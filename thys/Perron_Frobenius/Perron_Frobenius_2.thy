@@ -1447,7 +1447,7 @@ lemma permutation_mat_id_1: assumes p: "p permutes {..<n}"
 lemma permutation_mat_id_2: assumes p: "p permutes {..<n}" 
   shows "permutation_mat n (inv p) * permutation_mat n p = 1\<^sub>m n" 
   by (subst permutation_mat_right[OF _ p, of _ n], force, unfold permutation_mat_def, rule eq_matI, 
-   insert p, auto simp: permutes_lt[OF p] permutes_iff[OF p] permutes_inverses)
+   insert p, auto simp: permutes_lt[OF p] permutes_inverses)
 
 lemma permutation_mat_both: assumes A: "A \<in> carrier_mat n n" and p: "p permutes {..<n}" 
   shows "permutation_mat n p * Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j)) * permutation_mat n (inv p) = A" 
@@ -1460,6 +1460,297 @@ lemma permutation_similar_mat: assumes A: "A \<in> carrier_mat n n" and p: "p pe
   by (rule similar_matI[OF _ permutation_mat_id_1[OF p] permutation_mat_id_2[OF p] 
   permutation_mat_both[symmetric, OF A p]], insert A, auto)
 
+lemma wf_digraph_graph_of_mat: "wf_digraph (graph_of_mat A)" 
+  unfolding wf_digraph_def graph_of_mat_def Let_def by auto
 
+lemma det_four_block_mat_lower_left_zero: fixes A1 :: "'a :: idom mat" 
+  assumes A1: "A1 \<in> carrier_mat n n"
+  and A2: "A2 \<in> carrier_mat n m" and A30: "A3 = 0\<^sub>m m n"
+  and A4: "A4 \<in> carrier_mat m m"  
+shows "Determinant.det (four_block_mat A1 A2 A3 A4) = Determinant.det A1 * Determinant.det A4" 
+proof -
+  let ?det = Determinant.det
+  let ?t = "transpose_mat" 
+  let ?A = "four_block_mat A1 A2 A3 A4" 
+  let ?k = "n + m" 
+  have A3: "A3 \<in> carrier_mat m n" unfolding A30 by auto
+  have A: "?A \<in> carrier_mat ?k ?k" 
+    by (rule four_block_carrier_mat[OF A1 A4])
+  have "?det ?A = ?det (?t ?A)" 
+    by (rule sym, rule Determinant.det_transpose[OF A])
+  also have "?t ?A = four_block_mat (?t A1) (?t A3) (?t A2) (?t A4)" 
+    by (rule transpose_four_block_mat[OF A1 A2 A3 A4])
+  also have "?det \<dots> = ?det (?t A1) * ?det (?t A4)" 
+    by (rule det_four_block_mat_upper_right_zero[of _ n _ m], insert A1 A2 A30 A4, auto)
+  also have "?det (?t A1) = ?det A1" 
+    by (rule Determinant.det_transpose[OF A1])
+  also have "?det (?t A4) = ?det A4" 
+    by (rule Determinant.det_transpose[OF A4])
+  finally show ?thesis .
+qed
+
+lemma char_poly_matrix_four_block_mat: assumes 
+      A1: "A1 \<in> carrier_mat n n"
+  and A2: "A2 \<in> carrier_mat n m" 
+  and A3: "A3 \<in> carrier_mat m n"
+  and A4: "A4 \<in> carrier_mat m m"
+shows "char_poly_matrix (four_block_mat A1 A2 A3 A4) = 
+  four_block_mat (char_poly_matrix A1) (map_mat (\<lambda> x. [:-x:]) A2) 
+    (map_mat (\<lambda> x. [:-x:]) A3) (char_poly_matrix A4)" 
+proof -
+  from A1 A4 
+  have dim[simp]: "dim_row A1 = n" "dim_col A1 = n" 
+      "dim_row A4 = m" "dim_col A4 = m" by auto
+  show ?thesis
+    unfolding char_poly_matrix_def four_block_mat_def Let_def dim
+    by (rule eq_matI, insert A2 A3, auto)
+qed
+
+lemma char_poly_four_block_mat_lower_left_zero: fixes A :: "'a :: idom mat"
+  assumes A: "A = four_block_mat B C (0\<^sub>m m n) D"
+  and B: "B \<in> carrier_mat n n"
+  and C: "C \<in> carrier_mat n m"
+  and D: "D \<in> carrier_mat m m"
+shows "char_poly A = char_poly B * char_poly D"
+  unfolding A char_poly_def
+  by (subst char_poly_matrix_four_block_mat[OF B C _ D], force, 
+     rule det_four_block_mat_lower_left_zero[of _ n _ m], insert B C D, auto)
+
+lemma elements_mat_permutes: assumes p: "p permutes {..< n}" 
+  and A: "A \<in> carrier_mat n n" 
+  and B: "B = Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j))" 
+shows "elements_mat A = elements_mat B" 
+proof -
+  from A B have [simp]: "dim_row A = n" "dim_col A = n" "dim_row B = n" "dim_col B = n" by auto
+  {
+    fix i j
+    assume ij: "i < n" "j < n" 
+    let ?p = "inv p" 
+    from permutes_lt[OF p] ij have *: "p i < n" "p j < n" by auto
+    from permutes_lt[OF permutes_inv[OF p]] ij have **: "?p i < n" "?p j < n" by auto
+    have "\<exists> i' j'. B $$ (i,j) = A $$ (i',j') \<and> i' < n \<and> j' < n" 
+       "\<exists> i' j'. A $$ (i,j) = B $$ (i',j') \<and> i' < n \<and> j' < n"
+      by (rule exI[of _ "p i"], rule exI[of _ "p j"], insert ij *, simp add: B,
+      rule exI[of _ "?p i"], rule exI[of _ "?p j"], insert ** p, simp add: B permutes_inverses)
+  }
+  thus ?thesis unfolding elements_mat by auto
+qed
+
+lemma elements_mat_four_block_mat_supseteq: 
+  assumes A1: "A1 \<in> carrier_mat n n"
+  and A2: "A2 \<in> carrier_mat n m" 
+  and A3: "A3 \<in> carrier_mat m n"
+  and A4: "A4 \<in> carrier_mat m m"
+shows "elements_mat (four_block_mat A1 A2 A3 A4) \<supseteq> 
+  (elements_mat A1 \<union> elements_mat A2 \<union> elements_mat A3 \<union> elements_mat A4)" 
+proof 
+  let ?A = "four_block_mat A1 A2 A3 A4" 
+  have A: "?A \<in> carrier_mat (n + m) (n + m)" using A1 A2 A3 A4 by simp
+  from A1 A4 
+  have dim[simp]: "dim_row A1 = n" "dim_col A1 = n" 
+      "dim_row A4 = m" "dim_col A4 = m" by auto
+  fix x
+  assume x: "x \<in> elements_mat A1 \<union> elements_mat A2 \<union> elements_mat A3 \<union> elements_mat A4" 
+  {
+    assume "x \<in> elements_mat A1" 
+    from this[unfolded elements_mat] A1 obtain i j where x: "x = A1 $$ (i,j)" and 
+      ij: "i < n" "j < n" by auto
+    have "x = ?A $$ (i,j)" using ij unfolding x four_block_mat_def Let_def by simp
+    from elements_matI[OF A _ _ this] ij have "x \<in> elements_mat ?A" by auto
+  } 
+  moreover
+  {
+    assume "x \<in> elements_mat A2" 
+    from this[unfolded elements_mat] A2 obtain i j where x: "x = A2 $$ (i,j)" and 
+      ij: "i < n" "j < m" by auto
+    have "x = ?A $$ (i,j + n)" using ij unfolding x four_block_mat_def Let_def by simp
+    from elements_matI[OF A _ _ this] ij have "x \<in> elements_mat ?A" by auto
+  }
+  moreover
+  {
+    assume "x \<in> elements_mat A3" 
+    from this[unfolded elements_mat] A3 obtain i j where x: "x = A3 $$ (i,j)" and 
+      ij: "i < m" "j < n" by auto
+    have "x = ?A $$ (i+n,j)" using ij unfolding x four_block_mat_def Let_def by simp
+    from elements_matI[OF A _ _ this] ij have "x \<in> elements_mat ?A" by auto
+  }
+  moreover
+  {
+    assume "x \<in> elements_mat A4" 
+    from this[unfolded elements_mat] A4 obtain i j where x: "x = A4 $$ (i,j)" and 
+      ij: "i < m" "j < m" by auto
+    have "x = ?A $$ (i+n,j + n)" using ij unfolding x four_block_mat_def Let_def by simp
+    from elements_matI[OF A _ _ this] ij have "x \<in> elements_mat ?A" by auto
+  }
+  ultimately show "x \<in> elements_mat ?A" using x by blast
+qed
+      
+
+lemma non_irreducible_mat_split: 
+  fixes A :: "'a :: idom mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and not: "\<not> irreducible_mat A" 
+  and n: "n > 1" 
+shows "\<exists> n1 n2 B B1 B2 B4. similar_mat A B \<and> elements_mat A = elements_mat B \<and>
+       B = four_block_mat B1 B2 (0\<^sub>m n2 n1) B4 \<and>  
+       B1 \<in> carrier_mat n1 n1 \<and> B2 \<in> carrier_mat n1 n2 \<and> B4 \<in> carrier_mat n2 n2 \<and>
+       0 < n1 \<and> n1 < n \<and> 0 < n2 \<and> n2 < n \<and> n1 + n2 = n"
+proof -
+  from A have [simp]: "dim_row A = n" by auto
+  let ?G = "graph_of_mat A" 
+  interpret wf_digraph ?G by (rule wf_digraph_graph_of_mat)
+  have [simp]: "verts ?G = {..<n}" unfolding graph_of_mat_def by (auto simp: Let_def)
+  let ?reachp = "\<lambda> i j. i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> j" 
+  let ?reach = "\<lambda> i j. i \<rightarrow>\<^sup>*\<^bsub>?G\<^esub> j" 
+  have "\<exists> i j. i < n \<and> j < n \<and> \<not> ?reach i j" 
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    hence reach: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> ?reach i j" by auto
+    from not[unfolded irreducible_mat_def Let_def]
+    obtain i j where i: "i < n" and j: "j < n" and nreach: "\<not> ?reachp i j" by auto
+    from reach[OF i j] nreach have ij: "i = j" using reachable_neq_reachable1 by auto
+    from n j obtain k where k: "k < n" and diff: "j \<noteq> k" by auto
+    from reachable_neq_reachable1[OF reach[OF j k] diff] reach[OF k j]
+    have "?reachp j j" by auto
+    with nreach ij show False by auto
+  qed
+  then obtain i j where i: "i < n" and j: "j < n" and nreach: "\<not> ?reach i j" by auto
+  define I where "I = {k. k < n \<and> ?reach k j}" 
+  have iI: "i \<notin> I" unfolding I_def using nreach by auto
+  have jI: "j \<in> I" unfolding I_def using nreach j by auto
+  define f where "f = (\<lambda> i. if i \<in> I then 1 else 0 :: nat)" 
+  let ?xs = "[0 ..< n]" 
+  from mset_eq_permutation[OF mset_sort, of ?xs f] obtain p where p: "p permutes {..< n}" 
+    and perm: "permute_list p ?xs = sort_key f ?xs" by auto
+  from p have lt[simp]: "i < n \<Longrightarrow> p i < n" for i by (rule permutes_lt)
+  let ?p = "inv p" 
+  have ip: "?p permutes {..< n}" using permutes_inv[OF p] .
+  from ip have ilt[simp]: "i < n \<Longrightarrow> ?p i < n" for i by (rule permutes_lt)
+  let ?B = "Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j))" 
+  define B where "B = ?B" 
+  from permutation_similar_mat[OF A p] have sim: "similar_mat A B" unfolding B_def .
+  let ?ys = "permute_list p ?xs" 
+  define ys where "ys = ?ys" 
+  have len_ys: "length ys = n" unfolding ys_def by simp
+  let ?k = "length (filter (\<lambda> i. f i = 0) ys)" 
+  define k where "k = ?k"
+  have kn: "k \<le> n" unfolding k_def using len_ys 
+    using length_filter_le[of _ ys] by auto
+  have ys_p: "i < n \<Longrightarrow> ys ! i = p i" for i unfolding ys_def permute_list_def by simp
+  have ys: "ys = map (\<lambda> i. ys ! i) [0 ..< n]" unfolding len_ys[symmetric]
+    by (simp add: map_nth) 
+  also have "\<dots> = map p [0 ..< n]" 
+    by (rule map_cong, insert ys_p, auto)
+  also have "[0 ..< n] = [0 ..< k] @ [k ..< n]" using kn
+    using le_Suc_ex upt_add_eq_append by blast
+  finally have ys: "ys = map p [0 ..< k] @ map p [k ..< n]" by simp    
+  {
+    fix i
+    assume i: "i < n"
+    let ?g = "(\<lambda> i. f i = 0)" 
+    let ?f = "filter ?g" 
+    from i have pi: "p i < n" using p by simp
+    have "k = length (?f ys)" by fact    
+    also have "?f ys = ?f (map p [0 ..< k]) @ ?f (map p [k ..< n])" unfolding ys by simp
+    also note k = calculation
+    finally have True by blast
+    from perm[symmetric, folded ys_def]
+    have "sorted (map f ys)" using sorted_sort_key by metis
+    from this[unfolded ys map_append sorted_append set_map]
+    have sorted: "\<And> x y. x < k \<Longrightarrow> y \<in> {k..<n} \<Longrightarrow> f (p x) \<le> f (p y)" by auto
+    have 0: "\<forall> i < k. f (p i) = 0" 
+    proof (rule ccontr)
+      assume "\<not> ?thesis" 
+      then obtain i where i: "i < k" and zero: "f (p i) \<noteq> 0" by auto
+      hence "f (p i) = 1" unfolding f_def by (auto split: if_splits)
+      from sorted[OF i, unfolded this] have 1: "j \<in> {k..<n} \<Longrightarrow> f (p j) \<ge> 1" for j by auto
+      have le: "j \<in> {k ..< n} \<Longrightarrow> f (p j) = 1" for j using 1[of j] unfolding f_def 
+        by (auto split: if_splits)
+      also have "?f (map p [k ..< n]) = []" using le by auto
+      from k[unfolded this] have "length (?f (map p [0..<k])) = k" by simp 
+      from length_filter_less[of "p i" "map p [0 ..< k]" ?g, unfolded this] i zero
+      show False by auto
+    qed
+    hence "?f (map p [0..<k]) = map p [0..<k]" by auto
+    from arg_cong[OF k[unfolded this, simplified], of set]
+    have 1: "\<And> i. i \<in> {k ..< n} \<Longrightarrow> f (p i) \<noteq> 0" by auto
+    have 1: "i < n \<Longrightarrow> \<not> i < k \<Longrightarrow> f (p i) \<noteq> 0" for i using 1[of i] by auto
+    have 0: "i < n \<Longrightarrow> (f (p i) = 0) = (i < k)" for i using 1[of i] 0[rule_format, of i] by blast
+    have main: "(f i = 0) = (?p i < k)" using 0[of "?p i"] i p 
+      by (auto simp: permutes_inverses)
+    have "i \<in> I \<longleftrightarrow> f i \<noteq> 0" unfolding f_def by simp
+    also have "(f i = 0) \<longleftrightarrow> ?p i < k" using main by auto
+    finally have "i \<in> I \<longleftrightarrow> ?p i \<ge> k" by auto
+  } note main = this
+  from main[OF i] iI 
+  have k0: "k \<noteq> 0" by auto
+  from jI main[OF j] have "?p j \<ge> k" by auto
+  with ilt[OF j] have kn: "k < n" by auto
+  {
+    fix i j 
+    assume i: "i < n" and ik: "k \<le> i" and jk: "j < k"
+    with kn have j: "j < n" by auto
+    have jI: "p j \<notin> I" 
+      by (subst main, insert jk j p, auto simp: permutes_inverses)
+    have iI: "p i \<in> I" 
+      by (subst main, insert i ik p, auto simp: permutes_inverses)
+    from i j have "B $$ (i,j) = A $$ (p i, p j)" unfolding B_def by auto
+    also have "\<dots> = 0" 
+    proof (rule ccontr)
+      assume "A $$ (p i, p j) \<noteq> 0" 
+      hence "arc_to_ends ?G (p i, p j) \<in> arc_to_ends ?G ` arcs ?G" unfolding graph_of_mat_def Let_def 
+        by (auto simp: i j)
+      also have "arc_to_ends ?G (p i, p j) = (p j, p i)" unfolding arc_to_ends_def graph_of_mat_def Let_def by auto
+      finally have "p j \<rightarrow>\<^bsub>?G\<^esub> p i" unfolding arcs_ends_def .
+      with iI j have "p j \<in> I" unfolding I_def by (auto simp: adj_reachable_trans)
+      with jI show False by simp
+    qed
+    finally have "B $$ (i,j) = 0" .
+  } note zero = this
+  have dimB[simp]: "dim_row B = n" "dim_col B = n" unfolding B_def by auto
+  have dim: "dim_row B = k + (n - k)" "dim_col B = k + (n - k)" using kn by auto
+  obtain B1 B2 B3 B4 where spl: "split_block B k k = (B1,B2,B3,B4)" (is "?tmp = _") by (cases ?tmp, auto)  
+  from split_block[OF this dim] have
+    Bs: "B1 \<in> carrier_mat k k" "B2 \<in> carrier_mat k (n - k)"
+      "B3 \<in> carrier_mat (n - k) k" "B4 \<in> carrier_mat (n - k) (n - k)"
+    and B: "B = four_block_mat B1 B2 B3 B4" by auto
+  have B3: "B3 = 0\<^sub>m (n - k) k" unfolding arg_cong[OF spl[symmetric], of "\<lambda> (_,_,B,_). B", unfolded split]
+    unfolding split_block_def Let_def split
+    by (rule eq_matI, auto simp: kn zero)
+  from elements_mat_permutes[OF p A B_def] 
+  have elem: "elements_mat A = elements_mat B" .
+  show ?thesis
+    by (intro exI conjI, rule sim, rule elem, rule B[unfolded B3], insert Bs k0 kn, auto)
+qed
+
+lemma non_irreducible_nonneg_mat_split: 
+  fixes A :: "'a :: linordered_idom mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and nonneg: "nonneg_mat A" 
+  and not: "\<not> irreducible_mat A" 
+  and n: "n > 1" 
+shows "\<exists> n1 n2 A1 A2. char_poly A = char_poly A1 * char_poly A2 
+    \<and> nonneg_mat A1 \<and> nonneg_mat A2
+    \<and> A1 \<in> carrier_mat n1 n1 \<and> A2 \<in> carrier_mat n2 n2
+    \<and> 0 < n1 \<and> n1 < n \<and> 0 < n2 \<and> n2 < n \<and> n1 + n2 = n"
+proof -
+  from non_irreducible_mat_split[OF A not n]
+  obtain n1 n2 B B1 B2 B4
+    where sim: "similar_mat A B" and elem: "elements_mat A = elements_mat B" 
+     and B: "B = four_block_mat B1 B2 (0\<^sub>m n2 n1) B4"
+     and Bs: "B1 \<in> carrier_mat n1 n1" "B2 \<in> carrier_mat n1 n2" "B4 \<in> carrier_mat n2 n2" 
+     and n: "0 < n1" "n1 < n" "0 < n2" "n2 < n" "n1 + n2 = n" by auto
+  from char_poly_similar[OF sim] 
+  have AB: "char_poly A = char_poly B" .
+  from nonneg have nonneg: "nonneg_mat B" unfolding nonneg_mat_def elem by auto
+  have cB: "char_poly B = char_poly B1 * char_poly B4"  
+    by (rule char_poly_four_block_mat_lower_left_zero[OF B Bs])
+  from nonneg have B1_B4: "nonneg_mat B1" "nonneg_mat B4" unfolding B nonneg_mat_def
+    using elements_mat_four_block_mat_supseteq[OF Bs(1-2) _ Bs(3), of "0\<^sub>m n2 n1"] by auto
+  show ?thesis
+    by (intro exI conjI, rule AB[unfolded cB], rule B1_B4, rule B1_B4, 
+        rule Bs, rule Bs, insert n, auto)
+qed
+   
 
 end
