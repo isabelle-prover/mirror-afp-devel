@@ -793,10 +793,10 @@ lemma arg_eqD: assumes "arg (cis x) = arg (cis y)" "-pi < x" "x \<le> pi" "-pi <
   shows "x = y" 
   using assms(1) unfolding arg_unique[OF sgn_cis assms(2-3)] arg_unique[OF sgn_cis assms(4-5)] .
 
-lemma rcis_inj_on: assumes n: "n \<noteq> 0" and S: "S \<subseteq> {0 ..< 2 * pi}" shows "inj_on (rcis n) S" 
+lemma rcis_inj_on: assumes r: "r \<noteq> 0" and S: "S \<subseteq> {0 ..< 2 * pi}" shows "inj_on (rcis r) S" 
 proof (rule inj_onI, goal_cases)
   case (1 x y)
-  from arg_cong[OF 1(3), of "\<lambda> x. x / n"] have "cis x = cis y" using n by (simp add: rcis_def) 
+  from arg_cong[OF 1(3), of "\<lambda> x. x / r"] have "cis x = cis y" using r by (simp add: rcis_def) 
   from arg_cong[OF this, of "\<lambda> x. inverse x"] have "cis (-x) = cis (-y)" by simp
   from arg_cong[OF this, of uminus] have *: "cis (-x + pi) = cis (-y + pi)"
     by (auto simp: complex_eq_iff)
@@ -805,9 +805,74 @@ proof (rule inj_onI, goal_cases)
   thus ?case by simp
 qed
 
+lemma cis_inj_on: assumes S: "S \<subseteq> {0 ..< 2 * pi}" shows "inj_on cis S" 
+  using rcis_inj_on[OF _ S, of 1] unfolding rcis_def by auto
+
+definition root_unity :: "nat \<Rightarrow> 'a :: comm_ring_1 poly" where
+  "root_unity n = monom 1 n - 1"  
+
+lemma poly_root_unity: "poly (root_unity n) x = 0 \<longleftrightarrow> x^n = 1" 
+  unfolding root_unity_def by (simp add: poly_monom)
+
+lemma degree_root_unity[simp]: "degree (root_unity n) = n" (is "degree ?p = _")
+proof -
+  have p: "?p = monom 1 n + (-1)" unfolding root_unity_def by auto
+  show ?thesis
+  proof (cases n)
+    case 0
+    thus ?thesis unfolding p by simp
+  next
+    case (Suc m)
+    show ?thesis unfolding p unfolding Suc
+      by (subst degree_add_eq_left, auto simp: degree_monom_eq)
+  qed
+qed
+
+lemma zero_root_unit[simp]: "root_unity n = 0 \<longleftrightarrow> n = 0" (is "?p = 0 \<longleftrightarrow> _")
+proof (cases "n = 0")
+  case True
+  thus ?thesis unfolding root_unity_def by simp
+next
+  case False
+  from degree_root_unity[of n] False 
+  have "degree ?p \<noteq> 0" by auto 
+  hence "?p \<noteq> 0" by fastforce
+  thus ?thesis using False by auto 
+qed
+
+lemma (in comm_ring_hom) hom_root_unity: "map_poly hom (root_unity n) = root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..
+  show ?thesis unfolding root_unity_def 
+    by (simp add: hom_distribs)
+qed
+
+definition prod_root_unity :: "nat list \<Rightarrow> 'a :: idom poly" where
+  "prod_root_unity ns = prod_list (map root_unity ns)" 
+
+lemma poly_prod_root_unity: "poly (prod_root_unity ns) x = 0 \<longleftrightarrow> (\<exists>k\<in>set ns. x ^ k = 1)" 
+  unfolding prod_root_unity_def 
+  by (simp add: poly_prod_list prod_list_zero_iff o_def image_def poly_root_unity)
+
+lemma degree_prod_root_unity[simp]: "0 \<notin> set ns \<Longrightarrow> degree (prod_root_unity ns) = sum_list ns" 
+  unfolding prod_root_unity_def 
+  by (subst degree_prod_list_eq, auto simp: o_def)
+
+lemma zero_prod_root_unit[simp]: "prod_root_unity ns = 0 \<longleftrightarrow> 0 \<in> set ns" 
+  unfolding prod_root_unity_def prod_list_zero_iff by auto
+
+lemma (in idom_hom) hom_prod_root_unity: "map_poly hom (prod_root_unity n) = prod_root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..  
+  show ?thesis unfolding prod_root_unity_def p.hom_prod_list map_map o_def hom_root_unity ..
+qed
+
 lemma roots_of_unity: assumes n: "n \<noteq> 0" 
   shows "(\<lambda> i. (cis (of_nat i * 2 * pi / n))) ` {0 ..< n} = { x :: complex. x ^ n = 1}" (is "?prod = ?Roots")
-proof (rule card_subset_eq)
+     "{x. poly (root_unity n) x = 0} = { x :: complex. x ^ n = 1}" 
+     "card { x :: complex. x ^ n = 1} = n" 
+proof (atomize(full), goal_cases)
+  case 1
   let ?one = "1 :: complex"
   let ?p = "monom ?one n - 1" 
   have degM: "degree (monom ?one n) = n" by (rule degree_monom_eq, simp)
@@ -816,11 +881,11 @@ proof (rule card_subset_eq)
     by (rule degree_add_eq_left, insert n, simp add: degM) 
   finally have degp: "degree ?p = n" unfolding degM .
   with n have p: "?p \<noteq> 0" by auto
-  have roots: "?Roots = {x. poly ?p x = 0}" 
+  have roots: "?Roots = {x. poly ?p x = 0}"
     unfolding poly_diff poly_monom by simp
   also have "finite \<dots>" by (rule poly_roots_finite[OF p])
-  finally show fin: "finite ?Roots" .
-  show sub: "?prod \<subseteq> ?Roots" 
+  finally have fin: "finite ?Roots" .
+  have sub: "?prod \<subseteq> ?Roots" 
   proof
     fix x
     assume "x \<in> ?prod" 
@@ -829,9 +894,9 @@ proof (rule card_subset_eq)
     also have "\<dots> = 1" by simp
     finally show "x \<in> ?Roots" by auto
   qed
-  have "card ?Roots \<le> n" unfolding roots
+  have Rn: "card ?Roots \<le> n" unfolding roots
     by (rule poly_roots_degree[of ?p, unfolded degp, OF p])
-  also have "\<dots> = card {0 ..< n}" by simp
+  have "\<dots> = card {0 ..< n}" by simp
   also have "\<dots> = card ?prod" 
   proof (rule card_image[symmetric], rule inj_onI, goal_cases)
     case (1 x y)
@@ -848,8 +913,13 @@ proof (rule card_subset_eq)
       by (rule inj_onD[OF rcis_inj_on[OF _ subset_refl] 1(3)[unfolded cis_rcis_eq]], insert 1(1-2), auto)
     with n show "x = y" by auto
   qed
-  finally have "card ?prod \<ge> card ?Roots" .
-  with card_mono[OF fin sub] show "card ?prod = card ?Roots" by auto
+  finally have cn:  "card ?prod = n" ..
+  with Rn have "card ?prod \<ge> card ?Roots" by auto
+  with card_mono[OF fin sub] have card: "card ?prod = card ?Roots" by auto
+  have "?prod = ?Roots"
+    by (rule card_subset_eq[OF fin sub card])
+  from this roots[symmetric] cn[unfolded this]
+  show ?case unfolding root_unity_def by blast
 qed
 
 lemma poly_roots_dvd: fixes p :: "'a :: field poly" 
@@ -896,5 +966,7 @@ proof -
     show ?case unfolding p q using IH by simp
   qed
 qed
+
+
 
 end

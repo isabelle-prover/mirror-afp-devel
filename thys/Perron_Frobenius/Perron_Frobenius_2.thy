@@ -8,6 +8,9 @@ imports
     this import is incompatible with field_simps, ac_simps *)
 begin 
 
+lemma charpoly_of_real: "charpoly (map_matrix complex_of_real A) = map_poly of_real (charpoly A)" 
+  by (transfer_hma rule: of_real_hom.char_poly_hom)
+
 context includes lifting_syntax
 begin
 lemma HMA_M_smult[transfer_rule]: "(op = ===> HMA_M ===> HMA_M) (op \<cdot>\<^sub>m) (op *k)" 
@@ -1023,9 +1026,6 @@ proof -
   thus ?thesis unfolding \<phi>_def .
 qed
 
-lemma charpoly_cA: "charpoly cA = map_poly c (charpoly A)" 
-  by (transfer_hma rule: of_real_hom.char_poly_hom)
-
 lemma assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
   shows maximal_eigen_value_order_1: "order \<alpha> (charpoly cA) = 1" 
     and maximal_eigen_value_rotation: "eigen_value cA (x * cis (arg \<alpha>)) = eigen_value cA x"
@@ -1045,7 +1045,7 @@ proof -
   note order_neg[of \<alpha>]
   also have id: "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
     by (metis a cis_mult_cmod_id nonzero_mult_div_cancel_left)
-  also have sr: "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] charpoly_cA
+  also have sr: "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] charpoly_of_real
     by (rule map_poly_inj_idom_divide_hom.order_hom, unfold_locales)
   finally show *: "order \<alpha> ?p = 1" .
   show "eigen_value cA (x * ?a) = eigen_value cA x" using order_pos 
@@ -1320,12 +1320,12 @@ proof -
     show "{x. poly ?cp x = 0} \<subseteq> {x. poly (charpoly cA) x = 0}" 
       unfolding M eigen_value_root_charpoly by auto
   qed
-  from this[unfolded charpoly_cA cp p.hom_dvd_iff]
+  from this[unfolded charpoly_of_real cp p.hom_dvd_iff]
   have dvd: "?p dvd charpoly A" .
   from this[unfolded dvd_def] obtain f where 
     decomp: "charpoly A = ?p * f" by blast
   let ?f = "map_poly c f" 
-  have decompc: "charpoly cA = ?cp * ?f" unfolding charpoly_cA decomp p.hom_mult cp ..
+  have decompc: "charpoly cA = ?cp * ?f" unfolding charpoly_of_real decomp p.hom_mult cp ..
   show "\<exists> f. charpoly A = (monom 1 ?M - [:sr^?M:]) * f \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
     unfolding kM[symmetric]
   proof (intro exI conjI allI impI, rule decomp)
@@ -1851,6 +1851,8 @@ lemma perron_frobenius_nonneg: fixes A :: "real Matrix.mat"
     sr \<ge> 0 \<and> 
     0 \<notin> set ks \<and> ks \<noteq> [] \<and>
     char_poly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f \<and>
+    char_poly (map_mat complex_of_real A) = 
+       prod_list (map (\<lambda> k. monom 1 k - [:of_real sr ^ k:]) ks) * map_poly of_real f \<and>
     (\<forall> x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
 proof -
   define p where "p = (\<lambda> sr k. monom 1 k - [: (sr :: real) ^ k:])" 
@@ -1860,12 +1862,12 @@ proof -
   let ?c = "complex_of_real" 
   interpret c: field_hom ?c ..
   interpret p: map_poly_inj_idom_divide_hom ?c ..
+  have map_p: "map_poly ?c (p sr k) = (monom 1 k - [:?c sr^k:])" for sr k
+    unfolding p_def by (simp add:  hom_distribs)
   { (* TODO: make external *)
     fix k x sr
     assume 0: "poly (map_poly ?c (p sr k)) x = 0" and k: "k \<noteq> 0" and sr: "sr \<ge> 0" 
-    note 0
-    also have "map_poly ?c (p sr k) = (monom 1 k - [:?c sr^k:])" 
-      unfolding p_def by (simp add:  hom_distribs)    
+    note 0 also note map_p    
     finally have "x^k = (?c sr)^k" by (simp add: poly_monom) 
     from arg_cong[OF this, of "\<lambda> c. root k (cmod c)", unfolded norm_power] k
     have "cmod x = cmod (?c sr)" using real_root_pos2 by auto
@@ -1945,7 +1947,12 @@ proof -
       thus ?thesis by blast
     qed
   qed
-  thus ?thesis unfolding p_def by auto
+  then obtain sr ks f where wit: "?wit A sr ks f" by blast
+  hence "char_poly A = prod_list (map (p sr) ks) * f" by blast
+  from arg_cong[OF this, of "map_poly ?c"]
+  have "char_poly (map_mat ?c A) = prod_list (map (\<lambda> k. monom 1 k - [:?c sr ^ k:]) ks) * map_poly ?c f" 
+    by (simp add: of_real_hom.char_poly_hom[OF A] hom_distribs p.prod_list_map_hom[symmetric] o_def map_p)  
+  thus ?thesis using wit unfolding p_def by auto
 qed
 
 lemma perron_frobenius_non_neg: fixes A :: "real ^ 'n ^ 'n" 
@@ -1954,6 +1961,8 @@ lemma perron_frobenius_non_neg: fixes A :: "real ^ 'n ^ 'n"
     sr \<ge> 0 \<and> 
     0 \<notin> set ks \<and> ks \<noteq> [] \<and>
     charpoly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f \<and>
+    charpoly (map_matrix complex_of_real A) = 
+       prod_list (map (\<lambda> k. monom 1 k - [:of_real sr ^ k:]) ks) * map_poly of_real f \<and>
     (\<forall> x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
   using pos
 proof (transfer, goal_cases)
@@ -1961,6 +1970,51 @@ proof (transfer, goal_cases)
   from perron_frobenius_nonneg[OF 1]
   show ?case by auto
 qed
+
+definition "spectral_radius_real_matrix A = spectral_radius (map_matrix of_real A)" 
+
+lemma perron_frobenius_for_complexity: fixes A :: "real ^ 'n ^ 'n" 
+  assumes pos: "non_neg_mat A" 
+   and sr: "spectral_radius_real_matrix A = 1"
+  shows "\<exists> ks f. 
+    0 \<notin> set ks \<and> ks \<noteq> [] \<and>
+    charpoly A = prod_root_unity ks * f \<and>
+    charpoly (map_matrix complex_of_real A) = prod_root_unity ks * map_poly of_real f \<and>
+    (\<forall> x. poly (map_poly of_real f) x = 0 \<longrightarrow> cmod x < 1)" 
+proof -
+  let ?c = "complex_of_real" 
+  let ?cp = "map_poly ?c" 
+  let ?A = "map_matrix ?c A" 
+  interpret field_hom ?c ..
+  interpret p: map_poly_inj_idom_divide_hom ?c ..
+  from perron_frobenius_non_neg[OF pos] obtain sr ks f 
+    where *: "sr \<ge> 0" "0 \<notin> set ks" "ks \<noteq> []" 
+     and cp: "charpoly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f" 
+     and cpc: "charpoly ?A = prod_list (map (\<lambda> k. monom 1 k - [:?c sr ^ k:]) ks) * ?cp f" 
+     and small: "\<And> x. poly (?cp f) x = 0 \<Longrightarrow> cmod x < sr"  by blast
+  from spectral_radius_ev[of ?A, unfolded sr[unfolded spectral_radius_real_matrix_def]] 
+    spectral_radius_max[of ?A, unfolded sr[unfolded spectral_radius_real_matrix_def]]    
+  obtain ev where ev: "eigen_value ?A ev" "cmod ev = 1" 
+    and max: "\<And> x. eigen_value ?A x \<Longrightarrow> cmod x \<le> 1" 
+    unfolding eigen_value_def by auto
+  from * obtain k ks' where ks: "ks = k # ks'" by (cases ks, auto)
+  have "eigen_value ?A (?c sr)" unfolding eigen_value_root_charpoly cpc ks by (simp add: poly_monom)
+  from max[OF this] * have sr_le_1: "sr \<le> 1" by auto
+  {  
+    assume sr: "sr < 1" 
+    note [simp] = prod_list_zero_iff
+    from ev[unfolded eigen_value_root_charpoly cpc poly_mult poly_prod_list]
+      small[of ev] sr obtain k where k: "k \<in> set ks" and id: "ev ^ k = complex_of_real sr ^ k"
+      by (auto simp: poly_monom)
+    from k *(2) have k0: "k \<noteq> 0" by metis
+    from arg_cong[OF id, of "\<lambda> x. root k (cmod x)", unfolded norm_power] k0
+    have "cmod ev = cmod (?c sr)" using real_root_pos2 by auto
+    with sr_le_1 sr * ev(2) have False by auto
+  }
+  with sr_le_1 have sr: "sr = 1" by argo
+  from * cp cpc small
+  show ?thesis unfolding sr root_unity_def prod_root_unity_def by (auto simp: pCons_one)
+qed  
 
 
 end
