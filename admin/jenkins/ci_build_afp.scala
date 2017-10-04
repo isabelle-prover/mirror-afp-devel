@@ -1,7 +1,7 @@
 object profile extends isabelle.CI_Profile
 {
   import isabelle._
-  import java.io.{FileReader, PrintWriter}
+  import java.io.FileReader
   import scala.sys.process._
   import org.apache.commons.configuration2._
 
@@ -163,6 +163,7 @@ object profile extends isabelle.CI_Profile
   }
 
   val status_file = Path.explode("$ISABELLE_HOME/status.json").file
+  val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
   def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
   def threads = 2
@@ -181,6 +182,14 @@ object profile extends isabelle.CI_Profile
   }
 
   def post_hook(results: Build.Results) =
+  {
+    print_section("DEPENDENCIES")
+    println("Generating dependencies file ...")
+    val result = Isabelle_System.bash("isabelle afp_dependencies")
+    result.check
+    println("Writing dependencies file ...")
+    File.write(deps_file, result.out)
+
     if (!is_testboard)
     {
       val metadata = {
@@ -196,9 +205,7 @@ object profile extends isabelle.CI_Profile
 
       print_section("SITEGEN")
       println("Writing status file ...")
-      val writer = new PrintWriter(status_file)
-      writer.print(metadata.results_as_json(results))
-      writer.close()
+      File.write(status_file, metadata.results_as_json(results))
       println("Running sitegen ...")
 
       val script = afp + Path.explode("admin/sitegen-devel")
@@ -217,8 +224,9 @@ object profile extends isabelle.CI_Profile
         }
       }
 
-      print_section("COMPLETED")
     }
+    print_section("COMPLETED")
+  }
 
   def selection =
     Sessions.Selection(
