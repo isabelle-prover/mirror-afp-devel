@@ -1023,6 +1023,9 @@ proof -
   thus ?thesis unfolding \<phi>_def .
 qed
 
+lemma charpoly_cA: "charpoly cA = map_poly c (charpoly A)" 
+  by (transfer_hma rule: of_real_hom.char_poly_hom)
+
 lemma assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
   shows maximal_eigen_value_order_1: "order \<alpha> (charpoly cA) = 1" 
     and maximal_eigen_value_rotation: "eigen_value cA (x * cis (arg \<alpha>)) = eigen_value cA x"
@@ -1034,8 +1037,6 @@ proof -
   have "similar_matrix (?a *k cA) cA" .
   from similar_matrix_charpoly[OF this] 
   have id: "charpoly (?a *k cA) = ?p" .
-  have p: "?p = map_poly c (charpoly A)" 
-    by (transfer_hma rule: of_real_hom.char_poly_hom)
   have a: "?a \<noteq> 0" by simp
   from order_charpoly_smult[OF this, of _ cA, unfolded id]
   have order_neg: "order x ?p = order (x / ?a) ?p" for x .
@@ -1044,7 +1045,7 @@ proof -
   note order_neg[of \<alpha>]
   also have id: "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
     by (metis a cis_mult_cmod_id nonzero_mult_div_cancel_left)
-  also have sr: "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] p
+  also have sr: "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] charpoly_cA
     by (rule map_poly_inj_idom_divide_hom.order_hom, unfold_locales)
   finally show *: "order \<alpha> ?p = 1" .
   show "eigen_value cA (x * ?a) = eigen_value cA x" using order_pos 
@@ -1076,13 +1077,15 @@ qed
 
 lemma maximal_eigen_value_roots_of_unity_rotation: 
   assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}" 
-   and k: "k = card M" 
-  shows "k \<noteq> 0" 
+   and kM: "k = card M" 
+ shows "k \<noteq> 0" 
+    "k \<le> CARD('n)"
+    "\<exists> f. charpoly A = (monom 1 k - [:sr^k:]) * f 
+       \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
     "M = op * (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}"
     "M = op * (c sr) ` { x :: complex. x ^ k = 1}"
     "op * (cis (2 * pi / k)) ` Spectrum cA = Spectrum cA"
-    "k \<le> CARD('n)"
-  unfolding k 
+  unfolding kM
 proof -
   let ?M = "card M" 
   note fin = finite_spectrum[of cA]  
@@ -1230,7 +1233,7 @@ proof -
     by (rule image_cong, insert sr_pos, auto simp: rcis_mult rcis_def)
   finally show M_cis: "M = op * (c sr) ` ?f ` {0 ..< ?M}" 
     unfolding card Min by simp
-  thus "M = op * (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
+  thus M_pow: "M = op * (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
   let ?rphi = "rcis sr (2 * pi / ?M)" 
   let ?phi = "cis (2 * pi / ?M)" 
   from Min_M[unfolded Min] 
@@ -1262,6 +1265,90 @@ proof -
   qed
   from this[unfolded phi_def]
   show "op * (cis (2 * pi / real (card M))) ` Spectrum cA = Spectrum cA" .
+  let ?p = "monom 1 k - [:sr^k:]" 
+  let ?cp = "monom 1 k - [:(c sr)^k:]" 
+  let ?one = "1 :: complex" 
+  let ?list = "map (rcis sr) (map (\<lambda> i. of_nat i * ?piM) [0 ..< card M])" 
+  interpret c: field_hom c ..
+  interpret p: map_poly_inj_idom_divide_hom c ..
+  have cp: "?cp = map_poly c ?p" by (simp add: hom_distribs)    
+  have M_list: "M = set ?list" using M_list[unfolded Min card[symmetric]] .
+  have dist: "distinct ?list" using dist[unfolded Min card[symmetric]] .
+  have k0: "k \<noteq> 0" using k[folded card] assms by auto
+  have "?cp = (monom 1 k + (- [:(c sr)^k:]))" by simp
+  also have "degree \<dots> = k" 
+    by (subst degree_add_eq_left, insert k0, auto simp: degree_monom_eq)  
+  finally have deg: "degree ?cp = k" .
+  from deg k0 have cp0: "?cp \<noteq> 0" by auto
+  have "{x. poly ?cp x = 0} = {x. x^k = (c sr)^k}" unfolding poly_diff poly_monom 
+    by simp
+  also have "\<dots> \<subseteq> M" 
+  proof -
+    {
+      fix x
+      assume id: "x^k = (c sr)^k" 
+      from sr_pos k0 have "(c sr)^k \<noteq> 0" by auto
+      with arg_cong[OF id, of "\<lambda> x. x / (c sr)^k"] 
+      have "(x / c sr)^k = 1"
+        unfolding power_divide by auto
+      hence "c sr * (x / c sr) \<in> M" 
+        by (subst M_pow, unfold kM[symmetric], blast)
+      also have "c sr * (x / c sr) = x" using sr_pos by auto
+      finally have "x \<in> M" .
+    }
+    thus ?thesis by auto
+  qed
+  finally have cp_M: "{x. poly ?cp x = 0} \<subseteq> M" .
+  have "k = card (set ?list)" unfolding distinct_card[OF dist] by (simp add: kM)
+  also have "\<dots> \<le> card {x. poly ?cp x = 0}" 
+  proof (rule card_mono[OF poly_roots_finite[OF cp0]])
+    {
+      fix x
+      assume "x \<in> set ?list" 
+      then obtain i where x: "x = rcis sr (real i * ?piM)" by auto
+      have "x^k = (c sr)^k" unfolding x DeMoivre2 kM by simp
+      hence "poly ?cp x = 0" unfolding poly_diff poly_monom by simp
+    }
+    thus "set ?list \<subseteq> {x. poly ?cp x = 0}" by auto
+  qed
+  finally have k_card: "k \<le> card {x. poly ?cp x = 0}" .
+  from k_card cp_M finM have M_id: "M = {x. poly ?cp x = 0}"
+    unfolding kM by (metis card_seteq)
+  have dvdc: "?cp dvd charpoly cA" 
+  proof (rule poly_roots_dvd[OF cp0 deg k_card])
+    from cp_M
+    show "{x. poly ?cp x = 0} \<subseteq> {x. poly (charpoly cA) x = 0}" 
+      unfolding M eigen_value_root_charpoly by auto
+  qed
+  from this[unfolded charpoly_cA cp p.hom_dvd_iff]
+  have dvd: "?p dvd charpoly A" .
+  from this[unfolded dvd_def] obtain f where 
+    decomp: "charpoly A = ?p * f" by blast
+  let ?f = "map_poly c f" 
+  have decompc: "charpoly cA = ?cp * ?f" unfolding charpoly_cA decomp p.hom_mult cp ..
+  show "\<exists> f. charpoly A = (monom 1 ?M - [:sr^?M:]) * f \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
+    unfolding kM[symmetric]
+  proof (intro exI conjI allI impI, rule decomp)
+    fix x
+    assume f: "poly ?f x = 0" 
+    hence ev: "eigen_value cA x" 
+      unfolding decompc p.hom_mult eigen_value_root_charpoly by auto    
+    hence le: "cmod x \<le> sr" using eigen_value_norm_sr by auto
+    {
+      assume max: "cmod x = sr" 
+      hence "x \<in> M" unfolding M using ev by auto
+      hence "poly ?cp x = 0" unfolding M_id by auto
+      hence dvd1: "[: -x, 1 :] dvd ?cp" unfolding poly_eq_0_iff_dvd by auto
+      from f[unfolded poly_eq_0_iff_dvd]
+      have dvd2: "[: -x, 1 :] dvd ?f" by auto
+      from char have 0: "charpoly cA \<noteq> 0" by auto
+      from mult_dvd_mono[OF dvd1 dvd2] have "[: -x, 1 :]^2 dvd (charpoly cA)" 
+        unfolding decompc power2_eq_square .      
+      from order_max[OF this 0] maximal_eigen_value_order_1[OF ev max] 
+      have False by auto
+    }
+    with le show "cmod x < sr" by argo
+  qed
 qed
   
 lemmas pf_main =
@@ -1274,7 +1361,7 @@ lemmas pf_main =
   maximal_eigen_value_roots_of_unity_rotation 
    (* the maximal eigenvalues are precisely the k-th roots of unity for some k \<le> dim A *)
 
-lemmas pf_main_connect = pf_main(1,3,5,7,10,12)[unfolded sr_spectral_radius] 
+lemmas pf_main_connect = pf_main(1,3,5,7,8-10)[unfolded sr_spectral_radius] 
   sr_pos[unfolded sr_spectral_radius]
 end
 
@@ -1360,7 +1447,8 @@ end
 text \<open>The main statements of Perron-Frobenius can now be transferred to JNF-matrices\<close>
 
 lemma perron_frobenius_irreducible: fixes A :: "real Matrix.mat" and cA :: "complex Matrix.mat" 
-  assumes A: "A \<in> carrier_mat n n" and n: "n \<noteq> 0" and irr: "nonneg_irreducible_mat A" 
+  assumes A: "A \<in> carrier_mat n n" and n: "n \<noteq> 0" and nonneg: "nonneg_mat A" 
+    and irr: "irreducible_mat A" 
     and cA: "cA = map_mat of_real A"
     and sr: "sr = Spectral_Radius.spectral_radius cA" 
   shows 
@@ -1369,13 +1457,17 @@ lemma perron_frobenius_irreducible: fixes A :: "real Matrix.mat" and cA :: "comp
     "0 < sr"
     "eigenvalue cA \<alpha> \<Longrightarrow> cmod \<alpha> \<le> sr"
     "eigenvalue cA \<alpha> \<Longrightarrow> cmod \<alpha> = sr \<Longrightarrow> order \<alpha> (char_poly cA) = 1" 
-    "\<exists> k \<le> n. {\<alpha>. eigenvalue cA \<alpha> \<and> cmod \<alpha> = sr} = (op * sr) ` { x :: complex. x ^ k = 1}" 
+    "\<exists> k f. k \<noteq> 0 \<and> k \<le> n \<and> char_poly A = (monom 1 k - [:sr ^ k:]) * f \<and>
+        (\<forall>x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
 proof (atomize (full), goal_cases)
   case 1
+  from nonneg irr have irr: "nonneg_irreducible_mat A" unfolding nonneg_irreducible_mat_def by auto
   note main = perron_frobenius.pf_main_connect[untransferred, cancel_card_constraint, OF A irr, 
     folded sr cA] 
-  note main = main(1,3,7)[OF n] main(2)[OF _ n] main(4,5,6)[OF _ _ n]
-  from main(6-7)[OF refl refl]  main show ?case by blast
+  from main(5,6,7)[OF refl refl n]
+  have "\<exists> k f. k \<noteq> 0 \<and> k \<le> n \<and> char_poly A = (monom 1 k - [:sr ^ k:]) * f \<and>
+        (\<forall>x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" by blast
+  with main(1,3,8)[OF n] main(2)[OF _ n] main(4)[OF _ _ n] show ?case by auto
 qed
 
 text \<open>We now need permutations on matrices to show that a matrix if a matrix is not irreducible,
@@ -1751,6 +1843,124 @@ proof -
     by (intro exI conjI, rule AB[unfolded cB], rule B1_B4, rule B1_B4, 
         rule Bs, rule Bs, insert n, auto)
 qed
-   
+
+
+lemma perron_frobenius_nonneg: fixes A :: "real Matrix.mat" 
+  assumes A: "A \<in> carrier_mat n n" and pos: "nonneg_mat A" and n: "n \<noteq> 0" 
+  shows "\<exists> sr ks f. 
+    sr \<ge> 0 \<and> 
+    0 \<notin> set ks \<and> ks \<noteq> [] \<and>
+    char_poly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f \<and>
+    (\<forall> x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
+proof -
+  define p where "p = (\<lambda> sr k. monom 1 k - [: (sr :: real) ^ k:])" 
+  let ?small = "\<lambda> f sr. (\<forall> x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
+  let ?wit = "\<lambda> A sr ks f. sr \<ge> 0 \<and> 0 \<notin> set ks \<and> ks \<noteq> [] \<and>
+    char_poly A = prod_list (map (p sr) ks) * f \<and> ?small f sr" 
+  let ?c = "complex_of_real" 
+  interpret c: field_hom ?c ..
+  interpret p: map_poly_inj_idom_divide_hom ?c ..
+  { (* TODO: make external *)
+    fix k x sr
+    assume 0: "poly (map_poly ?c (p sr k)) x = 0" and k: "k \<noteq> 0" and sr: "sr \<ge> 0" 
+    note 0
+    also have "map_poly ?c (p sr k) = (monom 1 k - [:?c sr^k:])" 
+      unfolding p_def by (simp add:  hom_distribs)    
+    finally have "x^k = (?c sr)^k" by (simp add: poly_monom) 
+    from arg_cong[OF this, of "\<lambda> c. root k (cmod c)", unfolded norm_power] k
+    have "cmod x = cmod (?c sr)" using real_root_pos2 by auto
+    also have "\<dots> = sr" using sr by auto
+    finally have "cmod x = sr" .
+  } note p_conv = this  
+  have "\<exists> sr ks f. ?wit A sr ks f" using A pos n
+  proof (induct n arbitrary: A rule: less_induct)
+    case (less n A)
+    note pos = less(3)
+    note A = less(2)
+    note IH = less(1)
+    note n = less(4)
+    from n 
+    consider (1) "n = 1"
+      | (irr) "irreducible_mat A" 
+      | (red) "\<not> irreducible_mat A" "n > 1" 
+      by force
+    thus "\<exists> sr ks f. ?wit A sr ks f" 
+    proof cases
+      case irr
+      from perron_frobenius_irreducible(3,6)[OF A n pos irr refl refl]
+      obtain sr k f where 
+        *: "sr > 0" "k \<noteq> 0" "char_poly A = p sr k * f" "?small f sr" unfolding p_def
+        by auto
+      hence "?wit A sr [k] f" by auto
+      thus ?thesis by blast
+    next
+      case red
+      from non_irreducible_nonneg_mat_split[OF A pos red] obtain n1 n2 A1 A2
+        where char:  "char_poly A = char_poly A1 * char_poly A2" 
+          and pos: "nonneg_mat A1" "nonneg_mat A2" 
+          and A: "A1 \<in> carrier_mat n1 n1" "A2 \<in> carrier_mat n2 n2" 
+          and n: "n1 < n" "n2 < n" 
+          and n0: "n1 \<noteq> 0" "n2 \<noteq> 0" by auto
+      from IH[OF n(1) A(1) pos(1) n0(1)] obtain sr1 ks1 f1 where 1: "?wit A1 sr1 ks1 f1" by blast
+      from IH[OF n(2) A(2) pos(2) n0(2)] obtain sr2 ks2 f2 where 2: "?wit A2 sr2 ks2 f2" by blast
+      have "\<exists> A1 A2 sr1 ks1 f1 sr2 ks2 f2. ?wit A1 sr1 ks1 f1 \<and> ?wit A2 sr2 ks2 f2 \<and> 
+         sr1 \<ge> sr2 \<and> char_poly A = char_poly A1 * char_poly A2" 
+      proof (cases "sr1 \<ge> sr2")
+        case True
+        show ?thesis unfolding char
+          by (intro exI, rule conjI[OF 1 conjI[OF 2]], insert True, auto)
+      next
+        case False
+        show ?thesis unfolding char
+          by (intro exI, rule conjI[OF 2 conjI[OF 1]], insert False, auto)
+      qed
+      then obtain A1 A2 sr1 ks1 f1 sr2 ks2 f2 where 
+        1: "?wit A1 sr1 ks1 f1" and 2: "?wit A2 sr2 ks2 f2" and 
+        sr: "sr1 \<ge> sr2" and char: "char_poly A = char_poly A1 * char_poly A2" by blast
+      show ?thesis
+      proof (cases "sr1 = sr2")
+        case True
+        have "?wit A sr2 (ks1 @ ks2) (f1 * f2)" unfolding char
+          by (insert 1 2 True, auto simp: True p.hom_mult)
+        thus ?thesis by blast
+      next
+        case False
+        with sr have sr1: "sr1 > sr2" by auto         
+        have lt: "poly (map_poly ?c (p sr2 k)) x = 0 \<Longrightarrow> k \<in> set ks2 \<Longrightarrow> cmod x < sr1" for k x
+          using sr1 p_conv[of sr2 k x] 2 by auto
+        have "?wit A sr1 ks1 (f1 * f2 * prod_list (map (p sr2) ks2))" unfolding char
+          by (insert 1 2 sr1 lt, auto simp: p.hom_mult p.hom_prod_list 
+          poly_prod_list prod_list_zero_iff)
+        thus ?thesis by blast
+      qed
+    next
+      case 1
+      define a where "a = A $$ (0,0)"
+      have A: "A = Matrix.mat 1 1 (\<lambda> x. a)" 
+        by (rule eq_matI, unfold a_def, insert A 1(1), auto)
+      have char: "char_poly A = [: - a, 1 :]" unfolding A  
+        by (auto simp: Determinant.det_def char_poly_def char_poly_matrix_def)
+      from pos A have a: "a \<ge> 0" unfolding nonneg_mat_def elements_mat by auto
+      have "?wit A a [1] 1" unfolding char using a by (auto simp: p_def monom_Suc)
+      thus ?thesis by blast
+    qed
+  qed
+  thus ?thesis unfolding p_def by auto
+qed
+
+lemma perron_frobenius_non_neg: fixes A :: "real ^ 'n ^ 'n" 
+  assumes pos: "non_neg_mat A" 
+  shows "\<exists> sr ks f. 
+    sr \<ge> 0 \<and> 
+    0 \<notin> set ks \<and> ks \<noteq> [] \<and>
+    charpoly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f \<and>
+    (\<forall> x. poly (map_poly complex_of_real f) x = 0 \<longrightarrow> cmod x < sr)" 
+  using pos
+proof (transfer, goal_cases)
+  case (1 A)
+  from perron_frobenius_nonneg[OF 1]
+  show ?case by auto
+qed
+
 
 end

@@ -782,7 +782,9 @@ proof (induct n)
   finally show ?case .
 qed simp
 
-lemma rcis_2pi[simp]: "rcis y (x + 2 * pi) = rcis y x" unfolding rcis_def by simp
+lemma rcis_plus_2pi[simp]: "rcis y (x + 2 * pi) = rcis y x" unfolding rcis_def by simp
+lemma rcis_times_2pi[simp]: "rcis r (of_nat n * 2 * pi) = of_real r" 
+  unfolding rcis_def cis_times_2pi by simp
 
 lemma arg_rcis_cis: assumes n: "n > 0" shows "arg (rcis n x) = arg (cis x)"
   using arg_bounded arg_unique cis_arg complex_mod_rcis n rcis_def sgn_eq by auto
@@ -850,5 +852,49 @@ proof (rule card_subset_eq)
   with card_mono[OF fin sub] show "card ?prod = card ?Roots" by auto
 qed
 
+lemma poly_roots_dvd: fixes p :: "'a :: field poly" 
+  assumes "p \<noteq> 0" and "degree p = n" 
+  and "card {x. poly p x = 0} \<ge> n" and "{x. poly p x = 0} \<subseteq> {x. poly q x = 0}" 
+shows "p dvd q" 
+proof -
+  from poly_roots_degree[OF assms(1)] assms(2-3) have "card {x. poly p x = 0} = n" by auto
+  from assms(1-2) this assms(4)
+  show ?thesis
+  proof (induct n arbitrary: p q)
+    case (0 p q)
+    from is_unit_iff_degree[OF 0(1)] 0(2) show ?case by auto
+  next
+    case (Suc n p q)
+    let ?P = "{x. poly p x = 0}" 
+    let ?Q = "{x. poly q x = 0}" 
+    from Suc(4-5) card_gt_0_iff[of ?P] obtain x where 
+      x: "poly p x = 0" "poly q x = 0" and fin: "finite ?P" by auto
+    define r where "r = [:-x, 1:]" 
+    from x[unfolded poly_eq_0_iff_dvd r_def[symmetric]] obtain p' q' where
+      p: "p = r * p'" and q: "q = r * q'" unfolding dvd_def by auto
+    from Suc(2) have "degree p = degree r + degree p'" unfolding p
+      by (subst degree_mult_eq, auto)
+    with Suc(3) have deg: "degree p' = n" unfolding r_def by auto
+    from Suc(2) p have p'0: "p' \<noteq> 0" by auto
+    let ?P' = "{x. poly p' x = 0}"
+    let ?Q' = "{x. poly q' x = 0}"
+    have P: "?P = insert x ?P'" unfolding p poly_mult unfolding r_def by auto
+    have Q: "?Q = insert x ?Q'" unfolding q poly_mult unfolding r_def by auto
+    {
+      assume "x \<in> ?P'"  
+      hence "?P = ?P'" unfolding P by auto
+      from arg_cong[OF this, of card, unfolded Suc(4)] deg have False 
+        using poly_roots_degree[OF p'0] by auto
+    } note xp' = this
+    hence xP': "x \<notin> ?P'" by auto
+    have "card ?P = Suc (card ?P')" unfolding P 
+      by (rule card_insert_disjoint[OF _ xP'], insert fin[unfolded P], auto) 
+    with Suc(4) have card: "card ?P' = n" by auto
+    from Suc(5)[unfolded P Q] xP' have "?P' \<subseteq> ?Q'" by auto
+    from Suc(1)[OF p'0 deg card this] 
+    have IH: "p' dvd q'" .
+    show ?case unfolding p q using IH by simp
+  qed
+qed
 
 end
