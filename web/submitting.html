@@ -85,11 +85,11 @@
 
     <li>No use of the command <code>smt_oracle</code>.</li>
 
-    <li>If your theories contain calls to <code>nitpick</code> or
-    <code>quickcheck</code>those calls must include the <code>expect</code>
-    parameter. Alternatively the <code>expect</code> parameter must be set
-    globally via
-    <code>nitpick_params</code>/<code>quickcheck_params</code>.</li>
+    <li>If your theories contain calls to <code>nitpick</code>,
+    <code>quickcheck</code>, or <code>nunchaku</code> those calls must
+    include the <code>expect</code> parameter. Alternatively the
+    <code>expect</code> parameter must be set globally via, e.g.
+    <code>nitpick_params</code>.</li>
 
     <li><code>apply</code> scripts should be indented by subgoal as in
     the Isabelle distribution. If an <code>apply</code> command is
