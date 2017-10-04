@@ -186,7 +186,7 @@ class afp_dict(dict):
     """The afp_dict contains all afp_entry(s) and a list of afp_author(s).
        To create import/export data for all afp_entrys call build_stats().
     """
-    def __init__(self, entries, afp_thys_path, *args):
+    def __init__(self, entries, afp_thys_path, deps_dict, *args):
         dict.__init__(self, *args)
         self.path = normpath(afp_thys_path)
         self.authors = dict()
@@ -210,11 +210,12 @@ class afp_dict(dict):
         for a in self:
             for t in self[a].thys:
                 self.all_thys[t] = self[a]
+        for k, a in self.items():
+            a.imports = set([self[e] for e in deps_dict[k]['afp_deps']])
+            a.lib_imports = deps_dict[k]['distrib_deps']
 
     def build_stats(self):
         for _k, a in self.items():
-            a.add_imports()
-            a.add_lib_imports()
             a.add_loc()
             a.add_number_of_lemmas()
             a.used = set()
