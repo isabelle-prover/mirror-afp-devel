@@ -1200,8 +1200,8 @@ proof -
     note * this
   } note prod_pi = this
   have dist: "distinct ?list"
-    unfolding distinct_map[of "rcis sr"]
-  proof (rule conjI[OF _ rcis_inj_on[OF sr0]])
+    unfolding distinct_map[of "rcis sr"] 
+  proof (rule conjI[OF _ inj_on_subset[OF rcis_inj_on[OF sr0]]])
     show "distinct (map (\<lambda> i. of_nat i * Min) [0 ..< ?k])" using Min0
       by (auto simp: distinct_map inj_on_def)
     show "set (map (\<lambda>i. real i * Min) [0..<?k]) \<subseteq> {0..<2 * pi}" using prod_pi
@@ -1220,7 +1220,8 @@ proof -
     have k: "0 \<le> ?k * Min" "?k * Min < 2 * pi" by auto
     from rcisM[of ?k, unfolded M_list] have "rcis sr (?k * Min) \<in> set ?list" by auto
     then obtain i where i: "i < ?k" and id: "rcis sr (?k * Min) = rcis sr (i * Min)" by auto
-    from inj_onD[OF rcis_inj_on[OF sr0, of "{?k * Min, i * Min}"] id] prod_pi[OF i] k
+    from inj_onD[OF inj_on_subset[OF rcis_inj_on[OF sr0], of "{?k * Min, i * Min}"] id] 
+      prod_pi[OF i] k
     have "?k * Min = i * Min" by auto
     with Min0 i have False by auto
   }
@@ -1975,46 +1976,98 @@ definition "spectral_radius_real_matrix A = spectral_radius (map_matrix of_real 
 
 lemma perron_frobenius_for_complexity: fixes A :: "real ^ 'n ^ 'n" 
   assumes pos: "non_neg_mat A" 
-   and sr: "spectral_radius_real_matrix A = 1"
-  shows "\<exists> ks f. 
-    0 \<notin> set ks \<and> ks \<noteq> [] \<and>
-    charpoly A = prod_root_unity ks * f \<and>
-    charpoly (map_matrix complex_of_real A) = prod_root_unity ks * map_poly of_real f \<and>
-    (\<forall> x. poly (map_poly of_real f) x = 0 \<longrightarrow> cmod x < 1)" 
-proof -
+   and sr: "\<And> x. poly (charpoly A) x = 0 \<Longrightarrow> x \<le> 1"
+   and decomp: "decompose_prod_root_unity (charpoly A) = (ks, f)" 
+  shows "0 \<notin> set ks" 
+   "charpoly A = prod_root_unity ks * f"
+   "charpoly (map_matrix complex_of_real A) = prod_root_unity ks * map_poly of_real f"
+   "\<And> x. poly (charpoly (map_matrix of_real A)) x = 0 \<Longrightarrow> cmod x \<le> 1" 
+   "\<And> x. poly (map_poly of_real f) x = 0 \<Longrightarrow> cmod x < 1" 
+   "\<And> x. cmod x = 1 \<Longrightarrow> order x (charpoly (map_matrix of_real A)) = length [k\<leftarrow>ks . x ^ k = 1]" 
+   "\<And> x. cmod x = 1 \<Longrightarrow> poly (charpoly (map_matrix of_real A)) x = 0 \<Longrightarrow> \<exists> k \<in> set ks. x^k = 1" 
+proof (atomize(full), goal_cases)
+  case 1
   let ?c = "complex_of_real" 
   let ?cp = "map_poly ?c" 
   let ?A = "map_matrix ?c A" 
+  let ?wit = "\<lambda> ks f. 0 \<notin> set ks \<and> 
+    charpoly A = prod_root_unity ks * f \<and>
+    charpoly ?A = prod_root_unity ks * map_poly of_real f \<and>
+    (\<forall> x. poly (charpoly ?A) x = 0 \<longrightarrow> cmod x \<le> 1) \<and>
+    (\<forall> x. poly (?cp f) x = 0 \<longrightarrow> cmod x < 1)" 
   interpret field_hom ?c ..
   interpret p: map_poly_inj_idom_divide_hom ?c ..
-  from perron_frobenius_non_neg[OF pos] obtain sr ks f 
-    where *: "sr \<ge> 0" "0 \<notin> set ks" "ks \<noteq> []" 
-     and cp: "charpoly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f" 
-     and cpc: "charpoly ?A = prod_list (map (\<lambda> k. monom 1 k - [:?c sr ^ k:]) ks) * ?cp f" 
-     and small: "\<And> x. poly (?cp f) x = 0 \<Longrightarrow> cmod x < sr"  by blast
-  from spectral_radius_ev[of ?A, unfolded sr[unfolded spectral_radius_real_matrix_def]] 
-    spectral_radius_max[of ?A, unfolded sr[unfolded spectral_radius_real_matrix_def]]    
-  obtain ev where ev: "eigen_value ?A ev" "cmod ev = 1" 
-    and max: "\<And> x. eigen_value ?A x \<Longrightarrow> cmod x \<le> 1" 
-    unfolding eigen_value_def by auto
-  from * obtain k ks' where ks: "ks = k # ks'" by (cases ks, auto)
-  have "eigen_value ?A (?c sr)" unfolding eigen_value_root_charpoly cpc ks by (simp add: poly_monom)
-  from max[OF this] * have sr_le_1: "sr \<le> 1" by auto
-  {  
-    assume sr: "sr < 1" 
-    note [simp] = prod_list_zero_iff
-    from ev[unfolded eigen_value_root_charpoly cpc poly_mult poly_prod_list]
-      small[of ev] sr obtain k where k: "k \<in> set ks" and id: "ev ^ k = complex_of_real sr ^ k"
-      by (auto simp: poly_monom)
-    from k *(2) have k0: "k \<noteq> 0" by metis
-    from arg_cong[OF id, of "\<lambda> x. root k (cmod x)", unfolded norm_power] k0
-    have "cmod ev = cmod (?c sr)" using real_root_pos2 by auto
-    with sr_le_1 sr * ev(2) have False by auto
+  {
+    from perron_frobenius_non_neg[OF pos] obtain sr ks f 
+      where *: "sr \<ge> 0" "0 \<notin> set ks" "ks \<noteq> []" 
+       and cp: "charpoly A = prod_list (map (\<lambda> k. monom 1 k - [:sr ^ k:]) ks) * f" 
+       and cpc: "charpoly ?A = prod_list (map (\<lambda> k. monom 1 k - [:?c sr ^ k:]) ks) * ?cp f" 
+       and small: "\<And> x. poly (?cp f) x = 0 \<Longrightarrow> cmod x < sr" by blast
+    have sr_le_1: "sr \<le> 1" 
+      by (rule sr, unfold cp, insert *, cases ks, auto simp: poly_monom)
+    {
+      fix x
+      note [simp] = prod_list_zero_iff o_def poly_monom
+      assume "poly (charpoly ?A) x = 0" 
+      from this[unfolded cpc poly_mult poly_prod_list] small[of x]
+      consider (lt) "cmod x < sr" | (mem) k where "k \<in> set ks" "x ^ k = (?c sr) ^ k" by force
+      hence "cmod x \<le> sr" 
+      proof (cases)
+        case (mem k)
+        with * have k: "k \<noteq> 0" by metis
+        with arg_cong[OF mem(2), of "\<lambda> x. root k (cmod x)", unfolded norm_power] 
+          real_root_pos2[of k] *(1)
+        have "cmod x = sr" by auto
+        thus ?thesis by auto
+      qed simp
+    } note root = this
+    have "\<exists> ks f. ?wit ks f" 
+    proof (cases "sr = 1")
+      case False    
+      with sr_le_1 have *: "cmod x \<le> sr \<Longrightarrow> cmod x < 1" "cmod x \<le> sr \<Longrightarrow> cmod x \<le> 1" for x by auto
+      show ?thesis
+        by (rule exI[of _ Nil], rule exI[of _ "charpoly A"], insert * root,
+        auto simp: prod_root_unity_def charpoly_of_real)
+    next
+      case sr: True
+      from * cp cpc small root
+      show ?thesis unfolding sr root_unity_def prod_root_unity_def by (auto simp: pCons_one)
+    qed
   }
-  with sr_le_1 have sr: "sr = 1" by argo
-  from * cp cpc small
-  show ?thesis unfolding sr root_unity_def prod_root_unity_def by (auto simp: pCons_one)
-qed  
+  then obtain Ks F where wit: "?wit Ks F" by auto
+  have cA0: "charpoly ?A \<noteq> 0" using degree_monic_charpoly[of ?A] by auto
+  from wit have id: "charpoly ?A = prod_root_unity Ks * ?cp F" by auto
+  from of_real_hom.hom_decompose_prod_root_unity[of "charpoly A", unfolded decomp]
+  have decompc: "decompose_prod_root_unity (charpoly ?A) = (ks, ?cp f)" 
+    by (auto simp: charpoly_of_real)
+  from wit have small: "cmod x = 1 \<Longrightarrow> poly (?cp F) x \<noteq> 0" for x by auto
+  from decompose_prod_root_unity[OF id decompc this cA0]
+  have id: "charpoly ?A = prod_root_unity ks * ?cp F" "F = f" "set Ks = set ks" by auto
+  have "?cp (charpoly A) = ?cp (prod_root_unity ks * f)" unfolding id 
+    unfolding charpoly_of_real[symmetric] id p.hom_mult of_real_hom.hom_prod_root_unity ..
+  hence idr: "charpoly A = prod_root_unity ks * f" by auto
+  have wit: "?wit ks f" and idc: "charpoly ?A = prod_root_unity ks * ?cp f" 
+    using wit unfolding id idr by auto
+  {
+    fix x
+    assume "cmod x = 1"
+    from small[OF this, unfolded id] have "poly (?cp f) x \<noteq> 0" by auto
+    from order_0I[OF this] this have ord: "order x (?cp f) = 0" and cf0: "?cp f \<noteq> 0" by auto
+    have "order x (charpoly ?A) = order x (prod_root_unity ks)" unfolding idc
+      by (subst order_mult, insert cf0 wit ord, auto)
+    also have "\<dots> = length [k\<leftarrow>ks . x ^ k = 1]" 
+      by (subst order_prod_root_unity, insert wit, auto)
+    finally have ord: "order x (charpoly ?A) = length [k\<leftarrow>ks . x ^ k = 1]" .
+    {
+      assume "poly (charpoly ?A) x = 0" 
+      with cA0 have "order x (charpoly ?A) \<noteq> 0" unfolding order_root by auto
+      from this[unfolded ord] have "\<exists> k \<in> set ks. x ^ k = 1" 
+        by (cases "[k\<leftarrow>ks . x ^ k = 1]", force+)
+    } 
+    note this ord
+  }
+  with wit show ?case by blast
+qed
 
 
 end
