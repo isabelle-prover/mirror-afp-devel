@@ -1974,17 +1974,20 @@ qed
 
 definition "spectral_radius_real_matrix A = spectral_radius (map_matrix of_real A)" 
 
-lemma perron_frobenius_for_complexity: fixes A :: "real ^ 'n ^ 'n" 
+lemma perron_frobenius_for_complexity: fixes A :: "real ^ 'n ^ 'n" and f :: "real poly" 
+  defines "cA \<equiv> map_matrix complex_of_real A" 
+  defines "cf \<equiv> map_poly complex_of_real f" 
   assumes pos: "non_neg_mat A" 
    and sr: "\<And> x. poly (charpoly A) x = 0 \<Longrightarrow> x \<le> 1"
    and decomp: "decompose_prod_root_unity (charpoly A) = (ks, f)" 
   shows "0 \<notin> set ks" 
    "charpoly A = prod_root_unity ks * f"
-   "charpoly (map_matrix complex_of_real A) = prod_root_unity ks * map_poly of_real f"
-   "\<And> x. poly (charpoly (map_matrix of_real A)) x = 0 \<Longrightarrow> cmod x \<le> 1" 
-   "\<And> x. poly (map_poly of_real f) x = 0 \<Longrightarrow> cmod x < 1" 
-   "\<And> x. cmod x = 1 \<Longrightarrow> order x (charpoly (map_matrix of_real A)) = length [k\<leftarrow>ks . x ^ k = 1]" 
-   "\<And> x. cmod x = 1 \<Longrightarrow> poly (charpoly (map_matrix of_real A)) x = 0 \<Longrightarrow> \<exists> k \<in> set ks. x^k = 1" 
+   "charpoly cA = prod_root_unity ks * cf"
+   "\<And> x. poly (charpoly cA) x = 0 \<Longrightarrow> cmod x \<le> 1" 
+   "\<And> x. poly cf x = 0 \<Longrightarrow> cmod x < 1" 
+   "\<And> x. cmod x = 1 \<Longrightarrow> order x (charpoly cA) = length [k\<leftarrow>ks . x ^ k = 1]" 
+   "\<And> x. cmod x = 1 \<Longrightarrow> poly (charpoly cA) x = 0 \<Longrightarrow> \<exists> k \<in> set ks. x^k = 1" 
+  unfolding cf_def cA_def
 proof (atomize(full), goal_cases)
   case 1
   let ?c = "complex_of_real" 
@@ -2068,6 +2071,5 @@ proof (atomize(full), goal_cases)
   }
   with wit show ?case by blast
 qed
-
 
 end

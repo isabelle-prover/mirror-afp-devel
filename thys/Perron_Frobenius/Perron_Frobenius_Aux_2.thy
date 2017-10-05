@@ -1202,4 +1202,57 @@ proof -
   finally show ?thesis .
 qed
 
+declare cis_pi[simp]
+
+lemma cis_pi_2[simp]: "cis (pi / 2) = \<i>" 
+  by (auto simp: complex_eq_iff)
+
+lemma cis_add_pi[simp]: "cis (pi + x) = - cis x" 
+  by (auto simp: complex_eq_iff)
+
+lemma cis_3_pi_2[simp]: "cis (pi * 3 / 2) = - \<i>" 
+proof - 
+  have "cis (pi * 3 / 2) = cis (pi + pi / 2)" 
+    by (rule arg_cong[of _ _ cis], simp)  
+  also have "\<dots> = - \<i>" unfolding cis_add_pi by simp
+  finally show ?thesis .
+qed
+
+lemma root_unity_explicit: fixes x :: complex
+  shows "(x ^ 1 = 1) \<longleftrightarrow> x = 1" 
+    "(x ^ 2 = 1) \<longleftrightarrow> (x \<in> {1, -1})" 
+    "(x ^ 3 = 1) \<longleftrightarrow> (x \<in> {1, Complex (-1/2) (sqrt 3 / 2), Complex (-1/2) (- sqrt 3 / 2)})" 
+    "(x ^ 4 = 1) \<longleftrightarrow> (x \<in> {1, -1, \<i>, - \<i>})" 
+proof (atomize(full), goal_cases)
+  case 1
+  {
+    fix n :: nat
+    assume n: "n \<noteq> 0" 
+    from roots_of_unity(1)[OF n] 
+    have "x ^ n = 1 \<longleftrightarrow> (\<exists> i \<in> set [0 ..< n]. x = cis (i * 2 * pi / n))" 
+      by fastforce
+  } note exp = this
+  have id: 
+    "[0 ..< (1 :: nat)] = [0]"
+    "[0 ..< (2 :: nat)] = [0,1]"
+    "[0 ..< (4 :: nat)] = [0,1,2,3]"
+    by code_simp+
+  let ?x3 = "Complex (- (1 / 2)) (sqrt 3 / 2)" 
+  let ?x3' = "Complex (- (1 / 2)) (- sqrt 3 / 2)" 
+  let ?p3 = "[: -1, 1 :] * [: -?x3, 1 :] * [: - ?x3', 1 :]" 
+  {
+    fix x
+    have "x \<in> {1, ?x3, ?x3'} \<longleftrightarrow> poly ?p3 x = 0" unfolding poly_mult by simp
+    also have "?p3 = [: -1, 0, 0, 1 :]" 
+      by (simp add: complex_mult complex_eq_iff)
+    also have "\<dots> = root_unity 3" by code_simp
+    also have "poly \<dots> x = 0 \<longleftrightarrow> x^3 = 1"
+      using roots_of_unity(2)[of 3] by auto
+    finally have "x ^ 3 = 1 \<longleftrightarrow> x \<in> {1, ?x3, ?x3'}" by auto
+  } note case_3 = this
+  show ?case unfolding case_3
+    by (subst (1 2 3) exp, (auto)[3], unfold id, auto)
+qed
+
+
 end

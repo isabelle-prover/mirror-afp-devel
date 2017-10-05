@@ -27,6 +27,7 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
     Perron_Frobenius
     Perron_Frobenius_2
     Spectral_Radius_Theory
+    Spectral_Radius_Theory_2
   document_files
     "root.bib"
     "root.tex"
