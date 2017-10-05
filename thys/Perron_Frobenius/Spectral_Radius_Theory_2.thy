@@ -20,14 +20,15 @@ lemma jnf_complexity_generic: fixes A :: "complex mat"
   assumes A: "A \<in> carrier_mat n n" 
   and sr: "\<And> x. poly (char_poly A) x = 0 \<Longrightarrow> cmod x \<le> 1" 
   and 1: "\<And> x. poly (char_poly A) x = 0 \<Longrightarrow> cmod x = 1 \<Longrightarrow> 
-    order x (char_poly A) > d \<Longrightarrow> 
-    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks A x). bsize \<le> d)" 
-shows "\<exists>c1 c2. \<forall>k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (d - 1))" 
+    order x (char_poly A) > d + 1 \<Longrightarrow> 
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks A x). bsize \<le> d + 1)" 
+shows "\<exists>c1 c2. \<forall>k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ d)" 
 proof - 
   from char_poly_factorized[OF A] obtain as where cA: "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" 
     and lenn: "length as = n" by auto 
   from jordan_nf_exists[OF A cA] obtain n_xs where jnf: "jordan_nf A n_xs" ..
-  show ?thesis 
+  have dd: "x ^ d = x ^((d + 1) - 1)" for x by simp
+  show ?thesis unfolding dd
   proof (rule jordan_nf_matrix_poly_bound[OF A _ _ jnf])
     fix n x
     assume nx: "(n,x) \<in> set n_xs" 
@@ -41,12 +42,12 @@ proof -
       note rt
     } note sr = this
     assume c1: "cmod x = 1" 
-    show "n \<le> d" 
+    show "n \<le> d + 1" 
     proof (rule ccontr)
-      assume "\<not> n \<le> d" 
-      hence lt: "n > d" by auto
+      assume "\<not> n \<le> d + 1" 
+      hence lt: "n > d + 1" by auto
       with sr have rt: "poly (char_poly A) x = 0" by auto
-      from lt no have ord: "d < order x (char_poly A)" by auto
+      from lt no have ord: "d + 1 < order x (char_poly A)" by auto
       from 1[OF rt c1 ord, unfolded compute_set_of_jordan_blocks[OF jnf]] nx lt
       show False by force
     qed
@@ -55,23 +56,23 @@ qed
 
 lemma norm_bound_complex_to_real: fixes A :: "real mat" 
   assumes A: "A \<in> carrier_mat n n" 
-    and bnd: "\<exists>c1 c2. \<forall>k. norm_bound ((map_mat complex_of_real A) ^\<^sub>m k) (c1 + c2 * of_nat k ^ (d - 1))"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ (d - 1))"
+    and bnd: "\<exists>c1 c2. \<forall>k. norm_bound ((map_mat complex_of_real A) ^\<^sub>m k) (c1 + c2 * of_nat k ^ d)"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)"
 proof -
   let ?B = "map_mat complex_of_real A" 
-  from bnd obtain c1 c2 where nb: "\<And> k. norm_bound (?B ^\<^sub>m k) (c1 + c2 * real k ^ (d - 1))" by auto
+  from bnd obtain c1 c2 where nb: "\<And> k. norm_bound (?B ^\<^sub>m k) (c1 + c2 * real k ^ d)" by auto
   show ?thesis
   proof (rule exI[of _ c1], rule exI[of _ c2], intro allI impI)
     fix k a
     assume "a \<in> elements_mat (A ^\<^sub>m k)"
     with pow_carrier_mat[OF A] obtain i j where a: "a = (A ^\<^sub>m k) $$ (i,j)" and ij: "i < n" "j < n"
       unfolding elements_mat by force
-    from ij nb[of k] A have "norm ((?B ^\<^sub>m k) $$ (i,j)) \<le> c1 + c2 * real k ^ (d - 1)"
+    from ij nb[of k] A have "norm ((?B ^\<^sub>m k) $$ (i,j)) \<le> c1 + c2 * real k ^ d"
       unfolding norm_bound_def by auto
     also have "(?B ^\<^sub>m k) $$ (i,j) = of_real a"
       unfolding of_real_hom.mat_hom_pow[OF A, symmetric] a using ij A by auto
     also have "norm (complex_of_real a) = abs a" by auto
-    finally show "abs a \<le> (c1 + c2 * real k ^ (d - 1))" .
+    finally show "abs a \<le> (c1 + c2 * real k ^ d)" .
   qed
 qed
 
@@ -83,21 +84,39 @@ definition max_list :: "nat list \<Rightarrow> nat" where
 lemma max_list: "x \<in> set xs \<Longrightarrow> x \<le> max_list xs" 
   unfolding max_list_def by (induct xs, auto)
 
-lemma jnf_perron_frobenius_generic: fixes A :: "real mat" 
+lemma sum_list_approx: assumes kn: "k \<ge> (n :: nat)" and n: "n \<noteq> 0" 
+  shows "0 \<notin> set ks \<Longrightarrow> n * length (filter (op dvd k) ks) \<le> sum_list ks" 
+proof (induct ks)
+  case (Cons x ks)
+  {
+    assume "k dvd x" 
+    with Cons(2-) n have "x \<ge> k" by (simp add: dvd_imp_le)
+    with kn have "x \<ge> n" by auto
+  }
+  with Cons show ?case using kn n by auto
+qed auto
+
+context 
+  fixes A :: "real mat" and n :: nat and ks :: "nat list"
   assumes A: "A \<in> carrier_mat n n" 
   and nonneg: "nonneg_mat A" 
   and sr: "\<And> x. poly (char_poly A) x = 0 \<Longrightarrow> x \<le> 1" 
-  and ks: "ks = fst (decompose_prod_root_unity (char_poly A))" 
-  and main: "\<And> x k K. 
-     length ks > d \<Longrightarrow>     (* length ks = multiplicity of root 1, cheap test *)
+  and ks: "ks = fst (decompose_prod_root_unity (char_poly A))"
+begin
+
+  
+lemma jnf_perron_frobenius_generic:  
+  assumes main: "\<And> x k. 
+     sum_list ks \<le> n \<Longrightarrow> 
+     length ks > d + 1 \<Longrightarrow>     (* length ks = multiplicity of root 1, cheap test *)
      0 \<notin> set ks \<Longrightarrow> k \<in> {1 .. max_list ks} \<Longrightarrow>  
-     length [k'\<leftarrow>ks . k dvd k'] > d \<Longrightarrow> 
+     length [k'\<leftarrow>ks . k dvd k'] > d + 1 \<Longrightarrow> 
         (* length [k'\<leftarrow>ks . k dvd k'] is the multiplicity of x when x^k = 1 and k is minimal *)
       x^k = 1 \<Longrightarrow> (* consider arbitrary root of unity *)
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
-       bsize \<le> d)" 
+       bsize \<le> d + 1)" 
        (* eventually compute Jordan-blocks *)
-shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ (d - 1))" 
+shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)" 
 proof (cases "n = 0")
   case n: False
   let ?cA = "map_mat complex_of_real A" 
@@ -120,7 +139,7 @@ proof (cases "n = 0")
     finally have sum_ks: "sum_list ks \<le> n" .
     assume rt: "poly (char_poly ?cA) x = 0" 
     from pf(4)[OF this] show "cmod x \<le> 1" .
-    assume 1: "cmod x = 1" and d: "d < order x (char_poly ?cA)" 
+    assume 1: "cmod x = 1" and d: "d + 1 < order x (char_poly ?cA)" 
     let ?P = "\<lambda> k. x ^ k = 1 \<and> k \<noteq> 0" 
     define k where "k = (LEAST k. ?P k)" 
     from pf(7)[OF 1 rt] ks0 obtain K where K: "K \<in> set ks" "K \<noteq> 0" "x ^ K = 1"
@@ -141,17 +160,137 @@ proof (cases "n = 0")
     also have "\<dots> = [k'\<leftarrow>ks. k dvd k']" 
       by (unfold filter_id_conv, insert min, auto)
     finally have order_length: "order x (char_poly ?cA) = length [k'\<leftarrow>ks. k dvd k']" .
-    from d[unfolded this] have len: "d < length (filter (op dvd k) ks)" .
+    from d[unfolded this] have len: "d + 1 < length (filter (op dvd k) ks)" .
     also have "\<dots> \<le> length ks" by simp
-    finally have len3: "d < length ks" by auto
-    from main[OF len3 ks0 k_mem len k]
-    show "\<forall>bsize\<in>fst ` set (compute_set_of_jordan_blocks ?cA x). bsize \<le> d" by auto
+    finally have len3: "d + 1 < length ks" by auto
+    from main[OF sum_ks len3 ks0 k_mem len k]
+    show "\<forall>bsize\<in>fst ` set (compute_set_of_jordan_blocks ?cA x). bsize \<le> d + 1" by auto
   qed
 next
   case 0: True
   from A[unfolded this] 
   have A: "A ^\<^sub>m k = 1\<^sub>m 0" for k using A by (intro eq_matI, auto)
   show ?thesis unfolding A by (auto simp: elements_mat_def) 
-qed    
+qed
+
+lemma jnf_perron_frobenius_only_block_1:  
+  assumes size: "n \<le> 2 * (d + 2) - 1" 
+  and root_1: "sum_list ks \<le> n \<Longrightarrow> 
+     length ks > d + 1 \<Longrightarrow>
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) 1). 
+       bsize \<le> d + 1)" 
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)" 
+proof (rule jnf_perron_frobenius_generic, goal_cases)
+  case (1 x k)
+  show ?case
+  proof (cases "k = 1")
+    case True
+    from 1 root_1 show ?thesis unfolding True by auto
+  next
+    case False
+    with 1 have k: "k \<ge> 2" by auto
+    from 1(5) have "2 * (d + 2) \<le> 2 * length (filter (op dvd k) ks)" by auto
+    also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
+    finally have "2 * (d + 2) \<le> n" by auto
+    with size have False by auto
+    thus ?thesis by simp
+  qed
+qed
+    
+lemma jnf_perron_frobenius_only_blocks_1_and_minus_1:  
+  assumes size: "n \<le> 3 * (d + 2) - 1" 
+  and root_1: "sum_list ks \<le> n \<Longrightarrow> 
+     length ks > d + 1 \<Longrightarrow>
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) 1). 
+       bsize \<le> d + 1)" 
+  and root_m1: "  
+     length [k'\<leftarrow>ks . 2 dvd k'] > d + 1 \<Longrightarrow> 
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) (-1)). 
+       bsize \<le> d + 1)" 
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)" 
+proof (rule jnf_perron_frobenius_generic, goal_cases)
+  case (1 x k)
+  from 1(4)
+  consider (k1) "k = 1 \<or> x = 1" | (k2) "k = 2" "x \<noteq> 1" | (k) "k \<ge> 3" by fastforce
+  thus ?case
+  proof cases
+    case k1
+    from 1 root_1 show ?thesis using k1 by auto
+  next
+    case k2
+    with 1[unfolded k2 root_unity_explicit] have x: "x = -1" by auto
+    from root_m1 1 show ?thesis unfolding x k2 by auto
+  next
+    case k
+    from 1(5) have "3 * (d + 2) \<le> 3 * length (filter (op dvd k) ks)" by auto
+    also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
+    finally have "3 * (d + 2) \<le> n" by auto
+    with size have False by auto
+    thus ?thesis by simp
+  qed
+qed
+
+lemma jnf_perron_frobenius_only_square_roots:  
+  assumes size: "n \<le> 5 * (d + 2) - 1" 
+  and root_1: "sum_list ks \<le> n \<Longrightarrow> 
+     length ks > d + 1 \<Longrightarrow>
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) 1). 
+       bsize \<le> d + 1)" 
+  and root_m1: "  
+     length [k'\<leftarrow>ks . 2 dvd k'] > d + 1 \<Longrightarrow> 
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) (-1)). 
+       bsize \<le> d + 1)" 
+  and root_3: "\<And> x. x \<in> {Complex (-1/2) (sqrt 3 / 2), Complex (-1/2) (- sqrt 3 / 2)} \<Longrightarrow>
+     length [k'\<leftarrow>ks . 3 dvd k'] > d + 1 \<Longrightarrow> 
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
+       bsize \<le> d + 1)" 
+  and root_4: "\<And> x. x \<in> {\<i>, - \<i>} \<Longrightarrow>
+     length [k'\<leftarrow>ks . 4 dvd k'] > d + 1 \<Longrightarrow> 
+    (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
+       bsize \<le> d + 1)" 
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)" 
+proof (rule jnf_perron_frobenius_generic, goal_cases)
+  case (1 x k)
+  from 1(4)
+  consider (k1) "k = 1 \<or> x = 1" | (k2) "k = 2 \<or> (k = 4 \<and> x = -1)" "x \<noteq> 1" 
+    | (k3) "k = 3" "x \<noteq> 1" | (k4) "k = 4" "x \<noteq> 1" "x \<noteq> -1" | (k) "k \<ge> 5" by fastforce
+  thus ?case
+  proof cases
+    case k1
+    from 1 root_1 show ?thesis using k1 by auto
+  next
+    case k2
+    with 1(6) root_unity_explicit have x: "x = -1" by auto
+    show ?thesis unfolding x
+    proof (rule root_m1, insert k2) 
+      have "d + 1 < length (filter (op dvd k) ks)" by fact
+      also have "filter (op dvd k) ks = filter even (filter (op dvd k) ks)" 
+        by (rule sym, unfold filter_id_conv, insert k2, auto simp: dvd_def)
+      also have "\<dots> = filter (op dvd k) (filter even ks)" unfolding filter_filter
+        by (rule filter_cong, auto)
+      also have "length \<dots> \<le> length (filter even ks)" 
+        by (rule length_filter_le)
+      finally show "d + 1 < length (filter even ks)" by auto
+    qed
+  next
+    case k3
+    with 1[unfolded k3 root_unity_explicit] 
+    have x: "x \<in> {Complex (- 1 / 2) (sqrt 3 / 2), Complex (- 1 / 2) (- sqrt 3 / 2)}" by auto
+    from root_3[OF x] 1 show ?thesis unfolding k3 by auto
+  next
+    case k4
+    with 1[unfolded k4 root_unity_explicit] 
+    have x: "x \<in> {\<i>, -\<i>}" by auto
+    from root_4[OF x] 1 show ?thesis unfolding k4 by auto
+  next
+    case k
+    from 1(5) have "5 * (d + 2) \<le> 5 * length (filter (op dvd k) ks)" by auto
+    also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
+    finally have "5 * (d + 2) \<le> n" by auto
+    with size have False by auto
+    thus ?thesis by simp
+  qed
+qed
+end
 
 end
