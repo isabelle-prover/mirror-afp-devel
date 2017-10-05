@@ -77,17 +77,23 @@ qed
 
 text \<open>A tight criterion for non-negative real matrices\<close>
 
+definition max_list :: "nat list \<Rightarrow> nat" where
+  "max_list xs = foldr max xs 0"
+
+lemma max_list: "x \<in> set xs \<Longrightarrow> x \<le> max_list xs" 
+  unfolding max_list_def by (induct xs, auto)
+
 lemma jnf_perron_frobenius_generic: fixes A :: "real mat" 
   assumes A: "A \<in> carrier_mat n n" 
   and nonneg: "nonneg_mat A" 
   and sr: "\<And> x. poly (char_poly A) x = 0 \<Longrightarrow> x \<le> 1" 
   and ks: "ks = fst (decompose_prod_root_unity (char_poly A))" 
-  and main: "\<And> x k. 
+  and main: "\<And> x k K. 
      length ks > d \<Longrightarrow>     (* length ks = multiplicity of root 1, cheap test *)
-     0 \<notin> set ks \<Longrightarrow> k \<in> set ks \<Longrightarrow> length [k'\<leftarrow>ks . k \<le> k'] > d \<Longrightarrow> (* basic counting argument *)
+     0 \<notin> set ks \<Longrightarrow> k \<in> {1 .. max_list ks} \<Longrightarrow>  
+     length [k'\<leftarrow>ks . k dvd k'] > d \<Longrightarrow> 
+        (* length [k'\<leftarrow>ks . k dvd k'] is the multiplicity of x when x^k = 1 and k is minimal *)
       x^k = 1 \<Longrightarrow> (* consider arbitrary root of unity *)
-      length [k\<leftarrow>ks . x ^ k = 1] > d \<Longrightarrow>  (* length [k\<leftarrow>ks . x ^ k = 1] = 
-       multiplicity of root x, again quite cheap *)
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
        bsize \<le> d)" 
        (* eventually compute Jordan-blocks *)
@@ -115,23 +121,30 @@ proof (cases "n = 0")
     assume rt: "poly (char_poly ?cA) x = 0" 
     from pf(4)[OF this] show "cmod x \<le> 1" .
     assume 1: "cmod x = 1" and d: "d < order x (char_poly ?cA)" 
-    let ?P = "\<lambda> k. k \<in> set ks \<and> x ^ k = 1" 
+    let ?P = "\<lambda> k. x ^ k = 1 \<and> k \<noteq> 0" 
     define k where "k = (LEAST k. ?P k)" 
-    from pf(7)[OF 1 rt] have "\<exists> k. ?P k" by auto
-    from LeastI_ex[OF this, folded k_def] have k: "k \<in> set ks" "x ^ k = 1" by auto
-    have kk: "k' \<in> set ks \<Longrightarrow> x^k' = 1 \<Longrightarrow> k' \<ge> k" for k' 
+    from pf(7)[OF 1 rt] ks0 obtain K where K: "K \<in> set ks" "K \<noteq> 0" "x ^ K = 1"
+      and Pk: "\<exists> k. ?P k" by metis
+    from LeastI_ex[OF Pk, folded k_def] have k: "x ^ k = 1" and k0: "k \<noteq> 0" by auto
+    have k_least: "k' \<noteq> 0 \<Longrightarrow> k' < k \<Longrightarrow> x ^ k' \<noteq> 1" for k' 
       using not_less_Least[of k' ?P, folded k_def] by force
-    from d pf(6)[OF 1] have len: "d < length [k\<leftarrow>ks. x ^ k = 1]" by auto
-    also have "[k\<leftarrow>ks. x ^ k = 1] = filter (\<lambda> k'. k' \<ge> k) [k'\<leftarrow>ks. x ^ k' = 1]"
-      by (rule sym, unfold filter_id_conv, insert kk, auto)
-    also have "\<dots> = filter (\<lambda> k'. x ^ k' = 1) [k'\<leftarrow>ks. k' \<ge> k]" unfolding filter_filter 
+    from root_unity_different_powers[OF k k0 k_least] 
+    have min: "x ^ n = 1 \<longleftrightarrow> k dvd n" for n by force
+    from this[of K] K have "k dvd K" by auto
+    with K(2) have "k \<le> K" using dvd_imp_le by blast
+    from order.trans[OF this max_list[OF K(1)]] k0 have k_mem: "k \<in> {1 .. max_list ks}" by auto
+    have "order x (char_poly ?cA) = length [k\<leftarrow>ks . x ^ k = 1]" using pf(6)[OF 1] by simp
+    also have "[k\<leftarrow>ks. x ^ k = 1] = filter (\<lambda> k'. k dvd k') [k'\<leftarrow>ks. x ^ k' = 1]"
+      by (rule sym, unfold filter_id_conv, insert min, auto)
+    also have "\<dots> = filter (\<lambda> k'. x ^ k' = 1) [k'\<leftarrow>ks. k dvd k']" unfolding filter_filter 
       by (rule filter_cong, auto)
-    finally have len1: "d < length [k'\<leftarrow>filter (op \<le> k) ks . x ^ k' = 1]" .
-    also have "\<dots> \<le> length [k'\<leftarrow>ks . k \<le> k']" by (rule length_filter_le)
-    finally have len2: "d < length [k'\<leftarrow>ks . k \<le> k']" .
+    also have "\<dots> = [k'\<leftarrow>ks. k dvd k']" 
+      by (unfold filter_id_conv, insert min, auto)
+    finally have order_length: "order x (char_poly ?cA) = length [k'\<leftarrow>ks. k dvd k']" .
+    from d[unfolded this] have len: "d < length (filter (op dvd k) ks)" .
     also have "\<dots> \<le> length ks" by simp
     finally have len3: "d < length ks" by auto
-    from main[OF len3 ks0 k(1) len2 k(2) len]
+    from main[OF len3 ks0 k_mem len k]
     show "\<forall>bsize\<in>fst ` set (compute_set_of_jordan_blocks ?cA x). bsize \<le> d" by auto
   qed
 next

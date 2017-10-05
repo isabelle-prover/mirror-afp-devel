@@ -1254,5 +1254,45 @@ proof (atomize(full), goal_cases)
     by (subst (1 2 3) exp, (auto)[3], unfold id, auto)
 qed
 
+lemma root_unity_different_powers: fixes x :: "complex" 
+  assumes rt: "x ^ k = 1" and k0: "k \<noteq> 0" and
+    min_k: "\<And> k'. k' \<noteq> 0 \<Longrightarrow> k' < k \<Longrightarrow> x ^ k' \<noteq> 1"      
+  shows "x ^ n = 1 \<longleftrightarrow> k dvd n" 
+proof
+  assume "k dvd n" then obtain j where n: "n = k * j" unfolding dvd_def by auto
+  have "x ^ n = (x ^ k) ^ j" unfolding n power_mult by simp
+  also have "\<dots> = 1" unfolding rt by simp
+  finally show "x ^ n = 1" .
+next
+  assume n: "x ^ n = 1" 
+  show "k dvd n" 
+  proof (cases "n = 0")
+    case n0: False
+    from min_k[OF n0] n have nk: "n \<ge> k" by force
+    from roots_of_unity[OF k0] rt obtain i :: nat where xk: "x = cis (i * 2 * pi / k)" 
+      and ik: "i < k" by force
+    from roots_of_unity[OF n0] n obtain j :: nat where xn: "x = cis (j * 2 * pi / n)" 
+      and jn: "j < n" by force
+    {
+      from k0 have "gcd i k \<noteq> 0" by auto
+      from gcd_coprime_exists[OF this] this obtain i' k' g where 
+        *: "i = i' * g" "k = k' * g" "g \<noteq> 0" and g: "g = gcd i k" by blast
+      from *(2) k0 have k': "k' \<noteq> 0" by auto
+      have "x = cis (i * 2 * pi / k)" by fact
+      also have "i * 2 * pi / k = i' * 2 * pi / k'" unfolding * using *(3) by auto
+      finally have "x ^ k' = 1" by (simp add: DeMoivre k')
+      with min_k[OF k'] have "k' \<ge> k" by linarith
+      moreover with * k0 have "g = 1" by auto
+      hence "coprime i k" unfolding g .
+    } note cop = this
+    from inj_onD[OF cis_inj_on xk[unfolded xn]] n0 k0 ik jn 
+    have "j * real k = i * real n" by (auto simp: field_simps)
+    hence "real (j * k) = real (i * n)" by simp
+    hence eq: "j * k = i * n" by linarith
+    with cop show "k dvd n" 
+      by (metis coprime_dvd_mult dvd_triv_left gcd.commute mult.commute)
+  qed auto
+qed
+
 
 end
