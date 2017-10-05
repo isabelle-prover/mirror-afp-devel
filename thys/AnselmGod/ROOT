@@ -1,7 +1,7 @@
 chapter AFP
 
 session AnselmGod (AFP) = HOL +
-  options [timeout = 20,document = pdf]
+  options [timeout = 300]
   theories
     AnselmGod
   document_files
