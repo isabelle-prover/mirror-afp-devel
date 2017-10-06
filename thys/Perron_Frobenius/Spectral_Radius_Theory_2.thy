@@ -112,7 +112,7 @@ lemma jnf_perron_frobenius_generic:
      0 \<notin> set ks \<Longrightarrow> k \<in> {1 .. max_list ks} \<Longrightarrow>  
      length [k'\<leftarrow>ks . k dvd k'] > d + 1 \<Longrightarrow> 
         (* length [k'\<leftarrow>ks . k dvd k'] is the multiplicity of x when x^k = 1 and k is minimal *)
-      x^k = 1 \<Longrightarrow> (* consider arbitrary root of unity *)
+     primitive_root_unity k x \<Longrightarrow> (* consider primitive root of unity *)
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
        bsize \<le> d + 1)" 
        (* eventually compute Jordan-blocks *)
@@ -140,18 +140,13 @@ proof (cases "n = 0")
     assume rt: "poly (char_poly ?cA) x = 0" 
     from pf(4)[OF this] show "cmod x \<le> 1" .
     assume 1: "cmod x = 1" and d: "d + 1 < order x (char_poly ?cA)" 
-    let ?P = "\<lambda> k. x ^ k = 1 \<and> k \<noteq> 0" 
-    define k where "k = (LEAST k. ?P k)" 
-    from pf(7)[OF 1 rt] ks0 obtain K where K: "K \<in> set ks" "K \<noteq> 0" "x ^ K = 1"
-      and Pk: "\<exists> k. ?P k" by metis
-    from LeastI_ex[OF Pk, folded k_def] have k: "x ^ k = 1" and k0: "k \<noteq> 0" by auto
-    have k_least: "k' \<noteq> 0 \<Longrightarrow> k' < k \<Longrightarrow> x ^ k' \<noteq> 1" for k' 
-      using not_less_Least[of k' ?P, folded k_def] by force
-    from root_unity_different_powers[OF k k0 k_least] 
-    have min: "x ^ n = 1 \<longleftrightarrow> k dvd n" for n by force
-    from this[of K] K have "k dvd K" by auto
-    with K(2) have "k \<le> K" using dvd_imp_le by blast
-    from order.trans[OF this max_list[OF K(1)]] k0 have k_mem: "k \<in> {1 .. max_list ks}" by auto
+    from pf(7)[OF 1 rt] ks0 obtain K where K: "K \<in> set ks" "K \<noteq> 0" "x ^ K = 1" by auto
+    from primitive_root_unity_exists[OF K(2-)] obtain k where kK: "k \<le> K" and 
+      k: "primitive_root_unity k x" by auto
+    from primitive_root_unity_dvd[OF k]
+    have min: "x ^ n = 1 \<longleftrightarrow> k dvd n" for n .
+    from primitive_root_unityD[OF k] have k0: "k \<noteq> 0" and rt: "x ^ k = 1" by auto
+    from order.trans[OF kK max_list[OF K(1)]] k0 have k_mem: "k \<in> {1 .. max_list ks}" by auto
     have "order x (char_poly ?cA) = length [k\<leftarrow>ks . x ^ k = 1]" using pf(6)[OF 1] by simp
     also have "[k\<leftarrow>ks. x ^ k = 1] = filter (\<lambda> k'. k dvd k') [k'\<leftarrow>ks. x ^ k' = 1]"
       by (rule sym, unfold filter_id_conv, insert min, auto)
@@ -185,7 +180,7 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
   show ?case
   proof (cases "k = 1")
     case True
-    from 1 root_1 show ?thesis unfolding True by auto
+    from 1 root_1 show ?thesis unfolding True primitive_root_unity_explicit by auto
   next
     case False
     with 1 have k: "k \<ge> 2" by auto
@@ -203,7 +198,7 @@ lemma jnf_perron_frobenius_only_blocks_1_and_minus_1:
      length ks > d + 1 \<Longrightarrow>
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) 1). 
        bsize \<le> d + 1)" 
-  and root_m1: "  
+  and root_2: "  
      length [k'\<leftarrow>ks . 2 dvd k'] > d + 1 \<Longrightarrow> 
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) (-1)). 
        bsize \<le> d + 1)" 
@@ -211,15 +206,14 @@ lemma jnf_perron_frobenius_only_blocks_1_and_minus_1:
 proof (rule jnf_perron_frobenius_generic, goal_cases)
   case (1 x k)
   from 1(4)
-  consider (k1) "k = 1 \<or> x = 1" | (k2) "k = 2" "x \<noteq> 1" | (k) "k \<ge> 3" by fastforce
+  consider (k1) "k = 1" | (k2) "k = 2" | (k) "k \<ge> 3" by fastforce
   thus ?case
   proof cases
     case k1
-    from 1 root_1 show ?thesis using k1 by auto
+    from 1 root_1 show ?thesis unfolding k1 primitive_root_unity_explicit by auto
   next
     case k2
-    with 1[unfolded k2 root_unity_explicit] have x: "x = -1" by auto
-    from root_m1 1 show ?thesis unfolding x k2 by auto
+    from 1 root_2 show ?thesis unfolding k2 primitive_root_unity_explicit by auto
   next
     case k
     from 1(5) have "3 * (d + 2) \<le> 3 * length (filter (op dvd k) ks)" by auto
@@ -236,7 +230,7 @@ lemma jnf_perron_frobenius_only_square_roots:
      length ks > d + 1 \<Longrightarrow>
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) 1). 
        bsize \<le> d + 1)" 
-  and root_m1: "  
+  and root_2: "  
      length [k'\<leftarrow>ks . 2 dvd k'] > d + 1 \<Longrightarrow> 
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) (-1)). 
        bsize \<le> d + 1)" 
@@ -252,36 +246,20 @@ lemma jnf_perron_frobenius_only_square_roots:
 proof (rule jnf_perron_frobenius_generic, goal_cases)
   case (1 x k)
   from 1(4)
-  consider (k1) "k = 1 \<or> x = 1" | (k2) "k = 2 \<or> (k = 4 \<and> x = -1)" "x \<noteq> 1" 
-    | (k3) "k = 3" "x \<noteq> 1" | (k4) "k = 4" "x \<noteq> 1" "x \<noteq> -1" | (k) "k \<ge> 5" by fastforce
+  consider (k1) "k = 1" | (k2) "k = 2" | (k3) "k = 3" | (k4) "k = 4" | (k) "k \<ge> 5" by fastforce
   thus ?case
   proof cases
     case k1
-    from 1 root_1 show ?thesis using k1 by auto
+    from 1 root_1 show ?thesis unfolding k1 primitive_root_unity_explicit by auto
   next
     case k2
-    with 1(6) root_unity_explicit have x: "x = -1" by auto
-    show ?thesis unfolding x
-    proof (rule root_m1, insert k2) 
-      have "d + 1 < length (filter (op dvd k) ks)" by fact
-      also have "filter (op dvd k) ks = filter even (filter (op dvd k) ks)" 
-        by (rule sym, unfold filter_id_conv, insert k2, auto simp: dvd_def)
-      also have "\<dots> = filter (op dvd k) (filter even ks)" unfolding filter_filter
-        by (rule filter_cong, auto)
-      also have "length \<dots> \<le> length (filter even ks)" 
-        by (rule length_filter_le)
-      finally show "d + 1 < length (filter even ks)" by auto
-    qed
+    from 1 root_2 show ?thesis unfolding k2 primitive_root_unity_explicit by auto
   next
     case k3
-    with 1[unfolded k3 root_unity_explicit] 
-    have x: "x \<in> {Complex (- 1 / 2) (sqrt 3 / 2), Complex (- 1 / 2) (- sqrt 3 / 2)}" by auto
-    from root_3[OF x] 1 show ?thesis unfolding k3 by auto
+    from 1 root_3 show ?thesis unfolding k3 primitive_root_unity_explicit by auto
   next
     case k4
-    with 1[unfolded k4 root_unity_explicit] 
-    have x: "x \<in> {\<i>, -\<i>}" by auto
-    from root_4[OF x] 1 show ?thesis unfolding k4 by auto
+    from 1 root_4 show ?thesis unfolding k4 primitive_root_unity_explicit by auto
   next
     case k
     from 1(5) have "5 * (d + 2) \<le> 5 * length (filter (op dvd k) ks)" by auto

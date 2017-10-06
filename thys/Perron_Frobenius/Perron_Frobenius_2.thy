@@ -8,6 +8,10 @@ imports
     this import is incompatible with field_simps, ac_simps *)
 begin 
 
+lifting_forget vec.lifting
+lifting_forget mat.lifting
+lifting_forget poly.lifting
+
 lemma charpoly_of_real: "charpoly (map_matrix complex_of_real A) = map_poly of_real (charpoly A)" 
   by (transfer_hma rule: of_real_hom.char_poly_hom)
 
