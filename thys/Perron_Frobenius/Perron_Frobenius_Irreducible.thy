@@ -1,12 +1,19 @@
 subsection \<open>The Perron Frobenius Theorem for Irreducible Matrices\<close>
 
-theory Perron_Frobenius_2
+theory Perron_Frobenius_Irreducible
 imports
   Perron_Frobenius
   Perron_Frobenius_Aux_2
   Rank_Nullity_Theorem.Miscellaneous (* for scalar-matrix-multiplication, 
     this import is incompatible with field_simps, ac_simps *)
 begin 
+
+lifting_forget vec.lifting
+lifting_forget mat.lifting
+lifting_forget poly.lifting
+
+lemma charpoly_of_real: "charpoly (map_matrix complex_of_real A) = map_poly of_real (charpoly A)" 
+  by (transfer_hma rule: of_real_hom.char_poly_hom)
 
 context includes lifting_syntax
 begin
@@ -62,10 +69,13 @@ lemma reachable1_transpose:
   "reachable1 (fixed_mat.G (transpose A)) i j = reachable1 (fixed_mat.G A) j i"
   unfolding arcs_ends_transpose trancl_converse by auto 
 
-locale nonneg_mat = fixed_mat A for 
+locale pf_nonneg_mat = fixed_mat A for 
   A :: "'a :: linordered_idom ^ 'n ^ 'n" + 
-  assumes nonneg: "A $ i $ j \<ge> 0" 
+  assumes non_neg_mat: "non_neg_mat A"  
 begin 
+lemma nonneg: "A $ i $ j \<ge> 0" 
+  using non_neg_mat unfolding non_neg_mat_def elements_mat_h_def by auto
+
 lemma nonneg_matpow: "matpow A n $ i $ j \<ge> 0" 
   by (induct n arbitrary: i j, insert nonneg, 
     auto intro!: sum_nonneg simp: matrix_matrix_mult_def mat_def)
@@ -129,7 +139,7 @@ proof -
 qed
 end
 
-locale perron_frobenius = nonneg_mat A 
+locale perron_frobenius = pf_nonneg_mat A 
   for A :: "real ^ 'n ^ 'n" +
   assumes irr: irreducible
 begin
@@ -140,7 +150,7 @@ proof
     unfolding fixed_mat.irreducible_def reachable1_transpose using irr[unfolded irreducible_def] 
     by auto
   fix i j
-qed (insert nonneg, auto simp: transpose_def)
+qed (insert nonneg, auto simp: transpose_def non_neg_mat_def elements_mat_h_def)
 
 abbreviation le_vec :: "real ^ 'n \<Rightarrow> real ^ 'n \<Rightarrow> bool" where
   "le_vec x y \<equiv> (\<forall> i. x $ i \<le> y $ i)" 
@@ -592,6 +602,9 @@ end
 lemma eigen_vector_z_sr: "eigen_vector A z sr" 
   using sr_imp_eigen_vector[OF zX refl] by auto
 
+lemma eigen_value_sr: "eigen_value A sr" 
+  using eigen_vector_z_sr unfolding eigen_value_def by auto
+
 abbreviation "c \<equiv> complex_of_real" 
 abbreviation "cA \<equiv> map_matrix c A" 
 abbreviation "norm_v \<equiv> map_vector (norm :: complex \<Rightarrow> real)" 
@@ -641,14 +654,22 @@ proof -
   show "r (norm_v v) \<le> sr" .
 qed
 
-lemma norm_sr: "norm \<alpha> \<le> sr" using ev_inequalities by auto
+lemma eigen_vector_norm_sr: "norm \<alpha> \<le> sr" using ev_inequalities by auto
 end
+
+lemma eigen_value_norm_sr: assumes "eigen_value cA \<alpha>" 
+  shows "norm \<alpha> \<le> sr" 
+  using eigen_vector_norm_sr[of _ \<alpha>] assms unfolding eigen_value_def by auto
+
 
 lemma le_vec_trans: "le_vec x y \<Longrightarrow> le_vec y u \<Longrightarrow> le_vec x u" 
   using order.trans[of "x $ i" "y $ i" "u $ i" for i] by auto
 
 lemma eigen_vector_z_sr_c: "eigen_vector cA (map_vector c z) (c sr)" 
   unfolding of_real_hom.eigen_vector_hom by (rule eigen_vector_z_sr)
+
+lemma eigen_value_sr_c: "eigen_value cA (c sr)" 
+  using eigen_vector_z_sr_c unfolding eigen_value_def by auto
 
 definition "w = perron_frobenius.z (transpose A)" 
 
@@ -668,9 +689,7 @@ proof -
     finally have "eigen_value (t.cA) x = eigen_value cA x" .
   } note ev_id = this
   with ev have ev: "eigen_value t.cA (c sr)" "eigen_value cA (c t.sr)" by auto
-  then obtain v1 v2 where ev: "eigen_vector t.cA v1 (c sr)" "eigen_vector cA v2 (c t.sr)"
-    unfolding eigen_value_def by auto
-  from norm_sr[OF ev(2)] t.norm_sr[OF ev(1)] 
+  from eigen_value_norm_sr[OF ev(2)] t.eigen_value_norm_sr[OF ev(1)] 
   show id: "t.sr = sr" by auto
   from t.eigen_vector_z_sr[unfolded id, folded w_def] show "transpose A *v w = sr *s w" 
     unfolding eigen_vector_def by auto
@@ -836,7 +855,7 @@ proof -
     unfolding eigen_value_def by auto
   from spectral_radius_max[OF this] 
   have sr: "sr \<le> spectral_radius cA" by auto
-  with spectral_radius_ev[of cA] norm_sr
+  with spectral_radius_ev[of cA] eigen_vector_norm_sr
   show ?thesis by force
 qed
 
@@ -915,7 +934,7 @@ proof -
     assume "A *v y = mu *s y" 
     with y have "eigen_vector A y mu" unfolding X_def eigen_vector_def by auto
     hence "eigen_vector cA (map_vector c y) (c mu)" unfolding of_real_hom.eigen_vector_hom .
-    from norm_sr[OF this] * have "mu = sr" by auto
+    from eigen_vector_norm_sr[OF this] * have "mu = sr" by auto
   }
   with ** have mu_sr: "mu = sr" by auto
   from eq1[folded vector_smult_distrib]
@@ -1011,8 +1030,10 @@ proof -
   thus ?thesis unfolding \<phi>_def .
 qed
 
-lemma maximal_eigen_value_order_1: assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
-  shows "order \<alpha> (charpoly cA) = 1" 
+lemma assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
+  shows maximal_eigen_value_order_1: "order \<alpha> (charpoly cA) = 1" 
+    and maximal_eigen_value_rotation: "eigen_value cA (x * cis (arg \<alpha>)) = eigen_value cA x"
+      "eigen_value cA (x / cis (arg \<alpha>)) = eigen_value cA x"
 proof -
   let ?a = "cis (arg \<alpha>)" 
   let ?p = "charpoly cA" 
@@ -1020,29 +1041,333 @@ proof -
   have "similar_matrix (?a *k cA) cA" .
   from similar_matrix_charpoly[OF this] 
   have id: "charpoly (?a *k cA) = ?p" .
-  have p: "?p = map_poly c (charpoly A)" 
-    by (transfer_hma rule: of_real_hom.char_poly_hom)
   have a: "?a \<noteq> 0" by simp
   from order_charpoly_smult[OF this, of _ cA, unfolded id]
-  have "order x ?p = order (x / ?a) ?p" for x .
-  note this[of \<alpha>]
-  also have "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
+  have order_neg: "order x ?p = order (x / ?a) ?p" for x .
+  have order_pos: "order x ?p = order (x * ?a) ?p" for x 
+    using order_neg[symmetric, of "x * ?a"] by simp
+  note order_neg[of \<alpha>]
+  also have id: "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
     by (metis a cis_mult_cmod_id nonzero_mult_div_cancel_left)
-  also have "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] p
-    by (rule field_hom.order_hom, unfold_locales, transfer, drule degree_monic_char_poly, auto)
-  finally show ?thesis .
+  also have sr: "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] charpoly_of_real
+    by (rule map_poly_inj_idom_divide_hom.order_hom, unfold_locales)
+  finally show *: "order \<alpha> ?p = 1" .
+  show "eigen_value cA (x * ?a) = eigen_value cA x" using order_pos 
+    unfolding eigen_value_root_charpoly order_root by auto
+  show "eigen_value cA (x / ?a) = eigen_value cA x" using order_neg
+    unfolding eigen_value_root_charpoly order_root by auto
 qed
 
+lemma maximal_eigen_values_group: assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}"
+  and a: "rcis sr \<alpha> \<in> M" 
+  and b: "rcis sr \<beta> \<in> M" 
+shows "rcis sr (\<alpha> + \<beta>) \<in> M" "rcis sr (\<alpha> - \<beta>) \<in> M" "rcis sr 0 \<in> M" 
+proof -
+  {
+    fix a
+    assume *: "rcis sr a \<in> M" 
+    have id: "cis (arg (rcis sr a)) = cis a"
+      by (smt * M mem_Collect_eq nonzero_mult_div_cancel_left of_real_eq_0_iff 
+         rcis_cmod_arg rcis_def sr_pos) 
+    from *[unfolded assms] have "eigen_value cA (rcis sr a)" "cmod (rcis sr a) = sr" by auto
+    from maximal_eigen_value_rotation[OF this, unfolded id]
+    have "eigen_value cA (x * cis a) = eigen_value cA x" 
+      "eigen_value cA (x / cis a) = eigen_value cA x" for x by auto
+  } note * = this
+  from *(1)[OF b, of "rcis sr \<alpha>"] a show "rcis sr (\<alpha> + \<beta>) \<in> M" unfolding M by auto
+  from *(2)[OF a, of "rcis sr \<alpha>"] a show "rcis sr 0 \<in> M" unfolding M by auto
+  from *(2)[OF b, of "rcis sr \<alpha>"] a show "rcis sr (\<alpha> - \<beta>) \<in> M" unfolding M by auto
+qed 
 
+lemma maximal_eigen_value_roots_of_unity_rotation: 
+  assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}" 
+   and kM: "k = card M" 
+ shows "k \<noteq> 0" 
+    "k \<le> CARD('n)"
+    "\<exists> f. charpoly A = (monom 1 k - [:sr^k:]) * f 
+       \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
+    "M = op * (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}"
+    "M = op * (c sr) ` { x :: complex. x ^ k = 1}"
+    "op * (cis (2 * pi / k)) ` Spectrum cA = Spectrum cA"
+  unfolding kM
+proof -
+  let ?M = "card M" 
+  note fin = finite_spectrum[of cA]  
+  note char = degree_monic_charpoly[of cA]
+  have "?M \<le> card (Collect (eigen_value cA))" 
+    by (rule card_mono[OF fin], unfold M, auto)
+  also have "Collect (eigen_value cA) = {x. poly (charpoly cA) x = 0}" 
+    unfolding eigen_value_root_charpoly by auto
+  also have "card \<dots> \<le> degree (charpoly cA)" 
+    by (rule poly_roots_degree, insert char, auto)
+  also have "\<dots> = CARD('n)" using char by simp
+  finally show "?M \<le> CARD ('n)" .
+  from finite_subset[OF _ fin, of M] 
+  have finM: "finite M" unfolding M by blast
+  from finite_distinct_list[OF this]
+  obtain m where Mm: "M = set m" and dist: "distinct m" by auto
+  from Mm dist have card: "?M = length m" by (auto simp: distinct_card)
+  have sr: "sr \<in> set m" using eigen_value_sr_c sr_pos unfolding Mm[symmetric] M by auto
+  define s where "s = sort_key arg m" 
+  define a where "a = map arg s" 
+  let ?k = "length a" 
+  from dist Mm card sr have s: "M = set s" "distinct s"  "sr \<in> set s" 
+    and card: "?M = ?k"
+    and sorted: "sorted a" 
+    unfolding s_def a_def by auto
+  have map_s: "map (op * (c sr)) (map cis a) = s" unfolding map_map o_def a_def
+  proof (rule map_idI)
+    fix x
+    assume "x \<in> set s" 
+    from this[folded s(1), unfolded M] 
+    have id: "cmod x = sr" by auto
+    show "sr * cis (arg x) = x" 
+      by (subst (5) rcis_cmod_arg[symmetric], unfold id[symmetric] rcis_def, simp)
+  qed
+  from s(2)[folded map_s, unfolded distinct_map] have a: "distinct a" "inj_on cis (set a)" by auto
+  from s(3) obtain aa a' where a_split: "a = aa # a'" unfolding a_def by (cases s, auto)
+  from arg_bounded have bounded: "x \<in> set a \<Longrightarrow> - pi < x \<and> x \<le> pi" for x unfolding a_def by auto
+  from bounded[of aa, unfolded a_split] have aa: "- pi < aa \<and> aa \<le> pi" by auto
+  let ?aa = "aa + 2 * pi" 
+  define args where "args = a @ [?aa]" 
+  let ?diff = "\<lambda> i. args ! Suc i - args ! i" 
+  have bnd: "x \<in> set a \<Longrightarrow> x < ?aa" for x using aa bounded[of x] by auto
+  hence aa_a: "?aa \<notin> set a" by fast
+  have sorted: "sorted args" unfolding args_def using sorted unfolding sorted_append
+    by (insert bnd, auto simp: order.strict_iff_order)
+  have dist: "distinct args" using a aa_a unfolding args_def distinct_append by auto
+  have sum: "(\<Sum> i < ?k. ?diff i) = 2 * pi" 
+    unfolding sum_lessThan_telescope args_def a_split by simp
+  have k: "?k \<noteq> 0" unfolding a_split by auto
+  let ?A = "?diff ` {..< ?k}" 
+  let ?Min = "Min ?A" 
+  define Min where "Min = ?Min" 
+  have "?Min = (?k * ?Min) / ?k" using k by auto
+  also have "?k * ?Min = (\<Sum> i < ?k. ?Min)" by auto
+  also have "\<dots> / ?k \<le> (\<Sum> i < ?k. ?diff i) / ?k" 
+    by (rule divide_right_mono[OF sum_mono[OF Min_le]], auto)
+  also have "\<dots> = 2 * pi / ?k" unfolding sum ..
+  finally have Min: "Min \<le> 2 * pi / ?k" unfolding Min_def by auto
+  have lt: "i < ?k \<Longrightarrow> args ! i < args ! (Suc i)" for i 
+    using sorted[unfolded sorted_equals_nth_mono, rule_format, of "Suc i" i]
+    dist[unfolded distinct_conv_nth, rule_format, of "Suc i" i] by (auto simp: args_def)
+  let ?c = "\<lambda> i. rcis sr (args ! i)" 
+  have hda[simp]: "hd a = aa" unfolding a_split by simp  
+  have Min0: "Min > 0" using lt unfolding Min_def by (subst Min_gr_iff, insert k, auto)
+  have Min_A: "Min \<in> ?A" unfolding Min_def by (rule Min_in, insert k, auto)
+  {
+    fix i :: nat
+    assume i: "i < length args" 
+    hence "?c i = rcis sr ((a @ [hd a]) ! i)" 
+      by (cases "i = ?k", auto simp: args_def nth_append rcis_def)
+    also have "\<dots> \<in> set (map (rcis sr) (a @ [hd a]))" using i 
+      unfolding args_def set_map unfolding set_conv_nth by auto
+    also have "\<dots> = rcis sr ` set a" unfolding a_split by auto
+    also have "\<dots> = M" unfolding s(1) map_s[symmetric] set_map image_image
+      by (rule image_cong[OF refl], auto simp: rcis_def)
+    finally have "?c i \<in> M" by auto
+  } note ciM = this
+  {
+    fix i :: nat
+    assume i: "i < ?k" 
+    hence "i < length args" "Suc i < length args" unfolding args_def by auto
+    from maximal_eigen_values_group[OF M ciM[OF this(2)] ciM[OF this(1)]]
+    have "rcis sr (?diff i) \<in> M" by simp
+  }
+  hence Min_M: "rcis sr Min \<in> M" using Min_A by force  
+  have rcisM: "rcis sr (of_nat n * Min) \<in> M" for n
+  proof (induct n)
+    case 0
+    show ?case using sr Mm by auto
+  next
+    case (Suc n)    
+    have *: "rcis sr (of_nat (Suc n) * Min) = rcis sr (of_nat n * Min) * cis Min" 
+      by (simp add: rcis_mult ring_distribs add.commute)
+    from maximal_eigen_values_group(1)[OF M Suc Min_M]
+    show ?case unfolding * by simp
+  qed
+  let ?list = "map (rcis sr) (map (\<lambda> i. of_nat i * Min) [0 ..< ?k])" 
+  define list where "list = ?list" 
+  have len: "length ?list = ?M" unfolding card by simp
+  from sr_pos have sr0: "sr \<noteq> 0" by auto
+  {
+    fix i
+    assume i: "i < ?k" 
+    hence *: "0 \<le> real i * Min" using Min0 by auto
+    from i have "real i < real ?k" by auto
+    from mult_strict_right_mono[OF this Min0]
+    have "real i * Min < real ?k * Min" by simp
+    also have "\<dots> \<le> real ?k * (2 * pi / real ?k)" 
+      by (rule mult_left_mono[OF Min], auto)
+    also have "\<dots> = 2 * pi" using k by simp
+    finally have "real i * Min < 2 * pi" .
+    note * this
+  } note prod_pi = this
+  have dist: "distinct ?list"
+    unfolding distinct_map[of "rcis sr"] 
+  proof (rule conjI[OF _ inj_on_subset[OF rcis_inj_on[OF sr0]]])
+    show "distinct (map (\<lambda> i. of_nat i * Min) [0 ..< ?k])" using Min0
+      by (auto simp: distinct_map inj_on_def)
+    show "set (map (\<lambda>i. real i * Min) [0..<?k]) \<subseteq> {0..<2 * pi}" using prod_pi
+      by auto
+  qed
+  with len have card': "card (set ?list) = ?M" using distinct_card by fastforce
+  have listM: "set ?list \<subseteq> M" using rcisM by auto
+  from card_subset_eq[OF finM listM card']
+  have M_list: "M = set ?list" ..
+  let ?piM = "2 * pi / ?M" 
+  {
+    assume "Min \<noteq> ?piM" 
+    with Min have lt: "Min < 2 * pi / ?k" unfolding card by simp
+    from k have "0 < real ?k" by auto
+    from mult_strict_left_mono[OF lt this] k Min0
+    have k: "0 \<le> ?k * Min" "?k * Min < 2 * pi" by auto
+    from rcisM[of ?k, unfolded M_list] have "rcis sr (?k * Min) \<in> set ?list" by auto
+    then obtain i where i: "i < ?k" and id: "rcis sr (?k * Min) = rcis sr (i * Min)" by auto
+    from inj_onD[OF inj_on_subset[OF rcis_inj_on[OF sr0], of "{?k * Min, i * Min}"] id] 
+      prod_pi[OF i] k
+    have "?k * Min = i * Min" by auto
+    with Min0 i have False by auto
+  }
+  hence Min: "Min = ?piM" by auto
+  show cM: "?M \<noteq> 0" unfolding card using k by auto
+  let ?f = "(\<lambda> i. cis (of_nat i * 2 * pi / ?M))" 
+  note M_list
+  also have "set ?list = op * (c sr) ` (\<lambda> i. cis (of_nat i * Min)) ` {0 ..< ?k}" 
+    unfolding set_map image_image 
+    by (rule image_cong, insert sr_pos, auto simp: rcis_mult rcis_def)
+  finally show M_cis: "M = op * (c sr) ` ?f ` {0 ..< ?M}" 
+    unfolding card Min by simp
+  thus M_pow: "M = op * (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
+  let ?rphi = "rcis sr (2 * pi / ?M)" 
+  let ?phi = "cis (2 * pi / ?M)" 
+  from Min_M[unfolded Min] 
+  have ev: "eigen_value cA ?rphi" unfolding M by auto
+  have cm: "cmod ?rphi = sr" using sr_pos by simp
+  have id: "cis (arg ?rphi) = cis (arg ?phi) * cmod ?phi" 
+    unfolding arg_rcis_cis[OF sr_pos] by simp
+  also have "\<dots> = ?phi" unfolding cis_mult_cmod_id ..
+  finally have id: "cis (arg ?rphi) = ?phi" .
+  define phi where "phi = ?phi" 
+  have phi: "phi \<noteq> 0" unfolding phi_def by auto
+  note max = maximal_eigen_value_rotation[OF ev cm, unfolded id phi_def[symmetric]]
+  have "(op * phi) ` Spectrum cA = Spectrum cA" (is "?L = ?R")
+  proof -
+    {
+      fix x
+      have *: "x \<in> ?L \<Longrightarrow> x \<in> ?R" for x using max(2)[of x] phi unfolding Spectrum_def by auto
+      moreover
+      {
+        assume "x \<in> ?R" 
+        hence "eigen_value cA x" unfolding Spectrum_def by auto
+        from this[folded max(2)[of x]] have "x / phi \<in> ?R" unfolding Spectrum_def by auto      
+        from imageI[OF this, of "op * phi"]
+        have "x \<in> ?L" using phi by auto
+      }
+      note this *
+    }
+    thus ?thesis by blast
+  qed
+  from this[unfolded phi_def]
+  show "op * (cis (2 * pi / real (card M))) ` Spectrum cA = Spectrum cA" .
+  let ?p = "monom 1 k - [:sr^k:]" 
+  let ?cp = "monom 1 k - [:(c sr)^k:]" 
+  let ?one = "1 :: complex" 
+  let ?list = "map (rcis sr) (map (\<lambda> i. of_nat i * ?piM) [0 ..< card M])" 
+  interpret c: field_hom c ..
+  interpret p: map_poly_inj_idom_divide_hom c ..
+  have cp: "?cp = map_poly c ?p" by (simp add: hom_distribs)    
+  have M_list: "M = set ?list" using M_list[unfolded Min card[symmetric]] .
+  have dist: "distinct ?list" using dist[unfolded Min card[symmetric]] .
+  have k0: "k \<noteq> 0" using k[folded card] assms by auto
+  have "?cp = (monom 1 k + (- [:(c sr)^k:]))" by simp
+  also have "degree \<dots> = k" 
+    by (subst degree_add_eq_left, insert k0, auto simp: degree_monom_eq)  
+  finally have deg: "degree ?cp = k" .
+  from deg k0 have cp0: "?cp \<noteq> 0" by auto
+  have "{x. poly ?cp x = 0} = {x. x^k = (c sr)^k}" unfolding poly_diff poly_monom 
+    by simp
+  also have "\<dots> \<subseteq> M" 
+  proof -
+    {
+      fix x
+      assume id: "x^k = (c sr)^k" 
+      from sr_pos k0 have "(c sr)^k \<noteq> 0" by auto
+      with arg_cong[OF id, of "\<lambda> x. x / (c sr)^k"] 
+      have "(x / c sr)^k = 1"
+        unfolding power_divide by auto
+      hence "c sr * (x / c sr) \<in> M" 
+        by (subst M_pow, unfold kM[symmetric], blast)
+      also have "c sr * (x / c sr) = x" using sr_pos by auto
+      finally have "x \<in> M" .
+    }
+    thus ?thesis by auto
+  qed
+  finally have cp_M: "{x. poly ?cp x = 0} \<subseteq> M" .
+  have "k = card (set ?list)" unfolding distinct_card[OF dist] by (simp add: kM)
+  also have "\<dots> \<le> card {x. poly ?cp x = 0}" 
+  proof (rule card_mono[OF poly_roots_finite[OF cp0]])
+    {
+      fix x
+      assume "x \<in> set ?list" 
+      then obtain i where x: "x = rcis sr (real i * ?piM)" by auto
+      have "x^k = (c sr)^k" unfolding x DeMoivre2 kM by simp
+      hence "poly ?cp x = 0" unfolding poly_diff poly_monom by simp
+    }
+    thus "set ?list \<subseteq> {x. poly ?cp x = 0}" by auto
+  qed
+  finally have k_card: "k \<le> card {x. poly ?cp x = 0}" .
+  from k_card cp_M finM have M_id: "M = {x. poly ?cp x = 0}"
+    unfolding kM by (metis card_seteq)
+  have dvdc: "?cp dvd charpoly cA" 
+  proof (rule poly_roots_dvd[OF cp0 deg k_card])
+    from cp_M
+    show "{x. poly ?cp x = 0} \<subseteq> {x. poly (charpoly cA) x = 0}" 
+      unfolding M eigen_value_root_charpoly by auto
+  qed
+  from this[unfolded charpoly_of_real cp p.hom_dvd_iff]
+  have dvd: "?p dvd charpoly A" .
+  from this[unfolded dvd_def] obtain f where 
+    decomp: "charpoly A = ?p * f" by blast
+  let ?f = "map_poly c f" 
+  have decompc: "charpoly cA = ?cp * ?f" unfolding charpoly_of_real decomp p.hom_mult cp ..
+  show "\<exists> f. charpoly A = (monom 1 ?M - [:sr^?M:]) * f \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
+    unfolding kM[symmetric]
+  proof (intro exI conjI allI impI, rule decomp)
+    fix x
+    assume f: "poly ?f x = 0" 
+    hence ev: "eigen_value cA x" 
+      unfolding decompc p.hom_mult eigen_value_root_charpoly by auto    
+    hence le: "cmod x \<le> sr" using eigen_value_norm_sr by auto
+    {
+      assume max: "cmod x = sr" 
+      hence "x \<in> M" unfolding M using ev by auto
+      hence "poly ?cp x = 0" unfolding M_id by auto
+      hence dvd1: "[: -x, 1 :] dvd ?cp" unfolding poly_eq_0_iff_dvd by auto
+      from f[unfolded poly_eq_0_iff_dvd]
+      have dvd2: "[: -x, 1 :] dvd ?f" by auto
+      from char have 0: "charpoly cA \<noteq> 0" by auto
+      from mult_dvd_mono[OF dvd1 dvd2] have "[: -x, 1 :]^2 dvd (charpoly cA)" 
+        unfolding decompc power2_eq_square .      
+      from order_max[OF this 0] maximal_eigen_value_order_1[OF ev max] 
+      have False by auto
+    }
+    with le show "cmod x < sr" by argo
+  qed
+qed
+  
 lemmas pf_main =
-  eigen_vector_z_sr (* sr is eigenvalue *)
-  norm_sr  (* it is maximal among all complex eigenvalues *)
-  sr_spectral_radius (* so it is the spectral radius *)
+  eigen_value_sr eigen_vector_z_sr (* sr is eigenvalue *)
+  eigen_value_norm_sr  (* it is maximal among all complex eigenvalues *)
   z_pos    (* it's eigenvector is positive *)
   multiplicity_sr_1 (* the algebr. multiplicity is 1 *)
-  nonnegative_eigenvector_has_ev_sr (* every non-negative eigenvector has sr as eigenvalue *)
-  similar_matrix_rotation (* maximal eigenvectors are rotated *)
+  nonnegative_eigenvector_has_ev_sr (* every non-negative real eigenvector has sr as eigenvalue *)
   maximal_eigen_value_order_1 (* all maximal eigenvalues have order 1 *)
- 
+  maximal_eigen_value_roots_of_unity_rotation 
+   (* the maximal eigenvalues are precisely the k-th roots of unity for some k \<le> dim A *)
+
+lemmas pf_main_connect = pf_main(1,3,5,7,8-10)[unfolded sr_spectral_radius] 
+  sr_pos[unfolded sr_spectral_radius]
 end
+
 end

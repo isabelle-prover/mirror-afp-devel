@@ -4,9 +4,27 @@ subsection \<open>More Auxiliary Notions\<close>
 
 theory Perron_Frobenius_Aux_2
 imports 
+  Roots_Unity
   Perron_Frobenius
   Graph_Theory.Shortest_Path
 begin
+
+lemma trancl_image: 
+  "(i,j) \<in> R\<^sup>+ \<Longrightarrow> (f i, f j) \<in> (map_prod f f ` R)\<^sup>+" 
+proof (induct rule: trancl_induct)
+  case (step j k)
+  from step(2) have "(f j, f k) \<in> map_prod f f ` R" by auto
+  from step(3) this show ?case by auto
+qed auto
+
+lemma inj_trancl_image: assumes inj: "inj f" 
+  shows "(f i, f j) \<in> (map_prod f f ` R)\<^sup>+ = ((i,j) \<in> R\<^sup>+)" (is "?l = ?r")
+proof
+  assume ?r from trancl_image[OF this] show ?l .
+next
+  assume ?l from trancl_image[OF this, of "the_inv f"]
+  show ?r unfolding image_image prod.map_comp o_def the_inv_f_f[OF inj] by auto
+qed
 
 lemma cmod_plus_eqD: assumes "cmod (x + y) = cmod x + cmod y"
   shows "x = 0 \<or> y = 0 \<or> sgn x = sgn y"
@@ -497,9 +515,6 @@ proof
     by (meson Extended_Nonnegative_Real.of_nat_le_iff order_trans real_arch_simple)
 qed
 
-lemma cis_mult_cmod_id: "cis (arg x) * of_real (cmod x) = x"
-  using rcis_cmod_arg[unfolded rcis_def] by (simp add: ac_simps)
-
 definition diagvector :: "('n \<Rightarrow> 'a :: semiring_0) \<Rightarrow> 'a ^ 'n ^ 'n" where
   "diagvector x = (\<chi> i. \<chi> j. if i = j then x i else 0)" 
 
@@ -688,6 +703,20 @@ proof -
   show ?thesis using jordan_nf_def similar_mat_trans by blast
 qed
 
+lemma similar_iff_same_jordan_nf: fixes A :: "complex mat" 
+  assumes A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
+  shows "similar_mat A B = (jordan_nf A = jordan_nf B)" 
+proof 
+  show "similar_mat A B \<Longrightarrow> jordan_nf A = jordan_nf B" 
+    by (intro ext, auto simp: jordan_nf_def, insert similar_mat_trans similar_mat_sym, blast+)
+  assume id: "jordan_nf A = jordan_nf B" 
+  from char_poly_factorized[OF A] obtain as where "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
+  from jordan_nf_exists[OF A this] obtain n_as where jnfA: "jordan_nf A n_as" ..
+  with id have jnfB: "jordan_nf B n_as" by simp
+  from jnfA jnfB show "similar_mat A B" 
+    unfolding jordan_nf_def using similar_mat_trans similar_mat_sym by blast
+qed
+
 lemma order_char_poly_smult: fixes A :: "complex mat" 
   assumes A: "A \<in> carrier_mat n n" 
   and k: "k \<noteq> 0" 
@@ -699,41 +728,102 @@ proof -
     by (induct n_as, auto simp: k)
 qed
 
-lemma (in field_hom) order_hom: assumes "f \<noteq> 0" 
-  shows "order (hom x) (map_poly hom f) = order x f"
-proof -
+locale inj_idom_divide_hom = idom_divide_hom hom + inj_idom_hom hom
+  for hom :: "'a :: idom_divide \<Rightarrow> 'b :: idom_divide" 
+begin
+lemma hom_dvd_iff[simp]: "(hom p dvd hom q) = (p dvd q)"
+proof (cases "p = 0")
+  case False
+  show ?thesis
+  proof
+    assume "hom p dvd hom q" from this[unfolded dvd_def] obtain k where 
+      id: "hom q = hom p * k" by auto
+    hence "(hom q div hom p) = (hom p * k) div hom p" by simp
+    also have "\<dots> = k" by (rule nonzero_mult_div_cancel_left, insert False, simp)
+    also have "hom q div hom p = hom (q div p)" by (simp add: hom_div)
+    finally have "k = hom (q div p)" by auto
+    from id[unfolded this] have "hom q = hom (p * (q div p))" by (simp add: hom_mult)
+    hence "q = p * (q div p)" by simp
+    thus "p dvd q" unfolding dvd_def ..
+  qed simp
+qed simp
+end
+
+locale map_poly_inj_idom_divide_hom = base: inj_idom_divide_hom
+begin
+sublocale map_poly_idom_hom ..
+sublocale map_poly_inj_zero_hom .. 
+sublocale inj_idom_hom "map_poly hom" ..
+lemma divide_poly_main_hom: defines "hh \<equiv> map_poly hom" 
+  shows "hh (divide_poly_main lc f g h i j) = divide_poly_main (hom lc) (hh f) (hh g) (hh h) i j"  
+  unfolding hh_def
+proof (induct j arbitrary: lc f g h i)
+  case (Suc j lc f g h i)
   let ?h = "map_poly hom" 
-  interpret poly: map_poly_comm_semiring_hom ..
-  define n where "n = degree f" 
-  show ?thesis using n_def assms
-  proof (induct n arbitrary: f rule: less_induct)
-    case (less n f)
-    note f0 = less(3)
-    let ?f = "?h f" 
-    from f0 have id: "(f = 0) = False" "(?f = 0) = False" by auto
-    have id': "(poly ?f (hom x) = 0) = (poly f x = 0)" by auto
-    show ?case 
-    proof (subst (1 2) order_code, unfold id if_False id', rule if_cong[OF refl refl], 
-      rule arg_cong[of _ _ Suc])
-      assume "\<not> poly f x \<noteq> 0" 
-      hence "poly f x = 0" by simp
-      from this[unfolded poly_eq_0_iff_dvd dvd_def] obtain g where 
-        fg: "f = g * [: -x , 1:]" by auto
-      let ?g = "?h g" 
-      from fg have "?f = ?g * ?h [: -x, 1:]" unfolding poly.hom_mult[symmetric] by simp
-      also have "?h [: -x, 1 :] = [: - hom x, 1 :]" by (simp add: hom_uminus)
-      finally have hfg: "?f = ?g * [: - hom x, 1 :]" .
-      have fg': "f div [: - x, 1 :] = g" unfolding fg
-        by (rule divide_poly, auto)
-      have hfg': "?f div [: - hom x, 1 :] = ?g" unfolding hfg
-        by (rule divide_poly, auto)
-      show "order (hom x) (map_poly hom f div [:- hom x, 1:]) = order x (f div [:- x, 1:])" 
-        unfolding fg' hfg'
-      proof (rule less(1)[OF _ refl])
-        from f0 show "degree g < n" "g \<noteq> 0" unfolding less(2) fg
-          by (subst degree_mult_eq, auto)
-      qed
-    qed
-  qed
+  show ?case unfolding divide_poly_main.simps Let_def
+    unfolding base.coeff_map_poly_hom base.hom_div[symmetric] base.hom_mult[symmetric] base.eq_iff
+      if_distrib[of ?h] hom_zero
+    by (rule if_cong[OF refl _ refl], subst Suc, simp add: hom_minus hom_add hom_mult)
+qed simp
+
+sublocale inj_idom_divide_hom "map_poly hom" 
+proof
+  fix f g :: "'a poly" 
+  let ?h = "map_poly hom" 
+  show "?h (f div g) = (?h f) div (?h g)" unfolding divide_poly_def if_distrib[of ?h]
+    divide_poly_main_hom by simp
 qed
+
+lemma order_hom: "order (hom x) (map_poly hom f) = order x f"
+  unfolding Polynomial.order_def unfolding hom_dvd_iff[symmetric]
+  unfolding hom_power by (simp add: base.hom_uminus)
+end
+
+
+context field_hom
+begin
+sublocale inj_idom_divide_hom ..
+end
+
+lemma (in comm_ring_hom) hom_root_unity: "map_poly hom (root_unity n) = root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..
+  show ?thesis unfolding root_unity_def 
+    by (simp add: hom_distribs)
+qed
+
+lemma (in idom_hom) hom_prod_root_unity: "map_poly hom (prod_root_unity n) = prod_root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..  
+  show ?thesis unfolding prod_root_unity_def p.hom_prod_list map_map o_def hom_root_unity ..
+qed
+
+lemma (in field_hom) hom_decompose_prod_root_unity_main: 
+  "decompose_prod_root_unity_main (map_poly hom p) k = map_prod id (map_poly hom)
+    (decompose_prod_root_unity_main p k)"
+proof (induct p k rule: decompose_prod_root_unity_main.induct)
+  case (1 p k)
+  let ?h = "map_poly hom" 
+  let ?p = "?h p" 
+  let ?u = "root_unity k :: 'a poly" 
+  let ?u' = "root_unity k :: 'b poly" 
+  interpret p: map_poly_inj_idom_divide_hom hom ..
+  have u': "?u' = ?h ?u" unfolding hom_root_unity ..
+  note simp = decompose_prod_root_unity_main.simps
+  let ?rec1 = "decompose_prod_root_unity_main (p div ?u) k" 
+  have 0: "?p = 0 \<longleftrightarrow> p = 0" by simp
+  show ?case 
+    unfolding simp[of ?p k] simp[of p k] if_distrib[of "map_prod id ?h"] Let_def u'
+    unfolding 0 p.hom_div[symmetric] p.hom_dvd_iff
+    by (rule if_cong[OF refl], force, rule if_cong[OF refl if_cong[OF refl]], force,
+     (subst 1(1), auto, cases ?rec1, auto)[1],
+     (subst 1(2), auto))
+qed
+
+lemma (in field_hom) hom_decompose_prod_root_unity: 
+  "decompose_prod_root_unity (map_poly hom p) = map_prod id (map_poly hom)
+    (decompose_prod_root_unity p)" 
+  unfolding decompose_prod_root_unity_def
+  by (subst hom_decompose_prod_root_unity_main, simp)
+
 end

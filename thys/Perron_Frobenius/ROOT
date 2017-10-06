@@ -24,9 +24,9 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
   theories
     Cancel_Card_Constraint
     HMA_Connect
-    Perron_Frobenius
-    Perron_Frobenius_2
+    Perron_Frobenius_General
     Spectral_Radius_Theory
+    Spectral_Radius_Theory_2
   document_files
     "root.bib"
     "root.tex"
