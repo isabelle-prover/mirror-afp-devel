@@ -6,7 +6,7 @@ session CryptHOL (AFP) = Probabilistic_While +
     "HOL-Algebra"
     "HOL-Eisbach"
     Applicative_Lifting
-    Coinductive Landau_Analysis
+    Coinductive
     Landau_Symbols
     Monad_Normalisation
     Monomorphic_Monad

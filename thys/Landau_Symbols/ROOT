@@ -8,8 +8,8 @@ session Landau_Symbols (AFP) = "HOL-Library" +
     "root.tex"
 
 session Landau_Analysis (AFP) = "HOL-Analysis" +
-  options [timeout = 600, document = false, theory_qualifier = Landau_Symbols]
+  options [timeout = 600, document = false]
   sessions
     Landau_Symbols
   theories
-    Landau_Symbols
+    Landau_Symbols.Landau_Symbols
