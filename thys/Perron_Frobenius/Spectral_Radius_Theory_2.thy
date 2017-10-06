@@ -2,17 +2,11 @@ section \<open>Combining Spectral Radius Theory with Perron Frobenius theorem\<c
 
 theory Spectral_Radius_Theory_2
 imports 
-  Perron_Frobenius_2
+  Perron_Frobenius_General
   Jordan_Normal_Form.Jordan_Normal_Form_Uniqueness
 begin
 
 hide_const (open) Coset.order
-
-text \<open>get Perron Frobenius in JNF-world\<close>
-lemmas perron_frobenius_for_complexity_jnf = 
-  perron_frobenius_for_complexity[unfolded atomize_imp atomize_all, 
-    untransferred, cancel_card_constraint, rule_format]
-
 
 text \<open>This criterion is tight!\<close>
 
@@ -76,7 +70,7 @@ proof -
   qed
 qed
 
-text \<open>A tight criterion for non-negative real matrices\<close>
+text \<open>Now we will develop a tight criterion for non-negative real matrices.\<close>
 
 definition max_list :: "nat list \<Rightarrow> nat" where
   "max_list xs = foldr max xs 0"

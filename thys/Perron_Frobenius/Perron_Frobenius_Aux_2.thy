@@ -9,6 +9,23 @@ imports
   Graph_Theory.Shortest_Path
 begin
 
+lemma trancl_image: 
+  "(i,j) \<in> R\<^sup>+ \<Longrightarrow> (f i, f j) \<in> (map_prod f f ` R)\<^sup>+" 
+proof (induct rule: trancl_induct)
+  case (step j k)
+  from step(2) have "(f j, f k) \<in> map_prod f f ` R" by auto
+  from step(3) this show ?case by auto
+qed auto
+
+lemma inj_trancl_image: assumes inj: "inj f" 
+  shows "(f i, f j) \<in> (map_prod f f ` R)\<^sup>+ = ((i,j) \<in> R\<^sup>+)" (is "?l = ?r")
+proof
+  assume ?r from trancl_image[OF this] show ?l .
+next
+  assume ?l from trancl_image[OF this, of "the_inv f"]
+  show ?r unfolding image_image prod.map_comp o_def the_inv_f_f[OF inj] by auto
+qed
+
 lemma cmod_plus_eqD: assumes "cmod (x + y) = cmod x + cmod y"
   shows "x = 0 \<or> y = 0 \<or> sgn x = sgn y"
 proof (cases "x = 0 \<or> y = 0")
