@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-##
 ## Dependencies: Python 2.7 or Python 3.5
 ##
 ## This script reads a metadata file and generates the topics.html,
@@ -249,10 +248,15 @@ def main():
 
     # generate depends-on, used-by entries, lines of code and number of lemmas
     # by using an afp_dict object
-    if not options.deps_file:
+    # TODO: error instead of warn
+    deps_dict = metadata.empty_deps(entries)
+    if options.deps_file:
+        with open(options.deps_file, 'r') as df:
+            deps_dict = metadata.read_deps(df)
+    else:
         warn("No dependencies file specified")
 
-    afp_dict = afpstats.afp_dict(entries, options.thys_dir)
+    afp_dict = afpstats.afp_dict(entries, options.thys_dir, deps_dict)
     afp_dict.build_stats()
     for e in entries:
         entries[e]['depends-on'] = list(map(str, afp_dict[e].imports))
