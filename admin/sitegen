@@ -18,6 +18,47 @@ err() {
 ROOT="$(hg root)"
 cd "$ROOT"
 
+echo "Checking presence of Isabelle ..."
+
+if [ ! -x "$ISABELLE_TOOL" ]; then
+  echo "Isabelle not present at '$ISABELLE_TOOL', trying to use '$ISABELLE_RELEASES'"
+  if [ ! -d "$ISABELLE_RELEASES" ]; then
+    err "No Isabelle releases found"
+  else
+    if [ -z "$ISABELLE_VERSION" ]; then
+      echo "Trying to detect Isabelle version ..."
+      if [[ "$(basename "$(hg config paths.default)")" =~ ^afp-(.+)$ ]]; then
+        ISABELLE_VERSION="${BASH_REMATCH[1]}"
+        echo "Detected '$ISABELLE_VERSION'"
+      else
+        err "Unable to detect Isabelle version"
+      fi
+    fi
+
+    ISABELLE_VERSION="Isabelle$ISABELLE_VERSION"
+
+    case "$(uname -s)" in
+      Darwin)
+        ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_VERSION.app/Isabelle/bin/isabelle"
+        ;;
+      *)
+        ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_VERSION/bin/isabelle"
+        ;;
+    esac
+
+    if [ ! -x "$ISABELLE_TOOL" ]; then
+      err "Isabelle version is not present in '$ISABELLE_RELEASES'"
+    else
+      echo "Using '$ISABELLE_TOOL'"
+    fi
+  fi
+fi
+
+echo "Obtaining dependency information ..."
+
+DEPENDENCIES_FILE="$(mktemp)"
+"$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || err "Could not obtain dependency information"
+
 echo "Checking presence of Python ..."
 
 USE_PYTHON_3=false
@@ -48,7 +89,7 @@ esac
 if [ ! -f "$PYTHON" ]; then
   err "No suitable Python found"
 else
-  echo "Found Python at $PYTHON"
+  echo "Found Python at '$PYTHON'"
 fi
 
 echo "Checking presence of bootstrapping ..."
@@ -89,4 +130,5 @@ echo "Installing dependencies ..."
 echo "Running sitegen ..."
 "$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
                                        --templates=admin/sitegen-lib/templates \
+                                       --deps="$DEPENDENCIES_FILE" \
                                        metadata thys $@

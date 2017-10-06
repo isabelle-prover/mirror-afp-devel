@@ -213,7 +213,7 @@ def add_status(entries, status):
             entries[e]['status'] = "skipped"
 
 def main():
-    usage = "sitegen.py [-h] [--check] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--no-warn] [--debug] METADATA_DIR THYS_DIR"
+    usage = "sitegen.py [-h] [--check] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] [--no-warn] [--debug] METADATA_DIR THYS_DIR"
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument("metadata_dir", metavar="METADATA_DIR", action="store",
                         help="metadata location")
@@ -227,6 +227,8 @@ def main():
                         help="destination dir for generated html files")
     parser.add_argument("--status", action="store", dest="status_file",
                         help="status file location (devel)")
+    parser.add_argument("--deps", action="store", dest="deps_file",
+                        help="dependencies file location")
     parser.add_argument("--no-warn", action="store_false", dest="enable_warnings",
                         help="disable output of warnings")
     parser.add_argument("--debug", action="store_true", dest="enable_debug",
@@ -247,6 +249,9 @@ def main():
 
     # generate depends-on, used-by entries, lines of code and number of lemmas
     # by using an afp_dict object
+    if not options.deps_file:
+        warn("No dependencies file specified")
+
     afp_dict = afpstats.afp_dict(entries, options.thys_dir)
     afp_dict.build_stats()
     for e in entries:

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Routing - Archive of Formal Proofs
+<title>Stone-Kleene Relation Algebras - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,11 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">R</font>outing
+  <h1>          <font class="first">S</font>tone-Kleene
+  
+          <font class="first">R</font>elation
+  
+          <font class="first">A</font>lgebras
   
 </h1>
   <p>&nbsp;</p>
@@ -70,16 +74,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Routing</td>
+  <td class="data" width="80%">Stone-Kleene Relation Algebras</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    <a href="http://liftm.de/">Julius Michaelis</a> and
-          <a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>
+              <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>
       </td>
 </tr>
 
@@ -87,33 +90,34 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-08-31</td>
+  <td class="data">2017-07-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry contains definitions for routing with routing
-tables/longest prefix matching.  A routing table entry is modelled as
-a record of a prefix match, a metric, an output port, and an optional
-next hop. A routing table is a list of entries, sorted by prefix
-length and metric. Additionally, a parser and serializer for the
-output of the ip-route command, a function to create a relation from
-output port to corresponding destination IP space, and a model of a
-Linux-style router are included.</td>
+We develop Stone-Kleene relation algebras, which expand Stone relation
+algebras with a Kleene star operation to describe reachability in
+weighted graphs. Many properties of the Kleene star arise as a special
+case of a more general theory of iteration based on Conway semirings
+extended by simulation axioms. This includes several theorems
+representing complex program transformations. We formally prove the
+correctness of Conway's automata-based construction of the Kleene
+star of a matrix. We prove numerous results useful for reasoning about
+weighted graphs.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Routing-AFP,
-  author  = {Julius Michaelis and Cornelius Diekmann},
-  title   = {Routing},
+        <pre>@article{Stone_Kleene_Relation_Algebras-AFP,
+  author  = {Walter Guttmann},
+  title   = {Stone-Kleene Relation Algebras},
   journal = {Archive of Formal Proofs},
-  month   = aug,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Routing.html},
+  month   = jul,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/Stone_Kleene_Relation_Algebras.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -125,11 +129,9 @@ Linux-style router are included.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Simple_Firewall.html">Simple_Firewall</a>      </td></tr>
+          <td class="data"><a href="Stone_Relation_Algebras.html">Stone_Relation_Algebras</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Iptables_Semantics.html">Iptables_Semantics</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -141,29 +143,23 @@ Linux-style router are included.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Routing/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Routing/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Routing/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Routing-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Stone_Kleene_Relation_Algebras-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016:
-          <a href="../release/afp-Routing-2016-08-31.tar.gz">
-            afp-Routing-2016-08-31.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

@@ -62,15 +62,16 @@ THYS="$(dirname "$0")/../thys"
 [ "$1" = "-?" ] && usage
 
 # for dev version:
-ISABELLE_TOOL=$(which isabelle)
+#ISABELLE_TOOL=$(which isabelle)
 # for release version:
-# [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-# if [[ $OSTYPE == darwin* ]]; then
-#   ISABELLE_TOOL="$ISABELLE_RELEASES/${VERSION}.app/Isabelle/bin/isabelle"
-# fi
-# if [ ! -x "$ISABELLE_TOOL" ]; then
-#   ISABELLE_TOOL="$ISABELLE_RELEASES/$VERSION/bin/isabelle"
-# fi
+VERSION=Isabelle2017
+[ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
+if [[ $OSTYPE == darwin* ]]; then
+  ISABELLE_TOOL="$ISABELLE_RELEASES/${VERSION}.app/Isabelle/bin/isabelle"
+fi
+if [ ! -x "$ISABELLE_TOOL" ]; then
+  ISABELLE_TOOL="$ISABELLE_RELEASES/$VERSION/bin/isabelle"
+fi
 check_isabelle
 
 INCLUDE_INFREQUENT="yes"
