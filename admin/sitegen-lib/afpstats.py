@@ -212,7 +212,7 @@ class afp_dict(dict):
                 self.all_thys[t] = self[a]
         for k, a in self.items():
             a.imports = set([self[e] for e in deps_dict[k]['afp_deps']])
-            a.lib_imports = deps_dict[k]['distrib_deps']
+            a.lib_imports = set(deps_dict[k]['distrib_deps'])
 
     def build_stats(self):
         for _k, a in self.items():

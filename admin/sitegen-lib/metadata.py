@@ -45,6 +45,14 @@ def parse_email(email, entry, key):
         terminal.warn(u"In entry {0}: possibly malformed email in field {1}: '{2}'".format(entry, key, email))
     return stripped
 
+def empty_deps(entries):
+    d = {}
+    for e in entries:
+        d[e] = {}
+        d[e]["afp_deps"] = {}
+        d[e]["distrib_deps"] = {}
+    return d
+
 def read_deps(f):
     #TODO: make code fail safe
     j = json.load(f)
