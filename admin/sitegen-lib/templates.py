@@ -193,7 +193,8 @@ class Builder():
                            key=lambda x: (-len(x.used), x.name))
         # Show more than 10 articles but not more than necessary
         i = 0
-        while i < 10 or len(most_used[i].used) == len(most_used[i + 1].used):
+        while (i < 10 or (i + 1 < len(most_used) and
+          len(most_used[i].used) == len(most_used[i + 1].used))):
             i += 1
         # Groupby iterators trigger some obscure bug in jinja2
         # https://github.com/pallets/jinja/issues/555

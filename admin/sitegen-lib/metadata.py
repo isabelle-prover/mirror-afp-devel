@@ -1,3 +1,4 @@
+import json
 import terminal
 from config import licenses
 
@@ -43,6 +44,23 @@ def parse_email(email, entry, key):
     if ' ' in stripped:
         terminal.warn(u"In entry {0}: possibly malformed email in field {1}: '{2}'".format(entry, key, email))
     return stripped
+
+def empty_deps(entries):
+    d = {}
+    for e in entries:
+        d[e] = {}
+        d[e]["afp_deps"] = {}
+        d[e]["distrib_deps"] = {}
+    return d
+
+def read_deps(f):
+    #TODO: make code fail safe
+    j = json.load(f)
+    d = {}
+    for entry in j:
+        for e in entry:
+            d[e] = entry[e]
+    return d
 
 # key : (split, processor, default)
 #   'key' denotes the key of the key-value pair in the metadata file
