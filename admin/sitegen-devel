@@ -10,7 +10,7 @@ shift
 
 cd "$(dirname "$0")/.."
 
-admin/sitegen-lib/sitegen.py --dest=web --templates=admin/sitegen-lib/templates --status="$STATUS_FILE" --deps-file="$DEPS_FILE" metadata thys $@
+admin/sitegen-lib/sitegen.py --dest=web --templates=admin/sitegen-lib/templates --status="$STATUS_FILE" --deps="$DEPS_FILE" metadata thys $@
 
 mkdir -p release
 echo "Packing tars ..."
