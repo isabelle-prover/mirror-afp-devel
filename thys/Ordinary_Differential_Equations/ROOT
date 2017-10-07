@@ -36,22 +36,22 @@ session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
     "Refinement/Refine_Folds"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
-  options [timeout = 3600, document = false]
+  options [timeout = 7200, document = false]
   sessions
     "HOL-Types_To_Sets"
   theories
     ODE_Numerics
 
 session "Lorenz_Approximation" (AFP) = "HOL-ODE-Numerics" +
-  options [timeout = 1000, document = false]
+  options [timeout = 1200, document = false]
   theories "Ex/Lorenz/Lorenz_Approximation"
 
 session "HOL-ODE-Examples" (AFP slow) = "HOL-ODE-Numerics" +
-  options [timeout = 8000, document = false]
+  options [timeout = 10800, document = false]
   theories ODE_Examples
 
 session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
-  options [timeout = 8000, document = false]
+  options [timeout = 14400, document = false]
   theories
     "Ex/Lorenz/Lorenz_C0"
 
