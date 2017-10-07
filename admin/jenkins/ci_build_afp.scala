@@ -209,7 +209,7 @@ object profile extends isabelle.CI_Profile
       println("Running sitegen ...")
 
       val script = afp + Path.explode("admin/sitegen-devel")
-      val sitegen_result = List(script.file.toString, status_file.toString).!
+      val sitegen_result = List(script.file.toString, status_file.toString, deps_file.toString).!
       if (sitegen_result > 0)
         println("sitegen failed")
 
