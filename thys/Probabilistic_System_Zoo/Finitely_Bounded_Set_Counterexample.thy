@@ -3,7 +3,7 @@ section \<open>Sets Bounded by a Finite Cardinal $>2$ Are Not BNFs\<close>
 (*<*)
 theory Finitely_Bounded_Set_Counterexample
 imports
-  "HOL-Cardinals.Cardinals"
+  "~~/src/HOL/Cardinals/Cardinals"
 begin
 (*>*)
 

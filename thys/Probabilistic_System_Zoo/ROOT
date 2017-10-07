@@ -4,7 +4,6 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
-    "HOL-Cardinals"
   theories [document = false]
     Nonempty_Bounded_Set
   theories
@@ -15,12 +14,12 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
 
 session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
-  sessions
-    "HOL-Cardinals"
-    "HOL-Probability"
-  theories  (* FIXME proper document content (!?) *)
-    "HOL-Probability.Probability_Mass_Function"
-    "HOL-Cardinals.Bounded_Set"
+  theories [document = false]
+    "~~/src/HOL/Probability/Giry_Monad"
+    "~~/src/HOL/Cardinals/Cardinals"
+  theories
+    "~~/src/HOL/Probability/Probability_Mass_Function"
+    "~~/src/HOL/Cardinals/Bounded_Set"
     Nonempty_Bounded_Set
     Bool_Bounded_Set
   document_files (in "document/BNFs")
@@ -30,7 +29,6 @@ session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
-    "HOL-Cardinals"
   theories [document = false]
     Nonempty_Bounded_Set
     Probabilistic_Hierarchy

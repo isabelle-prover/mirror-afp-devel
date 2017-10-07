@@ -2,7 +2,7 @@ section \<open>Nonempty Sets Strictly Bounded by an Infinite Cardinal\<close>
 
 theory Nonempty_Bounded_Set
 imports
-  "HOL-Cardinals.Bounded_Set"
+  "~~/src/HOL/Cardinals/Bounded_Set"
 begin
 
 typedef ('a, 'k) nebset ("_ set![_]" [22, 21] 21) =

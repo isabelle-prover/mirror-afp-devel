@@ -3,7 +3,7 @@ section \<open>Sets with at Most 2 Elements\<close>
 (*<*)
 theory Bool_Bounded_Set
 imports
-  "HOL-Cardinals.Cardinals"
+  "~~/src/HOL/Cardinals/Cardinals"
 begin
 (*>*)
 
