@@ -370,7 +370,7 @@ lemma in_Res_not_congruent:
 
 subsubsection{*Concrete instances in Euclidean rings*}
 
-definition "ass_function_euclidean (p::'a::{euclidean_ring}) = normalize p"
+definition "ass_function_euclidean (p::'a::{normalization_euclidean_semiring, euclidean_ring}) = normalize p"
 definition "res_function_euclidean b (n::'a::{euclidean_ring}) = (if b = 0 then n else (n mod b))"
 
 lemma ass_function_euclidean: "ass_function ass_function_euclidean"
@@ -384,12 +384,6 @@ lemma res_function_euclidean:
 subsubsection{*Concrete case of the integer ring*}
 
 definition "ass_function_int (n::int) = abs n"
-
-lemma abs_mod_less:
-  assumes b: "b \<noteq> 0"
-  shows "\<bar>xa mod b\<bar> < \<bar>b::int\<bar>"
-  by (metis b abs_of_nonneg abs_of_nonpos neg_less_iff_less
-    neg_mod_conj not_less not_less_iff_gr_or_eq pos_mod_conj)
 
 lemma ass_function_int: "ass_function_int = ass_function_euclidean"
   by (unfold ass_function_int_def ass_function_euclidean_def) simp
@@ -1905,7 +1899,7 @@ lemma Hermite:
 subsection{*Proving the uniqueness of the Hermite Normal Form*}
 
 lemma diagonal_least_nonzero:
-  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, normalization_euclidean_semiring, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "(LEAST n. H $ i $ n \<noteq> 0) = i"
@@ -1920,7 +1914,7 @@ proof (rule Least_equality)
 qed
 
 lemma diagonal_in_associates:
-  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, normalization_euclidean_semiring, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "H $ i $ i \<in> associates"
@@ -1933,7 +1927,7 @@ proof -
 qed
 
 lemma above_diagonal_in_residues:
-  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, normalization_euclidean_semiring, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   and j_i: "j<i"
@@ -1950,7 +1944,7 @@ text{*The uniqueness of the Hermite Normal Form is proven following the proof pr
   Integral Matrices (1972) by Morris Newman.*}
 
 lemma Hermite_unique:
-  fixes K::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'n::mod_type^'n::mod_type"
+  fixes K::"'a::{bezout_ring_div,normalization_euclidean_semiring,unique_euclidean_ring}^'n::mod_type^'n::mod_type"
   assumes A_PH: "A = P ** H" 
   and A_QK: "A = Q ** K"
   and inv_A: "invertible A"

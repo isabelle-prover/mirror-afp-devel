@@ -167,12 +167,14 @@ lemma [transfer_rule]:
   "(op = ===> pcr_mod_ring) (\<lambda> x. x mod int (CARD('a :: nontriv))) (of_int :: int \<Rightarrow> 'a mod_ring)"
   by (intro rel_funI, unfold pcr_mod_ring_to_int_mod_ring of_int_of_int_mod_ring, transfer, auto)
 
-lemma one_mod_card[simp]: "1 mod CARD('a::nontriv) = 1" 
-  using Divides.mod_less prime_def nontriv by blast
+lemma one_mod_card [simp]: "1 mod CARD('a::nontriv) = 1"
+  using mod_less nontriv by blast 
 
-lemma one_mod_card_int[simp]: "1 mod int CARD('a::nontriv) = 1" 
-  using one_mod_card 
-  by (metis Divides.transfer_int_nat_functions(2) of_nat_1)
+lemma Suc_0_mod_card [simp]: "Suc 0 mod CARD('a::nontriv) = 1"
+  using one_mod_card by simp
+
+lemma one_mod_card_int [simp]: "1 mod int CARD('a::nontriv) = 1"
+  using of_nat_mod [of 1 "CARD('a)", where ?'a = int] by simp
 
 lemma pow_mod_ring_transfer[transfer_rule]:
   "(pcr_mod_ring ===> op = ===> pcr_mod_ring) 
@@ -268,21 +270,24 @@ proof
         using Suc_nat_eq_nat_zadd1[OF p2] card_rw by auto
       finally show ?thesis .
     qed
+    have "[int (nat x ^ (CARD('a) - 1)) = int 1] (mod CARD('a))"
+      using fermat_theorem [OF prime_card \<open>\<not> CARD('a) dvd nat x\<close>]
+      by (simp only: cong_int_def cong_nat_def of_nat_mod [symmetric])
+    then have *: "[x ^ (CARD('a) - 1) = 1] (mod CARD('a))"
+      using x by auto
     have "x ^ (CARD('a) - 2) mod CARD('a) * x mod CARD('a) 
       = (x ^ nat (CARD('a) - 2) * x) mod CARD('a)" by (simp add: mod_simps)
     also have "... =  (x ^ nat (?p - 1) mod ?p)" unfolding rw by simp
     also have "... = (x ^ (nat ?p - 1) mod ?p)" using p0' by (simp add: nat_diff_distrib')
     also have "... = 1"
-      using x fermat_theorem [OF prime_card \<open>\<not> CARD('a) dvd nat x\<close>]
-      by (auto simp add: cong_nat_def)
-        (metis Divides.transfer_int_nat_functions(2) One_nat_def int_nat_eq of_nat_1 of_nat_power one_mod_card)
+      using * by (simp add: cong_int_def)
     finally show "(if x = 0 then 0 else x ^ nat (int (CARD('a) - 2)) mod CARD('a)) * x mod CARD('a) = 1"
       using x0 by auto
   qed
 qed
 end
 
-instantiation mod_ring :: (prime_card) euclidean_ring
+instantiation mod_ring :: (prime_card) "{normalization_euclidean_semiring, euclidean_ring}"
 begin
 
 definition modulo_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> 'a mod_ring" where "modulo_mod_ring x y = (if y = 0 then x else 0)"

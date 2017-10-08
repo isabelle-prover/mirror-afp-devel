@@ -3204,18 +3204,19 @@ lemma int_sdiv_negated_is_minus1 [simp]:
     apply (clarsimp simp: sign_simps not_less sgn_mult)
     apply (metis less_le neg_less_0_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
    apply (clarsimp simp: sign_simps not_less sgn_mult)
-   apply (metis Divides.transfer_nat_int_function_closures(1) eq_iff minus_zero neg_le_iff_le)
-  apply (clarsimp simp: sgn_if)
+   apply (auto simp add: sgn_if)
+  apply (metis div_minus_right eq_iff neg_imp_zdiv_nonneg_iff neg_le_0_iff_le not_less)
   done
 
 lemma sdiv_int_range:
     "(a :: int) sdiv b \<in> { - (abs a) .. (abs a) }"
+  apply (cases "b = 0")
+  apply simp_all
   apply (unfold sdiv_int_def)
   apply (subgoal_tac "(abs a) div (abs b) \<le> (abs a)")
-   apply (clarsimp simp: sgn_if)
-   apply (metis Divides.transfer_nat_int_function_closures(1) abs_ge_zero
-              abs_less_iff abs_of_nonneg less_asym less_minus_iff not_less)
-  apply (metis abs_eq_0 abs_ge_zero div_by_0 zdiv_le_dividend zero_less_abs_iff)
+  using pos_imp_zdiv_nonneg_iff [of "\<bar>b\<bar>" "\<bar>a\<bar>"]
+  using zdiv_le_dividend [of "\<bar>a\<bar>" "\<bar>b\<bar>"]
+   apply (auto simp: sgn_if)
   done
 
 lemma word_sdiv_div1 [simp]:

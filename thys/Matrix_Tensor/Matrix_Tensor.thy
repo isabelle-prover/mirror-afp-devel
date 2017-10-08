@@ -942,8 +942,8 @@ lemma mod_eq:
  "(m::int) mod n = (m + (-1)*n) mod n"
  using mod_mult_self1 by metis
 
-lemma nat_mod_eq: "(int (m::nat)) mod (int n) = int ( m mod n)"
- using Divides.transfer_int_nat_functions(2) by auto 
+lemma nat_mod_eq: "int m mod int n = int (m mod n)"
+  by (simp add: of_nat_mod)
 
 lemma nat_mod: 
  assumes  "(m::nat) > n"

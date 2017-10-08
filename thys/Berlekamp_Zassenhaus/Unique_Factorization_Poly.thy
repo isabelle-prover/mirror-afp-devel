@@ -18,7 +18,7 @@ begin
 hide_const (open) module.smult
 hide_const (open) Divisibility.irreducible
 
-instantiation fract :: (idom) euclidean_ring
+instantiation fract :: (idom) "{normalization_euclidean_semiring, euclidean_ring}"
 begin
 
 definition [simp]: "normalize_fract \<equiv> (normalize_field :: 'a fract \<Rightarrow> _)"
@@ -34,13 +34,13 @@ instantiation fract :: (idom) euclidean_ring_gcd
 begin
 
 definition gcd_fract :: "'a fract \<Rightarrow> 'a fract \<Rightarrow> 'a fract" where
-  "gcd_fract \<equiv> euclidean_semiring_class.gcd"
+  "gcd_fract \<equiv> Euclidean_Algorithm.gcd"
 definition lcm_fract :: "'a fract \<Rightarrow> 'a fract \<Rightarrow> 'a fract" where
-  "lcm_fract \<equiv> euclidean_semiring_class.lcm"
+  "lcm_fract \<equiv> Euclidean_Algorithm.lcm"
 definition Gcd_fract :: "'a fract set \<Rightarrow> 'a fract" where
- "Gcd_fract \<equiv> euclidean_semiring_class.Gcd"
+ "Gcd_fract \<equiv> Euclidean_Algorithm.Gcd"
 definition Lcm_fract :: "'a fract set \<Rightarrow> 'a fract" where
- "Lcm_fract \<equiv> euclidean_semiring_class.Lcm"
+ "Lcm_fract \<equiv> Euclidean_Algorithm.Lcm"
 
 instance
   by (standard, simp_all add: gcd_fract_def lcm_fract_def Gcd_fract_def Lcm_fract_def)

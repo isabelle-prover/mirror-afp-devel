@@ -533,9 +533,9 @@ proof -
   from this[unfolded Mp_prod_mset] have monic: "monic (Mp (prod_mset fs))" by simp
   from * have "lead_coeff (Mp f) = lead_coeff (Mp (smult c (prod_mset fs)))" by simp
   also have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
-  finally show ?thesis using monic
-    by (metis M_M Mp_0 Mp_coeff degree_m_eq lead_coeff_smult m1 
-      mult_cancel_left2 poly_mod.M_def smult_eq_0_iff) (*takes time...*)
+  finally show ?thesis 
+    using monic \<open>smult c (prod_mset fs) =m smult (M c) (Mp (prod_mset fs))\<close>
+    by (metis M_M M_def Mp_0 Mp_coeff lead_coeff_smult m1 mult_cancel_left2 poly_mod.degree_m_eq smult_eq_0_iff)
 qed
 
 lemma factorization_m_smult: assumes "factorization_m f (c,fs)" 

@@ -72,7 +72,7 @@ lemma cong_iff_lin_poly: "([(a::'b::field poly) = b] (mod m)) = (\<exists>k. b =
   by (metis add_diff_cancel_left' diff_diff_eq2)
 
 
-lemma cong_solve_poly: "(a::'b::{factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> EX x. [a * x = gcd a n] (mod n)"
+lemma cong_solve_poly: "(a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> EX x. [a * x = gcd a n] (mod n)"
 proof (cases "n = 0")
   case True
   note n0=True
@@ -98,7 +98,7 @@ qed
 
 
 lemma cong_solve_coprime_poly: 
-assumes coprime_an:"coprime (a::'b::{factorial_ring_gcd,field} poly) n"
+assumes coprime_an:"coprime (a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) n"
 shows "EX x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
   case True
@@ -119,7 +119,7 @@ lemma cong_dvd_modulus_poly:
 
 lemma chinese_remainder_aux_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
   assumes fin: "finite A"
     and cop: "ALL i : A. (ALL j : A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
   shows "EX b. (ALL i : A. [b i = 1] (mod m i) \<and> [b i = 0] (mod (\<Prod>j \<in> A - {i}. m j)))"
@@ -144,7 +144,7 @@ qed
 (*The Chinese Remainder Theorem for polynomials: *)
 lemma chinese_remainder_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
     and u :: "'a \<Rightarrow> 'b poly"
   assumes fin: "finite A"
     and cop: "ALL i:A. (ALL j : A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
@@ -229,7 +229,7 @@ lemma cong_less_modulus_unique_poly:
 
 lemma chinese_remainder_unique_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
     and u :: "'a \<Rightarrow> 'b poly"
   assumes nz: "\<forall>i\<in>A. (m i) \<noteq> 0"
     and cop: "\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"

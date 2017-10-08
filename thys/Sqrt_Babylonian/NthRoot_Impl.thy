@@ -263,9 +263,12 @@ proof (induct x n rule: root_newton_int_main.induct)
     case False
     hence id: "(x ^ p \<le> n) = False" by simp
     from 1(3) 1(2) have not: "\<not> (x < 0 \<or> n < 0)" by auto
-    show ?thesis unfolding d id pm_x
-      by (rule 1(1)[OF not False _ 1(3)], unfold p, insert 1(2,3),
-      metis Divides.transfer_nat_int_function_closures(1) add_nonneg_nonneg of_nat_0_le_iff split_mult_pos_le zero_le_power)
+    then have x: "x > 0 \<or> x = 0"
+      by auto
+    with \<open>0 \<le> n\<close> have "0 \<le> (n div x ^ pm + x * int pm) div int p"
+      by (auto simp add: p algebra_simps pos_imp_zdiv_nonneg_iff power_0_left)
+    then show ?thesis unfolding d id pm_x
+      by (rule 1(1)[OF not False _ 1(3)])
   qed
 qed
 
@@ -290,10 +293,12 @@ lemma root_newton_int_main_upper:
 proof (induct y n rule: root_newton_int_main.induct)
   case (1 y n)
   from 1(3) have y0: "y \<ge> 0" .
+  then have "y > 0 \<or> y = 0"
+    by auto
   from 1(4) have n0: "n \<ge> 0" .
   def y' \<equiv> "(n div (y ^ pm) + y * int pm) div (int p)"
-  from y0 n0 have y'0: "y' \<ge> 0" unfolding y'_def
-    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases of_nat_0_le_iff of_nat_mult of_nat_power)
+  from \<open>y > 0 \<or> y = 0\<close> \<open>n \<ge> 0\<close> have y'0: "y' \<ge> 0"
+    by (auto simp add: y'_def p algebra_simps pos_imp_zdiv_nonneg_iff power_0_left)
   let ?rt = "root_newton_int_main"
   from 1(5) have rt: "?rt y n = (x,b)" by auto
   from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" "(y < 0 \<or> n < 0) = False" by auto
@@ -883,7 +888,8 @@ proof (cases "p = 0")
       by (cases "root_int p a", auto)
     from rb have "rb \<in> set (root_int p b)" by auto
     with ra p have rb: "b = rb ^ p" and ra: "a = ra ^ p" by auto
-    have "q \<in> {y. y ^ p = x}" unfolding q x ra rb by (auto simp: power_divide of_int_power)
+    have "q \<in> {y. y ^ p = x}" unfolding q x ra rb
+      by (auto simp: power_divide)
   }
   moreover
   {

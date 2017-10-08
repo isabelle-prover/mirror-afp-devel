@@ -447,14 +447,15 @@ next
       by (auto simp add: zdvd_int zdvd_not_zless)
     with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       by (rule fermat_theorem)
-    with a have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
-      by (auto simp add: cong_nat_def)
-        (metis Divides.transfer_int_nat_functions(2) One_nat_def int_nat_eq of_nat_1 of_nat_power one_mod_card)
-       
-    hence "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a" by auto
-    thus  "a ^ CARD('a) mod int CARD('a) = a"
-      by (metis a atLeastLessThan_iff mod_mult_right_eq mod_pos_pos_trivial
-          neq0_conv realpow_num_eq_if zero_less_card_finite)
+    with a have "int (nat a ^ (CARD('a) - 1) mod CARD('a)) = 1"
+      by (simp add: of_nat_mod cong_nat_def cong_int_def)
+    then have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
+      using a by (simp add: of_nat_mod)
+    then have "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a"
+      by simp
+    with a show  "a ^ CARD('a) mod int CARD('a) = a"
+      by (metis atLeastLessThan_iff mod_mult_right_eq mod_pos_pos_trivial neq0_conv
+        realpow_num_eq_if zero_less_card_finite)
   qed
 qed
 
@@ -725,7 +726,7 @@ qed auto
 
 
 lemma coprime_polynomial_factorization:
-  fixes a1 :: "'b :: {field,factorial_ring_gcd} poly"
+  fixes a1 :: "'b :: {normalization_euclidean_semiring,field,factorial_ring_gcd} poly"
   assumes  irr: "as \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
   and "finite as" and a1: "a1 \<in> as" and a2: "a2 \<in> as" and a1_not_a2: "a1 \<noteq> a2"
   shows "coprime a1 a2"

@@ -17,6 +17,7 @@ session Pre_BZ (AFP) = "Subresultants" +
     "HOL-Number_Theory.Residues"
     "HOL-Types_To_Sets.Types_To_Sets"
     Native_Word.Uint32
+    Native_Word.Uint64
     Native_Word.Code_Target_Bits_Int
     Polynomial_Factorization.Rational_Factorization 
 
