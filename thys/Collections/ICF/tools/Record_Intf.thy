@@ -100,14 +100,16 @@ structure Record_Intf: RECORD_INTF = struct
     in unf_thms end;
 
   in
-    fun icf_rec_def def_thm context = let
-      val unf_thms = unf_thms_of def_thm context;
-  
-      val context = add_unf_thms unf_thms context
-        |> Context.mapping (Code.del_eqn_global def_thm) I;
-    in
-      context
-    end;
+    fun icf_rec_def def_thm context =
+      let
+        val unf_thms = unf_thms_of def_thm context;
+        val eqn_heads = the_list (try (fst o dest_Const o fst o strip_comb o fst o Logic.dest_equals
+          o Thm.plain_prop_of o Local_Defs.meta_rewrite_rule (Context.proof_of context)) def_thm)
+      in
+        context
+        |> add_unf_thms unf_thms 
+        |> not (null eqn_heads) ? Context.mapping (fold Code.declare_aborting_global eqn_heads) I
+      end;
   
   end
 
