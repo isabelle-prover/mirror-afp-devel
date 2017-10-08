@@ -441,7 +441,7 @@ begin
 lemma dot_lmul_matrix: "inner_rows (x v* A) y = inner_cols x ((\<chi> i j. cnj (A $ i $ j)) *v y)"
  apply (simp add: COLS.inner_vec_def ROWS.inner_vec_def matrix_vector_mult_def 
        vector_matrix_mult_def sum_distrib_right cnj_sum ac_simps)
- proof (unfold sum_distrib_left, subst sum.commute, rule sum.cong, simp)
+ proof (unfold sum_distrib_left, subst sum.swap, rule sum.cong, simp)
   fix xa::'cols
   show "(\<Sum>i\<in>UNIV. cnj (y $ i) * (x $ xa * A $ xa $ i)) 
     = (\<Sum>n\<in>UNIV. x $ xa * cnj (y $ n * cnj (A $ xa $ n)))"

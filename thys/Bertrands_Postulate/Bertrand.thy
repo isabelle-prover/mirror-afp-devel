@@ -780,7 +780,7 @@ proof -
     by (rule sum.cong) (insert *, simp_all)
   also have "\<dots> = (\<Sum>da=1..n. \<Sum>d=1..n. if primepow da \<and>
                      da dvd d then ln (aprimedivisor da) else 0)"
-    by (rule sum.commute)
+    by (rule sum.swap)
   also have "\<dots> = sum (\<lambda>d. mangoldt d * floor (n/d)) {1..n}"
   proof (rule sum.cong)
     fix d assume d: "d \<in> {1..n}"
@@ -1570,7 +1570,7 @@ proof -
   also from ** have "\<dots> = (\<Sum>d = 1..n. \<Sum>e\<in>{y\<in>{1..n}. y \<le> n div d}. (-1)^(d+1) * mangoldt e)"
     by (intro sum.cong) auto
   also have "\<dots> = (\<Sum>y = 1..n. \<Sum>x | x \<in> {1..n} \<and> y \<le> n div x. (- 1) ^ (x + 1) * mangoldt y)"
-    by (rule sum.commute_restrict) simp_all
+    by (rule sum.swap_restrict) simp_all
   also have "\<dots> = (\<Sum>y = 1..n. \<Sum>x | x \<in> {1..n} \<and> x \<le> n div y. (- 1) ^ (x + 1) * mangoldt y)"
     by (intro sum.cong) (auto intro: div_invert)
   also from ** have "\<dots> = (\<Sum>y = 1..n. \<Sum>x \<in> {1..n div y}. (- 1) ^ (x + 1) * mangoldt y)"

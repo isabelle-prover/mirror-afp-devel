@@ -1043,7 +1043,7 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{0..<nc}. (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
     unfolding sum_distrib_right ..
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
-    by (rule sum.commute)
+    by (rule sum.swap)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * (col A i $ k * v\<^sub>2 $ i)))"
     by (simp add: ac_simps)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * (\<Sum>i\<in>{0..<nc}. col A i $ k * v\<^sub>2 $ i))"

@@ -321,7 +321,7 @@ proof -
               by(rule assms(4)) 
    also have E2: "\<dots> = (\<Sum>x\<in>set init.
           (\<Sum>i<length qs. ALG' A qs init i x))"
-          by(rule sum.commute) (* die summen tauschen *)
+          by(rule sum.swap) (* die summen tauschen *)
    also have E3: "\<dots> = (\<Sum>x\<in>set init.
           (\<Sum>y\<in>set init.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG' A qs init i x)))"
@@ -1854,7 +1854,7 @@ proof -
   also have "\<dots>
        = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) (fst z) (snd z) (steps' init qs Strat i)) )" 
-          by(rule sum.commute)
+          by(rule sum.swap)
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
           by(auto simp: split_def)
@@ -1874,7 +1874,7 @@ proof -
                 (\<Sum>e\<in>set init. ALG e qs i (?config i, ())))
         = (\<Sum>e\<in>set init. 
             (\<Sum>i\<in>{..<length qs}. ALG e qs i (?config i, ())))" 
-            by(rule sum.commute)
+            by(rule sum.swap)
   also have "\<dots> = (\<Sum>e\<in>set init.
           (\<Sum>y\<in>set init.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG e qs i (?config i,()))))"

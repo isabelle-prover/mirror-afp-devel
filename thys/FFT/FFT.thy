@@ -407,7 +407,7 @@ theorem DFT_inverse:
   using [[linarith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
   apply (simp add: sum_divide_distrib)
-  apply (subst sum.commute)
+  apply (subst sum.swap)
   apply (simp only: times_divide_eq_left [THEN sym])
   apply (simp only: power_divides_special [OF root_nonzero])
   apply (simp add: power_diff_rev_if root_nonzero)

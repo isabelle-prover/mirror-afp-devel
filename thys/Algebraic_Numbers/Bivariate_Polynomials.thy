@@ -186,7 +186,7 @@ lemma poly_y_x_swapped:
   fixes p :: "'a :: comm_monoid_add poly poly"
   defines "d \<equiv> Max { degree (coeff p i) | i. i \<le> degree p }" 
   shows "poly_y_x p = (\<Sum>j\<le>d. \<Sum>i\<le>degree p. monom (monom (coeff (coeff p i) j) i) j)"
-  using poly_y_x_fixed_deg[of p, folded d_def] sum.commute by auto
+  using poly_y_x_fixed_deg[of p, folded d_def] sum.swap by auto
 
 lemma poly2_poly_y_x[simp]: "poly2 (poly_y_x p) x y = poly2 p y x"
   using [[unfold_abs_def = false]]

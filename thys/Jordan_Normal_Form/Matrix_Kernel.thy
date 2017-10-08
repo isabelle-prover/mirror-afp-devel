@@ -579,7 +579,7 @@ proof -
         unfolding mult_mat_vec_def dimB scalar_prod_def index_vec[OF i]
         by (rule sum.cong, insert gen'nc, auto simp: sum_distrib_left ac_simps)
       also have "\<dots> = (\<Sum>j = 0 ..< nc. (\<Sum>v \<in> gen'. a v * row B i $ j * v $ j))"
-        by (rule sum.commute)
+        by (rule sum.swap)
       also have "\<dots> = (\<Sum>j = 0..<nc. row B i $ j * (\<Sum>v\<in>gen'. a v * v $ j))"
         by (rule sum.cong, auto simp: sum_distrib_left ac_simps)
       also have "\<dots> = (B *\<^sub>v AB.Ker.lincomb a gen') $ i"

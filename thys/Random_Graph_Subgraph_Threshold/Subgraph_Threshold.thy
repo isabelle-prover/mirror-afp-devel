@@ -497,7 +497,7 @@ next
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>k = 1..?v. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
       by (rule sum.cong, rule refl, rule sum.UNION_disjoint) auto
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
-      by (rule sum.commute)
+      by (rule sum.swap)
 
     --{* In this step, we compute an upper bound for the intersection probability and argue that
          it only depends on the cardinality of the intersection. *}

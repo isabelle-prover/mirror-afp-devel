@@ -300,7 +300,7 @@ lemma prod_sum_distrib:
   using \<open>finite I\<close>
 proof induction
   case (insert i I) then show ?case
-    by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.commute[of _ "Pi\<^sub>E I J"]
+    by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.swap[of _ "Pi\<^sub>E I J"]
                    sum_cartesian_product' sum_distrib_left sum_distrib_right
              intro!: sum.cong prod.cong arg_cong[where f="op * x" for x])
 qed simp

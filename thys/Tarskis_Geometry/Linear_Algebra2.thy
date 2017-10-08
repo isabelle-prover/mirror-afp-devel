@@ -135,7 +135,7 @@ proof -
     by simp
   also from sum_distrib_left [where ?A = S and ?'b = real]
   have "\<dots> = (\<Sum> i\<in>UNIV. \<Sum> j\<in>S. v$i * (w j)$i)" by simp
-  also from sum.commute [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
+  also from sum.swap [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
   have "\<dots> = (\<Sum> j\<in>S. \<Sum> i\<in>UNIV. v$i * (w j)$i)" by simp
   finally show "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> j\<in>S. v \<bullet> (w j))"
     unfolding inner_vec_def

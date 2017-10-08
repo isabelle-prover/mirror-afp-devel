@@ -294,7 +294,7 @@ proof
     also have "... = (\<Squnion>\<^sub>l \<Squnion>\<^sub>k f (i,k) * (g (k,l) * h (l,j)))"
       by (simp add: mult.assoc)
     also have "... = (\<Squnion>\<^sub>k \<Squnion>\<^sub>l f (i,k) * (g (k,l) * h (l,j)))"
-      using sup_monoid.sum.commute by auto
+      using sup_monoid.sum.swap by auto
     also have "... = (\<Squnion>\<^sub>k f (i,k) * (\<Squnion>\<^sub>l g (k,l) * h (l,j)))"
       by (metis (no_types) comp_left_dist_sum)
     also have "... = (\<Squnion>\<^sub>k f (i,k) * (g \<odot> h) (k,j))"

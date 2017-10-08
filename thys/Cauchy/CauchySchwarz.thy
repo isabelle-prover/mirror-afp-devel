@@ -23,7 +23,7 @@ lemma double_sum_equiv:
   shows
   "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
    (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-  by (rule sum.commute)
+  by (rule sum.swap)
 
 (*>*)
 

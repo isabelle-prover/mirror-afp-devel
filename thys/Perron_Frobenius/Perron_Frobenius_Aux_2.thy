@@ -348,7 +348,7 @@ proof -
   also have "\<dots> = sum (\<lambda> p. (\<Sum>a = 0..<n. f p a)) ?P" 
     by (rule sum.cong[OF refl], subst to_f, auto)
   also have "\<dots> = (\<Sum>a = 0..<n. sum (\<lambda> p. f p a) ?P)" 
-    by (rule sum.commute) 
+    by (rule sum.swap) 
   also have "\<dots> = (\<Sum>a <n. char_poly (mat_delete A a a))" 
     by (rule sum.cong, auto simp: to_char_poly)
   finally show ?thesis .

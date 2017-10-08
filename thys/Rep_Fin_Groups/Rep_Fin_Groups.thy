@@ -720,7 +720,7 @@ proof
                   = (\<Sum>z\<in>supp h. (\<Sum>y\<in>supp f. f y * g (-y + x - z) * h z) )"
       using sum.cong
       by    simp
-    thus ?thesis using sum.commute by simp
+    thus ?thesis using sum.swap by simp
   qed
   moreover have "convolution f gh x
                       = (\<Sum>y\<in>supp f. (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z) )"

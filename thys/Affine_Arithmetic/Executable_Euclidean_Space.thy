@@ -512,7 +512,7 @@ lemma euclidean_vec_componentwise:
   "(\<Sum>(xa::'a::euclidean_space^'b::finite)\<in>Basis. f xa) = (\<Sum>a\<in>Basis. (\<Sum>b::'b\<in>UNIV. f (axis b a)))"
   apply vector
   apply (auto simp: Basis_vec_def)
-  apply (subst sum.commute)
+  apply (subst sum.swap)
   apply (subst sum.Union_disjoint)
     apply auto
       apply (simp add: axis_eq_axis nonzero_Basis)
@@ -927,7 +927,7 @@ lemma blinfun_apply_eq_sum:
       simp: blinfun.bilinear_simps eucl_of_list_inner inner_sum_left inner_Basis if_distrib
         sum_Basis_sum_nth_Basis_list nth_eq_iff_index cond_application_beta
         cong: if_cong)
-  apply (subst sum.commute)
+  apply (subst sum.swap)
   by (auto simp: sum.delta algebra_simps)
 
 lemma in_square_lemma[intro, simp]: "x * C + y < D * C" if "x < D" "y < C" for x::nat

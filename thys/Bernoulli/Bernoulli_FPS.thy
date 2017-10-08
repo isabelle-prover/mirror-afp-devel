@@ -532,7 +532,7 @@ proof (rule fps_ext)
     by (rule sum.cong[OF refl], rule sum.mono_neutral_left) auto
   also have "\<dots> = (\<Sum>k\<le>n. \<Sum>m\<le>n. (- 1) ^ k * fact k * 
                       real (Stirling m k) * real (n choose m) * f k)"
-    by (rule sum.commute)
+    by (rule sum.swap)
   also have "\<dots> = gen_akiyama_tanigawa f n 0"
     by (simp add: gen_akiyama_tanigawa_n_0 sum_Stirling_binomial sum_distrib_left sum_distrib_right
           mult.assoc atLeast0AtMost del: Stirling.simps)

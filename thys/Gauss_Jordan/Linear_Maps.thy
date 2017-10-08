@@ -748,7 +748,7 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
   also have "... =  (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. s i *s (matrix' X Y f $ x $ i *s Y $ x))" unfolding vec.scale_sum_right ..
   also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x) *s Y $ x)" unfolding matrix'_def unfolding coord_def by auto
   also have "... = (\<Sum>x\<in>UNIV. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x) *s Y $ x))"
-    by (rule sum.commute)
+    by (rule sum.swap)
   also have "... =  (\<Sum>x\<in>UNIV. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x)) *s Y $ x)" unfolding vec.scale_sum_left ..
   also have "... =  (\<Sum>x\<in>UNIV. t x *s Y $ x)" unfolding t_def ..
   finally have "(\<Sum>x\<in>UNIV. g x *s Y $ x) = (\<Sum>x\<in>UNIV. t x *s Y $ x)" .  
@@ -875,7 +875,7 @@ proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, 
     show " g x *s X $ x = g x *s (\<Sum>i\<in>UNIV. (THE f. X $ x = (\<Sum>a\<in>UNIV. f a *s Y $ a)) i *s Y $ i)" unfolding the_h h ..
   qed rule
   also have "... = (\<Sum>x\<in>UNIV. (sum  (\<lambda>i. g x *s ((t x i) *s Y $ i)) UNIV))" unfolding vec.scale_sum_right ..
-  also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. g x *s (t x i *s Y $ i))" by (rule sum.commute)
+  also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. g x *s (t x i *s Y $ i))" by (rule sum.swap)
   also have "... =  (\<Sum>i\<in>UNIV. (\<Sum>x\<in>UNIV. g x * t x i) *s Y $ i)" unfolding vec.scale_sum_left by auto
   finally have "(\<Sum>x\<in>UNIV. f x *s Y $ x) = (\<Sum>i\<in>UNIV. (\<Sum>x\<in>UNIV. g x * t x i) *s Y $ i) " .  
   hence "f=w" using basis_combination_unique[OF basis_Y] unfolding w_def by auto  

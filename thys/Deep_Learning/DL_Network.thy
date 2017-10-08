@@ -490,7 +490,7 @@ next
 
   have "(\<Sum>is | is \<lhd> input_sizes (Conv A m). (\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Conv A m) $ j) is)
     = (\<Sum>i = 0..<dim_vec (tensors_from_net m). (\<Sum>is | is \<lhd> input_sizes (Conv A m).  row A j $ i *  ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)))"
-    using Groups_Big.comm_monoid_add_class.sum.commute 0 by auto
+    using Groups_Big.comm_monoid_add_class.sum.swap 0 by auto
   also have "... = (\<Sum>i = 0..<dim_vec (tensors_from_net m). row A j $ i * (\<Sum>is | is \<lhd> input_sizes (Conv A m). ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)))"
     by (simp add: sum_distrib_left)
   also have "... = (\<Sum>i = 0..<dim_vec (tensors_from_net m). row A j $ i * evaluate_net m inputs $ i)" using 1 by auto

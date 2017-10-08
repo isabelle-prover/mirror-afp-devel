@@ -1335,7 +1335,7 @@ proof -
     also have "... = (\<Sum>j<degree u. \<Sum>i = 0..<dim_vec H. monom (?B $$ (i,j) * H $ i) j)"
       by (auto simp add: monom_sum)
     also have "... = (\<Sum>i = 0..<dim_vec H. \<Sum>j<degree u. monom (?B $$ (i,j) * H $ i) j)"
-      by (rule sum.commute)
+      by (rule sum.swap)
     also have "... = (\<Sum>i = 0..<dim_vec H. \<Sum>j<degree u.  monom (H $ i) 0 * monom (?B $$ (i,j)) j)"
     proof (rule sum.cong, rule, rule sum.cong, rule)
        fix x xa
@@ -1462,7 +1462,7 @@ next
   also have "... = (\<Sum>i<degree u. (\<Sum>j<degree u. monom (coeff h i * ?B $$ (i, j)) j))"
     by (simp add: mult_monom)
   also have "... = (\<Sum>j<degree u. (\<Sum>i<degree u. monom (coeff h i * ?B $$ (i, j)) j))"
-    using sum.commute by auto
+    using sum.swap by auto
   also have "... = (\<Sum>j<degree u. monom (\<Sum>i<degree u.  (coeff h i * ?B $$ (i, j))) j)"
     by (simp add: monom_sum)
   finally have ss_rw: "(\<Sum>i<degree u. monom (coeff h i) i)

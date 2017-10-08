@@ -97,7 +97,7 @@ proof (rule poly_eqI)
     unfolding eval_poly_as_sum[of "\<lambda>a. [: h a :]", OF h'0]
     unfolding coeff_sum
     unfolding x_as_monom x_pow_n coeff_mult
-    unfolding sum.commute[of _ _ "{..degree p}"]
+    unfolding sum.swap[of _ _ "{..degree p}"]
     unfolding coeff_monom using 2 by auto
 qed
 

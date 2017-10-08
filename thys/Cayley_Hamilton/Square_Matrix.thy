@@ -197,7 +197,7 @@ instance
 proof
   fix a b c :: "'a^^'b" show "a * b * c = a * (b * c)"
     by transfer
-       (auto simp: fun_eq_iff sum_distrib_left sum_distrib_right field_simps intro: sum.commute)
+       (auto simp: fun_eq_iff sum_distrib_left sum_distrib_right field_simps intro: sum.swap)
 qed (transfer, simp add: vec_eq_iff sum.distrib field_simps)+
 end
 
@@ -326,7 +326,7 @@ lemma trace_transpose[simp]: "trace (transpose A) = trace A"
 lemma trace_mult_symm:
   fixes A B :: "'a::comm_semiring_0^^'n"
   shows "trace (A * B) = trace (B * A)"
-  by transfer (auto intro: sum.commute simp: mult.commute)
+  by transfer (auto intro: sum.swap simp: mult.commute)
 
 lift_definition det :: "'a::comm_ring_1^^'n \<Rightarrow> 'a" is
   "\<lambda>A. (\<Sum>p|p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i)))" .

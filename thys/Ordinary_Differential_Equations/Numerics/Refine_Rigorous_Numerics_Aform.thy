@@ -324,7 +324,7 @@ lemma pdevs_val_sum_pdevs:
     apply (subst pdevs_val_sum_le)
      apply (rule degree_sum_pdevs_le)
     apply (auto simp: scaleR_sum_right)
-    apply (subst sum.commute)
+    apply (subst sum.swap)
     apply (rule sum.cong[OF refl])
     apply (subst pdevs_val_sum_le[where d="Max (degree ` f ` X)"])
      apply (auto simp: Max_ge_iff)

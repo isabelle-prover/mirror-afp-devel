@@ -627,7 +627,7 @@ proof
         apply (rule fin2)
         apply (subst Sum_any_right_distrib)
         apply (rule fin1)
-        apply (subst Sum_any.commute [of ?AB])
+        apply (subst Sum_any.swap [of ?AB])
         apply (fact \<open>finite ?AB\<close>)
         apply (auto simp add: mult_when ac_simps)
         done

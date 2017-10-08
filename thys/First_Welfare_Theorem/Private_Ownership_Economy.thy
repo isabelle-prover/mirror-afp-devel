@@ -303,7 +303,7 @@ lemma commutativity_sums_over_funs:
   fixes X :: "'x set"
   fixes Y :: "'y set"
   shows "(\<Sum>i\<in>X. \<Sum>j\<in>Y. (f i j *\<^sub>R C \<bullet> g j)) = (\<Sum>j\<in>Y.\<Sum>i\<in>X. (f i j *\<^sub>R C \<bullet> g j))"
-  using Groups_Big.comm_monoid_add_class.sum.commute by auto
+  using Groups_Big.comm_monoid_add_class.sum.swap by auto
 
 lemma assoc_fun_over_sum:
   fixes X :: "'x set"

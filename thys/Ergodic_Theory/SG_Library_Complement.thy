@@ -95,7 +95,7 @@ proof -
     by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f' = "\<lambda>r. r-i*N"], auto)
 
   have "(\<Sum>r<N. (\<Sum>i<a. f (i*N+r))) = (\<Sum>i<a. (\<Sum>r<N. f (i*N+r)))"
-    using sum.commute by auto
+    using sum.swap by auto
   also have "... = (\<Sum>i<a. (\<Sum> j \<in> {i*N..<i*N + N}. f j))"
     using * by auto
   also have "... = (\<Sum>j<a*N. f j)"

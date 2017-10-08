@@ -474,7 +474,7 @@ proof -
     also have "\<dots> = (\<Sum>x\<in>space P. (\<Sum>c \<in> C k. if c \<in> XG x then prob {x} else 0))"
       using fin_C by (simp add: sum.If_cases) (simp add: XG_Int_C)
     also have "\<dots> = (\<Sum>c \<in> C k. (\<Sum> x \<in> space P \<inter> XC c. prob {x}))"
-      using finite_edges by (subst sum.commute) (simp add: sum.inter_restrict XG_def XC_def space_eq)
+      using finite_edges by (subst sum.swap) (simp add: sum.inter_restrict XG_def XC_def space_eq)
     also have "\<dots> = (\<Sum>c \<in> C k. prob (XC c))"
       using fin_XC XC_in_sets
       by (auto simp add: prob_eq sets_eq space_eq intro!: sum.cong)
