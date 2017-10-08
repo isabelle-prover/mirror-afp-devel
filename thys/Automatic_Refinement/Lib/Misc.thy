@@ -3127,19 +3127,8 @@ subsubsection {* Induction on nat *}
     by auto
     
     
-subsection {* Mod *}
-
-lemma mod_le:
-  "(a::'a::unique_euclidean_semiring_numeral) \<le> b \<Longrightarrow> 0 < a \<Longrightarrow> x mod (a + 1) \<le> b"
-  by (metis add_pos_nonneg discrete not_less order.strict_trans2
-    unique_euclidean_semiring_numeral_class.pos_mod_bound zero_le_one)
-
-lemma mod_ge:
-  "(b::'a::unique_euclidean_semiring_numeral) \<le> 0 \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> x mod (a+1)"
-  by (metis dual_order.trans less_add_one order.strict_trans
-    unique_euclidean_semiring_numeral_class.pos_mod_sign)
-
 subsection {* Integer *}
+
 text {* Some setup from @{text "int"} transferred to @{text "integer"} *}
 
 lemma atLeastLessThanPlusOne_atLeastAtMost_integer: "{l..<u+1} = {l..(u::integer)}"
