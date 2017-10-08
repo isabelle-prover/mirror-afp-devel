@@ -4,9 +4,8 @@
 
 section "Sturm-Tarski Theorem"
 
-theory Sturm_Tarski imports
-   Complex_Main 
-   PolyMisc
+theory Sturm_Tarski
+  imports Complex_Main PolyMisc "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 section{*Misc*}

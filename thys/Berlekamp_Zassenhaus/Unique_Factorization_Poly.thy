@@ -12,6 +12,7 @@ imports
   Unique_Factorization
   Polynomial_Factorization.Missing_Polynomial_Factorial 
   Subresultants.More_Homomorphisms 
+  "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 hide_const (open) module.smult

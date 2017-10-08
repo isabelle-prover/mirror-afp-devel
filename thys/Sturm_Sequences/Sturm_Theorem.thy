@@ -1,7 +1,8 @@
 section {* Proof of Sturm's Theorem *}
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Theorem
-imports "HOL-Computational_Algebra.Polynomial" "Lib/Sturm_Library"
+  imports "HOL-Computational_Algebra.Polynomial"
+    "Lib/Sturm_Library" "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 subsection {* Sign changes of polynomial sequences *}

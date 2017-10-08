@@ -11,6 +11,7 @@ imports
   Code_Cayley_Hamilton
   Gauss_Jordan.Examples_Gauss_Jordan_Abstract
   Echelon_Form_Inverse
+  "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 text{*The definitions introduced in this file will be also used in 

@@ -11,6 +11,7 @@ text \<open>This theory contains an algorithm to compute GCDs of rational polyno
 theory Gcd_Rat_Poly
 imports 
   Gauss_Lemma
+  "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 definition gcd_rat_poly :: "rat poly \<Rightarrow> rat poly \<Rightarrow> rat poly" where

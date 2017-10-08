@@ -5979,8 +5979,16 @@ next
     case True with Suc(4) show ?thesis
       using p_decomp n_inj_polymap_times by fast
   next
-    case False with q Suc(1-3) show ?thesis
-      using p_decomp degree_synthetic_div[of p c] by force
+    case False
+    then have "n = degree q"
+      using degree_synthetic_div [of p c] q \<open>Suc n = degree p\<close>
+      by auto
+    moreover have "q \<noteq> 0"
+      using \<open>p \<noteq> 0\<close> p_decomp
+      by auto
+    ultimately show ?thesis
+      using False
+      by (rule Suc.hyps)
   qed
 qed
 

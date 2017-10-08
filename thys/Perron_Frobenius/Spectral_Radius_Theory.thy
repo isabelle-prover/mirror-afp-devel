@@ -6,6 +6,7 @@ imports
   Jordan_Normal_Form.Spectral_Radius
   Jordan_Normal_Form.Char_Poly
   Perron_Frobenius
+  "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 abbreviation spectral_radius where "spectral_radius \<equiv> Spectral_Radius.spectral_radius"

@@ -23,10 +23,6 @@ subsection {* Polynomials *}
 
 subsubsection {* General simplification lemmas *}
 
-lemma degree_power_eq:
-  "(p::('a::idom) poly) \<noteq> 0 \<Longrightarrow> degree (p^n) = n * degree p"
-  by (induction n, simp_all add: degree_mult_eq)
-
 lemma pderiv_div:
   assumes [simp]: "q dvd p" "q \<noteq> 0"
   shows "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)"
