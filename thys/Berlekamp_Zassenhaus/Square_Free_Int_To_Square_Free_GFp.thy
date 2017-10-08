@@ -103,13 +103,13 @@ next
 qed
 
 lemma large_mod_0: assumes "(n :: int) > 1" "\<bar>k\<bar> < n" "k mod n = 0" shows "k = 0" 
-proof (cases "k \<ge> 0")
-  case False
-  with assms have "k mod n = k + n" 
-    using mod_add_self1 mod_pos_pos_trivial
-    by (metis abs_0_eq abs_ge_zero abs_mult abs_of_pos less_trans mod_mult_self1_is_0 zero_less_one_class.zero_less_one zmod_eq_0D)
-  with assms show ?thesis by auto
-qed (insert assms, auto)
+proof -
+  from \<open>k mod n = 0\<close> have "n dvd k"
+    by auto
+  then obtain m where "k = n * m" ..
+  with \<open>n > 1\<close> \<open>\<bar>k\<bar> < n\<close> show ?thesis
+    by (auto simp add: abs_mult)
+qed
 
 definition square_free_bound :: "int poly \<Rightarrow> int" where
   "square_free_bound f = max (abs (resultant f (pderiv f))) 

@@ -19,7 +19,7 @@ begin
 subsection \<open> Other auxiliary lemmas\<close>
 
 lemma mult_eq_imp_eq_div:
-  assumes "a * b = c" "(a :: 'a :: semiring_div) \<noteq> 0"
+  assumes "a * b = c" "(a :: 'a :: semidom_divide) \<noteq> 0"
   shows   "b = c div a"
   by (simp add: assms(2) assms(1) [symmetric])
 

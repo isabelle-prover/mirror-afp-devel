@@ -381,7 +381,7 @@ lemma map_poly_gcd[hom_distribs]: "map_poly hom (gcd p q) = gcd (map_poly hom p)
 
 end
 
-definition div_poly :: "'a :: semiring_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
+definition div_poly :: "'a :: euclidean_semiring \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "div_poly a p = map_poly (\<lambda> c. c div a) p"
 
 lemma smult_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"

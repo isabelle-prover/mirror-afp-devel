@@ -907,9 +907,10 @@ qed
 
 lemma det_multrow_div:
   assumes k: "k < n" and A: "A \<in> carrier_mat n n" and a0: "a \<noteq> 0"
-  shows "det (multrow k a A :: 'a :: ring_div mat) div a = det A"
+  shows "det (multrow k a A :: 'a :: idom_divide mat) div a = det A"
 proof -
-  have "det (multrow k a A) div a = a * det A div a" using k A by (simp add: det_multrow)
+  have "det (multrow k a A) div a = a * det A div a" using k A
+    by (simp add: det_multrow)
   also have "... = det A" using a0 by auto
   finally show ?thesis.
 qed

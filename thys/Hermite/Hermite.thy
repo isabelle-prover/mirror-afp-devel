@@ -82,7 +82,7 @@ qed
 subsubsection{*Upper triangular matrices*}
 
 lemma is_unit_diagonal: 
-  fixes U::"'a::{comm_ring_1, semiring_div}^'n::{finite, wellorder}^'n::{finite, wellorder}"
+  fixes U::"'a::{comm_ring_1, algebraic_semidom}^'n::{finite, wellorder}^'n::{finite, wellorder}"
   assumes U: "upper_triangular U"
   and det_U: "is_unit (det U)"
   shows "\<forall>i. is_unit (U $ i $ i)"
@@ -182,36 +182,36 @@ lemma from_nat_1: "from_nat 1 = 1"
 subsubsection{*Div and Mod*}
 
 lemma dvd_minus_eq_mod:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   assumes "c \<noteq> 0" and "c dvd a - b" shows "a mod c = b mod c" 
   using assms dvd_div_mult_self[of c]
   by (metis add.commute diff_add_cancel mod_mult_self1)
 
 lemma eq_mod_dvd_minus:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   assumes "c \<noteq> 0" and "a mod c = b mod c" 
   shows "c dvd a - b"
   using assms by (simp add: mod_eq_dvd_iff)
 
 lemma dvd_cong_not_eq_mod:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   assumes "xa mod c \<noteq> xb" and "c dvd xa mod c - xb" and "c \<noteq> 0"
   shows "xb mod c \<noteq> xb"
   using assms
   by (metis (no_types, lifting) diff_add_cancel dvdE mod_mod_trivial  mod_mult_self4)
 
 lemma diff_mod_cong_0:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   assumes "xa mod c \<noteq> xb mod c" and" c dvd xa mod c - xb mod c" shows "c = 0"
   using assms dvd_cong_not_eq_mod mod_mod_trivial by blast
 
 lemma cong_diff_mod:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   assumes "xa \<noteq> xb" and "c dvd xa - xb" and "xa = xa mod c" shows "xb \<noteq> xb mod c"
   by (metis assms diff_eq_diff_eq diff_numeral_special(12) dvd_0_left dvd_minus_eq_mod)
 
 lemma exists_k_mod:
-  fixes c::"'a::ring_div"
+  fixes c::"'a::unique_euclidean_ring"
   shows "\<exists>k. a mod c = a + k * c"
   by (metis add.commute diff_add_cancel diff_minus_eq_add
       mult_div_mod_eq mult.commute mult_minus_left)
@@ -266,7 +266,7 @@ qed (auto simp: normalize_Units normalize_mult)
 
 end
 
-context ring_div
+context unique_euclidean_ring
 begin
 
 definition "associated_rel = {(a,b). normalize a = normalize b}"
@@ -377,7 +377,7 @@ lemma ass_function_euclidean: "ass_function ass_function_euclidean"
   unfolding ass_function_def image_def ass_function_euclidean_def pairwise_def by auto
 
 lemma res_function_euclidean: 
-  "res_function (res_function_euclidean :: 'a :: {euclidean_ring, ring_div} \<Rightarrow> _)"
+  "res_function (res_function_euclidean :: 'a :: unique_euclidean_ring \<Rightarrow> _)"
   by (auto simp add: pairwise_def res_function_def cong_eq image_def res_function_euclidean_def dvd_minus_eq_mod)
     (auto simp add: dvd_cong_not_eq_mod eq_mod_dvd_minus diff_mod_cong_0 cong_diff_mod exists_k_mod)
 
@@ -553,7 +553,7 @@ The algorithm is parameterised by three functions:
 
 *}
 
-primrec Hermite_reduce_above :: "'a::ring_div^'cols::mod_type^'rows::mod_type\<Rightarrow>nat
+primrec Hermite_reduce_above :: "'a::unique_euclidean_ring^'cols::mod_type^'rows::mod_type\<Rightarrow>nat
     \<Rightarrow>'rows\<Rightarrow>'cols\<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow> 'a^'cols::mod_type^'rows::mod_type"
 where "Hermite_reduce_above A 0 i j res  = A"
     | "Hermite_reduce_above A (Suc n) i j res  = (let i'=((from_nat n)::'rows); 
@@ -1060,7 +1060,7 @@ lemma echelon_form_Hermite_of_upt_row_i:
   using echelon_form_fold_Hermite_of_row_i assms by auto
 
 lemma echelon_form_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1511,7 +1511,7 @@ qed
 
 
 lemma Hermite_of_upt_row_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i A"
   and e: "echelon_form A" and a: "ass_function ass" and r: "res_function res" and k: "k \<le> nrows A"
   shows "is_zero_row i (Hermite_of_upt_row_i A k ass res)"
@@ -1572,7 +1572,7 @@ next
 qed
 
 lemma Hermite_of_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i (echelon_form_of A bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1583,7 +1583,7 @@ lemma Hermite_of_preserves_zero_rows:
 (auto simp add: nrows_def)
 
 lemma Hermite_of_Least:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "\<not> is_zero_row i (Hermite_of A ass res bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1599,7 +1599,7 @@ proof -
 qed
 
 lemma in_associates_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1733,7 +1733,7 @@ qed
 
 
 lemma in_residues_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1873,7 +1873,7 @@ next
 qed
 
 lemma invertible_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass" 
   and b: "is_bezout_ext bezout"
   shows "\<exists>P. invertible P \<and> Hermite_of A ass res bezout = P ** A"
@@ -1905,7 +1905,7 @@ lemma Hermite:
 subsection{*Proving the uniqueness of the Hermite Normal Form*}
 
 lemma diagonal_least_nonzero:
-  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "(LEAST n. H $ i $ n \<noteq> 0) = i"
@@ -1920,7 +1920,7 @@ proof (rule Least_equality)
 qed
 
 lemma diagonal_in_associates:
-  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "H $ i $ i \<in> associates"
@@ -1933,7 +1933,7 @@ proof -
 qed
 
 lemma above_diagonal_in_residues:
-  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
+  fixes H :: "(('a :: {bezout_ring_div, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   and j_i: "j<i"
@@ -1950,7 +1950,7 @@ text{*The uniqueness of the Hermite Normal Form is proven following the proof pr
   Integral Matrices (1972) by Morris Newman.*}
 
 lemma Hermite_unique:
-  fixes K::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'n::mod_type^'n::mod_type"
+  fixes K::"'a::{bezout_ring_div,normalization_semidom,unique_euclidean_ring}^'n::mod_type^'n::mod_type"
   assumes A_PH: "A = P ** H" 
   and A_QK: "A = Q ** K"
   and inv_A: "invertible A"

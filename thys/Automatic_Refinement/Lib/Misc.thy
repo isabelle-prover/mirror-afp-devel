@@ -1009,7 +1009,7 @@ lemma mset_size_le1_cases[case_names empty singleton,consumes 1]: "\<lbrakk> siz
   by (cases M) auto
 
 lemma diff_union_single_conv2: "a \<in># J \<Longrightarrow> J + I - {#a#} = (J - {#a#}) + I"
-  by (simp add: subset_mset.add_diff_assoc2)
+  by simp
 
 lemmas diff_union_single_convs = diff_union_single_conv diff_union_single_conv2
 
@@ -3130,14 +3130,14 @@ subsubsection {* Induction on nat *}
 subsection {* Mod *}
 
 lemma mod_le:
-  "(a::'a::semiring_numeral_div) \<le> b \<Longrightarrow> 0 < a \<Longrightarrow> x mod (a + 1) \<le> b"
+  "(a::'a::unique_euclidean_semiring_numeral) \<le> b \<Longrightarrow> 0 < a \<Longrightarrow> x mod (a + 1) \<le> b"
   by (metis add_pos_nonneg discrete not_less order.strict_trans2
-    semiring_numeral_div_class.pos_mod_bound zero_le_one)
+    unique_euclidean_semiring_numeral_class.pos_mod_bound zero_le_one)
 
 lemma mod_ge:
-  "(b::'a::semiring_numeral_div) \<le> 0 \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> x mod (a+1)"
+  "(b::'a::unique_euclidean_semiring_numeral) \<le> 0 \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> x mod (a+1)"
   by (metis dual_order.trans less_add_one order.strict_trans
-    semiring_numeral_div_class.pos_mod_sign)
+    unique_euclidean_semiring_numeral_class.pos_mod_sign)
 
 subsection {* Integer *}
 text {* Some setup from @{text "int"} transferred to @{text "integer"} *}

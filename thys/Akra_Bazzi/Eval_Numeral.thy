@@ -108,7 +108,7 @@ lemma rat_powr:
   "x > 0 \<Longrightarrow> x powr Ratreal (Frct (0, Numeral1)) = Ratreal (Frct (Numeral1, Numeral1))"
   "x > 0 \<Longrightarrow> x powr Ratreal (Frct (numeral a, Numeral1)) = x ^ numeral a"
   "x > 0 \<Longrightarrow> x powr Ratreal (Frct (-numeral a, Numeral1)) = inverse (x ^ numeral a)"
-  by (simp_all add: rat_number_collapse powr_numeral powr_minus)
+  by (simp_all add: rat_number_collapse powr_minus)
 
 lemmas eval_numeral_simps =
   real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps

@@ -65,7 +65,8 @@ proof -
     unfolding prq
     by (rule degree_mult_eq, insert p prq, auto)
   with deg have deg: "degree q < degree p" by auto
-  from prq have "q = p div r" using deg by auto
+  from prq have "q = p div r"
+    using deg p by auto
   with deg show ?thesis by auto
 qed
 

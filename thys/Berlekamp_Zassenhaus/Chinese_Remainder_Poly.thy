@@ -35,18 +35,20 @@ end
 *)
 
 lemma cong_add_poly:
-    "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
-  unfolding cong_poly_def by (metis mod_add_cong)
+  "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
+  by (simp add: cong_poly_def poly_mod_add_left)
+
 
 lemma cong_mult_poly:
-    "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a * c = b * d] (mod m)"
+  "[(a::'b::{field, factorial_ring_gcd} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a * c = b * d] (mod m)"
   unfolding cong_poly_def  by (metis mod_mult_cong) 
+
 
 lemma cong_mult_self_poly: "[(a::'b::field poly) * m = 0] (mod m)"
   unfolding cong_poly_def by auto
 
 
-lemma cong_scalar2_poly: "[(a::'b::field poly)= b] (mod m) \<Longrightarrow> [k * a = k * b] (mod m)"
+lemma cong_scalar2_poly: "[(a::'b::{field, factorial_ring_gcd} poly)= b] (mod m) \<Longrightarrow> [k * a = k * b] (mod m)"
   by (rule cong_mult_poly, simp add: cong_poly_def)
 
 
@@ -111,11 +113,9 @@ next
 qed
   
 
-lemma cong_dvd_modulus_poly: "[(x::'b::field poly) = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow>
-    [x = y] (mod n)"
-by (auto simp add: cong_iff_lin_nat dvd_def cong_poly_def)
-   (metis (no_types, lifting) mod_mod_trivial poly_mod_mult_right mod_mult_self4)
-
+lemma cong_dvd_modulus_poly:
+  "[x = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow> [x = y] (mod n)" for x y :: "'b::field poly"
+  by (auto simp add: cong_iff_lin_poly elim!: dvdE)
 
 lemma chinese_remainder_aux_poly:
   fixes A :: "'a set"
@@ -197,7 +197,8 @@ lemma cong_trans_poly [trans]:
   unfolding cong_poly_def by auto
 
 lemma cong_mod_poly: "(n::'b::field poly) ~= 0 \<Longrightarrow> [a mod n = a] (mod n)"
-  by (simp add: cong_poly_def)
+  by (simp add: cong_poly_def) (use degree_mod_less mod_poly_less in force)
+
 
 lemma cong_sym_poly: "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [b = a] (mod m)"
   unfolding cong_poly_def by auto

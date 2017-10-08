@@ -627,7 +627,7 @@ proof -
 qed
 
 lemma mod_tree_lemma2:
-  fixes x y :: "'a :: semiring_div tree"
+  fixes x y :: "'a :: euclidean_semiring_cancel tree"
   shows "(x + y) mod y = x mod y"
 by applicative_lifting simp
 

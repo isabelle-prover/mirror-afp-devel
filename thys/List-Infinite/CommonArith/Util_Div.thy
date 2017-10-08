@@ -1187,22 +1187,12 @@ thm
 
 
 thm
-  Divides.mod_add_self1
-  Divides.mod_add_self2
-  Divides.mod_mult_self1
-  Divides.mod_mult_self2
-
   mod_diff_self1
   mod_diff_self2
   mod_diff_mult_self1
   mod_diff_mult_self2
 
 thm
-  Divides.div_add_self1
-  Divides.div_add_self2
-  Divides.div_mult_self1
-  Divides.div_mult_self2
-
   div_diff_self1
   div_diff_self2
   div_diff_mult_self1

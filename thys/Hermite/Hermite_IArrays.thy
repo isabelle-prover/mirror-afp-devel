@@ -14,7 +14,7 @@ begin
 
 subsection{*Definition of the algorithm over immutable arrays*}
 
-primrec Hermite_reduce_above_iarrays :: "'a::ring_div iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow> 'a iarray iarray"
+primrec Hermite_reduce_above_iarrays :: "'a::unique_euclidean_ring iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow> 'a iarray iarray"
 where "Hermite_reduce_above_iarrays A 0 i j res  = A"
     | "Hermite_reduce_above_iarrays A (Suc n) i j res  = (let i'=n; 
     Aij = A !! i !! j;
@@ -39,7 +39,7 @@ definition "Hermite_of_iarrays A ass res bezout =
 subsection{*Proving the equivalence between definitions of both representations*}
 
 lemma matrix_to_iarray_Hermite_reduce_above:
-  fixes A::"'a::{ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes "n<nrows A"
   shows "matrix_to_iarray (Hermite_reduce_above A n i j res) 
   = Hermite_reduce_above_iarrays (matrix_to_iarray A) n (to_nat i) (to_nat j) res"
@@ -64,7 +64,7 @@ next
 qed
 
 lemma matrix_to_iarray_Hermite_of_row_i[code_unfold]:
-  fixes A::"'a::{ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   shows "matrix_to_iarray (Hermite_of_row_i ass res A i) 
   = Hermite_of_row_i_iarray ass res (matrix_to_iarray A) (to_nat i)"
 proof -
@@ -102,7 +102,7 @@ qed
 
 
 lemma matrix_to_iarray_Hermite_of_upt_row_i:
-  fixes A::"'a::{ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "i\<le>nrows A"
   shows "matrix_to_iarray (Hermite_of_upt_row_i A i ass res) 
   = Hermite_of_upt_row_i_iarrays (matrix_to_iarray A) i ass res"

@@ -194,7 +194,7 @@ lemma sum_mset_dvd:
   using assms by (induct M) auto
 
 lemma sum_mset_distrib_div_if_dvd:
-  fixes k :: "'a::semiring_div"
+  fixes k :: "'a::unique_euclidean_semiring"
   assumes "\<forall>m \<in># M. k dvd f m"
   shows "(\<Sum>m \<in># M. f m) div k = (\<Sum>m \<in># M. f m div k)"
   using assms by (induct M) (auto simp: div_plus_div_distrib_dvd_left)

@@ -211,20 +211,6 @@ lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n
   by (induct n, auto simp: set_upt_Suc)
 
 
-text \<open>For determinant computation, we require the @{class ring_div}-class.
-In order to also support rational and real numbers, we therefore provide the
-following class which defines @{const modulo} for fields and will be a subclass
-of @{class ring_div}.\<close>
-
-class ring_div_field = field + modulo +
-  assumes mod: "(x :: 'a) mod y = (if y = 0 then x else 0)"
-begin
-
-subclass ring_div
-  by (unfold_locales, auto simp: mod field_simps)
-
-end
-
 (* GCD and LCM part *)
 
 lemma dvd_abs_mult_left_int[simp]: "(abs (a :: int) * y dvd x) = (a * y dvd x)"

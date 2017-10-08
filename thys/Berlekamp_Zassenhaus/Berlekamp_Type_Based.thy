@@ -16,6 +16,7 @@ imports
   Finite_Field
   Chinese_Remainder_Poly
   Poly_Mod_Finite_Field
+  "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
 hide_const (open) up_ring.coeff up_ring.monom
@@ -389,9 +390,10 @@ definition power_poly_f_mod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarro
   "power_poly_f_mod modulus = (\<lambda>a n. a ^ n mod modulus)"
 
 lemma power_poly_f_mod_binary: "power_poly_f_mod m a n = (if n = 0 then 1 mod m
-    else let (d,r) = Divides.divmod_nat n 2;
+    else let (d, r) = Divides.divmod_nat n 2;
        rec = power_poly_f_mod m ((a * a) mod m) d in
     if r = 0 then rec else (rec * a) mod m)"
+  for m a :: "'a :: {factorial_ring_gcd, field} poly"
 proof -
   note d = power_poly_f_mod_def
   show ?thesis
@@ -408,7 +410,8 @@ proof -
     proof (cases "r = 0")
       case True
       show ?thesis
-        by (unfold d div Let_def, simp add: n True id power_mod)
+        using power_mod [of "a * a" m q]
+        by (auto simp add: divmod_nat_div_mod Let_def True n d div id)
     next
       case False
       with r have r: "r = 1" by simp
@@ -877,7 +880,7 @@ definition berlekamp_monic_factorization :: "nat \<Rightarrow> 'a mod_ring poly 
 subsection \<open>Properties\<close>
 
 lemma power_polys_works:
-fixes u::"'b::semiring_div"
+fixes u::"'b::unique_euclidean_semiring"
 assumes i: "i < n" and c: "curr_p = curr_p mod u" (*Equivalent to degree curr_p < degree u*)
 shows "power_polys mult_p u curr_p n ! i = curr_p * mult_p ^ i mod u"
 using i c
@@ -900,7 +903,7 @@ next
       have "power_polys mult_p u curr_p (Suc n) ! i = power_polys mult_p u (curr_p * mult_p mod u) n ! (i - 1)"
         unfolding p_rw using nth_Cons_pos False by auto
       also have "... = (curr_p * mult_p mod u) * mult_p ^ (i-1) mod u"
-        by (rule Suc.hyps, auto simp add: i_less_n less_imp_diff_less)
+        by (rule Suc.hyps) (auto simp add: i_less_n less_imp_diff_less)
       also have "... = curr_p * mult_p ^ i mod u"
         using False by (cases i) (simp_all add: algebra_simps mod_simps)
       finally show ?thesis .

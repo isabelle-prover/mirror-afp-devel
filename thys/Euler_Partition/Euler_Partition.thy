@@ -24,7 +24,7 @@ subsubsection {* Additions to Groups-Big Theory *}
 
 lemma sum_div:
   assumes "finite A"
-  assumes "\<And>a. a \<in> A \<Longrightarrow> (b::'b::semiring_div) dvd f a"
+  assumes "\<And>a. a \<in> A \<Longrightarrow> (b::'b::euclidean_semiring) dvd f a"
   shows "(\<Sum>a\<in>A. f a) div b = (\<Sum>a\<in>A. (f a) div b)"
 using assms
 proof (induct)
@@ -33,7 +33,7 @@ qed (auto)
 
 lemma sum_mod:
   assumes "finite A"
-  assumes "\<And>a. a \<in> A \<Longrightarrow> f a mod b = (0::'b::{semiring_div})"
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a mod b = (0::'b::unique_euclidean_semiring)"
   shows "(\<Sum>a\<in>A. f a) mod b = 0"
 using assms by induct (auto simp add: mod_add_eq [symmetric])
 

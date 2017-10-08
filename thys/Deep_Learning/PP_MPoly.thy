@@ -415,7 +415,7 @@ by transfer(simp add: map_eq_zero_iff)
 lemma mult_smult_left: "smult s p * q = smult s (p * q)"
 by(simp add: smult_conv_mult mult.assoc)
 
-lift_definition sdiv :: "'a::ring_div \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly"
+lift_definition sdiv :: "'a::euclidean_ring \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly"
   is "\<lambda>a. PP_Poly_Mapping.map (\<lambda>b. b div a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _"
 .
 text \<open>
@@ -433,22 +433,22 @@ text \<open>
 \<close>
 
 definition pseudo_divmod_rel
-  :: "'a::ring_div => 'a mpoly => 'a mpoly => 'a mpoly => 'a mpoly => bool"
+  :: "'a::euclidean_ring => 'a mpoly => 'a mpoly => 'a mpoly => 'a mpoly => bool"
 where
   "pseudo_divmod_rel a x y q r \<longleftrightarrow>
     smult a x = q * y + r \<and> (if y = 0 then q = 0 else r = 0 \<or> degree r < degree y)"
 (* the notion of degree resigns a main variable in multivariate polynomials;
    also, there are infinitely many tuples (a,q,r) such that a x = q y + r *)
 
-definition pdiv :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl "pdiv" 70)
+definition pdiv :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl "pdiv" 70)
 where
   "x pdiv y = (THE (a, q). \<exists>r. pseudo_divmod_rel a x y q r)"
 
-definition pmod :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "pmod" 70)
+definition pmod :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "pmod" 70)
 where
   "x pmod y = (THE r. \<exists>a q. pseudo_divmod_rel a x y q r)"
 
-definition pdivmod :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly) \<times> 'a mpoly"
+definition pdivmod :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly) \<times> 'a mpoly"
 where
   "pdivmod p q = (p pdiv q, p pmod q)"
 
@@ -463,15 +463,15 @@ lemma pmod_code:
   by (simp add: pdivmod_def)
 
 (*TODO ERROR: Ambiguous input produces n parse trees ???...*)
-definition div :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "div" 70)
+definition div :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "div" 70)
 where
   "x div y = (THE q'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (q' = smult (inverse a) q))"
 
-definition mod :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "mod" 70)
+definition mod :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "mod" 70)
 where
   "x mod y = (THE r'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (r' = smult (inverse a) r))"
 
-definition divmod :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly \<times> 'a mpoly"
+definition divmod :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly \<times> 'a mpoly"
 where
   "divmod p q = (p div q, p mod q)"
 
@@ -496,11 +496,11 @@ text \<open>[1]p.82
   A polynomial is factored into "content" and "primitive part"
   for many different purposes.\<close>
 
-definition primitive :: "'a::{ring_div,semiring_Gcd} mpoly \<Rightarrow> bool"
+definition primitive :: "'a::{euclidean_ring,semiring_Gcd} mpoly \<Rightarrow> bool"
 where
   "primitive p \<longleftrightarrow> Gcd (coeffs p) = 1"
 
-definition content_primitive :: "'a::{ring_div,GCD.Gcd} mpoly \<Rightarrow> 'a \<times> 'a mpoly"
+definition content_primitive :: "'a::{euclidean_ring,GCD.Gcd} mpoly \<Rightarrow> 'a \<times> 'a mpoly"
 where
   "content_primitive p = (
     let d = Gcd (coeffs p)
