@@ -1166,11 +1166,14 @@ lemma lm146:
   shows "card A=Discrete.log (card (Pow A))" 
   using assms log_exp card_Pow by (metis card_infinite finite_Pow_iff)
 
+lemma log_2 [simp]:
+  "Discrete.log 2 = 1"
+  using log_exp [of 1] by simp
+
 lemma lm147: 
   assumes "card (Pow A) = 2" 
   shows "card A = 1" 
-  using assms lm146 
-  by (metis log_exp power_one_right zero_not_eq_two)
+  using assms lm146 [of A] by simp
 
 lemma lm148: 
   assumes "card (Pow X) = 1 \<or> card (Pow X) = 2" 

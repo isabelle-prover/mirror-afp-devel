@@ -256,8 +256,8 @@ proof (induct e n arbitrary: p rule: encode.induct)
         using X_sub by (simp add: subset_mset.add_increasing)
       have mam_eq: "?Ma + ?M = ?Na + ?N - X + (Y + ?Pa)"
       proof -
-        have "?Ma = ?Na + ?Pa"
-          by (metis (no_types) add_diff_inverse_nat mod_ge replicate_mset_plus)
+        from mod_ge have "?Ma = ?Na + ?Pa"
+          by (simp add: replicate_mset_plus [symmetric])
         moreover have "?Na + ?N - X = ?Na + (?N - X)"
           by (meson X_sub multiset_diff_union_assoc)
         ultimately show ?thesis

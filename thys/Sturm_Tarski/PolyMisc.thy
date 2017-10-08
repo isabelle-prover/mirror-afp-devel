@@ -144,10 +144,14 @@ lemma gcd_coprime_poly:
   shows "coprime p' q'" 
 using gcd_coprime nz p' q' by auto
 
-lemma poly_mod:"poly q x=0 \<Longrightarrow> poly (p mod q) x = poly p x" 
-  apply (subst (2) div_mult_mod_eq[symmetric,of p q])
-  by auto  
-    
+lemma poly_mod:
+  "poly (p mod q) x = poly p x" if "poly q x = 0"
+proof -
+  from that have "poly (p mod q) x = poly (p div q * q) x + poly (p mod q) x"
+    by simp
+  also have "\<dots> = poly p x"
+    by (simp only: poly_add [symmetric]) simp
+  finally show ?thesis .
+qed
+
 end
-
-

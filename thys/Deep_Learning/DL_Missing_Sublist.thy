@@ -51,7 +51,7 @@ shows "length (nths xs (Collect even)) = length (nths xs (Collect odd))"
 using assms proof (induction "length xs div 2" arbitrary:xs)
   case 0
   then have "length xs = 0"
-    using div_eq_0_iff length_0_conv length_greater_0_conv nat_dvd_not_less zero_not_eq_two by auto
+    by (auto elim: evenE)
   then show ?case by simp
 next
   case (Suc l xs)

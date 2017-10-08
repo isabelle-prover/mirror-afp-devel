@@ -276,12 +276,17 @@ lemma odd_of_distinct:
   assumes "\<And>i. p i \<noteq> 0 \<Longrightarrow> i \<le> n"
   shows "1 \<le> i \<and> i \<le> n"
 proof
-  from assms(1) show "1 \<le> i" by (metis One_nat_def Suc_leI even_zero gr0I odd)
+  from assms(1) odd have "odd i"
+    by simp
+  then show "1 \<le> i"
+    by (auto elim: oddE)
 next
-  from assms(1) obtain j where "p (2 ^ j * i) \<noteq> 0"
-    unfolding odd_of_distinct_def by (auto split: if_split_asm) fastforce
-  from assms(2)[OF this] show "i \<le> n"
-    by (metis div_le_dividend nonzero_mult_div_cancel_left le_trans power_not_zero zero_not_eq_two)
+  from assms(1) obtain j where "p (2 ^ j * i) > 0"
+    by (auto simp add: odd_of_distinct_def split: if_splits) fastforce
+  with assms(2) have "i \<le> 2 ^ j * i" "2 ^ j * i \<le> n"
+    by simp_all
+  then show "i \<le> n"
+    by (rule order_trans)
 qed
 
 lemma distinct_of_odd:

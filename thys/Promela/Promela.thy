@@ -6,6 +6,18 @@ imports
   PromelaStatistics
 begin
 
+text \<open>Auxiliary\<close>
+
+lemma mod_integer_le:
+  "a \<le> b \<Longrightarrow> 0 < a \<Longrightarrow> x mod (a + 1) \<le> b" for a b x :: integer
+  by (metis add_pos_nonneg discrete not_less order.strict_trans2
+    unique_euclidean_semiring_numeral_class.pos_mod_bound zero_le_one)
+
+lemma mod_integer_ge:
+  "b \<le> 0 \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> x mod (a+1)" for a b x :: integer
+  by (metis dual_order.trans less_add_one order.strict_trans
+    unique_euclidean_semiring_numeral_class.pos_mod_sign)
+
 text {* 
   After having defined the datastructures, we present in this theory how to construct the transition system and how to generate the successors of a state, \ie the real semantics of a Promela program.
   For the first task, we take the enriched AST as input, the second one operates on the transition system.
@@ -89,14 +101,26 @@ lemma [simp]:
   "variable_inv (Var VTChan 0)"
 by simp
 
+context
+  fixes type :: varType
+  assumes "varType_inv type"
+begin
+
+lemma checkVarValue_bounded:
+  "checkVarValue type val \<in> {min_var_value..max_var_value}"
+  using \<open>varType_inv type\<close>
+  by (cases type) (auto intro: mod_integer_le mod_integer_ge)
+
 lemma checkVarValue_bounds:
-  "varType_inv type \<Longrightarrow> checkVarValue type val \<le> max_var_value"
-  "varType_inv type \<Longrightarrow> min_var_value \<le> checkVarValue type val"
-by (cases type, auto intro: mod_le mod_ge)+
+  "min_var_value \<le> checkVarValue type val"
+  "checkVarValue type val \<le> max_var_value"
+  using checkVarValue_bounded [of val] by simp_all
 
 lemma checkVarValue_Var:
-  "varType_inv type \<Longrightarrow> variable_inv (Var type (checkVarValue type val))"
-by (simp add: checkVarValue_bounds)
+  "variable_inv (Var type (checkVarValue type val))"
+  using \<open>varType_inv type\<close> by (simp add: checkVarValue_bounds)
+
+end
 
 fun editVar :: "variable \<Rightarrow> integer option \<Rightarrow> integer \<Rightarrow> variable" where
   "editVar (Var type _ ) None val = Var type (checkVarValue type val)"
@@ -132,7 +156,8 @@ next
     note upd_cases = in_set_upd_cases[where l="IArray.list_of vals" and i="nat_of_integer i"]
 
     from Some VArray assms show ?thesis
-      by (cases type) (auto elim!: upd_cases intro!: mod_ge mod_le simp: min_var_value_def)
+      by (cases type)
+        (auto elim!: upd_cases intro!: mod_integer_le mod_integer_ge simp add: min_var_value_def)
   qed
 qed
 
@@ -492,7 +517,7 @@ apply (cases v)
   apply (auto intro!: checkVarValue_Var 
               simp del: variable_inv.simps checkVarValue.simps varType_inv.simps 
               split: if_splits option.splits)
-      apply (auto intro!: mod_ge mod_le simp add: min_var_value_def)
+      apply (auto intro!: mod_integer_ge mod_integer_le simp add: min_var_value_def)
     apply (simp_all add: assms gState_inv_def 
                max_channels_def max_var_value_def min_var_value_def max_array_size_def)
     including integer.lifting
