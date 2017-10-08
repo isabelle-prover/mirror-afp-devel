@@ -628,10 +628,9 @@ proof -
   proof -
     define N where "N = (n div s) + 1"
     then have "n \<le> N * s"
-      using \<open>s>0\<close> by (metis Suc_eq_plus1 less_imp_le_nat mult.commute split_div_lemma)
-    have "N * s \<le> n + s" unfolding N_def
-      by (metis \<open>0 < s\<close> div_add_self2 mult.commute neq0_conv split_div_lemma)
-
+      using \<open>s > 0\<close> dividend_less_div_times less_or_eq_imp_le by auto
+    have "N * s \<le> n + s"
+      by (auto simp add: N_def)
     have eq_t: "(d/2) * card(V x \<inter> {1..n}) \<le> abs(u(N* s+t) x) + (Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x)
             + (\<Sum>i<N. abs(u s ((T^^(i * s+t))x)))"
       if "t<s" for t
@@ -983,7 +982,7 @@ proof -
     unfolding prev_N_def apply (rule tendsto_at_top_pseudo_inverse2)
     using \<open>strict_mono Nf\<close> by (simp add: filterlim_subseq)
   then have "eventually (\<lambda>l. prev_N l > 1) sequentially"
-    by (simp add: eventually_gt_at_top filterlim_iff)
+    by (simp add: filterlim_iff)
   then have "eventually (\<lambda>l. delta l = eps(prev_N l)) sequentially"
     unfolding delta_def by (simp add: eventually_mono)
   moreover have "(\<lambda>l. eps(prev_N l)) \<longlonglongrightarrow> 0"

@@ -741,8 +741,9 @@ proof -
     show "nths is (Collect even) = nths is {n. odd n} \<Longrightarrow> i = j" unfolding is_def
       using nths_weave[of "digit_encode (nths (Tensor.dims Aw) (Collect even)) i"
       "Collect even" "digit_encode (nths (Tensor.dims Aw) {n. odd n}) j", unfolded eq_lengths, unfolded Collect_neg_eq[symmetric] card_even mult_2[symmetric] card_odd]
-      using Divides.mod_less \<open>nths (Tensor.dims Aw) (Collect even) = nths (Tensor.dims Aw) {n. odd n}\<close>
-        deep no_zeros y_valid assms digit_decode_encode dims_Aw' by metis
+      using \<open>nths (Tensor.dims Aw) (Collect even) = nths (Tensor.dims Aw) {n. odd n}\<close>
+        deep no_zeros y_valid assms digit_decode_encode dims_Aw'
+      by auto (metis digit_decode_encode_lt) 
   qed
 
   have "i=j \<Longrightarrow> set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i) = set is"
@@ -808,7 +809,7 @@ next
       then have "x < prod_list (d # ds)" "\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m" using low_digits_def by auto
       have "x mod d < m" using `\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m`[unfolded digit_encode.simps] by simp
       have "x div d < prod_list ds" using `x < prod_list (d # ds)`[unfolded prod_list.Cons]
-        by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 mult_0_right)
+        by (metis div_eq_0_iff div_mult2_eq mult_0_right not_less0)
       have "\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m" by (simp add: \<open>\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m\<close>)
       have "f ((x mod d),(x div d)) = x" by (simp add: f_def)
       show "x \<in> f ` ({..<m} \<times> {i. low_digits ds i})" by (metis SigmaI \<open>\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m\<close> \<open>f (x mod d, x div d) = x\<close> \<open>x div d < prod_list ds\<close> \<open>x mod d < m\<close> image_eqI lessThan_iff low_digits_def mem_Collect_eq)

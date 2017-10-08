@@ -123,8 +123,7 @@ qed
 lemma nat_le_power_trans:
   fixes n :: nat
   shows "\<lbrakk>n \<le> 2 ^ (m - k); k \<le> m\<rbrakk> \<Longrightarrow> 2 ^ k * n \<le> 2 ^ m"
-  by (metis le_imp_less_or_eq less_imp_le nat_less_power_trans power_sub split_div_lemma
-            zero_less_numeral zero_less_power)
+  by (auto dest: le_Suc_ex [of k] simp add: power_add)
   
 lemma x_power_minus_1:
   fixes x :: "'a :: {ab_group_add, power, numeral, one}"

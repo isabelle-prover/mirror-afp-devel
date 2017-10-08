@@ -618,7 +618,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     case False
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel32_eq[OF y urel32_0] by auto
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
-    from divmod_nat_div_mod[of y' 2, unfolded dr']
+    from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel32 (y AND 1) r'" unfolding r' using y unfolding urel32_def using small
@@ -1030,7 +1030,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     case False
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel64_eq[OF y urel64_0] by auto
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
-    from divmod_nat_div_mod[of y' 2, unfolded dr']
+    from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel64 (y AND 1) r'" unfolding r' using y unfolding urel64_def using small
@@ -1437,7 +1437,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     hence id: "(y \<le> 0) = False" "(y' = 0) = False" using False y unfolding urel_integer_def
       by ((metis eq_iff nat_int nat_of_integer.rep_eq nat_of_integer_code)+)
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
-    from divmod_nat_div_mod[of y' 2, unfolded dr']
+    from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel_integer (y AND 1) r'" unfolding r' using y unfolding urel_integer_def 

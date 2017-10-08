@@ -89,7 +89,7 @@ lemma remove_prime_factor: assumes res: "remove_prime_factor i n ps = (m,qs)"
 proof (induct n arbitrary: ps rule: less_induct)
   case (less n ps)
   obtain n' mo where dm: "Divides.divmod_nat n i = (n',mo)" by force
-  hence n': "n' = n div i" and mo: "mo = n mod i" by (auto simp: divmod_nat_div_mod)
+  hence n': "n' = n div i" and mo: "mo = n mod i" by (auto simp: divmod_nat_def)
   from less(2)[unfolded remove_prime_factor.simps[of i n] dm]
   have res: "(if mo = 0 then remove_prime_factor i n' (i # ps) else (n, ps)) = (m, qs)" by auto
   from less(3) have n: "n \<noteq> 0" by auto
@@ -443,7 +443,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
   next
     case (Cons i' iis)
     obtain n' m where dm: "Divides.divmod_nat n i' = (n',m)" by force
-    hence n': "n' = n div i'" and m: "m = n mod i'" by (auto simp: divmod_nat_div_mod)
+    hence n': "n' = n div i'" and m: "m = n mod i'" by (auto simp: divmod_nat_def)
     have m: "(m = 0) = (i' dvd n)" unfolding m by auto
     from Cons res[unfolded simps] dm m n'
     have res: "res = (

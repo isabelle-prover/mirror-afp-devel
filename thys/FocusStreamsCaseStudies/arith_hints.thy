@@ -13,15 +13,13 @@ begin
 lemma arith_mod_neq:
   assumes "a mod n \<noteq> b mod n"
   shows "a \<noteq> b"
-using assms by auto 
+  using assms by blast
 
 lemma arith_mod_nzero: 
-  fixes i::nat
-  assumes "i < n" 
-         and "0 < i"
+  fixes i :: nat
+  assumes "i < n" and "0 < i"
   shows "0 < (n * t + i) mod n"
-using assms
-by (metis Divides.mod_less mod_mult_self2 add.commute)
+  using assms by simp
 
 lemma arith_mult_neq_nzero1:
   fixes i::nat

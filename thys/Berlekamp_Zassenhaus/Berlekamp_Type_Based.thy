@@ -403,7 +403,7 @@ proof -
   next
     case False
     obtain q r where div: "Divides.divmod_nat n 2 = (q,r)" by force
-    hence n: "n = 2 * q + r" and r: "r = 0 \<or> r = 1" unfolding divmod_nat_div_mod by auto
+    hence n: "n = 2 * q + r" and r: "r = 0 \<or> r = 1" unfolding divmod_nat_def by auto
     have id: "a ^ (2 * q) = (a * a) ^ q"
       by (simp add: power_mult_distrib semiring_normalization_rules)
     show ?thesis
@@ -411,7 +411,7 @@ proof -
       case True
       show ?thesis
         using power_mod [of "a * a" m q]
-        by (auto simp add: divmod_nat_div_mod Let_def True n d div id)
+        by (auto simp add: divmod_nat_def Let_def True n d div id)
     next
       case False
       with r have r: "r = 1" by simp

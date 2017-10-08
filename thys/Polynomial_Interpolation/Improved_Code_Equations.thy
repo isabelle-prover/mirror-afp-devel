@@ -80,7 +80,7 @@ begin
 
 lemma divmod_nat_code: "Divides.divmod_nat m n = map_prod nat_of_integer nat_of_integer 
   (divmod_integer (integer_of_nat m) (integer_of_nat n))"
-  unfolding divmod_nat_div_mod divmod_integer_def map_prod_def split prod.simps
+  unfolding divmod_nat_def divmod_integer_def map_prod_def split prod.simps
 proof 
   show "m div n = nat_of_integer
      (integer_of_nat m div integer_of_nat n)"

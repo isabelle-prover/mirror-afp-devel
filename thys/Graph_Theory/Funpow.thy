@@ -765,10 +765,10 @@ next
   case False
   have "(f ^^ funpow_dist1 f x y) x = (f ^^ (funpow_dist1 f x y mod m)) x"
     using assms by (simp add: funpow_mod_eq)
-  then have "\<not>(funpow_dist1 f x y mod m < funpow_dist1 f x y)"
-    by (metis False assms(3) funpow_dist_least funpow_dist_prop funpow_dist_step)
-  then show ?thesis
-    by (metis (poly_guards_query) Divides.mod_less_eq_dividend assms(2) le_less mod_less_divisor)
+  with False \<open>y \<in> orbit f x\<close> have "funpow_dist1 f x y \<le> funpow_dist1 f x y mod m"
+    by auto (metis funpow_dist_least funpow_dist_prop funpow_dist_step funpow_simp_l not_less) 
+  with \<open>m > 0\<close> show ?thesis
+    by (auto intro: order_trans)
 qed
 
 

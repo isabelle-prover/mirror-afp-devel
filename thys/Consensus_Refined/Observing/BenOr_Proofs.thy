@@ -391,9 +391,7 @@ proof -
     by(simp add: BenOr_commGlobal_def all_conj_distrib, blast)
 
   from r1 obtain r0 where r1_def: "r1 = Suc r0" and step_r0: "two_step r0 = 0"
-    apply(case_tac r1, auto simp add: two_step_phase_Suc)
-    apply(simp add: two_step_def)
-    by (metis Divides.mod_less mod2_Suc_Suc mod_Suc_eq_Suc_mod zero_less_numeral)
+    by (cases r1) (auto simp add: two_step_phase_Suc two_step_def mod_Suc)
 
   def cfg0 \<equiv> "rho r0"
   def cfg1 \<equiv> "rho r1"

@@ -40,7 +40,7 @@ using assms proof (induction rule:valid_index.induct)
 next
   case (Cons "is" ds i d)
   have "(i + d * digit_decode ds is) div (d * prod_list ds) = 0"
-    using Cons.IH Cons.hyps(2) Divides.div_mult2_eq by force
+    using Cons.IH Cons.hyps(2) div_mult2_eq by force
   then show ?case unfolding digit_decode.simps prod_list.Cons
     by (metis (no_types) Cons.IH Cons.hyps(2) div_eq_0_iff mult_eq_0_iff not_less0)
 qed
@@ -53,10 +53,18 @@ using assms proof (induction ds arbitrary:a)
   show ?case by (simp add: valid_index.Nil)
 next
   case (Cons d ds a)
-  then show ?case
-    unfolding digit_encode.simps using Cons
-    by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 prod_list.Cons mod_div_trivial
-     mult_not_zero valid_index.Cons)
+  then have "a < d * prod_list ds"
+    by simp
+  then have "a div d < prod_list ds"
+    by (metis div_eq_0_iff div_mult2_eq mult_0_right not_less0)
+  then have "digit_encode ds (a div d) \<lhd> ds"
+    by (rule Cons)
+  moreover have "d > 0"
+    using \<open>a < d * prod_list ds\<close> by (cases "d = 0") simp_all
+  then have "a mod d < d"
+    by simp
+  ultimately show ?case
+    by (simp add: valid_index.Cons)
 qed
 
 lemma length_digit_encode:

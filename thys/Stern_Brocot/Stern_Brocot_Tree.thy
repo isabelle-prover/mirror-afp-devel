@@ -645,8 +645,8 @@ by(rule num_mod_den.unique)(rule tree.expand, simp add: mod_tree_lemma2 mod_tree
 
 lemma tree_chop_den: "tree_chop den = num + den - 2 * (num mod den)"
 proof -
-  have le: "\<And>x y :: nat. 0 < y \<Longrightarrow> 2 * (x mod y) \<le> x + y"
-    by(metis Divides.mod_less_eq_dividend add_le_mono mod_le_divisor mult_2)
+  have le: "0 < y \<Longrightarrow> 2 * (x mod y) \<le> x + y" for x y :: nat
+    by (simp add: mult_2 add_mono)
 
   text {* We switch to @{typ int} such that all cancellation laws are available. *}
   def den' \<equiv> "pure int \<diamondop> den"

@@ -567,16 +567,16 @@ by (metis add_eq_if mod_add mod_add_self1 mod_self add.commute)
 lemma between_imp_mod_between: "
   \<lbrakk> b < (m::nat); m * k + a \<le> n; n \<le> m * k + b \<rbrakk> \<Longrightarrow>
   a \<le> n mod m \<and> n mod m \<le> b"
-apply (case_tac "m = 0", simp_all)
-apply (frule gr_implies_gr0)
-apply (subgoal_tac "k = n div m")
- prefer 2
- apply (rule split_div_lemma[THEN iffD1], assumption)
- apply simp
-apply clarify
-apply (rule conjI)
-apply (rule add_le_imp_le_left[where c="m * (n div m)"], simp)+
-done
+  apply (case_tac "m = 0", simp_all)
+  apply (frule gr_implies_gr0)
+  apply (subgoal_tac "k = n div m")
+   prefer 2
+   apply (rule sym, rule div_nat_eqI) apply simp
+   apply simp
+  apply clarify
+  apply (rule conjI)
+   apply (rule add_le_imp_le_left[where c="m * (n div m)"], simp)+
+  done
 
 corollary between_imp_mod_le: "
   \<lbrakk> b < (m::nat); m * k \<le> n; n \<le> m * k + b \<rbrakk> \<Longrightarrow> n mod m \<le> b"
@@ -589,19 +589,17 @@ apply (rule between_imp_mod_between[THEN conjunct1, of "m - Suc 0" m k "Suc 0" n
 apply simp_all
 done
 
-text {* Some variations of @{term split_div_lemma} *}
 corollary le_less_div_conv: "
   0 < m \<Longrightarrow> (k * m \<le> n \<and> n < Suc k * m) = (n div m = k)"
-by (metis div_mult_le mult.commute split_div_lemma)
+  by (auto simp add: ac_simps intro: div_nat_eqI dividend_less_times_div)
+
 lemma le_less_imp_div: "
   \<lbrakk> k * m \<le> n; n < Suc k * m \<rbrakk> \<Longrightarrow> n div m = k"
-by (metis gr_implies_not0 mult_eq_if mult.commute neq0_conv split_div_lemma)
+  by (auto simp add: ac_simps intro: div_nat_eqI)  
+
 lemma div_imp_le_less: "
   \<lbrakk> n div m = k; 0 < m \<rbrakk> \<Longrightarrow> k * m \<le> n \<and> n < Suc k * m"
-by (rule le_less_div_conv[THEN iffD2])
-
-
-
+  by (auto simp add: ac_simps intro: dividend_less_times_div)
 
 lemma div_le_mod_le_imp_le: "
   \<lbrakk> (a::nat) div m \<le> b div m; a mod m \<le> b mod m \<rbrakk> \<Longrightarrow> a \<le> b"
@@ -996,14 +994,13 @@ done
 
 lemma mod_less_imp_diff_div_conv: "
   \<lbrakk> n mod m < r; r \<le> m + n mod m\<rbrakk> \<Longrightarrow> (n - r) div m = n div m - Suc 0"
-apply (case_tac "m = 0", simp)
-apply (simp only: neq0_conv)
-apply (case_tac "n < m", simp)
-apply (simp only: linorder_not_less)
-apply (rule iffD1[OF split_div_lemma, symmetric], assumption)
-apply (rule conjI)
-apply (simp_all add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric])
-done
+  apply (case_tac "m = 0", simp)
+  apply (simp only: neq0_conv)
+  apply (case_tac "n < m", simp)
+  apply (simp only: linorder_not_less)
+  apply (rule div_nat_eqI)
+   apply (simp_all add: algebra_simps minus_mod_eq_mult_div [symmetric])
+  done
 
 corollary mod_0_le_imp_diff_div_conv: "
   \<lbrakk> n mod m = 0; 0 < r; r \<le> m \<rbrakk> \<Longrightarrow> (n - r) div m = n div m - Suc 0"
@@ -1106,13 +1103,6 @@ done
 text {* List of definitions and lemmas *}
 
 thm
-  Divides.mod_less
-  Divides.mod_less_divisor
-  Divides.mod_le_divisor
-  mod_less_dividend
-  mod_le_dividend
-
-thm
   minus_mod_eq_mult_div [symmetric]
   mod_0_div_mult_cancel
   div_mult_le
@@ -1122,8 +1112,6 @@ thm
   Suc0_mod_subst
   Suc0_mod_cong
 
-thm
-  Divides.mod_Suc
 thm
   mod_Suc_conv
 
@@ -1238,11 +1226,6 @@ thm
   sub_diff_mod_eq
   sub_diff_mod_eq'
 
-thm
-  Divides.div_add1_eq
-  div_add1_eq_if
-  div_add1_eq1
-  div_add1_eq2
 thm
   div_diff1_eq_if
   div_diff1_eq

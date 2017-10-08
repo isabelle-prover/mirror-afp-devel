@@ -167,7 +167,7 @@ proof -
       case False
       hence n: "(n = 0) = False" by simp
       obtain q r where div: "Divides.divmod_nat n 2 = (q,r)" by force
-      from this[unfolded divmod_nat_div_mod] n have "q < n" by auto
+      from this[unfolded divmod_nat_def] n have "q < n" by auto
       note IH = less(1)[OF this]
       have rec: "poly_rel (power_poly_f_mod_i ff_ops m (m (times_poly_i ff_ops f f)) q) 
         (power_poly_f_mod m' (f' * f' mod m') q)" 

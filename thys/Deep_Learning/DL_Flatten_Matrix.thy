@@ -13,16 +13,8 @@ definition flatten_matrix :: "'a mat \<Rightarrow> (nat \<Rightarrow> 'a)" where
 "flatten_matrix A k = A $$ (k div dim_col A, k mod dim_col A)"
 
 lemma two_digit_le:
-fixes i j :: nat
-assumes "i < m" "j < n"
-shows "i*n + j < m*n"
-proof -
-  have "(i*n + j) div n = i" "m*n div n = m" using assms by auto
-  then have "(i * n + j) div m div n = i div m"
-    by (metis Divides.div_mult2_eq  mult.commute)
-  then show ?thesis
-    by (metis Divides.div_mult2_eq \<open>i < m\<close> \<open>m * n div n = m\<close> div_eq_0_iff not_less0)
-qed
+  "i * n + j < m * n" if "i < m" "j < n" for i j :: nat
+  using that by (auto dest!: less_imp_Suc_add simp add: algebra_simps)
 
 lemma extract_matrix_cong:
 assumes "\<And>i. i < m * n \<Longrightarrow> a i = b i"
@@ -37,10 +29,19 @@ lemma extract_matrix_flatten_matrix:
 unfolding extract_matrix_def flatten_matrix_def by auto
 
 lemma flatten_matrix_extract_matrix:
-shows "\<And>k. k<m*n \<Longrightarrow> flatten_matrix (extract_matrix a m n) k = a k"
-  unfolding extract_matrix_def flatten_matrix_def
-  by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff dim_col_mat(1)
-  index_mat(1) div_mult_mod_eq mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
+  "flatten_matrix (extract_matrix a m n) k = a k" if "k < m * n"
+proof -
+  from that have "m * n > 0"
+    by (cases "m * n = 0") simp_all
+  then have "m > 0" and "n > 0"
+    by simp_all
+  with that have "k div n < m"
+    by (metis div_eq_0_iff div_mult2_eq mult.commute neq0_conv) 
+  moreover have "k mod n < n"
+    using \<open>n > 0\<close> by simp
+  ultimately show ?thesis
+    by (auto simp add: extract_matrix_def flatten_matrix_def)
+qed
 
 lemma index_extract_matrix:
 assumes "i<m" "j<n"

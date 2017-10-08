@@ -268,21 +268,20 @@ begin
       apply sepref_to_hoare
       unfolding is_amtx_def     
       apply sep_auto
-      by (metis Divides.div_mult2_eq ab_semigroup_mult_class.mult.commute div_eq_0_iff mod_by_0 div_mult_mod_eq mod_less_divisor mod_mult_self2_is_0 not_less0)
+      apply (metis mult.commute div_eq_0_iff div_mult2_eq div_mult_mod_eq mod_less_divisor mult_is_0 not_less0)
+      done
   
     sepref_decl_impl amtx_lin_get: op_amtx_lin_get_aref by auto 
     
     lemma op_amtx_lin_set_aref: "(uncurry2 (\<lambda>m i x. Array.upd i x m), uncurry2 (RETURN ooo PR_CONST op_amtx_lin_set)) \<in> [\<lambda>((_,i),_). i<N*M]\<^sub>a (is_amtx N M)\<^sup>d *\<^sub>a nat_assn\<^sup>k *\<^sub>a id_assn\<^sup>k \<rightarrow> is_amtx N M"  
     proof -
       have [simp]: "i < N * M \<Longrightarrow> \<not>(M \<le> i mod M)" for i
-        apply (cases N; cases M; simp)
-        using leD mod_less_divisor by blast
+        by (cases "N = 0 \<or> M = 0") (auto simp add: not_le) 
       have [simp]: "i < N * M \<Longrightarrow> \<not>(N \<le> i div M)" for i
-        apply (cases N; cases M; simp)
-        by (metis (no_types, hide_lams) Divides.div_mult2_eq Suc_le_eq 
-          ab_semigroup_mult_class.mult.commute add_Suc div_eq_0_iff mult_Suc 
-          nat.simps(3) not_less_eq)
-
+        apply (cases "N = 0 \<or> M = 0")
+         apply (auto simp add: not_le)
+        apply (metis mult.commute div_eq_0_iff div_mult2_eq neq0_conv)
+        done
       show ?thesis  
         apply sepref_to_hoare
         unfolding is_amtx_def     

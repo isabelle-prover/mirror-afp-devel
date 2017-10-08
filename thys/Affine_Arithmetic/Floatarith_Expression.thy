@@ -805,8 +805,9 @@ lemma max_Var_floatariths_mmult_fa:
   apply (auto simp: mmult_fa_def concat_map_map_index intro!: max_Var_floatariths_leI)
    apply (rule max.coboundedI1)
    apply (auto intro!: max_Var_floatarith_le_max_Var_floatariths_nth max.coboundedI2)
-  by (metis add_gr_0 in_square_lemma less_imp_add_positive nat_0_less_mult_iff nth_upt
-      plus_nat.add_0 semiring_numeral_div_class.pos_mod_bound)
+  apply (cases "F = 0")
+   apply simp_all
+  done
 
 lemma isDERIV_inner_iff:
   assumes "length xs = length ys"
@@ -824,9 +825,10 @@ lemma isDERIV_mmult_fa_nth:
   assumes [simp]: "length A = D * E" "length B = E * F" "j < D * F"
   shows "isDERIV i (mmult_fa D E F A B ! j) xs"
   using assms
+  apply (cases "F = 0")
   apply (auto simp: mmult_fa_def concat_map_map_index isDERIV_inner_iff ac_simps)
   apply (metis add.commute assms(5) in_square_lemma less_square_imp_div_less mult.commute)
-  by (metis add_gr_0 assms(5) in_square_lemma less_imp_add_positive nat_0_less_mult_iff nth_upt plus_nat.add_0 semiring_numeral_div_class.pos_mod_bound)
+  done
 
 definition "mvmult_fa n m AS B =
   map (\<lambda>i. inner_floatariths (map (\<lambda>j. AS ! (i * m + j)) [0..<m]) (map (\<lambda>j. B ! j) [0..<m])) [0..<n]"

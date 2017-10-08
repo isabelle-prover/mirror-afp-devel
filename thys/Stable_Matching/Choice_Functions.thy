@@ -1238,7 +1238,7 @@ proof(rule mwc_sarpI)
         by (clarsimp simp: in_set_conv_nth)
       with AAA LLL ex_least_nat_le[where n="k + length Xs - j" and P="\<lambda>i. x \<notin> f (Xs !% (i + j))"]
       obtain i where "x \<in> f (Xs !% i) - f (Xs !% (i+1))"
-        by %invisible simp_all (metis (no_types, lifting) Divides.mod_less One_nat_def Suc_leI add_diff_cancel_right' add_eq_if diff_diff_cancel linorder_neqE_nat not_add_less2 zero_less_Suc zero_less_diff)
+        by %invisible auto (metis One_nat_def add_eq_if diff_diff_cancel diff_is_0_eq' lessI mod_less nat_le_linear zero_less_diff)
       with AAA have "x \<in> Rf f (Xs!%(i+1))" by auto
       with LLL show "x \<notin> f (\<Union>set Xs)"
         using \<open>iia f\<close> unfolding iia_on_def by clarsimp (meson Suc_lessD Sup_upper mod_less_divisor nth_mem)

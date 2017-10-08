@@ -26,9 +26,9 @@ lemma specializedtoprimes1:
 by (metis equalmodstrick1 equalmodstrick2 productdivides) 
 
 lemma specializedtoprimes1a:
- fixes p::nat 
- shows "\<lbrakk>prime p; prime q; p \<noteq> q; a mod p = b mod p; a mod q = b mod q; b < p*q \<rbrakk>
+  fixes p::nat 
+  shows "\<lbrakk>prime p; prime q; p \<noteq> q; a mod p = b mod p; a mod q = b mod q; b < p*q \<rbrakk>
     \<Longrightarrow> a mod (p*q) = b"
-by (metis Divides.mod_less specializedtoprimes1)
-
+  by (simp add: specializedtoprimes1)
+  
 end

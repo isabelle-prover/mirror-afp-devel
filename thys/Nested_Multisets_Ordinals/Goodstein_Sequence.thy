@@ -20,8 +20,7 @@ with a proof of Goodstein's theorem.
 subsection \<open>Lemmas about Division\<close>
 
 lemma div_mult_le: "m div n * n \<le> m" for m n :: nat
-  by (metis div_by_0 div_le_dividend leI le_less_trans nat_0_less_mult_iff
-    semiring_normalization_rules(7) split_div_lemma)
+  by (fact div_times_less_eq_dividend)
 
 lemma power_div_same_base:
   "b ^ y \<noteq> 0 \<Longrightarrow> x \<ge> y \<Longrightarrow> b ^ x div b ^ y = b ^ (x - y)" for b :: "'a::semidom_divide"

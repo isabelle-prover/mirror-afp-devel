@@ -97,8 +97,8 @@ begin
   lemma list_prod_divmod_eq: "List.product [0..<M] [0..<N] = map (\<lambda>i. (i div N, i mod N)) [0..<N*M]"
   proof -
     have [simp]: "i < m*n \<Longrightarrow> (i::nat) div n < m" for i m n
-      by (metis Divides.div_mult2_eq ab_semigroup_mult_class.mult.commute div_eq_0_iff mult_is_0 not_less0)
-    
+      by (metis mult.commute div_eq_0_iff div_mult2_eq gr_implies_not_zero mult_not_zero)
+
     have [simp]: "i<N*M \<Longrightarrow> N>0 \<and> M>0" for i
       by (cases N; cases M; auto)
 

@@ -23,7 +23,7 @@ qed
 
 lemma m_mult_div_Suc_m:
   "n > 0 \<Longrightarrow> m * n div Suc m < n"
-  by (metis Divides.div_mult2_eq div_if div_mult_mult2 lessI less_imp_Suc_add old.nat.distinct(1) zero_less_Suc)    
+  by (simp add: less_mult_imp_div_less)
   
 interpretation majorities: quorum_process majs
 proof

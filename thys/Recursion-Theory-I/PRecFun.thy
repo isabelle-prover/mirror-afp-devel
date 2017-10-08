@@ -1004,7 +1004,8 @@ proof -
         moreover have "0 \<le> a mod b" by auto
         ultimately show ?thesis by arith
       qed
-      ultimately have S6: "b*(z+1) \<le> a" by auto
+      ultimately have S6: "b*(z+1) \<le> a"
+        by (simp add: minus_mod_eq_mult_div [symmetric])
       then have "b*(z+1) - a = 0" by auto
       with S3 f_def show ?thesis by simp
     qed

@@ -79,7 +79,7 @@ next
     by (simp add: eq_fract(1) to_fract_def)
 qed
   
-declare divmod_nat_div_mod[termination_simp]
+declare divmod_nat_def[termination_simp]
 
 fun dichotomous_Lazard :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "dichotomous_Lazard x y n = (if n \<le> 1 then if n = 1 then x else 1 else
@@ -100,7 +100,7 @@ proof (induct x y n rule: dichotomous_Lazard.induct)
   proof cases
     case n
     obtain d r where n2: "Divides.divmod_nat n 2 = (d,r)" by force
-    from divmod_nat_div_mod[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
+    from divmod_nat_def[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
     hence r: "r = 0 \<or> r = 1" by auto
     define rec where "rec = dichotomous_Lazard x y d"      
     let ?sq = "rec * rec div y" 

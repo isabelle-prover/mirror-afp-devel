@@ -59,7 +59,10 @@ proof -
      assume P:"P \<in> subgroups_of_size q"
      have "card (subgroups_of_size q) mod q = 1" by (metis power_one_right syl.p_sylow_mod_p)     
      moreover have "card (subgroups_of_size q) dvd p" by (metis power_one_right syl.num_sylow_dvd_remainder)
-     ultimately have "card (subgroups_of_size q) = 1" using pq primep by (metis Divides.mod_less prime_nat_iff)
+     then have "card (subgroups_of_size q) = p \<or> card (subgroups_of_size q) = 1"
+       using primep by (auto simp add: prime_nat_iff)
+     ultimately have "card (subgroups_of_size q) = 1" using pq
+       by auto
      with Q P show "P = Q" by (auto simp:card_Suc_eq)
   qed
 qed
@@ -622,8 +625,10 @@ using assms proof (induction xs arbitrary: i thesis)
   thus thesis..
 next
   case (Cons x xs)
-  hence "xs \<noteq> []" using Divides.div_less Suc_eq_plus1 Zero_not_Suc div_eq_dividend_iff list.size(3,4) plus_nat.add_0 remdups_adj.simps(2) by metis
-  then obtain y xs' where xs:"xs = y # xs'" by (metis list.exhaust)
+  then have "xs \<noteq> []"
+    by auto
+  then obtain y xs' where xs: "xs = y # xs'"
+    by (cases xs) blast
   from `xs \<noteq> []` have lenxs:"length xs > 0" by simp
   from xs have rem:"remdups_adj (x # xs) = (if x = y then remdups_adj (y # xs') else x # remdups_adj (y # xs'))" using remdups_adj.simps(3) by auto
   show thesis

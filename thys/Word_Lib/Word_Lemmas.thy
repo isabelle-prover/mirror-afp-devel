@@ -2511,14 +2511,9 @@ lemmas map_prod_split_imageI'
 lemmas map_prod_split_imageI = map_prod_split_imageI'[simplified]
 
 lemma word_div_mult:
-  fixes c :: "('a::len) word"
-  shows "\<lbrakk>0 < c; a < b * c \<rbrakk> \<Longrightarrow> a div c < b"
-  apply (simp add: word_less_nat_alt unat_div)
-  apply (subst td_gal_lt [symmetric])
-   apply assumption
-  apply (erule order_less_le_trans)
-  apply (subst unat_word_ariths)
-  by (metis Divides.mod_less_eq_dividend)
+  "0 < c \<Longrightarrow> a < b * c \<Longrightarrow> a div c < b" for a b c :: "'a::len word"
+  by (rule classical) (use div_to_mult_word_lt [of b a c] in
+    \<open>auto simp add: word_less_nat_alt word_le_nat_alt unat_div\<close>)
 
 lemma word_less_power_trans_ofnat:
   "\<lbrakk>n < 2 ^ (m - k); k \<le> m; m < len_of TYPE('a)\<rbrakk>
@@ -4312,38 +4307,23 @@ lemma constraint_expand:
   shows "x \<in> {y. lower \<le> y \<and> y \<le> upper} = (lower \<le> x \<and> x \<le> upper)"
   by simp
 
+find_theorems "unats _ = _"
+
 lemma card_map_elide:
-  "n \<le> CARD('a::len word) \<Longrightarrow> card ((of_nat::nat \<Rightarrow> 'a::len word) ` {0..<n}) = card {0..<n}"
-  apply clarsimp
-  apply (induct n)
-   apply clarsimp+
-  apply (subgoal_tac "{0..<Suc n} = {0..<n} \<union> {n}")
-   prefer 2
-   apply clarsimp
-   apply fastforce
-  apply clarsimp
-  apply (subst card_insert_disjoint)
-    apply clarsimp
-   apply (subst atLeast0LessThan)
-   apply (subgoal_tac "(of_nat::nat \<Rightarrow> 'a::len word) ` {..<n} = {..<of_nat n}")
-    prefer 2
-    apply (rule equalityI)
-     apply clarsimp
-     apply (subst (asm) card_word)
-     apply (rule of_nat_mono_maybe)
-      apply clarsimp+
-    apply (subgoal_tac "x \<in> of_nat ` {..<n} = (\<exists>y\<in>{..<n}. of_nat y = x)")
-     prefer 2
-     apply blast
-    apply simp
-    apply (rule bexI)
-     apply (rule word_unat.Rep_inverse')
-     apply force
-    apply clarsimp
-    apply (subst (asm) card_word)
-    apply (metis (erased, hide_lams) Divides.mod_less_eq_dividend order_less_le_trans unat_of_nat
-                 word_less_nat_alt)
-   by clarsimp+
+  "card ((of_nat :: nat \<Rightarrow> 'a::len word) ` {0..<n}) = card {0..<n}"
+    if "n \<le> CARD('a::len word)"
+proof -
+  let ?of_nat = "of_nat :: nat \<Rightarrow> 'a word"
+  from word_unat.Abs_inj_on
+  have "inj_on ?of_nat {i. i < CARD('a word)}"
+    by (simp add: unats_def card_word)
+  moreover have "{0..<n} \<subseteq> {i. i < CARD('a word)}"
+    using that by auto
+  ultimately have "inj_on ?of_nat {0..<n}"
+    by (rule inj_on_subset)
+  then show ?thesis
+    by (simp add: card_image)
+qed
 
 lemma card_map_elide2:
   "n \<le> CARD('a::len word) \<Longrightarrow> card ((of_nat::nat \<Rightarrow> 'a::len word) ` {0..<n}) = n"

@@ -591,8 +591,7 @@ lemma concat_map_map_index:
   apply (subst nth_map_upt)
   apply (auto simp: ac_simps)
   apply (subst nth_map)
-  subgoal
-    by (metis Divides.div_mult2_eq div_eq_0_iff mult.commute mult_is_0 not_less_zero)
+  apply (metis div_eq_0_iff div_mult2_eq mult.commute mult_0 not_less0)
   apply (subst nth_map)
   subgoal for i
     using gr_implies_not_zero by fastforce
@@ -944,7 +943,7 @@ proof -
 qed
 
 lemma less_square_imp_div_less[intro, simp]: "i < E * D \<Longrightarrow>  i div E < D" for i::nat
-  by (metis Divides.div_mult2_eq div_eq_0_iff mult_0_right not_less0)
+  by (metis div_eq_0_iff div_mult2_eq gr_implies_not0 mult_not_zero)
 
 lemma in_square_lemma'[intro, simp]: "i < L \<Longrightarrow> n < N \<Longrightarrow> i * N + n < N * L" for i n::nat
   by (metis in_square_lemma mult.commute)

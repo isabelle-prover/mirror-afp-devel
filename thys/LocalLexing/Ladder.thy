@@ -2527,16 +2527,14 @@ qed
 lemma drop_2_shift:
   assumes "index > 0"
   assumes "length L > 1"
-  shows "(drop 2 L) ! (index - Suc 0) = L ! (Suc index)"
+  shows "drop 2 L ! (index - Suc 0) = L ! Suc index"
 proof -
-  have f1: "min (length L) (Suc (Suc 0)) = Suc (Suc 0)"
-    using assms(2) by linarith
-  have f2: "index = Suc (index + 0) - Suc 0"
-    by force
-  have "0 < (index + 1) div 2"
-    using Suc_n_div_2_gt_zero assms(1) by blast
-  then show ?thesis
-    using f2 f1 by (metis (no_types) Divides.div_less Nat.add_0_right One_nat_def add_Suc_right append_take_drop_id diff_diff_add length_take less_not_refl2 nth_append numeral_2_eq_2)
+  define l1 l2 and L' where "l1 = L ! 0" "l2 = L ! 1"
+    and "L' = drop 2 L"
+  with \<open>length L > 1\<close> have "L = l1 # l2 # L'"
+    by (cases L) (auto simp add: neq_Nil_conv)
+  with \<open>index > 0\<close> show ?thesis
+    by simp
 qed
 
 lemma ladder_shift_n_at:
