@@ -58,17 +58,9 @@ begin
   
   lemma map_lasso_run[simp]:
     shows "run_of_lasso (map_lasso f L) = f o (run_of_lasso L)"
-    apply (clarsimp
-      simp: map_lasso_def run_of_lasso_def conc_def iter_def 
-      simp: lasso_cycle_def lasso_v0_def
-      simp: nth_Cons'
-      intro!: ext)
-
-    apply (subst nth_map)
-    apply (metis One_nat_def Suc_diff_1 Suc_less_SucD less_Suc_eq_0_disj 
-      semiring_numeral_div_class.pos_mod_bound)
-    apply simp
-    done
+    by (auto simp add: map_lasso_def run_of_lasso_def conc_def iter_def
+      lasso_cycle_def lasso_v0_def fun_eq_iff not_less nth_Cons'
+      nz_le_conv_less)
 
 
   context graph begin

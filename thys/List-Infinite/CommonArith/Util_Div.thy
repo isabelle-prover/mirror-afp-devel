@@ -346,10 +346,10 @@ by (rule dvd_eq_mod_eq_0[symmetric, THEN subst], rule mod_eq_diff_mod_0_conv)
 
 subsection {* Some additional lemmata about integer @{text div} and @{text mod} *}
 
-lemma zmod_eq_imp_diff_mod_0:"
-  (a::int) mod m = b mod m \<Longrightarrow> (b - a) mod m = 0"
-  by (metis diff_minus_eq_add minus_minus mod_0 right_minus ring_div_class.mod_diff_right_eq)
-
+lemma zmod_eq_imp_diff_mod_0:
+  "a mod m = b mod m \<Longrightarrow> (b - a) mod m = 0" for a b m :: int
+  by (simp add: mod_diff_cong)
+  
 (*lemma int_mod_distrib: "int (n mod m) = int n mod int m"*)
 lemmas int_mod_distrib = zmod_int
 

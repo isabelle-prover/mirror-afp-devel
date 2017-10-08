@@ -70,7 +70,7 @@ proof -
   also { have "int_of_integer (integer_of_char x) < 256"
       including integer.lifting by transfer(simp add: nat_of_char_less_256) }
   hence "\<dots> = x"
-    by(simp add: semiring_numeral_div_class.mod_less int_of_integer_ge_0)
+    by(simp add: mod_pos_pos_trivial int_of_integer_ge_0)
   finally show ?thesis .
 qed
 

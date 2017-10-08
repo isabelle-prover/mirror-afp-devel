@@ -804,8 +804,7 @@ proof -
         also have "... = ?b * q * ?r" using True by auto
         also have "... = q * (-?b) * (-?r)" by auto
         finally show ?thesis using qb_not_0 
-          unfolding ring_1_no_zero_divisors_class.mult_cancel_left1 
-          by (metis minus_minus)
+          unfolding mult_cancel_left1 by (metis minus_minus)
       qed
       finally show ?thesis unfolding f_def .
     qed

@@ -114,7 +114,7 @@ qed
 lemma cong_dvd_modulus_poly: "[(x::'b::field poly) = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow>
     [x = y] (mod n)"
 by (auto simp add: cong_iff_lin_nat dvd_def cong_poly_def)
-   (metis (no_types, lifting) mod_mod_trivial poly_mod_mult_right semiring_div_class.mod_mult_self4)
+   (metis (no_types, lifting) mod_mod_trivial poly_mod_mult_right mod_mult_self4)
 
 
 lemma chinese_remainder_aux_poly:

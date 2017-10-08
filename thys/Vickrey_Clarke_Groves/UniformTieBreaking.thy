@@ -87,7 +87,7 @@ lemma randomElLemma:
    assumes "set list \<noteq> {}"
    shows "randomEl list random \<in> set list"
    by (metis assms bot.not_eq_extremum ex_in_conv gr_implies_not0 in_set_conv_nth 
-             randomEl_def semiring_numeral_div_class.pos_mod_bound)
+    randomEl_def mod_less_divisor)
 
 (* The chosen allocation takes the random-th element of all possible winning allocations. This is
    done by taking the element given by randomEl list random defined above. *)

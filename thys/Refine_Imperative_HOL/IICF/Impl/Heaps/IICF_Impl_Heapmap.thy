@@ -14,13 +14,7 @@ definition [code_unfold]:
     \<equiv> nat_of_integer (fst (Code_Numeral.divmod_abs (integer_of_nat n) 2))"
 
 lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
-  apply code_simp
-  apply simp
-  by (metis dual_order.order_iff_strict linear of_nat_0_le_iff 
-       semiring_numeral_div_class.div_less 
-       semiring_numeral_div_class.div_positive zero_less_numeral) 
-
-
+  by (simp add: efficient_nat_div2_def nat_of_integer.rep_eq)
 
   type_synonym 'v hma = "nat list \<times> ('v list)"
   sepref_decl_intf 'v i_hma is "nat list \<times> (nat \<rightharpoonup> 'v)"

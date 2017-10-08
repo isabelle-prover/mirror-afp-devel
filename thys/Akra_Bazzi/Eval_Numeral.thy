@@ -94,8 +94,8 @@ lemma divmod_one:
 
 lemmas divmod_numeral_simps =
   div_0 div_by_0 mod_0 mod_by_0
-  semiring_numeral_div_class.fst_divmod [symmetric]
-  semiring_numeral_div_class.snd_divmod [symmetric]
+  fst_divmod [symmetric]
+  snd_divmod [symmetric]
   divmod_cancel
   divmod_steps [simplified rel_simps if_True] divmod_trivial
   rel_simps

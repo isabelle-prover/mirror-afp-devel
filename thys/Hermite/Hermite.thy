@@ -198,8 +198,7 @@ lemma dvd_cong_not_eq_mod:
   assumes "xa mod c \<noteq> xb" and "c dvd xa mod c - xb" and "c \<noteq> 0"
   shows "xb mod c \<noteq> xb"
   using assms
-  by (metis (no_types, lifting) diff_add_cancel dvdE mod_mod_trivial 
-      semiring_div_class.mod_mult_self4)
+  by (metis (no_types, lifting) diff_add_cancel dvdE mod_mod_trivial  mod_mult_self4)
 
 lemma diff_mod_cong_0:
   fixes c::"'a::ring_div"
