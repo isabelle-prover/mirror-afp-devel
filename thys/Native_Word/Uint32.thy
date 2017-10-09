@@ -71,7 +71,7 @@ lift_definition size_uint32 :: "uint32 \<Rightarrow> nat" is "size" .
 instance ..
 end
 
-lemmas [code] = size_uint32.rep_eq
+lemmas [code] = size_uint32.rep_eq                                                    
 
 lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" (infixl ">>>" 55) is sshiftr .
 
@@ -474,7 +474,8 @@ code_printing constant uint32_test_bit \<rightharpoonup>
   (SML) "Uint32.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (OCaml) "Uint32.test'_bit" and
-  (Scala) "Uint32.test'_bit"
+  (Scala) "Uint32.test'_bit" and
+  (Eval) "(fn w => fn n => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_test'_bit out of bounds\") else Uint32.test'_bit w n)"
 
 definition uint32_set_bit :: "uint32 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint32"
 where [code del]:
@@ -497,7 +498,8 @@ code_printing constant uint32_set_bit \<rightharpoonup>
   (SML) "Uint32.set'_bit" and
   (Haskell) "Data'_Bits.setBitBounded" and
   (OCaml) "Uint32.set'_bit" and
-  (Scala) "Uint32.set'_bit"
+  (Scala) "Uint32.set'_bit" and
+  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit x n b)"
 
 lift_definition uint32_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32 \<Rightarrow> nat \<Rightarrow> uint32" is set_bits_aux .
 
@@ -533,7 +535,8 @@ code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (OCaml) "Uint32.shiftl" and
-  (Scala) "Uint32.shiftl"
+  (Scala) "Uint32.shiftl" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftl out of bounds\" else Uint32.shiftl x i)"
 
 definition uint32_shiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
@@ -552,7 +555,8 @@ code_printing constant uint32_shiftr \<rightharpoonup>
   (SML) "Uint32.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint32.shiftr" and
-  (Scala) "Uint32.shiftr"
+  (Scala) "Uint32.shiftr" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr out of bounds\" else Uint32.shiftr x i)"
 
 definition uint32_sshiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
@@ -579,7 +583,8 @@ code_printing constant uint32_sshiftr \<rightharpoonup>
   (Haskell) 
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint32.Int32) _)) :: Uint32.Word32)" and
   (OCaml) "Uint32.shiftr'_signed" and
-  (Scala) "Uint32.shiftr'_signed"
+  (Scala) "Uint32.shiftr'_signed" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr'_signed out of bounds\" else Uint32.shiftr'_signed x i)"
 
 lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint32) !! 31"
 by transfer(simp add: msb_nth)

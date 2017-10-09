@@ -672,7 +672,8 @@ code_printing constant uint64_test_bit \<rightharpoonup>
   (SML) "Uint64.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (OCaml) "Uint64.test'_bit" and
-  (Scala) "Uint64.test'_bit"
+  (Scala) "Uint64.test'_bit" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_test'_bit out of bounds\") else Uint64.test'_bit x i)"
 
 definition uint64_set_bit :: "uint64 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint64"
 where [code del]:
@@ -695,7 +696,8 @@ code_printing constant uint64_set_bit \<rightharpoonup>
   (SML) "Uint64.set'_bit" and
   (Haskell) "Data'_Bits.setBitBounded" and
   (OCaml) "Uint64.set'_bit" and
-  (Scala) "Uint64.set'_bit"
+  (Scala) "Uint64.set'_bit" and
+  (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit x i b)"
 
 lift_definition uint64_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint64 \<Rightarrow> nat \<Rightarrow> uint64" is set_bits_aux .
 
@@ -731,7 +733,9 @@ code_printing constant uint64_shiftl \<rightharpoonup>
   (SML) "Uint64.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (OCaml) "Uint64.shiftl" and
-  (Scala) "Uint64.shiftl"
+  (Scala) "Uint64.shiftl" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftl out of bounds\") else Uint64.shiftl x i)"
+
 
 definition uint64_shiftr :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
 where [code del]:
@@ -750,7 +754,9 @@ code_printing constant uint64_shiftr \<rightharpoonup>
   (SML) "Uint64.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint64.shiftr" and
-  (Scala) "Uint64.shiftr"
+  (Scala) "Uint64.shiftr" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr out of bounds\") else Uint64.shiftr x i)"
+
 
 definition uint64_sshiftr :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
 where [code del]:
@@ -777,7 +783,9 @@ code_printing constant uint64_sshiftr \<rightharpoonup>
   (Haskell) 
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint64.Int64) _)) :: Uint64.Word64)" and
   (OCaml) "Uint64.shiftr'_signed" and
-  (Scala) "Uint64.shiftr'_signed"
+  (Scala) "Uint64.shiftr'_signed" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed x i)"
+
 
 lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint64) !! 63"
 by transfer(simp add: msb_nth)
