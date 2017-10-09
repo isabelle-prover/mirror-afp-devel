@@ -498,7 +498,7 @@ proof (induct p k arbitrary: ks ks' rule: decompose_prod_root_unity_main.induct)
       with k' have "k \<in> set ks" by auto
       from split_list[OF this] obtain ks1 ks2 where ks: "ks = ks1 @ k # ks2" by auto
       hence "p div ?u = (?u * (prod_root_unity (ks1 @ ks2) * f)) div ?u"
-        unfolding p prod_root_unity_def by auto
+        by (simp add: ac_simps p prod_root_unity_def)
       also have "\<dots> = prod_root_unity (ks1 @ ks2) * f" 
         by (rule nonzero_mult_div_cancel_left, insert k0, auto)
       finally have id: "p div ?u = prod_root_unity (ks1 @ ks2) * f" .
