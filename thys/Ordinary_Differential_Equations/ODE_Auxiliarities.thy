@@ -443,13 +443,6 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma interior_atLeastAtMost:
-  fixes a b::real
-  assumes "a < b"
-  shows "interior {a .. b} = {a <..< b}"
-  by (metis assms closure_greaterThanLessThan convex_interior_closure
-    convex_real_interval(8) interior_open open_greaterThanLessThan)
-
 lemma is_interval_Ioo:
   fixes x::real shows "is_interval {x<..<y}"
   by (metis connected_Ioo is_interval_connected_1)
