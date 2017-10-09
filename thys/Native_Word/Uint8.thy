@@ -393,7 +393,9 @@ unfolding uint8_test_bit_def by(simp add: test_bit_uint8.rep_eq)
 code_printing constant uint8_test_bit \<rightharpoonup>
   (SML) "Uint8.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
-  (Scala) "Uint8.test'_bit"
+  (Scala) "Uint8.test'_bit" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit x i)"
+
 
 definition uint8_set_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint8"
 where [code del]:
@@ -415,7 +417,8 @@ including undefined_transfer unfolding uint8_set_bit_def by transfer simp
 code_printing constant uint8_set_bit \<rightharpoonup>
   (SML) "Uint8.set'_bit" and
   (Haskell) "Data'_Bits.setBitBounded" and
-  (Scala) "Uint8.set'_bit"
+  (Scala) "Uint8.set'_bit" and
+  (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit x i b)"
 
 
 lift_definition uint8_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8 \<Rightarrow> nat \<Rightarrow> uint8" is set_bits_aux .
@@ -452,7 +455,8 @@ including undefined_transfer unfolding uint8_shiftl_def by transfer simp
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
-  (Scala) "Uint8.shiftl"
+  (Scala) "Uint8.shiftl" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftl out of bounds\") else Uint8.shiftl x i)"
 
 definition uint8_shiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
 where [code del]:
@@ -471,7 +475,8 @@ including undefined_transfer unfolding uint8_shiftr_def by transfer simp
 code_printing constant uint8_shiftr \<rightharpoonup>
   (SML) "Uint8.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
-  (Scala) "Uint8.shiftr"
+  (Scala) "Uint8.shiftr" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftr out of bounds\") else Uint8.shiftr x i)"
 
 definition uint8_sshiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
 where [code del]:
@@ -498,7 +503,9 @@ code_printing constant uint8_sshiftr \<rightharpoonup>
   (SML) "Uint8.shiftr'_signed" and
   (Haskell) 
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint8.Int8) _)) :: Uint8.Word8)" and
-  (Scala) "Uint8.shiftr'_signed"
+  (Scala) "Uint8.shiftr'_signed" and
+  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed x i)"
+
 
 lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint8) !! 7"
 by transfer(simp add: msb_nth)
