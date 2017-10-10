@@ -250,9 +250,9 @@ notation sshiftr_uint (infixl ">>>" 55)
 
 definition "test_uint \<equiv> let 
   test_list1 = (let
-      HS = uint_of_int ((2^(dflt_size - 1)))
+      HS = uint_of_int (2 ^ (dflt_size - 1))
     in
-      ([ HS+HS+1, -1, -HS - HS + 5, HS + (HS - 1), 0x12
+      ([ HS + HS + 1, -1, -HS - HS + 5, HS + (HS - 1), 0x12
       , 0x5A AND 0x36
       , 0x5A OR 0x36
       , 0x5A XOR 0x36
@@ -271,7 +271,7 @@ definition "test_uint \<equiv> let
     else []) :: uint list));
   
   test_list2 = (let 
-      S=wivs_shift 
+      S = wivs_shift 
     in 
       ([ 1, -1, -S + 5, S - 1, 0x12
       , 0x5A AND 0x36
@@ -288,7 +288,7 @@ definition "test_uint \<equiv> let
       , 5, 5, -5, -5
       , 4, -8, 0, 1
       , 3, (S >> 3) - 1, 0, 0
-      , 3, (S>>1) + (S >> 1) - 1, 0, -1] 
+      , 3, (S >> 1) + (S >> 1) - 1, 0, -1] 
     else []) :: int list));
 
   test_list_c1 = (let

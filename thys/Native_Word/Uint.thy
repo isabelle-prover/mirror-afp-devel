@@ -32,6 +32,7 @@ end
 consts dflt_size_aux :: "nat"
 specification (dflt_size_aux) dflt_size_aux_g0: "dflt_size_aux > 0"
   by auto
+hide_fact dflt_size_aux_def
 
 instantiation dflt_size :: len begin
 definition "len_of_dflt_size (_ :: dflt_size itself) \<equiv> dflt_size_aux"
@@ -315,49 +316,43 @@ code_reserved Scala Uint
 
 
 text {*
-  OCaml's conversion from Big\_int to int demands that the value fits int a signed integer.
+  OCaml's conversion from Big\_int to int demands that the value fits into a signed integer.
   The following justifies the implementation.
 *}
 
 context includes integer.lifting begin
-definition wivs_mask :: int where "wivs_mask == (2^(dflt_size) - 1)"
+definition wivs_mask :: int where "wivs_mask = 2^ dflt_size - 1"
 lift_definition wivs_mask_integer :: integer is wivs_mask .
-lemma [code]: "wivs_mask_integer = (2^dflt_size) - 1"
+lemma [code]: "wivs_mask_integer = 2 ^ dflt_size - 1"
   by transfer (simp add: wivs_mask_def)
 
-definition wivs_shift :: int where "wivs_shift == (2^(dflt_size))"
+definition wivs_shift :: int where "wivs_shift = 2 ^ dflt_size"
 lift_definition wivs_shift_integer :: integer is wivs_shift .
-lemma [code]: "wivs_shift_integer = (2^dflt_size)"
+lemma [code]: "wivs_shift_integer = 2 ^ dflt_size"
   by transfer (simp add: wivs_shift_def)
 
 definition wivs_index :: nat where "wivs_index == dflt_size - 1"
 lift_definition wivs_index_integer :: integer is "int wivs_index".
 lemma wivs_index_integer_code[code]: "wivs_index_integer = dflt_size_integer - 1"
-  apply transfer apply (simp add: wivs_index_def)
-  by (metis One_nat_def add_diff_cancel2 dflt_size(1) diff_Suc_1 
-    less_nat_zero_code nat.exhaust of_nat_Suc)
+  by transfer (simp add: wivs_index_def of_nat_diff)
 
-definition wivs_overflow :: int where "wivs_overflow == (2^(dflt_size - 1))"
+definition wivs_overflow :: int where "wivs_overflow == 2^ (dflt_size - 1)"
 lift_definition wivs_overflow_integer :: integer is wivs_overflow .
-lemma [code]: "wivs_overflow_integer = (2^(dflt_size - 1))"
+lemma [code]: "wivs_overflow_integer = 2 ^ (dflt_size - 1)"
   by transfer (simp add: wivs_overflow_def)
 
 definition wivs_least :: int where "wivs_least == - wivs_overflow"
 lift_definition wivs_least_integer :: integer is wivs_least .
-lemma [code]: "wivs_least_integer = - (2^(dflt_size - 1))"
+lemma [code]: "wivs_least_integer = - (2 ^ (dflt_size - 1))"
   by transfer (simp add: wivs_overflow_def wivs_least_def)
 
-definition Uint_signed :: "integer \<Rightarrow> uint" 
-where "Uint_signed i = (if i < wivs_least_integer 
-  \<or> wivs_overflow_integer \<le> i then undefined Uint i else Uint i)"
+definition Uint_signed :: "integer \<Rightarrow> uint" where
+  "Uint_signed i = (if i < wivs_least_integer \<or> wivs_overflow_integer \<le> i then undefined Uint i else Uint i)"
 
 lemma Uint_code [code]:
   "Uint i = 
-  (let i' = i AND wivs_mask_integer
-   in 
-     if i' !! wivs_index then 
-       Uint_signed (i' - wivs_shift_integer) 
-     else Uint_signed i')"
+  (let i' = i AND wivs_mask_integer in 
+   if i' !! wivs_index then Uint_signed (i' - wivs_shift_integer) else Uint_signed i')"
   including undefined_transfer 
   unfolding Uint_signed_def
   apply transfer
