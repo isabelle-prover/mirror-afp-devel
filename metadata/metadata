@@ -1990,7 +1990,7 @@ notify = Stephan.Merz@loria.fr
 [Consensus_Refined]
 title = Consensus Refined
 date = 2015-03-18
-author = Ognjen Maric <mailto:omaric@inf.ethz.ch>, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
+author = Ognjen Maric, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
 topic = Computer Science/Algorithms/Distributed
 abstract =
 	Algorithms for solving the consensus problem are fundamental to
@@ -2009,7 +2009,7 @@ abstract =
 	view of a sizeable family of consensus algorithms. Our models
 	provide insights into the design choices underlying the different
 	algorithms, and classify them based on those choices.
-notify = omaric@inf.ethz.ch
+notify = sprenger@inf.ethz.ch
 
 [Key_Agreement_Strong_Adversaries]
 title = Refining Authenticated Key Agreement with Strong Adversaries
