@@ -975,8 +975,8 @@ lemma eventually_at_snd:
 lemma eventually_at_in_ball: "d > 0 \<Longrightarrow> eventually (\<lambda>y. y \<in> ball x0 d) (at x0)"
   by (auto simp: eventually_at dist_commute mem_ball intro!: exI[where x=d])
 
-lemma seq_harmonic': "((\<lambda>n. 1 / n) \<longlongrightarrow> 0) sequentially"
-  using seq_harmonic
+lemma lim_inverse_n': "((\<lambda>n. 1 / n) \<longlongrightarrow> 0) sequentially"
+  using lim_inverse_n
   by (simp add: inverse_eq_divide)
 
 lemma filterlim_real_at_infinity_sequentially[tendsto_intros]:
