@@ -336,19 +336,17 @@ proof(induct ls)
                              = (rat_poly.row_length (brickmat l))
                                *(rat_poly.row_length (blockmat ls))"
        using blockmat.simps  rat_poly.row_length_mat by auto
-    moreover have "... = 4*(2 ^ nat (domain_block ls))"
-       using rat_poly.row_length_def Cons over by auto
-    moreover have "... = 2^(2 + nat (domain_block ls))"
-       using domain_block.simps  by auto
-    moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
-       using domain.simps over by auto 
-    moreover have "... = 2^(nat (domain l + domain_block ls))"
-       using nat_sum over 
-             Nat_Transfer.transfer_nat_int_function_closures(7) 
-             domain.simps(4) domain_block_nonnegative  by (metis)
-    moreover have "... = 2^(nat (domain_block (l#ls)))"
-       using domain_block.simps by auto
-    ultimately show ?thesis by metis
+    also have "... = 4*(2 ^ nat (domain_block ls))"
+      using rat_poly.row_length_def Cons over by auto
+    also have "... = 2^(2 + nat (domain_block ls))"
+      using domain_block.simps by auto
+    also have "... = 2^(nat (domain l) + nat (domain_block ls))"
+      using domain.simps over by auto
+    also have "... = 2^(nat (domain l + domain_block ls))"
+      by (simp add: nat_add_distrib domain_block_nonnegative over)
+    also have "... = 2^(nat (domain_block (l#ls)))"
+      by simp
+    finally show ?thesis .
    next
    case under
     have "rat_poly.row_length (blockmat ls) = 2 ^ nat (domain_block ls)"
@@ -357,19 +355,17 @@ proof(induct ls)
                               = (rat_poly.row_length (brickmat l))
                                  *(rat_poly.row_length (blockmat ls))"
        using blockmat.simps  rat_poly.row_length_mat by auto
-    moreover have "... = 4*(2 ^ nat (domain_block ls))"
-       using rat_poly.row_length_def Cons under by auto
-    moreover have "... = 2^(2 + nat (domain_block ls))"
-       using domain_block.simps  by auto
-    moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
-       using domain.simps under by auto 
-    moreover have "... = 2^(nat (domain l + domain_block ls))"
-       using nat_sum under 
-             Nat_Transfer.transfer_nat_int_function_closures(7) 
-             domain.simps(5) domain_block_nonnegative  by (metis)
-    moreover have "... = 2^(nat (domain_block (l#ls)))"
-       using domain_block.simps by auto
-    ultimately show ?thesis by metis 
+    also have "... = 4*(2 ^ nat (domain_block ls))"
+      using rat_poly.row_length_def Cons under by auto
+    also have "... = 2^(2 + nat (domain_block ls))"
+      using domain_block.simps  by auto
+    also have "... = 2^(nat (domain l) + nat (domain_block ls))"
+      using domain.simps under by auto 
+    also have "... = 2^(nat (domain l + domain_block ls))"
+      by (simp add: nat_add_distrib domain_block_nonnegative under)
+    also have "... = 2^(nat (domain_block (l#ls)))"
+      using domain_block.simps by auto
+    finally show ?thesis .
    next
    case cup 
     have "rat_poly.row_length (blockmat ls) = 2 ^ nat (domain_block ls)"
@@ -406,10 +402,7 @@ proof(induct ls)
     moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
        using domain.simps cap by auto 
     moreover have "... = 2^(nat (domain l + domain_block ls))"
-       using nat_sum cap 
-             Nat_Transfer.transfer_nat_int_function_closures(7) 
-             domain.simps(3) domain_block_nonnegative 
-       by (metis)
+      by (simp add: cap domain_block_nonnegative nat_add_distrib)
     moreover have "... = 2^(nat (domain_block (l#ls)))"
        using domain_block.simps by auto
     ultimately show ?thesis by metis
@@ -461,10 +454,7 @@ proof(induct ls)
      moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
           using domain.simps over by auto 
      moreover have "... = 2^(nat (domain l + domain_block ls))"
-          using nat_sum over 
-                Nat_Transfer.transfer_nat_int_function_closures(7) 
-                domain.simps(4) domain_block_nonnegative  
-          by (metis)
+       by (simp add: over domain_block_nonnegative nat_add_distrib)
      moreover have "... = 2^(nat (domain_block (l#ls)))"
           using domain_block.simps by auto
      ultimately show ?thesis by metis
@@ -483,9 +473,7 @@ proof(induct ls)
      moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
           using domain.simps under by auto 
      moreover have "... = 2^(nat (domain l + domain_block ls))"
-          using nat_sum under  
-                Nat_Transfer.transfer_nat_int_function_closures(7) 
-                domain.simps(5) domain_block_nonnegative  by (metis)
+       by (simp add: under domain_block_nonnegative nat_add_distrib)
      moreover have "... = 2^(nat (domain_block (l#ls)))"
           using domain_block.simps by auto
      ultimately show ?thesis by metis 
@@ -524,9 +512,7 @@ proof(induct ls)
       moreover have "... = 2^(nat (domain l) + nat (domain_block ls))"
           using domain.simps cap by auto 
       moreover have "... = 2^(nat (domain l + domain_block ls))"
-          using nat_sum cap  
-                Nat_Transfer.transfer_nat_int_function_closures(7) 
-                domain.simps(3) domain_block_nonnegative  by (metis)
+        by (simp add: cap domain_block_nonnegative nat_add_distrib)
       moreover have "... = 2^(nat (domain_block (l#ls)))"
           using domain_block.simps by auto
       ultimately show ?thesis by metis
@@ -1196,7 +1182,7 @@ proof-
   moreover have 5:"(?r ! 1! 1) = 1"
     by auto
   ultimately show ?thesis
-    using  less_2_cases nat_1 transfer_nat_int_numerals(2) by (metis)
+    by (auto dest!: less_2_cases)
  qed
  have 3:"mat 2 2 (mat1 2)"
     by (metis mat1)

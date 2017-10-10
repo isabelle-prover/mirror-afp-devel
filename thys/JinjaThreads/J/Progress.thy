@@ -256,8 +256,8 @@ next
             with WTrtAAcc Array ty show ?thesis by (fastforce intro: RedAAccBounds)
           next
             case False
-            hence "nat (sint i) < n"
-              by(metis of_nat_le_0_iff linorder_not_less nat_int.Rep_inverse' sint_0 transfer_int_nat_numerals(1) word_sless_alt zless_nat_conj)
+            then have "nat (sint i) < n"
+              by (simp add: not_le word_sless_alt nat_less_iff)
             with ty have "P,h \<turnstile> ad@ACell (nat (sint i)) : U" by(auto intro!: addr_loc_type.intros)
             from heap_read_total[OF hconf this]
             obtain v where "heap_read h ad (ACell (nat (sint i))) v" by blast
@@ -402,8 +402,8 @@ next
                 with ty evalw Array ivalv vidx show ?thesis by(fastforce intro: RedAAssBounds)
               next
                 case False
-                hence "nat (sint idx) < n"
-                  by(metis of_nat_le_0_iff linorder_not_less nat_int.Rep_inverse' sint_0 transfer_int_nat_numerals(1) word_sless_alt zless_nat_conj)
+                then have "nat (sint idx) < n"
+                  by (simp add: not_le word_sless_alt nat_less_iff)
                 with ty have adal: "P,h \<turnstile> ad@ACell (nat (sint idx)) : U"
                   by(auto intro!: addr_loc_type.intros)
                 show ?thesis

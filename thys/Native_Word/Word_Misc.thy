@@ -179,7 +179,7 @@ lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<a
 lemma word_div_lt_eq_0:
   fixes x :: "'a :: len word"
   shows "x < y \<Longrightarrow> x div y = 0"
-by(simp only: word_div_def zero_word_def uint_nat zdiv_int[symmetric] transfer_int_nat_numerals(1) word_less_def div_less)
+  by (simp add: word_eq_iff word_less_def word_test_bit_def uint_div div_pos_pos_trivial)
 
 lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ len_of TYPE('a :: len)"
 by (metis One_nat_def len_gt_0 one_less_numeral_iff one_less_power semiring_norm(76))

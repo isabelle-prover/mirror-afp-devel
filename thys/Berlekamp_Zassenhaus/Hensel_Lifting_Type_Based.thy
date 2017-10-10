@@ -171,15 +171,19 @@ lemma rebase_of_nat[simp]: "(@(of_nat n :: 'a mod_ring) :: 'b mod_ring) = of_nat
   apply transfer apply (rule mod_mod_cancel) using dvd by presburger
 
 lemma mod_1_lift_nat:
-  assumes x0q: "(of_int (int x) :: 'a mod_ring) = 1"
+  assumes "(of_int (int x) :: 'a mod_ring) = 1"
   shows "(of_int (int x) :: 'b mod_ring) = 1"
-proof-
-  from dvd obtain s where s: "CARD('a) = CARD('b) * s" by (elim dvdE)
-  from x0q have "int x mod CARD('a) = 1" by transfer
-  then have "x mod CARD('a) = 1" unfolding transfer_int_nat_functions by simp
-  then have "x mod CARD('b) = 1" by (metis dvd mod_mod_cancel one_mod_card)
-  then have "int x mod CARD('b) = 1" by (simp add:transfer_int_nat_functions)
-  then show ?thesis by transfer
+proof -
+  from assms have "int x mod CARD('a) = 1"
+    by transfer
+  then have "x mod CARD('a) = 1"
+    by (simp add: of_nat_mod [symmetric])
+  then have "x mod CARD('b) = 1"
+    by (metis dvd mod_mod_cancel one_mod_card)
+  then have "int x mod CARD('b) = 1"
+    by (simp add: of_nat_mod [symmetric])
+  then show ?thesis
+    by transfer
 qed
 
 sublocale comm_ring_hom "rebase :: 'a mod_ring \<Rightarrow> 'b mod_ring"
@@ -331,10 +335,11 @@ definition "q \<equiv> if (ty_q :: 'q itself) = ty_q then CARD('q) else undefine
 lemma q[simp]: "q = CARD('q)" unfolding q_def by auto
 
 lemma p1: "int p > 1"
-  by (unfold transfer_int_nat_numerals p transfer_int_nat_relations, rule nontriv)
+  using nontriv [where ?'a = 'p] p by simp
 lemma q1: "int q > 1"
-  by (unfold transfer_int_nat_numerals q transfer_int_nat_relations, rule nontriv)
-lemma q0: "int q > 0" using q1 by auto
+  using nontriv [where ?'a = 'q] q by simp
+lemma q0: "int q > 0"
+  using q1 by auto
 
 lemma pq2[simp]: "CARD('pq) = p * q" using pq by simp
 

@@ -31,7 +31,8 @@ case (1 c)
     hence h1: "p dvd (c^n)" using 1(3) dvd_mult2[of p a b] by presburger
     hence "(p^n) dvd (c^n)"
       using p(1) prime_dvd_power_nat[of p c n] dvd_power_same[of p c n] by blast
-    moreover have h2: "\<not> p dvd b" using p 1(4) prime_nat_iff coprime_common_divisor_nat by blast
+    moreover have h2: "\<not> p dvd b"
+      using p \<open>coprime a b\<close> coprime_common_divisor_nat [of a b p] by auto
     hence "\<not> (p^n) dvd b" using n0 p(1)  dvd_power[of n p] gcd_nat.trans by blast
     ultimately have "(p^n) dvd a" using "1.prems" p(1) prime_divprod_pow_nat by force
     then obtain a' c' where ac: "a = p^n * a'" "c = p * c'"
@@ -52,17 +53,18 @@ case (1 c)
 qed
 
 private lemma int_relprime_odd_power_divisors:
-  assumes "odd n" and "(a::int) * b = c^n" and "coprime a b"
-  shows "\<exists>k. a = k^n"
+  assumes "odd n" and "(a::int) * b = c ^ n" and "coprime a b"
+  shows "\<exists>k. a = k^n" 
 proof -
-  have "\<bar>a\<bar> * \<bar>b\<bar> = \<bar>c\<bar>^n" using assms(2) abs_mult[of a b] power_abs[of c n] by presburger
-  hence "nat \<bar>a\<bar> * nat \<bar>b\<bar> = (nat \<bar>c\<bar>)^n" using nat_mult_distrib[of "\<bar>a\<bar>" "\<bar>b\<bar>"]
-    by (simp add: Nat_Transfer.transfer_nat_int_functions(4))
+  from assms have "\<bar>a\<bar> * \<bar>b\<bar> = \<bar>c\<bar> ^ n"
+    by (simp add: abs_mult [symmetric] power_abs)
+  then have "nat \<bar>a\<bar> * nat \<bar>b\<bar> = nat \<bar>c\<bar> ^ n"
+    by (simp add: nat_mult_distrib [of "\<bar>a\<bar>" "\<bar>b\<bar>", symmetric] nat_power_eq)
   moreover have "coprime (nat \<bar>a\<bar>) (nat \<bar>b\<bar>)" using assms(3) gcd_int_def by fastforce
   ultimately have "\<exists> k. nat \<bar>a\<bar> = k^n"
     using nat_relprime_power_divisors[of n "nat \<bar>a\<bar>" "nat \<bar>b\<bar>" "nat \<bar>c\<bar>"] assms(1) by blast
   then obtain k' where k': "nat \<bar>a\<bar> = k'^n" by blast
-  moreover def k == "int k'"
+  moreover define k where "k = int k'"
   ultimately have k: "\<bar>a\<bar> = k^n" using int_nat_eq[of "\<bar>a\<bar>"] of_nat_power[of k' n] by force
   { assume "a \<noteq> k^n"
     with k have "a = -(k^n)" by arith
@@ -204,7 +206,7 @@ next
       ultimately have "\<exists> c. 2*p = c^3" by (simp add: int_relprime_odd_power_divisors)
       then obtain c where c: "c^3 = 2*p" by auto
       from pqx factors_relprime have "gcd (p^2 + 3*q^2) (2*p) = 1"
-        and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: gcd.commute ac_simps)
+        and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: ac_simps)
       hence "\<exists> d. p^2 + 3*q^2 = d^3" by (simp add: int_relprime_odd_power_divisors)
       then obtain d where d: "p^2 + 3*q^2 = d^3" by auto
       have "odd d"
@@ -403,7 +405,7 @@ next
           moreover have "(3::int) \<noteq> 0" by simp
           ultimately have "h dvd 2*r" by (rule zdvd_mult_cancel)
           with h have "h dvd 2 \<or> h dvd r" 
-            by (auto simp: prime_int_nat_transfer prime_dvd_mult_iff dest: prime_dvd_multD)
+            by (auto dest: prime_dvd_multD)
           moreover have "\<not> h dvd 2" 
           proof (rule ccontr, simp)
             assume "h dvd 2" 
@@ -434,7 +436,7 @@ next
           assume h: "?h \<noteq> 1"
           have h9: "?h dvd 3*3" and hrq: "?h dvd 3*r^2 + q^2" by blast+
           have "nat ?h dvd 3^2"
-            using h9 gcd_ge_0_int[of "3*3" "3 * r\<^sup>2 + q\<^sup>2"] transfer_nat_int_relations(4)
+            using h9 gcd_ge_0_int[of "3*3" "3 * r\<^sup>2 + q\<^sup>2"]
             unfolding power2_eq_square by presburger 
           then obtain k where k: "nat ?h = 3^k" "k\<le>2"
             by (subst (asm) divides_primepow_nat) auto
@@ -467,7 +469,7 @@ next
       with c1 obtain c where c: "3*c^3 = 2*r" 
         by (auto simp add: power_mult_distrib dvd_def)
       from rqx factors_relprime have "gcd (q^2 + 3*r^2) (18*r) = 1"
-        and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: gcd.commute ac_simps)
+        and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: ac_simps)
       hence "\<exists> d. q^2 + 3*r^2 = d^3" 
         by (simp add: int_relprime_odd_power_divisors)
       then obtain d where d: "q^2 + 3*r^2 = d^3" by auto

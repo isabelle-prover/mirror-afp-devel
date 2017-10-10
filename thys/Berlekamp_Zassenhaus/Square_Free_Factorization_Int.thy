@@ -230,7 +230,7 @@ proof (intro conjI)
   then obtain K where F: "F = H * K" unfolding dvd_def by auto
   from arg_cong[OF this, of content, unfolded content_mult ff(8)]
     content_ge_0_int[of H] have "content H = 1"
-    by (metis Nat_Transfer.transfer_nat_int_function_closures(6) dvd_triv_left dvd_triv_right mult.comm_neutral zdvd_antisym_nonneg)
+    by (auto simp add: zmult_eq_1_iff)
   thus "content (gcd F G) = 1" unfolding H .
 qed
   

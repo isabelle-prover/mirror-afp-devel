@@ -86,7 +86,8 @@ private lemma mult_oddprime_is_sum4sq: "\<lbrakk> prime (nat p); odd p \<rbrakk>
   \<exists> t. 0<t \<and> t<p \<and> is_sum4sq_int (p*t)"
 proof -
   assume p1: "prime (nat p)"
-  hence p0: "p > 1" by (simp add: prime_nat_iff)
+  then have p0: "p > 1" and "prime p"
+    by (simp_all add: prime_int_nat_transfer prime_nat_iff)
   assume p2: "odd p"
   then obtain n where n: "p = 2*n+1" using oddE by blast
   with p1 have n0: "n > 0" by (auto simp add: prime_nat_iff)
@@ -116,8 +117,8 @@ proof -
       with p0 have "[x^2 = y^2] (mod p)" using cong_int_def by blast
       hence "p dvd x^2-y^2" using cong_altdef_int by blast
       hence "p dvd (x+y)*(x-y)" by (simp add: power2_eq_square algebra_simps)
-      hence "p dvd x+y \<or> p dvd x-y" using p1 p0 
-        by (auto dest: prime_dvd_multD simp: prime_dvd_mult_iff prime_int_nat_transfer)
+      hence "p dvd x+y \<or> p dvd x-y" using \<open>prime p\<close> p0 
+        by (auto dest: prime_dvd_multD)
       moreover
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
@@ -153,8 +154,8 @@ proof -
       moreover have "-1-y^2 - (-1-x^2) = x^2 - y^2" by arith
       ultimately have "p dvd x^2-y^2" by simp
       hence "p dvd (x+y)*(x-y)" by (simp add: power2_eq_square algebra_simps)
-      with p1 have "p dvd x+y \<or> p dvd x-y" using p1 p0 
-        by (auto dest: prime_dvd_multD simp: prime_dvd_mult_iff prime_int_nat_transfer)
+      with p1 have "p dvd x+y \<or> p dvd x-y" using \<open>prime p\<close> p0 
+        by (auto dest: prime_dvd_multD)
       moreover
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
@@ -413,7 +414,7 @@ next
             with ass have "x^2 dvd p*x" by (auto simp only: sum4sq_int_def)
             hence "x*x dvd x*p" by (simp only: power2_eq_square ac_simps)
             with ass have "nat x dvd nat p"
-              using dvd_mult_cancel_left transfer_nat_int_relations(4) by auto
+              by (simp add: nat_dvd_iff)
             moreover from ass prp have "x \<ge> 0 \<and> x \<noteq> 1 \<and> x \<noteq> p \<and> prime (nat p)" by simp
             ultimately have "False" unfolding prime_nat_iff by auto }
           moreover

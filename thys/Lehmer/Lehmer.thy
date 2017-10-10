@@ -71,10 +71,9 @@ proof -
 qed
 
 lemma One_leq_div:
-  fixes a b :: nat assumes "a dvd b" "a < b" shows "1 < b div a"
-by (metis assms dvd_mult_div_cancel gr_implies_not0 less_Suc0 linorder_not_le mult_1_right
-  mult_zero_right nat_1 order_le_neq_trans order_refl transfer_nat_int_numerals(2))
-
+  "1 < b div a" if "a dvd b" "a < b" for a b :: nat
+  using that by (metis dvd_div_mult_self mult.left_neutral mult_less_cancel2)
+  
 theorem lehmers_theorem:
   assumes "2 \<le> p"
   assumes pf_notcong1: "\<And>x. x \<in> prime_factors (p - 1) \<Longrightarrow> [a ^ ((p - 1) div x) \<noteq> 1] (mod p)"

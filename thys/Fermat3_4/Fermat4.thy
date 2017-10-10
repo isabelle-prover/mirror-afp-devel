@@ -30,7 +30,8 @@ case (1 c)
     hence h1: "p dvd (c^n)" using 1(3) dvd_mult2[of p a b] by presburger
     hence "(p^n) dvd (c^n)"
       using p(1) prime_dvd_power_nat[of p c n] dvd_power_same[of p c n] by blast
-    moreover have h2: "\<not> p dvd b" using p 1(4) prime_nat_iff coprime_common_divisor_nat by blast
+    moreover have h2: "\<not> p dvd b"
+      using p \<open>coprime a b\<close> coprime_common_divisor_nat [of a b p] by auto
     hence "\<not> (p^n) dvd b" using n0 p(1)
       by (auto intro: dvd_trans dvd_power[of n p])
     ultimately have "(p^n) dvd a" using "1.prems" p(1) prime_divprod_pow_nat by force
@@ -42,7 +43,9 @@ case (1 c)
     moreover have "coprime a' b" using 1(4) ac(1) coprime_lmult[of b a' "p^n"]
       by (simp add: gcd.commute mult.commute)
     moreover have "0 < b" "0 < a" using h2 dvd_0_right gr0I True by fastforce+
-    hence "0 < c" "1 < p" using p(1) prime_nat_iff[of p] 1(3) nat_0_less_mult_iff[of a b] n0 by simp+
+    then have "0 < c" "1 < p"
+      using p \<open>a * b = c ^ n\<close> n0 nat_0_less_mult_iff [of a b] n0
+      by (auto simp add: prime_gt_Suc_0_nat)
     hence "c' < c" using ac(2) by simp
     ultimately obtain k where "a' = k^n" using 1(1) n0 by presburger
     hence "a = (p*k)^n" using ac(1) by (simp add: power_mult_distrib)
@@ -51,17 +54,19 @@ case (1 c)
 qed
 
 private lemma int_relprime_power_divisors:
-  assumes "0 < n" and "0 \<le> a" and "0 \<le> b" and "(a::int) * b = c^n" and "coprime a b"
+  assumes "0 < n" and "0 \<le> a" and "0 \<le> b" and "(a::int) * b = c ^ n" and "coprime a b"
   shows "\<exists>k. a = k^n"
 proof (cases "a = 0")
-case False
-  have "0 \<le> c^n" using assms Nat_Transfer.transfer_nat_int_function_closures(2) by fastforce
+  case False
+  from \<open>0 \<le> a\<close> \<open>0 \<le> b\<close> \<open>a * b = c ^ n\<close>[symmetric] have "0 \<le> c ^ n"
+    by simp
   hence "c^n = \<bar>c\<bar>^n" using power_even_abs[of n c] zero_le_power_eq[of c n] by linarith
   hence "a * b = \<bar>c\<bar>^n" using assms(4) by presburger
   hence "nat a * nat b = (nat \<bar>c\<bar>)^n" using nat_mult_distrib[of "a" "b"] assms(2)
-    by (simp add: Nat_Transfer.transfer_nat_int_functions(4))
+    by (simp add: nat_power_eq)
   moreover have "0 \<le> b" using assms mult_less_0_iff[of a b] False by auto
-  hence "coprime (nat a) (nat b)" using assms(2) assms(5) transfer_nat_int_gcd(1) by presburger
+  then have "coprime (nat a) (nat b)" using assms(2) assms(5)
+    by (simp add: gcd_int_def)
   ultimately have "\<exists> k. nat a = k^n"
     using nat_relprime_power_divisors[of n "nat a" "nat b" "nat \<bar>c\<bar>"] assms(1) by blast
   thus ?thesis using assms(2) int_nat_eq[of "a"] by fastforce
@@ -196,7 +201,12 @@ proof -
     hence g2b: "?g dvd 2*b" by (simp only: gcd_dvd2)
     with g2c have "?g dvd 2 * gcd b c" by (simp only: gcd_greatest gcd_mult_distrib_nat)
     with bc_relprime have "?g dvd 2" by simp
-    with p2 have g1or2: "?g = 2 \<or> ?g = 1" unfolding prime_nat_iff by auto
+    moreover have "?g \<noteq> 0"
+      using b_less_c by auto
+    ultimately have "1 \<le> ?g" "?g \<le> 2"
+      by (simp_all add: dvd_imp_le)
+    then have g1or2: "?g = 2 \<or> ?g = 1"
+      by arith
     thus ?thesis
     proof (auto)
       assume "?g = 2" hence "2 dvd ?g" by simp
@@ -287,7 +297,8 @@ proof -
   hence "nat(\<bar>a\<bar>^2) + nat(\<bar>b\<bar>^2) = nat(\<bar>c\<bar>^2)" by simp
   hence new_abc: "?a^2 + ?b^2 = ?c^2"
     by (simp only: nat_mult_distrib power2_eq_square nat_add_distrib)
-  moreover from ab_rel have new_ab_rel: "gcd ?a ?b = 1" using transfer_nat_int_gcd(1) by auto
+  moreover from ab_rel have new_ab_rel: "gcd ?a ?b = 1"
+    by (simp add: gcd_int_def)
   moreover have new_a_odd: "odd ?a" using aodd by (simp add: dvd_int_unfold_dvd_nat)
   ultimately have 
     "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> gcd p q =1" 
@@ -306,7 +317,8 @@ proof -
     and "\<bar>c\<bar> = int(m^2) + int(n^2)" by (simp add: of_nat_diff)+
   hence absabc: "\<bar>a\<bar> = (int m)^2 - (int n)^2 \<and> \<bar>b\<bar> = 2*(int m)*int n
     \<and> \<bar>c\<bar> = (int m)^2 + (int n)^2" by (simp add: power2_eq_square)
-  from mn have mn_rel: "gcd (int m) (int n) = 1" by (simp add: transfer_int_nat_gcd(1))
+  from mn have mn_rel: "gcd (int m) (int n) = 1"
+    by (simp add: gcd_int_def)
   show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> gcd p q=1" 
     (is "\<exists> p q. ?Q p q")
   proof (cases)
@@ -335,7 +347,7 @@ proof -
       assume "\<not> b\<ge>0" hence bneg: "b<0" by simp 
       then obtain q where "q = - int m" by simp
       with p aneg bneg absabc mn_rel have "?Q p q" 
-        by (simp add: gcd.commute ac_simps)
+        by (simp add: ac_simps)
       thus ?thesis by (rule exI)
     qed
     thus ?thesis by (simp only: exI)
@@ -394,7 +406,7 @@ proof -
   proof -
     from kl_rel have "gcd (k*k) l = 1" by (simp add: gcd_mult_cancel)
     hence "gcd (k*k+l*l) l = 1" using gcd_add_mult[of l l "k*k"]
-      by (simp add: ac_simps gcd.commute)
+      by (simp add: ac_simps)
     hence "gcd l (k^2+l^2)=1" by (simp only: power2_eq_square gcd.commute)
     thus ?thesis by simp
   qed
@@ -403,7 +415,7 @@ proof -
     from kl_rel have "gcd l k = 1" by (simp only: gcd.commute)
     hence "gcd (l*l) k = 1" by (simp only: gcd_mult_cancel)
     hence "gcd (l*l+k*k) k = 1" using gcd_add_mult[of k k "l*l"]
-      by (simp add: ac_simps gcd.commute)
+      by (simp add: ac_simps)
     hence "gcd (k^2+l^2) k = 1" by (simp only: ac_simps power2_eq_square)
     thus ?thesis by simp
   qed
@@ -485,7 +497,7 @@ proof -
     { assume "odd \<beta>"
       with newabc albega0 alphabeta_relprime obtain p q where 
         "q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> odd p \<and> gcd p q=1" 
-        by (auto simp add: ac_simps gcd.commute)
+        by (auto simp add: ac_simps)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed

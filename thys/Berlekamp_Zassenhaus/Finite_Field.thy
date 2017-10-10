@@ -263,7 +263,6 @@ proof
     proof -
       have p2: "0 \<le> int (?p-2)" using x by simp
       have card_rw: "(CARD('a) - Suc 0) = nat (1 + int (CARD('a) - 2))" 
-        unfolding transfer_int_nat_numerals(2) nat_int_add 
         using nat_eq_iff x x0 by auto
       have "x ^ nat (?p - 2)*x = x ^ (Suc (nat (?p - 2)))" by simp
       also have "... = x ^ (nat (?p - 1))"

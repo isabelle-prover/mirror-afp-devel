@@ -918,7 +918,12 @@ lemma Un_infinite_iff: "infinite (S \<union> T) = (infinite S \<or> infinite T)"
 
 text {* Give own name to the lemma about finiteness of the integer image of a nat set *}
 corollary finite_A_int_A_conv: "finite A = finite (int ` A)"
-by (rule transfer_nat_int_set_relations)
+proof -
+  have "inj_on int A"
+    by (auto intro: inj_onI)
+  then show ?thesis
+    by (simp add: finite_image_iff)
+qed
 
 text {* Corresponding fact fo infinite sets *}
 corollary infinite_A_int_A_conv: "infinite A = infinite (int ` A)"

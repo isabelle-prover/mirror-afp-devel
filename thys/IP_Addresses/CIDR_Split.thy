@@ -16,11 +16,10 @@ begin
     "ipv4addr_upto i j \<equiv> map (of_nat \<circ> nat) [int (unat i) .. int (unat j)]"
   private lemma ipv4addr_upto: "set (ipv4addr_upto i j) = {i .. j}"
     proof -
-    have helpX:"\<And>f (i::nat) (j::nat). (f \<circ> nat) ` {int i..int j} = f ` {i .. j}"
-      apply(intro set_eqI)
-      apply(safe)
-       apply(force)
-      by (metis Set_Interval.transfer_nat_int_set_functions(2) image_comp image_eqI)
+      have int_interval_eq_image: "{int m..int n} = int ` {m..n}" for m n
+        by (auto intro!: image_eqI [of _ int "nat k" for k])
+      have helpX:"\<And>f (i::nat) (j::nat). (f \<circ> nat) ` {int i..int j} = f ` {i .. j}"
+        by (auto simp add: image_comp int_interval_eq_image)
     {   fix xa :: int
         assume a1: "int (unat i) \<le> xa \<and> xa \<le> int (unat j)"
         then have f2: "int (nat xa) = xa"

@@ -450,7 +450,7 @@ using stern_brocot_coprime[where path=path]
       stern_brocot_coprime[where path=path']
       stern_brocot_denominator_non_zero[where path=path]
       stern_brocot_denominator_non_zero[where path=path']
-by(auto simp: transfer_int_nat_gcd dest!: rat_inv_eq intro: stern_brocot_fractions_not_repeated simp add: stern_brocot_recurse_iterate[symmetric] split: prod.splits)
+by(auto simp: gcd_int_def dest!: rat_inv_eq intro: stern_brocot_fractions_not_repeated simp add: stern_brocot_recurse_iterate[symmetric] split: prod.splits)
 
 
 subsection {* Equivalence of recursive and iterative version \label{section:eq:rec:iterative} *}

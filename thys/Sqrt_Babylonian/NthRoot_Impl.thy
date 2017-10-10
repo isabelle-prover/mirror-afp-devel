@@ -177,9 +177,8 @@ proof -
   from xn x n have x0: "x > 0"
     using not_le p by fastforce
   from p have xp: "x ^ p = x * x ^ pm" by auto
-  have "n div x ^ pm * x ^ pm \<le> n" unfolding mod_div_equality_int
-    using transfer_nat_int_function_closures x n
-    by simp
+  from x n have "n div x ^ pm * x ^ pm \<le> n"
+    by (auto simp add: minus_mod_eq_div_mult [symmetric] mod_int_pos_iff not_less power_le_zero_eq)
   also have "\<dots> \<le> x ^ p" using xn by auto
   finally have le: "n div x ^ pm \<le> x" using x x0 unfolding xp by simp
   have "?sx \<le> (x^p div x ^ pm + x * int pm) div int p"
@@ -200,7 +199,8 @@ proof -
     from div_mult_mod_eq[of n "x^pm"] have "n div x^pm * x^pm = n - n mod x^pm" by arith
     from ge[unfolded this]
     have le: "x^p \<le> n - n mod x^pm" .
-    have ge: "n mod x^pm \<ge> 0" using n x transfer_nat_int_function_closures by auto
+    from x n have ge: "n mod x ^ pm \<ge> 0"
+      by (auto simp add: mod_int_pos_iff not_less power_le_zero_eq)
     from le ge
     have "n \<ge> x^p" by auto
     with xn have False by auto

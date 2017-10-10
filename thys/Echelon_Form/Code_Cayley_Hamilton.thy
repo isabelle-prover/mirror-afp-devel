@@ -64,18 +64,21 @@ primrec matpow :: "'a::semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n
 definition evalmat :: "'a::comm_ring_1 poly \<Rightarrow> 'a^'n^'n \<Rightarrow> 'a^'n^'n" where
   "evalmat P A = (\<Sum> i \<in> { n::nat . n \<le> ( degree P ) } . (coeff P i) *k (matpow A i) )"
 
+lemma evalmat_unfold:
+  "evalmat P A = (\<Sum>i = 0..degree P. coeff P i *k matpow A i)"
+  by (simp add: evalmat_def atMost_def [symmetric] atMost_atLeast0)
+
 lemma evalmat_code[code]:
-  "evalmat P A = sum_list (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"
+  "evalmat P A = (\<Sum>i\<leftarrow>[0..int (degree P)]. coeff P (nat i) *k matpow A (nat i))" (is "_ = ?rhs")
 proof -
-  have set_rw: "int` {n. n \<le> degree P} = set[0..(degree P)]"
-    by (auto, metis (poly_guards_query) image_iff mem_Collect_eq nat_0_le nat_le_iff)
-  have "evalmat P A = (\<Sum>i\<in>{n::nat. n \<le> degree P}. coeff P i *k matpow A i)"
-    unfolding evalmat_def ..
-  also have "... = (\<Sum>i\<in>set[0..(degree P)]. coeff P (nat i) *k matpow A (nat i))"
-    unfolding transfer_nat_int_sum_prod unfolding set_rw ..
-  also have "... = sum_list (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"  
-    unfolding sum_set_upto_conv_sum_list_int ..
-  finally show ?thesis .
+  let ?t = "\<lambda>n. coeff P n *k matpow A n"
+  have "(\<Sum>i = 0..degree P. coeff P i *k matpow A i) = (\<Sum>i\<in>{0..int (degree P)}. coeff P (nat i) *k matpow A (nat i))"
+    by (rule sum.reindex_cong [of nat])
+      (auto simp add: eq_nat_nat_iff image_iff intro: inj_onI, presburger)
+  also have "\<dots> = ?rhs"
+    by (simp add: sum_set_upto_conv_sum_list_int [symmetric])
+  finally show ?thesis
+    by (simp add: evalmat_unfold)
 qed
 
 definition coeffM_zero :: "'a poly^'n^'n \<Rightarrow> 'a::zero^'n^'n" where

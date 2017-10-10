@@ -29,9 +29,8 @@ proof -
   have 0:"lookup (unit_vec n i) [j] = (if i=j then 1 else 0)" unfolding unit_vec_def
     by (simp add: assms lookup_tensor_from_lookup valid_index.Cons valid_index.Nil)
   have 1:"order (unit_vec n i) = 1" unfolding unit_vec_def by (simp add: tensor_from_lookup_def)
-  have 2:"j < hd (dims (tensor_from_lookup [n] (\<lambda>x. if x = [i] then 1 else 0)))"
-    using assms dims_tensor length_tensor_vec_from_lookup list.sel(1) tensor_from_lookup_def transfer_nat_int_list_functions(2)
-    by metis
+  from assms have 2:"j < hd (dims (tensor_from_lookup [n] (\<lambda>x. if x = [i] then 1 else 0)))"
+    by (simp add: dims_tensor_from_lookup)
   show ?thesis using unit_vec_def subtensor_prod_with_vec 1 2 0 smult_1 tensor_smult0
     by (metis (no_types, lifting) tensor_from_lookup_eqI)
 qed

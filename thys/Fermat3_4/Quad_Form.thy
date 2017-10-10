@@ -549,7 +549,7 @@ proof -
         qed
       qed
       with P gpos have "g = 1 \<or> g = ?P"
-        using transfer_nat_int_relations(4)[of g ?P] prime_int_iff[of "?P"] by auto
+        by (simp add: prime_int_iff)
       with g have "g = ?P" by (simp add: prime_int_iff)
       with g have Pab: "?P dvd ?a \<and> ?P dvd ?b" by auto
       have ?thesis
@@ -607,7 +607,7 @@ proof -
     moreover
     { assume "?h > 1" hence "\<exists> g. prime g \<and> g dvd (nat ?h)" using prime_factor_nat by simp
       then obtain g' where "prime g' \<and> g' dvd (nat ?h)" by blast
-      moreover def g == "int g'"
+      moreover define g where "g = int g'"
       ultimately have g: "prime g \<and> g dvd ?h" by (simp add: h2 zdvd_int)
       hence gN: "g dvd N" and "g dvd ?a" by auto
       hence "g dvd p*p^2 - N*(3*p*q^2)"
@@ -621,8 +621,8 @@ proof -
       hence "g dvd p^2" by (simp add: power2_eq_square)
       with gN have gP: "g dvd ?P" by auto
       from g have "g \<ge> 0" by (simp add: prime_int_iff)
-      with gP P have "g = 1 \<or> g = ?P"
-        using transfer_nat_int_relations(4)[of g ?P] prime_int_iff[of "?P"] by auto
+      with gP P g have "g = 1 \<or> g = ?P"
+        by (auto dest: primes_dvd_imp_eq)
       with g have "g = ?P" by (auto simp only: prime_int_iff)
       with gp have ?thesis by simp }
     ultimately show ?thesis by auto
@@ -1371,14 +1371,14 @@ lemma Legendre_zmult: "\<lbrakk> p > 2; prime p \<rbrakk>
   \<Longrightarrow> (Legendre (a*b) p) = (Legendre a p)*(Legendre b p)"
 proof -
   assume p2: "p > 2" and prp: "prime p"
-  from prp have prp': "prime (nat p)" by (simp add: prime_int_nat_transfer)
+  from prp have prp': "prime (nat p)" by (simp add: prime_nat_iff_prime)
   let ?p12 = "nat(((p) - 1) div 2)"
   let ?Labp = "Legendre (a*b) p"
   let ?Lap = "Legendre a p"
   let ?Lbp = "Legendre b p"
   have h1: "((nat p - 1) div 2) = nat ((p - 1) div 2)" using p2 by auto
   hence "[?Labp = (a*b)^?p12] (mod p)" using prp p2 euler_criterion[of "nat p" "a*b"] 
-    by (auto simp: prime_int_nat_transfer)
+    by (auto simp: prime_nat_iff_prime)
   hence "[a^?p12 * b^?p12 = ?Labp] (mod p)"
     by (simp only: power_mult_distrib cong_sym_int)
   moreover have "[?Lap * ?Lbp = a^?p12*b^?p12] (mod p)"
@@ -1421,7 +1421,7 @@ proof -
   let ?L1 = "Legendre (-1) ?p"
   let ?L3 = "Legendre 3 ?p"
   assume p: "prime ?p"
-  from p have p': "prime (nat ?p)" by (simp add: prime_int_nat_transfer)
+  from p have p': "prime (nat ?p)" by (simp add: prime_nat_iff_prime)
   have neg1cube: "(-1::int)^3 = -1" by simp
   have m1: "m \<ge> 1"
   proof (rule ccontr)

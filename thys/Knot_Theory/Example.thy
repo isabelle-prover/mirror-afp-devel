@@ -317,13 +317,11 @@ proof-
   proof-
    have "codomain_wall (basic (cap#[])) = 0" 
         by auto
-   moreover have "domain_wall (basic (cap#[])) = 2" by auto
-   moreover then have "(vert#vert#[]) 
+   then have "domain_wall (basic (cap#[])) = 2" by auto
+   then have "(vert#vert#[]) 
                           = make_vert_block (nat (domain_wall (basic (cap#[]))))"
-        using make_vert_block_def domain_wall_def by (metis Suc_eq_plus1_left 
-              make_vert_block.simps(1) make_vert_block.simps(2) nat_1 nat_numeral one_add_one 
-              transfer_nat_int_numerals(2))
-   ultimately have "compress_top  ((basic (vert#vert#[]))\<circ>(basic (cap#[]))) ?w"
+     by (simp add: make_vert_block_def)
+   then have "compress_top  ((basic (vert#vert#[]))\<circ>(basic (cap#[]))) ?w"
         using compress_top_def by auto
    then have "compress ((basic (vert#vert#[]))\<circ>(basic (cap#[]))) ?w" 
         using compress_def by auto

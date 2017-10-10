@@ -180,7 +180,7 @@ lemma add_to_nat_def: "x + y = from_nat (to_nat x + to_nat y)"
   unfolding Abs'_def unfolding add_def[of x y] by auto
 
 lemma to_nat_1: "to_nat 1 = 1"
-  by (metis (hide_lams, mono_tags) Rep_1 comp_apply to_nat_def transfer_nat_int_numerals(2))
+  by (simp add: to_nat_def Rep_1)
 
 lemma add_def':
   shows "x + y = Abs' (Rep x + Rep y)" unfolding Abs'_def using add_def by simp

@@ -119,26 +119,16 @@ proof -
             split_l: "[2..int n] = [2..int (n - 1)] @ [int n]" and
             split_r: "[1..int n - 1] = [1..int (n - 1) - 1] @ [int n - 1]"
             using n_ge_2 by (induct n) (auto simp: upto_rec2)
-          have f_repeat: "(f ^^ nat (int n)) (z + 11) = (f ^^ nat (int n - 1)) z"
-            using z_le_100 n_ge_2
-            apply (induct n)
-             apply simp
-            apply (rename_tac m)
-            apply (case_tac m)
-             apply simp
-            apply (rename_tac m)
-            apply (case_tac m)
-             apply (simp add: funpow_rec f_def)
-            apply (subst (1 2) funpow_rec)
-            apply simp
-            by (metis Nat_Transfer.transfer_int_nat_functions(1) One_nat_def Suc_1 add_Suc_shift
-              diff_Suc_Suc minus_nat.diff_0 nat_int numeral_3_eq_3 plus_nat.add_0
-              transfer_int_nat_numerals(2) transfer_int_nat_numerals(3)
-              transfer_int_nat_numerals(4))
-
-          show ?thesis
-            using n_ge_2 unfolding split_l split_r list.map f_repeat map_append
-              by (auto intro: ih[of "nat (int n - 1)"] simp: less.hyps)
+          from z_le_100 have f_f_z_11: "f (f (z + 11)) = f z"
+            by (simp add: f_def)
+          moreover define m where "m = n - 2"
+          with n_ge_2 have "n = m + 2"
+            by simp
+          ultimately have f_repeat: "(f ^^ n) (z + 11) = (f ^^ (n - 1)) z"
+            by (simp add: funpow_Suc_right del: funpow.simps)
+          with n_ge_2 show ?thesis
+            by (auto intro: ih [of "nat (int n - 1)"]
+              simp: less.hyps split_l split_r nat_add_distrib nat_diff_distrib)
         qed
       qed
 
