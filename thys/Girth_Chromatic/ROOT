@@ -3,7 +3,8 @@ chapter AFP
 session Girth_Chromatic (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
-    Ordinary_Differential_Equations
+    "HOL-Decision_Procs"
+    "HOL-Library"
   theories
     Girth_Chromatic
   document_files
