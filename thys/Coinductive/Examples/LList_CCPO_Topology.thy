@@ -191,8 +191,7 @@ lemma closed_list_all2:
   fixes f g :: "'b::t2_space \<Rightarrow> 'a llist"
   assumes f: "\<And>x. isCont f x" and g: "\<And>x. isCont g x"
   shows "closed {x. llist_all2 R (f x) (g x)}"
-  using  continuous_closed_vimage[OF isCont_Pair[OF f g] closed_llist_all2, of R]
-  by simp
+  using  continuous_closed_vimage[OF closed_llist_all2  isCont_Pair[OF f g]] by simp
 
 lemma at_botI_lfinite[simp]: "lfinite l \<Longrightarrow> at l = bot"
   by (simp add: at_eq_bot_iff)
