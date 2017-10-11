@@ -1990,7 +1990,7 @@ notify = Stephan.Merz@loria.fr
 [Consensus_Refined]
 title = Consensus Refined
 date = 2015-03-18
-author = Ognjen Maric, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
+author = Ognjen Maric <>, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
 topic = Computer Science/Algorithms/Distributed
 abstract =
 	Algorithms for solving the consensus problem are fundamental to
