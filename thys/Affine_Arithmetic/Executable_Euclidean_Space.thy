@@ -375,9 +375,7 @@ lemma eucl_of_list_prod_if:
   apply (auto simp: eucl_of_list_inner dest!: Basis_prodD)
    apply (subst eucl_of_list_inner_le)
   apply (auto simp: Basis_list_prod_def index_append in_set_zip)
-  apply (subst List.nth_drop)
-  apply auto
-  by (metis index_le_size length_Basis_list)
+  done
 
 
 lemma snd_eucl_of_list_prod:

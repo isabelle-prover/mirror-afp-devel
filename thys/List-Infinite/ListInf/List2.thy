@@ -84,18 +84,15 @@ apply simp
 done
 
 corollary nth_0_drop: "n \<le> length xs \<Longrightarrow> (xs \<up> n) ! 0 = xs ! n"
-by (cut_tac nth_drop[of n 0 xs], simp+)
-corollary hd_drop: "n < length xs \<Longrightarrow> hd (xs \<up> n) = xs ! n"
-apply (frule drop_not_empty_conv[THEN iffD2])
-apply (simp add: hd_eq_first[symmetric])
-done
+  by (cut_tac nth_drop[of n xs 0], simp+)
+
 
 lemma drop_eq_tl: "xs \<up> (Suc 0) = tl xs"
 by (simp add: drop_Suc)
 
 lemma drop_take_1: "
   n < length xs \<Longrightarrow> xs \<up> n \<down> (Suc 0) = [xs ! n]"
-by (simp add: take_hd hd_drop)
+by (simp add: take_hd hd_drop_conv_nth)
 
 lemma upt_append: "m \<le> n \<Longrightarrow> [0..<m] @ [m..<n] = [0..<n]"
 by (insert upt_add_eq_append[of 0 m "n - m"], simp)

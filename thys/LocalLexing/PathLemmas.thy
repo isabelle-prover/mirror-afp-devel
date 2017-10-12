@@ -77,10 +77,8 @@ proof -
     have j_plus_r_bound: "j + r < length p" by (simp add: j length_p_q_r) 
     with p_\<Z> have "\<exists>u. p ! (j + r) \<in> \<Z> (charslength (take (j + r) p)) u" by blast
     then obtain u where u: "p ! (j + r) \<in> \<Z> (charslength (take (j + r) p)) u" by blast
-    have p_at_is_q_at: "p ! (j + r) = q ! j" 
-      by (simp add: add.commute j_plus_r_bound less_imp_le_nat q)    
-    have "take (j + r) p = (take r p) @ (take j q)"
-      by (metis add.commute q take_add)
+    have p_at_is_q_at: "p ! (j + r) = q ! j" by (simp add: add.commute q r) 
+    have "take (j + r) p = (take r p) @ (take j q)" by (metis add.commute q take_add)
     with empty have "charslength (take (j + r) p) = charslength (take j q)" by auto
     with u p_at_is_q_at have "q ! j \<in> \<Z> (charslength (take j q)) u" by simp
     then have "\<exists> u. q ! j \<in> \<Z> (charslength (take j q)) u" by auto
