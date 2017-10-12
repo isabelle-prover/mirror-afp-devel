@@ -895,6 +895,9 @@ qed
 
 subsubsection \<open>More on multisets and functions\<close>
 
+lemma subseteq_mset_size_eql: "X \<subseteq># Y \<Longrightarrow> size Y = size X \<Longrightarrow> X = Y"
+  using mset_subset_size subset_mset_def by fastforce
+
 lemma image_mset_of_subset_list:
   assumes "image_mset \<eta> C' = mset lC"
   shows "\<exists>qC'. map \<eta> qC' = lC \<and> mset qC' = C'"
