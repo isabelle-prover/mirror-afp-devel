@@ -490,15 +490,14 @@ lemma nth_append_drop_is_nth_conv:
   assumes "j < i" and "j \<le> length xs" and "i \<le> length xs"
   shows "(take j xs @ y # drop (Suc j) xs)!i = xs!i"
 proof -
-  from assms have j: "length(take j xs) = j" by auto
-  from \<open>j < i\<close> obtain n where "Suc(j + n) = i" using less_imp_Suc_add by auto
+  from \<open>j < i\<close> obtain n where ij: "Suc(j + n) = i" using less_imp_Suc_add by auto
   with assms have i: "i = length(take j xs) + Suc n" by auto
   have len: "Suc j + n \<le> length xs" using assms i by auto
   have "(take j xs @ y # drop (Suc j) xs)!i =
     (y # drop (Suc j) xs)!(i - length(take j xs))" unfolding nth_append i by auto
   also have "\<dots> = (y # drop (Suc j) xs)!(Suc n)" unfolding i by simp
   also have "\<dots> = (drop (Suc j) xs)!n" by simp
-  finally show ?thesis unfolding nth_drop[OF len] using i j by simp
+  finally show ?thesis using ij len by simp
 qed
 
 lemma nth_append_take_drop_is_nth_conv: 

@@ -108,8 +108,8 @@ begin
     show "drop (length ds1) is \<lhd> ds2"
       apply (rule valid_indexI)
       using valid_index_length using assms apply auto[1]
-      using nth_drop[of "length ds1" _ "is"] valid_index_lt[OF assms(1)] nth_append[of ds1 ds2] length_is
-      by (metis (no_types) add_strict_left_mono length_append less_imp_le nth_append_length_plus)
+      using nth_drop[of "length ds1" "is"] valid_index_lt[OF assms(1)] nth_append[of ds1 ds2] length_is
+      by (metis length_append nat_add_left_cancel_less nat_le_iff_add nth_append_length_plus)
     show "take (length ds1) is @ drop (length ds1) is = is" using length_is by auto
   qed
 
