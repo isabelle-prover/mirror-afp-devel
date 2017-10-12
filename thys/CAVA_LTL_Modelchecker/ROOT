@@ -24,14 +24,11 @@ session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
     "Nested_DFS/NDFS_SI_Statistics"
   theories
     "Nested_DFS/NDFS_SI"
-  theories
     CAVA_Abstract
-  theories [document = false]
-    "HOL-Library.AList_Mapping"
-  theories
     "BoolProgs/BoolProgs"
   theories [document = false]
-    "BoolProgs/BoolProgs_Extras" "BoolProgs/BoolProgs_LTL_Conv"
+    "BoolProgs/BoolProgs_Extras"
+    "BoolProgs/BoolProgs_LTL_Conv"
     "BoolProgs/Programs/BoolProgs_Programs"
   theories
     CAVA_Impl
