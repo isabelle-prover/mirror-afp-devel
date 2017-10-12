@@ -111,8 +111,7 @@ apply (subgoal_tac "length xs div k * k - i * k \<le> length xs - i * k")
  prefer 2
  apply (simp add: div_mult_cancel)
 apply (simp add: min_eqR)
-apply (simp add: drop_take)
-done
+by (simp add: less_diff_conv)
 
 lemma list_slice_append_mult: "
   \<And>xs. length xs = m * k \<Longrightarrow>
