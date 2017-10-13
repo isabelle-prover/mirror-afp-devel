@@ -75,9 +75,9 @@ lemma def_of_tl:
 lemma drop_yields_results_implies_nbound:
   shows "drop n x \<noteq> [] \<longrightarrow> n < length x"
 by(induct x,auto)
-lemma hd_take[simp]:
-  shows "n > 0 \<Longrightarrow> hd (take n x) = hd x"
-by(cases x,simp,cases n, auto)
+
+declare hd_take[simp]
+
 lemma consecutive_is_sub_seq:
   shows "a # (b # x) = lastn n y \<Longrightarrow> is_sub_seq a b y"
 proof-
