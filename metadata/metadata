@@ -6128,3 +6128,23 @@ abstract =
   guarantee its consistency. Thereby our work could provide a
   significant contribution to the development of a proper grounding for
   object theory. </p>
+
+[Diophantine_Eqns_Lin_Hom]
+title = Homogeneous Linear Diophantine Equations
+author = Florian Messner <mailto:florian.g.messner@uibk.ac.at>, Julian Parsert <mailto:julian.parsert@gmail.com>, Jonas Schöpf <mailto:jonas.schoepf@uibk.ac.at>,  Christian Sternagel <mailto:c.sternagel@gmail.com>
+topic = Computer Science/Algorithms, Mathematics/Number Theory, Tools
+license = LGPL
+date = 2017-10-14
+notify = c.sternagel@gmail.com, julian.parsert@gmail.com
+abstract =
+  We formalize the theory of homogeneous linear diophantine equations,
+  focusing on two main results: (1) an abstract characterization of
+  minimal complete sets of solutions, and (2) an algorithm computing
+  them. Both, the characterization and the algorithm are based on
+  previous work by Huet. Our starting point is a simple but inefficient
+  variant of Huet's lexicographic algorithm incorporating improved
+  bounds due to Clausen and Fortenbacher. We proceed by proving its
+  soundness and completeness. Finally, we employ code equations to
+  obtain a reasonably efficient implementation. Thus, we provide a
+  formally verified solver for homogeneous linear diophantine equations.
+

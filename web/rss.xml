@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Sep 2017 00:00:00 +0000</pubDate>
+    <pubDate>14 Oct 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Homogeneous Linear Diophantine Equations</title>
+              <link>https://www.isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</link>
+       <guid>https://www.isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+       <dc:creator> Florian Messner, Julian Parsert, Jonas Schöpf, Christian Sternagel       </dc:creator>
+       <pubDate>14 Oct 2017 00:00:00 +0000</pubDate>
+       <description>
+We formalize the theory of homogeneous linear diophantine equations,
+focusing on two main results: (1) an abstract characterization of
+minimal complete sets of solutions, and (2) an algorithm computing
+them. Both, the characterization and the algorithm are based on
+previous work by Huet. Our starting point is a simple but inefficient
+variant of Huet&#39;s lexicographic algorithm incorporating improved
+bounds due to Clausen and Fortenbacher. We proceed by proving its
+soundness and completeness. Finally, we employ code equations to
+obtain a reasonably efficient implementation. Thus, we provide a
+formally verified solver for homogeneous linear diophantine equations.</description>
+    </item>
     <item>
        <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
               <link>https://www.isa-afp.org/entries/PLM.html</link>
@@ -597,25 +615,6 @@ definition of monoidal functor need to take as given a specific
 isomorphism expressing the preservation of the unit object. Our
 definitions of monoidal category and monoidal functor are stated so as
 to take advantage of the economy afforded by these facts.</description>
-    </item>
-    <item>
-       <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</link>
-       <guid>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</guid>
-       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
-       <pubDate>01 May 2017 00:00:00 +0000</pubDate>
-       <description>
-A computer-formalisation of the essential parts of Fitting&#39;s
-textbook &#34;Types, Tableaus and Gödel&#39;s God&#34; in
-Isabelle/HOL is presented. In particular, Fitting&#39;s (and
-Anderson&#39;s) variant of the ontological argument is verified and
-confirmed. This variant avoids the modal collapse, which has been
-criticised as an undesirable side-effect of Kurt Gödel&#39;s (and
-Dana Scott&#39;s) versions of the ontological argument.
-Fitting&#39;s work is employing an intensional higher-order modal
-logic, which we shallowly embed here in classical higher-order logic.
-We then utilize the embedded logic for the formalisation of
-Fitting&#39;s argument. (See also the earlier AFP entry ``Gödel&#39;s God in Isabelle/HOL&#39;&#39;.)</description>
     </item>
   </channel>
 </rss>
