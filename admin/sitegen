@@ -56,7 +56,7 @@ fi
 
 echo "Obtaining dependency information ..."
 
-DEPENDENCIES_FILE="$(mktemp)"
+DEPENDENCIES_FILE="$(mktemp /tmp/afp.XXX)"
 "$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || err "Could not obtain dependency information"
 
 echo "Checking presence of Python ..."
