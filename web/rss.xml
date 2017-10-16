@@ -29,6 +29,30 @@ obtain a reasonably efficient implementation. Thus, we provide a
 formally verified solver for homogeneous linear diophantine equations.</description>
     </item>
     <item>
+       <title>The Hurwitz and Riemann ζ Functions</title>
+              <link>https://www.isa-afp.org/entries/Zeta_Function.html</link>
+       <guid>https://www.isa-afp.org/entries/Zeta_Function.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; This entry builds upon the results about formal and analytic
+Dirichlet series to define the Hurwitz &amp;zeta; function and, based
+on that, the Riemann &amp;zeta; function. This is done by first
+defining them for &amp;real;(&lt;i&gt;z&lt;/i&gt;) &gt; 1 and then
+successively extending the domain to the left using the
+Euler&amp;ndash;MacLaurin formula. &lt;/p&gt; &lt;p&gt; Some basic
+results about these functions are also shown, such as their
+analyticity on &amp;#8450;&amp;#8726;&amp;#123;1&amp;#125;, that they
+have a simple pole with residue 1 at 1, their relation to the
+&amp;Gamma; function, and the special values at negative integers and
+positive even integers &amp;ndash; including the famous &amp;zeta;(-1)
+= -1/12 and &amp;zeta;(2) = &amp;pi;&amp;sup2;/6. &lt;/p&gt; &lt;p&gt;
+Lastly, the entry also contains Euler&#39;s analytic proof of the
+infinitude of primes, based on the fact that
+&amp;zeta;(&lt;i&gt;s&lt;/i&gt;) has a pole at &lt;i&gt;s&lt;/i&gt; =
+1. &lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Dirichlet Series</title>
               <link>https://www.isa-afp.org/entries/Dirichlet_Series.html</link>
        <guid>https://www.isa-afp.org/entries/Dirichlet_Series.html</guid>
@@ -584,30 +608,6 @@ This AFP entry implements a simproc that normalises monadic
 expressions in commutative monads using ordered rewriting. The
 simproc can also permute computations across control operators like if
 and case.</description>
-    </item>
-    <item>
-       <title>Game-based cryptography in HOL</title>
-              <link>https://www.isa-afp.org/entries/Game_Based_Crypto.html</link>
-       <guid>https://www.isa-afp.org/entries/Game_Based_Crypto.html</guid>
-       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar, Bhargav Bhatt       </dc:creator>
-       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;In this AFP entry, we show how to specify game-based cryptographic
-security notions and formally prove secure several cryptographic
-constructions from the literature using the CryptHOL framework. Among
-others, we formalise the notions of a random oracle, a pseudo-random
-function, an unpredictable function, and of encryption schemes that are
-indistinguishable under chosen plaintext and/or ciphertext attacks. We
-prove the random-permutation/random-function switching lemma, security
-of the Elgamal and hashed Elgamal public-key encryption scheme and
-correctness and security of several constructions with pseudo-random
-functions.
-&lt;/p&gt;&lt;p&gt;Our proofs follow the game-hopping style advocated by
-Shoup and Bellare and Rogaway, from which most of the examples have
-been taken. We generalise some of their results such that they can be
-reused in other proofs. Thanks to CryptHOL&#39;s integration with
-Isabelle&#39;s parametricity infrastructure, many simple hops are easily
-justified using the theory of representation independence.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

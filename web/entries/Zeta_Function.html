@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Euler–MacLaurin Formula - Archive of Formal Proofs
+<title>The Hurwitz and Riemann ζ Functions - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -63,9 +63,15 @@
   <p>&nbsp;</p>
   <h1>          <font class="first">T</font>he
   
-          <font class="first">E</font>uler–MacLaurin
+          <font class="first">H</font>urwitz
   
-          <font class="first">F</font>ormula
+          and
+  
+          <font class="first">R</font>iemann
+  
+          ζ
+  
+          <font class="first">F</font>unctions
   
 </h1>
   <p>&nbsp;</p>
@@ -74,7 +80,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Euler–MacLaurin Formula</td>
+  <td class="data" width="80%">The Hurwitz and Riemann ζ Functions</td>
 </tr>
 
 <tr>
@@ -90,38 +96,41 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-03-10</td>
+  <td class="data">2017-10-12</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>The Euler-MacLaurin formula relates the value of a
-discrete sum to that of the corresponding integral in terms of the
-derivatives at the borders of the summation and a remainder term.
-Since the remainder term is often very small as the summation bounds
-grow, this can be used to compute asymptotic expansions for
-sums.</p>  <p>This entry contains a proof of this formula
-for functions from the reals to an arbitrary Banach space. Two
-variants of the formula are given: the standard textbook version and a
-variant outlined in <em>Concrete Mathematics</em> that is
-more useful for deriving asymptotic estimates.</p>  <p>As
-example applications, we use that formula to derive the full
-asymptotic expansion of the harmonic numbers and the sum of inverse
-squares.</p></td>
+<p> This entry builds upon the results about formal and analytic
+Dirichlet series to define the Hurwitz &zeta; function and, based
+on that, the Riemann &zeta; function. This is done by first
+defining them for &real;(<i>z</i>) > 1 and then
+successively extending the domain to the left using the
+Euler&ndash;MacLaurin formula. </p> <p> Some basic
+results about these functions are also shown, such as their
+analyticity on &#8450;&#8726;&#123;1&#125;, that they
+have a simple pole with residue 1 at 1, their relation to the
+&Gamma; function, and the special values at negative integers and
+positive even integers &ndash; including the famous &zeta;(-1)
+= -1/12 and &zeta;(2) = &pi;&sup2;/6. </p> <p>
+Lastly, the entry also contains Euler's analytic proof of the
+infinitude of primes, based on the fact that
+&zeta;(<i>s</i>) has a pole at <i>s</i> =
+1. </p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Euler_MacLaurin-AFP,
+        <pre>@article{Zeta_Function-AFP,
   author  = {Manuel Eberl},
-  title   = {The Euler–MacLaurin Formula},
+  title   = {The Hurwitz and Riemann ζ Functions},
   journal = {Archive of Formal Proofs},
-  month   = mar,
+  month   = oct,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Euler_MacLaurin.html},
+  note    = {\url{http://isa-afp.org/entries/Zeta_Function.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -133,11 +142,9 @@ squares.</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bernoulli.html">Bernoulli</a>, <a href="Landau_Symbols.html">Landau_Symbols</a>      </td></tr>
+          <td class="data"><a href="Bernoulli.html">Bernoulli</a>, <a href="Dirichlet_Series.html">Dirichlet_Series</a>, <a href="Euler_MacLaurin.html">Euler_MacLaurin</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Dirichlet_Series.html">Dirichlet_Series</a>, <a href="Zeta_Function.html">Zeta_Function</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -149,29 +156,23 @@ squares.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Euler_MacLaurin/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Euler_MacLaurin/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Zeta_Function/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Zeta_Function/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Euler_MacLaurin/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Zeta_Function/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Euler_MacLaurin-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Zeta_Function-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Euler_MacLaurin-2017-03-14.tar.gz">
-            afp-Euler_MacLaurin-2017-03-14.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

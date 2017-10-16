@@ -4678,6 +4678,30 @@ abstract =
   developing more number-theoretic results, such as the Prime Number
   Theorem.
 
+[Zeta_Function]
+title = The Hurwitz and Riemann ζ Functions
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory, Mathematics/Analysis
+date = 2017-10-12
+notify = eberlm@in.tum.de
+abstract =
+  <p> This entry builds upon the results about formal and analytic
+  Dirichlet series to define the Hurwitz &zeta; function and, based
+  on that, the Riemann &zeta; function. This is done by first
+  defining them for &real;(<i>z</i>) > 1 and then
+  successively extending the domain to the left using the
+  Euler&ndash;MacLaurin formula. </p> <p> Some basic
+  results about these functions are also shown, such as their
+  analyticity on &#8450;&#8726;&#123;1&#125;, that they
+  have a simple pole with residue 1 at 1, their relation to the
+  &Gamma; function, and the special values at negative integers and
+  positive even integers &ndash; including the famous &zeta;(-1)
+  = -1/12 and &zeta;(2) = &pi;&sup2;/6. </p> <p>
+  Lastly, the entry also contains Euler's analytic proof of the
+  infinitude of primes, based on the fact that
+  &zeta;(<i>s</i>) has a pole at <i>s</i> =
+  1. </p>
+
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
