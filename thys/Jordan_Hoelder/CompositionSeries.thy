@@ -225,24 +225,11 @@ lemma (in normal_series) normal_series_prefix_closed:
   shows "normal_series (G\<lparr>carrier := \<GG> ! (i - 1)\<rparr>) (take i \<GG>)"
 unfolding normal_series_def normal_series_axioms_def
 using assms
-apply (auto del:equalityI)
- apply (metis diff_Suc_Suc diff_is_0_eq' gr_implies_not0 minus_nat.diff_0 normal_series_subgroups not0_implies_Suc not_less_eq subgroup_imp_group zero_less_diff)
-proof -
-  from assms have "hd (take i \<GG>) = (take i \<GG>) ! 0" by (metis gr_implies_not0 hd_conv_nth notempty take_eq_Nil)
-  also from assms have "... = \<GG> ! 0" by (metis nth_take)
-  also from hd have "... = {\<one>}" by (metis hd_conv_nth notempty)
-  finally show "hd (take i \<GG>) = {\<one>}".
-next
-  from assms have "last (take i \<GG>) = (take i \<GG>) ! (length (take i \<GG>) - 1)" by (metis last_conv_nth neq0_conv notempty take_eq_Nil)
-  also from assms have "... = (take i \<GG>) ! (i - 1)" by (metis length_take min.absorb2)
-  also from assms have "... = \<GG> ! (i - 1)" by (metis diff_less nth_take zero_less_one)
-  finally show "last (take i \<GG>) = \<GG> ! (i - Suc 0)" by simp
-next
-  fix j
-  assume j:"Suc j < i"
-  hence "j + 1 < length \<GG>" using assms by simp
-  with normal show "\<GG> ! j \<lhd> G\<lparr>carrier := \<GG> ! (Suc j)\<rparr>" by auto
-qed
+apply (auto simp: hd del:equalityI)
+  apply (simp add: is_group normal_series_subgroups subgroup.subgroup_is_group)
+ apply (simp add: last_conv_nth min.absorb2 notempty)
+using assms(1) normal apply simp
+done
 
 text {* If a group's order is the product of two distinct primes @{term p} and @{term q}, where
 @{term "p < q"}, we can construct a normal series using the only subgroup of size  @{term q}. *}

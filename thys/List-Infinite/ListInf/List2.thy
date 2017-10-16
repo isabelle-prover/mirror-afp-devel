@@ -969,11 +969,8 @@ lemma map_list_xs_take: "\<And>n xs.
   map_list fs (xs \<down> n) =
   map_list fs xs"
 apply (induct fs, simp+)
-apply (rename_tac f fs n xs)
+apply (rename_tac fs n xs)
 apply (simp add: tl_take)
-apply (rule_tac f=f in arg_cong)
-apply (case_tac "xs = []", simp)
-apply (simp add: hd_conv_nth)
 done
 
 lemma map_list_take: "\<And>n xs.
