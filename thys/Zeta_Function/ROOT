@@ -1,0 +1,14 @@
+chapter AFP
+
+session Zeta_Function (AFP) = Dirichlet_Series +
+  options [timeout = 600]
+  sessions
+    Euler_MacLaurin
+    Bernoulli
+  theories [document = false]
+    "Dirichlet_Series.Dirichlet_Series_Analysis"
+  theories
+    Zeta_Function
+  document_files
+    "root.tex"
+
