@@ -4652,6 +4652,32 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
 	proof methods, see the accompanying paper (publication forthcoming).
 notify = eberlm@in.tum.de
 
+[Dirichlet_Series]
+title = Dirichlet Series
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2017-10-12
+notify = eberlm@in.tum.de
+abstract =
+  This entry is a formalisation of much of Chapters 2, 3, and 11 of
+  Apostol's &ldquo;Introduction to Analytic Number
+  Theory&rdquo;. This includes: <ul> <li>Definitions and
+  basic properties for several number-theoretic functions (Euler's
+  &phi;, M&ouml;bius &mu;, Liouville's &lambda;,
+  the divisor function &sigma;, von Mangoldt's
+  &Lambda;)</li> <li>Executable code for most of these
+  functions, the most efficient implementations using the factoring
+  algorithm by Thiemann <i>et al.</i></li>
+  <li>Dirichlet products and formal Dirichlet series</li>
+  <li>Analytic results connecting convergent formal Dirichlet
+  series to complex functions</li> <li>Euler product
+  expansions</li> <li>Asymptotic estimates of
+  number-theoretic functions including the density of squarefree
+  integers and the average number of divisors of a natural
+  number</li> </ul> These results are useful as a basis for
+  developing more number-theoretic results, such as the Prime Number
+  Theorem.
+
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
