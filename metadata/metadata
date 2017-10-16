@@ -4346,6 +4346,22 @@ abstract =
   We then utilize the embedded logic for the formalisation of
   Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
 
+[Lowe_Ontological_Argument]
+title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <www.christoph-benzmueller.de>
+topic = Logic
+date = 2017-09-21
+notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
+abstract =
+  Computers may help us to understand --not just verify-- philosophical
+  arguments. By utilizing modern proof assistants in an iterative
+  interpretive process, we can reconstruct and assess an argument by
+  fully formal means. Through the mechanization of a variant of St.
+  Anselm's ontological argument by E. J. Lowe, which is a
+  paradigmatic example of a natural-language argument with strong ties
+  to metaphysics and religion, we offer an ideal showcase for our
+  computer-assisted interpretive method.
+
 [AnselmGod]
 title = Anselm's God in Isabelle/HOL
 author = Ben Blumson <https://philpapers.org/profile/805>
@@ -5870,7 +5886,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2017-07-06
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop Stone-Kleene relation algebras, which expand Stone relation
   algebras with a Kleene star operation to describe reachability in
   weighted graphs. Many properties of the Kleene star arise as a special
@@ -6090,7 +6106,7 @@ author = Daniel Kirchner <mailto:daniel@ekpyron.org>
 topic = Logic
 date = 2017-09-17
 notify = daniel@ekpyron.org
-abstract = 
+abstract =
   <p> We present an embedding of the second-order fragment of the
   Theory of Abstract Objects as described in Edward Zalta's
   upcoming work <a
