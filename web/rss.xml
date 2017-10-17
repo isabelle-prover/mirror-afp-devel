@@ -53,6 +53,31 @@ infinitude of primes, based on the fact that
 1. &lt;/p&gt;</description>
     </item>
     <item>
+       <title>Linear Recurrences</title>
+              <link>https://www.isa-afp.org/entries/Linear_Recurrences.html</link>
+       <guid>https://www.isa-afp.org/entries/Linear_Recurrences.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; Linear recurrences with constant coefficients are an
+interesting class of recurrence equations that can be solved
+explicitly. The most famous example are certainly the Fibonacci
+numbers with the equation &lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt;) =
+&lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt;-1) +
+&lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt; - 2) and the quite
+non-obvious closed form
+(&lt;i&gt;&amp;phi;&lt;/i&gt;&lt;sup&gt;&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;
+-
+(-&lt;i&gt;&amp;phi;&lt;/i&gt;)&lt;sup&gt;-&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;)
+/ &amp;radic;&lt;span style=&#34;text-decoration:
+overline&#34;&gt;5&lt;/span&gt; where &amp;phi; is the golden ratio.
+&lt;/p&gt; &lt;p&gt; In this work, I build on existing tools in
+Isabelle &amp;ndash; such as formal power series and polynomial
+factorisation algorithms &amp;ndash; to develop a theory of these
+recurrences and derive a fully executable solver for them that can be
+exported to programming languages like Haskell. &lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Dirichlet Series</title>
               <link>https://www.isa-afp.org/entries/Dirichlet_Series.html</link>
        <guid>https://www.isa-afp.org/entries/Dirichlet_Series.html</guid>
@@ -592,22 +617,6 @@ abstract over the concrete monad in HOL definitions and thus use the
 same definition for different (combinations of) effects. We illustrate
 the usefulness of effect polymorphism with a monadic interpreter for a
 simple language.</description>
-    </item>
-    <item>
-       <title>Monad normalisation</title>
-              <link>https://www.isa-afp.org/entries/Monad_Normalisation.html</link>
-       <guid>https://www.isa-afp.org/entries/Monad_Normalisation.html</guid>
-       <dc:creator> Joshua Schneider, Manuel Eberl, Andreas Lochbihler       </dc:creator>
-       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
-       <description>
-The usual monad laws can directly be used as rewrite rules for Isabelle’s
-simplifier to normalise monadic HOL terms and decide equivalences.
-In a commutative monad, however, the commutativity law is a
-higher-order permutative rewrite rule that makes the simplifier loop.
-This AFP entry implements a simproc that normalises monadic
-expressions in commutative monads using ordered rewriting. The
-simproc can also permute computations across control operators like if
-and case.</description>
     </item>
   </channel>
 </rss>
