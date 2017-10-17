@@ -1,10 +1,28 @@
+(* Author: Thiemann *)
 section \<open>Combining Spectral Radius Theory with Perron Frobenius theorem\<close>
 
 theory Spectral_Radius_Theory_2
 imports 
   Perron_Frobenius_General
   Jordan_Normal_Form.Jordan_Normal_Form_Uniqueness
+  Matrix.Utility
 begin
+
+hide_const(open) Coset.order
+
+lemma order_of_real_char_poly: assumes A: "A \<in> carrier_mat n n" 
+  shows "order (complex_of_real x) (char_poly (of_real_hom.mat_hom A)) = order x (char_poly A)" 
+proof -
+  let ?c = complex_of_real
+  interpret c: field_hom ?c ..
+  interpret p: map_poly_inj_idom_divide_hom ?c ..
+  show ?thesis unfolding p.order_hom[symmetric] of_real_hom.char_poly_hom[OF A] ..
+qed
+
+lemma order_of_real_char_poly_1: assumes A: "A \<in> carrier_mat n n" 
+  shows "order (1 :: complex) (char_poly (of_real_hom.mat_hom A)) = order 1 (char_poly A)"
+  "order (- 1 :: complex) (char_poly (of_real_hom.mat_hom A)) = order (- 1) (char_poly A)"
+  using order_of_real_char_poly[OF A, of 1] order_of_real_char_poly[OF A, of "- 1"] by auto
 
 lemma jordan_matrix_append: "jordan_matrix (as @ bs) = 
   four_block_mat (jordan_matrix as) (0\<^sub>m (sum_list (map fst as)) (sum_list (map fst bs)))
@@ -192,8 +210,6 @@ proof -
   with sum show 0: "A $$ (0,0) = 0" "A $$ (1,1) = 0" by auto
   from cp'[unfolded 0 cp] show "A $$ (1,0) * A $$ (0,1) = 1" by simp
 qed
-
-hide_const(open) Coset.order
 
 lemma order_root_unity_2:
   assumes ord: "order (1 :: 'a :: field_char_0) p = 1" "order (-1) p = 1" 
@@ -435,12 +451,6 @@ qed
 
 text \<open>Now we will develop a tight criterion for non-negative real matrices.\<close>
 
-definition max_list :: "nat list \<Rightarrow> nat" where
-  "max_list xs = foldr max xs 0"
-
-lemma max_list: "x \<in> set xs \<Longrightarrow> x \<le> max_list xs" 
-  unfolding max_list_def by (induct xs, auto)
-
 lemma sum_list_approx: assumes kn: "k \<ge> (n :: nat)" and n: "n \<noteq> 0" 
   shows "0 \<notin> set ks \<Longrightarrow> n * length (filter (op dvd k) ks) \<le> sum_list ks" 
 proof (induct ks)
@@ -471,6 +481,7 @@ lemma jnf_perron_frobenius_generic:
         (* length [k'\<leftarrow>ks . k dvd k'] is the multiplicity of x when x^k = 1 and k is minimal *)
      primitive_root_unity k x \<Longrightarrow> (* consider primitive root of unity *)
      order x (char_poly (map_mat complex_of_real A)) = length [k'\<leftarrow>ks. k dvd k'] \<Longrightarrow>
+     (\<And> x. cmod x = 1 \<Longrightarrow> order x (char_poly (map_mat complex_of_real A)) = length [k\<leftarrow>ks . x ^ k = 1]) \<Longrightarrow>
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 
        bsize \<le> d + 1)" 
        (* eventually compute Jordan-blocks *)
@@ -516,7 +527,7 @@ proof (cases "n = 0")
     from d[unfolded this] have len: "d + 1 < length (filter (op dvd k) ks)" .
     also have "\<dots> \<le> length ks" by simp
     finally have len3: "d + 1 < length ks" by auto
-    from main[OF sum_ks len3 ks0 k_mem len k order_length]
+    from main[OF sum_ks len3 ks0 k_mem len k order_length, folded order_length, OF pf(6)]      
     show "\<forall>bsize\<in>fst ` set (compute_set_of_jordan_blocks ?cA x). bsize \<le> d + 1" by auto
   qed
 next
@@ -524,7 +535,7 @@ next
   from A[unfolded this] 
   have A: "A ^\<^sub>m k = 1\<^sub>m 0" for k using A by (intro eq_matI, auto)
   show ?thesis unfolding A by (auto simp: elements_mat_def) 
-qed
+qed  
 
 lemma jnf_perron_frobenius_only_block_1:  
   assumes size: "n \<le> 2 * (d + 2) - 1" 
@@ -539,7 +550,8 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
   proof (cases "k = 1")
     case True
     from 1 root_1 show ?thesis unfolding True primitive_root_unity_explicit
-      using compute_set_of_jordan_blocks_1[OF A] by auto
+      using compute_set_of_jordan_blocks_1[OF A] True 
+      by simp
   next
     case False
     with 1 have k: "k \<ge> 2" by auto
@@ -953,6 +965,7 @@ lemma jnf_perron_frobenius_only_block_1_dim_4:
   assumes size: "n \<le> 4" 
   and root_1: "sum_list ks \<le> n \<Longrightarrow> 
      length ks > d + 1 \<Longrightarrow>
+     order 1 (char_poly A) = length ks \<Longrightarrow>
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks A 1). 
        bsize \<le> d + 1)" 
   shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * of_nat k ^ d)" 
@@ -978,7 +991,8 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
     from this[folded compute_set_of_jordan_blocks[OF jnf, of 1]] 
       compute_set_of_jordan_blocks_1[OF A]
     have "k' \<in> fst ` set (compute_set_of_jordan_blocks A 1)" by force
-    from root_1[OF 1(1,2), rule_format, OF this] kb show "bsize \<le> d + 1" by auto
+    from root_1[OF 1(1,2), rule_format, OF _ this] 1(8)[of 1] kb A show "bsize \<le> d + 1" 
+      by (auto simp: order_of_real_char_poly_1)
   qed
 qed
 end
@@ -987,4 +1001,5 @@ thm
   jnf_perron_frobenius_only_blocks_1_and_minus_1
   jnf_perron_frobenius_only_block_1
   jnf_perron_frobenius_only_block_1_dim_4
+
 end

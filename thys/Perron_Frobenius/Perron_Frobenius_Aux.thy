@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 section \<open>Perron-Frobenius Theorem\<close>
 
 subsection \<open>Auxiliary Notions\<close>

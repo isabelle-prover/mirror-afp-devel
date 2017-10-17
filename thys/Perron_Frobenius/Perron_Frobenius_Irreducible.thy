@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 subsection \<open>The Perron Frobenius Theorem for Irreducible Matrices\<close>
 
 theory Perron_Frobenius_Irreducible

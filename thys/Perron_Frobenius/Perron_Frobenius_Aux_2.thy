@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 section \<open>Perron-Frobenius Theorem, Irreducible Matrices\<close>
 
 subsection \<open>More Auxiliary Notions\<close>

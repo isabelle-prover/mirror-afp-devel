@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 subsection \<open>Handling Non-Irreducible Matrices as Well\<close>
 
 theory Perron_Frobenius_General
