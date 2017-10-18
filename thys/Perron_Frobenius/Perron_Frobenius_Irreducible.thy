@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 subsection \<open>The Perron Frobenius Theorem for Irreducible Matrices\<close>
 
 theory Perron_Frobenius_Irreducible
@@ -46,28 +47,20 @@ lemma smult_eigen_value: fixes a :: "'a :: field"
 
 locale fixed_mat = fixes A :: "'a :: zero ^ 'n ^ 'n"
 begin
- 
-definition G :: "('n,'n \<times> 'n) pre_digraph" where
-  "G = 
-     \<lparr> pre_digraph.verts = UNIV, arcs = { (i,j). A $ i $ j \<noteq> 0}, tail = snd, head = fst \<rparr>" 
-
-lemma G_simps[simp]: "arcs G = { (i,j). A $ i $ j \<noteq> 0}" "tail G = snd" "head G = fst" 
-  unfolding G_def by auto
-
-sublocale fin_digraph G by (unfold_locales, unfold G_def, auto)
+definition G :: "'n rel" where
+  "G = { (i,j). A $ i $ j \<noteq> 0}" 
 
 definition irreducible :: bool where
-  "irreducible = (\<forall> i j. reachable1 G i j)" 
+  "irreducible = (UNIV \<subseteq> G^+)" 
 end
 
-lemma arcs_ends_transpose: 
-  "arcs_ends (fixed_mat.G (transpose A)) = (arcs_ends (fixed_mat.G A))^-1"
-  unfolding fixed_mat.G_def arcs_ends_def arc_to_ends_def
-  by (force simp: transpose_def)
+lemma G_transpose: 
+  "fixed_mat.G (transpose A) = ((fixed_mat.G A))^-1"
+  unfolding fixed_mat.G_def by (force simp: transpose_def)
 
-lemma reachable1_transpose: 
-  "reachable1 (fixed_mat.G (transpose A)) i j = reachable1 (fixed_mat.G A) j i"
-  unfolding arcs_ends_transpose trancl_converse by auto 
+lemma G_transpose_trancl: 
+  "(fixed_mat.G (transpose A))^+ = ((fixed_mat.G A)^+)^-1"
+  unfolding G_transpose trancl_converse by auto 
 
 locale pf_nonneg_mat = fixed_mat A for 
   A :: "'a :: linordered_idom ^ 'n ^ 'n" + 
@@ -80,16 +73,18 @@ lemma nonneg_matpow: "matpow A n $ i $ j \<ge> 0"
   by (induct n arbitrary: i j, insert nonneg, 
     auto intro!: sum_nonneg simp: matrix_matrix_mult_def mat_def)
 
-lemma awalk_pos_matpow_exact: "awalk i xs j \<Longrightarrow> matpow A (length xs) $ j $ i > 0" 
-proof (induct xs arbitrary: i)
-  case (Nil i)
+lemma G_relpow_matpow_pos: "(i,j) \<in> G ^^ n \<Longrightarrow> matpow A n $ i $ j > 0" 
+proof (induct n arbitrary: i j)
+  case (0 i)
   thus ?case by (auto simp: mat_def)
 next
-  case (Cons arc xs i)
-  from Cons(2)[unfolded awalk_Cons_iff] obtain k where
-    ik: "A $ k $ i \<noteq> 0" and xs: "awalk k xs j" by (cases arc, auto)
-  from ik nonneg[of k i] have ik: "A $ k $ i > 0" by auto
-  from Cons(1)[OF xs] have IH: "matpow A (length xs) $h j $h k > 0" .
+  case (Suc n i j)
+  from Suc(2) have "(i,j) \<in> G ^^ n O G"
+    by (simp add: relpow_commute) 
+  then obtain k where
+    ik: "A $ k $ j \<noteq> 0" and kj: "(i, k) \<in> G ^^ n" by (auto simp: G_def)
+  from ik nonneg[of k j] have ik: "A $ k $ j > 0" by auto
+  from Suc(1)[OF kj] have IH: "matpow A n $h i $h k > 0" .
   thus ?case using ik by (auto simp: nonneg_matpow nonneg matrix_matrix_mult_def 
     intro!: sum_pos2[of _ k] mult_nonneg_nonneg)
 qed
@@ -111,31 +106,16 @@ proof (induct k)
   thus ?case using Suc by (simp add: matrix_add_ldistrib matrix_mul_rid)
 qed simp
 
-lemma awalk_pos_matpow_over: 
-  assumes "awalk i xs j" "n \<ge> length xs"
-  shows "matpow (A + mat 1) n $ j $ i > 0" 
+lemma G_relpow_matpow_pos_ge: 
+  assumes "(i,j) \<in> G ^^ m" "n \<ge> m"
+  shows "matpow (A + mat 1) n $ i $ j > 0" 
 proof -
-  from assms(2) obtain k where n: "n = length xs + k" using le_Suc_ex by blast  
-  have "0 < matpow A (length xs) $ j $ i" by (rule awalk_pos_matpow_exact[OF assms(1)])
-  also have "\<dots> \<le> matpow (A + mat 1) (length xs) $ j $ i" 
+  from assms(2) obtain k where n: "n = m + k" using le_Suc_ex by blast  
+  have "0 < matpow A m $ i $ j" by (rule G_relpow_matpow_pos[OF assms(1)])
+  also have "\<dots> \<le> matpow (A + mat 1) m $ i $ j" 
     by (rule matpow_mono, auto simp: mat_def)
-  also have "\<dots> \<le> matpow (A + mat 1) n $ j $ i" unfolding n using matpow_sum_one_mono .
+  also have "\<dots> \<le> matpow (A + mat 1) n $ i $ j" unfolding n using matpow_sum_one_mono .
   finally show ?thesis .
-qed
-
-lemma irreducible_matpow_pos: assumes irreducible 
-  shows "matpow (A + mat 1) (CARD('n) - 1) $ i $ j > 0"
-proof -
-  from assms[unfolded irreducible_def] have "reachable G j i" by auto
-  then obtain p where p: "apath j p i" unfolding reachable_apath by auto
-  from p have "awalk j p i" by (rule awalkI_apath)
-  show ?thesis
-  proof (rule awalk_pos_matpow_over[OF \<open>awalk j p i\<close>])
-    from length_apath_less[OF p] have "length p < card (verts G)" by auto
-    also have "card (verts G) \<le> CARD('n)"
-      by (rule card_mono, auto)
-    finally show "length p \<le> CARD('n) - 1" by auto
-  qed
 qed
 end
 
@@ -144,12 +124,43 @@ locale perron_frobenius = pf_nonneg_mat A
   assumes irr: irreducible
 begin
 
+definition N where "N = (SOME N. \<forall> ij. \<exists> n \<le> N. ij \<in> G ^^ n)" 
+
+lemma N: "\<exists> n \<le> N. ij \<in> G ^^ n" 
+proof -
+  {
+    fix ij
+    have "ij \<in> G^+" using irr[unfolded irreducible_def] by auto
+    from this[unfolded trancl_power] have "\<exists> n. ij \<in> G ^^ n" by blast
+  }
+  hence "\<forall> ij. \<exists> n. ij \<in> G ^^ n" by auto
+  from choice[OF this] obtain f where f: "\<And> ij. ij \<in> G ^^ (f ij)" by auto
+  define N where N: "N = Max (range f)" 
+  {
+    fix ij
+    from f[of ij] have "ij \<in> G ^^ f ij" .
+    moreover have "f ij \<le> N" unfolding N
+      by (rule Max_ge, auto) 
+    ultimately have "\<exists> n \<le> N. ij \<in> G ^^ n" by blast
+  } note main = this
+  let ?P = "\<lambda> N. \<forall> ij. \<exists> n \<le> N. ij \<in> G ^^ n" 
+  from main have "?P N" by blast
+  from someI[of ?P, OF this, folded N_def]
+  show ?thesis by blast
+qed
+
+lemma irreducible_matpow_pos: assumes irreducible 
+  shows "matpow (A + mat 1) N $ i $ j > 0"
+proof -
+  from N obtain n where n: "n \<le> N" and reach: "(i,j) \<in> G ^^ n" by auto
+  show ?thesis by (rule G_relpow_matpow_pos_ge[OF reach n])
+qed
+
 lemma pf_transpose: "perron_frobenius (transpose A)" 
 proof
   show "fixed_mat.irreducible (transpose A)" 
-    unfolding fixed_mat.irreducible_def reachable1_transpose using irr[unfolded irreducible_def] 
+    unfolding fixed_mat.irreducible_def G_transpose_trancl using irr[unfolded irreducible_def] 
     by auto
-  fix i j
 qed (insert nonneg, auto simp: transpose_def non_neg_mat_def elements_mat_h_def)
 
 abbreviation le_vec :: "real ^ 'n \<Rightarrow> real ^ 'n \<Rightarrow> bool" where
@@ -158,7 +169,7 @@ abbreviation le_vec :: "real ^ 'n \<Rightarrow> real ^ 'n \<Rightarrow> bool" wh
 abbreviation lt_vec :: "real ^ 'n \<Rightarrow> real ^ 'n \<Rightarrow> bool" where
   "lt_vec x y \<equiv> (\<forall> i. x $ i < y $ i)" 
 
-definition "A1n = matpow (A + mat 1) (CARD('n) - 1)" 
+definition "A1n = matpow (A + mat 1) N" 
 
 lemmas A1n_pos = irreducible_matpow_pos[OF irr, folded A1n_def]
 
@@ -172,26 +183,18 @@ lemma nonneg_Ax: "x \<in> X \<Longrightarrow> le_vec 0 (A *v x)"
   unfolding X_def using nonneg
   by (auto simp: matrix_vector_mult_def intro!: sum_nonneg)
 
-lemma A_nonzero_fixed_j: "\<exists> i. A $ i $ j \<noteq> 0" 
+lemma A_nonzero_fixed_i: "\<exists> j. A $ i $ j \<noteq> 0" 
 proof -
-  from irr[unfolded irreducible_def, rule_format, of j j] have "reachable1 G j j" .
-  from this[unfolded reachable1_awalk] obtain p where walk: "awalk j p j" and p: "p \<noteq> []" by auto
-  from p obtain a q where "p = a # q" by (cases p, auto)
-  with walk have "awalk j (a # q) j" by auto
-  from this[unfolded awalk_Cons_iff] obtain i where "j = tail G a" "i = head G a" "a \<in> arcs G" by auto
+  from irr[unfolded irreducible_def] have "(i,i) \<in> G^+" by auto
+  then obtain j where "(i,j) \<in> G" by (metis converse_tranclE)
   hence Aij: "A $ i $ j \<noteq> 0" unfolding G_def by auto
   thus ?thesis ..
 qed
 
-lemma A_nonzero_fixed_i: "\<exists> j. A $ i $ j \<noteq> 0" 
+lemma A_nonzero_fixed_j: "\<exists> i. A $ i $ j \<noteq> 0" 
 proof -
-  from irr[unfolded irreducible_def, rule_format, of i i] have "reachable1 G i i" .
-  from this[unfolded reachable1_awalk] obtain p where walk: "awalk i p i" and p: "p \<noteq> []" by auto
-  from p have "p = butlast p @ [last p]" by simp
-  with walk have "awalk i (butlast p @ [last p]) i" by simp
-  from this[unfolded awalk_append_iff] obtain j a where "awalk j [a] i" by blast
-  from this[unfolded awalk_Cons_iff awalk_Nil_iff]
-  have "j = tail G a" "i = head G a" "a \<in> arcs G" by auto
+  from irr[unfolded irreducible_def] have "(j,j) \<in> G^+" by auto
+  then obtain i where "(i,j) \<in> G" by (cases, auto)
   hence Aij: "A $ i $ j \<noteq> 0" unfolding G_def by auto
   thus ?thesis ..
 qed
@@ -581,8 +584,8 @@ lemma sr_imp_eigen_vector: "eigen_vector A u sr"
 lemma sr_u_pos: "lt_vec 0 u" 
 proof -
   let ?y = "pow_A_1 u" 
-  define n where "n = (CARD('n) - 1)" 
-  define c where "c = (sr + 1)^n" 
+  define n where "n = N" 
+  define c where "c = (sr + 1)^N" 
   have c: "c > 0" using sr_pos unfolding c_def by auto
   have "lt_vec 0 ?y" using Y_pos_main[of ?y] u by auto
   also have "?y = A1n *v u" unfolding pow_A_1_def ..
@@ -899,8 +902,8 @@ proof -
     ultimately have "sr \<le> mu" by simp
   } 
   thus *: "sr \<le> mu" .
-  define cc where "cc = (mu + 1)^(CARD('n) - 1)" 
-  define n where "n = (CARD('n) - 1)" 
+  define cc where "cc = (mu + 1)^ N" 
+  define n where "n = N" 
   from * sr_pos have mu: "mu \<ge> 0" "mu > 0" by auto
   hence cc: "cc > 0" unfolding cc_def by simp  
   from y have "pow_A_1 y \<in> pow_A_1 ` X" by auto

@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 subsection \<open>Handling Non-Irreducible Matrices as Well\<close>
 
 theory Perron_Frobenius_General
@@ -11,11 +12,11 @@ text \<open>We will need to take sub-matrices and permutations of matrices where
 
 definition graph_of_mat where
   "graph_of_mat A = (let n = dim_row A; U = {..<n} in
-     \<lparr> pre_digraph.verts = U, arcs = { ij. A $$ ij \<noteq> 0} \<inter> U \<times> U, tail = snd, head = fst \<rparr>)" 
+     { ij. A $$ ij \<noteq> 0} \<inter> U \<times> U)" 
 
 definition irreducible_mat where
   "irreducible_mat A = (let n = dim_row A in 
-    (\<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> reachable1 (graph_of_mat A) i j))" 
+    (\<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> (i,j) \<in> (graph_of_mat A)^+))" 
 
 definition "nonneg_irreducible_mat A = (nonneg_mat A \<and> irreducible_mat A)"
 
@@ -39,23 +40,16 @@ proof (intro rel_funI, goal_cases)
   have Aij: "A $ i $ j = ?A $$ (?t i, ?t j)" for i j
     by (metis (no_types, lifting) to_hma\<^sub>m_def to_hma_from_hma\<^sub>m vec_lambda_beta)
   have graph: "graph_of_mat a = 
-    \<lparr> pre_digraph.verts = range ?t, arcs = {(?t i,?t j) | i j. A $ i $ j \<noteq> 0}, 
-    tail = snd, head = fst \<rparr>" (is "?G = _") unfolding graph_of_mat_def dim Let_def id range_to_nat[symmetric] 
+    {(?t i,?t j) | i j. A $ i $ j \<noteq> 0}" (is "?G = _") unfolding graph_of_mat_def dim Let_def id range_to_nat[symmetric] 
     unfolding a Aij by auto
-  have "irreducible_mat a = (\<forall>i j. i \<in> range ?t \<longrightarrow> j \<in> range ?t \<longrightarrow> i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> j)" 
+  have "irreducible_mat a = (\<forall>i j. i \<in> range ?t \<longrightarrow> j \<in> range ?t \<longrightarrow> (i,j) \<in> ?G^+)" 
     unfolding irreducible_mat_def dim Let_def range_to_nat by auto
-  also have "\<dots> = (\<forall> i j. ?t i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> ?t j)" by auto
+  also have "\<dots> = (\<forall> i j. (?t i, ?t j) \<in> ?G^+)" by auto
   also note part1 = calculation
-  have arcs: "arcs ?G = map_prod ?t ?t ` arcs G" unfolding graph G_def by auto
-  have arcs_end: "arc_to_ends ?G (map_prod ?t ?t ij) = map_prod ?t ?t (arc_to_ends G ij)" for ij
-    unfolding arc_to_ends_def G_def graph by auto
-  define R where "R = arc_to_ends G ` arcs G" 
-  have id': "(\<lambda>x. map_prod ?t ?t (arc_to_ends G x)) ` arcs G = map_prod ?t ?t ` (arc_to_ends G ` arcs G)" 
-    unfolding image_image ..
-  have part2: "?t i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> ?t j \<longleftrightarrow> i \<rightarrow>\<^sup>+\<^bsub>G\<^esub> j" for i j 
-    unfolding arcs_ends_def arcs image_image arcs_end unfolding id' R_def[symmetric]
-    by (rule inj_trancl_image, simp add: inj_on_def)
-  show ?case unfolding part1 part2 irreducible_def ..
+  have G: "?G = map_prod ?t ?t ` G" unfolding graph G_def by auto
+  have part2: "(?t i, ?t j) \<in> ?G^+ \<longleftrightarrow> (i,j) \<in> G^+" for i j 
+    unfolding G by (rule inj_trancl_image, simp add: inj_on_def)
+  show ?case unfolding part1 part2 irreducible_def by auto
 qed
 
 lemma HMA_nonneg_irreducible_mat[transfer_rule]: "(HMA_M ===> op =) nonneg_irreducible_mat perron_frobenius" 
@@ -171,9 +165,6 @@ lemma permutation_similar_mat: assumes A: "A \<in> carrier_mat n n" and p: "p pe
   shows "similar_mat A (Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j)))" 
   by (rule similar_matI[OF _ permutation_mat_id_1[OF p] permutation_mat_id_2[OF p] 
   permutation_mat_both[symmetric, OF A p]], insert A, auto)
-
-lemma wf_digraph_graph_of_mat: "wf_digraph (graph_of_mat A)" 
-  unfolding wf_digraph_def graph_of_mat_def Let_def by auto
 
 lemma det_four_block_mat_lower_left_zero: fixes A1 :: "'a :: idom mat" 
   assumes A1: "A1 \<in> carrier_mat n n"
@@ -310,26 +301,24 @@ shows "\<exists> n1 n2 B B1 B2 B4. similar_mat A B \<and> elements_mat A = eleme
 proof -
   from A have [simp]: "dim_row A = n" by auto
   let ?G = "graph_of_mat A" 
-  interpret wf_digraph ?G by (rule wf_digraph_graph_of_mat)
-  have [simp]: "verts ?G = {..<n}" unfolding graph_of_mat_def by (auto simp: Let_def)
-  let ?reachp = "\<lambda> i j. i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> j" 
-  let ?reach = "\<lambda> i j. i \<rightarrow>\<^sup>*\<^bsub>?G\<^esub> j" 
+  let ?reachp = "\<lambda> i j. (i,j) \<in> ?G^+" 
+  let ?reach = "\<lambda> i j. (i,j) \<in> ?G^*" 
   have "\<exists> i j. i < n \<and> j < n \<and> \<not> ?reach i j" 
   proof (rule ccontr)
     assume "\<not> ?thesis"
     hence reach: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> ?reach i j" by auto
     from not[unfolded irreducible_mat_def Let_def]
     obtain i j where i: "i < n" and j: "j < n" and nreach: "\<not> ?reachp i j" by auto
-    from reach[OF i j] nreach have ij: "i = j" using reachable_neq_reachable1 by auto
+    from reach[OF i j] nreach have ij: "i = j" by (simp add: rtrancl_eq_or_trancl)
     from n j obtain k where k: "k < n" and diff: "j \<noteq> k" by auto
-    from reachable_neq_reachable1[OF reach[OF j k] diff] reach[OF k j]
-    have "?reachp j j" by auto
+    from reach[OF j k] diff reach[OF k j]
+    have "?reachp j j" by (simp add: rtrancl_eq_or_trancl)
     with nreach ij show False by auto
   qed
   then obtain i j where i: "i < n" and j: "j < n" and nreach: "\<not> ?reach i j" by auto
-  define I where "I = {k. k < n \<and> ?reach k j}" 
-  have iI: "i \<notin> I" unfolding I_def using nreach by auto
-  have jI: "j \<in> I" unfolding I_def using nreach j by auto
+  define I where "I = {k. k < n \<and> ?reach i k}" 
+  have iI: "i \<in> I" unfolding I_def using nreach i by auto
+  have jI: "j \<notin> I" unfolding I_def using nreach j by auto
   define f where "f = (\<lambda> i. if i \<in> I then 1 else 0 :: nat)" 
   let ?xs = "[0 ..< n]" 
   from mset_eq_permutation[OF mset_sort, of ?xs f] obtain p where p: "p permutes {..< n}" 
@@ -394,10 +383,10 @@ proof -
     also have "(f i = 0) \<longleftrightarrow> ?p i < k" using main by auto
     finally have "i \<in> I \<longleftrightarrow> ?p i \<ge> k" by auto
   } note main = this
-  from main[OF i] iI 
+  from main[OF j] jI
   have k0: "k \<noteq> 0" by auto
-  from jI main[OF j] have "?p j \<ge> k" by auto
-  with ilt[OF j] have kn: "k < n" by auto
+  from iI main[OF i] have "?p i \<ge> k" by auto
+  with ilt[OF i] have kn: "k < n" by auto
   {
     fix i j 
     assume i: "i < n" and ik: "k \<le> i" and jk: "j < k"
@@ -410,11 +399,8 @@ proof -
     also have "\<dots> = 0" 
     proof (rule ccontr)
       assume "A $$ (p i, p j) \<noteq> 0" 
-      hence "arc_to_ends ?G (p i, p j) \<in> arc_to_ends ?G ` arcs ?G" unfolding graph_of_mat_def Let_def 
-        by (auto simp: i j)
-      also have "arc_to_ends ?G (p i, p j) = (p j, p i)" unfolding arc_to_ends_def graph_of_mat_def Let_def by auto
-      finally have "p j \<rightarrow>\<^bsub>?G\<^esub> p i" unfolding arcs_ends_def .
-      with iI j have "p j \<in> I" unfolding I_def by (auto simp: adj_reachable_trans)
+      hence "(p i, p j) \<in> ?G" unfolding graph_of_mat_def Let_def using i j p by auto
+      with iI j have "p j \<in> I" unfolding I_def by auto
       with jI show False by simp
     qed
     finally have "B $$ (i,j) = 0" .

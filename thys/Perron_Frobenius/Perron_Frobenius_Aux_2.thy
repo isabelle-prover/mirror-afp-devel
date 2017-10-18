@@ -1,3 +1,4 @@
+(* Author: Thiemann *)
 section \<open>Perron-Frobenius Theorem, Irreducible Matrices\<close>
 
 subsection \<open>More Auxiliary Notions\<close>
@@ -6,7 +7,6 @@ theory Perron_Frobenius_Aux_2
 imports 
   Roots_Unity
   Perron_Frobenius
-  Graph_Theory.Shortest_Path
 begin
 
 lemma trancl_image: 
@@ -24,121 +24,7 @@ proof
 next
   assume ?l from trancl_image[OF this, of "the_inv f"]
   show ?r unfolding image_image prod.map_comp o_def the_inv_f_f[OF inj] by auto
-qed
-
-lemma cmod_plus_eqD: assumes "cmod (x + y) = cmod x + cmod y"
-  shows "x = 0 \<or> y = 0 \<or> sgn x = sgn y"
-proof (cases "x = 0 \<or> y = 0")
-  case True
-  thus ?thesis by auto
-next
-  case False
-  from False have 0: "cmod x \<noteq> 0" "cmod y \<noteq> 0" by auto
-  {
-    assume min: "cmod y * x = - cmod x * y" 
-    hence "sgn y = - sgn x" unfolding sgn_eq using 0 by (auto simp: field_simps)
-    hence False
-      by (smt "0"(1) False assms min mult_cancel_right norm_triangle_eq of_real_eq_iff scaleR_conv_of_real)
-  } note sgn = this
-  obtain rx ix where x: "x = Complex rx ix" by (cases x, auto)
-  obtain ry iy where y: "y = Complex ry iy" by (cases y, auto)
-  from arg_cong[OF assms, of "\<lambda> x. x^2", unfolded cmod_power2]
-  have "(rx + ry)^2 + (ix + iy)^2 = (cmod x + cmod y)^2" 
-    by (simp add: x y)
-  also have "\<dots> = (cmod x)^2 + (cmod y)^2 + 2 * cmod (x * y)"
-    by (simp add: field_simps power2_eq_square norm_mult)
-  also have "\<dots> = rx^2 + ix^2 + ry^2 + iy^2 + 2 * cmod (x * y)" 
-    unfolding cmod_power2 x y by (simp add: cmod_power2)
-  also have "(rx + ry)^2 + (ix + iy)^2 = rx^2 + ry^2 + 2 * rx * ry + ix^2 + iy^2 + 2 * ix * iy" 
-    by (simp add: field_simps power2_eq_square norm_mult)
-  finally have 1: "rx * ry + ix * iy = cmod (x * y)" by simp
-  hence pos: "rx * ry + ix * iy \<ge> 0" by auto
-  from arg_cong[OF 1, of "\<lambda> x. x^2", unfolded cmod_power2, unfolded x y]
-  have "(ix * ry - iy * rx)^2 = 0" 
-    by (simp add: field_simps power2_eq_square)
-  hence 2: "ix * ry = iy * rx" by simp
-  have 3: "sgn x = sgn y \<longleftrightarrow> cmod y * x = cmod x * y" using 0 by (auto simp: field_simps sgn_eq)
-  also have "\<dots> \<longleftrightarrow> (cmod y * x)^2 = (cmod x * y)^2" using sgn unfolding power2_eq_iff by auto
-  also have "\<dots> \<longleftrightarrow> (cmod y)^2 * x^2 = (cmod x)^2 * y^2" 
-    by (simp add: field_simps power2_eq_square)
-  also have "\<dots> \<longleftrightarrow> (ry^2 + iy^2) * x^2 = (rx^2 + ix^2) * y^2" 
-    unfolding cmod_power2 x y by simp
-  also have "\<dots> \<longleftrightarrow> (iy * rx)^2 = (ix * ry)^2 \<and>
-     ix * iy^2 * rx + ix * rx * ry^2 =  ix^2 * iy * ry + iy * rx^2 * ry" 
-    unfolding x y by (auto simp: field_simps power2_eq_square complex_mult 
-      complex_add complex_of_real_mult_Complex)
-  also have "\<dots> \<longleftrightarrow> ix * iy^2 * rx + ix * rx * ry^2 = ix^2 * iy * ry + iy * rx^2 * ry" 
-    unfolding 2 by simp
-  also have "ix * iy^2 * rx + ix * rx * ry^2 = ix * iy^2 * rx + iy * rx^2 * ry" 
-    using 2 by (auto simp: field_simps power2_eq_square)
-  also have "ix^2 * iy * ry + iy * rx^2 * ry = ix * iy^2 * rx + iy * rx^2 * ry" 
-    using 2 by (auto simp: field_simps power2_eq_square)
-  finally show ?thesis by simp
-qed
-
-lemma cmod_plus_eq_exD: assumes "cmod (x + y) = cmod x + cmod y"
-  shows "\<exists> n. \<forall> z \<in> {x,y}. z = n * of_real (cmod z)"
-proof -
-  have z: "z = sgn z * cmod z" for z unfolding sgn_eq by (cases "z = 0", auto)
-  from cmod_plus_eqD[OF assms]
-  have *: "x = 0 \<or> y = 0 \<or> sgn x = sgn y" .
-  {
-    assume "x = 0" 
-    hence ?thesis by (intro exI[of _ "sgn y"], insert z, auto)
-  }
-  moreover
-  {
-    assume "y = 0" 
-    hence ?thesis by (intro exI[of _ "sgn x"], insert z, auto)
-  }
-  moreover
-  {
-    assume "sgn x = sgn y"  
-    hence ?thesis by (intro exI[of _ "sgn y"], insert z[of x] z[of y], auto)
-  }
-  ultimately show ?thesis using * by blast
-qed
-
-lemma cmod_sum_eq_exD: assumes "finite I" 
-  and "cmod (sum f I) = sum (\<lambda> i. cmod (f i)) I" 
-shows "\<exists> n. \<forall> z \<in> f ` I. z = n * of_real (cmod z)" 
-  using assms
-proof (induct I rule: finite_induct)
-  case (insert i I)
-  have id0: "sum f (insert i I) = f i + sum f I" for f
-    by (rule sum.insert, insert insert, auto)
-  from insert(4)[unfolded id0] 
-  have id1: "cmod (f i + sum f I) = cmod (f i) + (\<Sum>i\<in>I. cmod (f i))" by auto
-  note this[symmetric]
-  also have "cmod (f i + sum f I) \<le> cmod (f i) + cmod (sum f I)" by (rule norm_triangle_ineq)
-  finally have "(\<Sum>i\<in>I. cmod (f i)) \<le> cmod (sum f I)" by simp
-  with norm_sum[of f I] have id2: "cmod (sum f I) = (\<Sum>i\<in>I. cmod (f i))" by simp
-  from insert(3)[OF id2] obtain n where n: "\<And> x. x \<in> f ` I \<Longrightarrow> x = n * of_real (cmod x)" by auto
-  from cmod_plus_eq_exD[OF id1[folded id2]] obtain m where 
-    m1: "f i = m * of_real (cmod (f i))" and
-    m2: "sum f I = m * of_real (cmod (sum f I))" 
-    by auto
-  have *: "sum f I = m * (\<Sum>i\<in>I. of_real (cmod (f i)))" 
-    unfolding m2[unfolded id2] by simp
-  have **: "sum f I = n * (\<Sum>i\<in>I. of_real (cmod (f i)))" 
-    unfolding sum_distrib_left
-    by (rule sum.cong, insert n, auto)
-  have "m * cmod (sum f I) = n * cmod (sum f I)" 
-    using * ** unfolding id2 by auto
-  hence "m = n \<or> sum f I = 0" by auto
-  thus ?case
-  proof
-    assume "m = n" 
-    with n m1 m2 show ?case by (intro exI[of _ n], auto)
-  next
-    assume "sum f I = 0" 
-    hence "cmod (sum f I) = 0" by simp
-    from this[unfolded id2] insert(1) have I: "x \<in> f ` I \<Longrightarrow> x = m * of_real (cmod x)" for x
-      by (subst (asm) sum_nonneg_eq_0_iff, auto)
-    show ?case by (intro exI[of _ m], insert m1 I, auto)
-  qed
-qed auto
-  
+qed  
 
 lemma matrix_add_rdistrib: "((B + C) ** A) = (B ** A) + (C ** A)"
   by (vector matrix_matrix_mult_def sum.distrib[symmetric] field_simps)
@@ -185,21 +71,6 @@ lemma continuous_matpow: "continuous_on R (\<lambda> A :: 'a :: {semiring_1, rea
 lemma vector_smult_distrib: "(A *v ((a :: 'a :: comm_ring_1) *s x)) = a *s ((A *v x))" 
   unfolding matrix_vector_mult_def vector_scalar_mult_def
   by (simp add: ac_simps sum_distrib_left)  
-
-
-lemma (in fin_digraph) length_apath_less:
-  assumes "apath u p v"
-  shows "length p < card (verts G)"
-proof -
-  have "length p < length (awalk_verts u p)" unfolding awalk_verts_conv
-    by (auto simp: awalk_verts_conv)
-  also have "length (awalk_verts u p) = card (set (awalk_verts u p))"
-    using `apath u p v` by (auto simp: apath_def distinct_card)
-  also have "\<dots> \<le> card (verts G)"
-    using `apath u p v` unfolding apath_def awalk_conv
-    by (auto intro: card_mono)
-  finally show ?thesis .
-qed
 
 instance real :: ordered_semiring_strict
   by (intro_classes, auto)

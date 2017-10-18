@@ -1,14 +1,10 @@
 chapter AFP
 
-session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
+session "Pre_Perron_Frobenius" (AFP) = "Algebraic_Numbers_Lib" +
   options [document = false, timeout = 2400]
   sessions
-    "HOL-Eisbach"
-    "HOL-Analysis"
-    Polynomial_Factorization
-    Pre_BZ
-    Rank_Nullity_Theorem
-    Graph_Theory
+    "HOL-Types_To_Sets"
+    Jordan_Normal_Form
   theories
     "HOL-Analysis.Brouwer_Fixpoint"
     "HOL-Analysis.Determinants"
@@ -17,7 +13,6 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
     Jordan_Normal_Form.Spectral_Radius
     Polynomial_Factorization.Square_Free_Factorization
     Rank_Nullity_Theorem.Miscellaneous
-    Graph_Theory.Shortest_Path
 
 session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
   options [timeout = 1800]
@@ -26,7 +21,7 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
     HMA_Connect
     Perron_Frobenius_General
     Spectral_Radius_Theory
-    Spectral_Radius_Theory_2
+    Check_Matrix_Growth
   document_files
     "root.bib"
     "root.tex"
