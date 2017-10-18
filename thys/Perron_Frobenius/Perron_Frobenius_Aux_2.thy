@@ -7,7 +7,6 @@ theory Perron_Frobenius_Aux_2
 imports 
   Roots_Unity
   Perron_Frobenius
-  Graph_Theory.Shortest_Path
 begin
 
 lemma trancl_image: 
@@ -72,21 +71,6 @@ lemma continuous_matpow: "continuous_on R (\<lambda> A :: 'a :: {semiring_1, rea
 lemma vector_smult_distrib: "(A *v ((a :: 'a :: comm_ring_1) *s x)) = a *s ((A *v x))" 
   unfolding matrix_vector_mult_def vector_scalar_mult_def
   by (simp add: ac_simps sum_distrib_left)  
-
-
-lemma (in fin_digraph) length_apath_less:
-  assumes "apath u p v"
-  shows "length p < card (verts G)"
-proof -
-  have "length p < length (awalk_verts u p)" unfolding awalk_verts_conv
-    by (auto simp: awalk_verts_conv)
-  also have "length (awalk_verts u p) = card (set (awalk_verts u p))"
-    using `apath u p v` by (auto simp: apath_def distinct_card)
-  also have "\<dots> \<le> card (verts G)"
-    using `apath u p v` unfolding apath_def awalk_conv
-    by (auto intro: card_mono)
-  finally show ?thesis .
-qed
 
 instance real :: ordered_semiring_strict
   by (intro_classes, auto)
