@@ -669,19 +669,24 @@ qed
 
 subsection {* Paths *}
 
-lemma (in fin_digraph) length_apath:
+lemma (in fin_digraph) length_apath_less:
   assumes "apath u p v"
-  shows "length p \<le> card (verts G)"
+  shows "length p < card (verts G)"
 proof -
-  have "length p \<le> length (awalk_verts u p)"
+  have "length p < length (awalk_verts u p)" unfolding awalk_verts_conv
     by (auto simp: awalk_verts_conv)
-  also have "\<dots> = card (set (awalk_verts u p))"
+  also have "length (awalk_verts u p) = card (set (awalk_verts u p))"
     using `apath u p v` by (auto simp: apath_def distinct_card)
   also have "\<dots> \<le> card (verts G)"
     using `apath u p v` unfolding apath_def awalk_conv
     by (auto intro: card_mono)
   finally show ?thesis .
 qed
+
+lemma (in fin_digraph) length_apath:
+  assumes "apath u p v"
+  shows "length p \<le> card (verts G)"
+  using length_apath_less[OF assms] by auto
 
 lemma (in fin_digraph) apaths_finite_triple:
   shows "finite {(u,p,v). apath u p v}"
