@@ -92,6 +92,8 @@ DFS_Framework
 Dict_Construction
 Differential_Dynamic_Logic
 Dijkstra_Shortest_Path
+Diophantine_Eqns_Lin_Hom
+Dirichlet_Series
 Discrete_Summation
 DiskPaxos
 DynamicArchitectures
@@ -189,6 +191,7 @@ Lazy-Lists-II
 Lehmer
 LightweightJava
 LinearQuantifierElim
+Linear_Recurrences
 Liouville_Numbers
 List-Index
 List-Infinite
@@ -198,6 +201,7 @@ Lifting_Definition_Option
 LocalLexing
 Locally-Nameless-Sigma
 LOFT
+Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
 LTL
@@ -378,3 +382,4 @@ WHATandWHERE_Security
 Word_Lib
 WorkerWrapper
 XML
+Zeta_Function
