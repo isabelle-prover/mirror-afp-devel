@@ -6128,3 +6128,18 @@ abstract =
   guarantee its consistency. Thereby our work could provide a
   significant contribution to the development of a proper grounding for
   object theory. </p>
+    
+[Winding_Number_Eval]
+title = Evaluate winding numbers through Cauchy indices
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Analysis
+date = 2017-10-17
+notify = wl302@cam.ac.uk, liwenda1990@hotmail.com
+abstract = 
+  In complex analysis, the winding number measures the number of times a
+  path (counterclockwise) winds around a point, while the Cauchy index
+  can approximate how the path winds. This entry provides a
+  formalisation of the Cauchy index, which is then shown to be related
+  to the winding number. In addition, this entry also offers a tactic
+  that enables users to evaluate the winding number by calculating
+  Cauchy indices.
