@@ -853,7 +853,6 @@ sepref_thm set_of_arrays_ex is "uncurry0 (RETURN (op_list_append [] op_array_emp
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
   apply sepref_dbg_trans_step_keep
-  find_theorems op_list_append arl_assn
   supply [[goals_limit = 1, unify_trace_failure]]
   (*apply (rule arl_append_hnr[to_hnr])*)
   -- \<open>Many IICF data structures, in particular the array based ones, requires the element types
@@ -1179,7 +1178,6 @@ sepref_definition copy_list_to_array is "\<lambda>l. do {
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
   apply sepref_dbg_trans_step_keep
-  find_theorems op_arl_empty_sz arl_assn
   supply [[unify_trace_failure, goals_limit=1]]
   (*apply (rule arl_sz.custom_hnr[to_hnr])*)
   -- \<open>The problem manifests itself in trying to carry an abstract variable 

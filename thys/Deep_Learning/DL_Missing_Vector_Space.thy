@@ -5,7 +5,6 @@ section \<open>Missing Lemmas of Vector\_Space\<close>
 theory DL_Missing_Vector_Space
 imports Jordan_Normal_Form.Missing_VectorSpace
 begin
-find_theorems vectorspace.basis
 
 lemma (in vectorspace) dim1I:
 assumes "gen_set {v}"

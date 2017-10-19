@@ -4308,8 +4308,6 @@ lemma constraint_expand:
   shows "x \<in> {y. lower \<le> y \<and> y \<le> upper} = (lower \<le> x \<and> x \<le> upper)"
   by simp
 
-find_theorems "unats _ = _"
-
 lemma card_map_elide:
   "card ((of_nat :: nat \<Rightarrow> 'a::len word) ` {0..<n}) = card {0..<n}"
     if "n \<le> CARD('a::len word)"

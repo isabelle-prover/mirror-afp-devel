@@ -327,7 +327,7 @@ proof -
       qed
       moreover
       { assume "\<not> P dvd b*p+a*q"
-        with Pn_dvd_prod and ass have "P^n dvd b*p-a*q" find_theorems "prime ?p" "?p^_ dvd _"
+        with Pn_dvd_prod and ass have "P^n dvd b*p-a*q"
           by (rule_tac b="b*p+a*q" in prime_power_dvd_cancel_right, auto simp add: mult.commute) }
       moreover
       { assume "\<not> P dvd b*p-a*q"
@@ -1335,7 +1335,7 @@ next
   qed
   moreover have "is_cube_form c d"
   proof -
-    have "gcd c d = 1" find_theorems "?p dvd ?a" "?p dvd ?b" "coprime ?a ?b"
+    have "gcd c d = 1"
     proof (rule ccontr)
       let ?g = "gcd c d"
       assume "?g \<noteq> 1"

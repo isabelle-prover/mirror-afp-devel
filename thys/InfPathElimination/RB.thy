@@ -801,7 +801,6 @@ theorem (in finite_RedBlack) SE_rel :
   assumes "se_star (confs prb rv1) (trace (ui_es res) (labelling (black prb))) c"
   shows   "c \<sqsubseteq> (confs prb rv2)"
 using assms finite_RedBlack
-find_theorems name:"RedBlack." name:"induct"
 proof (induct arbitrary : rv1 res rv2 c rule : RedBlack.induct) 
   (* If the red part is empty, then @{term "rv1 = rv2 = root (red prb)"}, and 
      @{term "confs prb rv1 = confs prb rv2"} which prooves the goal, subsumption 

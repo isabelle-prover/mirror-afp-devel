@@ -216,7 +216,6 @@ proof -
   qed
   from a2factor have "(c-b)*(c+b) = a^2" and "(2::nat) >1"  by auto
   with factors_relprime have "\<exists> k. c-b = k^2" by (simp only: nat_relprime_power_divisors)
-  find_theorems "?a * ?b = _^2" "coprime ?a ?b"
   then obtain r where r: "c-b = r^2" by auto
   from a2factor have "(c+b)*(c-b) = a^2" and "(2::nat) >1"  by auto
   with factors_relprime have "\<exists> k. c+b = k^2" by (simp only: nat_relprime_power_divisors gcd.commute)

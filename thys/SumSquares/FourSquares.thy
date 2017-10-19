@@ -104,7 +104,6 @@ proof -
   with finC have finA: "finite ?A" and finB: "finite ?B"
     by (auto simp add: finite_subset)
   from AsubC BsubC have AunBsubC: "?A \<union> ?B \<subseteq> ?C" by (rule Un_least)
-    find_theorems "card {0 .. (?p::int)}"
   from p0 have cardC: "card ?C = nat p" using card_atLeastZeroLessThan_int by blast
   from n0 have cardD: "card ?D = 1+ nat n" by simp
   have cardA: "card ?A = card ?D"

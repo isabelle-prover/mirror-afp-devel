@@ -423,7 +423,6 @@ case (1 n)
       hence "even (multiplicity p n)" using "1.prems" h1 by auto
       moreover have "multiplicity p n \<noteq> 0" using h1 True m_nz 
         by (subst multiplicity_eq_zero_iff) (auto simp: prime_gt_0_nat)
-        find_theorems "multiplicity _ _ = 0"
       ultimately have h3: "multiplicity p n \<ge> 2" by presburger
       have "p dvd m"
       proof (rule ccontr)

@@ -50,12 +50,6 @@ context pseudo_hoop_algebra begin
   proof -
     interpret A: right_complemented_monoid_algebra lesseq_r less_r 1 "op *" inf_rr "op r\<rightarrow>"
       by (rule right_complemented_monoid_algebra)
-(*
-    find_theorems name: le_iff_inf
-    thm A.dual_algebra.le_iff_inf
-    have "\<And>x y. lesseq_r x y = (inf_rr x y = x)" by fact
-    note `\<And>x y. lesseq_r x y = (inf_rr x y = x)`
-*)
     show "lesseq_r a b = (a \<le> b)"
       apply (subst  le_iff_inf)
       apply (subst `lesseq_r a b = (inf_rr a b = a)`)

@@ -24,7 +24,6 @@ proof -
 	let ?fe1 = "OFEntry 0 ff a1"
 	let ?fe2 = "OFEntry 0 ff a2"
 	let ?ft = "[?fe1, ?fe2]"
-	find_theorems "_ @ [_]"
 	have "guha_table_semantics \<gamma> ?ft p (Some a1)" "guha_table_semantics \<gamma> ?ft p (Some a2)" 
 	by(rule guha_table_semantics.intros(1)[of \<gamma> ?fe1 p "[]" "[?fe2]", unfolded append_Nil flow_entry_match.sel] | 
 	   rule guha_table_semantics.intros(1)[of \<gamma> ?fe2 p "[?fe1]" "[]", unfolded append_Nil2 flow_entry_match.sel append.simps] |
