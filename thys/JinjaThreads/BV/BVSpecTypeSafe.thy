@@ -678,6 +678,92 @@ proof -
   qed
 qed
 
+lemma CAS_correct:
+  assumes wf: "wf_prog wt P"
+  assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
+  assumes i:  "ins!pc = CAS F D"
+  assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
+  assumes cf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes xc: "(tas, \<sigma>') \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma>' \<surd>"
+proof -
+  from mC cf obtain ST LT where    
+    "h\<surd>": "hconf h" and    
+    tconf: "P,h \<turnstile> t \<surd>t" and
+    \<Phi>: "\<Phi> C M ! pc = Some (ST,LT)" and
+    stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
+    pc: "pc < size ins" and 
+    fs: "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh: "preallocated h"
+    by (fastforce dest: sees_method_fun)
+  
+  from i \<Phi> wt obtain T1 T2 T3 T' ST'' ST' LT' fm where 
+    ST: "ST = T3 # T2 # T1 # ST''" and
+    field: "P \<turnstile> D sees F:T' (fm) in D" and
+    oT: "P \<turnstile> T1 \<le> Class D" and T2: "P \<turnstile> T2 \<le> T'" and T3: "P \<turnstile> T3 \<le> T'" and
+    pc': "pc+1 < size ins" and 
+    \<Phi>': "\<Phi> C M!(pc+1) = Some (Boolean # ST',LT')" and
+    ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'"
+    by clarsimp
+
+  from stk ST obtain v'' v' v stk' where 
+    stk': "stk = v''#v'#v#stk'" and
+    v:    "P,h \<turnstile> v :\<le> T1" and 
+    v':  "P,h \<turnstile> v' :\<le> T2" and
+    v'': "P,h \<turnstile> v'' :\<le> T3" and
+    ST'': "P,h \<turnstile> stk' [:\<le>] ST''"
+    by auto
+
+  show ?thesis
+  proof(cases "v = Null")
+    case True
+    with tconf "h\<surd>" i xc stk' mC fs \<Phi> ST'' v ST loc pc' v' v''
+      wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastforce)
+  next
+    case False
+    from v oT have "P,h \<turnstile> v :\<le> Class D" ..
+    with False obtain a U' D' where 
+      a: "v = Addr a" and h: "typeof_addr h a = Some U'"
+      and U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+      by (blast dest: non_npD2)
+    
+    from v' T2 have vT': "P,h \<turnstile> v' :\<le> T'" ..
+    from v'' T3 have vT'': "P,h \<turnstile> v'' :\<le> T'" ..
+    
+    from field D' have has_field: "P \<turnstile> D' has F:T' (fm) in D"
+      by (blast intro: has_field_mono has_visible_field)
+    with h have al: "P,h \<turnstile> a@CField D F : T'" unfolding U' ..
+
+    from ST'' ST' have stk'': "P,h \<turnstile> stk' [:\<le>] ST'" ..
+    from loc LT' have loc': "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
+    { fix h'
+      assume "write": "heap_write h a (CField D F) v'' h'"
+      hence hext: "h \<unlhd> h'" by(rule hext_heap_write)
+      with preh have "preallocated h'" by(rule preallocated_hext)
+      moreover
+      from "write" "h\<surd>" al vT'' have "hconf h'" by(rule hconf_heap_write_mono)
+      moreover
+      from stk'' hext have "P,h' \<turnstile> stk' [:\<le>] ST'" by (rule confs_hext)
+      moreover
+      from loc' hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by (rule confTs_hext)
+      moreover
+      from fs hext
+      have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
+      moreover
+      note mC \<Phi>' pc' 
+      moreover
+      let ?f' = "(Bool True # stk',loc,C,M,pc+1)"
+      from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
+      ultimately have "\<Phi> \<turnstile> t:(None, h', ?f'#frs) \<surd>" by fastforce 
+    } moreover {
+      let ?f' = "(Bool False # stk',loc,C,M,pc+1)"
+      have "\<Phi> \<turnstile> t:(None, h, ?f'#frs) \<surd>" using tconf "h\<surd>" preh mC \<Phi>' stk'' loc' pc' fs
+        by fastforce
+    } ultimately show ?thesis using a h i mC stk' xc by(auto simp del: correct_state_def)
+  qed
+qed
+
 lemma New_correct:
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
@@ -1397,6 +1483,7 @@ apply (rule AStore_correct, assumption+, fastforce)
 apply (rule ALength_correct, assumption+, fastforce)
 apply (rule Getfield_correct, assumption+, fastforce)
 apply (rule Putfield_correct, assumption+, fastforce)
+apply (rule CAS_correct, assumption+, fastforce)
 apply (rule Checkcast_correct, assumption+, fastforce)
 apply (rule Instanceof_correct, assumption+, fastforce)
 apply (rule Invoke_correct, assumption+, fastforce)
@@ -1622,6 +1709,42 @@ proof -
         with h have al: "P,h \<turnstile> a@CField D F : vT'" unfolding U' ..
         from v vT' have "P,h \<turnstile> v :\<le> vT'" by auto
         from heap_write_total[OF hconf al this] v a stk' h show ?thesis by auto
+      qed
+    next
+      case [simp]: (CAS F D)
+      from \<Phi>_pc wt obtain T' T1 T2 T3 ST'' fm where "ST = T3 # T2 # T1 # ST''" 
+        and field: "P \<turnstile> D sees F:T' (fm) in D"
+        and oT: "P \<turnstile> T1 \<le> Class D"
+        and vT': "P \<turnstile> T2 \<le> T'" "P \<turnstile> T3 \<le> T'" by fastforce
+      with ST obtain v v' v'' stk' where stk': "stk = v''#v'#v#stk'" 
+        and v:  "P,h \<turnstile> v :\<le> T1" 
+        and v': "P,h \<turnstile> v' :\<le> T2"
+        and v'': "P,h \<turnstile> v'' :\<le> T3" by auto
+      show ?thesis
+      proof(cases "v= Null")
+        case True with stk' show ?thesis by auto
+      next
+        case False
+        from v oT have "P,h \<turnstile> v :\<le> Class D" ..
+        with False obtain a U' D' where 
+          a: "v = Addr a" and h: "typeof_addr h a = Some U'" and
+          U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+          by (blast dest: non_npD2)
+
+        from field D' have has_field: "P \<turnstile> D' has F:T' (fm) in D"
+          by (blast intro: has_field_mono has_visible_field)
+        with h have al: "P,h \<turnstile> a@CField D F : T'" unfolding U' ..
+        from v' vT' have "P,h \<turnstile> v' :\<le> T'" by auto
+        from heap_read_total[OF hconf al] obtain v''' where v''': "heap_read h a (CField D F) v'''" by blast
+        show ?thesis
+        proof(cases "v''' = v'")
+          case True
+          from v'' vT' have "P,h \<turnstile> v'' :\<le> T'" by auto
+          from heap_write_total[OF hconf al this] v a stk' h v''' True show ?thesis by auto
+        next
+          case False
+          from v''' v a stk' h False show ?thesis by auto
+        qed
       qed
     next
       case [simp]: (Invoke M' n)

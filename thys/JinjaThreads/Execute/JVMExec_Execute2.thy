@@ -270,6 +270,17 @@ where
                 h' \<leftarrow> heap_write h a (CField C F) v;
                 {(\<lbrace>WriteMem a (CField C F) v\<rbrace>, None, h', ((tl ins', ins, xt), tl (tl stk), loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)}
               })"
+| "exec_instr ins' ins xt (CAS F C) P t h stk loc C0 M0 pc frs =
+  (let v'' = hd stk; v' = hd (tl stk); v = hd (tl (tl stk))
+   in if v = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)}
+      else let a = the_Addr v
+           in do {
+               v''' \<leftarrow> heap_read h a (CField C F);
+               if v''' = v' then do {
+                 h' \<leftarrow> heap_write h a (CField C F) v'';
+                 {(\<lbrace>ReadMem a (CField C F) v', WriteMem a (CField C F) v''\<rbrace>, None, h', ((tl ins', ins, xt), Bool True # tl (tl (tl stk)), loc, C0, M0, pc + 1) # frs)}
+               } else {(\<lbrace>ReadMem a (CField C F) v'''\<rbrace>, None, h, ((tl ins', ins, xt), Bool False # tl (tl (tl stk)), loc, C0, M0, pc + 1) # frs)}
+             })"
 | "exec_instr ins' ins xt (Checkcast T) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    {(\<epsilon>, let U = the (typeof\<^bsub>h\<^esub> (hd stk))
         in if P \<turnstile> U \<le> T then (None, h, ((tl ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)

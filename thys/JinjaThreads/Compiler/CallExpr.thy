@@ -28,6 +28,10 @@ where
 | "inline_call f (a\<bullet>length) = inline_call f a\<bullet>length"
 | "inline_call f (e\<bullet>F{D}) = inline_call f e\<bullet>F{D}"
 | "inline_call f (FAss e F D e') = (if is_val e then FAss e F D (inline_call f e') else FAss (inline_call f e) F D e')"
+| "inline_call f (CompareAndSwap e D F e' e'') = 
+   (if is_val e then if is_val e' then CompareAndSwap e D F e' (inline_call f e'') 
+     else CompareAndSwap e D F (inline_call f e') e''
+    else CompareAndSwap (inline_call f e) D F e' e'')"
 | "inline_call f (e\<bullet>M(es)) = 
    (if is_val e then if is_vals es \<and> is_addr e then f else e\<bullet>M(inline_calls f es) else inline_call f e\<bullet>M(es))"
 | "inline_call f ({V:T=vo; e}) = {V:T=vo; inline_call f e}"
@@ -116,6 +120,7 @@ apply(clarsimp)
 apply(fastforce split: if_split)
 apply(fastforce)
 apply(fastforce)
+apply(fastforce split: if_split)
 apply(fastforce split: if_split)
 apply(fastforce split: if_split)
 apply(fastforce)

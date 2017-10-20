@@ -41,6 +41,9 @@ next
   case RedFAss thus ?case
     by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
 next
+  case RedCASSucceed thus ?case
+    by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
+next
   case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
   hence "P,hp s \<turnstile> a\<bullet>M(vs) : T"
     by(fastforce simp add: external_WT'_iff dest: sees_method_fun)
@@ -71,6 +74,9 @@ next
     by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedFAss thus ?case
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+next
+  case RedCASSucceed thus ?case
     by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case (BlockRed e h x V vo ta e' h' x' T T' E)
@@ -538,6 +544,82 @@ next
   case RedFAss thus ?case by(auto simp del:fun_upd_apply)
 next
   case RedFAssNull thus ?case unfolding sconf_def
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
+next
+  case (CASRed1 e s ta e' s' D F e2 e3)
+  from CASRed1.prems(2) consider (NT) T2 T3 where 
+      "P,E,hp s \<turnstile> e : NT" "T = Boolean" "P,E,hp s \<turnstile> e2 : T2" "P,E,hp s \<turnstile> e3 : T3"
+    | (RefT) U T' C fm T2 T3 where
+      "P,E,hp s \<turnstile> e : U" "T = Boolean" "class_type_of' U = \<lfloor>C\<rfloor>" "P \<turnstile> C has F:T' (fm) in D"
+      "P,E,hp s \<turnstile> e2 : T2" "P \<turnstile> T2 \<le> T'" "P,E,hp s \<turnstile> e3 : T3" "P \<turnstile> T3 \<le> T'" "volatile fm" by fastforce
+  thus ?case
+  proof cases
+    case NT
+    have "P,E,hp s' \<turnstile> e' : NT" using CASRed1.hyps(2)[OF CASRed1.prems(1) NT(1) CASRed1.prems(3)] by auto
+    moreover from NT CASRed1.hyps(1)[THEN red_hext_incr]
+    have "P,E,hp s' \<turnstile> e2 : T2" "P,E,hp s' \<turnstile> e3 : T3" by(auto intro: WTrt_hext_mono)
+    ultimately show ?thesis using NT by(auto intro: WTrtCASNT)
+  next
+    case RefT
+    from CASRed1.hyps(2)[OF CASRed1.prems(1) RefT(1) CASRed1.prems(3)]
+    obtain U' where wt1: "P,E,hp s' \<turnstile> e' : U'" "P \<turnstile> U' \<le> U" by blast
+    from RefT CASRed1.hyps(1)[THEN red_hext_incr]
+    have wt2: "P,E,hp s' \<turnstile> e2 : T2" and wt3: "P,E,hp s' \<turnstile> e3 : T3" by(auto intro: WTrt_hext_mono)
+    show ?thesis
+    proof(cases "U' = NT")
+      case True
+      with RefT wt1 wt2 wt3 show ?thesis by(auto intro: WTrtCASNT)
+    next
+      case False
+      with RefT(3) wt1 obtain C' where icto': "class_type_of' U' = \<lfloor>C'\<rfloor>"
+        and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C" by(blast intro: widen_is_class_type_of)
+      have "P \<turnstile> C' has F:T' (fm) in D" by(rule has_field_mono[OF RefT(4) "subclass"])
+      with RefT wt1 wt2 wt3 icto' show ?thesis by(auto intro!: WTrtCAS)
+    qed
+  qed
+next
+  case (CASRed2 e s ta e' s' v D F e3)
+  consider (Null) "v = Null" | (Val) U C T' fm T2 T3 where
+    "class_type_of' U = \<lfloor>C\<rfloor>" "P \<turnstile> C has F:T' (fm) in D" "volatile fm"
+    "P,E,hp s \<turnstile> e : T2" "P \<turnstile> T2 \<le> T'" "P,E,hp s \<turnstile> e3 : T3" "P \<turnstile> T3 \<le> T'" "T = Boolean"
+    "typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>" using CASRed2.prems(2) by auto
+  then show ?case 
+  proof cases
+    case Null
+    then show ?thesis using CASRed2 
+      by(force dest: red_hext_incr intro: WTrt_hext_mono WTrtCASNT)
+  next
+    case Val
+    from CASRed2.hyps(1) have hext: "hp s \<unlhd> hp s'" by(auto dest: red_hext_incr)
+    with Val(9) have "typeof\<^bsub>hp s'\<^esub> v = \<lfloor>U\<rfloor>" by(rule type_of_hext_type_of)
+    moreover from CASRed2.hyps(2)[OF CASRed2.prems(1) Val(4) CASRed2.prems(3)] Val(5)
+    obtain T2' where "P,E,hp s' \<turnstile> e' : T2'" "P \<turnstile> T2' \<le> T'" by(auto intro: widen_trans)
+    moreover from Val(6) hext have "P,E,hp s' \<turnstile> e3 : T3" by(rule WTrt_hext_mono)
+    ultimately show ?thesis using Val by(auto intro: WTrtCAS)
+  qed
+next
+  case (CASRed3 e s ta e' s' v D F v')
+  consider (Null) "v = Null" | (Val) U C T' fm T2 T3 where 
+    "T = Boolean" "class_type_of' U = \<lfloor>C\<rfloor>" "P \<turnstile> C has F:T' (fm) in D" "volatile fm"
+    "P \<turnstile> T2 \<le> T'" "P,E,hp s \<turnstile> e : T3" "P \<turnstile> T3 \<le> T'"
+    "typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>" "typeof\<^bsub>hp s\<^esub> v' = \<lfloor>T2\<rfloor>"
+    using CASRed3.prems(2) by auto
+  then show ?case
+  proof cases
+    case Null
+    then show ?thesis using CASRed3
+      by(force dest: red_hext_incr intro: type_of_hext_type_of WTrtCASNT)
+  next
+    case Val
+    from CASRed3.hyps(1) have hext: "hp s \<unlhd> hp s'" by(auto dest: red_hext_incr)
+    with Val(8,9) have "typeof\<^bsub>hp s'\<^esub> v = \<lfloor>U\<rfloor>" "typeof\<^bsub>hp s'\<^esub> v' = \<lfloor>T2\<rfloor>"
+      by(blast intro: type_of_hext_type_of)+
+    moreover from CASRed3.hyps(2)[OF CASRed3.prems(1) Val(6) CASRed3.prems(3)] Val(7)
+    obtain T3' where "P,E,hp s' \<turnstile> e' : T3'" "P \<turnstile> T3' \<le> T'" by(auto intro: widen_trans)
+    ultimately show ?thesis using Val by(auto intro: WTrtCAS)
+  qed
+next
+  case CASNull thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (CallObj e s ta e' s' M es T E)

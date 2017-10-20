@@ -262,6 +262,33 @@ where
 | RedFAssNull:
   "extTA,P,t \<turnstile> \<langle>null\<bullet>F{D}:=Val v::'addr expr, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
+| CASRed1:
+  "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  extTA,P,t \<turnstile> \<langle>e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s'\<rangle>"
+
+| CASRed2:
+  "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  extTA,P,t \<turnstile> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), s'\<rangle>"
+
+| CASRed3:
+  "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  extTA,P,t \<turnstile> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), s'\<rangle>"
+
+| CASNull:
+  "extTA,P,t \<turnstile> \<langle>null\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| RedCASSucceed:
+  "\<lbrakk> heap_read h a (CField D F) v; heap_write h a (CField D F) v' h' \<rbrakk> \<Longrightarrow>
+  extTA,P,t \<turnstile> \<langle>addr a\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), (h, l)\<rangle> 
+  -\<lbrace>ReadMem a (CField D F) v, WriteMem a (CField D F) v'\<rbrace>\<rightarrow> 
+  \<langle>true, (h', l)\<rangle>"
+
+| RedCASFail:
+  "\<lbrakk> heap_read h a (CField D F) v''; v \<noteq> v'' \<rbrakk> \<Longrightarrow>
+  extTA,P,t \<turnstile> \<langle>addr a\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), (h, l)\<rangle> 
+  -\<lbrace>ReadMem a (CField D F) v''\<rbrace>\<rightarrow> 
+  \<langle>false, (h, l)\<rangle>"
+
 | CallObj:
   "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>M(es), s'\<rangle>"
 
@@ -368,6 +395,9 @@ where
 | FAccThrow: "extTA,P,t \<turnstile> \<langle>(Throw a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAssThrow1: "extTA,P,t \<turnstile> \<langle>(Throw a)\<bullet>F{D}:=e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAssThrow2: "extTA,P,t \<turnstile> \<langle>Val v\<bullet>F{D}:=(Throw a::'addr expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CASThrow: "extTA,P,t \<turnstile> \<langle>Throw a\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CASThrow2: "extTA,P,t \<turnstile> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Throw a, e3), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CASThrow3: "extTA,P,t \<turnstile> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | CallThrowObj: "extTA,P,t \<turnstile> \<langle>(Throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | CallThrowParams: "\<lbrakk> es = map Val vs @ Throw a # es' \<rbrakk> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | BlockThrow: "extTA,P,t \<turnstile> \<langle>{V:T=vo; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
@@ -390,6 +420,7 @@ inductive_cases red_cases:
   "extTA,P,t \<turnstile> \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P,t \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P,t \<turnstile> \<langle>e\<bullet>F{D} := e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "extTA,P,t \<turnstile> \<langle>e\<bullet>compareAndSwap(D\<bullet>F, e', e''), s\<rangle> -ta\<rightarrow> \<langle>e''', s'\<rangle>"
   "extTA,P,t \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P,t \<turnstile> \<langle>{V:T=vo; e}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P,t \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
@@ -612,8 +643,9 @@ lemmas [code_pred_intro] =
   J_heap_base.RedAAccBounds J_heap_base.RedAAcc J_heap_base.AAssRed1 J_heap_base.AAssRed2 J_heap_base.AAssRed3
   J_heap_base.RedAAssNull J_heap_base.RedAAssBounds J_heap_base.RedAAssStore J_heap_base.RedAAss J_heap_base.ALengthRed
   J_heap_base.RedALength J_heap_base.RedALengthNull J_heap_base.FAccRed J_heap_base.RedFAcc J_heap_base.RedFAccNull
-  J_heap_base.FAssRed1 J_heap_base.FAssRed2 J_heap_base.RedFAss J_heap_base.RedFAssNull J_heap_base.CallObj
-  J_heap_base.CallParams
+  J_heap_base.FAssRed1 J_heap_base.FAssRed2 J_heap_base.RedFAss J_heap_base.RedFAssNull
+  J_heap_base.CASRed1 J_heap_base.CASRed2 J_heap_base.CASRed3 J_heap_base.CASNull J_heap_base.RedCASSucceed J_heap_base.RedCASFail
+  J_heap_base.CallObj J_heap_base.CallParams
 
 declare
   J_heap_base.RedCall_code[code_pred_intro RedCall_code]
@@ -635,6 +667,7 @@ lemmas [code_pred_intro] =
   J_heap_base.NewArrayThrow J_heap_base.CastThrow J_heap_base.InstanceOfThrow J_heap_base.BinOpThrow1 J_heap_base.BinOpThrow2
   J_heap_base.LAssThrow J_heap_base.AAccThrow1 J_heap_base.AAccThrow2 J_heap_base.AAssThrow1 J_heap_base.AAssThrow2
   J_heap_base.AAssThrow3 J_heap_base.ALengthThrow J_heap_base.FAccThrow J_heap_base.FAssThrow1 J_heap_base.FAssThrow2
+  J_heap_base.CASThrow J_heap_base.CASThrow2 J_heap_base.CASThrow3
   J_heap_base.CallThrowObj 
 
 declare
@@ -662,11 +695,13 @@ proof -
     RedInstanceOf BinOpRed1 BinOpRed2 RedBinOp RedBinOpFail RedVar LAssRed RedLAss
     AAccRed1 AAccRed2 RedAAccNull RedAAccBounds RedAAcc
     AAssRed1 AAssRed2 AAssRed3 RedAAssNull RedAAssBounds RedAAssStore RedAAss ALengthRed RedALength RedALengthNull FAccRed
-    RedFAcc RedFAccNull FAssRed1 FAssRed2 RedFAss RedFAssNull CallObj CallParams RedCall RedCallExternal RedCallNull
+    RedFAcc RedFAccNull FAssRed1 FAssRed2 RedFAss RedFAssNull CASRed1 CASRed2 CASRed3 RedCASNull RedCASSucceed RedCASFail 
+    CallObj CallParams RedCall RedCallExternal RedCallNull
     BlockRed RedBlock SynchronizedRed1 SynchronizedNull LockSynchronized SynchronizedRed2 UnlockSynchronized SeqRed
     RedSeq CondRed RedCondT RedCondF RedWhile ThrowRed RedThrowNull TryRed RedTry RedTryCatch RedTryFail
     NewArrayThrow CastThrow InstanceOfThrow BinOpThrow1 BinOpThrow2 LAssThrow AAccThrow1 AAccThrow2 AAssThrow1 AAssThrow2
-    AAssThrow3 ALengthThrow FAccThrow FAssThrow1 FAssThrow2 CallThrowObj CallThrowParams BlockThrow SynchronizedThrow1 
+    AAssThrow3 ALengthThrow FAccThrow FAssThrow1 FAssThrow2 CASThrow CASThrow2 CASThrow3 
+    CallThrowObj CallThrowParams BlockThrow SynchronizedThrow1 
     SynchronizedThrow2 SeqThrow CondThrow ThrowThrow])
 
     case (RedCall s a U M Ts T pns body D vs)

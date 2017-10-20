@@ -61,6 +61,10 @@ proof -
     with check have "ka_Val v = {}" by(cases v) simp_all
     with Push exec check show ?thesis by(simp)
   next
+    case (CAS F D)
+    then show ?thesis using exec check 
+      by(clarsimp split: if_split_asm)(fastforce dest!: in_set_dropD)+
+  next
     case (Invoke M' n)
     show ?thesis
     proof(cases "stk ! n = Null")
@@ -132,6 +136,15 @@ next
 next
   case Getfield thus ?thesis using assms
     by(auto simp add: jvm_known_addrs_def neq_Nil_conv is_Ref_def split: if_split_asm)
+next
+  case CAS thus ?thesis using assms
+    apply(cases stk; simp)
+    subgoal for v stk
+      apply(cases stk; simp)
+      subgoal for v stk
+        by(cases stk)(auto split: if_split_asm simp add: jvm_known_addrs_def is_Ref_def)
+      done
+    done
 qed(auto simp add: split_beta is_Ref_def neq_Nil_conv split: if_split_asm)
 
 lemma mexecd_known_addrs_ReadMem:
@@ -163,6 +176,15 @@ next
 next
   case Putfield with assms show ?thesis
     by(cases stk)(auto simp add: jvm_known_addrs_def split: if_split_asm)
+next
+  case CAS with assms show ?thesis
+    apply(cases stk; simp)
+    subgoal for v stk
+      apply(cases stk; simp)
+      subgoal for v stk
+        by(cases stk)(auto split: if_split_asm simp add: take_Cons' jvm_known_addrs_def)
+      done
+    done
 qed(auto simp add: split_beta split: if_split_asm)
 
 lemma mexecd_known_addrs_WriteMem:
@@ -214,7 +236,7 @@ lemma exec_instr_New_same_addr_same:
      \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! j = NewHeapElem a x'; j < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> i = j"
 apply(cases ins)
-apply(auto split: prod.split_asm if_split_asm)
+apply(auto simp add: nth_Cons' split: prod.split_asm if_split_asm)
 apply(auto split: extCallRet.split_asm dest: red_external_aggr_New_same_addr_same)
 done
 
@@ -398,6 +420,11 @@ next
     and "ReadMem ad al v \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
     by(auto split: if_split_asm simp add: is_Ref_def)
   thus ?thesis by(rule red_external_aggr_read_mem_typeable)
+next
+  case (CAS F D)
+  with assms show ?thesis
+    by(clarsimp simp add: split_beta is_Ref_def conf_def split: if_split_asm)
+      (force intro: addr_loc_type.intros dest: has_visible_field[THEN has_field_mono])
 qed(auto simp add: split_beta is_Ref_def split: if_split_asm)
 
 lemma exec_1_d_read_typeable:
@@ -470,6 +497,9 @@ proof -
     case Getfield with assms show ?thesis
       by(auto 4 3 intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
   next
+    case CAS with assms show ?thesis
+      by(auto 4 3 intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
+  next
     case Invoke with assms show ?thesis
       by(fastforce dest: red_external_aggr_non_speculative_typeable simp add: has_method_def is_native.simps)
   qed(auto)
@@ -515,6 +545,10 @@ proof -
   next
     case Putfield
     show ?thesis using assms Putfield
+      by(auto intro!: vs_confI dest!: hext_heap_write)(blast intro: addr_loc_type.intros addr_loc_type_hext_mono typeof_addr_hext_mono has_field_mono[OF has_visible_field] conf_hext dest: vs_confD)+
+  next
+    case CAS
+    show ?thesis using assms CAS
       by(auto intro!: vs_confI dest!: hext_heap_write)(blast intro: addr_loc_type.intros addr_loc_type_hext_mono typeof_addr_hext_mono has_field_mono[OF has_visible_field] conf_hext dest: vs_confD)+
   qed(auto)
 qed
@@ -677,6 +711,9 @@ declare eq_upto_seq_inconsist_simps [simp]
 
 context JVM_progress begin
 
+abbreviation (input) jvm_non_speculative_read_bound :: nat where
+  "jvm_non_speculative_read_bound \<equiv> 2"
+
 lemma exec_instr_non_speculative_read:
   assumes hrt: "heap_read_typeable hconf P"
   and vs: "vs_conf P (shr s) vs"
@@ -691,7 +728,8 @@ lemma exec_instr_non_speculative_read:
   shows "\<exists>ta' xcp'' h'' frs''. (ta', xcp'', h'', frs'') \<in> exec_instr i P t (shr s) stk loc C M pc frs \<and>
            execd_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
-           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> 
+           length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max jvm_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 using exec_i i read
 proof(cases i)
   case [simp]: ALoad
@@ -731,6 +769,37 @@ next
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) ?a (CField D F) v'" using hconf by(rule heap_read_typeableD)
   with type Null aok exec_i show ?thesis by(fastforce)
+next
+  case [simp]: (CAS F D)
+  let ?a = "the_Addr (hd (tl (tl stk)))"
+
+  from exec_i i read have Null: "hd (tl (tl stk)) \<noteq> Null"
+    and [simp]: "I = 0" "a'' = ?a" "al'' = CField D F"
+    by(auto split: if_split_asm simp add: nth_Cons')
+  with check obtain U T fm C' a
+    where sees: "P \<turnstile> D sees F:T (fm) in D"
+    and type: "typeof_addr (shr s) ?a = \<lfloor>U\<rfloor>" 
+    and sub: "P \<turnstile> class_type_of U \<preceq>\<^sup>* D" 
+    and a: "hd (tl (tl stk)) = Addr a" "length stk > 2" 
+    and v: "P,shr s \<turnstile> hd stk :\<le> T"
+    by(auto simp add: is_Ref_def)
+  from has_visible_field[OF sees] sub
+  have "P \<turnstile> class_type_of U has F:T (fm) in D" by(rule has_field_mono)
+  with type have adal: "P,shr s \<turnstile> ?a@CField D F : T"
+    by(rule addr_loc_type.intros)
+  from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
+  with hrt adal have read: "heap_read (shr s) ?a (CField D F) v'" using hconf by(rule heap_read_typeableD)
+  show ?thesis
+  proof(cases "v' = hd (tl stk)")
+    case True
+    from heap_write_total[OF hconf adal v] a obtain h'
+      where "heap_write (shr s) a (CField D F) (hd stk) h'" by auto
+    then show ?thesis using read a True aok exec_i by fastforce
+  next
+    case False
+    then show ?thesis using read a aok exec_i
+      by(fastforce intro!: disjI2)
+  qed
 next
   case [simp]: (Invoke M n)
   let ?a = "the_Addr (stk ! n)"
@@ -772,7 +841,8 @@ lemma exec_1_d_non_speculative_read:
   shows "\<exists>ta' xcp'' h'' frs''. P,t \<turnstile> Normal (xcp, shr s, frs) -ta'-jvmd\<rightarrow> Normal (xcp'', h'', frs'') \<and>
            execd_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
-           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> 
+           length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max jvm_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 using assms
 apply -
 apply(erule jvmd_NormalE)
@@ -827,9 +897,10 @@ lemma non_speculative_read:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
-  shows "execd_mthr.if.non_speculative_read (init_fin_lift_state status (JVM_start_state P C M vs)) 
-                                            (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
-  (is "execd_mthr.if.non_speculative_read ?start_state ?start_vs")
+  shows "execd_mthr.if.non_speculative_read jvm_non_speculative_read_bound
+      (init_fin_lift_state status (JVM_start_state P C M vs)) 
+      (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
+  (is "execd_mthr.if.non_speculative_read _ ?start_state ?start_vs")
 proof(rule execd_mthr.if.non_speculative_readI)
   fix ttas s' t x ta x' m' i ad al v v'
 
@@ -902,7 +973,7 @@ proof(rule execd_mthr.if.non_speculative_readI)
     and i'': " i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>"
     and eq'': "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
     and read'': "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i = ReadMem ad al v'"
-    and len'': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by blast
+    and len'': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max jvm_non_speculative_read_bound (length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)" by blast
 
   let ?x' = "(Running, xcp'', frs'')"
   let ?ta' = "convert_TA_initial (convert_obs_initial ta'')"
@@ -912,12 +983,14 @@ proof(rule execd_mthr.if.non_speculative_readI)
   moreover from i'' have "i < length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub>" by simp
   moreover from eq'' have "take i \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by(simp add: take_map)
   moreover from read'' i'' have "\<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v')" by(simp add: nth_map)
-  moreover from len'' have "length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by simp
+  moreover from len'' have "length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> \<le> max jvm_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" 
+    unfolding ta by simp
   ultimately
   show "\<exists>ta' x'' m''. execd_mthr.init_fin P t (x, shr s') ta' (x'', m'') \<and>
                       execd_mthr.mthr.if.actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and>
-                      \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+                      \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and> 
+                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max jvm_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     by blast
 qed
 

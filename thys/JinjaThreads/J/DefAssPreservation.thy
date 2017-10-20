@@ -43,6 +43,9 @@ apply blast
 apply blast
 apply blast
 apply blast
+apply blast
+apply blast
+apply blast
 apply(force split: if_split_asm)
 apply blast
 apply blast
@@ -65,28 +68,20 @@ context J_heap_base begin
 lemma assumes wf: "wf_J_prog P"
   shows red_preserves_defass: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom (lcl s')\<rfloor>"
   and reds_preserves_defass: "extTA,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> \<D>s es \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D>s es' \<lfloor>dom (lcl s')\<rfloor>"
-proof (induct rule:red_reds.inducts)
+proof (induction rule:red_reds.inducts)
   case BinOpRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case AAccRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
-  case (AAssRed1 a s ta a' s' i e)
-  have ss: "extTA,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
-    and IH: "\<D> a \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> a' \<lfloor>dom (lcl s')\<rfloor>"
-    and D: "\<D> (a\<lfloor>i\<rceil> := e) \<lfloor>dom (lcl s)\<rfloor>" by fact+
-  from D have "\<D> a \<lfloor>dom (lcl s)\<rfloor>" by simp
-  with IH have Da: "\<D> a' \<lfloor>dom (lcl s')\<rfloor>" by simp
-  from ss have domgrow: "\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a'" by - (erule red_lA_incr)
-  from D have "\<D> i (\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a)" by simp
-  with domgrow have Di: "\<D> i (\<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a')" by - (erule D_mono)
-  from domgrow have domgrow2: "\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<squnion> \<A> i \<sqsubseteq> \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a' \<squnion> \<A> i" by - (rule sqUn_lem)
-  from D have "\<D> e (\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<squnion> \<A> i)" by simp
-  with domgrow2 have De: "\<D> e (\<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a' \<squnion> \<A> i)" by - (erule D_mono)
-  from Da Di De show ?case by simp
+  case AAssRed1 thus ?case by(auto intro: red_lA_incr sqUn_lem D_mono)
 next
   case AAssRed2 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case FAssRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
+next
+  case CASRed1 thus ?case by(auto intro: red_lA_incr sqUn_lem D_mono)
+next
+  case CASRed2 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case CallObj thus ?case by (auto elim!: Ds_mono[OF red_lA_incr])
 next

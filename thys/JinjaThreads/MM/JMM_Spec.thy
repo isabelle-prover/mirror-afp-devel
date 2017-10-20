@@ -248,7 +248,8 @@ definition sync_with ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
   ("_,_ \<turnstile> _ \<le>sw _" [51, 0, 0, 50] 50)
 where
-  "P,E \<turnstile> a \<le>sw a' \<longleftrightarrow> P,E \<turnstile> a \<le>so a' \<and> P \<turnstile> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a', action_obs E a')"
+  "P,E \<turnstile> a \<le>sw a' \<longleftrightarrow>
+   P,E \<turnstile> a \<le>so a' \<and> P \<turnstile> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a', action_obs E a')"
 
 definition po_sw :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
 where "po_sw P E a a' \<longleftrightarrow> E \<turnstile> a \<le>po a' \<or> P,E \<turnstile> a \<le>sw a'"
@@ -260,14 +261,15 @@ where "happens_before P E \<equiv> (po_sw P E)^++"
 
 type_synonym write_seen = "JMM_action \<Rightarrow> JMM_action"
 
-definition is_write_seen :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> write_seen \<Rightarrow> bool"
-where 
+definition is_write_seen :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> write_seen \<Rightarrow> bool" where 
   "is_write_seen P E ws \<longleftrightarrow>
    (\<forall>a \<in> read_actions E. \<forall>ad al v. action_obs E a = NormalAction (ReadMem ad al v) \<longrightarrow> 
        ws a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E (ws a) \<and>
        value_written P E (ws a) (ad, al) = v \<and> \<not> P,E \<turnstile> a \<le>hb ws a \<and>
        (is_volatile P al \<longrightarrow> \<not> P,E \<turnstile> a \<le>so ws a) \<and>
-       (\<forall>w' \<in> write_actions E. (ad, al) \<in> action_loc P E w' \<longrightarrow> (P,E \<turnstile> ws a \<le>hb w' \<and> P,E \<turnstile> w' \<le>hb a \<or> is_volatile P al \<and> P,E \<turnstile> ws a \<le>so w' \<and> P,E \<turnstile> w' \<le>so a) \<longrightarrow> w' = ws a))"
+       (\<forall>w' \<in> write_actions E. (ad, al) \<in> action_loc P E w' \<longrightarrow> 
+          (P,E \<turnstile> ws a \<le>hb w' \<and> P,E \<turnstile> w' \<le>hb a \<or> is_volatile P al \<and> P,E \<turnstile> ws a \<le>so w' \<and> P,E \<turnstile> w' \<le>so a) \<longrightarrow>
+          w' = ws a))"
 
 definition thread_start_actions_ok :: "('addr, 'thread_id) execution \<Rightarrow> bool"
 where
@@ -875,7 +877,7 @@ declare sequentially_consistent.simps [simp del]
 
 subsection {* Similar actions *}
 
-text {* Similar actions differ only in the values written/read *}
+text {* Similar actions differ only in the values written/read. *}
 
 inductive sim_action :: 
   "('addr, 'thread_id) obs_event action \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool" 
@@ -1225,7 +1227,7 @@ text {*
   the read and write are unrelated in hb, because synchronises-with is 
   asymmetric for volatiles.
 
-  The JLS consideres conflicting volatiles for data races, but this is only a 
+  The JLS considers conflicting volatiles for data races, but this is only a 
   remark on the DRF guarantee. See JMM mailing list posts \#2477 to 2488.
 *}
 (* Problem already exists in Sevcik's formalisation *)

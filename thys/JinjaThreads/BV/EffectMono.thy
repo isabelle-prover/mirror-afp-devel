@@ -79,6 +79,10 @@ proof -
     with app less show ?thesis
       by (fastforce intro: widen_trans rtrancl_trans simp add: sees_field_def widen_Array dest: has_fields_fun)
   next
+    case CAS
+    with app less show ?thesis
+      by (fastforce intro: widen_trans rtrancl_trans simp add: sees_field_def widen_Array dest: has_fields_fun)
+  next
     case Return
     with app less show ?thesis by (fastforce intro: widen_trans)
   next

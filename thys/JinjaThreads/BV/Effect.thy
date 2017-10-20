@@ -29,6 +29,7 @@ where
 | "succs (Push v) \<tau> pc       = [pc+1]"
 | "succs (Getfield F C) \<tau> pc = [pc+1]"
 | "succs (Putfield F C) \<tau> pc = [pc+1]"
+| "succs (CAS F C) \<tau> pc      = [pc+1]"
 | "succs (New C) \<tau> pc        = [pc+1]"
 | "succs (NewArray T) \<tau> pc   = [pc+1]"
 | "succs ALoad \<tau> pc          = (if (fst \<tau>)!1 = NT then [] else [pc+1])"
@@ -71,6 +72,9 @@ where
 
 | eff\<^sub>i_Putfield:
   "eff\<^sub>i (Putfield F C, P, (T\<^sub>1#T\<^sub>2#ST, LT)) = (ST,LT)"
+
+| eff\<^sub>i_CAS:
+  "eff\<^sub>i (CAS F C, P, (T\<^sub>1#T\<^sub>2#T\<^sub>3#ST, LT)) = (Boolean # ST, LT)"
 
 | eff\<^sub>i_New:
   "eff\<^sub>i (New C, P, (ST,LT))               = (Class C # ST, LT)"
@@ -129,6 +133,8 @@ where
   "is_relevant_class (Getfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
 | rel_Putfield:
   "is_relevant_class (Putfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
+| rel_CAS:
+  "is_relevant_class (CAS F D)      = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
 | rel_Checcast:
   "is_relevant_class (Checkcast T)  = (\<lambda>P C. P \<turnstile> ClassCast \<preceq>\<^sup>* C)" 
 | rel_New:
@@ -209,6 +215,9 @@ where
 | app\<^sub>i_Putfield:
   "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) = 
     (\<exists>T\<^sub>f fm. P \<turnstile> C sees F:T\<^sub>f (fm) in C \<and> P \<turnstile> T\<^sub>2 \<le> (Class C) \<and> P \<turnstile> T\<^sub>1 \<le> T\<^sub>f)" 
+| app\<^sub>i_CAS:
+  "app\<^sub>i (CAS F C, P, pc, mxs, T\<^sub>r, (T\<^sub>3#T\<^sub>2#T\<^sub>1#ST, LT)) = 
+    (\<exists>T\<^sub>f fm. P \<turnstile> C sees F:T\<^sub>f (fm) in C \<and> volatile fm \<and> P \<turnstile> T\<^sub>1 \<le> Class C \<and> P \<turnstile> T\<^sub>2 \<le> T\<^sub>f \<and> P \<turnstile> T\<^sub>3 \<le> T\<^sub>f)" 
 | app\<^sub>i_New:
   "app\<^sub>i (New C, P, pc, mxs, T\<^sub>r, (ST,LT)) = 
     (is_class P C \<and> length ST < mxs)"
@@ -319,45 +328,32 @@ lemma length_cases2:
 lemma length_cases3:
   assumes "\<And>LT. P ([],LT)"
   assumes "\<And>l LT. P ([l],LT)"
-  assumes "\<And>l ST LT. P (l#ST,LT)"
+  assumes "\<And>l l' ST LT. P (l#l'#ST,LT)"
   shows "P s"
-(*<*)
-proof -
-  obtain xs LT where s: "s = (xs,LT)" by (cases s)
-  show ?thesis
-  proof (cases xs)
-    case Nil thus ?thesis using s assms by (simp)
-  next
-    fix l xs' assume "xs = l#xs'"
-    thus ?thesis using s assms by (simp)
-  qed
-qed
-(*>*)
+  apply(rule length_cases2; (rule assms)?)
+  subgoal for l ST LT by(cases ST; clarsimp simp: assms)
+  done
 
 lemma length_cases4:
   assumes "\<And>LT. P ([],LT)"
   assumes "\<And>l LT. P ([l],LT)"
   assumes "\<And>l l' LT. P ([l,l'],LT)"
-  assumes "\<And>l l' ST LT. P (l#l'#ST,LT)"
+  assumes "\<And>l l' l'' ST LT. P (l#l'#l''#ST,LT)"
   shows "P s"
-(*<*)
-proof -
-  obtain xs LT where s: "s = (xs,LT)" by (cases s)
-  show ?thesis
-  proof (cases xs)
-    case Nil thus ?thesis using s assms by (simp)
-  next
-    fix l xs' assume xs: "xs = l#xs'"
-    thus ?thesis
-    proof (cases xs')
-      case Nil thus ?thesis using s assms xs by (simp)
-    next
-      fix l' ST assume xs': "xs' = l'#ST"
-      thus ?thesis using s assms xs xs' by (simp)
-    qed
-  qed
-qed
-(*>*)
+  apply(rule length_cases3; (rule assms)?)
+  subgoal for l l' ST LT by(cases ST; clarsimp simp: assms)
+  done
+
+lemma length_cases5:
+  assumes "\<And>LT. P ([],LT)"
+  assumes "\<And>l LT. P ([l],LT)"
+  assumes "\<And>l l' LT. P ([l,l'],LT)"
+  assumes "\<And>l l' l'' LT. P ([l,l',l''],LT)"
+  assumes "\<And>l l' l'' l''' ST LT. P (l#l'#l''#l'''#ST,LT)"
+  shows "P s"
+  apply(rule length_cases4; (rule assms)?)
+  subgoal for l l' l'' ST LT by(cases ST; clarsimp simp: assms)
+  done
 
 text {* 
 \medskip
@@ -391,6 +387,12 @@ lemma appPutField[simp]:
  (\<exists> vT vT' oT ST LT fm. s = (vT#oT#ST, LT) \<and>
   P \<turnstile> C sees F:vT' (fm) in C \<and> P \<turnstile> oT \<le> (Class C) \<and> P \<turnstile> vT \<le> vT')"
   by (rule length_cases4 [of _ s], auto)
+
+lemma appCAS[simp]:
+"app\<^sub>i (CAS F C, P, pc, mxs, T\<^sub>r, s) =
+  (\<exists> T1 T2 T3 T' ST LT fm. s = (T3 # T2 # T1 # ST, LT) \<and>
+  P \<turnstile> C sees F:T' (fm) in C \<and> volatile fm \<and> P \<turnstile> T1 \<le> Class C \<and> P \<turnstile> T2 \<le> T' \<and> P \<turnstile> T3 \<le> T')"
+  by(rule length_cases4[of _ s]) auto
 
 lemma appNew[simp]:
   "app\<^sub>i (New C,P,pc,mxs,T\<^sub>r,s) = 
@@ -556,6 +558,12 @@ lemma app\<^sub>i_Putfield_code:
    Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^sub>1 \<le> T then Predicate.single () else bot))"
 by (auto simp add: holds_eq eval_sees_field_i_i_i_o_i_conv split: if_splits)
 
+lemma app\<^sub>i_CAS_code:
+  "app\<^sub>i (CAS F C, P, pc, mxs, T\<^sub>r, (T\<^sub>3#T\<^sub>2#T\<^sub>1#ST, LT)) \<longleftrightarrow>
+   P \<turnstile> T\<^sub>1 \<le> Class C \<and>
+  Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^sub>2 \<le> T \<and> P \<turnstile> T\<^sub>3 \<le> T \<and> volatile fm then Predicate.single () else bot))"
+by(auto simp add: holds_eq eval_sees_field_i_i_i_o_i_conv)
+
 lemma app\<^sub>i_ALoad_code:
   "app\<^sub>i (ALoad, P, pc, mxs, T\<^sub>r, (T1#T2#ST,LT)) = 
    (T1 = Integer \<and> (case T2 of Ty\<lfloor>\<rceil> \<Rightarrow> True | NT \<Rightarrow> True | _ \<Rightarrow> False))"
@@ -598,7 +606,7 @@ by(simp split: ty.split)
 
 lemmas app\<^sub>i_code [code] =
   app\<^sub>i_Load app\<^sub>i_Store app\<^sub>i_Push
-  app\<^sub>i_Getfield_code app\<^sub>i_Putfield_code
+  app\<^sub>i_Getfield_code app\<^sub>i_Putfield_code app\<^sub>i_CAS_code
   app\<^sub>i_New app\<^sub>i_NewArray
   app\<^sub>i_ALoad_code app\<^sub>i_AStore_code app\<^sub>i_ALength_code
   app\<^sub>i_Checkcast app\<^sub>i_Instanceof
