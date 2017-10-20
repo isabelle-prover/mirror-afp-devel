@@ -3,7 +3,7 @@
 section \<open>Missing Lemmas of Matrix\<close>
 
 theory DL_Missing_Matrix
-imports Jordan_Normal_Form.Matrix
+imports Matrix
 begin
 
 lemma dim_vec_of_list[simp] :"dim_vec (vec_of_list as) = length as" by transfer auto

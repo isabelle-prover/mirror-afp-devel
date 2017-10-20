@@ -14,6 +14,8 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     Jordan_Normal_Form_Existence
     Jordan_Normal_Form_Uniqueness
     Spectral_Radius
+  theories
+    DL_Rank_Submatrix
   document_files
     "root.bib"
     "root.tex"

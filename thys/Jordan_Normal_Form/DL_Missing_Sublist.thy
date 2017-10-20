@@ -495,9 +495,6 @@ lemma nths_nth:
 assumes "n\<in>A" "n<length xs"
 shows "nths xs A ! (card {i. i<n \<and> i\<in>A}) = xs ! n"
 using assms proof (induction xs rule:rev_induct)
-  case Nil
-  then show ?case by simp
-next
   case (snoc x xs)
   then show ?case
   proof (cases "n = length xs")
@@ -515,7 +512,7 @@ next
     then show ?thesis unfolding nths_append[of xs "[x]" A] nth_append using 0
       by (simp add: \<open>n < length xs\<close>)
   qed
-qed
+qed simp
 
 lemma list_all2_nths:
 assumes "list_all2 P (nths xs A) (nths ys A)"

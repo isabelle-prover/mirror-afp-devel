@@ -26,36 +26,27 @@ lemma find_first_le:
 assumes "a \<in> set xs"
 shows "find_first a xs < length xs"
 using assms proof (induction xs)
-  case Nil
-  then show ?case by auto
-next
   case (Cons x xs)
   then show ?case
     using find_first.simps(2) nth_Cons_0 nth_Cons_Suc set_ConsD by auto
-qed
+qed auto
 
 lemma nth_find_first:
 assumes "a \<in> set xs"
 shows "xs ! (find_first a xs) = a"
 using assms proof (induction xs)
-  case Nil
-  then show ?case by auto
-next
   case (Cons x xs)
   then show ?case
     using find_first.simps(2) nth_Cons_0 nth_Cons_Suc set_ConsD by auto
-qed
+qed auto
 
 lemma find_first_unique:
 assumes "distinct xs"
 and "i < length xs"
 shows "find_first (xs ! i) xs = i"
 using assms proof (induction xs arbitrary:i)
-  case Nil
-  then show ?case by auto
-next
   case (Cons x xs i)
   then show ?case by (cases i; auto)
-qed
+qed auto
 
 end

@@ -3,7 +3,7 @@
 section \<open>Submatrices\<close>
 
 theory DL_Submatrix
-imports Jordan_Normal_Form.Matrix DL_Missing_Sublist
+imports Matrix DL_Missing_Sublist
 begin
 
 

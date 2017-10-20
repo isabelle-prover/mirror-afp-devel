@@ -3,7 +3,8 @@
 section \<open>CP-Rank and Matrix Rank\<close>
 
 theory DL_Rank_CP_Rank
-imports Tensor_Rank DL_Rank Tensor_Matricization DL_Submatrix DL_Missing_Vector_Space
+imports Tensor_Rank Jordan_Normal_Form.DL_Rank Tensor_Matricization 
+  Jordan_Normal_Form.DL_Submatrix Jordan_Normal_Form.DL_Missing_Vector_Space
 begin
 
 abbreviation "mrank A == vec_space.rank (dim_row A) A"

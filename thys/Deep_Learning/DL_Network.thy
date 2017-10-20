@@ -3,8 +3,9 @@
 section \<open>Deep Learning Networks\<close>
 
 theory DL_Network
-imports Tensor_Product HOL.Real DL_Missing_Matrix
-Jordan_Normal_Form.Matrix Tensor_Unit_Vec DL_Flatten_Matrix DL_Missing_List
+imports Tensor_Product HOL.Real
+  Jordan_Normal_Form.DL_Missing_Matrix Tensor_Unit_Vec DL_Flatten_Matrix 
+  Jordan_Normal_Form.DL_Missing_List
 begin
 
 text \<open>This symbol is used for the Tensor product:\<close>

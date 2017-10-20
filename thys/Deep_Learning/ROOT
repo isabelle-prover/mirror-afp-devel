@@ -37,6 +37,7 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
     Jordan_Normal_Form.Determinant
     "HOL-Library.Groups_Big_Fun"
     "HOL-Library.Fun_Lexorder"
+    Jordan_Normal_Form.DL_Rank_Submatrix
 
 session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
   options [timeout = 600]

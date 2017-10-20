@@ -3,7 +3,7 @@
 section \<open>Missing Lemmas of VS\_Connect\<close>
 
 theory DL_Missing_VS_Connect
-imports Jordan_Normal_Form.VS_Connect DL_Missing_Vector_Space
+imports VS_Connect DL_Missing_Vector_Space
 begin
 
 
