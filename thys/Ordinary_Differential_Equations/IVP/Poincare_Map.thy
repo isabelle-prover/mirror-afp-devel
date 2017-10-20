@@ -1031,7 +1031,7 @@ proof -
       by (auto intro!: continuous_intros v continuous_on_subset[OF e(4) U(2)])
     from continuous_closedin_preimage[OF this closed_singleton[where a=0]]
     have "closedin (subtopology euclidean U) M"
-      by (auto simp: M_def)
+      by (auto simp: M_def vimage_def Collect_conj_eq)
     moreover
     have "\<And>s. s \<in> U  \<Longrightarrow> isCont v s"
       using v
