@@ -122,6 +122,15 @@ exec_instr_Load:
            in {(\<lbrace>WriteMem a (CField C F) v\<rbrace>, None, h', (tl (tl stk), loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs) | h'.
                heap_write h a (CField C F) v h'})"
 
+| "exec_instr (CAS F C) P t h stk loc C0 M0 pc frs =
+  (let v'' = hd stk; v' = hd (tl stk); v = hd (tl (tl stk))
+   in if v = Null then {(\<epsilon>, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
+      else let a = the_Addr v
+           in {(\<lbrace>ReadMem a (CField C F) v', WriteMem a (CField C F) v''\<rbrace>, None, h', (Bool True # tl (tl (tl stk)), loc, C0, M0, pc + 1) # frs) | h' .
+                heap_read h a (CField C F) v' \<and> heap_write h a (CField C F) v'' h'} \<union>
+              {(\<lbrace>ReadMem a (CField C F) v''\<rbrace>, None, h, (Bool False # tl (tl (tl stk)), loc, C0, M0, pc + 1) # frs) | v''.
+                heap_read h a (CField C F) v'' \<and> v'' \<noteq> v'})"
+
 | "exec_instr (Checkcast T) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   {(\<epsilon>, let U = the (typeof\<^bsub>h\<^esub> (hd stk))
        in if P \<turnstile> U \<le> T then (None, h, (stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)

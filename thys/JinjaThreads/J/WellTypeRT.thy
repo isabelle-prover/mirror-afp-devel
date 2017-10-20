@@ -81,6 +81,15 @@ inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarr
     "\<lbrakk> WTrt P h E e1 NT; WTrt P h E e2 T2 \<rbrakk>
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
+| WTrtCAS:
+  "\<lbrakk> WTrt P h E e1 U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C has F:T (fm) in D; volatile fm;
+     WTrt P h E e2 T2; P \<turnstile> T2 \<le> T; WTrt P h E e3 T3; P \<turnstile> T3 \<le> T \<rbrakk>
+  \<Longrightarrow> WTrt P h E (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) Boolean"
+
+| WTrtCASNT:
+  "\<lbrakk> WTrt P h E e1 NT; WTrt P h E e2 T2; WTrt P h E e3 T3 \<rbrakk>
+  \<Longrightarrow> WTrt P h E (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) Boolean"
+
 | WTrtCall:
     "\<lbrakk> WTrt P h E e U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
        WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
@@ -179,6 +188,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> a\<bullet>length : T"
   "P,E,h \<turnstile> e\<bullet>F{D} : T"
   "P,E,h \<turnstile> e\<bullet>F{D} := v : T"
+  "P,E,h \<turnstile> e\<bullet>compareAndSwap(D\<bullet>F, e2, e3) : T"
   "P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
   "P,E,h \<turnstile> new C : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
@@ -212,6 +222,8 @@ apply(fastforce simp: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
 apply(fastforce simp: WTrtFAss)
 apply(fastforce simp: WTrtFAssNT)
+apply(fastforce simp: WTrtCAS)
+apply(fastforce simp: WTrtCASNT)
 apply(fastforce simp: WTrtCall)
 apply(fastforce simp: WTrtCallNT)
 apply(fastforce simp: map_le_def)
@@ -242,8 +254,9 @@ apply(assumption)
 apply(erule WTrtAAss)
 apply(assumption)+
 apply(erule WTrtALength)
-apply(fastforce intro: WTrtFAcc has_visible_field)
+apply(fastforce intro: has_visible_field)
 apply(fastforce simp: WTrtFAss dest: has_visible_field)
+apply(fastforce simp: WTrtCAS dest: has_visible_field)
 apply(fastforce simp: WTrtCall)
 apply(clarsimp simp del: fun_upd_apply, blast intro: typeof_lit_typeof)
 apply(fastforce)+
@@ -279,10 +292,12 @@ apply fastforce
 apply fastforce
 apply fastforce
 apply fastforce
-apply(fast intro: WTrtFAcc)
+apply(fast)
 apply(simp add: WTrtFAccNT)
 apply(fastforce simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastforce simp: WTrtFAssNT)
+apply(fastforce simp: WTrtCAS)
+apply(fastforce simp: WTrtCASNT)
 apply(fastforce simp: WTrtCall)
 apply(fastforce simp: WTrtCallNT)
 apply(fastforce intro: hext_typeof_mono)

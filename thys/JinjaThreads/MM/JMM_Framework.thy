@@ -2777,9 +2777,9 @@ by(induct obs arbitrary: vs vs')(auto del: equalityI intro: w_value_mrw_value_do
 context jmm_multithreaded begin
 
 definition non_speculative_read :: 
-  "('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> bool"
+  "nat \<Rightarrow> ('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> bool"
 where
-  "non_speculative_read s vs \<longleftrightarrow>
+  "non_speculative_read n s vs \<longleftrightarrow>
    (\<forall>ttas s' t x ta x' m' i ad al v v'.
        s -\<triangleright>ttas\<rightarrow>* s' \<longrightarrow> non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<longrightarrow>
        thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<longrightarrow> t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m') \<longrightarrow> actions_ok s' t ta \<longrightarrow> 
@@ -2789,7 +2789,7 @@ where
        v' \<in> w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas) @ take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ad, al) \<longrightarrow>
        (\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and>
-                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))" 
 
 lemma non_speculative_readI [intro?]:
   "(\<And>ttas s' t x ta x' m' i ad al v v'. 
@@ -2800,19 +2800,19 @@ lemma non_speculative_readI [intro?]:
      v' \<in> w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas) @ take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ad, al) \<rbrakk>
     \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and>
-                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)
-  \<Longrightarrow> non_speculative_read s vs"
+                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
+  \<Longrightarrow> non_speculative_read n s vs"
 unfolding non_speculative_read_def by blast
 
 lemma non_speculative_readD:
-  "\<lbrakk> non_speculative_read s vs; s -\<triangleright>ttas\<rightarrow>* s'; non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
+  "\<lbrakk> non_speculative_read n s vs; s -\<triangleright>ttas\<rightarrow>* s'; non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
      thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta;
      i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; non_speculative P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)); 
      \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v);
      v' \<in> w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas) @ take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ad, al) \<rbrakk>
   \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and>
-                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 unfolding non_speculative_read_def by blast
 
 end
@@ -2928,7 +2928,7 @@ lemma non_speculative_read_into_cut_and_update:
   and "s \<equiv> init_fin_lift_state status (start_state f P C M params)"
   and "vs' \<equiv> mrw_values P empty (map snd E)"
   assumes wf: "wf_syscls P"
-  and nsr: "if.non_speculative_read s vs"
+  and nsr: "if.non_speculative_read n s vs"
   and wt: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) params) \<subseteq> allocated start_heap"
   shows "if.cut_and_update s vs'"
@@ -2961,7 +2961,8 @@ proof(rule if.cut_and_updateI)
   hence wtt: "init_fin_lift wfx t x (shr s')" using tst by(rule ts_okD)
 
   { fix i
-    have "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and>
+    have "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and>
+                        length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<and>
                         ta_seq_consist P ?vs' (llist_of (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)) \<and>
                         eq_upto_seq_inconsist P (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) ?vs' \<and>
                         (ta_seq_consist P ?vs' (llist_of (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<longrightarrow> ta' = ta)"
@@ -2974,7 +2975,7 @@ proof(rule if.cut_and_updateI)
       then obtain ta' x'' m''
         where red': "t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'')"
         and aok': "mthr.if.actions_ok s' t ta'"
-        and len: "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+        and len: "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
         and sc': "ta_seq_consist P ?vs' (llist_of (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))"
         and eusi: "eq_upto_seq_inconsist P (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) ?vs'" 
         and ta'_ta: "ta_seq_consist P ?vs' (llist_of (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<Longrightarrow> ta' = ta"
@@ -3034,15 +3035,24 @@ proof(rule if.cut_and_updateI)
           and i': "i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>"
           and eq: "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
           and ta''_i: "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v')"
-          and len': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
+          and len': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
           using if.non_speculative_readD[OF nsr Red ns tst red' aok' i _ ta'_i, of v'] by auto
-        from len' len have "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp
+        from len' len have "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" by simp
         moreover have "ta_seq_consist P ?vs' (llist_of (take (Suc i) \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>))"
           using eq sc' i' ta''_i v'
           by(simp add: take_Suc_conv_app_nth lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend del: lappend_llist_of_llist_of)
-        moreover have eusi': "eq_upto_seq_inconsist P (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take (Suc i) \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>) ?vs'"
-          using i' i len eq eusi ta'_i ta''_i v'
-          by(auto simp add: take_Suc_conv_app_nth ta'_ta eq_upto_seq_inconsist_simps intro: eq_upto_seq_inconsist_appendI)
+        moreover
+        have eusi': "eq_upto_seq_inconsist P (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take (Suc i) \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>) ?vs'"
+        proof(cases "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>")
+          case True
+          with i' i len eq eusi ta'_i ta''_i v' show ?thesis
+            by(auto simp add: take_Suc_conv_app_nth ta'_ta eq_upto_seq_inconsist_simps intro: eq_upto_seq_inconsist_appendI)
+        next
+          case False
+          with i ta'_ta have "\<not> ta_seq_consist P ?vs' (llist_of (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" by auto
+          then show ?thesis using False i' eq eusi
+            by(simp add: take_Suc_conv_app_nth eq_upto_seq_inconsist_append2)
+        qed
         moreover {
           assume "ta_seq_consist P ?vs' (llist_of (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
           with True have "ta'' = ta" by simp }
@@ -3059,7 +3069,7 @@ proof(rule if.cut_and_updateI)
           moreover
           hence "eq_upto_seq_inconsist P (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ?vs'"
             by(rule ta_seq_consist_imp_eq_upto_seq_inconsist_refl)
-          ultimately show ?thesis using red aok by blast
+          ultimately show ?thesis using red aok by fastforce
         next
           assume "?case2" and "\<not> ?case1"
           have "eq_upto_seq_inconsist P (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take (Suc i) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) ?vs'"
@@ -3070,7 +3080,7 @@ proof(rule if.cut_and_updateI)
               by(blast intro: eq_upto_seq_inconsist_appendI[OF eusi])
             thus ?thesis using True `?case2` by(simp add: take_Suc_conv_app_nth)
           next
-            case False with len eusi show ?thesis by(simp)
+            case False with eusi \<open>?case2\<close> show ?thesis by simp
           qed
           with red' aok' len sc' eusi `?case2` `\<not> ?case1`show ?thesis
             by (fastforce simp add: take_all simp del: split_paired_Ex)
@@ -3078,12 +3088,12 @@ proof(rule if.cut_and_updateI)
           assume "?case3" and "\<not> ?case1" and "\<not> ?case2"
           with len eusi ta'_ta
           have "eq_upto_seq_inconsist P (take (Suc i) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (take (Suc i) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) ?vs'"
-            by(auto simp add: take_Suc_conv_app_nth lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend intro: eq_upto_seq_inconsist_appendI cong: action.case_cong obs_event.case_cong)
+            by(cases "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>")(auto simp add: take_Suc_conv_app_nth lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend intro: eq_upto_seq_inconsist_appendI eq_upto_seq_inconsist_append2 cong: action.case_cong obs_event.case_cong)
           with red' aok' `?case3` len `\<not> ?case1` show ?thesis by blast
         qed
       qed
     qed }
-  from this[of "length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"]
+  from this[of "max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"]
   show "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and> ta_seq_consist P ?vs' (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and> eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ?vs'"
     by(auto simp del: split_paired_Ex cong: conj_cong)
 qed
@@ -3094,7 +3104,7 @@ lemma non_speculative_read_into_hb_completion:
   and "vs \<equiv> w_values P (\<lambda>_. {}) (map snd E)"
   and "s \<equiv> init_fin_lift_state status (start_state f P C M params)"
   assumes wf: "wf_syscls P"
-  and nsr: "if.non_speculative_read s vs"
+  and nsr: "if.non_speculative_read n s vs"
   and wt: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) params) \<subseteq> allocated start_heap"
   shows "if.hb_completion s E"
@@ -3124,19 +3134,19 @@ proof
   hence wtt: "init_fin_lift wfx t x (shr s')" using tst by(rule ts_okD)
 
   { fix j
-    have "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and>
+    have "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<and>
                         take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
                         ta_hb_consistent P ?E (llist_of (map (Pair t) (take j (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)))) \<and>
                         (i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
                         (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
     proof(induct j)
-      case 0 from red aok show ?case by(auto simp del: split_paired_Ex)
+      case 0 from red aok show ?case by(fastforce simp del: split_paired_Ex)
     next
       case (Suc j)
       then obtain ta' x'' m''
         where red': "t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'')"
         and aok': "mthr.if.actions_ok s' t ta'"
-        and len: "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+        and len: "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
         and eq: "take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
         and hb: "ta_hb_consistent P ?E (llist_of (map (Pair t) (take j (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))))"
         and len_i: "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
@@ -3250,12 +3260,12 @@ proof
             and j': "i + j < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>"
             and eq': "take (i + j) \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take (i + j) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
             and ta''_j: "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! (i + j) = NormalAction (ReadMem ad al v')"
-            and len': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by blast
+            and len': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)" by blast
 
           def EE \<equiv> "?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>))"
           def E' \<equiv> "?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)) @ [(t, NormalAction (ReadMem ad al v'))]"
 
-          from len' len have "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp
+          from len' len have "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" by simp
           moreover with eq' eq j j' have "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
             by(auto simp add: take_add min_def)
           moreover {
@@ -3371,7 +3381,7 @@ proof
         qed
       qed
     qed }
-  from this[of "length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"]
+  from this[of "max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"]
   show "\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow>i (x'', m'') \<and> mthr.if.actions_ok s' t ta' \<and> 
                       take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
                       ta_hb_consistent P ?E (llist_of (map (Pair t) (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))) \<and> 

@@ -40,6 +40,7 @@ where
 | "compE1 Vs (a\<bullet>length) = compE1 Vs a\<bullet>length"
 | "compE1 Vs (e\<bullet>F{D}) = compE1 Vs e\<bullet>F{D}"
 | "compE1 Vs (e\<bullet>F{D}:=e') = compE1 Vs e\<bullet>F{D}:=compE1 Vs e'"
+| "compE1 Vs (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = compE1 Vs e\<bullet>compareAndSwap(D\<bullet>F, compE1 Vs e', compE1 Vs e'')"
 | "compE1 Vs (e\<bullet>M(es)) = (compE1 Vs e)\<bullet>M(compEs1 Vs es)"
 | "compE1 Vs {V:T=vo; e} = {(size Vs):T=vo; compE1 (Vs@[V]) e}"
 | "compE1 Vs (sync\<^bsub>U\<^esub> (o') e) = sync\<^bsub>length Vs\<^esub> (compE1 Vs o') (compE1 (Vs@[fresh_var Vs]) e)"
@@ -60,7 +61,7 @@ apply(rule mlex_less, simp)+
 done
 
 lemmas compE1_compEs1_induct =
-  compE1_compEs1.induct[case_names New NewArray Cast InstanceOf Val Var BinOp LAss AAcc AAss ALen FAcc FAss Call Block Synchronized InSynchronized Seq Cond While throw TryCatch Nil Cons]
+  compE1_compEs1.induct[case_names New NewArray Cast InstanceOf Val Var BinOp LAss AAcc AAss ALen FAcc FAss CAS Call Block Synchronized InSynchronized Seq Cond While throw TryCatch Nil Cons]
 
 lemma compEs1_conv_map [simp]: "compEs1 Vs es = map (compE1 Vs) es"
 by(induct es) simp_all

@@ -28,6 +28,7 @@ where
 | "ka (a\<bullet>length) = ka a"
 | "ka (e\<bullet>F{D}) = ka e"
 | "ka (e\<bullet>F{D} := e') = ka e \<union> ka e'"
+| "ka (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = ka e \<union> ka e' \<union> ka e''"
 | "ka (e\<bullet>M(es)) = ka e \<union> kas es"
 | "ka {V:T=vo; e} = ka e \<union> (case vo of None \<Rightarrow> {} | Some v \<Rightarrow> ka_Val v)"
 | "ka (Synchronized x e e') = ka e \<union> ka e'"
@@ -125,8 +126,10 @@ lemma red_known_addrs_WriteMem:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> a \<in> insert (thread_id2addr t) (kas es \<union> ka_locals (lcl s)) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 proof(induct rule: red_reds.inducts)
-  case RedCallExternal thus ?case by simp (blast dest: red_external_known_addrs_WriteMem)
+  case RedCASSucceed thus ?case by(auto simp add: nth_Cons split: nat.split_asm)
 next
+  case RedCallExternal thus ?case by simp (blast dest: red_external_known_addrs_WriteMem)
+next                                                            
   case (BlockRed e h l V vo ta e' h' l')
   thus ?case using ka_locals_update_subset[where xs = l and V=V] ka_locals_update_subset[where xs = l' and V=V]
     by(auto simp del: fun_upd_apply)
@@ -175,7 +178,7 @@ lemma red_New_same_addr_same:
      \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! j = NewHeapElem a x'; j < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> i = j"
 apply(induct rule: red_reds.inducts)
-apply(auto dest: red_external_New_same_addr_same)
+apply(auto dest: red_external_New_same_addr_same simp add: nth_Cons split: nat.split_asm)
 done
 
 end
@@ -298,6 +301,12 @@ next
   case RedFAcc thus ?case
     by(fastforce intro: addr_loc_type.intros)
 next
+  case RedCASSucceed thus ?case
+    by(fastforce intro: addr_loc_type.intros)
+next
+  case RedCASFail thus ?case
+    by(fastforce intro: addr_loc_type.intros)
+next
   case RedCallExternal thus ?case
     by(auto intro: red_external_read_mem_typeable)
 qed auto
@@ -320,6 +329,7 @@ where
 | "new_types (a\<bullet>length) = new_types a"
 | "new_types (e\<bullet>F{D}) = new_types e"
 | "new_types (e\<bullet>F{D} := e') = new_types e \<union> new_types e'"
+| "new_types (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = new_types e \<union> new_types e' \<union> new_types e''"
 | "new_types (e\<bullet>M(es)) = new_types e \<union> new_typess es"
 | "new_types {V:T=vo; e} = new_types e"
 | "new_types (Synchronized x e e') = new_types e \<union> new_types e'"
@@ -402,6 +412,13 @@ next
     by(force dest!: hext_heap_write intro!: addr_loc_type.intros intro: typeof_addr_hext_mono type_of_hext_type_of simp add: conf_def)
   thus ?case using RedFAss
     by(auto intro!: vs_confI simp add: take_Cons' split: if_split_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
+next
+  case (RedCASSucceed h a D F v v' h' l)
+  hence "\<exists>T. P,h' \<turnstile> a@CField D F : T \<and> P,h' \<turnstile> v' :\<le> T"
+    by(force dest!: hext_heap_write intro!: addr_loc_type.intros intro: typeof_addr_hext_mono type_of_hext_type_of simp add: conf_def take_Cons')
+  thus ?case using RedCASSucceed
+    by(auto simp add: take_Cons' split: if_split_asm dest: vs_confD intro!: vs_confI)
+      (blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
 next
   case RedCallExternal thus ?case by(auto intro: red_external_non_speculative_vs_conf)
 qed(auto dest: vs_conf_allocate hext_allocate intro: vs_conf_hext simp add: take_Cons')
@@ -575,6 +592,9 @@ lemma ex_WTrt_simps:
   "P,E,h \<turnstile> e : T \<Longrightarrow> \<exists>E T. P,E,h \<turnstile> e : T"
 by blast
 
+abbreviation (input) J_non_speculative_read_bound :: nat
+  where "J_non_speculative_read_bound \<equiv> 2"
+
 lemma assumes hrt: "heap_read_typeable hconf P"
   and vs: "vs_conf P (shr s) vs"
   and hconf: "hconf (shr s)"
@@ -586,7 +606,7 @@ lemma assumes hrt: "heap_read_typeable hconf P"
   \<Longrightarrow> \<exists>ta' e'' xs'' h''. P,t \<turnstile> \<langle>e, (shr s, xs)\<rangle> -ta'\<rightarrow> \<langle>e'', (h'', xs'')\<rangle> \<and> 
            red_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
-           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max J_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
   and reds_non_speculative_read:
   "\<lbrakk> P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', xs')\<rangle>; \<exists>E Ts. P,E,shr s \<turnstile> es [:] Ts;
      red_mthr.mthr.if.actions_ok s t ta;
@@ -595,7 +615,7 @@ lemma assumes hrt: "heap_read_typeable hconf P"
   \<Longrightarrow> \<exists>ta' es'' xs'' h''. P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta'\<rightarrow>] \<langle>es'', (h'', xs'')\<rangle> \<and> 
            red_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
-           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+           \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max J_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')" 
         and es hxs\<equiv>"(shr s, xs)" ta es' hxs'\<equiv>"(h', xs')"
       arbitrary: xs xs' and xs xs' rule: red_reds.inducts)
@@ -619,6 +639,49 @@ next
   with hrt adal have "heap_read (shr s) a (CField D F) v'" using hconf by(rule heap_read_typeableD)
   with `red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
   show ?case by(fastforce intro: red_reds.RedFAcc)
+next
+  case (RedCASSucceed a D F v'' v''')
+  hence [simp]: "I = 0" "al'' = CField D F" "a'' = a" "v'' = v" 
+    and v': "v' \<in> vs (a, CField D F)" by(auto simp add: take_Cons' split: if_split_asm)
+  from RedCASSucceed.prems(1) obtain E T where
+    "P,E,shr s \<turnstile> addr a\<bullet>compareAndSwap(D\<bullet>F, Val v'', Val v''') : T" by clarify
+  then obtain T where adal: "P,shr s \<turnstile> a@CField D F : T" 
+    and v'': "P,shr s \<turnstile> v'' :\<le> T" and v''': "P,shr s \<turnstile> v''' :\<le> T"
+    by(fastforce intro: addr_loc_type.intros simp add: conf_def)
+  from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
+  from hrt adal this hconf have read: "heap_read (shr s) a (CField D F) v'" by(rule heap_read_typeableD)
+  show ?case
+  proof(cases "v' = v''")
+    case True
+    then show ?thesis using RedCASSucceed 
+      by(fastforce intro: red_reds.RedCASSucceed)
+  next
+    case False
+    then show ?thesis using read RedCASSucceed
+      by(fastforce intro: RedCASFail)
+  qed
+next
+  case (RedCASFail a D F v'' v''' v'''')
+  hence [simp]: "I = 0" "al'' = CField D F" "a'' = a" "v'' = v" 
+    and v': "v' \<in> vs (a, CField D F)" by(auto simp add: take_Cons' split: if_split_asm)
+  from RedCASFail.prems(1) obtain E T where
+    "P,E,shr s \<turnstile> addr a\<bullet>compareAndSwap(D\<bullet>F, Val v''', Val v'''') : T" by(iprover)
+  then obtain T where adal: "P,shr s \<turnstile> a@CField D F : T" 
+    and v''': "P,shr s \<turnstile> v''' :\<le> T" and v'''': "P,shr s \<turnstile> v'''' :\<le> T"
+    by(fastforce intro: addr_loc_type.intros simp add: conf_def)
+  from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
+  from hrt adal this hconf have read: "heap_read (shr s) a (CField D F) v'" by(rule heap_read_typeableD)
+  show ?case
+  proof(cases "v' = v'''")
+    case True
+    from heap_write_total[OF hconf adal v''''] obtain h' where
+      "heap_write (shr s) a (CField D F) v'''' h'" ..
+    with read RedCASFail True show ?thesis 
+      by(fastforce intro: RedCASSucceed)
+  next
+    case False
+    with read RedCASFail show ?thesis by(fastforce intro: red_reds.RedCASFail)
+  qed
 next
   case (RedCallExternal a U M Ts Tr D ps ta' va h' ta e')
   from `P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>`
@@ -677,6 +740,15 @@ next
 next
   case FAssRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.FAssRed2)
+next
+  case CASRed1 thus ?case
+    by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CASRed1)
+next
+  case CASRed2 thus ?case
+    by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CASRed2)
+next
+  case CASRed3 thus ?case
+    by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CASRed3)
 next
   case CallObj thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CallObj)
@@ -755,9 +827,10 @@ lemma non_speculative_read:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
-  shows "red_mthr.if.non_speculative_read (init_fin_lift_state status (J_start_state P C M vs)) 
-                                          (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
-  (is "red_mthr.if.non_speculative_read ?start_state ?start_vs")
+  shows "red_mthr.if.non_speculative_read J_non_speculative_read_bound
+      (init_fin_lift_state status (J_start_state P C M vs)) 
+      (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
+  (is "red_mthr.if.non_speculative_read _ ?start_state ?start_vs")
 proof(rule red_mthr.if.non_speculative_readI)
   fix ttas s' t x ta x' m' i ad al v v'
   assume \<tau>Red: "red_mthr.mthr.if.RedT P ?start_state ttas s'"
@@ -830,7 +903,7 @@ proof(rule red_mthr.if.non_speculative_readI)
     and i'': "i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>"
     and eq'': "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
     and read'': "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i = ReadMem ad al v'"
-    and len'': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by blast
+    and len'': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max J_non_speculative_read_bound (length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)" by blast
 
   let ?x' = "(Running, e'', xs'')"
   let ?ta' = "convert_TA_initial (convert_obs_initial ta'')"
@@ -840,12 +913,14 @@ proof(rule red_mthr.if.non_speculative_readI)
   moreover from i'' have "i < length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub>" by simp
   moreover from eq'' have "take i \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by(simp add: take_map)
   moreover from read'' i'' have "\<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v')" by(simp add: nth_map)
-  moreover from len'' have "length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by simp
+  moreover from len'' have "length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> \<le> max J_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+    unfolding ta by simp
   ultimately
   show "\<exists>ta' x'' m''. red_mthr.init_fin P t (x, shr s') ta' (x'', m'') \<and>
                       red_mthr.mthr.if.actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and>
-                      \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+                      \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and> 
+                      length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> max J_non_speculative_read_bound (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     by blast
 qed
 

@@ -23,6 +23,7 @@ datatype (dead 'a, dead 'b, dead 'addr) exp
   | ALen "('a,'b,'addr) exp"                 ("_\<bullet>length" [10] 90)          -- "array length"
   | FAcc "('a,'b,'addr) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       -- "field access"
   | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
+  | CompareAndSwap "('a,'b,'addr) exp" cname vname "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<bullet>compareAndSwap('(_\<bullet>_, _, _'))" [10,90,90,90,90] 90) -- "compare and swap"
   | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
   | Block 'a ty "'addr val option" "('a,'b,'addr) exp"    ("'{_:_=_; _}")
   | Synchronized 'b "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
@@ -175,6 +176,7 @@ where
 | "fv(LAss V e) = {V} \<union> fv e"
 | "fv(e\<bullet>F{D}) = fv e"
 | "fv(FAss e\<^sub>1 F D e\<^sub>2) = fv e\<^sub>1 \<union> fv e\<^sub>2"
+| "fv(e\<^sub>1\<bullet>compareAndSwap(D\<bullet>F, e\<^sub>2, e\<^sub>3)) = fv e\<^sub>1 \<union> fv e\<^sub>2 \<union> fv e\<^sub>3"
 | "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
 | "fv({V:T=vo; e}) = fv e - {V}"
 | "fv(sync\<^bsub>V\<^esub> (h) e) = fv h \<union> fv e"
@@ -212,6 +214,7 @@ where
 | "expr_locks (a\<bullet>length) = expr_locks a"
 | "expr_locks (e\<bullet>F{D}) = expr_locks e"
 | "expr_locks (FAss e F D e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
+| "expr_locks (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = (\<lambda>ad. expr_locks e ad + expr_locks e' ad + expr_locks e'' ad)"
 | "expr_locks (e\<bullet>m(ps)) = (\<lambda>ad. expr_locks e ad + expr_lockss ps ad)"
 | "expr_locks ({V : T=vo; e}) = expr_locks e"
 | "expr_locks (sync\<^bsub>V\<^esub> (o') e) = (\<lambda>ad. expr_locks o' ad + expr_locks e ad)"
@@ -248,6 +251,7 @@ where
 | "contains_insync (a\<bullet>length) = contains_insync a"
 | "contains_insync (e\<bullet>F{D}) = contains_insync e"
 | "contains_insync (FAss e F D e') = (contains_insync e \<or> contains_insync e')"
+| "contains_insync (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = (contains_insync e \<or> contains_insync e' \<or> contains_insync e'')"
 | "contains_insync (e\<bullet>m(pns)) = (contains_insync e \<or> contains_insyncs pns)"
 | "contains_insync ({V : T=vo; e}) = contains_insync e"
 | "contains_insync (sync\<^bsub>V\<^esub> (o') e) = (contains_insync o' \<or> contains_insync e)"
@@ -331,7 +335,7 @@ proof
     by(induct)(fastforce simp add: Cons_eq_append_conv Cons_eq_map_conv)+
 next
   assume ?rhs thus ?lhs
-    by(induct es arbitrary: vs)(auto simp add: is_Throws_simps Cons_eq_map_conv Cons_eq_append_conv)
+    by(induct es)(auto simp add: is_Throws_simps Cons_eq_map_conv Cons_eq_append_conv)
 qed
 
 subsection {* @{text "blocks"} *}
@@ -431,6 +435,7 @@ where
 | "call (a\<bullet>length) = call a"
 | "call (e\<bullet>F{D}) = call e"
 | "call (FAss e F D e') = (if is_val e then call e' else call e)"
+| "call (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = (if is_val e then if is_val e' then call e'' else call e' else call e)"
 | "call (e\<bullet>M(es)) = (if is_val e then
                      (if is_vals es \<and> is_addr e then \<lfloor>(THE a. e = addr a, M, THE vs. es = map Val vs)\<rfloor> else calls es) 
                      else call e)"

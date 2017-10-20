@@ -215,6 +215,8 @@ where
 | "\<tau>move0 P h (a\<bullet>length) \<longleftrightarrow> \<tau>move0 P h a \<or> (\<exists>ad. a = Throw ad)"
 | "\<tau>move0 P h (e\<bullet>F{D}) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move0 P h (FAss e F D e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move0 P h e' \<or> (\<exists>a. e' = Throw a)))"
+| "\<tau>move0 P h (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and>
+   (\<tau>move0 P h e' \<or> (\<exists>a. e' = Throw a) \<or> (\<exists>v. e' = Val v \<and> (\<tau>move0 P h e'' \<or> (\<exists>a. e'' = Throw a)))))"
 | "\<tau>move0 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and>
    ((\<tau>moves0 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')) \<or> 
     (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of' T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
@@ -312,6 +314,9 @@ lemma \<tau>move0_\<tau>moves0_intros:
   and \<tau>move0FAcc: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>F{D})"
   and \<tau>move0FAss1: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (FAss e F D e')"
   and \<tau>move0FAss2: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>F{D} := e)"
+  and \<tau>move0CAS1: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>compareAndSwap(D\<bullet>F, e', e''))"
+  and \<tau>move0CAS2: "\<tau>move0 P h e' \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, e', e''))"
+  and \<tau>move0CAS3: "\<tau>move0 P h e'' \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e''))"
   and \<tau>move0CallObj: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>M(es))"
   and \<tau>move0CallParams: "\<tau>moves0 P h es \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(es))"
   and \<tau>move0Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; class_type_of' T = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
@@ -400,6 +405,7 @@ lemma no_call_simps [simp]:
   "no_call P h (a\<bullet>length) = no_call P h a"
   "no_call P h (e\<bullet>F{D}) = no_call P h e"
   "no_call P h (FAss e F D e') = (if is_val e then no_call P h e' else no_call P h e)"
+  "no_call P h (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = (if is_val e then (if is_val e' then no_call P h e'' else no_call P h e') else no_call P h e)"
   "no_call P h (e\<bullet>M(es)) = (if is_val e then (if is_vals es \<and> is_addr e then synthesized_call P h (THE a. e = addr a, M, THE vs. es = map Val vs) else no_calls P h es) else no_call P h e)"
   "no_call P h ({V:T=vo; e}) = no_call P h e"
   "no_call P h (sync\<^bsub>V'\<^esub> (e) e') = no_call P h e"
@@ -591,6 +597,18 @@ lemma FAss_\<tau>red0t_xt2:
   "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h (Val v\<bullet>F{D} := e, xs) (Val v\<bullet>F{D} := e', xs')"
 by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl FAssRed2)
 
+lemma CAS_\<tau>red0t_xt1:
+  "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h (e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs) (e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CASRed1)
+
+lemma CAS_\<tau>red0t_xt2:
+  "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CASRed2)
+
+lemma CAS_\<tau>red0t_xt3:
+  "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CASRed3)
+
 lemma Call_\<tau>red0t_obj:
   "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h (e\<bullet>M(ps), xs) (e'\<bullet>M(ps), xs')"
 by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CallObj)
@@ -696,6 +714,18 @@ by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl FAss
 lemma FAss_\<tau>red0r_xt2:
   "\<tau>red0r extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h (Val v\<bullet>F{D} := e, xs) (Val v\<bullet>F{D} := e', xs')"
 by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl FAssRed2)
+
+lemma CAS_\<tau>red0r_xt1:
+  "\<tau>red0r extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h (e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs) (e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CASRed1)
+
+lemma CAS_\<tau>red0r_xt2:
+  "\<tau>red0r extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CASRed2)
+
+lemma CAS_\<tau>red0r_xt3:
+  "\<tau>red0r extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CASRed3)
 
 lemma Call_\<tau>red0r_obj:
   "\<tau>red0r extTA P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h (e\<bullet>M(ps), xs) (e'\<bullet>M(ps), xs')"

@@ -32,6 +32,7 @@ where
 | "unmod (a\<bullet>length) j = unmod a j"
 | "unmod (e\<bullet>F{D}) i = unmod e i"
 | "unmod (e1\<bullet>F{D}:=e2) i = (unmod e1 i \<and> unmod e2 i)"
+| "unmod (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) i = (unmod e1 i \<and> unmod e2 i \<and> unmod e3 i)"
 | "unmod (e\<bullet>M(es)) i = (unmod e i \<and> unmods es i)"
 | "unmod {j:T=vo; e} i = ((i = j \<longrightarrow> vo = None) \<and> unmod e i)"
 | "unmod (sync\<^bsub>V\<^esub> (o') e) i = (unmod o' i \<and> unmod e i \<and> i \<noteq> V)"
@@ -148,6 +149,11 @@ where
 | bisimFAcc: "bisim Vs e e' xs \<Longrightarrow> bisim Vs (e\<bullet>F{D}) (e'\<bullet>F{D}) xs"
 | bisimFAss1: "\<lbrakk> bisim Vs e e' xs; \<not> is_val e; \<not> contains_insync e'' \<rbrakk> \<Longrightarrow> bisim Vs (e\<bullet>F{D}:=e'') (e'\<bullet>F{D}:=compE1 Vs e'') xs"
 | bisimFAss2: "bisim Vs e e' xs \<Longrightarrow> bisim Vs (Val v\<bullet>F{D} := e) (Val v\<bullet>F{D} := e') xs"
+| bisimCAS1: "\<lbrakk> bisim Vs e e' xs; \<not> is_val e; \<not> contains_insync e2; \<not> contains_insync e3 \<rbrakk> 
+  \<Longrightarrow> bisim Vs (e\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (e'\<bullet>compareAndSwap(D\<bullet>F, compE1 Vs e2, compE1 Vs e3)) xs"
+| bisimCAS2: "\<lbrakk> bisim Vs e e' xs; \<not> is_val e; \<not> contains_insync e3 \<rbrakk> 
+  \<Longrightarrow> bisim Vs (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, e', compE1 Vs e3)) xs"
+| bisimCAS3: "bisim Vs e e' xs \<Longrightarrow> bisim Vs (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e)) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e')) xs"
 | bisimCallObj: "\<lbrakk> bisim Vs e e' xs; \<not> is_val e; \<not> contains_insyncs es \<rbrakk> \<Longrightarrow> bisim Vs (e\<bullet>M(es)) (e'\<bullet>M(compEs1 Vs es)) xs"
 | bisimCallParams: "bisims Vs es es' xs \<Longrightarrow> bisim Vs (Val v\<bullet>M(es)) (Val v\<bullet>M(es')) xs"
 | bisimBlockNone: "bisim (Vs@[V]) e e' xs \<Longrightarrow> bisim Vs {V:T=None; e} {(length Vs):T=None; e'} xs"
@@ -184,6 +190,7 @@ declare bisimsCons1 [rule del, intro] bisimsCons2 [rule del, intro]
   bisimBinOp1 [rule del, intro] bisimAAcc1 [rule del, intro]
   bisimAAss1 [rule del, intro] bisimAAss2 [rule del, intro]
   bisimFAss1 [rule del, intro]
+  bisimCAS1 [rule del, intro] bisimCAS2 [rule del, intro]
   bisimCallObj [rule del, intro] 
 
 inductive_cases bisim_safe_cases [elim!]:
@@ -196,6 +203,7 @@ inductive_cases bisim_safe_cases [elim!]:
   "bisim Vs (V:=e) e' xs"
   "bisim Vs (Val v\<lfloor>i\<rceil>) e' xs"
   "bisim Vs (Val v\<lfloor>Val v'\<rceil> := e) e' xs"
+  "bisim Vs (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e)) e' xs"
   "bisim Vs (a\<bullet>length) e' xs"
   "bisim Vs (e\<bullet>F{D}) e' xs"
   "bisim Vs (sync(o') e) e' xs"
@@ -214,6 +222,7 @@ inductive_cases bisim_safe_cases [elim!]:
   "bisim Vs e' (V:=e) xs"
   "bisim Vs e' (Val v\<lfloor>i\<rceil>) xs"
   "bisim Vs e' (Val v\<lfloor>Val v'\<rceil> := e) xs"
+  "bisim Vs e' (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e)) xs"
   "bisim Vs e' (a\<bullet>length) xs"
   "bisim Vs e' (e\<bullet>F{D}) xs"
   "bisim Vs e' (sync\<^bsub>V\<^esub> (o') e) xs"
@@ -229,12 +238,14 @@ inductive_cases bisim_cases [elim]:
   "bisim Vs (a\<lfloor>i\<rceil>) e' xs"
   "bisim Vs (a\<lfloor>i\<rceil>:=e) e' xs"
   "bisim Vs (e\<bullet>F{D}:=e') e'' xs"
+  "bisim Vs (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) e''' xs"
   "bisim Vs (e\<bullet>M(es)) e' xs"
   "bisim Vs {V:T=vo; e} e' xs"
   "bisim Vs e' (e1 \<guillemotleft>bop\<guillemotright> e2) xs"
   "bisim Vs e' (a\<lfloor>i\<rceil>) xs"
   "bisim Vs e' (a\<lfloor>i\<rceil>:=e) xs"
   "bisim Vs e'' (e\<bullet>F{D}:=e') xs"
+  "bisim Vs e''' (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) xs"
   "bisim Vs e' (e\<bullet>M(es)) xs"
   "bisim Vs e' {V:T=vo; e} xs"
 
@@ -345,6 +356,9 @@ next
 next
   case (FAss Vs exp1 F D exp2 x)
   thus ?case by(cases "is_val exp1", auto)
+next
+  case (CAS Vs e1 D F e2 e3 x)
+  thus ?case by(cases "is_val e1", cases "is_val e2", fastforce+)
 next
   case (Call Vs obj M params x)
   thus ?case by(cases "is_val obj")(auto)
@@ -569,6 +583,19 @@ next
 next
   case (bisimFAss1 Vs e e' xs F D e'')
   thus ?case by(cases "is_val (inline_call E e)")(fastforce)+
+next
+  case (bisimCAS1 Vs e e' xs e2 e3 D F)
+  thus ?case 
+    apply(cases "is_val (inline_call E e)")
+     apply(cases "is_val e2")
+      apply(fastforce)
+     apply clarsimp
+     apply(safe; clarsimp?)
+     apply auto
+    done
+next
+  case (bisimCAS2 Vs e e' xs e3 v D F)
+  thus ?case by(cases "is_val (inline_call E e)"; safe?; clarsimp; fastforce)
 next
   case (bisimCallObj Vs e e' xs es M)
   obtain a M' vs where "aMvs = (a, M', vs)" by(cases aMvs, auto)

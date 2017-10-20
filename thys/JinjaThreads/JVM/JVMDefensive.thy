@@ -71,6 +71,13 @@ where
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
       (\<exists>T'. typeof_addr h (the_Addr ref) = \<lfloor>T'\<rfloor> \<and> P \<turnstile> class_type_of T' \<preceq>\<^sup>* C \<and> P,h \<turnstile> v :\<le> T))))"
 
+| check_instr_CAS:
+  "check_instr (CAS F C) P h stk loc C0 M0 pc frs =
+  (2 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and>
+  (let (C', T, fm) = field P C F; v'' = hd stk; v' = hd (tl stk); v = hd (tl (tl stk)) in
+     C' = C \<and> is_Ref v \<and> volatile fm \<and> (v \<noteq> Null \<longrightarrow>
+     (\<exists>T'. typeof_addr h (the_Addr v) = \<lfloor>T'\<rfloor> \<and> P \<turnstile> class_type_of T' \<preceq>\<^sup>* C \<and> P,h \<turnstile> v' :\<le> T \<and> P,h \<turnstile> v'' :\<le> T))))"
+
 | check_instr_Checkcast:
   "check_instr (Checkcast T) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> is_type P T)"
@@ -249,6 +256,10 @@ proof -
         by(auto simp add: split_beta split: if_split_asm intro: hext_heap_write)
     next
       case Putfield
+      with xexec check_ins show ?thesis
+        by(auto intro: hext_heap_write simp add: split_beta split: if_split_asm)
+    next
+      case CAS
       with xexec check_ins show ?thesis
         by(auto intro: hext_heap_write simp add: split_beta split: if_split_asm)
     next

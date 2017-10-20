@@ -78,6 +78,11 @@ where
   "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^sub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<^sub>1\<bullet>F{D}:=e\<^sub>2 :: Void"
 
+| WTCAS:
+  "\<lbrakk> is_lub,P,E \<turnstile> e1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; volatile fm; 
+     is_lub,P,E \<turnstile> e2 :: T'; P \<turnstile> T' \<le> T; is_lub,P,E \<turnstile> e3 :: T''; P \<turnstile> T'' \<le> T \<rbrakk>
+  \<Longrightarrow>  is_lub,P,E \<turnstile> e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) :: Boolean"
+
 | WTCall:
   "\<lbrakk> is_lub,P,E \<turnstile> e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
      is_lub,P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
@@ -96,6 +101,7 @@ where
 | WTSeq:
   "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1::T\<^sub>1;  is_lub,P,E \<turnstile> e\<^sub>2::T\<^sub>2 \<rbrakk>
   \<Longrightarrow>  is_lub,P,E \<turnstile> e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
+
 | WTCond:
   "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> e\<^sub>1::T\<^sub>1;  is_lub,P,E \<turnstile> e\<^sub>2::T\<^sub>2; \<turnstile> lub(T\<^sub>1, T\<^sub>2) = T \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T"
@@ -155,6 +161,7 @@ inductive_cases WT_elim_cases[elim!]:
   "is_lub',P,E \<turnstile> e instanceof U :: T"
   "is_lub',P,E \<turnstile> a\<bullet>F{D} :: T"
   "is_lub',P,E \<turnstile> a\<bullet>F{D} := v :: T"
+  "is_lub',P,E \<turnstile> e\<bullet>compareAndSwap(D\<bullet>F, e', e'') :: T"
   "is_lub',P,E \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
   "is_lub',P,E \<turnstile> new C :: T"
   "is_lub',P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T'"
@@ -183,6 +190,7 @@ apply fastforce
 apply fastforce
 apply(fastforce dest: sees_field_fun)
 apply(fastforce dest: sees_field_fun)
+apply blast
 apply(fastforce dest: sees_method_fun)
 apply fastforce
 apply fastforce
@@ -212,6 +220,7 @@ apply(simp add: WTAAss, fastforce)
 apply(simp add: WTALength, fastforce)
 apply(fastforce simp: WTFAcc)
 apply(fastforce simp: WTFAss del:WT_WTs.intros WT_elim_cases)
+apply blast
 apply(fastforce)
 apply(fastforce simp: map_le_def WTBlock)
 apply(fastforce simp: WTSynchronized)
@@ -256,6 +265,7 @@ apply(simp)
 apply(simp)
 apply(simp add:sees_field_is_type[OF _ wf])
 apply(simp)
+apply simp
 apply(fastforce dest: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
 apply(fastforce simp add: ran_def split: if_split_asm)
 apply(simp add: is_class_Object[OF wf])
@@ -315,7 +325,7 @@ lemma WTBlock_code:
 by(auto)
 
 lemmas [code_pred_intro] =
-  WTNew WTNewArray WTCast WTInstanceOf WTVal WTVar WTBinOp WTLAss WTAAcc WTAAss WTALength WTFAcc WTFAss WTCall 
+  WTNew WTNewArray WTCast WTInstanceOf WTVal WTVar WTBinOp WTLAss WTAAcc WTAAss WTALength WTFAcc WTFAss WTCAS WTCall 
 declare 
   WTBlock_code [code_pred_intro WTBlock']
 lemmas [code_pred_intro] =
