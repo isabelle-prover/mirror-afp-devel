@@ -141,11 +141,16 @@ lemma exec_instr_heap_read_typed:
 apply(cases i)
 apply(simp_all add: JVM_heap_base.exec_instr.simps split_beta cong: conj_cong)
 
-apply(auto dest: heap_base.heap_read_typed_into_heap_read)[4]
+apply(auto dest: heap_base.heap_read_typed_into_heap_read del: disjCI)[5]
 apply(blast dest:  heap_base.heap_read_typed_typed heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
 apply(auto dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base.heap_read_typedI)[1]
 apply(blast dest:  heap_base.heap_read_typed_typed heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
 apply(auto dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base.heap_read_typedI)[1]
+apply(blast dest:  heap_base.heap_read_typed_typed heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
+subgoal by(auto dest: heap_base.heap_read_typed_into_heap_read)
+apply(blast dest:  heap_base.heap_read_typed_typed heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
+subgoal by(auto dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base.heap_read_typedI)[1]
+subgoal by(auto 4 3 dest: heap_base.heap_read_typed_into_heap_read intro: heap_base.heap_read_typedI simp add: heap_base'.conf_conv_conf heap_base'.addr_loc_type_conv_addr_loc_type)
 
 apply(subst red_external_aggr_heap_read_typed)
 apply(fastforce)
@@ -199,8 +204,17 @@ lemma jmm'_exec_instrI:
   \<Longrightarrow> \<exists>ta xcphfrs. (ta, xcphfrs) \<in> JVM_heap_base.exec_instr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_base.heap_read_typed typeof_addr jmm_heap_read P) jmm_heap_write i P t h stk loc C M pc frs \<and> final_thread.actions_ok (final_thread.init_fin_final JVM_final) s t ta"
 apply(cases i)
 apply(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: if_split_asm)
-apply(drule red_external_aggr_heap_read_typedI)
-apply((fastforce simp add: final_thread.actions_ok_iff simp del: split_paired_Ex)+)[2]
+subgoal for F D
+  apply(cases "hd (tl stk) = (default_val (THE T. heap_base.addr_loc_type typeof_addr P h (the_Addr (hd (tl (tl stk)))) (CField D F) T))")
+  subgoal by(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: if_split_asm del: disjCI intro!: disjI1 exI)
+  subgoal by(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: if_split_asm del: disjCI intro!: disjI2 exI)
+  done
+subgoal for F D
+  apply(cases "hd (tl stk) = (default_val (THE T. heap_base.addr_loc_type typeof_addr P h (the_Addr (hd (tl (tl stk)))) (CField D F) T))")
+  subgoal by(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: if_split_asm del: disjCI intro!: disjI1 exI jmm_heap_write.intros)
+  subgoal by(rule exI conjI disjI2 refl jmm_heap_read_typed_default_val|assumption)+ auto
+  done
+subgoal by(drule red_external_aggr_heap_read_typedI)(fastforce simp add: final_thread.actions_ok_iff simp del: split_paired_Ex)+
 done
 
 lemma jmm'_execI:

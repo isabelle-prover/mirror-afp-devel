@@ -73,6 +73,11 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
   "\<lbrakk> P,E \<turnstile>1 e1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
+| WTCAS1:
+  "\<lbrakk> P,E \<turnstile>1 e1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; volatile fm; 
+     P,E \<turnstile>1 e2 :: T'; P \<turnstile> T' \<le> T; P,E \<turnstile>1 e3 :: T''; P \<turnstile> T'' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) :: Boolean"
+
 | WT1Call:
   "\<lbrakk> P,E \<turnstile>1 e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
      P,E \<turnstile>1 es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
@@ -127,6 +132,7 @@ inductive_cases WT1_WTs1_cases[elim!]:
   "P,E \<turnstile>1 try e1 catch(C i) e2 :: T"
   "P,E \<turnstile>1 e\<bullet>F{D} :: T"
   "P,E \<turnstile>1 e1\<bullet>F{D}:=e2 :: T"
+  "P,E \<turnstile>1 e\<bullet>compareAndSwap(D\<bullet>F, e', e'') :: T"
   "P,E \<turnstile>1 e1 \<guillemotleft>bop\<guillemotright> e2 :: T"
   "P,E \<turnstile>1 new C :: T"
   "P,E \<turnstile>1 newA T'\<lfloor>e\<rceil> :: T"
@@ -185,6 +191,7 @@ apply blast
 apply blast
 apply (blast dest:sees_field_idemp sees_field_fun)
 apply (blast dest: sees_field_fun)
+apply blast
 
 apply(erule WT1_WTs1_cases)
 apply(simp)
@@ -217,6 +224,7 @@ apply(simp del: is_type_array add: is_type_ArrayD)
 apply(simp)
 apply(simp)
 apply (simp add:sees_field_is_type[OF _ wf])
+apply simp
 apply simp
 apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
 apply(simp)

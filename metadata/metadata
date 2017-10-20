@@ -2640,7 +2640,10 @@ extra-history =
 	(revision 76063d860ae0)<br>
 	[2013-05-16]:
 	support for non-deterministic memory allocators
-	(revision cc3344a49ced)
+	(revision cc3344a49ced)<br>
+        [2017-10-20]:
+        add an atomic compare-and-swap operation for volatile fields
+        (revision a6189b1d6b30)<br>
 notify = andreas.lochbihler@inf.ethz.ch
 
 [Locally-Nameless-Sigma]
@@ -4230,15 +4233,15 @@ extra-history =
 	Change history:
 	[2013-11-06]:
 	added conversion function between native words and characters
-	(revision fd23d9a7fe3a)
+	(revision fd23d9a7fe3a)<br>
 	[2014-03-31]:
 	added words of default size in the target language (by Peter Lammich)
-	(revision 25caf5065833)
+	(revision 25caf5065833)<br>
 	[2014-10-06]:
 	proper test setup with compilation and execution of tests in all target languages
-	(revision 5d7a1c9ae047)
+	(revision 5d7a1c9ae047)<br>
         [2017-09-02]:
-        added 64-bit words (revision c89f86244e3c)
+        added 64-bit words (revision c89f86244e3c)<br>
 notify = andreas.lochbihler@inf.ethz.ch
 
 [XML]

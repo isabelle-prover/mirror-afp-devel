@@ -43,8 +43,8 @@ by(rule ext)(simp add: Predicate.single_bind eq.equation)
 
 lemma sup_case_exp_case_exp_same:
   "sup_class.sup 
-    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
-    (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) =
+    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCAS cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
+    (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCAS' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) =
   (case e of
     new C \<Rightarrow> sup_class.sup (cNew C) (cNew' C)
   | newArray T e \<Rightarrow> sup_class.sup (cNewArray T e) (cNewArray' T e)
@@ -59,6 +59,7 @@ lemma sup_case_exp_case_exp_same:
   | ALen a \<Rightarrow> sup_class.sup (cALen a) (cALen' a)
   | FAcc e F D \<Rightarrow> sup_class.sup (cFAcc e F D) (cFAcc' e F D)
   | FAss e F D e' \<Rightarrow> sup_class.sup (cFAss e F D e') (cFAss' e F D e')
+  | CompareAndSwap e D F e' e'' \<Rightarrow> sup_class.sup (cCAS e D F e' e'') (cCAS' e D F e' e'')
   | Call e M es \<Rightarrow> sup_class.sup (cCall e M es) (cCall' e M es)
   | Block V T vo e \<Rightarrow> sup_class.sup (cBlock V T vo e) (cBlock' V T vo e)
   | Synchronized v e e' \<Rightarrow> sup_class.sup (cSync v e e') (cSync' v e e')
@@ -75,8 +76,8 @@ done
 lemma sup_case_exp_case_exp_other:
   fixes p :: "'a :: semilattice_sup" shows
   "sup_class.sup 
-    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
-    (sup_class.sup (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) p) =
+    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCAS cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
+    (sup_class.sup (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCAS' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) p) =
   sup_class.sup (case e of
     new C \<Rightarrow> sup_class.sup (cNew C) (cNew' C)
   | newArray T e \<Rightarrow> sup_class.sup (cNewArray T e) (cNewArray' T e)
@@ -91,6 +92,7 @@ lemma sup_case_exp_case_exp_other:
   | ALen a \<Rightarrow> sup_class.sup (cALen a) (cALen' a)
   | FAcc e F D \<Rightarrow> sup_class.sup (cFAcc e F D) (cFAcc' e F D)
   | FAss e F D e' \<Rightarrow> sup_class.sup (cFAss e F D e') (cFAss' e F D e')
+  | CompareAndSwap e D F e' e'' \<Rightarrow> sup_class.sup (cCAS e D F e' e'') (cCAS' e D F e' e'')
   | Call e M es \<Rightarrow> sup_class.sup (cCall e M es) (cCall' e M es)
   | Block V T vo e \<Rightarrow> sup_class.sup (cBlock V T vo e) (cBlock' V T vo e)
   | Synchronized v e e' \<Rightarrow> sup_class.sup (cSync v e e') (cSync' v e e')

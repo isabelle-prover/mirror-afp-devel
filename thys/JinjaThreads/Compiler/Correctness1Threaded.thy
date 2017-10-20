@@ -32,6 +32,7 @@ where
 | "el_loc_ok (a\<bullet>length) xs \<longleftrightarrow> el_loc_ok a xs"
 | "el_loc_ok (e\<bullet>F{D}) xs \<longleftrightarrow> el_loc_ok e xs"
 | "el_loc_ok (e\<bullet>F{D} := e') xs \<longleftrightarrow> el_loc_ok e xs \<and> el_loc_ok e' xs"
+| "el_loc_ok (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) xs \<longleftrightarrow> el_loc_ok e xs \<and> el_loc_ok e' xs \<and> el_loc_ok e'' xs"
 | "el_loc_ok (e\<bullet>M(ps)) xs \<longleftrightarrow> el_loc_ok e xs \<and> els_loc_ok ps xs"
 | "el_loc_ok {V:T=vo; e} xs \<longleftrightarrow> (case vo of None \<Rightarrow> el_loc_ok e xs | \<lfloor>v\<rfloor> \<Rightarrow> el_loc_ok e (xs[V := v]))"
 | "el_loc_ok (sync\<^bsub>V\<^esub>(e) e') xs \<longleftrightarrow> el_loc_ok e xs \<and> el_loc_ok e' xs \<and> unmod e' V"

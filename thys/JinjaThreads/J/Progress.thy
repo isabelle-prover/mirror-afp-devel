@@ -631,6 +631,99 @@ next
     with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next
+  case (WTrtCAS E e1 U C F T fm D e2 T2 e3 T3)
+  show ?case
+  proof(cases "final e1")
+    case e1: True
+    with WTrtCAS.hyps(1,3) show ?thesis
+    proof(rule final_addrE)
+      fix a
+      assume e1: "e1 = addr a"
+      with WTrtCAS.hyps(1) obtain hU
+        where ty: "typeof_addr h a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU" by auto
+      with WTrtCAS.hyps(3,4) have adal: "P,h \<turnstile> a@CField D F : T" by(auto intro: addr_loc_type.intros)
+      from heap_read_total[OF hconf this]
+      obtain v where v: "heap_read h a (CField D F) v" by blast
+      show ?thesis
+      proof(cases "final e2")
+        case e2: True
+        show ?thesis
+        proof(cases "final e3")
+          case e3: True
+          consider (Val2) v2 where "e2 = Val v2" | (Throw2) a2 where "e2 = Throw a2"
+            using e2 by(auto simp add: final_iff)
+          then show ?thesis
+          proof(cases)
+            case Val2
+            consider (Succeed) v3 where "e3 = Val v3" "v2 = v" 
+              | (Fail) v3 where "e3 = Val v3" "v2 \<noteq> v" 
+              | (Throw3) a3 where "e3 = Throw a3"
+              using e3 by(auto simp add: final_iff)
+            then show ?thesis
+            proof cases
+              case Succeed
+              with WTrtCAS.hyps(9,11) adal have "P,h \<turnstile> v3 :\<le> T" by(auto simp add: conf_def)
+              from heap_write_total[OF hconf adal this] obtain h' 
+                where "heap_write h a (CField D F) v3 h'" ..
+              with Val2 e1 v Succeed show ?thesis
+                by(auto intro: RedCASSucceed simp del: split_paired_Ex)
+            next
+              case Fail
+              with Val2 e1 v show ?thesis 
+                by(auto intro: RedCASFail simp del: split_paired_Ex)
+            next
+              case Throw3
+              then show ?thesis using e1 Val2 by(auto intro: CASThrow3 simp del: split_paired_Ex)
+            qed
+          next
+            case Throw2
+            then show ?thesis using e1 by(auto intro: CASThrow2 simp del: split_paired_Ex)
+          qed
+        next
+          case False
+          with WTrtCAS e1 e2 show ?thesis 
+            by(fastforce simp del: split_paired_Ex simp add: final_iff intro: CASRed3 CASThrow2)
+        qed
+      next
+        case False
+        with WTrtCAS e1 show ?thesis 
+          by(fastforce intro: CASRed2 CASThrow2 simp del: split_paired_Ex)
+      qed
+    qed(fastforce intro: CASThrow)
+  next
+    case False
+    then show ?thesis using WTrtCAS by(fastforce intro: CASRed1)
+  qed
+next
+  case (WTrtCASNT E e1 e2 T2 e3 T3 D F)
+  note [simp del] = split_paired_Ex
+  show ?case
+  proof(cases "final e1")
+    case e1: True
+    show ?thesis
+    proof(cases "final e2")
+      case e2: True
+      show ?thesis
+      proof(cases "final e3")
+        case True
+        with e1 e2 WTrtCASNT show ?thesis
+          by(fastforce simp add: final_iff intro: CASNull CASThrow CASThrow2 CASThrow3) 
+      next
+        case False
+        with e1 e2 WTrtCASNT show ?thesis
+          by(fastforce simp add: final_iff intro: CASRed3 CASThrow CASThrow2) 
+      qed
+    next
+      case False
+      with e1 WTrtCASNT show ?thesis
+        by(fastforce simp add: final_iff intro: CASRed2 CASThrow) 
+    qed
+  next
+    case False
+    with WTrtCASNT show ?thesis
+      by(fastforce simp add: final_iff intro: CASRed1) 
+  qed
+next
   case (WTrtCall E e U C M Ts T meth D es Ts' l)
   have wte: "P,E,h \<turnstile> e : U" 
     and icto: "class_type_of' U = \<lfloor>C\<rfloor>" by fact+

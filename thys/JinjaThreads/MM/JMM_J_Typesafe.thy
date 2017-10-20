@@ -138,25 +138,25 @@ lemma red_heap_read_typedD:
 proof -
   have "(?lhs1 \<longrightarrow> ?rhs1a \<and> ?rhs1b) \<and> (?lhs2 \<longrightarrow> ?rhs2a \<and> ?rhs2b)"
     apply(induct rule: J_heap_base.red_reds.induct)
-    prefer 44 (* RedCallExternal *)
+    prefer 50 (* RedCallExternal *)
     apply(subst (asm) red_external_heap_read_typed)
     apply(fastforce intro!: J_heap_base.red_reds.RedCallExternal simp add: convert_extTA_def)
 
-    prefer 43 (* RedCall *)
+    prefer 49 (* RedCall *)
     apply(fastforce dest: J_heap_base.red_reds.RedCall)
 
     apply(auto intro: J_heap_base.red_reds.intros dest: heap_base.heap_read_typed_into_heap_read heap_base.heap_read_typed_typed dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
     done
   moreover have "(?rhs1a \<longrightarrow> ?rhs1b \<longrightarrow> ?lhs1) \<and> (?rhs2a \<longrightarrow> ?rhs2b \<longrightarrow> ?lhs2)"
     apply(induct rule: J_heap_base.red_reds.induct)
-    prefer 44 (* RedCallExternal *)
+    prefer 50 (* RedCallExternal *)
     apply simp
     apply(intro strip)
     apply(erule (1) J_heap_base.red_reds.RedCallExternal)
     apply(subst red_external_heap_read_typed, erule conjI)
     apply(blast+)[4]
 
-    prefer 43 (* RedCall *)
+    prefer 49 (* RedCall *)
     apply(fastforce dest: J_heap_base.red_reds.RedCall)
 
     apply(auto intro: J_heap_base.red_reds.intros intro!: heap_base.heap_read_typedI dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2])
@@ -209,14 +209,38 @@ proof -
     case (35 h a D F v l) (* RedFAcc *)
     thus ?case by(auto 4 5 intro: J_heap_base.red_reds.RedFAcc[where v="?v h a (CField D F)"])
   next
-    case (44 s a hU M Ts T D vs ta va h' ta' e' s') (* RedCallExternal *)
+    case RedCASSucceed: (45 h a D F v v' h') (* RedCASSucceed *)
+    thus ?case
+    proof(cases "v = ?v h a (CField D F)")
+      case True
+      with RedCASSucceed show ?thesis
+        by(fastforce intro: J_heap_base.red_reds.RedCASSucceed[where v="?v h a (CField D F)"])
+    next
+      case False
+      with RedCASSucceed show ?thesis
+        by(fastforce intro: J_heap_base.red_reds.RedCASFail[where v''="?v h a (CField D F)"])
+    qed
+  next
+    case RedCASFail: (46 h a D F v'' v v' l)
+    thus ?case
+    proof(cases "v = ?v h a (CField D F)")
+      case True
+      with RedCASFail show ?thesis
+        by(fastforce intro: J_heap_base.red_reds.RedCASSucceed[where v="?v h a (CField D F)"] jmm_heap_write.intros)
+    next
+      case False
+      with RedCASFail show ?thesis
+        by(fastforce intro: J_heap_base.red_reds.RedCASFail[where v''="?v h a (CField D F)"])
+    qed
+  next
+    case (50 s a hU M Ts T D vs ta va h' ta' e' s') (* RedCallExternal *)
     thus ?case
       apply clarify
       apply(drule jmm'_red_externalI, simp)
       apply(auto 4 4 intro: J_heap_base.red_reds.RedCallExternal)
       done
   next
-    case (46 e h l V vo ta e' h' l' T) (* BlockRed *)
+    case (52 e h l V vo ta e' h' l' T) (* BlockRed *)
     thus ?case
       by(clarify)(iprover intro: J_heap_base.red_reds.BlockRed)
   qed(blast intro: J_heap_base.red_reds.intros)+

@@ -120,6 +120,9 @@ where
 | "compT E A ST (e1\<bullet>F{D} := e2) =
   (let ST1 = ty E e1#ST; A1 = A \<squnion> \<A> e1; A2 = A1 \<squnion> \<A> e2
    in  compT E A ST e1 @ [after E A ST e1] @ compT E A1 ST1 e2 @ [after E A1 ST1 e2] @ [ty\<^sub>i' ST E A2])"
+| "compT E A ST (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) =
+  (let ST1 = ty E e1 # ST; A1 = A \<squnion> \<A> e1; ST2 = ty E e2 # ST1; A2 = A1 \<squnion> \<A> e2; A3 = A2 \<squnion> \<A> e3
+   in  compT E A ST e1 @ [after E A ST e1] @ compT E A1 ST1 e2 @ [after E A1 ST1 e2] @ compT E A2 ST2 e3 @ [after E A2 ST2 e3])"
 | "compT E A ST (e\<bullet>M(es)) =
    compT E A ST e @ [after E A ST e] @
    compTs E (A \<squnion> \<A> e) (ty E e # ST) es"
@@ -174,7 +177,7 @@ lemmas compT_compTs_induct =
   compT_compTs.induct[
     unfolded meta_all5_eq_conv meta_all4_eq_conv meta_all3_eq_conv meta_all2_eq_conv meta_all_eq_conv,
     case_names
-      new NewArray Cast InstanceOf Val BinOp Var LAss AAcc AAss ALen FAcc FAss Call BlockNone BlockSome
+      new NewArray Cast InstanceOf Val BinOp Var LAss AAcc AAss ALen FAcc FAss CompareAndSwap Call BlockNone BlockSome
       Synchronized InSynchronized Seq Cond While throw TryCatch
       Nil Cons]
 
@@ -241,9 +244,11 @@ next
 next
   case AAcc thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
-  case AAss thus ?case by(auto simp:hyperset_defs Un_ac elim!:sup_state_opt_trans)    
+  case AAss thus ?case by(auto simp:hyperset_defs Un_ac elim!:sup_state_opt_trans)
 next
   case ALen thus ?case by(auto simp add: hyperset_defs)
+next
+  case CompareAndSwap thus ?case by(auto simp: hyperset_defs Un_ac elim!:sup_state_opt_trans)
 next
   case Synchronized thus ?case
     by(fastforce simp add: hyperset_defs elim: sup_state_opt_trans intro: sup_state_opt_trans[OF ty\<^sub>i'_incr] ty\<^sub>i'_antimono2)
@@ -319,6 +324,8 @@ next
 next
   case FAss thus ?case
     by(auto simp:image_Un WT1_is_type[OF wf_prog] after_in_states)
+next
+  case CompareAndSwap thus ?case  by(auto simp:image_Un WT1_is_type[OF wf_prog] after_in_states)
 next
   case Seq thus ?case
     by(auto simp:image_Un after_in_states)
@@ -706,6 +713,11 @@ lemma wt_Put:
   "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow>
   \<turnstile> [Putfield F D],[] [::] [ty\<^sub>i' (T' # U # ST) E A, ty\<^sub>i' ST E A]"
 by(cases U)(auto 4 3 intro: sees_field_idemp widen_trans widen_array_object dest: sees_field_decl_above simp: ty\<^sub>i'_def wt_defs)
+
+lemma wt_CAS:
+  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; class_type_of' U' = \<lfloor>C\<rfloor>; volatile fm; P \<turnstile> T2 \<le> T; P \<turnstile> T3 \<le> T \<rbrakk> \<Longrightarrow>
+  \<turnstile> [CAS F D],[] [::] [ty\<^sub>i' (T3 # T2 # U' # ST) E A, ty\<^sub>i' (Boolean # ST) E A]"
+by(cases U')(auto 4 4 simp add: ty\<^sub>i'_def wt_defs intro: sees_field_idemp widen_trans widen_array_object dest: sees_field_decl_above)
 
 lemma wt_Throw:
   "P \<turnstile> C \<preceq>\<^sup>* Throwable \<Longrightarrow> \<turnstile> [ThrowExc],[] [::] [ty\<^sub>i' (Class C # ST) E A, \<tau>']"
@@ -1339,6 +1351,33 @@ next
   also from wta AAss have "\<turnstile> compE2 a, compxE2 a 0 (size ST) [::] ?\<tau>#?\<tau>sa@[?\<tau>1]" 
     by(auto simp add: after_def)
   finally show ?case using wta wti wte `P,E \<turnstile>1 a\<lfloor>i\<rceil> := e :: T`
+    by(simp add: after_def hyperUn_assoc)
+next
+  case (CompareAndSwap E A ST e1 D F e2 e3)
+  note wt = `P,E \<turnstile>1 e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) :: T`
+  then obtain T1 T2 T3 C fm T' where [simp]: "T = Boolean"
+    and wt1: "P,E \<turnstile>1 e1 :: T1" "class_type_of' T1 = \<lfloor>C\<rfloor>" "P \<turnstile> C sees F:T' (fm) in D" "volatile fm"
+    and wt2: "P,E \<turnstile>1 e2 :: T2" "P \<turnstile> T2 \<le> T'" and wt3: "P,E \<turnstile>1 e3 :: T3" "P \<turnstile> T3 \<le> T'"
+    by auto
+  let ?A1 = "A \<squnion> \<A> e1" let ?A2 = "?A1 \<squnion> \<A> e2" let ?A3 = "?A2 \<squnion> \<A> e3"
+  let ?\<tau> = "ty\<^sub>i' ST E A" let ?\<tau>s1 = "compT E A ST e1"
+  let ?\<tau>1 = "ty\<^sub>i' (T1#ST) E ?A1" let ?\<tau>s2 = "compT E ?A1 (T1#ST) e2"
+  let ?\<tau>2 = "ty\<^sub>i' (T2#T1#ST) E ?A2" let ?\<tau>s3 = "compT E ?A2 (T2#T1#ST) e3"
+  let ?\<tau>3 = "ty\<^sub>i' (T3#T2#T1#ST) E ?A3"
+  let ?\<tau>' = "ty\<^sub>i' (Boolean#ST) E ?A3"
+  from `length ST + max_stack (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) \<le> mxs`
+  have "\<turnstile> [CAS F D], [] [::] [?\<tau>3,?\<tau>']" using wt1 wt2 wt3
+    by(cases T1)(auto simp add: ty\<^sub>i'_def wt_defs nth_Cons split: nat.split intro: sees_field_idemp widen_trans[OF widen_array_object] dest: sees_field_decl_above)
+  also from CompareAndSwap.hyps(3)[of T3] wt3 CompareAndSwap.prems wt1 wt2
+  have "\<turnstile> compE2 e3, compxE2 e3 0 (size ST+2) [::] ?\<tau>2#?\<tau>s3@[?\<tau>3]"
+    by(auto simp add: after_def)
+  also from CompareAndSwap.hyps(2)[of T2] wt2 wt1 CompareAndSwap.prems
+  have "\<turnstile> compE2 e2, compxE2 e2 0 (size ST+1) [::] ?\<tau>1#?\<tau>s2@[?\<tau>2]"
+    by(auto simp add: after_def)
+  also from wt1 CompareAndSwap have "\<turnstile> compE2 e1, compxE2 e1 0 (size ST) [::] ?\<tau>#?\<tau>s1@[?\<tau>1]" 
+    by(auto simp add: after_def)
+  also have "ty E (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = T" using wt by(rule ty_def2)
+  ultimately show ?case using wt1 wt2 wt3
     by(simp add: after_def hyperUn_assoc)
 next
   case (InSynchronized i a exp) thus ?case by auto

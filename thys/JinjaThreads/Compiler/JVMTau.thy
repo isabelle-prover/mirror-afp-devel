@@ -33,6 +33,7 @@ where
 | "\<tau>instr P h stk ALength = False"
 | "\<tau>instr P h stk (Getfield F D) = False"
 | "\<tau>instr P h stk (Putfield F D) = False"
+| "\<tau>instr P h stk (CAS F D) = False"
 | "\<tau>instr P h stk (Checkcast T) = True"
 | "\<tau>instr P h stk (Instanceof T) = True"
 | "\<tau>instr P h stk (Invoke M n) = 
@@ -97,6 +98,10 @@ where
 | \<tau>move2FAss1: "\<tau>move2 P h stk e pc xcp \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc xcp"
 | \<tau>move2FAss2: "\<tau>move2 P h stk e' pc xcp \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') (length (compE2 e) + pc) xcp"
 | \<tau>move2FAssRed: "\<tau>move2 P h stk (e\<bullet>F{D} := e') (Suc (length (compE2 e) + length (compE2 e'))) None"
+
+| \<tau>move2CAS1: "\<tau>move2 P h stk e pc xcp \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) pc xcp"
+| \<tau>move2CAS2: "\<tau>move2 P h stk e' pc xcp \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) (length (compE2 e) + pc) xcp"
+| \<tau>move2CAS3: "\<tau>move2 P h stk e'' pc xcp \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) (length (compE2 e) + length (compE2 e') + pc) xcp"
 
 | \<tau>move2CallObj:
   "\<tau>move2 P h stk obj pc xcp \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc xcp"
@@ -204,6 +209,7 @@ inductive_cases \<tau>move2_cases:
   "\<tau>move2 P h stk (e1\<bullet>length) pc xcp"
   "\<tau>move2 P h stk (e1\<bullet>F{D}) pc xcp"
   "\<tau>move2 P h stk (e1\<bullet>F{D} := e3) pc xcp"
+  "\<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc xcp"
   "\<tau>move2 P h stk (e\<bullet>M(ps)) pc xcp"
   "\<tau>move2 P h stk {V:T=vo; e} pc xcp"
   "\<tau>move2 P h stk (sync\<^bsub>V\<^esub> (e1) e2) pc xcp"
@@ -247,6 +253,8 @@ lemma \<tau>move2_intros':
   and \<tau>move2AAssRed': "pc = Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)) \<Longrightarrow> \<tau>move2 P h stk (a\<lfloor>i\<rceil> := e) pc None"
   and \<tau>move2FAss2': "\<lbrakk> \<tau>move2 P h stk e' pc xcp; pc' = length (compE2 e) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc' xcp"
   and \<tau>move2FAssRed': "pc = Suc (length (compE2 e) + length (compE2 e')) \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc None"
+  and \<tau>move2CAS2': "\<lbrakk> \<tau>move2 P h stk e2 pc xcp; pc' = length (compE2 e1) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc' xcp"
+  and \<tau>move2CAS3': "\<lbrakk> \<tau>move2 P h stk e3 pc xcp; pc' = length (compE2 e1) + length (compE2 e2) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc' xcp"
   and \<tau>move2CallParams': "\<lbrakk> \<tau>moves2 P h stk ps pc xcp; pc' = length (compE2 obj) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc' xcp"
   and \<tau>move2Call': "\<lbrakk> pc = length (compE2 obj) + length (compEs2 ps); length ps < length stk; 
                      stk ! length ps = Null \<or> 
@@ -339,6 +347,10 @@ lemma [dest]:
   and \<tau>move2_FAccD: "\<lbrakk> \<tau>move2 P h stk (e\<bullet>F{D}) pc xcp; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e pc xcp"
   and \<tau>move2_FAssD1: "\<lbrakk> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc xcp; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e pc xcp"
   and \<tau>move2_FAssD2: "\<lbrakk> \<tau>move2 P h stk (e\<bullet>F{D} := e') (length (compE2 e) + pc) xcp; pc < length (compE2 e') \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e' pc xcp"
+  and \<tau>move2_CASD1: "\<lbrakk> \<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc xcp; pc < length (compE2 e1) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e1 pc xcp"
+  and \<tau>move2_CASD2: "\<lbrakk> \<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + pc) xcp; pc < length (compE2 e2) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e2 pc xcp"
+  and \<tau>move2_CASD3:
+  "\<lbrakk> \<tau>move2 P h stk (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + pc) xcp; pc < length (compE2 e3) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e3 pc xcp"
   and \<tau>move2_CallObjD: "\<lbrakk> \<tau>move2 P h stk (e\<bullet>M(es)) pc xcp; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e pc xcp"
   and \<tau>move2_BlockNoneD: "\<tau>move2 P h stk {V:T=None; e} pc xcp \<Longrightarrow> \<tau>move2 P h stk e pc xcp"
   and \<tau>move2_BlockSomeD: "\<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} (Suc (Suc pc)) xcp \<Longrightarrow> \<tau>move2 P h stk e pc xcp"
@@ -427,7 +439,7 @@ apply(clarsimp)
 apply(cases xcp)
  apply(rename_tac stk loc C M pc FRS M' Ts T meth mxs mxl ins xt)
  apply(case_tac "ins ! pc")
- prefer 18 -- BinOpInstr
+ prefer 19 -- BinOpInstr
  apply(rename_tac bop)
  apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
  apply(auto simp add: split_beta \<tau>external_def split: if_split_asm)

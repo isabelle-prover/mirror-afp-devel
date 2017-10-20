@@ -90,6 +90,9 @@ where
   "\<lbrakk> E this = \<lfloor>Class C\<rfloor>; C \<noteq> Object; class P C = \<lfloor>(D, fs, ms)\<rfloor>;
      P \<turnstile> D sees F:T (fm) in D'; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR []} := e \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'} := e'"
+| AnnoCAS:
+  "\<lbrakk> is_lub,P,E \<turnstile> e1 \<leadsto> e1'; is_lub,P,E \<turnstile> e2 \<leadsto> e2'; is_lub,P,E \<turnstile> e3 \<leadsto> e3' \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) \<leadsto> e1'\<bullet>compareAndSwap(D\<bullet>F, e2', e3')"
 | AnnoCall:
   "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e';  is_lub,P,E \<turnstile> es [\<leadsto>] es' \<rbrakk>
    \<Longrightarrow> is_lub,P,E \<turnstile> Call e M es \<leadsto> Call e' M es'"
@@ -132,6 +135,7 @@ inductive_cases Anno_cases [elim!]:
   "is_lub',P,E \<turnstile> e\<bullet>length \<leadsto> e'"
   "is_lub',P,E \<turnstile> e\<bullet>F{D} \<leadsto> e'"
   "is_lub',P,E \<turnstile> e1\<bullet>F{D} := e2 \<leadsto> e'"
+  "is_lub',P,E \<turnstile> e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) \<leadsto> e'"
   "is_lub',P,E \<turnstile> e\<bullet>M(es) \<leadsto> e'"
   "is_lub',P,E \<turnstile> {V:T=vo; e} \<leadsto> e'"
   "is_lub',P,E \<turnstile> sync(e1) e2 \<leadsto> e'"
@@ -252,6 +256,7 @@ where
 | "block_types (a\<bullet>length) = block_types a"
 | "block_types (e\<bullet>F{D}) = block_types e"
 | "block_types (e\<bullet>F{D} := e') = block_types e @ block_types e'"
+| "block_types (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = block_types e @ block_types e' @ block_types e''"
 | "block_types (e\<bullet>M(es)) = block_types e @ blocks_types es"
 | "block_types {V:T=vo; e} = T # block_types e"
 | "block_types (sync\<^bsub>V\<^esub>(e) e') = block_types e @ block_types e'"

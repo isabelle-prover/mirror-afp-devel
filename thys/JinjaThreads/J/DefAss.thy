@@ -110,6 +110,7 @@ where
 | "\<A> (a\<bullet>length) = \<A> a"
 | "\<A> (e\<bullet>F{D}) = \<A> e"
 | "\<A> (e\<^sub>1\<bullet>F{D}:=e\<^sub>2) = \<A> e\<^sub>1 \<squnion> \<A> e\<^sub>2"
+| "\<A> (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = \<A> e1 \<squnion> \<A> e2 \<squnion> \<A> e3"
 | "\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
 | "\<A> ({V:T=vo; e}) = \<A> e \<ominus> V"
 | "\<A> (sync\<^bsub>V\<^esub> (o') e) = \<A> o' \<squnion> \<A> e"
@@ -139,6 +140,7 @@ where
 | "\<D> (a\<bullet>length) A = \<D> a A"
 | "\<D> (e\<bullet>F{D}) A = \<D> e A"
 | "\<D> (e\<^sub>1\<bullet>F{D}:=e\<^sub>2) A = (\<D> e\<^sub>1 A \<and> \<D> e\<^sub>2 (A \<squnion> \<A> e\<^sub>1))"
+| "\<D> (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) A = (\<D> e1 A \<and> \<D> e2 (A \<squnion> \<A> e1) \<and> \<D> e3 (A \<squnion> \<A> e1 \<squnion> \<A> e2))"
 | "\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 | "\<D> ({V:T=vo; e}) A = (if vo = None then \<D> e (A \<ominus> V) else \<D> e (A \<squnion> \<lfloor>{V}\<rfloor>))"
 | "\<D> (sync\<^bsub>V\<^esub> (o') e) A = (\<D> o' A \<and> \<D> e (A \<squnion> \<A> o'))"
@@ -186,30 +188,35 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s es A'"
 (*<*)
 apply(induct e and es rule: \<D>.induct \<D>s.induct)
-apply simp
-apply simp
-apply simp
-apply simp
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply (fastforce simp add:hyperset_defs)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply(clarsimp split: if_split_asm) apply (iprover dest:diff_lem) apply(iprover dest: sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
+subgoal by simp
+subgoal by simp
+subgoal by simp
+subgoal by simp
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by(fastforce simp add:hyperset_defs)
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp (iprover dest: sqUn_lem)
+subgoal 
+  apply(clarsimp split: if_split_asm) 
+  apply (iprover dest:diff_lem) 
+  apply(iprover dest: sqUn_lem)
+  done
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
+subgoal by simp
+subgoal by simp (iprover dest:sqUn_lem)
 done
 (*>*)
 

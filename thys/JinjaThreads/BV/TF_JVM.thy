@@ -106,223 +106,248 @@ theorem (in start_context) exec_pres_type:
                    xcpt_eff_def norm_eff_def relevant_entries_def)
   apply (case_tac "is!pc")
 
-  -- Load
-  apply(clarsimp split: option.splits)
-  apply (frule listE_nth_in, assumption)
-  apply(fastforce split: option.splits)
-
-  -- Store
-  apply clarsimp
-  apply(erule disjE)
-   apply clarsimp
-  apply(fastforce split: option.splits)
-
-  -- Push
-  apply(fastforce simp add: typeof_lit_is_type split: option.splits)
-
-  -- New
-  apply (clarsimp)
-  apply (erule disjE)
-   apply clarsimp
-  apply (clarsimp)
-  apply(rule conjI)
-   apply(force split: option.splits)
-  apply fastforce
-
-  -- NewArray
-  apply clarsimp
-  apply (erule disjE)
-   apply clarsimp
-  apply (clarsimp)
-  apply (erule allE)+
-  apply(erule impE, blast)
-  apply(force split: option.splits)
-
-  -- ALoad
-  apply(clarsimp split: if_split_asm)
-   apply(rule conjI)
+  subgoal -- Load
+    apply(clarsimp split: option.splits)
+    apply (frule listE_nth_in, assumption)
     apply(fastforce split: option.splits)
-   apply(erule allE)+
-   apply(erule impE, blast)
-   apply arith
-  apply(erule disjE)
-   apply(fastforce dest: is_type_ArrayD)
-  apply(clarsimp)
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply(erule allE)+
-  apply(erule impE, blast)
-  apply arith
+    done
 
-  -- AStore
-  apply(clarsimp split: if_split_asm)
-   apply(rule conjI)
+  subgoal -- Store
+    apply clarsimp
+    apply(erule disjE)
+     apply clarsimp
     apply(fastforce split: option.splits)
-   apply(erule allE)+
-   apply(erule impE, blast)
-   apply arith
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply(erule allE)+
-  apply(erule impE, blast)
-  apply arith
+    done
 
-  -- ALength
-  apply(clarsimp split: if_split_asm)
-   apply(rule conjI)
-    apply(fastforce split: option.splits)
-   apply(erule allE)+
-   apply(erule impE, blast)
-   apply arith
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply(erule allE)+
-  apply(erule impE, blast)
-  apply arith
+  subgoal -- Push
+    by(fastforce simp add: typeof_lit_is_type split: option.splits)
 
+  subgoal -- New
+    apply (clarsimp)
+    apply (erule disjE)
+     apply clarsimp
+    apply (clarsimp)
+    apply(rule conjI)
+     apply(force split: option.splits)
+    apply fastforce
+    done
 
-  -- Getfield
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce dest: sees_field_is_type)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- NewArray
+    apply clarsimp
+    apply (erule disjE)
+     apply clarsimp
+    apply (clarsimp)
+    apply (erule allE)+
+    apply(erule impE, blast)
+    apply(force split: option.splits)
+    done
 
-  -- Putfield
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- ALoad
+    apply(clarsimp split: if_split_asm)
+     apply(rule conjI)
+      apply(fastforce split: option.splits)
+     apply(erule allE)+
+     apply(erule impE, blast)
+     apply arith
+    apply(erule disjE)
+     apply(fastforce dest: is_type_ArrayD)
+    apply(clarsimp)
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply(erule allE)+
+    apply(erule impE, blast)
+    apply arith
+    done
 
-  -- Checkcast
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- AStore
+    apply(clarsimp split: if_split_asm)
+     apply(rule conjI)
+      apply(fastforce split: option.splits)
+     apply(erule allE)+
+     apply(erule impE, blast)
+     apply arith
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply(erule allE)+
+    apply(erule impE, blast)
+    apply arith
+    done
 
-  -- Instanceof
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- ALength
+    apply(clarsimp split: if_split_asm)
+     apply(rule conjI)
+      apply(fastforce split: option.splits)
+     apply(erule allE)+
+     apply(erule impE, blast)
+     apply arith
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply(erule allE)+
+    apply(erule impE, blast)
+    apply arith
+    done
 
-  defer 
+  subgoal -- Getfield
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce dest: sees_field_is_type)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
+
+  subgoal -- Putfield
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
+
+  subgoal -- CAS
+    apply clarsimp
+    apply(erule disjE)
+     apply fastforce
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
+
+  subgoal -- Checkcast
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
+
+  subgoal -- Instanceof
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
+
+  subgoal for \<dots> the_s M n
+    apply (clarsimp split: if_split_asm)
+     apply(rule conjI)
+      apply(fastforce split!: option.splits)
+     apply fastforce
+    apply(erule disjE)
+     apply clarsimp
+     apply(rule conjI)
+      apply(drule (1) sees_wf_mdecl)
+      apply(clarsimp simp add: wf_mdecl_def)
+     apply(arith)
+    apply(clarsimp)
+    apply(erule allE)+
+    apply(rotate_tac -2)
+    apply(erule impE, blast)
+    apply(clarsimp split: option.splits)
+    done
   
-  -- Return
-  apply(fastforce split: option.splits)
+  subgoal -- Return
+    by(fastforce split: option.splits)
 
-  -- Pop
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- Pop
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
 
-  -- Dup
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- Dup
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
 
-  -- Swap
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- Swap
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
 
-  -- BinOpInstr
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce intro: WTrt_binop_is_type)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- BinOpInstr
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce intro: WTrt_binop_is_type)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
   
-  -- Goto
-  apply(fastforce split: option.splits)
+  subgoal -- Goto
+    by(fastforce split: option.splits)
 
-  -- IfFalse
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply(erule disjE)
-   apply fastforce
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- IfFalse
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply(erule disjE)
+     apply fastforce
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
 
-  -- ThrowExc
-  apply(clarsimp)
-  apply(rule conjI)
-   apply(erule allE)+
-   apply(erule impE, blast)
-   apply(clarsimp split: option.splits)
-  apply fastforce
+  subgoal -- ThrowExc
+    apply(clarsimp)
+    apply(rule conjI)
+     apply(erule allE)+
+     apply(erule impE, blast)
+     apply(clarsimp split: option.splits)
+    apply fastforce
+    done
 
-  -- MEnter
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
+  subgoal -- MEnter
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
 
-  -- MExit
-  apply(clarsimp)
-  apply(erule disjE)
-   apply(fastforce)
-  apply clarsimp
-  apply(rule conjI)
-   apply(fastforce split: option.splits)
-  apply fastforce
-
-  -- Invoke
-  apply(rename_tac the_s M n)
-  apply (clarsimp split: if_split_asm)
-   apply(rule conjI)
-    apply(fastforce split!: option.splits)
-   apply fastforce
-  apply(erule disjE)
-   apply clarsimp
-   apply(rule conjI)
-    apply(drule (1) sees_wf_mdecl)
-    apply(clarsimp simp add: wf_mdecl_def)
-   apply(arith)
-  apply(clarsimp)
-  apply(erule allE)+
-  apply(rotate_tac -2)
-  apply(erule impE, blast)
-  apply(clarsimp split: option.splits)
+  subgoal -- MExit
+    apply(clarsimp)
+    apply(erule disjE)
+     apply(fastforce)
+    apply clarsimp
+    apply(rule conjI)
+     apply(fastforce split: option.splits)
+    apply fastforce
+    done
   done
-
 (*>*)
 
 declare option.case_cong_weak[cong]
