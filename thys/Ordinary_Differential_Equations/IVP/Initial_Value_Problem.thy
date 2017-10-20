@@ -2335,12 +2335,12 @@ next
     define b where  "b \<equiv> B * abs (t - t0)"
     have "b > 0" using \<open>t0 \<noteq> t\<close> by (auto intro!: mult_pos_pos simp: algebra_simps b_def \<open>B > 0\<close>)
     from cont
-    have closed: "closed {s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}}"
+    have closed: "closed (closed_segment t0 t \<inter> ((\<lambda>s. norm (x s - x t0)) -` {b..}))"
       by (intro continuous_closed_preimage continuous_intros closed_segment)
     have exceeding: "{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
     proof (rule ccontr)
       assume "\<not>{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
-      hence notempty: "{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<noteq> {}"
+      hence notempty: "(closed_segment t0 t \<inter> ((\<lambda>s. norm (x s - x t0)) -` {b..})) \<noteq> {}"
         and not_max: "{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<noteq> {t}"
         by auto
       obtain s where s_bound: "s \<in> closed_segment t0 t"
