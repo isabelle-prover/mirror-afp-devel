@@ -2469,19 +2469,14 @@ lemma zmod_helper:
   by (metis add.commute mod_add_right_eq)
 
 lemma int_div_sub_1:
-  "(n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)" if "m \<ge> 1"
-  using that
-  apply (subgoal_tac "m = 0 \<or> (n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)")
-   apply fastforce
-  apply (subst mult_cancel_right[symmetric])
-  apply (simp only: left_diff_distrib split: if_split)
-  apply (simp only: mod_div_equality_div_eq)
-  apply (clarsimp simp: field_simps)
-  apply (clarsimp simp: dvd_eq_mod_eq_0)
-  apply (cases "m = 1")
-   apply auto
-  apply (subst mod_diff_eq [symmetric], simp add: zmod_minus1 mod_pos_pos_trivial)
-  by (smt Divides.pos_mod_bound Divides.pos_mod_sign int_mod_eq mod_add_left_eq)
+  "(n - 1) div m = (if m dvd n then (n div m) - 1 else n div m)"
+  if "m \<ge> 1" for m n :: int
+  using that div_add1_eq [of n "- 1" m]
+  apply (auto simp add: div_eq_minus1 zmod_minus1)
+  using  div_add1_eq [of m "n mod m - 1" m]
+  apply (auto simp add: algebra_simps)
+  apply (smt Divides.pos_mod_bound Divides.pos_mod_sign div_pos_pos_trivial mod_eq_0_iff_dvd)
+  done
 
 lemma ptr_add_image_multI:
   "\<lbrakk> \<And>x y. (x * val = y * val') = (x * val'' = y); x * val'' \<in> S \<rbrakk> \<Longrightarrow>
@@ -3043,11 +3038,8 @@ lemma sbintrunc_If:
   "- 3 * (2 ^ n) \<le> x \<and> x < 3 * (2 ^ n)
     \<Longrightarrow> sbintrunc n x = (if x < - (2 ^ n) then x + 2 * (2 ^ n)
         else if x \<ge> 2 ^ n then x - 2 * (2 ^ n) else x)"
-  apply (simp add: no_sbintr_alt2, safe)
-    apply (simp add: mod_pos_geq mod_pos_pos_trivial)
-   apply (subst mod_add_self1[symmetric], simp)
-   apply (simp add: mod_pos_pos_trivial)
-  apply (simp add: mod_pos_pos_trivial)
+  apply (auto simp add: no_sbintr_alt2 mod_pos_geq)
+  apply (subst mod_add_self1[symmetric], simp)
   done
 
 lemma signed_arith_eq_checks_to_ord:
@@ -4086,7 +4078,7 @@ lemma uint_2_id:
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> of_nat n; 0 < m\<rbrakk> \<Longrightarrow> bintrunc n m = m"
-  by (simp add: bintrunc_mod2p le_less_trans int_mod_eq')
+  by (simp add: bintrunc_mod2p le_less_trans)
 
 lemma shiftr1_unfold: "shiftr1 x = x >> 1"
   by (metis One_nat_def comp_apply funpow.simps(1) funpow.simps(2) id_apply shiftr_def)

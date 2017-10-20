@@ -71,7 +71,6 @@ lemma Rep_1: "Rep 1 = 1"
 lemma Rep_mod: "Rep x mod int CARD ('a) = Rep x"
   apply (rule_tac x=x in type_definition.Abs_cases [OF type])
   apply (simp add: type_definition.Abs_inverse [OF type])
-  apply (simp add: mod_pos_pos_trivial)
 done
 
 lemmas Rep_simps =
@@ -111,8 +110,8 @@ proof (unfold bij_betw_def, rule conjI)
     by (auto, metis Rep_Abs_mod mod_pos_pos_trivial)
   show "Abs' ` {0..<int CARD('a)} = (UNIV::'a set)"
   proof (unfold image_def Abs'_def, auto)
-    fix x show "\<exists>xa\<in>{0..<int CARD('a)}. x = Abs (xa mod int CARD('a))"
-      by (rule bexI[of _ "Rep x"], auto simp add: Rep_less_n[of x] Rep_ge_0[of x], metis Rep_inverse Rep_mod)
+    fix x show "\<exists>xa\<in>{0..<int CARD('a)}. x = Abs xa"
+      by (rule bexI[of _ "Rep x"], auto simp add: Rep_less_n[of x] Rep_ge_0[of x], metis Rep_inverse)
   qed
 qed
 

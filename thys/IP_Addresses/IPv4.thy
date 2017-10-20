@@ -103,15 +103,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: and_mask_mod_2p)
       apply(simp add: shiftr_div_2n)
       apply(simp add: uint_word_of_int)
-      apply(subst mod_pos_pos_trivial)
-        apply(simp; fail)
-       apply(simp; fail)
-      apply(simp)
-      apply(subst mod_pos_pos_trivial)
-        apply(simp; fail)
-       apply(simp; fail)
-      apply(subst mod_pos_pos_trivial)
-        by simp+
+      done
     have ipv4addr_of_nat_AND_mask8: "(ipv4addr_of_nat a) AND mask 8 = (ipv4addr_of_nat (a mod 256))"
       for a
       apply(simp add: ipv4addr_of_nat_def and_mask_mod_2p)
@@ -128,12 +120,6 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: and_mask_mod_2p)
       apply(simp add: shiftr_div_2n)
       apply(simp add: uint_word_of_int)
-      apply(subst mod_pos_pos_trivial)
-        apply(simp; fail)
-       apply(simp; fail)
-      apply(subst mod_pos_pos_trivial[where b="4294967296"])
-        apply(simp; fail)
-       apply(simp; fail)
       apply(simp add: NumberWang_IPv4.div65536[simplified])
       (*The [simplified] is needed because Word_Lib adds some additional simp rules*)
       done
@@ -148,12 +134,6 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: and_mask_mod_2p)
       apply(simp add: shiftr_div_2n)
       apply(simp add: uint_word_of_int)
-      apply(subst mod_pos_pos_trivial)
-        apply(simp; fail)
-       apply(simp; fail)
-      apply(subst mod_pos_pos_trivial[where b="4294967296"])
-        apply(simp; fail)
-       apply(simp; fail)
       apply(simp add: NumberWang_IPv4.div256[simplified])
       done
     from \<open>d < 256\<close> have d: "nat_of_ipv4addr (ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) AND mask 8) = d"
@@ -161,7 +141,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: ipv4addr_of_nat_def word_of_nat)
       apply(simp add: nat_of_ipv4addr_def)
       apply(subgoal_tac "(d + 256 * c + 65536 * b + 16777216 * a) mod 256 = d")
-       apply(simp add: unat_def uint_word_of_int mod_pos_pos_trivial; fail)
+       apply(simp add: unat_def uint_word_of_int; fail)
       apply(simp add: NumberWang_IPv4.mod256)
       done
     from a b c d show ?thesis

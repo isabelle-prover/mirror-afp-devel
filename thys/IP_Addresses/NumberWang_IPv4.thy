@@ -28,12 +28,8 @@ proof -
   also from assms have "\<dots> = int b + 256 * int a" by simp
   finally have helper:
     "(int d + int (256 * c) + int (65536 * b) + int (16777216 * a)) div 65536 = int b + 256 * int a" .
-  from assms show ?thesis
-    unfolding helper
-    apply(simp)
-    apply(subst mod_pos_pos_trivial)
-      apply simp_all
-    done
+  with assms show ?thesis
+    by simp
 qed
 
 lemma div256: assumes "a < 256" "b < 256" "c < 256" "d < 256" 
