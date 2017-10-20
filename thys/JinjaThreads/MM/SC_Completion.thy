@@ -775,8 +775,7 @@ apply(induct obs arbitrary: vs)
 apply(auto simp add: eq_upto_seq_inconsist_simps split: action.split obs_event.split)
 done
 
-declare split_paired_Ex [simp del]
-declare eq_upto_seq_inconsist_simps [simp]
+context notes split_paired_Ex [simp del] eq_upto_seq_inconsist_simps [simp] begin
 
 lemma eq_upto_seq_inconsist_appendI:
   "\<lbrakk> eq_upto_seq_inconsist P obs OBS vs;
@@ -789,8 +788,24 @@ apply(simp split: action.split obs_event.split)
 apply auto
 done
 
-declare split_paired_Ex [simp]
-declare eq_upto_seq_inconsist_simps [simp del]
+lemma eq_upto_seq_inconsist_trans:
+  "\<lbrakk> eq_upto_seq_inconsist P obs obs' vs; eq_upto_seq_inconsist P obs' obs'' vs \<rbrakk>
+  \<Longrightarrow> eq_upto_seq_inconsist P obs obs'' vs"
+  apply(induction obs arbitrary: obs' obs'' vs)
+  apply(clarsimp simp add: eq_upto_seq_inconsist_Cons1)+
+  apply(auto split!: action.split obs_event.split if_split_asm)
+  done
+
+lemma eq_upto_seq_inconsist_append2:
+  "\<lbrakk> eq_upto_seq_inconsist P obs obs' vs; \<not> ta_seq_consist P vs (llist_of obs) \<rbrakk>
+  \<Longrightarrow> eq_upto_seq_inconsist P obs (obs' @ obs'') vs"
+  apply(induction obs arbitrary: obs' vs)
+  apply(clarsimp simp add: eq_upto_seq_inconsist_Cons1)+
+  apply(auto split!: action.split obs_event.split if_split_asm)
+  done
+
+end
+
 
 context executions_sc_hb begin
 

@@ -191,6 +191,23 @@ proof -
         }
         ultimately show ?thesis using Putfield field stk confv by auto
       next
+        case (CAS F C)
+        with app stk reg \<Phi> obtain v v' v'' T' stk' fm where
+          field: "P \<turnstile> C sees F:T' (fm) in C" and
+          stk:   "stk = v'' # v' # v # stk'" and
+          confv: "P,h \<turnstile> v' :\<le> T'" "P,h \<turnstile> v'' :\<le> T'" and
+          confr: "P,h \<turnstile> v :\<le> Class C" and vol: "volatile fm"
+          by(fastforce simp add: list_all2_Cons2)
+        from confr have is_Ref: "is_Ref v"
+          by(cases v)(auto simp add: is_Ref_def conf_def)
+        moreover {
+          assume "v \<noteq> Null" 
+          with confr field is_Ref wf
+          have "\<exists>U. typeof_addr h (the_Addr v) = Some U \<and> P \<turnstile> class_type_of U \<preceq>\<^sup>* C"
+            by (auto dest: non_npD2)
+        }
+        ultimately show ?thesis using CAS field stk confv vol by auto
+      next
         case (Invoke M' n)
         with app have n: "n < size ST" by simp
         

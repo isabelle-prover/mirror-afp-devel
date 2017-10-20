@@ -196,6 +196,33 @@ where
 | Red1FAssNull:
   "uf,P,t \<turnstile>1 \<langle>FAss null F D (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
+| CAS1Red1:
+  "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  uf,P,t \<turnstile>1 \<langle>e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s'\<rangle>"
+
+| CAS1Red2:
+  "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  uf,P,t \<turnstile>1 \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), s'\<rangle>"
+
+| CAS1Red3:
+  "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
+  uf,P,t \<turnstile>1 \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), s'\<rangle>"
+
+| CAS1Null:
+  "uf,P,t \<turnstile>1 \<langle>null\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| Red1CASSucceed:
+  "\<lbrakk> heap_read h a (CField D F) v; heap_write h a (CField D F) v' h' \<rbrakk> \<Longrightarrow>
+  uf,P,t \<turnstile>1 \<langle>addr a\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), (h, l)\<rangle> 
+  -\<lbrace>ReadMem a (CField D F) v, WriteMem a (CField D F) v'\<rbrace>\<rightarrow> 
+  \<langle>true, (h', l)\<rangle>"
+
+| Red1CASFail:
+  "\<lbrakk> heap_read h a (CField D F) v''; v \<noteq> v'' \<rbrakk> \<Longrightarrow>
+  uf,P,t \<turnstile>1 \<langle>addr a\<bullet>compareAndSwap(D\<bullet>F, Val v, Val v'), (h, l)\<rangle> 
+  -\<lbrace>ReadMem a (CField D F) v''\<rbrace>\<rightarrow> 
+  \<langle>false, (h, l)\<rangle>"
+
 | Call1Obj:
   "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>M(es), s'\<rangle>"
 
@@ -304,6 +331,9 @@ where
 | FAcc1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAss1Throw1: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>F{D}:=e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAss1Throw2: "uf,P,t \<turnstile>1 \<langle>FAss (Val v) F D (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CAS1Throw: "uf,P,t \<turnstile>1 \<langle>Throw a\<bullet>compareAndSwap(D\<bullet>F, e2, e3), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CAS1Throw2: "uf,P,t \<turnstile>1 \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Throw a, e3), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CAS1Throw3: "uf,P,t \<turnstile>1 \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Call1ThrowObj: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Call1ThrowParams: "\<lbrakk> es = map Val vs @ Throw a # es' \<rbrakk> \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Block1Throw: "uf,P,t \<turnstile>1 \<langle>{V:T=None; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
@@ -332,6 +362,7 @@ inductive_cases red1_cases:
   "uf,P,t \<turnstile>1 \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "uf,P,t \<turnstile>1 \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "uf,P,t \<turnstile>1 \<langle>e\<bullet>F{D} := e2, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "uf,P,t \<turnstile>1 \<langle>e\<bullet>compareAndSwap(D\<bullet>F, e', e''), s\<rangle> -ta\<rightarrow> \<langle>e''', s'\<rangle>"
   "uf,P,t \<turnstile>1 \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "uf,P,t \<turnstile>1 \<langle>{V:T=vo; e}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "uf,P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
@@ -461,6 +492,8 @@ where
 | "\<tau>move1 P h (a\<bullet>length) \<longleftrightarrow> \<tau>move1 P h a \<or> (\<exists>ad. a = Throw ad)"
 | "\<tau>move1 P h (e\<bullet>F{D}) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move1 P h (FAss e F D e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move1 P h e' \<or> (\<exists>a. e' = Throw a)))"
+| "\<tau>move1 P h (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> 
+  (\<tau>move1 P h e' \<or> (\<exists>a. e' = Throw a) \<or> (\<exists>v. e' = Val v \<and> (\<tau>move1 P h e'' \<or> (\<exists>a. e'' = Throw a)))))"
 | "\<tau>move1 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> 
    (\<tau>moves1 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es') \<or> 
     (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of' T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
@@ -624,6 +657,9 @@ lemma \<tau>move1_\<tau>moves1_intros:
   and \<tau>move1FAcc: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (e\<bullet>F{D})"
   and \<tau>move1FAss1: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (FAss e F D e')"
   and \<tau>move1FAss2: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (FAss (Val v) F D e)"
+  and \<tau>move1CAS1: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (e\<bullet>compareAndSwap(D\<bullet>F, e', e''))"
+  and \<tau>move1CAS2: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e''))"
+  and \<tau>move1CAS3: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e))"
   and \<tau>move1CallObj: "\<tau>move1 P h obj \<Longrightarrow> \<tau>move1 P h (obj\<bullet>M(ps))"
   and \<tau>move1CallParams: "\<tau>moves1 P h ps \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(ps))"
   and \<tau>move1Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; class_type_of' T = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(map Val vs))"
@@ -657,6 +693,9 @@ lemma \<tau>move1_\<tau>moves1_intros:
   and \<tau>move1FAccThrow: "\<tau>move1 P h (Throw a\<bullet>F{D})"
   and \<tau>move1FAssThrow1: "\<tau>move1 P h (Throw a\<bullet>F{D} := e)"
   and \<tau>move1FAssThrow2: "\<tau>move1 P h (FAss (Val v) F D (Throw a))"
+  and \<tau>move1CASThrow1: "\<tau>move1 P h (CompareAndSwap (Throw a) D F e e')"
+  and \<tau>move1CASThrow2: "\<tau>move1 P h (CompareAndSwap (Val v) D F (Throw a) e')"
+  and \<tau>move1CASThrow3: "\<tau>move1 P h (CompareAndSwap (Val v) D F (Val v') (Throw a))"
   and \<tau>move1CallThrowObj: "\<tau>move1 P h (Throw a\<bullet>M(es))"
   and \<tau>move1CallThrowParams: "\<tau>move1 P h (Val v\<bullet>M(map Val vs @ Throw a # es))"
   and \<tau>move1BlockThrow: "\<tau>move1 P h {V:T=None; Throw a}"
@@ -862,6 +901,18 @@ lemma FAss_\<tau>red1t_xt2:
   "\<tau>red1gt uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gt uf P t h (Val v\<bullet>F{D} := e, xs) (Val v\<bullet>F{D} := e', xs')"
 by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl FAss1Red2 \<tau>move1FAss2)
 
+lemma CAS_\<tau>red1t_xt1:
+  "\<tau>red1gt uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gt uf P t h (e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs) (e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CAS1Red1)
+
+lemma CAS_\<tau>red1t_xt2:
+  "\<tau>red1gt uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gt uf P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CAS1Red2)
+
+lemma CAS_\<tau>red1t_xt3:
+  "\<tau>red1gt uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gt uf P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), xs')"
+by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CAS1Red3)
+
 lemma Call_\<tau>red1t_obj:
   "\<tau>red1gt uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gt uf P t h (e\<bullet>M(ps), xs) (e'\<bullet>M(ps), xs')"
 by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl Call1Obj \<tau>move1CallObj)
@@ -963,6 +1014,18 @@ by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl FAss
 lemma FAss_\<tau>red1r_xt2:
   "\<tau>red1gr uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gr uf P t h (Val v\<bullet>F{D} := e, xs) (Val v\<bullet>F{D} := e', xs')"
 by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl FAss1Red2 \<tau>move1FAss2)
+
+lemma CAS_\<tau>red1r_xt1:
+  "\<tau>red1gr uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gr uf P t h (e\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs) (e'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CAS1Red1)
+
+lemma CAS_\<tau>red1r_xt2:
+  "\<tau>red1gr uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gr uf P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, e, e3), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, e', e3), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CAS1Red2)
+
+lemma CAS_\<tau>red1r_xt3:
+  "\<tau>red1gr uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gr uf P t h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e), xs) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e'), xs')"
+by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl CAS1Red3)
 
 lemma Call_\<tau>red1r_obj:
   "\<tau>red1gr uf P t h (e, xs) (e', xs') \<Longrightarrow> \<tau>red1gr uf P t h (e\<bullet>M(ps), xs) (e'\<bullet>M(ps), xs')"

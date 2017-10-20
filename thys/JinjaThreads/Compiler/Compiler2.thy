@@ -24,6 +24,7 @@ where
 | "compE2 (a\<bullet>length) = compE2 a @ [ALength]"
 | "compE2 (e\<bullet>F{D}) = compE2 e @ [Getfield F D]"
 | "compE2 (e1\<bullet>F{D} := e2) = compE2 e1 @ compE2 e2 @ [Putfield F D, Push Unit]"
+| "compE2 (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = compE2 e @ compE2 e' @ compE2 e'' @ [CAS F D]"
 | "compE2 (e\<bullet>M(es)) = compE2 e @ compEs2 es @ [Invoke M (size es)]"
 | "compE2 ({i:T=vo; e}) = (case vo of None \<Rightarrow> [] | \<lfloor>v\<rfloor> \<Rightarrow> [Push v, Store i]) @ compE2 e"
 | "compE2 (sync\<^bsub>V\<^esub> (o') e) = compE2 o' @ [Dup, Store V, MEnter] @
@@ -76,6 +77,10 @@ where
 | "compxE2 (a\<bullet>length) pc d = compxE2 a pc d"
 | "compxE2 (e\<bullet>F{D}) pc d = compxE2 e pc d"
 | "compxE2 (e1\<bullet>F{D} := e2) pc d = compxE2 e1 pc d @ compxE2 e2 (pc + size (compE2 e1)) (d + 1)"
+| "compxE2 (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) pc d = 
+   (let pc1 = pc  + size (compE2 e);
+        pc2 = pc1 + size (compE2 e')
+    in compxE2 e pc d @ compxE2 e' pc1 (d + 1) @ compxE2 e'' pc2 (d + 2))"
 | "compxE2 (e\<bullet>M(es)) pc d = compxE2 e pc d @ compxEs2 es (pc + size(compE2 e)) (d+1)"
 | "compxE2 ({i:T=vo; e}) pc d = compxE2 e (case vo of None \<Rightarrow> pc | \<lfloor>v\<rfloor> \<Rightarrow> Suc (Suc pc)) d"
 | "compxE2 (sync\<^bsub>V\<^esub> (o') e) pc d =
@@ -163,6 +168,7 @@ where
 | "max_stack (a\<bullet>length) = max_stack a"
 | "max_stack (e\<bullet>F{D}) = max_stack e"
 | "max_stack (e1\<bullet>F{D} := e2) = max (max_stack e1) (max_stack e2) + 1"
+| "max_stack (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = max (max (max_stack e) (max_stack e' + 1)) (max_stack e'' + 2)"
 | "max_stack (e\<bullet>M(es)) = max (max_stack e) (max_stacks es) + 1"
 | "max_stack ({i:T=vo; e}) = max_stack e"
 | "max_stack (sync\<^bsub>V\<^esub> (o') e) = max (max_stack o') (max (max_stack e) 2)"

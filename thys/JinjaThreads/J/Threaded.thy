@@ -157,6 +157,7 @@ where
 | "sync_ok (a\<bullet>length) = sync_ok a"
 | "sync_ok (e\<bullet>F{D}) = sync_ok e"
 | "sync_ok (FAss e F D e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
+| "sync_ok (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = (sync_ok e \<and> sync_ok e' \<and> sync_ok e'' \<and> (contains_insync e' \<longrightarrow> is_val e) \<and> (contains_insync e'' \<longrightarrow> is_val e \<and> is_val e'))"
 | "sync_ok (e\<bullet>m(pns)) = (sync_ok e \<and> sync_oks pns \<and> (contains_insyncs pns \<longrightarrow> is_val e))"
 | "sync_ok ({V : T=vo; e}) = sync_ok e"
 | "sync_ok (sync\<^bsub>V\<^esub> (o') e) = (sync_ok o' \<and> \<not> contains_insync e)"

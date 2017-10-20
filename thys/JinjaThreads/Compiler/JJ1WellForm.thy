@@ -246,6 +246,37 @@ next
     thus ?thesis using IH1 indexA1 by auto
   qed
 next
+  case (CompareAndSwap e1 D F e2 e3 A Vs)
+  have IH1: "\<And>A Vs. \<lbrakk>A \<subseteq> set Vs; fv e1 \<subseteq> set Vs; \<D> e1 \<lfloor>A\<rfloor>\<rbrakk> \<Longrightarrow> \<D> (compE1 Vs e1) \<lfloor>index Vs ` A\<rfloor>" by fact
+  have IH2: "\<And>A Vs. \<lbrakk>A \<subseteq> set Vs; fv e2 \<subseteq> set Vs; \<D> e2 \<lfloor>A\<rfloor>\<rbrakk> \<Longrightarrow> \<D> (compE1 Vs e2) \<lfloor>index Vs ` A\<rfloor>" by fact
+  have IH3: "\<And>A Vs. \<lbrakk>A \<subseteq> set Vs; fv e3 \<subseteq> set Vs; \<D> e3 \<lfloor>A\<rfloor>\<rbrakk> \<Longrightarrow> \<D> (compE1 Vs e3) \<lfloor>index Vs ` A\<rfloor>" by fact
+  from `\<D> (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) \<lfloor>A\<rfloor>` have D1: "\<D> e1 \<lfloor>A\<rfloor>" and D2: "\<D> e2 (\<lfloor>A\<rfloor> \<squnion> \<A> e1)" 
+    and D3: "\<D> e3 (\<lfloor>A\<rfloor> \<squnion> \<A> e1 \<squnion> \<A> e2)" by auto
+  from `fv (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) \<subseteq> set Vs`
+  have fv1: "fv e1 \<subseteq> set Vs" and fv2: "fv e2 \<subseteq> set Vs" and fv3: "fv e3 \<subseteq> set Vs" by auto
+  show ?case
+  proof(cases "\<A> e1")
+    case None thus ?thesis using CompareAndSwap by simp
+  next
+    case (Some A1)
+    with fv1 have A1: "\<A> (compE1 Vs e1) = \<lfloor>index Vs ` A1\<rfloor>" by-(rule A_compE1)
+    from A_fv[OF Some] fv1 `A \<subseteq> set Vs` have "A1 \<union> A \<subseteq> set Vs" by auto
+    from IH2[OF this fv2] Some D2 have D2': "\<D> (compE1 Vs e2) \<lfloor>index Vs ` A1 \<union> index Vs ` A\<rfloor>"
+      by(simp add: image_Un)
+    show ?thesis
+    proof(cases "\<A> e2")
+      case None thus ?thesis using CompareAndSwap D2' Some A1 by simp
+    next
+      case (Some A2)
+      with fv2 have A2: "\<A> (compE1 Vs e2) = \<lfloor>index Vs ` A2\<rfloor>" by-(rule A_compE1)
+      moreover from A_fv[OF Some] fv2 `A1 \<union> A \<subseteq> set Vs` have "A1 \<union> A \<union> A2 \<subseteq> set Vs" by auto
+      from IH3[OF this fv3] Some `\<A> e1 = \<lfloor>A1\<rfloor>` D3
+      have "\<D> (compE1 Vs e3) \<lfloor>index Vs ` A1 \<union> index Vs ` A \<union> index Vs ` A2\<rfloor>"
+        by(simp add: image_Un Un_commute Un_assoc)
+      ultimately show ?thesis using IH1[OF `A \<subseteq> set Vs` fv1 D1] D2' A1 A2 by(simp)
+    qed
+  qed
+next
   case (Call e1 M es)
   hence IH1: "\<D> (compE1 Vs e1) \<lfloor>index Vs ` A\<rfloor>" by simp
   show ?case

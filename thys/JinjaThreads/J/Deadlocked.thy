@@ -194,6 +194,52 @@ next
   obtain h' where "heap_write H a (CField D F) v h'" ..
   thus ?case by(fastforce intro: red_reds.RedFAss)
 next
+  case CASRed1 thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASRed2 thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASRed3 thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASNull thus ?case by(fastforce intro: red_reds.intros)
+next
+  case (RedCASSucceed h a D F v v' h' l)
+  note split_paired_Ex[simp del]
+  from RedCASSucceed.prems(1) obtain T' fm T2 T3 U C where *:
+    "T = Boolean" "class_type_of' U = \<lfloor>C\<rfloor>" "P \<turnstile> C has F:T' (fm) in D" 
+    "volatile fm" "P \<turnstile> T2 \<le> T'" "P \<turnstile> T3 \<le> T'"
+    "P,E,H \<turnstile> Val v : T2" "P,E,H \<turnstile> Val v' : T3" "P,E,H \<turnstile> addr a : U" by auto
+  then have adal: "P,H \<turnstile> a@CField D F : T'" by(auto intro: addr_loc_type.intros)
+  from heap_read_total[OF hconf this] obtain v'' where v': "heap_read H a (CField D F) v''" by blast
+  show ?case
+  proof(cases "v'' = v")
+    case True
+    from * have "P,H \<turnstile> v' :\<le> T'" by(auto simp add: conf_def)
+    from heap_write_total[OF hconf adal this] True * v'
+    show ?thesis by(fastforce intro: red_reds.RedCASSucceed)
+  next
+    case False
+    then show ?thesis using * v' by(fastforce intro: RedCASFail)
+  qed
+next
+  case (RedCASFail h a D F v'' v v' l)
+  note split_paired_Ex[simp del]
+  from RedCASFail.prems(1) obtain T' fm T2 T3 U C where *:
+    "T = Boolean" "class_type_of' U = \<lfloor>C\<rfloor>" "P \<turnstile> C has F:T' (fm) in D" 
+    "volatile fm" "P \<turnstile> T2 \<le> T'" "P \<turnstile> T3 \<le> T'"
+    "P,E,H \<turnstile> Val v : T2" "P,E,H \<turnstile> Val v' : T3" "P,E,H \<turnstile> addr a : U" by auto
+  then have adal: "P,H \<turnstile> a@CField D F : T'" by(auto intro: addr_loc_type.intros)
+  from heap_read_total[OF hconf this] obtain v''' where v'': "heap_read H a (CField D F) v'''" by blast
+  show ?case
+  proof(cases "v''' = v")
+    case True
+    from * have "P,H \<turnstile> v' :\<le> T'" by(auto simp add: conf_def)
+    from heap_write_total[OF hconf adal this] True * v''
+    show ?thesis by(fastforce intro: red_reds.RedCASSucceed)
+  next
+    case False
+    then show ?thesis using * v'' by(fastforce intro: red_reds.RedCASFail)
+  qed
+next
   case CallObj thus ?case by(fastforce intro: red_reds.intros)
 next
   case CallParams thus ?case by(fastforce intro: red_reds.intros)
@@ -329,6 +375,12 @@ next
   case FAssThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next 
   case FAssThrow2 thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASThrow thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASThrow2 thus ?case by(fastforce intro: red_reds.intros)
+next
+  case CASThrow3 thus ?case by(fastforce intro: red_reds.intros)
 next
   case CallThrowObj thus ?case by(fastforce intro: red_reds.intros)
 next

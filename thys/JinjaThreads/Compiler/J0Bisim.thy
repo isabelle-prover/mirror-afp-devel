@@ -264,6 +264,8 @@ next
 next
   case FAss thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
+  case CompareAndSwap thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
+next
   case (Call obj M pns E' x x')
   note IHobj = `\<And>x E' x'. \<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee obj,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
                 \<Longrightarrow> ?concl obj E' x x'`

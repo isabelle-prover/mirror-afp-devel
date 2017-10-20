@@ -74,6 +74,7 @@ where
 | "sim12_size (a\<bullet>length) = Suc (sim12_size a)"
 | "sim12_size (e\<bullet>F{D}) = Suc (sim12_size e)"
 | "sim12_size (e\<bullet>F{D} := e') = Suc (sim12_size e + sim12_size e')"
+| "sim12_size (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = Suc (sim12_size e + sim12_size e' + sim12_size e'')"
 | "sim12_size (e\<bullet>M(es)) = Suc (sim12_size e + sim12_sizes es)"
 | "sim12_size ({V:T=vo; e}) = Suc (sim12_size e)"
 | "sim12_size (sync\<^bsub>V\<^esub>(e) e') = Suc (sim12_size e + sim12_size e')"
@@ -2475,6 +2476,639 @@ next
   case bisim1FAssNull thus ?case by fastforce
 next
   case bisim1FAss3 thus ?case by fastforce
+next
+  case (bisim1CAS1 e1 n e1' xs stk loc pc xcp e2 e3 D F)
+  note IH1 = bisim1CAS1.IH(2)
+  note IH2 = bisim1CAS1.IH(4)
+  note IH3 = bisim1CAS1.IH(6)
+  note bisim1 = `P,e1,h \<turnstile> (e1', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim2 = `\<And>xs. P,e2,h \<turnstile> (e2, xs) \<leftrightarrow> ([], xs, 0, None)`
+  note bisim3 = `\<And>xs. P,e3,h \<turnstile> (e3, xs) \<leftrightarrow> ([], xs, 0, None)`
+  note bsok = `bsok _ n`
+  from `True,P,t \<turnstile>1 \<langle>_,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
+  proof cases
+    case (CAS1Red1 E')
+    note [simp] = `e' = E'\<bullet>compareAndSwap(D\<bullet>F, e2, e3)`
+      and red = `True,P,t \<turnstile>1 \<langle>e1',(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have "\<tau>move1 P h (e1'\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = \<tau>move1 P h e1'" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    moreover from red have "call1 (e1'\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = call1 e1'" by auto
+    moreover from IH1[OF red] bsok
+    obtain pc'' stk'' loc'' xcp'' where bisim: "P,e1,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and redo: "?exec ta e1 e1' E' h stk loc pc xcp h' pc'' stk'' loc'' xcp''" by auto
+    from bisim 
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (E'\<bullet>compareAndSwap(D\<bullet>F, e2, e3), xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS1)
+    moreover { 
+      assume "no_call2 e1 pc"
+      hence "no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc \<or> pc = length (compE2 e1)" by(auto simp add: no_call2_def) }
+    ultimately show ?thesis using redo
+      by(auto simp del: call1.simps calls1.simps split: if_split_asm split del: if_split)(blast intro: CAS_\<tau>ExecrI1 CAS_\<tau>ExectI1 exec_move_CASI1)+
+  next
+    case (CAS1Red2 E' v)
+    note [simp] = `e1' = Val v` `e' = Val v\<bullet>compareAndSwap(D\<bullet>F, E', e3)`
+      and red = `True,P,t \<turnstile>1 \<langle>e2,(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have \<tau>: "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = \<tau>move1 P h e2" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and exec1: "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, None) ([v], xs, length (compE2 e1), None)"
+      by(auto dest: bisim1Val2D1)
+    from exec1 have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, None) ([v], xs, length (compE2 e1), None)"
+      by(rule CAS_\<tau>ExecrI1)
+    moreover
+    from IH2[OF red] bsok obtain pc'' stk'' loc'' xcp''
+      where bisim': "P,e2,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and exec': "?exec ta e2 e2 E' h [] xs 0 None h' pc'' stk'' loc'' xcp''" by auto
+    have "?exec ta (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, E', e3)) h ([] @ [v]) xs (length (compE2 e1) + 0) None h' (length (compE2 e1) + pc'') (stk'' @ [v]) loc'' xcp''"
+    proof(cases "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, e2, e3))")
+      case True
+      with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e2 E' P t e2 h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
+      from e have "sim_move (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (e1\<bullet>compareAndSwap(D\<bullet>F, E', e3)) P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v], xs, length (compE2 e1) + 0, None) (stk'' @ [v], loc'', length (compE2 e1) + pc'', xcp'')"
+        by(fastforce dest: CAS_\<tau>ExecrI2 CAS_\<tau>ExectI2)
+      with True show ?thesis by auto
+    next
+      case False
+      with exec' \<tau> obtain pc' stk' loc' xcp'
+        where e: "\<tau>Exec_mover_a P t e2 h ([], xs, 0, None) (stk', loc', pc', xcp')"
+        and e': "exec_move_a P t e2 h (stk', loc', pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'', loc'', pc'', xcp'')"
+        and \<tau>': "\<not> \<tau>move2 (compP2 P) h stk' e2 pc' xcp'" 
+        and call: "call1 e2 = None \<or> no_call2 e2 0 \<or> pc' = 0 \<and> stk' = [] \<and> loc' = xs \<and> xcp' = None" by auto
+      from e have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v], xs, length (compE2 e1) + 0, None) (stk' @ [v], loc', length (compE2 e1) + pc', xcp')" by(rule CAS_\<tau>ExecrI2)
+      moreover from e' have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk' @ [v], loc', length (compE2 e1) + pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'' @ [v], loc'', length (compE2 e1) + pc'', xcp'')"
+        by(rule exec_move_CASI2)
+      moreover from e' have "pc' < length (compE2 e2)" by(auto elim: exec_meth.cases)
+      with \<tau>' e' have "\<not> \<tau>move2 (compP2 P) h (stk' @ [v]) (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + pc') xcp'"
+        by(auto simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff)
+      moreover from red have "call1 (e1'\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = call1 e2" by auto
+      moreover have "no_call2 e2 0 \<Longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1))"
+        by(auto simp add: no_call2_def)
+      ultimately show ?thesis using False call
+        by(auto simp del: split_paired_Ex call1.simps calls1.simps) blast
+    qed
+    moreover from bisim'
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (Val v\<bullet>compareAndSwap(D\<bullet>F, E', e3), xs') \<leftrightarrow> ((stk'' @ [v]), loc'', length (compE2 e1) + pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS2)
+    moreover from bisim1 have "pc \<noteq> length (compE2 e1) \<longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc"
+      by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
+    ultimately show ?thesis using \<tau> exec1 s
+      apply(auto simp del: split_paired_Ex call1.simps calls1.simps split: if_split_asm split del: if_split)
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1.simps calls1.simps)+
+      done
+  next
+    case (CAS1Red3 E' v v')
+    note [simp] = `e2 = Val v'` `e1' = Val v` `e' = Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E')`
+      and red = `True,P,t \<turnstile>1 \<langle>e3,(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have \<tau>: "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) = \<tau>move1 P h e3" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and exec1: "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, None) ([] @ [v], xs, length (compE2 e1) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    from exec1 have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, None) ([] @ [v], xs, length (compE2 e1) + 0, None)"
+      by(rule CAS_\<tau>ExecrI1)
+    also from bisim2[of xs] 
+    have "\<tau>Exec_mover_a P t e2 h ([], xs, 0, None) ([v'], xs, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v], xs, length (compE2 e1) + 0, None) ([v'] @ [v], xs, length (compE2 e1) + length (compE2 e2), None)"
+      by(rule CAS_\<tau>ExecrI2)
+    also (rtranclp_trans) from IH3[OF red] bsok obtain pc'' stk'' loc'' xcp''
+      where bisim': "P,e3,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and exec': "?exec ta e3 e3 E' h [] xs 0 None h' pc'' stk'' loc'' xcp''" by auto
+    have "?exec ta (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E')) h ([] @ [v', v]) xs (length (compE2 e1) + length (compE2 e2) + 0) None h' (length (compE2 e1) + length (compE2 e2) + pc'') (stk'' @ [v', v]) loc'' xcp''"
+    proof(cases "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3))")
+      case True
+      with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e3 E' P t e3 h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
+      from e have "sim_move (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E')) P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v', v], xs, length (compE2 e1) + length (compE2 e2) + 0, None) (stk'' @ [v', v], loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+        by(fastforce dest: CAS_\<tau>ExectI3 CAS_\<tau>ExecrI3 simp del: compE2.simps compEs2.simps)
+      with True show ?thesis by auto
+    next
+      case False
+      with exec' \<tau> obtain pc' stk' loc' xcp'
+        where e: "\<tau>Exec_mover_a P t e3 h ([], xs, 0, None) (stk', loc', pc', xcp')"
+        and e': "exec_move_a P t e3 h (stk', loc', pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'', loc'', pc'', xcp'')"
+        and \<tau>': "\<not> \<tau>move2 (compP2 P) h stk' e3 pc' xcp'" 
+        and call: "call1 e3 = None \<or> no_call2 e3 0 \<or> pc' = 0 \<and> stk' = [] \<and> loc' = xs \<and> xcp' = None" by auto
+      from e have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v', v], xs, length (compE2 e1) + length (compE2 e2) + 0, None) (stk' @ [v', v], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp')" by(rule CAS_\<tau>ExecrI3)
+      moreover from e' have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk' @ [v', v], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'' @ [v', v], loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+        by(rule exec_move_CASI3)
+      moreover from e' \<tau>'
+      have "\<not> \<tau>move2 (compP2 P) h (stk' @ [v', v]) (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + pc') xcp'"
+        by(auto simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff)
+      moreover have "call1 (e1'\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) = call1 e3" by simp
+      moreover have "no_call2 e3 0 \<Longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2))"
+        by(auto simp add: no_call2_def)
+      ultimately show ?thesis using False call
+        by(auto simp del: split_paired_Ex call1.simps calls1.simps) blast
+    qed
+    moreover from bisim'
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E'), xs') \<leftrightarrow> ((stk'' @ [v', v]),  loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS3) 
+    moreover from bisim1 have "pc \<noteq> length (compE2 e1) + length (compE2 e2) \<longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) pc"
+      by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
+    ultimately show ?thesis using \<tau> exec1 s
+      apply(auto simp del: split_paired_Ex call1.simps calls1.simps split: if_split_asm split del: if_split)
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1.simps calls1.simps)+
+      done
+  next
+    case (CAS1Null v v')
+    note [simp] = `e1' = null` `e' = THROW NullPointer` `e2 = Val v` `xs' = xs` `ta = \<epsilon>` `h' = h` `e3 = Val v'`
+    have \<tau>: "\<not> \<tau>move1 P h (AAss null (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([] @ [Null], loc, length (compE2 e1) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, xcp) ([] @ [Null], loc, length (compE2 e1) + 0, None)"
+      by-(rule CAS_\<tau>ExecrI1)
+    also from bisim2[of loc] have "\<tau>Exec_mover_a P t e2 h ([], loc, 0, None) ([v], loc, length (compE2 e2) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [Null], loc, length (compE2 e1) + 0, None) ([v] @ [Null], loc, length (compE2 e1) + (length (compE2 e2) + 0), None)"
+      by(rule CAS_\<tau>ExecrI2)
+    also (rtranclp_trans) have "[v] @ [Null] = [] @ [v, Null]" by simp
+    also note add.assoc[symmetric]
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Null], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans)
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None) \<epsilon>
+                                 h ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Null] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      by(rule bisim1_bisims1.bisim1CASFail)
+    ultimately show ?thesis using s \<tau> by(auto simp add: \<tau>move1.simps) blast
+  next
+    case (Red1CASSucceed a v v')
+    hence [simp]: "e1' = addr a" "e' = true" "e2 = Val v"
+      "ta = \<lbrace>ReadMem a (CField D F) v, WriteMem a (CField D F) v'\<rbrace>" "xs' = xs" "e3 = Val v'"
+      and read: "heap_read h a (CField D F) v"
+      and "write": "heap_write h a (CField D F) v' h'" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([] @ [Addr a], loc, length (compE2 e1) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, xcp) ([] @ [Addr a], loc, length (compE2 e1) + 0, None)"
+      by-(rule CAS_\<tau>ExecrI1)
+    also from bisim2[of loc]
+    have "\<tau>Exec_mover_a P t e2 h ([], loc, 0, None) ([v], loc, length (compE2 e2) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [Addr a], loc, length (compE2 e1) + 0, None) ([v] @ [Addr a], loc, length (compE2 e1) + (length (compE2 e2) + 0), None)"
+      by(rule CAS_\<tau>ExecrI2)
+    also (rtranclp_trans) have "[v] @ [Addr a] = [] @ [v, Addr a]" by simp
+    also note add.assoc[symmetric]
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans) from read "write"
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)
+                                 \<lbrace> ReadMem a (CField D F) v, WriteMem a (CField D F) v' \<rbrace>
+                                 h' ([Bool True], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (true, loc) \<leftrightarrow> ([Bool True], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps) blast
+  next
+    case (Red1CASFail a v'' v v')
+    hence [simp]: "e1' = addr a" "e' = false" "e2 = Val v" "h' = h"
+      "ta = \<lbrace>ReadMem a (CField D F) v''\<rbrace>" "xs' = xs" "e3 = Val v'"
+      and read: "heap_read h a (CField D F) v''" "v \<noteq> v''" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([] @ [Addr a], loc, length (compE2 e1) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, xcp) ([] @ [Addr a], loc, length (compE2 e1) + 0, None)"
+      by-(rule CAS_\<tau>ExecrI1)
+    also from bisim2[of loc]
+    have "\<tau>Exec_mover_a P t e2 h ([], loc, 0, None) ([v], loc, length (compE2 e2) + 0, None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [Addr a], loc, length (compE2 e1) + 0, None) ([v] @ [Addr a], loc, length (compE2 e1) + (length (compE2 e2) + 0), None)"
+      by(rule CAS_\<tau>ExecrI2)
+    also (rtranclp_trans) have "[v] @ [Addr a] = [] @ [v, Addr a]" by simp
+    also note add.assoc[symmetric]
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans) from read
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)
+                                 \<lbrace> ReadMem a (CField D F) v'' \<rbrace>
+                                 h ([Bool False], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (false, loc) \<leftrightarrow> ([Bool False], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps)blast
+  next
+    case (CAS1Throw a)
+    hence [simp]: "e1' = Throw a" "ta = \<epsilon>" "e' = Throw a" "h' = h" "xs' = xs" by auto
+    have \<tau>: "\<tau>move1 P h (Throw a\<bullet>compareAndSwap(D\<bullet>F, e2, e3))" by(rule \<tau>move1CASThrow1)
+    from bisim1 have "xcp = \<lfloor>a\<rfloor> \<or> xcp = None" by(auto dest: bisim1_ThrowD)
+    thus ?thesis
+    proof
+      assume [simp]: "xcp = \<lfloor>a\<rfloor>"
+      with bisim1 have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
+        by(auto intro: bisim1_bisims1.intros)
+      thus ?thesis using \<tau> by(fastforce)
+    next
+      assume [simp]: "xcp = None"
+      with bisim1 obtain pc' where "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
+        and bisim': "P, e1, h \<turnstile> (Throw a, xs) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
+        and [simp]: "xs = loc"
+        by(auto dest: bisim1_Throw_\<tau>Exec_mover)
+      hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
+        by-(rule CAS_\<tau>ExecrI1)
+      moreover from bisim' 
+      have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw a, xs) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
+        by(auto intro: bisim1_bisims1.bisim1CASThrow1)
+      ultimately show ?thesis using \<tau> by auto
+    qed
+  next
+    case (CAS1Throw2 v ad)
+    note [simp] = `e1' = Val v` `e2 = Throw ad` `ta = \<epsilon>` `e' = Throw ad` `h' = h` `xs' = xs`
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e1), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, Throw ad, e3)) h (stk, loc, pc, xcp) ([v], loc, length (compE2 e1), None)"
+      by-(rule CAS_\<tau>ExecrI1)
+    also have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, Throw ad, e3)) h ([v], loc, length (compE2 e1), None) ([Addr ad, v], loc, Suc (length (compE2 e1)), \<lfloor>ad\<rfloor>)"
+      by(rule \<tau>Execr2step)(auto simp add: exec_move_def exec_meth_instr \<tau>move2_iff \<tau>move1.simps \<tau>moves1.simps)
+    also (rtranclp_trans)
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, Throw ad, e3),h \<turnstile> (Throw ad, loc) \<leftrightarrow> ([Addr ad] @ [v], loc, (length (compE2 e1) + length (compE2 (addr ad))), \<lfloor>ad\<rfloor>)"
+      by(rule bisim1CASThrow2[OF bisim1Throw2])
+    moreover have "\<tau>move1 P h (e1'\<bullet>compareAndSwap(D\<bullet>F, Throw ad, e3))" by(auto intro: \<tau>move1CASThrow2)
+    ultimately show ?thesis using s by auto
+  next
+    case (CAS1Throw3 v v' ad)
+    note [simp] = `e1' = Val v` `e2 = Val v'` `e3 = Throw ad` `ta = \<epsilon>` `e' = Throw ad` `h' = h` `xs' = xs`
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e1), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad)) h (stk, loc, pc, xcp) ([v], loc, length (compE2 e1), None)"
+      by-(rule CAS_\<tau>ExecrI1)
+    also from bisim2[of loc] have "\<tau>Exec_mover_a P t e2 h ([], loc, 0, None) ([v'], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    from CAS_\<tau>ExecrI2[OF this, of e1 D F e3 v]
+    have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad)) h ([v], loc, length (compE2 e1), None) ([v', v], loc, length (compE2 e1) + length (compE2 e2), None)" by simp
+    also (rtranclp_trans)
+    have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad)) h ([v', v], loc, length (compE2 e1) + length (compE2 e2), None) ([Addr ad, v', v], loc, Suc (length (compE2 e1) + length (compE2 e2)), \<lfloor>ad\<rfloor>)"
+      by(rule \<tau>Execr2step)(auto simp add: exec_move_def exec_meth_instr \<tau>move2_iff \<tau>move1.simps \<tau>moves1.simps)
+    also (rtranclp_trans)
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad),h \<turnstile> (Throw ad, loc) \<leftrightarrow> ([Addr ad] @ [v', v], loc, (length (compE2 e1) + length (compE2 e2) + length (compE2 (addr ad))), \<lfloor>ad\<rfloor>)"
+      by(rule bisim1CASThrow3[OF bisim1Throw2])
+    moreover have "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', Throw ad))" by(auto intro: \<tau>move1CASThrow3)
+    ultimately show ?thesis using s by auto
+  qed
+next
+  case (bisim1CAS2 e2 n e2' xs stk loc pc xcp e1 e3 D F v1)
+  note IH2 = bisim1CAS2.IH(2)
+  note IH3 = bisim1CAS2.IH(6)
+  note bisim2 = `P,e2,h \<turnstile> (e2', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `\<And>xs. P,e1,h \<turnstile> (e1, xs) \<leftrightarrow> ([], xs, 0, None)`
+  note bisim3 = `\<And>xs. P,e3,h \<turnstile> (e3, xs) \<leftrightarrow> ([], xs, 0, None)`
+  note bsok = `bsok (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) n`
+  from `True,P,t \<turnstile>1 \<langle>Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3),(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
+  proof cases
+    case (CAS1Red2 E')
+    note [simp] = `e' = Val v1\<bullet>compareAndSwap(D\<bullet>F, E', e3)`
+      and red = `True,P,t \<turnstile>1 \<langle>e2',(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have \<tau>: "\<tau>move1 P h (Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3)) = \<tau>move1 P h e2'" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from IH2[OF red] bsok obtain pc'' stk'' loc'' xcp''
+      where bisim': "P,e2,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and exec': "?exec ta e2 e2' E' h stk loc pc xcp h' pc'' stk'' loc'' xcp''" by auto
+    have "?exec ta (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3)) (Val v1\<bullet>compareAndSwap(D\<bullet>F, E', e3)) h (stk @ [v1]) loc (length (compE2 e1) + pc) xcp h' (length (compE2 e1) + pc'') (stk'' @ [v1]) loc'' xcp''"
+    proof(cases "\<tau>move1 P h (Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3))")
+      case True
+      with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e2' E' P t e2 h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')" by auto
+      from e have "sim_move (Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3)) (Val v1\<bullet>compareAndSwap(D\<bullet>F, E', e3)) P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) (stk'' @ [v1], loc'', length (compE2 e1) + pc'', xcp'')"
+        by(fastforce dest: CAS_\<tau>ExecrI2 CAS_\<tau>ExectI2 simp del: compE2.simps compEs2.simps)
+      with True show ?thesis by auto
+    next
+      case False
+      with exec' \<tau> obtain pc' stk' loc' xcp'
+        where e: "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
+        and e': "exec_move_a P t e2 h (stk', loc', pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'', loc'', pc'', xcp'')"
+        and \<tau>': "\<not> \<tau>move2 (compP2 P) h stk' e2 pc' xcp'" 
+        and call: "call1 e2' = None \<or> no_call2 e2 pc \<or> pc' = pc \<and> stk' = stk \<and> loc' = loc \<and> xcp' = xcp" by auto
+      from e have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) (stk' @ [v1], loc', length (compE2 e1) + pc', xcp')" by(rule CAS_\<tau>ExecrI2)
+      moreover from e' have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk' @ [v1], loc', length (compE2 e1) + pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'' @ [v1], loc'', length (compE2 e1) + pc'', xcp'')"
+        by(rule exec_move_CASI2)
+      moreover from e' have "pc' < length (compE2 e2)" by(auto elim: exec_meth.cases)
+      with \<tau>' e' have "\<not> \<tau>move2 (compP2 P) h (stk' @ [v1]) (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + pc') xcp'"
+        by(auto simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff)
+      moreover from red have "call1 (Val v1\<bullet>compareAndSwap(D\<bullet>F, e2', e3)) = call1 e2'" by auto
+      moreover have "no_call2 e2 pc \<Longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + pc)"
+        by(auto simp add: no_call2_def)
+      ultimately show ?thesis using False call by(auto simp del: split_paired_Ex call1.simps calls1.simps) 
+    qed
+    moreover from bisim'
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (Val v1\<bullet>compareAndSwap(D\<bullet>F, E', e3), xs') \<leftrightarrow> ((stk'' @ [v1]),  loc'', length (compE2 e1) + pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS2)
+    ultimately show ?thesis
+      apply(auto simp del: split_paired_Ex call1.simps calls1.simps split: if_split_asm split del: if_split)
+      apply(blast intro: \<tau>Exec_mover_trans)+
+      done
+  next
+    case (CAS1Red3 E' v')
+    note [simp] = `e2' = Val v'` `e' = Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', E')`
+      and red = `True,P,t \<turnstile>1 \<langle>e3,(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have \<tau>: "\<tau>move1 P h (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) = \<tau>move1 P h e3"
+      by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim2 have s: "xcp = None" "xs = loc"
+      and exec1: "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v'], xs, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v'] @ [v1], xs, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule CAS_\<tau>ExecrI2)
+    moreover from IH3[OF red] bsok obtain pc'' stk'' loc'' xcp''
+      where bisim': "P,e3,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and exec': "?exec ta e3 e3 E' h [] xs 0 None h' pc'' stk'' loc'' xcp''" by auto
+    have "?exec ta (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) (Val v1\<lfloor>Val v'\<rceil> := E') h ([] @ [v', v1]) xs (length (compE2 e1) + length (compE2 e2) + 0) None h' (length (compE2 e1) + length (compE2 e2) + pc'') (stk'' @ [v', v1]) loc'' xcp''"
+    proof(cases "\<tau>move1 P h (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', e3))")
+      case True
+      with exec' \<tau> have [simp]: "h = h'"
+        and e: "sim_move e3 E' P t e3 h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
+      from e have "sim_move (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', E')) P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v', v1], xs, length (compE2 e1) + length (compE2 e2) + 0, None) (stk'' @ [v', v1], loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+        by(fastforce dest: CAS_\<tau>ExectI3 CAS_\<tau>ExecrI3 simp del: compE2.simps compEs2.simps)
+      with True show ?thesis by auto
+    next
+      case False
+      with exec' \<tau> obtain pc' stk' loc' xcp'
+        where e: "\<tau>Exec_mover_a P t e3 h ([], xs, 0, None) (stk', loc', pc', xcp')"
+        and e': "exec_move_a P t e3 h (stk', loc', pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'', loc'', pc'', xcp'')"
+        and \<tau>': "\<not> \<tau>move2 (compP2 P) h stk' e3 pc' xcp'" 
+        and call: "call1 e3 = None \<or> no_call2 e3 0 \<or> pc' = 0 \<and> stk' = [] \<and> loc' = xs \<and> xcp' = None" by auto
+      from e have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v', v1], xs, length (compE2 e1) + length (compE2 e2) + 0, None) (stk' @ [v', v1], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp')" by(rule CAS_\<tau>ExecrI3)
+      moreover from e' have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk' @ [v', v1], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'' @ [v', v1], loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+        by(rule exec_move_CASI3)
+      moreover from e' \<tau>' have "\<not> \<tau>move2 (compP2 P) h (stk' @ [v', v1]) (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + pc') xcp'"
+        by(auto simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff)
+      moreover from red have "call1 (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', e3)) = call1 e3" by auto
+      moreover have "no_call2 e3 0 \<Longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2))"
+        by(auto simp add: no_call2_def)
+      ultimately show ?thesis using False call by(auto simp del: split_paired_Ex call1.simps calls1.simps) blast 
+    qed
+    moreover from bisim'
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (Val v1\<bullet>compareAndSwap(D\<bullet>F, Val v', E'), xs') \<leftrightarrow> ((stk'' @ [v', v1]),  loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS3)
+    moreover from bisim2 have "pc \<noteq> length (compE2 e2) \<longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + pc)"
+      by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
+    ultimately show ?thesis using \<tau> exec1 s
+      apply(auto simp del: split_paired_Ex call1.simps calls1.simps split: if_split_asm split del: if_split)
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1.simps calls1.simps)+
+      done
+  next
+    case (CAS1Null v v')
+    note [simp] = `v1 = Null` `e' = THROW NullPointer` `e2' = Val v` `xs' = xs` `ta = \<epsilon>` `h' = h` `e3 = Val v'`
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap null D F (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim2 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Null], loc, length (compE2 e1) + pc, xcp) ([v] @ [Null], loc, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule CAS_\<tau>ExecrI2)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Null], loc, length (compE2 e1) + pc, xcp) ([] @ [v, Null], loc, length (compE2 e1) + length (compE2 e2) + 0, None)" by simp
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Null], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans)
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None) \<epsilon>
+                                 h ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Null] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([v', v, Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      by(rule bisim1_bisims1.bisim1CASFail)
+    ultimately show ?thesis using s \<tau> by auto blast
+  next
+    case (Red1CASSucceed a v v')
+    hence [simp]: "v1 = Addr a" "e' = true" "e2' = Val v"
+      "ta = \<lbrace>ReadMem a (CField D F) v, WriteMem a (CField D F) v'\<rbrace>" "xs' = xs" "e3 = Val v'"
+      and read: "heap_read h a (CField D F) v"
+      and "write": "heap_write h a (CField D F) v' h'" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim2 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Addr a], loc, length (compE2 e1) + pc, xcp) ([v] @ [Addr a], loc, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule CAS_\<tau>ExecrI2)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Addr a], loc, length (compE2 e1) + pc, xcp) ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None)" by simp
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans) from read "write"
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)
+                                 \<lbrace> ReadMem a (CField D F) v, WriteMem a (CField D F) v' \<rbrace>
+                                 h' ([Bool True], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (true, loc) \<leftrightarrow> ([Bool True], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps) blast
+  next
+    case (Red1CASFail a v'' v v')
+    hence [simp]: "v1 = Addr a" "e' = false" "e2' = Val v" "h' = h"
+      "ta = \<lbrace>ReadMem a (CField D F) v''\<rbrace>" "xs' = xs" "e3 = Val v'"
+      and read: "heap_read h a (CField D F) v''" "v \<noteq> v''" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v) (Val v'))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim2 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Addr a], loc, length (compE2 e1) + pc, xcp) ([v] @ [Addr a], loc, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule CAS_\<tau>ExecrI2)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [Addr a], loc, length (compE2 e1) + pc, xcp) ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None)" by simp
+    also from bisim3[of loc] have "\<tau>Exec_mover_a P t e3 h ([], loc, 0, None) ([v'], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + 0, None) ([v'] @ [v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by(rule CAS_\<tau>ExecrI3)
+    also (rtranclp_trans) from read 
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v', v, Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)
+                                 \<lbrace> ReadMem a (CField D F) v'' \<rbrace>
+                                 h' ([Bool False], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v', v, Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (false, loc) \<leftrightarrow> ([Bool False], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps) blast
+  next
+    case (CAS1Throw2 ad)
+    note [simp] = `e2' = Throw ad` `ta = \<epsilon>` `e' = Throw ad` `h' = h` `xs' = xs`
+    have \<tau>: "\<tau>move1 P h (Val v1\<bullet>compareAndSwap(D\<bullet>F, Throw ad, e3))" by(rule \<tau>move1CASThrow2)
+    from bisim2 have "xcp = \<lfloor>ad\<rfloor> \<or> xcp = None" by(auto dest: bisim1_ThrowD)
+    thus ?thesis
+    proof
+      assume [simp]: "xcp = \<lfloor>ad\<rfloor>"
+      with bisim2
+      have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw ad, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 e1) + pc, xcp)"
+        by(auto intro: bisim1_bisims1.intros)
+      thus ?thesis using \<tau> by(fastforce)
+    next
+      assume [simp]: "xcp = None"
+      with bisim2 obtain pc' where "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, None) ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"
+        and bisim': "P, e2, h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"
+        and [simp]: "xs = loc"
+        by(auto dest: bisim1_Throw_\<tau>Exec_mover)
+      hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v1], loc, length (compE2 e1) + pc, None) ([Addr ad] @ [v1], loc, length (compE2 e1) + pc', \<lfloor>ad\<rfloor>)"
+        by-(rule CAS_\<tau>ExecrI2)
+      moreover from bisim'
+      have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad] @ [v1], loc, length (compE2 e1) +  pc', \<lfloor>ad\<rfloor>)"
+        by(rule bisim1_bisims1.bisim1CASThrow2)
+      ultimately show ?thesis using \<tau> by auto
+    qed
+  next
+    case (CAS1Throw3 v' ad)
+    note [simp] = `e2' = Val v'` `e3 = Throw ad` `ta = \<epsilon>` `e' = Throw ad` `h' = h` `xs' = xs`
+    from bisim2 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v'], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad)) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v'] @ [v1], loc, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule CAS_\<tau>ExecrI2)
+    also have "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad)) h ([v'] @ [v1], loc, length (compE2 e1) + length (compE2 e2), None) ([Addr ad, v', v1], loc, Suc (length (compE2 e1) + length (compE2 e2)), \<lfloor>ad\<rfloor>)"
+      by(rule \<tau>Execr2step)(auto simp add: exec_move_def exec_meth_instr \<tau>move2_iff \<tau>move1.simps \<tau>moves1.simps)
+    also (rtranclp_trans)
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, Throw ad),h \<turnstile> (Throw ad, loc) \<leftrightarrow> ([Addr ad] @ [v', v1], loc, (length (compE2 e1) + length (compE2 e2) + length (compE2 (addr ad))), \<lfloor>ad\<rfloor>)"
+      by(rule bisim1CASThrow3[OF bisim1Throw2])
+    moreover have "\<tau>move1 P h (CompareAndSwap (Val v1) D F (Val v') (Throw ad))" by(auto intro: \<tau>move1CASThrow3)
+    ultimately show ?thesis using s by auto
+  qed auto
+next
+  case (bisim1CAS3 e3 n e3' xs stk loc pc xcp e1 e2 D F v v')
+  note IH3 = bisim1CAS3.IH(2)
+  note bisim3 = `P,e3,h \<turnstile> (e3', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bsok = `bsok (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) n`
+  from `True,P,t \<turnstile>1 \<langle>Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3'),(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
+  proof cases
+    case (CAS1Red3 E')
+    note [simp] = `e' = Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E')`
+      and red = `True,P,t \<turnstile>1 \<langle>e3',(h, xs)\<rangle> -ta\<rightarrow> \<langle>E',(h', xs')\<rangle>`
+    from red have \<tau>: "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3')) = \<tau>move1 P h e3'" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from IH3[OF red] bsok obtain pc'' stk'' loc'' xcp''
+      where bisim': "P,e3,h' \<turnstile> (E', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
+      and exec': "?exec ta e3 e3' E' h stk loc pc xcp h' pc'' stk'' loc'' xcp''" by auto
+    have "no_call2 e3 pc \<Longrightarrow> no_call2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) +  pc)" 
+      by(auto simp add: no_call2_def)
+    hence "?exec ta (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3')) (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E')) h (stk @ [v', v]) loc (length (compE2 e1) + length (compE2 e2) + pc) xcp h' (length (compE2 e1) + length (compE2 e2) + pc'') (stk'' @ [v', v]) loc'' xcp''"
+      using exec' \<tau>
+      apply(cases "\<tau>move1 P h (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', e3'))")
+      apply(auto)
+      apply(blast intro: CAS_\<tau>ExecrI3 CAS_\<tau>ExectI3 exec_move_CASI3)
+      apply(blast intro: CAS_\<tau>ExecrI3 CAS_\<tau>ExectI3 exec_move_CASI3)
+      apply(rule exI conjI CAS_\<tau>ExecrI3 exec_move_CASI3|assumption)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: if_split_asm)
+      apply(rule exI conjI CAS_\<tau>ExecrI3 exec_move_CASI3|assumption)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: if_split_asm)
+      apply(rule exI conjI CAS_\<tau>ExecrI3 exec_move_CASI3 rtranclp.rtrancl_refl|assumption)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: if_split_asm)+
+      done
+    moreover from bisim'
+    have "P,e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3),h' \<turnstile> (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E'), xs') \<leftrightarrow> (stk''@[v',v], loc'', length (compE2 e1) + length (compE2 e2) + pc'', xcp'')"
+      by(rule bisim1_bisims1.bisim1CAS3)
+    ultimately show ?thesis using \<tau> by auto blast+
+  next
+    case (CAS1Null v'')
+    note [simp] = `v = Null` `e' = THROW NullPointer` `xs' = xs` `ta = \<epsilon>` `h' = h` `e3' = Val v''`
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap null D F (Val v') (Val v''))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim3 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e3 h (stk, loc, pc, xcp) ([v''], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v', Null], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp) ([v''] @ [v', Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by-(rule CAS_\<tau>ExecrI3)
+    moreover
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v'', v', Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None) \<epsilon>
+                                 h ([v'', v', Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v'', v', Null] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([v'', v', Null], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+      by(rule bisim1_bisims1.bisim1CASFail)
+    ultimately show ?thesis using s \<tau> by auto blast
+  next
+    case (Red1CASSucceed a v'')
+    hence [simp]: "v = Addr a" "e' = true" "e3' = Val v''"
+      "ta = \<lbrace>ReadMem a (CField D F) v', WriteMem a (CField D F) v''\<rbrace>" "xs' = xs" 
+      and read: "heap_read h a (CField D F) v'"
+      and "write": "heap_write h a (CField D F) v'' h'" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v') (Val v''))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim3 have s: "xcp = None" "xs = loc"
+      and exec1: "\<tau>Exec_mover_a P t e3 h (stk, loc, pc, xcp) ([v''], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp) ([v''] @ [v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by-(rule CAS_\<tau>ExecrI3)
+    moreover from read "write"
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v'', v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None) 
+                                 \<lbrace>ReadMem a (CField D F) v', WriteMem a (CField D F) v''\<rbrace>
+                                 h' ([Bool True], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+     unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v'', v', Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover 
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (true, loc) \<leftrightarrow> ([Bool True], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps ac_simps) blast
+  next
+    case (Red1CASFail a v'' v''')
+    hence [simp]: "v = Addr a" "e' = false" "e3' = Val v'''" "h' = h"
+      "ta = \<lbrace>ReadMem a (CField D F) v''\<rbrace>" "xs' = xs"
+      and read: "heap_read h a (CField D F) v''" "v' \<noteq> v''" by auto
+    have \<tau>: "\<not> \<tau>move1 P h (CompareAndSwap (addr a) D F (Val v') (Val v'''))" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
+    from bisim3 have s: "xcp = None" "xs = loc"
+      and exec1: "\<tau>Exec_mover_a P t e3 h (stk, loc, pc, xcp) ([v'''], loc, length (compE2 e3), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp) ([v'''] @ [v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None)"
+      by-(rule CAS_\<tau>ExecrI3)
+    moreover from read
+    have "exec_move_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h ([v''', v', Addr a], loc, length (compE2 e1) + length (compE2 e2) + length (compE2 e3), None) 
+                                 \<lbrace>ReadMem a (CField D F) v''\<rbrace>
+                                 h' ([Bool False], loc, Suc (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)), None)"
+     unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
+    moreover have "\<tau>move2 (compP2 P) h [v''', v', Addr a] (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) (length (compE2 e1) + length (compE2 e2) + length (compE2 e3)) None \<Longrightarrow> False"
+      by(simp add: \<tau>move2_iff)
+    moreover 
+    have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h' \<turnstile> (false, loc) \<leftrightarrow> ([Bool False], loc, length (compE2 (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3))), None)"
+      by(rule bisim1Val2) simp
+    ultimately show ?thesis using s \<tau> by(auto simp add: ta_upd_simps ac_simps) blast
+  next
+    case (CAS1Throw3 A)
+    note [simp] = `e3' = Throw A` `ta = \<epsilon>` `e' = Throw A` `h' = h` `xs' = xs`
+    have \<tau>: "\<tau>move1 P h (CompareAndSwap (Val v) D F (Val v') (Throw A))" by(rule \<tau>move1CASThrow3)
+    from bisim3 have "xcp = \<lfloor>A\<rfloor> \<or> xcp = None" by(auto dest: bisim1_ThrowD)
+    thus ?thesis
+    proof
+      assume [simp]: "xcp = \<lfloor>A\<rfloor>"
+      with bisim3
+      have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk @ [v', v], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp)"
+        by(auto intro: bisim1_bisims1.intros)
+      thus ?thesis using \<tau> by(fastforce)
+    next
+      assume [simp]: "xcp = None"
+      with bisim3 obtain pc' where "\<tau>Exec_mover_a P t e3 h (stk, loc, pc, None) ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
+        and bisim': "P, e3, h \<turnstile> (Throw A, xs) \<leftrightarrow> ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
+        and [simp]: "xs = loc"
+        by(auto dest: bisim1_Throw_\<tau>Exec_mover)
+      hence "\<tau>Exec_mover_a P t (e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3)) h (stk @ [v', v], loc, length (compE2 e1) + length (compE2 e2) + pc, None) ([Addr A] @ [v', v], loc, length (compE2 e1) + length (compE2 e2) + pc', \<lfloor>A\<rfloor>)"
+        by-(rule CAS_\<tau>ExecrI3)
+      moreover from bisim'
+      have "P, e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3), h \<turnstile> (Throw A, xs) \<leftrightarrow> ([Addr A] @ [v', v], loc, length (compE2 e1) +  length (compE2 e2) + pc', \<lfloor>A\<rfloor>)"
+        by(rule bisim1_bisims1.bisim1CASThrow3)
+      ultimately show ?thesis using \<tau> by auto
+    qed
+  qed auto
+next
+  case bisim1CASThrow1 thus ?case by auto
+next
+  case bisim1CASThrow2 thus ?case by auto
+next
+  case bisim1CASThrow3 thus ?case by auto
+next
+  case bisim1CASFail thus ?case by auto
 next
   case (bisim1CallParams ps n ps' xs stk loc pc xcp obj M' v)
   note IHparam = bisim1CallParams.IH(2)
