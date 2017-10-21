@@ -1462,10 +1462,10 @@ proof (rule ccontr)
                       using `n1 \<in> {0..<p}` `n2 \<in> {0..<p}` `n1>n2` by auto
                     hence "coprime (n1 - n2) p" using `prime p` 
                       by (metis (full_types) gcd.commute nat_dvd_not_less prime_imp_coprime_nat)
-                    hence  "\<exists>x. [(n1-n2) * x = 1] (mod p)" by (metis cong_solve_coprime_nat)
-                    then obtain s::nat where "s*(n1-n2) mod p=1" 
-                      by (metis `card (C (p-(1::nat))) mod p = 1` cong_nat_def mod_mod_trivial 
-                        mult.commute)
+                    hence "\<exists>x. [(n1 - n2) * x = 1] (mod p)" by (metis cong_solve_coprime_nat)
+                    then obtain s where "s * (n1 - n2) mod p = 1" 
+                      using \<open>prime p\<close> prime_gt_1_nat [of p]
+                      by (auto simp add: cong_def ac_simps)
                     moreover hence "s>0" by (metis mod_0 mult_0 neq0_conv zero_neq_one) 
                     ultimately show ?thesis using that by auto 
                   qed

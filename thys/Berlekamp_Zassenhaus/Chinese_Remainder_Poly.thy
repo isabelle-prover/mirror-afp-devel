@@ -15,62 +15,27 @@ imports
   Polynomial_Interpolation.Missing_Polynomial
 begin
 
-instantiation poly :: (field) cong
-begin
-
-definition cong_poly :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> bool"
-  where "cong_poly x y m = ((x mod m) = (y mod m))"
-
-instance ..
-
-end
-
-
-(*
-
-  The corresponding properties of cong between polynomials, they are analogous to the versions
-  for integers and natural numbers. I only prove the necessary ones to demonstrate the Chinese
-  Remainder Theorem.
-
-*)
-
 lemma cong_add_poly:
-  "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
-  by (simp add: cong_poly_def poly_mod_add_left)
-
+  "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
+  by (fact cong_add)
 
 lemma cong_mult_poly:
   "[(a::'b::{field, factorial_ring_gcd} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a * c = b * d] (mod m)"
-  unfolding cong_poly_def  by (metis mod_mult_cong) 
+  by (fact cong_mult)
 
-
-lemma cong_mult_self_poly: "[(a::'b::field poly) * m = 0] (mod m)"
-  unfolding cong_poly_def by auto
-
+lemma cong_mult_self_poly: "[(a::'b::{factorial_ring_gcd,field} poly) * m = 0] (mod m)"
+  by (fact cong_mult_self_right)
 
 lemma cong_scalar2_poly: "[(a::'b::{field, factorial_ring_gcd} poly)= b] (mod m) \<Longrightarrow> [k * a = k * b] (mod m)"
-  by (rule cong_mult_poly, simp add: cong_poly_def)
+  by (fact cong_scalar_left)
 
-
-lemma cong_sum_poly [rule_format]:
-    "(\<forall>x\<in>A. [((f x)::'b::field poly) = g x] (mod m)) \<longrightarrow>
+lemma cong_sum_poly:
+    "(\<And>x. x \<in> A \<Longrightarrow> [((f x)::'b::{factorial_ring_gcd,field} poly) = g x] (mod m)) \<Longrightarrow>
       [(\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)] (mod m)"
-  apply (cases "finite A")
-  apply (induct set: finite)
-  apply (auto intro: cong_add_poly)
-  apply (auto simp add: cong_poly_def)
-  done
+  by (rule cong_sum)
 
-
-lemma cong_altdef_poly: "[(a::'b::field poly) = b] (mod m) = (m dvd (a - b))"
-  by (metis (no_types, lifting) add_diff_cancel_left' cong_poly_def diff_eq_diff_eq 
-    dvd_div_mult_self dvd_triv_right div_mult_mod_eq poly_mod_diff_left)
-
-lemma cong_iff_lin_poly: "([(a::'b::field poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
-  apply (auto simp add: cong_altdef_poly dvd_def)
-  apply (rule_tac [!] x = "-k" in exI, auto)
-  by (metis add_diff_cancel_left' diff_diff_eq2)
-
+lemma cong_iff_lin_poly: "([(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
+  using cong_diff_iff_cong_0 [of b a m] by (auto simp add: cong_0_iff dvd_def algebra_simps dest: cong_sym)
 
 lemma cong_solve_poly: "(a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> EX x. [a * x = gcd a n] (mod n)"
 proof (cases "n = 0")
@@ -81,11 +46,11 @@ proof (cases "n = 0")
     case True
     have n: "normalize a = a" by (rule normalize_monic[OF True])
     show ?thesis
-    by (rule exI[of _ 1], auto simp add: n0 n cong_poly_def)
+    by (rule exI[of _ 1], auto simp add: n0 n cong_def)
   next
     case False
     show ?thesis 
-      by (auto simp add: True cong_poly_def  normalize_poly_old_def map_div_is_smult_inverse)
+      by (auto simp add: True cong_def normalize_poly_old_def map_div_is_smult_inverse)
          (metis mult.right_neutral mult_smult_right) 
   qed
 next
@@ -102,19 +67,18 @@ assumes coprime_an:"coprime (a::'b::{normalization_euclidean_semiring, factorial
 shows "EX x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
   case True
-  show ?thesis unfolding cong_poly_def
+  show ?thesis unfolding cong_def
     by (metis \<open>a = 0\<close> bezout_coefficients_fst_snd comm_monoid_add_class.add_0 coprime_an mod_mult_self2_is_0 mult_not_zero)
 next
   case False  
   show ?thesis
     using coprime_an cong_solve_poly[OF False, of n]
-    unfolding cong_poly_def
+    unfolding cong_def
     by presburger  
 qed
   
-
 lemma cong_dvd_modulus_poly:
-  "[x = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow> [x = y] (mod n)" for x y :: "'b::field poly"
+  "[x = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow> [x = y] (mod n)" for x y :: "'b::{factorial_ring_gcd,field} poly"
   by (auto simp add: cong_iff_lin_poly elim!: dvdE)
 
 lemma chinese_remainder_aux_poly:
@@ -165,14 +129,14 @@ proof -
           (\<Sum>j \<in> A - {i}. u j * b j)"
         by (subst sum.union_disjoint [symmetric], auto intro: sum.cong)
       then have "[?x = u i * b i + (\<Sum>j \<in> A - {i}. u j * b j)] (mod m i)"
-        unfolding cong_poly_def
+        unfolding cong_def
         by auto
       also have "[u i * b i + (\<Sum>j \<in> A - {i}. u j * b j) =
                   u i * 1 + (\<Sum>j \<in> A - {i}. u j * 0)] (mod m i)"
         apply (rule cong_add_poly)
         apply (rule cong_scalar2_poly)
         using bprop a apply blast
-        apply (rule cong_sum_poly)
+        apply (rule cong_sum)
         apply (rule cong_scalar2_poly)
         using bprop apply auto
         apply (rule cong_dvd_modulus_poly)
@@ -192,39 +156,37 @@ qed
 
 (*********************** Now we try to prove the uniqueness **********************)
 
-lemma cong_trans_poly [trans]:
-    "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [b = c] (mod m) \<Longrightarrow> [a = c] (mod m)"
-  unfolding cong_poly_def by auto
+lemma cong_trans_poly:
+    "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [b = c] (mod m) \<Longrightarrow> [a = c] (mod m)"
+  by (fact cong_trans)
 
-lemma cong_mod_poly: "(n::'b::field poly) ~= 0 \<Longrightarrow> [a mod n = a] (mod n)"
-  by (simp add: cong_poly_def) (use degree_mod_less mod_poly_less in force)
+lemma cong_mod_poly: "(n::'b::{factorial_ring_gcd,field} poly) ~= 0 \<Longrightarrow> [a mod n = a] (mod n)"
+  by auto
 
+lemma cong_sym_poly: "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [b = a] (mod m)"
+  by (fact cong_sym)
 
-lemma cong_sym_poly: "[(a::'b::field poly) = b] (mod m) \<Longrightarrow> [b = a] (mod m)"
-  unfolding cong_poly_def by auto
-
-lemma cong_1_poly [simp, presburger]: "[(a::'b::field poly) = b] (mod 1)"
-  unfolding cong_poly_def by auto
-
+lemma cong_1_poly: "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod 1)"
+  by (fact cong_1)
 
 lemma coprime_cong_mult_poly:
   assumes "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m)" and "[a = b] (mod n)" and "coprime m n"
   shows "[a = b] (mod m * n)"
-  using divides_mult cong_altdef_poly assms by metis
+  using divides_mult assms
+  by (metis (no_types, hide_lams) cong_dvd_modulus_poly cong_iff_lin_poly dvd_mult2 dvd_refl minus_add_cancel mult.right_neutral) 
 
-
-lemma coprime_cong_prod_poly [rule_format]: "finite A \<Longrightarrow>
-    (\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))) \<longrightarrow>
-      (\<forall>i\<in>A. [(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m i)) \<longrightarrow>
+lemma coprime_cong_prod_poly:
+    "(\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))) \<Longrightarrow>
+      (\<forall>i\<in>A. [(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m i)) \<Longrightarrow>
          [x = y] (mod (\<Prod>i\<in>A. m i))"
-  apply (induct set: finite)
+  apply (induct A rule: infinite_finite_induct)
   apply auto
   apply (metis (full_types) coprime_cong_mult_poly gcd.commute prod_coprime)
   done
 
 lemma cong_less_modulus_unique_poly:
-    "[(x::'b::field poly) = y] (mod m) \<Longrightarrow> degree x < degree m \<Longrightarrow> degree y < degree m \<Longrightarrow> x = y"
-    by (simp add: cong_poly_def mod_poly_less)
+    "[(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m) \<Longrightarrow> degree x < degree m \<Longrightarrow> degree y < degree m \<Longrightarrow> x = y"
+    by (simp add: cong_def mod_poly_less)
 
 
 lemma chinese_remainder_unique_poly:

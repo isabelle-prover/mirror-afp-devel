@@ -50,8 +50,8 @@ lemma prime_factors_elem:
   using assms by (cases "prime n") (auto simp: prime_factors_dvd prime_factor_nat)
 
 lemma cong_pow_1_nat:
-  fixes a b :: nat assumes "[a = 1] (mod b)" shows "[a ^ x = 1] (mod b)"
-by (metis assms cong_exp_nat power_one)
+  "[a ^ x = 1] (mod b)" if "[a = 1] (mod b)" for a b :: nat
+  using cong_pow [of a 1 b x] that by simp
 
 lemma cong_gcd_eq_1_nat:
   fixes a b :: nat
@@ -63,7 +63,7 @@ proof -
   have cong_m: "[a ^ (m * c) = 1] (mod b)" and cong_n: "[a ^ (n * d) = 1] (mod b)"
     using cong_props by (simp_all only: cong_pow_1_nat power_mult)
   have "[1 * a ^ gcd m n = a ^ (n * d) * a ^ gcd m n] (mod b)"
-    using cong_n[simplified cong_sym_eq_nat] by (simp only: power_one cong_scalar_nat)
+    by (rule cong_scalar_right, rule cong_sym) (fact cong_n)
   also have "[a ^ (n * d) * a ^ gcd m n = a ^ (m * c)] (mod b)"
     using gcd by (simp add: power_add)
   also have "[a ^ (m * c) = 1] (mod b)" using cong_m by simp
@@ -148,15 +148,17 @@ lemma converse_lehmer_weak:
           by (simp add: i power_add mod_mult_eq)
         have "a ^ (q*x) mod p = (a ^ x mod p) ^ q mod p"
           by (simp add: power_mod mult.commute power_mult[symmetric])
-        hence y_r:"y = a ^ r mod p" using `p\<ge>2` x by (simp add: cong_nat_def y_q_r)
+        then have y_r:"y = a ^ r mod p" using `p\<ge>2` x
+          by (simp add: cong_def y_q_r)
         have "y \<in> {a ^ i mod p | i. 0 < i \<and> i \<le> x}"
         proof (cases)
           assume "r = 0"
-            hence "y = a^x mod p" using `p\<ge>2` x by (simp add: cong_nat_def y_r)
-            thus ?thesis using x by blast
-          next
+          then have "y = a^x mod p" using `p\<ge>2` x
+            by (simp add: cong_def y_r)
+          thus ?thesis using x by blast
+        next
           assume "r \<noteq> 0"
-            thus ?thesis using x by (auto simp add: y_r r_def)
+          thus ?thesis using x by (auto simp add: y_r r_def)
         qed
       }
       thus " {a ^ i mod p|i. i \<in> UNIV} \<subseteq> {a ^ i mod p | i. 0 < i \<and> i \<le> x}" by auto

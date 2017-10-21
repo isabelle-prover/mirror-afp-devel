@@ -113,7 +113,7 @@ proof -
       fix x fix y
       assume x0: "0 \<le> x" and xn: "x \<le> n" and y0: "0 \<le> y" and yn: " y \<le> n"
         and xyp: "x^2 mod p = y^2 mod p"
-      with p0 have "[x^2 = y^2] (mod p)" using cong_int_def by blast
+      with p0 have "[x^2 = y^2] (mod p)" using cong_def by blast
       hence "p dvd x^2-y^2" using cong_altdef_int by blast
       hence "p dvd (x+y)*(x-y)" by (simp add: power2_eq_square algebra_simps)
       hence "p dvd x+y \<or> p dvd x-y" using \<open>prime p\<close> p0 
@@ -148,7 +148,7 @@ proof -
       fix x fix y
       assume x0: "0 \<le> x" and xn: "x \<le> n" and y0: "0 \<le> y" and yn: " y \<le> n"
         and xyp: "(-1-x^2) mod p = (-1-y^2) mod p"
-      with p0 have "[-1-y^2 = -1-x^2] (mod p)" by (simp only: cong_int_def)
+      with p0 have "[-1-y^2 = -1-x^2] (mod p)" by (simp only: cong_def)
       hence "p dvd (-1-y^2) - (-1-x^2)" by (simp only: cong_altdef_int)
       moreover have "-1-y^2 - (-1-x^2) = x^2 - y^2" by arith
       ultimately have "p dvd x^2-y^2" by simp
@@ -191,7 +191,7 @@ proof -
   qed
   then obtain z where "z \<in> ?A \<and> z \<in> ?B" by auto
   then obtain x y where xy: "x \<in> ?D \<and> y \<in> ?D \<and> z = x^2 mod p \<and> z = (-1-y^2) mod p" by blast
-  with p0 have "[x^2=-1-y^2](mod p)" by (simp add: cong_int_def)
+  with p0 have "[x^2=-1-y^2](mod p)" by (simp add: cong_def)
   hence "p dvd x^2-(-1-y^2)" by (simp only: cong_altdef_int)
   moreover have "x^2-(-1-y^2)=x^2+y^2+1" by arith
   ultimately have "p dvd sum4sq_int(x,y,1,0)" by (auto simp add: sum4sq_int_def)

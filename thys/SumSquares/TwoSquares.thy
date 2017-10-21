@@ -116,20 +116,21 @@ proof
   ultimately obtain ainv aux where "a' * ainv = ?p * aux + 1"
     using bezout_nat[of "a'" ?p] by (auto simp: gcd.commute)
   hence "[a' * ainv = 1] (mod ?p)" using cong_to_1'_nat by auto
-  from cong_mult_nat[OF this this] have h11: "[1 = ainv^2 * a'^2] (mod ?p)"
-    unfolding power2_eq_square by (simp add: algebra_simps cong_sym_nat)
+  from cong_mult [OF this this] have h11: "[1 = ainv^2 * a'^2] (mod ?p)"
+    unfolding power2_eq_square by (simp add: algebra_simps cong_sym)
   let ?bdiva = "ainv * b'"
   have "[ainv^2 * (a'^2 + b'^2) = 0] (mod ?p)"
-    using h6 cong_dvd_modulus_nat cong_mult_self_nat by blast
-  from cong_add_nat[OF h11 this] have "[1 + ainv^2 * b'^2 = 0] (mod ?p)"
-    unfolding add_mult_distrib2 using cong_add_lcancel_nat[of "ainv^2 * a'^2"] by fastforce
+    using h6 cong_dvd_modulus_nat cong_mult_self_right by blast 
+  from cong_add [OF h11 this] have "[1 + ainv^2 * b'^2 = 0] (mod ?p)"
+    unfolding add_mult_distrib2 using cong_add_lcancel_nat[of "ainv^2 * a'^2"]
+    by fastforce
   hence h8: "[?bdiva^2 + 1 = 0] (mod ?p)" by (simp add: power_mult_distrib)
   {
     assume "?p dvd ?bdiva"
     hence "?p dvd (?bdiva^2)" by (simp add: assms(1) prime_dvd_power_nat_iff)
     hence "[?bdiva^2 = 0] (mod ?p)" using cong_altdef_nat by auto
     hence "[?bdiva^2 +1 = 1] (mod ?p)" using cong_add_rcancel_0_nat by blast
-    from this h8 have "[0 = 1] (mod ?p)" using cong_sym_nat cong_trans_nat by blast
+    from this h8 have "[0 = 1] (mod ?p)" using cong_sym cong_trans by blast
     hence "?p dvd 1" using cong_0_1_nat by auto
     hence "False" using assms(1) by simp
   }
@@ -138,31 +139,33 @@ proof
     using assms(1) fermat_theorem [of ?p ?bdiva] by simp
   have h10: "?p\<ge>3" by simp
   have h11: "[?bdiva^(4*k+2) = 1] (mod ?p)" using h9 by auto
-  have "[(?bdiva^2 + 1)^2 = 0] (mod ?p)" using h8 cong_exp_nat[of "?bdiva^2 + 1" 0 ?p 2] by auto
+  have "[(?bdiva^2 + 1)^2 = 0] (mod ?p)" using h8 cong_pow [of "?bdiva^2 + 1" 0 ?p 2] by auto
   moreover have "?bdiva ^ 4 = (?bdiva ^ 2) ^ 2" by auto
   hence "(?bdiva^2 + 1)^2 = ?bdiva^4 + ?bdiva^2 + ?bdiva^2 + 1"
     by (auto simp: algebra_simps power2_eq_square)
   ultimately have "[?bdiva^4 + ?bdiva^2 + ?bdiva^2 + 1 = 0] (mod ?p)" by simp
   moreover have "[?bdiva^4 + ?bdiva^2 + (?bdiva^2 + 1) = ?bdiva^4 + ?bdiva^2 + 0] (mod ?p)"
     using h8 cong_add_lcancel_nat by blast
-  ultimately have "[?bdiva^4 + ?bdiva^2 = 0] (mod ?p)" by (simp add: cong_nat_def)
+  ultimately have "[?bdiva^4 + ?bdiva^2 = 0] (mod ?p)" by (simp add: cong_def)
   hence "[?bdiva^4 + ?bdiva^2 + 1 = 0 + 1] (mod ?p)" using cong_add_rcancel_nat by blast
   moreover have "[?bdiva^4 + (?bdiva^2 + 1) = ?bdiva^4 + 0] (mod ?p)"
     using h8 cong_add_lcancel_nat by blast
-  ultimately have "[?bdiva^4 = 1] (mod ?p)" by (simp add: cong_nat_def)
-  hence "[(?bdiva^4)^k = 1^k] (mod ?p)" using cong_exp_nat by blast
+  ultimately have "[?bdiva^4 = 1] (mod ?p)" by (simp add: cong_def)
+  hence "[(?bdiva^4)^k = 1^k] (mod ?p)" using cong_pow by blast
   hence h12: "[?bdiva^(4*k) = 1] (mod ?p)" by (simp add: power_mult)
   hence h13: "[?bdiva^(4*k)*(?bdiva^2 + 1) = 1*(?bdiva^2 + 1)] (mod ?p)"
-    using cong_scalar_nat by blast
+    using cong_scalar_right by blast
   have "?bdiva^(4*k)*(?bdiva^2 + 1) = ?bdiva^(4*k+2)+?bdiva^(4*k)"
     unfolding add_mult_distrib2 power_add by simp
   hence "[?bdiva^(4*k+2)+?bdiva^(4*k) = ?bdiva^2 + 1] (mod ?p)"
     using h13 unfolding nat_mult_1 by presburger
-  moreover have "[?bdiva^(4*k+2) + ?bdiva^(4*k) = 1 + 1] (mod ?p)" using h11 h12 cong_add_nat by blast
-  ultimately have "[?bdiva^2 + 1 = 2] (mod ?p)" using cong_nat_def by auto
-  hence "[0 = 2] (mod ?p)" using h8 by (simp add: cong_nat_def)
+  moreover have "[?bdiva^(4*k+2) + ?bdiva^(4*k) = 1 + 1] (mod ?p)"
+    using h11 h12 cong_add by blast
+  ultimately have "[?bdiva^2 + 1 = 2] (mod ?p)"
+    by (auto simp add: cong_def)
+  hence "[0 = 2] (mod ?p)" using h8 by (simp add: cong_def)
   moreover have "?p dvd 0" by simp
-  ultimately have "?p dvd 2" using cong_dvd_eq_nat by blast
+  ultimately have "?p dvd 2" using cong_dvd_iff by blast
   thus "False" using dvd_imp_le by fastforce
 qed
 
@@ -173,7 +176,7 @@ using sots1_aux assms by blast
 private lemma aux_lemma: assumes "[(a::nat) = b] (mod c)" "b < c"
   shows "\<exists> k. a = c*k + b"
 proof -
-  have "a mod c = b" using assms by (simp add: cong_nat_def mod_if)
+  have "a mod c = b" using assms by (simp add: cong_def mod_if)
   hence "b \<le> a" using assms by auto
   thus ?thesis using cong_le_nat assms(1) by auto
 qed
@@ -217,8 +220,10 @@ proof -
   from p have p0: "?p > 0" by simp
   then obtain s where s0p: "0 \<le> s \<and> s < ?p \<and> [s2 = s] (mod ?p)"
     using cong_less_unique_nat[of ?p] by fastforce
-  hence "[s^2 = s2^2] (mod ?p)" by (simp only: cong_sym_nat power2_eq_square cong_mult_nat)
-  with s2 have s: "[s^2 + 1 = 0] (mod ?p)" using cong_trans_nat cong_add_rcancel_nat by blast
+  then have "[s^2 = s2^2] (mod ?p)"
+    by (simp add: cong_sym cong_pow)
+  with s2 have s: "[s^2 + 1 = 0] (mod ?p)"
+    using cong_trans cong_add_rcancel_nat by blast
   hence "?p dvd s^2 + 1" using cong_altdef_nat by auto
   then obtain t where t: "s^2 + 1 = ?p*t" by (auto simp add: dvd_def)
   hence "?p*t = sum2sq_nat s 1" by (simp add: sum2sq_nat_def)
@@ -383,8 +388,8 @@ next
 case False
   hence "p > 2" using assms(1) unfolding prime_nat_iff by auto
   hence h1: "odd p" using assms(1) prime_odd_nat by simp
-  hence h2: "\<not> [p = 0] (mod 4)" using cong_nat_def by fastforce
-  have h3: "\<not> [p = 2] (mod 4)" using h1 cong_dvd_eq_nat[of p 2 2] cong_dvd_modulus_nat by auto
+  hence h2: "\<not> [p = 0] (mod 4)" unfolding cong_def by fastforce
+  have h3: "\<not> [p = 2] (mod 4)" using h1 cong_dvd_iff [of p 2 2] cong_dvd_modulus_nat by auto
   obtain x where h4: "[p = x] (mod 4) \<and> x<4" by (meson cong_less_unique_nat zero_less_numeral)
   from h1 h2 h3 h4 assms have "x\<noteq>0 \<and> x\<noteq>2 \<and> x\<noteq>3 \<and> x<4" by meson
   hence "x=1" by linarith
@@ -481,8 +486,8 @@ case (1 n)
         let ?q = "4*(kq::nat) + 3"
         assume a2: "prime ?q"
         { assume "p = ?q"
-          hence False using a1 cong_add_rcancel_0_nat[of "4*kq" 3 4] cong_mult_self_nat[of kq 4]
-          by (simp add: mult.commute)
+          then have False using a1 cong_add_rcancel_0_nat [of "4 * kq" 3 4]
+            by (auto simp add: cong_def)
         }
         hence "p\<noteq>?q" ..
         
@@ -515,7 +520,7 @@ proof
     fix k :: nat
     assume "prime (4 * k + 3)"
     moreover hence "[4*k+3 = 3] (mod 4)"
-      by (simp add: cong_add_rcancel_0_nat cong_mult_self_nat mult.commute)
+      by (simp add: cong_add_rcancel_0_nat cong_mult_self_left)
     ultimately have "P (4 * k + 3)" using a1 by blast
   }
   thus "\<forall>k. prime (4 * k + 3) \<longrightarrow> P (4 * k + 3)" by blast

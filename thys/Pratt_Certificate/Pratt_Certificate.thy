@@ -5,31 +5,22 @@ imports
   "HOL-Library.Code_Target_Numeral"
 begin
 
-(* TODO: Move? *)
-function mod_exp :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
-  "mod_exp b 0 m = 1 mod m"
-| "e > 0 \<Longrightarrow> even e \<Longrightarrow> mod_exp b e m = mod_exp ((b^2) mod m) (e div 2) m"
-| "odd e \<Longrightarrow> mod_exp b e m = (b * mod_exp ((b^2) mod m) (e div 2) m) mod m"
-  by fast simp_all
-termination
-  by (relation "measure (\<lambda>(_,e,_) \<Rightarrow> e)") (auto intro: div_less_dividend odd_pos)
+definition mod_exp :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
+  where [code_abbrev]: "mod_exp b e m = (b ^ e) mod m"
 
-lemma mod_exp_correct: "mod_exp b e m = (b ^ e) mod m"
-proof (induction b e m rule: mod_exp.induct, goal_cases)
-  case (2 e b m)
-  from 2 have "mod_exp b e m = b ^ (2 * (e div 2)) mod m" 
-    by (subst power_mult) (simp add: power_mod)
-  also from 2 have "2 * (e div 2) = e" by simp
-  finally show ?case .
-next
-  case (3 e b m)
-  from 3 have "mod_exp b e m = b ^ (Suc (2 * (e div 2))) mod m"
-    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq)
-  also from 3 have "Suc (2 * (e div 2)) = e" by simp
-  finally show ?case .
-qed simp
+lemma mod_exp_code [code]:
+  "mod_exp b e m = 
+    (if e = 0 then if m = 1 then 0 else 1 
+     else if even e then mod_exp ((b * b) mod m) (e div 2) m
+     else (b * mod_exp ((b * b) mod m) (e div 2) m) mod m)"
+  by (auto simp add: mod_exp_def power2_eq_square mod_Suc power_mod power_mult
+    mod_mult_right_eq elim: evenE oddE)
 
-declare mod_exp.simps [simp del]
+(* 
+  Need to use @{term "b*b::nat"} here instead of squaring, otherwise code_unfold produces
+  infinite recursion
+  FIXME: Better performance using divMod or bit tests/bit shifts. Tail-recursive would also be good.
+*)
 
 lemma eval_mod_exp [simp]:
   "mod_exp b 0 (Suc 0) = 0"
@@ -42,37 +33,20 @@ proof -
   have "1 mod m = 1" if "m \<noteq> 1" using that 
     by (cases m) auto
   show "m \<noteq> 1 \<Longrightarrow> mod_exp b 0 m = 1" "mod_exp b 0 (Suc 0) = 0"
-    by (cases m) (simp_all add: mod_exp.simps)
-  show "mod_exp b 1 m = b mod m" by (simp add: mod_exp_correct)
-  show "mod_exp b (Suc 0) m = b mod m" by (simp add: mod_exp_correct)
+    by (cases m) (simp_all add: mod_exp_def)
+  show "mod_exp b 1 m = b mod m" by (simp add: mod_exp_def)
+  show "mod_exp b (Suc 0) m = b mod m" by (simp add: mod_exp_def)
   have "numeral (num.Bit0 n) = (2 * numeral n :: nat)"
     by (subst numeral.numeral_Bit0) (simp del: arith_simps)
   also have "mod_exp b \<dots> m = mod_exp (b\<^sup>2 mod m) (numeral n) m"
-    by (subst mod_exp.simps(2)) (simp_all del: arith_simps)
+    by (simp only: mod_exp_def power_mult mod_simps)
   finally show "mod_exp b (numeral (num.Bit0 n)) m = mod_exp (b\<^sup>2 mod m) (numeral n) m" by simp
   have "numeral (num.Bit1 n) = Suc (2 * numeral n :: nat)"
     by (subst numeral.numeral_Bit1) (simp del: arith_simps)
   also have "mod_exp b \<dots> m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m"
-    by (subst mod_exp.simps(3)) (simp_all del: arith_simps)
+    by (simp only: mod_exp_def power_mult power_Suc mod_simps)
   finally show "mod_exp b (numeral (num.Bit1 n)) m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m" .
 qed
-
-(* 
-  Need to use @{term "b*b::nat"} here instead of squaring, otherwise code_unfold produces
-  infinite recursion
-  FIXME: Better performance using divMod or bit tests/bit shifts. Tail-recursive would also be good.
-*)
-lemma mod_exp_code [code]:
-  "mod_exp b e m = 
-    (if e = 0 then if m = 1 then 0 else 1 
-     else if even e then mod_exp ((b*b) mod m) (e div 2) m
-     else (b * mod_exp ((b*b) mod m) (e div 2) m) mod m)"
-  by (simp_all add: mod_exp.simps(2,3) power2_eq_square)
-
-lemmas mod_exp_code_unfold [code_unfold] = mod_exp_correct [symmetric]
-
-
-(* END TODO *)
 
 
 section {* Pratt's Primality Certificates *}
@@ -450,7 +424,7 @@ proof (induction p rule: less_induct)
     also have "\<dots> = log 2 9" by simp
     also have "3 \<le> log 2 9 \<longleftrightarrow> True" by (subst le_log_iff) simp_all
     finally show ?case
-      by (intro exI[where x = "?cert"]) (simp add: cong_nat_def)
+      by (intro exI[where x = "?cert"]) (simp add: cong_def)
   next
     assume "p > 3"
     have qlp: "\<forall>q \<in> prime_factors (p - 1) . q < p" using `prime p`
@@ -599,13 +573,13 @@ lemma valid_cert_Cons1:
      Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> mod_exp a (p-1) p = 1 ) \<and> valid_cert xs"
   (is "?lhs = ?rhs")
 proof
-  assume ?lhs thus ?rhs by (auto simp: mod_exp_correct cong_nat_def split: pratt.splits)
+  assume ?lhs thus ?rhs by (auto simp: mod_exp_def cong_def split: pratt.splits)
 next
   assume ?rhs
   hence "p > 1" "valid_cert xs" by blast+
   moreover from \<open>?rhs\<close> obtain t where "t \<in> set xs" "case t of Prime _ \<Rightarrow> False | 
      Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> [a^(p-1) = 1] (mod p)" 
-     by (auto simp: cong_nat_def mod_exp_correct cong: pratt.case_cong)
+     by (auto simp: cong_def mod_exp_def cong: pratt.case_cong)
   ultimately show ?lhs by (cases t) auto
 qed
 
@@ -642,7 +616,7 @@ proof
         Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
         (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1))"
      using pos by (intro bexI[of _ "Triple p a y"]) 
-       (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_nat_def mod_exp_correct)
+       (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_def mod_exp_def)
     with pos gt_1 valid show ?thesis unfolding LAZY_DISJ_def by blast
   qed
 next
@@ -661,7 +635,7 @@ next
                               mod_exp a ((p - 1) div q) p \<noteq> 1" 
       by (cases t rule: pratt.exhaust) auto
     with gt_1 have y': "let q = x div y in Prime q \<in> set xs \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
-      by (auto simp: cong_nat_def Let_def mod_exp_correct Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
+      by (auto simp: cong_def Let_def mod_exp_def Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
     define q where "q = x div y"
     have "\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
                      \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"

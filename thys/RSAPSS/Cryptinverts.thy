@@ -29,7 +29,7 @@ proof -
   from assms have "[m ^ (p - 1) = 1] (mod p)"
     using fermat_theorem [of p m] by (simp add: mod_eq_0_iff_dvd)
   then show ?thesis
-    using \<open>prime p\<close> cong_nat_def prime_nat_iff by auto
+    using \<open>prime p\<close> prime_gt_1_nat [of p] by (simp add: cong_def)
 qed
 
 lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p = m mod p"

@@ -448,7 +448,7 @@ next
     with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       by (rule fermat_theorem)
     with a have "int (nat a ^ (CARD('a) - 1) mod CARD('a)) = 1"
-      by (simp add: of_nat_mod cong_nat_def cong_int_def)
+      by (simp add: of_nat_mod cong_def cong_def)
     then have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
       using a by (simp add: of_nat_mod)
     then have "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a"
@@ -477,7 +477,7 @@ qed
 
 lemma cong_gcd_eq_poly:
   "gcd a m = gcd b m" if "[(a::'a mod_ring poly) = b] (mod m)"
-  using that by (simp add: cong_poly_def) (metis gcd_mod_left mod_by_0)
+  using that by (simp add: cong_def) (metis gcd_mod_left mod_by_0)
 
 lemma coprime_h_c_poly:
 fixes h::"'a mod_ring poly"
@@ -802,7 +802,7 @@ proof (cases "f=0")
       and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
       and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
         using monic_square_free_irreducible\<^sub>d_factorization[OF monic_f sf_f] by blast
-      have f_dvd_hqh: "f dvd (h^?p - h)" using hq_mod_f unfolding cong_poly_def
+      have f_dvd_hqh: "f dvd (h^?p - h)" using hq_mod_f unfolding cong_def
         using mod_eq_dvd_iff_poly by blast
       also have hq_h_rw: "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
         by (rule poly_identity_mod_p)
@@ -1000,7 +1000,7 @@ qed
 corollary Poly_berlekamp_cong_mat:
 assumes k: "k < degree u"
 shows "[Poly (list_of_vec (row (berlekamp_mat u) k)) = [:0,1:]^(CARD('a) * k)] (mod u)"
-using Poly_berlekamp_mat[OF k] unfolding cong_poly_def by auto
+using Poly_berlekamp_mat[OF k] unfolding cong_def by auto
 
 lemma mat_of_rows_list_dim[simp]:
   "mat_of_rows_list n vs \<in> carrier_mat (length vs) n"
@@ -1400,7 +1400,7 @@ proof -
     also have "... = h^CARD('a) mod u"
       using poly_power_card_as_sum_of_monoms by auto
     finally show ?lhs
-      unfolding cong_poly_def
+      unfolding cong_def
       using deg_le
       by (simp add: mod_poly_less)
 next
@@ -1415,7 +1415,7 @@ next
     by (simp add: deg_le mod_poly_less poly_as_sum_of_monoms)
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) (CARD('a)*i)) mod u"
      using lhs
-     unfolding cong_poly_def poly_as_sum_of_monoms poly_power_card_as_sum_of_monoms
+     unfolding cong_def poly_as_sum_of_monoms poly_power_card_as_sum_of_monoms
      by auto
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) 0 * monom 1 (CARD('a)*i)) mod u"
     by (rule arg_cong[of _ _ "\<lambda>x. x mod u"], rule sum.cong, simp_all add: mult_monom)
@@ -1515,7 +1515,7 @@ assumes finite_P: "finite P"
       shows "\<exists>s. fi dvd (h - [:s:])"
 proof -
   let ?p = "CARD('a)"
-       have f_dvd_hqh: "f dvd (h^?p - h)" using h unfolding cong_poly_def
+       have f_dvd_hqh: "f dvd (h^?p - h)" using h unfolding cong_def
         using mod_eq_dvd_iff_poly by blast
       also have hq_h_rw: "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
         by (rule poly_identity_mod_p)
@@ -1671,7 +1671,7 @@ proof -
     using U_irr_monic
     using fi_U irreducible\<^sub>dD by auto
   have "u dvd (v^CARD('a) - v)"
-    using v unfolding W cong_poly_def
+    using v unfolding W cong_def
     by (simp add: mod_eq_dvd_iff_poly)
   moreover have "fi dvd u" using u_U U_irr_monic finite_U dvd_prod_eqI fi_U by blast
   ultimately have "fi dvd (v^CARD('a) - v)" using dvd_trans by fast
@@ -1718,7 +1718,7 @@ proof -
       by (simp add: add_power_poly_mod_ring)
   } note r=this
   thus ?thesis using f
-   by (unfold_locales, auto simp: zero_power mod_smult_left smult_power cong_poly_def degree_add_less)
+   by (unfold_locales, auto simp: zero_power mod_smult_left smult_power cong_def degree_add_less)
 qed
 
 
@@ -1853,7 +1853,7 @@ next
     have "mat_kernel (berlekamp_resulting_mat u) = {0\<^sub>v 0}"
       by (rule mat_kernel_berlekamp_resulting_mat_degree_0[OF True])
     hence x_0: "x = 0\<^sub>v 0" using x by blast
-    show ?thesis by (auto simp add: zero_power x_0 cong_poly_def)
+    show ?thesis by (auto simp add: zero_power x_0 cong_def)
   next
     case False note deg_u = False
     show ?thesis
@@ -1941,7 +1941,7 @@ next
     have "mat_kernel (berlekamp_resulting_mat u) = {0\<^sub>v 0}"
       by (rule mat_kernel_berlekamp_resulting_mat_degree_0[OF True])
     hence x_0: "x = 0\<^sub>v 0" using x by blast
-    show ?thesis by (auto simp add: zero_power x_0 cong_poly_def)
+    show ?thesis by (auto simp add: zero_power x_0 cong_def)
   next
     case False note deg_u = False
     show ?thesis
@@ -2227,25 +2227,25 @@ proof -
         have "[v = ?u k] (mod p)" using v mk k by auto
         moreover have "?u k mod p = ?u k"
           apply (rule mod_poly_less) using irreducible\<^sub>dD(1)[OF irr_p] by auto
-        ultimately obtain s where v_mod_p: "v mod p = [:s:]" unfolding cong_poly_def by force
+        ultimately obtain s where v_mod_p: "v mod p = [:s:]" unfolding cong_def by force
         hence deg_v_p: "degree (v mod p) = 0" by auto
         have "v mod p = [:s:]" by (rule v_mod_p)
         also have "... = [:s:]^CARD('a)" unfolding poly_const_pow by auto
         also have "... = (v mod p) ^ CARD('a)" using v_mod_p by auto
         also have "... = (v mod p) ^ CARD('a) mod p" using calculation by auto
         also have "... = v^CARD('a) mod p" using power_mod by blast
-        finally show "[v ^ CARD('a) = v] (mod p)" unfolding cong_poly_def ..
+        finally show "[v ^ CARD('a) = v] (mod p)" unfolding cong_def ..
       qed
       show "\<forall>p1 p2. p1 \<in> P \<and> p2 \<in> P \<and> p1 \<noteq> p2 \<longrightarrow> coprime p1 p2"
         using P coprime_polynomial_factorization finite_P by auto
     qed
     have "[v = ?u i] (mod m i)" using v i by auto
-    hence v_pi_si_mod: "v mod p_i = [:s_i:] mod p_i" unfolding cong_poly_def mi by auto
+    hence v_pi_si_mod: "v mod p_i = [:s_i:] mod p_i" unfolding cong_def mi by auto
     also have "... = [:s_i:]" apply (rule mod_poly_less) using irreducible\<^sub>dD(1)[OF irr_pi] by simp
     finally have v_pi_si: "v mod p_i = [:s_i:]" .
 
     have "[v = ?u j] (mod m j)" using v j by auto
-    hence v_pj_sj_mod: "v mod p_j = [:s_j:] mod p_j" unfolding cong_poly_def mj using ij by auto
+    hence v_pj_sj_mod: "v mod p_j = [:s_j:] mod p_j" unfolding cong_def mj using ij by auto
     also have "... = [:s_j:]" apply (rule mod_poly_less) using irreducible\<^sub>dD(1)[OF irr_pj] by simp
     finally have v_pj_sj: "v mod p_j = [:s_j:]" .
     show "v mod p_i = v mod p_j \<Longrightarrow> False" using si_sj v_pi_si v_pj_sj by auto
@@ -2424,12 +2424,12 @@ proof -
     by (intro_locales)
   moreover have inj_f: "inj_on ?f (carrier W)"
   proof (rule Ke0_imp_inj, auto simp add: mod_hom.ker_def)
-     show "[0 ^ CARD('a) = 0] (mod u)" by (simp add: cong_poly_def zero_power)
+     show "[0 ^ CARD('a) = 0] (mod u)" by (simp add: cong_def zero_power)
      show "vec n (\<lambda>i. 0) = \<zero>\<^bsub>module_vec TYPE('a mod_ring) n\<^esub>" by (auto simp add: module_vec_def)
      fix x assume x: "[x ^ CARD('a) = x] (mod u)" and deg_x: "degree x < degree u"
      and v: "vec n (\<lambda>i. coeff (x mod m i) 0) = \<zero>\<^bsub>module_vec TYPE('a mod_ring) n\<^esub>"
      have cong_0: "\<forall>i\<in>{i. i < n}. [x = (\<lambda>i. 0) i] (mod m i)"
-     proof (rule, unfold cong_poly_def)
+     proof (rule, unfold cong_def)
        fix i assume i: "i \<in> {i. i < n}"
        have deg_x_mod_mi: "degree (x mod m i) = 0"
        proof (rule degree_u_mod_irreducible\<^sub>d_factor_0[OF _ finite_P u_desc_square_free P])
@@ -2444,7 +2444,7 @@ proof -
      moreover have deg_x2: "degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))"
       using deg_sum_eq deg_x by simp
      moreover have "\<forall>i\<in>{i. i < n}. [0 = (\<lambda>i. 0) i] (mod m i)"
-      by (auto simp add: cong_poly_def)
+      by (auto simp add: cong_def)
      moreover have "degree 0 < (\<Sum>i\<in>{i. i < n}. degree (m i))"
       using degree_prod deg_sum_eq deg_u0 by force
      moreover have "\<exists>!x. degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))
@@ -2479,13 +2479,13 @@ proof -
         have deg_mi: "0 < degree (m i)" using i P_m P unfolding irreducible\<^sub>d_def by fast
         have "[v = [:x $ i:]] (mod m i)" using v_x_cong i by auto
         hence v_mi_eq_xi: "v mod m i = [:x $ i:]"
-          unfolding cong_poly_def
+          unfolding cong_def
           by auto (rule mod_poly_less, simp add: deg_mi)
         have xi_pow_xi: "[:x $ i:]^CARD('a) = [:x $ i:]" by (simp add: poly_const_pow)
         hence "(v mod m i)^CARD('a) = v mod m i" using v_mi_eq_xi by auto
         hence "(v mod m i)^CARD('a) = (v^CARD('a) mod m i)"
           by (metis mod_mod_trivial power_mod)
-        thus "[v ^ CARD('a) = v] (mod y)" unfolding mi cong_poly_def v_mi_eq_xi xi_pow_xi by simp
+        thus "[v ^ CARD('a) = v] (mod y)" unfolding mi cong_def v_mi_eq_xi xi_pow_xi by simp
         next
         fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "gcd p1 p2 = 1"
           using coprime_polynomial_factorization[OF P finite_P] by auto
@@ -2503,7 +2503,7 @@ proof -
               show "v \<in> {v. [v ^ CARD('a) = v] (mod u)}" using v by fast
               show "m i \<in> P" using P_m i by auto
            qed
-           have "v mod m i = [:x $ i:] mod m i" using v_x_cong i unfolding cong_poly_def by auto
+           have "v mod m i = [:x $ i:] mod m i" using v_x_cong i unfolding cong_def by auto
            also have "... = [:x $ i:]" by (rule mod_poly_less, simp add: deg_mi)
            finally show "x $ i = coeff (v mod m i) 0" by simp
          qed

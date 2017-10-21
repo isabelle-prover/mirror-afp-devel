@@ -1380,11 +1380,11 @@ proof -
   hence "[?Labp = (a*b)^?p12] (mod p)" using prp p2 euler_criterion[of "nat p" "a*b"] 
     by (auto simp: prime_nat_iff_prime)
   hence "[a^?p12 * b^?p12 = ?Labp] (mod p)"
-    by (simp only: power_mult_distrib cong_sym_int)
+    by (simp only: power_mult_distrib cong_sym)
   moreover have "[?Lap * ?Lbp = a^?p12*b^?p12] (mod p)"
-    using euler_criterion[of "nat p"] p2 prp' h1 by (simp add: cong_mult_int)
+    using euler_criterion[of "nat p"] p2 prp' h1 by (simp add: cong_mult)
   ultimately have "[?Lap * ?Lbp = ?Labp] (mod p)"
-    by (rule_tac b="a^?p12 * b^?p12" in cong_trans_int)
+    using cong_trans by blast
   then obtain k where k: "?Labp = (?Lap*?Lbp) + p * k"
     by (auto simp add: cong_iff_lin_int)
   have "k=0"
@@ -1474,12 +1474,12 @@ proof -
     ultimately show ?thesis by auto
   qed
   ultimately have "[?L = (-1)^(nat m)*(-1)^(nat m)] (mod ?p)"
-    by (metis cong_scalar_int minus_one_mult_self)
+    by (metis cong_scalar_right)
   hence "[?L = (-1)^((nat m)+(nat m))] (mod ?p)" by (simp only: power_add)
   moreover have "(nat m)+(nat m) = 2*(nat m)" by auto
   ultimately have "[?L = (-1)^(2*(nat m))] (mod ?p)" by simp
   hence "[?L = ((-1)^2)^(nat m)] (mod ?p)" by (simp only: power_mult)
-  hence "[1 = ?L] (mod ?p)" by (auto simp add: cong_sym_int)
+  hence "[1 = ?L] (mod ?p)" by (auto simp add: cong_sym)
   hence "?p dvd 1 - ?L" by (simp only: cong_altdef_int)
   moreover have "?L = -1 \<or> ?L = 0 \<or> ?L = 1" by (simp add: Legendre_def)
   ultimately have "?p dvd 2 \<or> ?p dvd 1 \<or> ?L = 1" by auto

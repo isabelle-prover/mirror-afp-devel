@@ -271,7 +271,7 @@ proof
     qed
     have "[int (nat x ^ (CARD('a) - 1)) = int 1] (mod CARD('a))"
       using fermat_theorem [OF prime_card \<open>\<not> CARD('a) dvd nat x\<close>]
-      by (simp only: cong_int_def cong_nat_def of_nat_mod [symmetric])
+      by (simp only: cong_def cong_def of_nat_mod [symmetric])
     then have *: "[x ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       using x by auto
     have "x ^ (CARD('a) - 2) mod CARD('a) * x mod CARD('a) 
@@ -279,7 +279,7 @@ proof
     also have "... =  (x ^ nat (?p - 1) mod ?p)" unfolding rw by simp
     also have "... = (x ^ (nat ?p - 1) mod ?p)" using p0' by (simp add: nat_diff_distrib')
     also have "... = 1"
-      using * by (simp add: cong_int_def)
+      using * by (simp add: cong_def)
     finally show "(if x = 0 then 0 else x ^ nat (int (CARD('a) - 2)) mod CARD('a)) * x mod CARD('a) = 1"
       using x0 by auto
   qed
