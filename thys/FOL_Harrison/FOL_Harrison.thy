@@ -607,7 +607,7 @@ next
   fix e p q
   show "semantics e f g (concl (axiom_impiff p q))"
   unfolding axiom_impiff_def
-  by simp (rule iff)
+  by (simp add: iffI)
 next
   fix e
   show "semantics e f g (concl (axiom_true))"
