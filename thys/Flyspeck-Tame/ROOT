@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Flyspeck-Tame" (AFP slow very_slow) = "HOL-Library" +
-  options [timeout = 86400]
+  options [timeout = 50400]
   sessions
     Trie
   theories [document = false]
