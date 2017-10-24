@@ -892,12 +892,7 @@ next
 qed
 
 lemma bv_to_int_upper_range: "bv_to_int w < 2 ^ (length w - 1)"
-proof (rule bit_list_cases [of w],simp_all)
-  fix bs
-  from bv_to_nat_upper_range
-  show "int (bv_to_nat bs) < 2 ^ length bs"
-    using less_imp_of_nat_less by fastforce
-next
+proof (rule bit_list_cases [of w],simp_all add: bv_to_nat_upper_range)
   fix bs
   have "-1 - int (bv_to_nat (bv_not bs)) \<le> 0" by simp
   also have "... < 2 ^ length bs" by (induct bs) simp_all
@@ -1073,7 +1068,7 @@ proof -
         show False by simp
       qed
       with bv_to_nat_lower_limit [of w']
-      show "2 ^ (length (norm_unsigned w') - Suc 0) \<le> int (bv_to_nat w')"
+      show "2 ^ (length (norm_unsigned w') - Suc 0) \<le> bv_to_nat w'"
         using One_nat_def int_nat_two_exp by presburger
     qed
   next

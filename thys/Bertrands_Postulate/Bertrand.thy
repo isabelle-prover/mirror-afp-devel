@@ -2017,7 +2017,7 @@ next
           moreover have "k \<le> n"
           proof -
             have "k < 2^k"
-              using of_nat_less_two_power real_of_nat_less_numeral_power_cancel_iff by blast
+              using of_nat_less_two_power of_nat_less_numeral_power_cancel_iff by blast
             also have "\<dots> \<le> p^k"
               by (simp add: power_mono prime_ge_2_nat that)
             also have "\<dots> \<le> n"
