@@ -1,6 +1,6 @@
 chapter AFP
 
-session IEEE_Floating_Point (AFP) = HOL +
+session IEEE_Floating_Point (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories
     IEEE_Properties
