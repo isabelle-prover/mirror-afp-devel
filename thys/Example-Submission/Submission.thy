@@ -60,7 +60,6 @@ Example-Submission/
     document/
         root.tex
         root.bib
-    config
     ROOT
     Submission.thy
 \end{verbatim}
@@ -71,9 +70,6 @@ The {\LaTeX} part of your
 submission should contain title, abstract, author, and any
 further documentation
 you wish to provide. 
-
-The file \texttt{config} contains maintenance information. This is
-optional. If you do not submit one, we will create one for you.
 
 \texttt{ROOT} controls which theories should be loaded. If you have
 one main theory that depends on all the others, you only need to
@@ -89,16 +85,7 @@ the article MiniML, the way to import it is:
 
 \begin{verbatim}
 theory My_Theory
-  imports "../MiniML/W"
-begin
-\end{verbatim}
-
-To build on a theory that is in the Isabelle distribtion, but not in
-one of the standard images like HOL, use something like the following:
-
-\begin{verbatim}
-theory My_Theory
-  imports "~~/src/HOL/Number_Theory/Number_Theory"
+  imports MiniML.W
 begin
 \end{verbatim}
 *}
