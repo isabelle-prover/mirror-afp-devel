@@ -38,19 +38,22 @@ global_interpretation opp_lex: od_powerprod lex lex_strict
   subgoal by (erule lex_trans, simp)
   subgoal by (erule lex_antisym, simp)
   subgoal by (rule lex_lin)
-  subgoal by (rule lex_one_min)
-  subgoal by (erule lex_times_monotone)
+  subgoal by (rule lex_zero_min)
+  subgoal by (erule lex_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
 
+hide_const (open) PP
+abbreviation PP :: "('a \<times> nat) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 nat" where "PP \<equiv> Poly_Lists.PP"
+
 lemma
-  "lp_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, 2), (Y, 1)]"
+  "lp_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, 2), (Y, 1)]"
 by eval
 
 lemma
-  "lc_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = 3"
-by eval
+  "lc_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = 3"
+  by eval
 
 lemma
   "tail_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) =
@@ -132,12 +135,12 @@ lemma
   "gb_lex
     [
      MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], -1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (1, -1)]
+     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)]
     ] =
     [
      MP [(PP [(X, 2)], - 1), (PP [(Y, 5)], 1)],
      MP [(PP [(Y, 3)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (1, - 1)]
+     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
 by eval
 
@@ -145,11 +148,11 @@ lemma
   "gb_lex
     [
      MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (1, -1)]
+     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)]
     ] =
     [
      MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1), (1, - 1)]
+     MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
 by eval
 
@@ -181,8 +184,8 @@ global_interpretation opp_dlex: od_powerprod dlex dlex_strict
   subgoal by (erule dlex_trans, simp)
   subgoal by (erule dlex_antisym, simp)
   subgoal by (rule dlex_lin)
-  subgoal by (rule dlex_one_min)
-  subgoal by (erule dlex_times_monotone)
+  subgoal by (rule dlex_zero_min)
+  subgoal by (erule dlex_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
@@ -274,7 +277,7 @@ lemma
     [
      MP [(PP [(X, 2)], - 1), (PP [(Y, 4), (X, 1)], 1)],
      MP [(PP [(X, 1), (Y, 2)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (1, - 1)]
+     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
 by eval
 
@@ -290,7 +293,7 @@ lemma
     [
      MP [(PP [(X, 5)], - 1), (PP [(X, 1), (Z, 3)], 1)],
      MP [(PP [(X, 3), (Y, 1)], - 1), (PP [(X, 1), (Z, 1)], 1)],
-     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (1, - 1)]
+     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
 by eval
 
