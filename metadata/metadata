@@ -5084,6 +5084,11 @@ abstract =
 	JNF. With this connection we derive the combined result: if A is a
 	non-negative real matrix, and no real eigenvalue of A is strictly
 	larger than one, then A<sup>n</sup> is polynomially bounded in n. </p>
+extra-history =
+        Change history:
+        [2017-10-18]:
+        added Perron-Frobenius theorem for irreducible matrices with generalization 
+        (revision bda1f1ce8a1c)
 
 [Formal_SSA]
 title = Verified Construction of Static Single Assignment Form
