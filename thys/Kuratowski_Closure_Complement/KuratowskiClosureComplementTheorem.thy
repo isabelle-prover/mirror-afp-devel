@@ -1,7 +1,7 @@
 (*<*)
 theory KuratowskiClosureComplementTheorem
 imports
-  Analysis
+  "HOL-Analysis.Analysis"
 begin
 
 (*>*)

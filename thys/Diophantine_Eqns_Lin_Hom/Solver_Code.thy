@@ -9,6 +9,8 @@ theory Solver_Code
   imports Algorithm
 begin
 
+external_file "src/Main.hs"
+
 (*test whether Haskell code generation works*)
 export_code solve checking Haskell
 

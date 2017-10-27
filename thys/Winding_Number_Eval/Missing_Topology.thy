@@ -4,7 +4,7 @@
 
 section \<open>Some useful lemmas in topology\<close>
 
-theory Missing_Topology imports Analysis
+theory Missing_Topology imports "HOL-Analysis.Analysis"
 begin
 
 subsection \<open>Misc\<close>

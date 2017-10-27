@@ -18,5 +18,3 @@ session HLDE = Diophantine_Eqns_Lin_Hom +
   options [timeout = 600]
   theories [document = false, condition = ISABELLE_GHC]
     Solver_Code
-  files
-    "src/Main.hs"

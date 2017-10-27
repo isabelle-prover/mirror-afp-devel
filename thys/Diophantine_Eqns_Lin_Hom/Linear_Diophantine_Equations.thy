@@ -11,7 +11,7 @@ section \<open>Homogeneous Linear Diophantine Equations\<close>
 theory Linear_Diophantine_Equations
   imports
     List_Vector
-    GCD
+    "HOL.GCD"
 begin
 
 (*TODO: move*)
