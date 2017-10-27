@@ -9,9 +9,7 @@ License: LGPL
 section \<open>Homogeneous Linear Diophantine Equations\<close>
 
 theory Linear_Diophantine_Equations
-  imports
-    List_Vector
-    "HOL.GCD"
+imports List_Vector
 begin
 
 (*TODO: move*)
@@ -35,13 +33,12 @@ proof -
   have "lcm a b = (a * b) div (gcd a b)"
     using lcm_nat_def by blast
   moreover have "\<dots> > 0"
-    using  Divides.div_positive assms
+    using  assms
     by (metis assms calculation lcm_pos_nat)
   ultimately show ?thesis
     using assms
-    by (metis (no_types, lifting) Divides.div_mult2_eq
-        div_mult_self_is_m gcd_coprime_exists mult.commute
-        mult_0_right not_gr0)
+    by (metis div_by_0 div_mult2_eq div_positive gcd_le2_nat nat_mult_div_cancel_disj neq0_conv
+              semiring_normalization_rules(7))
 qed
 
 (*TODO: move*)
