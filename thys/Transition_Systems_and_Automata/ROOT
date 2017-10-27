@@ -1,0 +1,21 @@
+chapter AFP
+
+session Transition_Systems_and_Automata (AFP) = "Collections" +
+  options [timeout = 1200]
+
+	theories
+		"Basic/Basic"
+		"Basic/Sequence"
+		"Basic/Sequence_Zip"
+		"Basic/Sequence_LTL"
+		"Transition_Systems/Transition_System"
+		"Transition_Systems/Transition_System_Extra"
+		"Transition_Systems/Transition_System_Construction"
+		"Automata/DFA"
+		"Automata/NFA"
+		"Automata/BA"
+
+		"Automata/BA_Implement"
+
+	document_files
+		"root.tex"

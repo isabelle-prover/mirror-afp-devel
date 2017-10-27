@@ -29,6 +29,7 @@ Binomial-Queues
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
+Buchi_Complementation
 Buffons_Needle
 Buildings
 BytecodeLogicJmlTypes
@@ -359,6 +360,7 @@ Tarskis_Geometry
 Timed_Automata
 Topology
 TortoiseHare
+Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
 Tree-Automata

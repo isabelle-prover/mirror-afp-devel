@@ -9,7 +9,42 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Oct 2017 00:00:00 +0000</pubDate>
+    <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Transition Systems and Automata</title>
+              <link>https://www.isa-afp.org/entries/Transition_Systems_and_Automata.html</link>
+       <guid>https://www.isa-afp.org/entries/Transition_Systems_and_Automata.html</guid>
+       <dc:creator> Julian Brunner       </dc:creator>
+       <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a very abstract theory of transition systems that
+can be instantiated to express various types of automata. A transition
+system is typically instantiated by providing a set of initial states,
+a predicate for enabled transitions, and a transition execution
+function. From this, it defines the concepts of finite and infinite
+paths as well as the set of reachable states, among other things. Many
+useful theorems, from basic path manipulation rules to coinduction and
+run construction rules, are proven in this abstract transition system
+context. The library comes with instantiations for DFAs, NFAs, and
+Büchi automata.</description>
+    </item>
+    <item>
+       <title>Büchi Complementation</title>
+              <link>https://www.isa-afp.org/entries/Buchi_Complementation.html</link>
+       <guid>https://www.isa-afp.org/entries/Buchi_Complementation.html</guid>
+       <dc:creator> Julian Brunner       </dc:creator>
+       <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a verified implementation of rank-based Büchi
+Complementation. The verification is done in three steps: &lt;ol&gt;
+&lt;li&gt;Definition of odd rankings and proof that an automaton
+rejects a word iff there exists an odd ranking for it.&lt;/li&gt;
+&lt;li&gt;Definition of the complement automaton and proof that it
+accepts exactly those words for which there is an odd
+ranking.&lt;/li&gt; &lt;li&gt;Verified implementation of the
+complement automaton using the Isabelle Collections
+Framework.&lt;/li&gt; &lt;/ol&gt;</description>
+    </item>
     <item>
        <title>Evaluate winding numbers through Cauchy indices</title>
               <link>https://www.isa-afp.org/entries/Winding_Number_Eval.html</link>
@@ -580,42 +615,6 @@ protocols provide fundamental abstractions for bridging the gap
 between security properties and standard protocol descriptions based
 on cryptographic messages. It also shows that our refinement approach
 scales to protocols of nontrivial size and complexity.</description>
-    </item>
-    <item>
-       <title>Dictionary Construction</title>
-              <link>https://www.isa-afp.org/entries/Dict_Construction.html</link>
-       <guid>https://www.isa-afp.org/entries/Dict_Construction.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>24 May 2017 00:00:00 +0000</pubDate>
-       <description>
-Isabelle&#39;s code generator natively supports type classes. For
-targets that do not have language support for classes and instances,
-it performs the well-known dictionary translation, as described by
-Haftmann and Nipkow. This translation happens outside the logic, i.e.,
-there is no guarantee that it is correct, besides the pen-and-paper
-proof. This work implements a certified dictionary translation that
-produces new class-free constants and derives equality theorems.</description>
-    </item>
-    <item>
-       <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-              <link>https://www.isa-afp.org/entries/Floyd_Warshall.html</link>
-       <guid>https://www.isa-afp.org/entries/Floyd_Warshall.html</guid>
-       <dc:creator> Simon Wimmer, Peter Lammich       </dc:creator>
-       <pubDate>08 May 2017 00:00:00 +0000</pubDate>
-       <description>
-The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
-dynamic programming algorithm to compute the length of all shortest
-paths between any two vertices in a graph (i.e. to solve the all-pairs
-shortest path problem, or APSP for short). Given a representation of
-the graph as a matrix of weights M, it computes another matrix M&#39;
-which represents a graph with the same path lengths and contains the
-length of the shortest path between any two vertices i and j. This is
-only possible if the graph does not contain any negative cycles.
-However, in this case the Floyd-Warshall algorithm will detect the
-situation by calculating a negative diagonal entry. This entry
-includes a formalization of the algorithm and of these key properties.
-The algorithm is refined to an efficient imperative version using the
-Imperative Refinement Framework.</description>
     </item>
   </channel>
 </rss>

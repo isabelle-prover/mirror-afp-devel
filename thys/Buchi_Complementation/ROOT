@@ -1,0 +1,10 @@
+chapter AFP
+
+session Buchi_Complementation (AFP) = "Transition_Systems_and_Automata" +
+  options [timeout = 1200]
+	theories
+		"Complementation"
+		"Complementation_Implement"
+	document_files
+		"root.tex"
+		"root.bib"

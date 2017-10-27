@@ -6269,3 +6269,39 @@ abstract =
   complex root isolation (of a polynomial) and testing the Routh-Hurwitz
   stability criterion (i.e., to check whether all the roots of some
   characteristic polynomial have negative real parts).
+
+[Buchi_Complementation]
+title = Büchi Complementation
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-10-19
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a verified implementation of rank-based Büchi
+  Complementation. The verification is done in three steps: <ol>
+  <li>Definition of odd rankings and proof that an automaton
+  rejects a word iff there exists an odd ranking for it.</li>
+  <li>Definition of the complement automaton and proof that it
+  accepts exactly those words for which there is an odd
+  ranking.</li> <li>Verified implementation of the
+  complement automaton using the Isabelle Collections
+  Framework.</li> </ol>
+
+[Transition_Systems_and_Automata]
+title = Transition Systems and Automata
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-10-19
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a very abstract theory of transition systems that
+  can be instantiated to express various types of automata. A transition
+  system is typically instantiated by providing a set of initial states,
+  a predicate for enabled transitions, and a transition execution
+  function. From this, it defines the concepts of finite and infinite
+  paths as well as the set of reachable states, among other things. Many
+  useful theorems, from basic path manipulation rules to coinduction and
+  run construction rules, are proven in this abstract transition system
+  context. The library comes with instantiations for DFAs, NFAs, and
+  Büchi automata.
+
