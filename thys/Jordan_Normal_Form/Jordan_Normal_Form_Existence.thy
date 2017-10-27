@@ -12,6 +12,8 @@ imports
   Schur_Decomposition
 begin
 
+hide_const (open) Coset.order
+
 text\<open>We prove existence of Jordan normal forms by means of first applying Schur's algorithm
  to convert a matrix into upper-triangular form, and then applying the following algorithm 
  to convert a upper-triangular matrix into a Jordan normal form. It only consists of 
@@ -3084,7 +3086,30 @@ next
   show ?r unfolding jordan_nf_char_poly[OF jnf] expand_powers[of "\<lambda> a. [: -a, 1:]" n_as] by blast
 qed
 
+lemma similar_iff_same_jordan_nf: fixes A :: "complex mat" 
+  assumes A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
+  shows "similar_mat A B = (jordan_nf A = jordan_nf B)" 
+proof 
+  show "similar_mat A B \<Longrightarrow> jordan_nf A = jordan_nf B" 
+    by (intro ext, auto simp: jordan_nf_def, insert similar_mat_trans similar_mat_sym, blast+)
+  assume id: "jordan_nf A = jordan_nf B" 
+  from char_poly_factorized[OF A] obtain as where "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
+  from jordan_nf_exists[OF A this] obtain n_as where jnfA: "jordan_nf A n_as" ..
+  with id have jnfB: "jordan_nf B n_as" by simp
+  from jnfA jnfB show "similar_mat A B" 
+    unfolding jordan_nf_def using similar_mat_trans similar_mat_sym by blast
+qed
 
+lemma order_char_poly_smult: fixes A :: "complex mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and k: "k \<noteq> 0" 
+shows "order x (char_poly (k \<cdot>\<^sub>m A)) = order (x / k) (char_poly A)" 
+proof -
+  from char_poly_factorized[OF A] obtain as where "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
+  from jordan_nf_exists[OF A this] obtain n_as where jnf: "jordan_nf A n_as" ..
+  show ?thesis unfolding jordan_nf_order[OF jnf] jordan_nf_order[OF jordan_nf_smult[OF jnf k]]
+    by (induct n_as, auto simp: k)
+qed
 
 subsection \<open>Application for Complexity\<close>
 

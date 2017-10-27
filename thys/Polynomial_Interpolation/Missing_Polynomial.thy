@@ -1320,5 +1320,22 @@ lemma smult_exact_sdiv_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrig
 
 lemma coeff_sdiv_poly: "coeff (sdiv_poly f a) n = coeff f n div a" 
   unfolding sdiv_poly_def by (rule coeff_map_poly, auto)    
-    
+
+lemma poly_pinfty_ge:
+  fixes p :: "real poly"
+  assumes "lead_coeff p > 0" "degree p \<noteq> 0" 
+  shows "\<exists>n. \<forall> x \<ge> n. poly p x \<ge> b"
+proof -
+  let ?p = "p - [:b - lead_coeff p :]" 
+  have id: "lead_coeff ?p = lead_coeff p" using assms(2)
+    by (cases p, auto)
+  with assms(1) have "lead_coeff ?p > 0" by auto
+  from poly_pinfty_gt_lc[OF this, unfolded id] obtain n
+    where "\<And> x. x \<ge> n \<Longrightarrow> 0 \<le> poly p x - b" by auto
+  thus ?thesis by auto
+qed
+
+lemma pderiv_sum: "pderiv (sum f I) = sum (\<lambda> i. (pderiv (f i))) I" 
+  by (induct I rule: infinite_finite_induct, auto simp: pderiv_add)
+
 end

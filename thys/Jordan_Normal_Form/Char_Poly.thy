@@ -429,5 +429,194 @@ proof -
     by (subst det_transpose[symmetric, OF A'], rule arg_cong[of _ _ det],
     insert A, auto)
 qed
+
+lemma pderiv_char_poly: fixes A :: "'a :: idom mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  shows "pderiv (char_poly A) = (\<Sum>i < n. char_poly (mat_delete A i i))"
+proof -
+  let ?det = Determinant.det
+  let ?m = "map_mat (\<lambda>a. [:- a:])" 
+  let ?lam = "[:0, 1:] \<cdot>\<^sub>m 1\<^sub>m n :: 'a poly mat" 
+  from A have id: "dim_row A = n" by auto  
+
+  define mA where "mA = ?m A"
+  define lam where "lam = ?lam" 
+  let ?sum = "lam + mA" 
+  define Sum where "Sum = ?sum" 
+  have mA: "mA \<in> carrier_mat n n" and 
+    lam: "lam \<in> carrier_mat n n" and
+    Sum: "Sum \<in> carrier_mat n n" 
+    using A unfolding mA_def Sum_def lam_def by auto
+  let ?P = "{p. p permutes {0..<n}}" 
+  let ?e = "\<lambda> p. (\<Prod>i = 0..<n. Sum $$ (i, p i))" 
+  let ?f = "\<lambda> p a. signof p * (\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, p i)) * pderiv (Sum $$ (a, p a))" 
+  let ?g = "\<lambda> p a. signof p * (\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, p i))" 
+  define f where "f = ?f" 
+  define g where "g = ?g" 
+  {
+    fix p
+    assume p: "p permutes {0 ..< n}" 
+    have "pderiv (signof p :: 'a poly) = 0" unfolding signof_def by (simp add: pderiv_minus) 
+    hence "pderiv (signof p * ?e p) = signof p * pderiv (\<Prod>i = 0..<n. Sum $$ (i, p i))" 
+      unfolding pderiv_mult by auto
+    also have "signof p * pderiv (\<Prod>i = 0..<n. Sum $$ (i, p i)) = 
+       (\<Sum>a = 0..<n. f p a)" 
+      unfolding pderiv_prod sum_distrib_left f_def by (simp add: ac_simps)
+    also note calculation
+  } note to_f = this
+  {
+    fix a
+    assume a: "a < n" 
+    have Psplit: "?P = {p. p permutes {0..<n} \<and> p a = a} \<union> (?P - {p. p a = a})" (is "_ = ?Pa \<union> ?Pz") by auto 
+    {
+      fix p
+      assume p: "p permutes {0 ..< n}" "p a \<noteq> a"
+      hence "pderiv (Sum $$ (a, p a)) = 0" unfolding Sum_def lam_def mA_def using a p A by auto
+      hence "f p a = 0" unfolding f_def by auto
+    } note 0 = this
+    {
+      fix p
+      assume p: "p permutes {0 ..< n}" "p a = a"
+      hence "pderiv (Sum $$ (a, p a)) = 1" unfolding Sum_def lam_def mA_def using a p A
+        by (auto simp: pderiv_pCons)
+      hence "f p a = g p a" unfolding f_def g_def by auto
+    } note fg = this
+    let ?n = "n - 1" 
+    from a have n: "Suc ?n = n" by simp
+    let ?B = "[:0, 1:] \<cdot>\<^sub>m 1\<^sub>m ?n + ?m (mat_delete A a a)" 
+    have B: "?B \<in> carrier_mat ?n ?n" using A by auto
+    have "sum (\<lambda> p. f p a) ?P = sum (\<lambda> p. f p a) ?Pa + sum (\<lambda> p. f p a) ?Pz" 
+      by (subst sum.union_disjoint[symmetric], auto simp: finite_permutations Psplit[symmetric])
+    also have "\<dots> = sum (\<lambda> p. f p a) ?Pa" 
+      by (subst (2) sum.neutral, insert 0, auto)
+    also have "\<dots> = sum (\<lambda> p. g p a) ?Pa" 
+      by (rule sum.cong, auto simp: fg)
+    also have "\<dots> = ?det ?B"
+      unfolding det_def'[OF B] 
+      unfolding permutation_fix[of a ?n a, unfolded n, OF a a]
+      unfolding sum.reindex[OF permutation_insert_inj_on[of a ?n a, unfolded n, OF a a]] o_def
+    proof (rule sum.cong[OF refl])
+      fix p
+      let ?Q = "{p. p permutes {0..<?n}}" 
+      assume "p \<in> ?Q"      
+      hence p: "p permutes {0 ..< ?n}" by auto
+      let ?p = "permutation_insert a a p"
+      let ?i = "insert_index a" 
+      have sign: "signof ?p = signof p" 
+        unfolding signof_permutation_insert[OF p, unfolded n, OF a a] by simp
+      show "g (permutation_insert a a p) a = signof p * (\<Prod>i = 0..<?n. ?B $$ (i, p i))" 
+        unfolding g_def sign
+      proof (rule arg_cong[of _ _ "op * (signof p)"])
+        have "(\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, ?p i)) = 
+           prod (op $$ Sum) ((\<lambda>x. (x, ?p x)) ` ({0..<n} - {a}))"
+          unfolding prod.reindex[OF inj_on_convol_ident, of _ ?p] o_def ..
+        also have "\<dots> = (\<Prod> ii \<in> {(i', ?p i') |i'. i' \<in> {0..<n} - {a}}. Sum $$ ii)" 
+          by (rule prod.cong, auto)
+        also have "\<dots> = prod (op $$ Sum) ((\<lambda> i. (?i i, ?i (p i))) ` {0 ..< ?n})" 
+          unfolding Determinant.foo[of a ?n a, unfolded n, OF a a p]
+          by (rule arg_cong[of _ _ "prod _"], auto) 
+        also have "\<dots> = prod (\<lambda> i. Sum $$ (?i i, ?i (p i))) {0 ..< ?n}"
+        proof (subst prod.reindex, unfold o_def)
+          show "inj_on (\<lambda>i. (?i i, ?i (p i))) {0..<?n}" using insert_index_inj_on[of a]
+            by (auto simp: inj_on_def)
+        qed simp
+        also have "\<dots> = (\<Prod>i = 0..<?n. ?B $$ (i, p i))" 
+        proof (rule prod.cong[OF refl], rename_tac i)
+          fix j
+          assume "j \<in> {0 ..< ?n}"
+          hence j: "j < ?n" by auto
+          with p have pj: "p j < ?n" by auto
+          from j pj have jj: "?i j < n" "?i (p j) < n" by (auto simp: insert_index_def)
+          let ?jj = "(?i j, ?i (p j))" 
+          note index_adj = mat_delete_index[of _ ?n, unfolded n, OF _ a a j pj]
+          have "Sum $$ ?jj = lam $$ ?jj + mA $$ ?jj" unfolding Sum_def using jj A lam mA by auto
+          also have "\<dots> = ?B $$ (j, p j)" 
+            unfolding index_adj[OF mA] index_adj[OF lam] using j pj A
+            by (simp add: mA_def lam_def mat_delete_def)
+          finally show "Sum $$ ?jj = ?B $$ (j, p j)" .
+        qed
+        finally 
+        show "(\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, ?p i)) = (\<Prod>i = 0..<?n. ?B $$ (i, p i))" .
+      qed
+    qed
+    also have "\<dots> = char_poly (mat_delete A a a)" unfolding char_poly_def char_poly_matrix_def
+      using A by simp
+    also note calculation
+  } note to_char_poly = this
+  have "pderiv (char_poly A) = pderiv (?det Sum)" 
+    unfolding char_poly_def char_poly_matrix_def id lam_def mA_def Sum_def by auto
+  also have "\<dots> = sum (\<lambda> p. pderiv (signof p * ?e p)) ?P" unfolding det_def'[OF Sum]
+    pderiv_sum by (rule sum.cong, auto)
+  also have "\<dots> = sum (\<lambda> p. (\<Sum>a = 0..<n. f p a)) ?P" 
+    by (rule sum.cong[OF refl], subst to_f, auto)
+  also have "\<dots> = (\<Sum>a = 0..<n. sum (\<lambda> p. f p a) ?P)" 
+    by (rule sum.swap) 
+  also have "\<dots> = (\<Sum>a <n. char_poly (mat_delete A a a))" 
+    by (rule sum.cong, auto simp: to_char_poly)
+  finally show ?thesis .
+qed    
+
+lemma char_poly_0_column: fixes A :: "'a :: idom mat" 
+  assumes 0: "\<And> j. j < n \<Longrightarrow> A $$ (j,i) = 0" 
+  and A: "A \<in> carrier_mat n n" 
+  and i: "i < n"
+shows "char_poly A = monom 1 1 * char_poly (mat_delete A i i)" 
+proof -
+  let ?n = "n - 1" 
+  let ?A = "mat_delete A i i" 
+  let ?sum = "[:0, 1:] \<cdot>\<^sub>m 1\<^sub>m n + map_mat (\<lambda>a. [:- a:]) A" 
+  define Sum where "Sum = ?sum" 
+  let ?f = "\<lambda> j. Sum $$ (j, i) * cofactor Sum j i" 
+  have Sum: "Sum \<in> carrier_mat n n" using A unfolding Sum_def by auto
+  from A have id: "dim_row A = n" by auto  
+  have "char_poly A = (\<Sum>j<n. ?f j)" 
+    unfolding char_poly_def[of A] char_poly_matrix_def 
+    using laplace_expansion_column[OF Sum i] unfolding Sum_def using A by simp
+  also have "\<dots> = ?f i + sum ?f ({..<n} - {i})" 
+    by (rule sum.remove[of _ i], insert i, auto)
+  also have "\<dots> = ?f i" 
+  proof (subst sum.neutral, intro ballI)
+    fix j
+    assume "j \<in> {..<n} - {i}" 
+    hence j: "j < n" and ji: "j \<noteq> i" by auto
+    show "?f j = 0" unfolding Sum_def using ji j i A 0[OF j] by simp
+  qed simp
+  also have "?f i = [:0, 1:] * (cofactor Sum i i)" 
+    unfolding Sum_def using i A 0[OF i] by simp
+  also have "cofactor Sum i i = det (mat_delete Sum i i)" 
+    unfolding cofactor_def by simp
+  also have "\<dots> = char_poly ?A" 
+    unfolding char_poly_def char_poly_matrix_def Sum_def
+  proof (rule arg_cong[of _ _ det])
+    show "mat_delete ?sum i i = [:0, 1:] \<cdot>\<^sub>m 1\<^sub>m (dim_row ?A) + map_mat (\<lambda>a. [:- a:]) ?A"
+      using i A by (auto simp: mat_delete_def)
+  qed
+  also have "[:0, 1:] = (monom 1 1 :: 'a poly)" by (rule x_as_monom)
+  finally show ?thesis .
+qed
+
+definition mat_erase :: "'a :: zero mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
+  "mat_erase A i j = Matrix.mat (dim_row A) (dim_col A) 
+     (\<lambda> (i',j'). if i' = i \<or> j' = j then 0 else A $$ (i',j'))"  
+
+lemma mat_erase_carrier[simp]: "(mat_erase A i j) \<in> carrier_mat nr nc \<longleftrightarrow> A \<in> carrier_mat nr nc" 
+  unfolding mat_erase_def carrier_mat_def by simp
+
+lemma pderiv_char_poly_mat_erase: fixes A :: "'a :: idom mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  shows "monom 1 1 * pderiv (char_poly A) = (\<Sum>i < n. char_poly (mat_erase A i i))"
+proof -
+  show ?thesis unfolding pderiv_char_poly[OF A] sum_distrib_left
+  proof (rule sum.cong[OF refl])
+    fix i
+    assume "i \<in> {..<n}" 
+    hence i: "i < n" by simp
+    have mA: "mat_erase A i i \<in> carrier_mat n n" using A by simp
+    show "monom 1 1 * char_poly (mat_delete A i i) = char_poly (mat_erase A i i)"
+      by (subst char_poly_0_column[OF _ mA i], (insert i A, force simp: mat_erase_def),
+      rule arg_cong[of _ _ "\<lambda> x. f * char_poly x" for f],
+      auto simp: mat_delete_def mat_erase_def)
+  qed
+qed
     
 end

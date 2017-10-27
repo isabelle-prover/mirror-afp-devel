@@ -56,6 +56,7 @@ session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
     Show.Show_Instances
     VectorSpace.VectorSpace
     Polynomial_Interpolation.Missing_Polynomial
+    Polynomial_Interpolation.Ring_Hom_Poly
 
 session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}

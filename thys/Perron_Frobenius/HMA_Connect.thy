@@ -476,6 +476,18 @@ definition mat2matofpoly where "mat2matofpoly A = (\<chi> i j. [: A $ i $ j :])"
 
 definition charpoly where charpoly_def: "charpoly A = det (mat (monom 1 (Suc 0)) - mat2matofpoly A)"
 
+definition erase_mat :: "'a :: zero ^ 'nc ^ 'nr \<Rightarrow> 'nr \<Rightarrow> 'nc \<Rightarrow> 'a ^ 'nc ^ 'nr" 
+  where "erase_mat A i j = (\<chi> i'. \<chi>  j'. if i' = i \<or> j' = j then 0 else A $ i' $ j')" 
+
+definition sum_UNIV_type :: "('n :: finite \<Rightarrow> 'a :: comm_monoid_add) \<Rightarrow> 'n itself \<Rightarrow> 'a" where
+  "sum_UNIV_type f _ = sum f UNIV" 
+
+definition sum_UNIV_set :: "(nat \<Rightarrow> 'a :: comm_monoid_add) \<Rightarrow> nat \<Rightarrow> 'a" where
+  "sum_UNIV_set f n = sum f {..<n}" 
+
+definition HMA_T :: "nat \<Rightarrow> 'n :: finite itself \<Rightarrow> bool" where
+  "HMA_T n _ = (n = CARD('n))" 
+
 lemma HMA_mat2matofpoly[transfer_rule]: "(HMA_M ===> HMA_M) (\<lambda>x. map_mat (\<lambda>a. [:a:]) x) mat2matofpoly"
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def mat2matofpoly_def by auto
 
@@ -634,6 +646,40 @@ qed
 lemma HMA_spectrum[transfer_rule]: "(HMA_M ===> op =) spectrum Spectrum"
   unfolding spectrum_def[abs_def] Spectrum_def[abs_def]
   by transfer_prover
+
+lemma HMA_M_erase_mat[transfer_rule]: "(HMA_M ===> HMA_I ===> HMA_I ===> HMA_M) mat_erase erase_mat" 
+  unfolding mat_erase_def[abs_def] erase_mat_def[abs_def]
+  by (auto simp: HMA_M_def HMA_I_def from_hma\<^sub>m_def to_nat_from_nat_id intro!: eq_matI)
+
+lemma HMA_M_sum_UNIV[transfer_rule]: 
+  "((HMA_I ===> op =) ===> HMA_T ===> op =) sum_UNIV_set sum_UNIV_type"
+  unfolding rel_fun_def 
+proof (clarify, rename_tac f fT n nT)
+  fix f and fT :: "'b \<Rightarrow> 'a" and n and nT :: "'b itself" 
+  assume f: "\<forall>x y. HMA_I x y \<longrightarrow> f x = fT y"
+    and n: "HMA_T n nT" 
+  let ?f = "from_nat :: nat \<Rightarrow> 'b" 
+  let ?t = "to_nat :: 'b \<Rightarrow> nat" 
+  from n[unfolded HMA_T_def] have n: "n = CARD('b)" .
+  from to_nat_from_nat_id[where 'a = 'b, folded n]
+  have tf: "i < n \<Longrightarrow> ?t (?f i) = i" for i by auto
+  have "sum_UNIV_set f n = sum f (?t ` ?f ` {..<n})" 
+    unfolding sum_UNIV_set_def
+    by (rule arg_cong[of _ _ "sum f"], insert tf, force)
+  also have "\<dots> = sum (f \<circ> ?t) (?f ` {..<n})" 
+    by (rule sum.reindex, insert tf n, auto simp: inj_on_def)
+  also have "?f ` {..<n} = UNIV" 
+    using range_to_nat[where 'a = 'b, folded n] by force
+  also have "sum (f \<circ> ?t) UNIV = sum fT UNIV" 
+  proof (rule sum.cong[OF refl])
+    fix i :: 'b
+    show "(f \<circ> ?t) i = fT i" unfolding o_def 
+      by (rule f[rule_format], auto simp: HMA_I_def)
+  qed
+  also have "\<dots> = sum_UNIV_type fT nT" 
+    unfolding sum_UNIV_type_def ..
+  finally show "sum_UNIV_set f n = sum_UNIV_type fT nT" .
+qed
 end
 
 text \<open>Setup a method to easily convert theorems from JNF into HMA.\<close>
@@ -679,5 +725,29 @@ lemma matrix_diff_vect_distrib: "(A - B) *v v = A *v v - B *v (v :: 'a :: ring_1
 
 lemma similar_matrix_charpoly: "similar_matrix A B \<Longrightarrow> charpoly A = charpoly B" 
   by (transfer_hma rule: char_poly_similar)
+
+lemma pderiv_char_poly_erase_mat: fixes A :: "'a :: idom ^ 'n ^ 'n" 
+  shows "monom 1 1 * pderiv (charpoly A) = sum (\<lambda> i. charpoly (erase_mat A i i)) UNIV" 
+proof -
+  let ?A = "from_hma\<^sub>m A" 
+  let ?n = "CARD('n)" 
+  have tA[transfer_rule]: "HMA_M ?A A" unfolding HMA_M_def by simp
+  have tN[transfer_rule]: "HMA_T ?n TYPE('n)" unfolding HMA_T_def by simp
+  have A: "?A \<in> carrier_mat ?n ?n" unfolding from_hma\<^sub>m_def by auto
+  have id: "sum (\<lambda> i. charpoly (erase_mat A i i)) UNIV = 
+    sum_UNIV_type (\<lambda> i. charpoly (erase_mat A i i)) TYPE('n)"
+    unfolding sum_UNIV_type_def ..
+  show ?thesis unfolding id
+    by (transfer, insert pderiv_char_poly_mat_erase[OF A], simp add: sum_UNIV_set_def)
+qed
+
+lemma degree_monic_charpoly: fixes A :: "'a :: comm_ring_1 ^ 'n ^ 'n" 
+  shows "degree (charpoly A) = CARD('n) \<and> monic (charpoly A)" 
+proof (transfer, goal_cases)
+  case 1
+  from degree_monic_char_poly[OF 1] show ?case by auto
+qed
+
+
 
 end

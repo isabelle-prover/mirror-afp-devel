@@ -53,6 +53,13 @@ next
   with False show ?thesis by simp
 qed
 
+lemma order_linear_power: "order a ([: b, 1:]^n) = (if b = -a then n else 0)" 
+proof (cases n)
+  case (Suc m)
+  show ?thesis unfolding Suc order_linear_power' by simp
+qed simp
+
+
 lemma order_linear': "order a [: b, 1:] = (if b = -a then 1 else 0)"
   using order_linear_power'[of a b 0] by simp
 

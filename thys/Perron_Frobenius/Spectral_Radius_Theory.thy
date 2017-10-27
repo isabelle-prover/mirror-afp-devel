@@ -8,9 +8,7 @@ imports
   Perron_Frobenius
   "HOL-Computational_Algebra.Field_as_Ring"
 begin
-
 abbreviation spectral_radius where "spectral_radius \<equiv> Spectral_Radius.spectral_radius"
-hide_const (open) Coset.order 
 hide_const (open) Module.smult
 
 text \<open>Via JNFs it has been proven that the growth of $A^k$ is polynomially bounded,

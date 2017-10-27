@@ -6,6 +6,7 @@ theory Roots_Unity
 imports 
   Polynomial_Factorization.Order_Polynomial
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
+  Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
 lemma cis_mult_cmod_id: "cis (arg x) * of_real (cmod x) = x"
@@ -537,5 +538,47 @@ proof (rule decompose_prod_root_unity_main[OF p d[unfolded decompose_prod_root_u
   with p0 show "\<not> root_unity k dvd p"
     by (simp add: poly_divides_conv0)
 qed
+
+lemma (in comm_ring_hom) hom_root_unity: "map_poly hom (root_unity n) = root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..
+  show ?thesis unfolding root_unity_def 
+    by (simp add: hom_distribs)
+qed
+
+lemma (in idom_hom) hom_prod_root_unity: "map_poly hom (prod_root_unity n) = prod_root_unity n" 
+proof -
+  interpret p: map_poly_comm_ring_hom hom ..  
+  show ?thesis unfolding prod_root_unity_def p.hom_prod_list map_map o_def hom_root_unity ..
+qed
+
+lemma (in field_hom) hom_decompose_prod_root_unity_main: 
+  "decompose_prod_root_unity_main (map_poly hom p) k = map_prod id (map_poly hom)
+    (decompose_prod_root_unity_main p k)"
+proof (induct p k rule: decompose_prod_root_unity_main.induct)
+  case (1 p k)
+  let ?h = "map_poly hom" 
+  let ?p = "?h p" 
+  let ?u = "root_unity k :: 'a poly" 
+  let ?u' = "root_unity k :: 'b poly" 
+  interpret p: map_poly_inj_idom_divide_hom hom ..
+  have u': "?u' = ?h ?u" unfolding hom_root_unity ..
+  note simp = decompose_prod_root_unity_main.simps
+  let ?rec1 = "decompose_prod_root_unity_main (p div ?u) k" 
+  have 0: "?p = 0 \<longleftrightarrow> p = 0" by simp
+  show ?case 
+    unfolding simp[of ?p k] simp[of p k] if_distrib[of "map_prod id ?h"] Let_def u'
+    unfolding 0 p.hom_div[symmetric] p.hom_dvd_iff
+    by (rule if_cong[OF refl], force, rule if_cong[OF refl if_cong[OF refl]], force,
+     (subst 1(1), auto, cases ?rec1, auto)[1],
+     (subst 1(2), auto))
+qed
+
+lemma (in field_hom) hom_decompose_prod_root_unity: 
+  "decompose_prod_root_unity (map_poly hom p) = map_prod id (map_poly hom)
+    (decompose_prod_root_unity p)" 
+  unfolding decompose_prod_root_unity_def
+  by (subst hom_decompose_prod_root_unity_main, simp)
+
 
 end

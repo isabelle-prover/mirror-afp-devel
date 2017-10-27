@@ -4,7 +4,7 @@ subsection \<open>The Perron Frobenius Theorem for Irreducible Matrices\<close>
 theory Perron_Frobenius_Irreducible
 imports
   Perron_Frobenius
-  Perron_Frobenius_Aux_2
+  Roots_Unity
   Rank_Nullity_Theorem.Miscellaneous (* for scalar-matrix-multiplication, 
     this import is incompatible with field_simps, ac_simps *)
 begin 

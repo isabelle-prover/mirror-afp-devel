@@ -2196,4 +2196,21 @@ proof -
   finally show ?thesis unfolding atLeast0LessThan using A j unfolding l_def by auto
 qed
 
+lemma degree_det_le: assumes "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> degree (A $$ (i,j)) \<le> k"
+  and A: "A \<in> carrier_mat n n" 
+shows "degree (det A) \<le> k * n" 
+proof -
+  {
+    fix p
+    assume p: "p permutes {0..<n}"
+    have "(\<Sum>x = 0..<n. degree (A $$ (x, p x))) \<le> (\<Sum>x = 0..<n. k)"     
+      by (rule sum_mono[OF assms(1)], insert p, auto)
+    also have "\<dots> = k * n" unfolding sum_constant by simp
+    also note calculation 
+  } note * = this
+  show ?thesis unfolding det_def'[OF A]
+    by (rule degree_sum_le, insert *, auto simp: finite_permutations signof_def 
+      intro!: order.trans[OF degree_prod_sum_le])
+qed
+
 end

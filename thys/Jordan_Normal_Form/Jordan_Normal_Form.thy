@@ -708,6 +708,96 @@ proof -
   from order_max[OF this A] show ?thesis .
 qed
 
+lemma similar_mat_jordan_block_smult: fixes A :: "'a :: field mat" 
+  assumes "similar_mat A (jordan_block n a)" 
+   and k: "k \<noteq> 0" 
+  shows "similar_mat (k \<cdot>\<^sub>m A) (jordan_block n (k * a))" 
+proof -
+  let ?J = "jordan_block n a" 
+  let ?Jk = "jordan_block n (k * a)" 
+  let ?kJ = "k \<cdot>\<^sub>m jordan_block n a" 
+  from k have inv: "k ^ i \<noteq> 0" for i by auto
+  let ?A = "mat_diag n (\<lambda> i. k^i)" 
+  let ?B = "mat_diag n (\<lambda> i. inverse (k^i))"
+  have "similar_mat_wit ?Jk ?kJ ?A ?B" 
+  proof (rule similar_mat_witI)
+    show "jordan_block n (k * a) = ?A * ?kJ * ?B"
+      by (subst mat_diag_mult_left[of _ _ n], force, subst mat_diag_mult_right[of _ n],
+       insert k inv, auto simp: jordan_block_def field_simps intro!: eq_matI)
+  qed (auto simp: inv field_simps k)
+  hence kJ: "similar_mat ?Jk ?kJ" 
+    unfolding similar_mat_def by auto
+  have "similar_mat A ?J" by fact
+  hence "similar_mat (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m ?J)" by (rule similar_mat_smult)
+  with kJ show ?thesis
+    using similar_mat_sym similar_mat_trans by blast
+qed
+
+
+lemma jordan_matrix_Cons:  "jordan_matrix (Cons (n,a) n_as) = four_block_mat 
+  (jordan_block n a)                 (0\<^sub>m n (sum_list (map fst n_as))) 
+  (0\<^sub>m (sum_list (map fst n_as)) n)   (jordan_matrix n_as)" 
+  unfolding jordan_matrix_def by (simp, simp add: jordan_matrix_def[symmetric])
+
+lemma similar_mat_jordan_matrix_smult:  fixes n_as :: "(nat \<times> 'a :: field) list"
+  assumes k: "k \<noteq> 0" 
+  shows "similar_mat (k \<cdot>\<^sub>m jordan_matrix n_as) (jordan_matrix (map (\<lambda> (n,a). (n, k * a)) n_as))" 
+proof (induct n_as)
+  case Nil
+  show ?case by (auto simp: jordan_matrix_def intro!: similar_mat_refl)
+next
+  case (Cons na n_as)
+  obtain n a where na: "na = (n,a)" by force
+  let ?l = "map (\<lambda> (n,a). (n, k * a))" 
+  let ?n = "sum_list (map fst n_as)" 
+  have "k \<cdot>\<^sub>m jordan_matrix (Cons na n_as) = k \<cdot>\<^sub>m four_block_mat 
+     (jordan_block n a) (0\<^sub>m n ?n)
+     (0\<^sub>m ?n n) (jordan_matrix n_as)" (is "?M = _ \<cdot>\<^sub>m four_block_mat ?A ?B ?C ?D")
+    by (simp add: na jordan_matrix_Cons)
+  also have "\<dots> = four_block_mat (k \<cdot>\<^sub>m ?A) ?B ?C (k \<cdot>\<^sub>m ?D)" 
+    by (subst smult_four_block_mat, auto)
+  finally have jm: "?M = four_block_mat (k \<cdot>\<^sub>m ?A) ?B ?C (k \<cdot>\<^sub>m ?D)" .
+  have [simp]: "fst (case x of (n :: nat, a) \<Rightarrow> (n, k * a)) = fst x" for x by (cases x, auto)
+  have jmk: "jordan_matrix (?l (Cons na n_as)) = four_block_mat
+     (jordan_block n (k * a)) ?B
+     ?C (jordan_matrix (?l n_as))" (is "?kM = four_block_mat ?kA _ _ ?kD")
+    by (simp add: na jordan_matrix_Cons o_def)
+  show ?case unfolding jmk jm
+    by (rule similar_mat_four_block_0_0[OF similar_mat_jordan_block_smult[OF _ k] Cons],
+      auto intro!: similar_mat_refl)
+qed
+
+lemma jordan_nf_smult: fixes k :: "'a :: field" 
+  assumes jn: "jordan_nf A n_as" 
+  and k: "k \<noteq> 0" 
+  shows "jordan_nf (k \<cdot>\<^sub>m A) (map (\<lambda> (n,a). (n, k * a)) n_as)" 
+proof -
+  let ?l = "map (\<lambda> (n,a). (n, k * a))" 
+  from jn[unfolded jordan_nf_def] have sim: "similar_mat A (jordan_matrix n_as)" .
+  from similar_mat_smult[OF this, of k] similar_mat_jordan_matrix_smult[OF k, of n_as]
+  show ?thesis using jordan_nf_def similar_mat_trans by blast
+qed
+
+lemma jordan_nf_order: assumes "jordan_nf A n_as" 
+  shows "order a (char_poly A)  = sum_list (map fst (filter (\<lambda> na. snd na = a) n_as))" 
+proof - 
+  let ?p = "\<lambda> n_as. (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)" 
+  let ?s = "\<lambda> n_as. sum_list (map fst (filter (\<lambda> na. snd na = a) n_as))" 
+  from jordan_nf_char_poly[OF assms]
+  have "order a (char_poly A) = order a (?p n_as)" by simp
+  also have "\<dots> = ?s n_as" 
+  proof (induct n_as)
+    case (Cons nb n_as)
+    obtain n b where nb: "nb = (n,b)" by force
+    have "order a (?p (nb # n_as)) = order a ([: -b, 1:] ^ n * ?p n_as)" unfolding nb by simp
+    also have "\<dots> = order a ([: -b, 1:] ^ n) + order a (?p n_as)" 
+      by (rule order_mult, auto simp: prod_list_zero_iff)
+    also have "\<dots> = (if a = b then n else 0) + ?s n_as" unfolding Cons order_linear_power by simp
+    also have "\<dots> = ?s (nb # n_as)" unfolding nb by auto
+    finally show ?case .
+  qed simp
+  finally show ?thesis .
+qed
 
 subsection \<open>Application for Complexity\<close>
 

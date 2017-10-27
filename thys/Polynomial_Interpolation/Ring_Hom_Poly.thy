@@ -393,6 +393,37 @@ lemma coeff_div_poly: "coeff (div_poly a f) n = coeff f n div a"
   unfolding div_poly_def
   by (rule coeff_map_poly, auto)
 
+locale map_poly_inj_idom_divide_hom = base: inj_idom_divide_hom
+begin
+sublocale map_poly_idom_hom ..
+sublocale map_poly_inj_zero_hom .. 
+sublocale inj_idom_hom "map_poly hom" ..
+lemma divide_poly_main_hom: defines "hh \<equiv> map_poly hom" 
+  shows "hh (divide_poly_main lc f g h i j) = divide_poly_main (hom lc) (hh f) (hh g) (hh h) i j"  
+  unfolding hh_def
+proof (induct j arbitrary: lc f g h i)
+  case (Suc j lc f g h i)
+  let ?h = "map_poly hom" 
+  show ?case unfolding divide_poly_main.simps Let_def
+    unfolding base.coeff_map_poly_hom base.hom_div[symmetric] base.hom_mult[symmetric] base.eq_iff
+      if_distrib[of ?h] hom_zero
+    by (rule if_cong[OF refl _ refl], subst Suc, simp add: hom_minus hom_add hom_mult)
+qed simp
+
+sublocale inj_idom_divide_hom "map_poly hom" 
+proof
+  fix f g :: "'a poly" 
+  let ?h = "map_poly hom" 
+  show "?h (f div g) = (?h f) div (?h g)" unfolding divide_poly_def if_distrib[of ?h]
+    divide_poly_main_hom by simp
+qed
+
+lemma order_hom: "order (hom x) (map_poly hom f) = order x f"
+  unfolding Polynomial.order_def unfolding hom_dvd_iff[symmetric]
+  unfolding hom_power by (simp add: base.hom_uminus)
+end
+
+
 subsection {* Example Interpretations *}
 
 abbreviation "of_int_poly \<equiv> map_poly of_int"

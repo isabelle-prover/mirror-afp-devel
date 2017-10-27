@@ -2365,4 +2365,48 @@ lemma uminus_uminus_mat[simp]: "- (- (A::'a:: group_add mat)) = A"
 lemma uminus_eq_mat[simp]: "- (A::'a:: group_add mat) = - B \<longleftrightarrow> A = B"
   by (metis uminus_uminus_mat)
 
+lemma smult_zero_mat[simp]: "(k :: 'a :: mult_zero) \<cdot>\<^sub>m 0\<^sub>m nr nc = 0\<^sub>m nr nc" 
+  by (intro eq_matI, auto)
+
+lemma similar_mat_wit_smult: fixes A :: "'a :: comm_ring_1 mat" 
+  assumes "similar_mat_wit A B P Q" 
+  shows "similar_mat_wit (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m B) P Q" 
+proof -
+  define n where "n = dim_row A" 
+  note main = similar_mat_witD[OF n_def assms]
+  show ?thesis
+    by (rule similar_mat_witI[OF main(1-2) _ _ _ main(6-7)], insert main(3-), auto
+      simp: mult_smult_distrib mult_smult_assoc_mat[of _ n n _ n]) 
+qed
+
+lemma similar_mat_smult: fixes A :: "'a :: comm_ring_1 mat" 
+  assumes "similar_mat A B" 
+  shows "similar_mat (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m B)" 
+  using similar_mat_wit_smult assms unfolding similar_mat_def by blast
+
+definition mat_diag :: "nat \<Rightarrow> (nat \<Rightarrow> 'a :: zero) \<Rightarrow> 'a mat" where
+  "mat_diag n f = Matrix.mat n n (\<lambda> (i,j). if i = j then f j else 0)" 
+
+lemma mat_diag_dim[simp]: "mat_diag n f \<in> carrier_mat n n" 
+  unfolding mat_diag_def by auto
+
+lemma mat_diag_mult_left: assumes A: "A \<in> carrier_mat n nr" 
+  shows "mat_diag n f * A = Matrix.mat n nr (\<lambda> (i,j). f i * A $$ (i,j))" 
+proof (rule eq_matI, insert A, auto simp: mat_diag_def scalar_prod_def, goal_cases)
+  case (1 i j)
+  thus ?case by (subst sum.remove[of _ i], auto)
+qed
+
+lemma mat_diag_mult_right: assumes A: "A \<in> carrier_mat nr n" 
+  shows "A * mat_diag n f = Matrix.mat nr n (\<lambda> (i,j). A $$ (i,j) * f j)" 
+proof (rule eq_matI, insert A, auto simp: mat_diag_def scalar_prod_def, goal_cases)
+  case (1 i j)
+  thus ?case by (subst sum.remove[of _ j], auto)
+qed
+
+lemma mat_diag_diag[simp]: "mat_diag n f * mat_diag n g = mat_diag n (\<lambda> i. f i * g i)" 
+  by (subst mat_diag_mult_left[of _ n n], auto simp: mat_diag_def)
+
+lemma mat_diag_one[simp]: "mat_diag n (\<lambda> x. 1) = 1\<^sub>m n" unfolding mat_diag_def by auto
+
 end

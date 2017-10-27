@@ -449,6 +449,33 @@ begin
   sublocale inv: field_hom "inv hom" by (unfold_locales; simp add: hom_distribs)
 end
 
+locale inj_idom_divide_hom = idom_divide_hom hom + inj_idom_hom hom
+  for hom :: "'a :: idom_divide \<Rightarrow> 'b :: idom_divide" 
+begin
+lemma hom_dvd_iff[simp]: "(hom p dvd hom q) = (p dvd q)"
+proof (cases "p = 0")
+  case False
+  show ?thesis
+  proof
+    assume "hom p dvd hom q" from this[unfolded dvd_def] obtain k where 
+      id: "hom q = hom p * k" by auto
+    hence "(hom q div hom p) = (hom p * k) div hom p" by simp
+    also have "\<dots> = k" by (rule nonzero_mult_div_cancel_left, insert False, simp)
+    also have "hom q div hom p = hom (q div p)" by (simp add: hom_div)
+    finally have "k = hom (q div p)" by auto
+    from id[unfolded this] have "hom q = hom (p * (q div p))" by (simp add: hom_mult)
+    hence "q = p * (q div p)" by simp
+    thus "p dvd q" unfolding dvd_def ..
+  qed simp
+qed simp
+end
+
+context field_hom
+begin
+sublocale inj_idom_divide_hom ..
+end
+
+
 subsection {* Example Interpretations *}
 
 interpretation of_int_hom: ring_hom of_int by (unfold_locales, auto)
