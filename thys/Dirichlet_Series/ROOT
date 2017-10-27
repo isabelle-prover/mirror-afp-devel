@@ -1,0 +1,22 @@
+chapter AFP
+
+session Dirichlet_Series (AFP) = Euler_MacLaurin +
+  options
+    [timeout = 600]
+  sessions
+    "HOL-Number_Theory"
+    "Polynomial_Factorization"
+    "Landau_Symbols"
+  theories [document = false]
+    "HOL-Number_Theory.Number_Theory"
+    "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.Going_To_Filter"
+    "Landau_Symbols.Landau_Symbols"
+    "Polynomial_Factorization.Prime_Factorization"
+  theories
+    Arithmetic_Summatory_Asymptotics
+    Dirichlet_Efficient_Code
+  document_files
+    "root.tex"
+    "root.bib"
+

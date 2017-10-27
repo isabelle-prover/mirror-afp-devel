@@ -4353,6 +4353,22 @@ abstract =
   We then utilize the embedded logic for the formalisation of
   Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
 
+[Lowe_Ontological_Argument]
+title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <www.christoph-benzmueller.de>
+topic = Logic
+date = 2017-09-21
+notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
+abstract =
+  Computers may help us to understand --not just verify-- philosophical
+  arguments. By utilizing modern proof assistants in an iterative
+  interpretive process, we can reconstruct and assess an argument by
+  fully formal means. Through the mechanization of a variant of St.
+  Anselm's ontological argument by E. J. Lowe, which is a
+  paradigmatic example of a natural-language argument with strong ties
+  to metaphysics and religion, we offer an ideal showcase for our
+  computer-assisted interpretive method.
+
 [AnselmGod]
 title = Anselm's God in Isabelle/HOL
 author = Ben Blumson <https://philpapers.org/profile/805>
@@ -4642,6 +4658,81 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
 	included. For a more detailed explanation of the formalisation and the
 	proof methods, see the accompanying paper (publication forthcoming).
 notify = eberlm@in.tum.de
+
+[Dirichlet_Series]
+title = Dirichlet Series
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2017-10-12
+notify = eberlm@in.tum.de
+abstract =
+  This entry is a formalisation of much of Chapters 2, 3, and 11 of
+  Apostol's &ldquo;Introduction to Analytic Number
+  Theory&rdquo;. This includes: <ul> <li>Definitions and
+  basic properties for several number-theoretic functions (Euler's
+  &phi;, M&ouml;bius &mu;, Liouville's &lambda;,
+  the divisor function &sigma;, von Mangoldt's
+  &Lambda;)</li> <li>Executable code for most of these
+  functions, the most efficient implementations using the factoring
+  algorithm by Thiemann <i>et al.</i></li>
+  <li>Dirichlet products and formal Dirichlet series</li>
+  <li>Analytic results connecting convergent formal Dirichlet
+  series to complex functions</li> <li>Euler product
+  expansions</li> <li>Asymptotic estimates of
+  number-theoretic functions including the density of squarefree
+  integers and the average number of divisors of a natural
+  number</li> </ul> These results are useful as a basis for
+  developing more number-theoretic results, such as the Prime Number
+  Theorem.
+
+[Zeta_Function]
+title = The Hurwitz and Riemann ζ Functions
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory, Mathematics/Analysis
+date = 2017-10-12
+notify = eberlm@in.tum.de
+abstract =
+  <p> This entry builds upon the results about formal and analytic
+  Dirichlet series to define the Hurwitz &zeta; function and, based
+  on that, the Riemann &zeta; function. This is done by first
+  defining them for &real;(<i>z</i>) > 1 and then
+  successively extending the domain to the left using the
+  Euler&ndash;MacLaurin formula. </p> <p> Some basic
+  results about these functions are also shown, such as their
+  analyticity on &#8450;&#8726;&#123;1&#125;, that they
+  have a simple pole with residue 1 at 1, their relation to the
+  &Gamma; function, and the special values at negative integers and
+  positive even integers &ndash; including the famous &zeta;(-1)
+  = -1/12 and &zeta;(2) = &pi;&sup2;/6. </p> <p>
+  Lastly, the entry also contains Euler's analytic proof of the
+  infinitude of primes, based on the fact that
+  &zeta;(<i>s</i>) has a pole at <i>s</i> =
+  1. </p>
+
+[Linear_Recurrences]
+title = Linear Recurrences
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2017-10-12
+notify = eberlm@in.tum.de
+abstract =
+  <p> Linear recurrences with constant coefficients are an
+  interesting class of recurrence equations that can be solved
+  explicitly. The most famous example are certainly the Fibonacci
+  numbers with the equation <i>f</i>(<i>n</i>) =
+  <i>f</i>(<i>n</i>-1) +
+  <i>f</i>(<i>n</i> - 2) and the quite
+  non-obvious closed form
+  (<i>&phi;</i><sup><i>n</i></sup>
+  -
+  (-<i>&phi;</i>)<sup>-<i>n</i></sup>)
+  / &radic;<span style="text-decoration:
+  overline">5</span> where &phi; is the golden ratio.
+  </p> <p> In this work, I build on existing tools in
+  Isabelle &ndash; such as formal power series and polynomial
+  factorisation algorithms &ndash; to develop a theory of these
+  recurrences and derive a fully executable solver for them that can be
+  exported to programming languages like Haskell. </p>
 
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
@@ -5877,7 +5968,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2017-07-06
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop Stone-Kleene relation algebras, which expand Stone relation
   algebras with a Kleene star operation to describe reachability in
   weighted graphs. Many properties of the Kleene star arise as a special
@@ -6097,7 +6188,7 @@ author = Daniel Kirchner <mailto:daniel@ekpyron.org>
 topic = Logic
 date = 2017-09-17
 notify = daniel@ekpyron.org
-abstract = 
+abstract =
   <p> We present an embedding of the second-order fragment of the
   Theory of Abstract Objects as described in Edward Zalta's
   upcoming work <a
@@ -6135,3 +6226,102 @@ abstract =
   guarantee its consistency. Thereby our work could provide a
   significant contribution to the development of a proper grounding for
   object theory. </p>
+    
+
+[Diophantine_Eqns_Lin_Hom]
+title = Homogeneous Linear Diophantine Equations
+author = Florian Messner <mailto:florian.g.messner@uibk.ac.at>, Julian Parsert <mailto:julian.parsert@gmail.com>, Jonas Schöpf <mailto:jonas.schoepf@uibk.ac.at>,  Christian Sternagel <mailto:c.sternagel@gmail.com>
+topic = Computer Science/Algorithms, Mathematics/Number Theory, Tools
+license = LGPL
+date = 2017-10-14
+notify = c.sternagel@gmail.com, julian.parsert@gmail.com
+abstract =
+  We formalize the theory of homogeneous linear diophantine equations,
+  focusing on two main results: (1) an abstract characterization of
+  minimal complete sets of solutions, and (2) an algorithm computing
+  them. Both, the characterization and the algorithm are based on
+  previous work by Huet. Our starting point is a simple but inefficient
+  variant of Huet's lexicographic algorithm incorporating improved
+  bounds due to Clausen and Fortenbacher. We proceed by proving its
+  soundness and completeness. Finally, we employ code equations to
+  obtain a reasonably efficient implementation. Thus, we provide a
+  formally verified solver for homogeneous linear diophantine equations.
+
+[Winding_Number_Eval]
+title = Evaluate winding numbers through Cauchy indices
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Analysis
+date = 2017-10-17
+notify = wl302@cam.ac.uk, liwenda1990@hotmail.com
+abstract = 
+  In complex analysis, the winding number measures the number of times a
+  path (counterclockwise) winds around a point, while the Cauchy index
+  can approximate how the path winds. This entry provides a
+  formalisation of the Cauchy index, which is then shown to be related
+  to the winding number. In addition, this entry also offers a tactic
+  that enables users to evaluate the winding number by calculating
+  Cauchy indices.
+  
+[Count_Complex_Roots]
+title = Count the Number of Complex Roots
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Analysis
+date = 2017-10-17
+notify = wl302@cam.ac.uk, liwenda1990@hotmail.com
+abstract = 
+  Based on evaluating Cauchy indices through remainder sequences, this
+  entry provides an effective procedure to count the number of complex
+  roots (with multiplicity) of a polynomial within a rectangle box or a
+  half-plane. Potential applications of this entry include certified
+  complex root isolation (of a polynomial) and testing the Routh-Hurwitz
+  stability criterion (i.e., to check whether all the roots of some
+  characteristic polynomial have negative real parts).
+
+[Buchi_Complementation]
+title = Büchi Complementation
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-10-19
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a verified implementation of rank-based Büchi
+  Complementation. The verification is done in three steps: <ol>
+  <li>Definition of odd rankings and proof that an automaton
+  rejects a word iff there exists an odd ranking for it.</li>
+  <li>Definition of the complement automaton and proof that it
+  accepts exactly those words for which there is an odd
+  ranking.</li> <li>Verified implementation of the
+  complement automaton using the Isabelle Collections
+  Framework.</li> </ol>
+
+[Transition_Systems_and_Automata]
+title = Transition Systems and Automata
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-10-19
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a very abstract theory of transition systems that
+  can be instantiated to express various types of automata. A transition
+  system is typically instantiated by providing a set of initial states,
+  a predicate for enabled transitions, and a transition execution
+  function. From this, it defines the concepts of finite and infinite
+  paths as well as the set of reachable states, among other things. Many
+  useful theorems, from basic path manipulation rules to coinduction and
+  run construction rules, are proven in this abstract transition system
+  context. The library comes with instantiations for DFAs, NFAs, and
+  Büchi automata.
+
+[Kuratowski_Closure_Complement]
+title = The Kuratowski Closure-Complement Theorem
+author = Peter Gammie <http://peteg.org>, Gianpaolo Gioiosa<>
+topic = Mathematics/Topology
+date = 2017-10-26
+notify = peteg42@gmail.com
+abstract = 
+  We discuss a topological curiosity discovered by Kuratowski (1922):
+  the fact that the number of distinct operators on a topological space
+  generated by compositions of closure and complement never exceeds 14,
+  and is exactly 14 in the case of R. In addition, we prove a theorem
+  due to Chagrov (1982) that classifies topological spaces according to
+  the number of such operators they support.

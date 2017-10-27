@@ -1,0 +1,24 @@
+chapter AFP
+
+session Linear_Recurrences (AFP) = "Algebraic_Numbers_Lib" +
+  options
+    [timeout = 600]
+  sessions
+    "HOL-Library"
+    "HOL-Computational_Algebra"
+  theories [document = false]
+    "HOL-Computational_Algebra.Polynomial_Factorial"
+    "HOL-Computational_Algebra.Computational_Algebra"
+    "HOL-Library.Stirling"
+    "Algebraic_Numbers.Complex_Algebraic_Numbers"
+  theories
+    Linear_Recurrences_Solver
+  document_files
+    "root.tex"
+
+session Linear_Recurrences_Test (AFP) = Linear_Recurrences +
+  options
+    [document = false, timeout = 600]
+  theories
+    Linear_Recurrences_Test
+

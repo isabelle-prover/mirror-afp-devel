@@ -29,6 +29,7 @@ Binomial-Queues
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
+Buchi_Complementation
 Buffons_Needle
 Buildings
 BytecodeLogicJmlTypes
@@ -69,6 +70,7 @@ Consensus_Refined
 Constructor_Funs
 Containers
 CoreC++
+Count_Complex_Roots
 CRDT
 CryptoBasedCompositionalProperties
 CryptHOL
@@ -91,6 +93,8 @@ DFS_Framework
 Dict_Construction
 Differential_Dynamic_Logic
 Dijkstra_Shortest_Path
+Diophantine_Eqns_Lin_Hom
+Dirichlet_Series
 Discrete_Summation
 DiskPaxos
 DynamicArchitectures
@@ -175,6 +179,7 @@ Key_Agreement_Strong_Adversaries
 Kleene_Algebra
 Knot_Theory
 Koenigsberg_Friendship
+Kuratowski_Closure_Complement
 Lam-ml-Normalization
 LambdaMu
 Lambda_Free_KBOs
@@ -188,6 +193,7 @@ Lazy-Lists-II
 Lehmer
 LightweightJava
 LinearQuantifierElim
+Linear_Recurrences
 Liouville_Numbers
 List-Index
 List-Infinite
@@ -197,6 +203,7 @@ Lifting_Definition_Option
 LocalLexing
 Locally-Nameless-Sigma
 LOFT
+Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
 LTL
@@ -354,6 +361,7 @@ Tarskis_Geometry
 Timed_Automata
 Topology
 TortoiseHare
+Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
 Tree-Automata
@@ -372,7 +380,9 @@ Verified-Prover
 VolpanoSmith
 Vickrey_Clarke_Groves
 Well_Quasi_Orders
+Winding_Number_Eval
 WHATandWHERE_Security
 Word_Lib
 WorkerWrapper
 XML
+Zeta_Function
