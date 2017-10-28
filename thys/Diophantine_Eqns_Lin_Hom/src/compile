@@ -1,0 +1,9 @@
+#!/bin/bash
+
+shopt -s -o errexit
+shopt -s -o nounset
+
+cp -va Main.hs ../generated/
+cd ../generated
+ghc Main.hs
+mv -v Main hlde
