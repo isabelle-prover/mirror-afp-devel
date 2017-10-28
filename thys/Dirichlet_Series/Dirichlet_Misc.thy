@@ -140,7 +140,7 @@ qed
 
 lemma power_diff':
   assumes "m \<ge> n" "x \<noteq> 0"
-  shows   "x ^ (m - n) = (x ^ m div x ^ n :: 'a :: semiring_div)"
+  shows   "x ^ (m - n) = (x ^ m div x ^ n :: 'a :: unique_euclidean_semiring)"
 proof -
   from assms have "x ^ m = x ^ (m - n) * x ^ n"
     by (subst power_add [symmetric]) simp

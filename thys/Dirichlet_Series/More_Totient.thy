@@ -66,7 +66,7 @@ proof -
   also have "real_of_int (\<Sum>d | d dvd n. moebius_mu d * int (n div d)) =
                (\<Sum>d | d dvd n. moebius_mu d * real (n div d))" by simp
   also have "\<dots> = (\<Sum>d | d dvd n. real n * moebius_mu d / real d)"
-    by (intro sum.cong refl) (auto simp: of_nat_div)
+    by (rule sum.cong) (simp_all add: field_char_0_class.of_nat_div)
   also have "\<dots> = real n * (\<Sum>d | d dvd n. moebius_mu d / real d)"
     by (simp add: sum_distrib_left)
   finally show ?thesis .
