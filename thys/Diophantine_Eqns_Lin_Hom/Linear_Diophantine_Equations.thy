@@ -9,7 +9,7 @@ License: LGPL
 section \<open>Homogeneous Linear Diophantine Equations\<close>
 
 theory Linear_Diophantine_Equations
-imports List_Vector
+  imports List_Vector
 begin
 
 (*TODO: move*)
