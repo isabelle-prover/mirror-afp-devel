@@ -3,11 +3,6 @@ chapter AFP
 session "MFMC_Countable" (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions EdmondsKarp_Maxflow
-  theories [document = false]
-    "HOL-Library.Transitive_Closure_Table"
-    "HOL-Library.Bourbaki_Witt_Fixpoint"
-    "HOL-Library.While_Combinator"
-    EdmondsKarp_Maxflow.EdmondsKarp_Termination_Abstract
   theories
     Max_Flow_Min_Cut_Countable
     Rel_PMF_Characterisation

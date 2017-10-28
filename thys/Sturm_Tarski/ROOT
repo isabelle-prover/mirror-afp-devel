@@ -2,8 +2,6 @@ chapter AFP
 
 session Sturm_Tarski (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Computational_Algebra.Polynomial_Factorial"
   theories
     Sturm_Tarski
   document_files

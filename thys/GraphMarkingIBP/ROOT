@@ -4,8 +4,6 @@ session GraphMarkingIBP (AFP) = HOL +
   options [timeout = 600]
   sessions
     DataRefinementIBP
-  theories [document = false]
-    DataRefinementIBP.DataRefinement
   theories
     DSWMark
   document_files

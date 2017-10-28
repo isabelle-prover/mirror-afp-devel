@@ -4,10 +4,6 @@ session "Polynomial_Interpolation" (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
   sessions
     Sqrt_Babylonian
-  theories [document = false]
-    "HOL-Computational_Algebra.Polynomial"
-    "HOL-Library.Monad_Syntax"
-    Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary
   theories
     Is_Rat_To_Rat
     Divmod_Int

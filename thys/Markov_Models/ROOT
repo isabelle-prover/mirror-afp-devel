@@ -5,15 +5,6 @@ session Markov_Models (AFP) = "HOL-Probability" +
   sessions
     Coinductive
     "Gauss-Jordan-Elim-Fun"
-  theories [document = false]
-    "Gauss-Jordan-Elim-Fun.Gauss_Jordan_Elim_Fun"
-    "HOL-Library.While_Combinator"
-    "HOL-Library.Rewrite"
-    "HOL-Library.Monad_Syntax"
-    "HOL-Library.Linear_Temporal_Logic_on_Streams"
-    "HOL-Library.IArray"
-    "HOL-Library.Code_Target_Numeral"
-    Coinductive.Coinductive
   theories
     Markov_Models
     "ex/Example_A"

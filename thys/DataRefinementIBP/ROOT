@@ -4,9 +4,6 @@ session DataRefinementIBP (AFP) = HOL +
   options [timeout = 600]
   sessions
     LatticeProperties
-  theories [document = false]
-    LatticeProperties.Complete_Lattice_Prop
-    LatticeProperties.Conj_Disj
   theories
     DataRefinement
   document_files

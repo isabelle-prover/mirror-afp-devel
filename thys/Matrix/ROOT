@@ -4,9 +4,6 @@ session Matrix (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"
-  theories [document = false]
-    "Abstract-Rewriting.SN_Orders"
-    "HOL-Algebra.Ring"
   theories
     Matrix_Legacy
   document_files

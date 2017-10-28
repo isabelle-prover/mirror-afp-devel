@@ -5,13 +5,6 @@ session "Nominal2" (AFP) = HOL +
   sessions
     "HOL-Library"
     FinFun
-  theories [document = false]
-    "HOL-Library.Old_Datatype"
-    "HOL-Library.Cardinality"
-    "HOL-Library.Infinite_Set"
-    "HOL-Library.Phantom_Type"
-    "HOL-Library.FSet"
-    FinFun.FinFun
   theories
     Nominal2
     Atoms

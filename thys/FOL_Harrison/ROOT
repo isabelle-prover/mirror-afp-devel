@@ -4,9 +4,6 @@ session FOL_Harrison (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
-  theories [document = false]
-     "HOL-Library.Char_ord"
-     "HOL-Library.Code_Char"
   theories
     FOL_Harrison
   document_files

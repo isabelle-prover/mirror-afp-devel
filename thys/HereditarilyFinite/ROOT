@@ -3,8 +3,6 @@ chapter AFP
 session HereditarilyFinite (AFP) = "HOL-Library" +
   description {* The Hereditarily Finite Sets *}
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Library.Nat_Bijection"
   theories
     Rank
     Finite_Automata

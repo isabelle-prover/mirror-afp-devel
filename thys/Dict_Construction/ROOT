@@ -7,11 +7,6 @@ session Dict_Construction (AFP) = HOL +
     Automatic_Refinement
     Lazy_Case
     Show
-  theories [document = false]
-    "HOL-Library.ListVector"
-    Automatic_Refinement.Refine_Util
-    Lazy_Case.Lazy_Case
-    Show.Show_Instances
   theories
     Introduction
     Impossibility

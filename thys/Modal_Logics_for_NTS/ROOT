@@ -4,8 +4,6 @@ session "Modal_Logics_for_NTS" (AFP) = Nominal2 +
   options [timeout = 600]
   sessions
     "HOL-Cardinals"
-  theories [document = false]
-    "HOL-Cardinals.Bounded_Set"
   theories
     (* Strong Bisimilarity *)
     Nominal_Bounded_Set

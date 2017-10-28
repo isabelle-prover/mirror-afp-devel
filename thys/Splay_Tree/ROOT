@@ -4,10 +4,6 @@ session Splay_Tree (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"
-  theories [document = false]
-    "HOL-Data_Structures.Set_by_Ordered"
-    "HOL-Data_Structures.Map_by_Ordered"
-    "HOL-Data_Structures.Cmp"
   theories
     Splay_Tree
     Splay_Map

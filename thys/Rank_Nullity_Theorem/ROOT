@@ -2,8 +2,6 @@ chapter AFP
 
 session "Rank_Nullity_Theorem" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Library.Bit"
   theories
     Dim_Formula
   document_files

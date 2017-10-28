@@ -1,31 +1,9 @@
 chapter AFP
 
-session Koenigsberg_Friendship_Base (AFP) = "HOL-Number_Theory" +
-  options [timeout = 3600, document = false]
+session Koenigsberg_Friendship (AFP) = "HOL-Number_Theory" +
+  options [timeout = 3600]
   sessions
     Dijkstra_Shortest_Path
-  theories
-    "HOL-Algebra.Congruence"
-    "HOL-Algebra.FiniteProduct"
-    "HOL-Algebra.Group"
-    "HOL-Algebra.Lattice"
-    "HOL-Algebra.Ring"
-    "HOL-Algebra.More_Group"
-    "HOL-Algebra.More_Finite_Product"
-    "HOL-Algebra.More_Ring"
-    "HOL-Library.AList"
-    "HOL-Library.DAList"
-    "HOL-Library.FuncSet"
-    "HOL-Library.Multiset"
-    "HOL-Number_Theory.Cong"
-    "HOL-Number_Theory.Fib"
-    "HOL-Number_Theory.Number_Theory"
-    "HOL-Computational_Algebra.Primes"
-    "HOL-Number_Theory.Residues"
-    Dijkstra_Shortest_Path.Graph
-
-session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
-  options [timeout = 3600]
   theories
     MoreGraph
     KoenigsbergBridge
@@ -33,4 +11,3 @@ session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
   document_files
     "root.bib"
     "root.tex"
-

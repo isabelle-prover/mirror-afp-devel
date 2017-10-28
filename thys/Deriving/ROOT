@@ -6,10 +6,6 @@ session Deriving (AFP) = "HOL-Library" +
     "HOL-Word"
     Native_Word
     Collections
-  theories [document = false]
-    Collections.HashCode
-    "HOL-Library.Char_ord"
-    "HOL-Library.Countable"
   theories
     Derive_Manager
     Generator_Aux

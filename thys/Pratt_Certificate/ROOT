@@ -1,12 +1,11 @@
 chapter AFP
 
-session "Pratt_Certificate" (AFP) = "Lehmer" +
-
+session "Pratt_Certificate" (AFP) = "HOL-Number_Theory" +
   options [timeout = 3600]
-
+  sessions
+    Lehmer
   theories
     Pratt_Certificate
-
   document_files
     "root.tex"
     "root.bib"

@@ -2,10 +2,6 @@ chapter AFP
 
 session Groebner_Bases (AFP) = Polynomials +
   options [timeout = 600]
-  theories [document = false]
-    "Abstract-Rewriting.Abstract_Rewriting"
-    Polynomials.Abstract_Poly
-    Polynomials.Poly_Lists
   theories
     Computations
   document_files

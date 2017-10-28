@@ -4,8 +4,6 @@ session Stewart_Apollonius (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Triangle
-  theories [document = false]
-    Triangle.Triangle
   theories
     Stewart_Apollonius
   document_files
