@@ -7,13 +7,6 @@ session "QR_Decomposition" (AFP) = "HOL-Analysis" +
     Rank_Nullity_Theorem
     Real_Impl
     Sqrt_Babylonian
-  theories [document = false]
-    "HOL-Library.Code_Target_Numeral"
-    "HOL-Library.Code_Char"
-    "HOL-Library.IArray"
-    Real_Impl.Real_Unique_Impl
-    Gauss_Jordan.Examples_Gauss_Jordan_Abstract
-    Gauss_Jordan.Code_Real_Approx_By_Float_Haskell
   theories
     Least_Squares_Approximation
     Examples_QR_Abstract_Float

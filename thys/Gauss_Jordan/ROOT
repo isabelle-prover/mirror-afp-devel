@@ -4,9 +4,6 @@ session Gauss_Jordan (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Rank_Nullity_Theorem
-  theories [document = false]
-    "HOL-Library.Code_Target_Numeral"
-    Rank_Nullity_Theorem.Dim_Formula
   theories
     Examples_Gauss_Jordan_Abstract
     Code_Generation_IArrays_SML
@@ -14,4 +11,3 @@ session Gauss_Jordan (AFP) = "HOL-Analysis" +
   document_files
     "root.bib"
     "root.tex"
-

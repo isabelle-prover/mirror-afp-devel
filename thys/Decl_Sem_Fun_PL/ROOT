@@ -4,8 +4,6 @@ session Decl_Sem_Fun_PL (AFP) = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Library"
-  theories [document = false]
-    "HOL-Library.FSet"
   theories
     Lambda
     SmallStepLam

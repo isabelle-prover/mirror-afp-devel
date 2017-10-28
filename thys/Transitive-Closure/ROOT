@@ -4,9 +4,6 @@ session "Transitive-Closure" (AFP) = Collections +
   options [timeout = 600]
   sessions
     Matrix
-  theories [document = false]
-    Collections.RBTMapImpl
-    Collections.RBTSetImpl
   theories
     Transitive_Closure_Impl
     Transitive_Closure_List_Impl

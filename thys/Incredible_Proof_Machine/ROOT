@@ -6,11 +6,6 @@ session Incredible_Proof_Machine (AFP) = "HOL-Library" +
   sessions
     "HOL-Eisbach"
     Abstract_Completeness
-  theories [document = false]
-    "HOL-Library.FSet"
-    "HOL-Library.Stream"
-    "HOL-Library.Sublist"
-    "HOL-Library.Countable"
   theories
     Incredible_Everything
     Incredible_Propositional_Tasks

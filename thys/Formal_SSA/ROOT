@@ -5,17 +5,6 @@ session Formal_SSA (AFP) = Collections +
   sessions
     Dijkstra_Shortest_Path
     Slicing
-  theories [document = false]
-    "HOL-Library.While_Combinator"
-    "HOL-Library.Product_Lexorder"
-    "HOL-Library.Sublist"
-    "HOL-Library.RBT_Set"
-    "HOL-Library.RBT_Mapping"
-    "HOL-Library.Char_ord"
-    "HOL-Library.List_lexord"
-    "HOL-Library.Code_Target_Numeral"
-    Slicing.AdditionalLemmas
-    Dijkstra_Shortest_Path.GraphSpec
   theories
     FormalSSA_Misc
     Serial_Rel

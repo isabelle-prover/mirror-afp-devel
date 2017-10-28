@@ -1,8 +1,9 @@
 chapter AFP
 
-session JinjaThreads (AFP slow) = "HOL-Word" +
+session JinjaThreads (AFP slow) = HOL +
   options [timeout = 28800]
   sessions
+    "HOL-Word"
     "Binomial-Heaps"
     "Finger-Trees"
     Automatic_Refinement

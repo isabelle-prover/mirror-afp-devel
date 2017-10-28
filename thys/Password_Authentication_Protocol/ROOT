@@ -2,8 +2,6 @@ chapter AFP
 
 session "Password_Authentication_Protocol" (AFP) = "HOL-Library" +
   options [timeout = 300]
-  theories [document = false]
-    "HOL-Library.Countable"
   theories
     Propaedeutics
     Protocol

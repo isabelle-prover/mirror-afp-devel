@@ -7,10 +7,6 @@ session "Myhill-Nerode" (AFP) = "HOL-Library" +
     "Regular-Sets"
     Open_Induction
     Well_Quasi_Orders
-  theories [document = false]
-    "Regular-Sets.Regular_Set"
-    "Regular-Sets.Regular_Exp"
-    "Regular-Sets.Derivatives"
   theories
     Closures2
     Non_Regular_Languages

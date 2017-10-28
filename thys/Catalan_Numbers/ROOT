@@ -1,9 +1,7 @@
 chapter AFP
 
 session Catalan_Numbers (AFP) = "Landau_Analysis" +
-  options [timeout=600]
-  theories [document=false]
-    "HOL-Computational_Algebra.Formal_Power_Series"
+  options [timeout = 600]
   theories
     Catalan_Numbers
   document_files

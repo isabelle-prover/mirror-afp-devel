@@ -1,12 +1,10 @@
 chapter AFP
 
-session Bertrands_Postulate (AFP) = "Pratt_Certificate" +
+session Bertrands_Postulate (AFP) = "HOL-Number_Theory" +
   options [timeout = 600]
   sessions
+    Pratt_Certificate
     Ordinary_Differential_Equations
-  theories [document = false]
-    "HOL-Decision_Procs.Approximation_Bounds"
-    "HOL-Library.Discrete"
   theories
     Bertrand
   document_files

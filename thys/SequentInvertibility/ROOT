@@ -2,8 +2,6 @@ chapter AFP
 
 session SequentInvertibility (AFP) = "HOL-Nominal" +
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Library.Multiset"
   theories
     SequentInvertibility
   document_files

@@ -6,10 +6,6 @@ session "Decreasing-Diagrams-II" (AFP) = "Abstract-Rewriting" +
     "HOL-Cardinals"
     Open_Induction
     Well_Quasi_Orders
-  theories [document = false]
-    "HOL-Cardinals.Wellorder_Extension"
-    Well_Quasi_Orders.Multiset_Extension
-    Well_Quasi_Orders.Well_Quasi_Orders
   theories
     Decreasing_Diagrams_II
   document_files

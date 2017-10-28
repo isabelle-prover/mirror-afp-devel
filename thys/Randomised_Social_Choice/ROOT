@@ -4,8 +4,6 @@ session Randomised_Social_Choice (AFP) = "HOL-Probability" +
   options [timeout = 300]
   sessions
     "List-Index"
-  theories [document = false]
-    "List-Index.List_Index"
   theories
     Randomised_Social_Choice
     "Automation/SDS_Automation"

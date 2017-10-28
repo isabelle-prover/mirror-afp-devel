@@ -5,9 +5,6 @@ session Rewriting_Z (AFP) = Nominal2 +
   sessions
     "HOL-Eisbach"
     "Abstract-Rewriting"
-  theories [document = false]
-    "HOL-Eisbach.Eisbach"
-    "Abstract-Rewriting.Abstract_Rewriting"
   theories
     Z
     Lambda_Z

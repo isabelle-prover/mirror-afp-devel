@@ -4,8 +4,6 @@ session SuperCalc (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-ex"
-  theories [document = false]
-    "HOL-ex.Unification"
   theories
     multisets_continued
     well_founded_continued

@@ -5,10 +5,6 @@ session Incompleteness (AFP) = HereditarilyFinite +
   options [timeout = 2400]
   sessions
     Nominal2
-  theories [document = false]
-    "HOL-Library.Nat_Bijection"
-    HereditarilyFinite.OrdArith
-    Nominal2.Nominal2
   theories
     Goedel_I
     Goedel_II

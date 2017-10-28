@@ -4,10 +4,6 @@ session Jinja (AFP) = "HOL-Library" +
   options [timeout = 1200]
   sessions
     "List-Index"
-  theories [document = false]
-    "HOL-Library.Sublist"
-    "HOL-Library.While_Combinator"
-    "HOL-Library.Code_Target_Numeral"
   theories
     Jinja
   document_files

@@ -4,8 +4,6 @@ session Category2 (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-ZF"
-  theories [document = false]
-    "HOL-ZF.MainZF"
   theories
     MonadicEquationalTheory
     Yoneda

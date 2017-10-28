@@ -4,10 +4,6 @@ session CRDT (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
-  theories [document = false]
-    "HOL-Library.Adhoc_Overloading"
-    "HOL-Library.Monad_Syntax"
-    "HOL-Library.Code_Target_Numeral"
   theories
     Network
     RGA

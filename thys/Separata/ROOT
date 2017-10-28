@@ -5,10 +5,6 @@ session Separata (AFP) = "HOL-Library" +
   sessions
     "HOL-Eisbach"
     Separation_Algebra
-  theories [document = false]
-    "HOL-Eisbach.Eisbach_Tools"
-    "HOL-Library.Multiset"
-    Separation_Algebra.Separation_Algebra
   theories
     Separata
   document_files

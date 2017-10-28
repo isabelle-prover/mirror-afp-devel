@@ -4,12 +4,6 @@ session Propositional_Proof_Systems (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
-  theories [document=false]
-    "HOL-Library.Multiset"
-    "HOL-Library.Countable"
-    "HOL-Library.Simps_Case_Conv"
-    "HOL-Library.List_lexord"
-    "HOL-Library.While_Combinator"
   theories
     (* beware of stupid placement of section titles when reordering. *)
     Formulas

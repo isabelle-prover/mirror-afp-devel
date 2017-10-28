@@ -1,11 +1,10 @@
 chapter AFP
 
-session "Flyspeck-Tame" (AFP slow very_slow) = "HOL-Library" +
+session "Flyspeck-Tame" (AFP slow very_slow) = HOL +
   options [timeout = 50400]
   sessions
+    "HOL-Library"
     Trie
-  theories [document = false]
-    Trie.Tries
   theories
     Completeness
   document_files
