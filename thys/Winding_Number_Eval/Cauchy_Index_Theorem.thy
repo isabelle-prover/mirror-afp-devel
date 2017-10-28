@@ -2368,7 +2368,7 @@ proof -
     have "jumpF f (at_right a) = 0" "jumpF f (at_left a) = 0"
     proof -
       have "isCont (inverse o inverse o f) a" using cont False unfolding comp_def
-        by (rule_tac isCont_inverse,auto)
+        by (rule_tac continuous_at_within_inverse, auto)
       then have "isCont f a" unfolding comp_def by auto
       then have "(f \<longlongrightarrow> f a) (at_right a)" "(f \<longlongrightarrow> f a) (at_left a)"
         unfolding continuous_at_split by (auto simp add:continuous_within)
@@ -2643,8 +2643,8 @@ proof -
       case False
       have "isCont (\<lambda>x. Im (g x)) x" "isCont (\<lambda>x. Re (g x)) x" 
         using \<open>path g\<close> unfolding path_def
-        by (metis False atLeastAtMost_iff at_within_closed_interval continuous_Im continuous_Re
-          continuous_on_eq_continuous_within less_le that(1) that(2))+      
+        by (metis False atLeastAtMost_iff at_within_Icc_at continuous_Im continuous_Re
+          continuous_on_eq_continuous_within less_le that)+      
       then have "isCont g' x" 
         using assms(2) unfolding g'_def
         by (auto intro:continuous_intros)
@@ -2676,11 +2676,11 @@ proof -
       case False
       have "isCont (\<lambda>x. Im (g x)) x" "isCont (\<lambda>x. Re (g x)) x" 
         using \<open>path g\<close> unfolding path_def
-        by (metis False atLeastAtMost_iff at_within_closed_interval continuous_Im continuous_Re
-          continuous_on_eq_continuous_within less_le that(1) that(2))+      
+        by (metis False atLeastAtMost_iff at_within_Icc_at continuous_Im continuous_Re
+          continuous_on_eq_continuous_within less_le that)+      
       then have "isCont g' x" 
         using assms(2) unfolding g'_def
-        by (auto intro:continuous_intros)
+        by (auto)
       then show ?thesis unfolding isCont_def using filterlim_at_split by blast
     qed
     then have "\<not> filterlim g' at_top (at_left x)" "\<not> filterlim g' at_bot (at_left x)"
