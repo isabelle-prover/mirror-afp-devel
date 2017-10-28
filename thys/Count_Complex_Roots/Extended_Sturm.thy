@@ -481,11 +481,18 @@ proof -
     have "\<forall>\<^sub>F x in at y within S. poly p x \<noteq> 0" 
       using eventually_poly_nz_at_within[OF \<open>p\<noteq>0\<close>,of y S] .
     then have "eventually (\<lambda>x. (poly q x / poly p x) = (f x+ g x)) ?F"
-      unfolding f_def g_def
-      apply (elim eventually_mono)
-      apply (subst mult_div_mod_eq[of p q,symmetric])
-      apply (auto simp only:poly_add poly_mult divide_simps split:if_splits)
-      by (metis linordered_field_class.sign_simps(24) nonzero_eq_divide_eq)
+    proof (rule eventually_mono)
+      fix x
+      assume P: "poly p x \<noteq> 0"
+      have "poly q x = poly (q div p * p + q mod p) x"
+        by simp
+      also have "\<dots> = f x * poly p x + poly (q mod p) x"
+        by (simp only: poly_add poly_mult f_def g_def)
+      moreover have "poly (q mod p) x = g x * poly p x"
+        using P by (simp add: g_def)
+      ultimately show "poly q x / poly p x = f x + g x"
+        using P by simp
+    qed
     then have "jumpF (\<lambda>x. poly q x / poly p x) ?F = jumpF (\<lambda>x. f x+ g x) ?F"
       by (intro jumpF_cong,auto)
     also have "... = jumpF g ?F"  
