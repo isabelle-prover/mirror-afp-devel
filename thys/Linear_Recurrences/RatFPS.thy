@@ -205,7 +205,7 @@ begin
 lift_definition inverse_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" is
   "\<lambda>x. let (a,b) = quot_of_fract x
        in  if coeff a 0 = 0 then 0 else inverse x"
-  by (auto simp: case_prod_unfold Let_def quot_of_fract_inverse coeff_normalize)
+  by (auto simp: case_prod_unfold Let_def quot_of_fract_inverse)
 
 lift_definition divide_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is
   "\<lambda>f g. (if g = 0 then 0 else 
@@ -430,11 +430,7 @@ lemma fps_of_ratfps_eq_zero_iff [simp]:
   "fps_of_ratfps p = 0 \<longleftrightarrow> p = 0" 
   by (simp del: fps_of_ratfps_0 add: fps_of_ratfps_0 [symmetric])
 
-
-
-lemma unit_factor_snd_quot_of_fract [simp]: 
-  "unit_factor (snd (quot_of_fract x)) = 1"
-  by transfer simp
+declare unit_factor_snd_quot_of_fract [simp]
 
 lemma unit_factor_snd_quot_of_ratfps [simp]: 
   "unit_factor (snd (quot_of_ratfps x)) = 1"
@@ -534,9 +530,6 @@ qed
 lemma fps_shift_code [code]: "fps_shift n (fps_of_ratfps x) = fps_of_ratfps (ratfps_shift n x)"
   by simp
 
-
-  
-
 instantiation fps :: (equal) equal
 begin
 
@@ -549,54 +542,33 @@ end
 
 lemma equal_fps_code [code]: "HOL.equal (fps_of_ratfps f) (fps_of_ratfps g) \<longleftrightarrow> f = g"
   by simp
-  
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") ring_div
-begin
-
-lift_definition modulo_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is
-  "\<lambda>f g. if g = 0 then f else 
-           let n = ratfps_subdegree g; h = ratfps_shift n g
-           in  ratfps_of_poly (ratfps_cutoff n (f * inverse h)) * h" .
-
-lemma fps_of_ratfps_mod [simp]: 
-   "fps_of_ratfps (f mod g :: 'a ratfps) = fps_of_ratfps f mod fps_of_ratfps g"
-  unfolding fps_mod_def by transfer' (simp add: Let_def ratfps_subdegree_altdef)
-
-lemma fps_of_ratfps_divide [simp]: "fps_of_ratfps (f div g) = fps_of_ratfps f div fps_of_ratfps g"
+lemma fps_of_ratfps_divide [simp]:
+  "fps_of_ratfps (f div g) = fps_of_ratfps f div fps_of_ratfps g"
   unfolding fps_divide_def Let_def by transfer' (simp add: Let_def ratfps_subdegree_altdef)
            
 lemma ratfps_eqI: "fps_of_ratfps x = fps_of_ratfps y \<Longrightarrow> x = y" by simp
 
-instance by standard (simp_all add: ratfps_eqI del: fps_of_ratfps_eq_iff add: div_mult_mod_eq)
+instance ratfps :: ("{field,factorial_ring_gcd}") algebraic_semidom
+  by standard (auto intro: ratfps_eqI)
 
-end
+lemma fps_of_ratfps_dvd [simp]:
+  "fps_of_ratfps x dvd fps_of_ratfps y \<longleftrightarrow> x dvd y"
+proof
+  assume "fps_of_ratfps x dvd fps_of_ratfps y"
+  hence "fps_of_ratfps y = fps_of_ratfps y div fps_of_ratfps x * fps_of_ratfps x" by simp
+  also have "\<dots> = fps_of_ratfps (y div x * x)" by simp
+  finally have "y = y div x * x" by (subst (asm) fps_of_ratfps_eq_iff)
+  thus "x dvd y" by (intro dvdI[of _ _ "y div x"]) (simp add: mult_ac)
+next
+  assume "x dvd y"
+  hence "y = y div x * x" by simp
+  also have "fps_of_ratfps \<dots> = fps_of_ratfps (y div x) * fps_of_ratfps x" by simp
+  finally show "fps_of_ratfps x dvd fps_of_ratfps y" by (simp del: fps_of_ratfps_divide)
+qed
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring
-begin
-
-definition unit_factor_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" where
-  "unit_factor x = ratfps_shift (ratfps_subdegree x) x"
-
-definition normalize_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" where
-  "normalize x = (if x = 0 then 0 else ratfps_of_poly (monom 1 (ratfps_subdegree x)))"
-
-definition euclidean_size_ratfps :: "'a ratfps \<Rightarrow> nat" where
-  "euclidean_size_ratfps x = (if x = 0 then 0 else 2 ^ ratfps_subdegree x)"
-  
-lemma fps_of_ratfps_unit_factor [simp]: 
-  "fps_of_ratfps (unit_factor x) = unit_factor (fps_of_ratfps x)"
-  unfolding unit_factor_ratfps_def by (simp add: ratfps_subdegree_altdef)
-
-lemma fps_of_ratfps_normalize [simp]: 
-  "fps_of_ratfps (normalize x) = normalize (fps_of_ratfps x)"
-  unfolding normalize_ratfps_def by (simp add: fps_of_poly_monom ratfps_subdegree_altdef)
-
-lemma fps_of_ratfps_euclidean_size [symmetric,simp]:
-  "euclidean_size (fps_of_ratfps x) = euclidean_size x"
-  unfolding euclidean_size_ratfps_def fps_euclidean_size_def by (simp add: ratfps_subdegree_altdef)
-
-lemma is_unit_ratfps_iff [simp]: "is_unit x \<longleftrightarrow> ratfps_nth x 0 \<noteq> 0"
+lemma is_unit_ratfps_iff [simp]:
+  "is_unit x \<longleftrightarrow> ratfps_nth x 0 \<noteq> 0"
 proof
   assume "is_unit x"
   then obtain y where "1 = x * y" by (auto elim!: dvdE)
@@ -612,9 +584,25 @@ next
   finally have "x * inverse x = 1" by (subst (asm) fps_of_ratfps_eq_iff)
   thus "is_unit x" by (intro dvdI[of _ _ "inverse x"]) simp_all
 qed
- 
+
+instantiation ratfps :: ("{field,factorial_ring_gcd}") normalization_semidom
+begin
+
+definition unit_factor_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" where
+  "unit_factor x = ratfps_shift (ratfps_subdegree x) x"
+
+definition normalize_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" where
+  "normalize x = (if x = 0 then 0 else ratfps_of_poly (monom 1 (ratfps_subdegree x)))"
+
+lemma fps_of_ratfps_unit_factor [simp]: 
+  "fps_of_ratfps (unit_factor x) = unit_factor (fps_of_ratfps x)"
+  unfolding unit_factor_ratfps_def by (simp add: ratfps_subdegree_altdef)
+
+lemma fps_of_ratfps_normalize [simp]: 
+  "fps_of_ratfps (normalize x) = normalize (fps_of_ratfps x)"
+  unfolding normalize_ratfps_def by (simp add: fps_of_poly_monom ratfps_subdegree_altdef)
+
 instance proof
-  show "euclidean_size (0 :: 'a ratfps) = 0" by simp
   show "unit_factor x * normalize x = x" "normalize (0 :: 'a ratfps) = 0" 
        "unit_factor (0 :: 'a ratfps) = 0" for x :: "'a ratfps"
     by (rule ratfps_eqI, simp add: ratfps_subdegree_code 
@@ -624,29 +612,56 @@ instance proof
   show "unit_factor (a * b) = unit_factor a * unit_factor b" for a b :: "'a ratfps"
     by (rule ratfps_eqI, insert unit_factor_mult[of "fps_of_ratfps a" "fps_of_ratfps b"])
        (simp del: fps_of_ratfps_eq_iff)
-  show "euclidean_size (a mod b) < euclidean_size b"
-       "euclidean_size a \<le> euclidean_size (a * b)" if "b \<noteq> 0" for a b :: "'a ratfps"
-    using that by (simp_all add: mod_size_less size_mult_mono)
   show "unit_factor a = a" if "is_unit a" for a :: "'a ratfps"
     by (rule ratfps_eqI) (insert that, auto simp: fps_of_ratfps_is_unit)
 qed
 
 end
 
+instantiation ratfps :: ("{field,factorial_ring_gcd}") semidom_modulo
+begin
 
-lemma fps_of_ratfps_dvd [simp]: "fps_of_ratfps x dvd fps_of_ratfps y \<longleftrightarrow> x dvd y"
-proof
-  assume "fps_of_ratfps x dvd fps_of_ratfps y"
-  hence "fps_of_ratfps y = fps_of_ratfps y div fps_of_ratfps x * fps_of_ratfps x" by simp
-  also have "\<dots> = fps_of_ratfps (y div x * x)" by simp
-  finally have "y = y div x * x" by (subst (asm) fps_of_ratfps_eq_iff)
-  thus "x dvd y" by (intro dvdI[of _ _ "y div x"]) (simp add: mult_ac)
-next
-  assume "x dvd y"
-  hence "y = y div x * x" by simp
-  also have "fps_of_ratfps \<dots> = fps_of_ratfps (y div x) * fps_of_ratfps x" by simp
-  finally show "fps_of_ratfps x dvd fps_of_ratfps y" by (simp del: fps_of_ratfps_divide)
+lift_definition modulo_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is
+  "\<lambda>f g. if g = 0 then f else 
+           let n = ratfps_subdegree g; h = ratfps_shift n g
+           in  ratfps_of_poly (ratfps_cutoff n (f * inverse h)) * h" .
+
+lemma fps_of_ratfps_mod [simp]: 
+   "fps_of_ratfps (f mod g :: 'a ratfps) = fps_of_ratfps f mod fps_of_ratfps g"
+  unfolding fps_mod_def by transfer' (simp add: Let_def ratfps_subdegree_altdef)
+
+instance
+  by standard (auto intro: ratfps_eqI)
+
+end
+
+instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring
+begin
+
+definition euclidean_size_ratfps :: "'a ratfps \<Rightarrow> nat" where
+  "euclidean_size_ratfps x = (if x = 0 then 0 else 2 ^ ratfps_subdegree x)"
+  
+lemma fps_of_ratfps_euclidean_size [simp]:
+  "euclidean_size x = euclidean_size (fps_of_ratfps x)"
+  unfolding euclidean_size_ratfps_def fps_euclidean_size_def
+  by (simp add: ratfps_subdegree_altdef)
+
+instance proof
+  show "euclidean_size (0 :: 'a ratfps) = 0" by simp
+  show "euclidean_size (a mod b) < euclidean_size b"
+       "euclidean_size a \<le> euclidean_size (a * b)" if "b \<noteq> 0" for a b :: "'a ratfps"
+    using that by (simp_all add: mod_size_less size_mult_mono)
 qed
+
+end
+
+instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring_cancel
+begin
+
+instance
+  by standard (auto intro: ratfps_eqI)
+
+end
 
 lemma quot_of_ratfps_eq_iff [simp]: "quot_of_ratfps x = quot_of_ratfps y \<longleftrightarrow> x = y"
   by transfer simp
@@ -672,6 +687,7 @@ lemma ratfps_dvd_code [code_unfold]:
   using fps_dvd_code [of "fps_of_ratfps x" "fps_of_ratfps y"]
   by (simp add: ratfps_subdegree_altdef)
 
+instance ratfps :: ("{field,factorial_ring_gcd}") normalization_euclidean_semiring ..
 
 instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring_gcd
 begin

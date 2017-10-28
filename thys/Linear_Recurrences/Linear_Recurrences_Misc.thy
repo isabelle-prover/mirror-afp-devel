@@ -206,7 +206,7 @@ proof -
 qed
 
 lemma coprime_linear_poly': 
-  fixes c :: "'a :: {field,factorial_ring_gcd}"
+  fixes c :: "'a :: {field,factorial_ring_gcd,normalization_euclidean_semiring}"
   assumes "c \<noteq> c'" "c \<noteq> 0" "c' \<noteq> 0"
   shows   "coprime [:1,c:] [:1,c':]"
 proof -

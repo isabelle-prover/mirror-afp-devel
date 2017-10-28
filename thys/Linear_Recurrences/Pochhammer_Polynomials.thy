@@ -6,8 +6,8 @@ section \<open>Falling factorial as a polynomial\<close>
 theory Pochhammer_Polynomials
 imports
   Complex_Main
-  "~~/src/HOL/Library/Stirling" 
-  "~~/src/HOL/Computational_Algebra/Polynomial" 
+  "HOL-Library.Stirling" 
+  "HOL-Computational_Algebra.Polynomial" 
 begin
 
 definition pochhammer_poly :: "nat \<Rightarrow> 'a :: {comm_semiring_1} poly" where

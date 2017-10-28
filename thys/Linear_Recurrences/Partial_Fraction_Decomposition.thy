@@ -107,7 +107,7 @@ text \<open>
   than $y_i$.
 \<close>
 definition partial_fraction_decomposition :: 
-    "'a :: {euclidean_ring_gcd, semiring_div} \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a \<times> 'a list list" where
+    "'a :: euclidean_ring_gcd \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a \<times> 'a list list" where
   "partial_fraction_decomposition x ys = (if ys = [] then (x, []) else
      (let zs = [let (y, n) = ys ! i
                 in  normalise_decomp (decompose x (map (\<lambda>(y,n). y ^ Suc n) ys) ! i) y (Suc n). 
@@ -146,7 +146,7 @@ text \<open>
 \<close>
 
 locale pfd_homomorphism =
-fixes lift :: "('a :: {euclidean_ring_gcd,semiring_div}) \<Rightarrow> ('b :: ring_div)"
+fixes lift :: "('a :: euclidean_ring_gcd) \<Rightarrow> ('b :: euclidean_semiring_cancel)"
 assumes lift_add: "lift (a + b) = lift a + lift b"                   
 assumes lift_mult: "lift (a * b) = lift a * lift b"
 assumes lift_0 [simp]: "lift 0 = 0"
@@ -161,7 +161,7 @@ definition from_decomp :: "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> '
   "from_decomp x y n = lift x div lift y ^ n"
 
 lemma decompose:
-  assumes "ys \<noteq> []" "pairwise_coprime (set ys)" "distinct ys"
+  assumes "ys \<noteq> []" "pairwise coprime (set ys)" "distinct ys"
           "\<And>y. y \<in> set ys \<Longrightarrow> is_unit (lift y)"
   shows   "(\<Sum>i<length ys. lift (decompose x ys ! i) div lift (ys ! i)) = 
              lift x div lift (prod_list ys)"
@@ -176,8 +176,9 @@ proof (induction ys arbitrary: x rule: list_nonempty_induct)
   obtain s t where st: "bezout_coefficients y (prod_list ys) = (s, t)"
     by (cases "bezout_coefficients y (prod_list ys)") simp_all
 
-  from \<open>pairwise_coprime (set (y#ys))\<close> 
-    have  coprime:"pairwise_coprime (set ys)" by (rule pairwise_coprime_subset) auto
+  from \<open>pairwise coprime (set (y#ys))\<close> 
+  have  coprime:"pairwise coprime (set ys)"
+    by (rule pairwise_subset) auto
 
   have "(\<Sum>i<length (y # ys). lift (decompose x (y # ys) ! i) div lift ((y # ys) ! i)) = 
           lift (t * x) div lift y + lift (s * x) div lift (prod_list ys)"
@@ -188,16 +189,16 @@ proof (induction ys arbitrary: x rule: list_nonempty_induct)
                 lift (prod_list (y#ys)) = 
              lift (prod_list ys) * (lift y * (lift (t * x) div lift y)) + 
              lift y * (lift (prod_list ys) * (lift (s * x) div lift (prod_list ys)))"
-                by (simp_all add: lift_mult ring_distribs)
+                by (simp_all add: lift_mult algebra_simps)
   also have "\<dots> = lift (prod_list ys * t * x + y * s * x)" using assms unit 
-    by (simp add: lift_mult lift_add)
+    by (simp add: lift_mult lift_add algebra_simps)
   finally have "(\<Sum>i<length (y # ys). lift (decompose x (y # ys) ! i) div lift ((y # ys) ! i)) =
                   lift ((s * y + t * prod_list ys) * x) div lift (prod_list (y#ys))"
                   using unit by (subst unit_eq_div2) (auto simp: lift_mult lift_add algebra_simps)
                 also have "s * y + t * prod_list ys = gcd (prod_list ys) y"
     using bezout_coefficients_fst_snd[of y "prod_list ys"] by (simp add: st gcd.commute)
   also from cons.prems have "\<dots> = 1"
-    by (intro prod_list_coprime) (auto dest: pairwise_coprimeD)
+    by (intro prod_list_coprime) (auto dest: pairwiseD)
   finally show ?case by simp
 qed simp_all
 
@@ -218,16 +219,21 @@ proof (induction x y n rule: normalise_decomp.induct, goal_cases)
             (\<Sum>i<Suc n. from_decomp (snd (normalise_decomp x y (Suc n)) ! i) y (Suc n - i)) =
           lift a + (\<Sum>i<n. from_decomp (b ! i) y (n - i)) + from_decomp (x mod y) y (Suc n)"
     unfolding atLeast0LessThan[symmetric]
-      by (subst sum_head_upt_Suc, simp, subst sum_shift_bounds_Suc_ivl)
-         (simp add: ab atLeast0LessThan)
+    apply (subst sum_head_upt_Suc)
+    apply simp
+    apply (subst sum_shift_bounds_Suc_ivl)
+    apply (simp add: ab atLeast0LessThan ac_simps)
+    done
   also have "lift a + (\<Sum>i<n. from_decomp (b ! i) y (n - i)) = 
                lift (x div y) div lift y ^ n"
     using 2 by (simp add: ab)
   also from 2(2) unit have "(\<dots> + from_decomp (x mod y) y (Suc n)) * lift y = 
       (lift ((x div y) * y + x mod y) div lift y ^ n)" (is "?A * _ = ?B div _")
       unfolding lift_add lift_mult
-      by (subst div_add) (auto simp add: from_decomp_def algebra_simps dvd_div_mult2_eq 
-            unit_div_mult_swap dvd_div_mult2_eq[OF unit_imp_dvd] is_unit_mult_iff)
+      apply (subst div_add)
+      apply (auto simp add: from_decomp_def algebra_simps dvd_div_mult2_eq 
+        unit_div_mult_swap dvd_div_mult2_eq[OF unit_imp_dvd] is_unit_mult_iff)
+      done
   with 2(2) have "?A = \<dots> div lift y" by (subst eq_commute, subst dvd_div_eq_mult) auto
   also from 2(2) unit have "\<dots> = ?B div (lift y ^ Suc n)"
     by (subst is_unit_div_mult2_eq [symmetric]) (auto simp: mult_ac)
@@ -245,7 +251,7 @@ lemma partial_fraction_decomposition:
   fixes   ys :: "('a \<times> nat) list"
   defines "ys' \<equiv> map (\<lambda>(x,n). x ^ Suc n) ys :: 'a list"
   assumes unit: "\<And>y. y \<in> fst ` set ys \<Longrightarrow> is_unit (lift y)" 
-  assumes coprime: "pairwise_coprime (set ys')"
+  assumes coprime: "pairwise coprime (set ys')"
   assumes distinct: "distinct ys'"
   assumes "partial_fraction_decomposition x ys = (a, zs)"
   shows   "lift a + (\<Sum>i<length ys. \<Sum>j\<le>snd (ys!i). 
@@ -257,8 +263,8 @@ proof (cases "ys = []")
 
   have "lift x div lift (prod_list ys') = (\<Sum>i<n. lift (decompose x ys' ! i) div lift (ys' ! i))"
     using assms by (subst decompose [symmetric])
-                   (force simp: lift_prod_list prod_list_zero_iff lift_power lift_mult o_def n_def 
-                                is_unit_mult_iff is_unit_power_iff)+ 
+      (force simp: lift_prod_list prod_list_zero_iff lift_power lift_mult o_def n_def 
+        is_unit_mult_iff is_unit_power_iff)+ 
   also have "\<dots> = 
     (\<Sum>i<n. lift (fst (normalise_decomp (decompose x ys' ! i) (fst (ys!i)) (snd (ys!i)+1)))) +
     (\<Sum>i<n. (\<Sum>j\<le>snd (ys!i). from_decomp (zs!i!j) (fst (ys!i)) (snd (ys!i)+1 - j)))" (is "_ = ?A + ?B")
@@ -342,7 +348,7 @@ lemma const_polyI: "degree p = 0 \<Longrightarrow> [:coeff p 0:] = p"
   by (elim degree_eq_zeroE) simp_all
   
 lemma snd_poly_pfd_simple:
-  "map (map (\<lambda>c. [:c :: 'a :: {field,factorial_ring_gcd}:])) (snd (poly_pfd_simple x cs)) = 
+  "map (map (\<lambda>c. [:c :: 'a :: {field,factorial_ring_gcd,normalization_euclidean_semiring}:])) (snd (poly_pfd_simple x cs)) = 
       (snd (partial_fraction_decomposition x (map (\<lambda>(c,n). ([:1,-c:],n)) cs)))"
 proof -
   have "snd (poly_pfd_simple x cs) = map (map (\<lambda>p. coeff p 0))
