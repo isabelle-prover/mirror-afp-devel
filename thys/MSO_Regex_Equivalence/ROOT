@@ -1,8 +1,9 @@
 chapter AFP
 
-session MSO_Regex_Equivalence (AFP) = "HOL-Library" +
+session MSO_Regex_Equivalence (AFP) = HOL +
   options [timeout = 1600]
   sessions
+    "HOL-Library"
     "List-Index"
     Deriving
   theories [document = false]

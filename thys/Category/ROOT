@@ -1,7 +1,9 @@
 chapter AFP
 
-session Category (AFP) = "HOL-Library" +
+session Category (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Cat
     SetCat

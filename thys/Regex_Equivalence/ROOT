@@ -1,8 +1,9 @@
 chapter AFP
 
-session Regex_Equivalence (AFP) = "HOL-Library" +
+session Regex_Equivalence (AFP) = HOL +
   options [timeout = 600]
   sessions
+    "HOL-Library"
     "Regular-Sets"
     "Efficient-Mergesort"
   theories
