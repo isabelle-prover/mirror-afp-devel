@@ -6,8 +6,6 @@ session UpDown_Scheme (AFP) = "HOL-Probability" +
     "HOL-Imperative_HOL"
     Automatic_Refinement
     Separation_Logic_Imperative_HOL
-  theories [document = false]
-    Separation_Logic_Imperative_HOL.Sep_Main
   theories
     Grid_Point
     Grid

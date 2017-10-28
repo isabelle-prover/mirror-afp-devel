@@ -2,9 +2,6 @@ chapter AFP
 
 session "Graph_Theory" (AFP) = "HOL-Library" +
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Library.Extended_Nat"
-    "HOL-Library.Extended_Real"
   theories
     Graph_Theory
   document_files

@@ -5,9 +5,6 @@ session Case_Labeling (AFP) = HOL +
   sessions
     "HOL-Eisbach"
     "HOL-Hoare"
-  theories [document = false]
-    "HOL-Eisbach.Eisbach"
-    "HOL-Hoare.Hoare_Logic"
   theories
     Case_Labeling
     Case_Labeling_Examples

@@ -4,9 +4,6 @@ session Priority_Queue_Braun (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"
-  theories [document = false]
-    "HOL-Library.Tree_Multiset"
-    "HOL-Data_Structures.Priority_Queue"
   theories
     Priority_Queue_Braun
   document_files

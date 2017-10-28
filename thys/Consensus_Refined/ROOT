@@ -6,11 +6,6 @@ session Consensus_Refined (AFP) = HOL +
     "HOL-Library"
     Heard_Of
     Stuttering_Equivalence
-  theories [document = false]
-    Stuttering_Equivalence.StutterEquivalence
-    Heard_Of.HOModel
-    Heard_Of.Reduction
-    Heard_Of.Majorities
   theories
     Infra
     Consensus_Types

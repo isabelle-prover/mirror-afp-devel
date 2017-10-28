@@ -6,13 +6,11 @@ session EdmondsKarp_Maxflow (AFP) = "Flow_Networks" +
     FordFulkerson_Algo
     EdmondsKarp_Termination_Abstract
     EdmondsKarp_Algo
-
     Augmenting_Path_BFS
     EdmondsKarp_Impl
     Edka_Checked_Impl
-  theories [document=false]
+  theories [document = false]
     Edka_Benchmark_Export
-
   document_files
     "root.tex"
     "root.bib"

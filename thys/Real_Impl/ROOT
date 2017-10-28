@@ -6,9 +6,6 @@ session Real_Impl (AFP) = Sqrt_Babylonian +
     "HOL-Computational_Algebra"
     Show
     Deriving
-  theories [document = false]
-    Show.Show_Instances
-    "HOL-Computational_Algebra.Primes"
   theories
     Real_Impl_Auxiliary
     Real_Unique_Impl

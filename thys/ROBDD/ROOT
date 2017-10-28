@@ -10,11 +10,6 @@ session ROBDD (AFP) = Sepref_Prereq +
     Automatic_Refinement
     Collections
     Native_Word
-  theories [document = false]
-    Automatic_Refinement.Refine_Lib
-    Separation_Logic_Imperative_HOL.Array_Blit
-    Separation_Logic_Imperative_HOL.Sep_Main
-    Separation_Logic_Imperative_HOL.Hash_Map_Impl
   theories
     Middle_Impl
     Bool_Func

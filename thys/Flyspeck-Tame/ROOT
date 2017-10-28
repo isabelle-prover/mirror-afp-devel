@@ -4,8 +4,6 @@ session "Flyspeck-Tame" (AFP slow very_slow) = "HOL-Library" +
   options [timeout = 50400]
   sessions
     Trie
-  theories [document = false]
-    Trie.Tries
   theories
     Completeness
   document_files

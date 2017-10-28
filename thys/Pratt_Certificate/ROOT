@@ -1,12 +1,9 @@
 chapter AFP
 
 session "Pratt_Certificate" (AFP) = "Lehmer" +
-
   options [timeout = 3600]
-
   theories
     Pratt_Certificate
-
   document_files
     "root.tex"
     "root.bib"

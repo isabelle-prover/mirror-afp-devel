@@ -4,9 +4,6 @@ session Completeness (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
-  theories [document = false]
-    "HOL-Library.Permutation"
-    "HOL-Library.Multiset"
   theories
     Base
     (* NOTES omitted permutations and try to reuse library stuff *)

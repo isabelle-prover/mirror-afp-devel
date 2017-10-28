@@ -4,8 +4,6 @@ session Derangements (AFP) = "HOL-Library" +
   options [timeout=600]
   sessions
     "HOL-Library"
-  theories [document = false]
-    "HOL-Library.Permutations"
   theories
     Derangements
   document_files

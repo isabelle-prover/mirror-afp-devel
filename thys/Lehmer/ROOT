@@ -2,17 +2,6 @@ chapter AFP
 
 session "Lehmer" (AFP) = "HOL-Number_Theory" +
   options [timeout = 3600]
-  theories [document = false]
-    "HOL-Algebra.Coset"
-    "HOL-Algebra.AbelCoset"
-    "HOL-Algebra.Ideal"
-    "HOL-Algebra.RingHom"
-    "HOL-Algebra.Module"
-    "HOL-Algebra.UnivPoly"
-    "HOL-Algebra.More_Group"
-    "HOL-Algebra.More_Finite_Product"
-    "HOL-Algebra.More_Ring"
-    "HOL-Algebra.Multiplicative_Group"
   theories
     Lehmer
   document_files

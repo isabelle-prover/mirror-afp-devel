@@ -9,13 +9,6 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
   theories [document = false]
     While_Default
     FSet_More
-    "HOL-Library.Code_Target_Nat"
-    "HOL-Library.Code_Target_Int"
-    "HOL-Library.Code_Char"
-    "HOL-Library.While_Combinator"
-    Coinductive_Languages.Coinductive_Language
-    Deriving.Compare_Instances
-    "List-Index.List_Index"
   theories
     WS1S_Formula
     WS1S_Alt_Formula

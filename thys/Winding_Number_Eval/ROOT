@@ -2,22 +2,13 @@ chapter AFP
 
 session "Winding_Number_Eval" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
-
   sessions
     "HOL-Computational_Algebra"
     "HOL-Eisbach"
     "Sturm_Tarski"
-
-  theories [document = false]
-    "HOL-Computational_Algebra.Polynomial_Factorial"
-    "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
-    "HOL-Eisbach.Eisbach_Tools"
-    "Sturm_Tarski.Sturm_Tarski"
-
   theories
     Winding_Number_Eval
     Winding_Number_Eval_Examples
-
   document_files
     "root.tex"
     "root.bib"

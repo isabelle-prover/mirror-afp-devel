@@ -4,9 +4,6 @@ session KAD (AFP) = HOL +
   options [timeout = 600]
   sessions
     Kleene_Algebra
-  theories [document = false]
-    Kleene_Algebra.Kleene_Algebra
-    Kleene_Algebra.Kleene_Algebra_Models
   theories
     Domain_Semiring
     Antidomain_Semiring

@@ -5,9 +5,6 @@ session List_Update (AFP) = "HOL-Probability" +
   sessions
     "List-Index"
     "Regular-Sets"
-  theories [document = false]
-    "List-Index.List_Index"
-    "Regular-Sets.Equivalence_Checking"
   theories
     Move_to_Front
     Competitive_Analysis

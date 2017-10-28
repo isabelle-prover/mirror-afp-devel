@@ -1,9 +1,7 @@
 chapter AFP
 
 session Liouville_Numbers (AFP) = "HOL-Computational_Algebra" +
-  options [timeout=600]
-  theories [document=false]
-    "HOL-Computational_Algebra.Polynomial"
+  options [timeout = 600]
   theories
     Liouville_Numbers
   document_files

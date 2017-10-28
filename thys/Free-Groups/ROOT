@@ -7,12 +7,6 @@ session "Free-Groups" (AFP) = HOL +
     "HOL-Algebra"
     "HOL-Cardinals"
     Applicative_Lifting
-  theories [document = false]
-    "HOL-Algebra.Group"
-    "HOL-Algebra.IntRing"
-    "HOL-Algebra.Bij"
-    "HOL-Proofs-Lambda.Commutation"
-    "HOL-Cardinals.Cardinal_Order_Relation"
   theories
     FreeGroups
     Isomorphisms

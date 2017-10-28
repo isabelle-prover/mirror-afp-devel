@@ -5,9 +5,6 @@ session Probabilistic_While (AFP) = "HOL-Probability" +
   sessions
     MFMC_Countable
     Pre_BZ
-  theories [document = false]
-    "HOL-Types_To_Sets.Types_To_Sets"
-    MFMC_Countable.Rel_PMF_Characterisation
   theories
     While_SPMF
     Bernoulli

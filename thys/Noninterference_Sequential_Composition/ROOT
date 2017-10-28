@@ -4,8 +4,6 @@ session "Noninterference_Sequential_Composition" (AFP) = "HOL" +
   options [timeout = 600]
   sessions
     Noninterference_Ipurge_Unwinding
-  theories [document = false]
-    Noninterference_Ipurge_Unwinding.DeterministicProcesses
   theories
     Propaedeutics
     SequentialComposition

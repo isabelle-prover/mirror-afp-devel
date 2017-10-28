@@ -7,12 +7,6 @@ session Quick_Sort_Cost (AFP) = "HOL-Probability" +
     "Regular-Sets"
     Comparison_Sort_Lower_Bound
     Landau_Symbols
-  theories [document = false]
-    "HOL-Library.Multiset_Permutations"
-    "List-Index.List_Index"
-    "Regular-Sets.Regular_Set"
-    Landau_Symbols.Landau_Symbols
-    Comparison_Sort_Lower_Bound.Linorder_Relations
   theories
     Randomised_Quick_Sort
     Quick_Sort_Average_Case

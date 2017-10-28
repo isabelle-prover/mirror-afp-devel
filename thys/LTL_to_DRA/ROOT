@@ -1,18 +1,12 @@
 chapter AFP
 
-session LTL_to_DRA (AFP) = LTL + 
+session LTL_to_DRA (AFP) = LTL +
   options [timeout = 600]
   sessions
     "List-Index"
     Boolean_Expression_Checkers
     KBPs
-  theories 
-    [document = false]
-    Boolean_Expression_Checkers.Boolean_Expression_Checkers
-    Boolean_Expression_Checkers.Boolean_Expression_Checkers_AList_Mapping
-    "List-Index.List_Index"
-    KBPs.DFS
-  theories 
+  theories
     LTL_Rabin
     LTL_Rabin_Unfold_Opt
     "Impl/Export_Code"
