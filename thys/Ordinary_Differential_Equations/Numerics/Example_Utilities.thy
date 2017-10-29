@@ -2334,6 +2334,8 @@ ML \<open>val ode_numerics_conv = @{computation_check
   terms:
     Trueprop
 
+    Not
+
     solves_one_step_until_time_aform_fo
     solves_poincare_map_aform'_fo
 
