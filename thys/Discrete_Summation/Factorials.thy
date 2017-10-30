@@ -165,7 +165,7 @@ next
     also have "\<dots> = (\<Sum>k = Suc 0 .. Suc (Suc n). of_nat (Stirling n k) * (of_nat k * ffact k a)) "
       by (simp only: sum_head_Suc [of 0 "n + 2"]) simp
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat (Stirling n (Suc k)) * (of_nat (Suc k) * ffact (Suc k) a))"
-      by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
+      by (simp only: image_Suc_atLeast_atMost sum_shift_bounds_cl_Suc_ivl)
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat ((Suc k) * Stirling n (Suc k)) * ffact (Suc k) a)"
       by (simp only: of_nat_mult algebra_simps)
     finally have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
@@ -176,7 +176,7 @@ next
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling (Suc n) (Suc k)) * ffact (Suc k) a)"
     by (simp add: algebra_simps sum.distrib)
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
-    by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
+    by (simp only: image_Suc_atLeast_atMost sum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
     by (simp only: sum_head_Suc [of "0" "Suc n"]) simp
   finally show ?case by simp

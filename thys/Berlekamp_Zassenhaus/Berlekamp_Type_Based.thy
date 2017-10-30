@@ -448,7 +448,7 @@ next
     with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       by (rule fermat_theorem)
     with a have "int (nat a ^ (CARD('a) - 1) mod CARD('a)) = 1"
-      by (simp add: of_nat_mod cong_def cong_def)
+      by (simp add: of_nat_mod cong_def)
     then have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
       using a by (simp add: of_nat_mod)
     then have "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a"
@@ -2840,7 +2840,7 @@ proof -
         } note gS = this
 
         have int_set: "int ` set [0..<CARD('a)] = {0 ..< int CARD('a)}"
-          by (simp add: image_int_atLeastLessThan)
+          by (simp add: image_int_atLeast_lessThan)
 
         have inj: "inj_on ?g ?S" unfolding inj_on_def
         proof (intro ballI impI)

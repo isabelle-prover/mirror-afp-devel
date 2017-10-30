@@ -93,7 +93,7 @@ lemma \<Sigma>_comp_of_int:
 
 lemma \<Sigma>_const:
   "\<Sigma> (\<lambda>k. c) j l = of_int (l - j) * c"
-  by (simp add: \<Sigma>_def algebra_simps of_nat_nat)
+  by (simp add: \<Sigma>_def algebra_simps)
 
 lemma \<Sigma>_add:
   "\<Sigma> (\<lambda>k. f k + g k) j l = \<Sigma> f j l + \<Sigma> g j l"

@@ -60,7 +60,7 @@ proof
   have "finite B" by simp
   from `card B = CARD('n)`
   have "card B = dim (UNIV :: ((real^'n) set))"
-    by (simp add: dim_UNIV)
+    by simp
   with card_eq_dim [of B UNIV] and `finite B` and `independent B`
   have "span B = UNIV" by auto
   with `independent B` show "is_basis B" unfolding is_basis_def ..
@@ -77,7 +77,7 @@ next
     ultimately have "card B = dim (UNIV::((real^'n) set))"
       using basis_card_eq_dim [of B UNIV]
       by simp
-    then show "card B = CARD('n)" by (simp add: dim_UNIV)
+    then show "card B = CARD('n)" by simp
   qed
   ultimately show "independent B \<and> card B = CARD('n)" ..
 qed
@@ -133,8 +133,8 @@ proof -
   have "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> i\<in>UNIV. v$i * (\<Sum> j\<in>S. (w j)$i))"
     unfolding inner_vec_def
     by simp
-  also from sum_distrib_left [where ?A = S and ?'b = real]
-  have "\<dots> = (\<Sum> i\<in>UNIV. \<Sum> j\<in>S. v$i * (w j)$i)" by simp
+  also have "\<dots> = (\<Sum> i\<in>UNIV. \<Sum> j\<in>S. v$i * (w j)$i)"
+    by (simp add: sum_distrib_left)
   also from sum.swap [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
   have "\<dots> = (\<Sum> j\<in>S. \<Sum> i\<in>UNIV. v$i * (w j)$i)" by simp
   finally show "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> j\<in>S. v \<bullet> (w j))"

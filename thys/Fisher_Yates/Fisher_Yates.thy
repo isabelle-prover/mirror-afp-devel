@@ -234,7 +234,7 @@ proof (induction i xs rule: fisher_yates_aux.induct)
              pmf_of_set {i..<length xs} \<bind> (\<lambda>j. fisher_yates_aux (i+1) (swap xs i j))"
       using False by (subst fisher_yates_aux.simps) simp
     also have "{i..<length xs} = ((\<lambda>j. j + i) ` {..<length xs - i})"
-      by (subst atLeast0LessThan [symmetric], subst image_add_atLeastLessThan) (insert False, simp)
+      using False by (simp add: lessThan_atLeast0)
     also from False have "pmf_of_set \<dots> = map_pmf (\<lambda>j. j + i) (pmf_of_set {..<length xs - i})"
       by (subst map_pmf_of_set_inj) (simp_all add: lessThan_empty_iff)
     also from False have "length xs - i = length (drop i xs)" by simp

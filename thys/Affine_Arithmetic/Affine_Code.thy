@@ -298,11 +298,11 @@ lift_definition msum_slist::"nat \<Rightarrow> (nat, 'a) slist \<Rightarrow> (na
   is "\<lambda>m xs ys. map (apfst (\<lambda>n. n + m)) ys @ dropWhile (\<lambda>(i, x). i \<ge> m) xs"
 proof (safe, goal_cases)
   case (1 n l1 l2)
-  thus ?case
-    by (auto dest: set_dropWhileD
-      simp: dropWhile_rsorted_eq_filter sorted_append rev_map rev_filter sorted_filter distinct_map
-      intro!: comp_inj_on
-        subset_inj_on[where A="{x \<in> set l1. case x of (i, x) \<Rightarrow> i < n}" and B="set l1"])
+  then have "set (dropWhile (\<lambda>(i, x). n \<le> i) l1) \<subseteq> set l1"
+    by (simp add: set_dropWhileD subrelI)
+  with 1 show ?case
+    by (auto simp add: distinct_map add.commute [of _ n] intro!: comp_inj_on intro: subset_inj_on)
+      (simp add: dropWhile_rsorted_eq_filter)
 next
   case prems: (2 n l1 l2)
   hence "sorted (map ((\<lambda>na. na + n) \<circ> fst) (rev l2))"
@@ -546,14 +546,14 @@ lift_definition abs_slist_if::"('a::linorder\<times>'b) list \<Rightarrow> ('a, 
   is "\<lambda>list. if distinct (map fst list) \<and> rsorted (map fst list) then list else []"
   by auto
 
-definition "slist \<equiv> Abs_slist"
+definition "slist = Abs_slist"
 
-lemma [code_post]: "Abs_slist \<equiv> slist"
+lemma [code_post]: "Abs_slist = slist"
   by (simp add: slist_def)
 
-lemma [code]: "slist \<equiv> (\<lambda>xs.
+lemma [code]: "slist = (\<lambda>xs.
   (if distinct (map fst xs) \<and> rsorted (map fst xs) then abs_slist_if xs else Code.abort (STR '''') (\<lambda>_. slist xs)))"
-  by (auto simp add: slist_def abs_slist_if.abs_eq intro!: ext eq_reflection)
+  by (auto simp add: slist_def abs_slist_if.abs_eq)
 
 abbreviation "pdevs \<equiv> (\<lambda>x. Pdevs (slist x))"
 

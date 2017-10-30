@@ -225,14 +225,14 @@ lemma less_add_1_iff_le_hmset: "m < n + 1 \<longleftrightarrow> m \<le> n" for m
 instance hmultiset :: ordered_cancel_comm_semiring
   by intro_classes (simp add: mult_le_mono2_hmset)
 
+instance hmultiset :: zero_less_one
+  by intro_classes (simp add: zero_less_iff_neq_zero_hmset)
+
 instance hmultiset :: linordered_semiring_1_strict
   by intro_classes
 
 instance hmultiset :: bounded_lattice_bot
   by intro_classes
-
-instance hmultiset :: zero_less_one
-  by intro_classes (simp add: zero_less_iff_neq_zero_hmset)
 
 instance hmultiset :: linordered_nonzero_semiring
   by intro_classes

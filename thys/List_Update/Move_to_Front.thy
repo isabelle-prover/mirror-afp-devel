@@ -885,23 +885,25 @@ by (simp add: sorted_equals_nth_mono)
 
 
 lemma sorted_weighted_gauss_Ico_div2:
-fixes f :: "nat \<Rightarrow> nat"
-assumes "\<And>i j. i \<le> j \<Longrightarrow> j<n \<Longrightarrow> f(i) \<ge> f(j)"
-shows "(\<Sum>i=0..<n. (i+1) * f(i)) \<le> (n+1) * sum f {0..<n} div 2"
-proof cases
-  assume "n = 0" thus ?thesis by simp
-next
-  assume "n \<noteq> 0"
-  have "n * (\<Sum>i=0..<n. (i+1) * f i) \<le> (\<Sum>i=0..<n. i+1) * sum f {0..<n}"
-    using assms by(intro Chebyshev_sum_upper_nat[of n "%i. i+1" f]) auto
-  hence "2 * (n * (\<Sum>i=0..<n. (i+1) * f i)) \<le> 2*(\<Sum>i=0..<n. i+1) * sum f {0..<n}"
+  fixes f :: "nat \<Rightarrow> nat"
+  assumes "\<And>i j. i \<le> j \<Longrightarrow> j < n \<Longrightarrow> f i \<ge> f j"
+  shows "(\<Sum>i=0..<n. (i + 1) * f i) \<le> (n + 1) * sum f {0..<n} div 2"
+proof (cases n)
+  case 0
+  then show ?thesis
     by simp
-  also have "2*(\<Sum>i=0..<n. i+1) = n*(n+1)"
-    using arith_series_general[where 'a=nat,of 1 1 n] `n \<noteq> 0`
-    by(simp add:atLeast0LessThan)
-  finally have "2 * (\<Sum>i = 0..<n. (i + 1) * f i) \<le> (n+1) * sum f {0..<n}"
-    using `n \<noteq> 0` by(simp del: One_nat_def)
-  thus ?thesis by linarith
+next
+  case (Suc n)
+  with assms have "Suc n * (\<Sum>i=0..<Suc n. Suc i * f i) \<le> (\<Sum>i=0..<Suc n. Suc i) * sum f {0..<Suc n}"
+    by (intro Chebyshev_sum_upper_nat [of "Suc n" Suc f]) auto
+  then have "Suc n * (2 * (\<Sum>i=0..n. Suc i * f i)) \<le> 2 * (\<Sum>i=0..n. Suc i) * sum f {0..n}"
+    by (simp add: atLeastLessThanSuc_atLeastAtMost)
+  also have "2 * (\<Sum>i=0..n. Suc i) = Suc n * (n + 2)"
+    using arith_series_nat [of 1 1 n] by simp
+  finally have "2 * (\<Sum>i=0..n. Suc i * f i) \<le> (n + 2) * sum f {0..n}"
+    by (simp only: ac_simps Suc_mult_le_cancel1)
+  with Suc show ?thesis
+    by (simp only: atLeastLessThanSuc_atLeastAtMost) simp
 qed
 
 lemma T_adv: assumes "l \<noteq> 0"

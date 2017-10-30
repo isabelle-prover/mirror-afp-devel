@@ -1075,11 +1075,12 @@ qed
 
 lemma image_add_atMost:
   "(\<lambda>n::nat. n+k) ` {..i} = {k..i+k}" (is "?A = ?B")
+  
 proof -
   have s1: "{..i} = {0..i}"
     by (simp add: set_interval_defs)
-  show "?A = ?B"
-    by (simp add: s1 image_add_atLeastAtMost)
+  then show "?A = ?B"
+    by simp
 qed
 
 corollary image_Suc_atLeast: "Suc ` {i..} = {Suc i..}"
@@ -1089,11 +1090,11 @@ corollary image_Suc_atMost: "Suc ` {..i} = {Suc 0..Suc i}"
 by (insert image_add_atMost[of "Suc 0"], simp)
 
 lemmas image_add_lemmas =
-  image_add_atLeastAtMost
+  image_add_atLeast_atMost
   image_add_atLeast
   image_add_atMost
 lemmas image_Suc_lemmas =
-  image_Suc_atLeastAtMost
+  image_Suc_atLeast_atMost
   image_Suc_atLeast
   image_Suc_atMost
 

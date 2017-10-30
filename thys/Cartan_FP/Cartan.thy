@@ -377,16 +377,17 @@ proof -
   qed
   have dnf0: "(deriv ^^ n) f 0 = 0" if len: "2 \<le> n" for n
   proof -
-    have **: "z = 0" if "\<And>u::complex. norm u = 1 \<Longrightarrow> u^n * z = u * z" for z
+    have **: "z = 0" if "\<And>u::complex. norm u = 1 \<Longrightarrow> u ^ n * z = u * z" for z
     proof -
-      have "2 \<le> n' \<Longrightarrow> \<exists>u::complex. norm u = 1 \<and> (u^n' \<noteq> u)" for n'
-        using complex_not_root_unity [of "n'-1"]
+      have "\<exists>u::complex. norm u = 1 \<and> u ^ n \<noteq> u"
+        using complex_not_root_unity [of "n-1"] len
         apply (simp add: algebra_simps le_diff_conv2, clarify)
         apply (rule_tac x=u in exI)
-        apply (subst (asm) field_class.power_diff)
+        apply (subst (asm) power_diff)
         apply auto
         done
-      then show ?thesis using len that mult_right_cancel by blast
+      with that show ?thesis
+        by auto
     qed
     show ?thesis
       apply (rule **)

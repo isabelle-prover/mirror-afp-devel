@@ -1332,15 +1332,15 @@ lemma scalar_prod_append: assumes "v1 \<in> carrier_vec n1" "v2 \<in> carrier_ve
 proof -
   from assms have dim: "dim_vec v1 = n1" "dim_vec v2 = n2" "dim_vec w1 = n1" "dim_vec w2 = n2" by auto
   have id: "{0 ..< n1 + n2} = {0 ..< n1} \<union> {n1 ..< n1 + n2}" by auto
-  have id2: "{n1 ..< n1 + n2} = (\<lambda> x. x + n1) ` {0 ..< n2}" 
-    by (simp add: add.commute image_add_atLeastLessThan)
+  have id2: "{n1 ..< n1 + n2} = (plus n1) ` {0 ..< n2}" 
+    by (simp add: ac_simps)
   have "(v1 @\<^sub>v v2) \<bullet> (w1 @\<^sub>v w2) = (\<Sum>i = 0..<n1. v1 $ i * w1 $ i) +
     (\<Sum>i = n1..<n1 + n2. v2 $ (i - n1) * w2 $ (i - n1))"
   unfolding scalar_prod_def
     by (auto simp: dim id, subst sum.union_disjoint, insert assms, force+)
   also have "(\<Sum>i = n1..<n1 + n2. v2 $ (i - n1) * w2 $ (i - n1))
     = (\<Sum>i = 0..< n2. v2 $ i * w2 $ i)"
-    by (rule sum.reindex_cong[OF _ id2], auto)
+    by (rule sum.reindex_cong [OF _ id2]) simp_all
   finally show ?thesis by (simp, insert assms, auto simp: scalar_prod_def)
 qed
 

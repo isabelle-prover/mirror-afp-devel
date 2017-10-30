@@ -790,8 +790,7 @@ proof (intro exI conjI)
   hence "sum ?f {n..<d} = (\<Sum>i=n..<d. monom 1 (m + n - Suc i) * c i) * q"
     (is "_ = sum ?h _ * _") unfolding sum_distrib_right by auto
   also have "{n..<d} = (\<lambda>i. i+n) ` {0..<m}"
-    unfolding dmn
-    by (metis add_0_left image_add_atLeastLessThan)
+    by (simp add: dmn)
   also have "sum ?h ... = sum (?h \<circ> (\<lambda>i. i+n)) {0..<m}"
     apply(subst sum.reindex[symmetric])
     apply (rule inj_onI) by auto

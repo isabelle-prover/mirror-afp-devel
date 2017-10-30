@@ -826,7 +826,8 @@ proof -
         thus ?case by simp
       qed
       also have "sum ?g_b {off .. off + db} = sum ?gb {0 .. db}"
-        by (rule sum.reindex_cong[of "\<lambda> x. x + off"], auto simp: b coeff_int_def)
+        using sum.atLeast_atMost_shift_bounds [of ?g_b 0 off db]
+        by (auto intro: sum.cong simp add: b ac_simps)
       finally have id: "row ?G_F i \<bullet> col ?M j - ?H = ?Pj + sum ?gb {0 .. db} - ?H"
         (is "_ = ?E")
         by (simp add: ac_simps)
