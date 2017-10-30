@@ -11,6 +11,6 @@ session Linear_Recurrences (AFP) = "Algebraic_Numbers_Lib" +
     "root.tex"
 
 session Linear_Recurrences_Test (AFP) = Linear_Recurrences +
-  options [document = false, timeout = 600]
+  options [document = false, timeout = 1200]
   theories
     Linear_Recurrences_Test
