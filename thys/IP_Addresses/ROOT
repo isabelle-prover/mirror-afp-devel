@@ -6,9 +6,6 @@ session "IP_Addresses" (AFP) = Word_Lib +
     Automatic_Refinement
     "HOL-ex"
   theories [document = false]
-    "HOL-Library.Code_Target_Nat"
-    "HOL-Library.Code_Target_Int"
-    "HOL-Library.Code_Char"
     Automatic_Refinement.Misc (* mergesort *)
     NumberWang_IPv4
     NumberWang_IPv6

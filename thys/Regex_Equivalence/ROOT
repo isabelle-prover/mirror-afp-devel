@@ -13,7 +13,7 @@ session Regex_Equivalence (AFP) = HOL +
     "root.bib"
 
 session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
-  options [document = false, timeout = 600]
+  options [timeout = 600]
   sessions
     Spec_Check
   theories

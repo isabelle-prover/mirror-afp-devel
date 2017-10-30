@@ -14,8 +14,7 @@ session Show (AFP) = Deriving +
     "root.tex"
 
 session Old_Datatype_Show (AFP) = Datatype_Order_Generator +
-  options [timeout = 600, document = false]
+  options [timeout = 600]
   theories
     "Old_Datatype/Old_Show_Instances"
     "Old_Datatype/Old_Show_Examples"
-

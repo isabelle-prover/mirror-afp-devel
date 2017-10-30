@@ -12,7 +12,6 @@ session "Network_Security_Policy_Verification" (AFP) = HOL +
     "Lib/FiniteListGraph_Impl"
     "Lib/FiniteListGraph"
     "Lib/Efficient_Distinct"
-    "HOL-Lattice.CompleteLattice"
   theories
     "Security_Invariants/SINVAR_Subnets2"
     "Security_Invariants/SINVAR_BLPstrict"

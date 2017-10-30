@@ -2,7 +2,7 @@ chapter AFP
 
 session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
   description {* Theories that are not part of HOL but are used by this entry *}
-  options [document = false, timeout = 600]
+  options [timeout = 600]
   sessions
     "HOL-Cardinals"
   theories
@@ -38,7 +38,7 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
 
 session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
   description {* Theories from the Archive of Formal Proofs that are used by this entry *}
-  options [document = false, timeout = 600]
+  options [timeout = 600]
   sessions
     Containers
     "Abstract-Rewriting"
@@ -60,7 +60,7 @@ session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
 
 session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
-  options [timeout = 600, document = false]
+  options [timeout = 600]
   sessions
     Partial_Function_MR
     Polynomial_Interpolation

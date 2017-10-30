@@ -4,11 +4,6 @@ session Refine_Monadic (AFP) = Automatic_Refinement +
   options [timeout = 1200]
   sessions
     "HOL-Word"
-  theories [document = false]
-    "HOL-Library.While_Combinator"
-    "HOL-Library.Lattice_Syntax"
-    "HOL-Library.Monad_Syntax"
-    "HOL-Word.Word"
   theories
     Refine_Monadic
     "examples/Examples"

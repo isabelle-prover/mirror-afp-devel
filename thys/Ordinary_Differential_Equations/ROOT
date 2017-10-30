@@ -14,12 +14,12 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     "root.tex"
 
 session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
-  options [timeout = 300, document = false]
+  options [timeout = 300]
   theories
     Ordinary_Differential_Equations.ODE_Analysis
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
-  options [timeout = 3600, document = false]
+  options [timeout = 3600]
   sessions
     Collections
     Show
@@ -36,28 +36,28 @@ session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
     "Refinement/Refine_Folds"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
-  options [timeout = 7200, document = false]
+  options [timeout = 7200]
   sessions
     "HOL-Types_To_Sets"
   theories
     ODE_Numerics
 
 session "Lorenz_Approximation" (AFP) = "HOL-ODE-Numerics" +
-  options [timeout = 1200, document = false]
+  options [timeout = 1200]
   theories
     "Ex/Lorenz/Lorenz_Approximation"
 
 session "HOL-ODE-Examples" (AFP slow) = "HOL-ODE-Numerics" +
-  options [timeout = 10800, document = false]
+  options [timeout = 10800]
   theories
     ODE_Examples
 
 session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
-  options [timeout = 14400, document = false]
+  options [timeout = 14400]
   theories
     "Ex/Lorenz/Lorenz_C0"
 
 session "Lorenz_C1" (AFP slow) = "Lorenz_Approximation" +
-  options [timeout = 500000, document = false]
+  options [timeout = 500000]
   theories
     "Ex/Lorenz/Lorenz_C1"

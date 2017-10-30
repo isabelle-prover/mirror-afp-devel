@@ -4,9 +4,6 @@ session Akra_Bazzi (AFP) = "Landau_Analysis" +
   options [timeout = 600]
   sessions
     Ordinary_Differential_Equations
-  theories [document = false]
-    "HOL-Decision_Procs.Approximation"
-    Landau_Symbols.Landau_Symbols
   theories
     Akra_Bazzi
     Master_Theorem

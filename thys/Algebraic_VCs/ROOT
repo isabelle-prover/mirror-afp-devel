@@ -6,12 +6,6 @@ session Algebraic_VCs (AFP) = KAT_and_DRA +
     "HOL-Eisbach"
     "HOL-Hoare"
     KAD
-  theories [document = false]
-    KAD.Modal_Kleene_Algebra_Applications
-    KAD.Modal_Kleene_Algebra
-    KAD.Modal_Kleene_Algebra_Models
-    "HOL-Eisbach.Eisbach"
-    "HOL-Hoare.Heap"
   theories
     "AVC_KAT/VC_KAT_scratch"
     "AVC_KAD/VC_KAD_scratch"

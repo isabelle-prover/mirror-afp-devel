@@ -19,7 +19,7 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
     "root.tex"
 
 session "Formula_Derivatives-Examples" (AFP) = "Formula_Derivatives" +
-  options [document = false, timeout = 1200]
+  options [timeout = 1200]
   sessions
     Show
   theories

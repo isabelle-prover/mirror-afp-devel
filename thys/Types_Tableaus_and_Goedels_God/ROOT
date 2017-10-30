@@ -10,7 +10,7 @@ session "Types_Tableaus_and_Goedels_God" (AFP) = "HOL" +
     GoedelProof_P1
     GoedelProof_P2
     FittingProof
-  AndersonProof
+    AndersonProof
   document_files
     "root.tex"
     "root.bib"

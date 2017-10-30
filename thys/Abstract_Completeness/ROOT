@@ -4,11 +4,6 @@ session Abstract_Completeness (AFP) = "HOL-Library" +
   options [timeout = 300]
   sessions
     Collections
-  theories [document = false]
-    "HOL-Library.Stream"
-    "HOL-Library.Linear_Temporal_Logic_on_Streams"
-    Collections.Locale_Code
-    "HOL-Library.Code_Target_Nat"
   theories
     Abstract_Completeness
     Propositional_Logic

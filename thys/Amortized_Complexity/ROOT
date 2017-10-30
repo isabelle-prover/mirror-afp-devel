@@ -6,13 +6,6 @@ session Amortized_Complexity (AFP) = "HOL-Library" +
     Pairing_Heap
     Skew_Heap
     Splay_Tree
-  theories [document = false]
-    Splay_Tree.Splay_Tree
-    Splay_Tree.Splay_Heap
-    Skew_Heap.Skew_Heap
-    Pairing_Heap.Pairing_Heap_Tree
-    Pairing_Heap.Pairing_Heap_List1
-    Pairing_Heap.Pairing_Heap_List2
   theories
     Amortized_Framework0
     Amortized_Examples

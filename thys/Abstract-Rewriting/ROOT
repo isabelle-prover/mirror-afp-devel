@@ -4,8 +4,6 @@ session "Abstract-Rewriting" (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Regular-Sets"
-  theories [document = false]
-    "Regular-Sets.Regexp_Method"
   theories
     Seq
     Abstract_Rewriting

@@ -1,12 +1,12 @@
 chapter AFP
 
 session Sepref_Prereq (AFP) = Collections +
-  options [document = false, timeout = 300]
+  options [timeout = 300]
   sessions
     "HOL-Library"
     "HOL-Imperative_HOL"
     Separation_Logic_Imperative_HOL
-  theories [document = false]
+  theories
     Separation_Logic_Imperative_HOL.Sep_Examples
 
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
@@ -70,17 +70,17 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
 
 (* Smaller Sessions: *)
 session Sepref_Basic (AFP) = Sepref_Prereq +
-  options [document = false, timeout = 300]
+  options [timeout = 300]
   sessions
     "HOL-Eisbach"
     "List-Index"
     Refine_Imperative_HOL
-  theories [document = false]
+  theories
     Refine_Imperative_HOL.Sepref
 
 session Sepref_IICF (AFP) = Sepref_Basic +
-  options [document = false, timeout = 600]
+  options [timeout = 600]
   sessions
     Refine_Imperative_HOL
-  theories [document = false]
+  theories
     Refine_Imperative_HOL.IICF
