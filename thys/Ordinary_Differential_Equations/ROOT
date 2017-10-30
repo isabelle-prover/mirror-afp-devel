@@ -19,7 +19,7 @@ session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
     Ordinary_Differential_Equations.ODE_Analysis
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
-  options [timeout = 2400, document = false]
+  options [timeout = 3600, document = false]
   sessions
     Collections
     Show
