@@ -771,15 +771,15 @@ proof (rule bij_betwI[of _ _ _ "\<lambda>q. case quotient_of q of (a, b) \<Right
   case 1
   show ?case
     by (auto simp: farey_fractions_def Rat.zero_less_Fract_iff Rat.Fract_le_one_iff 
-                   Rat.quotient_of_Fract Rat.normalize_def transfer_int_nat_gcd Let_def)
+                   Rat.quotient_of_Fract Rat.normalize_def gcd_int_def Let_def)
 next
   case 2
   show ?case
     by (auto simp: farey_fractions_def Rat.Fract_le_one_iff Rat.zero_less_Fract_iff 
-          transfer_nat_int_gcd split: prod.splits quotient_of_split_asm)
+          gcd_int_def split: prod.splits quotient_of_split_asm)
 next
   case (3 x)
-  thus ?case by (auto simp: Rat.quotient_of_Fract Rat.normalize_def Let_def transfer_int_nat_gcd)
+  thus ?case by (auto simp: Rat.quotient_of_Fract Rat.normalize_def Let_def gcd_int_def)
 next
   case (4 x)
   thus ?case unfolding farey_fractions_def

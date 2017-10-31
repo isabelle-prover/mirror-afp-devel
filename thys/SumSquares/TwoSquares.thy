@@ -216,7 +216,7 @@ proof -
   hence "int (s2^2 + 1) = s1^2 + 1" by auto
   with s1' have "[int (s2^2 + 1) = 0] (mod ?p)" by presburger
   hence s2: "[s2^2 + 1 = 0] (mod ?p)"
-    using transfer_int_nat_cong[of "s2^2+1" 0 ?p] by auto
+    using cong_int_iff by fastforce
   from p have p0: "?p > 0" by simp
   then obtain s where s0p: "0 \<le> s \<and> s < ?p \<and> [s2 = s] (mod ?p)"
     using cong_less_unique_nat[of ?p] by fastforce
