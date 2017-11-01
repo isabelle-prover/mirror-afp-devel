@@ -15,8 +15,6 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
 
 session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
   options [timeout = 300]
-  theories
-    Ordinary_Differential_Equations.ODE_Analysis
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 3600]
