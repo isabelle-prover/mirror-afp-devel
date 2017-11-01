@@ -43,7 +43,7 @@ subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<clos
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A \<Longrightarrow> A \<subseteq># B\<close>
   by (simp add: subset_mset.le_iff_sup)
 
-lemma subset_msetE [elim!]: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
+lemma subset_msetE: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
   unfolding subseteq_mset_def subset_mset_def by (meson mset_subset_eqI subset_mset.eq_iff)
 
 lemma Diff_triv_mset: "M \<inter># N = {#} \<Longrightarrow> M - N = M"
@@ -57,6 +57,8 @@ proof -
   then show "A - B - (A - B - (B - A)) = {#}"
     by (metis diff_add diff_cancel diff_subset_eq_self subset_mset.diff_add)
 qed
+
+declare subset_msetE [elim!]
 
 
 subsection \<open>Lemmas about Filter and Image\<close>
@@ -138,22 +140,20 @@ text \<open>Near duplicate of @{thm [source] filter_eq_replicate_mset}: @{thm fi
 lemma filter_mset_eq: "filter_mset (op = L) A = replicate_mset (count A L) L"
   by (auto simp: multiset_eq_iff)
 
-text \<open>See @{thm [source] filter_cong} for the set version. Mark as \<open>[fundef_cong]\<close> too?\<close>
-
-lemma filter_mset_cong:
-  assumes [simp]: "M = M'" and [simp]: "\<And>a. a \<in># M \<Longrightarrow> P a = Q a"
+lemma filter_mset_cong[fundef_cong]:
+  assumes "M = M'" "\<And>a. a \<in># M \<Longrightarrow> P a = Q a"
   shows "filter_mset P M = filter_mset Q M"
 proof -
   have "M - filter_mset Q M = filter_mset (\<lambda>a. \<not>Q a) M"
     by (subst multiset_partition[of _ Q]) simp
   then show ?thesis
-    by (auto simp: filter_mset_eq_conv)
+    by (auto simp: filter_mset_eq_conv assms)
 qed
 
 lemma image_mset_filter_swap: "image_mset f {# x \<in># M. P (f x)#} = {# x \<in># image_mset f M. P x#}"
   by (induction M) auto
 
-lemma image_mset_cong2[cong]:
+lemma image_mset_cong2:
   "(\<And>x. x \<in># M \<Longrightarrow> f x = g x) \<Longrightarrow> M = N \<Longrightarrow> image_mset f M = image_mset g N"
   by (hypsubst, rule image_mset_cong)
 
@@ -171,8 +171,13 @@ lemma image_filter_cong:
 lemma image_mset_filter_swap2: \<open>{#C \<in># {#P x. x \<in># D#}. Q C #} = {#P x. x \<in># {#C| C \<in># D. Q (P C)#}#}\<close>
   by (simp add: image_mset_filter_swap)
 
+declare image_mset_cong2 [cong]
+
 
 subsection \<open>Lemmas about Sum\<close>
+
+lemma sum_image_mset_sum_map[simp]: "sum_mset (image_mset f (mset xs)) = sum_list (map f xs)"
+  by (metis mset_map sum_mset_sum_list)
 
 lemma sum_image_mset_mono:
   fixes f :: "'a \<Rightarrow> 'b::canonically_ordered_monoid_add"
@@ -225,28 +230,17 @@ lemma removeAll_subseteq_remove1_mset: "removeAll_mset x M \<subseteq># remove1_
 lemma in_remove1_mset_neq:
   assumes ab: "a \<noteq> b"
   shows "a \<in># remove1_mset b C \<longleftrightarrow> a \<in># C"
-proof -
-  have "count {#b#} a = 0"
-    using ab by simp
-  then show ?thesis
-    by (metis (no_types) count_diff diff_zero mem_Collect_eq set_mset_def)
-qed
+  by (metis assms diff_single_trivial in_diffD insert_DiffM insert_noteq_member)
 
 lemma size_mset_removeAll_mset_le_iff: "size (removeAll_mset x M) < size M \<longleftrightarrow> x \<in># M"
-  apply (rule iffI)
-    apply (force intro: count_inI)
-  apply (rule mset_subset_size)
-  apply (auto simp: subset_mset_def multiset_eq_iff)
-  done
+  by (auto intro: count_inI mset_subset_size simp: subset_mset_def multiset_eq_iff)
 
 lemma size_remove1_mset_If: \<open>size (remove1_mset x M) = size M - (if x \<in># M then 1 else 0)\<close>
   by (auto simp: size_Diff_subset_Int)
 
 lemma size_mset_remove1_mset_le_iff: "size (remove1_mset x M) < size M \<longleftrightarrow> x \<in># M"
-  apply (rule iffI)
-    using less_irrefl apply fastforce
-  apply (rule mset_subset_size)
-  by (auto elim: in_countE simp: subset_mset_def multiset_eq_iff)
+  using less_irrefl
+  by (fastforce intro!: mset_subset_size elim: in_countE simp: subset_mset_def multiset_eq_iff)
 
 lemma single_remove1_mset_eq:
   "add_mset a (remove1_mset a M) = M \<longleftrightarrow> a \<in># M"
@@ -611,7 +605,7 @@ lemma Sigma_mset_empty2[simp]: "A \<times># {#} = {#}"
   by (auto simp: multiset_eq_iff count_Sigma_mset)
 
 lemma Sigma_mset_mono:
-  assumes "A \<subseteq># C" and "\<And>x. x\<in>#A \<Longrightarrow> B x \<subseteq># D x"
+  assumes "A \<subseteq># C" and "\<And>x. x \<in># A \<Longrightarrow> B x \<subseteq># D x"
   shows "Sigma_mset A B \<subseteq># Sigma_mset C D"
 proof -
   have "count A a * count (B a) b \<le> count C a * count (D a) b" for a b
@@ -716,7 +710,7 @@ lemma snd_image_mset_times_mset [simp]:
 
 lemma product_swap_mset: "image_mset prod.swap (A \<times># B) = B \<times># A"
   by (induction A) (auto simp add: Times_mset_single_left Times_mset_single_right
-    Times_insert_right Times_insert_left)
+      Times_insert_right Times_insert_left)
 
 context
 begin
@@ -743,9 +737,8 @@ lemma sum_le_singleton: "A \<subseteq> {x} \<Longrightarrow> sum f A = (if x \<i
 
 lemma Times_mset_assoc: "(A \<times># B) \<times># C = image_mset (\<lambda>(a, b, c). ((a, b), c)) (A \<times># B \<times># C)"
   by (auto simp: multiset_eq_iff count_Sigma_mset count_image_mset vimage_def Times_mset_Times
-    Int_commute count_eq_zero_iff
-    intro!: trans[OF _ sym[OF sum_le_singleton[of _ "(_, _, _)"]]]
-    cong: sum.cong if_cong)
+      Int_commute count_eq_zero_iff intro!: trans[OF _ sym[OF sum_le_singleton[of _ "(_, _, _)"]]]
+      cong: sum.cong if_cong)
 
 
 subsection \<open>Transfer Rules\<close>
@@ -763,11 +756,9 @@ proof (unfold rel_fun_def rel_mset_def, safe)
   assume [transfer_rule]: "list_all2 R xs ys" "list_all2 R xs' ys'"
   have "list_all2 R (fold remove1 xs' xs) (fold remove1 ys' ys)"
     by transfer_prover
-  moreover
-  have "mset (fold remove1 xs' xs) = mset xs - mset xs'"
+  moreover have "mset (fold remove1 xs' xs) = mset xs - mset xs'"
     by (induct xs' arbitrary: xs) auto
-  moreover
-  have "mset (fold remove1 ys' ys) = mset ys - mset ys'"
+  moreover have "mset (fold remove1 ys' ys) = mset ys - mset ys'"
     by (induct ys' arbitrary: ys) auto
   ultimately show "\<exists>xs'' ys''.
     mset xs'' = mset xs - mset xs' \<and> mset ys'' = mset ys - mset ys' \<and> list_all2 R xs'' ys''"
@@ -785,8 +776,8 @@ unfolding rel_fun_def rel_mset_def proof safe
   then show "count (mset xs) x = count (mset ys) y"
   proof (induct xs ys rule: list.rel_induct)
     case (Cons x' xs y' ys)
-    then show ?case using assms unfolding bi_unique_alt_def2
-      by (auto simp: rel_fun_def)
+    then show ?case
+      using assms unfolding bi_unique_alt_def2 by (auto simp: rel_fun_def)
   qed simp
 qed
 
@@ -820,11 +811,17 @@ lemma range_image_mset:
   assumes "set_mset Ds \<subseteq> range f"
   shows "Ds \<in> range (image_mset f)"
 proof -
-  have "\<forall>D. D \<in># Ds \<longrightarrow> (\<exists>C. f C = D)" using assms by blast
-  then obtain f_i where f_p: "\<forall>D. D \<in># Ds \<longrightarrow> (f (f_i D) = D)" by metis
-  define Cs where "Cs \<equiv> image_mset f_i Ds"
-  from f_p Cs_def have "image_mset f Cs = Ds" by auto
-  then show ?thesis by blast
+  have "\<forall>D. D \<in># Ds \<longrightarrow> (\<exists>C. f C = D)"
+    using assms by blast
+  then obtain f_i where
+    f_p: "\<forall>D. D \<in># Ds \<longrightarrow> (f (f_i D) = D)"
+    by metis
+  define Cs where
+    "Cs \<equiv> image_mset f_i Ds"
+  from f_p Cs_def have "image_mset f Cs = Ds"
+    by auto
+  then show ?thesis
+    by blast
 qed
 
 
@@ -843,13 +840,19 @@ lemma range_mset_map:
   assumes "set_mset Ds \<subseteq> range f"
   shows "Ds \<in> range (\<lambda>Cl. mset (map f Cl))"
 proof -
-  have "Ds \<in> range (image_mset f)" by (simp add: assms range_image_mset)
-  then obtain Cs where Cs_p: "image_mset f Cs = Ds" by auto
+  have "Ds \<in> range (image_mset f)"
+    by (simp add: assms range_image_mset)
+  then obtain Cs where Cs_p: "image_mset f Cs = Ds"
+    by auto
   define Cl where "Cl = list_of_mset Cs"
-  then have "mset Cl = Cs" by auto
-  then have "image_mset f (mset Cl) = Ds" using Cs_p by auto
-  then have "mset (map f Cl) = Ds" by auto
-  then show ?thesis by auto
+  then have "mset Cl = Cs"
+    by auto
+  then have "image_mset f (mset Cl) = Ds"
+    using Cs_p by auto
+  then have "mset (map f Cl) = Ds"
+    by auto
+  then show ?thesis
+    by auto
 qed
 
 lemma list_of_mset_empty[iff]: "list_of_mset m = [] \<longleftrightarrow> m = {#}"
@@ -931,8 +934,7 @@ proof -
   have "image_mset \<eta> ?A' = A"
     using m using lA_def
     by (metis (full_types) ex_mset list_of_mset_def mset_map someI_ex)
-  moreover
-  have "?A' \<subseteq># C'"
+  moreover have "?A' \<subseteq># C'"
     using qC'_p unfolding lA_def
     using mset_take_subseteq by blast
   ultimately show ?thesis by blast
@@ -946,7 +948,7 @@ lemma Melem_subseteq_Union_mset[simp]:
   shows "x \<subseteq># \<Union>#T"
   using assms sum_mset.remove by force
 
-lemma Melem_subset_eq_sum_list [simp]:
+lemma Melem_subset_eq_sum_list[simp]:
   assumes "x \<in># mset T"
   shows "x \<subseteq># sum_list T"
   using assms by (metis mset_subset_eq_add_left sum_mset.remove sum_mset_sum_list)
@@ -957,7 +959,7 @@ lemma less_subset_eq_Union_mset[simp]:
 proof -
   from assms have "CAi ! i \<in># mset CAi"
     by auto
-  then show "CAi ! i \<subseteq># \<Union>#mset CAi"
+  then show ?thesis
     by auto
 qed
 
@@ -967,7 +969,7 @@ lemma less_subset_eq_sum_list[simp]:
 proof -
   from assms have "CAi ! i \<in># mset CAi"
     by auto
-  then show "CAi ! i \<subseteq># sum_list CAi"
+  then show ?thesis
     by auto
 qed
 
