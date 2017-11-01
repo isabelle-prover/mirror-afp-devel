@@ -1,7 +1,9 @@
 chapter AFP
 
-session MonoBoolTranAlgebra (AFP) = LatticeProperties +
+session MonoBoolTranAlgebra (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    LatticeProperties
   theories
     Statements
   document_files

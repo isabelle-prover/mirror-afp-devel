@@ -1,7 +1,9 @@
 chapter AFP
 
-session Topology (AFP) = "Lazy-Lists-II" +
+session Topology (AFP) = Coinductive +
   options [timeout = 600]
+  sessions
+    "Lazy-Lists-II"
   theories
     LList_Topology
   document_files
