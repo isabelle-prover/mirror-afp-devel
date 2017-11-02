@@ -11,6 +11,7 @@ imports
   Generalizations
   "HOL-Library.Bit"
   Mod_Type
+  "HOL-Library.Function_Algebras"
 begin
 
 text{*In this file, we present some basic definitions and lemmas about linear algebra and matrices.*}
@@ -438,28 +439,10 @@ text{*Functions between two real vector spaces form a real vector*}
 instantiation "fun" :: (real_vector, real_vector) real_vector
 begin
 
-definition "plus_fun f g = (\<lambda>i. f i + g i)"
-definition "zero_fun = (\<lambda>i. 0)"
 definition "scaleR_fun a f = (\<lambda>i. a *\<^sub>R f i )"
 
-instance proof
-  fix a::"'a \<Rightarrow> 'b" and b::"'a \<Rightarrow> 'b" and c::"'a \<Rightarrow> 'b"
-  show "a + b + c = a + (b + c)" unfolding fun_eq_iff unfolding plus_fun_def by auto
-  show "a + b = b + a" unfolding fun_eq_iff unfolding plus_fun_def by auto
-  show " (0::'a \<Rightarrow> 'b) + a = a"  unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
-  show "- a + a = (0::'a \<Rightarrow> 'b)" unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
-  show "a - b = a + - b" unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
-next
-  fix a::real and x::"('a \<Rightarrow> 'b)" and y::"'a \<Rightarrow> 'b"
-  show "a *\<^sub>R (x + y) = a *\<^sub>R x + a *\<^sub>R y" 
-  unfolding fun_eq_iff plus_fun_def scaleR_fun_def scaleR_right.add by auto
-next
-  fix a::real and b::real and x::"'a \<Rightarrow> 'b" 
-  show "(a + b) *\<^sub>R x = a *\<^sub>R x + b *\<^sub>R x" 
-    unfolding fun_eq_iff unfolding plus_fun_def scaleR_fun_def unfolding  scaleR_left.add by auto
-  show " a *\<^sub>R b *\<^sub>R x = (a * b) *\<^sub>R x" unfolding fun_eq_iff unfolding scaleR_fun_def by auto
-  show "(1::real) *\<^sub>R x = x" unfolding fun_eq_iff unfolding scaleR_fun_def by auto
-qed
+instance 
+  by (intro_classes, auto simp add: fun_eq_iff scaleR_fun_def scaleR_left.add scaleR_right.add)
 end
 
 
