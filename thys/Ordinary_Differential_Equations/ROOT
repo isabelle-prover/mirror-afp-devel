@@ -50,7 +50,7 @@ session "HOL-ODE-Examples" (AFP slow) = "HOL-ODE-Numerics" +
   theories
     ODE_Examples
 
-session "Lorenz_C0" (AFP very_slow) = "Lorenz_Approximation" +
+session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
   options [timeout = 14400]
   theories
     "Ex/Lorenz/Lorenz_C0"
