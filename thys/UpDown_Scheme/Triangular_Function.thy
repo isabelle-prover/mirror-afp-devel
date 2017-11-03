@@ -1,7 +1,7 @@
 section \<open> Hat Functions \<close>
 
 theory Triangular_Function
-imports Probability Grid
+imports "HOL-Probability.Probability" Grid
 begin
 
 lemma continuous_on_max[continuous_intros]:

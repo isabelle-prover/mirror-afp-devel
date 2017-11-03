@@ -3,7 +3,7 @@ section \<open>Stochastic Dominance\<close>
 theory Stochastic_Dominance
 imports
   Complex_Main
-  Probability
+  "HOL-Probability.Probability"
   Lotteries
   Preference_Profiles
   Utility_Functions

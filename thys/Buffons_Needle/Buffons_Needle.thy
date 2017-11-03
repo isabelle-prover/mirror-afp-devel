@@ -6,7 +6,7 @@
 *)
 section \<open>Buffon's Needle Problem\<close>
 theory Buffons_Needle
-  imports Probability
+  imports "HOL-Probability.Probability"
 begin
 
 subsection \<open>Auxiliary material\<close>

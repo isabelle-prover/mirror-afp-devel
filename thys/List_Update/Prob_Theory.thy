@@ -5,7 +5,7 @@
 section "Probability Theory"
 
 theory Prob_Theory
-imports Probability
+imports "HOL-Probability.Probability"
 begin
 
 lemma integral_map_pmf[simp]:

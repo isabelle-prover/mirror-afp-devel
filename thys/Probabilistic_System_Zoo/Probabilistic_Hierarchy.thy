@@ -2,7 +2,7 @@
 (*<*)
 theory Probabilistic_Hierarchy
 imports
-  Probability
+  "HOL-Probability.Probability"
   Nonempty_Bounded_Set
   "HOL-Eisbach.Eisbach"
 begin

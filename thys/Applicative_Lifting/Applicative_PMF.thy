@@ -4,7 +4,7 @@ subsection \<open>Probability mass functions\<close>
 
 theory Applicative_PMF imports
   Applicative
-  Probability
+  "HOL-Probability.Probability"
   "HOL-Library.Adhoc_Overloading"
 begin
 

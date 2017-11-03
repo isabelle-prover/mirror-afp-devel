@@ -7,7 +7,7 @@
 section \<open>Randomised QuickSort\<close>
 theory Randomised_Quick_Sort
   imports 
-    Probability 
+    "HOL-Probability.Probability"
     Landau_Symbols.Landau_Symbols
     Comparison_Sort_Lower_Bound.Linorder_Relations
 begin

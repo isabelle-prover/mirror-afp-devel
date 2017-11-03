@@ -9,7 +9,7 @@ Normalisation of monadic expressions.
 section \<open>Normalisation of monadic expressions\<close>
 
 theory Monad_Normalisation
-imports Probability
+imports "HOL-Probability.Probability"
 keywords "print_monad_rules" :: diag
 begin
 

@@ -5,7 +5,7 @@ section \<open>Distributions built from coin flips\<close>
 
 subsection \<open> The Bernoulli distribution\<close>
 
-theory Bernoulli imports Probability begin
+theory Bernoulli imports "HOL-Probability.Probability" begin
 
 lemma zero_lt_num [simp]: "0 < (numeral n :: _ :: {canonically_ordered_monoid_add, semiring_char_0})"
   by (metis not_gr_zero zero_neq_numeral)

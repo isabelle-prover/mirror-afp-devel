@@ -6,7 +6,7 @@ text \<open>Parts of it should be moved to the Isabelle repository\<close>
 
 theory Markov_Models_Auxiliary
 imports
-  Probability
+  "HOL-Probability.Probability"
   "HOL-Library.Rewrite"
   "HOL-Library.Linear_Temporal_Logic_on_Streams"
   Coinductive.Coinductive_Stream

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory Monomorphic_Monad imports
-  Probability
+  "HOL-Probability.Probability"
   "HOL-Library.Multiset"
 begin
 

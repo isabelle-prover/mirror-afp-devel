@@ -3,7 +3,7 @@
 section \<open>Preliminaries\<close>
 
 theory MFMC_Misc imports
-  Probability
+  "HOL-Probability.Probability"
   "HOL-Library.Transitive_Closure_Table"
   "HOL-Library.Complete_Partial_Order2"
   "HOL-Library.Bourbaki_Witt_Fixpoint"

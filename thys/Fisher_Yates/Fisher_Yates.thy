@@ -8,7 +8,7 @@
 *)
 section \<open>Fisher--Yates shuffle\<close>
 theory Fisher_Yates
-  imports Probability
+  imports "HOL-Probability.Probability"
 begin
 
 (* TODO Move *)
