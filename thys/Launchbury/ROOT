@@ -1,17 +1,10 @@
 chapter AFP
 
-session "HOLCF-Nominal2" (AFP) = HOLCF +
+session Launchbury (AFP) = HOLCF +
   options [timeout = 300]
   sessions
     FinFun
     Nominal2
-  theories
-    Nominal2.Nominal2
-    Nominal2.Atoms
-    Nominal2.Eqvt
-
-session Launchbury (AFP) = "HOLCF-Nominal2" +
-  options [timeout = 300]
   theories
     EverythingAdequacy
   document_files
