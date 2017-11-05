@@ -9,9 +9,8 @@ section \<open>The Graceful Recursive Path Order for Lambda-Free Higher-Order Te
 
 theory Lambda_Free_RPO_Std
 imports Lambda_Free_Term Extension_Orders
-abbrevs
-  ">t" = ">\<^sub>t"
-  "\<ge>t" = "\<ge>\<^sub>t"
+abbrevs ">t" = ">\<^sub>t"
+  and "\<ge>t" = "\<ge>\<^sub>t"
 begin
 
 text \<open>

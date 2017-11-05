@@ -7,10 +7,9 @@ section \<open>Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_Term
 imports Lambda_Free_Util
-abbrevs
-  ">s" = ">\<^sub>s"
-  ">h" = ">\<^sub>h\<^sub>d"
-  "\<le>\<ge>h" = "\<le>\<ge>\<^sub>h\<^sub>d"
+abbrevs ">s" = ">\<^sub>s"
+  and ">h" = ">\<^sub>h\<^sub>d"
+  and "\<le>\<ge>h" = "\<le>\<ge>\<^sub>h\<^sub>d"
 begin
 
 text \<open>

@@ -11,13 +11,12 @@ section \<open>The Graceful Transfinite Knuth--Bendix Order with Subterm Coeffic
 
 theory Lambda_Free_TKBO_Coefs
 imports Lambda_Free_KBO_Util Nested_Multisets_Ordinals.Signed_Syntactic_Ordinal
-abbrevs
-  "=p" = "=\<^sub>p"
-  ">p" = ">\<^sub>p"
-  "\<ge>p" = "\<ge>\<^sub>p"
-  ">t" = ">\<^sub>t"
-  "\<ge>t" = "\<ge>\<^sub>t"
-  "!h" = "\<^sub>h"
+abbrevs "=p" = "=\<^sub>p"
+  and ">p" = ">\<^sub>p"
+  and "\<ge>p" = "\<ge>\<^sub>p"
+  and ">t" = ">\<^sub>t"
+  and "\<ge>t" = "\<ge>\<^sub>t"
+  and "!h" = "\<^sub>h"
 begin
 
 text \<open>

@@ -7,9 +7,8 @@ section \<open>The Applicative Recursive Path Order for Lambda-Free Higher-Order
 
 theory Lambda_Free_RPO_App
 imports Lambda_Free_Term Extension_Orders
-abbrevs
-  ">t" = ">\<^sub>t"
-  "\<ge>t" = "\<ge>\<^sub>t"
+abbrevs ">t" = ">\<^sub>t"
+  and "\<ge>t" = "\<ge>\<^sub>t"
 begin
 
 text \<open>

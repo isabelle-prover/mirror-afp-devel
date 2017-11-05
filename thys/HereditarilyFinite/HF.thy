@@ -1,10 +1,9 @@
 chapter \<open>The Hereditarily Finite Sets\<close>
 
 theory HF
-  imports "HOL-Library.Nat_Bijection"
-  abbrevs
-    "<:" = "\<^bold>\<in>"
-    "~<:" = "\<^bold>\<notin>"
+imports "HOL-Library.Nat_Bijection"
+abbrevs "<:" = "\<^bold>\<in>"
+  and "~<:" = "\<^bold>\<notin>"
 begin
 
 text \<open>From "Finite sets and Gödel's Incompleteness Theorems" by S. Swierczkowski.

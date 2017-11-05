@@ -10,9 +10,8 @@ section \<open>The Graceful Standard Knuth--Bendix Order for Lambda-Free Higher-
 
 theory Lambda_Free_KBO_Std
 imports Lambda_Free_KBO_Util
-abbrevs
-  ">t" = ">\<^sub>t"
-  "\<ge>t" = "\<ge>\<^sub>t"
+abbrevs ">t" = ">\<^sub>t"
+  and "\<ge>t" = "\<ge>\<^sub>t"
 begin
 
 text \<open>
