@@ -6,8 +6,8 @@ object AFP_Dependencies extends isabelle.Isabelle_Tool.Body {
 
   val afp_dir = Path.explode("$AFP").expand
 
-  val tree = Sessions.load(Options.init(), Nil, List(afp_dir))
-  val (selected, _) = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil))
+  val tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
+  val selected = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil)).build_graph.keys
 
   def get_entry(name: String): Option[String] =
   {
