@@ -2859,7 +2859,8 @@ qed
 lemma jnf_vector: assumes A: "A \<in> carrier_mat n n"
   and jb: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb A i j"
   and evb: "ev_block n A"
-  shows "jordan_matrix (jnf_vector A) = (A :: 'a mat)"
+shows "jordan_matrix (jnf_vector A) = (A :: 'a mat)"
+  "0 \<notin> fst ` set (jnf_vector A)" 
 proof -
   from A have "dim_row A = n" by simp
   hence id: "jnf_vector A = jnf_vector_main n A" unfolding jnf_vector_def by auto
@@ -2869,7 +2870,8 @@ proof -
     fix k
     assume "k \<le> n"
     hence "(\<forall> i j. i < k \<longrightarrow> j < k \<longrightarrow> ?B k $$ (i,j) = A $$ (i,j))
-      \<and> diag_block_mat (?map (jnf_vector_main k A)) \<in> carrier_mat k k"
+      \<and> diag_block_mat (?map (jnf_vector_main k A)) \<in> carrier_mat k k
+      \<and> 0 \<notin> fst ` set (jnf_vector_main k A)"
     proof (induct k rule: less_induct)
       case (less sk)
       show ?case
@@ -2967,12 +2969,13 @@ proof -
               qed
             qed
           qed
-        qed        
+        qed (insert bk IH, auto)
       qed auto
     qed
   }
   from this[OF le_refl] A
-  show ?thesis unfolding id jordan_matrix_def by auto
+  show "jordan_matrix (jnf_vector A) = A" "0 \<notin> fst ` set (jnf_vector A)"
+    unfolding id jordan_matrix_def by auto
 qed
 
 end
@@ -3016,7 +3019,7 @@ proof -
     have "inv_all n jb (step_3 C)" and sd: "same_diag n C (step_3 C)" unfolding step_3_def dimC by auto
     hence jbD: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb ?D i j" unfolding inv_all_def DC by auto
     from same_diag_ev_block[OF sd C(2)] have "ev_block n (step_3 C)" by auto
-    from jnf_vector[OF D jbD this] have "jordan_matrix D = ?D" unfolding DC .
+    from jnf_vector[OF D jbD this] have "jordan_matrix D = ?D" "0 \<notin> fst ` set D" unfolding DC by auto
     with sim have "jordan_nf C D" unfolding jordan_nf_def by simp
   } note jnf_blocks = this
   have id: "map fst ?CD = Cs" by (induct Cs, auto)
@@ -3024,12 +3027,11 @@ proof -
   have J: "?J = concat (map (jnf_vector \<circ> step_3) Cs)" unfolding 
     triangular_to_jnf_vector_def Let_def Cs_def ..
   from jordan_nf_diag_block_mat[of ?CD, OF jnf_blocks, unfolded id id2]
-  have "jordan_nf (diag_block_mat Cs) ?J" unfolding J .
+  have jnf: "jordan_nf (diag_block_mat Cs) ?J" unfolding J .
   hence "similar_mat (diag_block_mat Cs) (jordan_matrix ?J)" 
-    unfolding jordan_nf_def .
-  from similar_mat_trans[OF similar_mat_sym[OF this] sim[unfolded BC]]
-  show ?thesis unfolding jordan_nf_def 
-    by (rule similar_mat_sym)
+    unfolding jordan_nf_def by auto
+  from similar_mat_sym[OF similar_mat_trans[OF similar_mat_sym[OF this] sim[unfolded BC]]] jnf
+  show ?thesis unfolding jordan_nf_def by auto
 qed
 
 (* hide auxiliary definitions and functions *)

@@ -53,9 +53,9 @@ lemma jordan_nf_four_block_mat: assumes A: "A \<in> carrier_mat na na"
 shows "jordan_nf (four_block_mat A (0\<^sub>m na nb) (0\<^sub>m nb na) B) (as @ bs)" 
 proof -
   from jnfA[unfolded jordan_nf_def] 
-  have simA: "similar_mat A (jordan_matrix as)" .
+  have simA: "similar_mat A (jordan_matrix as)" by auto
   from jnfB[unfolded jordan_nf_def] 
-  have simB: "similar_mat B (jordan_matrix bs)" .
+  have simB: "similar_mat B (jordan_matrix bs)" by auto
   from similar_matD[OF simA] A 
   have "jordan_matrix as \<in> carrier_mat na na" by auto
   with jordan_matrix_carrier[of as] have na: "na = sum_list (map fst as)" by auto
@@ -67,7 +67,7 @@ proof -
    (four_block_mat (jordan_matrix as) (0\<^sub>m na nb) (0\<^sub>m nb na) (jordan_matrix bs))" .
   also have "four_block_mat (jordan_matrix as) (0\<^sub>m na nb) (0\<^sub>m nb na) (jordan_matrix bs)
     = jordan_matrix (as @ bs)" unfolding jordan_matrix_append na nb ..
-  finally show ?thesis unfolding jordan_nf_def .
+  finally show ?thesis using jnfA jnfB unfolding jordan_nf_def by auto
 qed
 
 lemma nonneg_matD: assumes "nonneg_mat A" 
@@ -164,7 +164,7 @@ proof -
       unfolding A b 
       by (rule eq_matI, auto simp add: jordan_matrix_def mat_of_rows_list_def)
     show "jordan_nf A [(1,a),(1,a)]" unfolding jordan_nf_def A
-      by (rule similar_mat_refl[of _ 2], auto)
+      by (rule conjI[OF _ similar_mat_refl[of _ 2]], auto)
   }
   {
     assume b: "b \<noteq> 0" 
@@ -178,7 +178,7 @@ proof -
       by (rule eq_matI, rename_tac i j, (case_tac i; case_tac j), 
       auto simp add: jordan_matrix_def jordan_block_def mat_of_rows_list_def)
     from similar_mat_sym[OF sim]
-    show "jordan_nf A [(2,a)]" unfolding jordan_nf_def A .
+    show "jordan_nf A [(2,a)]" unfolding jordan_nf_def A by auto
   }
 qed
 
@@ -648,7 +648,6 @@ qed
 lemma jordan_block_1_greatest_up_to_4_4: assumes n4: "n \<le> 4" 
   and jnf: "jordan_nf (map_mat complex_of_real A) n_as" 
   and jb: "(k,a) \<in> set n_as" 
-  and k: "k \<noteq> 0" 
   and a: "cmod a = 1"   
 shows "\<exists> k'. k' \<ge> k \<and> (k',1) \<in> set n_as" 
 proof (cases "a = 1")
@@ -656,6 +655,7 @@ proof (cases "a = 1")
   with jb show ?thesis by auto
 next
   case a1: False
+  from jnf jb have k: "k \<noteq> 0" unfolding jordan_nf_def by force
   let ?c = "complex_of_real" 
   let ?cm = "map_mat ?c" 
   let ?A = "?cm A" 
@@ -983,11 +983,11 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
   proof 
     fix bsize
     assume "bsize \<in>  fst ` set (compute_set_of_jordan_blocks ?A x)" 
-    with compute_set_of_jordan_blocks[OF jnf, of x] 
-    have bsize: "(bsize, x) \<in> set n_as" "bsize \<noteq> 0" by force+
+    with compute_set_of_jordan_blocks[OF jnf, of x] jnf[unfolded jordan_nf_def]
+    have bsize: "(bsize, x) \<in> set n_as" by auto
     from jordan_block_1_greatest_up_to_4_4[OF size jnf this cx]
     obtain k' where kb: "k' \<ge> bsize" and "(k',1) \<in> set n_as" by auto
-    with bsize have "(k',1) \<in> set n_as \<inter> UNIV \<times> {1} - {0} \<times> UNIV" by auto
+    with bsize have "(k',1) \<in> set n_as \<inter> UNIV \<times> {1}" by auto
     from this[folded compute_set_of_jordan_blocks[OF jnf, of 1]] 
       compute_set_of_jordan_blocks_1[OF A]
     have "k' \<in> fst ` set (compute_set_of_jordan_blocks A 1)" by force

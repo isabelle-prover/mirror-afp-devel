@@ -220,10 +220,6 @@ proof -
   finally show ?thesis .
 qed
 
-text \<open>One might get more fine-grained and prove the lemma for multisets, 
-   so one takes multiplicities into account. For the moment we don't require this for
-  complexity analysis, so it remains as future work.\<close>
-
 definition compute_set_of_jordan_blocks :: "'a mat \<Rightarrow> 'a \<Rightarrow> (nat \<times> 'a)list" where
   "compute_set_of_jordan_blocks A ev \<equiv> let 
      k = Polynomial.order ev (char_poly A);
@@ -232,8 +228,10 @@ definition compute_set_of_jordan_blocks :: "'a mat \<Rightarrow> 'a \<Rightarrow
      in map (\<lambda> (k,c). (k,ev)) (filter (\<lambda> (k,c). c \<noteq> 0) cards)"
 
 lemma compute_set_of_jordan_blocks: assumes jnf: "jordan_nf A n_as"
-  shows "set (compute_set_of_jordan_blocks A ev) = set n_as \<inter> UNIV \<times> {ev} - {0} \<times> UNIV" (is "?C = ?N")
+  shows "set (compute_set_of_jordan_blocks A ev) = set n_as \<inter> UNIV \<times> {ev}" (is "?C = ?N'")
 proof -
+  let ?N = "set n_as \<inter> UNIV \<times> {ev} - {0} \<times> UNIV" 
+  have N: "?N' = ?N" using jnf[unfolded jordan_nf_def] by force
   note cjb = compute_nr_of_jordan_blocks[OF jnf]
   note d = compute_set_of_jordan_blocks_def Let_def
   define kk where "kk = Polynomial.order ev (char_poly A)"
@@ -282,8 +280,20 @@ proof -
       qed
     qed
   }
-  thus ?thesis unfolding C by auto
+  thus ?thesis unfolding C N[symmetric] by auto
 qed
+
+lemma jordan_nf_unique: assumes "jordan_nf (A :: 'a mat) n_as" and "jordan_nf A m_bs" 
+shows "set n_as = set m_bs" 
+proof -
+  from compute_set_of_jordan_blocks[OF assms(1), unfolded compute_set_of_jordan_blocks[OF assms(2)]]
+  show ?thesis by auto
+qed
+
+text \<open>One might get more fine-grained and prove the uniqueness lemma for multisets, 
+   so one takes multiplicities into account. For the moment we don't require this for
+  complexity analysis, so it remains as future work.\<close>
+
 end
 
 end

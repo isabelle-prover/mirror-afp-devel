@@ -222,7 +222,7 @@ proof -
 qed
 
 definition jordan_nf :: "'a :: semiring_1 mat \<Rightarrow> (nat \<times> 'a)list \<Rightarrow> bool" where
-  "jordan_nf A n_as \<equiv> similar_mat A (jordan_matrix n_as)"
+  "jordan_nf A n_as \<equiv> (0 \<notin> fst ` set n_as \<and> similar_mat A (jordan_matrix n_as))"
 
 lemma jordan_nf_powE: assumes A: "A \<in> carrier_mat n n" and jnf: "jordan_nf A n_as" 
   obtains P Q where "P \<in> carrier_mat n n" "Q \<in> carrier_mat n n" and 
@@ -606,7 +606,7 @@ proof -
   let ?cp2 = "\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n"
   let ?J = "jordan_matrix n_as"
   from jnf[unfolded jordan_nf_def]
-  have sim: "similar_mat A ?J" .
+  have sim: "similar_mat A ?J" by auto
   then obtain P Q where sim_wit: "similar_mat_wit A ?J P Q" unfolding similar_mat_def by auto
   from similar_mat_wit_pow_id[OF this] have pow: "\<And> k. A ^\<^sub>m k = P * ?J ^\<^sub>m k * Q" .
   from sim_wit[unfolded similar_mat_wit_def Let_def] A 
@@ -677,25 +677,25 @@ proof -
     fix A B
     assume "(A,B) \<in> set ?Ms"
     then obtain jbs where mem: "(A,jbs) \<in> set Ms" and B: "B = jordan_matrix jbs" by auto
-    from Ms[OF mem] have "similar_mat A B" unfolding B jordan_nf_def .
+    from Ms[OF mem] have "similar_mat A B" unfolding B jordan_nf_def by auto
   }
-  from similar_diag_mat_block_mat[of ?Ms, OF this, unfolded id id2]
+  from similar_diag_mat_block_mat[of ?Ms, OF this, unfolded id id2] Ms
   show ?thesis
-    unfolding jordan_nf_def jordan_matrix_concat_diag_block_mat by auto
+    unfolding jordan_nf_def jordan_matrix_concat_diag_block_mat by force
 qed  
 
 
 lemma jordan_nf_char_poly: assumes "jordan_nf A n_as"
   shows "char_poly A = (\<Prod> (n,a) \<leftarrow> n_as. [:- a, 1:] ^ n)"
   unfolding jordan_matrix_char_poly[symmetric]
-  by (rule char_poly_similar, insert assms[unfolded jordan_nf_def])
+  by (rule char_poly_similar, insert assms[unfolded jordan_nf_def], auto)
 
 lemma jordan_nf_block_size_order_bound: assumes jnf: "jordan_nf A n_as"
   and mem: "(n,a) \<in> set n_as"
   shows "n \<le> order a (char_poly A)"
 proof -
   from jnf[unfolded jordan_nf_def]
-  have "similar_mat A (jordan_matrix n_as)" .
+  have "similar_mat A (jordan_matrix n_as)" by auto
   from similar_matD[OF this] obtain m where "A \<in> carrier_mat m m" by auto
   from degree_monic_char_poly[OF this] have A: "char_poly A \<noteq> 0" by auto
   from mem obtain as bs where nas: "n_as = as @ (n,a) # bs" 
@@ -773,9 +773,11 @@ lemma jordan_nf_smult: fixes k :: "'a :: field"
   shows "jordan_nf (k \<cdot>\<^sub>m A) (map (\<lambda> (n,a). (n, k * a)) n_as)" 
 proof -
   let ?l = "map (\<lambda> (n,a). (n, k * a))" 
-  from jn[unfolded jordan_nf_def] have sim: "similar_mat A (jordan_matrix n_as)" .
+  from jn[unfolded jordan_nf_def] have sim: "similar_mat A (jordan_matrix n_as)" by auto
   from similar_mat_smult[OF this, of k] similar_mat_jordan_matrix_smult[OF k, of n_as]
-  show ?thesis using jordan_nf_def similar_mat_trans by blast
+  have "similar_mat (k \<cdot>\<^sub>m A) (jordan_matrix (map (\<lambda>(n, a). (n, k * a)) n_as))" 
+    using similar_mat_trans by blast
+  with jn show ?thesis unfolding jordan_nf_def by force
 qed
 
 lemma jordan_nf_order: assumes "jordan_nf A n_as" 
@@ -814,7 +816,7 @@ proof -
   let ?cp2 = "\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n"
   let ?J = "jordan_matrix n_as"
   from jnf[unfolded jordan_nf_def]
-  have sim: "similar_mat A ?J" .
+  have sim: "similar_mat A ?J" by auto
   from char_poly_similar[OF sim, unfolded linear_factors jordan_matrix_char_poly]
   have cp: "?cp1 = ?cp2" .
   show ?thesis
