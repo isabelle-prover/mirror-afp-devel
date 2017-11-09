@@ -6318,3 +6318,21 @@ abstract =
   and is exactly 14 in the case of R. In addition, we prove a theorem
   due to Chagrov (1982) that classifies topological spaces according to
   the number of such operators they support.
+
+[Hybrid_Multi_Lane_Spatial_Logic]
+title = Hybrid Multi-Lane Spatial Logic
+author = Sven Linker <mailto:s.linker@liverpool.ac.uk>
+topic = Logic
+date = 2017-11-06
+notify = s.linker@liverpool.ac.uk
+abstract = 
+  We present a semantic embedding of a spatio-temporal multi-modal
+  logic, specifically defined to reason about motorway traffic, into
+  Isabelle/HOL. The semantic model is an abstraction of a motorway,
+  emphasising local spatial properties, and parameterised by the types
+  of sensors deployed in the vehicles. We use the logic to define
+  controller constraints to ensure safety, i.e., the absence of
+  collisions on the motorway. After proving safety with a restrictive
+  definition of sensors, we relax these assumptions and show how to
+  amend the controller constraints to still guarantee safety.
+

@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Oct 2017 00:00:00 +0000</pubDate>
+    <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hybrid Multi-Lane Spatial Logic</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
+       <dc:creator> Sven Linker       </dc:creator>
+       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a semantic embedding of a spatio-temporal multi-modal
+logic, specifically defined to reason about motorway traffic, into
+Isabelle/HOL. The semantic model is an abstraction of a motorway,
+emphasising local spatial properties, and parameterised by the types
+of sensors deployed in the vehicles. We use the logic to define
+controller constraints to ensure safety, i.e., the absence of
+collisions on the motorway. After proving safety with a restrictive
+definition of sensors, we relax these assumptions and show how to
+amend the controller constraints to still guarantee safety.</description>
+    </item>
     <item>
        <title>The Kuratowski Closure-Complement Theorem</title>
               <link>https://www.isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
@@ -584,26 +601,6 @@ We present a formalization of flow networks and the Min-Cut-Max-Flow
 theorem. Our formal proof closely follows a standard textbook proof,
 and is accessible even without being an expert in Isabelle/HOL, the
 interactive theorem prover used for the formalization.</description>
-    </item>
-    <item>
-       <title>Optics</title>
-              <link>https://www.isa-afp.org/entries/Optics.html</link>
-       <guid>https://www.isa-afp.org/entries/Optics.html</guid>
-       <dc:creator> Simon Foster, Frank Zeyda       </dc:creator>
-       <pubDate>25 May 2017 00:00:00 +0000</pubDate>
-       <description>
-Lenses provide an abstract interface for manipulating data types
-through spatially-separated views. They are defined abstractly in
-terms of two functions, &lt;em&gt;get&lt;/em&gt;, the return a value
-from the source type, and &lt;em&gt;put&lt;/em&gt; that updates the
-value. We mechanise the underlying theory of lenses, in terms of an
-algebraic hierarchy of lenses, including well-behaved and very
-well-behaved lenses, each lens class being characterised by a set of
-lens laws. We also mechanise a lens algebra in Isabelle that enables
-their composition and comparison, so as to allow construction of
-complex lenses. This is accompanied by a large library of algebraic
-laws. Moreover we also show how the lens classes can be applied by
-instantiating them with a number of Isabelle data types.</description>
     </item>
   </channel>
 </rss>
