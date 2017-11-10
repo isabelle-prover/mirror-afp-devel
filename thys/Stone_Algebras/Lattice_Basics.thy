@@ -16,6 +16,42 @@ imports Main
 begin
 
 text {*
+The following results extend basic Isabelle/HOL facts.
+*}
+
+lemma if_distrib_2:
+  "f (if c then x else y) (if c then z else w) = (if c then f x z else f y w)"
+  by simp
+
+lemma left_invertible_inj:
+  "(\<forall>x . g (f x) = x) \<Longrightarrow> inj f"
+  by (metis injI)
+
+lemma invertible_bij:
+  assumes "\<forall>x . g (f x) = x"
+      and "\<forall>y . f (g y) = y"
+    shows "bij f"
+  by (metis assms bijI')
+
+lemma finite_ne_subset_induct [consumes 3, case_names singleton insert]:
+  assumes "finite F"
+      and "F \<noteq> {}"
+      and "F \<subseteq> S"
+      and singleton: "\<And>x . P {x}"
+      and insert: "\<And>x F . finite F \<Longrightarrow> F \<noteq> {} \<Longrightarrow> F \<subseteq> S \<Longrightarrow> x \<in> S \<Longrightarrow> x \<notin> F \<Longrightarrow> P F \<Longrightarrow> P (insert x F)"
+    shows "P F"
+  using assms(1-3)
+  apply (induct rule: finite_ne_induct)
+  apply (simp add: singleton)
+  by (simp add: insert)
+
+lemma finite_set_of_finite_funs_pred:
+  assumes "finite { x::'a . True }"
+      and "finite { y::'b . P y }"
+    shows "finite { f . (\<forall>x::'a . P (f x)) }"
+  using assms finite_set_of_finite_funs by force
+
+text {*
 We use the following notations for the join, meet and complement operations.
 Changing the precedence of the unary complement allows us to write terms like @{text "--x"} instead of @{text "-(-x)"}.
 *}
@@ -94,6 +130,22 @@ lemma lifted_transitive:
 lemma lifted_antisymmetric:
   "f \<le>\<le> g \<Longrightarrow> g \<le>\<le> f \<Longrightarrow> f = g"
   by (metis (full_types) antisym ext lifted_less_eq_def)
+
+text {*
+If the image of a finite non-empty set under @{text f} is a totally ordered, there is an element that minimises the value of @{text f}.
+*}
+
+lemma finite_set_minimal:
+  assumes "finite s"
+      and "s \<noteq> {}"
+      and "\<forall>x\<in>s . \<forall>y\<in>s . f x \<le> f y \<or> f y \<le> f x"
+    shows "\<exists>m\<in>s . \<forall>z\<in>s . f m \<le> f z"
+  apply (rule finite_ne_subset_induct[where S=s])
+  apply (rule assms(1))
+  apply (rule assms(2))
+  apply simp
+  apply simp
+  by (metis assms(3) insert_iff order_trans set_mp)
 
 end
 
@@ -390,24 +442,6 @@ proof -
 qed
 
 end
-
-text {*
-The following results extend basic Isabelle/HOL facts.
-*}
-
-lemma if_distrib_2:
-  "f (if c then x else y) (if c then z else w) = (if c then f x z else f y w)"
-  by simp
-
-lemma left_invertible_inj:
-  "(\<forall>x . g (f x) = x) \<Longrightarrow> inj f"
-  by (metis injI)
-
-lemma invertible_bij:
-  assumes "\<forall>x . g (f x) = x"
-      and "\<forall>y . f (g y) = y"
-    shows "bij f"
-  by (metis assms bijI')
 
 end
 
