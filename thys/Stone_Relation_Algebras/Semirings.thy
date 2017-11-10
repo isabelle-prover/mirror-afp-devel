@@ -41,9 +41,12 @@ begin
 
 abbreviation reflexive   :: "'a \<Rightarrow> bool" where "reflexive x   \<equiv> 1 \<le> x"
 abbreviation coreflexive :: "'a \<Rightarrow> bool" where "coreflexive x \<equiv> x \<le> 1"
+
 abbreviation transitive  :: "'a \<Rightarrow> bool" where "transitive x  \<equiv> x * x \<le> x"
 abbreviation dense_rel   :: "'a \<Rightarrow> bool" where "dense_rel x   \<equiv> x \<le> x * x"
 abbreviation idempotent  :: "'a \<Rightarrow> bool" where "idempotent x  \<equiv> x * x = x"
+
+abbreviation preorder    :: "'a \<Rightarrow> bool" where "preorder x    \<equiv> reflexive x \<and> transitive x"
 
 abbreviation "coreflexives \<equiv> { x . coreflexive x }"
 
@@ -175,9 +178,17 @@ lemma idempotent_one_closed:
   "idempotent 1"
   by simp
 
+lemma preorder_one_closed:
+  "preorder 1"
+  by simp
+
 lemma coreflexive_transitive:
   "coreflexive x \<Longrightarrow> transitive x"
   using mult_left_isotone by fastforce
+
+lemma preorder_idempotent:
+  "preorder x \<Longrightarrow> idempotent x"
+  using antisym mult_isotone by fastforce
 
 text {*
 We study the following three ways of defining reflexive-transitive closures.
@@ -585,6 +596,10 @@ lemma dense_top_closed:
 
 lemma idempotent_top_closed:
   "idempotent top"
+  by simp
+
+lemma preorder_top_closed:
+  "preorder top"
   by simp
 
 end

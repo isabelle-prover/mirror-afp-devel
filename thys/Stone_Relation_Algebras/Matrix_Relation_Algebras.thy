@@ -294,7 +294,7 @@ proof
     also have "... = (\<Squnion>\<^sub>l \<Squnion>\<^sub>k f (i,k) * (g (k,l) * h (l,j)))"
       by (simp add: mult.assoc)
     also have "... = (\<Squnion>\<^sub>k \<Squnion>\<^sub>l f (i,k) * (g (k,l) * h (l,j)))"
-      using sup_monoid.sum.swap by auto
+      using sup_monoid.sum.commute by auto
     also have "... = (\<Squnion>\<^sub>k f (i,k) * (\<Squnion>\<^sub>l g (k,l) * h (l,j)))"
       by (metis (no_types) comp_left_dist_sum)
     also have "... = (\<Squnion>\<^sub>k f (i,k) * (g \<odot> h) (k,j))"
@@ -318,7 +318,7 @@ next
     also have "... = (\<Squnion>\<^sub>k if i = k then f (k,j) else bot)"
       by (meson mult_left_one mult_left_zero)
     also have "... = f (i,j)"
-      by (simp add: sup_monoid.sum.delta')
+      by simp
     finally show "(mone \<odot> f) (i,j) = f (i,j)"
       .
   qed
@@ -336,7 +336,7 @@ next
     also have "... = (\<Squnion>\<^sub>k if k = j then f (i,k) else bot)"
       by (meson mult.right_neutral semiring.mult_zero_right)
     also have "... = f (i,j)"
-      by (simp add: sup_monoid.sum.delta)
+      by simp
     finally show "(f \<odot> mone) (i,j) = f (i,j)"
       .
   qed
