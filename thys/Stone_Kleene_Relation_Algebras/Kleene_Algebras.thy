@@ -542,6 +542,42 @@ proof -
     using 4 by (simp add: antisym)
 qed
 
+lemma cancel_separate_eq:
+  "x * y \<le> 1 \<Longrightarrow> x\<^sup>\<star> * y\<^sup>\<star> = x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
+  by (metis antisym cancel_separate star.circ_plus_one star.circ_sup_sub_sup_one_1 star_involutive)
+
+lemma cancel_separate_1:
+  assumes "x * y \<le> 1"
+    shows "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * x\<^sup>\<star>"
+proof -
+  have "y\<^sup>\<star> * x\<^sup>\<star> * y = y\<^sup>\<star> * x\<^sup>\<star> * x * y \<squnion> y\<^sup>\<star> * y"
+    by (metis mult_right_dist_sup star.circ_back_loop_fixpoint)
+  also have "... \<le> y\<^sup>\<star> * x\<^sup>\<star> \<squnion> y\<^sup>\<star> * y"
+    by (metis assms semiring.add_right_mono mult_right_isotone mult_1_right mult_assoc)
+  also have "... \<le> y\<^sup>\<star> * x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
+    using semiring.add_left_mono star.right_plus_below_circ by simp
+  also have "... = y\<^sup>\<star> * x\<^sup>\<star>"
+    by (metis star.circ_back_loop_fixpoint sup.left_idem sup_commute)
+  finally have "y\<^sup>\<star> * x\<^sup>\<star> * y \<le> y\<^sup>\<star> * x\<^sup>\<star>"
+    by simp
+  hence "y\<^sup>\<star> * x\<^sup>\<star> * (x \<squnion> y) \<le> y\<^sup>\<star> * x\<^sup>\<star> * x \<squnion> y\<^sup>\<star> * x\<^sup>\<star>"
+    using mult_left_dist_sup order_lesseq_imp by fastforce
+  also have "... = y\<^sup>\<star> * x\<^sup>\<star>"
+    by (metis star.circ_back_loop_fixpoint sup.left_idem)
+  finally have "(x \<squnion> y)\<^sup>\<star> \<le> y\<^sup>\<star> * x\<^sup>\<star>"
+    by (metis star.circ_decompose_7 star_right_induct_mult sup_commute)
+  thus ?thesis
+    using antisym star.circ_sub_dist_3 sup_commute by fastforce
+qed
+
+lemma plus_sup:
+  "(x \<squnion> y)\<^sup>+ = (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>+ \<squnion> (x\<^sup>\<star> * y)\<^sup>+"
+  by (metis semiring.distrib_left star.circ_sup_9 star_plus mult_assoc)
+
+lemma plus_half_bot:
+  "x * y * x = bot \<Longrightarrow> (x * y)\<^sup>+ = x * y"
+  by (metis star_absorb star_slide mult_assoc)
+
 end
 
 text {*

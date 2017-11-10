@@ -280,7 +280,7 @@ proof (rule ext, rule prod_cases)
   also have "... = (\<Squnion>\<^sub>k if i = k then (if List.member ks i then 1 else bot) * (if List.member ks i \<and> List.member ls j then f (i,j) else bot) else bot)"
     by (rule sup_monoid.sum.cong) simp_all
   also have "... = (if List.member ks i then 1 else bot) * (if List.member ks i \<and> List.member ls j then f (i,j) else bot)"
-    by (simp add: sup_monoid.sum.delta')
+    by simp
   also have "... = (if List.member ks i \<and> List.member ls j then f (i,j) else bot)"
     by simp
   also have "... = (ks\<langle>f\<rangle>ls) (i,j)"
@@ -316,7 +316,7 @@ proof -
   also have "... = (\<Squnion>\<^sub>h if h = l then (if i = k then f (i,h) else bot) * (if h = m \<and> j = n then g (h,j) else bot) else bot)"
     by (rule sup_monoid.sum.cong) auto
   also have "... = (if i = k then f (i,l) else bot) * (if l = m \<and> j = n then g (l,j) else bot)"
-    by (simp add: sup_monoid.sum.delta)
+    by simp
   also have "... = (if i = k \<and> l = m \<and> j = n then f (i,l) * g (m,j) else bot)"
     by simp
   finally show ?thesis
@@ -343,7 +343,7 @@ proof (rule ext, rule prod_cases)
     apply simp
     by (rule sup_monoid.sum.cong) auto
   also have "... = ([l]\<langle>?o\<rangle>[l]) (i,j) \<squnion> (if i = l then f (i,l) else bot) * (if j = l then (f (l,j))\<^sup>\<star> else bot)"
-    by (simp add: sup_monoid.sum.delta)
+    by simp
   also have "... = (if i = l \<and> j = l then 1 \<squnion> f (l,l) * (f (l,l))\<^sup>\<star> else bot)"
     by (simp add: restrict_singleton one_matrix_def)
   also have "... = (if i = l \<and> j = l then (f (l,l))\<^sup>\<star> else bot)"
@@ -599,7 +599,7 @@ next
     also have "... = (\<Squnion>\<^sub>k if k = l then (if i = l then (f (i,k))\<^sup>\<star> else bot) * (if j = m then g (k,j) else bot) else bot)"
       by (rule sup_monoid.sum.cong) auto
     also have "... = (if i = l then (f (i,l))\<^sup>\<star> else bot) * (if j = m then g (l,j) else bot)"
-      by (simp add: sup_monoid.sum.delta)
+      by simp
     also have "... = (if i = l \<and> j = m then (f (l,l))\<^sup>\<star> * g (l,m) else bot)"
       by simp
     also have "... \<le> ([l]\<langle>g\<rangle>[m]) (i,j)"
@@ -640,7 +640,7 @@ next
     also have "... = (\<Squnion>\<^sub>k if k = l then (if i = m then g (i,k) else bot) * (if j = l then (f (k,j))\<^sup>\<star> else bot) else bot)"
       by (rule sup_monoid.sum.cong) auto
     also have "... = (if i = m then g (i,l) else bot) * (if j = l then (f (l,j))\<^sup>\<star> else bot)"
-      by (simp add: sup_monoid.sum.delta)
+      by simp
     also have "... = (if i = m \<and> j = l then g (m,l) * (f (l,l))\<^sup>\<star> else bot)"
       by simp
     also have "... \<le> ([m]\<langle>g\<rangle>[l]) (i,j)"
