@@ -23,7 +23,7 @@ def parse_name_url(name, entry, key):
         return name[:url_start].strip(), url
     else:
         terminal.notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
-        return name, None
+        return name, ""
 
 def parse_author(author, entry, key):
     return parse_name_url(author, entry, key)
