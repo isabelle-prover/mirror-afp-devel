@@ -15,7 +15,7 @@ begin
 (* TODO: this lemma is also used in Fermat3 with a slightly different generalization to ints.
 Maybe it should be generalized to factorial rings and moved to another theory. *)
 private lemma nat_relprime_power_divisors: 
-  assumes n0: "0 < n" and abc: "(a::nat)*b = c^n" and relprime: "gcd a b = 1"
+  assumes n0: "0 < n" and abc: "(a::nat)*b = c^n" and relprime: "coprime a b"
   shows "\<exists> k. a = k^n"
 using assms proof (induct c arbitrary: a b rule: nat_less_induct)
 case (1 c)
@@ -110,8 +110,8 @@ qed
 subsection {* Parametrisation of Pythagorean triples (over $\mathbb{N}$ and $\mathbb{Z}$) *}
 
 private theorem nat_euclid_pyth_triples:
-  assumes abc: "(a::nat)^2 + b^2 = c^2" and ab_relprime: "gcd a b=1" and aodd: "odd a"
-  shows "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> c = p^2 + q^2 \<and> gcd p q=1"
+  assumes abc: "(a::nat)^2 + b^2 = c^2" and ab_relprime: "coprime a b" and aodd: "odd a"
+  shows "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> c = p^2 + q^2 \<and> coprime p q"
 proof -
   have two0: "(2::nat) \<noteq> 0" by simp
   from abc have a2cb: "a^2 = c^2 - b^2" by arith
@@ -142,7 +142,7 @@ proof -
     ultimately show ?thesis by auto
   qed
   hence b2_le_c2: "b^2 \<le> c^2" by (simp add: power_mono)
-  have bc_relprime: "gcd b c = 1"
+  have bc_relprime: "coprime b c"
   proof -
     from b2_le_c2 have cancelb2: "c^2-b^2+b^2 = c^2" by auto
     let ?g = "gcd b c"
@@ -182,7 +182,7 @@ proof -
     also with b_less_c have " \<dots> = b + (c+b-b)" by (simp only: diff_add_assoc2)
     finally show ?thesis by simp
   qed
-  have factors_relprime: "gcd (c-b) (c+b) =1"
+  have factors_relprime: "coprime (c-b) (c+b)"
   proof -
     let ?g = "gcd (c-b) (c+b)"
     have cb1: "c-b + (c+b) = 2*c"
@@ -269,7 +269,7 @@ proof -
     finally have "a^2 = (p^2 - q^2)^2" by simp
     with two0 show ?thesis by (rule_tac n="2" in nat_power_inject_base)
   qed
-  moreover have "gcd p q=1"
+  moreover have "coprime p q"
   proof -
     let ?k = "gcd p q"
     have "?k dvd p \<and> ?k dvd q" by simp
@@ -283,10 +283,10 @@ qed
 
 text {* Now for the case of integers. Based on \textit{nat-euclid-pyth-triples}. *}
   
-private corollary int_euclid_pyth_triples: "\<lbrakk> gcd (a::int) b = 1; odd a; a^2 + b^2 = c^2 \<rbrakk>
-  \<Longrightarrow> \<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> gcd p q=1"
+private corollary int_euclid_pyth_triples: "\<lbrakk> coprime (a::int) b; odd a; a^2 + b^2 = c^2 \<rbrakk>
+  \<Longrightarrow> \<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> coprime p q"
 proof -
-  assume ab_rel: "gcd a b = 1" and aodd: "odd a" and abc: "a^2 + b^2 = c^2"
+  assume ab_rel: "coprime a b" and aodd: "odd a" and abc: "a^2 + b^2 = c^2"
   let ?a = "nat\<bar>a\<bar>"
   let ?b = "nat\<bar>b\<bar>"
   let ?c = "nat\<bar>c\<bar>"
@@ -296,14 +296,14 @@ proof -
   hence "nat(\<bar>a\<bar>^2) + nat(\<bar>b\<bar>^2) = nat(\<bar>c\<bar>^2)" by simp
   hence new_abc: "?a^2 + ?b^2 = ?c^2"
     by (simp only: nat_mult_distrib power2_eq_square nat_add_distrib)
-  moreover from ab_rel have new_ab_rel: "gcd ?a ?b = 1"
+  moreover from ab_rel have new_ab_rel: "coprime ?a ?b"
     by (simp add: gcd_int_def)
   moreover have new_a_odd: "odd ?a" using aodd by (simp add: dvd_int_unfold_dvd_nat)
   ultimately have 
-    "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> gcd p q =1" 
+    "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> coprime p q" 
     by (rule_tac a="?a" and b = "?b" and c="?c" in nat_euclid_pyth_triples)
   then obtain m and n where mn: 
-    "?a = m^2-n^2 \<and> ?b = 2*m*n \<and> ?c = m^2 + n^2 \<and> gcd m n =1" by auto
+    "?a = m^2-n^2 \<and> ?b = 2*m*n \<and> ?c = m^2 + n^2 \<and> coprime m n" by auto
   have "n^2 \<le> m^2"
   proof (rule ccontr)
     assume "\<not> n^2 \<le> m^2" hence "n^2 > m^2" by simp 
@@ -316,9 +316,9 @@ proof -
     and "\<bar>c\<bar> = int(m^2) + int(n^2)" by (simp add: of_nat_diff)+
   hence absabc: "\<bar>a\<bar> = (int m)^2 - (int n)^2 \<and> \<bar>b\<bar> = 2*(int m)*int n
     \<and> \<bar>c\<bar> = (int m)^2 + (int n)^2" by (simp add: power2_eq_square)
-  from mn have mn_rel: "gcd (int m) (int n) = 1"
+  from mn have mn_rel: "coprime (int m) (int n)"
     by (simp add: gcd_int_def)
-  show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> gcd p q=1" 
+  show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> coprime p q" 
     (is "\<exists> p q. ?Q p q")
   proof (cases)
     assume apos: "a \<ge> 0" then obtain p where p: "p = int m" by simp
@@ -355,36 +355,35 @@ qed
 
 subsection {* Fermat's last theorem, case $n=4$ *}
 
-text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,\gcd a b=1\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
+text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,\coprime a b\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
 
 private lemma smaller_fermat4:
   assumes abc: "(a::int)^4+b^4=c^2" and abc0: "a*b*c \<noteq> 0" and aodd: "odd a" 
-    and ab_relprime: "gcd a b=1"
+    and ab_relprime: "coprime a b"
   shows 
-  "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> odd p \<and> gcd p q = 1 \<and> r^2 < c^2)"
+  "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> odd p \<and> coprime p q \<and> r^2 < c^2)"
 proof - 
   -- "put equation in shape of a pythagorean triple and obtain $u$ and $v$"
-  from ab_relprime have a2b2relprime: "gcd (a^2) (b^2) = 1" by blast
+  from ab_relprime have a2b2relprime: "coprime (a^2) (b^2)" by blast
   moreover from aodd have "odd (a^2)" by presburger
   moreover from abc have "(a^2)^2 + (b^2)^2 = c^2" by simp
   ultimately obtain u and v where uvabc: 
-    "a^2 = u^2-v^2 \<and> b^2 = 2*u*v \<and> \<bar>c\<bar> = u^2 + v^2 \<and> gcd u v = 1" 
+    "a^2 = u^2-v^2 \<and> b^2 = 2*u*v \<and> \<bar>c\<bar> = u^2 + v^2 \<and> coprime u v" 
     by (frule_tac a="a^2" in int_euclid_pyth_triples, auto)
   with abc0 have uv0: "u\<noteq>0 \<and> v\<noteq>0" by auto
-  have av_relprime: "gcd a v = 1" 
+  have av_relprime: "coprime a v" 
   proof -
     have "gcd a v dvd gcd (a^2) v" by (simp add: power2_eq_square)
     moreover
     from uvabc have "gcd v (a^2) dvd gcd (b^2) (a^2)" by simp
     with a2b2relprime have "gcd (a^2) v dvd (1::int)" by (simp only: gcd.commute)
     ultimately have "gcd a v dvd 1" by (rule dvd_trans)
-    hence "\<bar>gcd a v\<bar>= 1" by auto
     thus ?thesis by simp
   qed
   -- "make again a pythagorean triple and obtain $k$ and $l$"
   from uvabc have "a^2 + v^2 = u^2" by simp
   with av_relprime and aodd obtain k l where 
-    klavu: "a = k^2-l^2 \<and> v = 2*k*l \<and> \<bar>u\<bar> = k^2+l^2" and kl_rel: "gcd k l = 1" 
+    klavu: "a = k^2-l^2 \<and> v = 2*k*l \<and> \<bar>u\<bar> = k^2+l^2" and kl_rel: "coprime k l" 
     by (frule_tac a="a" in int_euclid_pyth_triples, auto)
   --"prove $b=2m$ and $kl(k^2 + l^2) = m^2$, for coprime $k$, $l$ and $k^2+l^2$"
   from uvabc have "even (b^2)" by simp
@@ -400,22 +399,22 @@ proof -
     finally show ?thesis by simp
   qed
   moreover have "(2::nat) > 1" by auto
-  moreover from kl_rel have "gcd \<bar>k\<bar> \<bar>l\<bar> = 1" by simp
-  moreover have "gcd \<bar>l\<bar> (\<bar>k^2+l^2\<bar>) = 1"
+  moreover from kl_rel have "coprime \<bar>k\<bar> \<bar>l\<bar>" by simp
+  moreover have "coprime \<bar>l\<bar> (\<bar>k^2+l^2\<bar>)"
   proof -
-    from kl_rel have "gcd (k*k) l = 1" by (simp add: gcd_mult_cancel)
-    hence "gcd (k*k+l*l) l = 1" using gcd_add_mult[of l l "k*k"]
+    from kl_rel have "coprime (k*k) l" by (simp add: gcd_mult_cancel)
+    hence "coprime (k*k+l*l) l" using gcd_add_mult[of l l "k*k"]
       by (simp add: ac_simps)
-    hence "gcd l (k^2+l^2)=1" by (simp only: power2_eq_square gcd.commute)
+    hence "coprime l (k^2+l^2)" by (simp only: power2_eq_square gcd.commute)
     thus ?thesis by simp
   qed
-  moreover have "gcd \<bar>k^2+l^2\<bar> \<bar>k\<bar>=1"
+  moreover have "coprime \<bar>k^2+l^2\<bar> \<bar>k\<bar>"
   proof -
-    from kl_rel have "gcd l k = 1" by (simp only: gcd.commute)
-    hence "gcd (l*l) k = 1" by (simp only: gcd_mult_cancel)
-    hence "gcd (l*l+k*k) k = 1" using gcd_add_mult[of k k "l*l"]
+    from kl_rel have "coprime l k" by (simp only: gcd.commute)
+    hence "coprime (l*l) k" by (simp only: gcd_mult_cancel)
+    hence "coprime (l*l+k*k) k" using gcd_add_mult[of k k "l*l"]
       by (simp add: ac_simps)
-    hence "gcd (k^2+l^2) k = 1" by (simp only: ac_simps power2_eq_square)
+    hence "coprime (k^2+l^2) k" by (simp only: ac_simps power2_eq_square)
     thus ?thesis by simp
   qed
   ultimately have "\<exists> x y z. \<bar>k\<bar> = x^2 \<and> \<bar>l\<bar> = y^2 \<and> \<bar>k^2+l^2\<bar> = z^2"
@@ -448,7 +447,7 @@ proof -
   ultimately have newabc: "\<alpha>^4 + \<beta>^4 = \<gamma>^2" by auto 
   from uv0 klavu albega have albega0: "\<alpha> * \<beta> * \<gamma>  \<noteq> 0" by auto
   -- "show the coprimality"
-  have alphabeta_relprime: "gcd \<alpha> \<beta> = 1"
+  have alphabeta_relprime: "coprime \<alpha> \<beta>"
   proof (rule classical)
     let ?g = "gcd \<alpha> \<beta>"
     assume gnot1: "?g \<noteq> 1"
@@ -476,7 +475,7 @@ proof -
     with kl_rel show ?thesis by auto
   qed
   -- "choose $p$ and $q$ in the right way"
-  have "\<exists> p q. p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma> \<noteq> 0 \<and> odd p \<and> gcd p q=1"
+  have "\<exists> p q. p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma> \<noteq> 0 \<and> odd p \<and> coprime p q"
   proof -
     have "odd \<alpha> \<or> odd \<beta>"      
     proof (rule ccontr)
@@ -489,13 +488,13 @@ proof -
     moreover
     { assume "odd \<alpha>"
       with newabc albega0 alphabeta_relprime obtain p q where 
-        "p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> odd p \<and> gcd p q=1" 
+        "p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> odd p \<and> coprime p q" 
         by auto
       hence ?thesis by auto }
     moreover
     { assume "odd \<beta>"
       with newabc albega0 alphabeta_relprime obtain p q where 
-        "q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> odd p \<and> gcd p q=1" 
+        "q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> odd p \<and> coprime p q" 
         by (auto simp add: ac_simps)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
@@ -525,7 +524,7 @@ qed
 text {* Show that no solution exists, by infinite descent of $c^2$. *}
 
 private lemma no_rewritten_fermat4:
-  "\<not> (\<exists> (a::int) b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> odd a \<and> gcd a b=1))"
+  "\<not> (\<exists> (a::int) b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> odd a \<and> coprime a b))"
 proof (induct c rule: infinite_descent0_measure[where V="\<lambda>c. nat(c^2)"])
   case (0 x)
   have "x^2 \<ge> 0" by (rule zero_le_power2)
@@ -535,11 +534,11 @@ proof (induct c rule: infinite_descent0_measure[where V="\<lambda>c. nat(c^2)"])
 next
   case (smaller x)
   then obtain a b where "a^4 + b^4 = x^2" and "a*b*x \<noteq> 0" 
-    and "odd a" and "gcd a b=1" by auto
+    and "odd a" and "coprime a b" by auto
   hence "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> odd p
-    \<and> gcd p q=1 \<and> r^2 < x^2)" by (rule smaller_fermat4)
+    \<and> coprime p q \<and> r^2 < x^2)" by (rule smaller_fermat4)
   then obtain p q r where pqr: "p^4 + q^4 = r^2 \<and> p*q*r \<noteq> 0 \<and> odd p
-    \<and> gcd p q=1 \<and> r^2 < x^2" by auto
+    \<and> coprime p q \<and> r^2 < x^2" by auto
   have "r^2 \<ge> 0" and "x^2 \<ge> 0" by (auto simp only: zero_le_power2)
   hence "int(nat(r^2)) = r^2 \<and> int(nat(x^2)) = x^2" by auto
   with pqr have "int(nat(r^2)) < int(nat(x^2))" by auto
@@ -558,7 +557,7 @@ proof (rule ccontr)
   assume xyz0: "x*y*z \<noteq> 0"
   -- "divide out the g.c.d."
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
-  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> gcd a b=1"
+  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> coprime a b"
      using gcd_coprime_exists[of x y] by (auto simp: mult.commute)
   moreover have abc: "a^4 + b^4 = ?c^2 \<and> a*b*?c \<noteq> 0"
   proof -
@@ -592,7 +591,7 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   -- "choose the parity right"
-  have "\<exists> p q. p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> gcd p q=1"
+  have "\<exists> p q. p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> coprime p q"
   proof -
     have "odd a \<or> odd b"
     proof (rule ccontr)
@@ -609,7 +608,7 @@ proof (rule ccontr)
     { assume "odd b"
       then obtain p q where "p = b" and "q = a" and "odd p" by simp    
       with ab abc have 
-        "p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> gcd p q=1"
+        "p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> coprime p q"
         by (simp add: gcd.commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto

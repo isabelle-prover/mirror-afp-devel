@@ -241,8 +241,8 @@ done
 lemma qfN_power_div_prime:
   fixes P :: int
   assumes ass: "prime P \<and> odd P \<and> P dvd A \<and> P^n = p^2+N*q^2
-  \<and> A^n = a^2+N*b^2 \<and> gcd a b=1 \<and> gcd p (N*q) = 1 \<and> n>0"
-  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> gcd u v=1
+  \<and> A^n = a^2+N*b^2 \<and> coprime a b \<and> coprime p (N*q) \<and> n>0"
+  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> coprime u v
                 \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar> = 1)"
 proof -
   from ass have "P dvd A \<and> n>0" by simp
@@ -408,7 +408,7 @@ proof -
     assume "\<not> e=1" with e have "e=-1" by simp
     with a and b and ass show ?thesis by (simp add: qfN_mult2 ac_simps)
   qed
-  moreover have "gcd u v=1"
+  moreover have "coprime u v"
   proof -
     let ?g = "gcd u v"
     have "?g dvd u \<and> ?g dvd v" by auto
@@ -460,7 +460,7 @@ qed
 
 lemma qfN_oddprime_cube:
   "\<lbrakk> prime (p^2+N*q^2::int); odd (p^2+N*q^2); p \<noteq> 0; N \<ge> 1 \<rbrakk>
-  \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> gcd a (N*b)=1"
+  \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> coprime a (N*b)"
 proof -
   let ?P = "p^2+N*q^2"
   assume P: "prime ?P" and Podd: "odd ?P" and p0: "p \<noteq> 0" and N1: "N \<ge> 1"
@@ -648,8 +648,8 @@ proof -
       with neg show False by simp
     qed
   qed
-  ultimately have "gcd ?b ?a = 1 \<and> gcd N ?a = 1" by auto
-  hence "gcd (N*?b) ?a = 1" by (simp only: gcd_mult_cancel)
+  ultimately have "coprime ?b ?a \<and> coprime N ?a" by auto
+  hence "coprime (N*?b) ?a" by (simp only: gcd_mult_cancel)
   with abP show ?thesis by (auto simp only: gcd.commute)
 qed
 
@@ -721,7 +721,7 @@ qed
 
 lemma qfN_square_prime:
   assumes ass:
-  "prime (p^2+N*q^2::int) \<and> N>1 \<and> (p^2+N*q^2)^2 = r^2+N*s^2 \<and> gcd r s=1"
+  "prime (p^2+N*q^2::int) \<and> N>1 \<and> (p^2+N*q^2)^2 = r^2+N*s^2 \<and> coprime r s"
   shows "\<bar>r\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>s\<bar> = \<bar>2*p*q\<bar>"
 proof -
   let ?P = "p^2 + N*q^2"
@@ -769,7 +769,7 @@ qed
 
 lemma qfN_cube_prime:
   assumes ass: "prime (p^2 + N*q^2::int) \<and> N > 1
-  \<and> (p^2 + N*q^2)^3 = a^2 + N*b^2 \<and> gcd a b=1"
+  \<and> (p^2 + N*q^2)^3 = a^2 + N*b^2 \<and> coprime a b"
   shows "\<bar>a\<bar> = \<bar>p^3- 3*N*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q-N*q^3\<bar>"
 proof -
   let ?P = "p^2 + N*q^2"
@@ -780,7 +780,7 @@ proof -
   then obtain u v e where uve:
     "?A = (u^2+N*v^2)*?P \<and> a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar>=1"
     by (frule_tac p="p" in qfN_div_prime, auto)
-  have "gcd u v=1"
+  have "coprime u v"
   proof -
     let ?g = "gcd u v"
     have "?g dvd u \<and> ?g dvd v" by auto
@@ -791,7 +791,7 @@ proof -
     ultimately show ?thesis by auto
   qed
   with P1 uve APP ass have "prime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2
-    \<and> gcd u v=1" by (auto simp add: ac_simps)
+    \<and> coprime u v" by (auto simp add: ac_simps)
   hence "\<bar>u\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>v\<bar> = \<bar>2*p*q\<bar>" by (rule qfN_square_prime)
   then obtain f g where f: "u = f*(p^2-N*q^2) \<and> \<bar>f\<bar> = 1"
     and g: "v = g*(2*p*q) \<and> \<bar>g\<bar> = 1" by (blast dest: abs_eq_impl_unitfactor)
@@ -955,7 +955,7 @@ proof (rule ccontr, simp)
 qed
 
 lemma qf3_oddprimedivisor:
-  "\<lbrakk> prime (P::int); odd P; gcd a b=1; P dvd (a^2+3*b^2) \<rbrakk>
+  "\<lbrakk> prime (P::int); odd P; coprime a b; P dvd (a^2+3*b^2) \<rbrakk>
   \<Longrightarrow> is_qfN P 3"
 proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P. nat\<bar>P\<bar>"])
   case (0 x)
@@ -963,7 +963,7 @@ proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P.
   ultimately show ?case by (simp add: prime_int_iff)
 next
   case (smaller x)
-  then obtain a b where abx: "prime x \<and> odd x \<and> gcd a b=1
+  then obtain a b where abx: "prime x \<and> odd x \<and> coprime a b
     \<and> x dvd (a^2+3*b^2) \<and> \<not> is_qfN x 3" by auto
   then obtain M where M: "a^2+3*b^2 = x*M" by (auto simp add: dvd_def)
   let ?A = "a^2 + 3*b^2"
@@ -1047,7 +1047,7 @@ next
     assume "\<not> (c\<noteq>0 \<or> d\<noteq>0)" hence "c=0 \<and> d=0" by simp
     with C0 show False by simp
   qed
-  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> gcd e f = 1"
+  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> coprime e f"
     using gcd_coprime_exists[of c d] gcd_pos_int[of c d] by (auto simp: mult.commute)
   have g2nonzero: "?g^2 \<noteq> 0"
   proof (rule ccontr, simp)
@@ -1064,7 +1064,7 @@ next
   qed
   hence "?g^2 dvd ?C" by (simp add: dvd_def)
   with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: ac_simps)
-  moreover have "gcd x (?g^2) = 1"
+  moreover have "coprime x (?g^2)"
   proof -
     let ?h = "gcd ?g x"
     have "?h dvd ?g" and "?g dvd c" by blast+
@@ -1081,7 +1081,7 @@ next
     with `?h dvd a` have "?h dvd gcd a b" by simp
     with abx have "?h dvd 1" by simp
     hence "?h = 1" by simp
-    hence "gcd (?g^2) x = 1" using coprime_exp_left by blast
+    hence "coprime (?g^2) x" using coprime_exp_left by blast
     thus ?thesis by (simp only: gcd.commute)
   qed
   ultimately have "?g^2 dvd y" by (simp add: coprime_dvd_mult_iff gcd.commute)
@@ -1126,7 +1126,7 @@ next
     by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
   from Ewx have "w dvd ?E" by simp
   with z have "z dvd ?E" by (auto dest: dvd_trans)
-  with z ef have "prime z \<and> odd z \<and> gcd e f = 1 \<and> z dvd ?E \<and> \<not> is_qfN z 3"
+  with z ef have "prime z \<and> odd z \<and> coprime e f \<and> z dvd ?E \<and> \<not> is_qfN z 3"
     by auto
   moreover have "nat\<bar>z\<bar> < nat\<bar>x\<bar>"
   proof -
@@ -1144,7 +1144,7 @@ next
 qed
 
 lemma qf3_cube_prime_impl_cube_form:
-  assumes ab_relprime: "gcd a b = 1" and abP: "P^3 = a^2 + 3*b^2"
+  assumes ab_relprime: "coprime a b" and abP: "P^3 = a^2 + 3*b^2"
   and P: "prime P \<and> odd P"
   shows "is_cube_form a b"
 proof -
@@ -1153,7 +1153,7 @@ proof -
   with abP ab_relprime P have qfP: "is_qfN P 3" by (simp add: qf3_oddprimedivisor)
   then obtain p q where pq: "P = p^2 + 3*q^2" by (auto simp only: is_qfN_def)
   with P abP ab_relprime have "prime (p^2 + 3*q^2) \<and> (3::int) > 1
-    \<and> (p^2+3*q^2)^3 = a^2+3*b^2 \<and> gcd a b=1" by auto
+    \<and> (p^2+3*q^2)^3 = a^2+3*b^2 \<and> coprime a b" by auto
   hence ab: "\<bar>a\<bar> = \<bar>p^3 - 3*3*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q - 3*q^3\<bar>"
     by (rule qfN_cube_prime)
   hence a: "a = p^3 - 9*p*q^2 \<or> a = -(p^3) + 9*p*q^2" by arith
@@ -1246,7 +1246,7 @@ proof -
 qed
 
 lemma qf3_cube_primelist_impl_cube_form: "\<lbrakk> (\<forall>p\<in>set_mset ps. prime p); odd (int (\<Prod>i\<in>#ps. i)) \<rbrakk> \<Longrightarrow>
-  (!! a b. gcd a b=1 \<Longrightarrow> a^2 + 3*b^2 = (int(\<Prod>i\<in>#ps. i))^3 \<Longrightarrow> is_cube_form a b)"
+  (!! a b. coprime a b \<Longrightarrow> a^2 + 3*b^2 = (int(\<Prod>i\<in>#ps. i))^3 \<Longrightarrow> is_cube_form a b)"
 proof (induct ps)
   case empty hence ab1: "a^2 + 3*b^2 = 1" by simp
   have b0: "b=0"
@@ -1263,9 +1263,9 @@ proof (induct ps)
   with a1 and b0 have "a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3" by auto
   thus "is_cube_form a b" by (auto simp only: is_cube_form_def)
 next
-  case (add p ps) hence ass: "gcd a b=1 \<and> odd (int(\<Prod>i\<in>#ps + {#p#}. i))
+  case (add p ps) hence ass: "coprime a b \<and> odd (int(\<Prod>i\<in>#ps + {#p#}. i))
     \<and> a^2+3*b^2 = int(\<Prod>i\<in>#ps + {#p#}. i)^3 \<and>  (\<forall>a\<in>set_mset ps. prime a) \<and> prime (int p)"
-    and IH: "!! u v. gcd u v=1 \<and> u^2+3*v^2 = int(\<Prod>i\<in>#ps. i)^3
+    and IH: "!! u v. coprime u v \<and> u^2+3*v^2 = int(\<Prod>i\<in>#ps. i)^3
     \<and> odd (int(\<Prod>i\<in>#ps. i)) \<Longrightarrow> is_cube_form u v"
     by auto
   let ?w = "int (\<Prod>i\<in>#ps + {#p#}. i)"
@@ -1284,7 +1284,7 @@ next
   proof -
     from ass have "a^2+3*b^2 = (?p*?X)^3" by (simp add: mult.commute)
     hence "?p dvd a^2+3*b^2" by (simp add: eval_nat_numeral field_simps)
-    moreover from ass have "prime ?p" and "gcd a b=1" by simp_all
+    moreover from ass have "prime ?p" and "coprime a b" by simp_all
     moreover from pw have "odd ?p" by simp
     ultimately show ?thesis by (simp add: qf3_oddprimedivisor)
   qed
@@ -1312,13 +1312,13 @@ next
   moreover from alphabeta pw ass have
     "prime (\<alpha>^2 + 3*\<beta>^2) \<and> odd (\<alpha>^2+3*\<beta>^2) \<and> (3::int) \<ge> 1" by auto
   ultimately obtain c d where cdp:
-    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> gcd c (3*d)=1"
+    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> coprime c (3*d)"
     by (blast dest: qfN_oddprime_cube)
   with ass pw alphabeta have "\<exists> u v. a^2+3*b^2 = (u^2 + 3*v^2)*(c^2+3*d^2)
-    \<and> gcd u v=1 \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)"
+    \<and> coprime u v \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)"
     by (rule_tac A="?w" and n="3" in qfN_power_div_prime, auto)
   then obtain u v e where uve: "a^2+3*b^2 = (u^2+3*v^2)*(c^2+3*d^2)
-    \<and> gcd u v=1 \<and> a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1" by blast
+    \<and> coprime u v \<and> a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1" by blast
   moreover have "is_cube_form u v"
   proof -
     have uvX: "u^2+3*v^2 = ?X^3"
@@ -1335,7 +1335,7 @@ next
   qed
   moreover have "is_cube_form c d"
   proof -
-    have "gcd c d = 1"
+    have "coprime c d"
     proof (rule ccontr)
       let ?g = "gcd c d"
       assume "?g \<noteq> 1"
@@ -1351,7 +1351,7 @@ next
 qed
 
 lemma qf3_cube_impl_cube_form:
-  assumes ass: "gcd a b=1 \<and> a^2 + 3*b^2 = w^3 \<and> odd w"
+  assumes ass: "coprime a b \<and> a^2 + 3*b^2 = w^3 \<and> odd w"
   shows "is_cube_form a b"
 proof -
   have "0 \<le> w^3" using ass not_sum_power2_lt_zero[of a b] zero_le_power2[of b] by linarith
@@ -1504,7 +1504,7 @@ proof -
   hence "?p dvd s^2 - (-3::int)" by (unfold cong_altdef_int, simp)
   moreover have "s^2 -(-3::int) = s^2 + 3" by arith
   ultimately have "?p dvd s^2 + 3*1^2" by auto
-  moreover have "gcd s 1 = 1" by auto
+  moreover have "coprime s 1" by auto
   moreover have "odd ?p"
   proof -
     have "?p = 2*(3*m)+1" by simp

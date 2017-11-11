@@ -16,7 +16,7 @@ text {* Proof of Fermat's last theorem for the case $n=3$: $$\forall x,y,z:~x^3 
 (* TODO: this lemma is also used in Fermat4 with a slightly different generalization to ints.
 Maybe it should be generalized to factorial rings and moved to another theory. *)
 private lemma nat_relprime_power_divisors: 
-  assumes n0: "0 < n" and abc: "(a::nat)*b = c^n" and relprime: "gcd a b = 1"
+  assumes n0: "0 < n" and abc: "(a::nat)*b = c^n" and relprime: "coprime a b"
   shows "\<exists> k. a = k^n"
 using assms proof (induct c arbitrary: a b rule: nat_less_induct)
 case (1 c)
@@ -91,10 +91,10 @@ proof -
   ultimately show False by arith
 qed
 
-text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $\gcd(v,w)=1$ and $x$ even, by constructing a solution with a smaller $|x^3|$. *}
+text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $coprime v w$ and $x$ even, by constructing a solution with a smaller $|x^3|$. *}
 
 private lemma no_rewritten_fermat3: 
-  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> even (x::int) \<and> gcd v w=1)"
+  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> even (x::int) \<and> coprime v w)"
 proof (induct x rule: infinite_descent0_measure[where V="\<lambda>x. nat\<bar>x^3\<bar>"])
   case (0 x) hence "x^3 = 0" by arith
   hence "x=0" by auto
@@ -102,7 +102,7 @@ proof (induct x rule: infinite_descent0_measure[where V="\<lambda>x. nat\<bar>x^
 next
   case (smaller x)
   then obtain v w where vwx: 
-    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> even x \<and> gcd v w=1" (is "?P v w x")
+    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> even x \<and> coprime v w" (is "?P v w x")
     by auto
   have "\<exists> \<alpha> \<beta> \<gamma>. ?P \<alpha> \<beta> \<gamma> \<and> nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
   proof -
@@ -177,7 +177,7 @@ next
           using prime_dvd_multD[of 3] by (fastforce simp add: prime_dvd_mult_iff)
         with p3 show False by arith
       qed
-      have pq_relprime: "gcd p q=1"
+      have pq_relprime: "coprime p q"
       proof (rule ccontr)
         let ?h = "gcd p q"
         assume h: "?h \<noteq> 1"
@@ -205,7 +205,7 @@ next
       moreover from vwx vwpq have pqx: "(2*p)*(p^2 + 3*q^2) = x^3" by auto
       ultimately have "\<exists> c. 2*p = c^3" by (simp add: int_relprime_odd_power_divisors)
       then obtain c where c: "c^3 = 2*p" by auto
-      from pqx factors_relprime have "gcd (p^2 + 3*q^2) (2*p) = 1"
+      from pqx factors_relprime have "coprime (p^2 + 3*q^2) (2*p)"
         and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: ac_simps)
       hence "\<exists> d. p^2 + 3*q^2 = d^3" by (simp add: int_relprime_odd_power_divisors)
       then obtain d where d: "p^2 + 3*q^2 = d^3" by auto
@@ -218,7 +218,7 @@ next
         ultimately have "2 dvd gcd (2*p) (d^3)" by simp
         with d factors_relprime show False by simp
       qed
-      with d pq_relprime have "gcd p q=1 \<and> p^2 + 3*q^2 = d^3 \<and> odd d"
+      with d pq_relprime have "coprime p q \<and> p^2 + 3*q^2 = d^3 \<and> odd d"
         by simp
       hence "is_cube_form p q" by (rule qf3_cube_impl_cube_form)
       then obtain a b where "p = a^3 - 9*a*b^2 \<and> q = 3*a^2*b - 3*b^3"
@@ -226,7 +226,7 @@ next
       hence ab: "p = a*(a+3*b)*(a- 3*b) \<and> q = b*(a+b)*(a-b)*3"
         by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*a)*(a+3*b)*(a- 3*b) = c^3" by auto
-      have ab_relprime: "gcd a b=1"
+      have ab_relprime: "coprime a b"
       proof (rule ccontr)
         let ?h = "gcd a b"
         assume h: "?h \<noteq> 1"
@@ -234,7 +234,7 @@ next
         with ab have "?h dvd p \<and> ?h dvd q" by simp
         thus False using pq_relprime coprime_common_divisor_int h by fastforce
       qed
-      have ab1: "gcd (2*a) (a+3*b) = 1"
+      have ab1: "coprime (2*a) (a+3*b)"
       proof (rule ccontr)
         let ?h = "gcd (2*a) (a+3*b)"
         assume h: "?h \<noteq> 1"
@@ -263,7 +263,7 @@ next
           using h3b coprime_dvd_mult_iff[of ?h 3 b] mult.commute by presburger
         thus False using coprime_common_divisor_int ha h ab_relprime by fastforce
       qed
-      have ab2: "gcd (a+3*b) (a- 3*b) = 1"
+      have ab2: "coprime (a+3*b) (a- 3*b)"
       proof (rule ccontr)
         let ?h = "gcd (a+3*b) (a- 3*b)"
         assume h: "?h \<noteq> 1"
@@ -272,7 +272,7 @@ next
         hence "?h dvd 2*a" by simp
         thus False using coprime_common_divisor_int hab1 h ab1 by fastforce
       qed
-      have "gcd(a- 3*b) (2*a) = 1"
+      have "coprime (a- 3*b) (2*a)"
       proof (rule ccontr)
         let ?h = "gcd(a- 3*b) (2*a)"
         assume h: "?h \<noteq> 1"
@@ -307,7 +307,7 @@ next
         with albega have "even (\<gamma>^3)" by simp
         thus ?thesis by simp
       qed
-      moreover have "gcd \<alpha> \<beta>=1"
+      moreover have "coprime \<alpha> \<beta>"
       proof (rule ccontr)
         let ?h = "gcd \<alpha> \<beta>"
         assume h: "?h \<noteq> 1"
@@ -377,7 +377,7 @@ next
       ultimately have pq3: "3 dvd p^2+3*q^2" by (simp add: power_mult_distrib)
       moreover from p3 have "3 dvd 2*p" by (rule dvd_mult)
       ultimately have g3: "3 dvd ?g" by simp
-      have qr_relprime: "gcd q r = 1" 
+      have qr_relprime: "coprime q r" 
       proof (rule ccontr)
         let ?h = "gcd q r"
         assume h: "?h \<noteq> 1"
@@ -387,7 +387,7 @@ next
         with vw have "?h dvd gcd v w" by simp
         with vwx h show False by auto
       qed
-      have factors_relprime: "gcd (18*r) (q^2 + 3*r^2) = 1"
+      have factors_relprime: "coprime (18*r) (q^2 + 3*r^2)"
       proof -
         from g3 obtain k where k: "?g = 3*k" by (auto simp add: dvd_def)
         have "k = 1"
@@ -429,8 +429,8 @@ next
         also have "\<dots> = gcd (3*(2*r)) (3*(3*r^2 + q^2))" 
           by (simp add: power_mult_distrib)
         also have "\<dots> = 3 * gcd (2*r) (3*r^2 + q^2)" using gcd_mult_distrib_int[of 3] by auto
-        finally have "gcd (2*r) (3*r^2 + q^2) = 1" by auto
-        moreover have "gcd (3*3) (3*r^2 + q^2) = 1"
+        finally have "coprime (2*r) (3*r^2 + q^2)" by auto
+        moreover have "coprime (3*3) (3*r^2 + q^2)"
         proof (rule ccontr)
           let ?h = "gcd (3*3) (3*r^2 + q^2)"
           assume h: "?h \<noteq> 1"
@@ -450,7 +450,7 @@ next
           with vw have "3 dvd gcd v w" by simp
           with vwx show False by auto
         qed
-        ultimately have "gcd ((3*3)*(2*r)) (3*r^2 + q^2) = 1"
+        ultimately have "coprime ((3*3)*(2*r)) (3*r^2 + q^2)"
           by (simp only: gcd_mult_cancel)
         thus ?thesis by (auto simp add: ac_simps)
       qed
@@ -468,7 +468,7 @@ next
       hence "3 dvd c1" using prime_dvd_power[of 3] by fastforce
       with c1 obtain c where c: "3*c^3 = 2*r" 
         by (auto simp add: power_mult_distrib dvd_def)
-      from rqx factors_relprime have "gcd (q^2 + 3*r^2) (18*r) = 1"
+      from rqx factors_relprime have "coprime (q^2 + 3*r^2) (18*r)"
         and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: ac_simps)
       hence "\<exists> d. q^2 + 3*r^2 = d^3" 
         by (simp add: int_relprime_odd_power_divisors)
@@ -481,7 +481,7 @@ next
         ultimately have "2 dvd gcd (2*(9*r)) (d^3)" by simp
         with d factors_relprime show False by auto
       qed
-      with d qr_relprime have "gcd q r=1 \<and> q^2 + 3*r^2 = d^3 \<and> odd d" 
+      with d qr_relprime have "coprime q r \<and> q^2 + 3*r^2 = d^3 \<and> odd d" 
         by simp
       hence "is_cube_form q r" by (rule qf3_cube_impl_cube_form)
       then obtain a b where "q = a^3 - 9*a*b^2 \<and> r = 3*a^2*b - 3*b^3" 
@@ -489,7 +489,7 @@ next
       hence ab: "q = a*(a+3*b)*(a- 3*b) \<and> r = b*(a+b)*(a-b)*3"
         by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*b)*(a+b)*(a-b) = c^3" by auto
-      have ab_relprime: "gcd a b=1"
+      have ab_relprime: "coprime a b"
       proof (rule ccontr)
         let ?h = "gcd a b"
         assume h: "?h \<noteq> 1"
@@ -497,7 +497,7 @@ next
         with ab have "?h dvd q \<and> ?h dvd r" by simp
         thus False using qr_relprime coprime_common_divisor_int h by fastforce
       qed
-      have ab1: "gcd (2*b) (a+b) = 1"
+      have ab1: "coprime (2*b) (a+b)"
       proof (rule ccontr)
         let ?h = "gcd (2*b) (a+b)"
         assume h: "?h \<noteq> 1"
@@ -515,7 +515,7 @@ next
         moreover with hab have "?h dvd a" using dvd_diff by fastforce
         ultimately show False using h ab_relprime coprime_common_divisor_int by fastforce
       qed
-      have ab2: "gcd (a+b) (a-b) = 1"
+      have ab2: "coprime (a+b) (a-b)"
       proof (rule ccontr)
         let ?h = "gcd (a+b) (a-b)"
         assume h: "?h \<noteq> 1"
@@ -523,7 +523,7 @@ next
         hence "?h dvd 2*b" using dvd_diff[of ?h "a+b" "a-b"] by fastforce
         thus False using hab1 h ab1 coprime_common_divisor_int by fastforce
       qed
-      have "gcd (a-b) (2*b) = 1"
+      have "coprime (a-b) (2*b)"
       proof (rule ccontr)
         let ?h = "gcd (a-b) (2*b)"
         assume h: "?h \<noteq> 1"
@@ -559,7 +559,7 @@ next
         with a1 have "even (\<gamma>^3)" by simp
         thus ?thesis by simp
       qed
-      moreover have "gcd \<alpha> \<beta>=1"
+      moreover have "coprime \<alpha> \<beta>"
       proof (rule ccontr)
         let ?h = "gcd \<alpha> \<beta>"
         assume h: "?h \<noteq> 1"
@@ -609,7 +609,7 @@ proof (rule ccontr)
   assume xyz0: "x*y*z\<noteq>0"
   -- "divide out the g.c.d."
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
-  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> gcd a b=1"
+  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> coprime a b"
     using gcd_coprime_exists[of x y] by (auto simp: mult.commute)
   moreover have abc: "?c*?g = z \<and> a^3 + b^3 = ?c^3 \<and> a*b*?c \<noteq> 0"
   proof -
@@ -640,9 +640,9 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   -- "make both sides even"
-  have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> gcd u v = 1"
+  have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> coprime u v"
   proof -
-    let "?Q u v w" = "u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> gcd u v=1"
+    let "?Q u v w" = "u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> coprime u v"
     have "even a \<or> even b \<or> even ?c"
     proof (rule ccontr)
       assume "\<not>(even a \<or> even b \<or> even ?c)"
@@ -666,7 +666,7 @@ proof (rule ccontr)
         also with abc and uvwabc have "\<dots> = w^3" by auto
         finally show ?thesis by simp
       qed
-      moreover have "gcd u v=1"
+      moreover have "coprime u v"
       proof (rule ccontr)
         let ?h = "gcd u v"
         assume h: "?h \<noteq> 1"
@@ -693,7 +693,7 @@ proof (rule ccontr)
         also with abc and uvwabc have "\<dots> = w^3" by auto
         finally show ?thesis by simp
       qed
-      moreover have "gcd u v=1"
+      moreover have "coprime u v"
       proof (rule ccontr)
         let ?h = "gcd u v"
         assume h: "?h \<noteq> 1"
@@ -714,7 +714,7 @@ proof (rule ccontr)
       with abc ab have ?thesis by auto }
     ultimately show ?thesis by auto
   qed
-  hence "\<exists> w. \<exists> u v. u^3 + v^3 = w^3 \<and> u*v*w \<noteq> (0::int) \<and> even w \<and> gcd u v=1"
+  hence "\<exists> w. \<exists> u v. u^3 + v^3 = w^3 \<and> u*v*w \<noteq> (0::int) \<and> even w \<and> coprime u v"
     by auto
   -- "show contradiction using the earlier result"
   thus False by (auto simp only: no_rewritten_fermat3)
