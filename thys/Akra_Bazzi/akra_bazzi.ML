@@ -495,19 +495,6 @@ fun find_function goal =
       @{term "Set.member :: (nat => real) => _ set => bool"} $ f $ _ => f
     | _ => raise TERM ("find_function", [goal])
 
-fun find_funvar ctxt f lhs = 
-  let
-    val thy = Proof_Context.theory_of ctxt
-    val ctxt_names = Variable.declare_term f ctxt
-    val var = Var (("x", Variable.maxidx_of ctxt_names + 1), HOLogic.natT)
-    val matcher = Pattern.match thy (lhs, betapply (f, var)) (Vartab.empty, Vartab.empty) |> snd
-      handle Pattern.MATCH => raise TERM ("find_funvar", [f,f$var,lhs])
-  in
-    case Vartab.get_first (fn (k,v) => if snd v = var then SOME k else NONE) matcher of
-      NONE => raise TERM ("find_funvar", [f,lhs])
-    | SOME x => Var (x, HOLogic.natT)
-  end
-
 val leq_nat = @{term "op <= :: nat => nat => bool"}
 val less_nat = @{term "op < :: nat => nat => bool"}
 

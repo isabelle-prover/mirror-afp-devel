@@ -168,6 +168,8 @@ lemma decompose:
   using assms
 proof (induction ys arbitrary: x rule: list_nonempty_induct)
   case (cons y ys x)
+  from cons.prems have "coprime (prod_list ys) y"
+    by (auto simp add: pairwise_insert intro: prod_list_coprime_left)
   from cons.prems have unit: "is_unit (lift y)" by simp
   moreover from cons.prems have "\<forall>y\<in>set ys. is_unit (lift y)" by simp
   hence unit': "is_unit (lift (prod_list ys))" by (induction ys) (auto simp: lift_mult)
@@ -194,11 +196,11 @@ proof (induction ys arbitrary: x rule: list_nonempty_induct)
     by (simp add: lift_mult lift_add algebra_simps)
   finally have "(\<Sum>i<length (y # ys). lift (decompose x (y # ys) ! i) div lift ((y # ys) ! i)) =
                   lift ((s * y + t * prod_list ys) * x) div lift (prod_list (y#ys))"
-                  using unit by (subst unit_eq_div2) (auto simp: lift_mult lift_add algebra_simps)
-                also have "s * y + t * prod_list ys = gcd (prod_list ys) y"
+    using unit by (subst unit_eq_div2) (auto simp: lift_mult lift_add algebra_simps)
+  also have "s * y + t * prod_list ys = gcd (prod_list ys) y"
     using bezout_coefficients_fst_snd[of y "prod_list ys"] by (simp add: st gcd.commute)
-  also from cons.prems have "\<dots> = 1"
-    by (intro prod_list_coprime) (auto dest: pairwiseD)
+  also have "\<dots> = 1"
+    using \<open>coprime (prod_list ys) y\<close> by simp
   finally show ?case by simp
 qed simp_all
 

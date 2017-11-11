@@ -68,7 +68,7 @@ shows "EX x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
   case True
   show ?thesis unfolding cong_def
-    by (metis \<open>a = 0\<close> bezout_coefficients_fst_snd comm_monoid_add_class.add_0 coprime_an mod_mult_self2_is_0 mult_not_zero)
+    using True coprime_an by auto
 next
   case False  
   show ?thesis
@@ -91,7 +91,7 @@ proof (rule finite_set_choice, rule fin, rule ballI)
   fix i
   assume "i : A"
   with cop have "coprime (\<Prod>j \<in> A - {i}. m j) (m i)"
-    by (intro prod_coprime, auto)
+    by (auto intro: prod_coprime_left)
   then have "EX x. [(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
     by (elim cong_solve_coprime_poly)
   then obtain x where "[(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
@@ -180,8 +180,8 @@ lemma coprime_cong_prod_poly:
       (\<forall>i\<in>A. [(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m i)) \<Longrightarrow>
          [x = y] (mod (\<Prod>i\<in>A. m i))"
   apply (induct A rule: infinite_finite_induct)
-  apply auto
-  apply (metis (full_types) coprime_cong_mult_poly gcd.commute prod_coprime)
+    apply auto
+  apply (metis coprime_cong_mult_poly prod_coprime_right)
   done
 
 lemma cong_less_modulus_unique_poly:

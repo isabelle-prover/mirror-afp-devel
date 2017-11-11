@@ -22,7 +22,7 @@ proof
   have  "2^?n dvd m" by (rule multiplicity_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 
   with m0 have mdef: "m=2^?n*?A & coprime 2 ?A"
-    by (simp add: coprime_multiplicity)
+    using multiplicity_decompose [of m 2] by simp
   moreover with m0 have a0: "?A>0" by (metis nat_0_less_mult_iff)
   moreover
   { from perfect have "2*m=sigma(m)" by (simp add: perfect_def)
@@ -38,11 +38,12 @@ proof
   let ?B = "?A div ?np"
 
   from formula have "?np dvd ?A * 2^(?n+1)"
-    by (metis mult.commute dvd_def) 
+    by (auto simp add: ac_simps)
   then have "?np dvd ?A"
-    using coprime_minus_one_nat [of "2 ^ (multiplicity 2 m + 1)"]
-    by (auto intro: coprime_dvd_mult) 
-  hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
+    using coprime_diff_one_left_nat [of "2 ^ (multiplicity 2 m + 1)"]
+    by (auto simp add: coprime_dvd_mult_left_iff)
+  then have bdef: "?np*?B = ?A"
+    by simp
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
 
   from nplarger a0 have bsmallera: "?B < ?A" by auto

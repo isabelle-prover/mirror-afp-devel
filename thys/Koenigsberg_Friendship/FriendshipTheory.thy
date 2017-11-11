@@ -1460,9 +1460,10 @@ proof (rule ccontr)
                   proof -
                     have "n1-n2>0" and "n1-n2<p" 
                       using `n1 \<in> {0..<p}` `n2 \<in> {0..<p}` `n1>n2` by auto
-                    hence "coprime (n1 - n2) p" using `prime p` 
-                      by (metis (full_types) gcd.commute nat_dvd_not_less prime_imp_coprime_nat)
-                    hence "\<exists>x. [(n1 - n2) * x = 1] (mod p)" by (metis cong_solve_coprime_nat)
+                    with \<open>prime p\<close> have "coprime (n1 - n2) p"
+                      by (simp add: prime_nat_iff'' coprime_commute [of p])
+                    then have "\<exists>x. [(n1 - n2) * x = 1] (mod p)"
+                      by (simp add: cong_solve_coprime_nat)
                     then obtain s where "s * (n1 - n2) mod p = 1" 
                       using \<open>prime p\<close> prime_gt_1_nat [of p]
                       by (auto simp add: cong_def ac_simps)

@@ -426,7 +426,8 @@ proof (cases "square_free_heuristic f")
       from rel(2) cop have "?rp (gcd a A) = [: c :]" by simp
       from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
       from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto
-      from rel(8) rel(5) show "gcd a A = 1" unfolding content_def gcd by auto
+      from rel(8) rel(5) show "Rings.coprime a A"
+        by (auto intro!: gcd_eq_1_imp_coprime simp add: gcd)
     }
     let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
     let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
@@ -660,7 +661,8 @@ proof -
           with dvd show ?thesis by auto
         qed
       qed auto
-      hence "coprime ?x a" by simp
+      hence "coprime ?x a"
+        by (simp add: gcd_eq_1_imp_coprime)
       note this dvd
     } note hs_dvd_x = this
     from hs_dvd_x[of ?x m]
@@ -678,7 +680,7 @@ proof -
         | (hs_x) "(a,i) \<in> set hs" "b = ?x" 
         | (x_hs) "(b,j) \<in> set hs" "a = ?x" 
         using ai bj diff unfolding fs by auto
-      thus "gcd a b = 1"
+      then show "Rings.coprime a b"
       proof cases
         case hs_hs
         from sf(3)[OF this diff] show ?thesis .

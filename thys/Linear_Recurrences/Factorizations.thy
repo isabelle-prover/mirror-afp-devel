@@ -169,8 +169,21 @@ proof -
     by (simp add: prod_list_prod_nth case_prod_unfold)
   also have "order c \<dots> = 
                (\<Sum>x<length fctrs. order c ([:- fst (fctrs ! x), 1:] ^ Suc (snd (fctrs ! x))))"
-    using nth_eq_iff_index_eq [OF distinct]
-    by (intro order_prod coprime_exp2 coprime_linear_poly power_not_zero) auto
+  proof (rule order_prod)
+    fix i
+    assume "i \<in> {..<length fctrs}"
+    then show "[:- fst (fctrs ! i), 1:] ^ Suc (snd (fctrs ! i)) \<noteq> 0"
+      by (simp only: power_eq_0_iff) simp
+  next
+    fix i j :: nat
+    assume "i \<noteq> j" "i \<in> {..<length fctrs}" "j \<in> {..<length fctrs}"
+    then have "fst (fctrs ! i) \<noteq> fst (fctrs ! j)"
+      using nth_eq_iff_index_eq [OF distinct, of i j] by simp
+    then show "coprime ([:- fst (fctrs ! i), 1:] ^ Suc (snd (fctrs ! i)))
+      ([:- fst (fctrs ! j), 1:] ^ Suc (snd (fctrs ! j)))"
+      by (simp only: coprime_power_left_iff coprime_power_right_iff)
+        (auto simp add: coprime_linear_poly)
+  qed
   also have "\<dots> = (\<Sum>(c',n')\<leftarrow>fctrs. order c ([:-c', 1:] ^ Suc n'))"
     by (simp add: sum_list_sum_nth case_prod_unfold atLeast0LessThan)
   also have "\<dots> = (\<Sum>(c',n')\<leftarrow>fctrs. if c = c' then Suc n' else 0)"

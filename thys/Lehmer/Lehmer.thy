@@ -15,11 +15,14 @@ text {*
 *}
 
 lemma mod_1_coprime_nat:
-  fixes a b :: nat assumes "0 < n" "[a ^ n = 1] (mod b)" shows "coprime a b"
+  "coprime a b" if "0 < n" "[a ^ n = 1] (mod b)" for a b :: nat
 proof -
-  from assms have "coprime (a ^ n) b" by (simp cong: cong_gcd_eq_nat)
-  with `0 < n` show ?thesis
-    by (simp add: coprime_power gcd.commute del: One_nat_def)
+  from that have "[a * a ^ (n - 1) = 1] (mod b)"
+    by (cases n) simp_all
+  then have "coprime (a ^ n) b"
+    by (cases "b = 0") (auto simp add: coprime_iff_invertible_nat)
+  with \<open>0 < n\<close> show ?thesis
+    by simp
 qed
 
 text {*

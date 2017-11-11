@@ -19,34 +19,38 @@ hide_fact(open)
   Divisibility.irreducibleD
   Divisibility.irreducibleE
 
-(**** coprime shouldn't need "gcd" ****)
-hide_const(open) coprime
+hide_const (open) Rings.coprime
 
 context comm_monoid_mult begin
 
-  definition coprime where "coprime p q \<equiv> \<forall>r. r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1"
+  definition coprime :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+    where coprime_def': "coprime p q \<equiv> \<forall>r. r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1"
 
   lemma coprimeI:
     assumes "\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1"
-    shows "coprime p q" using assms by (auto simp: coprime_def)
+    shows "coprime p q" using assms by (auto simp: coprime_def')
 
   lemma coprimeE:
     assumes "coprime p q"
         and "(\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1) \<Longrightarrow> thesis"
-    shows thesis using assms by (auto simp: coprime_def)
+    shows thesis using assms by (auto simp: coprime_def')
 
-  lemma coprime_commute[ac_simps]: "coprime p q \<longleftrightarrow> coprime q p" unfolding coprime_def by auto
+  lemma coprime_commute [ac_simps]:
+    "coprime p q \<longleftrightarrow> coprime q p"
+    by (auto simp add: coprime_def')
 
   lemma not_coprime_iff_common_factor:
     "\<not> coprime p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
-    unfolding coprime_def by auto
+    by (auto simp add: coprime_def')
 
 end
 
-lemma(in semiring_gcd) coprime_iff_gcd_one[simp,code]:
-  "coprime = (\<lambda>x y. gcd x y = 1)" using coprime by (intro ext, auto simp: coprime_def)
+lemma (in algebraic_semidom) coprime_iff_coprime [simp, code]:
+  "coprime = Rings.coprime"
+  by (simp add: fun_eq_iff coprime_def coprime_def')
 
-lemma(in comm_semiring_1) coprime_0[simp]: "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
+lemma (in comm_semiring_1) coprime_0 [simp]:
+  "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
   by (auto intro: coprimeI elim: coprimeE dest: dvd_trans)
 
 (**** until here ****)
@@ -132,7 +136,7 @@ end
 context comm_monoid_mult_isom begin
   lemma coprime_hom[simp]: "coprime (hom x) y' \<longleftrightarrow> coprime x (Hilbert_Choice.inv hom y')"
   proof-
-    show ?thesis by (unfold coprime_def, fold ball_UNIV, subst surj[symmetric], simp)
+    show ?thesis by (unfold coprime_def', fold ball_UNIV, subst surj[symmetric], simp)
   qed
   lemma coprime_inv_hom[simp]: "coprime (Hilbert_Choice.inv hom x') y \<longleftrightarrow> coprime x' (hom y)"
   proof-
@@ -996,7 +1000,7 @@ begin
       from dvd_factor_mult_gcd[OF d1 d2 q p] have 1: "p dvd q' * ?gcd" .
       from q p have 2: "?gcd dvd q" by auto
       from q p have 3: "?gcd dvd p" by auto
-      from cop[unfolded coprime_def, rule_format, OF 3 2] have "?gcd dvd 1" .
+      from cop[unfolded coprime_def', rule_format, OF 3 2] have "?gcd dvd 1" .
       from 1 dvd_mult_unit_iff[OF this] have "p dvd q'" by auto
     } note main = this
     from main[OF coprime eq,of 1] False coprime coprime_commute main[OF _ eq[symmetric], of 1]
@@ -1009,10 +1013,10 @@ subclass (in ring_gcd) idom_gcd by (unfold_locales, auto)
 
 lemma coprime_rewrites: "comm_monoid_mult.coprime (op *) 1 = coprime"
   apply (intro ext)
-  apply (subst comm_monoid_mult.coprime_def)
+  apply (subst comm_monoid_mult.coprime_def')
   apply (unfold_locales)
   apply (unfold dvd_rewrites)
-  apply (fold coprime_def) ..
+  apply (fold coprime_def') ..
 
 (* TODO: incorporate into the default class hierarchy *)
 locale gcd_condition =

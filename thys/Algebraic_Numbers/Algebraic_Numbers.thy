@@ -558,7 +558,8 @@ proof(rule ccontr)
     by (auto simp: poly_y_x_poly_lift monom_0 image_mset.compositionality poly_y_x_o_poly_lift)
 
   assume "\<not> coprime (poly_x_mult_y p) (poly_lift q)"
-  then have "\<not> coprime (poly_y_x (poly_x_mult_y p)) (poly_y_x (poly_lift q))" by simp
+  then have "\<not> coprime (poly_y_x (poly_x_mult_y p)) (poly_y_x (poly_lift q))"
+    by (simp del: coprime_iff_coprime)
   from this[unfolded not_coprime_iff_common_factor]
   obtain r
   where rp: "r dvd poly_y_x (poly_x_mult_y p)"

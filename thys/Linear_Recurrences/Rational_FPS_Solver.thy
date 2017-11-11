@@ -49,14 +49,14 @@ proof (rule fps_ext)
       by (subst pochhammer_poly_Suc' [symmetric]) simp
     also from assms have "\<dots> = pCons 0 (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]])" 
       unfolding pochhammer_poly_def
-      by (auto simp add: poly_eq_iff nth_default_def coeff_pCons stirling_0
+      by (auto simp add: poly_eq_iff nth_default_def coeff_pCons
                split: nat.split simp del: upt_Suc )
     finally have "pcompose (pochhammer_poly (n-1)) [:1,1::'a:] =
                       Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]]" by simp
   }
   also have "smult (d / fact (n - 1)) (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]]) = 
                inverse_irred_power_poly d n"
-    by (auto simp: poly_eq_iff inverse_irred_power_poly_def coeff_Poly_eq nth_default_def)
+    by (auto simp: poly_eq_iff inverse_irred_power_poly_def nth_default_def)
   also have "poly \<dots> (of_nat k) * c ^ k = ?rhs $ k" by simp
   finally show "?lhs $ k = ?rhs $ k" .
 qed
@@ -91,28 +91,44 @@ lemma solve_rat_fps_aux:
 proof -
   interpret pfd_homomorphism "fps_of_poly :: 'a poly \<Rightarrow> 'a fps"
     by standard (auto simp: fps_of_poly_add fps_of_poly_mult)
+  from distinct have distinct': "(a, b1) \<in> set cs \<Longrightarrow>
+    (a, b2) \<in> set cs \<Longrightarrow> b1 = b2" for a b1 b2
+    by (metis (no_types, hide_lams) Some_eq_map_of_iff image_set in_set_zipE insert_iff list.simps(15) map_of_Cons_code(2) map_of_SomeD nz snd_conv)
+  from nz have nz': "(0, b) \<notin> set cs" for b
+    by (auto simp add: image_iff)
   define n where "n = length cs"
-  
-  from distinct nz have coprime: "pairwise coprime (set (map (\<lambda>(c, n). [:1,-c:] ^ Suc n) cs))" 
-    by (intro pairwiseI) (force intro!: coprime_exp2 coprime_linear_poly'
-           simp: distinct_map inj_on_def simp del: power_Suc)
-
-  have "inj_on (\<lambda>x. [:1, -fst x:] ^ Suc (snd x)) (set cs)"
-  proof (intro inj_onI, clarify, goal_cases)
-    case (1 c1 n1 c2 n2)
-    with nz have [simp]: "c1 \<noteq> 0" "c2 \<noteq> 0" by force+
-    have "Suc n1 = degree ([:1, -c1:] ^ Suc n1)" 
+  let ?g = "\<lambda>(c, n). [:1, - c:] ^ Suc n"
+  have "inj_on ?g (set cs)"
+  proof
+    fix x y
+    assume "x \<in> set cs" "y \<in> set cs" "?g x = ?g y"
+    moreover obtain c1 n1 c2 n2 where [simp]: "x = (c1, n1)" "y = (c2, n2)"
+      by (cases x, cases y)
+    ultimately have in_cs: "(c1, n1) \<in> set cs"
+      "(c2, n2) \<in> set cs"
+      and eq: "[:1, - c1:] ^ Suc n1 = [:1, - c2:] ^ Suc n2"
+      by simp_all
+    with nz have [simp]: "c1 \<noteq> 0" "c2 \<noteq> 0"
+      by (auto simp add: image_iff)
+    have "Suc n1 = degree ([:1, - c1:] ^ Suc n1)" 
       by (simp add: degree_power_eq del: power_Suc)
-    also from 1 have "\<dots> = degree ([:1, -c2:] ^ Suc n2)" by simp
-    also have "\<dots> = Suc n2" by (simp add: degree_power_eq del: power_Suc)
-    finally have n: "n1 = n2" by simp
-    have "0 = poly ([:1,-c1:] ^ Suc n1) (1/c1)" by (simp add: n)
-    also from 1 have "\<dots> = poly ([:1,-c2:] ^ Suc n2) (1/c1)" by simp
-    finally show ?case using n by (auto simp: field_simps)
+    also have "\<dots> = degree ([:1, - c2:] ^ Suc n2)"
+      using eq by simp
+    also have "\<dots> = Suc n2"
+      by (simp add: degree_power_eq del: power_Suc)
+    finally have "n1 = n2" by simp
+    then have "0 = poly ([:1, - c1:] ^ Suc n1) (1 / c1)"
+      by simp
+    also have "\<dots> = poly ([:1, - c2:] ^ Suc n2) (1 / c1)"
+      using eq by simp
+    finally show "x = y" using \<open>n1 = n2\<close>
+      by (auto simp: field_simps)
   qed
-  with distinct have distinct': "distinct (map (\<lambda>x. [:1,-fst x:] ^ Suc (snd x)) cs)"
+  with distinct have distinct': "distinct (map ?g cs)"
     by (simp add: distinct_map del: power_Suc)
-  
+  from nz' distinct have coprime: "pairwise coprime (?g ` set cs)"
+    by (auto intro!: pairwise_imageI coprime_linear_poly' simp add: eq_key_imp_eq_value
+      simp del: power_Suc)
   have [simp]: "length zs = n"
     using assms by (simp add: poly_pfd_simple_def n_def split: if_split_asm)
   have [simp]: "i < length cs \<Longrightarrow> length (zs!i) = snd (cs!i)+1" for i

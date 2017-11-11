@@ -210,7 +210,7 @@ lemma MASTER_BOUND_postproc:
   "CLAMP (\<lambda>x. CLAMP f x / CLAMP g x) = CLAMP (\<lambda>x. f x / g x)"
   "CLAMP (CLAMP f) = CLAMP f"
   unfolding CLAMP_def[abs_def] MASTER_BOUND'_def[abs_def] MASTER_BOUND''_def[abs_def]
-  by (rule ext, simp add: powr_numeral powr_minus divide_inverse)+
+  by (simp_all add: powr_minus divide_inverse fun_eq_iff)
 
   
 context
@@ -271,7 +271,7 @@ lemma numeral_assoc_simps:
 
 lemmas CLAMP_aux =
   arith_simps numeral_assoc_simps of_nat_power of_nat_mult of_nat_numeral
-  one_add_one one_to_numeral
+  one_add_one numeral_One [symmetric]
 
 lemmas CLAMP_postproc = numeral_One
 

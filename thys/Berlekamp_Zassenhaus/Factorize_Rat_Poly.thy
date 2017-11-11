@@ -98,7 +98,8 @@ next
       from this(1) obtain B where b: "b = ?rp B" and B: "(B,j) \<in> set gs" unfolding fs by auto
       from diff[unfolded a b] have "(A,i) \<noteq> (B,j)" by auto
       from sff'(3)[OF A B this]
-      show "gcd a b = 1" unfolding a b using gcd_rat_to_gcd_int by auto
+      show "Rings.coprime a b"
+        by (auto simp add: coprime_iff_gcd_eq_1 gcd_rat_to_gcd_int a b)
     }
     {
       fix fi i

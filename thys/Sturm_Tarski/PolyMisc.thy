@@ -7,9 +7,17 @@ theory PolyMisc imports
 begin
   
 lemma coprime_poly_0:
-  assumes "coprime p q"
-  shows "poly p x \<noteq>0 \<or> poly q x\<noteq>0" 
-by (metis assms poly_1 poly_eq_0_iff_dvd semiring_gcd_class.gcd_greatest_iff zero_neq_one)  
+  "poly p x \<noteq> 0 \<or> poly q x \<noteq> 0" if "coprime p q"
+  for x :: "'a :: field"
+proof (rule ccontr)
+  assume " \<not> (poly p x \<noteq> 0 \<or> poly q x \<noteq> 0)"
+  then have "[:-x, 1:] dvd p" "[:-x, 1:] dvd q"
+    by (simp_all add: poly_eq_0_iff_dvd)
+  with that have "is_unit [:-x, 1:]"
+    by (rule coprime_common_divisor)
+  then show False
+    by (auto simp add: is_unit_pCons_iff)
+qed
 
 lemma smult_cancel:
   fixes p::"'a::idom poly"

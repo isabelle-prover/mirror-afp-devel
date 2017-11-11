@@ -9,6 +9,21 @@ theory Dirichlet_Product
      Multiplicative_Function
 begin
 
+lemma sum_coprime_dvd_cong:
+  "(\<Sum>r | r dvd a. \<Sum>s | s dvd b. f r s) = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. g r s)"
+  if "coprime a b" "\<And>r s. coprime r s \<Longrightarrow> r dvd a \<Longrightarrow> s dvd b \<Longrightarrow> f r s = g r s"
+using refl proof (rule sum.cong, rule sum.cong)
+  fix r s
+  assume "r \<in> {r. r dvd a}" and "s \<in> {s. s dvd b}"
+  then have "r dvd a" and "s dvd b"
+    by simp_all
+  moreover from \<open>coprime a b\<close> have "coprime r s"
+    using \<open>r dvd a\<close> \<open>s dvd b\<close>
+    by (auto intro: coprime_imp_coprime dvd_trans)
+  ultimately show "f r s = g r s"
+    using that by simp
+qed
+
 definition dirichlet_prod :: "(nat \<Rightarrow> 'a :: semiring_0) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a" where
   "dirichlet_prod f g = (\<lambda>n. \<Sum>d | d dvd n. f d * g (n div d))"
 
@@ -340,11 +355,20 @@ proof -
              (\<Sum>r | r dvd a. \<Sum>s | s dvd b. f (r * s) * g (a * b div (r * s)))"
       by (simp add: dirichlet_prod_def sum_divisors_coprime_mult)
     also have "\<dots> = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. f r * f s * g (a div r) * g (b div s))"
-    proof (intro sum.cong refl, goal_cases)
-      case (1 r s)
-      with f.mult_coprime[OF coprime_divisors[OF _ _ coprime, of r s]]
-           g.mult_coprime[OF coprime_divisors[OF _ _ coprime, of "a div r" "b div s"]]
-        show ?case by (fastforce elim!: dvdE simp: mult_ac)
+    using \<open>coprime a b\<close> proof (rule sum_coprime_dvd_cong)
+      fix r s
+      assume "coprime r s" and "r dvd a" and "s dvd b"
+      with \<open>a > 1\<close> \<open>b > 1\<close> have "r > 0" "s > 0"
+        by (auto intro: ccontr)
+      from \<open>coprime r s\<close> have "f (r * s) = f r * f s"
+        by (rule f.mult_coprime)
+      moreover from \<open>coprime a b\<close> have \<open>coprime (a div r) (b div s)\<close>
+        using \<open>r > 0\<close> \<open>s > 0\<close> \<open>r dvd a\<close> \<open>s dvd b\<close> dvd_div_iff_mult [of r a] dvd_div_iff_mult [of s b]
+        by (auto dest: coprime_imp_coprime dvd_mult_left)
+      then have "g (a div r * (b div s)) = g (a div r) * g (b div s)"
+        by (rule g.mult_coprime)
+      ultimately show "f (r * s) * g (a * b div (r * s)) = f r * f s * g (a div r) * g (b div s)"
+        using \<open>r dvd a\<close> \<open>s dvd b\<close> by (simp add: div_mult_div_if_dvd ac_simps)
     qed
     also have "\<dots> = dirichlet_prod f g a * dirichlet_prod f g b"
       unfolding dirichlet_prod_def by (simp add: sum_product mult_ac)
@@ -391,23 +415,35 @@ proof -
         by (intro sum.cong refl) (auto elim!: dvdE)
       also have "\<dots> = (\<Sum>r | r dvd a. \<Sum>d | d dvd b.
                           if r * d = 1 then 0 else f r * f d * g (a div r) * g (b div d))"
-      proof (intro sum.cong refl, goal_cases)
-        case (1 r d)
-        hence f: "f (r * d) = f r * f d"
-          by (intro f.mult_coprime coprime_divisors[OF _ _ \<open>coprime a b\<close>]) auto            
-        show ?case
-        proof (cases "r * d = 1")
+      using \<open>coprime a b\<close> proof (rule sum_coprime_dvd_cong)
+        fix r s
+        assume "coprime r s" and "r dvd a" and "s dvd b"
+        with \<open>a > 0\<close> \<open>b > 0\<close> have "r > 0" "s > 0"
+          by (auto intro: ccontr)
+        from \<open>coprime r s\<close> have f: "f (r * s) = f r * f s"
+          by (rule f.mult_coprime)
+        show "(if r * s = 1 then 0 else f (r * s) * g (a div r * (b div s))) =
+          (if r * s = 1 then 0 else f r * f s * g (a div r) * g (b div s))"
+        proof (cases "r * s = 1")
+          case True
+          then show ?thesis
+            by simp
+        next
           case False
-          with 1 and less.prems have "(a div r) * (b div d) \<noteq> a * b"
+          with \<open>r dvd a\<close> \<open>s dvd b\<close> less.prems
+          have "(a div r) * (b div s) \<noteq> a * b"
             by (intro notI) (auto elim!: dvdE)
-          moreover from 1 and less.prems have "(a div r) * (b div d) \<le> a * b" 
+          moreover from \<open>r dvd a\<close> \<open>s dvd b\<close> less.prems
+          have "(a div r) * (b div s) \<le> a * b" 
             by (intro dvd_imp_le mult_dvd_mono Nat.gr0I) (auto elim!: dvdE)
-          ultimately have "(a div r) * (b div d) < a * b" by presburger
-          hence g: "g ((a div r) * (b div d)) = g (a div r) * g (b div d)" using less.prems and 1
-            by (intro less coprime_divisors[OF _ _ \<open>coprime a b\<close>]) (auto elim!: dvdE)
-          from False f g show ?thesis
-            by (auto simp: f.mult_coprime less f g mult_ac)
-        qed auto
+          ultimately have "(a div r) * (b div s) < a * b"
+            by arith
+          with \<open>r dvd a\<close> \<open>s dvd b\<close> less.prems
+          have g: "g ((a div r) * (b div s)) = g (a div r) * g (b div s)"
+            by (auto intro: less coprime_divisors [OF _ _ \<open>coprime a b\<close>] elim!: dvdE)
+          from False show ?thesis
+            by (auto simp: less f g ac_simps)
+        qed
       qed
       also have "\<dots> = (\<Sum>(r,d)\<in>{r. r dvd a}\<times>{d. d dvd b}. 
                         if r * d = 1 then 0 else f r * f d * g (a div r) * g (b div d))"

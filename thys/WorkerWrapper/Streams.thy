@@ -30,7 +30,7 @@ lemma Stream_bisimI[intro]:
      \<Longrightarrow> (xs = \<bottom> \<and> ys = \<bottom>)
        \<or> (\<exists>h t t'. R t t' \<and> xs = h && t \<and> ys = h && t'))
   \<Longrightarrow> Stream_bisim R"
-  unfolding Stream.bisim_def by blast
+  unfolding Stream.bisim_def by auto
 (*>*)
 
 fixrec smap :: "('a \<rightarrow> 'b) \<rightarrow> 'a Stream \<rightarrow> 'b Stream"

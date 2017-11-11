@@ -40,8 +40,8 @@ case (1 c)
     hence "p^n * (a' * b) = p^n * c'^n" using 1(3)
       by (simp add: power_mult_distrib semiring_normalization_rules(18))
     hence "a' * b = c'^n" using p(1) by auto
-    moreover have "coprime a' b" using 1(4) ac(1) coprime_lmult[of b a' "p^n"]
-      by (simp add: gcd.commute mult.commute)
+    moreover have "coprime a' b" using 1(4) ac(1)
+      by (simp add: ac_simps)
     moreover have "0 < b" "0 < a" using h2 dvd_0_right gr0I True by fastforce+
     then have "0 < c" "1 < p"
       using p \<open>a * b = c ^ n\<close> n0 nat_0_less_mult_iff [of a b] n0
@@ -65,8 +65,8 @@ proof (cases "a = 0")
   hence "nat a * nat b = (nat \<bar>c\<bar>)^n" using nat_mult_distrib[of "a" "b"] assms(2)
     by (simp add: nat_power_eq)
   moreover have "0 \<le> b" using assms mult_less_0_iff[of a b] False by auto
-  then have "coprime (nat a) (nat b)" using assms(2) assms(5)
-    by (simp add: gcd_int_def)
+  with \<open>0 \<le> a\<close> \<open>coprime a b\<close> have "coprime (nat a) (nat b)"
+    using coprime_nat_abs_left_iff [of a "nat b"] by simp
   ultimately have "\<exists> k. nat a = k^n"
     using nat_relprime_power_divisors[of n "nat a" "nat b" "nat \<bar>c\<bar>"] assms(1) by blast
   thus ?thesis using assms(2) int_nat_eq[of "a"] by fastforce
@@ -146,14 +146,15 @@ proof -
   proof -
     from b2_le_c2 have cancelb2: "c^2-b^2+b^2 = c^2" by auto
     let ?g = "gcd b c"
-    have "?g^2 = gcd (b^2) (c^2)" by (simp add: gcd_exp)
+    have "?g^2 = gcd (b^2) (c^2)" by simp
     with cancelb2 have "?g^2 = gcd (b^2) (c^2-b^2+b^2)" by simp
     hence "?g^2 = gcd (b^2) (c^2-b^2)" using gcd_add2[of "b^2" "c^2 - b^2"] 
       by (simp add: algebra_simps del: gcd_add1)
     with a2cb have "?g^2 dvd a^2" by (simp only: gcd_dvd2)
     hence "?g dvd a \<and> ?g dvd b" by simp
     hence "?g dvd gcd a b" by (simp only: gcd_greatest)
-    with ab_relprime show ?thesis by auto
+    with ab_relprime show ?thesis
+      by (simp add: ac_simps gcd_eq_1_imp_coprime)
   qed
   have p2: "prime (2::nat)" by simp
   have factors_odd: "odd (c-b) \<and> odd (c+b)"
@@ -207,18 +208,24 @@ proof -
       by (simp_all add: dvd_imp_le)
     then have g1or2: "?g = 2 \<or> ?g = 1"
       by arith
-    thus ?thesis
-    proof (auto)
-      assume "?g = 2" hence "2 dvd ?g" by simp
-      hence "2 dvd c-b" by simp
-      with factors_odd show False by simp
-    qed
+    moreover have "?g \<noteq> 2"
+    proof
+      assume "?g = 2"
+      moreover have "?g dvd c - b"
+        by simp
+      ultimately show False
+        using factors_odd by simp
+    qed 
+    ultimately show ?thesis
+      by (auto intro: gcd_eq_1_imp_coprime)
   qed
   from a2factor have "(c-b)*(c+b) = a^2" and "(2::nat) >1"  by auto
-  with factors_relprime have "\<exists> k. c-b = k^2" by (simp only: nat_relprime_power_divisors)
+  with factors_relprime have "\<exists> k. c-b = k^2"
+    by (simp only: nat_relprime_power_divisors)
   then obtain r where r: "c-b = r^2" by auto
   from a2factor have "(c+b)*(c-b) = a^2" and "(2::nat) >1"  by auto
-  with factors_relprime have "\<exists> k. c+b = k^2" by (simp only: nat_relprime_power_divisors gcd.commute)
+  with factors_relprime have "\<exists> k. c+b = k^2"
+    by (simp only: nat_relprime_power_divisors ac_simps)
   then obtain s where s: "c+b = s^2" by auto
   -- "now $p := (s+r)/2$ and $q := (s-r)/2$ is our solution"
   have rs_odd: "odd r \<and> odd s"
@@ -276,7 +283,8 @@ proof -
     with b and a have "?k dvd a \<and> ?k dvd b" 
       by (simp add: power2_eq_square)
     hence "?k dvd gcd a b" by (simp only: gcd_greatest)
-    with ab_relprime show ?thesis by auto
+    with ab_relprime show ?thesis
+      by (auto intro: gcd_eq_1_imp_coprime)
   qed
   ultimately show ?thesis by auto
 qed
@@ -340,7 +348,8 @@ proof -
     hence "\<exists> q. ?Q p q"
     proof (cases)
       assume bpos: "b \<ge> 0" then obtain q where "q = int m" by simp
-      with p aneg bpos absabc mn_rel have "?Q p q" by (simp add: gcd.commute)
+      with p aneg bpos absabc mn_rel have "?Q p q"
+        by (simp add: ac_simps)
       thus ?thesis by (rule exI)
     next
       assume "\<not> b\<ge>0" hence bneg: "b<0" by simp 
@@ -364,7 +373,8 @@ private lemma smaller_fermat4:
   "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> odd p \<and> coprime p q \<and> r^2 < c^2)"
 proof - 
   -- "put equation in shape of a pythagorean triple and obtain $u$ and $v$"
-  from ab_relprime have a2b2relprime: "coprime (a^2) (b^2)" by blast
+  from ab_relprime have a2b2relprime: "coprime (a^2) (b^2)"
+    by simp
   moreover from aodd have "odd (a^2)" by presburger
   moreover from abc have "(a^2)^2 + (b^2)^2 = c^2" by simp
   ultimately obtain u and v where uvabc: 
@@ -374,11 +384,14 @@ proof -
   have av_relprime: "coprime a v" 
   proof -
     have "gcd a v dvd gcd (a^2) v" by (simp add: power2_eq_square)
-    moreover
-    from uvabc have "gcd v (a^2) dvd gcd (b^2) (a^2)" by simp
-    with a2b2relprime have "gcd (a^2) v dvd (1::int)" by (simp only: gcd.commute)
-    ultimately have "gcd a v dvd 1" by (rule dvd_trans)
-    thus ?thesis by simp
+    moreover from uvabc have "gcd v (a^2) dvd gcd (b^2) (a^2)"
+      by simp
+    with a2b2relprime have "gcd (a^2) v dvd (1::int)"
+      by (simp add: ac_simps)
+    ultimately have "gcd a v dvd 1"
+      by (rule dvd_trans)
+    then show ?thesis
+      by (simp add: gcd_eq_1_imp_coprime)
   qed
   -- "make again a pythagorean triple and obtain $k$ and $l$"
   from uvabc have "a^2 + v^2 = u^2" by simp
@@ -402,29 +415,31 @@ proof -
   moreover from kl_rel have "coprime \<bar>k\<bar> \<bar>l\<bar>" by simp
   moreover have "coprime \<bar>l\<bar> (\<bar>k^2+l^2\<bar>)"
   proof -
-    from kl_rel have "coprime (k*k) l" by (simp add: gcd_mult_cancel)
-    hence "coprime (k*k+l*l) l" using gcd_add_mult[of l l "k*k"]
-      by (simp add: ac_simps)
-    hence "coprime l (k^2+l^2)" by (simp only: power2_eq_square gcd.commute)
+    from kl_rel have "coprime (k*k) l"
+      by simp
+    hence "coprime (k*k+l*l) l" using gcd_add_mult [of l l "k*k"]
+      by (simp add: ac_simps gcd_eq_1_imp_coprime)
+    hence "coprime l (k^2+l^2)"
+      by (simp add: power2_eq_square ac_simps)
     thus ?thesis by simp
   qed
   moreover have "coprime \<bar>k^2+l^2\<bar> \<bar>k\<bar>"
   proof -
-    from kl_rel have "coprime l k" by (simp only: gcd.commute)
-    hence "coprime (l*l) k" by (simp only: gcd_mult_cancel)
-    hence "coprime (l*l+k*k) k" using gcd_add_mult[of k k "l*l"]
+    from kl_rel have "coprime l k"
       by (simp add: ac_simps)
-    hence "coprime (k^2+l^2) k" by (simp only: ac_simps power2_eq_square)
+    hence "coprime (l*l) k"
+      by simp
+    hence "coprime (l*l+k*k) k" using gcd_add_mult[of k k "l*l"]
+      by (simp add: ac_simps gcd_eq_1_imp_coprime)
+    hence "coprime (k^2+l^2) k"
+      by (simp add: power2_eq_square ac_simps)
     thus ?thesis by simp
   qed
   ultimately have "\<exists> x y z. \<bar>k\<bar> = x^2 \<and> \<bar>l\<bar> = y^2 \<and> \<bar>k^2+l^2\<bar> = z^2"
     using int_relprime_power_divisors[of 2 "\<bar>k\<bar>" "\<bar>l\<bar> * \<bar>k\<^sup>2 + l\<^sup>2\<bar>" m]
       int_relprime_power_divisors[of 2 "\<bar>l\<bar>" "\<bar>k\<bar> * \<bar>k\<^sup>2 + l\<^sup>2\<bar>" m]
       int_relprime_power_divisors[of 2 "\<bar>k\<^sup>2 + l\<^sup>2\<bar>" "\<bar>k\<bar>*\<bar>l\<bar>" m]
-      coprime_mul_eq[of "\<bar>k\<bar>" "\<bar>l\<bar>" "\<bar>k\<^sup>2 + l\<^sup>2\<bar>"]
-      coprime_mul_eq[of "\<bar>l\<bar>" "\<bar>k\<bar>" "\<bar>k\<^sup>2 + l\<^sup>2\<bar>"]
-      coprime_mul_eq[of "\<bar>k\<^sup>2 + l\<^sup>2\<bar>" "\<bar>k\<bar>" "\<bar>l\<bar>"]
-    by (auto simp: gcd.commute mult.assoc mult.commute mult.left_commute)
+    by (simp_all add: ac_simps)
   then obtain \<alpha> \<beta> \<gamma> where albega: 
     "\<bar>k\<bar> = \<alpha>^2 \<and> \<bar>l\<bar> = \<beta>^2 \<and> \<bar>k^2+l^2\<bar> = \<gamma>^2" 
     by auto
@@ -450,7 +465,9 @@ proof -
   have alphabeta_relprime: "coprime \<alpha> \<beta>"
   proof (rule classical)
     let ?g = "gcd \<alpha> \<beta>"
-    assume gnot1: "?g \<noteq> 1"
+    assume "\<not> coprime \<alpha> \<beta>"
+    then have gnot1: "?g \<noteq> 1"
+      by (auto intro: gcd_eq_1_imp_coprime)
     have "?g > 1"
     proof -
       have "?g \<noteq> 0"
@@ -609,7 +626,7 @@ proof (rule ccontr)
       then obtain p q where "p = b" and "q = a" and "odd p" by simp    
       with ab abc have 
         "p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> coprime p q"
-        by (simp add: gcd.commute)
+        by (simp add: ac_simps)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed

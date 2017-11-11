@@ -104,8 +104,10 @@ end
 
 
 lemma dvd_div:
-  fixes a b c :: int assumes "a dvd b" "c dvd b" "gcd a c = 1" shows "a dvd (b div c)"
-  by (metis assms coprime_dvd_mult_iff dvd_mult_div_cancel mult.commute)
+  fixes a b c :: int
+  assumes "a dvd b" "c dvd b" "coprime a c"
+  shows "a dvd (b div c)"
+  using assms coprime_dvd_mult_left_iff by fastforce 
 
 lemma divides: "
 valid
@@ -123,17 +125,8 @@ valid
   (\<lambda>r. odd r \<and> r dvd a \<and> (\<forall>m. odd m \<and> m dvd a \<longrightarrow> m \<le> r))
 "
   apply vcg
-    apply (intro conjI allI impI)
-      apply (metis pos_imp_zdiv_pos_iff zdvd_imp_le zero_less_numeral)
-     apply (rule dvd_mult_left[where b=2], simp)
-    apply (rename_tac n m)
-    apply (subgoal_tac "coprime m 2")
-     apply (subgoal_tac "m dvd n")
-      apply (simp add: dvd_div)
-     apply simp
-    apply (metis dvd_eq_mod_eq_0 invertible_coprime_int mult_cancel_left2 not_mod_2_eq_1_eq_0)
-   apply (simp add: zdvd_imp_le)
-  apply simp
+    apply (auto simp add: zdvd_imp_le dvd_div div_positive_int elim!:
+      evenE intro: dvd_mult_right)
   done
 
 lemma L_divides: "
@@ -170,7 +163,7 @@ print_nested_cases
         then have "m dvd n" using conseq.inv_pre(3) by simp
         moreover note \<open>even n\<close>
         moreover from \<open>odd m\<close> have "coprime m 2"
-         by (metis dvd_eq_mod_eq_0 invertible_coprime_int mult_cancel_left2 not_mod_2_eq_1_eq_0)
+         by (metis dvd_eq_mod_eq_0 invertible_coprime mult_cancel_left2 not_mod_2_eq_1_eq_0)
         ultimately
         have "m dvd n div 2" by (rule dvd_div)
       }

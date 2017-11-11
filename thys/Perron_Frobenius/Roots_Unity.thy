@@ -374,7 +374,8 @@ next
       and ik: "i < k" by force
     from roots_of_unity[OF n0] n obtain j :: nat where xn: "x = cis (j * 2 * pi / n)" 
       and jn: "j < n" by force
-    {
+    have cop: "coprime i k"
+    proof (rule gcd_eq_1_imp_coprime)
       from k(1) have "gcd i k \<noteq> 0" by auto
       from gcd_coprime_exists[OF this] this obtain i' k' g where 
         *: "i = i' * g" "k = k' * g" "g \<noteq> 0" and g: "g = gcd i k" by blast
@@ -384,14 +385,14 @@ next
       finally have "x ^ k' = 1" by (simp add: DeMoivre k')
       with k(3)[OF k'] have "k' \<ge> k" by linarith
       moreover with * k(1) have "g = 1" by auto
-      hence "coprime i k" unfolding g .
-    } note cop = this
+      then show "gcd i k = 1" by (simp add: g)
+    qed
     from inj_onD[OF cis_inj_on xk[unfolded xn]] n0 k(1) ik jn 
     have "j * real k = i * real n" by (auto simp: field_simps)
     hence "real (j * k) = real (i * n)" by simp
     hence eq: "j * k = i * n" by linarith
-    with cop show "k dvd n" 
-      by (metis coprime_dvd_mult dvd_triv_left gcd.commute mult.commute)
+    with cop show "k dvd n"
+      by (metis coprime_commute coprime_dvd_mult_right_iff dvd_triv_right)
   qed auto
 qed
 

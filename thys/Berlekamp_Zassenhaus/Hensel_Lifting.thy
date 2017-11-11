@@ -33,7 +33,8 @@ lemma uniqueness_poly_equality:
 proof -
   from eq have *: "(A - A') * f = (B' - B) * g" by (simp add: field_simps)
   hence "f dvd (B' - B) * g" unfolding dvd_def by (intro exI[of _ "A - A'"], auto simp: field_simps)
-  with cop[simplified] have dvd: "f dvd (B' - B)" by (rule coprime_dvd_mult)
+  with cop[simplified] have dvd: "f dvd (B' - B)"
+    by (simp add: coprime_dvd_mult_right_iff ac_simps)
   from divides_degree[OF this] have "degree f \<le> degree (B' - B) \<or> B = B'" by auto
   with degree_diff_le_max[of B' B] deg 
   show "B = B'" by auto
@@ -1718,8 +1719,8 @@ proof -
   from res[unfolded hensel_lifting_def Let_def] 
   have hen: "hensel_lifting_monic p n F fs = gs" 
     unfolding ilc_def F_def .
-  from inverse_mod_pow[OF cop[simplified] m1 n, folded ilc_def]
-  have inv: "q.M (ilc * ?lc) = 1" unfolding q.M_def .
+  from m1 n cop have inv: "q.M (ilc * ?lc) = 1"
+    by (auto simp add: q.M_def inverse_mod_pow ilc_def)
   hence ilc0: "ilc \<noteq> 0" by (cases "ilc = 0", auto)
   {
     fix q

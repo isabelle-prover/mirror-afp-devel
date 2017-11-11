@@ -208,7 +208,9 @@ proof -
         from cnt[unfolded gc content_def, simplified] have "abs c = 1" 
           by (cases "c = 0", auto)
         with g gc have "gcd fi Fi \<in> {1,-1}" by fastforce
-        thus "coprime fi Fi" by (metis coprime_iff_gcd_one coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
+        thus "coprime fi Fi"
+          by (auto intro!: gcd_eq_1_imp_coprime)
+            (metis dvd_minus_iff dvd_refl is_unit_gcd_iff one_neq_neg_one)
       qed
     } note cop = this
     
@@ -231,7 +233,7 @@ proof -
     then obtain k K where k: "k < length fs" "K < length fs" 
       and f: "fs ! k = (fi, i)" "fs ! K = (Fi, I)" unfolding set_conv_nth by auto
     with diff have diff: "k \<noteq> K" by auto
-    from cop[OF k f diff] show "gcd fi Fi = 1" by auto
+    from cop[OF k f diff] show "Rings.coprime fi Fi" by auto
   qed
 qed
 
@@ -492,7 +494,11 @@ proof (atomize(full))
         from diff[unfolded fi] have "(gi,i) \<noteq> (gj,j)" by auto
         from sf(3)[OF gi this] have cop: "coprime gi gj" by simp
         have nz: "coeff gi 0 \<noteq> 0" "coeff gj 0 \<noteq> 0" using nzg(1)[OF gi(1)] nzg(1)[OF gi(2)] .
-        show "gcd fi fj = 1" unfolding fi gcd_reflect_poly[OF nz] using cop by auto
+        show "Rings.coprime fi fj"
+          unfolding fi gcd_reflect_poly[OF nz] using cop
+            \<open>gcd (reflect_poly gi) (reflect_poly gj) = normalize (reflect_poly (gcd gi gj))\<close> is_unit_gcd
+          by auto
+
       qed
     qed
   qed
@@ -578,7 +584,8 @@ proof (atomize(full))
             with dvd show ?thesis by auto
           qed
         qed auto
-        hence "coprime ?x a" by simp
+        hence "coprime ?x a"
+          by (simp add: gcd_eq_1_imp_coprime)
         note this dvd
       } note hs_dvd_x = this
       from hs_dvd_x[of ?x m]
@@ -597,16 +604,18 @@ proof (atomize(full))
           | (hs_x) "(a,i) \<in> set hs" "b = ?x" 
           | (x_hs) "(b,j) \<in> set hs" "a = ?x" 
           using ai bj diff unfolding id by auto
-        thus "gcd a b = 1"
+        thus "Rings.coprime a b"
         proof cases
           case hs_hs
           from sf(3)[OF this diff] show ?thesis .
         next
           case hs_x
-          from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) by (simp add: gcd.commute)
+          from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2)
+            by (simp add: ac_simps)
         next
           case x_hs
-          from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) by simp
+          from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2)
+            by simp
         qed
       next
         show "g = 0 \<Longrightarrow> d = 0" using sf(4) by auto

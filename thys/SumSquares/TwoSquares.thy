@@ -110,11 +110,13 @@ proof
   hence "\<not> (?p dvd a'^2)" ..
   hence h7: "\<not> (?p dvd a')" using assms(1)
     by (simp add: power2_eq_square prime_dvd_mult_iff)
-  hence "gcd ?p a' = 1" using assms(1) by (fastforce intro: prime_imp_coprime_nat)
+  hence "coprime ?p a'"
+    using assms(1) by (simp add: prime_imp_coprime)
   thm prime_imp_coprime_nat
   moreover have "a' \<noteq> 0" using h7 dvd_0_right[of ?p] by meson
   ultimately obtain ainv aux where "a' * ainv = ?p * aux + 1"
-    using bezout_nat[of "a'" ?p] by (auto simp: gcd.commute)
+    using bezout_nat[of "a'" ?p]
+    by (auto simp: ac_simps)
   hence "[a' * ainv = 1] (mod ?p)" using cong_to_1'_nat by auto
   from cong_mult [OF this this] have h11: "[1 = ainv^2 * a'^2] (mod ?p)"
     unfolding power2_eq_square by (simp add: algebra_simps cong_sym)

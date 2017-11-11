@@ -519,8 +519,7 @@ qed
 
 lemma coprime_prod: (* TODO: move *)
   "a \<noteq> 0 \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> coprime (a * b) (c * d) \<Longrightarrow> coprime b (d::'a::{semiring_gcd})"
-  unfolding coprime_iff_gcd_one
-  by (metis coprime_lmult coprime_mul_eq' mult.commute)
+  by auto
 
 lemma smult_prod: (* TODO: move or find corresponding lemma *)
   "smult a b = monom a 0 * b"
@@ -687,7 +686,7 @@ proof -
       by (auto simp: poly_eq_0_iff_dvd)
     hence "[:-x,1:] dvd gcd (?rp q') (?rp r')" by simp
     hence "gcd (?rp q') (?rp r') = 0 \<or> degree (gcd (?rp q') (?rp r')) \<noteq> 0"
-      by (metis is_unit_gcd is_unit_iff_degree is_unit_pCons_iff one_neq_zero pCons_0_0)
+      by (metis is_unit_gcd_iff is_unit_iff_degree is_unit_pCons_iff one_poly_eq_simps(1))
     hence "gcd q' r' = 0 \<or> degree (gcd q' r') \<noteq> 0"
       unfolding gcd_eq_0_iff degree_of_gcd[of q' r',symmetric] by auto
     hence "\<not> coprime q' r'" by auto
@@ -730,7 +729,8 @@ qed
 lemma prime_elem_imp_gcd_eq:
   fixes x::"'a:: ring_gcd"
   shows "prime_elem x \<Longrightarrow> gcd x y = normalize x \<or> gcd x y = 1"
-  by (meson gcd_proj1_if_dvd prime_elem_imp_coprime)
+  using prime_elem_imp_coprime [of x y]
+  by (auto simp add: gcd_proj1_iff intro: coprime_imp_gcd_eq_1) 
 
 lemma irreducible_pos_gcd:
   fixes p :: "int poly"

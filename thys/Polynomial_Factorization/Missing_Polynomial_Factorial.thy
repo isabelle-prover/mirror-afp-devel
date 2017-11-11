@@ -39,6 +39,8 @@ proof (cases "a = 0 \<or> f = 0")
   have "H dvd ?c g" unfolding H_def by auto
   then obtain G where gh: "?c g = H * G" unfolding dvd_def by blast
   from arg_cong[OF gh, of "\<lambda> f. f div H"] H have G: "G = ?c g div H" by auto
+  have "coprime F G" using H unfolding F G H_def
+    using cf0 div_gcd_coprime by blast
   have "is_unit ?ua" using False by simp
   then have ua: "is_unit [: ?ua :]"
     by (simp add: is_unit_const_poly_iff)
@@ -59,10 +61,7 @@ proof (cases "a = 0 \<or> f = 0")
     by (rule gcd_poly_decompose[symmetric])
   also have "gcd (?na * F) G = gcd (F * ?na) G" by (simp add: ac_simps)
   also have "\<dots> = gcd ?na G"
-  proof (rule gcd_mult_cancel)
-    show "coprime F G" using H unfolding F G H_def
-      using cf0 div_gcd_coprime by blast
-  qed
+    using \<open>coprime F G\<close> by (simp add: gcd_mult_right_left_cancel ac_simps)
   finally show ?thesis unfolding G H_def cg cf using False by simp
 next
   case True

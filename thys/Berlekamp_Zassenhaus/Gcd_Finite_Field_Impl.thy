@@ -34,8 +34,14 @@ proof -
   have rel_f[transfer_rule]: "poly_rel ?g' g''" 
     by (rule poly_rel_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
-    = coprime f'' g''"
-    unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover
+    = coprime f'' g''" (is "?P \<longleftrightarrow> ?Q")
+  proof -
+    have "?P \<longleftrightarrow> gcd f'' g'' = 1"
+      unfolding square_free_i_def by transfer_prover
+    also have "\<dots> \<longleftrightarrow> ?Q"
+      by (simp add: coprime_iff_gcd_eq_1)
+    finally show ?thesis .
+  qed
   have fF: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have gG: "MP_Rel (Mp g) G" unfolding G MP_Rel_def
@@ -92,15 +98,8 @@ proof -
     with k0 have lk: "lead_coeff ?k \<ge> 1" "lead_coeff ?k < p"
       by (auto simp add: int_one_le_iff_zero_less order.not_eq_order_implies_strict)
     have id: "lead_coeff (h * ?k) = lead_coeff h * lead_coeff ?k" unfolding lead_coeff_mult ..
-    have "coprime (lead_coeff h * lead_coeff ?k) p" 
-    proof (cases "lead_coeff ?k = 1")
-      case True thus ?thesis using coph by auto
-    next
-      case False 
-      with lk have "coprime (lead_coeff ?k) p"
-        by (simp add: gcd.commute int_one_le_iff_zero_less prime prime_imp_coprime zdvd_not_zless)
-      with coph show ?thesis by (simp add: gcd_mult_cancel)
-    qed    
+    from coph prime lk have "coprime (lead_coeff h * lead_coeff ?k) p" 
+      by (simp add: ac_simps prime_imp_coprime zdvd_not_zless)
     with id have cop_prod: "coprime (lead_coeff (h * ?k)) p" by simp
     from h0 k0 have lc0: "lead_coeff (h * ?k) \<noteq> 0"
       unfolding lead_coeff_mult by auto

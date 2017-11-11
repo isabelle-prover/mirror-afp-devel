@@ -40,8 +40,8 @@ case (1 c)
     hence "p^n * (a' * b) = p^n * c'^n" using 1(3)
       by (simp add: power_mult_distrib semiring_normalization_rules(18))
     hence "a' * b = c'^n" using p(1) by auto
-    moreover have "coprime a' b" using 1(4) ac(1) coprime_lmult[of b a' "p^n"]
-      by (simp add: gcd.commute mult.commute)
+    moreover have "coprime a' b" using 1(4) ac(1)
+      by simp
     moreover have "0 < b" "0 < a" using h2 dvd_0_right gr0I True by fastforce+
     hence "0 < c" "1 < p" using p(1) prime_def[of p] 1(3) nat_0_less_mult_iff[of a b] n0
        by (simp_all add: prime_gt_Suc_0_nat)
@@ -104,6 +104,8 @@ next
   then obtain v w where vwx: 
     "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> even x \<and> coprime v w" (is "?P v w x")
     by auto
+  then have "coprime v w"
+    by simp
   have "\<exists> \<alpha> \<beta> \<gamma>. ?P \<alpha> \<beta> \<gamma> \<and> nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
   proof -
     -- "obtain coprime $p$ and $q$ such that $v = p+q$ and $w = p-q$"
@@ -145,7 +147,7 @@ next
       also have "\<dots> = 2*(2*p)*(p^2+3*q^2)" by (simp add: power_mult_distrib)
       finally show ?thesis by simp
     qed
-    let ?g = "gcd (2*p) (p^2+3*q^2)"
+    let ?g = "gcd (2 * p) (p\<^sup>2 + 3 * q\<^sup>2)"
     have g1: "?g \<ge> 1" 
     proof (rule ccontr)
       assume "\<not> ?g \<ge> 1"
@@ -155,7 +157,7 @@ next
       hence "p = 0" by simp
       with vwpq vwx `0 < nat\<bar>x^3\<bar>` show False by auto
     qed
-    have gOdd: "\<not> 2 dvd ?g"
+    have gOdd: "odd ?g"
     proof (rule ccontr)
       assume "\<not> odd ?g"
       hence"2 dvd p^2+3*q^2" by simp
@@ -167,6 +169,8 @@ next
       hence "even (v) \<or> even (w)" by simp
       with vwOdd show False by simp
     qed
+    then have even_odd_p_q: "even p \<and> odd q \<or> odd p \<and> even q"
+      by auto
     -- "first case: $p$ is not a multiple of $3$; hence $2p$ and $p^2+3q^2$"
     -- "are coprime; hence both are cubes"
     { assume p3: "\<not> 3 dvd p"
@@ -177,30 +181,35 @@ next
           using prime_dvd_multD[of 3] by (fastforce simp add: prime_dvd_mult_iff)
         with p3 show False by arith
       qed
-      have pq_relprime: "coprime p q"
-      proof (rule ccontr)
-        let ?h = "gcd p q"
-        assume h: "?h \<noteq> 1"
-        have hp: "?h dvd p" and gq: "?h dvd q" by blast+
-        hence "?h dvd p+q \<and> ?h dvd p-q" by (auto simp only: dvd_add dvd_diff)
-        with vw have "?h dvd v \<and> ?h dvd w" by simp
-        thus False using vwx h coprime_common_divisor_int by fastforce
+      from \<open>coprime v w\<close> have pq_relprime: "coprime p q"
+      proof (rule coprime_imp_coprime)
+        fix c
+        assume "c dvd p" and "c dvd q"
+        then have "c dvd p + q" and "c dvd p - q"
+          by simp_all
+        with vw show "c dvd v" and "c dvd w"
+          by simp_all
       qed
-      have factors_relprime: "?g = 1" 
-      proof (rule ccontr)
-        assume g: "?g \<noteq> 1"
-        have g2p: "?g dvd 2*p" and gpq: "?g dvd p^2+3*q^2" by blast+
-        have "?g mod 2 = 1" using gOdd by presburger
-        hence "coprime ?g 2" using coprime_1_left gcd_red_int[of ?g 2] by auto
-        hence gp: "?g dvd p" using g2p coprime_dvd_mult_iff[of ?g 2 p] by presburger
-        hence "?g dvd p^2" by (auto simp add: power2_eq_square)
-        with gpq have "?g dvd p^2+3*q^2-p^2" by (simp only: dvd_diff)
-        hence "?g dvd 3*q^2" by auto
-        moreover have "?g mod 3 = 1 \<or> ?g mod 3 = 2" using g3 by presburger
-        hence "coprime ?g 3" using gcd_red_int[of ?g 3] gcd_red_int[of 3 2] by fastforce
-        ultimately have "?g dvd q^2" using coprime_dvd_mult_iff[of ?g 3 "q^2"] by presburger
-        moreover have "coprime p (q^2)" using pq_relprime coprime_exp by blast
-        ultimately show False using gp g coprime_common_divisor_int by fastforce
+      from \<open>coprime p q\<close> have "coprime p (q\<^sup>2)"
+        by simp
+      then have factors_relprime: "coprime (2 * p) (p\<^sup>2 + 3 * q\<^sup>2)" 
+      proof (rule coprime_imp_coprime)
+        fix c
+        assume g2p: "c dvd 2 * p" and gpq: "c dvd p\<^sup>2 + 3 * q\<^sup>2"
+        have "coprime 2 c"
+          using g2p gpq even_odd_p_q dvd_trans [of 2 c "p\<^sup>2 + 3 * q\<^sup>2"]
+          by auto
+        with g2p show "c dvd p"
+          by (simp add: coprime_dvd_mult_left_iff ac_simps)
+        then have "c dvd p\<^sup>2"
+          by (simp add: power2_eq_square)
+        with gpq have "c dvd 3 * q\<^sup>2"
+          by (simp add: dvd_add_right_iff)
+        moreover have "coprime 3 c"
+          using \<open>c dvd p\<close> p3 dvd_trans [of 3 c p]
+          by (auto intro: prime_imp_coprime)
+        ultimately show "c dvd q\<^sup>2"
+          by (simp add: coprime_dvd_mult_right_iff ac_simps)
       qed
       moreover from vwx vwpq have pqx: "(2*p)*(p^2 + 3*q^2) = x^3" by auto
       ultimately have "\<exists> c. 2*p = c^3" by (simp add: int_relprime_odd_power_divisors)
@@ -226,71 +235,51 @@ next
       hence ab: "p = a*(a+3*b)*(a- 3*b) \<and> q = b*(a+b)*(a-b)*3"
         by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*a)*(a+3*b)*(a- 3*b) = c^3" by auto
-      have ab_relprime: "coprime a b"
-      proof (rule ccontr)
-        let ?h = "gcd a b"
-        assume h: "?h \<noteq> 1"
-        have ha: "?h dvd a" and hb: "?h dvd b" by blast+
-        with ab have "?h dvd p \<and> ?h dvd q" by simp
-        thus False using pq_relprime coprime_common_divisor_int h by fastforce
+      from pq_relprime ab have ab_relprime: "coprime a b"
+        by (auto intro: coprime_imp_coprime)
+      then have ab1: "coprime (2 * a) (a + 3 * b)"
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume h2a: "h dvd 2 * a" and hab: "h dvd a + 3 * b"
+        have "coprime 2 h"
+          using ab even_odd_p_q hab dvd_trans [of 2 h "a + 3 * b"]
+          by auto
+        with h2a show "h dvd a"
+          by (simp add: coprime_dvd_mult_left_iff ac_simps)
+        with hab have "h dvd 3 * b" and "\<not> 3 dvd h"
+          using dvd_trans [of 3 h a] ab \<open>\<not> 3 dvd p\<close>
+          by (auto simp add: dvd_add_right_iff)
+        moreover have "coprime 3 h"
+          using \<open>\<not> 3 dvd h\<close> by (auto intro: prime_imp_coprime)
+        ultimately show "h dvd b"
+          by (simp add: coprime_dvd_mult_left_iff ac_simps)
       qed
-      have ab1: "coprime (2*a) (a+3*b)"
-      proof (rule ccontr)
-        let ?h = "gcd (2*a) (a+3*b)"
-        assume h: "?h \<noteq> 1"
-        have h2a: "?h dvd 2*a" and hab: "?h dvd a+3*b" by blast+
-        have "\<not> 2 dvd ?h"
-        proof (rule ccontr)
-          assume "\<not> odd ?h"
-          hence "2 dvd a+3*b" using hab by force
-          hence "2 dvd q"  "2 dvd p" using ab by presburger+
-          thus False using coprime_common_divisor_int pq_relprime by fastforce
-        qed
-        hence "coprime ?h 2" using prime_imp_coprime_int[of 2 ?h] 
-          by (auto simp: gcd.commute)
-        hence ha: "?h dvd a" 
-          using h2a coprime_dvd_mult_iff[of ?h 2 a] mult.commute by presburger
-        with hab have "?h dvd a+3*b-a" by (simp only: dvd_diff)
-        hence h3b: "?h dvd 3*b" by simp
-        have "\<not> 3 dvd ?h"
-        proof (rule ccontr)
-          assume "\<not> \<not> 3 dvd ?h"
-          hence "3 dvd p" using ha dvd_trans ab by simp
-          with p3 show False by simp
-        qed
-        hence "coprime ?h 3" using prime_imp_coprime_int[of 3 ?h] by (auto simp: gcd.commute)
-        hence hb: "?h dvd b" 
-          using h3b coprime_dvd_mult_iff[of ?h 3 b] mult.commute by presburger
-        thus False using coprime_common_divisor_int ha h ab_relprime by fastforce
+      then have [simp]: "even b \<longleftrightarrow> odd a"
+        and ab3: "coprime a (a + 3 * b)"
+        by simp_all
+      from \<open>coprime a b\<close> have ab4: "coprime a (a - 3 * b)"
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume h2a: "h dvd a" and hab: "h dvd a - 3 * b"
+        then show "h dvd a"
+          by simp
+        with hab have "h dvd 3 * b" and "\<not> 3 dvd h"
+          using dvd_trans [of 3 h a] ab \<open>\<not> 3 dvd p\<close> dvd_add_right_iff [of h a "- 3 * b"]
+          by auto
+        moreover have "coprime 3 h"
+          using \<open>\<not> 3 dvd h\<close> by (auto intro: prime_imp_coprime)
+        ultimately show "h dvd b"
+          by (simp add: coprime_dvd_mult_left_iff ac_simps)
       qed
-      have ab2: "coprime (a+3*b) (a- 3*b)"
-      proof (rule ccontr)
-        let ?h = "gcd (a+3*b) (a- 3*b)"
-        assume h: "?h \<noteq> 1"
-        have hab1: "?h dvd a+3*b" and hab2: "?h dvd a- 3*b" by blast+
-        hence "?h dvd (a+3*b)+(a- 3*b)" by (simp only: dvd_add)
-        hence "?h dvd 2*a" by simp
-        thus False using coprime_common_divisor_int hab1 h ab1 by fastforce
-      qed
-      have "coprime (a- 3*b) (2*a)"
-      proof (rule ccontr)
-        let ?h = "gcd(a- 3*b) (2*a)"
-        assume h: "?h \<noteq> 1"
-        hence h2a: "?h dvd 2*a" and hab: "?h dvd a- 3*b" by blast+
-        hence "?h dvd 2*a-(a- 3*b)" by (simp only: dvd_diff)
-        moreover have "2*a-(a- 3*b) = a+3*b" by simp
-        ultimately have "?h dvd a+3*b" by simp
-        thus False using h2a h ab1 coprime_common_divisor_int by fastforce
-      qed
-      hence "\<exists> k l m. 2*a=k^3 \<and> a+3*b=l^3 \<and> a- 3*b=m^3"
-        using abc ab1 ab2
-          int_relprime_odd_power_divisors[of 3 "2*a" "(a + 3 * b) * (a - 3 * b)" c]
-          int_relprime_odd_power_divisors[of 3 "(a + 3 * b)" "2*a * (a - 3 * b)" c]
-          int_relprime_odd_power_divisors[of 3 "(a - 3 * b)" "2*a * (a + 3 * b)" c]
-          coprime_mul_eq[of "2*a" "(a + 3 * b)" "(a - 3 * b)"]
-          coprime_mul_eq[of "(a + 3 * b)" "2*a" "(a - 3 * b)"]
-          coprime_mul_eq[of "(a - 3 * b)" "2*a" "(a + 3 * b)"]
-        by (auto simp: gcd.commute algebra_simps)
+      from ab1 have ab2: "coprime (a + 3 * b) (a - 3 * b)"
+        by (rule coprime_imp_coprime)
+          (use dvd_add [of _ "a + 3 * b" "a - 3 * b"] in simp_all)
+      have "\<exists>k l m. 2 * a = k ^ 3 \<and> a + 3 * b = l ^ 3 \<and> a - 3 * b = m ^ 3"
+        using ab2 ab3 ab4 abc
+          int_relprime_odd_power_divisors [of 3 "2 * a" "(a + 3 * b) * (a - 3 * b)" c]
+          int_relprime_odd_power_divisors [of 3 "(a + 3 * b)" "2 * a * (a - 3 * b)" c]
+          int_relprime_odd_power_divisors [of 3 "(a - 3 * b)" "2 * a * (a + 3 * b)" c]
+        by auto (auto simp add: ac_simps)
       then obtain \<alpha> \<beta> \<gamma> where albega: 
         "2*a = \<gamma>^3 \<and> a - 3*b = \<alpha>^3 \<and> a+3*b = \<beta>^3" by auto 
       -- "show this is a (smaller) solution"
@@ -308,14 +297,12 @@ next
         thus ?thesis by simp
       qed
       moreover have "coprime \<alpha> \<beta>"
-      proof (rule ccontr)
-        let ?h = "gcd \<alpha> \<beta>"
-        assume h: "?h \<noteq> 1"
-        have ha: "?h dvd \<alpha>" and hb: "?h dvd \<beta>" by blast+
-        hence "?h dvd \<alpha> * \<alpha>^2 \<and> ?h dvd \<beta> * \<beta>^2" by simp
-        hence "?h dvd \<alpha>^Suc 2 \<and> ?h dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
-        with albega have "?h dvd a- 3*b \<and> ?h dvd a+3*b" by auto 
-        thus False using ab2 h coprime_common_divisor_int by fastforce
+      using ab2 proof (rule coprime_imp_coprime)
+        fix h
+        assume ha: "h dvd \<alpha>" and hb: "h dvd \<beta>"
+        then have "h dvd \<alpha> * \<alpha>^2 \<and> h dvd \<beta> * \<beta>^2" by simp
+        then have "h dvd \<alpha>^Suc 2 \<and> h dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
+        with albega show "h dvd a - 3 * b" "h dvd a + 3 * b" by auto 
       qed
       moreover have "nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
       proof -
@@ -377,15 +364,15 @@ next
       ultimately have pq3: "3 dvd p^2+3*q^2" by (simp add: power_mult_distrib)
       moreover from p3 have "3 dvd 2*p" by (rule dvd_mult)
       ultimately have g3: "3 dvd ?g" by simp
-      have qr_relprime: "coprime q r" 
-      proof (rule ccontr)
-        let ?h = "gcd q r"
-        assume h: "?h \<noteq> 1"
-        have hq: "?h dvd q" and "?h dvd r" by blast+
-        with r have "?h dvd p" by simp
-        with hq have "?h dvd p+q \<and> ?h dvd p-q" by simp
-        with vw have "?h dvd gcd v w" by simp
-        with vwx h show False by auto
+      from \<open>coprime v w\<close> have qr_relprime: "coprime q r" 
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume hq: "h dvd q" "h dvd r"
+        with r have "h dvd p" by simp
+        with hq have "h dvd p + q" "h dvd p - q"
+          by simp_all
+        with vw show "h dvd v" "h dvd w"
+          by simp_all
       qed
       have factors_relprime: "coprime (18*r) (q^2 + 3*r^2)"
       proof -
@@ -429,30 +416,45 @@ next
         also have "\<dots> = gcd (3*(2*r)) (3*(3*r^2 + q^2))" 
           by (simp add: power_mult_distrib)
         also have "\<dots> = 3 * gcd (2*r) (3*r^2 + q^2)" using gcd_mult_distrib_int[of 3] by auto
-        finally have "coprime (2*r) (3*r^2 + q^2)" by auto
-        moreover have "coprime (3*3) (3*r^2 + q^2)"
-        proof (rule ccontr)
-          let ?h = "gcd (3*3) (3*r^2 + q^2)"
-          assume h: "?h \<noteq> 1"
-          have h9: "?h dvd 3*3" and hrq: "?h dvd 3*r^2 + q^2" by blast+
-          have "nat ?h dvd 3^2"
-            using h9 gcd_ge_0_int[of "3*3" "3 * r\<^sup>2 + q\<^sup>2"]
-            unfolding power2_eq_square by presburger 
-          then obtain k where k: "nat ?h = 3^k" "k\<le>2"
-            by (subst (asm) divides_primepow_nat) auto
-          then consider "k = 0" | "k = 1" | "k = 2" by linarith
-          hence "?h = 3 \<or> ?h = 3*3" by (cases; insert h k; force)
-          hence "3 dvd ?h" by presburger
-          hence "3 dvd 3*r^2 + q^2" using hrq by auto
-          hence "3 dvd q^2" by presburger
-          hence "3 dvd q" using prime_dvd_power_int[of 3 q 2] by auto
-          with p3 have "3 dvd p+q \<and> 3 dvd p-q" by simp
-          with vw have "3 dvd gcd v w" by simp
-          with vwx show False by auto
+        finally have "coprime (2*r) (3*r^2 + q^2)"
+          by (auto dest: gcd_eq_1_imp_coprime)
+        moreover have "coprime 9 (3*r^2 + q^2)"
+        using \<open>coprime v w\<close> proof (rule coprime_imp_coprime)
+          fix h :: int
+          assume "\<not> is_unit h"
+          assume h9: "h dvd 9" and hrq: "h dvd 3 * r\<^sup>2 + q\<^sup>2"
+          have "prime (3::int)"
+            by simp
+          moreover from \<open>h dvd 9\<close> have "h dvd 3\<^sup>2"
+            by simp
+          ultimately obtain k where "normalize h = 3 ^ k"
+            by (rule divides_primepow)
+          with \<open>\<not> is_unit h\<close> have "0 < k"
+            by simp
+          with \<open>normalize h = 3 ^ k\<close> have "\<bar>h\<bar> = 3 * 3 ^ (k - 1)"
+            by (cases k) simp_all
+          then have "3 dvd \<bar>h\<bar>" ..
+          then have "3 dvd h"
+            by simp
+          then have "3 dvd 3 * r\<^sup>2 + q\<^sup>2"
+            using hrq by (rule dvd_trans)
+          then have "3 dvd q\<^sup>2"
+            by presburger
+          then have "3 dvd q"
+            using prime_dvd_power_int [of 3 q 2] by auto
+          with p3 have "3 dvd p + q" and "3 dvd p - q"
+            by simp_all
+          with vw have "3 dvd v" and "3 dvd w"
+            by simp_all
+          with \<open>coprime v w\<close> have "is_unit (3::int)"
+            by (rule coprime_common_divisor)
+          then show "h dvd v" and "h dvd w"
+            by simp_all
         qed
-        ultimately have "coprime ((3*3)*(2*r)) (3*r^2 + q^2)"
-          by (simp only: gcd_mult_cancel)
-        thus ?thesis by (auto simp add: ac_simps)
+        ultimately have "coprime (2 * r * 9) (3 * r\<^sup>2 + q\<^sup>2)"
+          by (simp only: coprime_mult_left_iff)
+        then show ?thesis
+          by (simp add: ac_simps)
       qed
       moreover have rqx: "(18*r)*(q^2 + 3*r^2) = x^3"
       proof -
@@ -489,58 +491,49 @@ next
       hence ab: "q = a*(a+3*b)*(a- 3*b) \<and> r = b*(a+b)*(a-b)*3"
         by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*b)*(a+b)*(a-b) = c^3" by auto
-      have ab_relprime: "coprime a b"
-      proof (rule ccontr)
-        let ?h = "gcd a b"
-        assume h: "?h \<noteq> 1"
-        have ha: "?h dvd a" and hb: "?h dvd b" by blast+
-        with ab have "?h dvd q \<and> ?h dvd r" by simp
-        thus False using qr_relprime coprime_common_divisor_int h by fastforce
-      qed
-      have ab1: "coprime (2*b) (a+b)"
-      proof (rule ccontr)
-        let ?h = "gcd (2*b) (a+b)"
-        assume h: "?h \<noteq> 1"
-        have h2b: "?h dvd 2*b" and hab: "?h dvd a+b" by blast+
-        have "\<not> 2 dvd ?h"
-        proof (rule ccontr)
-          assume "\<not> odd ?h"
-          hence "2 dvd a+3*b" using hab by force
-          hence "2 dvd q" "2 dvd r" using ab by presburger+
-          thus False using coprime_common_divisor_int qr_relprime by fastforce
+      from qr_relprime ab have ab_relprime: "coprime a b"
+        by (auto intro: coprime_imp_coprime)
+      then have ab1: "coprime (2*b) (a+b)"
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume h2b: "h dvd 2*b" and hab: "h dvd a+b"
+        have "odd h"
+        proof
+          assume "even h"
+          then have "even (a + b)"
+            using hab by (rule dvd_trans)
+          then have "even (a+3*b)"
+            by simp
+          with ab have "even q" "even r"
+            by auto
+          then show False
+            using coprime_common_divisor_int qr_relprime by fastforce
         qed
-        hence "coprime ?h 2" using prime_imp_coprime_int[of 2 ?h] by (force simp: gcd.commute)
-        hence ha: "?h dvd b" 
-          using h2b coprime_dvd_mult_iff[of ?h 2 b] mult.commute by presburger
-        moreover with hab have "?h dvd a" using dvd_diff by fastforce
-        ultimately show False using h ab_relprime coprime_common_divisor_int by fastforce
+        with h2b show "h dvd b" 
+          using coprime_dvd_mult_right_iff [of h 2 b] by simp
+        with hab show "h dvd a" using dvd_diff by fastforce
       qed
-      have ab2: "coprime (a+b) (a-b)"
-      proof (rule ccontr)
-        let ?h = "gcd (a+b) (a-b)"
-        assume h: "?h \<noteq> 1"
-        have hab1: "?h dvd a+b" and hab2: "?h dvd a-b" by blast+
-        hence "?h dvd 2*b" using dvd_diff[of ?h "a+b" "a-b"] by fastforce
-        thus False using hab1 h ab1 coprime_common_divisor_int by fastforce
+      from ab1 have ab2: "coprime (a+b) (a-b)"
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume hab1: "h dvd a+b" and hab2: "h dvd a-b"
+        then show "h dvd 2*b" using dvd_diff[of h "a+b" "a-b"] by fastforce
       qed
-      have "coprime (a-b) (2*b)"
-      proof (rule ccontr)
-        let ?h = "gcd (a-b) (2*b)"
-        assume h: "?h \<noteq> 1"
-        have hab: "?h dvd a-b" and h2b: "?h dvd 2*b" by blast+
+      from ab1 have ab3: "coprime (a-b) (2*b)"
+      proof (rule coprime_imp_coprime)
+        fix h
+        assume hab: "h dvd a-b" and h2b: "h dvd 2*b"
         have "a-b+2*b = a+b" by simp
-        hence "?h dvd a+b" using hab h2b dvd_add[of ?h "a-b" "2*b"] by presburger
-        thus False using h2b h ab1 coprime_common_divisor_int by fastforce
+        then show "h dvd a+b" using hab h2b dvd_add [of h "a-b" "2*b"] by presburger
       qed
-      hence "\<exists> k l m. 2*b = k^3 \<and> a+b = l^3 \<and> a-b = m^3"
-        using abc ab1 ab2
-          int_relprime_odd_power_divisors[of 3 "2*b" "(a + b) * (a - b)" c]
-          int_relprime_odd_power_divisors[of 3 "(a + b)" "2*b * (a - b)" c]
-          int_relprime_odd_power_divisors[of 3 "(a - b)" "2*b * (a + b)" c]
-          coprime_mul_eq[of "2*b" "(a + b)" "(a - b)"]
-          coprime_mul_eq[of "(a + b)" "2*b" "(a - b)"]
-          coprime_mul_eq[of "(a - b)" "2*b" "(a + b)"]
-        by (auto simp: gcd.commute algebra_simps)
+      then have [simp]: "even b \<longleftrightarrow> odd a"
+        by simp
+      have "\<exists> k l m. 2*b = k^3 \<and> a+b = l^3 \<and> a-b = m^3"
+        using abc ab1 ab2 ab3
+          int_relprime_odd_power_divisors [of 3 "2 * b" "(a + b) * (a - b)" c]
+          int_relprime_odd_power_divisors [of 3 "a + b" "(2 * b) * (a - b)" c]
+          int_relprime_odd_power_divisors [of 3 "a - b" "(2 * b) * (a + b)" c]
+        by simp (simp add: ac_simps, simp add: algebra_simps)
       then obtain \<alpha>1 \<beta> \<gamma> where a1: "2*b = \<gamma>^3 \<and> a-b = \<alpha>1^3 \<and> a+b = \<beta>^3"
         by auto 
       then obtain \<alpha> where "\<alpha> = -\<alpha>1" by auto
@@ -560,15 +553,14 @@ next
         thus ?thesis by simp
       qed
       moreover have "coprime \<alpha> \<beta>"
-      proof (rule ccontr)
-        let ?h = "gcd \<alpha> \<beta>"
-        assume h: "?h \<noteq> 1"
-        have ha: "?h dvd \<alpha>" and hb: "?h dvd \<beta>" by blast+
-        hence "?h dvd \<alpha> * \<alpha>^2 \<and> ?h dvd \<beta> * \<beta>^2" by simp
-        hence "?h dvd \<alpha>^Suc 2 \<and> ?h dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
-        with a1 a2 have "?h dvd b-a \<and> ?h dvd a+b" by auto 
-        hence "?h dvd -(b-a) \<and> ?h dvd a+b" by (auto simp only: dvd_minus_iff)
-        thus False using ab2 h coprime_common_divisor_int by fastforce
+      using ab2 proof (rule coprime_imp_coprime)
+        fix h
+        assume ha: "h dvd \<alpha>" and hb: "h dvd \<beta>"
+        then have "h dvd \<alpha> * \<alpha>^2" and "h dvd \<beta> * \<beta>^2" by simp_all
+        then have "h dvd \<alpha>^Suc 2" and "h dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
+        with a1 a2 have "h dvd b - a" and "h dvd a + b" by auto 
+        then show "h dvd a + b" and "h dvd a - b"
+          by (simp_all add: dvd_diff_commute)
       qed
       moreover have "nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
       proof -
@@ -640,6 +632,8 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   -- "make both sides even"
+  from ab have "coprime (a ^ 3) (b ^ 3)"
+    by simp
   have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> coprime u v"
   proof -
     let "?Q u v w" = "u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> coprime u v"
@@ -667,16 +661,14 @@ proof (rule ccontr)
         finally show ?thesis by simp
       qed
       moreover have "coprime u v"
-      proof (rule ccontr)
-        let ?h = "gcd u v"
-        assume h: "?h \<noteq> 1"
-        have hu: "?h dvd u" and "?h dvd v" by blast+
-        with uvwabc have "?h dvd ?c*?c^2" by (simp only: dvd_mult2)
-        with abc have "?h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
-        moreover from hu uvwabc have hb3: "?h dvd b*b^2" by simp
-        ultimately have "?h dvd a^3+b^3-b^3" using power_Suc[of b 2] dvd_diff by fastforce
-        with hb3 have "?h dvd a^3 \<and> ?h dvd b^3" using power_Suc[of b 2] by auto
-        thus False using ab coprime_exp2_int[of a b 3 3] coprime_common_divisor_int h by fastforce
+      using \<open>coprime (a ^ 3) (b ^ 3)\<close> proof (rule coprime_imp_coprime)
+        fix h
+        assume hu: "h dvd u" and "h dvd v"
+        with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
+        with abc have "h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
+        moreover from hu uvwabc have hb3: "h dvd b*b^2" by simp
+        ultimately have "h dvd a^3+b^3-b^3" using power_Suc[of b 2] dvd_diff by fastforce
+        with hb3 show "h dvd a^3" "h dvd b^3" using power_Suc[of b 2] by auto
       qed
       ultimately have "?Q u v w" using `even a` by simp
       hence ?thesis by auto }
@@ -694,16 +686,14 @@ proof (rule ccontr)
         finally show ?thesis by simp
       qed
       moreover have "coprime u v"
-      proof (rule ccontr)
-        let ?h = "gcd u v"
-        assume h: "?h \<noteq> 1"
-        have hu: "?h dvd u" and "?h dvd v" by blast+
-        with uvwabc have "?h dvd ?c*?c^2" by (simp only: dvd_mult2)
-        with abc have "?h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
-        moreover from hu uvwabc have hb3: "?h dvd a*a^2" by simp
-        ultimately have "?h dvd a^3+b^3-a^3" using power_Suc[of a 2] dvd_diff by fastforce
-        with hb3 have "?h dvd a^3 \<and> ?h dvd b^3" using power_Suc[of a 2] by auto
-        thus False using ab coprime_exp2_int[of a b 3 3] coprime_common_divisor_int h by fastforce
+      using \<open>coprime (a ^ 3) (b ^ 3)\<close> proof (rule coprime_imp_coprime)
+        fix h
+        assume hu: "h dvd u" and "h dvd v"
+        with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
+        with abc have "h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
+        moreover from hu uvwabc have hb3: "h dvd a*a^2" by simp
+        ultimately have "h dvd a^3+b^3-a^3" using power_Suc[of a 2] dvd_diff by fastforce
+        with hb3 show "h dvd a^3" and "h dvd b^3" using power_Suc[of a 2] by auto
       qed
       ultimately have "?Q u v w" using `even b` by simp
       hence ?thesis by auto }

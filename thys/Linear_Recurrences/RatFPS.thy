@@ -10,11 +10,10 @@ imports
   "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
-typedef (overloaded) 'a :: "{field,factorial_ring_gcd}" ratfps = 
-  "{x :: 'a poly fract. coeff (snd (quot_of_fract x)) 0 \<noteq> 0}"
-  by (rule exI[of _ 0]) simp_all
+subsection \<open>Some auxiliary\<close>
 
-setup_lifting type_definition_ratfps
+abbreviation constant_term :: "'a poly \<Rightarrow> 'a::zero"
+  where "constant_term p \<equiv> coeff p 0"
 
 lemma coeff_0_mult: "coeff (p * q) 0 = coeff p 0 * coeff q 0"
   by (simp add: coeff_mult)
@@ -57,6 +56,30 @@ proof -
   with assms show ?thesis by (auto simp: coeff_0_mult)
 qed
 
+abbreviation numerator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide}"
+  where "numerator x \<equiv> fst (quot_of_fract x)"
+
+abbreviation denominator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide}"
+  where "denominator x \<equiv> snd (quot_of_fract x)"
+
+declare unit_factor_snd_quot_of_fract [simp]
+  normalize_snd_quot_of_fract [simp]
+
+lemma constant_term_denominator_nonzero_imp_constant_term_denominator_div_gcd_nonzero:
+  "constant_term (denominator x div gcd a (denominator x)) \<noteq> 0"
+  if "constant_term (denominator x) \<noteq> 0"
+  using that coeff_0_normalize_quot_nonzero [of "(a, denominator x)"]
+  normalize_quot_proj(2) [of "denominator x" a]
+  by simp
+
+
+subsection \<open>The type of rational formal power series\<close>
+
+typedef (overloaded) 'a :: "{field,factorial_ring_gcd}" ratfps = 
+  "{x :: 'a poly fract. constant_term (denominator x) \<noteq> 0}"
+  by (rule exI [of _ 0]) simp
+
+setup_lifting type_definition_ratfps
 
 instantiation ratfps :: ("{field,factorial_ring_gcd}") idom
 begin
@@ -76,10 +99,12 @@ lift_definition minus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow>
      (simp_all add: quot_of_fract_uminus Let_def case_prod_unfold)
 
 lift_definition times_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "op *"
-  by (simp add: quot_of_fract_mult case_prod_unfold Let_def coeff_0_mult
-        coeff_0_normalize_quot_nonzero)
+  by (simp add: quot_of_fract_mult Let_def case_prod_unfold coeff_0_mult
+    constant_term_denominator_nonzero_imp_constant_term_denominator_div_gcd_nonzero)
+ 
+instance
+  by (standard; transfer) (simp_all add: ring_distribs)
 
-instance by standard (transfer, simp add: ring_distribs)+
 end
 
 fun ratfps_nth_aux :: "('a::field) poly \<Rightarrow> nat \<Rightarrow> 'a"
@@ -122,6 +147,14 @@ lift_definition quot_to_ratfps :: "('a poly \<times> 'a poly) \<Rightarrow> 'a r
            in  if coeff y' 0 = 0 then 0 else quot_to_fract (x',y')"
   by (simp add: case_prod_unfold Let_def quot_of_fract_quot_to_fract)
 
+lemma normalize_quot_quot_of_fract [simp]: 
+  "normalize_quot (quot_of_fract x) = quot_of_fract x"
+  by (rule normalize_quot_id, rule quot_of_fract_in_normalized_fracts)
+
+lemma quot_to_ratfps_quot_of_ratfps [code abstype]:
+  "quot_to_ratfps (quot_of_ratfps x) = x"
+  by transfer (simp add: case_prod_unfold Let_def)
+
 lemma coeff_0_snd_quot_of_ratfps_nonzero [simp]: 
   "coeff (snd (quot_of_ratfps x)) 0 \<noteq> 0"
   by transfer simp
@@ -131,32 +164,24 @@ lemma quot_of_ratfps_quot_to_ratfps:
   by transfer (simp add: Let_def case_prod_unfold coeff_0_normalize_quot_nonzero 
                  quot_of_fract_quot_to_fract normalize_quot_id)
 
-lemma quot_of_ratfps_0 [simp]: "quot_of_ratfps 0 = (0, 1)"
+lemma quot_of_ratfps_0 [simp, code abstract]: "quot_of_ratfps 0 = (0, 1)"
   by transfer simp_all
 
-lemma quot_of_ratfps_1 [simp]: "quot_of_ratfps 1 = (1, 1)"
+lemma quot_of_ratfps_1 [simp, code abstract]: "quot_of_ratfps 1 = (1, 1)"
   by transfer simp_all
 
 lift_definition ratfps_of_poly :: "'a poly \<Rightarrow> 'a ratfps" is
-  "\<lambda>x::'a poly. Fraction_Field.Fract x 1"
-  by transfer (simp add: normalize_quot_def)
-  
-lemma normalize_quot_quot_of_fract [simp]: 
-  "normalize_quot (quot_of_fract x) = quot_of_fract x"
-  by (rule normalize_quot_id, rule quot_of_fract_in_normalized_fracts)
+  "to_fract :: 'a poly \<Rightarrow> _"
+  by transfer simp
 
-lemma quot_to_ratfps_quot_of_ratfps [code abstype]: "quot_to_ratfps (quot_of_ratfps x) = x"
-  by transfer (simp add: case_prod_unfold Let_def coeff_0_normalize_quot_nonzero)
-  
-lemma zero_ratfps_code [code abstract]: "quot_of_ratfps 0 = (0, 1)"
-  by transfer (rule quot_of_fract_0)
+lemma ratfps_of_poly_code [code abstract]:
+  "quot_of_ratfps (ratfps_of_poly p) = (p, 1)"
+  by transfer' simp
 
-lemma one_ratfps_code [code abstract]: "quot_of_ratfps 1 = (1, 1)"
-  by transfer (rule quot_of_fract_1)
-  
-lemma ratfps_of_poly_code [code abstract]: "quot_of_ratfps (ratfps_of_poly p) = (p, 1)"
-  by (transfer', transfer') (simp add: normalize_quot_def)
+lemmas zero_ratfps_code = quot_of_ratfps_0
 
+lemmas one_ratfps_code = quot_of_ratfps_1
+  
 lemma uminus_ratfps_code [code abstract]: 
   "quot_of_ratfps (- x) = (let (a, b) = quot_of_ratfps x in (-a, b))"
   by transfer (rule quot_of_fract_uminus)
@@ -238,27 +263,49 @@ lemma quot_of_fract_eq_iff [simp]: "quot_of_fract x = quot_of_fract y \<longleft
 lemma equal_ratfps_code [code]: "HOL.equal x y \<longleftrightarrow> quot_of_ratfps x = quot_of_ratfps y"
   unfolding equal_ratfps_def by transfer simp
 
-
 lemma fps_of_poly_quot_normalize_quot [simp]:
-  assumes "(snd x :: 'a :: {field,factorial_ring_gcd} poly) \<noteq> 0"
-  shows   "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
-             fps_of_poly (fst x) / fps_of_poly (snd x)"
+  "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
+     fps_of_poly (fst x) / fps_of_poly (snd x)"
+  if "(snd x :: 'a :: {field, factorial_ring_gcd} poly) \<noteq> 0"
 proof -
-  from normalize_quotE'[OF assms] guess d .
-  thus ?thesis by (simp add: fps_of_poly_mult)
+  from that obtain d where "fst x = fst (normalize_quot x) * d"
+    and "snd x = snd (normalize_quot x) * d" and "d \<noteq> 0"
+    by (rule normalize_quotE')
+  then show ?thesis
+    by (simp add: fps_of_poly_mult)
 qed
 
 lemma fps_of_poly_quot_normalize_quot' [simp]:
-  assumes "coeff (snd x) 0 \<noteq> (0 :: 'a :: {field,factorial_ring_gcd})"
-  shows   "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
-             fps_of_poly (fst x) / fps_of_poly (snd x)"
-  using assms by (intro fps_of_poly_quot_normalize_quot) auto
-    
+  "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
+     fps_of_poly (fst x) / fps_of_poly (snd x)"
+  if "coeff (snd x) 0 \<noteq> (0 :: 'a :: {field,factorial_ring_gcd})"
+  using that by (auto intro: fps_of_poly_quot_normalize_quot)
+
+lemma fps_of_poly_quot_normalize_eq [simp]:
+  "fps_of_poly (x div (gcd x y * unit_factor y)) /
+    fps_of_poly (normalize y div gcd x y) = fps_of_poly x / fps_of_poly y"
+  if "y \<noteq> 0" for y :: "'a :: {field, factorial_ring_gcd} poly"
+proof -
+  from that have "fps_of_poly (fst (normalize_quot (x, y))) / fps_of_poly (snd (normalize_quot (x, y))) =
+    fps_of_poly x / fps_of_poly y"
+    by (subst fps_of_poly_quot_normalize_quot) simp_all
+  with that show ?thesis by simp
+qed
+
+lemma fps_of_poly_quot_normalize_eq' [simp]:
+  "fps_of_poly (x div (gcd x y * unit_factor y)) /
+    fps_of_poly (normalize y div gcd x y) = fps_of_poly x / fps_of_poly y"
+  if "constant_term y \<noteq> 0" for y :: "'a :: {field, factorial_ring_gcd} poly"
+  using that by (auto intro: fps_of_poly_quot_normalize_eq)
+
 lift_definition fps_of_ratfps :: "'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> 'a fps" is
-  "\<lambda>x. (case quot_of_fract x of (a, b) \<Rightarrow> fps_of_poly a / fps_of_poly b)" .
+  "\<lambda>x. fps_of_poly (numerator x) / fps_of_poly (denominator x)" .
 
 lemma fps_of_ratfps_altdef: 
   "fps_of_ratfps x = (case quot_of_ratfps x of (a, b) \<Rightarrow> fps_of_poly a / fps_of_poly b)"
+  by transfer (simp add: case_prod_unfold)
+
+lemma fps_of_ratfps_ratfps_of_poly [simp]: "fps_of_ratfps (ratfps_of_poly p) = fps_of_poly p"
   by transfer simp
 
 lemma fps_of_ratfps_0 [simp]: "fps_of_ratfps 0 = 0"
@@ -267,20 +314,14 @@ lemma fps_of_ratfps_0 [simp]: "fps_of_ratfps 0 = 0"
 lemma fps_of_ratfps_1 [simp]: "fps_of_ratfps 1 = 1"
   by transfer simp
 
-lemma fps_of_ratfps_ratfps_of_poly [simp]: "fps_of_ratfps (ratfps_of_poly p) = fps_of_poly p"
-  by (transfer, transfer) (simp add: normalize_quot_def)
-
 lemma fps_of_ratfps_uminus [simp]: "fps_of_ratfps (-x) = - fps_of_ratfps x"
-  by transfer
-     (auto simp add: quot_of_fract_uminus case_prod_unfold Let_def fps_of_poly_simps dvd_neg_div)
+  by transfer (simp add: quot_of_fract_uminus case_prod_unfold Let_def fps_of_poly_simps dvd_neg_div)
   
 lemma fps_of_ratfps_add [simp]: "fps_of_ratfps (x + y) = fps_of_ratfps x + fps_of_ratfps y"
-  by transfer
-     (auto simp add: quot_of_fract_add case_prod_unfold Let_def fps_of_poly_simps coeff_0_mult)
+  by transfer (simp add: quot_of_fract_add Let_def case_prod_unfold fps_of_poly_simps)
 
 lemma fps_of_ratfps_diff [simp]: "fps_of_ratfps (x - y) = fps_of_ratfps x - fps_of_ratfps y"
-  by transfer
-     (auto simp add: quot_of_fract_diff case_prod_unfold Let_def fps_of_poly_simps coeff_0_mult)  
+  by transfer (simp add: quot_of_fract_diff Let_def case_prod_unfold fps_of_poly_simps)
 
 lemma is_unit_div_div_commute: "is_unit b \<Longrightarrow> is_unit c \<Longrightarrow> a div b div c = a div c div b"
   by (metis is_unit_div_mult2_eq mult.commute)
@@ -288,11 +329,13 @@ lemma is_unit_div_div_commute: "is_unit b \<Longrightarrow> is_unit c \<Longrigh
 lemma fps_of_ratfps_mult [simp]: "fps_of_ratfps (x * y) = fps_of_ratfps x * fps_of_ratfps y"
 proof (transfer, goal_cases)
   case (1 x y)
-  define x' y' where "x' = quot_of_fract x" and "y' = quot_of_fract y"
-  define w z where "w = normalize_quot (fst x', snd y')" and "z = normalize_quot (fst y', snd x')"
-  from 1 have unit: "coeff (snd x') 0 \<noteq> 0" "coeff (snd y') 0  \<noteq> 0" 
-      "coeff (snd w) 0 \<noteq> 0" "coeff (snd z) 0 \<noteq> 0"
-    by (simp_all add: w_def z_def x'_def y'_def coeff_0_normalize_quot_nonzero)
+  moreover define x' y' where "x' = quot_of_fract x" and "y' = quot_of_fract y"
+  ultimately have assms: "coeff (snd x') 0 \<noteq> 0" "coeff (snd y') 0 \<noteq> 0"
+    by simp_all
+  moreover define w z where "w = normalize_quot (fst x', snd y')" and "z = normalize_quot (fst y', snd x')"
+  ultimately have unit: "coeff (snd x') 0 \<noteq> 0" "coeff (snd y') 0 \<noteq> 0" 
+    "coeff (snd w) 0 \<noteq> 0" "coeff (snd z) 0 \<noteq> 0"
+    by (simp_all add: coeff_0_normalize_quot_nonzero)
   have "fps_of_poly (fst w * fst z) / fps_of_poly (snd w * snd z) =
           (fps_of_poly (fst w) / fps_of_poly (snd w)) *
           (fps_of_poly (fst z) / fps_of_poly (snd z))" (is "_ = ?A * ?B")
@@ -506,7 +549,7 @@ proof -
     finally show ?thesis by (rule monom_times_poly_shift' [symmetric])
   qed (simp_all add: y_def)
   finally have coprime: "coprime (poly_shift n (fst y)) (snd y)"
-    by (simp add: coprime_mul_eq')
+    by simp
   
   have "quot_of_ratfps (ratfps_shift n x) = 
           quot_of_ratfps (quot_to_ratfps (poly_shift n (fst y), snd y))"
@@ -673,7 +716,8 @@ proof
     by transfer (simp add: coprime_quot_of_fract)
   moreover have "normalize (snd (quot_of_ratfps x)) = snd (quot_of_ratfps x)"
     by (simp add: div_unit_factor [symmetric] del: div_unit_factor)
-  ultimately have "quot_of_ratfps x = (0,1)" by (simp add: prod_eq_iff)
+  ultimately have "quot_of_ratfps x = (0,1)"
+    by (simp add: prod_eq_iff normalize_idem_imp_is_unit_iff)
   also have "\<dots> = quot_of_ratfps 0" by simp
   finally show "x = 0" by (subst (asm) quot_of_ratfps_eq_iff)
 qed simp_all
@@ -797,11 +841,6 @@ proof (cases "bdd_above (ratfps_subdegree`A)")
   with unbounded show ?thesis by simp
 qed (simp_all add: ratfps_Lcm Lcm_eq_0_I)
 
-
-
-
-
-  
 lemma fps_of_ratfps_quot_to_ratfps:
   "coeff y 0 \<noteq> 0 \<Longrightarrow> fps_of_ratfps (quot_to_ratfps (x,y)) = fps_of_poly x / fps_of_poly y"
 proof (transfer, goal_cases)

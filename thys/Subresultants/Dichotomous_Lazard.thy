@@ -54,9 +54,9 @@ proof -
   have 0: "bd^e \<noteq> 0" for e using bd by auto
   from no_fract[unfolded id range_to_fract_dvd_iff[OF 0]] have dvd: "bd ^ e dvd an * bn ^ e" .
   from copb have copb: "coprime (bd ^ e) (bn ^ e)" for e
-    by (simp add: coprime_exp2 gcd.commute)
-  from dvd copb[of e] bd have "bd ^ e dvd an"
-    using coprime_dvd_mult_iff dvd_mult_right by blast
+    by (simp add: ac_simps)
+  from dvd copb [of e] bd have "bd ^ e dvd an"
+    by (simp add: coprime_dvd_mult_left_iff)
   hence "bd ^ f dvd an" using le by (rule power_le_dvd)
   hence dvd: "bd ^ f dvd an * bn ^ f" by simp
   from le obtain g where e: "e = f + g" using le_Suc_ex by blast

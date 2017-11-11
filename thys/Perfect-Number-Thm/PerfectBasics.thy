@@ -20,7 +20,7 @@ proof (rule ccontr)
   hence a:"p dvd (m div (p^(multiplicity p m)))" by auto
   from m0 have "p^(multiplicity p m) dvd m" by (auto simp add: multiplicity_dvd)
   with a have "p^Suc (multiplicity p m) dvd m"
-    by (subst (asm) dvd_div_iff_mult) (auto simp: multiplicity_0)
+    by (subst (asm) dvd_div_iff_mult) auto
   with m0 p show False
     by (subst (asm) power_dvd_iff_le_multiplicity) auto
 qed
@@ -43,8 +43,8 @@ qed
 lemma add_mult_distrib_three: "(x::nat)*(a+b+c)=x*a+x*b+x*c" 
 proof -
   have "(x::nat)*(a+b+c) = x*((a+b)+c)" by auto
-  hence "x*(a+b+c) = x*(a+b)+x*c" by (metis add_mult_distrib2 add.commute add.left_commute)
-  thus "x*(a+b+c) = x*a+x*b+x*c" by (metis add_mult_distrib2 add.commute add.left_commute) 
+  hence "x*(a+b+c) = x*(a+b)+x*c" by (simp add: algebra_simps)
+  thus "x*(a+b+c) = x*a+x*b+x*c" by (simp add: algebra_simps) 
 qed
 
 lemma nat_interval_minus_zero: "{0..Suc n} = {0} Un {Suc 0..Suc n}" by auto

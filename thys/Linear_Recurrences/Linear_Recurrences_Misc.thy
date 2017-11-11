@@ -202,7 +202,8 @@ proof -
   also from assms have "gcd \<dots> [:c',1:] = normalize [:c-c':]"
     by (intro gcd_proj1_if_dvd) (auto simp: const_poly_dvd_iff dvd_field_iff)
   also from assms have "\<dots> = 1" by (simp add: normalize_poly_def)
-  finally show "coprime [:c,1:] [:c',1:]" .
+  finally show "coprime [:c,1:] [:c',1:]"
+    by (simp add: gcd_eq_1_imp_coprime)
 qed
 
 lemma coprime_linear_poly': 
@@ -219,7 +220,8 @@ proof -
   also from assms have "gcd \<dots> [:1,c':] = normalize ([:1 - c / c':])"
     by (intro gcd_proj1_if_dvd) (auto simp: const_poly_dvd_iff dvd_field_iff)
   also from assms have "\<dots> = 1" by (auto simp: normalize_poly_def)
-  finally show ?thesis .
+  finally show ?thesis
+    by (rule gcd_eq_1_imp_coprime)
 qed
 
 end

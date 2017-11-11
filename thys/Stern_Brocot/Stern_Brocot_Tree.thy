@@ -137,7 +137,8 @@ by(induct path)(auto split: dir.splits)
 
 lemma stern_brocot_coprime:
   "case root (traverse_tree path stern_brocot_recurse) of (m, n) \<Rightarrow> coprime m n"
-by(induct path)(clarsimp simp: field_simps split: dir.splits)+
+  by (induct path) (auto split: dir.splits simp add: coprime_iff_gcd_eq_1, metis gcd.commute gcd_add1)
+
 
 subsection {* All the rationals *}
 

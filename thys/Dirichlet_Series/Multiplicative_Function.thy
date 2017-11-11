@@ -36,8 +36,8 @@ lemma prod_coprime:
 proof (induction rule: infinite_finite_induct)
   case (insert x A)
   from insert have "f (prod g (insert x A)) = f (g x * prod g A)" by simp
-  also have "\<dots> = f (g x) * f (prod g A)" using insert.prems insert.hyps 
-    by (intro mult_coprime prod_coprime') auto
+  also have "\<dots> = f (g x) * f (prod g A)" using insert.prems insert.hyps
+    by (auto intro: mult_coprime prod_coprime_right)
   also have "\<dots> = (\<Prod>x\<in>insert x A. f (g x))" using insert by simp
   finally show ?case .
 qed auto
@@ -49,8 +49,7 @@ proof -
   have "n = (\<Prod>p\<in>prime_factors n. p ^ multiplicity p n)"
     using Primes.prime_factorization_nat assms by blast
   also have "f \<dots> = (\<Prod>p\<in>prime_factors n. f (p ^ multiplicity p n))"
-    by (intro prod_coprime coprime_exp2 prime_imp_coprime)
-       (auto dest: primes_dvd_imp_eq simp: prime_factors_multiplicity)
+    by (rule prod_coprime) (auto simp add: in_prime_factors_imp_prime primes_coprime) 
   finally show ?thesis .
 qed
 
@@ -60,8 +59,8 @@ proof
   hence "(\<Sum>d | d dvd a * b. f d) = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. f (r * s))"
     by (intro sum_divisors_coprime_mult)
   also have "\<dots> = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. f r * f s)"
-    by (intro sum.cong refl mult_coprime) 
-       (auto intro: coprime_divisors[OF _ _ ab(3)] simp del: One_nat_def)
+    using ab(3)
+    by (auto intro!: sum.cong intro: mult_coprime coprime_imp_coprime dvd_trans)
   also have "\<dots> = (\<Sum>r | r dvd a. f r) * (\<Sum>s | s dvd b. f s)"
     by (subst sum_distrib_right, subst sum_distrib_left) simp_all
   finally show "(\<Sum>d | d dvd a * b. f d) = (\<Sum>r | r dvd a. f r) * (\<Sum>s | s dvd b. f s)" .

@@ -385,7 +385,7 @@ lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV"
 lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff"
   unfolding rel_fun_def M_Rel_def MP_Rel_def Mp_coeff[symmetric] by auto
 
-lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
+lemma M_1_1: "M 1 = 1" unfolding M_def unfolding m by simp
 
 lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
   unfolding square_free_m_def[abs_def] square_free_def[abs_def]
@@ -396,7 +396,7 @@ lemma mset_factors_m_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel ===> 
   by (transfer_prover_start, transfer_step+, auto dest:eq_m_irreducible_m)
 
 lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
-  unfolding coprime_m_def[abs_def] coprime_def[abs_def]
+  unfolding coprime_m_def[abs_def] coprime_def' [abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma prime_elem_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) prime_elem_m prime_elem"

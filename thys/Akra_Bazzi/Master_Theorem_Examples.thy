@@ -112,7 +112,7 @@ by force simp_all
 termination by akra_bazzi_termination simp_all
 
 lemma "drmota1 \<in> \<Theta>(\<lambda>n::real. n^2 * ln (ln n))"
-  by (master_theorem 2.2) (simp_all add: powr_numeral power_divide)
+  by (master_theorem 2.2) (simp_all add: power_divide)
 
 
 function drmota2 :: "nat \<Rightarrow> real" where

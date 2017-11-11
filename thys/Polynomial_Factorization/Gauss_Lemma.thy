@@ -281,8 +281,9 @@ proof -
     from normalize_crossproduct[OF `d \<noteq> 0`, of 1 "n * c" n', unfolded this]
     have id: "n * c = n' * d" by auto 
     from quotient_of_coprime[OF irs'] have "coprime n d" .
-    with dc id show False
-      by (metis coprime_dvd_mult_iff dc dvd_triv_right gcd.commute mult.commute)
+    with id have "d dvd c"
+      by (metis coprime_commute coprime_dvd_mult_right_iff dvd_triv_right)
+    with dc show False ..
   qed
   then obtain irs where irs: "?irs = ?r irs" unfolding Ints_def by blast
   from id[unfolded irs, folded hom_distribs, unfolded of_int_poly_hom.eq_iff]

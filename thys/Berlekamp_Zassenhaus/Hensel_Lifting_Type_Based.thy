@@ -591,7 +591,8 @@ proof(intro conjI)
   also have "... - v' * #w = (v''- v') * #w" by (auto simp: left_diff_distrib)
   finally have *: "(w' - w'') * #v = (v''- v') * #w" by (auto simp: left_diff_distrib)
   then have "#v dvd (v'' - v') * #w" by (auto intro: dvdI[of _ _ "w' - w''"] simp: ac_simps)
-  then have "#v dvd v'' - v'" by (rule coprime_dvd_mult[OF coprime[simplified]])
+  with coprime have "#v dvd v'' - v'"
+    by (simp add: coprime_dvd_mult_left_iff)
   moreover have "degree (v'' - v') < degree v" by (rule degree_diff_less[OF degv'' degv'])
   ultimately have "v'' - v' = 0"
     by (metis deg_v degree_0 gr_implies_not_zero poly_divides_conv0)

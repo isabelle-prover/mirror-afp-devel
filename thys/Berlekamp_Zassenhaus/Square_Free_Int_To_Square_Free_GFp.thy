@@ -73,8 +73,9 @@ next
   {
     assume "resultant pp ?p' = 0" 
     from this[unfolded resultant_0_gcd] have "\<not> coprime pp ?p'" by auto
-    then obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1" by force
-    from r(1) obtain k where "pp = r * k" unfolding dvd_def by auto
+    then obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1"
+      by (blast elim: not_coprimeE) 
+    from r(1) obtain k where "pp = r * k" ..
     from pos_zmult_eq_1_iff_lemma[OF arg_cong[OF this, 
       of content, unfolded content_mult cp, symmetric]] content_ge_0_int[of r]
     have cr: "content r = 1" by auto

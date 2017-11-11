@@ -387,7 +387,7 @@ context poly_mod
 begin
 
 lemma degree_m_eq_monic: "monic f \<Longrightarrow> m > 1 \<Longrightarrow> degree_m f = degree f" 
-  by (rule degree_m_eq, auto simp: mod_pos_pos_trivial)
+  by (rule degree_m_eq) auto
 
 lemma monic_degree_m_lift: assumes "monic f" "k > 1" "m > 1"
   shows "monic (poly_mod.Mp (m * k) f)" 
@@ -395,7 +395,7 @@ proof -
   have deg: "degree (poly_mod.Mp (m * k) f) = degree f" 
     by (rule poly_mod.degree_m_eq_monic[of f "m * k"], insert assms, auto simp: less_1_mult)
   show ?thesis unfolding poly_mod.Mp_coeff deg assms poly_mod.M_def using assms(2-)
-    by (simp add: less_1_mult mod_pos_pos_trivial)
+    by (simp add: less_1_mult)
 qed
 
 end
@@ -405,7 +405,8 @@ locale poly_mod_2 = poly_mod m for m +
   assumes m1: "m > 1"
 begin
 
-lemma M_1[simp]: "M 1 = 1" unfolding M_def using m1 by (auto simp: mod_pos_pos_trivial)
+lemma M_1[simp]: "M 1 = 1" unfolding M_def using m1
+  by auto
 
 lemma Mp_1[simp]: "Mp 1 = 1" unfolding Mp_def by simp
 
@@ -761,31 +762,35 @@ definition inverse_mod :: "int \<Rightarrow> int \<Rightarrow> int" where
   "inverse_mod x m = fst (bezout_coefficients x m)" 
 
 lemma inverse_mod:
-  assumes "gcd x m = 1" "m > 1"
-  shows "(inverse_mod x m * x) mod m = 1" 
+  "(inverse_mod x m * x) mod m = 1"
+  if "coprime x m" "m > 1"
 proof -
   from bezout_coefficients [of x m "inverse_mod x m" "snd (bezout_coefficients x m)"]
   have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = gcd x m"
     by (simp add: inverse_mod_def)
-  also note assms(1)
-  finally have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = 1" .
+  with that have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = 1"
+    by simp
   then have "(inverse_mod x m * x + snd (bezout_coefficients x m) * m) mod m = 1 mod m"
     by simp
   with \<open>m > 1\<close> show ?thesis
-    by (simp add: mod_pos_pos_trivial)
+    by simp
 qed
 
-lemma inverse_mod_pow: assumes "gcd x p = 1" "p > 1" "n \<noteq> 0" 
-  shows "(inverse_mod x (p^n) * x) mod (p^n) = 1" 
-  by (rule inverse_mod[OF coprime_exp[OF assms(1)]], insert assms, simp) 
+lemma inverse_mod_pow:
+  "(inverse_mod x (p ^ n) * x) mod (p ^ n) = 1"
+  if "coprime x p" "p > 1" "n \<noteq> 0" 
+  using that by (auto intro: inverse_mod)
 
-lemma (in poly_mod) inverse_mod_coprime: assumes p: "prime m" 
-  and cop: "gcd x m = 1" shows "M (inverse_mod x m * x) = 1" 
+lemma (in poly_mod) inverse_mod_coprime:
+  assumes p: "prime m" 
+  and cop: "coprime x m" shows "M (inverse_mod x m * x) = 1" 
   unfolding M_def using inverse_mod_pow[OF cop, of 1] p
   by (auto simp: prime_int_iff)
 
-lemma (in poly_mod) inverse_mod_coprime_exp: assumes m: "m = p^n" and p: "prime p" 
-  and n: "n \<noteq> 0" and cop: "gcd x p = 1" shows "M (inverse_mod x m * x) = 1" 
+lemma (in poly_mod) inverse_mod_coprime_exp:
+  assumes m: "m = p^n" and p: "prime p" 
+  and n: "n \<noteq> 0" and cop: "coprime x p"
+  shows "M (inverse_mod x m * x) = 1" 
   unfolding M_def unfolding m using inverse_mod_pow[OF cop _ n] p
   by (auto simp: prime_int_iff)
 
@@ -829,9 +834,10 @@ proof (intro allI impI)
   have "c \<ge> 0" "c < p" by auto
   with c0 have c_props:"c > 0" "c < p" by auto
   with prime have "prime p" using prime_int_nat_transfer by auto
-  hence "gcd p c = 1"
-    by (metis (no_types) c_props gcd_dvd1 gcd_ge_0_int gcd_le2_int not_less prime_int_iff)
-  hence "gcd c p = 1" by (simp add: gcd.commute)
+  with c_props have "coprime p c"
+    by (auto intro: prime_imp_coprime dest: zdvd_not_zless)
+  then have "coprime c p"
+    by (simp add: ac_simps)
   from inverse_mod_coprime[OF prime this]
   obtain d where d: "M (c * d) = 1" by (auto simp: ac_simps)
   show "h dvdm 1" unfolding dvdm_def

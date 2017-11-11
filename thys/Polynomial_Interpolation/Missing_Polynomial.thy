@@ -1165,17 +1165,29 @@ lemma monic_irreducible\<^sub>d_gcd:
   by (metis zero_neq_one gcd_dvd1 insert_iff irreducible\<^sub>d_dvd_eq irreducible\<^sub>d_dvd_smult Nat.neq0_conv
     irreducible\<^sub>d_smult_field leading_coeff_0_iff monic_degree_0 poly_gcd_monic)
 
-lemma monic_gcd_dvd: assumes fg: "f dvd g" and mon: "monic f" and gcd: "gcd g h \<in> {1,g}"
-  shows "gcd f h \<in> {1,f}"
-proof (cases "gcd g h = 1")
+lemma monic_gcd_dvd:
+  assumes fg: "f dvd g" and mon: "monic f" and gcd: "gcd g h \<in> {1, g}"
+  shows "gcd f h \<in> {1, f}"
+proof (cases "coprime g h")
   case True
-  with fg show ?thesis by (metis coprime_divisors dvd_refl insertCI)
+  with dvd_refl have "coprime f h"
+    using fg by (blast intro: coprime_divisors)
+  then show ?thesis
+    by simp
 next
   case False
-  with gcd have gcd: "gcd g h = g" by auto
-  with fg mon show ?thesis
-    by (metis dvd_gcdD2 gcd_proj1_iff insertI2 insert_absorb2 insert_eq_iff 
-      insert_not_empty normalize_monic)
+  with gcd have gcd: "gcd g h = g"
+    by (simp add: coprime_iff_gcd_eq_1)
+  with fg have "f dvd gcd g h"
+    by simp
+  then have "f dvd h"
+    by simp
+  then have "gcd f h = normalize f"
+    by (simp add: gcd_proj1_iff)
+  also have "normalize f = f"
+    using mon by (rule normalize_monic)
+  finally show ?thesis
+    by simp
 qed
 
 lemma monom_power: "(monom a b)^n = monom (a^n) (b*n)" 

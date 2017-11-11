@@ -193,9 +193,12 @@ proof (cases q)
     show ?thesis
     proof (cases "bezout_coefficients z (int p)")
       case (Pair a b)
-      with fields p_prime False assms have "coprime z (int p)"
-        by (simp add: in_carrierp_def res_carrier_eq gcd.commute [of z]
-          prime_imp_coprime zdvd_not_zless)
+      with fields False assms have "\<not> int p dvd z"
+        by (auto simp add: in_carrierp_def res_carrier_eq prime_imp_coprime zdvd_not_zless)
+      with p_prime have "coprime (int p) z"
+        by (auto intro: prime_imp_coprime)
+      then have "coprime z (int p)"
+        by (simp add: ac_simps)
       then have "fst (bezout_coefficients z (int p)) * z +
         snd (bezout_coefficients z (int p)) * int p = 1"
         by (simp add: bezout_coefficients_fst_snd)

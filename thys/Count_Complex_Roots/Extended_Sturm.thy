@@ -69,14 +69,14 @@ proof -
   have ?thesis when "p=0" 
   proof -
     have "is_unit q" using that \<open>coprime p q\<close> 
-      by (metis dvd_0_right dvd_refl gcd_greatest)
+      by simp
     then obtain a where "a\<noteq>0" "q=[:a:]" using is_unit_pCons_ex_iff by blast
     then show ?thesis using that unfolding cross_alt_def by auto
   qed
   moreover have ?thesis when "q=0" 
   proof -
     have "is_unit p" using that \<open>coprime p q\<close> 
-      by (metis dvd_0_right dvd_refl gcd_greatest)
+      by simp
     then obtain a where "a\<noteq>0" "p=[:a:]" using is_unit_pCons_ex_iff by blast
     then show ?thesis using that unfolding cross_alt_def by auto
   qed 
@@ -389,7 +389,7 @@ next
   proof -
     have "jumpF_polyR q p x = 0" using jumpF_poly_noroot[OF \<open>poly p x\<noteq>0\<close>] by auto
     then show ?thesis using jumpF_add[OF \<open>poly q x=0\<close>,of p] \<open>coprime p q\<close> 
-      by (simp add: gcd.commute mult.commute)
+      by (simp add: ac_simps)
   qed  
   moreover have ?thesis when "poly p x\<noteq>0" "poly q x\<noteq>0" 
     by (simp add: jumpF_poly_noroot(2) that(1) that(2))
@@ -433,7 +433,7 @@ next
   proof -
     have "jumpF_polyL q p x = 0" using jumpF_poly_noroot[OF \<open>poly p x\<noteq>0\<close>] by auto
     then show ?thesis using jumpF_add[OF \<open>poly q x=0\<close>,of p] \<open>coprime p q\<close> 
-      by (simp add: gcd.commute mult.commute)
+      by (simp add: ac_simps)
   qed  
   moreover have ?thesis when "poly p x\<noteq>0" "poly q x\<noteq>0" 
     by (simp add: jumpF_poly_noroot that(1) that(2))
@@ -729,7 +729,7 @@ proof (induct "degree p" arbitrary:p rule:nat_less_induct)
           proof (rule sum.cong,rule refl)
             fix x assume "x \<in> roots'" 
             hence "x\<noteq>max_r" using max_r_nz unfolding roots'_def 
-              by (metis (mono_tags, lifting) mem_Collect_eq poly_eq_0_iff_dvd )
+              by auto
             hence "poly max_rp x\<noteq>0" using poly_power_n_eq unfolding max_rp_def by auto
             hence "order x max_rp=0"  by (metis order_root)
             moreover have "jump_poly 1 max_rp x=0" 
@@ -1012,9 +1012,8 @@ next
     obtain ps where ps:"smods p q=p#q#ps" "smods q r=q#ps" and "xs=q#ps"
       unfolding r_def using `q\<noteq>0` `p\<noteq>0` `x # xs = smods p q` 
       by (metis list.inject smods.simps)
-    have "coprime q r" 
-      apply(simp add: Cons.prems gcd.commute r_def) 
-      by (simp add: Cons.prems gcd.commute that)
+    from Cons.prems \<open>q \<noteq> 0\<close> have "coprime q r" 
+      by (simp add: r_def ac_simps)
     then have "cindex_polyE a b r q = real_of_int (changes_alt_itv_smods a b q r) / 2"
       apply (rule_tac Cons.hyps(1))
       using ps \<open>xs=q#ps\<close> by simp_all  

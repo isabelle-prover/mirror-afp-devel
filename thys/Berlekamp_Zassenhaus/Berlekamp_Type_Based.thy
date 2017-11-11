@@ -36,9 +36,9 @@ lemma prod_list_map_partition: assumes "partition f xs = (ys, zs)"
 end
 
 lemma coprime_id_is_unit:
-fixes a::"'b::semiring_gcd"
-shows "coprime a a = (is_unit a)"
-  using dvd_unit_imp_unit by (auto simp: coprime)
+  fixes a::"'b::semiring_gcd"
+  shows "coprime a a \<longleftrightarrow> is_unit a"
+  using dvd_unit_imp_unit by auto
 
 lemma dim_vec_of_list[simp]: "dim_vec (vec_of_list x) = length x"
   by (transfer, auto)
@@ -353,8 +353,24 @@ qed
 
 end
 
-lemma gcd_monic_constant: "monic (f :: 'a :: {field,euclidean_ring_gcd} poly) \<Longrightarrow> degree g = 0 \<Longrightarrow> gcd f g \<in> {1,f}"
-  by (metis coprime_1_right coprime_divisors gcd_0_right gcd_dvd1 insertCI is_unit_iff_degree normalize_monic)
+lemma gcd_monic_constant:
+  "gcd f g \<in> {1, f}" if "monic f" and "degree g = 0"
+    for f g :: "'a :: {field,euclidean_ring_gcd} poly"
+proof (cases "g = 0")
+  case True
+  moreover from \<open>monic f\<close> have "normalize f = f"
+    by (rule normalize_monic)
+  ultimately show ?thesis
+    by simp
+next
+  case False
+  with \<open>degree g = 0\<close> have "is_unit g"
+    by simp
+  then have "Rings.coprime f g"
+    by (rule is_unit_right_imp_coprime)
+  then show ?thesis
+    by simp
+qed
 
 lemma distinct_find_base_vectors:
 fixes A::"'a::field mat"
@@ -521,7 +537,8 @@ proof -
     case (insert x A)
     have "(\<Prod>c\<in>insert x A. g c) = (g x) * (\<Prod>c\<in>A. g c)"
       by (simp add: insert.hyps(2))
-    with insert.prems show ?case by (auto simp: insert.hyps(3) prod_coprime' intro!:coprime_mult)
+    with insert.prems show ?case
+      by (auto simp: insert.hyps(3) prod_coprime_right)
   qed auto
 qed
 
@@ -535,7 +552,8 @@ proof (induct A)
   case (insert x A)
   have "(\<Prod>c\<in>insert x A. c) = (x) * (\<Prod>c\<in>A. c)"
     by (simp add: insert.hyps)
-  with insert.prems show ?case by (simp add: coprime_mult insert.hyps prod_coprime')
+  with insert.prems show ?case
+    by (simp add: insert.hyps prod_coprime_right)
 qed auto
 
 
@@ -556,11 +574,8 @@ proof -
     proof (rule divides_mult)
       show "g x dvd f" using insert.prems by auto
       show "prod g A dvd f" using insert.hyps(3) insert.prems by auto
-      show "gcd (g x) (prod g A) = 1" using coprime_prod
-      proof (intro coprime_prod[unfolded coprime_iff_gcd_one] ballI)
-        fix c assume "c \<in> A"
-        thus "gcd (g x) (g c) = 1" using insert by auto
-      qed
+      from insert show "Rings.coprime (g x) (prod g A)"
+        by (auto intro: prod_coprime_right)
     qed
     finally show ?case .
    qed auto
@@ -646,8 +661,8 @@ qed
 
 lemma coprime_gcd:
   fixes h::"'a mod_ring poly"
-  assumes "gcd (h-[:c1:]) (h-[:c2:]) = 1"
-  shows "gcd (gcd f(h-[:c1:])) (gcd f (h-[:c2:])) = 1"
+  assumes "Rings.coprime (h-[:c1:]) (h-[:c2:])"
+  shows "Rings.coprime (gcd f(h-[:c1:])) (gcd f (h-[:c2:]))"
   using assms coprime_divisors by blast
 
 
@@ -666,13 +681,9 @@ proof -
     proof (rule divides_mult)
       show "gcd f (h - [:x:]) dvd f" by simp
       show "(\<Prod>c\<in>A. gcd f (h - [:c:])) dvd f" using insert.hyps(3) insert.prems by auto
-      show "gcd (gcd f (h - [:x:])) (\<Prod>c\<in>A. gcd f (h - [:c:])) = 1"
-        proof (rule coprime_prod[unfolded coprime_iff_gcd_one], rule)
-          fix c assume "c \<in> A"
-          thus "gcd (gcd f (h - [:x:])) (gcd f (h - [:c:])) = 1"
-            using coprime_gcd insert
-            by (metis (no_types, hide_lams) coprime_h_c_poly coprime_iff_gcd_one)
-        qed
+      show "Rings.coprime (gcd f (h - [:x:])) (\<Prod>c\<in>A. gcd f (h - [:c:]))"
+        by (rule prod_coprime_right)
+          (metis Berlekamp_Type_Based.coprime_h_c_poly coprime_gcd coprime_iff_coprime insert.hyps(2))
     qed
     finally show ?case .
    qed auto
@@ -719,7 +730,8 @@ proof (induct A)
   proof (rule divides_mult)
     show "x dvd c" by (simp add: insert.prems)
     show "\<Prod>A dvd c" using insert by auto
-    show "gcd x (\<Prod>A) = 1" using coprime_prod2 f insert.hyps insert.prems by auto
+    from insert show "Rings.coprime x (\<Prod>A)"
+      by (auto intro: prod_coprime_right)
   qed
   finally show ?case .
 qed auto
@@ -1532,28 +1544,27 @@ qed
 
 
 corollary exists_unique_s_factor_dvd_h_s:
-fixes fi::"'a mod_ring poly"
-assumes finite_P: "finite P"
-      and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-      and fi_P: "fi \<in> P"
-      and h: "h \<in> {v. [v^(CARD('a)) = v] (mod f)}"
-      shows "\<exists>!s. fi dvd (h - [:s:])"
+  fixes fi::"'a mod_ring poly"
+  assumes finite_P: "finite P"
+    and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
+    and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+    and fi_P: "fi \<in> P"
+    and h: "h \<in> {v. [v^(CARD('a)) = v] (mod f)}"
+    shows "\<exists>!s. fi dvd (h - [:s:])"
 proof -
-obtain c where fi_dvd: "fi dvd (h - [:c:])" using assms exists_s_factor_dvd_h_s by blast
-have irr_fi: "irreducible\<^sub>d fi" using fi_P P by blast
-have fi_not_unit: "\<not> is_unit fi"
-  by (simp add: irr_fi irreducible\<^sub>dD(1) poly_dvd_1)
-show ?thesis
-          proof (rule ex1I[of _ c], auto simp add: fi_dvd)
-            fix c2 assume fi_dvd_hc2: "fi dvd h - [:c2:]"
-            have *: "fi dvd (h - [:c:]) * (h - [:c2:])" using fi_dvd by auto
-            hence "fi dvd (h - [:c:]) \<or> fi dvd (h - [:c2:])"
-              using irreducible\<^sub>d_dvd_mult[OF irr_fi] by blast
-            thus "c2 = c"
-            by (metis coprime_h_c_poly[simplified] fi_dvd fi_dvd_hc2
-               fi_not_unit semiring_gcd_class.gcd_greatest_iff)
-          qed
+  obtain c where fi_dvd: "fi dvd (h - [:c:])" using assms exists_s_factor_dvd_h_s by blast
+  have irr_fi: "irreducible\<^sub>d fi" using fi_P P by blast
+  have fi_not_unit: "\<not> is_unit fi"
+    by (simp add: irr_fi irreducible\<^sub>dD(1) poly_dvd_1)
+  show ?thesis
+  proof (rule ex1I[of _ c], auto simp add: fi_dvd)
+    fix c2 assume fi_dvd_hc2: "fi dvd h - [:c2:]"
+    have *: "fi dvd (h - [:c:]) * (h - [:c2:])" using fi_dvd by auto
+    hence "fi dvd (h - [:c:]) \<or> fi dvd (h - [:c2:])"
+      using irreducible\<^sub>d_dvd_mult[OF irr_fi] by blast
+    thus "c2 = c"
+      using coprime_h_c_poly coprime_not_unit_not_dvd fi_dvd fi_dvd_hc2 fi_not_unit by blast
+  qed
 qed
 
 
@@ -1579,9 +1590,8 @@ next
   proof (rule coprime_cong_mult_poly)
     show "[a = b] (mod p)" using insert.prems by auto
     show "[a = b] (mod \<Prod>P)" using insert.prems insert.hyps by auto
-    show "gcd p (\<Prod>P) = 1"
-      apply (rule coprime_prod2[OF _ insert.hyps(1), simplified])
-      using insert.prems insert.hyps(2) insertI1 set_rev_mp subset_insertI by auto
+    from insert show "Rings.coprime p (\<Prod>P)"
+      by (auto intro: prod_coprime_right)
   qed
   thus ?case by (simp add: insert.hyps(1) insert.hyps(2))
 qed
@@ -2202,10 +2212,10 @@ proof -
   have degree_sj: "degree [:s_j:] = 0" by auto
   have "\<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>a\<in>{i. i < n}. [v = ?u a] (mod m a))"
   proof (rule chinese_remainder_unique_poly)
-    show "\<forall>a\<in>{i. i < n}. \<forall>b\<in>{i. i < n}. a \<noteq> b \<longrightarrow> gcd (m a) (m b) = 1"
+    show "\<forall>a\<in>{i. i < n}. \<forall>b\<in>{i. i < n}. a \<noteq> b \<longrightarrow> Rings.coprime (m a) (m b)"
     proof (rule+)
       fix a b assume "a \<in> {i. i < n}" and "b \<in> {i. i < n}" and "a \<noteq> b"
-      thus "gcd (m a) (m b) = 1"
+      thus "Rings.coprime (m a) (m b)"
         using coprime_polynomial_factorization[OF P finite_P, simplified] P_m
         by (metis image_eqI inj_onD inj_on_m)
     qed
@@ -2348,7 +2358,7 @@ shows "\<exists>v \<in> B. v mod p_i \<noteq> v mod p_j
   \<and> degree (v mod p_i) = 0
   \<and> degree (v mod p_j) = 0
 (*This implies that the algorithm decreases the degree of the reducible polynomials in each step: *)
-  \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> gcd w (v - [:s:]) \<noteq> 1)"
+  \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> \<not> coprime w (v - [:s:]))"
 proof -
   have f_not_0: "u \<noteq> 0" using monic_f by auto
   have irr_pi: "irreducible\<^sub>d p_i" using pi P by fast
@@ -2364,7 +2374,7 @@ proof -
     by (rule degree_u_mod_irreducible\<^sub>d_factor_0[OF v finite_P f_desc_square_free P pj])
   from this obtain s_j where v_pj_sj: "v mod p_j = [:s_j:]" using degree_eq_zeroE by blast
   have si_sj: "s_i \<noteq> s_j" using v_pi_si v_pj_sj v_pi_pj by auto
-  have "(\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> gcd w (v - [:s:]) \<noteq> 1)"
+  have "(\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> \<not> Rings.coprime w (v - [:s:]))"
   proof (rule exI[of _ s_i], rule conjI)
     have pi_dvd_v_si: "p_i dvd v - [:s_i:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pi_si)
     have pj_dvd_v_sj: "p_j dvd v - [:s_j:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pj_sj)
@@ -2376,14 +2386,12 @@ proof -
     qed
     show "gcd w (v - [:s_i:]) \<noteq> w"
       by (metis deg_v_pi dvd_gcdD2 irr_pj irreducible\<^sub>dD(1) mod_eq_dvd_iff_poly mod_poly_less pj_dvd_w v_pi_pj v_pi_si)
-    show "gcd w (v - [:s_i:]) \<noteq> 1"
-      by (metis coprime irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1 neq0_conv)
+    show "\<not> Rings.coprime w (v - [:s_i:])"
+      using irr_pi pi_dvd_v_si pi_dvd_w 
+      by (simp add: irreducible\<^sub>dD(1) not_coprimeI)
   qed
-  thus ?thesis using v_pi_pj vV deg_v_pi deg_v_pj by fast
+  thus ?thesis using v_pi_pj vV deg_v_pi deg_v_pj by auto
 qed
-
-
-
 
 lemma exists_bijective_linear_map_W_vec:
   assumes finite_P: "finite P"
@@ -2486,8 +2494,9 @@ proof -
         hence "(v mod m i)^CARD('a) = (v^CARD('a) mod m i)"
           by (metis mod_mod_trivial power_mod)
         thus "[v ^ CARD('a) = v] (mod y)" unfolding mi cong_def v_mi_eq_xi xi_pow_xi by simp
-        next
-        fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "gcd p1 p2 = 1"
+      next
+        fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2"
+        then show "Rings.coprime p1 p2"
           using coprime_polynomial_factorization[OF P finite_P] by auto
       qed
       show "degree v < degree u" using deg_v deg_sum_eq degree_prod by presburger
@@ -2728,7 +2737,10 @@ proof -
     thus ?case
     proof
       assume "gcd p u = 1"
-      with dvd have "u dvd prod_list ps" by (metis coprime_dvd_mult_iff gcd.commute mult.commute)
+      then have "Rings.coprime p u"
+        by (rule gcd_eq_1_imp_coprime)
+      with dvd have "u dvd prod_list ps"
+        using coprime_dvd_mult_right_iff coprime_imp_coprime by blast
       from Cons(1)[OF this ps] Cons(4-5) show ?thesis by auto
     next
       assume "gcd p u = p"
@@ -2753,7 +2765,8 @@ proof -
         thus ?case
         proof
           assume "gcd p k = 1"
-          with dvd have "k dvd prod_list ps" by (metis coprime_dvd_mult_iff gcd.commute mult.commute)
+          with dvd have "k dvd prod_list ps"
+            by (metis dvd_triv_left gcd_greatest_mult mult.left_neutral)
           from Cons(1)[OF _ this] Cons(2) show ?thesis by auto
         next
           assume "gcd p k = p"
@@ -2890,7 +2903,7 @@ proof -
               (* next step will yield contradiction to square_free u *)
               let ?h = "?gcdn w j'"
               from *(3) not have deg: "degree ?h > 0"
-                by (metis gcd_eq_0_iff insertCI is_unit_gcd is_unit_iff_degree Nat.neq0_conv)
+                using monic_degree_0 poly_gcd_monic by auto
               have hw: "?h dvd w" by auto
               have "?h dvd ?gcdn u j'" using wu using dvd_trans by auto
               also have "?gcdn u j' = ?g j'" by simp
@@ -3086,7 +3099,8 @@ proof -
         from exists_vector_in_Berlekamp_basis_dvd[OF
           deg_f berlekamp_basis_basis[OF deg_f, folded vs1] finite_set
           P pij(1-3) mon_f sf_f irr_u uf mon_u pij(4-5), unfolded vs1]
-        obtain v s where v: "v \<in> set (berlekamp_basis f)" and gcd: "gcd u (v - [:s:]) \<notin> {1,u}" by auto
+        obtain v s where v: "v \<in> set (berlekamp_basis f)" 
+          and gcd: "gcd u (v - [:s:]) \<notin> {1,u}" using is_unit_gcd by auto
         from surj_of_nat_mod_ring[of s] obtain i where i: "i < CARD('a)" and s: "s = of_nat i" by auto
         from no_further_splitting_possible[OF v u i] gcd[unfolded s]
         show False by auto

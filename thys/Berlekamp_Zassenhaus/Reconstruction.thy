@@ -236,9 +236,9 @@ proof -
   qed
 qed
 
-lemma coprime_exp_mod: "coprime lu p \<Longrightarrow> prime p \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> lu mod p ^ n \<noteq> 0" 
-  by (metis coprime_iff_gcd_one coprime_exp inverse_mod m m1 mod_0 mod_mult_eq mult_zero_right zero_neq_one)
-
+lemma coprime_exp_mod: "coprime lu p \<Longrightarrow> prime p \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> lu mod p ^ n \<noteq> 0"
+  by (auto simp add: abs_of_pos prime_gt_0_int)
+  
 interpretation correct_subseqs_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
 
 lemma reconstruction: assumes
@@ -607,8 +607,9 @@ proof -
         from dvd have "lead_coeff vb dvd lead_coeff (smult lu u)" 
           by (metis dvd_def lead_coeff_mult)
         hence ldvd: "lead_coeff vb dvd lu * lu" unfolding lead_coeff_smult lu by simp
-        from cop have cop_lu: "coprime (lu * lu) p" unfolding coprime_iff_gcd_one coprime_mul_eq' by simp
-        from coprime_divisors[OF ldvd dvd_refl cop_lu[unfolded coprime_iff_gcd_one]]
+        from cop have cop_lu: "coprime (lu * lu) p"
+          by simp
+        from coprime_divisors [OF ldvd dvd_refl] cop_lu
         have cop_lvb: "coprime (lead_coeff vb) p" by simp
         then have cop_vb: "coprime (content vb) p" 
           by (auto intro: coprime_divisors[OF content_dvd_coeff dvd_refl])
@@ -617,7 +618,7 @@ proof -
         from coprime_divisors[OF this dvd_refl] cop
         have "coprime (lead_coeff u') p" by simp
         hence "coprime (lu * lead_coeff u') p" and cop_lu': "coprime lu' p" 
-          using cop by (auto simp: coprime_mul_eq' lu'_def)
+          using cop by (auto simp: lu'_def)
         hence cop': "coprime (lead_coeff (?fact * u')) p" 
           unfolding lead_coeff_mult lead_coeff_smult l_ws by simp
         have "p.square_free_m (smult (content vb) u)" using cop_vb sf p_inv
@@ -852,9 +853,9 @@ proof -
     finally show ?case .
   qed
   note bh' = bh[unfolded factorization_m_def split]
-  have deg_f: "degree_m f = degree f" 
-    by (rule degree_m_eq[OF _ m1], 
-    insert coprime_exp[OF cop[simplified], of n] m1, auto)
+  have deg_f: "degree_m f = degree f"
+    using cop unique_factorization_m_zero [OF ufact] n
+    by (auto simp add: M_def intro: degree_m_eq [OF _ m1])
   have mon_hs: "monic (prod_list hs)" using bh' by (auto intro: monic_prod_list)
   have Mlc: "M ?lc \<in> {1 ..< p^n}" 
     by (rule prime_cop_exp_poly_mod[OF prime cop n])

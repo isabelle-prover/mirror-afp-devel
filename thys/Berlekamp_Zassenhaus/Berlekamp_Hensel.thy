@@ -93,7 +93,8 @@ lemma prime_cop_exp_poly_mod:
 proof -
   from prime have p1: "p > 1" by (simp add: prime_int_iff)
   interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using p1 n by simp
-  from coprime_exp[OF cop[unfolded coprime_iff_gcd_one], of n] have "M c \<noteq> 0" unfolding M_def using m1 by auto
+  from cop \<open>p > 1\<close> \<open>p ^ n > 1\<close> have "M c \<noteq> 0"
+    by (auto simp add: M_def)
   moreover have "M c < p^n" "M c \<ge> 0" unfolding M_def using m1 by auto
   ultimately show ?thesis by auto
 qed
@@ -115,7 +116,8 @@ proof -
     fix f g 
     assume cop: "coprime (lead_coeff (f * g)) p" 
     from this[unfolded lead_coeff_mult]
-    have "coprime (lead_coeff f) p" using prime by (metis coprime_iff_gcd_one coprime_lmult gcd.commute)
+    have "coprime (lead_coeff f) p" using prime
+      by simp
   }
   from this[OF assms] this[of g f] assms
   show "coprime (lead_coeff f) p" "coprime (lead_coeff g) p" by (auto simp: ac_simps)
@@ -136,7 +138,7 @@ proof -
   note sf = p.square_free_m_factor[OF sf]
   note cop = coprime_lead_coeff_factor[OF cop]
   from cop have copm: "coprime (lead_coeff f) m" "coprime (lead_coeff g) m" 
-    unfolding m coprime_iff_gcd_one by (metis coprime_exp)+
+    by (simp_all add: m)
   have df: "degree_m f = degree f" 
     by (rule degree_m_eq[OF _ m1], insert copm(1) m1, auto)  
   have dg: "degree_m g = degree g" 
@@ -506,8 +508,8 @@ proof -
     from prime have p1: "p > 1" by (simp add: prime_int_iff)
   let ?lc = "coeff f (degree f)" 
   define ilc where "ilc \<equiv> inverse_mod ?lc (p ^ n)"
-  from inverse_mod_pow[OF cop[unfolded coprime_iff_gcd_one] p1 n, folded ilc_def]
-  have inv: "q.M (ilc * ?lc) = 1" unfolding q.M_def .
+  from cop p1 n have inv: "q.M (ilc * ?lc) = 1"
+    by (auto simp add: q.M_def ilc_def inverse_mod_pow)
   hence ilc0: "ilc \<noteq> 0" by (cases "ilc = 0", auto)
   {
     fix q

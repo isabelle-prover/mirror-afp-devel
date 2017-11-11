@@ -1054,7 +1054,8 @@ next
     have "coprime f g"
     proof (cases "g = 0")
       case False
-      then show ?thesis using divides_degree[of _ g, unfolded deg_g] by (auto intro!: coprimeI)
+      then show ?thesis using divides_degree[of _ g, unfolded deg_g]
+        by (simp add: is_unit_right_imp_coprime) 
     next
       case g: True
       then have "g = [:0:]" by auto

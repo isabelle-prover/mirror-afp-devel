@@ -76,12 +76,6 @@ lemmas rat_arith_code =
   Frct_add Frct_uminus Frct_diff Frct_mult Frct_inverse Frct_divide Frct_pow
   Frct_less Frct_le Frct_equals
 
-
-lemma one_to_numeral: "1 = Numeral1" by simp
-
-lemma gcd_1_int': "gcd 1 x = (1::int)"
-  by (fact coprime_1_left)
-
 lemma gcd_numeral_red: "gcd (numeral x::int) (numeral y) = gcd (numeral y) (numeral x mod numeral y)"
   by (fact gcd_red_int)
 
@@ -112,9 +106,9 @@ lemma rat_powr:
 
 lemmas eval_numeral_simps =
   real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps
-  Rat.normalize_def fst_conv snd_conv gcd_0_int gcd_0_left_int gcd_1_int gcd_1_int'
+  Rat.normalize_def fst_conv snd_conv gcd_0_int gcd_0_left_int gcd.bottom_right_bottom gcd.bottom_left_bottom
   gcd_neg1_int gcd_neg2_int gcd_numeral_red zmod_numeral_Bit0 zmod_numeral_Bit1 power_numeral_simps
-  divmod_numeral_simps one_to_numeral Groups.Let_0 Num.Let_numeral Suc_to_numeral power_numeral
+  divmod_numeral_simps numeral_One [symmetric] Groups.Let_0 Num.Let_numeral Suc_to_numeral power_numeral
   greaterThanLessThan_iff atLeastAtMost_iff atLeastLessThan_iff greaterThanAtMost_iff rat_powr
   Num.pow.simps Num.sqr.simps Product_Type.split of_int_numeral of_int_neg_numeral of_nat_numeral
 

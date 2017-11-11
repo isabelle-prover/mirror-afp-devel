@@ -895,7 +895,7 @@ proof (cases "a*e - b*d =0")
     using a e b d radical_sqrt.simps
     by (metis radical_sqrt.intros(5) radical_sqrt_rule_subtraction)
   hence "((e*c-b*f) / (a*e-b*d)) \<in> radical_sqrt"  "((a*f-d*c) / (a*e-b*d)) \<in> radical_sqrt"
-    by (metis False a b c d e f radical_sqrt.intros(5) radical_sqrt_rule_division radical_sqrt_rule_subtraction)+
+    using False a b c d e f by (auto intro!: radical_sqrt.intros(5) radical_sqrt_rule_division radical_sqrt_rule_subtraction)
   thus ?thesis
     by (simp add: x y)
 next
@@ -1280,9 +1280,9 @@ proof-
   have l6: "r^3 = 2"
     by (metis (lifting) hypsy hypsr of_rat_eq_iff of_rat_numeral_eq of_rat_power)
   have l7: "r^3  = Fract (p^3) (q^3)"
-    by (metis (no_types) hypsp mult_rat power3_eq_cube)
+    using hypsp by (simp add: power3_eq_cube)
   have l8: "q ^ 3 > 0 & coprime (p ^ 3) (q ^ 3)"
-    by (metis hypsp gcd_exp power_one zero_less_power)
+    using hypsp by simp
   have "Fract (p ^ 3) (q ^ 3) = 2"
     using l6 l7
     by auto
@@ -1333,7 +1333,7 @@ proof-
     using hypsy hypsr [[hypsubst_thin = true]]
     by auto (metis (hide_lams, no_types) of_rat_1 of_rat_diff of_rat_eq_iff of_rat_mult of_rat_numeral_eq of_rat_power)
   have l7: "(snd p) ^3 > 0 & coprime ((fst p)^3) ((snd p)^3)"
-    by (metis hypsp gcd_exp power_one zero_less_power)
+    using hypsp by simp
   have "r^3  = Fract ((fst p)^3) ((snd p)^3)"
     by (metis (no_types) mult_rat power3_eq_cube hypsp)
   then have "Fract ((fst p)^3) ((snd p)^3) - (Fract (3 * (fst p)) (snd p)) = 1"
@@ -1360,14 +1360,16 @@ proof-
     apply (rule_tac [2] x = "(snd p)^2 + 3 * (fst p) * (snd p)" in exI)
     apply auto
     done
-  moreover have "coprime (fst p) ((snd p)^3)"  "coprime ((fst p)^3) (snd p)"
-    using hypsp
-    by (auto simp add: coprime_exp gcd.commute)
-  ultimately have "(fst p) = 1 | (fst p) = - 1"  "(snd p) = 1"
-    using hypsp
+  moreover have "coprime (fst p) (snd p ^ 3)" "coprime (fst p ^ 3) (snd p)"
+    using hypsp by auto
+  ultimately have "is_unit (fst p)" "is_unit (snd p)"
+    using coprime_common_divisor [of "fst p" "snd p ^ 3" "fst p"]
+      coprime_common_divisor [of "fst p ^ 3" "snd p" "snd p"]
     by auto
-  hence "r = 1 | r = - 1"
-    by (metis hypsp minus_rat one_rat)
+  with hypsp have "fst p = 1 \<or> fst p = - 1" "snd p = 1"
+    by auto
+  with hypsp have "r = 1 | r = - 1"
+    by (auto simp add: rat_number_collapse)
   with r3eq show False
     by (auto simp add: power_def algebra_simps)
 qed

@@ -307,13 +307,15 @@ proof -
   have "?r x / ?r y = ?r x' / ?r y'" unfolding id using z y y' by (auto simp: field_simps) 
   from assms[unfolded this] have quot: "quotient_of (?r x' / ?r y') = (a, b)" by auto
   from quotient_of_coprime[OF quot] have cop': "coprime a b" .
-  hence cop: "coprime b a" by (simp add: gcd.commute)
+  hence cop: "coprime b a"
+    by (simp add: ac_simps)
   from quotient_of_denom_pos[OF quot] have b: "b > 0" "b \<noteq> 0" by auto
   from quotient_of_div[OF quot] quotient_of_denom_pos[OF quot] y'
   have "?r x' * ?r b = ?r a * ?r y'" by (auto simp: field_simps)
   hence id': "x' * b = a * y'" unfolding of_int_mult[symmetric] by linarith
   from id'[symmetric] have "b dvd y' * a" unfolding mult.commute[of y'] by auto
-  with cop y' have "b dvd y'" by (metis coprime_dvd_mult)
+  with cop y' have "b dvd y'"
+    by (simp add: coprime_dvd_mult_left_iff) 
   then obtain z' where ybz: "y' = b * z'" unfolding dvd_def by auto
   from id[unfolded y' this] have y: "y = b * (z * z')" by auto
   with `y \<noteq> 0` have zz: "z * z' \<noteq> 0" by auto

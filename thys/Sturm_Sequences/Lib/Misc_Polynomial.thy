@@ -56,16 +56,16 @@ text {*
   Two polynomials that are coprime have no common roots.
 *}
 lemma coprime_imp_no_common_roots:
-  assumes "coprime p q"
-  shows "\<And>x. \<not>(poly p x = 0 \<and> poly q x = 0)"
-proof(clarify)
-  fix x assume "poly p x = 0" "poly q x = 0"
-  hence "[:-x,1:] dvd p" "[:-x,1:] dvd q"
-      by (simp_all add: poly_eq_0_iff_dvd)
-  hence "[:-x,1:] dvd gcd p q" by simp
-  hence "poly (gcd p q) x = 0" by (simp add: poly_eq_0_iff_dvd)
-  moreover from assms have "poly (gcd p q) x = 1" by simp
-  ultimately show False by simp
+  "\<not> (poly p x = 0 \<and> poly q x = 0)" if "coprime p q"
+     for x :: "'a :: field"
+proof clarify
+  assume "poly p x = 0" "poly q x = 0"
+  then have "[:-x, 1:] dvd p" "[:-x, 1:] dvd q"
+    by (simp_all add: poly_eq_0_iff_dvd)
+  with that have "is_unit [:-x, 1:]"
+    by (rule coprime_common_divisor)
+  then show False
+    by (auto simp add: is_unit_pCons_iff)
 qed
 
 lemma poly_div:
@@ -207,7 +207,7 @@ proof-
       with \<open>p \<noteq> 0\<close> \<open>c \<noteq> 0\<close> have "p div d = [:c:]"
         by (simp add: pCons_one)
       with \<open>c \<noteq> 0\<close> show ?thesis
-        by (simp add: normalize_const_poly)
+        by (simp add: normalize_const_poly is_unit_triv)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

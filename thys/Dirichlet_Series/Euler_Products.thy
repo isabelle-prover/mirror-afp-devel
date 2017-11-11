@@ -122,10 +122,7 @@ proof -
            (auto simp: prime_gt_Suc_0_nat summable'')
       also have "\<dots> = (\<Sum>\<^sub>ag\<in>{p. p \<le> n \<and> prime p} \<rightarrow>\<^sub>E UNIV.
                          f (\<Prod>x\<in>{p. p \<le> n \<and> prime p}. x ^ g x))"
-      proof (subst f.prod_coprime, goal_cases)
-        case (1 g p q)
-        thus ?case by (intro coprime_exp2[OF primes_coprime]) auto
-      qed simp_all
+        by (subst f.prod_coprime) (auto simp add: primes_coprime)
       also have "\<dots> = (\<Sum>\<^sub>am | m > 0 \<and> prime_factors m \<subseteq> {..n}. f m)"
         by (intro infsetsum_reindex_bij_betw bij_betw_prime_powers)
       also have "(\<Sum>\<^sub>am\<in>UNIV. f m) - \<dots> = (\<Sum>\<^sub>am\<in>UNIV - {m. m > 0 \<and> prime_factors m \<subseteq> {..n}}. f m)"

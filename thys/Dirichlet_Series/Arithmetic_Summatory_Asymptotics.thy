@@ -253,7 +253,7 @@ proof -
     finally show "g (p ^ k) = \<dots>" .
   qed simp_all
   have mult_g_square: "multiplicative_function (\<lambda>n. g (n ^ 2))"
-    by standard (simp_all add: power_mult_distrib gcd_exp g.mult_coprime)
+    by standard (simp_all add: power_mult_distrib g.mult_coprime)
     
   have g_square: "g (m ^ 2) = moebius_mu m" for m
     using mult_g_square moebius_mu.multiplicative_function_axioms
@@ -667,11 +667,7 @@ proof -
   have *: "card (A N) = 2 * (\<Sum>m\<in>{0<..N}. totient m) - 1" if N: "N > 0" for N
   proof -
     have "A N = C N \<union> D N"
-    proof (intro equalityI subsetI, goal_cases)
-      case (1 x)
-      thus ?case unfolding A_def C_def D_def
-        by (cases "fst x \<le> snd x"; fastforce simp: totatives_def gcd.commute image_iff)
-    qed (auto simp: totatives_def gcd.commute A_def C_def D_def)
+      by (auto simp add: A_def C_def D_def totatives_def image_iff ac_simps)
     also have "card \<dots> = card (C N) + card (D N) - card (C N \<inter> D N)"
       using card_Un_Int[OF fin[of N]] by arith
     also have "C N \<inter> D N = {(1, 1)}" using N by (auto simp: image_iff totatives_def C_def D_def)
@@ -775,8 +771,8 @@ proof (rule bij_betwI[of _ _ _ "\<lambda>q. case quotient_of q of (a, b) \<Right
 next
   case 2
   show ?case
-    by (auto simp: farey_fractions_def Rat.Fract_le_one_iff Rat.zero_less_Fract_iff 
-          gcd_int_def split: prod.splits quotient_of_split_asm)
+    by (auto simp add: farey_fractions_def Rat.Fract_le_one_iff Rat.zero_less_Fract_iff split: prod.splits quotient_of_split_asm)
+      (simp add: coprime_int_iff [symmetric])
 next
   case (3 x)
   thus ?case by (auto simp: Rat.quotient_of_Fract Rat.normalize_def Let_def gcd_int_def)

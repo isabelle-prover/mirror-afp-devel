@@ -158,10 +158,10 @@ lemma prodsums_eq_sumprods:
   assumes "coprime p m"
   shows " \<Sum>{p ^ f |f. f \<le> n} * \<Sum>{b. b dvd m} = \<Sum>{p ^ f * b |f b. f \<le> n \<and> b dvd m}"
 proof -
-  have "coprime (p ^ f) x" if "x dvd m" for x f
-    unfolding gcd.commute [of _ x]
-    by (rule coprime_exp, rule coprime_divisors[OF that dvd_refl])
-       (insert assms, simp add: gcd.commute)
+  have "coprime p x" if "x dvd m" for x
+    using assms by (rule coprime_imp_coprime) (auto intro: dvd_trans that)
+  then have "coprime (p ^ f) x" if "x dvd m" for x f
+    using that by simp
   then show ?thesis
     by (auto simp: imp_ex sum_mult_sum_if_inj [OF mult_inj_if_coprime_nat]
              intro!: arg_cong [where f = "sum (\<lambda>x. x)"])
@@ -198,7 +198,7 @@ theorem sigma_semimultiplicative:
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
-    by (auto simp add: coprime_exp gcd.commute)
+    by simp
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)

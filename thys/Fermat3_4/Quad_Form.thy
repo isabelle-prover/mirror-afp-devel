@@ -38,12 +38,12 @@ proof -
 qed
 
 lemma prime_power_dvd_cancel_right:
-  assumes "prime (p::'a::semiring_gcd)" "\<not>p dvd b" "p^n dvd a*b"
-  shows "p^n dvd a"
+  "p ^ n dvd a" if "prime (p::'a::semiring_gcd)" "\<not> p dvd b" "p ^ n dvd a * b"
 proof -
-  from assms(1,2) have "coprime (p ^ n) b"
-  by (simp add: gcd.commute prime_imp_power_coprime)
-  from this and assms(3) show ?thesis by (rule coprime_dvd_mult)
+  from that have "coprime p b"
+    by (auto intro: prime_imp_coprime)
+  with that show ?thesis
+    by (simp add: coprime_dvd_mult_left_iff)
 qed
 
 definition
@@ -415,9 +415,8 @@ proof -
     hence "?g dvd u*p + v*(e*N*q) \<and> ?g dvd v*p - u*(e*q)" by simp
     with a and b have "?g dvd a \<and> ?g dvd b" by (auto simp only: ac_simps)
     hence "?g dvd gcd a b" by simp
-    with ass have "?g = 1 \<or> ?g = -1" by simp
-    moreover have "?g \<ge> 0" by auto
-    ultimately show ?thesis by auto
+    with ass show ?thesis
+      by (simp add: gcd_eq_1_imp_coprime)
   qed
   moreover from e and ass have
     "\<bar>e\<bar> = 1 \<and> A^n = a^2+N*b^2 \<and> P^n = p^2+N*q^2" by simp
@@ -648,9 +647,14 @@ proof -
       with neg show False by simp
     qed
   qed
-  ultimately have "coprime ?b ?a \<and> coprime N ?a" by auto
-  hence "coprime (N*?b) ?a" by (simp only: gcd_mult_cancel)
-  with abP show ?thesis by (auto simp only: gcd.commute)
+  ultimately have "gcd ?a ?b = 1" "gcd ?a N = 1"
+    by (auto simp add: ac_simps)
+  then have "coprime ?a ?b" "coprime ?a N "
+    by (auto simp only: gcd_eq_1_imp_coprime)
+  then have "coprime ?a (N * ?b)"
+    by simp
+  with abP show ?thesis
+    by blast
 qed
 
 subsection {* Uniqueness ($N>1$)*}
@@ -774,6 +778,7 @@ lemma qfN_cube_prime:
 proof -
   let ?P = "p^2 + N*q^2"
   let ?A = "a^2 + N*b^2"
+  from ass have "coprime a b" by blast
   from ass have P1: "?P > 1" by (simp add: prime_int_iff)
   with ass have APP: "?A = ?P*?P^2" by (simp add: power2_eq_square power3_eq_cube)
   with ass have "prime ?P \<and> ?P dvd ?A" by (simp add: dvdI)
@@ -781,14 +786,13 @@ proof -
     "?A = (u^2+N*v^2)*?P \<and> a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar>=1"
     by (frule_tac p="p" in qfN_div_prime, auto)
   have "coprime u v"
-  proof -
-    let ?g = "gcd u v"
-    have "?g dvd u \<and> ?g dvd v" by auto
-    with uve have "?g dvd a \<and> ?g dvd b" by auto
-    hence "?g dvd gcd a b" by auto
-    with ass have "?g dvd 1" by simp
-    moreover have "?g \<ge> 0" by simp
-    ultimately show ?thesis by auto
+  proof (rule coprimeI)
+    fix c
+    assume "c dvd u" "c dvd v"
+    with uve have "c dvd a" "c dvd b"
+      by simp_all
+    with \<open>coprime a b\<close> show "is_unit c"
+      by (rule coprime_common_divisor)
   qed
   with P1 uve APP ass have "prime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2
     \<and> coprime u v" by (auto simp add: ac_simps)
@@ -1081,10 +1085,11 @@ next
     with `?h dvd a` have "?h dvd gcd a b" by simp
     with abx have "?h dvd 1" by simp
     hence "?h = 1" by simp
-    hence "coprime (?g^2) x" using coprime_exp_left by blast
-    thus ?thesis by (simp only: gcd.commute)
+    hence "coprime (?g^2) x" by (auto intro: gcd_eq_1_imp_coprime)
+    thus ?thesis by (simp only: ac_simps)
   qed
-  ultimately have "?g^2 dvd y" by (simp add: coprime_dvd_mult_iff gcd.commute)
+  ultimately have "?g^2 dvd y"
+    by (auto simp add: ac_simps coprime_dvd_mult_right_iff)
   then obtain w where w: "y = ?g^2 * w" by (auto simp add: dvd_def)
   with CgE y g2nonzero have Ewx: "?E = x*w" by auto
   have "w>0"
@@ -1268,6 +1273,8 @@ next
     and IH: "!! u v. coprime u v \<and> u^2+3*v^2 = int(\<Prod>i\<in>#ps. i)^3
     \<and> odd (int(\<Prod>i\<in>#ps. i)) \<Longrightarrow> is_cube_form u v"
     by auto
+  then have "coprime a b"
+    by simp
   let ?w = "int (\<Prod>i\<in>#ps + {#p#}. i)"
   let ?X = "int (\<Prod>i\<in>#ps. i)"
   let ?p = "int p"
@@ -1336,13 +1343,15 @@ next
   moreover have "is_cube_form c d"
   proof -
     have "coprime c d"
-    proof (rule ccontr)
-      let ?g = "gcd c d"
-      assume "?g \<noteq> 1"
-      moreover have "?g dvd c" and "?g dvd d" by auto
-      hence "?g dvd c*u + d*(e*3*v) \<and> ?g dvd c*v-d*(e*u)" by simp
-      with uve have "?g dvd a \<and> ?g dvd b" by (auto simp only: ac_simps)
-      ultimately show False using ass coprime_common_divisor_int by fastforce
+    proof (rule coprimeI)
+      fix f
+      assume "f dvd c" and "f dvd d"
+      then have "f dvd c*u + d*(e*3*v) \<and> f dvd c*v-d*(e*u)"
+        by simp
+      with uve have "f dvd a" and "f dvd b"
+        by (auto simp only: ac_simps)
+      with \<open>coprime a b\<close> show "is_unit f"
+        by (rule coprime_common_divisor)
     qed
     with pw cdp ass alphabeta show ?thesis
       by (rule_tac P="?p" in qf3_cube_prime_impl_cube_form, auto)
@@ -1355,7 +1364,7 @@ lemma qf3_cube_impl_cube_form:
   shows "is_cube_form a b"
 proof -
   have "0 \<le> w^3" using ass not_sum_power2_lt_zero[of a b] zero_le_power2[of b] by linarith
-  hence "0 < w" using ass by presburger
+  hence "0 < w" using ass by auto arith
   define M where "M = prime_factorization (nat w)"
   from \<open>w > 0\<close> have "(\<forall>p\<in>set_mset M. prime p) \<and> w = int (\<Prod>i\<in>#M. i)"
     by (auto simp: M_def prod_mset_prime_factorization_int)

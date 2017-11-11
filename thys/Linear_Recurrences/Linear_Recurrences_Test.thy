@@ -31,7 +31,7 @@ text \<open>
   are again the Fibonacci numbers.
 \<close>
 value "let f = fps_of_ratfps (lhr_fps [-1,-1,1] [0,1 :: rat])
-       in  map (\<lambda>n. fps_nth f n) [0..<10]"
+       in  map (fps_nth f) [0..<10]"
 
 
 text \<open>

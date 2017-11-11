@@ -1100,11 +1100,10 @@ next
   proof -
     have "cindex_poly a b q p = sum (\<lambda>x. jump_poly 1 (q*p) x) A" unfolding A_def cindex_poly_def
       using jump_poly_coprime[OF _ `coprime p q`] by auto 
-    moreover have "coprime q p" using `coprime p q` by (simp add: gcd.commute)
+    moreover have "coprime q p" using `coprime p q`
+      by (simp add: ac_simps)
     hence "cindex_poly a b p q = sum (\<lambda>x. jump_poly 1 (q*p) x) B" unfolding B_def cindex_poly_def
-      using jump_poly_coprime[of q _ p] 
-      apply (subst (asm) mult.commute)
-      by auto
+      using jump_poly_coprime [of q _ p] by (auto simp add: ac_simps)
     ultimately show ?thesis by auto
   qed
   moreover have "A \<union> B= {x. poly (q*p) x=0 \<and> a<x \<and> x<b }" unfolding poly_mult A_def B_def by auto
@@ -1451,9 +1450,9 @@ next
   next
     case (Cons x1 xs)
     define r where "r\<equiv>- (p mod q)"
-    hence "smods p q=p#xs" and "smods q r=xs" and "p\<noteq>0" 
-      using `x1 # xs = smods p q` unfolding r_def
-      by (metis Cons.hyps(2) list.distinct(1) list.inject smods.simps)+
+    then have "smods p q = p # xs" and "smods q r = xs" and "p \<noteq> 0"
+      using `x1 # xs = smods p q`
+      by (auto simp del: smods.simps simp add: smods.simps [of p q] split: if_splits)
     obtain a1 b1 where 
           "a < a1"  "a1 < b1"  "b1 < b" and  
           a1_b1_no_root:"\<forall>p\<in>set xs. \<forall>x. a < x \<and> x \<le> a1 \<or> b1 \<le> x \<and> x < b \<longrightarrow> poly p x \<noteq> 0"

@@ -61,8 +61,11 @@ proof -
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
     by (rule poly_rel_of_int_poly[OF refl], simp add: f''_def)
-  have id: "square_free_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
+  have "square_free_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
     unfolding square_free_i_def by transfer_prover
+  also have "\<dots> \<longleftrightarrow> coprime f'' (pderiv f'')"
+    by (auto simp add: gcd_eq_1_imp_coprime)
+  finally have id: "square_free_i ff_ops ?f' \<longleftrightarrow> coprime f'' (pderiv f'')" .
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have "square_free f'' = square_free F" unfolding f''_def F by simp
@@ -115,7 +118,8 @@ definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" w
     else square_free_impl_main p (finite_field_ops_integer (integer_of_int p)))" 
 
 lemma square_free_mod_imp_square_free: assumes 
-  p: "prime p" and sf: "poly_mod.square_free_m p f" and cop: "coprime (lead_coeff f) p" 
+  p: "prime p" and sf: "poly_mod.square_free_m p f"
+  and cop: "coprime (lead_coeff f) p" 
   shows "square_free f"
 proof -
   interpret poly_mod p .
@@ -135,8 +139,8 @@ proof -
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)
     hence "lead_coeff g dvd lead_coeff f" by auto
-    with cop have cop: "gcd (lead_coeff g) p = 1" unfolding coprime_iff_gcd_one
-      by (metis coprime_divisors dvd_def mult.right_neutral)
+    with cop have cop: "coprime (lead_coeff g) p"
+      by (auto elim: coprime_imp_coprime intro: dvd_trans)
     with p0 have "coprime (lead_coeff g mod p) p" by simp
     also have "lead_coeff g mod p = 0"
       using M_def g0 by simp
@@ -163,9 +167,13 @@ lemma coprime_lead_coeff_large_prime: assumes prime: "prime (p :: int)"
 proof -
   {
     fix lc 
-    assume assms:"0 < lc" "lc < p" 
-    from prime have "coprime lc p"
-      by (metis (no_types) assms coprime_iff_gcd_one gcd.commute prime_imp_coprime zdvd_not_zless)
+    assume "0 < lc" "lc < p" 
+    then have "\<not> p dvd lc"
+      by (simp add: zdvd_not_zless)
+    with \<open>prime p\<close> have "coprime p lc"
+      by (auto intro: prime_imp_coprime)
+    then have "coprime lc p"
+      by (simp add: ac_simps)
   } note main = this
   define lc where "lc = lead_coeff f" 
   from f have lc0: "lc \<noteq> 0" unfolding lc_def by auto
@@ -192,7 +200,6 @@ proof (rule ccontr)
   assume contr: "\<not> ?thesis"
   {
     fix p :: int
-    let ?ops = "finite_field_ops p" 
     assume prime: "prime p" and n: "p > n" 
     then interpret poly_mod_prime p by unfold_locales
     from n have large: "p > abs (lead_coeff f)" "nat p > degree f" "nat p > square_free_bound f" 

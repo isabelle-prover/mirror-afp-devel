@@ -106,11 +106,6 @@ proof -
   from A and B show "card {B. B \<subseteq> A \<and> even (card B)} = card {B. B \<subseteq> A \<and> odd (card B)}" by simp
 qed
   
-
-lemma (in semiring_gcd) prod_coprime' [rule_format]: 
-    "(\<forall>i\<in>A. gcd a (f i) = 1) \<longrightarrow> gcd a (\<Prod>i\<in>A. f i) = 1"
-  using prod_coprime[of A f a] by (simp add: gcd.commute)
-    
 lemma bij_betw_prod_divisors_coprime:
   assumes "coprime a (b :: nat)"
   shows   "bij_betw (\<lambda>x. fst x * snd x) ({d. d dvd a} \<times> {d. d dvd b}) {k. k dvd a * b}"

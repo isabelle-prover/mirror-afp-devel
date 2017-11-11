@@ -73,10 +73,10 @@ proof (rule ccontr)
   from us[OF this] show False by auto
 qed
 
-lemma coprime_pderiv_imp_square_free: assumes "coprime f (pderiv f)"
-  shows "square_free f"
+lemma coprime_pderiv_imp_square_free:
+  "square_free f" if "coprime f (pderiv f)" for f :: "'a::{field, factorial_ring_gcd} poly"
 proof (rule ccontr)
-  from assms have f0: "f \<noteq> 0" by (cases f, auto)
+  from that have f0: "f \<noteq> 0" by (cases f, auto)
   assume "\<not> square_free f"
   then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" using f0 unfolding square_free_def by auto
   then obtain h where f: "f = g * (g * h)" unfolding dvd_def by (auto simp: ac_simps)
@@ -87,9 +87,9 @@ proof (rule ccontr)
   ultimately have dvd: "g dvd (gcd f (pderiv f))" by simp
   have "gcd f (pderiv f) \<noteq> 0" using f0 by simp
   with g dvd have "degree (gcd f (pderiv f)) \<noteq> 0"
-    by (simp add: assms poly_dvd_1)
+    by (simp add: that poly_dvd_1)
   hence "\<not> coprime f (pderiv f)" by auto
-  with assms show False by simp
+  with that show False by simp
 qed
 
 lemma square_free_rsquarefree: assumes f: "square_free f" 
@@ -149,7 +149,8 @@ proof (rule square_freeI)
   thus False using assms unfolding rsquarefree_def' by auto
 qed (insert assms, auto simp: rsquarefree_def)
    
-lemma square_free_coprime_pderiv_main: fixes f :: "'a :: {field,factorial_ring_gcd} poly"
+lemma square_free_coprime_pderiv_main:
+  fixes f :: "'a :: {field,factorial_ring_gcd} poly"
   assumes "square_free f"
   and cop: "\<not> coprime f (pderiv f)"
   shows "\<exists> g k. f = g * k \<and> degree g \<noteq> 0 \<and> pderiv g = 0"
@@ -163,7 +164,7 @@ proof -
   proof (cases "degree G")
     case 0
     from degree0_coeffs[OF this] cop mon show ?thesis
-      by (auto simp: G_def)
+      by (auto simp: G_def coprime_iff_gcd_eq_1)
   qed auto
   have gf: "G dvd f" unfolding G_def by auto
   have gf': "G dvd pderiv f" unfolding G_def by auto
@@ -225,13 +226,13 @@ definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a p
     (p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i))
   \<and> (p = 0 \<longrightarrow> c = 0 \<and> bs = [])
   \<and> (\<forall> a i. (a,i) \<in> set bs \<longrightarrow> square_free a \<and> degree a > 0)
-  \<and> (\<forall> a i b j. (a,i) \<in> set bs \<longrightarrow> (b,j) \<in> set bs \<longrightarrow> (a,i) \<noteq> (b,j) \<longrightarrow> gcd a b = 1)
+  \<and> (\<forall> a i b j. (a,i) \<in> set bs \<longrightarrow> (b,j) \<in> set bs \<longrightarrow> (a,i) \<noteq> (b,j) \<longrightarrow> coprime a b)
   \<and> distinct bs"
 
 lemma square_free_factorizationD: assumes "square_free_factorization p (c,bs)"
   shows "p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i)"
   "(a,i) \<in> set bs \<Longrightarrow> square_free a \<and> degree a \<noteq> 0"
-  "(a,i) \<in> set bs \<Longrightarrow> (b,j) \<in> set bs \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> gcd a b = 1"
+  "(a,i) \<in> set bs \<Longrightarrow> (b,j) \<in> set bs \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> coprime a b"
   "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   "distinct bs"
   using assms unfolding square_free_factorization_def split by blast+
@@ -361,7 +362,7 @@ lemma coprime_generic:
 proof -
   have single: "?single \<noteq> 0" by (rule nonzero_gen[OF bs])
   show ?thesis
-  proof (rule gcdI[symmetric])
+  proof (rule gcd_eq_1_imp_coprime, rule gcdI [symmetric])
     fix k
     assume dvd: "k dvd ?single" "k dvd ?onederiv"
     note bs_monic = as_monic[OF set_mp[OF bs]]
@@ -448,9 +449,11 @@ proof -
   have pp: "pderiv p = ?prod * ?sum" by (rule pderiv_exp_prod)
   have p: "p = ?prod * ?single" by (rule poly_exp_expand)
   have monic: "monic ?prod" by (rule monic_Prod)
-  have gcd: "gcd ?single ?onederiv = 1" 
+  have gcd: "coprime ?single ?onederiv" 
     by (rule coprime_generic, auto)
-  show ?thesis unfolding pp unfolding p unfolding poly_gcd_monic_factor[OF monic] gcd by simp
+  then have gcd: "gcd ?single ?onederiv = 1"
+    by simp
+  show ?thesis unfolding pp unfolding p poly_gcd_monic_factor [OF monic] gcd by simp
 qed
 
 lemma p_div_gcd_p_pderiv: "p div (gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
@@ -495,9 +498,9 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
       assume "k dvd B n" "k dvd D n"
       from dvd_gcd_mult[OF this[unfolded Bn' Dn]]
       have "k dvd ?an * (gcd ?bn ?dn)" .
-      also have "gcd ?bn ?dn = 1"
+      moreover have "coprime ?bn ?dn"
         by (rule coprime_generic, auto)
-      finally show "k dvd ?an" by simp
+      ultimately show "k dvd ?an" by simp
     }
   qed auto
 next
@@ -617,15 +620,15 @@ proof -
   show "B m = 1" unfolding B id by simp
 qed
 
-lemma gcd_A_A: assumes "i \<noteq> j"
-  shows "gcd (A i) (A j) = 1"
-proof (rule gcdI[symmetric])
+lemma coprime_A_A: assumes "i \<noteq> j"
+  shows "coprime (A i) (A j)"
+proof (rule coprimeI)
   fix k  
   assume dvd: "k dvd A i" "k dvd A j"
   have Ai: "A i \<noteq> 0" unfolding A
     by (rule nonzero_gen, auto)
   with dvd have k: "k \<noteq> 0" by auto
-  show "k dvd 1"
+  show "is_unit k"
   proof (cases "degree k > 0")
     case False
     then obtain c where kc: "k = [: c :]" by (auto dest: degree0_coeffs)
@@ -651,7 +654,7 @@ proof (rule gcdI[symmetric])
     have "a = b" unfolding coeff_smult degree_smult_eq by auto
     with neq show ?thesis by auto
   qed
-qed (auto simp: nonzero_gen A)
+qed
 
 lemma A_monic: "monic (A i)"
   unfolding A by (rule monic_gen, auto)
@@ -829,13 +832,14 @@ proof -
     assume ai: "(a,i) \<in> set bs" and bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)"
     hence a: "a = A i" and b: "b = A j" unfolding bs by auto
     from neq dist ai bj have neq: "i \<noteq> j" using a b by blast
-    from gcd_A_A[OF neq] have "gcd a b = 1" unfolding a b .
+    from coprime_A_A [OF neq] have "coprime a b" unfolding a b .
   } note 3 = this
   have "monic p" unfolding p 
     by (rule monic_prod, insert as_monic, auto intro: monic_power monic_mult)
   hence 4: "p \<noteq> 0" by auto
   from dist have 5: "distinct bs" unfolding distinct_map ..
-  show "square_free_factorization p (1,bs)" unfolding square_free_factorization_def using 1 2 3 4 5
+  show "square_free_factorization p (1,bs)"
+    unfolding square_free_factorization_def using 1 2 3 4 5
     by auto
   show "(b,i) \<in> set bs \<Longrightarrow> monic b" using 2 by auto
   show "distinct (map snd bs)" by fact
@@ -1001,10 +1005,10 @@ proof -
       from irreducible\<^sub>d_dvd_prod[OF iq this]
       obtain b j where bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)" and dvd: "q dvd b ^ Suc j" by auto
       from irreducible\<^sub>d_dvd_pow[OF iq dvd] have qb: "q dvd b" .
-      from sff(3)[OF ai bj neq] have gcd: "gcd a b = 1" .
+      from sff(3)[OF ai bj neq] have gcd: "coprime a b" .
       from qb qa have "q dvd gcd a b" by simp
-      from dvd_imp_degree_le[OF this[unfolded gcd]] iq q0 show False unfolding irreducible\<^sub>d_def
-        by auto
+      from dvd_imp_degree_le[OF this[unfolded gcd]] iq q0 show False
+        unfolding irreducible\<^sub>d_def using gcd by simp
     qed
   }
   hence ndvd: "\<not> q ^ Suc (Suc i) dvd ?prod" by blast
@@ -1119,7 +1123,8 @@ proof -
     from dvd1 dvd2 have "q dvd gcd b b'" by auto
     with dq is_unit_iff_degree[OF q0] have cop: "\<not> coprime b b'" by force
     from mem' have "(b',i') \<in> set bs" unfolding bs by auto
-    from sf(3)[OF mem this] cop have b': "(b',i') = (b,i)" by auto
+    from sf(3)[OF mem this] cop have b': "(b',i') = (b,i)"
+      by (auto simp add: coprime_iff_gcd_eq_1)
     with mem' sf(5)[unfolded bs] show False by auto
   qed
 qed
@@ -1419,11 +1424,13 @@ lemma (in field_hom_0') yun_factorization_hom:
   unfolding yun_factorization_def Let_def hp hpi
    by (auto simp: hom_distribs)
 
-lemma (in field_hom_0') square_free_map_poly: "square_free (map_poly hom f) = square_free f"
+lemma (in field_hom_0') square_free_map_poly:
+  "square_free (map_poly hom f) = square_free f"
 proof -
   interpret map_poly_hom: map_poly_inj_comm_ring_hom..
   show ?thesis unfolding square_free_iff_coprime
-    by (unfold hom_distribs[symmetric] (*fold doesn't work!*), simp)
+    by (simp only: hom_distribs [symmetric] (*fold doesn't work!*))
+      (simp add: coprime_iff_gcd_eq_1 map_poly_gcd [symmetric])
 qed
 
 end
