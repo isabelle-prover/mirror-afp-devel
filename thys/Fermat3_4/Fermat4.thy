@@ -364,7 +364,7 @@ qed
 
 subsection {* Fermat's last theorem, case $n=4$ *}
 
-text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,\coprime a b\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
+text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,coprime\,a\,b\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
 
 private lemma smaller_fermat4:
   assumes abc: "(a::int)^4+b^4=c^2" and abc0: "a*b*c \<noteq> 0" and aodd: "odd a" 
