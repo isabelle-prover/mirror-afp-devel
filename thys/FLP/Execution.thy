@@ -370,7 +370,6 @@ next
     assume Ass: " \<not> (\<exists>i\<ge>n. i < length exec - 1 \<and> msg = execMsg i)" 
     hence Not: "\<forall> i. i < n \<or> i \<ge> length exec - 1 \<or> msg \<noteq> execMsg i" 
       by (metis leI)
-    thm assms
     have "\<forall> i. i \<ge> n \<and> i \<le> length exec - 1 \<longrightarrow> enabled (exec ! i) msg" 
     proof(clarify)
       fix i 

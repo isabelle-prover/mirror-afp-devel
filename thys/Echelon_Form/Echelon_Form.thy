@@ -2914,7 +2914,6 @@ next
   obtain P where invP: "invertible P" 
     and P: "P ** A = fst ?foldl"
     using Suc.hyps unfolding echelon_form_of_upt_k_def by auto
-    term ?foldl
   obtain Q where invQ: "invertible Q" and Q: 
     "Q ** fst ?foldl = fst ((echelon_form_of_column_k bezout) (fst ?foldl, snd ?foldl) (Suc k))"
     using echelon_form_of_column_k_invertible [OF ib] by blast

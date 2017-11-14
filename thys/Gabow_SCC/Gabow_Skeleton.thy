@@ -2192,8 +2192,6 @@ begin
         done
     } note SPEC_NE=this
 
-    thm INVAR  
-      
     have SPEC: "sel_rem_last \<le> SPEC (\<lambda>r. case r of 
         (None, SBIP') \<Rightarrow> SBIP' = SBIP \<and> pE_\<alpha> \<inter> last p_\<alpha> \<times> UNIV = {} \<and> GS_invar SBIP
       | (Some v, SBIP') \<Rightarrow> \<exists>u. (u, v) \<in> pE_\<alpha> \<inter> last p_\<alpha> \<times> UNIV 

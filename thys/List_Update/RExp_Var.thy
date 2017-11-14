@@ -328,7 +328,6 @@ next
             show "elem @ word \<in> L1 ^^ Suc n" by simp
           next
             case 2
-            thm x1 Suc(2)
             have "x1 \<in> lang (subst (w2rexp elem) \<sigma>)" by(fact x1elem)
             with x2[unfolded R] show ?case unfolding x apply(simp only: subst_w2rexp) by blast
           qed

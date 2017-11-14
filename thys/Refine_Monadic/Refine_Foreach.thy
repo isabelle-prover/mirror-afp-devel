@@ -1268,7 +1268,6 @@ proof -
         subgoal using COND[of l1i "xi#l2i" l1 "x#l2" si s] Cons.prems Cons.hyps by auto
         subgoal apply (rule STEP) using Cons.prems Cons.hyps by auto
         subgoal for si' s'
-          thm Cons.IH
           apply (rule Cons.IH[of "l1i@[xi]" "l1@[x]"])
           using Cons.prems Cons.hyps
           apply (auto simp: list_rel_append1) apply force

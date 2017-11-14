@@ -1064,7 +1064,6 @@ begin
         hence "matches \<gamma> m p \<Longrightarrow> wf_chain \<Gamma> [Rule m (Call chain_name)] \<Longrightarrow> (\<exists>t. \<Gamma>,\<gamma>,p\<turnstile> \<langle>[Rule m (Call chain_name)], Undecided\<rangle> \<Rightarrow> t)"
         proof(induction arbitrary: m rule: wf_induct_rule[where r="called_by_chain \<Gamma>"])
         case (less chain_name_neu)
-          thm less.prems
           from less.prems have "\<Gamma> chain_name_neu \<noteq> None" by(simp add: wf_chain_def)
           from this obtain rs_called where rs_called: "\<Gamma> chain_name_neu = Some rs_called" by blast
   

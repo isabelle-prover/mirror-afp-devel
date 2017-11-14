@@ -403,7 +403,6 @@ lemma push2_aux_refine:
   proof -
     assume [simp]: "Labeling c s t f l"
     then interpret Labeling c s t f l .
-        thm cfE_ss_invE
     assume "push_precond f l (u, v)"    
     then interpret l': push_effect_locale c s t f l u v by unfold_locales
     show ?thesis 

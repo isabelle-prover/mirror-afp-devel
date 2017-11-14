@@ -68,7 +68,6 @@ next
   case 13 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
 next
   case (3 b a lb rb ra)
-thm "3.prems"
   have "b \<notin> set_tree ra" using "3.prems"(1) by auto
   thus ?case using "3.prems"(1,2) nl2[of "size1 lb" "size1 rb" "size1 ra"]
     by (auto simp: \<phi>_def log_divide algebra_simps)

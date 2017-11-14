@@ -190,7 +190,6 @@ proof -
         with 0 show ?case by simp
     next
       case (Suc k)
-        thm Suc
         have "p \<in> \<P> (Suc k) u \<Longrightarrow> P p"
         proof (induct u arbitrary: p)
           case 0 thus ?case

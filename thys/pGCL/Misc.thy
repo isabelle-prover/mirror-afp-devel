@@ -207,7 +207,6 @@ proof -
     thus "- Inf ?T \<le> Sup S" by(simp)
   qed
   also {
-    thm bT
     from neT bbT have "Inf ?T \<in> closure ?T" by(rule closure_contains_Inf)
     hence "- Inf ?T \<in> uminus ` closure ?T" by(auto)
   }

@@ -1190,7 +1190,6 @@ theorem transform_normalize_primitives:
          using rewrite_MultiportPorts_unchanged_if_not_has_disc by fastforce+
       subgoal (*yeah, just need to consider the other cases*)
       apply(clarify)
-      thm x_src_ports[rotated 2]
       apply(frule_tac m6=m in x_src_ports[rotated 2])
           apply(simp_all)
        apply simp

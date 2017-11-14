@@ -4384,7 +4384,6 @@ proof -
         using evin by auto
       have 9: "(x, d) \<in> PDP' \<Longrightarrow> \<forall>\<^sub>F x in at x within plane (normal sctn) (pstn sctn). x \<in> ivl" for x d
         using evin by (auto simp add: plane_of_def)
-      thm flowpipe_split_at_above_halfspace[OF 1 2 3 4 5 6 7 8 9]
       obtain X1 X2
         where X1X2: "X' \<inter> sbelow_halfspace sctn \<times> UNIV = X1 \<union> X2"
           and X1: "flowsto X1 {0<..h'} (CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)

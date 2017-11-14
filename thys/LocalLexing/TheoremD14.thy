@@ -595,7 +595,6 @@ proof (induct k arbitrary: u rule: less_induct)
             have subset2: "Prefixes q \<subseteq> \<P> k'' (Suc v'')" 
               apply (rule Prefixes_subset_\<P>)
               using k'' by blast
-            thm less
             from subset1 subset2 have "Prefixes p \<subseteq> \<P> k'' (Suc v'')" by blast
             then have "Prefixes p \<subseteq> paths_le k'' (\<P> k'' (Suc v''))" 
               using k'' Prefixes_subset_paths_le by blast            

@@ -789,7 +789,6 @@ begin
           moreover
           have "a \<noteq> G.face_cycle_succ x"
             by (metis b_in not_in_segment1 segment.step segmentD_orbit step(1))
-thm b_in not_in_segment1 segment.step segmentD_orbit step(1)
           moreover
           have "a' \<noteq> x" "a' \<noteq> G.face_cycle_succ x"
             using step(1) diff_face_not_in(2) by (auto simp: G.face_cycle_set_def dest!: segmentD_orbit intro: orbit.step)

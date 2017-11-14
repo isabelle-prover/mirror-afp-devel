@@ -206,7 +206,6 @@ proof -
           using xny 1 3 dxs by(auto)
     then have "x < y in Lxy xs {x,y}" using xny by(simp add: before_in_def)
   } note aha=this
-  thm Lxy_project aha
   have a: "x < y in xs \<Longrightarrow> x < y in Lxy xs {x,y}"
     apply(subst Lxy_project) 
       using xy xyset dxs by(simp_all add: before_in_def)

@@ -306,7 +306,6 @@ begin
         moreover have "\<alpha> (foldl (\<lambda>s (k, v). update k v s) m0 (kv # l)) =
           \<alpha> m0 ++ map_of (rev (kv # l))"
           apply simp
-          thm trans[OF conjunct2[OF Cons.IH]]
           apply (rule trans[OF conjunct2[OF Cons.IH]])
           apply (auto 
             simp: update_correct Cons.prems Map.map_add_def[abs_def]

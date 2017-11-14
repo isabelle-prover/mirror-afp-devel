@@ -361,7 +361,6 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                         have "T\<in>{[x,y],[y,x]} \<Longrightarrow> mtf2 k x T = [y,x] \<Longrightarrow> T = [y,x]"
                           apply(rule ccontr) by (simp add: less(3) mtf2_def)
                       }
-                      term ?L1
                       have t1: "t\<^sub>p [x, y] y (hd Strat) \<ge> 1" unfolding t\<^sub>p_def apply(simp add: split_def)
                         apply(cases "(snd (hd Strat))") using `x \<noteq> y` by auto
                       have t2: "t\<^sub>p [y,x] x (hd (tl Strat)) \<ge> 1" unfolding t\<^sub>p_def apply(simp add: split_def)

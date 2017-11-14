@@ -1786,7 +1786,6 @@ next
     assume "c\<^sub>1 \<noteq> Stop"
     then obtain c\<^sub>1' where step: "\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = (c\<^sub>1' ;; c\<^sub>2)"
       by (metis seq_elim seq_type.prems)
-      thm seq_type(2)
     then have "no_await c\<^sub>1" using `no_await (c\<^sub>1 ;; c\<^sub>2)` no_await.cases by blast
     then obtain \<Gamma>''' \<S>''' P''' where "\<turnstile> \<Gamma>''',\<S>''',P''' {c\<^sub>1'} \<Gamma>\<^sub>1,\<S>\<^sub>1,P\<^sub>1 \<and>
       (tyenv_wellformed mds \<Gamma> \<S> P \<and> pred P mem \<and> tyenv_sec mds \<Gamma> mem \<longrightarrow> 
@@ -2124,7 +2123,6 @@ next
     assume "c\<^sub>1 \<noteq> Stop"
     then obtain c\<^sub>1' where "\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = (c\<^sub>1' ;; c\<^sub>2)"
       by (metis seq_elim seq_type.prems)
-      thm seq_type(2)
     then obtain \<Gamma>''' \<S>''' P''' where "\<turnstile> \<Gamma>''',\<S>''',P''' {c\<^sub>1'} \<Gamma>\<^sub>1,\<S>\<^sub>1,P\<^sub>1 \<and>
       (tyenv_wellformed mds \<Gamma> \<S> P \<and> pred P mem \<and> tyenv_sec mds \<Gamma> mem \<longrightarrow> 
        tyenv_wellformed mds' \<Gamma>''' \<S>''' P''' \<and> pred P''' mem' \<and> tyenv_sec mds' \<Gamma>''' mem')"

@@ -193,7 +193,7 @@ proof (induct k)
 next
   case (Suc k)
   let ?f = "foldl (echelon_form_of_column_k_det bezout) (1,A,0) [0..<Suc k]"
-  have Suc_rw: "[0..<Suc (Suc k)] = [0..<(Suc k)] @ [Suc k]" by simp term ?f
+  have Suc_rw: "[0..<Suc (Suc k)] = [0..<(Suc k)] @ [Suc k]" by simp
   have fold_expand: "?f = (fst ?f, fst (snd ?f), snd (snd ?f))" by simp
   show ?case unfolding echelon_form_of_upt_k_det_def Let_def 
     unfolding Suc_rw foldl_append List.foldl.simps fst_conv snd_conv

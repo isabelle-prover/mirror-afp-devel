@@ -379,7 +379,6 @@ subsection\<open>Rewriting Negated Matches on Ports\<close>
     apply(simp)
     apply(subgoal_tac "normalized_n_primitive (disc2, sel2) f rst")
      prefer 2 subgoal for spts rst
-     thm primitive_extractor_correct(5)[OF _ wf_disc_sel]
      apply(drule primitive_extractor_correct(5)[OF _ wf_disc_sel, where P="f"])
       apply blast
      by(simp)
@@ -841,7 +840,6 @@ subsection\<open>Complete Normalization\<close>
         apply(simp_all add: disc2_noC disc2_noProt)
      apply(rule rewrite_negated_primitives_normalized_preserves_unrelated_helper[OF wf_disc_sel _ _ n])
         apply(simp_all add: disc2_noC disc2_noProt)
-    thm primitive_extractor_correct(5)[OF _ wf_disc_sel, where P=f]
     apply(frule_tac m=a in primitive_extractor_correct(5)[OF _ wf_disc_sel, where P=f])
      by blast+
   
@@ -880,7 +878,6 @@ subsection\<open>Complete Normalization\<close>
      subgoal for a
      apply(rule_tac m="rewrite_negated_primitives (disc, sel) C l4_ports_negate_one m" in not_has_disc_normalize_match)
       apply(simp_all)
-     thm rewrite_negated_primitives_preserves_not_has_disc_negated[OF n wf_disc_sel ]
      apply(rule rewrite_negated_primitives_preserves_not_has_disc_negated[OF n wf_disc_sel ])
       using disc2_noProt l4_ports_negate_one_not_has_disc_negated_generic apply blast
      using nodisc by blast

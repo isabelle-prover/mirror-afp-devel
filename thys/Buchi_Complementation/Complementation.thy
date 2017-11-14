@@ -562,7 +562,6 @@ begin
           have 31: "even (f' (Suc (k + l), r !! Suc l))" using 29 30 unfolding g_def by simp
           show "False" using 28 31 by simp
         qed
-        thm 10
         have 11: "infs (\<lambda> k. P k = {}) nats" using 10 unfolding infs_snth by simp
         have "infs (\<lambda> S. S = {}) (smap snd (smap g nats ||| smap P nats))"
           using 11 by (simp add: comp_def)

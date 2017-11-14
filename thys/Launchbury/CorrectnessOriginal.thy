@@ -145,7 +145,6 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> v)
   let ?e = "if b then e\<^sub>1 else e\<^sub>2"
 
   case 1
-  thm new_free_vars_on_heap[OF IfThenElse.hyps(1)]
 
   hence prem1: "fv (\<Gamma>, scrut) \<subseteq> set L \<union> domA \<Gamma>"
     and prem2: "fv (\<Delta>, ?e) \<subseteq> set L \<union> domA \<Delta>"

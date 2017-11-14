@@ -377,8 +377,6 @@ proof -
     next
       fix ix1 ix2 yd
       assume X2: "x2 = Insert ix1 ix2" and Y2: "y2 = Delete yd"
-                thm insert_delete_commute
-                thm Insert_Delete_concurrent
       have "hb.concurrent (x1, Insert ix1 ix2) (y1, Delete yd)"
         using C X2 Y2 1 2 by simp
       also have "{Deliver (x1, Insert ix1 ix2), Deliver (y1, Delete yd)} \<subseteq> set (history i)"

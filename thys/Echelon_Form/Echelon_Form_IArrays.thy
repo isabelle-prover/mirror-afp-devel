@@ -364,7 +364,7 @@ next
     using hyp1 unfolding echelon_form_of_upt_k_def echelon_form_of_upt_k_iarrays_def by simp
   have upt_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [(Suc k)]" by auto
   let ?f = "foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]"
-  let ?f2 = "foldl (echelon_form_of_column_k bezout) (A,0) [0..<(Suc k)]" term ?f2
+  let ?f2 = "foldl (echelon_form_of_column_k bezout) (A,0) [0..<(Suc k)]"
   have fold_rw: "?f = (fst ?f, fst (snd ?f), snd (snd ?f))" by simp
   have fold_rw': "?f2 = (fst ?f2, snd ?f2)" by simp
   have rw: "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k])

@@ -1697,9 +1697,6 @@ text "Approximation of the Term for Free exchanges"
 
         have qsn: "{index init q} \<union> {} \<subseteq> {0..<?l}" using setinit queryinlist by auto
 
-        term "?l -1"
-        term "length init - card {q} - card {}"
-
         have "{l::bool list. length l = ?l \<and> l!(index init q)}
           = {xs. Ball {(index init q)} (op ! xs) \<and> (\<forall>i\<in>{}. \<not> xs ! i) \<and> length xs = ?l}" by auto
         then have "card {l::bool list. length l = ?l \<and> l!(index init q)}
