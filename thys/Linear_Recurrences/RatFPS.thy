@@ -47,7 +47,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma coeff_0_normalize_quot_nonzero:
+lemma coeff_0_normalize_quot_nonzero [simp]:
   assumes "coeff (snd x) 0 \<noteq> 0"
   shows   "coeff (snd (normalize_quot x)) 0 \<noteq> 0"
 proof -
@@ -281,23 +281,6 @@ lemma fps_of_poly_quot_normalize_quot' [simp]:
   if "coeff (snd x) 0 \<noteq> (0 :: 'a :: {field,factorial_ring_gcd})"
   using that by (auto intro: fps_of_poly_quot_normalize_quot)
 
-lemma fps_of_poly_quot_normalize_eq [simp]:
-  "fps_of_poly (x div (gcd x y * unit_factor y)) /
-    fps_of_poly (normalize y div gcd x y) = fps_of_poly x / fps_of_poly y"
-  if "y \<noteq> 0" for y :: "'a :: {field, factorial_ring_gcd} poly"
-proof -
-  from that have "fps_of_poly (fst (normalize_quot (x, y))) / fps_of_poly (snd (normalize_quot (x, y))) =
-    fps_of_poly x / fps_of_poly y"
-    by (subst fps_of_poly_quot_normalize_quot) simp_all
-  with that show ?thesis by simp
-qed
-
-lemma fps_of_poly_quot_normalize_eq' [simp]:
-  "fps_of_poly (x div (gcd x y * unit_factor y)) /
-    fps_of_poly (normalize y div gcd x y) = fps_of_poly x / fps_of_poly y"
-  if "constant_term y \<noteq> 0" for y :: "'a :: {field, factorial_ring_gcd} poly"
-  using that by (auto intro: fps_of_poly_quot_normalize_eq)
-
 lift_definition fps_of_ratfps :: "'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> 'a fps" is
   "\<lambda>x. fps_of_poly (numerator x) / fps_of_poly (denominator x)" .
 
@@ -472,8 +455,6 @@ qed
 lemma fps_of_ratfps_eq_zero_iff [simp]:
   "fps_of_ratfps p = 0 \<longleftrightarrow> p = 0" 
   by (simp del: fps_of_ratfps_0 add: fps_of_ratfps_0 [symmetric])
-
-declare unit_factor_snd_quot_of_fract [simp]
 
 lemma unit_factor_snd_quot_of_ratfps [simp]: 
   "unit_factor (snd (quot_of_ratfps x)) = 1"
