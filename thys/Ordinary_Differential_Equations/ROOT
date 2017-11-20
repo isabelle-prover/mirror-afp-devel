@@ -56,6 +56,6 @@ session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
     "Ex/Lorenz/Lorenz_C0"
 
 session "Lorenz_C1" (AFP) = "Lorenz_Approximation" +
-  options [timeout = 300]
+  options [timeout = 300 (*360000*)]
   theories
     "Ex/Lorenz/Lorenz_C1"
