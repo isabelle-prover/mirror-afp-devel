@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
+    <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
+       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+Stochastic matrices are a convenient way to model discrete-time and
+finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
+tells us something about the existence and uniqueness of non-negative
+eigenvectors of a stochastic matrix.  In this entry, we formalize
+stochastic matrices, link the formalization to the existing AFP-entry
+on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
+prove that stationary distributions always exist, and they are unique
+if the stochastic matrix is irreducible.</description>
+    </item>
     <item>
        <title>The IMAP CmRDT</title>
               <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
@@ -588,24 +604,6 @@ origin (which is equivalent to larger arrangements due to symmetry).
 It then provides proofs of the simple solution in the case where the
 needle&#39;s length is no greater than the width of the strips and
 the more complicated solution in the opposite case.</description>
-    </item>
-    <item>
-       <title>Formalizing Push-Relabel Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Prpu_Maxflow.html</link>
-       <guid>https://www.isa-afp.org/entries/Prpu_Maxflow.html</guid>
-       <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
-       <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of push-relabel algorithms for computing
-the maximum flow in a network. We start with Goldberg&#39;s et
-al.~generic push-relabel algorithm, for which we show correctness and
-the time complexity bound of O(V^2E). We then derive the
-relabel-to-front and FIFO implementation. Using stepwise refinement
-techniques, we derive an efficient verified implementation.  Our
-formal proof of the abstract algorithms closely follows a standard
-textbook proof. It is accessible even without being an expert in
-Isabelle/HOL, the interactive theorem prover used for the
-formalization.</description>
     </item>
   </channel>
 </rss>
