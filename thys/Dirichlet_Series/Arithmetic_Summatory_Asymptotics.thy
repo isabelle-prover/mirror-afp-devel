@@ -403,7 +403,7 @@ proof -
                 (-(sum_upto f (sqrt x) * sum_upto g (sqrt x) - T x))"
   have "(\<lambda>x. sum_upto (dirichlet_prod f g) x - (R x + S x - T x)) \<in> \<Theta>(?A)"
     by (intro bigthetaI_cong eventually_mono[OF eventually_ge_at_top[of "0::real"]])
-       (auto simp: hyperbola_method)
+       (auto simp: hyperbola_method_sqrt)
   also from assms have "?A \<in> O(b)"
     by (intro sum_in_bigo(1)) (simp_all only: landau_o.big.uminus_in_iff)
   finally show ?thesis .
