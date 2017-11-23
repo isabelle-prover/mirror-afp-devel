@@ -14,6 +14,7 @@ external_file "src/Main.hs"
 export_code solve checking Haskell -- \<open>test whether Haskell code generation works\<close>
 
 ML \<open>
+  val exists_ghc = getenv "ISABELLE_GHC" <> "";
   val here = Resources.master_directory @{theory};
   val compile_dir = File.tmp_path (Path.basic "HLDE");
   val compile_result = Path.append compile_dir (Path.basic "Main");
@@ -28,10 +29,8 @@ ML \<open>
 export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file "$ISABELLE_TMP/HLDE"
 
 ML \<open>
-  val ghc = getenv "ISABELLE_GHC";
-  val cmd = "cd " ^ File.bash_path compile_dir ^ " && " ^ ghc ^ " Main.hs 2>&1";
-  if ghc <> "" then
-    if Isabelle_System.bash cmd = 0 then (
+  if exists_ghc then
+    if Isabelle_System.bash ("cd " ^ File.bash_path compile_dir ^ " && \"$ISABELLE_GHC\" Main.hs 2>&1") = 0 then (
       Isabelle_System.copy_file compile_result hlde;
       File.rm compile_result
     ) else error "HLDE compilation failed"
@@ -54,7 +53,7 @@ fun print_hlde (xs, ys) =
 \<close>
 
 ML \<open>
-  if ghc <> "" then print_hlde ([3, 5, 1], [2, 7])
+  if exists_ghc then print_hlde ([3, 5, 1], [2, 7])
   else ()
 \<close>
 
