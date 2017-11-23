@@ -448,30 +448,36 @@ context
 assumes "SORT_CONSTRAINT('a::prime_card)"
 begin
 
-lemma fermat_theorem_mod_ring[simp]:
-fixes a::"'a mod_ring"
-shows "a ^ CARD('a) = a"
-proof (cases "a=0")
-  case True thus ?thesis by auto
+lemma fermat_theorem_mod_ring [simp]:
+  fixes a::"'a mod_ring"
+  shows "a ^ CARD('a) = a"
+proof (cases "a = 0")
+  case True
+  then show ?thesis by auto
 next
   case False
-  thus ?thesis
+  then show ?thesis
   proof transfer
     fix a
-    assume a: "a \<in> {0..<int CARD('a)}" and a0: "a \<noteq> 0"
-    then have not_dvd: "\<not> CARD('a) dvd nat a"
+    assume "a \<in> {0..<int CARD('a)}" and "a \<noteq> 0"
+    then have a: "1 \<le> a" "a < int CARD('a)"
+      by simp_all
+    then have [simp]: "a mod int CARD('a) = a"
+      by simp
+    from a have not_dvd: "\<not> CARD('a) dvd nat a"
       by (auto simp add: zdvd_int zdvd_not_zless)
     with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       by (rule fermat_theorem)
     with a have "int (nat a ^ (CARD('a) - 1) mod CARD('a)) = 1"
-      by (simp add: of_nat_mod cong_def)
-    then have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
-      using a by (simp add: of_nat_mod)
+      by (simp add: cong_def)
+    with a have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
+      by (simp add: of_nat_mod)
     then have "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a"
       by simp
-    with a show  "a ^ CARD('a) mod int CARD('a) = a"
-      by (metis atLeastLessThan_iff mod_mult_right_eq mod_pos_pos_trivial neq0_conv
-        realpow_num_eq_if zero_less_card_finite)
+    then have "(a * (a ^ (CARD('a) - 1) mod int CARD('a))) mod int CARD('a) = a mod int CARD('a)"
+      by (simp only:)
+    then show "a ^ CARD('a) mod int CARD('a) = a"
+      by (simp add: mod_simps semiring_normalization_rules(27))
   qed
 qed
 

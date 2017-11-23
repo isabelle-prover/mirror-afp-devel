@@ -615,8 +615,8 @@ proof
     hence "(\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
         Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
         (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1))"
-     using pos by (intro bexI[of _ "Triple p a y"]) 
-       (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_def mod_exp_def)
+    using pos gt_1 by (intro bexI [of _ "Triple p a y"]) 
+      (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_def mod_exp_def)
     with pos gt_1 valid show ?thesis unfolding LAZY_DISJ_def by blast
   qed
 next

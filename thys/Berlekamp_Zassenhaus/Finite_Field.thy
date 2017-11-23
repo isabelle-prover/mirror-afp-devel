@@ -174,7 +174,12 @@ lemma Suc_0_mod_card [simp]: "Suc 0 mod CARD('a::nontriv) = 1"
   using one_mod_card by simp
 
 lemma one_mod_card_int [simp]: "1 mod int CARD('a::nontriv) = 1"
-  using of_nat_mod [of 1 "CARD('a)", where ?'a = int] by simp
+proof -
+  from nontriv [where ?'a = 'a] have "int (1 mod CARD('a::nontriv)) = 1"
+    by simp
+  then show ?thesis
+    using of_nat_mod [of 1 "CARD('a)", where ?'a = int] by simp
+qed
 
 lemma pow_mod_ring_transfer[transfer_rule]:
   "(pcr_mod_ring ===> op = ===> pcr_mod_ring) 
