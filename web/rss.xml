@@ -9,22 +9,40 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+    <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
     <item>
-       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
-       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+       <title>The IMAP CmRDT</title>
+              <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
+       <guid>https://www.isa-afp.org/entries/IMAP-CRDT.html</guid>
+       <dc:creator> Tim Jungnickel, Lennart Oldenburg, Matthias Loibl       </dc:creator>
+       <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
        <description>
-Stochastic matrices are a convenient way to model discrete-time and
-finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
-tells us something about the existence and uniqueness of non-negative
-eigenvectors of a stochastic matrix.  In this entry, we formalize
-stochastic matrices, link the formalization to the existing AFP-entry
-on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
-prove that stationary distributions always exist, and they are unique
-if the stochastic matrix is irreducible.</description>
+We provide our Isabelle/HOL formalization of a Conflict-free
+Replicated Datatype for Internet Message Access Protocol commands.
+We show that Strong Eventual Consistency (SEC) is guaranteed
+by proving the commutativity of concurrent operations. We base our
+formalization on the recently proposed &#34;framework for
+establishing Strong Eventual Consistency for Conflict-free Replicated
+Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
+additional example of how the recently proposed framework can be used
+to design and prove CRDTs.</description>
+    </item>
+    <item>
+       <title>Hybrid Multi-Lane Spatial Logic</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
+       <dc:creator> Sven Linker       </dc:creator>
+       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a semantic embedding of a spatio-temporal multi-modal
+logic, specifically defined to reason about motorway traffic, into
+Isabelle/HOL. The semantic model is an abstraction of a motorway,
+emphasising local spatial properties, and parameterised by the types
+of sensors deployed in the vehicles. We use the logic to define
+controller constraints to ensure safety, i.e., the absence of
+collisions on the motorway. After proving safety with a restrictive
+definition of sensors, we relax these assumptions and show how to
+amend the controller constraints to still guarantee safety.</description>
     </item>
     <item>
        <title>The Kuratowski Closure-Complement Theorem</title>
@@ -588,18 +606,6 @@ formal proof of the abstract algorithms closely follows a standard
 textbook proof. It is accessible even without being an expert in
 Isabelle/HOL, the interactive theorem prover used for the
 formalization.</description>
-    </item>
-    <item>
-       <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-              <link>https://www.isa-afp.org/entries/Flow_Networks.html</link>
-       <guid>https://www.isa-afp.org/entries/Flow_Networks.html</guid>
-       <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
-       <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of flow networks and the Min-Cut-Max-Flow
-theorem. Our formal proof closely follows a standard textbook proof,
-and is accessible even without being an expert in Isabelle/HOL, the
-interactive theorem prover used for the formalization.</description>
     </item>
   </channel>
 </rss>
