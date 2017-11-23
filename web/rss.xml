@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Oct 2017 00:00:00 +0000</pubDate>
+    <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
+       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+Stochastic matrices are a convenient way to model discrete-time and
+finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
+tells us something about the existence and uniqueness of non-negative
+eigenvectors of a stochastic matrix.  In this entry, we formalize
+stochastic matrices, link the formalization to the existing AFP-entry
+on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
+prove that stationary distributions always exist, and they are unique
+if the stochastic matrix is irreducible.</description>
+    </item>
     <item>
        <title>The Kuratowski Closure-Complement Theorem</title>
               <link>https://www.isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
@@ -584,26 +600,6 @@ We present a formalization of flow networks and the Min-Cut-Max-Flow
 theorem. Our formal proof closely follows a standard textbook proof,
 and is accessible even without being an expert in Isabelle/HOL, the
 interactive theorem prover used for the formalization.</description>
-    </item>
-    <item>
-       <title>Optics</title>
-              <link>https://www.isa-afp.org/entries/Optics.html</link>
-       <guid>https://www.isa-afp.org/entries/Optics.html</guid>
-       <dc:creator> Simon Foster, Frank Zeyda       </dc:creator>
-       <pubDate>25 May 2017 00:00:00 +0000</pubDate>
-       <description>
-Lenses provide an abstract interface for manipulating data types
-through spatially-separated views. They are defined abstractly in
-terms of two functions, &lt;em&gt;get&lt;/em&gt;, the return a value
-from the source type, and &lt;em&gt;put&lt;/em&gt; that updates the
-value. We mechanise the underlying theory of lenses, in terms of an
-algebraic hierarchy of lenses, including well-behaved and very
-well-behaved lenses, each lens class being characterised by a set of
-lens laws. We also mechanise a lens algebra in Isabelle that enables
-their composition and comparison, so as to allow construction of
-complex lenses. This is accompanied by a large library of algebraic
-laws. Moreover we also show how the lens classes can be applied by
-instantiating them with a number of Isabelle data types.</description>
     </item>
   </channel>
 </rss>
