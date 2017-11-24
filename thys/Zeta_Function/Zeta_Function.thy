@@ -217,13 +217,25 @@ text \<open>
   must be equal to our Hurwitz $\zeta$ function.
 \<close>
 definition hurwitz_zeta :: "real \<Rightarrow> complex \<Rightarrow> complex" where
-  "hurwitz_zeta a s = pre_zeta a s + of_real a powr (1 - s) / (s - 1)"
+  "hurwitz_zeta a s = (if s = 1 then 0 else pre_zeta a s + of_real a powr (1 - s) / (s - 1))"
 
 text \<open>
   The Riemann $\zeta$ function is simply the Hurwitz $\zeta$ function with $a = 1$.
 \<close>
 definition zeta :: "complex \<Rightarrow> complex" where
   "zeta = hurwitz_zeta 1"
+
+
+text \<open>
+  We define the $\zeta$ functions as 0 at their poles. To avoid confusion, these facts
+  are not added as simplification rules by default.
+\<close>
+lemma hurwitz_zeta_1: "hurwitz_zeta c 1 = 0"
+  by (simp add: hurwitz_zeta_def)
+
+lemma zeta_1: "zeta 1 = 0"
+  by (simp add: zeta_def hurwitz_zeta_1)
+
 
 context
 begin
@@ -521,8 +533,16 @@ text \<open>
   It is now obvious that $\zeta$ is holomorphic everywhere except 1, where it has a 
   simple pole with residue 1, which we can simply read off.
 \<close>
-theorem holomorphic_hurwitz_zeta: "a > 0 \<Longrightarrow> 1 \<notin> A\<Longrightarrow> hurwitz_zeta a holomorphic_on A"
-  unfolding hurwitz_zeta_def [abs_def] by (auto intro!: holomorphic_intros)
+theorem holomorphic_hurwitz_zeta: 
+  assumes "a > 0" "1 \<notin> A"
+  shows   "hurwitz_zeta a holomorphic_on A"
+proof -
+  have "(\<lambda>s. pre_zeta a s + complex_of_real a powr (1 - s) / (s - 1)) holomorphic_on A"
+    using assms by (auto intro!: holomorphic_intros)
+  also from assms have "?this \<longleftrightarrow> ?thesis"
+    by (intro holomorphic_cong) (auto simp: hurwitz_zeta_def)
+  finally show ?thesis .
+qed
 
 corollary holomorphic_hurwitz_zeta' [holomorphic_intros]:
   assumes "f holomorphic_on A" and "a > 0" and "\<And>z. z \<in> A \<Longrightarrow> f z \<noteq> 1"
@@ -574,8 +594,11 @@ proof -
     by (auto simp: filterlim_at eventually_at_filter)
   hence ***: "filterlim (\<lambda>s :: complex. a powr (1 - s) / (s - 1)) at_infinity (at 1)"
     by (intro filterlim_divide_at_infinity [OF **]) auto
-  show ?thesis unfolding is_pole_def hurwitz_zeta_def
-    by (rule tendsto_add_filterlim_at_infinity * ***)+
+  have "is_pole (\<lambda>s. pre_zeta a s + complex_of_real a powr (1 - s) / (s - 1)) 1"
+    unfolding is_pole_def hurwitz_zeta_def by (rule tendsto_add_filterlim_at_infinity * ***)+
+  also have "?this \<longleftrightarrow> ?thesis" unfolding is_pole_def
+    by (intro filterlim_cong refl) (auto simp: eventually_at_filter hurwitz_zeta_def)
+  finally show ?thesis .
 qed
 
 corollary is_pole_zeta: "is_pole zeta 1"
@@ -598,8 +621,9 @@ theorem residue_hurwitz_zeta:
   shows   "residue (hurwitz_zeta a) 1 = 1"
 proof -
   note holo = analytic_imp_holomorphic[OF analytic_pre_zeta]
-  have "residue (hurwitz_zeta a) 1 = residue (\<lambda>z. a powr (1 - z) / (z - 1)) 1"
-    unfolding hurwitz_zeta_def using assms
+  have "residue (hurwitz_zeta a) 1 = residue (\<lambda>z. pre_zeta a z + a powr (1 - z) / (z - 1)) 1"
+    by (intro residue_cong) (auto simp: eventually_at_filter hurwitz_zeta_def)
+  also have "\<dots> = residue (\<lambda>z. a powr (1 - z) / (z - 1)) 1" using assms
     by (subst residue_add [of UNIV])
        (auto intro!: holomorphic_intros holo intro: residue_holo[of UNIV, OF _ _ holo])
   also have "\<dots> = complex_of_real a powr (1 - 1)"
@@ -678,7 +702,11 @@ lemma pre_zeta_cnj [simp]: "a > 0 \<Longrightarrow> pre_zeta a (cnj z) = cnj (pr
   by (simp add: pre_zeta_def)
 
 theorem hurwitz_zeta_cnj [simp]: "a > 0 \<Longrightarrow> hurwitz_zeta a (cnj z) = cnj (hurwitz_zeta a z)"
-  by (simp add: hurwitz_zeta_def cnj_powr)
+proof -
+  assume "a > 0"
+  moreover have "cnj z = 1 \<longleftrightarrow> z = 1" by (simp add: complex_eq_iff)
+  ultimately show ?thesis by (auto simp: hurwitz_zeta_def cnj_powr)
+qed
 
 theorem zeta_cnj [simp]: "zeta (cnj z) = cnj (zeta z)"
   by (simp add: zeta_def)
@@ -696,8 +724,9 @@ theorem hurwitz_zeta_neg_of_nat:
   assumes "a > 0"
   shows   "hurwitz_zeta a (-of_nat n) = -bernpoly (Suc n) a / of_nat (Suc n)"
 proof -
-  have "hurwitz_zeta a (-of_nat n) = 
-          pre_zeta a (-of_nat n) + a powr real (Suc n) / (-of_nat (Suc n))"
+  have "-of_nat n \<noteq> (1::complex)" by (simp add: complex_eq_iff)
+  hence "hurwitz_zeta a (-of_nat n) = 
+           pre_zeta a (-of_nat n) + a powr real (Suc n) / (-of_nat (Suc n))"
     unfolding zeta_def hurwitz_zeta_def using assms by (simp add: powr_of_real [symmetric])
   also have "a powr real (Suc n) / (-of_nat (Suc n)) = - (a powr real (Suc n) / of_nat (Suc n))"
     by (simp add: divide_simps del: of_nat_Suc)
