@@ -120,7 +120,7 @@ begin
 
   declare conj_cong [fundef_cong]
 
-  function (sequential) valid_Tree :: "'state \<Rightarrow> ('idx,'pred,'act) Tree \<Rightarrow> bool" where
+  function valid_Tree :: "'state \<Rightarrow> ('idx,'pred,'act) Tree \<Rightarrow> bool" where
     "valid_Tree P (tConj tset) \<longleftrightarrow> (\<forall>t\<in>set_bset tset. valid_Tree P t)"
   | "valid_Tree P (tNot t) \<longleftrightarrow> \<not> valid_Tree P t"
   | "valid_Tree P (tPred \<phi>) \<longleftrightarrow> P \<turnstile> \<phi>"
@@ -208,7 +208,7 @@ begin
       qed
   qed
 
-  lemma valid_Tree_eqvt [eqvt]:
+  lemma valid_Tree_eqvt (*[eqvt]*):
     assumes "valid_Tree P t" shows "valid_Tree (p \<bullet> P) (p \<bullet> t)"
   using assms by (metis valid_Tree_eqvt')
 
@@ -248,7 +248,7 @@ begin
     valid_Tree
   by (fact alpha_Tree_valid_Tree)
 
-  lemma valid_Tree\<^sub>\<alpha>_eqvt [eqvt]:
+  lemma valid_Tree\<^sub>\<alpha>_eqvt (*[eqvt]*):
     assumes "valid_Tree\<^sub>\<alpha> P t" shows "valid_Tree\<^sub>\<alpha> (p \<bullet> P) (p \<bullet> t)"
   using assms by transfer (fact valid_Tree_eqvt)
 
@@ -288,7 +288,7 @@ begin
     valid_Tree\<^sub>\<alpha>
   .
 
-  lemma valid_eqvt [eqvt]:
+  lemma valid_eqvt (*[eqvt]*):
     assumes "P \<Turnstile> x" shows "(p \<bullet> P) \<Turnstile> (p \<bullet> x)"
   using assms by transfer (metis valid_Tree\<^sub>\<alpha>_eqvt)
 

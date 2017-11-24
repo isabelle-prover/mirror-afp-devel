@@ -13,7 +13,7 @@ begin
   where
     "x distinguishes P from Q \<equiv> P \<Turnstile> x \<and> \<not> Q \<Turnstile> x"
 
-  lemma distinguishing_formula_eqvt [eqvt]:
+  lemma distinguishing_formula_eqvt (*[eqvt]*):
     assumes "x distinguishes P from Q" shows "(p \<bullet> x) distinguishes (p \<bullet> P) from (p \<bullet> Q)"
   using assms unfolding distinguishing_formula_def
   by (metis permute_minus_cancel(2) FL_valid_eqvt)
@@ -234,7 +234,7 @@ begin
       unfolding is_L_bisimulation_def by metis
   qed
 
-  theorem equivalence_implies_bisimilarity: assumes "FL_logically_equivalent F P Q" shows "P \<sim>\<cdot>[F] Q"
+  theorem FL_equivalence_implies_bisimilarity: assumes "FL_logically_equivalent F P Q" shows "P \<sim>\<cdot>[F] Q"
   using assms by (metis FL_bisimilar_def FL_equivalence_is_L_bisimulation)
 
 end
