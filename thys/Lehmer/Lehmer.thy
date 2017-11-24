@@ -17,10 +17,8 @@ text {*
 lemma mod_1_coprime_nat:
   "coprime a b" if "0 < n" "[a ^ n = 1] (mod b)" for a b :: nat
 proof -
-  from that have "[a * a ^ (n - 1) = 1] (mod b)"
-    by (cases n) simp_all
-  then have "coprime (a ^ n) b"
-    by (cases "b = 0") (auto simp add: coprime_iff_invertible_nat)
+  from that coprime_1_left have "coprime (a ^ n) b"
+    using cong_imp_coprime_nat cong_sym by blast
   with \<open>0 < n\<close> show ?thesis
     by simp
 qed
