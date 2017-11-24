@@ -801,7 +801,7 @@ lemma alpha_Tree_permute_rep_commute [simp]: "p \<bullet> rep_Tree\<^sub>\<alpha
 by (metis Tree\<^sub>\<alpha>.abs_eq_iff Tree\<^sub>\<alpha>_abs_rep permute_Tree\<^sub>\<alpha>.abs_eq)
 
 
-subsection \<open>Constructors for trees modulo $\alpha$-equivalence\<close>
+subsection \<open>Constructors for trees modulo \texorpdfstring{$\alpha$}{alpha}-equivalence\<close>
 
 text \<open>The constructors are lifted from trees.\<close>
 
