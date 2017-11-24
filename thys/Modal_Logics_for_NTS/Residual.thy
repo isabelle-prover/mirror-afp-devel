@@ -221,7 +221,7 @@ proof
   then obtain p where "({}, (\<alpha>1, P1)) \<approx>set (op=) supp p (bn \<alpha>2, (\<alpha>2, P2))"
     using Abs_eq_iff(1) by blast
   then show "\<alpha>1 = \<alpha>2 \<and> P1 = P2"
-    unfolding alpha_set.simps using supp_perm_eq by fastforce
+    unfolding alpha_set using supp_perm_eq by fastforce
 next
   assume "\<alpha>1 = \<alpha>2 \<and> P1 = P2" then show "\<langle>\<alpha>1,P1\<rangle> = \<langle>\<alpha>2,P2\<rangle>"
     by simp
