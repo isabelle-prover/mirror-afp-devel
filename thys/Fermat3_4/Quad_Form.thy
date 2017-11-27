@@ -248,6 +248,8 @@ proof -
   from ass have "P dvd A \<and> n>0" by simp
   hence "P^n dvd A^n" by simp
   then obtain U where U: "A^n = U*P^n" by (auto simp only: dvd_def ac_simps)
+  from ass have "coprime a b"
+    by blast
   have "\<exists> e. P^n dvd b*p + e*a*q \<and> \<bar>e\<bar> = 1"
   proof -
     have Pn_dvd_prod: "P^n dvd (b*p + a*q)*(b*p - a*q)"
@@ -409,14 +411,14 @@ proof -
     with a and b and ass show ?thesis by (simp add: qfN_mult2 ac_simps)
   qed
   moreover have "coprime u v"
-  proof -
-    let ?g = "gcd u v"
-    have "?g dvd u \<and> ?g dvd v" by auto
-    hence "?g dvd u*p + v*(e*N*q) \<and> ?g dvd v*p - u*(e*q)" by simp
-    with a and b have "?g dvd a \<and> ?g dvd b" by (auto simp only: ac_simps)
-    hence "?g dvd gcd a b" by simp
-    with ass show ?thesis
-      by (simp add: gcd_eq_1_imp_coprime)
+    using \<open>coprime a b\<close>
+  proof (rule coprime_imp_coprime)
+    fix w
+    assume "w dvd u" "w dvd v"
+    then have "w dvd u*p + v*(e*N*q) \<and> w dvd v*p - u*(e*q)"
+      by simp
+    with a b show "w dvd a" "w dvd b"
+      by (auto simp only: ac_simps)
   qed
   moreover from e and ass have
     "\<bar>e\<bar> = 1 \<and> A^n = a^2+N*b^2 \<and> P^n = p^2+N*q^2" by simp
@@ -457,6 +459,24 @@ proof (rule ccontr, auto)
   with ps ass2 ass show False by auto
 qed
 
+lemma prime_factor_int:
+  fixes k :: int
+  assumes "\<bar>k\<bar> \<noteq> 1"
+  obtains p where "prime p" "p dvd k"
+proof (cases "k = 0")
+  case True
+  then have "prime (2::int)" and "2 dvd k"
+    by simp_all
+  with that show thesis
+    by blast
+next
+  case False
+  with assms prime_divisor_exists [of k] obtain p where "prime p" "p dvd k"
+    by auto
+  with that show thesis
+    by blast
+qed
+
 lemma qfN_oddprime_cube:
   "\<lbrakk> prime (p^2+N*q^2::int); odd (p^2+N*q^2); p \<noteq> 0; N \<ge> 1 \<rbrakk>
   \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> coprime a (N*b)"
@@ -467,26 +487,28 @@ proof -
   let ?a = "p*(p^2 - 3*N*q^2)"
   let ?b = "q*(3*p^2 - N*q^2)"
   have abP: "?P^3 = ?a^2 + N*?b^2" by (simp add: eval_nat_numeral field_simps)
-  have "gcd ?b ?a \<noteq>  1 \<Longrightarrow> ?P dvd p"
+  have "?P dvd p" if h1: "gcd ?b ?a \<noteq> 1"
   proof -
     let ?h = "gcd ?b ?a"
-    assume h1: "?h \<noteq> 1"
     have h2: "?h \<ge> 0" by simp
     hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
-    { assume "?h = 0" hence "nat\<bar>?b\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0"
+    { assume "?h = 0"
+      hence "?a = 0 \<and> ?b = 0"
         by auto
-      hence "?a = 0 \<and> ?b = 0" by arith
-      with abP have "?P^3 = 0" by auto
-      with P have False by (unfold prime_int_iff, auto)
+      with abP have "?P^3 = 0"
+        by auto
+      with P have False
+        by (unfold prime_int_iff, auto)
       hence ?thesis by simp }
     moreover
-    { assume "?h > 1" hence "\<exists> g. prime g \<and> g dvd (nat ?h)" using prime_factor_nat by simp
-      then obtain g' where "prime g' \<and> g' dvd (nat ?h)" by blast
-      moreover define g where "g = int g'"
-      ultimately have g: "prime g \<and> g dvd ?h" by (simp add: h2 zdvd_int)
-      hence "g dvd ?b \<and> g dvd ?a" by simp
+    { assume "?h > 1"
+      then have "\<exists>g. prime g \<and> g dvd ?h"
+        using prime_factor_int [of ?h] by auto
+      then obtain g where g: "prime g" "g dvd ?h"
+        by blast
+      then have "g dvd ?b \<and> g dvd ?a" by simp
       with g have g1: "g dvd q \<or> g dvd 3*p^2-N*q^2"
         and g2: "g dvd p \<or> g dvd p^2 - 3*N*q^2"
         by (auto dest: prime_dvd_multD)
@@ -590,24 +612,24 @@ proof -
       qed }
     ultimately show ?thesis by blast
   qed
-  moreover have "gcd N ?a \<noteq> 1 \<Longrightarrow> ?P dvd p"
+  moreover have "?P dvd p" if h1: "gcd N ?a \<noteq> 1"
   proof -
     let ?h = "gcd N ?a"
-    assume h1: "?h \<noteq> 1"
     have h2: "?h \<ge> 0" by simp
     hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
-    { assume "?h = 0" hence "nat\<bar>N\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0"
+    { assume "?h = 0" hence "N = 0 \<and> ?a = 0"
         by auto
       hence "N = 0" by arith
       with N1 have False by auto
       hence ?thesis by simp }
     moreover
-    { assume "?h > 1" hence "\<exists> g. prime g \<and> g dvd (nat ?h)" using prime_factor_nat by simp
-      then obtain g' where "prime g' \<and> g' dvd (nat ?h)" by blast
-      moreover define g where "g = int g'"
-      ultimately have g: "prime g \<and> g dvd ?h" by (simp add: h2 zdvd_int)
+    { assume "?h > 1"
+      then have "\<exists>g. prime g \<and> g dvd ?h"
+        using prime_factor_int [of ?h] by auto
+      then obtain g where g: "prime g" "g dvd ?h"
+        by blast
       hence gN: "g dvd N" and "g dvd ?a" by auto
       hence "g dvd p*p^2 - N*(3*p*q^2)"
         by (auto simp only: right_diff_distrib ac_simps)
