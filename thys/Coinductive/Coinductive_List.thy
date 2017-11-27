@@ -2129,7 +2129,7 @@ proof -
   note [simp] = this
 
   { fix x
-    def n \<equiv> "0 :: nat"
+    define n :: nat where "n = 0"
     have "(lmap f ^^ n) (h x) = (lmap f ^^ n) (iterates f x)"
       by(coinduction arbitrary: n)(auto simp add: funpow_swap1 lmap_iterates intro: exI[where x="Suc n" for n]) }
   thus ?thesis by auto
@@ -2405,7 +2405,7 @@ by (metis llcp_commute llcp_lprefix1)
 
 lemma llcp_le_length: "llcp xs ys \<le> min (llength xs) (llength ys)"
 proof -
-  def m \<equiv> "llcp xs ys" and n \<equiv> "min (llength xs) (llength ys)"
+  define m n where "m = llcp xs ys" and "n = min (llength xs) (llength ys)"
   hence "(m, n) \<in> {(llcp xs ys, min (llength xs) (llength ys)) |xs ys :: 'a llist. True}" by blast
   thus "m \<le> n"
   proof(coinduct rule: enat_leI)
@@ -3667,7 +3667,7 @@ qed
 lemma llexord_refl [simp, intro!]:
   "llexord r xs xs"
 proof -
-  def ys == xs
+  define ys where "ys = xs"
   hence "xs = ys" by simp
   thus "llexord r xs ys"
     by(coinduct xs ys) auto

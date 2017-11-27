@@ -106,7 +106,7 @@ lemma wild_recursion:
   shows "ccApprox (ttree_restr (-S) (substitute f T t)) \<sqsubseteq> G"
 proof(rule ccApprox_belowI)
   fix xs
-  def seen \<equiv> "{} :: var set"
+  define seen :: "var set" where "seen = {}"
 
   assume "xs \<in> paths (ttree_restr (- S) (substitute f T t))"
   then obtain xs' xs'' where "xs = [x\<leftarrow>xs' . x \<notin> S]" and "substitute'' f T xs'' xs'" and "xs'' \<in> paths t"
@@ -207,8 +207,8 @@ lemma wild_recursion_thunked:
 proof(rule ccApprox_belowI)
   fix xs
 
-  def seen \<equiv> "{} :: var set"
-  def seen_T \<equiv> "{} :: var set"
+  define seen :: "var set" where "seen = {}"
+  define seen_T :: "var set" where "seen_T = {}"
 
   assume "xs \<in> paths (ttree_restr (- S) (substitute f T t))"
   then obtain xs' xs'' where "xs = [x\<leftarrow>xs' . x \<notin> S]" and "substitute'' f T xs'' xs'" and "xs'' \<in> paths t"

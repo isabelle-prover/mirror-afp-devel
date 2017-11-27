@@ -65,7 +65,7 @@ proof-
   have "\<forall>x \<in> S. \<exists> i. x \<in> Y i" by auto
   then obtain f where f: "\<forall> x\<in> S. x \<in> Y (f x)" by metis
 
-  def i \<equiv> "Max (f ` S)"
+  define i where "i = Max (f ` S)"
   from `finite S`
   have "finite (f ` S)" by simp
   hence "\<forall> x\<in>S. f x \<le> i" unfolding i_def by auto

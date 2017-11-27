@@ -442,9 +442,9 @@ subsection {* The Generalized Bell Recurrence Relation *}
 theorem Bell_eq:
   "Bell (n + m) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
 proof -
-  def A == "{0..<n + m}"
-  def B == "{0..<n}"
-  def C == "{n..<n + m}"
+  define A where "A = {0..<n + m}"
+  define B where "B = {0..<n}"
+  define C where "C = {n..<n + m}"
   have "A = B \<union> C" "B \<inter> C = {}" "finite B" "card B = n" "finite C" "card C = m"
     unfolding A_def B_def C_def by auto
   have step1: "Bell (n + m) = card {P. partition_on A P}"

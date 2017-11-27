@@ -52,7 +52,7 @@ lemma pure_similarE:
   assumes "Pure x' \<cong> y"
   obtains y' where "y = Pure y'" and "x' \<leftrightarrow> y'"
 proof -
-  def x \<equiv> "Pure x' :: 'a itrm"
+  define x :: "'a itrm" where "x = Pure x'"
   from assms have "x \<cong> y" unfolding x_def .
   then have "(\<forall>x''. x = Pure x'' \<longrightarrow> (\<exists>y'. y = Pure y' \<and> x'' \<leftrightarrow> y')) \<and>
     (\<forall>x''. y = Pure x'' \<longrightarrow> (\<exists>y'. x = Pure y' \<and> x'' \<leftrightarrow> y'))"
@@ -68,7 +68,7 @@ lemma opaque_similarE:
   assumes "Opaque x' \<cong> y"
   obtains y' where "y = Opaque y'" and "x' = y'"
 proof -
-  def x \<equiv> "Opaque x' :: 'a itrm"
+  define x :: "'a itrm" where "x = Opaque x'"
   from assms have "x \<cong> y" unfolding x_def .
   then have "(\<forall>x''. x = Opaque x'' \<longrightarrow> (\<exists>y'. y = Opaque y' \<and> x'' = y')) \<and>
     (\<forall>x''. y = Opaque x'' \<longrightarrow> (\<exists>y'. x = Opaque y' \<and> x'' = y'))"
@@ -672,11 +672,11 @@ lemma dist_perm_eta:
   obtains vs' where "\<And>t. \<forall>i\<in>frees t. n \<le> i \<Longrightarrow>
     (Abs^^n) (var_dist vs' ((Abs^^n) (var_dist vs (liftn n t 0)))) \<leftrightarrow> strip_context n t 0"
 proof -
-  def vsubsts \<equiv> "\<lambda>n vs' vs.
+  define vsubsts where "vsubsts n vs' vs =
     map (\<lambda>v.
       if v < n - length vs' then v
       else if v < n then vs' ! (n - v - 1) + (n - length vs')
-      else v - length vs') vs"
+      else v - length vs') vs" for n vs' vs
 
   let ?app_vars = "\<lambda>t n vs' vs. var_dist vs' ((Abs^^n) (var_dist vs (liftn n t 0)))"
   {
@@ -691,7 +691,7 @@ proof -
       then show ?case by simp
     next
       case (Cons v vs')
-      def n' \<equiv> "n - 1"
+      define n' where "n' = n - 1"
       have Suc_n': "Suc n' = n" unfolding n'_def using Cons.prems by simp
       have vs'_length: "length vs' \<le> n'" unfolding n'_def using Cons.prems by simp
       let ?m' = "n' - length vs'"
@@ -727,7 +727,7 @@ proof -
   }
   note partial_appd = this
 
-  def vs' \<equiv> "map (\<lambda>i. n - perm_vars_inv n vs (n - i - 1) - 1) [0..<n]"
+  define vs' where "vs' = map (\<lambda>i. n - perm_vars_inv n vs (n - i - 1) - 1) [0..<n]"
 
   from perm_vars have vs_length: "length vs = n" by (rule perm_vars_length)
   have vs'_length: "length vs' = n" unfolding vs'_def by simp
@@ -945,7 +945,7 @@ lemma itrm_brackets_dist:
   assumes defined: "itrm_brackets vs x = Some x'"
     shows "opaque_dist vs x' \<simeq>\<^sup>+ x"
 proof -
-  def x'' \<equiv> x'
+  define x'' where "x'' = x'"
   have "x' \<simeq>\<^sup>+ x''" unfolding x''_def ..
   with defined show "opaque_dist vs x'' \<simeq>\<^sup>+ x"
     unfolding opaque_dist_def

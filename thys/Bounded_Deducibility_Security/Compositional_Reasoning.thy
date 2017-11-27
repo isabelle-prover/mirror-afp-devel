@@ -217,11 +217,10 @@ and e: "unwind_exit \<Delta>e"
 shows secure
 proof-
   let ?\<Delta>0 = "hd \<Delta>s"  let ?\<Delta>s = "insert \<Delta>e (set \<Delta>s)"
-  def "next" \<equiv>
-  "\<lambda> \<Delta>1.
-     if \<Delta>1 = \<Delta>e then {}
+  define "next" where "next \<Delta>1 =
+    (if \<Delta>1 = \<Delta>e then {}
      else if \<Delta>1 = last \<Delta>s then {\<Delta>1,\<Delta>e}
-     else {\<Delta>1,SOME \<Delta>2. (\<Delta>1,\<Delta>2) \<in> allConsec \<Delta>s,\<Delta>e}"
+     else {\<Delta>1,SOME \<Delta>2. (\<Delta>1,\<Delta>2) \<in> allConsec \<Delta>s,\<Delta>e})" for \<Delta>1
   show ?thesis
   proof(rule unwind_dec_secure)
     show "?\<Delta>0 \<in> ?\<Delta>s" using n by auto

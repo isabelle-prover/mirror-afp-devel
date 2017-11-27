@@ -851,8 +851,8 @@ proof (cases "f`C=f`D")
     using domain.chamber_distance_def codomain.chamber_distance_def by simp
 next  
   case False
-  def Cs \<equiv> "ARG_MIN length Cs. domain.gallery (C#Cs@[D])"
-  and Ds \<equiv> "ARG_MIN length Ds. codomain.gallery (f`C # Ds @ [f`D])"
+  define Cs Ds where "Cs = (ARG_MIN length Cs. domain.gallery (C#Cs@[D]))"
+    and "Ds = (ARG_MIN length Ds. codomain.gallery (f`C # Ds @ [f`D]))"
   from assms False Cs_def have "codomain.gallery (f`C # f\<Turnstile>Cs @ [f`D])"
     using gallery_map domain.maxsimp_connect[of C D]
           arg_min_natI[of "\<lambda>Cs. domain.gallery (C#Cs@[D])"]
@@ -876,9 +876,9 @@ lemma face_distance_map:
   assumes "domain.chamber C" "F\<in>X"
   shows   "codomain.face_distance (f`F) (f`C) = domain.face_distance F C"
 proof-
-  def D    \<equiv> "domain.closest_supchamber F C"
-  and D'   \<equiv> "codomain.closest_supchamber (f`F) (f`C)"
-  and invf \<equiv> "the_inv_into (\<Union>X) f"
+  define D D' invf where "D = domain.closest_supchamber F C"
+    and "D' = codomain.closest_supchamber (f`F) (f`C)"
+    and "invf = the_inv_into (\<Union>X) f"
 
   from assms D_def D'_def invf_def have chambers:
     "codomain.chamber (f`C)" "domain.chamber D" "codomain.chamber D'"
@@ -1048,7 +1048,7 @@ lemma split_gallery:
     \<exists>As A B Bs. A\<in>f\<turnstile>\<C> \<and> B\<in>\<C>-f\<turnstile>\<C> \<and> C#Cs@[D] = As@A#B#Bs"
 proof (induct Cs arbitrary: C)
   case Nil
-  def As \<equiv> "[]::'a set list"
+  define As :: "'a set list" where "As = []"
   hence "C#[]@[D] = As@C#D#As" by simp
   with Nil(1,2) show ?case by auto
 next
@@ -1651,20 +1651,19 @@ proof (rule fun_eq_onI)
     case True with funeq show ?thesis using fun_eq_onD by fast
   next
     case False
-    def F: F \<equiv> "f`C \<inter> f`D"
-    and G: G \<equiv> "g`C \<inter> g`D"
+    define F G where "F = f`C \<inter> f`D" and "G = g`C \<inter> g`D"
 
     from morph(1) chambers(1-4) have 1: "f`C \<sim> f`D"
       using ChamberComplexMorphism.adj_map' by fast
-    with F chambers(4) have F_facet: "F\<lhd>f`C" "F\<lhd>f`D"
+    with F_def chambers(4) have F_facet: "F\<lhd>f`C" "F\<lhd>f`D"
       using adjacent_int_facet1[of "f`C"] adjacent_int_facet2[of "f`C"] by auto
 
-    from F G chambers have "G = F"
+    from F_def G_def chambers have "G = F"
       using ChamberComplexMorphism.adj_map'[OF morph(2)]
             adjacent_to_adjacent_int[of C D g] 1
             adjacent_to_adjacent_int[of C D f] funeq fun_eq_on_im[of f g]
       by    force
-    with G morph(2) chambers have F_facet': "F\<lhd>g`D"
+    with G_def morph(2) chambers have F_facet': "F\<lhd>g`D"
       using ChamberComplexMorphism.adj_map' adjacent_int_facet2 by blast
     with chambers(1,2,4,5) have 2: "g`D = f`D"
       using ChamberComplexMorphism.chamber_map[OF morph(1)] F_facet
@@ -1737,7 +1736,7 @@ proof (rule fun_eq_onI)
   fix v assume "v \<in> \<Union>W"
   from this obtain D where "ChamberComplex.chamber W D" "v\<in>D"
     using ChamberComplex.simplex_in_max[OF W] by auto
-  moreover def Cs \<equiv> "ARG_MIN length Cs. ChamberComplex.gallery W (C#Cs@[D])"
+  moreover define Cs where "Cs = (ARG_MIN length Cs. ChamberComplex.gallery W (C#Cs@[D]))"
   ultimately show "f v = g v"
     using chamber map_gals[of "Cs@[D]"]
           ChamberComplex.gallery_least_length[OF W]
@@ -1887,7 +1886,7 @@ proof
       using B' chamber_distance_def by auto
   next
     case False
-    def Ds \<equiv> "ARG_MIN length Ds. gallery (B#Ds@[D])"
+    define Ds where "Ds = (ARG_MIN length Ds. gallery (B#Ds@[D]))"
     with B C D False closerToC_def show ?thesis
       using chamber_system_def folding.chamber_map gallery_least_length[of B D]
             chamber_image_closer[of D B Ds]
@@ -1968,7 +1967,7 @@ next
     using chamber_system_def folding.inj_on_chamber[of C]
           inj_on_pullback_facet[of f C z]
     by    auto
-  def B \<equiv> "the_adj_chamber C y"
+  define B where "B = the_adj_chamber C y"
   with CD(1) y(1) have B: "chamber B" "y\<lhd>B" "B\<noteq>C"
     using the_adj_chamber the_adj_chamber_facet the_adj_chamber_neq by auto
   have "f`B \<noteq> f`C"
@@ -2028,10 +2027,8 @@ lemma gallery_preimage: "set Cs \<subseteq> \<C>-f\<turnstile>\<C> \<Longrightar
   by    fast
 
 lemma chambercomplex_opp_half_apartment: "ChamberComplex folding.Y"
-proof (
-  intro_locales, rule folding.simplicialcomplex_opp_half_apartment, unfold_locales
-)
-  def Y \<equiv> "folding.Y"
+proof (intro_locales, rule folding.simplicialcomplex_opp_half_apartment, unfold_locales)
+  define Y where "Y = folding.Y"
   fix y assume "y\<in>Y" 
   with Y_def obtain C where "C\<in>\<C>-f\<turnstile>\<C>" "y\<subseteq>C"
     using folding.opp_half_apartment_def by auto
@@ -2041,7 +2038,7 @@ proof (
           chamber_system_def max_in_subcomplex[of Y]
     by    force
 next
-  def Y \<equiv> "folding.Y"
+  define Y where "Y = folding.Y"
   fix C D
   assume CD:  "SimplicialComplex.maxsimp Y C" "SimplicialComplex.maxsimp Y D"
               "C\<noteq>D"
@@ -2053,7 +2050,7 @@ next
           folding.maxsimp_map_into_image folding.chambercomplex_image
           ChamberComplex.maxsimp_connect[of "f\<turnstile>X" "f`C" "f`D"]
     by    auto
-  def Cs    : Cs     \<equiv> "map opp_chamber Ds"
+  define Cs where "Cs = map opp_chamber Ds"
   from Ds have Ds': "gallery ((f`C)#Ds@[f`D])"
     using folding.chambersubcomplex_image subcomplex_gallery by fast
   with Ds have Ds'': "set Ds \<subseteq> f\<turnstile>\<C>"
@@ -2061,13 +2058,13 @@ next
           ChamberComplex.galleryD_chamber ChamberComplex.chamberD_simplex
           gallery_chamber_system
     by    fastforce
-  have "set Cs \<subseteq> \<C>-f\<turnstile>\<C>"
+  have *: "set Cs \<subseteq> \<C>-f\<turnstile>\<C>"
   proof
     fix B assume "B \<in> set Cs"
-    with Cs obtain A where "A\<in>set Ds" "B = opp_chamber A" by auto
+    with Cs_def obtain A where "A\<in>set Ds" "B = opp_chamber A" by auto
     with Ds'' show "B \<in> \<C>-f\<turnstile>\<C>" using folding.opp_chamberD1[of A] by auto
   qed
-  moreover with Cs CD' Ds' Ds'' have "gallery (C#Cs@[D])"
+  moreover from Cs_def CD' Ds' Ds'' * have "gallery (C#Cs@[D])"
     using folding.f_opp_chamber_list gallery_preimage[of "C#Cs@[D]"] by simp
   ultimately show "\<exists>Cs. SimplicialComplex.maxsimpchain Y (C # Cs @ [D])"
     using Y_def CD' folding.subcomplex_opp_half_apartment
@@ -2147,7 +2144,7 @@ proof
       using chamber_distance_def by auto
   next
     case False
-    def Cs \<equiv> "ARG_MIN length Cs. gallery (B#Cs@[C])"
+    define Cs where "Cs = (ARG_MIN length Cs. gallery (B#Cs@[C]))"
     with B C D False closerToD_def show ?thesis
       using chamber_system_def folding.chamber_map[of D]
             gallery_least_length[of B C] chamber_distance_le
@@ -2358,7 +2355,7 @@ proof-
       show  "OpposedThinChamberComplexFoldings_axioms X f g' C0"
       by    unfold_locales auto
   qed
-  def a: a \<equiv> "f'\<turnstile>\<C>" and b: b \<equiv> "f\<turnstile>\<C>"
+  define a b where "a = f'\<turnstile>\<C>" and "b = f\<turnstile>\<C>"
   hence "a\<subseteq>\<C>" "b\<subseteq>\<C>" "\<C>-a = \<C>-b"
     using OpposedThinChamberComplexFoldings.axioms(2)[OF assms(1)]
           OpposedThinChamberComplexFoldings.axioms(2)[OF 1]
@@ -2372,7 +2369,7 @@ proof-
           ]
     by    auto
   hence "a=b" by fast
-  with a b show ?thesis by simp
+  with a_def b_def show ?thesis by simp
 qed
 
 lemma unique_half_chamber_system_g:
@@ -3281,7 +3278,7 @@ lemma wall_crossings_min_gallery_betwI:
   shows   "min_gallery (C#Cs@[D])"
 proof (rule min_galleryI_betw)
   obtain B Bs where BBs: "Cs@[D] = B#Bs" using snoc_conv_cons by fast
-  def H \<equiv> "the_wall_betw C B"
+  define H where "H = the_wall_betw C B"
   with BBs assms(3) have 1: "separated_by H C D" by simp
   show "C\<noteq>D"
   proof (cases "H={}")
@@ -3363,9 +3360,9 @@ next
         using the_wall_betw_self_empty by simp
     next
       case (Cons E Es)
-      def H \<equiv> "the_wall_betw B E"
-      with Cons have "H \<in> set (wall_crossings (B#Bs@[C]))" by simp
-      moreover with assms(3) Cons_snoc have "H \<noteq> {}" by fast
+      define H where "H = the_wall_betw B E"
+      with Cons have *: "H \<in> set (wall_crossings (B#Bs@[C]))" by simp
+      moreover from assms(3) Cons_snoc * have "H \<noteq> {}" by fast
       ultimately show ?thesis
         using assms(1) Cons_snoc Cons True H_def
               the_wall_betw_nempty(1)[of B E] not_self_separated_by_wall[of H B]
@@ -3419,7 +3416,7 @@ proof (induct Cs rule: list_induct_CCons)
     with split(1-5) show ?thesis by blast
   next
     case True
-    def H \<equiv> "the_wall_betw C J"
+    define H where "H = the_wall_betw C J"
     with True CCons(4) have "H\<in>set (wall_crossings (J#Js))" by simp
     from this obtain Bs E F Fs
       where split1: "J#Js = Bs@[E,F]@Fs" "H = the_wall_betw E F"
@@ -3976,16 +3973,16 @@ proof (induct ss rule: list_induct_ssnoc)
     by    (fastforce simp add: zero_permutation.rep_eq)
 next
   case (ssnoc ss s t)
-  def Cs: Cs \<equiv> "map (\<lambda>w. w `\<rightarrow> C0) (sums ss)"
-  and D : D  \<equiv> "sum_list (ss@[s]) `\<rightarrow> C0"
-  and E : E  \<equiv> "sum_list (ss@[s,t]) `\<rightarrow> C0"
+  define Cs D E where "Cs = map (\<lambda>w. w `\<rightarrow> C0) (sums ss)"
+    and "D = sum_list (ss@[s]) `\<rightarrow> C0"
+    and "E = sum_list (ss@[s,t]) `\<rightarrow> C0"
   with ssnoc have "gallery (Cs@[D,E])"
     using sum_list_S_in_W[of "ss@[s,t]"] sum_list_S_in_W[of "ss@[s]"]
           fundchamber_W_image_chamber
           fundchamber_WS_image_adjacent[of "sum_list (ss@[s])" t]
           sum_list_append[of "ss@[s]" "[t]"]
     by    (auto intro: gallery_snocI simp add: sums_snoc)
-  with Cs D E show ?case using sums_snoc[of "ss@[s]" t] by (simp add: sums_snoc)
+  with Cs_def D_def E_def show ?case using sums_snoc[of "ss@[s]" t] by (simp add: sums_snoc)
 qed (auto simp add: gallery_def fundchamber zero_permutation.rep_eq)
 
 lemma pgallery_last_eq_W_image:
@@ -4052,9 +4049,8 @@ proof (induct ss rule: list_induct_ssnoc)
 next
   case (ssnoc ss s t)
   moreover
-    def A : A  \<equiv> "sum_list (ss@[s]) `\<rightarrow> C0"
-    and B : B  \<equiv> "sum_list (ss@[s,t]) `\<rightarrow> C0"
-  moreover with ssnoc(2) obtain f g
+  define A B where "A = sum_list (ss@[s]) `\<rightarrow> C0" and "B = sum_list (ss@[s,t]) `\<rightarrow> C0"
+  moreover from ssnoc(2) A_def B_def obtain f g
     where "OpposedThinChamberComplexFoldings X f g A" "B=g`A"
     using sum_list_S_in_W[of "ss@[s]"] sum_list_S_in_W[of "ss@[s,t]"]
           fundchamber_W_image_chamber sum_list_append[of "ss@[s]" "[t]"]
@@ -4367,7 +4363,7 @@ proof (induct Cs arbitrary: C rule: length_induct)
         "length Zs < length Cs"
         "Es @ E # fst (Spair s) \<Turnstile> Bs = C0 # Zs @ [fst (Spair s) ` C]"
         by fast
-      def Ys: Ys \<equiv> "fold fst (map Spair ts) \<Turnstile> Zs"
+      define Ys where "Ys = fold fst (map Spair ts) \<Turnstile> Zs"
       with Zs(2) have
         "fold fst (map Spair ts) \<Turnstile> (Es @ E # fst (Spair s) \<Turnstile> Bs) =
           fold fst (map Spair ts) ` C0 # Ys @ [fold fst (map Spair (s#ts)) ` C]"
@@ -4389,7 +4385,7 @@ proof (induct Cs arbitrary: C rule: length_induct)
         using gal fundfold_comp_gallery_map[of "Es @ E # fst (Spair s) \<Turnstile> Bs" ts]
               gallery_obtain_pgallery[OF False[THEN not_sym]]
         by    (fastforce simp add: image_comp)
-      from Ys Xs(1) Zs(1) have "length Xs < length Cs" by simp
+      from Ys_def Xs(1) Zs(1) have "length Xs < length Cs" by simp
       with Xs(2) obtain n where "(fold fst (map Spair ss) ^^ (Suc n)) ` C = C0"
         using step by (force simp add: image_comp funpow_Suc_right[THEN sym])
       thus ?thesis by fast
@@ -4453,12 +4449,12 @@ lemma ex_label_retraction: "\<exists>\<phi>. label_wrt C0 \<phi> \<and> fixespoi
 proof-
   obtain ss where ss: "set ss = S" using finite_S finite_list by fastforce
 
-  def fgs: fgs \<equiv> "map Spair ss"
+  define fgs where "fgs = map Spair ss"
   -- {* for @{term "fg \<in> set fgs"}, have @{term "(fst fg) ` D = C0"} for some @{term "D \<in> fundajdset"} *}
 
-  def \<psi>: \<psi> \<equiv> "fold fst fgs" (* \<psi> = fn \<circ> \<dots> \<circ> f1 *)
-  def vdist: vdist \<equiv> "\<lambda>v. LEAST n. (\<psi>^^n) v \<in> C0"
-  def \<phi>: \<phi> \<equiv> "\<lambda>v. (\<psi>^^(vdist v)) v"
+  define \<psi> where "\<psi> = fold fst fgs" (* \<psi> = fn \<circ> \<dots> \<circ> f1 *)
+  define vdist where "vdist v = (LEAST n. (\<psi>^^n) v \<in> C0)" for v
+  define \<phi> where "\<phi> v = (\<psi>^^(vdist v)) v" for v
 
   have "label_wrt C0 \<phi>"
     unfolding label_wrt_def
@@ -4466,23 +4462,23 @@ proof-
     fix C assume C: "C\<in>\<C>"
     show "bij_betw \<phi> C C0"
     proof-
-      from \<psi> fgs ss C obtain m where m: "(\<psi>^^m)`C = C0"
+      from \<psi>_def fgs_def ss C obtain m where m: "(\<psi>^^m)`C = C0"
         using chamber_system_def fundfold_comp_chamber_ex_funpow by fastforce
       have "\<And>v. v\<in>C \<Longrightarrow> (\<psi>^^m) v = \<phi> v"
       proof-
         fix v assume v: "v\<in>C"
-        def n \<equiv> "LEAST n. (\<psi>^^n) v \<in> C0"
-        moreover with v m \<phi> vdist have "m \<ge> n" "\<phi> v \<in> C0"
+        define n where "n = (LEAST n. (\<psi>^^n) v \<in> C0)"
+        from v m \<phi>_def vdist_def n_def have "m \<ge> n" "\<phi> v \<in> C0"
           using Least_le[of "\<lambda>n. (\<psi>^^n) v \<in> C0" m]
                 LeastI_ex[of "\<lambda>n. (\<psi>^^n) v \<in> C0"]
           by    auto
-        ultimately show "(\<psi>^^m) v = \<phi> v"
-          using ss \<psi> fgs \<phi> vdist funpow_add[of "m-n" n \<psi>]
+        then show "(\<psi>^^m) v = \<phi> v"
+          using ss \<psi>_def fgs_def \<phi>_def vdist_def n_def funpow_add[of "m-n" n \<psi>]
                 fundfold_comp_fixespointwise_C0
                 funpower_fixespointwise fixespointwiseD
           by    fastforce
       qed
-      with C m ss \<psi> fgs show ?thesis
+      with C m ss \<psi>_def fgs_def show ?thesis
         using chamber_system_def fundchamber fundfold_comp_endomorphism
               ChamberComplexEndomorphism.funpower_endomorphism[of X]
               ChamberComplexEndomorphism.bij_betw_chambers[of X]
@@ -4490,7 +4486,7 @@ proof-
         by    fastforce
     qed
   qed
-  moreover from vdist \<phi> have "fixespointwise \<phi> C0"
+  moreover from vdist_def \<phi>_def have "fixespointwise \<phi> C0"
     using Least_eq_0 by (fastforce intro: fixespointwiseI)
   ultimately show ?thesis by fast
 qed
@@ -4611,14 +4607,14 @@ proof (rule seteqI)
   show "\<And>v. v \<in> fundantivertex ` S \<Longrightarrow> v\<in>C0" using fundantivertex by fast
 next
   fix v assume v: "v\<in>C0"
-  def D: D \<equiv> "the_adj_chamber C0 (C0-{v})"
+  define D where "D = the_adj_chamber C0 (C0-{v})"
   with v have "D\<in>fundadjset"
     using fundchamber facetrel_diff_vertex the_adj_chamber_adjacentset
           the_adj_chamber_neq
     by    fastforce
   from this obtain s where s: "s\<in>S" "D = s`\<rightarrow>C0"
     using fundadjset_eq_S_image by blast
-  with v D have "fundantivertex s = v"
+  with v D_def [abs_def] have "fundantivertex s = v"
     using     fundchamber fundchamber_S_adjacent
               fundchamber_S_image_neq_fundchamber[of s]
               facetrel_diff_vertex[of v C0]
