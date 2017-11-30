@@ -764,9 +764,12 @@ end
 text \<open>The following (alternative) proof of the ``$\leftarrow$'' direction of this equivalence,
 namely that bisimilarity in the $L$-transform implies $F/L$-bisimilarity, uses the fact that the
 $L$-transform preserves satisfaction of formulas, together with the fact that bisimilarity (in the
-$L$-transform) implies logical equivalence. However, this requires an \emph{indexed} nominal
-transition system with effects where, additionally, the cardinality of the state set of the
-$L$-transform is bounded.\<close>
+$L$-transform) implies logical equivalence. However, since we proved the latter in the context of
+indexed nominal transition systems, this proof requires an indexed nominal transition system with
+effects where, additionally, the cardinality of the state set of the $L$-transform is bounded. We
+could re-organize our formalization to remove this assumption: the proof of
+@{thm indexed_nominal_ts.bisimilarity_implies_equivalence} does not actually make use of the
+cardinality assumptions provided by indexed nominal transition systems.\<close>
 
 locale L_transform_indexed_effect_nominal_ts = indexed_effect_nominal_ts L satisfies transition effect_apply
   for L :: "('act::bn) \<times> ('effect::fs) fs_set \<times> 'effect \<Rightarrow> 'effect fs_set" 
