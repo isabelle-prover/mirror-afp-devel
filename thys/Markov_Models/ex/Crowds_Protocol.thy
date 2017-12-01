@@ -892,7 +892,7 @@ proof -
     apply auto
     done
 
-  def c \<equiv> "SOME j. j \<in> C"
+  define c where "c = (SOME j. j \<in> C)"
   have c: "c \<in> C"
     using C_non_empty unfolding ex_in_conv[symmetric] c_def by (rule someI_ex)
 

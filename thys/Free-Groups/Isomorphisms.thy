@@ -86,7 +86,7 @@ lemma free_group_over_one_gen: "\<exists>h. h \<in> \<F>\<^bsub>{()}\<^esub> \<c
 proof-
   interpret int: group int_group by (simp add: int.a_group)
 
-  def f \<equiv> "\<lambda>(x::unit).(1::int)"
+  define f :: "unit \<Rightarrow> int" where "f x = 1" for x
   have "f \<in> {()} \<rightarrow> carrier int_group"
     by auto
   hence "int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group"
@@ -243,7 +243,7 @@ next
     assume "x \<in> carrier \<F>\<^bsub>gens2\<^esub>"
     hence "canceled x" and "x \<in> lists (UNIV\<times>gens2)"
       unfolding free_group_def by auto
-    def y \<equiv> "map (map_prod id (the_inv_into gens1 f)) x"
+    define y where "y = map (map_prod id (the_inv_into gens1 f)) x"
     have "map (map_prod id f) y =
           map (map_prod id f) (map (map_prod id (the_inv_into gens1 f)) x)"
       by (simp add:y_def)
@@ -266,9 +266,10 @@ next
             = map_prod id (f \<circ> the_inv_into gens1 f) (fst xa, snd xa)" by simp
       also have "\<dots> = (fst xa, f (the_inv_into gens1 f (snd xa)))"
         by (auto simp del:prod.collapse)
-      also with `snd xa \<in> image f gens1` and `inj_on f gens1`
-           have "\<dots> = (fst xa, snd xa)"
-           by (auto elim:f_the_inv_into_f simp del:prod.collapse)
+      also
+      from `snd xa \<in> image f gens1` and `inj_on f gens1`
+      have "\<dots> = (fst xa, snd xa)"
+        by (auto elim:f_the_inv_into_f simp del:prod.collapse)
       also have "\<dots> = id xa" by simp
       finally show "map_prod id (f \<circ> the_inv_into gens1 f) xa = id xa".
     qed

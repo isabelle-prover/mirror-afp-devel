@@ -232,20 +232,21 @@ next
    fix a :: ws1s
    assume "lformula0 a"
    moreover
-   def d \<equiv> "Formula_Operations.deriv extend lderiv0"
-   def \<Phi> \<equiv> "\<lambda>a. (case a of
-       Fo m \<Rightarrow> {FBase (Fo m), FBase (Z m), FBool False}
-     | Z m \<Rightarrow> {FBase (Z m), FBool False}
-     | Less m1 m2 \<Rightarrow> {FBase (Less m1 m2),
-        FAnd (FBase (Z m1)) (FBase (Fo m2)),
-        FAnd (FBase (Z m1)) (FBase (Z m2)),
-        FAnd (FBase (Z m1)) (FBool False),
-        FAnd (FBool False) (FBase (Fo m2)),
-        FAnd (FBool False) (FBase (Z m2)),
-        FAnd (FBool False) (FBool False),
-       FBool False}
-     | In i I \<Rightarrow> {FBase (In i I),  FBase (Z i), FBool False})
-     :: (ws1s, order) aformula set"
+   define d where "d = Formula_Operations.deriv extend lderiv0"
+   define \<Phi> :: "_ \<Rightarrow> (ws1s, order) aformula set"
+     where "\<Phi> a =
+       (case a of
+         Fo m \<Rightarrow> {FBase (Fo m), FBase (Z m), FBool False}
+       | Z m \<Rightarrow> {FBase (Z m), FBool False}
+       | Less m1 m2 \<Rightarrow> {FBase (Less m1 m2),
+          FAnd (FBase (Z m1)) (FBase (Fo m2)),
+          FAnd (FBase (Z m1)) (FBase (Z m2)),
+          FAnd (FBase (Z m1)) (FBool False),
+          FAnd (FBool False) (FBase (Fo m2)),
+          FAnd (FBool False) (FBase (Z m2)),
+          FAnd (FBool False) (FBool False),
+         FBool False}
+       | In i I \<Rightarrow> {FBase (In i I),  FBase (Z i), FBool False})" for a
    { fix xs
      note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
      from \<open>lformula0 a\<close> have "FBase a \<in> \<Phi> a" by (cases a) auto
@@ -258,20 +259,21 @@ next
    ultimately show "finite {fold d xs (FBase a) | xs. True}" by (blast intro: finite_subset)
 next
    fix a :: ws1s
-   def d \<equiv> "Formula_Operations.deriv extend rderiv0"
-   def \<Phi> \<equiv> "\<lambda>a. (case a of
-       Fo m \<Rightarrow> {FBase (Fo m), FBase (Z m), FBool False}
-     | Z m \<Rightarrow> {FBase (Z m), FBool False}
-     | Less m1 m2 \<Rightarrow> {FBase (Less m1 m2),
-        FAnd (FBase (Z m2)) (FBase (Fo m1)) ,
-        FAnd (FBase (Z m2)) (FBase (Z m1)),
-        FAnd (FBase (Z m2)) (FBool False),
-        FAnd (FBool False) (FBase (Fo m1)),
-        FAnd (FBool False) (FBase (Z m1)),
-        FAnd (FBool False) (FBool False),
-       FBool False}
-     | In i I \<Rightarrow> {FBase (In i I),  FBase (Z i), FBool False})
-     :: (ws1s, order) aformula set"
+   define d where "d = Formula_Operations.deriv extend rderiv0"
+   define \<Phi> :: "_ \<Rightarrow> (ws1s, order) aformula set"
+     where "\<Phi> a =
+       (case a of
+         Fo m \<Rightarrow> {FBase (Fo m), FBase (Z m), FBool False}
+       | Z m \<Rightarrow> {FBase (Z m), FBool False}
+       | Less m1 m2 \<Rightarrow> {FBase (Less m1 m2),
+          FAnd (FBase (Z m2)) (FBase (Fo m1)) ,
+          FAnd (FBase (Z m2)) (FBase (Z m1)),
+          FAnd (FBase (Z m2)) (FBool False),
+          FAnd (FBool False) (FBase (Fo m1)),
+          FAnd (FBool False) (FBase (Z m1)),
+          FAnd (FBool False) (FBool False),
+         FBool False}
+       | In i I \<Rightarrow> {FBase (In i I),  FBase (Z i), FBool False})" for a
    { fix xs
      note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
      then have "FBase a \<in> \<Phi> a" by (auto split: atomic.splits option.splits)

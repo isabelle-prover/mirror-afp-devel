@@ -21,7 +21,7 @@ lemma (in group) unique_sizes_subgrp_normal:
   shows "(THE Q. Q \<in> subgroups_of_size q) \<lhd> G"
 proof -
   from assms obtain Q where "Q \<in> subgroups_of_size q" by auto
-  def Q \<equiv> "THE Q. Q \<in> subgroups_of_size q"
+  define Q where "Q = (THE Q. Q \<in> subgroups_of_size q)"
   with assms have Qsize:"Q \<in> subgroups_of_size q" using theI by metis
   hence QG:"subgroup Q G" and cardQ:"card Q = q" unfolding subgroups_of_size_def by auto
   from QG have "Q \<lhd> G" apply(rule normalI)
@@ -47,8 +47,8 @@ lemma (in group) pq_order_unique_subgrp:
   shows "\<exists>!Q. Q \<in> (subgroups_of_size q)"
 proof -
   from primep primeq pq have nqdvdp:"\<not> (q dvd p)" by (metis less_not_refl3 prime_nat_iff)
-  def calM \<equiv> "{s. s \<subseteq> carrier G \<and> card s = q ^ 1}"
-  def RelM \<equiv> "{(N1, N2). N1 \<in> calM \<and> N2 \<in> calM \<and> (\<exists>g\<in>carrier G. N1 = N2 #> g)}"
+  define calM where "calM = {s. s \<subseteq> carrier G \<and> card s = q ^ 1}"
+  define RelM where "RelM = {(N1, N2). N1 \<in> calM \<and> N2 \<in> calM \<and> (\<exists>g\<in>carrier G. N1 = N2 #> g)}"
   interpret syl: snd_sylow G q 1 p calM RelM
     unfolding snd_sylow_def sylow_def snd_sylow_axioms_def sylow_axioms_def
     using is_group primeq orderG finite nqdvdp calM_def RelM_def by auto
@@ -240,7 +240,7 @@ lemma (in group) pq_order_normal_series:
   assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
   shows "normal_series G [{\<one>}, (THE H. H \<in> subgroups_of_size q), carrier G]"
 proof -
-  def H \<equiv> "(THE H. H \<in> subgroups_of_size q)"
+  define H where "H = (THE H. H \<in> subgroups_of_size q)"
   with assms have HG:"H \<lhd> G" by (metis pq_order_subgrp_normal)
   then interpret groupH: group "G\<lparr>carrier := H\<rparr>" unfolding normal_def by (metis subgroup_imp_group)
   have "normal_series (G\<lparr>carrier := H\<rparr>) [{\<one>}, H]"  using groupH.trivial_normal_series by auto
@@ -401,7 +401,7 @@ next
   qed
   moreover have "length \<GG> \<le> 2"
   proof (rule ccontr)
-    def k \<equiv> "length \<GG> - 2"
+    define k where "k = length \<GG> - 2"
     assume "\<not> (length \<GG> \<le> 2)"
     hence gt2:"length \<GG> > 2" by simp
     hence ksmall:"k + 1 < length \<GG>" unfolding k_def by auto
@@ -456,7 +456,7 @@ unfolding composition_series_def composition_series_axioms_def
 apply(auto)
 using assms apply(rule pq_order_normal_series)
 proof -
-  def H \<equiv> "THE H. H \<in> subgroups_of_size q"
+  define H where "H = (THE H. H \<in> subgroups_of_size q)"
   from assms have exi:"\<exists>!Q. Q \<in> (subgroups_of_size q)" by (auto simp: pq_order_unique_subgrp)
   hence Hsize:"H \<in> subgroups_of_size q" unfolding H_def using theI' by metis
   hence HsubG:"subgroup H G" unfolding subgroups_of_size_def by auto
@@ -549,7 +549,7 @@ unfolding max_normal_subgroup_def max_normal_subgroup_axioms_def
 proof (auto del: equalityI)
   show "\<GG> ! (length \<GG> - 2) \<lhd> G" by (rule normal_series_snd_to_last)
 next 
-  def G' \<equiv> "\<GG> ! (length \<GG> - 2)"
+  define G' where "G' = \<GG> ! (length \<GG> - 2)"
   from length have length21:"length \<GG> - 2 + 1 = length \<GG> - 1" by arith
   from length have "length \<GG> - 2 + 1 < length \<GG>" by arith
   with simplefact have "simple_group (G\<lparr>carrier := \<GG> ! ((length \<GG> - 2) + 1)\<rparr> Mod G')" unfolding G'_def by auto

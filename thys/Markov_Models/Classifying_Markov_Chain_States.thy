@@ -362,7 +362,7 @@ proof -
       define m where "m = (n - a * a) div a"
       define r where "r = (n - a * a) mod a"
       with `0 < a` have "r < a" by simp
-      moreover def am \<equiv> "a + m"
+      moreover define am where "am = a + m"
       ultimately have "r < am" by simp
       assume "a * a \<le> n" then have n: "n = a * a + (m * a + r)"
         unfolding m_def r_def by simp
@@ -2394,7 +2394,7 @@ proof -
       by simp }
   note measure_y_eq = this
 
-  def D \<equiv> "{x::'s \<times> 's option. Some (fst x) = snd x}"
+  define D where "D = {x::'s \<times> 's option. Some (fst x) = snd x}"
 
   have [measurable]:
     "\<And>P::('s \<times> 's option \<Rightarrow> bool). P \<in> measurable (count_space UNIV) (count_space UNIV)"
@@ -2576,7 +2576,7 @@ lemma stationary_distribution_imp_p_limit:
   assumes [simp]: "x \<in> C" "y \<in> C"
   shows "p x y \<longlonglongrightarrow> pmf N y"
 proof -
-  def D \<equiv> "\<lambda>y n. \<bar>p x y n - pmf N y\<bar>"
+  define D where "D y n = \<bar>p x y n - pmf N y\<bar>" for y n
 
   from stationary_distribution_imp_limit[OF assms(1,2,3,4,5,6)]
   have INT: "(\<lambda>n. \<integral>y. D y n \<partial>count_space C) \<longlonglongrightarrow> 0"
@@ -2599,7 +2599,7 @@ proof -
        (auto simp: eventually_sequentially * D_nonneg)
   then show ?thesis
     using Lim_null[where l="pmf N y" and net=sequentially and f="p x y"]
-    by (simp add: D_def tendsto_rabs_zero_iff)
+    by (simp add: D_def [abs_def] tendsto_rabs_zero_iff)
 qed
 
 end

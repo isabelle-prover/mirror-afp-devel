@@ -616,7 +616,7 @@ next
       { 
         assume "\<exists>i. suffix i w \<Turnstile>\<^sub>n \<psi>"
         moreover  
-        def i \<equiv> "LEAST i. suffix i w \<Turnstile>\<^sub>n \<psi>"
+        define i where "i = (LEAST i. suffix i w \<Turnstile>\<^sub>n \<psi>)"
         ultimately
         have "\<forall>j < i. \<not>suffix j w \<Turnstile>\<^sub>n \<psi>" and "suffix i w \<Turnstile>\<^sub>n \<psi>"
           by (blast dest: not_less_Least , metis LeastI `\<exists>i. suffix i w \<Turnstile>\<^sub>n \<psi>` i_def)  
@@ -642,7 +642,7 @@ next
       { 
         assume "\<exists>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>"
         moreover  
-        def i \<equiv> "LEAST i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>"
+        define i where "i = (LEAST i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>)"
         ultimately
         have "\<forall>j < i. suffix j w \<Turnstile>\<^sub>n \<psi>" and "\<not> suffix i w \<Turnstile>\<^sub>n \<psi>"
           by (blast dest: not_less_Least , metis LeastI `\<exists>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>` i_def)  

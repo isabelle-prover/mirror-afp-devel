@@ -1162,8 +1162,10 @@ next
   then guess c1 c2 :: real unfolding bigtheta_def by (elim landau_o.bigE landau_omega.bigE IntE)
   note c = this
 
-  def h1 \<equiv> "\<lambda>x. if g x = 0 then if f x = 0 then if h x = 0 then h x else 1 else f x else h x / g x"
-  def h2 \<equiv> "\<lambda>x. if g x = 0 then if f x = 0 then h x else h x / f x else g x" 
+  define h1 h2
+    where "h1 x = (if g x = 0 then if f x = 0 then if h x = 0 then h x else 1 else f x else h x / g x)"
+      and "h2 x = (if g x = 0 then if f x = 0 then h x else h x / f x else g x)"
+    for x
 
   have "h = h1 * h2" by (intro ext) (auto simp: h1_def h2_def field_simps)
   moreover have "h1 \<in> \<Theta>[F](f)"

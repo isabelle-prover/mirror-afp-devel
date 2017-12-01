@@ -698,11 +698,11 @@ proof -
     have 31: "n < length paid_A" using nqs by auto
  
 
-    def q == "qs!n"
-    def [simp]: D == "(config'' (BIT_init, BIT_step) qs init n)"
-    def [simp]: cost == "(\<lambda>(s, is).(t s q (if (fst is) ! (index (snd is) q) then 0 else length s, [])))"
-    def [simp]: \<Phi>\<^sub>2 == "(\<lambda>(s, is). ((phi (Suc n)) (step s q (if (fst is) ! (index (snd is) q) then 0 else length s, []),(flip (index (snd is) q) (fst is), snd is))))"
-    def [simp]: \<Phi>\<^sub>0 == "(phi n)"
+    define q where "q = qs!n"
+    define D where [simp]: "D = (config'' (BIT_init, BIT_step) qs init n)"
+    define cost where [simp]: "cost = (\<lambda>(s, is).(t s q (if (fst is) ! (index (snd is) q) then 0 else length s, [])))"
+    define \<Phi>\<^sub>2 where [simp]: "\<Phi>\<^sub>2 = (\<lambda>(s, is). ((phi (Suc n)) (step s q (if (fst is) ! (index (snd is) q) then 0 else length s, []),(flip (index (snd is) q) (fst is), snd is))))"
+    define \<Phi>\<^sub>0 where [simp]: "\<Phi>\<^sub>0 = phi n"
            
     have inEreinziehn: "t_BIT n + Phi (n+1) - Phi n =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)"
     proof - 
@@ -747,11 +747,11 @@ proof -
             =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)" by auto
     qed 
 
-    def [simp]: xs  == "s_A n"
-    def [simp]: xs' == "swaps (paid_A!n) xs"
-    def [simp]: xs''== "mtf2 (free_A!n) (q) xs'"
-    def [simp]: k   == "index xs' (q)"    (* position of the requested element in A's list *)
-    def [simp]: k'  == "max 0 (k-free_A!n)" (* position where A moves the requested element to *)
+    define xs where [simp]: "xs = s_A n"
+    define xs' where [simp]: "xs' = swaps (paid_A!n) xs"
+    define xs'' where [simp]: "xs'' = mtf2 (free_A!n) (q) xs'"
+    define k where [simp]: "k = index xs' q"    (* position of the requested element in A's list *)
+    define k' where [simp]: "k' = max 0 (k-free_A!n)" (* position where A moves the requested element to *)
 
     have [simp]: "length xs = length init" by auto
 
@@ -771,15 +771,12 @@ text "The Transformation"
       note xinD=1 
       then have [simp]: "snd (snd x) = init" using D_def config_n_init3 by fast
 
-      def b == "fst (snd x)"
-      def ys == "fst x"
-      def [simp]: aBIT == "(if b ! (index (snd (snd x)) q) then 0 else length ys, ([]::nat list))"
-      def ys' == "step ys (q) aBIT"
-      def b' == "flip (index init q) b"
-      def \<Phi>\<^sub>1 == "(\<lambda>z:: 'a list\<times> (bool list \<times> 'a list) . (\<Sum>(x,y)\<in>(Inv ys xs'). (if fst (snd z)!(index init y) then 2::real else 1)))"
-
-
-
+      define b where "b = fst (snd x)"
+      define ys where "ys = fst x"
+      define aBIT where [simp]: "aBIT = (if b ! (index (snd (snd x)) q) then 0 else length ys, ([]::nat list))"
+      define ys' where "ys' = step ys (q) aBIT"
+      define b' where "b' = flip (index init q) b"
+      define \<Phi>\<^sub>1 where "\<Phi>\<^sub>1 = (\<lambda>z:: 'a list\<times> (bool list \<times> 'a list) . (\<Sum>(x,y)\<in>(Inv ys xs'). (if fst (snd z)!(index init y) then 2::real else 1)))"
 
       have xs''_step: "xs'' = step xs (q) (free_A!n,paid_A!n)"
       unfolding xs'_def xs''_def xs_def step_def free_A_def paid_A_def
@@ -943,8 +940,8 @@ text "The Transformation"
 
       text "Upper bound for the costs of BIT"
 
-      def [simp]: inI == "InvOf (q) ys xs'"
-      def [simp]: I == "card(InvOf (q) ys xs')" 
+      define inI where [simp]: "inI = InvOf (q) ys xs'"
+      define I where [simp]: "I = card(InvOf (q) ys xs')" 
             (* ys is BITs list, xs' is A's list after paid exchanges *)
 
       have ub_cost_BIT:  "(cost x) \<le> k + 1 + I"
@@ -970,9 +967,11 @@ text "The Transformation"
 
       (* second part: FREE EXCHANGES *)
  
-      def ub_free == "(if (q \<in> set init)
-                      then (if b!(index init q) then  k-k' else (\<Sum>j<k'. (if (b)!(index init (xs'!j)) then 2::real else 1) ))
-                      else 0)"
+      define ub_free
+        where "ub_free =
+          (if (q \<in> set init)
+           then (if b!(index init q) then  k-k' else (\<Sum>j<k'. (if (b)!(index init (xs'!j)) then 2::real else 1) ))
+           else 0)"
       let ?ub2 = "- I + ub_free"
       have free_ub: "(\<Sum>(x,y)\<in>(Inv ys' xs''). (if b' !(index init y) then 2 else 1 ) )
                 - (\<Sum>(x,y)\<in>(Inv ys xs'). (if b!(index init y) then 2 else 1) ) \<le> ?ub2"
@@ -1034,12 +1033,12 @@ text "The Transformation"
       have fB: "finite (Inv ys xs')" by auto
 
 
-      def [simp]: \<Delta> == "(\<Sum>(x,y)\<in>(Inv ys' xs''). (if b'!(index init y) then 2::real else 1))
+      define \<Delta> where [simp]: "\<Delta> = (\<Sum>(x,y)\<in>(Inv ys' xs''). (if b'!(index init y) then 2::real else 1))
                 - (\<Sum>(x,y)\<in>(Inv ys xs'). (if b!(index init y) then 2 else 1))"
-      def [simp]: C == "(\<Sum>(x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys xs'). (if b'!(index init y) then 2::real else 1)
+      define C where [simp]: "C = (\<Sum>(x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys xs'). (if b'!(index init y) then 2::real else 1)
                         - (if b!(index init y) then 2 else 1))"
-      def [simp]: A == "(\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))"
-      def [simp]: B == "(\<Sum>(x,y)\<in>(Inv ys xs')-(Inv ys' xs''). (if b!(index init y) then 2::real else 1))"
+      define A where [simp]: "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))"
+      define B where [simp]: "B = (\<Sum>(x,y)\<in>(Inv ys xs')-(Inv ys' xs''). (if b!(index init y) then 2::real else 1))"
         have teilen: "\<Delta> = C + A - B"  (* C A B *)
               unfolding \<Delta>_def A_def B_def C_def
                      using sum_my[OF fA fB]  by (auto simp: split_def)

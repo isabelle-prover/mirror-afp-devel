@@ -180,7 +180,7 @@ lemma \<F>_eq_\<S>:
 proof -
   let ?F = "{q. \<G> \<Turnstile>\<^sub>P Rep q}"
 
-  def k \<equiv> "the (threshold \<psi> w \<G>)"
+  define k where "k = the (threshold \<psi> w \<G>)"
   hence "threshold \<psi> w \<G> = Some k"
     using assms unfolding threshold.simps index.simps almost_all_eventually_provable_def  by simp
 
@@ -201,7 +201,7 @@ proof -
   obtain n\<^sub>2 where "\<And>x. x < k \<Longrightarrow> token_succeeds x \<Longrightarrow> token_run x n\<^sub>2 \<in> ?F"
     by (induction k) (simp, metis token_stays_in_final_states add.commute le_neq_implies_less not_less not_less_eq token_succeeds_def) 
   
-  def n \<equiv> "Max {n\<^sub>1, n\<^sub>2, k}"
+  define n where "n = Max {n\<^sub>1, n\<^sub>2, k}"
   
   (* Prove properties for the larger n *)
   {
@@ -235,12 +235,12 @@ proof -
       proof (cases "q \<in> ?F")
         case False
           moreover
-          then obtain j where "state_rank q m = Some j" and "j \<ge> i"
+          from False obtain j where "state_rank q m = Some j" and "j \<ge> i"
             using `q \<in> \<S> m` `smallest_accepting_rank = Some i` by force
-          then obtain x where "x \<in> configuration q m" and "token_run x m = q" 
+          then obtain x where x: "x \<in> configuration q m" "token_run x m = q" 
             by force
           moreover
-          hence "token_succeeds x" 
+          from x have "token_succeeds x" 
             using n_def_1[OF `n \<le> m`] `q \<in> \<S> m` by blast
           ultimately
           have "S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])"
@@ -265,7 +265,7 @@ proof -
 
       { 
         fix x assume "k \<le> x" "x \<le> m"
-        def q \<equiv> "token_run x m"
+        define q where "q = token_run x m"
 
         hence "token_succeeds x"
           using threshold_properties[OF `threshold \<psi> w \<G> = Some k`] `x \<ge> k` Rep_token_run_af  
@@ -373,7 +373,7 @@ theorem ltl_FG_to_generalized_rabin_correct:
   shows "w \<Turnstile> F G \<phi> = accept\<^sub>G\<^sub>R (\<P> \<phi>) w"
   (is "?lhs = ?rhs")
 proof
-  def r \<equiv> "run\<^sub>t (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) w"
+  define r where "r = run\<^sub>t (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) w"
 
   have [intro]: "\<And>i. w i \<in> \<Sigma>" and "\<Sigma> \<noteq> {}"
     using assms by auto
@@ -398,7 +398,9 @@ proof
     hence "ltl_FG_to_rabin \<Sigma> \<G> w"
       using `finite \<Sigma>` `range w \<subseteq> \<Sigma>` unfolding ltl_FG_to_rabin_def by auto
 
-    def \<pi> \<equiv> "\<lambda>\<psi>. if \<psi> \<in> \<G> then the (ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<psi>) \<G> w) else 0"
+    define \<pi> where "\<pi> \<psi> =
+        (if \<psi> \<in> \<G> then the (ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<psi>) \<G> w) else 0)"
+      for \<psi>
     let ?P' = "{\<^bold>\<upharpoonleft>\<^sub>\<chi> (ltl_FG_to_rabin_def.Acc\<^sub>R \<Sigma> (theG \<chi>) \<G> (\<pi> \<chi>)) | \<chi>. \<chi> \<in> \<G>}"
      
     have "\<forall>P \<in> ?P'. accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w"
@@ -414,7 +416,7 @@ proof
       interpret ltl_FG_to_rabin \<Sigma> "theG \<chi>" \<G> w
         by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
      
-      def r\<^sub>\<chi> \<equiv> "run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
+      define r\<^sub>\<chi> where "r\<^sub>\<chi> = run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
       
       moreover
 
@@ -495,8 +497,8 @@ proof
     proof (rule+)
       fix \<psi>
       assume "G \<psi> \<in> \<G>"
-      def \<chi> \<equiv> "G \<psi>" 
-      def P \<equiv> "\<^bold>\<upharpoonleft>\<^sub>\<chi> (ltl_FG_to_rabin_def.Acc\<^sub>R \<Sigma> \<psi> \<G> (\<pi> \<chi>))"
+      define \<chi> where "\<chi> = G \<psi>" 
+      define P where "P = \<^bold>\<upharpoonleft>\<^sub>\<chi> (ltl_FG_to_rabin_def.Acc\<^sub>R \<Sigma> \<psi> \<G> (\<pi> \<chi>))"
       hence "\<chi> \<in> \<G>" and "theG \<chi> = \<psi>" 
         using \<chi>_def `G \<psi> \<in> \<G>` by simp+
       hence "P \<in> ?P'" 
@@ -507,7 +509,7 @@ proof
       interpret ltl_FG_to_rabin \<Sigma> \<psi> \<G> w
         by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
 
-      def r\<^sub>\<chi> \<equiv> "run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
+      define r\<^sub>\<chi> where "r\<^sub>\<chi> = run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
       
       have "limit r \<inter> fst P = {}" and "limit r \<inter> snd P \<noteq> {}"
         using `accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w` 
@@ -709,7 +711,7 @@ lemma Acc_property:
   "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi> (G \<psi>)) w \<longleftrightarrow> accepting_pair\<^sub>R \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) w"
   (is "?Acc = ?Acc\<^sub>\<R>")
 proof -  
-  def r \<equiv> "run\<^sub>t (delta \<Sigma>) (initial \<phi>) w" and r\<^sub>\<psi> \<equiv> "run\<^sub>t \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> w"
+  define r r\<^sub>\<psi> where "r = run\<^sub>t (delta \<Sigma>) (initial \<phi>) w" and "r\<^sub>\<psi> = run\<^sub>t \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> w"
   hence "finite (range r)"
     using run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma>
     by (blast dest: finite_subset) 
@@ -763,10 +765,11 @@ lemma normalize_\<pi>:
     and "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
     and "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
 proof -
-  def \<G> \<equiv> "dom \<pi>"
+  define \<G> where "\<G> = dom \<pi>"
   note \<G>_properties[OF dom_subset]
 
-  def \<pi>\<^sub>\<A> \<equiv> "(\<lambda>\<chi>.  mojmir_def.smallest_accepting_rank \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}) |` \<G>"
+  define \<pi>\<^sub>\<A>
+    where "\<pi>\<^sub>\<A> = (\<lambda>\<chi>.  mojmir_def.smallest_accepting_rank \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}) |` \<G>"
 
   moreover
   
@@ -864,7 +867,7 @@ proof
   let ?F = "F\<^sub>\<A> \<Sigma> \<phi>"
  
   --\<open>Preliminary facts needed by both proof directions\<close>
-  def r \<equiv> "run\<^sub>t ?\<Delta> ?q\<^sub>0 w"
+  define r where "r = run\<^sub>t ?\<Delta> ?q\<^sub>0 w"
   have r_alt_def': "\<And>i. fst (fst (r i)) = Abs (af \<phi> (w [0 \<rightarrow> i]))"
     using run_properties(1) unfolding r_def run\<^sub>t.simps fst_conv
     by (metis af_abs.f_foldl_abs.abs_eq af_abs.f_foldl_abs_alt_def af_letter_abs_def) 
@@ -887,7 +890,9 @@ proof
     hence "ltl_FG_to_rabin \<Sigma> \<G> w"
       using finite_\<Sigma> bounded_w unfolding ltl_FG_to_rabin_def by auto
 
-    def \<pi> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> \<G> then (ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) \<G> w) else None"
+    define \<pi>
+      where "\<pi> \<chi> = (if \<chi> \<in> \<G> then (ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) \<G> w) else None)"
+      for \<chi>
     
     have \<MM>_accept: "\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> ltl_FG_to_rabin_def.accept\<^sub>R' \<psi> \<G> w"
       using `closed \<G> w` `ltl_FG_to_rabin \<Sigma> \<G> w` ltl_FG_to_rabin.ltl_to_rabin_correct_exposed' by blast
@@ -1024,7 +1029,7 @@ proof
       and 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> accepting_pair\<^sub>R ?\<Delta> ?q\<^sub>0 (Acc \<Sigma> \<pi>' \<chi>) w"
       using accept\<^sub>G\<^sub>R_I[OF `?rhs`] unfolding max_rank_of_def by blast
 
-    def \<G> \<equiv> "dom \<pi>'"
+    define \<G> where "\<G> = dom \<pi>'"
     hence "\<G> \<subseteq> \<^bold>G \<phi>"
      using `dom \<pi>' \<subseteq> \<^bold>G \<phi>` by simp
 

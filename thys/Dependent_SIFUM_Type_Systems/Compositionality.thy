@@ -308,7 +308,7 @@ lemma change_respecting_subset':
   assumes dom_subset: "dom \<sigma> \<subseteq> X"
   shows "(cms, mem [\<mapsto> \<sigma>]) \<leadsto> (cms', mem' [\<mapsto> \<sigma>])"
 proof -
-  def \<sigma>\<^sub>X \<equiv> "\<lambda>x. if x \<in> X then if x \<in> dom \<sigma> then \<sigma> x else Some (mem x) else None"
+  define \<sigma>\<^sub>X where "\<sigma>\<^sub>X x = (if x \<in> X then if x \<in> dom \<sigma> then \<sigma> x else Some (mem x) else None)" for x
   have "dom \<sigma>\<^sub>X = X" using dom_subset by(auto simp: \<sigma>\<^sub>X_def)
 
   have "mem [\<mapsto> \<sigma>] = mem [\<mapsto> \<sigma>\<^sub>X]"
@@ -656,8 +656,8 @@ proof -
     using h_prop
     by (metis deterministic)
   let ?\<sigma>_mem\<^sub>2 = "to_partial mem\<^sub>2 |` ?X k"
-  def mem\<^sub>2' \<equiv> "mem\<^sub>h [\<mapsto> ?\<sigma>_mem\<^sub>2]"
-  def c\<^sub>2' \<equiv> c\<^sub>h
+  define mem\<^sub>2' where "mem\<^sub>2' = mem\<^sub>h [\<mapsto> ?\<sigma>_mem\<^sub>2]"
+  define c\<^sub>2' where "c\<^sub>2' = c\<^sub>h"
 
   have dom\<sigma>_mem\<^sub>2: "dom ?\<sigma>_mem\<^sub>2 = ?X k"
     by (metis dom_restrict_total)
@@ -677,7 +677,7 @@ proof -
     unfolding mem\<^sub>2'_def c\<^sub>2'_def
     by metis
 
-  def cms\<^sub>2' \<equiv> "cms\<^sub>2 [k := (c\<^sub>2', ?mds\<^sub>k')]"
+  define cms\<^sub>2' where "cms\<^sub>2' = cms\<^sub>2 [k := (c\<^sub>2', ?mds\<^sub>k')]"
 
   with i b equal_size have "(cms\<^sub>2, mem\<^sub>2) \<leadsto>\<^bsub>k\<^esub> (cms\<^sub>2', mem\<^sub>2')"
     by (metis meval_intro)
@@ -729,14 +729,14 @@ proof -
         by (metis (erased, hide_lams))      
     qed
 
-    def mems'_k \<equiv> "\<lambda> x.
-      if x \<notin> ?X k
-      then (mem\<^sub>1' x, mem\<^sub>2' x)
-      else (?mems\<^sub>1k x, ?mems\<^sub>2k x)"
+    define mems'_k where "mems'_k x =
+      (if x \<notin> ?X k
+       then (mem\<^sub>1' x, mem\<^sub>2' x)
+       else (?mems\<^sub>1k x, ?mems\<^sub>2k x))" for x
 
     (* FIXME: see if we can reduce the number of cases *)
-    def mems'_i \<equiv> "\<lambda> i x.
-      if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
+    define mems'_i where "mems'_i i x =
+      (if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
           (mem\<^sub>1' x = mem\<^sub>2' x \<or> dma mem\<^sub>1' x = High))
          then (mem\<^sub>1' x, mem\<^sub>2' x)
          else if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
@@ -744,10 +744,11 @@ proof -
               then (some_val, some_val)
               else if dma mem\<^sub>1 x = High \<and> dma mem\<^sub>1' x = Low then (mem\<^sub>1 x, mem\<^sub>1 x)
               else if dma mem\<^sub>1' x = dma mem\<^sub>1 x then (fst (mems ! i) x, snd (mems ! i) x)
-              else (mem\<^sub>1' x, mem\<^sub>2' x)"
+              else (mem\<^sub>1' x, mem\<^sub>2' x))" for i x
 
-    def mems' \<equiv>
-      "map (\<lambda> i.
+    define mems'
+      where "mems' =
+        map (\<lambda> i.
             if i = k
             then (fst \<circ> mems'_k, snd \<circ> mems'_k)
             else (fst \<circ> mems'_i i, snd \<circ> mems'_i i))
@@ -937,13 +938,14 @@ proof -
         assume [simp]: "i = k"
         -- "We define another  function from this and reuse the universally quantified statements
           from the first part of the proof."
-        def \<sigma>' \<equiv>
-          "\<lambda> x. if x \<in> ?X k
-                then if x \<in> ?X' k
-                     then \<sigma> x
-                     else Some (mem\<^sub>1' x)
-                else None"
-        then have dom\<sigma>': "dom \<sigma>' = ?X k"
+        define \<sigma>' where "\<sigma>' x =
+           (if x \<in> ?X k
+            then if x \<in> ?X' k
+                 then \<sigma> x
+                 else Some (mem\<^sub>1' x)
+            else None)" for x
+        have dom\<sigma>': "dom \<sigma>' = ?X k"
+          using \<sigma>'_def [abs_def]
           apply (clarsimp, safe)
           by( metis domI domIff, metis `i = k` domD dom\<sigma> )
         have diff_vars_impl [simp]: "\<And>x. x \<in> ?X' k \<Longrightarrow> x \<in> ?X k"
@@ -1097,11 +1099,12 @@ proof -
 
       next
         assume "i \<noteq> k"
-        def \<sigma>' \<equiv> "\<lambda> x. if x \<in> ?X i
-                       then if x \<in> ?X' i
-                            then \<sigma> x
-                            else Some (mem\<^sub>1' x)
-                       else None"
+        define \<sigma>' where "\<sigma>' x =
+            (if x \<in> ?X i
+             then if x \<in> ?X' i
+                  then \<sigma> x
+                  else Some (mem\<^sub>1' x)
+             else None)" for x
         let ?mems\<^sub>1i = "fst (mems ! i)" and
             ?mems\<^sub>2i = "snd (mems ! i)"
         have "dom \<sigma>' = ?X i"
@@ -1277,7 +1280,7 @@ proof -
           bisim: "(cms\<^sub>1 ! i, ?mems\<^sub>1i [\<mapsto> \<sigma>']) \<approx> (cms\<^sub>2 ! i, ?mems\<^sub>2i [\<mapsto> \<sigma>'])"
           by auto
 
-        def \<sigma>'\<^sub>k \<equiv> "\<lambda>x. if x \<in> ?X k then Some (undefined::'Val) else None"
+        define \<sigma>'\<^sub>k where "\<sigma>'\<^sub>k x = (if x \<in> ?X k then Some (undefined::'Val) else None)" for x
         have "dom \<sigma>'\<^sub>k = ?X k" unfolding \<sigma>'\<^sub>k_def by (simp add: dom_def)
         with compat and `dom \<sigma>'\<^sub>k = ?X k` and b have
           bisim\<^sub>k: "(cms\<^sub>1 ! k, ?mems\<^sub>1k [\<mapsto> \<sigma>'\<^sub>k]) \<approx> (cms\<^sub>2 ! k, ?mems\<^sub>2k [\<mapsto> \<sigma>'\<^sub>k])"
@@ -1306,15 +1309,16 @@ proof -
         have \<Delta>_finite: "finite ?\<Delta>"
           by (metis (no_types) differing_finite finite_UnI)
         -- "We first define the adaptation, then prove that it does the right thing."
-        def A \<equiv> "\<lambda> x. if x \<in> ?\<Delta>
-                      then if dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = High
-                           then Some (?mems\<^sub>1'i [\<mapsto> \<sigma>] x, ?mems\<^sub>2'i [\<mapsto> \<sigma>] x)
-                           else if x \<in> ?X' i
-                                then (case \<sigma> x of
-                                        Some v \<Rightarrow> Some (v, v)
-                                      | None \<Rightarrow> None)
-                                else Some (mem\<^sub>1' x, mem\<^sub>1' x)
-                      else None"
+        define A where "A x =
+             (if x \<in> ?\<Delta>
+              then if dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = High
+                   then Some (?mems\<^sub>1'i [\<mapsto> \<sigma>] x, ?mems\<^sub>2'i [\<mapsto> \<sigma>] x)
+                   else if x \<in> ?X' i
+                        then (case \<sigma> x of
+                                Some v \<Rightarrow> Some (v, v)
+                              | None \<Rightarrow> None)
+                        else Some (mem\<^sub>1' x, mem\<^sub>1' x)
+              else None)" for x
         have domA: "dom A = ?\<Delta>"
         proof
           show "dom A \<subseteq> ?\<Delta>"

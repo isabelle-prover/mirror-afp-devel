@@ -182,12 +182,13 @@ proof (rule antisym)
       by (rewrite E_inf_While_step) (auto intro!: step.E_inf_mono mono_r le_funI)
   qed (auto intro: SUP_least)
 
-  def w \<equiv> "\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then if g (snd t) then F (c, snd t) else f (snd t) else F t) \<partial>D"
+  define w where "w F s = (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then if g (snd t) then F (c, snd t) else f (snd t) else F t) \<partial>D)"
+    for F s
   have "mono w"
     by (auto simp: w_def mono_def le_fun_def intro!: INF_mono[OF bexI] nn_integral_mono) []
 
-  def d \<equiv> c
-  def t \<equiv> "Seq d (While g c)"
+  define d where "d = c"
+  define t where "t = Seq d (While g c)"
   then have "(t = While g c \<and> d = c \<and> g s) \<or> t = Seq d (While g c)"
     by auto
   then have "step.E_inf (t, s) (r f) \<le> lfp w (d, s)"

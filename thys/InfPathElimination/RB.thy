@@ -1147,15 +1147,14 @@ next
          We conclude by transitivity of subsumption. *)
       fix res1 res2
        
-      def t_res1 \<equiv> "trace (ui_es res1) (labelling (black prb'))"
-      def t_res2 \<equiv> "trace (ui_es res2) (labelling (black prb'))"
+      define t_res1 where "t_res1 = trace (ui_es res1) (labelling (black prb'))"
+      define t_res2 where "t_res2 = trace (ui_es res2) (labelling (black prb'))"
       
       assume "res = res1 @ res2"
       and    "res1 \<noteq> []"
       and    "subpath (red prb) rv1 res1 (subsumee sub) (subs prb)"
       and    "subpath (red prb') (subsumee sub) res2 rv2 (subs prb')"
       
-      moreover
       then obtain c1 c2
       where "se_star (confs prb' rv1) t_res1 c1"
       and   "se_star c1 t_res2 c"
@@ -1166,8 +1165,7 @@ next
             unfolding finite_RedBlack_def t_res1_def t_res2_def
             by (simp  add : fst_of_sp_is_vert  se_star_append) blast
 
-      ultimately
-      have "c \<sqsubseteq> c2"
+      then have "c \<sqsubseteq> c2"
       proof -
         have "c1 \<sqsubseteq> confs prb' (subsumee sub)" 
              using subsum_step(2,3,6-8) 
@@ -1762,13 +1760,11 @@ unfolding set_eq_iff Un_iff singleton_iff Diff_iff
 proof (intro allI iffI, goal_cases)
   case (1 rv)
 
-  moreover
   hence "rv \<in> red_vertices prb \<or> rv = tgt re" 
   and   "rv \<noteq> src re" 
   using assms(2,3,4,5) by (auto simp add : fringe_def vertices_def) 
 
-  ultimately
-  show ?case using assms(2) by (auto simp add : fringe_def)
+  with 1 show ?case using assms(2) by (auto simp add : fringe_def)
 
 next
   case (2 rv)
@@ -1926,11 +1922,11 @@ proof (intro allI iffI, goal_cases)
   case (1 rv)
 
   moreover
-  hence "rv \<in> red_vertices prb" and "rv \<noteq> src re"
-  using assms by (auto simp add : fringe_def vertices_def) 
+  have "rv \<in> red_vertices prb" and "rv \<noteq> src re"
+  using 1 assms by (auto simp add : fringe_def vertices_def)  (* slow *)
 
   moreover
-  hence "\<not> marked prb rv"
+  have "\<not> marked prb rv"
   proof (intro notI)
     assume "marked prb rv"
 

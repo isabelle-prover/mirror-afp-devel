@@ -369,7 +369,7 @@ qed
 lemma exists_proper:
   obtains ct where "proper ct"
 proof atomize_elim
-  def r \<equiv> "rec_nat S2 (\<lambda>_ S'. {s\<in>S\<^sub>r. \<exists>t\<in>S'. (s, t) \<in> E})"
+  define r where "r = rec_nat S2 (\<lambda>_ S'. {s\<in>S\<^sub>r. \<exists>t\<in>S'. (s, t) \<in> E})"
   then have [simp]: "r 0 = S2" "\<And>n. r (Suc n) = {s\<in>S\<^sub>r. \<exists>t\<in>r n. (s, t) \<in> E}"
     by simp_all
 
@@ -397,7 +397,7 @@ proof atomize_elim
     have "\<exists>D\<in>K s. s \<in> S\<^sub>r \<longrightarrow> (\<exists>t\<in>D. \<exists>n. t \<in> r n \<and> (\<forall>m. s \<in> r m \<longrightarrow> n < m))"
     proof cases
       assume s: "s \<in> S\<^sub>r"
-      def n \<equiv> "LEAST n. s \<in> r n"
+      define n where "n = (LEAST n. s \<in> r n)"
       then have "s \<in> r n" and n: "\<And>i. i < n \<Longrightarrow> s \<notin> r i"
         using r s by (auto intro: LeastI_ex dest: not_less_Least)
       with s have "n \<noteq> 0"
@@ -597,7 +597,7 @@ proof -
       by auto
     with S2 `X \<subset> S\<^sub>r` have "s \<notin> S2" and "s \<in> S \<and> s \<notin> S2" and "s \<notin> X"and [simp]: "t \<in> S"
       by (auto simp add: S\<^sub>r_def)
-    def l' \<equiv> "l(s := t)"
+    define l' where "l' = l(s := t)"
     then have l'_s[simp, intro]: "l' s = t"
       by simp
 
@@ -650,7 +650,7 @@ qed
 lemma F_v_memoryless:
   obtains ct where "ct \<in> Pi\<^sub>E S K" "v\<circ>simple ct = F_sup (v\<circ>simple ct)"
 proof atomize_elim
-  def R \<equiv> "{(ct(s := D), ct) | ct s D.
+  define R where "R = {(ct(s := D), ct) | ct s D.
     ct \<in> Pi\<^sub>E S K \<and> proper ct \<and> s \<in> S\<^sub>r \<and> D \<in> K s \<and> v (simple ct s) < (\<integral>\<^sup>+t. v (simple ct t) \<partial>D) }"
 
   { fix ct ct' assume ct_ct': "(ct', ct) \<in> R"
@@ -787,7 +787,7 @@ proof atomize_elim
       then have "t' \<in> S"
         by (metis v_nS simple_valid_cfg_iff ct' ct order.irrefl)
 
-      def \<Delta> \<equiv> "\<lambda>t. enn2real (?v t) - enn2real (?v' t)"
+      define \<Delta> where "\<Delta> t = enn2real (?v t) - enn2real (?v' t)" for t
       with * `t' \<in> S` have "0 < \<Delta> t'"
         by (cases "?v t'" "?v' t'" rule: ennreal2_cases) (auto simp add: ct' ct ennreal_less_iff)
 
@@ -917,7 +917,7 @@ proof atomize_elim
     by (rule finite_acyclic_wf)
 
   from exists_proper obtain ct' where ct': "proper ct'" .
-  def ct \<equiv> "restrict ct' S"
+  define ct where "ct = restrict ct' S"
   with ct' have sc_Pi: "ct \<in> Pi S K" and "ct' \<in> Pi S K"
     by (auto simp: proper_def)
   then have ct: "ct \<in> {ct \<in> Pi\<^sub>E S K. proper ct}"
@@ -1082,7 +1082,7 @@ lemma S1_nS2: "s \<in> S1 \<Longrightarrow> s \<notin> S2"
 lemma n_eq_lfp_F_inf: "n = lfp F_inf"
 proof (intro antisym lfp_lowerbound le_funI)
   fix s let ?I = "\<lambda>D. (\<integral>\<^sup>+t. lfp F_inf t \<partial>measure_pmf D)"
-  def ct \<equiv> "\<lambda>s. SOME D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D)"
+  define ct where "ct s = (SOME D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D))" for s
   { fix s assume s: "s \<in> S"
     then have "finite (?I ` K s)"
       by (auto intro: K_finite)
@@ -1105,7 +1105,9 @@ proof (intro antisym lfp_lowerbound le_funI)
   then have valid_ct[simp]: "\<And>s. s \<in> S \<Longrightarrow> simple ct s \<in> valid_cfg"
     by simp
   let ?F = "\<lambda>P. HLD S2 or (HLD S1 aand nxt P)"
-  def P \<equiv> "\<lambda>s n. emeasure (T (simple ct s)) {x\<in>space (T (simple ct s)). (?F ^^ n) (\<lambda>x. False) (s ## x)}"
+  define P where "P s n =
+      emeasure (T (simple ct s)) {x\<in>space (T (simple ct s)). (?F ^^ n) (\<lambda>x. False) (s ## x)}"
+    for s n
   { assume "s \<in> S"
     with S1 have [simp, measurable]: "s \<in> S" by auto
     then have "n s \<le> v (simple ct s)"
@@ -1191,7 +1193,7 @@ proof -
 
   interpret sc: MC_syntax sc .
 
-  def N \<equiv> "{s\<in>S. p s = 0} \<union> S2"
+  define N where "N = {s\<in>S. p s = 0} \<union> S2"
   { fix s assume "s \<in> S" "s \<notin> N"
     with p_nS12 have "s \<in> S1"
       by (auto simp add: N_def) }
@@ -1231,7 +1233,7 @@ proof -
         by (subst integral_measure_pmf[where A=S])
            (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
 
-      def X \<equiv> "SIGMA x:UNIV. sc x"
+      define X where "X = (SIGMA x:UNIV. sc x)"
       show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
       proof (rule ccontr)
         assume "\<not> ?thesis"
@@ -1294,7 +1296,7 @@ proof -
   then have sc_Pi: "sc \<in> Pi S K"
     by auto
 
-  def N \<equiv> "{s\<in>S. n s = 0} \<union> S2"
+  define N where "N = {s\<in>S. n s = 0} \<union> S2"
   with S2 have N_S: "N \<subseteq> S"
     by auto
   { fix s assume "s \<in> S" "s \<notin> N"
@@ -1337,7 +1339,7 @@ proof -
         by (subst integral_measure_pmf[where A=S])
            (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
 
-      def X \<equiv> "SIGMA x:UNIV. sc x"
+      define X where "X = (SIGMA x:UNIV. sc x)"
       show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
       proof (rule ccontr)
         assume "\<not> ?thesis"

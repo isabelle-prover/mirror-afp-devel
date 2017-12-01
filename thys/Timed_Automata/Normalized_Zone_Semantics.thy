@@ -598,7 +598,7 @@ proof -
     "Regions' (clk_set A) v n x" "valid_abstraction A (clk_set A) k" "global_clock_numbering A v n"
   .
   from this(1) interpret interp: Regions' "clk_set A" k v n x .
-  def v' \<equiv> "\<lambda> i. if i \<le> n then (THE c. c \<in> clk_set A \<and> v c = i) else x"
+  define v' where "v' i = (if i \<le> n then (THE c. c \<in> clk_set A \<and> v c = i) else x)" for i
   { fix l D l' D'
     assume step: "A \<turnstile> \<langle>l,D\<rangle> \<leadsto>\<^bsub>(k o v'),v,n\<^esub>* \<langle>l',D'\<rangle>"
     and valid: "valid_dbm D n" and non_empty: "[D']\<^bsub>v,n\<^esub> \<noteq> {}"

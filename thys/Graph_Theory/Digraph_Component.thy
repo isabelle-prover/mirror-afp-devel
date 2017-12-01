@@ -608,7 +608,7 @@ lemma induced_subgraphI':
   shows "induced_subgraph H G"
 proof -
   interpret H: wf_digraph H using \<open>subgraph H G\<close> ..
-  def H' \<equiv> "G \<restriction> verts H"
+  define H' where "H' = G \<restriction> verts H"
   then have H'_props: "subgraph H' G" "verts H' = verts H"
     using subg by (auto intro: wf_digraph.subgraph_induce_subgraphI)
   moreover
@@ -822,7 +822,7 @@ context wf_digraph begin
       { assume B: "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v" "v \<rightarrow>\<^sup>*\<^bsub>G\<^esub> u"
         from B obtain p_uv where p_uv: "awalk u p_uv v" by (metis reachable_awalk)
         from B obtain p_vu where p_vu: "awalk v p_vu u" by (metis reachable_awalk)
-        def T \<equiv> "S \<union> set (awalk_verts u p_uv) \<union> set (awalk_verts v p_vu)"
+        define T where "T = S \<union> set (awalk_verts u p_uv) \<union> set (awalk_verts v p_vu)"
         have "S \<subseteq> T" by (auto simp: T_def)
         have "v \<in> T" using p_vu by (auto simp: T_def set_awalk_verts)
         then have "T \<noteq> S" using \<open>v \<notin> S\<close> by auto
@@ -1350,8 +1350,7 @@ proof -
     show "arcs G \<subseteq> (\<Union>c \<in> sccs. arcs c)"
     proof (safe)
       fix e assume "e \<in> arcs G"
-      def a \<equiv> "tail G e" and b \<equiv> "head G e"
-      note a_def[simp] b_def[simp]
+      define a b where [simp]: "a = tail G e" and [simp]: "b = head G e"
 
       have "e \<in> (\<Union>x \<in> sccs. arcs x)"
       proof cases

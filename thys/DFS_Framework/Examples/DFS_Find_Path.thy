@@ -274,7 +274,7 @@ proof (rule le_ASSERT_defI1[OF find_path0_restr_spec_def], clarify)
 
   assume I: "restr_invar (g_E G) R P"
 
-  def reachable \<equiv> "graph_defs.reachable (graph_restrict G R)"
+  define reachable where "reachable = graph_defs.reachable (graph_restrict G R)"
 
   interpret fp0 "graph_restrict G R" by unfold_locales
   

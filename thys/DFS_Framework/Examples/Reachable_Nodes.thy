@@ -17,7 +17,7 @@ lemma gen_obtain_finite_set:
   assumes EE: "\<And>x. x\<in>S \<Longrightarrow> \<exists>xi. (xi,x)\<in>R"
   shows "\<exists>Si. (Si,S)\<in>\<langle>R\<rangle>Rs"
 proof -
-  def S'==S
+  define S' where "S' = S"
 
   have "S\<subseteq>S'" by (simp add: S'_def)
   from F this show "(\<exists>Si. (Si,S)\<in>\<langle>R\<rangle>Rs)"

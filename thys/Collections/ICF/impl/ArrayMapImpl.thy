@@ -164,7 +164,7 @@ begin
     show "iam_rev_iterateoi m = foldli kvs"
       unfolding iam_rev_iterateoi_foldli_conv kvs_def by simp
   next
-    def al \<equiv> "array_length m"
+    define al where "al = array_length m"
     show dist_kvs: "distinct (map fst kvs)" and "sorted (rev (map fst kvs))"
       unfolding kvs_def al_def[symmetric]
       apply (induct al)
@@ -242,7 +242,7 @@ begin
     show "iam_iterateoi m = foldli kvs"
       unfolding iam_iterateoi_foldli_conv kvs_def by simp
   next
-    def al \<equiv> "array_length m::nat"
+    define al where "al = array_length m"
     show dist_kvs: "distinct (map fst kvs)" and "sorted (map fst kvs)"
       unfolding kvs_def al_def[symmetric]
       apply (induct al)

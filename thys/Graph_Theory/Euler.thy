@@ -480,7 +480,7 @@ lemma open_euler_infinite_label:
   assumes deg_out: "out_degree G v + 1 = in_degree G v"
   shows "\<exists>p. pre_digraph.euler_trail G u p v"
 proof -
-  def [simp]: label \<equiv> "fst o snd :: 'a \<times> nat \<times> 'a \<Rightarrow> nat"
+  define label :: "'a \<times> nat \<times> 'a \<Rightarrow> nat" where [simp]: "label = fst o snd"
 
   interpret fin_digraph G by fact
 
@@ -601,8 +601,9 @@ proof -
       and i: "inj_on f (arcs G)"
     by atomize_elim (rule finite_imp_inj_to_nat_seg, auto)
 
-  def iso_f \<equiv> "\<lparr> iso_verts = id, iso_arcs = (\<lambda>a. (tail G a, f a, head G a)),
-    head = snd o snd, tail = fst \<rparr>"
+  define iso_f where "iso_f =
+    \<lparr> iso_verts = id, iso_arcs = (\<lambda>a. (tail G a, f a, head G a)),
+      head = snd o snd, tail = fst \<rparr>"
   have [simp]: "iso_verts iso_f = id" "iso_head iso_f = snd o snd" "iso_tail iso_f = fst"
     unfolding iso_f_def by auto
   have di_iso_f: "digraph_isomorphism iso_f" unfolding digraph_isomorphism_def iso_f_def

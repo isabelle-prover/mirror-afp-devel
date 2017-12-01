@@ -378,12 +378,10 @@ proof-
   qed
   have NGr0: "n > 0"
     using N finiteProcs minimalProcs by auto
-  def initMsg  ==
-    "(\<lambda> ind m .
-      if \<exists>p. m = <p, inM (\<exists>i<ind. procList!i = p)> then 1 else 0)
-      :: nat \<Rightarrow> ('p, 'v) message \<Rightarrow> nat"
-  def initCfgList == 
-    "map (\<lambda>ind.  \<lparr> states = start, msgs = initMsg ind \<rparr>) [0..<(n+1)] " 
+  define initMsg :: "nat \<Rightarrow> ('p, 'v) message \<Rightarrow> nat"
+    where "initMsg ind m = (if \<exists>p. m = <p, inM (\<exists>i<ind. procList!i = p)> then 1 else 0)" for ind m
+  define initCfgList
+    where "initCfgList = map (\<lambda>ind. \<lparr>states = start, msgs = initMsg ind\<rparr>) [0..<(n+1)]"
   have InitCfgLength: "length initCfgList = n + 1" 
     unfolding initCfgList_def by auto
   have InitCfgNonEmpty: "initCfgList \<noteq> []"  
@@ -416,14 +414,14 @@ proof-
     unfolding initReachable_def
     by blast
 
-  def c0 == "initCfgList ! 0"
+  define c0 where "c0 = initCfgList ! 0"
   hence "c0 = \<lparr> states = start, msgs = initMsg 0 \<rparr>"
     using InitCfgLength nth_map_upt[of 0 "n+1" 0]
     unfolding initCfgList_def by auto
   hence MsgC0: "msgs c0 = (\<lambda>m. if \<exists>p. m = <p, inM False> then 1 else 0)"
     unfolding initMsg_def by simp
       
-  def cN == "initCfgList ! n"
+  define cN where "cN = initCfgList ! n"
   hence "cN = \<lparr> states = start, msgs = initMsg n\<rparr>"
     using InitCfgLength nth_map_upt[of n "n+1" 0]
     unfolding initCfgList_def
@@ -543,8 +541,8 @@ proof-
     where J: "j < n"
       "vUniform False (initCfgList ! j)"
       "\<not>(vUniform False (initCfgList ! Suc j))" by blast
-  def pJ == "procList ! j"
-  def cJ == "initCfgList ! j"
+  define pJ where "pJ = procList ! j"
+  define cJ where "cJ = initCfgList ! j"
   hence cJDef: "cJ = \<lparr> states = start, msgs = initMsg j\<rparr>"
     using J(1) InitCfgLength nth_map_upt[of 0 "j- 1" 1] 
       nth_map_upt[of "j" "n + 1" 0]
@@ -556,7 +554,7 @@ proof-
     unfolding initMsg_def
     using AllPInProclist
     by auto
-  def cJ1 == "initCfgList ! (Suc j)"    
+  define cJ1 where "cJ1 = initCfgList ! (Suc j)"
   hence cJ1Def: "cJ1 = \<lparr> states = start, msgs = initMsg (Suc j)\<rparr>"
     using J(1) InitCfgLength nth_map_upt[of 0 "j" 1] 
     nth_map_upt[of "j + 1" "n + 1" 0]
@@ -599,8 +597,8 @@ proof-
     using pJ_def ProcList J(1) MsgCJ using Distinct by auto  
   have D: "msgs cJ1 (<pJ ,inM False>) = 0" 
     using pJ_def ProcList J(1) MsgCJ1 by auto
-  def msgsCJ' == "(\<lambda>m. if m = (<pJ ,inM False>) \<or> m = (<pJ ,inM True>) 
-                       then 0 else (msgs cJ) m)"
+  define msgsCJ' where
+    "msgsCJ' m = (if m = (<pJ ,inM False>) \<or> m = (<pJ ,inM True>) then 0 else (msgs cJ) m)" for m
   have MsgsCJ': "msgsCJ' = ((msgs cJ) -# (<pJ ,inM False>))"
     using A C msgsCJ'_def by auto
   have AllOther: "\<forall> m . msgsCJ' m = ((msgs cJ1) -# (<pJ ,inM True>)) m"
@@ -645,8 +643,8 @@ proof-
   with F have InitMsgs: "(((msgs cJ) -# (<pJ ,inM False>)) 
     \<union># ({#<pJ, inM True>})) = (msgs cJ1)" 
     by simp
-  def cc' == "\<lparr>states = (states cc), 
-    msgs = (((msgs cc) -# (<pJ,inM False>)) \<union># {# (<pJ, inM True>)}) \<rparr>"
+  define cc' where "cc' = \<lparr>states = (states cc),
+    msgs = (((msgs cc) -# (<pJ,inM False>)) \<union># {# (<pJ, inM True>)})\<rparr>"
   have "\<lbrakk>qReachable cJ ccQ cc; ccQ = Proc - {pJ}; 
     (((msgs cJ) -# (<pJ ,inM False>)) \<union># ({#<pJ, inM True>})) 
       = (msgs cJ1); states cJ = states cJ1\<rbrakk> 

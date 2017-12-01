@@ -298,11 +298,11 @@ subsection\<open>Syntax of IPv6 Adresses\<close>
 (*for all ipv6_syntax, there is a corresponding list representation*)
 lemma parse_ipv6_address_compressed_exists:
   obtains ss where "parse_ipv6_address_compressed ss = Some ipv6_syntax"
-  proof
-    def ss \<equiv> "ipv6addr_syntax_compressed_to_list ipv6_syntax"
-    thus "parse_ipv6_address_compressed ss = Some ipv6_syntax"
-      by (cases ipv6_syntax; simp add: parse_ipv6_address_compressed_def)
-  qed
+proof
+  define ss where "ss = ipv6addr_syntax_compressed_to_list ipv6_syntax"
+  thus "parse_ipv6_address_compressed ss = Some ipv6_syntax"
+    by (cases ipv6_syntax; simp add: parse_ipv6_address_compressed_def)
+qed
 
 lemma parse_ipv6_address_compressed_identity:
       "parse_ipv6_address_compressed (ipv6addr_syntax_compressed_to_list (ipv6_syntax)) = Some ipv6_syntax"

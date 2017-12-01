@@ -105,7 +105,7 @@ proof -
     show "from_nat a \<le> x"
     proof (rule ccontr)
       assume "\<not> from_nat a \<le> x" hence x_less_from_nat_a: "x < from_nat a" by simp
-      def ja\<equiv>"(to_nat x) - (to_nat i)"
+      define ja where "ja = (to_nat x) - (to_nat i)"
       have to_nat_x_less_card: "to_nat x < CARD ('n)" using bij_to_nat[where ?'a='n] unfolding bij_betw_def by fastforce
       hence ja_less_length: "ja < IArray.length (vec_to_iarray A)" unfolding ja_def vec_to_iarray_def by auto
       have "[to_nat i..<IArray.length (vec_to_iarray A)] ! ja = to_nat i + ja" 

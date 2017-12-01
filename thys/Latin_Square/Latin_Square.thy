@@ -279,7 +279,7 @@ proof -
     then show ?case using insert by auto
   qed
 
-  def f == "\<lambda>ix::('a \<times> 'b). (case ix of (i,x) \<Rightarrow> x)"
+  define f where "f ix = (case ix of (i,x) \<Rightarrow> x)" for ix :: "'a \<times> 'b"
 
   have preimages_le_k: "\<forall>x \<in> f ` ?pairs. card ((f -` {x}) \<inter> ?pairs) \<le> k"
   proof
@@ -305,7 +305,7 @@ proof -
   qed
 
   then have "card I  \<le> card (f ` ?pairs) " using card_pairs assms by auto
-  moreover have "f ` ?pairs = (\<Union>i\<in>I. (A i))" using f_def by auto
+  moreover have "f ` ?pairs = (\<Union>i\<in>I. (A i))" using f_def [abs_def] by auto
   ultimately show ?thesis using f_def by auto
 qed
 
@@ -405,8 +405,8 @@ next
   -- "The Hall theorem gives us a system of distinct representatives, which we can use to fill the next row:"
   then obtain R where R_def:"\<forall>j\<in>{0..<n}. R j \<in> ?not_in_column j \<and> inj_on R {0..<n}" using marriage_HV[of "{0..<n}" "?not_in_column"] by blast
 
-  def new_row == "(\<lambda>j. rec_latin_type (n - Suc m) j (R j)) ` {0..<n}"
-  def s' == "s \<union> new_row"
+  define new_row where "new_row = (\<lambda>j. rec_latin_type (n - Suc m) j (R j)) ` {0..<n}"
+  define s' where "s' = s \<union> new_row"
 
   -- "s' is now a latin rect with one more row:"
   have "latin_rect s' (n-m) n"

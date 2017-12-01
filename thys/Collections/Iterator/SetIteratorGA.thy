@@ -304,7 +304,7 @@ assumes sort_fun_OK: "\<And>l. sorted_by_rel R (sort_fun l) \<and> mset (sort_fu
     and it_OK: "set_iterator it S0"
 shows "set_iterator_genord (iterator_to_ordered_iterator sort_fun it) S0 R"
 proof -
-  def l \<equiv> "iterate_to_list it"
+  define l where "l = iterate_to_list it"
   have l_props: "set l = S0" "distinct l" 
     using iterate_to_list_correct [OF it_OK, folded l_def] by simp_all
 

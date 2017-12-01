@@ -213,15 +213,17 @@ lemma subdivision_choose_rev:
   shows "\<exists>rev_G'. subdivision (G, rev_G') (H, rev_H')"
   using assms
 proof (induction arbitrary: rev_H')
-  case base then show ?case by (auto dest: subdivision_base)
+  case base
+  then show ?case by (auto dest: subdivision_base)
 next
   case (divide I rev_I H rev_H u v w uv uw vw)
 
   interpret subdiv_step I rev_I H rev_H u v w uv uw vw using divide by unfold_locales
   interpret H': bidirected_digraph H rev_H' by fact
 
-  def rev_I' \<equiv> "\<lambda>x.
-    if x = uv then rev_I uv else if x = rev_I uv then uv else if x \<in> arcs I then rev_H' x else x"
+  define rev_I' where "rev_I' x =
+    (if x = uv then rev_I uv else if x = rev_I uv then uv else if x \<in> arcs I then rev_H' x else x)"
+    for x
 
   have rev_H_injD: "\<And>x y z. rev_H' x = z \<Longrightarrow> rev_H' y = z \<Longrightarrow> x \<noteq> y \<Longrightarrow> False"
     by (metis H'.arev_eq_iff)
@@ -315,7 +317,8 @@ begin
     assumes "pair_sd G H" shows "pair_bidirected_digraph H"
     using assms
   proof induct
-    case base then  show ?case by auto
+    case base
+    then show ?case by auto
   next
     case (divide e w H)
     interpret H: pair_bidirected_digraph H by fact
@@ -370,13 +373,13 @@ begin
       by (auto intro: pair_sd.base pair_bidirected_digraphI_bidirected_digraph)
   next
     case (divide I rev_I u v w uv uw vw)
-    def I' \<equiv> "\<lparr> pverts = verts I, parcs = arcs I \<rparr>"
+    define I' where "I' = \<lparr> pverts = verts I, parcs = arcs I \<rparr>"
     have "compatible G I " using \<open>subdivision (with_proj G, _) (I, _)\<close>
       by (rule subdivision_compatible)
     then have "tail I = fst" "head I = snd" by (auto simp: compatible_def)
-    then have "I = I'" by (auto simp: I'_def)
+    then have I: "I = I'" by (auto simp: I'_def)
     moreover
-    then have "rev_I = swap_in (parcs I')"
+    from I have "rev_I = swap_in (parcs I')"
       using \<open>subdivision_step _ _ _ _ _ _\<close>
       by (simp add: subdivision_step_def bidirected_digraph_rev_conv_pair)
     ultimately

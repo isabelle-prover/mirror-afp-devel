@@ -45,7 +45,7 @@ lemma mpoly_to_poly_inverse:
 assumes "vars p \<subseteq> {v}"
 shows "poly_to_mpoly v (mpoly_to_poly v p) = p"
 proof -
-  def f == "(\<lambda>m. Polynomial.coeff (mpoly_to_poly v p) (PP_Poly_Mapping.lookup m v) when PP_Poly_Mapping.keys m \<subseteq> {v})"
+  define f where "f = (\<lambda>m. Polynomial.coeff (mpoly_to_poly v p) (PP_Poly_Mapping.lookup m v) when PP_Poly_Mapping.keys m \<subseteq> {v})"
   have "finite {m. f m \<noteq> 0}" unfolding f_def using poly_to_mpoly_finite by blast
   have "Abs_poly_mapping f = mapping_of p"
   proof (rule "PP_Poly_Mapping.poly_mapping_eqI")

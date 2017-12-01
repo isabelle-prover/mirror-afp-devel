@@ -24,7 +24,7 @@ proof (cases "\<forall>k. b ((c^^k) s)")
   ultimately show ?thesis unfolding while_default_def by simp
 next
   case False
-  def k \<equiv> "LEAST k. \<not> b ((c ^^ k) s)"
+  define k where "k = (LEAST k. \<not> b ((c ^^ k) s))"
   with False have k: "\<not> b ((c ^^ k) s)"
     "\<And>l. \<not> b ((c ^^ l) s) \<Longrightarrow> k \<le> l"
     by (auto intro!: LeastI_ex[of "\<lambda>k. \<not> b ((c ^^ k) s)"] Least_le)

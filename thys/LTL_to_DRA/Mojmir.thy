@@ -330,7 +330,7 @@ lemma mojmir_accept_token_set_def1:
   assumes "accept"
   shows "\<exists>i < max_rank. finite fail \<and> finite (merge i) \<and> infinite (succeed i) \<and> (\<forall>j < i. finite (succeed j))"
 proof (rule+)
-  def i \<equiv> "LEAST k. infinite (succeed k)"
+  define i where "i = (LEAST k. infinite (succeed k))"
 
   from assms have "infinite {t. token_succeeds t}"
     unfolding mojmir_accept_alt_def by force
@@ -383,7 +383,7 @@ proof (rule+)
       by (rule rank_upper_bound)
   }
 
-  def S \<equiv> "{(x, y). token_succeeds x \<and> token_succeeds y}"
+  define S where "S = {(x, y). token_succeeds x \<and> token_succeeds y}"
 
   have "finite (merge i \<inter> S)"
   proof (rule finite_product)
@@ -753,15 +753,15 @@ lemma fail_t_inclusion:
   assumes "token_run x (Suc n) \<notin> F"
   shows "n \<in> fail_t"
 proof -
-  def q \<equiv> "token_run x n" and q' \<equiv> "token_run x (Suc n)"
-  hence "\<not>sink q" and "sink q'" and "q' \<notin> F"
+  define q q' where "q = token_run x n" and "q' = token_run x (Suc n)"
+  hence *: "\<not>sink q" "sink q'" and "q' \<notin> F"
     using assms by blast+
   moreover
-  hence "state_rank q n \<noteq> None"
+  from * have **: "state_rank q n \<noteq> None"
     unfolding q_def by (metis oldest_token_always_def option.distinct(1) state_rank_None)
   moreover
-  hence "q' = \<delta> q (w n)"
-   unfolding q_def q'_def using assms(1) token_run_step' by blast
+  from ** have "q' = \<delta> q (w n)"
+    unfolding q_def q'_def using assms(1) token_run_step' by blast
   ultimately
   show "n \<in> fail_t"
     unfolding fail_t_def by blast
@@ -776,7 +776,10 @@ lemma merge_t_inclusion:
   assumes "j < i"
   shows "n \<in> merge_t i"
 proof -
-  def q \<equiv> "token_run x n" and q' \<equiv> "token_run x (Suc n)" and q'' \<equiv> "token_run y n"
+  define q q' q''
+    where "q = token_run x n"
+      and "q' = token_run x (Suc n)"
+      and "q'' = token_run y n"
   have "y \<le> Suc n"
     using assms(2) by linarith
   hence "(q' = \<delta> q'' (w n) \<and> state_rank q'' n \<noteq> None \<and> q'' \<noteq> q) \<or> q' = q\<^sub>0"
@@ -796,7 +799,7 @@ lemma succeed_t_inclusion:
   assumes "token_run x (Suc n) \<in> F"
   shows "n \<in> succeed_t i"
 proof -
-  def q \<equiv> "token_run x n"
+  define q where "q = token_run x n"
   hence "state_rank q n = Some i" and "q \<notin> F - {q\<^sub>0}" and "\<delta> q (w n) \<in> F"
     using token_run_step' rank_Some_time[OF assms(1)] assms rank_eq_state_rank by auto
   thus "n \<in> succeed_t i"
@@ -1207,9 +1210,9 @@ proof -
 
   then obtain n\<^sub>1 where n\<^sub>1_def: "\<forall>x \<ge> n\<^sub>1. token_succeeds x"
     unfolding accept_def MOST_nat_le by blast
-  def n\<^sub>2 \<equiv> "Suc (Max (fail_t \<union> \<Union>{succeed_t j | j. j < i}))" (is "Suc (Max ?S)")
-  def n\<^sub>3 \<equiv> "Max ({LEAST m. stable_rank_at x m | x. x < n\<^sub>1 \<and> token_squats x})" (is "Max ?S'")
-  def n \<equiv> "Max {n\<^sub>1, n\<^sub>2, n\<^sub>3}"
+  define n\<^sub>2 where "n\<^sub>2 = Suc (Max (fail_t \<union> \<Union>{succeed_t j | j. j < i}))" (is "_ = Suc (Max ?S)")
+  define n\<^sub>3 where "n\<^sub>3 = Max ({LEAST m. stable_rank_at x m | x. x < n\<^sub>1 \<and> token_squats x})" (is "_ = Max ?S'")
+  define n where "n = Max {n\<^sub>1, n\<^sub>2, n\<^sub>3}"
 
   have "finite ?S" and "finite ?S'"
     using `finite fail` `\<forall>j < i. finite (succeed j)`

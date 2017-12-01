@@ -42,13 +42,13 @@ lemma Gauss_Jordan_in_ij_unfold:
       else (row_add A' s i (- (interchange_A $ s $ j))) $ s)"
 proof -
   from assms obtain m where Anj: "A $ m $ j \<noteq> 0 \<and> i \<le> m" ..
-  moreover def n \<equiv> "LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n"
+  moreover define n where "n = (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)"
   then have P1: "(LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) = n" by simp
   ultimately have P2: "A $ n $ j \<noteq> 0" and P3: "i \<le> n"
     using LeastI [of "\<lambda>n. A $ n $ j \<noteq> 0 \<and> i \<le> n" m] by simp_all
-  def interchange_A \<equiv> "interchange_rows A i n"
+  define interchange_A where "interchange_A = interchange_rows A i n"
   then have P4: "interchange_A = interchange_rows A i n" by simp
-  def A' \<equiv> "mult_row interchange_A i (1 / interchange_A $ i $ j)"
+  define A' where "A' = mult_row interchange_A i (1 / interchange_A $ i $ j)"
   then have P5: "A' = mult_row interchange_A i (1 / interchange_A $ i $ j)" by simp
   have P6: "Gauss_Jordan_in_ij A i j = vec_lambda (\<lambda>s. if s = i then A' $ s 
     else (row_add A' s i (- (interchange_A $ s $ j))) $ s)"
@@ -209,7 +209,7 @@ lemma Gauss_Jordan_in_ij_preserves_previous_elements:
   and j_le_k: "to_nat j < k"
   shows "Gauss_Jordan_in_ij A ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ i $ j = A $ i $ j"
 proof (unfold Gauss_Jordan_in_ij_def Let_def interchange_rows_def mult_row_def row_add_def, auto)
-  def last_nonzero_row == "(GREATEST m. \<not> is_zero_row_upt_k m k A)"
+  define last_nonzero_row where "last_nonzero_row = (GREATEST m. \<not> is_zero_row_upt_k m k A)"
   have "last_nonzero_row < (last_nonzero_row + 1)" by (rule  Suc_le'[of last_nonzero_row], auto simp add: last_nonzero_row_def Greatest_plus_1)  
   hence zero_row: "is_zero_row_upt_k (last_nonzero_row + 1) k A"
     using not_le greatest_ge_nonzero_row last_nonzero_row_def by fastforce
@@ -218,7 +218,7 @@ proof (unfold Gauss_Jordan_in_ij_def Let_def interchange_rows_def mult_row_def r
     by simp
   show zero: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j = 0"
   proof -
-    def least_n \<equiv> "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n)"
+    define least_n where "least_n = (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n)"
     have "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by (metis exists_m)
     from this obtain n where n1: "A $ n $ from_nat k \<noteq> 0"  and n2: "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by blast
     have "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> least_n"
@@ -1384,7 +1384,7 @@ lemma foldl_Gauss_condition_8:
   and ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   shows "\<exists>m. \<not> is_zero_row_upt_k m (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
 proof -
-  def Greatest_plus_one\<equiv>"((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
+  define Greatest_plus_one where "Greatest_plus_one = (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
   have to_nat_from_nat_k_suc: "to_nat (from_nat k::'columns) < (Suc k)"  using to_nat_from_nat_id[OF k[unfolded ncols_def]] by simp
   have Gauss_eq_1: "(Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k)) $ Greatest_plus_one $ (from_nat k) = 1" 
     by (unfold Greatest_plus_one_def, rule Gauss_Jordan_in_ij_1, auto intro!: A_ma_k ma)
@@ -1403,7 +1403,7 @@ lemma foldl_Gauss_condition_9:
   shows "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =
   to_nat(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)))"
 proof -
-  def Greatest_plus_one=="((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
+  define Greatest_plus_one where "Greatest_plus_one = (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
   have to_nat_from_nat_k_suc: "to_nat (from_nat k::'columns) < (Suc k)"  using to_nat_from_nat_id[OF k[unfolded ncols_def]] by simp
   have greatest_plus_one_not_zero: "Greatest_plus_one \<noteq> 0"
   proof -
@@ -1545,7 +1545,7 @@ next
       else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
       snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))"
       unfolding Gauss_Jordan_upt_k_def by force
-    def A'\<equiv>"(snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))"
+    define A' where "A' = snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])"
     have ncols_eq: "ncols A = ncols A'" unfolding A'_def ncols_def ..
     have rref_A': "reduced_row_echelon_form_upt_k A' (Suc k)"  using hyp_rref unfolding A'_def Gauss_Jordan_upt_k_def .
     show "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]) =
@@ -1627,7 +1627,7 @@ lemma independent_not_zero_rows_rref:
   assumes rref_A: "reduced_row_echelon_form A"
   shows "vec.independent {row i A |i. row i A \<noteq> 0}"
 proof
-  def R \<equiv> "{row i A |i. row i A \<noteq> 0}"
+  define R where "R = {row i A |i. row i A \<noteq> 0}"
   assume dep: "vec.dependent R"
   from this obtain a where a_in_R: "a\<in>R" and a_in_span: "a \<in> vec.span (R - {a})" unfolding vec.dependent_def by fast
   from a_in_R obtain i where a_eq_row_i_A: "a=row i A" unfolding R_def by blast
@@ -1635,7 +1635,7 @@ proof
   have row_i_A_not_zero: "\<not> is_zero_row i A" using a_in_R 
   unfolding R_def is_zero_row_def is_zero_row_upt_ncols row_def vec_nth_inverse
   unfolding vec_lambda_unique zero_vec_def mem_Collect_eq using a_eq_Ai by force
-  def least_n == "(LEAST n. A $ i $ n \<noteq> 0)"
+  define least_n where "least_n = (LEAST n. A $ i $ n \<noteq> 0)"
   have span_rw: "vec.span (R - {a}) = {y. \<exists>u. (\<Sum>v\<in>(R - {a}). u v *s v) = y}"
   proof (rule vec.span_finite)
     show "finite (R - {a})" using finite_rows[of A] unfolding rows_def R_def by simp
@@ -1689,7 +1689,7 @@ proof (induct n arbitrary: A)
     show ?thesis by (metis False invertible_row_add row_add_iterate.simps(1) row_add_mat_1) 
   qed
   fix n and A::"'a::{ring_1}^'n^'m::{mod_type}"
-  def A'=="(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
+  define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
   assume  hyp: "\<And>A::'a::{ring_1}^'n^'m::{mod_type}. n < nrows A \<Longrightarrow> \<exists>P. invertible P \<and> row_add_iterate A n i j = P ** A" and Suc_n: "Suc n < nrows A"
   hence "\<exists>P. invertible P \<and> row_add_iterate A' n i j = P ** A'" unfolding nrows_def by auto
   from this obtain P where inv_P: "invertible P"  and P: "row_add_iterate A' n i j = P ** A'" by auto
@@ -1746,7 +1746,7 @@ next
     show "row_add_iterate A (Suc n) i j $ a $ b = A $ a $ b" unfolding row_add_iterate.simps if_P[OF True] using row_add_iterate_A .
   next
     case False
-    def A' \<equiv> "row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+    define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
     have row_add_iterate_A': "row_add_iterate A' n i j $ a $ b = A' $ a $ b" using hyp suc_n_less_card suc_n_kess_a unfolding nrows_def by auto
     have from_nat_not_a: "from_nat (Suc n) \<noteq> a" by (metis less_not_refl suc_n_kess_a suc_n_less_card to_nat_from_nat_id nrows_def)
     show "row_add_iterate A (Suc n) i j $ a $ b = A $ a $ b" unfolding row_add_iterate.simps if_not_P[OF False] row_add_iterate_A'[unfolded A'_def]
@@ -1774,7 +1774,7 @@ next
     show ?thesis unfolding row_add_iterate.simps if_P[OF True] apply (rule row_add_iterate_preserves_greater_than_n) using Suc_n_less_card True lessI by linarith+
   next
     case False
-    def A'\<equiv> "(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
+    define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
     have row_add_iterate_A': "row_add_iterate A' n i j $ i $ b = A' $ i $ b" using hyp Suc_n_less_card i_less_suc False unfolding nrows_def by auto
     have from_nat_noteq_i: "from_nat (Suc n) \<noteq> i"  using False Suc_n_less_card from_nat_not_eq unfolding nrows_def by blast
     show ?thesis unfolding row_add_iterate.simps if_not_P[OF False] row_add_iterate_A'[unfolded A'_def]
@@ -1812,7 +1812,7 @@ next
         by (metis Suc_le_lessD True order_refl less_imp_le row_add_iterate_preserves_greater_than_n suc_n_less_card to_nat_from_nat nrows_def)
     next
       case False
-      def A'\<equiv>"(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
+      define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
       have rw: "row_add_iterate A' n i j $ a $ b = row_add A' a i (- A' $ a $ j) $ a $ b"
       proof (rule hyp)
         show "a \<noteq> i" using a_not_i .
@@ -1878,19 +1878,20 @@ lemma invertible_Gauss_Jordan_column_k:
   shows "\<exists>P. invertible P \<and> (snd (Gauss_Jordan_column_k (i,A) k)) = P**A"
   unfolding Gauss_Jordan_column_k_def Let_def
 proof (auto)
-  show "\<exists>P. invertible P \<and> A = P ** A" and " \<exists>P. invertible P \<and> A = P ** A" using invertible_mat_1 matrix_mul_lid[of A] by auto
+  show "\<exists>P. invertible P \<and> A = P ** A" and "\<exists>P. invertible P \<and> A = P ** A" using invertible_mat_1 matrix_mul_lid[of A] by auto
 next
   fix m
   assume i: "i \<noteq> nrows A"
     and i_le_m: "from_nat i \<le> m" and Amk_not_zero: "A $ m $ from_nat k \<noteq> 0"
-  def A_interchange \<equiv> "(interchange_rows A (from_nat i) (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (from_nat i) \<le> n))"
-  def A_mult \<equiv> "(mult_row A_interchange (from_nat i) (1 / (A_interchange $ (from_nat i) $ from_nat k)))"
+  define A_interchange where "A_interchange = interchange_rows A (from_nat i) (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (from_nat i) \<le> n)"
+  define A_mult where "A_mult = mult_row A_interchange (from_nat i) (1 / (A_interchange $ (from_nat i) $ from_nat k))"
   obtain P where inv_P: "invertible P" and PA: "A_interchange = P**A" 
     unfolding A_interchange_def
     using interchange_rows_mat_1[of "from_nat i" "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)" A]
     using invertible_interchange_rows[of "from_nat i" "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)"]
     by fastforce
-  def Q \<equiv> "(mult_row (mat 1) (from_nat i) (1 / (A_interchange $ (from_nat i) $ from_nat k)))::'a^'m::{mod_type}^'m::{mod_type}"
+  define Q :: "'a^'m::{mod_type}^'m::{mod_type}"
+    where "Q = mult_row (mat 1) (from_nat i) (1 / (A_interchange $ (from_nat i) $ from_nat k))"
   have Q_A_interchange: "A_mult = Q**A_interchange" unfolding A_mult_def A_interchange_def Q_def unfolding mult_row_mat_1 ..
   have inv_Q: "invertible Q"
   proof (unfold Q_def, rule invertible_mult_row', unfold A_interchange_def, rule LeastI2_ex)

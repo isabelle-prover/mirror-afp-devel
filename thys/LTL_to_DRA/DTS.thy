@@ -438,8 +438,8 @@ proof (induction "dom \<iota>\<^sub>m" arbitrary: \<iota>\<^sub>m)
       unfolding reach_def by simp
 next 
   case (insert k K)
-    def f \<equiv> "\<lambda>(q :: 'b, m :: 'a \<rightharpoonup> 'b). m(k := Some q)"
-    def Reach \<equiv> "(reach \<Sigma> (\<delta>\<^sub>m k) (the (\<iota>\<^sub>m k))) \<times> ((reach \<Sigma> (\<Delta>\<^sub>\<times> \<delta>\<^sub>m) (\<iota>\<^sub>m(k := None))))"
+    define f where "f = (\<lambda>(q :: 'b, m :: 'a \<rightharpoonup> 'b). m(k := Some q))"
+    define Reach where "Reach = (reach \<Sigma> (\<delta>\<^sub>m k) (the (\<iota>\<^sub>m k))) \<times> ((reach \<Sigma> (\<Delta>\<^sub>\<times> \<delta>\<^sub>m) (\<iota>\<^sub>m(k := None))))"
 
     have "(reach \<Sigma> (\<Delta>\<^sub>\<times> \<delta>\<^sub>m) \<iota>\<^sub>m) \<subseteq> f ` Reach"
     proof
@@ -746,7 +746,7 @@ proof standard+
     then obtain w n where "z = run \<delta> q w n" and "range w \<subseteq> \<Sigma>"
       unfolding reach_def by auto
     
-    def w' \<equiv> "\<lambda>n. SOME x. B (w n) x"
+    define w' where "w' n = (SOME x. B (w n) x)" for n
     
     have "\<And>n. w n \<in> \<Sigma>"
       using `range w \<subseteq> \<Sigma>` by blast
@@ -778,7 +778,7 @@ proof standard+
     then obtain w n where "z = run \<delta>' q' w n" and "range w \<subseteq> \<Sigma>'"
       unfolding reach_def by auto
     
-    def w' \<equiv> "(\<lambda>n. SOME x. B x (w n))"
+    define w' where "w' n = (SOME x. B x (w n))" for n
     
     have "\<And>n. w n \<in> \<Sigma>'"
       using `range w \<subseteq> \<Sigma>'` by blast

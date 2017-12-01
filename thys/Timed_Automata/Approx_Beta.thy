@@ -60,20 +60,20 @@ lemma region_dbm:
 proof -
   from assms obtain I r where R: "R = region X I r" "valid_region X k I r" unfolding \<R>_def by blast
   let ?X\<^sub>0 = "{x \<in> X. \<exists>d. I x = Regions.intv.Intv d}"
-  def f \<equiv> "\<lambda> x. if isIntv (I x) then Lt (intv_const (I x) + 1)
+  define f where "f x = (if isIntv (I x) then Lt (intv_const (I x) + 1)
                  else if isConst (I x) then Le (intv_const (I x))
-                 else \<infinity>"
-  def g \<equiv> "\<lambda> x. if isIntv (I x) then Lt (- intv_const (I x))
+                 else \<infinity>)" for x
+  define g where "g x = (if isIntv (I x) then Lt (- intv_const (I x))
                  else if isConst (I x) then Le (- intv_const (I x))
-                 else Lt (- k x)"
-  def h \<equiv> "\<lambda> x y. if isIntv (I x) \<and> isIntv (I y) then
+                 else Lt (- k x))" for x
+  define h where "h x y = (if isIntv (I x) \<and> isIntv (I y) then
                       if (y, x) \<in> r \<and> (x, y) \<notin> r then Lt (int (intv_const (I x)) - intv_const (I y) + 1)
                       else if (x, y) \<in> r \<and> (y, x) \<notin> r then Lt (int (intv_const (I x)) - intv_const (I y))
                       else Le (int (intv_const (I x)) - intv_const (I y))
                    else if isConst (I x) \<and> isConst (I y) then Le (int (intv_const (I x)) - intv_const (I y))
                    else if isIntv (I x) \<and> isConst (I y) then Lt (int (intv_const (I x)) + 1 - intv_const (I y))
                    else if isConst (I x) \<and> isIntv (I y) then Lt (int (intv_const (I x)) - intv_const (I y))
-                   else \<infinity>"
+                   else \<infinity>)" for x y
   let ?M = "\<lambda> i j. if i = 0 then if j = 0 then Le 0 else g (v' j)
                    else if j = 0 then f (v' i) else if i = j then Le 0 else h (v' i) (v' j)"
   have "[?M]\<^bsub>v,n\<^esub> \<subseteq> R"
@@ -808,7 +808,7 @@ theorem region_zone_intersect_empty_approx_correct:
   assumes "R \<in> \<R>" "Z \<subseteq> V" "R \<inter> Z = {}" "vabstr Z M"
   shows "R \<inter> Approx\<^sub>\<beta> Z = {}"
 proof -
-  def v' \<equiv> "\<lambda> i. THE c. c \<in> X \<and> v c = i"
+  define v' where "v' i = (THE c. c \<in> X \<and> v c = i)" for i
   from region_dbm[OF assms(1)] obtain M\<^sub>R where M\<^sub>R:
     "[M\<^sub>R]\<^bsub>v,n\<^esub> = R" "\<forall>i\<le>n. \<forall>j\<le>n. M\<^sub>R i 0 = \<infinity> \<and> 0 < j \<and> i \<noteq> j \<longrightarrow> M\<^sub>R i j = \<infinity> \<and> M\<^sub>R j i = \<infinity>"
     "\<forall>i\<le>n. M\<^sub>R i i = Le 0"

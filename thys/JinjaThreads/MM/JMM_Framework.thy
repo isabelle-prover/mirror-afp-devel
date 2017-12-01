@@ -2587,7 +2587,7 @@ proof -
         have HB: "ta_hb_consistent P (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>)) (lappend (llist_of (map (Pair t_r) (drop r_n \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>))) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas')))"
           by -(rule ta_hb_consistent_lappendI, simp_all add: take_map[symmetric] drop_map[symmetric])
         
-        def EE \<equiv> "llist_of (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))"
+        define EE where "EE = llist_of (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))"
 
         from r r_conv have r_conv': "r = (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + r_n + length ?start_heap_obs" by auto
         hence len_EE: "llength EE = enat r" using r_m r_n
@@ -3178,7 +3178,7 @@ proof
             by(rule read_non_speculative_new_actions_for)
           then obtain w where w: "?new_w w" ..
 
-          def E'' \<equiv> "?E @ map (Pair t) (take (Suc j) (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))"
+          define E'' where "E'' = ?E @ map (Pair t) (take (Suc j) (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))"
 
           from Red redT' have "mthr.if.RedT s (ttas @ [(t, ta')]) s''" unfolding mthr.if.RedT_def ..
           hence tsa: "thread_start_actions_ok (llist_of (lift_start_obs start_tid start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta')]))))"
@@ -3195,11 +3195,11 @@ proof
           ultimately have hb_w: "P,llist_of E'' \<turnstile> w \<le>hb length ?E + j"
             by(rule happens_before_new_not_new)
           
-          def writes == 
-            "{w. P,llist_of E'' \<turnstile> w \<le>hb length ?E + j \<and> w \<in> write_actions (llist_of E'') \<and> 
+          define writes where
+            "writes = {w. P,llist_of E'' \<turnstile> w \<le>hb length ?E + j \<and> w \<in> write_actions (llist_of E'') \<and> 
                  (ad, al) \<in> action_loc P (llist_of E'') w}"
 
-          def w' \<equiv> "Max_torder (action_order (llist_of E'')) writes"
+          define w' where "w' = Max_torder (action_order (llist_of E'')) writes"
 
           have writes_actions: "writes \<subseteq> actions (llist_of E'')" unfolding writes_def actions_def
             by(auto dest!: happens_before_into_action_order elim!: action_orderE simp add: actions_def)
@@ -3218,7 +3218,7 @@ proof
             have "llist_of E'' \<turnstile> w'' \<le>a w'" using writes_actions unfolding w'_def by(rule Max_torder_above) }
           note w'_maximal = this
 
-          def v' \<equiv> "value_written P (llist_of E'') w' (ad, al)"
+          define v' where "v' = value_written P (llist_of E'') w' (ad, al)"
 
           from nsi ta_hb_consistent_into_non_speculative[OF hb]
           have nsi': "non_speculative P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of (take (i + j) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))"
@@ -3262,11 +3262,11 @@ proof
             and ta''_j: "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! (i + j) = NormalAction (ReadMem ad al v')"
             and len': "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)" by blast
 
-          def EE \<equiv> "?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>))"
-          def E' \<equiv> "?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)) @ [(t, NormalAction (ReadMem ad al v'))]"
+          define EE where "EE = ?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>))"
+          define E' where "E' = ?E @ map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)) @ [(t, NormalAction (ReadMem ad al v'))]"
 
           from len' len have "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> max n (length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" by simp
-          moreover with eq' eq j j' have "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+          moreover from eq' eq j j' have "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
             by(auto simp add: take_add min_def)
           moreover {
             note hb

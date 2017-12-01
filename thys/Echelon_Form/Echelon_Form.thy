@@ -500,11 +500,11 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
             using ib using is_bezout_ext_def using bz [symmetric]
             using foo [of ?a ?b] by fastforce
   have pa_bq_d: "p * ?a + ?b * q = d" using foo by (auto simp add: mult.commute)
-  def f \<equiv> "(\<lambda>k. (if k = a then p
+  define f where "f k = (if k = a then p
               else if a = a \<and> k = b then q
               else if a = b \<and> k = a then u
               else if a = b \<and> k = b then v
-              else if a = k then 1 else 0) * A $ k $ j)"
+              else if a = k then 1 else 0) * A $ k $ j" for k
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
   have sum_rw: "sum f (insert a (UNIV - {a} - {b})) = f a + sum f (UNIV - {a} - {b})"
     by (rule sum.insert, auto)
@@ -600,11 +600,11 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, auto)
   have d_dvd_a: "d dvd ?a" using pib by auto
   have d_dvd_b: "d dvd -?b" using pib by auto
   have pa_bq_d: "p * ?a + ?b * q = d" using pa_bq_d by (simp add: mult.commute)
-  def f\<equiv>"\<lambda>k. (if b = a \<and> k = a then p
+  define f where "f k = (if b = a \<and> k = a then p
                  else if b = a \<and> k = b then q
                       else if b = b \<and> k = a then u
                            else if b = b \<and> k = b then v else if b = k then 1 else 0) *
-                A $ k $ j"
+                A $ k $ j" for k
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
   have sum_rw: "sum f (insert a (UNIV - {a} - {b})) = f a + sum f (UNIV - {a} - {b})"
     by (rule sum.insert, auto)
@@ -656,10 +656,10 @@ proof (auto)
   obtain p q u v d where bz: "(p, q, u, v, d) = ?z" by (cases ?z, auto)
   have Aib: "A $ i $ b = 0" by (metis b_k i is_zero_row_upt_k_def to_nat_mono)
   have Ajb: "A $ j $ b = 0" by (metis b_k j is_zero_row_upt_k_def to_nat_mono)
-  def f\<equiv>"(\<lambda>ka. (if a = i \<and> ka = i then p
+  define f where "f ka = (if a = i \<and> ka = i then p
                   else if a = i \<and> ka = j then q
                   else if a = j \<and> ka = i then u
-                  else if a = j \<and> ka = j then v else if a = ka then 1 else 0) * A $ ka $ b)"
+                  else if a = j \<and> ka = j then v else if a = ka then 1 else 0) * A $ ka $ b" for ka
   show "(\<Sum>ka\<in>UNIV.
        (case bezout (A $ i $ k) (A $ j $ k) of
         (p, q, u, v, d) \<Rightarrow>
@@ -775,9 +775,9 @@ proof -
         using bz [symmetric]
         unfolding bezout_matrix_def Let_def by auto
     qed
-    also have "... = -1" 
+    also have "\<dots> = -1" 
     proof -
-      def f == "(\<lambda>i. interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i)"
+      define f where "f i = interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i" for i
       have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
         =  f a * prod f (UNIV - {a} - {b})"
         by (rule prod.insert, simp_all)
@@ -814,8 +814,8 @@ proof -
     thus ?thesis unfolding det_inter_1 by simp
   next
     case False
-    def mult_b_dp \<equiv> "mult_row ?B b (d * p)"
-    def sum_ab \<equiv> "row_add mult_b_dp b a ?b"
+    define mult_b_dp where "mult_b_dp = mult_row ?B b (d * p)"
+    define sum_ab where "sum_ab = row_add mult_b_dp b a ?b"
     have "det (sum_ab) = prod (\<lambda>i. sum_ab $ i $ i) UNIV"
     proof (rule det_upperdiagonal)
       fix i j::'rows 
@@ -831,7 +831,7 @@ proof -
     qed
     also have "... = d * p"
     proof -
-      def f \<equiv> "(\<lambda>i. sum_ab $ i $ i)"
+      define f where "f i = sum_ab $ i $ i" for i
       have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
         =  f a * prod f (UNIV - {a} - {b})"
         by (rule prod.insert, simp_all)
@@ -2617,7 +2617,7 @@ next
     (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
     (fst ?fold)) + 1)"
   proof (rule prod_eqI, metis fst_conv)
-    def A'\<equiv>"(fst ?fold2)"
+    define A' where "A' = fst ?fold2"
     let ?greatest="(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A')"
     have k: "k < ncols A'" using Suc_k unfolding ncols_def by auto
     have k2: "Suc k < ncols A'" using Suc_k unfolding ncols_def by auto

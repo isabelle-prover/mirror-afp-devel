@@ -625,14 +625,14 @@ proof (rule iffI, (erule conjE)+)
      and A2: "rel_weakly_reflects_barb_set TRel TWB {success}"
      and A3: "enc_weakly_preserves_barb_set {success}"
      and A4: "enc_weakly_reflects_barb_set {success}"
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+  from Rel_def have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
     by (simp add: indRelRTPO.target)
-  from rel have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+  from Rel_def have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
     by (simp add: indRelRTPO_to_TRel(4)[where TRel="TRel"])
-  from rel have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
+  from Rel_def have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -641,10 +641,10 @@ proof (rule iffI, (erule conjE)+)
      and "weak_reduction_simulation (TRel\<^sup>+) Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
-  with rel have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
@@ -744,14 +744,14 @@ proof (rule iffI, (erule conjE)+)
      and A4: "enc_weakly_reflects_barb_set {success}"
      and A5: "rel_weakly_preserves_barbs TRel TWB" and A6: "rel_weakly_reflects_barbs TRel TWB"
      and A7: "enc_weakly_preserves_barbs" and A8: "enc_weakly_reflects_barbs"
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+  from Rel_def have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
     by (simp add: indRelRTPO.target)
-  from rel have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+  from Rel_def have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
     by (simp add: indRelRTPO_to_TRel(4)[where TRel="TRel"])
-  from rel have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
+  from Rel_def have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -759,14 +759,14 @@ proof (rule iffI, (erule conjE)+)
      and "operational_sound (TRel\<^sup>*)"
      and "weak_reduction_simulation (TRel\<^sup>+) Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
-  with rel have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
-  from rel A5 A6 A7 A8 have B7: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
+  from Rel_def A5 A6 A7 A8 have B7: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_barbs[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -924,27 +924,27 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding refl_on_def preorder_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete TRel" and "operational_sound TRel"
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel)"
-  with rel A6 A7 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
@@ -1043,27 +1043,27 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete TRel" and "operational_sound TRel"
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel)"
-  with rel A6 A7 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_barbs[where TRel="TRel"]
     by blast
   hence B7: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
@@ -1176,13 +1176,13 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -1190,14 +1190,14 @@ proof (rule iffI, (erule conjE)+)
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel)"
-  with rel A6 A7 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
       using WOC_iff_indRelRTPO_is_reduction_correspondence_simulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
@@ -1301,13 +1301,13 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -1315,18 +1315,18 @@ proof (rule iffI, (erule conjE)+)
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel)"
-  with rel A6 A7 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
       using WOC_iff_indRelRTPO_is_reduction_correspondence_simulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
-  from rel A1' A2' A3' A4' have B7: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
+  from Rel_def A1' A2' A3' A4' have B7: "rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_barbs[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -1436,27 +1436,27 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "strongly_operational_complete TRel" and "strongly_operational_sound TRel"
      and "strong_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel)"
-  with rel A6 A7 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
       using SOC_iff_indRelRTPO_is_strong_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_respects_success[where TRel="TRel" and success="success"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -1555,27 +1555,27 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A6 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A7 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "strongly_operational_complete TRel" and "strongly_operational_sound TRel"
      and "strong_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel)"
-  with rel A6 A7 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A6 A7 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
       using SOC_iff_indRelRTPO_is_strong_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A5 have B5: "preorder Rel"
+  from Rel_def A5 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by blast
-  from rel A1 A2 A3 A4 have B6: "rel_respects_barbs Rel (STCalWB SWB TWB)"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_respects_barbs Rel (STCalWB SWB TWB)"
       using enc_and_TRel_impl_indRelRTPO_respects_barbs[where TRel="TRel"]
     by blast
   hence B7: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
@@ -1726,14 +1726,14 @@ proof (rule iffI, (erule conjE)+)
      and A3: "enc_weakly_preserves_barb_set {success}"
      and A4: "enc_weakly_reflects_barb_set {success}"
      and A5: "rel_reflects_divergence TRel Target" and A6: "enc_reflects_divergence"
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+  from Rel_def have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
     by (simp add: indRelRTPO.target)
-  from rel have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+  from Rel_def have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
     by (simp add: indRelRTPO_to_TRel(4)[where TRel="TRel"])
-  from rel have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
+  from Rel_def have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -1742,14 +1742,14 @@ proof (rule iffI, (erule conjE)+)
      and "weak_reduction_simulation (TRel\<^sup>+) Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
-  with rel have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
-  from rel A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
+  from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
       using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -1864,13 +1864,13 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
@@ -1878,18 +1878,18 @@ proof (rule iffI, (erule conjE)+)
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel)"
-  with rel A8 A9 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
+  with Rel_def A8 A9 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
       using WOC_iff_indRelRTPO_is_reduction_correspondence_simulation[where TRel="TRel"]
     by simp
-  from rel A7 have B5: "preorder Rel"
+  from Rel_def A7 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
-  from rel A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
+  from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
       using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -2000,31 +2000,31 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete TRel" and "operational_sound TRel" and "preorder TRel"
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel)"
-  with rel A8 A9 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A8 A9 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
       using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A7 have B5: "preorder Rel"
+  from Rel_def A7 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
-  from rel A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
+  from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
       using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -2132,30 +2132,30 @@ proof (rule iffI, (erule conjE)+)
       using reflcl_trancl[of TRel] trancl_id[of TRel]
       unfolding preorder_on_def refl_on_def
     by auto
-  def rel: Rel\<equiv>"indRelRTPO TRel"
+  define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
-  from rel A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
       using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
-  from rel A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+  from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
       using indRelRTPO_to_TRel(2)[where TRel="TRel"]
             trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "strongly_operational_complete TRel" and "strongly_operational_sound TRel"
      and "preorder TRel" and "strong_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel)"
-  with rel A8 A9 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
+  with Rel_def A8 A9 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
       using SOC_iff_indRelRTPO_is_strong_reduction_bisimulation[where TRel="TRel"]
     by simp
-  from rel A7 have B5: "preorder Rel"
+  from Rel_def A7 have B5: "preorder Rel"
       using indRelRTPO_is_preorder[where TRel="TRel"]
       unfolding preorder_on_def
     by simp
-  from rel A1 A2 A3 A4 have B6: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
+  from Rel_def A1 A2 A3 A4 have B6: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
       using enc_and_TRel_impl_indRelRTPO_respects_success[where TRel="TRel" and success="success"]
     by blast
-  from rel A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
+  from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
       using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)

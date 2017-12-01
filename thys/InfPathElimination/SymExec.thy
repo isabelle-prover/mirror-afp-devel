@@ -245,7 +245,7 @@ proof -
                     pred    = insert (\<lambda>\<sigma>. \<sigma> sv = adapt_aexp e (store c) \<sigma>) (pred c) \<rparr>"
   using assms(1) se_Assign_eq[of c v e c'] by blast
 
-  def \<sigma>\<^sub>s\<^sub>y\<^sub>m' \<equiv> "\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := e \<sigma>)"
+  define \<sigma>\<^sub>s\<^sub>y\<^sub>m' where "\<sigma>\<^sub>s\<^sub>y\<^sub>m' = \<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := e \<sigma>)"
   
   have "consistent \<sigma>' \<sigma>\<^sub>s\<^sub>y\<^sub>m' (store c')"
   using `\<sigma>' = \<sigma> (v := e \<sigma>)` 1 4 5 

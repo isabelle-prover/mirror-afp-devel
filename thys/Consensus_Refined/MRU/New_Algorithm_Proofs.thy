@@ -101,7 +101,7 @@ proof(clarsimp simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distrib
   note \<mu>nxt = \<mu> nxt
   have r_phase_step: "nr_steps * three_phase r = r" using r three_phase_step[of r]
     by(auto)
-  def C \<equiv> "ran (prop_vote o sc')"
+  define C where "C = ran (prop_vote o sc')"
   have guard: "\<forall>cand\<in>C. \<exists>Q. majorities.opt_mru_guard (mru_vote \<circ> sc) Q cand"
   proof(simp add: C_def ran_def, safe)
     fix p cand
@@ -126,7 +126,7 @@ proof(clarsimp simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distrib
       by blast
   qed
 
-  def sa' \<equiv> "sa\<lparr>
+  define sa' where "sa' = sa\<lparr>
       next_round := Suc r,
       candidates := C
     \<rparr>"
@@ -156,7 +156,7 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
         and nxt: "\<forall>p. next1 r p (sc p) (\<mu> p) (crds r) (sc' p)"
   note \<mu>nxt = \<mu> nxt
 
-  def S \<equiv> "{p. mru_vote (sc' p) \<noteq> mru_vote (sc p)}"
+  define S where "S = {p. mru_vote (sc' p) \<noteq> mru_vote (sc p)}"
 
   have S: "S \<subseteq> {p. \<exists>Q v. Q \<subseteq> HOs r p
       \<and> (\<forall>q \<in> Q. prop_vote (sc q) = Some v)
@@ -205,7 +205,7 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
       by (metis all_not_in_conv comp_eq_dest_lhs majorities.empty_not_quorum ranI)
   qed(auto)
 
-  def sa' \<equiv> "sa\<lparr> next_round := Suc r, 
+  define sa' where "sa' = sa\<lparr> next_round := Suc r, 
     opt_mru_state.mru_vote := opt_mru_state.mru_vote sa ++ const_map (three_phase r, v) S
   \<rparr>"
 
@@ -243,7 +243,8 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
         and nxt: "\<forall>p. next2 r p (sc p) (\<mu> p) (crds r) (sc' p)"
   note \<mu>nxt = \<mu> nxt
 
-  def dec_f \<equiv> "\<lambda>p. if decide (sc' p) \<noteq> decide (sc p) then decide (sc' p) else None"
+  define dec_f
+    where "dec_f p = (if decide (sc' p) \<noteq> decide (sc p) then decide (sc' p) else None)" for p
 
   have dec_f: "(decide \<circ> sc) ++ dec_f = decide \<circ> sc'"
   proof
@@ -252,7 +253,7 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
       by(auto simp add: map_add_def dec_f_def next2_def Let_def split: option.split intro!: ext)
   qed
 
-  def sa' \<equiv> "sa\<lparr>
+  define sa' where "sa' = sa\<lparr>
     next_round := Suc r,
     decisions := decisions sa ++ dec_f
   \<rparr>"
@@ -262,9 +263,9 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
       mru_vote_evolution2[OF nxt])
   moreover have "(sa, sa') \<in> majorities.opt_mru_step2 r dec_f" using r R
   proof-
-    def sc_r_votes \<equiv> "\<lambda>p. if (\<exists>v. mru_vote (sc p) = Some (three_phase r, v))
+    define sc_r_votes where "sc_r_votes p = (if (\<exists>v. mru_vote (sc p) = Some (three_phase r, v))
         then map_option snd (mru_vote (sc p))
-        else None"
+        else None)" for p
     have sc_r_votes: "sc_r_votes = majorities.r_votes sa r" using R r
       by(auto simp add: new_algo_ref_rel_def sc_r_votes_def majorities.r_votes_def intro!: ext)
     have "majorities.step2_d_guard dec_f sc_r_votes"
@@ -329,13 +330,13 @@ proof -
     by(auto simp add: New_Algo_HOMachine_def NA_commGlobal_def)
 
   -- {* The tedious bit: obtain four consecutive rounds linked by send/next functions *}
-  def r0 \<equiv> "nr_steps * ph"
-  def cfg0 \<equiv> "rho r0"
-  def r1 \<equiv> "Suc r0"
-  def cfg1 \<equiv> "rho r1"
-  def r2 \<equiv> "Suc r1"
-  def cfg2 \<equiv> "rho r2"
-  def cfg3 \<equiv> "rho (Suc r2)"
+  define r0 where "r0 = nr_steps * ph"
+  define cfg0 where "cfg0 = rho r0"
+  define r1 where "r1 = Suc r0"
+  define cfg1 where "cfg1 = rho r1"
+  define r2 where "r2 = Suc r1"
+  define cfg2 where "cfg2 = rho r2"
+  define cfg3 where "cfg3 = rho (Suc r2)"
 
   from 
     run[simplified HORun_def SHORun_def, THEN CSHORun_step, THEN spec, where x="r0"] 

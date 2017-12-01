@@ -255,12 +255,12 @@ proof cases
       and x: "nonnegative x" and y: "nonnegative y"
       by simp_all
 txt{*\nopagebreak*}
-    def "C" \<equiv> "(\<lambda>(i,j). A i \<inter> B j) \<circ> prod_decode"
-    def "z1" \<equiv> "(\<lambda>k. x (fst (prod_decode k)))"
-    def "z2" \<equiv> "(\<lambda>k. y (snd (prod_decode k)))"
-    def "K" \<equiv> "{k. \<exists>i\<in>R. \<exists>j\<in>S. k = prod_encode (i,j)}"
-    def "G" \<equiv> "(\<lambda>i. (\<lambda>j. prod_encode (i,j)) ` S)"                                            
-    def "H" \<equiv> "(\<lambda>j. (\<lambda>i. prod_encode (i,j)) ` R)"
+    define C where "C = (\<lambda>(i,j). A i \<inter> B j) \<circ> prod_decode"
+    define z1 where "z1 k = x (fst (prod_decode k))" for k
+    define z2 where "z2 k = y (snd (prod_decode k))" for k
+    define K where "K = {k. \<exists>i\<in>R. \<exists>j\<in>S. k = prod_encode (i,j)}"
+    define G where "G i = (\<lambda>j. prod_encode (i,j)) ` S" for i                                            
+    define H where "H j = (\<lambda>i. prod_encode (i,j)) ` R" for j
 
     { fix t
       { fix i
@@ -641,9 +641,9 @@ lemma sfis_char:
   assumes ms: "measure_space M" and mA: "A \<in> measurable_sets M" 
   shows "measure M A \<in> sfis \<chi> A M"
 (*<*)proof -
-  def "R" \<equiv> "(\<lambda>i::nat. if i = 0 then A else if i=1 then -A else {})::(nat\<Rightarrow>'a set)"
-  def "x" \<equiv> "(\<lambda>i::nat. if i = 0 then 1 else 0)::(nat \<Rightarrow> real)"
-  def "K" \<equiv> "{0,1::nat}"
+  define R :: "nat \<Rightarrow> 'a set" where "R i = (if i = 0 then A else if i=1 then -A else {})" for i
+  define x :: "nat \<Rightarrow> real" where "x i = (if i = 0 then 1 else 0)" for i
+  define K :: "nat set" where "K = {0,1}"
   
   from ms mA have Rms: "\<forall>i\<in>K. R i \<in> measurable_sets M" 
     by (simp add: K_def R_def measure_space_def sigma_algebra_def)
@@ -895,7 +895,7 @@ proof cases
   note base_a = this
   
   { fix z assume znn: "0<(z::real)" and z1: "z<1"
-    def B \<equiv> "(\<lambda>n. {w. z*s w \<le> u n w})" 
+    define B where "B n = {w. z*s w \<le> u n w}" for n
 
     { fix n
       note ms also
@@ -1393,7 +1393,7 @@ theorem nnfis_mon_conv:
   and ms: "measure_space M"
   shows "y \<in> nnfis h M"
 proof -
-  def u \<equiv> "(\<lambda>n. SOME u. u\<up>(f n) \<and> (\<forall>m. \<exists>a. a \<in> sfis (u m) M))"
+  define u where "u n = (SOME u. u\<up>(f n) \<and> (\<forall>m. \<exists>a. a \<in> sfis (u m) M))" for n
   { fix n
     from xf[of n] have "\<exists>u. u\<up>(f n) \<and> (\<forall>m. \<exists>a. a \<in> sfis (u m) M)" (is "\<exists>x. ?P x")
     proof (cases)
@@ -1406,7 +1406,7 @@ proof -
     with u_def have "?P (u n)" 
       by simp
   } also
-  def urev \<equiv> "(\<lambda>m n. u n m)"
+  define urev where "urev m n = u n m" for m n
   ultimately have uf: "\<And>n. (\<lambda>m. urev m n)\<up>(f n)" 
     and sf: "\<And>n m. \<exists>a. a \<in> sfis (urev m n) M"
     by auto
@@ -1518,9 +1518,9 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
   shows rv_mon_conv_sfis: "\<exists>u x. u\<up>f \<and> (\<forall>n. x n \<in> sfis (u n) M)"
 (*<*)proof (rule+)
     (*We don't need the greater case in the book, since our functions are real*)
-  def A \<equiv> "(\<lambda>n i. {w. real i/(2::real)^n \<le> f w} \<inter> {w. f w < real (Suc i)/(2::real)^n})"
-  def u \<equiv> "(\<lambda>n t. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*\<chi> (A n i) t)" 
-  def x \<equiv> "(\<lambda>n. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*measure M (A n i))" 
+  define A where "A n i = {w. real i/(2::real)^n \<le> f w} \<inter> {w. f w < real (Suc i)/(2::real)^n}" for n i
+  define u where "u n t = (\<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*\<chi> (A n i) t)"  for n t
+  define x where "x n = (\<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*measure M (A n i))" for n
   
   { fix n 
     note ms
@@ -1549,7 +1549,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
     moreover have "finite ({..<(n*2^n)}-{0})"
       by simp
     ultimately have "x n \<in> sfis (u n) M" 
-      by (simp only: u_def x_def sfis_intro)
+      by (simp only: u_def [abs_def] x_def sfis_intro)
   } thus "\<forall>n. x n \<in> sfis (u n) M" 
     by simp
   
@@ -1646,8 +1646,8 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 
       { fix n
         
-        def a \<equiv> "(f t)*(2::real)^n"
-        def i \<equiv> "(LEAST i. a < real (i::nat)) - 1"
+        define a where "a = (f t)*(2::real)^n"
+        define i where "i = (LEAST i. a < real (i::nat)) - 1"
         from nn have "0 \<le> a" 
           by (simp add: zero_le_mult_iff a_def nonnegative_def)
         also 
@@ -2040,8 +2040,8 @@ theorem integral_add:
   shows "integrable (\<lambda>t. f t + g t) M"
   and "\<integral> (\<lambda>t. f t + g t) \<partial>M = \<integral> f \<partial>M + \<integral> g \<partial>M"
 proof -
-  def u \<equiv> "(\<lambda>t. pp f t + pp g t)"
-  def v \<equiv> "(\<lambda>t. np f t + np g t)"
+  define u where "u = (\<lambda>t. pp f t + pp g t)"
+  define v where "v = (\<lambda>t. np f t + np g t)"
 
   from f obtain pf nf where pf: "pf \<in> nnfis (pp f) M" 
     and nf: "nf \<in> nnfis (np f) M" and ms: "measure_space M"

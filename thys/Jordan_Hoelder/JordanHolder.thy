@@ -26,7 +26,7 @@ lemma (in normal_series) quotients_butlast:
   assumes "length \<GG> > 1"
   shows "butlast quotients = normal_series.quotients (G\<lparr>carrier := \<GG> ! (length \<GG> - 1 - 1)\<rparr>) (take (length \<GG> - 1) \<GG>)"
 proof (rule nth_equalityI )
-  def n \<equiv> "length \<GG> - 1"
+  define n where "n = length \<GG> - 1"
   hence "n = length (take n \<GG>)" "n > 0" "n < length \<GG>" using assms notempty by auto
   interpret normal\<GG>butlast: normal_series "(G\<lparr>carrier := \<GG> ! (n - 1)\<rparr>)" "take n \<GG>" 
     using normal_series_prefix_closed `n > 0` `n < length \<GG>` by auto
@@ -105,14 +105,14 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
     hence "length \<HH> \<noteq> 1" using comp\<HH>.composition_series_length_one comp\<HH>.composition_series_triv_group by auto
     moreover from comp\<HH>.notempty have "length \<HH> \<noteq> 0" by simp
     ultimately have length\<HH>big:"length \<HH> \<ge> 3" using comp\<HH>.notempty by arith
-    def m \<equiv> "length \<HH> - 1"
-    def n \<equiv> "length \<GG> - 1"
+    define m where "m = length \<HH> - 1"
+    define n where "n = length \<GG> - 1"
     from length\<HH>big have m':"m > 0" "m < length \<HH>" "(m - 1) + 1 < length \<HH>" "m - 1 = length \<HH> - 2" "m - 1 + 1 = length \<HH> - 1" "m - 1 < length \<HH>"
       unfolding m_def by auto
     from length have n':"n > 0" "n < length \<GG>" "(n - 1) + 1 < length \<GG>" "n - 1 < length \<GG>" "Suc n \<le> length \<GG>"
      "n - 1 = length \<GG> - 2" "n - 1 + 1 = length \<GG> - 1"  unfolding n_def by auto
-    def \<GG>Pn \<equiv> "G\<lparr>carrier := \<GG> ! (n - 1)\<rparr>"
-    def \<HH>Pm \<equiv> "G\<lparr>carrier := \<HH> ! (m - 1)\<rparr>"
+    define \<GG>Pn where "\<GG>Pn = G\<lparr>carrier := \<GG> ! (n - 1)\<rparr>"
+    define \<HH>Pm where "\<HH>Pm = G\<lparr>carrier := \<HH> ! (m - 1)\<rparr>"
     then interpret grp\<GG>Pn: group \<GG>Pn unfolding \<GG>Pn_def using n' by (metis comp\<GG>.normal_series_subgroups comp\<GG>.subgroup_imp_group)
     interpret grp\<HH>Pm: group \<HH>Pm unfolding \<HH>Pm_def using m' comp\<HH>.normal_series_subgroups 1(2) group.subgroup_imp_group by force
     have finGbl:"finite (carrier \<GG>Pn)" using `n - 1 < length \<GG>` 1(3) unfolding \<GG>Pn_def using comp\<GG>.normal_series_subgroups comp\<GG>.subgroup_finite by auto
@@ -155,7 +155,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       finally show ?thesis .
     next
       case False 
-      def \<HH>PmInt\<GG>Pn \<equiv> "G\<lparr>carrier := \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)\<rparr>"
+      define \<HH>PmInt\<GG>Pn where "\<HH>PmInt\<GG>Pn = G\<lparr>carrier := \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)\<rparr>"
       interpret \<GG>Pnmax: max_normal_subgroup "\<GG> ! (n - 1)" G unfolding n_def
         by (metis add_lessD1 diff_diff_add n'(3) add.commute one_add_one 1(3) comp\<GG>.snd_to_last_max_normal)
       interpret \<HH>Pmmax: max_normal_subgroup "\<HH> ! (m - 1)" G unfolding m_def
@@ -219,8 +219,8 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       interpret grpGMod\<GG>Pn: group "(G Mod \<GG> ! (n - 1))" by (metis \<GG>PnnormG normal.factorgroup_is_group)
       
       -- {* Instantiate several composition series used to build up the equality of quotient multisets. *}
-      def \<KK> \<equiv> "remdups_adj (map (op \<inter> (\<HH> ! (m - 1))) \<GG>)"
-      def \<LL> \<equiv> "remdups_adj (map (op \<inter> (\<GG> ! (n - 1))) \<HH>)"
+      define \<KK> where "\<KK> = remdups_adj (map (op \<inter> (\<HH> ! (m - 1))) \<GG>)"
+      define \<LL> where "\<LL> = remdups_adj (map (op \<inter> (\<GG> ! (n - 1))) \<HH>)"
       interpret \<KK>: composition_series \<HH>Pm \<KK> using comp\<GG>.intersect_normal 1(3) \<HH>PmnormG unfolding \<KK>_def \<HH>Pm_def by auto
       interpret \<LL>: composition_series \<GG>Pn \<LL> using comp\<HH>.intersect_normal 1(3) \<GG>PnnormG unfolding \<LL>_def \<GG>Pn_def by auto
 

@@ -642,29 +642,31 @@ next
    fix a :: ws1s
    assume "lformula0 a"
    moreover
-   def d \<equiv> "Formula_Operations.deriv extend lderiv0"
-   def \<Phi> \<equiv> "\<lambda>a. (case a of
-       Fo m \<Rightarrow> {FBase (Fo m), FBool True}
-     | Eq_Const None m n \<Rightarrow> {FBase (Eq_Const None m i) | i . i \<le> n} \<union> {FBool True, FBool False}
-     | Less None m1 m2 \<Rightarrow> {FBase (Less None m1 m2), FBase (Fo m2), FBool True, FBool False}
-     | Plus_FO None m1 m2 n \<Rightarrow> {FBase (Eq_Const None m1 i) | i . i \<le> n} \<union>
-        {FBase (Plus_FO None m1 m2 n), FBool True, FBool False}
-     | Eq_FO False m1 m2 \<Rightarrow> {FBase (Eq_FO False m1 m2), FBool True, FBool False}
-     | Eq_SO M1 M2 \<Rightarrow> {FBase (Eq_SO M1 M2), FBool False}
-     | Suc_SO False bl M1 M2 \<Rightarrow> {FBase (Suc_SO False True M1 M2), FBase (Suc_SO False False M1 M2),
-         FBool False}
-     | Empty M \<Rightarrow> {FBase (Empty M), FBool False}
-     | Singleton M \<Rightarrow> {FBase (Singleton M), FBase (Empty M), FBool False}
-     | Subset M1 M2 \<Rightarrow> {FBase (Subset M1 M2), FBool False}
-     | In False i I \<Rightarrow> {FBase (In False i I), FBool True, FBool False}
-     | Eq_Max False m M \<Rightarrow> {FBase (Eq_Max False m M), FBase (Empty M), FBool False}
-     | Eq_Min False m M \<Rightarrow> {FBase (Eq_Min False m M), FBool True, FBool False}
-     | Eq_Union M1 M2 M3 \<Rightarrow> {FBase (Eq_Union M1 M2 M3), FBool False}
-     | Eq_Inter M1 M2 M3 \<Rightarrow> {FBase (Eq_Inter M1 M2 M3), FBool False}
-     | Eq_Diff M1 M2 M3 \<Rightarrow> {FBase (Eq_Diff M1 M2 M3), FBool False}
-     | Disjoint M1 M2 \<Rightarrow> {FBase (Disjoint M1 M2), FBool False}
-     | Eq_Presb None M n \<Rightarrow> {FBase (Eq_Presb None M i) | i . i \<le> n} \<union> {FBool False}
-     | _ \<Rightarrow> {}) :: (ws1s, order) aformula set"
+   define d where "d = Formula_Operations.deriv extend lderiv0"
+   define \<Phi> :: "_ \<Rightarrow> (ws1s, order) aformula set"
+     where "\<Phi> a =
+       (case a of
+         Fo m \<Rightarrow> {FBase (Fo m), FBool True}
+       | Eq_Const None m n \<Rightarrow> {FBase (Eq_Const None m i) | i . i \<le> n} \<union> {FBool True, FBool False}
+       | Less None m1 m2 \<Rightarrow> {FBase (Less None m1 m2), FBase (Fo m2), FBool True, FBool False}
+       | Plus_FO None m1 m2 n \<Rightarrow> {FBase (Eq_Const None m1 i) | i . i \<le> n} \<union>
+          {FBase (Plus_FO None m1 m2 n), FBool True, FBool False}
+       | Eq_FO False m1 m2 \<Rightarrow> {FBase (Eq_FO False m1 m2), FBool True, FBool False}
+       | Eq_SO M1 M2 \<Rightarrow> {FBase (Eq_SO M1 M2), FBool False}
+       | Suc_SO False bl M1 M2 \<Rightarrow> {FBase (Suc_SO False True M1 M2), FBase (Suc_SO False False M1 M2),
+           FBool False}
+       | Empty M \<Rightarrow> {FBase (Empty M), FBool False}
+       | Singleton M \<Rightarrow> {FBase (Singleton M), FBase (Empty M), FBool False}
+       | Subset M1 M2 \<Rightarrow> {FBase (Subset M1 M2), FBool False}
+       | In False i I \<Rightarrow> {FBase (In False i I), FBool True, FBool False}
+       | Eq_Max False m M \<Rightarrow> {FBase (Eq_Max False m M), FBase (Empty M), FBool False}
+       | Eq_Min False m M \<Rightarrow> {FBase (Eq_Min False m M), FBool True, FBool False}
+       | Eq_Union M1 M2 M3 \<Rightarrow> {FBase (Eq_Union M1 M2 M3), FBool False}
+       | Eq_Inter M1 M2 M3 \<Rightarrow> {FBase (Eq_Inter M1 M2 M3), FBool False}
+       | Eq_Diff M1 M2 M3 \<Rightarrow> {FBase (Eq_Diff M1 M2 M3), FBool False}
+       | Disjoint M1 M2 \<Rightarrow> {FBase (Disjoint M1 M2), FBool False}
+       | Eq_Presb None M n \<Rightarrow> {FBase (Eq_Presb None M i) | i . i \<le> n} \<union> {FBool False}
+       | _ \<Rightarrow> {})" for a
    { fix xs
      note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
      from \<open>lformula0 a\<close> have "FBase a \<in> \<Phi> a" by auto
@@ -677,34 +679,36 @@ next
    ultimately show "finite {fold d xs (FBase a) | xs. True}" by (blast intro: finite_subset)
 next
    fix a :: ws1s
-   def d \<equiv> "Formula_Operations.deriv extend rderiv0"
-   def \<Phi> \<equiv> "\<lambda>a. (case a of
-       Fo m \<Rightarrow> {FBase (Fo m), FBool True}
-     | Eq_Const i m n \<Rightarrow>
-        {FBase (Eq_Const (Some j) m n) | j . j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
-        {FBase (Eq_Const None m n)}
-     | Less b m1 m2 \<Rightarrow> {FBase (Less None m1 m2), FBase (Less (Some True) m1 m2),
-        FBase (Less (Some False) m1 m2)}
-     | Plus_FO i m1 m2 n \<Rightarrow> 
-        {FBase (Plus_FO (Some j) m1 m2 n) | j . j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
-        {FBase (Plus_FO None m1 m2 n)}
-     | Eq_FO b m1 m2 \<Rightarrow> {FBase (Eq_FO True m1 m2), FBase (Eq_FO False m1 m2)}
-     | Eq_SO M1 M2 \<Rightarrow> {FBase (Eq_SO M1 M2), FBool False}
-     | Suc_SO br bl M1 M2 \<Rightarrow> {FBase (Suc_SO False True M1 M2), FBase (Suc_SO False False M1 M2),
-         FBase (Suc_SO True True M1 M2), FBase (Suc_SO True False M1 M2), FBool False}
-     | Empty M \<Rightarrow> {FBase (Empty M), FBool False}
-     | Singleton M \<Rightarrow> {FBase (Singleton M), FBase (Empty M), FBool False}
-     | Subset M1 M2 \<Rightarrow> {FBase (Subset M1 M2), FBool False}
-     | In b i I \<Rightarrow> {FBase (In True i I), FBase (In False i I)}
-     | Eq_Max b m M \<Rightarrow> {FBase (Eq_Max False m M), FBase (Eq_Max True m M), FBool False}
-     | Eq_Min b m M \<Rightarrow> {FBase (Eq_Min False m M), FBase (Eq_Min True m M)}
-     | Eq_Union M1 M2 M3 \<Rightarrow> {FBase (Eq_Union M1 M2 M3), FBool False}
-     | Eq_Inter M1 M2 M3 \<Rightarrow> {FBase (Eq_Inter M1 M2 M3), FBool False}
-     | Eq_Diff M1 M2 M3 \<Rightarrow> {FBase (Eq_Diff M1 M2 M3), FBool False}
-     | Disjoint M1 M2 \<Rightarrow> {FBase (Disjoint M1 M2), FBool False}
-     | Eq_Presb i M n \<Rightarrow> {FBase (Eq_Presb (Some l) M j) | j l .
-         j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n) \<and> l \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
-         {FBase (Eq_Presb None M n), FBool False}) :: (ws1s, order) aformula set"
+   define d where "d = Formula_Operations.deriv extend rderiv0"
+   define \<Phi> :: "_ \<Rightarrow> (ws1s, order) aformula set"
+     where "\<Phi> a =
+       (case a of
+         Fo m \<Rightarrow> {FBase (Fo m), FBool True}
+       | Eq_Const i m n \<Rightarrow>
+          {FBase (Eq_Const (Some j) m n) | j . j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
+          {FBase (Eq_Const None m n)}
+       | Less b m1 m2 \<Rightarrow> {FBase (Less None m1 m2), FBase (Less (Some True) m1 m2),
+          FBase (Less (Some False) m1 m2)}
+       | Plus_FO i m1 m2 n \<Rightarrow> 
+          {FBase (Plus_FO (Some j) m1 m2 n) | j . j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
+          {FBase (Plus_FO None m1 m2 n)}
+       | Eq_FO b m1 m2 \<Rightarrow> {FBase (Eq_FO True m1 m2), FBase (Eq_FO False m1 m2)}
+       | Eq_SO M1 M2 \<Rightarrow> {FBase (Eq_SO M1 M2), FBool False}
+       | Suc_SO br bl M1 M2 \<Rightarrow> {FBase (Suc_SO False True M1 M2), FBase (Suc_SO False False M1 M2),
+           FBase (Suc_SO True True M1 M2), FBase (Suc_SO True False M1 M2), FBool False}
+       | Empty M \<Rightarrow> {FBase (Empty M), FBool False}
+       | Singleton M \<Rightarrow> {FBase (Singleton M), FBase (Empty M), FBool False}
+       | Subset M1 M2 \<Rightarrow> {FBase (Subset M1 M2), FBool False}
+       | In b i I \<Rightarrow> {FBase (In True i I), FBase (In False i I)}
+       | Eq_Max b m M \<Rightarrow> {FBase (Eq_Max False m M), FBase (Eq_Max True m M), FBool False}
+       | Eq_Min b m M \<Rightarrow> {FBase (Eq_Min False m M), FBase (Eq_Min True m M)}
+       | Eq_Union M1 M2 M3 \<Rightarrow> {FBase (Eq_Union M1 M2 M3), FBool False}
+       | Eq_Inter M1 M2 M3 \<Rightarrow> {FBase (Eq_Inter M1 M2 M3), FBool False}
+       | Eq_Diff M1 M2 M3 \<Rightarrow> {FBase (Eq_Diff M1 M2 M3), FBool False}
+       | Disjoint M1 M2 \<Rightarrow> {FBase (Disjoint M1 M2), FBool False}
+       | Eq_Presb i M n \<Rightarrow> {FBase (Eq_Presb (Some l) M j) | j l .
+           j \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n) \<and> l \<le> (case i of Some i \<Rightarrow> max i n | _ \<Rightarrow> n)} \<union>
+           {FBase (Eq_Presb None M n), FBool False})" for a
    { fix xs
      note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
      then have "FBase a \<in> \<Phi> a" by (auto split: atomic.splits option.splits)

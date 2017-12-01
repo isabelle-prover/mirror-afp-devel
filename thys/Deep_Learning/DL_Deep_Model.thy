@@ -99,7 +99,7 @@ proof (rule tensor_lookup_eqI)
     output_size_correct_tensors[OF assms(1)] dims_tensor0 by (simp add: vec_setI)
   ultimately show "Tensor.dims (?a $ i) = Tensor.dims (?b)" by auto
 
-  def Convm == "Conv (eye_matrix nr (output_size' m)) m"
+  define Convm where "Convm = Conv (eye_matrix nr (output_size' m)) m"
   fix "is"
   assume "is \<lhd> Tensor.dims (?a$i)"
   then have "is \<lhd> input_sizes m" using `Tensor.dims (?a$i) = input_sizes m` by auto
@@ -144,7 +144,7 @@ proof (rule tensor_lookup_eqI)
     output_size_correct_tensors[OF assms(1)] using assms(3) by (simp add: vec_setI)
   ultimately show "Tensor.dims (?a$i) = Tensor.dims (?b)" by auto
 
-  def Convm == "Conv (copy_first_matrix nr (output_size' m)) m"
+  define Convm where "Convm = Conv (copy_first_matrix nr (output_size' m)) m"
   fix "is"
   assume "is \<lhd> Tensor.dims (?a$i)"
   then have "is \<lhd> input_sizes m" using `Tensor.dims (?a$i) = input_sizes m` by auto
@@ -181,7 +181,7 @@ proof (rule tensor_lookup_eqI)
     using dims_tensors_from_net input_sizes.simps(2) listsum_dims
     by (metis index_vec_of_list in_set_conv_nth length_list_of_vec vec_list vec_setI)
 
-  def Convm == "Conv (all1_matrix nr (output_size' m)) m"
+  define Convm where "Convm = Conv (all1_matrix nr (output_size' m)) m"
   fix "is" assume "is \<lhd> Tensor.dims (?a $ i)"
   then have "is \<lhd> input_sizes m"
     using \<open>i < dim_vec ?a\<close> dims_tensors_from_net input_sizes.simps(2) by (metis vec_setI)
@@ -705,7 +705,7 @@ assumes "i < dim_row Aw'" and "j < dim_col Aw'"
 shows "Aw' $$ (i, j)
  = (if i=j \<and> (\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)) then 1 else 0)"
 proof -
-  def "is" == "weave {n. even n}
+  define "is" where "is = weave {n. even n}
     (digit_encode (nths (Tensor.dims Aw) {n. even n}) i)
     (digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)"
   have lookup_eq: "Aw' $$ (i, j) = Tensor.lookup Aw is"
@@ -768,12 +768,13 @@ using assms proof (induction ds)
   then show ?case using prod_list.Nil by simp
 next
   case (Cons d ds)
-  def low_digits == "\<lambda>ds i. i < prod_list ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)"
+  define low_digits
+    where "low_digits ds i \<longleftrightarrow> i < prod_list ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)" for ds i
   have "card {i. low_digits ds i} = m ^ (length ds)" unfolding low_digits_def
     by (simp add: Cons.IH Cons.prems(1) Cons.prems(2))
   have "card {i. low_digits (d # ds) i} = card ({..<m} \<times> {i. low_digits ds i})"
   proof -
-    def f == "\<lambda>p. fst p + d * snd p"
+    define f where "f p = fst p + d * snd p" for p
     have "inj_on f ({..<m} \<times> {i. low_digits ds i})"
     proof (rule inj_onI)
       fix x y assume "x \<in> {..<m} \<times> {i. low_digits ds i}" "y \<in> {..<m} \<times> {i. low_digits ds i}" "f x = f y"
@@ -872,7 +873,7 @@ qed
 
 lemma infinite_rows_with_1: "infinite rows_with_1"
 proof -
-  def listpr == "prod_list (nths (Tensor.dims Aw) {n. even n})"
+  define listpr where "listpr = prod_list (nths (Tensor.dims Aw) {n. even n})"
   have "\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1"
   proof -
     fix i assume dvd_i: "listpr dvd i"

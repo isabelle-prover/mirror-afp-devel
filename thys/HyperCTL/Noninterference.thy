@@ -153,8 +153,8 @@ proof-
     and \<pi>\<pi>'[simp]: "wfp AP' \<pi>" "wfp AP' \<pi>'" "stateOf \<pi> = s0" "stateOf \<pi>' = s0"
     and \<phi>: "\<forall>j\<le>i. f (fst (\<pi> !! j)) (fst (\<pi>' !! j))"
     have \<pi>\<pi>'i[simp]: "\<And> i. wfp AP' (sdrop i \<pi>) \<and> wfp AP' (sdrop i \<pi>')" by (metis \<pi>\<pi>' wfp_sdrop)
-    def \<pi>1 \<equiv> "shift (stake (Suc i) \<pi>) (sconst (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
-    def \<pi>1' \<equiv> "shift (stake (Suc i) \<pi>') (sconst (toSink (fst (\<pi>' !! i)), L (toSink (fst (\<pi>' !! i)))))"
+    define \<pi>1 where "\<pi>1 = shift (stake (Suc i) \<pi>) (sconst (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
+    define \<pi>1' where "\<pi>1' = shift (stake (Suc i) \<pi>') (sconst (toSink (fst (\<pi>' !! i)), L (toSink (fst (\<pi>' !! i)))))"
     have \<pi>1\<pi>1': "wfp AP' \<pi>1 \<and> stateOf \<pi>1 = s0 \<and> wfp AP' \<pi>1' \<and> stateOf \<pi>1' = s0"
     using wfp_stateOf_shift_stake_sconst unfolding \<pi>1_def \<pi>1'_def by auto
     hence \<pi>1\<pi>1'i: "\<And> i. wfp AP' (sdrop i \<pi>1) \<and> wfp AP' (sdrop i \<pi>1')" by (metis \<pi>\<pi>' wfp_sdrop)
@@ -345,10 +345,10 @@ definition nonintSI :: bool where
 
 lemma nonintSfmla_nonintSI: "nonintSfmla [] \<longleftrightarrow> nonintSI"
 proof-
-  def \<phi> \<equiv> "\<lambda> \<pi>l::(('St,'U,'C) state,('U,'C,'Out) aprop) path list.
-            eqButGH (length \<pi>l) (Suc (length \<pi>l))"
-  def \<psi> \<equiv> "\<lambda> \<pi>l::(('St,'U,'C) state,('U,'C,'Out) aprop) path list.
-            eqOnGL (length \<pi>l) (Suc (length \<pi>l))"
+  define \<phi> where "\<phi> \<pi>l = eqButGH (length \<pi>l) (Suc (length \<pi>l))"
+    for \<pi>l :: "(('St,'U,'C) state,('U,'C,'Out) aprop) path list"
+  define \<psi> where "\<psi> \<pi>l = eqOnGL (length \<pi>l) (Suc (length \<pi>l))"
+    for \<pi>l :: "(('St,'U,'C) state,('U,'C,'Out) aprop) path list"
   have "\<And> \<pi> \<pi>'. wfp UNIV \<pi> \<and> wfp UNIV \<pi>' \<longrightarrow>
                  \<phi> [] [\<pi>,\<pi>'] = f (stateOf \<pi>) (stateOf \<pi>') \<and>
                  \<psi> [] [\<pi>,\<pi>'] = g (stateOf \<pi>) (stateOf \<pi>')"
@@ -664,7 +664,7 @@ proof(unfold nonintS_def nonintSI_def, safe)
   and "list_all2 f sl sl'"
   hence l: "length sl = length sl'" and i: "\<forall> i < length sl. f (sl ! i) (sl' ! i)"
   unfolding list_all2_conv_all_nth by auto
-  def i0 \<equiv> "length sl - 1"
+  define i0 where "i0 = length sl - 1"
   have slsl'_NE: "sl \<noteq> [] \<and> sl' \<noteq> []" using slsl' wffp_NE by auto
   hence last: "last sl = sl!i0" "last sl' = sl'!i0"
   by (metis i0_def l slsl' last_conv_nth)+
@@ -685,7 +685,8 @@ next
             \<longrightarrow>
             ((\<forall> i < length sl. f (sl!i) (sl'!i)) \<longrightarrow> g (last sl) (last sl'))"
   unfolding list_all2_conv_all_nth by auto
-  def i0 \<equiv> "Suc i" have i0_ge: "i0 > 0" unfolding i0_def by auto
+  define i0 where "i0 = Suc i"
+  have i0_ge: "i0 > 0" unfolding i0_def by auto
   have ii0: "i < i0" unfolding i0_def by auto
   have f: "\<forall>j<i0. f (fst (\<pi> !! j)) (fst (\<pi>' !! j))" using f unfolding i0_def by auto
   obtain sl sl' where
@@ -869,7 +870,7 @@ using assms proof(induction ucl arbitrary: s rule: list_pair_induct)
 next
   case (Cons u c ucl s)
   then obtain st1 u1 c1 where s: "s = State st1 u1 c1" by (cases s) auto
-  def s1 \<equiv> "State (do st1 u c) u c"
+  define s1 where "s1 = State (do st1 u c) u c"
   obtain sl where sl: "wffp sl \<and> list_all isState sl" and hsl: "hd sl = s1"
   and msl: "map getGMUserCom (tl sl) = ucl" using Cons(1)[of s1] unfolding s1_def by auto
   thus ?case using s s1_def by (intro exI[of _ "s # sl"]) auto
@@ -888,14 +889,15 @@ next
   hence slNE: "sl \<noteq> []" by (metis wffp_NE)
   obtain s sl1 where sl: "sl = s # sl1" using wffp_NE[OF `wffp sl`] by (cases sl) auto
   then obtain st u c where s: "s = State st u c" using Cons by (cases s) auto
-  def ucl1 \<equiv> "tl ucl"
+  define ucl1 where "ucl1 = tl ucl"
   have ucl: "ucl = (u,c) # ucl1" and hsl: "hd sl = s" using Cons(5) unfolding s ucl1_def sl by auto
   have 1: "list_all isState sl" and 2: "map getGMUserCom (tl sl) = ucl1"
   using Cons unfolding ucl1_def s by auto
-  def st' \<equiv> "getGMState ss'"
-  show ?case proof(cases "u \<in> GH")
+  define st' where "st' = getGMState ss'"
+  show ?case
+  proof(cases "u \<in> GH")
     case True note u = True
-    def s' \<equiv> "Idle st' :: ('St, 'U, 'C) state"
+    define s' :: "('St, 'U, 'C) state" where "s' = Idle st'"
     obtain sl' where hsl': "hd sl' = s'" and wsl': "wffp sl'"
     and slsl': "list_all2 f (tl sl) (tl sl')" and m: "map getGMUserCom (purgeIdle (tl sl')) = purge GH ucl1"
     using Cons(3)[OF 1 2, of s'] by auto
@@ -911,7 +913,7 @@ next
     ultimately show ?thesis by (intro exI[of _ "ss' # sl'"]) auto
   next
     case False note u = False
-    def s' \<equiv> "State (do st' u c) u c"
+    define s' where "s' = State (do st' u c) u c"
     obtain sl' where hsl': "hd sl' = s'" and wsl': "wffp sl'"
     and slsl': "list_all2 f (tl sl) (tl sl')" and m: "map getGMUserCom (purgeIdle (tl sl')) = purge GH ucl1"
     using Cons(3)[OF 1 2, of s'] by auto
@@ -1013,8 +1015,8 @@ next
   assume 1: "\<forall>ucl. \<forall>u\<in>GL. out (doo st0 ucl) u = out (doo st0 (purge GH ucl)) u"
   and wsl: "wffp sl" and wsl': "wffp sl'" and hsl: "hd sl = s0" and hsl': "hd sl' = s0"
   and f: "list_all2 f sl sl'"
-  def ucl  \<equiv> "map getGMUserCom (tl (purgeIdle sl))"
-  def ucl' \<equiv> "map getGMUserCom (tl (purgeIdle sl'))"
+  define ucl where "ucl = map getGMUserCom (tl (purgeIdle sl))"
+  define ucl' where "ucl' = map getGMUserCom (tl (purgeIdle sl'))"
   have 2: "tl (purgeIdle sl) = purgeIdle (tl sl)" "tl (purgeIdle sl') = purgeIdle (tl sl')"
   by (subst hd_Cons_tl[OF wffp_NE[OF wsl], symmetric, unfolded hsl], auto)[]
      (subst hd_Cons_tl[OF wffp_NE[OF wsl'], symmetric, unfolded hsl'], auto)

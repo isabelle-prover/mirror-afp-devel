@@ -90,7 +90,7 @@ proof -
   from r1.inf_step_imp_inf_step_table[OF red1]
   obtain stls1 where red1': "s1 -1-stls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd) stls1" by blast
-  def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist). unfold_llist
+  define tl1_to_tl2 where "tl1_to_tl2 s2 stls1 = unfold_llist
      (\<lambda>(s2, stls1). lnull stls1)
      (\<lambda>(s2, stls1). let (s1, tl1, s1') = lhd stls1;
                         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
@@ -99,6 +99,7 @@ proof -
                         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
                     in (s2', ltl stls1))
      (s2, stls1)"
+    for s2 :: 's2 and stls1 :: "('s1 \<times> 'tl1 \<times> 's1) llist"
 
   have tl1_to_tl2_simps [simp]:
     "\<And>s2 stls1. lnull (tl1_to_tl2 s2 stls1) \<longleftrightarrow> lnull stls1"
@@ -426,7 +427,7 @@ proof -
   from trsys1.\<tau>inf_step_imp_\<tau>inf_step_table[OF \<tau>inf1]
   obtain sstls1 where \<tau>inf1': "s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd \<circ> snd) sstls1" by blast
-  def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist). unfold_llist
+  define tl1_to_tl2 where "tl1_to_tl2 s2 sstls1 = unfold_llist
      (\<lambda>(s2, sstls1). lnull sstls1)
      (\<lambda>(s2, sstls1).
         let (s1, s1', tl1, s1'') = lhd sstls1;
@@ -439,6 +440,7 @@ proof -
                                      \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
         in (s2'', ltl sstls1))
      (s2, sstls1)"
+    for s2 :: 's2 and sstls1 :: "('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist"
   have [simp]:
     "\<And>s2 sstls1. lnull (tl1_to_tl2 s2 sstls1) \<longleftrightarrow> lnull sstls1"
     "\<And>s2 sstls1. \<not> lnull sstls1 \<Longrightarrow> lhd (tl1_to_tl2 s2 sstls1) =
@@ -463,7 +465,7 @@ proof -
   have [simp]: "llength (tl1_to_tl2 s2 sstls1) = llength sstls1"
     by(coinduction arbitrary: s2 sstls1 rule: enat_coinduct)(auto simp add: epred_llength split_beta)
 
-  def sstls2: sstls2 \<equiv> "tl1_to_tl2 s2 sstls1"
+  define sstls2 where "sstls2 = tl1_to_tl2 s2 sstls1"
   with \<tau>inf1' bisim have "\<exists>s1 sstls1. s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity> \<and> sstls2 = tl1_to_tl2 s2 sstls1 \<and> s1 \<approx> s2" by blast
 
   from \<tau>inf1' bisim have "s2 -\<tau>2-tl1_to_tl2 s2 sstls1\<rightarrow>*t \<infinity>"
@@ -492,7 +494,7 @@ proof -
       case \<tau>inf_step_table_Nil
       hence [simp]: "sstls1 = LNil" and "s1 -\<tau>1\<rightarrow> \<infinity>" by simp_all
       from `s1 -\<tau>1\<rightarrow> \<infinity>` `s1 \<approx> s2` have "s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
-      thus ?thesis using sstls2 by simp
+      thus ?thesis using sstls2_def by simp
     qed
   qed
   hence "s2 -\<tau>2-lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)\<rightarrow>* \<infinity>"
@@ -617,12 +619,13 @@ lemma simulation_\<tau>Runs_table1:
 proof(intro exI conjI)
   let ?P = "\<lambda>(s2 :: 's2) (stlsss1 :: ('tl1 \<times> 's1, 's1 option) tllist) (tl2, s2'').
     \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> snd (thd stlsss1) \<approx> s2'' \<and> fst (thd stlsss1) \<sim> tl2"
-  def tls1_to_tls2 == "\<lambda>s2 stlsss1. unfold_tllist
+  define tls1_to_tls2 where "tls1_to_tls2 s2 stlsss1 = unfold_tllist
       (\<lambda>(s2, stlsss1). is_TNil stlsss1)
       (\<lambda>(s2, stlsss1). map_option (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1))
       (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))
       (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (s2'', ttl stlsss1))
       (s2, stlsss1)"
+    for s2 stlsss1
   have [simp]:
     "\<And>s2 stlsss1. is_TNil (tls1_to_tls2 s2 stlsss1) \<longleftrightarrow> is_TNil stlsss1"
     "\<And>s2 stlsss1. is_TNil stlsss1 \<Longrightarrow> terminal (tls1_to_tls2 s2 stlsss1) = map_option (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1)"

@@ -191,7 +191,7 @@ apply (subgoal_tac "2 \<le> length ls") apply force  by (rule enumerator_length)
 lemma enumerator_length2: "ls \<in> set (enumerator m n) \<Longrightarrow> 2 < m \<Longrightarrow> length ls = m"
 proof -
   assume ls:"ls \<in> set (enumerator m n)" and m: "2 < m"
-  def k \<equiv> "m - 3"
+  define k where "k = m - 3"
   with m have k: "m = k + 3" by arith
   with ls have "ls \<in> set (enumerator (k+3) n)" by auto
   then have "length ls = k + 3"
@@ -274,7 +274,7 @@ proof (rule ccontr)
   assume props: "incrIndexList ls m nmax" and butl: "\<not> butlast ls \<noteq> []"
   then have "ls \<noteq> []" by auto
   then have ls': "ls = (butlast ls) @ [last ls]" by auto
-  def l \<equiv> "last ls"
+  define l where "l = last ls"
   with butl ls' have "ls = [l]" by auto
   then have "length ls = 1" by auto
   with props have "m = 1" by auto
@@ -293,9 +293,9 @@ proof -
   then have leq: "last (butlast ls) \<le>  nmax - 2" by arith
   from props  have "ls \<noteq> []" by auto
   then have ls1: "ls = butlast ls @ [last ls]" by auto
-  def ls' \<equiv> "(butlast (butlast ls))"
-  def last2 \<equiv> "last (butlast ls)"
-  def last1 \<equiv> "last ls"
+  define ls' where "ls' = butlast (butlast ls)"
+  define last2 where "last2 = last (butlast ls)"
+  define last1 where "last1 = last ls"
   from props  have "butlast ls \<noteq> []" by auto
   with ls'_def last2_def have bls: "butlast ls = ls' @ [last2]" by auto
   with last1_def ls1 props have ls3: "ls = ls' @ [last2] @ [last1]" by auto
@@ -335,11 +335,11 @@ proof (induct ks)
   with ls1 show ?case apply (simp add: enumBase_def) by auto
 next
   case (Suc n)
-  def ls' \<equiv> "butlast ls"
-  def l \<equiv> "last ls"
-  def ll \<equiv> "last ls'"
-  def bl \<equiv> "butlast ls'"
-  def ls'list \<equiv> "(enumAppend nmax ^^ n) (enumBase nmax)"
+  define ls' where "ls' = butlast ls"
+  define l where "l = last ls"
+  define ll where "ll = last ls'"
+  define bl where "bl = butlast ls'"
+  define ls'list where "ls'list = (enumAppend nmax ^^ n) (enumBase nmax)"
   then have short: "(enumAppend nmax ^^ n) (enumBase nmax) = ls'list" by simp
   from Suc have "ls \<noteq> []" by auto
   then have "ls = butlast ls @ [last ls]" by auto

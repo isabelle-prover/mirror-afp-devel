@@ -188,8 +188,8 @@ and hyp4: "fst (snd (foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k])) 
 by linarith+
 
 have suc_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
-def A'=="(foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k])"
-def B=="(foldl Gauss_Jordan_column_k_iarrays_PA (mat_iarray 1 (nrows_iarray (matrix_to_iarray A)), 0, matrix_to_iarray A) [0..<Suc k])"
+define A' where "A' = foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
+define B where "B = foldl Gauss_Jordan_column_k_iarrays_PA (mat_iarray 1 (nrows_iarray (matrix_to_iarray A)), 0, matrix_to_iarray A) [0..<Suc k]"
 have A'_eq: "A' = (fst A', fst (snd A'), snd (snd A'))" by auto
 
 have fst_A': "matrix_to_iarray (fst A') = fst B" unfolding A'_def B_def by (rule hyp1[unfolded Gauss_Jordan_upt_k_PA_def Gauss_Jordan_upt_k_iarrays_PA_def Let_def fst_conv])

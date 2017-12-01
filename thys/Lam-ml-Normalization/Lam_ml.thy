@@ -1446,9 +1446,9 @@ lemma sn_forget:
   assumes a: "SN(t[x::=v])"
   shows "SN t"
 proof -
-  def dq: q \<equiv> "t[x::=v]"
-  from a have "SN q" unfolding dq .
-  thus "SN t" using dq
+  define q where "q = t[x::=v]"
+  from a have "SN q" unfolding q_def .
+  thus "SN t" using q_def
   proof (induct q arbitrary: t)
     case (SN_intro t)
     hence ih: "\<And> t'. \<lbrakk>t[x::=v] \<mapsto> t'[x::=v]\<rbrakk> \<Longrightarrow> SN t'" by auto

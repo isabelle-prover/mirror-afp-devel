@@ -711,8 +711,9 @@ qed
 
 lemma exists_bezout_ext: "\<exists>bezout_ext. is_bezout_ext bezout_ext"
 proof -
-  def bezout_ext \<equiv> "\<lambda>a b. (SOME (p,q,u,v,d). p * a + q * b = d
+  define bezout_ext where "bezout_ext a b = (SOME (p,q,u,v,d). p * a + q * b = d
     \<and> (d dvd a) \<and> (d dvd b) \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d) \<and> d * u = -b \<and> d * v = a)"
+    for a b
   show ?thesis
   proof (rule exI [of _ bezout_ext], unfold is_bezout_ext_def, rule+)
     fix a b
@@ -726,7 +727,7 @@ proof -
               gcd_a_b dvd a \<and>
               gcd_a_b dvd b \<and>
               (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and>
-              gcd_a_b * u = - b \<and> gcd_a_b * v = a" thm someI
+              gcd_a_b * u = - b \<and> gcd_a_b * v = a"
       by (unfold bezout_ext_def Let_def, rule someI [of _ "(p,q,u,v,d)"], clarify, rule foo)
    qed
 qed
@@ -756,7 +757,7 @@ in principal ideal rings for each pair of elements.*}
 subclass (in pir) bezout_ring
 proof
   fix a b
-  def S \<equiv> "ideal_generated {a,b}"
+  define S where "S = ideal_generated {a,b}"
   have ideal_S: "ideal S" using ideal_ideal_generated unfolding S_def by simp
   obtain d where d: "ideal_generated {d} = S" using all_ideal_is_principal[OF ideal_S]
     unfolding principal_ideal_def by blast
@@ -769,7 +770,7 @@ proof
   obtain f U where U: "U \<subseteq> {a,b}" and f: "sum (\<lambda>i. f i * i) U = d"
     using left_ideal_explicit[of "{a,b}"] d_in_S unfolding S_def ideal_generated_eq_left_ideal
     by auto
-  def g\<equiv>"\<lambda>i. if i \<in> U then f i else 0"
+  define g where "g i = (if i \<in> U then f i else 0)" for i
   show "\<exists>p q d. p * a + q * b = d \<and> d dvd a \<and> d dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d)"
   proof (cases "a = b")
     case True

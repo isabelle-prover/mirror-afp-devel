@@ -223,8 +223,8 @@ lemma is_sublist_notlast[simp]: "distinct vs \<Longrightarrow> x = last vs \<Lon
 proof
   assume dvs: "distinct vs" and xl: "x = last vs" and subl:"is_sublist [x, y] vs"
   then obtain rs ts where vs: "vs = rs @ x # y # ts" by (auto simp: is_sublist_def)
-  def as \<equiv>  "rs @ [x]"
-  def bs \<equiv>  "y # ts"
+  define as where "as = rs @ [x]"
+  define bs where "bs = y # ts"
   then have bsne: "bs \<noteq> []" by auto
   from as_def bs_def have vs2: "vs = as @ bs" using vs by auto
   with as_def have xas: "x \<in> set as" by auto
@@ -289,9 +289,9 @@ lemma is_sublist_y_hd: "distinct vs \<Longrightarrow> y = hd vs \<Longrightarrow
 proof
   assume d: "distinct vs" and yh: "y = hd vs" and subl: "is_sublist [x, y] vs"
   then obtain rs ts where vs: "vs = rs @ x # y # ts" by (auto simp: is_sublist_def)
-  def as \<equiv> "rs @ [x]"
+  define as where "as = rs @ [x]"
   then have asne: "as \<noteq> []" by auto
-  def bs \<equiv> "y # ts"
+  define bs where "bs = y # ts"
   then have bsne: "bs \<noteq> []" by auto
   from as_def bs_def have vs2: "vs = as @ bs" using vs by auto
   from bs_def have xbs: "y \<in> set bs" by auto
@@ -305,12 +305,13 @@ lemma is_sublist_at1: "distinct (as @ bs) \<Longrightarrow> is_sublist [x,y] (as
   is_sublist [x,y] as \<or> is_sublist [x,y] bs"
 proof (cases "x \<in> set as")
   assume d: "distinct (as @ bs)"  and subl: "is_sublist [x, y] (as @ bs)" and xnl: "x \<noteq> last as"
-  def vs \<equiv> "as @ bs"
+  define vs where "vs = as @ bs"
   with d have dvs: "distinct vs" by auto
   case True
   with xnl subl have ind: "is_sublist (as@bs) vs \<Longrightarrow> is_sublist [x, y] as"
   proof (induct as)
-    case Nil then show ?case by force
+    case Nil
+    then show ?case by force
   next
     case (Cons a as)
     assume ih: "\<lbrakk>is_sublist (as@bs) vs; x \<noteq> last as; is_sublist [x,y] (as @ bs); x \<in> set as\<rbrakk> \<Longrightarrow>
@@ -333,12 +334,13 @@ proof (cases "x \<in> set as")
   then show ?thesis by auto
 next
   assume d: "distinct (as @ bs)"  and subl: "is_sublist [x, y] (as @ bs)" and xnl: "x \<noteq> last as"
-  def ars \<equiv> "as"
+  define ars where "ars = as"
   case False
   with ars_def have xars: "x \<notin> set ars" by auto
   from subl have ind: "is_sublist as ars \<Longrightarrow> is_sublist [x, y] bs"
   proof (induct as)
-    case Nil then show ?case by auto
+    case Nil
+    then show ?case by auto
   next
     case (Cons a as)
     assume ih: "\<lbrakk>is_sublist as ars; is_sublist [x, y] (as @ bs)\<rbrakk> \<Longrightarrow> is_sublist [x, y] bs"
@@ -355,7 +357,7 @@ lemma is_sublist_at4: "distinct (as @ bs) \<Longrightarrow> is_sublist [x,y] (as
 proof -
   assume d: "distinct (as @ bs)" and subl: "is_sublist [x,y] (as @ bs)"
     and asne: "as \<noteq> []" and xl: "x = last as"
-  def vs \<equiv> "as @ bs"
+  define vs where "vs = as @ bs"
   with subl have "is_sublist [x,y] vs" by auto
   then obtain rs ts where vs2: "vs = rs @ x # y # ts" by (auto simp: is_sublist_def)
   from vs_def d have dvs:"distinct vs" by auto
@@ -458,7 +460,7 @@ lemma is_nextElem_rotate1_aux:
   "is_nextElem (rotate m ls) x y \<Longrightarrow> is_nextElem ls x y"
 proof -
   assume is_nextElem: "is_nextElem (rotate m ls) x y"
-  def n \<equiv> "m mod length ls"
+  define n where "n = m mod length ls"
   then have rot_eq: "rotate m ls = rotate n ls"
     by (auto intro: rotate_conv_mod)
   with is_nextElem have "is_nextElem (rotate n ls) x y"
@@ -469,14 +471,14 @@ proof -
     by (drule_tac is_nextElem_nth1) auto
   then have lls: "0 < length ls"
     by auto
-  def k \<equiv> "(i+n) mod (length ls)"
+  define k where "k = (i+n) mod (length ls)"
   with lls have sk: "k < length ls"
     by simp
   from k_def lls vors have "ls!k = (rotate n ls)!(i mod (length ls))"
     by (simp add: nth_rotate)
   with vors have lsk: "ls!k = x"
     by simp
-  def l \<equiv> "(j+n) mod (length ls)"
+  define l where "l = (j+n) mod (length ls)"
   with lls have sl: "l < length ls"
     by simp
   from l_def lls vors have "ls!l = (rotate n ls)!(j mod (length ls))"
@@ -556,8 +558,8 @@ proof -
   from d fn have r3: "hd vs \<noteq> y \<Longrightarrow> (\<exists> a b. vs = a @ [x,y] @ b)" by (drule_tac nextElem_cases) auto
 
   from x obtain n where xn:"x = vs!n" and nl: "n < length vs" by (auto simp: in_set_conv_nth)
-  def as \<equiv> "take n vs"
-  def bs \<equiv> "drop (Suc n) vs"
+  define as where "as = take n vs"
+  define bs where "bs = drop (Suc n) vs"
   from as_def bs_def xn nl have vs:"vs = as @ [x] @ bs" by (auto intro: id_take_nth_drop)
   then have r2: "x \<noteq> last vs \<Longrightarrow> y \<noteq> hd vs"
   proof -
@@ -589,14 +591,14 @@ lemma nextElem_is_nextElem:
 lemma nextElem_congs_eq: "xs \<cong> ys \<Longrightarrow> distinct xs \<Longrightarrow> x \<in> set xs  \<Longrightarrow>
    nextElem xs (hd xs) x = nextElem ys (hd ys) x"
 proof -
-    assume eq: "xs \<cong> ys" and dist: "distinct xs" and x: "x \<in> set xs"
-    def y \<equiv> "nextElem xs (hd xs) x"
-    then have f1:"nextElem xs (hd xs) x = y" by auto
-    with dist x have "is_nextElem xs x y" by (auto intro: is_nextElem1)
-    with eq have "is_nextElem ys x y" by (simp add:is_nextElem_congs_eq)
-    with eq dist x have f2:"nextElem ys (hd ys) x = y"
-      by (auto simp: congs_distinct intro: is_nextElem2)
-    from f1 f2 show ?thesis by auto
+  assume eq: "xs \<cong> ys" and dist: "distinct xs" and x: "x \<in> set xs"
+  define y where "y = nextElem xs (hd xs) x"
+  then have f1:"nextElem xs (hd xs) x = y" by auto
+  with dist x have "is_nextElem xs x y" by (auto intro: is_nextElem1)
+  with eq have "is_nextElem ys x y" by (simp add:is_nextElem_congs_eq)
+  with eq dist x have f2:"nextElem ys (hd ys) x = y"
+    by (auto simp: congs_distinct intro: is_nextElem2)
+  from f1 f2 show ?thesis by auto
 qed
 
 
@@ -608,9 +610,10 @@ proof -
   from subl obtain rs ts where vs: "vs = rs @ as @ ts"  apply (simp add: is_sublist_def) apply (elim exE) by auto
   with d xnl asne have "x \<noteq> last vs"
   proof (cases "ts = []")
-    case True with d xnl asne vs show ?thesis by force
+    case True
+    with d xnl asne vs show ?thesis by force
   next
-    def lastvs \<equiv> "last ts"
+    define lastvs where "lastvs = last ts"
     case False
     with vs lastvs_def have vs2: "vs = rs @ as @ butlast ts @ [lastvs]" by auto
     with d have "lastvs \<notin> set as" by auto
@@ -668,18 +671,19 @@ proof -
   assume r1: "ram1 \<in> set vs" and r2: "ram2 \<in> set vs" and r12: "ram1 \<noteq> ram2"
   then show ?thesis
     proof (cases "ram2 \<in> set (snd (splitAt ram1 vs))")
-      def a \<equiv> "fst (splitAt ram1 vs)"
-      def b \<equiv> "fst (splitAt ram2 (snd (splitAt ram1 vs)))"
-      def c \<equiv> "snd (splitAt ram2 (snd (splitAt ram1 vs)))"
+      define a where "a = fst (splitAt ram1 vs)"
+      define b where "b = fst (splitAt ram2 (snd (splitAt ram1 vs)))"
+      define c where "c = snd (splitAt ram2 (snd (splitAt ram1 vs)))"
       case True with r1 a_def b_def c_def have "vs = a @ [ram1] @ b @ [ram2] @ c"
         by (auto dest!: splitAt_ram)
       then show ?thesis apply (simp add: before_def) by auto
     next
-      def ab \<equiv> "fst (splitAt ram1 vs)"
-      case False with r1 r2 r12 ab_def have r2': "ram2 \<in> set ab" by (auto intro: splitAt_ram3)
-      def a \<equiv> "fst (splitAt ram2 ab)"
-      def b \<equiv> "snd (splitAt ram2 ab)"
-      def c \<equiv> "snd (splitAt ram1 vs)"
+      define ab where "ab = fst (splitAt ram1 vs)"
+      case False
+      with r1 r2 r12 ab_def have r2': "ram2 \<in> set ab" by (auto intro: splitAt_ram3)
+      define a where "a = fst (splitAt ram2 ab)"
+      define b where "b = snd (splitAt ram2 ab)"
+      define c where "c = snd (splitAt ram1 vs)"
       from r1 ab_def c_def have "vs = ab @ [ram1] @ c" by (auto dest!: splitAt_ram)
       with r2' a_def b_def have "vs = (a @ [ram2] @ b) @ [ram1] @ c" by (drule_tac splitAt_ram) simp
       then show ?thesis apply (simp add: before_def) apply (rule disjI2) by auto
@@ -703,10 +707,10 @@ proof -
       assume vs: "vs = a @ r1 # b @ r2 # c" and "\<forall>y. vs = fst y @ r1 # snd y \<longrightarrow> y = s"
       then have  "\<And> y. vs = fst y @ r1 # snd y \<longrightarrow> y = s" by (clarify, hypsubst_thin, auto)
       then have single: "\<And> y. vs = fst y @ r1 # snd y \<Longrightarrow> y = s" by auto
-      def bc \<equiv> "b @ r2 # c"
+      define bc where "bc = b @ r2 # c"
       with vs have vs2: "vs = a @ r1 # bc" by auto
       from bc_def have  r2: "r2 \<in> set bc" by auto
-      def t \<equiv> "(a,bc)"
+      define t where "t = (a,bc)"
       with vs2 have vs3: "vs = fst (t) @ r1 # snd (t)" by auto
       with single have ts: "t = s" by (rule_tac single) auto
       from b have "splitAt r1 vs = s" apply (drule_tac before_r1) apply (drule_tac splitAt_ram) by (rule single) auto
@@ -730,10 +734,10 @@ proof -
       assume vs: "vs = a @ r1 # b @ r2 # c" and "\<forall>y. vs = fst y @ r2 # snd y \<longrightarrow> y = s"
       then have  "\<And> y. vs = fst y @ r2 # snd y \<longrightarrow> y = s" by (clarify, hypsubst_thin, auto)
       then have single: "\<And> y. vs = fst y @ r2 # snd y \<Longrightarrow> y = s" by auto
-      def ab \<equiv> "a @ r1 # b"
+      define ab where "ab = a @ r1 # b"
       with vs have vs2: "vs = ab @ r2 # c" by auto
       from ab_def have  r1: "r1 \<in> set ab" by auto
-      def t \<equiv> "(ab,c)"
+      define t where "t = (ab,c)"
       with vs2 have vs3: "vs = fst (t) @ r2 # snd (t)" by auto
       with single have ts: "t = s" by (rule_tac single) auto
       from b have "splitAt r2 vs = s" apply (drule_tac before_r2) apply (drule_tac splitAt_ram) by (rule single) auto
@@ -751,10 +755,10 @@ lemma before_snd:
 proof -
   assume r2: "r2 \<in> set (snd (splitAt r1 vs))"
   from r2 have r1: "r1 \<in> set vs" apply (rule_tac ccontr) apply (drule splitAt_no_ram) by simp
-  def a \<equiv> "fst (splitAt r1 vs)"
-  def bc \<equiv> "snd (splitAt r1 vs)"
-  def b \<equiv> "fst (splitAt r2 bc)"
-  def c \<equiv> "snd (splitAt r2 bc)"
+  define a where "a = fst (splitAt r1 vs)"
+  define bc where "bc = snd (splitAt r1 vs)"
+  define b where "b = fst (splitAt r2 bc)"
+  define c where "c = snd (splitAt r2 bc)"
   from r1 a_def bc_def have vs: "vs = a @ [r1] @ bc" by (auto dest: splitAt_ram)
   from r2 bc_def have r2: "r2 \<in> set bc" by simp
   with b_def c_def have "bc = b @ [r2] @ c" by (auto dest: splitAt_ram)
@@ -765,10 +769,10 @@ lemma before_fst:
 "r2 \<in> set vs \<Longrightarrow> r1 \<in> set (fst (splitAt r2 vs)) \<Longrightarrow> before vs r1 r2"
 proof -
   assume r2: "r2 \<in> set vs" and r1: "r1 \<in> set (fst (splitAt r2 vs))"
-  def ab \<equiv> "fst (splitAt r2 vs)"
-  def c \<equiv> "snd (splitAt r2 vs)"
-  def a \<equiv> "fst (splitAt r1 ab)"
-  def b \<equiv> "snd (splitAt r1 ab)"
+  define ab where "ab = fst (splitAt r2 vs)"
+  define c where "c = snd (splitAt r2 vs)"
+  define a where "a = fst (splitAt r1 ab)"
+  define b where "b = snd (splitAt r1 ab)"
   from r2 ab_def c_def have vs: "vs = ab @ [r2] @ c" by (auto dest: splitAt_ram)
   from r1 ab_def have r1: "r1 \<in> set ab" by simp
   with a_def b_def have "ab = a @ [r1] @ b" by (auto dest: splitAt_ram)
@@ -809,7 +813,7 @@ lemma before_vs:
  "distinct vs \<Longrightarrow> before vs ram1 ram2 \<Longrightarrow> vs = fst (splitAt ram1 vs) @ ram1 # fst (splitAt ram2 (snd (splitAt ram1 vs))) @ ram2 # snd (splitAt ram2 vs)"
 proof -
   assume d: "distinct vs" and b: "before vs ram1 ram2"
-  def s \<equiv> "snd (splitAt ram1 vs)"
+  define s where "s = snd (splitAt ram1 vs)"
   from b have  "ram1 \<in> set vs" by (auto simp: before_def)
   with s_def have vs: "vs = fst (splitAt ram1 vs) @ [ram1] @ s" by (auto dest: splitAt_ram)
   from d b s_def have "ram2 \<in> set s" by (auto intro: before_dist_r2)
@@ -974,15 +978,15 @@ lemma between_distinct[intro]:
   "distinct vs \<Longrightarrow> distinct (between vs ram1 ram2)"
 proof -
   assume vs: "distinct vs"
-  def a: a \<equiv> "fst (splitAt ram1 vs)"
-  def b: b \<equiv> "snd (splitAt ram1 vs)"
-  from a b have ab: "(a,b) = splitAt ram1 vs" by auto
+  define a where "a = fst (splitAt ram1 vs)"
+  define b where "b = snd (splitAt ram1 vs)"
+  from a_def b_def have ab: "(a,b) = splitAt ram1 vs" by auto
   with vs have ab_disj:"set a \<inter> set b = {}" by (drule_tac splitAt_distinct_ab)  auto
-  def c: c \<equiv> "fst (splitAt ram2 a)"
-  def d: d \<equiv> "snd (splitAt ram2 a)"
-  from c d have c_d: "(c,d) = splitAt ram2 a" by auto
+  define c where "c = fst (splitAt ram2 a)"
+  define d where "d = snd (splitAt ram2 a)"
+  from c_def d_def have c_d: "(c,d) = splitAt ram2 a" by auto
   with ab_disj have "set c \<inter> set b = {}" by (drule_tac splitAt_subset_ab) auto
-  with vs a b c show ?thesis
+  with vs a_def b_def c_def show ?thesis
     by (auto simp: between_def split_def splitAt_no_ram dest: splitAt_ram intro: splitAt_distinct_fst splitAt_distinct_snd)
 qed
 
@@ -998,9 +1002,9 @@ lemma between_in:
   "before vs ram1 ram2 \<Longrightarrow> pre_between vs ram1 ram2 \<Longrightarrow> x \<in> set vs \<Longrightarrow> x = ram1 \<or> x \<in> set (between vs ram1 ram2) \<or> x = ram2 \<or> x \<in> set (between vs ram2 ram1)"
 proof -
   assume b: "before vs ram1 ram2" and p: "pre_between vs ram1 ram2" and xin: "x \<in> set vs"
-  def a \<equiv> "fst (splitAt ram1 vs)"
-  def b \<equiv> "between vs ram1 ram2"
-  def c \<equiv> "snd (splitAt ram2 vs)"
+  define a where "a = fst (splitAt ram1 vs)"
+  define b where "b = between vs ram1 ram2"
+  define c where "c = snd (splitAt ram2 vs)"
   from p have "distinct vs" by auto
   from p b a_def b_def c_def have "vs = a @ ram1 # b @ ram2 # c" apply (drule_tac between_vs)  by auto
   with xin have "x \<in> set (a @ ram1 # b @ ram2 # c)" by auto
@@ -1019,8 +1023,8 @@ proof -
   assume b: "before vs ram1 ram2" and p: "pre_between vs ram1 ram2" and vs: "hd vs \<noteq> ram1" and ab: "(a,b) = splitAt (hd vs) (between vs ram2 ram1)"
   from p have dist_b: "distinct (between vs ram2 ram1)" by (auto intro: between_distinct simp: pre_between_def)
   with ab have "distinct a \<and> distinct b" by (auto intro: splitAt_distinct_a splitAt_distinct_b)
-  def r \<equiv> "snd (splitAt ram1 vs)"
-  def btw \<equiv> "between vs ram2 ram1"
+  define r where "r = snd (splitAt ram1 vs)"
+  define btw where "btw = between vs ram2 ram1"
   from p r_def have vs2: "vs = fst (splitAt ram1 vs) @ [ram1] @ r" by (auto dest: splitAt_ram simp: pre_between_def)
   then have "fst (splitAt ram1 vs) = [] \<Longrightarrow> hd vs = ram1" by auto
   with vs have neq: "fst (splitAt ram1 vs) \<noteq> []" by auto
@@ -1136,12 +1140,12 @@ lemma is_nextElem_or1: "pre_between vs ram1 ram2 \<Longrightarrow>
 proof -
   assume p: "pre_between vs ram1 ram2" and is_nextElem: "is_nextElem vs x y" and b: "before vs ram1 ram2"
   from p have r1: "ram1 \<in> set vs" by (auto simp: pre_between_def)
-  def bs \<equiv> "[ram1] @ (between vs ram1 ram2) @ [ram2]"
+  define bs where "bs = [ram1] @ (between vs ram1 ram2) @ [ram2]"
   have rule1: "x \<in> set (ram1 # (between vs ram1 ram2)) \<Longrightarrow> is_sublist [x,y] bs"
   proof -
     assume xin:"x \<in> set (ram1 # (between vs ram1 ram2))"
     with bs_def have xin2: "x \<in> set bs" by auto
-    def s \<equiv> "snd (splitAt ram1 vs)"
+    define s where "s = snd (splitAt ram1 vs)"
     from r1 s_def have sub1:"is_sublist (ram1 # s) vs" by (auto intro: splitAt_is_sublist2R)
     from b p s_def have "ram2 \<in> set s" by (auto intro!: before_dist_r2 simp: pre_between_def)
     then have "is_prefix (fst (splitAt ram2 s) @ [ram2]) s" by (auto intro!: splitAt_is_prefix)
@@ -1153,15 +1157,15 @@ proof -
     with xin bs_def have xnlb:"x \<noteq> last bs" by auto
     with p is_nextElem subl xin2 show "is_sublist [x,y] bs" apply (rule_tac is_sublist_is_nextElem) by (auto simp: pre_between_def)
   qed
-  def bs2 \<equiv> "[ram2] @ (between vs ram2 ram1) @ [ram1]"
+  define bs2 where "bs2 = [ram2] @ (between vs ram2 ram1) @ [ram1]"
   have rule2: "x \<in> set (ram2 # (between vs ram2 ram1)) \<Longrightarrow> is_sublist [x,y] bs2"
   proof -
     assume xin:"x \<in> set (ram2 # (between vs ram2 ram1))"
     with bs2_def have xin2: "x \<in> set bs2" by auto
-    def cs1 \<equiv> "ram2 # snd (splitAt ram2 vs)"
+    define cs1 where "cs1 = ram2 # snd (splitAt ram2 vs)"
     then have cs1ne: "cs1 \<noteq> []" by auto
-    def cs2 \<equiv> "fst (splitAt ram1 vs)"
-    def cs2ram1 \<equiv> "cs2 @ [ram1]"
+    define cs2 where "cs2 = fst (splitAt ram1 vs)"
+    define cs2ram1 where "cs2ram1 = cs2 @ [ram1]"
     from cs1_def cs2_def bs2_def p b have bs2: "bs2 = cs1 @ cs2 @ [ram1]" by (auto simp: pre_between_def)
     have "x \<in> set cs1 \<Longrightarrow> x \<noteq> last cs1 \<Longrightarrow> is_sublist [x,y] cs1"
     proof-
@@ -1197,7 +1201,7 @@ proof -
     proof-
       assume xin2': "x \<in> set cs2"
       then have xin2: "x \<in> set (cs2 @ [ram1])" by auto
-      def fr2 \<equiv> "snd (splitAt ram1 vs)"
+      define fr2 where "fr2 = snd (splitAt ram1 vs)"
       from p have "vs = fst (splitAt ram1 vs) @ ram1 # snd (splitAt ram1 vs)" by (auto intro: splitAt_ram)
       with fr2_def cs2_def have "vs = cs2 @ [ram1] @ fr2" by simp
       with p xin2'  have "x \<noteq> ram1" by (auto simp: pre_between_def)
@@ -1394,7 +1398,7 @@ subsubsection {* @{const nextVertex} *}
 lemma nextElem_suc2: "distinct (vertices f) \<Longrightarrow> last (vertices f) = v \<Longrightarrow> v \<in> set (vertices f) \<Longrightarrow> f \<bullet> v = hd (vertices f)"
 proof -
   assume dist: "distinct (vertices f)" and last: "last (vertices f) = v" and v: "v \<in> set (vertices f)"
-  def ls \<equiv> "vertices f"
+  define ls where "ls = vertices f"
   have ind: "\<And> c. distinct ls \<Longrightarrow> last ls = v \<Longrightarrow> v \<in> set ls \<Longrightarrow> nextElem ls c v = c"
   proof (induct ls)
     case Nil then show ?case by auto
@@ -1445,7 +1449,7 @@ lemma split_face_distinct1:
     distinct (vertices f12)"
 proof -
   assume split: "(f12, f21) = split_face oldF ram1 ram2 newVertexList" and p: "pre_split_face oldF ram1 ram2 newVertexList"
-  def old_vs \<equiv> "vertices oldF"
+  define old_vs where "old_vs = vertices oldF"
   with p have d_old_vs: "distinct old_vs" by auto
   from p have p2: "pre_between (vertices oldF) ram1 ram2" by auto
   have rule1: "before old_vs ram1 ram2 \<Longrightarrow> distinct (vertices f12)"
@@ -1491,7 +1495,7 @@ lemma split_face_distinct2:
 proof -
   assume split: "(f12, f21) = split_face oldF ram1 ram2 newVertexList"
     and p: "pre_split_face oldF ram1 ram2 newVertexList"
-  def old_vs \<equiv> "vertices oldF"
+  define old_vs where "old_vs = vertices oldF"
   with p have d_old_vs: "distinct old_vs" by auto
   with p have p1: "pre_split_face oldF ram1 ram2 newVertexList" by auto
   from p have p2: "pre_between (vertices oldF) ram1 ram2" by auto
@@ -1621,9 +1625,8 @@ proof -
   hence eq: "(vertices f) \<cong> (verticesFrom f v)" by (auto simp: verticesFrom_congs)
   from ith eq small_i have "u \<in> set (verticesFrom f v)" by (auto simp: congs_length)
   with eq have u: "u \<in> \<V> f" by (auto simp: congs_pres_nodes)
-  def ls \<equiv> "verticesFrom f v"
-  with dist ith have
-    "ls!i = u" by auto
+  define ls where "ls = verticesFrom f v"
+  with dist ith have "ls!i = u" by auto
   have ind: "\<And> c i. i < length ls \<Longrightarrow> distinct ls \<Longrightarrow> last ls \<noteq> u \<Longrightarrow> ls!i = u \<Longrightarrow> u \<in> set ls \<Longrightarrow>
      nextElem ls c u = ls ! Suc i"
   proof (induct ls)
@@ -1639,7 +1642,7 @@ proof -
       case False with Cons have a1: "u \<in> set ms" by auto
       then have ms: "ms \<noteq> []" by auto
       from False Cons have i: "0 < i" by auto
-      def i' \<equiv> "i - 1"
+      define i' where "i' = i - 1"
       with i have i': "i = Suc i'" by auto
       with False Cons i' ms have "nextElem ms c u = ms ! Suc i'" apply (rule_tac Cons) by simp_all
       with False Cons i' ms show ?thesis by simp
@@ -1895,8 +1898,8 @@ lemma split_face_empty_ram2_ram1_in_f12':
   (ram2, ram1) \<in> edges (fst (split_face oldF ram1 ram2 []))"
 proof -
   assume split: "pre_split_face oldF ram1 ram2 []"
-  def f12 \<equiv> "fst (split_face oldF ram1 ram2 [])"
-  def f21 \<equiv> "snd (split_face oldF ram1 ram2 [])"
+  define f12 where "f12 = fst (split_face oldF ram1 ram2 [])"
+  define f21 where "f21 = snd (split_face oldF ram1 ram2 [])"
   then have "(f12, f21) = split_face oldF ram1 ram2 []" by (simp add: f12_def f21_def)
   with split have "(ram2, ram1) \<in> edges f12"
     by (rule split_face_empty_ram2_ram1_in_f12)
@@ -2335,8 +2338,8 @@ lemma split_face_empty_ram1_ram2_in_f21':
   (ram1, ram2) \<in> edges (snd (split_face oldF ram1 ram2 []))"
 proof -
   assume split: "pre_split_face oldF ram1 ram2 []"
-  def f12 \<equiv> "fst (split_face oldF ram1 ram2 [])"
-  def f21 \<equiv> "snd (split_face oldF ram1 ram2 [])"
+  define f12 where "f12 = fst (split_face oldF ram1 ram2 [])"
+  define f21 where "f21 = snd (split_face oldF ram1 ram2 [])"
   then have "(f12, f21) = split_face oldF ram1 ram2 []" by (simp add: f12_def f21_def)
   with split have "(ram1, ram2) \<in> edges f21"
     by (rule split_face_empty_ram1_ram2_in_f21)
@@ -2381,8 +2384,8 @@ shows "edges f12 =
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?rhs"
@@ -2434,8 +2437,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
@@ -2474,8 +2477,8 @@ shows "edges f12 = {(ram2, ram1) , (ram1, hd vs1), (last vs1, ram2)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?rhs"
@@ -2514,8 +2517,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
@@ -2553,8 +2556,8 @@ shows "edges f12 = {(hd vs, ram1) , (ram1, ram2), (ram2, last vs)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?rhs"
@@ -2587,8 +2590,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
@@ -2617,8 +2620,8 @@ shows "edges f12 = {(ram2, ram1) , (ram1, ram2)}" (is "?lhs = ?rhs")
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?rhs"
@@ -2632,8 +2635,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
@@ -2660,8 +2663,8 @@ shows "edges f21 = {(last vs2, ram1) , (ram1, hd vs), (last vs, ram2), (ram2, hd
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?rhs"
@@ -2718,8 +2721,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
@@ -2766,8 +2769,8 @@ shows "edges f21 = {(last vs2, ram1) , (ram1, ram2), (ram2, hd vs2)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?rhs"
@@ -2806,8 +2809,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
@@ -2837,8 +2840,8 @@ shows "edges f21 = {(ram1, hd vs), (last vs, ram2), (ram2, ram1)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?rhs"
@@ -2873,8 +2876,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
@@ -2906,8 +2909,8 @@ shows "edges f21 = {(ram1, ram2), (ram2, ram1)}" (is "?lhs = ?rhs")
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?rhs"
@@ -2917,8 +2920,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
@@ -2964,8 +2967,8 @@ shows "edges f = {(ram2, ram1) , (ram1, ram2)}" (is "?lhs = ?rhs")
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from x vors show "x \<in> ?rhs" apply (simp add: dist_f)
@@ -2978,8 +2981,8 @@ proof (intro equalityI subsetI)
   next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from x vors show "x \<in> ?lhs" apply (simp add: dist_f)
@@ -2997,8 +3000,8 @@ shows "edges f = {(last vs2, ram1) , (ram1, ram2), (ram2, hd vs2)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs2: "distinct (ram2 # vs2 @ [ram1])" apply (simp only:)
@@ -3039,8 +3042,8 @@ proof (intro equalityI subsetI)
   next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs2: "distinct (ram2 # vs2 @ [ram1])" apply (simp only:)
@@ -3071,8 +3074,8 @@ shows "edges f = {(ram2, ram1) , (ram1, hd vs1), (last vs1, ram2)} \<union>
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs1: "distinct (ram1 # vs1 @ [ram2])" apply (simp only:)
@@ -3109,8 +3112,8 @@ proof (intro equalityI subsetI)
   next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs1: "distinct (ram1 # vs1 @ [ram2])" apply (simp only:)
@@ -3143,8 +3146,8 @@ shows "edges f = {(last vs2, ram1) , (ram1, hd vs1), (last vs1, ram2), (ram2, hd
 proof (intro equalityI subsetI)
   fix x
   assume x: "x \<in> ?lhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs1: "distinct (ram1 # vs1 @ [ram2])" apply (simp only:)
@@ -3182,8 +3185,8 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume x: "x \<in> ?rhs"
-  def c \<equiv> "fst x"
-  def d \<equiv> "snd x"
+  define c where "c = fst x"
+  define d where "d = snd x"
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs1: "distinct (ram1 # vs1 @ [ram2])" apply (simp only:)
@@ -3493,7 +3496,7 @@ proof -
   assume d: "distinct (vertices f)" and v: "v \<in> \<V> f" and i: "i < length (vertices (f::face))"
     and a: "a < length (vertices f)" and eq:" f\<^bsup>a\<^esup>\<bullet>v = f\<^bsup>i\<^esup>\<bullet>v"
   then have eq: "(verticesFrom f v)!a = (verticesFrom f v)!i " by (simp add: verticesFrom_nth)
-  def xs \<equiv> "verticesFrom f v"
+  define xs where "xs = verticesFrom f v"
   with eq have eq: "xs!a = xs!i" by auto
   from d v have z: "distinct (verticesFrom f v)" by auto
   moreover
@@ -3608,7 +3611,7 @@ lemma natToVertexList_last[simp]:
   "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> incrIndexList es (length es) (length (vertices f)) \<Longrightarrow> last (natToVertexList v f es) = Some (last (verticesFrom f v))"
 proof -
   assume vors: "distinct (vertices f)" "v \<in> \<V> f" and incr: "incrIndexList es (length es) (length (vertices f))"
-  def n' \<equiv> "length es - 2"
+  define n' where "n' = length es - 2"
   from incr have "1 < length es" by auto
   with n'_def have n'l: "Suc (Suc n') = length es" by arith
   from incr n'l have last_ntvl: "(natToVertexList v f es)!(Suc n') = last (natToVertexList v f es)" by auto
@@ -3776,7 +3779,7 @@ next
       with elim_insert have sub2: "nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
         nths (take (es ! n) (verticesFrom f v)) (set (take n es))" by simp
 
-      def m \<equiv> "es!n - es!n'"
+      define m where "m = es!n - es!n'"
       with smaller_n have mgz: "0 < m" by auto
       with m_def have esn: "es!n = (es!n') + m" by auto
 
@@ -3790,8 +3793,8 @@ next
         with x Suc suc1 show "x \<le> es!n'" by (auto simp: take_Suc_conv_app_nth)
       qed
 
-      def m' \<equiv> "m - 1"
-      def Suc_es_n' \<equiv> "Suc (es!n')"
+      define m' where "m' = m - 1"
+      define Suc_es_n' where "Suc_es_n' = Suc (es!n')"
 
       from smaller smaller_n have "Suc (es!n') < length vs" by auto
       then have "min (length vs) (Suc (es ! n')) = Suc (es!n')" by arith
@@ -3835,13 +3838,13 @@ lemma natToVertexList_nths: "distinct (vertices f) \<Longrightarrow> v \<in> \<V
 proof -
   assume vors1: "distinct (vertices f)" "v \<in> \<V> f"
      "incrIndexList es (length es) (length (vertices f))"
-  def vs \<equiv> "verticesFrom f v"
+  define vs where "vs = verticesFrom f v"
   with vors1 have lvs: "length vs = length (vertices f)"  by (auto intro: verticesFrom_length)
   with vors1 vs_def have vors: "distinct (vertices f)" "v \<in> \<V> f"
     "vs = verticesFrom f v"  "incrIndexList es (length es) (length vs)" by auto
 
   with lvs have vsne: "vs \<noteq> []" by auto
-  def n \<equiv> "length es"
+  define n where "n = length es"
   then have "es!(n - 1) = last es"
   proof (cases n)
     case 0 with n_def vors show ?thesis by (cases es)  auto
@@ -4341,8 +4344,8 @@ next
   proof -
     fix a b
     assume vors: "is_nextElem (vertices f) a b \<and> a \<in> set (removeNones vol) \<and> b \<in> set (removeNones vol)"
-    def vor_u \<equiv> "fst (splitAt u (verticesFrom f v'))"
-    def nach_u \<equiv> "snd (splitAt u (verticesFrom f v'))"
+    define vor_u where "vor_u = fst (splitAt u (verticesFrom f v'))"
+    define nach_u where "nach_u = snd (splitAt u (verticesFrom f v'))"
     from vors v' have "is_nextElem (verticesFrom f v') a b"  by (simp add: verticesFrom_is_nextElem)
     moreover
     from vors inSnd_u nach_u_def have "a \<in> set (nach_u)" by auto
@@ -4430,8 +4433,8 @@ next
     case False
 
     with m1 dist_f21_v' have ne_uv': "u \<noteq> v'" by auto
-    def fst_u \<equiv>  "fst (splitAt u (verticesFrom f v'))"
-    def fst_v \<equiv>  "fst (splitAt v (verticesFrom f v'))"
+    define fst_u where "fst_u = fst (splitAt u (verticesFrom f v'))"
+    define fst_v where "fst_v = fst (splitAt v (verticesFrom f v'))"
 
     from pre_add u dist_vf_v' have "v \<in> set (fst (splitAt u (verticesFrom f v')))"
       apply (rule_tac before_dist_r1) by (auto  simp: pre_subdivFace'_def)
@@ -4479,8 +4482,8 @@ next
     from m1 m2 dist_f21_v' have "distinct (snd (splitAt u (verticesFrom f v')))" apply (cases "v = v'")
       by auto
     moreover
-    def z1 \<equiv> "fst (splitAt (hd (removeNones vol)) (snd (splitAt u (verticesFrom f v'))))"
-    def z2 \<equiv> "snd (splitAt (hd (removeNones vol)) (snd (splitAt u (verticesFrom f v'))))"
+    define z1 where "z1 = fst (splitAt (hd (removeNones vol)) (snd (splitAt u (verticesFrom f v'))))"
+    define z2 where "z2 = snd (splitAt (hd (removeNones vol)) (snd (splitAt u (verticesFrom f v'))))"
     note z1_def z2_def hd_ram
     ultimately have "snd (splitAt u (verticesFrom f v')) = z1 @ (hd (removeNones vol)) # z2"
       by (auto intro: splitAt_ram)
@@ -4509,7 +4512,7 @@ next
   have l: "\<And> a b f v. v \<in> set (vertices f) \<Longrightarrow> is_nextElem (vertices f) a b = is_nextElem (verticesFrom f v) a b "
     apply (rule is_nextElem_congs_eq) by (rule verticesFrom_congs)
 
-  def f12 \<equiv> "fst (split_face f v u ws)"
+  define f12 where "f12 = fst (split_face f v u ws)"
   then have f12_fdg: "f12 = fst (splitFace g v u f ws)"
     by (simp add: splitFace_def split_def)
 

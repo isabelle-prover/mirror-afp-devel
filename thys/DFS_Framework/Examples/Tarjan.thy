@@ -203,8 +203,8 @@ context Tarjan begin
     }
     moreover {
       fix k j
-      def k' \<equiv> "k - Suc 0"
-      def j' \<equiv> "j - Suc 0"
+      define k' where "k' = k - Suc 0"
+      define j' where "j' = j - Suc 0"
 
       assume A: "k < Suc (length (tj_stack s))" "j < k" "(v#tj_stack s) ! j \<noteq> v"
       hence gt_0: "j > 0 \<and> k>0" by (cases "j=0") simp_all
@@ -232,8 +232,7 @@ context Tarjan begin
       and "u \<in> set (tj_stack s)"
       hence "?dw \<noteq> []" by auto
 
-      def j' \<equiv> "Suc j + length ?tw" 
-      and k' \<equiv> "Suc k + length ?tw"
+      define j' k' where "j' = Suc j + length ?tw" and "k' = Suc k + length ?tw"
       with `j < k` have "j' < k'" by simp
       
       have "length (tj_stack s) = length ?tw + length ?dw"
@@ -486,7 +485,7 @@ context Tarjan begin context begin interpretation timing_syntax .
           let ?dw = "dropWhile (op \<noteq> u) (tj_stack s)"
           let ?tw = "takeWhile (op \<noteq> u) (tj_stack s)"
           fix x
-          def j \<equiv> "0::nat"
+          define j::nat where "j = 0"
           
           assume x: "x \<in> set (tj_stack ?s)"
           then obtain i where i: "i < length (tj_stack ?s)" "tj_stack ?s ! i = x"

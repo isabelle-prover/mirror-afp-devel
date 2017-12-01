@@ -217,7 +217,7 @@ lemma porder_extend_to_linorder:
   assumes r: "partial_order_on A r"
   obtains s where "linear_order_on A s" "order_consistent r s"
 proof(atomize_elim)
-  def S \<equiv> "{s. partial_order_on A s \<and> r \<subseteq> s}"
+  define S where "S = {s. partial_order_on A s \<and> r \<subseteq> s}"
   from r have r_in_S: "r \<in> S" unfolding S_def by auto
 
   have "\<exists>y\<in>S. \<forall>x\<in>S. y \<subseteq> x \<longrightarrow> x = y"
@@ -316,7 +316,7 @@ proof(atomize_elim)
       assume "\<not> ?thesis"
       hence xy: "(x, y) \<notin> s" "(y, x) \<notin> s" by simp_all
 
-      def s' \<equiv> "{(a, b). a = x \<and> (b = y \<or> b = x) \<or> a = y \<and> b = y}"
+      define s' where "s' = {(a, b). a = x \<and> (b = y \<or> b = x) \<or> a = y \<and> b = y}"
       let ?s' = "(s \<union> s')^+"
       note `partial_order_on A s`
       moreover have "linear_order_on {x, y} s'" unfolding s'_def

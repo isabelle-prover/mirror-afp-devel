@@ -305,8 +305,10 @@ lemma par_beta_refl:
   shows "t \<Rightarrow>\<^sub>\<beta> t"
   using assms
 proof -
-  def pred_cof \<equiv> "\<lambda>L t. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-                          \<longrightarrow> (\<exists>t'. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t' \<and> t = \<sigma>[s,p] t'))"
+  define pred_cof
+    where "pred_cof L t \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> (\<exists>t'. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t' \<and> t = \<sigma>[s,p] t'))"
+    for L t
   from assms show ?thesis
   proof 
     (induct
@@ -321,7 +323,8 @@ proof -
       by auto
   next
     case (Obj f T) note pred = this
-    def pred_fl \<equiv> "\<lambda>s p b l::Label. (\<exists>t'. (the b\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t' \<and> the b = \<sigma>[s,p]t')"
+    define pred_fl where "pred_fl s p b l \<longleftrightarrow> (\<exists>t'. (the b\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t' \<and> the b = \<sigma>[s,p]t')"
+      for s p b and l :: Label
 
     from fmap_ex_cof[of f pred_fl] pred
     obtain L where
@@ -369,8 +372,10 @@ lemma par_beta_ssubst[rule_format]:
   assumes "t \<Rightarrow>\<^sub>\<beta> t'"
   shows "\<forall>x v v'. v \<Rightarrow>\<^sub>\<beta> v' \<longrightarrow> [x \<rightarrow> v] t \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t'"
 proof -
-  def pred_cof \<equiv> "\<lambda>L t t'. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-                             \<longrightarrow> (\<exists>t''. t\<^bsup>[Fvar s, Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+  define pred_cof
+    where "pred_cof L t t' \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> (\<exists>t''. t\<^bsup>[Fvar s, Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+    for L t t'
   {
     fix x v v' t t'
     assume 
@@ -480,8 +485,10 @@ proof -
     show ?case
     proof (intro strip)
       fix x v v'
-      def pred_bnd \<equiv> "\<lambda>s p b b' l::Label. \<exists>t''. [x \<rightarrow> v] the b\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' 
-                                              \<and> [x \<rightarrow> v'] the b' = \<sigma>[s,p] t''"
+      define pred_bnd
+        where "pred_bnd s p b b' l \<longleftrightarrow>
+          (\<exists>t''. [x \<rightarrow> v] the b\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> [x \<rightarrow> v'] the b' = \<sigma>[s,p] t'')"
+        for s p b b' and l::Label
       assume "v \<Rightarrow>\<^sub>\<beta> v'"
       with pred `dom f' = dom f` fmap_ex_cof2[of f' f pred_bnd] 
       obtain L where
@@ -610,8 +617,10 @@ subsection {* Inclusions *}
 text {* @{text "beta \<subseteq> par_beta \<subseteq> beta^*"} \medskip *}
 lemma beta_subset_par_beta: "beta \<le> par_beta"
 proof (clarify)
-  def pred_cof \<equiv> "\<lambda>L t t'. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-                          \<longrightarrow> (\<exists>t''. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+  define pred_cof
+    where "pred_cof L t t' \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> (\<exists>t''. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+    for L t t'
 
   fix t t' assume "t \<rightarrow>\<^sub>\<beta> t'" thus "t \<Rightarrow>\<^sub>\<beta> t'"
   proof 
@@ -686,8 +695,10 @@ qed
 
 lemma par_beta_subset_beta: "par_beta \<le> beta^**"
 proof (rule predicate2I)
-  def pred_cof \<equiv> "\<lambda>L t t'. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-                             \<longrightarrow> (\<exists>t''. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<rightarrow>\<^sub>\<beta>\<^sup>* t'' \<and> t' = \<sigma>[s,p] t''))"
+  define pred_cof
+    where "pred_cof L t t' \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> (\<exists>t''. (t\<^bsup>[Fvar s, Fvar p]\<^esup>) \<rightarrow>\<^sub>\<beta>\<^sup>* t'' \<and> t' = \<sigma>[s,p] t''))"
+    for L t t'
 
   fix x y assume "x \<Rightarrow>\<^sub>\<beta> y" thus "x \<rightarrow>\<^sub>\<beta>\<^sup>* y"
   proof (induct 
@@ -726,8 +737,9 @@ proof (rule predicate2I)
     show ?case by simp
   next
     case (Obj f f' T) note body = this(2) and pred = this(3)
-    def pred_bnd \<equiv> "\<lambda>s p b b' l::Label. \<exists>t''. the b\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t'' 
-                                            \<and> the b' = \<sigma>[s,p] t''"
+    define pred_bnd
+      where "pred_bnd s p b b' l \<longleftrightarrow> (\<exists>t''. the b\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t'' \<and> the b' = \<sigma>[s,p] t'')"
+      for s p b b' and l::Label
     from 
       pred `dom f' = dom f` fmap_ex_cof2[of f' f pred_bnd]
     obtain L where

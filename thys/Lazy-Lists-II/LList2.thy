@@ -500,7 +500,7 @@ lemma lrev_induct [case_names LNil snocl, consumes 1]:
   and step: "\<And>x xs. \<lbrakk> xs \<in> A\<^sup>\<star>; P xs; x \<in> A \<rbrakk> \<Longrightarrow> P (xs @@ x##LNil)"
   shows "P xs"
 proof-
-  def l == "lrev xs"
+  define l where "l = lrev xs"
   with fin have "l \<in> A\<^sup>\<star>" by simp
   hence "P (lrev l)"
   proof (induct l)

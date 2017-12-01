@@ -1297,7 +1297,7 @@ begin
     apply simp
   proof -
     from INV interpret invar_loc G v0 D0 p D pE unfolding invar_def by simp 
-    def i \<equiv> "idx_of p v"
+    define i where "i = idx_of p v"
     let ?thesis 
       = "((collapse_aux p i, D, pE-{(u,v)}), (p, D, pE)) \<in> abs_wf_rel v0"
 
@@ -1975,7 +1975,7 @@ begin
         done
     } note AUX2 = this
 
-    def ci \<equiv> "( 
+    define ci where "ci = ( 
       take (last B) S, 
       butlast B,
       mark_as_done_abs 

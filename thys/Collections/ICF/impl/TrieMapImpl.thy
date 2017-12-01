@@ -77,8 +77,8 @@ proof (rule proper_it'I)
         apply (rule pi_union)
         apply (auto split: option.split intro: icf_proper_iteratorI) []
       proof (rule pi_image)
-        def bs \<equiv> "\<lambda>(k,t). SOME l'::('k list \<times> 'v) list. 
-          ?ITA (k#l) t = foldli l' \<and> ?ITB (k#l) t = foldli l'"
+        define bs where "bs = (\<lambda>(k,t). SOME l'::('k list \<times> 'v) list. 
+          ?ITA (k#l) t = foldli l' \<and> ?ITB (k#l) t = foldli l')"
 
         have EQ1: "\<forall>(k,t)\<in>set kvs. ?ITA (k#l) t = foldli (bs (k,t))" and
           EQ2: "\<forall>(k,t)\<in>set kvs. ?ITB (k#l) t = foldli (bs (k,t))"

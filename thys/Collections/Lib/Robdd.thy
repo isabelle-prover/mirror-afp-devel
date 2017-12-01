@@ -666,8 +666,8 @@ proof -
     from sem_eq have sem_eq_a: "\<And>a. robdd_\<alpha> (robdd_var i1 l1 v1 r1) a = robdd_\<alpha> (robdd_var i2 l2 v2 r2) a" 
       by (simp add: fun_eq_iff)
 
-    def a1 \<equiv> "\<lambda>a v'. if v1 = v' then True else a v'"
-    def a2 \<equiv> "\<lambda>a v'. if v1 = v' then False else a v'"
+    define a1 where "a1 a v' = (if v1 = v' then True else a v')" for a v'
+    define a2 where "a2 a v' = (if v1 = v' then False else a v')" for a v'
 
     have a12_eval: "\<And>a. a1 a v1" "\<And>a. ~(a2 a v1)" "\<And>a v. v \<noteq> v1 \<Longrightarrow> a1 a v = a v \<and> a2 a v = a v"
       unfolding a1_def a2_def by simp_all
@@ -1379,8 +1379,8 @@ locale robdd_locale =
   shows "robdd_invar_ext bs' v b \<and> rev_map_invar bs' rev_map' \<and>
          robdd_\<alpha> b = robdd_\<alpha> (robdd_var 0 l v r)"
   proof -
-    def l_id \<equiv> "robdd_get_id l"
-    def r_id \<equiv> "robdd_get_id r"
+    define l_id where "l_id = robdd_get_id l"
+    define r_id where "r_id = robdd_get_id r"
 
     note bs_OK = rev_map_invar_implies_invar_bs[OF invar_rev_map] 
 
@@ -1448,7 +1448,7 @@ locale robdd_locale =
           by (simp add: map_eq bs'_eq invar_b b_\<alpha> lr'_eq invar_rev_map)
       next
         case None note map_eq = this
-        def b' \<equiv> "robdd_var (snd rev_map) l v r"
+        define b' where "b' = robdd_var (snd rev_map) l v r"
 
         have \<alpha>_b': "robdd_\<alpha> b' = robdd_\<alpha> (robdd_var 0 l v r)"
           unfolding b'_def by (simp add: fun_eq_iff)
@@ -1988,8 +1988,10 @@ locale robdd_locale =
         obtain r apply_map'' rev_map'' where 
           apply_r_eq: "robdd_apply apply_map' rev_map' bop b1_r b2_r = (r, apply_map'', rev_map'')"
           by (metis prod.exhaust)
-        obtain b' rev_map''' where const_eq: "robdd_construct rev_map'' l v'' r = (b', rev_map''')" by (metis prod.exhaust)
-        def apply_map''' \<equiv> "c_update (robdd_get_id b1, robdd_get_id b2) b' apply_map''"
+        obtain b' rev_map''' where const_eq: "robdd_construct rev_map'' l v'' r = (b', rev_map''')"
+          by (metis prod.exhaust)
+        define apply_map'''
+          where "apply_map''' = c_update (robdd_get_id b1, robdd_get_id b2) b' apply_map''"
         note next_props = robdd_apply_next_correct [OF b1_invar b2_invar next_eq] not_leaf_b12
         note v''_eq = next_props(13)
 
@@ -2025,7 +2027,7 @@ locale robdd_locale =
         have l_invar1: "robdd_invar_ext bs'' (Suc v'') l"
           unfolding robdd_invar_ext_def by simp (metis subrobdds_set_mono subsetD)
 
-        def bs''' \<equiv> "insert b' bs''"
+        define bs''' where "bs''' = insert b' bs''"
         from robdd_construct_correct[OF invar_rev_map'' _ _ l_invar1 r_invar1]
         have b'_invar: "robdd_invar_ext bs''' v'' b'"
          and invar_rev_map''': "rev_map_invar bs''' rev_map'''"
@@ -2709,7 +2711,7 @@ next
               robdd_invar_vars_greater.simps(2) robdd_invar_vars_impl)
   then obtain a where a_sem_neq: "robdd_\<alpha> ll a \<noteq> robdd_\<alpha> rr a" by (auto simp add: fun_eq_iff)
 
-  def aa \<equiv> "\<lambda>v. a (v + n)"
+  define aa where "aa v = a (v + n)" for v
   from invar(1) have ll_sem: "\<And>b. robdd_\<alpha> ll (\<lambda>v'. (aa(v - n := b)) (v' - n)) = robdd_\<alpha> ll a"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc v"]) 
     apply (simp_all add: aa_def)

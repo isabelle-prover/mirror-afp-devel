@@ -218,8 +218,8 @@ next
     show "fst (row_add_iterate_PA (P, A) (Suc n) i j) $ a $ b = P $ a $ b" unfolding row_add_iterate_PA.simps if_P[OF True] using row_add_iterate_A .
   next
     case False
-    def A' \<equiv> "row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
-    def P' \<equiv> "row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+    define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+    define P' where "P' = row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
     have row_add_iterate_A': "fst (row_add_iterate_PA (P',A') n i j) $ a $ b = P' $ a $ b" using Suc.hyps Suc.prems unfolding nrows_def by auto
     have from_nat_not_a: "from_nat (Suc n) \<noteq> a" by (metis less_not_refl Suc.prems to_nat_from_nat_id nrows_def)
     show "fst (row_add_iterate_PA (P, A) (Suc n) i j) $ a $ b = P $ a $ b" unfolding row_add_iterate_PA.simps if_not_P[OF False] row_add_iterate_A'[unfolded A'_def P'_def]
@@ -258,8 +258,8 @@ case True show ?thesis unfolding row_add_iterate_PA.simps if_P[OF True]
   qed
 next
 case False
-def P'=="row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
-def A'=="row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+define P' where "P' = row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
 have from_nat_noteq_i: "from_nat (Suc n) \<noteq> i"  using False Suc.prems(1) from_nat_not_eq unfolding nrows_def by blast
 have hyp: "fst (row_add_iterate_PA (P', A') n i j) $ i $ b = P' $ i $ b"
 proof (rule Suc.hyps)
@@ -302,8 +302,8 @@ unfolding row_add_iterate_PA.simps if_not_P[OF False]
 by (metis Suc_le_lessD True order_refl less_imp_le fst_row_add_iterate_PA_preserves_greater_than_n Suc.prems(2) to_nat_from_nat nrows_def)
 next
 case False
-def A'\<equiv>"(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
-def P'\<equiv>"(row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
+define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+define P' where "P' = row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
       have rw: "fst (row_add_iterate_PA (P',A') n i j) $ a $ b = row_add P' a i (- A' $ a $ j) $ a $ b"
       proof (rule Suc.hyps)
         show "a \<noteq> i" using Suc.prems(1) by simp
@@ -440,7 +440,7 @@ show ?case unfolding Gauss_Jordan_upt_k_PA_def Let_def fst_conv by (simp add: in
 next
 case (Suc k)
 have list_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
-def f\<equiv>"foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
+define f where "f = foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
 have f_rw: "f = (fst f, fst (snd f), snd (snd f))" by simp
 show ?case unfolding Gauss_Jordan_upt_k_PA_def Let_def fst_conv
 unfolding list_rw unfolding foldl_append unfolding List.foldl.simps using invertible_fst_Gauss_Jordan_column_k_PA

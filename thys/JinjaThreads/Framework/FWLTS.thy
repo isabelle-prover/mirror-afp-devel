@@ -283,15 +283,15 @@ next
              \<Longrightarrow> \<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge t (x, shr s)`
   from `insert t A = dom (thr s)`
   obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastforce simp add: dom_def)
-  def s' == "(locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
+  define s' where "s' = (locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
   show ?case
   proof(cases "ln = no_wait_locks \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None")
     case True
     with tst show ?thesis by blast
   next
     case False
-    def xm == "(x, shr s)"
-    def xm' == "(x, shr s)"
+    define xm where "xm = (x, shr s)"
+    define xm' where "xm' = (x, shr s)"
     have "A = dom (thr s')" using `t \<notin> A` `insert t A = dom (thr s)`
       unfolding s'_def by auto
     moreover { 
@@ -474,7 +474,7 @@ proof(intro strip)
     next
       case (insert t A)
       note IH = `\<And>ts Q. \<lbrakk>A = dom ts; ts \<in> Q\<rbrakk> \<Longrightarrow> \<exists>z\<in>Q. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q`
-      def Q' == "{ts. ts t = None \<and> (\<exists>xln. ts(t \<mapsto> xln) \<in> Q)}"
+      define Q' where "Q' = {ts. ts t = None \<and> (\<exists>xln. ts(t \<mapsto> xln) \<in> Q)}"
       let ?ts' = "ts(t := None)"
       from `insert t A = dom ts` `t \<notin> A` have "A = dom ?ts'" by auto
       moreover from `insert t A = dom ts` obtain xln where "ts t = \<lfloor>xln\<rfloor>" by(cases "ts t") auto
@@ -486,7 +486,7 @@ proof(intro strip)
         and min: "\<And>ts''. m\<mu>t m ts'' ts' \<Longrightarrow> ts'' \<notin> Q'" by blast
       from `ts' \<in> Q'` obtain x' ln' where "ts' t = None" "ts'(t \<mapsto> (x', ln')) \<in> Q"
         unfolding Q'_def by auto
-      def Q'' == "{(x, m)|x. \<exists>ln. ts'(t \<mapsto> (x, ln)) \<in> Q}"
+      define Q'' where "Q'' = {(x, m)|x. \<exists>ln. ts'(t \<mapsto> (x, ln)) \<in> Q}"
       from `ts'(t \<mapsto> (x', ln')) \<in> Q` have "(x', m) \<in> Q''" unfolding Q''_def by blast
       hence "\<exists>xm''\<in>Q''. \<forall>xm'''. \<mu> xm''' xm'' \<longrightarrow> xm''' \<notin> Q''" by(rule wf_\<mu>[unfolded wfP_eq_minimal, rule_format])
       then obtain xm'' where "xm'' \<in> Q''" and min': "\<And>xm'''. \<mu> xm''' xm'' \<Longrightarrow> xm''' \<notin> Q''" by blast

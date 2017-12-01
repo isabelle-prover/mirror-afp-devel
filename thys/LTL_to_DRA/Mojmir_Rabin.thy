@@ -195,7 +195,7 @@ theorem mojmir_accept_iff_rabin_accept_rank:
     \<longleftrightarrow> accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> i) w"
   (is "?lhs = ?rhs")
 proof
-  def r \<equiv> "run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w" 
+  define r where "r = run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w" 
   have r_alt_def: "\<And>i. r i = (\<lambda>q. state_rank q i, w i, \<lambda>q. state_rank q (Suc i))"
     using r_def state_rank_step_foldl run_foldl by fastforce
 

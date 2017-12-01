@@ -117,7 +117,7 @@ proof -
   have "\<forall>t (f::Label -~> sterm) l.  P1 t \<and> (applyPropOnOption P1) (f l)"
   proof (intro strip)
     fix t :: sterm and f' :: "Label -~> sterm" and l :: Label
-    def foobar \<equiv> "f' l" 
+    define foobar where "foobar = f' l" 
     from assms show "P1 t \<and> applyPropOnOption P1 foobar"
     proof (induct_tac t and foobar rule: compat_sterm.induct compat_sterm_option.induct, auto)
       fix f :: "Label -~> sterm" and T :: type
@@ -1350,7 +1350,8 @@ lemma ssubst_preserves_lc[simp, rule_format]:
   assumes "lc t"
   shows "\<forall>x t'. lc t' \<longrightarrow> lc ([x \<rightarrow> t'] t)"
 proof -
-  def pred_cof \<equiv> "\<lambda>L t. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> lc (t\<^bsup>[Fvar s, Fvar p]\<^esup>))"
+  define pred_cof
+    where "pred_cof L t \<longleftrightarrow> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> lc (t\<^bsup>[Fvar s, Fvar p]\<^esup>))" for L t
 
   {
     fix x v t
@@ -1388,7 +1389,8 @@ proof -
     show ?case
     proof (intro strip)
       fix x t' assume "lc t'"
-      def pred_fl \<equiv> "\<lambda>s p b l::Label. lc ([x \<rightarrow> t'] the b\<^bsup>[Fvar s, Fvar p]\<^esup>)"
+      define pred_fl where "pred_fl s p b l = lc ([x \<rightarrow> t'] the b\<^bsup>[Fvar s, Fvar p]\<^esup>)"
+        for s p b and l::Label
 
       from `lc t'` fmap_ball_all2[OF pred]
       have "\<forall>l\<in>dom f. \<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> t'] the(f l))"
@@ -1823,8 +1825,10 @@ lemma beta_ssubst[rule_format]:
   assumes "t \<rightarrow>\<^sub>\<beta> t'"
   shows "\<forall>x v. lc v \<longrightarrow> [x \<rightarrow> v] t \<rightarrow>\<^sub>\<beta> [x \<rightarrow> v] t'"
 proof -
-  def pred_cof \<equiv> "\<lambda>L t t'. (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-                             \<longrightarrow> (\<exists>t''. t\<^bsup>[Fvar s, Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+  define pred_cof
+    where "pred_cof L t t' \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> (\<exists>t''. t\<^bsup>[Fvar s, Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t''))"
+    for L t t'
   {
     fix x v t t'
     assume 
@@ -2364,7 +2368,7 @@ proof
       from obkmem mem_ob have obkfst: "dom (fst(ob!k)) = dom f" by blast 
 
         (* get witness *)
-      def ob' \<equiv> "ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))]"
+      define ob' where "ob' = ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))]"
 
       from nth_fst[OF `length ob = k + 1`] have first: "ob'!0 = ob!0" 
         by (simp add: ob'_def)

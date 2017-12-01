@@ -329,7 +329,7 @@ lemma inj_on_funpow_least:
   shows "inj_on (\<lambda>k. (f^^k) s) {0..<n}"
 proof -
   { fix k l assume A: "k < n" "l < n" "k \<noteq> l" "(f ^^ k) s = (f ^^ l) s"
-    def k' \<equiv> "min k l" and l' \<equiv> "max k l"
+    define k' l' where "k' = min k l" and "l' = max k l"
     with A have A': "k' < l'" "(f ^^ k') s = (f ^^ l') s" "l' < n"
       by (auto simp: min_def max_def)
 
@@ -659,7 +659,7 @@ lemma funpow_neq_less_funpow_dist:
 proof (rule notI)
   assume A: "(f ^^ m) x = (f ^^ n) x"
 
-  def m' \<equiv> "min m n" and n' \<equiv> "max m n"
+  define m' n' where "m' = min m n" and "n' = max m n"
   with A assms have A': "m' < n'" "(f ^^ m') x = (f ^^ n') x" "n' \<le> funpow_dist f x y"
     by (auto simp: min_def max_def)
 
@@ -681,7 +681,7 @@ lemma funpow_neq_less_funpow_dist1:
 proof (rule notI)
   assume A: "(f ^^ m) x = (f ^^ n) x"
 
-  def m' \<equiv> "min m n" and n' \<equiv> "max m n"
+  define m' n' where "m' = min m n" and "n' = max m n"
   with A assms have A': "m' < n'" "(f ^^ m') x = (f ^^ n') x" "n' < funpow_dist1 f x y"
     by (auto simp: min_def max_def)
 

@@ -266,7 +266,7 @@ lemma array_map_conv_array_foldl:
   "array_map f a = array_foldl (\<lambda>h a v. array_set a h (f h v)) a a"
 proof(cases a)
   case (Array xs)
-  def a == xs
+  define a where "a = xs"
   hence "length xs \<le> length a" by simp
   hence "foldl (\<lambda>a (k, v). array_set a k (f k v))
               (Array a) (zip [0..<length xs] xs)

@@ -310,7 +310,7 @@ proof
       and 3: "accepting_pair\<^sub>G\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}) w" 
       by auto
     
-    def \<pi>' \<equiv> "Mapping.Mapping \<pi>"
+    define \<pi>' where "\<pi>' = Mapping.Mapping \<pi>"
     
     have "dom \<pi> = Mapping.keys \<pi>'" and "\<pi> = Mapping.lookup \<pi>'"
       by (simp_all add: keys.abs_eq lookup.abs_eq \<pi>'_def)
@@ -339,7 +339,7 @@ proof
         (\<lambda>\<chi>. Set.filter (Acc_inf\<^sub>C \<pi> \<chi>) ?reach\<^sub>C) ` (Mapping.keys \<pi>))"
         and 1: "Mapping.keys \<pi> \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> Mapping.keys \<pi> \<Longrightarrow> the (Mapping.lookup \<pi> \<chi>) < max_rank_of \<Sigma> \<chi>"
       unfolding ltl_to_generalized_rabin\<^sub>C.simps Let_def fst_conv snd_conv mappings\<^sub>C_def assms reachable_transitions\<^sub>C_simp max_rank_of\<^sub>C_simp by auto
-    def \<pi>' \<equiv> "Mapping.rep \<pi>"
+    define \<pi>' where "\<pi>' = Mapping.rep \<pi>"
     have "dom \<pi>' = Mapping.keys \<pi>" and "Mapping.Mapping \<pi>' = \<pi>"
       by (simp_all add: \<pi>'_def mapping.rep_inverse keys.rep_eq)
     have 1: "dom \<pi>' \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> the (\<pi>' \<chi>) < max_rank_of \<Sigma> \<chi>"

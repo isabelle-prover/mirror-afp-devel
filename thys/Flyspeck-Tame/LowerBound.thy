@@ -67,8 +67,9 @@ proof -
   where $V2$ contains all exceptional vertices, $V1$ all
   not exceptional vertices. *}
 
-  also def V1 \<equiv> "[v \<leftarrow> V. except g v = 0]"
-  def V2 \<equiv> "[v \<leftarrow> V. except g v \<noteq> 0]"  (*<*)
+  also
+  define V1 where "V1 = [v \<leftarrow> V. except g v = 0]"
+  define V2 where "V2 = [v \<leftarrow> V. except g v \<noteq> 0]"  (*<*)
   have s: "set V1 \<subseteq> set V" by (auto simp add: V1_def)
   with pS obtain pSV1: "separated g (set V1)"
     by (auto dest: separated_subset)
@@ -91,8 +92,9 @@ proof -
   $V3$ contains all exceptional vertices of degree $5$.
   *}
 
-  also def V4 \<equiv> "[v \<leftarrow> V2. vertextype g v \<noteq> (5,0,1)]"
-  def V3 \<equiv> "[v \<leftarrow> V2. vertextype g v = (5,0,1)]"
+  also
+  define V4 where "V4 = [v \<leftarrow> V2. vertextype g v \<noteq> (5,0,1)]"
+  define V3 where "V3 = [v \<leftarrow> V2. vertextype g v = (5,0,1)]"
 
 (*<*)
   with pS V2_def have V3: "separated g (set V3)"
@@ -115,8 +117,9 @@ proof -
   $F1$ contains all faces that contain a vertex of $V1$,
   $F2$ the remaining faces. *}
 
-  also def F1 \<equiv> "[f \<leftarrow> faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
-  def F2 \<equiv> "[f \<leftarrow> faces g . \<not>(\<exists> v \<in> set V1. f \<in> set (facesAt g v))]"
+  also
+  define F1 where "F1 = [f \<leftarrow> faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
+  define F2 where "F2 = [f \<leftarrow> faces g . \<not>(\<exists> v \<in> set V1. f \<in> set (facesAt g v))]"
 
   have "(\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f| )
       = (\<Sum>\<^bsub>f \<in> F1\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub> f \<in> F2\<^esub> \<d> |vertices f| )" (*<*)
@@ -124,11 +127,12 @@ proof -
 
   txt {*  We split up @{text "F2"} in two disjoint subsets: *}
 
-  also def F3 \<equiv> "[f\<leftarrow>F2. \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
-  def F4 \<equiv> "[f\<leftarrow>F2. \<not> (\<exists>v \<in> set V3. f \<in> set (facesAt g v))]"
+  also
+  define F3 where "F3 = [f\<leftarrow>F2. \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
+  define F4 where "F4 = [f\<leftarrow>F2. \<not> (\<exists>v \<in> set V3. f \<in> set (facesAt g v))]"
 
   have F3: "F3 = [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
-proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
+  proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
      fix f assume "f \<in> set (faces g)"
      with final have fin: "final f" by (rule finalGraph_face)
      assume "\<exists>v3\<in>set V3. f \<in> set (facesAt g v3)"
@@ -238,8 +242,8 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F3 \<^esub>w f)" (*<*)
   proof-
-    def T == "[f\<leftarrow>F3. triangle f]"
-    def E == "[f\<leftarrow>F3. ~ triangle f]"
+    define T where "T = [f\<leftarrow>F3. triangle f]"
+    define E where "E = [f\<leftarrow>F3. \<not> triangle f]"
     have "(\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) =
       (\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )"
       by(simp only: T_def E_def ListSum_compl2)

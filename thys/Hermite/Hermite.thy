@@ -595,7 +595,7 @@ proof (induct n arbitrary: A)
   case 0 thus ?case by (simp add: row_add_def)
 next
   case (Suc n)
-  def A'=="row_add A (from_nat n) i
+  define A' where "A' = row_add A (from_nat n) i
     ((res (A $ i $ j) (A $ from_nat n $ j) - A $ from_nat n $ j) div A $ i $ j)"
   have n: "n < nrows A"
     unfolding nrows_def by (metis Suc.prems(1) Suc_le_eq less_trans to_nat_less_card)
@@ -1274,7 +1274,7 @@ next
     case (Suc k)
     have k: "k\<le>nrows A" using Suc.prems unfolding nrows_def by simp
     have k2: "k<nrows A" using Suc.prems unfolding nrows_def by simp
-    def A'\<equiv>"(foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k]))"
+    define A' where "A' = foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k])"
     have A'_def2: "A' = Hermite_of_upt_row_i A k ass res"
       unfolding Hermite_of_upt_row_i_def A'_def ..
     have e: "echelon_form A'"
@@ -1348,7 +1348,7 @@ proof -
       case (Suc k)
       have k_nrows: "k \<le> nrows A" using Suc.prems unfolding nrows_def by auto
       have k_nrows2: "k < nrows A" using Suc.prems unfolding nrows_def by auto
-      def A'\<equiv>"(foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k]))"
+      define A' where "A' = foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k])"
       have A'_def2: "A' = Hermite_of_upt_row_i A k ass res"
         unfolding Hermite_of_upt_row_i_def A'_def ..
       have least_A'_A: "(LEAST n. A' $ i $ n \<noteq> 0) = (LEAST n. A $ i $ n \<noteq> 0)"
@@ -1434,9 +1434,9 @@ next
   case (Suc k)
   have k: "k\<le>nrows A" using Suc.prems unfolding nrows_def by simp
   have k2: "k<nrows A" using Suc.prems unfolding nrows_def by simp
-  def A'=="(foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k]))"
+  define A' where "A' = foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k])"
   have A'_def2: "A' = Hermite_of_upt_row_i A k ass res" unfolding Hermite_of_upt_row_i_def A'_def ..
-  def M=="(mult_row A' i (ass (A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)) div A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)))"
+  define M where "M = mult_row A' i (ass (A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)) div A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0))"
   have not_zero_A': "\<not> is_zero_row i A'" 
     using Hermite_of_upt_row_preserves_nonzero_rows[OF not_zero_i_A e a r k]
     unfolding A'_def Hermite_of_upt_row_i_def by simp
@@ -1524,7 +1524,7 @@ next
     case (Suc k)
     have k: "k\<le>nrows A" using Suc.prems unfolding nrows_def by auto
     have k2: "k<nrows A" using Suc.prems unfolding nrows_def by simp
-    def A'=="(foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k]))" 
+    define A' where "A' = foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k])"
     have A'_def2: "A' = Hermite_of_upt_row_i A k ass res"
       unfolding Hermite_of_upt_row_i_def A'_def ..
     show ?case unfolding is_zero_row_def' 
@@ -1618,7 +1618,7 @@ lemma Hermite_of_row_i_range_res:
   \<in> range (res (Hermite_of_row_i ass res A i $ i $ (LEAST n. A $ i $ n \<noteq> 0)))"
 proof -
   let ?n="(LEAST n. A $ i $ n \<noteq> 0)"
-  def M=="(mult_row A i (ass (A $ i $ ?n) div A $ i $ ?n))"
+  define M where "M = mult_row A i (ass (A $ i $ ?n) div A $ i $ ?n)"
   let ?R="row_add M j i ((res (M $ i $ ?n) (M $ j $ ?n) 
     - M $ j $ ?n) div M $ i $ ?n)"
   have Hii: "Hermite_of_row_i ass res A i $ i $ ?n = M $ i $ ?n"
@@ -1654,9 +1654,9 @@ next
   let ?n="(LEAST n. A $ i $ n \<noteq> 0)"
   have k: "k\<le>nrows A" using Suc.prems unfolding nrows_def by simp
   have k2: "k<nrows A" using Suc.prems unfolding nrows_def by simp
-  def A'=="(foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k]))"
+  define A' where "A' = foldl (Hermite_of_row_i ass res) A (map from_nat [0..<k])"
   have A'_def2: "A' = Hermite_of_upt_row_i A k ass res" unfolding Hermite_of_upt_row_i_def A'_def ..
-  def M=="(mult_row A' i (ass (A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)) div A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)))"
+  define M where "M = mult_row A' i (ass (A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0)) div A' $ i $ (LEAST n. A' $ i $ n \<noteq> 0))"
   have not_zero_A': "\<not> is_zero_row i A'" 
     using Hermite_of_upt_row_preserves_nonzero_rows[OF not_zero_i_A e a r k]
     unfolding A'_def Hermite_of_upt_row_i_def by simp
@@ -1959,7 +1959,7 @@ proof -
     by (metis A_PH inv_A inv_P invertible_def invertible_mult matrix_mul_assoc matrix_mul_lid)
   have inv_K: "invertible K" 
     by (metis A_QK inv_A inv_Q invertible_def invertible_mult matrix_mul_assoc matrix_mul_lid)
-  def U\<equiv>"(matrix_inv P)**Q"
+  define U where "U = (matrix_inv P)**Q"
   have inv_U: "invertible U" 
     by (metis U_def inv_P inv_Q invertible_def invertible_mult matrix_inv_left matrix_inv_right)
   have H_UK: "H = U ** K" using A_PH A_QK inv_P 
@@ -2029,7 +2029,7 @@ proof -
             show ?thesis 
             proof (cases "x<s+from_nat p")
               case True
-              def a\<equiv>"to_nat x - to_nat s"
+              define a where "a = to_nat x - to_nat s"
               from x_g_s have "to_nat s < to_nat x" by (rule to_nat_mono)
               hence xa: "x=s+(from_nat a)" unfolding a_def add_to_nat_def
                 by (simp add: less_imp_diff_less to_nat_less_card algebra_simps to_nat_from_nat_id)
@@ -2101,7 +2101,7 @@ proof -
     next
       case False
       hence i_less_ia: "i<ia" using i_ia by auto
-      def a=="to_nat ia - to_nat i"
+      define a where "a = to_nat ia - to_nat i"
       have ia_eq: "ia = i + from_nat a" unfolding a_def
         by (metis i_less_ia a_def add_to_nat_def dual_order.strict_iff_order from_nat_to_nat_id 
             le_add_diff_inverse less_imp_diff_less to_nat_from_nat_id to_nat_less_card to_nat_mono)

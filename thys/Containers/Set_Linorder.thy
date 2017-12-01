@@ -28,8 +28,8 @@ specification (infinite_complement_partition)
     \<Longrightarrow> (A :: 'a set) \<in> infinite_complement_partition \<longleftrightarrow> - A \<notin> infinite_complement_partition"
 proof(cases "finite (UNIV :: 'a set)")
   case False
-  def Field_r == "{\<P> :: 'a set set. (\<forall>C \<in> \<P>. - C \<notin> \<P>) \<and> (\<forall>A. finite A \<longrightarrow> A \<in> \<P>)}"
-  def r == "{(\<P>1, \<P>2). \<P>1 \<subseteq> \<P>2 \<and> \<P>1 \<in> Field_r \<and> \<P>2 \<in> Field_r}"
+  define Field_r where "Field_r = {\<P> :: 'a set set. (\<forall>C \<in> \<P>. - C \<notin> \<P>) \<and> (\<forall>A. finite A \<longrightarrow> A \<in> \<P>)}"
+  define r where "r = {(\<P>1, \<P>2). \<P>1 \<subseteq> \<P>2 \<and> \<P>1 \<in> Field_r \<and> \<P>2 \<in> Field_r}"
   have in_Field_r [simp]: "\<And>\<P>. \<P> \<in> Field_r \<longleftrightarrow> (\<forall>C \<in> \<P>. - C \<notin> \<P>) \<and> (\<forall>A. finite A \<longrightarrow> A \<in> \<P>)"
     unfolding Field_r_def by simp
   have in_r [simp]: "\<And>\<P>1 \<P>2. (\<P>1, \<P>2) \<in> r \<longleftrightarrow> \<P>1 \<subseteq> \<P>2 \<and> \<P>1 \<in> Field_r \<and> \<P>2 \<in> Field_r"
@@ -43,11 +43,11 @@ proof(cases "finite (UNIV :: 'a set)")
     fix \<CC>
     assume \<CC>: "\<CC> \<in> Chains r"
     let ?\<B> = "\<Union>\<CC> \<union> {A. finite A}"
-    have "?\<B> \<in> Field r" using False \<CC>
+    have *: "?\<B> \<in> Field r" using False \<CC>
       by clarsimp(safe, drule (2) ChainsD, auto 4 4 dest: Chains_Field)
-    moreover hence "\<And>\<A>. \<A> \<in> \<CC> \<Longrightarrow> (\<A>, ?\<B>) \<in> r"
+    hence "\<And>\<A>. \<A> \<in> \<CC> \<Longrightarrow> (\<A>, ?\<B>) \<in> r"
       using \<CC> by(auto simp del: in_Field_r dest: Chains_Field)
-    ultimately show "\<exists>\<B> \<in> Field r. \<forall>\<A> \<in> \<CC>. (\<A>, \<B>) \<in> r" by blast
+    with * show "\<exists>\<B> \<in> Field r. \<forall>\<A> \<in> \<CC>. (\<A>, \<B>) \<in> r" by blast
   qed
   ultimately have "\<exists>\<P> \<in> Field r. \<forall>\<A> \<in> Field r. (\<P>, \<A>) \<in> r \<longrightarrow> \<A> = \<P>"
     by(rule Zorns_po_lemma)
@@ -61,9 +61,9 @@ proof(cases "finite (UNIV :: 'a set)")
       assume "\<not> ?thesis"
       hence C: "C \<notin> \<P>" "- C \<notin> \<P>" by simp_all
       let ?\<A> = "insert C \<P>"
-      have "?\<A> \<in> Field r" using C \<P> by auto
-      moreover hence "(\<P>, ?\<A>) \<in> r" using \<P> by auto
-      ultimately have "?\<A> = \<P>" by(rule max)
+      have *: "?\<A> \<in> Field r" using C \<P> by auto
+      hence "(\<P>, ?\<A>) \<in> r" using \<P> by auto
+      with * have "?\<A> = \<P>" by(rule max)
       thus False using C by auto
     qed
     hence "C \<in> \<P> \<longleftrightarrow> - C \<notin> \<P>" using \<P> by auto }
@@ -673,7 +673,7 @@ theorem assumes fin: "finite (UNIV :: 'a set)"
 proof -
   note fin' [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
+  define above where "above = case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"
@@ -690,7 +690,7 @@ proof -
       by(auto simp add: above_upclosed)
     from z_ao z B have B_eq: "B \<inter> above ao = B"
       by(auto simp add: above_upclosed)
-    def w == "Min (above ao)"
+    define w where "w = Min (above ao)"
     with z_ao have "w \<le> z" "\<forall>z \<in> above ao. w \<le> z" "w \<in> above ao"
       by(auto simp add: Min_le_iff intro: Min_in)
     hence "A \<inter> above ao \<sqsubset>' (- B) \<inter> above ao" (is "?lhs \<sqsubset>' ?rhs")
@@ -1223,7 +1223,7 @@ lemma proper_interval_set_Compl_aux:
 proof -
   note [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
+  define above where "above = case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"
@@ -1275,7 +1275,7 @@ proof -
       have len_ys: "length ys = card (set ys)"
         using ys by(auto simp add: List.card_set intro: sym)
 
-      def m \<equiv> "CARD('a) - card (UNIV - above ao)"
+      define m where "m = CARD('a) - card (UNIV - above ao)"
       have "CARD('a) = card (above ao) + card (UNIV - above ao)"
         using card_Un_disjoint[of "above ao" "UNIV - above ao"] by auto
       hence m_eq: "m = card (above ao)" unfolding m_def by simp
@@ -1374,7 +1374,7 @@ proof -
       have len_xs: "length xs = card (set xs)"
         using xs by(auto simp add: List.card_set intro: sym)
       
-      def m \<equiv> "CARD('a) - card (UNIV - above ao)"
+      define m where "m = CARD('a) - card (UNIV - above ao)"
       have "CARD('a) = card (above ao) + card (UNIV - above ao)"
         using card_Un_disjoint[of "above ao" "UNIV - above ao"] by auto
       hence m_eq: "m = card (above ao)" unfolding m_def by simp
@@ -1396,7 +1396,7 @@ proof -
             by(subst card_Diff_subset)(auto simp add: m_def card_Diff_subset)
           then obtain z where z: "z \<in> above ao" "z \<noteq> x" "z \<notin> set xs"
             unfolding card_eq_1_iff by auto
-          def A \<equiv> "insert z {y. y \<in> set (x # xs) \<and> y < z}"
+          define A where "A = insert z {y. y \<in> set (x # xs) \<and> y < z}"
 
           from True have "\<not> proper_interval (Some (last (x # xs))) None" by(rule pi)
           hence "z \<le> last (x # xs)" by(simp add: proper_interval_simps not_less del: last.simps)
@@ -1427,13 +1427,13 @@ proof -
           obtain y y' where y: "y \<in> above ao" "y \<noteq> x" "y \<notin> set xs"
             and y': "y' \<in> above ao" "y' \<noteq> x" "y' \<notin> set xs"
             and neq: "y \<noteq> y'" by auto
-          def A \<equiv> "insert y (set (x # xs) \<inter> above ao)"
+          define A where "A = insert y (set (x # xs) \<inter> above ao)"
           hence "set (x # xs) \<subset> A" using y xs by auto
           hence "set (x # xs) \<sqsubset>' \<dots>"
             by(fastforce intro: psubset_finite_imp_set_less_aux)
-          moreover have "\<dots> \<subset> above ao"
+          moreover have *: "\<dots> \<subset> above ao"
             using y y' neq by(auto simp add: A_def)
-          moreover hence "A \<sqsubset>' above ao"
+          moreover from * have "A \<sqsubset>' above ao"
             by(auto intro: psubset_finite_imp_set_less_aux)
           ultimately show ?thesis by blast
         qed
@@ -1792,7 +1792,8 @@ proof -
                   and y': "y' \<in> above ao" "y' \<notin> set (x # xs)"
                   and neq: "x' \<noteq> y'" by auto
 
-                def A \<equiv> "if x' = Min (above ao) then insert y' (set (x # xs)) else insert x' (set (x # xs))"
+                define A
+                  where "A = (if x' = Min (above ao) then insert y' (set (x # xs)) else insert x' (set (x # xs)))"
                 hence "set (x # xs) \<subseteq> A" by auto
                 moreover have "set (x # xs) \<noteq> \<dots>"
                   using neq x' y' by(auto simp add: A_def)
@@ -1834,7 +1835,7 @@ lemma proper_interval_Compl_set_aux:
 proof -
   note [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
+  define above where "above = case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"

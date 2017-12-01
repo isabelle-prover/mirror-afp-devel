@@ -195,7 +195,7 @@ context BlueDFS begin
       apply simp
     proof -
       fix fp1
-      def s' \<equiv> "finish (hd (stack s)) s"
+      define s' where "s' = finish (hd (stack s)) s"
       assume FP_spec: 
         "find_path1_restr_pred (G \<lparr> g_V0 := {hd (stack s)} \<rparr>) (\<lambda>x. x \<in> set (stack s)) (red s) fp1"
       assume "BlueDFS_invar G accpt (s'\<lparr>state.more := mk_blue_witness s' fp1\<rparr>)"      

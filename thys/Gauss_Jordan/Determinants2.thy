@@ -347,8 +347,8 @@ proof (cases "Suc n = to_nat i")
 case True show ?thesis unfolding row_add_iterate_PA.simps if_P[OF True] using Suc.hyps[OF n] .
 next
 case False 
-def P'=="row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
-def A'=="row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+define P' where "P' = row_add P (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
+define A' where "A' = row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)"
 have n2: "n< nrows A'" using n unfolding nrows_def .
 have "det (fst (row_add_iterate_PA (P, A) (Suc n) i j)) = det (fst (row_add_iterate_PA (P', A') n i j))" unfolding row_add_iterate_PA.simps if_not_P[OF False] P'_def A'_def ..
 also have "... = det P'" using Suc.hyps[OF n2] .
@@ -369,8 +369,8 @@ lemma det_fst_Gauss_Jordan_in_ij_PA_eq_fst_Gauss_Jordan_in_ij_det_P:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 shows "fst (Gauss_Jordan_in_ij_det_P A i j) * det P = det (fst (Gauss_Jordan_in_ij_PA (P,A) i j))"
 proof -
-def P'\<equiv>"mult_row (interchange_rows P i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ i $ j)"
-def A'\<equiv>"mult_row (interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ i $ j)"
+define P' where "P' = mult_row (interchange_rows P i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ i $ j)"
+define A' where "A' = mult_row (interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ i $ j)"
 have "det (fst (Gauss_Jordan_in_ij_PA (P,A) i j)) = det (fst (row_add_iterate_PA (P',A') (nrows A - 1) i j))"
 unfolding fst_row_add_iterate_PA_eq_fst_Gauss_Jordan_in_ij_PA[symmetric] A'_def P'_def ..
 also have "...= det P'" by (rule det_fst_row_add_iterate_PA, simp add: nrows_def)
@@ -427,8 +427,8 @@ and hyp2: "snd (Gauss_Jordan_upt_k_det_P A k) = snd (Gauss_Jordan_upt_k_PA A k)"
 and hyp3: "fst (snd (foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k])) = fst (snd (foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]))"
 have list_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
 have det_mat_nn: "det (mat 1::'a^'n::{mod_type}^'n::{mod_type}) = 1" using det_I by simp
-def f=="foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k]"
-def g=="foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
+define f where "f = foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k]"
+define g where "g = foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
 have f_rw: "f = (fst f, fst (snd f), snd(snd f))" by simp
 have g_rw: "g = (fst g, fst (snd g), snd(snd g))" by simp
 have fst_snd: "fst (snd f) = fst (snd g)" unfolding f_def g_def using hyp3 unfolding Gauss_Jordan_upt_k_det_P_def Gauss_Jordan_upt_k_PA_def Let_def fst_conv snd_conv .

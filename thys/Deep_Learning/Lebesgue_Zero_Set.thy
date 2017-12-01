@@ -86,8 +86,8 @@ text \<open>Show that N is finite:\<close>
   moreover have "{x. \<forall>j. insertion (\<lambda>_. x) (?q j) = 0} = (\<Inter>j. {x. insertion (\<lambda>v. x) (?q j) = 0})" by blast
   ultimately have "finite {x. \<forall>j. insertion (\<lambda>_. x) (?q j) = 0}" by metis
 
-  def p_fix1 == "\<lambda>x1. replace_coeff (insertion (\<lambda>_. x1)) (extract_var p n)"
-  def N == "{x1. p_fix1 x1 = 0}"
+  define p_fix1 where "p_fix1 x1 = replace_coeff (insertion (\<lambda>_. x1)) (extract_var p n)" for x1
+  define N where "N = {x1. p_fix1 x1 = 0}"
   have "N \<subseteq> {x. \<forall>j. insertion (\<lambda>_. x) (?q j) = 0}"
   proof
     fix x assume "x\<in>N"
@@ -103,7 +103,7 @@ text \<open>Show that N is finite:\<close>
 
 text \<open>Use the IH:\<close>
 
-  def A == "{f\<in>space (lborel_f (Suc n)). insertion f p = 0}"
+  define A where "A = {f\<in>space (lborel_f (Suc n)). insertion f p = 0}"
 
   have "\<And>x1. vars (p_fix1 x1) \<subseteq> {..<n}"
   proof -

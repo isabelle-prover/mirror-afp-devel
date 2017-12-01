@@ -292,8 +292,8 @@ proof -
     qed
   next
     case False
-    def w' == "w - length ?start_obs"
-    from "write" False w'_def have w'_len: "enat w' < llength E'"
+    define w' where "w' = w - length ?start_obs"
+    with "write" False have w'_len: "enat w' < llength E'"
       by(cases "llength E'")(auto simp add: actions_def E' elim: write_actions.cases)
     with Runs obtain m_w n_w t_w ta_w 
       where E'_w: "lnth E' w' = (t_w, \<lbrace>ta_w\<rbrace>\<^bsub>o\<^esub> ! n_w)"
@@ -483,7 +483,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       qed
       hence ws_a_not_le: "\<not> ws a < length ?start_obs" using False by simp
 
-      def w == "ws a - length ?start_obs"
+      define w where "w = ws a - length ?start_obs"
       from "write" ws_a_not_le w_def
       have "enat w < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))"
         by(cases "llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))")(auto simp add: actions_def E' E'' elim: write_actions.cases)
@@ -518,7 +518,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       then obtain CTn where obs_w': "action_obs E (ws a) = NormalAction (NewHeapElem ad CTn)" 
         using adal_w by cases auto
 
-      def a' == "a - length ?start_obs"
+      define a' where "a' = a - length ?start_obs"
       with False w_def
       have "enat a' < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))"
         by(simp add: le_less_trans[OF _ `enat w < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))`])
@@ -638,7 +638,7 @@ proof -
       case 0 thus ?case by simp
     next
       case (Suc n')
-      def n': n \<equiv> "Suc n'"
+      define n where "n = Suc n'"
       with Suc have n: "0 < n" and a: "enat a < llength (?E n)"
         and a_obs: "action_obs (?E n) a = NormalAction (ReadMem ad al v)"
         by simp_all
@@ -655,7 +655,7 @@ proof -
         from a' have "a' \<in> actions (?E n)" by(simp add: actions_def)
         hence read_a': "a' \<in> read_actions (?E n)" using a'_obs ..
         with justified nhb have committed': "?\<phi> n a' \<in> ?\<phi> n' ` ?C n'"
-          unfolding is_weakly_justified_by.simps n' uncommitted_reads_see_hb_def by blast
+          unfolding is_weakly_justified_by.simps n_def uncommitted_reads_see_hb_def by blast
 
         from justified have wfa_n: "wf_action_translation E (J n)"
           and wfa_n': "wf_action_translation E (J n')" by(simp_all add: wf_action_translations_def)
@@ -668,8 +668,8 @@ proof -
           by(simp_all add: committed_subset_actions_def justification_well_formed_def)
 
         from justified have "?\<phi> n' ` ?C n' \<subseteq> ?\<phi> n ` ?C n"
-          unfolding n' by(simp add: is_commit_sequence_def)
-        with n' committed' have "?\<phi> n a' \<in> ?\<phi> n ` ?C n" by auto
+          unfolding n_def by(simp add: is_commit_sequence_def)
+        with n_def committed' have "?\<phi> n a' \<in> ?\<phi> n ` ?C n" by auto
         with inj_n C_n have committed: "a' \<in> ?C n"
           using `a' \<in> actions (?E n)` by(auto dest: inj_onD)
         with justified read_a' have ws_committed: "ws (?\<phi> n a') \<in> ?\<phi> n ` ?C n"
@@ -681,7 +681,7 @@ proof -
           and adal: "(ad', al') \<in> action_loc P (?E n) (?ws n a')"
           and written: "value_written P (?E n) (?ws n a') (ad', al') = v'" by simp_all
 
-        def a'' \<equiv> "inv_into (actions (?E n')) (?\<phi> n') (?\<phi> n a')"
+        define a'' where "a'' = inv_into (actions (?E n')) (?\<phi> n') (?\<phi> n a')"
         from C_n' n committed' have "?\<phi> n a' \<in> ?\<phi> n' ` actions (?E n')" by auto
         hence a'': "?\<phi> n' a'' = ?\<phi> n a'"
           and a''_action: "a'' \<in> actions (?E n')" using inj_n' committed' n
@@ -704,7 +704,7 @@ proof -
         hence inj_n'': "inj_on (?\<phi> n'') (actions (?E n''))" by(blast dest: wf_action_translation_on_inj_onD)+
         from justified have C_n'': "?C n'' \<subseteq> actions (?E n'')" by(simp add: committed_subset_actions_def)
 
-        from justified committed' committed'' n' read_a' read_a'' n
+        from justified committed' committed'' n_def read_a' read_a'' n
         have "?\<phi> n (?ws n (inv_into (actions (?E n)) (?\<phi> n) (?\<phi> n' a''))) = ws (?\<phi> n' a'')"
           by(simp add: write_seen_committed_def)
         hence "?\<phi> n (?ws n a') = ws (?\<phi> n a')" using inj_n `a' \<in> actions (?E n)` by(simp add: a'')

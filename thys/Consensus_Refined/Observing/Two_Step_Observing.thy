@@ -129,7 +129,7 @@ proof(clarsimp simp add: PO_rhoare_defs)
     and safe: "S \<noteq> {} \<longrightarrow> opt_obs_safe (last_obs sc) v"
     by(auto simp add: tso_ref_rel_def step1_rel_def step1_add_rel_def)
 
-  def sa' \<equiv> "sa\<lparr> 
+  define sa' where "sa' = sa\<lparr> 
       next_round := Suc (next_round sa)
       , decisions := decisions sa ++ dec_f
       , last_obs := last_obs sa ++ const_map v (dom o_f)

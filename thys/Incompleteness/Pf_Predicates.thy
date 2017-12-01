@@ -241,8 +241,8 @@ proof (induction rule: Induction_ax.induct)
   then obtain A' A'' where A': "q_Imp (\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e) (q_Imp xw xevw) = \<lbrakk>quot_dbfm A'\<rbrakk>e"
                        and A'': "q_All allw = \<lbrakk>quot_dbfm A''\<rbrakk>e"
     using I VarNonOccForm_imp_fresh by (auto dest!: AbstForm_imp_abst_dbfm)
-  def Aw \<equiv> "A(decode_Var v::=Var (decode_Var w))"
-  def Ae \<equiv> "A(decode_Var v::= Eats (Var (decode_Var v)) (Var (decode_Var w)))"
+  define Aw where "Aw = A(decode_Var v::=Var (decode_Var w))"
+  define Ae where "Ae = A(decode_Var v::= Eats (Var (decode_Var v)) (Var (decode_Var w)))"
   have x0: "x0 = \<lbrakk>\<lceil>A(decode_Var v::=Zero)\<rceil>\<rbrakk>e"  using I SubstForm_imp_subst_fm 
     by (metis A Form_quot_fm eval_fm_inject eval_tm.simps(1) quot_Zero)
   have xw: "xw = \<lbrakk>\<lceil>Aw\<rceil>\<rbrakk>e"  using I SubstForm_imp_subst_fm
@@ -264,8 +264,9 @@ proof (induction rule: Induction_ax.induct)
   hence allvw: "allvw = \<lbrakk>quot_dbfm (abst_dbfm (decode_Var v) 0
                                      (trans_fm [] (All (decode_Var w) (A IMP (Aw IMP Ae)))))\<rbrakk>e"
     using I  by (metis AbstForm_imp_abst_dbfm nat_of_ord_0 quot_dbfm_inject_lemma)
-  def ind_ax \<equiv> 
-       "A(decode_Var v::=Zero) IMP
+  define ind_ax
+    where "ind_ax =
+        A(decode_Var v::=Zero) IMP
         ((All (decode_Var v) (All (decode_Var w) (A IMP (Aw IMP Ae)))) IMP
         (All (decode_Var v) A))"
   have "atom (decode_Var w) \<sharp> (decode_Var v, A)" using I wfresh v w

@@ -581,13 +581,13 @@ lemma (in encoding) target_relation_from_source_target_relation:
             \<and> (\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+)
             \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*)"
 proof -
-  def trel: TRel\<equiv>"{(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
-  from trel have "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+  define TRel where "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  from TRel_def have "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
     by simp
-  moreover from trel
+  moreover from TRel_def
   have "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
     by blast
-  moreover from stre trel
+  moreover from stre TRel_def
   have "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
     by blast
   ultimately show ?thesis

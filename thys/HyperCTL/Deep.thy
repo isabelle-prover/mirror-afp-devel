@@ -308,7 +308,7 @@ lemma sem_Scon[simp]:
 assumes "finite \<phi>s"
 shows "sem (Scon \<phi>s) env = scon ((\<lambda> \<phi>. sem \<phi> env) ` \<phi>s)"
 proof-
-  def \<phi>l \<equiv> "asList \<phi>s"
+  define \<phi>l where "\<phi>l = asList \<phi>s"
   have "sem (foldr Con \<phi>l Tr) env = scon ((\<lambda> \<phi>. sem \<phi> env) ` (set \<phi>l))"
   by (induct \<phi>l) (auto simp: scon_def)
   thus ?thesis unfolding \<phi>l_def Scon_def by (metis assms set_asList)
@@ -318,9 +318,9 @@ lemma FV_Scon[simp]:
 assumes "finite \<phi>s"
 shows "FV (Scon \<phi>s) = \<Union> (FV ` \<phi>s)"
 proof-
-  def \<phi>l \<equiv> "asList \<phi>s"
+  define \<phi>l where "\<phi>l = asList \<phi>s"
   have "FV (foldr Con \<phi>l Tr) = \<Union> (set (map FV \<phi>l))"
-  apply(induct \<phi>l) by (auto simp: der_Op_defs)
+  by (induct \<phi>l) (auto simp: der_Op_defs)
   thus ?thesis unfolding \<phi>l_def Scon_def by (metis assms set_map set_asList)
 qed
 

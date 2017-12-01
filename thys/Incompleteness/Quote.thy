@@ -643,10 +643,10 @@ proof -
       show "atom l \<sharp> (k, ?scheme)" using atoms
         by simp 
     next
-      def V \<equiv> "{i,j,sm,sn}"
-      and p \<equiv> "(atom i \<rightleftharpoons> atom i') + (atom j \<rightleftharpoons> atom j') + 
-               (atom sm \<rightleftharpoons> atom sm') + (atom sn \<rightleftharpoons> atom sn')" 
-      def F \<equiv> "make_F V p"
+      define V p where "V = {i,j,sm,sn}"
+        and "p = (atom i \<rightleftharpoons> atom i') + (atom j \<rightleftharpoons> atom j') +
+                 (atom sm \<rightleftharpoons> atom sm') + (atom sn \<rightleftharpoons> atom sn')"
+      define F where "F \<equiv> make_F V p"
       interpret qp: quote_perm p V F
         proof unfold_locales
           show "finite V" by (simp add: V_def)
@@ -1002,8 +1002,10 @@ proof -
        "atom sm \<sharp> (p,\<alpha>,i,j,j',s,k,sm',sn,sn')" "atom sm' \<sharp> (p,\<alpha>,i,j,j',s,k,sn,sn')"
        "atom sn \<sharp> (p,\<alpha>,i,j,j',s,k,sn')" "atom sn' \<sharp> (p,\<alpha>,i,j,j',s,k)"
     by (metis obtain_fresh)
-  def V' \<equiv> "{sm,sn} \<union> Vs" and p' \<equiv> "(atom sm \<rightleftharpoons> atom sm') + (atom sn \<rightleftharpoons> atom sn') + p" 
-  def F' \<equiv> "make_F V' p'"
+  define V' p'
+    where "V' = {sm,sn} \<union> Vs"
+      and "p' = (atom sm \<rightleftharpoons> atom sm') + (atom sn \<rightleftharpoons> atom sn') + p"
+  define F' where "F' \<equiv> make_F V' p'"
   interpret qp': quote_perm p' V' F'
     proof unfold_locales 
       show "finite V'" by (simp add: V'_def)
@@ -1326,8 +1328,8 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
       by unfold_locales (auto simp: image_iff ExI)
     obtain i'::name where i': "atom i' \<sharp> (i,p,A)"
       by (metis obtain_fresh)
-    def p' \<equiv> "(atom i \<rightleftharpoons> atom i') + p" 
-    def F' \<equiv> "make_F (insert i V) p'"
+    define p' where "p' = (atom i \<rightleftharpoons> atom i') + p" 
+    define F' where "F' = make_F (insert i V) p'"
     have p'_apply [simp]: "!!v. p' \<bullet> v = (if v=i then i' else if v=i' then i else p \<bullet> v)"
       using  `atom i \<sharp> p`  i'
       by (auto simp: p'_def fresh_Pair fresh_at_base_permI) 
@@ -1380,8 +1382,8 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
       by unfold_locales (auto simp: image_iff All2I)
     obtain i'::name where i': "atom i' \<sharp> (i,p,A)"
       by (metis obtain_fresh)
-    def p' \<equiv> "(atom i \<rightleftharpoons> atom i') + p" 
-    def F' \<equiv> "make_F (insert i V) p'"
+    define p' where "p' = (atom i \<rightleftharpoons> atom i') + p" 
+    define F' where "F' = make_F (insert i V) p'"
     interpret qp': quote_perm p' "insert i V" F' 
       using `atom i \<sharp> p` i'
       by (auto simp: qp.qp_insert p'_def F'_def)

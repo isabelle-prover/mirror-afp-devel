@@ -511,8 +511,8 @@ next
   then have "j < dim_vec (tensors_from_net m1)" "j < dim_vec (tensors_from_net m2)"
     by (simp_all add: \<open>valid_net' m1\<close> \<open>valid_net' m2\<close> output_size_correct_tensors)
 
-  def inputs1 == "take (length (input_sizes m1)) inputs"
-  def inputs2 == "drop (length (input_sizes m1)) inputs"
+  define inputs1 where "inputs1 = take (length (input_sizes m1)) inputs"
+  define inputs2 where "inputs2 = drop (length (input_sizes m1)) inputs"
   have "map dim_vec inputs1 = input_sizes m1" "map dim_vec inputs2 = input_sizes m2"
     apply (metis Pool.prems(2) append_eq_conv_conj input_sizes.simps(3) inputs1_def take_map)
     by (metis Pool.prems(2) append_eq_conv_conj drop_map input_sizes.simps(3) inputs2_def)

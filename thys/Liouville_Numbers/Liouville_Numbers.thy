@@ -60,7 +60,7 @@ proof
   assume "x \<in> \<rat>"
   then obtain c d :: int where d: "x = of_int c / of_int d" "d > 0" 
     by (elim Rats_cases') simp
-  def n \<equiv> "Suc (nat \<lceil>log 2 d\<rceil>)"
+  define n where "n = Suc (nat \<lceil>log 2 d\<rceil>)"
   note q_gt_1 = denom_gt_1[of n]
 
   have neq: "c * q n \<noteq> d * p n"
@@ -104,16 +104,16 @@ lemma liouville_irrational_algebraic:
     where "c > 0" and "\<And>(p::int) (q::int). q > 0 \<Longrightarrow> abs (x - p / q) > c / of_int q ^ n"
 proof -
   from \<open>algebraic x\<close> guess p by (elim algebraicE) note p = this
-  def n \<equiv> "degree p"
+  define n where "n = degree p"
 
   -- \<open>The derivative of @{term p} is bounded within @{term "{x-1..x+1}"}.\<close>
   let ?f = "\<lambda>t. \<bar>poly (pderiv p) t\<bar>"
-  def M \<equiv> "SUP t:{x-1..x+1}. ?f t"
-  def roots \<equiv> "{x. poly p x = 0} - {x}"
+  define M where "M = (SUP t:{x-1..x+1}. ?f t)"
+  define roots where "roots = {x. poly p x = 0} - {x}"
 
-  def A_set \<equiv> "{1, 1/M} \<union> {abs (x' - x) |x'. x' \<in> roots}"
-  def A' \<equiv> "Min A_set"
-  def A  \<equiv> "A' / 2"
+  define A_set where "A_set = {1, 1/M} \<union> {abs (x' - x) |x'. x' \<in> roots}"
+  define A' where "A' = Min A_set"
+  define A  where "A = A' / 2"
   -- \<open>We define @{term A} to be a positive real number that is less than @{term 1}, 
       @{term "1/M"} and any distance from @{term x} to another root of @{term p}.\<close>
 
@@ -216,8 +216,8 @@ proof
   assume "algebraic x"
   from liouville_irrational_algebraic[OF irrational this] guess c n . note cn = this
   
-  def r \<equiv> "nat \<lceil>log 2 (1 / c)\<rceil>"
-  def m \<equiv> "n + r"
+  define r where "r = nat \<lceil>log 2 (1 / c)\<rceil>"
+  define m where "m = n + r"
   from cn(1) have "(1/c) = 2 powr log 2 (1/c)" by (subst powr_log_cancel) simp_all
   also have "log 2 (1/c) \<le> of_nat (nat \<lceil>log 2 (1/c)\<rceil>)" by linarith
   hence "2 powr log 2 (1/c) \<le> 2 powr \<dots>" by (intro powr_mono) simp_all
@@ -340,7 +340,7 @@ proof
 
   from assms(3) obtain k where k: "k \<ge> n + 1" "p k \<noteq> 0" 
     by (auto simp: frequently_def eventually_at_top_linorder)
-  def k' \<equiv> "k - n - 1"
+  define k' where "k' = k - n - 1"
   from assms k have "p k \<ge> 0" by force
   with k assms have k': "p (k' + n + 1) > 0" unfolding k'_def by force
   with assms(1,2) have "?S > 0"

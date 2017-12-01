@@ -84,7 +84,7 @@ proof -
       using nth_mat_tensorlist_mult dims_tensors_from_net assms(2) dim_extract output_size_correct_tensors[of "insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z))", unfolded remove_insert_weights, OF valid_shallow_model']
       dimc_extract_matrix output_size_shallow_model' input_sizes by auto
 
-    def Bs == "map (\<lambda>j. extract_matrix w Y Z $$ (y, j) \<cdot> tensors_from_net (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z))) $ j) [0..<Z]"
+    define Bs where "Bs = map (\<lambda>j. extract_matrix w Y Z $$ (y, j) \<cdot> tensors_from_net (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z))) $ j) [0..<Z]"
 
     have "\<And>B. B \<in> set Bs \<Longrightarrow> cprank_max1 B" "\<And>B. B \<in> set Bs \<Longrightarrow> dims B = input_sizes (shallow_model' Z M N)"
     proof -

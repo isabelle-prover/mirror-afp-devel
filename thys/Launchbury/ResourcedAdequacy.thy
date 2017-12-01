@@ -155,7 +155,7 @@ proof-
   from assms(1)
   have [simp]: "x \<in> domA \<Gamma>" by (metis domIff dom_map_of_conv_domA not_Some_eq)
 
-  def ub \<equiv> "\<N>\<lbrace>\<Gamma>\<rbrace>" -- "An upper bound for the induction"
+  define ub where "ub = \<N>\<lbrace>\<Gamma>\<rbrace>" -- "An upper bound for the induction"
 
   have heaps: "(\<N>\<lbrace>\<Gamma>\<rbrace>)|\<^sup>\<circ>\<^bsub>r\<^esub> \<sqsubseteq> \<N>\<lbrace>delete x \<Gamma>\<rbrace>" and "\<N>\<lbrace>\<Gamma>\<rbrace> \<sqsubseteq> ub"
   proof (induction rule: HSem_bot_ind) 

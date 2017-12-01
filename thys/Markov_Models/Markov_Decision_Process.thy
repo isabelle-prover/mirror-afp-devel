@@ -603,7 +603,7 @@ proof (rule antisym)
   have mono_F: "mono ?F"
     using sup_continuous_mono[OF cont_g]
     by (force intro!: INF_mono nn_integral_mono monoI simp: mono_def le_fun_def)
-  def ct \<equiv> "\<lambda>s. SOME D. D \<in> K s \<and> (lfp ?F s = ?I D)"
+  define ct where "ct s = (SOME D. D \<in> K s \<and> (lfp ?F s = ?I D))" for s
   { fix s
     have "finite (?I ` K s)"
       by (auto intro: K_finite)
@@ -626,7 +626,7 @@ proof (rule antisym)
   then show "(\<lambda>s. E_inf s (lfp l)) \<le> lfp ?F"
   proof (intro le_funI, rule E_inf_lower2)
     fix s
-    def P \<equiv> "\<lambda>f cfg. \<integral>\<^sup>+ t. g (state t) (f t) \<partial>K_cfg cfg"
+    define P where "P f cfg = \<integral>\<^sup>+ t. g (state t) (f t) \<partial>K_cfg cfg" for f cfg
     have "integral\<^sup>N (T (memoryless_on ct s)) (lfp l) = lfp P (memoryless_on ct s)"
       unfolding P_def l_def using measurable_g cont_g int_g by (rule nn_integral_T_lfp)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom>) (memoryless_on ct s)"

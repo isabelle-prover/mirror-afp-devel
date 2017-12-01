@@ -272,7 +272,7 @@ proof -
   have "{v \<in> pverts G. 2 < in_degree G v} = {v \<in> pverts G. 2 < in_degree ?sG v}"
   proof -
     { fix x assume "x \<in> pverts G"
-      def card_eq \<equiv> "\<lambda>x. in_degree ?sG x = in_degree G x"
+      define card_eq where "card_eq x \<longleftrightarrow> in_degree ?sG x = in_degree G x" for x
 
       have "in_arcs ?sG u = (in_arcs G u - {(v,u)}) \<union> {(w,u)}"
            "in_arcs ?sG v = (in_arcs G v - {(u,v)}) \<union> {(w,v)}"
@@ -409,8 +409,8 @@ proof (cases p)
   show ?thesis
   proof (rule ccontr)
     assume "e1 \<noteq> e2"
-    def x \<equiv> "snd e"
-    then have e_unf:"e = (u,x)" using `awalk u p v`  Cons by (auto simp: awalk_simps)
+    define x where "x = snd e"
+    then have e_unf:"e = (u,x)" using `awalk u p v` Cons by (auto simp: awalk_simps)
     then have ei_unf: "e1 = (u1, u)" "e2 = (u2, u)"
       using Cons assms by (auto simp: apath_simps prod_eqI)
     with Cons assms `e = (u,x)` `e1 \<noteq> e2` have "u1 \<noteq> u2" "x \<noteq> u1" "x \<noteq> u2"
@@ -498,7 +498,7 @@ proof -
   from arcs obtain p1 p2 where p_decomp: "p = p1 @ e # p2" by (metis in_set_conv_decomp_first)
   from arcs obtain q1 q2 where q_decomp: "q = q1 @ e # q2" by (metis in_set_conv_decomp_first)
 
-  { def p1' \<equiv> "rev_path (p1 @ [e])" and q1' \<equiv> "rev_path (q1 @ [e])"
+  { define p1' q1' where "p1' = rev_path (p1 @ [e])" and "q1' = rev_path (q1 @ [e])"
     then have decomp: "p = rev_path p1' @ p2" "q = rev_path q1' @ q2"
       and "awlast u (rev_path p1') = snd e" "awlast w (rev_path q1') = snd e"
       using p_decomp q_decomp walk by (auto simp: awlast_append awalk_verts_rev_path)
@@ -516,7 +516,7 @@ proof -
       by (auto simp: inner_verts_rev_path)
     ultimately have "p1' = q1'" by (rule same_awalk_by_same_end[OF V]) }
   moreover
-  { def p2' \<equiv> "e # p2" and q2' \<equiv> "e # q2"
+  { define p2' q2' where "p2' = e # p2" and "q2' = e # q2"
     then have decomp: "p = p1 @ p2'" "q = q1 @ q2'"
       using p_decomp q_decomp by (auto simp: awlast_append)
     moreover
@@ -605,7 +605,7 @@ lemma choose_iapath:
   assumes "\<exists>p. iapath u p v"
   shows "iapath u (choose_iapath u v) v"
 proof (cases "direct_arc (u,v) = (u,v)")
-  def chosen \<equiv> "\<lambda>u v. SOME p. iapath u p v"
+  define chosen where "chosen u v = (SOME p. iapath u p v)" for u v
   { case True
     have "iapath u (chosen u v) v"
       unfolding chosen_def by (rule someI_ex) (rule assms)
@@ -662,7 +662,8 @@ by (simp add: direct_arc_def insert_commute)
 lemma direct_arc_chooses:
   fixes u v :: 'a shows "direct_arc (u,v) = (u,v) \<or> direct_arc (u,v) = (v,u)"
 proof -
-  def f \<equiv> "(\<lambda>X. SOME e. X = {fst e,snd e}) :: 'a set \<Rightarrow> 'a \<times> 'a"
+  define f :: "'a set \<Rightarrow> 'a \<times> 'a"
+    where "f X = (SOME e. X = {fst e,snd e})" for X
 
   have "\<exists>p::'a \<times> 'a. {u,v} = {fst p, snd p}" by (rule exI[where x="(u,v)"]) auto
   then have "{u,v} = {fst (f {u,v}), snd (f {u,v})}"
@@ -1219,7 +1220,7 @@ proof -
         using `gen_iapath V x (co_path e w p) y`  by fast
     next
       assume "e' \<notin> parcs ?sdG"
-      def a \<equiv> "fst e'" and b \<equiv> "snd e'"
+      define a b where "a = fst e'" and "b = snd e'"
       then have "e' = (a,b)" and ab: "(a,b) = (u,v) \<or> (a,b) = (v,u)"
         using `e' \<in> parcs G` `e' \<notin> parcs ?sdG` `e = (u,v)` mem1 by auto
       obtain x p y where "sdG.gen_iapath V x p y" "(a,w) \<in> set p"
@@ -1232,11 +1233,11 @@ proof -
         by (auto intro: arcs_symmetric simp: subdivide.simps)
       then have "pre_digraph.apath (subdivide G (a,b) w) x p y" "w \<noteq> y"
         using mem2 `sdG.gen_iapath V x p y` by (auto simp: sdG.gen_iapath_def)
-      then obtain p1 p2 where "p = p1 @ (a,w) # (w,b) # p2"
+      then obtain p1 p2 where p: "p = p1 @ (a,w) # (w,b) # p2"
         using exists_co_path_decomp1 `(a,b) \<in> parcs G` `w \<notin> pverts G` `(a,w) \<in> set p` `w \<noteq> y`
         by atomize_elim auto
       moreover
-      then have "co_path e w ((a,w) # (w,b) # p2) = (a,b) # co_path e w p2"
+      from p have "co_path e w ((a,w) # (w,b) # p2) = (a,b) # co_path e w p2"
         unfolding `e = (u,v)` using ab by auto
       ultimately
       have "(a,b) \<in> set (co_path e w p)"
@@ -1297,7 +1298,7 @@ next
     using `w \<in> pverts G - V` q
     unfolding G.gen_iapath_def G.apath_def G.awalk_conv
     by (auto simp: G.awalk_verts_conv')
-  moreover def u \<equiv> "fst e"
+  moreover define u where "u = fst e"
   ultimately obtain q1 q2 v where q_decomp: "q = q1 @ (u, w) # (w, v) # q2" "u \<noteq> v" "w \<noteq> v"
     using q `w \<noteq> y` unfolding G.gen_iapath_def by atomize_elim (rule G.apath_succ_decomp, auto)
   with q have qi_walks: "G.awalk x q1 u" "G.awalk v q2 y"
@@ -1357,7 +1358,7 @@ next
   qed
   then have "(v,u) \<notin> parcs G" by (auto intro: G.arcs_symmetric)
 
-  def G' \<equiv> "\<lparr>pverts = pverts G - {w},
+  define G' where "G' = \<lparr>pverts = pverts G - {w},
       parcs = {(u,v), (v,u)} \<union> (parcs G - {(u,w), (w,u), (v,w), (w,v)})\<rparr>"
 
   have mem_G': "(u,v) \<in> parcs G'" "w \<notin> pverts G'" by (auto simp: G'_def)

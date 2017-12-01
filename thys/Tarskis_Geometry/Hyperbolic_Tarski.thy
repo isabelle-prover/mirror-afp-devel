@@ -3881,9 +3881,10 @@ lemma endpoints_in_S_perp_foot_are_endpoints_in_S:
   shows "are_endpoints_in_S
   (endpoint_in_S a b) (endpoint_in_S b a) a (perp_foot c l)"
 proof -
-  def p \<equiv> "endpoint_in_S a b"
-    and q \<equiv> "endpoint_in_S b a"
-    and d \<equiv> "perp_foot c l"
+  define p q d
+    where "p = endpoint_in_S a b"
+      and "q = endpoint_in_S b a"
+      and "d = perp_foot c l"
 
   from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
   have "p \<noteq> q" by (unfold p_def q_def) (simp add: endpoint_in_S_swap)
@@ -3915,8 +3916,8 @@ lemma perp_foot_up_right_angle:
   and "proj2_incident b l"
   shows "right_angle p (perp_foot a l) (perp_up a l)"
 proof -
-  def c \<equiv> "perp_foot a l"
-  def q \<equiv> "perp_up a l"
+  define c where "c = perp_foot a l"
+  define q where "q = perp_up a l"
   from `a \<in> hyp2` and `b \<in> hyp2` and `proj2_incident b l`
   have "q \<in> S" by (unfold q_def) (rule perp_up_in_S)
 
@@ -3930,7 +3931,7 @@ proof -
   have "l = proj2_line_through p c"
     by (unfold c_def) (rule proj2_line_through_unique)
 
-  def m \<equiv> "drop_perp a l"
+  define m where "m = drop_perp a l"
   from `a \<in> hyp2` and `b \<in> hyp2` and `proj2_incident b l`
   have "proj2_incident q m" by (unfold q_def m_def) (rule perp_up_incident)
   with `c \<noteq> q` and perp_foot_incident(2) [of a l]
@@ -5152,18 +5153,20 @@ next
     and ?pa' = "Rep_hyp2 a'"
     and ?pb' = "Rep_hyp2 b'"
     and ?pc' = "Rep_hyp2 c'"
-  def pp \<equiv> "endpoint_in_S ?pa ?pb"
-    and pq \<equiv> "endpoint_in_S ?pb ?pa"
-    and l \<equiv> "proj2_line_through ?pa ?pb"
-    and pp' \<equiv> "endpoint_in_S ?pa' ?pb'"
-    and pq' \<equiv> "endpoint_in_S ?pb' ?pa'"
-    and l' \<equiv> "proj2_line_through ?pa' ?pb'"
-  def pd \<equiv> "perp_foot ?pc l"
-    and ps \<equiv> "perp_up ?pc l"
-    and m \<equiv> "drop_perp ?pc l"
-    and pd' \<equiv> "perp_foot ?pc' l'"
-    and ps' \<equiv> "perp_up ?pc' l'"
-    and m' \<equiv> "drop_perp ?pc' l'"
+  define pp pq l pp' pq' l'
+    where "pp = endpoint_in_S ?pa ?pb"
+      and "pq = endpoint_in_S ?pb ?pa"
+      and "l = proj2_line_through ?pa ?pb"
+      and "pp' = endpoint_in_S ?pa' ?pb'"
+      and "pq' = endpoint_in_S ?pb' ?pa'"
+      and "l' = proj2_line_through ?pa' ?pb'"
+  define pd ps m pd' ps' m'
+    where "pd = perp_foot ?pc l"
+      and "ps = perp_up ?pc l"
+      and "m = drop_perp ?pc l"
+      and "pd' = perp_foot ?pc' l'"
+      and "ps' = perp_up ?pc' l'"
+      and "m' = drop_perp ?pc' l'"
 
   have "pp \<in> S" and "pp' \<in> S" and "pq \<in> S" and "pq' \<in> S"
     unfolding pp_def and pp'_def and pq_def and pq'_def
@@ -5616,11 +5619,12 @@ proof (rule allI)+
       and ?pa = "Rep_hyp2 a"
       and ?pb = "Rep_hyp2 b"
       and ?pc = "Rep_hyp2 c"
-    def l \<equiv> "proj2_line_through ?pp ?pq"
-    def m \<equiv> "drop_perp ?pa l"
-      and ps \<equiv> "endpoint_in_S ?pp ?pq"
-      and pt \<equiv> "endpoint_in_S ?pq ?pp"
-      and stpq \<equiv> "exp_2dist ?pp ?pq"
+    define l where "l = proj2_line_through ?pp ?pq"
+    define m ps pt stpq
+      where "m = drop_perp ?pa l"
+        and "ps = endpoint_in_S ?pp ?pq"
+        and "pt = endpoint_in_S ?pq ?pp"
+        and "stpq = exp_2dist ?pp ?pq"
 
     from `p \<noteq> q` have "?pp \<noteq> ?pq" by (simp add: Rep_hyp2_inject)
 
@@ -5642,8 +5646,9 @@ proof (rule allI)+
       assume "pd \<in> {?pa,?pb,?pc}"
       with Rep_hyp2 have "pd \<in> hyp2" by auto
 
-      def pe \<equiv> "perp_foot pd l"
-        and x \<equiv> "cosh_dist ?pp pd"
+      define pe x
+        where "pe = perp_foot pd l"
+          and "x = cosh_dist ?pp pd"
 
       from `pd \<in> {?pa,?pb,?pc}` and `a p \<congruent>\<^sub>K a q` and `b p \<congruent>\<^sub>K b q`
         and `c p \<congruent>\<^sub>K c q`

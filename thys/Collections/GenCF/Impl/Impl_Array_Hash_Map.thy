@@ -725,14 +725,13 @@ lemma ahm_rehash_aux_correct:
   shows "ahm_invar_aux bhc n (ahm_rehash_aux bhc a sz)" (is "?thesis1")
   and "ahm_\<alpha>_aux bhc (ahm_rehash_aux bhc a sz) = ahm_\<alpha>_aux bhc a" (is "?thesis2")
 proof -
-thm ahm_rehash_aux'_def
   let ?a = "ahm_rehash_aux bhc a sz"
- def I \<equiv> "\<lambda>it a'. 
+  define I where "I it a' \<longleftrightarrow>
    ahm_invar_aux bhc (n - card it) a' 
  \<and> array_length a' = sz 
  \<and> (\<forall>k. if k \<in> it then 
       ahm_\<alpha>_aux bhc a' k = None 
-      else ahm_\<alpha>_aux bhc a' k = ahm_\<alpha>_aux bhc a k)"
+      else ahm_\<alpha>_aux bhc a' k = ahm_\<alpha>_aux bhc a k)" for it a'
 
   note iterator_rule = map_iterator_no_cond_rule_P[
         OF ahm_iteratei_aux_impl[OF inv bhc], 

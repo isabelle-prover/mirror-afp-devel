@@ -340,8 +340,8 @@ lemma almost_never_le_\<alpha>:
 proof -
   let "?prob_fun_raw n" = "probGn p n (\<lambda>es. nat(ceiling (1/2*n/k)) \<le> \<alpha> (edge_space.edge_ugraph n es))"
 
-  def r \<equiv> "\<lambda>(n :: nat). (1 / 2 * n / k)"
-  let "?nr n" = "nat(ceiling (r n))"
+  define r where "r n = 1 / 2 * n / k" for n :: nat
+  let ?nr = "\<lambda>n. nat(ceiling (r n))"
 
   have r_pos: "\<And>n. 0 < n \<Longrightarrow> 0 < r n " by (auto simp: r_def field_simps)
 
@@ -449,11 +449,11 @@ lemma (in edge_space) mean_k_cycles:
     = of_nat (fact n div fact (n - k)) * p ^ k"
 proof -
   let ?k_cycle = "\<lambda>es c k. c \<in> ucycles (edge_ugraph es) \<and> uwalk_length c = k"
-  def C \<equiv> "\<lambda>k. {c. ?k_cycle S_edges c k}"
+  define C where "C k = {c. ?k_cycle S_edges c k}" for k
     -- {* @{term "C k"} is the set of all possible cycles of size @{term k} in @{term "edge_ugraph S_edges"} *}
-  def XG \<equiv> "\<lambda>es. {c. ?k_cycle es c k}"
+  define XG  where "XG es = {c. ?k_cycle es c k}" for es
     -- {* @{term "XG es"} is the set of cycles contained in a @{term "edge_ugraph es"} *}
-  def XC \<equiv> "\<lambda>c. {es \<in> space P. ?k_cycle es c k}"
+  define XC where "XC c = {es \<in> space P. ?k_cycle es c k}" for c
     -- {* "@{term "XC c"} is the set of graphs (edge sets) containing a cycle c" *}
   then have XC_in_sets: "\<And>c. XC c \<in> sets P"
       and XC_cyl: "\<And>c. c \<in> C k \<Longrightarrow> XC c = cylinder S_edges (set (uwalk_edges c)) {}"
@@ -526,18 +526,18 @@ theorem girth_chromatic:
   fixes l :: nat
   shows "\<exists>G. uwellformed G \<and> l < girth G \<and> l < chromatic_number G"
 proof -
-  def k \<equiv> "max 3 l"
-  def \<epsilon> \<equiv> "1 / (2 * k)"
-  def p \<equiv> "\<lambda>(n :: nat). real n powr (\<epsilon> - 1)"
+  define k where "k = max 3 l"
+  define \<epsilon> where "\<epsilon> = 1 / (2 * k)"
+  define p where "p n = real n powr (\<epsilon> - 1)" for n :: nat
 
   let ?ug = edge_space.edge_ugraph
 
-  def short_count \<equiv> "\<lambda>g. card (short_cycles g k)"
+  define short_count where "short_count g = card (short_cycles g k)" for g
     -- {* This random variable differs from the one used in the proof of theorem 11.2.2,
           as we count the number of paths describing a circle, not the circles themselves *}
 
   from k_def have "3 \<le> k" "l \<le> k" by auto
-  from \<epsilon>_def `3 \<le> k` have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: field_simps)
+  from `3 \<le> k` have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: \<epsilon>_def field_simps)
 
   have ev_p: "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1"
   proof (rule eventually_sequentiallyI)
@@ -554,7 +554,7 @@ proof -
     then interpret pG: edge_space n "p n" by unfold_locales auto
     have "1 \<le> n" using A by auto
 
-    def mean_short_count \<equiv> "\<integral>es. short_count (?ug n es) \<partial> pG.P"
+    define mean_short_count where "mean_short_count = (\<integral>es. short_count (?ug n es) \<partial> pG.P)"
 
     have mean_short_count_le: "mean_short_count \<le> (k - 2) * n powr (\<epsilon> * k)"
     proof -
@@ -610,8 +610,10 @@ proof -
     finally show "?P n" .
   qed
 
-  def pf_short_count \<equiv> "\<lambda>n. probGn p n (\<lambda>es. n/2 \<le> short_count (?ug n es))"
-    and pf_\<alpha> \<equiv> "\<lambda>n. probGn p n (\<lambda>es. 1/2 * n/k \<le> \<alpha> (edge_space.edge_ugraph n es))"
+  define pf_short_count pf_\<alpha>
+    where "pf_short_count n = probGn p n (\<lambda>es. n/2 \<le> short_count (?ug n es))"
+      and "pf_\<alpha> n = probGn p n (\<lambda>es. 1/2 * n/k \<le> \<alpha> (edge_space.edge_ugraph n es))"
+    for n
 
   have ev_short_count_le: "\<forall>\<^sup>\<infinity> n. pf_short_count n < 1 / 2"
   proof -
@@ -696,8 +698,8 @@ proof -
     by auto
     -- "now we obtained a high colored graph (few independent nodes) with almost no short cycles"
 
-  def G \<equiv> "?ug n es"
-  def H \<equiv> "kill_short G k"
+  define G where "G = ?ug n es"
+  define H where "H = kill_short G k"
 
   have G_props: "uverts G = {1..n}" "finite (uverts G)" "short_count G < n/2" "\<alpha> G < 1/2 * n/k"
     unfolding G_def using es_props by (auto simp: ES.S_verts_def)

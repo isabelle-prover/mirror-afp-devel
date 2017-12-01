@@ -1206,24 +1206,24 @@ proof(clarsimp)
   assume A_modifies_dma: "\<forall>x. dma mem\<^sub>1 [\<parallel>\<^sub>1 A] x \<noteq> dma mem\<^sub>1 x \<longrightarrow> \<not> var_asm_not_written mds x"
   assume A_modifies_sec: "\<forall>x. dma mem\<^sub>1 [\<parallel>\<^sub>1 A] x = Low \<and> (x \<in> mds AsmNoReadOrWrite \<longrightarrow> x \<in> \<C>) \<longrightarrow> mem\<^sub>1 [\<parallel>\<^sub>1 A] x = mem\<^sub>2 [\<parallel>\<^sub>2 A] x"
   (* do a bit of massaging to get the goal state set-up nicely for the induction rule *)
-  def lc\<^sub>1 \<equiv> "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle>"
-  def lc\<^sub>2 \<equiv> "\<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
+  define lc\<^sub>1 where "lc\<^sub>1 \<equiv> \<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle>"
+  define lc\<^sub>2 where "lc\<^sub>2 \<equiv> \<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
   from lc\<^sub>1_def lc\<^sub>2_def in_\<R>\<^sub>3 have "lc\<^sub>1 \<R>\<^sup>3\<^bsub>\<Gamma>',\<S>',P'\<^esub> lc\<^sub>2" by simp
   from this lc\<^sub>1_def lc\<^sub>2_def A_modifies_vars A_modifies_dma A_modifies_sec
   show "\<langle>c\<^sub>1, mds, mem\<^sub>1 [\<parallel>\<^sub>1 A]\<rangle> \<R>\<^sup>3\<^bsub>\<Gamma>',\<S>',P'\<^esub> \<langle>c\<^sub>2, mds, mem\<^sub>2 [\<parallel>\<^sub>2 A]\<rangle>"
-proof(induct arbitrary: c\<^sub>1 mds mem\<^sub>1 c\<^sub>2 mds mem\<^sub>2 rule: \<R>\<^sub>3_aux.induct)
-  case (intro\<^sub>1 c\<^sub>1 mds mem\<^sub>1 \<Gamma> \<S> P c\<^sub>2 mem\<^sub>2 c \<Gamma>' \<S>' P')
-  show ?case
-    apply (rule \<R>\<^sub>3_aux.intro\<^sub>1[OF _ intro\<^sub>1(2)])
-    using \<R>\<^sub>1_closed_glob_consistent intro\<^sub>1
-    unfolding closed_glob_consistent_def by blast
-next
-  case (intro\<^sub>3 c\<^sub>1 mds mem\<^sub>1 \<Gamma> \<S> P c\<^sub>2 mem\<^sub>2 c \<Gamma>' \<S>' P')
-  show ?case
-    apply(rule \<R>\<^sub>3_aux.intro\<^sub>3)
-     apply(rule intro\<^sub>3(2))
-     using intro\<^sub>3 apply simp+
-     done
+  proof(induct arbitrary: c\<^sub>1 mds mem\<^sub>1 c\<^sub>2 mds mem\<^sub>2 rule: \<R>\<^sub>3_aux.induct)
+    case (intro\<^sub>1 c\<^sub>1 mds mem\<^sub>1 \<Gamma> \<S> P c\<^sub>2 mem\<^sub>2 c \<Gamma>' \<S>' P')
+    show ?case
+      apply (rule \<R>\<^sub>3_aux.intro\<^sub>1[OF _ intro\<^sub>1(2)])
+      using \<R>\<^sub>1_closed_glob_consistent intro\<^sub>1
+      unfolding closed_glob_consistent_def by blast
+  next
+    case (intro\<^sub>3 c\<^sub>1 mds mem\<^sub>1 \<Gamma> \<S> P c\<^sub>2 mem\<^sub>2 c \<Gamma>' \<S>' P')
+    show ?case
+      apply(rule \<R>\<^sub>3_aux.intro\<^sub>3)
+      apply(rule intro\<^sub>3(2))
+      using intro\<^sub>3 apply simp+
+      done
   qed
 qed
 

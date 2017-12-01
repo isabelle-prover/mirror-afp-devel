@@ -75,8 +75,8 @@ proof-
 
          txt {* We lift the Xout and Xin sets to generators and their inveres, and
          create variants of the disj-conditions: *}
-         def Xout' \<equiv> "\<lambda>(b,i::'d). if b then Xin i else Xout i"
-         def Xin' \<equiv> "\<lambda>(b,i::'d). if b then Xout i else Xin i"
+         define Xout' where "Xout' = (\<lambda>(b,i::'d). if b then Xin i else Xout i)"
+         define Xin' where "Xin' = (\<lambda>(b,i::'d). if b then Xout i else Xin i)"
 
          have disj1': "\<forall>i\<in>(UNIV \<times> I). \<forall>j\<in>(UNIV \<times> I). i \<noteq> j \<longrightarrow> Xout' i \<inter> Xout' j = {}"
            using disj1[rule_format] disj2[rule_format] disj3[rule_format]

@@ -533,7 +533,7 @@ proof(intro strip)
   proof(cases "\<exists>a \<in> Q. a \<in> actions E \<and> is_new_action (action_obs E a)")
     case True
     then obtain a where a: "a \<in> actions E \<and> is_new_action (action_obs E a) \<and> a \<in> Q" by blast
-    def a' == "LEAST a'. a' \<in> actions E \<and> is_new_action (action_obs E a') \<and> a' \<in> Q"
+    define a' where "a' = (LEAST a'. a' \<in> actions E \<and> is_new_action (action_obs E a') \<and> a' \<in> Q)"
     from a have a': "a' \<in> actions E \<and> is_new_action (action_obs E a') \<and> a' \<in> Q"
       unfolding a'_def by(rule LeastI)
     { fix y
@@ -556,7 +556,7 @@ proof(intro strip)
       with `x \<in> Q` show ?thesis by(auto elim: action_orderE)
     next
       case False
-      def a' == "LEAST a'. a' \<in> Q \<and> a' \<in> actions E \<and> \<not> is_new_action (action_obs E a')"
+      define a' where "a' = (LEAST a'. a' \<in> Q \<and> a' \<in> actions E \<and> \<not> is_new_action (action_obs E a'))"
       from False obtain a where "a \<in> Q" "a \<in> actions E" by blast
       with not_new[OF this] have "a \<in> Q \<and> a \<in> actions E \<and> \<not> is_new_action (action_obs E a)" by blast
       hence a': "a' \<in> Q \<and> a' \<in> actions E \<and> \<not> is_new_action (action_obs E a')"

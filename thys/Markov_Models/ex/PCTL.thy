@@ -84,8 +84,8 @@ lemma gauss_jordan'_correct:
   shows "\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * f s') = a s"
 proof -
   note `gauss_jordan' M a = Some f`
-  moreover def M' \<equiv> "\<lambda>i j. if j = card S then
-    a (order i) else M (order i) (order j)"
+  moreover define M' where "M' = (\<lambda>i j. if j = card S then
+    a (order i) else M (order i) (order j))"
   ultimately obtain sol where sol: "gauss_jordan M' (card S) = Some sol"
     and f: "f = (\<lambda>i. sol (iorder i) (card S))"
     by (auto simp: gauss_jordan'_def Let_def split: bind_split_asm)
@@ -103,8 +103,8 @@ lemma gauss_jordan'_complete:
   assumes unique: "\<And>y. \<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * y s') = a s \<Longrightarrow> \<forall>s\<in>S. y s = x s"
   shows "\<exists>y. gauss_jordan' M a = Some y"
 proof -
-  def M' \<equiv> "\<lambda>i j. if j = card S then
-    a (order i) else M (order i) (order j)"
+  define M' where "M' = (\<lambda>i j. if j = card S then
+    a (order i) else M (order i) (order j))"
 
   { fix x
     have iorder_neq_card_S: "\<And>s. s \<in> S \<Longrightarrow> iorder s \<noteq> card S"
@@ -773,8 +773,9 @@ next
 
 next
   case (7 rel r F1 F2)
-  moreover def constants \<equiv> "\<lambda>s::'s. if s \<in> (svalid F2) then 1 else (0::real)"
-  moreover def distr \<equiv> "LES (Prob0 (svalid F1) (svalid F2) \<union> svalid F2)"
+  moreover
+  define constants :: "'s \<Rightarrow> real" where "constants = (\<lambda>s. if s \<in> (svalid F2) then 1 else 0)"
+  moreover define distr where "distr = LES (Prob0 (svalid F1) (svalid F2) \<union> svalid F2)"
   ultimately obtain l where eq: "Sat F1 = Some (svalid F1)" "Sat F2 = Some (svalid F2)"
     and l: "gauss_jordan' distr constants = Some l"
     by atomize_elim (simp add: ProbUinfty_def split: bind_split_asm)
@@ -836,9 +837,9 @@ next
   case (10 rel r F)
   moreover
   let ?F = "svalid F"
-  def N \<equiv> "Prob0 S ?F"
-  moreover def Y \<equiv> "Prob1 N S ?F"
-  moreover def const \<equiv> "\<lambda>s. if s \<in> Y \<and> s \<notin> ?F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
+  define N where "N \<equiv> Prob0 S ?F"
+  moreover define Y where "Y \<equiv> Prob1 N S ?F"
+  moreover define const where "const \<equiv> (\<lambda>s. if s \<in> Y \<and> s \<notin> ?F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0)"
   ultimately obtain l
     where l: "gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
     and F: "Sat F = Some ?F"
@@ -886,8 +887,8 @@ proof (induct F rule: Sat.induct)
   then have F: "Sat \<Phi> = Some (svalid \<Phi>)" "Sat \<Psi> = Some (svalid \<Psi>)"
     by (auto intro!: Sat_sound)
 
-  def constants \<equiv> "\<lambda>s::'s. if s \<in> svalid \<Psi> then 1 else (0::real)"
-  def distr \<equiv> "LES (Prob0 (svalid \<Phi>) (svalid \<Psi>) \<union> svalid \<Psi>)"
+  define constants :: "'s \<Rightarrow> real" where "constants = (\<lambda>s. if s \<in> svalid \<Psi> then 1 else 0)"
+  define distr where "distr = LES (Prob0 (svalid \<Phi>) (svalid \<Psi>) \<union> svalid \<Psi>)"
   have "\<exists>l. gauss_jordan' distr constants = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ProbU])
     show "\<forall>s\<in>S. (\<Sum>s'\<in>S. distr s s' * \<P>(\<omega> in T s'. pvalid (U\<^sup>\<infinity> \<Phi> \<Psi>) (s' ## \<omega>))) = constants s"
@@ -929,9 +930,9 @@ next
     by (auto intro!: Sat_sound)
 
   let ?F = "svalid \<Phi>"
-  def N \<equiv> "Prob0 S ?F"
-  def Y \<equiv> "Prob1 N S ?F"
-  def const \<equiv> "\<lambda>s. if s \<in> Y \<and> s \<notin> ?F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
+  define N where "N \<equiv> Prob0 S ?F"
+  define Y where "Y \<equiv> Prob1 N S ?F"
+  define const where "const \<equiv> (\<lambda>s. if s \<in> Y \<and> s \<notin> ?F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0)"
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future \<Phi>) (s' ## \<omega>) \<partial>T s'"
   have "\<exists>l. gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ExpFuture[OF N_def Y_def const_def]])

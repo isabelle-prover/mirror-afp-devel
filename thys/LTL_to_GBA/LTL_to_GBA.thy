@@ -2557,7 +2557,7 @@ proof (rule ccontr)
   then have contr: "\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>}\<subseteq>old(\<sigma> i) \<and> \<eta>\<notin>old(\<sigma> i)"
     using assms L4_2a[of \<sigma> \<mu> \<eta>] by blast
 
-  def S \<equiv> "{q \<in> qs. \<mu> U\<^sub>n \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
+  define S where "S = {q \<in> qs. \<mu> U\<^sub>n \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
 
   from assms inres_SPEC[OF res old_propag_on_create_graph] create_gba_from_nodes__ipath
   have "\<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>"
@@ -2900,7 +2900,7 @@ lemma L4_10:
   assumes "\<xi> \<Turnstile>\<^sub>n \<phi>"
   shows "gba.accept \<xi>"
 proof -
-  def \<sigma> \<equiv> "auto_run \<xi> qs"
+  define \<sigma> where "\<sigma> = auto_run \<xi> qs"
   let ?G = "create_graph \<phi>"
 
   have \<sigma>_prop_0: "(\<sigma> 0)\<in>qs \<and> expand_init\<in>incoming(\<sigma> 0) \<and> auto_run_j 0 \<xi> (\<sigma> 0)"

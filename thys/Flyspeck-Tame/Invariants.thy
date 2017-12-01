@@ -935,14 +935,14 @@ assumes pre: "pre_splitFace g v w f [countVertices g..<countVertices g + n]"
     and mgp: "minGraphProps g"
 shows "facesAt_distinct (snd (snd (splitFace g v w f [countVertices g..<countVertices g + n])))"
 proof -
-  def ws \<equiv>  "[countVertices g..<countVertices g + n]"
-  def f21 \<equiv> "snd (split_face f v w ws)"
+  define ws where "ws = [countVertices g..<countVertices g + n]"
+  define f21 where "f21 = snd (split_face f v w ws)"
   with pre ws_def have dist_f21: "distinct (vertices f21)" by (auto intro: split_face_distinct2)
-  def f12 \<equiv> "fst (split_face f v w ws)"
+  define f12 where "f12 = fst (split_face f v w ws)"
   with pre ws_def have dist_f12: "distinct (vertices f12)" by (auto intro: split_face_distinct1)
-  def vs1 \<equiv> "between (vertices f) v w"
-  def vs2 \<equiv> "between (vertices f) w v"
-  def g' \<equiv> "snd (snd (splitFace g v w f [countVertices g..<countVertices g + n]))"
+  define vs1 where "vs1 = between (vertices f) v w"
+  define vs2 where "vs2 = between (vertices f) w v"
+  define g' where "g' = snd (snd (splitFace g v w f [countVertices g..<countVertices g + n]))"
   from f12_def f21_def ws_def g'_def
   have fdg: "(f12, f21, g') = splitFace g v w f [countVertices g..<countVertices g + n]"
     by (simp add: splitFace_def split_def)
@@ -1227,11 +1227,11 @@ proof -
     apply (simp add: g'') by (simp add: splitFace_def split_def)
   hence vg'': "vertices g'' = [0..<countVertices g' + n]" by (simp add:vertices_graph)
 
-  def ws \<equiv>  "[countVertices g'..<countVertices g' + n]"
-  def f21 \<equiv>  "snd (split_face f' v a ws)"
-  def f12 \<equiv> "fst (split_face f' v a ws)"
-  def vs1 \<equiv> "between (vertices f') v a"
-  def vs2 \<equiv> "between (vertices f') a v"
+  define ws where "ws = [countVertices g'..<countVertices g' + n]"
+  define f21 where "f21 = snd (split_face f' v a ws)"
+  define f12 where "f12 = fst (split_face f' v a ws)"
+  define vs1 where "vs1 = between (vertices f') v a"
+  define vs2 where "vs2 = between (vertices f') a v"
   from ws_def [symmetric] f21_def [symmetric] f12_def [symmetric] g'' have fdg: "(f12, f21, g'') = splitFace g' v a f' ws"
     by (simp add: splitFace_def split_def)
   from pre_F have pre_F': "pre_splitFace g' v a f' ws" apply (unfold pre_splitFace_def ws_def) by force
@@ -1365,7 +1365,7 @@ apply (rule equalityI)
    apply simp
   apply (subgoal_tac "distinct (faces g')")
    apply (simp add: replace6)
-   apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+   apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
    apply (subgoal_tac "(va - |faceListAt g'| ) < | ws |") apply simp apply (rule conjI) apply blast
     apply (subgoal_tac "va \<in> set ws")
      apply (case_tac "x = f12") apply (simp add: vert_f12) apply (simp add: vert_f21)
@@ -1419,7 +1419,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
            apply (rule pre_F')
           apply simp
          apply (rule fdg)
-        apply (case_tac "x = f21") apply (simp add: vert_f21 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+        apply (case_tac "x = f21") apply (simp add: vert_f21 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
          apply (simp add: ws_def)
         apply simp apply (rule minGraphProps7') apply simp  apply simp apply simp
        apply (rule minGraphProps11') apply simp
@@ -1434,7 +1434,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
        apply (case_tac "x = f'")
         apply (subgoal_tac "f' \<noteq> f12") apply simp apply (rule splitFace_f12_oldF_neq)
           apply (rule pre_F') apply simp  apply (rule fdg)
-       apply (case_tac "x = f12") apply (simp add: vert_f12 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+       apply (case_tac "x = f12") apply (simp add: vert_f12 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
         apply (simp add: ws_def)
        apply simp apply (rule minGraphProps7') apply simp  apply simp apply simp
       apply (rule minGraphProps11') apply simp apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
@@ -1442,9 +1442,9 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
     apply (subgoal_tac "distinct (faces g')")
      apply (simp add: replace6)
      apply (rule minGraphProps7') apply simp
-      apply (case_tac "x = f21") apply (simp add: vert_f21) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+      apply (case_tac "x = f21") apply (simp add: vert_f21) apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
        apply (simp add: ws_def vertices_graph)
-      apply (case_tac "x = f12") apply (simp add: vert_f12) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+      apply (case_tac "x = f12") apply (simp add: vert_f12) apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
        apply (simp add: ws_def vertices_graph)
       apply simp
      apply simp
@@ -1459,7 +1459,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
  apply (simp add: nth_append del:replacefacesAt_simps)
  apply (subgoal_tac "distinct (faces g')")
   apply (simp add: replace6)
-  apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+  apply (thin_tac "[countVertices g'..<countVertices g' + n] = ws")
   apply (subgoal_tac "(va - |faceListAt g'| ) < |ws|") apply simp
    apply (rule ccontr) apply simp
    apply (case_tac "x = f'") apply simp apply simp
@@ -1480,12 +1480,12 @@ assumes pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n
 and mgp: "minGraphProps g'"
 shows "faces_subset (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
 proof -
-  def g'' \<equiv>  "(snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
-  def ws \<equiv>  "[countVertices g'..<countVertices g' + n]"
-  def f21 \<equiv>  "snd (split_face f' v a ws)"
-  def f12 \<equiv> "fst (split_face f' v a ws)"
-  def vs1 \<equiv> "between (vertices f') v a"
-  def vs2 \<equiv> "between (vertices f') a v"
+  define g'' where "g'' = (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
+  define ws where "ws = [countVertices g'..<countVertices g' + n]"
+  define f21 where "f21 = snd (split_face f' v a ws)"
+  define f12 where "f12 = fst (split_face f' v a ws)"
+  define vs1 where "vs1 = between (vertices f') v a"
+  define vs2 where "vs2 = between (vertices f') a v"
   from ws_def [symmetric] f21_def [symmetric] f12_def [symmetric] g''_def
     have fdg: "(f12, f21, g'') = splitFace g' v a f' ws"
       by (simp add: splitFace_def split_def)
@@ -1523,11 +1523,11 @@ assumes pre_F: "pre_splitFace g' v a f' ws"
 and mgp: "minGraphProps g'"
 shows "edges_sym (snd (snd (splitFace g' v a f' ws)))"
 proof -
-  def g'' \<equiv>  "(snd (snd (splitFace g' v a f' ws)))"
-  def f21 \<equiv>  "snd (split_face f' v a ws)"
-  def f12 \<equiv> "fst (split_face f' v a ws)"
-  def vs1 \<equiv> "between (vertices f') v a"
-  def vs2 \<equiv> "between (vertices f') a v"
+  define g'' where "g'' = (snd (snd (splitFace g' v a f' ws)))"
+  define f21 where "f21 = snd (split_face f' v a ws)"
+  define f12 where "f12 = fst (split_face f' v a ws)"
+  define vs1 where "vs1 = between (vertices f') v a"
+  define vs2 where "vs2 = between (vertices f') a v"
   from f21_def [symmetric] f12_def [symmetric] g''_def
     have fdg: "(f12, f21, g'') = splitFace g' v a f' ws"
       by (simp add: splitFace_def split_def)
@@ -1593,15 +1593,15 @@ assumes pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n
 and mgp: "minGraphProps g'"
 shows "faces_distinct (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
 proof -
-  def g'' \<equiv>  "(snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
-  def ws \<equiv>  "[countVertices g'..<countVertices g' + n]"
-  def f21 \<equiv>  "snd (split_face f' v a ws)"
-  def f12 \<equiv> "fst (split_face f' v a ws)"
-  def vs1 \<equiv> "between (vertices f') v a"
-  def vs2 \<equiv> "between (vertices f') a v"
+  define g'' where "g'' = snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n]))"
+  define ws where "ws \<equiv> [countVertices g'..<countVertices g' + n]"
+  define f21 where "f21 = snd (split_face f' v a ws)"
+  define f12 where "f12 = fst (split_face f' v a ws)"
+  define vs1 where "vs1 = between (vertices f') v a"
+  define vs2 where "vs2 = between (vertices f') a v"
   from ws_def [symmetric] f21_def [symmetric] f12_def [symmetric] g''_def
-    have fdg: "(f12, f21, g'') = splitFace g' v a f' ws"
-      by (simp add: splitFace_def split_def)
+  have fdg: "(f12, f21, g'') = splitFace g' v a f' ws"
+    by (simp add: splitFace_def split_def)
   from pre_F have pre_F': "pre_splitFace g' v a f' ws" apply (unfold pre_splitFace_def ws_def) by force
 
   from ws_def f21_def f12_def have faces:"faces g'' = (replace f' [f21]  (faces g')) @ [f12]"
