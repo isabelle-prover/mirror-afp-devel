@@ -2,7 +2,7 @@ chapter AFP
 
 session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
   description {* Theories that are not part of HOL-Probability but are used by this entry *}
-  options [timeout = 600]
+  options [timeout = 1200]
   sessions
     "HOL-Algebra"
     Jordan_Normal_Form
