@@ -844,6 +844,93 @@ proof (rule conv_abscissa_leI)
     by (intro exI[of _ "of_real c'"]) (auto simp: fds_converges_deriv)
 qed
 
+lemma abs_conv_abscissa_integral:
+  fixes f :: "'a fds"
+  shows "abs_conv_abscissa (fds_integral a f) = abs_conv_abscissa f"
+proof (rule antisym)
+  show "abs_conv_abscissa (fds_integral a f) \<le> abs_conv_abscissa f"
+  proof (rule abs_conv_abscissa_leI, goal_cases)
+    case (1 c)
+    have "fds_abs_converges (fds_integral a f) (of_real c)"
+      unfolding fds_abs_converges_def
+    proof (rule summable_comparison_test_ev)
+      from 1 have "fds_abs_converges f (of_real c)"
+        by (intro fds_abs_converges) auto
+      thus "summable (\<lambda>n. norm (fds_nth f n / nat_power n (of_real c)))"
+        by (simp add: fds_abs_converges_def)
+    next
+      show "\<forall>\<^sub>F n in sequentially. norm (norm (fds_nth (fds_integral a f) n / nat_power n (of_real c))) \<le> 
+              norm (fds_nth f n / nat_power n (of_real c))"
+        using eventually_gt_at_top[of 3]
+      proof eventually_elim
+        case (elim n)
+        from elim and exp_le have "ln (exp 1) \<le> ln (real n)"
+          by (subst ln_le_cancel_iff) auto
+        hence "1 * norm (fds_nth f n) \<le> ln (real n) * norm (fds_nth f n)"
+          by (intro mult_right_mono) auto
+        with elim show ?case
+          by (simp add: norm_divide norm_nat_power fds_integral_def field_simps)
+      qed
+    qed
+    thus ?case by (intro exI[of _ "of_real c"]) auto
+  qed
+next
+  show "abs_conv_abscissa f \<le> abs_conv_abscissa (fds_integral a f)" (is "_ \<le> ?s0")
+  proof (cases "abs_conv_abscissa (fds_integral a f) = \<infinity>")
+    case False
+    show ?thesis
+    proof (rule abs_conv_abscissa_leI)
+      fix c :: real
+      define \<epsilon> where "\<epsilon> = (if ?s0 = -\<infinity> then 1 else (c - real_of_ereal ?s0) / 2)"
+      assume "ereal c > ?s0"
+      with False have \<epsilon>: "\<epsilon> > 0" "c - \<epsilon> > ?s0"
+        by (cases ?s0; force simp: \<epsilon>_def field_simps)+
+  
+      have "fds_abs_converges f (of_real c)"
+        unfolding fds_abs_converges_def
+      proof (rule summable_comparison_test_ev)
+        from \<epsilon> have "fds_abs_converges (fds_integral a f) (of_real (c - \<epsilon>))"
+          by (intro fds_abs_converges) (auto simp: algebra_simps)
+        thus "summable (\<lambda>n. norm (fds_nth (fds_integral a f) n / nat_power n (of_real (c - \<epsilon>))))"
+          by (simp add: fds_abs_converges_def)
+      next
+        have "\<forall>\<^sub>F n in at_top. ln (real n) / real n powr \<epsilon> < 1"
+          by (rule order_tendstoD lim_ln_over_power \<open>\<epsilon> > 0\<close> zero_less_one)+
+        thus "\<forall>\<^sub>F n in sequentially. norm (norm (fds_nth f n / nat_power n (of_real c)))
+                \<le> norm (fds_nth (fds_integral a f) n / nat_power n (of_real (c - \<epsilon>)))"
+          using eventually_gt_at_top[of 1]
+        proof eventually_elim
+          case (elim n)
+          hence "ln (real n) * norm (fds_nth f n) \<le> real n powr \<epsilon> * norm (fds_nth f n)"
+            by (intro mult_right_mono) auto
+          with elim show ?case
+            by (simp add: norm_divide norm_nat_power field_simps 
+                          powr_diff inner_diff_left fds_integral_def)
+        qed
+      qed
+      thus "\<exists>s. s \<bullet> 1 = c \<and> fds_abs_converges f s"
+        by (intro exI[of _ "of_real c"]) auto
+    qed
+  qed auto
+qed
+
+lemma abs_conv_abscissa_ln: 
+  "abs_conv_abscissa (fds_ln l (f :: 'a :: dirichlet_series fds)) = 
+     abs_conv_abscissa (fds_deriv f / f)"
+  by (simp add: fds_ln_def abs_conv_abscissa_integral)
+
+lemma abs_conv_abscissa_deriv:
+  fixes f :: "'a fds"
+  shows "abs_conv_abscissa (fds_deriv f) = abs_conv_abscissa f"
+proof -
+  have "abs_conv_abscissa (fds_deriv f) = 
+          abs_conv_abscissa (fds_integral (fds_nth f 1) (fds_deriv f))"
+    by (rule abs_conv_abscissa_integral [symmetric])
+  also have "fds_integral (fds_nth f 1) (fds_deriv f) = f"
+    by (rule fds_integral_fds_deriv)
+  finally show ?thesis .
+qed
+
 lemma eval_fds_deriv:
   fixes f :: "'a fds"
   assumes "s \<bullet> 1 > conv_abscissa f"
@@ -1084,100 +1171,6 @@ lemma tendsto_eval_fds_Re_going_to_at_top':
   using assms by (rule tendsto_eval_fds_Re_at_top) auto
 
 
-
-subsection \<open>Auxiliary lemmas about summation\<close>
-
-lemma integral_count_space_cong:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> f x = f' x" "A = A'"
-  shows   "lebesgue_integral (count_space A) f = lebesgue_integral (count_space A') f'"
-  using assms(1) unfolding assms(2) by (intro integral_cong_AE) (simp_all add: AE_count_space)    
-
-lemma lebesgue_integral_count_space_finite_support':
-  assumes "finite B" "B \<subseteq> A" "\<And>x. x \<in> A - B \<Longrightarrow> f x = 0"
-  shows "(\<integral>x. f x \<partial>count_space A) = (\<Sum>a | a \<in> B. f a)"
-proof -
-  from assms have "{x. x \<in> A \<and> f x \<noteq> 0} \<subseteq> B" by auto
-  note fin = finite_subset[OF this \<open>finite B\<close>]
-  have "(\<integral>x. f x \<partial>count_space A) = (\<Sum>a | a \<in> A \<and> f a \<noteq> 0. f a)"
-    using fin by (intro lebesgue_integral_count_space_finite_support)
-  also from assms fin have "\<dots> = (\<Sum>a | a \<in> B. f a)"
-    by (intro sum.mono_neutral_left) auto
-  finally show ?thesis .
-qed
-
-lemma set_integrable_carrier_count_space [simp]:
-  "A \<subseteq> B \<Longrightarrow> set_integrable (count_space A) B f = integrable (count_space A) f"
-  by (rule integrable_cong_AE) (auto simp: AE_count_space indicator_def)
-
-lemma integrable_count_space_subset:
-  fixes f :: "'a \<Rightarrow> 'b :: {banach, second_countable_topology}"
-  assumes "integrable (count_space B) f" "A \<subseteq> B"
-  shows   "integrable (count_space A) f"
-proof -
-  from assms have "set_integrable (count_space B) B f" by simp
-  from set_integrable_subset[OF this _ assms(2)] assms(2)
-    have "integrable (restrict_space (count_space B) A) f"
-    by (subst integrable_restrict_space) auto
-  also from assms have "restrict_space (count_space B) A = count_space A"
-    by (simp add: restrict_count_space Int_absorb2)
-  finally show ?thesis .
-qed
-
-lemma norm_scaleR': "norm (a *\<^sub>R b) = abs a *\<^sub>R norm b"
-  by simp
-
-lemma set_integral_at_point:
-  fixes a
-  assumes "set_integrable M {a} f"
-  and [simp]: "{a} \<in> sets M" and "(emeasure M) {a} \<noteq> \<infinity>"
-  shows "(LINT x:{a} | M. f x) = f a * measure M {a}"
-proof-
-  have "set_lebesgue_integral M {a} f = set_lebesgue_integral M {a} (%x. f a)"
-    by (intro set_lebesgue_integral_cong) simp_all
-  then show ?thesis using assms by simp
-qed
-
-lemma integrable_at_point_count_space: 
-  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
-  shows "set_integrable (count_space A) {a} f"
-proof -
-  have "set_integrable (count_space A) {a} f \<longleftrightarrow> integrable (restrict_space (count_space A) {a}) f"
-    by (subst integrable_restrict_space) simp_all
-  also have "restrict_space (count_space A) {a} = count_space ({a} \<inter> A)"
-    by (simp add: restrict_count_space)
-  also have "integrable \<dots> f" by (intro integrable_count_space) auto
-  finally show ?thesis .
-qed
-
-lemma set_integral_at_point_count_space:
-  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
-  assumes "a \<in> A"
-  shows   "(LINT x:{a} | count_space A. f x) = f a"
-proof-
-  have "set_lebesgue_integral (count_space A) {a} f = 
-          set_lebesgue_integral (count_space A) {a} (%x. f a)"
-    using assms by (intro set_lebesgue_integral_cong) simp_all
-  then show ?thesis using assms by simp
-qed
-
-lemma AE_count_spaceI: "(\<And>x. x \<in> A \<Longrightarrow> P x) \<Longrightarrow> AE x in count_space A. P x"
-  by (simp add: AE_count_space)
-
-lemma norm_norm: "norm (norm x) = norm x" by simp
-    
-lemma integral_indicator': 
-  assumes "A \<in> sets M" "emeasure M A < \<infinity>"
-  shows "integral\<^sup>L M (indicator A) = (of_real (measure M (A \<inter> space M))
-            :: 'a :: {banach, second_countable_topology, real_algebra_1})"
-proof -
-  have "integral\<^sup>L M (indicator A) = integral\<^sup>L M (\<lambda>x. of_real (indicator A x))"
-    by (simp add: indicator_def [abs_def] if_distrib cong: if_cong)
-  also have "\<dots> = of_real (integral\<^sup>L M (\<lambda>x. indicator A x))"
-    by (intro integral_of_real integrable_real_indicator assms)
-  finally show ?thesis by simp
-qed
-
-  
 subsection \<open>Multiplication of two series\<close>
 
 lemma 
@@ -1269,6 +1262,15 @@ lemma fds_abs_converges_mult:
   using summable_dirichlet_prod[OF _ _ assms[unfolded fds_abs_converges_def]]
   by (simp add: fds_abs_converges_def fds_nth_times)
 
+lemma abs_conv_abscissa_mult_le:
+  "abs_conv_abscissa (f * g :: 'a :: dirichlet_series fds) \<le> 
+      max (abs_conv_abscissa f) (abs_conv_abscissa g)"
+proof (rule abs_conv_abscissa_leI, goal_cases)
+  case (1 c')
+  thus ?case
+    by (auto intro!: exI[of _ "of_real c'"] fds_abs_converges_mult intro: fds_abs_converges)
+qed
+
 lemma eval_fds_mult:
   fixes s :: "'a :: {nat_power, real_normed_field, banach, second_countable_topology}"
   assumes "fds_abs_converges f s" "fds_abs_converges g s"
@@ -1288,7 +1290,319 @@ proof -
   finally show ?thesis by (auto simp: divide_simps)
 qed
 
+lemma eval_fds_integral_has_field_derivative:
+  fixes s :: "'a :: dirichlet_series"
+  assumes "ereal (s \<bullet> 1) > abs_conv_abscissa f"
+  assumes "fds_nth f 1 = 0"
+  shows   "(eval_fds (fds_integral c f) has_field_derivative eval_fds f s) (at s)"
+proof -
+  have "conv_abscissa (fds_integral c f) \<le> abs_conv_abscissa (fds_integral c f)"
+    by (rule conv_le_abs_conv_abscissa)
+  also from assms have "\<dots> < ereal (s \<bullet> 1)" by (simp add: abs_conv_abscissa_integral)
+  finally have "(eval_fds (fds_integral c f) has_field_derivative 
+                  eval_fds (fds_deriv (fds_integral c f)) s) (at s)"
+    by (intro derivative_eq_intros) auto
+  also from assms have "fds_deriv (fds_integral c f) = f"
+    by simp
+  finally show ?thesis .
+qed
 
+lemmas eval_fds_integral_has_field_derivative' [derivative_intros] = 
+  DERIV_chain'[OF _ eval_fds_integral_has_field_derivative]
+
+
+subsection \<open>Logarithms of Dirichlet series\<close>
+
+(* TODO: Move ? *)
+lemma eventually_gt_ereal_at_top: "c \<noteq> \<infinity> \<Longrightarrow> eventually (\<lambda>x. ereal x > c) at_top"
+  by (cases c) auto
+
+text \<open>
+  Given a sufficiently nice absolutely convergent Dirichlet series that converges
+  to some function $f(s)$ and a holomorphic branch of $\ln f(s)$, we can construct 
+  a Dirichlet series that absolutely converges to that logarithm.
+\<close>
+lemma eval_fds_ln:
+  fixes s0 :: ereal
+  assumes nz: "\<And>s. Re s > s0 \<Longrightarrow> eval_fds f s \<noteq> 0" "fds_nth f 1 \<noteq> 0"
+  assumes l: "exp l = fds_nth f 1" "((g \<circ> of_real) \<longlongrightarrow> l) at_top"
+  assumes g: "\<And>s. Re s > s0 \<Longrightarrow> exp (g s) = eval_fds f s"
+  assumes holo_g: "g holomorphic_on {s. Re s > s0}"
+  assumes "ereal (Re s) > s0"
+  assumes "s0 \<ge> abs_conv_abscissa f" and "s0 \<ge> abs_conv_abscissa (inverse f)"
+  shows   "eval_fds (fds_ln l f) s = g s"
+proof -
+  let ?s0 = "abs_conv_abscissa f" and ?s1 = "abs_conv_abscissa (inverse f)"
+  let ?h = "\<lambda>s. eval_fds (fds_ln l f) s - g s"
+  let ?A = "{s. Re s > s0}"
+  have open_A: "open ?A" by (cases s0) (auto simp: open_halfspace_Re_gt)
+
+  have "conv_abscissa f \<le> abs_conv_abscissa f" by (rule conv_le_abs_conv_abscissa)
+  moreover from assms have "\<dots> \<noteq> \<infinity>" by auto
+  ultimately have "conv_abscissa f \<noteq> \<infinity>" by auto
+
+  have "conv_abscissa (fds_ln l f) \<le> abs_conv_abscissa (fds_ln l f)"
+    by (rule conv_le_abs_conv_abscissa)
+  also have "\<dots> \<le> abs_conv_abscissa (fds_deriv f / f)"
+    unfolding fds_ln_def by (simp add: abs_conv_abscissa_integral)
+  also have "\<dots> \<le> max (abs_conv_abscissa (fds_deriv f)) ?s1" 
+    unfolding divide_fds_def by (rule abs_conv_abscissa_mult_le)
+  finally have "conv_abscissa (fds_ln l f) \<noteq> \<infinity>"
+    using assms by (auto simp: max_def abs_conv_abscissa_deriv split: if_splits)
+
+  have deriv_g [derivative_intros]:
+    "(g has_field_derivative eval_fds (fds_deriv f) s / eval_fds f s) (at s within B)"
+    if s: "Re s > s0" for s B
+  proof -
+    have "conv_abscissa f \<le> abs_conv_abscissa f" by (rule conv_le_abs_conv_abscissa)
+    also have "\<dots> \<le> s0" using assms by simp
+    also have "\<dots> < Re s" by fact
+    finally have s': "Re s > conv_abscissa f" .
+
+    have deriv_g: "(g has_field_derivative deriv g s) (at s)"
+      using holomorphic_derivI[OF holo_g open_A, of s] s
+      by (auto simp: at_within_open[OF _ open_A])
+    have "((\<lambda>s. exp (g s)) has_field_derivative eval_fds f s * deriv g s) (at s)" (is ?P)
+      by (rule derivative_eq_intros deriv_g s)+ (insert s, simp_all add: g)
+    also from s have ev: "eventually (\<lambda>t. t \<in> ?A) (nhds s)"
+      by (intro eventually_nhds_in_open open_A) auto
+    have "?P \<longleftrightarrow> (eval_fds f has_field_derivative eval_fds f s * deriv g s) (at s)"
+      by (intro DERIV_cong_ev refl eventually_mono[OF ev]) (auto simp: g)
+    finally have "(eval_fds f has_field_derivative eval_fds f s * deriv g s) (at s)" .
+    moreover have "(eval_fds f has_field_derivative eval_fds (fds_deriv f) s) (at s)"
+      using s' assms by (intro derivative_intros) auto
+    ultimately have "eval_fds f s * deriv g s = eval_fds (fds_deriv f) s"
+      by (rule DERIV_unique)
+    hence "deriv g s = eval_fds (fds_deriv f) s / eval_fds f s"
+      using s nz by (simp add: field_simps)
+    with deriv_g show ?thesis by (auto intro: has_field_derivative_at_within)
+  qed  
+
+  have "\<exists>c. \<forall>z\<in>{z. Re z > s0}. ?h z = c"
+  proof (rule DERIV_zero_constant, goal_cases)
+    case 1
+    show ?case using convex_halfspace_gt[of _ "1::complex"]
+      by (cases s0) auto
+  next
+    case (2 z)
+    have "conv_abscissa (fds_ln l f) \<le> abs_conv_abscissa (fds_ln l f)"
+      by (rule conv_le_abs_conv_abscissa)
+    also have "\<dots> \<le> abs_conv_abscissa (fds_deriv f / f)"
+      by (simp add: abs_conv_abscissa_ln)
+    also have "\<dots> \<le> max (abs_conv_abscissa (fds_deriv f)) ?s1" unfolding divide_fds_def 
+      by (rule abs_conv_abscissa_mult_le)
+    also have "\<dots> < Re z" using 2 assms by (auto simp: abs_conv_abscissa_deriv)
+    finally have s1: "conv_abscissa (fds_ln l f) < ereal (Re z)" .
+
+    have "conv_abscissa f \<le> abs_conv_abscissa f"
+      by (rule conv_le_abs_conv_abscissa)
+    also have "\<dots> < Re z" using 2 assms by auto
+    finally have s2: "conv_abscissa f < ereal (Re z)" .
+
+    from l have "fds_nth f 1 \<noteq> 0" by auto
+    with 2 assms have *: "eval_fds (fds_deriv f / f) z = eval_fds (fds_deriv f) z / (eval_fds f z)"
+      by (auto simp: eval_fds_mult fds_abs_converges eval_fds_inverse
+                     divide_simps abs_conv_abscissa_deriv divide_fds_def)
+    have "eval_fds f z \<noteq> 0" using 2 assms by auto
+    show ?case using s1 s2 2 nz
+      by (auto intro!: derivative_eq_intros simp: * field_simps)
+  qed
+  then obtain c where c: "\<And>z. Re z > s0 \<Longrightarrow> ?h z = c" by blast
+
+  have "(at_top :: real filter) \<noteq> bot" by simp
+  moreover from assms have "s0 \<noteq> \<infinity>" by auto
+  have "eventually (\<lambda>x. c = (?h \<circ> of_real) x) at_top"
+    using eventually_gt_ereal_at_top[OF \<open>s0 \<noteq> \<infinity>\<close>] by eventually_elim (simp add: c)
+  hence "((?h \<circ> of_real) \<longlongrightarrow> c) at_top"
+    by (rule Lim_transform_eventually) auto
+  moreover have "((?h \<circ> of_real) \<longlongrightarrow> fds_nth (fds_ln l f) 1 - l) at_top"
+    using \<open>conv_abscissa (fds_ln l f) \<noteq> \<infinity>\<close> and l unfolding o_def
+    by (intro tendsto_intros tendsto_eval_fds_Re_at_top) (auto simp: filterlim_ident)
+  ultimately have "c = fds_nth (fds_ln l f) 1 - l"
+    by (rule tendsto_unique)
+  with c[OF \<open>Re s > s0\<close>] and l and nz show ?thesis
+    by (simp add: exp_minus field_simps)
+qed
+
+text \<open>
+  Less explicitly: For a sufficiently nice absolutely convergent Dirichlet series converging
+  to a function $f(s)$, the formal logarithm absolutely converges to some logarithm of $f(s)$.
+\<close>
+lemma eval_fds_ln':
+  fixes s0 :: ereal
+  assumes "ereal (Re s) > s0"
+  assumes "s0 \<ge> abs_conv_abscissa f" and "s0 \<ge> abs_conv_abscissa (inverse f)"
+      and nz: "\<And>s. Re s > s0 \<Longrightarrow> eval_fds f s \<noteq> 0" "fds_nth f 1 \<noteq> 0"
+  assumes l: "exp l = fds_nth f 1"
+  shows   "exp (eval_fds (fds_ln l f) s) = eval_fds f s"
+proof -
+  let ?s0 = "abs_conv_abscissa f" and ?s1 = "abs_conv_abscissa (inverse f)"
+  let ?h = "\<lambda>s. eval_fds f s * exp (-eval_fds (fds_ln l f) s)"
+
+  have "conv_abscissa f \<le> abs_conv_abscissa f" by (rule conv_le_abs_conv_abscissa)
+  moreover from assms have "\<dots> \<noteq> \<infinity>" by auto
+  ultimately have "conv_abscissa f \<noteq> \<infinity>" by auto
+
+  have "conv_abscissa (fds_ln l f) \<le> abs_conv_abscissa (fds_ln l f)"
+    by (rule conv_le_abs_conv_abscissa)
+  also have "\<dots> \<le> abs_conv_abscissa (fds_deriv f / f)"
+    unfolding fds_ln_def by (simp add: abs_conv_abscissa_integral)
+  also have "\<dots> \<le> max (abs_conv_abscissa (fds_deriv f)) ?s1"
+    unfolding divide_fds_def by (rule abs_conv_abscissa_mult_le)
+  finally have "conv_abscissa (fds_ln l f) \<noteq> \<infinity>"
+    using assms by (auto simp: max_def abs_conv_abscissa_deriv split: if_splits)
+
+  have "\<exists>c. \<forall>z\<in>{z. Re z > s0}. ?h z = c"
+  proof (rule DERIV_zero_constant, goal_cases)
+    case 1
+    show ?case using convex_halfspace_gt[of _ "1::complex"]
+      by (cases s0) auto
+  next
+    case (2 z)
+    have "conv_abscissa (fds_ln l f) \<le> abs_conv_abscissa (fds_ln l f)"
+      by (rule conv_le_abs_conv_abscissa)
+    also have "\<dots> \<le> abs_conv_abscissa (fds_deriv f / f)"
+      unfolding fds_ln_def by (simp add: abs_conv_abscissa_integral)
+    also have "\<dots> \<le> max (abs_conv_abscissa (fds_deriv f)) ?s1" unfolding divide_fds_def 
+      by (rule abs_conv_abscissa_mult_le)
+    also have "\<dots> < Re z" using 2 assms by (auto simp: abs_conv_abscissa_deriv)
+    finally have s1: "conv_abscissa (fds_ln l f) < ereal (Re z)" .
+
+    have "conv_abscissa f \<le> abs_conv_abscissa f"
+      by (rule conv_le_abs_conv_abscissa)
+    also have "\<dots> < Re z" using 2 assms by auto
+    finally have s2: "conv_abscissa f < ereal (Re z)" .
+
+    from l have "fds_nth f 1 \<noteq> 0" by auto
+    with 2 assms have *: "eval_fds (fds_deriv f / f) z = eval_fds (fds_deriv f) z / (eval_fds f z)"
+      by (auto simp: eval_fds_mult fds_abs_converges eval_fds_inverse
+                     divide_simps abs_conv_abscissa_deriv divide_fds_def)
+    have "eval_fds f z \<noteq> 0" using 2 assms by auto
+    thus ?case using s1 s2
+      by (auto intro!: derivative_eq_intros simp: *)
+  qed
+  then obtain c where c: "\<And>z. Re z > s0 \<Longrightarrow> ?h z = c" by blast
+
+  have "(at_top :: real filter) \<noteq> bot" by simp
+  moreover from assms have "s0 \<noteq> \<infinity>" by auto
+  have "eventually (\<lambda>x. c = (?h \<circ> of_real) x) at_top"
+    using eventually_gt_ereal_at_top[OF \<open>s0 \<noteq> \<infinity>\<close>] by eventually_elim (simp add: c)
+  hence "((?h \<circ> of_real) \<longlongrightarrow> c) at_top"
+    by (rule Lim_transform_eventually) auto
+  moreover have "((?h \<circ> of_real) \<longlongrightarrow> fds_nth f 1 * exp (-fds_nth (fds_ln l f) 1)) at_top"
+    unfolding o_def using \<open>conv_abscissa (fds_ln l f) \<noteq> \<infinity>\<close> and \<open>conv_abscissa f \<noteq> \<infinity>\<close>
+    by (intro tendsto_intros tendsto_eval_fds_Re_at_top) (auto simp: filterlim_ident)
+  ultimately have "c = fds_nth f 1 * exp (-fds_nth (fds_ln l f) 1)"
+    by (rule tendsto_unique)
+  with c[OF \<open>Re s > s0\<close>] and l and nz show ?thesis
+    by (simp add: exp_minus field_simps)
+qed
+
+lemma fds_ln_completely_multiplicative:
+  fixes f :: "'a :: dirichlet_series fds"
+  assumes "completely_multiplicative_function (fds_nth f)"
+  assumes "fds_nth f 1 \<noteq> 0"
+  shows   "fds_ln l f = fds (\<lambda>n. if n = 1 then l else fds_nth f n * mangoldt n /\<^sub>R ln n)"
+proof -
+  have "fds_ln l f = fds_integral l (fds_deriv f / f)"
+    by (simp add: fds_ln_def)
+  also have "fds_deriv f = -fds (\<lambda>n. fds_nth f n * mangoldt n) * f"
+    by (intro completely_multiplicative_fds_deriv' assms)
+  also have "\<dots> / f = -fds (\<lambda>n. fds_nth f n * mangoldt n) * (f * inverse f)"
+    by (simp add: divide_fds_def)
+  also from assms have "f * inverse f = 1"
+    by (simp add: fds_right_inverse)
+  also have "fds_integral l (- fds (\<lambda>n. fds_nth f n * mangoldt n) * 1) = 
+               fds (\<lambda>n. if n = 1 then l else fds_nth f n * mangoldt n /\<^sub>R ln n)"
+    by (simp add: fds_integral_def cong: if_cong)
+  finally show ?thesis .
+qed
+
+lemma eval_fds_ln_completely_multiplicative_strong:
+  fixes s :: "'a :: dirichlet_series" and l :: 'a and f :: "'a fds" and g :: "nat \<Rightarrow> 'a"
+  defines "h \<equiv> fds (\<lambda>n. fds_nth (fds_ln l f) n * g n)"
+  assumes "fds_abs_converges h s"
+  assumes "completely_multiplicative_function (fds_nth f)" and "fds_nth f 1 \<noteq> 0"
+  shows  "(\<lambda>(p,k). (fds_nth f p / nat_power p s) ^ Suc k * g (p ^ Suc k) / of_nat (Suc k))
+            abs_summable_on ({p. prime p} \<times> UNIV)" (is ?th1)
+    and  "eval_fds h s = l * g 1 + (\<Sum>\<^sub>a(p, k)\<in>{p. prime p}\<times>UNIV.
+            (fds_nth f p / nat_power p s) ^ Suc k * g (p ^ Suc k) / of_nat (Suc k))" (is ?th2)
+proof -
+  let ?P = "{p::nat. prime p}"
+  interpret f: completely_multiplicative_function "fds_nth f" by fact
+  from assms have *: "(\<lambda>n. fds_nth h n / nat_power n s) abs_summable_on UNIV"
+    by (auto simp: abs_summable_on_nat_iff' fds_abs_converges_def)
+  have eq: "h = fds (\<lambda>n. if n = 1 then l * g 1 else fds_nth f n * g n * mangoldt n /\<^sub>R ln (real n))"
+    using fds_ln_completely_multiplicative [OF assms(3), of l] 
+    by (simp add: h_def fds_eq_iff)
+
+  note *
+  also have "(\<lambda>n. fds_nth h n / nat_power n s) abs_summable_on UNIV \<longleftrightarrow>
+          (\<lambda>x. if x = Suc 0 then l * g 1 else fds_nth f x * g x * mangoldt x /\<^sub>R ln (real x) /
+                nat_power x s) abs_summable_on {1} \<union> Collect primepow"
+    using eq by (intro abs_summable_on_cong_neutral) (auto simp: fds_nth_fds mangoldt_def)
+  finally have sum1: "(\<lambda>x. if x = Suc 0 then l * g 1 else 
+                        fds_nth f x * g x * mangoldt x /\<^sub>R ln (real x) / nat_power x s)
+                      abs_summable_on Collect primepow"
+    by (rule abs_summable_on_subset) auto
+  also have "?this \<longleftrightarrow> (\<lambda>x. fds_nth f x * g x * mangoldt x /\<^sub>R ln (real x) / nat_power x s) 
+                         abs_summable_on Collect primepow" 
+    by (intro abs_summable_on_cong) (insert primepow_gt_Suc_0, auto)
+  also have "\<dots> \<longleftrightarrow> (\<lambda>(p,k). fds_nth f (p ^ Suc k) * g (p ^ Suc k) * mangoldt (p ^ Suc k)
+                 /\<^sub>R ln (real (p ^ Suc k)) / nat_power (p ^ Suc k) s) abs_summable_on (?P \<times> UNIV)"
+    using bij_betw_primepows unfolding case_prod_unfold
+    by (intro abs_summable_on_reindex_bij_betw [symmetric])
+  also have "\<dots> \<longleftrightarrow> ?th1"
+    by (intro abs_summable_on_cong)
+       (auto simp: f.mult f.power mangoldt_def aprimedivisor_prime_power ln_realpow prime_gt_0_nat 
+          nat_power_power_left divide_simps scaleR_conv_of_real simp del: power_Suc)
+  finally show ?th1 .
+
+  have "eval_fds h s = (\<Sum>\<^sub>an. fds_nth h n / nat_power n s)"
+    using * unfolding eval_fds_def by (subst infsetsum_nat') auto
+  also have "\<dots> = (\<Sum>\<^sub>an \<in> {1} \<union> {n. primepow n}.
+        if n = 1 then l * g 1 else fds_nth f n * g n * mangoldt n /\<^sub>R ln (real n) /  nat_power n s)"
+    by (intro infsetsum_cong_neutral) (auto simp: eq fds_nth_fds mangoldt_def)
+  also have "\<dots> = l * g 1 + (\<Sum>\<^sub>an | primepow n.
+         if n = 1 then l * g 1 else fds_nth f n * g n * mangoldt n /\<^sub>R ln (real n) / nat_power n s)"
+    (is "_ = _ + ?x") using sum1 primepow_gt_Suc_0 by (subst infsetsum_Un_disjoint) auto
+  also have "?x =
+    (\<Sum>\<^sub>an\<in>Collect primepow. fds_nth f n * g n * mangoldt n /\<^sub>R ln (real n) / nat_power n s)"
+    (is "_ = infsetsum ?f _") by (intro infsetsum_cong refl) (insert primepow_gt_Suc_0, auto)
+  also have "\<dots> = (\<Sum>\<^sub>a(p,k)\<in>(?P \<times> UNIV). fds_nth f (p ^ Suc k) * g (p ^ Suc k) *
+                    mangoldt (p ^ Suc k) /\<^sub>R ln (p ^ Suc k) / nat_power (p ^ Suc k) s)"
+     using bij_betw_primepows unfolding case_prod_unfold 
+     by (intro infsetsum_reindex_bij_betw [symmetric])
+   also have "\<dots> = (\<Sum>\<^sub>a(p,k)\<in>(?P \<times> UNIV). 
+                     (fds_nth f p / nat_power p s) ^ Suc k * g (p ^ Suc k) / of_nat (Suc k))"
+    by (intro infsetsum_cong)
+       (auto simp: f.mult f.power mangoldt_def aprimedivisor_prime_power ln_realpow prime_gt_0_nat 
+          nat_power_power_left divide_simps scaleR_conv_of_real simp del: power_Suc)
+  finally show ?th2 .
+qed    
+
+lemma eval_fds_ln_completely_multiplicative:
+  fixes s :: "'a :: dirichlet_series" and l :: 'a and f :: "'a fds"
+  assumes "completely_multiplicative_function (fds_nth f)" and "fds_nth f 1 \<noteq> 0"
+  assumes "s \<bullet> 1 > abs_conv_abscissa f" "s \<bullet> 1 > abs_conv_abscissa (inverse f)"
+  shows  "(\<lambda>(p,k). (fds_nth f p / nat_power p s) ^ Suc k / of_nat (Suc k))
+            abs_summable_on ({p. prime p} \<times> UNIV)" (is ?th1)
+    and  "eval_fds (fds_ln l f) s =
+                  l + (\<Sum>\<^sub>a(p, k)\<in>{p. prime p}\<times>UNIV.
+                        (fds_nth f p / nat_power p s) ^ Suc k / of_nat (Suc k))" (is ?th2)
+proof -
+  from assms have "fds_abs_converges (fds_ln l f) s"
+    by (intro fds_abs_converges_ln)
+       (auto simp: divide_fds_def abs_conv_abscissa_deriv intro!: fds_abs_converges_mult 
+             intro: fds_abs_converges)
+  hence "fds_abs_converges (fds (\<lambda>n. fds_nth (fds_ln l f) n * 1)) s"
+    by simp
+  from eval_fds_ln_completely_multiplicative_strong [OF this assms(1,2)] show ?th1 ?th2 
+    by simp_all
+qed
+
+
+subsection \<open>Euler products\<close>
 
 lemma fds_euler_product_LIMSEQ:
   fixes f :: "'a :: {nat_power, real_normed_field, banach, second_countable_topology} fds"
@@ -1398,6 +1712,7 @@ proof -
     using assms * ** by (subst fds_abs_convergent_zero_iff) simp_all
 qed
 
+
 subsection \<open>Application to the M\"{o}bius $\mu$ function\<close>
 
 lemma inverse_squares_sums': "(\<lambda>n. 1 / real n ^ 2) sums (pi ^ 2 / 6)"
@@ -1426,5 +1741,5 @@ proof -
   finally have "(\<Sum>n. moebius_mu n / (real n)\<^sup>2) = 6 / pi ^ 2" by (simp add: field_simps)
   with summable_moebius_over_square show ?thesis by (simp add: sums_iff)
 qed
-  
+
 end

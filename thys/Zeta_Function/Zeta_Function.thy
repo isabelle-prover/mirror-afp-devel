@@ -127,6 +127,92 @@ proof -
     by (subst has_integral_restrict) auto
   finally show ?thesis .
 qed
+
+lemma powr_divide_complex_of_real:
+  assumes "x \<noteq> 0" "y > 0"
+  shows   "(x / of_real y) powr s = x powr s / of_real y powr (s::complex)"
+  using assms by (auto simp: powr_def Ln_divide_of_real ring_distribs exp_diff Ln_of_real)
+
+lemma powr_add_minus_powr_asymptotics:
+  fixes a z :: complex 
+  shows "((\<lambda>z. ((1 + z) powr a - 1) / z) \<longlongrightarrow> a) (at 0)"
+proof (rule Lim_transform_eventually)
+  have "eventually (\<lambda>z::complex. z \<in> ball 0 1 - {0}) (at 0)"
+    using eventually_at_ball'[of 1 "0::complex" UNIV] by (simp add: dist_norm)
+  thus "eventually (\<lambda>z. (\<Sum>n. (a gchoose (Suc n)) * z ^ n) = ((1 + z) powr a - 1) / z) (at 0)"
+  proof eventually_elim
+    case (elim z)
+    hence "(\<lambda>n. (a gchoose n) * z ^ n) sums (1 + z) powr a"
+      by (intro gen_binomial_complex) auto
+    hence "(\<lambda>n. (a gchoose (Suc n)) * z ^ (Suc n)) sums ((1 + z) powr a - 1)"
+      by (subst sums_Suc_iff) simp_all
+    also have "(\<lambda>n. (a gchoose (Suc n)) * z ^ (Suc n)) = (\<lambda>n. z * ((a gchoose (Suc n)) * z ^ n))"
+      by (simp add: algebra_simps)
+    finally have "(\<lambda>n. (a gchoose (Suc n)) * z ^ n) sums (((1 + z) powr a - 1) / z)"
+      by (rule sums_mult_D) (use elim in auto)
+    thus ?case by (simp add: sums_iff)
+  qed
+next
+  have "conv_radius (\<lambda>n. a gchoose (n + 1)) = conv_radius (\<lambda>n. a gchoose n)"
+    using conv_radius_shift[of "\<lambda>n. a gchoose n" 1] by simp
+  hence "continuous_on (cball 0 (1/2)) (\<lambda>z. \<Sum>n. (a gchoose (Suc n)) * (z - 0) ^ n)"
+    using conv_radius_gchoose[of a] by (intro powser_continuous_suminf) (simp_all)
+  hence "isCont (\<lambda>z. \<Sum>n. (a gchoose (Suc n)) * z ^ n) 0"
+    by (auto intro: continuous_on_interior)
+  thus "(\<lambda>z. \<Sum>n. (a gchoose Suc n) * z ^ n) \<midarrow>0\<rightarrow> a"
+    by (auto simp: isCont_def)
+qed
+
+lemma tendsto_neg_powr_complex_of_real:
+  assumes "filterlim f at_top F" and "Re s < 0"
+  shows   "((\<lambda>x. complex_of_real (f x) powr s) \<longlongrightarrow> 0) F"
+proof -
+  have "((\<lambda>x. norm (complex_of_real (f x) powr s)) \<longlongrightarrow> 0) F"
+  proof (rule Lim_transform_eventually)
+    from assms(1) have "eventually (\<lambda>x. f x \<ge> 0) F"
+      by (auto simp: filterlim_at_top)
+    thus "eventually (\<lambda>x. f x powr Re s = norm (of_real (f x) powr s)) F"
+      by eventually_elim (simp add: norm_powr_real_powr)
+    from assms show "((\<lambda>x. f x powr Re s) \<longlongrightarrow> 0) F"
+      by (intro tendsto_neg_powr)
+  qed
+  thus ?thesis by (simp add: tendsto_norm_zero_iff)
+qed
+
+lemma tendsto_neg_powr_complex_of_nat:
+  assumes "filterlim f at_top F" and "Re s < 0"
+  shows   "((\<lambda>x. of_nat (f x) powr s) \<longlongrightarrow> 0) F"
+  using tendsto_neg_powr_complex_of_real[OF filterlim_compose[OF 
+          filterlim_real_sequentially assms(1)] assms(2)] by simp
+
+lemma complex_powr_add_minus_powr_asymptotics:
+  fixes s :: complex
+  assumes a: "a > 0" and s: "Re s < 1"
+  shows "filterlim (\<lambda>x. of_real (x + a) powr s - of_real x powr s) (nhds 0) at_top"
+proof (rule Lim_transform_eventually)
+  show "eventually (\<lambda>x. ((1 + of_real (a / x)) powr s - 1) / of_real (a / x) * 
+                            of_real x powr (s - 1) * a = 
+                          of_real (x + a) powr s - of_real x powr s) at_top"
+    (is "eventually (\<lambda>x. ?f x / ?g x * ?h x * _ = _) _") using eventually_gt_at_top[of a]
+  proof eventually_elim
+    case (elim x)
+    have "?f x / ?g x * ?h x * a = ?f x * (a * ?h x / ?g x)" by simp
+    also have "a * ?h x / ?g x = of_real x powr s"
+      using elim a by (simp add: powr_diff)
+    also have "?f x * \<dots> = of_real (x + a) powr s - of_real x powr s"
+      using a elim by (simp add: algebra_simps powr_times_real [symmetric])
+    finally show ?case .
+  qed
+
+  have "filterlim (\<lambda>x. complex_of_real (a / x)) (nhds (complex_of_real 0)) at_top"
+    by (intro tendsto_of_real real_tendsto_divide_at_top[OF tendsto_const] filterlim_ident)
+  hence "filterlim (\<lambda>x. complex_of_real (a / x)) (at 0) at_top"
+    using a by (intro filterlim_atI) auto
+  hence "((\<lambda>x. ?f x / ?g x * ?h x * a) \<longlongrightarrow> s * 0 * a) at_top" using s
+    by (intro tendsto_mult filterlim_compose[OF powr_add_minus_powr_asymptotics]
+              tendsto_const tendsto_neg_powr_complex_of_real filterlim_ident) auto
+  thus "((\<lambda>x. ?f x / ?g x * ?h x * a) \<longlongrightarrow> 0) at_top" by simp
+qed
 (* END TODO *)
 
 lemma summable_zeta:
@@ -718,6 +804,124 @@ corollary zeta_real: "zeta (of_real x) \<in> \<real>"
   unfolding zeta_def by (rule hurwitz_zeta_real) auto
 
 
+text \<open>
+  The following gives an extension of the $\zeta$ functions to the critical strip.
+\<close>
+lemma hurwitz_zeta_critical_strip:
+  fixes s :: complex and a :: real
+  defines "S \<equiv> (\<lambda>n. \<Sum>i<n. (of_nat i + a) powr - s)"
+  defines "I' \<equiv> (\<lambda>n. of_nat n powr (1 - s) / (1 - s))"
+  assumes "Re s > 0" "s \<noteq> 1" and "a > 0"
+  shows   "(\<lambda>n. S n - I' n) \<longlonglongrightarrow> hurwitz_zeta a s"
+proof -
+  from assms have [simp]: "s \<noteq> 1" by auto
+  let ?f = "\<lambda>x. of_real (x + a) powr -s"
+  let ?fs = "\<lambda>n x. (-1) ^ n * pochhammer s n * of_real (x + a) powr (-s - of_nat n)"
+  define I where "I = (\<lambda>n. (of_nat n + a) powr (1 - s) / (1 - s))"
+  define R where "R = (\<lambda>n. EM_remainder' 3 (?fs 3) (real 0) (real n))"
+  define R_lim where "R_lim = EM_remainder 3 (?fs 3) 0"
+  define C where "C = s * a powr (-s - 1) / 12 - (a powr -s / 2)"
+  define D where "D = (\<lambda>n. (-s/12) * of_real (a + real n) powr (- s - 1) +
+                            (1/2) * (of_real (a + real n) powr - s))"
+  define D' where "D' = (\<lambda>n. of_real (a + real n) powr - s)"
+  define C' where "C' = a powr (1 - s) / (1 - s)"
+  define C'' where "C'' = of_real a powr - s"
+  {
+    fix n :: nat assume n: "n > 0"
+    have "((\<lambda>x. of_real (x + a) powr -s) has_integral (of_real (real n + a) powr (1-s) / (1 - s) - 
+            of_real (0 + a) powr (1 - s) / (1 - s))) {0..real n}" using n assms 
+      by (intro fundamental_theorem_of_calculus)
+         (auto intro!: continuous_intros has_vector_derivative_real_field derivative_eq_intros
+               simp: complex_nonpos_Reals_iff)
+    hence I: "((\<lambda>x. of_real (x + a) powr -s) has_integral (I n - C')) {0..n}"
+      by (auto simp: divide_simps C'_def I_def)
+    have "(\<Sum>i\<in>{0<..n}. ?f (real i)) - integral {real 0..real n} ?f =
+            (\<Sum>k<3. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) + R n" 
+      using n assms unfolding R_def
+      by (intro euler_maclaurin_strong_raw_nat[where Y = "{0}"])
+         (auto intro!: continuous_intros derivative_eq_intros has_vector_derivative_real_field
+               simp: pochhammer_rec' algebra_simps complex_nonpos_Reals_iff add_eq_0_iff)
+    also have "(\<Sum>k<3. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) = 
+                  (s * a powr (- s - 1) - s * (n + a) powr (- s - 1)) / 12 +
+                  ((n + a) powr - s - a powr - s) / 2"
+      by (simp add: lessThan_nat_numeral scaleR_conv_of_real numeral_2_eq_2 [symmetric])
+    also have "\<dots> = C + D n" by (simp add: C_def D_def field_simps)
+    also have "integral {real 0..real n} (\<lambda>x. complex_of_real (x + a) powr - s) = I n - C'"
+      using I by (simp add: has_integral_iff)
+    also have "(\<Sum>i\<in>{0<..n}. of_real (real i + a) powr - s) = 
+                 (\<Sum>i=0..n. of_real (real i + a) powr - s) - of_real a powr -s"
+      using assms by (subst sum_head) auto
+    also have "(\<Sum>i=0..n. of_real (real i + a) powr - s) = S n + of_real (real n + a) powr -s"
+      unfolding S_def by (subst sum_last_plus) (auto simp: atLeast0LessThan)
+    finally have "C - C' + C'' - D' n + D n + R n + (I n - I' n) = S n - I' n"
+      by (simp add: algebra_simps S_def D'_def C''_def)
+  }
+  hence ev: "eventually (\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n) = S n - I' n) at_top"
+    by (intro eventually_mono[OF eventually_gt_at_top[of 0]]) auto
+
+  have [simp]: "-3 - s = -s - 3" by simp
+  {
+    let ?C = "norm (pochhammer s 3)"
+    have "R \<longlonglongrightarrow> R_lim" unfolding R_def R_lim_def of_nat_0
+    proof (subst of_int_0 [symmetric], rule tendsto_EM_remainder)
+      show "eventually (\<lambda>x. norm (?fs 3 x) \<le> ?C * (x + a) powr (-Re s - 3)) at_top"
+        using eventually_ge_at_top[of 0]
+        by eventually_elim (insert assms, auto simp: norm_mult norm_powr_real_powr)
+    next
+      fix x assume x: "x \<ge> real_of_int 0"
+      have [simp]: "-numeral n - (x :: real) = -x - numeral n" for x n by (simp add: algebra_simps)
+      show "((\<lambda>x. ?C / (-Re s - 2) * (x + a) powr (-Re s - 2)) has_real_derivative 
+              ?C * (x + a) powr (- Re s - 3)) (at x within {real_of_int 0..})"
+        using assms x by (auto intro!: derivative_eq_intros)
+    next
+      have "(\<lambda>y. ?C / (- Re s - 2) * (a + real y) powr (- Re s - 2)) \<longlonglongrightarrow> 0"
+        by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_real_sequentially
+                  filterlim_tendsto_add_at_top[OF tendsto_const]) (use assms in auto)
+      thus "convergent (\<lambda>y. ?C / (- Re s - 2) * (real y + a) powr (- Re s - 2))"
+        by (auto simp: add_ac convergent_def)
+    qed (intro integrable_EM_remainder' continuous_intros, insert assms, auto simp: add_eq_0_iff)
+  }
+  moreover have "(\<lambda>n. I n - I' n) \<longlonglongrightarrow> 0"
+  proof -
+    have "(\<lambda>n. (complex_of_real (real n + a) powr (1 - s) - 
+                 of_real (real n) powr (1 - s)) / (1 - s)) \<longlonglongrightarrow> 0 / (1 - s)" 
+      using assms(3-5) by (intro filterlim_compose[OF _ filterlim_real_sequentially]
+                             tendsto_divide complex_powr_add_minus_powr_asymptotics) auto
+    thus "(\<lambda>n. I n - I' n) \<longlonglongrightarrow> 0" by (simp add: I_def I'_def divide_simps)
+  qed
+  ultimately have "(\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n)) 
+                     \<longlonglongrightarrow> C - C' + C'' - 0 + (0 + 0) + R_lim + 0"
+    unfolding D_def D'_def using assms
+    by (intro tendsto_add tendsto_diff tendsto_const tendsto_mult_right_zero
+              tendsto_neg_powr_complex_of_real filterlim_tendsto_add_at_top 
+              filterlim_real_sequentially) auto
+  also have "C - C' + C'' - 0 + (0 + 0) + R_lim + 0 = 
+               (a powr - s / 2) + a powr (1 - s) / (s - 1) + s * a powr (- s - 1) / 12 + R_lim"
+    by (simp add: C_def C'_def C''_def field_simps)
+  also have "\<dots> = hurwitz_zeta a s"
+    using assms by (simp add: hurwitz_zeta_def pre_zeta_def pre_zeta_aux_def
+                              R_lim_def scaleR_conv_of_real)
+  finally have "(\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n)) \<longlonglongrightarrow> hurwitz_zeta a s" .
+  from ev and this show ?thesis
+    by (rule Lim_transform_eventually)
+qed
+
+lemma zeta_critical_strip:
+  fixes s :: complex and a :: real
+  defines "S \<equiv> (\<lambda>n. \<Sum>i=1..n. (of_nat i) powr - s)"
+  defines "I \<equiv> (\<lambda>n. of_nat n powr (1 - s) / (1 - s))"
+  assumes s: "Re s > 0" "s \<noteq> 1"
+  shows   "(\<lambda>n. S n - I n) \<longlonglongrightarrow> zeta s"
+proof -
+  from hurwitz_zeta_critical_strip[OF s zero_less_one]
+    have "(\<lambda>n. (\<Sum>i<n. complex_of_real (Suc i) powr - s) -
+            of_nat n powr (1 - s) / (1 - s)) \<longlonglongrightarrow> hurwitz_zeta 1 s" by (simp add: add_ac)
+  also have "(\<lambda>n. (\<Sum>i<n. complex_of_real (Suc i) powr -s)) = (\<lambda>n. (\<Sum>i=1..n. of_nat i powr -s))"
+    by (intro ext sum.reindex_bij_witness[of _ "\<lambda>x. x - 1" Suc]) auto
+  finally show ?thesis by (simp add: zeta_def S_def I_def)
+qed
+
+
 subsection \<open>Special values of the $\zeta$ functions\<close>
 
 theorem hurwitz_zeta_neg_of_nat: 
@@ -1117,7 +1321,7 @@ qed
 
 corollary zeta_integral_Gamma_def:
   assumes "Re z > 1"
-  shows   "zeta z = 
+  shows   "zeta z =
              rGamma z * (\<integral>x\<in>{0<..}. (of_real x powr (z - 1) / of_real (exp x - 1)) \<partial>lebesgue)"
 proof -
   from assms have "Gamma z \<noteq> 0" 

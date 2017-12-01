@@ -662,6 +662,23 @@ proof -
   finally show \<dots> .
 qed
 
+lemma tendsto_EM_remainder:
+  fixes f :: "real \<Rightarrow> 'b :: {banach,real_normed_algebra}"
+  assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
+  assumes integrable: "\<And>a' b . a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
+                         (\<lambda>t. pbernpoly n t *\<^sub>R f t) integrable_on {a'..b}"
+  assumes conv: "convergent (\<lambda>y. G (real y))"
+  assumes bound: "eventually (\<lambda>x. norm (f x) \<le> g x) at_top"
+  shows   "filterlim (\<lambda>b. EM_remainder' n f a b) 
+             (nhds (EM_remainder n f a)) sequentially"
+proof -
+  have "uniform_limit {()} (\<lambda>b s. EM_remainder' n f a b) 
+             (\<lambda>s. EM_remainder n f a) sequentially"
+    using assms by (intro uniform_limit_EM_remainder[where G = G and g = g]) auto
+  moreover have "() \<in> {()}" by simp
+  ultimately show ?thesis by (rule tendsto_uniform_limitI)
+qed
+
 lemma EM_remainder_0 [simp]: "EM_remainder n (\<lambda>x. 0) a = 0"
   by (rule EM_remainder_eqI) (simp add: EM_remainder'_def)
 

@@ -860,6 +860,11 @@ proof (rule fds_eqI, goal_cases)
     using 1 by (simp add: fds_nth_deriv scaleR_conv_of_real)
   finally show ?case ..
 qed
+
+lemma completely_multiplicative_fds_deriv':
+  "completely_multiplicative_function (fds_nth f) \<Longrightarrow>
+     fds_deriv f = - fds (\<lambda>n. fds_nth f n * mangoldt n) * f"
+  using completely_multiplicative_fds_deriv[of "fds_nth f"] by simp
   
 lemma fds_deriv_zeta: 
   "fds_deriv fds_zeta = 
@@ -877,6 +882,35 @@ lemma fds_mangoldt_times_zeta: "fds mangoldt * fds_zeta = fds (\<lambda>x. of_re
 lemma fds_deriv_zeta': "fds_deriv fds_zeta = 
     -fds (\<lambda>x. of_real (ln (real x)):: 'a :: {comm_semiring_1,real_algebra_1})"
   by (simp add: fds_deriv_zeta fds_mangoldt_times_zeta)
+
+
+subsection \<open>Formal integral\<close>
+
+definition fds_integral :: "'a \<Rightarrow> 'a :: real_algebra fds \<Rightarrow> 'a fds" where
+  "fds_integral c f = fds (\<lambda>n. if n = 1 then c else - fds_nth f n /\<^sub>R ln (real n))"
+
+lemma fds_deriv_fds_integral [simp]: 
+    "fds_nth f (Suc 0) = 0 \<Longrightarrow> fds_deriv (fds_integral c f) = f"
+  by (simp add: fds_deriv_def fds_integral_def fds_eq_iff)
+
+lemma fds_integral_fds_deriv [simp]: "fds_integral (fds_nth f 1) (fds_deriv f) = f"
+  by (simp add: fds_deriv_def fds_integral_def fds_eq_iff)
+
+
+subsection \<open>Formal logarithm\<close>
+
+definition fds_ln :: "'a \<Rightarrow> 'a :: {real_normed_field} fds \<Rightarrow> 'a fds" where
+  "fds_ln l f = fds_integral l (fds_deriv f / f)"
+
+lemma fds_nth_Suc_0_fds_deriv [simp]: "fds_nth (fds_deriv f) (Suc 0) = 0"
+  by (simp add: fds_deriv_def)
+
+lemma fds_deriv_fds_ln [simp]: "fds_deriv (fds_ln l f) = fds_deriv f / f"
+  unfolding fds_ln_def by (subst fds_deriv_fds_integral) (simp_all add: divide_fds_def)
+
+
+lemma fds_nth_Suc_0_fds_ln [simp]: "fds_nth (fds_ln l f) (Suc 0) = l"
+  by (simp add: fds_ln_def fds_integral_def)
 
 
 subsection \<open>Convergence and connection to concrete functions\<close>
@@ -1140,7 +1174,30 @@ proof -
   finally show ?thesis by (simp add: eval_fds_def)
 qed
 
+lemma fds_abs_converges_integral:
+  assumes "fds_abs_converges f s"
+  shows   "fds_abs_converges (fds_integral c f) s"
+  unfolding fds_abs_converges_def
+proof (rule summable_comparison_test_ev)
+  show "summable (\<lambda>n. norm (fds_nth f n / nat_power n s))"
+    using assms by (simp add: fds_abs_converges_def)
+  show "eventually (\<lambda>n. norm (norm (fds_nth (fds_integral c f) n / nat_power n s))
+                           \<le> norm (fds_nth f n / nat_power n s)) at_top"
+    using eventually_gt_at_top[of 3]
+  proof eventually_elim
+    case (elim n)
+    hence "ln n \<ge> ln (exp 1)"
+      using exp_le by (subst ln_le_cancel_iff) auto
+    hence "norm (fds_nth f n) * 1 \<le> norm (fds_nth f n) * ln (real n)"
+      by (intro mult_left_mono) auto
+    with elim show ?case
+      by (simp_all add: fds_integral_def norm_divide divide_simps)
+  qed
+qed
 
-(* TODO: evaluating deriv, etc. *)
+lemma fds_abs_converges_ln: 
+  assumes "fds_abs_converges (fds_deriv f / f) s"
+  shows   "fds_abs_converges (fds_ln l f) s"
+  using assms unfolding fds_ln_def by (intro fds_abs_converges_integral)
 
 end
