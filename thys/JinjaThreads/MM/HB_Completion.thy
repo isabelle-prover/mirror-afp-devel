@@ -356,7 +356,7 @@ proof(intro exI conjI strip)
     next
       assume "\<not> a' < length E'"
       hence a'_E': "length E' \<le> a'" by simp
-      def a \<equiv> "a' - length E'"
+      define a where "a = a' - length E'"
       with a' a'_E' have a: "enat a < llength E"
         by(simp add: E''_def) (metis enat_add_mono le_add_diff_inverse plus_enat_simps(1))
       
@@ -365,7 +365,7 @@ proof(intro exI conjI strip)
         and lnth: "lnth E a = (t, NormalAction (ReadMem ad al v))"
         by(simp_all add: E''_def lnth_lappend2 action_obs_def)
       
-      def E''' \<equiv> "lappend (llist_of E') (ltake (enat a) E)"
+      define E''' where "E''' = lappend (llist_of E') (ltake (enat a) E)"
       let ?E'' = "lappend E''' (LCons (t, NormalAction (ReadMem ad al v)) LNil)"
     
       note hb also
@@ -652,7 +652,7 @@ lemma complete_hb_ta_hb_consistent:
   shows "ta_hb_consistent P E (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (complete_hb s E)))"
   (is "ta_hb_consistent _ _ (?obs (complete_hb s E))")
 proof -
-  def obs \<equiv> "?obs (complete_hb s E)" and a \<equiv> "complete_hb s E"
+  define obs a where "obs = ?obs (complete_hb s E)" and "a = complete_hb s E"
   with `hb_completion s E` have "\<exists>s. hb_completion s E \<and> obs = ?obs (complete_hb s E) \<and> a = complete_hb s E" by blast
   moreover have "wf (inv_image {(m, n). m < n} (llength \<circ> ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = [])))"
     (is "wf ?R") by(rule wf_inv_image)(rule wellorder_class.wf)

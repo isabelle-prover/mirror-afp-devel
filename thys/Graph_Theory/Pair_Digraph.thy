@@ -472,7 +472,7 @@ lemma
       \<subseteq> set (awalk_verts u p) \<union> {w}" (is ?B)
 proof -
   obtain x y where e_conv: "e = (x,y)" by (cases e) auto
-  def sG \<equiv> "subdivide G e w"
+  define sG where "sG = subdivide G e w"
   interpret S: pair_sym_digraph sG
     unfolding sG_def using elems by (rule pair_sym_digraph_subdivide)
 

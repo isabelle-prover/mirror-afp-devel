@@ -175,9 +175,10 @@ proof(simp add: PO_rhoare_defs Ate_trans_step_def, safe)
     and send: "\<forall>p. \<mu> p \<in> get_msgs (Ate_sendMsg r) sc (HOs r) (HOs r) p"
     and nxt: "\<forall>p. Ate_nextState r p (sc p) (\<mu> p) (sc' p)"
   note step=send nxt
-  def d_f \<equiv> "\<lambda>p. if decide (sc' p) \<noteq> decide (sc p) then decide (sc' p) else None"
+  define d_f
+    where "d_f p = (if decide (sc' p) \<noteq> decide (sc p) then decide (sc' p) else None)" for p
 
-  def sa' \<equiv> "\<lparr> 
+  define sa' where "sa' = \<lparr> 
     opt_v_state.next_round = Suc r
     , opt_v_state.last_vote = opt_v_state.last_vote sa ++ (Some o x o sc) 
     , opt_v_state.decisions = opt_v_state.decisions sa ++ d_f

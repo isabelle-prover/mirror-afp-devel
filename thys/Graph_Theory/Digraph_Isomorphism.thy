@@ -303,7 +303,7 @@ proof -
       by (auto simp: reachable_awalk)
     moreover
     then have "set p0 \<subseteq> arcs G" by (simp add: awalk_def)
-    def p \<equiv> "map (iso_arcs hom) p0"
+    define p where "p = map (iso_arcs hom) p0"
     have "set p \<subseteq> iso_arcs hom ` arcs G" "p0 = map (iso_arcs (inv_iso hom)) p"
       using \<open>set p0 \<subseteq> _\<close> hom by (auto simp: p_def map_idI subsetD)
     ultimately
@@ -473,7 +473,7 @@ proof -
 
   have *: "subgraph (app_iso (inv_iso hom) H) G"
     using hom pre_digraph.subgraph_app_isoI'[OF hom_inv subg aG.subgraph_refl] by simp
-  def H0 \<equiv> "app_iso (inv_iso hom) H"
+  define H0 where "H0 = app_iso (inv_iso hom) H"
   then have H0: "H = app_iso hom H0" "subgraph H0 G" 
     using hom subg \<open>subgraph _ G\<close> by (auto simp: )
     

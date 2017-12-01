@@ -469,7 +469,8 @@ proof (induct f rule: fmap_induct)
   case empty thus ?case by blast
 next
   case (insert f l t P f') note imp = this(2) and pred = this(4)
-  def pred_cof \<equiv> "\<lambda>L b b' l. \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P s p b b' l"
+  define pred_cof where "pred_cof L b b' l \<longleftrightarrow> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P s p b b' l)"
+    for L b b' l
   from 
     map_upd_nonempty[of f l t] `dom f' = dom (f(l \<mapsto> t))`
     one_more_dom[of l f']

@@ -572,7 +572,7 @@ begin
       unfolding transforms_to_unique_keys_def inj_on_def Ball_def map_to_set_def
       by auto (metis option.inject)
 
-    def vP \<equiv> "\<lambda>k v. \<exists>k' v'. m1.\<alpha> m k' = Some v' \<and> f (k', v') = Some (k, v)"
+    define vP where "vP k v \<longleftrightarrow> (\<exists>k' v'. m1.\<alpha> m k' = Some v' \<and> f (k', v') = Some (k, v))" for k v
     have vP_intro: "\<And>k v. (\<exists>k' v'. m1.\<alpha> m k' = Some v' 
         \<and> f (k', v') = Some (k, v)) \<longleftrightarrow> vP k v"
       unfolding vP_def by simp
@@ -667,4 +667,3 @@ sublocale g_value_image_filter_loc
 
 
 end
-

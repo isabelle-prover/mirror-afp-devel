@@ -64,7 +64,7 @@ next
   fix N
   assume NH:"N \<lhd> H" and Nneq1:"N \<noteq> {\<one>\<^bsub>H\<^esub>}"
   then interpret Nnormal: normal N H by simp
-  def M \<equiv> "(inv_into (carrier G) \<phi>) ` N"
+  define M where "M = (inv_into (carrier G) \<phi>) ` N"
   hence MG:"M \<lhd> G" using inv_iso NH H by (metis is_group iso_normal_subgroup)
   have surj:"\<phi> ` carrier G = carrier H" using iso unfolding iso_def bij_betw_def by simp
   hence MN:"\<phi> ` M = N" unfolding M_def using Nnormal.subset image_inv_into_cancel by metis

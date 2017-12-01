@@ -74,7 +74,7 @@ lemma Gcd_monoid_closure_in_monoid_closure:
   assumes "s \<in> S" "s \<noteq> 0"
   shows "Gcd (monoid_closure S) \<in> monoid_closure S"
 proof -
-  def m \<equiv> "LEAST n. n \<noteq> 0 \<and> int n \<in> monoid_closure S"
+  define m where "m = (LEAST n. n \<noteq> 0 \<and> int n \<in> monoid_closure S)"
 
   from `s \<in> S` have s: "int s \<in> monoid_closure S"
     by (rule monoid_closure.base)
@@ -222,10 +222,10 @@ proof -
     show "\<exists>N. \<forall>n\<ge>N. n * Gcd S \<in> S"
     proof (safe intro!: exI[of _ "a * a"])
       fix n
-      def m \<equiv> "(n - a * a) div a"
-      def r \<equiv> "(n - a * a) mod a"
+      define m where "m = (n - a * a) div a"
+      define r where "r = (n - a * a) mod a"
       with `0 < a` have "r < a" by simp
-      moreover def am \<equiv> "a + m"
+      moreover define am where "am = a + m"
       ultimately have "r < am" by simp
       assume "a * a \<le> n" then have n: "n = a * a + (m * a + r)"
         unfolding m_def r_def by simp
@@ -301,7 +301,7 @@ proof (induction n arbitrary: x)
     by (simp add: p_0 one_ennreal_def[symmetric] max_def)
 next
   case (Suc n)
-  def X \<equiv> "(SIGMA x:UNIV. K x)\<^sup>* `` K x"
+  define X where "X = (SIGMA x:UNIV. K x)\<^sup>* `` K x"
   then have X: "countable X"
     by (blast intro: countable_Image countable_reachable countable_set_pmf)
 
@@ -655,7 +655,7 @@ lemma H_eq:
   "\<not> recurrent s \<longleftrightarrow> H s s = 0"
   "H s t = U s t * H t t"
 proof -
-  def H' \<equiv> "\<lambda>t n. {\<omega>\<in>space S. enat n \<le> scount (HLD {t::'s}) \<omega>}"
+  define H' where "H' t n = {\<omega>\<in>space S. enat n \<le> scount (HLD {t::'s}) \<omega>}" for t n
   have [measurable]: "\<And>y n. H' y n \<in> sets S"
     by (simp add: H'_def)
   let ?H' = "\<lambda>s t n. measure (T s) (H' t n)"
@@ -1446,7 +1446,7 @@ proof (rule pmf_eqI antisym)+
   show "pmf (bind_pmf N K) i \<le> pmf N i"
     by (simp add: pmf_bind le)
 
-  def \<Omega> \<equiv> "N \<union> (\<Union>i\<in>N. K i)"
+  define \<Omega> where "\<Omega> = N \<union> (\<Union>i\<in>N. K i)"
   then have \<Omega>: "countable \<Omega>"
     by (auto intro: countable_set_pmf)
   then interpret N: sigma_finite_measure "count_space \<Omega>"
@@ -2165,7 +2165,7 @@ proof -
   from `essential_class C` have C_comm: "C \<in> UNIV // communicating"
     by (simp add: essential_class_def)
 
-  def K' \<equiv> "\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N"
+  define K' where "K' = (\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N)"
 
   interpret K2: MC_syntax K' .
   interpret KN: MC_pair K K' .
@@ -2256,7 +2256,7 @@ proof -
       by simp }
   note measure_y_eq = this
 
-  def D \<equiv> "{x::'s \<times> 's option. Some (fst x) = snd x}"
+  define D where "D = {x::'s \<times> 's option. Some (fst x) = snd x}"
 
   have [measurable]:
     "\<And>P::('s \<times> 's option \<Rightarrow> bool). P \<in> measurable (count_space UNIV) (count_space UNIV)"
@@ -2438,7 +2438,7 @@ lemma stationary_distribution_imp_p_limit:
   assumes [simp]: "x \<in> C" "y \<in> C"
   shows "p x y \<longlonglongrightarrow> pmf N y"
 proof -
-  def D \<equiv> "\<lambda>y n. \<bar>p x y n - pmf N y\<bar>"
+  define D where "D y n = \<bar>p x y n - pmf N y\<bar>" for y n
 
   from stationary_distribution_imp_limit[OF assms(1,2,3,4,5,6)]
   have INT: "(\<lambda>n. \<integral>y. D y n \<partial>count_space C) \<longlonglongrightarrow> 0"
@@ -2461,7 +2461,7 @@ proof -
        (auto simp: eventually_sequentially * D_nonneg)
   then show ?thesis
     using Lim_null[where l="pmf N y" and net=sequentially and f="p x y"]
-    by (simp add: D_def tendsto_rabs_zero_iff)
+    by (simp add: D_def [abs_def] tendsto_rabs_zero_iff)
 qed
 
 end

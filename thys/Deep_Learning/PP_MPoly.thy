@@ -309,7 +309,7 @@ proof -
     then have "finite {v. f v ^ PP_Poly_Mapping.lookup m v \<noteq> 1}"
       by (rule rev_finite_subset) (auto intro: ccontr)
   }
-  moreover def g \<equiv> "\<lambda>m. (\<Prod>v. f v ^ PP_Poly_Mapping.lookup m v)"
+  moreover define g where "g m = (\<Prod>v. f v ^ PP_Poly_Mapping.lookup m v)" for m
   ultimately have *: "\<And>a b. g (a + b) = g a * g b"
     by (simp add: plus_poly_mapping.rep_eq power_add Prod_any.distrib)
   have bij: "bij (\<lambda>(l, n, m). (m, l, n))"

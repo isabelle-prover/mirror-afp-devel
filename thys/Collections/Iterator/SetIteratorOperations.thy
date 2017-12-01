@@ -315,7 +315,7 @@ proof -
       from Cons(4) have dist_as: "distinct as" and a_nin_as: "a \<notin> set as" by simp_all
       note ind_hyp = Cons(1)[OF sorted_as sorted_bs_as dist_as]
       
-      def bs_a \<equiv> "bs a"
+      define bs_a where "bs_a = bs a"
       from sorted_bs_a
       have sorted_prod_a : "sorted_by_rel (set_iterator_product_order R_a R_b) (map (Pair a) (bs a))"
         unfolding bs_a_def[symmetric]
@@ -736,7 +736,7 @@ lemma map_iterator_genord_dom_filter_correct :
        m k2 = Some v2; P (k2, v2); R (k1, v1) (k2, v2)\<rbrakk> \<Longrightarrow> R' k1 k2"
   shows "set_iterator_genord (map_iterator_dom_filter P it) {k . \<exists>v. m k = Some v \<and> P (k, v)} R'"
 proof - 
-  def g \<equiv> "\<lambda>xy::('a \<times> 'b). if P xy then Some (fst xy) else None"
+  define g where "g xy = (if P xy then Some (fst xy) else None)" for xy :: "'a \<times> 'b"
 
   note set_iterator_genord_image_filter_correct [OF it_OK, of g R']
 

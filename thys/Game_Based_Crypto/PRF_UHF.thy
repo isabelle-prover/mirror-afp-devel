@@ -115,7 +115,7 @@ theorem prf_prf'_advantage:
 proof -
   let ?\<A> = "prf'_reduction \<A>"
 
-  { def cr \<equiv> "\<lambda>_ :: unit \<times> unit. \<lambda>_ :: unit. True"
+  { define cr where "cr = (\<lambda>_ :: unit \<times> unit. \<lambda>_ :: unit. True)"
     have [transfer_rule]: "cr ((), ()) ()" by(simp add: cr_def)
     have "prf.game_0 ?\<A> = prf'.game_0 \<A>"
       unfolding prf'.game_0_def prf.game_0_def prf'_reduction_def unfolding key_seed_gen_def
@@ -123,11 +123,11 @@ proof -
         (transfer_prover) }
   note hop1 = this[symmetric]
 
-  def semi_forgetful_RO \<equiv> "\<lambda>seed :: 'seed. \<lambda>(\<sigma> :: '\<alpha> \<rightharpoonup> '\<beta> \<times> '\<gamma>, b :: bool). \<lambda>x. 
+  define semi_forgetful_RO where "semi_forgetful_RO = (\<lambda>seed :: 'seed. \<lambda>(\<sigma> :: '\<alpha> \<rightharpoonup> '\<beta> \<times> '\<gamma>, b :: bool). \<lambda>x. 
     case \<sigma> (h seed x) of Some (a, y) \<Rightarrow> return_spmf (y, (\<sigma>, a \<noteq> x \<or> b))
-     | None \<Rightarrow> bind_spmf rand (\<lambda>y. return_spmf (y, (\<sigma>(h seed x \<mapsto> (x, y)), b)))"
+     | None \<Rightarrow> bind_spmf rand (\<lambda>y. return_spmf (y, (\<sigma>(h seed x \<mapsto> (x, y)), b))))"
 
-  def game_semi_forgetful \<equiv> "do {
+  define game_semi_forgetful where "game_semi_forgetful = do {
      seed :: 'seed \<leftarrow> seed_gen;
      (b, rep) \<leftarrow> exec_gpv (semi_forgetful_RO seed) \<A> (Map.empty, False);
      return_spmf (b, rep) 
@@ -138,8 +138,9 @@ proof -
   have lossless_semi_forgetful [simp]: "lossless_spmf (semi_forgetful_RO seed s1 x)" for seed s1 x
     by(simp add: semi_forgetful_RO_def split_def split: option.split)
 
-  { def cr \<equiv> "\<lambda>(_ :: unit, \<sigma>) (\<sigma>' :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, _ :: bool). \<sigma> = map_option snd \<circ> \<sigma>'"
-    def initial \<equiv> "(Map.empty :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, False)"
+  { define cr
+      where "cr = (\<lambda>(_ :: unit, \<sigma>) (\<sigma>' :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, _ :: bool). \<sigma> = map_option snd \<circ> \<sigma>')"
+    define initial where "initial = (Map.empty :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, False)"
     have [transfer_rule]: "cr ((), Map.empty) initial" by(simp add: cr_def initial_def fun_eq_iff)
     have [transfer_rule]:  "(op = ===> cr ===> op = ===> rel_spmf (rel_prod op = cr))
         (\<lambda>y p ya. do {y \<leftarrow> prf.random_oracle (snd p) (h y ya); return_spmf (fst y, (), snd y) })
@@ -151,7 +152,7 @@ proof -
         (transfer_prover) }
   note hop2 = this
 
-  def game_semi_forgetful_bad \<equiv> "do {
+  define game_semi_forgetful_bad where "game_semi_forgetful_bad = do {
        seed :: 'seed \<leftarrow> seed_gen;
        x \<leftarrow> exec_gpv (semi_forgetful_RO seed) \<A> (Map.empty, False);
        return_spmf (snd x) 
@@ -163,8 +164,9 @@ proof -
   have bad_random_oracle_A [simp]: "callee_invariant prf.random_oracle (\<lambda>\<sigma>. \<not> inj_on (h seed) (dom \<sigma>))" for seed
     by unfold_locales(auto simp add: prf.random_oracle_def split: option.split_asm)
 
-  def invar \<equiv> "\<lambda>seed (\<sigma>1, b) (\<sigma>2 :: '\<beta> \<Rightarrow> '\<gamma> option). \<not> b \<and> dom \<sigma>1 = h seed ` dom \<sigma>2 \<and> 
-    (\<forall>x \<in> dom \<sigma>2. \<sigma>1 (h seed x) = map_option (Pair x) (\<sigma>2 x))"
+  define invar
+    where "invar = (\<lambda>seed (\<sigma>1, b) (\<sigma>2 :: '\<beta> \<Rightarrow> '\<gamma> option). \<not> b \<and> dom \<sigma>1 = h seed ` dom \<sigma>2 \<and> 
+      (\<forall>x \<in> dom \<sigma>2. \<sigma>1 (h seed x) = map_option (Pair x) (\<sigma>2 x)))"
 
   have rel_spmf_oracle_adv: 
     "rel_spmf (\<lambda>(x, s1) (y, s2). snd s1 \<noteq> inj_on (h seed) (dom s2) \<and> (inj_on (h seed) (dom s2) \<longrightarrow> x = y \<and> invar seed s1 s2))
@@ -236,7 +238,7 @@ proof -
         (simp_all add: assms)
   qed
 
-  def game_A \<equiv> "do {
+  define game_A where "game_A = do {
       seed :: 'seed \<leftarrow> seed_gen;
       (b, \<sigma>) \<leftarrow> exec_gpv prf.random_oracle \<A> Map.empty;
       return_spmf (b, \<not> inj_on (h seed) (dom \<sigma>))
@@ -255,7 +257,7 @@ proof -
   then have bound_bad2_event : "\<bar>spmf (map_spmf fst game_semi_forgetful) True - spmf (map_spmf fst game_A) True\<bar> \<le> spmf (map_spmf snd game_A) True"
     using bad1_bad2 by (simp)
   
-  def game_B \<equiv> "do {
+  define game_B where "game_B = do {
       (b, \<sigma>) \<leftarrow> exec_gpv prf.random_oracle \<A> Map.empty;
       hash.game_hash_set (dom \<sigma>)
     }"

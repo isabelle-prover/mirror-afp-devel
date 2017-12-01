@@ -148,7 +148,7 @@ lemma perm_weak_contr_mono:
 proof -
   from contr weak have contr': "! x xs. P(x#x#xs) = P (x#xs)" by blast
 
-  def y' == "filter (% z. z : set x) y"
+  define y' where "y' = filter (% z. z : set x) y"
   from xy have "set x = set y'" apply(simp add: y'_def) apply blast done
   hence rxry': "remdups x <~~> remdups y'" by(simp add: perm_remdups_iff_eq_set)
 

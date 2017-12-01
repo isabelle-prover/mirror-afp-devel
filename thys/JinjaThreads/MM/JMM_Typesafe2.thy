@@ -106,7 +106,7 @@ lemma if_mthr_Runs_heap_read_typedD:
   shows "trsys.Runs (multithreaded_base.redT (final_thread.init_fin_final final) (multithreaded_base.init_fin final r) (map NormalAction \<circ> convert_RA)) s \<xi>"
   (is "?Runs s \<xi>")
 proof -
-  def s' \<equiv> s
+  define s' where "s' = s"
   with Runs' have "\<exists>ttas. ?RedT' s ttas s' \<and> ?Runs' s' \<xi>"
     by(auto simp add: multithreaded_base.RedT_def o_def)
   thus "?Runs s' \<xi>"

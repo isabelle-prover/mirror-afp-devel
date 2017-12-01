@@ -214,7 +214,7 @@ proof(auto simp only: PO_rhoare_defs)
   from step0 step1 obtain Q where Q: "S \<noteq> {} \<longrightarrow> opt_mru_guard (mru_vote sc0) Q v"
     by(auto simp add: opt_mru_step0_def opt_mru_step1_def)
     
-  def sa' \<equiv> "sa\<lparr>
+  define sa' where "sa' = sa\<lparr>
       mru_vote := mru_vote sa ++ const_map (three_phase r, v) S
       , next_round := Suc (three_phase r)
       , decisions := decisions sa ++ dec_f

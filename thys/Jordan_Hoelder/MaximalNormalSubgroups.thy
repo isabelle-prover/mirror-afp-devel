@@ -38,7 +38,7 @@ proof
   next
     fix A'
     assume A'normal:"A' \<lhd> G Mod H" and A'nottriv:"A' \<noteq> {\<one>\<^bsub>G Mod H\<^esub>}"
-    def A \<equiv> "\<Union>A'"
+    define A where "A = \<Union>A'"
     have A2:"A \<lhd> G" using A'normal unfolding A_def by (rule factgroup_subgroup_union_normal)
     have "H \<in> A'" using A'normal normal_imp_subgroup subgroup.one_closed unfolding FactGroup_def by force
     hence "H \<subseteq> A" unfolding A_def by auto

@@ -138,7 +138,7 @@ proof -
               and "listsum (dims B) CS = B"
               and "length CS = n"
     using assms(2) cprank_maxE by metis
-  def CS' == "map (\<lambda>C. A\<otimes>C) CS"
+  define CS' where "CS' = map (\<lambda>C. A\<otimes>C) CS"
   then have "\<And>C'. C'\<in>set CS' \<Longrightarrow> cprank_max1 C'"
     using assms(1) higher_order \<open>\<And>C. C \<in> set CS \<Longrightarrow> cprank_max1 C\<close> imageE set_map by auto
   have "listsum (dims A @ dims B) CS' = A\<otimes>B" using CS'_def \<open>Tensor_Plus.listsum (dims B) CS = B\<close>
@@ -154,7 +154,7 @@ proof (induction A rule:subtensor_induct)
   then show ?case using order_0 by auto
 next
   case (order_step A)
-  def Bs == "map (\<lambda>i. unit_vec (hd (dims A)) i \<otimes> subtensor A i) [0..<hd (dims A)]"
+  define Bs where "Bs = map (\<lambda>i. unit_vec (hd (dims A)) i \<otimes> subtensor A i) [0..<hd (dims A)]"
   have "\<And>B. B \<in> set Bs \<Longrightarrow> dims A = dims B"
   proof -
     fix B assume "B \<in> set Bs"

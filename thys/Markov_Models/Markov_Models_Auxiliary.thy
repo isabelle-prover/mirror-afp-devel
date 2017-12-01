@@ -109,7 +109,7 @@ lemma mono_les:
   assumes finitary: "finite (\<Delta> ` (S\<union>N))"
   shows "l2 s \<le> l1 s"
 proof -
-  def M \<equiv> "{s\<in>S\<union>N. \<forall>t\<in>S\<union>N. \<Delta> t \<le> \<Delta> s}"
+  define M where "M = {s\<in>S\<union>N. \<forall>t\<in>S\<union>N. \<Delta> t \<le> \<Delta> s}"
 
   have [simp]: "\<And>s. s\<in>S \<Longrightarrow> integrable (K s) \<Delta>"
     by (simp add: \<Delta>_def[abs_def])

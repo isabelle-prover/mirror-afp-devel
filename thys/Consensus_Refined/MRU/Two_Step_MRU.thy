@@ -147,7 +147,7 @@ proof(auto simp only: PO_rhoare_defs)
     qed
   qed
     
-  def sa' \<equiv> "sa\<lparr>
+  define sa' where "sa' = sa\<lparr>
       mru_vote := mru_vote sa ++ const_map (two_phase r, v) S0
       , next_round := Suc (two_phase r)
       , decisions := decisions sa ++ dec_f

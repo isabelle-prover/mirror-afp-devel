@@ -236,7 +236,7 @@ proof -
   obtain a w where "a \<in> set (cols A) \<rightarrow> UNIV" "lincomb a (set (cols A)) = 0\<^sub>v n" "w \<in> set (cols A)" "a w \<noteq> 0"
     using finite_lin_dep[OF `finite (set (cols A))` `lin_dep (set (cols A))`]
     using assms(1) cols_dim carrier_matD(1) by blast
-  def v == "vec nc (\<lambda>i. a (col A i))"
+  define v where "v = vec nc (\<lambda>i. a (col A i))"
   have 1:"v \<in> carrier_vec nc" by (simp add: v_def)
   have 2:"v \<noteq> 0\<^sub>v nc"
   proof -
@@ -511,8 +511,8 @@ assumes "A \<in> carrier_mat n nc"
 assumes "B \<in> carrier_mat n nc"
 shows "rank (A + B) \<le> rank A + rank B"
 proof -
-  def W1 == "span (set (cols A))"
-  def W2 == "span (set (cols B))"
+  define W1 where "W1 = span (set (cols A))"
+  define W2 where "W2 = span (set (cols B))"
   have "set (cols (A + B)) \<subseteq> subspace_sum W1 W2"
   proof
     fix x assume "x \<in> set (cols (A + B))"

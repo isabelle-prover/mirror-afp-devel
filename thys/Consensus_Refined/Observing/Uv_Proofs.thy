@@ -201,7 +201,7 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
     apply(simp add: next0_def o_def)
     by (metis pstate.select_convs(3) pstate.surjective pstate.update_convs(1) pstate.update_convs(2))
 
-  def S \<equiv> "{p. \<exists>v. agreed_vote (cfg' p) = Some v}"
+  define S where "S = {p. \<exists>v. agreed_vote (cfg' p) = Some v}"
   from same_new_vote[OF send step inv step_r] 
   obtain v where v: "\<forall>p \<in> S. agreed_vote (cfg' p) = Some v"
     by(simp add: S_def) (metis)
@@ -210,7 +210,7 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
 
   note x_origin = x_origin1[OF send step step_r]
 
-  def sa' \<equiv> "sa\<lparr> next_round := Suc r, r_votes := const_map v S \<rparr>"
+  define sa' where "sa' = sa\<lparr> next_round := Suc r, r_votes := const_map v S \<rparr>"
 
   have "\<forall>p. p \<in> S \<longrightarrow> opt_obs_safe (opt_obsv_state.last_obs sa) v"
     using vote_origin[OF send step inv step_r] R per_rd[THEN spec, of r] v
@@ -303,14 +303,14 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
   from R have next_r: "next_round sa = r"
     by(simp add: ref_rel_def)
 
-  def S \<equiv> "{p. \<exists>v. agreed_vote (cfg p) = Some v}"
+  define S where "S = {p. \<exists>v. agreed_vote (cfg p) = Some v}"
   from R obtain v where v: "\<forall>p \<in> S. agreed_vote (cfg p) = Some v" using ainv step_r
     by(auto simp add: ref_rel_def TSO_inv1_def S_def two_step_step)
 
-  def Ob \<equiv> "{p. last_obs (cfg' p) = v}"
-  def o_f \<equiv> "\<lambda>p :: process. if S \<in> Quorum then Some v else None"
+  define Ob where "Ob = {p. last_obs (cfg' p) = v}"
+  define o_f where "o_f p = (if S \<in> Quorum then Some v else None)" for p :: process
 
-  def dec_f \<equiv> "\<lambda>p. if p \<in> D cfg cfg' then decide (cfg' p) else None"
+  define dec_f where "dec_f p = (if p \<in> D cfg cfg' then decide (cfg' p) else None)" for p
 
   {
     fix p w
@@ -347,7 +347,7 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
     apply (metis S_def all_not_in_conv  empty_not_quorum v)
     done
 
-  def sa' \<equiv> "sa\<lparr> 
+  define sa' where "sa' = sa\<lparr> 
     next_round := Suc (next_round sa)
     , decisions := decisions sa ++ dec_f
     , opt_obsv_state.last_obs := opt_obsv_state.last_obs sa ++ o_f

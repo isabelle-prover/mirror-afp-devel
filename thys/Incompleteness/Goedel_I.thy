@@ -621,7 +621,7 @@ proof -
   obtain k::name and j::name
     where atoms: "atom k \<sharp> (i,j,\<alpha>)" "atom j \<sharp> (i,\<alpha>)"
     by (metis obtain_fresh)
-  def \<beta> \<equiv> "Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j))"
+  define \<beta> where "\<beta> = Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j))"
   hence 1: "{} \<turnstile> \<beta>(i ::= \<lceil>\<beta>\<rceil>) IFF (Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<lceil>\<beta>\<rceil>)"
     by (metis Iff_refl)
   have 2: "{} \<turnstile> (Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<lceil>\<beta>\<rceil>) IFF

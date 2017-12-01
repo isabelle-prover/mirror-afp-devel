@@ -40,7 +40,7 @@ begin
     shows "wset_find_path E U0 P \<le> find_path E U0 P"
   proof -
 
-    def inv \<equiv> "\<lambda>(res,V,ws). case res of
+    define inv where "inv = (\<lambda>(res,V,ws). case res of
         None \<Rightarrow> 
           dom ws\<subseteq>V 
         \<and> finite (dom ws)  (* Derived *)
@@ -50,9 +50,9 @@ begin
         \<and> U0 \<subseteq> V
         \<and> (\<forall>v p. ws v = Some p 
           \<longrightarrow> ((\<forall>v\<in>set p. \<not>P v) \<and> (\<exists>u0\<in>U0. path E u0 (rev p) v)))
-      | Some (p,v) \<Rightarrow> (\<exists>u0\<in>U0. path E u0 p v \<and> P v \<and> (\<forall>v\<in>set p. \<not>P v))"
+      | Some (p,v) \<Rightarrow> (\<exists>u0\<in>U0. path E u0 p v \<and> P v \<and> (\<forall>v\<in>set p. \<not>P v)))"
 
-    def var\<equiv>"inv_image 
+    define var where "var = inv_image 
         (brk_rel (finite_psupset (E\<^sup>*``U0) <*lex*> measure (card o dom)))
         (\<lambda>(res::('v list \<times> 'v) option,V::'v set,ws::'v\<rightharpoonup>'v list). 
             (res\<noteq>None,V,ws))"

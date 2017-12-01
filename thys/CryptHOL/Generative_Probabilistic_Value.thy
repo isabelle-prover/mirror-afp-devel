@@ -2313,8 +2313,8 @@ lemma WT_gpv_coinduct_bind [consumes 1, case_names WT_gpv, case_conclusion WT_gp
   shows "\<I> \<turnstile>g gpv \<surd>"
 proof -
   fix x
-  def gpv' \<equiv> "Done x :: ('b, 'call, 'ret) gpv"
-    and f \<equiv> "(\<lambda>_. gpv) :: 'b \<Rightarrow> ('a, 'call, 'ret) gpv" 
+  define gpv' :: "('b, 'call, 'ret) gpv" and f :: "'b \<Rightarrow> ('a, 'call, 'ret) gpv"
+    where "gpv' = Done x" and "f = (\<lambda>_. gpv)"
   with * have "\<I> \<turnstile>g gpv' \<surd>" and "\<And>x. x \<in> results_gpv \<I> gpv' \<Longrightarrow> X (f x)" by simp_all
   then have "\<I> \<turnstile>g gpv' \<bind> f \<surd>"
   proof(coinduction arbitrary: gpv' f rule: WT_gpv_coinduct)
@@ -2928,7 +2928,7 @@ lemma lossless_gpv_induct_strong [consumes 1, case_names lossless_gpv]:
        \<Longrightarrow> P (GPV p)"
   shows "P gpv"
 proof -
-  def gpv' \<equiv> gpv
+  define gpv' where "gpv' = gpv"
   then have "gpv' \<in> insert gpv (sub_gpvs \<I> gpv)" by simp
   with gpv have "lossless_gpv \<I> gpv' \<and> P gpv'"
   proof(induction arbitrary: gpv')
@@ -3176,10 +3176,14 @@ lemma gpv_coinduct_bind [consumes 1, case_names Eq_gpv]:
   shows "gpv = gpv'"
 proof -
   fix x y
-  def gpv1 \<equiv> "Done x :: ('b, 'call, 'ret) gpv"
-    and f \<equiv> "(\<lambda>_. gpv) :: 'b \<Rightarrow> ('a, 'call, 'ret) gpv"
-    and gpv1' \<equiv> "Done y :: ('c, 'call, 'ret) gpv"
-    and f' \<equiv> "(\<lambda>_. gpv') :: 'c \<Rightarrow> ('a, 'call, 'ret) gpv"
+  define gpv1 :: "('b, 'call, 'ret) gpv"
+    and f :: "'b \<Rightarrow> ('a, 'call, 'ret) gpv"
+    and gpv1' :: "('c, 'call, 'ret) gpv"
+    and f' :: "'c \<Rightarrow> ('a, 'call, 'ret) gpv"
+    where "gpv1 = Done x"
+      and "f = (\<lambda>_. gpv)"
+      and "gpv1' = Done y"
+      and "f' = (\<lambda>_. gpv')"
   from * have "rel_gpv (\<lambda>x y. R (f x) (f' y)) op = gpv1 gpv1'"
     by(simp add: gpv1_def gpv1'_def f_def f'_def)
   then have "gpv1 \<bind> f = gpv1' \<bind> f'"
@@ -3466,7 +3470,8 @@ lemma inline1_inline_conv_inline2:
   (inline2 gpv s2 s1)"
   (is "?lhs = ?rhs")
 proof(rule spmf.leq_antisym)
-  def inline1_1 \<equiv> "inline1 :: ('s1 \<Rightarrow> 'c1 \<Rightarrow> ('r1 \<times> 's1, 'c, 'r) gpv) \<Rightarrow> ('r2 \<times> 's2, 'c1, 'r1) gpv \<Rightarrow> 's1 \<Rightarrow> _"
+  define inline1_1 :: "('s1 \<Rightarrow> 'c1 \<Rightarrow> ('r1 \<times> 's1, 'c, 'r) gpv) \<Rightarrow> ('r2 \<times> 's2, 'c1, 'r1) gpv \<Rightarrow> 's1 \<Rightarrow> _"
+    where "inline1_1 = inline1"
   have "ord_spmf op = ?lhs ?rhs"
     -- \<open> We need in the inductive step that the approximation behaves well with @{const bind_gpv}
          because of @{thm [source] inline_aux_Inr}. So we have to thread it through the induction
@@ -3817,15 +3822,17 @@ proof -
   { assume "\<exists>(Rep :: 's' \<Rightarrow> 's) Abs. type_definition Rep Abs {s. I s}"
     then obtain Rep :: "'s' \<Rightarrow> 's" and Abs where td: "type_definition Rep Abs {s. I s}" by blast
     then interpret td: type_definition Rep Abs "{s. I s}" .
-    def cr \<equiv> "\<lambda>x y. x = Rep y"
-    have [transfer_rule]: "bi_unique cr" "right_total cr" using td cr_def by(rule typedef_bi_unique typedef_right_total)+
-    have [transfer_domain_rule]: "Domainp cr = I" using type_definition_Domainp[OF td cr_def] by simp
+    define cr where "cr x y \<longleftrightarrow> x = Rep y" for x y
+    have [transfer_rule]: "bi_unique cr" "right_total cr"
+      using td cr_def[abs_def] by(rule typedef_bi_unique typedef_right_total)+
+    have [transfer_domain_rule]: "Domainp cr = I"
+      using type_definition_Domainp[OF td cr_def[abs_def]] by simp
 
-    def callee' \<equiv> "(Rep --->  id ---> map_gpv (map_prod id Abs) id) callee"
+    define callee' where "callee' = (Rep --->  id ---> map_gpv (map_prod id Abs) id) callee"
     have [transfer_rule]: "(cr ===> op = ===> rel_gpv (rel_prod op = cr) op =) callee callee'"
       by(auto simp add: callee'_def rel_fun_def cr_def gpv.rel_map prod.rel_map td.Abs_inverse intro!: gpv.rel_refl_strong intro: td.Rep[simplified] dest: invariant)
 
-    def s' \<equiv> "Abs s"
+    define s' where "s' = Abs s"
     have [transfer_rule]: "cr s s'" using I by(simp add: cr_def s'_def td.Abs_inverse)
 
     note p moreover
@@ -4190,7 +4197,7 @@ by(auto simp add: exec_gpv_conv_inline1 inline1_bind_gpv map_spmf_bind_spmf o_de
 lemma exec_gpv_map_gpv_id:
   "exec_gpv oracle (map_gpv f id gpv) \<sigma> = map_spmf (apfst f) (exec_gpv oracle gpv \<sigma>)"
 proof(rule sym)
-  def gpv' \<equiv> "map_gpv f id gpv"
+  define gpv' where "gpv' = map_gpv f id gpv"
   have [transfer_rule]: "rel_gpv (\<lambda>x y. y = f x) op = gpv gpv'"
     unfolding gpv'_def by(simp add: gpv.rel_map gpv.rel_refl)
   have "rel_spmf (rel_prod (\<lambda>x y. y = f x) op =) (exec_gpv oracle gpv \<sigma>) (exec_gpv oracle gpv' \<sigma>)"

@@ -145,14 +145,14 @@ shows
     (f x1 x2) = (y1, y2) 
     \<and> (P x1 x2 (fst (f x1 x2)) (snd (f x1 x2)))"
 proof -
-  def A2:  P'=="\<lambda>x y . P (fst x) (snd x) (fst y) (snd y)"
-  hence "\<forall>x . \<exists>y . (P' x  y)" using A1 by auto
-  hence A3: "\<exists>f . \<forall>x . P' x (f x)" by metis
-  then obtain f where "\<forall>x . P' x (f x)" by blast
-  moreover def f'=="\<lambda>x1 x2. f (x1, x2)"
-  ultimately have "\<forall>x . P' x (f' (fst x) (snd x))" by auto
-  hence "\<exists>f' . \<forall>x . P' x (f' (fst x) (snd x))" by blast
-  thus ?thesis using A2 by auto
+  define P' where "P' x y = P (fst x) (snd x) (fst y) (snd y)" for x y
+  hence "\<forall>x. \<exists>y. P' x  y" using A1 by auto
+  hence "\<exists>f. \<forall>x. P' x (f x)" by metis
+  then obtain f where "\<forall>x. P' x (f x)" by blast
+  moreover define f' where "f' x1 x2 = f (x1, x2)" for x1 x2
+  ultimately have "\<forall>x. P' x (f' (fst x) (snd x))" by auto
+  hence "\<exists>f'. \<forall>x. P' x (f' (fst x) (snd x))" by blast
+  thus ?thesis using P'_def by auto
 qed           
 
 lemma PredicatePairFunctions2: 
@@ -168,8 +168,8 @@ proof (cases thesis, auto)
   assume ass: "\<And>f1 f2. \<forall>x1 x2. P x1 x2 (f1 x1 x2) (f2 x1 x2) \<Longrightarrow> False"
   obtain f where F: "\<forall>x1 x2. \<exists>y1 y2. f x1 x2 = (y1, y2) \<and> P x1 x2 (fst (f x1 x2)) (snd (f x1 x2))"
     using PredicatePairFunction[OF A1] by blast
-  def f1 == "\<lambda>x1 x2 . fst (f x1 x2)"
-  def f2 == "\<lambda>x1 x2 . snd (f x1 x2)"
+  define f1 where "f1 x1 x2 = fst (f x1 x2)" for x1 x2
+  define f2 where "f2 x1 x2 = snd (f x1 x2)" for x1 x2
   show False
     using ass[of f1 f2] F unfolding f1_def f2_def by auto
 qed

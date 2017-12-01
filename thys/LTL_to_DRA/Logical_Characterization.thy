@@ -496,7 +496,7 @@ lemma threshold_closed:
   assumes "closed \<G> w"
   shows "\<exists>k. \<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> threshold \<psi> (suffix k w) \<G> = Some 0"
 proof -
-  def k \<equiv> "Max {the (threshold \<psi> w \<G>) | \<psi>. G \<psi> \<in> \<G>}" (is "Max ?S")
+  define k where "k = Max {the (threshold \<psi> w \<G>) | \<psi>. G \<psi> \<in> \<G>}" (is "_ = Max ?S")
 
   have "finite \<G>" and "Only_G \<G>" and "\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> \<PP>\<^sub>\<infinity> \<psi> \<G> w"
     using assms by blast+
@@ -619,8 +619,8 @@ proof
     using threshold_closed[OF closed_\<G>\<^sub>F\<^sub>G] by blast
 
   (* Define new constants *)
-  def w' \<equiv> "suffix k w"
-  def \<phi>' \<equiv> "af \<phi> (w[0 \<rightarrow> k])"
+  define w' where "w' = suffix k w"
+  define \<phi>' where "\<phi>' = af \<phi> (w[0 \<rightarrow> k])"
 
   (* Facts about w' and \<phi>' *)
   from `?lhs` have "w' \<Turnstile> \<phi>'"
@@ -691,10 +691,10 @@ next
     using almost_all_suffixes_model_\<F>_generalized[OF `closed \<G> w`] unfolding MOST_nat_le by blast
   
   (* Define new constants *)
-  def k \<equiv> "max (max i j) j'"
-  def w' \<equiv> "suffix k w"
-  def \<phi>' \<equiv> "af \<phi> (w[0 \<rightarrow> k])"
-  def S \<equiv> "{\<chi>. w' \<Turnstile> \<chi>}"
+  define k where "k = max (max i j) j'"
+  define w' where "w' = suffix k w"
+  define \<phi>' where "\<phi>' = af \<phi> (w[0 \<rightarrow> k])"
+  define S where "S = {\<chi>. w' \<Turnstile> \<chi>}"
 
   have "(\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P G \<psi> \<and> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (\<F> \<psi> w \<G> k)) \<Longrightarrow> S \<Turnstile>\<^sub>P \<phi>'"
     using j_def[of k S] unfolding \<phi>'_def k_def by fastforce

@@ -816,8 +816,8 @@ proof
   then show "f * g \<noteq> 0"
   proof transfer
     fix f g :: "'a \<Rightarrow> 'b"
-    def F \<equiv> "{a. f a \<noteq> 0}"
-    moreover def G \<equiv> "{a. g a \<noteq> 0}"
+    define F where "F = {a. f a \<noteq> 0}"
+    moreover define G where "G = {a. g a \<noteq> 0}"
     ultimately have [simp]:
       "\<And>a. f a \<noteq> 0 \<longleftrightarrow> a \<in> F"
       "\<And>b. g b \<noteq> 0 \<longleftrightarrow> b \<in> G"
@@ -846,7 +846,7 @@ proof
       "\<And>a. a \<in> F \<Longrightarrow> a \<le> Max F"
       "\<And>b. b \<in> G \<Longrightarrow> b \<le> Max G"
       by auto
-    def q \<equiv> "Max F + Max G"
+    define q where "q = Max F + Max G"
     have "(\<Sum>(a, b). f a * g b when q = a + b) =
       (\<Sum>(a, b). f a * g b when q = a + b when a \<in> F \<and> b \<in> G)"
       by (rule Sum_any.cong) (auto simp add: split_def when_def q_def intro: ccontr)
@@ -1183,10 +1183,10 @@ lemma update_induct [case_names const update]:
 proof -
   obtain g where "f = Abs_poly_mapping g" and "finite {a. g a \<noteq> 0}"
     by (cases f) simp_all
-  def Q_subst: Q \<equiv> "\<lambda>g. P (Abs_poly_mapping g)"
+  define Q where "Q g = P (Abs_poly_mapping g)" for g
   from \<open>finite {a. g a \<noteq> 0}\<close> have "Q g"
   proof (induct g rule: finite_update_induct)
-    case const with const' Q_subst show ?case
+    case const with const' Q_def show ?case
       by (simp add: zero_poly_mapping.abs_eq)
   next
     case (update a b g)
@@ -1194,16 +1194,16 @@ proof -
       by (simp add: Abs_poly_mapping_inverse keys.rep_eq)
     moreover note \<open>b \<noteq> 0\<close>
     moreover from \<open>Q g\<close> have "P (Abs_poly_mapping g)"
-      by (simp add: Q_subst)
+      by (simp add: Q_def)
     ultimately have "P (update a b (Abs_poly_mapping g))"
       by (rule update')
     also from \<open>finite {a. g a \<noteq> 0}\<close>
     have "update a b (Abs_poly_mapping g) = Abs_poly_mapping (g(a := b))"
       by (simp add: update.abs_eq eq_onp_same_args)
     finally show ?case
-      by (simp add: Q_subst fun_upd_def)
+      by (simp add: Q_def fun_upd_def)
   qed
-  then show ?thesis by (simp add: Q_subst \<open>f = Abs_poly_mapping g\<close>)
+  then show ?thesis by (simp add: Q_def \<open>f = Abs_poly_mapping g\<close>)
 qed
 
 lemma lookup_update:

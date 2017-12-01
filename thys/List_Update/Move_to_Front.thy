@@ -743,8 +743,8 @@ lemma rat_fun_lem:
 proof (rule dense_le_bounded[OF `0 < l`])
    fix x assume x: "0 < x" "x < l"
 
-   def m \<equiv> "(x - l) / 2"
-   def k \<equiv> "l / (x - m)"
+   define m where "m = (x - l) / 2"
+   define k where "k = l / (x - m)"
    have "x = l / k + m" "1 < k" "m < 0"
      unfolding k_def m_def using x by (auto simp: divide_simps)
    

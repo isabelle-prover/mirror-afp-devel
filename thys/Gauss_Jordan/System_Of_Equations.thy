@@ -113,8 +113,8 @@ have "(P_Gauss_Jordan A *v b) = 0"
 thus ?thesis unfolding A_0_imp_Gauss_Jordan_0[OF True] by force
 next
 case False note A_not_zero=False
-def not_zero_positions_row_a\<equiv>"{j. Gauss_Jordan A $ a $ j \<noteq> 0}"
-def zero_positions_row_a\<equiv>"{j. Gauss_Jordan A $ a $ j = 0}"
+define not_zero_positions_row_a where "not_zero_positions_row_a = {j. Gauss_Jordan A $ a $ j \<noteq> 0}"
+define zero_positions_row_a where "zero_positions_row_a = {j. Gauss_Jordan A $ a $ j = 0}"
 have UNIV_rw: "UNIV = not_zero_positions_row_a \<union> zero_positions_row_a" 
   unfolding zero_positions_row_a_def not_zero_positions_row_a_def by auto
 have disj: "not_zero_positions_row_a \<inter> zero_positions_row_a = {}" 
@@ -215,8 +215,8 @@ fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes inc: "rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 shows "inconsistent A b"
 proof (rule ccontr)
-def i\<equiv>"(GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"
-def j\<equiv>"(GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
+define i where "i = (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"
+define j where "j = (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
 assume "\<not> inconsistent A b"
 hence ex_solution: "\<exists>x. is_solution x A b" unfolding inconsistent_def consistent_def by auto
 from this obtain x where "is_solution x A b"  by auto
@@ -458,7 +458,7 @@ proof -
 have "solution_set A 0 \<noteq> {0}" using vec.dim_zero_subspace_eq[of "solution_set A 0"] dim_not_zero
   by (metis less_numeral_extra(3) vec.dim_zero_eq')
 from this obtain x where x: "x \<in> solution_set A 0" and x_not_0: "x \<noteq> 0" using vec.subspace_0[OF homogeneous_solution_set_subspace, of A] by auto
-def f\<equiv>"\<lambda>n::nat. (of_nat n) *s x"
+define f where "f = (\<lambda>n::nat. (of_nat n) *s x)"
 show ?thesis
   proof (unfold infinite_iff_countable_subset, rule exI[of _ f], rule conjI)
     show "inj f" unfolding inj_on_def unfolding f_def using x_not_0 by auto
@@ -504,7 +504,7 @@ have "solution_set A 0 \<noteq> {0}" using vec.dim_zero_subspace_eq[of "solution
   by (metis less_numeral_extra(3) vec.dim_zero_eq')
 from this obtain x where x: "x \<in> solution_set A 0" and x_not_0: "x \<noteq> 0" using vec.subspace_0[OF homogeneous_solution_set_subspace, of A] by auto
 obtain y where y: "is_solution y A b" using con unfolding consistent_def by blast
-def f\<equiv>"\<lambda>n::nat. y + (of_nat n) *s x"
+define f where "f = (\<lambda>n::nat. y + (of_nat n) *s x)"
 show ?thesis 
   proof (unfold infinite_iff_countable_subset, rule exI[of _ f], rule conjI)
     show "inj f" unfolding inj_on_def unfolding f_def using x_not_0 by force

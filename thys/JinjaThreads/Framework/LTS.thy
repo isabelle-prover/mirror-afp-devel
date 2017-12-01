@@ -216,11 +216,12 @@ lemma Runs_into_Runs_table:
   where "tls = lmap (\<lambda>(s, tl, s'). tl) stlss"
   and "Runs_table s stlss"
 proof -
-  def stlss \<equiv> "\<lambda>s tls. unfold_llist
+  define stlss where "stlss s tls = unfold_llist
     (\<lambda>(s, tls). lnull tls)
     (\<lambda>(s, tls). (s, lhd tls, SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls)))
     (\<lambda>(s, tls). (SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls), ltl tls))
     (s, tls)"
+    for s tls
   have [simp]:
     "\<And>s. stlss s LNil = LNil"
     "\<And>s tl tls. stlss s (LCons tl tls) = LCons (s, tl, SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) (stlss (SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) tls)"
@@ -721,7 +722,7 @@ lemma \<tau>diverge_not_wfP_silent_move_from:
   shows "\<not> wfP (flip (silent_move_from s))"
 proof
   assume "wfP (flip (silent_move_from s))"
-  moreover def Q == "{s'. silent_moves s s' \<and> s' -\<tau>\<rightarrow> \<infinity>}"
+  moreover define Q where "Q = {s'. silent_moves s s' \<and> s' -\<tau>\<rightarrow> \<infinity>}"
   hence "s \<in> Q" using `s -\<tau>\<rightarrow> \<infinity>` by(auto)
   ultimately have "\<exists>z\<in>Q. \<forall>y. silent_move_from s z y \<longrightarrow> y \<notin> Q"
     unfolding wfP_eq_minimal flip_simps by blast
@@ -787,7 +788,7 @@ lemma not_\<tau>diverge_to_no_\<tau>move:
   assumes "\<not> s -\<tau>\<rightarrow> \<infinity>"
   shows "\<exists>s'. s -\<tau>\<rightarrow>* s' \<and> (\<forall>s''. \<not> s' -\<tau>\<rightarrow> s'')"
 proof -
-  def S == s
+  define S where "S = s"
   from `\<not> \<tau>diverge s` have "wfP (flip (silent_move_from S))" unfolding S_def
     using \<tau>diverge_neq_wfP_silent_move_from[of s] by simp
   moreover have "silent_moves S s" unfolding S_def ..
@@ -950,13 +951,12 @@ proof
   let ?\<tau>diverge = "\<lambda>\<sigma>. \<sigma> -\<tau>\<rightarrow> \<infinity>"
   let ?proceed = "\<lambda>\<sigma> (tl, \<sigma>''). \<exists>\<sigma>'. \<sigma> -\<tau>\<rightarrow>* \<sigma>' \<and> \<sigma>' -tl\<rightarrow> \<sigma>'' \<and> \<not> \<tau>move \<sigma>' tl \<sigma>''"
 
-  def tls == "unfold_tllist
+  define tls where "tls = unfold_tllist
      (\<lambda>\<sigma>. (\<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>') \<or> ?\<tau>diverge \<sigma>)
      (\<lambda>\<sigma>. if \<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>' then Some (SOME \<sigma>'. ?\<tau>halt \<sigma> \<sigma>') else None)
      (\<lambda>\<sigma>. fst (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>'))
      (\<lambda>\<sigma>. snd (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>')) \<sigma>"
-  from meta_eq_to_obj_eq[OF this]
-  show "\<sigma> \<Down> tls"
+  then show "\<sigma> \<Down> tls"
   proof(coinduct \<sigma> tls rule: \<tau>Runs.coinduct)
     case (\<tau>Runs \<sigma> tls)
     show ?case
@@ -1025,11 +1025,11 @@ lemma \<tau>diverge_into_inf_step_silent_move2:
   assumes "s -\<tau>\<rightarrow> \<infinity>"
   obtains tls where "trsys.inf_step silent_move2 s tls"
 proof -
-  def tls \<equiv> "unfold_llist
+  define tls where "tls = unfold_llist
      (\<lambda>_. False)
      (\<lambda>s. fst (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
      (\<lambda>s. snd (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
-     s" (is "?tls s")
+     s" (is "_ = ?tls s")
   
   with assms have "s -\<tau>\<rightarrow> \<infinity> \<and> tls = ?tls s" by simp
   hence "trsys.inf_step silent_move2 s tls"
@@ -1225,12 +1225,13 @@ proof -
           None \<Rightarrow> Inr (SOME tls'. trsys.inf_step silent_move2 s tls')
         | Some s' \<Rightarrow> let tls' = SOME tls'. silent_moves2 s tls' s' in Inl (tls', s')"
   let ?P = "\<lambda>s tls (tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls"
-  def tlsstlss \<equiv> "\<lambda>s tls. unfold_tllist
+  define tlsstlss where "tlsstlss s tls = unfold_tllist
       (\<lambda>(s, tls). is_TNil tls)
       (\<lambda>(s, tls). ?terminal s tls)
       (\<lambda>(s, tls). let (tls'', s', s'') = Eps (?P s tls) in (tls'', s', thd tls, s''))
       (\<lambda>(s, tls). let (tls'', s', s'') = Eps (?P s tls) in (s'', ttl tls))
       (s, tls)"
+    for s tls
 
   have [simp]:
     "\<And>s tls. is_TNil (tlsstlss s tls) \<longleftrightarrow> is_TNil tls"

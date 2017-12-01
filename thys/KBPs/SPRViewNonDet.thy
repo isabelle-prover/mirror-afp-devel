@@ -451,7 +451,7 @@ next
     apply (auto iff: Let_def)
     done
 
-  def aact'' \<equiv> "aact (a := aact' a)"
+  define aact'' where "aact'' = aact (a := aact' a)"
 
   from tObsC trans trans'
   have aact''_fst: "fst \<circ> aact'' = fst \<circ> aact"
@@ -556,7 +556,7 @@ proof(rule sim_rI)
       and tvq: "tLast t = vq"
     by (auto iff: tObsC_abs_conv)
 
-  def q \<equiv> "t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub> p"
+  define q where "q = t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub> p"
 
   from tp tuq uq
   have "spr_jview a p = spr_jview a q"

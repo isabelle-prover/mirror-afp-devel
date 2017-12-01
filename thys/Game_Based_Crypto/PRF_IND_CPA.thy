@@ -130,16 +130,16 @@ proof -
     apply(auto intro: rel_spmf_bindI[OF bisim2] intro!: rel_spmf_bind_reflI simp add: encrypt_def prf.prf_oracle_def cong del: if_cong)
     done
 
-  def rf_encrypt \<equiv> "\<lambda>s plain. bind_spmf (spmf_of_set (nlists UNIV len)) (\<lambda>r :: bool list. 
+  define rf_encrypt where "rf_encrypt = (\<lambda>s plain. bind_spmf (spmf_of_set (nlists UNIV len)) (\<lambda>r :: bool list. 
     bind_spmf (prf.random_oracle s r) (\<lambda>(pad, s'). 
-    return_spmf ((r, xor_list plain pad), s'))
+    return_spmf ((r, xor_list plain pad), s')))
   )"
   interpret rf_finite: callee_invariant_on rf_encrypt "\<lambda>s. finite (dom s)" \<I>_full
     by unfold_locales(auto simp add: rf_encrypt_def dest: prf.finite.callee_invariant)
   have lossless_rf_encrypt [simp]: "\<And>s plain. lossless_spmf (rf_encrypt s plain)"
     by(auto simp add: rf_encrypt_def)
 
-  def game2 \<equiv> "do {
+  define game2 where "game2 = do {
     (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
     if valid_plain p0 \<and> valid_plain p1 then do {
       b \<leftarrow> coin_spmf;
@@ -163,7 +163,7 @@ proof -
     by(rewrite in "if _ then \<hole> else _" rf_encrypt_def)
       (auto simp add: Let_def \<A> if_distribs intro!: rel_spmf_bindI[OF bisim2] rel_spmf_bind_reflI rel_spmf_bindI[OF bisim1])
 
-  def game2_a \<equiv> "do {
+  define game2_a where "game2_a = do {
     r \<leftarrow> spmf_of_set (nlists UNIV len);
     (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
     let bad = r \<in> dom s1;
@@ -176,7 +176,7 @@ proof -
       return_spmf (b' = b, bad)
     } else coin_spmf \<bind> (\<lambda>b. return_spmf (b, bad))
   }"
-  def game2_b \<equiv> "do {
+  define game2_b where "game2_b = do {
     r \<leftarrow> spmf_of_set (nlists UNIV len);
     (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
     let bad = r \<in> dom s1;
@@ -219,7 +219,7 @@ proof -
   have game2a_2b: "\<bar>spmf (map_spmf fst game2_a) True - spmf (map_spmf fst game2_b) True\<bar> \<le> spmf (map_spmf snd game2_a) True"
     by(subst (1 2) spmf_conv_measure_spmf)(rule identical_until_bad; simp add: spmf.map_id[unfolded id_def] spmf_conv_measure_spmf)
 
-  def game2_a_bad \<equiv> "do {
+  define game2_a_bad where "game2_a_bad = do {
       r \<leftarrow> spmf_of_set (nlists UNIV len);
       (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
       return_spmf (r \<in> dom s1)
@@ -247,16 +247,17 @@ proof -
     by(simp add: measure_spmf.emeasure_eq_measure field_simps mult_left_le weight1)
   finally have game2a_bad_bound: "spmf game2_a_bad True \<le> q1 / 2 ^ len" by simp
 
-  def rf_encrypt_bad \<equiv> "\<lambda>secret (s :: (plain, plain) prf.dict, bad) plain. bind_spmf
+  define rf_encrypt_bad
+    where "rf_encrypt_bad = (\<lambda>secret (s :: (plain, plain) prf.dict, bad) plain. bind_spmf
      (spmf_of_set (nlists UNIV len)) (\<lambda>r.
      bind_spmf (prf.random_oracle s r) (\<lambda>(pad, s').
-     return_spmf ((r, xor_list plain pad), (s', bad \<or> r = secret))))"
+     return_spmf ((r, xor_list plain pad), (s', bad \<or> r = secret)))))"
   have rf_encrypt_bad_sticky [simp]: "\<And>s. callee_invariant (rf_encrypt_bad s) snd"
     by(unfold_locales)(auto simp add: rf_encrypt_bad_def)
   have lossless_rf_encrypt [simp]: "\<And>challenge s plain. lossless_spmf (rf_encrypt_bad challenge s plain)"
     by(clarsimp simp add: rf_encrypt_bad_def prf.random_oracle_def split: option.split)
 
-  def game2_c \<equiv> "do {
+  define game2_c where "game2_c = do {
     r \<leftarrow> spmf_of_set (nlists UNIV len);
     (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
     if valid_plain p0 \<and> valid_plain p1 then do {
@@ -278,7 +279,7 @@ proof -
   have game2b_c [unfolded spmf_rel_eq]: "rel_spmf op = (map_spmf fst game2_b) (map_spmf fst game2_c)"
     by(auto simp add: game2_b_def game2_c_def o_def split_def Let_def if_distribs intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF bisim2c_bad])
 
-  def game2_d \<equiv> "do {
+  define game2_d where "game2_d = do {
     r \<leftarrow> spmf_of_set (nlists UNIV len);
     (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
     if valid_plain p0 \<and> valid_plain p1 then do {
@@ -337,7 +338,7 @@ proof -
   also have "\<dots> \<le> q2 / 2 ^ len" by(simp add: split_def weight1 measure_spmf.emeasure_eq_measure)
   finally have game2_d_bad: "spmf (map_spmf snd game2_d) True \<le> q2 / 2 ^ len" by simp
 
-  def game3 \<equiv> "do {
+  define game3 where "game3 = do {
       (((p0, p1), \<sigma>), s1) \<leftarrow> exec_gpv rf_encrypt \<A>1 Map.empty;
       if valid_plain p0 \<and> valid_plain p1 then do {
         b \<leftarrow> coin_spmf;

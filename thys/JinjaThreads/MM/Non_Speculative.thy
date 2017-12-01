@@ -386,7 +386,7 @@ proof -
     adal: "(ad, al) \<in> action_loc P E ra"
     by(rule read_action_action_locE)
 
-  def Q == "{a. a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E a \<and> E \<turnstile> a \<le>a ra}"
+  define Q where "Q = {a. a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E a \<and> E \<turnstile> a \<le>a ra}"
   let ?A = "new_actions_for P E (ad, al)"
   let ?B = "{a. a \<in> actions E \<and> (\<exists>v'. action_obs E a = NormalAction (WriteMem ad al v')) \<and> a \<le> ra}"
 
@@ -402,7 +402,7 @@ proof -
     where wa: "wa \<in> Q" unfolding Q_def
     by(fastforce elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
    
-  def wa' == "Max_torder (action_order E) Q"
+  define wa' where "wa' = Max_torder (action_order E) Q"
 
   from wa have "Q \<noteq> {}" "Q \<subseteq> actions E" by(auto simp add: Q_def)
   with finQ have "wa' \<in> Q" unfolding wa'_def

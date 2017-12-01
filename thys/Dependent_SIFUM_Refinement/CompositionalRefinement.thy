@@ -1491,7 +1491,7 @@ proof(induct arbitrary: cms cmn' mem mem' rule: neval.induct)
     assume a: "\<not> (mem x \<noteq> mem'' x \<or> dma mem x \<noteq> dma mem'' x)"
     hence unchanged: "mem'' x = mem x \<and> dma mem'' x = dma mem x"
       by (blast intro: sym)
-    def cms'' \<equiv> "cms[n := cmn'']"
+    define cms'' where "cms'' = cms[n := cmn'']"
     have len'': "n < length cms''"
       by(simp add: cms''_def neval_S_n)
     hence lcn''_def2: "lcn'' = (cms'' ! n, mem'')"
@@ -1537,8 +1537,8 @@ case (neval_0 x y)
   done
 next
 case (neval_S_n x y n z)
-  def cms' \<equiv> "cms[k := fst y]"
-  def mem' \<equiv> "snd y"
+  define cms' where "cms' = cms[k := fst y]"
+  define mem' where "mem' = snd y"
   have y_def: "y = (cms' ! k, mem')"
     by(simp add: cms'_def mem'_def neval_S_n)
   moreover have len': "k < length cms'"
@@ -1575,8 +1575,8 @@ case (neval_0 lcn lcn')
   thus ?case by fastforce
 next
 case (neval_S_n lcn lcn'' k lcn')
-  def [simp]: cms'' \<equiv> "cms[n := fst lcn'']"
-  def [simp]: mem'' \<equiv> "snd lcn''"
+  define cms'' where [simp]: "cms'' = cms[n := fst lcn'']"
+  define mem'' where [simp]: "mem'' = snd lcn''"
   have len'' [simp]: "n < length cms''" by(simp add: neval_S_n(4))
   have lcn''_def: "lcn'' = (cms'' ! n, mem'')" using len'' by simp
   have hyp: "(cms'', mem'') \<rightarrow>\<^bsub>replicate k n\<^esub> (cms''[n := cmn'], mem')"
@@ -2022,8 +2022,8 @@ proof -
       in_\<R>n'': "((cm\<^sub>An'',mem\<^sub>A''),(cm\<^sub>Cn'',mem\<^sub>C'')) \<in> ?\<R>n"
       by blast+
       
-    def cms\<^sub>A'' \<equiv> "cms\<^sub>A [n := cm\<^sub>An'']" 
-    def [simp]: gc\<^sub>A'' \<equiv> "(cms\<^sub>A'', mem\<^sub>A'')"
+    define cms\<^sub>A'' where "cms\<^sub>A'' = cms\<^sub>A [n := cm\<^sub>An'']" 
+    define gc\<^sub>A'' where [simp]: "gc\<^sub>A'' = (cms\<^sub>A'', mem\<^sub>A'')"
     have len_cms\<^sub>A'' [simp]: "length cms\<^sub>A'' = length cms" by(simp add: cms\<^sub>A''_def 2[simplified])
   
     have in_\<R>'': "(\<And>i. i < length cms \<Longrightarrow> ((cms\<^sub>A'' ! i, mem\<^sub>A''), cms\<^sub>C'' ! i, mem\<^sub>C'') \<in> \<R>_rel (cms ! i))"
@@ -2122,7 +2122,7 @@ proof -
     where  meval_sched\<^sub>A'': "abs.meval_sched sched\<^sub>A gc\<^sub>A'' gc\<^sub>A'" and
            in_\<R>': "(\<forall>i<length cms. ((fst gc\<^sub>A' ! i, snd gc\<^sub>A'), fst gc\<^sub>c' ! i, snd gc\<^sub>c') \<in> \<R>_rel (cms ! i))" and
            sound_mode_use\<^sub>A': "abs.sound_mode_use  gc\<^sub>A'" by fastforce
-    def final_sched\<^sub>A \<equiv> "(replicate m\<^sub>A n) @ sched\<^sub>A"
+    define final_sched\<^sub>A where "final_sched\<^sub>A = (replicate m\<^sub>A n) @ sched\<^sub>A"
     have meval_final_sched\<^sub>A: "abs.meval_sched final_sched\<^sub>A gc\<^sub>A gc\<^sub>A'"
       using meval_sched\<^sub>A'' meval_sched\<^sub>A abs.meval_sched_app final_sched\<^sub>A_def gc\<^sub>A''_def by blast
     

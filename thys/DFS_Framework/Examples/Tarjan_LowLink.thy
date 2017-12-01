@@ -78,7 +78,7 @@ context DFS_invar begin
 
     from path obtain u where "path E u xs w" by (auto simp add: path_simps)
     moreover note cb `xs \<noteq> []`
-    moreover { fix k def k' \<equiv> "Suc k"
+    moreover { fix k define k' where "k' = Suc k"
       assume "k < length xs - 1"
       with k'_def have "k' < length xs" by simp
       with t have "((x#xs)!k', (x#xs)!Suc k') \<in> tree_edges s" by simp
@@ -106,8 +106,9 @@ context DFS_invar begin
     proof (induction arbitrary: v j k rule: list_nonempty_induct)
       case single thus ?case by auto
     next
-      case (cons x xs) def j' \<equiv> "j - 1"
-      with cons have j'_le: "j' < length xs" and "k \<le> j'"  and j: "j = Suc j'"  by auto
+      case (cons x xs)
+      define j' where "j' = j - 1"
+      with cons have j'_le: "j' < length xs" and "k \<le> j'"  and j: "j = Suc j'" by auto
 
       from cons lowlink_path_Cons obtain u where p: "lowlink_path s u xs w" by blast
 
@@ -131,7 +132,7 @@ context DFS_invar begin
         qed
       next
         case False 
-        def k' \<equiv> "k - 1"
+        define k' where "k' = k - 1"
         with False `k \<le> j'` have "k' < j'" and k: "k = Suc k'" by simp_all
         with cons.IH[OF p j'_le] have "(xs!k', xs!j') \<in> (tree_edges s)\<^sup>+" by metis
         hence "((x#xs)!Suc k', (x#xs)!Suc j') \<in> (tree_edges s)\<^sup>+" by simp
@@ -229,7 +230,7 @@ context DFS_invar begin
           qed
         next
           case False hence *: "Suc k - length tp = Suc (k - length tp)" by simp
-          def k' \<equiv> "k - length tp"
+          define k' where "k' = k - length tp"
           with False * have k': "?p ! k = p ! k'" "?p ! Suc k = p ! Suc k'" 
             by (simp_all add: nth_append)
           from k'_def False A have "k' < length p - 1" by simp 

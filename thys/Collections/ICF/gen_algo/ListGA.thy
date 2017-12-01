@@ -182,7 +182,7 @@ begin
     fix s i 
     assume "invar s" "i < length (\<alpha> s)"
 
-    def l \<equiv> "\<alpha> s"
+    define l where "l = \<alpha> s"
     from `i < length (\<alpha> s)`
     show "it_get s i = \<alpha> s ! i"
       unfolding it_get_def iteratei_correct l_def[symmetric]

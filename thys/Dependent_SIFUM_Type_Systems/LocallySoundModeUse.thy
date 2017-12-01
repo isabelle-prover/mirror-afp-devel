@@ -650,7 +650,7 @@ next
       apply (rule impI)
     proof -
       fix c' mds' mem'
-      def lc \<equiv> "\<langle>While e c \<otimes> annos, mds\<^sub>2, mem\<rangle>"
+      define lc where "lc = \<langle>While e c \<otimes> annos, mds\<^sub>2, mem\<rangle>"
       assume "\<langle>c', mds', mem'\<rangle> \<in> loc_reach lc"
       thus "\<forall>x. (x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify c' x) \<and>
                  (x \<in> mds' GuarNoWrite \<longrightarrow> doesnt_modify c' x)"

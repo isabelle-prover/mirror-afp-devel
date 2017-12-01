@@ -228,7 +228,7 @@ proof -
             {
               assume "\<exists>j \<ge> i\<^sub>\<UU>. \<UU>.rank x m = Some j"
               moreover
-              def q' \<equiv> "\<UU>.token_run x m"
+              define q' where "q' = \<UU>.token_run x m"
               ultimately
               have "\<exists>j \<ge> i\<^sub>\<UU>. \<UU>.state_rank q' m = Some j"
                 unfolding \<UU>.rank_eq_state_rank[OF `x \<le> m`] q'_def by blast
@@ -325,7 +325,9 @@ proof -
     using ltl_to_generalized_rabin_af_wellformed bounded_w finite_\<Sigma> by auto
 
   --\<open>Define constants for both runs\<close>
-  def r\<^sub>\<A> \<equiv> "run\<^sub>t (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) w" and r\<^sub>\<UU> \<equiv> "run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
+  define r\<^sub>\<A> r\<^sub>\<UU>
+    where "r\<^sub>\<A> = run\<^sub>t (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) w"
+      and "r\<^sub>\<UU> = run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
   hence "finite (range r\<^sub>\<A>)" and "finite (range r\<^sub>\<UU>)"
     using run\<^sub>t_finite[OF \<A>.finite_reach] run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma> by simp+
 
@@ -481,7 +483,9 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w] unfolding ltl_prop_entails_abs.rep_eq by blast
   
     --\<open>Define @{text \<pi>} for the other automaton\<close>
-    def \<pi>\<^sub>\<UU> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None"
+    define \<pi>\<^sub>\<UU>
+      where "\<pi>\<^sub>\<UU> \<chi> = (if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None)"
+      for \<chi>
     
     have 1: "dom \<pi>\<^sub>\<UU> = dom \<pi>"
       using \<UU>_Accept by (auto simp add: \<pi>\<^sub>\<UU>_def dom_def mojmir_def.smallest_accepting_rank_def)   
@@ -530,7 +534,9 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       unfolding ltl_prop_entails_abs.rep_eq by blast
   
     --\<open>Define @{text \<pi>} for the other automaton\<close>
-    def \<pi>\<^sub>\<A> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None"
+    define \<pi>\<^sub>\<A>
+      where "\<pi>\<^sub>\<A> \<chi> = (if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None)"
+      for \<chi>
     
     have 1: "dom \<pi>\<^sub>\<A> = dom \<pi>"
       using \<MM>_Accept by (auto simp add: \<pi>\<^sub>\<A>_def dom_def mojmir_def.smallest_accepting_rank_def)   

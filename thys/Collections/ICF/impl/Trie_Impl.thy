@@ -70,23 +70,23 @@ proof (induct t arbitrary: ks0)
   by (simp_all add: Ball_def distinct_map)
 
   -- "root iterator"
-  def it_vo \<equiv> "(case vo of None \<Rightarrow> set_iterator_emp 
-                        | Some v \<Rightarrow> set_iterator_sng (ks0, v)) :: 
-                  ('key list \<times> 'val, '\<sigma>) set_iterator"
-  def vo_S \<equiv> "case vo of None \<Rightarrow> {} | Some v \<Rightarrow> {(ks0, v)}"
+  define it_vo :: "('key list \<times> 'val, '\<sigma>) set_iterator"
+    where "it_vo =
+      (case vo of None \<Rightarrow> set_iterator_emp 
+       | Some v \<Rightarrow> set_iterator_sng (ks0, v))"
+  define vo_S where "vo_S = (case vo of None \<Rightarrow> {} | Some v \<Rightarrow> {(ks0, v)})"
   have it_vo_OK: "set_iterator it_vo vo_S"
     unfolding it_vo_def vo_S_def
     by (simp split: option.split 
              add: set_iterator_emp_correct set_iterator_sng_correct)
 
   -- "children iterator"
-  def it_prod \<equiv> "(set_iterator_product (foldli kvs)
-      (\<lambda>(k, y). iteratei_postfixed (k # ks0) y))::
-          (('key \<times> ('key, 'val) trie) \<times> 'key list \<times> 'val, '\<sigma>) set_iterator"
+  define it_prod :: "(('key \<times> ('key, 'val) trie) \<times> 'key list \<times> 'val, '\<sigma>) set_iterator"
+    where "it_prod = set_iterator_product (foldli kvs) (\<lambda>(k, y). iteratei_postfixed (k # ks0) y)"
 
-    def it_prod_S \<equiv> "SIGMA kt:set kvs.
+  define it_prod_S where "it_prod_S = (SIGMA kt:set kvs.
        (\<lambda>ksv. (rev (fst ksv) @ ((fst kt) # ks0), snd ksv)) `
-       map_to_set (lookup_trie (snd kt))"
+       map_to_set (lookup_trie (snd kt)))"
 
   have it_prod_OK: "set_iterator it_prod it_prod_S"
   proof -

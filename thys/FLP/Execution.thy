@@ -151,10 +151,10 @@ proof-
     then obtain k where K: " k < length exec - 1 - n0" 
       "\<not> enabled (execConf (n0 + k)) msg" 
       "enabled (execConf (n0 + k + 1)) msg" by blast
-    def N1Def: n1 == "k + n0 + 1"
+    define n1 where "n1 = k + n0 + 1"
     hence N1: "n1 \<ge> n0" "\<not> enabled (execConf (n1 - 1)) msg" 
       "enabled (execConf n1) msg" "n1 < length exec"
-      unfolding N1Def using K
+      unfolding n1_def using K
       by (auto simp add: add.commute)
     have "\<forall>n'\<ge>n1. n' < length trace \<longrightarrow> execMsg n' \<noteq> msg" 
       using N1(1) N0(2) by (metis order_trans)
@@ -172,7 +172,7 @@ proof-
     by metis
   hence "firstOccurrence msg n1" using assms unfolding firstOccurrence_def 
     by auto
-  thus "\<exists> n .firstOccurrence msg n" by blast
+  thus "\<exists>n. firstOccurrence msg n" by blast
 qed
 
 lemma ReachableInExecution:
@@ -226,7 +226,7 @@ obtains n where
     \<longrightarrow> n0 \<ge> n"
 proof (cases ?thesis, simp)
   case False
-  def len=="length exec - 1"
+  define len where "len = length exec - 1"
   have
     "len < length exec"
     "enabled (execConf len) msg" 
@@ -400,29 +400,29 @@ shows
   \<and> (last exec'') = cMsg 
   \<and> (last trace'' = msg)"
 proof -
-  def ExecMsg: execMsg == "exec' @ [cMsg]"
-  def TraceMsg: traceMsg == "trace' @ [msg]"
+  define execMsg where "execMsg = exec' @ [cMsg]"
+  define traceMsg where "traceMsg = trace' @ [msg]"
   have ExecMsgEq: "\<forall> i < ((length execMsg) - 1) . execMsg ! i = exec'!i " 
-    using ExecMsg by (auto simp add: nth_append)
+    using execMsg_def by (auto simp add: nth_append)
   have TraceMsgEq: "\<forall> i < ((length traceMsg) - 1) . traceMsg!i = trace'!i" 
-    using TraceMsg 
+    using traceMsg_def 
     by (auto simp add: nth_append)
-  have ExecLen: "(length execMsg) \<ge> 1" using ExecMsg by auto
+  have ExecLen: "(length execMsg) \<ge> 1" using execMsg_def by auto
   have lessLessExec: "\<forall> i . i < (length exec') \<longrightarrow> i < (length execMsg )" 
-    unfolding ExecMsg by auto
+    unfolding execMsg_def by auto
   have ExecLenTraceLen: "length exec'- 1 = length trace'" 
     using ExecIsExecution execution.length by auto
   have lessLessTrace: "\<forall> i . i < (length exec' - 1) \<longrightarrow> i < (length trace')" 
     using ExecLenTraceLen by auto
   have Exec'Len: "length exec' \<ge> 1" 
     using ExecIsExecution execution.notEmpty by blast
-  hence "hd exec' = hd execMsg " using ExecMsg
+  hence "hd exec' = hd execMsg " using execMsg_def
     by (metis One_nat_def hd_append2 length_0_conv not_one_le_zero)
   moreover have "initial (hd exec')" 
     using ExecIsExecution execution.base by blast 
-  ultimately have ExecInit: "initial (hd execMsg)" using ExecMsg by auto
+  ultimately have ExecInit: "initial (hd execMsg)" using execMsg_def by auto
   have ExecMsgLen: "length execMsg - 1 = length traceMsg" 
-    using ExecLenTraceLen unfolding ExecMsg TraceMsg
+    using ExecLenTraceLen unfolding execMsg_def traceMsg_def
     by (auto,metis Exec'Len Suc_pred length_greater_0_conv list.size(3) 
        not_one_le_zero) 
   have ExecSteps:"\<forall> i < length exec' - 1 .
@@ -430,7 +430,7 @@ proof -
     using ExecIsExecution execution.step by blast
   have "\<forall> i < length execMsg - 1. 
     ((execMsg ! i) \<turnstile> traceMsg ! i \<mapsto> (execMsg ! (i + 1)))" 
-    unfolding ExecMsg TraceMsg
+    unfolding execMsg_def traceMsg_def
   proof auto
     fix i
     assume IlessLen:"i < (length exec')"
@@ -441,18 +441,18 @@ proof -
       hence IlessLen1: "(i < (length exec') - 1)" by auto
       hence "((exec' ! i)  \<turnstile> trace' ! i \<mapsto> (exec' ! (i + 1)))" 
         using ExecSteps by auto
-      with IlessLen1 ExecMsgEq lessLessExec ExecMsg 
+      with IlessLen1 ExecMsgEq lessLessExec execMsg_def 
       have "((exec' @ [cMsg]) ! i) \<turnstile> ((trace') ! i) 
         \<mapsto> ((exec' @ [cMsg]) ! (Suc i))" by auto
       thus "((exec' @ [cMsg]) ! i) \<turnstile> ((trace' @ [msg]) ! i) 
         \<mapsto> ((exec' @ [cMsg]) ! (Suc i))" 
-        using IlessLen1 TraceMsgEq lessLessTrace TraceMsg by auto
+        using IlessLen1 TraceMsgEq lessLessTrace traceMsg_def by auto
     next
     case False
       with IlessLen have IEqLen1: "(i = (length exec') - 1)" by auto
       thus "((exec' @ [cMsg]) ! i) \<turnstile> ((trace' @ [msg]) ! i) 
         \<mapsto> ((exec' @ [cMsg]) ! (Suc i))" 
-        using  ExecMsg TraceMsg  CfgIsReachable Exec'Len 
+        using  execMsg_def traceMsg_def  CfgIsReachable Exec'Len 
                ExecLenTraceLen ExecMsgEq ExecMsgLen IlessLen   
         by (metis One_nat_def Suc_eq_plus1 Suc_eq_plus1_left last_conv_nth 
            le_add_diff_inverse length_append less_nat_zero_code list.size(3) 
@@ -462,11 +462,11 @@ proof -
   hence isExecution: "execution trans sends start execMsg traceMsg" 
     using ExecLen ExecMsgLen ExecInit  
     by (unfold_locales ,auto) 
-  moreover have "prefixList exec' execMsg" unfolding ExecMsg 
+  moreover have "prefixList exec' execMsg" unfolding execMsg_def 
     by (metis TailIsPrefixList not_Cons_self2)
-  moreover have "prefixList trace' traceMsg" unfolding TraceMsg 
+  moreover have "prefixList trace' traceMsg" unfolding traceMsg_def 
     by (metis TailIsPrefixList not_Cons_self2)
-  ultimately show ?thesis using ExecMsg TraceMsg by (metis last_snoc)
+  ultimately show ?thesis using execMsg_def traceMsg_def by (metis last_snoc)
 qed
 
 lemma (in asynchronousSystem) expandExecutionReachable:

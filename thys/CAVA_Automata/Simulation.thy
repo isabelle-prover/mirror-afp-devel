@@ -84,7 +84,8 @@ begin
       from init_sim obtain rb0 where rel0: "(ra 0, rb0) \<in> R" and binit: "rb0 \<in> b.V0"
         by (auto intro: ainit)
   
-      def rb \<equiv> "rec_nat rb0 (\<lambda>i rbi. SOME rbsi. (rbi, rbsi) \<in> b.E \<and> (ra (Suc i), rbsi) \<in> R)"
+      define rb
+        where "rb = rec_nat rb0 (\<lambda>i rbi. SOME rbsi. (rbi, rbsi) \<in> b.E \<and> (ra (Suc i), rbsi) \<in> R)"
       
       have [simp]: 
         "rb 0 = rb0" 

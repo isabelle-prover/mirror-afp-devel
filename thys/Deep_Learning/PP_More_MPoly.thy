@@ -433,9 +433,11 @@ lemma extract_var_non_zero_coeff: "extract_var p v = (\<Sum>m\<in>{m'. coeff p m
 
 lemma extract_var_sum: "extract_var (p+p') v = extract_var p v + extract_var p' v"
 proof -
-  def S == "{m. coeff p m \<noteq> 0} \<union> {m. coeff p' m \<noteq> 0} \<union> {m. coeff (p+p') m \<noteq> 0}"
-  have subsets:"{m. coeff p m \<noteq> 0} \<subseteq> S" "{m. coeff p' m \<noteq> 0} \<subseteq> S" "{m. coeff (p+p') m \<noteq> 0} \<subseteq> S" unfolding S_def by auto
-  have "finite S" unfolding S_def using coeff_def finite_lookup by (metis (mono_tags) Collect_disj_eq finite_Collect_disjI)
+  define S where "S = {m. coeff p m \<noteq> 0} \<union> {m. coeff p' m \<noteq> 0} \<union> {m. coeff (p+p') m \<noteq> 0}"
+  have subsets:"{m. coeff p m \<noteq> 0} \<subseteq> S" "{m. coeff p' m \<noteq> 0} \<subseteq> S" "{m. coeff (p+p') m \<noteq> 0} \<subseteq> S"
+    unfolding S_def by auto
+  have "finite S" unfolding S_def using coeff_def finite_lookup
+    by (metis (mono_tags) Collect_disj_eq finite_Collect_disjI)
   then show ?thesis  unfolding
     extract_var_finite_set[OF subsets(1) `finite S`]
     extract_var_finite_set[OF subsets(2) `finite S`]

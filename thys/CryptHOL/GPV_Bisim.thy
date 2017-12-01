@@ -523,7 +523,8 @@ lemma (in callee_invariant_on) exec_gpv_bind_materialize:
     \<bind> (\<lambda>(a, r, s). case r of None \<Rightarrow> bind_spmf (f s) (g (a, s)) | Some r' \<Rightarrow> g (a, s) r')"
     (is "?lhs = ?rhs" is "_ = bind_spmf (exec_gpv2 ?callee2 _ _) _")
 proof -
-  def [simp]: exec_gpv1 \<equiv> "exec_gpv :: ('a, 'b, 's option \<times> 's) callee \<Rightarrow> ('x, 'a, 'b) gpv \<Rightarrow> _"
+  define exec_gpv1 :: "('a, 'b, 's option \<times> 's) callee \<Rightarrow> ('x, 'a, 'b) gpv \<Rightarrow> _"
+    where [simp]: "exec_gpv1 = exec_gpv"
   let ?X = "\<lambda>s (ss, s'). s = s'"
   let ?callee = "\<lambda>(ss, s) x. map_spmf (\<lambda>(y, s'). (y, if I s' \<and> ss = None then Some s' else ss, s')) (callee s x)"
   let ?track = "exec_gpv1 ?callee gpv (None, s)"

@@ -137,7 +137,7 @@ lemma init_fin_\<tau>divergeD:
 proof
   from assms show "status = Running"
     by(cases rule: \<tau>trsys.\<tau>diverge.cases[consumes 1])(auto dest: init_fin_silent_moveD)
-  moreover def xm \<equiv> "(x, m)"
+  moreover define xm where "xm = (x, m)"
   ultimately have "\<exists>x m. xm = (x, m) \<and> \<tau>trsys.\<tau>diverge (init_fin t) init_fin_\<tau>move ((Running, x), m)"
     using assms by blast
   thus "\<tau>diverge t xm"
@@ -155,7 +155,7 @@ lemma init_fin_\<tau>diverge_RunningI:
   assumes "\<tau>diverge t (x, m)"
   shows "\<tau>trsys.\<tau>diverge (init_fin t) init_fin_\<tau>move ((Running, x), m)"
 proof -
-  def sxm \<equiv> "((Running, x), m)"
+  define sxm where "sxm = ((Running, x), m)"
   with assms have "\<exists>x m. \<tau>diverge t (x, m) \<and> sxm = ((Running, x), m)" by blast
   thus "\<tau>trsys.\<tau>diverge (init_fin t) init_fin_\<tau>move sxm"
   proof(coinduct rule: \<tau>trsys.\<tau>diverge.coinduct[consumes 1, case_names \<tau>diverge])

@@ -631,7 +631,7 @@ proof (cases m)
     thus ?thesis using StepWithoutP by simp
   next
     case (InMsg q b')
-    def Cfg': cfg' == "\<lparr>states = \<lambda>s. (
+    define cfg' where "cfg' = \<lparr>states = \<lambda>s. (
       if s = q then
         trans q (states cfg q) (Bool b')
       else if s = p then
@@ -643,9 +643,9 @@ proof (cases m)
             \<union># ((msgs cfg)-# m)) -# m'))\<rparr> "
     have StepP': "(cfg1 \<turnstile> m' \<mapsto> cfg')"
       using StepP  EnM' Rec
-      unfolding Cfg' InMsg CaseM by auto
+      unfolding cfg'_def InMsg CaseM by auto
     moreover from EnM have "(cfg2 \<turnstile> m \<mapsto> cfg')"
-      using InMsg Cfg' StepP StepP' StepWithoutP NoReceivingNoChange  
+      using InMsg cfg'_def StepP StepP' StepWithoutP NoReceivingNoChange  
             Rec' CaseM EnM'
     proof (simp, clarify)
       assume msgCfg:
@@ -668,7 +668,7 @@ proof (cases m)
     ultimately show ?thesis by blast
   next
     case (Msg q v')
-    def Cfg': cfg' == "\<lparr>states = \<lambda>s. (
+    define cfg' where "cfg' = \<lparr>states = \<lambda>s. (
       if s = q then
         trans q (states cfg q) (Value v')
       else if s = p then
@@ -678,13 +678,13 @@ proof (cases m)
       msgs = ((sends q (states cfg q) (Value v')) 
         \<union># (((sends p (states cfg p) (Bool b))
             \<union># ((msgs cfg)-# m))
-            -# m'))\<rparr> "
+            -# m'))\<rparr>"
     have StepP': "(cfg1 \<turnstile> m' \<mapsto> cfg')"
       using StepP EnM' Rec
-      unfolding Msg CaseM Cfg' by auto
+      unfolding Msg CaseM cfg'_def by auto
 
     moreover from EnM have "(cfg2 \<turnstile> m \<mapsto> cfg')"
-      using Msg Cfg' StepP StepP' StepWithoutP NoReceivingNoChange Rec' CaseM EnM'
+      using Msg cfg'_def StepP StepP' StepWithoutP NoReceivingNoChange Rec' CaseM EnM'
     proof (simp,clarify) 
       assume msgCfg1:
         "msgs cfg1 = (sends p (states cfg p) (Bool b)   
@@ -726,7 +726,7 @@ next
     thus ?thesis using StepWithoutP by simp
   next
     case (InMsg q b')
-    def Cfg': cfg' == "\<lparr>states = \<lambda>s. (
+    define cfg' where "cfg' = \<lparr>states = \<lambda>s. (
       if s = q then
         trans q (states cfg q) (Bool b')
       else if s = p then
@@ -741,7 +741,7 @@ next
       using StepP InMsg EnM' Rec CaseM
       by auto
     moreover from EnM have "(cfg2 \<turnstile> m \<mapsto> cfg')"
-      using InMsg Cfg' StepP StepP' StepWithoutP NoReceivingNoChange Rec' 
+      using InMsg cfg'_def StepP StepP' StepWithoutP NoReceivingNoChange Rec' 
             CaseM EnM'
     proof (simp, clarify)
       assume msgCfg:
@@ -763,7 +763,7 @@ next
     ultimately show ?thesis by blast
   next
     case (Msg q v')
-    def Cfg': cfg' == "\<lparr>states = \<lambda>s. (
+    define cfg' where "cfg' = \<lparr>states = \<lambda>s. (
       if s = q then
         trans q (states cfg q) (Value v')
       else if s = p then
@@ -777,7 +777,7 @@ next
     hence StepP': "(cfg1 \<turnstile> m' \<mapsto> cfg')"
       using StepP Msg EnM' Rec CaseM by auto
     moreover from EnM have "(cfg2 \<turnstile> m \<mapsto> cfg')"
-      using Msg Cfg' StepP StepP' StepWithoutP NoReceivingNoChange Rec' CaseM EnM'
+      using Msg cfg'_def StepP StepP' StepWithoutP NoReceivingNoChange Rec' CaseM EnM'
     proof (simp, clarify)
       assume msgCfg:
         "msgs cfg1 = (sends p (states cfg p) (Value v)
@@ -863,9 +863,9 @@ shows
   "\<exists> cfg'. withoutQReachable cfg1 Q cfg' 
      \<and> qReachable cfg2 Q cfg'"
 proof -
-  def NotQ: notQ == "UNIV - Q"
-  hence "qReachable cfg notQ cfg2 " using WithoutQReach by simp
-  thus ?thesis using QReach NotQ
+  define notQ where "notQ \<equiv> UNIV - Q"
+  with WithoutQReach have "qReachable cfg notQ cfg2" by simp
+  thus ?thesis using QReach notQ_def
   proof (induct rule: qReachable.induct)
     fix cfg2
     assume "qReachable cfg2 Q cfg1"

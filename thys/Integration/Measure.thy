@@ -94,7 +94,7 @@ text {*Note that our definition is restricted to finite measure
 theorem assumes sig: "sigma_algebra a" and meas: "f \<in> measurable a b" shows 
   measurable_lift: "f \<in> measurable a (sigma b)"
 proof -
-  def Q \<equiv> "{q. f -` q \<in> a}"
+  define Q where "Q = {q. f -` q \<in> a}"
   with meas have 1: "b \<subseteq> Q" by (auto simp add: measurable_def) 
 
   { fix x assume "x\<in>sigma b"

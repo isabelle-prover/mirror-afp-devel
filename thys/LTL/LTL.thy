@@ -497,16 +497,14 @@ lemma ltln_Release_alterdef:
   "w \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<psi> \<longleftrightarrow> w \<Turnstile>\<^sub>n (G\<^sub>n \<psi>) or\<^sub>n (\<psi> U\<^sub>n (\<phi> and\<^sub>n \<psi>))"
 proof (cases "\<exists>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>")
   case True
-    def i \<equiv> "Least (\<lambda>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>)"
+    define i where "i = Least (\<lambda>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>)"
     have "\<And>j. j < i \<Longrightarrow> suffix j w \<Turnstile>\<^sub>n \<psi>" and "\<not> suffix i w \<Turnstile>\<^sub>n \<psi>"
       using True LeastI not_less_Least unfolding i_def by fast+
-    hence "\<forall>i. suffix i w \<Turnstile>\<^sub>n \<psi> \<or> (\<exists>j<i. suffix j w \<Turnstile>\<^sub>n \<phi>) \<Longrightarrow> (\<exists>i. (suffix i w \<Turnstile>\<^sub>n \<psi> \<and> suffix i w \<Turnstile>\<^sub>n \<phi>) \<and> (\<forall>j<i. suffix j w \<Turnstile>\<^sub>n \<psi>))"
+    hence *: "\<forall>i. suffix i w \<Turnstile>\<^sub>n \<psi> \<or> (\<exists>j<i. suffix j w \<Turnstile>\<^sub>n \<phi>) \<Longrightarrow> (\<exists>i. (suffix i w \<Turnstile>\<^sub>n \<psi> \<and> suffix i w \<Turnstile>\<^sub>n \<phi>) \<and> (\<forall>j<i. suffix j w \<Turnstile>\<^sub>n \<psi>))"
       by fastforce  
-    moreover
     hence "\<exists>i. (suffix i w \<Turnstile>\<^sub>n \<psi> \<and> suffix i w \<Turnstile>\<^sub>n \<phi>) \<and> (\<forall>j<i. suffix j w \<Turnstile>\<^sub>n \<psi>) \<Longrightarrow> (\<forall>i. suffix i w \<Turnstile>\<^sub>n \<psi> \<or> (\<exists>j<i. suffix j w \<Turnstile>\<^sub>n \<phi>))"
       using linorder_cases by blast
-    ultimately
-    show ?thesis
+    with * show ?thesis
       using True by auto
 qed auto
 

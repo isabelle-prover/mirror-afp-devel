@@ -584,7 +584,7 @@ lemma ta_seq_consist_imp_sequentially_consistent:
   and seq: "ta_seq_consist P empty (lmap snd E)"
   shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
 proof(intro exI conjI)
-  def ws == "\<lambda>i. THE w. P,E \<turnstile> i \<leadsto>mrw w"
+  define ws where "ws i = (THE w. P,E \<turnstile> i \<leadsto>mrw w)" for i
   from seq have ns: "non_speculative P (\<lambda>_. {}) (lmap snd E)"
     by(rule ta_seq_consist_into_non_speculative) simp
   show "sequentially_consistent P (E, ws)" unfolding ws_def
@@ -1013,8 +1013,9 @@ proof -
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
 
-  def s' \<equiv> s and vs' \<equiv> vs
-    and ttas \<equiv> "[] :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list"
+  define s' vs'
+    and ttas :: "('thread_id \<times> ('l,'thread_id,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list"
+    where "s' = s" and "vs' = vs" and "ttas = []"
   hence "s -\<triangleright>ttas\<rightarrow>* s'" "ta_seq_consist P vs (llist_of (?ttas' ttas))" by auto
   hence "mthr.Runs s' (complete_sc s' (?vs ttas))"
   proof(coinduction arbitrary: s' ttas rule: mthr.Runs.coinduct)
@@ -1051,8 +1052,8 @@ proof -
         thus thesis by(simp add: that[OF red] ta_seq_consist_convert_RA)
       qed
       hence "?proceed ((t', ta''), s''')" using Red by(auto)
-      hence "?proceed (Eps ?proceed)" by(rule someI)
-      moreover with Red have "s -\<triangleright>ttas' @ [fst (Eps ?proceed)]\<rightarrow>* snd (Eps ?proceed)"
+      hence *: "?proceed (Eps ?proceed)" by(rule someI)
+      moreover from Red * have "s -\<triangleright>ttas' @ [fst (Eps ?proceed)]\<rightarrow>* snd (Eps ?proceed)"
         by(auto simp add: split_beta RedT_def intro: rtrancl3p_step)
       moreover from True
       have "complete_sc s' (?vs ttas') = LCons (fst (Eps ?proceed)) (complete_sc (snd (Eps ?proceed)) (?vs (ttas' @ [fst (Eps ?proceed)])))"
@@ -1074,13 +1075,13 @@ lemma complete_sc_ta_seq_consist:
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
   shows "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (complete_sc s vs)))"
 proof -
-  def vs' \<equiv> vs
+  define vs' where "vs' = vs"
   let ?obs = "\<lambda>ttas. lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)"
-  def obs \<equiv> "?obs (complete_sc s vs)"
-  def a \<equiv> "complete_sc s vs'"
+  define obs where "obs = ?obs (complete_sc s vs)"
+  define a where "a = complete_sc s vs'"
   let ?ttas' = "\<lambda>ttas' :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w,('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
-  let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
+  let ?vs = "\<lambda>ttas'. mrw_values P vs (?ttas' ttas')"
   from vs'_def obs_def
   have "s -\<triangleright>[]\<rightarrow>* s" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []" by(auto)
   hence "\<exists>s' ttas'. obs = ?obs (complete_sc s' vs') \<and> s -\<triangleright>ttas'\<rightarrow>* s' \<and> 

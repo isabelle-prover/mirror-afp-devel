@@ -422,12 +422,12 @@ lemma finite_lderiv0[Presb_simps]:
   assumes "lformula0 a"
   shows "finite {\<phi>. \<exists>xs. \<phi> = fold (Formula_Operations.deriv extend lderiv0) xs (FBase a)}"
 proof -
-  def d \<equiv> "Formula_Operations.deriv extend lderiv0"
-  def l \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i > 0]"
-  def \<Phi> \<equiv> "\<lambda>a. (case a of
+  define d where "d = Formula_Operations.deriv extend lderiv0"
+  define l where "l is = sum_list [i. i \<leftarrow> is, i < 0]" for "is" :: "int list"
+  define h where "h is = sum_list [i. i \<leftarrow> is, i > 0]" for "is" :: "int list"
+  define \<Phi> where "\<Phi> a = (case a of
     Eq is n z \<Rightarrow> {FBase (Eq is i 0) | i . i \<in> {min (- h is) n .. max (- l is) n}} \<union>
-      {FBool False :: formula})"
+      {FBool False :: formula})" for a
   { fix xs
     note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
     from \<open>lformula0 a\<close> have "FBase a \<in> \<Phi> a" by (auto simp: elim!: lformula0.cases)
@@ -459,12 +459,12 @@ qed
 lemma finite_rderiv0[Presb_simps]:
   "finite {\<phi>. \<exists>xs. \<phi> = fold (Formula_Operations.deriv extend rderiv0) xs (FBase a)}"
 proof -
-  def d \<equiv> "Formula_Operations.deriv extend rderiv0"
-  def l \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i > 0]"
-  def \<Phi> \<equiv> "\<lambda>a. (case a of
+  define d where "d = Formula_Operations.deriv extend rderiv0"
+  define l where "l is = sum_list [i. i \<leftarrow> is, i < 0]"for "is" :: "int list"
+  define h where "h is = sum_list [i. i \<leftarrow> is, i > 0]"for "is" :: "int list"
+  define \<Phi> where "\<Phi> a = (case a of
     Eq is n z \<Rightarrow> {FBase (Eq is n i) | i . i \<in> {min (- h is) (min n z) .. max (- l is) (max n z)}} \<union>
-      {FBool False :: formula})"
+      {FBool False :: formula})" for a
   { fix xs
     note Formula_Operations.fold_deriv_FBool[simp] Formula_Operations.deriv.simps[simp] \<Phi>_def[simp]
     have "FBase a \<in> \<Phi> a" by (auto split: presb.splits)
@@ -566,9 +566,9 @@ lemma satisfies_bounded_rderiv0[Presb_simps]:
 proof (induct a)
   case (Eq "is" n d)
   let ?l = "Length \<AA>"
-  def d' \<equiv> "scalar_product x is + 2 * d"
-  def l \<equiv> "sum_list  [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "sum_list  [i. i \<leftarrow> is, i > 0]"
+  define d' where "d' = scalar_product x is + 2 * d"
+  define l where "l = sum_list  [i. i \<leftarrow> is, i < 0]"
+  define h where "h = sum_list  [i. i \<leftarrow> is, i > 0]"
   from Eq show ?case
   unfolding wf0.simps satisfies0.simps rderiv0.simps Let_def
   proof (split if_splits, simp only: Formula_Operations.satisfies_gen.simps satisfies0.simps

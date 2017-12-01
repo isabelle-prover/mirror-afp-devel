@@ -968,13 +968,13 @@ lemma stable_rank_equiv_token_squats:
   (is "?lhs = ?rhs")
 proof
   assume ?lhs
-  def ranks \<equiv> "{j | j n. rank x n = Some j}"
+  define ranks where "ranks = {j | j n. rank x n = Some j}"
   hence "ranks \<subseteq> {0..<max_rank}" and "the (rank x x) \<in> ranks"
     using rank_upper_bound rank_initial[of x] unfolding ranks_def by fastforce+ (* Takes roughly 10s *)
   hence "finite ranks" and "ranks \<noteq> {}"
     using finite_reach finite_atLeastAtMost infinite_super by fast+
 
-  def i \<equiv> "Min ranks"
+  define i where "i = Min ranks"
   obtain n where "rank x n = Some i"
     using Min_in[OF `finite ranks` `ranks \<noteq> {}`]
     unfolding i_def ranks_def by blast
@@ -1015,7 +1015,7 @@ proof -
   from assms(2) obtain n_j where "n_j \<ge> n" and "\<forall>t \<ge> n_j. rank y t = Some j"
     unfolding stable_rank_def MOST_nat_le by (metis linear order_trans)
   moreover
-  def m \<equiv> "max n_i n_j"
+  define m where "m = max n_i n_j"
   ultimately
   have "rank x m = Some i" and "rank y m = Some j"
     by (metis max.bounded_iff order_refl)+
@@ -1884,8 +1884,8 @@ proof
   }
 
   {
-    def ot_p \<equiv> "Min (pre_oldest_tokens p n)"
-    def ot_q \<equiv> "Min (pre_oldest_tokens q n)"
+    define ot_p where "ot_p = Min (pre_oldest_tokens p n)"
+    define ot_q where "ot_q = Min (pre_oldest_tokens q n)"
     assume ?rhs
     hence "ot_p < ot_q"
       unfolding ot_p_def ot_q_def .
@@ -1894,10 +1894,10 @@ proof
       unfolding ot_p_def ot_q_def oldest_token_rec pre_oldest_configuration_tokens by (metis assms)+
 
    (* Min oldest \<longleftrightarrow> Min rank *)
-    def min_r\<^sub>p \<equiv> "Min (pre_ranks r (w n) p)"
+    define min_r\<^sub>p where "min_r\<^sub>p = Min (pre_ranks r (w n) p)"
     hence "min_r\<^sub>p \<in> pre_ranks r (w n) p"
       using pre_ranks_Min_in assms pre_ranks_tokens by simp
-    hence "min_r\<^sub>p < max_rank"
+    hence *: "min_r\<^sub>p < max_rank"
     proof (cases min_r\<^sub>p max_rank rule: linorder_cases)
       case equal
         hence "ot_p = Suc n"
@@ -1925,7 +1925,7 @@ proof
           by simp
     qed simp
     moreover
-    hence "min_r\<^sub>p \<in> pre_ranks r (w n) p - {max_rank}"
+    from * have "min_r\<^sub>p \<in> pre_ranks r (w n) p - {max_rank}"
       using `min_r\<^sub>p \<in> pre_ranks r (w n) p` by simp
     then obtain p' where "r p' = Some min_r\<^sub>p" and "p = \<delta> p' (w n)"
       using pre_ranks_state_obtain by blast
@@ -1935,13 +1935,13 @@ proof
     {
       fix r\<^sub>q
       assume "r\<^sub>q \<in> pre_ranks r (w n) q - {max_rank}"
-      then obtain q' where "r q' = Some r\<^sub>q" and "q = \<delta> q' (w n)"
+      then obtain q' where q': "r q' = Some r\<^sub>q" "q = \<delta> q' (w n)"
         using pre_ranks_state_obtain by blast
       moreover
-      then obtain ot_q' where "oldest_token q' n = Some ot_q'"
+      from q' obtain ot_q' where ot_q': "oldest_token q' n = Some ot_q'"
         unfolding assms by (metis push_down_state_rank_oldest_token)
       moreover
-      hence "ot_q' \<in> pre_oldest_tokens q n"
+      from ot_q' have "ot_q' \<in> pre_oldest_tokens q n"
         using `q = \<delta> q' (w n)`
         unfolding pre_oldest_tokens.simps by blast
       hence "ot_q \<le> ot_q'"

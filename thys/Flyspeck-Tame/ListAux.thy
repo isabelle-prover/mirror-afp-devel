@@ -366,7 +366,7 @@ lemma nth_last_Suc_n: "distinct ls \<Longrightarrow> n < length ls \<Longrightar
 proof (rule ccontr)
   assume d: "distinct ls" and n: "n < length ls" and l: "last ls = ls ! n" and not: "Suc n \<noteq> length ls"
   then have s: "Suc n < length ls" by auto
-  def lls \<equiv>  "ls!n"
+  define lls where  "lls = ls!n"
   with n have "take (Suc n) ls = take n ls @ [lls]" apply simp by (rule take_Suc_conv_app_nth)
   then have "take (Suc n) ls @ drop (Suc n) ls = take n ls @ [lls] @ drop (Suc n) ls" by auto
   then have ls: "ls = take n ls @ [lls] @ drop (Suc n) ls" by auto
@@ -391,7 +391,7 @@ qed
 
 lemma  plus_length2[simp]: "rotate ((length ls)+k) ls = rotate k ls "
 proof -
-  def x \<equiv> "(length ls)+k"
+  define x where "x = (length ls)+k"
   then have "x = k+(length ls)" by auto
   with x_def have "rotate x ls = rotate (k+(length ls)) ls" by simp
   then have "rotate x ls = rotate k ls" by simp
@@ -504,7 +504,7 @@ lemma nth_rotate1: "0 < length ls \<Longrightarrow> ls!((Suc n) mod (length ls))
 proof (cases "0 < (Suc n) mod (length ls)")
   assume lls: "0 < length ls"
   case True
-  def m \<equiv> "(Suc n) mod (length ls) - 1"
+  define m where "m = (Suc n) mod (length ls) - 1"
   with True have m: "Suc m = (Suc n) mod (length ls)" by auto
   with lls have a: "(Suc m) <   length ls" by auto
   from lls m have "m = n mod (length ls)" by (simp add: mod_Suc split:if_split_asm)
@@ -526,7 +526,7 @@ proof (induct m)
   case 0 then show ?case by auto
 next
   case (Suc m)
-  def z \<equiv> "n + m"
+  define z where "z = n + m"
   then have "n + Suc m = Suc (z)" by auto
   with Suc have r1: "ls ! ((Suc z) mod length ls) = rotate1 ls ! (z mod length ls)"
     by (rule_tac nth_rotate1)
@@ -626,9 +626,9 @@ lemma splitAt_subset_ab:
 lemma splitAt_in_fst[dest]: "v \<in> set (fst (splitAt ram vs)) \<Longrightarrow> v \<in> set vs"
 proof (cases "ram \<in> set vs")
   assume v: "v \<in> set (fst (splitAt ram vs))"
-  def a \<equiv> "fst (splitAt ram vs)"
+  define a where "a = fst (splitAt ram vs)"
   with v have vin: "v \<in> set a" by auto
-  def b \<equiv> "snd (splitAt ram vs)"
+  define b where "b = snd (splitAt ram vs)"
   case True with a_def b_def  have "vs = a @ ram # b" by (auto dest: splitAt_ram)
   with vin show "v \<in> set vs" by auto
 next
@@ -642,8 +642,8 @@ lemma splitAt_not1:
 lemma splitAt_in_snd[dest]: "v \<in> set (snd (splitAt ram vs)) \<Longrightarrow> v \<in> set vs"
 proof (cases "ram \<in> set vs")
   assume v: "v \<in> set (snd (splitAt ram vs))"
-  def a \<equiv> "fst (splitAt ram vs)"
-  def b \<equiv> "snd (splitAt ram vs)"
+  define a where "a = fst (splitAt ram vs)"
+  define b where "b = snd (splitAt ram vs)"
   with v have vin: "v \<in> set b" by auto
   case True with a_def b_def  have "vs = a @ ram # b" by (auto dest: splitAt_ram)
   with vin show "v \<in> set vs" by auto
@@ -657,26 +657,26 @@ subsubsection {* Distinctness *}
 
 lemma splitAt_distinct_ab_aux:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a \<and> distinct b"
-apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
+  by (cases "ram \<in> set vs") (auto dest: splitAt_split simp: splitAt_no_ram)
 
 lemma splitAt_distinct_fst_aux[intro]:
  "distinct vs \<Longrightarrow> distinct (fst (splitAt ram vs))"
 proof -
   assume d: "distinct vs"
-  def b: b \<equiv> "snd (splitAt ram vs)"
-  def a: a \<equiv> "fst (splitAt ram vs)"
-  with b have "(a,b) = splitAt ram vs" by auto
-  with a d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
+  define b where "b = snd (splitAt ram vs)"
+  define a where "a = fst (splitAt ram vs)"
+  with b_def have "(a,b) = splitAt ram vs" by auto
+  with a_def d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
 qed
 
 lemma splitAt_distinct_snd_aux[intro]:
  "distinct vs \<Longrightarrow> distinct (snd (splitAt ram vs))"
 proof -
   assume d: "distinct vs"
-  def b: b \<equiv> "snd (splitAt ram vs)"
-  def a: a \<equiv> "fst (splitAt ram vs)"
-  with b have "(a,b) = splitAt ram vs" by auto
-  with b d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
+  define b where "b = snd (splitAt ram vs)"
+  define a where "a = fst (splitAt ram vs)"
+  with b_def have "(a,b) = splitAt ram vs" by auto
+  with b_def d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
 qed
 
 lemma splitAt_distinct_ab:
@@ -758,7 +758,8 @@ qed
 lemma distinct_unique1: "distinct vs \<Longrightarrow> ram \<in> set vs \<Longrightarrow> \<exists>!s. vs = (fst s) @ ram # (snd s)"
 proof
   assume d: "distinct vs" and r: "ram \<in> set vs"
-  def s  \<equiv> "splitAt ram vs" with r show  "vs = (fst s) @ ram # (snd s)"
+  define s where "s = splitAt ram vs"
+  with r show  "vs = (fst s) @ ram # (snd s)"
     by (auto intro: splitAt_ram)
 next
   fix s
@@ -904,7 +905,7 @@ by (rule local_help) auto
 lemma splitAt_simp1: "ram \<notin> set a \<Longrightarrow> ram \<notin> set b \<Longrightarrow> fst (splitAt ram (a @ ram # b)) = a "
 proof -
   assume ramab: "ram \<notin> set a"  "ram \<notin> set b"
-  def vs \<equiv> "a @ ram # b"
+  define vs where "vs = a @ ram # b"
   then have vs: "vs = a @ ram # b" by auto
   then have "ram \<in> set vs" by auto
   then have "vs = fst (splitAt ram vs) @ ram # snd (splitAt ram vs)" by (auto dest: splitAt_ram)

@@ -112,7 +112,7 @@ proof -
       proof (cases msg)
         case (InMsg p' b)
         with PisReceiverOf have MsgIsInMsg: "(msg = <p, inM b>)" by auto
-        def CfgInM: cfgInM == "\<lparr>states = \<lambda>proc. (
+        define cfgInM where "cfgInM = \<lparr>states = \<lambda>proc. (
         if proc = p then
           trans p (states (last exec') p) (Bool b)
         else states (last exec') proc),
@@ -128,8 +128,8 @@ proof -
       next 
         case (Msg p' v')
         with PisReceiverOf have MsgIsVMsg: "(msg = <p, v'>)" by auto
-        def CfgVMsg: cfgVMsg == 
-          "\<lparr>states = \<lambda>proc. (
+        define cfgVMsg where "cfgVMsg =
+          \<lparr>states = \<lambda>proc. (
               if proc = p then
                trans p (states (last exec') p) (Value v')
                else states (last exec') proc),
@@ -140,8 +140,8 @@ proof -
         thus "\<exists> cMsg . ((last exec') \<turnstile> msg \<mapsto> cMsg )" by blast
       qed  
       then obtain cMsg where  CMsg:"((last exec') \<turnstile> msg \<mapsto> cMsg )" by auto
-      def ExecMsg: execMsg == "exec' @ [cMsg]"
-      def TraceMsg: traceMsg == "trace' @ [msg]"      
+      define execMsg where "execMsg = exec' @ [cMsg]"
+      define traceMsg where "traceMsg = trace' @ [msg]"
       from NewExec(1) CMsg obtain execMsg traceMsg where isExecution: 
         "execution trans sends start execMsg traceMsg"
         and ExecMsg: "prefixList exec' execMsg" "prefixList trace' traceMsg"
@@ -396,8 +396,9 @@ proof -
             \<and> (initial (hd cfgList'))
             \<and> (\<exists> msg'. execution.minimalEnabled cfgList msgList msg' 
               \<and> msg' \<in> (set (drop (length msgList ) msgList')))))" "False"] by auto
-  def Fe: fe == "infiniteExecutionCfg cfg fStepCfg fStepMsg" and
-      Ft: ft == "infiniteExecutionMsg cfg fStepCfg fStepMsg"
+  define fe ft
+    where "fe = infiniteExecutionCfg cfg fStepCfg fStepMsg"
+      and "ft = infiniteExecutionMsg cfg fStepCfg fStepMsg"
   
   have BasicProperties: "(\<forall>n. nonUniform (last (fe n)) 
     \<and> prefixList (fe n) (fe (n + 1)) \<and> prefixList (ft n) (ft (n + 1)) 
@@ -414,7 +415,7 @@ proof -
       case 0
       hence "fe 0 = [cfg]" "ft 0 = []" "fe 1 = fStepCfg (fe 0) (ft 0)" 
         "ft 1 = fStepMsg (fe 0) (ft 0)"
-        using Fe Ft
+        using fe_def ft_def
         by simp_all
       thus ?case
         using BC FStep
@@ -422,7 +423,7 @@ proof -
     next
       case (Suc n)
         thus ?case
-        using Fe Ft
+        using fe_def ft_def
         by (auto, (metis FStep execution.base)+)
     qed
   qed
@@ -516,10 +517,10 @@ proof -
       proof(rule ccontr,simp)
         assume AssumptionFairContr: "\<forall>n'\<ge>n. \<forall>n0'<length (ft n'). 
           length (ft n) \<le> n0' \<longrightarrow> msg \<noteq> ft n' ! n0'"
-        def FirstOccSet: firstOccSet == "\<lambda>n . { msg1 . \<exists> nMsg . 
+        define firstOccSet where "firstOccSet n = { msg1 . \<exists> nMsg . 
           \<exists> n1 \<le> nMsg . 
           execution.firstOccurrence (fe n) (ft n) msg1 n1 
-          \<and> execution.firstOccurrence (fe n) (ft n) msg nMsg }"
+          \<and> execution.firstOccurrence (fe n) (ft n) msg nMsg }" for n
         have NotEmpty: "fe n \<noteq> []" using  AssumptionFair(2) 
           by (metis less_nat_zero_code list.size(3))
         have FirstToLast': 
@@ -539,7 +540,7 @@ proof -
             enabled_def
           by metis
         hence "\<forall> n . \<forall> msg' \<in> (firstOccSet n) . 
-          0 < msgs (last (fe n)) msg'" using FirstOccSet by blast
+          0 < msgs (last (fe n)) msg'" using firstOccSet_def by blast
         hence "\<forall> n . firstOccSet n \<subseteq> {msg. 0 < msgs (last (fe n)) msg}"
           by (metis (lifting, full_types) mem_Collect_eq subsetI)
         hence FiniteMsgs: "\<forall> n . finite (firstOccSet n)" 
@@ -678,7 +679,7 @@ proof -
           qed
           have Subset: "\<And> msgInSet . msgInSet \<in> firstOccSet (Suc index)
             \<Longrightarrow> msgInSet \<in> firstOccSet index" 
-          unfolding FirstOccSet
+          unfolding firstOccSet_def
           proof(auto)
             fix msgInSet nMsg n1
             assume AssumptionSubset: "n1 \<le> nMsg"
@@ -857,7 +858,7 @@ proof -
             hence "\<exists>msg'. execution.minimalEnabled (fe index) (ft index)
               msg' \<and>  msg' \<in> set (drop (length (ft index)) 
                 (fStepMsg (fe index) (ft index)))" 
-              using FStep Fe Ft 
+              using FStep fe_def ft_def
                 BasicProperties by simp
             then obtain consumedMsg where ConsumedMsg: 
               "execution.minimalEnabled (fe index) (ft index) 
@@ -866,7 +867,7 @@ proof -
                 (fStepMsg (fe index) (ft index)))" by blast
             hence ConsumedIsInDrop:
               "consumedMsg \<in> set (drop (length (ft index)) (ft (Suc index)))"
-              using Fe Ft FStep
+              using fe_def ft_def FStep
                 BasicProperties[rule_format, of index]
               by auto
             
@@ -1000,7 +1001,7 @@ proof -
                 (fe index) (ft index) msg OccM 
               \<longrightarrow> OccM' \<le> OccM" using MinImplAllBigger by blast
               thus "msg' \<in> firstOccSet index" using OccM' 
-              proof (auto simp add: FirstOccSet)
+              proof (auto simp add: firstOccSet_def)
                 have "enabled (last (fe index)) msg" 
                   using AssumptionFirstOccSetDecrOrConsumed(1) by blast
                 hence "\<exists>nMsg .  execution.firstOccurrence (fe index) 
@@ -1072,7 +1073,7 @@ proof -
                     (ft (Suc index)) consumedMsg n1 \<and> 
                   execution.firstOccurrence (fe (Suc index)) 
                     (ft (Suc index)) msg nMsg" 
-                using FirstOccSet by blast
+                using firstOccSet_def by blast
               thus False using GreaterOccurrence 
                 by (metis less_le_trans less_not_refl3)
             qed
@@ -1169,7 +1170,7 @@ proof -
       \<and> (\<forall>n. nonUniform (last (fe n)) \<and> prefixList (fe n) (fe (n + 1)) 
           \<and> prefixList (ft n) (ft (n + 1))
           \<and> execution trans sends start (fe n) (ft n))"
-    using Fair Fe FStep BasicProperties by auto
+    using Fair fe_def FStep BasicProperties by auto
   qed
 qed
 
@@ -1430,20 +1431,20 @@ proof -
     "\<forall> p . (\<forall> n1 > (crashPoint p) . \<forall> m \<in> (set (drop (length 
     (ft (crashPoint p))) (ft n1))) . (\<not> isReceiverOf p m))"
     by blast
-  def LimitSet: limitSet == "{crashPoint p | p . p \<in> Proc}"
+  define limitSet where "limitSet = {crashPoint p | p . p \<in> Proc}"
   have "finite {p. p \<in> Proc}" using finiteProcs by simp
-  hence "finite limitSet" using LimitSet finite_image_set[] by blast
+  hence "finite limitSet" using limitSet_def finite_image_set[] by blast
   hence "\<exists> limit . \<forall> l \<in> limitSet . l < limit" using 
     finite_nat_set_iff_bounded by auto
-  hence "\<exists> limit . \<forall> p . (crashPoint p) < limit" using LimitSet by auto
+  hence "\<exists> limit . \<forall> p . (crashPoint p) < limit" using limitSet_def by auto
   then obtain limit where Limit: "\<forall> p . (crashPoint p) < limit" by blast
-  def LengthLimit: lengthLimit == "(length (ft limit) - 1)"
-  def LateMessage: lateMessage == "last (ft limit)"
+  define lengthLimit where "lengthLimit = length (ft limit) - 1"
+  define lateMessage where "lateMessage = last (ft limit)"
   hence "lateMessage = (ft limit) ! (length (ft limit) - 1)" 
     by (metis AllArePrefixesTrace Limit last_conv_nth less_nat_zero_code 
       list.size(3) PrefixListMonotonicity)
   hence LateIsLast: "lateMessage = (ft limit) ! lengthLimit" 
-  using LateMessage LengthLimit by auto
+  using lateMessage_def lengthLimit_def by auto
 
   have "\<exists> p . isReceiverOf p lateMessage" 
   proof(rule ccontr)
@@ -1455,7 +1456,7 @@ proof -
     hence "length (fe limit) - 1 = length (ft limit)"
       using execution.length by simp
     hence "lengthLimit < length (fe limit) - 1" 
-      using LengthLimit 
+      using lengthLimit_def 
       by (metis (hide_lams, no_types) Length Limit One_nat_def Suc_eq_plus1
         Suc_le_eq diff_less 
         diffs0_imp_equal gr_implies_not0 less_Suc0 neq0_conv)
@@ -1488,7 +1489,7 @@ proof -
     hence "last (drop (length (ft (crashPoint p))) (ft limit)) 
       = last (ft limit)" by (metis last_drop)
     hence "lateMessage = last (drop (length (ft (crashPoint p))) 
-      (ft limit))" using LateMessage by auto
+      (ft limit))" using lateMessage_def by auto
     thus "lateMessage \<in> set (drop (length(ft (crashPoint p))) (ft limit))" 
       by (metis CrashShorterLimit drop_eq_Nil last_in_set not_le)
   qed

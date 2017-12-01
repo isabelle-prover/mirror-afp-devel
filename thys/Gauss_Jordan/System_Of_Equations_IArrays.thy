@@ -74,7 +74,7 @@ have "(GREATEST b. A $ b \<noteq> 0) = from_nat a"
       finally have "a = (length [0..<IArray.length (vec_to_iarray A)] - Suc ia)" .
       hence ia_eq: "ia = length [0..<IArray.length (vec_to_iarray A)] - (Suc a)"
         by (metis Suc_diff_Suc Suc_eq_plus1_left diff_diff_cancel less_imp_le ia_less_length length_rev)      
-      def ja\<equiv>"length [0..<IArray.length (vec_to_iarray A)] - to_nat y - 1"
+      define ja where "ja = length [0..<IArray.length (vec_to_iarray A)] - to_nat y - 1"
       have ja_less_length: "ja < length [0..<IArray.length (vec_to_iarray A)]" unfolding ja_def 
         using ia_eq ia_less_length' by (simp add: algebra_simps )
       have suc_i_le: "IArray.length (vec_to_iarray A)\<ge>Suc (to_nat y)" unfolding vec_to_iarray_def  using to_nat_less_card[of y] by auto
@@ -88,7 +88,7 @@ have "(GREATEST b. A $ b \<noteq> 0) = from_nat a"
       hence eq_0: "vec_to_iarray A !! (?xs ! ja) = 0" using all_zero by simp
       hence "A $ y = 0" using vec_to_iarray_nth'[of A y] unfolding xs_ja_eq_y by simp
       thus False using Ay by contradiction
-qed
+    qed
 qed
 thus ?thesis unfolding greatest_not_zero_def a unfolding to_nat_eq[symmetric] 
   unfolding to_nat_from_nat_id[OF a_less_card] by simp
@@ -338,9 +338,9 @@ proof (auto)
 assume none_solve_Ab: "Option.is_none (solve A b)"
 show "None = solve_iarrays (matrix_to_iarray A) (vec_to_iarray b)"
     proof -
-      def GJ_P == "Gauss_Jordan_iarrays_PA (matrix_to_iarray A)"
-      def P_mult_b == "fst GJ_P *iv vec_to_iarray b"
-      def rank_A == "length [x\<leftarrow>IArray.list_of (snd GJ_P) . \<not> is_zero_iarray x]"
+      define GJ_P where "GJ_P = Gauss_Jordan_iarrays_PA (matrix_to_iarray A)"
+      define P_mult_b where "P_mult_b = fst GJ_P *iv vec_to_iarray b"
+      define rank_A where "rank_A = length [x\<leftarrow>IArray.list_of (snd GJ_P). \<not> is_zero_iarray x]"
       have "\<not> consistent A b" using none_solve_Ab unfolding solve_def unfolding Option.is_none_def by auto
       hence "\<not> consistent_iarrays (matrix_to_iarray A) (vec_to_iarray b)" using matrix_to_iarray_consistent by auto
       hence "\<not> (if \<not> is_zero_iarray P_mult_b then greatest_not_zero P_mult_b + 1 else 0) \<le> rank_A"
@@ -352,12 +352,12 @@ next
 assume not_none: "\<not> Option.is_none (solve A b)"
 show "Some (vec_to_iarray (fst (the (solve A b))), vec_to_iarray ` snd (the (solve A b))) = solve_iarrays (matrix_to_iarray A) (vec_to_iarray b)"
 proof -
-  def GJ_P == "Gauss_Jordan_iarrays_PA (matrix_to_iarray A)"
-      def P_mult_b == "fst GJ_P *iv vec_to_iarray b"
-      def rank_A == "length [x\<leftarrow>IArray.list_of (snd GJ_P) . \<not> is_zero_iarray x]"
-  def GJ_transpose == "Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))"
-  def basis == "set (map (\<lambda>i. row_iarray i (fst GJ_transpose)) [rank_A..<ncols_iarray (matrix_to_iarray A)])"
-  def P_mult_b == "fst GJ_P *iv vec_to_iarray b"
+  define GJ_P where "GJ_P = Gauss_Jordan_iarrays_PA (matrix_to_iarray A)"
+  define P_mult_b where "P_mult_b = fst GJ_P *iv vec_to_iarray b"
+  define rank_A where "rank_A = length [x\<leftarrow>IArray.list_of (snd GJ_P) . \<not> is_zero_iarray x]"
+  define GJ_transpose where "GJ_transpose = Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))"
+  define basis where "basis = set (map (\<lambda>i. row_iarray i (fst GJ_transpose)) [rank_A..<ncols_iarray (matrix_to_iarray A)])"
+  define P_mult_b where "P_mult_b = fst GJ_P *iv vec_to_iarray b"
   have consistent_Ab: "consistent A b" using not_none unfolding solve_def unfolding Option.is_none_def by metis
   hence "consistent_iarrays (matrix_to_iarray A) (vec_to_iarray b)" using matrix_to_iarray_consistent by auto
   hence "(if \<not> is_zero_iarray P_mult_b then greatest_not_zero P_mult_b + 1 else 0) \<le> rank_A"

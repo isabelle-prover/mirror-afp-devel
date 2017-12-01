@@ -54,7 +54,7 @@ proof -
                                       (action_obs E' (n - 1)) (action_obs E (n - 1)) \<and>
                                    (\<forall>i < n - 1. i \<in> read_actions E  \<longrightarrow> ws' i = ws i)) \<and> 
                          (\<forall>r \<in> read_actions E'. n - 1 \<le> r \<longrightarrow> P,E' \<turnstile> ws' r \<le>hb r)"
-  def E' == "\<lambda>n. fst (Eps (?P n))" and ws' == "\<lambda>n. snd (Eps (?P n))"
+  define E' ws' where "E' n = fst (Eps (?P n))" and "ws' n = snd (Eps (?P n))" for n
   hence [simp]: 
     "\<And>n. commit_for_sc P (E, ws) n = 
     (if enat n \<le> llength E

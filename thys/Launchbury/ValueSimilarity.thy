@@ -43,9 +43,9 @@ lemma counter_example:
   assumes "Equation (3)": "\<And> n d d'. \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>(d \<down>Fn d') = \<psi>\<^sup>D\<^bsub>Suc n\<^esub>\<cdot>d \<down>Fn \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>d'"
   shows "False"
 proof-
-  def n == "1::nat"
-  def d == "Fn\<cdot>(\<Lambda> e. (e \<down>Fn \<bottom>))"
-  def d' == "Fn\<cdot>(\<Lambda> _. Fn\<cdot>(\<Lambda> _. \<bottom>))"
+  define n :: nat where "n = 1"
+  define d where "d = Fn\<cdot>(\<Lambda> e. (e \<down>Fn \<bottom>))"
+  define d' where "d' = Fn\<cdot>(\<Lambda> _. Fn\<cdot>(\<Lambda> _. \<bottom>))"
   have "Fn\<cdot>(\<Lambda> _. \<bottom>) = \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>(d \<down>Fn d')"
     by (simp add: d_def d'_def n_def cfun_map_def)
   also
@@ -64,9 +64,9 @@ lemma counter_example2:
   assumes "Equation (2)": "\<And> n e a c. \<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>((e \<down>CFn a)\<cdot>c) = (\<psi>\<^sup>E\<^bsub>Suc n\<^esub>\<cdot>e \<down>CFn \<psi>\<^sup>A\<^bsub>n\<^esub>\<cdot>a)\<cdot>c"
   shows "False"
 proof-
-  def n == "1::nat"
-  def e == "CFn\<cdot>(\<Lambda> e r. (e\<cdot>r \<down>CFn \<bottom>)\<cdot>r)"
-  def a == "\<Lambda> _ . CFn\<cdot>(\<Lambda> _ _. CFn\<cdot>(\<Lambda> _ _. \<bottom>)) :: C \<rightarrow> CValue"
+  define n :: nat where "n = 1"
+  define e where "e = CFn\<cdot>(\<Lambda> e r. (e\<cdot>r \<down>CFn \<bottom>)\<cdot>r)"
+  define a :: "C \<rightarrow> CValue" where "a = (\<Lambda> _ . CFn\<cdot>(\<Lambda> _ _. CFn\<cdot>(\<Lambda> _ _. \<bottom>)))"
   fix c :: C
   have "CFn\<cdot>(\<Lambda> _ _. \<bottom>) = \<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>((e \<down>CFn a)\<cdot>c)"
     by (simp add: e_def a_def n_def cfun_map_def)

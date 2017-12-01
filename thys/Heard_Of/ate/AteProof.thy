@@ -800,7 +800,7 @@ proof -
     where imgR: "R ` (UNIV::Proc set) \<noteq> {}"
       and R: "\<forall>pp k. x (rho (R pp + k) pp) = v" 
     by blast
-  def rr \<equiv> "Max (R ` UNIV)"
+  define rr where "rr = Max (R ` UNIV)"
 
   have P5: "\<forall>r' > rr. \<forall>pp. x (rho r' pp) = v"
   proof (clarify)

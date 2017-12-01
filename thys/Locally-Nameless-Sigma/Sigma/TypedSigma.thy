@@ -522,9 +522,11 @@ lemma bigger_env_lemma[rule_format]:
   assumes "e \<turnstile> t : T"
   shows "\<forall>x X. x \<notin> env_dom e \<longrightarrow> e\<lparr>x:X\<rparr> \<turnstile> t: T"
 proof -
-  def pred_cof \<equiv> "\<lambda>L env t T l. 
-    \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
-     \<longrightarrow> env\<lparr>s:T\<rparr>\<lparr>p:param (the(T^l))\<rparr> \<turnstile> (t\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(T^l))"
+  define pred_cof
+    where "pred_cof L env t T l \<longleftrightarrow>
+      (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
+        \<longrightarrow> env\<lparr>s:T\<rparr>\<lparr>p:param (the(T^l))\<rparr> \<turnstile> (t\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(T^l)))"
+    for L env t T l
   from assms show ?thesis
   proof (induct
       taking: "\<lambda>env t T l. \<forall>x X. x \<notin> env_dom env 
@@ -544,7 +546,8 @@ proof -
     qed
   next
     case (Obj env Ta f) note pred_o = this(3)
-    def pred_cof' \<equiv> "\<lambda>x X b l. \<exists>L. finite L \<and> pred_cof L (env\<lparr>x:X\<rparr>) (the b) Ta l"
+    define pred_cof'
+      where "pred_cof' x X b l \<longleftrightarrow> (\<exists>L. finite L \<and> pred_cof L (env\<lparr>x:X\<rparr>) (the b) Ta l)" for x X b l
     from pred_o
     have pred: "\<forall>x X. x \<notin> env_dom env \<longrightarrow> (\<forall>l\<in>dom f. pred_cof' x X (f l) l)"
       by (intro fmap_ball_all2'[of f "\<lambda>x X. x \<notin> env_dom env" pred_cof'],
@@ -552,8 +555,10 @@ proof -
     show ?case
     proof (intro strip)
       fix x X 
-      def pred_bnd \<equiv> "\<lambda>s p b l. env\<lparr>x:X\<rparr>\<lparr>s:Ta\<rparr>\<lparr>p:param (the(Ta^l))\<rparr> 
-                                \<turnstile> (the b\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(Ta^l))"
+      define pred_bnd
+        where "pred_bnd s p b l \<longleftrightarrow>
+          env\<lparr>x:X\<rparr>\<lparr>s:Ta\<rparr>\<lparr>p:param (the(Ta^l))\<rparr> \<turnstile> (the b\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(Ta^l))"
+        for s p b l
       assume "x \<notin> env_dom env"
       with pred fmap_ex_cof[of f pred_bnd] `dom f = do Ta`
       obtain L where

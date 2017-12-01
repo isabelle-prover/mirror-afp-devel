@@ -19,7 +19,7 @@ lemma cong_rotate_to:
 proof -
   assume x: "x \<in> set xs"
   hence ls1: "xs = fst (splitAt x xs) @ x # snd (splitAt x xs)" by (auto dest: splitAt_ram)
-  def i \<equiv> "length(fst(splitAt x xs))"
+  define i where "i = length(fst(splitAt x xs))"
   hence "i < length((fst(splitAt x xs)) @ [x] @ snd(splitAt x xs))" by auto
   with ls1 have i_len: "i < length xs" by auto
   hence ls2: "xs = take i xs @ xs!i # drop (Suc i) xs" by (auto intro: id_take_nth_drop)

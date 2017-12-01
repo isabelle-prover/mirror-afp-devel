@@ -615,7 +615,7 @@ proof -
     by (auto dest: hoeq_xeq)
 
   txt {* Now obtain a round where all votes agree. *}
-  def r' \<equiv> "if step (Suc r0) = 0 then Suc r0 else Suc (Suc r0)"
+  define r' where "r' = (if step (Suc r0) = 0 then Suc r0 else Suc (Suc r0))"
   have stp': "step r' = 0"
     by (simp add: r'_def step_def mod_Suc)
   have x': "\<forall>q. x (rho r' q) = ?v"

@@ -45,7 +45,7 @@ lemma (in encoding) fully_abstract_wrt_source_relation:
   assumes injectivity: "\<forall>S1 S2. \<lbrakk>S1\<rbrakk> = \<lbrakk>S2\<rbrakk> \<longrightarrow> S1 = S2"
   shows "\<exists>RelT. fully_abstract RelS RelT"
 proof -
-  def RelT\<equiv>"{(T1, T2). \<exists>S1 S2. (S1, S2) \<in> RelS \<and> T1 = \<lbrakk>S1\<rbrakk> \<and> T2 = \<lbrakk>S2\<rbrakk>}"
+  define RelT where "RelT = {(T1, T2). \<exists>S1 S2. (S1, S2) \<in> RelS \<and> T1 = \<lbrakk>S1\<rbrakk> \<and> T2 = \<lbrakk>S2\<rbrakk>}"
   with injectivity have "fully_abstract RelS RelT"
     by blast
   thus "\<exists>RelT. fully_abstract RelS RelT"
@@ -62,17 +62,17 @@ lemma (in encoding) fully_abstract_wrt_trans_source_relation:
       and transS:  "trans RelS"
   shows "\<exists>RelT. fully_abstract RelS RelT"
 proof -
-  def relT: RelT\<equiv>"{(T1, T2). \<exists>S1 S2. (S1, S2) \<in> RelS \<and> T1 = \<lbrakk>S1\<rbrakk> \<and> T2 = \<lbrakk>S2\<rbrakk>}"
+  define RelT where "RelT = {(T1, T2). \<exists>S1 S2. (S1, S2) \<in> RelS \<and> T1 = \<lbrakk>S1\<rbrakk> \<and> T2 = \<lbrakk>S2\<rbrakk>}"
   have "fully_abstract RelS RelT"
   proof auto
     fix S1 S2
     assume "(S1, S2) \<in> RelS"
-    with relT show "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> RelT"
+    with RelT_def show "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> RelT"
       by blast
   next
     fix S1 S2
     assume "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> RelT"
-    with relT obtain S1' S2' where A1: "(S1', S2') \<in> RelS" and A2: "\<lbrakk>S1\<rbrakk> = \<lbrakk>S1'\<rbrakk>"
+    with RelT_def obtain S1' S2' where A1: "(S1', S2') \<in> RelS" and A2: "\<lbrakk>S1\<rbrakk> = \<lbrakk>S1'\<rbrakk>"
                                and A3: "\<lbrakk>S2\<rbrakk> = \<lbrakk>S2'\<rbrakk>"
       by blast
     from A2 encRelS have "(S1, S1') \<in> RelS"
@@ -106,7 +106,7 @@ lemma (in encoding) fully_abstract_wrt_target_relation:
   fixes RelT :: "('procT \<times> 'procT) set"
   shows "\<exists>RelS. fully_abstract RelS RelT"
 proof -
-  def RelS\<equiv>"{(S1, S2). (\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> RelT}"
+  define RelS where "RelS = {(S1, S2). (\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> RelT}"
   hence "fully_abstract RelS RelT"
     by simp
   thus "\<exists>RelS. fully_abstract RelS RelT"
@@ -134,32 +134,32 @@ lemma (in encoding) full_abstraction_and_trans_relation_contains_SRel_impl_TRel:
   shows "\<forall>S1 S2. (\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> TRel \<longleftrightarrow> (TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
 proof auto
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
   hence "(TargetTerm (\<lbrakk>S1\<rbrakk>), SourceTerm S1) \<in> Rel'"
     by simp
   moreover assume "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> TRel"
   with fullAbs have "(S1, S2) \<in> SRel"
     by simp
-  with srel rel' have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
+  with srel Rel'_def have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
     by simp
-  moreover from encR rel' have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  moreover from encR Rel'_def have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
   ultimately show "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
 next
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
-  from encR rel' have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  from encR Rel'_def have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
     by simp
   moreover assume "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
-  with rel' have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  with Rel'_def have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
-  moreover from rel' have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
+  moreover from Rel'_def have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
     by simp
   ultimately have "(SourceTerm S1, SourceTerm S2) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
   with srel have "(S1, S2) \<in> SRel"
@@ -179,32 +179,32 @@ lemma (in encoding) full_abstraction_and_trans_relation_contains_TRel_impl_SRel:
   shows "SRel = {(S1, S2). (SourceTerm S1, SourceTerm S2) \<in> Rel}"
 proof auto
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
-  from encR rel' have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  from encR Rel'_def have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
     by simp
   moreover assume "(S1, S2) \<in> SRel"
   with fullAbs have "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> TRel"
     by simp
-  with trel rel' have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  with trel Rel'_def have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
-  moreover from rel' have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
+  moreover from Rel'_def have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
     by simp
   ultimately show "(SourceTerm S1, SourceTerm S2) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
 next
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
   hence "(TargetTerm (\<lbrakk>S1\<rbrakk>), SourceTerm S1) \<in> Rel'"
     by simp
   moreover assume "(SourceTerm S1, SourceTerm S2) \<in> Rel"
-  with rel' have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
+  with Rel'_def have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
     by simp
-  moreover from encR rel' have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  moreover from encR Rel'_def have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
   ultimately have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
   with trel have "(\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> TRel"
@@ -1387,19 +1387,19 @@ lemma (in encoding) fully_abstract_wrt_preorders_impl_source_target_relation_is_
                 \<and> ((refl SRel \<and> trans TRel)
                    \<longleftrightarrow> trans (Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}))"
 proof -
-  def rel: Rel\<equiv>"(indRelSTEQ SRel TRel) - ({(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}
+  define Rel where "Rel = (indRelSTEQ SRel TRel) - ({(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}
                  \<union> {(P, Q). \<exists>S1 S2. S1 \<in>S P \<and> S2 \<in>S Q \<and> (S1, S2) \<notin> SRel}
                  \<union> {(P, Q). \<exists>T1 T2. T1 \<in>T P \<and> T2 \<in>T Q \<and> (T1, T2) \<notin> TRel})"
-  from rel have "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+  from Rel_def have "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelSTEQ.encR[where SRel="SRel" and TRel="TRel"])
-  moreover from rel have "SRel = {(S1, S2). (SourceTerm S1, SourceTerm S2) \<in> Rel}"
+  moreover from Rel_def have "SRel = {(S1, S2). (SourceTerm S1, SourceTerm S2) \<in> Rel}"
   proof auto
     fix S1 S2
     assume "(S1, S2) \<in> SRel"
     thus "SourceTerm S1 \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S2"
       by (simp add: indRelSTEQ.source[where SRel="SRel" and TRel="TRel"])
   qed
-  moreover from rel have "TRel =  {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  moreover from Rel_def have "TRel =  {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
   proof auto
     fix T1 T2
     assume "(T1, T2) \<in> TRel"
@@ -1411,7 +1411,7 @@ proof -
   proof (rule iffI, erule conjE)
     assume reflS: "refl SRel" and transT: "trans TRel"
     have "Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q} = indRelSTEQ SRel TRel"
-    proof (auto simp add: rel)
+    proof (auto simp add: Rel_def)
       fix S
       show "TargetTerm (\<lbrakk>S\<rbrakk>) \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S"
         by (rule indRelSTEQ.encL)
@@ -1446,7 +1446,7 @@ proof -
       unfolding trans_def refl_on_def
     proof auto
       fix S
-      from rel have "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+      from Rel_def have "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
         by (simp add: indRelSTEQ.encR)
       moreover have "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
         by simp
@@ -1454,21 +1454,21 @@ proof -
           using transR
           unfolding trans_def
         by blast
-      with rel show "(S, S) \<in> SRel"
+      with Rel_def show "(S, S) \<in> SRel"
         by simp
     next
       fix TP TQ TR
       assume "(TP, TQ) \<in> TRel"
-      with rel have "(TargetTerm TP, TargetTerm TQ) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+      with Rel_def have "(TargetTerm TP, TargetTerm TQ) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
         by (simp add: indRelSTEQ.target)
       moreover assume "(TQ, TR) \<in> TRel"
-      with rel have "(TargetTerm TQ, TargetTerm TR) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+      with Rel_def have "(TargetTerm TQ, TargetTerm TR) \<in> Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
         by (simp add: indRelSTEQ.target)
       ultimately have "(TargetTerm TP, TargetTerm TR) \<in> Rel"
           using transR
           unfolding trans_def
         by blast
-      with rel show "(TP, TR) \<in> TRel"
+      with Rel_def show "(TP, TR) \<in> TRel"
         by simp
     qed
   qed
@@ -1487,13 +1487,13 @@ lemma (in encoding) fully_abstract_wrt_preorders_impl_source_target_relation_is_
                 \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
                 \<and> trans (Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q})"
 proof -
-  def rel: Rel\<equiv>"(indRelSTEQ SRel TRel) - {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  define Rel where "Rel = (indRelSTEQ SRel TRel) - {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
   from fullAbs reflT have reflS: "refl SRel"
       unfolding refl_on_def
     by auto
-  from rel have "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+  from Rel_def have "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelSTEQ.encR[where SRel="SRel" and TRel="TRel"])
-  moreover from rel have "SRel = {(S1, S2). (SourceTerm S1, SourceTerm S2) \<in> Rel}"
+  moreover from Rel_def have "SRel = {(S1, S2). (SourceTerm S1, SourceTerm S2) \<in> Rel}"
   proof auto
     fix S1 S2
     assume "(S1, S2) \<in> SRel"
@@ -1507,7 +1507,7 @@ proof -
               and TRel="TRel"]
       by blast
   qed
-  moreover from rel have "TRel =  {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+  moreover from Rel_def have "TRel =  {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
   proof auto
     fix T1 T2
     assume "(T1, T2) \<in> TRel"
@@ -1521,7 +1521,7 @@ proof -
               and TRel="TRel"]
       by blast
   qed
-  moreover from rel have "Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q} = indRelSTEQ SRel TRel"
+  moreover from Rel_def have "Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q} = indRelSTEQ SRel TRel"
     by (auto simp add: indRelSTEQ.encL)
   hence "trans (Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q})"
       using indRelSTEQ.trans[where SRel="SRel" and TRel="TRel"]
@@ -1895,30 +1895,30 @@ lemma (in encoding) source_target_relation_with_trans_impl_full_abstraction:
           {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
 proof auto
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
-  from rel' have "(TargetTerm (\<lbrakk>S1\<rbrakk>), SourceTerm S1) \<in> Rel'"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  from Rel'_def have "(TargetTerm (\<lbrakk>S1\<rbrakk>), SourceTerm S1) \<in> Rel'"
     by simp
   moreover assume "(SourceTerm S1, SourceTerm S2) \<in> Rel"
-  with rel' have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
+  with Rel'_def have "(SourceTerm S1, SourceTerm S2) \<in> Rel'"
     by simp
-  moreover from enc rel' have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  moreover from enc Rel'_def have "(SourceTerm S2, TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
   ultimately show "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
 next
   fix S1 S2
-  def rel': Rel'\<equiv>"Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
-  from enc rel' have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
+  define Rel' where "Rel' = Rel \<union> {(P, Q). \<exists>S. \<lbrakk>S\<rbrakk> \<in>T P \<and> S \<in>S Q}"
+  from enc Rel'_def have "(SourceTerm S1, TargetTerm (\<lbrakk>S1\<rbrakk>)) \<in> Rel'"
     by simp
   moreover assume "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel"
-  with rel' have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
+  with Rel'_def have "(TargetTerm (\<lbrakk>S1\<rbrakk>), TargetTerm (\<lbrakk>S2\<rbrakk>)) \<in> Rel'"
     by simp
-  moreover from rel' have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
+  moreover from Rel'_def have "(TargetTerm (\<lbrakk>S2\<rbrakk>), SourceTerm S2) \<in> Rel'"
     by simp
   ultimately show "(SourceTerm S1, SourceTerm S2) \<in> Rel"
-      using trans rel'
+      using trans Rel'_def
       unfolding trans_def
     by blast
 qed

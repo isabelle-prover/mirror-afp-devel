@@ -83,14 +83,15 @@ lemma many_single_reduction:
   shows "advantage_multi \<A> \<le> advantage_single (reduction q \<A>) * q"
   including lifting_syntax
 proof -
-  def eval_oracle' \<equiv> "\<lambda>c_o c_a ((id, occ :: nat option), s') guess. 
+  define eval_oracle'
+    where "eval_oracle' = (\<lambda>c_o c_a ((id, occ :: nat option), s') guess. 
     map_spmf (\<lambda>b'. case occ of Some j\<^sub>0 \<Rightarrow> ((), (Suc id, Some j\<^sub>0), s')
                                 | None \<Rightarrow> ((), (Suc id, (if b' then Some id else None)), s'))
-      (eval c_o c_a s' guess)"
+      (eval c_o c_a s' guess))"
   let ?multi'_body = "\<lambda>c_o c_a s. exec_gpv (\<dagger>(oracle c_o) \<oplus>\<^sub>O eval_oracle' c_o c_a) (\<A> c_a) ((0, None), s)"
-  def game_multi' \<equiv> "\<lambda>c_o c_a s. do {
+  define game_multi' where "game_multi' = (\<lambda>c_o c_a s. do {
     (_, ((id, j\<^sub>0), s' :: 's)) \<leftarrow> ?multi'_body c_o c_a s;
-    return_spmf (j\<^sub>0 \<noteq> None) }"
+    return_spmf (j\<^sub>0 \<noteq> None) })"
 
   define initialize :: "('c_o \<Rightarrow> 'c_a \<Rightarrow> 's \<Rightarrow> nat \<Rightarrow> bool spmf) \<Rightarrow> bool spmf" where
     "initialize body = do {
@@ -102,10 +103,10 @@ proof -
     return_spmf (j\<^sub>0 = Some j\<^sub>s) }" for c_o c_a s j\<^sub>s
   let ?game2 = "initialize body2"
 
-  def stop_oracle \<equiv> "\<lambda>c_o. 
+  define stop_oracle where "stop_oracle = (\<lambda>c_o. 
      (\<lambda>(idgs, s) x. case idgs of Inr _ \<Rightarrow> map_spmf (\<lambda>(y, s). (Some y, (idgs, s))) (oracle c_o s x) | Inl _ \<Rightarrow> return_spmf (None, (idgs, s)))
      \<oplus>\<^sub>O\<^sup>S
-     (\<lambda>(idgs, s) guess :: 'guess. return_spmf (case idgs of Inr 0 \<Rightarrow> (None, Inl (guess, s), s) | Inr (Suc i) \<Rightarrow> (Some (), Inr i, s) | Inl _ \<Rightarrow> (None, idgs, s)))"
+     (\<lambda>(idgs, s) guess :: 'guess. return_spmf (case idgs of Inr 0 \<Rightarrow> (None, Inl (guess, s), s) | Inr (Suc i) \<Rightarrow> (Some (), Inr i, s) | Inl _ \<Rightarrow> (None, idgs, s))))"
   define body3 where "body3 c_o c_a s j\<^sub>s = do {
     (_ :: unit option, idgs, _) \<leftarrow> exec_gpv_stop (stop_oracle c_o) (\<A> c_a) (Inr j\<^sub>s, s);
     (b' :: bool) \<leftarrow> case idgs of Inr _ \<Rightarrow> return_spmf False | Inl (g, s') \<Rightarrow> eval c_o c_a s' g;

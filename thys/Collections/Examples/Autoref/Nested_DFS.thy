@@ -416,16 +416,16 @@ proof -
 "
   let "REC\<^sub>T ?body ?init" = "?dfs_red"
 
-  def pre \<equiv> "\<lambda>S (V,u0). gen_dfs_pre E U S V u0 \<and> E``V \<inter> onstack = {}"
-  def post \<equiv> "\<lambda>S (V0,u0) (V,cyc). gen_dfs_post E U S V0 u0 V (cyc\<noteq>None)
+  define pre where "pre = (\<lambda>S (V,u0). gen_dfs_pre E U S V u0 \<and> E``V \<inter> onstack = {})"
+  define post where "post = (\<lambda>S (V0,u0) (V,cyc). gen_dfs_post E U S V0 u0 V (cyc\<noteq>None)
     \<and> (case cyc of None \<Rightarrow> E``V \<inter> onstack = {}
-      | Some (p,v) \<Rightarrow> v\<in>onstack \<and> p\<noteq>[] \<and> path E u0 p v)
+      | Some (p,v) \<Rightarrow> v\<in>onstack \<and> p\<noteq>[] \<and> path E u0 p v))
     "
 
-  def fe_inv \<equiv> "\<lambda>S V0 u0 it (V,cyc). 
+  define fe_inv where "fe_inv = (\<lambda>S V0 u0 it (V,cyc). 
     gen_dfs_fe_inv E U S V0 u0 it V (cyc\<noteq>None)
     \<and> (case cyc of None \<Rightarrow> E``V \<inter> onstack = {}
-      | Some (p,v) \<Rightarrow> v\<in>onstack \<and> p\<noteq>[] \<and> path E u0 p v)
+      | Some (p,v) \<Rightarrow> v\<in>onstack \<and> p\<noteq>[] \<and> path E u0 p v))
     "
 
 
@@ -592,32 +592,32 @@ proof -
 
   let ?U = "E\<^sup>*``{v0}"
 
-  def add_inv \<equiv> "\<lambda>blues reds onstack. 
+  define add_inv where "add_inv = (\<lambda>blues reds onstack. 
     \<not>(\<exists>v\<in>(blues-onstack)\<inter>A. (v,v)\<in>E\<^sup>+)  (* No cycles over finished,
                                            accepting states *)
     \<and> reds \<subseteq> blues                     (* Red nodes are also blue *)
     \<and> reds \<inter> onstack = {}              (* No red nodes on stack *)
-    \<and> red_dfs_inv E ?U reds onstack"
+    \<and> red_dfs_inv E ?U reds onstack)"
 
-  def cyc_post \<equiv> "\<lambda>blues reds onstack u0 cyc. (case cyc of 
+  define cyc_post where "cyc_post = (\<lambda>blues reds onstack u0 cyc. (case cyc of 
       NO_CYC \<Rightarrow> add_inv blues reds onstack
     | REACH v p u p' \<Rightarrow> v\<in>A \<and> u\<in>onstack-{u0} \<and> p\<noteq>[] 
       \<and> path E v p u \<and> path E u0 p' v
     | CIRC v pc pr \<Rightarrow> v\<in>A \<and> pc\<noteq>[] \<and> path E v pc v \<and> path E u0 pr v
-    )"
+    ))"
 
-  def pre \<equiv> "\<lambda>(blues,reds,onstack,u).  
-    gen_dfs_pre E ?U onstack blues u \<and> add_inv blues reds onstack"
+  define pre where "pre = (\<lambda>(blues,reds,onstack,u).  
+    gen_dfs_pre E ?U onstack blues u \<and> add_inv blues reds onstack)"
 
-  def post \<equiv> "\<lambda>(blues0,reds0::'v set,onstack0,u0) (blues,reds,onstack,cyc). 
+  define post where "post = (\<lambda>(blues0,reds0::'v set,onstack0,u0) (blues,reds,onstack,cyc). 
     onstack = onstack0
     \<and> gen_dfs_post E ?U onstack0 blues0 u0 blues (cyc\<noteq>NO_CYC)
-    \<and> cyc_post blues reds onstack u0 cyc"
+    \<and> cyc_post blues reds onstack u0 cyc)"
 
-  def fe_inv \<equiv> "\<lambda>blues0 u0 onstack0 it (blues,reds,onstack,cyc). 
+  define fe_inv where "fe_inv = (\<lambda>blues0 u0 onstack0 it (blues,reds,onstack,cyc). 
     onstack=onstack0 
     \<and> gen_dfs_fe_inv E ?U onstack0 blues0 u0 it blues (cyc\<noteq>NO_CYC)
-    \<and> cyc_post blues reds onstack u0 cyc"
+    \<and> cyc_post blues reds onstack u0 cyc)"
 
   have GENPRE: "gen_dfs_pre E ?U {} {} v0"
     apply (auto intro: gen_dfs_pre_initial)

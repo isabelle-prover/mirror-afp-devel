@@ -135,8 +135,8 @@ proof -
   note if_weak_cong[cong del]
   note measurable_g = measurable_compose_countable'[OF _ _ countable_reachable]
 
-  def n \<equiv> "0::nat"
-  def g \<equiv> "\<lambda>_::('s \<Rightarrow> 's) stream. s"
+  define n :: nat where "n = 0"
+  define g where "g = (\<lambda>_::('s \<Rightarrow> 's) stream. s)"
   then have "g \<in> measurable D (count_space (acc `` {s}))"
     by auto
   then have "(\<lambda>x. walk (g x) (sdrop n x)) \<in> measurable D S"
@@ -293,7 +293,7 @@ lemma AE_T_alw:
   assumes P: "\<And>s. (x, s) \<in> acc \<Longrightarrow> AE \<omega> in T s. P \<omega>"
   shows "AE \<omega> in T x. alw P \<omega>"
 proof -
-  def F \<equiv> "\<lambda>p x. P x \<and> p (stl x)"
+  define F where "F = (\<lambda>p x. P x \<and> p (stl x))"
   have [measurable]: "\<And>p. Measurable.pred S p \<Longrightarrow> Measurable.pred S (F p)"
     by (auto simp: F_def)
   have "almost_everywhere (T s) ((F ^^ i) top)"
@@ -396,7 +396,7 @@ lemma AE_T_fair:
 proof -
   let ?M = "\<lambda>P s. emeasure (T s) {\<omega>\<in>space (T s). P \<omega>}"
   let ?t = "HLD {t}" and ?t' = "HLD {t'}"
-  def N \<equiv> "alw (ev ?t) aand alw (not (?t aand nxt ?t'))"
+  define N where "N = alw (ev ?t) aand alw (not (?t aand nxt ?t'))"
   let ?until = "not ?t suntil (?t aand nxt (not ?t' aand nxt N))"
   have N_stl: "\<And>\<omega>. N \<omega> \<Longrightarrow> N (stl \<omega>)"
     by (auto simp: N_def)
@@ -459,7 +459,7 @@ lemma enabled_imp_trancl:
   assumes "alw (HLD B) \<omega>" "enabled s \<omega>"
   shows "alw (HLD (acc_on B `` {s})) \<omega>"
 proof -
-  def t \<equiv> s
+  define t where "t = s"
   then have "(s, t) \<in> acc_on B"
     by auto
   moreover note `alw (HLD B) \<omega>`
@@ -619,7 +619,7 @@ proof -
   qed simp
   then obtain n where "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> ?Pf n t < 1"
     by (auto simp: eventually_sequentially)
-  moreover def d \<equiv> "Max (?Pf n ` acc_on (-H) `` {s})"
+  moreover define d where "d = Max (?Pf n ` acc_on (-H) `` {s})"
   ultimately have d: "0 \<le> d" "d < 1" "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> ?Pf (Suc n) t \<le> d"
     using Pf_mono[of n "Suc n"] by (auto simp: Max_ge_iff measure_nonneg)
 
@@ -637,7 +637,7 @@ proof -
   then have "mono ?I"
     by (rule sup_continuous_mono)
 
-  def p \<equiv> "Suc n / (1 - d)"
+  define p where "p = Suc n / (1 - d)"
   have p: "p = Suc n + d * p"
     unfolding p_def using d(1,2) by (auto simp: field_simps)
   have [simp]: "0 \<le> p"
@@ -982,7 +982,7 @@ proof (intro stream_space_eq_sstart)
   show "sets M = sets S" "sets (T x) = sets S"
     using \<open>R x M\<close> by (auto simp: sets)
 
-  def \<Omega> \<equiv> "acc `` {x}"
+  define \<Omega> where "\<Omega> = acc `` {x}"
   show "countable \<Omega>"
     by (auto intro: countable_acc simp: \<Omega>_def)
   have "x \<in> \<Omega>"
@@ -1235,7 +1235,7 @@ proof cases
 next
   assume "s \<notin>  H"
   let ?L = "acc_on (-H)"
-  def M \<equiv> "Max ((\<lambda>(s, t). \<rho> s + \<iota> s t) ` (SIGMA t:?L``{s}. K t))"
+  define M where "M = Max ((\<lambda>(s, t). \<rho> s + \<iota> s t) ` (SIGMA t:?L``{s}. K t))"
   have "?L \<subseteq> ?R"
     by (intro rtrancl_mono) auto
   with `s \<notin> H` have subset: "(SIGMA t:?L``{s}. K t) \<subseteq> (?R``{s} \<times> ?R``{s})"
@@ -1271,7 +1271,7 @@ next
     using ev AE_T_enabled
   proof eventually_elim
     fix \<omega> assume "ev (HLD H) \<omega>" "enabled s \<omega>"
-    moreover def t\<equiv>"s"
+    moreover define t where "t = s"
     ultimately have "ev (HLD H) \<omega>" "enabled t \<omega>" "t \<in> ?L``{s}"
       by auto
     then show "reward_until H t \<omega> \<le> M * sfirst (HLD H) (t ## \<omega>)"

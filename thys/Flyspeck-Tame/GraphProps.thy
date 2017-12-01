@@ -92,7 +92,7 @@ lemma prevElem_nextElem:
 assumes dist: "distinct xs" and xxs: "x : set xs"
 shows "nextElem (rev xs) (last xs) (nextElem xs (hd xs) x) = x"
 proof -
-  def x' \<equiv> "nextElem xs (hd xs) x"
+  define x' where "x' = nextElem xs (hd xs) x"
   hence nE: "nextElem xs (hd xs) x = x'" by simp
   have "xs \<noteq> [] \<and> x = last xs \<and> x' = hd xs \<or> (\<exists>us vs. xs = us @ [x, x'] @ vs)"
     (is "?A \<or> ?B")
@@ -134,7 +134,7 @@ lemma nextVertex_in_face'[simp]:
   "vertices f \<noteq> [] \<Longrightarrow> f \<bullet> v \<in> \<V> f"
 proof -
   assume f: "vertices f \<noteq> []"
-  def c \<equiv> "nextElem (vertices f) (hd (vertices f)) v"
+  define c where "c = nextElem (vertices f) (hd (vertices f)) v"
   then have "nextElem (vertices f) (hd (vertices f)) v = c" by auto
   with f show ?thesis
     apply (simp add: nextVertex_def)

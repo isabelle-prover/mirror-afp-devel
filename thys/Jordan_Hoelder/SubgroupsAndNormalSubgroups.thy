@@ -526,7 +526,9 @@ lemma flatten_set_group:
 proof (rule groupI)
   fix x y
   assume x:"x \<in> carrier (flatten G rep)" and y:"y \<in> carrier (flatten G rep)"
-  def g \<equiv> "the_inv_into (carrier G) rep x" and h \<equiv> "the_inv_into (carrier G) rep y"
+  define g h
+    where "g = the_inv_into (carrier G) rep x"
+      and "h = the_inv_into (carrier G) rep y"
   hence "x \<otimes>\<^bsub>flatten G rep\<^esub> y = rep (g \<otimes>\<^bsub>G\<^esub> h)" unfolding flatten_def by auto
   moreover from g_def h_def have "g \<in> carrier G" "h \<in> carrier G" 
     using inj x y the_inv_into_into unfolding flatten_def by (metis partial_object.select_convs(1) subset_refl)+
@@ -538,7 +540,10 @@ next
 next
   fix x y z
   assume x:"x \<in> carrier (flatten G rep)" and y:"y \<in> carrier (flatten G rep)" and z:"z \<in> carrier (flatten G rep)"
-  def g \<equiv> "the_inv_into (carrier G) rep x" and h \<equiv> "the_inv_into (carrier G) rep y" and k \<equiv> "the_inv_into (carrier G) rep z"
+  define g h k
+    where "g = the_inv_into (carrier G) rep x"
+      and "h = the_inv_into (carrier G) rep y"
+      and "k = the_inv_into (carrier G) rep z"
   hence "x \<otimes>\<^bsub>flatten G rep\<^esub> y \<otimes>\<^bsub>flatten G rep\<^esub> z = (rep (g \<otimes>\<^bsub>G\<^esub> h)) \<otimes> \<^bsub>flatten G rep\<^esub> z" unfolding flatten_def by auto
   also have "\<dots> = rep (the_inv_into (carrier G) rep (rep (g \<otimes>\<^bsub>G\<^esub> h)) \<otimes>\<^bsub>G\<^esub> k)" using k_def unfolding flatten_def by auto
   also from g_def h_def k_def have ghkG:"g \<in> carrier G" "h \<in> carrier G" "k \<in> carrier G"
@@ -553,7 +558,7 @@ next
 next
   fix x
   assume x:"x \<in> carrier (flatten G rep)"
-  def g \<equiv> "the_inv_into (carrier G) rep x"
+  define g where "g = the_inv_into (carrier G) rep x"
   hence gG:"g \<in> carrier G" using inj x unfolding flatten_def using the_inv_into_into by force
   have "\<one>\<^bsub>G\<^esub> \<in> (carrier G)" by (simp add: group group.is_monoid)
   hence "the_inv_into (carrier G) rep (\<one>\<^bsub>flatten G rep\<^esub>) = \<one>\<^bsub>G\<^esub>" unfolding flatten_def using the_inv_into_f_f inj by force
@@ -565,7 +570,7 @@ next
   from group inj have hom:"rep \<in> hom G (flatten G rep)" using flatten_set_group_hom by auto
   fix x
   assume x:"x \<in> carrier (flatten G rep)"
-  def g \<equiv> "the_inv_into (carrier G) rep x"
+  define g where "g = the_inv_into (carrier G) rep x"
   hence gG:"g \<in> carrier G" using inj x unfolding flatten_def using the_inv_into_into by force
   hence invG:"inv\<^bsub>G\<^esub> g \<in> carrier G" by (metis group group.inv_closed)
   hence "rep (inv\<^bsub>G\<^esub> g) \<in> carrier (flatten G rep)" unfolding flatten_def by auto

@@ -122,7 +122,7 @@ begin
         by (metis (mono_tags, lifting) `is \<lhd> dims ((A \<otimes> B) \<otimes> C)` Tensor_Product.dims_tensor_prod append_assoc valid_index_split)
       obtain is2 is3 where "is2 \<lhd> dims B" "is3 \<lhd> dims C" "is2 @ is3 = is23"
         by (metis \<open>is23 \<lhd> dims (local.tensor_prod_otimes B C)\<close> dims_tensor_prod valid_index_split)
-      def is12 == "is1 @ is2"
+      define is12 where "is12 = is1 @ is2"
       have "is12 \<lhd> dims (A \<otimes> B)" by (simp add: \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims B\<close> is12_def valid_index_append)
       have "is12 @ is3 = is" by (simp add: \<open>is1 @ is23 = is\<close> \<open>is2 @ is3 = is23\<close> is12_def)
       show "lookup ((A \<otimes> B) \<otimes> C) is = lookup (A \<otimes> (B \<otimes> C)) is"

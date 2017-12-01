@@ -287,7 +287,7 @@ proof -
     fix s a assume "s \<in> S2" then show "?x s = 1"
       using valid_sub_certD[OF `valid_mdp_rp mdp` pos] by simp
   next
-    fix s def X \<equiv> "SIGMA s:S1. \<Union>D\<in>K s. set_pmf D"
+    fix s define X where "X = (SIGMA s:S1. \<Union>D\<in>K s. set_pmf D)"
     assume "s \<in> S1" "?x s \<noteq> 0"
     with valid_sub_certD(3)[OF rp pos, of s]
     have "0 < ?x s"

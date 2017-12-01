@@ -183,14 +183,14 @@ proof(clarsimp simp add: PO_rhoare_defs BenOr_trans_step_def all_conj_distrib)
     apply(simp add: next0_def o_def)
     by (metis pstate.select_convs(3) pstate.surjective pstate.update_convs(2))
  
-  def S \<equiv> "{p. \<exists>v. vote (cfg' p) = Some v}"
+  define S where "S = {p. \<exists>v. vote (cfg' p) = Some v}"
   from same_new_vote[OF send step step_r] 
   obtain v where v: "\<forall>p \<in> S. vote (cfg' p) = Some v"
     by(simp add: S_def) (metis)
   hence vote_const_map: "vote o cfg' = const_map v S"
     by(auto simp add: S_def const_map_def restrict_map_def intro!: ext)
 
-   def sa' \<equiv> "sa\<lparr> next_round := Suc r, r_votes := const_map v S \<rparr>"
+  define sa' where "sa' = sa\<lparr> next_round := Suc r, r_votes := const_map v S \<rparr>"
 
   have "\<forall>p. p \<in> S \<longrightarrow> opt_obs_safe (last_obs sa) v"
     using vote_origin[OF send step step_r] R per_rd[THEN spec, of r] v
@@ -242,14 +242,14 @@ proof(clarsimp simp add: PO_rhoare_defs BenOr_trans_step_def all_conj_distrib)
   from R have next_r: "next_round sa = r"
     by(simp add: ref_rel_def)
 
-  def S \<equiv> "{p. \<exists>v. vote (cfg p) = Some v}"
+  define S where "S = {p. \<exists>v. vote (cfg p) = Some v}"
   from R obtain v where v: "\<forall>p \<in> S. vote (cfg p) = Some v" using ainv step_r
     by(auto simp add: ref_rel_def TSO_inv1_def S_def)
 
-  def Ob \<equiv> "{p. x (cfg' p) = v}"
-  def o_f \<equiv> "\<lambda>p :: process. if S \<in> Quorum then Some v else None"
+  define Ob where "Ob = {p. x (cfg' p) = v}"
+  define o_f where "o_f p = (if S \<in> Quorum then Some v else None)" for p :: process
 
-  def dec_f \<equiv> "\<lambda>p. if p \<in> D cfg cfg' then decide (cfg' p) else None"
+  define dec_f where "dec_f p = (if p \<in> D cfg cfg' then decide (cfg' p) else None)" for p
 
   {
     fix p w
@@ -286,7 +286,7 @@ proof(clarsimp simp add: PO_rhoare_defs BenOr_trans_step_def all_conj_distrib)
     apply (metis S_def all_not_in_conv  empty_not_quorum v)
     done
 
-  def sa' \<equiv> "sa\<lparr> 
+  define sa' where "sa' = sa\<lparr> 
     next_round := Suc (next_round sa)
     , decisions := decisions sa ++ dec_f
     , last_obs := last_obs sa ++ o_f
@@ -393,13 +393,13 @@ proof -
   from r1 obtain r0 where r1_def: "r1 = Suc r0" and step_r0: "two_step r0 = 0"
     by (cases r1) (auto simp add: two_step_phase_Suc two_step_def mod_Suc)
 
-  def cfg0 \<equiv> "rho r0"
-  def cfg1 \<equiv> "rho r1"
-  def r2 \<equiv> "Suc r1"
-  def cfg2 \<equiv> "rho r2"
-  def r3 \<equiv> "Suc r2"
-  def cfg3 \<equiv> "rho r3"
-  def cfg4 \<equiv> "rho (Suc r3)"
+  define cfg0 where "cfg0 = rho r0"
+  define cfg1 where "cfg1 = rho r1"
+  define r2 where "r2 = Suc r1"
+  define cfg2 where "cfg2 = rho r2"
+  define r3 where "r3 = Suc r2"
+  define cfg3 where "cfg3 = rho r3"
+  define cfg4 where "cfg4 = rho (Suc r3)"
 
   have step_r2: "two_step r2 = 0" using r1
     by(auto simp add: r2_def two_step_phase_Suc)

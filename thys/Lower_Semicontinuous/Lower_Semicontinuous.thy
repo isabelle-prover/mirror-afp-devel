@@ -68,7 +68,8 @@ proof-
 { assume "~?rhs"
   from this obtain S where S_def:
      "open S & f x0 : S & (ALL T. (open T & x0 : T) --> (EX x':T. f x' <= f x0 & f x' ~: S))" by metis
-  def X == "{x'. f x' <= f x0 & f x' ~: S}" hence "x0 islimpt X" unfolding islimpt_def using S_def by auto
+  define X where "X = {x'. f x' <= f x0 & f x' ~: S}"
+  hence "x0 islimpt X" unfolding islimpt_def using S_def by auto
   from this obtain x where x_def: "(ALL n. x n : X) & x \<longlonglongrightarrow> x0"
      using islimpt_sequential[of x0 X] by auto
   hence not: "~(f o x) \<longlonglongrightarrow> (f x0)" unfolding tendsto_explicit using X_def S_def by auto
@@ -310,7 +311,7 @@ proof-
     { assume "l = -\<infinity>"
       { fix B :: real obtain N where N_def: "ALL n>=N. f(x n) <= ereal B"
            using Lim_MInfty[of "f o x"] `(f o x) \<longlonglongrightarrow> l` `l = -\<infinity>` by auto
-        def g == "(%n. if n>=N then x n else x N)"
+        define g where "g n = (if n>=N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
           by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
              (auto simp: eventually_sequentially)
@@ -324,7 +325,7 @@ proof-
         from this obtain N where N_def: "ALL n>=N. f(x n) : {l - e <..< l + e}"
            apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
            using fin e_def ereal_between `(f o x) \<longlonglongrightarrow> l` by auto
-        def g == "(%n. if n>=N then x n else x N)"
+        define g where "g n = (if n>=N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
           by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
              (auto simp: eventually_sequentially)
@@ -354,7 +355,8 @@ shows "lsc_at x0 f \<longleftrightarrow> (ALL x c c0. x \<longlonglongrightarrow
 proof-
 { assume "?rhs"
   { fix x c0 assume a: "x \<longlonglongrightarrow> x0 & (ALL n. f (x n) <= c0)"
-    def c == "(%n::nat. c0)" hence "c \<longlonglongrightarrow> c0" by auto
+    define c where "c = (\<lambda>n::nat. c0)"
+    hence "c \<longlonglongrightarrow> c0" by auto
     hence "f(x0)<=c0" using `?rhs`[rule_format, of x c c0] using a c_def by auto
   } hence "?lhs" using lsc_sequentially[of x0 f] by auto
 }
@@ -1132,8 +1134,8 @@ proof-
   { fix k u x
     have zero: "~(sum u {1..0::nat} = (1::real))" by auto
     assume "(ALL i:{1..k::nat}. (0::real) <= u i & x i : s)"
-    moreover assume "sum u {1..k} = 1"
-    moreover hence "k ~= 0" using zero by metis
+    moreover assume *: "sum u {1..k} = 1"
+    moreover from * have "k ~= 0" using zero by metis
     ultimately have "f (sum (%i. u i *\<^sub>R x i) {1..k} )
       <= sum (%i. (ereal (u i)) * f(x i)) {1..k}"
       using convex_on_ereal_sum[of "{1..k}" s f u x] using assms `?rhs` by auto
@@ -1144,8 +1146,8 @@ moreover
   { fix x y u v
     assume xys: "x:s" "y:s"
     assume uv1: "u>=0" "v>=0" "u + v = (1::real)"
-    def xy == "(%i::nat. if i=1 then x else y)"
-    def uv == "(%i::nat. if i=1 then u else v)"
+    define xy where "xy = (\<lambda>i::nat. if i=1 then x else y)"
+    define uv where "uv = (\<lambda>i::nat. if i=1 then u else v)"
     have "ALL i:{1..2::nat}. (0 <= uv i) & (xy i : s)" unfolding xy_def uv_def using xys uv1 by auto
     moreover have "sum uv {1..2} = 1" using sum_2[of uv] unfolding uv_def using uv1 by auto
     moreover have "(SUM i = 1..2. uv i *\<^sub>R xy i) = u *\<^sub>R x + v *\<^sub>R y"
@@ -1328,7 +1330,7 @@ lemma convex_PInfty_outside:
   assumes "convex_on UNIV f" "convex S"
   shows "convex_on UNIV (%x. if x:S then (f x) else \<infinity>)"
 proof-
-  def g == "(%x. if x:S then -\<infinity> else \<infinity>::ereal)"
+  define g where "g x = (if x:S then -\<infinity> else \<infinity>::ereal)" for x
   hence "convex_on UNIV g" apply (subst infinite_convex_domain_iff)
     using assms unfolding domain_def by auto
   moreover have "(%x. if x:S then (f x) else \<infinity>) = (%x. max (f x) (g x))"
@@ -1375,16 +1377,17 @@ moreover
   { fix x assume "x:rel_interior(domain f)"
     then obtain m where m_def: "m>1 & (1 - m) *\<^sub>R u + m *\<^sub>R x : domain f"
        using convex_rel_interior_iff[of "domain f" x] nemp convex_domain[of f] assms udom by auto
-    def v == "1/m" hence v01: "0<v & v<1" using m_def by auto
-    def y == "(1 - m) *\<^sub>R u + m *\<^sub>R x"
-    hence "x = (1-v) *\<^sub>R u+v *\<^sub>R y" unfolding v_def using m_def by (simp add: algebra_simps)
+    define v where "v = 1/m"
+    hence v01: "0<v & v<1" using m_def by auto
+    define y where "y = (1 - m) *\<^sub>R u + m *\<^sub>R x"
+    have "x = (1-v) *\<^sub>R u+v *\<^sub>R y" unfolding v_def y_def using m_def by (simp add: algebra_simps)
     hence "f x <= (1-ereal v) * f u+ereal v * f y"
       using convex_on_ereal_alt_mem[of "UNIV" f y u v] assms convex_UNIV v01
-      by (simp add: convex_UNIV add.commute)
+      by (simp add: add.commute)
     moreover have "f y < \<infinity>" using m_def y_def unfolding domain_def by auto
     moreover have *: "0 < 1 - ereal v" using v01
       by (metis diff_gt_0_iff_gt ereal_less(2) ereal_minus(1) one_ereal_def)
-    moreover hence "(1-ereal v) * f u = -\<infinity>" using u_def by auto
+    moreover from * have "(1-ereal v) * f u = -\<infinity>" using u_def by auto
     ultimately have "f x = -\<infinity>" using v01 by simp
   } hence ?thesis by auto
 } ultimately show ?thesis by blast
@@ -1523,7 +1526,7 @@ lemma convex_less_ri_domain:
   assumes "EX x. f x < a"
   shows "EX x:rel_interior (domain f). f x < a"
 proof-
-  def A == "{(x::'a::euclidean_space,m)|x m. ereal m<a}"
+  define A where "A = {(x::'a::euclidean_space,m)|x m. ereal m<a}"
   obtain x where "f x < a" using assms by auto
   then obtain z where z_def: "f x < ereal z & ereal z < a" using ereal_dense2 by auto
   hence "(x,z):A & (x,z):Epigraph UNIV f" unfolding A_def Epigraph_def by auto
@@ -1558,7 +1561,7 @@ lemma convex_less_in_riS:
   assumes "EX x:closure S. f x < a"
   shows "EX x:rel_interior S. f x < a"
 proof-
-  def g == "(%x. if x:closure S then (f x) else \<infinity>)"
+  define g where "g x = (if x:closure S then (f x) else \<infinity>)" for x
   hence "EX x. g x < a" using assms by auto
   have convg: "convex_on UNIV g" unfolding g_def apply (subst convex_PInfty_outside)
     using assms convex_closure by auto
@@ -1667,7 +1670,7 @@ have cEpi: "convex (Epigraph UNIV f)" by (metis assms convex_EpigraphI convex_UN
   hence "f x < \<infinity>" unfolding domain_def using rel_interior_subset by auto
   then obtain r where r_def: "(x,r):rel_interior (Epigraph UNIV f)"
     using assms x_def rel_interior_Epigraph[of f x]  by (metis ereal_dense2)
-  def M == "{(x,m::real)|m. m:UNIV}"
+  define M where "M = {(x,m::real)|m. m:UNIV}"
   hence "affine M" using vertical_line_affine by auto
   moreover have "rel_interior (Epigraph UNIV f) Int M ~= {}" using r_def M_def by auto
   ultimately have *: "closure (Epigraph UNIV f) Int M = closure (Epigraph UNIV f Int M)"

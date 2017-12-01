@@ -326,7 +326,7 @@ proof-
     proof(cases "i \<le> j") 
       -- {* The non-trivial case. *}
       case False
-      def t' \<equiv> "tr ! (i - j)"
+      define t' where "t' = tr ! (i - j)"
       -- {* Both @{term t} and @{term t'} are reachable, thus respect the invariants, and
         they are related by the transition relation. *}
       hence "t' \<in> reach v_TS" "t \<in> reach v_TS" using beh len Suc

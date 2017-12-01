@@ -165,8 +165,8 @@ and hyp3: "fst (snd (foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k])) \
 and hyp4: "(fst (snd (foldl Gauss_Jordan_column_k_det_P_iarrays (1, 0, matrix_to_iarray A) [0..<Suc k])) = fst (snd (foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k])))"
   by auto
 have list_rw: "[0..<Suc (Suc k)] = [0..<(Suc k)] @ [Suc k]" by simp
-def f\<equiv>"(foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k])"
-def g\<equiv>"(foldl Gauss_Jordan_column_k_det_P_iarrays (1, 0, matrix_to_iarray A) [0..<Suc k])"
+define f where "f = foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k]"
+define g where "g = foldl Gauss_Jordan_column_k_det_P_iarrays (1, 0, matrix_to_iarray A) [0..<Suc k]"
 have f_rw: "f = (fst f, fst (snd f), snd (snd f))" by simp
 have g_rw: "g = (fst g, fst (snd g), snd (snd g))" by simp
 have fst_rw: "fst g = fst f" unfolding f_def g_def using hyp1[unfolded Gauss_Jordan_upt_k_det_P_def Gauss_Jordan_upt_k_det_P_iarrays_def Let_def fst_conv] ..

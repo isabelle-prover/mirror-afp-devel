@@ -42,8 +42,12 @@ shows "mrank (matricize I A) \<le> 1"
 proof -
   obtain Bs a where "\<And>B. B \<in> set Bs \<Longrightarrow> Tensor.order B = 1" "a \<cdot> prod_list Bs = A"
     using cprank_max1_prod_listE assms by metis
-  def row_factor == "\<lambda>ris. a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip ris (nths Bs I))))"
-  def col_factor == "\<lambda>cis. (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip cis (nths Bs (-I)))))"
+  define row_factor
+    where "row_factor ris = a * prod_list (map (\<lambda>(i,B). lookup B [i]) (zip ris (nths Bs I)))"
+    for ris
+  define col_factor
+    where "col_factor cis = prod_list (map (\<lambda>(i,B). lookup B [i]) (zip cis (nths Bs (-I))))"
+    for cis
   have "\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (nths is I) * col_factor (nths is (-I))"
   proof -
     fix "is" assume "is \<lhd> dims A"
@@ -57,8 +61,10 @@ proof -
       using nths_zip row_factor_def col_factor_def by metis
     finally show "lookup A is = row_factor (nths is I) * col_factor (nths is (-I))" .
   qed
-  def row_factor' == "\<lambda>r. row_factor (digit_encode (nths (Tensor.dims A) I) r)"
-  def col_factor' == "\<lambda>c. col_factor (digit_encode (nths (Tensor.dims A) (-I)) c)"
+  define row_factor'
+    where "row_factor' r = row_factor (digit_encode (nths (Tensor.dims A) I) r)" for r
+  define col_factor'
+    where "col_factor' c = col_factor (digit_encode (nths (Tensor.dims A) (-I)) c)" for c
   have "\<And>r c. r<dim_row (matricize I A) \<Longrightarrow> c<dim_col (matricize I A) \<Longrightarrow> matricize I A $$ (r,c) = row_factor' r * col_factor' c"
   proof -
     fix r c assume "r<dim_row (matricize I A)" "c<dim_col (matricize I A)"

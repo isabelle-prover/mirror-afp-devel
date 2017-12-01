@@ -479,7 +479,7 @@ begin
 
     from INV' interpret inv': invar_loc G v0 D0 p' D pE' by (simp add: invar_def)
 
-    def vE' \<equiv> "vE p' D pE'"
+    define vE' where "vE' = vE p' D pE'"
 
     have vE'_alt: "vE' = insert (u,v) lvE"
       by (simp add: vE'_def p'_def pE'_def E)
@@ -554,7 +554,7 @@ begin
     from INV interpret fgl_invar_loc G v0 D0 None p D pE 
       by (simp add: fgl_invar_def)
 
-    def pE'\<equiv>"(pE - {(u,v)} \<union> E\<inter>{v}\<times>UNIV)"
+    define pE' where "pE' = (pE - {(u,v)} \<union> E\<inter>{v}\<times>UNIV)"
 
     have [simp]: "push v (p,D,pE - {(u,v)}) = (p@[{v}],D,pE')"
       by (simp add: push_def pE'_def)
@@ -1922,8 +1922,8 @@ proof -
     apply force
     done
 
-  def term_rel 
-    \<equiv> "(inv_image (finite_psupset {0..<num_acc}) (\<lambda>(_::'Q,_::'Q list,cS). cS))"
+  define term_rel
+    where "term_rel = (inv_image (finite_psupset {0..<num_acc}) (\<lambda>(_::'Q,_::'Q list,cS). cS))"
   hence WF: "wf term_rel" by simp
 
   { fix va

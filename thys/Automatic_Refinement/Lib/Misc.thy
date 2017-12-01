@@ -4588,7 +4588,7 @@ proof rule
     thus "\<exists>y\<in>ccpo_class.iterates g. f x \<le> y" ..
   next
     case (Sup M)
-    def N \<equiv> "{SOME y. y\<in>ccpo_class.iterates g \<and> x\<le>y | x. x\<in>M}"
+    define N where "N = {SOME y. y\<in>ccpo_class.iterates g \<and> x\<le>y | x. x\<in>M}"
 
     have N1: "\<forall>y\<in>N. y\<in>ccpo_class.iterates g \<and> (\<exists>x\<in>M. x\<le>y)"
       unfolding N_def

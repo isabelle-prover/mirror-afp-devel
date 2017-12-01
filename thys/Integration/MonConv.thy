@@ -219,7 +219,7 @@ theorem realfun_mon_conv_bound:
   and bound: "\<And>n. c n \<le> (x::'a \<Rightarrow> real)"
   shows "\<exists>l. c\<up>l \<and> l\<le>x"
 (*<*)proof 
-  def r \<equiv> "\<lambda>t. SOME l. (\<lambda>n. c n t)\<up>l \<and> l\<le>x t"
+  define r where "r t = (SOME l. (\<lambda>n. c n t)\<up>l \<and> l\<le>x t)" for t
   { fix t
     from mon have m2: "\<And>n. c n t \<le> c (Suc n) t" by (simp add: le_fun_def)
     also 

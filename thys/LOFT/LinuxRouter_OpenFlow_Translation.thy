@@ -529,7 +529,7 @@ lemma distinct_simple_match_to_of_match_portlist_hlp:
            else [])"
 proof -
   assume di: "distinct ifs"
-  { def wis \<equiv> "set (wordinterval_CIDR_split_prefixmatch (WordInterval (fst ps) (snd ps)))"
+  { define wis where "wis = set (wordinterval_CIDR_split_prefixmatch (WordInterval (fst ps) (snd ps)))"
     fix x y :: "16 prefix_match"
     obtain xm xn ym yn where xyd[simp]: "x = PrefixMatch xm xn" "y = PrefixMatch ym yn" by(cases x; cases y)
     assume iw: "x \<in> wis" "y \<in> wis" and et: "(pfxm_prefix x, ~~ pfxm_mask x) = (pfxm_prefix y, ~~ pfxm_mask y)"

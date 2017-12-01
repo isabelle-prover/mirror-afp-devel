@@ -486,8 +486,9 @@ lemma ex_no_call: "finite S \<Longrightarrow> \<exists>c. \<forall>(rs :: 'a rul
 (* If you want, you can put in \<open>ran \<Gamma>\<close> for S. *)
 proof -
   assume fS: \<open>finite S\<close>
-  def called_c \<equiv> "\<lambda>rs :: 'a rule list. {c. \<exists>m. Rule m (Call c) \<in> set rs}"
-  def called_c' \<equiv> "\<lambda>rs :: 'a rule list. set [c. r \<leftarrow> rs, c \<leftarrow> (case get_action r of Call c \<Rightarrow> [c] | _ \<Rightarrow> [])]"
+  define called_c where "called_c rs = {c. \<exists>m. Rule m (Call c) \<in> set rs}" for rs :: "'a rule list"
+  define called_c' where "called_c' rs = set [c. r \<leftarrow> rs, c \<leftarrow> (case get_action r of Call c \<Rightarrow> [c] | _ \<Rightarrow> [])]"
+    for rs :: "'a rule list"
   have cc: "called_c' rs = called_c rs" for rs
     unfolding called_c'_def called_c_def
     by(induction rs; simp add: Un_def) (auto; metis rule.collapse)      
@@ -525,8 +526,9 @@ proof -
   have ran_alt: "ran f = (the o f) ` dom f" for f by(auto simp add: ran_def dom_def image_def)
   assume fD: \<open>finite (dom \<Gamma>)\<close>
   hence fS: \<open>finite (ran \<Gamma>)\<close> by(simp add: ran_alt)
-  def called_c \<equiv> "\<lambda>rs :: 'a rule list. {c. \<exists>m. Rule m (Call c) \<in> set rs}"
-  def called_c' \<equiv> "\<lambda>rs :: 'a rule list. set [c. r \<leftarrow> rs, c \<leftarrow> (case get_action r of Call c \<Rightarrow> [c] | _ \<Rightarrow> [])]"
+  define called_c where "called_c rs = {c. \<exists>m. Rule m (Call c) \<in> set rs}" for rs :: "'a rule list"
+  define called_c' where "called_c' rs = set [c. r \<leftarrow> rs, c \<leftarrow> (case get_action r of Call c \<Rightarrow> [c] | _ \<Rightarrow> [])]"
+    for rs :: "'a rule list"
   have cc: "called_c' rs = called_c rs" for rs
     unfolding called_c'_def called_c_def
     by(induction rs; simp add: Un_def) (auto; metis rule.collapse)      

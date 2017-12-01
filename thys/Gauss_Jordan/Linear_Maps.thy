@@ -146,16 +146,16 @@ lemma invertible_matrix_mult_right_rank:
   assumes invertible_Q: "invertible Q"
   shows "rank (A**Q) = rank A"
 proof -
-  def TQ=="(\<lambda>x. Q *v x)"
-  def TA\<equiv>"(\<lambda>x. A *v x)"
-  def TAQ=="(\<lambda>x. (A**Q) *v x)"
+  define TQ where "TQ x = Q *v x" for x
+  define TA where "TA x = A *v x" for x
+  define TAQ where "TAQ x = (A**Q) *v x" for x
   have "invertible_lf (op *s) (op *s) TQ" using invertible_matrix_imp_invertible_lf[OF invertible_Q] unfolding TQ_def .
   hence bij_TQ: "bij TQ" using invertible_imp_bijective by auto
   have "range TAQ = range (TA \<circ> TQ)" unfolding TQ_def TA_def TAQ_def o_def matrix_vector_mul_assoc ..
   also have "... = TA `(range TQ)" unfolding fun.set_map ..
   also have "... = TA ` (UNIV)" using bij_is_surj[OF bij_TQ] by simp
   finally have "range TAQ = range TA" .
-  thus ?thesis unfolding rank_eq_dim_image using TAQ_def TA_def by auto
+  thus ?thesis unfolding rank_eq_dim_image using TAQ_def [abs_def] TA_def [abs_def] by auto
 qed
 
 
@@ -177,8 +177,8 @@ proof -
   obtain B where B_in_W: "B\<subseteq>W" and ind_B: "vec.independent B" 
     and W_in_span_B: "W \<subseteq> vec.span B" and card_B_eq_dim_W: "card B = vec.dim W"
     using vec.basis_exists by blast
-  def L\<equiv>"(\<lambda>x. P *v x)"
-  def C\<equiv>"L`B"
+  define L where "L = (\<lambda>x. P *v x)"
+  define C where "C = L`B"
   have finite_B: "finite B" using vec.indep_card_eq_dim_span[OF ind_B] by simp
   have linear_L: "linear (op *s) (op *s) L"  using matrix_vector_mul_linear unfolding L_def .
   have finite_C: "finite C" using vec.indep_card_eq_dim_span[OF ind_B] unfolding C_def by simp
@@ -242,9 +242,9 @@ lemma invertible_matrix_mult_left_rank:
   assumes invertible_P: "invertible P"
   shows "rank (P**A) = rank A"
 proof -
-  def TP=="(\<lambda>x. P *v x)"
-  def TA\<equiv>"(\<lambda>x. A *v x)"
-  def TPA=="(\<lambda>x. (P**A) *v x)"
+  define TP where "TP = (\<lambda>x. P *v x)"
+  define TA where "TA = (\<lambda>x. A *v x)"
+  define TPA where "TPA = (\<lambda>x. (P**A) *v x)"
   have sub: "vec.subspace (range (op *v A))"
     by (metis matrix_vector_mul_linear vec.subspace_UNIV vec.subspace_linear_image)
   have "vec.dim (range TPA) = vec.dim (range (TP \<circ> TA))" 
@@ -437,7 +437,7 @@ proof -
   have finite_X:"finite (set_of_vector X)" using basis_finite[OF is_basis] .
   have 1: "(\<forall>g. (\<Sum>v\<in>(set_of_vector X). g v *s v) = 0 \<longrightarrow> (\<forall>v\<in>(set_of_vector X). g v = 0))"
     using ind_X unfolding vec.independent_explicit using finite_X by auto
-  def g\<equiv>"\<lambda>v. f (THE i. X $ i = v)"
+  define g where "g v = f (THE i. X $ i = v)" for v
   have "(\<Sum>v\<in>(set_of_vector X). g v *s v) = 0"
   proof -
     have "(\<Sum>v\<in>(set_of_vector X). g v *s v)  = (\<Sum>i\<in>(UNIV::'n set). f i *s X$i)"
@@ -523,7 +523,7 @@ next
   fix x::"('a, 'n) vec"
   show "x \<in> range (coord X)"
   proof (unfold image_def, auto, rule exI[of _ "sum (\<lambda>i. x$i *s X$i) UNIV"], unfold coord_def)
-    def f\<equiv>"\<lambda>i. x$i"
+    define f where "f i = x$i" for i
     have the_f: " (THE f. (\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. f x *s X $ x)) = f"
     proof (rule the_equality)
       show "(\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. f x *s X $ x)" unfolding f_def ..
@@ -546,7 +546,7 @@ proof (unfold linear_def additive_def linear_axioms_def coord_def, auto)
     obtain f where f: "(\<Sum>a\<in>(UNIV::'n set). f a *s X $ a) = x + y" using basis_UNIV[OF basis_X] by blast
     obtain g where g: " (\<Sum>x\<in>UNIV. g x *s X $ x) = x" using basis_UNIV[OF basis_X] by blast
     obtain h where h: "(\<Sum>x\<in>UNIV. h x *s X $ x) = y" using basis_UNIV[OF basis_X] by blast
-    def t\<equiv>"\<lambda>i. g i + h i"
+    define t where "t i = g i + h i" for i
     have the_f: "(THE f. x + y = (\<Sum>x\<in>UNIV. f x *s X $ x)) = f"
     proof (rule the_equality)
       show " x + y = (\<Sum>x\<in>UNIV. f x *s X $ x)" using f by simp
@@ -577,7 +577,7 @@ next
   proof -
     obtain f where f: "(\<Sum>x\<in>UNIV. f x *s X $ x) = c *s x" using basis_UNIV[OF basis_X] by blast
     obtain g where g: "(\<Sum>x\<in>UNIV. g x *s X $ x) = x" using basis_UNIV[OF basis_X] by blast
-    def t\<equiv>"\<lambda>i. c * g i"
+    define t where "t i = c * g i" for i
     have the_f: "(THE f. c *s x = (\<Sum>x\<in>UNIV. f x *s X $ x)) = f"
     proof (rule the_equality)
       show " c *s x = (\<Sum>x\<in>UNIV. f x *s X $ x)" using f ..
@@ -705,8 +705,8 @@ proof -
   show ?thesis
   proof (vector, auto)
     fix i j
-    def a\<equiv>"\<lambda>x. (matrix' X Y f) $ x $ i"
-    def b\<equiv>"\<lambda>x. A $ x $ i"    
+    define a where "a x = (matrix' X Y f) $ x $ i" for x
+    define b where "b x = A $ x $ i" for x
     have  fxi_1:"f (X$i) = sum (\<lambda>j. a j *s (Y$j)) UNIV" using eq_f' unfolding a_def by simp
     have  fxi_2: "f (X$i) = sum (\<lambda>j. b j *s(Y$j)) UNIV" using eq_f unfolding b_def by simp    
     have "a=b" using basis_combination_unique[OF basis_Y] fxi_1 fxi_2  by auto    
@@ -740,7 +740,7 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
     hence fa: "v=(\<Sum>x\<in>UNIV. fa x *s X $ x)" by (vector, auto)
     show "fa=s"by (rule basis_combination_unique[OF basis_X], simp add: fa s)
   qed
-  def t\<equiv>"\<lambda>x. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x))"
+  define t where "t x = (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x))" for x
   have "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using g by simp
   also have "... = f (\<Sum>x\<in>UNIV. s x *s X $ x)" using s by simp
   also have "... = (\<Sum>x\<in>UNIV. s x *s f (X $ x))" by (rule linear.linear_sum_mul[OF linear_f], simp)
@@ -789,7 +789,7 @@ lemma exists_linear_eq_matrix':
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   shows "\<exists>f. matrix' X Y f = A \<and> linear (op *s) (op *s) f" 
 proof -
-  def f == "\<lambda>v. sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV"
+  define f where "f v = sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV" for v
   obtain g where linear_g: "linear (op *s) (op *s) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)" 
     using vec.linear_independent_extend using basis_X unfolding is_basis_def by blast  
   show ?thesis
@@ -841,8 +841,8 @@ proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, 
   fix i
   obtain f where f: "(\<Sum>x\<in>UNIV. f x *s Y $ x) = v" using basis_UNIV[OF basis_Y] by blast
   obtain g where g: "(\<Sum>x\<in>UNIV. g x *s X $ x) = v" using basis_UNIV[OF basis_X] by blast
-  def t\<equiv>"\<lambda>x. (THE f. X $ x= (\<Sum>a\<in>UNIV. f a *s Y $ a))"
-  def w\<equiv>"\<lambda>i. (\<Sum>x\<in>UNIV. g x * t x i)"
+  define t where "t x = (THE f. X $ x= (\<Sum>a\<in>UNIV. f a *s Y $ a))" for x
+  define w where "w i = (\<Sum>x\<in>UNIV. g x * t x i)" for i
   have the_f:"(THE f. \<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * Y $ x $ i)) = f"
   proof (rule the_equality)
     show "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * Y $ x $ i)" using f by auto
@@ -891,7 +891,7 @@ lemma matrix_change_of_basis_mat_1:
   shows "matrix_change_of_basis X X = mat 1"
 proof (unfold matrix_change_of_basis_def coord_def mat_def, vector, auto)
   fix j::"'n" 
-  def f\<equiv>"\<lambda>i. if i=j then 1::'a else 0"
+  define f :: "'n \<Rightarrow> 'a" where "f i = (if i=j then 1 else 0)" for i
   have UNIV_rw: "UNIV = insert j (UNIV-{j})" by auto
   have "(\<Sum>x\<in>UNIV. f x *s X $ x) = (\<Sum>x\<in>(insert j (UNIV-{j})). f x *s X $ x)" using UNIV_rw by simp
   also have "... = (\<lambda>x. f x *s X $ x) j + (\<Sum>x\<in>(UNIV-{j}). f x *s X $ x)" by (rule sum.insert, simp+)

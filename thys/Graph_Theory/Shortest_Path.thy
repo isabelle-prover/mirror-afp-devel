@@ -113,8 +113,8 @@ proof -
   from w_in_p obtain xs ys where pv_decomp: "awalk_verts u p = xs @ w # ys"
     by (auto simp: in_set_conv_decomp)
 
-  def q \<equiv> "take (length xs) p" and r \<equiv> "drop (length xs) p"
-  def ext_p \<equiv> "\<lambda>n. q @ mk_cycles_path n c @ r"
+  define q r where "q = take (length xs) p" and "r = drop (length xs) p"
+  define ext_p where "ext_p n = q @ mk_cycles_path n c @ r" for n
 
   have ext_p_cost: "\<And>n. awalk_cost f (ext_p n)
       = (awalk_cost f q + awalk_cost f r) + n * awalk_cost f c"
@@ -149,7 +149,7 @@ lemma walk_cheaper_path_imp_neg_cyc:
   assumes less_path_\<mu>: "awalk_cost f p < (INF p: {p. apath u p v}. ereal (awalk_cost f p))"
   shows "\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0"
 proof -
-  def path_\<mu>  \<equiv> "(INF p: {p. apath u p v}. ereal (awalk_cost f p))"
+  define path_\<mu> where "path_\<mu> = (INF p: {p. apath u p v}. ereal (awalk_cost f p))"
   then have "awalk u p v" and "awalk_cost f p < path_\<mu>"
     using p_props less_path_\<mu> by simp_all
   then show ?thesis
@@ -191,7 +191,7 @@ lemma (in fin_digraph) neg_inf_imp_neg_cyc:
   assumes inf_mu: "\<mu> f u v = - \<infinity>"
   shows "\<exists>p. awalk u p v \<and> (\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
 proof -
-  def path_\<mu> \<equiv> "INF s:{p. apath u p v}. ereal (awalk_cost f s)"
+  define path_\<mu> where "path_\<mu> = (INF s:{p. apath u p v}. ereal (awalk_cost f s))"
 
   have awalks_ne: "{p. awalk u p v} \<noteq> {}"
     using inf_mu unfolding \<mu>_def by safe (simp add: top_ereal_def)
@@ -289,8 +289,8 @@ lemma (in fin_digraph) no_neg_cyc_reach_imp_path:
     \<Longrightarrow> \<not>(\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
   shows "\<exists>p. apath u p v \<and> \<mu> f u v = awalk_cost f p"
 proof -
-  def set_walks \<equiv> "{p. awalk u p v}"
-  def set_paths \<equiv> "{p. apath u p v}"
+  define set_walks where "set_walks = {p. awalk u p v}"
+  define set_paths where "set_paths = {p. apath u p v}"
 
   have "set_paths \<noteq> {}"
   proof -
@@ -427,10 +427,11 @@ proof cases
 next
   assume "\<not>s \<rightarrow>\<^sup>* v"
   then have "\<mu> c s v = \<infinity>" by (metis shortest_path_inf)
-  def S \<equiv> "?S"
+  define S where "S = ?S"
   show "\<mu> c s v = Inf S"
   proof cases
-    assume "S = {}" then show ?thesis unfolding `\<mu> c s v = \<infinity>`
+    assume "S = {}"
+    then show ?thesis unfolding `\<mu> c s v = \<infinity>`
       by (simp add: top_ereal_def)
   next
     assume "S \<noteq> {}"
@@ -446,6 +447,5 @@ next
 qed
 
 end
-
 
 end

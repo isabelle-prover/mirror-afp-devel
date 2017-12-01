@@ -908,7 +908,7 @@ begin
   proof -
     assume R0: "r 0 \<in> V0" and RS: "\<forall>i. (r i, r (Suc i)) \<in> E"
 
-    def r'\<equiv>"rec_nat
+    define r' where "r' = rec_nat
       (r 0,0) 
       (\<lambda>i (q,n). (r (Suc i), if n \<in> acc q then (n+1) mod num_acc else n))"
 
@@ -926,7 +926,8 @@ begin
     have R0': "r' 0 \<in> degen.V0 T m" using R0
       unfolding degeneralize_ext_def by auto
 
-    have MAP: "r = fst o r'" proof (rule ext)
+    have MAP: "r = fst o r'"
+    proof (rule ext)
       fix i
       show "r i = (fst o r') i"
         by (cases i) (auto simp: split: prod.split)
@@ -979,7 +980,7 @@ begin
     assumes RI: "r i = (q,n)"
     shows "\<exists>j\<ge>i. \<exists>q'. r j = (q',n) \<and> n \<in> acc q'"
   proof -
-    def j \<equiv> "LEAST j. j\<ge>i \<and> n \<in> acc (fst (r j))"
+    define j where "j = (LEAST j. j\<ge>i \<and> n \<in> acc (fst (r j)))"
 
     from RI have "n<num_acc" using degen_run_bound[OF NN0 R, of i] by auto
     from EXJ have 
@@ -1130,7 +1131,7 @@ begin
     from degen_run_bound[OF NN0 R] A have "n<num_acc" "n'<num_acc"
       by (metis snd_conv)+
 
-    def k \<equiv> "LEAST k. i<k \<and> snd (r k) \<noteq> n"
+    define k where "k = (LEAST k. i<k \<and> snd (r k) \<noteq> n)"
 
     have "i<k" "snd (r k) \<noteq> n"
       by (metis (lifting, mono_tags) LeastI_ex A k_def leD less_linear snd_conv)+
