@@ -5,125 +5,236 @@ imports
   Discrete_Time_Markov_Chain
 begin
 
-lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
-  by (metis int_cases)
-
-inductive_set monoid_closure :: "nat set \<Rightarrow> int set" for S where
-  base: "s \<in> S \<Longrightarrow> int s \<in> monoid_closure S"
-| plus: "s \<in> monoid_closure S \<Longrightarrow> t \<in> monoid_closure S \<Longrightarrow> s + t \<in> monoid_closure S"
+inductive_set monoid_closure :: "nat set \<Rightarrow> nat set" for S
+  where zero [simp]: "0 \<in> monoid_closure S"
+| base: "s \<in> S \<Longrightarrow> s \<in> monoid_closure S"
+| add: "s \<in> monoid_closure S \<Longrightarrow> t \<in> monoid_closure S \<Longrightarrow> s + t \<in> monoid_closure S"
 | diff: "s \<in> monoid_closure S \<Longrightarrow> t \<in> monoid_closure S \<Longrightarrow> s - t \<in> monoid_closure S"
 
-lemma Gcd_nonneg: "0 \<le> Gcd (S :: int set)"
-  by (simp add: Gcd_int_def)
+inductive_set group_closure :: "nat set \<Rightarrow> int set" for S
+  where zero [simp]: "0 \<in> group_closure S"
+| base: "s \<in> S \<Longrightarrow> int s \<in> group_closure S"
+| add: "s \<in> group_closure S \<Longrightarrow> t \<in> group_closure S \<Longrightarrow> s + t \<in> group_closure S"
+| minus: "s \<in> group_closure S \<Longrightarrow> - s \<in> group_closure S"
 
-lemma Gcd_eq_Gcd_monoid_closure:
-  fixes S :: "nat set"
-  shows "Gcd S = Gcd (monoid_closure S)"
-apply (simp add: Gcd_int_def)
-proof (safe intro!: dvd_antisym Gcd_greatest)
-  fix s assume "s \<in> monoid_closure S"
-  then show "Gcd S dvd nat \<bar>s\<bar>"
-  proof induct
-    case (plus s t)
+lemma monoid_closure_sym_diff:
+  "nat \<bar>int s - int t\<bar> \<in> monoid_closure S" if "s \<in> monoid_closure S" "t \<in> monoid_closure S"
+proof (cases "s \<ge> t")
+  case True
+  with that show ?thesis
+    by (simp add: nat_diff_distrib monoid_closure.diff)
+next
+  case False
+  with that show ?thesis
+    by (simp add: not_le nat_diff_distrib monoid_closure.diff)
+qed
+
+lemma group_closure_diff:
+  "s - t \<in> group_closure S" if "s \<in> group_closure S" "t \<in> group_closure S"
+  using that group_closure.add [of s S "- t"] by (auto intro: group_closure.minus)
+
+lemma group_closure_minus_iff [simp]:
+  "- s \<in> group_closure S \<longleftrightarrow> s \<in> group_closure S"
+  using group_closure.minus [of s] group_closure.minus [of "- s"] by auto
+
+lemma monoid_closure_eq_group_closure:
+  "monoid_closure S = nat ` group_closure S"
+
+proof (rule; rule)
+  fix s
+  assume "s \<in> monoid_closure S"
+  then show "s \<in> nat ` group_closure S"
+  proof induction
+    case zero
+    show ?case
+      by auto
+  next
+    case (base s)
+    then have "int s \<in> group_closure S"
+      by (rule group_closure.base)
     then show ?case
-      by (cases s t rule: int_cases'[case_product int_cases'])
-         (simp_all add: nat_abs_int_diff nat_int_add)
+      by force
+  next
+    case (add s t)
+    then have "int s \<in> group_closure S" and "int t \<in> group_closure S"
+      by auto
+    then have "int s + int t \<in> group_closure S"
+      by (rule group_closure.add)
+    then have "nat (int s + int t) \<in> nat ` group_closure S"
+      by simp
+    also have "nat (int s + int t) = s + t"
+      by simp
+    finally show ?case .
   next
     case (diff s t)
+    then have "int s \<in> group_closure S" and "int t \<in> group_closure S"
+      by auto
+    then have "int s - int t \<in> group_closure S"
+      by (rule group_closure_diff)
+    then have "nat (int s - int t) \<in> nat ` group_closure S"
+      by simp
+    also have "nat (int s - int t) = s - t"
+      by simp
+    finally show ?case .
+  qed
+next
+  fix s
+  assume "s \<in> nat ` group_closure S"
+  moreover define r where "r = int s"
+  ultimately have "r \<in> group_closure S"
+    by auto
+  then have "nat \<bar>r\<bar> \<in> monoid_closure S"
+  proof induction
+    case zero
+    show ?case
+      by simp
+  next
+    case (base s)
     then show ?case
-      by (cases s t rule: int_cases'[case_product int_cases'])
-         (simp_all add: nat_abs_int_diff nat_int_add)
-  qed simp
-next
-  fix s assume "s \<in> S"
-  then have "int s \<in> monoid_closure S"
-    by (simp add: monoid_closure.base)
-  then have "s \<in> (\<lambda>k. nat \<bar>k\<bar>) ` monoid_closure S"
-    by (auto intro!: image_eqI [where x = "int s"])
-  then show "(GCD m\<in>monoid_closure S. nat \<bar>m\<bar>) dvd s"
-    by (rule Gcd_dvd)
+      by (simp add: monoid_closure.base)
+  next
+    case (add s t)
+    then have *: "nat \<bar>s\<bar> + nat \<bar>t\<bar> \<in> monoid_closure S"
+      and "nat \<bar>int (nat \<bar>s\<bar>) - int (nat \<bar>t\<bar>)\<bar> \<in> monoid_closure S"
+      by (safe intro!: monoid_closure.add monoid_closure_sym_diff)
+    then have **: "nat \<bar>\<bar>s\<bar> - \<bar>t\<bar>\<bar> \<in> monoid_closure S"
+      by simp
+    consider "s \<ge> 0 \<and> t \<ge> 0 \<or> s < 0 \<and> t < 0"
+      | "s \<ge> 0 \<and> t < 0 \<or> s < 0 \<and> t \<ge> 0"
+      by (cases "s \<ge> 0"; cases "t \<ge> 0") auto
+    then show ?case proof cases
+      case 1
+      then have "nat \<bar>s + t\<bar> = nat \<bar>s\<bar> + nat \<bar>t\<bar>"
+        by auto
+      then show ?thesis
+        by (auto intro: *)
+    next
+      case 2
+      then have "nat \<bar>s + t\<bar> = nat \<bar>\<bar>s\<bar> - \<bar>t\<bar>\<bar>"
+        by auto
+      then show ?thesis
+        by (auto intro: **)
+    qed
+  next
+    case (minus s)
+    then show ?case
+      by simp
+  qed
+  with r_def show "s \<in> monoid_closure S"
+    by simp
 qed
 
-lemma monoid_closure_nat_mult:
-  "s \<in> monoid_closure S \<Longrightarrow> int n * s \<in> monoid_closure S"
-proof (induct n)
-  case 0 with monoid_closure.diff[of s S s] show ?case by simp
+lemma monoid_closure_mult_left:
+  "t * s \<in> monoid_closure S" if "s \<in> monoid_closure S"
+  using that by (induction t)
+    (auto simp add: algebra_simps intro: monoid_closure.zero monoid_closure.add)
+
+lemma monoid_closure_mult_right:
+  "s * t \<in> monoid_closure S" if "s \<in> monoid_closure S"
+  using that monoid_closure_mult_left [of s S t] by (simp add: ac_simps)
+
+lemma monoid_closure_empty [simp]:
+  "monoid_closure {} = {0}"
+  by (rule ccontr) (auto elim: monoid_closure.induct)
+
+lemma monoid_closure_singleton_zero [simp]:
+  "monoid_closure {0} = {0}"
+  by (auto elim: monoid_closure.induct)
+
+lemma monoid_closure_mult_all_eq:
+  "monoid_closure (times n ` S) = times n ` monoid_closure S"
+proof (rule; rule)
+  fix s
+  have *: "n * a + n * b = n * (a + b)"
+    "n * a - n * b = n * (a - b)" for a b
+    by (simp_all add: algebra_simps)
+  assume "s \<in> monoid_closure (times n ` S)"
+  then show "s \<in> times n ` monoid_closure S"
+    by induction (auto simp add: * intro: monoid_closure.base monoid_closure.add monoid_closure.diff)
 next
-  case (Suc n) then show ?case
-    by (simp add: field_simps monoid_closure.plus)
+  fix s
+  assume "s \<in> times n ` monoid_closure S"
+  then obtain r where r: "r \<in> monoid_closure S" and s: "s = n * r"
+    by auto
+  from r have "n * r \<in> monoid_closure (times n ` S)"
+    by (induction arbitrary: s) (auto simp add: algebra_simps nat_mult_distrib intro: monoid_closure.intros)
+  with s show "s \<in> monoid_closure (times n ` S)"
+    by simp
 qed
 
-lemma monoid_closure_uminus:
-  assumes s: "s \<in> monoid_closure S" shows "-s \<in> monoid_closure S"
-  using monoid_closure.diff[OF monoid_closure.diff[OF s s] s] by simp
-
-lemma monoid_closure_int_mult:
-  "s \<in> monoid_closure S \<Longrightarrow> i * s \<in> monoid_closure S"
-  by (cases i rule: int_cases') (auto intro: monoid_closure_uminus monoid_closure_nat_mult)
+lemma Gcd_monoid_closure_eq_Gcd:
+  "Gcd (monoid_closure S) = Gcd S"
+proof -
+  have "Gcd S dvd s" if "s \<in> monoid_closure S" for s
+    using that by induction (simp_all add: zdvd_int [symmetric])
+  moreover have "Gcd (monoid_closure S) dvd s" if "s \<in> S" for s
+  proof -
+    from that have "s \<in> monoid_closure S"
+      by (simp add: monoid_closure.base)
+    then show ?thesis
+      by (rule Gcd_dvd)
+  qed
+  ultimately show ?thesis
+    by (auto intro: dvd_antisym Gcd_greatest)
+qed
 
 lemma monoid_closure_sum:
   assumes X: "finite X" "X \<noteq> {}" "X \<subseteq> S"
-  shows "(\<Sum>x\<in>X. a x * int x) \<in> monoid_closure S"
-  using X
-  apply (induct X rule: finite_ne_induct)
-  apply (auto intro!: monoid_closure_int_mult monoid_closure.base monoid_closure.plus)
-  done
+  shows "(\<Sum>x\<in>X. a x * x) \<in> monoid_closure S"
+  using X by (induction X rule: finite_ne_induct)
+    (auto intro: monoid_closure_mult_left monoid_closure.base monoid_closure.add)
 
 lemma Gcd_monoid_closure_in_monoid_closure:
-  fixes S :: "nat set"
-  assumes "s \<in> S" "s \<noteq> 0"
-  shows "Gcd (monoid_closure S) \<in> monoid_closure S"
-proof -
-  def m \<equiv> "LEAST n. n \<noteq> 0 \<and> int n \<in> monoid_closure S"
-
-  from `s \<in> S` have s: "int s \<in> monoid_closure S"
-    by (rule monoid_closure.base)
-  moreover from `s \<noteq> 0` have "0 < s"
-    by (metis neq0_conv)
-  ultimately have s': "s \<noteq> 0 \<and> int s \<in> monoid_closure S"
+  "Gcd (monoid_closure S) \<in> monoid_closure S"
+proof (cases "S \<subseteq> {0}")
+  case True
+  then have "S = {} \<or> S = {0}"
     by auto
-
-  have m: "m \<noteq> 0 \<and> m \<in> monoid_closure S"
+  then show ?thesis
+    by auto
+next
+  case False
+  then obtain s where s: "s > 0" "s \<in> S"
+    by auto
+  then have s': "s > 0" "s \<in> monoid_closure S"
+    by (auto intro: monoid_closure.base)
+  define m where "m = (LEAST n. n > 0 \<and> n \<in> monoid_closure S)"
+  have m: "m > 0 \<and> m \<in> monoid_closure S"
     unfolding m_def
     apply (rule LeastI[of _ s])
     using s'
     by simp
-  then have m': "m \<in> monoid_closure S" "0 < int m"
+  then have m': "m \<in> monoid_closure S" "0 < m"
     by auto
 
-  have "Gcd (monoid_closure S) = int m"
-  proof (unfold Gcm_eq_int_iff, rule dvd_antisym)
-    from m have "m \<in> (nat \<circ> abs) ` monoid_closure S"
-      by (auto intro: image_eqI [of _ _ "int m"])
-    then show "Gcd ((nat \<circ> abs) `
-      monoid_closure S) dvd m"
-    by (rule Gcd_dvd)
-    show "m dvd Gcd ((nat \<circ> abs) ` monoid_closure S)"
+  have "Gcd (monoid_closure S) = m"
+  proof (rule dvd_antisym)
+    from m have "m \<in> monoid_closure S"
+      by auto
+    then show "Gcd (monoid_closure S) dvd m"
+      by (rule Gcd_dvd)
+    show "m dvd Gcd (monoid_closure S)"
     proof (rule Gcd_greatest)
-      fix n
-      assume "n \<in> (nat \<circ> abs) ` monoid_closure S"
-      then obtain s where s: "s \<in> monoid_closure S"
-        and n: "n = (nat \<circ> abs) s"
-        by blast
+      fix s
+      assume s: "s \<in> monoid_closure S"
       from minus_div_mult_eq_mod [symmetric, of s m]
-      have "s mod int m = s - s div int m * int m"
+      have "s mod m = s - s div m * m"
         by auto
-      also have "s - s div int m * int m \<in> monoid_closure S"
-        by (intro monoid_closure.diff s monoid_closure_int_mult m')
-      finally have mod_in: "s mod int m \<in> monoid_closure S" by auto
+      also have "s - s div m * m \<in> monoid_closure S"
+        by (intro monoid_closure.diff s monoid_closure_mult_left m')
+      finally have mod_in: "s mod m \<in> monoid_closure S" by auto
 
-      have "int m dvd s"
+      show "m dvd s"
       proof cases
-        assume "s mod int m = 0"
-        with dvd_eq_mod_eq_0[of "int m" s] show ?thesis by simp
+        assume "s mod m = 0"
+        with dvd_eq_mod_eq_0[of m s] show ?thesis by simp
       next
-        assume "s mod int m \<noteq> 0"
-        moreover have "0 \<le> s mod int m"
-          using m'(2) by (rule pos_mod_sign[of "int m" s])
-        ultimately have pos: "0 < s mod int m" by auto
-        moreover have "s mod int m < int m"
-          using m'(2) by (rule pos_mod_bound)
-        moreover have "m \<le> nat (s mod int m)"
+        assume "s mod m \<noteq> 0"
+        then have pos: "0 < s mod m"
+          by auto
+        moreover have "s mod m < m"
+          by (simp add: m)
+        moreover have "m \<le> s mod m"
           using pos
           apply (subst m_def)
           apply (intro Least_le)
@@ -132,66 +243,92 @@ proof -
        ultimately show ?thesis
          by auto
       qed
-      then show "m dvd n"
-        unfolding int_dvd_iff by (simp add: n)
     qed
   qed
   with m' show ?thesis by simp
 qed
 
 lemma Gcd_in_monoid_closure:
-  fixes S :: "nat set"
-  shows "s \<in> S \<Longrightarrow> s \<noteq> 0 \<Longrightarrow> Gcd S \<in> monoid_closure S"
-  unfolding Gcd_eq_Gcd_monoid_closure by (rule Gcd_monoid_closure_in_monoid_closure)
+  "Gcd S \<in> monoid_closure S"
+  using Gcd_monoid_closure_in_monoid_closure [of S]
+  by (simp add: Gcd_monoid_closure_eq_Gcd)
+
+lemma monoid_closure_eq:
+  "monoid_closure S = range (times (Gcd S))"
+proof (auto intro: Gcd_in_monoid_closure monoid_closure_mult_right)
+  fix s
+  assume "s \<in> monoid_closure S"
+  then show "s \<in> range (times (Gcd S))"
+  proof induction
+    case zero
+    show ?case
+      by auto
+  next
+    case (base s)
+    then have "Gcd S dvd s"
+      by (rule Gcd_dvd)
+    then obtain t where "s = Gcd S * t" ..
+    then show ?case
+      by auto
+  next
+    case (add s t)
+    moreover have "Gcd S * a + Gcd S * b = Gcd S * (a + b)" for a b
+      by (simp add: algebra_simps)
+    ultimately show ?case
+      by auto
+  next
+    case (diff s t)
+    moreover have "Gcd S * a - Gcd S * b = Gcd S * (a - b)" for a b
+      by (simp add: algebra_simps)
+    ultimately show ?case
+      by auto
+  qed
+qed
 
 lemma eventually_mult_Gcd:
   fixes S :: "nat set"
   assumes S: "\<And>s t. s \<in> S \<Longrightarrow> t \<in> S \<Longrightarrow> s + t \<in> S"
-  assumes s: "s \<in> S" "s \<noteq> 0"
+  assumes s: "s \<in> S" "s > 0"
   shows "eventually (\<lambda>m. m * Gcd S \<in> S) sequentially"
 proof -
-  have "Gcd S \<in> monoid_closure S"
-    using s by (rule Gcd_in_monoid_closure)
-  also have "monoid_closure S = {s - t | s t. (s = 0 \<or> s \<in> S) \<and> (t = 0 \<or> t \<in> S) }"
-  proof auto
-    fix x assume "x \<in> monoid_closure S"
+  have "int (Gcd S) \<in> group_closure S"
+    using monoid_closure_eq_group_closure [of S] Gcd_in_monoid_closure [of S] by auto
+  also have "group_closure S = {int s - int t | s t. (s = 0 \<or> s \<in> S) \<and> (t = 0 \<or> t \<in> S)}"
+  proof (auto intro: group_closure.base group_closure.minus group_closure_diff)
+    fix x assume "x \<in> group_closure S"
     then show "\<exists>s t. x = int s - int t \<and> (s = 0 \<or> s \<in> S) \<and> (t = 0 \<or> t \<in> S)"
     proof induct
+      case zero
+      from s show ?case
+        by auto
+    next
       case (base x) then show ?case
         apply (rule_tac x=x in exI)
         apply (rule_tac x=0 in exI)
         apply auto
         done
     next
-      case (plus x y)
+      case (add x y)
       then obtain a b c d where
-        "a = 0 \<or> a \<in> S" "b = 0 \<or> b \<in> S" "x = int a - b"
-        "c = 0 \<or> c \<in> S" "d = 0 \<or> d \<in> S" "y = int c - d"
+        "a = 0 \<or> a \<in> S" "b = 0 \<or> b \<in> S" "x = int a - int b"
+        "c = 0 \<or> c \<in> S" "d = 0 \<or> d \<in> S" "y = int c - int d"
         by auto
       then show ?case
         apply (rule_tac x="a + c" in exI)
         apply (rule_tac x="b + d" in exI)
-        apply simp
-        apply (metis S add_0_right add_0_left)
+        apply (auto intro: S)
         done
     next
-      case (diff x y)
-      then obtain a b c d where
-        "a = 0 \<or> a \<in> S" "b = 0 \<or> b \<in> S" "x = int a - b"
-        "c = 0 \<or> c \<in> S" "d = 0 \<or> d \<in> S" "y = int c - d"
-        by auto
+      case (minus x)
+      then obtain a b where
+        "x = int a - int b" "a = 0 \<or> a \<in> S" "b = 0 \<or> b \<in> S" by blast
       then show ?case
-        apply (rule_tac x="a + d" in exI)
-        apply (rule_tac x="b + c" in exI)
-        apply simp
-        apply (metis S add_0_right add_0_left)
-        done
+        by auto
     qed
-  next
-    show "0 \<in> monoid_closure S"
-      using monoid_closure.diff[of "int s" S "int s"] monoid_closure.base[OF `s \<in> S`] by simp
-  qed (auto intro: monoid_closure.base monoid_closure_uminus monoid_closure.diff)
-  finally obtain s t :: nat where st: "s = 0 \<or> s \<in> S" "t = 0 \<or> t \<in> S" "Gcd S = int s - int t" by auto
+  qed
+  finally 
+  obtain s t :: nat where st: "s = 0 \<or> s \<in> S" "t = 0 \<or> t \<in> S" "int (Gcd S) = int s - int t"
+    by auto
   then have Gcd_S: "Gcd S = s - t"
     by auto
   with s
@@ -222,8 +359,8 @@ proof -
     show "\<exists>N. \<forall>n\<ge>N. n * Gcd S \<in> S"
     proof (safe intro!: exI[of _ "a * a"])
       fix n
-      def m \<equiv> "(n - a * a) div a"
-      def r \<equiv> "(n - a * a) mod a"
+      define m where "m = (n - a * a) div a"
+      define r where "r = (n - a * a) mod a"
       with `0 < a` have "r < a" by simp
       moreover def am \<equiv> "a + m"
       ultimately have "r < am" by simp
@@ -301,7 +438,7 @@ proof (induction n arbitrary: x)
     by (simp add: p_0 one_ennreal_def[symmetric] max_def)
 next
   case (Suc n)
-  def X \<equiv> "(SIGMA x:UNIV. K x)\<^sup>* `` K x"
+  define X where "X = (SIGMA x:UNIV. K x)\<^sup>* `` K x"
   then have X: "countable X"
     by (blast intro: countable_Image countable_reachable countable_set_pmf)
 
@@ -655,7 +792,7 @@ lemma H_eq:
   "\<not> recurrent s \<longleftrightarrow> H s s = 0"
   "H s t = U s t * H t t"
 proof -
-  def H' \<equiv> "\<lambda>t n. {\<omega>\<in>space S. enat n \<le> scount (HLD {t::'s}) \<omega>}"
+  define H' where "H' t n = {\<omega>\<in>space S. enat n \<le> scount (HLD {t::'s}) \<omega>}" for t n
   have [measurable]: "\<And>y n. H' y n \<in> sets S"
     by (simp add: H'_def)
   let ?H' = "\<lambda>s t n. measure (T s) (H' t n)"
@@ -1024,7 +1161,7 @@ lemma essential_class_iff_recurrent:
 definition "U' x y = (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T x)"
 
 lemma U'_neq_zero[simp]: "U' x y \<noteq> 0"
-  unfolding U'_def by (simp add: nn_integral_add add_eq_0_iff_both_eq_0)
+  unfolding U'_def by (simp add: nn_integral_add)
 
 definition "gf_U' x y z = (\<Sum>n. u x y n * Suc n * z ^ n)"
 
@@ -1446,7 +1583,7 @@ proof (rule pmf_eqI antisym)+
   show "pmf (bind_pmf N K) i \<le> pmf N i"
     by (simp add: pmf_bind le)
 
-  def \<Omega> \<equiv> "N \<union> (\<Union>i\<in>N. K i)"
+  define \<Omega> where "\<Omega> = N \<union> (\<Union>i\<in>N. K i)"
   then have \<Omega>: "countable \<Omega>"
     by (auto intro: countable_set_pmf)
   then interpret N: sigma_finite_measure "count_space \<Omega>"
@@ -1971,10 +2108,11 @@ proof -
     using n by (auto simp: period_set_def)
   have "eventually (\<lambda>m. m * Gcd (period_set x) \<in> (period_set x)) sequentially"
   proof (rule eventually_mult_Gcd)
-    show "n \<noteq> 0" "n \<in> period_set x"
+    show "n > 0" "n \<in> period_set x"
       using n by (auto simp add: period_set_def)
     fix k l  assume "k \<in> period_set x" "l \<in> period_set x"
-    then have "0 < p x x k * p x x l" "0 < l" "0 < k" by (auto simp: period_set_def mult_pos_pos)
+    then have "0 < p x x k * p x x l" "0 < l" "0 < k"
+      by (auto simp: period_set_def)
     moreover have "p x x k * p x x l \<le> p x x (k + l)"
       using prob_reachable_le[of k "k + l" x x x] `x \<in> C`
       by auto
@@ -2165,7 +2303,7 @@ proof -
   from `essential_class C` have C_comm: "C \<in> UNIV // communicating"
     by (simp add: essential_class_def)
 
-  def K' \<equiv> "\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N"
+  define K' where "K' = (\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N)"
 
   interpret K2: MC_syntax K' .
   interpret KN: MC_pair K K' .

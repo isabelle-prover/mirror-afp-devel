@@ -221,6 +221,47 @@ begin
       using transition and alpha and fresh_X by (metis bn_eqvt)
   qed
 
+  (* bn \<alpha> \<sharp>* (F,f) is required for the \<longleftarrow> implication as well as for the \<longrightarrow> implication;
+     additionally bn \<alpha> \<sharp>* P is required for the \<longrightarrow> implication. *)
+
+  lemma L_transition_AC_fresh:
+    assumes "bn \<alpha> \<sharp>* (F,f,P)"
+    shows "AC (f,F,P) \<rightarrow>\<^sub>L \<langle>Act \<alpha>, P\<^sub>L'\<rangle> \<longleftrightarrow> (\<exists>P'. P\<^sub>L' = EF (L (\<alpha>,F,f), P') \<and> P \<rightarrow> \<langle>\<alpha>,P'\<rangle>)"
+  proof
+    assume "AC (f,F,P) \<rightarrow>\<^sub>L \<langle>Act \<alpha>, P\<^sub>L'\<rangle>"
+    moreover have "finite (supp (F,f,P))"
+      by (fact finite_supp)
+    ultimately obtain \<alpha>' P' where trans: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and eq: "\<langle>Act \<alpha> :: ('act,'effect) L_action, P\<^sub>L'\<rangle> = \<langle>Act \<alpha>', EF (L (\<alpha>',F,f), P')\<rangle>" and fresh: "bn \<alpha>' \<sharp>* (F,f,P)"
+      using L_transition_AC_strong by blast
+    from eq obtain p where p: "p \<bullet> (Act \<alpha> :: ('act,'effect) L_action, P\<^sub>L') = (Act \<alpha>', EF (L (\<alpha>',F,f), P'))" and supp_p: "supp p \<subseteq> bn (Act \<alpha> :: ('act,'effect) L_action) \<union> p \<bullet> bn (Act \<alpha> :: ('act,'effect) L_action)"
+      using residual_eq_iff_perm_renaming by metis
+
+    from p have p_\<alpha>: "p \<bullet> \<alpha> = \<alpha>'" and p_P\<^sub>L': "p \<bullet> P\<^sub>L' = EF (L (\<alpha>',F,f), P')"
+      by simp_all
+
+    from supp_p and p_\<alpha> and assms and fresh have "supp p \<sharp>* (F, f, P)"
+      by (simp add: bn_eqvt fresh_star_def) blast
+    then have p_F: "p \<bullet> F = F" and p_f: "p \<bullet> f = f" and p_P: "p \<bullet> P = P"
+      by (simp_all add: fresh_star_Pair perm_supp_eq)
+
+    from p_P\<^sub>L' have "P\<^sub>L' = -p \<bullet> EF (L (\<alpha>',F,f), P')"
+      by (metis permute_minus_cancel(2))
+    then have "P\<^sub>L' = EF (L (\<alpha>,F,f), -p \<bullet> P')"
+      using p_\<alpha> p_F p_f by simp (metis (full_types) permute_minus_cancel(2))
+
+    moreover from trans have "P \<rightarrow> \<langle>\<alpha>, -p \<bullet> P'\<rangle>"
+      using p_P and p_\<alpha> by (metis permute_minus_cancel(2) transition_eqvt')
+
+    ultimately show "\<exists>P'. P\<^sub>L' = EF (L (\<alpha>,F,f), P') \<and> P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+      by blast
+  next
+    assume "\<exists>P'. P\<^sub>L' = EF (L (\<alpha>,F,f), P') \<and> P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+    moreover from assms have "bn \<alpha> \<sharp>* (F,f)"
+      by (simp add: fresh_star_Pair)
+    ultimately show "AC (f, F, P) \<rightarrow>\<^sub>L \<langle>Act \<alpha>, P\<^sub>L'\<rangle>"
+      using L_transition.simps(1) by blast
+  qed
+
 end
 
 
@@ -435,7 +476,7 @@ begin
       ultimately show "L_transform.valid (EF (F, P)) (L_transform (Pred f \<phi>))"
         using L_transform.valid_Act by fastforce
     next
-      assume "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Pred f \<phi>))"
+      assume "L_transform.valid (EF (F, P)) (L_transform (Pred f \<phi>))"
       then obtain P' where trans: "EF (F, P) \<rightarrow>\<^sub>L \<langle>Eff f, P'\<rangle>" and valid: "L_transform.valid P' ?\<phi>"
         by simp (metis bn_L_action.simps(2) empty_iff fresh_star_def L_transform.valid_Act_fresh L_transform.valid_Pred L_transition.simps(2))
       from trans have "P' = AC (f, F, \<langle>f\<rangle>P)"
@@ -466,14 +507,9 @@ begin
       then have "L_transform.valid (EF (L (\<alpha>', F, f), P')) (L_transform x')"
         using p_x and p_\<alpha> and `p \<bullet> F = F` and `p \<bullet> f = f` by simp
 
-      moreover from eq have "Formula.Act (Eff f) (Formula.Act (Act \<alpha>) (L_transform x)) = Formula.Act (Eff f) (Formula.Act (Act \<alpha>') (L_transform x'))"
-        by (metis L_transform_Act)
-      then have "Formula.Act (Act \<alpha>) (L_transform x) = Formula.Act (Act \<alpha>') (L_transform x')"
-        by (metis bn_L_action.simps(2) Formula.Act_eq_iff_perm Diff_empty supp_perm_eq)
-
-      ultimately have "L_transform.valid (AC (f, F, \<langle>f\<rangle>P)) (Formula.Act (Act \<alpha>) (L_transform x))"
+      then have "L_transform.valid (AC (f, F, \<langle>f\<rangle>P)) (Formula.Act (Act \<alpha>') (L_transform x'))"
         using trans fresh L_transform.valid_Act by fastforce
-      with `f \<in>\<^sub>f\<^sub>s F` show "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
+      with `f \<in>\<^sub>f\<^sub>s F` and eq show "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
         using L_transform.valid_Act by fastforce
     next
       assume *: "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
@@ -504,73 +540,27 @@ begin
       from trans have P': "P' = AC (f, F, \<langle>f\<rangle>P)"
         by (simp add: residual_empty_bn_eq_iff)
 
-      have "supp (\<langle>f\<rangle>P) \<subseteq> supp f \<union> supp P"
+      have supp_f_P: "supp (\<langle>f\<rangle>P) \<subseteq> supp f \<union> supp P"
         using effect_apply_eqvt supp_fun_app supp_fun_app_eqvt by fastforce
       with 1 have "bn (Act (p \<bullet> \<alpha>)) \<sharp>* AC (f, F, \<langle>f\<rangle>P)"
         by (auto simp add: bn_eqvt fresh_star_def fresh_def supp_Pair)
       with valid obtain P'' where trans': "AC (f, F, \<langle>f\<rangle>P) \<rightarrow>\<^sub>L \<langle>Act (p \<bullet> \<alpha>),P''\<rangle>" and valid': "L_transform.valid P'' (L_transform (p \<bullet> x))"
         using P' by (metis L_transform.valid_Act_fresh)
 
-      have "finite (supp (F, FL_Formula.Act f \<alpha> x))"
-        by (fact finite_supp)
-      with trans' obtain \<alpha>' P' where trans'': "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and eq_residual: "\<langle>Act (p \<bullet> \<alpha>) :: ('act,'effect) L_action,P''\<rangle> = \<langle>Act \<alpha>',EF (L (\<alpha>', F, f), P')\<rangle>" and fresh: "bn \<alpha>' \<sharp>* (F, FL_Formula.Act f \<alpha> x)"
-        using L_transition_AC_strong by metis
+      from supp_f_P and 1 have "bn (p \<bullet> \<alpha>) \<sharp>* (F, f, \<langle>f\<rangle>P)"
+        by (auto simp add: bn_eqvt fresh_star_def fresh_def supp_Pair)
+      with trans' obtain P' where P'': "P'' = EF (L (p \<bullet> \<alpha>, F, f), P')" and trans'': "\<langle>f\<rangle>P \<rightarrow> \<langle>p \<bullet> \<alpha>,P'\<rangle>"
+        by (metis L_transition_AC_fresh)
 
-      from eq_residual obtain q where q: "q \<bullet> (Act (p \<bullet> \<alpha>) :: ('act,'effect) L_action, P'') = (Act \<alpha>', EF (L (\<alpha>', F, f), P'))" and supp_q: "supp q \<subseteq> bn (p \<bullet> \<alpha>) \<union> q \<bullet> bn (p \<bullet> \<alpha>)"
-        by (metis (mono_tags, lifting) bn_L_action.simps(1) residual_eq_iff_perm_renaming)
-      from q have q_p_\<alpha>: "q \<bullet> p \<bullet> \<alpha> = \<alpha>'" and q_P'': "q \<bullet> P'' = EF (L (\<alpha>', F, f), P')"
-        by simp_all
-      from 1 and fresh have "bn (p \<bullet> \<alpha>) \<sharp>* (F, f)" and "bn \<alpha>' \<sharp>* (F, f)"
-         by (simp_all add: bn_eqvt fresh_star_Pair fresh_star_def fresh_def supp_Pair)
-      with supp_q and q_p_\<alpha> have "supp q \<sharp>* (F, f)"
-        by (simp add: bn_eqvt fresh_star_def) blast
-      then have "q \<bullet> F = F" and "q \<bullet> f = f"
-        by (simp_all add: fresh_star_Pair perm_supp_eq)
-
-      from 1 have "bn (p \<bullet> \<alpha>) \<sharp>* f"
-        by (simp add: bn_eqvt fresh_star_Pair)
-      with eq have "bn (p \<bullet> \<alpha>) \<sharp>* FL_Formula.Act f \<alpha> x"
-        by (simp add: fresh_star_Pair fresh_star_def fresh_def)
-      moreover from fresh have "bn \<alpha>' \<sharp>* FL_Formula.Act f \<alpha> x"
-        by (simp add: fresh_star_def)
-      ultimately have "supp q \<sharp>* FL_Formula.Act f \<alpha> x"
-        using supp_q and q_p_\<alpha> by (simp add: bn_eqvt fresh_star_def) blast
-      then have Act_fresh_q: "supp (FL_Formula.Act f \<alpha> x) \<sharp>* q"
-        by (metis fresh_star_supp_conv)
-
-      from Act_fresh have "(supp x - bn \<alpha>) \<sharp>* p"
-        by (simp add: Un_Diff fresh_star_Un)
-      moreover from Act_fresh_q have "(supp x - bn \<alpha>) \<sharp>* q"
-        by (simp add: Un_Diff fresh_star_Un)
-      ultimately have "supp x - bn \<alpha> = supp (q \<bullet> p \<bullet> x) - bn (q \<bullet> p \<bullet> \<alpha>)" and "(supp x - bn \<alpha>) \<sharp>* (q + p)"
-        by (metis (no_types, hide_lams) Diff_eqvt atom_set_perm_eq bn_eqvt supp_eqvt, metis fresh_star_plus)
-
-      moreover
-      {
-        from Act_fresh have "(supp \<alpha> - bn \<alpha>) \<sharp>* p"
-          by (metis FL_Formula.supp_Act Un_Diff fresh_star_Un)
-        moreover from Act_fresh_q have "(supp \<alpha> - bn \<alpha>) \<sharp>* q"
-          by (metis FL_Formula.supp_Act Un_Diff fresh_star_Un)
-        ultimately have "supp \<alpha> - bn \<alpha> = supp (q \<bullet> p \<bullet> \<alpha>) - bn (q \<bullet> p \<bullet> \<alpha>)" and "(supp \<alpha> - bn \<alpha>) \<sharp>* (q + p)"
-          by (metis (no_types, hide_lams) Diff_eqvt atom_set_perm_eq bn_eqvt supp_eqvt, metis fresh_star_plus)
-      }
-
-      ultimately have "FL_Formula.Act f \<alpha> x = FL_Formula.Act f (q \<bullet> p \<bullet> \<alpha>) (q \<bullet> p \<bullet> x)"
-        by (auto simp add: FL_Formula.Act_eq_iff_perm)
-
-      moreover from q_P'' have "-q \<bullet> q \<bullet> P'' = -q \<bullet> EF (L (\<alpha>', F, f), P')"
-        by simp
-      then have "P'' = EF (L (p \<bullet> \<alpha>, F, f), -q \<bullet> P')"
-        using q_p_\<alpha> `q \<bullet> F = F` `q \<bullet> f = f` by simp (metis permute_minus_cancel(2))
-      then have "-p \<bullet> P'' = EF (L (\<alpha>, F, f), -p \<bullet> -q \<bullet> P')"
-        using `p \<bullet> F = F` `p \<bullet> f = f` by (simp add: pemute_minus_self) (metis permute_minus_cancel(2))
-      with valid' have "L_transform.valid (EF (L (\<alpha>, F, f), - p \<bullet> - q \<bullet> P')) (L_transform x)"
+      from valid' have "L_transform.valid (-p \<bullet> P'') (L_transform x)"
         by (metis (mono_tags) L_transform.valid_eqvt L_transform_eqvt permute_minus_cancel(2))
-      then have "FL_valid P' (q \<bullet> p \<bullet> x)"
+      with P'' `p \<bullet> F = F` `p \<bullet> f = f` have "L_transform.valid (EF (L (\<alpha>, F, f), - p \<bullet> P')) (L_transform x)"
+        by simp (metis pemute_minus_self permute_minus_cancel(1))
+      then have "FL_valid P' (p \<bullet> x)"
         using Act.hyps(4) by (metis FL_valid_eqvt permute_minus_cancel(1))
 
-      ultimately show "FL_valid P (FL_Formula.Act f \<alpha> x)"
-        using trans'' and q_p_\<alpha> by (metis FL_valid_Act)
+      with trans'' and eq show "FL_valid P (FL_Formula.Act f \<alpha> x)"
+        by (metis FL_valid_Act)
     qed
   qed
 
@@ -774,9 +764,12 @@ end
 text \<open>The following (alternative) proof of the ``$\leftarrow$'' direction of this equivalence,
 namely that bisimilarity in the $L$-transform implies $F/L$-bisimilarity, uses the fact that the
 $L$-transform preserves satisfaction of formulas, together with the fact that bisimilarity (in the
-$L$-transform) implies logical equivalence. However, this requires an \emph{indexed} nominal
-transition system with effects where, additionally, the cardinality of the state set of the
-$L$-transform is bounded.\<close>
+$L$-transform) implies logical equivalence. However, since we proved the latter in the context of
+indexed nominal transition systems, this proof requires an indexed nominal transition system with
+effects where, additionally, the cardinality of the state set of the $L$-transform is bounded. We
+could re-organize our formalization to remove this assumption: the proof of
+@{thm indexed_nominal_ts.bisimilarity_implies_equivalence} does not actually make use of the
+cardinality assumptions provided by indexed nominal transition systems.\<close>
 
 locale L_transform_indexed_effect_nominal_ts = indexed_effect_nominal_ts L satisfies transition effect_apply
   for L :: "('act::bn) \<times> ('effect::fs) fs_set \<times> 'effect \<Rightarrow> 'effect fs_set" 
