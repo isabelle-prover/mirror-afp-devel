@@ -166,7 +166,7 @@ lemma Gcd_monoid_closure_eq_Gcd:
   "Gcd (monoid_closure S) = Gcd S"
 proof -
   have "Gcd S dvd s" if "s \<in> monoid_closure S" for s
-    using that by induction (simp_all add: zdvd_int [symmetric])
+    using that by induction simp_all
   moreover have "Gcd (monoid_closure S) dvd s" if "s \<in> S" for s
   proof -
     from that have "s \<in> monoid_closure S"

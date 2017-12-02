@@ -833,7 +833,7 @@ proof (intro allI impI)
   with arg_cong[OF hc[symmetric], of "\<lambda> f. coeff f 0", unfolded Mp_coeff M_def] m1
   have "c \<ge> 0" "c < p" by auto
   with c0 have c_props:"c > 0" "c < p" by auto
-  with prime have "prime p" using prime_int_nat_transfer by auto
+  with prime have "prime p" by simp
   with c_props have "coprime p c"
     by (auto intro: prime_imp_coprime dest: zdvd_not_zless)
   then have "coprime c p"

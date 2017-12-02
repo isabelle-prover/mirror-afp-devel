@@ -1004,7 +1004,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
       from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
     qed
     also have "\<dots> = ?on n / (?off n + ?a)"
-      by (simp del: Int.distrib_left_numeral One_nat_def cruel.simps)
+      by (simp del: distrib_left_numeral One_nat_def cruel.simps)
     finally have "2*l/(l+1) \<le> ?on n / (real (?off n) + ?a)"
       by (auto simp: divide_right_mono)
   }

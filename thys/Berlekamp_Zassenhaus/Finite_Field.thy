@@ -262,8 +262,10 @@ proof
     have p0': "0\<le>?p" by auto
     have "\<not> ?p dvd x"
       using x x0 zdvd_imp_le by fastforce
+    then have "\<not> CARD('a) dvd nat \<bar>x\<bar>"
+      by simp
     with x have "\<not> CARD('a) dvd nat x"
-      by (simp add: zdvd_int)
+      by simp
     have rw: "x ^ nat (int (?p - 2)) * x = x ^ nat (?p - 1)"
     proof -
       have p2: "0 \<le> int (?p-2)" using x by simp

@@ -213,20 +213,30 @@ lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n
 
 (* GCD and LCM part *)
 
-lemma dvd_abs_mult_left_int[simp]: "(abs (a :: int) * y dvd x) = (a * y dvd x)"
-  by (simp add: dvd_int_unfold_dvd_nat nat_abs_mult_distrib)
+lemma dvd_abs_mult_left_int [simp]:
+  "\<bar>a\<bar> * y dvd x \<longleftrightarrow> a * y dvd x" for x y a :: int
+  using abs_dvd_iff [of "a * y"] abs_dvd_iff [of "\<bar>a\<bar> * y"]
+  by (simp add: abs_mult)
   
-lemma gcd_abs_mult_right_int[simp]: "gcd x (\<bar>a\<bar> * (y :: int)) = gcd x (a * y)" 
-  by (simp add: gcd_int_def nat_abs_mult_distrib)
+lemma gcd_abs_mult_right_int [simp]:
+  "gcd x (\<bar>a\<bar> * y) = gcd x (a * y)" for x y a :: int
+  using gcd_abs2_int [of _ "a * y"] gcd_abs2_int [of _ "\<bar>a\<bar> * y"]
+  by (simp add: abs_mult)
 
-lemma lcm_abs_mult_right_int[simp]: "lcm x (\<bar>a\<bar> * (y :: int)) = lcm x (a * y)" 
-  by (simp add: lcm_int_def nat_abs_mult_distrib)
+lemma lcm_abs_mult_right_int [simp]:
+  "lcm x (\<bar>a\<bar> * y) = lcm x (a * y)" for x y a :: int
+  using lcm_abs2_int [of _ "a * y"] lcm_abs2_int [of _ "\<bar>a\<bar> * y"]
+  by (simp add: abs_mult)
 
-lemma gcd_abs_mult_left_int[simp]: "gcd x (a * (abs y :: int)) = gcd x (a * y)" 
-  by (simp add: gcd_int_def nat_abs_mult_distrib)
+lemma gcd_abs_mult_left_int [simp]:
+  "gcd x (a * \<bar>y\<bar>) = gcd x (a * y)" for x y a :: int
+  using gcd_abs2_int [of _ "a * \<bar>y\<bar>"] gcd_abs2_int [of _ "a * y"]
+  by (simp add: abs_mult)
 
-lemma lcm_abs_mult_left_int[simp]: "lcm x (a * (abs y :: int)) = lcm x (a * y)" 
-  by (simp add: lcm_int_def nat_abs_mult_distrib)
+lemma lcm_abs_mult_left_int [simp]:
+  "lcm x (a * \<bar>y\<bar>) = lcm x (a * y)" for x y a :: int
+  using lcm_abs2_int [of _ "a * \<bar>y\<bar>"] lcm_abs2_int [of _ "a * y"]
+  by (simp add: abs_mult)
 
 
 abbreviation (input) list_gcd :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
@@ -285,7 +295,7 @@ proof -
   then show "list_lcm xs \<noteq> 0"
     by (simp add: Lcm_0_iff)
   with \<open>list_lcm xs \<ge> 0\<close> show "list_lcm xs > 0"
-    by auto
+    by (simp add: le_less)
 qed
 
 lemma quotient_of_nonzero: "snd (quotient_of r) > 0" "snd (quotient_of r) \<noteq> 0"

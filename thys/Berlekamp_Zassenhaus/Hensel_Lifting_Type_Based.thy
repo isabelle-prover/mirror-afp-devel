@@ -190,11 +190,9 @@ sublocale comm_ring_hom "rebase :: 'a mod_ring \<Rightarrow> 'b mod_ring"
 proof
   fix x y :: "'a mod_ring"
   show hom_add: "(@(x+y) :: 'b mod_ring) = @x + @y"
-    apply transfer
-    by (metis mod_add_eq mod_mod_cancel zdvd_int dvd)
+    by transfer (simp add: mod_simps dvd mod_mod_cancel)
   show "(@(x*y) :: 'b mod_ring) = @x * @y"
-    apply transfer
-    by (metis dvd mod_mod_cancel mod_mult_eq zdvd_int)
+    by transfer (simp add: mod_simps dvd mod_mod_cancel)
 qed auto
 
 lemma of_nat_CARD_eq_0[simp]: "(of_nat CARD('a) :: 'b mod_ring) = 0"
@@ -352,7 +350,7 @@ qed
 lemma of_nat_q[simp]: "of_nat q :: 'q mod_ring \<equiv> 0" by (fold of_nat_card_eq_0, auto)
 
 lemma rebase_rebase[simp]: "(@(@(x::'pq mod_ring) :: 'q mod_ring) :: 'p mod_ring) = @x"
-  using p_dvd_q by (transfer, simp add: mod_mod_cancel zdvd_int)
+  using p_dvd_q by (transfer) (simp add: mod_mod_cancel)
 
 lemma rebase_rebase_poly[simp]: "(#(#(f::'pq mod_ring poly) :: 'q mod_ring poly) :: 'p mod_ring poly) = #f"
   by (induct f, auto)

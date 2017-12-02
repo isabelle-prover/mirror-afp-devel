@@ -34,7 +34,8 @@ case (1 c)
     moreover have h2: "\<not> p dvd b"
       using p \<open>coprime a b\<close> coprime_common_divisor_nat [of a b p] by auto
     hence "\<not> (p^n) dvd b" using n0 p(1)  dvd_power[of n p] gcd_nat.trans by blast
-    ultimately have "(p^n) dvd a" using "1.prems" p(1) prime_divprod_pow_nat by force
+    ultimately have "(p^n) dvd a"
+      using "1.prems" p(1) prime_elem_divprod_pow [of p a b n] by simp
     then obtain a' c' where ac: "a = p^n * a'" "c = p * c'"
       using h1 dvdE[of "p^n" a] dvdE[of p c] prime_dvd_power_nat[of p c n] p(1) by meson
     hence "p^n * (a' * b) = p^n * c'^n" using 1(3)
@@ -43,8 +44,8 @@ case (1 c)
     moreover have "coprime a' b" using 1(4) ac(1)
       by simp
     moreover have "0 < b" "0 < a" using h2 dvd_0_right gr0I True by fastforce+
-    hence "0 < c" "1 < p" using p(1) prime_def[of p] 1(3) nat_0_less_mult_iff[of a b] n0
-       by (simp_all add: prime_gt_Suc_0_nat)
+    then have "0 < c" "1 < p" using p(1) 1(3) nat_0_less_mult_iff [of a b] n0 prime_gt_Suc_0_nat
+      by simp_all
     hence "c' < c" using ac(2) by simp
     ultimately obtain k where "a' = k^n" using 1(1) n0 by presburger
     hence "a = (p*k)^n" using ac(1) by (simp add: power_mult_distrib)

@@ -10,6 +10,9 @@ begin
 
 section \<open>The Sieve of Eratosthenes\<close>
 
+declare [[coercion int]]
+declare [[coercion_enabled]]
+
 text \<open>
   This example proves that the well-known Haskell two-liner that lazily
   calculates the list of all primes does indeed do so. This proof is using
@@ -150,11 +153,12 @@ proof -
       then obtain k' :: nat where "k = int k'" by (cases k) auto
       then obtain p where "prime p" and "p dvd k"
         using \<open>k > 1\<close> \<open>k = int k'\<close>
-        by (metis (full_types) neq_iff of_nat_1 prime_factor_nat prime_nat_int_transfer zdvd_int)
+        by (metis (full_types) less_numeral_extra(4) of_nat_1 of_nat_dvd_iff prime_factor_nat prime_nat_int_transfer)  
       then have "p < n'" using \<open>k < n'\<close>  \<open>k > 1\<close>
-        using zdvd_imp_le by force
+        using zdvd_imp_le [of p k] by simp
       then have "p \<le> n" using \<open>prime p\<close> not_prime
-        using not_le prime_gt_0_int zero_less_imp_eq_int by force
+        using not_le prime_gt_0_int zero_less_imp_eq_int
+        by (metis of_nat_less_iff prime_nat_int_transfer) 
       then have "\<exists>d::int>1. d \<le> n \<and> d dvd k" using \<open>p dvd k\<close> \<open>prime p\<close> of_nat_le_iff prime_gt_1_nat
           prime_gt_1_int by auto
     }
@@ -228,7 +232,10 @@ proof -
         using \<open>prime n\<close>
         by (subst intsFrom.simps[unfolded enumFrom_intsFrom_conv[symmetric]])(simp add: one_Integer_def TT_def[symmetric] add.commute)
       also have "... = (MkI\<cdot>n) : filter\<cdot>(\<Lambda> (MkI\<cdot>i). Def (prime (nat \<bar>i\<bar>)))\<cdot>[MkI\<cdot>n'..]"
-        apply (subst filter_fast_forward[of n n'])  using \<open>n' > n\<close> and not_prime by auto
+        apply (subst filter_fast_forward[of n n']) using \<open>n' > n\<close> and not_prime
+          apply auto
+        apply (metis (full_types) \<open>\<And>k. \<lbrakk>int n < k; k < int n'\<rbrakk> \<Longrightarrow> \<exists>d>1. d \<le> int n \<and> d dvd k\<close> le_less not_le prime_gt_0_int prime_int_not_dvd zdvd_imp_le) 
+        done
       also note calculation
     }
     moreover

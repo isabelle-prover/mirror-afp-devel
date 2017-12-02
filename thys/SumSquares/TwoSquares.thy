@@ -436,9 +436,10 @@ case (1 n)
         assume a2: "\<not> p dvd m"
         hence "multiplicity p m = 0" by (rule not_dvd_imp_multiplicity_0)
         moreover from h1 have "multiplicity p p = 1" by (intro multiplicity_prime) auto
-        moreover have "m > 0" using h1 True gr0I by fastforce
+        moreover have "m > 0" using h1 True by (cases "m = 0") simp_all
         ultimately have "multiplicity p n = 1" using h1
-          using prime_elem_multiplicity_mult_distrib[of p p m] m_nz by auto
+          using prime_elem_multiplicity_mult_distrib [of p p m] m_nz prime_gt_0_nat
+          by auto
         thus "False" using h3 by simp
       qed
       then obtain m' where h4: "m = p * m'" using dvdE by blast

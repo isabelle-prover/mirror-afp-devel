@@ -34,7 +34,8 @@ case (1 c)
       using p \<open>coprime a b\<close> coprime_common_divisor_nat [of a b p] by auto
     hence "\<not> (p^n) dvd b" using n0 p(1)
       by (auto intro: dvd_trans dvd_power[of n p])
-    ultimately have "(p^n) dvd a" using "1.prems" p(1) prime_divprod_pow_nat by force
+    ultimately have "(p^n) dvd a"
+      using "1.prems" p(1) prime_elem_divprod_pow [of p a b n] by simp
     then obtain a' c' where ac: "a = p^n * a'" "c = p * c'"
       using h1 dvdE[of "p^n" a] dvdE[of p c] prime_dvd_power_nat[of p c n] p(1) by meson
     hence "p^n * (a' * b) = p^n * c'^n" using 1(3)
@@ -306,7 +307,8 @@ proof -
     by (simp only: nat_mult_distrib power2_eq_square nat_add_distrib)
   moreover from ab_rel have new_ab_rel: "coprime ?a ?b"
     by (simp add: gcd_int_def)
-  moreover have new_a_odd: "odd ?a" using aodd by (simp add: dvd_int_unfold_dvd_nat)
+  moreover have new_a_odd: "odd ?a" using aodd
+    by simp
   ultimately have 
     "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> coprime p q" 
     by (rule_tac a="?a" and b = "?b" and c="?c" in nat_euclid_pyth_triples)

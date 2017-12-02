@@ -1402,14 +1402,15 @@ lemma Legendre_zmult: "\<lbrakk> p > 2; prime p \<rbrakk>
   \<Longrightarrow> (Legendre (a*b) p) = (Legendre a p)*(Legendre b p)"
 proof -
   assume p2: "p > 2" and prp: "prime p"
-  from prp have prp': "prime (nat p)" by (simp add: prime_nat_iff_prime)
+  from prp have prp': "prime (nat p)"
+    by simp
   let ?p12 = "nat(((p) - 1) div 2)"
   let ?Labp = "Legendre (a*b) p"
   let ?Lap = "Legendre a p"
   let ?Lbp = "Legendre b p"
   have h1: "((nat p - 1) div 2) = nat ((p - 1) div 2)" using p2 by auto
   hence "[?Labp = (a*b)^?p12] (mod p)" using prp p2 euler_criterion[of "nat p" "a*b"] 
-    by (auto simp: prime_nat_iff_prime)
+    by auto
   hence "[a^?p12 * b^?p12 = ?Labp] (mod p)"
     by (simp only: power_mult_distrib cong_sym)
   moreover have "[?Lap * ?Lbp = a^?p12*b^?p12] (mod p)"
@@ -1452,7 +1453,7 @@ proof -
   let ?L1 = "Legendre (-1) ?p"
   let ?L3 = "Legendre 3 ?p"
   assume p: "prime ?p"
-  from p have p': "prime (nat ?p)" by (simp add: prime_nat_iff_prime)
+  from p have p': "prime (nat ?p)" by simp
   have neg1cube: "(-1::int)^3 = -1" by simp
   have m1: "m \<ge> 1"
   proof (rule ccontr)

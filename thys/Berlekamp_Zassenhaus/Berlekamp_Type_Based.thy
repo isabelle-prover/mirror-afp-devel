@@ -464,8 +464,12 @@ next
       by simp_all
     then have [simp]: "a mod int CARD('a) = a"
       by simp
-    from a have not_dvd: "\<not> CARD('a) dvd nat a"
-      by (auto simp add: zdvd_int zdvd_not_zless)
+    from a have "\<not> int CARD('a) dvd a"
+      by (auto simp add: zdvd_not_zless)
+    then have "\<not> CARD('a) dvd nat \<bar>a\<bar>"
+      by simp
+    with a have "\<not> CARD('a) dvd nat a"
+      by simp
     with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
       by (rule fermat_theorem)
     with a have "int (nat a ^ (CARD('a) - 1) mod CARD('a)) = 1"
@@ -1121,7 +1125,7 @@ proof -
       show "prime CARD('a)" by (rule prime_card)
     qed
     hence rw0: "of_int (CARD('a) choose xa) = (0 :: 'a mod_ring)"
-      by (transfer, simp add: zdvd_int)
+      by transfer simp
     have "of_nat (CARD('a) choose xa) = [:of_int (CARD('a) choose xa) :: 'a mod_ring:]"
       by (simp add: of_nat_poly)
     also have "... = [:0:]" using rw0 by simp

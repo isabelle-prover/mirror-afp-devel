@@ -752,9 +752,8 @@ proof -
     }
     ultimately show ?thesis by blast
   qed
-  show "set (divisors_int_pos x) = {i. i dvd x \<and> i > 0}"
-    unfolding divisors_int_pos_def set_map divisors_nat(1)[OF xx] 
-      int_dvd_iff[symmetric] id by simp
+  from xx show "set (divisors_int_pos x) = {i. i dvd x \<and> i > 0}"
+    by (simp add: divisors_int_pos_def divisors_nat id) 
 qed
 
 lemma divisors_int: "x \<noteq> 0 \<Longrightarrow> set (divisors_int x) = {i. i dvd x}" "distinct (divisors_int x)"

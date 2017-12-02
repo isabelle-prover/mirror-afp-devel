@@ -540,7 +540,7 @@ lemma ucast_of_nat:
   apply (rule nat_int.Rep_eqD)
   apply (simp only: zmod_int)
   apply (rule mod_mod_cancel)
-  apply (subst zdvd_int[symmetric])
+  apply simp
   apply (rule le_imp_power_dvd)
   apply (simp add: is_down_def target_size_def source_size_def word_size)
   done

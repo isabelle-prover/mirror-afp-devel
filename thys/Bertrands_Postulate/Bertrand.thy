@@ -293,20 +293,24 @@ lemma primepow_even_imp_primepow:
   assumes "primepow_even n"
   shows   "primepow n"
 proof -
-  from assms guess p k unfolding primepow_even_def
-    by (elim exE conjE)
-  thus ?thesis unfolding primepow_def
-    by (force simp: primepow_def intro: exI[of _ p, OF exI[of _ "2*k"]])
+  from assms obtain p k where "1 \<le> k" "prime p" "n = p ^ (2 * k)"
+    unfolding primepow_even_def by blast
+  moreover from \<open>1 \<le> k\<close> have "1 \<le> 2 * k"
+    by simp
+  ultimately show ?thesis unfolding primepow_def
+    by blast
 qed
 
 lemma primepow_odd_imp_primepow:
   assumes "primepow_odd n"
   shows   "primepow n"
 proof -
-  from assms guess p k unfolding primepow_odd_def
-    by (elim exE conjE)
-  thus ?thesis unfolding primepow_def
-    by (force simp: primepow_def intro: exI[of _ p, OF exI[of _ "2*k"]])
+ from assms obtain p k where "1 \<le> k" "prime p" "n = p ^ (2 * k + 1)"
+   unfolding primepow_odd_def by blast
+  moreover from \<open>1 \<le> k\<close> have "1 \<le> 2 * k + 1"
+    by simp
+  ultimately show ?thesis unfolding primepow_def
+    by blast
 qed
 
 lemma not_primepow_0 [simp]: "\<not>primepow 0"
@@ -1863,7 +1867,8 @@ next
   with assms obtain p where "p \<in> {n<..2*n}" "prime p" by (auto elim!: theta_lessE)
   moreover from assms have "\<not>prime (2*n)" by (auto dest!: prime_product)
   with \<open>prime p\<close> have "p \<noteq> 2 * n" by auto
-  ultimately show ?thesis by force
+  ultimately show ?thesis
+    by auto
 qed
   
   
@@ -1982,7 +1987,11 @@ next
       proof -
         have eq: "{p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 1 \<le> k} =
                   {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 2 \<le> k} \<union> {p. prime p \<and> p \<in> {1..n}}"
-          by (force simp: prime_ge_Suc_0_nat prime_power_iff)
+          apply (auto simp add: prime_ge_Suc_0_nat prime_power_iff not_le)
+          using less_2_cases apply blast
+          using le_trans prime_ge_Suc_0_nat two_is_prime_nat apply blast
+          apply (metis order_refl power_Suc0_right)
+          done
         have eqln: "(\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) = 
                       (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
           by (rule sum.cong) auto
@@ -2025,7 +2034,7 @@ next
             finally show ?thesis by (simp add: that)
           qed
           ultimately show ?thesis
-            using prime_ge_1_nat that by force
+            using prime_ge_1_nat that by auto (use atLeastAtMost_iff in blast)
         qed
         have finite: "finite {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 1 \<le> k}"
           by (rule finite_subset[of _ "{..n}"]) auto

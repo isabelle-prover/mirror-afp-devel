@@ -32,7 +32,7 @@ proof -
 qed
 
 lemma of_nat_eq_1_iff [simp]: "of_nat x = (1 :: 'a :: semiring_char_0) \<longleftrightarrow> x = 1"
-  using of_nat_eq_iff[of x 1] by (simp del: of_nat_eq_iff)
+  by (fact of_nat_eq_1_iff)
 
 lemma prime_elem_int_not_dvd_neg1_power:
   "prime_elem (p :: int) \<Longrightarrow> \<not>p dvd (-1) ^ n"
@@ -42,8 +42,9 @@ lemma nat_fact [simp]: "nat (fact n) = fact n"
   by (subst of_nat_fact [symmetric]) (rule nat_int)
 
 lemma prime_dvd_fact_iff_int:
-  "prime p \<Longrightarrow> p dvd fact n \<longleftrightarrow> p \<le> int n"
-  by (simp add: prime_int_nat_transfer dvd_int_unfold_dvd_nat prime_dvd_fact_iff nat_le_iff)
+  "p dvd fact n \<longleftrightarrow> p \<le> int n" if "prime p"
+  using that prime_dvd_fact_iff [of "nat \<bar>p\<bar>" n]
+  by auto (simp add: prime_ge_0_int)
 
 lemma filterlim_minus_nat_at_top:
   "filterlim (\<lambda>n. n - k :: nat) at_top at_top"

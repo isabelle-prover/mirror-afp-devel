@@ -320,7 +320,7 @@ proof -
     by auto
   hence "prime (nat P)" using prime_int_nat_transfer by blast
   with * have "\<exists> p. prime p \<and> coprime ?lc (int p) \<and> square_free_impl p f"
-    by (intro exI[of _ "nat P"], auto)
+    by (intro exI [of _ "nat P"]) (auto dest: prime_gt_0_int)
   from find_prime[OF this]
   have prime: "prime p" and cop: "coprime ?lc p" and sf: "square_free_impl p f" 
     unfolding p suitable_prime_bz_def Let_def by auto
