@@ -257,9 +257,10 @@ theorem transform_optimize_dnf_strict_structure:
       using simplers by (simp add: cut_off_after_match_any_simplers
           optimize_matches_simple_ruleset simple_ruleset_normalize_rules_dnf)
 
-    def transform_optimize_dnf_strict_inner \<equiv>
-        "optimize_matches (opt_MatchAny_match_expr :: 'a common_primitive match_expr \<Rightarrow> 'a common_primitive match_expr) \<circ> 
-        normalize_rules_dnf \<circ> (optimize_matches (opt_MatchAny_match_expr \<circ> optimize_primitive_univ))"
+    define transform_optimize_dnf_strict_inner
+      where "transform_optimize_dnf_strict_inner =
+        optimize_matches (opt_MatchAny_match_expr :: 'a common_primitive match_expr \<Rightarrow> 'a common_primitive match_expr) \<circ> 
+          normalize_rules_dnf \<circ> (optimize_matches (opt_MatchAny_match_expr \<circ> optimize_primitive_univ))"
     have inner_outer: "transform_optimize_dnf_strict = (cut_off_after_match_any \<circ> transform_optimize_dnf_strict_inner)"
       by(auto simp add: transform_optimize_dnf_strict_def transform_optimize_dnf_strict_inner_def)
     have tf1: "transform_optimize_dnf_strict_inner (r#rs) =
