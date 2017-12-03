@@ -1098,7 +1098,7 @@ next
     hence "i = snd (mk_eqcl (None # xs) zs i T) ! j \<or> Suc i \<le> snd (mk_eqcl (None # xs) zs i T) ! j" by auto
     hence "fst (mk_eqcl (None # xs) zs i T) ! (snd (mk_eqcl (None # xs) zs i T) ! j - i) = j" proof (elim disjE)
       assume H: "i = snd (mk_eqcl (None # xs) zs i T) ! j"
-      def k \<equiv> "length zs"
+      define k where "k = length zs"
       hence K: "snd (mk_eqcl (None # xs) zs i T) ! k = i" by (simp add: mk_eqcl_snd_nth split_beta)
       { assume "j \<noteq> k"
         hence "j < k \<or> j > k" by auto
@@ -2185,19 +2185,19 @@ proof -
   note 2 = dfa_startnode_is_node[OF well_formed1]
   note 5 = dfa_startnode_is_node[OF well_formed2]
   note B = dfa_startnode_is_node[OF binop_wf_dfa]
-  def tab: tab == "fst (prod_dfs A B (0,0))"
-  def ps: ps == "snd (prod_dfs A B (0,0))"
-  from tab ps have prod: "prod_dfs A B (0,0) = (tab, ps)" by simp
-  def s1 \<equiv> "dfa_steps A 0 bs"
-  def s2 \<equiv> "dfa_steps B 0 bs"
+  define tab where "tab = fst (prod_dfs A B (0,0))"
+  define ps where "ps = snd (prod_dfs A B (0,0))"
+  from tab_def ps_def have prod: "prod_dfs A B (0,0) = (tab, ps)" by simp
+  define s1 where "s1 = dfa_steps A 0 bs"
+  define s2 where "s2 = dfa_steps B 0 bs"
   with s1_def have "dfa_reach A 0 bs s1" and "dfa_reach B 0 bs s2" by (simp add: reach_def)+
   with X have "\<exists>m. dfa_reach ?A 0 bs m \<and> fst (prod_dfs A B (0, 0)) ! s1 ! s2 = Some m \<and> dfa_is_node A s1 \<and> dfa_is_node B s2"
     by (simp add: binop_dfa_reachable)
-  with tab have "\<exists>m. dfa_reach ?A 0 bs m \<and> tab ! s1 ! s2 = Some m \<and> dfa_is_node A s1 \<and> dfa_is_node B s2" by simp
+  with tab_def have "\<exists>m. dfa_reach ?A 0 bs m \<and> tab ! s1 ! s2 = Some m \<and> dfa_is_node A s1 \<and> dfa_is_node B s2" by simp
   then obtain m where R: "dfa_reach ?A 0 bs m" and M: "tab ! s1 ! s2 = Some m" and s1: "dfa_is_node A s1" and s2: "dfa_is_node B s2" by blast
   hence M': "m = dfa_steps ?A 0 bs" by (simp add: reach_def)
   from B X R binop_wf_dfa [of f] have mL: "dfa_is_node ?A m" by (simp add: dfa_reach_is_node)
-  from 2 5 M s1 s2 have bij: "m < length (snd (prod_dfs A B (0, 0))) \<and> snd (prod_dfs A B (0, 0)) ! m = (s1, s2)" unfolding tab
+  from 2 5 M s1 s2 have bij: "m < length (snd (prod_dfs A B (0, 0))) \<and> snd (prod_dfs A B (0, 0)) ! m = (s1, s2)" unfolding tab_def
     by (simp add: prod_dfs_bij[symmetric] prod_is_node_def)
   with mL have "snd (binop_dfa f A B) ! m = f (snd A ! s1) (snd B ! s2)"
     by (simp add: binop_dfa_def split_beta dfa_is_node_def)
@@ -2327,7 +2327,7 @@ proof -
     hence JL: "nfa_is_node (nfa_of_dfa M) j" by (simp add: nfa_is_node_def nfa_of_dfa_def split_beta)
     from snoc PR have PL: "dfa_is_node M p" by (simp add: dfa_reach_is_node)
     with snoc JL have PL': "p < length j" by (simp add: nfa_is_node_def dfa_is_node_def nfa_of_dfa_def split_beta)
-    def m \<equiv> "dfa_trans M p bs"
+    define m where "m = dfa_trans M p bs"
     with snoc PR have MR: "dfa_reach M q (bss @ [bs]) m" by (simp add: reach_snoc)
     with snoc have mL: "dfa_is_node M m" by (simp add: dfa_reach_is_node)
     from V2 JL snoc have "nfa_is_node (nfa_of_dfa M) (nfa_trans (nfa_of_dfa M) j bs)" by (simp add: nfa_trans_is_node)
@@ -2381,7 +2381,7 @@ proof
   with R show "dfa_reach M q bss p" by simp
 next
   assume H: "dfa_reach M q bss p"
-  def n2' \<equiv> "nfa_steps (nfa_of_dfa M) n1 bss"
+  define n2' where "n2' = nfa_steps (nfa_of_dfa M) n1 bss"
   hence R': "nfa_reach (nfa_of_dfa M) n1 bss n2'" by (simp add: reach_def)
   with assms have "\<exists>p. dfa_reach M q bss p \<and> n2' = replicate (length (fst M)) False[p := True]" by (simp add: nfa_of_dfa_reach')
   then obtain p' where R: "dfa_reach M q bss p'" and N2': "n2' = replicate (length (fst M)) False[p' := True]" by blast
@@ -2414,8 +2414,8 @@ lemma nfa_of_dfa_accepts:
 proof -
   from V have Q: "dfa_is_node A 0" by (simp add: dfa_startnode_is_node)
   have S: "nfa_startnode (nfa_of_dfa A) = replicate (length (fst A)) False[0:= True]" by (simp add: nfa_startnode_def nfa_of_dfa_def split_beta)
-  def p \<equiv> "dfa_steps A 0 bss"
-  def n2 \<equiv> "replicate (length (fst A)) False[p := True]"
+  define p where "p = dfa_steps A 0 bss"
+  define n2 where "n2 = replicate (length (fst A)) False[p := True]"
   from p_def have PR: "dfa_reach A 0 bss p" by (simp add: reach_def)
   with p_def n2_def Q S X V have "nfa_reach (nfa_of_dfa A) (nfa_startnode (nfa_of_dfa A)) bss n2" by (simp add: nfa_of_dfa_reach)
   hence N2: "n2 = nfa_steps (nfa_of_dfa A) (nfa_startnode (nfa_of_dfa A)) bss" by (simp add: reach_def)
@@ -2821,8 +2821,8 @@ next
   from this assms show "nfa_reach A q1 bss q2"
   proof (induct arbitrary: q2)
     case (snoc j bss bs q2)
-    def v \<equiv> "bdd_lookup (fst ?M ! j) bs"
-    def qq \<equiv> "nfa_trans A (ls ! j) bs"
+    define v where "v = bdd_lookup (fst ?M ! j) bs"
+    define qq where "qq = nfa_trans A (ls ! j) bs"
     from well_formed have Q0: "nfa_is_node A (nfa_startnode A)" by (simp add: nfa_startnode_is_node)
 
     from snoc have L: "length (fst ?M) = length ls" by (simp add: det_nfa_def)
@@ -2888,10 +2888,10 @@ proof -
   note SL = nfa_startnode_is_node[OF well_formed]
   let ?q = "nfa_startnode A"
   let ?subset_dfs = "subset_dfs A (nfa_startnode A)"
-  def bd \<equiv> "fst ?subset_dfs"
-  def ls \<equiv> "snd ?subset_dfs"
+  define bd where "bd = fst ?subset_dfs"
+  define ls where "ls = snd ?subset_dfs"
   with bd_def have BD: "?subset_dfs = (bd,ls)" by simp
-  def p \<equiv> "nfa_steps A (nfa_startnode A) w"
+  define p where "p = nfa_steps A (nfa_startnode A) w"
   with well_formed X SL have P: "nfa_is_node A p" by (simp add: nfa_steps_is_node)
   from p_def have R: "nfa_reach A ?q w p" by (simp add: reach_def)
   with assms have "\<exists>bs. nfa_reach A ?q bs p \<and> list_all (is_alph n) bs" by auto
@@ -3197,7 +3197,7 @@ lemma zeros_rtrancl: "(\<exists>n. dfa_reach M x (zeros n v) y) = ((x,y) \<in> (
 proof
   assume "\<exists>n. dfa_reach M x (zeros n v) y"
   then obtain n where N: "dfa_reach M x (zeros n v) y" ..
-  def w \<equiv> "zeros n v"
+  define w where "w = zeros n v"
   hence W: "\<exists>n. w = zeros n v" by auto
   from w_def N have "dfa_reach M x w y" by simp
   from this W show "(x,y) \<in> (succsr (rquot_succs M v))\<^sup>*"

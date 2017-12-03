@@ -299,8 +299,7 @@ proof -
       by (metis insert_iff)
     (* Unfortunately, it is necessary to define the required function in advance for
        all case distinctions we want to make. *)
-    def g \<equiv>
-    "\<lambda> \<sigma> :: ('Var \<rightharpoonup> 'Val).
+    define g where "g \<sigma> =
        (let \<sigma>' = \<sigma> |` X in
         (if (\<forall> v. \<langle>c, mds, mem [\<mapsto> \<sigma>'] (x := v)\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> g\<^sub>X \<sigma>'] (x := v)\<rangle>)
          then (\<lambda> y :: 'Var.
@@ -308,6 +307,7 @@ proof -
                     then \<sigma> y
                     else g\<^sub>X \<sigma>' y)
          else (\<lambda> y. g\<^sub>X \<sigma>' y)))"
+      for \<sigma> :: "'Var \<rightharpoonup> 'Val"
     have "change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> (insert x X) g"
     proof
       show "\<langle>c, mds, mem\<rangle> \<leadsto> \<langle>c', mds', mem'\<rangle>" using insert by auto
@@ -794,7 +794,7 @@ proof -
       by auto
   next
     case (insert x X)
-    def A' \<equiv> "A |` X"
+    define A' where "A' = A |` X"
     hence "dom A' = X"
       by (metis Int_insert_left_if0 dom_restrict inf_absorb2 insert(2) insert(4) order_refl)
     moreover
@@ -951,8 +951,8 @@ proof -
     using h_prop
     by (metis deterministic)
   let ?\<sigma>_mem\<^sub>2 = "to_partial mem\<^sub>2 |` ?X k"
-  def mem\<^sub>2' \<equiv> "mem\<^sub>h [\<mapsto> g2 ?\<sigma>_mem\<^sub>2]"
-  def c\<^sub>2' \<equiv> c\<^sub>h
+  define mem\<^sub>2' where "mem\<^sub>2' = mem\<^sub>h [\<mapsto> g2 ?\<sigma>_mem\<^sub>2]"
+  define c\<^sub>2' where "c\<^sub>2' = c\<^sub>h"
 
   have dom\<sigma>_mem\<^sub>2: "dom ?\<sigma>_mem\<^sub>2 = ?X k"
     by (metis dom_restrict_total)
@@ -972,7 +972,7 @@ proof -
     unfolding mem\<^sub>2'_def c\<^sub>2'_def
     by metis
 
-  def cms\<^sub>2' \<equiv> "cms\<^sub>2 [k := (c\<^sub>2', ?mds\<^sub>k')]"
+  define cms\<^sub>2' where "cms\<^sub>2' = cms\<^sub>2 [k := (c\<^sub>2', ?mds\<^sub>k')]"
 
   with i b equal_size have "(cms\<^sub>2, mem\<^sub>2) \<rightarrow> (cms\<^sub>2', mem\<^sub>2')"
     by (metis meval_intro)
@@ -995,12 +995,13 @@ proof -
   -- "This is the complicated part of the proof."
   obtain mems' where "makes_compatible (cms\<^sub>1', mem\<^sub>1') (cms\<^sub>2', mem\<^sub>2') mems'"
   proof
-    def mems'_k \<equiv> "\<lambda> x.
-      if x \<notin> ?X k
-      then (mem\<^sub>1' x, mem\<^sub>2' x)
-      else if (x \<notin> dom_g1) \<or> (x \<notin> dom_g2)
-           then (mem\<^sub>1' x, mem\<^sub>2' x)
-           else (?mems\<^sub>1k x, ?mems\<^sub>2k x)"
+    define mems'_k
+      where "mems'_k x =
+      (if x \<notin> ?X k
+       then (mem\<^sub>1' x, mem\<^sub>2' x)
+       else if (x \<notin> dom_g1) \<or> (x \<notin> dom_g2)
+       then (mem\<^sub>1' x, mem\<^sub>2' x)
+       else (?mems\<^sub>1k x, ?mems\<^sub>2k x))" for x
     -- "This is used in two of the following cases, so we prove it beforehand:"
     have x_unchanged: "\<And> x. \<lbrakk> x \<in> ?X k; x \<in> dom_g1; x \<in> dom_g2 \<rbrakk> \<Longrightarrow>
       mem\<^sub>1 x = mem\<^sub>1' x \<and> mem\<^sub>2 x = mem\<^sub>2' x"
@@ -1032,17 +1033,19 @@ proof -
         by (metis `mem\<^sub>2 = ?mems\<^sub>2k [\<mapsto> ?\<sigma>_mem\<^sub>2]` dom\<sigma>_mem\<^sub>2 domh mem\<^sub>2'_def subst_overrides)
     qed
 
-    def mems'_i \<equiv> "\<lambda> i x.
-      if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
+    define mems'_i
+      where "mems'_i i x =
+       (if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
           (mem\<^sub>1' x = mem\<^sub>2' x \<or> dma x = High))
          then (mem\<^sub>1' x, mem\<^sub>2' x)
          else if ((mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x) \<and>
                   (mem\<^sub>1' x \<noteq> mem\<^sub>2' x \<and> dma x = Low))
               then (some_val, some_val)
-              else (fst (mems ! i) x, snd (mems ! i) x)"
+              else (fst (mems ! i) x, snd (mems ! i) x))" for i x
 
-    def mems' \<equiv>
-      "map (\<lambda> i.
+    define mems'
+      where "mems' =
+       map (\<lambda> i.
             if i = k
             then (fst \<circ> mems'_k, snd \<circ> mems'_k)
             else (fst \<circ> mems'_i i, snd \<circ> mems'_i i))
@@ -1147,8 +1150,9 @@ proof -
         assume [simp]: "i = k"
         -- "We define another  function from this and reuse the universally quantified statements
           from the first part of the proof."
-        def \<sigma>' \<equiv>
-          "\<lambda> x. if x \<in> ?X k
+        define \<sigma>'
+          where "\<sigma>' x =
+              (if x \<in> ?X k
                 then if x \<in> ?X' k
                      then \<sigma> x
                      else if (x \<in> dom (g1 h))
@@ -1156,7 +1160,7 @@ proof -
                              else if (x \<in> dom (g2 h))
                                   then Some (?mems\<^sub>2'i x)
                                   else Some some_val
-                else None"
+                else None)" for x
         then have dom\<sigma>': "dom \<sigma>' = ?X k"
           by (auto, metis domI domIff, metis `i = k` domD dom\<sigma>)
 
@@ -1365,11 +1369,12 @@ proof -
 
       next
         assume "i \<noteq> k"
-        def \<sigma>' \<equiv> "\<lambda> x. if x \<in> ?X i
-                       then if x \<in> ?X' i
-                            then \<sigma> x
-                            else Some (mem\<^sub>1' x)
-                       else None"
+        define \<sigma>'
+          where "\<sigma>' x = (if x \<in> ?X i
+                         then if x \<in> ?X' i
+                              then \<sigma> x
+                              else Some (mem\<^sub>1' x)
+                         else None)" for x
         let ?mems\<^sub>1i = "fst (mems ! i)" and
             ?mems\<^sub>2i = "snd (mems ! i)"
         have "dom \<sigma>' = ?X i"
@@ -1480,7 +1485,8 @@ proof -
         have \<Delta>_finite: "finite ?\<Delta>"
           by (metis (no_types) differing_finite finite_UnI)
         -- "We first define the adaptation, then prove that it does the right thing."
-        def A \<equiv> "\<lambda> x. if x \<in> ?\<Delta>
+        define A where "A x =
+                     (if x \<in> ?\<Delta>
                       then if dma x = High
                            then Some (?mems\<^sub>1'i [\<mapsto> \<sigma>] x, ?mems\<^sub>2'i [\<mapsto> \<sigma>] x)
                            else if x \<in> ?X' i
@@ -1488,7 +1494,7 @@ proof -
                                         Some v \<Rightarrow> Some (v, v)
                                       | None \<Rightarrow> None)
                                 else Some (mem\<^sub>1' x, mem\<^sub>1' x)
-                      else None"
+                      else None)" for x
         have domA: "dom A = ?\<Delta>"
         proof
           show "dom A \<subseteq> ?\<Delta>"

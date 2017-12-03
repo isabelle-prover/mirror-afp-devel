@@ -2772,7 +2772,7 @@ next
   }
   moreover
   { assume 2: "q \<bullet> a \<noteq> p \<bullet> a"
-    def q' \<equiv> "((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
+    define q' where "q' = ((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
     have "\<forall>b \<in> insert a bs. q' \<bullet> b = p \<bullet> b" using 2 * `a \<notin> bs` unfolding q'_def
       by (auto simp: swap_atom)
     moreover 
@@ -2841,7 +2841,7 @@ proof (induct bs)
   }
   moreover
   { assume 2: "a \<notin> set bs"
-    def q' \<equiv> "((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
+    define q' where "q' = ((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
     have "\<forall>b \<in> set (a # bs). q' \<bullet> b = p \<bullet> b" 
       unfolding q'_def using 2 * `a \<notin> set bs` by (auto simp: swap_atom)
     moreover 

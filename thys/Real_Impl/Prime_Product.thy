@@ -126,7 +126,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
       proof (cases "i dvd n div i")
         case True
         hence *: "(i dvd n div i) = True" by auto
-        def n' \<equiv> "n div i div i"
+        define n' where "n' = n div i div i"
         from mod True have n: "n = n' * i * i" by (auto simp: n'_def dvd_eq_mod_eq_0)
         note simp = simp[unfolded * if_True split]
         note IH = IH(1)[OF True refl _ refl _ simp prems(5) _ prems(7-9)]
@@ -152,7 +152,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         qed
       next
         case False        
-        def n' \<equiv> "n div i"
+        define n' where "n' = n div i"
         from mod True have n: "n = n' * i" by (auto simp: n'_def dvd_eq_mod_eq_0)
         have prime: "prime i" 
           unfolding prime_nat_iff

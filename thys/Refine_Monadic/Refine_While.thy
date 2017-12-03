@@ -1317,11 +1317,11 @@ proof (rule ccontr)
   from P have SIR: "\<And>i. inres (step (f i)) (f (Suc i))"
     unfolding ipath_def rwof_rel_def by auto
 
-  def F \<equiv> "(WHILEI_body op \<bind> RETURN I cond step)"
+  define F where "F = (WHILEI_body op \<bind> RETURN I cond step)"
 
   {
     assume M: "trimono F"
-    def f' \<equiv> "\<lambda>x. if x\<in>range f then FAIL else gfp F x"
+    define f' where "f' x = (if x\<in>range f then FAIL else gfp F x)" for x
 
     have "f' \<le> F f'"
       unfolding f'_def

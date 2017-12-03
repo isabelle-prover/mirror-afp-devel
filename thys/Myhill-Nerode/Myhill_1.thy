@@ -250,7 +250,7 @@ lemma every_eqclass_has_transition:
   and     in_CS:   "X \<in> UNIV // \<approx>A"
   obtains Y where "Y \<in> UNIV // \<approx>A" and "Y \<cdot> {[c]} \<subseteq> X" and "s \<in> Y"
 proof -
-  def Y \<equiv> "\<approx>A `` {s}"
+  define Y where "Y = \<approx>A `` {s}"
   have "Y \<in> UNIV // \<approx>A" 
     unfolding Y_def quotient_def by auto
   moreover
@@ -339,9 +339,9 @@ lemma Arden_preserves_soundness:
   and finite: "finite rhs"
   shows "X = lang_rhs (Arden X rhs)"
 proof -
-  def A \<equiv> "lang (\<Uplus>{r. Trn X r \<in> rhs})"
-  def b \<equiv> "{Trn X r | r. Trn X r \<in> rhs}"
-  def B \<equiv> "lang_rhs (rhs - b)"
+  define A where "A = lang (\<Uplus>{r. Trn X r \<in> rhs})"
+  define b where "b = {Trn X r | r. Trn X r \<in> rhs}"
+  define B where "B = lang_rhs (rhs - b)"
   have not_empty2: "[] \<notin> A" 
     using finite_Trn[OF finite] not_empty
     unfolding A_def ardenable_def by simp
@@ -397,7 +397,7 @@ lemma Subst_preserves_soundness:
   and finite: "finite rhs"
   shows "lang_rhs (Subst rhs X xrhs) = lang_rhs rhs" (is "?Left = ?Right")
 proof-
-  def A \<equiv> "lang_rhs (rhs - {Trn X r | r. Trn X r \<in> rhs})"
+  define A where "A = lang_rhs (rhs - {Trn X r | r. Trn X r \<in> rhs})"
   have "?Left = A \<union> lang_rhs (Append_rexp_rhs xrhs (\<Uplus>{r. Trn X r \<in> rhs}))"
     unfolding Subst_def
     unfolding lang_rhs_union_distrib[symmetric]
@@ -548,8 +548,8 @@ lemma Remove_in_card_measure:
   and     in_ES: "(X, rhs) \<in> ES"
   shows "(Remove ES X rhs, ES) \<in> measure card"
 proof -
-  def f \<equiv> "\<lambda> x. ((fst x)::'a lang, Subst (snd x) X (Arden X rhs))"
-  def ES' \<equiv> "ES - {(X, rhs)}"
+  define f where "f x = ((fst x)::'a lang, Subst (snd x) X (Arden X rhs))" for x
+  define ES' where "ES' = ES - {(X, rhs)}"
   have "Subst_all ES' X (Arden X rhs) = f ` ES'" 
     apply (auto simp: Subst_all_def f_def image_def)
     by (rule_tac x = "(Y, yrhs)" in bexI, simp+)
@@ -656,7 +656,7 @@ lemma Solve:
   and     X_in: "X \<in> (UNIV // \<approx>A)"
   shows "\<exists>rhs. Solve X (Init (UNIV // \<approx>A)) = {(X, rhs)} \<and> invariant {(X, rhs)}"
 proof -
-  def Inv \<equiv> "\<lambda>ES. invariant ES \<and> (\<exists>rhs. (X, rhs) \<in> ES)"
+  define Inv where "Inv ES \<longleftrightarrow> invariant ES \<and> (\<exists>rhs. (X, rhs) \<in> ES)" for ES
   have "Inv (Init (UNIV // \<approx>A))" unfolding Inv_def
       using fin X_in by (simp add: Init_ES_satisfies_invariant, simp add: Init_def)
   moreover
@@ -701,7 +701,7 @@ proof -
   obtain xrhs where Inv_ES: "invariant {(X, xrhs)}"
     using Solve by metis
 
-  def A \<equiv> "Arden X xrhs"
+  define A where "A = Arden X xrhs"
   have "rhss xrhs \<subseteq> {X}" using Inv_ES 
     unfolding validity_def invariant_def rhss_def lhss_def
     by auto

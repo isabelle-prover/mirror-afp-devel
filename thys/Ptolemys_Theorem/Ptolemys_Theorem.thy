@@ -395,8 +395,9 @@ theorem ptolemy:
   shows "dist A C * dist B D = dist A B * dist C D + dist A D * dist B C"
 proof -
   from \<open>dist center A = radius\<close> have "0 \<le> radius" by auto
-  def \<alpha> \<equiv> "radiant_of (A - center)" and \<beta> \<equiv> "radiant_of (B - center)"
-    and \<gamma> \<equiv> "radiant_of (C - center)" and \<delta> \<equiv> "radiant_of (D - center)"
+  define \<alpha> \<beta> \<gamma> \<delta>
+    where "\<alpha> = radiant_of (A - center)" and "\<beta> = radiant_of (B - center)"
+    and "\<gamma> = radiant_of (C - center)" and "\<delta> = radiant_of (D - center)"
   from ordering_of_points have angle_basics:
     "\<alpha> \<le> \<beta>" "\<beta> \<le> \<gamma>" "\<gamma> \<le> \<delta>"
     "0 \<le> \<alpha>" "\<alpha> \<le> 2 * pi" "0 \<le> \<beta>" "\<beta> \<le> 2 * pi"
@@ -421,7 +422,7 @@ proof -
     unfolding dist_eqs by (simp add: power2_eq_square)
   also have "\<dots> = 4 * radius ^ 2 * (sin ((\<beta> - \<alpha>) / 2) * sin ((\<delta> - \<gamma>) / 2) + sin ((\<gamma> - \<beta>) / 2) * sin ((\<delta> - \<alpha>) / 2))"
   proof -
-    def \<omega>\<^sub>1 \<equiv> "(\<beta> - \<alpha>) / 2" and \<omega>\<^sub>2 \<equiv> "(\<gamma> - \<beta>) / 2" and \<omega>\<^sub>3 \<equiv> "(\<delta> - \<gamma>) / 2"
+    define \<omega>\<^sub>1 \<omega>\<^sub>2 \<omega>\<^sub>3 where "\<omega>\<^sub>1 = (\<beta> - \<alpha>) / 2" and "\<omega>\<^sub>2 = (\<gamma> - \<beta>) / 2" and "\<omega>\<^sub>3 = (\<delta> - \<gamma>) / 2"
     have "(\<gamma> - \<alpha>) / 2 = \<omega>\<^sub>1 + \<omega>\<^sub>2" and "(\<delta> - \<beta>) / 2 = \<omega>\<^sub>2 + \<omega>\<^sub>3" and "(\<delta> - \<alpha>) / 2 = \<omega>\<^sub>1 + \<omega>\<^sub>2 + \<omega>\<^sub>3"
       unfolding \<omega>\<^sub>1_def \<omega>\<^sub>2_def \<omega>\<^sub>3_def by (auto simp add: field_simps)
     have "sin ((\<gamma> - \<alpha>) / 2) * sin ((\<delta> - \<beta>) / 2) = sin (\<omega>\<^sub>1 + \<omega>\<^sub>2) * sin (\<omega>\<^sub>2 + \<omega>\<^sub>3)"

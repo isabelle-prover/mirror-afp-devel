@@ -50,28 +50,28 @@ begin
         finite_subset rtrancl.rtrancl_into_rtrancl subsetI)
 
   
-    def rpre \<equiv> "\<lambda>S (V,v). 
+    define rpre where "rpre = (\<lambda>S (V,v). 
         v\<in>reachable 
       \<and> V\<subseteq>reachable
       \<and> S\<subseteq>V
       \<and> (V \<inter> Collect tgt = {})
-      \<and> E``(V-S) \<subseteq> V"
+      \<and> E``(V-S) \<subseteq> V)"
 
-    def rpost \<equiv> "\<lambda>S (V,v) (V',r). 
+    define rpost where "rpost = (\<lambda>S (V,v) (V',r). 
           (r\<longleftrightarrow>V'\<inter>Collect tgt \<noteq> {}) 
         \<and> V\<subseteq>V' 
         \<and> v\<in>V'
         \<and> V'\<subseteq>reachable
-        \<and> (\<not>r \<longrightarrow> (E``(V'-S) \<subseteq> V'))
+        \<and> (\<not>r \<longrightarrow> (E``(V'-S) \<subseteq> V')))
       "
 
-    def fe_inv \<equiv> "\<lambda>S V v it (V',r).
+    define fe_inv where "fe_inv = (\<lambda>S V v it (V',r).
         (r\<longleftrightarrow>V'\<inter>Collect tgt \<noteq> {})
       \<and> insert v V\<subseteq>V'
       \<and> E``{v} - it \<subseteq> V'
       \<and> V'\<subseteq>reachable
       \<and> S\<subseteq>insert v V
-      \<and> (\<not>r \<longrightarrow> E``(V'-S) \<subseteq> V' \<union> it \<and> E``(V'-insert v S) \<subseteq> V')"
+      \<and> (\<not>r \<longrightarrow> E``(V'-S) \<subseteq> V' \<union> it \<and> E``(V'-insert v S) \<subseteq> V'))"
 
     have vc_pre_initial: "rpre {} ({}, v0)"
       by (auto simp: rpre_def reachable_def)

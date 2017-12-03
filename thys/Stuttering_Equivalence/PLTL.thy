@@ -523,13 +523,13 @@ next
     the characteristic formula for a valuation. Finally, we define the formula
     @{text "psi'"} that we will prove to be equivalent to @{text "next \<phi>"} over
     the stutter-free and canonical sequence @{text "\<sigma>"}. *}
-  def stval \<equiv> "\<lambda>s. { p \<in> A . p s }"
-  def chi \<equiv> "\<lambda>val. ((AND {atom p | p . p \<in> val}) and\<^sub>p
-                        (AND {not\<^sub>p (atom p) | p . p \<in> A - val}))"
-  def psi' \<equiv> "(Or_ltlp (\<psi> and\<^sub>p (OR {G\<^sub>p (chi val) | val . val \<subseteq> A }))
+  define stval where "stval = (\<lambda>s. { p \<in> A . p s })"
+  define chi where "chi = (\<lambda>val. ((AND {atom p | p . p \<in> val}) and\<^sub>p
+                        (AND {not\<^sub>p (atom p) | p . p \<in> A - val})))"
+  define psi' where "psi' = (Or_ltlp (\<psi> and\<^sub>p (OR {G\<^sub>p (chi val) | val . val \<subseteq> A }))
                   (OR {(chi val) and\<^sub>p (until (chi val) ( \<psi> and\<^sub>p (chi val'))) | val val'.
                         val \<subseteq> A \<and> val' \<subseteq> A \<and> val' \<noteq> val }))"
-        (is "(Or_ltlp ( _ and\<^sub>p (OR ?ALW)) (OR ?UNT))")
+        (is "_ = (Or_ltlp ( _ and\<^sub>p (OR ?ALW)) (OR ?UNT))")
 
   have "\<And>s. {not\<^sub>p (atom p) | p . p \<in> A - stval s}
            = {not\<^sub>p (atom p) | p . p \<in> A \<and> \<not>(p s)}"
@@ -781,14 +781,14 @@ proof -
     hence "\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> atoms \<phi> \<and> (\<forall>\<sigma>. \<sigma> \<Turnstile>\<^sub>p \<psi> \<longleftrightarrow> \<sigma> \<Turnstile>\<^sub>p \<phi>)"
       by (rule stutter_invariant_next_free) blast
   }
-moreover
+  moreover
   {
     fix \<psi>
     assume 1: "next_free \<psi>" and 2: "\<forall>\<sigma>. \<sigma> \<Turnstile>\<^sub>p \<psi> \<longleftrightarrow> \<sigma> \<Turnstile>\<^sub>p \<phi>"
     from 1 have "stutter_invariant \<psi>" by (rule next_free_stutter_invariant)
     with 2 have "stutter_invariant \<phi>" by blast
   }
-ultimately show ?thesis by blast
+  ultimately show ?thesis by blast
 qed
 
 

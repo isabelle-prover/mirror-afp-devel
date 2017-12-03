@@ -800,7 +800,7 @@ proof -
   note agents = this
   from card_ge_4E[OF finite_alts alts_ge_4] guess a b c d .
   note alts = this
-  def agents' \<equiv> "{A1,A2,A3,A4}" and alts' \<equiv> "{a,b,c,d}"
+  define agents' alts' where "agents' = {A1,A2,A3,A4}" and "alts' = {a,b,c,d}"
   from agents alts 
     interpret sds_lowering_anonymous_neutral_sdeff_stratproof agents alts sds agents' alts'
     unfolding agents'_def alts'_def by unfold_locales simp_all

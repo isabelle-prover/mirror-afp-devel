@@ -62,7 +62,7 @@ proof -  (* by reductio *)
 
 
 (* Step 2: Consider the m-lightcone at e *)
-  def eCone \<equiv> "mkCone e (c m)"  
+  define eCone where "eCone = mkCone e (c m)"  
   have e_on_econe: "onCone e eCone" by (simp add: eCone_def)
 
 
@@ -86,7 +86,7 @@ proof -  (* by reductio *)
   have g_on_eCone: "onCone g eCone" by (metis g_props)
   have g_not_vertex: "g \<noteq> vertex eCone" by (metis g_props)
 
-  def tplane \<equiv> "tangentPlane g eCone"
+  define tplane where "tplane = tangentPlane g eCone"
   have e_in_tplane: "inPlane e tplane" by (metis AxTangentVertex e_is_vertex tplane_def)
   have f_in_tplane: "inPlane f tplane" by (metis g_props tplane_def)
   have g_in_tplane: "inPlane g tplane" by (metis lemPlaneContainsBasePoint tplane_def AxTangentBase)
@@ -107,9 +107,9 @@ proof -  (* by reductio *)
 (* Step 4: k considers wvte and wvtf to be distinct points on the t-axis, and wvtg is off 
            k's t-axis. *)
 
-  def wvte \<equiv> "wvt k m e"
-  def wvtf \<equiv> "wvt k m f"
-  def wvtg \<equiv> "wvt k m g"
+  define wvte where "wvte = wvt k m e"
+  define wvtf where "wvtf = wvt k m f"
+  define wvtg where "wvtg = wvt k m g"
 
   have "W k k wvte" by (metis wvte_def AxWVT mke iobm iobk)
   hence wvte_onAxis: "onAxisT wvte" by (metis AxSelf iobk)
@@ -150,8 +150,8 @@ proof -  (* by reductio *)
     wvtz_props: "collinear wvte wvtg wvtz \<and> (space2 wvtz wvtf = (c k * c k)*time2 wvtz wvtf)" by auto
   hence wvtf_speed: "space2 wvtz wvtf = (c k * c k)*time2 wvtz wvtf" by metis
 
-  def z \<equiv> "wvt m k wvtz"  
-  def wvtzCone \<equiv> "lightcone k wvtz"
+  define z where "z = wvt m k wvtz"  
+  define wvtzCone where "wvtzCone = lightcone k wvtz"
 
   have wvtz_is_vertex: "wvtz = vertex wvtzCone" by (simp add: wvtzCone_def)
   have ck_is_slope: "c k = slope wvtzCone" by (simp add: wvtzCone_def)
@@ -165,7 +165,7 @@ proof -  (* by reductio *)
 
 
   (* f is on the lightcone at z *)
-  def zCone \<equiv> "lightcone m z"
+  define zCone where "zCone = lightcone m z"
   have z_is_vertex: "z = vertex zCone" by (simp add: zCone_def)
   have cm_is_zSlope: "c m = slope zCone" by (simp add: zCone_def)
 
@@ -179,7 +179,7 @@ proof -  (* by reductio *)
   hence "space2 z f = (c m * c m)*time2 z f" by (metis z_is_vertex cm_is_zSlope)
   hence fz_speed: "space2 f z = (c m * c m)*time2 f z" by (metis lemSpace2Sym lemTime2Sym)
 
-  def fCone \<equiv> "lightcone m f"
+  define fCone where "fCone = lightcone m f"
 
   have f_is_fVertex: "f = vertex fCone" by (simp add: fCone_def)
   have cm_is_fSlope: "c m = slope fCone" by (simp add: fCone_def)
@@ -213,8 +213,8 @@ proof -  (* by reductio *)
 
   (* but the lines e-z and f-z must be parallel *)
 
-  def lineA \<equiv> "lineJoining e z"
-  def lineB \<equiv> "lineJoining f z"
+  define lineA where "lineA = lineJoining e z"
+  define lineB where "lineB = lineJoining f z"
 
   {
     assume assm: "direction lineA = vecZero"
@@ -275,8 +275,8 @@ proof -  (* by reductio *)
     }
     from this have b_nonzero: "-b \<noteq> 0" by blast
 
-    def binv \<equiv> "inverse (-b)"
-    def factor \<equiv> "1+binv"
+    define binv where "binv = inverse (-b)"
+    define factor where "factor = 1+binv"
     have binv_nonzero: "binv \<noteq> 0" by (metis b_nonzero add.comm_neutral binv_def nonzero_imp_inverse_nonzero right_minus)
     
     have "from e to g = (-b)**(from g to z)" by (metis e_to_g)

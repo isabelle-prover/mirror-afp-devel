@@ -190,8 +190,8 @@ proof (subst l2_\<phi>I_DERIV)
   let ?\<phi>' = "\<phi> (l',i')"
   let ?\<phi> = "\<phi> (l, i)"
   let "?\<phi>2 x" = "?\<phi>' x * ?\<phi> x"
-  def \<Phi>_n \<equiv> "\<lambda> x. x^3 / 3 * ?l' * ?l + x * ?i * ?in' - x^2 / 2 * (?in' * ?l + ?i * ?l')"
-  def \<Phi>_p \<equiv> "\<lambda> x. x^2 / 2 * (?ip' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?ip'"
+  define \<Phi>_n where "\<Phi>_n x = x^3 / 3 * ?l' * ?l + x * ?i * ?in' - x^2 / 2 * (?in' * ?l + ?i * ?l')" for x
+  define \<Phi>_p where "\<Phi>_p x = x^2 / 2 * (?ip' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?ip'" for x
 
   have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] `l < l'` by auto
 
@@ -236,9 +236,9 @@ proof (subst l2_\<phi>I_DERIV)
   let ?i = "real_of_int i + 1"
   let ?\<phi>' = "\<phi> (l',i')"
   let ?\<phi> = "\<phi> (l, i)"
-  let "?\<phi>2 x" = "?\<phi>' x * ?\<phi> x"
-  def \<Phi>_n \<equiv> "\<lambda> x. x^2 / 2 * (?in' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?in'"
-  def \<Phi>_p \<equiv> "\<lambda> x. x^3 / 3 * ?l' * ?l + x * ?i * ?ip' - x^2 / 2 * (?ip' * ?l + ?i * ?l')"
+  let ?\<phi>2 = "\<lambda>x. ?\<phi>' x * ?\<phi> x"
+  define \<Phi>_n where "\<Phi>_n x = x^2 / 2 * (?in' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?in'" for x
+  define \<Phi>_p where "\<Phi>_p x = x^3 / 3 * ?l' * ?l + x * ?i * ?ip' - x^2 / 2 * (?ip' * ?l + ?i * ?l')" for x
 
   have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] `l < l'` by auto
 

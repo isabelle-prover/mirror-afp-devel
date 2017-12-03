@@ -207,7 +207,7 @@ proof -
   from l obtain mu where mu: "mu \<le> l \<and> seq (Suc l) = seq mu"
     by (fastforce simp: atLeastAtMostSuc_conv)
   moreover
-  def lambda \<equiv> "l - mu + 1"
+  define lambda where "lambda = l - mu + 1"
   have "seq (i + j * lambda) = seq i" if "mu \<le> i" for i j
   using that proof (induct j)
     case (Suc j)

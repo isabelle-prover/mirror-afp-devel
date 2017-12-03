@@ -78,7 +78,7 @@ lemma nat_nat_induct[case_names less]:
   assumes less: "\<And>n m. (\<And>j k. j + k < n + m \<Longrightarrow> P j k) \<Longrightarrow> P n m"
   shows "P n m"
 proof -
-  def N \<equiv> "n + m"
+  define N where "N \<equiv> n + m"
   then show ?thesis
   proof (induct N arbitrary: n m rule: nat_less_induct)
     case 1 show "P n m"
@@ -347,7 +347,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
   note `proper (fst cf1)`[simp, intro]
   note `proper (fst cf2)`[simp, intro]
 
-  def W \<equiv> "\<lambda>c. sum (wt (fst c) (snd c))"
+  define W where "W c = sum (wt (fst c) (snd c))" for c
   from ZObis_mC_ZOC[OF `fst cf1 \<approx>01 fst cf2` `snd cf1 \<approx> snd cf2`]
   obtain I0 P F where mC: "mC_ZOC ZObis (fst cf1) (fst cf2) (snd cf1) (snd cf2) I0 P F" by blast
   then have P: "{} \<notin> P - {I0}" "part {..<brn (fst cf1)} P" and "I0 \<in> P"
@@ -444,8 +444,10 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     then obtain n' m' where nm: "n = Suc n'" "m = Suc m'"
       by (metis nat.exhaust)
 
-    def ps \<equiv> "\<lambda>cf I. \<Sum>b\<in>I. wt (fst cf) (snd cf) b / W cf I * Ps (cont_eff cf b)"
-    def pn \<equiv> "\<lambda>cf I n. \<Sum>b\<in>I. wt (fst cf) (snd cf) b / W cf I * Pn (cont_eff cf b) n"
+    define ps pn
+      where "ps cf I = (\<Sum>b\<in>I. wt (fst cf) (snd cf) b / W cf I * Ps (cont_eff cf b))"
+        and "pn cf I n = (\<Sum>b\<in>I. wt (fst cf) (snd cf) b / W cf I * Pn (cont_eff cf b) n)"
+      for cf I n
 
     { fix I assume "I \<in> P" "I \<noteq> I0" and W: "W cf1 I \<noteq> 0" "W cf2 (F I) \<noteq> 0"
       then have "dist (ps cf1 I) (ps cf2 (F I)) \<le> pn cf1 I n' + pn cf2 (F I) m'"
@@ -928,7 +930,7 @@ proof (unfold eSec_def, intro allI impI)
     from AE_T_max_qsend_time[OF _ `0 < e / 2`, of "(c,s2)"]
     obtain N2 where N2: "\<P>(bT in T.T (c, s2). ?N s2 N2 bT) < e / 2"
       using `aeT c` unfolding aeT_def by auto
-    def N \<equiv> "max N1 N2"
+    define N where "N = max N1 N2"
 
     let ?Tn = "\<lambda>n s bT. eff_at (c,s) bT n \<approx> t"
 

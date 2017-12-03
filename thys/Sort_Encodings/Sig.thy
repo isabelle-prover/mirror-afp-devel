@@ -41,9 +41,9 @@ qed
 
 lemma tpOfV_pred: "\<exists> f. tpOfV_pred f"
 proof-
-  def Ut \<equiv> "UNIV :: 'tp set" def Uv \<equiv> "UNIV :: var set"
-  def Unt \<equiv> "UNIV :: nat set"
-  def U2 \<equiv> "UNIV :: ('tp \<times> nat) set"
+  define Ut Uv where "Ut = (UNIV :: 'tp set)" and "Uv = (UNIV :: var set)"
+  define Unt where "Unt = (UNIV :: nat set)"
+  define U2 where "U2 = (UNIV :: ('tp \<times> nat) set)"
   have U2: "U2 \<equiv> Ut \<times> Unt" unfolding Ut_def Unt_def U2_def UNIV_Times_UNIV .
   have "|U2| =o |Unt \<times> Ut|" unfolding U2 by (metis card_of_Times_commute)
   also have "|Unt \<times> Ut| =o |Unt|"

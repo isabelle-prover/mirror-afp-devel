@@ -700,8 +700,8 @@ qed
 
 theorem pr_b_least2: "f \<in> PrimRec2 \<Longrightarrow> b_least2 f \<in> PrimRec2"
 proof -
-  def loc_Op1 == "(\<lambda> (f::nat \<Rightarrow> nat \<Rightarrow> nat) x y z. (sgn1 (z - y)) * y + (sgn2 (z - y))*((sgn1 (f x z))*z + (sgn2 (f x z))*(Suc z)))"
-  def loc_Op2 == "(\<lambda> f. PrimRecOp_last (\<lambda> x. 0) (loc_Op1 f))"
+  define loc_Op1 where "loc_Op1 = (\<lambda> (f::nat \<Rightarrow> nat \<Rightarrow> nat) x y z. (sgn1 (z - y)) * y + (sgn2 (z - y))*((sgn1 (f x z))*z + (sgn2 (f x z))*(Suc z)))"
+  define loc_Op2 where "loc_Op2 = (\<lambda> f. PrimRecOp_last (\<lambda> x. 0) (loc_Op1 f))"
   have loc_op2_lm_1: "\<And> f x y. loc_Op2 f x y < y \<Longrightarrow> loc_Op2 f x (Suc y) = loc_Op2 f x y"
   proof -
     fix f x y
@@ -832,10 +832,10 @@ theorem c_sum_is_pr: "c_sum \<in> PrimRec1"
 proof -
   let ?f = "\<lambda> u z. (sgn1 (sf(z+1) - u))"
   have S1: "(\<lambda> u z. sgn1 ((sf(z+1) - u))) \<in> PrimRec2" by prec
-  def D1: g == "b_least2 ?f"
-  from D1 S1 have "g \<in> PrimRec2" by (simp add: pr_b_least2)
+  define g where "g = b_least2 ?f"
+  from g_def S1 have "g \<in> PrimRec2" by (simp add: pr_b_least2)
   then have S2: "(\<lambda> u. g u (Suc u)) \<in> PrimRec1" by prec
-  from D1 have "c_sum = (\<lambda> u. g u (Suc u))" by (simp add: c_sum_as_b_least ext)
+  from g_def have "c_sum = (\<lambda> u. g u (Suc u))" by (simp add: c_sum_as_b_least ext)
   with S2 show ?thesis by simp
 qed
 
@@ -897,23 +897,23 @@ proof -
   assume f_at_h_nz: "\<forall> x. f x (h x) \<noteq> 0"
   assume h_is_min: "\<forall> z x. z < h x \<longrightarrow> f x z = 0"
   have h_def: "h = (\<lambda> x. b_least2 f x (g x))"
-    proof
-      fix x show "h x = b_least2 f x (g x)"
-      proof -
-        from f_at_h_nz have S1: "b_least2 f x (g x) \<le> h x" by (simp add: nz_impl_b_least2_le)
-        from h_lt_g have "h x < g x" by auto
-        with S1 have "b_least2 f x (g x) < g x" by simp
-        then have S2: "f x (b_least2 f x (g x)) \<noteq> 0" by (rule b_least2_less_impl_nz)
-        have S3: "h x \<le> b_least2 f x (g x)"
-        proof (rule ccontr)
-          assume "\<not> h x \<le> b_least2 f x (g x)" then have "b_least2 f x (g x) < h x" by auto
-          with h_is_min have "f x (b_least2 f x (g x)) = 0" by simp
-          with S2 show False by auto
-        qed
-        from S1 S3 show ?thesis by auto
+  proof
+    fix x show "h x = b_least2 f x (g x)"
+    proof -
+      from f_at_h_nz have S1: "b_least2 f x (g x) \<le> h x" by (simp add: nz_impl_b_least2_le)
+      from h_lt_g have "h x < g x" by auto
+      with S1 have "b_least2 f x (g x) < g x" by simp
+      then have S2: "f x (b_least2 f x (g x)) \<noteq> 0" by (rule b_least2_less_impl_nz)
+      have S3: "h x \<le> b_least2 f x (g x)"
+      proof (rule ccontr)
+        assume "\<not> h x \<le> b_least2 f x (g x)" then have "b_least2 f x (g x) < h x" by auto
+        with h_is_min have "f x (b_least2 f x (g x)) = 0" by simp
+        with S2 show False by auto
       qed
+      from S1 S3 show ?thesis by auto
     qed
-  def f1_def: f1 \<equiv> "b_least2 f"
+  qed
+  define f1 where "f1 = b_least2 f"
   from f_is_pr f1_def have f1_is_pr: "f1 \<in> PrimRec2" by (simp add: pr_b_least2)
   with g_is_pr have "(\<lambda> x. f1 x (g x)) \<in> PrimRec1" by prec
   with h_def f1_def show "h \<in> PrimRec1" by auto
@@ -928,9 +928,9 @@ proof -
   assume h_lt_g: "\<forall> x y. h x y < g x y"
   assume f_at_h_nz: "\<forall> x y. f x y (h x y) \<noteq> 0"
   assume h_is_min: "\<forall> z x y. z < h x y \<longrightarrow> f x y z = 0"
-  def f1_def: f1 \<equiv> "pr_conv_3_to_2 f"
-  def g1_def: g1 \<equiv> "pr_conv_2_to_1 g"
-  def h1_def: h1 \<equiv> "pr_conv_2_to_1 h"
+  define f1 where "f1 = pr_conv_3_to_2 f"
+  define g1 where "g1 = pr_conv_2_to_1 g"
+  define h1 where "h1 = pr_conv_2_to_1 h"
   from f_is_pr f1_def have f1_is_pr: "f1 \<in> PrimRec2" by (simp add: pr_conv_3_to_2_lm)
   from g_is_pr g1_def have g1_is_pr: "g1 \<in> PrimRec1" by (simp add: pr_conv_2_to_1_lm)
   from h_lt_g h1_def g1_def have h1_lt_g1: "\<forall> x. h1 x < g1 x" by (simp add: pr_conv_2_to_1_def)
@@ -943,10 +943,10 @@ qed
 
 theorem div_is_pr: "(\<lambda> a b. a div b) \<in> PrimRec2"
 proof -
-  def f_def: f \<equiv> "\<lambda> a b z. (sgn1 b) * (sgn1 (b*(z+1)-a)) + (sgn2 b)*(sgn2 z)"
+  define f where "f a b z = (sgn1 b) * (sgn1 (b*(z+1)-a)) + (sgn2 b)*(sgn2 z)" for a b z
   have f_is_pr: "f \<in> PrimRec3" unfolding f_def by prec
-  def h_def: h \<equiv> "\<lambda> (a::nat) (b::nat). a div b"
-  def g_def: g \<equiv> "\<lambda> (a::nat) (b::nat). a + 1"
+  define h where "h a b = a div b" for a b :: nat
+  define g where "g a b = a + 1" for a b :: nat
   have g_is_pr: "g \<in> PrimRec2" unfolding g_def by prec
   have h_lt_g: "\<forall> a b. h a b < g a b"
   proof (rule allI, rule allI)
@@ -1011,7 +1011,7 @@ proof -
     qed
   qed
   from f_is_pr g_is_pr h_lt_g f_at_h_nz h_is_min have h_is_pr: "h \<in> PrimRec2" by (rule b_least2_scheme2)
-  with h_def show ?thesis by simp
+  with h_def [abs_def] show ?thesis by simp
 qed
 
 theorem mod_is_pr: "(\<lambda> a b. a mod b) \<in> PrimRec2"
@@ -1037,8 +1037,8 @@ qed
 
 theorem power_is_pr: "(\<lambda> (x::nat) (n::nat). x ^ n) \<in> PrimRec2"
 proof -
-  def g_def: g \<equiv> "\<lambda> (x::nat). (1::nat)"
-  def h_def: h \<equiv> "\<lambda> (a::nat) (b::nat) (c::nat). a * b"
+  define g :: "nat \<Rightarrow> nat" where "g x = 1" for x
+  define h where "h a b c = a * b" for a b c :: nat
   have g_is_pr: "g \<in> PrimRec1" unfolding g_def by prec
   have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
   let ?f = "\<lambda> (x::nat) (n::nat). x ^ n"

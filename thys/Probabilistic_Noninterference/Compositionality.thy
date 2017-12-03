@@ -272,7 +272,7 @@ lemma singlPart_finite1:
 assumes "finite (singlPart I)"
 shows "finite (I::'a set)"
 proof-
-  def u \<equiv> "%i. {i::'a}"
+  define u where "u i = {i}" for i :: 'a
   have "u ` I \<subseteq> singlPart I" unfolding u_def singlPart_def by auto
   moreover have "inj_on u I" unfolding u_def inj_on_def by auto
   ultimately show ?thesis using assms
@@ -854,7 +854,7 @@ unfolding part_def proof(intro conjI allI impI)
     thus "ii \<in> {brnL cl n ..<+ brn (cl!n)}" using ii by simp
   next
     fix ii assume ii_in: "ii \<in> {brnL cl n..<+brn (cl ! n)}"
-    def i \<equiv> "ii - brnL cl n"
+    define i where "i = ii - brnL cl n"
     have ii: "ii = brnL cl n + i" unfolding i_def using ii_in by force
     have "i \<in> {..< brn (cl!n)}" unfolding i_def using ii_in by auto
     then obtain I where i: "i \<in> I" and I: "I \<in> P"
@@ -1037,7 +1037,8 @@ assumes P: "\<And> n. n < length cl \<Longrightarrow> part {..< brn (cl!n)} (P n
 and n: "n < length cl" and I: "I \<in> P n"
 shows "UNlift cl dl P F (shift cl n I) = shift dl n (F n I)"
 proof-
-  let ?N = "length cl" def II \<equiv> "shift cl n I"
+  let ?N = "length cl"
+  define II where "II = shift cl n I"
   have II: "shift cl n I = II" using II_def by simp
   have n: "n = pickT cl P II" apply(rule pickT_unique)
   using assms unfolding II_def by auto
@@ -1253,7 +1254,7 @@ unfolding Sretr_def matchC_C_def proof safe
   }
   then obtain PF where phi: "\<And>n. n < ?N \<Longrightarrow> ?phi n (PF n)"
   using bchoice[of "{..< ?N}" ?phi] by blast
-  def P \<equiv> "fst o PF" def F \<equiv> "snd o PF"
+  define P F where "P = fst o PF" and "F = snd o PF"
   have m: "\<And>n. n < ?N \<Longrightarrow> mC_C Sbis (cl ! n) (dl ! n) (?ss n) (?tt n) (P n) (F n)"
   using phi unfolding P_def F_def by auto
   (*  *)
@@ -1272,7 +1273,7 @@ unfolding Sretr_def matchC_C_def proof safe
      cont (cl!n) (?ss n) i \<approx>s cont (dl!n) (?tt n) j"
   using m unfolding mC_C_def mC_C_eff_cont_def by auto
   (*  *)
-  def Q \<equiv> "UNpart cl P" def G \<equiv> "UNlift cl dl P F"
+  define Q G where "Q = UNpart cl P" and "G = UNlift cl dl P F"
   note defi = Q_def G_def brn_c brn_d
   show "\<exists>Q G. mC_C (thetaSPar) c d s t Q G"
   apply(rule exI[of _ Q]) apply(rule exI[of _ G])
@@ -1923,7 +1924,8 @@ and P: "\<And> n. n < length cl \<Longrightarrow> part {..< brn (cl!n)} (P n) \<
 and n: "n \<in> theNFTBoth cl dl" and I: "I \<in> P n"
 shows "UNlift01 cl dl P F (shift cl n I) = shift dl n (F n I)"
 proof-
-  let ?N = "length cl" def II \<equiv> "shift cl n I"
+  let ?N = "length cl"
+  define II where "II = shift cl n I"
   have "n < length cl" using n l by auto note n = this n
   have II: "shift cl n I = II" using II_def by simp
   have "II \<in> UNpart1 cl dl P" unfolding II_def UNpart1_def using n I by auto
@@ -2497,7 +2499,7 @@ unfolding ZOretr_def matchC_LC_def proof safe
   }
   then obtain PF where phi: "\<And>n. n < ?N \<Longrightarrow> ?phi n (PF n)"
   using bchoice[of "{..< ?N}" ?phi] by blast
-  def P \<equiv> "fst o PF" def F \<equiv> "snd o PF"
+  define P F where "P = fst o PF" and "F = snd o PF"
   have m: "\<And>n. n < ?N \<Longrightarrow> mC_C Sbis (cl ! n) (dl ! n) (?ss n) (?tt n) (P n) (F n)"
   using phi unfolding P_def F_def by auto
   (*  *)
@@ -2515,8 +2517,8 @@ unfolding ZOretr_def matchC_LC_def proof safe
      eff (cl!n) (?ss n) i \<approx> eff (dl!n) (?tt n) j \<and> cont (cl!n) (?ss n) i \<approx>s cont (dl!n) (?tt n) j"
   using m unfolding mC_C_def mC_C_eff_cont_def by auto
   (*  *)
-  def II0 \<equiv> "BrnFT cl dl"
-  def Q \<equiv> "UNpart01 cl dl P" def G \<equiv> "UNlift01 cl dl P F"
+  define II0 where "II0 = BrnFT cl dl"
+  define Q G where "Q = UNpart01 cl dl P" and "G = UNlift01 cl dl P F"
   note defi = II0_def Q_def G_def brn_c brn_d
   show "\<exists>II0 Q G. mC_ZOC (thetaZOParT) c d s t II0 Q G"
   apply(rule exI[of _ II0]) apply(rule exI[of _ Q]) apply(rule exI[of _ G])

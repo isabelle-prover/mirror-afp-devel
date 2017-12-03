@@ -94,7 +94,7 @@ proof -
     by simp
   finally have finite: "finite ?A" .
 
-  def \<epsilon> \<equiv> "Min (insert 1 ?A) / 2"
+  define \<epsilon> where "\<epsilon> = Min (insert 1 ?A) / 2"
   from finite have "Min (insert 1 ?A) > 0"
     by (auto intro!: divide_pos_pos simp: utility_less)
   hence \<epsilon>: "\<epsilon> > 0" unfolding \<epsilon>_def by simp

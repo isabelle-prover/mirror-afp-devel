@@ -66,15 +66,15 @@ proof
     fix f assume "f \<in> C"
     then show "LEXEQ P (lexmin C) f"
     proof (cases "f = lexmin C")
-      def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
+      define i where "i = (LEAST i. f i \<noteq> lexmin C i)"
       case False
       then have neq: "\<exists>i. f i \<noteq> lexmin C i" by blast
       from LeastI_ex [OF this, folded i_def]
         and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
-        have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
-      then have "f \<in> eq_upto C (lexmin C) i"
-        and "f i \<in> ith (eq_upto C (lexmin C) i) i" using \<open>f \<in> C\<close> by force+
-      moreover then have "\<not> P (f i) (lexmin C i)"
+      have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
+      then have **: "f \<in> eq_upto C (lexmin C) i" "f i \<in> ith (eq_upto C (lexmin C) i) i"
+        using \<open>f \<in> C\<close> by force+
+      moreover from ** have "\<not> P (f i) (lexmin C i)"
         using lexmin_minimal [OF *, of "f i" i] and \<open>f \<in> C\<close> and \<open>C \<subseteq> SEQ A\<close> by blast
       moreover obtain g where "g \<in> eq_upto C (lexmin C) (Suc i)"
         using eq_upto_lexmin_non_empty [OF *] by blast
@@ -89,12 +89,12 @@ proof
   fix f assume lb: "lb (LEX P) C f"
   then show "LEXEQ P f (lexmin C)"
   proof (cases "f = lexmin C")
-    def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
+    define i where "i = (LEAST i. f i \<noteq> lexmin C i)"
     case False
     then have neq: "\<exists>i. f i \<noteq> lexmin C i" by blast
     from LeastI_ex [OF this, folded i_def]
       and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
-      have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
+    have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
     obtain h where "h \<in> eq_upto C (lexmin C) (Suc i)" and "h \<in> C"
       using eq_upto_lexmin_non_empty [OF *] by (auto simp: eq_upto_def)
     then have [simp]: "\<And>j. j < Suc i \<Longrightarrow> h j = lexmin C j" by auto
@@ -151,16 +151,16 @@ proof
     show "good (list_emb P) f"
   proof (induct rule: open_induct_on)
     case (less f)
-    def h \<equiv> "\<lambda>i. hd (f i)"
+    define h where "h i = hd (f i)" for i
     show ?case
     proof (cases "\<exists>i. f i = []")
       case False
       then have ne: "\<forall>i. f i \<noteq> []" by auto
       with \<open>f \<in> SEQ (lists A)\<close> have "\<forall>i. h i \<in> A" by (auto simp: h_def ne_lists)
       from almost_full_on_imp_homogeneous_subseq [OF assms this]
-        obtain \<phi> :: "nat \<Rightarrow> nat" where mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
+      obtain \<phi> :: "nat \<Rightarrow> nat" where mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
         and P: "\<And>i j. i < j \<Longrightarrow> P (h (\<phi> i)) (h (\<phi> j))" by blast
-      def f' \<equiv> "\<lambda>i. if i < \<phi> 0 then f i else tl (f (\<phi> (i - \<phi> 0)))"
+      define f' where "f' i = (if i < \<phi> 0 then f i else tl (f (\<phi> (i - \<phi> 0))))" for i
       have f': "f' \<in> SEQ (lists A)" using ne and \<open>f \<in> SEQ (lists A)\<close>
         by (auto simp: f'_def dest: list.set_sel)
       have [simp]: "\<And>i. \<phi> 0 \<le> i \<Longrightarrow> h (\<phi> (i - \<phi> 0)) # f' i = f (\<phi> (i - \<phi> 0))"

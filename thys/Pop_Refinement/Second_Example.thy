@@ -595,21 +595,22 @@ proof (auto simp: Target.GNI_def)
   assume Spec: "spec\<^sub>0 p"
   -- {* Consider a trace @{text \<tau>\<^sub>1} and its high input: *}
   fix \<tau>\<^sub>1::trace
-  def highIn \<equiv> "high_in \<tau>\<^sub>1"
+  define highIn where "highIn = high_in \<tau>\<^sub>1"
   -- {* Consider a trace @{text \<tau>\<^sub>2},
         its low input and output,
         and its states: *}
   fix \<tau>\<^sub>2::trace
-  def lowIn \<equiv> "low_in \<tau>\<^sub>2"
-  and lowOut \<equiv> "low_out \<tau>\<^sub>2"
-  and \<sigma>\<^sub>2 \<equiv> "initial \<tau>\<^sub>2"
-  and \<sigma>\<^sub>2' \<equiv> "final \<tau>\<^sub>2"
+  define lowIn lowOut \<sigma>\<^sub>2 \<sigma>\<^sub>2'
+    where "lowIn = low_in \<tau>\<^sub>2"
+      and "lowOut = low_out \<tau>\<^sub>2"
+      and "\<sigma>\<^sub>2 = initial \<tau>\<^sub>2"
+      and "\<sigma>\<^sub>2' = final \<tau>\<^sub>2"
   assume "\<tau>\<^sub>2 \<in> traces p"
   hence Exec2: "body p \<rhd> \<sigma>\<^sub>2 \<leadsto> Some \<sigma>\<^sub>2'"
   and State2: "\<sigma>\<^sub>2 \<in> states p"
   by (auto simp: \<sigma>\<^sub>2_def \<sigma>\<^sub>2'_def elim: traces.cases)
   -- {* Construct the initial state of the witness trace @{text \<tau>\<^sub>3}: *}
-  def \<sigma>\<^sub>3 \<equiv> "\<sigma>\<^sub>2 (''highIn'' \<mapsto> highIn)"
+  define \<sigma>\<^sub>3 where "\<sigma>\<^sub>3 = \<sigma>\<^sub>2 (''highIn'' \<mapsto> highIn)"
   hence LowIn3: "the (\<sigma>\<^sub>3 ''lowIn'') = lowIn"
   and HighIn3: "the (\<sigma>\<^sub>3 ''highIn'') = highIn"
   by (auto simp: lowIn_def low_in_def \<sigma>\<^sub>2_def)
@@ -632,7 +633,7 @@ proof (auto simp: Target.GNI_def)
     and LowOut3: "the (\<sigma>\<^sub>3' ''lowOut'') = lowOut"
     by (auto simp: spec\<^sub>0_def low_proc_0_def)
     -- {* Construct @{text \<tau>\<^sub>3} from its initial and final states: *}
-    def \<tau>\<^sub>3 \<equiv> "\<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
+    define \<tau>\<^sub>3 where "\<tau>\<^sub>3 = \<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
     with Exec3 State3
     have Trace3: "\<tau>\<^sub>3 \<in> traces p"
     by auto
@@ -670,7 +671,7 @@ proof (auto simp: Target.GNI_def)
     have LowOut3: "the (\<sigma>\<^sub>3' ''lowOut'') = lowIn + 1"
     by (auto simp: spec\<^sub>0_def low_proc_non0_def LowIn3)
     -- {* Construct @{text \<tau>\<^sub>3} from its initial and final states: *}
-    def \<tau>\<^sub>3 \<equiv> "\<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
+    define \<tau>\<^sub>3 where "\<tau>\<^sub>3 = \<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
     with Exec3 State3
     have Trace3: "\<tau>\<^sub>3 \<in> traces p"
     by auto

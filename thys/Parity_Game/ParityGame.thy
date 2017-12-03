@@ -70,7 +70,7 @@ lemma valid_path_edges:
   assumes "valid_path P" "enat (Suc n) < llength P"
   shows "P $ n \<rightarrow> P $ Suc n"
 proof-
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   have "enat n < llength P" using assms(2) enat_ord_simps(2) less_trans by blast
   hence "P' $ 0 = P $ n" by (simp add: P'_def)
   moreover have "P' $ Suc 0 = P $ Suc n"
@@ -187,7 +187,7 @@ lemma maximal_ends_on_deadend:
 proof-
   from `lfinite P` `\<not>lnull P` obtain n where n: "llength P = enat (Suc n)"
     by (metis enat_ord_simps(2) gr0_implies_Suc lfinite_llength_enat lnull_0_llength)
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   hence "maximal_path P'" using assms(1) maximal_drop by blast
   thus ?thesis proof (cases rule: maximal_path.cases)
     case (maximal_path_base' v)
@@ -355,7 +355,7 @@ lemma path_inf_priorities_is_nonempty:
   shows "\<exists>k. k \<in> path_inf_priorities P"
 proof-
   text {* Define a map from indices to priorities on the path. *}
-  def f \<equiv> "\<lambda>i. \<omega> (P $ i)"
+  define f where "f i = \<omega> (P $ i)" for i
   have "range f \<subseteq> \<omega> ` V" unfolding f_def
     using valid_path_in_V[OF P(1)] lset_nth_member_inf[OF P(2)]
     by blast
@@ -363,7 +363,7 @@ proof-
     using priorities_finite finite_subset by blast
   then obtain n0 where n0: "\<not>(finite {n. f n = f n0})"
     using pigeonhole_infinite[of UNIV f] by auto
-  def k \<equiv> "f n0"
+  define k where "k = f n0"
   text {* The priority @{term k} occurs infinitely often. *}
   have "lmap \<omega> P $ n0 = k" unfolding f_def k_def
     using assms(2) by (simp add: infinite_small_llength)

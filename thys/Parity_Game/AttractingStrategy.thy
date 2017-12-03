@@ -30,7 +30,7 @@ lemma visits_via_LCons:
 proof-
   obtain n where n: "enat n < llength P" "P $ n \<in> W" "lset (ltake (enat n) P) \<subseteq> A"
     using assms unfolding visits_via_def by blast
-  def P' \<equiv> "LCons v0 P"
+  define P' where "P' = LCons v0 P"
   have "enat (Suc n) < llength P'" unfolding P'_def
     by (metis n(1) ldropn_Suc_LCons ldropn_Suc_conv_ldropn ldropn_eq_LConsD)
   moreover have "P' $ Suc n \<in> W" unfolding P'_def by (simp add: n(2))
@@ -122,7 +122,7 @@ lemma strategy_attracts_via_no_deadends:
   shows "\<not>deadend v"
 proof
   assume "deadend v"
-  def [simp]: P \<equiv> "LCons v LNil"
+  define P where [simp]: "P = LCons v LNil"
   interpret vmc_path G P v p \<sigma> proof
     show "valid_path P" using `v \<in> A - W` `v \<in> V` valid_path_base' by auto
     show "maximal_path P" using `deadend v` by (simp add: maximal_path.intros(2))
@@ -153,7 +153,7 @@ lemma strategy_attracts_via_successor:
 proof
   fix P assume "vmc_path G P w0 p \<sigma>"
   then interpret vmc_path G P w0 p \<sigma> .
-  def [simp]: P' \<equiv> "LCons v0 P"
+  define P' where [simp]: "P' = LCons v0 P"
   then interpret P': vmc_path G P' v0 p \<sigma>
     using extension_valid_maximal_conforming w0 by blast
   interpret P': vmc_path_no_deadend G P' v0 p \<sigma> using `v0\<rightarrow>w0` by unfold_locales blast
@@ -241,7 +241,7 @@ lemma strategy_attracts_does_not_leave:
 proof (rule ccontr)
   assume contra: "\<not>(v \<in> VV p \<and> \<sigma> v \<noteq> w)"
   (* Define a strategy for p** which tries to take this edge. *)
-  def \<sigma>' \<equiv> "\<sigma>_arbitrary(v := w)"
+  define \<sigma>' where "\<sigma>' = \<sigma>_arbitrary(v := w)"
   hence "strategy p** \<sigma>'" using `v\<rightarrow>w` by (simp add: valid_strategy_updates)
   then obtain P where P: "vmc2_path G P v p \<sigma> \<sigma>'"
     using `v\<rightarrow>w` strategy_conforming_path_exists \<sigma>(2) by blast
@@ -315,7 +315,7 @@ lemma (in vmc_path) attracted_path:
   shows "lset P \<inter> W \<noteq> {}"
 proof-
   obtain n where n: "enat n < llength P" "P $ n \<in> A" using P_hits_A by (meson lset_intersect_lnth)
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   interpret vmc_path G P' "P $ n" p \<sigma> unfolding P'_def using vmc_path_ldropn n(1) by blast
   have "visits_via P' A W" using \<sigma> n(2) strategy_attractsE by blast
   thus ?thesis unfolding P'_def using visits_via_visits in_lset_ldropnD[of _ n P] by blast

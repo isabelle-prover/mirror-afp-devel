@@ -78,12 +78,13 @@ lemma graph_conversion_bij: "G = from_pre_digraph (to_pre_digraph G)"
 
 lemma (in nomulti_digraph) graph_conversion_bij2: "digraph_iso G (to_pre_digraph (from_pre_digraph G))"
 proof-
-  def iso \<equiv> "\<lparr>
-    iso_verts = id :: 'a \<Rightarrow> 'a,
-    iso_arcs = arc_to_ends G,
-    iso_head = snd,
-    iso_tail = fst
-  \<rparr>"
+  define iso 
+    where "iso = \<lparr>
+      iso_verts = id :: 'a \<Rightarrow> 'a,
+      iso_arcs = arc_to_ends G,
+      iso_head = snd,
+      iso_tail = fst
+    \<rparr>"
 
   have "inj_on (iso_verts iso) (pre_digraph.verts G)" unfolding iso_def by auto
   moreover have "inj_on (iso_arcs iso) (pre_digraph.arcs G)"

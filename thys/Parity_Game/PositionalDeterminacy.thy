@@ -28,21 +28,21 @@ lemma positional_strategy_induction_step:
   shows "\<exists>p. v \<in> winning_region p"
 proof-
   text {* First, we determine the minimum priority and the player who likes it. *}
-  def min_prio \<equiv> "Min (\<omega> ` V)"
+  define min_prio where "min_prio = Min (\<omega> ` V)"
   have "\<exists>p. winning_priority p min_prio" by auto
   then obtain p where p: "winning_priority p min_prio" by blast
   text {* Then we define the tentative winning region of player @{term "p**"}.
     The rest of the proof is to show that this is the complete winning region.
   *}
-  def W1 \<equiv> "winning_region p**"
+  define W1 where "W1 = winning_region p**"
   text {* For this, we define several more sets of nodes.
     First, @{text U} is the tentative winning region of player @{term p}.
   *}
-  def U \<equiv> "V - W1"
-  def K \<equiv> "U \<inter> (\<omega> -` {min_prio})"
-  def V' \<equiv> "U - attractor p K"
+  define U where "U = V - W1"
+  define K where "K = U \<inter> (\<omega> -` {min_prio})"
+  define V' where "V' = U - attractor p K"
 
-  def [simp]: G' \<equiv> "subgame V'"
+  define G' where [simp]: "G' = subgame V'"
   interpret G': ParityGame G' using subgame_ParityGame by simp
 
   have U_equiv: "\<And>v. v \<in> V \<Longrightarrow> v \<in> U \<longleftrightarrow> v \<notin> winning_region p**"
@@ -119,7 +119,7 @@ proof-
 
       have "v \<in> winning_region p**" proof
         show "v \<in> V" using `v \<in> V\<^bsub>G'\<^esub>` `V\<^bsub>G'\<^esub> \<subseteq> V` by blast
-        def \<sigma>' \<equiv> "override_on (override_on \<sigma>_arbitrary \<sigma>W1 W1) \<sigma> V'"
+        define \<sigma>' where "\<sigma>' = override_on (override_on \<sigma>_arbitrary \<sigma>W1 W1) \<sigma> V'"
         thus "strategy p** \<sigma>'"
           using valid_strategy_updates_set_strong valid_arbitrary_strategy \<sigma>W1(1)
                 valid_strategy_supergame \<sigma>(1) G'_no_deadends `V\<^bsub>G'\<^esub> = V'`
@@ -209,10 +209,10 @@ proof-
   text {*
     As a last option we choose an arbitrary successor but avoid entering @{term W1}.
     In particular, this defines the strategy on the set @{term K}. *}
-  def succ \<equiv> "\<lambda>v. SOME w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)"
+  define succ where "succ v = (SOME w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1))" for v
 
   text {* Compose the three pieces. *}
-  def \<sigma> \<equiv> "override_on (override_on succ \<sigma>2 V') \<sigma>1 (attractor p K - K)"
+  define \<sigma> where "\<sigma> = override_on (override_on succ \<sigma>2 V') \<sigma>1 (attractor p K - K)"
 
   have "attractor p K \<inter> W1 = {}" proof (rule ccontr)
     assume "attractor p K \<inter> W1 \<noteq> {}"
@@ -231,9 +231,9 @@ proof-
   have \<sigma>_\<sigma>1: "\<And>v. v \<in> attractor p K - K \<Longrightarrow> \<sigma> v = \<sigma>1 v" unfolding \<sigma>_def by simp
   have \<sigma>_\<sigma>2: "\<And>v. v \<in> V' \<Longrightarrow> \<sigma> v = \<sigma>2 v" unfolding \<sigma>_def V'_def by auto
   have \<sigma>_K: "\<And>v. v \<in> K \<union> W1 \<Longrightarrow> \<sigma> v = succ v" proof-
-    fix v assume "v \<in> K \<union> W1"
-    moreover hence "v \<notin> V'" unfolding V'_def U_def using attractor_set_base by auto
-    ultimately show "\<sigma> v = succ v" unfolding \<sigma>_def U_def using `attractor p K \<inter> W1 = {}`
+    fix v assume v: "v \<in> K \<union> W1"
+    hence "v \<notin> V'" unfolding V'_def U_def using attractor_set_base by auto
+    with v show "\<sigma> v = succ v" unfolding \<sigma>_def U_def using `attractor p K \<inter> W1 = {}`
       by (metis (mono_tags, lifting) Diff_iff IntI UnE override_on_def override_on_emptyset)
   qed
 
@@ -258,7 +258,8 @@ proof-
       using someI_ex[of "\<lambda>w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)"] by blast+
   } note succ_works = this
 
-  have "strategy p \<sigma>" proof
+  have "strategy p \<sigma>"
+  proof
     fix v assume v: "v \<in> VV p" "\<not>deadend v"
     hence "v \<in> attractor p K - K \<Longrightarrow> v\<rightarrow>\<sigma> v" using \<sigma>_\<sigma>1 \<sigma>1(1) v unfolding strategy_def by auto
     moreover have "v \<in> V' \<Longrightarrow> v\<rightarrow>\<sigma> v" proof-
@@ -287,7 +288,8 @@ proof-
     fix v P assume P: "v \<in> V - W1" "vmc_path G P v p \<sigma>"
     interpret vmc_path G P v p \<sigma> using P(2) .
 
-    have "lset P \<subseteq> V - W1" proof (induct rule: vmc_path_lset_induction_closed_subset)
+    have "lset P \<subseteq> V - W1"
+    proof (induct rule: vmc_path_lset_induction_closed_subset)
       fix v assume "v \<in> V - W1" "\<not>deadend v" "v \<in> VV p"
       show "\<sigma> v \<in> V - W1 \<union> {}" proof (rule ccontr)
         assume "\<not>?thesis"
@@ -318,7 +320,8 @@ proof-
       qed
     next
       fix v w assume "v \<in> V - W1" "\<not>deadend v" "v \<in> VV p**" "v\<rightarrow>w"
-      show "w \<in> V - W1 \<union> {}" proof (rule ccontr)
+      show "w \<in> V - W1 \<union> {}"
+      proof (rule ccontr)
         assume "\<not>?thesis"
         hence "w \<in> W1" using `v\<rightarrow>w` by blast
         let ?\<sigma> = "\<sigma>W1(v := w)"
@@ -355,11 +358,12 @@ proof-
           Then @{term P} is winning because of the priority of the nodes in @{term K}.
       \end{enumerate}
     *}
-    show "winning_path p P" proof (cases)
+    show "winning_path p P"
+    proof (cases)
       assume "\<exists>n. lset (ldropn n P) \<subseteq> V'"
       text {* The first case: @{term P} eventually stays in @{term V'}. *}
       then obtain n where n: "lset (ldropn n P) \<subseteq> V'" by blast
-      def P' \<equiv> "ldropn n P"
+      define P' where "P' = ldropn n P"
       hence "lset P' \<subseteq> V'" using n by blast
       interpret vmc_path G' P' "lhd P'" p \<sigma>2 proof
         show "\<not>lnull P'" unfolding P'_def
@@ -402,7 +406,7 @@ proof-
       unfolding path_inf_priorities_def proof (intro CollectI allI)
         fix n
         obtain k1 where k1: "ldropn n P $ k1 \<notin> V'" using asm by (metis lset_lnth subsetI)
-        def k2 \<equiv> "k1 + n"
+        define k2 where "k2 = k1 + n"
         interpret vmc_path G "ldropn k2 P" "P $ k2" p \<sigma>
           using vmc_path_ldropn infinite_small_llength `\<not>lfinite P` by blast
         have "P $ k2 \<notin> V'" unfolding k2_def
@@ -411,7 +415,7 @@ proof-
           by (metis DiffI U_def V'_def lset_nth_member_inf)
         then obtain k3 where k3: "ldropn k2 P $ k3 \<in> K"
           using \<sigma>_attracts strategy_attractsE unfolding G'.visits_via_def by blast
-        def k4 \<equiv> "k3 + k2"
+        define k4 where "k4 = k3 + k2"
         hence "P $ k4 \<in> K"
           using k3 lnth_ldropn infinite_small_llength[OF `\<not>lfinite P`] by simp
         moreover have "k4 \<ge> n" unfolding k4_def k2_def
@@ -457,7 +461,7 @@ theorem positional_strategy_exists:
   shows "\<exists>p. v0 \<in> winning_region p"
 proof-
   { fix p
-    def A \<equiv> "attractor p (deadends p**)"
+    define A where "A = attractor p (deadends p**)"
     assume v0_in_attractor: "v0 \<in> attractor p (deadends p**)"
     then obtain \<sigma> where \<sigma>: "strategy p \<sigma>" "strategy_attracts p \<sigma> A (deadends p**)"
       using attractor_has_strategy[of "deadends p**" "p"] A_def deadends_in_V by blast
@@ -474,13 +478,13 @@ proof-
     qed
     hence "\<exists>p \<sigma>. strategy p \<sigma> \<and> winning_strategy p \<sigma> v0" using \<sigma> by blast
   } note lemma_path_to_deadend = this
-  def A \<equiv> "\<lambda>p. attractor p (deadends p**)"
+  define A where "A p = attractor p (deadends p**)" for p
   text {* Remove the attractor sets of the sets of deadends. *}
-  def V' \<equiv> "V - A Even - A Odd"
+  define V' where "V' = V - A Even - A Odd"
   hence "V' \<subseteq> V" by blast
   show ?thesis proof (cases)
     assume "v0 \<in> V'"
-    def G' \<equiv> "subgame V'"
+    define G' where "G' = subgame V'"
     interpret G': ParityGame G' unfolding G'_def using subgame_ParityGame .
     have "V\<^bsub>G'\<^esub> = V'" unfolding G'_def using `V' \<subseteq> V` by simp
     hence "v0 \<in> V\<^bsub>G'\<^esub>" using `v0 \<in> V'` by simp
@@ -503,8 +507,8 @@ proof-
 
     obtain \<sigma>_attr
       where \<sigma>_attr: "strategy p \<sigma>_attr" "strategy_attracts p \<sigma>_attr (A p) (deadends p**)"
-      using attractor_has_strategy[OF deadends_in_V] A_def by blast
-    def \<sigma>' \<equiv> "override_on \<sigma> \<sigma>_attr (A Even \<union> A Odd)"
+      using attractor_has_strategy[OF deadends_in_V] unfolding A_def by blast
+    define \<sigma>' where "\<sigma>' = override_on \<sigma> \<sigma>_attr (A Even \<union> A Odd)"
     have \<sigma>'_is_\<sigma>_on_V': "\<And>v. v \<in> V' \<Longrightarrow> \<sigma>' v = \<sigma> v"
       unfolding V'_def \<sigma>'_def A_def by (cases p) simp_all
 

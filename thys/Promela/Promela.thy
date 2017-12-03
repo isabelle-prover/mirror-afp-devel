@@ -2522,8 +2522,7 @@ lemma reachable_states_finite:
   and "gState_inv prog g"
   shows "finite (reachable_states prog g)"
 proof (rule finite_subset[OF _ gStates_finite[of _ g]])
-  def INV \<equiv> "\<lambda>g'. g' \<in> (gState_progress_rel prog)\<^sup>* `` {g}  
-                       \<and> gState_inv prog g'"
+  define INV where "INV g' \<longleftrightarrow> g' \<in> (gState_progress_rel prog)\<^sup>* `` {g} \<and> gState_inv prog g'" for g'
 
   {
     fix g'

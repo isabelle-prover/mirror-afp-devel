@@ -59,7 +59,7 @@ theorem WHATWHERE_Secure_Skip:
 "WHATWHERE_Secure [skip\<^bsub>\<iota>\<^esub>]"
 proof (simp add: WHATWHERE_Secure_def, auto)
   fix d PP
-  def R \<equiv> "{(V::('exp,'id) MWLsCom list,V'::('exp,'id) MWLsCom list). 
+  define R where "R = {(V::('exp,'id) MWLsCom list,V'::('exp,'id) MWLsCom list). 
     V = V' \<and> (V = [] \<or> V = [skip\<^bsub>\<iota>\<^esub>])}"
   
   have inR: "([skip\<^bsub>\<iota>\<^esub>],[skip\<^bsub>\<iota>\<^esub>]) \<in> R"
@@ -150,7 +150,7 @@ theorem WHATWHERE_Secure_Assign:
   shows "WHATWHERE_Secure [x :=\<^bsub>\<iota>\<^esub> e]"
 proof (simp add: WHATWHERE_Secure_def, auto)
   fix d PP 
-  def R \<equiv> "{(V::('exp,'id) MWLsCom list,V'::('exp,'id) MWLsCom list). 
+  define R where "R = {(V::('exp,'id) MWLsCom list,V'::('exp,'id) MWLsCom list). 
     V = V' \<and> (V = [] \<or> V = [x :=\<^bsub>\<iota>\<^esub> e])}"
   
   have inR: "([x :=\<^bsub>\<iota>\<^esub> e],[x :=\<^bsub>\<iota>\<^esub> e]) \<in> R"

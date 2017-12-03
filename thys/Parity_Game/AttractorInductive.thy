@@ -42,8 +42,9 @@ proof
       case (VVpstar v) thus ?case using attractor_set_VVpstar by auto
     qed
   qed
-  show "attractor p W \<subseteq> attractor_inductive p W" proof-
-    def P \<equiv> "\<lambda>S. S \<subseteq> attractor_inductive p W"
+  show "attractor p W \<subseteq> attractor_inductive p W"
+  proof-
+    define P where "P S \<longleftrightarrow> S \<subseteq> attractor_inductive p W" for S
     from `W \<subseteq> V` have "P (attractor p W)" proof (induct rule: attractor_set_induction)
       case (step S)
       hence "S \<subseteq> attractor_inductive p W" using P_def by simp

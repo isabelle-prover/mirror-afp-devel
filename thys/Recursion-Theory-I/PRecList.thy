@@ -216,8 +216,8 @@ proof -
   have S2: "u>0 \<Longrightarrow> ?thesis"
   proof -
     assume A1: "u>0"
-    def D1: ls == "nat_to_list u"
-    from D1 A1 have S2_1: "ls = c_unfold (c_len u) (c_snd (u-(1::nat)))" by (simp add: nat_to_list_def)
+    define ls where "ls = nat_to_list u"
+    from ls_def A1 have S2_1: "ls = c_unfold (c_len u) (c_snd (u-(1::nat)))" by (simp add: nat_to_list_def)
     let ?k = "c_len u"
     from A1 have S2_2: "?k > 0" by (rule c_len_3)
     from S2_1 have S2_3: "length ls = ?k" by (simp add: c_unfold_len)
@@ -239,7 +239,7 @@ proof -
     from S2_9 have S2_10: "c_pair ((length ls)-(1::nat)) (c_fold ls) = u - (1::nat)" by simp
     from S2_6 S2_10 have S2_11: "list_to_nat ls = (u - (1::nat))+1" by simp
     from A1 have S2_12: "(u - (1::nat))+1 = u" by simp
-    from D1 S2_11 S2_12 show ?thesis by simp
+    from ls_def S2_11 S2_12 show ?thesis by simp
   qed
   from S1 S2 show ?thesis by arith
 qed
@@ -250,8 +250,8 @@ proof -
   have S2: "ls \<noteq> [] \<Longrightarrow> ?thesis"
   proof -
     assume A1: "ls \<noteq> []"
-    def D1: u == "list_to_nat ls"
-    from D1 A1 have S2_1: "u = (c_pair ((length ls)-(1::nat)) (c_fold ls))+1" by (simp add: list_to_nat_def)
+    define u where "u = list_to_nat ls"
+    from u_def A1 have S2_1: "u = (c_pair ((length ls)-(1::nat)) (c_fold ls))+1" by (simp add: list_to_nat_def)
     let ?k = "length ls"
     from A1 have S2_2: "?k > 0" by simp
     from S2_1 have S2_3: "u>0" by simp
@@ -270,7 +270,7 @@ proof -
     qed
     from S2_4 S2_5 S2_6 have S2_7:"nat_to_list u = c_unfold (length ls) (c_fold ls)" by simp
     from S2_7 have "nat_to_list u = ls" by (simp add: th_3)
-    from D1 this show ?thesis by simp
+    from u_def this show ?thesis by simp
   qed
   have S3: "ls = [] \<or> ls \<noteq> []" by simp
   from S1 S2 S3 show ?thesis by auto
@@ -415,9 +415,9 @@ proof -
   from S5 have S6: "c_unfold (Suc ?k) (c_snd (u-(1::nat))) = (c_fst (c_snd (u-(1::nat)))) # (c_unfold ?k (c_snd (c_snd (u-(1::nat)))))" by (rule c_unfold_4)
   from S6 have S7: "tl (c_unfold (Suc ?k) (c_snd (u-(1::nat)))) = c_unfold ?k (c_snd (c_snd (u-(1::nat))))" by simp
   from S2 S4 S7 have S8: "tl (nat_to_list u) = c_unfold ?k (c_snd (c_snd (u-(1::nat))))" by simp
-  def D1: ls == "tl (nat_to_list u)"
-  from D1 S8 have S9: "length ls = ?k" by (simp add: c_unfold_len)
-  from D1 have S10: "c_tl u = list_to_nat ls" by (simp add: c_tl_def)
+  define ls where "ls = tl (nat_to_list u)"
+  from ls_def S8 have S9: "length ls = ?k" by (simp add: c_unfold_len)
+  from ls_def have S10: "c_tl u = list_to_nat ls" by (simp add: c_tl_def)
   from S5 S9 have S11: "length ls > 0" by simp
   from S11 have S12: "ls \<noteq> []" by simp
   from S12 have S13: "list_to_nat ls = (c_pair ((length ls) - 1) (c_fold ls))+1" by (simp add: list_to_nat_def)
@@ -425,7 +425,7 @@ proof -
   from S9 have S15: "(length ls)-(1::nat) = ?k-(1::nat)" by simp
   from A1 have S16: "?k-(1::nat) = c_len u - (2::nat)" by arith
   from S15 S16 have S17: "(length ls)-(1::nat) = c_len u - (2::nat)" by simp
-  from D1 S8 have S18: "ls = c_unfold ?k (c_snd (c_snd (u-(1::nat))))" by simp
+  from ls_def S8 have S18: "ls = c_unfold ?k (c_snd (c_snd (u-(1::nat))))" by simp
   from S5 have S19: "c_fold (c_unfold ?k (c_snd (c_snd (u-(1::nat))))) = c_snd (c_snd (u-(1::nat)))" by (simp add: th_2)
   from S18 S19 have S20: "c_fold ls = c_snd (c_snd (u-(1::nat)))" by simp
   from S14 S17 S20 show ?thesis by simp
@@ -507,12 +507,12 @@ proof -
   assume A1: "u > 0"
   from A1 have S1: "c_len u > 0" by (rule c_len_3)
   from A1 have S2: "nat_to_list u = c_unfold (c_len u) (c_snd (u-(1::nat)))" by (rule nat_to_list_of_pos)
-  def D1: ls == "nat_to_list u"
-  from D1 S2 have S3: "ls = c_unfold (c_len u) (c_snd (u-(1::nat)))" by simp
+  define ls where "ls = nat_to_list u"
+  from ls_def S2 have S3: "ls = c_unfold (c_len u) (c_snd (u-(1::nat)))" by simp
   from S3 have S4: "length ls = c_len u" by (simp add: c_unfold_len)
   from S4 S1 have S5: "length ls > 0" by simp
   from S5 have S6: "ls \<noteq> []" by simp
-  from D1 have S7: "c_cons x u = list_to_nat (x # ls)" by (simp add: c_cons_def)
+  from ls_def have S7: "c_cons x u = list_to_nat (x # ls)" by (simp add: c_cons_def)
   have S8: "list_to_nat (x # ls) = (c_pair ((length (x#ls))-(1::nat)) (c_fold (x#ls)))+1" by (simp add: list_to_nat_def)
   have S9: "(length (x#ls))-(1::nat) = length ls" by simp
   from S9 S4 S8 have S10: "list_to_nat (x # ls) = (c_pair (c_len u) (c_fold (x#ls)))+1" by simp

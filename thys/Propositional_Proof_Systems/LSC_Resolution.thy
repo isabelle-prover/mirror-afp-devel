@@ -101,7 +101,7 @@ lemma Resolution_LSC_pre:
 using assms proof(induction S R rule: Resolution.induct)
   case (Ass F S)
   (* Idea: we don't just obtain an S', we obtain an S' that contains R (and not just some reordering of it) *)
-  def Sm \<equiv> "S - {F}"
+  define Sm where "Sm = S - {F}"
   hence Sm: "S = F\<triangleright>Sm" "F \<notin> Sm" using Ass by fast+ (* try doing this with obtain\<dots> *)
   with Ass have fsm: "finite Sm" "Ball Sm finite" by auto
   then obtain Sm' where "Sm = set (map set Sm')" by (metis (full_types) ex_map_conv finite_list)

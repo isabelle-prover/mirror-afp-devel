@@ -371,7 +371,7 @@ private lemma greedy_conforming_path_properties:
     and greedy_path_conforms:  "path_conforms_with_strategy p (greedy_conforming_path p \<sigma> \<sigma>' v0) \<sigma>"
     and greedy_path_conforms': "path_conforms_with_strategy p** (greedy_conforming_path p \<sigma> \<sigma>' v0) \<sigma>'"
 proof-
-  def [simp]: P \<equiv> "greedy_conforming_path p \<sigma> \<sigma>' v0"
+  define P where [simp]: "P = greedy_conforming_path p \<sigma> \<sigma>' v0"
 
   show "\<not>lnull P" "P $ 0 = v0" by (simp_all add: lnth_0_conv_lhd)
 
@@ -535,7 +535,7 @@ lemma vmc_path_conforms:
   assumes "enat (Suc n) < llength P" "P $ n \<in> VV p"
   shows "\<sigma> (P $ n) = P $ Suc n"
 proof-
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   then interpret P': vmc_path G P' "P $ n" p \<sigma> using vmc_path_ldropn assms(1) Suc_llength by blast
   have "\<not>deadend (P $ n)" using assms(1) P_no_deadends by blast
   then interpret P': vmc_path_no_deadend G P' "P $ n" p \<sigma> by unfold_locales

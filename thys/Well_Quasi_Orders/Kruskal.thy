@@ -57,9 +57,9 @@ proof (rule ccontr)
     and min: "\<forall>g. (m, g) \<in> gseq \<longrightarrow> good ?P g" ..
   then have trees: "\<And>i. m i \<in> trees" by auto
 
-  def r \<equiv> "\<lambda>i. root (m i)"
-  def a \<equiv> "\<lambda>i. args (m i)"
-  def S \<equiv> "\<Union>{set (a i) | i. True}"
+  define r where "r i = root (m i)" for i
+  define a where "a i = args (m i)" for i
+  define S where "S = \<Union>{set (a i) | i. True}"
 
   have m: "\<And>i. m i = mk (fst (r i)) (a i)"
    by (simp add: r_def a_def mk_root_args [OF trees])
@@ -76,14 +76,14 @@ proof (rule ccontr)
     then obtain s :: "nat \<Rightarrow> 'a"
       where S: "\<And>i. s i \<in> S" and bad_s: "bad ?P s" by (auto simp: almost_full_on_def)
 
-    def n \<equiv> "LEAST n. \<exists>k. s k \<in> set (a n)"
+    define n where "n = (LEAST n. \<exists>k. s k \<in> set (a n))"
     have "\<exists>n. \<exists>k. s k \<in> set (a n)" using S by (force simp: S_def)
     from LeastI_ex [OF this] obtain k
       where sk: "s k \<in> set (a n)" by (auto simp: n_def)
     have args: "\<And>k. \<exists>m \<ge> n. s k \<in> set (a m)"
       using S by (auto simp: S_def) (metis Least_le n_def)
 
-    def m' \<equiv> "\<lambda>i. if i < n then m i else s (k + (i - n))"
+    define m' where "m' i = (if i < n then m i else s (k + (i - n)))" for i
     
     have m'_less: "\<And>i. i < n \<Longrightarrow> m' i = m i" by (simp add: m'_def)
     have m'_geq: "\<And>i. i \<ge> n \<Longrightarrow> m' i = s (k + (i - n))" by (simp add: m'_def)

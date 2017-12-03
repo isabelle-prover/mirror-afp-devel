@@ -126,7 +126,7 @@ proof
         from 1 i1 have b1: "b1 \<noteq> 0" unfolding sqrt_irrat_def by (cases b1, auto)
         from 2 i2 have b2: "b2 \<noteq> 0" unfolding sqrt_irrat_def by (cases b2, auto)
         let ?sq = "\<lambda> x. x * x"
-        def q3 \<equiv> "p2 - p1"
+        define q3 where "q3 = p2 - p1"
         let ?q3 = "real_of_rat q3"
         let ?e = "of_rat (q2 * q2 * of_nat b2 + ?sq q3  - ?sq q1 * of_nat b1) + of_rat (2 * q2 * q3) * sqrt ?b2"
         from eq have *: "?q1 * sqrt ?b1 = ?q2 * sqrt ?b2 + ?q3"
@@ -200,14 +200,15 @@ lift_definition mau_sqrt :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is
       in ma_times ma' (ma_sqrt (ma_of_rat (of_nat fact)))"
 proof -
   fix ma :: mini_alg
-  let ?num = "let (a, b) = quotient_of (ma_rat ma); (sq, fact) = prime_product_factor (nat (\<bar>a\<bar> * b));
-             ma' = ma_of_rat (rat_of_int (sgn a) * rat_of_nat sq / of_int b)
-         in ma_times ma' (ma_sqrt (ma_of_rat (rat_of_nat fact)))"
+  let ?num =
+    "let (a, b) = quotient_of (ma_rat ma); (sq, fact) = prime_product_factor (nat (\<bar>a\<bar> * b));
+       ma' = ma_of_rat (rat_of_int (sgn a) * rat_of_nat sq / of_int b)
+     in ma_times ma' (ma_sqrt (ma_of_rat (rat_of_nat fact)))"
   obtain a b where q: "quotient_of (ma_rat ma) = (a,b)" by force
   obtain sq fact where ppf: "prime_product_factor (nat (abs a * b)) = (sq,fact)" by force
-  def asq \<equiv> "rat_of_int (sgn a) * of_nat sq / of_int b"
-  def ma' \<equiv> "ma_of_rat asq"
-  def sqrt \<equiv> "ma_sqrt (ma_of_rat (rat_of_nat fact))"
+  define asq where "asq = rat_of_int (sgn a) * of_nat sq / of_int b"
+  define ma' where "ma' = ma_of_rat asq"
+  define sqrt where "sqrt = ma_sqrt (ma_of_rat (rat_of_nat fact))"
   have num: "?num = ma_times ma' sqrt" unfolding q ppf asq_def Let_def split ma'_def sqrt_def ..
   let ?inv = "\<lambda> ma. ma_coeff ma = 0 \<and> ma_base ma = 0 \<or> ma_coeff ma \<noteq> 0 \<and> prime_product (ma_base ma)"
   have ma': "?inv ma'" unfolding ma'_def
@@ -218,7 +219,7 @@ proof -
   hence sqrt: "?inv sqrt" unfolding sqrt_def
     by (transfer, unfold split quotient_of_nat Let_def id, case_tac "sqrt_int \<bar>int facta\<bar>", auto)
   show "?inv ?num" unfolding num using ma' sqrt
-    by (transfer, auto simp: ma_normalize_def split: if_splits)
+    by (transfer, auto simp: ma_normalize_def split: if_splits)  (* slow *)
 qed
 
 lemma sqrt_sgn[simp]: "sqrt (of_int (sgn a)) = of_int (sgn a)"

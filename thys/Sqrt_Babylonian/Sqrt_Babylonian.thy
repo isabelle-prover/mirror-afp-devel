@@ -295,9 +295,9 @@ text {* Termination essentially is a proof of convergence. Here, one complicatio
   does not require any square-root operation. *}
 termination
 proof -
-  def er \<equiv> "\<lambda> x. (x * x / n - 1)" 
-  def c \<equiv> "2 * n / \<epsilon>"
-  def m \<equiv> "\<lambda> x. nat \<lfloor> c * er x \<rfloor>"
+  define er where "er x = (x * x / n - 1)" for x
+  define c where "c = 2 * n / \<epsilon>"
+  define m where "m x = nat \<lfloor> c * er x \<rfloor>" for x
   have c: "c > 0" unfolding c_def using n \<epsilon> by auto
   show ?thesis
   proof
@@ -305,7 +305,7 @@ proof -
   next
     fix x 
     assume x: "0 < x" and xe: "\<not> x * x - n < \<epsilon>"
-    def y \<equiv> "(n / x + x) / 2"    
+    define y where "y = (n / x + x) / 2"    
     show "((n / x + x) / 2,x) \<in> measures [m]" unfolding y_def[symmetric]
     proof (rule measures_less)
       from n have inv_n: "1 / n > 0" by auto
@@ -413,7 +413,7 @@ next
   let ?x = "\<bar>x\<bar>" 
   let ?sqrti = "sqrt_approx_main_impl \<epsilon> ?x (?x + 1)"
   let ?sqrt = "sqrt_approximation.sqrt_approx_main \<epsilon> ?x (?x + 1)"
-  def sqrt \<equiv> ?sqrt
+  define sqrt where "sqrt = ?sqrt"
   from False have x: "?x > 0" "?x + 1 > 0" by auto
   interpret sqrt_approximation \<epsilon> ?x
     by (unfold_locales, insert x \<epsilon>, auto)

@@ -94,7 +94,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
               auto
         qed
       qed
-      def f'\<equiv>"\<lambda>i. if i<k then g i else f (i-k)"
+      define f' where "f' i = (if i<k then g i else f (i-k))" for i
       have "\<exists>f'. f' 0 = x0 \<and> (\<forall>i. (f' i, f' (Suc i))\<in>S)"
         apply (rule_tac x=f' in exI)
         apply (unfold f'_def)
@@ -117,7 +117,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
   qed
 
   txt {* Construct chain in @{text "S'"}*}
-  def g'\<equiv>"rec_nat x0' (\<lambda>i x. SOME x'. 
+  define g' where "g' = rec_nat x0' (\<lambda>i x. SOME x'. 
           (x,x')\<in>S' \<and> (f' (Suc i),x')\<in>R \<and> (x0', x')\<in>S'\<^sup>* )"
   {
     fix i

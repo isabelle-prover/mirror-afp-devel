@@ -33,7 +33,7 @@ lemma square_part_0 [simp]: "square_part 0 = 0"
 lemma squarefree_decompose: "\<Prod>(squarefree_part n) * square_part n ^ 2 = n"
 proof (cases "n = 0")
   case False
-  def A \<equiv> "squarefree_part n" and s \<equiv> "square_part n"
+  define A s where "A = squarefree_part n" and "s = square_part n"
   have "(\<Prod>A) = (\<Prod>p\<in>A. p ^ (multiplicity p n mod 2))"
     by (intro prod.cong) (auto simp: A_def squarefree_part_def elim!: oddE)
   also have "\<dots> = (\<Prod>p\<in>prime_factors n. p ^ (multiplicity p n mod 2))"
@@ -135,7 +135,7 @@ lemma squarefree_decomposition_unique2:
   assumes s2_nonneg: "s2 \<ge> 0"
   shows "A2 = squarefree_part n" and "s2 = square_part n"
 proof -
-  def A1 \<equiv> "squarefree_part n" and s1 \<equiv> "square_part n"
+  define A1 s1 where "A1 = squarefree_part n" and "s1 = square_part n"
   have "finite A1" unfolding A1_def by simp
   note fin = \<open>finite A1\<close> \<open>finite A2\<close>
 
@@ -153,7 +153,7 @@ proof -
             "multiplicity p (\<Prod>A1) = multiplicity p (\<Prod>A2)" 
     if   p: "prime p" for p
   proof -
-    def m \<equiv> "multiplicity p"
+    define m where "m = multiplicity p"
     from decomp have "m (\<Prod>A1 * s1^2) = m (\<Prod>A2 * s2^2)" unfolding A1_def s1_def
       by (simp add: A1_def s1_def squarefree_decompose)
     with p pos have eq: "m (\<Prod>A1) + 2 * m s1 = m (\<Prod>A2) + 2 * m s2"

@@ -891,29 +891,28 @@ lemma loc_upb_lex_4: "\<lbrakk>\<And> n' x'. ((n',x'), (n,x)) \<in> lex_p \<Long
                        c_fst n mod 7 = 4\<rbrakk> \<Longrightarrow>
                        c_assoc_have_key (pr_gr (loc_upb n x)) (c_pair n x) = 0"
 proof -
-
   assume A1: "\<And> n' x'. ((n',x'), (n,x)) \<in> lex_p \<Longrightarrow> c_assoc_have_key (pr_gr (loc_upb n' x')) (c_pair n' x') = 0"
   assume A2: "c_fst n mod 7 = 4"
   let ?key = "c_pair n x"
   let ?m1 = "c_fst (c_snd n)"
   let ?m2 = "c_snd (c_snd n)"
-  def D1: upb1 == "loc_upb ?m2 x"
+  define upb1 where "upb1 = loc_upb ?m2 x"
   from A2 have m2_lt_n: "?m2 < n" by (simp add: loc_upb_lm_2_2)
   then have M2: "((?m2, x), (n,x)) \<in> lex_p" by (simp add: lex_p_eq)
-  with A1 D1 have S1: "c_assoc_have_key (pr_gr upb1) (c_pair ?m2 x) = 0" by auto
+  with A1 upb1_def have S1: "c_assoc_have_key (pr_gr upb1) (c_pair ?m2 x) = 0" by auto
   from M2 have M2': "((?m2, x), n, x) \<in> measure (\<lambda>m. m) <*lex*> measure (\<lambda>n. n)" by (simp add: lex_p_def)
   have T1: "c_is_sub_fun (pr_gr upb1) univ_for_pr" by (rule pr_gr_1)
   from T1 S1 have T2: "c_assoc_value (pr_gr upb1) (c_pair ?m2 x) = univ_for_pr (c_pair ?m2 x)" by (rule c_is_sub_fun_lm_1)
-  def D_y: y == "c_assoc_value (pr_gr upb1) (c_pair ?m2 x)"
-  from T2 D_y have T3: "y = univ_for_pr (c_pair ?m2 x)" by auto
+  define y where "y = c_assoc_value (pr_gr upb1) (c_pair ?m2 x)"
+  from T2 y_def have T3: "y = univ_for_pr (c_pair ?m2 x)" by auto
 
-  def D2: upb2 == "loc_upb ?m1 y"
+  define upb2 where "upb2 = loc_upb ?m1 y"
   from A2 have "?m1 < n" by (simp add: loc_upb_lm_2_0)
   then have M1: "((?m1, y), (n,x)) \<in> lex_p" by (simp add: lex_p_eq)
   with A1 have S2: "c_assoc_have_key (pr_gr (loc_upb ?m1 y)) (c_pair ?m1 y) = 0" by auto
   from M1 have M1': "((?m1, y), n, x) \<in> measure (\<lambda>m. m) <*lex*> measure (\<lambda>n. n)" by (simp add: lex_p_def)
-  from S1 D1 have S3: "c_assoc_have_key (pr_gr upb1) (c_pair ?m2 x) = 0" by auto
-  from S2 D2 have S4: "c_assoc_have_key (pr_gr upb2) (c_pair ?m1 y) = 0" by auto
+  from S1 upb1_def have S3: "c_assoc_have_key (pr_gr upb1) (c_pair ?m2 x) = 0" by auto
+  from S2 upb2_def have S4: "c_assoc_have_key (pr_gr upb2) (c_pair ?m1 y) = 0" by auto
 
   let ?s = "c_pair ?key (upb1 + upb2)"
   let ?ls = "pr_gr ?s"
@@ -924,10 +923,9 @@ proof -
   from A2 M2' M1'' have S11: "loc_upb n x = (let y = c_assoc_value (pr_gr (loc_upb ?m2 x)) (c_pair ?m2 x)
                                in (c_pair (c_pair n x)
                                    (loc_upb ?m2 x + loc_upb ?m1 y)) + 1)"
-  apply(simp add: Let_def)
-  done
-  def upb_def: upb == "loc_upb n x"
-  from S11 D_y D1 D2 have "loc_upb n x = ?s + 1" by (simp add: Let_def)
+    by(simp add: Let_def)
+  define upb where "upb = loc_upb n x"
+  from S11 y_def upb1_def upb2_def have "loc_upb n x = ?s + 1" by (simp add: Let_def)
   with upb_def have S11: "upb = ?s + 1" by auto
 
   have S7: "?sum_upb \<le> ?s" by (rule arg2_le_c_pair)
@@ -955,9 +953,7 @@ proof -
   from T_ls S19 have T_ls2: "c_assoc_value ?ls (c_pair ?m2 x) = univ_for_pr (c_pair ?m2 x)" by (rule c_is_sub_fun_lm_1)
   from T3 T_ls2 have T_y: "c_assoc_value ?ls (c_pair ?m2 x) = y" by auto
   from T_y  S19 S20 have S21: "g_comp ?ls ?key = c_cons (c_pair ?key (c_assoc_value ?ls (c_pair ?m1 y))) ?ls"
-  apply(unfold g_comp_def)
-  apply(simp del: loc_upb.simps add: Let_def)
-  done
+    by(unfold g_comp_def)(simp del: loc_upb.simps add: Let_def)
   from S18 S21 have "pr_gr upb = c_cons (c_pair ?key (c_assoc_value ?ls (c_pair ?m1 y))) ?ls" by auto
   with upb_def have "pr_gr (loc_upb n x) = c_cons (c_pair ?key (c_assoc_value ?ls (c_pair ?m1 y))) ?ls" by auto
   thus ?thesis by (simp add: c_assoc_lm_1)
@@ -978,10 +974,10 @@ proof -
   from A2 have "?m2 < n" by (simp add: loc_upb_lm_2_4)
   then have "((?m2, x), (n,x)) \<in> lex_p" by (simp add: lex_p_eq)
   with A1 have S2: "c_assoc_have_key (pr_gr (loc_upb ?m2 x)) (c_pair ?m2 x) = 0" by auto
-  def D1: upb1 == "loc_upb ?m1 x"
-  def D2: upb2 == "loc_upb ?m2 x"
-  from D1 S1 have S3: "c_assoc_have_key (pr_gr upb1) (c_pair ?m1 x) = 0" by auto
-  from D2 S2 have S4: "c_assoc_have_key (pr_gr upb2) (c_pair ?m2 x) = 0" by auto
+  define upb1 where "upb1 = loc_upb ?m1 x"
+  define upb2 where "upb2 = loc_upb ?m2 x"
+  from upb1_def S1 have S3: "c_assoc_have_key (pr_gr upb1) (c_pair ?m1 x) = 0" by auto
+  from upb2_def S2 have S4: "c_assoc_have_key (pr_gr upb2) (c_pair ?m2 x) = 0" by auto
   let ?sum_upb = "upb1 +upb2"
   have S5: "upb1 \<le> ?sum_upb" by (rule Nat.le_add1)
   have S6: "upb2 \<le> ?sum_upb" by (rule Nat.le_add2)
@@ -990,12 +986,12 @@ proof -
   from S5 S7 have S8: "upb1 \<le> ?s" by auto
   from S6 S7 have S9: "upb2 \<le> ?s" by auto
   let ?ls = "pr_gr ?s"
-  from A2 D1 D2 have S10: "loc_upb n x = ?s + 1" by (simp add: Let_def)
-  def D3: upb == "loc_upb n x"
-  from D3 S10 have S11: "upb = ?s + 1" by auto
+  from A2 upb1_def upb2_def have S10: "loc_upb n x = ?s + 1" by (simp add: Let_def)
+  define upb where "upb = loc_upb n x"
+  from upb_def S10 have S11: "upb = ?s + 1" by auto
   from S11 have S12: "pr_gr upb = g_step (pr_gr ?s) (c_fst ?s)" by (simp add: pr_gr_at_Suc)
-  from S8 S10 D3 have S13: "upb1 \<le> upb" by (simp only:)
-  from S9 S10 D3 have S14: "upb2 \<le> upb" by (simp only:)
+  from S8 S10 upb_def have S13: "upb1 \<le> upb" by (simp only:)
+  from S9 S10 upb_def have S14: "upb2 \<le> upb" by (simp only:)
   from S3 S13 have S15: "c_assoc_have_key (pr_gr upb) (c_pair ?m1 x) = 0" by (rule lm5)
   from S4 S14 have S16: "c_assoc_have_key (pr_gr upb) (c_pair ?m2 x) = 0" by (rule lm5)
   from A2 have S17: "g_step ?ls ?key = g_pair ?ls ?key" by (simp add: g_step_def)
@@ -1007,7 +1003,7 @@ proof -
   let ?y = "c_pair ?y1 ?y2"
   from S19 S20 have S21: "g_pair ?ls ?key = c_cons (c_pair ?key ?y) ?ls" by (unfold g_pair_def, simp add: Let_def)
   from S18 S21 have S22: "pr_gr upb = c_cons (c_pair ?key ?y) ?ls" by auto
-  from D3 S22 have S23: "pr_gr (loc_upb n x) = c_cons (c_pair ?key ?y) ?ls" by auto
+  from upb_def S22 have S23: "pr_gr (loc_upb n x) = c_cons (c_pair ?key ?y) ?ls" by auto
   from S23 show ?thesis by (simp add: c_assoc_lm_1)
 qed
 
@@ -1033,12 +1029,12 @@ proof -
   let ?m2 = "c_snd (c_snd n)"
   let ?y1 = "c_fst x"
   let ?x1 = "c_snd x"
-  def upb_def: upb == "loc_upb n x"
+  define upb where "upb = loc_upb n x"
   show ?thesis
   proof (cases)
     assume A: "?y1 = 0"
     from A2 A have S1: "loc_upb n x = c_pair ?key (loc_upb ?m1 (c_snd x)) + 1" by (rule loc_upb_6_z)
-    def upb1_def: upb1 == "loc_upb ?m1 (c_snd x)"
+    define upb1 where "upb1 = loc_upb ?m1 (c_snd x)"
     from upb1_def S1 have S2: "loc_upb n x = c_pair ?key upb1 + 1" by auto
     let ?s = "c_pair ?key upb1"
     from S2 have S3: "pr_gr (loc_upb n x) = pr_gr (Suc ?s)" by simp

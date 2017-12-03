@@ -145,7 +145,7 @@ theorem lfp_induct_pointwise:
         \<Longrightarrow> post a x (B f x)"
   shows "post a x (lfp B x)"
 proof -
-  def u\<equiv>"lfp B"
+  define u where "u = lfp B"
 
   have [simp]: "\<And>f. f\<le>lfp B \<Longrightarrow> B f \<le> lfp B"
     by (metis (poly_guards_query) MONO lfp_unfold monoD)

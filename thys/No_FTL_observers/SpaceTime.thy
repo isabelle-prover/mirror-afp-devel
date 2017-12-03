@@ -315,7 +315,7 @@ begin
   lemma lemParallelReflexive: 
     shows "lineA \<parallel> lineA"
   proof -
-    def dir \<equiv> "direction lineA"
+    define dir where "dir = direction lineA"
     have "(1 \<noteq> 0) \<and> (dir = 1**dir)" by simp
     thus ?thesis by (metis dir_def parallel.simps)
   qed
@@ -331,12 +331,12 @@ begin
       assume case3: "direction lineA \<noteq> vecZero \<and> direction lineB \<noteq> vecZero"
       have exists_kab: "\<exists>kab.(kab \<noteq> (0::'a) \<and> direction lineB = kab**direction lineA)" 
         by (metis parallel.simps assms(1) case3)
-      def kab \<equiv> "SOME kab.(kab \<noteq> (0::'a) \<and> direction lineB = kab**direction lineA)"
+      define kab where "kab \<equiv> (SOME kab.(kab \<noteq> (0::'a) \<and> direction lineB = kab**direction lineA))"
       have kab_props: "kab \<noteq> 0 \<and> direction lineB = kab**direction lineA"
         using exists_kab kab_def 
         by (rule Hilbert_Choice.exE_some)
 
-      def kba \<equiv> "inverse kab"
+      define kba where "kba = inverse kab"
       have kba_nonzero: "kba \<noteq> 0" by (metis inverse_zero_imp_zero kab_props kba_def)
       have "direction lineA = kba**direction lineB" by (metis kba_def lemScaleInverse kab_props)
       hence ?thesis by (metis kba_nonzero parallel.simps)
@@ -367,7 +367,7 @@ begin
         by (metis parallel.simps assms(2) case3 assms(3))
       then obtain kbc where kbc_props: "kbc \<noteq> 0 \<and> direction lineC = kbc**direction lineB" by auto
 
-      def kac \<equiv> "kbc * kab"
+      define kac where "kac = kbc * kab"
       have kac_nonzero: "kac \<noteq> 0" by (metis kab_props kac_def kbc_props no_zero_divisors)
       have "direction lineC = kac**direction lineA" 
         by (metis kab_props kbc_props kac_def lemScaleScale)
@@ -420,7 +420,7 @@ begin
       and   "inLine x lineA"
     shows   "x = basepoint lineA"
   proof -
-    def bp \<equiv> "basepoint lineA"
+    define bp where "bp = basepoint lineA"
     have "collinear x (basepoint lineA) (basepoint lineA \<leadsto> direction lineA)" 
       by (metis inLine.simps assms(2))
     hence "collinear x bp (bp \<leadsto> vecZero)" by (metis bp_def  assms(1))
@@ -436,7 +436,7 @@ begin
   lemma lemLineContainsBasepoint: 
     shows "inLine p (line joining p to q)"
   proof -
-    def linePQ \<equiv> "line joining p to q"
+    define linePQ where "linePQ = line joining p to q"
     have bp: "basepoint linePQ = p" by (simp add: linePQ_def)
     have dir: "direction linePQ = from p to q" by (simp add: linePQ_def)
     have endq: "basepoint linePQ \<leadsto> direction linePQ = q" by (metis bp dir lemLineEndpoint)
@@ -453,7 +453,7 @@ begin
   lemma lemLineContainsEndpoint: 
     shows "inLine q (line joining p to q)"
   proof -
-    def linePQ \<equiv> "line joining p to q"
+    define linePQ where "linePQ = line joining p to q"
     have bp: "basepoint linePQ = p" by (simp add: linePQ_def)
     have dir: "direction linePQ = from p to q" by (simp add: linePQ_def)
     have endq: "basepoint linePQ \<leadsto> direction linePQ = q" by (metis bp dir lemLineEndpoint)
@@ -477,9 +477,9 @@ begin
     assumes "line joining p to q \<parallel> line joining q to r"
     shows  "line joining p to q \<parallel> line joining p to r"
   proof -
-    def linePQ \<equiv> "line joining p to q"
-    def lineQR \<equiv> "line joining q to r"
-    def linePR \<equiv> "line joining p to r"
+    define linePQ where "linePQ = line joining p to q"
+    define lineQR where "lineQR = line joining q to r"
+    define linePR where "linePR = line joining p to r"
 
     have case1: "(direction linePQ = vecZero) \<longrightarrow> ?thesis" by (simp add: linePQ_def)
     have case2: "(direction linePR = vecZero) \<longrightarrow> ?thesis" by (simp add: linePR_def)
@@ -499,17 +499,17 @@ begin
       {
         assume case3b: "direction lineQR \<noteq> vecZero"
 
-        def dirPQ \<equiv> "from p to q"
+        define dirPQ where "dirPQ = from p to q"
         have dir_pq: "direction linePQ = dirPQ" by (simp add: linePQ_def dirPQ_def)
 
-        def dirQR \<equiv> "from q to r"
+        define dirQR where "dirQR = from q to r"
         have dir_qr: "direction lineQR = dirQR" by (simp add: lineQR_def dirQR_def)
   
         have exists_k: "\<exists>k.(k \<noteq> 0 \<and> direction lineQR = k**direction linePQ)" 
           by (metis linePQ_def lineQR_def assms(1) parallel.simps case3b case3)
         then obtain k where k_props: "k \<noteq> 0 \<and> dirQR= k**dirPQ" by (metis dir_pq dir_qr)
 
-        def scalar \<equiv> "1+k"
+        define scalar where "scalar = 1+k"
 
         have "q = p \<leadsto> dirPQ \<and> r = q \<leadsto> dirQR" by (metis lemLineEndpoint dirPQ_def dirQR_def)
         hence "r = p \<leadsto> dirPQ \<leadsto> (k**dirPQ)" by (metis k_props)
@@ -574,7 +574,7 @@ begin
     {
       assume "\<exists>\<beta>.(from u to v = (-\<beta>)**d)"
       then obtain \<beta> where assm: "from u to v = (-\<beta>)**d" by auto
-      def \<alpha> \<equiv> "1 - \<beta>"
+      define \<alpha> where "\<alpha> = 1 - \<beta>"
       have \<alpha>\<beta>_sum: "\<alpha> + \<beta> = 1" by (simp add: \<alpha>_def) 
       have "from u to v = vecNegate (\<beta>**d)" by (metis assm lemScaleNeg)
       hence "positionVector v \<ominus> positionVector u = vecNegate (\<beta>**d)" by auto
@@ -604,10 +604,10 @@ begin
     have basic: "\<forall>p q v a.(from p to q = a**v \<longrightarrow> from q to p = (-a)**v)"
       apply (simp add: lemScaleNeg) by (metis minus_diff_eq)
 
-    def bpA \<equiv> "basepoint lineA"
-    def dirA \<equiv> "direction lineA"
-    def bpB \<equiv> "basepoint lineB"
-    def dirB \<equiv> "direction lineB"
+    define bpA where "bpA = basepoint lineA"
+    define dirA where "dirA = direction lineA"
+    define bpB where "bpB = basepoint lineB"
+    define dirB where "dirB = direction lineB"
 
     (* lineA is parallel to lineB *)
     have "lineB \<parallel> lineA" by (metis lemParallelSym assms(1))
@@ -636,7 +636,7 @@ begin
 
       (* Express from x to bpB directly in terms of dirB *)
 
-      def \<gamma> \<equiv> "-((-\<beta>)*kab + (\<beta>A*kab) + (-\<beta>B))"
+      define \<gamma> where "\<gamma> = -((-\<beta>)*kab + (\<beta>A*kab) + (-\<beta>B))"
       have x_to_bpB: "(from x to bpA) \<oplus> (from bpA to p) \<oplus> (from p to bpB) = (from x to bpB)"
         by (metis lemFromToTo)      
       hence "from x to bpB = ((-\<beta>)*kab)**dirB \<oplus> (\<beta>A*kab)**dirB \<oplus> (-\<beta>B)**dirB"
@@ -660,7 +660,7 @@ begin
       and   "z \<noteq> x"
     shows   "collinear x y z"
   proof -
-    def ratio \<equiv> "-(tval y - tval x) / (tval z - tval y)"
+    define ratio where "ratio = -(tval y - tval x) / (tval z - tval y)"
 
     have x_onAxis: "xval x = 0 \<and> yval x = 0 \<and> zval x = 0" by (metis assms(1) onAxisT.simps)
     have y_onAxis: "xval y = 0 \<and> yval y = 0 \<and> zval y = 0" by (metis assms(2) onAxisT.simps)
@@ -686,9 +686,9 @@ begin
   lemma lemSpace2Sym: 
     shows "space2 x y = space2 y x"
   proof -
-    def xsep \<equiv> "xval x - xval y"
-    def ysep \<equiv> "yval x - yval y"
-    def zsep \<equiv> "zval x - zval y"
+    define xsep where "xsep = xval x - xval y"
+    define ysep where "ysep = yval x - yval y"
+    define zsep where "zsep = zval x - zval y"
 
     have spacexy: "space2 x y = (xsep*xsep) + (ysep*ysep) + (zsep*zsep)"
       by (simp add: xsep_def ysep_def zsep_def)
@@ -700,7 +700,7 @@ begin
   lemma lemTime2Sym: 
     shows "time2 x y = time2 y x"
   proof -
-    def tsep \<equiv> "tval x - tval y"
+    define tsep where "tsep = tval x - tval y"
 
     have timexy: "time2 x y = tsep*tsep"
       by (simp add: tsep_def)
@@ -737,15 +737,15 @@ begin
 lemma lemPlaneContainsBasePoint: 
   shows "inPlane (pbasepoint pl) pl"
   proof -
-    def \<alpha> \<equiv> "1::'a"
-    def \<beta> \<equiv> "0::'a"
-    def \<gamma> \<equiv> "0::'a"
+    define \<alpha> where "\<alpha> = (1::'a)"
+    define \<beta> where "\<beta> = (0::'a)"
+    define \<gamma> where "\<gamma> = (0::'a)"
     have rtp1: "\<alpha> + \<beta> + \<gamma> = 1" by (simp add: \<alpha>_def \<beta>_def \<gamma>_def)
 
-    def e \<equiv> "pbasepoint pl"
-    def x \<equiv> "pbasepoint pl"
-    def y \<equiv> "pbasepoint pl \<leadsto> direction1 pl"
-    def z \<equiv> "pbasepoint pl \<leadsto> direction2 pl"
+    define e where "e = pbasepoint pl"
+    define x where "x = pbasepoint pl"
+    define y where "y = pbasepoint pl \<leadsto> direction1 pl"
+    define z where "z = pbasepoint pl \<leadsto> direction2 pl"
     have rtp2: "positionVector e = \<alpha>**(positionVector x) 
                                  \<oplus> \<beta>**(positionVector y) \<oplus> \<gamma>**(positionVector z)"
       by (simp add: e_def x_def \<alpha>_def \<beta>_def \<gamma>_def)

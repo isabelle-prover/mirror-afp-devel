@@ -260,8 +260,9 @@ begin
     assumes [simp, intro!]: "finite Q"
     shows "finite (legal_rules Q)"
   proof -
-    def possible_rules_f == "\<lambda>(Q::'Q set) f. 
-      (\<lambda>(q,qs). (q \<rightarrow> f qs)) ` (Q \<times> (lists Q \<inter> {qs. A f = Some (length qs)}))"
+    define possible_rules_f
+      where "possible_rules_f = (\<lambda>(Q::'Q set) f. 
+      (\<lambda>(q,qs). (q \<rightarrow> f qs)) ` (Q \<times> (lists Q \<inter> {qs. A f = Some (length qs)})))"
     
     have "legal_rules Q = \<Union>(possible_rules_f Q`F)"
       by (auto simp add: legal_rules_def possible_rules_f_def)

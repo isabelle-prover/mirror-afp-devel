@@ -409,7 +409,7 @@ next
   obtain rs' pred\<^sub>\<phi>\<^sub>r where rs'_props: "g \<turnstile> defNode g r-rs'\<rightarrow> pred\<^sub>\<phi>\<^sub>r" "old.EntryPath g rs'" "r \<in> phiUses g pred\<^sub>\<phi>\<^sub>r" "pred\<^sub>\<phi>\<^sub>r \<in> set (old.predecessors g (defNode g \<phi>\<^sub>r))"
    by (rule phiArg_path_ex')
 
-  def rs\<equiv>"rs'@[defNode g \<phi>\<^sub>r]"
+  define rs where "rs = rs'@[defNode g \<phi>\<^sub>r]"
   from rs'_props(2,1) old.EntryPath_distinct old.path2_hd
   have rs'_loopfree: "defNode g r \<notin> set (tl rs')"  by (simp add: Misc.distinct_hd_tl)
 
@@ -775,8 +775,8 @@ proof (rule ccontr)
     obtain ss where ss_props: "g \<turnstile> m -ms@ss\<rightarrow> defNode g \<phi>\<^sub>s" "set (butlast (ms@ss)) \<inter> set (butlast (ns@rs)) = {}"
      by (rule phiArg_disjoint_paths_extend) (metis disjoint_iff_not_equal in_set_butlastD)
 
-    def p\<^sub>m \<equiv> "ms@ss"
-    def p\<^sub>n \<equiv> "ns@rs"
+    define p\<^sub>m where "p\<^sub>m = ms@ss"
+    define p\<^sub>n where "p\<^sub>n = ns@rs"
 
     have ind_props: "g \<turnstile> m -p\<^sub>m\<rightarrow> defNode g \<phi>\<^sub>s" "g \<turnstile> n -p\<^sub>n\<rightarrow> defNode g \<phi>\<^sub>r" "set (butlast p\<^sub>m) \<inter> set (butlast p\<^sub>n) = {}"
     using rs_props(1) ss_props p\<^sub>m_def p\<^sub>n_def by auto

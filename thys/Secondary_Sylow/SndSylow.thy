@@ -93,10 +93,10 @@ proof -
   from H have HsubG:"subgroup H G" unfolding subgroups_of_size_def by auto
   hence HG:"H \<subseteq> carrier G" unfolding subgroups_of_size_def by (simp add:subgroup_imp_subset)
   from Psize have PG:"subgroup P G" and cardP:"card P = p ^ a" unfolding subgroups_of_size_def by auto
-  def H' \<equiv> "G\<lparr>carrier := H\<rparr>"
+  define H' where "H' = G\<lparr>carrier := H\<rparr>"
   from HsubG interpret Hgroup: group H' unfolding H'_def by (metis subgroup_imp_group)
   from H have orderH':"order H' =  p ^ b" unfolding H'_def subgroups_of_size_def order_def by simp
-  def \<phi> \<equiv> "\<lambda>g. \<lambda>U\<in>rcosets P. U #> inv g"
+  define \<phi> where "\<phi> = (\<lambda>g. \<lambda>U\<in>rcosets P. U #> inv g)"
   with PG interpret Gact: group_action G \<phi> "rcosets P" unfolding \<phi>_def by (metis inv_mult_on_rcosets_action)
   from H interpret H'act: group_action H' \<phi> "rcosets P" unfolding H'_def subgroups_of_size_def by (metis (mono_tags) Gact.subgroup_action mem_Collect_eq)
   from finite_G PG have "finite (rcosets P)" unfolding RCOSETS_def r_coset_def by (metis (lifting) finite.emptyI finite_UN_I finite_insert)
@@ -226,7 +226,7 @@ proof -
   hence Psize:"P \<in> subgroups_of_size (p ^ a)" unfolding subgroups_of_size_def by simp
   with finite_G have "order G = card (conj.orbit P) * card (conj.stabilizer P)" by (metis Psize acts_on_subsets group_action.orbit_size)
   with order_G Psize have orderEq:"p ^ a * m = card (subgroups_of_size (p ^ a)) * card (conj.stabilizer P)" by (metis num_eq_card_orbit)
-  def k \<equiv> "card (rcosets\<^bsub>G\<lparr>carrier := conj.stabilizer P\<rparr>\<^esub> P)"
+  define k where "k = card (rcosets\<^bsub>G\<lparr>carrier := conj.stabilizer P\<rparr>\<^esub> P)"
   with Psize have "k * p ^ a = card (conj.stabilizer P)" by (metis num_sylow_normalizer)
   with orderEq have "p ^ a * m = card (subgroups_of_size (p ^ a)) * p ^ a * k" by (auto simp:mult.assoc mult.commute)
   hence "p ^ a * m = p ^ a * card (subgroups_of_size (p ^ a)) * k" by auto
@@ -244,7 +244,7 @@ lemma (in snd_sylow) restrict_locale:
   shows "snd_sylow (G\<lparr>carrier := P\<rparr>) p a ((card P) div (p ^ a))"
 proof -
   from subgrp interpret groupP: group "G\<lparr>carrier := P\<rparr>" by (metis subgroup_imp_group)
-  def k \<equiv> "(card P) div (p ^ a)"
+  define k where "k = (card P) div (p ^ a)"
   with card have cardP:"card P = p ^ a * k" by (auto simp: dvd_mult_div_cancel)
   hence orderP:"order (G\<lparr>carrier := P\<rparr>) = p ^ a * k" unfolding order_def by simp
   from cardP subgrp order_G have "p ^ a * k dvd p ^ a * m" by (metis card_subgrp_dvd)
@@ -252,8 +252,8 @@ proof -
     by (metis nat_mult_dvd_cancel_disj pa_not_zero) 
   with pNotDvdm have ndvd:"\<not> p dvd k"
     by (blast intro: dvd_trans)
-  def PcalM \<equiv> "{s. s \<subseteq> carrier (G\<lparr>carrier := P\<rparr>) \<and> card s = p ^ a}"
-  def PRelM \<equiv> "{(N1, N2). N1 \<in> PcalM \<and> N2 \<in> PcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := P\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := P\<rparr>\<^esub> g)}"
+  define PcalM where "PcalM = {s. s \<subseteq> carrier (G\<lparr>carrier := P\<rparr>) \<and> card s = p ^ a}"
+  define PRelM where "PRelM = {(N1, N2). N1 \<in> PcalM \<and> N2 \<in> PcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := P\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := P\<rparr>\<^esub> g)}"
   from subgrp finite_G have finite_groupP:"finite (carrier (G\<lparr>carrier := P\<rparr>))" by (auto simp:subgroup_finite)
   interpret Nsylow: snd_sylow "G\<lparr>carrier := P\<rparr>" p a k PcalM PRelM
      unfolding snd_sylow_def snd_sylow_axioms_def sylow_def sylow_axioms_def k_def
@@ -284,8 +284,8 @@ proof -
       hence cardQ:"card Q = p ^ a" unfolding subgroups_of_size_def by simp
       -- "The normalizer of @{term Q} in @{term G}"
       -- "Let's first show some basic propertiers of @{text N}"
-      def N \<equiv> "conjG.stabilizer Q"
-      def k \<equiv> "(card N) div (p ^ a)"
+      define N where "N = conjG.stabilizer Q"
+      define k where "k = (card N) div (p ^ a)"
       from N_def Qsize have NG:"subgroup N G" by (metis conjG.stabilizer_is_subgroup)
       then interpret groupN: group "G\<lparr>carrier := N\<rparr>" by (metis subgroup_imp_group)
       from Qsize N_def have QN:"subgroup Q (G\<lparr>carrier := N\<rparr>)" using stabilizer_supergrp_P by auto
@@ -298,9 +298,10 @@ proof -
       hence "p ^ a dvd card N" unfolding order_def by simp
       with NG have smaller_sylow:"snd_sylow (G\<lparr>carrier := N\<rparr>) p a k" unfolding k_def by (rule restrict_locale)
       -- "Instantiate the @{term snd_sylow} Locale a second time for the normalizer of @{term Q}"
-      def NcalM \<equiv> "{s. s \<subseteq> carrier (G\<lparr>carrier := N\<rparr>) \<and> card s = p ^ a}"
-      def NRelM \<equiv> "{(N1, N2). N1 \<in> NcalM \<and> N2 \<in> NcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := N\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)}"
-      interpret Nsylow: snd_sylow "G\<lparr>carrier := N\<rparr>" p a k NcalM NRelM using smaller_sylow NcalM_def NRelM_def.
+      define NcalM where "NcalM = {s. s \<subseteq> carrier (G\<lparr>carrier := N\<rparr>) \<and> card s = p ^ a}"
+      define NRelM where "NRelM = {(N1, N2). N1 \<in> NcalM \<and> N2 \<in> NcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := N\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)}"
+      interpret Nsylow: snd_sylow "G\<lparr>carrier := N\<rparr>" p a k NcalM NRelM
+        unfolding NcalM_def NRelM_def using smaller_sylow .
       -- "@{term P} and @{term Q} are conjugate in @{term N}:"
       from cardP PN have PsizeN:"P \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from cardQ QN have QsizeN:"Q \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto

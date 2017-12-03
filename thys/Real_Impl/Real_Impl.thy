@@ -154,11 +154,11 @@ lemma ma_ge_0: "ge_0 (real_of x) = ma_ge_0 x"
 proof (transfer, unfold Let_def, clarsimp)
   fix p' q' :: rat and b' :: nat
   assume b': "q' = 0 \<or> b' \<in> sqrt_irrat"
-  def b \<equiv> "real_of_nat b'"
-  def p \<equiv> "real_of_rat p'"
-  def q \<equiv> "real_of_rat q'"
+  define b where "b = real_of_nat b'"
+  define p where "p = real_of_rat p'"
+  define q where "q = real_of_rat q'"
   from b' have b: "0 \<le> b" "q = 0 \<or> b' \<in> sqrt_irrat" unfolding b_def q_def by auto
-  def qb \<equiv> "q * sqrt b"
+  define qb where "qb = q * sqrt b"
   from b have sqrt: "sqrt b \<ge> 0" by auto
   from b(2) have disj: "q = 0 \<or> b \<noteq> 0" unfolding sqrt_irrat_def b_def by auto
   have bdef: "b = real_of_rat (of_nat b')" unfolding b_def by auto
@@ -192,9 +192,9 @@ lemma ma_inverse: "inverse (real_of r) = real_of (ma_inverse r)"
 proof (transfer, unfold Let_def, clarsimp)
   fix p' q' :: rat and b' :: nat
   assume b': "q' = 0 \<or> b' \<in> sqrt_irrat"
-  def b \<equiv> "real_of_nat b'"
-  def p \<equiv> "real_of_rat p'"
-  def q \<equiv> "real_of_rat q'"
+  define b where "b = real_of_nat b'"
+  define p where "p = real_of_rat p'"
+  define q where "q = real_of_rat q'"
   from b' have b: "b \<ge> 0" "q = 0 \<or> b' \<in> sqrt_irrat" unfolding b_def q_def by auto
   have "inverse (p + q * sqrt b) = (p - q * sqrt b) * inverse (p * p - b * (q * q))"
   proof (cases "q = 0")
@@ -252,8 +252,8 @@ proof (transfer, unfold Let_def, clarsimp)
   also have "\<dots> = ?rhs"
   proof (cases "sqrt_int \<bar>a * b\<bar>")
     case Nil
-    def sb \<equiv> "sqrt (of_int b)"
-    def sa \<equiv> "sqrt (of_int a)"
+    define sb where "sb = sqrt (of_int b)"
+    define sa where "sa = sqrt (of_int a)"
     from b sb_def have sb: "sb > 0" "real_of_int b > 0" by auto
     have sbb: "sb * sb = real_of_int b" unfolding sb_def
       by (rule sqrt_sqrt, insert b, auto)
@@ -365,10 +365,10 @@ proof (transfer, unfold Let_def, clarsimp)
   from quotient_of_div[OF qq] have q: "q = of_int z2 / of_int n2" .
   have p: "p = of_int (z1 * n2) / of_int (n1 * n2)" unfolding p using n2 by auto
   have q: "q = of_int (z2 * n1) / of_int (n1 * n2)" unfolding q using n1 by auto
-  def z1n2 \<equiv> "z1 * n2"
-  def z2n1 \<equiv> "z2 * n1"
-  def n12 \<equiv> "n1 * n2"
-  def r_add \<equiv> "of_int (z2n1) * sqrt (real_of_int (int b))"
+  define z1n2 where "z1n2 = z1 * n2"
+  define z2n1 where "z2n1 = z2 * n1"
+  define n12 where "n12 = n1 * n2"
+  define r_add where "r_add = of_int (z2n1) * sqrt (real_of_int (int b))"
   from n1 n2 have n120: "n12 > 0" unfolding n12_def by simp
   have "floor (of_rat p + of_rat q * sqrt (real_of_nat b)) = floor ((of_int z1n2 + r_add) / of_int n12)"
     unfolding r_add_def n12_def z1n2_def z2n1_def

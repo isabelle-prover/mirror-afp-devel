@@ -687,9 +687,9 @@ where
 
 theorem pr_index_enumerator_is_pr: "pr_index_enumerator \<in> PrimRec2"
 proof -
-  def g_def: g \<equiv> "\<lambda> (x::nat). x"
+  define g where "g x = x" for x :: nat
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule pr_id1_1)
-  def h_def: h \<equiv> "\<lambda> (a::nat) b (c::nat). comp_by_index index_of_id b"
+  define h where "h a b c = comp_by_index index_of_id b" for a b c :: nat
   from comp_by_index_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
   let ?f = "pr_index_enumerator"
   from g_def have f_at_0: "\<forall> x. ?f x 0 = g x" by auto
@@ -754,7 +754,7 @@ qed
 lemma pr_index_enumerator_mono1: "n1 < n2 \<Longrightarrow> pr_index_enumerator n1 m < pr_index_enumerator n2 m"
 proof -
   assume A: "n1 < n2"
-  def f_def: f \<equiv> "\<lambda> x. pr_index_enumerator x m"
+  define f where "f x = pr_index_enumerator x m" for x
   have f_inc: "\<forall> x. f x < f (x+1)"
   proof
     fix x show "f x < f (x+1)" by (unfold f_def, rule pr_index_enumerator_increase1)
@@ -766,7 +766,7 @@ qed
 lemma pr_index_enumerator_mono2: "m1 < m2 \<Longrightarrow> pr_index_enumerator n m1 < pr_index_enumerator n m2"
 proof -
   assume A: "m1 < m2"
-  def f_def: f \<equiv> "\<lambda> x. pr_index_enumerator n x"
+  define f where "f x = pr_index_enumerator n x" for x
   have f_inc: "\<forall> x. f x < f (x+1)"
   proof
     fix x show "f x < f (x+1)" by (unfold f_def, rule pr_index_enumerator_increase2)
@@ -798,7 +798,7 @@ qed
 theorem pr_index_enumerator_inj1: "pr_index_enumerator n1 m = pr_index_enumerator n2 m \<Longrightarrow> n1 = n2"
 proof -
   assume A: "pr_index_enumerator n1 m = pr_index_enumerator n2 m"
-  def f_def: f \<equiv> "\<lambda> x. pr_index_enumerator x m"
+  define f where "f x = pr_index_enumerator x m" for x
   have f_mono: "\<forall> x y. (x < y \<longrightarrow> f x < f y)"
   proof (rule allI, rule allI)
     fix x y show "x < y \<longrightarrow> f x < f y" by (unfold f_def, simp add: pr_index_enumerator_mono1)
@@ -810,7 +810,7 @@ qed
 theorem pr_index_enumerator_inj2: "pr_index_enumerator n m1 = pr_index_enumerator n m2 \<Longrightarrow> m1 = m2"
 proof -
   assume A: "pr_index_enumerator n m1 = pr_index_enumerator n m2"
-  def f_def: f \<equiv> "\<lambda> x. pr_index_enumerator n x"
+  define f where "f x = pr_index_enumerator n x" for x
   have f_mono: "\<forall> x y. (x < y \<longrightarrow> f x < f y)"
   proof (rule allI, rule allI)
     fix x y show "x < y \<longrightarrow> f x < f y" by (unfold f_def, simp add: pr_index_enumerator_mono2)

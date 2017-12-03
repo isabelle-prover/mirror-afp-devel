@@ -59,7 +59,7 @@ assumes Bisim: "is_Bisimulation as ps"
 assumes "(R, S) \<in> set ps"
 shows "Lang R = Lang S"
 proof -
-  def ps' \<equiv> "({}, {}) # ps"
+  define ps' where "ps' = ({}, {}) # ps"
   from Bisim have Bisim': "is_Bisimulation as ps'"
     by (fastforce simp: ps'_def is_Bisimulation_def UN_subset_iff Pderiv_def Atoms_def)
   let ?R = "\<lambda>K L. (\<exists>(R,S)\<in>set ps'. K = Lang R \<and> L = Lang S)"

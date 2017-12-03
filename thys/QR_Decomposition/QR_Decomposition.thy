@@ -294,7 +294,7 @@ lemma orthogonal_matrix_fst_QR_decomposition:
   assumes r: "rank A = ncols A"
   shows "transpose (fst (QR_decomposition A)) ** (fst (QR_decomposition A)) = mat 1"
 proof (unfold vec_eq_iff, clarify, unfold mat_1_fun, auto)
-  def Q\<equiv>"fst (QR_decomposition A)"
+  define Q where "Q = fst (QR_decomposition A)"
   have n: "\<forall>i. norm (column i Q) = 1" unfolding Q_def using norm_columns_fst_QR_decomposition[OF r] by auto
   have c: "card (columns Q) = ncols A" unfolding Q_def
     by (metis full_rank_imp_is_basis2 independent_columns_fst_QR_decomposition r)
@@ -370,7 +370,7 @@ proof -
   let ?uk="column k ((Gram_Schmidt_matrix A))"
   let ?qk="column k (fst(QR_decomposition A))"
   let ?ak="(column k A)"
-  def f\<equiv>"\<lambda>x. (1/norm x) *\<^sub>R (x::real^'m::{mod_type})"
+  define f where "f x = (1/norm x) *\<^sub>R x" for x :: "real^'m::{mod_type}"
   let ?g="\<lambda>x::real^'m::{mod_type}. (x \<bullet> (column k A) / (x \<bullet> x)) *\<^sub>R x"
   have set_rw: "{column i (fst (QR_decomposition A))|i. i < k} = f`{column i (Gram_Schmidt_matrix A)|i. i < k}"
   proof (auto)
@@ -613,8 +613,8 @@ proof -
     also have "... = (\<Sum>x\<in>{column i (fst (QR_decomposition A)) |i. i \<le> b}. (x \<bullet> column b A) *\<^sub>R x)"
     proof (subst column_def, subst vec_eq_iff, auto)
       fix a 
-      def f=="\<lambda>i. column i (fst (QR_decomposition A))"
-      def g=="\<lambda>x. THE i. x = column i (fst (QR_decomposition A))"
+      define f where "f i = column i (fst (QR_decomposition A))" for i
+      define g where "g x = (THE i. x = column i (fst (QR_decomposition A)))" for x
       have f_eq: "f`UNIV = {column i (fst (QR_decomposition A)) |i. i\<in>UNIV}" unfolding f_def by auto
       have inj_f: "inj f"
         by (metis inj_on_def f_def column_eq_fst_QR_decomposition r)

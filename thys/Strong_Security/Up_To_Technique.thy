@@ -37,7 +37,7 @@ lemma Up_To_Technique:
   assumes upToR: "d_Bisimulation_Up_To_USdB d R"
   shows "R \<subseteq> \<approx>\<^bsub>d\<^esub>"
 proof -
-  def S \<equiv> "R \<union> (\<approx>\<^bsub>d\<^esub>)"
+  define S where "S = R \<union> (\<approx>\<^bsub>d\<^esub>)"
   from S_def have "R \<subseteq> S"
     by auto
   moreover 

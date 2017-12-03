@@ -154,14 +154,16 @@ lemma ex_pickE:
 assumes "length xl = length al"
 and "distinct xl" and "\<And> i. i < length xl \<Longrightarrow> intT (tpOfV (xl!i)) (al!i)"
 shows "\<exists> \<xi>. wtE \<xi> \<and> (\<forall> i < length xl. \<xi> (xl!i) = al!i)"
-using assms proof(induct rule: list_induct2)
+using assms
+proof(induct rule: list_induct2)
   case Nil show ?case apply(rule exI[of _ "\<lambda> x. pickT (tpOfV x)"])
   unfolding wtE_def by auto
 next
   case (Cons x xl a al)
   then obtain \<xi> where 1: "wtE \<xi>" and 2: "\<forall> i < length xl. \<xi> (xl!i) = al!i" by force
-  def \<xi>' \<equiv> "\<lambda> x'. if x = x' then a else \<xi> x'"
-  show ?case proof(rule exI[of _ \<xi>'], unfold wtE_def, safe)
+  define \<xi>' where "\<xi>' x' = (if x = x' then a else \<xi> x')" for x'
+  show ?case
+  proof(rule exI[of _ \<xi>'], unfold wtE_def, safe)
     fix x' show "intT (tpOfV x') (\<xi>' x')"
     using 1 Cons.prems(2)[of 0] unfolding \<xi>'_def by auto
   next

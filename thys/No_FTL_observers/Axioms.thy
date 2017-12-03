@@ -124,7 +124,7 @@ proof -
     by (smt assms(1) lemCProps)
   hence ph_exists: "(space2 x y = (c m * c m)*time2 x y) \<longrightarrow> (\<exists>p.(Ph p \<and> W m p x \<and> W m p y))"
     by metis
-  def lcmx \<equiv> "lightcone m x"
+  define lcmx where "lcmx = lightcone m x"
   have lcmx_vertex: "vertex lcmx = x" by (simp add: lcmx_def)
   have lcmx_slope: "slope lcmx = c m" by (simp add: lcmx_def)
   have "onCone y lcmx \<longrightarrow> (space2 x y = (c m * c m)*time2 x y)" 

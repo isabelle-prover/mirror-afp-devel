@@ -26,7 +26,7 @@ proof-
     have "\<not>deadend v0" using `v0\<rightarrow>w` by blast
     then interpret vmc_path_no_deadend G P v0 p ?\<sigma> by unfold_locales
 
-    def [simp]: P'' \<equiv> "ltl P"
+    define P'' where [simp]: "P'' = ltl P"
     have "lhd P'' = w" using v0(1) v0_conforms w0_def by auto
     hence "vmc_path G P'' w p ?\<sigma>" using vmc_path_ltl by (simp add: w0_def)
 

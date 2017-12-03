@@ -70,12 +70,12 @@ next
       unfolding Gram_Schmidt_cons unfolding Gram_Schmidt_step_def using l by auto 
     show "real_vector.span (set (Gram_Schmidt (a # xs))) 
       = real_vector.span (set (a # xs)) \<and> pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
-    proof (rule conjI)
+    proof
       have set_rw1: "set (a # xs) = insert a (set xs)" by simp
       have set_rw2: "set (Gram_Schmidt (a # xs)) 
         = (insert (a - (\<Sum>x\<in>set (Gram_Schmidt xs). (a \<bullet> x / (x \<bullet> x)) *\<^sub>R x)) (set (Gram_Schmidt xs)))"
         unfolding Gram_Schmidt_cons Gram_Schmidt_step_def proj_onto_def proj_def[abs_def] by auto
-      def C=="set (Gram_Schmidt xs)"
+      define C where "C = set (Gram_Schmidt xs)"
       have finite_C: "finite C" unfolding C_def by auto
       {   
         fix x k
@@ -113,7 +113,7 @@ proof (induct xs)
   case Nil show ?case unfolding Gram_Schmidt_def by simp
 next
   case (Cons x xs)
-  def b\<equiv>"(\<Sum>xa\<in>set (Gram_Schmidt xs). (x \<bullet> xa / (xa \<bullet> xa)) *\<^sub>R xa)"
+  define b where "b = (\<Sum>xa\<in>set (Gram_Schmidt xs). (x \<bullet> xa / (xa \<bullet> xa)) *\<^sub>R xa)"
   have distinct_xs: "distinct xs" using Cons.prems by auto
   show ?case
   proof (cases "x - b \<notin> set (Gram_Schmidt xs)")
@@ -527,9 +527,9 @@ next
     show ?thesis unfolding set_rw1 set_rw2 col_eq unfolding real_vector.span_insert unfolding hyp ..
   next  
     case True
-    def C=="(cols_upt_k A k)"
-    def B=="(cols_upt_k (Gram_Schmidt_column_k A j) k)"
-    def a=="column (from_nat (Suc k)) A"
+    define C where "C = cols_upt_k A k"
+    define B where "B = cols_upt_k (Gram_Schmidt_column_k A j) k"
+    define a where "a = column (from_nat (Suc k)) A"
     let ?a="a - sum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
     let ?C="insert ?a C"
     have col_rw: "{column i A |i. i \<le> from_nat k} = {column i A |i. i < from_nat (Suc k)}" 

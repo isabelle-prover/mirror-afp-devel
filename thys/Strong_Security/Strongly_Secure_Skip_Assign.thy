@@ -46,7 +46,7 @@ by (simp add: d_indistinguishable_def d_equal_def, metis)
 theorem Strongly_Secure_Skip:
 "[skip] \<approx>\<^bsub>d\<^esub> [skip]"
 proof -
-  def R0 \<equiv> "{(V::('exp,'id) MWLfCom list,V'::('exp,'id) MWLfCom list). 
+  define R0 where "R0 = {(V::('exp,'id) MWLfCom list,V'::('exp,'id) MWLfCom list). 
     V = [skip] \<and> V' = [skip]}"
 
   have uptoR0: "d_Bisimulation_Up_To_USdB d R0"
@@ -94,7 +94,7 @@ theorem Strongly_Secure_Assign:
   assumes d_indistinguishable_exp: "e \<equiv>\<^bsub>DA x\<^esub> e'"
   shows "[x := e] \<approx>\<^bsub>d\<^esub> [x := e']"
 proof -
-  def R0 \<equiv> "{(V,V'). \<exists>x e e'. V = [x := e] \<and> V' = [x := e'] \<and>
+  define R0 where "R0 = {(V,V'). \<exists>x e e'. V = [x := e] \<and> V' = [x := e'] \<and>
     e \<equiv>\<^bsub>DA x\<^esub> e'}"
 
   from d_indistinguishable_exp have inR0: "([x:=e],[x:=e']) \<in> R0"

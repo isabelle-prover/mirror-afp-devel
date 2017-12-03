@@ -317,13 +317,13 @@ lemma SD_iff_expected_utilities_le:
 proof safe
   fix u assume SD: "p \<preceq>[SD(le)] q" and is_utility: "is_vnm_utility u"
   from is_utility interpret vnm_utility carrier le u .
-  def xs \<equiv> "weak_ranking le"
+  define xs where "xs = weak_ranking le"
   have le: "is_weak_ranking xs" "le = of_weak_ranking xs"
     by (simp_all add: xs_def weak_ranking_total_preorder)
 
   let ?pref = "\<lambda>p x. measure_pmf.prob p {y. x \<preceq>[le] y}" and
       ?pref' = "\<lambda>p x. measure_pmf.prob p {y. x \<prec>[le] y}"
-  def f \<equiv> "\<lambda>i. SOME x. x \<in> xs ! i"
+  define f where "f i = (SOME x. x \<in> xs ! i)" for i
   have xs_wf: "is_weak_ranking xs"
     by (simp add: xs_def weak_ranking_total_preorder)
   hence f: "f i \<in> xs ! i" if "i < length xs" for i
@@ -331,7 +331,7 @@ proof safe
     by (intro someI_ex[of "\<lambda>x. x \<in> xs ! i"]) (auto simp: set_conv_nth)
   have f': "f i \<in> carrier" if "i < length xs" for i
     using that f weak_ranking_Union unfolding xs_def by (auto simp: set_conv_nth)
-  def n \<equiv> "length xs - 1"
+  define n where "n = length xs - 1"
   from assms weak_ranking_Union have carrier_nonempty: "carrier \<noteq> {}" and "xs \<noteq> []"
     by (auto simp: xs_def lotteries_on_def set_pmf_not_empty)
   hence n: "length xs = Suc n" and xs_nonempty: "xs \<noteq> []" by (auto simp add: n_def)
@@ -422,7 +422,7 @@ next
   assume "\<forall>u. is_vnm_utility u \<longrightarrow> measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
   hence expected_utility_le: "measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
     if "is_vnm_utility u" for u using that by blast
-  def xs \<equiv> "weak_ranking le"
+  define xs where "xs = weak_ranking le"
   have le: "le = of_weak_ranking xs" and [simp]: "is_weak_ranking xs"
     by (simp_all add: xs_def weak_ranking_total_preorder)
   have carrier: "carrier = \<Union>set xs"
@@ -439,7 +439,7 @@ next
              measure_pmf.prob q {y. le x y} / real (length xs)"
     proof (rule field_le_epsilon)
       fix \<epsilon> :: real assume \<epsilon>: "\<epsilon> > 0"
-      def u \<equiv> "\<lambda>y. indicator {y. y \<succeq>[le] x} y + \<epsilon> * ?idx y"
+      define u where "u y = indicator {y. y \<succeq>[le] x} y + \<epsilon> * ?idx y" for y
       have is_utility: "is_vnm_utility u" unfolding u_def xs_def
       proof (intro vnm_utility.add_left vnm_utility.scaled utility_weak_ranking_index)
         fix y z assume "le y z"
@@ -507,7 +507,7 @@ proof
     have "\<exists>\<epsilon>>0. is_vnm_utility (\<lambda>x. u x - \<epsilon> * u' x)"
       by (intro u.diff_epsilon antisym u'.utility_le)
     then guess \<epsilon> by (elim exE conjE) note \<epsilon> = this
-    def u'' \<equiv> "\<lambda>x. u x - \<epsilon> * u' x"
+    define u'' where "u'' x = u x - \<epsilon> * u' x" for x
     interpret u'': vnm_utility carrier le u'' unfolding u''_def by fact
     have exp_u'': "?E p u'' = ?E p u - \<epsilon> * ?E p u'" if "p \<in> lotteries_on carrier" for p using that
       by (subst (1 2 3) integral_measure_pmf[of carrier])

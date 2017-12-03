@@ -40,7 +40,7 @@ lemma real_of_rat_floor[simp]: "floor (real_of_rat x) = floor x"
 lemma abs_of_rat[simp]: "\<bar>real_of_rat x\<bar> = real_of_rat \<bar>x\<bar>" 
 proof (cases "x \<ge> 0")
   case False
-  def y \<equiv> "- x"
+  define y where "y = - x"
   from False have y: "y \<ge> 0" "x = - y" by (auto simp: y_def)
   thus ?thesis by (auto simp: of_rat_minus)
 qed auto
@@ -61,13 +61,13 @@ lemma floor_div_pos_int:
   shows "\<lfloor>r / of_int n\<rfloor> = \<lfloor>r\<rfloor> div n" (is "?l = ?r")
 proof -
   let ?of_int = "of_int :: int \<Rightarrow> 'a"
-  def rhs \<equiv> "\<lfloor>r\<rfloor> div n"
+  define rhs where "rhs = \<lfloor>r\<rfloor> div n"
   let ?n = "?of_int n"
-  def m \<equiv> "\<lfloor>r\<rfloor> mod n"
+  define m where "m = \<lfloor>r\<rfloor> mod n"
   let ?m = "?of_int m"
   from div_mult_mod_eq[of "floor r" n] have dm: "rhs * n + m = \<lfloor>r\<rfloor>" unfolding rhs_def m_def by simp
   have mn: "m < n" and m0: "m \<ge> 0" using n m_def by auto
-  def e \<equiv> "r - ?of_int \<lfloor>r\<rfloor>"
+  define e where "e = r - ?of_int \<lfloor>r\<rfloor>"
   have e0: "e \<ge> 0" unfolding e_def 
     by (metis diff_self eq_iff floor_diff_of_int zero_le_floor)
   have e1: "e < 1" unfolding e_def 
