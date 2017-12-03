@@ -67,8 +67,8 @@ proof (cases "x = 0")
 next
   case False
   with x have x: "x > 0" by auto
-  def l2x \<equiv> "\<lceil>log 2 x\<rceil>"
-  def pow \<equiv> "nat \<lceil>rat_of_int l2x / of_nat p\<rceil>"
+  define l2x where "l2x = \<lceil>log 2 x\<rceil>"
+  define pow where "pow = nat \<lceil>rat_of_int l2x / of_nat p\<rceil>"
   have "root p x = x powr (1 / p)" by (rule root_powr_inverse, insert x p, auto)
   also have "\<dots> = (2 powr (log 2 x)) powr (1 / p)" using powr_log_cancel[of 2 x] x by auto
   also have "\<dots> = 2 powr (log 2 x * (1 / p))" by (rule powr_powr)
@@ -296,7 +296,7 @@ proof (induct y n rule: root_newton_int_main.induct)
   then have "y > 0 \<or> y = 0"
     by auto
   from 1(4) have n0: "n \<ge> 0" .
-  def y' \<equiv> "(n div (y ^ pm) + y * int pm) div (int p)"
+  define y' where "y' = (n div (y ^ pm) + y * int pm) div (int p)"
   from \<open>y > 0 \<or> y = 0\<close> \<open>n \<ge> 0\<close> have y'0: "y' \<ge> 0"
     by (auto simp add: y'_def p algebra_simps pos_imp_zdiv_nonneg_iff power_0_left)
   let ?rt = "root_newton_int_main"
@@ -337,8 +337,8 @@ proof (induct y n rule: root_newton_int_main.induct)
         from yyn n0 have y00: "y \<noteq> 0" unfolding p by auto
         from y00 y0 have y0: "?y > 0" by auto
         from n0 False have n0: "?n > 0" by auto
-        def Y \<equiv> "?y * of_int pm"
-        def NY \<equiv> "?n / ?y ^ pm"
+        define Y where "Y = ?y * of_int pm"
+        define NY where "NY = ?n / ?y ^ pm"
         note pos_intro = divide_nonneg_pos add_nonneg_nonneg mult_nonneg_nonneg
         have NY0: "NY > 0" unfolding NY_def using y0 n0
           by (metis NY_def zero_less_divide_iff zero_less_power)
@@ -373,8 +373,8 @@ proof (induct y n rule: root_newton_int_main.induct)
           by (rule power_strict_mono[OF *], insert n0 p, auto)
         finally have ineq1: "?n < ((NY + Y) / real p)^p" by auto
         {
-          def s \<equiv> "n div y ^ pm + y * int pm"
-          def S \<equiv> "NY + Y"
+          define s where "s = n div y ^ pm + y * int pm"
+          define S where "S = NY + Y"
           have Y0: "Y \<ge> 0" using y0 unfolding Y_def
             by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff of_nat_0_le_iff)
           have S0: "S > 0" using NY0 Y0 unfolding S_def by auto

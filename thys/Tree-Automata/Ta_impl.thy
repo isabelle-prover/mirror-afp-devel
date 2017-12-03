@@ -726,14 +726,14 @@ proof -
   from INV have [simp]: "hs_invar Q" "ls_invar \<delta>d" 
     by (auto simp add: pa_invar_add_def pa_invar_def)
 
-  def inv == "\<lambda>\<delta>p (Q', W', \<delta>d'). 
+  define inv where "inv = (\<lambda>\<delta>p (Q', W', \<delta>d'). 
     hs_invar Q' 
     \<and> ls_invar \<delta>d' 
     \<and> (\<exists>Wn. distinct Wn 
             \<and> set Wn = (f_succ \<delta>p `` {(q1,q2)}) - hs_\<alpha> Q 
             \<and> W'=Wn@Wtl 
             \<and> hs_\<alpha> Q'=hs_\<alpha> Q \<union> (f_succ \<delta>p `` {(q1,q2)}))
-    \<and> (ls_\<alpha> \<delta>d' = ls_\<alpha> \<delta>d \<union> {r\<in>\<delta>p. lhs r = (q1,q2) })"
+    \<and> (ls_\<alpha> \<delta>d' = ls_\<alpha> \<delta>d \<union> {r\<in>\<delta>p. lhs r = (q1,q2) }))"
 
   have G: "inv (\<delta>_prod (ls_\<alpha> (hta_\<delta> H1)) (ls_\<alpha> (hta_\<delta> H2))) 
                (pa_step H1 H2 (Q,W,\<delta>d))"

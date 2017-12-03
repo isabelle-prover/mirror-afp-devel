@@ -106,11 +106,10 @@ next
   proof
     fix as :: "'a list"
     assume as: "length as = length (concat (fs#fss))"
-    def xs: xs \<equiv> "take (length fs) as"
-    and ys: ys \<equiv> "drop (length fs) as"
-    def gss: gss \<equiv> "SOME css. ys = concat css \<and> list_all2 eq_len css fss"
-    def hss: hss \<equiv> "xs # gss"
-    with xs ys as gss eq_len prevcase
+    define xs ys where "xs = take (length fs) as" and "ys = drop (length fs) as"
+    define gss where "gss = (SOME css. ys = concat css \<and> list_all2 eq_len css fss)"
+    define hss where "hss = xs # gss"
+    with xs_def ys_def as gss_def eq_len prevcase
       show "as = concat hss \<and> list_all2 eq_len hss (fs#fss)"
       using someI_ex[of "\<lambda>css. ys = concat css \<and> list_all2 eq_len css fss"] by auto
   qed
@@ -385,54 +384,56 @@ lemma convolution_symm :
               = (\<lambda>x. \<Sum>y|y \<in> supp f \<and> -y + x \<in> supp g. (f y) * g (-y + x))"
 proof
   fix x::'a
-  def c1: c1 \<equiv> "\<lambda>y. (f (x - y)) * g y"
-  and c2: c2 \<equiv> "\<lambda>y. (f y) * g (-y + x)"
-  and i : i  \<equiv> "\<lambda>y. -y + x"
-  and S1: S1 \<equiv> "{y. x - y \<in> supp f \<and> y \<in> supp g}"
-  and S2: S2 \<equiv> "{y. y \<in> supp f \<and> -y + x \<in> supp g}"
-  have "inj_on i S2" unfolding inj_on_def using i by simp
+  define c1 c2 i S1 S2
+    where "c1 y = (f (x - y)) * g y"
+      and "c2 y = (f y) * g (-y + x)"
+      and "i y = -y + x"
+      and "S1 = {y. x - y \<in> supp f \<and> y \<in> supp g}"
+      and "S2 = {y. y \<in> supp f \<and> -y + x \<in> supp g}"
+    for y
+  have "inj_on i S2" unfolding inj_on_def using i_def by simp
   hence "(\<Sum>y\<in>(i ` S2). c1 y) = (\<Sum>y\<in>S2. (c1 \<circ> i) y)"
     using sum.reindex by fast
   moreover have S1_iS2: "S1 = i ` S2"
   proof (rule seteqI)
     fix y assume y_S1: "y \<in> S1"
-    def z: z \<equiv> "x - y"
+    define z where "z = x - y"
     hence y_eq: "-z + x = y" by (auto simp add: algebra_simps)
-    hence "-z + x \<in> supp g" using y_S1 S1 by fast
-    moreover have "z \<in> supp f" using z y_S1 S1 by fast
-    ultimately have "z \<in> S2" using S2 by fast
-    moreover have "y = i z" using i y_eq by fast
+    hence "-z + x \<in> supp g" using y_S1 S1_def by fast
+    moreover have "z \<in> supp f" using z_def y_S1 S1_def by fast
+    ultimately have "z \<in> S2" using S2_def by fast
+    moreover have "y = i z" using i_def [abs_def] y_eq by fast
     ultimately show "y \<in> i ` S2" by fast
-next
+  next
     fix y assume "y \<in> i ` S2"
     from this obtain z where z_S2: "z \<in> S2" and y_eq: "y = -z + x"
-      using i by fast
+      using i_def by fast
     from y_eq have "x - y = z" by (auto simp add: algebra_simps)
-    hence "x - y \<in> supp f \<and> y \<in> supp g" using y_eq z_S2 S2 by fastforce
-    thus "y \<in> S1" using S1 by fast
+    hence "x - y \<in> supp f \<and> y \<in> supp g" using y_eq z_S2 S2_def by fastforce
+    thus "y \<in> S1" using S1_def by fast
   qed
   ultimately have "(\<Sum>y\<in>S1. c1 y) = (\<Sum>y\<in>S2. (c1 \<circ> i) y)" by fast
-  with i c1 c2 have "(\<Sum>y\<in>S1. c1 y) = (\<Sum>y\<in>S2. c2 y)"
+  with i_def c1_def c2_def have "(\<Sum>y\<in>S1. c1 y) = (\<Sum>y\<in>S2. c2 y)"
     using diff_add_eq_diff_diff_swap[of x _ x] by simp
   thus "convolution f g x
               = (\<Sum>y|y \<in> supp f \<and> -y + x \<in> supp g. (f y) * g (-y + x))"
-    using S1 c1 S2 c2 unfolding convolution_def by fast
+    unfolding S1_def c1_def S2_def c2_def convolution_def by fast
 qed  
 
 lemma supp_convolution_subset_sum_supp :
   fixes f g :: "'a::group_add \<Rightarrow> 'b::{comm_monoid_add,times}"
   shows "supp (convolution f g) \<subseteq> supp f + supp g"
 proof-
-  def SS: SS \<equiv> "\<lambda>x. {y. x-y \<in> supp f \<and> y \<in> supp g}"
+  define SS where "SS x = {y. x-y \<in> supp f \<and> y \<in> supp g}" for x
   have "convolution f g = (\<lambda>x. sum (\<lambda>y. (f (x - y)) * g y) (SS x))"
-    using SS unfolding convolution_def by fast
+    unfolding SS_def convolution_def by fast
   moreover have "\<And>x. x \<notin> supp f + supp g \<Longrightarrow> SS x = {}"
   proof-
     have "\<And>x. SS x \<noteq> {} \<Longrightarrow> x \<in> supp f + supp g"
     proof-
       fix x::'a assume "SS x \<noteq> {}"
       from this obtain y where "x - y \<in> supp f" and y_G: "y \<in> supp g"
-        using SS by fast
+        using SS_def by fast
       from this obtain z where z_F: "z \<in> supp f" and z_eq: "x - y = z" by fast
       from z_eq have "x = z + y" using diff_eq_eq by fast
       with z_F y_G show "x \<in> supp f + supp g" by fast
@@ -556,19 +557,19 @@ next
                   \<and> f = (\<Sum>(b,a)\<leftarrow>zip bs (a#as). b \<delta> a))"
   proof-
     fix f :: "'a \<Rightarrow> 'b" assume supp_f : "supp f \<subseteq> insert a A"
-    def g : g \<equiv> "(\<lambda>x. if x = a then 0 else f x)"
+    define g where "g x = (if x = a then 0 else f x)" for x
     have "supp g \<subseteq> A"
     proof
       fix x assume x: "x \<in> supp g"
-      with x supp_f g have "x \<in> insert a A" unfolding supp_def by auto
-      moreover from x g have "x \<noteq> a" unfolding supp_def by auto
+      with x supp_f g_def have "x \<in> insert a A" unfolding supp_def by auto
+      moreover from x g_def have "x \<noteq> a" unfolding supp_def by auto
       ultimately show "x \<in> A" by fast
     qed
     with as(3) obtain bs
       where bs: "length bs = length as" "g = (\<Sum>(b,a)\<leftarrow>zip bs as. b \<delta> a)"
       by    fast
     from bs(1) have "length ((f a) # bs) = length (a#as)" by auto
-    moreover from g bs(2) have "f = (\<Sum>(b,a)\<leftarrow>zip ((f a) # bs) (a#as). b \<delta> a)"
+    moreover from g_def bs(2) have "f = (\<Sum>(b,a)\<leftarrow>zip ((f a) # bs) (a#as). b \<delta> a)"
       using deltafun_apply_eq[of "f a" a] deltafun_apply_neq[of _ a "f a"] by (cases) auto
     ultimately
       show "\<exists>bs. length bs = length (a#as) \<and> f = (\<Sum>(b,a)\<leftarrow>zip bs (a#as). b \<delta> a)"
@@ -585,13 +586,13 @@ lemma convolution_eq_sum_over_supp_right :
   shows   "convolution f g = (\<lambda>x. \<Sum>y\<in>supp g. (f (x - y)) * g y )"
 proof
   fix x::'a
-  def SS: SS \<equiv> "{y. x - y \<in> supp f \<and> y \<in> supp g}"
+  define SS where "SS = {y. x - y \<in> supp f \<and> y \<in> supp g}"
   have "finite (supp g)" using assms unfolding aezfun_set_def by fast
-  moreover have "SS \<subseteq> supp g" using SS by fast
-  moreover have "\<And>y. y \<in> supp g - SS \<Longrightarrow> (f (x - y)) * g y = 0" using SS unfolding supp_def by auto
+  moreover have "SS \<subseteq> supp g" unfolding SS_def by fast
+  moreover have "\<And>y. y \<in> supp g - SS \<Longrightarrow> (f (x - y)) * g y = 0" using SS_def unfolding supp_def by auto
   ultimately show "convolution f g x = (\<Sum>y\<in>supp g. (f (x - y)) * g y )"
     unfolding convolution_def
-    using     SS sum.mono_neutral_left[of "supp g" SS "\<lambda>y. (f (x - y)) * g y"]
+    using     SS_def sum.mono_neutral_left[of "supp g" SS "\<lambda>y. (f (x - y)) * g y"]
     by        fast
 qed
 
@@ -601,18 +602,18 @@ lemma convolution_symm_eq_sum_over_supp_left :
   shows   "convolution f g = (\<lambda>x. \<Sum>y\<in>supp f. (f y) * g (-y + x))"
 proof
   fix x::'a
-  def SS: SS \<equiv> "{y. y \<in> supp f \<and> -y + x \<in> supp g}"
+  define SS where "SS = {y. y \<in> supp f \<and> -y + x \<in> supp g}"
   have "finite (supp f)" using assms unfolding aezfun_set_def by fast
-  moreover have "SS \<subseteq> supp f" using SS by fast
+  moreover have "SS \<subseteq> supp f" using SS_def by fast
   moreover have "\<And>y. y \<in> supp f - SS \<Longrightarrow> (f y) * g (-y + x) = 0"
-    using SS unfolding supp_def by auto
+    using SS_def unfolding supp_def by auto
   ultimately
     have "(\<Sum>y\<in>SS. (f y) * g (-y + x)) = (\<Sum>y\<in>supp f. (f y) * g (-y + x) )"
     unfolding convolution_def
-    using     SS sum.mono_neutral_left[of "supp f" SS "\<lambda>y. (f y) * g (-y + x)"]
+    using     SS_def sum.mono_neutral_left[of "supp f" SS "\<lambda>y. (f y) * g (-y + x)"]
     by        fast
   thus "convolution f g x = (\<Sum>y\<in>supp f. (f y) * g (-y + x) )"
-    using SS convolution_symm[of f g] by simp
+    using SS_def convolution_symm[of f g] by simp
 qed
 
 lemma convolution_delta_left :
@@ -696,8 +697,7 @@ lemma convolution_assoc :
   assumes f_aez: "f \<in> aezfun_set" and h_aez: "h \<in> aezfun_set"
   shows   "convolution (convolution f g) h = convolution f (convolution g h)"
 proof
-  def fg: fg \<equiv> "convolution f g"
-  and gh: gh \<equiv> "convolution g h"
+  define fg gh where "fg = convolution f g" and "gh = convolution g h"
   fix x::'a
   have "convolution fg h x
               = (\<Sum>y\<in>supp f. (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z) )"
@@ -709,7 +709,7 @@ proof
     proof-
       fix z::'a
       have "fg (x - z) = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) )"
-        using fg f_aez convolution_symm_eq_sum_over_supp_left by fastforce
+        using fg_def f_aez convolution_symm_eq_sum_over_supp_left by fastforce
       hence "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) * h z )"
         using sum_distrib_right by simp
       thus "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + x - z) * h z )"
@@ -735,7 +735,7 @@ proof
                               = f y * g (-y + x - z) * h z"
         using mult.assoc[of "f y"] by simp
       have "gh (-y + x) = (\<Sum>z\<in>supp h. g (-y + x - z) * h z)"
-        using gh h_aez convolution_eq_sum_over_supp_right by fastforce
+        using gh_def h_aez convolution_eq_sum_over_supp_right by fastforce
       hence "f y * gh (-y + x) = (\<Sum>z\<in>supp h. f y * (g (-y + x - z) * h z))"
         using sum_distrib_left by simp
       also have "\<dots> = (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z)"
@@ -754,10 +754,9 @@ lemma convolution_distrib_left :
   assumes "g \<in> aezfun_set" "h \<in> aezfun_set"
   shows   "convolution f (g + h) = convolution f g + convolution f h"
 proof
-  def gh: gh \<equiv> "g + h"
-  and GH: GH \<equiv> "supp g \<union> supp h"
-  have fin_GH: "finite GH" using GH assms unfolding aezfun_set_def by fast
-  have gh_aezfun: "gh \<in> aezfun_set" using gh assms sum_of_aezfun_is_aezfun by fast
+  define gh GH where "gh = g + h" and "GH = supp g \<union> supp h"
+  have fin_GH: "finite GH" using GH_def assms unfolding aezfun_set_def by fast
+  have gh_aezfun: "gh \<in> aezfun_set" using gh_def assms sum_of_aezfun_is_aezfun by fast
   fix x::'a
   have zero_ext_g : "\<And>y. y \<in> GH - supp g \<Longrightarrow> (f (x - y)) * g y = 0"
   and  zero_ext_h : "\<And>y. y \<in> GH - supp h \<Longrightarrow> (f (x - y)) * h y = 0"
@@ -765,15 +764,15 @@ proof
     unfolding supp_def by auto
   have "convolution f gh x = (\<Sum>y\<in>supp gh. (f (x - y)) * gh y)"
     using assms gh_aezfun convolution_eq_sum_over_supp_right[of gh f] by simp
-  also from gh GH have "\<dots> = (\<Sum>y\<in>GH. (f (x - y)) * gh y)"
+  also from gh_def GH_def have "\<dots> = (\<Sum>y\<in>GH. (f (x - y)) * gh y)"
     using fin_GH supp_sum_subset_union_supp zero_ext_gh
           sum.mono_neutral_left[of GH "supp gh" "(\<lambda>y. (f (x - y)) * gh y)"]
     by    fast
-  also from gh
+  also from gh_def
     have  "\<dots> = (\<Sum>y\<in>GH. (f (x - y)) * g y) + (\<Sum>y\<in>GH. (f (x - y)) * h y)"
     using sum.distrib by (simp add: algebra_simps)
   finally show "convolution f gh x = (convolution f g + convolution f h) x"
-    using assms GH fin_GH zero_ext_g zero_ext_h
+    using assms GH_def fin_GH zero_ext_g zero_ext_h
           sum.mono_neutral_right[of GH "supp g" "(\<lambda>y. (f (x - y)) * g y)"]
           sum.mono_neutral_right[of GH "supp h" "(\<lambda>y. (f (x - y)) * h y)"]
           convolution_eq_sum_over_supp_right[of g f]
@@ -786,10 +785,9 @@ lemma convolution_distrib_right :
   assumes "f \<in> aezfun_set" "g \<in> aezfun_set"
   shows   "convolution (f + g) h = convolution f h + convolution g h"
 proof
-  def fg: fg \<equiv> "f + g"
-  and FG: FG \<equiv> "supp f \<union> supp g"
-  have fin_FG: "finite FG" using FG assms unfolding aezfun_set_def by fast
-  have fg_aezfun: "fg \<in> aezfun_set" using fg assms sum_of_aezfun_is_aezfun by fast
+  define fg FG where "fg = f + g" and "FG = supp f \<union> supp g"
+  have fin_FG: "finite FG" using FG_def assms unfolding aezfun_set_def by fast
+  have fg_aezfun: "fg \<in> aezfun_set" using fg_def assms sum_of_aezfun_is_aezfun by fast
   fix x::'a
   have zero_ext_f : "\<And>y. y \<in> FG - supp f \<Longrightarrow> (f y) * h (-y + x) = 0"
   and  zero_ext_g : "\<And>y. y \<in> FG - supp g \<Longrightarrow> (g y) * h (-y + x) = 0"
@@ -797,15 +795,15 @@ proof
     unfolding supp_def by auto
   from assms have "convolution fg h x = (\<Sum>y\<in>supp fg. (fg y) * h (-y + x))"
     using fg_aezfun convolution_symm_eq_sum_over_supp_left[of fg h] by simp
-  also from fg FG have "\<dots> = (\<Sum>y\<in>FG. (fg y) * h (-y + x))"
+  also from fg_def FG_def have "\<dots> = (\<Sum>y\<in>FG. (fg y) * h (-y + x))"
     using fin_FG supp_sum_subset_union_supp zero_ext_fg
           sum.mono_neutral_left[of FG "supp fg" "(\<lambda>y. (fg y) * h (-y + x))"]
     by    fast
-  also from fg
+  also from fg_def
     have  "\<dots> = (\<Sum>y\<in>FG. (f y) * h (-y + x)) + (\<Sum>y\<in>FG. (g y) * h (-y + x))"
     using sum.distrib by (simp add: algebra_simps)
   finally show "convolution fg h x = (convolution f h + convolution g h) x"
-    using assms FG fin_FG zero_ext_f zero_ext_g
+    using assms FG_def fin_FG zero_ext_f zero_ext_g
           sum.mono_neutral_right[of FG "supp f" "(\<lambda>y. (f y) * h (-y + x))"]
           sum.mono_neutral_right[of FG "supp g" "(\<lambda>y. (g y) * h (-y + x))"]
           convolution_symm_eq_sum_over_supp_left[of f h]
@@ -836,11 +834,11 @@ end
 
 lemma zero_aezfun_transfer : "Abs_aezfun ((0::'b::zero) \<delta> (0::'a::zero)) = 0"
 proof-
-  def zb: zb \<equiv> "0::'b" and za: za \<equiv> "0::'a"
+  define zb za where "zb = (0::'b)" and "za = (0::'a)"
   hence "zb \<delta> za = 0" using deltafun0[of za] by fast
   moreover have "aezfun 0 = 0" using zero_aezfun.rep_eq by fast
   ultimately have "zb \<delta> za = aezfun 0" by simp
-  with zb za show ?thesis using aezfun_inverse by simp
+  with zb_def za_def show ?thesis using aezfun_inverse by simp
 qed
 
 lemma zero_aezfun_apply [simp]: "aezfun 0 x = 0"
@@ -968,10 +966,10 @@ end
 
 lemma one_aezfun_transfer : "Abs_aezfun (1 \<delta> 0) = 1"
 proof-
-  def z: z \<equiv> "0::'b::zero" and n: n \<equiv> "1::'a::{one,zero}"
+  define z n where "z = (0::'b::zero)" and "n = (1::'a::{one,zero})"
   hence "aezfun 1 = n \<delta> z" using one_aezfun.rep_eq by fast
   hence "Abs_aezfun (n \<delta> z) = Abs_aezfun (aezfun 1)" by simp
-  with z n show ?thesis using aezfun_inverse by simp
+  with z_def n_def show ?thesis using aezfun_inverse by simp
 qed
 
 lemma one_aezfun_apply [simp]: "aezfun 1 x = (1 \<delta> 0) x"
@@ -1866,8 +1864,7 @@ lemma (in FinGroup) ex_rcoset_replist :
   assumes "Subgroup H"
   shows   "\<exists>gs. is_rcoset_replist H gs"
 proof-
-
-  def r: r \<equiv> "rcoset_rel H"
+  define r where "r = rcoset_rel H"
   hence equiv_r: "equiv G r" using rcoset_equiv[OF assms] by fast
   have "\<forall>x\<in>G//r. \<exists>g. g \<in> x"
   proof
@@ -1878,7 +1875,7 @@ proof-
     thus "\<exists>g. g \<in> x" by fast
   qed
   from this obtain f where f: "\<forall>x\<in>G//r. f x \<in> x" using bchoice by force
-  from r have "r \<subseteq> G \<times> G" using rcoset_rel_def by auto
+  from r_def have "r \<subseteq> G \<times> G" using rcoset_rel_def by auto
   with finite have "finite (f`(G//r))" using finite_quotient by auto
   from this obtain gs where gs: "distinct gs" "set gs = f`(G//r)"
     using finite_distinct_list by force
@@ -1926,11 +1923,10 @@ proof-
     from f g'(2) rg have "g \<in> r``{g'}" using equiv_r equivE sym_def[of r] by force
     with g'(1) show "g \<in> (\<Union>g\<in>set gs. r``{g})" by fast
   next
-    from r show "G \<supseteq> (\<Union>g\<in>set gs. r``{g})" using rcoset_rel_def by auto
+    from r_def show "G \<supseteq> (\<Union>g\<in>set gs. r``{g})" using rcoset_rel_def by auto
   qed
 
-  ultimately show ?thesis using r unfolding is_rcoset_replist_def by fastforce
-
+  ultimately show ?thesis using r_def unfolding is_rcoset_replist_def by fastforce
 qed
 
 lemma (in FinGroup) ex_rcoset_replist_hd0 :
@@ -2024,7 +2020,7 @@ subsubsection {* Basic facts *}
 lemma (in Group) trivial_GroupHom : "GroupHom G (0::('g\<Rightarrow>'h::group_add))"
 proof
   fix g g'
-  def z: z \<equiv> "0::'h" and z_map: z_map \<equiv> "0::('g\<Rightarrow>'h)"
+  define z z_map where "z = (0::'h)" and "z_map = (0::'g\<Rightarrow>'h)"
   thus "z_map (g + g') = z_map g + z_map g'" by simp
 qed (rule supp_zerofun_subset_any)
 
@@ -2058,19 +2054,19 @@ lemma im_sum_list_prod :
   "set (map (case_prod f) xys) \<subseteq> G
         \<Longrightarrow> T (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. T (f x y))"
 proof (induct xys)
-  case Nil show ?case using im_zero by simp
+  case Nil
+  show ?case using im_zero by simp
 next
   case (Cons xy xys)
-  def Tf: Tf \<equiv> "T \<circ> (case_prod f)"
+  define Tf where "Tf = T \<circ> (case_prod f)"
   have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y) = T ( (case_prod f) xy + (\<Sum>(x,y)\<leftarrow>xys. f x y) )"
     by simp
   moreover from Cons(2) have "(case_prod f) xy \<in> G" "set (map (case_prod f) xys) \<subseteq> G"
     by auto
-  ultimately have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y)
-                        = Tf xy + (\<Sum>(x,y)\<leftarrow>xys. Tf (x,y))"
-    using Tf sum_list_closed[of "case_prod f"] hom Cons by auto
+  ultimately have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y) = Tf xy + (\<Sum>(x,y)\<leftarrow>xys. Tf (x,y))"
+    using Tf_def sum_list_closed[of "case_prod f"] hom Cons by auto
   also have "\<dots> = (\<Sum>(x,y)\<leftarrow>(xy#xys). Tf (x,y))" by simp
-  finally show ?case using Tf by simp
+  finally show ?case using Tf_def by simp
 qed
 
 lemma distrib_comp_sum_left :
@@ -2483,7 +2479,7 @@ proof (induct Gs)
   have "\<And>x::'a. x \<in> (\<Oplus>H\<leftarrow>[]. H) \<Longrightarrow> \<exists>!gs\<in>listset []. x = sum_list gs"
   proof
     fix x::'a assume "x \<in> (\<Oplus>G\<leftarrow>[]. G)"
-    moreover def f \<equiv> "\<lambda>x::'a. []::'a list"
+    moreover define f :: "'a \<Rightarrow> 'a list" where "f x = []" for x
     ultimately show "f x \<in> listset [] \<and> x = sum_list (f x)"
       using inner_dirsum_Nil by auto
   next
@@ -2637,7 +2633,7 @@ lemma AbGroup_inner_dirsum_el_decomp_plus :
           "y \<in> (\<Oplus>G\<leftarrow>Gs. G)"
   shows   "(\<Oplus>Gs\<leftarrow>(x+y)) = [a+b. (a,b)\<leftarrow>zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y)]"
 proof-
-  def xs: xs \<equiv> "(\<Oplus>Gs\<leftarrow>x)" and ys: ys \<equiv> "(\<Oplus>Gs\<leftarrow>y)"
+  define xs ys where "xs = (\<Oplus>Gs\<leftarrow>x)" and "ys = (\<Oplus>Gs\<leftarrow>y)"
   with assms
     have  xy: "xs \<in> listset Gs" "x = sum_list xs" "ys \<in> listset Gs" "y = sum_list ys"
     using AbGroup_inner_dirsum_el_decompI
@@ -2665,24 +2661,24 @@ lemma AbGroup_inner_dirsum_el_decomp_in_nth :
 proof-
   from assms have x: "x \<in> (\<Oplus>G\<leftarrow>Gs. G)"
     using AbGroup_nth_subset_inner_dirsum by fast
-  def xgs: xgs \<equiv> "(replicate (length Gs) (0::'a))[n := x]"
+  define xgs where "xgs = (replicate (length Gs) (0::'a))[n := x]"
   hence "length xgs = length Gs" by simp
   moreover have "\<forall>k<length xgs. xgs!k \<in> Gs!k"
   proof-
     have "\<And>k. k < length xgs \<Longrightarrow> xgs!k \<in> Gs!k"
     proof-
       fix k assume "k < length xgs"
-      with assms(1,4) xgs show "xgs!k \<in> Gs!k" 
+      with assms(1,4) xgs_def show "xgs!k \<in> Gs!k" 
         using AbGroup.zero_closed[of "Gs!k"] by (cases "k = n") auto
     qed
     thus ?thesis by fast
   qed
   ultimately have "xgs \<in> listset Gs" using listsetI_nth by fast
-  moreover from xgs assms(3) have "x = sum_list xgs"
+  moreover from xgs_def assms(3) have "x = sum_list xgs"
     using sum_list_update[of n "replicate (length Gs) 0" x] nth_replicate sum_list_replicate0
     by    simp
   ultimately show "(\<Oplus>Gs\<leftarrow>x) = xgs"
-    using assms(1,2) x xgs AbGroup_inner_dirsum_el_decomp_eq by fast
+    using assms(1,2) x xgs_def AbGroup_inner_dirsum_el_decomp_eq by fast
 qed
 
 lemma AbGroup_inner_dirsum_el_decomp_nth_in_nth :
@@ -3042,17 +3038,17 @@ lemma trivial_RModule :
   assumes "Ring1 R" "\<forall>r\<in>R. smult r (0::'m::ab_group_add) = 0"
   shows   "RModule R smult (0::'m set)"
 proof (rule RModuleI, rule assms(1), rule trivial_Group, unfold_locales)
-  def Z: Z \<equiv> "0::'m set"
+  define Z where "Z = (0::'m set)"
   fix r s m n assume rsmn: "r \<in> R" "s \<in> R" "m \<in> Z" "n \<in> Z"
-  from rsmn(1,3) Z assms(2) show "r \<cdot> m \<in> Z" by simp
-  from rsmn(1,3,4) Z assms(2) show "r \<cdot> (m+n) = r \<cdot> m + r \<cdot> n" by simp
-  from rsmn(1-3) Z assms show "(r + s) \<cdot> m = r \<cdot> m + s \<cdot> m"
+  from rsmn(1,3) Z_def assms(2) show "r \<cdot> m \<in> Z" by simp
+  from rsmn(1,3,4) Z_def assms(2) show "r \<cdot> (m+n) = r \<cdot> m + r \<cdot> n" by simp
+  from rsmn(1-3) Z_def assms show "(r + s) \<cdot> m = r \<cdot> m + s \<cdot> m"
     using Ring1.add_closed by auto
-  from rsmn(1-3) Z assms show "r \<cdot> (s \<cdot> m) = (r*s) \<cdot> m"
+  from rsmn(1-3) Z_def assms show "r \<cdot> (s \<cdot> m) = (r*s) \<cdot> m"
     using Ring1.mult_closed by auto
 next
-  def Z: Z \<equiv> "0::'m set"
-  fix m assume "m \<in> Z" with Z assms show "1 \<cdot> m = m"
+  define Z where "Z = (0::'m set)"
+  fix m assume "m \<in> Z" with Z_def assms show "1 \<cdot> m = m"
     using Ring1.one_closed by auto
 qed
 
@@ -3359,15 +3355,16 @@ lemma lincomb_sum :
   shows   "rs \<bullet>\<cdot> ms + ss \<bullet>\<cdot> ms
                 = ([a + b. (a,b)\<leftarrow>zip rs ss] @ (drop (length rs) ss)) \<bullet>\<cdot> ms"
 proof-
-  def zs : zs  \<equiv> "[a + b. (a,b)\<leftarrow>zip rs ss]"
-  and fss: fss \<equiv> "take (length rs) ss"
-  and bss: bss \<equiv> "drop (length rs) ss"
-  from assms(4) zs fss have "length zs = length rs" "length fss = length rs"
+  define zs fss bss
+    where "zs = [a + b. (a,b)\<leftarrow>zip rs ss]"
+      and "fss = take (length rs) ss"
+      and "bss = drop (length rs) ss"
+  from assms(4) zs_def fss_def have "length zs = length rs" "length fss = length rs"
     using length_concat_map_split_zip[of "\<lambda>a b. a + b" rs] by auto
   hence "(zs @ bss) \<bullet>\<cdot> ms = rs \<bullet>\<cdot> ms + (fss @ bss) \<bullet>\<cdot> ms"
-    using assms(1,2,3) zs fss lincomb_sum_left lincomb_append_left
+    using assms(1,2,3) zs_def fss_def lincomb_sum_left lincomb_append_left
     by    simp
-  thus ?thesis using fss bss zs by simp
+  thus ?thesis using fss_def bss_def zs_def by simp
 qed
 
 lemma lincomb_diff_left :
@@ -3438,8 +3435,8 @@ next
   case 2 thus ?case using lincomb_Nil by simp
 next
   case (3 m ms)
-  def ss: ss \<equiv> "replicate (Suc (length ms)) (0::'r)"
-  from 3(2) ss
+  define ss where "ss = replicate (Suc (length ms)) (0::'r)"
+  from 3(2) ss_def
     have  "set ss \<subseteq> R" "length ss = length (m#ms)" "[] \<bullet>\<cdot> (m#ms) = ss \<bullet>\<cdot> (m#ms)"
     using R_scalars.zero_closed lincomb_Nil
           lincomb_replicate0_left[of "m#ms" "Suc (length ms)"]
@@ -4153,9 +4150,9 @@ lemma R_lin_independent_vs_lincomb0 :
           "(rs@s#ss) \<bullet>\<cdot> (ms@n#ns) = 0"
   shows   "s = 0"
 proof-
-  def k: k \<equiv> "length rs"
+  define k where "k = length rs"
   hence "(rs@s#ss)!k = s" by simp
-  moreover from k assms(4) have "k < min (length (rs@s#ss)) (length (ms@n#ns))"
+  moreover from k_def assms(4) have "k < min (length (rs@s#ss)) (length (ms@n#ns))"
     by simp
   ultimately show ?thesis
     using assms(1,2,3,5) R_lin_independentD_all_scalars_nth[of "rs@s#ss" "ms@n#ns"]
@@ -4564,11 +4561,11 @@ lemma (in RModule) RModule_inner_dirsum_el_decomp_Rsmult :
           "x \<in> (\<Oplus>N\<leftarrow>Ns. N)"
   shows   "(\<Oplus>Ns\<leftarrow>(r \<cdot> x)) = [r \<cdot> m. m\<leftarrow>(\<Oplus>Ns\<leftarrow>x)]"
 proof-
-  def xs: xs \<equiv> "(\<Oplus>Ns\<leftarrow>x)"
+  define xs where "xs = (\<Oplus>Ns\<leftarrow>x)"
   with assms have x: "xs \<in> listset Ns" "x = sum_list xs"
     using RModule.AbGroup[of R] AbGroup_inner_dirsum_el_decompI[of Ns x]
     by    auto
-  from assms(1,2,4) xs have xs_M: "set xs \<subseteq> M"
+  from assms(1,2,4) xs_def have xs_M: "set xs \<subseteq> M"
     using Subgroup_RSubmodule
           AbGroup.abSubgroup_inner_dirsum_el_decomp_set[OF AbGroup]
     by    fast
@@ -4705,13 +4702,13 @@ lemma coeff_n0_imp_in_Span_others :
           "w = (as @ b # bs) \<bullet>\<cdot> (us @ v # vs)"
   shows   "v \<in> Span (w # us @ vs)"
 proof-
-  def x: x \<equiv> "(1 # [- c. c\<leftarrow>as@bs]) \<bullet>\<cdot> (w # us @ vs)"
+  define x where "x = (1 # [- c. c\<leftarrow>as@bs]) \<bullet>\<cdot> (w # us @ vs)"
   from assms(1,4-6) have "v = (1/b) \<cdot> (w + - ( (as@bs) \<bullet>\<cdot> (us@vs) ))"
     using lincomb_append lincomb_Cons by simp
   moreover from assms(1,2,3,6) have w: "w \<in> V" using lincomb_closed by simp
   ultimately have "v = (1/b) \<cdot> x"
-    using x assms(2,3) neg_lincomb[of _ "us@vs"] lincomb_Cons[of 1 _ w] by simp
-  with x w assms(2,3) show ?thesis
+    using x_def assms(2,3) neg_lincomb[of _ "us@vs"] lincomb_Cons[of 1 _ w] by simp
+  with x_def w assms(2,3) show ?thesis
     using SpanD_lincomb_arb_len_coeffs[of "w # us @ vs"]
           Span_smult_closed[of "1/b" "w # us @ vs" x]
     by    auto
@@ -4722,7 +4719,7 @@ lemma lin_independent_replace1_by_lincomb :
           "length as = length us" "b \<noteq> 0"
   shows   "lin_independent ( ((as @ b # bs) \<bullet>\<cdot> (us @ v # vs)) # us @ vs )"
 proof-
-  def w: w \<equiv> "(as @ b # bs) \<bullet>\<cdot> (us @ v # vs)"
+  define w where "w = (as @ b # bs) \<bullet>\<cdot> (us @ v # vs)"
   from assms(1,2,4) have "lin_independent (us @ vs)"
     using lin_independent_reduce by fast
   hence "lin_independent (w # us @ vs)"
@@ -4736,23 +4733,24 @@ proof-
             lincomb_obtain_same_length_coeffs[of "drop (length us) cs" vs]
             lincomb_obtain_same_length_coeffs[of cs us]
       by    auto
-    def xs: xs \<equiv> "[x+y. (x,y)\<leftarrow>zip [c*a. a\<leftarrow>as] fs]"
-    and ys: ys \<equiv> "[x+y. (x,y)\<leftarrow>zip es [c*d. d\<leftarrow>ds]]"
+    define xs ys
+      where "xs = [x+y. (x,y)\<leftarrow>zip [c*a. a\<leftarrow>as] fs]"
+        and "ys = [x+y. (x,y)\<leftarrow>zip es [c*d. d\<leftarrow>ds]]"
     with assms(5) dsesfs(5) have len_xs: "length xs = length us"
       using length_concat_map_split_zip[of _ "[c*a. a\<leftarrow>as]" fs] by simp
-    from A w assms(1-3,5) dsesfs(2,4,6)
+    from A w_def assms(1-3,5) dsesfs(2,4,6)
       have "0 = c \<cdot> as \<bullet>\<cdot> us + fs \<bullet>\<cdot> us + (c * b) \<cdot> v + es \<bullet>\<cdot> vs + c \<cdot> ds \<bullet>\<cdot> vs"
       using lincomb_Cons lincomb_append_right lincomb_append add_closed smult_closed
             lincomb_closed
       by    (simp add: algebra_simps)
-    also from assms(1,3,5) dsesfs(1,3,5) xs ys len_xs
+    also from assms(1,3,5) dsesfs(1,3,5) xs_def ys_def len_xs
       have "\<dots> = (xs @ (c * b) # ys) \<bullet>\<cdot> (us @ v # vs)"
       using smult_lincomb lincomb_sum lincomb_Cons lincomb_append by simp
     finally have "(xs @ (c * b) # ys) \<bullet>\<cdot> (us @ v # vs) = 0" by simp
     with assms(1-3,4,6) len_xs show "c = 0"
       using lin_independent_vs_lincomb0 by fastforce
   qed
-  with w show ?thesis by fast
+  with w_def show ?thesis by fast
 qed
 
 lemma build_lin_independent_seq :
@@ -4776,7 +4774,7 @@ next
     moreover from ws(1) us_V have ws_us_V: "set (ws @ us) \<subseteq> V" by simp
     ultimately have "Span (ws@us) \<subset> V" using Span_closed by fast
     from this obtain w where w: "w \<in> V" "w \<notin> Span (ws@us)" by fast
-    def vs \<equiv> "w # ws"
+    define vs where "vs = w # ws"
     with w ws_us_V ws(2,3)
       have  "set (vs @ us) \<subseteq> V" "lin_independent (vs @ us)" "length vs = Suc m"
       using lin_independent_Cons_conditions[of w "ws@us"]
@@ -4845,30 +4843,30 @@ proof-
   from v_n0 as_bs(4) closed(1) obtain b where b: "b \<in> set bs" "b \<noteq> 0"
     using lincomb_0coeffs[of vs] by auto
   from b(1) obtain cs ds where cs_ds: "bs = cs @ b # ds" using split_list by fast
-  def n   :   n  \<equiv> "length cs"
-  def fvs : fvs  \<equiv> "take n vs"
-  and y   :   y  \<equiv> "vs!n"
-  and bvs : bvs  \<equiv> "drop (Suc n) vs"
-  def ufvs: ufvs \<equiv> "us @ fvs"
-  and acs : acs  \<equiv> "as @ cs"
-  from as_bs(1,3) cs_ds n acs ufvs fvs
+  define n where "n = length cs"
+  define fvs where "fvs = take n vs"
+  define y where "y = vs!n"
+  define bvs where "bvs = drop (Suc n) vs"
+  define ufvs where "ufvs = us @ fvs"
+  define acs where "acs = as @ cs"
+  from as_bs(1,3) cs_ds n_def acs_def ufvs_def fvs_def
     have n_len_vs: "n < length vs" and len_acs: "length acs = length ufvs"
     by   auto
-  from n_len_vs fvs y bvs have vs_decomp: "vs = fvs @ y # bvs"
+  from n_len_vs fvs_def y_def bvs_def have vs_decomp: "vs = fvs @ y # bvs"
     using id_take_nth_drop by simp
-  with uv(3) as_bs(1,2,4) cs_ds acs ufvs
+  with uv(3) as_bs(1,2,4) cs_ds acs_def ufvs_def
     have  w_decomp: "w = (acs @ b # ds) \<bullet>\<cdot> (ufvs @ y # bvs)"
     using lincomb_append
     by    simp
   from closed(1) vs_decomp
     have y_V: "y \<in> V" and fvs_V: "set fvs \<subseteq> V" and bvs_V: "set bvs \<subseteq> V"
     by   auto
-  from ufvs fvs_V closed(2) have ufvs_V: "set ufvs \<subseteq> V" by simp
+  from ufvs_def fvs_V closed(2) have ufvs_V: "set ufvs \<subseteq> V" by simp
   from w_decomp ufvs_V y_V bvs_V have w_V: "w \<in> V"
     using lincomb_closed by simp
   have "Span (us@vs) = Span (w # ufvs @ bvs)"
   proof
-    from vs_decomp ufvs have 1: "Span (us@vs) = Span (y # ufvs @ bvs)"
+    from vs_decomp ufvs_def have 1: "Span (us@vs) = Span (y # ufvs @ bvs)"
       using Span_append Span_Cons[of y bvs] Span_Cons[of y ufvs]
             Span_append[of "y#ufvs" bvs]
       by    (simp add: algebra_simps)
@@ -4880,7 +4878,7 @@ proof-
       using Span_replace_hd by simp
     with 1 show "Span (us@vs) \<subseteq> Span (w # ufvs @ bvs)" by fast
   qed
-  moreover from ufvs_V y_V bvs_V ufvs indep vs_decomp w_decomp len_acs b(2)
+  moreover from ufvs_V y_V bvs_V ufvs_def indep vs_decomp w_decomp len_acs b(2)
     have  "lin_independent (w # ufvs @ bvs)"
     using lin_independent_replace1_by_lincomb[of ufvs y bvs acs b ds]
     by    simp
@@ -4889,13 +4887,13 @@ proof-
     from new_w have "w \<in> Span (us@vs)" by fast
     moreover from closed have "set us \<subseteq> Span (us@vs)"
       using Span_contains_spanset_append_left by fast
-    moreover from closed fvs have "set fvs \<subseteq> Span (us@vs)"
+    moreover from closed fvs_def have "set fvs \<subseteq> Span (us@vs)"
       using Span_contains_spanset_append_right[of us] set_take_subset by fastforce
-    moreover from closed bvs have "set bvs \<subseteq> Span (us@vs)"
+    moreover from closed bvs_def have "set bvs \<subseteq> Span (us@vs)"
       using Span_contains_spanset_append_right[of us] set_drop_subset by fastforce
     ultimately show ?thesis by simp
   qed
-  ultimately show ?thesis using ufvs vs_decomp by auto
+  ultimately show ?thesis using ufvs_def vs_decomp by auto
 qed
 
 lemma replace_basis :
@@ -4913,8 +4911,9 @@ next
                 "basis_for (Span vs) (take (length vs) (us @ ppvs))"
     using lin_independent_ConsD1[of u us]
     by    auto
-  def fppvs: fppvs \<equiv> "take (length vs - length us) ppvs"
-  and bppvs: bppvs \<equiv> "drop (length vs - length us) ppvs"
+  define fppvs bppvs
+    where "fppvs = take (length vs - length us) ppvs"
+      and "bppvs = drop (length vs - length us) ppvs"
   with ppvs(1) Cons(2)
     have ppvs_decomp: "ppvs = fppvs @ bppvs"
     and  len_fppvs  : "length fppvs = length vs - length us"
@@ -4922,8 +4921,8 @@ next
   from closed Cons(3) have uus_V:  "u \<in> V" "set us \<subseteq> V"
     using Span_closed by auto
   from closed ppvs(2) have "set ppvs \<subseteq> V" by fast
-  with fppvs have fppvs_V: "set fppvs \<subseteq> V" using set_take_subset[of _ ppvs] by fast
-  from fppvs Cons(2)
+  with fppvs_def have fppvs_V: "set fppvs \<subseteq> V" using set_take_subset[of _ ppvs] by fast
+  from fppvs_def Cons(2)
     have prev_basis_decomp: "take (length vs) (us @ ppvs) = us @ fppvs"
     by   auto
   with Cons(3,4) ppvs(3) fppvs_V uus_V obtain xs y ys
@@ -4931,7 +4930,7 @@ next
     using lin_independent_imp_hd_independent_from_Span
           replace_basis_one_step[of fppvs us u]
     by    auto
-  def pvs: pvs \<equiv> "xs @ ys @ y # bppvs"
+  define pvs where "pvs = xs @ ys @ y # bppvs"
   with xs_y_ys len_fppvs ppvs_decomp ppvs(1,2)
     have "length pvs = length vs" "set pvs = set vs" 
          "basis_for (Span vs) (take (length vs) ((u # us) @ pvs))"
@@ -5011,17 +5010,17 @@ proof (cases us)
   moreover have "length (x#xs) > length bvs \<Longrightarrow> \<not> lin_independent (x#xs)"
   proof
     assume A: "length (x#xs) > length bvs" "lin_independent (x#xs)"
-    def ws: ws \<equiv> "take (length bvs) xs"
+    define ws where "ws = take (length bvs) xs"
     from Cons assms(1,2) have xxs_V: "x \<in> V" "set xs \<subseteq> V"
       using Span_closed by auto
-    from ws A(1) have "length ws = length bvs" by simp
-    moreover from Cons assms(2) bvs(2) ws have "set ws \<subseteq> Span bvs"
+    from ws_def A(1) have "length ws = length bvs" by simp
+    moreover from Cons assms(2) bvs(2) ws_def have "set ws \<subseteq> Span bvs"
       using set_take_subset by fastforce
     ultimately have "basis_for (Span vs) ws"
-      using A(2) ws assms(1) bvs xxs_V lin_independent_ConsD1
+      using A(2) ws_def assms(1) bvs xxs_V lin_independent_ConsD1
             lin_independent_imp_independent_take replace_basis_completely[of bvs ws]
       by    force
-    with Cons assms(2) ws A(2) xxs_V show False
+    with Cons assms(2) ws_def A(2) xxs_V show False
       using Span_contains_Span_take[of xs]
             lin_independent_imp_hd_independent_from_Span[of x xs]
       by    auto
@@ -5091,13 +5090,13 @@ lemma extend_lin_independent_to_basis :
   assumes "set us \<subseteq> V" "lin_independent us"
   shows   "\<exists>vs. basis_for V (vs @ us)"
 proof-
-  def n: n \<equiv> "Suc (dim V - length us)"
+  define n where "n = Suc (dim V - length us)"
   from assms obtain vs
     where vs: "set vs \<subseteq> V" "lin_independent (vs @ us)"
               "Span (vs @ us) = V \<or> length vs = n"
     using build_lin_independent_seq[of us n]
     by    fast
-  with assms n show ?thesis
+  with assms n_def show ?thesis
     using set_append lin_independent_length_le_dim[of "vs @ us"] by auto
 qed
 
@@ -5290,13 +5289,13 @@ lemma findim_domain_findim_image :
 proof-
   from assms obtain vs where vs: "set vs \<subseteq> V" "scalar_mult.Span smult vs = V"
     by fast
-  def ws: ws \<equiv> "map T vs"
+  define ws where "ws = map T vs"
   with vs(1) have 1: "set ws \<subseteq> Im" by auto
   moreover have "Span ws = Im"
   proof
     show "Span ws \<subseteq> Im"
       using 1 VectorSpace.Span_closed[OF VectorSpace_Im] by fast
-    from vs ws show "Span ws \<supseteq> Im"
+    from vs ws_def show "Span ws \<supseteq> Im"
       using 1 SpanD_lincomb_arb_len_coeffs distrib_lincomb
             VectorSpace.SpanD_lincomb_arb_len_coeffs[OF VectorSpace_Im]
       by auto
@@ -5315,12 +5314,11 @@ lemma (in VectorSpace) basis_im_defines_hom :
   and     basisV_im : "set ws \<subseteq> W" "length ws = length vs"
   shows   "\<exists>! T. VectorSpaceHom smult V smult' T \<and> map T vs = ws"
 proof (rule ex_ex1I)
-  def T:
-    T \<equiv> "restrict0 (\<lambda>v. (THE as. length as = length vs \<and> v = as \<bullet>\<cdot> vs) \<bullet>\<star> ws) V"
+  define T where "T = restrict0 (\<lambda>v. (THE as. length as = length vs \<and> v = as \<bullet>\<cdot> vs) \<bullet>\<star> ws) V"
   have "VectorSpaceHom op \<cdot> V smult' T"
   proof
     fix v v' assume vv': "v \<in> V" "v' \<in> V"
-    with T lincomb' basisV basisV_im(1) show "T (v + v') = T v + T v'"
+    with T_def lincomb' basisV basisV_im(1) show "T (v + v') = T v + T v'"
       using basis_for_obtain_unique_scalars theI'[
               of "\<lambda>ds. length ds = length vs \<and> v = ds \<bullet>\<cdot> vs"
             ]
@@ -5328,10 +5326,10 @@ proof (rule ex_ex1I)
             add_unique_scalars VectorSpace.lincomb_sum[OF VSpW]
       by    auto
   next
-    from T show "supp T \<subseteq> V" using supp_restrict0 by fast
+    from T_def show "supp T \<subseteq> V" using supp_restrict0 by fast
   next
     fix a v assume v: "v \<in> V"
-    with basisV basisV_im(1) T lincomb' show "T (a \<cdot> v) = a \<star> T v"
+    with basisV basisV_im(1) T_def lincomb' show "T (a \<cdot> v) = a \<star> T v"
       using smult_closed smult_unique_scalars VectorSpace.smult_lincomb[OF VSpW] by auto
   qed
   moreover have "map T vs = ws"
@@ -5340,12 +5338,12 @@ proof (rule ex_ex1I)
     have "\<And>i. i<length (map T vs) \<Longrightarrow> map T vs ! i = ws ! i"
     proof-
       fix i assume i: "i < length (map T vs)"
-      def zs: zs \<equiv> "(replicate (length vs) (0::'f))[i:=1]"
+      define zs where "zs = (replicate (length vs) (0::'f))[i:=1]"
       with basisV i have "length zs = length vs \<and> vs!i = zs \<bullet>\<cdot> vs" 
         using delta_scalars_lincomb_eq_nth by auto
       moreover from basisV i have "vs!i \<in> V" by auto
       ultimately show "(map T vs)!i = ws!i"
-        using basisV basisV_im T lincomb' zs i
+        using basisV basisV_im T_def lincomb' zs_def i
               basis_for_obtain_unique_scalars[of vs "vs!i"]
               the1_equality[of "\<lambda>zs. length zs = length vs \<and> vs!i = zs \<bullet>\<cdot> vs"]
               VectorSpace.delta_scalars_lincomb_eq_nth[OF VSpW, of ws]
@@ -5361,7 +5359,7 @@ next
     "VectorSpaceHom op \<cdot> V smult' T \<and> map T vs = ws"
   with basisV show "S = T"
     using VectorSpaceHom.same_image_on_spanset_imp_same_hom map_eq_conv
-    by    fastforce
+    by    fastforce  (* slow *)
 qed
 
 subsubsection {* Hom-sets *}
@@ -5739,7 +5737,7 @@ proof cases
       by    fastforce
   next
     assume a: "a \<noteq> 0"
-    def zmap: zmap \<equiv> "0::'v\<Rightarrow>'v"
+    define zmap where "zmap = (0::'v\<Rightarrow>'v)"
     from a p have "polymap (pCons a p) = a \<cdot>\<cdot> (endpow 0)" 
       using polymap_def scalar_mult.lincomb_singles by simp
     moreover have "a \<cdot>\<cdot> (id\<down>V) + (T \<circ> (polymap p)) = a \<cdot>\<cdot> (id\<down>V)"
@@ -5971,7 +5969,7 @@ proof (induct n \<equiv> "degree p" arbitrary: p)
 next
   case (Suc n p)
   from Suc(2) alg_closed obtain c where c: "poly p c = 0" by fastforce
-  def q: q \<equiv> "synthetic_div p c"
+  define q where "q = synthetic_div p c"
   with c have p_decomp: "p = [:-c, 1:] * q"
     using synthetic_div_correct'[of c p] by simp
   show ?case
@@ -5981,7 +5979,7 @@ next
   next
     case False
     then have "n = degree q"
-      using degree_synthetic_div [of p c] q \<open>Suc n = degree p\<close>
+      using degree_synthetic_div [of p c] q_def \<open>Suc n = degree p\<close>
       by auto
     moreover have "q \<noteq> 0"
       using \<open>p \<noteq> 0\<close> p_decomp
@@ -6002,59 +6000,59 @@ lemma (in FinDimVectorSpace) endomorph_has_eigenvector :
   and     endo      : "VectorSpaceEnd smult V T"
   shows   "\<exists>c u. u \<in> V \<and> u \<noteq> 0 \<and> T u = c \<cdot> u"
 proof-
-  def Tpolymap: Tpolymap \<equiv> "VectorSpaceEnd.polymap smult V T"
+  define Tpolymap where "Tpolymap = VectorSpaceEnd.polymap smult V T"
   from dim obtain v where v: "v \<in> V" "v \<noteq> 0"
     using dim_nonzero nonempty by auto
-  def Tpows: Tpows \<equiv> "map (VectorSpaceEnd.endpow V T) [0..<Suc (dim V)]"
-  def Tpows_v: Tpows_v \<equiv> "map (\<lambda>S. S v) Tpows"
-  with endo Tpows v(1) have Tpows_v_V: "set Tpows_v \<subseteq> V"
+  define Tpows where "Tpows = map (VectorSpaceEnd.endpow V T) [0..<Suc (dim V)]"
+  define Tpows_v where "Tpows_v = map (\<lambda>S. S v) Tpows"
+  with endo Tpows_def v(1) have Tpows_v_V: "set Tpows_v \<subseteq> V"
     using VectorSpaceEnd.endpow_list_apply_closed by fast
-  moreover with Tpows_v Tpows have "\<not> lin_independent Tpows_v"
+  moreover from Tpows_v_def Tpows_def Tpows_v_V have "\<not> lin_independent Tpows_v"
     using too_long_lin_dependent by simp
   ultimately obtain as
     where as: "set as \<noteq> 0" "length as = length Tpows_v" "as \<bullet>\<cdot> Tpows_v = 0"
     using lin_dependent_dependence_relation
     by    fast
-  def p: p \<equiv> "Poly as"
-  with dim Tpows Tpows_v as(1,2) have p_n0: "p \<noteq> 0"
+  define p where "p = Poly as"
+  with dim Tpows_def Tpows_v_def as(1,2) have p_n0: "p \<noteq> 0"
     using nonzero_coeffs_nonzero_poly[of as] by fastforce
-  def Tpows': Tpows' \<equiv> "map (VectorSpaceEnd.endpow V T) [0..<Suc (degree p)]"
-  def Tpows_v': Tpows_v' \<equiv> "map (\<lambda>S. S v) Tpows'"
+  define Tpows' where "Tpows' = map (VectorSpaceEnd.endpow V T) [0..<Suc (degree p)]"
+  define Tpows_v' where "Tpows_v' = map (\<lambda>S. S v) Tpows'"
   have "Tpows' = take (Suc (degree p)) Tpows"
   proof-
-    from Tpows
+    from Tpows_def
       have  1: "take (Suc (degree p)) Tpows = map (VectorSpaceEnd.endpow V T)
                       (take (Suc (degree p)) [0..<Suc (dim V)])"
       using take_map[of _ _ "[0..<Suc (dim V)]"]
       by    simp
-    from p_n0 p as(2) Tpows_v Tpows
+    from p_n0 p_def as(2) Tpows_v_def Tpows_def
       have  2: "take (Suc (degree p)) [0..<Suc (dim V)] = [0..<Suc (degree p)]"
       using length_coeffs_degree[of p] length_strip_while_le[of "op = 0" as]
             take_upt[of 0 "Suc (degree p)" "Suc (dim V)"]
       by    simp
-    from 1 Tpows' have "take (Suc (degree p)) Tpows = Tpows'"
+    from 1 Tpows'_def have "take (Suc (degree p)) Tpows = Tpows'"
       using subst[OF 2] by fast
     thus ?thesis by simp
   qed
-  with Tpows_v Tpows_v' have "Tpows_v' = take (Suc (degree p)) Tpows_v"
+  with Tpows_v_def Tpows_v'_def have "Tpows_v' = take (Suc (degree p)) Tpows_v"
     using take_map[of _ "\<lambda>S. S v" Tpows] by simp
-  moreover from p Tpows_v_V as(3) Tpows_v' have "(coeffs p) \<bullet>\<cdot> Tpows_v = 0"
+  moreover from p_def Tpows_v_V as(3) Tpows_v'_def have "(coeffs p) \<bullet>\<cdot> Tpows_v = 0"
     using lincomb_strip_while_0coeffs by simp
   ultimately have "(coeffs p) \<bullet>\<cdot> Tpows_v' = 0"
     using p_n0 lincomb_conv_take_right[of "coeffs p"] length_coeffs_degree[of p] by simp
-  with Tpolymap v(1) Tpows_v' Tpows' have "Tpolymap p v = 0"
+  with Tpolymap_def v(1) Tpows_v'_def Tpows'_def have "Tpolymap p v = 0"
     using VectorSpaceEnd.polymap_apply[OF endo] by simp
-  with alg_closed Tpolymap v endo p_n0 obtain c
+  with alg_closed Tpolymap_def v endo p_n0 obtain c
     where "\<not> inj_on (Tpolymap [:-c, 1:]) V"
     using VectorSpaceEnd.VEnd_polymap VectorSpaceEnd.nonzero_Ker_el_imp_n_inj
           VectorSpaceEnd.n_inj_polymap_findlinear[OF endo]
     by    fastforce
-  with Tpolymap have "(GroupHom.Ker V (Tpolymap [:-c, 1:])) - 0 \<noteq> {}"
+  with Tpolymap_def have "(GroupHom.Ker V (Tpolymap [:-c, 1:])) - 0 \<noteq> {}"
     using VectorSpaceEnd.VEnd_polymap[OF endo] VectorSpaceEnd.Ker0_imp_inj_on
     by    fast
   from this obtain u where "u \<in> V" "Tpolymap [:-c, 1:] u = 0" "u \<noteq> 0"
     using kerD by fastforce
-  with Tpolymap show ?thesis
+  with Tpolymap_def show ?thesis
     using VectorSpaceEnd.polymap_apply_linear[OF endo] by auto
 qed
 
@@ -6188,12 +6186,12 @@ lemma Gmult_assoc :
   assumes "g \<in> G" "h \<in> G" "v \<in> V"
   shows   "g *\<cdot> h *\<cdot> v = (g + h) *\<cdot> v"
 proof-
-  def n: n \<equiv> "1::'f"
+  define n where "n = (1::'f)"
   with assms have "g *\<cdot> h *\<cdot> v = ((n \<delta>\<delta> g) * (n \<delta>\<delta> h)) \<cdot> v"
     using FG_fddg_closed GmultD by simp
-  moreover from n have "n \<delta>\<delta> g * (n \<delta>\<delta> h) = n \<delta>\<delta> (g + h)"
+  moreover from n_def have "n \<delta>\<delta> g * (n \<delta>\<delta> h) = n \<delta>\<delta> (g + h)"
     using times_aezdeltafun_aezdeltafun[of n g n h] by simp
-  ultimately show ?thesis using n GmultD by simp
+  ultimately show ?thesis using n_def GmultD by simp
 qed
 
 lemma Gmult_distrib_left :
@@ -7880,7 +7878,7 @@ theorem Maschke :
   shows   "\<exists>W. GSubspace W \<and> V = W \<oplus> U"
 proof (cases "V = 0")
   case True
-  moreover with assms have "U = 0" using RModule.zero_closed by auto
+  moreover from assms True have "U = 0" using RModule.zero_closed by auto
   ultimately have "V = 0 + U" using set_plus_def by fastforce
   moreover have "add_independentS [0,U]" by simp
   ultimately have "V = 0 \<oplus> U" using inner_dirsum_doubleI by fast
@@ -7896,25 +7894,25 @@ next
     using VectorSpace.SubspaceD1[OF fVectorSpace] by auto
   from False dirsum have indS: "add_independentS [W',U]"
     using inner_dirsumD2 by fastforce
-  def P : P  \<equiv> "(\<Oplus>[W',U]\<down>1)"
-  def CP: CP \<equiv> "(\<lambda>g. Gmult (- g) \<circ> P \<circ> Gmult g)"
-  def S : S  \<equiv> "fsmult (1/ordG) \<circ> (\<Sum>g\<in>G. CP g)"
-  def W : W  \<equiv> "GroupHom.Ker V (S\<down>V)"
-  from assms W' indS S CP P have endo: "GRepEnd (S\<down>V)"
+  define P where "P  = (\<Oplus>[W',U]\<down>1)"
+  define CP where "CP = (\<lambda>g. Gmult (- g) \<circ> P \<circ> Gmult g)"
+  define S where "S = fsmult (1/ordG) \<circ> (\<Sum>g\<in>G. CP g)"
+  define W where "W = GroupHom.Ker V (S\<down>V)"
+  from assms W' indS S_def CP_def P_def have endo: "GRepEnd (S\<down>V)"
     using FGModuleEnd_avg_proj_right by fast
-  moreover from S CP P have "\<And>v. v \<in> V \<Longrightarrow> (S\<down>V) ((S\<down>V) v) = (S\<down>V) v"
+  moreover from S_def CP_def P_def have "\<And>v. v \<in> V \<Longrightarrow> (S\<down>V) ((S\<down>V) v) = (S\<down>V) v"
       using endo FGModuleEnd.endomorph
             avg_proj_is_proj_right[OF vsp_W' assms indS dirsum]
       by    fastforce
   moreover have "(S\<down>V) ` V = U"
   proof-
-    from assms indS P CP S dirsum vsp_W' have "S ` V = U"
+    from assms indS P_def CP_def S_def dirsum vsp_W' have "S ` V = U"
       using avg_proj_onto_right by fast
     moreover have "(S\<down>V) ` V = S ` V" by auto
     ultimately show ?thesis by fast
   qed
   ultimately have "V = W \<oplus> U" "GSubspace W"
-    using W FGModuleEnd.proj_decomp[of G smult V "S\<down>V"]
+    using W_def FGModuleEnd.proj_decomp[of G smult V "S\<down>V"]
           FGModuleEnd.GSubspace_Ker
     by    auto
   thus ?thesis by fast
@@ -7957,11 +7955,12 @@ lemma FinGroupRepresentation_reducible' :
                   \<and> (0 \<notin> set Us) \<and> V = (\<Oplus>U\<leftarrow>Us. U) )"
 proof (induct n rule: full_nat_induct)
   fix n V
-  def GRep     : GRep      \<equiv> "FinGroupRepresentation G fgsmult"
-  and IGRep    : IGRep     \<equiv> "IrrFinGroupRepresentation G fgsmult"
-  and GSubspace: GSubspace \<equiv> "FGModule.GSubspace G fgsmult V"
-  and GSpan    : GSpan     \<equiv> "FGModule.GSpan G fgsmult"
-  and fdim     : fdim      \<equiv> "FGModule.fdim fgsmult"
+  define GRep IGRep GSubspace GSpan fdim
+    where "GRep = FinGroupRepresentation G fgsmult"
+      and "IGRep = IrrFinGroupRepresentation G fgsmult"
+      and "GSubspace = FGModule.GSubspace G fgsmult V"
+      and "GSpan = FGModule.GSpan G fgsmult"
+      and "fdim = FGModule.fdim fgsmult"
   assume "\<forall>m. Suc m \<le> n \<longrightarrow> (\<forall>x. GRep x \<and> m = fdim x \<longrightarrow> ( \<exists>Us.
               Ball (set Us) IGRep \<and> (0 \<notin> set Us) \<and> x = (\<Oplus>U\<leftarrow>Us. U)) )"
   hence prev_case:
@@ -7979,15 +7978,15 @@ proof (induct n rule: full_nat_induct)
       ultimately show ?thesis using inner_dirsum_Nil by fast
     next
       case OneTrue
-      with V GRep obtain v where v: "v \<in> V" "v \<noteq> 0" 
+      with V GRep_def obtain v where v: "v \<in> V" "v \<noteq> 0" 
         using FinGroupRepresentation.Group[of G fgsmult] Group.obtain_nonzero
         by    auto
-      from v(1) V GRep GSpan GSubspace have GSub: "GSubspace (GSpan [v])"
+      from v(1) V GRep_def GSpan_def GSubspace_def have GSub: "GSubspace (GSpan [v])"
         using FinGroupRepresentation.GSubmodule_GSpan_single by fast
-      moreover from v V GRep GSpan have nzero: "GSpan [v] \<noteq> 0"
+      moreover from v V GRep_def GSpan_def have nzero: "GSpan [v] \<noteq> 0"
         using FinGroupRepresentation.GSpan_single_nonzero by fast
       ultimately have "V = GSpan [v]"
-        using OneTrue GSpan GSubspace IGRep IrrFinGroupRepresentation.irr
+        using OneTrue GSpan_def GSubspace_def IGRep_def IrrFinGroupRepresentation.irr
         by    fast
       with OneTrue
         have  "Ball (set [GSpan [v]]) IGRep" "0 \<notin> set [GSpan [v]]"
@@ -7996,17 +7995,17 @@ proof (induct n rule: full_nat_induct)
         by    auto
       thus ?thesis by fast
     next
-      case OtherTrue with V GRep IGRep show ?thesis
+      case OtherTrue with V GRep_def IGRep_def show ?thesis
         using FinGroupRepresentation.IrrFinGroupRep_trivialGSubspace by fast
     next
       case BothFalse
-      with V GRep IGRep GSubspace obtain U W
+      with V GRep_def IGRep_def GSubspace_def obtain U W
         where U: "GSubspace U" "U \<noteq> 0" "U \<noteq> V"
         and   W: "GSubspace W" "W \<noteq> 0" "W \<noteq> V"
         and   Vdecompose: "V = U \<oplus> W"
         using FinGroupRepresentation.notIrr_decompose[of G fgsmult V]
         by    auto
-      from U(1,3) W(1,3) V GRep GSubspace fdim
+      from U(1,3) W(1,3) V GRep_def GSubspace_def fdim_def
         have  "fdim U < fdim V" "fdim W < fdim V"
         using FinGroupRepresentation.axioms(1)
               FGModule.GSubspace_is_Subspace[of G fgsmult V U]
@@ -8019,10 +8018,10 @@ proof (induct n rule: full_nat_induct)
                 of "aezfun_scalar_mult.fsmult fgsmult" V W
               ]
         by    auto
-      from this U(1) W(1) V GSubspace obtain Us Ws
+      from this U(1) W(1) V GSubspace_def obtain Us Ws
         where "Ball (set Us) IGRep \<and> (0 \<notin> set Us) \<and> U = (\<Oplus>X\<leftarrow>Us. X)"
         and   "Ball (set Ws) IGRep \<and> (0 \<notin> set Ws) \<and> W = (\<Oplus>X\<leftarrow>Ws. X)"
-        using prev_case[of "fdim U"] prev_case[of "fdim W"] GRep
+        using prev_case[of "fdim U"] prev_case[of "fdim W"] GRep_def
               FinGroupRepresentation.GSubspace_is_FinGroupRep[
                 of G fgsmult V U
               ]
@@ -8042,7 +8041,7 @@ proof (induct n rule: full_nat_induct)
           and   indWs: "add_independentS Ws"
           using inner_dirsumD2
           by    auto
-        moreover from IGRep Us(1) have "Ball (set Us) (op \<in> 0)"
+        moreover from IGRep_def Us(1) have "Ball (set Us) (op \<in> 0)"
           using IrrFinGroupRepresentation.axioms(1)[of G fgsmult]
                 FinGroupRepresentation.zero_closed[of G fgsmult]
           by    fast
@@ -8054,7 +8053,7 @@ proof (induct n rule: full_nat_induct)
         ultimately have "add_independentS (Us@Ws)" 
           using add_independentS_double_sum_conv_append by auto
         moreover from W(1) Ws(3) indWs have "0 \<in> (\<Sum>X\<leftarrow>Ws. X)"
-          using inner_dirsumD GSubspace RModule.zero_closed by fast
+          using inner_dirsumD GSubspace_def RModule.zero_closed by fast
         ultimately show ?thesis
           using Vdecompose Us(3) Ws(3) inner_dirsum_append by fast
       qed
@@ -8173,8 +8172,8 @@ proof-
             OF FinDimVectorSpace, of T
           ]
     by    fast
-  def U \<equiv> "{v \<in> V. T v = e \<sharp>\<cdot> v}"
-  moreover with eu have "U \<noteq> 0" by auto
+  define U where "U = {v \<in> V. T v = e \<sharp>\<cdot> v}"
+  moreover from eu U_def have "U \<noteq> 0" by auto
   ultimately have "\<forall>v \<in> V. T v = e \<sharp>\<cdot> v"
     using GRep irr FGModuleEnd.axioms(1)[of G smult V T]
           GSubspace_eigenspace[of G smult]
@@ -8212,7 +8211,7 @@ proof (rule FinGroupRepresentation.intro)
                       \<and> f = (\<Sum>(b,g)\<leftarrow>zip bs gs. (b \<delta>\<delta> 0) * (1 \<delta>\<delta> g))"
       using good_card_imp_finite FinGroupI FinGroup.group_ring_spanning_set
       by    fast
-    def xs: xs \<equiv> "map (op \<delta>\<delta> (1::'f)) gs"
+    define xs where "xs = map (op \<delta>\<delta> (1::'f)) gs"
     with FG gs(1) have 1: "set xs \<subseteq> FG" using RG_aezdeltafun_closed by auto
     moreover have "aezfun_scalar_mult.fSpan op * xs = FG"
     proof
@@ -8225,9 +8224,9 @@ proof (rule FinGroupRepresentation.intro)
           where bs: "length bs = length gs"
                     "x = (\<Sum>(b,g)\<leftarrow>zip bs gs. (b \<delta>\<delta> 0) * (1 \<delta>\<delta> g))"
           by    fast
-        from bs(2) xs have "x = (\<Sum>(b,a)\<leftarrow>zip bs xs. (b \<delta>\<delta> 0) * a)"
+        from bs(2) xs_def have "x = (\<Sum>(b,a)\<leftarrow>zip bs xs. (b \<delta>\<delta> 0) * a)"
           using sum_list_prod_map2[THEN sym] by fast
-        with bs(1) xs show "x \<in> aezfun_scalar_mult.fSpan op * xs"
+        with bs(1) xs_def show "x \<in> aezfun_scalar_mult.fSpan op * xs"
           using aezfun_scalar_mult.fsmultD[of "op *", THEN sym]
                 sum_list_prod_cong[
                   of "zip bs xs" "\<lambda>b a. (b \<delta>\<delta> 0) * a"
@@ -8330,18 +8329,18 @@ theorem (in IrrFinGroupRepresentation) iso_FG_constituent :
   shows   "\<exists>U\<in>set Us. isomorphic op * U"
 proof-
   from nonzero obtain v where v: "v \<in> V" "v \<noteq> 0" using nonempty by auto
-  def T: T \<equiv> "(\<lambda>x. x \<cdot> v)\<down>FG"
+  define T where "T = (\<lambda>x. x \<cdot> v)\<down>FG"
   have "FGModuleHom G op * FG smult T"
   proof (rule FGModule.FGModuleHomI_fromaxioms)
     show "FGModule G op * FG"
       using ActingGroup.FGModule_FG by fast
-    from T v(1) show "\<And>v v'. v \<in> FG \<Longrightarrow> v' \<in> FG \<Longrightarrow> T (v + v') = T v + T v'"
+    from T_def v(1) show "\<And>v v'. v \<in> FG \<Longrightarrow> v' \<in> FG \<Longrightarrow> T (v + v') = T v + T v'"
       using Ring1.add_closed[OF Ring1] smult_distrib_right by auto
-    from T show "supp T \<subseteq> FG" using supp_restrict0 by fast
-    from T v(1) show "\<And>r m. r \<in> FG \<Longrightarrow> m \<in> FG \<Longrightarrow> T (r * m) = r \<cdot> T m"
+    from T_def show "supp T \<subseteq> FG" using supp_restrict0 by fast
+    from T_def v(1) show "\<And>r m. r \<in> FG \<Longrightarrow> m \<in> FG \<Longrightarrow> T (r * m) = r \<cdot> T m"
       using ActingGroup.RG_mult_closed by auto
   qed
-  from this obtain W
+  then obtain W
     where W: "FGModule.GSubspace G op * FG W" "FG = W \<oplus> (ker T \<inter> FG)"
              "FGModule.isomorphic G op * W smult (T ` FG)"
     using FG_n0
@@ -8349,7 +8348,7 @@ proof-
             OF FinGroupRepresentation_FG
           ]
     by    fast
-  from T v have "T ` FG = V" using eq_GSpan_single RSpan_single by auto
+  from T_def v have "T ` FG = V" using eq_GSpan_single RSpan_single by auto
   with W(3) have W': "FGModule.isomorphic G op * W smult V" by fast
   with W(1) nonzero have "W \<noteq> 0"
     using FGModule.GSubspace_is_FGModule[OF ActingGroup.FGModule_FG]
@@ -8611,7 +8610,7 @@ proof-
     fix k j assume k: "k < length hs" and j: "j < length hs"
     hence hsk_H: "hs!k \<in> H" and hsj_H: "hs!j \<in> H"
       using Supgroup.is_rcoset_replistD_set[OF rcoset_reps] by auto
-    def LHS: LHS \<equiv> "((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> hs!k)"
+    define LHS where "LHS = ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> hs!k)"
     with hfvss
       have "LHS = (\<Sum>(r,m)\<leftarrow>zip (css!j) (hfvss!j). (r \<currency>\<currency> m) (1 \<delta>\<delta> hs!k))"
       using length_negHorbit_list scalar_mult.lincomb_def[of induced_smult.fsmult]
@@ -8686,9 +8685,9 @@ proof-
     qed
   qed
 
-  def terms:
-    terms \<equiv> "map (\<lambda>a. case_prod (\<lambda>cs hfvs. (cs \<bullet>\<currency>\<currency> hfvs) (1 \<delta>\<delta> hs!i)) a) (zip css hfvss)"
-  and LHS: LHS \<equiv> "((concat css) \<bullet>\<currency>\<currency> (concat hfvss)) (1 \<delta>\<delta> (hs!i))"
+  define terms LHS
+    where "terms = map (\<lambda>a. case_prod (\<lambda>cs hfvs. (cs \<bullet>\<currency>\<currency> hfvs) (1 \<delta>\<delta> hs!i)) a) (zip css hfvss)"
+      and "LHS = ((concat css) \<bullet>\<currency>\<currency> (concat hfvss)) (1 \<delta>\<delta> (hs!i))"
   hence "LHS = sum_list terms"
     using scalars
           VectorSpace.lincomb_concat[OF fVectorSpace_indspace, of css hfvss]
@@ -8696,11 +8695,11 @@ proof-
     by    simp
   hence "LHS = (\<Sum>j\<in>{0..<length terms}. terms!j)"
     using sum_list_sum_nth[of terms] by simp
-  moreover from terms
+  moreover from terms_def
     have "\<forall>j\<in>{0..<length terms}. terms!j = ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> hs!i)"
     by   simp
   ultimately show "LHS = (css!i) \<bullet>\<sharp>\<cdot> vs"
-    using terms sum.cong scalars list_all2_lengthD[of _ css hfvss] hfvss 
+    using terms_def sum.cong scalars list_all2_lengthD[of _ css hfvss] hfvss 
           length_negHorbit_list[of hs induced_vector vs] i mostly_zero
           sum_single_nonzero[
             of "{0..<length hs}" "\<lambda>i j. ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> (hs!i))"
@@ -8734,20 +8733,21 @@ proof (rule VectorSpace.SpanI[OF fVectorSpace_indspace])
                                 \<and> f (1 \<delta>\<delta> h) = ahs \<bullet>\<sharp>\<cdot> vs"
       using BaseRep.in_fSpan_obtain_same_length_coeffs
       by    fast
-    def f_coeffs:
-      f_coeffs \<equiv> "\<lambda>h. SOME ahs. length ahs = length vs \<and> f (1 \<delta>\<delta> h) = ahs \<bullet>\<sharp>\<cdot> vs"
-    def ahss: ahss \<equiv> "map f_coeffs hs"
+    define f_coeffs
+      where "f_coeffs h = (SOME ahs. length ahs = length vs \<and> f (1 \<delta>\<delta> h) = ahs \<bullet>\<sharp>\<cdot> vs)" for h
+    define ahss where "ahss = map f_coeffs hs"
     hence len_ahss: "length ahss = length hs" by simp
     with hfvss have len_zip_ahss_hfvss: "length (zip ahss hfvss) = length hs"
       using length_negHorbit_list[of hs induced_vector vs] by simp
     have len_ahss_el: "\<forall>ahs\<in>set ahss. length ahs = length vs"
     proof
       fix ahs assume "ahs \<in> set ahss"
-      from this ahss obtain h where h: "h \<in> set hs" "ahs = f_coeffs h"
+      from this ahss_def obtain h where h: "h \<in> set hs" "ahs = f_coeffs h"
         using set_map by auto
       from h(1) have "\<exists>ahs. length ahs = length vs \<and> f (1 \<delta>\<delta> h) = ahs \<bullet>\<sharp>\<cdot> vs"
         using coeffs_exist by fast
-      with h(2) f_coeffs show "length ahs = length vs"
+      with h(2) show "length ahs = length vs"
+        unfolding f_coeffs_def
         using someI_ex[of "\<lambda>ahs. length ahs = length vs \<and> f (1 \<delta>\<delta> h) = ahs \<bullet>\<sharp>\<cdot> vs"]
         by    fast
     qed
@@ -8770,13 +8770,13 @@ proof (rule VectorSpace.SpanI[OF fVectorSpace_indspace])
             list_all2I[of ahss hfvss]
       by    auto
 
-    def f': f' \<equiv> "(concat ahss) \<bullet>\<currency>\<currency> (concat hfvss)"
+    define f' where "f' = (concat ahss) \<bullet>\<currency>\<currency> (concat hfvss)"
     have "f = f'"
       using Supgroup.is_rcoset_replistD_set[OF rcoset_reps]
             Supgroup.group_eq_subgrp_rcoset_un[OF Subgroup rcoset_reps]
             f
     proof (rule indspace_el_eq'[of hs])
-      from f' hfvss base_spset(1) show "f' \<in> indV"
+      from f'_def hfvss base_spset(1) show "f' \<in> indV"
         using Supgroup.is_rcoset_replistD_set[OF rcoset_reps]
               induced_vector_indV negHorbit_list_indV[of hs induced_vector vs]
               FGModule.flincomb_closed[OF FHModule_indspace]
@@ -8784,11 +8784,11 @@ proof (rule VectorSpace.SpanI[OF fVectorSpace_indspace])
       have "\<And>i. i<length hs \<Longrightarrow> f (1 \<delta>\<delta> (hs!i)) = f' (1 \<delta>\<delta> (hs!i))"
       proof-
         fix i assume i: "i < length hs"
-        with f_coeffs have "f (1 \<delta>\<delta> (hs!i)) = (f_coeffs (hs!i)) \<bullet>\<sharp>\<cdot> vs"
+        with f_coeffs_def have "f (1 \<delta>\<delta> (hs!i)) = (f_coeffs (hs!i)) \<bullet>\<sharp>\<cdot> vs"
           using coeffs_exist
                 someI_ex[of "\<lambda>ahs. length ahs = length vs \<and> f (1 \<delta>\<delta> hs!i) = ahs \<bullet>\<sharp>\<cdot> vs"]
           by    auto
-        moreover from i hfvss f' base_spset(1) rcoset_reps ahss
+        moreover from i hfvss f'_def base_spset(1) rcoset_reps ahss_def
           have  "f' (1 \<delta>\<delta> (hs!i)) = (f_coeffs (hs!i)) \<bullet>\<sharp>\<cdot> vs"
           using list_all2_len_ahss_hfvss flincomb_Horbit_induced_veclist_reduce
           by    simp
@@ -8796,7 +8796,7 @@ proof (rule VectorSpace.SpanI[OF fVectorSpace_indspace])
       qed
       thus "\<forall>i<length hs. f (1 \<delta>\<delta> (hs!i)) = f' (1 \<delta>\<delta> (hs!i))" by fast
     qed
-    with f' hfvss base_spset(1) show "f \<in> induced_smult.fSpan (concat hfvss)"
+    with f'_def hfvss base_spset(1) show "f \<in> induced_smult.fSpan (concat hfvss)"
       using Supgroup.is_rcoset_replistD_set[OF rcoset_reps]
             induced_vector_indV negHorbit_list_indV[of hs induced_vector vs]
             VectorSpace.SpanI_lincomb_arb_len_coeffs[OF fVectorSpace_indspace]
@@ -8892,7 +8892,7 @@ proof-
     by fast
   obtain hs where hs: "Supgroup.is_rcoset_replist G hs"
     using ex_rcoset_replist by fast
-  def hfvss : hfvss \<equiv> "negHorbit_list hs induced_vector vs"
+  define hfvss where "hfvss = negHorbit_list hs induced_vector vs"
   with vs hs
     have  "set (concat hfvss) \<subseteq> indV" "indV = induced_smult.fSpan (concat hfvss)"
     using Supgroup.is_rcoset_replistD_set[OF hs] induced_vector_indV
@@ -9221,9 +9221,9 @@ proof-
             of rrsmult H_rcoset_reps induced_vector
           ]
     by    simp
-  def hi: hi \<equiv> "H_rcoset_reps!i"
+  define hi where "hi = H_rcoset_reps!i"
   with i' have hi_H: "hi \<in> H" using set_conv_nth H_rcoset_reps_H by fast
-  from hi i(2) have "f \<in> set (map (Hmult (-hi) \<circ> induced_vector) Vfbasis)"
+  from hi_def i(2) have "f \<in> set (map (Hmult (-hi) \<circ> induced_vector) Vfbasis)"
     using indVfbasis_def i'
           aezfun_scalar_mult.negGorbit_list_nth[
             of i H_rcoset_reps rrsmult induced_vector
@@ -9245,9 +9245,9 @@ proof-
             of rrsmult H_rcoset_reps induced_vector
           ]
     by    simp
-  def hj: hj \<equiv> "H_rcoset_reps!j"
+  define hj where "hj = H_rcoset_reps!j"
   with j(1) have hj_H: "hj \<in> H" using set_conv_nth H_rcoset_reps_H by fast
-  from hj j(2) obtain g where g: "g \<in> G" "hi - x = g + hj"
+  from hj_def j(2) obtain g where g: "g \<in> G" "hi - x = g + hj"
     unfolding set_plus_def by fast
   from g(2) have x_hi: "x - hi = - hj + - g"
     using minus_diff_eq[of hi x] minus_add[of g] by simp
@@ -9269,7 +9269,7 @@ proof-
           ActingGroup.neg_closed
           FGModuleHom.G_map[OF hom_induced_vector]
     by    auto
-  also from cs(2) hj j(1) have "\<dots> = \<psi> T (cs \<bullet>\<currency>\<currency> (indVfbasis!j))"
+  also from cs(2) hj_def j(1) have "\<dots> = \<psi> T (cs \<bullet>\<currency>\<currency> (indVfbasis!j))"
     using hj_H Vfbasis_V FGModuleHom.distrib_flincomb[OF hom_induced_vector]
           indVfbasis_def Supgroup.neg_closed[of hj] induced_vector_indV
           FGModule.Gmult_flincomb_comm[
@@ -9284,7 +9284,7 @@ proof-
     using \<psi>D_VectorSpaceHom[OF assms] indVfbasis_indV j' set_conv_nth
           VectorSpaceHom.distrib_lincomb[of induced_smult.fsmult indV fsmult']
     by    simp
-  also from j(1) hj have "\<dots> = (- hj) *\<star> cs \<bullet>\<sharp>\<star> (map T Vfbasis)"
+  also from j(1) hj_def have "\<dots> = (- hj) *\<star> cs \<bullet>\<sharp>\<star> (map T Vfbasis)"
     using \<psi>D_im[OF assms]
           aezfun_scalar_mult.negGorbit_list_nth[of j H_rcoset_reps smult' T] hj_H
           Group.neg_closed[OF HRep.GroupG]
@@ -9306,7 +9306,7 @@ proof-
     using hi_H Supgroup.neg_closed Tv_W HRep.Gmult_assoc
     by    (simp add: algebra_simps)
   finally show "\<psi> T (x *\<currency> f) = x *\<star> (\<psi> T f)"
-    using assms(1) v hi i' set_conv_nth[of H_rcoset_reps] \<psi>D_im_single by fastforce
+    using assms(1) v hi_def i' set_conv_nth[of H_rcoset_reps] \<psi>D_im_single by fastforce
 qed
 
 lemma \<psi>T_hom :
@@ -9347,10 +9347,9 @@ proof
       using Vfbasis
             VectorSpace.in_Span_obtain_same_length_coeffs[OF GRep.fVectorSpace]
       by    fast
-    def extrazeros:
-      extrazeros \<equiv> "replicate ((length nonzero_H_rcoset_reps)*(length Vfbasis)) (0::'f)"
-    from cs extrazeros
-      have      "GRep.induced_vector v = (cs@extrazeros) \<bullet>\<currency>\<currency> (concat indVfbasis)"
+    define extrazeros
+      where "extrazeros = replicate ((length nonzero_H_rcoset_reps)*(length Vfbasis)) (0::'f)"
+    with cs have "GRep.induced_vector v = (cs@extrazeros) \<bullet>\<currency>\<currency> (concat indVfbasis)"
       using     H_rcoset_reps induced_vector_decomp[OF Vfbasis]
       unfolding H_rcoset_reps_def indVfbasis_def
       by        auto
@@ -9371,8 +9370,9 @@ proof
       by    simp
     also have "\<dots> = cs \<bullet>\<sharp>\<star> (map T Vfbasis)"
       using nonzero_H_rcoset_reps_H Vfbasis FGModuleHomSetD_Im[OF assms]
-            HRep.negGorbit_list_V extrazeros
+            HRep.negGorbit_list_V
             VectorSpace.lincomb_replicate0_left[OF HRep.fVectorSpace]
+      unfolding extrazeros_def
       by    force
     also from cs(2) have "\<dots> = T v"
       using FGModuleHomSetD_FGModuleHom[OF assms]

@@ -134,7 +134,7 @@ lemma path_strategies_monotone_Suc:
     "enat (Suc n) < llength P"
   shows "(path_strategies P $ Suc n, path_strategies P $ n) \<in> r"
 proof-
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   hence "enat (Suc 0) < llength P'" using P(4)
     by (metis enat_ltl_Suc ldrop_eSuc_ltl ldropn_Suc_conv_ldropn llist.disc(2) lnull_0_llength ltl_ldropn)
   then obtain v w Ps where vw: "P' = LCons v (LCons w Ps)"
@@ -197,7 +197,7 @@ lemma path_strategies_eventually_constant:
   assumes "\<not>lfinite P" "lset P \<subseteq> S" "valid_path P" "path_conforms_with_strategy p P well_ordered_strategy"
   shows "\<exists>n. \<forall>m \<ge> n. path_strategies P $ n = path_strategies P $ m"
 proof-
-  def \<sigma>_set \<equiv> "lset (path_strategies P)"
+  define \<sigma>_set where "\<sigma>_set = lset (path_strategies P)"
   have "\<exists>\<sigma>. \<sigma> \<in> \<sigma>_set" unfolding \<sigma>_set_def path_strategies_def
     using assms(1) lfinite_lmap lset_nth_member_inf by blast
   then obtain \<sigma>' where \<sigma>': "\<sigma>' \<in> \<sigma>_set" "\<And>\<tau>. (\<tau>, \<sigma>') \<in> r - Id \<Longrightarrow> \<tau> \<notin> \<sigma>_set"
@@ -241,7 +241,7 @@ next
   then obtain n where n: "\<And>m. n \<le> m \<Longrightarrow> path_strategies P $ n = path_strategies P $ m"
     using path_strategies_eventually_constant assms by blast
   let ?\<sigma> = well_ordered_strategy
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   { fix v assume "v \<in> lset P'"
     hence "v \<in> S" using `lset P \<subseteq> S` P'_def in_lset_ldropnD by fastforce
     from `v \<in> lset P'` obtain m where m: "enat m < llength P'" "P' $ m = v" by (meson in_lset_conv_lnth)

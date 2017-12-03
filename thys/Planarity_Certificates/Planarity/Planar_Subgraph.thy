@@ -127,7 +127,7 @@ proof -
   have "an = (face_cycle_succ ^^ funpow_dist face_cycle_succ a0 an) a0"
     using assms by (simp add: fcs_a funpow_dist_prop)
 
-  def p \<equiv> "map (\<lambda>n. (face_cycle_succ ^^ n) a0) [0..<Suc (funpow_dist face_cycle_succ a0 an)]"
+  define p where "p = map (\<lambda>n. (face_cycle_succ ^^ n) a0) [0..<Suc (funpow_dist face_cycle_succ a0 an)]"
   have p_nth: "\<And>i. i < length p \<Longrightarrow> p ! i = (face_cycle_succ ^^ i) a0"
     by (auto simp: p_def simp del: upt_Suc)
 
@@ -496,7 +496,9 @@ context bidel_arc begin
     have face_cycle_sets_inter:
       "(G.face_cycle_sets - {G.face_cycle_set a, G.face_cycle_set a'}) \<inter> H.face_cycle_set ` ((G.face_cycle_set a \<union> G.face_cycle_set a') - {a, a'}) = {}" (is "?L \<inter> ?R = _")
     proof -
-      def L \<equiv> ?L and R \<equiv> ?R and P \<equiv> "\<lambda>x. x \<inter> (G.face_cycle_set a \<union> G.face_cycle_set a') = {}"
+      define L R P
+        where "L = ?L" and "R = ?R" and "P x \<longleftrightarrow> x \<inter> (G.face_cycle_set a \<union> G.face_cycle_set a') = {}"
+        for x
       then have "\<And>x. x \<in> L \<Longrightarrow> P x" "\<And>x. x \<in> R \<Longrightarrow> \<not>P x"
         using G.face_cycle_set_parts by (auto simp: G.face_cycle_sets_def)
       then have "L \<inter> R = {}" by blast
@@ -679,7 +681,7 @@ begin
 
     have a_in_orb_a: "a \<in> orbit G.face_cycle_succ a" by (simp add: G.face_cycle_set_def[symmetric])
 
-    def c \<equiv> "inv G.face_cycle_succ a"
+    define c where "c = inv G.face_cycle_succ a"
     have c_succ: "G.face_cycle_succ c = a" unfolding c_def
       by (meson bij_inv_eq_iff permutation_bijective G.permutation_face_cycle_succ)
     have c_in_aa: "c \<in> segment G.face_cycle_succ a a"
@@ -757,19 +759,18 @@ begin
       next
         case False
 
-        def d \<equiv> "inv G.face_cycle_succ a'"
+        define d where "d = inv G.face_cycle_succ a'"
         have d_succ: "G.face_cycle_succ d = a'" unfolding d_def
           by (meson bij_inv_eq_iff permutation_bijective G.permutation_face_cycle_succ)
-        have "d \<in> ?L"
+        have *: "d \<in> ?L"
           using sa'a'_in_L False
           by (metis DiffI d_succ empty_iff G.face_cycle_set_self G.face_cycle_set_succ insert_iff G.permutation_face_cycle_succ pre_digraph_map.face_cycle_set_def segment_x_x_eq)
-        moreover
         then have "d \<in> arcs H" using assms by (auto dest: H.in_face_cycle_setD)
         have "H.face_cycle_succ d = G.face_cycle_succ a"
           using fcs_a_neq_a a_neq_a' \<open>d \<in> arcs H\<close> d_succ
           unfolding G.face_cycle_succ_def H.face_cycle_succ_def arcs_H
           by (auto simp: HM_def perm_restrict_simps arcs_H perm_rem_conv G.bij_edge_succ G.arev_eq_iff)
-        ultimately show ?thesis ..
+        with * show ?thesis ..
       qed
       then have "d \<in> arcs H" using assms 
         by - (drule H.in_face_cycle_setD, auto)
@@ -1022,12 +1023,12 @@ end
 sublocale bidel_arc_not_biconnected \<subseteq> bidel_arc_same_face
 proof
   note a_in
-  moreover then have "head G a \<in> tail G ` G.face_cycle_set a" 
+  moreover from a_in have "head G a \<in> tail G ` G.face_cycle_set a" 
     by (simp add: G.heads_face_cycle_set[symmetric])
   moreover have "tail G a \<in> tail G ` G.face_cycle_set a" by simp
   ultimately obtain p where p: "G.trail (head G a) p (tail G a)" "set p \<subseteq> G.face_cycle_set a"
     by (rule G.obtain_trail_in_fcs')
-  def p' \<equiv> "G.awalk_to_apath p"
+  define p' where "p' = G.awalk_to_apath p"
   from p have p': "G.apath (head G a) p' (tail G a)" "set p' \<subseteq> G.face_cycle_set a"
     by (auto simp: G.trail_def p'_def dest: G.apath_awalk_to_apath G.awalk_to_apath_subset)
   then have "set p' \<subseteq> arcs G"
@@ -1186,7 +1187,7 @@ begin
     proof (intro set_eqI iffI)
       fix b assume "b \<in> ?L"
 
-      def m \<equiv> "funpow_dist1 G.face_cycle_succ a' a - 1"
+      define m where "m = funpow_dist1 G.face_cycle_succ a' a - 1"
 
       have b_in0: "b \<in> orbit H.face_cycle_succ (a_neigh)"
         using \<open>b \<in> ?L\<close> by (simp add: H.face_cycle_set_def[symmetric])
@@ -1819,7 +1820,7 @@ qed
 
 lemma (in digraph_map) nonneg_euler_genus: "0 \<le> euler_genus"
 proof -
-  def H \<equiv> "\<lparr> verts = {}, arcs = {}, tail = tail G, head = head G \<rparr>"
+  define H where "H = \<lparr> verts = {}, arcs = {}, tail = tail G, head = head G \<rparr>"
   then have H_simps: "verts H = {}" "arcs H = {}" "tail H = tail G" "head H = head G"
     by (simp_all add: H_def)
 
@@ -1833,9 +1834,9 @@ proof -
 
   have "H.sccs = {}"
   proof -
-    { fix x assume "x \<in> H.sccs_verts"
-      moreover then have "x = {}" by (auto dest: H.sccs_verts_subsets simp: H_simps)
-      ultimately have False by (auto simp: H.in_sccs_verts_conv_reachable)
+    { fix x assume *: "x \<in> H.sccs_verts"
+      then have "x = {}" by (auto dest: H.sccs_verts_subsets simp: H_simps)
+      with * have False by (auto simp: H.in_sccs_verts_conv_reachable)
     } then show ?thesis by (auto simp: H.sccs_verts_conv)
   qed
   then have "H.euler_genus = 0"

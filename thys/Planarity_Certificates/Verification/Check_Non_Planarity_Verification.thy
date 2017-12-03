@@ -206,8 +206,9 @@ proof -
   obtain q r where es_decomp: "es = q @ r" "awalk (snd e1) q w" "awalk w r (fst e2)"
     using awalk_decomp[OF walk_es w_es] by auto
 
-  def xs \<equiv> "butlast (e1 # q)" and x \<equiv> "last (e1 # q)"
-    and y \<equiv> "hd (r @ [e2])" and ys \<equiv> "tl (r @ [e2])"
+  define xs x y ys
+    where "xs = butlast (e1 # q)" and "x = last (e1 # q)"
+      and "y = hd (r @ [e2])" and "ys = tl (r @ [e2])"
   then have "p = xs @ x # y # ys"
     by (auto simp: p_decomp es_decomp)
   moreover
@@ -815,7 +816,7 @@ proof
     computed (as implied by @{thm path}) is of degree 1. Hence we consider all vertices
     except the degree-2 nodes.
   \<close>
-  def V \<equiv> "{v \<in> pverts (mk_graph G). in_degree (mk_graph G) v \<noteq> 2}"
+  define V where "V = {v \<in> pverts (mk_graph G). in_degree (mk_graph G) v \<noteq> 2}"
 
   have V: "verts3 (mk_graph G) \<subseteq> V" "V \<subseteq> pverts (mk_graph G)"
     unfolding verts3_def V_def by auto
@@ -921,7 +922,7 @@ proof -
       progress: "progressing p"
     by (auto simp: find_endpoint_path_inv_def)
 
-  def p' \<equiv> "p @ [(x,x')]"
+  define p' where "p' = p @ [(x,x')]"
 
   from path have "x \<in> set (ig_verts G)"
     by (metis awalk pg.awalk_last_in_verts verts_mkg)
@@ -1389,7 +1390,7 @@ proof -
   then have "(\<forall>v\<in>set (ig_verts G). blue v \<longleftrightarrow> iadj G u v)"
     using colorize by (rule is_K33_colorize_last[THEN iffD1])
 
-  def U \<equiv> "{u \<in> set (ig_verts G). \<not>blue u}" and V \<equiv> "{v \<in> set (ig_verts G). blue v}"
+  define U V where "U = {u \<in> set (ig_verts G). \<not>blue u}" and "V = {v \<in> set (ig_verts G). blue v}"
   then have UV_set: "U \<subseteq> set (ig_verts G)" "V \<subseteq> set (ig_verts G)" "U \<union> V = set (ig_verts G)" "U \<inter> V = {}"
     and fin_UV: "finite U" "finite V" by auto
 

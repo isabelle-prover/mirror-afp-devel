@@ -163,10 +163,11 @@ proof-
     We want to perform induction over @{term "length xs"}, but @{term xs} in
     @{term "set ys \<subseteq> set xs"} should not be part of the induction hypothesis. To accomplish this,
     we hide @{term "set xs"} behind a definition for this specific part of the goal. *}
-  def target_set \<equiv> "set xs"
+  define target_set where "target_set = set xs"
   hence "set xs \<subseteq> target_set" by simp
   thus "\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> target_set"
-  using assms proof (induct "length xs" arbitrary: xs rule: infinite_descent0)
+    using assms
+  proof (induct "length xs" arbitrary: xs rule: infinite_descent0)
     case (smaller n)
     then obtain xs where
       xs: "n = length xs" "walk xs" "xs \<noteq> Nil" "hd xs = v" "last xs = w" "set xs \<subseteq> target_set" and
@@ -180,15 +181,15 @@ proof-
       We define @{term zs} as @{term xs} without this loop. *}
     obtain ys' ys_suffix where
       ys_decomp: "ys = ys' @ u # ys_suffix" by (meson split_list xs_decomp(1))
-    def zs \<equiv> "ys' @ u # zs"
-    have "walk zs" unfolding zs_def using xs(2) xs_decomp(3) ys_decomp
+    define zs' where "zs' = ys' @ u # zs"
+    have "walk zs'" unfolding zs'_def using xs(2) xs_decomp(3) ys_decomp
       by (metis walk_decomp list.sel(1) list.simps(3) walk_comp walk_last_edge)
-    moreover have "length zs < n" unfolding zs_def by (simp add: xs(1) xs_decomp(3) ys_decomp)
-    moreover have "hd zs = v" unfolding zs_def
+    moreover have "length zs' < n" unfolding zs'_def by (simp add: xs(1) xs_decomp(3) ys_decomp)
+    moreover have "hd zs' = v" unfolding zs'_def
       by (metis append_is_Nil_conv hd_append list.sel(1) xs(4) xs_decomp(3) ys_decomp)
-    moreover have "last zs = w" unfolding zs_def using xs(5) xs_decomp(3) by auto
-    moreover have "set zs \<subseteq> target_set" unfolding zs_def using xs(6) xs_decomp(3) ys_decomp by auto
-    ultimately show ?case using zs_def hyp by blast
+    moreover have "last zs' = w" unfolding zs'_def using xs(5) xs_decomp(3) by auto
+    moreover have "set zs' \<subseteq> target_set" unfolding zs'_def using xs(6) xs_decomp(3) ys_decomp by auto
+    ultimately show ?case using zs'_def hyp by blast
   qed simp
 qed
 
@@ -261,7 +262,7 @@ proof
   let ?v = "hd xs"
   let ?w = "last xs"
   let ?ys = "[?v,?w]"
-  def good \<equiv> "\<lambda>xs. ?v \<leadsto>xs\<leadsto> ?w"
+  define good where "good xs \<longleftrightarrow> ?v \<leadsto>xs\<leadsto> ?w" for xs
   have "path ?ys" using \<open>cycle xs\<close> cycle_def no_loops undirected by auto
   hence "good ?ys" unfolding good_def by (simp add: path_from_toI)
   moreover have "good xs" unfolding good_def by (simp add: path_from_toI \<open>cycle xs\<close> cycleE)

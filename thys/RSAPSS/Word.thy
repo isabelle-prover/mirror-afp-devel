@@ -2089,12 +2089,13 @@ lemma bv_slice_bv_slice:
   and     lw: "l < length w"
   shows       "bv_slice w (j,i) = bv_slice (bv_slice w (l,k)) (j-k,i-k)"
 proof -
-  def w1  == "fst (bv_chop w (Suc l))"
-  and w2  == "fst (bv_chop (snd (bv_chop w (Suc l))) (Suc j))"
-  and w3  == "fst (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)"
-  and w4  == "fst (bv_chop (snd (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)) k)"
-  and w5  == "snd (bv_chop (snd (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)) k)"
-  note w_defs = this
+  define w1 w2 w3 w4 w5
+    where w_defs:
+      "w1 = fst (bv_chop w (Suc l))"
+      "w2 = fst (bv_chop (snd (bv_chop w (Suc l))) (Suc j))"
+      "w3 = fst (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)"
+      "w4 = fst (bv_chop (snd (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)) k)"
+      "w5 = snd (bv_chop (snd (bv_chop (snd (bv_chop (snd (bv_chop w (Suc l))) (Suc j))) i)) k)"
 
   have w_def: "w = w1 @ w2 @ w3 @ w4 @ w5"
     by (simp add: w_defs append_bv_chop_id)

@@ -1074,7 +1074,8 @@ proof induct
     show ?thesis unfolding child_def nth_list_update_neq[OF False] using Child by auto
   qed
 qed (rule grid_change_dim)
-lemma grid_shift_base: assumes ds_dj: "ds \<inter> ds' = {}" and b_spg: "b \<in> sparsegrid' dm" and p_grid: "p \<in> grid (base (ds' \<union> ds) b) (ds' \<union> ds)"
+lemma grid_shift_base:
+  assumes ds_dj: "ds \<inter> ds' = {}" and b_spg: "b \<in> sparsegrid' dm" and p_grid: "p \<in> grid (base (ds' \<union> ds) b) (ds' \<union> ds)"
   shows "base ds' p \<in> grid (base (ds \<union> ds') b) ds"
 proof -
   from grid_split[OF p_grid]
@@ -1084,7 +1085,7 @@ proof -
 
   have b_len: "length (base (ds' \<union> ds) b) = dm" using base_length[OF b_spg] by auto
 
-  def d' \<equiv> "dm"
+  define d' where "d' = dm"
   moreover have "d' \<le> dm \<Longrightarrow> x \<in> grid (start dm) ({0..<dm} - {d \<in> ds'. d < d'})"
   proof (induct d')
     case (Suc d')

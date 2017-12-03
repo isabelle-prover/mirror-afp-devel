@@ -286,7 +286,7 @@ assumes "\<And> a. a \<in> set al \<Longrightarrow> 0 < f a"
 and "n < length al" and "j < f (al ! n)" and "i = lsum f (take n al) + j"
 shows "n = locate1 f al i \<and> j = locate2 f al i"
 proof-
-  def n_j \<equiv> "(n,j)"
+  define n_j where "n_j = (n,j)"
   have "locate_pred f al i n_j" using assms unfolding n_j_def locate_pred_def by auto
   hence "n_j = locate f al i" using assms locate_locate_pred_unique by blast
   thus ?thesis unfolding n_j_def locate1_def locate2_def by (metis fst_conv n_j_def snd_conv)
@@ -396,7 +396,7 @@ and "finite A" and "a \<in> A"
 and "\<And> a'. \<lbrakk>a' \<in> A; a' \<noteq> a\<rbrakk> \<Longrightarrow> f a' = 0"
 shows "sum f A = b"
 proof-
-  def B \<equiv> "A - {a}"
+  define B where "B = A - {a}"
   have "A = B Un {a}" unfolding B_def using assms by blast
   moreover have "B Int {a} = {}" unfolding B_def by blast
   ultimately have "sum f A = sum f B + sum f {a}"
@@ -1025,9 +1025,9 @@ shows
  eff (cl ! n) s i"
 (is "?eL = ?eR")
 proof-
-  def ii \<equiv> "brnL cl n + i"
-  def n1 \<equiv> "locateT cl ii"
-  def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl n + i"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have n_i: "n = n1" "i = i1" using p unfolding n1_def i1_def
   using ii_def locateTI_unique n i by auto
   have lsum1: "ii < brnL cl (length cl)" unfolding ii_def using n i by simp
@@ -1036,21 +1036,21 @@ proof-
   hence set: "cl ! n1 \<in> set cl" by simp
   (*  *)
   have "?wL = 1 / (length cl)* wt (cl ! n1) s i1"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using set unfolding n1_def i1_def unfolding wt_def by simp
   also have "... = ?wR" unfolding n_i by simp
   finally show "?wL = ?wR" .
   (*  *)
   have "?mL = Par (cl [n1 := cont (cl ! n1) s i1])"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using set unfolding n1_def i1_def unfolding cont_def by simp
   also have "... = ?mR" unfolding n_i by simp
   finally show "?mL = ?mR" .
   (*  *)
   have "?eL = eff (cl ! n1) s i1"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using set unfolding n1_def i1_def unfolding eff_def by simp
   also have "eff (cl ! n1) s i1 = ?eR" unfolding n_i by simp
@@ -1069,9 +1069,9 @@ shows
  eff (cl ! n) s i"
 (is "?eL = ?eR")
 proof-
-  def ii \<equiv> "brnL cl n + i"
-  def n1 \<equiv> "locateT cl ii"
-  def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl n + i"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have n_i: "n = n1" "i = i1" using p unfolding n1_def i1_def
   using ii_def locateTI_unique n i by auto
   have lsum1: "ii < brnL cl (length cl)" unfolding ii_def using n i by simp
@@ -1080,14 +1080,14 @@ proof-
   hence set: "cl ! n1 \<in> set cl" by simp
   (*  *)
   have "?mL = ParT (cl [n1 := cont (cl ! n1) s i1])"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using set unfolding n1_def i1_def unfolding cont_def by simp
   also have "... = ?mR" unfolding n_i by simp
   finally show "?mL = ?mR" .
   (*  *)
   have "?eL = eff (cl ! n1) s i1"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using set unfolding n1_def i1_def unfolding eff_def by simp
   also have "eff (cl ! n1) s i1 = ?eR" unfolding n_i by simp
@@ -1099,7 +1099,9 @@ assumes p: "properL cl" and WtFT: "WtFT cl = 1"
 shows "wt (ParT cl) s (brnL cl (pickFT cl)) = 1"
 (is "?wL = 1")
 proof-
-  def ii \<equiv> "brnL cl (pickFT cl)" def n1 \<equiv> "locateT cl ii" def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl (pickFT cl)"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have ni: "pickFT cl < length cl" "0 < brn (cl! (pickFT cl))"
   using WtFT p brn_gt_0 by auto
   hence n_i: "pickFT cl = n1" "0 = i1" using p unfolding n1_def i1_def
@@ -1112,7 +1114,7 @@ proof-
   (*  *)
   have n1i1: "n1 = pickFT cl \<and> i1 = 0" using WtFT ni unfolding n_i by auto
   show "?wL = 1"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using WtFT n1i1 set unfolding n1_def i1_def unfolding wt_def by simp
 qed
@@ -1122,7 +1124,9 @@ assumes p: "properL cl" and n: "n < length cl" and i: "i < brn (cl ! n)"
 and WtFT: "WtFT cl = 1" and ni: "n = pickFT cl \<longrightarrow> i \<noteq> 0"
 shows "wt (ParT cl) s (brnL cl n + i) = 0" (is "?wL = 0")
 proof-
-  def ii \<equiv> "brnL cl n + i" def n1 \<equiv> "locateT cl ii" def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl n + i"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have n_i: "n = n1" "i = i1" using p unfolding n1_def i1_def
   using ii_def locateTI_unique n i by auto
   have lsum1: "ii < brnL cl (length cl)" unfolding ii_def using n i by simp
@@ -1132,7 +1136,7 @@ proof-
   (*  *)
   have n1i1: "n1 \<noteq> pickFT cl \<or> i1 \<noteq> 0" using WtFT ni unfolding n_i by auto
   show "?wL = 0"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using WtFT n1i1 set unfolding n1_def i1_def unfolding wt_def by force
 qed
@@ -1142,7 +1146,9 @@ assumes p: "properL cl" and n: "n < length cl" and i: "i < brn (cl ! n)"
 and WtFT: "WtFT cl \<noteq> 1" and f: "finished (cl ! n)"
 shows "wt (ParT cl) s (brnL cl n + i) = 0" (is "?wL = 0")
 proof-
-  def ii \<equiv> "brnL cl n + i" def n1 \<equiv> "locateT cl ii" def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl n + i"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have n_i: "n = n1" "i = i1" using p unfolding n1_def i1_def
   using ii_def locateTI_unique n i by auto
   have lsum1: "ii < brnL cl (length cl)" unfolding ii_def using n i by simp
@@ -1152,7 +1158,7 @@ proof-
   (*  *)
   have f: "finished (cl ! n1)" using f unfolding n_i by auto
   show "?wL = 0"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using WtFT f set unfolding n1_def i1_def unfolding wt_def by simp
 qed
@@ -1163,7 +1169,9 @@ and WtFT: "WtFT cl \<noteq> 1" and nf: "\<not> finished (cl ! n)"
 shows "wt (ParT cl) s (brnL cl n + i) =
        (1 / (length cl)) / (1 - WtFT cl) * wt (cl ! n) s i" (is "?wL = ?wR")
 proof-
-  def ii \<equiv> "brnL cl n + i" def n1 \<equiv> "locateT cl ii" def i1 \<equiv> "locateI cl ii"
+  define ii where "ii = brnL cl n + i"
+  define n1 where "n1 = locateT cl ii"
+  define i1 where "i1 = locateI cl ii"
   have n_i: "n = n1" "i = i1" using p unfolding n1_def i1_def
   using ii_def locateTI_unique n i by auto
   have lsum1: "ii < brnL cl (length cl)" unfolding ii_def using n i by simp
@@ -1172,7 +1180,7 @@ proof-
   (*  *)
   have nf: "\<not> finished (cl ! n1)" using nf unfolding n_i by auto
   have "?wL = (1 / (length cl)) / (1 - WtFT cl) * wt (cl ! n1) s i1"
-  unfolding ii_def[THEN meta_eq_to_obj_eq, THEN sym]
+  unfolding ii_def[THEN sym]
   apply (cases "wt_cont_eff (cl ! n1) s i1")
   using WtFT nf set unfolding n1_def i1_def unfolding wt_def by simp
   also have "... = ?wR" unfolding n_i by simp
@@ -1478,7 +1486,7 @@ using assms proof (induct c arbitrary: s rule: proper_induct)
 next
   case (ParT cl)
   let ?v = "1/(length cl)" let ?wtF = "WtFT cl" let ?wtNF = "WtNFT cl"
-  let ?w = "\<lambda> n.
+  let ?w = "\<lambda>n.
   if ?wtF = 1
     then
       (if n = pickFT cl then 1 else 0)
@@ -1487,7 +1495,7 @@ next
          then 0
          else ?v / (1 - ?wtF) *
               sum (wt (cl ! n) s) {..< brn (cl ! n)})"
-  def w \<equiv> ?w
+  define w where "w = ?w"
   have w: "\<And> n. ?wtF \<noteq> 1 \<and> n < length cl \<and> \<not> finished (cl!n)
   \<Longrightarrow> w n = ?v / (1 - ?wtF)"
   unfolding w_def using ParT by simp
@@ -1569,7 +1577,7 @@ lemma sum_subset_le_1[simp]:
 assumes *: "proper c" and **: "I \<subseteq> {..< brn c}"
 shows "sum (wt c s) I \<le> 1"
 proof-
-  def J \<equiv> "{..< brn c}"
+  define J where "J = {..< brn c}"
   have "I \<subseteq> J" and "finite J" using ** unfolding J_def by auto
   moreover have "\<forall> j \<in> J. wt c s j \<ge> 0" unfolding J_def using * by simp
   ultimately have "sum (wt c s) I \<le> sum (wt c s) J"

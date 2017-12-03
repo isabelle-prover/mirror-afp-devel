@@ -124,7 +124,7 @@ proof -
   have [simp]: "\<And>x. binsert (True, undefined) (binsert (False, undefined) bempty) \<noteq> bsingleton x"
     unfolding bsingleton_def by transfer auto
 
-  def R \<equiv> "\<lambda>(a::bool) (b::bool). b"
+  define R where "R a b = b" for a b :: bool
   have "rel_var R op = X Z'"
     unfolding R_def var.in_rel mem_Collect_eq subset_eq
     apply (intro exI[of _ C])
@@ -132,7 +132,7 @@ proof -
     apply (auto simp: set_bset binsert.rep_eq fsts.simps snds.simps bempty.rep_eq bsingleton_def)
     done
   moreover
-  def S \<equiv> "\<lambda>(a::bool) (b::bool). a"
+  define S where "S a b = a" for a b :: bool
   have "rel_var S op = Z Y"
     unfolding S_def var.in_rel mem_Collect_eq subset_eq
     apply (intro exI[of _ C'])

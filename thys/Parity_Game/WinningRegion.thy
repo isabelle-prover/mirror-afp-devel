@@ -77,7 +77,7 @@ lemma (in vmc_path) path_hits_winning_region_is_winning:
 proof-
   obtain n where n: "enat n < llength P" "P $ n \<in> winning_region p"
     using P by (meson lset_intersect_lnth)
-  def P' \<equiv> "ldropn n P"
+  define P' where "P' = ldropn n P"
   then interpret P': vmc_path G P' "P $ n" p \<sigma>
     unfolding P'_def using vmc_path_ldropn n(1) by blast
   have "winning_strategy p \<sigma>' (P $ n)" using \<sigma>'(2) n(2) by blast

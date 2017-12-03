@@ -170,8 +170,8 @@ proof
       by (metis (no_types, lifting) unique_connecting_path_rev mem_Collect_eq set_rev t)
 
     text {* Now we can define two different paths from @{term s} to @{term u}. *}
-    def [simp]: xs' \<equiv> "?xs"
-    def [simp]: ys' \<equiv> "s # ?ys"
+    define xs' where [simp]: "xs' = ?xs"
+    define ys' where [simp]: "ys' = s # ?ys"
 
     have "path ys'" using path_cons \<open>s \<notin> set ?ys\<close> assms
       by (simp add: unique_connecting_path_properties(1-3) t u(1))

@@ -375,8 +375,10 @@ proof (unfold_locales, safe)
   interpret R: pref_profile_wf agents' alts' R by fact
   from R_wf interpret liftR: pref_profile_wf agents alts "lift R" by simp
 
-  def lift_Ri' \<equiv> "\<lambda>x y. x \<in> alts \<and> y \<in> alts \<and> (x = y \<or> x \<notin> alts' \<or> (y \<in> alts' \<and> Ri' x y))"
-  def S \<equiv> "(lift R)(i := lift_Ri')"
+  define lift_Ri'
+    where "lift_Ri' x y \<longleftrightarrow> x \<in> alts \<and> y \<in> alts \<and> (x = y \<or> x \<notin> alts' \<or> (y \<in> alts' \<and> Ri' x y))"
+    for x y
+  define S where "S = (lift R)(i := lift_Ri')"
   from Ri' interpret Ri': total_preorder_on alts' Ri' .
   have wf_lift_Ri': "total_preorder_on alts lift_Ri'" using Ri'.total
     by unfold_locales (auto simp: lift_Ri'_def intro: Ri'.trans)

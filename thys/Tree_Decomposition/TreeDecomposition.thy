@@ -94,8 +94,8 @@ text {* Every graph has a trivial tree decomposition consisting of a single bag 
   @{term V}. *}
 proposition tree_decomposition_exists: "\<exists>(T :: 'c Graph) bag. TreeDecomposition G T bag" proof-
   obtain x where "x \<in> (UNIV :: 'c set)" by blast
-  def [simp]: T \<equiv> "\<lparr> verts = {x}, arcs = {} \<rparr>"
-  def [simp]: bag \<equiv> "\<lambda>_ :: 'c. V"
+  define T where [simp]: "T = \<lparr> verts = {x}, arcs = {} \<rparr>"
+  define bag where [simp]: "bag = (\<lambda>_ :: 'c. V)"
   have "Graph T" by unfold_locales simp_all
   then interpret T: Graph T .
   have "\<And>xs. \<not>T.cycle xs" using T.cycleE by auto

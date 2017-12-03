@@ -335,7 +335,7 @@ lemma word_of_int_via_signed:
          if i' - shift < least \<or> overflow \<le> i' - shift then arbitrary1 i' else word_of_int (i' - shift)
        else if i' < least \<or> overflow \<le> i' then arbitrary2 i' else word_of_int i')"
 proof -
-  def i' \<equiv> "i AND mask"
+  define i' where "i' = i AND mask"
   have "shift = mask + 1" unfolding assms by(simp add: bin_mask_p1_conv_shift)
   hence "i' < shift" by(simp add: mask_def i'_def int_and_le)
   show ?thesis

@@ -103,7 +103,7 @@ proof (unfold inj_on_def, rule+, rule ccontr)
   then obtain g where sum: "(\<Sum>v\<in>B. scale (g v) v) = (x - y)" by blast
   -- "We define one of the elements as a linear combination of the second 
       element and the ones in $B$"
-  def h \<equiv> "(\<lambda>a. if a = y then (1::'a) else g a)"
+  define h :: "'b \<Rightarrow> 'a" where "h a = (if a = y then 1 else g a)" for a
   have "x = y + (\<Sum>v\<in>B. scale (g v) v)" using sum by auto
   also have "... = scale (h y) y  + (\<Sum>v\<in>B. scale (g v) v)" unfolding h_def by simp
   also have "... = scale (h y) y + (\<Sum>v\<in>B. scale (h v) v)"
@@ -148,8 +148,8 @@ proof -
   have l: "linear scaleB scaleC f" by unfold_locales
   -- "For convenience we define abbreviations for the universe set, $V$, 
     and the kernel of $f$"
-  def V == "UNIV::'b set"
-  def ker_f == "{x. f x = 0}"
+  define V :: "'b set" where "V = UNIV"
+  define ker_f where "ker_f = {x. f x = 0}"
   -- "The kernel is a proper subspace:"
   have sub_ker: "B.subspace {x. f x = 0}" using B.subspace_kernel[OF l] .
   -- "The kernel has its proper basis, $B$:"
@@ -197,7 +197,7 @@ proof -
       the range of $f$"
     also have "... = B.dim ker_f + C.dim (range f)"
     proof (unfold add_left_cancel)
-      def W == "C - B"
+      define W where "W = C - B"
       have finite_W: "finite W" unfolding W_def using finite_CB .
       have finite_fW: "finite (f ` W)" using finite_imageI[OF finite_W] .    
       have "card W = card (f ` W)" 
@@ -261,7 +261,7 @@ proof -
           unfolding ker_f_def by auto
         then obtain h where 
           sum_h: "(\<Sum>v\<in>B. scaleB (h v) v) = (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x)" by blast
-        def t \<equiv> "(\<lambda>a. if a \<in> B then h a else - ((g \<circ> f) a))"
+        define t where "t a = (if a \<in> B then h a else - ((g \<circ> f) a))" for a
         have "0 = (\<Sum>v\<in>B. scaleB (h v) v) + - (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x)" 
           using sum_h by simp
           also have "... =  (\<Sum>v\<in>B. scaleB (h v) v) + (\<Sum>x\<in>W. - (scaleB ((g \<circ> f) x) x))" 

@@ -14,7 +14,7 @@ theorem parallel_composition:
   assumes partsrelated: "\<forall>i < length V. [V!i] \<approx>\<^bsub>d\<^esub> [V'!i]"
   shows "V \<approx>\<^bsub>d\<^esub> V'"
 proof -
-  def R \<equiv> "{(V,V'). length V = length V' 
+  define R where "R = {(V,V'). length V = length V' 
     \<and> (\<forall>i < length V. [V!i] \<approx>\<^bsub>d\<^esub> [V'!i])}"
   from eqlen partsrelated have inR: "(V,V') \<in> R"
     by (simp add: R_def)
@@ -58,7 +58,7 @@ lemma parallel_decomposition:
   assumes related: "V \<approx>\<^bsub>d\<^esub> V'"
   shows "\<forall>i < length V. [V!i] \<approx>\<^bsub>d\<^esub> [V'!i]"
 proof -
-  def R \<equiv> "{(C,C'). \<exists>i W W'. W \<approx>\<^bsub>d\<^esub> W' \<and> i < length W 
+  define R where "R = {(C,C'). \<exists>i W W'. W \<approx>\<^bsub>d\<^esub> W' \<and> i < length W 
     \<and> C = [W!i] \<and> C' = [W'!i]}"
 
   with related have inR: "\<forall>i < length V. ([V!i],[V'!i]) \<in> R"

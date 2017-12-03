@@ -47,7 +47,7 @@ lemma set_grouped_out_arcs:
     (is "?L = ?R")
 proof -
   interpret pair_wf_digraph "list_digraph G_list" by fact
-  def vs \<equiv> "remdups (map fst (snd G_list))"
+  define vs where "vs = remdups (map fst (snd G_list))"
   have "set vs = {v. out_arcs (list_digraph G_list) v \<noteq> {}}"
     by (auto simp: out_arcs_def list_digraph_ext_def vs_def intro: rev_image_eqI )
   then have vs: "set vs = {v \<in> pverts (list_digraph G_list). out_arcs (list_digraph G_list) v \<noteq> {}}"

@@ -587,7 +587,7 @@ proof
       by (simp add: permute_profile_def prefs_from_table_undef)
   next
     assume i: "i \<in> agents"
-    def xs \<equiv> "the (map_of xss i)"
+    define xs where "xs = the (map_of xss i)"
     from i wf have xs: "map_of xss i = Some xs"
       by (cases "map_of xss i") (auto simp: prefs_from_table_wf_def xs_def)
     have xs_in_xss: "xs \<in> snd ` set xss"
@@ -709,10 +709,10 @@ proof -
              "permute_list f (permute_list g (map snd ys)) = map snd xs"
     by (auto elim: mset_eq_permutation simp: same_length simp del: mset_map)
   from permutes_in_image[OF f(1)]
-    have [simp]: "f x < length xs \<longleftrightarrow> x < length xs" 
+  have [simp]: "f x < length xs \<longleftrightarrow> x < length xs" 
                  "f x < length ys \<longleftrightarrow> x < length ys" for x by (simp_all add: same_length)
 
-  def idx \<equiv> "index (map fst xs)" and unidx \<equiv> "\<lambda>i. map fst xs ! i"
+  define idx unidx where "idx = index (map fst xs)" and "unidx i = map fst xs ! i" for i
   from wf(1) have "bij_betw idx agents {0..<length xs}" unfolding idx_def
     by (intro bij_betw_index) (simp_all add: prefs_from_table_wf_def)
   hence bij_betw_idx: "bij_betw idx agents {..<length xs}" by (simp add: atLeast0LessThan)
@@ -728,8 +728,8 @@ proof -
     unfolding idx_def unidx_def using wf(1) index_nth_id[of "map fst xs" i] i
     by (simp add: prefs_from_table_wfD(3))
  
-  def \<pi> \<equiv> "\<lambda>x. if x \<in> agents then (unidx \<circ> f \<circ> idx) x else x"
-  def \<pi>' \<equiv> "\<lambda>x. if x \<in> agents then (unidx \<circ> inv f \<circ> idx) x else x"
+  define \<pi> where "\<pi> x = (if x \<in> agents then (unidx \<circ> f \<circ> idx) x else x)" for x
+  define \<pi>' where "\<pi>' x = (if x \<in> agents then (unidx \<circ> inv f \<circ> idx) x else x)" for x
   have "bij_betw (unidx \<circ> f \<circ> idx) agents agents" (is "?P") unfolding unidx_def
     by (rule bij_betw_trans bij_betw_idx permutes_imp_bij f g bij_betw_nth)+
        (insert wf(1) g, simp_all add: prefs_from_table_wf_def same_length)
@@ -738,7 +738,7 @@ proof -
   finally have perm: "\<pi> permutes agents"
     by (intro bij_imp_permutes) (simp_all add: \<pi>_def)
 
-  def h \<equiv> "g \<circ> f"
+  define h where "h = g \<circ> f"
   from f g have h: "h permutes {..<length ys}" unfolding h_def
     by (intro permutes_compose) (simp_all add: same_length)
 
@@ -794,7 +794,7 @@ proof -
   from mset_eq_permutation[OF this] obtain \<pi> where
     \<pi>: "\<pi> permutes {0..<length xs}" "permute_list \<pi> (map g xs) = map f xs"
     by (auto simp: atLeast0LessThan)
-  def \<pi>' \<equiv> "\<lambda>x. if x \<in> A then (op ! xs \<circ> \<pi> \<circ> index xs) x else x"
+  define \<pi>' where "\<pi>' x = (if x \<in> A then (op ! xs \<circ> \<pi> \<circ> index xs) x else x)" for x
   have "bij_betw (op ! xs \<circ> \<pi> \<circ> index xs) A A" (is "?P")
     by (rule bij_betw_trans bij_betw_index xs refl permutes_imp_bij \<pi> bij_betw_nth)+
        (simp_all add: atLeast0LessThan xs)

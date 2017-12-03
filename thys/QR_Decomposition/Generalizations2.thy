@@ -252,8 +252,8 @@ lemma real_inner_inner: "real_of (inner x x * inner y y) = real_of (inner x x) *
 lemma Cauchy_Schwarz_ineq:
   "real_of (cnj (inner x y) * inner x y) \<le> real_of (inner x x) * real_of (inner y y)"
 proof -
-  def cnj_a\<equiv>"- cnj (inner x y)/ (inner y y)"
-  def a \<equiv> "cnj (cnj_a)"
+  define cnj_a where "cnj_a = - cnj (inner x y)/ (inner y y)"
+  define a where "a = cnj (cnj_a)"
   have cnj_rw: "(cnj a) = cnj_a" 
     unfolding a_def by (simp)
   have rw_0: "(cnj (inner x y)) + (cnj a) * (inner y y) = 0"

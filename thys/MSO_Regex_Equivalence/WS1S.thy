@@ -204,7 +204,7 @@ lemma fin_cut_same_tl:
   assumes "\<exists>n. sdrop n s = sconst x" 
   shows "fin_cut_same (\<pi> x) (map \<pi> (cut_same x s)) = cut_same (\<pi> x) (smap \<pi> s)"
 proof -
-  def min \<equiv> "LEAST n. sdrop n s = sconst x"
+  define min where "min = (LEAST n. sdrop n s = sconst x)"
   from assms have min: "sdrop min s = sconst x" "\<And>m. sdrop m s = sconst x \<Longrightarrow> min \<le> m"
     unfolding min_def by (auto intro: LeastI Least_le)
   have Ex: "\<exists>n. drop n (map \<pi> (stake min s)) = replicate (length (map \<pi> (stake min s)) - n) (\<pi> x)"
@@ -449,7 +449,7 @@ proof (intro equalityI subsetI)
     unfolding sdrop_smap by (simp add: sdrop_shift)
   ultimately have enc_dec: "stream_enc (dec_word ?s, stream_dec n FO ?s) =
     x @- sconst (any, replicate n False)" by (intro stream_enc_dec) auto
-  def I \<equiv> "stream_dec n FO ?s"
+  define I where "I = stream_dec n FO ?s"
   with assms have "wf_interp (dec_word ?s) I \<and>
    (\<forall>i \<in> FO. case I ! i of Inl _ \<Rightarrow> True | Inr _ \<Rightarrow> False) \<and>
    (\<forall>i \<in> SO. case I ! i of Inl _ \<Rightarrow> False | Inr _ \<Rightarrow> True)" unfolding I_def dec_word_def

@@ -546,7 +546,7 @@ proof (unfold_locales, rule)
   assume wf: "is_pref_profile R" and i [simp]: "i \<in> agents" and x: "x \<in> alts" and
          wf': "total_preorder_on alts Ri'"
   interpret R: pref_profile_wf agents alts R by fact
-  def R' \<equiv> "R (i := Ri')"
+  define R' where "R' = R (i := Ri')"
   from wf wf' have "is_pref_profile R'" by (simp add: R'_def R.wf_update)
   then interpret R': pref_profile_wf agents alts R' .
   note wf = wf wf'

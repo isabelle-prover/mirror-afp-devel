@@ -164,7 +164,8 @@ proof -
   next
     text\<open>The rest is just those cases that can't happen because of the mini formula property.\<close>
   qed (metis add.commute is_mini_formula.simps union_iff union_single_eq_member)+
-  def tms \<equiv> "image_mset to_mini_formula :: 'a formula multiset \<Rightarrow> 'a formula multiset"
+  define tms :: "'a formula multiset \<Rightarrow> 'a formula multiset"
+    where "tms = image_mset to_mini_formula"
   have [simp]: "tms (A + B) = tms A + tms B" "tms {#F#} = {#to_mini_formula F#}" for A B F unfolding tms_def by simp_all
   have [simp]: "atoms_mset (tms \<Gamma>) = atoms_mset \<Gamma>" for \<Gamma> unfolding tms_def using mini_formula_atoms by fastforce
   have imm: "is_mini_mset (tms \<Gamma> + tms \<Gamma>' + tms \<Delta> + tms \<Delta>')" unfolding tms_def by auto
@@ -331,7 +332,8 @@ proof -
     qed
   next
   qed (metis add.commute is_mini_formula.simps union_iff union_single_eq_member)+
-  def tms \<equiv> "image_mset to_mini_formula :: 'a formula multiset \<Rightarrow> 'a formula multiset"
+  define tms :: "'a formula multiset \<Rightarrow> 'a formula multiset"
+    where "tms = image_mset to_mini_formula"
   have [simp]: "tms (A + B) = tms A + tms B" "tms {#F#} = {#to_mini_formula F#}" for A B F unfolding tms_def by simp_all
   have imm: "is_mini_mset (tms \<Gamma> + tms \<Gamma>' + tms \<Delta> + tms \<Delta>')" unfolding tms_def by auto
   from assms have "tms \<Gamma> + tms \<Gamma>' \<Rightarrow> tms \<Delta> + tms \<Delta>'" unfolding tms_def using SC_full_to_mini by force

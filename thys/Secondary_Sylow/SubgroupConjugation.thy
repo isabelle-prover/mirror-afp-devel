@@ -265,8 +265,8 @@ next
   assume x:"x \<in> carrier G" and y:"y \<in> carrier G"
   hence invx:"inv x \<in> carrier G" and invy:"inv y \<in> carrier G" by (metis inv_closed)+
   from x y have xyG:"x \<otimes> y \<in> carrier G" by (metis m_closed)
-  def conjx \<equiv> "conjugation_action p x"
-  def conjy \<equiv> "conjugation_action p y"
+  define conjx where "conjx = conjugation_action p x"
+  define conjy where "conjy = conjugation_action p y"
   from fin x have xBij:"conjx \<in> Bij (subgroups_of_size p)" unfolding conjx_def by (metis conjugation_is_Bij)
   from fin y have yBij:"conjy \<in> Bij (subgroups_of_size p)" unfolding conjy_def by (metis conjugation_is_Bij)
   have "conjx \<otimes>\<^bsub>BijGroup (subgroups_of_size p)\<^esub> conjy

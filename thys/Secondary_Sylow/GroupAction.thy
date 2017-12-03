@@ -318,15 +318,14 @@ theorem orbit_thm:
   assumes m:"m \<in> M"
   assumes rep:"\<And>U. U \<in> (carrier (G Mod (stabilizer m))) \<Longrightarrow> rep U \<in> U"
   shows "bij_betw (\<lambda>H. (\<phi> (inv (rep H)) m)) (carrier (G Mod (stabilizer m))) (orbit m)"
-apply(simp add:bij_betw_def)
-proof(auto)
+proof(auto simp add:bij_betw_def)
   show "inj_on (\<lambda>H. \<phi> (inv (rep H)) m) (carrier (G Mod stabilizer m))"
   proof(rule inj_onI)
     fix U V
     assume U:"U \<in> carrier (G Mod (stabilizer m))"
     assume V:"V \<in> carrier (G Mod (stabilizer m))"
-    def h \<equiv> "rep V"
-    def g \<equiv> "rep U"
+    define h where "h = rep V"
+    define g where "g = rep U"
     have stabSubset:"(stabilizer m) \<subseteq> carrier G" unfolding stabilizer_def by auto
     from m have stabSubgroup: "subgroup (stabilizer m) G" by (metis stabilizer_is_subgroup)
     from V rep have hV:"h \<in> V" unfolding h_def by simp
@@ -341,14 +340,19 @@ proof(auto)
     assume reps:"\<phi> (inv rep U) m = \<phi> (inv rep V) m"
     hence gh:"\<phi> (inv g) m = \<phi> (inv h) m" unfolding g_def h_def.
     from gG hinvG m have "\<phi> (g \<otimes> (inv h)) m = \<phi> g (\<phi> (inv h) m)" by (metis action_mult)
-    also with gh ginvG gG m have "... = \<phi> (g \<otimes> inv g) m" by (metis action_mult)
-    also with m gG have "... = m" by (auto simp: one_is_id)
+    also from gh ginvG gG m have "... = \<phi> (g \<otimes> inv g) m" by (metis action_mult)
+    also from m gG have "... = m" by (auto simp: one_is_id)
     finally have "\<phi> (g \<otimes> inv h) m = m".
-    with ginvhG have "(g \<otimes> inv h) \<in> stabilizer m" unfolding stabilizer_def by simp
-    hence "(stabilizer m) #> (g \<otimes> inv h) = (stabilizer m) #> \<one>" by (metis coset_join2 coset_mult_one m stabSubset stabilizer_is_subgroup subgroup.mem_carrier)
-    with hinvG hG gG stabSubset have  stabgstabh:"(stabilizer m) #> g = (stabilizer m) #> h" by (metis coset_mult_inv1 group.coset_mult_one is_group)
-    from stabSubgroup is_group U gU have "U = (stabilizer m) #> g" unfolding FactGroup_def by (simp add:subgroup.repr_independence2)
-    also with stabgstabh is_group stabSubgroup V hV subgroup.repr_independence2 have "... = V" unfolding FactGroup_def by force
+    with ginvhG have "(g \<otimes> inv h) \<in> stabilizer m"
+      unfolding stabilizer_def by simp
+    hence "(stabilizer m) #> (g \<otimes> inv h) = (stabilizer m) #> \<one>"
+      by (metis coset_join2 coset_mult_one m stabSubset stabilizer_is_subgroup subgroup.mem_carrier)
+    with hinvG hG gG stabSubset have  stabgstabh:"(stabilizer m) #> g = (stabilizer m) #> h"
+      by (metis coset_mult_inv1 group.coset_mult_one is_group)
+    from stabSubgroup is_group U gU have "U = (stabilizer m) #> g"
+      unfolding FactGroup_def by (simp add:subgroup.repr_independence2)
+    also from stabgstabh is_group stabSubgroup V hV subgroup.repr_independence2 have "... = V"
+      unfolding FactGroup_def by force
     finally show "U = V".
   qed
 next
@@ -387,7 +391,7 @@ corollary orbit_size:
   assumes m:"m \<in> M"
   shows "order G = card (orbit m) * card (stabilizer m)"
 proof -
-  def rep \<equiv> "\<lambda>U \<in> (carrier (G Mod (stabilizer m))). (SOME x. x \<in> U)"
+  define rep where "rep = (\<lambda>U \<in> (carrier (G Mod (stabilizer m))). SOME x. x \<in> U)"
   have "\<And>U. U \<in> (carrier (G Mod (stabilizer m))) \<Longrightarrow> rep U \<in> U"
   proof -
     fix U
@@ -485,7 +489,7 @@ lemma fixed_point_congruence:
   assumes finM:"finite M"
   shows "card M mod p = card fixed_points mod p"
 proof -
-  def big_orbits \<equiv> "{N\<in>orbits. card N > 1}"
+  define big_orbits where "big_orbits = {N\<in>orbits. card N > 1}"
   from finM have orbit_part:"orbits = big_orbits \<union> {N\<in>orbits. card N = 1}" unfolding big_orbits_def by (auto dest:orbit_not_empty)
   have orbit_disj:"big_orbits \<inter> {N\<in>orbits. card N = 1} = {}" unfolding big_orbits_def by auto
   from finM have orbits_fin:"finite orbits" by (rule fin_set_imp_fin_orbits)
@@ -557,7 +561,9 @@ proof(auto simp add:is_group group_BijGroup)
 next
   fix x y
   assume x:"x \<in> carrier G" and y:"y \<in> carrier G"
-  def multx \<equiv> "(\<lambda>g\<in>carrier G. x \<otimes> g)" and  multy \<equiv> "(\<lambda>g\<in>carrier G. y \<otimes> g)"
+  define multx multy
+    where "multx = (\<lambda>g\<in>carrier G. x \<otimes> g)"
+      and "multy = (\<lambda>g\<in>carrier G. y \<otimes> g)"
   with x y have "multx \<in> (Bij (carrier G))" "multy \<in> (Bij (carrier G))" by (metis right_mult_is_bij)+
   hence "multx \<otimes>\<^bsub>BijGroup (carrier G)\<^esub> multy = (\<lambda>g\<in>carrier G. multx (multy g))" unfolding BijGroup_def by (auto simp: compose_def)
   also have "... = (\<lambda>g\<in>carrier G. (x \<otimes> y) \<otimes> g)" unfolding multx_def multy_def
@@ -619,23 +625,31 @@ unfolding group_action_def group_action_axioms_def group_hom_def group_hom_axiom
 proof(auto simp add:is_group group_BijGroup)
   fix h
   assume "h \<in> carrier G"
-  with HG show "(\<lambda>U \<in> rcosets H. U #> inv h) \<in> carrier (BijGroup (rcosets H))" unfolding BijGroup_def by (auto simp:inv_mult_on_rcosets_is_bij)
+  with HG show "(\<lambda>U \<in> rcosets H. U #> inv h) \<in> carrier (BijGroup (rcosets H))"
+    unfolding BijGroup_def by (auto simp:inv_mult_on_rcosets_is_bij)
 next
   fix x y
   assume x:"x \<in> carrier G" and y:"y \<in> carrier G"
-  def cosx \<equiv> "(\<lambda>U\<in>rcosets H. U #> inv x)" and  cosy \<equiv> "(\<lambda>U\<in>rcosets H. U #> inv y)"
-  with x y HG have "cosx \<in> (Bij (rcosets H))" "cosy \<in> (Bij (rcosets H))" by (metis inv_mult_on_rcosets_is_bij)+
-  hence "cosx \<otimes>\<^bsub>BijGroup (rcosets H)\<^esub> cosy = (\<lambda>U\<in>rcosets H. cosx (cosy U))" unfolding BijGroup_def by (auto simp: compose_def)
+  define cosx cosy
+    where "cosx = (\<lambda>U\<in>rcosets H. U #> inv x)"
+      and "cosy = (\<lambda>U\<in>rcosets H. U #> inv y)"
+  with x y HG have "cosx \<in> (Bij (rcosets H))" "cosy \<in> (Bij (rcosets H))"
+    by (metis inv_mult_on_rcosets_is_bij)+
+  hence "cosx \<otimes>\<^bsub>BijGroup (rcosets H)\<^esub> cosy = (\<lambda>U\<in>rcosets H. cosx (cosy U))"
+    unfolding BijGroup_def by (auto simp: compose_def)
   also have "... = (\<lambda>U\<in>rcosets H. U #> inv (x \<otimes> y))" unfolding cosx_def cosy_def
   proof(rule restrict_ext)
     fix U
     assume U:"U \<in> rcosets H"
     with HG y have "U #> inv y \<in> rcosets H" by (metis inv_closed rcosets_closed)
-    with x y HG U have "(\<lambda>U\<in>rcosets H. U #> inv x) ((\<lambda>U\<in>rcosets H. U #> inv y) U) = U #> inv y #> inv x" by auto
-    also from x y U HG have "... = U #> inv (x \<otimes> y)" by (metis inv_mult_group coset_mult_assoc inv_closed is_group subgroup.rcosets_carrier)
+    with x y HG U have "(\<lambda>U\<in>rcosets H. U #> inv x) ((\<lambda>U\<in>rcosets H. U #> inv y) U) = U #> inv y #> inv x"
+      by auto
+    also from x y U HG have "... = U #> inv (x \<otimes> y)"
+      by (metis inv_mult_group coset_mult_assoc inv_closed is_group subgroup.rcosets_carrier)
     finally show "(\<lambda>U\<in>rcosets H. U #> inv x) ((\<lambda>U\<in>rcosets H. U #> inv y) U) = U #> inv (x \<otimes> y)".
   qed
-  finally show "(\<lambda>U\<in>rcosets H. U #> inv (x \<otimes> y)) = (\<lambda>U\<in>rcosets H. U #> inv x) \<otimes>\<^bsub>BijGroup (rcosets H)\<^esub> (\<lambda>U\<in>rcosets H. U #> inv y)" unfolding cosx_def cosy_def by simp
+  finally show "(\<lambda>U\<in>rcosets H. U #> inv (x \<otimes> y)) = (\<lambda>U\<in>rcosets H. U #> inv x) \<otimes>\<^bsub>BijGroup (rcosets H)\<^esub> (\<lambda>U\<in>rcosets H. U #> inv y)"
+    unfolding cosx_def cosy_def by simp
 qed
 
 end

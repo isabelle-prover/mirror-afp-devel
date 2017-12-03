@@ -38,7 +38,7 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
     where pc_r_def: "child p right d = child pc_r (inv right) d"
     and pc_l_def: "child p left d = child pc_l (inv left) d" by blast
 
-  def pc \<equiv> "\<lambda> dir. case dir of right \<Rightarrow> pc_r | left \<Rightarrow> pc_l"
+  define pc where "pc dir = (case dir of right \<Rightarrow> pc_r | left \<Rightarrow> pc_l)" for dir
   { fix dir have "child p (inv dir) d = child (pc (inv dir)) dir d"
       by (cases dir, auto simp add: pc_def pc_r_def pc_l_def) } note pc_child = this
   { fix dir have "child p dir d = child (pc dir) (inv dir) d"
@@ -47,23 +47,22 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
   hence "!! dir. length p = length (pc dir)" by auto
   hence [simp]: "!! dir. d < length (pc dir)" by auto
 
-  let "?l s" = "lm + level s"
-  let "?C p p'" = "(\<alpha> p) * l2_\<phi> (p ! d) (p' ! d)"
-  let "?sum' s p''" = "\<Sum> p' \<in> lgrid s {d} (Suc lm + level p). ?C p' p''"
-  let "?sum s dir p" = "\<Sum> p' \<in> lgrid (child s dir d) {d} (?l (child s dir d)). ?C p' p"
-  let "?ch dir" = "child p dir d"
-  let "?f dir"  = "?sum p dir (pc dir)"
-  let "?fm dir" = "?sum p dir p"
+  let ?l = "\<lambda>s. lm + level s"
+  let ?C = "\<lambda>p p'. (\<alpha> p) * l2_\<phi> (p ! d) (p' ! d)"
+  let ?sum' = "\<lambda>s p''. \<Sum> p' \<in> lgrid s {d} (Suc lm + level p). ?C p' p''"
+  let ?sum = "\<lambda>s dir p. \<Sum> p' \<in> lgrid (child s dir d) {d} (?l (child s dir d)). ?C p' p"
+  let ?ch = "\<lambda>dir. child p dir d"
+  let ?f = "\<lambda>dir. ?sum p dir (pc dir)"
+  let ?fm = "\<lambda>dir. ?sum p dir p"
   let ?result = "(?fm left + ?fm right + (\<alpha> p) / 2 ^ (lv p d) / 2) / 2"
-  let "?up lm p \<alpha>" = "up' d lm p \<alpha>"
+  let ?up = "\<lambda>lm p \<alpha>. up' d lm p \<alpha>"
 
-  def \<beta>l \<equiv> "snd (?up lm (?ch left) \<alpha>)"
-  def \<beta>r \<equiv> "snd (?up lm (?ch right) \<beta>l)"
+  define \<beta>l where "\<beta>l = snd (?up lm (?ch left) \<alpha>)"
+  define \<beta>r where "\<beta>r = snd (?up lm (?ch right) \<beta>l)"
 
-  def p_d \<equiv> "\<lambda> dir. case dir of right \<Rightarrow> p_r | left \<Rightarrow> p_l"
-  { fix dir have "p = child (p_d dir) dir d"
-      using Suc.prems p_d_def by (cases dir) auto }
-  note p_d_child = this
+  define p_d where "p_d dir = (case dir of right \<Rightarrow> p_r | left \<Rightarrow> p_l)" for dir
+  have p_d_child: "p = child (p_d dir) dir d" for dir
+    using Suc.prems p_d_def by (cases dir) auto
   hence "\<And> dir. length p = length (child (p_d dir) dir d)" by auto
   hence "\<And> dir. d < length (p_d dir)" by auto
 
@@ -105,7 +104,9 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
       Suc.hyps[of "?ch right" p "pc right" \<beta>l] eq[of right \<beta>l]
     by (cases "?up lm (?ch left) \<alpha>", cases "?up lm (?ch right) \<beta>l") (simp add: Let_def)
   ultimately show ?case by (auto simp add: p_d_def)
-next case 0 show ?case by simp
+next
+  case 0
+  show ?case by simp
 qed
 
 lemma up'_\<beta>:
@@ -210,9 +211,9 @@ proof (induct l arbitrary: b p \<alpha>)
   qed
 next
       case False
-      moreover hence "p \<notin> lgrid ?l {d} lm" and "p \<notin> lgrid ?r {d} lm"
+      then have "p \<notin> lgrid ?l {d} lm" and "p \<notin> lgrid ?r {d} lm"
         unfolding lgrid_def and grid_partition[where p=b] by auto
-      ultimately show ?thesis using `?goal l ?l p \<alpha>` and `?goal l ?r p (snd ?ul)`
+      with False show ?thesis using `?goal l ?l p \<alpha>` and `?goal l ?r p (snd ?ul)`
         using `p \<noteq> b` `p \<notin> lgrid b {d} lm`
         unfolding lgrid_def
         by (cases ?ul, cases ?ur, auto simp add: Let_def)
@@ -220,16 +221,17 @@ next
   qed
 next
   case 0
-  moreover hence "lgrid b {d} lm = {}" using lgrid_empty'[where p=b and lm=lm and ds="{d}"] by auto
-  ultimately show ?case unfolding up'.simps by auto
+  then have "lgrid b {d} lm = {}"
+    using lgrid_empty'[where p=b and lm=lm and ds="{d}"] by auto
+  with 0 show ?case unfolding up'.simps by auto
 qed
 
 lemma up:
   assumes "d < dm" and "p \<in> sparsegrid dm lm"
   shows "(up dm lm d \<alpha>) p = (\<Sum> p' \<in> (lgrid p {d} lm) - {p}. \<alpha> p' * l2_\<phi> (p' ! d) (p ! d))"
 proof -
-  let "?S x p p'" = "if p' \<in> grid p {d} - {p} then x * l2_\<phi> (p'!d) (p!d) else 0"
-  let "?F d lm p \<alpha>" = "snd (up' d lm p \<alpha>)"
+  let ?S = "\<lambda> x p p'. if p' \<in> grid p {d} - {p} then x * l2_\<phi> (p'!d) (p!d) else 0"
+  let ?F = "\<lambda> d lm p \<alpha>. snd (up' d lm p \<alpha>)"
 
   { fix p b assume "p \<in> grid b {d}"
     from grid_transitive[OF _ this subset_refl subset_refl]

@@ -251,7 +251,7 @@ next
   case True
   have tn_fn_suc: "to_nat (from_nat (Suc k)::'n) = Suc k" 
     using suc_k to_nat_from_nat_id unfolding ncols_def by auto
-  def G=="(Gram_Schmidt_upt_k A k)"
+  define G where"G = Gram_Schmidt_upt_k A k"
   let ?f="(\<lambda>x. (column b G \<bullet> x / (x \<bullet> x)) *\<^sub>R x)"
   let ?g="(\<lambda>n. column (from_nat n) G) "
   have proj_eq: "proj_onto (column b G) {column i G |i. i < b} 

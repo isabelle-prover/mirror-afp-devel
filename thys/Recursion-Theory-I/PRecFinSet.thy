@@ -114,7 +114,7 @@ proof -
   next
     assume A1: "log2 x \<noteq> 0"
     then have S1: "log2 x > 0" by auto
-    def y_def: y \<equiv> "log2 x - 1"
+    define y where "y = log2 x - 1"
     from S1 y_def have S2: "log2 x = y + 1" by auto
     then have S3: "y < log2 x" by auto
     have "2^(y+1) \<le> x"
@@ -131,7 +131,7 @@ lemma log2_gt: "x < 2 ^ (log2 x + 1)"
 proof -
   have "x < 2^x" by (rule x_lt_2_x)
   then have S1: "x < 2^(x+1)" by simp
-  def y_def: y \<equiv> "x"
+  define y where "y = x"
   from S1 y_def have S2: "x < 2^(y+1)" by auto
   let ?P = "\<lambda> z. x < 2^(z+1)"
   from S2 have S3: "?P y" by auto
@@ -248,7 +248,7 @@ lemma log2_is_max: "u > 0 \<Longrightarrow> log2 u = Max (nat_to_set u)"
 proof -
   assume A: "u > 0"
   then have S1: "log2 u \<in> nat_to_set u" by (rule log2_lm5)
-  def max_def: max \<equiv> "Max (nat_to_set u)"
+  define max where "max = Max (nat_to_set u)"
   from A have ne: "nat_to_set u \<noteq> {}" by (rule pos_imp_ne)
   have finite: "finite (nat_to_set u)" by (rule nat_to_set_is_finite)
   from max_def finite ne have max_in: "max \<in> nat_to_set u" by simp
@@ -423,15 +423,15 @@ proof -
           then have u_pos: "u > 0" by (rule ne_imp_pos)
           from A3 d_v_d have "nat_to_set v \<noteq> {}" by auto
           then have v_pos: "v > 0" by (rule ne_imp_pos)
-          def m_def: m \<equiv> "Max D"
+          define m where "m = Max D"
           from S1 m_def A3 have m_in: "m \<in> D" by auto
           from d_u_d m_def have m_u: "m = Max (nat_to_set u)" by auto
           from d_v_d m_def have m_v: "m = Max (nat_to_set v)" by auto
           from u_pos m_u log2_is_max have m_log_u: "m = log2 u" by auto
           from v_pos m_v log2_is_max have m_log_v: "m = log2 v" by auto
-          def D1_def: D1 \<equiv> "D - {m}"
-          def u1_def: u1 \<equiv> "u - 2^m"
-          def v1_def: v1 \<equiv> "v - 2^m"
+          define D1 where "D1 = D - {m}"
+          define u1 where "u1 = u - 2^m"
+          define v1 where "v1 = v - 2^m"
           have card_D1: "card D1 \<le> n"
           proof -
             from D1_def S1 m_in have "card D1 = (card D) - 1" by (simp add: card_Diff_singleton)
@@ -490,11 +490,11 @@ proof -
   qed
 qed
   from P_at_0 P_at_Suc have main: "\<And> n. ?P n" by (rule nat.induct)
-  def D_def: D \<equiv> "nat_to_set u"
+  define D where "D = nat_to_set u"
   from D_def A have P1: "nat_to_set u = D" by auto
   from D_def A have P2: "nat_to_set v = D" by auto
   from D_def nat_to_set_is_finite have d_finite: "finite D" by auto
-  def n_def: n \<equiv> "card D"
+  define n where "n = card D"
   from n_def d_finite have card_le: "card D \<le> n" by auto
   from d_finite card_le have P3: "finite D \<and> card D \<le> n" by auto
   with main have P4: "\<forall>u v. nat_to_set u = D \<and> nat_to_set v = D \<longrightarrow> u = v" by auto
@@ -589,18 +589,19 @@ proof -
         assume A1: "finite D \<and> card D = Suc n"
         from A1 have S1: "finite D" by auto
         from A1 have S2: "card D = Suc n" by auto
-        def m_def: m \<equiv> "Max D"
+        define m where "m = Max D"
         from S2 have D_ne: "D \<noteq> {}" by auto
         with S1 m_def have m_in: "m \<in> D" by auto
-        def D1_def: D1 \<equiv> "D - {m}"
+        define D1 where "D1 = D - {m}"
         from S1 D1_def have d1_finite: "finite D1" by auto
         from D1_def m_in S1 have "card D1 = card D - 1" by (simp add: card_Diff_singleton)
         with S2 have card_d1: "card D1 = n" by auto
         from d1_finite card_d1 have "finite D1 \<and> card D1 = n" by auto
         with A_n have S3: "nat_to_set (set_to_nat D1) = D1" by auto
-        def u_def: u \<equiv> "set_to_nat D"
-        def u1_def: u1 \<equiv> "set_to_nat D1"
-        from S1 m_in have "sum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + sum (\<lambda> x. 2 ^ x) (D - {m})" by (rule sum.remove)
+        define u where "u = set_to_nat D"
+        define u1 where "u1 = set_to_nat D1"
+        from S1 m_in have "sum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + sum (\<lambda> x. 2 ^ x) (D - {m})"
+          by (rule sum.remove)
         with set_to_nat_def have "set_to_nat D = 2 ^ m + set_to_nat (D - {m})" by auto
         with u_def u1_def D1_def have u_u1: "u = u1 + 2 ^ m" by auto
         from S3 u1_def have d1_u1: "nat_to_set u1 = D1" by auto
@@ -650,9 +651,9 @@ qed
 lemma sum_of_pr_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> n. sum g {i. i<n}) \<in> PrimRec1"
 proof -
   assume g_is_pr: "g \<in> PrimRec1"
-  def f_def: f \<equiv> "\<lambda> n. sum g {i. i<n}"
+  define f where "f n = sum g {i. i<n}" for n
   from f_def have f_at_0: "f 0 = 0" by auto
-  def h_def: h \<equiv> "\<lambda> a (b::nat). (g a) + b"
+  define h where "h a b = g a + b" for a b
   from g_is_pr have h_is_pr: "h \<in> PrimRec2" unfolding h_def by prec
   have f_at_Suc: "\<forall> y. f (Suc y) = h y (f y)"
   proof
@@ -670,20 +671,20 @@ proof -
     qed
   qed
   from h_is_pr f_at_0 f_at_Suc have f_is_pr: "f \<in> PrimRec1" by (rule pr_rec1_scheme)
-  with f_def show ?thesis by auto
+  with f_def [abs_def] show ?thesis by auto
 qed
 
 lemma sum_of_pr_is_pr2: "p \<in> PrimRec2 \<Longrightarrow> (\<lambda> n m. sum (\<lambda> x. p x m) {i. i<n}) \<in> PrimRec2"
 proof -
   assume p_is_pr: "p \<in> PrimRec2"
-  def f_def: f \<equiv> "\<lambda> n m. sum (\<lambda> x. p x m) {i. i<n}"
-  def g_def: g \<equiv> "\<lambda> (x::nat). (0::nat)"
+  define f where "f n m = sum (\<lambda> x. p x m) {i. i<n}" for n m
+  define g :: "nat \<Rightarrow> nat" where "g x = 0" for x
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule const_is_pr [where ?n=0])
   have f_at_0: "\<forall> x. f 0 x = g x"
   proof
     fix x from f_def g_def show "f 0 x = g x" by auto
   qed
-  def h_def: h \<equiv> "\<lambda> a (b::nat) c. (p a c) + b"
+  define h where "h a b c = p a c + b" for a b c
   from p_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
   have f_at_Suc: "\<forall> x y. f (Suc y) x = h y (f y x) x"
   proof (rule allI, rule allI)
@@ -693,7 +694,7 @@ proof -
       have S2: "{i. i < Suc y} = {i. i < y} \<union> {y}" by auto
       have S3: "finite {i. i < y}" by (rule finite_interval)
       have S4: "y \<notin> {i. i < y}" by auto
-      def g1_def: g1 \<equiv> "(\<lambda> z. p z x)"
+      define g1 where "g1 z = p z x" for z
       from S1 S2 g1_def have "f (Suc y) x = sum g1 ({i. (i::nat) < y} \<union> {y})" by auto
       also from S3 S4 sum.insert have "\<dots> = g1 y + sum g1 {i. i<y}" by auto
       also from f_def g1_def have "\<dots> = g1 y + f y x" by auto
@@ -702,13 +703,13 @@ proof -
     qed
   qed
   from g_is_pr h_is_pr f_at_0 f_at_Suc have f_is_pr: "f \<in> PrimRec2" by (rule pr_rec_scheme)
-  with f_def show ?thesis by auto
+  with f_def [abs_def] show ?thesis by auto
 qed
 
 lemma sum_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> u. sum g (nat_to_set u)) \<in> PrimRec1"
 proof -
   assume g_is_pr: "g \<in> PrimRec1"
-  def g1_def: g1 \<equiv> "\<lambda> x u. if (c_in x u = 1) then (g x) else 0"
+  define g1 where "g1 x u = (if (c_in x u = 1) then (g x) else 0)" for x u
   have g1_is_pr: "g1 \<in> PrimRec2"
   proof (unfold g1_def, rule if_eq_is_pr2)
     show "c_in \<in> PrimRec2" by (rule c_in_is_pr)
@@ -719,10 +720,11 @@ proof -
   next
     show "(\<lambda>x y. 0) \<in> PrimRec2" by (rule const_is_pr_2 [where ?n=0])
   qed
-  def f_def: f \<equiv> "\<lambda> (u::nat). sum (\<lambda> x. g1 x u) {i. (i::nat) < u}"
-  def f1_def: f1 \<equiv> "\<lambda> (u::nat) v. sum (\<lambda> x. g1 x v) {i. (i::nat) < u}" 
-  from g1_is_pr have "(\<lambda> (u::nat) v. sum (\<lambda> x. g1 x v) {i. (i::nat) < u}) \<in> PrimRec2" by (rule sum_of_pr_is_pr2)
-  with f1_def have f1_is_pr: "f1 \<in> PrimRec2" by auto
+  define f where "f u = sum (\<lambda> x. g1 x u) {i. (i::nat) < u}" for u
+  define f1 where "f1 u v = sum (\<lambda> x. g1 x v) {i. (i::nat) < u}"  for u v
+  from g1_is_pr have "(\<lambda> (u::nat) v. sum (\<lambda> x. g1 x v) {i. (i::nat) < u}) \<in> PrimRec2"
+    by (rule sum_of_pr_is_pr2)
+  with f1_def [abs_def] have f1_is_pr: "f1 \<in> PrimRec2" by auto
   from f_def f1_def have f_f1: "f = (\<lambda> u. f1 u u)" by auto
   from f1_is_pr have "(\<lambda> u. f1 u u) \<in> PrimRec1" by prec
   with f_f1 have f_is_pr: "f \<in> PrimRec1" by auto
@@ -730,9 +732,9 @@ proof -
   proof
     fix u show "f u = sum g (nat_to_set u)"
     proof -
-      def U_def: U \<equiv> "{i. i < u}"
-      def A_def: A \<equiv> "{x \<in> U. c_in x u = 1}"
-      def B_def: B \<equiv> "{x \<in> U. c_in x u \<noteq> 1}"
+      define U where "U = {i. i < u}"
+      define A where "A = {x \<in> U. c_in x u = 1}"
+      define B where "B = {x \<in> U. c_in x u \<noteq> 1}"
       have U_finite: "finite U" by (unfold U_def, rule finite_interval)
       from A_def U_finite have A_finite: "finite A" by auto
       from B_def U_finite have B_finite: "finite B" by auto
@@ -760,7 +762,7 @@ definition
 
 theorem c_card_is_pr: "c_card \<in> PrimRec1"
 proof -
-  def g_def: g \<equiv> "\<lambda> (x::nat). (1::nat)"
+  define g :: "nat \<Rightarrow> nat" where "g x = 1" for x
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule const_is_pr)
   have "c_card = (\<lambda> u. sum g (nat_to_set u))"
   proof
@@ -787,7 +789,7 @@ qed
 
 lemma [simp]: "set_to_nat (nat_to_set u) = u"
 proof -
-  def D_def: D \<equiv> "nat_to_set u"
+  define D where "D = nat_to_set u"
   from D_def nat_to_set_is_finite have D_finite: "finite D" by auto
   then have "nat_to_set (set_to_nat D) = D" by (rule nat_to_set_srj)
   with D_def have "nat_to_set (set_to_nat D) = nat_to_set u" by auto
@@ -798,7 +800,7 @@ qed
 lemma insert_lemma: "x \<notin> nat_to_set u \<Longrightarrow> set_to_nat (nat_to_set u \<union> {x}) = u + 2 ^ x"
 proof -
   assume A: "x \<notin> nat_to_set u"
-  def D_def: D \<equiv> "nat_to_set u"
+  define D where "D = nat_to_set u"
   from A D_def have S1: "x \<notin> D" by auto
   have "finite (nat_to_set u)" by (rule nat_to_set_is_finite)
   with D_def have D_finite: "finite D" by auto
@@ -847,7 +849,7 @@ qed
 lemma remove_lemma: "x \<in> nat_to_set u \<Longrightarrow> set_to_nat (nat_to_set u - {x}) = u - 2 ^ x"
 proof -
   assume A: "x \<in> nat_to_set u"
-  def D_def: D \<equiv> "nat_to_set u - {x}"
+  define D where "D = nat_to_set u - {x}"
   from A D_def have S1: "x \<notin> D" by auto
   have "finite (nat_to_set u)" by (rule nat_to_set_is_finite)
   with D_def have D_finite: "finite D" by auto
@@ -886,12 +888,13 @@ definition
 
 theorem c_union_is_pr: "c_union \<in> PrimRec2"
 proof -
-  def f_def: f \<equiv> "\<lambda> y x. set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y})"
+  define f where "f y x = set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y})"
+    for y x
   have f_is_pr: "f \<in> PrimRec2"
   proof -
-    def g_def: g \<equiv> "c_fst"
+    define g where "g = c_fst"
     from c_fst_is_pr g_def have g_is_pr: "g \<in> PrimRec1" by auto
-    def h_def: h \<equiv> "\<lambda> a b c. if c_in a (c_snd c) = 1 then c_insert a b else b"
+    define h where "h a b c = (if c_in a (c_snd c) = 1 then c_insert a b else b)" for a b c
     from c_in_is_pr c_insert_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
     have f_at_0: "\<forall> x. f 0 x = g x"
     proof
@@ -933,7 +936,7 @@ proof -
     qed
     from g_is_pr h_is_pr f_at_0 f_at_Suc show ?thesis by (rule pr_rec_scheme)
   qed
-  def union_def: union \<equiv> "\<lambda> u v. f v (c_pair u v)"
+  define union where "union u v = f v (c_pair u v)" for u v
   from f_is_pr have union_is_pr: "union \<in> PrimRec2" unfolding union_def by prec
   have "\<And> u v. union u v = set_to_nat (nat_to_set u \<union> nat_to_set v)"
   proof -
@@ -954,12 +957,13 @@ definition
 
 theorem c_diff_is_pr: "c_diff \<in> PrimRec2"
 proof -
-  def f_def: f \<equiv> "\<lambda> y x. set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y})"
+  define f where "f y x = set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y})"
+    for y x
   have f_is_pr: "f \<in> PrimRec2"
   proof -
-    def g_def: g \<equiv> "c_fst"
+    define g where "g = c_fst"
     from c_fst_is_pr g_def have g_is_pr: "g \<in> PrimRec1" by auto
-    def h_def: h \<equiv> "\<lambda> a b c. if c_in a (c_snd c) = 1 then c_remove a b else b"
+    define h where "h a b c = (if c_in a (c_snd c) = 1 then c_remove a b else b)" for a b c
     from c_in_is_pr c_remove_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
     have f_at_0: "\<forall> x. f 0 x = g x"
     proof
@@ -1006,7 +1010,7 @@ proof -
     qed
     from g_is_pr h_is_pr f_at_0 f_at_Suc show ?thesis by (rule pr_rec_scheme)
   qed
-  def diff_def: diff \<equiv> "\<lambda> u v. f v (c_pair u v)"
+  define diff where "diff u v = f v (c_pair u v)" for u v
   from f_is_pr have diff_is_pr: "diff \<in> PrimRec2" unfolding diff_def by prec
   have "\<And> u v. diff u v = set_to_nat (nat_to_set u - nat_to_set v)"
   proof -
@@ -1027,7 +1031,7 @@ definition
 
 theorem c_intersect_is_pr: "c_intersect \<in> PrimRec2"
 proof -
-  def f_def: f \<equiv> "\<lambda> u v. c_diff (c_union u v) (c_union (c_diff u v) (c_diff v u))"
+  define f where "f u v = c_diff (c_union u v) (c_union (c_diff u v) (c_diff v u))" for u v
   from c_diff_is_pr c_union_is_pr have f_is_pr: "f \<in> PrimRec2" unfolding f_def by prec
   have "\<And> u v. f u v = c_intersect u v"
   proof -

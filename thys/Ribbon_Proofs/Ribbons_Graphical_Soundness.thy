@@ -558,13 +558,13 @@ next
         with lins2(4)[OF this `v |\<in>| (thd3 e)`] show False by auto
       qed
 
-      def S' \<equiv> "{|v|} |\<union>| S"
+      define S' where "S' = {|v|} |\<union>| S"
 
-      def \<Pi>' \<equiv> "mk_ps_chain \<lbrace> initial_ps2 S' G \<rbrace> \<pi>'"
+      define \<Pi>' where "\<Pi>' = mk_ps_chain \<lbrace> initial_ps2 S' G \<rbrace> \<pi>'"
       hence pre_\<Pi>': "pre \<Pi>' = initial_ps2 S' G"
       by (metis pre.simps(1) pre_mk_ps_chain)
 
-      def \<sigma> \<equiv> "[ initials G - ({|v|} |\<union>| S) |=> Top ] ++\<^sub>f [ S |=> Bot ]"
+      define \<sigma> where "\<sigma> = [ initials G - ({|v|} |\<union>| S) |=> Top ] ++\<^sub>f [ S |=> Bot ]"
 
       have "wf_ps_chain \<Pi>' \<and> (post \<Pi>' = [terminals G |=> Bot])"
       proof (intro Suc.hyps[of "S'"])
@@ -634,8 +634,8 @@ next
     next
       case (Inr e)
       note x_def = this
-      def vs \<equiv> "fst3 e"
-      def ws \<equiv> "thd3 e"
+      define vs where "vs = fst3 e"
+      define ws where "ws = thd3 e"
 
       obtain c where e_def: "e = (vs, c, ws)"
       by (metis vs_def ws_def fst3_simp thd3_simp prod_cases3)
@@ -685,16 +685,16 @@ next
       apply (unfold ws_def G_def, auto simp add: e_in_E)
       done
 
-      def S' \<equiv> "S - vs"
-      def V' \<equiv> "V - vs"
-      def E' \<equiv> "removeAll e E"
-      def G' \<equiv> "Graph V' \<Lambda> E'"
+      define S' where "S' = S - vs"
+      define V' where "V' = V - vs"
+      define E' where "E' = removeAll e E"
+      define G' where "G' = Graph V' \<Lambda> E'"
 
-      def \<Pi>' \<equiv> "mk_ps_chain \<lbrace> initial_ps2 S' G' \<rbrace> \<pi>'"
+      define \<Pi>' where "\<Pi>' = mk_ps_chain \<lbrace> initial_ps2 S' G' \<rbrace> \<pi>'"
       hence pre_\<Pi>': "pre \<Pi>' = initial_ps2 S' G'"
       by (metis pre.simps(1) pre_mk_ps_chain)
 
-      def \<sigma> \<equiv> "[ initials G - S |=> Top ] ++\<^sub>f [ S - vs |=> Bot ]"
+      define \<sigma> where "\<sigma> = [ initials G - S |=> Top ] ++\<^sub>f [ S - vs |=> Bot ]"
 
       have next_initial_ps2: "initial_ps2 S' G'
         = initial_ps2 S G \<ominus> vs ++\<^sub>f [ws |=> Top]"
@@ -980,7 +980,7 @@ next
 
     note lins = linsD[OF \<pi>_lin]
 
-    def \<Pi> \<equiv> "mk_ps_chain \<lbrace> initial_ps G \<rbrace> \<pi>"
+    define \<Pi> where "\<Pi> = mk_ps_chain \<lbrace> initial_ps G \<rbrace> \<pi>"
 
     have "\<Pi> \<in> ps_chains G" by (simp add: \<pi>_lin \<Pi>_def ps_chains_def G_def)
     hence 1: "post \<Pi> = [ terminals G |=> Bot ]"

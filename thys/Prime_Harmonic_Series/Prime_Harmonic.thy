@@ -50,7 +50,7 @@ lemma prime_harmonic_aux2:
   assumes "finite (A :: nat set)"
   shows   "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> 5/3"
 proof -
-  def n \<equiv> "max 2 (Max A)"
+  define n where "n = max 2 (Max A)"
   have n: "n \<ge> Max A" "n \<ge> 2" by (auto simp: n_def)
   with assms have "A \<subseteq> {0..n}" by (auto intro: order.trans[OF Max_ge])
   hence "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> (\<Sum>k=0..n. 1 / (real k ^ 2))" by (intro sum_mono2) auto
@@ -87,14 +87,14 @@ theorem prime_harmonic_lower:
   shows "(\<Sum>p\<leftarrow>primes_upto n. 1 / real p) \<ge> ln (harm n) - ln (5/3)"
 proof -
   -- \<open>the set of primes that we will allow in the squarefree part\<close>
-  def P \<equiv> "\<lambda>n. set (primes_upto n)"
+  define P where "P n = set (primes_upto n)" for n
   {
     fix n :: nat
     have "finite (P n)" by (simp add: P_def)
   } note [simp] = this
 
   -- \<open>The function that combines the squarefree part and the square part\<close>
-  def f \<equiv> "\<lambda>(R, s :: nat). \<Prod>R * s^2"
+  define f where "f = (\<lambda>(R, s :: nat). \<Prod>R * s^2)"
 
   -- \<open>@{term f} is injective if the squarefree part contains only primes
       and the square part is positive.\<close>
@@ -236,7 +236,7 @@ proof
   then obtain k where k: "k > 0" "\<And>n. norm (ln (ln (real (n::nat) + 1))) \<le> k"
     by (auto elim!: BseqE simp: add_ac)
 
-  def N \<equiv> "nat \<lceil>exp (exp k)\<rceil>"
+  define N where "N = nat \<lceil>exp (exp k)\<rceil>"
   have N_pos: "N > 0" unfolding N_def by simp
   have "real N + 1 > exp (exp k)" unfolding N_def by linarith
   hence "ln (real N + 1) > ln (exp (exp k))" by (subst ln_less_cancel_iff) simp_all

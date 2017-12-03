@@ -8,7 +8,9 @@ lemma (in PL_Indis) WbisT_If_cross:
   assumes "c1 \<approx>wT c2" "c1 \<approx>wT c1" "c2 \<approx>wT c2"
   shows "(If tst c1 c2) \<approx>wT (If tst c1 c2)"
 proof -
-  def \<phi> \<equiv> "\<lambda>c d. \<exists>c1' c2'. c = If tst c1' c2' \<and> d = If tst c1' c2' \<and> c1' \<approx>wT c2' \<and> c1' \<approx>wT c1' \<and> c2' \<approx>wT c2'"
+  define \<phi>
+    where "\<phi> c d \<longleftrightarrow> (\<exists>c1' c2'. c = If tst c1' c2' \<and> d = If tst c1' c2' \<and> c1' \<approx>wT c2' \<and> c1' \<approx>wT c1' \<and> c2' \<approx>wT c2')"
+    for c d
   with assms have "\<phi> (If tst c1 c2) (If tst c1 c2)" by auto
   then show ?thesis
   proof (induct rule: WbisT_coinduct[where \<phi>=\<phi>])
@@ -235,9 +237,10 @@ definition [simp]: "c13 =
 lemma c13_inner:
   "(h ::= Ct 1 ;; l ::= Ct 2) \<approx>wT (l ::= Ct 2)"
 proof -
-  def \<phi> \<equiv> "\<lambda>(c :: (test, atom) com) (d :: (test, atom) com).
-    c = h ::= Ct 1 ;; l ::= Ct 2 \<and> d = l ::= Ct 2 \<or>
-    d = h ::= Ct 1 ;; l ::= Ct 2 \<and> c = l ::= Ct 2"
+  define \<phi> where "\<phi> =
+    (\<lambda>(c :: (test, atom) com) (d :: (test, atom) com).
+      c = h ::= Ct 1 ;; l ::= Ct 2 \<and> d = l ::= Ct 2 \<or>
+      d = h ::= Ct 1 ;; l ::= Ct 2 \<and> c = l ::= Ct 2)"
   then have "\<phi> (h ::= Ct 1 ;; l ::= Ct 2) (l ::= Ct 2)"
     by auto
   then show ?thesis

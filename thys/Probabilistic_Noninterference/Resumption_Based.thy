@@ -31,8 +31,8 @@ lemma refl_gfp:
 assumes 1: "mono Retr" and 2: "\<And> theta. refl theta \<Longrightarrow> refl (Retr theta)"
 shows "refl (gfp Retr)"
 proof-
-  def bis \<equiv> "gfp Retr"
-  def th \<equiv> "Id Un bis"
+  define bis where "bis = gfp Retr"
+  define th where "th = Id Un bis"
   have "bis \<subseteq> Retr bis"
   using 1 unfolding bis_def by (metis gfp_unfold subset_refl)
   also have "... \<subseteq> Retr th" using 1 unfolding mono_def th_def by auto
@@ -50,8 +50,8 @@ lemma sym_gfp:
 assumes 1: "mono Retr" and 2: "\<And> theta. sym theta \<Longrightarrow> sym (Retr theta)"
 shows "sym (gfp Retr)"
 proof-
-  def bis \<equiv> "gfp Retr"
-  def th \<equiv> "bis ^-1 Un bis"
+  define bis where "bis = gfp Retr"
+  define th where "th = bis ^-1 Un bis"
   have "bis \<subseteq> Retr bis"
   using 1 unfolding bis_def by (metis gfp_unfold subset_refl)
   also have "... \<subseteq> Retr th" using 1 unfolding mono_def th_def by auto
@@ -82,8 +82,8 @@ lemma trans_gfp:
 assumes 1: "mono Retr" and 2: "\<And> theta. trans theta \<Longrightarrow> trans (Retr theta)"
 shows "trans (gfp Retr)"
 proof-
-  def bis \<equiv> "gfp Retr"
-  def th \<equiv> "bis ^+"
+  define bis where "bis = gfp Retr"
+  define th where "th = bis ^+"
   have "bis \<subseteq> Retr bis"
   using 1 unfolding bis_def by (metis gfp_unfold subset_refl)
   also have "... \<subseteq> Retr th" using 1 unfolding mono_def th_def
@@ -113,8 +113,8 @@ lemma sym_trans_gfp:
 assumes 1: "mono Retr" and 2: "\<And> theta. sym theta \<and> trans theta \<Longrightarrow> sym (Retr theta) \<and> trans (Retr theta)"
 shows "sym (gfp Retr) \<and> trans (gfp Retr)"
 proof-
-  def bis \<equiv> "gfp Retr"
-  def th \<equiv> "(bis Un bis ^-1) ^+"
+  define bis where "bis = gfp Retr"
+  define th where "th = (bis Un bis ^-1) ^+"
   have "bis \<subseteq> Retr bis"
   using 1 unfolding bis_def by (metis gfp_unfold subset_refl)
   also have "... \<subseteq> Retr th" using 1 unfolding mono_def th_def
@@ -294,16 +294,17 @@ qed
 lemma gen_idem[simp]:
 "gen P (gen P I) = gen P I"
 proof-
-  def J \<equiv> "gen P I"
+  define J where "J = gen P I"
   have "I \<subseteq> J" unfolding J_def by auto
   hence "gen P I \<subseteq> gen P J" by simp
-  moreover have "gen P J \<subseteq> gen P I" proof
-  fix i assume "i \<in> gen P J"
+  moreover have "gen P J \<subseteq> gen P I"
+  proof
+    fix i assume "i \<in> gen P J"
     thus "i \<in> gen P I"
     proof induct
       case (ext J' j0 j)
       thus ?case
-      using gen.ext[of J' P j0 I j] by blast
+        using gen.ext[of J' P j0 I j] by blast
     qed (unfold J_def, auto)
   qed
   ultimately show ?thesis unfolding J_def by auto
@@ -708,7 +709,7 @@ unfolding part_def proof (intro conjI allI impI)
   next
     fix j assume "j \<in> J0"
     then obtain J where J: "J \<in> F ` P" and j: "j \<in> J" using FP unfolding part_def by auto
-    def I \<equiv> "inv_into P F J"
+    define I where "I = inv_into P F J"
     have j: "j \<in> F I" unfolding I_def using j J F by auto
     have I: "I \<in> P" unfolding I_def using F J by auto
     obtain II where "I \<subseteq> II" and "II \<in> Q" using P Q PQ I finer_ex[of I0 P Q I] by auto
@@ -1258,7 +1259,7 @@ next
   show "mC_C_wt c d s t Q (lift P F)"
   unfolding mC_C_wt_def proof clarify
     fix II assume II: "II \<in> Q"
-    def S \<equiv> "{I \<in> P . I \<subseteq> II}"
+    define S where "S = {I \<in> P . I \<subseteq> II}"
     have II: "II = (UN I : S . id I)" using II Q unfolding finer_def S_def by auto
     have S: "\<And> I J. \<lbrakk>I : S; J : S; I \<noteq> J\<rbrakk> \<Longrightarrow> id I Int id J = {}" "finite S"
     unfolding S_def using * finite_part[of "{..<brn c}" P] unfolding mC_C_def mC_C_part_def part_def by auto
@@ -1344,7 +1345,7 @@ and theta: "sym theta" "trans theta"
 shows "matchC_C theta c1 c2"
 unfolding matchC_C_def proof clarify
   fix s1 s2 assume s1s2: "s1 \<approx> s2"
-  def s \<equiv> "s1"
+  define s where "s = s1"
   have s: "s \<approx> s1 \<and> s \<approx> s2" unfolding s_def using s1s2 by auto
   have th: "theta ^-1 = theta" "theta O theta \<subseteq> theta" using theta
   by (metis sym_conv_converse_eq trans_O_subset)+
@@ -1353,7 +1354,7 @@ unfolding matchC_C_def proof clarify
   unfolding matchC_C_def by blast
   from s ** obtain P2 F2 where m2: "mC_C theta c c2 s s2 P2 F2"
   unfolding matchC_C_def by blast
-  def P \<equiv> "partJoin P1 P2"
+  define P where "P = partJoin P1 P2"
   (*  *)
   have P:
   "finer P1 P \<and> finer P2 P \<and>

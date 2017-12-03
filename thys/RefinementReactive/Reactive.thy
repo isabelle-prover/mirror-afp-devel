@@ -212,9 +212,10 @@ begin
     next
       fix x::"nat \<Rightarrow>'a" and
           z::"nat \<Rightarrow> 'b"
-      def A: a == "(\<lambda> n . SOME y . r (fst (u n)) (fst (u (Suc n))) (x n) y \<and> r' (snd (u n)) (snd (u (Suc n))) y (z n))"
+      define a where "a n = (SOME y . r (fst (u n)) (fst (u (Suc n))) (x n) y \<and> r' (snd (u n)) (snd (u (Suc n))) y (z n))"
+        for n
       assume "\<forall>i . (case u i of (u, v) \<Rightarrow> \<lambda>(u', v'). r u u' OO r' v v') (u (Suc i)) (x i) (z i)"
-      from this and A have "(\<forall>i :: nat. r (fst (u i)) (fst (u (Suc i))) (x i) (a i)) \<and> (\<forall>i :: nat. r' (snd (u i)) (snd (u (Suc i))) (a i) (z i))"
+      from this and a_def have "(\<forall>i :: nat. r (fst (u i)) (fst (u (Suc i))) (x i) (a i)) \<and> (\<forall>i :: nat. r' (snd (u i)) (snd (u (Suc i))) (a i) (z i))"
         apply auto
           apply (metis (mono_tags, lifting) pick_middlep prod.collapse split_conv tfl_some)
           by (metis (mono_tags, lifting) pick_middlep prod.collapse split_conv tfl_some)
@@ -690,10 +691,10 @@ begin
           then show "xa xb = count x xb" by simp
         next
           fix x::"nat \<Rightarrow> bool" and xa::"nat \<Rightarrow> nat"
-          def A: u == "\<lambda> i . if i = 0 then 0 else count x (i - 1)"
+          define u where "u i = (if i = 0 then 0 else count x (i - 1))" for i
           assume B: "\<forall>xb::nat. xa xb = count x xb"
           {fix xb::nat
-          from A and B have "u 0 = 0 \<and> ( (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> xa xb = u (Suc xb))"
+          from u_def and B have "u 0 = 0 \<and> ( (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> xa xb = u (Suc xb))"
             by (case_tac xb, auto)
           }
           then show "\<exists>u::nat \<Rightarrow> nat. u 0 = 0 \<and> (\<forall>xb. (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> 
@@ -706,17 +707,17 @@ begin
         proof (simp add: fun_eq_iff lft_rel_st_def  prec_st_def until_def 
             lft_pred_st_def prec_count_def at_fun_def inpt_st_def rel_count_def, safe)
           fix xa::"nat \<Rightarrow> bool" and k:: nat
-          def A: uu == "\<lambda> i . if i = 0 then 0 else count xa (i - 1)"
+          define uu where "uu i = (if i = 0 then 0 else count xa (i - 1))" for i
           assume "(\<forall>u . u 0 = 0 \<longrightarrow> (\<forall>xb . (\<exists>x<xb. xa x \<and> u (Suc x) \<noteq> Suc (u x) \<or> \<not> xa x \<and> u (Suc x) \<noteq> u x) \<or> u xb \<le> x))" (is "\<forall> u . ?s u")
           then have "?s uu" (is "?p \<longrightarrow> (\<forall>xb . (\<exists> x < xb . ?q xb x) \<or> ?r xb)")
             by auto
-          from this and A  have "(\<forall>xb . (\<exists> x < xb . ?q xb x) \<or> ?r xb)"
+          from this and uu_def  have "(\<forall>xb . (\<exists> x < xb . ?q xb x) \<or> ?r xb)"
             by simp
           then have "(\<exists> x < (Suc k) . ?q (Suc k) x) \<or> ?r (Suc k)"
             by simp
           then obtain xb where "xb < (Suc k) \<and> (?q (Suc k) xb \<or> ?r (Suc k))"
             by auto
-          from this and A show "count xa k \<le> x"
+          from this and uu_def show "count xa k \<le> x"
              by (case_tac xb, auto)
         next 
           fix xa:: "nat \<Rightarrow> bool" and  u::"nat \<Rightarrow> nat" and xaa::nat
@@ -760,11 +761,9 @@ begin
   definition "LIVE = [:x \<leadsto> u, x' . u (0::nat) = 0 \<and> x = x':] o {.u, x . prec_st prec_ex rel_ex u x.} 
     o [:u, x \<leadsto> y . (\<box>(\<lambda> u x y . rel_ex (u 0) (u 1) (x 0) (y 0))) u x y  \<and> (\<box> (\<diamond> (\<lambda> y . y 0))) y :]"
 
-thm fusion_spec_local_a
-
   lemma LIVE_fusion: "LIVE = (SymSystem {u . u 0 = 0} prec_ex rel_ex) \<parallel> [:x \<leadsto> y . (\<box> (\<diamond> (\<lambda> y . y 0))) y:]"
     proof -
-      def B: init == "{u . u (0::nat) = (0::int)}"
+      define init where "init = {u . u (0::nat) = (0::int)}"
       then have A: "(\<lambda> i::nat . 0::int) \<in> init"
         by simp
       then have "([: x \<leadsto> (u, y). u \<in> init \<and> x = y :] \<circ> {.(x, y). prec_st prec_ex rel_ex x y .} \<circ> [: \<lambda>(x, y). (\<box> lft_rel_st rel_ex) x y :]) \<parallel>
@@ -772,9 +771,9 @@ thm fusion_spec_local_a
           [: x \<leadsto> (u, y). u \<in> init \<and> x = y :] \<circ> {. (x, y). prec_st prec_ex rel_ex x y .} \<circ>
           [: (u, x) \<leadsto> y. (\<box> lft_rel_st rel_ex) u x y \<and> (\<box> \<diamond> (\<lambda>y. y 0)) y :]"
         by (unfold fusion_spec_local_a, auto)
-      from B and this show ?thesis 
-        apply (simp add: SymSystem_def)
-        by (auto simp add: LIVE_def lft_rel_st_def always_def at_fun_def)
+      then show ?thesis 
+        by (simp add: init_def SymSystem_def)
+          (auto simp add: LIVE_def lft_rel_st_def always_def at_fun_def)
    qed
 
   definition "preca_ex x = (x 1 = (\<not>x 0))"

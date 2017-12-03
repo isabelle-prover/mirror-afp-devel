@@ -622,7 +622,7 @@ proof-
               show "sign_changes ps a = sign_changes ps b"
               proof (cases "a = b")
                 case False
-                  def x \<equiv> "min (a+\<delta>/2) b"
+                  define x where "x = min (a+\<delta>/2) b"
                   with False have "a < x" "x < a+\<delta>" "x \<le> b"
                      using `\<delta> > 0` `a \<le> b` by simp_all
                   from \<delta>_props `a < x` `x < a+\<delta>`
@@ -642,7 +642,7 @@ proof-
           with fin have card_greater_0:
               "card {x. x > a \<and> x \<le> b \<and> poly p x = 0} > 0" by fastforce
 
-          def x\<^sub>2 \<equiv> "Min {x. x > a \<and> x \<le> b \<and> poly p x = 0}"
+          define x\<^sub>2 where "x\<^sub>2 = Min {x. x > a \<and> x \<le> b \<and> poly p x = 0}"
           from Min_in[OF fin] and True
               have x\<^sub>2_props: "x\<^sub>2 > a" "x\<^sub>2 \<le> b" "poly p x\<^sub>2 = 0"
               unfolding x\<^sub>2_def by blast+
@@ -660,7 +660,7 @@ proof-
               "\<forall>x. x \<noteq> x\<^sub>2 \<and> \<bar>x - x\<^sub>2\<bar> < \<epsilon> \<longrightarrow>
                    sign_changes ps x = sign_changes ps x\<^sub>2 +
                        (if x < x\<^sub>2 then 1 else 0)" by auto
-          def x\<^sub>1 \<equiv> "max (x\<^sub>2 - \<epsilon> / 2) a"
+          define x\<^sub>1 where "x\<^sub>1 = max (x\<^sub>2 - \<epsilon> / 2) a"
           have "\<bar>x\<^sub>1 - x\<^sub>2\<bar> < \<epsilon>" using `\<epsilon> > 0` x\<^sub>2_props by (simp add: x\<^sub>1_def)
           hence "sign_changes ps x\<^sub>1 =
               (if x\<^sub>1 < x\<^sub>2 then sign_changes ps x\<^sub>2 + 1 else sign_changes ps x\<^sub>2)"
@@ -1197,11 +1197,11 @@ lemma sturm_squarefree'_adjacent_root_propagate_left:
   shows "\<forall>j\<le>i+1. poly (sturm_squarefree' p ! j) x = 0"
 proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
   case prems: (1 i x)
-    def q \<equiv> "sturm p ! i"
-    def r \<equiv> "sturm p ! (Suc i)"
-    def s \<equiv> "sturm p ! (Suc (Suc i))"
-    def d \<equiv> "gcd p (pderiv p)"
-    def q' \<equiv> "q div d" and r' \<equiv> "r div d" and s' \<equiv> "s div d"
+    define q where "q = sturm p ! i"
+    define r where "r = sturm p ! (Suc i)"
+    define s where "s = sturm p ! (Suc (Suc i))"
+    define d where "d = gcd p (pderiv p)"
+    define q' r' s' where "q' = q div d" and "r' = r div d" and "s' = s div d"
     from `p \<noteq> 0` have "d \<noteq> 0" unfolding d_def by simp
     from prems(1) have i_in_range: "i < length (sturm p) - 2"
         unfolding sturm_squarefree'_def Let_def by simp
@@ -1236,7 +1236,7 @@ lemma sturm_squarefree'_adjacent_roots:
           "poly (sturm_squarefree' p ! (i + 1)) x = 0"
   shows False
 proof-
-  def d \<equiv> "gcd p (pderiv p)"
+  define d where "d = gcd p (pderiv p)"
   from sturm_squarefree'_adjacent_root_propagate_left[OF assms]
       have "poly (sturm_squarefree' p ! 0) x = 0"
            "poly (sturm_squarefree' p ! 1) x = 0" by auto
@@ -1256,7 +1256,7 @@ lemma sturm_squarefree'_signs:
          poly (sturm_squarefree' p ! i) x < 0"
             (is "poly ?r x * poly ?p x < 0")
 proof-
-  def d \<equiv> "gcd p (pderiv p)"
+  define d where "d = gcd p (pderiv p)"
   with `p \<noteq> 0` have [simp]: "d \<noteq> 0" by simp
   from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`]
        coprime_imp_no_common_roots
@@ -1411,10 +1411,10 @@ lemma sturm_sturm_squarefree'_same_sign_changes:
         "p \<noteq> 0 \<Longrightarrow> sign_changes_inf ps' = sign_changes_inf ps"
         "p \<noteq> 0 \<Longrightarrow> sign_changes_neg_inf ps' = sign_changes_neg_inf ps"
 proof-
-  def d \<equiv> "gcd p (pderiv p)"
-  def p' \<equiv> "p div d"
-  def s' \<equiv> "poly_inf d"
-  def s'' \<equiv> "poly_neg_inf d"
+  define d where "d = gcd p (pderiv p)"
+  define p' where "p' = p div d"
+  define s' where "s' = poly_inf d"
+  define s'' where "s'' = poly_neg_inf d"
 
   {
     fix x :: real and q :: "real poly"
@@ -1529,7 +1529,7 @@ proof (cases "p \<noteq> 0 \<and> a \<le> b")
 next
   case True
   hence "p \<noteq> 0" "a \<le> b" by simp_all
-  def p' \<equiv> "p div (gcd p (pderiv p))"
+  define p' where "p' = p div (gcd p (pderiv p))"
   from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
@@ -1557,7 +1557,7 @@ proof (cases "p = 0")
     thus ?thesis by (simp add: count_roots_def True)
 next
   case False
-  def p' \<equiv> "p div (gcd p (pderiv p))"
+  define p' where "p' = p div (gcd p (pderiv p))"
   from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
@@ -1583,7 +1583,7 @@ proof (cases "p = 0")
   thus ?thesis by (simp add: count_roots_above_def True)
 next
   case False
-  def p' \<equiv> "p div (gcd p (pderiv p))"
+  define p' where "p' = p div (gcd p (pderiv p))"
   from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
@@ -1610,7 +1610,7 @@ proof (cases "p = 0")
     thus ?thesis by (simp add: count_roots_below_def True)
 next
   case False
-  def p' \<equiv> "p div (gcd p (pderiv p))"
+  define p' where "p' = p div (gcd p (pderiv p))"
   from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
@@ -1658,7 +1658,7 @@ next
     case True
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" and
             B: "poly p b \<noteq> 0 \<or> poly (pderiv p) b \<noteq> 0" by auto
-      def d \<equiv> "gcd p (pderiv p)"
+      define d where "d = gcd p (pderiv p)"
       from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
           using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
       from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
@@ -1683,7 +1683,7 @@ lemma count_roots_code[code]:
            in sign_changes_neg_inf ps - sign_changes_inf ps)"
 proof (cases "p = 0", simp add: count_roots_def)
   case False
-    def d \<equiv> "gcd p (pderiv p)"
+    define d where "d = gcd p (pderiv p)"
     from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
         using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
     from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
@@ -1724,7 +1724,7 @@ next
     next
     case True
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" by simp
-      def d \<equiv> "gcd p (pderiv p)"
+      define d where "d = gcd p (pderiv p)"
       from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
           using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
       from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
@@ -1765,7 +1765,7 @@ next
     next
     case True
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" by simp
-      def d \<equiv> "gcd p (pderiv p)"
+      define d where "d = gcd p (pderiv p)"
       from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
           using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
       from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]

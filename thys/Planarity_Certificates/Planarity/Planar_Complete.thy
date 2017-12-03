@@ -182,7 +182,7 @@ proof -
     with \<open>symmetric G\<close> obtain b0 where "b0 \<in> arcs G" "tail G b0 = head G a0" "head G b0 = tail G a0"
       by (auto simp: symmetric_def arcs_ends_conv elim: symE)
     moreover
-    def b \<equiv> "iso_arcs hom b0"
+    define b where "b = iso_arcs hom b0"
     ultimately
     have "b \<in> iso_arcs hom ` arcs G" "tail ?G b = v" "head ?G b = u"
       using a a0 assms by (auto simp: iso_verts_tail iso_verts_head)
@@ -397,7 +397,7 @@ proof -
   obtain fv_V where fv_V: "bij_betw fv_V GV HV"
     using \<open>card GV = _\<close> \<open>card HV = _\<close> \<open>finite GV\<close> \<open>finite HV\<close> by (metis finite_same_card_bij)
 
-  def fv \<equiv> "\<lambda>x. if x \<in> GU then fv_U x else fv_V x"
+  define fv where "fv x = (if x \<in> GU then fv_U x else fv_V x)" for x
   have "\<And>x. x \<in> GV \<Longrightarrow> x \<notin> GU" using \<open>GU \<inter> GV = {}\<close> by blast
   then have bij_fv_UV: "bij_betw fv GU HU" "bij_betw fv GV HV"
     using fv_U fv_V by (auto simp: fv_def cong: bij_betw_cong)

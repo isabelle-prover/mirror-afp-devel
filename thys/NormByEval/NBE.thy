@@ -1031,7 +1031,7 @@ proof(induct u arbitrary:v rule:kernel.induct)
     have "subst (subst_decr (Suc 0) (lift_tm 0 (kernel v))) (lift_ml 0 (lift_ml 0 w)[V\<^sub>U 0 []/0][V\<^sub>U 1 []/0]!) =
     subst (subst_decr 0 (kernel(lift_ml 0 v))) (lift_ml 0 (lift_ml 0 w)[V\<^sub>U 1 []/0][V\<^sub>U 0 []/0]!)" (is "?a = ?b")
     proof-
-      def pi == "\<lambda>n::nat. if n = 0 then 1 else if n = 1 then 0 else n"
+      define pi where "pi n = (if n = 0 then 1 else if n = 1 then 0 else n)" for n :: nat
       have "(\<lambda>i. V (pi i)[lift 0 (v!)/0]) = subst_decr (Suc 0) (lift 0 (v!))"
         by(rule ext)(simp add:pi_def)
       hence "?a =

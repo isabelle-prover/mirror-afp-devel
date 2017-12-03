@@ -140,7 +140,7 @@ next
     "SdlHPPB d PP RV' \<and> (V,V) \<in> RV'"
     by blast
 
-  def RV \<equiv> "{(V',V''). (V',V'') \<in> RV' \<and> set (PPV V') \<subseteq> set (PPV V)
+  define RV where "RV = {(V',V''). (V',V'') \<in> RV' \<and> set (PPV V') \<subseteq> set (PPV V)
     \<and> set (PPV V'') \<subseteq> set (PPV V)}"
 
   with RV'assump RV_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -152,7 +152,7 @@ next
     by (metis append_Nil drop_Nil neq0_conv not_Cons_self 
       nth_append_length Cons_nth_drop_Suc zero_less_Suc)
  
-  def Rc \<equiv> "{(V',V''). (V',V'') \<in> Rc' \<and> set (PPV V') \<subseteq> set (PPc c)
+  define Rc where "Rc = {(V',V''). (V',V'') \<in> Rc' \<and> set (PPV V') \<subseteq> set (PPc c)
     \<and> set (PPV V'') \<subseteq> set (PPc c)}"
 
   with Rc'assump Rc_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -167,7 +167,7 @@ next
   have Areflassump1: "Arefl RV \<inter> Arefl Rc \<subseteq> {[]}"
     by force
     
-  def R \<equiv> "{(V',V''). \<exists>c c' W W'. V' = c#W \<and> V'' = c'#W' \<and> W \<noteq> []
+  define R where "R = {(V',V''). \<exists>c c' W W'. V' = c#W \<and> V'' = c'#W' \<and> W \<noteq> []
     \<and> W' \<noteq> [] \<and> ([c],[c']) \<in> Rc \<and> (W,W') \<in> RV}"
 
   with RV_def RV'assump Rc_def Rc'assump have inR: 

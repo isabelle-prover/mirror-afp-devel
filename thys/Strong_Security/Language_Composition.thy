@@ -14,8 +14,7 @@ theorem Compositionality_Seq:
   assumes relatedpart2: "[c2] \<approx>\<^bsub>d\<^esub> [c2']"
   shows "[c1;c2] \<approx>\<^bsub>d\<^esub> [c1';c2']"
 proof -
-
-  def R0 \<equiv> "{(S1,S2). \<exists>c1 c1' c2 c2' W W'. 
+  define R0 where "R0 = {(S1,S2). \<exists>c1 c1' c2 c2' W W'. 
     S1 = (c1;c2)#W \<and> S2 = (c1';c2')#W' \<and> 
     [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> [c2] \<approx>\<^bsub>d\<^esub> [c2'] \<and> W \<approx>\<^bsub>d\<^esub> W'}"
   
@@ -173,7 +172,7 @@ theorem Compositionality_Fork:
   assumes relatedthreads: "V \<approx>\<^bsub>d\<^esub> V'"
   shows "[fork c V] \<approx>\<^bsub>d\<^esub> [fork c' V']"  
 proof -
-  def R0 \<equiv> "{(F1,F2). \<exists>c1 c1' W W'. 
+  define R0 where "R0 = {(F1,F2). \<exists>c1 c1' W W'. 
     F1 = [fork c1 W] \<and> F2 = [fork c1' W']
     \<and> [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> W \<approx>\<^bsub>d\<^esub> W'}"
   from relatedmain relatedthreads 
@@ -234,16 +233,16 @@ theorem Compositionality_If:
   assumes branch2related: "[c2] \<approx>\<^bsub>d\<^esub> [c2']"
   shows "[if b then c1 else c2 fi] \<approx>\<^bsub>d\<^esub> [if b' then c1' else c2' fi]"
 proof -
-  def R1 \<equiv> "{(I1,I2). \<exists>c1 c1' c2 c2' b b'.
+  define R1 where "R1 = {(I1,I2). \<exists>c1 c1' c2 c2' b b'.
     I1 = [if b then c1 else c2 fi] \<and> I2 = [if b' then c1' else c2' fi] \<and>
     [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> [c2] \<approx>\<^bsub>d\<^esub> [c2'] \<and> b \<equiv>\<^bsub>d\<^esub> b'}"
 
-  def R2 \<equiv> "{(I1,I2). \<exists>c1 c1' c2 c2' b b'.
+  define R2 where "R2 = {(I1,I2). \<exists>c1 c1' c2 c2' b b'.
     I1 = [if b then c1 else c2 fi] \<and> I2 = [if b' then c1' else c2' fi] \<and>
     [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> [c2] \<approx>\<^bsub>d\<^esub> [c2'] \<and>
     ([c1] \<approx>\<^bsub>d\<^esub> [c2] \<or> [c1'] \<approx>\<^bsub>d\<^esub> [c2'])}"
 
-  def R0 \<equiv> "R1 \<union> R2"
+  define R0 where "R0 = R1 \<union> R2"
 
   from dind_or_branchesrelated branch1related branch2related
   have inR0: "([if b then c1 else c2 fi],[if b' then c1' else c2' fi]) \<in> R0"
@@ -410,16 +409,16 @@ theorem Compositionality_While:
   assumes bodyrelated: "[c] \<approx>\<^bsub>d\<^esub> [c']"
   shows "[while b do c od] \<approx>\<^bsub>d\<^esub> [while b' do c' od]"
 proof -
-  def R1 \<equiv> "{(S1,S2). \<exists>c1 c1' c2 c2' b b' W W'.
+  define R1 where "R1 = {(S1,S2). \<exists>c1 c1' c2 c2' b b' W W'.
     S1 = (c1;(while b do c2 od))#W \<and> 
     S2 = (c1';(while b' do c2' od))#W' \<and>
     [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> [c2] \<approx>\<^bsub>d\<^esub> [c2'] \<and> W \<approx>\<^bsub>d\<^esub> W' \<and> b \<equiv>\<^bsub>d\<^esub> b'}"
 
-  def R2 \<equiv> "{(W1,W2). \<exists>c1 c1' b b'. 
+  define R2 where "R2 = {(W1,W2). \<exists>c1 c1' b b'. 
     W1 = [while b do c1 od] \<and> W2 = [while b' do c1' od] \<and>
     [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> b \<equiv>\<^bsub>d\<^esub> b'}"
 
-  def R0 \<equiv> "R1 \<union> R2"
+  define R0 where "R0 = R1 \<union> R2"
 
   from dind bodyrelated 
   have inR0: "([while b do c od],[while b' do c' od]) \<in> R0"

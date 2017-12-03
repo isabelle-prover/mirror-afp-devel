@@ -287,9 +287,10 @@ nv2T: "\<And> x. \<lbrakk>\<not> infTp (tpOfV x); x \<in> nv2T T\<rbrakk> \<Long
            \<exists> l. Ik.wtL l \<and> \<not> I.satL \<xi> l \<and> isGuard x l"
 shows "Ik.int (transE \<xi>) T = I.int \<xi> T"
 proof(cases "infTp (Ik.tpOf T) \<or> (\<forall> x \<in> nv2T T. tpOfV x \<noteq> Ik.tpOf T)")
-  case True thus ?thesis using int_transE_nv2T[OF wt \<xi>] by auto
+  case True
+  thus ?thesis using int_transE_nv2T[OF wt \<xi>] by auto
 next
-  def \<sigma> \<equiv> "Ik.tpOf T"
+  define \<sigma> where "\<sigma> = Ik.tpOf T"
   case False then obtain x where i: "\<not> infTp \<sigma>" and x: "x \<in> nv2T T"
   unfolding \<sigma>_def by auto
   hence T: "T = Var x" by (simp add: in_nv2T)

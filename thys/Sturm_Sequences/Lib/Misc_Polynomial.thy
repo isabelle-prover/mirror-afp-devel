@@ -93,10 +93,10 @@ proof -
     by (rule bezout_coefficients)
   then have rs: "d = r * p + s * pderiv p"
     by (simp add: d_def)
-  def t \<equiv> "p div d"
-  def [simp]: p' \<equiv> "pderiv p"
-  def [simp]: d' \<equiv> "pderiv d"
-  def u \<equiv> "p' div d"
+  define t where "t = p div d"
+  define p' where [simp]: "p' = pderiv p"
+  define d' where [simp]: "d' = pderiv d"
+  define u where "u = p' div d"
   have A: "p = t * d" and B: "p' = u * d"
     by (simp_all add: t_def u_def d_def algebra_simps)
   from poly_squarefree_decomp[OF assms(1) A B[unfolded p'_def] rs]
@@ -112,7 +112,7 @@ proof -
     fix x assume "x dvd t" "x dvd (pderiv t)"
     then obtain v w where vw:
         "t = x*v" "pderiv t = x*w" unfolding dvd_def by blast
-    def [simp]: x' \<equiv> "pderiv x" and [simp]: v' \<equiv> "pderiv v"
+    define x' v' where [simp]: "x' = pderiv x" and [simp]: "v' = pderiv v"
     from vw have "x*v' + v*x' = x*w" by (simp add: pderiv_mult)
     hence "v*x' = x*(w - v')" by (simp add: algebra_simps)
     hence "x dvd v*pderiv x" by simp
@@ -130,13 +130,13 @@ proof -
       next
         fix n n' assume IH: "x^n dvd d" and "n = Suc n'"
         hence [simp]: "Suc n' = n" "x * x^n' = x^n" by simp_all
-        def c \<equiv> "[:of_nat n:] :: 'a poly"
+        define c :: "'a poly" where "c = [:of_nat n:]"
         from pderiv_power_Suc[of x n']
             have [simp]: "pderiv (x^n) = c*x^n' * x'" unfolding c_def
             by simp
 
         from IH obtain z where d: "d = x^n * z" unfolding dvd_def by blast
-        def [simp]: z' \<equiv> "pderiv z"
+        define z' where [simp]: "z' = pderiv z"
         from d `d \<noteq> 0` have "x^n \<noteq> 0" "z \<noteq> 0" by force+
         from C d have "x^n*z = z*r*v*x^Suc n + z*s*c*x^n*(v*x') +
                           s*v*z'*x^Suc n + s*z*(v*x')*x^n + s*z*v'*x^Suc n"
@@ -288,7 +288,7 @@ proof-
       case (Suc _)
         with less(3) have "{x. \<bar>x - x\<^sub>0\<bar> < \<epsilon> \<and> x \<noteq> x\<^sub>0 \<and> poly p x = 0} \<noteq> {}" by force
         then obtain x where x_props: "\<bar>x - x\<^sub>0\<bar> < \<epsilon>" "x \<noteq> x\<^sub>0" "poly p x = 0" by blast
-        def \<epsilon>' \<equiv> "\<bar>x - x\<^sub>0\<bar> / 2"
+        define \<epsilon>' where "\<epsilon>' = \<bar>x - x\<^sub>0\<bar> / 2"
         have "\<epsilon>' > 0" "\<epsilon>' < \<epsilon>" unfolding \<epsilon>'_def using x_props by simp_all
         from x_props(1,2) and `\<epsilon> > 0`
             have "x \<notin> {x'. \<bar>x' - x\<^sub>0\<bar> < \<epsilon>' \<and> x' \<noteq> x\<^sub>0 \<and> poly p x' = 0}" (is "_ \<notin> ?B")
@@ -351,8 +351,8 @@ proof
       using poly_roots_finite by fast
   let ?roots' = "insert 0 ?roots"
 
-  def l \<equiv> "Min ?roots' - 1"
-  def u \<equiv> "Max ?roots' + 1"
+  define l where "l = Min ?roots' - 1"
+  define u where "u = Max ?roots' + 1"
 
   from `finite ?roots` have A: "finite ?roots'"  by auto
   from Min_le[OF this, of 0] and Max_ge[OF this, of 0]
@@ -412,7 +412,7 @@ lemma poly_neq_0_at_infinity:
 proof-
   from poly_roots_bounds[OF assms] guess l u .
   note lu_props = this
-  def b \<equiv> "max (-l) u"
+  define b where "b = max (-l) u"
   show ?thesis
   proof (subst eventually_at_infinity, rule exI[of _ b], clarsimp)
     fix x assume A: "\<bar>x\<bar> \<ge> b" and B: "poly p x = 0"
@@ -485,7 +485,7 @@ lemma poly_at_top_at_top:
   shows "LIM x at_top. poly p x :> at_top"
 proof-
   let ?n = "degree p"
-  def f \<equiv> "\<lambda>x::real. poly p x / x^?n" and g \<equiv> "\<lambda>x::real. x ^ ?n"
+  define f g where "f x = poly p x / x^?n" and "g x = x ^ ?n" for x :: real
 
   from poly_limit_aux have "(f \<longlongrightarrow> coeff p (degree p)) at_top"
       using tendsto_mono at_top_le_at_infinity unfolding f_def by blast
@@ -554,10 +554,10 @@ lemma poly_at_top_or_bot_at_bot:
   shows "LIM x at_bot. poly p x :> (if even (degree p) then at_top else at_bot)"
 proof-
   let ?n = "degree p"
-  def f \<equiv> "\<lambda>x::real. poly p x / x ^ ?n" and g \<equiv> "\<lambda>x::real. x ^ ?n"
+  define f g where "f x = poly p x / x ^ ?n" and "g x = x ^ ?n" for x :: real
 
   from poly_limit_aux have "(f \<longlongrightarrow> coeff p (degree p)) at_bot"
-      using tendsto_mono at_bot_le_at_infinity by (force simp: f_def)
+      using tendsto_mono at_bot_le_at_infinity by (force simp: f_def [abs_def])
   moreover from assms
       have "LIM x at_bot. g x :> (if even (degree p) then at_top else at_bot)"
         by (auto simp add: g_def split: if_split_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)

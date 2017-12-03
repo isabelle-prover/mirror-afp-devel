@@ -354,7 +354,7 @@ subsection\<open>Reality check: Validity of Simple Matches\<close>
       using ipcidr_conjunct_valid by blast+
   
     (* now for the source ports\<dots> *)
-    def nmu \<equiv> "\<lambda>ps. {p. simple_match_port ps p} \<noteq> UNIV"
+    define nmu where "nmu ps \<longleftrightarrow> {p. simple_match_port ps p} \<noteq> UNIV" for ps
     have "simpl_ports_conjunct (sports m1) (sports m2) = (sports m)" (is "?ph1 sports")
       using mj by(cases m1; cases m2; cases m; simp split: option.splits)
     hence sp: "nmu (sports m) \<longrightarrow> nmu (sports m1) \<or> nmu (sports m2)"
@@ -366,7 +366,8 @@ subsection\<open>Reality check: Validity of Simple Matches\<close>
     hence dp: "?ph2 dports" unfolding nmu_def using simpl_ports_conjunct_not_UNIV by metis
   
     (* And an argument for the protocol. *)
-    def php \<equiv> "\<lambda>mr :: 'i simple_match. proto mr \<in> Proto ` {TCP, UDP, L4_Protocol.SCTP}"
+    define php where "php mr \<longleftrightarrow> proto mr \<in> Proto ` {TCP, UDP, L4_Protocol.SCTP}"
+      for mr :: "'i simple_match"
     have pcj: "simple_proto_conjunct (proto m1) (proto m2) = Some (proto m)"
       using mj by(cases m1; cases m2; cases m; simp split: option.splits)
     hence p: "php m1 \<Longrightarrow> php m"

@@ -23,7 +23,7 @@ proof-
     assume "V \<noteq> {}"
     then obtain root where root: "root \<in> V" by blast
     then interpret RootedTree G root by unfold_locales
-    def bag \<equiv> "\<lambda>v. if v = root then {v} else {v, parent v}"
+    define bag where "bag v = (if v = root then {v} else {v, parent v})" for v
     have v_in_bag: "\<And>v. v \<in> bag v" unfolding bag_def by simp
     have bag_in_V: "\<And>v. v \<in> V \<Longrightarrow> bag v \<subseteq> V" unfolding bag_def
       using parent_in_V empty_subsetI insert_subset by auto

@@ -403,14 +403,14 @@ shows
 (is "(?A1 \<longrightarrow> ?C) \<and>
      (?A2 \<longrightarrow> ?H2 \<longrightarrow> ?C)")
 proof(intro conjI impI)
-  def xl \<equiv> "getVars (arOf f)"
+  define xl where "xl = getVars (arOf f)"
   have l[simp]: "length xl = length al" "length al = length (arOf f)"
                 "length (getTvars (arOf f)) = length (arOf f)"
   unfolding xl_def using al unfolding list_all2_iff by auto
   have 1[simp]: "\<And> i. i < length (arOf f) \<Longrightarrow> tpOfV (xl!i) = (arOf f)!i"
   unfolding xl_def by auto
   have xl[simp]: "distinct xl" unfolding xl_def using distinct_getVars by auto
-  def \<xi> \<equiv> "pickE xl al"
+  define \<xi> where "\<xi> = pickE xl al"
   have \<xi>: "GE.wtE \<xi>" unfolding \<xi>_def apply(rule wtE_pickE) using al list_all2_nthD by auto
   have [simp]: "\<And> i. i < length (arOf f) \<Longrightarrow> \<xi> (xl ! i) = al ! i"
   using al unfolding \<xi>_def by (auto simp: list_all2_length intro: pickE)
@@ -460,7 +460,7 @@ lemma GE_Wit:
 assumes \<sigma>: "\<not> unprot \<sigma>" "\<not> isRes \<sigma> \<or> protCl \<sigma>"
 shows "eintP (Guard \<sigma>) [eintF (Wit \<sigma>) []]"
 proof-
-  def \<xi> \<equiv> "pickE [] []"
+  define \<xi> where "\<xi> = pickE [] []"
   have \<xi>: "GE.wtE \<xi>" unfolding \<xi>_def apply(rule wtE_pickE) by auto
   have "GE.satPB \<xi> Wax" using GE.sat_\<Phi>[OF \<xi>] unfolding gPB_def by simp
   hence "GE.satC \<xi> (wax \<sigma>)" unfolding Wax_def GE.satPB_def using \<sigma> by auto
@@ -470,19 +470,24 @@ qed
 lemma NE_intT_forget: "NE (intT \<sigma>)"
 proof-
   obtain a where a: "eintT \<sigma> a" using GE.NE_intT by blast
-  show ?thesis proof(cases "unprot \<sigma>")
-    case True thus ?thesis using a unfolding intT_def by auto
+  show ?thesis
+  proof(cases "unprot \<sigma>")
+    case True
+      thus ?thesis using a unfolding intT_def by auto
   next
-    case False note unprot = False show ?thesis proof(cases "isRes \<sigma>")
+    case False note unprot = False
+      show ?thesis proof(cases "isRes \<sigma>")
       case True then obtain f where f: "wtFsym f" and \<sigma>: "\<sigma> = resOf f"
       unfolding isRes_def by auto
-      def al \<equiv> "map pickT (arOf f)"  have al: "list_all2 eintT (arOf f) al"
+      define al where "al = map pickT (arOf f)"
+      have al: "list_all2 eintT (arOf f) al"
       unfolding al_def list_all2_map2 unfolding list_all2_length by auto
-      def a \<equiv> "intF f al"
+      define a where "a = intF f al"
       have a: "eintT \<sigma> a" unfolding a_def \<sigma> intF_def using f al
       by (metis GE_arOf.simps GE_resOf.simps GE_wtFsym.simps GE.intF)
       show ?thesis proof (cases "protCl \<sigma>")
-        case True def a \<equiv> "eintF (Wit \<sigma>) []"
+        case True
+        define a where "a = eintF (Wit \<sigma>) []"
         have "eintT \<sigma> a" unfolding a_def
         by (metis True GE_arOf.simps GE_resOf.simps GE_wtFsym.simps intF list_all2_Nil)
         moreover have "eintP (Guard \<sigma>) [a]"
@@ -495,7 +500,8 @@ proof-
         thus ?thesis using unprot a unfolding intT_def by auto
       qed
     next
-      case False def a \<equiv> "eintF (Wit \<sigma>) []"
+      case False
+      define a where "a = eintF (Wit \<sigma>) []"
       have "eintT \<sigma> a" unfolding a_def
       by (metis False GE_arOf.simps GE_resOf.simps GE_wtFsym.simps intF list_all2_Nil)
       moreover have "eintP (Guard \<sigma>) [a]"

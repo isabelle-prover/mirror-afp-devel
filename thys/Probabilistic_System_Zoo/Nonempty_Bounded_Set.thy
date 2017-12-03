@@ -48,8 +48,9 @@ lemma rel_nebset_aux_infinite:
     BNF_Def.Grp {a. set_nebset a \<subseteq> {(a, b). R a b}} (map_nebset snd)) a b" (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L
-  def R' \<equiv> "the_inv set_nebset (Collect (case_prod R) \<inter> (set_nebset a \<times> set_nebset b)) :: ('a \<times> 'b) set!['k]"
-    (is "the_inv set_nebset ?L'")
+  define R' :: "('a \<times> 'b) set!['k]"
+    where "R' = the_inv set_nebset (Collect (case_prod R) \<inter> (set_nebset a \<times> set_nebset b))"
+    (is "_ = the_inv set_nebset ?L'")
   from \<open>?L\<close> have "?L' \<noteq> {}" by transfer auto
   moreover
   have "|?L'| <o natLeq +c |UNIV :: 'k set|"

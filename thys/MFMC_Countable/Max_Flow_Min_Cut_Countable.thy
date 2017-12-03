@@ -649,9 +649,9 @@ next
     from enum have x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" using range_enum_v
       by(auto dest: sym intro: rev_image_eqI)
 
-    def share \<equiv> "g (x, y) - h_plus i (x, y)"
-    def shares \<equiv> "d_OUT g x - d_OUT (h_plus i) x"
-    def total \<equiv> "d_IN (h_plus i) x - d_OUT (h_plus i) x"
+    define share where "share = g (x, y) - h_plus i (x, y)"
+    define shares where "shares = d_OUT g x - d_OUT (h_plus i) x"
+    define total where "total = d_IN (h_plus i) x - d_OUT (h_plus i) x"
     let ?h = "h_plus i (x, y) + share * total / shares"
 
     have "d_OUT (h_plus i) x \<le> d_OUT g x" by(rule d_OUT_mono)(rule Suc.IH)
@@ -671,7 +671,7 @@ next
       ultimately show ?thesis by(simp add: divide_le_posI_ennreal)
     qed
 
-    note shares_def[THEN meta_eq_to_obj_eq]
+    note shares_def
     also have "d_OUT g x = d_IN g x" by(rule flowD_KIR[OF g x])
     also have "d_IN (h_plus i) x \<le> d_IN g x" by(rule d_IN_mono)(rule Suc.IH)
     ultimately have *: "total \<le> shares" unfolding total_def by(simp add: ennreal_minus_mono)
@@ -791,7 +791,7 @@ proof(induction i)
   finally show ?case by simp
 next
   case (Suc i)
-  def xi \<equiv> "enum_v (Suc i)"
+  define xi where "xi = enum_v (Suc i)"
   then have xi: "xi \<noteq> source \<Delta>" "xi \<noteq> sink \<Delta>" using range_enum_v by auto
   show ?case
   proof(cases "d_OUT (h_plus i) xi < d_IN (h_plus i) xi")
@@ -891,8 +891,8 @@ proof(induction j)
   case 0 show ?case by simp
 next
   case (Suc j)
-  def C \<equiv> "enum_cycle j"
-  def \<delta> \<equiv> "Min {h' e' - h_minus_aux j e' |e'. e' \<in> set (cycle_edges C)}"
+  define C where "C = enum_cycle j"
+  define \<delta> where "\<delta> = Min {h' e' - h_minus_aux j e' |e'. e' \<in> set (cycle_edges C)}"
 
   have "d_OUT (h_minus_aux (Suc j)) x =
     (\<Sum>\<^sup>+ y. h_minus_aux j (x, y) + (if (x, y) \<in> set (cycle_edges C) then \<delta> else 0))"
@@ -1246,7 +1246,7 @@ qed
 lemma d_IN_h_le_value': "d_IN (h_diff i) x \<le> value_flow \<Delta> (h_plus i)"
 proof -
   let ?supp = "support_flow (h_diff i)"
-  def X \<equiv> "{y. (y, x) \<in> ?supp^*} - {x}"
+  define X where "X = {y. (y, x) \<in> ?supp^*} - {x}"
 
   { fix x y
     assume x: "x \<notin> X" and y: "y \<in> X"
@@ -2102,12 +2102,12 @@ proof -
     and value_aux: "\<And>i. value_flow \<Delta> (f_aux i) = ?v_r i"
     unfolding v_eq by moura
 
-  def f_i \<equiv> "rec_nat (\<lambda>_. 0) (\<lambda>i f_i.
+  define f_i where "f_i = rec_nat (\<lambda>_. 0) (\<lambda>i f_i.
     let g = f_aux (Suc i) \<ominus> f_i;
       k_i = SOME k. k \<le> g \<and> flow (residual_network f_i) k \<and> value_flow (residual_network f_i) k = value_flow (residual_network f_i) g \<and> (\<forall>x. d_IN k x \<le> value_flow (residual_network f_i) k)
     in f_i \<oplus> k_i)"
   let ?P = "\<lambda>i k. k \<le> f_aux (Suc i) \<ominus> f_i i \<and> flow (residual_network (f_i i)) k \<and> value_flow (residual_network (f_i i)) k = value_flow (residual_network (f_i i)) (f_aux (Suc i) \<ominus> f_i i) \<and> (\<forall>x. d_IN k x \<le> value_flow (residual_network (f_i i)) k)"
-  def k_i \<equiv> "\<lambda>i. Eps (?P i)"
+  define k_i where "k_i i = Eps (?P i)" for i
 
   have f_i_simps [simp]: "f_i 0 = (\<lambda>_. 0)" "f_i (Suc i) = f_i i \<oplus> k_i i" for i
     by(simp_all add: f_i_def Let_def k_i_def)
@@ -2293,7 +2293,7 @@ proof -
     have integral_k_bounded: "(\<Sum>\<^sup>+ y. norm (?k i x y)) \<le> \<alpha>' / 2 ^ i" (is ?thesis1)
       and integral_k'_bounded: "(\<Sum>\<^sup>+ y. norm (?k i y x)) \<le> \<alpha>' / 2 ^ i" (is ?thesis2) for i
     proof -
-      def b \<equiv> "\<Sum>\<^sup>+ y. k_i i (x, y) + k_i i (y, x)"
+      define b where "b = (\<Sum>\<^sup>+ y. k_i i (x, y) + k_i i (y, x))"
       have "b = d_OUT (k_i i) x + d_IN (k_i i) x" unfolding b_def
         by(subst nn_integral_add)(simp_all add: d_OUT_def d_IN_def)
       also have "d_OUT (k_i i) x = d_IN (k_i i) x" using k_i by(rule flowD_KIR)(simp_all add: x)
@@ -2707,7 +2707,7 @@ next
       from flow_by_value[OF this real] have "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = 2 * 2 ^ i" by blast }
     then obtain f_i where f_i: "\<And>i. flow \<Delta> (f_i i)"
       and value_i: "\<And>i. value_flow \<Delta> (f_i i) = 2 * 2 ^ i" by metis
-    def f \<equiv> "\<lambda>e. \<Sum>\<^sup>+ i. f_i i e / (2 * 2 ^ i)"
+    define f where "f e = (\<Sum>\<^sup>+ i. f_i i e / (2 * 2 ^ i))" for e
     have "flow \<Delta> f"
     proof
       fix e
@@ -3341,7 +3341,7 @@ lemma wave_lub: -- \<open>Lemma 4.3\<close>
 proof
   { fix x y p
     assume p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    def P \<equiv> "{x} \<union> set p"
+    define P where "P = {x} \<union> set p"
 
     let ?f = "\<lambda>f. SINK f \<inter> P"
     have "Complete_Partial_Order.chain op \<supseteq> (?f ` Y)" using chain
@@ -3406,8 +3406,8 @@ lemma ex_maximal_wave: -- \<open>Corollary 4.4\<close>
   assumes countable: "countable \<^bold>E"
   shows "\<exists>f. current \<Gamma> f \<and> wave \<Gamma> f \<and> (\<forall>w. current \<Gamma> w \<and> wave \<Gamma> w \<and> f \<le> w \<longrightarrow> f = w)"
 proof -
-  def Field_r \<equiv> "{f. current \<Gamma> f \<and> wave \<Gamma> f}"
-  def r \<equiv> "{(f, g). f \<in> Field_r \<and> g \<in> Field_r \<and> f \<le> g}"
+  define Field_r where "Field_r = {f. current \<Gamma> f \<and> wave \<Gamma> f}"
+  define r where "r = {(f, g). f \<in> Field_r \<and> g \<in> Field_r \<and> f \<le> g}"
   have Field_r: "Field r = Field_r" by(auto simp add: Field_def r_def)
 
   have "Partial_order r" unfolding order_on_defs
@@ -3703,8 +3703,8 @@ lemma ex_trimming: -- \<open>Lemma 4.8\<close>
   and weight_finite: "\<And>x. weight \<Gamma> x \<noteq> \<top>"
   shows "\<exists>g. trimming g"
 proof -
-  def F \<equiv> "{g. current \<Gamma> g \<and> wave \<Gamma> g \<and> g \<le> f \<and> \<E> (TER g) = \<E> (TER f)}"
-  def leq \<equiv> "restrict_rel F {(g, g'). g' \<le> g}"
+  define F where "F = {g. current \<Gamma> g \<and> wave \<Gamma> g \<and> g \<le> f \<and> \<E> (TER g) = \<E> (TER f)}"
+  define leq where "leq = restrict_rel F {(g, g'). g' \<le> g}"
   have in_F [simp]: "g \<in> F \<longleftrightarrow> current \<Gamma> g \<and> wave \<Gamma> g \<and> (\<forall>e. g e \<le> f e) \<and> \<E> (TER g) = \<E> (TER f)" for g
     by(simp add: F_def le_fun_def)
 
@@ -3776,11 +3776,12 @@ proof -
     from c w' INF_le_f eq show ?thesis by simp
   qed
 
-  def trim1 \<equiv>
-   "\<lambda>g. if trimming g then g
+  define trim1
+    where "trim1 g =
+      (if trimming g then g
         else let z = SOME z. z \<in> RF\<^sup>\<circ> (TER g) \<and> z \<notin> A \<Gamma> \<and> \<not> KIR g z;
             factor = d_OUT g z / d_IN g z
-          in (\<lambda>(y, x). (if x = z then factor else 1) * g (y, x))"
+          in (\<lambda>(y, x). (if x = z then factor else 1) * g (y, x)))" for g
 
   have increasing: "trim1 g \<le> g \<and> trim1 g \<in> F" if "g \<in> F" for g
   proof(cases "trimming g")
@@ -3789,7 +3790,7 @@ proof -
   next
     case False
     let ?P = "\<lambda>z. z \<in> RF\<^sup>\<circ> (TER g) \<and> z \<notin> A \<Gamma> \<and> \<not> KIR g z"
-    def z \<equiv> "Eps ?P"
+    define z where "z = Eps ?P"
     from that have g: "current \<Gamma> g" and w': "wave \<Gamma> g" and le_f: "\<And>e. g e \<le> f e"
       and \<E>: "\<E> (TER g) = \<E> (TER f)" by(auto simp add: le_fun_def)
     { with False obtain z where z: "z \<in> RF\<^sup>\<circ> (TER f)" and A: "z \<notin> A \<Gamma>" and neq: "d_OUT g z \<noteq> d_IN g z"
@@ -3869,7 +3870,7 @@ proof -
 
   have f_Field: "f \<in> Field leq" using f w by(simp add: leq_def)
 
-  def g \<equiv> "fixp_above f"
+  define g where "g = fixp_above f"
 
   have "g \<in> Field leq" using f_Field unfolding g_def by(rule fixp_above_Field)
   hence le_f: "g \<le> f"
@@ -3880,7 +3881,7 @@ proof -
   have "trimming g"
   proof(rule ccontr)
     let ?P = "\<lambda>x. x \<in> RF\<^sup>\<circ> (TER g) \<and> x \<notin> A \<Gamma> \<and> \<not> KIR g x"
-    def x \<equiv> "Eps ?P"
+    define x where "x = Eps ?P"
     assume False: "\<not> ?thesis"
     hence "\<exists>x. ?P x" using le_f g w' TER
       by(auto simp add: trimming.simps roofed_circ_essential[of \<Gamma> "TER g", symmetric] roofed_circ_essential[of \<Gamma> "TER f", symmetric])
@@ -5029,15 +5030,19 @@ proof -
 
   write Some ("\<langle>_\<rangle>")
 
-  def edge' \<equiv> "\<lambda>xo yo. case (xo, yo) of
-      (None, Some y) \<Rightarrow> y \<in> \<^bold>V \<and> y \<notin> A \<Gamma>
-    | (Some x, Some y) \<Rightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x
-    | _ \<Rightarrow> False"
-  def cap \<equiv> "\<lambda>e. case e of
-      (None, Some y) \<Rightarrow> if y \<in> \<^bold>V then u y else 0
-    | (Some x, Some y) \<Rightarrow> if edge \<Gamma> x y \<and> x \<noteq> a then f (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) + 1 else 0
-    | _ \<Rightarrow> 0"
-  def \<Psi> \<equiv> "\<lparr>edge = edge', capacity = cap, source = None, sink = Some a\<rparr>"
+  define edge'
+    where "edge' xo yo =
+      (case (xo, yo) of
+        (None, Some y) \<Rightarrow> y \<in> \<^bold>V \<and> y \<notin> A \<Gamma>
+      | (Some x, Some y) \<Rightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x
+      | _ \<Rightarrow> False)" for xo yo
+  define cap
+    where "cap e =
+      (case e of
+        (None, Some y) \<Rightarrow> if y \<in> \<^bold>V then u y else 0
+      | (Some x, Some y) \<Rightarrow> if edge \<Gamma> x y \<and> x \<noteq> a then f (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) + 1 else 0
+      | _ \<Rightarrow> 0)" for e
+  define \<Psi> where "\<Psi> = \<lparr>edge = edge', capacity = cap, source = None, sink = Some a\<rparr>"
 
   have edge'_simps [simp]:
     "edge' None \<langle>y\<rangle> \<longleftrightarrow> y \<in> \<^bold>V \<and> y \<notin> A \<Gamma>"
@@ -5122,7 +5127,7 @@ proof -
   qed
   then interpret \<Psi>: flow_attainability "\<Psi>" .
 
-  def \<alpha> \<equiv> "(\<Squnion>g\<in>{g. flow \<Psi> g}. value_flow \<Psi> g)"
+  define \<alpha> where "\<alpha> = (\<Squnion>g\<in>{g. flow \<Psi> g}. value_flow \<Psi> g)"
   have \<alpha>_le: "\<alpha> \<le> \<epsilon>"
   proof -
     have "\<alpha> \<le> d_OUT cap None" unfolding \<alpha>_def by(rule SUP_least)(auto intro!: d_OUT_mono dest: flowD_capacity)
@@ -5219,7 +5224,7 @@ proof -
     finally show ?thesis .
   qed
 
-  def g \<equiv> "f \<oplus> ?j"
+  define g where "g = f \<oplus> ?j"
   have g_simps: "g (x, y) = (f \<oplus> ?j) (x, y)" for x y by(simp add: g_def)
 
   have OUT_g_A: "d_OUT g x = d_OUT f x + d_IN j \<langle>x\<rangle> - d_OUT j \<langle>x\<rangle>" if "x \<in> A \<Gamma>" for x
@@ -5342,16 +5347,16 @@ proof -
       by(cases e)(auto simp add: g_simps)
   qed
 
-  def cap' \<equiv> "\<lambda>(x, y). if edge \<Gamma> x y then g (x, y) else if edge \<Gamma> y x then 1 else 0"
+  define cap' where "cap' = (\<lambda>(x, y). if edge \<Gamma> x y then g (x, y) else if edge \<Gamma> y x then 1 else 0)"
 
   have cap'_simps [simp]: "cap' (x, y) = (if edge \<Gamma> x y then g (x, y) else if edge \<Gamma> y x then 1 else 0)"
     for x y by(simp add: cap'_def)
 
-  def G \<equiv> "\<lparr>edge = \<lambda>x y. cap' (x, y) > 0\<rparr>"
+  define G where "G = \<lparr>edge = \<lambda>x y. cap' (x, y) > 0\<rparr>"
   have G_sel [simp]: "edge G x y \<longleftrightarrow> cap' (x, y) > 0" for x y by(simp add: G_def)
-  def reachable \<equiv> "\<lambda>x. (edge G)\<^sup>*\<^sup>* x a"
+  define reachable where "reachable x = (edge G)\<^sup>*\<^sup>* x a" for x
   have reachable_alt_def: "reachable \<equiv> \<lambda>x. \<exists>p. path G x p a"
-    by(simp add: reachable_def rtranclp_eq_rtrancl_path)
+    by(simp add: reachable_def [abs_def] rtranclp_eq_rtrancl_path)
 
   have [simp]: "reachable a" by(auto simp add: reachable_def)
 
@@ -5386,7 +5391,7 @@ proof -
     using that flowD_capacity[OF j, of "(x, y)"] \<Psi>.capacity_outside[of "(x, y)"]
     by(auto)
 
-  def h \<equiv> "\<lambda>(x, y). if reachable x \<and> reachable y then g (x, y) else 0"
+  define h where "h = (\<lambda>(x, y). if reachable x \<and> reachable y then g (x, y) else 0)"
   have h_simps [simp]: "h (x, y) = (if reachable x \<and> reachable y then g (x, y) else 0)" for x y
     by(simp add: h_def)
   have h_le_g: "h e \<le> g e" for e by(cases e) simp
@@ -5431,10 +5436,10 @@ proof -
     have q_Nil: "q \<noteq> []" using q a(1) disjoint y by(auto elim!: rtrancl_path.cases)
 
     let ?E = "zip (y # q) q"
-    def E \<equiv> "(None, Some y) # map (map_prod Some Some) ?E"
-    def \<zeta> \<equiv> "Min (insert (u y - j (None, Some y)) (cap' ` set ?E))"
+    define E where "E = (None, Some y) # map (map_prod Some Some) ?E"
+    define \<zeta> where "\<zeta> = Min (insert (u y - j (None, Some y)) (cap' ` set ?E))"
     let ?j' = "\<lambda>e. (if e \<in> set E then \<zeta> else 0) + j e"
-    def j' \<equiv> "cleanup ?j'"
+    define j' where "j' = cleanup ?j'"
 
     have j_free: "0 < cap' e" if "e \<in> set ?E" for e using that unfolding E_def list.sel
     proof -
@@ -5706,7 +5711,7 @@ corollary hindered_reduce_current: -- \<open>Corollary 6.8\<close>
   and hindered: "hindered_by (\<Gamma> \<ominus> g) \<epsilon>"
   shows "hindered \<Gamma>"
 proof -
-  def \<Gamma>' \<equiv> "\<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT g x else weight \<Gamma> x\<rparr>"
+  define \<Gamma>' where "\<Gamma>' = \<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT g x else weight \<Gamma> x\<rparr>"
   have \<Gamma>'_sel [simp]:
     "edge \<Gamma>' = edge \<Gamma>"
     "A \<Gamma>' = A \<Gamma>"
@@ -5785,12 +5790,14 @@ lemma unhinder_bipartite:
   shows "\<exists>h'. current \<Gamma> h' \<and> wave \<Gamma> h' \<and> B \<Gamma> \<inter> \<^bold>V \<subseteq> SAT \<Gamma> h'"
 proof -
   write Inner ("\<langle>_\<rangle>")
-  def edge' \<equiv> "\<lambda>xo yo. case (xo, yo) of
-      (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x
-    | (\<langle>x\<rangle>, SINK) \<Rightarrow> x \<in> A \<Gamma>
-    | (SOURCE, \<langle>y\<rangle>) \<Rightarrow> y = b
-    | (SINK, \<langle>x\<rangle>) \<Rightarrow> x \<in> A \<Gamma>
-    | _ \<Rightarrow> False"
+  define edge'
+    where "edge' xo yo =
+      (case (xo, yo) of
+        (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x
+      | (\<langle>x\<rangle>, SINK) \<Rightarrow> x \<in> A \<Gamma>
+      | (SOURCE, \<langle>y\<rangle>) \<Rightarrow> y = b
+      | (SINK, \<langle>x\<rangle>) \<Rightarrow> x \<in> A \<Gamma>
+      | _ \<Rightarrow> False)" for xo yo
   have edge'_simps [simp]:
     "edge' \<langle>x\<rangle> \<langle>y\<rangle> \<longleftrightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x"
     "edge' \<langle>x\<rangle> SINK \<longleftrightarrow> x \<in> A \<Gamma>"
@@ -5821,12 +5828,14 @@ proof -
     "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     for xo thesis using that by(auto elim: edge'E)
 
-  def cap \<equiv> "\<lambda>xoyo. case xoyo of
-      (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then h 0 (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) else 0
-    | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT (h 0) x else 0
-    | (SOURCE, yo) \<Rightarrow> if yo = \<langle>b\<rangle> then weight \<Gamma> b - d_IN (h 0) b else 0
-    | (SINK, \<langle>y\<rangle>) \<Rightarrow> if y \<in> A \<Gamma> then weight \<Gamma> y else 0
-    | _ \<Rightarrow> 0"
+  define cap
+    where "cap xoyo =
+      (case xoyo of
+        (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then h 0 (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) else 0
+      | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT (h 0) x else 0
+      | (SOURCE, yo) \<Rightarrow> if yo = \<langle>b\<rangle> then weight \<Gamma> b - d_IN (h 0) b else 0
+      | (SINK, \<langle>y\<rangle>) \<Rightarrow> if y \<in> A \<Gamma> then weight \<Gamma> y else 0
+      | _ \<Rightarrow> 0)" for xoyo
   have cap_simps [simp]:
     "cap (\<langle>x\<rangle>, \<langle>y\<rangle>) = (if edge \<Gamma> x y then h 0 (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) else 0)"
     "cap (\<langle>x\<rangle>, SINK) = (if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT (h 0) x else 0)"
@@ -5835,7 +5844,7 @@ proof -
     "cap (SINK, SINK) = 0"
     "cap (xo, SOURCE) = 0"
     for x y yo xo by(simp_all add: cap_def split: vertex.split)
-  def \<Psi> \<equiv> "\<lparr>edge = edge', capacity = cap, source = SOURCE, sink = SINK\<rparr>"
+  define \<Psi> where "\<Psi> = \<lparr>edge = edge', capacity = cap, source = SOURCE, sink = SINK\<rparr>"
   have \<Psi>_sel [simp]:
     "edge \<Psi> = edge'"
     "capacity \<Psi> = cap"
@@ -5902,14 +5911,16 @@ proof -
     show "source \<Psi> \<noteq> sink \<Psi>" by simp
   qed
   then interpret \<Psi>: flow_attainability "\<Psi>" .
-  def \<alpha> \<equiv> "SUP f:{f. flow \<Psi> f}. value_flow \<Psi> f"
+  define \<alpha> where "\<alpha> = (SUP f:{f. flow \<Psi> f}. value_flow \<Psi> f)"
 
-  def f \<equiv> "\<lambda>n xoyo. case xoyo of
+  define f
+    where "f n xoyo =
+    (case xoyo of
       (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then h 0 (x, y) - h n (x, y) else if edge \<Gamma> y x then h n (y, x) - h 0 (y, x) else 0
     | (SOURCE, \<langle>y\<rangle>) \<Rightarrow> if y = b then d_IN (h n) b - d_IN (h 0) b else 0
     | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then d_OUT (h n) x - d_OUT (h 0) x else 0
     | (SINK, \<langle>y\<rangle>) \<Rightarrow> if y \<in> A \<Gamma> then d_OUT (h 0) y - d_OUT (h n) y else 0
-    | _ \<Rightarrow> 0"
+    | _ \<Rightarrow> 0)" for n xoyo
   have f_cases: thesis if "\<And>x y. e = (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Longrightarrow> thesis" "\<And>y. e = (SOURCE, \<langle>y\<rangle>) \<Longrightarrow> thesis"
     "\<And>x. e = (\<langle>x\<rangle>, SINK) \<Longrightarrow> thesis" "\<And>y. e = (SINK, \<langle>y\<rangle>) \<Longrightarrow> thesis" "e = (SINK, SINK) \<Longrightarrow> thesis"
     "\<And>xo. e = (xo, SOURCE) \<Longrightarrow> thesis" "e = (SOURCE, SINK) \<Longrightarrow> thesis"
@@ -6157,7 +6168,7 @@ proof -
 
   let ?g = "\<lambda>(x, y). g (\<langle>y\<rangle>, \<langle>x\<rangle>)"
 
-  def h' \<equiv> "h 0 \<oplus> ?g"
+  define h' where "h' = h 0 \<oplus> ?g"
   have h'_simps: "h' (x, y) = (if edge \<Gamma> x y then h 0 (x, y) + g (\<langle>y\<rangle>, \<langle>x\<rangle>) - g (\<langle>x\<rangle>, \<langle>y\<rangle>) else 0)" for x y
     by(simp add: h'_def)
 
@@ -6366,11 +6377,11 @@ proof(rule ccontr)
 
   from b disjoint have bnA: "b \<notin> A \<Gamma>" by blast
 
-  def wb \<equiv> "enn2real (weight \<Gamma> b)"
+  define wb where "wb = enn2real (weight \<Gamma> b)"
   have wb_conv: "weight \<Gamma> b = ennreal wb" by(simp add: wb_def less_top[symmetric])
   have wb_pos: "wb > 0" using wb by(simp add: wb_conv)
 
-  def \<epsilon> \<equiv> "\<lambda>n :: nat. min \<delta> wb / (n + 2)"
+  define \<epsilon> where "\<epsilon> n = min \<delta> wb / (n + 2)" for n :: nat
   have \<epsilon>_pos: "\<epsilon> n > 0" for n using wb_pos \<delta> by(simp add: \<epsilon>_def)
   have \<epsilon>_nonneg: "0 \<le> \<epsilon> n" for n using \<epsilon>_pos[of n] by simp
   have *: "\<epsilon> n \<le> min wb \<delta> / 2" for n using wb_pos \<delta>
@@ -6378,7 +6389,7 @@ proof(rule ccontr)
   have \<epsilon>_le: "\<epsilon> n \<le> wb" and \<epsilon>_less: "\<epsilon> n < wb" and \<epsilon>_less_\<delta>: "\<epsilon> n < \<delta>" and \<epsilon>_le': "\<epsilon> n \<le> wb / 2" for n
     using *[of n] \<epsilon>_pos[of n] by(auto)
 
-  def \<Gamma>' \<equiv> "\<lambda>n. reduce_weight \<Gamma> b (\<epsilon> n)"
+  define \<Gamma>' where "\<Gamma>' n = reduce_weight \<Gamma> b (\<epsilon> n)" for n :: nat
   have \<Gamma>'_sel [simp]:
     "edge (\<Gamma>' n) = edge \<Gamma>"
     "A (\<Gamma>' n) = A \<Gamma>"
@@ -6417,14 +6428,14 @@ proof(rule ccontr)
   have IN_g_b: "d_IN (g n) b = weight \<Gamma> b - \<epsilon> n" for n using b_TER[of n] bnA
     by(auto simp add: currentD_SAT[OF g])
 
-  def factor \<equiv> "\<lambda>n :: nat. (wb - \<epsilon> 0) / (wb - \<epsilon> n)"
+  define factor where "factor n = (wb - \<epsilon> 0) / (wb - \<epsilon> n)" for n
   have factor_le_1: "factor n \<le> 1" for n using wb_pos \<delta> \<epsilon>_less[of n]
     by(auto simp add: factor_def field_simps \<epsilon>_def min_def)
   have factor_pos: "0 < factor n" for n using wb_pos \<delta> * \<epsilon>_less by(simp add: factor_def field_simps)
   have factor: "(wb - \<epsilon> n) * factor n = wb - \<epsilon> 0" for n using \<epsilon>_less[of n]
     by(simp add: factor_def field_simps)
 
-  def g' \<equiv> "\<lambda>n (x, y). if y = b then g n (x, y) * factor n else g n (x, y)"
+  define g' where "g' = (\<lambda>n (x, y). if y = b then g n (x, y) * factor n else g n (x, y))"
   have g'_simps: "g' n (x, y) = (if y = b then g n (x, y) * factor n else g n (x, y))" for n x y by(simp add: g'_def)
   have g'_le_g: "g' n e \<le> g n e" for n e using factor_le_1[of n]
     by(cases e "g n e" rule: prod.exhaust[case_product ennreal_cases])
@@ -6477,7 +6488,7 @@ proof(rule ccontr)
     then show "separating (\<Gamma>' 0) (TER\<^bsub>\<Gamma>' 0\<^esub> (g' n))" unfolding TER_g' .
   qed(rule g')
 
-  def f \<equiv> "rec_nat (g 0) (\<lambda>n rec. rec \<frown>\<^bsub>\<Gamma>' 0\<^esub> g' (n + 1))"
+  define f where "f = rec_nat (g 0) (\<lambda>n rec. rec \<frown>\<^bsub>\<Gamma>' 0\<^esub> g' (n + 1))"
   have f_simps [simp]:
     "f 0 = g 0"
     "f (Suc n) = f n \<frown>\<^bsub>\<Gamma>' 0\<^esub> g' (n + 1)"
@@ -6523,7 +6534,7 @@ proof(rule ccontr)
     finally show ?case by simp
   qed
 
-  def g\<omega> \<equiv> "SUP n. f n"
+  define g\<omega> where "g\<omega> = (SUP n. f n)"
   have g\<omega>: "current (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def using chain_f
     by(rule current_Sup)(auto simp add: f supp_f)
   have w\<omega>: "wave (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def using chain_f
@@ -6607,12 +6618,12 @@ proof(rule ccontr)
   have TER_plus_\<omega>: "TER\<^bsub>\<Gamma>' n\<^esub> (g n \<frown>\<^bsub>\<Gamma>' n\<^esub> g\<omega>) = TER\<^bsub>\<Gamma>' 0\<^esub> (g' n \<frown>\<^bsub>\<Gamma>' 0\<^esub> g\<omega>)" for n
     by(rule set_eqI iffI)+(simp_all add: SAT_plus_\<omega> SINK_plus_\<omega>)
 
-  def h \<equiv> "\<lambda>n. g n \<frown>\<^bsub>\<Gamma>' n\<^esub> g\<omega>"
+  define h where "h n = g n \<frown>\<^bsub>\<Gamma>' n\<^esub> g\<omega>" for n
   have h: "current (\<Gamma>' n) (h n)" for n unfolding h_def using g w
     by(rule current_plus_current)(rule current_restrict_current[OF w g\<omega>'])
   have hw: "wave (\<Gamma>' n) (h n)" for n unfolding h_def using g w g\<omega>' w\<omega>r by(rule wave_plus)
 
-  def T \<equiv> "TER\<^bsub>\<Gamma>' 0\<^esub> g\<omega>"
+  define T where "T = TER\<^bsub>\<Gamma>' 0\<^esub> g\<omega>"
   have RF_h: "RF (TER\<^bsub>\<Gamma>' n\<^esub> (h n)) = RF T" for n
   proof -
     have "RF\<^bsub>\<Gamma>' 0\<^esub> (TER\<^bsub>\<Gamma>' n\<^esub> (h n)) = RF\<^bsub>\<Gamma>' 0\<^esub> (RF\<^bsub>\<Gamma>' 0\<^esub> (TER\<^bsub>\<Gamma>' 0\<^esub> g\<omega>) \<union> TER\<^bsub>\<Gamma>' 0\<^esub> (g' n))"
@@ -6673,8 +6684,8 @@ proof(rule ccontr)
     with b_SAT wb \<open>b \<notin> A \<Gamma>\<close> show False by(simp add: SAT.simps wb_conv \<epsilon>_def ennreal_minus_if split: if_split_asm)
   qed
 
-  def S \<equiv> "{x \<in> RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>. essential \<Gamma> (T \<inter> B \<Gamma>) (RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>) x}"
-  def \<Gamma>_h \<equiv> "\<lparr> edge = \<lambda>x y. edge \<Gamma> x y \<and> x \<in> S \<and> y \<in> T \<and> y \<in> B \<Gamma>, weight = \<lambda>x. weight \<Gamma> x * indicator (S \<union> T \<inter> B \<Gamma>) x, A = S, B = T \<inter> B \<Gamma>\<rparr>"
+  define S where "S = {x \<in> RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>. essential \<Gamma> (T \<inter> B \<Gamma>) (RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>) x}"
+  define \<Gamma>_h where "\<Gamma>_h = \<lparr> edge = \<lambda>x y. edge \<Gamma> x y \<and> x \<in> S \<and> y \<in> T \<and> y \<in> B \<Gamma>, weight = \<lambda>x. weight \<Gamma> x * indicator (S \<union> T \<inter> B \<Gamma>) x, A = S, B = T \<inter> B \<Gamma>\<rparr>"
   have \<Gamma>_h_sel [simp]:
     "edge \<Gamma>_h x y \<longleftrightarrow> edge \<Gamma> x y \<and> x \<in> S \<and> y \<in> T \<and> y \<in> B \<Gamma>"
     "A \<Gamma>_h = S"
@@ -7193,13 +7204,13 @@ proof -
     with a that show "hindrance \<Gamma> zero_current" by(auto intro: hindrance)
   qed
 
-  def F \<equiv> "\<lambda>(\<epsilon>, h :: 'v current). plus_current \<epsilon> h"
+  define F where "F = (\<lambda>(\<epsilon>, h :: 'v current). plus_current \<epsilon> h)"
   have F_simps: "F (\<epsilon>, h) = plus_current \<epsilon> h" for \<epsilon> h by(simp add: F_def)
-  def Fld \<equiv> "{(\<epsilon>, h).
+  define Fld where "Fld = {(\<epsilon>, h).
      current \<Gamma> \<epsilon> \<and> (\<forall>x. x \<noteq> a \<longrightarrow> d_OUT \<epsilon> x = 0) \<and>
      current (\<Gamma> \<ominus> \<epsilon>) h \<and> wave (\<Gamma> \<ominus> \<epsilon>) h \<and>
      \<not> hindered (\<Gamma> \<ominus> F (\<epsilon>, h))}"
-  def leq \<equiv> "restrict_rel Fld {(f, f'). f \<le> f'}"
+  define leq where "leq = restrict_rel Fld {(f, f'). f \<le> f'}"
   have Fld: "Field leq = Fld" by(auto simp add: leq_def)
   have F_I [intro?]: "(\<epsilon>, h) \<in> Field leq"
     if "current \<Gamma> \<epsilon>" and "\<And>x. x \<noteq> a \<Longrightarrow> d_OUT \<epsilon> x = 0"
@@ -7366,7 +7377,7 @@ proof -
     show wave: "wave ?\<Gamma> ?h" using chain2 \<open>snd ` M \<noteq> {}\<close> _ supp_flow2
       by(rule wave_lub)(clarify; rule wM; simp)
 
-    def f \<equiv> "F (Sup (fst ` M), Sup (snd ` M))"
+    define f where "f = F (Sup (fst ` M), Sup (snd ` M))"
     have supp_flow: "countable (support_flow f)"
       using supp_flow1 supp_flow2 support_flow_plus_current[of "Sup (fst ` M)" ?h]
       unfolding f_def F_simps by(blast intro: countable_subset)
@@ -7391,7 +7402,7 @@ proof -
       then obtain g where g: "current ?\<Omega> g" and g_w: "wave ?\<Omega> g" and hindrance: "hindrance ?\<Omega> g" by cases
       from hindrance obtain z where z: "z \<in> A \<Gamma>" and z\<E>: "z \<notin> \<E>\<^bsub>?\<Omega>\<^esub> (TER\<^bsub>?\<Omega>\<^esub> g)"
         and OUT_z: "d_OUT g z < weight ?\<Omega> z" by cases auto
-      def \<delta> \<equiv> "weight ?\<Omega> z - d_OUT g z"
+      define \<delta> where "\<delta> = weight ?\<Omega> z - d_OUT g z"
       have \<delta>_pos: "\<delta> > 0" using OUT_z by(simp add: \<delta>_def diff_gr0_ennreal del: minus_web_sel)
       then have \<delta>_finite[simp]: "\<delta> \<noteq> \<top>" using z
         by(simp_all add: \<delta>_def)
@@ -7434,7 +7445,7 @@ proof -
       note [simp del] = minus_web_sel(2)
         and [simp] = weight_minus_web[OF \<epsilon>h_curr] weight_minus_web[OF SM1, simplified]
 
-      def k \<equiv> "\<lambda>e. Sup (fst ` M) e - \<epsilon> e"
+      define k where "k e = Sup (fst ` M) e - \<epsilon> e" for e
       have k_simps: "k (x, y) = Sup (fst ` M) (x, y) - \<epsilon> (x, y)" for x y by(simp add: k_def)
       have k_alt: "k (x, y) = (if x = a \<and> edge \<Gamma> x y then Sup (fst ` M) (a, y) - \<epsilon> (a, y) else 0)" for x y
         by(cases "x = a")(auto simp add: k_simps out_\<epsilon>[OF Field] currentD_outside[OF \<epsilon>] intro!: SUP_eq_const[OF nempty] dest!: Chains_FieldD[OF M] intro: currentD_outside[OF \<epsilon>_curr] out_\<epsilon>)
@@ -7493,7 +7504,7 @@ proof -
         show "k e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma> \<ominus> ?\<epsilon>h\<^esub>" for e using that by(cases e)(simp add: k_alt)
       qed
 
-      def q \<equiv> "\<Sum>\<^sup>+ y\<in>B (\<Gamma> \<ominus> ?\<epsilon>h). d_IN k y - d_OUT k y"
+      define q where "q = (\<Sum>\<^sup>+ y\<in>B (\<Gamma> \<ominus> ?\<epsilon>h). d_IN k y - d_OUT k y)"
       have q_alt: "q = (\<Sum>\<^sup>+ y\<in>- A (\<Gamma> \<ominus> ?\<epsilon>h). d_IN k y - d_OUT k y)" using disjoint
         by(auto simp add: q_def nn_integral_count_space_indicator currentD_outside_OUT[OF k] currentD_outside_IN[OF k] not_vertex split: split_indicator intro!: nn_integral_cong)
       have q_simps: "q = d_OUT (Sup (fst ` M)) a - d_OUT \<epsilon> a"
@@ -7522,7 +7533,7 @@ proof -
           by (subst minus_less_iff_ennreal) (auto intro!: d_OUT_mono SUP_upper2 simp: less_top)
       qed
 
-      def g' \<equiv> "plus_current g (Sup (snd ` M) - h)"
+      define g' where "g' = plus_current g (Sup (snd ` M) - h)"
       have g'_simps: "g' e = g e + Sup (snd ` M) e - h e" for e
         using hM by(auto simp add: g'_def intro!: add_diff_eq_ennreal intro: SUP_upper2)
       have OUT_g': "d_OUT g' x = d_OUT g x + (d_OUT (Sup (snd ` M)) x - d_OUT h x)" for x
@@ -7637,18 +7648,20 @@ proof -
     qed
   qed
 
-  def sat \<equiv> "\<lambda>(\<epsilon>, h). let
-      f = F (\<epsilon>, h);
-      k = SOME k. current (\<Gamma> \<ominus> f) k \<and> wave (\<Gamma> \<ominus> f) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> f) k' \<and> wave (\<Gamma> \<ominus> f) k' \<and> k \<le> k' \<longrightarrow> k = k')
-    in
-      if d_OUT (plus_current f k) a < weight \<Gamma> a then
-        let
-          \<Omega> = \<Gamma> \<ominus> f \<ominus> k;
-          y = SOME y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0;
-          \<delta> = SOME \<delta>. \<delta> > 0 \<and> \<delta> < enn2real (min (weight \<Omega> a) (weight \<Omega> y)) \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)
-        in
-          (plus_current \<epsilon> (zero_current((a, y) := \<delta>)), plus_current h k)
-      else (\<epsilon>, h)"
+  define sat where "sat =
+    (\<lambda>(\<epsilon>, h).
+      let
+        f = F (\<epsilon>, h);
+        k = SOME k. current (\<Gamma> \<ominus> f) k \<and> wave (\<Gamma> \<ominus> f) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> f) k' \<and> wave (\<Gamma> \<ominus> f) k' \<and> k \<le> k' \<longrightarrow> k = k')
+      in
+        if d_OUT (plus_current f k) a < weight \<Gamma> a then
+          let
+            \<Omega> = \<Gamma> \<ominus> f \<ominus> k;
+            y = SOME y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0;
+            \<delta> = SOME \<delta>. \<delta> > 0 \<and> \<delta> < enn2real (min (weight \<Omega> a) (weight \<Omega> y)) \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)
+          in
+            (plus_current \<epsilon> (zero_current((a, y) := \<delta>)), plus_current h k)
+        else (\<epsilon>, h))"
 
   have zero: "(zero_current, zero_current) \<in> Field leq"
     by(rule F_I)(simp_all add: unhindered  F_def)
@@ -7721,7 +7734,7 @@ proof -
     note [simp] = weight_minus_web[OF f]
 
     let ?P_k = "\<lambda>k. current (\<Gamma> \<ominus> F (\<epsilon>, h)) k \<and> wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> F (\<epsilon>, h)) k' \<and> wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k' \<and> k \<le> k' \<longrightarrow> k = k')"
-    def k \<equiv> "Eps ?P_k"
+    define k where "k = Eps ?P_k"
     have "Ex ?P_k" by(intro ex_maximal_wave)(simp_all)
     hence "?P_k k" unfolding k_def by(rule someI_ex)
     hence k: "current (\<Gamma> \<ominus> F (\<epsilon>, h)) k" and k_w: "wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k"
@@ -7739,7 +7752,7 @@ proof -
     proof(cases "d_OUT ?fk a < weight \<Gamma> a")
       case less: True
 
-      def \<Omega> \<equiv> "\<Gamma> \<ominus> F (\<epsilon>, h) \<ominus> k"
+      define \<Omega> where "\<Omega> = \<Gamma> \<ominus> F (\<epsilon>, h) \<ominus> k"
       have B_\<Omega> [simp]: "B \<Omega> = B \<Gamma>" by(simp add: \<Omega>_def)
 
       have loose: "loose \<Omega>" unfolding \<Omega>_def using unhindered k k_w maximal by(rule \<Gamma>.loose_minus_web)
@@ -7753,7 +7766,7 @@ proof -
         by(simp add: OUT_fk SINK.simps diff_gr0_ennreal)
 
       let ?P_y = "\<lambda>y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0"
-      def y \<equiv> "Eps ?P_y"
+      define y where "y = Eps ?P_y"
       have "Ex ?P_y" using that k k_w less unfolding \<Omega>_def by(rule Ex_y)
       hence "?P_y y" unfolding y_def by(rule someI_ex)
       hence y_OUT: "y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a" and weight_y: "weight \<Omega> y > 0" by blast+
@@ -7763,13 +7776,13 @@ proof -
         by(auto split: if_split_asm simp add: SINK.simps currentD_SAT[OF k] roofed_circ_def RF_in_B \<Gamma>.currentD_finite_IN[OF k])
       hence IN_k_y: "d_IN k y = 0" by(rule wave_not_RF_IN_zero[OF k k_w])
 
-      def bound \<equiv> "enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
+      define bound where "bound = enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
       have bound_pos: "bound > 0" using weight_y weight_a using \<Omega>.weight_finite
         by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ennreal2_cases)
           (simp_all add: bound_def min_def split: if_split_asm)
 
       let ?P_\<delta> = "\<lambda>\<delta>. \<delta> > 0 \<and> \<delta> < bound \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)"
-      def \<delta> \<equiv> "Eps ?P_\<delta>"
+      define \<delta> where "\<delta> = Eps ?P_\<delta>"
       let ?\<Omega> = "reduce_weight \<Omega> y \<delta>"
 
       from \<Omega>.unhinder[OF loose _ weight_y bound_pos] y_B disjoint
@@ -7903,7 +7916,7 @@ proof -
     by(intro bourbaki_witt_fixpoint_restrict_rel)(auto intro: Sup_upper Sup_least)
   then interpret bourbaki_witt_fixpoint Sup leq sat .
 
-  def f \<equiv> "fixp_above (zero_current, zero_current)"
+  define f where "f = fixp_above (zero_current, zero_current)"
   have Field: "f \<in> Field leq" using fixp_above_Field[OF zero] unfolding f_def .
   then have f: "current \<Gamma> (F f)" and unhindered: "\<not> hindered (\<Gamma> \<ominus> F f)"
     by(cases f; simp add: f unhindered'; fail)+
@@ -7912,7 +7925,7 @@ proof -
   have Field': "(fst f, snd f) \<in> Field leq" using Field by simp
 
   let ?P_k = "\<lambda>k. current (\<Gamma> \<ominus> F f) k \<and> wave (\<Gamma> \<ominus> F f) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> F f) k' \<and> wave (\<Gamma> \<ominus> F f) k' \<and> k \<le> k' \<longrightarrow> k = k')"
-  def k \<equiv> "Eps ?P_k"
+  define k where "k = Eps ?P_k"
   have "Ex ?P_k" by(intro ex_maximal_wave)(simp_all)
   hence "?P_k k" unfolding k_def by(rule someI_ex)
   hence k: "current (\<Gamma> \<ominus> F f) k" and k_w: "wave (\<Gamma> \<ominus> F f) k"
@@ -7931,7 +7944,7 @@ proof -
     assume "\<not> ?thesis"
     hence less: "d_OUT ?fk a < weight \<Gamma> a" by simp
 
-    def \<Omega> \<equiv> "\<Gamma> \<ominus> F f \<ominus> k"
+    define \<Omega> where "\<Omega> = \<Gamma> \<ominus> F f \<ominus> k"
     have B_\<Omega> [simp]: "B \<Omega> = B \<Gamma>" by(simp add: \<Omega>_def)
 
     have loose: "loose \<Omega>" unfolding \<Omega>_def using unhindered k k_w maximal by(rule \<Gamma>.loose_minus_web)
@@ -7945,19 +7958,19 @@ proof -
       by(simp add: OUT_fk SINK.simps diff_gr0_ennreal)
 
     let ?P_y = "\<lambda>y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0"
-    def y \<equiv> "Eps ?P_y"
+    define y where "y = Eps ?P_y"
     have "Ex ?P_y" using Field k k_w less unfolding \<Omega>_def by(rule Ex_y)
     hence "?P_y y" unfolding y_def by(rule someI_ex)
     hence "y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a" and weight_y: "weight \<Omega> y > 0" by blast+
     then have y_B: "y \<in> B \<Omega>" by(auto simp add: outgoing_def \<Omega>_def dest: bipartite_E)
 
-    def bound \<equiv> "enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
+    define bound where "bound = enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
     have bound_pos: "bound > 0" using weight_y weight_a \<Omega>.weight_finite
       by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ennreal2_cases)
         (simp_all add: bound_def min_def split: if_split_asm)
 
     let ?P_\<delta> = "\<lambda>\<delta>. \<delta> > 0 \<and> \<delta> < bound \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)"
-    def \<delta> \<equiv> "Eps ?P_\<delta>"
+    define \<delta> where "\<delta> = Eps ?P_\<delta>"
     from \<Omega>.unhinder[OF loose _ weight_y bound_pos] y_B disjoint have "Ex ?P_\<delta>" by(auto simp add: \<Omega>_def)
     hence "?P_\<delta> \<delta>" unfolding \<delta>_def by(rule someI_ex)
     hence \<delta>_pos: "0 < \<delta>" by blast+
@@ -7995,11 +8008,11 @@ next
 
   let ?P = "\<lambda>f a f'. current (\<Gamma> \<ominus> f) f' \<and> d_OUT f' a = weight (\<Gamma> \<ominus> f) a \<and> \<not> hindered (\<Gamma> \<ominus> f \<ominus> f')"
 
-  def enum \<equiv> "from_nat_into (A \<Gamma>)"
+  define enum where "enum = from_nat_into (A \<Gamma>)"
   have enum_A: "enum n \<in> A \<Gamma>" for n using from_nat_into[OF nempty, of n] by(simp add: enum_def)
   have vertex_enum [simp]: "vertex \<Gamma> (enum n)" for n using enum_A[of n] A_vertex by blast
 
-  def f \<equiv> "rec_nat zero_current (\<lambda>n f. let f' = SOME f'. ?P f (enum n) f' in plus_current f f')"
+  define f where "f = rec_nat zero_current (\<lambda>n f. let f' = SOME f'. ?P f (enum n) f' in plus_current f f')"
   have f_0 [simp]: "f 0 = zero_current" by(simp add: f_def)
   have f_Suc: "f (Suc n) = plus_current (f n) (Eps (?P (f n) (enum n)))" for n by(simp add: f_def)
 
@@ -8015,7 +8028,7 @@ next
     case (Suc n)
     interpret \<Gamma>: countable_bipartite_web "\<Gamma> \<ominus> f n" using Suc.IH(1) by(rule countable_bipartite_web_minus_web)
 
-    def f' \<equiv> "Eps (?P (f n) (enum n))"
+    define f' where "f' = Eps (?P (f n) (enum n))"
     have "Ex (?P (f n) (enum n))" using Suc.IH(3) by(rule \<Gamma>.unhindered_saturate1)(simp add: enum_A)
     hence "?P (f n) (enum n) f'" unfolding f'_def by(rule someI_ex)
     hence f': "current (\<Gamma> \<ominus> f n) f'"
@@ -8048,7 +8061,7 @@ next
   hence incseq: "incseq f" by(rule incseq_SucI)
   hence chain: "Complete_Partial_Order.chain op \<le> (range f)" by(rule incseq_chain_range)
 
-  def g \<equiv> "Sup (range f)"
+  define g where "g = Sup (range f)"
   have "support_flow g \<subseteq> \<^bold>E"
     by(auto simp add: g_def support_flow.simps currentD_outside[OF f] elim: contrapos_pp)
   then have countable_g: "countable (support_flow g)" by(rule countable_subset) simp
@@ -8141,12 +8154,12 @@ proof(cases "p = []")
   thus ?thesis ..
 next
   case nNil: False
-  def inmarked \<equiv> "\<lambda>x. x \<in> A \<Gamma> \<or> Inr x \<in> S"
-  def outmarked \<equiv> "\<lambda>x. x \<in> B \<Gamma> \<or> Inl x \<in> S"
+  define inmarked where "inmarked x \<longleftrightarrow> x \<in> A \<Gamma> \<or> Inr x \<in> S" for x
+  define outmarked where "outmarked x \<longleftrightarrow> x \<in> B \<Gamma> \<or> Inl x \<in> S" for x
   let ?\<Gamma> = "bipartite_web_of \<Gamma>"
   let ?double = "\<lambda>x. inmarked x \<and> outmarked x"
-  def tailmarked \<equiv> "\<lambda>(x, y :: 'v). outmarked x"
-  def headmarked \<equiv> "\<lambda>(x :: 'v, y). inmarked y"
+  define tailmarked where "tailmarked = (\<lambda>(x, y :: 'v). outmarked x)"
+  define headmarked where "headmarked = (\<lambda>(x :: 'v, y). inmarked y)"
 
   have marked_E: "tailmarked e \<or> headmarked e" if "e \<in> \<^bold>E" for e -- \<open>Lemma 1b\<close>
   proof(cases e)
@@ -8558,7 +8571,7 @@ lemma linkable_bipartite_web_ofD:
 proof -
   from link obtain f where wf: "web_flow ?\<Gamma> f" and link: "linkage ?\<Gamma> f" by blast
   from wf have f: "current ?\<Gamma> f" by(rule web_flowD_current)
-  def f' \<equiv> "current_of_bipartite f"
+  define f' where "f' = current_of_bipartite f"
 
   have IN_le_OUT: "d_IN f' x \<le> d_OUT f' x" if "x \<notin> B \<Gamma>" for x
   proof(cases "x \<in> \<^bold>V")
@@ -8592,14 +8605,14 @@ proof -
     qed
   qed
 
-  def F \<equiv> "{g. (\<forall>e. 0 \<le> g e) \<and> (\<forall>e. e \<notin> \<^bold>E \<longrightarrow> g e = 0) \<and>
+  define F where "F = {g. (\<forall>e. 0 \<le> g e) \<and> (\<forall>e. e \<notin> \<^bold>E \<longrightarrow> g e = 0) \<and>
     (\<forall>x. x \<notin> B \<Gamma> \<longrightarrow> d_IN g x \<le> d_OUT g x) \<and>
     linkage \<Gamma> g \<and>
     (\<forall>x\<in>A \<Gamma>. d_IN g x = 0) \<and>
     (\<forall>x. d_OUT g x \<le> weight \<Gamma> x) \<and>
     (\<forall>x. d_IN g x \<le> weight \<Gamma> x) \<and>
     (\<forall>x\<in>B \<Gamma>. d_OUT g x = 0) \<and> g \<le> f'}"
-  def leq \<equiv> "restrict_rel F {(f, f'). f' \<le> f}"
+  define leq where "leq = restrict_rel F {(f, f'). f' \<le> f}"
   have F: "Field leq = F" by(auto simp add: leq_def)
   have F_I [intro?]: "f \<in> Field leq" if "\<And>e. 0 \<le> f e" and "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0"
     and "\<And>x. x \<notin> B \<Gamma> \<Longrightarrow> d_IN f x \<le> d_OUT f x" and "linkage \<Gamma> f"
@@ -8702,18 +8715,19 @@ proof -
 
   let ?P = "\<lambda>g z. z \<notin> A \<Gamma> \<and> z \<notin> B \<Gamma> \<and> d_OUT g z > d_IN g z"
 
-  def link \<equiv>
-   "\<lambda>g. if \<exists>z. ?P g z then
-          let z = SOME z. ?P g z; factor = d_IN g z / d_OUT g z
-          in (\<lambda>(x, y). (if x = z then factor else 1) * g (x, y))
-        else g"
+  define link
+    where "link g =
+      (if \<exists>z. ?P g z then
+        let z = SOME z. ?P g z; factor = d_IN g z / d_OUT g z
+        in (\<lambda>(x, y). (if x = z then factor else 1) * g (x, y))
+       else g)" for g
   have increasing: "link g \<le> g \<and> link g \<in> Field leq" if g: "g \<in> Field leq" for g
   proof(cases "\<exists>z. ?P g z")
     case False
     thus ?thesis using that by(auto simp add: link_def leq_def)
   next
     case True
-    def z \<equiv> "Eps (?P g)"
+    define z where "z = Eps (?P g)"
     from True have "?P g z" unfolding z_def by(rule someI_ex)
     hence A: "z \<notin> A \<Gamma>" and B: "z \<notin> B \<Gamma>" and less: "d_IN g z < d_OUT g z" by simp_all
     let ?factor = "d_IN g z / d_OUT g z"
@@ -8757,7 +8771,7 @@ proof -
     by(intro bourbaki_witt_fixpoint_restrict_rel)(auto intro: Inf_greatest Inf_lower)
   then interpret bourbaki_witt_fixpoint Inf leq link .
 
-  def g \<equiv> "fixp_above f'"
+  define g where "g = fixp_above f'"
 
   have g: "g \<in> Field leq" using f' unfolding g_def by(rule fixp_above_Field)
   hence "linkage \<Gamma> g" by(rule F_link)
@@ -8772,7 +8786,7 @@ proof -
 
     show KIR: "KIR g x" if A: "x \<notin> A \<Gamma>" and B: "x \<notin> B \<Gamma>" for x
     proof(rule ccontr)
-      def z \<equiv> "Eps (?P g)"
+      define z where "z = Eps (?P g)"
       assume "\<not> KIR g x"
       with F_IN_OUT[OF g B] have "d_OUT g x > d_IN g x" by simp
       with A B have Ex: "\<exists>x. ?P g x" by blast
@@ -9026,7 +9040,7 @@ lemma separating_network_cut_of_sep:
   and source_sink: "source \<Delta> \<noteq> sink \<Delta>"
   shows "separating_network \<Delta> (fst ` \<E> S)"
 proof
-  def s \<equiv> "source \<Delta>" and t \<equiv> "sink \<Delta>"
+  define s t where "s = source \<Delta>" and "t = sink \<Delta>"
   fix p
   assume p: "path \<Delta> s p t"
   with p source_sink have "p \<noteq> []" by cases(auto simp add: s_def t_def)
@@ -9092,7 +9106,7 @@ proof -
     and distinct: "distinct ((x, z) # q)" and bypass': "\<And>z. z \<in> set q \<Longrightarrow> z \<notin> RF S"
     by(rule \<E>_E_RF) blast
 
-  def p' \<equiv> "y # p"
+  define p' where "p' = y # p"
   hence "p' \<noteq> []" by simp
   with p' have "path \<Gamma> (x, hd p') (zip p' (tl p')) (last (x # butlast p'), sink \<Delta>)"
     unfolding p'_def[symmetric]
@@ -9210,7 +9224,7 @@ next
     proof
       fix q b
       assume q: "path \<Gamma> (x, y) q b" and b: "b \<in> B \<Gamma>"
-      def xy \<equiv> "(x, y)"
+      define xy where "xy = (x, y)"
       from q have "path \<Delta> (snd xy) (map snd q) (snd b)" unfolding xy_def[symmetric]
         by(induction)(auto intro: rtrancl_path.intros simp add: \<Gamma>_def)
       with b have "path \<Delta> y (map snd q) (sink \<Delta>)" by(auto simp add: xy_def \<Gamma>_def)
@@ -9425,10 +9439,11 @@ qed
 theorem max_flow_min_cut:
   "\<exists>f S. flow \<Delta> f \<and> cut \<Delta> S \<and> orthogonal \<Delta> f S"
 proof -
-  def \<Delta>' \<equiv> "\<lparr>edge = \<lambda>x y. edge \<Delta> x y \<and> capacity \<Delta> (x, y) > 0 \<and> y \<noteq> source \<Delta> \<and> x \<noteq> sink \<Delta>,
-    capacity = \<lambda>(x, y). if x = sink \<Delta> \<or> y = source \<Delta> then 0 else capacity \<Delta> (x, y),
-    source = source \<Delta>,
-    sink = sink \<Delta>\<rparr>"
+  define \<Delta>' where "\<Delta>' =
+    \<lparr>edge = \<lambda>x y. edge \<Delta> x y \<and> capacity \<Delta> (x, y) > 0 \<and> y \<noteq> source \<Delta> \<and> x \<noteq> sink \<Delta>,
+      capacity = \<lambda>(x, y). if x = sink \<Delta> \<or> y = source \<Delta> then 0 else capacity \<Delta> (x, y),
+      source = source \<Delta>,
+      sink = sink \<Delta>\<rparr>"
   have \<Delta>'_sel [simp]:
     "edge \<Delta>' x y \<longleftrightarrow> edge \<Delta> x y \<and> capacity \<Delta> (x, y) > 0 \<and> y \<noteq> source \<Delta> \<and> x \<noteq> sink \<Delta>"
     "capacity \<Delta>' (x, y) = (if x = sink \<Delta> \<or> y = source \<Delta> then 0 else capacity \<Delta> (x, y))"

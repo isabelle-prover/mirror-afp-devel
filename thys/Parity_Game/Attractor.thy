@@ -107,7 +107,7 @@ proof (cases)
 next
   assume "\<not>deadend v"
   have v: "v \<in> V - ?A - ?B" using v unfolding V'_def subgame_def by simp
-  def G' \<equiv> "subgame V'"
+  define G' where "G' = subgame V'"
   interpret G': ParityGame G' unfolding G'_def using subgame_ParityGame .
   show ?thesis proof
     assume "Digraph.deadend (subgame V') v"

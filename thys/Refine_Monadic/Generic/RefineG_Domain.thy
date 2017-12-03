@@ -145,7 +145,7 @@ begin
       \<Longrightarrow> post a x (B f x)"
     shows "post a x (flatf_fp b B x)"
   proof -
-    def ub\<equiv>"flatf_fp b B"
+    define ub where "ub = flatf_fp b B"
 
     have "(\<forall>x a. pre a x \<longrightarrow> post a x (flatf_fp b B x)) 
       \<and> flatf_ord b (flatf_fp b B) ub"

@@ -340,10 +340,10 @@ lemma stern_brocot_fractions_not_repeated_strict_prefix:
   shows False
 proof -
   from pp' obtain d ds where pp': "path' = path @ [d] @ ds" by (auto elim!: strict_prefixE')
-  def m \<equiv> "root (traverse_tree path (stern_brocot_iterate_aux I))"
+  define m where "m = root (traverse_tree path (stern_brocot_iterate_aux I))"
   then have Dm: "Det m = 1" and Pm: "0 < snd (mediant m)"
     using stern_brocot_iterate_aux_Det[where path="path" and m="I"] by simp_all
-  def m' \<equiv> "root (traverse_tree path' (stern_brocot_iterate_aux I))"
+  define m' where "m' = root (traverse_tree path' (stern_brocot_iterate_aux I))"
   then have Dm': "Det m' = 1"
     using stern_brocot_iterate_aux_Det[where path=path' and m="I"] by simp
   let ?M = "case d of L \<Rightarrow> m \<otimes> LL | R \<Rightarrow> m \<otimes> UR"
@@ -365,10 +365,10 @@ lemma stern_brocot_fractions_not_repeated_parallel:
   assumes dd': "d \<noteq> d'"
   shows False
 proof -
-  def m \<equiv> "root (traverse_tree pref (stern_brocot_iterate_aux I))"
+  define m where "m = root (traverse_tree pref (stern_brocot_iterate_aux I))"
   then have Dm: "Det m = 1" and Pm: "0 < snd (mediant m)"
     using stern_brocot_iterate_aux_Det[where path="pref" and m="I"] by simp_all
-  def pm \<equiv> "root (traverse_tree path (stern_brocot_iterate_aux I))"
+  define pm where "pm = root (traverse_tree path (stern_brocot_iterate_aux I))"
   then have Dpm: "Det pm = 1"
     using stern_brocot_iterate_aux_Det[where path=path and m="I"] by simp
   let ?M = "case d of L \<Rightarrow> m \<otimes> LL | R \<Rightarrow> m \<otimes> UR"
@@ -383,7 +383,7 @@ proof -
           tree_ordering_right[OF Dm Dpm' Pm, unfolded pm']
     by (simp split: dir.splits)
   moreover
-  def p'm \<equiv> "root (traverse_tree path' (stern_brocot_iterate_aux I))"
+  define p'm where "p'm = root (traverse_tree path' (stern_brocot_iterate_aux I))"
   then have Dp'm: "Det p'm = 1"
     using stern_brocot_iterate_aux_Det[where path=path' and m="I"] by simp
   let ?M' = "case d' of L \<Rightarrow> m \<otimes> LL | R \<Rightarrow> m \<otimes> UR"
@@ -650,9 +650,9 @@ proof -
     by (simp add: mult_2 add_mono)
 
   text {* We switch to @{typ int} such that all cancellation laws are available. *}
-  def den' \<equiv> "pure int \<diamondop> den"
-  def num' \<equiv> "pure int \<diamondop> num"
-  def num_mod_den' \<equiv> "pure int \<diamondop> num_mod_den"
+  define den' where "den' = pure int \<diamondop> den"
+  define num' where "num' = pure int \<diamondop> num"
+  define num_mod_den' where "num_mod_den' = pure int \<diamondop> num_mod_den"
 
   have [simp]: "root num' = 1" "left num' = num'" unfolding den'_def num'_def by simp_all
   have [simp]: "right num' = num' + den'" unfolding den'_def num'_def ap_tree.sel pure_tree_simps num_simps

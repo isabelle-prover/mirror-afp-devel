@@ -29,7 +29,7 @@ proof(goal_cases)
   next
     case (insert a A)
     hence e: "a \<in> atoms \<Gamma>" "a \<notin> atoms \<Delta>" by auto
-    def \<Gamma>' \<equiv> "(\<Gamma>[\<top> / a]) \<^bold>\<or> (\<Gamma>[\<bottom> / a])"
+    define \<Gamma>' where "\<Gamma>' = (\<Gamma>[\<top> / a]) \<^bold>\<or> (\<Gamma>[\<bottom> / a])"
     have su: "atoms \<Gamma>' \<subseteq> atoms \<Gamma>" unfolding \<Gamma>'_def by(cases "a \<in> atoms \<Gamma>"; simp add: subst_atoms Diff_subset)
     from \<open>\<Turnstile> \<Gamma> \<^bold>\<rightarrow> \<Delta>\<close> e have "\<Turnstile> \<Gamma>' \<^bold>\<rightarrow> \<Delta>" by (auto simp add: substitution_lemma \<Gamma>'_def)
     from \<open>a \<triangleright> A = atoms \<Gamma> - atoms \<Delta>\<close> \<open>a \<notin> A\<close> e have "A = atoms \<Gamma>' - atoms \<Delta>" by(simp add: subst_atoms \<Gamma>'_def) blast
@@ -93,7 +93,7 @@ proof -
   proof(induction "card ?as" arbitrary: F H)
     case (Suc n)
     let ?inf = "Min (atoms F - atoms H)"
-    def G \<equiv> "(F[\<top> / ?inf]) \<^bold>\<or> (F[\<bottom> / ?inf])"
+    define G where "G = (F[\<top> / ?inf]) \<^bold>\<or> (F[\<bottom> / ?inf])"
     have e: "Min (atoms F - atoms H) \<in> atoms F - atoms H" by (metis Min_in Suc.hyps(2) Suc.prems(1) card_empty nat.simps(3))
     with Suc(2) have "n = card (atoms G - atoms H)" unfolding G_def subst_atoms_simp
     proof -

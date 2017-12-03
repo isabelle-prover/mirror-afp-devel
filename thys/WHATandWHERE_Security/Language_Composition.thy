@@ -24,7 +24,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R1' \<and> ([c1],[c1]) \<in> R1'"
     by (simp add: WHATWHERE_Secure_def, auto)
 
-  def R1 \<equiv> "{(V,V'). (V,V') \<in> R1' \<and> set (PPV V) \<subseteq> set (PPc c1) 
+  define R1 where "R1 = {(V,V'). (V,V') \<in> R1' \<and> set (PPV V) \<subseteq> set (PPc c1) 
     \<and> set (PPV V') \<subseteq> set (PPc c1)}"
 
   from R1'assump R1_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -35,7 +35,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R2' \<and> ([c2],[c2]) \<in> R2'"
     by (simp add: WHATWHERE_Secure_def, auto)
 
-  def R2 \<equiv> "{(V,V'). (V,V') \<in> R2' \<and> set (PPV V) \<subseteq> set (PPc c2) 
+  define R2 where "R2 = {(V,V'). (V,V') \<in> R2' \<and> set (PPV V) \<subseteq> set (PPc c2) 
     \<and> set (PPV V') \<subseteq> set (PPc c2)}"
 
   from R2'assump R2_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -50,7 +50,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
   have Areflassump1: "Arefl R1 \<inter> Arefl R2 \<subseteq> {[]}"
     by force
      
-  def R0 \<equiv> "{(s1,s2). \<exists>c1 c1' c2 c2'. s1 = [c1;c2] \<and> s2 = [c1';c2'] \<and> 
+  define R0 where "R0 = {(s1,s2). \<exists>c1 c1' c2 c2'. s1 = [c1;c2] \<and> s2 = [c1';c2'] \<and> 
     ([c1],[c1']) \<in> R1 \<and> ([c2],[c2']) \<in> R2}"
 
   with R1_def R1'assump R2_def R2'assump 
@@ -282,7 +282,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R' \<and> (V,V) \<in> R'"
     by (simp add: WHATWHERE_Secure_def, auto)
 
-  def R \<equiv> "{(V',V''). (V',V'') \<in> R' \<and> set (PPV V') \<subseteq> set (PPV V)
+  define R where "R = {(V',V''). (V',V'') \<in> R' \<and> set (PPV V') \<subseteq> set (PPV V)
     \<and> set (PPV V'') \<subseteq> set (PPV V)}"
 
   from R'assump R_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -290,7 +290,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     by force
 
   -- "Step 2"
-  def R0 \<equiv> "{(sp1,sp2). \<exists>\<iota>' \<iota>'' V' V''. 
+  define R0 where "R0 = {(sp1,sp2). \<exists>\<iota>' \<iota>'' V' V''. 
     sp1 = [spawn\<^bsub>\<iota>'\<^esub> V'] \<and> sp2 = [spawn\<^bsub>\<iota>''\<^esub> V'']
     \<and> \<iota>' \<notin> set (PPV V) \<and> \<iota>'' \<notin> set (PPV V) \<and> (V',V'') \<in> R}"
 
@@ -428,7 +428,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R1' \<and> ([c1],[c1]) \<in> R1'"
     by (simp add: WHATWHERE_Secure_def, auto)
   
-  def R1 \<equiv> "{(V,V'). (V,V') \<in> R1' \<and> set (PPV V) \<subseteq> set (PPc c1) 
+  define R1 where "R1 = {(V,V'). (V,V') \<in> R1' \<and> set (PPV V) \<subseteq> set (PPc c1) 
     \<and> set (PPV V') \<subseteq> set (PPc c1)}"
 
   from R1'assump R1_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -439,7 +439,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R2' \<and> ([c2],[c2]) \<in> R2'"
     by (simp add: WHATWHERE_Secure_def, auto)
 
-  def R2 \<equiv> "{(V,V'). (V,V') \<in> R2' \<and> set (PPV V) \<subseteq> set (PPc c2) 
+  define R2 where "R2 = {(V,V'). (V,V') \<in> R2' \<and> set (PPV V) \<subseteq> set (PPc c2) 
     \<and> set (PPV V') \<subseteq> set (PPc c2)}"
 
   from R2'assump R2_def SdlHPPB_restricted_on_PP_is_SdlHPPB
@@ -459,9 +459,9 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP (R1 \<union> R2)"
     by force
 
-  def R \<equiv> "(R1 \<union> R2) \<union> {([],[])}"
+  define R where "R = (R1 \<union> R2) \<union> {([],[])}"
   
-  def R0 \<equiv> "{(i1,i2). \<exists>\<iota>' \<iota>'' b' b'' c1' c1'' c2' c2''. 
+  define R0 where "R0 = {(i1,i2). \<exists>\<iota>' \<iota>'' b' b'' c1' c1'' c2' c2''. 
     i1 = [if\<^bsub>\<iota>'\<^esub> b' then c1' else c2' fi]
     \<and> i2 = [if\<^bsub>\<iota>''\<^esub> b'' then c1'' else c2'' fi] 
     \<and> \<iota>' \<notin> (set (PPc c1) \<union> set (PPc c2))
@@ -675,7 +675,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     by (simp add: WHATWHERE_Secure_def, auto)
 
   --"add the empty pair because it is needed later in the proof"
-  def R \<equiv> "{(V,V'). (V,V') \<in> R' \<and> set (PPV V) \<subseteq> set (PPc c) \<and>
+  define R where "R = {(V,V'). (V,V') \<in> R' \<and> set (PPV V) \<subseteq> set (PPc c) \<and>
     set (PPV V') \<subseteq> set (PPc c)} \<union> {([],[])}"
   
   with R'assump SdlHPPB_restricted_on_PP_is_SdlHPPB 
@@ -698,20 +698,20 @@ proof (simp add: WHATWHERE_Secure_def, auto)
         by auto
     qed
  
-  def R1 \<equiv> "{(w1,w2). \<exists>\<iota> \<iota>' b b' c1 c1' c2 c2'. 
+  define R1 where "R1 = {(w1,w2). \<exists>\<iota> \<iota>' b b' c1 c1' c2 c2'. 
     w1 = [c1;(while\<^bsub>\<iota>\<^esub> b do c2 od)]
     \<and> w2 = [c1';(while\<^bsub>\<iota>'\<^esub> b' do c2' od)] 
     \<and> \<iota> \<notin> set (PPc c) \<and> \<iota>' \<notin> set (PPc c) 
     \<and> ([c1],[c1']) \<in> R \<and> ([c2],[c2']) \<in> R
     \<and> b \<equiv>\<^bsub>d\<^esub> b'}"
 
-  def R2 \<equiv> "{(w1,w2). \<exists>\<iota> \<iota>' b b' c1 c1'. 
+  define R2 where "R2 = {(w1,w2). \<exists>\<iota> \<iota>' b b' c1 c1'. 
     w1 = [while\<^bsub>\<iota>\<^esub> b do c1 od]
     \<and> w2 = [while\<^bsub>\<iota>'\<^esub> b' do c1' od] 
     \<and> \<iota> \<notin> set (PPc c) \<and> \<iota>' \<notin> set (PPc c) \<and>
     ([c1],[c1']) \<in> R \<and> b \<equiv>\<^bsub>d\<^esub> b'}"
 
-  def R0 \<equiv> "R1 \<union> R2" 
+  define R0 where "R0 = R1 \<union> R2" 
 
   from R2_def R_def R'assump pp_difference dind
   have inR2: "([while\<^bsub>\<iota>\<^esub> b do c od],[while\<^bsub>\<iota>\<^esub> b do c od]) \<in> R2"

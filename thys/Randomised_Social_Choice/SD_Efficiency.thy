@@ -34,8 +34,8 @@ proof -
   finally have finite: "finite {x. pmf p' x > pmf q' x}" 
     using finite_alts by (rule finite_subset)
 
-  def \<epsilon> \<equiv> "Min (insert 1 {pmf p x / (pmf p' x - pmf q' x) |x. pmf p' x > pmf q' x})"
-  def supp \<equiv> "set_pmf p \<union> set_pmf q'"
+  define \<epsilon> where "\<epsilon> = Min (insert 1 {pmf p x / (pmf p' x - pmf q' x) |x. pmf p' x > pmf q' x})"
+  define supp where "supp = set_pmf p \<union> set_pmf q'"
   from lotteries finite_alts q'(1) have finite_supp: "finite supp"
     by (auto simp: lotteries_on_def supp_def dest: finite_subset)
   from support have [simp]: "pmf p x = 0" "pmf p' x = 0" "pmf q' x = 0" if "x \<notin> supp" for x
@@ -54,7 +54,7 @@ proof -
     with pmf_nonneg[of p x] \<epsilon> show ?thesis by simp
   qed
 
-  def q \<equiv> "embed_pmf (\<lambda>x. pmf p x + \<epsilon> * (pmf q' x - pmf p' x))"
+  define q where "q = embed_pmf (\<lambda>x. pmf p x + \<epsilon> * (pmf q' x - pmf p' x))"
   have "(\<integral>\<^sup>+ x. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x)) \<partial>count_space UNIV) = 1"
   proof (subst nn_integral_count_space')
     have "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 
@@ -144,8 +144,8 @@ proof -
   from assms have "q \<noteq> p" by (auto simp: strongly_preferred_def)
   hence ex_less: "\<exists>x. pmf p x > pmf q x" by (rule pmf_neq_exists_less)
 
-  def \<epsilon> \<equiv> "Min {pmf p x / (pmf p x - pmf q x) |x. pmf p x > pmf q x}"
-  def supp \<equiv> "set_pmf p"
+  define \<epsilon> where "\<epsilon> = Min {pmf p x / (pmf p x - pmf q x) |x. pmf p x > pmf q x}"
+  define supp where "supp = set_pmf p"
   from assms finite_alts have finite_supp: "finite supp"
     by (auto simp: lotteries_on_def supp_def dest: finite_subset)
   from assms have [simp]: "pmf p x = 0" "pmf q x = 0" if "x \<notin> supp" for x
@@ -164,7 +164,7 @@ proof -
     with pmf_nonneg[of p x] \<epsilon> show ?thesis by simp
   qed
 
-  def r \<equiv> "embed_pmf (\<lambda>x. pmf p x + \<epsilon> * (pmf q x - pmf p x))"
+  define r where "r = embed_pmf (\<lambda>x. pmf p x + \<epsilon> * (pmf q x - pmf p x))"
   have "(\<integral>\<^sup>+ x. ennreal (pmf p x + \<epsilon> * (pmf q x - pmf p x)) \<partial>count_space UNIV) = 1"
   proof (subst nn_integral_count_space')
     have "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q x - pmf p x))) = 
@@ -238,7 +238,7 @@ private lemma improve_lottery:
   shows   "r \<in> lotteries_on alts" "r \<succ>[Pareto(SD\<circ>R)] q"
           "\<And>r'. r' \<in> lotteries_on alts \<Longrightarrow> r' \<succ>[Pareto(SD\<circ>R)] q \<Longrightarrow> \<not>(set_pmf r' \<subset> set_pmf r)"
 proof -
-  def A \<equiv> "{r\<in>lotteries_on alts. r \<succ>[Pareto(SD\<circ>R)] q}"
+  define A where "A = {r\<in>lotteries_on alts. r \<succ>[Pareto(SD\<circ>R)] q}"
   have subset_alts: "X \<subseteq> alts" if "X \<in> set_pmf`A" for X using that 
     by (auto simp: A_def lotteries_on_def)
   have r_altdef: "r = (SOME r. r \<in> A \<and> \<not>(\<exists>r'\<in>A. set_pmf r' \<subset> set_pmf r))"
@@ -329,8 +329,8 @@ proof -
   thus ?thesis
   proof cases
     case 1
-    def m \<equiv> "LEAST m. sd_chain m = None"
-    def k \<equiv> "m - 1"
+    define m where "m = (LEAST m. sd_chain m = None)"
+    define k where "k = m - 1"
     from LeastI_ex[OF 1] have m: "sd_chain m = None" by (simp add: m_def)
     from m have nz: "m \<noteq> 0" by (intro notI) simp_all
     from nz have m_altdef: "m = Suc k" by (simp add: k_def)

@@ -152,8 +152,8 @@ oops
 lemma extended_not_increasing: "\<exists>S T. fin_sat S \<and> fin_sat T \<and> \<not> (S \<subseteq> T \<longrightarrow> extended S \<subseteq> extended (T :: 'a :: countable formula set))"
 proof -
   have ex_then_min: "\<exists>x :: nat. P x \<Longrightarrow> P (LEAST x. P x)" for P using LeastI2_wellorder by auto
-  def P \<equiv> "\<lambda>x. let F = (from_nat x :: 'a formula) in (\<exists>A. \<not> A \<Turnstile> F) \<and> (\<exists> A. A \<Turnstile> F)"
-  def x \<equiv> "LEAST n. P n"
+  define P where "P x = (let F = (from_nat x :: 'a formula) in (\<exists>A. \<not> A \<Turnstile> F) \<and> (\<exists> A. A \<Turnstile> F))" for x
+  define x where "x = (LEAST n. P n)"
   hence "\<exists>n. P n" unfolding P_def Let_def by(auto intro!: exI[where x="to_nat (Atom undefined :: 'a formula)"])
   from ex_then_min[OF this] have Px: "P x" unfolding x_def .
   have lessx: "n < x \<Longrightarrow> \<not> P n" for n unfolding x_def using not_less_Least by blast

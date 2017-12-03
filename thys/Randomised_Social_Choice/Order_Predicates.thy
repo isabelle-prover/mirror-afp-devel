@@ -202,7 +202,7 @@ lemma Max_wrt_among_nonempty:
   assumes "B \<inter> carrier \<noteq> {}" "finite (B \<inter> carrier)"
   shows   "Max_wrt_among le B \<noteq> {}"
 proof -
-  def A \<equiv> "B \<inter> carrier"
+  define A where "A = B \<inter> carrier"
   have "A \<subseteq> carrier" by (simp add: A_def)
   from assms(2,1)[folded A_def] this have "{x\<in>A. (\<forall>y\<in>A. le x y \<longrightarrow> le y x)} \<noteq> {}"
   proof (induction A rule: finite_ne_induct)
@@ -709,7 +709,7 @@ lemma of_weak_ranking_weak_ranking_aux':
 using assms
 proof (induction A rule: weak_ranking_aux.induct [case_names empty nonempty])
   case (nonempty A)
-  def M \<equiv> "Max_wrt_among le A"
+  define M where "M = Max_wrt_among le A"
   from nonempty.prems nonempty.hyps have M: "M \<subseteq> A" unfolding M_def
     by (intro Max_wrt_among_subset)
   from nonempty.prems have in_MD: "le x y" if "x \<in> A" "y \<in> M" for x y
@@ -871,7 +871,7 @@ lemma weak_ranking_eqclass2:
   assumes A: "A \<in> set (weak_ranking le)" "x \<in> A" and le: "le x y" "le y x"
   shows   "y \<in> A"
 proof -
-  def xs \<equiv> "weak_ranking le"
+  define xs where "xs = weak_ranking le"
   have wf: "is_weak_ranking xs" by (simp add: xs_def weak_ranking_total_preorder)
   let ?le' = "of_weak_ranking xs"
   from le have le': "?le' x y" "?le' y x" by (simp_all add: weak_ranking_total_preorder xs_def)

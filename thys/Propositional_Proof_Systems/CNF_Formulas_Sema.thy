@@ -14,7 +14,9 @@ lemma cnf_form_semantics:
   assumes nnf: "is_nnf F"
   shows "\<A> \<Turnstile> cnf_form_of F \<longleftrightarrow> \<A> \<Turnstile> F"
 proof -
-  def cnf_semantics_list \<equiv> "\<lambda>\<A> S. \<forall>s \<in> set S. \<exists>l \<in> set s. lit_semantics \<A> (l :: 'a literal)"
+  define cnf_semantics_list
+    where "cnf_semantics_list \<A> S \<longleftrightarrow> (\<forall>s \<in> set S. \<exists>l \<in> set s. lit_semantics \<A> (l :: 'a literal))"
+    for \<A> S
   have tcn: "cnf F = set (map set (cnf_lists F))" using nnf
     by(induction F rule: cnf.induct) (auto simp add: image_UN image_comp comp_def )
   have "\<A> \<Turnstile> F \<longleftrightarrow> cnf_semantics \<A> (cnf F)" using cnf_semantics[OF nnf] by simp

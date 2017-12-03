@@ -338,13 +338,13 @@ lemma TE_Tag: (* fixme: messy proof *)
 assumes f: "wtFsym f" and al: "list_all2 eintT (arOf f) al"
 shows "eintF (Tag (resOf f)) [eintF (Oldf f) al] = eintF (Oldf f) al"
 proof-
-  def xl \<equiv> "getVars (arOf f)"
+  define xl where "xl = getVars (arOf f)"
   have l[simp]: "length xl = length al" "length al = length (arOf f)"
   unfolding xl_def using al unfolding list_all2_iff by auto
   have 1[simp]: "\<And> i. i < length (arOf f) \<Longrightarrow> tpOfV (xl!i) = (arOf f)!i"
   unfolding xl_def by auto
   have xl[simp]: "distinct xl" unfolding xl_def using distinct_getVars by auto
-  def \<xi> \<equiv> "pickE xl al"
+  define \<xi> where "\<xi> = pickE xl al"
   have \<xi>: "TE.wtE \<xi>" unfolding \<xi>_def apply(rule wtE_pickE)
   using al  list_all2_nthD by auto
   have [simp]: "\<And> i. i < length (arOf f) \<Longrightarrow> \<xi> (xl ! i) = al ! i"
@@ -363,7 +363,7 @@ lemma TE_Wit:
 assumes \<sigma>: "\<not> isRes \<sigma>" "protFw \<sigma>"
 shows "eintF (Tag \<sigma>) [eintF (Wit \<sigma>) []] = eintF (Wit \<sigma>) []"
 proof-
-  def \<xi> \<equiv> "pickE [] []"
+  define \<xi> where "\<xi> = pickE [] []"
   have \<xi>: "TE.wtE \<xi>" unfolding \<xi>_def apply(rule wtE_pickE) by auto
   have "TE.satPB \<xi> Wax" using TE.sat_\<Phi>[OF \<xi>] unfolding tPB_def by simp
   hence "TE.satC \<xi> [Pos (Eq (lOfWax \<sigma>) (rOfWax \<sigma>))]"
@@ -383,15 +383,17 @@ proof-
       case True note protFw = True show ?thesis proof(cases "isRes \<sigma>")
         case True then obtain f where f: "wtFsym f" and \<sigma>: "\<sigma> = resOf f"
         unfolding isRes_def by auto
-        def al \<equiv> "map pickT (arOf f)"  have al: "list_all2 eintT (arOf f) al"
+        define al where "al = map pickT (arOf f)"
+        have al: "list_all2 eintT (arOf f) al"
         unfolding al_def list_all2_map2 unfolding list_all2_length by auto
-        def a \<equiv> "eintF (Oldf f) al"
+        define a where "a = eintF (Oldf f) al"
         have "eintT \<sigma> a" unfolding a_def \<sigma> using f al
         by (metis TE_arOf.simps TE_resOf.simps TE_wtFsym.simps TE.intF)
         moreover have "eintF (Tag \<sigma>) [a] = a" unfolding \<sigma> a_def using TE_Tag[OF f al] .
         ultimately show ?thesis using unprot protFw unfolding intT_def by auto
       next
-        case False def a \<equiv> "eintF (Wit \<sigma>) []"
+        case False
+        define a where "a = eintF (Wit \<sigma>) []"
         have "eintT \<sigma> a" unfolding a_def
         by (metis False TE_arOf.simps TE_resOf.simps TE_wtFsym.simps TE.intF list_all2_NilR)
         moreover have "eintF (Tag \<sigma>) [a] = a" unfolding a_def using TE_Wit[OF False protFw] .

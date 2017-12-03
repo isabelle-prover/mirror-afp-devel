@@ -702,7 +702,7 @@ lemma cyclic_on_obtain_lists_succ:
   obtains xss where "f = lists_succ xss" "distincts xss" "map set xss = map set css" "map hd xss = map hd css"
 proof -
   let ?fc = "\<lambda>cs. perm_restrict f (set cs)"
-  def some_list \<equiv> "\<lambda>cs. SOME xs. ?fc cs = list_succ xs \<and> set xs = set cs \<and> distinct xs \<and> hd xs = hd cs"
+  define some_list where "some_list cs = (SOME xs. ?fc cs = list_succ xs \<and> set xs = set cs \<and> distinct xs \<and> hd xs = hd cs)" for cs
   { fix cs assume "cs \<in> set css"
     then have "cyclic_on (?fc cs) (set cs)" "\<And>x. x \<notin> set cs \<Longrightarrow> ?fc cs x = x" "hd cs \<in> set cs"
       using cyclic dists by (auto simp add: cyclic_on_perm_restrict perm_restrict_def distincts_def)
