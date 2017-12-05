@@ -2101,8 +2101,8 @@ next
         moreover have "cindex_pathE rr x=-1"
           unfolding rr_def using r_ball that
           by (auto intro!: cindex_pathE_half_circlepath)
-        ultimately show " - of_real (cindex_pathE (linepath (- of_real r) (of_real r)) x) =
-            of_real (cindex_pathE (part_circlepath 0 r 0 pi) x)"
+        ultimately show "-cindex_pathE (linepath (- of_real r) (of_real r)) x =
+            cindex_pathE (part_circlepath 0 r 0 pi) x"
           unfolding ll_def rr_def by auto
       qed
       then show "\<forall>i\<in>proots p - proots_within p {x. 0 < Im x}. 

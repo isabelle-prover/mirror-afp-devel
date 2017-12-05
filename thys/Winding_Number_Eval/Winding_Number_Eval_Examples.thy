@@ -43,7 +43,7 @@ proof (eval_winding,simp_all)
     unfolding CR_def using \<open>R>1\<close> 
     apply (subst cindex_pathE_part_circlepath)
     by (simp_all add:jumpF_pathstart_part_circlepath jumpF_pathfinish_part_circlepath)
-  ultimately show "- complex_of_real (cindex_pathE CR (-\<i>)) = cindex_pathE L (-\<i>) "
+  ultimately show "-cindex_pathE CR (-\<i>) = cindex_pathE L (-\<i>)"
     unfolding L_def CR_def by auto    
 qed
  

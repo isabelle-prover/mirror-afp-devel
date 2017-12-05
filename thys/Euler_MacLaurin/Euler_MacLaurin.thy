@@ -686,27 +686,160 @@ lemma holomorphic_EM_remainder':
   assumes deriv: 
     "\<And>z t. z \<in> U \<Longrightarrow> t \<in> {a..x} \<Longrightarrow> 
        ((\<lambda>z. f z t) has_field_derivative f' z t) (at z within U)"
-  assumes int: "\<And>z. z \<in> U \<Longrightarrow> (\<lambda>t. pbernpoly n t *\<^sub>R f z t) integrable_on {a..x}"
+  assumes int: "\<And>b c z e. a \<le> b \<Longrightarrow> c \<le> x \<Longrightarrow> z \<in> U \<Longrightarrow>
+                  (\<lambda>t. of_real (bernpoly n (t - e)) * f z t) integrable_on {b..c}"
   assumes cont: "continuous_on (U \<times> {a..x}) (\<lambda>(z, t). f' z t)"
-  assumes "convex U" "n \<noteq> 1"
+  assumes "convex U"
   shows "(\<lambda>s. EM_remainder' n (f s) a x) holomorphic_on U"
   unfolding EM_remainder'_def scaleR_conv_of_real
 proof (intro holomorphic_intros)
-  have "(\<lambda>z. integral (cbox a x) (\<lambda>t. of_real (pbernpoly n t) * f z t)) holomorphic_on U"
+  have holo: "(\<lambda>z. integral (cbox b c) (\<lambda>t. of_real (bernpoly n (t - e)) * f z t)) holomorphic_on U"
+    if "b \<ge> a" "c \<le> x" for b c e :: real
   proof (rule leibniz_rule_holomorphic)
-    fix z t assume "z \<in> U" "t \<in> cbox a x"
-    thus "((\<lambda>z. complex_of_real (pbernpoly n t) * f z t) has_field_derivative
-             complex_of_real (pbernpoly n t) * f' z t) (at z within U)"
-      by (intro DERIV_cmult deriv) auto
+    fix z t assume "z \<in> U" "t \<in> cbox b c"
+    thus "((\<lambda>z. complex_of_real (bernpoly n (t - e)) * f z t) has_field_derivative
+             complex_of_real (bernpoly n (t - e)) * f' z t) (at z within U)"
+      using that by (intro DERIV_cmult deriv) auto
   next
     fix z assume "z \<in> U"
-    thus "(\<lambda>t. complex_of_real (pbernpoly n t) * f z t) integrable_on cbox a x"
-      using int by (simp add: scaleR_conv_of_real)
+    thus "(\<lambda>t. complex_of_real (bernpoly n (t - e)) * f z t) integrable_on cbox b c"
+      using that int[of b c z] by auto
   next
-    show "continuous_on (U \<times> cbox a x) (\<lambda>(z, t).
-            complex_of_real (pbernpoly n t) * f' z t)"
-      using cont and \<open>n \<noteq> 1\<close> by (auto simp: case_prod_unfold intro!: continuous_intros)
+    have "continuous_on (U \<times> {b..c}) (\<lambda>(z, t). f' z t)"
+      using cont by (rule continuous_on_subset) (insert that, auto)
+    thus "continuous_on (U \<times> cbox b c) (\<lambda>(z, t).
+            complex_of_real (bernpoly n (t - e)) * f' z t)"
+      by (auto simp: case_prod_unfold intro!: continuous_intros)
   qed fact+
+
+  consider "a > x" | "a \<le> x" "floor x \<le> a" | "a \<le> x" "floor x > a" by force
+  hence "(\<lambda>z. integral (cbox a x) (\<lambda>t. of_real (pbernpoly n t) * f z t)) holomorphic_on U"
+    (is "?f a x holomorphic_on _")
+  proof cases
+    case 2
+    have "(\<lambda>z. integral (cbox a x) (\<lambda>t. of_real (bernpoly n (t - of_int \<lfloor>x\<rfloor>)) * f z t))
+                   holomorphic_on U" 
+      by (intro holo) auto
+    also have "(\<lambda>z. integral (cbox a x) (\<lambda>t. of_real (bernpoly n (t - of_int \<lfloor>x\<rfloor>)) * f z t)) = ?f a x"
+    proof (intro ext integral_cong, goal_cases)
+      case (1 z t)
+      hence "t \<ge> a" "t \<le> x" by auto
+      hence "floor t = floor x" using 2 by linarith
+      thus ?case by (simp add: pbernpoly_def frac_def)
+    qed
+    finally show ?thesis .
+  next
+    case 3
+          define N :: "int set" where "N = {\<lceil>a\<rceil>..<\<lfloor>x\<rfloor>}"
+    define A where "A = insert {a..of_int \<lceil>a\<rceil>} (insert {of_int \<lfloor>x\<rfloor>..x} 
+                          ((\<lambda>n. {of_int n..of_int n + 1}) ` N))"
+    {
+      fix X assume "X \<in> A"
+      then consider "X = {a..of_int \<lceil>a\<rceil>}" | "X = {of_int \<lfloor>x\<rfloor>..x}" |
+             n where "X = {of_int n..of_int n + 1}" "n \<in> N" by (auto simp: A_def)
+    } note A_cases = this
+
+    have division: "A division_of {a..x}"
+    proof (rule division_ofI)
+      show "finite A" by (auto simp: A_def N_def)
+      fix K assume K: "K \<in> A"
+      from 3 have "of_int \<lceil>a\<rceil> \<le> x" 
+        using ceiling_le[of a "floor x"] by linarith
+      moreover from 3 have "of_int \<lfloor>x\<rfloor> \<ge> a" by linarith
+      ultimately show "K \<subseteq> {a..x}" using K 3 by (auto simp: A_def N_def) linarith+
+      from K show "K \<noteq> {}" and "\<exists>a b. K = cbox a b" by (auto simp: A_def)
+    next
+      fix K1 K2 assume K: "K1 \<in> A" "K2 \<in> A" "K1 \<noteq> K2"
+      have F1: "interior {a..\<lceil>a\<rceil>} \<inter> interior {\<lfloor>x\<rfloor>..x} = {}" using 3 ceiling_le[of a "floor x"]
+        by (auto simp: min_def max_def) 
+      hence F2: "interior {\<lfloor>x\<rfloor>..x} \<inter> interior {a..\<lceil>a\<rceil>} = {}" by simp
+      have F3: "interior {a..\<lceil>a\<rceil>} \<inter> interior {of_int n..of_int n+1} = {}"
+               "interior {\<lfloor>x\<rfloor>..x} \<inter> interior {of_int n..of_int n+1} = {}"
+               "interior {of_int n..of_int n+1} \<inter> interior {a..\<lceil>a\<rceil>} = {}"
+               "interior {of_int n..of_int n+1} \<inter> interior {\<lfloor>x\<rfloor>..x} = {}"if "n \<in> N" for n
+        using 3 ceiling_le[of a "floor x"] that by (auto simp: min_def max_def N_def)
+      have F4: "interior {real_of_int n..of_int n+1} \<inter> interior {of_int m..of_int m+1} = {}"
+        if "{real_of_int n..of_int n+1} \<noteq> {of_int m..of_int m+1}" for m n
+      proof -
+        from that have "n \<noteq> m" by auto
+        thus ?thesis by simp
+      qed
+      from F1 F2 F3 F4 K show "interior K1 \<inter> interior K2 = {}"
+        by (elim A_cases) (simp_all only: not_False_eq_True)
+    next
+      show "\<Union>A = {a..x}"
+      proof (cases "\<lceil>a\<rceil> = \<lfloor>x\<rfloor>")
+        case True
+        thus ?thesis using 3 by (auto simp: A_def N_def intro: order.trans) linarith+
+      next
+        case False
+        with 3 have *: "\<lceil>a\<rceil> < \<lfloor>x\<rfloor>" by linarith
+        have "\<Union>A = {a..of_int \<lceil>a\<rceil>} \<union> (\<Union>n\<in>N. {of_int n..of_int (n + 1)}) \<union> {of_int \<lfloor>x\<rfloor>..x}"
+          by (simp add: A_def Un_ac)
+        also have "(\<Union>n\<in>N. {of_int n..of_int (n + 1)}) = {of_int \<lceil>a\<rceil>..real_of_int \<lfloor>x\<rfloor>}"
+          using * unfolding N_def by (intro Union_atLeastAtMost_real_of_int)
+        also have "{a..of_int \<lceil>a\<rceil>} \<union> \<dots> = {a..real_of_int \<lfloor>x\<rfloor>}"
+          using 3 * by (intro ivl_disj_un) auto
+        also have "\<dots> \<union> {of_int \<lfloor>x\<rfloor>..x} = {a..x}"
+          using 3 * by (intro ivl_disj_un) auto
+        finally show ?thesis .
+      qed
+    qed
+
+
+    have "(\<lambda>z. \<Sum>X\<in>A. integral X (\<lambda>t. of_real (bernpoly n (t - \<lfloor>Inf X\<rfloor>)) * f z t)) 
+            holomorphic_on U"
+    proof (intro holomorphic_on_sum holo, goal_cases)
+      case (1 X)
+      from 1 and division have subset: "X \<subseteq> {a..x}" by (auto simp: division_of_def)
+      from 1 obtain b c where [simp]: "X = cbox b c" "b \<le> c" by (auto simp: A_def)
+      from subset have "b \<ge> a" "c \<le> x" by auto
+      hence "(\<lambda>x. integral (cbox b c) (\<lambda>t. of_real (bernpoly n (t - \<lfloor>Inf {b..c}\<rfloor>)) * f x t)) 
+               holomorphic_on U" by (intro holo) auto
+      thus ?case by simp
+    qed
+    also have "?this \<longleftrightarrow> (\<lambda>z. integral {a..x} (\<lambda>t. of_real (pbernpoly n t) * f z t)) 
+                           holomorphic_on U"
+    proof (intro holomorphic_cong refl, goal_cases)
+      case (1 z)
+      have "((\<lambda>t. of_real (pbernpoly n t) * f z t) has_integral
+              (\<Sum>X\<in>A. integral X (\<lambda>t. of_real (bernpoly n (t - \<lfloor>Inf X\<rfloor>)) * f z t))) {a..x}"
+        using division
+      proof (rule has_integral_combine_division)
+        fix X assume X: "X \<in> A"
+        then obtain b c where X': "X = {b..c}" "b \<le> c" by (elim A_cases) auto
+        from X and division have "X \<subseteq> {a..x}" by (auto simp: division_of_def)
+        with X' have bc: "b \<ge> a" "c \<le> x" by auto
+        have "((\<lambda>t. of_real (bernpoly n (t - of_int \<lfloor>Inf X\<rfloor>)) * f z t) has_integral
+                 integral X (\<lambda>t. of_real (bernpoly n (t - of_int \<lfloor>Inf X\<rfloor>)) * f z t)) X"
+          unfolding X' using \<open>z \<in> U\<close> bc by (intro integrable_integral int)
+        also have "?this \<longleftrightarrow> ((\<lambda>t. of_real (pbernpoly n t) * f z t) has_integral
+                 integral X (\<lambda>t. of_real (bernpoly n (t - of_int \<lfloor>Inf X\<rfloor>)) * f z t)) X"
+        proof (rule has_integral_spike_eq[of "{Sup X}"], goal_cases)
+          case (2 t)
+          note t = this
+          from \<open>X \<in> A\<close> have "\<lfloor>t\<rfloor> = \<lfloor>Inf X\<rfloor>"
+          proof (cases rule: A_cases [consumes 1])
+            case 1
+            with t show ?thesis
+              by (intro floor_unique) (auto simp: ceiling_altdef split: if_splits, (linarith+)?)
+          next
+            case 2
+            with t show ?thesis
+              by (intro floor_unique) (auto simp: ceiling_altdef split: if_splits, (linarith+)?)
+          next
+            case 3
+            with t show ?thesis
+              by (intro floor_unique) (auto simp: ceiling_altdef N_def split: if_splits)
+          qed
+          thus ?case by (simp add: pbernpoly_def frac_def)
+        qed auto
+        finally show \<dots> .
+      qed
+      thus ?case by (simp add: has_integral_iff)
+    qed
+    finally show ?thesis by simp
+  qed auto
   thus "(\<lambda>z. integral {a..x} (\<lambda>t. of_real (pbernpoly n t) * f z t)) holomorphic_on U"
     by simp
 qed
@@ -717,11 +850,13 @@ lemma
     "\<And>z t x. z \<in> U \<Longrightarrow> x \<ge> a \<Longrightarrow> t \<in> {a..x} \<Longrightarrow> 
        ((\<lambda>z. f z t) has_field_derivative f' z t) (at z within U)"
   assumes cont: "continuous_on (U \<times> {of_int a..}) (\<lambda>(z, t). f' z t)"
-  assumes int: "\<And>a' x y. y \<in> U \<Longrightarrow> a \<le> a' \<Longrightarrow> a' \<le> x \<Longrightarrow>
-                  (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..x}"
+  assumes int: "\<And>b c z e. a \<le> b \<Longrightarrow> z \<in> U \<Longrightarrow>
+                  (\<lambda>t. of_real (bernpoly n (t - e)) * f z t) integrable_on {b..c}"
+  assumes int': "\<And>a' b y. y \<in> U \<Longrightarrow>  a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
+                         (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
   assumes conv: "convergent (\<lambda>y. G (real y))"
   assumes bound: "eventually (\<lambda>x. \<forall>y\<in>U. norm (f y x) \<le> g x) at_top"
-  assumes "n \<noteq> 1" "open U" 
+  assumes "open U" 
   shows analytic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) analytic_on U"
     and holomorphic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) holomorphic_on U"
 proof -
@@ -735,19 +870,18 @@ proof -
     proof (rule holomorphic_uniform_sequence)
       fix x :: nat
       show "(\<lambda>s. EM_remainder' n (f s) a x) holomorphic_on ball z \<epsilon>"
-      proof (rule holomorphic_EM_remainder')
+      proof (rule holomorphic_EM_remainder', goal_cases)
         fix s t assume "s \<in> ball z \<epsilon>" "t \<in> {real_of_int a..real x}"
         thus "((\<lambda>z. f z t) has_field_derivative f' s t) (at s within ball z \<epsilon>)"
           using \<epsilon> by (intro DERIV_subset[OF deriv'[of _ x]]) auto
       next
-        fix s assume "s \<in> ball z \<epsilon>"
+        case (2 b c s e)
         with \<epsilon> have "s \<in> U" by blast
-        thus "(\<lambda>t. pbernpoly n t *\<^sub>R f s t) integrable_on {real_of_int a..real x}"
-          by (cases "a \<le> x") (auto intro: int)
+        with 2 show ?case using \<epsilon> int[of b s e c] by (cases "a \<le> x") auto
       next
         from cont show "continuous_on (ball z \<epsilon> \<times> {real_of_int a..real x}) (\<lambda>(z, t). f' z t)"
           by (rule continuous_on_subset) (insert \<epsilon>, auto)
-      qed (insert \<open>n \<noteq> 1\<close>, auto)
+      qed (auto)
     next
       fix s assume s: "s \<in> ball z \<epsilon>"
       have "open (ball z \<epsilon>)" by simp
@@ -757,7 +891,7 @@ proof -
         by (intro eventually_mono [OF bound]) (insert \<delta> \<epsilon>, auto)
       have "uniform_limit (cball s \<delta>) (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
                         (\<lambda>s. EM_remainder n (f s) a) sequentially"
-        by (rule uniform_limit_EM_remainder[OF deriv int conv bound']) (insert \<delta> \<epsilon> s, auto)
+        by (rule uniform_limit_EM_remainder[OF deriv int' conv bound']) (insert \<delta> \<epsilon> s, auto)
       ultimately show "\<exists>\<delta>>0. cball s \<delta> \<subseteq> ball z \<epsilon> \<and> uniform_limit (cball s \<delta>)
                           (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
                           (\<lambda>s. EM_remainder n (f s) a) sequentially" by blast

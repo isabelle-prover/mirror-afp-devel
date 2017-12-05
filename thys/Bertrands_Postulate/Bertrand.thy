@@ -81,12 +81,6 @@ qed (insert assms, auto)
 
 
 subsection \<open>Preliminary definitions\<close>
-  
-definition primepow :: "nat \<Rightarrow> bool" where
-  "primepow q \<longleftrightarrow> (\<exists> p k. 1 \<le> k \<and> prime p \<and> q = p^k)"
-
-definition primepows :: "nat \<Rightarrow> nat set" where
-  "primepows n = {x::nat. primepow x \<and> x dvd n}"
 
 definition primepow_even :: "nat \<Rightarrow> bool" where
   "primepow_even q \<longleftrightarrow> (\<exists> p k. 1 \<le> k \<and> prime p \<and> q = p^(2*k))"
@@ -94,23 +88,17 @@ definition primepow_even :: "nat \<Rightarrow> bool" where
 definition primepow_odd :: "nat \<Rightarrow> bool" where
   "primepow_odd q \<longleftrightarrow> (\<exists> p k. 1 \<le> k \<and> prime p \<and> q = p^(2*k+1))"
 
-abbreviation isprimedivisor :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
+abbreviation (input) isprimedivisor :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
   "isprimedivisor q p \<equiv> prime p \<and> p dvd q"
-
-definition aprimedivisor :: "nat \<Rightarrow> nat" where
-  "aprimedivisor q = (LEAST p. isprimedivisor q p)"
 
 definition pre_mangoldt :: "nat \<Rightarrow> nat" where
   "pre_mangoldt d = (if primepow d then aprimedivisor d else 1)"
-  
-definition mangoldt :: "nat \<Rightarrow> real" where
-  "mangoldt d = (if primepow d then ln (aprimedivisor d) else 0)"
 
 definition mangoldt_even :: "nat \<Rightarrow> real" where
-  "mangoldt_even d = (if primepow_even d then ln (aprimedivisor d) else 0)"
+  "mangoldt_even d = (if primepow_even d then ln (real (aprimedivisor d)) else 0)"
 
 definition mangoldt_odd :: "nat \<Rightarrow> real" where
-  "mangoldt_odd d = (if primepow_odd d then ln (aprimedivisor d) else 0)"
+  "mangoldt_odd d = (if primepow_odd d then ln (real (aprimedivisor d)) else 0)"
 
 definition mangoldt_1 :: "nat \<Rightarrow> real" where
   "mangoldt_1 d = (if prime d then ln d else 0)"
@@ -135,170 +123,15 @@ definition theta :: "nat \<Rightarrow> real" where
 
 subsection \<open>Properties of prime powers\<close>  
 
-lemma
-  assumes "n \<noteq> 0" "n \<noteq> 1"
-  shows prime_aprimedivisor: "prime (aprimedivisor n)" 
-    and aprimedivisor_dvd:   "aprimedivisor n dvd n"
-proof -
-  from assms(2) have A: "\<not>is_unit n" by auto
-  from LeastI_ex[OF prime_divisor_exists[OF assms(1) A]] 
-    show "prime (aprimedivisor n)" "aprimedivisor n dvd n"
-      unfolding aprimedivisor_def by (simp_all add: conj_commute)
-qed
-
-lemma finite_primepows [simp]: "n \<noteq> 0 \<Longrightarrow> finite (primepows n)"
-  by (rule finite_subset [OF _ finite_divisors_nat[of n]]) (auto simp: primepows_def)
-
-lemma primepow_gt_Suc_0: "primepow n \<Longrightarrow> n > Suc 0"
-  using one_less_power[of "p::nat" for p] by (auto simp: primepow_def prime_nat_iff)
-
-lemma aprimedivisor_of_prime [simp]: "prime p \<Longrightarrow> aprimedivisor p = p"
-  by (rule primes_dvd_imp_eq) (auto intro!: prime_aprimedivisor aprimedivisor_dvd prime_gt_0_nat)
-
-lemma aprimedivisor_primepow_power:
-  assumes "primepow n" "k > 0"
-  shows   "aprimedivisor (n ^ k) = aprimedivisor n"
-proof -
-  from assms obtain p l where l: "prime p" "l \<ge> 1" "n = p ^ l"
-    by (auto simp: primepow_def)
-  from assms primepow_gt_Suc_0[of n] 
-    have *: "prime (aprimedivisor (n ^ k))" "aprimedivisor (n ^ k) dvd n ^ k"
-      by (intro prime_aprimedivisor aprimedivisor_dvd; simp)+
-  from * l have "aprimedivisor (n ^ k) dvd p ^ (l * k)" by (simp add: power_mult)
-  with assms * l have "aprimedivisor (n ^ k) dvd p" 
-    by (subst (asm) prime_dvd_power_iff) simp_all
-  with l assms have "aprimedivisor (n ^ k) = p"
-    by (intro primes_dvd_imp_eq prime_aprimedivisor l) auto
-  moreover from l have "aprimedivisor n dvd p ^ l" 
-    by (auto intro: aprimedivisor_dvd simp: prime_gt_0_nat)
-  with assms l have "aprimedivisor n dvd p"
-    by (subst (asm) prime_dvd_power_iff) (auto intro!: prime_aprimedivisor simp: prime_gt_0_nat)
-  with l assms have "aprimedivisor n = p"
-    by (intro primes_dvd_imp_eq prime_aprimedivisor l) auto
-  ultimately show ?thesis by simp
-qed
-
-lemma aprimedivisor_prime_power:
-  assumes "prime p" "k > 0"
-  shows   "aprimedivisor (p ^ k) = p"
-proof -
-  from assms have *: "prime (aprimedivisor (p ^ k))" "aprimedivisor (p ^ k) dvd p ^ k"
-    by (intro prime_aprimedivisor aprimedivisor_dvd; simp add: prime_nat_iff)+
-  from assms * have "aprimedivisor (p ^ k) dvd p" 
-    by (subst (asm) prime_dvd_power_iff) simp_all
-  with assms * show "aprimedivisor (p ^ k) = p" by (intro primes_dvd_imp_eq)
-qed
-
-lemma prime_factorization_primepow:
-  assumes "primepow n"
-  shows   "prime_factorization n = 
-             replicate_mset (multiplicity (aprimedivisor n) n) (aprimedivisor n)"
-  using assms
-  by (auto simp: primepow_def aprimedivisor_prime_power prime_factorization_prime_power)
-
-lemma primepow_decompose:
-  assumes "primepow n"
-  shows   "aprimedivisor n ^ multiplicity (aprimedivisor n) n = n"
-proof -
-  from assms have "n \<noteq> 0" by (intro notI) (auto simp: primepow_def)
-  hence "n = prod_mset (prime_factorization n)"
-    by (subst prod_mset_prime_factorization_nat) simp_all
-  also have "prime_factorization n = 
-               replicate_mset (multiplicity (aprimedivisor n) n) (aprimedivisor n)"
-    by (intro prime_factorization_primepow assms)
-  also have "prod_mset \<dots> = aprimedivisor n ^ multiplicity (aprimedivisor n) n" by simp
-  finally show ?thesis ..
-qed
-
-lemma aprimedivisor_vimage:
-  assumes "prime p"
-  shows   "aprimedivisor -` {p} \<inter> primepows n = {p ^ k |k. k > 0 \<and> p ^ k dvd n}"
-proof safe
-  fix q assume q: "q \<in> primepows n"
-  hence q': "q \<noteq> 0" "q \<noteq> 1" by (auto simp: primepow_def primepows_def prime_nat_iff)
-  let ?n = "multiplicity (aprimedivisor q) q"
-  from q q' have "q = aprimedivisor q ^ ?n \<and> ?n > 0 \<and> aprimedivisor q ^ ?n dvd n"
-    by (auto simp: primepow_decompose primepows_def prime_multiplicity_gt_zero_iff
-          prime_aprimedivisor prime_imp_prime_elem aprimedivisor_dvd)
-  thus "\<exists>k. q = aprimedivisor q ^ k \<and> k > 0 \<and> aprimedivisor q ^ k dvd n" ..
-next
-  fix k :: nat assume k: "p ^ k dvd n" "k > 0"
-  with assms show "p ^ k \<in> aprimedivisor -` {p}"
-    by (auto simp: aprimedivisor_prime_power)
-  with assms k show "p ^ k \<in> primepows n"
-    by (auto simp: primepows_def primepow_def aprimedivisor_prime_power intro: Suc_leI)
-qed
-
-lemma aprimedivisor_primepows_conv_prime_factorization:
-  assumes [simp]: "n \<noteq> 0"
-  shows   "image_mset aprimedivisor (mset_set (primepows n)) = prime_factorization n" 
-          (is "?lhs = ?rhs")
-proof (intro multiset_eqI)
-  fix p :: nat
-  show "count ?lhs p = count ?rhs p"
-  proof (cases "prime p")
-    case False
-    have "p \<notin># image_mset aprimedivisor (mset_set (primepows n))"
-    proof
-      assume "p \<in># image_mset aprimedivisor (mset_set (primepows n))"
-      then obtain q where "p = aprimedivisor q" "q \<in> primepows n" by auto
-      with False prime_aprimedivisor[of q] have "q = 0 \<or> q = 1" by blast
-      with \<open>q \<in> primepows n\<close> show False by (auto simp: primepows_def primepow_def)
-    qed
-    hence "count ?lhs p = 0" by (simp only: Multiset.not_in_iff)
-    with False show ?thesis by (simp add: count_prime_factorization)
-  next
-    case True
-    hence "p > 1" by (auto simp: prime_nat_iff)
-    have "count ?lhs p = card (aprimedivisor -` {p} \<inter> primepows n)" by (simp add: count_image_mset)
-    also have "aprimedivisor -` {p} \<inter> primepows n = {p^k |k. k > 0 \<and> p ^ k dvd n}"
-      using True by (rule aprimedivisor_vimage)
-    also from True have "\<dots> = (\<lambda>k. p ^ k) ` {0<..multiplicity p n}"
-      by (subst power_dvd_iff_le_multiplicity) auto
-    also from \<open>p > 1\<close> have "card \<dots> = multiplicity p n"
-      by (subst card_image) (auto intro!: inj_onI simp: )
-    also from True have "\<dots> = count (prime_factorization n) p" 
-      by (simp add: count_prime_factorization)
-    finally show ?thesis .
-  qed
-qed
-
-lemma aprimedivisor:
-  assumes "n \<noteq> 1"
-  shows   "prime (aprimedivisor n)" "aprimedivisor n dvd n"
-proof -
-  from assms have "\<exists>p. prime p \<and> p dvd n" by (rule prime_factor_nat)
-  from LeastI_ex[OF this, folded aprimedivisor_def] 
-    show "prime (aprimedivisor n)" "aprimedivisor n dvd n" by blast+
-qed
-  
-lemma aprimedivisor_gt_1: 
-  assumes "n \<noteq> 1"
-  shows   "aprimedivisor n > 1"
-proof -
-  from assms have "prime (aprimedivisor n)" by (rule aprimedivisor)
-  thus "aprimedivisor n > 1" by (simp add: prime_nat_iff)
-qed
-
-lemma aprimedivisor_le:
-  assumes "n > 1"
-  shows   "aprimedivisor n \<le> n"
-proof -
-  from assms have "aprimedivisor n dvd n" by (intro aprimedivisor) simp_all
-  with assms show "aprimedivisor n \<le> n"
-    by (intro dvd_imp_le) simp_all
-qed
-
 lemma primepow_even_imp_primepow:
   assumes "primepow_even n"
   shows   "primepow n"
 proof -
   from assms obtain p k where "1 \<le> k" "prime p" "n = p ^ (2 * k)"
     unfolding primepow_even_def by blast
-  moreover from \<open>1 \<le> k\<close> have "1 \<le> 2 * k"
+  moreover from \<open>1 \<le> k\<close> have "2 * k > 0"
     by simp
-  ultimately show ?thesis unfolding primepow_def
-    by blast
+  ultimately show ?thesis unfolding primepow_def by blast
 qed
 
 lemma primepow_odd_imp_primepow:
@@ -307,95 +140,11 @@ lemma primepow_odd_imp_primepow:
 proof -
  from assms obtain p k where "1 \<le> k" "prime p" "n = p ^ (2 * k + 1)"
    unfolding primepow_odd_def by blast
-  moreover from \<open>1 \<le> k\<close> have "1 \<le> 2 * k + 1"
+  moreover from \<open>1 \<le> k\<close> have "Suc (2 * k) > 0"
     by simp
   ultimately show ?thesis unfolding primepow_def
-    by blast
+    by (auto simp del: power_Suc)
 qed
-
-lemma not_primepow_0 [simp]: "\<not>primepow 0"
-  by (simp add: primepow_def)
-
-lemma not_primepow_Suc_0 [simp]: "\<not>primepow (Suc 0)"
-  using primepow_gt_Suc_0[of "Suc 0"] by auto
-
-lemma aprimedivisor_primepow:
-  assumes "prime p" "p dvd n" "primepow n"
-  shows   "aprimedivisor (p * n) = p" "aprimedivisor n = p"
-proof -
-  define q where "q = aprimedivisor n"
-  from assms(3) have n_gt_1: "n > Suc 0" by (rule primepow_gt_Suc_0)
-  with assms have q: "prime q" by (auto simp: q_def intro!: prime_aprimedivisor)
-  from \<open>primepow n\<close> have n: "n = q ^ multiplicity q n" by (simp add: primepow_decompose q_def)
-  with assms have "multiplicity q n \<noteq> 0" by (intro notI) simp
-  with \<open>prime p\<close> \<open>p dvd n\<close> have "p dvd q"
-    by (subst (asm) n) (auto intro: prime_dvd_power_nat)
-  with \<open>prime p\<close> q have "p = q" by (intro primes_dvd_imp_eq)
-  thus "aprimedivisor n = p" by (simp add: q_def)
-
-  define r where "r = aprimedivisor (p * n)"
-  with n_gt_1 assms have r: "r dvd (p * n)" "prime r" unfolding r_def
-    by (intro aprimedivisor_dvd prime_aprimedivisor; simp)+
-  hence "r dvd q ^ Suc (multiplicity q n)"
-    by (subst (asm) n) (simp_all add: \<open>p = q\<close>)
-  with r have "r dvd q" 
-    by (auto intro: prime_dvd_power_nat simp: prime_dvd_mult_iff dest: prime_dvd_power)
-  with r q have "r = q" by (intro primes_dvd_imp_eq)
-  thus "aprimedivisor (p * n) = p" by (simp add: r_def \<open>p = q\<close>)
-qed
-
-lemma primepow_power_iff:
-  "primepow (p ^ n) \<longleftrightarrow> primepow p \<and> n > 0"
-proof safe
-  assume "primepow (p ^ n)"
-  from primepow_gt_Suc_0[OF this] have n: "n \<noteq> 0" by (intro notI) simp
-  thus "n > 0" by simp
-  from \<open>primepow (p ^ n)\<close> obtain q k where *: "k \<ge> 1" "prime q" "p ^ n = q ^ k"
-    by (auto simp: primepow_def)
-  with prime_power_exp_nat[of q n p k] n obtain i where "p = q ^ i" by auto
-  with \<open>primepow (p ^ n)\<close> have "i \<noteq> 0" by (intro notI) simp
-  with \<open>p = q ^ i\<close> \<open>prime q\<close> show "primepow p"
-    by (auto simp: primepow_def intro!: exI[of _ q, OF exI[of _ i]])
-next
-  assume "primepow p" "n > 0"
-  then obtain q k where *: "k \<ge> 1" "prime q" "p = q ^ k" by (auto simp: primepow_def)
-  with \<open>n > 0\<close> show "primepow (p ^ n)"
-    by (auto simp: primepow_def power_mult intro!: exI[of _ q, OF exI[of _ "k * n"]])
-qed
-
-lemma primepow_prime [simp]: "prime n \<Longrightarrow> primepow n"
-  by (auto simp: primepow_def intro!: exI[of _ n, OF exI[of _ 1]])
-
-lemma primepow_prime_power [simp]: "prime p \<Longrightarrow> primepow (p ^ n) \<longleftrightarrow> n > 0"
-  by (simp add: primepow_power_iff)
-
-lemma primepow_multD:
-  assumes "primepow (a * b)"
-  shows   "a = 1 \<or> primepow a" "b = 1 \<or> primepow b"
-proof -
-  from assms obtain p k where k: "k \<ge> 1" "a * b = p ^ k" "prime p"
-    unfolding primepow_def by auto
-  then obtain i j where "a = p ^ i" "b = p ^ j"
-    using prime_power_mult_nat[of p a b] by blast
-  with \<open>prime p\<close> show "a = 1 \<or> primepow a" "b = 1 \<or> primepow b" by auto
-qed
-  
-lemma mangoldt_primepow:
-   "prime p \<Longrightarrow> mangoldt (p ^ k) = (if k > 0 then ln p else 0)"
-  by (simp add: mangoldt_def aprimedivisor_prime_power)
-    
-lemma mangoldt_primepow' [simp]: "prime p \<Longrightarrow> k > 0 \<Longrightarrow> mangoldt (p ^ k) = ln p"
-  by (subst mangoldt_primepow) auto
-
-lemma mangoldt_prime [simp]: "prime p \<Longrightarrow> mangoldt p = ln p"    
-  using mangoldt_primepow[of p 1] by simp
-
-lemma primepow_mult_aprimedivisorI:
-  assumes "primepow n"
-  shows   "primepow (aprimedivisor n * n)"
-  by (subst (2) primepow_decompose[OF assms, symmetric], subst power_Suc [symmetric],
-      subst primepow_prime_power) 
-     (insert assms, auto intro!: prime_aprimedivisor dest: primepow_gt_Suc_0)
 
 lemma primepow_odd_altdef:
   "primepow_odd n \<longleftrightarrow>
@@ -410,7 +159,7 @@ next
   assume A: "primepow n" and B: "odd (multiplicity (aprimedivisor n) n)"
      and C: "multiplicity (aprimedivisor n) n > 1"
   from A obtain p k where n: "k \<ge> 1" "prime p" "n = p ^ k"
-    by (auto simp: primepow_def)
+    by (auto simp: primepow_def Suc_le_eq)
   with B C have "odd k" "k > 1"
     by (simp_all add: aprimedivisor_primepow prime_elem_multiplicity_mult_distrib)
   then obtain j where j: "k = 2 * j + 1" "j > 0" by (auto elim!: oddE)
@@ -428,7 +177,7 @@ proof (intro iffI conjI; (elim conjE)?)
 next
   assume A: "primepow n" and B: "even (multiplicity (aprimedivisor n) n)"
   from A obtain p k where n: "k \<ge> 1" "prime p" "n = p ^ k"
-    by (auto simp: primepow_def)
+    by (auto simp: primepow_def Suc_le_eq)
   with B have "even k"
     by (simp_all add: aprimedivisor_primepow prime_elem_multiplicity_mult_distrib)
   then obtain j where j: "k = 2 * j" by (auto elim!: evenE)
@@ -437,43 +186,14 @@ next
     by (auto simp: primepow_even_def intro!: exI[of _ p, OF exI[of _ j]])
 qed (auto dest: primepow_even_imp_primepow)
 
-lemma prime_elem_aprimedivisor: "d > 1 \<Longrightarrow> prime_elem (aprimedivisor d)"
-  using prime_aprimedivisor[of d] by simp
-
-lemma aprimedivisor_gt_0 [simp]: "d > 1 \<Longrightarrow> aprimedivisor d > 0"
-  using prime_aprimedivisor[of d] by (simp add: prime_gt_0_nat)
-
-lemma aprimedivisor_not_zero [simp]: "d > 1 \<Longrightarrow> aprimedivisor d \<noteq> 0"
-  using prime_aprimedivisor[of d] by (simp add: prime_gt_0_nat)
-
-lemma aprimedivisor_gt_Suc_0 [simp]: "d > 1 \<Longrightarrow> aprimedivisor d > Suc 0"
-  using prime_aprimedivisor[of d] by (simp add: prime_gt_Suc_0_nat)
-
-lemma aprimedivisor_not_Suc_0 [simp]: "d > 1 \<Longrightarrow> aprimedivisor d \<noteq> Suc 0"
-  using aprimedivisor_gt_Suc_0[of d] by (intro notI) (simp del:
-aprimedivisor_gt_Suc_0)
-
-lemma multiplicity_aprimedivisor_gt_0 [simp]:
-  "d > 1 \<Longrightarrow> multiplicity (aprimedivisor d) d > 0"
-  by (subst multiplicity_gt_zero_iff) (auto intro: aprimedivisor_dvd)
-
 lemma primepow_odd_mult:
-  assumes "d > 1"
+  assumes "d > Suc 0"
   shows   "primepow_odd (aprimedivisor d * d) \<longleftrightarrow> primepow_even d"
     using assms
     by (auto simp: primepow_odd_altdef primepow_even_altdef primepow_mult_aprimedivisorI
-                   aprimedivisor_primepow prime_aprimedivisor aprimedivisor_dvd
-                   prime_elem_multiplicity_mult_distrib prime_elem_aprimedivisor
+                   aprimedivisor_primepow prime_aprimedivisor' aprimedivisor_dvd'
+                   prime_elem_multiplicity_mult_distrib prime_elem_aprimedivisor_nat
              dest!: primepow_multD)
-
-lemma primepowI:
-  "prime p \<Longrightarrow> k \<ge> 1 \<Longrightarrow> p ^ k = n \<Longrightarrow> primepow n \<and> aprimedivisor n = p"
-  unfolding primepow_def by (auto simp: aprimedivisor_prime_power)
-
-lemma not_primepowI:
-  assumes "prime p" "prime q" "p \<noteq> q" "p dvd n" "q dvd n"
-  shows   "\<not>primepow n"
-  using assms by (auto dest: aprimedivisor_primepow(2))
 
 lemma pre_mangoldt_primepow:
   assumes "primepow n" "aprimedivisor n = p"
@@ -484,29 +204,6 @@ lemma pre_mangoldt_notprimepow:
   assumes "\<not>primepow n"
   shows   "pre_mangoldt n = 1"
   using assms by (simp add: pre_mangoldt_def)
-
-lemma not_primepow_1: "\<not>primepow 1" by simp
-
-lemma sum_prime_factorization_conv_sum_primepows:
-  assumes "n \<noteq> 0"
-  shows "(\<Sum>q\<in>primepows n. f (aprimedivisor q)) = (\<Sum>p\<in>#prime_factorization n. f p)"
-proof -
-  from assms have "prime_factorization n = image_mset aprimedivisor (mset_set (primepows n))"
-    by (rule aprimedivisor_primepows_conv_prime_factorization [symmetric])
-  also have "(\<Sum>p\<in>#\<dots>. f p) = (\<Sum>q\<in>primepows n. f (aprimedivisor q))"
-    by (simp add: image_mset.compositionality sum_unfold_sum_mset o_def)
-  finally show ?thesis ..
-qed    
-
-lemma primepow_gt_0: "primepow n \<Longrightarrow> n > 0"
-  using primepow_gt_Suc_0[of n] by simp
-
-lemma multiplicity_aprimedivisor_Suc_0_iff:
-  assumes "primepow n"
-  shows   "multiplicity (aprimedivisor n) n = Suc 0 \<longleftrightarrow> prime n"
-  by (subst (3) primepow_decompose [OF assms, symmetric])
-     (insert assms primepow_gt_Suc_0[OF assms],
-      auto simp add: prime_power_iff intro!: prime_aprimedivisor)
 
 lemma primepow_cases:
   "primepow d \<longleftrightarrow>
@@ -730,22 +427,22 @@ next
 qed  
   
 lemma ln_primefact:
-  assumes "n \<noteq> 0"
+  assumes "n \<noteq> (0::nat)"
   shows   "ln n = (\<Sum>d=1..n. if primepow d \<and> d dvd n then ln (aprimedivisor d) else 0)" 
           (is "?lhs = ?rhs")
 proof -
   have "?rhs = (\<Sum>d\<in>{x \<in> {1..n}. primepow x \<and> x dvd n}. ln (real (aprimedivisor d)))" 
-    unfolding primepows_def by (subst sum.inter_filter [symmetric]) simp_all
-  also have "{x \<in> {1..n}. primepow x \<and> x dvd n} = primepows n"
-    using assms by (auto simp: primepows_def dest: dvd_imp_le primepow_gt_Suc_0)
-  finally have *: "(\<Sum>d\<in>primepows n. ln (real (aprimedivisor d))) = ?rhs" ..
+    unfolding primepow_factors_def by (subst sum.inter_filter [symmetric]) simp_all
+  also have "{x \<in> {1..n}. primepow x \<and> x dvd n} = primepow_factors n"
+    using assms by (auto simp: primepow_factors_def dest: dvd_imp_le primepow_gt_Suc_0)
+  finally have *: "(\<Sum>d\<in>primepow_factors n. ln (real (aprimedivisor d))) = ?rhs" ..
   from in_prime_factors_imp_prime prime_gt_0_nat 
     have pf_pos: "\<And>p. p\<in>#prime_factorization n \<Longrightarrow> p > 0"
     by blast
   from ln_msetprod[of "prime_factorization n", OF pf_pos] assms
     have "ln n = (\<Sum>p\<in>#prime_factorization n. ln p)"
       by (simp add: of_nat_prod_mset)
-  also from * sum_prime_factorization_conv_sum_primepows[of n ln, OF assms(1)]
+  also from * sum_prime_factorization_conv_sum_primepow_factors[of n ln, OF assms(1)]
     have "\<dots> = ?rhs" by simp
   finally show ?thesis .
 qed
@@ -769,13 +466,11 @@ proof -
   with \<open>d dvd x\<close> show ?thesis by (auto intro!: bexI[of _ "x div d"])
 qed
 
-lemma ln_fact_conv_mangoldt:
-  shows "ln (fact n) = (\<Sum>d=1..n. mangoldt d * floor (n / d))"
+lemma ln_fact_conv_mangoldt: "ln (fact n) = (\<Sum>d=1..n. mangoldt d * floor (n / d))"
 proof -
-  have *: "(\<Sum>da=1..n. if primepow da \<and>
-        da dvd d then ln (aprimedivisor da) else 0) = 
-        (\<Sum>da=1..d. if primepow da \<and>
-        da dvd d then ln (aprimedivisor da) else 0)" if d: "d \<in> {1..n}" for d
+  have *: "(\<Sum>da=1..n. if primepow da \<and> da dvd d then ln (aprimedivisor da) else 0) = 
+             (\<Sum>(da::nat)=1..d. if primepow da \<and> da dvd d then ln (aprimedivisor da) else 0)" 
+    if d: "d \<in> {1..n}" for d
     by (rule sum.mono_neutral_right, insert d) (auto dest: dvd_imp_le)
   have "(\<Sum>d=1..n. \<Sum>da=1..d. if primepow da \<and>
       da dvd d then ln (aprimedivisor da) else 0) = 
@@ -832,11 +527,6 @@ qed
 
 end
 
-lemma mangoldt_pos: "0 \<le> mangoldt d"
-  using aprimedivisor_gt_1[of d]
-  by (auto simp: mangoldt_def of_nat_le_iff[of 1 x for x, unfolded of_nat_1] Suc_le_eq
-           intro!: ln_ge_zero dest: primepow_gt_Suc_0)
-
 context
 begin
 
@@ -879,7 +569,7 @@ proof -
   also have "\<dots> \<le> (\<Sum>d=1..n. mangoldt d * (2 * \<lfloor>?k / d\<rfloor> + 1))"
     using div_2_mult_2_bds(2)[of _ n]
     by (intro sum_mono mult_left_mono, subst of_int_le_iff)
-       (auto simp: algebra_simps mangoldt_pos)
+       (auto simp: algebra_simps mangoldt_nonneg)
   also have "\<dots> = 2 * (\<Sum>d=1..n. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
     by (simp add: algebra_simps sum.distrib sum_distrib_left)
   also have "\<dots> = 2 * (\<Sum>d=1..2*?k+?d. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
@@ -908,7 +598,7 @@ next
     by (intro sum.cong) simp_all
   also from div_2_mult_2_bds(1) have "\<dots> \<le> (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d))"
     by (intro sum_mono) 
-       (auto simp: algebra_simps mangoldt_pos intro!: mult_left_mono simp del: of_int_mult)
+       (auto simp: algebra_simps mangoldt_nonneg intro!: mult_left_mono simp del: of_int_mult)
   also from n_div_d_eq_1 have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d * \<lfloor>n/d\<rfloor>))"
     by (intro sum.cong refl) auto
   also have "\<dots> = (\<Sum>d=1..n. mangoldt d * real_of_int (\<lfloor>real n / real d\<rfloor>) -
@@ -1051,6 +741,8 @@ proof -
   also from \<open>n \<le> m\<close> have "\<dots> \<le> 3 / 2 * ln 2 * m" by simp
   finally show ?thesis .
 qed
+
+lemma not_primepow_1_nat: "\<not>primepow (1 :: nat)" by auto
                  
 ML_file \<open>bertrand.ML\<close>
 
@@ -1414,9 +1106,10 @@ qed
 
 lemma primepow_iff_even_sqr:
   "primepow n \<longleftrightarrow> primepow_even (n^2)"
-  by (auto simp: primepow_even_altdef aprimedivisor_primepow_power primepow_power_iff
-                 prime_elem_multiplicity_power_distrib prime_aprimedivisor prime_imp_prime_elem
-           dest: primepow_gt_Suc_0)
+  by (cases "n = 0")
+     (auto simp: primepow_even_altdef aprimedivisor_primepow_power primepow_power_iff_nat
+                 prime_elem_multiplicity_power_distrib prime_aprimedivisor' prime_imp_prime_elem
+                 unit_factor_nat_def primepow_gt_0_nat dest: primepow_gt_Suc_0)
 
 lemma psi_sqrt: "psi (Discrete.sqrt n) = psi_even n"
 proof (induction n)
@@ -1452,9 +1145,8 @@ next
           by simp
         also from True have "aprimedivisor ((Suc (Discrete.sqrt n))^2) = aprimedivisor (Suc (Discrete.sqrt n))"
           by (simp add: aprimedivisor_primepow_power)
-        also from True mangoldt_def
-          have "ln (\<dots>) = mangoldt (Suc (Discrete.sqrt n))"
-          by simp
+        also from True have "ln (\<dots>) = mangoldt (Suc (Discrete.sqrt n))"
+          by (simp add: mangoldt_def)
         finally show ?thesis ..
       next
         case False
@@ -1466,9 +1158,8 @@ next
         also from mangoldt_even_def False2
           have "\<dots> = 0"
           by simp
-        also from False mangoldt_def
-          have "\<dots> = mangoldt (Suc (Discrete.sqrt n))"
-          by simp
+        also from False have "\<dots> = mangoldt (Suc (Discrete.sqrt n))"
+          by (simp add: mangoldt_def)
         finally show ?thesis ..
       qed  
       also from psi_even_def have "psi_even n + mangoldt_even (Suc n) = psi_even (Suc n)"
@@ -1515,17 +1206,16 @@ lemma psi_split: "psi n = theta n + psi_even n + psi_odd n"
   by (induction n) 
      (simp_all add: psi_def theta_def psi_even_def psi_odd_def mangoldt_1_def mangoldt_split)
 
-lemma psi_mono: "m \<le> n \<Longrightarrow> psi m \<le> psi n"
-  using mangoldt_pos sum_mono2[of "{1..n}" "{1..m}" "mangoldt"] by (simp add: psi_def)
+lemma psi_mono: "m \<le> n \<Longrightarrow> psi m \<le> psi n" unfolding psi_def
+  by (intro sum_mono2 mangoldt_nonneg) auto
 
 lemma psi_pos: "0 \<le> psi n"
-  by (auto simp: psi_def intro!: sum_nonneg mangoldt_pos)
+  by (auto simp: psi_def intro!: sum_nonneg mangoldt_nonneg)
 
 lemma mangoldt_odd_pos: "0 \<le> mangoldt_odd d"
   using aprimedivisor_gt_Suc_0[of d]
-  by (auto simp: mangoldt_odd_def of_nat_le_iff[of 1, unfolded of_nat_1]
-           simp del: aprimedivisor_gt_Suc_0 intro!: ln_ge_zero 
-           dest!: primepow_odd_imp_primepow primepow_gt_Suc_0)
+  by (auto simp: mangoldt_odd_def of_nat_le_iff[of 1, unfolded of_nat_1] Suc_le_eq
+           intro!: ln_ge_zero dest!: primepow_odd_imp_primepow primepow_gt_Suc_0)
 
 lemma psi_odd_mono: "m \<le> n \<Longrightarrow> psi_odd m \<le> psi_odd n"
   using mangoldt_odd_pos sum_mono2[of "{1..n}" "{1..m}" "mangoldt_odd"] 
@@ -1929,13 +1619,12 @@ proof -
       have "-?sm = (\<Sum>d = 1..n. mangoldt d * (n/d - \<lfloor>n/d\<rfloor>))"
         by (simp add: sum_subtractf algebra_simps)
       also have "\<dots> \<le> (\<Sum>d = 1..n. mangoldt d * 1)"
-        by (intro sum_mono mult_left_mono mangoldt_pos) linarith
+        by (intro sum_mono mult_left_mono mangoldt_nonneg) linarith+
       finally have "-?sm \<le> ?rhs" by (simp add: psi_def)
       moreover
       have "?sm \<le> 0"
-        using mangoldt_pos by (simp add: mult_le_0_iff sum_nonpos)
-      ultimately show ?thesis
-        by (simp add: abs_if)
+        using mangoldt_nonneg by (simp add: mult_le_0_iff sum_nonpos)
+      ultimately show ?thesis by (simp add: abs_if)
     qed
     also have "\<dots> \<le> 3/2 * real n"
       by (rule psi_ubound_3_2)
@@ -1963,9 +1652,9 @@ next
     have "finite I"
       using assms finite_subset by blast
     have "0 \<le> (\<Sum>i\<in>I. mangoldt i / i - (if prime i then ln i / i else 0))"
-      using mangoldt_pos by (simp add: sum_nonneg)
+      using mangoldt_nonneg by (intro sum_nonneg) simp_all
     moreover have "\<dots> \<le> (\<Sum>i = 1..n. mangoldt i / i - (if prime i then ln i / i else 0))"
-      using assms by (intro sum_mono2) (auto simp: mangoldt_pos)
+      using assms by (intro sum_mono2) (auto simp: mangoldt_nonneg)
     ultimately have *: "\<bar>\<Sum>i\<in>I. mangoldt i / i - (if prime i then ln i / i else 0)\<bar>
                       \<le> \<bar>\<Sum>i = 1..n. mangoldt i / i - (if prime i then ln i / i else 0)\<bar>"
       by linarith
@@ -1980,18 +1669,31 @@ next
     proof -
       have eq_sm: "(\<Sum>i = 1..n. mangoldt i / i) = 
                      (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 1}. mangoldt i / i)"
-        by (intro sum.mono_neutral_right) 
-           (auto simp: mangoldt_def primepow_def dest: prime_ge_1_nat split: if_split_asm)
+      proof (intro sum.mono_neutral_right ballI, goal_cases)
+        case (3 i)
+        hence "\<not>primepow i" by (auto simp: primepow_def Suc_le_eq)
+        thus ?case by (simp add: mangoldt_def)
+      qed (auto simp: Suc_le_eq prime_gt_0_nat)
       have "(\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) =
             (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 2}. mangoldt i / i)"
       proof -
         have eq: "{p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 1 \<le> k} =
                   {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 2 \<le> k} \<union> {p. prime p \<and> p \<in> {1..n}}"
-          apply (auto simp add: prime_ge_Suc_0_nat prime_power_iff not_le)
-          using less_2_cases apply blast
-          using le_trans prime_ge_Suc_0_nat two_is_prime_nat apply blast
-          apply (metis order_refl power_Suc0_right)
-          done
+          (is "?A = ?B \<union> ?C")
+        proof (intro equalityI subsetI; (elim UnE)?)
+          fix x assume "x \<in> ?A"
+          then obtain p k where "x = p ^ k" "prime p" "p ^ k \<le> n" "k \<ge> 1" by auto
+          thus "x \<in> ?B \<union> ?C"
+            by (cases "k \<ge> 2") (auto simp: prime_power_iff Suc_le_eq)
+        next
+          fix x assume "x \<in> ?B"
+          then obtain p k where "x = p ^ k" "prime p" "p ^ k \<le> n" "k \<ge> 1" by auto
+          thus "x \<in> ?A" by (auto simp: prime_power_iff Suc_le_eq)
+        next
+          fix x assume "x \<in> ?C"
+          then obtain p where "x = p ^ 1" "1 \<ge> (1::nat)" "prime p" "p ^ 1 \<le> n" by auto
+          thus "x \<in> ?A" by blast
+        qed
         have eqln: "(\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) = 
                       (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
           by (rule sum.cong) auto
@@ -2007,9 +1709,9 @@ next
           using eq_sm by auto
       qed
       have "(\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) \<le> (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
-        using mangoldt_pos by (auto intro: sum_mono)
+        using mangoldt_nonneg by (auto intro: sum_mono)
       also have "\<dots> \<le> (\<Sum>i = Suc 0..n. mangoldt i / i)"
-        by (intro sum_mono2) (auto simp: mangoldt_pos)
+        by (intro sum_mono2) (auto simp: mangoldt_nonneg)
       finally have "0 \<le> (\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p)"
         by simp
       moreover have "(\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) \<le> 3"

@@ -12,127 +12,7 @@ begin
 
 subsection \<open>Preliminary facts\<close>
 
-(* TODO Move *)
-lemmas eval_bernpoly = 
-  bernpoly_def atMost_nat_numeral power_eq_if binomial_fact fact_numeral eval_bernoulli 
-
-lemma minus_of_real_eq_of_real_iff [simp]: "-of_real x = of_real y \<longleftrightarrow> -x = y"
-  using of_real_eq_iff[of "-x" y] by (simp only: of_real_minus)
-
-lemma of_real_eq_minus_of_real_iff [simp]: "of_real x = -of_real y \<longleftrightarrow> x = -y"
-  using of_real_eq_iff[of x "-y"] by (simp only: of_real_minus)
-
-lemma holomorphic_on_prod [holomorphic_intros]:
-  "(\<And>i. i \<in> I \<Longrightarrow> (f i) holomorphic_on s) \<Longrightarrow> (\<lambda>x. prod (\<lambda>i. f i x) I) holomorphic_on s"
-  by (induction I rule: infinite_finite_induct) (auto intro: holomorphic_intros)
-
-lemma convex_halfspace_Re_gt: "convex {x. Re x > b}"
-  using convex_halfspace_gt[of b "1::complex"] by simp
-
-lemma convex_halfspace_Re_lt: "convex {x. Re x < b}"
-  using convex_halfspace_lt[of "1::complex" b] by simp
-
-lemma convex_halfspace_Im_gt: "convex {x. Im x > b}"
-  using convex_halfspace_gt[of b \<i>] by simp
-
-lemma convex_halfspace_Im_lt: "convex {x. Im x < b}"
-  using convex_halfspace_lt[of \<i> b] by simp
-
-lemma not_is_pole_holomorphic:
-  assumes "open A" "x \<in> A" "f holomorphic_on A"
-  shows   "\<not>is_pole f x"
-proof -
-  have "continuous_on A f" by (intro holomorphic_on_imp_continuous_on) fact
-  with assms have "isCont f x" by (simp add: continuous_on_eq_continuous_at)
-  hence "f \<midarrow>x\<rightarrow> f x" by (simp add: isCont_def)
-  thus "\<not>is_pole f x" unfolding is_pole_def
-    using not_tendsto_and_filterlim_at_infinity[of "at x" f "f x"] by auto
-qed
-
-lemma absolutely_integrable_Gamma_integral:
-  assumes "Re z > 0" "a > 0"
-  shows   "(\<lambda>t. complex_of_real t powr (z - 1) / of_real (exp (a * t))) 
-             absolutely_integrable_on {0<..}" (is "?f absolutely_integrable_on _")
-proof -
-  have "((\<lambda>x. (Re z - 1) * (ln x / x)) \<longlongrightarrow> (Re z - 1) * 0) at_top"
-    by (intro tendsto_intros ln_x_over_x_tendsto_0)
-  hence "((\<lambda>x. ((Re z - 1) * ln x) / x) \<longlongrightarrow> 0) at_top" by simp
-  from order_tendstoD(2)[OF this, of "a/2"] and \<open>a > 0\<close>
-    have "eventually (\<lambda>x. (Re z - 1) * ln x / x < a/2) at_top" by simp
-  from eventually_conj[OF this eventually_gt_at_top[of 0]]
-    obtain x0 where "\<forall>x\<ge>x0. (Re z - 1) * ln x / x < a/2 \<and> x > 0"
-      by (auto simp: eventually_at_top_linorder)
-  hence "x0 > 0" by simp
-  have "x powr (Re z - 1) / exp (a * x) < exp (-(a/2) * x)" if "x \<ge> x0" for x
-  proof -
-    from that and \<open>\<forall>x\<ge>x0. _\<close> have x: "(Re z - 1) * ln x / x < a / 2" "x > 0" by auto
-    have "x powr (Re z - 1) = exp ((Re z - 1) * ln x)"
-      using \<open>x > 0\<close> by (simp add: powr_def)
-    also from x have "(Re z - 1) * ln x < (a * x) / 2" by (simp add: field_simps)
-    finally show ?thesis by (simp add: field_simps exp_add [symmetric])
-  qed
-  note x0 = \<open>x0 > 0\<close> this
-
-  have "?f absolutely_integrable_on ({0<..x0} \<union> {x0..})"
-  proof (rule set_integrable_Un)
-    show "?f absolutely_integrable_on {0<..x0}"
-    proof (rule Bochner_Integration.integrable_bound [OF _ _ AE_I2])
-      show "set_integrable lebesgue {0<..x0} (\<lambda>x. x powr (Re z - 1))" using x0(1) assms
-        by (intro nonnegative_absolutely_integrable_1 integrable_on_powr_from_0') auto
-      show "set_borel_measurable lebesgue {0<..x0}
-              (\<lambda>x. complex_of_real x powr (z - 1) / complex_of_real (exp (a * x)))"
-        by (intro measurable_completion)
-           (auto intro!: borel_measurable_continuous_on_indicator continuous_intros)
-      fix x :: real 
-      have "x powr (Re z - 1) / exp (a * x) \<le> x powr (Re z - 1) / 1" if "x \<ge> 0"
-        using that assms by (intro divide_left_mono) auto
-      thus "norm (indicator {0<..x0} x *\<^sub>R ?f x) \<le> 
-               norm (indicator {0<..x0} x *\<^sub>R x powr (Re z - 1))"
-        by (simp_all add: norm_divide norm_powr_real_powr indicator_def)
-    qed
-  next
-    show "?f absolutely_integrable_on {x0..}"
-    proof (rule Bochner_Integration.integrable_bound [OF _ _ AE_I2])
-      show "set_integrable lebesgue {x0..} (\<lambda>x. exp (-(a/2) * x))" using assms
-        by (intro nonnegative_absolutely_integrable_1 integrable_on_exp_minus_to_infinity) auto
-      show "set_borel_measurable lebesgue {x0..}
-              (\<lambda>x. complex_of_real x powr (z - 1) / complex_of_real (exp (a * x)))" using x0(1)
-        by (intro measurable_completion)
-           (auto intro!: borel_measurable_continuous_on_indicator continuous_intros)
-      fix x :: real 
-      show "norm (indicator {x0..} x *\<^sub>R ?f x) \<le> 
-               norm (indicator {x0..} x *\<^sub>R exp (-(a/2) * x))" using x0
-        by (auto simp: norm_divide norm_powr_real_powr indicator_def less_imp_le)
-    qed
-  qed auto
-  also have "{0<..x0} \<union> {x0..} = {0<..}" using x0(1) by auto
-  finally show ?thesis .
-qed
-
-lemma absolutely_integrable_Gamma_integral':
-  assumes "Re z > 0"
-  shows   "(\<lambda>t. complex_of_real t powr (z - 1) / of_real (exp t)) absolutely_integrable_on {0<..}"
-  using absolutely_integrable_Gamma_integral [OF assms zero_less_one] by simp
-
-lemma Gamma_integral_complex':
-  assumes z: "Re z > 0"
-  shows   "((\<lambda>t. of_real t powr (z - 1) / of_real (exp t)) has_integral Gamma z) {0<..}"
-proof -
-  have "((\<lambda>t. of_real t powr (z - 1) / of_real (exp t)) has_integral Gamma z) {0..}"
-    by (rule Gamma_integral_complex) fact+
-  hence "((\<lambda>t. if t \<in> {0<..} then of_real t powr (z - 1) / of_real (exp t) else 0) 
-           has_integral Gamma z) {0..}"
-    by (rule has_integral_spike [of "{0}", rotated 2]) auto
-  also have "?this = ?thesis"
-    by (subst has_integral_restrict) auto
-  finally show ?thesis .
-qed
-
-lemma powr_divide_complex_of_real:
-  assumes "x \<noteq> 0" "y > 0"
-  shows   "(x / of_real y) powr s = x powr s / of_real y powr (s::complex)"
-  using assms by (auto simp: powr_def Ln_divide_of_real ring_distribs exp_diff Ln_of_real)
-
+(* TODO Move? *)
 lemma powr_add_minus_powr_asymptotics:
   fixes a z :: complex 
   shows "((\<lambda>z. ((1 + z) powr a - 1) / z) \<longlongrightarrow> a) (at 0)"
@@ -162,28 +42,6 @@ next
   thus "(\<lambda>z. \<Sum>n. (a gchoose Suc n) * z ^ n) \<midarrow>0\<rightarrow> a"
     by (auto simp: isCont_def)
 qed
-
-lemma tendsto_neg_powr_complex_of_real:
-  assumes "filterlim f at_top F" and "Re s < 0"
-  shows   "((\<lambda>x. complex_of_real (f x) powr s) \<longlongrightarrow> 0) F"
-proof -
-  have "((\<lambda>x. norm (complex_of_real (f x) powr s)) \<longlongrightarrow> 0) F"
-  proof (rule Lim_transform_eventually)
-    from assms(1) have "eventually (\<lambda>x. f x \<ge> 0) F"
-      by (auto simp: filterlim_at_top)
-    thus "eventually (\<lambda>x. f x powr Re s = norm (of_real (f x) powr s)) F"
-      by eventually_elim (simp add: norm_powr_real_powr)
-    from assms show "((\<lambda>x. f x powr Re s) \<longlongrightarrow> 0) F"
-      by (intro tendsto_neg_powr)
-  qed
-  thus ?thesis by (simp add: tendsto_norm_zero_iff)
-qed
-
-lemma tendsto_neg_powr_complex_of_nat:
-  assumes "filterlim f at_top F" and "Re s < 0"
-  shows   "((\<lambda>x. of_nat (f x) powr s) \<longlongrightarrow> 0) F"
-  using tendsto_neg_powr_complex_of_real[OF filterlim_compose[OF 
-          filterlim_real_sequentially assms(1)] assms(2)] by simp
 
 lemma complex_powr_add_minus_powr_asymptotics:
   fixes s :: complex
@@ -289,7 +147,7 @@ text \<open>
   complex plane.
 \<close>
 definition pre_zeta :: "real \<Rightarrow> complex \<Rightarrow> complex" where
-  "pre_zeta a s = pre_zeta_aux (nat \<lceil>- Re s\<rceil> div 2 + 1) a s"
+  "pre_zeta a s = pre_zeta_aux (nat (1 - \<lceil>Re s / 2\<rceil>)) a s"
 
 text \<open>
   We can then obtain the Hurwitz $\zeta$ function by adding back the pole at 1.
@@ -327,7 +185,7 @@ context
 begin
 
 private lemma holomorphic_pre_zeta_aux':
-  assumes "n \<noteq> 0" "a > 0" "bounded U" "open U" "U \<subseteq> {s. Re s > \<sigma>}" and \<sigma>: "\<sigma> > - 2 * real n"
+  assumes "a > 0" "bounded U" "open U" "U \<subseteq> {s. Re s > \<sigma>}" and \<sigma>: "\<sigma> > - 2 * real n"
   shows   "pre_zeta_aux n a holomorphic_on U" unfolding pre_zeta_aux_def
 proof (intro holomorphic_intros)
   define C :: real where "C = max 0 (Sup ((\<lambda>s. norm (pochhammer s (Suc (2 * n)))) ` closure U))"
@@ -380,32 +238,38 @@ proof (intro holomorphic_intros)
     show ?case using \<open>a > 0\<close> and * unfolding f'_def
       by (auto simp: case_prod_unfold add_eq_0_iff intro!: continuous_intros)
   next
-    case (4 t x s)
+    case (4 b c z e)
+    have "- 2 * real n < \<sigma>" by (fact \<sigma>)
+    also from 4 assms have "\<sigma> < Re z" by auto
+    finally show ?case using assms 4
+      by (intro integrable_continuous_real continuous_intros) (auto simp: add_eq_0_iff)
+  next
+    case (5 t x s)
     thus ?case using \<open>a > 0\<close>
       by (intro integrable_EM_remainder') (auto intro!: continuous_intros simp: add_eq_0_iff)
   next
-    case 5
+    case 6
     from \<sigma> have "(\<lambda>y. C / (-2 * real n - \<sigma>) * (a + y) powr (-2 * real n - \<sigma>)) \<longlonglongrightarrow> 0"
       by (intro tendsto_mult_right_zero tendsto_neg_powr
             filterlim_real_sequentially filterlim_tendsto_add_at_top [OF tendsto_const]) auto
     thus ?case unfolding convergent_def by (auto simp: add_ac)
   next
-    case 6
+    case 7
     show ?case 
     proof (intro eventually_mono [OF eventually_ge_at_top[of 1]] ballI)
       fix x :: real and s :: complex assume x: "x \<ge> 1" and s: "s \<in> U"
       have "norm (- (pochhammer s (Suc (2 * n)) * of_real (x + a) powr (- 1 - 2 * of_nat n - s))) =
               norm (pochhammer s (Suc (2 * n))) * (x + a) powr (-1 - 2 * of_nat n - Re s)"
-        (is "?N = _") using 6 \<open>a > 0\<close> x by (simp add: norm_mult norm_powr_real_powr)
+        (is "?N = _") using 7 \<open>a > 0\<close> x by (simp add: norm_mult norm_powr_real_powr)
       also have "\<dots> \<le> ?g x"
-        using 6 assms x s \<open>a > 0\<close> by (intro mult_mono C powr_mono) auto
+        using 7 assms x s \<open>a > 0\<close> by (intro mult_mono C powr_mono) auto
       finally show "?N \<le> ?g x" .
     qed
   qed (insert assms, auto)
 qed (insert assms, auto)
 
 lemma analytic_pre_zeta_aux:
-  assumes "n \<noteq> 0" "a > 0"
+  assumes "a > 0"
   shows   "pre_zeta_aux n a analytic_on {s. Re s > - 2 * real n}"
   unfolding analytic_on_def
 proof
@@ -528,7 +392,7 @@ text \<open>
   $\mathfrak R(s)>0$, they must agree in their entire domain.
 \<close>
 lemma pre_zeta_aux_eq:
-  assumes "0 < m" "m \<le> n" "a > 0" "Re s > -2 * real m"
+  assumes "m \<le> n" "a > 0" "Re s > -2 * real m"
   shows   "pre_zeta_aux m a s = pre_zeta_aux n a s"
 proof -
   have "pre_zeta_aux n a s - pre_zeta_aux m a s = 0"
@@ -555,7 +419,7 @@ proof -
 qed
 
 lemma pre_zeta_aux_eq':
-  assumes "0 < m" "0 < n" "a > 0" "Re s > -2 * real m" "Re s > -2 * real n"
+  assumes "a > 0" "Re s > -2 * real m" "Re s > -2 * real n"
   shows   "pre_zeta_aux m a s = pre_zeta_aux n a s"
 proof (cases m n rule: linorder_cases)
   case less
@@ -566,12 +430,12 @@ next
 qed auto
 
 lemma pre_zeta_aux_eq_pre_zeta:
-  assumes "n > 0" and "Re s > -2 * real n" and "a > 0"
+  assumes "Re s > -2 * real n" and "a > 0"
   shows   "pre_zeta_aux n a s = pre_zeta a s"
   unfolding pre_zeta_def
 proof (intro pre_zeta_aux_eq')
-  from assms show "- 2 * real (nat \<lceil>- Re s\<rceil> div 2 + 1) < Re s"
-    unfolding of_nat_add of_nat_1 ring_distribs by linarith
+  from assms show "- 2 * real (nat (1 - \<lceil>Re s / 2\<rceil>)) < Re s"
+    by linarith
 qed (insert assms, simp_all)
 
 text \<open>
@@ -594,17 +458,17 @@ proof
   note analytic = analytic_on_subset[OF analytic_pre_zeta_aux]
   have "pre_zeta_aux (nat \<lceil>- Re s\<rceil> + 2) a holomorphic_on C"
   proof (intro analytic_imp_holomorphic analytic subsetI assms, goal_cases)
-    case (2 w)
+    case (1 w)
     with \<epsilon> have "w \<in> ?B" by (auto simp: C_def)
     thus ?case by (auto simp: ceiling_minus)
-  qed auto
+  qed
   also have "?this \<longleftrightarrow> pre_zeta a holomorphic_on C"
   proof (intro holomorphic_cong refl pre_zeta_aux_eq_pre_zeta assms)
     fix w assume "w \<in> C"
     with \<epsilon> have w: "w \<in> ?B" by (auto simp: C_def)
     thus " - 2 * real (nat \<lceil>- Re s\<rceil> + 2) < Re w"
       by (simp add: ceiling_minus)
-  qed auto
+  qed
   finally show "\<exists>e>0. pre_zeta a holomorphic_on ball s e"
     using \<open>\<epsilon> > 0\<close> unfolding C_def by blast
 qed
@@ -766,9 +630,9 @@ theorem
   and   sums_hurwitz_zeta: "(\<lambda>n. (of_nat n + of_real a) powr -s) sums hurwitz_zeta a s"
 proof -
   from assms have [simp]: "s \<noteq> 1" by auto
-  from assms have "hurwitz_zeta a s = pre_zeta_aux 1 a s + of_real a powr (1 - s) / (s - 1)"
+  from assms have "hurwitz_zeta a s = pre_zeta_aux 0 a s + of_real a powr (1 - s) / (s - 1)"
     by (simp add: hurwitz_zeta_def pre_zeta_def)
-  also from assms have "pre_zeta_aux 1 a s = (\<Sum>n. (of_nat n + of_real a) powr -s) + 
+  also from assms have "pre_zeta_aux 0 a s = (\<Sum>n. (of_nat n + of_real a) powr -s) + 
                           of_real a powr (1 - s) / (1 - s)"
     by (intro pre_zeta_aux_conv_zeta)
   also have "\<dots> + a powr (1 - s) / (s - 1) = 
@@ -1031,12 +895,12 @@ proof -
   from assms have [simp]: "s \<noteq> 1" by auto
   let ?f = "\<lambda>x. of_real (x + a) powr -s"
   let ?fs = "\<lambda>n x. (-1) ^ n * pochhammer s n * of_real (x + a) powr (-s - of_nat n)"
+  have minus_commute: "-a - b = -b - a" for a b :: complex by (simp add: algebra_simps)
   define I where "I = (\<lambda>n. (of_nat n + a) powr (1 - s) / (1 - s))"
-  define R where "R = (\<lambda>n. EM_remainder' 3 (?fs 3) (real 0) (real n))"
-  define R_lim where "R_lim = EM_remainder 3 (?fs 3) 0"
-  define C where "C = s * a powr (-s - 1) / 12 - (a powr -s / 2)"
-  define D where "D = (\<lambda>n. (-s/12) * of_real (a + real n) powr (- s - 1) +
-                            (1/2) * (of_real (a + real n) powr - s))"
+  define R where "R = (\<lambda>n. EM_remainder' 1 (?fs 1) (real 0) (real n))"
+  define R_lim where "R_lim = EM_remainder 1 (?fs 1) 0"
+  define C where "C = - (a powr -s / 2)"
+  define D where "D = (\<lambda>n. (1/2) * (of_real (a + real n) powr - s))"
   define D' where "D' = (\<lambda>n. of_real (a + real n) powr - s)"
   define C' where "C' = a powr (1 - s) / (1 - s)"
   define C'' where "C'' = of_real a powr - s"
@@ -1050,13 +914,12 @@ proof -
     hence I: "((\<lambda>x. of_real (x + a) powr -s) has_integral (I n - C')) {0..n}"
       by (auto simp: divide_simps C'_def I_def)
     have "(\<Sum>i\<in>{0<..n}. ?f (real i)) - integral {real 0..real n} ?f =
-            (\<Sum>k<3. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) + R n" 
+            (\<Sum>k<1. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) + R n" 
       using n assms unfolding R_def
       by (intro euler_maclaurin_strong_raw_nat[where Y = "{0}"])
          (auto intro!: continuous_intros derivative_eq_intros has_vector_derivative_real_field
                simp: pochhammer_rec' algebra_simps complex_nonpos_Reals_iff add_eq_0_iff)
-    also have "(\<Sum>k<3. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) = 
-                  (s * a powr (- s - 1) - s * (n + a) powr (- s - 1)) / 12 +
+    also have "(\<Sum>k<1. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (?fs k (real n) - ?fs k (real 0))) = 
                   ((n + a) powr - s - a powr - s) / 2"
       by (simp add: lessThan_nat_numeral scaleR_conv_of_real numeral_2_eq_2 [symmetric])
     also have "\<dots> = C + D n" by (simp add: C_def D_def field_simps)
@@ -1073,25 +936,25 @@ proof -
   hence ev: "eventually (\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n) = S n - I' n) at_top"
     by (intro eventually_mono[OF eventually_gt_at_top[of 0]]) auto
 
-  have [simp]: "-3 - s = -s - 3" by simp
+  have [simp]: "-1 - s = -s - 1" by simp
   {
-    let ?C = "norm (pochhammer s 3)"
+    let ?C = "norm (pochhammer s 1)"
     have "R \<longlonglongrightarrow> R_lim" unfolding R_def R_lim_def of_nat_0
     proof (subst of_int_0 [symmetric], rule tendsto_EM_remainder)
-      show "eventually (\<lambda>x. norm (?fs 3 x) \<le> ?C * (x + a) powr (-Re s - 3)) at_top"
+      show "eventually (\<lambda>x. norm (?fs 1 x) \<le> ?C * (x + a) powr (-Re s - 1)) at_top"
         using eventually_ge_at_top[of 0]
         by eventually_elim (insert assms, auto simp: norm_mult norm_powr_real_powr)
     next
       fix x assume x: "x \<ge> real_of_int 0"
       have [simp]: "-numeral n - (x :: real) = -x - numeral n" for x n by (simp add: algebra_simps)
-      show "((\<lambda>x. ?C / (-Re s - 2) * (x + a) powr (-Re s - 2)) has_real_derivative 
-              ?C * (x + a) powr (- Re s - 3)) (at x within {real_of_int 0..})"
+      show "((\<lambda>x. ?C / (-Re s) * (x + a) powr (-Re s)) has_real_derivative 
+              ?C * (x + a) powr (- Re s - 1)) (at x within {real_of_int 0..})"
         using assms x by (auto intro!: derivative_eq_intros)
     next
-      have "(\<lambda>y. ?C / (- Re s - 2) * (a + real y) powr (- Re s - 2)) \<longlonglongrightarrow> 0"
+      have "(\<lambda>y. ?C / (- Re s) * (a + real y) powr (- Re s)) \<longlonglongrightarrow> 0"
         by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_real_sequentially
                   filterlim_tendsto_add_at_top[OF tendsto_const]) (use assms in auto)
-      thus "convergent (\<lambda>y. ?C / (- Re s - 2) * (real y + a) powr (- Re s - 2))"
+      thus "convergent (\<lambda>y. ?C / (- Re s) * (real y + a) powr (- Re s))"
         by (auto simp: add_ac convergent_def)
     qed (intro integrable_EM_remainder' continuous_intros, insert assms, auto simp: add_eq_0_iff)
   }
@@ -1104,13 +967,13 @@ proof -
     thus "(\<lambda>n. I n - I' n) \<longlonglongrightarrow> 0" by (simp add: I_def I'_def divide_simps)
   qed
   ultimately have "(\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n)) 
-                     \<longlonglongrightarrow> C - C' + C'' - 0 + (0 + 0) + R_lim + 0"
+                     \<longlonglongrightarrow> C - C' + C'' - 0 + 0 + R_lim + 0"
     unfolding D_def D'_def using assms
     by (intro tendsto_add tendsto_diff tendsto_const tendsto_mult_right_zero
               tendsto_neg_powr_complex_of_real filterlim_tendsto_add_at_top 
               filterlim_real_sequentially) auto
-  also have "C - C' + C'' - 0 + (0 + 0) + R_lim + 0 = 
-               (a powr - s / 2) + a powr (1 - s) / (s - 1) + s * a powr (- s - 1) / 12 + R_lim"
+  also have "C - C' + C'' - 0 + 0 + R_lim + 0 = 
+               (a powr - s / 2) + a powr (1 - s) / (s - 1) + R_lim"
     by (simp add: C_def C'_def C''_def field_simps)
   also have "\<dots> = hurwitz_zeta a s"
     using assms by (simp add: hurwitz_zeta_def pre_zeta_def pre_zeta_aux_def
@@ -1584,16 +1447,6 @@ corollary zeta_8: "zeta 8 = pi ^ 8 / 9450"
 
 subsection \<open>Integral relation between $\Gamma$ and $\zeta$ function\<close>
 
-(* TODO: Move? *)
-lemma lebesgue_real_scale:
-  assumes "c \<noteq> 0"
-  shows   "lebesgue = density (distr lebesgue lebesgue (\<lambda>x. c * x)) (\<lambda>x. ennreal \<bar>c\<bar>)"
-  using assms by (subst lebesgue_affine_euclidean[of "\<lambda>_. c" 0]) simp_all
-
-lemma powr_Reals_eq': "\<lbrakk>x \<in> \<real>; y \<in> \<real>; Re x \<ge> 0\<rbrakk> \<Longrightarrow> x powr y = of_real (Re x powr Re y)"
-  by (cases "Re x = 0") (auto simp: powr_Reals_eq elim: Reals_cases)
-(* END TODO *)
-
 lemma
   assumes z: "Re z > 0" and a: "a > 0"
   shows   Gamma_hurwitz_zeta_aux_integral: 
@@ -1671,7 +1524,7 @@ proof -
       using assms by (intro Gamma_hurwitz_zeta_aux_integrable) auto
     also have "?this \<longleftrightarrow> integrable lebesgue
                  (\<lambda>s. complex_of_real (indicator {0<..} s *\<^sub>R (s powr (x - 1) / (exp ((n+a) * s)))))"
-      by (intro Bochner_Integration.integrable_cong refl) (auto simp: powr_Reals_eq' indicator_def)
+      by (intro Bochner_Integration.integrable_cong refl) (auto simp: powr_Reals_eq indicator_def)
     finally have "set_integrable lebesgue {0<..} (\<lambda>s. s powr (x - 1) / exp ((n+a) * s))"
       by (subst (asm) complex_of_real_integrable_eq)
     thus ?case by simp
@@ -1683,7 +1536,7 @@ proof -
   also have "?I = lebesgue_integral lebesgue
                     (\<lambda>s. of_real (indicator {0<..} s *\<^sub>R (s powr (x - 1) / exp ((n+a) * s))))"
     using assms by (intro Bochner_Integration.integral_cong refl) 
-                   (auto simp: indicator_def powr_Reals_eq')
+                   (auto simp: indicator_def powr_Reals_eq)
   also have "\<dots> = of_real (set_lebesgue_integral lebesgue {0<..} 
                     (\<lambda>s. s powr (x - 1) / exp ((n+a) * s)))"
     by (rule Bochner_Integration.integral_complex_of_real)

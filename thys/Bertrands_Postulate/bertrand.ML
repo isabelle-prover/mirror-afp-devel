@@ -87,7 +87,7 @@ fun prove_primepow ctxt cache t =
     if n <= 0 then
       raise TERM ("prove_primepow", [t])
     else if n = 1 then
-      NotPrimepowThm @{thm not_primepow_1}
+      NotPrimepowThm @{thm not_primepow_1_nat}
     else
       case mk_primepow_cert n of
         Primepow (p, k) =>

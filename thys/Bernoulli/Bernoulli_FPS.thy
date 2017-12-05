@@ -703,8 +703,11 @@ lemmas eval_bernoulli =
   akiyama_tanigawa_code akiyama_tanigawa_row_numeral
   numeral_2_eq_2 [symmetric] akiyama_tanigawa_row_Suc upt_conv_Cons
   akiyama_tanigawa_row_0 bernoulli_code[of "numeral n" for n]
-  
+
 lemmas eval_bernoulli' = eval_bernoulli bernoulli'_code[of "numeral n" for n]
+
+lemmas eval_bernpoly = 
+  bernpoly_def atMost_nat_numeral power_eq_if binomial_fact fact_numeral eval_bernoulli
 
 (* This should only take a few seconds *)
 lemma bernoulli_upto_20 [simp]:
