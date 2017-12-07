@@ -279,7 +279,7 @@ qed
 lemma norm1_cont[simp]: "isCont norm1 v" unfolding norm1_def[abs_def] by auto
 
 lemma norm1_ge_norm: "norm1 v \<ge> norm v" unfolding norm1_def norm_vec_def
-  by (rule setL2_le_sum, auto)
+  by (rule L2_set_le_sum, auto)
 
 text \<open>The following continuity lemmas have been proven with hints from Fabian Immler.\<close>
 

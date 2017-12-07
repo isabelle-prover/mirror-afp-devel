@@ -418,7 +418,7 @@ lemma norm_M: "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)
 proof -
   have "(norm v)\<^sup>2 = (v$1)\<^sup>2 + (v$2)\<^sup>2"
     unfolding norm_vec_def
-      and setL2_def
+      and L2_set_def
     by (simp add: sum_2)
   thus "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<^sup>2 - 1"
     unfolding vector2_append1_def
@@ -5581,7 +5581,7 @@ lemma hyp2_rep_abs_examples:
 proof -
   have "norm ?ca < 1" and "norm ?cb < 1" and "norm ?cc < 1" and "norm ?cd < 1"
     and "norm ?ct < 1"
-    by (unfold norm_vec_def setL2_def) (simp_all add: sum_2 power2_eq_square)
+    by (unfold norm_vec_def L2_set_def) (simp_all add: sum_2 power2_eq_square)
   thus "hyp2_rep ?a = ?ca" and "hyp2_rep ?b = ?cb" and "hyp2_rep ?c = ?cc"
     and "hyp2_rep ?d = ?cd" and "hyp2_rep ?t = ?ct"
     by (simp_all add: hyp2_rep_abs)

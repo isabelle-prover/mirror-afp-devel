@@ -324,7 +324,7 @@ lemma norm_cast[simp]: "norm (cast x::'a) = norm (x::'b)"
   unfolding norm_conv_dist
   apply (subst (1 2) euclidean_dist_l2)
   using that
-  apply (auto simp: setL2_def sum_Basis_sum_nth_Basis_list  cong: sum.cong)
+  apply (auto simp: L2_set_def sum_Basis_sum_nth_Basis_list  cong: sum.cong)
   apply (subst sum.cong[OF refl])
    apply (subst cast_inner_Basis_list_nth)
      apply auto

@@ -110,7 +110,7 @@ lemma dist_component_le:
   assumes "i \<in> Basis"
   shows "dist (x \<bullet> i) (y \<bullet> i) \<le> dist x y"
   using assms
-  by (auto simp: euclidean_dist_l2[of x y] intro: member_le_setL2)
+  by (auto simp: euclidean_dist_l2[of x y] intro: member_le_L2_set)
 
 lemma sum_inner_Basis_one: "i \<in> Basis \<Longrightarrow> (\<Sum>x\<in>Basis. x \<bullet> i) = 1"
   by (subst sum.mono_neutral_right[where S="{i}"])

@@ -426,7 +426,7 @@ proof -
   }
   hence x: "x \<noteq> 0" by auto
   moreover have "le_vec 0 x" unfolding x_def by auto
-  moreover have "norm x = 1" unfolding norm_vec_def setL2_def
+  moreover have "norm x = 1" unfolding norm_vec_def L2_set_def
     by (auto, subst sum.remove[of _ undefined], auto simp: x_def)
   ultimately show ?thesis unfolding X1_def X_def by auto
 qed

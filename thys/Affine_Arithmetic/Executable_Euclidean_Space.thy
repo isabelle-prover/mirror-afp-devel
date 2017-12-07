@@ -90,7 +90,7 @@ lemma eucl_truncate_down_correct:
     {0..sqrt (DIM('a)) * 2 powr of_int (- e)}"
 proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
-    unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
+    unfolding euclidean_dist_l2[where 'a='a] L2_set_def ..
   also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr of_int (- e))\<^sup>2))"
     by (intro real_sqrt_le_mono sum_mono power_mono)
       (auto simp: dist_real_def eucl_down_def abs_round_down_le)

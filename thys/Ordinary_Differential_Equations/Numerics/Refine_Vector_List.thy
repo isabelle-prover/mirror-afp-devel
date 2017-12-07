@@ -82,7 +82,7 @@ lemma mig_real_abs_le: "\<bar>mig_real a b\<bar> \<le> \<bar>x\<bar>" if "x \<in
   by (auto simp: mig_real_def abs_real_def)
 
 lemma norm_eucl_L2: "norm x = sqrt (\<Sum>i\<in>Basis. (x \<bullet> i)\<^sup>2)"
-  unfolding norm_conv_dist by (subst euclidean_dist_l2)  (simp add: setL2_def)
+  unfolding norm_conv_dist by (subst euclidean_dist_l2)  (simp add: L2_set_def)
 
 lemma mig_componentwise_inner_Basis: "mig_componentwise a b \<bullet> i = mig_real (a \<bullet> i) (b \<bullet> i)"
   if "i \<in> Basis"

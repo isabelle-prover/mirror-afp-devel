@@ -18,7 +18,7 @@ lemma cube_in_cball:
   assumes "r > 0"
   assumes "\<And>i. i\<in> Basis \<Longrightarrow> dist (x \<bullet> i) (y \<bullet> i) \<le> r / sqrt(DIM('a))"
   shows "y \<in> cball x r"
-  unfolding mem_cball euclidean_dist_l2[of x y] setL2_def
+  unfolding mem_cball euclidean_dist_l2[of x y] L2_set_def
 proof -
   have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<^sup>2)"
   proof (intro sum_mono)

@@ -406,7 +406,7 @@ lemma interpret_form_conefield_bounds_form_list:
     tan (rad_of L) * ux  \<le> uy)"
   if "U \<in> float" "L \<in> float" "e \<in> float" "em \<in> float"
   using that
-  by (auto simp: conefield_bounds_form_def setL2_def)
+  by (auto simp: conefield_bounds_form_def L2_set_def)
 
 lemma list_of_eucl_eucl1_3:
   "(list_of_eucl (vec1_of_flow1 (xDX::(real^3) \<times> ((real^3)\<Rightarrow>\<^sub>L(real^3))))) =

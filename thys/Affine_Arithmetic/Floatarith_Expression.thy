@@ -610,7 +610,7 @@ lemma bounded_bilinear_matrix_matrix_mult[bounded_bilinear]:
   by unfold_locales (auto simp: matrix_add_ldistrib matrix_add_rdistrib matrix_scaleR_right matrix_scaleR_left)
 
 lemma norm_axis: "norm (axis ia 1::'a::{real_normed_algebra_1}^'n) = 1"
-  by (auto simp: axis_def norm_vec_def setL2_def if_distrib cond_application_beta sum.delta
+  by (auto simp: axis_def norm_vec_def L2_set_def if_distrib cond_application_beta sum.delta
       cong: if_cong)
 
 lemma abs_vec_nth_blinfun_apply_lemma:
@@ -627,12 +627,12 @@ lemma bounded_linear_matrix_blinfun_apply: "bounded_linear (\<lambda>x::(real^'n
   apply (rule exI[where x="real (CARD('n) * CARD('m))"])
   apply (auto simp: matrix_def)
   apply (subst norm_vec_def)
-  apply (rule setL2_le_sum[THEN order_trans])
+  apply (rule L2_set_le_sum[THEN order_trans])
   apply simp
   apply auto
   apply (rule sum_mono[THEN order_trans])
   apply (subst norm_vec_def)
-   apply (rule setL2_le_sum)
+   apply (rule L2_set_le_sum)
    apply simp
   apply (rule sum_mono[THEN order_trans])
    apply (rule sum_mono)
@@ -1149,8 +1149,8 @@ definition "norm2\<^sub>e n = Maxs\<^sub>e (map (\<lambda>j. Norm (map (\<lambda
 definition "N\<^sub>r l = Num (float_of l)"
 
 lemma interpret_floatarith_Norm:
-  "interpret_floatarith (Norm xs) vs = setL2 (\<lambda>i. interpret_floatarith (xs ! i) vs) {0..<length xs}"
-  by (auto simp: Norm_def setL2_def sum_list_sum_nth power2_eq_square)
+  "interpret_floatarith (Norm xs) vs = L2_set (\<lambda>i. interpret_floatarith (xs ! i) vs) {0..<length xs}"
+  by (auto simp: Norm_def L2_set_def sum_list_sum_nth power2_eq_square)
 
 lemma interpret_floatarith_Nr[simp]: "interpret_floatarith (N\<^sub>r U) vs = real_of_float (float_of U)"
   by (auto simp: N\<^sub>r_def)

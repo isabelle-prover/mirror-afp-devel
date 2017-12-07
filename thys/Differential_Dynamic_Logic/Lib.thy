@@ -11,7 +11,7 @@ lemma vec_extensionality:"(\<And>i. v$i = w$i) \<Longrightarrow> (v = w)"
 
 lemma norm_axis: "norm (axis i x) = norm x"
   unfolding axis_def norm_vec_def
-  unfolding setL2_def
+  unfolding L2_zet_def
   by(clarsimp simp add: if_distrib[where f=norm] if_distrib[where f="\<lambda>x. x\<^sup>2"] sum.If_cases)
 
 lemma bounded_linear_axis: "bounded_linear (axis i)"
@@ -165,7 +165,7 @@ proof (auto simp add:  LIM_def continuous_on_def)
     assume dist:"\<forall>i. dist x2 x1 < ?\<delta>i i"
     have dists:"\<And>i. dist x2 x1 < ?\<delta>i i"
       subgoal for i using dist \<delta>s[of i] by auto done
-    have euclid:"\<And>y. norm(?f x1 y - ?f x2 y) = (setL2 (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)"
+    have euclid:"\<And>y. norm(?f x1 y - ?f x2 y) = (L2_zet (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)"
       by (simp add: norm_vec_def)
     have finite:"finite (UNIV::'a set)" by auto
     have nonempty: "(UNIV::'a set) \<noteq> {}" by auto
@@ -243,9 +243,9 @@ proof (auto simp add:  LIM_def continuous_on_def)
       qed
     have SUM_leq:"\<And>S::('a) set. \<And> f g ::('a \<Rightarrow> real). S \<noteq> {} \<Longrightarrow> finite S \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> f x < g x) \<Longrightarrow> (\<Sum>x\<in>S. f x) < (\<Sum>x\<in>S. g x)"
       by(rule sum_strict_mono, auto)
-    have L2:"\<And>f S. setL2 (\<lambda>x. norm(f x)) S \<le> (\<Sum>x \<in> S. norm(f x))"
-      using setL2_le_sum norm_ge_zero by metis
-    have L2':"\<And>y. (setL2 (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y) \<le> (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y))/norm(y)"
+    have L2:"\<And>f S. L2_zet (\<lambda>x. norm(f x)) S \<le> (\<Sum>x \<in> S. norm(f x))"
+      using L2_zet_le_sum norm_ge_zero by metis
+    have L2':"\<And>y. (L2_zet (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y) \<le> (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y))/norm(y)"
       subgoal for y
         using L2[of "(\<lambda> x. f x x1 y - f x x2 y)" UNIV]
         by (auto simp add: divide_right_mono)
@@ -300,7 +300,7 @@ proof (auto simp add:  LIM_def continuous_on_def)
       by (simp add: dist_blinfun_def)
     moreover have "... = (SUP y:UNIV. norm(?f x1 y - ?f x2 y)/norm(y))"
       by (metis (no_types, lifting) SUP_cong blinfun.diff_left norm_blinfun.rep_eq norm_minus_commute onorm_def)
-    moreover have "... = (SUP y:UNIV. (setL2 (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y))"
+    moreover have "... = (SUP y:UNIV. (L2_zet (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y))"
       using  euclid by auto
     moreover have "... \<le> (SUP y:UNIV. (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y))/norm(y))"
       using L2' SUP_cong SUP_leq bdd_above by auto

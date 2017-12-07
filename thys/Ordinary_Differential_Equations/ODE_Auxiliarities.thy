@@ -750,7 +750,7 @@ lemma norm_nth_le:
   fixes x::"'a::euclidean_space"
   assumes "i \<in> Basis"
   shows "norm (x \<bullet> i) \<le> norm x"
-  unfolding norm_conv_dist euclidean_dist_l2[of x] setL2_def
+  unfolding norm_conv_dist euclidean_dist_l2[of x] L2_set_def
   by (auto intro!: real_le_rsqrt sum_ge_element assms)
 
 lemma norm_Pair_le:
