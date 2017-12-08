@@ -120,7 +120,6 @@ proof -
         to instantiate the IH (which is in some sense more natural, less use of commutativity).
         This gave us a @{term Fa} that verifies @{term "H' \<Rightarrow> Fa, F, \<Delta>"} and @{term "Fa, \<Gamma>' \<Rightarrow> \<Delta>'"}
          and resulted in the interpolant @{term "to_mini_formula (Fa \<^bold>\<or> Ga)"}.\<close>
-      thm ImpL(2)[of H' \<Gamma>' "F, \<Delta>" \<Delta>']
       let ?w = "Fa \<^bold>\<rightarrow> Ga"
       show ?thesis proof(intro exI[where x="?w"] conjI)  
         from IH1(1) IH2(2) show "?w, \<Gamma>' \<Rightarrow> \<Delta>'"
@@ -289,7 +288,6 @@ proof -
       from ImpL(4)[OF * this] obtain Ga where IH2: "G, H' \<Rightarrow> Ga, \<Delta>" "Ga, \<Gamma>' \<Rightarrow> \<Delta>'" 
         "fst (pn_atoms Ga) \<subseteq> (patoms_mset (G, H') \<union> natoms_mset \<Delta>) \<inter> (natoms_mset \<Gamma>' \<union> patoms_mset \<Delta>')"
         "snd (pn_atoms Ga) \<subseteq> (natoms_mset (G, H') \<union> patoms_mset \<Delta>) \<inter> (patoms_mset \<Gamma>' \<union> natoms_mset \<Delta>')" "is_mini_formula Ga" by blast
-      thm ImpL(2)[of H' \<Gamma>' "F, \<Delta>" \<Delta>']
       let ?w = "Fa \<^bold>\<rightarrow> Ga"
       show ?thesis proof(intro exI[where x="?w"] conjI)
         from IH1(1) IH2(2) show "?w, \<Gamma>' \<Rightarrow> \<Delta>'"
