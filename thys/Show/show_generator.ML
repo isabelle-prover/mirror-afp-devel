@@ -295,26 +295,36 @@ fun generate_showsp tyco lthy =
       let
         val constr_Ts = tycos
           |> map (#ctrXs_Tss o #fp_ctr_sugar o the o BNF_FP_Def_Sugar.fp_sugar_of ctxt)
+
         val ind_case_to_idxs = 
           let
             fun number n (i, j) ((_ :: xs) :: ys) = (n, (i, j)) :: number (n + 1) (i, j + 1) (xs :: ys)
               | number n (i, _) ([] :: ys) = number n (i + 1, 0) ys
               | number _ _ [] = []
           in AList.lookup (op =) (number 0 (0, 0) constr_Ts) #> the end
+
         fun instantiate_IHs IHs assms = map (fn IH =>
           OF_option IH (replicate (Thm.nprems_of IH - length assms) NONE @ map SOME assms)) IHs
-        val show_law_simps = Named_Theorems.get ctxt @{named_theorems "show_law_simps"}
+
         fun induct_tac ctxt f =
           (DETERM o Induction.induction_tac ctxt false
             (map (fn x => [SOME (NONE, (x, false))]) xs) [] [] (SOME induct_thms) [])
           THEN_ALL_NEW (fn st =>
             Subgoal.SUBPROOF (fn {context = ctxt, prems, params, ...} =>
               f ctxt (st - 1) prems params) ctxt st)
+
+        (*do not use full "show_law_simps" here, since otherwise too many
+          subgoals might be solved (so that the number of subgoals does no longer
+          match the number of IHs)*)
+        val show_law_simps_less = @{thms
+          shows_string_append shows_pl_append shows_pr_append shows_space_append}
+
         fun o_append_intro_tac ctxt f = HEADGOAL (
           K (Method.try_intros_tac ctxt @{thms o_append} [])
-          THEN_ALL_NEW K (unfold_tac ctxt show_law_simps)
-          THEN_ALL_NEW (fn st =>
-            Subgoal.SUBPROOF (fn {context = ctxt', ...} => f ctxt' (st - 1)) ctxt st))
+          THEN_ALL_NEW K (unfold_tac ctxt show_law_simps_less)
+          THEN_ALL_NEW (fn i => Subgoal.SUBPROOF (fn {context = ctxt', ...} =>
+              f (i - 1) ctxt') ctxt i))
+
         fun solve_tac ctxt case_num prems params =
           let
             val (i, _) = ind_case_to_idxs case_num (*(constructor number, argument number)*)
@@ -329,9 +339,10 @@ fun generate_showsp tyco lthy =
                 val IHs = instantiate_IHs IHs assms |> split_IHs Ts
               in
                 unfold_tac ctxt (nth show_simps i)
-                THEN o_append_intro_tac ctxt (fn ctxt' => fn st =>
+                THEN print_tac ctxt ("after unfold_tac")
+                THEN o_append_intro_tac ctxt (fn i => fn ctxt' =>
                   resolve_tac ctxt' @{thms show_lawD} 1
-                  THEN recursor_tac assms (nth Ts st) (nth IHs st) ctxt')
+                  THEN recursor_tac assms (nth Ts i) (nth IHs i) ctxt')
               end) ctxt 1
           end
       in induct_tac ctxt solve_tac end
@@ -339,6 +350,7 @@ fun generate_showsp tyco lthy =
     val show_law_thms = prove_multi_future lthy (map fst xs @ ss) [] show_law_prethms
       (fn {context = ctxt, ...} =>
         HEADGOAL (show_law_tac ctxt (map Free xs)))
+
     val (show_law_thms, lthy) = fold_map (fn (tyco, thm) =>
       let val name = Long_Name.base_name tyco
       in
