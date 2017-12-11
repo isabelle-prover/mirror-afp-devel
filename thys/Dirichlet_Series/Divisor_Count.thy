@@ -26,7 +26,7 @@ lemma divisor_sigma_1 [simp]: "divisor_sigma x 1 = 1"
   by simp
 
 lemma fds_divisor_sigma: "fds (divisor_sigma x) = fds_zeta * fds_shift x fds_zeta"
-  by (rule fds_eqI) (simp add: fds_nth_times dirichlet_prod_altdef1 divisor_sigma_def)
+  by (rule fds_eqI) (simp add: fds_nth_mult dirichlet_prod_altdef1 divisor_sigma_def)
 
 interpretation divisor_sigma: multiplicative_function "divisor_sigma x"
 proof -
@@ -36,7 +36,7 @@ proof -
        (simp_all add: nat_power_mult_distrib)
   also have "?f n = divisor_sigma x n" for n
     using fds_divisor_sigma[of x]
-    by (cases "n = 0") (simp_all add: fds_eq_iff fds_nth_times )
+    by (cases "n = 0") (simp_all add: fds_eq_iff fds_nth_mult )
   hence "?f = divisor_sigma x" ..
   finally show "multiplicative_function (divisor_sigma x)" .
 qed
@@ -238,16 +238,16 @@ lemma divisor_sum_naive [code]:
 
 lemma fds_divisor_count: "fds divisor_count = fds_zeta ^ 2"
   by (rule fds_eqI) 
-     (simp add: fds_nth_times dirichlet_prod_altdef1 divisor_count_def power2_eq_square)
+     (simp add: fds_nth_mult dirichlet_prod_altdef1 divisor_count_def power2_eq_square)
 
 lemma fds_shift_zeta_1: "fds_shift 1 fds_zeta = fds of_nat"
-  by (rule fds_eqI) (simp add: fds_nth_times)
+  by (rule fds_eqI) (simp add: fds_nth_mult)
 
 lemma fds_shift_zeta_Suc_0: "fds_shift (Suc 0) fds_zeta = fds id"
-  by (rule fds_eqI) (simp add: fds_nth_times)
+  by (rule fds_eqI) (simp add: fds_nth_mult)
 
 lemma fds_divisor_sum: "fds divisor_sum = fds_zeta * fds id"
-  by (rule fds_eqI) (simp add: fds_nth_times dirichlet_prod_altdef1 divisor_sum_def)
+  by (rule fds_eqI) (simp add: fds_nth_mult dirichlet_prod_altdef1 divisor_sum_def)
     
 
 lemma fds_divisor_sum_eq_totient_times_d: "fds divisor_sum = fds totient * fds divisor_count"

@@ -17,7 +17,7 @@ proof
   fix n :: nat assume n: "n > 0"
   have "fds_nth (fds (\<lambda>n. of_nat (totient n)) * fds_zeta) n = 
           dirichlet_prod (\<lambda>n. of_nat (totient n)) (\<lambda>_. 1) n"
-    by (simp add: fds_nth_times)
+    by (simp add: fds_nth_mult)
   also from n have "\<dots> = fds_nth (fds of_nat) n"
     by (simp add: fds_nth_fds dirichlet_prod_def totient_divisor_sum of_nat_sum [symmetric]
              del: of_nat_sum)

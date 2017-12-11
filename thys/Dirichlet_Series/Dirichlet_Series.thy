@@ -172,14 +172,14 @@ lemma fds_nth_minus [simp]:
 lemma fds_nth_uminus [simp]: "fds_nth (-g) = (\<lambda>n. - fds_nth g n :: 'a :: group_add)"
   by (simp add: uminus_fds_def fds_nth_fds fun_eq_iff)
 
-lemma fds_nth_times: "fds_nth (f * g) = dirichlet_prod (fds_nth f) (fds_nth g)"
+lemma fds_nth_mult: "fds_nth (f * g) = dirichlet_prod (fds_nth f) (fds_nth g)"
   by (simp add: times_fds_def fds_nth_fds dirichlet_prod_def fun_eq_iff)
 
-lemma fds_nth_times_const_left [simp]: "fds_nth (fds_const c * f) n = c * fds_nth f n"
-  by (cases "n = 0") (simp_all add: fds_nth_times fds_const_def)
+lemma fds_nth_mult_const_left [simp]: "fds_nth (fds_const c * f) n = c * fds_nth f n"
+  by (cases "n = 0") (simp_all add: fds_nth_mult fds_const_def)
 
-lemma fds_nth_times_const_right [simp]: "fds_nth (f * fds_const c) n = fds_nth f n * c"
-  by (cases "n = 0") (simp_all add: fds_nth_times fds_const_def)
+lemma fds_nth_mult_const_right [simp]: "fds_nth (f * fds_const c) n = fds_nth f n * c"
+  by (cases "n = 0") (simp_all add: fds_nth_mult fds_const_def)
 
 
 instance fds :: ("{semigroup_add, zero}") semigroup_add
@@ -213,30 +213,30 @@ instance fds :: (semiring_0) semiring_0
 proof
   fix f g h :: "'a fds"
   show "(f + g) * h = f * h + g * h"
-    by (simp add: fds_eq_iff fds_nth_times dirichlet_prod_def algebra_simps sum.distrib)
+    by (simp add: fds_eq_iff fds_nth_mult dirichlet_prod_def algebra_simps sum.distrib)
 next
   fix f g h :: "'a fds"
   show "f * g * h = f * (g * h)" 
-    by (intro fds_eqI) (simp add: fds_nth_times dirichlet_prod_assoc)
-qed (simp_all add: fds_eq_iff fds_nth_times dirichlet_prod_def algebra_simps sum.distrib)
+    by (intro fds_eqI) (simp add: fds_nth_mult dirichlet_prod_assoc)
+qed (simp_all add: fds_eq_iff fds_nth_mult dirichlet_prod_def algebra_simps sum.distrib)
   
 instance fds :: (comm_semiring_0) comm_semiring_0
 proof
   fix f g :: "'a fds"
   show "f * g = g * f"
-    by (simp add: fds_eq_iff fds_nth_times dirichlet_prod_commutes)
-qed (simp_all add: fds_eq_iff fds_nth_times dirichlet_prod_def algebra_simps sum.distrib)
+    by (simp add: fds_eq_iff fds_nth_mult dirichlet_prod_commutes)
+qed (simp_all add: fds_eq_iff fds_nth_mult dirichlet_prod_def algebra_simps sum.distrib)
 
 instance fds :: (semiring_0_cancel) semiring_0_cancel
-  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_times)
+  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_mult)
 
 instance fds :: (comm_semiring_0_cancel) comm_semiring_0_cancel ..
 
 instance fds :: (semiring_1) semiring_1
-  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_times)
+  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_mult)
     
 instance fds :: (comm_semiring_1) comm_semiring_1
-  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_times)
+  by standard (simp_all add: fds_eq_iff fds_nth_one fds_nth_mult)
 
 instance fds :: (semiring_1_cancel) semiring_1_cancel .. 
 instance fds :: (ring) ring ..
@@ -264,7 +264,7 @@ proof
     
   have "fds_nth (f * g) (m * n) = 
           (\<Sum>d | d dvd m * n. fds_nth f d * fds_nth g (m * n div d))"
-    by (simp add: fds_nth_times dirichlet_prod_def)
+    by (simp add: fds_nth_mult dirichlet_prod_def)
   also have "\<dots> = (\<Sum>d | d dvd m * n. if d = m then fds_nth f m * fds_nth g n else 0)"
   proof (intro sum.cong refl, goal_cases)
     case (1 d)
@@ -305,10 +305,16 @@ instance by standard (simp_all add: fds_eq_iff algebra_simps)
 end
   
 instance fds :: (real_algebra) real_algebra
-  by standard (simp_all add: fds_eq_iff algebra_simps fds_nth_times
+  by standard (simp_all add: fds_eq_iff algebra_simps fds_nth_mult
                              dirichlet_prod_def scaleR_sum_right)
 
 instance fds :: (real_algebra_1) real_algebra_1 ..
+
+lemma fds_nth_sum [simp]: "fds_nth (sum f A) n = sum (\<lambda>x. fds_nth (f x) n) A"
+  by (induction A rule: infinite_finite_induct) auto
+
+lemma sum_fds [simp]: "(\<Sum>x\<in>A. fds (f x)) = fds (\<lambda>n. \<Sum>x\<in>A. f x n)"
+  by (rule fds_eqI) simp_all
 
 lemma fds_nth_const: "fds_nth (fds_const c) = (\<lambda>n. if n = 1 then c else 0)"
   by (simp add: fds_const_def fds_nth_fds fun_eq_iff)
@@ -338,7 +344,7 @@ lemma fds_const_uminus [simp]:
     
 lemma fds_const_mult [simp]: 
   "fds_const (a * b :: 'a :: semiring_0) = fds_const a * fds_const b"
-  by (simp add: fds_eq_iff fds_nth_const fds_nth_times)
+  by (simp add: fds_eq_iff fds_nth_const fds_nth_mult)
     
 lemma fds_const_of_nat [simp]: "fds_const (of_nat c) = of_nat c"
   by (induction c) (simp_all)
@@ -363,18 +369,26 @@ instance ..
 
 end
 
+lemma numeral_fds: "numeral n = fds_const (numeral n)"
+proof -
+  have "numeral n = (of_nat (numeral n) :: 'a fds)" by simp
+  also have "\<dots> = fds_const (of_nat (numeral n))" by (rule fds_const_of_nat [symmetric])
+  also have "of_nat (numeral n) = (numeral n :: 'a)" by simp
+  finally show ?thesis .
+qed
+
 lemma fds_ind_False [simp]: "fds_ind (\<lambda>_. False) = 0"
   by (rule fds_eqI) simp
 
 lemma fds_commutes: 
   assumes "\<And>m n. m > 0 \<Longrightarrow> n > 0 \<Longrightarrow> fds_nth f m * fds_nth g n = fds_nth g n * fds_nth f m"
   shows   "f * g = g * f"
-  by (intro fds_eqI, unfold fds_nth_times, subst dirichlet_prod_def, 
+  by (intro fds_eqI, unfold fds_nth_mult, subst dirichlet_prod_def, 
       subst dirichlet_prod_altdef1, intro sum.cong refl assms) (auto elim: dvdE)
 
-lemma fds_nth_times_Suc_0 [simp]: 
+lemma fds_nth_mult_Suc_0 [simp]: 
   "fds_nth (f * g) (Suc 0) = fds_nth f (Suc 0) * fds_nth g (Suc 0)"
-  by (simp add: fds_nth_times)
+  by (simp add: fds_nth_mult)
   
 lemma fds_nth_inverse: 
   "fds_nth (inverse f) = dirichlet_inverse (fds_nth f) (inverse (fds_nth f 1))"
@@ -389,11 +403,11 @@ lemma inverse_0_fds [simp]: "inverse (0 :: 'a :: field fds) = 0"
 
 lemma fds_left_inverse: 
   "fds_nth f 1 \<noteq> (0 :: 'a :: field) \<Longrightarrow> inverse f * f = 1"
-  by (auto simp: fds_eq_iff fds_nth_times fds_nth_inverse dirichlet_prod_inverse' fds_nth_one)
+  by (auto simp: fds_eq_iff fds_nth_mult fds_nth_inverse dirichlet_prod_inverse' fds_nth_one)
 
 lemma fds_right_inverse: 
   "fds_nth f 1 \<noteq> (0 :: 'a :: field) \<Longrightarrow> f * inverse f = 1"
-  by (auto simp: fds_eq_iff fds_nth_times fds_nth_inverse dirichlet_prod_inverse fds_nth_one)
+  by (auto simp: fds_eq_iff fds_nth_mult fds_nth_inverse dirichlet_prod_inverse fds_nth_one)
     
 lemma fds_left_inverse_unique:
   assumes "f * g = (1 :: 'a :: field fds)"
@@ -486,7 +500,7 @@ next
   from insert have "fds_nth (\<Prod>x\<in>insert x A. f x) n = 
            (\<Sum>z | fst z * snd z = n. \<Sum>d | d \<in> extensional A \<and> prod d A = snd z. 
               fds_nth (f x) (fst z) * (\<Prod>x\<in>A. fds_nth (f x) (d x)))"
-    by (simp add: fds_nth_times dirichlet_prod_altdef2 sum_distrib_left case_prod_unfold)
+    by (simp add: fds_nth_mult dirichlet_prod_altdef2 sum_distrib_left case_prod_unfold)
   also have "\<dots> = (\<Sum>(z,d)\<in>(SIGMA x:{z. fst z * snd z = n}. {d \<in> extensional A. prod d A = snd x}).
                       fds_nth (f x) (fst z) * (\<Prod>x\<in>A. fds_nth (f x) (d x)))"
     using finite_divisors_nat'[of n] and insert.hyps and \<open>n > 0\<close>
@@ -510,6 +524,42 @@ next
               (\<Prod>x\<in>A. fds_nth (f x) (snd z x))" by (intro prod.cong) auto
     with 5 insert.hyps insert.prems show ?case by (simp add: case_prod_unfold)
   qed auto
+  finally show ?case .
+qed
+
+lemma fds_nth_power_Suc_0 [simp]: "fds_nth (f ^ n) (Suc 0) = fds_nth f (Suc 0) ^ n"
+  by (induction n) simp_all
+
+lemma fds_nth_prod_Suc_0 [simp]: "fds_nth (prod f A) (Suc 0) = (\<Prod>x\<in>A. fds_nth (f x) (Suc 0))"
+  by (induction A rule: infinite_finite_induct) simp_all
+
+lemma fds_nth_power_eq_0:
+  assumes "n < 2 ^ k" "fds_nth f 1 = 0"
+  shows   "fds_nth (f ^ k) n = 0"
+  using assms(1)
+proof (induction k arbitrary: n)
+  case 0
+  thus ?case by (simp add: one_fds_def)
+next
+  case (Suc k n)
+  have "fds_nth (f ^ Suc k) n = dirichlet_prod (fds_nth (f ^ k)) (fds_nth f) n"
+    by (subst power_Suc2) (simp add: fds_nth_mult dirichlet_prod_commutes)
+  also have "\<dots> = 0" unfolding dirichlet_prod_def
+  proof (intro sum.neutral ballI)
+    fix d assume d: "d \<in> {d. d dvd n}"
+    show "fds_nth (f ^ k) d * fds_nth f (n div d) = 0"
+    proof (cases "d < 2 ^ k")
+      case True
+      thus ?thesis using Suc.IH[of d] by simp
+    next
+      case False
+      hence "(n div d) * 2 ^ k \<le> (n div d) * d" by (intro mult_left_mono) auto
+      also from d have "(n div d) * d = n" by simp
+      also from Suc have "n < 2 * 2 ^ k" by simp
+      finally have "n div d \<le> 1" by simp
+      with assms(2) show ?thesis by (cases "n div d") simp_all
+    qed
+  qed
   finally show ?case .
 qed
 
@@ -581,6 +631,12 @@ lemma fds_shift_shift [simp]: "fds_shift c (fds_shift c' f) = fds_shift (c' + c)
 lemma fds_shift_zero [simp]: "fds_shift c 0 = 0"
   by (rule fds_eqI) simp
 
+lemma fds_shift_1 [simp]: "fds_shift a 1 = 1"
+  by (rule fds_eqI) (simp add: fds_shift_def one_fds_def)
+
+lemma fds_shift_const [simp]: "fds_shift a (fds_const c) = fds_const c"
+  by (rule fds_eqI) (simp add: fds_shift_def fds_const_def)
+
 lemma fds_shift_add [simp]: 
   fixes f g :: "'a :: {monoid_add, nat_power} fds"
   shows "fds_shift c (f + g) = fds_shift c f + fds_shift c g"
@@ -600,8 +656,37 @@ lemma fds_shift_mult [simp]:
   fixes f g :: "'a :: {comm_semiring, nat_power} fds"
   shows "fds_shift c (f * g) = fds_shift c f * fds_shift c g"
   by (rule fds_eqI) 
-     (auto simp: algebra_simps fds_nth_times dirichlet_prod_altdef2 
+     (auto simp: algebra_simps fds_nth_mult dirichlet_prod_altdef2 
         sum_distrib_left sum_distrib_right nat_power_mult_distrib intro!: sum.cong)
+
+lemma fds_shift_power [simp]:
+  fixes f :: "'a :: {comm_semiring, nat_power} fds"
+  shows "fds_shift c (f ^ n) = fds_shift c f ^ n"
+  by (induction n) simp_all
+
+lemma fds_shift_by_0 [simp]: "fds_shift 0 f = f"
+  by (simp add: fds_shift_def)
+
+lemma fds_shift_inverse [simp]: 
+  "fds_shift (a :: 'a :: {field, nat_power}) (inverse f) = inverse (fds_shift a f)"
+proof (cases "fds_nth f 1 = 0")
+  case False
+  have "fds_shift a f * fds_shift a (inverse f) = fds_shift a (f * inverse f)" 
+    by simp
+  also from False have "f * inverse f = 1" by (intro fds_right_inverse)
+  finally have "fds_shift a f * fds_shift a (inverse f) = 1" by simp
+  thus ?thesis by (rule fds_right_inverse_unique)
+qed (auto simp: inverse_fds_nonunit)
+
+lemma fds_shift_divide [simp]: 
+  "fds_shift (a :: 'a :: {field, nat_power}) (f / g) = fds_shift a f / fds_shift a g"
+  by (simp add: divide_fds_def)
+
+lemma fds_shift_sum [simp]: "fds_shift a (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. fds_shift a (f x))"
+  by (induction A rule: infinite_finite_induct) simp_all
+
+lemma fds_shift_prod [simp]: "fds_shift a (\<Prod>x\<in>A. f x) = (\<Prod>x\<in>A. fds_shift a (f x))"
+  by (induction A rule: infinite_finite_induct) simp_all
 
 
 subsection \<open>Scaling the argument\<close>
@@ -708,7 +793,7 @@ proof (cases "c > 0")
       case False
       have "fds_nth (fds_scale c f * fds_scale c g) n = 
               (\<Sum>(r, d) | r * d = n. fds_nth (fds_scale c f) r * fds_nth (fds_scale c g) d)"
-        by (simp add: fds_nth_times dirichlet_prod_altdef2)
+        by (simp add: fds_nth_mult dirichlet_prod_altdef2)
       also from False have "\<dots> = (\<Sum>(r, d) | r * d = n. 0)"
         by (intro sum.cong refl) (auto simp: fds_nth_scale dest: is_nth_power_mult)
       also from False have "\<dots> = fds_nth (fds_scale c (f * g)) n" by simp
@@ -723,7 +808,7 @@ proof (cases "c > 0")
 
       have "fds_nth (fds_scale c f * fds_scale c g) n = 
               (\<Sum>(r, d) | r * d = n. fds_nth (fds_scale c f) r * fds_nth (fds_scale c g) d)"
-        by (simp add: fds_nth_times dirichlet_prod_altdef2)
+        by (simp add: fds_nth_mult dirichlet_prod_altdef2)
       also have "\<dots> = (\<Sum>(r, d) | r * d = n'. fds_nth f r * fds_nth g d)"
       proof (rule sym, intro sum.reindex_bij_witness_not_neutral[of "{}" S _ h i])
         show "finite S" unfolding S_def A_def
@@ -740,7 +825,7 @@ proof (cases "c > 0")
         show "(case rd of (r, d) \<Rightarrow> fds_nth (fds_scale c f) r * fds_nth (fds_scale c g) d) = 0"
           if "rd \<in> S" for rd using that by (auto simp: S_def case_prod_unfold)
       qed (insert \<open>c > 0\<close>, auto simp: case_prod_unfold i_def)
-      also have "\<dots> = fds_nth (f * g) n'" by (simp add: fds_nth_times dirichlet_prod_altdef2)
+      also have "\<dots> = fds_nth (f * g) n'" by (simp add: fds_nth_mult dirichlet_prod_altdef2)
       also from \<open>c > 0\<close> have "\<dots> = fds_nth (fds_scale c (f * g)) n" by simp
       finally show ?thesis ..
     qed
@@ -803,7 +888,7 @@ lemma fds_deriv_minus [simp]: "fds_deriv (f - g) = fds_deriv f - fds_deriv g"
 lemma fds_deriv_times [simp]: 
   "fds_deriv (f * g) = fds_deriv f * g + f * fds_deriv g"
   by (rule fds_eqI) 
-     (auto simp add: fds_nth_deriv fds_nth_times dirichlet_prod_altdef2 scaleR_right.sum 
+     (auto simp add: fds_nth_deriv fds_nth_mult dirichlet_prod_altdef2 scaleR_right.sum 
         algebra_simps sum.distrib [symmetric] ln_mult intro!: sum.cong)
 
 lemma fds_deriv_inverse [simp]:
@@ -836,6 +921,23 @@ proof (cases "c > 0")
                 ln_realpow * simp del: fds_const_of_nat elim!: is_nth_powerE)
 qed auto
 
+lemma fds_deriv_eq_imp_eq:
+  assumes "fds_deriv f = fds_deriv g" "fds_nth f (Suc 0) = fds_nth g (Suc 0)"
+  shows   "f = g"
+proof (rule fds_eqI)
+  fix n :: nat assume n: "n > 0"
+  show "fds_nth f n = fds_nth g n"
+  proof (cases "n = 1")
+    case False
+    with n have "n > 1" by auto
+    hence "fds_nth f n = -fds_nth (fds_deriv f) n /\<^sub>R ln n"
+      by (simp add: fds_deriv_def)
+    also note assms(1)
+    also from \<open>n > 1\<close> have "-fds_nth (fds_deriv g) n /\<^sub>R ln n = fds_nth g n"
+      by (simp add: fds_deriv_def)
+    finally show ?thesis .
+  qed (auto simp: assms)
+qed
 
 lemma completely_multiplicative_fds_deriv:
   assumes "completely_multiplicative_function f"
@@ -845,7 +947,7 @@ proof (rule fds_eqI, goal_cases)
   interpret completely_multiplicative_function f by fact
   have "fds_nth (-fds (\<lambda>n. f n * mangoldt n) * fds f) n = 
           -(\<Sum>(r, d) | r * d = n. f r * mangoldt r * f d)"
-    by (simp add: fds_nth_times fds_nth_deriv dirichlet_prod_altdef2)
+    by (simp add: fds_nth_mult fds_nth_deriv dirichlet_prod_altdef2)
   also have "(\<Sum>(r, d) | r * d = n. f r * mangoldt r * f d) =
                (\<Sum>(r, d) | r * d = n. mangoldt r * f n)"
     using 1 by (intro sum.mono_neutral_cong_right refl) 
@@ -877,7 +979,7 @@ proof -
 qed
 
 lemma fds_mangoldt_times_zeta: "fds mangoldt * fds_zeta = fds (\<lambda>x. of_real (ln (real x)))"
-  by (rule fds_eqI) (simp add: fds_nth_times dirichlet_prod_def mangoldt_sum)
+  by (rule fds_eqI) (simp add: fds_nth_mult dirichlet_prod_def mangoldt_sum)
     
 lemma fds_deriv_zeta': "fds_deriv fds_zeta = 
     -fds (\<lambda>x. of_real (ln (real x)):: 'a :: {comm_semiring_1,real_algebra_1})"
@@ -888,6 +990,21 @@ subsection \<open>Formal integral\<close>
 
 definition fds_integral :: "'a \<Rightarrow> 'a :: real_algebra fds \<Rightarrow> 'a fds" where
   "fds_integral c f = fds (\<lambda>n. if n = 1 then c else - fds_nth f n /\<^sub>R ln (real n))"
+
+lemma fds_integral_0 [simp]: "fds_integral a 0 = fds_const a"
+  by (simp add: fds_integral_def fds_eq_iff)
+
+lemma fds_integral_add: "fds_integral (a + b) (f + g) = fds_integral a f + fds_integral b g"
+  by (rule fds_eqI) (auto simp: fds_integral_def scaleR_diff_right)
+
+lemma fds_integral_diff: "fds_integral (a - b) (f - g) = fds_integral a f - fds_integral b g"
+  by (rule fds_eqI) (auto simp: fds_integral_def scaleR_diff_right)
+
+lemma fds_integral_minus: "fds_integral (-a) (-f) = -fds_integral a f"
+  by (rule fds_eqI) (auto simp: fds_integral_def scaleR_diff_right)
+
+lemma fds_shift_integral: "fds_shift b (fds_integral a f) = fds_integral a (fds_shift b f)"
+  by (rule fds_eqI) (simp add: fds_integral_def fds_shift_def)
 
 lemma fds_deriv_fds_integral [simp]: 
     "fds_nth f (Suc 0) = 0 \<Longrightarrow> fds_deriv (fds_integral c f) = f"
@@ -908,9 +1025,444 @@ lemma fds_nth_Suc_0_fds_deriv [simp]: "fds_nth (fds_deriv f) (Suc 0) = 0"
 lemma fds_deriv_fds_ln [simp]: "fds_deriv (fds_ln l f) = fds_deriv f / f"
   unfolding fds_ln_def by (subst fds_deriv_fds_integral) (simp_all add: divide_fds_def)
 
-
 lemma fds_nth_Suc_0_fds_ln [simp]: "fds_nth (fds_ln l f) (Suc 0) = l"
   by (simp add: fds_ln_def fds_integral_def)
+
+lemma fds_ln_const [simp]: "fds_ln l (fds_const c) = fds_const l"
+  by (rule fds_eqI) (simp add: fds_ln_def fds_integral_def divide_fds_def)
+
+lemma fds_ln_0 [simp]: "fds_ln l 0 = fds_const l"
+  by (rule fds_eqI) (simp add: fds_ln_def fds_integral_def divide_fds_def)
+
+lemma fds_ln_1 [simp]: "fds_ln l 1 = fds_const l"
+  by (rule fds_eqI) (simp add: fds_ln_def fds_integral_def divide_fds_def)
+
+lemma fds_shift_ln [simp]: "fds_shift a (fds_ln l f) = fds_ln l (fds_shift a f)"
+  by (simp add: fds_ln_def fds_shift_integral)
+
+lemma fds_ln_mult:
+  assumes "fds_nth f 1 \<noteq> 0" "fds_nth g 1 \<noteq> 0" "l' + l'' = l"
+  shows   "fds_ln l (f * g) = fds_ln l' f + fds_ln l'' g"
+proof -
+  have "fds_ln l (f * g) = fds_integral (l' + l'') ((fds_deriv f * g + f * fds_deriv g) / (f * g))"
+    by (simp add: fds_ln_def assms)
+  also have "(fds_deriv f * g + f * fds_deriv g) / (f * g) =
+               fds_deriv f / f * (g * inverse g) + fds_deriv g / g * (f * inverse f)"
+    by (simp add: divide_fds_def algebra_simps inverse_mult_fds)
+  also from assms have "f * inverse f = 1" by (intro fds_right_inverse) auto
+  also from assms have "g * inverse g = 1" by (intro fds_right_inverse) auto
+  finally show ?thesis by (simp add: fds_integral_add fds_ln_def)
+qed
+
+lemma fds_ln_power:
+  assumes "fds_nth f 1 \<noteq> 0" "l = of_nat n * l'"
+  shows   "fds_ln l (f ^ n) = of_nat n * fds_ln l' f"
+proof -
+  have "fds_ln (of_nat n * l') (f ^ n) = of_nat n * fds_ln l' f"
+    using assms(1) by (induction n) (simp_all add: fds_ln_mult algebra_simps)
+  with assms show ?thesis by simp
+qed
+
+lemma fds_ln_prod:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> fds_nth (f x) 1 \<noteq> 0" "(\<Sum>x\<in>A. l' x) = l"
+  shows   "fds_ln l (\<Prod>x\<in>A. f x) = (\<Sum>x\<in>A. fds_ln (l' x) (f x))"
+proof -
+  have "fds_ln (\<Sum>x\<in>A. l' x) (\<Prod>x\<in>A. f x) = (\<Sum>x\<in>A. fds_ln (l' x) (f x))"
+    using assms(1) by (induction A rule: infinite_finite_induct) (simp_all add: fds_ln_mult)
+  with assms show ?thesis by simp
+qed
+
+
+subsection \<open>Formal exponential\<close>
+
+definition fds_exp :: "'a :: {real_normed_algebra_1,banach} fds \<Rightarrow> 'a fds" where
+  "fds_exp f = (let f' = fds (\<lambda>n. if n = 1 then 0 else fds_nth f n)
+                in  fds (\<lambda>n. exp (fds_nth f 1) * (\<Sum>k. fds_nth (f' ^ k) n /\<^sub>R fact k)))"
+
+lemma fds_nth_exp_Suc_0 [simp]: "fds_nth (fds_exp f) (Suc 0) = exp (fds_nth f 1)"
+proof -
+  have "fds_nth (fds_exp f) (Suc 0) = exp (fds_nth f 1) * (\<Sum>k. 0 ^ k /\<^sub>R fact k)"
+    by (simp add: fds_exp_def)
+  also have "(\<Sum>k. (0::'a) ^ k /\<^sub>R fact k) = (\<Sum>k. if k = 0 then 1 else 0)"
+    by (intro suminf_cong) (auto simp: power_0_left)
+  also have "\<dots> = 1" using sums_If_finite[of "\<lambda>k. k = 0" "\<lambda>_. 1 :: 'a"]
+    by (simp add: sums_iff)
+  finally show ?thesis by simp
+qed
+
+lemma fds_exp_times_fds_nth_0:
+  "fds_const (exp (fds_nth f (Suc 0))) * fds_exp (f - fds_const (fds_nth f (Suc 0))) = fds_exp f"
+  by (rule fds_eqI) (simp add: fds_exp_def fds_nth_fds' cong: if_cong)
+
+lemma fds_exp_const [simp]: "fds_exp (fds_const c) = fds_const (exp c)"
+proof -
+  have "fds_exp (fds_const c) = fds (\<lambda>n. exp c * (\<Sum>k. fds_nth (fds (\<lambda>n. 0) ^ k) n /\<^sub>R fact k))"
+    by (simp add: fds_exp_def fds_nth_fds' one_fds_def cong: if_cong)
+  also have "fds (\<lambda>_. 0 :: 'a) = 0" by (simp add: fds_eq_iff)
+  also have "(\<lambda>(k::nat) (n::nat). fds_nth (0 ^ k) n) = (\<lambda>k n. if k = 0 \<and> n = 1 then 1 else 0)"
+    by (intro ext) (auto simp: one_fds_def fds_nth_fds' power_0_left)
+  also have "(\<lambda>n::nat. \<Sum>k. (if k = 0 \<and> n = 1 then 1 else (0::'a)) /\<^sub>R fact k) =
+               (\<lambda>n. if n = 1 then (\<Sum>k. (if k = 0 then 1 else 0) /\<^sub>R fact k) else 0)"
+    by (intro ext) auto
+  also have "\<dots> = (\<lambda>n::nat. if n = 1 then (\<Sum>k\<in>{0}. (if k = (0::nat) then 1 else 0)) else 0 :: 'a)"
+    by (subst suminf_finite[of "{0}"]) auto
+  also have "fds (\<lambda>n. exp c * \<dots> n) = fds_const (exp c)"
+    by (simp add: fds_const_def fds_eq_iff fds_nth_fds' cong: if_cong)
+  finally show ?thesis .
+qed
+
+lemma fds_exp_numeral [simp]: "fds_exp (numeral n) = fds_const (exp (numeral n))"
+  using fds_exp_const[of "numeral n :: 'a"] by (simp del: fds_exp_const add: numeral_fds)
+
+lemma fds_exp_0 [simp]: "fds_exp 0 = 1"
+  using fds_exp_const[of 0] by (simp del: fds_exp_const)
+
+lemma fds_exp_1 [simp]: "fds_exp 1 = fds_const (exp 1)"
+  using fds_exp_const[of 1] by (simp del: fds_exp_const)
+
+lemma fds_nth_Suc_0_exp [simp]: "fds_nth (fds_exp f) (Suc 0) = exp (fds_nth f (Suc 0))"
+proof -
+  have "(\<Sum>k. 0 ^ k /\<^sub>R fact k) = (\<Sum>k\<in>{0}. 0 ^ k /\<^sub>R fact k :: 'a)"
+    by (intro suminf_finite) (auto simp: power_0_left)
+  also have "\<dots> = 1" by simp
+  finally show ?thesis by (simp add: fds_exp_def)
+qed
+
+
+subsection \<open>Subseries\<close>
+
+definition fds_subseries :: "(nat \<Rightarrow> bool) \<Rightarrow> ('a :: semiring_1) fds \<Rightarrow> 'a fds" where
+  "fds_subseries P f = fds (\<lambda>n. if P n then fds_nth f n else 0)"
+
+lemma fds_nth_subseries:
+  "fds_nth (fds_subseries P f) n = (if P n then fds_nth f n else 0)"
+  by (simp add: fds_subseries_def fds_nth_fds')
+
+lemma fds_subseries_0 [simp]: "fds_subseries P 0 = 0"
+  by (simp add: fds_subseries_def fds_eq_iff)
+
+lemma fds_subseries_1 [simp]: "P 1 \<Longrightarrow> fds_subseries P 1 = 1"
+  by (simp add: fds_subseries_def fds_eq_iff one_fds_def)
+
+lemma fds_subseries_const [simp]: "P 1 \<Longrightarrow> fds_subseries P (fds_const c) = fds_const c"
+  by (simp add: fds_subseries_def fds_eq_iff fds_const_def)
+
+lemma fds_subseries_add [simp]: "fds_subseries P (f + g) = fds_subseries P f + fds_subseries P g"
+  by (simp add: fds_subseries_def fds_eq_iff plus_fds_def)
+
+lemma fds_subseries_diff [simp]:
+  "fds_subseries P (f - g :: 'a :: ring_1 fds) = fds_subseries P f - fds_subseries P g"
+  by (simp add: fds_subseries_def fds_eq_iff minus_fds_def)
+
+lemma fds_subseries_minus [simp]:
+  "fds_subseries P (-f :: 'a :: ring_1 fds) = - fds_subseries P f"
+  by (simp add: fds_subseries_def fds_eq_iff minus_fds_def)
+
+lemma fds_subseries_sum [simp]: "fds_subseries P (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. fds_subseries P (f x))"
+  by (induction A rule: infinite_finite_induct) simp_all
+
+lemma fds_subseries_shift [simp]:
+  "fds_subseries P (fds_shift c f) = fds_shift c (fds_subseries P f)"
+  by (simp add: fds_subseries_def fds_eq_iff)
+
+lemma fds_subseries_deriv [simp]:
+  "fds_subseries P (fds_deriv f) = fds_deriv (fds_subseries P f)"
+  by (simp add: fds_subseries_def fds_deriv_def fds_eq_iff)
+
+lemma fds_subseries_integral [simp]:
+  "P 1 \<or> c = 0 \<Longrightarrow> fds_subseries P (fds_integral c f) = fds_integral c (fds_subseries P f)"
+  by (auto simp: fds_subseries_def fds_integral_def fds_eq_iff)
+
+abbreviation fds_primepow_subseries :: "nat \<Rightarrow> ('a :: semiring_1) fds \<Rightarrow> 'a fds" where
+  "fds_primepow_subseries p f \<equiv> fds_subseries (\<lambda>n. prime_factors n \<subseteq> {p}) f"
+
+lemma fds_primepow_subseries_mult [simp]:
+  fixes p :: nat
+  defines "P \<equiv> (\<lambda>n. prime_factors n \<subseteq> {p})"
+  shows   "fds_subseries P (f * g) = fds_subseries P f * fds_subseries P g"
+proof (rule fds_eqI)
+  fix n :: nat
+  consider "n = 0" | "P n" "n > 0" | "\<not>P n" "n > 0" by blast
+  thus "fds_nth (fds_subseries P (f * g)) n = fds_nth (fds_subseries P f * fds_subseries P g) n"
+  proof cases
+    case 2
+    have P: "P d" if "d dvd n" for d
+    proof -      
+      have "prime_factors d \<subseteq> prime_factors n" using that 2
+        by (intro dvd_prime_factors) auto
+      also have "\<dots> \<subseteq> {p}" using 2 by (simp add: P_def)
+      finally show ?thesis by (simp add: P_def)
+    qed
+    have P': "P a" "P b" if "n = a * b" for a b
+      using P[of a] P[of b] that by auto
+
+    have "fds_nth (fds_subseries P (f * g)) n = dirichlet_prod (fds_nth f) (fds_nth g) n"
+      using 2 by (simp add: fds_subseries_def fds_nth_fds' fds_nth_mult)
+    also have "\<dots> = dirichlet_prod (fds_nth (fds_subseries P f)) (fds_nth (fds_subseries P g)) n"
+      unfolding dirichlet_prod_altdef2 using 2
+      by (intro sum.cong refl) (auto simp: fds_subseries_def fds_nth_fds' dest: P')
+    finally show ?thesis by (simp add: fds_nth_mult)
+  next
+    case 3
+    have "\<not>(P a \<and> P b)" if "n = a * b" for a b
+    proof -
+      have "prime_factors n = prime_factors (a * b)" by (simp add: that)
+      also have "\<dots> = prime_factors a \<union> prime_factors b"
+        using 3 that by (intro prime_factors_product) auto
+      finally show ?thesis using 3 by (auto simp: P_def)
+    qed
+    hence "dirichlet_prod (fds_nth (fds_subseries P f)) (fds_nth (fds_subseries P g)) n = 0"
+      unfolding dirichlet_prod_altdef2
+      by (intro sum.neutral) (auto simp: fds_subseries_def fds_nth_fds')
+    also have "\<dots> = fds_nth (fds_subseries P (f * g)) n"
+      using 3 by (simp add: fds_subseries_def)
+    finally show ?thesis by (simp add: fds_nth_mult)
+  qed auto
+qed
+
+(* TODO Move *)
+lemma prime_factorization_Suc_0 [simp]: "prime_factorization (Suc 0) = {#}"
+  unfolding One_nat_def [symmetric] using prime_factorization_1 .
+
+lemma fds_primepow_subseries_power [simp]: 
+  "fds_primepow_subseries p (f ^ n) = fds_primepow_subseries p f ^ n"
+  by (induction n)  simp_all
+
+lemma fds_primepow_subseries_prod [simp]: 
+  "fds_primepow_subseries p (\<Prod>x\<in>A. f x) = (\<Prod>x\<in>A. fds_primepow_subseries p (f x))"
+  by (induction A rule: infinite_finite_induct) simp_all
+
+lemma completely_multiplicative_function_only_pows:
+  assumes "completely_multiplicative_function (fds_nth f)"
+  shows   "completely_multiplicative_function (fds_nth (fds_primepow_subseries p f))"
+proof -
+  interpret completely_multiplicative_function "fds_nth f" by fact
+  show ?thesis
+    by standard (auto simp: fds_nth_subseries prime_factors_product mult)
+qed
+
+
+subsection \<open>Truncation\<close>
+
+definition fds_truncate :: "nat \<Rightarrow> 'a ::{zero} fds \<Rightarrow> 'a fds" where
+  "fds_truncate m f = fds (\<lambda>n. if n \<le> m then fds_nth f n else 0)"
+
+lemma fds_nth_truncate: "fds_nth (fds_truncate m f) n = (if n \<le> m then fds_nth f n else 0)"
+  by (simp add: fds_truncate_def fds_nth_fds')
+
+lemma fds_truncate_0 [simp]: "fds_truncate 0 f = 0"
+  by (simp add: fds_eq_iff fds_nth_truncate)
+
+lemma fds_truncate_zero [simp]: "fds_truncate m 0 = 0"
+  by (simp add: fds_truncate_def fds_eq_iff)
+
+lemma fds_truncate_one [simp]: "m > 0 \<Longrightarrow> fds_truncate m 1 = 1"
+  by (simp add: fds_truncate_def fds_eq_iff)
+
+lemma fds_truncate_const [simp]: "m > 0 \<Longrightarrow> fds_truncate m (fds_const c) = fds_const c"
+  by (simp add: fds_truncate_def fds_eq_iff)
+
+lemma fds_truncate_truncate [simp]: "fds_truncate m (fds_truncate n f) = fds_truncate (min m n) f"
+  by (rule fds_eqI) (simp add: fds_nth_truncate)
+
+lemma fds_truncate_truncate' [simp]: "fds_truncate m (fds_truncate m f) = fds_truncate m f"
+  by (rule fds_eqI) (simp add: fds_nth_truncate)
+
+lemma fds_truncate_shift [simp]: "fds_truncate m (fds_shift a f) = fds_shift a (fds_truncate m f)"
+  by (simp add: fds_eq_iff fds_nth_truncate)
+
+lemma fds_truncate_add_strong: 
+  "fds_truncate m (f + g :: 'a :: monoid_add fds) = fds_truncate m f + fds_truncate m g"
+  by (auto simp: fds_eq_iff fds_nth_truncate)
+
+lemma fds_truncate_add:
+  "fds_truncate m (fds_truncate m f + fds_truncate m g :: 'a :: monoid_add fds) = 
+     fds_truncate m (f + g)"
+  by (auto simp: fds_eq_iff fds_nth_truncate)
+
+lemma fds_truncate_mult:
+  "fds_truncate m (fds_truncate m f * fds_truncate m g) = fds_truncate m (f * g)" (is "?A = ?B")
+proof (intro fds_eqI, goal_cases)
+  case (1 n)
+  show ?case
+  proof (cases "n \<le> m")
+    case True
+    hence "fds_nth ?B n = dirichlet_prod (fds_nth f) (fds_nth g) n"
+      by (simp add: fds_nth_truncate fds_nth_mult)
+    also have "\<dots> = dirichlet_prod (fds_nth (fds_truncate m f)) (fds_nth (fds_truncate m g)) n"
+      unfolding dirichlet_prod_def
+    proof (intro sum.cong refl, goal_cases)
+      case (1 d)
+      with \<open>n > 0\<close> have "d \<le> m" "n div d \<le> m"
+        by (auto dest: dvd_imp_le intro: order.trans[OF _ True])
+      thus ?case by (auto simp add: fds_nth_truncate)
+    qed
+    also have "\<dots> = fds_nth ?A n" using True by (simp add: fds_nth_truncate fds_nth_mult)
+    finally show ?thesis ..
+  qed (auto simp: fds_nth_truncate)
+qed
+
+lemma fds_truncate_deriv: "fds_truncate m (fds_deriv f) = fds_deriv (fds_truncate m f)"
+  by (simp add: fds_eq_iff fds_nth_truncate fds_deriv_def)
+
+lemma fds_truncate_integral: 
+  "m > 0 \<or> c = 0 \<Longrightarrow> fds_truncate m (fds_integral c f) = fds_integral c (fds_truncate m f)"
+  by (auto simp: fds_eq_iff fds_nth_truncate fds_integral_def)
+
+lemma fds_truncate_power: "fds_truncate m (fds_truncate m f ^ n) = fds_truncate m (f ^ n)"
+proof (cases "m = 0")
+  case False
+  show ?thesis
+  proof (induction n)
+    case (Suc n)
+    have "fds_truncate m (fds_truncate m f ^ Suc n) =
+            fds_truncate m (fds_truncate m f * fds_truncate m f ^ n)" by simp
+    also have "\<dots> = fds_truncate m (fds_truncate m f * fds_truncate m (f ^ n))"
+      by (subst fds_truncate_mult [symmetric]) (simp add: Suc)
+    also have "\<dots> = fds_truncate m (f ^ Suc n)"
+      by (simp add: fds_truncate_mult)
+    finally show ?case .
+  qed (simp_all add: fds_truncate_mult)
+qed simp_all
+
+lemma dirichlet_inverse_cong_strong:
+  assumes "\<And>m. m > 0 \<Longrightarrow> m \<le> n \<Longrightarrow> f m = f' m" "i = i'" "n = n'"
+  shows   "dirichlet_inverse f i n = dirichlet_inverse f' i' n'"
+proof -
+  have "dirichlet_inverse f i n = dirichlet_inverse f' i n"
+  using assms(1)
+  proof (induction n rule: dirichlet_inverse_induct) 
+    case (gt1 n)
+    have *: "dirichlet_inverse f i k = dirichlet_inverse f' i k" if "k dvd n \<and> k < n" for k
+      using that by (intro gt1) auto
+    have *: "(\<Sum>d | d dvd n \<and> d < n. f (n div d) * dirichlet_inverse f i d) =
+               (\<Sum>d | d dvd n \<and> d < n. f' (n div d) * dirichlet_inverse f' i d)"
+      by (intro sum.cong refl) (subst gt1.prems, auto elim: dvdE simp: *)
+    consider "n = 0" | "n = 1" | "n > 1" by force
+    thus ?case
+      by cases (insert *, simp_all add: dirichlet_inverse_gt_1 * cong: sum.cong)
+  qed auto
+  with assms(2,3) show ?thesis by simp
+qed
+
+lemma fds_truncate_cong: 
+  "(\<And>n. m > 0 \<Longrightarrow> n > 0 \<Longrightarrow> n \<le> m \<Longrightarrow> fds_nth f n = fds_nth f' n) \<Longrightarrow>
+   fds_truncate m f = fds_truncate m f'"
+  by (rule fds_eqI) (simp add: fds_nth_truncate)
+
+lemma fds_truncate_inverse:
+  "fds_truncate m (inverse (fds_truncate m (f :: 'a :: field fds))) = fds_truncate m (inverse f)"
+proof (rule fds_truncate_cong, goal_cases)
+  case (1 n)
+  have *: "dirichlet_inverse (\<lambda>n. if n \<le> m then fds_nth f n else 0) (inverse (fds_nth f 1)) n =
+             dirichlet_inverse (fds_nth f) (inverse (fds_nth f 1)) n" using 1
+    by (intro dirichlet_inverse_cong_strong) auto
+  show ?case
+  proof (cases "fds_nth f 1 = 0")
+    case True
+    thus ?thesis by (auto simp: inverse_fds_nonunit fds_nth_truncate)
+  qed (insert * 1, auto simp: inverse_fds_def fds_nth_fds' fds_nth_truncate Suc_le_eq)
+qed
+
+lemma fds_truncate_divide: 
+  fixes f g :: "'a :: field fds"
+  shows "fds_truncate m (fds_truncate m f / fds_truncate m g) = fds_truncate m (f / g)"
+proof -
+  have "fds_truncate m (f / g) = fds_truncate m (fds_truncate m (fds_truncate m f) * 
+          fds_truncate m (inverse (fds_truncate m g)))"
+    by (simp add: fds_truncate_inverse fds_truncate_mult divide_fds_def)
+  also have "\<dots> = fds_truncate m (fds_truncate m f * inverse (fds_truncate m g))"
+    by (rule fds_truncate_mult)
+  also have "\<dots> = fds_truncate m (fds_truncate m f / fds_truncate m g)"
+    by (simp add: divide_fds_def)
+  finally show ?thesis ..
+qed
+
+lemma fds_truncate_ln:
+  fixes f :: "'a :: real_normed_field fds"
+  shows "fds_truncate m (fds_ln l (fds_truncate m f)) = fds_truncate m (fds_ln l f)"
+  by (cases "m = 0")
+     (simp_all add: fds_ln_def fds_truncate_integral fds_truncate_deriv [symmetric] 
+                    fds_truncate_divide)
+
+lemma fds_truncate_exp:
+  shows "fds_truncate m (fds_exp (fds_truncate m f)) = fds_truncate m (fds_exp f)"
+proof (rule fds_truncate_cong, goal_cases)
+  case (1 n)
+  define a where "a = exp (fds_nth f (Suc 0))"
+  define f' where "f' = fds (\<lambda>n. if n = Suc 0 then 0 else fds_nth f n)"
+  have truncate_f': "fds_truncate m f' = fds (\<lambda>n. if n = Suc 0 then 0 else fds_nth (fds_truncate m f) n)"
+    by (simp add: f'_def fds_eq_iff fds_nth_truncate)
+
+  have "fds_nth (fds_exp (fds_truncate m f)) n = 
+          a * (\<Sum>k. fds_nth (fds_truncate m f' ^ k) n /\<^sub>R fact k)" using 1
+    by (simp add: fds_exp_def fds_nth_fds' a_def [symmetric] f'_def [symmetric] 
+                  fds_nth_truncate truncate_f' [symmetric])
+  also have "(\<lambda>k. fds_nth (fds_truncate m f' ^ k) n) = (\<lambda>k. fds_nth (f' ^ k) n)"
+  proof (rule ext, goal_cases)
+    case (1 k)
+    have "fds_nth (fds_truncate m f' ^ k) n = fds_nth (fds_truncate m (fds_truncate m f' ^ k)) n"
+      using \<open>n \<le> m\<close> by (simp add: fds_nth_truncate)
+    also have "fds_truncate m (fds_truncate m f' ^ k) = fds_truncate m (f' ^ k)"
+      by (simp add: fds_truncate_power)
+    also have "fds_nth \<dots> n = fds_nth (f' ^ k) n" using \<open>n \<le> m\<close> by (simp add: fds_nth_truncate)
+    finally show ?case .
+  qed
+  also have "a * (\<Sum>k. \<dots> k /\<^sub>R fact k) = fds_nth (fds_exp f) n"
+    by (simp add: fds_exp_def fds_nth_fds' a_def f'_def)
+  finally show ?case .
+qed
+
+lemma fds_eqI_truncate:
+  assumes "\<And>m. m > 0 \<Longrightarrow> fds_truncate m f = fds_truncate m g"
+  shows   "f = g"
+proof (rule fds_eqI)
+  fix n :: nat assume "n > 0"
+  have "fds_nth f n = fds_nth (fds_truncate n f) n"
+    by (simp add: fds_nth_truncate)
+  also note assms[OF \<open>n > 0\<close>]
+  also have "fds_nth (fds_truncate n g) n = fds_nth g n"
+    by (simp add: fds_nth_truncate)
+  finally show "fds_nth f n = fds_nth g n" .
+qed
+
+
+subsection \<open>Normed series\<close>
+
+definition fds_norm :: "'a :: {real_normed_div_algebra} fds \<Rightarrow> real fds"
+  where "fds_norm f = fds (\<lambda>n. of_real (norm (fds_nth f n)))"
+
+lemma fds_nth_norm [simp]: "fds_nth (fds_norm f) n = norm (fds_nth f n)"
+  by (simp add: fds_norm_def fds_nth_fds')
+
+lemma fds_norm_1 [simp]: "fds_norm 1 = 1"
+  by (simp add: fds_eq_iff one_fds_def)
+
+lemma fds_nth_norm_mult_le:
+  shows "norm (fds_nth (f * g) n) \<le> fds_nth (fds_norm f * fds_norm g) n"
+  by (auto simp add: fds_nth_mult dirichlet_prod_def norm_mult intro!: sum_norm_le)
+
+lemma fds_nth_norm_mult_nonneg [simp]: "fds_nth (fds_norm f * fds_norm g) n \<ge> 0"
+  by (auto simp: fds_nth_mult dirichlet_prod_def intro!: sum_nonneg)
+
+
+subsection \<open>Lifting a real series to a real algebra\<close>
+
+definition fds_of_real :: "real fds \<Rightarrow> 'a :: {real_normed_algebra_1} fds" where
+  "fds_of_real f = fds (\<lambda>n. of_real (fds_nth f n))"
+
+lemma fds_nth_of_real [simp]: "fds_nth (fds_of_real f) n = of_real (fds_nth f n)"
+  by (simp add: fds_of_real_def fds_nth_fds')
+
+lemma fds_of_real_0 [simp]: "fds_of_real 0 = 0"
+  and fds_of_real_1 [simp]: "fds_of_real 1 = 1"
+  and fds_of_real_const [simp]: "fds_of_real (fds_const c) = fds_const (of_real c)"
+  and fds_of_real_minus [simp]: "fds_of_real (-f) = -fds_of_real f"
+  and fds_of_real_add [simp]: "fds_of_real (f + g) = fds_of_real f + fds_of_real g"
+  and fds_of_real_mult [simp]: "fds_of_real (f * g) = fds_of_real f * fds_of_real g"
+  and fds_of_real_deriv [simp]: "fds_of_real (fds_deriv f) = fds_deriv (fds_of_real f)"
+  by (simp_all add: fds_eq_iff one_fds_def fds_const_def fds_nth_mult 
+                    dirichlet_prod_def fds_deriv_def scaleR_conv_of_real)
 
 
 subsection \<open>Convergence and connection to concrete functions\<close>
@@ -943,7 +1495,8 @@ lemma fds_converges_iff:
 definition fds_abs_converges :: 
     "('a :: {nat_power, real_normed_field, banach}) fds \<Rightarrow> 'a \<Rightarrow> bool" where
   "fds_abs_converges f s \<longleftrightarrow> summable (\<lambda>n. norm (fds_nth f n / nat_power n s))"
-  
+
+
 lemma fds_abs_converges_imp_converges [dest, intro]: 
   "fds_abs_converges f s \<Longrightarrow> fds_converges f s"
   unfolding fds_abs_converges_def fds_converges_def by (rule summable_norm_cancel)
@@ -989,8 +1542,42 @@ lemma fds_one_abs_converges [simp]: "fds_abs_converges 1 s"
 lemma fds_one_converges [simp]: "fds_converges 1 s"
   by (simp only: fds_const_one [symmetric] fds_const_converges)
 
+lemma fds_converges_truncate [simp]: "fds_converges (fds_truncate n f) s"
+proof -
+  have "summable (\<lambda>k. fds_nth (fds_truncate n f) k / nat_power k s) \<longleftrightarrow> summable (\<lambda>_. 0 :: 'a)"
+    by (intro summable_cong[OF eventually_mono[OF eventually_gt_at_top[of n]]]) 
+       (auto simp: fds_nth_truncate)
+  thus ?thesis by (simp add: fds_converges_def)
+qed
+
+lemma fds_abs_converges_truncate [simp]: "fds_abs_converges (fds_truncate n f) s"
+proof -
+  have "summable (\<lambda>k. norm (fds_nth (fds_truncate n f) k / nat_power k s)) \<longleftrightarrow> summable (\<lambda>_. 0 :: real)"
+    by (intro summable_cong[OF eventually_mono[OF eventually_gt_at_top[of n]]]) 
+       (auto simp: fds_nth_truncate)
+  thus ?thesis by (simp add: fds_abs_converges_def)
+qed
+
+lemma fds_abs_converges_subseries [simp, intro]:
+  assumes "fds_abs_converges f s"
+  shows   "fds_abs_converges (fds_subseries P f) s"
+  unfolding fds_abs_converges_def
+proof (rule summable_comparison_test_ev)
+  show "summable (\<lambda>n. norm (fds_nth f n / nat_power n s))"
+    using assms unfolding fds_abs_converges_def .
+qed (auto simp: fds_nth_subseries)
+
 lemma eval_fds_one [simp]: "eval_fds 1 = (\<lambda>_. 1)"
   by (simp only: fds_const_one [symmetric] eval_fds_const)
+
+lemma eval_fds_truncate: "eval_fds (fds_truncate n f) s = (\<Sum>k=1..n. fds_nth f k / nat_power k s)"
+proof -
+  have "eval_fds (fds_truncate n f) s = (\<Sum>k=1..n. fds_nth (fds_truncate n f) k / nat_power k s)"
+    unfolding eval_fds_def by (intro suminf_finite) (auto simp: fds_nth_truncate Suc_le_eq)
+  also have "\<dots> = (\<Sum>k=1..n. fds_nth f k / nat_power k s)"
+    by (intro sum.cong) (auto simp: fds_nth_truncate)
+  finally show ?thesis .
+qed
 
 
 lemma fds_converges_add: 

@@ -550,8 +550,17 @@ corollary continuous_hurwitz_zeta [continuous_intros]:
      (insert continuous_on_hurwitz_zeta[of a "-{1}"], 
       auto simp: continuous_on_eq_continuous_at open_Compl)
 
+corollary continuous_hurwitz_zeta' [continuous_intros]:
+  "a > 0 \<Longrightarrow> f s \<noteq> 1 \<Longrightarrow> continuous (at s within A) f \<Longrightarrow>
+     continuous (at s within A) (\<lambda>s. hurwitz_zeta a (f s))"
+  using continuous_within_compose3[OF continuous_hurwitz_zeta, of a f s A] by auto
+
 corollary continuous_zeta [continuous_intros]:
   "s \<noteq> 1 \<Longrightarrow> continuous (at s within A) zeta"
+  unfolding zeta_def by (intro continuous_intros) auto
+
+corollary continuous_zeta' [continuous_intros]:
+  "f s \<noteq> 1 \<Longrightarrow> continuous (at s within A) f \<Longrightarrow> continuous (at s within A) (\<lambda>s. zeta (f s))"
   unfolding zeta_def by (intro continuous_intros) auto
 
 corollary field_differentiable_at_zeta:

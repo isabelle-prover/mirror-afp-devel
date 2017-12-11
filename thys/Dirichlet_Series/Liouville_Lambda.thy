@@ -94,7 +94,7 @@ next
 qed
 
 lemma fds_liouville_lambda_times_zeta: "fds liouville_lambda * fds_zeta = fds_ind is_square"
-  by (rule fds_eqI) (simp add: liouville_lambda_divisors_sum fds_nth_times dirichlet_prod_def)
+  by (rule fds_eqI) (simp add: liouville_lambda_divisors_sum fds_nth_mult dirichlet_prod_def)
 
 lemma fds_liouville_lambda: "fds liouville_lambda = fds_ind is_square * fds moebius_mu"
 proof -
@@ -113,7 +113,7 @@ proof (cases "n = 0")
   also have "fds liouville_lambda = fds_ind is_square * (fds moebius_mu :: 'a fds)" 
     by (rule fds_liouville_lambda)
   also have "fds_nth \<dots> n = (\<Sum>d | d dvd n. ind is_square d * moebius_mu (n div d))"
-    by (simp add: fds_nth_times dirichlet_prod_def)
+    by (simp add: fds_nth_mult dirichlet_prod_def)
   also have "\<dots> = (\<Sum>d \<in> (\<lambda>d. d^2) ` {d. d ^ 2 dvd n}. moebius_mu (n div d))" using False
     by (intro sum.mono_neutral_cong_right) (auto simp: ind_def is_nth_power_def)
   also have "\<dots> = (\<Sum>d | d ^ 2 dvd n. moebius_mu (n div d ^ 2))"

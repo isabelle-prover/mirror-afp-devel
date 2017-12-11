@@ -27,7 +27,7 @@ lemma dirichlet_prod_moebius_commute:
   by (subst dirichlet_prod_def, subst dirichlet_prod_altdef1) (simp add: moebius_commute)
 
 lemma fds_moebius_commute: "x * fds moebius_mu = fds moebius_mu * x"
-  by (simp add: fds_eq_iff fds_nth_times dirichlet_prod_moebius_commute)
+  by (simp add: fds_eq_iff fds_nth_mult dirichlet_prod_moebius_commute)
 
 lemma of_int_moebius_mu [simp]: "of_int (moebius_mu n) = moebius_mu n"
   by (simp add: moebius_mu_def)
@@ -169,7 +169,7 @@ lemma fds_zeta_times_moebius_mu: "fds_zeta * fds moebius_mu = 1"
 proof
   fix n :: nat assume n: "n > 0"
   from n have "fds_nth (fds_zeta * fds moebius_mu :: 'a fds) n = (\<Sum>d | d dvd n. moebius_mu d)"
-    unfolding fds_nth_times dirichlet_prod_altdef1
+    unfolding fds_nth_mult dirichlet_prod_altdef1
     by (intro sum.cong refl) (auto simp: fds_nth_fds elim: dvdE)
   also have "\<dots> = fds_nth 1 n" by (simp add: sum_moebius_mu_divisors')
   finally show "fds_nth (fds_zeta * fds moebius_mu :: 'a fds) n = fds_nth 1 n" .
@@ -249,9 +249,9 @@ lemma moebius_inversion:
   shows   "f n = dirichlet_prod moebius_mu g n"
 proof -
   from assms have "fds g = fds f * fds_zeta"
-    by (intro fds_eqI) (simp add: fds_nth_times dirichlet_prod_def)
+    by (intro fds_eqI) (simp add: fds_nth_mult dirichlet_prod_def)
   thus ?thesis using assms
-    by (subst (asm) fds_moebius_inversion [symmetric]) (simp add: fds_eq_iff fds_nth_times)
+    by (subst (asm) fds_moebius_inversion [symmetric]) (simp add: fds_eq_iff fds_nth_mult)
 qed
 
 lemma fds_mangoldt: "fds mangoldt = fds moebius_mu * fds (\<lambda>n. of_real (ln (real n)))"
@@ -280,7 +280,7 @@ lemma selberg_aux':
      ((moebius_mu \<star> (\<lambda>b. of_real (ln b) ^ 2)) n
          :: 'a :: {comm_ring_1,real_algebra_1})" if "n > 0"
   using selberg_aux [symmetric] that 
-  by (auto simp add: fds_eq_iff fds_nth_times power2_eq_square fds_nth_deriv
+  by (auto simp add: fds_eq_iff fds_nth_mult power2_eq_square fds_nth_deriv
         dirichlet_prod_commutes algebra_simps scaleR_conv_of_real)
 
 end
