@@ -8,9 +8,71 @@ imports
   "Euler_MacLaurin.Euler_MacLaurin"
   "Bernoulli.Bernoulli_Zeta"
   "Dirichlet_Series.Dirichlet_Series_Analysis"
+  "Landau_Symbols.Landau_Symbols"
 begin
 
 subsection \<open>Preliminary facts\<close>
+
+(* TODO Move once Landau symbols are in the distribution *)
+lemma holomorphic_on_extend:
+  assumes "f holomorphic_on S - {\<xi>}" "\<xi> \<in> interior S" "f \<in> O[at \<xi>](\<lambda>_. 1)"
+  shows   "(\<exists>g. g holomorphic_on S \<and> (\<forall>z\<in>S - {\<xi>}. g z = f z))"
+  by (subst holomorphic_on_extend_bounded) (insert assms, auto elim!: landau_o.bigE)
+
+lemma removable_singularities:
+  assumes "finite X" "X \<subseteq> interior S" "f holomorphic_on (S - X)"
+  assumes "\<And>z. z \<in> X \<Longrightarrow> f \<in> O[at z](\<lambda>_. 1)"
+  shows   "\<exists>g. g holomorphic_on S \<and> (\<forall>z\<in>S-X. g z = f z)"
+  using assms
+proof (induction arbitrary: f rule: finite_induct)
+  case empty
+  thus ?case by auto
+next
+  case (insert z0 X f)
+  from insert.prems and insert.hyps have z0: "z0 \<in> interior (S - X)"
+    by (auto simp: interior_diff finite_imp_closed)
+  hence "\<exists>g. g holomorphic_on (S - X) \<and> (\<forall>z\<in>S - X - {z0}. g z = f z)"
+    using insert.prems insert.hyps by (intro holomorphic_on_extend) auto
+  then obtain g where g: "g holomorphic_on (S - X)" "\<forall>z\<in>S - X - {z0}. g z = f z" by blast
+  have "\<exists>h. h holomorphic_on S \<and> (\<forall>z\<in>S - X. h z = g z)"
+  proof (rule insert.IH)
+    fix z0' assume z0': "z0' \<in> X"
+    hence "eventually (\<lambda>z. z \<in> interior S - (X - {z0'}) - {z0}) (nhds z0')"
+      using insert.prems insert.hyps
+      by (intro eventually_nhds_in_open open_Diff finite_imp_closed) auto
+    hence ev: "eventually (\<lambda>z. z \<in> S - X - {z0}) (at z0')"
+      unfolding eventually_at_filter 
+      by eventually_elim (insert z0' insert.hyps interior_subset[of S], auto)
+    have "g \<in> \<Theta>[at z0'](f)"
+      by (intro bigthetaI_cong eventually_mono[OF ev]) (insert g, auto)
+    also have "f \<in> O[at z0'](\<lambda>_. 1)"
+      using z0' by (intro insert.prems) auto
+    finally show "g \<in> \<dots>" .
+  qed (insert insert.prems g, auto)
+  then obtain h where "h holomorphic_on S" "\<forall>z\<in>S - X. h z = g z" by blast
+  with g have "h holomorphic_on S" "\<forall>z\<in>S - insert z0 X. h z = f z" by auto
+  thus ?case by blast
+qed
+
+lemma continuous_imp_bigo_1:
+  assumes "continuous (at x within A) f"
+  shows   "f \<in> O[at x within A](\<lambda>_. 1)"
+proof (rule bigoI_tendsto)
+  from assms show "((\<lambda>x. f x / 1) \<longlongrightarrow> f x) (at x within A)"
+    by (auto simp: continuous_within)
+qed auto
+
+lemma taylor_bigo_linear:
+  assumes "f field_differentiable at x0 within A"
+  shows   "(\<lambda>x. f x - f x0) \<in> O[at x0 within A](\<lambda>x. x - x0)"
+proof -
+  from assms obtain f' where "(f has_field_derivative f') (at x0 within A)"
+    by (auto simp: field_differentiable_def)
+  hence "((\<lambda>x. (f x - f x0) / (x - x0)) \<longlongrightarrow> f') (at x0 within A)"
+    by (auto simp: has_field_derivative_iff)
+  thus ?thesis by (intro bigoI_tendsto[where c = f']) (auto simp: eventually_at_filter)
+qed
+(* END TODO *)
 
 (* TODO Move? *)
 lemma powr_add_minus_powr_asymptotics:
@@ -633,6 +695,29 @@ qed
 corollary residue_zeta: "residue zeta 1 = 1"
   unfolding zeta_def by (rule residue_hurwitz_zeta) auto
 
+lemma zeta_bigo_at_1: "zeta \<in> O[at 1 within A](\<lambda>x. 1 / (x - 1))"
+proof -
+  have "zeta \<in> \<Theta>[at 1 within A](\<lambda>s. pre_zeta 1 s + 1 / (s - 1))"
+    by (intro bigthetaI_cong) (auto simp: eventually_at_filter zeta_def hurwitz_zeta_def)
+  also have "(\<lambda>s. pre_zeta 1 s + 1 / (s - 1)) \<in> O[at 1 within A](\<lambda>s. 1 / (s - 1))"
+  proof (rule sum_in_bigo)
+    have "continuous_on UNIV (pre_zeta 1)"
+      by (intro holomorphic_on_imp_continuous_on holomorphic_intros) auto
+    hence "isCont (pre_zeta 1) 1" by (auto simp: continuous_on_eq_continuous_at)
+    hence "continuous (at 1 within A) (pre_zeta 1)"
+      by (rule continuous_within_subset) auto
+    hence "pre_zeta 1 \<in> O[at 1 within A](\<lambda>_. 1)"
+      by (intro continuous_imp_bigo_1) auto
+    also have ev: "eventually (\<lambda>s. s \<in> ball 1 1 \<and> s \<noteq> 1 \<and> s \<in> A) (at 1 within A)"
+      by (intro eventually_at_ball') auto
+    have "(\<lambda>_. 1) \<in> O[at 1 within A](\<lambda>s. 1 / (s - 1))"
+      by (intro landau_o.bigI[of 1] eventually_mono[OF ev]) 
+         (auto simp: eventually_at_filter norm_divide dist_norm norm_minus_commute field_simps)
+    finally show "pre_zeta 1 \<in> O[at 1 within A](\<lambda>s. 1 / (s - 1))" .
+  qed simp_all
+  finally show ?thesis .
+qed
+
 theorem
   assumes "a > 0" "Re s > 1"
   shows hurwitz_zeta_conv_suminf: "hurwitz_zeta a s = (\<Sum>n. (of_nat n + of_real a) powr -s)"
@@ -1008,283 +1093,247 @@ proof -
 qed
 
 
-subsection \<open>The non-vanishing of $\zeta$ for $\mathfrak{R}(s) = 1$\<close>
+subsection \<open>The non-vanishing of $\zeta$ for $\mathfrak{R}(s) \geq 1$\<close>
 
 text \<open>
-  This fact was originally done by John Harrison in HOL Light and ported to Isabelle by
-  Larry Paulson, then cleaned up and converted to the Isabelle definition of the zeta function
-  by Manuel Eberl.
+  This proof is based on a sketch by Newman~\cite{newman1998analytic}, which was previously
+  formalised in HOL Light by Harrison~\cite{harrison2009pnt}, albeit in a much more concrete
+  and low-level style.
+
+  Our aim here is to reproduce Newman's proof idea cleanly and on the same high level of
+  abstraction.
 \<close>
-lemma zeta_bound_calc:
-  fixes r::real
-  assumes "0<r" "r<1" "-1\<le>t" "t \<le> 1"
-  shows "\<bar>1 - r\<bar>^3 * ((1 + r\<^sup>2 - 2 * (r * t))\<^sup>2 * (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))) \<le> 1"
-proof -
-  have le1: "c * a\<^sup>2 * b \<le> 1"
-            if  "0 \<le> a" "0 \<le> b" "0 \<le> c" "c * (2 * a + b)^3 / 27 \<le> 1" for a b c::real
-  proof -
-    have "c * (a\<^sup>2 * b) \<le> c * ((2 * a + b)^3 / 27)"
-    proof (rule mult_left_mono)
-      have "0 \<le> (8 / 27 * a + 1 / 27 * b) * (a - b)\<^sup>2"
-        using that by (simp add: zero_le_mult_iff)
-      then show "a\<^sup>2 * b \<le> (2 * a + b)^3 / 27"
-       by (auto simp: field_simps power_eq_if)
-    qed (use that in auto)
-    with that show ?thesis
-      by linarith
-  qed
-  have le_a_ln: "0 \<le> 1 + r\<^sup>2 - 2 * (r * u)" if "u \<le> 1" for u
-  proof -
-    have "0 \<le> (1 - r)\<^sup>2"
-      by simp
-    also have "\<dots> = 1 + r\<^sup>2 - 2*r"
-      by (simp add: power_eq_if algebra_simps)
-    also have "\<dots> \<le> 1 + r\<^sup>2 - 2 * (r * u)"
-      using that assms by simp
-    finally show "0 \<le> 1 + r\<^sup>2 - 2 * (r * u)" .
-  qed
-  have "\<bar>1 - r\<bar>^3 * ((1 + r\<^sup>2 - 2 * (r * t))\<^sup>2 * (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))) =
-        (1 - r)^3 * (1 + r\<^sup>2 - 2 * (r * t))\<^sup>2 * (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))"
-    using assms by simp
-  also have "\<dots> \<le> 1"
-  proof (rule le1)
-    show "0 \<le> 1 + r\<^sup>2 - 2 * (r * t)"
-      by (metis assms(4) le_a_ln)
-    show "0 \<le> 1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1))"
-      by (rule le_a_ln) (insert assms, simp add: abs_square_le_1)
-    show "0 \<le> (1 - r)^3"
-      using assms by auto
-    have "((1 - r) * (2 * (1 + r\<^sup>2 - 2 * (r * t)) + (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))))^3 \<le> 3^3"
-    proof (rule power_mono_odd)
-      have "(1 - r) * (2 * (1 + r\<^sup>2 - 2 * (r * t)) + (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))) =
-            (1 - r) * ((3 + 3 * r\<^sup>2) - 2 * r * (2 * t\<^sup>2 + 2 * t - 1))"
-        by (auto simp: algebra_simps)
-      also have "\<dots> \<le> (1 - r) * ((3 + 3 * r\<^sup>2) + 3 * r)"
-      proof (rule mult_left_mono, simp)
-        have "0 \<le> (1 + 2*t)^2"
-          by (auto simp: algebra_simps)
-        with assms have "- (2 * (2 * t\<^sup>2 + 2 * t - 1)) \<le> 3"
-          unfolding power2_eq_square by (auto simp: algebra_simps)
-        then have "- (2 * (2 * t\<^sup>2 + 2 * t - 1)) * r \<le> 3 * r"
-          using assms real_mult_le_cancel_iff1 by blast
-        then show "- (2 * r * (2 * t\<^sup>2 + 2 * t - 1)) \<le> 3 * r"
-          by (simp add: algebra_simps)
-      qed (use assms in auto)
-      also have "\<dots> \<le> 3"
-        using assms by (auto simp: algebra_simps power_eq_if)
-      finally show "(1 - r) * (2 * (1 + r\<^sup>2 - 2 * (r * t)) + (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1)))) \<le> 3" .
-    qed auto
-    then
-    show "(1 - r)^3 * (2 * (1 + r\<^sup>2 - 2 * (r * t)) + (1 + r\<^sup>2 - 2 * (r * (2 * t\<^sup>2 - 1))))^3 / 27 \<le> 1"
-      by (simp add: power_mult_distrib)
-  qed
-  finally show ?thesis .
-qed
-
-
-lemma of_nat_nz [simp]: "1 + of_nat n \<noteq> (0::'a::real_algebra_1)"
-                        "numeral x + of_nat n \<noteq> (0::'a::real_algebra_1)"
-proof -
-  have "1 + of_nat n = (of_nat (Suc n) :: 'a)" by simp
-  also have "\<dots> \<noteq> of_nat 0" by (subst of_nat_eq_iff) auto
-  finally show "1 + of_nat n \<noteq> (0::'a)" by simp
-  have "numeral x + of_nat n = (of_nat (numeral x + n) :: 'a)" by simp
-  also have "\<dots> \<noteq> of_nat 0" by (subst of_nat_eq_iff) auto
-  finally show "numeral x + of_nat n \<noteq> (0::'a)" by simp
-qed
-
-lemma powr_of_nat_ne_1:
-  assumes "Re s > 0" and "n \<ge> 2"
-  shows   "of_nat n powr s \<noteq> 1"
-proof -
-  from assms have "real n powr 0 < real n powr Re s"
-    by (intro powr_less_mono) auto
-  also have "real n powr Re s = norm (of_nat n powr s)"
-    by (simp add: norm_powr_real_powr)
-  finally show ?thesis using assms by auto
-qed
-
-lemma zeta_multiple_bound:
-  assumes "x \<in> \<real>" "y \<in> \<real>" and x: "1 < Re x"
-    shows "1 \<le> norm (zeta x^3 * zeta(x + \<i> * y) ^ 4 * zeta(x + 2 * \<i> * y)^2)"  (is "1 \<le> norm ?g")
-proof -
-  let ?f = "\<lambda>n. (\<Prod>p \<in> {p. prime p \<and> p \<le> n}. inverse(1 - 1 / (of_nat p powr x)))^3 *
-        (\<Prod>p \<in> {p. prime p \<and> p \<le> n}. inverse(1 - 1 / (of_nat p powr (x + \<i> * y)))) ^ 4 *
-        (\<Prod>p \<in> {p. prime p \<and> p \<le> n}. inverse(1 - 1 / (of_nat p powr (x + 2 * \<i> * y))))\<^sup>2"
+theorem zeta_Re_ge_1_nonzero:
+  fixes s assumes "Re s \<ge> 1" "s \<noteq> 1"
+  shows "zeta s \<noteq> 0"
+proof (cases "Re s > 1")
+  case False
+  define a where "a = -Im s"
+  from False assms have s [simp]: "s = 1 - \<i> * a" and a: "a \<noteq> 0"
+    by (auto simp: complex_eq_iff a_def)
   show ?thesis
-  proof (rule Lim_norm_lbound)
-    show "?f \<longlonglongrightarrow> ?g"
-      by (intro tendsto_mult tendsto_power euler_product_zeta' assms)
-         (insert assms, auto simp: Reals_def)
-    have "1 \<le> cmod (?f n)" for n
+  proof
+    assume "zeta s = 0"
+    hence zero: "zeta (1 - \<i> * a) = 0" by simp
+    with zeta_cnj[of "1 - \<i> * a"] have zero': "zeta (1 + \<i> * a) = 0" by simp
+
+    -- \<open>We define the function $Q(s) = \zeta(s)^2\zeta(s+ia)\zeta(s-ia)$ and its Dirichlet series.
+        The objective will be to show that this function is entire and its Dirichlet series
+        converges everywhere. Of course, $Q(s)$ has singularities at $1$ and $1\pm ia$, so we 
+        need to show they can be removed.\<close>
+    define Q Q_fds
+      where "Q = (\<lambda>s. zeta s ^ 2 * zeta (s + \<i> * a) * zeta (s - \<i> * a))"
+        and "Q_fds = fds_zeta ^ 2 * fds_shift (\<i> * a) fds_zeta * fds_shift (-\<i> * a) fds_zeta"  
+    let ?sings = "{1, 1 + \<i> * a, 1 - \<i> * a}"
+ 
+    -- \<open>We show that @{term Q} is locally bounded everywhere. This is the case because the
+        poles of $\zeta(s)$ cancel with the zeros of $\zeta(s\pm ia)$ and vice versa.
+        This boundedness is then enough to show that @{term Q} has only removable singularities.\<close>
+    have Q_bigo_1: "Q \<in> O[at s](\<lambda>_. 1)" for s
     proof -
-      have "cmod ((1 - inverse (of_nat p powr x))^3 *
-                  (1 - inverse (of_nat p powr (x + \<i> * y))) ^ 4 *
-                  (1 - inverse (of_nat p powr (x + 2 * \<i> * y)))\<^sup>2) \<le> 1"
-           if "prime p" "p \<le> n" for p
+      have Q_eq: "Q = (\<lambda>s. (zeta s * zeta (s + \<i> * a)) * (zeta s * zeta (s - \<i> * a)))"
+        by (simp add: Q_def power2_eq_square mult_ac)
+
+      -- \<open>The singularity of $\zeta(s)$ at 1 gets cancelled by the zero of $\zeta(s-ia)$:\<close>
+      have bigo1: "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[at 1](\<lambda>_. 1)"
+        if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
       proof -
-        have "p \<ge> 2"
-          by (simp add: prime_ge_2_nat that)
-        let ?r = "exp (-(Re x * ln (real p)))"
-        let ?t = "cos (Re y * ln (real p))"
-        have r01: "0 < ?r" "?r < 1"
-          using \<open>p \<ge> 2\<close> assms by (auto simp: zero_less_mult_iff)
-        have 422: "z ^ 4 = (z\<^sup>2)\<^sup>2" for z::real by auto
-        have rcs: "(1 - r * c)\<^sup>2 + (r * s)\<^sup>2 = 1 + r\<^sup>2 * (s\<^sup>2 + c\<^sup>2) - 2 * r * c" for r c s::real
-          by (auto simp: algebra_simps power_eq_if)
-        have "cmod ((1 - inverse (of_nat p powr x))^3 *
-                    (1 - inverse (of_nat p powr (x + \<i> * y))) ^ 4 *
-                    (1 - inverse (of_nat p powr (x + 2 * \<i> * y)))\<^sup>2) =
-              cmod ((1 - inverse (of_nat p powr x))^3 *
-                    ((1 - inverse (of_nat p powr x) * inverse (of_nat p powr (\<i> * y))) ^ 4 *
-                    (1 - inverse (of_nat p powr x) * inverse (of_nat p powr (2 * (\<i> * y))))\<^sup>2))"
-          by (simp add: powr_add mult.assoc)
-        also have "\<dots> = cmod ((1 - inverse (of_nat p powr x))^3 *
-                           ((1 - inverse (of_nat p powr x) * inverse (of_nat p powr (\<i> * y))) ^ 4 *
-                            (1 - inverse (of_nat p powr x) * inverse ((of_nat p powr (\<i> * y))\<^sup>2))\<^sup>2))"
-          by (simp add: semiring_numeral_class.mult_2 [symmetric] powr_add [symmetric] power_eq_if)
-        also have "\<dots> = cmod ((1 - exp (- (x * complex_of_real (ln (real p)))))^3 *
-                               ((1 - exp (- (x * of_real (ln (real p)))) * 
-                                exp (- (\<i> * y * of_real (ln (real p))))) ^ 4 *
-                                (1 - exp (- (x * of_real (ln (real p)))) * 
-                                exp (- (2 * (\<i> * y * of_real (ln (real p))))))\<^sup>2))"
-          using \<open>p \<ge> 2\<close> by (simp add: powr_def Ln_of_nat exp_minus [symmetric]
-                                      exp_of_nat_mult [symmetric])
-        also have "\<dots> = cmod ((1 - exp (- (x * complex_of_real (ln (real p)))))^3 *
-                               ((1 - exp (- (x * of_real (ln (real p)))) * 
-                               exp (\<i> * (-y * of_real (ln (real p))))) ^ 4 *
-                               (1 - exp (- (x * of_real (ln (real p)))) * 
-                               exp (\<i> * (2 * -y * of_real (ln (real p)))))\<^sup>2))"
-          by (simp add: algebra_simps)
-        also have "\<dots> = cmod ((1 - exp (- (x * of_real (ln (real p)))))^3 *
-                               ((1 - exp (- (x * of_real (ln (real p)))) * 
-                               (cos (- y * of_real (ln (real p))) + 
-                                \<i> * sin (- y * of_real (ln (real p))))) ^ 4 *
-                               (1 - exp (- (x * of_real (ln (real p)))) * 
-                               (cos (2 * - y * of_real (ln (real p))) +
-                                \<i> * sin (2 * - y * of_real (ln (real p)))))\<^sup>2))"
-          by (simp only: exp_Euler)
-        also have "\<dots> = cmod (of_real(1 - ?r)^3 *
-                               ((1 - ?r * (cos (- (Re y) * ln (real p)) +
-                                            \<i> * sin (- (Re y) * ln (real p)))) ^ 4 *
-                               (1 - ?r * (of_real (cos (2 * - (Re y) * ln (real p))) + 
-                                         \<i> * of_real (sin (2 * - (Re y) * ln (real p)))))\<^sup>2))"
-          using assms by (auto simp: exp_of_real [symmetric] cos_of_real [symmetric] 
-                                     sin_of_real [symmetric] Reals_def)
-        also have "\<dots> = \<bar>1 - ?r\<bar>^3 * ((1 + ?r\<^sup>2 - 2 * (?r * ?t))\<^sup>2 * 
-                          (1 + ?r\<^sup>2 - 2 * (?r * (2 * ?t\<^sup>2 - 1))))"
-          unfolding norm_mult norm_power cmod_power2 422 norm_of_real
-          by (simp add: rcs) (simp_all add: mult.assoc cos_double_cos)
-        also have "\<dots> \<le> 1"
-          by (auto intro: zeta_bound_calc [OF r01])
+        have "(\<lambda>s. zeta (s - \<i> * a) - zeta (1 - \<i> * a)) \<in> O[at 1](\<lambda>s. s - 1)"
+          using that
+          by (intro taylor_bigo_linear holomorphic_on_imp_differentiable_at[of _ "-{1 + \<i> * a}"]
+                    holomorphic_intros) (auto simp: complex_eq_iff)
+        hence "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[at 1](\<lambda>s. 1 / (s - 1) * (s - 1))" 
+          using that by (intro landau_o.big.mult zeta_bigo_at_1) simp_all
+        also have "(\<lambda>s. 1 / (s - 1) * (s - 1)) \<in> \<Theta>[at 1](\<lambda>_. 1)"
+          by (intro bigthetaI_cong) (auto simp: eventually_at_filter)
         finally show ?thesis .
       qed
-      then have "inverse (cmod (?f n)) \<le> 1"
-        unfolding prod_power_distrib prod.distrib [symmetric] norm_inverse [symmetric]
-                  prod_inversef [symmetric] power_inverse o_def
-        by (auto simp: prod_norm [symmetric] divide_simps intro: prod_le_1)
-      moreover have "cmod (?f n) > 0"
-        using assms by (simp add: powr_of_nat_ne_1 prime_ge_2_nat complex_is_Real_iff)
-      ultimately have "1 \<le> inverse (inverse (cmod (?f n)))"
-        using inverse_positive_iff_positive one_le_inverse_iff by blast
-      then show ?thesis by simp
-    qed
-    then show "\<forall>\<^sub>F n in sequentially. 1 \<le> cmod (?f n)"
-      by (rule eventually_sequentiallyI [of 0])
-  qed auto
-qed
 
-lemma tendsto_pre_zeta [tendsto_intros]:
-  assumes "a > 0"
-  shows   "(pre_zeta a \<longlongrightarrow> pre_zeta a s) (at s within A)"
-proof -
-  from assms have "continuous_on UNIV (pre_zeta a)"
-    by (intro holomorphic_on_imp_continuous_on holomorphic_intros)
-  hence "pre_zeta a \<midarrow>s\<rightarrow> pre_zeta a s" by (auto simp: continuous_on_def)
-  thus ?thesis by (rule filterlim_mono) (auto intro!: at_le)
-qed
+      -- \<open>The analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
+      have bigo1': "(\<lambda>s. zeta s * zeta (s + \<i> * a)) \<in> O[at 1](\<lambda>_. 1)"
+        if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
+        using bigo1[of  "-a"] that zeta_cnj[of "1 - \<i> * a"] by simp
 
-lemma zeta_nonzero_aux: "((\<lambda>s. zeta s^3 * (s - 1) ^ 4) \<longlongrightarrow> 0) (at 1 within {s \<in> \<real>. 1 < Re s})"
-  (is "filterlim _ _ ?F")
-proof (rule Lim_transform_eventually)
-  let ?f = "pre_zeta 1"
-  have "eventually (\<lambda>s. s \<noteq> 1) ?F" by (auto simp: eventually_at_filter)
-  thus "eventually (\<lambda>s. (\<Sum>k\<le>3. (3 choose k) * ?f s ^ k * (s - 1) ^ Suc k) =
-                            zeta s ^ 3 * (s - 1) ^ 4) ?F"
-  proof eventually_elim
-    case (elim s)
-    let ?t = "inverse (s - 1)" and ?u = "s - 1"
-    from elim have "zeta s = ?f s + ?t"
-      by (simp add: zeta_def hurwitz_zeta_def divide_simps)
-    also have "\<dots> ^ 3 = (\<Sum>k\<le>3. (3 choose k) * ?f s ^ k * ?t ^ (3 - k))"
-      by (simp add: algebra_simps eval_nat_numeral)
-    also have "\<dots> * ?u ^ 4 = (\<Sum>k\<le>3. (3 choose k) * ?f s ^ k * (?u ^ 4 * ?t ^ (3 - k)))"
-      by (subst sum_distrib_right) (simp_all add: algebra_simps)
-    also have "\<dots> = (\<Sum>k\<le>3. (3 choose k) * ?f s ^ k * ?u ^ Suc k)"
-      by (intro sum.cong) (auto simp: divide_simps power_diff eval_nat_numeral)
-    finally show ?case ..
-  qed
-qed (auto intro!: tendsto_eq_intros)
-
-theorem zeta_nonzero:
-  assumes "1 \<le> Re s" and "s \<noteq> 1"
-    shows "zeta s \<noteq> 0"
-proof
-  assume contr: "zeta s = 0"
-  let ?y = "Im s"
-  have "?thesis" if Re1: "Re s = 1"
-  proof (cases "?y = 0")
-    case True then show ?thesis
-      using Re1 assms by (auto simp: complex_eq_iff)
-  next
-    case False
-    let ?D = "deriv (\<lambda>x. zeta(x + \<i> * ?y)) 1"
-    let ?F = "at 1 within {s \<in> \<real>. 1 < Re s}"
-    have 1: "1 islimpt {s. s \<in> \<real> \<and> 1 < Re s}" unfolding islimpt_approachable_le
-    proof safe
-      fix \<epsilon> :: real assume "\<epsilon> > 0"
-      thus "\<exists>x'\<in>{s \<in> \<real>. 1 < Re s}. x' \<noteq> 1 \<and> dist x' 1 \<le> \<epsilon>"
-        by (intro bexI[of _ "of_real (1 + \<epsilon>)"]) (auto simp: dist_norm)
-    qed
-    show ?thesis
-    proof (rule notE [OF _ Lim_norm_lbound])
-      show "((\<lambda>x. zeta x^3 * zeta (x + \<i> * ?y) ^ 4 * (zeta (x + 2*\<i>*?y))\<^sup>2) \<longlongrightarrow>
-             ((0 * ?D ^ 4) * zeta(1 + 2*\<i>*?y)^2)) ?F"
-      proof (rule tendsto_mult)
-        show "((\<lambda>x. zeta x^3 * zeta (x + \<i> * ?y) ^ 4) \<longlongrightarrow> 0 * ?D ^ 4)
-              ?F"
-        proof (rule Lim_transform_eventually)
-          show " \<forall>\<^sub>F x in at 1 within {s \<in> \<real>. 1 < Re s}.
-                    zeta x^3 * (x - 1) ^ 4 * (zeta (x + \<i> * ?y) / (x - 1)) ^ 4 =
-                    zeta x^3 * zeta (x + \<i> * ?y) ^ 4"
-            by (force simp: eventually_at divide_simps intro!: zero_less_one)
-          have "((\<lambda>x. zeta (x + \<i> * ?y)) has_field_derivative ?D) ?F" using False
-            by (intro holomorphic_derivI[where ?S = "-{1 - \<i> * Im s}"])
-               (auto intro!: holomorphic_intros simp: complex_eq_iff)
-          then have *: "((\<lambda>y. (zeta (y + \<i> * ?y) - zeta (1 + \<i> * ?y)) / (y - 1)) \<longlongrightarrow> ?D) ?F"
-            by (simp add: has_field_derivative_iff)
-          from Re1 have s_eq: "s = 1 + \<i> * Im s" by (auto simp: complex_eq_iff)
-          have *: "((\<lambda>x. zeta (x + \<i> * ?y) / (x - 1)) \<longlongrightarrow> ?D) ?F"
-            by (rule Lim_transform [OF *])
-               (auto simp: Lim_within norm_divide divide_simps complex_eq dist_complex_def 
-                           s_eq [symmetric] contr intro!: exI[of _ 1])
-          have zeta_lim0: "((\<lambda>x. zeta x^3 * (x - 1) ^ 4) \<longlongrightarrow> 0) ?F" by (rule zeta_nonzero_aux)
-          show "((\<lambda>x. zeta x^3 * (x - 1) ^ 4 * (zeta (x + \<i>*?y) / (x - 1)) ^ 4) \<longlongrightarrow> 0 * ?D ^ 4) ?F"
-            by (intro tendsto_mult [OF zeta_lim0] tendsto_power *)
-        qed
-        have "continuous ?F (\<lambda>x. (zeta (x + 2*\<i>*?y))\<^sup>2)" using \<open>Im s \<noteq> 0\<close>
-          by (intro continuous_intros continuous_within_compose2 
-                   [where f = "\<lambda>x. x + 2*\<i>*?y" and g = zeta]) auto
-        then show "((\<lambda>x. (zeta (x + 2*\<i>*?y))\<^sup>2) \<longlongrightarrow> (zeta (1 + 2*\<i>*?y))\<^sup>2) ?F"
-          by (force simp: continuous_within)
+      -- \<open>The singularity of $\zeta(s-ia)$ gets cancelled by the zero of $\zeta(s)$:\<close>
+      have bigo2: "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[at (1 + \<i> * a)](\<lambda>_. 1)"
+        if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
+      proof -
+        have "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[filtermap (\<lambda>s. s + \<i> * a) (at 1)](\<lambda>_. 1)"
+          using bigo1'[of a] that by (simp add: mult.commute landau_o.big.in_filtermap_iff)
+        also have "filtermap (\<lambda>s. s + \<i> * a) (at 1) = at (1 + \<i> * a)"
+          using filtermap_at_shift[of "-\<i> * a" 1] by simp
+        finally show ?thesis .
       qed
-      show "\<forall>\<^sub>F x in ?F. 1 \<le> cmod (zeta x^3 * zeta (x + \<i> * ?y) ^ 4 * (zeta (x + 2*\<i>*?y))\<^sup>2)"
-        by (force simp: eventually_at intro!: zeta_multiple_bound zero_less_one)
-    qed (use 1 trivial_limit_within 1 in auto)
+
+      -- \<open>Again, the analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
+      have bigo2': "(\<lambda>s. zeta s * zeta (s + \<i> * a)) \<in> O[at (1 - \<i> * a)](\<lambda>_. 1)"
+        if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
+        using bigo2[of "-a"] that zeta_cnj[of "1 - \<i> * a"] by simp
+
+      -- \<open>Now the final case distinction to show $Q(s)\in O(1)$ for all $s\in\mathbb{C}$:\<close>
+      consider "s = 1" | "s = 1 + \<i> * a" | "s = 1 - \<i> * a" | "s \<notin> ?sings" by blast
+      thus ?thesis
+      proof cases
+        case 1
+        thus ?thesis unfolding Q_eq using zero zero' a
+          by (auto intro: bigo1 bigo1' landau_o.big.mult_in_1)
+      next
+        case 2
+        from a have "isCont (\<lambda>s. zeta s * zeta (s + \<i> * a)) (1 + \<i> * a)"
+          by (auto intro!: continuous_intros)
+        with 2 show ?thesis unfolding Q_eq using zero zero' a
+          by (auto intro: bigo2 landau_o.big.mult_in_1 continuous_imp_bigo_1)
+      next
+        case 3
+        from a have "isCont (\<lambda>s. zeta s * zeta (s - \<i> * a)) (1 - \<i> * a)"
+          by (auto intro!: continuous_intros)
+        with 3 show ?thesis unfolding Q_eq using zero zero' a
+          by (auto intro: bigo2' landau_o.big.mult_in_1 continuous_imp_bigo_1)
+      qed (auto intro!: continuous_imp_bigo_1 continuous_intros simp: Q_def complex_eq_iff)
+    qed
+  
+    -- \<open>Thus, we can remove the singularities from @{term Q} and extend it to an entire function.\<close>
+    have "\<exists>Q'. Q' holomorphic_on UNIV \<and> (\<forall>z\<in>UNIV - ?sings. Q' z = Q z)"
+      by (intro removable_singularities Q_bigo_1)
+         (auto simp: Q_def complex_eq_iff intro!: holomorphic_intros)
+    then obtain Q' where Q': "Q' holomorphic_on UNIV" "\<And>z. z \<notin> ?sings \<Longrightarrow> Q' z = Q z" by blast
+
+    -- \<open>@{term Q'} constitutes an analytic continuation of the Dirichlet series of @{term Q}.\<close>
+    have eval_Q_fds: "eval_fds Q_fds s = Q' s" if "Re s > 1" for s
+    proof -
+      have "eval_fds Q_fds s = Q s" using that
+        by (simp add: Q_fds_def Q_def eval_fds_mult eval_fds_power fds_abs_converges_mult 
+                      fds_abs_converges_power eval_fds_zeta)
+      also from that have "\<dots> = Q' s" by (subst Q') auto
+      finally show ?thesis .
+    qed
+  
+    -- \<open>Since $\zeta(s)$ and $\zeta(s\pm ia)$ are completely multiplicative Dirichlet series,
+        the logarithm of their product can be rewritten into the following nice form:\<close>
+    have ln_Q_fds_eq: 
+      "fds_ln 0 Q_fds = fds (\<lambda>k. of_real (2 * mangoldt k / ln k * (1 + cos (a * ln k))))"
+    proof -
+      note simps = fds_ln_mult[where l' = 0 and l'' = 0] fds_ln_power[where l' = 0]
+                   fds_ln_prod[where l' = "\<lambda>_. 0"]
+      have "fds_ln 0 Q_fds = 2 * fds_ln 0 fds_zeta + fds_shift (\<i> * a) (fds_ln 0 fds_zeta) + 
+                               fds_shift (-\<i> * a) (fds_ln 0 fds_zeta)"
+        by (auto simp: Q_fds_def simps)
+      also have "completely_multiplicative_function (fds_nth (fds_zeta :: complex fds))"
+        by standard auto
+      hence "fds_ln (0 :: complex) fds_zeta = fds (\<lambda>n. mangoldt n /\<^sub>R ln (real n))"
+        by (subst fds_ln_completely_multiplicative) (auto simp: fds_eq_iff)
+      also have "2 * \<dots> + fds_shift (\<i> * a) \<dots> + fds_shift (-\<i> * a) \<dots> = 
+                   fds (\<lambda>k. of_real (2 * mangoldt k / ln k * (1 + cos (a * ln k))))"
+        (is "?a = ?b")
+      proof (intro fds_eqI, goal_cases)
+        case (1 n)
+        then consider "n = 1" | "n > 1" by force
+        hence "fds_nth ?a n = mangoldt n / ln (real n) * (2 + (n powr (\<i> * a) + n powr (-\<i> * a)))"
+          by cases (auto simp: field_simps scaleR_conv_of_real numeral_fds)
+        also have "n powr (\<i> * a) + n powr (-\<i> * a) = 2 * cos (of_real (a * ln n))"
+          using 1 by (subst cos_exp_eq) (simp_all add: powr_def algebra_simps)
+        also have "mangoldt n / ln (real n) * (2 + \<dots>) = 
+                     of_real (2 * mangoldt n / ln n * (1 + cos (a * ln n)))"
+          by (subst cos_of_real) simp_all
+        finally show ?case by (simp add: fds_nth_fds')
+      qed
+      finally show ?thesis .
+    qed
+    -- \<open>It is then obvious that this logarithm series has non-negative real coefficients.\<close>
+    also have "nonneg_dirichlet_series \<dots>"
+    proof (standard, goal_cases)
+      case (1 n)
+      from cos_ge_minus_one[of "a * ln n"] have "1 + cos (a * ln (real n)) \<ge> 0" by linarith
+      thus ?case using 1
+        by (cases "n = 0")
+           (auto simp: complex_nonneg_Reals_iff fds_nth_fds' mangoldt_nonneg
+                 intro!: divide_nonneg_nonneg mult_nonneg_nonneg)
+    qed
+    -- \<open>Therefore, the original series also has non-negative real coefficients.\<close>
+    finally have nonneg: "nonneg_dirichlet_series Q_fds"
+      by (rule nonneg_dirichlet_series_lnD) (auto simp: Q_fds_def)
+  
+    -- \<open>By the Pringsheim--Landau theorem, a Dirichlet series with non-negative coefficnets that 
+        can be analytically continued to the entire complex plane must converge everywhere, i.\,e.\ 
+        its abscissa of (absolute) convergence is $-\infty$:\<close>
+    have abscissa_Q_fds: "abs_conv_abscissa Q_fds \<le> 1"
+      unfolding Q_fds_def by (auto intro!: abs_conv_abscissa_mult_leI abs_conv_abscissa_power_leI)
+    with nonneg and eval_Q_fds and \<open>Q' holomorphic_on UNIV\<close>
+      have abscissa: "abs_conv_abscissa Q_fds = -\<infinity>"
+        by (intro entire_continuation_imp_abs_conv_abscissa_MInfty[where c = 1 and g = Q'])
+           (auto simp: one_ereal_def)
+  
+    -- \<open>This now leads to a contradiction in a very obvious way. If @{term Q_fds} is
+        absolutely convergent, then the subseries corresponding to powers of 2 (\i.e.
+        we delete all summands $a_n / n ^ s$ where $n$ is not a power of 2 from the sum) is
+        also absolutely convergent. We denote this series with $R$.\<close>
+    define R_fds where "R_fds = fds_primepow_subseries 2 Q_fds"
+    have "conv_abscissa R_fds \<le> abs_conv_abscissa R_fds" by (rule conv_le_abs_conv_abscissa)
+    also have "abs_conv_abscissa R_fds \<le> abs_conv_abscissa Q_fds"
+      unfolding R_fds_def by (rule abs_conv_abscissa_restrict)
+    also have "\<dots> = -\<infinity>" by (simp add: abscissa)
+    finally have abscissa': "conv_abscissa R_fds = -\<infinity>" by simp
+  
+    -- \<open>Since $\zeta(s)$ and $\zeta(s \pm ia)$ have an Euler product expansion for 
+        $\mathfrak{R}(s) > 1$, we have
+          \[R(s) = (1 - 2^{-s})^-2 (1 - 2^{-s+ia})^{-1} (1 - 2^{-s-ia})^{-1}\]
+        there, and since $R$ converges everywhere and the right-hand side is holomorphic for
+        $\mathfrak{R}(s) > 0$, the equation is also valid for all $s$ with $\mathfrak{R}(s) > 0$
+        by analytic continuation.\<close>
+    have eval_R: "eval_fds R_fds s = 
+                   1 / ((1 - 2 powr -s) ^ 2 * (1 - 2 powr (-s + \<i> * a)) * (1 - 2 powr (-s - \<i> * a)))"
+      (is "_ = ?f s") if "Re s > 0" for s
+    proof -
+      show ?thesis
+      proof (rule analytic_continuation_open[where f = "eval_fds R_fds"])
+        show "?f holomorphic_on {s. Re s > 0}"
+          by (intro holomorphic_intros) (auto simp: powr_def exp_eq_1 Ln_Reals_eq)
+      next
+        fix z assume z: "z \<in> {s. Re s > 1}"
+        have [simp]: "completely_multiplicative_function (fds_nth fds_zeta)" by standard auto
+        thus "eval_fds R_fds z = ?f z" using z
+          by (simp add: R_fds_def Q_fds_def eval_fds_mult eval_fds_power fds_abs_converges_mult 
+                fds_abs_converges_power fds_primepow_subseries_euler_product_cm divide_simps
+                powr_minus powr_diff powr_add fds_abs_summable_zeta)
+      qed (insert that abscissa', auto intro!: exI[of _ 2] convex_connected open_halfspace_Re_gt
+                                               convex_halfspace_Re_gt holomorphic_intros)
+    qed
+  
+    -- \<open>We now clearly have a contradiction: $R(s)$, being entire, is continuous everywhere,
+        while the function on the right-hand side clearly has a pole at $0$.\<close>
+    show False
+    proof (rule not_tendsto_and_filterlim_at_infinity)
+      have "((\<lambda>b. (1-2 powr - b)\<^sup>2 * (1 - 2 powr (-b+\<i>*a)) * (1 - 2 powr (-b-\<i>*a))) \<longlongrightarrow> 0) 
+              (at 0 within {s. Re s > 0})"
+        (is "filterlim ?f' _ _") by (intro tendsto_eq_intros) (auto)
+      moreover have "eventually (\<lambda>s. s \<in> {s. Re s > 0}) (at 0 within {s. Re s > 0})"
+        by (auto simp: eventually_at_filter)
+      hence "eventually (\<lambda>s. ?f' s \<noteq> 0) (at 0 within {s. Re s > 0})"
+        by eventually_elim (auto simp: powr_def exp_eq_1 Ln_Reals_eq)
+      ultimately have "filterlim ?f' (at 0) (at 0 within {s. Re s > 0})" by (simp add: filterlim_at)
+      hence "filterlim ?f at_infinity (at 0 within {s. Re s > 0})" (is ?lim)
+        by (intro filterlim_divide_at_infinity[OF tendsto_const]
+                     tendsto_mult_filterlim_at_infinity) auto
+      also have ev: "eventually (\<lambda>s. Re s > 0) (at 0 within {s. Re s > 0})"
+        by (auto simp: eventually_at intro!: exI[of _ 1])
+      have "?lim \<longleftrightarrow> filterlim (eval_fds R_fds) at_infinity (at 0 within {s. Re s > 0})"
+        by (intro filterlim_cong refl eventually_mono[OF ev]) (auto simp: eval_R)
+      finally show \<dots> .
+    next
+      have "continuous (at 0 within {s. Re s > 0}) (eval_fds R_fds)"
+        by (intro continuous_intros) (auto simp: abscissa')
+      thus "((eval_fds R_fds \<longlongrightarrow> eval_fds R_fds 0)) (at 0 within {s. Re s > 0})"
+        by (auto simp: continuous_within)
+    next
+      have "0 \<in> {s. Re s \<ge> 0}" by simp
+      also have "{s. Re s \<ge> 0} = closure {s. Re s > 0}"
+        using closure_halfspace_gt[of "1::complex" 0] by (simp add: inner_commute)
+      finally have "0 \<in> \<dots>" .
+      thus "at 0 within {s. Re s > 0} \<noteq> bot"
+        by (subst at_within_eq_bot_iff) auto
+    qed
   qed
-  then show False using assms contr zeta_Re_gt_1_nonzero[of s]
-    by (cases "Re s > 1") auto
-qed
+qed (fact zeta_Re_gt_1_nonzero)
 
 
 subsection \<open>Special values of the $\zeta$ functions\<close>

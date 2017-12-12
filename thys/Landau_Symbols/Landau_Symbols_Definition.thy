@@ -415,6 +415,15 @@ lemma lift_trans_bigtheta':
   shows   "f \<in> L F (\<lambda>x. t x (h x))"
   using cong_bigtheta[OF assms(3)[OF assms(2)]] assms(1)  by simp
 
+lemma (in landau_symbol) mult_in_1:
+  assumes "f \<in> L F (\<lambda>_. 1)" "g \<in> L F (\<lambda>_. 1)"
+  shows   "(\<lambda>x. f x * g x) \<in> L F (\<lambda>_. 1)"
+  using mult[OF assms] by simp
+
+lemma (in landau_symbol) of_real_cancel:
+  "(\<lambda>x. of_real (f x)) \<in> L F (\<lambda>x. of_real (g x)) \<Longrightarrow> f \<in> Lr F g"
+  by (subst (asm) norm_iff [symmetric], subst (asm) (1 2) norm_of_real) simp_all
+
 lemmas [landau_divide_simps] = 
   inverse_cancel divide_left_iff divide_eq1 divide_eq2 inverse_eq1 inverse_eq2
 
@@ -923,6 +932,16 @@ proof
   with big_refl[of f F] big_refl[of g F] have "f \<in> L F (g)" "g \<in> L F (f)" by simp_all
   thus "f \<in> \<Theta>[F](g)" using L unfolding bigtheta_def by (auto simp: bigomega_iff_bigo)
 qed (rule big.cong_bigtheta)
+
+lemma big_prod:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> L F (g x)"
+  shows   "(\<lambda>y. \<Prod>x\<in>A. f x y) \<in> L F (\<lambda>y. \<Prod>x\<in>A. g x y)"
+  using assms by (induction A rule: infinite_finite_induct) (auto intro!: big.mult)
+
+lemma big_prod_in_1:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> L F (\<lambda>_. 1)"
+  shows   "(\<lambda>y. \<Prod>x\<in>A. f x y) \<in> L F (\<lambda>_. 1)"
+  using assms by (induction A rule: infinite_finite_induct) (auto intro!: big.mult_in_1)
 
 end
 

@@ -1220,10 +1220,6 @@ proof (rule fds_eqI)
   qed auto
 qed
 
-(* TODO Move *)
-lemma prime_factorization_Suc_0 [simp]: "prime_factorization (Suc 0) = {#}"
-  unfolding One_nat_def [symmetric] using prime_factorization_1 .
-
 lemma fds_primepow_subseries_power [simp]: 
   "fds_primepow_subseries p (f ^ n) = fds_primepow_subseries p f ^ n"
   by (induction n)  simp_all
@@ -1463,6 +1459,10 @@ lemma fds_of_real_0 [simp]: "fds_of_real 0 = 0"
   and fds_of_real_deriv [simp]: "fds_of_real (fds_deriv f) = fds_deriv (fds_of_real f)"
   by (simp_all add: fds_eq_iff one_fds_def fds_const_def fds_nth_mult 
                     dirichlet_prod_def fds_deriv_def scaleR_conv_of_real)
+
+lemma fds_of_real_higher_deriv [simp]: 
+  "(fds_deriv ^^ n) (fds_of_real f) = fds_of_real ((fds_deriv ^^ n) f)"
+  by (induction n) simp_all
 
 
 subsection \<open>Convergence and connection to concrete functions\<close>

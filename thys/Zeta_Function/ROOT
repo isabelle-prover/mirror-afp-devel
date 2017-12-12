@@ -9,3 +9,4 @@ session Zeta_Function (AFP) = Dirichlet_Series +
     Zeta_Function
   document_files
     "root.tex"
+    "root.bib"

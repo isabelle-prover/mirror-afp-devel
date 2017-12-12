@@ -284,7 +284,7 @@ proof -
        (auto simp: g_square g_nonsquare abs_moebius_mu_le elim!: is_nth_powerE)
     
   have fds_g: "fds g = fds_ind squarefree * fds moebius_mu"
-    by (rule fds_eqI) (simp add: g_def fds_nth_times)
+    by (rule fds_eqI) (simp add: g_def fds_nth_mult)
   have "fds g * fds_zeta = fds_ind squarefree * (fds_zeta * fds moebius_mu)"
     by (simp add: fds_g mult_ac)
   also have "fds_zeta * fds moebius_mu = (1 :: real fds)"
@@ -294,7 +294,7 @@ proof -
   proof
     fix n :: nat
     from * show "ind squarefree n = dirichlet_prod g f n"
-      by (cases "n = 0") (simp_all add: fds_eq_iff fds_nth_times f_def)
+      by (cases "n = 0") (simp_all add: fds_eq_iff fds_nth_mult f_def)
   qed
     
   define H :: "real \<Rightarrow> real" 
@@ -560,7 +560,7 @@ proof -
   qed
   also have "divisor_count n = dirichlet_prod (\<lambda>_. 1) (\<lambda>_. 1) n" for n
     using fds_divisor_count
-    by (cases "n = 0") (simp_all add: fds_eq_iff power2_eq_square fds_nth_times)
+    by (cases "n = 0") (simp_all add: fds_eq_iff power2_eq_square fds_nth_mult)
   hence "?g = (\<lambda>x. sum_upto (\<lambda>n. real (divisor_count n)) x - 
                (x * ln x + (2 * euler_mascheroni - 1) * x))"
     by (intro ext) (simp_all add: algebra_simps dirichlet_prod_def)
