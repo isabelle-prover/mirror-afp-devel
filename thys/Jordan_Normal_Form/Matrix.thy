@@ -594,7 +594,7 @@ definition mat_of_cols :: "nat \<Rightarrow> 'a vec list \<Rightarrow> 'a mat"
   where "mat_of_cols n cs = mat n (length cs) (\<lambda>(i,j). cs ! j $ i)"
 
 definition mat_of_cols_list :: "nat \<Rightarrow> 'a list list \<Rightarrow> 'a mat" where
-  "mat_of_cols_list nr cs = mat nr (length cs) (\<lambda> (i,j). cs ! j ! j)"
+  "mat_of_cols_list nr cs = mat nr (length cs) (\<lambda> (i,j). cs ! j ! i)"
 
 lemma col_dim[simp]: "col A i \<in> carrier_vec (dim_row A)" unfolding col_def by auto
 
