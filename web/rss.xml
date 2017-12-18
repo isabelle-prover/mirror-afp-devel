@@ -18,9 +18,9 @@
        <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
        <description>
 The Knuth-Morris-Pratt algorithm is often used to show that the
-problem of finding a string &lt;MATH&gt;s&lt;/MATH&gt; in a text
-&lt;MATH&gt;t&lt;/MATH&gt; can be solved deterministically in
-&lt;MATH&gt;O(|s| + |t|)&lt;/MATH&gt; time. We use the Isabelle
+problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
+&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
+&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
 Refinement Framework to formulate and verify the algorithm. Via
 refinement, we apply some optimisations and finally use the
 &lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in

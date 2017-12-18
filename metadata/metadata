@@ -6,9 +6,9 @@ date = 2017-12-18
 notify = hellauer@in.tum.de, lammich@in.tum.de
 abstract = 
   The Knuth-Morris-Pratt algorithm is often used to show that the
-  problem of finding a string <MATH>s</MATH> in a text
-  <MATH>t</MATH> can be solved deterministically in
-  <MATH>O(|s| + |t|)</MATH> time. We use the Isabelle
+  problem of finding a string <i>s</i> in a text
+  <i>t</i> can be solved deterministically in
+  <i>O(|s| + |t|)</i> time. We use the Isabelle
   Refinement Framework to formulate and verify the algorithm. Via
   refinement, we apply some optimisations and finally use the
   <em>Sepref</em> tool to obtain executable code in
