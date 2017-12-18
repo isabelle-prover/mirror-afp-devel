@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+    <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The string search algorithm by Knuth, Morris and Pratt</title>
+              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
+       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
+       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
+       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+The Knuth-Morris-Pratt algorithm is often used to show that the
+problem of finding a string &lt;MATH&gt;s&lt;/MATH&gt; in a text
+&lt;MATH&gt;t&lt;/MATH&gt; can be solved deterministically in
+&lt;MATH&gt;O(|s| + |t|)&lt;/MATH&gt; time. We use the Isabelle
+Refinement Framework to formulate and verify the algorithm. Via
+refinement, we apply some optimisations and finally use the
+&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
+&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
+    </item>
     <item>
        <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
               <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
@@ -585,25 +601,6 @@ convolution algebras provide uniform foundations from which models of
 computation based on relations, program traces or pomsets, and
 verification components for separation or interval temporal logics can
 be built with little effort.</description>
-    </item>
-    <item>
-       <title>Buffon's Needle Problem</title>
-              <link>https://www.isa-afp.org/entries/Buffons_Needle.html</link>
-       <guid>https://www.isa-afp.org/entries/Buffons_Needle.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
-       <description>
-In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
-later solved the following problem, which is often called the first
-problem ever solved in geometric probability: Given a floor divided
-into vertical strips of the same width, what is the probability that a
-needle thrown onto the floor randomly will cross two strips?  This
-entry formally defines the problem in the case where the needle&#39;s
-position is chosen uniformly at random in a single strip around the
-origin (which is equivalent to larger arrangements due to symmetry).
-It then provides proofs of the simple solution in the case where the
-needle&#39;s length is no greater than the width of the strips and
-the more complicated solution in the opposite case.</description>
     </item>
   </channel>
 </rss>
