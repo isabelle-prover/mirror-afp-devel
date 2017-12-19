@@ -242,10 +242,6 @@ lemma size_mset_remove1_mset_le_iff: "size (remove1_mset x M) < size M \<longlef
   using less_irrefl
   by (fastforce intro!: mset_subset_size elim: in_countE simp: subset_mset_def multiset_eq_iff)
 
-lemma single_remove1_mset_eq:
-  "add_mset a (remove1_mset a M) = M \<longleftrightarrow> a \<in># M"
-  by (cases "count M a") (auto simp: multiset_eq_iff count_eq_zero_iff count_inI)
-
 lemma remove_1_mset_id_iff_notin:
   "remove1_mset a M = M \<longleftrightarrow> a \<notin># M"
   by (meson diff_single_trivial multi_drop_mem_not_eq)
