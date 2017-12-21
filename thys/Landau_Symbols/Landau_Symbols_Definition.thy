@@ -424,6 +424,10 @@ lemma (in landau_symbol) of_real_cancel:
   "(\<lambda>x. of_real (f x)) \<in> L F (\<lambda>x. of_real (g x)) \<Longrightarrow> f \<in> Lr F g"
   by (subst (asm) norm_iff [symmetric], subst (asm) (1 2) norm_of_real) simp_all
 
+lemma (in landau_symbol) of_real_iff:
+  "(\<lambda>x. of_real (f x)) \<in> L F (\<lambda>x. of_real (g x)) \<longleftrightarrow> f \<in> Lr F g"
+  by (subst norm_iff [symmetric], subst (1 2) norm_of_real) simp_all
+
 lemmas [landau_divide_simps] = 
   inverse_cancel divide_left_iff divide_eq1 divide_eq2 inverse_eq1 inverse_eq2
 
@@ -1665,6 +1669,11 @@ proof-
     show "(\<lambda>x. f x + g x) \<in> o[F](h)" "(\<lambda>x. f x - g x) \<in> o[F](h)" by simp_all
 qed
 
+lemma small_sum_in_smallo:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> o[F](g)"
+  shows   "(\<lambda>x. sum (\<lambda>y. f y x) A) \<in> o[F](g)"
+  using assms by (induction A rule: infinite_finite_induct) (auto intro: sum_in_smallo)
+
 lemma sum_in_bigo:
   assumes "f \<in> O[F](h)" "g \<in> O[F](h)"
   shows   "(\<lambda>x. f x + g x) \<in> O[F](h)" "(\<lambda>x. f x - g x) \<in> O[F](h)"
@@ -1680,6 +1689,11 @@ proof-
   from this[of f g] this[of f "\<lambda>x. -g x"] assms
     show "(\<lambda>x. f x + g x) \<in> O[F](h)" "(\<lambda>x. f x - g x) \<in> O[F](h)" by simp_all
 qed
+
+lemma big_sum_in_bigo:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> O[F](g)"
+  shows   "(\<lambda>x. sum (\<lambda>y. f y x) A) \<in> O[F](g)"
+  using assms by (induction A rule: infinite_finite_induct) (auto intro: sum_in_bigo)
 
 
 lemma tendsto_ln_over_powr: 

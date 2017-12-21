@@ -42,35 +42,35 @@ proof -
   finally show ?thesis .
 qed
 
-lemma sum_upto_dirichlet_prod:
-  "sum_upto (dirichlet_prod f g) x = sum_upto (\<lambda>d. f d * sum_upto g (x / real d)) x"
+lemma sum_upto_sum_divisors:
+  "sum_upto (\<lambda>n. \<Sum>d | d dvd n. f n d) x = sum_upto (\<lambda>k. sum_upto (\<lambda>d. f (d * k) k) (x / k)) x"
 proof -
-  have "sum_upto (dirichlet_prod f g) x = 
-          (\<Sum>n | 0 < n \<and> real n \<le> x. \<Sum>d | d dvd n. f d * g (n div d))"
-    by (simp add: sum_upto_def dirichlet_prod_def)
-  also have "\<dots> = (\<Sum>(n,d) \<in> (SIGMA n:{n. 0 < n \<and> real n \<le> x}. {d. d dvd n}). f d * g (n div d))"
-    (is "_ = sum _ ?A") by (subst sum.Sigma) simp_all
-  also have "\<dots> = (\<Sum>(d,n) \<in> (SIGMA d:{d. 0 < d \<and> real d \<le> x}. {n. d dvd n \<and> 0 < n \<and> real n \<le> x}). 
-                     f d * g (n div d))"
-    by (intro sum.reindex_bij_witness[of _ "\<lambda>(x,y). (y,x)" "\<lambda>(x,y). (y,x)"])
-       (auto dest: dvd_imp_le elim: dvdE)
-  also have "\<dots> = (\<Sum>d | 0 < d \<and> real d \<le> x. f d * 
-                     (\<Sum>n | d dvd n \<and> 0 < n \<and> real n \<le> x. g (n div d)))"
-    by (subst sum.Sigma [symmetric]) (simp_all add: sum_distrib_left)
-  also have "\<dots> = (\<Sum>d | 0 < d \<and> real d \<le> x. f d * 
-                     (\<Sum>n' | 0 < n' \<and> real n' \<le> x / real d. g n'))"
-  proof (intro sum.cong refl, goal_cases)
-    case (1 d)
-    hence "(\<Sum>n | d dvd n \<and> 0 < n \<and> real n \<le> x. g (n div d)) =
-             (\<Sum>n' | 0 < n' \<and> real n' \<le> x / real d. g n')"
-      by (intro sum.reindex_bij_witness[of _ "\<lambda>n'. n' * d" "\<lambda>n. n div d"])
-         (auto elim: dvdE simp: field_simps)
-    thus ?case by simp
+  let ?B = "(SIGMA k:{k. 0 < k \<and> real k \<le> x}. {d. 0 < d \<and> real d \<le> x / real k})"
+  let ?A = "(SIGMA k:{k. 0 < k \<and> real k \<le> x}. {d. d dvd k})"
+  have *: "real a \<le> x" if "real (a * b) \<le> x" "b > 0" for a b
+  proof -
+    have "real a * 1 \<le> real (a * b)" unfolding of_nat_mult using that
+      by (intro mult_left_mono) auto
+    also have "\<dots> \<le> x" by fact
+    finally show ?thesis by simp
   qed
-  also have "\<dots> = sum_upto (\<lambda>d. f d * sum_upto g (x / real d)) x"
-    by (simp add: sum_upto_def)
+  have bij: "bij_betw (\<lambda>(k,d). (d * k, k)) ?B ?A"
+    by (rule bij_betwI[where g = "\<lambda>(k,d). (d, k div d)"])
+       (auto simp: * divide_simps mult.commute elim!: dvdE)
+
+  have "sum_upto (\<lambda>n. \<Sum>d | d dvd n. f n d) x = (\<Sum>(k,d)\<in>?A. f k d)"
+    unfolding sum_upto_def by (rule sum.Sigma) auto
+  also have "\<dots> = (\<Sum>(k,d)\<in>?B. f (d * k) k)"
+    by (subst sum.reindex_bij_betw[OF bij, symmetric]) (auto simp: case_prod_unfold)
+  also have "\<dots> = sum_upto (\<lambda>k. sum_upto (\<lambda>d. f (d * k) k) (x / k)) x"
+    unfolding sum_upto_def by (rule sum.Sigma [symmetric]) auto
   finally show ?thesis .
 qed
+
+lemma sum_upto_dirichlet_prod:
+  "sum_upto (dirichlet_prod f g) x = sum_upto (\<lambda>d. f d * sum_upto g (x / real d)) x"
+  unfolding dirichlet_prod_def
+  by (subst sum_upto_sum_divisors) (simp add: sum_upto_def sum_distrib_left)
 
 lemma sum_upto_real: 
   assumes "x \<ge> 0"
@@ -83,6 +83,24 @@ proof -
   also have "real (nat \<lfloor>x\<rfloor> * Suc (nat \<lfloor>x\<rfloor>)) = of_int (floor x) * (of_int (floor x) + 1)" using assms
     by (simp add: algebra_simps)
   finally show ?thesis by simp
+qed
+
+lemma summable_imp_convergent_sum_upto:
+  assumes "summable (f :: nat \<Rightarrow> 'a :: real_normed_vector)"
+  obtains c where "(sum_upto f \<longlongrightarrow> c) at_top"
+proof -
+  from assms have "summable (\<lambda>n. f (Suc n))"
+    by (subst summable_Suc_iff)
+  then obtain c where "(\<lambda>n. f (Suc n)) sums c" by (auto simp: summable_def)
+  hence "(\<lambda>n. \<Sum>k<n. f (Suc k)) \<longlonglongrightarrow> c" by (auto simp: sums_def)
+  also have "(\<lambda>n. \<Sum>k<n. f (Suc k)) = (\<lambda>n. \<Sum>k\<in>{0<..n}. f k)"
+    by (subst sum_atLeast1_atMost_eq [symmetric]) (auto simp: atLeastSucAtMost_greaterThanAtMost)
+  finally have "((\<lambda>x. sum f {0<..nat \<lfloor>x\<rfloor>}) \<longlongrightarrow> c) at_top"
+    by (rule filterlim_compose)
+       (auto intro!: filterlim_compose[OF filterlim_nat_sequentially] filterlim_floor_sequentially)
+  also have "(\<lambda>x. sum f {0<..nat \<lfloor>x\<rfloor>}) = sum_upto f"
+    by (intro ext) (simp_all add: sum_upto_altdef)
+  finally show ?thesis using that[of c] by blast
 qed
 
 

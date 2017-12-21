@@ -5,6 +5,13 @@ session Zeta_Function (AFP) = Dirichlet_Series +
   sessions
     Euler_MacLaurin
     Bernoulli
+    Landau_Symbols
+    Dirichlet_Series
+  theories [document=false]
+    "Euler_MacLaurin.Euler_MacLaurin"
+    "Bernoulli.Bernoulli_Zeta"
+    "Landau_Symbols.Landau_Symbols"
+    "Dirichlet_Series.Dirichlet_Series_Analysis"
   theories
     Zeta_Function
   document_files
