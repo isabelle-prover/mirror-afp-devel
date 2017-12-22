@@ -1,10 +1,10 @@
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
-author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich
+author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www4.in.tum.de/~lammich/>
 topic = Computer Science/Algorithms
 date = 2017-12-18
 notify = hellauer@in.tum.de, lammich@in.tum.de
-abstract = 
+abstract =
   The Knuth-Morris-Pratt algorithm is often used to show that the
   problem of finding a string <i>s</i> in a text
   <i>t</i> can be solved deterministically in
@@ -5428,6 +5428,20 @@ abstract =
 	previously published informal proof of a weaker statement contained a
 	mistake in precisely this lifting step.
 notify = eberlm@in.tum.de
+
+[Median_Of_Medians_Selection]
+title = The Median-of-Medians Selection Algorithm
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-12-21
+notify = eberlm@in.tum.de
+abstract =
+  <p>This entry provides an executable functional implementation
+  of the Median-of-Medians algorithm for selecting the
+  <em>k</em>-th smallest element of an unsorted list
+  deterministically in linear time. The size bounds for the recursive
+  call that lead to the linear upper bound on the run-time of the
+  algorithm are also proven. </p>
 
 [FLP]
 title = A Constructive Proof for FLP

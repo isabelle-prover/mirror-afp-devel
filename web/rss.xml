@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
+    <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Median-of-Medians Selection Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
+       <guid>https://www.isa-afp.org/entries/Median_Of_Medians_Selection.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry provides an executable functional implementation
+of the Median-of-Medians algorithm for selecting the
+&lt;em&gt;k&lt;/em&gt;-th smallest element of an unsorted list
+deterministically in linear time. The size bounds for the recursive
+call that lead to the linear upper bound on the run-time of the
+algorithm are also proven. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>The string search algorithm by Knuth, Morris and Pratt</title>
               <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
@@ -578,29 +592,6 @@ resolution) and prove the most important meta-theoretic results about
 semantics and proofs: compactness, soundness, completeness,
 translations between proof systems, cut-elimination, interpolation and
 model existence.</description>
-    </item>
-    <item>
-       <title>Partial Semigroups and Convolution Algebras</title>
-              <link>https://www.isa-afp.org/entries/PSemigroupsConvolution.html</link>
-       <guid>https://www.isa-afp.org/entries/PSemigroupsConvolution.html</guid>
-       <dc:creator> Brijesh Dongol, Victor B. F. Gomes, Ian J. Hayes, Georg Struth       </dc:creator>
-       <pubDate>13 Jun 2017 00:00:00 +0000</pubDate>
-       <description>
-Partial Semigroups are relevant to the foundations of quantum
-mechanics and combinatorics as well as to interval and separation
-logics. Convolution algebras can be understood either as algebras of
-generalised binary modalities over ternary Kripke frames, in
-particular over partial semigroups, or as algebras of quantale-valued
-functions which are equipped with a convolution-style operation of
-multiplication that is parametrised by a ternary relation. Convolution
-algebras provide algebraic semantics for various substructural logics,
-including categorial, relevance and linear logics, for separation
-logic and for interval logics; they cover quantitative and qualitative
-applications. These mathematical components for partial semigroups and
-convolution algebras provide uniform foundations from which models of
-computation based on relations, program traces or pomsets, and
-verification components for separation or interval temporal logics can
-be built with little effort.</description>
     </item>
   </channel>
 </rss>
