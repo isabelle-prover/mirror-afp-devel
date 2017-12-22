@@ -25,6 +25,36 @@ call that lead to the linear upper bound on the run-time of the
 algorithm are also proven. &lt;/p&gt;</description>
     </item>
     <item>
+       <title>The Mason–Stother's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Mason_Stothers.html</link>
+       <guid>https://www.isa-afp.org/entries/Mason_Stothers.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of Snyder’s simple and
+elegant proof of the Mason&amp;ndash;Stothers theorem, which is the
+polynomial analogue of the famous abc Conjecture for integers.
+Remarkably, Snyder found this very elegant proof when he was still a
+high-school student.&lt;/p&gt; &lt;p&gt;In short, the statement of the
+theorem is that three non-zero coprime polynomials
+&lt;em&gt;A&lt;/em&gt;, &lt;em&gt;B&lt;/em&gt;, &lt;em&gt;C&lt;/em&gt;
+over a field which sum to 0 and do not all have vanishing derivatives
+fulfil max{deg(&lt;em&gt;A&lt;/em&gt;), deg(&lt;em&gt;B&lt;/em&gt;),
+deg(&lt;em&gt;C&lt;/em&gt;)} &lt; deg(rad(&lt;em&gt;ABC&lt;/em&gt;))
+where the rad(&lt;em&gt;P&lt;/em&gt;) denotes the
+&lt;em&gt;radical&lt;/em&gt; of &lt;em&gt;P&lt;/em&gt;,
+i.&amp;thinsp;e. the product of all unique irreducible factors of
+&lt;em&gt;P&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This theorem also implies a
+kind of polynomial analogue of Fermat’s Last Theorem for polynomials:
+except for trivial cases,
+&lt;em&gt;A&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; +
+&lt;em&gt;B&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; +
+&lt;em&gt;C&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; = 0 implies
+n&amp;nbsp;&amp;le;&amp;nbsp;2 for coprime polynomials
+&lt;em&gt;A&lt;/em&gt;, &lt;em&gt;B&lt;/em&gt;, &lt;em&gt;C&lt;/em&gt;
+over a field.&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>The string search algorithm by Knuth, Morris and Pratt</title>
               <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
        <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
@@ -578,20 +608,6 @@ representing complex program transformations. We formally prove the
 correctness of Conway&#39;s automata-based construction of the Kleene
 star of a matrix. We prove numerous results useful for reasoning about
 weighted graphs.</description>
-    </item>
-    <item>
-       <title>Propositional Proof Systems</title>
-              <link>https://www.isa-afp.org/entries/Propositional_Proof_Systems.html</link>
-       <guid>https://www.isa-afp.org/entries/Propositional_Proof_Systems.html</guid>
-       <dc:creator> Julius Michaelis, Tobias Nipkow       </dc:creator>
-       <pubDate>21 Jun 2017 00:00:00 +0000</pubDate>
-       <description>
-We formalize a range of proof systems for classical propositional
-logic (sequent calculus, natural deduction, Hilbert systems,
-resolution) and prove the most important meta-theoretic results about
-semantics and proofs: compactness, soundness, completeness,
-translations between proof systems, cut-elimination, interpolation and
-model existence.</description>
     </item>
   </channel>
 </rss>

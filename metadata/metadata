@@ -5443,6 +5443,36 @@ abstract =
   call that lead to the linear upper bound on the run-time of the
   algorithm are also proven. </p>
 
+[Mason_Stothers]
+title = The Mason–Stother's Theorem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2017-12-21
+notify = eberlm@in.tum.de
+abstract =
+  <p>This article provides a formalisation of Snyder’s simple and
+  elegant proof of the Mason&ndash;Stothers theorem, which is the
+  polynomial analogue of the famous abc Conjecture for integers.
+  Remarkably, Snyder found this very elegant proof when he was still a
+  high-school student.</p> <p>In short, the statement of the
+  theorem is that three non-zero coprime polynomials
+  <em>A</em>, <em>B</em>, <em>C</em>
+  over a field which sum to 0 and do not all have vanishing derivatives
+  fulfil max{deg(<em>A</em>), deg(<em>B</em>),
+  deg(<em>C</em>)} < deg(rad(<em>ABC</em>))
+  where the rad(<em>P</em>) denotes the
+  <em>radical</em> of <em>P</em>,
+  i.&thinsp;e. the product of all unique irreducible factors of
+  <em>P</em>.</p> <p>This theorem also implies a
+  kind of polynomial analogue of Fermat’s Last Theorem for polynomials:
+  except for trivial cases,
+  <em>A<sup>n</sup></em> +
+  <em>B<sup>n</sup></em> +
+  <em>C<sup>n</sup></em> = 0 implies
+  n&nbsp;&le;&nbsp;2 for coprime polynomials
+  <em>A</em>, <em>B</em>, <em>C</em>
+  over a field.</em></p>
+
 [FLP]
 title = A Constructive Proof for FLP
 author = Benjamin Bisping <mailto:benjamin.bisping@campus.tu-berlin.de>,  Paul-David Brodmann <mailto:p.brodmann@tu-berlin.de>,  Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>,  Christina Rickmann <mailto:c.rickmann@tu-berlin.de>,  Henning Seidler <mailto:henning.seidler@mailbox.tu-berlin.de>,  Anke Stüber <mailto:anke.stueber@campus.tu-berlin.de>, Arno Wilhelm-Weidner <mailto:arno.wilhelm-weidner@tu-berlin.de>,  Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>,  Uwe Nestmann <https://www.mtv.tu-berlin.de/nestmann/>
