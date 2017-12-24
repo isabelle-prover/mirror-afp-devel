@@ -4096,13 +4096,15 @@ next
       have "sum (\<lambda>x. jumpF f (at_right x)) Ri = jumpF f (at_right 0)"
       proof (cases "jumpF f (at_right 0) = 0")
         case True
-        then have "Ri = {}"
-          unfolding Ri_def using jumpF_eq0(2) greaterThanLessThan_iff by fastforce
+        hence False if "x \<in> Ri" for x using that
+          by (cases "x = 0") (auto simp: jumpF_eq0 Ri_def)
+        hence "Ri = {}" by blast
         then show ?thesis using True by auto
       next
         case False
-        then have "Ri = {0}"
-          unfolding Ri_def using jumpF_eq0(2) greaterThanLessThan_iff by fastforce
+        hence "x \<in> Ri \<longleftrightarrow> x = 0" for x using that
+          by (cases "x = 0") (auto simp: jumpF_eq0 Ri_def)
+        hence "Ri = {0}" by blast
         then show ?thesis by auto
       qed
       moreover have "sum (\<lambda>x. jumpF f (at_left x)) Le = jumpF f (at_left 1)"
@@ -4272,13 +4274,15 @@ next
         have "sum (\<lambda>x. jumpF f (at_right x)) Ri = jumpF f (at_right 0)"
         proof (cases "jumpF f (at_right 0) = 0")
           case True
-          then have "Ri = {}"
-            unfolding Ri_def using jumpF_eq0(2) greaterThanLessThan_iff by fastforce
+          hence False if "x \<in> Ri" for x using that
+            by (cases "x = 0") (auto simp: jumpF_eq0 Ri_def)
+          hence "Ri = {}" by blast
           then show ?thesis using True by auto
         next
           case False
-          then have "Ri = {0}"
-            unfolding Ri_def using jumpF_eq0(2) greaterThanLessThan_iff by fastforce
+          hence "x \<in> Ri \<longleftrightarrow> x = 0" for x using that
+            by (cases "x = 0") (auto simp: jumpF_eq0 Ri_def)
+          then have "Ri = {0}" by blast
           then show ?thesis by auto
         qed
         moreover have "sum (\<lambda>x. jumpF f (at_left x)) Le = jumpF f (at_left 1)"

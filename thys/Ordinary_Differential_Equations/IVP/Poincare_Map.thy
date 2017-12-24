@@ -245,7 +245,7 @@ lemma returns_to_laterI:
     moreover
     have "\<forall>\<^sub>F s in at_right 0. t + s < return_time P x"
       using return_time_gt[OF ret flow_not, of t]
-      by (auto simp: less_diff_eq eventually_at_right[OF zero_less_one]) (use less_diff_eq in fastforce)
+      by (auto simp: eventually_at_right[OF zero_less_one] intro!: exI[of _ "return_time P x - t"])
     moreover
     have "\<forall>\<^sub>F s in at_right 0. 0 < t + s"
       by (metis (mono_tags) eventually_at_rightI greaterThanLessThan_iff pos_add_strict t(1))

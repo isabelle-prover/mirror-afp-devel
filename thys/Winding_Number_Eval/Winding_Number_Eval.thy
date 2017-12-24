@@ -413,16 +413,18 @@ proof -
         moreover have "sum (\<lambda>x. jumpF f (at_right x)) right = jumpF_pathstart ?g z"
         proof (cases " jumpF f (at_right 0) = 0")
           case True
-          then have "right = {}"
-            unfolding right_def using jumpF_nz by force
+          hence False if "x \<in> right" for x using that
+            by (cases "x = 0") (auto simp: jumpF_nz right_def)
+          then have "right = {}" by blast
           then show ?thesis 
             unfolding jumpF_pathstart_def using True
             apply (fold f_def)
             by auto  
         next
           case False
-          then have "right = {0}"
-            unfolding right_def using jumpF_nz by force
+          hence "x \<in> right \<longleftrightarrow> x = 0" for x using that
+            by (cases "x = 0") (auto simp: jumpF_nz right_def)
+          then have "right = {0}" by blast
           then show ?thesis 
             unfolding jumpF_pathstart_def using False
             apply (fold f_def)

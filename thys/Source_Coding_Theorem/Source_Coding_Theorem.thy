@@ -364,8 +364,7 @@ proof -
       using \<K>_pos \<K>_power_bound
       by (metis (no_types, hide_lams) not_less of_nat_0_le_iff of_nat_mult power_strict_mono real_root_mult real_root_pos_pos_le real_root_pos_unique real_root_power)
     hence "0 < max_len \<Longrightarrow> (\<lambda>k. root k k * root k max_len) \<longlonglongrightarrow> 1"
-      using LIMSEQ_root LIMSEQ_root_const tendsto_mult
-      by fastforce
+      by (auto intro!: tendsto_eq_intros LIMSEQ_root LIMSEQ_root_const)
     moreover have "\<forall>n\<ge>1. \<K> \<le> root n n * root n max_len"
       using ineq by simp
     moreover have "max_len = 0 \<Longrightarrow> \<K> \<le> 1" using ineq by fastforce
@@ -427,15 +426,8 @@ proof -
       using non_null
       by (simp add: order.strict_implies_order)
     have "- log b (\<Sum>i\<in>S. a i * e i / a i) \<le> (\<Sum>i\<in>S. a i * - log b (e i / a i))"
-      using convex_on_sum[
-    OF fin,
-    OF nemp,OF minus_log_convex[OF b_gt_1],
-    OF convex_real_interval(3),
-    OF sum_a_one,
-    OF a_pos
-    ]
-    f_pos
-      by fastforce
+      using convex_on_sum[OF fin nemp  minus_log_convex[OF b_gt_1] convex_real_interval(3)
+                             sum_a_one a_pos, of "\<lambda>i. e i / a i"] f_pos by simp
     also have "-log b (\<Sum>i\<in>S. a i * e i / a i) = -log b (\<Sum>i\<in>S. e i)"
   proof -
       from non_null(1) have "\<And>i. i \<in> S \<Longrightarrow> a i * e i / a i = e i" by force

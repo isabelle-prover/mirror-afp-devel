@@ -1014,7 +1014,7 @@ proof -
       case 3
       then have "q = \<infinity>" by simp
       obtain p2 where "p = ennreal p2" "p2 > 0"
-        using 3 enn2real_positive_iff by force
+        using 3 enn2real_positive_iff[of p] by (cases p) auto
       have *: "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> M) f"
         using L_infinity_AE_bound `f \<in> space\<^sub>N (\<LL> q M)` `q = \<infinity>` by auto
       have **: "integrable M (\<lambda>x. \<bar>f x\<bar> powr p2)"
@@ -1034,10 +1034,10 @@ proof -
       case 4
       then have "0 < p" "p < \<infinity>" by auto
       then obtain p2 where "p = ennreal p2" "p2 > 0"
-        using enn2real_positive_iff by force
+        using enn2real_positive_iff[of p] by (cases p) auto
       have "0 < q" "q < \<infinity>" using 4 by auto
       then obtain q2 where "q = ennreal q2" "q2 > 0"
-        using enn2real_positive_iff by force
+        using enn2real_positive_iff[of q] by (cases q) auto
       have "p2 < q2" using 4 `p = ennreal p2` `q = ennreal q2`
         using ennreal_less_iff by auto
       define r2 where "r2 = q2 / p2"
@@ -1702,9 +1702,9 @@ proof -
     next
       case 3
       obtain p2 where "p = ennreal p2" "p2 > 0"
-        using enn2real_positive_iff 3 `p > 0` by force
+        using enn2real_positive_iff[of p] 3 `p > 0` by (cases p) auto
       obtain q2 where "q = ennreal q2" "q2 > 0"
-        using enn2real_positive_iff 3 `q > 0` by force
+        using enn2real_positive_iff[of q] 3 `q > 0` by (cases q) auto
 
       have "ennreal(1/r2) = 1/r"
         using `r = ennreal r2` `r2 > 0` divide_ennreal zero_le_one by fastforce
