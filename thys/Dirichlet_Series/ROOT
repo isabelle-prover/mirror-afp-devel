@@ -9,15 +9,6 @@ session Dirichlet_Series (AFP) = "HOL-Analysis" +
     "Polynomial_Factorization"
     "Landau_Symbols"
     "Euler_MacLaurin"
-  theories [document=false]
-    "Euler_MacLaurin.Euler_MacLaurin_Landau"
-    "HOL-Number_Theory.Number_Theory"
-    "HOL-Library.Code_Target_Numeral"
-    "Polynomial_Factorization.Prime_Factorization"
-    "HOL-Library.Going_To_Filter"
-    "HOL-Library.FuncSet"
-    "HOL-Analysis.Analysis"
-    "HOL-Computational_Algebra.Computational_Algebra"
   theories
     Arithmetic_Summatory_Asymptotics
     Dirichlet_Efficient_Code
