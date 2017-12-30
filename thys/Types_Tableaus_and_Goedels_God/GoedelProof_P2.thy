@@ -67,7 +67,7 @@ text\<open> \bigbreak \<close>
     
 subsubsection \<open>Theorems\<close>
 text\<open>  Remark: Essence is defined here (and in Fitting's variant) in the version of Scott; G\"odel's original version leads to the inconsistency
- reported in @{cite "C55,C60"} \<close>
+ reported in @{cite C55 and C60} \<close>
 
 abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>") where
   "\<E> Y x \<equiv> (Y x) \<^bold>\<and> (\<^bold>\<forall>Z. Z x \<^bold>\<rightarrow> Y \<Rrightarrow> Z)"   

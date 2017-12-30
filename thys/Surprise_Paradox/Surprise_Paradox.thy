@@ -26,7 +26,7 @@ It is an interesting exercise to try to phrase the Surprise Paradox in a rigorou
 see this might clarify things.
 
 In 1964, Frederic Fitch suggested a formulation that refines the notion of ``surprise'' as
-``cannot be proven from the given assumptions'' @{cite fitch}. To formulate that, we need propositions that
+``cannot be proven from the given assumptions'' @{cite Fitch}. To formulate that, we need propositions that
 reference their own provability, so just as Fitch builds on Gödel's work, we build on Paulson's
 formalisation of Gödel's incompleteness theorems in Isabelle @{cite Incompleteness}.
 \<close>

@@ -13,19 +13,19 @@ his textbook \emph{Types, Tableaus and G\"odel's God} @{cite "Fitting"}. Fitting
 is an emendation of Kurt G\"odel's modern variant @{cite "GoedelNotes"} (resp. Dana Scott's 
 variant @{cite "ScottNotes"}) of the ontological argument. \<close>
 
-text\<open> The motivation is to avoid the \emph{modal collapse} @{cite "Sobel,sobel2004logic"}, which has been criticised
+text\<open> The motivation is to avoid the \emph{modal collapse} @{cite Sobel and sobel2004logic}, which has been criticised
 as an undesirable side-effect of the axioms of G\"odel resp. Scott. The modal collapse essentially  
 states that  there are no contingent truths and that everything is determined.
-Several authors (e.g. @{cite "anderson90:_some_emend_of_goedel_ontol_proof,AndersonGettings,Hajek2002,bjordal99"}) 
+Several authors (e.g. @{cite "anderson90:_some_emend_of_goedel_ontol_proof" and "AndersonGettings" and "Hajek2002" and "bjordal99"}) 
 have proposed emendations of the argument with the aim of maintaining the essential result 
 (the necessary existence of God) while at the same time avoiding the modal collapse. 
 Related work  has formalised several of these variants on the computer and verified or falsified them. For example,
-G\"odel's axioms @{cite "GoedelNotes"} have been shown inconsistent @{cite "C55,C60"}
+G\"odel's axioms @{cite "GoedelNotes"} have been shown inconsistent @{cite C55 and C60}
 while Scott's version has been verified @{cite "ECAI"}. Further experiments, contributing amongst others
 to the clarification of a related debate between H\'ajek and Anderson, are presented and discussed in
 @{cite "J23"}. The enabling technique in all of these experiments has been
 shallow semantical embeddings of (extensional) higher-order modal logics in classical higher-order
-logic (see @{cite "J23,R59"} and the references therein). \<close>
+logic (see @{cite J23 and R59} and the references therein). \<close>
 
 text\<open> Fitting's emendation also intends to avoid the modal collapse. However, in contrast to the above variants, Fitting's
 solution is based on the use of an intensional as opposed to an extensional higher-order modal logic.

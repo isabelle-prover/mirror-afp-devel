@@ -11,7 +11,7 @@ we have used a technique known as \emph{shallow semantic embedding}, which allow
 to take advantage of the expressive power of higher-order logic in order to embed the semantics
 of an object language. We draw on previous work on the embedding of multimodal logics in HOL @{cite "J23"},
 which has successfully been applied to the analysis and verification of ontological arguments
-(e.g. @{cite "C55,J32,J35"}).}\<close>
+(e.g. @{cite C55 and J32 and J35}).}\<close>
 
 subsection \<open>Type Declarations\<close>  
 
