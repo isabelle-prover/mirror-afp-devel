@@ -2,7 +2,7 @@
   File:        Periodic_Bernpoly.thy
   Author:      Manuel Eberl <eberlm@in.tum.de> 
 
-  Definition of the periodic Bernoulli polynomials as required for the Euler–Maclaurin 
+  Definition of the periodic Bernoulli polynomials as required for the Euler-Maclaurin 
   summation formula and Stirling's formula for the lnGamma function.
 *)
 section \<open>Periodic Bernoulli polynomials\<close>

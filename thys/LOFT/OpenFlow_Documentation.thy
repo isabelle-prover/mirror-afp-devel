@@ -67,7 +67,7 @@ text\<open>where @{term "mlf :: ipv4addr \<Rightarrow> 48 word"} is a function t
 
 text\<open>There are already a few important aspects that have not been modelled, but they are not core essential for the functionality of a firewall.
 Namely, there is no local traffic from/to the firewall.
-This is problematic since this model can not generate ARP replies — thus, an equivalent OpenFlow device will not do so, either.
+This is problematic since this model can not generate ARP replies --- thus, an equivalent OpenFlow device will not do so, either.
 Furthermore, this model is problematic because it requires access to a function that looks up a MAC address, 
 something that may not be known at the time of time running a translation to an OpenFlow configuration.
 \<close>
@@ -88,7 +88,7 @@ text\<open>In this model, all access to the MAC layer has been eliminated.
 This is done by the approximation that the firewall will be asked to route a packet 
 (i.e. be addressed on the MAC layer) iff the destination IP address of the packet causes it to be routed out on a different interface.
 Because this model does not insert destination MAC addresses, the destination MAC address has to be already correct when the packet is sent.
-This can only be achieved by changing the subnet of all connected device, moving them into one common subnet\footnote{There are cases where this is not possible — A limitation of our system.}.
+This can only be achieved by changing the subnet of all connected device, moving them into one common subnet\footnote{There are cases where this is not possible --- A limitation of our system.}.
 \<close>
 text\<open>
 While a test-wise implementation based on this model also showed acceptable results, the model is still problematic.
@@ -460,7 +460,7 @@ text\<open>The assumptions are to be read as follows:
   \item The match @{term r} has to be valid, i.e. it has to use @{const valid_prefix} matches, and it cannot use anything other than $0$-$65535$ for the port matches unless its protocol match ensures @{const TCP}, @{const UDP} or @{const L4_Protocol.SCTP}.
   \item @{const simple_match_to_of_match} cannot produce rules for packets that have input interfaces that are not named in the interface list.
   \item The output interface of @{term p} has to match the output interface match of @{term r}. This is a weakened formulation of @{term "oiface r = ifaceAny"}, since @{thm[display] match_ifaceAny[no_vars]}.
-    We require this because OpenFlow field matches cannot be used to match on the output port — they are supposed to match a packet and decide an output port.
+    We require this because OpenFlow field matches cannot be used to match on the output port --- they are supposed to match a packet and decide an output port.
   \item The @{type simple_match} type was designed for IP(v4) packets, we limit ourselves to them.
 \end{itemize}
 The conclusion then states that the @{type simple_match} @{term r} matches iff an element of the result of @{const simple_match_to_of_match} matches.

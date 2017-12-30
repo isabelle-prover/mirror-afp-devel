@@ -9,7 +9,6 @@ definition sequent_semantics :: "'a valuation \<Rightarrow> 'a formula multiset 
 abbreviation sequent_valid :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(\<Turnstile> (_ \<Rightarrow>/ _))" [53,53] 53) where
 "\<Turnstile> \<Gamma> \<Rightarrow> \<Delta> \<equiv> \<forall>A. A \<Turnstile> \<Gamma> \<Rightarrow> \<Delta>"
 abbreviation sequent_nonvalid :: "'a valuation \<Rightarrow> 'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(_ \<not>\<Turnstile> (_ \<Rightarrow>/ _))" [53, 53,53] 53) where
-(* Hey, there's an unicode ⊭ and Isabelle doesn't support it? (if you're thinking "I can see the black square just fine": Isabelle doesn't support it. The black square is not what I want to show you.) *)
 "\<A> \<not>\<Turnstile> \<Gamma> \<Rightarrow> \<Delta> \<equiv> \<not>\<A>\<Turnstile> \<Gamma> \<Rightarrow> \<Delta>"
 
 lemma sequent_intuitonistic_semantics: "\<Turnstile> \<Gamma> \<Rightarrow> {#\<delta>#} \<longleftrightarrow> set_mset \<Gamma> \<TTurnstile> \<delta>"

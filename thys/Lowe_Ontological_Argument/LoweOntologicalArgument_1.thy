@@ -239,7 +239,7 @@ lemma "\<lfloor>\<^bold>\<forall>x. Explained x \<^bold>\<leftrightarrow> Depend
   using P6 P8 Dependent_def Explained_def by auto
                                 
         
-text\<open>\noindent{The Nitpick model finder is also useful to check axioms’ consistency at any stage during the
+text\<open>\noindent{The Nitpick model finder is also useful to check axioms' consistency at any stage during the
 formalization of an argument.
 We instruct Nitpick to generate a model satisfying some tautological sentence
 (here we use a trivial `True' proposition) while taking into account all previously defined axioms.}\<close>

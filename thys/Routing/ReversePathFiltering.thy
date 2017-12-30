@@ -177,7 +177,7 @@ proof(rule iffI, goal_cases)
       have **: "\<forall>ra\<in>set rtbl. routing_prefix ra < n \<longrightarrow> routing_prefix rr < routing_prefix ra \<longrightarrow> \<not> prefix_match_semantics (routing_match ra) ip"
         using Suc.prems(6) by simp
       have ***: "ip \<in> wordinterval_to_set (snd (rpf_semifeasible_round rtbl n space))" 
-        by (simp add: * Suc.prems(1) Suc.prems(6) rpf_semifeasible_round_snd' vpfx) (* it werks™ *)
+        by (simp add: * Suc.prems(1) Suc.prems(6) rpf_semifeasible_round_snd' vpfx) (* it werks\<^sup>T\<^sup>M *)
       note Suc.IH[OF *** Suc.prems(2) * Suc.prems(4-5) **]
       thus ?thesis by(auto simp add: case_prod_unfold Let_def)
     next
@@ -271,7 +271,7 @@ proof(induction l arbitrary: a)
 qed simp
 
 lemma fold_max: "(f :: nat) \<in> set l \<Longrightarrow> f < Suc (fold max l 0)"
-by(induction l; simp) (metis (no_types, lifting) fold_max_append lessI max_less_iff_conj not_less_eq) (* It werks™ *)
+by(induction l; simp) (metis (no_types, lifting) fold_max_append lessI max_less_iff_conj not_less_eq) (* It werks\<^sup>T\<^sup>M *)
 
 
 corollary rpf_semifeasible_correct: 
