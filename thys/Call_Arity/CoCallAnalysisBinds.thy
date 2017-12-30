@@ -9,7 +9,7 @@ definition ccBind :: "var \<Rightarrow> exp \<Rightarrow> ((AEnv \<times> CoCall
 (* paper has:  \<or> ae v = up\<cdot>0, but that is not monotone! But should give the same result. *)
 
 lemma ccBind_eq:
-  "ccBind v e\<cdot>(ae, G) = (if v--v\<notin>G \<or> \<not> isVal e then \<G>\<^sup>\<bottom>\<^bsub>ae v\<^esub> e G|` fv e else (fv e)²)"
+  "ccBind v e\<cdot>(ae, G) = (if v--v\<notin>G \<or> \<not> isVal e then \<G>\<^sup>\<bottom>\<^bsub>ae v\<^esub> e G|` fv e else (fv e)\<^sup>2)"
   unfolding ccBind_def
   apply (rule cfun_beta_Pair)
   apply (rule cont_if_else_above)

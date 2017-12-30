@@ -215,7 +215,7 @@ sublocale EdomArityAnalysis Aexp by standard (rule Aexp_edom')
 
 lemma CCexp_simps[simp]:
   "\<G>\<^bsub>a\<^esub>(Var x) = \<bottom>"
-  "\<G>\<^bsub>0\<^esub>(Lam [x]. e) = (fv (Lam [x]. e))²"
+  "\<G>\<^bsub>0\<^esub>(Lam [x]. e) = (fv (Lam [x]. e))\<^sup>2"
   "\<G>\<^bsub>inc\<cdot>a\<^esub>(Lam [x]. e) = cc_delete x (\<G>\<^bsub>a\<^esub> e)"
   "\<G>\<^bsub>a\<^esub> (App e x) = \<G>\<^bsub>inc\<cdot>a\<^esub> e \<squnion> {x} G\<times>insert x (fv e)"
   "\<not> nonrec \<Gamma> \<Longrightarrow> \<G>\<^bsub>a\<^esub> (Let \<Gamma> e) =

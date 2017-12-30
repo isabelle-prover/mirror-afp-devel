@@ -280,19 +280,19 @@ lemma ccProd_below_cc_restr:
 lemma cc_restr_eq_subset: "S \<subseteq> S' \<Longrightarrow> cc_restr S' G = cc_restr S' G2 \<Longrightarrow> cc_restr S G = cc_restr S G2"
   by transfer' (auto simp add: Set.filter_def)
  
-definition ccSquare ("_²" [80] 80)
-  where "S² = ccProd S S"
+definition ccSquare ("_\<^sup>2" [80] 80)
+  where "S\<^sup>2 = ccProd S S"
 
-lemma ccField_ccSquare[simp]: "ccField (S²) = S"
+lemma ccField_ccSquare[simp]: "ccField (S\<^sup>2) = S"
   unfolding ccSquare_def by transfer (auto simp add: Field_def)
   
-lemma below_ccSquare[iff]: "(G \<sqsubseteq> S²) = (ccField G \<subseteq> S)"
+lemma below_ccSquare[iff]: "(G \<sqsubseteq> S\<^sup>2) = (ccField G \<subseteq> S)"
   unfolding ccSquare_def by transfer (auto simp add: Field_def)
 
-lemma cc_restr_ccSquare[simp]: "(S'²) G|` S = (S' \<inter> S)²"
+lemma cc_restr_ccSquare[simp]: "(S'\<^sup>2) G|` S = (S' \<inter> S)\<^sup>2"
   unfolding ccSquare_def by auto
 
-lemma ccSquare_empty[simp]: "{}² = \<bottom>"
+lemma ccSquare_empty[simp]: "{}\<^sup>2 = \<bottom>"
   unfolding ccSquare_def by simp
 
 lift_definition ccNeighbors :: "var \<Rightarrow> CoCalls \<Rightarrow> var set" 
