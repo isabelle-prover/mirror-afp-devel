@@ -5667,6 +5667,25 @@ abstract =
 	formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
 	This theorem is the 95th theorem of the Top 100 Theorems list.
 
+[Falling_Factorial_Sum]
+title = The Falling Factorial of a Sum
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+topic = Mathematics/Combinatorics
+date = 2017-12-22
+notify = lukas.bulwahn@gmail.com
+abstract =
+  This entry shows that the falling factorial of a sum can be computed
+  with an expression using binomial coefficients and the falling
+  factorial of its summands. The entry provides three different proofs:
+  a combinatorial proof, an induction proof and an algebraic proof using
+  the Vandermonde identity.  The three formalizations try to follow
+  their informal presentations from a Mathematics Stack Exchange page as
+  close as possible. The induction and algebraic formalization end up to
+  be very close to their informal presentation, whereas the
+  combinatorial proof first requires the introduction of list
+  interleavings, and significant more detail than its informal
+  presentation.
+
 [InfPathElimination]
 title = Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths
 author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.fr>

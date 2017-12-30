@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
+    <pubDate>22 Dec 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Falling Factorial of a Sum</title>
+              <link>https://www.isa-afp.org/entries/Falling_Factorial_Sum.html</link>
+       <guid>https://www.isa-afp.org/entries/Falling_Factorial_Sum.html</guid>
+       <dc:creator> Lukas Bulwahn       </dc:creator>
+       <pubDate>22 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry shows that the falling factorial of a sum can be computed
+with an expression using binomial coefficients and the falling
+factorial of its summands. The entry provides three different proofs:
+a combinatorial proof, an induction proof and an algebraic proof using
+the Vandermonde identity.  The three formalizations try to follow
+their informal presentations from a Mathematics Stack Exchange page as
+close as possible. The induction and algebraic formalization end up to
+be very close to their informal presentation, whereas the
+combinatorial proof first requires the introduction of list
+interleavings, and significant more detail than its informal
+presentation.</description>
+    </item>
     <item>
        <title>The Median-of-Medians Selection Algorithm</title>
               <link>https://www.isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
@@ -591,23 +610,6 @@ relations, which provides a formal definition of strong eventual
 consistency. We then obtain the first machine-checked correctness
 theorems for three concrete CRDTs: the Replicated Growable Array, the
 Observed-Remove Set, and an Increment-Decrement Counter.</description>
-    </item>
-    <item>
-       <title>Stone-Kleene Relation Algebras</title>
-              <link>https://www.isa-afp.org/entries/Stone_Kleene_Relation_Algebras.html</link>
-       <guid>https://www.isa-afp.org/entries/Stone_Kleene_Relation_Algebras.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>06 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-We develop Stone-Kleene relation algebras, which expand Stone relation
-algebras with a Kleene star operation to describe reachability in
-weighted graphs. Many properties of the Kleene star arise as a special
-case of a more general theory of iteration based on Conway semirings
-extended by simulation axioms. This includes several theorems
-representing complex program transformations. We formally prove the
-correctness of Conway&#39;s automata-based construction of the Kleene
-star of a matrix. We prove numerous results useful for reasoning about
-weighted graphs.</description>
     </item>
   </channel>
 </rss>

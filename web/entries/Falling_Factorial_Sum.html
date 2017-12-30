@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Cardinality of Equivalence Relations - Archive of Formal Proofs
+<title>The Falling Factorial of a Sum - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,17 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ardinality
+  <h1>          <font class="first">T</font>he
+  
+          <font class="first">F</font>alling
+  
+          <font class="first">F</font>actorial
   
           of
   
-          <font class="first">E</font>quivalence
+          a
   
-          <font class="first">R</font>elations
+          <font class="first">S</font>um
   
 </h1>
   <p>&nbsp;</p>
@@ -76,7 +80,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Cardinality of Equivalence Relations</td>
+  <td class="data" width="80%">The Falling Factorial of a Sum</td>
 </tr>
 
 <tr>
@@ -92,38 +96,36 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-05-24</td>
+  <td class="data">2017-12-22</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry provides formulae for counting the number of equivalence
-relations and partial equivalence relations over a finite carrier set
-with given cardinality.  To count the number of equivalence relations,
-we provide bijections between equivalence relations and set
-partitions, and then transfer the main results of the two AFP entries,
-Cardinality of Set Partitions and Spivey's Generalized Recurrence for
-Bell Numbers, to theorems on equivalence relations. To count the
-number of partial equivalence relations, we observe that counting
-partial equivalence relations over a set A is equivalent to counting
-all equivalence relations over all subsets of the set A. From this
-observation and the results on equivalence relations, we show that the
-cardinality of partial equivalence relations over a finite set of
-cardinality n is equal to the n+1-th Bell number.</td>
+This entry shows that the falling factorial of a sum can be computed
+with an expression using binomial coefficients and the falling
+factorial of its summands. The entry provides three different proofs:
+a combinatorial proof, an induction proof and an algebraic proof using
+the Vandermonde identity.  The three formalizations try to follow
+their informal presentations from a Mathematics Stack Exchange page as
+close as possible. The induction and algebraic formalization end up to
+be very close to their informal presentation, whereas the
+combinatorial proof first requires the introduction of list
+interleavings, and significant more detail than its informal
+presentation.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Card_Equiv_Relations-AFP,
+        <pre>@article{Falling_Factorial_Sum-AFP,
   author  = {Lukas Bulwahn},
-  title   = {Cardinality of Equivalence Relations},
+  title   = {The Falling Factorial of a Sum},
   journal = {Archive of Formal Proofs},
-  month   = may,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Card_Equiv_Relations.html},
+  month   = dec,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/Falling_Factorial_Sum.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -135,11 +137,9 @@ cardinality n is equal to the n+1-th Bell number.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bell_Numbers_Spivey.html">Bell_Numbers_Spivey</a>      </td></tr>
+          <td class="data"><a href="Card_Equiv_Relations.html">Card_Equiv_Relations</a>, <a href="Discrete_Summation.html">Discrete_Summation</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Falling_Factorial_Sum.html">Falling_Factorial_Sum</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -151,34 +151,23 @@ cardinality n is equal to the n+1-th Bell number.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Card_Equiv_Relations/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Card_Equiv_Relations/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Falling_Factorial_Sum/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Falling_Factorial_Sum/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Card_Equiv_Relations/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Falling_Factorial_Sum/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Card_Equiv_Relations-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Falling_Factorial_Sum-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Card_Equiv_Relations-2016-12-17.tar.gz">
-            afp-Card_Equiv_Relations-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-Card_Equiv_Relations-2016-05-24.tar.gz">
-            afp-Card_Equiv_Relations-2016-05-24.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
