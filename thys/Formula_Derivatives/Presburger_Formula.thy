@@ -4,7 +4,6 @@ section \<open>Concrete Atomic Presburger Formulas\<close>
 theory Presburger_Formula
 imports
   Abstract_Formula
-  "HOL-Library.Code_Char"
   "HOL-Library.Code_Target_Int"
   "List-Index.List_Index"
 begin
