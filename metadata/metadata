@@ -5458,7 +5458,7 @@ abstract =
 	interactive visual theorem prover which represents proofs as port
 	graphs. We model this proof representation in Isabelle, and prove that
 	it is just as powerful as natural deduction.
-notify = breitner@kit.edu
+notify = mail@joachim-breitner.de
 
 [Word_Lib]
 title = Finite Machine Word Library
@@ -5580,7 +5580,7 @@ abstract =
 [Surprise_Paradox]
 title = Surprise Paradox
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
-notify = breitner@kit.edu
+notify = mail@joachim-breitner.de
 date = 2016-07-17
 topic = Logic
 abstract =
