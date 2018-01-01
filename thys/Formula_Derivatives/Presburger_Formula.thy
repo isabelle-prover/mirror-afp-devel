@@ -10,8 +10,8 @@ imports
 begin
 (*>*)
 
-declare [[coercion "\<lambda>b. if b then 1 else 0 :: nat"]]
-declare [[coercion "int"]]
+declare [[coercion "of_bool :: bool \<Rightarrow> nat"]]
+declare [[coercion int]]
 declare [[coercion_map map]]
 declare [[coercion_enabled]]
 
