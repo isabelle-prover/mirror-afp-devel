@@ -157,7 +157,7 @@ let
   val raw_bclauses = rawify_bclauses dts_env cnstrs_env bn_fun_full_env bclauses 
 
   val (raw_full_dt_names', thy1) = 
-    Old_Datatype.add_datatype Old_Datatype_Aux.default_config raw_dts thy
+    BNF_LFP_Compat.add_datatype [BNF_LFP_Compat.Kill_Type_Args] raw_dts thy
 
   val lthy1 = Named_Target.theory_init thy1
 
@@ -178,7 +178,7 @@ let
   val raw_induct_thms = #inducts (hd dtinfos)
   val raw_exhaust_thms = map #exhaust dtinfos
   val raw_size_trms = map HOLogic.size_const raw_tys
-  val raw_size_thms = these (Option.map ((fn ths => drop (length ths div 2) ths) o #2 o #2)
+  val raw_size_thms = these (Option.map (#2 o #2)
     (BNF_LFP_Size.size_of lthy1 (hd raw_full_dt_names')))
 
   val raw_result = RawDtInfo 
