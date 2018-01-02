@@ -5,8 +5,7 @@
     Nominal Isabelle. 
 *)
 theory Nominal2_Base
-imports "HOL-Library.Old_Datatype"
-        "HOL-Library.Infinite_Set"
+imports "HOL-Library.Infinite_Set"
         "HOL-Library.Multiset"
         "HOL-Library.FSet"
         FinFun.FinFun
