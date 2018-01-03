@@ -35,10 +35,10 @@ definition "M2L = (FEx SO (FAll FO (FBase (In 0 0))) :: formula)"
 definition "\<Phi> = (FAll FO (FEx FO (FBase (Less 1 0))) :: formula)"
 
 lemma "Thm (Abs_idx (0, 1)) (FNot M2L)"
-  by eval
+  by (simp add: M2L_def Thm_def) check_equiv
 
 lemma "Thm (Abs_idx (0, 0)) \<Phi>"
-  by eval
+  by (simp add: Thm_def \<Phi>_def) check_equiv
 
 abbreviation Globally ("\<box>_" [40] 40) where "Globally P == %n. FAll FO (FImp (FNot (FBase (Less (n+1) 0))) (P 0))"
 abbreviation Future ("\<diamond>_" [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less (n+1) 0))) (P 0))"
@@ -48,12 +48,23 @@ definition \<Psi> :: "nat \<Rightarrow> formula" where
   "\<Psi> n = FAll FO (((\<box>(foldr (\<lambda>i \<phi>. (\<lambda>m. FBase (In m i)) \<rightarrow> \<phi>) [0..<n] (\<lambda>m. FBase (In m n)))) \<rightarrow>
      foldr (\<lambda>i \<phi>. (\<box>(\<lambda>m. FBase (In m i))) \<rightarrow> \<phi>) [0..<n] (\<box>(\<lambda>m. FBase (In m n)))) 0)"
 
-lemma "Thm (Abs_idx (0, 1)) (\<Psi> 0)" by eval
-lemma "Thm (Abs_idx (0, 2)) (\<Psi> 1)" by eval
-lemma "Thm (Abs_idx (0, 3)) (\<Psi> 2)" by eval
-lemma "Thm (Abs_idx (0, 4)) (\<Psi> 3)" by eval
-lemma "Thm (Abs_idx (0, 5)) (\<Psi> 4)" by eval
-lemma "Thm (Abs_idx (0, 6)) (\<Psi> 5)" by eval
+lemma "Thm (Abs_idx (0, 1)) (\<Psi> 0)"
+  by (simp add: Thm_def \<Psi>_def) check_equiv
+
+lemma "Thm (Abs_idx (0, 2)) (\<Psi> 1)"
+  by (simp add: Thm_def \<Psi>_def) check_equiv
+
+lemma "Thm (Abs_idx (0, 3)) (\<Psi> 2)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 4)) (\<Psi> 3)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 5)) (\<Psi> 4)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 6)) (\<Psi> 5)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
 
 (*<*)
 end

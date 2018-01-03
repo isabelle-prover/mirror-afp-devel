@@ -332,8 +332,6 @@ lemma check_eqv_code[code]: "check_eqv idx r s =
 definition while where [code del, code_abbrev]: "while idx \<phi> = while_default (fut_default idx \<phi>)"
 declare while_default_code[of "fut_default idx \<phi>" for idx \<phi>, folded while_def, code]
 
-export_code check_eqv in SML module_name WS1S_Generated (*file "WS1S_Generated"*)
-
 lemma check_eqv_sound: 
   "\<lbrakk>#\<^sub>V \<AA> = idx; check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> (WS1S_Alt.sat \<AA> \<phi> \<longleftrightarrow> WS1S_Alt.sat \<AA> \<psi>)"
   unfolding check_eqv_def by (rule WS1S_Alt.check_eqv_soundness)
@@ -342,11 +340,24 @@ lemma bounded_check_eqv_sound:
   "\<lbrakk>#\<^sub>V \<AA> = idx; bounded_check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> (WS1S_Alt.sat\<^sub>b \<AA> \<phi> \<longleftrightarrow> WS1S_Alt.sat\<^sub>b \<AA> \<psi>)"
   unfolding bounded_check_eqv_def by (rule WS1S_Alt.bounded_check_eqv_soundness)
 
-code_reflect WS1S_Alt
-  datatypes nat and atomic = _ and order = _ and aformula = _ and idx = _
-  functions check_eqv "0::nat" "1::nat" Suc
-    "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
-    "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
-    nat_of_integer integer_of_nat
+method_setup check_equiv = \<open>
+  let
+    fun tac ctxt =
+      let
+        val conv = @{computation_check terms: Trueprop
+          "0 :: nat" "1 :: nat" "2 :: nat" "3 :: nat" Suc
+          "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
+          "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
+          "0 :: int" "1 :: int" "2 :: int" "3 :: int" "-1 :: int"
+          check_eqv datatypes: formula "int list" integer idx
+          "nat \<times> nat" "nat option" "bool option"} ctxt
+      in
+        CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN'
+        resolve_tac ctxt [TrueI]
+      end
+  in
+    Scan.succeed (SIMPLE_METHOD' o tac)
+  end
+\<close>
 
 end

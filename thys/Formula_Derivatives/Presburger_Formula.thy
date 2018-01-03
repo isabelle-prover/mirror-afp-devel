@@ -516,7 +516,7 @@ lemma satisfies_bounded_lderiv0[Presb_simps]:
 lemma scalar_product_SNOC: "length xs = length (bs :: bool list)  \<Longrightarrow>
   scalar_product (map_index (\<lambda>i m. m + 2 ^ a * bs ! i) xs) is =
   scalar_product xs is + 2 ^ a * scalar_product bs is"
-  by (induct "is" arbitrary: bs xs) (auto split: list.splits simp: algebra_simps of_nat_power)
+  by (induct "is" arbitrary: bs xs) (auto split: list.splits simp: algebra_simps)
 
 lemma eval_tm_SNOC[simp]:
   "\<lbrakk>length is \<le> #\<^sub>V \<AA>; #\<^sub>V \<AA> = length x\<rbrakk> \<Longrightarrow>
@@ -667,8 +667,6 @@ lemma check_eqv_code[code]: "check_eqv idx r s =
 definition while where [code del, code_abbrev]: "while idx \<phi> = while_default (fut_default idx \<phi>)"
 declare while_default_code[of "fut_default idx \<phi>" for idx \<phi>, folded while_def, code]
 
-export_code check_eqv in SML module_name Presb_Generated (*file "Presb_Generated"*)
-
 lemma check_eqv_sound: 
   "\<lbrakk>#\<^sub>V \<AA> = idx; check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> (Presb.sat \<AA> \<phi> \<longleftrightarrow> Presb.sat \<AA> \<psi>)"
   unfolding check_eqv_def by (rule Presb.check_eqv_soundness)
@@ -677,11 +675,23 @@ lemma bounded_check_eqv_sound:
   "\<lbrakk>#\<^sub>V \<AA> = idx; bounded_check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> (Presb.sat\<^sub>b \<AA> \<phi> \<longleftrightarrow> Presb.sat\<^sub>b \<AA> \<psi>)"
   unfolding bounded_check_eqv_def by (rule Presb.bounded_check_eqv_soundness)
 
-code_reflect Presb
-  datatypes nat and int = _ and presb = _ and aformula = _
-  functions check_eqv "0::nat" "1::nat" Suc
-    "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
-    "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
-    nat_of_integer integer_of_nat
+method_setup check_equiv = \<open>
+  let
+    fun tac ctxt =
+      let
+        val conv = @{computation_check terms: Trueprop
+          "0 :: nat" "1 :: nat" "2 :: nat" "3 :: nat" Suc
+          "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
+          "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
+          "0 :: int" "1 :: int" "2 :: int" "3 :: int" "-1 :: int"
+          check_eqv datatypes: formula "int list" integer bool} ctxt
+      in
+        CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN'
+        resolve_tac ctxt [TrueI]
+      end
+  in
+    Scan.succeed (SIMPLE_METHOD' o tac)
+  end
+\<close>
 
 end

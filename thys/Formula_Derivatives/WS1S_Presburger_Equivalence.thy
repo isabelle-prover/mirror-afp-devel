@@ -52,7 +52,7 @@ global_interpretation WS1S_Presb: DAs
   by unfold_locales auto
 
 (*Workaround for code generation*)
-lemma check_eqv_code[code]: "check_eqv idx n r s =
+lemma check_eqv_code[code]: "check_eqv idx n r s \<longleftrightarrow>
   ((ws1s_wf idx r \<and> ws1s_lformula r) \<and> (presb_wf n s \<and> presb_lformula s) \<and>
   (case rtrancl_while (\<lambda>(p, q). final idx p = Presburger_Formula.final n q)
   (\<lambda>(p, q).
@@ -65,8 +65,25 @@ lemma check_eqv_code[code]: "check_eqv idx n r s =
   | Some (a # list, x) \<Rightarrow> False))"
   unfolding check_eqv_def WS1S_Presb.check_eqv_def ..
 
-code_reflect WS1S_Presburger
-  functions check_eqv
+method_setup check_equiv = \<open>
+  let
+    fun tac ctxt =
+      let
+        val conv = @{computation_check terms: Trueprop
+          "0 :: nat" "1 :: nat" "2 :: nat" "3 :: nat" Suc
+          "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
+          "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
+          "0 :: int" "1 :: int" "2 :: int" "3 :: int" "-1 :: int"
+          check_eqv datatypes: idx "(presb, unit) aformula" "((nat, nat) atomic, WS1S_Prelim.order) aformula"
+          "nat \<times> nat" "nat option" "bool option" "int list" integer} ctxt
+      in
+        CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN'
+        resolve_tac ctxt [TrueI]
+      end
+  in
+    Scan.succeed (SIMPLE_METHOD' o tac)
+  end
+\<close>
 
 (*<*)
 end

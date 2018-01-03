@@ -18,8 +18,6 @@ abbreviation Succ where "Succ sucx x \<equiv> FAnd (FBase (Less None x sucx)) (F
 
 definition "Thm idx \<phi> = check_eqv idx \<phi> (FBool True)"
 
-export_code Thm in SML module_name Thm
-
 abbreviation FTrue ("\<top>") where "FTrue \<equiv> FBool True"
 abbreviation FFalse ("\<bottom>") where "FFalse \<equiv> FBool False"
 
@@ -38,21 +36,22 @@ abbreviation FEq_Plus ("x\<^sub>_ = x\<^sub>_ + _" [65, 66] 65) where "FEq_Plus 
 abbreviation FSuc_SO ("X\<^sub>_ = X\<^sub>_ + 1" [65, 66] 65) where "FSuc_SO m n \<equiv> FBase (Suc_SO False False m n)"
 abbreviation FQ ("[x\<^sub>_]" [66] 65) where "FQ m \<equiv> FBase (Fo m)"
 
-declare check_eqv_code[code del]
-
 lemma "check_eqv (Abs_idx (1, 0)) (FAnd (FEq_Const 0 100000) (FEq_Const 0 0)) FFalse"
-  by eval
+  by check_equiv
+
 lemma "check_eqv (Abs_idx (1, 0)) (FEq_Plus 0 0 1) FFalse"
-  by eval
+  by check_equiv
+
 lemma "check_eqv (Abs_idx (0, 1)) (FSuc_SO 0 0) (FBase (Empty 0))"
-  by eval
+  by check_equiv
+
 lemma "check_eqv (Abs_idx (0, 2))
   (FEx SO (FAnd (FBase (Subset 1 0)) (FSuc_SO 0 2)))
   (FAll FO (FImp (FIn 0 0) (FEx FO (FAnd (FEq_Plus 1 0 1) (FIn 0 1)))))"
-  by eval
+  by check_equiv
+
 value "automaton (\<sigma> (Abs_idx (0, 1))) (FBase (Eq_Presb None 0 (2 ^ 32)))"
 value "automaton (\<sigma> (Abs_idx (1, 0))) (nFAnd (FEq_Const 0 100000) (FEq_Const 0 42))"
-
 value "automaton (\<sigma> (Abs_idx (1, 0))) (nFAnd (FOr (FEq_Const 0 100000) (FEx FO (FBase (Eq_FO False 1 0)))) (FEq_Const 0 42))"
 
 (*true in M2L, false in WS1S*)
@@ -61,10 +60,10 @@ definition "M2L = (FEx SO (FAll FO (FBase (In False 0 0))) :: formula)"
 definition "\<Phi> = (FAll FO (FEx FO (FBase (Less None 1 0))) :: formula)"
 
 lemma "Thm (Abs_idx (0, 1)) (FNot M2L)"
-  by eval
+  by (simp add: Thm_def M2L_def) check_equiv
 
 lemma "Thm (Abs_idx (0, 0)) \<Phi>"
-  by eval
+  by (simp add: Thm_def \<Phi>_def) check_equiv
 
 abbreviation Globally ("\<box>_" [40] 40) where "Globally P == %n. FAll FO (FImp (FNot (FBase (Less None (n+1) 0))) (P 0))"
 abbreviation Future ("\<diamond>_" [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less None (n+1) 0))) (P 0))"
@@ -74,14 +73,29 @@ definition \<Psi> :: "nat \<Rightarrow> formula" where
   "\<Psi> n = FAll FO (((\<box>(foldr (\<lambda>i \<phi>. (\<lambda>m. FBase (In False m i)) \<rightarrow> \<phi>) [0..<n] (\<lambda>m. FBase (In False m n)))) \<rightarrow>
      foldr (\<lambda>i \<phi>. (\<box>(\<lambda>m. FBase (In False m i))) \<rightarrow> \<phi>) [0..<n] (\<box>(\<lambda>m. FBase (In False m n)))) 0)"
 
-lemma "Thm (Abs_idx (0, 1)) (\<Psi> 0)" by eval
-lemma "Thm (Abs_idx (0, 2)) (\<Psi> 1)" by eval
-lemma "Thm (Abs_idx (0, 3)) (\<Psi> 2)" by eval
-lemma "Thm (Abs_idx (0, 4)) (\<Psi> 3)" by eval
-lemma "Thm (Abs_idx (0, 5)) (\<Psi> 4)" by eval
-lemma "Thm (Abs_idx (0, 6)) (\<Psi> 5)" by eval
-lemma "Thm (Abs_idx (0, 11)) (\<Psi> 10)" by eval
-lemma "Thm (Abs_idx (0, 16)) (\<Psi> 15)" by eval
+lemma "Thm (Abs_idx (0, 1)) (\<Psi> 0)"
+  by (simp add: Thm_def \<Psi>_def) check_equiv
+
+lemma "Thm (Abs_idx (0, 2)) (\<Psi> 1)"
+  by (simp add: Thm_def \<Psi>_def) check_equiv
+
+lemma "Thm (Abs_idx (0, 3)) (\<Psi> 2)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 4)) (\<Psi> 3)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 5)) (\<Psi> 4)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 6)) (\<Psi> 5)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 11)) (\<Psi> 10)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
+
+lemma "Thm (Abs_idx (0, 16)) (\<Psi> 15)"
+  by (simp add: Thm_def \<Psi>_def numeral_nat) check_equiv
 
 (*<*)
 (*
