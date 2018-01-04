@@ -104,8 +104,6 @@ lemma sorted_wrt_alls:
 
 definition "alls2 A B a b = [(xs, ys). ys \<leftarrow> alls B b, xs \<leftarrow> alls A a]"
 
-value "alls2 2 1 [1,1] [2]"
-
 lemma alls2_ne [simp]:
   "alls2 A B a b \<noteq> []"
   by (auto simp: alls2_def) (metis alls_ne list.set_intros(1) neq_Nil_conv surj_pair)
