@@ -74,4 +74,9 @@ lemma in_minimize_wrt_iff:
   using assms and in_minimize_wrtD [of Q xs x P, OF assms(1,2) _ assms(3,4)]
   by (blast intro: in_minimize_wrtI)
 
+lemma minimize_wrt_append:
+  assumes "\<forall>x\<in>set xs. \<forall>y\<in>set (xs @ ys). P y x"
+  shows "minimize_wrt P (xs @ ys) = xs @ filter (\<lambda>y. \<forall>x\<in>set xs. P x y) (minimize_wrt P ys)"
+  using assms by (induct xs) (auto intro: filter_cong)
+
 end
