@@ -1251,8 +1251,8 @@ lemma diag_mat_one[simp]: "diag_mat (1\<^sub>m n) = replicate n 1"
   by (rule nth_equalityI, auto)
 
 lemma pow_mat_ring_pow: assumes A: "(A :: ('a :: semiring_1)mat) \<in> carrier_mat n n" 
-  shows "A ^\<^sub>m k = A (^)\<^bsub>ring_mat TYPE('a) n b\<^esub> k" 
-  (is "_ = A (^)\<^bsub>?C\<^esub> k")
+  shows "A ^\<^sub>m k = A [^]\<^bsub>ring_mat TYPE('a) n b\<^esub> k" 
+  (is "_ = A [^]\<^bsub>?C\<^esub> k")
 proof -
   interpret semiring ?C by (rule semiring_mat)
   show ?thesis

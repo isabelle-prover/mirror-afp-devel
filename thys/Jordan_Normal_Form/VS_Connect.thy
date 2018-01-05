@@ -35,10 +35,10 @@ proof -
   then interpret semiring ?r .
   {
     fix x y
-    have "x (^)\<^bsub>?r\<^esub> y = x ^ y"
+    have "x [^]\<^bsub>?r\<^esub> y = x ^ y"
       by (induct y, auto simp: power_commutes)
   }
-  thus "op (^)\<^bsub>?r\<^esub> = op ^" by (intro ext)
+  thus "op [^]\<^bsub>?r\<^esub> = op ^" by (intro ext)
   {
     fix f and A :: "'b set"
     have "finsum ?r f A = sum f A"

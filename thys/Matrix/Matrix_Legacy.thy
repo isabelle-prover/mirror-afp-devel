@@ -1259,8 +1259,8 @@ proof -
       mat_mult_plus_distrib_right, auto)
 qed
 
-lemma mat_pow_ring_pow: assumes mat: "mat n n (m :: ('a :: semiring_1)mat)" shows "mat_pow n m k = m (^)\<^bsub>mat_ring n b\<^esub> k" 
-  (is "_ = m (^)\<^bsub>?C\<^esub> k")
+lemma mat_pow_ring_pow: assumes mat: "mat n n (m :: ('a :: semiring_1)mat)" shows "mat_pow n m k = m [^]\<^bsub>mat_ring n b\<^esub> k" 
+  (is "_ = m [^]\<^bsub>?C\<^esub> k")
 proof -
   interpret semiring ?C by (rule mat_semiring)
   show ?thesis

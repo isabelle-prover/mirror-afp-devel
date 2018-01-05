@@ -30,8 +30,8 @@ by(simp add: sample_uniform_def)
 lemma (in cyclic_group) sample_uniform_one_time_pad:
   assumes [simp]: "c \<in> carrier G"
   shows
-  "map_spmf (\<lambda>x. \<^bold>g (^) x \<otimes> c) (sample_uniform (order G)) = 
-   map_spmf (\<lambda>x. \<^bold>g (^) x) (sample_uniform (order G))"
+  "map_spmf (\<lambda>x. \<^bold>g [^] x \<otimes> c) (sample_uniform (order G)) = 
+   map_spmf (\<lambda>x. \<^bold>g [^] x) (sample_uniform (order G))"
    (is "?lhs = ?rhs")
 proof(cases "finite (carrier G)")
   case False
