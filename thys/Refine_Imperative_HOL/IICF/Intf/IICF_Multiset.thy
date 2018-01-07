@@ -70,7 +70,7 @@ lemma rel_mset_Minus_gen:
 
 lemma pcr_count:
   assumes "bi_unique A"
-  shows "rel_fun (rel_mset A) (rel_fun A (=)) count count"
+  shows "rel_fun (rel_mset A) (rel_fun A op=) count count"
   apply (intro rel_funI)
   unfolding rel_mset_def
   apply clarsimp
@@ -100,7 +100,7 @@ lemma param_mset_empty[param]: "({#},{#}) \<in> \<langle>A\<rangle>mset_rel"
   apply (simp add: p2rel_def)
   by (rule rel_mset_Zero)
 
-lemma param_mset_Plus[param]: "((+),(+))\<in>\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"  
+lemma param_mset_Plus[param]: "(op+,op+)\<in>\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"  
   apply (rule rel2pD)
   apply (simp add: rel2p)
   apply (intro rel_funI)
@@ -121,7 +121,7 @@ lemma param_mset_add[param]: "(add_mset, add_mset) \<in> A \<rightarrow> \<langl
   by (rule rel_mset_Plus)
 
 lemma param_mset_minus[param]: "\<lbrakk>single_valued A; single_valued (A\<inverse>)\<rbrakk> 
-  \<Longrightarrow> ((-), (-)) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" 
+  \<Longrightarrow> (op -, op -) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" 
   apply (rule rel2pD)
   apply (simp add: rel2p)
   apply (intro rel_funI)
@@ -166,12 +166,12 @@ subsection \<open>Operations\<close>
   sepref_decl_op mset_delete: "\<lambda>x m. m - {#x#}" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"
     where "single_valued A" "single_valued (A\<inverse>)" .
 
-  sepref_decl_op mset_plus: "(+)::_ multiset \<Rightarrow> _" :: "\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" .
-  sepref_decl_op mset_minus: "(-)::_ multiset \<Rightarrow> _" :: "\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" 
+  sepref_decl_op mset_plus: "op +::_ multiset \<Rightarrow> _" :: "\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" .
+  sepref_decl_op mset_minus: "op -::_ multiset \<Rightarrow> _" :: "\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" 
     where "single_valued A" "single_valued (A\<inverse>)" .
   
 
-  sepref_decl_op mset_contains: "(\<in>#)" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> bool_rel" 
+  sepref_decl_op mset_contains: "op \<in>#" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> bool_rel" 
     where "single_valued A" "single_valued (A\<inverse>)" .
     
   sepref_decl_op mset_count: "\<lambda>x y. count y x" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> nat_rel" 
@@ -193,18 +193,18 @@ subsection \<open>Patterns\<close>
 lemma [def_pat_rules]:
   "{#} \<equiv> op_mset_empty"
   "add_mset \<equiv> op_mset_insert"
-  "(=) $b${#} \<equiv> op_mset_is_empty$b"
-  "(=) ${#}$b \<equiv> op_mset_is_empty$b"
-  "(+) $a$b \<equiv> op_mset_plus$a$b"
-  "(-) $a$b \<equiv> op_mset_minus$a$b"
+  "op= $b${#} \<equiv> op_mset_is_empty$b"
+  "op= ${#}$b \<equiv> op_mset_is_empty$b"
+  "op+ $a$b \<equiv> op_mset_plus$a$b"
+  "op- $a$b \<equiv> op_mset_minus$a$b"
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 lemma [def_pat_rules]:
-  "(+) $b$(add_mset$x${#}) \<equiv> op_mset_insert$x$b"
-  "(+) $(add_mset$x${#})$b \<equiv> op_mset_insert$x$b"
-  "(-) $b$(add_mset$x${#}) \<equiv> op_mset_delete$x$b"
-  "(<) $0$(count$a$x) \<equiv> op_mset_contains$x$a"
-  "(\<in>) $x$(set_mset$a) \<equiv> op_mset_contains$x$a"
+  "op+ $b$(add_mset$x${#}) \<equiv> op_mset_insert$x$b"
+  "op+ $(add_mset$x${#})$b \<equiv> op_mset_insert$x$b"
+  "op- $b$(add_mset$x${#}) \<equiv> op_mset_delete$x$b"
+  "op< $0$(count$a$x) \<equiv> op_mset_contains$x$a"
+  "op \<in> $x$(set_mset$a) \<equiv> op_mset_contains$x$a"
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 
