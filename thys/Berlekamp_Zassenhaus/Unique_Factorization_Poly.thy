@@ -124,7 +124,7 @@ proof -
   next
     fix d
     assume "ALL x : set X. divides_ff d x"
-    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) (divides_ff (to_fract r * d))" by simp
+    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) ( divides_ff (to_fract r * d))" by simp
     also have "(\<lambda> x. to_fract r * x) ` set X = to_fract ` set ys"
       unfolding set_conv_nth using ys len by force
     finally have dvd: "Ball (set ys) (\<lambda> y. divides_ff (to_fract r * d) (to_fract y))" by auto
