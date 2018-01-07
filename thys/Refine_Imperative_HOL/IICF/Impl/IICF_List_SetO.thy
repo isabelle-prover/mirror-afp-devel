@@ -13,7 +13,7 @@ begin
     \<in> unit_rel  \<rightarrow>\<^sub>f \<langle>br set (\<lambda>_. True)\<rangle>nres_rel"
     by (auto simp: in_br_conv intro!: frefI nres_relI)
 
-  lemma lso_ins_aref: "(uncurry (RETURN oo (op #)), uncurry (RETURN oo op_set_insert)) 
+  lemma lso_ins_aref: "(uncurry (RETURN oo (op # )), uncurry (RETURN oo op_set_insert)) 
     \<in> Id \<times>\<^sub>r br set (\<lambda>_. True) \<rightarrow>\<^sub>f \<langle>br set (\<lambda>_. True)\<rangle>nres_rel"
     by (auto simp: in_br_conv intro!: frefI nres_relI)
 
