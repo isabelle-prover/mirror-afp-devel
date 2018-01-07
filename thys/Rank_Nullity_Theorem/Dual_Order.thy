@@ -21,7 +21,7 @@ lemma wf_wellorderI2:
   apply (rule class.wellorder_axioms.intro) by (blast intro: wf_induct_rule [OF wf])
 
 
-lemma (in preorder) tranclp_less': "op >\<^sup>+\<^sup>+ = op >"
+lemma (in preorder) tranclp_less': "(op >)\<^sup>+\<^sup>+ = op >"
   by(auto simp add: fun_eq_iff intro: less_trans elim: tranclp.induct)
 
 interpretation dual_wellorder: wellorder "(op \<ge>)::('a::{linorder, finite}=>'a=>bool)" "(op >)" 
