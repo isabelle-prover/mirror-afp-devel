@@ -183,7 +183,7 @@ qed
 
 lemma pow_mod_ring_transfer[transfer_rule]:
   "(pcr_mod_ring ===> op = ===> pcr_mod_ring) 
-   (\<lambda>a::int. \<lambda>n. a^n mod CARD('a::nontriv)) (op ^::'a mod_ring \<Rightarrow> nat \<Rightarrow> 'a mod_ring)"
+   (\<lambda>a::int. \<lambda>n. a^n mod CARD('a::nontriv)) ((op ^)::'a mod_ring \<Rightarrow> nat \<Rightarrow> 'a mod_ring)"
 unfolding pcr_mod_ring_to_int_mod_ring
 proof (intro rel_funI,simp)
   fix x::"'a mod_ring" and n
