@@ -79,7 +79,7 @@ proof -
     have "x \<ominus>\<^bsub>?r\<^esub> y = x - y" 
       by (subst a_minus_def[of x ?r y], (auto)[2], subst ainv, auto)
   }
-  thus "op \<ominus>\<^bsub>?r\<^esub> = minus" by (intro ext)
+  thus "(\<lambda>x y. x \<ominus>\<^bsub>?r\<^esub> y) = minus" by (intro ext)
 qed (auto simp: class_ring_simps)
 
 interpretation class_cring: cring "class_ring :: 'a :: comm_ring_1 ring"
