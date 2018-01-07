@@ -6288,7 +6288,7 @@ lemma
 lemma op_inter_fst_impl:
   assumes "DIM_precond TYPE('n::enum rvec) D"
   assumes "GEN_OP intr (op_inter_ivl::'n rvec set\<Rightarrow>_) (lvivl_rel \<rightarrow> lvivl_rel \<rightarrow> lvivl_rel)"
-  assumes "GEN_OP le   (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le   (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   shows "(\<lambda>x y.
     if le (fst x) (snd x) then
     case (intr (pairself (take D) x) y, pairself (drop D) x) of
