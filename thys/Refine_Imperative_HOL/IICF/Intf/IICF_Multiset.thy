@@ -193,18 +193,18 @@ subsection \<open>Patterns\<close>
 lemma [def_pat_rules]:
   "{#} \<equiv> op_mset_empty"
   "add_mset \<equiv> op_mset_insert"
-  "op=$b${#} \<equiv> op_mset_is_empty$b"
-  "op=${#}$b \<equiv> op_mset_is_empty$b"
-  "op+$a$b \<equiv> op_mset_plus$a$b"
-  "op-$a$b \<equiv> op_mset_minus$a$b"
+  "op= $b${#} \<equiv> op_mset_is_empty$b"
+  "op= ${#}$b \<equiv> op_mset_is_empty$b"
+  "op+ $a$b \<equiv> op_mset_plus$a$b"
+  "op- $a$b \<equiv> op_mset_minus$a$b"
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 lemma [def_pat_rules]:
-  "op+$b$(add_mset$x${#}) \<equiv> op_mset_insert$x$b"
-  "op+$(add_mset$x${#})$b \<equiv> op_mset_insert$x$b"
-  "op-$b$(add_mset$x${#}) \<equiv> op_mset_delete$x$b"
-  "op <$0$(count$a$x) \<equiv> op_mset_contains$x$a"
-  "op \<in>$x$(set_mset$a) \<equiv> op_mset_contains$x$a"
+  "op+ $b$(add_mset$x${#}) \<equiv> op_mset_insert$x$b"
+  "op+ $(add_mset$x${#})$b \<equiv> op_mset_insert$x$b"
+  "op- $b$(add_mset$x${#}) \<equiv> op_mset_delete$x$b"
+  "op< $0$(count$a$x) \<equiv> op_mset_contains$x$a"
+  "op \<in> $x$(set_mset$a) \<equiv> op_mset_contains$x$a"
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 

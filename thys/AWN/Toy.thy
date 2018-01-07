@@ -792,11 +792,11 @@ interpretation toy_openproc: openproc ptoy optoy Fun.id
         show "((\<sigma>, snd (Fun.id s)), a, (\<sigma>', snd (Fun.id s'))) \<in> trans (optoy i)"
           by simp
     qed
-    then interpret op: openproc ptoy optoy Fun.id .
+    then interpret op0: openproc ptoy optoy Fun.id .
     have [simp]: "\<And>i. (SOME x. x \<in> (fst o Fun.id) ` init (ptoy i)) = toy_init i"
       unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def by simp
     hence "\<And>i. openproc.initmissing ptoy Fun.id i = initmissing i"
-      unfolding op.initmissing_def op.someinit_def initmissing_def
+      unfolding op0.initmissing_def op0.someinit_def initmissing_def
       by (auto split: option.split)
     thus "openproc.initmissing ptoy Fun.id = initmissing" ..
   qed

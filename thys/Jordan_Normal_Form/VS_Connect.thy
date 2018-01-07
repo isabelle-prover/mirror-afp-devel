@@ -35,10 +35,10 @@ proof -
   then interpret semiring ?r .
   {
     fix x y
-    have "x (^)\<^bsub>?r\<^esub> y = x ^ y"
+    have "x [^]\<^bsub>?r\<^esub> y = x ^ y"
       by (induct y, auto simp: power_commutes)
   }
-  thus "op (^)\<^bsub>?r\<^esub> = op ^" by (intro ext)
+  thus "op [^]\<^bsub>?r\<^esub> = op ^" by (intro ext)
   {
     fix f and A :: "'b set"
     have "finsum ?r f A = sum f A"
@@ -79,7 +79,7 @@ proof -
     have "x \<ominus>\<^bsub>?r\<^esub> y = x - y" 
       by (subst a_minus_def[of x ?r y], (auto)[2], subst ainv, auto)
   }
-  thus "op \<ominus>\<^bsub>?r\<^esub> = minus" by (intro ext)
+  thus "(\<lambda>x y. x \<ominus>\<^bsub>?r\<^esub> y) = minus" by (intro ext)
 qed (auto simp: class_ring_simps)
 
 interpretation class_cring: cring "class_ring :: 'a :: comm_ring_1 ring"

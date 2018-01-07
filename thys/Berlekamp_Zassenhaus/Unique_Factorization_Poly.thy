@@ -123,8 +123,8 @@ proof -
       by (intro exI[of _ d], auto)
   next
     fix d
-    assume "Ball (set X) (divides_ff d)"
-    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) (divides_ff (to_fract r * d))" by simp
+    assume "ALL x : set X. divides_ff d x"
+    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) ( divides_ff (to_fract r * d))" by simp
     also have "(\<lambda> x. to_fract r * x) ` set X = to_fract ` set ys"
       unfolding set_conv_nth using ys len by force
     finally have dvd: "Ball (set ys) (\<lambda> y. divides_ff (to_fract r * d) (to_fract y))" by auto
@@ -157,7 +157,7 @@ lemma some_gcd_ff_list: "gcd_ff_list xs (some_gcd_ff_list xs)"
 lemma some_gcd_ff_list_divides: "x \<in> set xs \<Longrightarrow> divides_ff (some_gcd_ff_list xs) x"
   using some_gcd_ff_list[of xs] unfolding gcd_ff_list_def by auto
 
-lemma some_gcd_ff_list_greatest: "Ball (set xs) (divides_ff d) \<Longrightarrow> divides_ff d (some_gcd_ff_list xs)"
+lemma some_gcd_ff_list_greatest: "(ALL x : set xs. divides_ff d x) \<Longrightarrow> divides_ff d (some_gcd_ff_list xs)"
   using some_gcd_ff_list[of xs] unfolding gcd_ff_list_def by auto
 
 lemma divides_ff_refl[simp]: "divides_ff x x"

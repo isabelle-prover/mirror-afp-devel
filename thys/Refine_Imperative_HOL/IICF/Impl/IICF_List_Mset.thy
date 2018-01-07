@@ -98,7 +98,7 @@ subsection \<open>Declaration of Implementations\<close>
   sepref_decl_impl lms_insert: lms_insert_aref[sepref_param] .
   sepref_decl_impl lms_union: lms_union_aref[sepref_param] .
 
-  -- \<open>Some extra work is required for nondetermistic op\<close>
+  -- \<open>Some extra work is required for nondetermistic ops\<close>
   lemma lms_pick_aref': 
     "(\<lambda>x#l \<Rightarrow> return (x,l), mop_mset_pick) \<in> (pure list_mset_rel)\<^sup>k \<rightarrow>\<^sub>a prod_assn id_assn (pure list_mset_rel)"
     apply (simp only: prod_assn_pure_conv)

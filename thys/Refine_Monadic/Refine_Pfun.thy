@@ -96,7 +96,7 @@ lemma drec_admissible: "drec.admissible (\<lambda>(f::'a \<Rightarrow> 'b dres).
     (f x \<noteq> dFAIL \<and> 
     (\<forall>r. f x = dRETURN r \<longrightarrow> Q x r))))"
 proof -
-  have [simp]: "fun_ord (op \<le>::'b dres \<Rightarrow> _ \<Rightarrow> _) = op \<le>"
+  have [simp]: "fun_ord (op \<le> ::'b dres \<Rightarrow> _ \<Rightarrow> _) = op \<le>"
     apply (intro ext)
     unfolding fun_ord_def le_fun_def
     by (rule refl)

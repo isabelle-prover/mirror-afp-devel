@@ -515,7 +515,7 @@ apply force
 done 
 (*>*)
 
-lemma lem: "\<And>x xs. x \<squnion>\<^bsub>op #\<^esub> xs = x#xs"
+lemma lem: "\<And>x xs. x \<squnion>\<^bsub>(op #)\<^esub> xs = x#xs"
 (*<*) by (simp add: plussub_def) (*>*)
 
 lemma coalesce_eq_OK1_D [rule_format]:

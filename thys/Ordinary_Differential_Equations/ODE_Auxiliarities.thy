@@ -1120,7 +1120,7 @@ proof -
     by (rule exI[where x=d]) (auto intro!: d simp: dist_prod_def)
 qed
 
-lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>op has_derivative_on\<close>?\<close>
+lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>(has_derivative_on)\<close>?\<close>
   assumes "\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
   assumes "f ` s \<subseteq> t" "x \<in> s"
   assumes "(f has_derivative f') (at x within s)"

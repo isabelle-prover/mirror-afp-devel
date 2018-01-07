@@ -666,7 +666,7 @@ proof (intro fun_relI; simp)
   fix l :: "'a list"
   { fix n m
     assume "n\<le>m" and "length l = m"
-    hence "fold (\<lambda>i l. l[i:=1+l!i]) [n..<m] l = take n l @ map (op+1) (drop n l)"
+    hence "fold (\<lambda>i l. l[i:=1+l!i]) [n..<m] l = take n l @ map ((op+)1) (drop n l)"
       apply (induction  arbitrary: l rule: inc_induct)
       apply simp
       apply (clarsimp simp: upt_conv_Cons take_Suc_conv_app_nth)
@@ -724,7 +724,7 @@ proof (intro nres_relI fun_relI; simp)
     unfolding incr_list2_def incr_list_def
     -- \<open>@{const nfoldli} comes with an invariant proof rule. In order to use it, we have to specify
       the invariant manually:\<close>
-    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 l2 s. s = map (op+1) (take (length l1) l) @ drop (length l1) l"])
+    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 l2 s. s = map ((op+)1) (take (length l1) l) @ drop (length l1) l"])
     apply (vc_solve 
       simp: upt_eq_append_conv upt_eq_Cons_conv
       simp: nth_append list_update_append upd_conv_take_nth_drop take_Suc_conv_app_nth
@@ -1248,14 +1248,14 @@ sepref_thm mtx_dup_test is "\<lambda>m. RETURN (mtx_dup_diag (mtx_dup_diag m))" 
 
 text \<open>Similarly, there are operations to combine to matrices, and to compare two matrices:\<close>
 
-interpretation pw_add: amtx_pointwise_binop_impl N M "(op+::(_::monoid_add) \<Rightarrow> _)" id_assn "return oo op+"
+interpretation pw_add: amtx_pointwise_binop_impl N M "((op+)::(_::monoid_add) \<Rightarrow> _)" id_assn "return oo (op+)"
   for N M
   apply standard
   apply simp
   apply (sepref_to_hoare) apply sep_auto -- \<open>Alternative to 
     synthesize concrete operation, for simple ad-hoc refinements\<close>
   done
-abbreviation "mtx_add \<equiv> mtx_pointwise_binop op+"
+abbreviation "mtx_add \<equiv> mtx_pointwise_binop (op+)"
 
 sepref_thm mtx_add_test is "uncurry2 (\<lambda>m1 m2 m3. RETURN (mtx_add m1 (mtx_add m2 m3)))" 
   :: "(amtx_assn N M int_assn)\<^sup>d *\<^sub>a (amtx_assn N M int_assn)\<^sup>d *\<^sub>a (amtx_assn N M int_assn)\<^sup>k \<rightarrow>\<^sub>a amtx_assn N M int_assn"

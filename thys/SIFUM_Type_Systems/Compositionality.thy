@@ -726,7 +726,7 @@ abbreviation apply_adaptation\<^sub>2 ::
   ("_ [\<parallel>\<^sub>2 _]" [900, 0] 1000)
   where "mem [\<parallel>\<^sub>2 A] \<equiv> apply_adaptation False mem A"
 
-definition restrict_total :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'a \<rightharpoonup> 'b" (infix "|'" 60)
+definition restrict_total :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'a \<rightharpoonup> 'b" (*infix "|'" 60*)
   where "restrict_total f A = to_partial f |` A"
 
 lemma differing_empty_eq:

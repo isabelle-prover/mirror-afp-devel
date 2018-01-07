@@ -880,7 +880,7 @@ lemma option_assn_eq[sepref_comb_rules]:
     (eq' va' vb') 
     (\<Gamma>' va va' vb vb') 
     bool_assn
-    (RETURN$(op=$va$vb))"
+    (RETURN$(op= $va$vb))"
   assumes F2: 
     "\<And>va va' vb vb'. 
       \<Gamma>' va va' vb vb' \<Longrightarrow>\<^sub>t hn_ctxt P va va' * hn_ctxt P vb vb' * \<Gamma>1"
@@ -889,7 +889,7 @@ lemma option_assn_eq[sepref_comb_rules]:
     (imp_option_eq eq' a' b') 
     (hn_ctxt (option_assn P) a a' * hn_ctxt (option_assn P) b b' * \<Gamma>1)
     bool_assn 
-    (RETURN$(op=$a$b))"
+    (RETURN$(op= $a$b))"
   apply (rule hn_refine_cons_pre[OF F1])
   unfolding imp_option_eq_def
   apply rule
@@ -911,8 +911,8 @@ lemma option_assn_eq[sepref_comb_rules]:
   done
 
 lemma [pat_rules]: 
-  "op=$a$None \<equiv> is_None$a"
-  "op=$None$a \<equiv> is_None$a"
+  "op= $a$None \<equiv> is_None$a"
+  "op= $None$a \<equiv> is_None$a"
   apply (rule eq_reflection, simp split: option.split)+
   done
 
@@ -1205,7 +1205,7 @@ lemma hn_Nil[sepref_fr_rules]:
 
 lemma hn_Cons[sepref_fr_rules]: "hn_refine (hn_ctxt P x x' * hn_ctxt (list_assn P) xs xs') 
   (return (x'#xs')) (hn_invalid P x x' * hn_invalid (list_assn P) xs xs') (list_assn P)
-  (RETURN$(op #$x$xs))"
+  (RETURN$(op # $x$xs))"
   unfolding hn_refine_def
   apply (sep_auto simp: hn_ctxt_def)
   apply (rule ent_frame_fwd[OF invalidate_clone'[of P]], frame_inference)
@@ -1229,7 +1229,7 @@ lemma list_assn_aux_eqlen_simp:
 
 lemma hn_append[sepref_fr_rules]: "hn_refine (hn_ctxt (list_assn P) l1 l1' * hn_ctxt (list_assn P) l2 l2')
   (return (l1'@l2')) (hn_invalid (list_assn P) l1 l1' * hn_invalid (list_assn P) l2 l2') (list_assn P)
-  (RETURN$(op @$l1$l2))"
+  (RETURN$(op @ $l1$l2))"
   apply rule
   apply (sep_auto simp: hn_ctxt_def)
   apply (subst list_assn_aux_len)
@@ -1340,11 +1340,11 @@ lemma [sepref_monadify_arity]: "case_sum \<equiv> \<lambda>\<^sub>2f1 f2 x. SP c
   by simp
 
 text \<open>This determines an evaluation order for the first-order operands\<close>  
-lemma [sepref_monadify_comb]: "case_sum$f1$f2$x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$f1$f2$x)" by simp
+lemma [sepref_monadify_comb]: "case_sum$f1$f2$x \<equiv> op \<bind> $(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$f1$f2$x)" by simp
 
 text \<open>This enables translation of the case-distinction in a non-monadic context.\<close>  
 lemma [sepref_monadify_comb]: "EVAL$(case_sum$(\<lambda>\<^sub>2x. f1 x)$(\<lambda>\<^sub>2x. f2 x)$x) 
-  \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$(\<lambda>\<^sub>2x. EVAL $ f1 x)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
+  \<equiv> op \<bind> $(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$(\<lambda>\<^sub>2x. EVAL $ f1 x)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
   apply (rule eq_reflection)
   by (simp split: sum.splits)
 

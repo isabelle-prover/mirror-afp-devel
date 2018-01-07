@@ -227,7 +227,7 @@ lemmas i_cut_eq_set_restriction_fun =
 
 lemma i_cut_set_restriction_disj: "
   \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge>;
+    cut_op = op \<down>> \<or> cut_op = (op \<down>\<ge>);
     f = (\<lambda>I. cut_op I t)  \<rbrakk> \<Longrightarrow> set_restriction f"
 apply safe
 apply (simp_all only: i_cut_eq_set_restriction_fun set_restriction_fun_is_set_restriction)
@@ -246,7 +246,7 @@ lemmas i_cut_set_restriction =
 
 lemma i_cut_commute_disj: "\<lbrakk>
   cut_op1 = op \<down>< \<or> cut_op1 = op \<down>\<le> \<or>
-  cut_op1 = op \<down>> \<or> cut_op1 = op \<down>\<ge>;
+  cut_op1 = op \<down>> \<or> cut_op1 = (op \<down>\<ge>);
   cut_op2 = op \<down>< \<or> cut_op2 = op \<down>\<le> \<or>
   cut_op2 = op \<down>> \<or> cut_op2 = op \<down>\<ge> \<rbrakk> \<Longrightarrow>
   cut_op2 (cut_op1 I t1) t2 = cut_op1 (cut_op2 I t2) t1"
@@ -373,7 +373,7 @@ lemmas i_cut_Diff =
 
 lemma i_cut_subset_mono_disj: "
   \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge>; A \<subseteq> B \<rbrakk>
+    cut_op = op \<down>> \<or> cut_op = (op \<down>\<ge>); A \<subseteq> B \<rbrakk>
   \<Longrightarrow> cut_op A t \<subseteq> cut_op B t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], simp)
 by (rule set_restriction_mono[where f="\<lambda>I. cut_op I t"])

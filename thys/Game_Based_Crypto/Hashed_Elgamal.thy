@@ -85,21 +85,21 @@ definition key_gen :: "('grp pub_key \<times> 'grp priv_key) spmf"
 where 
   "key_gen = do {
      x \<leftarrow> sample_uniform (order \<G>);
-     return_spmf (\<^bold>g (^) x, x)
+     return_spmf (\<^bold>g [^] x, x)
   }"
 
 definition aencrypt :: "'grp pub_key \<Rightarrow> plain \<Rightarrow> ('grp cipher, 'grp, bitstring) gpv"
 where
   "aencrypt \<alpha> msg = do {
     y \<leftarrow> lift_spmf (sample_uniform (order \<G>));
-    h \<leftarrow> hash (\<alpha> (^) y);
-    Done (\<^bold>g (^) y, h [\<oplus>] msg)
+    h \<leftarrow> hash (\<alpha> [^] y);
+    Done (\<^bold>g [^] y, h [\<oplus>] msg)
   }"
 
 definition adecrypt :: "'grp priv_key \<Rightarrow> 'grp cipher \<Rightarrow> (plain, 'grp, bitstring) gpv"
 where
   "adecrypt x = (\<lambda>(\<beta>, \<zeta>). do {
-    h \<leftarrow> hash (\<beta> (^) x);
+    h \<leftarrow> hash (\<beta> [^] x);
     Done (\<zeta> [\<oplus>] h)
   })"
 
@@ -184,10 +184,10 @@ proof -
   have game0_alt_def: "game0 = do {
       x \<leftarrow> lift_spmf (sample_uniform (order \<G>));
       b \<leftarrow> lift_spmf coin_spmf;
-      (((msg1, msg2), \<sigma>), s) \<leftarrow> inline hash_oracle' (\<A>1 (\<^bold>g (^) x)) {};
+      (((msg1, msg2), \<sigma>), s) \<leftarrow> inline hash_oracle' (\<A>1 (\<^bold>g [^] x)) {};
       TRY do {
         _ :: unit \<leftarrow> assert_gpv (valid_plains msg1 msg2);
-        cipher \<leftarrow> aencrypt (\<^bold>g (^) x) (if b then msg1 else msg2);
+        cipher \<leftarrow> aencrypt (\<^bold>g [^] x) (if b then msg1 else msg2);
         (guess, s') \<leftarrow> inline hash_oracle' (\<A>2 cipher \<sigma>) s;
         Done (guess = b)
       } ELSE lift_spmf coin_spmf
@@ -213,16 +213,16 @@ proof -
   let ?sample = "\<lambda>f. bind_spmf (sample_uniform (order \<G>)) (\<lambda>x. bind_spmf (sample_uniform (order \<G>)) (f x))"
   define game1 where "game1 = (\<lambda>(x :: nat) (y :: nat). do {
       b \<leftarrow> coin_spmf;
-      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g (^) x)) ({}, hash.initial);
+      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g [^] x)) ({}, hash.initial);
       TRY do {
         _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
-        (h, s_h') \<leftarrow> hash.oracle s_h (\<^bold>g (^) (x * y));
-        let cipher = (\<^bold>g (^) y, h [\<oplus>] (if b then msg1 else msg2));
+        (h, s_h') \<leftarrow> hash.oracle s_h (\<^bold>g [^] (x * y));
+        let cipher = (\<^bold>g [^] y, h [\<oplus>] (if b then msg1 else msg2));
         (guess, (s', s_h'')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 cipher \<sigma>) (s, s_h');
-        return_spmf (guess = b, \<^bold>g (^) (x * y) \<in> s')
+        return_spmf (guess = b, \<^bold>g [^] (x * y) \<in> s')
       } ELSE do {
         b \<leftarrow> coin_spmf;
-        return_spmf (b, \<^bold>g (^) (x * y) \<in> s)
+        return_spmf (b, \<^bold>g [^] (x * y) \<in> s)
       }
     })"
   have game01: "run_gpv hash.oracle game0 hash.initial = map_spmf fst (?sample game1)"
@@ -231,17 +231,17 @@ proof -
   
   define game2 where "game2 = (\<lambda>(x :: nat) (y :: nat). do {
     b \<leftarrow> coin_spmf;
-    (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g (^) x)) ({}, hash.initial);
+    (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g [^] x)) ({}, hash.initial);
     TRY do {
       _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
       h \<leftarrow> spmf_of_set (nlists UNIV len_plain);
       (* We do not do the lookup in s_h here, so the rest differs only if the adversary guessed y *)
-      let cipher = (\<^bold>g (^) y, h [\<oplus>] (if b then msg1 else msg2));
+      let cipher = (\<^bold>g [^] y, h [\<oplus>] (if b then msg1 else msg2));
       (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 cipher \<sigma>) (s, s_h);
-      return_spmf (guess = b, \<^bold>g (^) (x * y) \<in> s')
+      return_spmf (guess = b, \<^bold>g [^] (x * y) \<in> s')
     } ELSE do {
       b \<leftarrow> coin_spmf;
-      return_spmf (b, \<^bold>g (^) (x * y) \<in> s)
+      return_spmf (b, \<^bold>g [^] (x * y) \<in> s)
     }
   })"
   interpret inv'': callee_invariant_on "hash_oracle''" "\<lambda>(s, s_h). s = dom s_h" \<I>_full
@@ -250,8 +250,8 @@ proof -
     by unfold_locales(auto simp add: hash_oracle''_def)
 
   { fix x y :: nat
-    let ?bad = "\<lambda>(s, s_h). \<^bold>g (^) (x * y) \<in> s"
-    let ?X = "\<lambda>(s, s_h) (s', s_h'). s = dom s_h \<and> s' = s \<and> s_h = s_h'(\<^bold>g (^) (x * y) := None)"
+    let ?bad = "\<lambda>(s, s_h). \<^bold>g [^] (x * y) \<in> s"
+    let ?X = "\<lambda>(s, s_h) (s', s_h'). s = dom s_h \<and> s' = s \<and> s_h = s_h'(\<^bold>g [^] (x * y) := None)"
     have bisim:
       "rel_spmf (\<lambda>(a, s1') (b, s2'). ?bad s1' = ?bad s2' \<and> (\<not> ?bad s2' \<longrightarrow> a = b \<and> ?X s1' s2'))
              (hash_oracle'' s1 plain) (hash_oracle'' s2 plain)"
@@ -266,7 +266,7 @@ proof -
       subgoal for b msg1 msg2 \<sigma> s s_h
         apply(rule rel_spmf_bind_reflI)
         apply(drule inv''.exec_gpv_invariant; clarsimp)
-        apply(cases "s_h (\<^bold>g (^) (x * y))")
+        apply(cases "s_h (\<^bold>g [^] (x * y))")
         subgoal -- \<open>case @{const None}\<close>
           apply(clarsimp intro!: rel_spmf_bind_reflI)
           apply(rule rel_spmf_bindI)
@@ -291,16 +291,16 @@ proof -
   define game3
     where "game3 = (\<lambda>f :: _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> bitstring spmf \<Rightarrow> _ spmf. \<lambda>(x :: nat) (y :: nat). do {
       b \<leftarrow> coin_spmf;
-      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g (^) x)) ({}, hash.initial);
+      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g [^] x)) ({}, hash.initial);
       TRY do {
         _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
         h' \<leftarrow> f b msg1 msg2 (spmf_of_set (nlists UNIV len_plain));
-        let cipher = (\<^bold>g (^) y, h');
+        let cipher = (\<^bold>g [^] y, h');
         (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 cipher \<sigma>) (s, s_h);
-        return_spmf (guess = b, \<^bold>g (^) (x * y) \<in> s')
+        return_spmf (guess = b, \<^bold>g [^] (x * y) \<in> s')
       } ELSE do {
         b \<leftarrow> coin_spmf;
-        return_spmf (b, \<^bold>g (^) (x * y) \<in> s)
+        return_spmf (b, \<^bold>g [^] (x * y) \<in> s)
       }
     })"
   let ?f = "\<lambda>b msg1 msg2. map_spmf (\<lambda>h. (if b then msg1 else msg2) [\<oplus>] h)"
@@ -320,23 +320,23 @@ proof -
     have * [transfer_rule]: "(bisim ===> op =) (\<lambda>x. x) snd" by(simp add: rel_fun_def bisim_def)
     have "game3 (\<lambda>_ _ _ x. x) x y = do {
         b \<leftarrow> coin_spmf;
-        (((msg1, msg2), \<sigma>), s) \<leftarrow> exec_gpv hash_oracle''' (\<A>1 (\<^bold>g (^) x)) hash.initial;
+        (((msg1, msg2), \<sigma>), s) \<leftarrow> exec_gpv hash_oracle''' (\<A>1 (\<^bold>g [^] x)) hash.initial;
         TRY do {
           _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
           h' \<leftarrow> spmf_of_set (nlists UNIV len_plain);
-          let cipher = (\<^bold>g (^) y, h');
+          let cipher = (\<^bold>g [^] y, h');
           (guess, s') \<leftarrow> exec_gpv hash_oracle''' (\<A>2 cipher \<sigma>) s;
-          return_spmf (guess = b, \<^bold>g (^) (x * y) \<in> dom s')
+          return_spmf (guess = b, \<^bold>g [^] (x * y) \<in> dom s')
         } ELSE do {
           b \<leftarrow> coin_spmf;
-          return_spmf (b, \<^bold>g (^) (x * y) \<in> dom s)
+          return_spmf (b, \<^bold>g [^] (x * y) \<in> dom s)
         }
       }" for x y
       unfolding game3_def Map_empty_def[symmetric] split_def fst_conv snd_conv prod.collapse
       by(transfer fixing: \<A>1 \<G> len_plain x y \<A>2) simp
     moreover have "map_spmf snd (\<dots> x y) = do {
-        zs \<leftarrow> elgamal_adversary \<A> (\<^bold>g (^) x) (\<^bold>g (^) y);
-        return_spmf (\<^bold>g (^) (x * y) \<in> zs)
+        zs \<leftarrow> elgamal_adversary \<A> (\<^bold>g [^] x) (\<^bold>g [^] y);
+        return_spmf (\<^bold>g [^] (x * y) \<in> zs)
       }" for x y
       by(simp add: o_def split_def hash_oracle'''_def map_try_spmf map_scale_spmf)
         (simp add: o_def map_try_spmf map_scale_spmf map_spmf_conv_bind_spmf[symmetric] spmf.map_comp map_const_spmf_of_set)
@@ -346,11 +346,11 @@ proof -
     using game23 by(simp add: o_def)
 
   have "map_spmf fst (game3 (\<lambda>_ _ _ x. x) x y) = do {
-      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g (^) x)) ({}, hash.initial);
+      (((msg1, msg2), \<sigma>), (s, s_h)) \<leftarrow> exec_gpv hash_oracle'' (\<A>1 (\<^bold>g [^] x)) ({}, hash.initial);
       TRY do {
         _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
         h' \<leftarrow> spmf_of_set (nlists UNIV len_plain);
-        (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 (\<^bold>g (^) y, h') \<sigma>) (s, s_h);
+        (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 (\<^bold>g [^] y, h') \<sigma>) (s, s_h);
         map_spmf (op = guess) coin_spmf
       } ELSE coin_spmf
     }" for x y 

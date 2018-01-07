@@ -152,7 +152,7 @@ subsection \<open>ML-Code\<close>
 context begin
 
 private lemma start_eval: "x \<equiv> SP x" by auto
-private lemma add_eval: "f x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. f x)" by auto
+private lemma add_eval: "f x \<equiv> (op \<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. f x)" by auto
 
 private lemma init_mk_arity: "f \<equiv> id (SP f)" by simp
 private lemma add_mk_arity: "id f \<equiv> (\<lambda>\<^sub>2x. id (f$x))" by auto
@@ -573,9 +573,9 @@ attribute_setup sepref_register_combinator =
 subsection \<open>Obsolete Manual Setup Rules\<close>
 
 lemma 
-      mk_mcomb1: "\<And>c. c$x1 \<equiv> op \<bind>$(EVAL$x1)$(\<lambda>\<^sub>2x1. SP (c$x1))"
-  and mk_mcomb2: "\<And>c. c$x1$x2 \<equiv> op \<bind>$(EVAL$x1)$(\<lambda>\<^sub>2x1. op \<bind>$(EVAL$x2)$(\<lambda>\<^sub>2x2. SP (c$x1$x2)))"
-  and mk_mcomb3: "\<And>c. c$x1$x2$x3 \<equiv> op \<bind>$(EVAL$x1)$(\<lambda>\<^sub>2x1. op \<bind>$(EVAL$x2)$(\<lambda>\<^sub>2x2. op \<bind>$(EVAL$x3)$(\<lambda>\<^sub>2x3. SP (c$x1$x2$x3))))"
+      mk_mcomb1: "\<And>c. c$x1 \<equiv> (op \<bind>)$(EVAL$x1)$(\<lambda>\<^sub>2x1. SP (c$x1))"
+  and mk_mcomb2: "\<And>c. c$x1$x2 \<equiv> (op \<bind>)$(EVAL$x1)$(\<lambda>\<^sub>2x1. (op \<bind>)$(EVAL$x2)$(\<lambda>\<^sub>2x2. SP (c$x1$x2)))"
+  and mk_mcomb3: "\<And>c. c$x1$x2$x3 \<equiv> (op \<bind>)$(EVAL$x1)$(\<lambda>\<^sub>2x1. (op \<bind>)$(EVAL$x2)$(\<lambda>\<^sub>2x2. (op \<bind>)$(EVAL$x3)$(\<lambda>\<^sub>2x3. SP (c$x1$x2$x3))))"
     by auto
 
 end

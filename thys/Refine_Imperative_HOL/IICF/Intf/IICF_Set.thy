@@ -19,7 +19,7 @@ sepref_decl_op set_delete: "\<lambda>x s. s - {x}" :: "A \<rightarrow> \<langle>
   where "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A" .
 sepref_decl_op set_union: "op \<union>" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel" .
 sepref_decl_op set_inter: "op \<inter>" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel" where "IS_LEFT_UNIQUE A"  "IS_RIGHT_UNIQUE A" .
-sepref_decl_op set_diff: "op -::_ set \<Rightarrow> _" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel" where "IS_LEFT_UNIQUE A"  "IS_RIGHT_UNIQUE A" .
+sepref_decl_op set_diff: "op - ::_ set \<Rightarrow> _" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel" where "IS_LEFT_UNIQUE A"  "IS_RIGHT_UNIQUE A" .
 sepref_decl_op set_subseteq: "op \<subseteq>" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> bool_rel" where "IS_LEFT_UNIQUE A"  "IS_RIGHT_UNIQUE A" .
 sepref_decl_op set_subset: "op \<subset>" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> bool_rel" where "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A" .
 
@@ -44,11 +44,11 @@ lemma pat_set[def_pat_rules]:
   by (auto intro!: eq_reflection)
   
 lemma pat_set2[pat_rules]: 
-  "op=$s${} \<equiv> op_set_is_empty$s"
-  "op=${}$s \<equiv> op_set_is_empty$s"
+  "op= $s${} \<equiv> op_set_is_empty$s"
+  "op= ${}$s \<equiv> op_set_is_empty$s"
 
-  "op-$s$(Set.insert$x${}) \<equiv> op_set_delete$x$s"
-  "SPEC$(\<lambda>\<^sub>2x. op\<in>$x$s) \<equiv> op_set_pick s"
+  "op- $s$(Set.insert$x${}) \<equiv> op_set_delete$x$s"
+  "SPEC$(\<lambda>\<^sub>2x. op\<in> $x$s) \<equiv> op_set_pick s"
   "RES$s \<equiv> op_set_pick s"
   by (auto intro!: eq_reflection)
 

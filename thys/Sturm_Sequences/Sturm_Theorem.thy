@@ -1389,10 +1389,10 @@ text {*
 
 lemma sign_changes_mult_aux:
   assumes "d \<noteq> (0::real)"
-  shows "length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map (op *d \<circ> f) xs))) =
+  shows "length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map (op* d \<circ> f) xs))) =
          length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map f xs)))"
 proof-
-  from assms have inj: "inj (op *d)" by (auto intro: injI)
+  from assms have inj: "inj (op* d)" by (auto intro: injI)
   from assms have [simp]: "filter (\<lambda>x. (op* d \<circ> f) x \<noteq> 0) = filter (\<lambda>x. f x \<noteq> 0)"
                           "filter ((\<lambda>x. x \<noteq> 0) \<circ> f) = filter (\<lambda>x. f x \<noteq> 0)"
       by (simp_all add: o_def)

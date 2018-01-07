@@ -1107,7 +1107,7 @@ next
     qed
   also
     obtain gs where G: "G = mset gs" by (metis ex_mset)
-    have "list_all2 (op ddvd\<inverse>\<inverse>) gs (map normalize gs)" by (intro list_all2_all_nthI, auto)
+    have "list_all2 ((op ddvd)\<inverse>\<inverse>) gs (map normalize gs)" by (intro list_all2_all_nthI, auto)
     then have "rel_mset (op ddvd) (image_mset normalize G) G"
       by (subst multiset.rel_flip[symmetric], unfold rel_mset_def G, force)
   finally show ?case.

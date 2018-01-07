@@ -27,13 +27,13 @@ qed simp
 lemmas equal_neg_zero = trans [OF eq_commute neg_equal_zero]
 
 definition nonsingular :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where
-  "nonsingular a b = (\<guillemotleft>4\<guillemotright> \<otimes> a (^) (3::nat) \<oplus> \<guillemotleft>27\<guillemotright> \<otimes> b (^) (2::nat) \<noteq> \<zero>)"
+  "nonsingular a b = (\<guillemotleft>4\<guillemotright> \<otimes> a [^] (3::nat) \<oplus> \<guillemotleft>27\<guillemotright> \<otimes> b [^] (2::nat) \<noteq> \<zero>)"
 
 definition on_curve :: "'a \<Rightarrow> 'a \<Rightarrow> 'a point \<Rightarrow> bool" where
   "on_curve a b p = (case p of
        Infinity \<Rightarrow> True
      | Point x y \<Rightarrow> x \<in> carrier R \<and> y \<in> carrier R \<and>
-         y (^) (2::nat) = x (^) (3::nat) \<oplus> a \<otimes> x \<oplus> b)"
+         y [^] (2::nat) = x [^] (3::nat) \<oplus> a \<otimes> x \<oplus> b)"
 
 definition add :: "'a \<Rightarrow> 'a point \<Rightarrow> 'a point \<Rightarrow> 'a point" where
   "add a p\<^sub>1 p\<^sub>2 = (case p\<^sub>1 of
@@ -45,14 +45,14 @@ definition add :: "'a \<Rightarrow> 'a point \<Rightarrow> 'a point \<Rightarrow
              if y\<^sub>1 = \<ominus> y\<^sub>2 then Infinity
              else
                let
-                 l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1);
-                 x\<^sub>3 = l (^) (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1
+                 l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1);
+                 x\<^sub>3 = l [^] (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1
                in
                  Point x\<^sub>3 (\<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1))
            else
              let
                l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1);
-               x\<^sub>3 = l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2
+               x\<^sub>3 = l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2
              in
                Point x\<^sub>3 (\<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1))))"
 
@@ -87,10 +87,10 @@ lemma curve_elt_opp:
   shows "p\<^sub>1 = p\<^sub>2 \<or> p\<^sub>1 = opp p\<^sub>2"
 proof -
   from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `on_curve a b p\<^sub>1`
-  have "y\<^sub>1 \<in> carrier R" "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+  have "y\<^sub>1 \<in> carrier R" "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     by (simp_all add: on_curve_def)
   moreover from `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2` `x\<^sub>1 = x\<^sub>2`
-  have "y\<^sub>2 \<in> carrier R" "x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>2 (^) (2::nat)"
+  have "y\<^sub>2 \<in> carrier R" "x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>2 [^] (2::nat)"
     by (simp_all add: on_curve_def)
   ultimately have "y\<^sub>1 = y\<^sub>2 \<or> y\<^sub>1 = \<ominus> y\<^sub>2"
     by (simp add: square_eq_iff power2_eq_square)
@@ -122,7 +122,7 @@ proof (cases p\<^sub>1)
         case False
         from `on_curve a b p\<^sub>1` Point' True'
         have "x\<^sub>2 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and
-          on_curve1: "y\<^sub>1 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+          on_curve1: "y\<^sub>1 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
         from False True' Point Point' assms
         have "y\<^sub>1 \<noteq> \<zero>"
@@ -141,11 +141,11 @@ proof (cases p\<^sub>1)
       case False
       from `on_curve a b p\<^sub>1` Point'
       have  "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
-        and on_curve1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+        and on_curve1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
         by (simp_all add: on_curve_def)
       from `on_curve a b p\<^sub>2` Point
       have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
-        and on_curve2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+        and on_curve2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
         by (simp_all add: on_curve_def)
       from assms not_sym [OF False] show ?thesis
         apply (simp add: on_curve_def add_def Let_def False Point Point' eq_diff0)
@@ -175,15 +175,15 @@ lemma add_case [consumes 4, case_names InfL InfR Opp Tan Gen]:
   and R4: "\<And>p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l.
     p\<^sub>1 = Point x\<^sub>1 y\<^sub>1 \<Longrightarrow> p\<^sub>2 = Point x\<^sub>2 y\<^sub>2 \<Longrightarrow>
     p\<^sub>2 = add a p\<^sub>1 p\<^sub>1 \<Longrightarrow> y\<^sub>1 \<noteq> \<zero> \<Longrightarrow>
-    l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1) \<Longrightarrow>
-    x\<^sub>2 = l (^) (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1 \<Longrightarrow>
+    l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1) \<Longrightarrow>
+    x\<^sub>2 = l [^] (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1 \<Longrightarrow>
     y\<^sub>2 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1) \<Longrightarrow>
     P p\<^sub>1 p\<^sub>1 p\<^sub>2"
   and R5: "\<And>p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l.
     p\<^sub>1 = Point x\<^sub>1 y\<^sub>1 \<Longrightarrow> p\<^sub>2 = Point x\<^sub>2 y\<^sub>2 \<Longrightarrow> p\<^sub>3 = Point x\<^sub>3 y\<^sub>3 \<Longrightarrow>
     p\<^sub>3 = add a p\<^sub>1 p\<^sub>2 \<Longrightarrow> x\<^sub>1 \<noteq> x\<^sub>2 \<Longrightarrow>
     l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1) \<Longrightarrow>
-    x\<^sub>3 = l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<Longrightarrow>
+    x\<^sub>3 = l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<Longrightarrow>
     y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1) \<Longrightarrow>
     P p\<^sub>1 p\<^sub>2 p\<^sub>3"
   shows "P p q (add a p q)"
@@ -195,7 +195,7 @@ next
   case (Point x\<^sub>1 y\<^sub>1)
   note Point' = this
   with p have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
-    and p': "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+    and p': "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     by (simp_all add: on_curve_def)
   show ?thesis
   proof (cases q)
@@ -205,7 +205,7 @@ next
   next
     case (Point x\<^sub>2 y\<^sub>2)
     with q have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
-      and q': "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+      and q': "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
       by (simp_all add: on_curve_def)
     show ?thesis
     proof (cases "x\<^sub>1 = x\<^sub>2")
@@ -250,9 +250,9 @@ lemma add_casew [consumes 4, case_names InfL InfR Opp Gen]:
   and R4: "\<And>p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l.
     p\<^sub>1 = Point x\<^sub>1 y\<^sub>1 \<Longrightarrow> p\<^sub>2 = Point x\<^sub>2 y\<^sub>2 \<Longrightarrow> p\<^sub>3 = Point x\<^sub>3 y\<^sub>3 \<Longrightarrow>
     p\<^sub>3 = add a p\<^sub>1 p\<^sub>2 \<Longrightarrow> p\<^sub>1 \<noteq> opp p\<^sub>2 \<Longrightarrow>
-    x\<^sub>1 = x\<^sub>2 \<and> y\<^sub>1 = y\<^sub>2 \<and> l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1) \<or>
+    x\<^sub>1 = x\<^sub>2 \<and> y\<^sub>1 = y\<^sub>2 \<and> l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1) \<or>
     x\<^sub>1 \<noteq> x\<^sub>2 \<and> l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1) \<Longrightarrow>
-    x\<^sub>3 = l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<Longrightarrow>
+    x\<^sub>3 = l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<Longrightarrow>
     y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1) \<Longrightarrow>
     P p\<^sub>1 p\<^sub>2 p\<^sub>3"
   shows "P p q (add a p q)"
@@ -389,19 +389,19 @@ next
           `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
           `on_curve a b p\<^sub>3` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
         have
-          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
-          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b" and
-          "x\<^sub>3 \<in> carrier R" "y\<^sub>3 \<in> carrier R" and y3: "y\<^sub>3 (^) (2::nat) = x\<^sub>3 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>3 \<oplus> b"
+          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
+          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b" and
+          "x\<^sub>3 \<in> carrier R" "y\<^sub>3 \<in> carrier R" and y3: "y\<^sub>3 [^] (2::nat) = x\<^sub>3 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>3 \<oplus> b"
           by (simp_all add: on_curve_def)
         show ?case
           apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
           apply (simp only: ps
-            `x\<^sub>6 = l\<^sub>2 (^) 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'` `x\<^sub>7 = l\<^sub>3 (^) 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
+            `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'` `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
             `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')` `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
             `l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')` `l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')`
             `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
-            `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3` `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-            `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`)
+            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3` `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
+            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`)
           apply (rule conjI)
           apply (field y1 y2 y3)
           apply (rule conjI)
@@ -410,7 +410,7 @@ next
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
+          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
             `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
           apply (erule notE)
           apply (rule sym)
@@ -421,7 +421,7 @@ next
           apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
             `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`])
           apply (erule notE)
           apply (rule sym)
@@ -431,7 +431,7 @@ next
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
+          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
             `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
           apply (erule notE)
           apply (rule sym)
@@ -444,7 +444,7 @@ next
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
             `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`])
           apply (erule notE)
           apply (rule sym)
@@ -535,8 +535,8 @@ next
           `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
           `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
         have
-          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
-          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
+          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
         from
           `p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'`
@@ -556,16 +556,16 @@ next
         show ?case
           apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
           apply (simp only: ps
-            `x\<^sub>7 = l\<^sub>3 (^) 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
+            `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
             `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
             `l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')`
-            `x\<^sub>6 = l\<^sub>2 (^) 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'`
+            `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'`
             `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')`
             `l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')`
-            `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
+            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
             `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-            `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
+            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
             `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`
             `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
           apply (rule conjI)
@@ -575,8 +575,8 @@ next
           apply (rule notI)
           apply (ring (prems) y1 y2)
           apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
+            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
+            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
             `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
           apply (rule sym)
           apply (field y1 y2)
@@ -585,7 +585,7 @@ next
           apply (rule notI)
           apply (ring (prems) y1 y2)
           apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
             `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
             `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
           apply (rule sym)
@@ -596,8 +596,8 @@ next
           apply (rule notI)
           apply (ring (prems) y1 y2)
           apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
+            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
+            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
             `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
           apply (rule sym)
           apply (field y1 y2)
@@ -606,7 +606,7 @@ next
           apply (rule notI)
           apply (ring (prems) y1 y2)
           apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
             `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
             `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
           apply (rule sym)
@@ -696,8 +696,8 @@ next
           `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
           `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
         have
-          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
-          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+          "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
+          "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
         from
           `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'`
@@ -713,16 +713,16 @@ next
           "x\<^sub>1' = x\<^sub>5" "y\<^sub>1' = y\<^sub>5" "x\<^sub>1 = x\<^sub>5" "y\<^sub>1 = y\<^sub>5"
           by simp_all
         note qs =
-          `x\<^sub>7 = l\<^sub>3 (^) 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>2''`
+          `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>2''`
           `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
           `l\<^sub>3 = (y\<^sub>2'' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>2'' \<ominus> x\<^sub>4')`
-          `x\<^sub>6 = l\<^sub>2 (^) 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1'`
+          `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1'`
           `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')`
-          `x\<^sub>5 = l\<^sub>1 (^) 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
+          `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
           `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-          `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-          `l\<^sub>2 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1' (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1')`
-          `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
+          `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
+          `l\<^sub>2 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1')`
+          `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
           `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`
           `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
         from `y\<^sub>2 \<in> carrier R` `y\<^sub>2' \<noteq> \<zero>` `y\<^sub>2' = y\<^sub>2`
@@ -827,7 +827,7 @@ next
   note Point' = this
   with `on_curve a b p\<^sub>1`
   have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
-    and y1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+    and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     by (simp_all add: on_curve_def)
   show ?thesis
   proof (cases p\<^sub>2)
@@ -836,7 +836,7 @@ next
   next
     case (Point x\<^sub>2 y\<^sub>2)
     with `on_curve a b p\<^sub>2` have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
-      and y2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+      and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
       by (simp_all add: on_curve_def)
     show ?thesis
     proof (cases "x\<^sub>1 = x\<^sub>2")
@@ -898,7 +898,7 @@ next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
   from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
   have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" by (simp_all add: on_curve_def)
-  with a `l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1)` `y\<^sub>1 \<noteq> \<zero>`
+  with a `l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1)` `y\<^sub>1 \<noteq> \<zero>`
   have "l \<in> carrier R" by (simp add: integral_iff)
   from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>2 = p\<^sub>1`
   have "x\<^sub>2 = x\<^sub>1" "y\<^sub>2 = y\<^sub>1" by simp_all
@@ -909,8 +909,8 @@ next
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
   then have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
-    and y1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
-    and y2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+    and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+    and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
     by (simp_all add: on_curve_def)
   with `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>1 \<noteq> x\<^sub>2`
   have "l \<in> carrier R" by (simp add: eq_diff0)
@@ -929,14 +929,14 @@ next
     by (simp add: l_neg equal_neg_zero)
   with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2`
     `a \<in> carrier R` `b \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-  have x2: "x\<^sub>2 (^) (3::nat) = \<ominus> (a \<otimes> x\<^sub>2 \<oplus> b)"
+  have x2: "x\<^sub>2 [^] (3::nat) = \<ominus> (a \<otimes> x\<^sub>2 \<oplus> b)"
     by (simp add: on_curve_def nat_pow_zero eq_neg_iff_add_eq_0 a_assoc)
-  from `x\<^sub>3 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>3 = x\<^sub>2`
-  have "l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> x\<^sub>2 = x\<^sub>2 \<ominus> x\<^sub>2" by simp
+  from `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>3 = x\<^sub>2`
+  have "l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> x\<^sub>2 = x\<^sub>2 \<ominus> x\<^sub>2" by simp
   with `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `l \<in> carrier R`
-  have "l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>"
+  have "l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>"
     by (simp add: of_int_2 l_distr minus_eq a_ac minus_add r_neg)
-  then have "x\<^sub>2 \<otimes> (l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2) = x\<^sub>2 \<otimes> \<zero>" by simp
+  then have "x\<^sub>2 \<otimes> (l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2) = x\<^sub>2 \<otimes> \<zero>" by simp
   then have "(x\<^sub>2 \<ominus> x\<^sub>1) \<otimes> (\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b) = \<zero>"
     apply (simp add: `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `y\<^sub>2 = \<zero>`)
     apply (field (prems) y1 x2)
@@ -951,16 +951,16 @@ next
   have "\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)"
     by (simp add: eq_neg_iff_add_eq_0)
   from y2 [symmetric] `y\<^sub>2 = \<zero>` `a \<in> carrier R`
-  have "\<ominus> (\<guillemotleft>2\<guillemotright> \<otimes> a) (^) (3::nat) \<otimes> (x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b) = \<zero>"
+  have "\<ominus> (\<guillemotleft>2\<guillemotright> \<otimes> a) [^] (3::nat) \<otimes> (x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b) = \<zero>"
     by (simp add: nat_pow_zero)
-  then have "b \<otimes> (\<guillemotleft>4\<guillemotright> \<otimes> a (^) (3::nat) \<oplus> \<guillemotleft>27\<guillemotright> \<otimes> b (^) (2::nat)) = \<zero>"
+  then have "b \<otimes> (\<guillemotleft>4\<guillemotright> \<otimes> a [^] (3::nat) \<oplus> \<guillemotleft>27\<guillemotright> \<otimes> b [^] (2::nat)) = \<zero>"
     apply (ring (prems) `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)`)
     apply (ring `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)`)
     done
   with ab a b have "b = \<zero>" by (simp add: nonsingular_def integral_iff)
   with `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b = \<zero>` ab a b `x\<^sub>2 \<in> carrier R`
   have "x\<^sub>2 = \<zero>" by (simp add: nonsingular_def nat_pow_zero integral_iff)
-  from `l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>`
+  from `l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>`
   show ?case
     apply (simp add: `x\<^sub>2 = \<zero>` `y\<^sub>2 = \<zero>` `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
     apply (field (prems) y1 `b = \<zero>`)
@@ -989,8 +989,8 @@ next
   next
     case (Point x\<^sub>2 y\<^sub>2)
     with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` p\<^sub>1 p\<^sub>2
-    have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>1 (^) (2::nat)"
-      "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" "x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b = y\<^sub>2 (^) (2::nat)"
+    have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>1 [^] (2::nat)"
+      "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" "x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b = y\<^sub>2 [^] (2::nat)"
       by (simp_all add: on_curve_def)
     with Point `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` show ?thesis
       apply (cases "x\<^sub>1 = x\<^sub>2")
@@ -1047,8 +1047,8 @@ next
   have "\<guillemotleft>2\<guillemotright> \<otimes> \<guillemotleft>2\<guillemotright> \<noteq> \<zero>"
     by (simp add: integral_iff)
   then have "\<guillemotleft>4\<guillemotright> \<noteq> \<zero>" by (simp add: of_int_mult [symmetric])
-  from Gen have "((\<ominus> y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 =
-    ((y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2"
+  from Gen have "((\<ominus> y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 =
+    ((y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2"
     by (simp add: add_def opp_def Let_def)
   then show ?case
     apply (field (prems))
@@ -1096,8 +1096,8 @@ next
     by (auto simp add: opp_def on_curve_def neg_equal_swap split: point.split_asm)
   with `add a p p = Point x\<^sub>1 y\<^sub>1` [symmetric]
   obtain l' where l':
-    "l' = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> \<ominus> y\<^sub>2)"
-    and xy: "x\<^sub>1 = l' (^) (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2"
+    "l' = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> \<ominus> y\<^sub>2)"
+    and xy: "x\<^sub>1 = l' [^] (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2"
     "y\<^sub>1 = \<ominus> (\<ominus> y\<^sub>2) \<ominus> l' \<otimes> (x\<^sub>1 \<ominus> x\<^sub>2)"
     and y2: "\<ominus> y\<^sub>2 \<noteq> \<ominus> (\<ominus> y\<^sub>2)"
     by (simp add: add_def Let_def split: if_split_asm)
@@ -1105,7 +1105,7 @@ next
   have "l' \<in> carrier R" by (simp add: neg_equal_zero neg_equal_swap integral_iff)
   have "x\<^sub>3 = x\<^sub>2"
     apply (simp add: xy
-      `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>3 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`)
+      `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`)
     apply field
     apply (insert `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>2 \<in> carrier R` `l' \<in> carrier R`)
     apply (simp add: xy eq_diff0)
@@ -1169,28 +1169,28 @@ next
     case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
     from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
     have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
-      and y\<^sub>1: "y\<^sub>1 (^) (2::nat) = x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
+      and y\<^sub>1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
       by (simp_all add: on_curve_def)
     from `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
     have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
-      and y\<^sub>2: "y\<^sub>2 (^) (2::nat) = x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
+      and y\<^sub>2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
       by (simp_all add: on_curve_def)
     from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 \<noteq> opp p\<^sub>1` `y\<^sub>1 \<in> carrier R`
     have "y\<^sub>1 \<noteq> \<zero>"
       by (simp add: opp_Point integral_iff equal_neg_zero)
-    from Gen have "x\<^sub>1 = ((y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2"
+    from Gen have "x\<^sub>1 = ((y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2"
       by (simp add: opp_Point)
-    then have "\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<otimes> y\<^sub>1 = a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2 \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a \<otimes> x\<^sub>1 \<ominus>
-      x\<^sub>1 (^) (3::nat) \<oplus> \<guillemotleft>2\<guillemotright> \<otimes> b"
+    then have "\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<otimes> y\<^sub>1 = a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2 \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a \<otimes> x\<^sub>1 \<ominus>
+      x\<^sub>1 [^] (3::nat) \<oplus> \<guillemotleft>2\<guillemotright> \<otimes> b"
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
       apply simp
       apply (insert `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`)
       apply (simp add: eq_diff0)
       done
-    then have "(x\<^sub>2 \<ominus> (((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) (^) (2::nat) \<ominus>
-      \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1)) \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1) (^) (2::nat) = \<zero>"
-      apply (drule_tac f="\<lambda>x. x (^) (2::nat)" in arg_cong)
+    then have "(x\<^sub>2 \<ominus> (((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) [^] (2::nat) \<ominus>
+      \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1)) \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1) [^] (2::nat) = \<zero>"
+      apply (drule_tac f="\<lambda>x. x [^] (2::nat)" in arg_cong)
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
       apply (insert `y\<^sub>1 \<noteq> \<zero>` `y\<^sub>1 \<in> carrier R`)
@@ -1198,7 +1198,7 @@ next
       done
     with a `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
       `y\<^sub>1 \<noteq> \<zero>` `x\<^sub>1 \<noteq> x\<^sub>2`
-    have "x\<^sub>2 = ((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 (^) (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) (^) (2::nat) \<ominus>
+    have "x\<^sub>2 = ((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) [^] (2::nat) \<ominus>
       \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1"
       by (simp add: integral_iff eq_diff0 neg_equal_swap)
     with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` _ `on_curve a b p\<^sub>2`
@@ -1334,9 +1334,9 @@ next
       assume "l' = l"
       with `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
         `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-        `x\<^sub>4 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>5 = l' (^) 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>3`
+        `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>5 = l' [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>3`
         `x\<^sub>1 \<in> carrier R` `x\<^sub>3 \<in> carrier R` `l \<in> carrier R`
-      have "\<zero> = l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> (l (^) (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>3)"
+      have "\<zero> = l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> (l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>3)"
         by (simp add: trans [OF eq_commute eq_diff0])
       with `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `x\<^sub>3 \<in> carrier R` `l \<in> carrier R`
       have "x\<^sub>2 = x\<^sub>3"
@@ -1510,9 +1510,9 @@ next
           `y\<^sub>5 = \<ominus> y\<^sub>2` `x\<^sub>5 = x\<^sub>2`
           `x\<^sub>4 = x\<^sub>3` `y\<^sub>4 = y\<^sub>3`
           `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `x\<^sub>6 = l' (^) 2 \<ominus> x\<^sub>4 \<ominus> x\<^sub>5` `y\<^sub>6 = \<ominus> y\<^sub>4 \<ominus> l' \<otimes> (x\<^sub>6 \<ominus> x\<^sub>4)`
+          `x\<^sub>6 = l' [^] 2 \<ominus> x\<^sub>4 \<ominus> x\<^sub>5` `y\<^sub>6 = \<ominus> y\<^sub>4 \<ominus> l' \<otimes> (x\<^sub>6 \<ominus> x\<^sub>4)`
           `l' = (y\<^sub>5 \<ominus> y\<^sub>4) \<oslash> (x\<^sub>5 \<ominus> x\<^sub>4)`
-          `x\<^sub>3 = l (^) 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)`
+          `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)`
           `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
         apply (rule conjI)
         apply field
@@ -1929,12 +1929,12 @@ definition (in cring) pdouble :: "'a \<Rightarrow> 'a ppoint \<Rightarrow> 'a pp
         else
           let
             l = \<guillemotleft>2\<guillemotright> \<otimes> y \<otimes> z;
-            m = \<guillemotleft>3\<guillemotright> \<otimes> x (^) (2::nat) \<oplus> a \<otimes> z (^) (2::nat)
+            m = \<guillemotleft>3\<guillemotright> \<otimes> x [^] (2::nat) \<oplus> a \<otimes> z [^] (2::nat)
           in
-            (l \<otimes> (m (^) (2::nat) \<ominus> \<guillemotleft>4\<guillemotright> \<otimes> x \<otimes> y \<otimes> l),
-             m \<otimes> (\<guillemotleft>6\<guillemotright> \<otimes> x \<otimes> y \<otimes> l \<ominus> m (^) (2::nat)) \<ominus>
-             \<guillemotleft>2\<guillemotright> \<otimes> y (^) (2::nat) \<otimes> l (^) (2::nat),
-             l (^) (3::nat)))"
+            (l \<otimes> (m [^] (2::nat) \<ominus> \<guillemotleft>4\<guillemotright> \<otimes> x \<otimes> y \<otimes> l),
+             m \<otimes> (\<guillemotleft>6\<guillemotright> \<otimes> x \<otimes> y \<otimes> l \<ominus> m [^] (2::nat)) \<ominus>
+             \<guillemotleft>2\<guillemotright> \<otimes> y [^] (2::nat) \<otimes> l [^] (2::nat),
+             l [^] (3::nat)))"
 
 definition (in cring) padd :: "'a \<Rightarrow> 'a ppoint \<Rightarrow> 'a ppoint \<Rightarrow> 'a ppoint" where
   "padd a p\<^sub>1 p\<^sub>2 =
@@ -1955,11 +1955,11 @@ definition (in cring) padd :: "'a \<Rightarrow> 'a ppoint \<Rightarrow> 'a ppoin
               if m = \<zero> then pdouble a p\<^sub>1
               else (\<zero>, \<zero>, \<zero>)
             else
-              let h = m (^) (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 \<ominus> (d\<^sub>1 \<oplus> d\<^sub>2) \<otimes> l (^) (2::nat)
+              let h = m [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 \<ominus> (d\<^sub>1 \<oplus> d\<^sub>2) \<otimes> l [^] (2::nat)
               in
                 (l \<otimes> h,
-                 (d\<^sub>2 \<otimes> l (^) (2::nat) \<ominus> h) \<otimes> m \<ominus> l (^) (3::nat) \<otimes> y\<^sub>1 \<otimes> z\<^sub>2,
-                 l (^) (3::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2))"
+                 (d\<^sub>2 \<otimes> l [^] (2::nat) \<ominus> h) \<otimes> m \<ominus> l [^] (3::nat) \<otimes> y\<^sub>1 \<otimes> z\<^sub>2,
+                 l [^] (3::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2))"
 
 definition (in field) make_affine :: "'a ppoint \<Rightarrow> 'a point" where
   "make_affine p =
@@ -1973,7 +1973,7 @@ definition (in cring) on_curvep :: "'a \<Rightarrow> 'a \<Rightarrow> 'a ppoint 
   "on_curvep a b = (\<lambda>(x, y, z).
      x \<in> carrier R \<and> y \<in> carrier R \<and> z \<in> carrier R \<and>
      (z \<noteq> \<zero> \<longrightarrow>
-      y (^) (2::nat) \<otimes> z = x (^) (3::nat) \<oplus> a \<otimes> x \<otimes> z (^) (2::nat) \<oplus> b \<otimes> z (^) (3::nat)))"
+      y [^] (2::nat) \<otimes> z = x [^] (3::nat) \<oplus> a \<otimes> x \<otimes> z [^] (2::nat) \<oplus> b \<otimes> z [^] (3::nat)))"
 
 lemma (in cring) on_curvep_infinity [simp]: "on_curvep a b (x, y, \<zero>) = (x \<in> carrier R \<and> y \<in> carrier R)"
   by (simp add: on_curvep_def)
@@ -1995,7 +1995,7 @@ proof (induct p rule: prod_induct3)
     assume H: "on_curvep a b (x, y, z)"
     then have carrier: "x \<in> carrier R" "y \<in> carrier R" "z \<in> carrier R"
       and yz: "z \<noteq> \<zero> \<Longrightarrow>
-        y (^) (2::nat) \<otimes> z = x (^) (3::nat) \<oplus> a \<otimes> x \<otimes> z (^) (2::nat) \<oplus> b \<otimes> z (^) (3::nat)"
+        y [^] (2::nat) \<otimes> z = x [^] (3::nat) \<oplus> a \<otimes> x \<otimes> z [^] (2::nat) \<oplus> b \<otimes> z [^] (3::nat)"
       by (simp_all add: on_curvep_def)
     show "on_curve a b (make_affine (x, y, z))"
     proof (cases "z = \<zero>")
@@ -2075,12 +2075,12 @@ proof (induct p\<^sub>1 rule: prod_induct3)
   proof (induct p\<^sub>2 rule: prod_induct3)
     case (fields x\<^sub>2 y\<^sub>2 z\<^sub>2)
     then have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" "z\<^sub>2 \<in> carrier R" and
-      yz\<^sub>2: "z\<^sub>2 \<noteq> \<zero> \<Longrightarrow> y\<^sub>2 (^) (2::nat) \<otimes> z\<^sub>2 \<otimes> z\<^sub>1 (^) (3::nat) =
-        (x\<^sub>2 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<otimes> z\<^sub>2 (^) (2::nat) \<oplus> b \<otimes> z\<^sub>2 (^) (3::nat)) \<otimes> z\<^sub>1 (^) (3::nat)"
+      yz\<^sub>2: "z\<^sub>2 \<noteq> \<zero> \<Longrightarrow> y\<^sub>2 [^] (2::nat) \<otimes> z\<^sub>2 \<otimes> z\<^sub>1 [^] (3::nat) =
+        (x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<otimes> z\<^sub>2 [^] (2::nat) \<oplus> b \<otimes> z\<^sub>2 [^] (3::nat)) \<otimes> z\<^sub>1 [^] (3::nat)"
       by (simp_all add: on_curvep_def)
     from p\<^sub>1' have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "z\<^sub>1 \<in> carrier R" and
-      yz\<^sub>1: "z\<^sub>1 \<noteq> \<zero> \<Longrightarrow> y\<^sub>1 (^) (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 (^) (3::nat) =
-        (x\<^sub>1 (^) (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<otimes> z\<^sub>1 (^) (2::nat) \<oplus> b \<otimes> z\<^sub>1 (^) (3::nat)) \<otimes> z\<^sub>2 (^) (3::nat)"
+      yz\<^sub>1: "z\<^sub>1 \<noteq> \<zero> \<Longrightarrow> y\<^sub>1 [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 [^] (3::nat) =
+        (x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<otimes> z\<^sub>1 [^] (2::nat) \<oplus> b \<otimes> z\<^sub>1 [^] (3::nat)) \<otimes> z\<^sub>2 [^] (3::nat)"
       by (simp_all add: on_curvep_def)
     show ?case
     proof (cases "z\<^sub>1 = \<zero>")
@@ -2120,11 +2120,11 @@ proof (induct p\<^sub>1 rule: prod_induct3)
               by (simp add: padd_def pdouble_correct)
           next
             case False
-            have "y\<^sub>2 (^) (2::nat) \<otimes> z\<^sub>1 (^) (3::nat) \<otimes> z\<^sub>2 =
-              y\<^sub>1 (^) (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 (^) (3::nat)"
+            have "y\<^sub>2 [^] (2::nat) \<otimes> z\<^sub>1 [^] (3::nat) \<otimes> z\<^sub>2 =
+              y\<^sub>1 [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 [^] (3::nat)"
               by (ring yz\<^sub>1 [OF `z\<^sub>1 \<noteq> \<zero>`] yz\<^sub>2 [OF `z\<^sub>2 \<noteq> \<zero>`] x')
-            then have "y\<^sub>2 (^) (2::nat) \<otimes> z\<^sub>1 (^) (3::nat) \<otimes> z\<^sub>2 \<oslash> z\<^sub>1 \<oslash> z\<^sub>2 =
-              y\<^sub>1 (^) (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 (^) (3::nat) \<oslash> z\<^sub>1 \<oslash> z\<^sub>2"
+            then have "y\<^sub>2 [^] (2::nat) \<otimes> z\<^sub>1 [^] (3::nat) \<otimes> z\<^sub>2 \<oslash> z\<^sub>1 \<oslash> z\<^sub>2 =
+              y\<^sub>1 [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 [^] (3::nat) \<oslash> z\<^sub>1 \<oslash> z\<^sub>2"
               by simp
             then have "(y\<^sub>2 \<otimes> z\<^sub>1) \<otimes> (y\<^sub>2 \<otimes> z\<^sub>1) = (y\<^sub>1 \<otimes> z\<^sub>2) \<otimes> (y\<^sub>1 \<otimes> z\<^sub>2)"
               apply (field (prems))

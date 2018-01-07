@@ -41,7 +41,7 @@ begin
   lemma lso_bex_arity[sepref_monadify_arity]: 
     "op_lso_bex \<equiv> \<lambda>\<^sub>2P s. SP op_lso_bex$(\<lambda>\<^sub>2x. P$x)$s" by (auto intro!: eq_reflection ext)
   lemma op_lso_bex_monadify[sepref_monadify_comb]:  
-    "EVAL$(op_lso_bex$(\<lambda>\<^sub>2x. P x)$s) \<equiv> op \<bind>$(EVAL$s)$(\<lambda>\<^sub>2s. mop_lso_bex$(\<lambda>\<^sub>2x. EVAL $ P x)$s)" by simp
+    "EVAL$(op_lso_bex$(\<lambda>\<^sub>2x. P x)$s) \<equiv> op \<bind> $(EVAL$s)$(\<lambda>\<^sub>2s. mop_lso_bex$(\<lambda>\<^sub>2x. EVAL $ P x)$s)" by simp
 
   definition "lso_abex P l \<equiv> nfoldli l (Not) (\<lambda>x _. P x) False"
   lemma lso_abex_to_set: "lso_abex P l \<le> mop_lso_bex P (set l)"
