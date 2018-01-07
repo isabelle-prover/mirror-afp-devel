@@ -520,7 +520,7 @@ proof -
   thus ?thesis by(metis dma_\<C>_vars)
 qed
 
-definition restrict_total :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'a \<rightharpoonup> 'b" (infix "|'" 60)
+definition restrict_total :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'a \<rightharpoonup> 'b" (*infix "|'" 60*)
   where "restrict_total f A = to_partial f |` A"
 
 lemma differing_empty_eq:
