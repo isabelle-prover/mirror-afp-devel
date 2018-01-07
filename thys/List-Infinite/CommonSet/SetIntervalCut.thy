@@ -227,7 +227,7 @@ lemmas i_cut_eq_set_restriction_fun =
 
 lemma i_cut_set_restriction_disj: "
   \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge>;
+    cut_op = op \<down>> \<or> cut_op = (op \<down>\<ge>);
     f = (\<lambda>I. cut_op I t)  \<rbrakk> \<Longrightarrow> set_restriction f"
 apply safe
 apply (simp_all only: i_cut_eq_set_restriction_fun set_restriction_fun_is_set_restriction)
