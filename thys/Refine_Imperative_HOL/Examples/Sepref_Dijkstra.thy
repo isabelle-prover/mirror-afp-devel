@@ -58,9 +58,9 @@ lemma Infty_hnr[sepref_fr_rules]: "(uncurry0 (return Infty),uncurry0 (RETURN Inf
 sepref_register case_infty
 lemma [sepref_monadify_arity]: "case_infty \<equiv> \<lambda>\<^sub>2f1 f2 x. SP case_infty$f1$(\<lambda>\<^sub>2x. f2$x)$x"
   by simp
-lemma [sepref_monadify_comb]: "case_infty$f1$f2$x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$f1$f2$x)" by simp
+lemma [sepref_monadify_comb]: "case_infty$f1$f2$x \<equiv> (op \<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$f1$f2$x)" by simp
 lemma [sepref_monadify_comb]: "EVAL$(case_infty$f1$(\<lambda>\<^sub>2x. f2 x)$x) 
-  \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$(EVAL $ f1)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
+  \<equiv> (op \<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$(EVAL $ f1)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
   apply (rule eq_reflection)
   by (simp split: infty.splits)
 
