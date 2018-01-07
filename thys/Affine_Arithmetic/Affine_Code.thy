@@ -122,7 +122,7 @@ lemma binop_plus:
   fixes b::"(nat * 'a::euclidean_space) list"
   shows
     "(\<Sum>(i, y)\<leftarrow>binop op + 0 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
-  by (induct "op +::'a\<Rightarrow>_" "0::'a" "0::'a" b ba rule: binop.induct)
+  by (induct "op + ::'a\<Rightarrow>_" "0::'a" "0::'a" b ba rule: binop.induct)
     (auto simp: algebra_simps)
 
 lemma binop_compose:

@@ -68,7 +68,7 @@ lemmas trimonoD = trimonoD_flatf_ge trimonoD_mono
 
 (* TODO: Optimize mono-prover to only do derivations once. 
   Will cause problem with higher-order unification on ord - variable! *)
-definition "triords \<equiv> {flat_ge,op \<le>}"
+definition "triords \<equiv> {flat_ge,(op \<le>)}"
 lemma trimono_alt: 
   "trimono B \<longleftrightarrow> (\<forall>ord\<in>fun_ord`triords. monotone ord ord B)"
   unfolding trimono_def
