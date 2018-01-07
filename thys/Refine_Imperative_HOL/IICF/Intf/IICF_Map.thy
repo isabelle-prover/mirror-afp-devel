@@ -131,10 +131,10 @@ subsection \<open>Patterns\<close>
 lemma pat_map_empty[pat_rules]: "\<lambda>\<^sub>2_. None \<equiv> op_map_empty" by simp
 
 lemma pat_map_is_empty[pat_rules]: 
-  "op =$m$(\<lambda>\<^sub>2_. None) \<equiv> op_map_is_empty$m" 
-  "op =$(\<lambda>\<^sub>2_. None)$m \<equiv> op_map_is_empty$m" 
-  "op =$(dom$m)${} \<equiv> op_map_is_empty$m"
-  "op =${}$(dom$m) \<equiv> op_map_is_empty$m"
+  "op = $m$(\<lambda>\<^sub>2_. None) \<equiv> op_map_is_empty$m" 
+  "op = $(\<lambda>\<^sub>2_. None)$m \<equiv> op_map_is_empty$m" 
+  "op = $(dom$m)${} \<equiv> op_map_is_empty$m"
+  "op = ${}$(dom$m) \<equiv> op_map_is_empty$m"
   unfolding atomize_eq
   by (auto dest: sym)
 
@@ -151,7 +151,7 @@ lemma op_map_delete_pat[pat_rules]:
 
 lemma op_map_contains_key[pat_rules]: 
   "op \<in> $ k $ (dom$m) \<equiv> op_map_contains_key$'k$'m"
-  "Not$(op =$(m$k)$None) \<equiv> op_map_contains_key$'k$'m"
+  "Not$(op = $(m$k)$None) \<equiv> op_map_contains_key$'k$'m"
    by (auto intro!: eq_reflection)
 
 
