@@ -6360,7 +6360,7 @@ definition "op_inter_fst_coll XS Y = do {
   }"
 schematic_goal op_inter_fst_coll_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n vec1) set) \<in> clw_rel lvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_coll XS Y) \<in> \<langle>clw_rel lvivl_rel\<rangle>nres_rel"
@@ -6369,7 +6369,7 @@ schematic_goal op_inter_fst_coll_impl:
 concrete_definition op_inter_fst_coll_impl uses op_inter_fst_coll_impl
 lemma op_inter_fst_coll_impl_refine[autoref_rules]:
   "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-  GEN_OP le (op \<le>::'a vec1 \<Rightarrow> _) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+  GEN_OP le (op \<le> ::'a vec1 \<Rightarrow> _) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
   (\<lambda>XSi Yi. nres_of (op_inter_fst_coll_impl le XSi Yi), op_inter_fst_coll::'a vec1 set\<Rightarrow> _)
   \<in> clw_rel (\<langle>lv_rel\<rangle>ivl_rel) \<rightarrow> \<langle>lv_rel\<rangle>ivl_rel \<rightarrow> \<langle>clw_rel (\<langle>lv_rel\<rangle>ivl_rel)\<rangle>nres_rel"
   using op_inter_fst_coll_impl.refine[where 'a='a, of le]
@@ -7720,7 +7720,7 @@ definition "op_inter_fst_ivl_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_fst_ivl_scaleR2 .
 schematic_goal op_inter_fst_ivl_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_ivl_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7730,7 +7730,7 @@ schematic_goal op_inter_fst_ivl_scaleR2_impl:
 concrete_definition op_inter_fst_ivl_scaleR2_impl uses op_inter_fst_ivl_scaleR2_impl
 lemma op_inter_fst_ivl_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le (op \<le> ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_fst_ivl_scaleR2_impl le XSi Yi),
  op_inter_fst_ivl_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7755,7 +7755,7 @@ definition "op_inter_fst_ivl_coll_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_fst_ivl_coll_scaleR2 .
 schematic_goal op_inter_fst_ivl_coll_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> clw_rel elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_ivl_coll_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7765,7 +7765,7 @@ schematic_goal op_inter_fst_ivl_coll_scaleR2_impl:
 concrete_definition op_inter_fst_ivl_coll_scaleR2_impl uses op_inter_fst_ivl_coll_scaleR2_impl
 lemma op_inter_fst_ivl_coll_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le (op \<le> ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_fst_ivl_coll_scaleR2_impl le XSi Yi),
  op_inter_fst_ivl_coll_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> clw_rel elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7787,7 +7787,7 @@ definition "op_inter_ivl_coll_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_ivl_coll_scaleR2 .
 schematic_goal op_inter_ivl_coll_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> clw_rel elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_ivl_coll_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7797,7 +7797,7 @@ schematic_goal op_inter_ivl_coll_scaleR2_impl:
 concrete_definition op_inter_ivl_coll_scaleR2_impl uses op_inter_ivl_coll_scaleR2_impl
 lemma op_inter_ivl_coll_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le (op \<le> ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_ivl_coll_scaleR2_impl le XSi Yi),
  op_inter_ivl_coll_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> clw_rel elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7818,7 +7818,7 @@ sublocale autoref_op_pat_def op_image_fst_ivl .
 
 lemma op_image_fst_ivl[autoref_rules]:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   shows "(\<lambda>(l,u). nres_of (if le l u then dRETURN (pairself (take D) (l, u)) else dSUCCEED)
     , op_image_fst_ivl::('n vec1) set\<Rightarrow>_) \<in> lvivl_rel \<rightarrow> \<langle>lvivl_rel\<rangle>nres_rel"
   using assms
@@ -7858,7 +7858,7 @@ lemma [le, refine_vcg]: "op_image_fst_ivl_coll X \<le> SPEC (\<lambda>R. R = fst
 
 schematic_goal op_image_fst_ivl_coll_impl[autoref_rules]:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
     assumes [autoref_rules]: "(Xi, X) \<in> clw_rel lvivl_rel"
     shows "(nres_of ?r, (op_image_fst_ivl_coll::('n vec1) set\<Rightarrow>_) X) \<in> \<langle>clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding op_image_fst_ivl_coll_def
@@ -7866,7 +7866,7 @@ schematic_goal op_image_fst_ivl_coll_impl[autoref_rules]:
 concrete_definition op_image_fst_ivl_coll_impl uses op_image_fst_ivl_coll_impl
 lemma op_image_fst_ivl_coll_impl_refine[autoref_rules]:
   "DIM_precond TYPE((real, 'n::enum) vec) D \<Longrightarrow>
-  GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+  GEN_OP le (op \<le> ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
   (\<lambda>Xi. nres_of (op_image_fst_ivl_coll_impl Xi), op_image_fst_ivl_coll::('n vec1) set\<Rightarrow>_) \<in>
   clw_rel (lvivl_rel) \<rightarrow> \<langle>clw_rel (\<langle>lv_rel\<rangle>ivl_rel)\<rangle>nres_rel"
   using op_image_fst_ivl_coll_impl.refine
