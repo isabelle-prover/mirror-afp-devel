@@ -76,6 +76,7 @@ lemma rep_upd_unit:
 
 definition nonzero_iff: "nonzero xs \<longleftrightarrow> (\<exists>x\<in>set xs. x \<noteq> 0)"
 
+
 lemma nonzero_append [simp]:
   "nonzero (xs @ ys) \<longleftrightarrow> nonzero xs \<or> nonzero ys" by (auto simp: nonzero_iff)
 
@@ -172,6 +173,9 @@ lemma dotprod_eq_nonzero_iff:
 lemma eq_0_iff:
   "xs = zeroes n \<longleftrightarrow> length xs = n \<and> (\<forall>x\<in>set xs. x = 0)"
   using in_set_replicate [of _ n 0] and replicate_eqI [of xs n 0] by auto
+
+lemma not_nonzero_iff: "\<not> nonzero x \<longleftrightarrow> x = zeroes (length x)"
+  by (auto simp: nonzero_iff replicate_length_same eq_0_iff)
 
 lemma neq_0_iff':
   "xs \<noteq> zeroes n \<longleftrightarrow> length xs \<noteq> n \<or> (\<exists>x\<in>set xs. x > 0)"
