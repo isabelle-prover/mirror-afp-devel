@@ -320,7 +320,7 @@ lemma Minimal_Solutions_length:
   by (auto simp: hlde_ops.Minimal_Solutions_def hlde_ops.Solutions_def)
 
 lemma Minimal_Solutions_gt0:
-  "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> replicate (length x) 0 <\<^sub>v x"
+  "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> zeroes (length x) <\<^sub>v x"
   using zero_less by (auto simp: hlde_ops.Minimal_Solutions_def)
 
 lemma Minimal_Solutions_sym:
@@ -955,8 +955,7 @@ proof (unfold boundr_def, intro allI impI)
         using assms(1) assms(2) dij_neq_0 i(1) j_less_l ln by auto
       then have not_0_u: "nonzero u"
       proof (unfold nonzero_iff)
-        have "i < length (replicate (m) (0::nat))"
-          by (simp add: i(1) ln)
+        have "i < length (zeroes m)" by (simp add: i(1) ln)
         then show "\<exists>i\<in>set u. i \<noteq> 0"
           by (metis (no_types) Pair_inject dij_gt0 set_update_memI sij_def u_v(1) neq0_conv)
       qed
