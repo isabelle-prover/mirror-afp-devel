@@ -686,7 +686,7 @@ lemma (in hlde) solve [simp]:
 
 section \<open>Making the Algorithm More Efficient\<close>
 
-locale bounded_lexs =
+locale bounded_gen_check =
   fixes C :: "nat list \<Rightarrow> nat \<Rightarrow> bool"
     and B :: nat
   assumes bound: "\<And>x xs s. x > B \<Longrightarrow> C (x # xs) s = False"
@@ -734,20 +734,20 @@ proof
   qed
 qed
 
-fun lexs :: "nat list \<Rightarrow> (nat list \<times> nat) list"
+fun gen_check :: "nat list \<Rightarrow> (nat list \<times> nat) list"
   where
-    "lexs [] = [([], 0)]"
-  | "lexs (a # as) = concat (map (incs a 0) (lexs as))"
+    "gen_check [] = [([], 0)]"
+  | "gen_check (a # as) = concat (map (incs a 0) (gen_check as))"
 
-lemma lexs_len:
-  assumes "(ys, s) \<in> set (lexs as)"
+lemma gen_check_len:
+  assumes "(ys, s) \<in> set (gen_check as)"
   shows "length ys = length as"
   using assms
 proof (induct as arbitrary: ys s)
   case (Cons a as)
-  have "\<exists>(la,t) \<in> set (lexs as). (ys, s) \<in> set (incs a 0 (la,t))"
+  have "\<exists>(la,t) \<in> set (gen_check as). (ys, s) \<in> set (incs a 0 (la,t))"
     using Cons.prems(1) by auto
-  moreover obtain  la t where "(la,t) \<in> set (lexs as)"
+  moreover obtain  la t where "(la,t) \<in> set (gen_check as)"
     using calculation by auto
   moreover have "length ys = length la + 1"
     using calculation
@@ -758,8 +758,8 @@ proof (induct as arbitrary: ys s)
   ultimately show ?case by simp
 qed (auto)
 
-lemma in_lexs:
-  assumes "(xs, s) \<in> set (lexs as)"
+lemma in_gen_check:
+  assumes "(xs, s) \<in> set (gen_check as)"
   shows "length xs = length as \<and> s = as \<bullet> xs"
   using assms
   apply (induct as arbitrary: xs s)
@@ -768,8 +768,8 @@ lemma in_lexs:
    apply (auto dest: in_incs)
   done
 
-lemma lexs_filter:
-  "lexs as = filter (suffs C as) (alls B as)"
+lemma gen_check_filter:
+  "gen_check as = filter (suffs C as) (alls B as)"
 proof (induct as)
 next
   case (Cons a as)
@@ -788,14 +788,14 @@ next
   finally have *: "filter (suffs C (a # as)) (alls B (a # as)) =
     concat (map (\<lambda>(xs, s).
       filter (cond_cons C) (map (\<lambda>x. (x # xs, s + a * x)) [0..<B + 1])) (filter (suffs C as) (alls B as)))" .
-  have "lexs (a # as) = filter (suffs C (a # as)) (alls B (a # as))"
+  have "gen_check (a # as) = filter (suffs C (a # as)) (alls B (a # as))"
     unfolding *
     by (simp add: incs_filter [OF zero_le] Cons)
   then show ?case by simp
 qed simp
 
-lemma in_lexs_cond:
-  assumes "(xs, s) \<in> set (lexs as)"
+lemma in_gen_check_cond:
+  assumes "(xs, s) \<in> set (gen_check as)"
   shows "\<forall>j\<le>length xs. drop j xs \<noteq> [] \<longrightarrow> C (drop j xs) (s - take j as \<bullet> take j xs)"
   using assms
   apply (induct as arbitrary: xs s)
@@ -806,8 +806,8 @@ lemma in_lexs_cond:
    apply (auto dest: in_incs)
   done
 
-lemma sorted_lexs:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (lexs xs))"
+lemma sorted_gen_check:
+  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (gen_check xs))"
 proof -
   have sort_map: "sorted_wrt (\<lambda>x y. x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y) (map fst (alls B xs))"
     using sorted_wrt_alls by auto
@@ -818,26 +818,26 @@ proof -
     using sorted_wrt_alls sorted_wrt_filter sorted_wrt_map
     by blast
   then show ?thesis
-    using lexs_filter
+    using gen_check_filter
     by (simp add: case_prod_unfold sorted_wrt_map_mono)
 qed
 
 end
 
 locale bounded_lexs2 =
-  c2: bounded_lexs C\<^sub>2 B\<^sub>2 for C\<^sub>2 B\<^sub>2 +
+  c2: bounded_gen_check C\<^sub>2 B\<^sub>2 for C\<^sub>2 B\<^sub>2 +
   fixes C\<^sub>1 and B\<^sub>1
-  assumes cond1: "\<And>b ys. ys \<in> fst ` set (c2.lexs b) \<Longrightarrow> bounded_lexs (C\<^sub>1 b ys) (B\<^sub>1 b)"
+  assumes cond1: "\<And>b ys. ys \<in> fst ` set (c2.gen_check b) \<Longrightarrow> bounded_gen_check (C\<^sub>1 b ys) (B\<^sub>1 b)"
 begin
 
-definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2.lexs b, xs \<leftarrow> bounded_lexs.lexs (C\<^sub>1 b (fst ys)) a]"
+definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2.gen_check b, xs \<leftarrow> bounded_gen_check.gen_check (C\<^sub>1 b (fst ys)) a]"
 
 lemma lexs2_filter_conv:
   "lexs2 a b = [(xs, ys).
     ys \<leftarrow> filter (suffs C\<^sub>2 b) (alls B\<^sub>2 b),
     xs \<leftarrow> filter (suffs (C\<^sub>1 b (fst ys)) a) (alls (B\<^sub>1 b) a)]"
-  using bounded_lexs.lexs_filter [OF cond1]
-  by (force simp: lexs2_def c2.lexs_filter intro!: arg_cong [of _ _ concat] map_cong)
+  using bounded_gen_check.gen_check_filter [OF cond1]
+  by (force simp: lexs2_def c2.gen_check_filter intro!: arg_cong [of _ _ concat] map_cong)
 
 lemma lexs2_filter:
   "lexs2 a b = [(xs, ys) \<leftarrow> alls2 (B\<^sub>1 b) B\<^sub>2 a b. suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
@@ -919,7 +919,7 @@ lemma le_imp_maxx_impl'_ge:
 end
 
 global_interpretation c12: bounded_lexs2 "(cond2 a b)" "Max (set a)" "cond1" "\<lambda>b. Max (set b)"
-  defines c2_lexs = c12.c2.lexs and c2_incs = c12.c2.incs
+  defines c2_gen_check = c12.c2.gen_check and c2_incs = c12.c2.incs
     and c12_lexs2 = c12.lexs2
 proof -
   { fix x xs s assume "Max (set a) < x"
@@ -934,14 +934,14 @@ proof -
       by (auto simp: le_Cons) (metis dotprod_le_right le_trans length_map map_nth) }
   note 2 = this
 
-  interpret c2: bounded_lexs "cond2 a b" "Max (set a)" by (standard) fact+
+  interpret c2: bounded_gen_check "cond2 a b" "Max (set a)" by (standard) fact+
 
-  { fix b ys x xs s assume "ys \<in> fst ` set (c2.lexs b)" and "Max (set b) < x"
+  { fix b ys x xs s assume "ys \<in> fst ` set (c2.gen_check b)" and "Max (set b) < x"
   then have "cond1 b ys (x # xs) s = False"
-    by (auto dest!: c2.in_lexs) (metis leD less_le_trans maxne0_impl maxne0_le_Max) }
+    by (auto dest!: c2.in_gen_check) (metis leD less_le_trans maxne0_impl maxne0_le_Max) }
   note 3 = this
 
-  { fix b ys x x' xs s s' assume "ys \<in> fst ` set (c2.lexs b)" and "cond1 b ys (x # xs) s"
+  { fix b ys x x' xs s s' assume "ys \<in> fst ` set (c2.gen_check b)" and "cond1 b ys (x # xs) s"
       and "x' \<le> x" and "s' \<le> s"
     then have "cond1 b ys (x' # xs) s'" by auto }
   note 4 = this
@@ -1103,24 +1103,24 @@ proof
     using maxne0_impl_le [of ys b] by auto
 qed
 
-fun c1_lexs
+fun c1_gen_check
   where
-    "c1_lexs b ys [] = [([], 0)]"
-  | "c1_lexs b ys (a # as) = concat (map (c1_incs b ys a 0) (c1_lexs b ys as))"
+    "c1_gen_check b ys [] = [([], 0)]"
+  | "c1_gen_check b ys (a # as) = concat (map (c1_incs b ys a 0) (c1_gen_check b ys as))"
 
-definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2_lexs a b b, xs \<leftarrow> c1_lexs b (fst ys) a]"
+definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2_gen_check a b b, xs \<leftarrow> c1_gen_check b (fst ys) a]"
 
-lemma c1_lexs_conv:
-  assumes "(ys, s) \<in> set (c2_lexs a b b)"
-  shows "c1_lexs b ys a = bounded_lexs.lexs (cond1 b ys) a"
+lemma c1_gen_check_conv:
+  assumes "(ys, s) \<in> set (c2_gen_check a b b)"
+  shows "c1_gen_check b ys a = bounded_gen_check.gen_check (cond1 b ys) a"
 proof -
-  interpret c1: bounded_lexs "(cond1 b ys)" "Max (set b)"
+  interpret c1: bounded_gen_check "(cond1 b ys)" "Max (set b)"
     by (unfold_locales) (auto, meson leD less_le_trans maxne0_impl_le)
-  have eq: "c1_incs b ys a1 0 (a, ba) = c1.incs a1 0 (a, ba)" if "(a, ba) \<in> set (c1.lexs a2)"
+  have eq: "c1_incs b ys a1 0 (a, ba) = c1.incs a1 0 (a, ba)" if "(a, ba) \<in> set (c1.gen_check a2)"
     for a a1 a2 ba
     using that
     apply (induct rule: c1.incs.induct)
-    apply (auto dest!: c1.in_lexs)
+    apply (auto dest!: c1.in_gen_check)
     apply (subst incs1.incs.simps)
     apply (subst c1.incs.simps)
     by (auto simp: Let_def)
@@ -1137,6 +1137,6 @@ lemma solve_efficient [code]:
 
 lemma c12_lexs2_code [code_unfold]:
   "c12_lexs2 a b a b = lexs2 a b"
-  by (auto simp: lexs2_def c12.lexs2_def c1_lexs_conv intro!: arg_cong [of _ _ concat])
+  by (auto simp: lexs2_def c12.lexs2_def c1_gen_check_conv intro!: arg_cong [of _ _ concat])
 
 end
