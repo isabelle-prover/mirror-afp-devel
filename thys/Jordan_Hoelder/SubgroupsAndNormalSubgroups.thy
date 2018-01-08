@@ -283,10 +283,10 @@ proof -
   interpret GModN: group "G Mod N" using assms(1) by (rule normal.factorgroup_is_group)
   have "N \<lhd> G\<lparr>carrier := H\<rparr>" using assms by (metis normal_restrict_supergroup)
   hence grpHN:"group (G\<lparr>carrier := H\<rparr> Mod N)" by (rule normal.factorgroup_is_group)
-  have "op <#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> k}))" using set_mult_def by metis
+  have "op <#>\<^bsub>G\<lparr>carrier:=H\<rparr>\<^esub> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> k}))" using set_mult_def by metis
   moreover have "\<dots> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<^esub> k}))" by auto
   moreover have "op <#> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes> k}))" using set_mult_def by metis
-  ultimately have "op <#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = op <#>\<^bsub>G\<^esub>" by simp
+  ultimately have "op <#>\<^bsub>G\<lparr>carrier:=H\<rparr>\<^esub> = op <#>\<^bsub>G\<^esub>" by simp
   with grpHN have "group ((G Mod N)\<lparr>carrier := (rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N)\<rparr>)" unfolding FactGroup_def by auto
   moreover have "rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N \<subseteq> carrier (G Mod N)" unfolding FactGroup_def RCOSETS_def r_coset_def
     using assms(3) subgroup_imp_subset by fastforce
