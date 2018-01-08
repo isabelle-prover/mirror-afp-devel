@@ -824,32 +824,33 @@ qed
 
 end
 
-locale bounded_lexs2 =
+locale bounded_generate_check =
   c2: bounded_gen_check C\<^sub>2 B\<^sub>2 for C\<^sub>2 B\<^sub>2 +
   fixes C\<^sub>1 and B\<^sub>1
   assumes cond1: "\<And>b ys. ys \<in> fst ` set (c2.gen_check b) \<Longrightarrow> bounded_gen_check (C\<^sub>1 b ys) (B\<^sub>1 b)"
 begin
 
-definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2.gen_check b, xs \<leftarrow> bounded_gen_check.gen_check (C\<^sub>1 b (fst ys)) a]"
+definition "generate_check a b =
+  [(xs, ys). ys \<leftarrow> c2.gen_check b, xs \<leftarrow> bounded_gen_check.gen_check (C\<^sub>1 b (fst ys)) a]"
 
-lemma lexs2_filter_conv:
-  "lexs2 a b = [(xs, ys).
+lemma generate_check_filter_conv:
+  "generate_check a b = [(xs, ys).
     ys \<leftarrow> filter (suffs C\<^sub>2 b) (alls B\<^sub>2 b),
     xs \<leftarrow> filter (suffs (C\<^sub>1 b (fst ys)) a) (alls (B\<^sub>1 b) a)]"
   using bounded_gen_check.gen_check_filter [OF cond1]
-  by (force simp: lexs2_def c2.gen_check_filter intro!: arg_cong [of _ _ concat] map_cong)
+  by (force simp: generate_check_def c2.gen_check_filter intro!: arg_cong [of _ _ concat] map_cong)
 
-lemma lexs2_filter:
-  "lexs2 a b = [(xs, ys) \<leftarrow> alls2 (B\<^sub>1 b) B\<^sub>2 a b. suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
+lemma generate_check_filter:
+  "generate_check a b = [(xs, ys) \<leftarrow> alls2 (B\<^sub>1 b) B\<^sub>2 a b. suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
   by (auto intro: arg_cong [of _ _ concat]
-    simp: lexs2_filter_conv alls2_def filter_concat concat_map_filter filter_map o_def)
+    simp: generate_check_filter_conv alls2_def filter_concat concat_map_filter filter_map o_def)
 
-lemma tl_lexs2_filter:
+lemma tl_generate_check_filter:
   assumes "suffs (C\<^sub>1 b (zeroes (length b))) a (zeroes (length a), 0)"
     and "suffs C\<^sub>2 b (zeroes (length b), 0)"
-  shows "tl (lexs2 a b) = [(xs, ys) \<leftarrow> tl (alls2 (B\<^sub>1 b) B\<^sub>2 a b). suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
+  shows "tl (generate_check a b) = [(xs, ys) \<leftarrow> tl (alls2 (B\<^sub>1 b) B\<^sub>2 a b). suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
   using assms
-  apply (auto simp: lexs2_filter)
+  apply (auto simp: generate_check_filter)
   apply (subst (1 2) alls2_Cons_tl_conv)
   apply auto
   done
@@ -918,9 +919,9 @@ lemma le_imp_maxx_impl'_ge:
 
 end
 
-global_interpretation c12: bounded_lexs2 "(cond2 a b)" "Max (set a)" "cond1" "\<lambda>b. Max (set b)"
+global_interpretation c12: bounded_generate_check "(cond2 a b)" "Max (set a)" "cond1" "\<lambda>b. Max (set b)"
   defines c2_gen_check = c12.c2.gen_check and c2_incs = c12.c2.incs
-    and c12_lexs2 = c12.lexs2
+    and c12_generate_check = c12.generate_check
 proof -
   { fix x xs s assume "Max (set a) < x"
     then have "cond2 a b (x # xs) s = False" by (auto) }
@@ -946,14 +947,14 @@ proof -
     then have "cond1 b ys (x' # xs) s'" by auto }
   note 4 = this
 
-  show "bounded_lexs2 (cond2 a b) (Max (set a)) cond1 (\<lambda>b. Max (set b))"
+  show "bounded_generate_check (cond2 a b) (Max (set a)) cond1 (\<lambda>b. Max (set b))"
     using 1 and 2 and 3 and 4 by (unfold_locales) metis+
 qed
 
 definition "post_cond a b = (\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr_impl a b x y)"
 
 definition "fast_filter a b =
-  filter (post_cond a b) (map (\<lambda>(x, y). (fst x, fst y)) (tl (c12_lexs2 a b a b)))"
+  filter (post_cond a b) (map (\<lambda>(x, y). (fst x, fst y)) (tl (c12_generate_check a b a b)))"
 
 lemma cond1_cond2_zeroes:
   shows "suffs (cond1 b (zeroes (length b))) a (zeroes (length a), 0)"
@@ -1053,7 +1054,7 @@ lemma tune:
   "(check a b) (tl (generate (Max (set b)) (Max (set a)) a b)) = fast_filter a b"
   using cond1_cond2_zeroes
   unfolding fast_filter_def
-  apply (subst c12.tl_lexs2_filter)
+  apply (subst c12.tl_generate_check_filter)
     apply (auto simp: check_def generate_def map_tl [symmetric] filter_map post_cond_def intro!: map_cong)
   apply (auto simp: o_def)
   apply (rule filter_cong)
@@ -1108,7 +1109,7 @@ fun c1_gen_check
     "c1_gen_check b ys [] = [([], 0)]"
   | "c1_gen_check b ys (a # as) = concat (map (c1_incs b ys a 0) (c1_gen_check b ys as))"
 
-definition "lexs2 a b = [(xs, ys). ys \<leftarrow> c2_gen_check a b b, xs \<leftarrow> c1_gen_check b (fst ys) a]"
+definition "generate_check a b = [(xs, ys). ys \<leftarrow> c2_gen_check a b b, xs \<leftarrow> c1_gen_check b (fst ys) a]"
 
 lemma c1_gen_check_conv:
   assumes "(ys, s) \<in> set (c2_gen_check a b b)"
@@ -1135,8 +1136,8 @@ lemma solve_efficient [code]:
   "solve a b = special_solutions a b @ minimize (fast_filter a b)"
   by (auto simp: solve_def non_special_solutions_def tune)
 
-lemma c12_lexs2_code [code_unfold]:
-  "c12_lexs2 a b a b = lexs2 a b"
-  by (auto simp: lexs2_def c12.lexs2_def c1_gen_check_conv intro!: arg_cong [of _ _ concat])
+lemma c12_generate_check_code [code_unfold]:
+  "c12_generate_check a b a b = generate_check a b"
+  by (auto simp: generate_check_def c12.generate_check_def c1_gen_check_conv intro!: arg_cong [of _ _ concat])
 
 end
