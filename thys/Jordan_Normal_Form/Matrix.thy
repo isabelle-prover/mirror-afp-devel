@@ -704,7 +704,7 @@ definition module_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow
     one = 1\<^sub>m nr, 
     zero = 0\<^sub>m nr nc,
     add = op +,
-    smult = op \<cdot>\<^sub>m\<rparr>"
+    smult = (op \<cdot>\<^sub>m)\<rparr>"
 
 lemma ring_mat_simps: 
   "mult (ring_mat ty n b) = op *" 
