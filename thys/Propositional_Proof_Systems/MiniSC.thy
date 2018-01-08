@@ -8,11 +8,11 @@ lemma to_mini_mset_is: "is_mini_mset (image_mset to_mini_formula \<Gamma>)" by s
 
 lemma SC_full_to_mini:
   defines "tms \<equiv> image_mset to_mini_formula"
-  assumes "\<Gamma> \<Rightarrow> \<Delta>"
+  assumes asm: "\<Gamma> \<Rightarrow> \<Delta>"
   shows "tms \<Gamma> \<Rightarrow> tms \<Delta>"
 proof -
   have tmsi[simp]: "tms (F,S) = to_mini_formula F, tms S" for F S unfolding tms_def by simp
-  from assms show ?thesis
+  from asm show ?thesis
   proof(induction \<Gamma> \<Delta> rule: SCp.induct)
     case (BotL \<Gamma>)
     hence "\<bottom> \<in># tms \<Gamma>" unfolding tms_def by force
@@ -56,7 +56,7 @@ qed
   
 lemma SC_mini_to_full:
   defines "tms \<equiv> image_mset to_mini_formula"
-  assumes "tms \<Gamma> \<Rightarrow> tms \<Delta>"
+  assumes asm: "tms \<Gamma> \<Rightarrow> tms \<Delta>"
   shows "\<Gamma> \<Rightarrow> \<Delta>"
 proof -
   have tmsi[simp]: "tms (F,S) = to_mini_formula F, tms S" for F S unfolding tms_def by simp
@@ -79,7 +79,7 @@ proof -
       by (metis msed_map_invR union_commute)
     show ?thesis using pim unfolding S by(cases pim; simp; blast)
   qed
-  from assms show ?thesis
+  from asm show ?thesis
   proof(induction "tms \<Gamma>"  "tms \<Delta>" arbitrary: \<Gamma> \<Delta> rule: SCp.induct)
     have *: "to_mini_formula F = \<bottom> \<Longrightarrow> F = \<bottom>" for F by(cases F; simp)
     case BotL thus ?case unfolding tms_def using * SCp.BotL by (metis image_iff multiset.set_map)
