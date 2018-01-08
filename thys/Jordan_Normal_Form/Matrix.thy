@@ -222,7 +222,7 @@ definition module_vec ::
     one = undefined,
     zero = 0\<^sub>v n,
     add = op +,
-    smult = op \<cdot>\<^sub>v\<rparr>"
+    smult = (op \<cdot>\<^sub>v)\<rparr>"
 
 lemma monoid_vec_simps: 
   "mult (monoid_vec ty n) = op +" 
