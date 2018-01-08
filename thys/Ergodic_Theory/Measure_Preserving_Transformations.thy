@@ -335,7 +335,7 @@ lemma mpt_translation:
   shows "mpt lborel (\<lambda>x. x + c)"
 proof (rule mpt_I, auto simp add: lborel.sigma_finite_measure_axioms)
   fix A::"'a set" assume [measurable]: "A \<in> sets borel"
-  have "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel ((op+c)-`A)" by (meson add.commute)
+  have "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel (((op+)c)-`A)" by (meson add.commute)
   also have "... = emeasure lborel ((op+c)-`A \<inter> space lborel)" by simp
   also have "... = emeasure (distr lborel borel (op + c)) A" by (rule emeasure_distr[symmetric], auto)
   also have "... = emeasure lborel A" using lborel_distr_plus2[of c] by simp
