@@ -831,7 +831,7 @@ lemma is_relation_order:
   fixes F::"('a, 'b::field) poly_mapping set"
   shows "Confluence.relation_order (red F) (op \<preceq>p) (op \<prec>p)"
 proof
-  show "red F \<le> op \<prec>p\<inverse>\<inverse>"
+  show "red F \<le> (op \<prec>p)\<inverse>\<inverse>"
   proof
     fix x y
     assume "red F x y"
