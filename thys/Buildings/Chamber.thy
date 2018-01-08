@@ -2529,7 +2529,7 @@ lemma induced_automorphism_bij_between_half_chamber_systems_f:
   "bij_betw (op ` \<s>) (\<C>-f\<turnstile>\<C>) (f\<turnstile>\<C>)"
   using induced_automorphism_simplex_image(2)
         flopped_half_chamber_systems_fg
-        folding_f.opp_chambers_bij bij_betw_cong[of "\<C>-f\<turnstile>\<C>" "op`\<s>"]
+        folding_f.opp_chambers_bij bij_betw_cong[of "\<C>-f\<turnstile>\<C>" "op` \<s>"]
   by    auto
 
 lemmas indaut_bij_btw_halfchsys_f =

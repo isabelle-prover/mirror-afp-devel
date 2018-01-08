@@ -421,7 +421,7 @@ next
   case (CPair e'1 e'2 x e)
   from CPair.IH[of x e] show ?case by auto
 next
-  case (COperator op e' x e)
+  case (COperator _ _ x e)
   from COperator.IH[of x e] show ?case by auto
 next
   case (CIf b e'1 e'2 x e)

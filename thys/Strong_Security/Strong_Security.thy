@@ -52,7 +52,7 @@ where
 "\<approx>\<^bsub>d\<^esub> \<equiv> \<Union>{r. (Strong_d_Bisimulation d r)}"
 
 abbreviation relatedbyUSdB :: "'com list \<Rightarrow> 'd \<Rightarrow> 'com list \<Rightarrow> bool" 
-(infixr "\<approx>\<^bsub>_\<^esub>" 65)
+("(_ \<approx>\<^bsub>_\<^esub> _)" [66,66] 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> USdB d"
 
 -- "predicate to define when a program is strongly secure"

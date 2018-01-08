@@ -129,7 +129,7 @@ proof -
   have "?l = sum (%x. x) {(op ^ p) m |m . m<= n}" by auto
   also have "... = sum (%x. x) ((op ^ p)`{m . m<= n})"
     by (simp add: setcompr_eq_image)
-  moreover with p have "inj_on (op ^p) {m . m<=n}"
+  moreover with p have "inj_on (op ^ p) {m . m<=n}"
     by (simp add: inj_on_def)
   ultimately have "?l = sum (op ^ p) {m . m<=n}"
     by (simp add: sum.reindex)
