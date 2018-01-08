@@ -6448,3 +6448,19 @@ abstract =
   definition of sensors, we relax these assumptions and show how to
   amend the controller constraints to still guarantee safety.
 
+[Taylor_Models]
+title = Taylor Models
+author = Christoph Traut<>, Fabian Immler <http://home.in.tum.de/~immler/>
+topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
+date = 2018-01-08
+notify = immler@in.tum.de
+abstract = 
+  We present a formally verified implementation of multivariate Taylor
+  models. Taylor models are a form of rigorous polynomial approximation,
+  consisting of an approximation polynomial based on Taylor expansions,
+  combined with a rigorous bound on the approximation error. Taylor
+  models were introduced as a tool to mitigate the dependency problem of
+  interval arithmetic. Our implementation automatically computes Taylor
+  models for the class of elementary functions, expressed by composition
+  of arithmetic operations and basic functions like exp, sin, or square
+  root.

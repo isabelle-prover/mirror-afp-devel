@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Dec 2017 00:00:00 +0000</pubDate>
+    <pubDate>08 Jan 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Taylor Models</title>
+              <link>https://www.isa-afp.org/entries/Taylor_Models.html</link>
+       <guid>https://www.isa-afp.org/entries/Taylor_Models.html</guid>
+       <dc:creator> Christoph Traut, Fabian Immler       </dc:creator>
+       <pubDate>08 Jan 2018 00:00:00 +0000</pubDate>
+       <description>
+We present a formally verified implementation of multivariate Taylor
+models. Taylor models are a form of rigorous polynomial approximation,
+consisting of an approximation polynomial based on Taylor expansions,
+combined with a rigorous bound on the approximation error. Taylor
+models were introduced as a tool to mitigate the dependency problem of
+interval arithmetic. Our implementation automatically computes Taylor
+models for the class of elementary functions, expressed by composition
+of arithmetic operations and basic functions like exp, sin, or square
+root.</description>
+    </item>
     <item>
        <title>The Falling Factorial of a Sum</title>
               <link>https://www.isa-afp.org/entries/Falling_Factorial_Sum.html</link>
@@ -588,28 +605,6 @@ extract an executable type inference algorithm. More information can
 be found in my &lt;a
 href=&#34;http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html&#34;&gt;undergraduate
 dissertation&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-              <link>https://www.isa-afp.org/entries/CRDT.html</link>
-       <guid>https://www.isa-afp.org/entries/CRDT.html</guid>
-       <dc:creator> Victor B. F. Gomes, Martin Kleppmann, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
-       <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-In this work, we focus on the correctness of Conflict-free Replicated
-Data Types (CRDTs), a class of algorithm that provides strong eventual
-consistency guarantees for replicated data. We develop a modular and
-reusable framework for verifying the correctness of CRDT algorithms.
-We avoid correctness issues that have dogged previous mechanised
-proofs in this area by including a network model in our formalisation,
-and proving that our theorems hold in all possible network behaviours.
-Our axiomatic network model is a standard abstraction that accurately
-reflects the behaviour of real-world computer networks. Moreover, we
-identify an abstract convergence theorem, a property of order
-relations, which provides a formal definition of strong eventual
-consistency. We then obtain the first machine-checked correctness
-theorems for three concrete CRDTs: the Replicated Growable Array, the
-Observed-Remove Set, and an Increment-Decrement Counter.</description>
     </item>
   </channel>
 </rss>
