@@ -252,12 +252,8 @@ definition check where
   "check = filter check_cond"
 
 definition "non_special_solutions =
-  (let
-     max_x = Max (set b);
-     max_y = Max (set a);
-     all = tl (generate max_x max_y a b)
-  in
-  minimize (check all))"
+  (let A = Max (set b); B = Max (set a)
+  in minimize (check (tl (generate A B a b))))"
 
 definition "solve = special_solutions @ non_special_solutions"
 
