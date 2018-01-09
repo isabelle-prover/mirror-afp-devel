@@ -11,7 +11,7 @@ imports
 begin
 
 setup {*
-  Thy_Output.antiquotation @{binding haskell} (Scan.lift Args.name)
+  Document_Antiquotation.setup @{binding haskell} (Scan.lift Args.name)
     (fn _ => fn s => "\\" ^ "<" ^ s ^ "\\>")
 *}
 
