@@ -286,11 +286,11 @@ interpretation aodv_openproc: openproc paodv opaodv id
         show "((\<sigma>, snd (id s)), a, (\<sigma>', snd (id s'))) \<in> trans (opaodv i)"
           by simp
     qed
-    then interpret op: openproc paodv opaodv id .
+    then interpret opn: openproc paodv opaodv id .
     have [simp]: "\<And>i. (SOME x. x \<in> (fst o id) ` init (paodv i)) = aodv_init i"
       unfolding \<sigma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V_def by simp
     hence "\<And>i. openproc.initmissing paodv id i = initmissing i"
-      unfolding op.initmissing_def op.someinit_def initmissing_def
+      unfolding opn.initmissing_def opn.someinit_def initmissing_def
       by (auto split: option.split)
     thus "openproc.initmissing paodv id = initmissing" ..
   qed
