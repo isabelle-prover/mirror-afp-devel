@@ -967,122 +967,212 @@ qed
 
 subsection \<open>Bisimulation\<close>
 
+lemma sstart_eq': "sstart \<Omega> (x # xs) = {\<omega>. shd \<omega> = x \<and> stl \<omega> \<in> sstart \<Omega> xs}"
+  by (auto simp: sstart_eq)
+
+lemma measure_eq_stream_space_coinduct[consumes 1, case_names left right cont]:
+  assumes "R N M"
+  assumes R_1: "\<And>N M. R N M \<Longrightarrow> N \<in> space (prob_algebra S)"
+    and R_2: "\<And>N M. R N M \<Longrightarrow> M \<in> space (prob_algebra S)"
+    and cont: "\<And>N M. R N M \<Longrightarrow> \<exists>N' M' p. (\<forall>y\<in>set_pmf p. R (N' y) (M' y)) \<and>
+      (\<forall>x. N' x \<in> space (prob_algebra S)) \<and> (\<forall>x. M' x \<in> space (prob_algebra S)) \<and> 
+      N = (measure_pmf p \<bind> (\<lambda>y. distr (N' y) S ((##) y))) \<and>
+      M = (measure_pmf p \<bind> (\<lambda>y. distr (M' y) S ((##) y)))"
+  shows "N = M"
+proof -
+  have "\<forall>N M. R N M \<longrightarrow> (\<exists>N' M' p. (\<forall>y\<in>set_pmf p. R (N' y) (M' y)) \<and>
+      (\<forall>x. N' x \<in> space (prob_algebra S)) \<and> (\<forall>x. M' x \<in> space (prob_algebra S)) \<and>
+      N = (measure_pmf p \<bind> (\<lambda>y. distr (N' y) S ((##) y))) \<and>
+      M = (measure_pmf p \<bind> (\<lambda>y. distr (M' y) S ((##) y))))"
+    using cont by auto
+  then obtain n m p where
+    p: "\<And>N M y. R N M \<Longrightarrow> y \<in> set_pmf (p N M) \<Longrightarrow> R (n N M y) (m N M y)" and
+    n: "\<And>N M x. R N M \<Longrightarrow> n N M x \<in> space (prob_algebra S)" and
+    n_eq: "\<And>N M y. R N M \<Longrightarrow> N = (measure_pmf (p N M) \<bind> (\<lambda>y. distr (n N M y) S ((##) y)))" and
+    m: "\<And>N M x. R N M \<Longrightarrow> m N M x \<in> space (prob_algebra S)" and
+    m_eq: "\<And>N M y. R N M \<Longrightarrow> M = (measure_pmf (p N M) \<bind> (\<lambda>y. distr (m N M y) S ((##) y)))"
+    unfolding choice_iff' choice_iff by blast
+
+  define A where "A = (SIGMA nm:UNIV. (\<lambda>x. (n (fst nm) (snd nm) x, m (fst nm) (snd nm) x)) ` p (fst nm) (snd nm))"
+  have A_singleton: "A `` {nm} = (\<lambda>x. (n (fst nm) (snd nm) x, m (fst nm) (snd nm) x)) ` p (fst nm) (snd nm)" for nm
+    by (auto simp: A_def)
+
+  have sets_n[measurable_cong, simp]: "sets (n N M y) = sets S" if "R N M" for N M y
+    using n[OF that, of y] by (auto simp: space_prob_algebra)
+  have sets_m[measurable_cong, simp]: "sets (m N M y) = sets S" if "R N M" for N M y
+    using m[OF that, of y] by (auto simp: space_prob_algebra)
+  have [simp]: "R N M \<Longrightarrow> prob_space (n N M y)" for N M y
+    using n[of N M y] by (auto simp: space_prob_algebra)
+  have [simp]: "R N M \<Longrightarrow> prob_space (m N M y)" for N M y
+    using m[of N M y] by (auto simp: space_prob_algebra)
+  have [measurable]: "R N M \<Longrightarrow> n N M \<in> count_space UNIV \<rightarrow>\<^sub>M subprob_algebra S" for N M
+    by (rule measurable_prob_algebraD) (auto intro: n)
+  have [measurable]: "R N M \<Longrightarrow> m N M \<in> count_space UNIV \<rightarrow>\<^sub>M subprob_algebra S" for N M
+    by (rule measurable_prob_algebraD) (auto intro: m)
+
+  define n' where "n' N M y = distr (n N M y) S ((##) y)" for N M y
+  define m' where "m' N M y = distr (m N M y) S ((##) y)" for N M y
+  have n'_eq: "R N M \<Longrightarrow> N = (measure_pmf (p N M) \<bind> n' N M)" for N M unfolding n'_def by (rule n_eq)
+  have m'_eq: "R N M \<Longrightarrow> M = (measure_pmf (p N M) \<bind> m' N M)" for N M unfolding m'_def by (rule m_eq)
+  have [measurable]: "R N M \<Longrightarrow> n' N M \<in> count_space UNIV \<rightarrow>\<^sub>M subprob_algebra S" for N M
+    unfolding n'_def by (rule measurable_distr2[where M=S]) measurable
+  have [measurable]: "R N M \<Longrightarrow> m' N M \<in> count_space UNIV \<rightarrow>\<^sub>M subprob_algebra S" for N M
+    unfolding m'_def by (rule measurable_distr2[where M=S]) measurable
+
+  have n'_shd: "R N M \<Longrightarrow> distr (n' N M y) (count_space UNIV) shd = measure_pmf (return_pmf y)" for N M y
+    unfolding n'_def by (subst distr_distr) (auto simp: comp_def prob_space.distr_const return_pmf.rep_eq)
+  have m'_shd: "R N M \<Longrightarrow> distr (m' N M y) (count_space UNIV) shd = measure_pmf (return_pmf y)" for N M y
+    unfolding m'_def by (subst distr_distr) (auto simp: comp_def prob_space.distr_const return_pmf.rep_eq)
+  have n'_stl: "R N M \<Longrightarrow> distr (n' N M y) S stl = n N M y" for N M y
+    unfolding n'_def by (subst distr_distr) (auto simp: comp_def distr_id2)
+  have m'_stl: "R N M \<Longrightarrow> distr (m' N M y) S stl = m N M y" for N M y
+    unfolding m'_def by (subst distr_distr) (auto simp: comp_def distr_id2)
+
+  define F where "F = (A\<^sup>* `` {(N, M)})"
+  have "countable F"
+    unfolding F_def
+    apply (intro countable_rtrancl countable_insert[of _ "(N, M)"] countable_empty)
+    apply (rule countable_Image)
+     apply (auto simp: A_singleton)
+    done
+  have F_NM[simp]: "(N, M) \<in> F" unfolding F_def by auto
+  have R_F[simp]: "R N' M'" if "(N', M') \<in> F" for N' M'
+  proof -
+    have "((N, M), (N', M')) \<in> A\<^sup>*" using that by (auto simp: F_def)
+    then show "R N' M'"
+      by (induction p=="(N', M')" arbitrary: N' M' rule: rtrancl_induct) (auto simp: \<open>R N M\<close> A_def p)
+  qed
+  have nm_F: "(n N' M' y, m N' M' y) \<in> F" if "y \<in> p N' M'" "(N', M') \<in> F" for N' M' y
+  proof -
+    have *: "((N, M), (N', M')) \<in> A\<^sup>*" using that by (auto simp: F_def)
+    with that show ?thesis
+      apply (simp add: F_def)
+      apply (intro rtrancl.rtrancl_into_rtrancl[OF *])
+      apply (auto simp: A_def)
+      done
+  qed
+
+  define \<Omega> where "\<Omega> = (\<Union>(n, m)\<in>F. p n m)"
+  have [measurable]: "\<Omega> \<in> sets (count_space UNIV)" by auto
+  have in_\<Omega>: "(N, M) \<in> F \<Longrightarrow> y \<in> p N M \<Longrightarrow> y \<in> \<Omega>" for N M y
+    by (auto simp: \<Omega>_def Bex_def)
+
+  show ?thesis
+  proof (intro stream_space_eq_sstart)
+    show "countable \<Omega>"
+      unfolding \<Omega>_def by (intro countable_UN countable_set_pmf) fact
+    show "prob_space N" "prob_space M" "sets N = sets S" "sets M = sets S"
+      using R_1[OF \<open>R N M\<close>] R_2[OF \<open>R N M\<close>] by (auto simp add: space_prob_algebra)
+    have "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in N. x !! i \<in> \<Omega>" for i
+    proof (induction i)
+      case 0 note NM = 0[THEN R_F, simp] show ?case
+        apply (subst n'_eq[OF NM])
+        apply (subst AE_bind[where B=S])
+          apply measurable
+        apply (auto intro!: AE_distrD[where f=shd and M'="count_space UNIV"]
+                    simp: AE_measure_pmf_iff n[OF NM] n'_shd in_\<Omega>[OF 0] cong: AE_cong_strong)
+        done
+    next
+      case (Suc i) note NM = Suc(2)[THEN R_F, simp]
+      show ?case
+        apply (subst n'_eq[OF NM])
+        apply (subst AE_bind[where B=S])
+          apply measurable
+        apply (auto intro!: AE_distrD[where f=stl and M'=S] Suc(1)[OF nm_F] Suc(2)
+          simp: AE_measure_pmf_iff n'_stl cong: AE_cong_strong)
+        done
+    qed
+    then have AE_N: "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in N. x \<in> streams \<Omega>"
+      unfolding streams_iff_snth AE_all_countable by auto
+    then show "AE x in N. x \<in> streams \<Omega>" by (blast intro: F_NM)
+
+    have "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in M. x !! i \<in> \<Omega>" for i
+    proof (induction i arbitrary: N M)
+      case 0 note NM = 0[THEN R_F, simp] show ?case
+        apply (subst m'_eq[OF NM])
+        apply (subst AE_bind[where B=S])
+          apply measurable
+        apply (auto intro!: AE_distrD[where f=shd and M'="count_space UNIV"]
+                    simp: AE_measure_pmf_iff m[OF NM] m'_shd in_\<Omega>[OF 0] cong: AE_cong_strong)
+        done
+    next
+      case (Suc i) note NM = Suc(2)[THEN R_F, simp]
+      show ?case
+        apply (subst m'_eq[OF NM])
+        apply (subst AE_bind[where B=S])
+          apply measurable
+        apply (auto intro!: AE_distrD[where f=stl and M'=S] Suc(1)[OF nm_F] Suc(2)
+          simp: AE_measure_pmf_iff m'_stl cong: AE_cong_strong)
+        done
+    qed
+    then have AE_M: "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in M. x \<in> streams \<Omega>"
+      unfolding streams_iff_snth AE_all_countable by auto
+    then show "AE x in M. x \<in> streams \<Omega>" by (blast intro: F_NM)
+
+    fix xs assume "xs \<in> lists \<Omega>"
+    with \<open>(N, M) \<in> F\<close> show "emeasure N (sstart \<Omega> xs) = emeasure M (sstart \<Omega> xs)"
+    proof (induction xs arbitrary: N M)
+      case Nil
+      have "prob_space N" "prob_space M" "sets N = sets S" "sets M = sets S"
+        using R_1[OF R_F[OF Nil(1)]] R_2[OF R_F[OF Nil(1)]] by (auto simp add: space_prob_algebra)
+      have "emeasure N (streams \<Omega>) = 1"
+        by (rule prob_space.emeasure_eq_1_AE[OF \<open>prob_space N\<close> _ AE_N[OF Nil(1)]])
+           (auto simp add: \<open>sets N = sets S\<close> intro!: streams_sets)
+      moreover have "emeasure M (streams \<Omega>) = 1"
+        by (rule prob_space.emeasure_eq_1_AE[OF \<open>prob_space M\<close> _ AE_M[OF Nil(1)]])
+           (auto simp add: \<open>sets M = sets S\<close> intro!: streams_sets)
+      ultimately show ?case by simp
+    next
+      case (Cons x xs)
+      note NM = Cons(2)[THEN R_F, simp]
+      have *: "(##) y -` sstart \<Omega> (x # xs) = (if x = y then sstart \<Omega> xs else {})" for y
+        by auto
+      show ?case
+        apply (subst n'_eq[OF NM])
+        apply (subst (3) m'_eq[OF NM])
+        apply (subst emeasure_bind[OF _ _ sstart_sets])
+          apply simp []
+         apply measurable []
+        apply (subst emeasure_bind[OF _ _ sstart_sets])
+          apply simp []
+         apply measurable []
+        apply (intro nn_integral_cong_AE AE_pmfI)
+        apply (subst n'_def)
+        apply (subst m'_def)
+        using Cons(3)
+        apply (auto intro!: Cons nm_F
+          simp: * emeasure_distr sets_eq_imp_space_eq[OF sets_n] sets_eq_imp_space_eq[OF sets_m]
+                space_stream_space)
+        done
+    qed
+  qed
+qed
+
 lemma T_coinduct[consumes 1, case_names prob sets cont]:
   assumes "R x M"
   assumes prob: "\<And>x M. R x M \<Longrightarrow> prob_space M"
     and sets: "\<And>x M. R x M \<Longrightarrow> sets M = sets S"
-    and cont: "\<And>x M. R x M \<Longrightarrow> \<exists>M'. (\<forall>y\<in>K x. R y (M' y)) \<and> (\<forall>y. sets (M' y) = S \<and> prob_space (M' y)) \<and>
+    and cont': "\<And>x M. R x M \<Longrightarrow> \<exists>M'. (\<forall>y\<in>K x. R y (M' y)) \<and> (\<forall>y. sets (M' y) = S \<and> prob_space (M' y)) \<and>
       M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S ((##) y)))"
   shows "T x = M"
-proof (intro stream_space_eq_sstart)
-  show "prob_space (T x)"
-    by unfold_locales
-  show "prob_space M"
-    using \<open>R x M\<close> by (rule prob)
-  show "sets M = sets S" "sets (T x) = sets S"
-    using \<open>R x M\<close> by (auto simp: sets)
-
-  define \<Omega> where "\<Omega> = acc `` {x}"
-  show "countable \<Omega>"
-    by (auto intro: countable_acc simp: \<Omega>_def)
-  have "x \<in> \<Omega>"
-    by (auto simp: \<Omega>_def)
-  have \<Omega>_trans: "\<And>x y. x \<in> \<Omega> \<Longrightarrow> y \<in> K x \<Longrightarrow> y \<in> \<Omega>"
-    by (auto simp: \<Omega>_def intro: rtrancl_trans)
-
-  have [measurable]: "\<Omega> \<in> sets (count_space UNIV)"
+  using \<open>R x M\<close>
+proof (coinduction arbitrary: x M rule: measure_eq_stream_space_coinduct)
+  case left then show ?case using T.prob_space_axioms[of x] sets_T[of x] by (auto simp: space_prob_algebra)
+next
+  case (right M) with prob[of M] sets[of M] show ?case by (auto simp: space_prob_algebra)
+next
+  case (cont x M) with cont'[OF cont] obtain M' where *:
+    "(\<forall>y\<in>K x. R y (M' y))"
+    "(\<forall>y. sets (M' y) = S \<and> prob_space (M' y))"
+    "M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S ((##) y)))"
     by auto
-
-  note streams_sets[measurable]
-  { fix n y assume "y \<in> \<Omega>"
-    then have "(x, y) \<in> acc" by (simp add: \<Omega>_def)
-    then have "AE \<omega> in T y. \<omega> \<in> streams \<Omega>"
-    proof induction
-      case (step y z) then show ?case
-        by (subst (asm) AE_T_iff) (auto simp: streams_Stream)
-    qed (insert AE_T_reachable, simp add: alw_HLD_iff_streams \<Omega>_def) }
-  note AE_T = this[simp]
-  with \<open>x \<in> \<Omega>\<close> show "AE \<omega> in T x. \<omega> \<in> streams \<Omega>"
-    by simp
-
-  have space_M: "R x M \<Longrightarrow> space M = space S" for x M
-    using sets[THEN sets_eq_imp_space_eq] .
-
-  have "\<forall>x M. R x M \<longrightarrow> (\<exists>M'. (\<forall>y\<in>K x. R y (M' y)) \<and> (\<forall>y. sets (M' y) = S \<and> prob_space (M' y)) \<and>
-      M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S ((##) y))))"
-    using cont by auto
-  then guess M' unfolding choice_iff' choice_iff ..
-  then have
-    R_closed: "\<And>x M y. R x M \<Longrightarrow> y \<in> K x \<Longrightarrow> R y (M' x M y)" and
-    M'_sets[simp, measurable_cong]: "\<And>x M y. R x M \<Longrightarrow> sets (M' x M y) = sets S" and
-    M'_prob: "\<And>x M y. R x M \<Longrightarrow> prob_space (M' x M y)" and
-    M'_eq: "\<And>x M y. R x M \<Longrightarrow> M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' x M y) S ((##) y)))"
-    by auto
-
-  have M'_subprob: "\<And>x M y. R x M \<Longrightarrow> subprob_space (M' x M y)"
-    using M'_prob by (rule prob_space_imp_subprob_space)
-
-  have *: "R x M \<Longrightarrow>
-    (\<lambda>s. distr (M' x M s) S ((##) s)) \<in> K x \<rightarrow>\<^sub>M subprob_algebra S" for x M
-    by (intro measurable_distr2[where M=S])
-       (auto simp: measurable_split_conv space_subprob_algebra
-             intro!: measurable_Stream measurable_compose[OF measurable_fst] M'_subprob)
-
-  { fix x M assume "x \<in> \<Omega>" "R x M" then have "AE \<omega> in M. (x ## \<omega>) !! n \<in> \<Omega>" for n
-    proof (induction n arbitrary: x M)
-      case 0 then show ?case by simp
-    next
-      case (Suc n) then show ?case
-        apply (subst M'_eq[OF \<open>R x M\<close>])
-        apply (subst AE_bind[OF *[OF \<open>R x M\<close>]])
-        apply measurable
-        apply (auto intro!: measurable_compose[OF measurable_snth]
-                            measurable_compose[OF measurable_stl] AE_distr_iff[THEN iffD2] predE
-                    intro: rtrancl_into_rtrancl R_closed
-                    simp: AE_measure_pmf_iff AE_distr_iff \<Omega>_def)+
-        done
-    qed
-    then have "AE \<omega> in M. \<forall>n. (x ## \<omega>) !! n \<in> \<Omega>"
-      unfolding AE_all_countable by auto
-    then have AE_M: "AE \<omega> in M. \<omega> \<in> streams \<Omega>"
-      by eventually_elim (auto simp: streams_iff_snth Stream_snth split: nat.splits) }
-  note AE_M = this
-
-  show "AE \<omega> in M. \<omega> \<in> streams \<Omega>"
-    using \<open>x \<in> \<Omega>\<close> \<open>R x M\<close> by (rule AE_M)
-
-  fix xs
-  from \<open>R x M\<close> \<open>x \<in> \<Omega>\<close> show "emeasure (T x) (sstart \<Omega> xs) = emeasure M (sstart \<Omega> xs)"
-  proof (induction xs arbitrary: x M)
-    case Nil
-    interpret M: prob_space M
-      using \<open>R x M\<close> by fact
-    note sets[OF \<open>R x M\<close>, simp]
-    from Nil AE_M[of x] AE_T[of x] show ?case
-      by (cases "streams (acc `` {x}) \<in> sets S")
-         (simp_all add: T.emeasure_eq_1_AE M.emeasure_eq_1_AE emeasure_notin_sets)
-  next
-    case (Cons a xs x M)
-    note sets[OF \<open>R x M\<close>, simp]
-    note space_M[OF \<open>R x M\<close>, simp]
-    have "emeasure (T x) {\<omega>\<in>space (T x). \<omega> \<in> sstart \<Omega> (a # xs)} =
-      (\<integral>\<^sup>+y. emeasure (M' x M y) (sstart \<Omega> xs) * indicator {a} y \<partial>K x)"
-      using Cons
-      by (subst emeasure_Collect_T)
-         (auto intro!: nn_integral_cong_AE R_closed Cons
-               simp: space_stream_space AE_measure_pmf_iff \<Omega>_trans split: split_indicator
-               simp del: nn_integral_indicator_singleton)
-    also have "\<dots> = emeasure M {\<omega>\<in>space M. \<omega> \<in> sstart \<Omega> (a # xs)}"
-      apply (subst (2) M'_eq[OF \<open>R x M\<close>])
-      apply (subst emeasure_bind[OF _ *[OF \<open>R x M\<close>]])
-      apply (auto intro!: nn_integral_cong arg_cong2[where f=emeasure] split: split_indicator
-                  simp add: emeasure_distr Cons
-                  simp del: nn_integral_indicator_singleton)
-      apply (auto simp: space_stream_space M'_sets[THEN sets_eq_imp_space_eq] Cons)
-      done
-    finally show ?case
-      by (simp add: space_stream_space del: in_sstart)
-  qed
+  show ?case
+    apply (rule exI[of _ T])
+    apply (rule exI[of _ M'])
+    apply (rule exI[of _ "K x"])
+    using * T.prob_space_axioms sets_T[of x]
+    apply (auto simp: space_prob_algebra intro: T_eq_bind)
+    done
 qed
 
 lemma T_bisim:

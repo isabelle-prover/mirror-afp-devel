@@ -145,8 +145,6 @@ proof safe
     by (coinduction arbitrary: cfg2) (auto intro!: rel_pmf_reflI)
 qed
 
-(* TODO: show cfg is BNF -- the 's in scheduler is dead, but can be resurrected to live in cfg *)
-
 subsection {* Configuration with Memoryless Scheduler *}
 
 definition "memoryless_on f s = cfg_corec s f (\<lambda>_ t. t) s"
