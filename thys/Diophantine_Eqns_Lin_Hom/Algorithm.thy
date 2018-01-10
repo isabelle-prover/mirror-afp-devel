@@ -422,7 +422,7 @@ lemma (in hlde) in_non_special_solutions:
   shows "(x, y) \<in> Solutions"
   using assms
   by (auto dest!: minimize_wrtD in_generate
-    simp: non_special_solutions_def Solutions_def minimize_def set_alls2)
+    simp: non_special_solutions_def in_Solutions_iff minimize_def set_alls2)
 
 lemma generate_unique:
   assumes "i < length (generate A B a b)"
@@ -496,7 +496,7 @@ proof -
   proof (cases)
     case nonspecial
     then have "(x, y) \<in> Solutions" by (fact in_non_special_solutions)
-    then have [simp]: "length x = m" "length y = n" by (auto simp: Solutions_def)
+    then have [simp]: "length x = m" "length y = n" by (auto simp: in_Solutions_iff)
     have "(x, y) \<in> Minimal_Solutions"
     proof (intro Minimal_SolutionsI')
       show "(x, y) \<in> Solutions" by fact

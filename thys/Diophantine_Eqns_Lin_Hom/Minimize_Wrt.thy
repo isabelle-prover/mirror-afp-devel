@@ -76,7 +76,7 @@ lemma in_minimize_wrt_iff:
   using assms and in_minimize_wrtD [of Q xs x P, OF assms(1,2) _ assms(3,4)]
   by (blast intro: in_minimize_wrtI)
 
-lemma set_minimize_wrt_iff:
+lemma set_minimize_wrt:
   assumes "\<And>x y. Q x y \<Longrightarrow> \<not> Q y x"
     and "sorted_wrt Q xs"
     and "\<And>x y. \<not> P x y \<Longrightarrow> Q x y"
