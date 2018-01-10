@@ -51,7 +51,7 @@ proof -
   {
   fix aa :: "'a list"
   have "map (\<lambda>n. if n < length aa then aa ! n else undef_vec (n - length aa)) [0..<length aa]
-    = map (op ! aa) [0..<length aa]"
+    = map ((!) aa) [0..<length aa]"
     by simp
   hence "map (\<lambda>n. if n < length aa then aa ! n else undef_vec (n - length aa)) [0..<length aa] = aa"
     by (simp add: map_nth)
@@ -1713,15 +1713,15 @@ qed
 (* Also polynomials over a field as a vector space in HOL-Algebra.*)
 
 definition "poly_abelian_monoid
-  = \<lparr>carrier = UNIV::'a mod_ring poly set, monoid.mult = (op *), one = 1, zero = 0, add = (op +), module.smult = smult\<rparr>"
+  = \<lparr>carrier = UNIV::'a mod_ring poly set, monoid.mult = (( * )), one = 1, zero = 0, add = (+), module.smult = smult\<rparr>"
 
 interpretation vector_space_poly: vectorspace class_ring poly_abelian_monoid
   rewrites [simp]: "\<zero>\<^bsub>poly_abelian_monoid\<^esub> = 0"
        and [simp]: "\<one>\<^bsub>poly_abelian_monoid\<^esub> = 1"
-       and [simp]: "op \<oplus>\<^bsub>poly_abelian_monoid\<^esub> = (op +)"
-       and [simp]: "op \<otimes>\<^bsub>poly_abelian_monoid\<^esub> = (op *)"
+       and [simp]: "(\<oplus>\<^bsub>poly_abelian_monoid\<^esub>) = (+)"
+       and [simp]: "(\<otimes>\<^bsub>poly_abelian_monoid\<^esub>) = (( * ))"
        and [simp]: "carrier poly_abelian_monoid = UNIV"
-       and [simp]: "op \<odot>\<^bsub>poly_abelian_monoid\<^esub> = smult"
+       and [simp]: "(\<odot>\<^bsub>poly_abelian_monoid\<^esub>) = smult"
   by (unfold_locales, auto simp add: poly_abelian_monoid_def class_field_def smult_add_left smult_add_right)
 
 lemma subspace_Berlekamp:
@@ -1902,10 +1902,10 @@ next
         proof -
            have Hx: "?H = x"
            proof (unfold vec_eq_iff, auto)
-             let ?H'="vec_of_list (strip_while (op = 0) (list_of_vec x)
-              @ replicate (degree u - length (strip_while (op = 0) (list_of_vec x))) 0)"
-             show "length (strip_while (op = 0) (list_of_vec x))
-              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim_vec x"
+             let ?H'="vec_of_list (strip_while ((=) 0) (list_of_vec x)
+              @ replicate (degree u - length (strip_while ((=) 0) (list_of_vec x))) 0)"
+             show "length (strip_while ((=) 0) (list_of_vec x))
+              + (degree u - length (strip_while ((=) 0) (list_of_vec x))) = dim_vec x"
                 by (metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
              fix i assume i: "i < dim_vec x"
              have "?H $ i =  coeff (Poly (list_of_vec x)) i"
@@ -1990,10 +1990,10 @@ next
         proof -
            have Hx: "?H = x"
            proof (unfold vec_eq_iff, auto)
-             let ?H'="vec_of_list (strip_while (op = 0) (list_of_vec x)
-              @ replicate (degree u - length (strip_while (op = 0) (list_of_vec x))) 0)"
-             show "length (strip_while (op = 0) (list_of_vec x))
-              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim_vec x"
+             let ?H'="vec_of_list (strip_while ((=) 0) (list_of_vec x)
+              @ replicate (degree u - length (strip_while ((=) 0) (list_of_vec x))) 0)"
+             show "length (strip_while ((=) 0) (list_of_vec x))
+              + (degree u - length (strip_while ((=) 0) (list_of_vec x))) = dim_vec x"
                 by (metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
              fix i assume i: "i < dim_vec x"
              have "?H $ i =  coeff (Poly (list_of_vec x)) i"

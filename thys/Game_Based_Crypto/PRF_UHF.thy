@@ -142,7 +142,7 @@ proof -
       where "cr = (\<lambda>(_ :: unit, \<sigma>) (\<sigma>' :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, _ :: bool). \<sigma> = map_option snd \<circ> \<sigma>')"
     define initial where "initial = (Map.empty :: '\<alpha> \<Rightarrow> ('\<beta> \<times> '\<gamma>) option, False)"
     have [transfer_rule]: "cr ((), Map.empty) initial" by(simp add: cr_def initial_def fun_eq_iff)
-    have [transfer_rule]:  "(op = ===> cr ===> op = ===> rel_spmf (rel_prod op = cr))
+    have [transfer_rule]:  "((=) ===> cr ===> (=) ===> rel_spmf (rel_prod (=) cr))
         (\<lambda>y p ya. do {y \<leftarrow> prf.random_oracle (snd p) (h y ya); return_spmf (fst y, (), snd y) })
         semi_forgetful_RO"
       by(auto simp add: semi_forgetful_RO_def cr_def prf.random_oracle_def rel_fun_def fun_eq_iff split: option.split intro!: rel_spmf_bind_reflI)

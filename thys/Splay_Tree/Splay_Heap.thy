@@ -43,7 +43,7 @@ lemma get_min_in:
 by(induction h) auto
 
 lemma get_min_min:
-  "\<lbrakk> bst_wrt (op \<le>) h; h \<noteq> Leaf \<rbrakk> \<Longrightarrow> \<forall>x \<in> set_tree h. get_min h \<le> x"
+  "\<lbrakk> bst_wrt (\<le>) h; h \<noteq> Leaf \<rbrakk> \<Longrightarrow> \<forall>x \<in> set_tree h. get_min h \<le> x"
 proof(induction h)
   case (Node l x r) thus ?case using get_min_in[of l] get_min_in[of r]
     by auto (blast intro: order_trans)
@@ -53,7 +53,7 @@ lemma size_partition: "partition p t = (l',r') \<Longrightarrow> size t = size l
 by (induction p t arbitrary: l' r' rule: partition.induct)
    (auto split: if_splits tree.splits prod.splits)
 
-lemma mset_partition: "\<lbrakk> bst_wrt (op \<le>) t; partition p t = (l',r') \<rbrakk>
+lemma mset_partition: "\<lbrakk> bst_wrt (\<le>) t; partition p t = (l',r') \<rbrakk>
  \<Longrightarrow> mset_tree t = mset_tree l' + mset_tree r'"
 proof(induction p t arbitrary: l' r' rule: partition.induct)
   case 1 thus ?case by simp
@@ -99,12 +99,12 @@ next
   qed
 qed
 
-lemma set_partition: "\<lbrakk> bst_wrt (op \<le>) t; partition p t = (l',r') \<rbrakk>
+lemma set_partition: "\<lbrakk> bst_wrt (\<le>) t; partition p t = (l',r') \<rbrakk>
  \<Longrightarrow> set_tree t = set_tree l' \<union> set_tree r'"
 by (metis mset_partition set_mset_tree set_mset_union)
 
 lemma bst_partition:
-  "partition p t = (l',r') \<Longrightarrow> bst_wrt (op \<le>) t \<Longrightarrow> bst_wrt (op \<le>) (Node l' p r')"
+  "partition p t = (l',r') \<Longrightarrow> bst_wrt (\<le>) t \<Longrightarrow> bst_wrt (\<le>) (Node l' p r')"
 proof(induction p t arbitrary: l' r' rule: partition.induct)
   case 1 thus ?case by simp
 next
@@ -172,7 +172,7 @@ proof(induction h rule: del_min.induct)
   qed
 qed auto
 
-lemma bst_del_min: "bst_wrt (op \<le>) t \<Longrightarrow> bst_wrt (op \<le>) (del_min t)"
+lemma bst_del_min: "bst_wrt (\<le>) t \<Longrightarrow> bst_wrt (\<le>) (del_min t)"
 apply(induction t rule: del_min.induct)
   apply simp
  apply simp

@@ -17,7 +17,7 @@ lemma set_eqI':
 using assms by auto
 
 lemma comp_image:
-  "(op ` f \<circ> op ` g) = op ` (f o g)"
+  "((`) f \<circ> (`) g) = (`) (f o g)"
 by rule auto
 
 subsection {* Introduction and Elimination Rules *}
@@ -300,7 +300,7 @@ qed
 lemma partition_on_map:
   assumes "inj_on f A"
   assumes "partition_on A P"
-  shows "partition_on (f ` A) (op ` f ` P)"
+  shows "partition_on (f ` A) ((`) f ` P)"
 proof -
   {
     fix X Y
@@ -310,16 +310,16 @@ proof -
     ultimately have "f ` X \<inter> f ` Y = {}"
       unfolding inj_on_def by auto (metis IntI empty_iff rev_image_eqI)+
   }
-  from assms this show "partition_on (f ` A) (op ` f ` P)"
+  from assms this show "partition_on (f ` A) ((`) f ` P)"
     by (auto intro!: partition_onI elim!: partition_onE)
 qed
 
 lemma set_of_partition_on_map:
   assumes "inj_on f A"
-  shows "op ` (op ` f) ` {P. partition_on A P} = {P. partition_on (f ` A) P}"
+  shows "(`) ((`) f) ` {P. partition_on A P} = {P. partition_on (f ` A) P}"
 proof (rule set_eqI')
   fix x
-  assume "x \<in> op ` (op ` f) ` {P. partition_on A P}"
+  assume "x \<in> (`) ((`) f) ` {P. partition_on A P}"
   from this \<open>inj_on f A\<close> show "x \<in> {P. partition_on (f ` A) P}"
     by (auto intro: partition_on_map)
 next
@@ -328,9 +328,9 @@ next
   from this have "partition_on (f ` A) P" by auto
   from this have mem: "\<And>X x. X \<in> P \<Longrightarrow> x \<in> X \<Longrightarrow> x \<in> f ` A"
     by (auto elim!: partition_onE)
-  have "op ` (f \<circ> the_inv_into A f) ` P = op ` f ` op ` (the_inv_into A f) ` P"
+  have "(`) (f \<circ> the_inv_into A f) ` P = (`) f ` (`) (the_inv_into A f) ` P"
     by (simp add: image_comp comp_image)
-  moreover have "P = op ` (f \<circ> the_inv_into A f) ` P"
+  moreover have "P = (`) (f \<circ> the_inv_into A f) ` P"
   proof (rule set_eqI')
     fix X
     assume X: "X \<in> P"
@@ -353,10 +353,10 @@ next
         by (subst f_the_inv_into_f[of f]) (auto intro: \<open>inj_on f A\<close>)
       from x' \<open>X \<in> P\<close> f show "x \<in> X" by auto
     qed
-    ultimately show "X \<in> op ` (f \<circ> the_inv_into A f) ` P" by auto
+    ultimately show "X \<in> (`) (f \<circ> the_inv_into A f) ` P" by auto
   next
     fix X
-    assume "X \<in> op ` (f \<circ> the_inv_into A f) ` P"
+    assume "X \<in> (`) (f \<circ> the_inv_into A f) ` P"
     moreover
     {
       fix Y
@@ -367,13 +367,13 @@ next
     }
     ultimately show "X \<in> P" by auto
   qed
-  ultimately have P: "P = op ` f ` op ` (the_inv_into A f) ` P" by simp
+  ultimately have P: "P = (`) f ` (`) (the_inv_into A f) ` P" by simp
   have A_eq: "A = the_inv_into A f ` f ` A" by (simp add: assms)
   from \<open>inj_on f A\<close> have "inj_on (the_inv_into A f) (f ` A)"
     using \<open>partition_on (f ` A) P\<close> by (simp add: inj_on_the_inv_into)
-  from this have  "op ` (the_inv_into A f) ` P \<in> {P. partition_on A P}"
+  from this have  "(`) (the_inv_into A f) ` P \<in> {P. partition_on A P}"
     using \<open>partition_on (f ` A) P\<close> by (subst A_eq, auto intro!: partition_on_map)
-  from P this show "P \<in> op ` (op ` f) ` {P. partition_on A P}" by (rule image_eqI)
+  from P this show "P \<in> (`) ((`) f) ` {P. partition_on A P}" by (rule image_eqI)
 qed
 
 end

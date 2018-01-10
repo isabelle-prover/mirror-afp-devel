@@ -97,16 +97,16 @@ lemma take_chain_map[simp]:
 subsection \<open>Sorted is a Special Case of Linked\<close>
 
 lemma (in linorder) linked_le_sorted_conv[simp]:
-  "linked (op \<le>) xs = sorted xs"
+  "linked (\<le>) xs = sorted xs"
 proof
-  assume "sorted xs" thus "linked (op \<le>) xs"
+  assume "sorted xs" thus "linked (\<le>) xs"
   proof (induct xs rule: sorted.induct)
     case (Cons xs x) thus ?case by (cases xs) simp_all
   qed simp
 qed (induct xs rule: linked.induct, simp_all)
 
 lemma (in linorder) linked_less_imp_sorted:
-  "linked (op <) xs \<Longrightarrow> sorted xs"
+  "linked (<) xs \<Longrightarrow> sorted xs"
   by (induct xs rule: linked.induct) simp_all
 
 abbreviation (in linorder) (input) lt :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool" where
@@ -123,10 +123,10 @@ abbreviation (in linorder) (input) ge :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b
 
 lemma (in linorder) sorted_take_chain_le[simp]:
   "sorted (key x # map key (take_chain x (le key) xs))"
-  using linked_take_chain[of "op \<le>", of "key x" "map key xs"] by simp
+  using linked_take_chain[of "(\<le>)", of "key x" "map key xs"] by simp
 
 lemma (in linorder) sorted_rev_take_chain_gt_append:
-  assumes "linked (op <) (key x # map key ys)"
+  assumes "linked (<) (key x # map key ys)"
   shows "sorted (map key (rev (take_chain x (gt key) xs)) @ key x # map key ys)"
   using linked_less_imp_sorted[OF linked_rev_take_chain_append[OF assms, of "map key xs"]]
     by (simp add: rev_map)
@@ -162,10 +162,10 @@ fun sequences :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'b l
   and desc :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list list"
 where
   "sequences key (a#b#xs) =
-    (if key a > key b then desc key b [a] xs else asc key b (op # a) xs)"
+    (if key a > key b then desc key b [a] xs else asc key b ((#) a) xs)"
 | "sequences key xs = [xs]"
 | "asc key a f (b#bs) = (if \<not> key a > key b
-    then asc key b (f \<circ> op # a) bs
+    then asc key b (f \<circ> (#) a) bs
     else f [a] # sequences key (b#bs))"
 | "asc key a f bs = f [a] # sequences key bs"
 | "desc key a as (b#bs) = (if key a > key b
@@ -247,7 +247,7 @@ qed simp
 
 lemma asc_take_chain_drop_chain_conv_append:
   assumes "\<And>xs ys. f (xs@ys) = f xs @ ys"
-  shows "asc key a (f \<circ> op @ as) xs
+  shows "asc key a (f \<circ> (@) as) xs
     = (f as @ a # take_chain a (le key) xs) # sequences key (drop_chain a (le key) xs)"
 using assms
 proof (induct xs arbitrary: as a)
@@ -263,11 +263,11 @@ proof (induct xs arbitrary: as a)
 qed simp
 
 lemma asc_take_chain_drop_chain_conv[simp]:
-  "asc key b (op # a) xs
+  "asc key b ((#) a) xs
     = (a # b # take_chain b (le key) xs) # sequences key (drop_chain b (le key) xs)"
 proof -
-  let ?f = "op # a"
-  have "\<And>xs ys. (op # a) (xs@ys) = (op # a) xs @ ys" by simp
+  let ?f = "(#) a"
+  have "\<And>xs ys. ((#) a) (xs@ys) = ((#) a) xs @ ys" by simp
   from asc_take_chain_drop_chain_conv_append[of ?f key b "[]" xs, OF this]
     show ?thesis by (simp add: o_def)
 qed

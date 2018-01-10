@@ -11,7 +11,7 @@ lemma Sigma_transfer[transfer_rule]:
   unfolding Sigma_def
   by transfer_prover
 lemma index_transfer[transfer_rule]:
-  "(list_all2 A ===> A ===> op =) index index"
+  "(list_all2 A ===> A ===> (=)) index index"
   if [transfer_rule]: "bi_unique A"
   unfolding index_def find_index_def
   by transfer_prover
@@ -22,164 +22,164 @@ subsection \<open>Parametricity rules for analysis constants\<close>
 context includes lifting_syntax begin
 
 lemma less_transfer[transfer_rule]:
-  "(A ===> A ===> op =) less less"
-  if [transfer_rule]: "bi_unique A" "(A ===> A ===> op =) less_eq less_eq"
+  "(A ===> A ===> (=)) less less"
+  if [transfer_rule]: "bi_unique A" "(A ===> A ===> (=)) less_eq less_eq"
   for A::"'c::order \<Rightarrow> 'd::order \<Rightarrow> bool"
   unfolding order.strict_iff_order[abs_def]
   by transfer_prover
 
 lemma norm_transfer[transfer_rule]:
-  "(A ===> op =) norm norm"
-  if [transfer_rule]: "(A ===> A ===> op =) inner inner"
+  "(A ===> (=)) norm norm"
+  if [transfer_rule]: "(A ===> A ===> (=)) inner inner"
   unfolding norm_eq_sqrt_inner
   by transfer_prover
 
 lemma dist_transfer[transfer_rule]:
-  "(A ===> A ===> op =) dist dist"
-  if [transfer_rule]: "(A ===> op =) norm norm" "(A ===> A ===> A) op - op -"
+  "(A ===> A ===> (=)) dist dist"
+  if [transfer_rule]: "(A ===> (=)) norm norm" "(A ===> A ===> A) (-) (-)"
   unfolding dist_norm
   by transfer_prover
 
 lemma open_transfer[transfer_rule]:
-  "(rel_set A ===> op =) open open"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> op =) dist dist"
+  "(rel_set A ===> (=)) open open"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> (=)) dist dist"
   unfolding open_dist
   by transfer_prover
 
 lemma closed_transfer[transfer_rule]:
-  "(rel_set A ===> op =) closed closed"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
+  "(rel_set A ===> (=)) closed closed"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
   unfolding closed_def
   by transfer_prover
 
 lemma sgn_transfer[transfer_rule]:
   "(A ===> A) sgn sgn"
-  if [transfer_rule]: "(A ===> op =) norm norm" "(op = ===> A ===> A) scaleR scaleR"
+  if [transfer_rule]: "(A ===> (=)) norm norm" "((=) ===> A ===> A) scaleR scaleR"
   unfolding sgn_div_norm
   by transfer_prover
 
 lemma uniformity_transfer[transfer_rule]:
   "(rel_filter (rel_prod A A)) uniformity uniformity"
-  if [transfer_rule]: "bi_total A"  "bi_unique A" "(A ===> A ===> op =) dist dist"
+  if [transfer_rule]: "bi_total A"  "bi_unique A" "(A ===> A ===> (=)) dist dist"
   unfolding uniformity_dist
   by transfer_prover
 
 lemma lipschitz_transfer[transfer_rule]:
-  "((rel_set A) ===> (A ===> B) ===> op = ===> op =) lipschitz lipschitz"
-  if [transfer_rule]: "(B ===> B ===> op =) dist dist" "(A ===> A ===> op =) dist dist"
+  "((rel_set A) ===> (A ===> B) ===> (=) ===> (=)) lipschitz lipschitz"
+  if [transfer_rule]: "(B ===> B ===> (=)) dist dist" "(A ===> A ===> (=)) dist dist"
   unfolding lipschitz_def by transfer_prover
 
 lemma cball_transfer[transfer_rule]:
-  "(A ===> op = ===> rel_set A) cball cball"
-  if [transfer_rule]: "bi_total A" "(A ===> A ===> op =) dist dist"
+  "(A ===> (=) ===> rel_set A) cball cball"
+  if [transfer_rule]: "bi_total A" "(A ===> A ===> (=)) dist dist"
   unfolding cball_def by transfer_prover
 
 lemma ball_transfer[transfer_rule]:
-  "(A ===> op = ===> rel_set A) ball ball"
-  if [transfer_rule]: "bi_total A" "(A ===> A ===> op =) dist dist"
+  "(A ===> (=) ===> rel_set A) ball ball"
+  if [transfer_rule]: "bi_total A" "(A ===> A ===> (=)) dist dist"
   unfolding ball_def by transfer_prover
 
 lemma local_lipschitz_transfer[transfer_rule]:
-  "(rel_set A ===> rel_set B ===> (A ===> B ===> C) ===> op =) local_lipschitz local_lipschitz"
+  "(rel_set A ===> rel_set B ===> (A ===> B ===> C) ===> (=)) local_lipschitz local_lipschitz"
   if [transfer_rule]: "bi_total A" "bi_unique A" "bi_total B" "bi_unique B"
-    "(A ===> A ===> op =) dist dist"
-    "(B ===> B ===> op =) dist dist"
-    "(C ===> C ===> op =) dist dist"
+    "(A ===> A ===> (=)) dist dist"
+    "(B ===> B ===> (=)) dist dist"
+    "(C ===> C ===> (=)) dist dist"
   unfolding local_lipschitz_def
   by transfer_prover
 
 lemma filterlim_transfer[transfer_rule]:
-  "((A ===> B) ===> rel_filter B ===> rel_filter A ===> op =) filterlim filterlim"
+  "((A ===> B) ===> rel_filter B ===> rel_filter A ===> (=)) filterlim filterlim"
   if [transfer_rule]: "bi_unique B"
   unfolding filterlim_iff
   by transfer_prover
 
 lemma nhds_transfer[transfer_rule]:
   "(A ===> rel_filter A) nhds nhds"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
   unfolding nhds_def
   by transfer_prover
 
 lemma at_within_transfer[transfer_rule]:
   "(A ===> rel_set A ===> rel_filter A) at_within at_within"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
   unfolding at_within_def
   by transfer_prover
 
 lemma continuous_on_transfer[transfer_rule]:
-  "(rel_set A ===> (A ===> B) ===> op =) continuous_on continuous_on"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
-    "bi_unique B" "bi_total B" "(rel_set B ===> op =) open open"
+  "(rel_set A ===> (A ===> B) ===> (=)) continuous_on continuous_on"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
+    "bi_unique B" "bi_total B" "(rel_set B ===> (=)) open open"
   unfolding continuous_on_def
   by transfer_prover
 
-lemma is_interval_transfer[transfer_rule]: "(rel_set A ===> op =) is_interval is_interval"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> op =) inner inner" "(rel_set A) Basis Basis"
+lemma is_interval_transfer[transfer_rule]: "(rel_set A ===> (=)) is_interval is_interval"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> (=)) inner inner" "(rel_set A) Basis Basis"
   unfolding is_interval_def
   by transfer_prover
 
-lemma interval_transfer[transfer_rule]: "(rel_set A ===> op =) interval interval"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> op =) inner inner" "(rel_set A) Basis Basis"
+lemma interval_transfer[transfer_rule]: "(rel_set A ===> (=)) interval interval"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> (=)) inner inner" "(rel_set A) Basis Basis"
   unfolding interval_def
   by transfer_prover
 
 lemma ll_on_open_transfer[transfer_rule]:
-  "(rel_set A ===> (A ===> B ===> C) ===> (rel_set B) ===> op =) ll_on_open ll_on_open"
+  "(rel_set A ===> (A ===> B ===> C) ===> (rel_set B) ===> (=)) ll_on_open ll_on_open"
   if [transfer_rule]:
-    "bi_unique A" "bi_total A" "(A ===> A ===> op =) dist dist" "(A ===> A ===> op =) inner inner" "(rel_set A) Basis Basis"
-    "bi_unique B" "bi_total B" "(B ===> B ===> op =) dist dist"
-    "bi_unique C" "bi_total C" "(C ===> C ===> op =) dist dist"
+    "bi_unique A" "bi_total A" "(A ===> A ===> (=)) dist dist" "(A ===> A ===> (=)) inner inner" "(rel_set A) Basis Basis"
+    "bi_unique B" "bi_total B" "(B ===> B ===> (=)) dist dist"
+    "bi_unique C" "bi_total C" "(C ===> C ===> (=)) dist dist"
   unfolding ll_on_open_def ll_on_open_axioms_def
   by transfer_prover
 
 lemma auto_ll_on_open_transfer[transfer_rule]:
-  "((A ===> A) ===> (rel_set A) ===> op =) auto_ll_on_open auto_ll_on_open"
-  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> op =) dist dist"
+  "((A ===> A) ===> (rel_set A) ===> (=)) auto_ll_on_open auto_ll_on_open"
+  if [transfer_rule]: "bi_unique A" "bi_total A" "(A ===> A ===> (=)) dist dist"
   unfolding auto_ll_on_open_def ll_on_open_axioms_def
   by transfer_prover
 
 lemma additive_transfer[transfer_rule]:
-  "((B ===> A) ===> op =) Real_Vector_Spaces.additive Real_Vector_Spaces.additive"
+  "((B ===> A) ===> (=)) Real_Vector_Spaces.additive Real_Vector_Spaces.additive"
   if [transfer_rule]:
     "bi_unique A"
     "bi_total B"
-    "(A ===> A ===> A) op + op +"
-    "(B ===> B ===> B) op + op +"
+    "(A ===> A ===> A) (+) (+)"
+    "(B ===> B ===> B) (+) (+)"
   unfolding Real_Vector_Spaces.additive_def
   by transfer_prover
 
-lemma linear_transfer[transfer_rule]: "((B ===> A) ===> op =) linear linear"
+lemma linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) linear linear"
   if [transfer_rule]:
     "bi_unique A"
     "bi_total B"
-    "(A ===> A ===> A) op + op +"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(B ===> B ===> B) op + op +"
-    "(op = ===> B ===> B) op *\<^sub>R op *\<^sub>R"
+    "(A ===> A ===> A) (+) (+)"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(B ===> B ===> B) (+) (+)"
+    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
   unfolding linear_def linear_axioms_def
   by transfer_prover
 
-lemma bounded_linear_transfer[transfer_rule]: "((B ===> A) ===> op =) bounded_linear bounded_linear"
+lemma bounded_linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) bounded_linear bounded_linear"
   if [transfer_rule]:
     "bi_unique A"
     "bi_total B"
-    "(A ===> A ===> A) op + op +"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(B ===> B ===> B) op + op +"
-    "(op = ===> B ===> B) op *\<^sub>R op *\<^sub>R"
-    "(A ===> op =) norm norm"
-    "(B ===> op =) norm norm"
+    "(A ===> A ===> A) (+) (+)"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(B ===> B ===> B) (+) (+)"
+    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+    "(A ===> (=)) norm norm"
+    "(B ===> (=)) norm norm"
   unfolding bounded_linear_def bounded_linear_axioms_def
   by transfer_prover
 
 lemma has_vderiv_on_transfer[transfer_rule]:
-  "((op = ===> A) ===> (op = ===> A) ===> rel_set op = ===> op =) op has_vderiv_on op has_vderiv_on"
+  "(((=) ===> A) ===> ((=) ===> A) ===> rel_set (=) ===> (=)) (has_vderiv_on) (has_vderiv_on)"
   if [transfer_rule]:
-    "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(A ===> A ===> A) op + op +"
-    "(A ===> A ===> A) op - op -"
-    "(A ===> op =) norm norm"
+    "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(A ===> A ===> A) (+) (+)"
+    "(A ===> A ===> A) (-) (-)"
+    "(A ===> (=)) norm norm"
   unfolding has_vderiv_on_def has_vector_derivative_def has_derivative_within
   by transfer_prover
 
@@ -189,13 +189,13 @@ lemma Pi_transfer[transfer_rule]: "(rel_set B ===> (B ===> rel_set A) ===> rel_s
   by transfer_prover
 
 lemma solves_ode_transfer[transfer_rule]:
-  "((op = ===> A) ===> (op = ===> A ===> A)  ===> rel_set op = ===> rel_set A ===> op =) op solves_ode op solves_ode"
+  "(((=) ===> A) ===> ((=) ===> A ===> A)  ===> rel_set (=) ===> rel_set A ===> (=)) (solves_ode) (solves_ode)"
   if [transfer_rule]:
-    "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> op =) open open"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(A ===> A ===> A) op + op +"
-    "(A ===> A ===> A) op - op -"
-    "(A ===> op =) norm norm"
+    "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(A ===> A ===> A) (+) (+)"
+    "(A ===> A ===> A) (-) (-)"
+    "(A ===> (=)) norm norm"
   unfolding solves_ode_def
   by transfer_prover
 
@@ -213,12 +213,12 @@ lemma bi_total_rel_blinfun[transfer_rule]:
   if
     "bi_unique A" "bi_total B" (* really? *)
     "bi_unique B" "bi_total A"
-    "(B ===> B ===> B) op + op +"
-    "(op = ===> B ===> B) op *\<^sub>R op *\<^sub>R"
-    "(A ===> A ===> A) op + op +"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(B ===> op =) norm norm"
-    "(A ===> op =) norm norm"
+    "(B ===> B ===> B) (+) (+)"
+    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+    "(A ===> A ===> A) (+) (+)"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(B ===> (=)) norm norm"
+    "(A ===> (=)) norm norm"
   using bounded_linear_transfer[OF that(3-)]
   using bi_total_fun[OF that(1,2)]
   unfolding bi_total_def
@@ -242,33 +242,33 @@ lemma blinfun_apply_transfer[transfer_rule]:
   "(rel_blinfun A B ===> A ===> B) blinfun_apply blinfun_apply"
   by (auto simp: rel_blinfun_def)
 
-lemma norm_blinfun_transfer[transfer_rule]: "(rel_blinfun A A ===> op =) norm norm"
-  if [transfer_rule]: "(A ===> op =) norm norm" "(rel_set A) UNIV UNIV"
+lemma norm_blinfun_transfer[transfer_rule]: "(rel_blinfun A A ===> (=)) norm norm"
+  if [transfer_rule]: "(A ===> (=)) norm norm" "(rel_set A) UNIV UNIV"
   unfolding norm_blinfun.rep_eq
   unfolding onorm_def
   by transfer_prover
 
 lemma minus_blinfun_transfer[transfer_rule]:
-  "(rel_blinfun A B ===> rel_blinfun A B ===> rel_blinfun A B) op - op -"
-  if "(B ===> B ===> B) op - op -"
+  "(rel_blinfun A B ===> rel_blinfun A B ===> rel_blinfun A B) (-) (-)"
+  if "(B ===> B ===> B) (-) (-)"
   using that
   apply (auto simp: rel_blinfun_def blinfun.bilinear_simps
       intro!: rel_funI dest: rel_funD)
   by (metis rel_funD)
 
-lemma compose_blinfun_transfer[transfer_rule]:"(rel_blinfun A B ===> rel_blinfun C A ===> rel_blinfun C B) op o\<^sub>L op o\<^sub>L"
+lemma compose_blinfun_transfer[transfer_rule]:"(rel_blinfun A B ===> rel_blinfun C A ===> rel_blinfun C B) (o\<^sub>L) (o\<^sub>L)"
   apply (auto simp: rel_blinfun_def blinfun.bilinear_simps
       intro!: rel_funI dest: rel_funD)
   by (metis rel_funD)
 
 lemma c1_on_open_transfer[transfer_rule]:
-  "((A ===> A) ===> (A ===> rel_blinfun A A) ===> rel_set A ===> op =) c1_on_open c1_on_open"
+  "((A ===> A) ===> (A ===> rel_blinfun A A) ===> rel_set A ===> (=)) c1_on_open c1_on_open"
   if [transfer_rule]:
     "bi_unique A" "bi_total A"
-    "(A ===> A ===> A) op + op +"
-    "(A ===> A ===> A) op - op -"
-    "(op = ===> A ===> A) op *\<^sub>R op *\<^sub>R"
-    "(A ===> op =) norm norm"
+    "(A ===> A ===> A) (+) (+)"
+    "(A ===> A ===> A) (-) (-)"
+    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "(A ===> (=)) norm norm"
     "A 0 0"
   unfolding c1_on_open_def has_derivative_at
   by transfer_prover
@@ -361,12 +361,12 @@ lemma cast_bl_rep: "cast_bl (f::'a \<Rightarrow>\<^sub>L 'b) x = (cast (f (cast 
 
 definition "cast_eucl1 x = (cast (fst x), cast_bl (snd x))"
 
-definition [simp]: "op_cast_image = op ` cast"
-definition [simp]: "op_cast_eucl1_image = op ` cast_eucl1"
+definition [simp]: "op_cast_image = (`) cast"
+definition [simp]: "op_cast_eucl1_image = (`) cast_eucl1"
 context begin interpretation autoref_syn.
 lemma [autoref_op_pat_def]:
-  "op ` cast \<equiv> OP op_cast_image"
-  "op ` cast_eucl1 \<equiv> OP op_cast_eucl1_image"
+  "(`) cast \<equiv> OP op_cast_image"
+  "(`) cast_eucl1 \<equiv> OP op_cast_eucl1_image"
   by auto
 end
 
@@ -515,13 +515,13 @@ lemma abs_transfer[transfer_rule]:
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma less_eq_transfer[transfer_rule]:
-  "(rel_ve ===> rel_ve ===> op =) less_eq less_eq"
+  "(rel_ve ===> rel_ve ===> (=)) less_eq less_eq"
   by (auto simp: rel_ve_def nth_eq_iff_index eucl_le_Basis_list_iff[where 'a='a]
       eucl_le_Basis_list_iff[where 'a="'n rvec"]
       list_of_eucl_eq_iff intro!: rel_funI )
 
 lemma scaleR_transfer[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_ve) scaleR scaleR"
+  "((=) ===> rel_ve ===> rel_ve) scaleR scaleR"
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
@@ -545,12 +545,12 @@ lemma uminus_transfer[transfer_rule]:
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma plus_transfer[transfer_rule]:
-  "(rel_ve ===> rel_ve ===> rel_ve) op + op +"
+  "(rel_ve ===> rel_ve ===> rel_ve) (+) (+)"
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma minus_transfer[transfer_rule]:
-  "(rel_ve ===> rel_ve ===> rel_ve) op - op -"
+  "(rel_ve ===> rel_ve ===> rel_ve) (-) (-)"
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
@@ -560,23 +560,23 @@ lemma Basis_list_transfer[transfer_rule]:
       nth_eq_iff_index intro!: nth_equalityI)
 
 lemma eucl_down_transfer[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_ve) eucl_down eucl_down"
+  "((=) ===> rel_ve ===> rel_ve) eucl_down eucl_down"
   unfolding eucl_down_def
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma eucl_truncate_up_transfer[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_ve) eucl_truncate_up eucl_truncate_up"
+  "((=) ===> rel_ve ===> rel_ve) eucl_truncate_up eucl_truncate_up"
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma eucl_truncate_down_transfer[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_ve) eucl_truncate_down eucl_truncate_down"
+  "((=) ===> rel_ve ===> rel_ve) eucl_truncate_down eucl_truncate_down"
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index
       list_of_eucl_eq_iff intro!: rel_funI)
 
 lemma inner_transfer[transfer_rule]:
-  "(rel_ve ===> rel_ve ===> op =) inner inner"
+  "(rel_ve ===> rel_ve ===> (=)) inner inner"
   apply (subst euclidean_inner[where 'a="'a", abs_def])
   apply (subst euclidean_inner[where 'a="'n rvec", abs_def])
   by (auto simp: rel_ve_def algebra_simps nth_eq_iff_index inner_simps nth_eq_iff_index
@@ -589,10 +589,10 @@ lemma rel_ve_cast: "rel_ve (x::'n rvec) (y::'a) \<longleftrightarrow> x = cast y
 lemma rel_ve_cast': "rel_ve (x::'n rvec) (y::'a) \<longleftrightarrow> cast x = y"
   by (auto simp: rel_ve_def cast_def)
 
-lemma cast_transfer[transfer_rule]: "(rel_ve ===> op =) (\<lambda>x. x) cast"
+lemma cast_transfer[transfer_rule]: "(rel_ve ===> (=)) (\<lambda>x. x) cast"
   by (auto simp: rel_ve_cast)
 
-lemma cast_transfer'[transfer_rule]: "(op = ===> rel_ve) (\<lambda>x. x) cast"
+lemma cast_transfer'[transfer_rule]: "((=) ===> rel_ve) (\<lambda>x. x) cast"
   by (auto simp: rel_ve_cast')
 
 lemma bounded_linear_cast: "bounded_linear (cast::'a \<Rightarrow> 'n rvec)"
@@ -605,16 +605,16 @@ context includes blinfun.lifting begin
 
 lemmas [simp] = cast_bl_rep
 
-lemma eucl_of_list_transfer[transfer_rule]: "(list_all2 op = ===> rel_ve) eucl_of_list eucl_of_list"
+lemma eucl_of_list_transfer[transfer_rule]: "(list_all2 (=) ===> rel_ve) eucl_of_list eucl_of_list"
   unfolding eucl_of_list_def
   by transfer_prover
 
-lemma list_of_eucl_transfer[transfer_rule]: "(rel_ve ===> list_all2 op =) list_of_eucl list_of_eucl"
+lemma list_of_eucl_transfer[transfer_rule]: "(rel_ve ===> list_all2 (=)) list_of_eucl list_of_eucl"
   unfolding list_of_eucl_def
   by transfer_prover
 
 lemma blinfun_of_matrix_transfer[transfer_rule]:
-  "((rel_ve ===> rel_ve ===> op =) ===> (rel_blinfun rel_ve rel_ve)) blinfun_of_matrix blinfun_of_matrix"
+  "((rel_ve ===> rel_ve ===> (=)) ===> (rel_blinfun rel_ve rel_ve)) blinfun_of_matrix blinfun_of_matrix"
   apply (rule rel_funI)
   apply transfer
   apply (rule rel_funI)
@@ -624,9 +624,9 @@ lemma blinfun_of_matrix_transfer[transfer_rule]:
   unfolding rel_ve_def list_of_eucl_eq_iff inner_sum_left
   apply simp
   apply (intro allI impI sum.cong refl)
-  apply (rule arg_cong2[where f="op *"])
+  apply (rule arg_cong2[where f="( * )"])
   subgoal for a b c d e f g
-    apply (rule arg_cong2[where f="op *"])
+    apply (rule arg_cong2[where f="( * )"])
     subgoal by simp
     apply (drule rel_funD[where x="Basis_list ! f"]) defer
      apply (drule rel_funD[where x="Basis_list ! g"]) defer
@@ -669,7 +669,7 @@ locale transfer_eucl_vec_ll_on_open = transfer_eucl_vec a n + ll_on_open T f X
 begin
 
 lemma transfer_X[transfer_rule]: "rel_set rel_ve vX X"
-  and transfer_f[transfer_rule]: "(rel_fun op = (rel_fun rel_ve rel_ve)) vf f"
+  and transfer_f[transfer_rule]: "(rel_fun (=) (rel_fun rel_ve rel_ve)) vf f"
   by (auto simp: rel_ve_cast cast_eqI vX_def vf_def intro!: rel_setI rel_funI)
 
 sublocale v: ll_on_open T vf vX
@@ -678,12 +678,12 @@ sublocale v: ll_on_open T vf vX
 context includes lifting_syntax begin
 
 lemma transfer_csols[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_set (rel_prod (op = ===> rel_ve) op =)) v.csols csols"
+  "((=) ===> rel_ve ===> rel_set (rel_prod ((=) ===> rel_ve) (=))) v.csols csols"
   unfolding csols_def v.csols_def
   by transfer_prover
 
 lemma transfer_existence_ivl[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_set op =) v.existence_ivl existence_ivl"
+  "((=) ===> rel_ve ===> rel_set (=)) v.existence_ivl existence_ivl"
   unfolding existence_ivl_def v.existence_ivl_def
   by transfer_prover
 
@@ -715,7 +715,7 @@ lemma cast_v_flow_cast_eq:
   done
 
 lemma transfer_flow[transfer_rule]:
-  "(op = ===> rel_ve ===> op = ===> rel_ve) v.flow flow"
+  "((=) ===> rel_ve ===> (=) ===> rel_ve) v.flow flow"
   apply (auto intro!: rel_funI simp: rel_ve_cast)
   subgoal for t0 x0 t
     apply (cases "t \<in> existence_ivl t0 (cast x0)")
@@ -760,17 +760,17 @@ sublocale v: c1_on_open_euclidean vf vf' vX
 context includes lifting_syntax begin
 
 lemma transfer_csols[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_set (rel_prod (op = ===> rel_ve) op =)) v.csols csols"
+  "((=) ===> rel_ve ===> rel_set (rel_prod ((=) ===> rel_ve) (=))) v.csols csols"
   unfolding csols_def v.csols_def
   by transfer_prover
 
 lemma transfer_existence_ivl[transfer_rule]:
-  "(op = ===> rel_ve ===> rel_set op =) v.existence_ivl existence_ivl"
+  "((=) ===> rel_ve ===> rel_set (=)) v.existence_ivl existence_ivl"
   unfolding existence_ivl_def v.existence_ivl_def
   by transfer_prover
 
 lemma transfer_existence_ivl0[transfer_rule]:
-  "(rel_ve ===> rel_set op =) v.existence_ivl0 existence_ivl0"
+  "(rel_ve ===> rel_set (=)) v.existence_ivl0 existence_ivl0"
 proof -
   interpret ll: transfer_eucl_vec_ll_on_open a n UNIV "\<lambda>_. f" X "\<lambda>_. vf" vX
     by unfold_locales (auto simp: vf_def)
@@ -780,7 +780,7 @@ proof -
 qed
 
 lemma transfer_flow0[transfer_rule]:
-  "(rel_ve ===> op = ===> rel_ve) v.flow0 flow0"
+  "(rel_ve ===> (=) ===> rel_ve) v.flow0 flow0"
 proof -
   interpret ll: transfer_eucl_vec_ll_on_open a n UNIV "\<lambda>_. f" X "\<lambda>_. vf" vX
     by unfold_locales (auto simp: vf_def)
@@ -861,7 +861,7 @@ proof -
 qed
 
 lemma transfer_Dflow[transfer_rule]:
-  "(rel_ve ===> op = ===> rel_blinfun rel_ve rel_ve) v.Dflow Dflow"
+  "(rel_ve ===> (=) ===> rel_blinfun rel_ve rel_ve) v.Dflow Dflow"
   apply (auto intro!: rel_funI simp: rel_ve_cast rel_blinfun_def)
   subgoal for x0 t d
     apply (cases "t \<in> mvar.existence_ivl (cast x0) 0 1\<^sub>L")
@@ -914,12 +914,12 @@ lemma transfer_Dflow[transfer_rule]:
   done
 
 lemma returns_to_transfer[transfer_rule]:
-  "(rel_set rel_ve ===> rel_ve ===> op =) v.returns_to returns_to"
+  "(rel_set rel_ve ===> rel_ve ===> (=)) v.returns_to returns_to"
   unfolding returns_to_def v.returns_to_def
   by transfer_prover
 
 lemma return_time_transfer[transfer_rule]:
-  "(rel_set rel_ve ===> rel_ve ===> op =) v.return_time return_time"
+  "(rel_set rel_ve ===> rel_ve ===> (=)) v.return_time return_time"
   unfolding return_time_def v.return_time_def
   by transfer_prover
 
@@ -934,17 +934,17 @@ lemma poincare_mapsto_transfer[transfer_rule]:
    ===> rel_set rel_ve
    ===> rel_set rel_ve
    ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
-   ===> op =) v.poincare_mapsto poincare_mapsto"
+   ===> (=)) v.poincare_mapsto poincare_mapsto"
   unfolding poincare_mapsto_def v.poincare_mapsto_def
     has_derivative_within differentiable_def
   by transfer_prover
 
 lemma flowsto_transfer[transfer_rule]:
   "(rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
-   ===> rel_set op =
+   ===> rel_set (=)
    ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
    ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
-   ===> op =) v.flowsto flowsto"
+   ===> (=)) v.flowsto flowsto"
   unfolding flowsto_def v.flowsto_def
   by transfer_prover
 

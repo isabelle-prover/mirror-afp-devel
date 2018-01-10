@@ -16,7 +16,7 @@ paragraph \<open>Misc lemmas\<close>
 
 lemma mem_snd_map: "(\<exists>x. (x, y) \<in> S) \<longleftrightarrow> y \<in> snd ` S" by force
 
-lemma filter_upt: assumes "l \<le> m" "m < n" shows "filter (op \<le> m) [l..<n] = [m..<n]"
+lemma filter_upt: assumes "l \<le> m" "m < n" shows "filter ((\<le>) m) [l..<n] = [m..<n]"
 proof(insert assms, induct n)
   case 0 then show ?case by auto
 next
@@ -30,7 +30,7 @@ next
   case (Suc k) then show ?case by (cases "j = k", auto)
 qed
 
-lemma IArray_sub[simp]: "op !! as = op ! (IArray.list_of as)" by auto
+lemma IArray_sub[simp]: "(!!) as = (!) (IArray.list_of as)" by auto
 declare IArray.sub_def[simp del]
 
 text \<open>Following lemmas in this section are for @{const subseqs}\<close>
@@ -125,7 +125,7 @@ proof (induct xs)
 next
   case (Cons x xs)
   from this[symmetric]
-  have "subseqs xs = map (map (op ! (x#xs))) (subseqs [Suc 0..<Suc (length xs)])"
+  have "subseqs xs = map (map ((!) (x#xs))) (subseqs [Suc 0..<Suc (length xs)])"
     by (fold map_Suc_upt, simp)
   then show ?case by (unfold length_Cons upt_conv_Cons[OF zero_less_Suc], simp)
 qed
@@ -195,9 +195,9 @@ next
     where xs: "xs = x#y#ys" and n': "length ys = n'" by auto
     with * have xy: "x < y" and yys: "y#ys \<in> set (subseqs [0..<m])" by auto
     from Cons_mem_set_subseqs_sorted[OF _ yys]
-    have "y#ys \<in> set (subseqs (filter (op \<le> y) [0..<m]))" by auto
+    have "y#ys \<in> set (subseqs (filter ((\<le>) y) [0..<m]))" by auto
     also from Cons_mem_set_subseqsD[OF yys] have ym: "y < m" by auto
-      then have "filter (op \<le> y) [0..<m] = [y..<m]" by (auto intro: filter_upt)
+      then have "filter ((\<le>) y) [0..<m] = [y..<m]" by (auto intro: filter_upt)
     finally have "y#ys \<in> set (subseqs [y..<m])" by auto
     with xy have "x#y#ys \<in> set (subseqs (x#[y..<m]))" by auto
     also from xy have "... \<subseteq> set (subseqs ([0..<y] @ [y..<m]))"
@@ -453,7 +453,7 @@ definition impl where "impl = Sublists_Foldr_Impl create_subseqs next_subseqs"
 sublocale subseqs_foldr_impl f impl .
 
 definition set_prevs where "set_prevs base tail n \<equiv>
-  { (i, foldr f (map (op ! tail) is) base) | i is.
+  { (i, foldr f (map ((!) tail) is) base) | i is.
    subseq_of_length n [0..<length tail] is \<and> i = (if n = 0 then length tail else hd is) }"
 
 lemma snd_set_prevs:
@@ -506,11 +506,11 @@ proof(intro equalityI subsetI)
   fix t
   assume r: "t \<in> ?r"
   from this[unfolded set_prevs_def] obtain iis
-  where t: "t = (hd iis, foldr f (map (op !! tail) iis) base)"
+  where t: "t = (hd iis, foldr f (map ((!!) tail) iis) base)"
     and sl: "subseq_of_length (Suc n) [0..<IArray.length tail] iis" by auto
   from sl have "length iis > 0" by auto
   then obtain i "is" where iis: "iis = i#is" by (meson list.set_cases nth_mem)
-  define v where "v = foldr f (map (op !! tail) is) base"
+  define v where "v = foldr f (map ((!!) tail) is) base"
   note sl[unfolded subseq_of_length_Suc_upt]
   note nxt = next_subseqs_spec[OF nxt]
   show "t \<in> ?l"
@@ -538,7 +538,7 @@ next
     and iv: "(i,v) \<in> set prevs" by auto
   from iv[unfolded inv_prevs set_prevs_def, simplified]
   obtain "is"
-  where v: "v = foldr f (map (op !! tail) is) base"
+  where v: "v = foldr f (map ((!!) tail) is) base"
     and "is": "subseq_of_length n [0..<IArray.length tail] is"
     and i: "if n = 0 then i = IArray.length tail else i = hd is" by auto
   from "is" j i have jis: "subseq_of_length (Suc n) [0..<IArray.length tail] (j#is)"
@@ -604,7 +604,7 @@ proof (cases state)
           ?f ` Cons head ` { as. subseq_of_length n (tl elements) as }" by (auto simp: image_def)
         also note image_Un[symmetric]
         also have
-          "(op # head ` {as. subseq_of_length n (tl elements) as} \<union>
+          "((#) head ` {as. subseq_of_length n (tl elements) as} \<union>
            {as. subseq_of_length (Suc n) (tl elements) as}) =
            {as. subseq_of_length (Suc n) elements as}"
         by (unfold subseqs_of_length_Suc_Cons elements2, auto)

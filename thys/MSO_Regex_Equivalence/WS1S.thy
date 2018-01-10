@@ -175,7 +175,7 @@ lemma stream_enc_cut_same:
   shows "stream_enc (w, I) = cut_same (any, replicate (length I) False) (stream_enc (w, I)) @-
     sconst (any, replicate (length I) False)"
   unfolding cut_same_def
-  by (rule trans[OF sym[OF stake_sdrop] arg_cong2[of _ _ _ _ "op @-", OF refl]])
+  by (rule trans[OF sym[OF stake_sdrop] arg_cong2[of _ _ _ _ "(@-)", OF refl]])
      (rule LeastI_ex[OF ex_Loop_stream_enc[OF assms]])
 
 lemma stream_enc_enc:
@@ -379,8 +379,8 @@ lemma stream_enc_dec:
   by (drule LeastI_ex)
     (auto intro!: enc_atom_dec simp: smap2_alt cut_same_def
     simp del: stake_smap sdrop_smap
-    intro!: trans[OF arg_cong2[of _ _ _ _ "op !!"] snth_smap]
-            trans[OF arg_cong2[of _ _ _ _ "op @-"] stake_sdrop])
+    intro!: trans[OF arg_cong2[of _ _ _ _ "(!!)"] snth_smap]
+            trans[OF arg_cong2[of _ _ _ _ "(@-)"] stake_sdrop])
 
 lemma stream_enc_unique: 
   "i < length I \<Longrightarrow> \<exists>p. I ! i = Inl p \<Longrightarrow> \<exists>!p. snd (stream_enc (w, I) !! p) ! i"

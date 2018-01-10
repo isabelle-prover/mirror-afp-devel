@@ -1407,17 +1407,17 @@ proof (rule conservative_mptI)
         then have *: "abs(birkhoff_sum f n x) \<le> r * n1" using \<open>n \<le> n1\<close> \<open>r>0\<close>
           by (meson of_nat_le_iff order_trans real_mult_le_cancel_iff2)
 
-        have F_expr: "F = {-r*n1-N..r*n1+N} \<inter> op+(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)"
+        have F_expr: "F = {-r*n1-N..r*n1+N} \<inter> (+)(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)"
           unfolding F_def by (auto simp add: add.commute)
         have "(Pair ((T^^n)x) -`C) \<subseteq> {real_of_int (- int N)..real N}" unfolding C_def B_def by auto
-        then have "(op+(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C) \<subseteq> {-N-birkhoff_sum f n x..N-birkhoff_sum f n x}"
+        then have "((+)(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C) \<subseteq> {-N-birkhoff_sum f n x..N-birkhoff_sum f n x}"
           by auto
         also have "... \<subseteq> {-r * n1 - N .. r * n1 + N}" using * by auto
-        finally have "F = (op+(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C)" unfolding F_expr by auto
+        finally have "F = ((+)(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C)" unfolding F_expr by auto
 
-        then have "emeasure lborel F = emeasure lborel (op+(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C))" by auto
-        also have "... = emeasure lborel ((op+(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)) \<inter> space lborel)" by simp
-        also have "... = emeasure (distr lborel borel (op + (birkhoff_sum f n x))) (Pair ((T^^n)x) -`C)"
+        then have "emeasure lborel F = emeasure lborel ((+)(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C))" by auto
+        also have "... = emeasure lborel (((+)(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)) \<inter> space lborel)" by simp
+        also have "... = emeasure (distr lborel borel ((+) (birkhoff_sum f n x))) (Pair ((T^^n)x) -`C)"
           apply (rule emeasure_distr[symmetric]) using C_meas by auto
         also have "... = emeasure lborel (Pair ((T^^n)x) -`C)" using lborel_distr_plus[of "birkhoff_sum f n x"] by simp
         also have "... \<ge> e" using Cx_fibers \<open>(T^^n) x \<in> Cx\<close> by auto

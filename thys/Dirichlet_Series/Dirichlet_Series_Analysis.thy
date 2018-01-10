@@ -113,7 +113,7 @@ instantiation real :: nat_power_normed_field
 begin
 
 definition real_power_real :: "real \<Rightarrow> real \<Rightarrow> real" where
-  [simp]: "real_power_real = op powr"
+  [simp]: "real_power_real = (powr)"
   
 instance proof (standard, goal_cases)
   case (7 n x)

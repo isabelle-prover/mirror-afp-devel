@@ -149,9 +149,9 @@ proof (induct xs arbitrary: n)
     finally have id: "?r =
       {ps. ps \<subseteq># mset xs \<and> size ps = n} \<union> (\<lambda>ps. ps + {#x#}) ` {ps. ps \<subseteq># mset xs \<and> size ps = m}" .
     have "?l = mset ` {ys \<in> set (subseqs xs). length ys = Suc m}
-      \<union> mset ` {ys \<in> op # x ` set (subseqs xs). length ys = Suc m}"
+      \<union> mset ` {ys \<in> (#) x ` set (subseqs xs). length ys = Suc m}"
       unfolding Suc by (auto simp: Let_def)
-    also have "mset ` {ys \<in> op # x ` set (subseqs xs). length ys = Suc m}
+    also have "mset ` {ys \<in> (#) x ` set (subseqs xs). length ys = Suc m}
       = (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (subseqs xs). length ys = m}" by force
     finally have id': "?l = mset ` {ys \<in> set (subseqs xs). length ys = Suc m} \<union>
       (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (subseqs xs). length ys = m}" .

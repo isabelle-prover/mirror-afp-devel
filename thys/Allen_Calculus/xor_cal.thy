@@ -16,7 +16,7 @@ where "xor A B \<equiv> (A \<and> \<not>B) \<or> (\<not>A \<and> B)"
 
 declare xor_def [simp]
 
-interpretation bool:semigroup "op \<oplus> "
+interpretation bool:semigroup "(\<oplus>) "
 proof
 { fix a b c show "a \<oplus> b \<oplus> c = a \<oplus> (b \<oplus> c)" by auto}
 qed

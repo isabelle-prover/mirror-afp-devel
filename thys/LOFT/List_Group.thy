@@ -6,7 +6,7 @@ section\<open>List Group\<close>
 
 function (sequential) list_group_eq :: "'a list \<Rightarrow> 'a list list" where
   "list_group_eq [] = []" |
-  "list_group_eq (x#xs) = [x # takeWhile (op = x) xs] @ list_group_eq (dropWhile (op = x) xs)"
+  "list_group_eq (x#xs) = [x # takeWhile ((=) x) xs] @ list_group_eq (dropWhile ((=) x) xs)"
 by pat_completeness auto
 termination list_group_eq
 apply (relation "measure (\<lambda>N. length N )")

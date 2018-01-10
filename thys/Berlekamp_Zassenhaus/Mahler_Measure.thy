@@ -117,7 +117,7 @@ lemma mahler_measure_poly_via_monic :
 
 lemma smult_inj[simp]: assumes "(a::'a::idom) \<noteq> 0" shows "inj (smult a)"
 proof-
-  interpret map_poly_inj_zero_hom "op * a" using assms by (unfold_locales, auto)
+  interpret map_poly_inj_zero_hom "( * ) a" using assms by (unfold_locales, auto)
   show ?thesis unfolding smult_as_map_poly by fact
 qed
 
@@ -252,7 +252,7 @@ abbreviation "linH a \<equiv> if (cmod a > 1) then [:- 1,cnj a:] else [:- a,1:]"
 lemma coeffs_cong_1[simp]: "cCons a v = cCons b v \<longleftrightarrow> a = b" unfolding cCons_def by auto
 
 lemma strip_while_singleton[simp]:
-  "strip_while (op = 0) [v * a] = cCons (v * a) []" unfolding cCons_def strip_while_def by auto
+  "strip_while ((=) 0) [v * a] = cCons (v * a) []" unfolding cCons_def strip_while_def by auto
 
 lemma coeffs_times_linterm:
   shows "coeffs (pCons 0 (smult a p) + smult b p) = strip_while (HOL.eq (0::'a::{comm_ring_1}))
@@ -269,23 +269,23 @@ lemma filter_distr_rev[simp]:
 by(induct lst;auto)
 
 lemma strip_while_filter:
-  shows "filter (op \<noteq> 0) (strip_while (op = 0) (lst::'a::zero list)) = filter (op \<noteq> 0) lst"
+  shows "filter ((\<noteq>) 0) (strip_while ((=) 0) (lst::'a::zero list)) = filter ((\<noteq>) 0) lst"
 proof - {fix lst::"'a list"
-  have "filter (op \<noteq> 0) (dropWhile (op = 0) lst) = filter (op \<noteq> 0) lst" by (induct lst;auto)
-  hence "(filter (op \<noteq> 0) (strip_while (op = 0) (rev lst))) = filter (op \<noteq> 0) (rev lst)"
+  have "filter ((\<noteq>) 0) (dropWhile ((=) 0) lst) = filter ((\<noteq>) 0) lst" by (induct lst;auto)
+  hence "(filter ((\<noteq>) 0) (strip_while ((=) 0) (rev lst))) = filter ((\<noteq>) 0) (rev lst)"
   unfolding strip_while_def by(simp)}
   from this[of "rev lst"] show ?thesis by simp
 qed
 
 lemma sum_stripwhile[simp]:
   assumes "f 0 = 0"
-  shows "(\<Sum>a\<leftarrow>strip_while (op = 0) lst. f a) = (\<Sum>a\<leftarrow>lst. f a)"
+  shows "(\<Sum>a\<leftarrow>strip_while ((=) 0) lst. f a) = (\<Sum>a\<leftarrow>lst. f a)"
 proof -
   {fix lst
-    have "(\<Sum>a\<leftarrow>filter (op \<noteq> 0) lst. f a) = (\<Sum>a\<leftarrow>lst. f a)" by(induct lst,auto simp:assms)}
+    have "(\<Sum>a\<leftarrow>filter ((\<noteq>) 0) lst. f a) = (\<Sum>a\<leftarrow>lst. f a)" by(induct lst,auto simp:assms)}
   note f=this
-  have "sum_list (map f (filter (op \<noteq> 0) (strip_while (op = 0) lst)))
-       = sum_list (map f (filter (op \<noteq> 0) lst))"
+  have "sum_list (map f (filter ((\<noteq>) 0) (strip_while ((=) 0) lst)))
+       = sum_list (map f (filter ((\<noteq>) 0) lst))"
   using strip_while_filter[of lst] by(simp)
   thus ?thesis unfolding f.
 qed

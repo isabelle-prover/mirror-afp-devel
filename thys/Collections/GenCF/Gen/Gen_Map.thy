@@ -15,7 +15,7 @@ begin
   (* TODO: Make foldli explicit, such that it is seen by 
   iterator-optimizations! cf Gen_Set for how to do this! *)
   lemma foldli_add: "det_fold_map X 
-    (\<lambda>_. True) (\<lambda>(k,v) m. op_map_update k v m) m (op ++ m)"
+    (\<lambda>_. True) (\<lambda>(k,v) m. op_map_update k v m) m ((++) m)"
   proof (rule, goal_cases)
     case (1 l) thus ?case
       apply (induct l arbitrary: m) 
@@ -32,7 +32,7 @@ begin
     assumes PRIO_TAG_GEN_ALGO
     assumes UPD: "GEN_OP ins op_map_update (Rk\<rightarrow>Rv\<rightarrow>\<langle>Rk,Rv\<rangle>Rs1\<rightarrow>\<langle>Rk,Rv\<rangle>Rs1)"
     assumes IT: "SIDE_GEN_ALGO (is_map_to_list Rk Rv Rs2 tsl)"
-    shows "(gen_add (foldli o tsl) ins,op ++) 
+    shows "(gen_add (foldli o tsl) ins,(++)) 
       \<in> (\<langle>Rk,Rv\<rangle>Rs1) \<rightarrow> (\<langle>Rk,Rv\<rangle>Rs2) \<rightarrow> (\<langle>Rk,Rv\<rangle>Rs1)"
     apply (intro fun_relI)
     unfolding gen_add_def comp_def

@@ -153,7 +153,7 @@ where     "OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Sequence{S .First(), S .
 subsection{* Definition: asBag *}
 
 definition OclAsBag\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>S\<^sub>e\<^sub>q'(')")
-where     "OclAsBag\<^sub>S\<^sub>e\<^sub>q S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if list_ex (op = s) \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"
+where     "OclAsBag\<^sub>S\<^sub>e\<^sub>q S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if list_ex ((=) s) \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"
 
 definition OclAsBag\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>S\<^sub>e\<^sub>t'(')")
 where     "OclAsBag\<^sub>S\<^sub>e\<^sub>t S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if s \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"

@@ -124,8 +124,8 @@ proof safe
   fix x i::'a assume "i \<in> Basis" "x \<in> cball y r"
   with dist_component_le[OF \<open>i \<in> Basis\<close>, of y x]
   have "dist (y \<bullet> i) (x \<bullet> i) \<le> r" by (simp add: mem_cball)
-  thus "(y - sum (op *\<^sub>R r) Basis) \<bullet> i \<le> x \<bullet> i"
-    "x \<bullet> i \<le> (y + sum (op *\<^sub>R r) Basis) \<bullet> i"
+  thus "(y - sum (( *\<^sub>R) r) Basis) \<bullet> i \<le> x \<bullet> i"
+    "x \<bullet> i \<le> (y + sum (( *\<^sub>R) r) Basis) \<bullet> i"
     by (auto simp add: inner_diff_left inner_add_left inner_sum_left
       sum_distrib_left[symmetric] sum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
 qed
@@ -993,7 +993,7 @@ lemma usolves_ode_cong[cong]:
 lemma shift_autonomous_unique_solution:
   assumes usol: "(x usolves_ode f from t0) T X"
   assumes auto: "\<And>s t x. x \<in> X \<Longrightarrow> f s x = f t x"
-  shows "((\<lambda>t. x (t + t0 - t1)) usolves_ode f from t1) (op + (t1 - t0) ` T) X"
+  shows "((\<lambda>t. x (t + t0 - t1)) usolves_ode f from t1) ((+) (t1 - t0) ` T) X"
 proof (rule usolves_ode_rawI)
   from usolves_odeD[OF usol]
   have sol: "(x solves_ode f) T X"
@@ -1002,18 +1002,18 @@ proof (rule usolves_ode_rawI)
     and unique: "t0 \<in> T' \<Longrightarrow> is_interval T' \<Longrightarrow> T' \<subseteq> T \<Longrightarrow> (z solves_ode f) T' X \<Longrightarrow> z t0 = x t0 \<Longrightarrow> t \<in> T' \<Longrightarrow> z t = x t"
     for z T' t
     by blast+
-  have "(\<lambda>t. t + t1 - t0) = op + (t1 - t0)"
+  have "(\<lambda>t. t + t1 - t0) = (+) (t1 - t0)"
     by (auto simp add: algebra_simps)
   with shift_autonomous_solution[OF sol auto, of "t0 - t1"] solves_odeD[OF sol]
-  show "((\<lambda>t. x (t + t0 - t1)) solves_ode f) (op + (t1 - t0) ` T) X"
+  show "((\<lambda>t. x (t + t0 - t1)) solves_ode f) ((+) (t1 - t0) ` T) X"
     by (simp add: algebra_simps)
-  from \<open>t0 \<in> T\<close> show "t1 \<in> op + (t1 - t0) ` T" by auto
+  from \<open>t0 \<in> T\<close> show "t1 \<in> (+) (t1 - t0) ` T" by auto
   from \<open>is_interval T\<close>
-  show "is_interval (op + (t1 - t0) ` T)"
+  show "is_interval ((+) (t1 - t0) ` T)"
     by simp
   fix z T' t
   assume z: "(z solves_ode f) T' X"
-    and t0': "t1 \<in> T'" "T' \<subseteq> op + (t1 - t0) ` T"
+    and t0': "t1 \<in> T'" "T' \<subseteq> (+) (t1 - t0) ` T"
     and shift: "z t1 = x (t1 + t0 - t1)"
     and t: "t \<in> T'"
     and ivl: "is_interval T'"
@@ -2354,8 +2354,8 @@ next
       from cont have cont: "continuous_on (closed_segment t0 s) x"
         by (rule continuous_on_subset)
           (insert b_pos closed_segment_subset_domain s_bound, auto simp: closed_segment_real)
-      have bnd_cont: "continuous_on (closed_segment t0 s) (op * B)"
-        and bnd_deriv: "(op * B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
+      have bnd_cont: "continuous_on (closed_segment t0 s) (( * ) B)"
+        and bnd_deriv: "(( * ) B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
         by (auto intro!: continuous_intros derivative_eq_intros
           simp: has_vector_derivative_def has_vderiv_on_def)
       {

@@ -21,7 +21,7 @@ instance ..
 end
 
 instantiation tree :: (plus) plus begin
-definition [applicative_unfold]: "plus x y = pure op + \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "plus x y = pure (+) \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
 end
 
@@ -37,7 +37,7 @@ subgoal by transfer_prover
 done
 
 instantiation tree :: (minus) minus begin
-definition [applicative_unfold]: "minus x y = pure op - \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "minus x y = pure (-) \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
 end
 
@@ -48,12 +48,12 @@ lemma minus_tree_simps [simp]:
 by(simp_all add: minus_tree_def)
 
 instantiation tree :: (uminus) uminus begin
-definition [applicative_unfold tree]: "uminus = (op \<diamondop> (pure uminus) :: 'a tree \<Rightarrow> 'a tree)"
+definition [applicative_unfold tree]: "uminus = ((\<diamondop>) (pure uminus) :: 'a tree \<Rightarrow> 'a tree)"
 instance ..
 end
 
 instantiation tree :: (times) times begin
-definition [applicative_unfold]: "times x y = pure op * \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "times x y = pure ( * ) \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
 end
 
@@ -66,8 +66,8 @@ by(simp_all add: times_tree_def)
 instance tree :: (Rings.dvd) Rings.dvd ..
 
 instantiation tree :: (modulo) modulo begin
-definition [applicative_unfold]: "x div y = pure_tree op div \<diamondop> x \<diamondop> (y :: 'a tree)"
-definition [applicative_unfold]: "x mod y = pure_tree op mod \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "x div y = pure_tree (div) \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "x mod y = pure_tree (mod) \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
 end
 

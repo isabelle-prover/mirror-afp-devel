@@ -331,7 +331,7 @@ begin
       "list_all_zip (accs_laz \<delta>) ts qs'"
       by (auto elim!: accs_laz.cases)
 
-    from I(2,3) A'(2) have "list_all_zip (op =) qs qs'"
+    from I(2,3) A'(2) have "list_all_zip (=) qs qs'"
       by (auto simp add: list_all_zip_alt)
     hence "qs=qs'" by (auto simp add: laz_eq)
     with deterministic[OF I(1), of q'] A'(1) show "q=q'" by simp
@@ -1284,7 +1284,7 @@ context ranked_tree_automaton
 begin
   -- "Left-hand side of subset rule for given symbol and rhs"
   definition "\<delta>ss_lhs f ss == 
-    { q | q qs. (q \<rightarrow> f qs)\<in>\<delta> \<and> list_all_zip (op \<in>) qs ss }"
+    { q | q qs. (q \<rightarrow> f qs)\<in>\<delta> \<and> list_all_zip (\<in>) qs ss }"
 
   -- "Subset construction"
   inductive_set \<delta>ss :: "('Q set,'L) ta_rule set" where
@@ -1352,7 +1352,7 @@ begin
         by simp_all
       from I(3) obtain ss where SS: 
         "ss \<in> lists {s. s\<subseteq>Q}"
-        "list_all_zip (op \<in>) qs ss"
+        "list_all_zip (\<in>) qs ss"
         "list_all_zip (accs_laz \<delta>ss) ts ss"
         by (erule_tac laz_swap_ex) auto
       from I(2) SS(2) have 
@@ -1405,7 +1405,7 @@ begin
       
     from I(4) SS(3) obtain qs where
       RULE: "(q \<rightarrow> f qs) \<in> \<delta>" and
-      QSISS: "list_all_zip (op \<in>) qs ss"
+      QSISS: "list_all_zip (\<in>) qs ss"
       by (auto simp add: \<delta>ss_lhs_def)
     from I(3) QSISS have CA: "list_all_zip (accs_laz \<delta>) ts qs"
       by (auto simp add: list_all_zip_alt)

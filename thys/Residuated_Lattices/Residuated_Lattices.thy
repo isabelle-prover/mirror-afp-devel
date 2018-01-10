@@ -713,7 +713,7 @@ qed
 
 lemma multr_def: "x \<cdot> y = \<Sqinter> {z. y \<le> x \<rightarrow> z}"
 proof -
-  have "\<Sqinter>{ya. y \<le> residual (op \<cdot> x) ya} = \<Sqinter>{z. y \<le> x \<rightarrow> z}"
+  have "\<Sqinter>{ya. y \<le> residual ((\<cdot>) x) ya} = \<Sqinter>{z. y \<le> x \<rightarrow> z}"
     by simp
   thus ?thesis
     by (metis residuated_multr residual_eq2)

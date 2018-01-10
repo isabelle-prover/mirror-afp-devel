@@ -22,7 +22,7 @@ fun binary_power :: "'a \<Rightarrow> nat \<Rightarrow> 'a" where
        rec = binary_power (x * x) d in 
     if r = 0 then rec else rec * x)"
 
-lemma binary_power[simp]: "binary_power = op ^"
+lemma binary_power[simp]: "binary_power = (^)"
 proof (intro ext)
   fix x n
   show "binary_power x n = x ^ n"
@@ -51,7 +51,7 @@ proof (intro ext)
   qed
 qed
 
-lemma binary_power_code_unfold[code_unfold]: "op ^ = binary_power" 
+lemma binary_power_code_unfold[code_unfold]: "(^) = binary_power" 
   by simp
 
 declare binary_power.simps[simp del]

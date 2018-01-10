@@ -22,7 +22,7 @@ begin
 lemma ap_pmf_id: "pure_pmf (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_pmf_def pair_return_pmf1 pmf.map_comp o_def)
 
-lemma ap_pmf_comp: "pure_pmf op \<circ> \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
+lemma ap_pmf_comp: "pure_pmf (\<circ>) \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
 by(simp add: ap_pmf_def pair_return_pmf1 pair_map_pmf1 pair_map_pmf2 pmf.map_comp o_def split_def pair_pair_pmf)
 
 lemma ap_pmf_homo: "pure_pmf f \<diamondop> pure_pmf x = pure_pmf (f x)"

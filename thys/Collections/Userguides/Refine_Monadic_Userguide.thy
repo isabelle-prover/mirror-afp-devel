@@ -680,7 +680,7 @@ section {* Reference *}
     subsection {* Refinement *}
     text {* 
       \begin{description}
-        \item{@{term_type "op \<le> :: 'a nres \<Rightarrow> 'a nres \<Rightarrow> bool"}} 
+        \item{@{term_type "(\<le>) :: 'a nres \<Rightarrow> 'a nres \<Rightarrow> bool"}} 
           Refinement ordering.
           @{text "S \<le> S'"} means, that every result in 
           @{text "S"} is also a result in @{text "S'"}. 

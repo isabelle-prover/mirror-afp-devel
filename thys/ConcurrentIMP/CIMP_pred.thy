@@ -98,7 +98,7 @@ abbreviation (input)
 
 abbreviation (input)
   pred_conjoin :: "('a \<Rightarrow> bool) list \<Rightarrow> 'a \<Rightarrow> bool" where
-  "pred_conjoin xs \<equiv> foldr (op and) xs \<langle>True\<rangle>"
+  "pred_conjoin xs \<equiv> foldr (and) xs \<langle>True\<rangle>"
 
 abbreviation (input)
   pred_singleton :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b set" where

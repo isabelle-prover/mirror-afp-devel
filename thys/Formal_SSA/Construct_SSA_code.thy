@@ -174,8 +174,8 @@ begin
       using 1(2)
       by auto
 
-      assume "m \<in> fold op \<union> (map (phiDefNodes_aux g v (removeAll n un)) (predecessors g n)) A"
-      hence "m \<in> fold op \<union> (map (phiDefNodes_aux g v (removeAll n un')) (predecessors g n)) A"
+      assume "m \<in> fold (\<union>) (map (phiDefNodes_aux g v (removeAll n un)) (predecessors g n)) A"
+      hence "m \<in> fold (\<union>) (map (phiDefNodes_aux g v (removeAll n un')) (predecessors g n)) A"
       apply (rule fold_union_elem)
       apply (rule fold_union_elemI')
       apply (auto simp: image_def dest: a[THEN subsetD])

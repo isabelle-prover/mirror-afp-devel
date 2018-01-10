@@ -175,8 +175,8 @@ proof -
     } ELSE lift_spmf coin_spmf"
   { define cr where "cr = (\<lambda>_ :: unit. \<lambda>_ :: 'a set. True)"
     have [transfer_rule]: "cr () {}" by(simp add: cr_def)
-    have [transfer_rule]: "(op = ===> cr ===> cr) (\<lambda>_ \<sigma>. \<sigma>) insert" by(simp add: rel_fun_def cr_def)
-    have [transfer_rule]: "(cr ===> op = ===> rel_gpv (rel_prod op = cr) op =) id_oracle hash_oracle'"
+    have [transfer_rule]: "((=) ===> cr ===> cr) (\<lambda>_ \<sigma>. \<sigma>) insert" by(simp add: rel_fun_def cr_def)
+    have [transfer_rule]: "(cr ===> (=) ===> rel_gpv (rel_prod (=) cr) (=)) id_oracle hash_oracle'"
       unfolding hash_oracle'_def id_oracle_def[abs_def] bind_gpv_Pause bind_rpv_Done by transfer_prover
     have "ind_cpa.ind_cpa \<A> = game0" unfolding game0_def \<A> ind_cpa_pk.ind_cpa.simps
       by(transfer fixing: \<G> len_plain \<A>1 \<A>2)(simp add: bind_map_gpv o_def ind_cpa_pk.ind_cpa.simps split_def) }
@@ -314,10 +314,10 @@ proof -
   define hash_oracle''' where "hash_oracle''' = (\<lambda>(\<sigma> :: 'a \<Rightarrow> _). hash.oracle \<sigma>)"
   { define bisim where "bisim = (\<lambda>\<sigma> (s :: 'a set, \<sigma>' :: 'a \<rightharpoonup> bitstring). s = dom \<sigma> \<and> \<sigma> = \<sigma>')"
     have [transfer_rule]: "bisim Map_empty ({}, Map_empty)" by(simp add: bisim_def)
-    have [transfer_rule]: "(bisim ===> op = ===> rel_spmf (rel_prod op = bisim)) hash_oracle''' hash_oracle''"
+    have [transfer_rule]: "(bisim ===> (=) ===> rel_spmf (rel_prod (=) bisim)) hash_oracle''' hash_oracle''"
       by(auto simp add: hash_oracle''_def split_def hash_oracle'''_def spmf_rel_map hash.oracle_def rel_fun_def bisim_def split: option.split intro!: rel_spmf_bind_reflI)
-    have * [transfer_rule]: "(bisim ===> op =) dom fst" by(simp add: bisim_def rel_fun_def)
-    have * [transfer_rule]: "(bisim ===> op =) (\<lambda>x. x) snd" by(simp add: rel_fun_def bisim_def)
+    have * [transfer_rule]: "(bisim ===> (=)) dom fst" by(simp add: bisim_def rel_fun_def)
+    have * [transfer_rule]: "(bisim ===> (=)) (\<lambda>x. x) snd" by(simp add: rel_fun_def bisim_def)
     have "game3 (\<lambda>_ _ _ x. x) x y = do {
         b \<leftarrow> coin_spmf;
         (((msg1, msg2), \<sigma>), s) \<leftarrow> exec_gpv hash_oracle''' (\<A>1 (\<^bold>g [^] x)) hash.initial;
@@ -351,7 +351,7 @@ proof -
         _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
         h' \<leftarrow> spmf_of_set (nlists UNIV len_plain);
         (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 (\<^bold>g [^] y, h') \<sigma>) (s, s_h);
-        map_spmf (op = guess) coin_spmf
+        map_spmf ((=) guess) coin_spmf
       } ELSE coin_spmf
     }" for x y 
     including monad_normalisation

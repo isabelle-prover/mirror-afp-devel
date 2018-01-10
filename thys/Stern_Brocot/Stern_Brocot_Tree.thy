@@ -101,7 +101,7 @@ where
      (map_tree recip (map_tree succ (map_tree recip stern_brocot_recurse)))
      (map_tree succ stern_brocot_recurse)"
 
-text \<open>Actually, we would like to write the specification below, but @{text "op \<diamondop>"} cannot be registered as friendly due to varying type parameters\<close>
+text \<open>Actually, we would like to write the specification below, but @{text "(\<diamondop>)"} cannot be registered as friendly due to varying type parameters\<close>
 lemma stern_brocot_unfold:
   "stern_brocot_recurse =
    Node (1, 1)
@@ -263,10 +263,10 @@ where "stern_brocot_iterate \<equiv> map_tree mediant (stern_brocot_iterate_aux 
 
 lemma stern_brocot_recurse_iterate: "stern_brocot_recurse = stern_brocot_iterate" (is "?lhs = ?rhs")
 proof -
-  have "?rhs = map_tree mediant (tree_recurse (op \<otimes> LL) (op \<otimes> UR) I)"
-    using tree_recurse_iterate[where f="op \<otimes>" and l="LL" and r="UR" and \<epsilon>="I"]
+  have "?rhs = map_tree mediant (tree_recurse ((\<otimes>) LL) ((\<otimes>) UR) I)"
+    using tree_recurse_iterate[where f="(\<otimes>)" and l="LL" and r="UR" and \<epsilon>="I"]
     by (simp add: stern_brocot_iterate_def stern_brocot_iterate_aux_def)
- also have "\<dots> = tree_recurse (op \<odot> LL) (op \<odot> UR) (1, 1)"
+ also have "\<dots> = tree_recurse ((\<odot>) LL) ((\<odot>) UR) (1, 1)"
    unfolding mediant_I_F(2)[symmetric]
    by (rule tree_recurse_fusion)(simp_all add: fun_eq_iff mediant_def times_matrix_def times_vector_def LL_def UR_def)[2]
  also have "\<dots> = ?lhs"
@@ -623,7 +623,7 @@ lemma mod_tree_lemma1:
   assumes "\<forall>i\<in>set_tree y. 0 < i"
   shows "x mod (x + y) = x"
 proof -
-  have "rel_tree op = (x mod (x + y)) x" by applicative_lifting(simp add: assms)
+  have "rel_tree (=) (x mod (x + y)) x" by applicative_lifting(simp add: assms)
   thus ?thesis by(unfold tree.rel_eq)
 qed
 
@@ -673,7 +673,7 @@ proof -
   also have "\<dots> = num' + den' - 2 * (num' mod den')"
     unfolding num_mod_den'_def num'_def den'_def num_mod_den[symmetric]
     by applicative_lifting(simp add: zmod_int)
-  also have [unfolded tree.rel_eq]: "rel_tree op = \<dots> (pure int \<diamondop> (num + den - 2 * (num mod den)))"
+  also have [unfolded tree.rel_eq]: "rel_tree (=) \<dots> (pure int \<diamondop> (num + den - 2 * (num mod den)))"
     unfolding num'_def den'_def by(applicative_lifting)(simp add: of_nat_diff zmod_int le den_gt_0)
   also have "pure nat \<diamondop> (pure int \<diamondop> (num + den - 2 * (num mod den))) = num + den - 2 * (num mod den)" by(applicative_nf) simp
   finally show ?thesis .

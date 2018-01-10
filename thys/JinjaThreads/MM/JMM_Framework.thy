@@ -2401,7 +2401,7 @@ proof -
     show "\<exists>E'\<in>?\<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and>
                          (\<forall>a\<in>read_actions E'. if a < r then ws' a = ws a else P,E' \<turnstile> ws' a \<le>hb a) \<and>
                          action_tid E' r = action_tid E r \<and>
-                         (if r \<in> read_actions E then sim_action else op =) (action_obs E' r) (action_obs E r) \<and>
+                         (if r \<in> read_actions E then sim_action else (=)) (action_obs E' r) (action_obs E r) \<and>
                          (r \<in> actions E \<longrightarrow> r \<in> actions E')"
       (is "\<exists>E'\<in>?\<E>. \<exists>ws'. _ \<and> ?same E' \<and> ?read E' ws' \<and> ?tid E' \<and> ?obs E' \<and> ?actions E'")
     proof(cases "r < length ?start_heap_obs")
@@ -2520,7 +2520,7 @@ proof -
 
         let ?hb = "\<lambda>ta'_r  :: ('addr, 'thread_id, status \<times> 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action. 
              ta_hb_consistent P (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>)) (llist_of (map (Pair t_r) (drop r_n \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>)))"
-        let ?sim = "\<lambda>ta'_r. (if \<exists>ad al v. \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n) (\<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub> ! r_n)"
+        let ?sim = "\<lambda>ta'_r. (if \<exists>ad al v. \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n = NormalAction (ReadMem ad al v) then sim_action else (=)) (\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n) (\<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub> ! r_n)"
 
         from red_ra obtain ta'_r \<sigma>''''
           where red_ra': "mthr.if.redT \<sigma>' (t_r, ta'_r) \<sigma>''''"
@@ -3138,7 +3138,7 @@ proof
                         take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
                         ta_hb_consistent P ?E (llist_of (map (Pair t) (take j (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)))) \<and>
                         (i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
-                        (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
+                        (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else (=)) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
     proof(induct j)
       case 0 from red aok show ?case by(fastforce simp del: split_paired_Ex)
     next
@@ -3150,7 +3150,7 @@ proof
         and eq: "take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
         and hb: "ta_hb_consistent P ?E (llist_of (map (Pair t) (take j (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))))"
         and len_i: "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
-        and sim_i: "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
+        and sim_i: "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else (=)) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
         by blast
       show ?case
       proof(cases "i + j < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>")
@@ -3365,7 +3365,7 @@ proof
               using j' unfolding lappend_llist_of_llist_of by(simp add: take_Suc_conv_app_nth) }
           moreover from len_i have "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>" using eq' j' by auto
           moreover from sim_i eq' ta''_j ta'_j
-          have "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i)"
+          have "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else (=)) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i)"
             by(cases "j = 0")(auto split: if_split_asm, (metis add_strict_left_mono add_0_right nth_take)+)
           ultimately show ?thesis using red'' aok'' by blast
         next
@@ -3386,7 +3386,7 @@ proof
                       take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
                       ta_hb_consistent P ?E (llist_of (map (Pair t) (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))) \<and> 
                       (i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
-                      (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
+                      (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else (=)) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
     by(simp del: split_paired_Ex cong: conj_cong split del: if_split) blast
 qed
 

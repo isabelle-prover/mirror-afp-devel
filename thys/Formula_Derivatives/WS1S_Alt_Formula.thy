@@ -128,14 +128,14 @@ global_interpretation WS1S_Alt: Formula SUC LESS assigns nvars Extend CONS SNOC 
     (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
-    (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (op =)"
+    (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (=)"
   and bounded_check_eqv = "\<lambda>idx. DAs.check_eqv
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
     nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
-    nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (op =)"
+    nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (=)"
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
 proof

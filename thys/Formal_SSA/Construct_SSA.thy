@@ -33,13 +33,13 @@ begin
   fun phiDefNodes_aux :: "'g \<Rightarrow> 'var \<Rightarrow> 'node list \<Rightarrow> 'node \<Rightarrow> 'node set" where
     "phiDefNodes_aux g v unvisited n =(
         if n \<notin> set unvisited \<or> v \<in> defs g n then {}
-        else fold (op \<union>)
+        else fold (\<union>)
           [phiDefNodes_aux g v (removeAll n unvisited) m . m \<leftarrow> predecessors g n]
           (if length (predecessors g n) \<noteq> 1 then {n} else {})
     )"
 
   definition phiDefNodes :: "'g \<Rightarrow> 'var \<Rightarrow> 'node set" where
-    "phiDefNodes g v \<equiv> fold (op \<union>)
+    "phiDefNodes g v \<equiv> fold (\<union>)
       [phiDefNodes_aux g v (\<alpha>n g) n . n \<leftarrow> \<alpha>n g, v \<in> uses g n]
       {}"
 

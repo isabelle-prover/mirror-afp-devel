@@ -22,7 +22,7 @@ antidomain Kleene Algebras. *}
 definition pp_a ::  "'a ppath set \<Rightarrow> 'a ppath set" where
   "pp_a X = {(Node u) |u. \<not> (\<exists>v \<in> X. u = pp_first v)}"
 
-interpretation ppath_aka: antidomain_kleene_algebra pp_a "op \<union>" pp_prod pp_one "{}" "op \<subseteq>" "op \<subset>" pp_star
+interpretation ppath_aka: antidomain_kleene_algebra pp_a "(\<union>)" pp_prod pp_one "{}" "(\<subseteq>)" "(\<subset>)" pp_star
   apply standard
   apply (clarsimp simp add: pp_prod_def pp_a_def)
   apply (simp add: pp_prod_def pp_a_def, safe, metis pp_first.simps(1) pp_first_pp_fusion)

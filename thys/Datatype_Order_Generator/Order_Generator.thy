@@ -36,7 +36,7 @@ text {*
 The order generator registers itself at the derive-manager for the classes @{class ord},
 @{class order}, and @{class linorder}.
 To be more precise,
-it automatically generates the two functions @{term "op \<le>"} and @{term "op <"} for some datatype 
+it automatically generates the two functions @{term "(\<le>)"} and @{term "(<)"} for some datatype 
 \texttt{dtype} and
 proves the following instantiations.
 

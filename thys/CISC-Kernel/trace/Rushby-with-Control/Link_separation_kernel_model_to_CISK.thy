@@ -136,7 +136,7 @@ interpretation Inst:
     "\<up>s0"           -- "initial state"
     rcurrent        -- "returns the currently active domain"
     rcswitch        -- "switches the currently active domain"
-    "(op =) 42"     -- "interrupt function (yet unspecified)"
+    "(=) 42"     -- "interrupt function (yet unspecified)"
     rkinvolved      -- "returns a set of threads involved in the give action"
     rifp            -- "information flow policy"
     rvpeq           -- "view partitioning"

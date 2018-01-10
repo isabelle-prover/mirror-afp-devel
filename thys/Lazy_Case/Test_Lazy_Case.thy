@@ -68,7 +68,7 @@ fun get_code_eqs ctxt const =
       |> Code.equations_of_cert thy ||> these
       |> pair name
   in
-    AList.lookup op = (maps (map mk_eqs) (rev (Graph.strong_conn graph))) const
+    AList.lookup (=) (maps (map mk_eqs) (rev (Graph.strong_conn graph))) const
     |> the |> snd
     |> map (fst o snd)
     |> map_filter I
@@ -78,7 +78,7 @@ fun check_absence ctxt const =
   let
     val forbidden =
       @{const_name HOL.If} :: map (fst o dest_Const o #casex) (Ctr_Sugar.ctr_sugars_of ctxt)
-    val check = exists_subterm (fn Const (c, _) => member op = forbidden c | _ => false)
+    val check = exists_subterm (fn Const (c, _) => member (=) forbidden c | _ => false)
   in
     get_code_eqs ctxt const
     |> map Thm.prop_of

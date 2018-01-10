@@ -257,7 +257,7 @@ lemma P14_b: "a \<le> b \<Longrightarrow> c r\<rightarrow> a \<le> c r\<rightarr
   by simp
 
 subclass order
-  apply (subgoal_tac "op \<le> = lesseq_a \<and> op < = less_a")
+  apply (subgoal_tac "(\<le>) = lesseq_a \<and> (<) = less_a")
   apply simp
   apply unfold_locales
   apply safe
@@ -382,7 +382,7 @@ definition
 
 end
 
-sublocale pseudo_wajsberg_algebra < slattice_inf_a:semilattice_inf inf_a "op \<le>" "op <"
+sublocale pseudo_wajsberg_algebra < slattice_inf_a:semilattice_inf inf_a "(\<le>)" "(<)"
   apply unfold_locales
   apply (simp_all add: inf_a_def)
   apply (subst C7_b) 
@@ -416,7 +416,7 @@ sublocale pseudo_wajsberg_algebra < slattice_inf_a:semilattice_inf inf_a "op \<l
     qed
       
 
-sublocale pseudo_wajsberg_algebra < slattice_inf_b:semilattice_inf inf_b "op \<le>" "op <"
+sublocale pseudo_wajsberg_algebra < slattice_inf_b:semilattice_inf inf_b "(\<le>)" "(<)"
   apply unfold_locales
   apply (simp_all add: inf_b_def)
   apply (subst C7_a)

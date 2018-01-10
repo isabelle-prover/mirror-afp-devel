@@ -1891,20 +1891,20 @@ proof -
   let ?s = "proj2_intersection (polar p) (polar q)"
   let ?t = "vector [vector [?s,r,p,q], vector [far_north, north, east, west]]
     :: proj2^4^2"
-  have "range (op $ (?t$1)) = {?s, r, p, q}"
+  have "range (($) (?t$1)) = {?s, r, p, q}"
     unfolding image_def
     by (auto simp add: UNIV_4 vector_4)
   with `p \<in> S` and `q \<in> S` and `r \<in> S` and `p \<noteq> q` and `r \<notin> {p,q}`
-  have "proj2_no_3_Col (range (op $ (?t$1)))"
+  have "proj2_no_3_Col (range (($) (?t$1)))"
     by (simp add: three_in_S_tangent_intersection_no_3_Col)
-  moreover have "range (op $ (?t$2)) = {far_north, north, east, west}"
+  moreover have "range (($) (?t$2)) = {far_north, north, east, west}"
     unfolding image_def
     by (auto simp add: UNIV_4 vector_4)
    with compass_in_S and east_west_distinct and north_not_east_or_west
      and east_west_tangents_far_north
      and three_in_S_tangent_intersection_no_3_Col [of east west north]
-   have "proj2_no_3_Col (range (op $ (?t$2)))" by simp
-   ultimately have "\<forall> i. proj2_no_3_Col (range (op $ (?t$i)))"
+   have "proj2_no_3_Col (range (($) (?t$2)))" by simp
+   ultimately have "\<forall> i. proj2_no_3_Col (range (($) (?t$i)))"
      by (simp add: forall_2)
    hence "\<exists> J. \<forall> j. apply_cltn2 (?t$0$j) J = ?t$1$j"
      by (rule statement53_existence)

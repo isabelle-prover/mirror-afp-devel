@@ -1745,7 +1745,7 @@ done
 
 lemma iT_Plus_neg_cut_le2: "k \<le> t \<Longrightarrow> (I \<oplus>- k) \<down>\<le> (t - k) = (I \<down>\<le> t) \<oplus>- k"
 apply (simp add: iT_Plus_neg_image_conv)
-apply (simp add: i_cut_commute_disj[of "op \<down>\<le>" "op \<down>\<ge>"])
+apply (simp add: i_cut_commute_disj[of "(\<down>\<le>)" "(\<down>\<ge>)"])
 apply (rule i_cut_image[OF sub_left_strict_mono_on])
 apply (simp add: cut_ge_Int_conv)+
 done
@@ -1758,7 +1758,7 @@ apply (case_tac "t \<le> k")
  apply (rule sym, rule iT_Plus_neg_Max_less_empty[OF nat_cut_less_finite])
  apply (rule order_less_le_trans[OF cut_less_Max_less[OF nat_cut_less_finite]], assumption+)
 apply (simp add: linorder_not_le iT_Plus_neg_image_conv)
-apply (simp add: i_cut_commute_disj[of "op \<down><" "op \<down>\<ge>"])
+apply (simp add: i_cut_commute_disj[of "(\<down><)" "(\<down>\<ge>)"])
 apply (rule i_cut_image[OF sub_left_strict_mono_on])
 apply (simp add: cut_ge_Int_conv)+
 done
@@ -1767,14 +1767,14 @@ lemma iT_Plus_neg_cut_ge2: "(I \<oplus>- k) \<down>\<ge> (t - k) = (I \<down>\<g
 apply (case_tac "t \<le> k")
  apply (simp add: cut_ge_0_all iT_Plus_neg_cut_eq)
 apply (simp add: linorder_not_le iT_Plus_neg_image_conv)
-apply (simp add: i_cut_commute_disj[of "op \<down>\<ge>" "op \<down>\<ge>"])
+apply (simp add: i_cut_commute_disj[of "(\<down>\<ge>)" "(\<down>\<ge>)"])
 apply (rule i_cut_image[OF sub_left_strict_mono_on])
 apply (simp add: cut_ge_Int_conv)+
 done
 
 lemma iT_Plus_neg_cut_greater2: "k \<le> t \<Longrightarrow> (I \<oplus>- k) \<down>> (t - k) = (I \<down>> t) \<oplus>- k"
 apply (simp add: iT_Plus_neg_image_conv)
-apply (simp add: i_cut_commute_disj[of "op \<down>>" "op \<down>\<ge>"])
+apply (simp add: i_cut_commute_disj[of "(\<down>>)" "(\<down>\<ge>)"])
 apply (rule i_cut_image[OF sub_left_strict_mono_on])
 apply (simp add: cut_ge_Int_conv)+
 done
@@ -2938,7 +2938,7 @@ by (blast intro: i_set_finite_as_iMODb i_set_infinite_as_iMOD)
 subsubsection {* Interval sets are closed under cutting *}
 
 lemma i_set_cut_le_ge_closed_disj: "
-  \<lbrakk> I \<in> i_set; t \<in> I; cut_op = op \<down>\<le> \<or> cut_op = op \<down>\<ge> \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> I \<in> i_set; t \<in> I; cut_op = (\<down>\<le>) \<or> cut_op = (\<down>\<ge>) \<rbrakk> \<Longrightarrow> 
   cut_op I t \<in> i_set"
 apply (simp add: i_set_i_set_ind_eq)
 apply (induct rule: i_set_ind.induct)
@@ -2955,8 +2955,8 @@ lemmas i_set_cut_le_ge_closed = i_set_cut_le_closed i_set_cut_ge_closed
 
 lemma i_set0_cut_closed_disj: "
   \<lbrakk> I \<in> i_set0;
-    cut_op = op \<down>\<le> \<or> cut_op = op \<down>\<ge> \<or>
-    cut_op = op \<down>< \<or> cut_op = op \<down>> \<rbrakk> \<Longrightarrow> 
+    cut_op = (\<down>\<le>) \<or> cut_op = (\<down>\<ge>) \<or>
+    cut_op = (\<down><) \<or> cut_op = (\<down>>) \<rbrakk> \<Longrightarrow> 
   cut_op I t \<in> i_set0"
 apply (simp add: i_set0_i_set0_ind_eq)
 apply (induct rule: i_set0_ind.induct)

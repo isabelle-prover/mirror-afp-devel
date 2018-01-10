@@ -19,7 +19,7 @@ lift_definition map_values :: "('a \<Rightarrow> 'b \<Rightarrow> 'c option) \<R
 lift_definition restrict_mapping :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a, 'b) mapping"
   is "\<lambda>f. restrict_map (Some \<circ> f)" .
 lift_definition mapping_add :: "('a, 'b) mapping \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'b) mapping"
-  is "op ++" .
+  is "(++)" .
 
 definition "mmap = Mapping.map id"
 

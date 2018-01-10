@@ -91,14 +91,14 @@ lift_definition one_ratfps :: "'a ratfps" is "1" by simp
 lift_definition uminus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" is "uminus" 
   by (simp add: quot_of_fract_uminus case_prod_unfold Let_def)
 
-lift_definition plus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "op +"
+lift_definition plus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "(+)"
   by (rule coeff_0_add_fract_nonzero)
 
-lift_definition minus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "op -"
+lift_definition minus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "(-)"
   by (simp only: diff_conv_add_uminus, rule coeff_0_add_fract_nonzero)
      (simp_all add: quot_of_fract_uminus Let_def case_prod_unfold)
 
-lift_definition times_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "op *"
+lift_definition times_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "( * )"
   by (simp add: quot_of_fract_mult Let_def case_prod_unfold coeff_0_mult
     constant_term_denominator_nonzero_imp_constant_term_denominator_div_gcd_nonzero)
  
@@ -127,7 +127,7 @@ context
 includes lifting_syntax
 begin
   
-lemma RatFPS_parametric: "(rel_prod op = op = ===> op =)
+lemma RatFPS_parametric: "(rel_prod (=) (=) ===> (=))
   (\<lambda>(p,q). if coeff q 0 = 0 then 0 else quot_to_fract (p, q))
   (\<lambda>(p,q). if coeff q 0 = 0 then 0 else quot_to_fract (p, q))"
   by transfer_prover
@@ -871,7 +871,7 @@ definition (in term_syntax)
     "'a ::{field,factorial_ring_gcd,typerep} poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 
      'a poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a ratfps \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
   [code_unfold]: "valterm_ratfps k l = 
-    Code_Evaluation.valtermify (op /) {\<cdot>} 
+    Code_Evaluation.valtermify (/) {\<cdot>} 
       (Code_Evaluation.valtermify ratfps_of_poly {\<cdot>} k) {\<cdot>} 
       (Code_Evaluation.valtermify ratfps_of_poly {\<cdot>} l)"
 

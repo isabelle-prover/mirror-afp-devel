@@ -1261,11 +1261,11 @@ qed
   
 lemma sat_push_edge_action_bound':
   assumes "((f,l),p,(f',l')) \<in> trcl pr_algo_lts'" 
-  shows "length (filter (op = (SAT_PUSH' e)) p) \<le> 2*card V"
+  shows "length (filter ((=) (SAT_PUSH' e)) p) \<le> 2*card V"
 proof -
   obtain u v where [simp]: "e=(u,v)" by (cases e)
   
-  have "length (filter (op = (SAT_PUSH' (u,v))) p) \<le> 2*card V - l v"
+  have "length (filter ((=) (SAT_PUSH' (u,v))) p) \<le> 2*card V - l v"
     if "((f,l),p,(f',l')) \<in> trcl pr_algo_lts'" for p
     using that
   proof (induction p arbitrary: f l rule: length_induct)
@@ -1286,20 +1286,20 @@ proof -
       proof (cases "a = SAT_PUSH' (u,v)")  
         case [simp]: False
         from "1.IH" PP have 
-          "length (filter (op = (SAT_PUSH' (u, v))) p') 
+          "length (filter ((=) (SAT_PUSH' (u, v))) p') 
           \<le> 2 * card V - lh v"
           by auto
         with FIRST show ?thesis
           apply (cases; clarsimp)
         proof -
           fix ua :: nat
-          assume a1: "length (filter (op = (SAT_PUSH' (u, v))) p') 
+          assume a1: "length (filter ((=) (SAT_PUSH' (u, v))) p') 
                     \<le> 2 * card V - relabel_effect f l ua v"
           assume a2: "relabel_precond f l ua"
           have "2 * card V - relabel_effect f l ua v \<le> 2 * card V - l v 
-          \<longrightarrow> length (filter (op = (SAT_PUSH' (u, v))) p') \<le> 2 * card V - l v"
+          \<longrightarrow> length (filter ((=) (SAT_PUSH' (u, v))) p') \<le> 2 * card V - l v"
             using a1 order_trans by blast
-          then show "length (filter (op = (SAT_PUSH' (u, v))) p') 
+          then show "length (filter ((=) (SAT_PUSH' (u, v))) p') 
                     \<le> 2 * card V - l v"
             using a2 a1 by (metis (no_types) Labeling.relabel_increase_u 
                 Labeling_axioms diff_le_mono2 nat_less_le 
@@ -1327,7 +1327,7 @@ proof -
         show ?thesis 
         proof (cases "SAT_PUSH' (u,v) \<in> set p'")  
           case False 
-          hence [simp]: "filter (op = (SAT_PUSH' (u,v))) p' = []" 
+          hence [simp]: "filter ((=) (SAT_PUSH' (u,v))) p' = []" 
             by (induction p') auto
           show ?thesis 
             using bspec[OF height_bound \<open>u\<in>V\<close>]  
@@ -1341,7 +1341,7 @@ proof -
               and NP1: "SAT_PUSH' (u,v) \<notin> set p1"
             using in_set_conv_decomp_first[of _ p'] by auto 
               
-          from NP1 have [simp]: "filter (op = (SAT_PUSH' (u,v))) p1 = []" 
+          from NP1 have [simp]: "filter ((=) (SAT_PUSH' (u,v))) p1 = []" 
             by (induction p1) auto
               
           from PP obtain f2 l2 f3 l3 
@@ -1359,7 +1359,7 @@ proof -
             by (auto elim!: pr_algo_lts'.cases)
               
           from spec[OF "1.IH", of "SAT_PUSH' (u,v)#p2"] S P2 have 
-            "Suc (length (filter (op = (SAT_PUSH' (u, v))) p2)) 
+            "Suc (length (filter ((=) (SAT_PUSH' (u, v))) p2)) 
             \<le> 2 * card V - l2 v" 
             by (auto simp: trcl_conv)
           also have "\<dots> + 1 \<le> 2*card V - l v"
@@ -1390,7 +1390,7 @@ proof -
     done  
     
   have AUX: "length (filter (\<lambda>a. \<exists>e\<in>S. a = SAT_PUSH' e) p) 
-    = (\<Sum>e\<in>S. length (filter (op = (SAT_PUSH' e)) p))" if "finite S" for S
+    = (\<Sum>e\<in>S. length (filter ((=) (SAT_PUSH' e)) p))" if "finite S" for S
     using that
     apply induction
     apply simp 
@@ -1405,7 +1405,7 @@ proof -
   hence "length (filter is_SAT_PUSH' p) 
     = length (filter (\<lambda>a. \<exists>e\<in>E\<union>E\<inverse>. a = SAT_PUSH' e) p)" 
     by (auto cong: filter_cong)
-  also have "\<dots> = (\<Sum>e\<in>E\<union>E\<inverse>. length (filter (op = (SAT_PUSH' e)) p))" 
+  also have "\<dots> = (\<Sum>e\<in>E\<union>E\<inverse>. length (filter ((=) (SAT_PUSH' e)) p))" 
     by (auto simp: AUX)
   also have "\<dots> \<le> (\<Sum>i\<in>E \<union> E\<inverse>. 2 * card V)" 
     using sum_mono[OF sat_push_edge_action_bound'[OF A], where K="E\<union>E\<inverse>"] .

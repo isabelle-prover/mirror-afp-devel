@@ -1174,7 +1174,7 @@ proof -
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C"
         by auto
-      show "(op - 1 \<longlongrightarrow> 0) ?L"
+      show "((-) 1 \<longlongrightarrow> 0) ?L"
         by (intro tendsto_eq_intros) simp_all
       have "recurrent y"
         using pos[THEN bspec, OF `y\<in>C`] by (simp add: pos_recurrent_def)
@@ -1191,7 +1191,7 @@ proof -
         by eventually_elim simp
       show "eventually (\<lambda>x. DERIV (\<lambda>x. 1 - gf_U y y x) x :> - gf_U' y y x) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
-      show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
+      show "eventually (\<lambda>x. DERIV ((-) 1) x :> - 1) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros)
       show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) ?L"
         using `recurrent y` by (rule inverse_gf_U'_tendsto)
@@ -1546,7 +1546,7 @@ proof -
           enn2real (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
       proof (intro tendsto_add tendsto_const tendsto_mult int_gf_F,
              rule lhopital_left[where f'="\<lambda>x. - 1" and g'="\<lambda>z. - gf_U' y y z"])
-        show "(op - 1 \<longlongrightarrow> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
+        show "((-) 1 \<longlongrightarrow> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
           using gf_U[of y y] by (auto intro!: tendsto_eq_intros simp: `U y y = 1`)
         show "y \<in> C" "finite A" "A \<subseteq> C" by fact+
         show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
@@ -1559,7 +1559,7 @@ proof -
           by eventually_elim simp
         show "eventually (\<lambda>x. DERIV (\<lambda>x. 1 - gf_U y y x) x :> - gf_U' y y x) ?L"
           by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
-        show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
+        show "eventually (\<lambda>x. DERIV ((-) 1) x :> - 1) ?L"
           by (auto intro!: eventually_at_left_1 derivative_eq_intros)
       qed
       then have "measure N {y} \<le> enn2real (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e"

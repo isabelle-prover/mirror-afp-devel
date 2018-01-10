@@ -83,7 +83,7 @@ lemma id_init_wit_blue[id_rules]:
 lemma hn_blue_wit[sepref_import_param]: 
   "(NO_CYC,NO_CYC)\<in>blue_wit_rel" 
   "(prep_wit_blue,prep_wit_blue)\<in>nat_rel\<rightarrow>blue_wit_rel\<rightarrow>blue_wit_rel"
-  "(op=,op=)\<in>blue_wit_rel\<rightarrow>blue_wit_rel\<rightarrow>bool_rel"
+  "((=),(=))\<in>blue_wit_rel\<rightarrow>blue_wit_rel\<rightarrow>bool_rel"
   by simp_all
 
 lemma hn_init_wit_blue[sepref_fr_rules]: "hn_refine

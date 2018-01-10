@@ -222,18 +222,18 @@ proof -
   have game0'_eq: "ind_cca.game \<A> = map_spmf fst (?game0' \<A>)" (is ?game0)
     and game1'_eq: "ind_cca'.game \<A> = map_spmf fst (?game1' \<A>)" (is ?game1)
   proof -
-    let ?S = "rel_prod2 op ="
+    let ?S = "rel_prod2 (=)"
     define initial where "initial = (False, {} :: 'hash cipher_text set)"
     have [transfer_rule]: "?S {} initial" by(simp add: initial_def)
 
     have [transfer_rule]: 
-      "(op = ===> ?S ===> op = ===> rel_spmf (rel_prod op = ?S))
+      "((=) ===> ?S ===> (=) ===> rel_spmf (rel_prod (=) ?S))
        ind_cca.oracle_decrypt oracle_decrypt0'"
       unfolding ind_cca.oracle_decrypt_def[abs_def] oracle_decrypt0'_def[abs_def]
       by(simp add: rel_spmf_return_spmf1 rel_fun_def)
 
     have [transfer_rule]: 
-      "(op = ===> ?S ===> op = ===> rel_spmf (rel_prod op = ?S))
+      "((=) ===> ?S ===> (=) ===> rel_spmf (rel_prod (=) ?S))
        ind_cca'.oracle_decrypt oracle_decrypt1'"
       unfolding ind_cca'.oracle_decrypt_def[abs_def] oracle_decrypt1'_def[abs_def]
       by (simp add: rel_spmf_return_spmf1 rel_fun_def)
@@ -247,7 +247,7 @@ proof -
          (exec_gpv (\<dagger>(ind_cca.oracle_encrypt k b) \<oplus>\<^sub>O oracle_decrypt1' k) \<A> (False, {}))
          (exec_gpv (\<dagger>(ind_cca.oracle_encrypt k b) \<oplus>\<^sub>O oracle_decrypt0' k) \<A> (False, {}))"
     for k b
-    by (cases k; rule exec_gpv_oracle_bisim_bad[where X="op =" and ?bad1.0=fst and ?bad2.0=fst and \<I> = "\<I>_full \<oplus>\<^sub>\<I> \<I>_full"])
+    by (cases k; rule exec_gpv_oracle_bisim_bad[where X="(=)" and ?bad1.0=fst and ?bad2.0=fst and \<I> = "\<I>_full \<oplus>\<^sub>\<I> \<I>_full"])
        (auto intro: rel_spmf_reflI callee_invariant_extend_state_oracle_const' simp add: spmf_rel_map1 spmf_rel_map2 oracle_decrypt0'_simps oracle_decrypt1'_simps assms split: plus_oracle_split)
     -- \<open>We cannot get rid of the losslessness assumption on @{term \<A>} in this step, because if it 
       were not, then the bad event might still occur, but the adversary does not terminate in
@@ -291,11 +291,11 @@ proof -
       define initial :: "('hash cipher_text set \<times> 'hash cipher_text set) \<times>  bool \<times> bitstring set"
         where "initial = (({}, {}), (False, {}))"
       have [transfer_rule]: "S ?init_normal initial" by(simp add: S_def initial_def)
-      have [transfer_rule]: "(S ===> op = ===> rel_spmf (rel_prod op = S)) ?oracle_normal oracle_intercept"
+      have [transfer_rule]: "(S ===> (=) ===> rel_spmf (rel_prod (=) S)) ?oracle_normal oracle_intercept"
         unfolding S_def
         by(rule callee_invariant_restrict_relp, unfold_locales)
           (auto simp add: rel_fun_def bind_spmf_of_set prf_domain_finite prf_domain_nonempty bind_spmf_pmf_assoc bind_assoc_pmf bind_return_pmf spmf_rel_map exec_gpv_bind Let_def ind_cca.oracle_encrypt_def oracle_decrypt1'_def encrypt.simps UPF.oracle_hash_def UPF.oracle_flag_def bind_map_spmf o_def split: plus_oracle_split bool.split if_split intro!: rel_spmf_bind_reflI rel_pmf_bind_reflI)
-      have "rel_spmf (rel_prod op = S) ?lhs (exec_gpv oracle_intercept \<A> initial)"
+      have "rel_spmf (rel_prod (=) S) ?lhs (exec_gpv oracle_intercept \<A> initial)"
         by(transfer_prover)
       then show "rel_spmf (\<lambda>x y. ?fl x = ?fr y) ?lhs ?rhs"
         by(auto simp add: S_def exec_gpv_inline spmf_rel_map initial_def elim: rel_spmf_mono)
@@ -333,7 +333,7 @@ lemma callee_invariant_oracle_decrypt2 [simp]: "callee_invariant (oracle_decrypt
   by (unfold_locales) (auto simp add: oracle_decrypt2_def split: if_split_asm)
 
 lemma oracle_decrypt2_parametric [transfer_rule]:
-  "(rel_prod P U ===> S ===> rel_prod op = (rel_prod op = H) ===> rel_spmf (rel_prod op = S))
+  "(rel_prod P U ===> S ===> rel_prod (=) (rel_prod (=) H) ===> rel_spmf (rel_prod (=) S))
    oracle_decrypt2 oracle_decrypt2"
   unfolding oracle_decrypt2_def split_def relator_eq[symmetric] by transfer_prover
 
@@ -395,12 +395,12 @@ proof -
     define S where "S = (\<lambda>(L :: 'hash cipher_text set) (D :: unit). True)"
     have [transfer_rule]: "S {} ()" by (simp add: S_def)
     have [transfer_rule]: 
-      "(op = ===> op = ===> S ===> op = ===> rel_spmf (rel_prod op = S))
+      "((=) ===> (=) ===> S ===> (=) ===> rel_spmf (rel_prod (=) S))
        ind_cca'.oracle_encrypt oracle_encrypt1''"
       unfolding ind_cca'.oracle_encrypt_def[abs_def] oracle_encrypt1''_def[abs_def]
       by (auto simp add: rel_fun_def Let_def S_def encrypt.simps prf_domain_finite prf_domain_nonempty intro: rel_spmf_bind_reflI rel_pmf_bind_reflI split: bool.split)
     have [transfer_rule]:
-      "(op = ===> S ===> op = ===> rel_spmf (rel_prod op = S)) 
+      "((=) ===> S ===> (=) ===> rel_spmf (rel_prod (=) S)) 
        ind_cca'.oracle_decrypt oracle_decrypt2"
       unfolding ind_cca'.oracle_decrypt_def[abs_def] oracle_decrypt2_def[abs_def]
       by(auto simp add: rel_fun_def)
@@ -417,7 +417,7 @@ proof -
       define initial where "initial = ()"
       define S where "S = (\<lambda>(s2 :: unit, _ :: unit) (s1 :: unit). True)"
       have [transfer_rule]: "S ((), ()) initial" by(simp add: S_def initial_def)
-      have [transfer_rule]: "(S ===> op = ===> rel_spmf (rel_prod op = S)) oracle_intercept oracle_normal"
+      have [transfer_rule]: "(S ===> (=) ===> rel_spmf (rel_prod (=) S)) oracle_intercept oracle_normal"
         unfolding oracle_normal_def oracle_intercept_def
         by(auto split: bool.split plus_oracle_split simp add: S_def rel_fun_def exec_gpv_bind PRF.prf_oracle_def oracle_encrypt1''_def Let_def map_spmf_conv_bind_spmf oracle_decrypt2_def intro!: rel_spmf_bind_reflI rel_spmf_reflI)
       have "map_spmf (\<lambda>x. b = fst x) (exec_gpv oracle_normal \<A> initial) =
@@ -439,7 +439,7 @@ proof -
         where "S = (\<lambda>(s2 :: unit, s2') (s1 :: (bitstring, bitstring) PRF.dict). s2' = s1)"
 
       have [transfer_rule]: "S ((), Map_empty) Map_empty" by(simp add: S_def)
-      have [transfer_rule]: "(S ===> op = ===> rel_spmf (rel_prod op = S)) oracle_intercept oracle2"
+      have [transfer_rule]: "(S ===> (=) ===> rel_spmf (rel_prod (=) S)) oracle_intercept oracle2"
         unfolding oracle2_def oracle_intercept_def
         by(auto split: bool.split plus_oracle_split option.split simp add: S_def rel_fun_def exec_gpv_bind PRF.random_oracle_def oracle_encrypt2_def Let_def map_spmf_conv_bind_spmf oracle_decrypt2_def rel_spmf_return_spmf1 fun_upd_idem intro!: rel_spmf_bind_reflI rel_spmf_reflI)
 
@@ -524,12 +524,12 @@ proof -
     define S where "S = (\<lambda>(D1 :: (bitstring, bitstring) PRF.dict) (bad :: bool, D2). D1 = D2)"
     have [transfer_rule, simp]: "S Map_empty (b, Map_empty)" for b by (simp add: S_def)
   
-    have [transfer_rule]: "(op = ===> op = ===> S ===> op = ===> rel_spmf (rel_prod op = S))
+    have [transfer_rule]: "((=) ===> (=) ===> S ===> (=) ===> rel_spmf (rel_prod (=) S))
       oracle_encrypt2 oracle_encrypt2'"
       unfolding oracle_encrypt2_def[abs_def] oracle_encrypt2'_def[abs_def]
       by (auto simp add: rel_fun_def Let_def split_def S_def
            intro!: rel_spmf_bind_reflI split: bool.split option.split)
-    have [transfer_rule]: "(op = ===> S ===> op = ===> rel_spmf (rel_prod op = S)) 
+    have [transfer_rule]: "((=) ===> S ===> (=) ===> rel_spmf (rel_prod (=) S)) 
       oracle_decrypt2 oracle_decrypt2"
       by(auto simp add: rel_fun_def oracle_decrypt2_def)
 
@@ -541,7 +541,7 @@ proof -
     (exec_gpv (oracle_encrypt3 key b \<oplus>\<^sub>O oracle_decrypt2 key) \<A> (False, Map_empty))
     (exec_gpv (oracle_encrypt2' key b \<oplus>\<^sub>O oracle_decrypt2 key) \<A> (False, Map_empty))"
     for key b
-    apply(rule exec_gpv_oracle_bisim_bad[where X="op =" and X_bad = "\<lambda>_ _. True" and ?bad1.0=fst and ?bad2.0=fst and \<I>="\<I>_full \<oplus>\<^sub>\<I> \<I>_full"])
+    apply(rule exec_gpv_oracle_bisim_bad[where X="(=)" and X_bad = "\<lambda>_ _. True" and ?bad1.0=fst and ?bad2.0=fst and \<I>="\<I>_full \<oplus>\<^sub>\<I> \<I>_full"])
     apply(simp_all add: assms)
     apply(auto simp add: assms spmf_rel_map Let_def oracle_encrypt2'_def oracle_encrypt3_def split: plus_oracle_split prod.split bool.split option.split intro!: rel_spmf_bind_reflI rel_spmf_reflI)
     done
@@ -574,7 +574,7 @@ proof -
   define game4 where "game4 = (\<lambda>\<A>. do {
     key \<leftarrow> key_gen;
     (b', _) \<leftarrow> exec_gpv (oracle_encrypt4 key \<oplus>\<^sub>O oracle_decrypt2 key) \<A> ();
-    map_spmf (op = b') coin_spmf})"
+    map_spmf ((=) b') coin_spmf})"
 
   have "map_spmf fst (game3 \<A>) = game4 \<A>"
   proof -
@@ -582,7 +582,7 @@ proof -
     define S where "S = (\<lambda>(_ :: unit) (_ :: bool \<times> (bitstring, bitstring) PRF.dict). True)"
     define initial3 where "initial3 = (False, Map.empty :: (bitstring, bitstring) PRF.dict)"
     have [transfer_rule]: "S () initial3" by(simp add: S_def)
-    have [transfer_rule]: "(op = ===> op = ===> S ===> op = ===> rel_spmf (rel_prod op = S))
+    have [transfer_rule]: "((=) ===> (=) ===> S ===> (=) ===> rel_spmf (rel_prod (=) S))
        (\<lambda>key b. oracle_encrypt4 key) oracle_encrypt3"
     proof(intro rel_funI; hypsubst)
       fix key unit msg10 b Dbad
@@ -593,7 +593,7 @@ proof -
          apply(simp split: if_split)
         apply(simp add: bind_map_spmf o_def option.case_distrib case_option_collapse xor_list_commute split_def cong del: option.case_cong_weak if_weak_cong)
         done
-      then show "rel_spmf (rel_prod op = S) (oracle_encrypt4 key unit msg10) (oracle_encrypt3 key b Dbad msg10)"
+      then show "rel_spmf (rel_prod (=) S) (oracle_encrypt4 key unit msg10) (oracle_encrypt3 key b Dbad msg10)"
         by(auto simp add: spmf_rel_eq[symmetric] spmf_rel_map S_def elim: rel_spmf_mono)
     qed
 

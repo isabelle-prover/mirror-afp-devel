@@ -144,7 +144,7 @@ lemma ah_interleavable1:
   "w \<in> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<Longrightarrow> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
   -- "The lemma is shown by induction on the structure of the monitor consistent interleaving operator"
 proof (induct w \<alpha> w1 w2 rule: cil_set_induct_fix\<alpha>) 
-  case empty show ?case by (simp add: ah_il_def) -- {* The base case is trivial by the definition of @{term "op [*]"} *}
+  case empty show ?case by (simp add: ah_il_def) -- {* The base case is trivial by the definition of @{term "([*])"} *}
 next
   -- "Case: First step comes from the left word"
   case (left e w' w1' w2) show ?case 

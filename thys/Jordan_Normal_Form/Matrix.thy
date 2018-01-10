@@ -211,7 +211,7 @@ definition scalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: semir
 definition monoid_vec :: "'a itself \<Rightarrow> nat \<Rightarrow> ('a :: monoid_add vec) monoid" where
   "monoid_vec ty n \<equiv> \<lparr> 
     carrier = carrier_vec n, 
-    mult = op +, 
+    mult = (+), 
     one = 0\<^sub>v n\<rparr>"
 
 definition module_vec ::
@@ -221,20 +221,20 @@ definition module_vec ::
     mult = undefined,
     one = undefined,
     zero = 0\<^sub>v n,
-    add = op +,
-    smult = (op \<cdot>\<^sub>v)\<rparr>"
+    add = (+),
+    smult = (\<cdot>\<^sub>v)\<rparr>"
 
 lemma monoid_vec_simps: 
-  "mult (monoid_vec ty n) = op +" 
+  "mult (monoid_vec ty n) = (+)" 
   "carrier (monoid_vec ty n) = carrier_vec n"
   "one (monoid_vec ty n) = 0\<^sub>v n"
   unfolding monoid_vec_def by auto
 
 lemma module_vec_simps:
-  "add (module_vec ty n) = op +" 
+  "add (module_vec ty n) = (+)" 
   "zero (module_vec ty n) = 0\<^sub>v n" 
   "carrier (module_vec ty n) = carrier_vec n" 
-  "smult (module_vec ty n) = op \<cdot>\<^sub>v"
+  "smult (module_vec ty n) = (\<cdot>\<^sub>v)"
   unfolding module_vec_def by auto
 
 definition finsum_vec :: "'a :: monoid_add itself \<Rightarrow> nat \<Rightarrow> ('c \<Rightarrow> 'a vec) \<Rightarrow> 'c set \<Rightarrow> 'a vec" where
@@ -685,42 +685,42 @@ definition invertible_mat :: "'a :: semiring_1 mat \<Rightarrow> bool"
 definition monoid_mat :: "'a :: monoid_add itself \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat monoid" where
   "monoid_mat ty nr nc \<equiv> \<lparr> 
     carrier = carrier_mat nr nc, 
-    mult = op +, 
+    mult = (+), 
     one = 0\<^sub>m nr nc\<rparr>"
 
 definition ring_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ring_scheme" where
   "ring_mat ty n b \<equiv> \<lparr> 
     carrier = carrier_mat n n, 
-    mult = op *, 
+    mult = ( * ), 
     one = 1\<^sub>m n, 
     zero = 0\<^sub>m n n,
-    add = op +,
+    add = (+),
     \<dots> = b\<rparr>"
 
 definition module_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a,'a mat)module" where
   "module_mat ty nr nc \<equiv> \<lparr>
     carrier = carrier_mat nr nc, 
-    mult = op *, 
+    mult = ( * ), 
     one = 1\<^sub>m nr, 
     zero = 0\<^sub>m nr nc,
-    add = op +,
-    smult = (op \<cdot>\<^sub>m)\<rparr>"
+    add = (+),
+    smult = (\<cdot>\<^sub>m)\<rparr>"
 
 lemma ring_mat_simps: 
-  "mult (ring_mat ty n b) = op *" 
-  "add (ring_mat ty n b) = op +" 
+  "mult (ring_mat ty n b) = ( * )" 
+  "add (ring_mat ty n b) = (+)" 
   "one (ring_mat ty n b) = 1\<^sub>m n" 
   "zero (ring_mat ty n b) = 0\<^sub>m n n" 
   "carrier (ring_mat ty n b) = carrier_mat n n" 
   unfolding ring_mat_def by auto
 
 lemma module_mat_simps: 
-  "mult (module_mat ty nr nc) = op *" 
-  "add (module_mat ty nr nc) = op +" 
+  "mult (module_mat ty nr nc) = ( * )" 
+  "add (module_mat ty nr nc) = (+)" 
   "one (module_mat ty nr nc) = 1\<^sub>m nr" 
   "zero (module_mat ty nr nc) = 0\<^sub>m nr nc" 
   "carrier (module_mat ty nr nc) = carrier_mat nr nc" 
-  "smult (module_mat ty nr nc) = op \<cdot>\<^sub>m"
+  "smult (module_mat ty nr nc) = (\<cdot>\<^sub>m)"
   unfolding module_mat_def by auto
     
 lemma index_zero_mat[simp]: "i < nr \<Longrightarrow> j < nc \<Longrightarrow> 0\<^sub>m nr nc $$ (i,j) = 0" 
@@ -2305,7 +2305,7 @@ qed (simp add: mat_hom_one)
 
 lemma (in semiring_hom) hom_sum_mat: "hom (sum_mat A) = sum_mat (mat\<^sub>h A)"
 proof -
-  obtain B where id: "?thesis = (hom (sum (op $$ A) B) = sum (op $$ (mat\<^sub>h A)) B)"
+  obtain B where id: "?thesis = (hom (sum (($$) A) B) = sum (($$) (mat\<^sub>h A)) B)"
     and B: "B \<subseteq> {0..<dim_row A} \<times> {0..<dim_col A}"
   unfolding sum_mat_def by auto
   from B have "finite B" 

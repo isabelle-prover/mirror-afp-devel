@@ -99,14 +99,14 @@ proof (rule pmf_eqI)
   next
     case True
     with assms have nonempty: "xs \<noteq> []" by (auto dest: permutations_of_multisetD)
-    hence range_Cons: "xs \<in> range (op # x) \<longleftrightarrow> hd xs = x" for x
+    hence range_Cons: "xs \<in> range ((#) x) \<longleftrightarrow> hd xs = x" for x
       by (cases xs) auto
     from True nonempty 
       have hd_tl: "hd xs \<in># A \<and> tl xs \<in> permutations_of_multiset (A - {#hd xs#})"
       by (cases xs) (auto simp: permutations_of_multiset_Cons_iff)
 
     from assms have "pmf ?rhs xs = 
-      (\<Sum>x\<in>set_mset A. real (count A x) * pmf (map_pmf (op # x) 
+      (\<Sum>x\<in>set_mset A. real (count A x) * pmf (map_pmf ((#) x) 
         (pmf_of_set (permutations_of_multiset (A - {#x#})))) xs) / real (size A)" (is "_ = ?S / _")
       unfolding map_pmf_def [symmetric] by (simp add: pmf_bind_pmf_of_multiset)
     also have "?S = 
@@ -165,11 +165,11 @@ proof -
             }" unfolding shuffle_def
     by (simp add: pmf_of_set_permutations_of_multiset_nonempty)
   also have "pmf_of_multiset (mset xs) = 
-               pmf_of_multiset (image_mset (op ! xs) (mset (upt 0 (length xs))))"
+               pmf_of_multiset (image_mset ((!) xs) (mset (upt 0 (length xs))))"
     by (subst mset_map [symmetric]) (simp add: map_nth)
-  also have "\<dots> = map_pmf (op ! xs) (pmf_of_set {..<length xs})"
+  also have "\<dots> = map_pmf ((!) xs) (pmf_of_set {..<length xs})"
     by (subst map_pmf_of_set) (auto simp add: map_pmf_of_set atLeast0LessThan lessThan_empty_iff)
-  also have "do {x \<leftarrow> map_pmf (op ! xs) (pmf_of_set {..<length xs});
+  also have "do {x \<leftarrow> map_pmf ((!) xs) (pmf_of_set {..<length xs});
                  ys \<leftarrow> pmf_of_set (permutations_of_multiset (mset xs - {#x#}));
                  return_pmf (x # ys)
                 } = 
@@ -250,7 +250,7 @@ proof (induction i xs rule: fisher_yates_aux.induct)
       fix j assume "j \<in> set_pmf (pmf_of_set {..<length (drop i xs)})"
       with False have j: "j < length (drop i xs)" by (simp_all add: lessThan_empty_iff)
       define ys where "ys = swap xs i (j + i)"
-      have "fisher_yates_aux (i + 1) ys = map_pmf (op @ (take (i+1) ys)) (shuffle (drop (i+1) ys))"
+      have "fisher_yates_aux (i + 1) ys = map_pmf ((@) (take (i+1) ys)) (shuffle (drop (i+1) ys))"
         using False j unfolding ys_def by (intro "1.IH") simp_all
       also from False have "take (i+1) ys = take i ys @ [hd (drop i ys)]"
         by (simp add: ys_def take_hd_drop)

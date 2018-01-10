@@ -311,9 +311,9 @@ end
 
 lemma parallel_oracle_parametric:
   includes lifting_syntax shows
-  "((S1 ===> CALL1 ===> rel_spmf (rel_prod op = S1)) 
-  ===> (S2 ===> CALL2 ===> rel_spmf (rel_prod op = S2))
-  ===> rel_prod S1 S2 ===> rel_sum CALL1 CALL2 ===> rel_spmf (rel_prod op = (rel_prod S1 S2)))
+  "((S1 ===> CALL1 ===> rel_spmf (rel_prod (=) S1)) 
+  ===> (S2 ===> CALL2 ===> rel_spmf (rel_prod (=) S2))
+  ===> rel_prod S1 S2 ===> rel_sum CALL1 CALL2 ===> rel_spmf (rel_prod (=) (rel_prod S1 S2)))
   parallel_oracle parallel_oracle"
 unfolding parallel_oracle_def[abs_def] by (fold relator_eq)transfer_prover
 

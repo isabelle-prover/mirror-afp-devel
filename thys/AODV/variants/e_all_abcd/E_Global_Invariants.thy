@@ -653,7 +653,7 @@ lemmas ozero_seq_unk_hops_one =
 lemma oreachable_fresh_okD_unk_or_atleast_one:
     fixes dip
   assumes "(\<sigma>, p) \<in> oreachable (opaodv i)
-                       (otherwith (op=) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
+                       (otherwith ((=)) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
                                                              \<and> msg_zhops m)))
                        (other quality_increases {i})"
       and "dip\<in>kD(rt (\<sigma> i))"
@@ -670,7 +670,7 @@ lemma oreachable_fresh_okD_unk_or_atleast_one:
 lemma oreachable_fresh_ozero_seq_unk_hops_one:
     fixes dip
   assumes "(\<sigma>, p) \<in> oreachable (opaodv i)
-                     (otherwith (op=) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
+                     (otherwith ((=)) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
                                                          \<and> msg_zhops m)))
                      (other quality_increases {i})"
       and "dip\<in>kD(rt (\<sigma> i))"
@@ -688,7 +688,7 @@ lemma oreachable_fresh_ozero_seq_unk_hops_one:
   qed
 
 lemma seq_nhop_quality_increases':
-  shows "opaodv i \<Turnstile> (otherwith (op=) {i}
+  shows "opaodv i \<Turnstile> (otherwith ((=)) {i}
                         (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)),
                          other quality_increases {i} \<rightarrow>)
                         onl \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V (\<lambda>(\<sigma>, _). \<forall>dip. let nhip = the (nhop (rt (\<sigma> i)) dip)
@@ -699,7 +699,7 @@ lemma seq_nhop_quality_increases':
   proof -
     have weaken:
       "\<And>p I Q R P. p \<Turnstile> (otherwith quality_increases I (orecvmsg Q), other quality_increases I \<rightarrow>) P
-       \<Longrightarrow> p \<Turnstile> (otherwith (op=) I (orecvmsg (\<lambda>\<sigma> m. Q \<sigma> m \<and> R \<sigma> m)), other quality_increases I \<rightarrow>) P"
+       \<Longrightarrow> p \<Turnstile> (otherwith ((=)) I (orecvmsg (\<lambda>\<sigma> m. Q \<sigma> m \<and> R \<sigma> m)), other quality_increases I \<rightarrow>) P"
         by auto
     {
       fix i a and \<sigma> \<sigma>' :: "ip \<Rightarrow> state"
@@ -1004,7 +1004,7 @@ lemma seq_nhop_quality_increases':
      qed
     } note rreq_rrep_update = this
 
-    have "opaodv i \<Turnstile> (otherwith (op=) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
+    have "opaodv i \<Turnstile> (otherwith ((=)) {i} (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m
                                                             \<and> msg_zhops m)),
                        other quality_increases {i} \<rightarrow>)
             onl \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V
@@ -1133,7 +1133,7 @@ lemma seq_nhop_quality_increases':
 
 lemma seq_compare_next_hop:
   fixes w
-  shows "opaodv i \<Turnstile> (otherwith (op=) {i} (orecvmsg msg_fresh),
+  shows "opaodv i \<Turnstile> (otherwith ((=)) {i} (orecvmsg msg_fresh),
                       other quality_increases {i} \<rightarrow>)
                        global (\<lambda>\<sigma>. \<forall>dip. let nhip = the (nhop (rt (\<sigma> i)) dip)
                                          in dip \<in> kD(rt (\<sigma> i)) \<and> nhip \<noteq> dip \<longrightarrow>
@@ -1142,7 +1142,7 @@ lemma seq_compare_next_hop:
   by (rule oinvariant_weakenE [OF seq_compare_next_hop']) (auto dest!: onlD)
 
 lemma seq_nhop_quality_increases:
-  shows "opaodv i \<Turnstile> (otherwith (op=) {i}
+  shows "opaodv i \<Turnstile> (otherwith ((=)) {i}
                         (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)),
                          other quality_increases {i} \<rightarrow>)
                         global (\<lambda>\<sigma>. \<forall>dip. let nhip = the (nhop (rt (\<sigma> i)) dip)

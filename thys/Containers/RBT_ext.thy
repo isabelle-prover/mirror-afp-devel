@@ -57,7 +57,7 @@ proof(induction xs arbitrary: zs)
 next
   case (Cons x xs)
   obtain a b where x: "x = (a, b)" by(cases x)
-  have "\<And>zs. fold (\<lambda>(c, d). op # ((a, c), f a b c d)) ys zs =
+  have "\<And>zs. fold (\<lambda>(c, d). (#) ((a, c), f a b c d)) ys zs =
     rev (map (\<lambda>(c, d). ((a, c), f a b c d)) ys) @ zs"
     by(induct ys) auto
   with Cons.IH[of "zs @ map (\<lambda>(c, d). ((a, c), f a b c d)) ys"] x
@@ -138,10 +138,10 @@ lemmas linorder_prod = linorder_prod[OF lin_a lin_b]
 
 lemma sorted_alist_product: 
   assumes xs: "linorder.sorted leq_a (map fst xs)" "distinct (map fst xs)"
-  and ys: "linorder.sorted op \<sqsubseteq>\<^sub>b (map fst ys)"
-  shows "linorder.sorted op \<sqsubseteq> (map fst (alist_product f xs ys))"
+  and ys: "linorder.sorted (\<sqsubseteq>\<^sub>b) (map fst ys)"
+  shows "linorder.sorted (\<sqsubseteq>) (map fst (alist_product f xs ys))"
 proof -
-  interpret a: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
+  interpret a: linorder "(\<sqsubseteq>\<^sub>a)" "(\<sqsubset>\<^sub>a)" by(fact lin_a)
 
   note [simp] = 
     linorder.sorted.Nil[OF linorder_prod] linorder.sorted_Cons[OF linorder_prod]
@@ -155,7 +155,7 @@ proof -
   next
     case (Cons x xs)
     obtain a b where x: "x = (a, b)" by(cases x)
-    have "linorder.sorted op \<sqsubseteq> (map fst (map (\<lambda>(c, d). ((a, c), f a b c d)) ys))"
+    have "linorder.sorted (\<sqsubseteq>) (map fst (map (\<lambda>(c, d). ((a, c), f a b c d)) ys))"
       using ys by(induct ys) auto
     thus ?case using x Cons
       by(fastforce simp add: set_alist_product a.not_less dest: bspec a.antisym intro: rev_image_eqI)
@@ -163,16 +163,16 @@ proof -
 qed
 
 lemma is_rbt_rbt_product:
-  "\<lbrakk> ord.is_rbt op \<sqsubset>\<^sub>a rbt1; ord.is_rbt op \<sqsubset>\<^sub>b rbt2 \<rbrakk>
-  \<Longrightarrow> ord.is_rbt op \<sqsubset> (rbt_product f rbt1 rbt2)"
+  "\<lbrakk> ord.is_rbt (\<sqsubset>\<^sub>a) rbt1; ord.is_rbt (\<sqsubset>\<^sub>b) rbt2 \<rbrakk>
+  \<Longrightarrow> ord.is_rbt (\<sqsubset>) (rbt_product f rbt1 rbt2)"
 unfolding rbt_product_def
 by(blast intro: linorder.is_rbt_rbtreeify[OF linorder_prod] sorted_alist_product linorder.rbt_sorted_entries[OF lin_a] ord.is_rbt_rbt_sorted linorder.distinct_entries[OF lin_a] linorder.rbt_sorted_entries[OF lin_b] distinct_alist_product linorder.distinct_entries[OF lin_b])
 
 lemma rbt_lookup_rbt_product:
-  "\<lbrakk> ord.is_rbt op \<sqsubset>\<^sub>a rbt1; ord.is_rbt op \<sqsubset>\<^sub>b rbt2 \<rbrakk>
-  \<Longrightarrow> ord.rbt_lookup op \<sqsubset> (rbt_product f rbt1 rbt2) (a, c) =
-     (case ord.rbt_lookup op \<sqsubset>\<^sub>a rbt1 a of None \<Rightarrow> None
-      | Some b \<Rightarrow> map_option (f a b c) (ord.rbt_lookup op \<sqsubset>\<^sub>b rbt2 c))"
+  "\<lbrakk> ord.is_rbt (\<sqsubset>\<^sub>a) rbt1; ord.is_rbt (\<sqsubset>\<^sub>b) rbt2 \<rbrakk>
+  \<Longrightarrow> ord.rbt_lookup (\<sqsubset>) (rbt_product f rbt1 rbt2) (a, c) =
+     (case ord.rbt_lookup (\<sqsubset>\<^sub>a) rbt1 a of None \<Rightarrow> None
+      | Some b \<Rightarrow> map_option (f a b c) (ord.rbt_lookup (\<sqsubset>\<^sub>b) rbt2 c))"
 by(simp add: rbt_product_def linorder.rbt_lookup_rbtreeify[OF linorder_prod] linorder.is_rbt_rbtreeify[OF linorder_prod] sorted_alist_product linorder.rbt_sorted_entries[OF lin_a] ord.is_rbt_rbt_sorted linorder.distinct_entries[OF lin_a] linorder.rbt_sorted_entries[OF lin_b] distinct_alist_product linorder.distinct_entries[OF lin_b] map_of_alist_product linorder.map_of_entries[OF lin_a] linorder.map_of_entries[OF lin_b] cong: option.case_cong)
 
 end
@@ -213,8 +213,8 @@ lemma is_rbt_RBT_Impl_diag:
 by(simp add: ord.is_rbt_def rbt_sorted_RBT_Impl_diag inv_RBT_Impl_diag)
 
 lemma (in linorder) rbt_lookup_RBT_Impl_diag:
-  "ord.rbt_lookup (less_prod op \<le> op < op <) (RBT_Impl_diag t) =
-  (\<lambda>(k, k'). if k = k' then ord.rbt_lookup op < t k else None)"
+  "ord.rbt_lookup (less_prod (\<le>) (<) (<)) (RBT_Impl_diag t) =
+  (\<lambda>(k, k'). if k = k' then ord.rbt_lookup (<) t k else None)"
 by(induct t)(auto simp add: ord.rbt_lookup.simps fun_eq_iff)
 
 subsection {* Folding and quantifiers over RBTs *}

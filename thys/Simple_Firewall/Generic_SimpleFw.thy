@@ -274,9 +274,9 @@ subsection\<open>Joining two firewalls, i.e. a packet is send through both seque
   done
   
   lemma generalized_fw_join_1_1:
-    "generalized_fw_join [(m1,d1)] fw2 = foldr (\<lambda>(m2,d2). op @ (case simple_match_and m1 m2 of None \<Rightarrow> [] | Some mu \<Rightarrow> [(mu,d1,d2)])) fw2 []"
+    "generalized_fw_join [(m1,d1)] fw2 = foldr (\<lambda>(m2,d2). (@) (case simple_match_and m1 m2 of None \<Rightarrow> [] | Some mu \<Rightarrow> [(mu,d1,d2)])) fw2 []"
   proof -
-    have concat_map_foldr: "concat (map (\<lambda>x. f x) l) = foldr (\<lambda>x. op @ (f x)) l []" for f :: "'x \<Rightarrow> 'y list" and l
+    have concat_map_foldr: "concat (map (\<lambda>x. f x) l) = foldr (\<lambda>x. (@) (f x)) l []" for f :: "'x \<Rightarrow> 'y list" and l
       by(induction l) simp_all
     show ?thesis
     apply(simp add: generalized_fw_join_cons_1 option2list_def)

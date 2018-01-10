@@ -1305,7 +1305,7 @@ In fact, for @{term "ys = y # ys'"}, the induction hypothesis entails that the c
 be accomplished by applying lemma @{thm [source] ipurge_tr_ref_aux_failures_general} to the
 resulting future of trace @{term "map (inv p) [x\<leftarrow>xs. x \<in> range p]"}, moving functions
 @{term ipurge_tr_aux} and @{term "ipurge_ref_aux"} into the arguments of @{term "map (inv p)"} and
-@{term "op ` (inv p)"}, and using the recursive equations contained in the definitions of functions
+@{term "(`) (inv p)"}, and using the recursive equations contained in the definitions of functions
 @{term ipurge_tr_aux_foldr} and @{term ipurge_ref_aux_foldr}.
 
 This property, along with the match of the outputs of functions @{term ipurge_tr_aux_foldr} and

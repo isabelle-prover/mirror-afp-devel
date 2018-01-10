@@ -324,7 +324,7 @@ proof cases
   } ultimately show ?thesis using \<open>x \<noteq> 1\<close> by arith
 qed (insert assms, simp)
 
-lemma ccw'_sorted_scaleR: "ccw'.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw'.sortedP 0 (map (op *\<^sub>R r) xs)"
+lemma ccw'_sorted_scaleR: "ccw'.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw'.sortedP 0 (map (( *\<^sub>R) r) xs)"
   by (induct xs) (auto intro!: ccw'.sortedP.Cons  elim!: ccw'.sortedP_Cons simp del: scaleR_Pair)
 
 
@@ -505,7 +505,7 @@ proof -
     note coll_scale[OF coll[OF nth] \<open>z \<noteq> 0\<close>]
   } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> r i *\<^sub>R z = xs ! i"
     by metis
-  have "xs = map (op ! xs) [0..<length xs]" by (simp add: map_nth)
+  have "xs = map ((!) xs) [0..<length xs]" by (simp add: map_nth)
   also have "\<dots> = map (\<lambda>i. r i *\<^sub>R z) [0..<length xs]"
     by (auto simp: r)
   also have "sum_list \<dots> = (\<Sum>i\<leftarrow>[0..<length xs]. r i) *\<^sub>R z"

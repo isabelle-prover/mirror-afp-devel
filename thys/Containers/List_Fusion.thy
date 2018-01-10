@@ -180,11 +180,11 @@ context includes lifting_syntax
 begin
 
 lemma generator_has_next_transfer [transfer_rule]: 
-  "(pcr_generator op = op = ===> op =) fst list.has_next"
+  "(pcr_generator (=) (=) ===> (=)) fst list.has_next"
 by(auto simp add: generator.pcr_cr_eq cr_generator_def list.has_next_def dest: sym)
 
 lemma generator_next_transfer [transfer_rule]:
-  "(pcr_generator op = op = ===> op =) snd list.next"
+  "(pcr_generator (=) (=) ===> (=)) snd list.next"
 by(auto simp add: generator.pcr_cr_eq cr_generator_def list.next_def)
 
 end

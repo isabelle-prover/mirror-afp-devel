@@ -72,7 +72,7 @@ fun add_raws ss = map add_raw ss
 fun raw_bind bn = Binding.suffix_name "_raw" bn
 
 fun replace_str ss s = 
-  case (AList.lookup (op=) ss s) of 
+  case (AList.lookup ((=)) ss s) of 
      SOME s' => s'
    | NONE => s
 
@@ -342,7 +342,7 @@ let
   val _ = trace_msg (K "Defining the quotient constants...")
   val qconstrs_descrs =
     (map2 o map2) (fn (b, _, mx) => fn (t, th) => (Variable.check_name b, t, mx, th))
-      (get_cnstrs dts) (map (op ~~) (raw_all_cns ~~ raw_constrs_rsp))
+      (get_cnstrs dts) (map (~~) (raw_all_cns ~~ raw_constrs_rsp))
 
   val qbns_descr =
     map2 (fn (b, _, mx) => fn (t, th) => (Variable.check_name b, t, mx, th)) bn_funs (raw_bns ~~ raw_bn_rsp)
@@ -447,7 +447,7 @@ let
   (* filters the theorems that are of the form "qfv = supp" *)
   val qfv_names = map (fst o dest_Const) qfvs
   fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) = 
-    member (op=) qfv_names lhs
+    member ((=)) qfv_names lhs
   | is_qfv_thm _ = false
 
   val qsupp_constrs = qfv_defs
@@ -607,7 +607,7 @@ in
 end
 
 fun index_lookup xs x =
-  case AList.lookup (op=) xs x of
+  case AList.lookup ((=)) xs x of
     SOME x => x
   | NONE => error ("Cannot find " ^ x ^ " as argument annotation.");
 *}
@@ -655,7 +655,7 @@ ML {*
 fun included i bcs = 
 let
   fun incl (BC (_, bns, bds)) = 
-    member (op =) (map snd bns) i orelse member (op =) bds i
+    member (=) (map snd bns) i orelse member (=) bds i
 in
   exists incl bcs 
 end

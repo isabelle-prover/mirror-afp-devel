@@ -236,11 +236,11 @@ lemma inf_continuous_nxt[order_continuous_intros]: "inf_continuous P \<Longright
 lemma sup_continuous_nxt[order_continuous_intros]: "sup_continuous P \<Longrightarrow> sup_continuous (\<lambda>x. nxt (P x) \<omega>)"
   by (auto simp: sup_continuous_def)
 
-lemma mcont_ennreal_of_enat: "mcont Sup (op \<le>) Sup op \<le> ennreal_of_enat"
+lemma mcont_ennreal_of_enat: "mcont Sup (\<le>) Sup (\<le>) ennreal_of_enat"
   by (auto intro!: mcontI monotoneI contI ennreal_of_enat_Sup)
 
 lemma mcont2mcont_ennreal_of_enat[cont_intro]:
-  "mcont lub ord Sup op \<le> f \<Longrightarrow> mcont lub ord Sup op \<le> (\<lambda>x. ennreal_of_enat (f x))"
+  "mcont lub ord Sup (\<le>) f \<Longrightarrow> mcont lub ord Sup (\<le>) (\<lambda>x. ennreal_of_enat (f x))"
   by (auto intro: ccpo.mcont2mcont[OF complete_lattice_ccpo'] mcont_ennreal_of_enat)
 
 declare stream.exhaust[cases type: stream]
@@ -302,7 +302,7 @@ proof induction
   case (insert i I) then show ?case
     by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.swap[of _ "Pi\<^sub>E I J"]
                    sum_cartesian_product' sum_distrib_left sum_distrib_right
-             intro!: sum.cong prod.cong arg_cong[where f="op * x" for x])
+             intro!: sum.cong prod.cong arg_cong[where f="( * ) x" for x])
 qed simp
 
 lemma prod_add_distrib:
@@ -315,7 +315,7 @@ proof -
     using \<open>finite I\<close> by (rule prod_sum_distrib) simp
   also have "\<dots> = (\<Sum>J\<in>Pow I. (\<Prod>i\<in>J. f i) * (\<Prod>i\<in>I - J. g i))"
     by (rule sum.reindex_bij_witness[where i="\<lambda>J. \<lambda>i\<in>I. i\<in>J" and j="\<lambda>m. {i\<in>I. m i}"])
-       (auto simp: fun_eq_iff prod.If_cases \<open>finite I\<close> intro!: arg_cong2[where f="op *"] prod.cong)
+       (auto simp: fun_eq_iff prod.If_cases \<open>finite I\<close> intro!: arg_cong2[where f="( * )"] prod.cong)
   finally show ?thesis .
 qed
 

@@ -87,7 +87,7 @@ subsubsection\<open>inverting a DNF\<close>
   
   lemma "listprepend [a,b] [as, bs] = [a#as, a#bs, b#as, b#bs]" by simp
   
-  lemma map_a_and: "dnf_to_bool \<gamma> (map (op # a) ds) \<longleftrightarrow> dnf_to_bool \<gamma> [[a]] \<and> dnf_to_bool \<gamma> ds"
+  lemma map_a_and: "dnf_to_bool \<gamma> (map ((#) a) ds) \<longleftrightarrow> dnf_to_bool \<gamma> [[a]] \<and> dnf_to_bool \<gamma> ds"
     apply(induction ds)
      apply(simp_all)
     apply(case_tac a)

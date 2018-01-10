@@ -78,7 +78,7 @@ proof
     hence "dirichlet_prod f g n = (\<Sum>d | d dvd n. f (n div (n div d)) * g (n div d))"
       unfolding dirichlet_prod_def by (intro sum.cong refl) (auto elim!: dvdE)
     also from False have "\<dots> = (\<Sum>d | d dvd n. f (n div d) * g d)" 
-      by (intro sum.reindex_bij_witness[of _ "op div n" "op div n"]) (auto elim!: dvdE)
+      by (intro sum.reindex_bij_witness[of _ "(div) n" "(div) n"]) (auto elim!: dvdE)
     finally show ?thesis .
   qed simp
 qed

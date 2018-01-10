@@ -288,10 +288,10 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
 
     abbreviation (input) "prio_rel \<equiv> (Id::('p\<times>'p) set)"
 
-    lemma param_prio_le: "(op \<le>, op \<le>) \<in> prio_rel \<rightarrow> prio_rel \<rightarrow> bool_rel" by simp
+    lemma param_prio_le: "((\<le>), (\<le>)) \<in> prio_rel \<rightarrow> prio_rel \<rightarrow> bool_rel" by simp
     lemmas [sepref_import_param] = param_prio_le
     
-    lemma param_prio_lt: "(op <, op <) \<in> prio_rel \<rightarrow> prio_rel \<rightarrow> bool_rel" by simp
+    lemma param_prio_lt: "((<), (<)) \<in> prio_rel \<rightarrow> prio_rel \<rightarrow> bool_rel" by simp
     lemmas [sepref_import_param] = param_prio_lt
 
     abbreviation "I_HM_UNF \<equiv> TYPE(nat list \<times> 'v list)"

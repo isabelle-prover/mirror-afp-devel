@@ -20,7 +20,7 @@ subsection {* Binary Relations *}
 text {* Since Isabelle's libraries for binary relations are very well
 developed, the proof for this model is entirely trivial. *}
 
-interpretation rel_relation_algebra: relation_algebra "op -" uminus "op \<inter>" "op \<subseteq>" "op \<subset>" "op \<union>" "{}" UNIV "op O" Relation.converse Id
+interpretation rel_relation_algebra: relation_algebra "(-)" uminus "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" UNIV "(O)" Relation.converse Id
 by unfold_locales auto
 
 subsection {* Infinite Boolean Matrices *}
@@ -56,10 +56,10 @@ begin
     "one_bool \<equiv> True"
 
   definition times_bool_def:
-    "times_bool \<equiv> op \<and>"
+    "times_bool \<equiv> (\<and>)"
 
   definition plus_bool_def:
-    "plus_bool \<equiv> op \<or>"
+    "plus_bool \<equiv> (\<or>)"
 
   instance
   by standard (auto simp: plus_bool_def times_bool_def one_bool_def zero_bool_def)
@@ -71,7 +71,7 @@ text {* We now show that infinite Boolean matrices form a Boolean algebra. *}
 lemma le_funI2: "(\<And>i j. f i j \<le> g i j) \<Longrightarrow> f \<le> g"
 by (metis le_funI)
 
-interpretation matrix_ba: boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "op \<sqinter>" "op \<le>" "op <" mat_add mat_zero mat_top
+interpretation matrix_ba: boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" mat_add mat_zero mat_top
 by standard (force intro!: le_funI simp: mat_inter_def plus_bool_def mat_add_def mat_zero_def zero_bool_def mat_top_def mat_complement_def)+
 
 text {* We continue working towards the main result of this section, that
@@ -118,7 +118,7 @@ qed
 
 text {* Finally the main result of this section. *}
 
-interpretation matrix_ra: relation_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "op \<sqinter>" "op \<le>" "op <" "op \<oplus>" "\<lambda>i j. False" \<tau> "op \<otimes>" mat_transpose \<epsilon>
+interpretation matrix_ra: relation_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" "(\<oplus>)" "\<lambda>i j. False" \<tau> "(\<otimes>)" mat_transpose \<epsilon>
 proof
   fix x y z :: "'a::finite \<Rightarrow> 'a \<Rightarrow> bool"
   show "(\<lambda>(i::'a) j::'a. False) \<le> x"

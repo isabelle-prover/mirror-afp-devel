@@ -121,7 +121,7 @@ abbreviation
 
 definition
   sep_list_conj :: "('a \<Rightarrow> bool) list \<Rightarrow> ('a \<Rightarrow> bool)"  ("\<And>* _" [60] 90) where
-  "sep_list_conj Ps \<equiv> foldl (op **) \<box> Ps"
+  "sep_list_conj Ps \<equiv> foldl (( ** )) \<box> Ps"
 
 
 subsection {* Disjunction/Addition Properties *}
@@ -251,7 +251,7 @@ qed
 
 lemmas sep_conj_ac = sep_conj_commute sep_conj_assoc sep_conj_left_commute
 
-lemma ab_semigroup_mult_sep_conj: "class.ab_semigroup_mult op **"
+lemma ab_semigroup_mult_sep_conj: "class.ab_semigroup_mult ( ** )"
   by (unfold_locales)
      (auto simp: sep_conj_ac)
 
@@ -302,10 +302,10 @@ lemma sep_conj_sep_emptyE:
   "\<lbrakk> P s; (P ** \<box>) s \<Longrightarrow> (Q ** R) s \<rbrakk> \<Longrightarrow> (Q ** R) s"
   by simp
 
-lemma monoid_add: "class.monoid_add (op **) \<box>"
+lemma monoid_add: "class.monoid_add (( ** )) \<box>"
   by (unfold_locales) (auto simp: sep_conj_ac)
 
-lemma comm_monoid_add: "class.comm_monoid_add op ** \<box>"
+lemma comm_monoid_add: "class.comm_monoid_add ( ** ) \<box>"
   by (unfold_locales) (auto simp: sep_conj_ac)
 
 
@@ -646,10 +646,10 @@ lemma strictly_exact_conj_impl:
 
 end
 
-interpretation sep: ab_semigroup_mult "op **"
+interpretation sep: ab_semigroup_mult "( ** )"
   by (rule ab_semigroup_mult_sep_conj)
 
-interpretation sep: comm_monoid_add "op **" \<box>
+interpretation sep: comm_monoid_add "( ** )" \<box>
   by (rule comm_monoid_add)
 
 
@@ -674,11 +674,11 @@ lemma sep_list_conj_Nil [simp]: "\<And>* [] = \<box>"
 
 (* apparently these two are rarely used and had to be removed from List.thy *)
 lemma (in semigroup_add) foldl_assoc:
-shows "foldl op+ (x+y) zs = x + (foldl op+ y zs)"
+shows "foldl (+) (x+y) zs = x + (foldl (+) y zs)"
 by (induct zs arbitrary: y) (simp_all add:add.assoc)
 
 lemma (in monoid_add) foldl_absorb0:
-shows "x + (foldl op+ 0 zs) = foldl op+ x zs"
+shows "x + (foldl (+) 0 zs) = foldl (+) x zs"
 by (induct zs) (simp_all add:foldl_assoc)
 
 lemma sep_list_conj_Cons [simp]: "\<And>* (x#xs) = (x ** \<And>* xs)"
@@ -688,20 +688,20 @@ lemma sep_list_conj_append [simp]: "\<And>* (xs @ ys) = (\<And>* xs ** \<And>* y
   by (simp add: sep_list_conj_def sep.foldl_absorb0)
 
 lemma (in comm_monoid_add) foldl_map_filter:
-  "foldl op + 0 (map f (filter P xs)) +
-     foldl op + 0 (map f (filter (not P) xs))
-   = foldl op + 0 (map f xs)"
+  "foldl (+) 0 (map f (filter P xs)) +
+     foldl (+) 0 (map f (filter (not P) xs))
+   = foldl (+) 0 (map f xs)"
 proof (induct xs)
   case Nil thus ?case by clarsimp
 next
   case (Cons x xs)
-  hence IH: "foldl op + 0 (map f xs) =
-               foldl op + 0 (map f (filter P xs)) +
-               foldl op + 0 (map f [x\<leftarrow>xs . \<not> P x])"
+  hence IH: "foldl (+) 0 (map f xs) =
+               foldl (+) 0 (map f (filter P xs)) +
+               foldl (+) 0 (map f [x\<leftarrow>xs . \<not> P x])"
                by (simp only: eq_commute)
 
   have foldl_Cons':
-    "\<And>x xs. foldl op + 0 (x # xs) = x + (foldl op + 0 xs)"
+    "\<And>x xs. foldl (+) 0 (x # xs) = x + (foldl (+) 0 xs)"
     by (simp, subst foldl_absorb0[symmetric], rule refl)
 
   { assume "P x"
@@ -731,7 +731,7 @@ definition
   precise :: "('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "precise P = (\<forall>h hp hp'. hp \<preceq> h \<and> P hp \<and> hp' \<preceq> h \<and> P hp' \<longrightarrow> hp = hp')"
 
-lemma "precise (op = s)"
+lemma "precise ((=) s)"
   by (metis (full_types) precise_def)
 
 lemma sep_add_cancel:
@@ -798,8 +798,8 @@ next
     have "\<forall>Q R. ((Q and R) \<and>* P) (z + hp) = ((Q \<and>* P) and (R \<and>* P)) (z' + hp')"
       by (fastforce simp: h_eq sep_add_ac sep_conj_commute)
 
-    hence "((op = z and op = z') \<and>* P) (z + hp) =
-           ((op = z \<and>* P) and (op = z' \<and>* P)) (z' + hp')" by blast
+    hence "(((=) z and (=) z') \<and>* P) (z + hp) =
+           (((=) z \<and>* P) and ((=) z' \<and>* P)) (z' + hp')" by blast
 
     thus  "hp = hp'" using php php' hpz hpz' h_eq
       by (fastforce dest!: iffD2 cong: conj_cong

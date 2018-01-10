@@ -908,11 +908,11 @@ proof -
     by (auto simp: assms)
 
   have tI[simp]: "t \<in> T" for t by (simp add: assms)
-  let ?T = "(op + (- s) ` existence_ivl s x)"
+  let ?T = "((+) (- s) ` existence_ivl s x)"
   have shifted: "is_interval ?T" "0 \<in> ?T"
     by (auto simp: \<open>x \<in> X\<close>)
 
-  have "(\<lambda>t. t - s) = op + (- s)" by auto
+  have "(\<lambda>t. t - s) = (+) (- s)" by auto
   with shift_autonomous_solution[OF flow_solves_ode[OF na], of s] flow_in_domain
   have sol: "((\<lambda>t. flow s x (t + s)) solves_ode f) ?T X"
     by (auto simp: auto \<open>x \<in> X\<close>)
@@ -945,11 +945,11 @@ proof -
   have na: "s \<in> T" "x \<in> X" and a: "0 \<in> T" "x \<in> X"
     by (auto simp: assms)
 
-  let ?T = "(op + s ` existence_ivl 0 x)"
+  let ?T = "((+) s ` existence_ivl 0 x)"
   have shifted: "is_interval ?T" "s \<in> ?T"
     by (auto simp: a)
 
-  have "(\<lambda>t. t + s) = op + s"
+  have "(\<lambda>t. t + s) = (+) s"
     by (auto simp: )
   with shift_autonomous_solution[OF flow_solves_ode[OF a], of "-s"]
     flow_in_domain

@@ -32,18 +32,18 @@ declare Quotient_uint8[transfer_rule]
 instantiation uint8 :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
 lift_definition zero_uint8 :: uint8 is "0" .
 lift_definition one_uint8 :: uint8 is "1" .
-lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op +" .
-lift_definition minus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op -" .
+lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(+)" .
+lift_definition minus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(-)" .
 lift_definition uminus_uint8 :: "uint8 \<Rightarrow> uint8" is uminus .
-lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op *" .
-lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op div" .
-lift_definition modulo_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op mod" .
+lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "( * )" .
+lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(div)" .
+lift_definition modulo_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+
 end
 
 instantiation uint8 :: linorder begin
-lift_definition less_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "op <" .
-lift_definition less_eq_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "(<)" .
+lift_definition less_eq_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "(\<le>)" .
 instance by standard (transfer, simp add: less_le_not_le linear)+
 end
 
@@ -103,7 +103,7 @@ lemma Rep_uint8_numeral [simp]: "Rep_uint8 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint8_def Abs_uint8_inverse numeral.simps plus_uint8_def)
 
 lemma numeral_uint8_transfer [transfer_rule]:
-  "(rel_fun op = cr_uint8) numeral numeral"
+  "(rel_fun (=) cr_uint8) numeral numeral"
 by(auto simp add: cr_uint8_def)
 
 lemma numeral_uint8 [code_unfold]: "numeral n = Uint8 (numeral n)"
@@ -222,7 +222,7 @@ text {*
 definition Rep_uint8' where [simp]: "Rep_uint8' = Rep_uint8"
 
 lemma Rep_uint8'_transfer [transfer_rule]:
-  "rel_fun cr_uint8 op = (\<lambda>x. x) Rep_uint8'"
+  "rel_fun cr_uint8 (=) (\<lambda>x. x) Rep_uint8'"
 unfolding Rep_uint8'_def by(rule uint8.rep_transfer)
 
 lemma Rep_uint8'_code [code]: "Rep_uint8' x = (BITS n. x !! n)"
@@ -310,7 +310,7 @@ code_printing type_constructor uint8 \<rightharpoonup>
 
 definition uint8_divmod :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8 \<times> uint8" where
   "uint8_divmod x y = 
-  (if y = 0 then (undefined (op div :: uint8 \<Rightarrow> _) x (0 :: uint8), undefined (op mod :: uint8 \<Rightarrow> _) x (0 :: uint8)) 
+  (if y = 0 then (undefined ((div) :: uint8 \<Rightarrow> _) x (0 :: uint8), undefined ((mod) :: uint8 \<Rightarrow> _) x (0 :: uint8)) 
   else (x div y, x mod y))"
 
 definition uint8_div :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" 
@@ -330,15 +330,15 @@ by transfer (simp add: word_mod_def)
 definition uint8_sdiv :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8"
 where
   "uint8_sdiv x y =
-   (if y = 0 then undefined (op div :: uint8 \<Rightarrow> _) x (0 :: uint8)
+   (if y = 0 then undefined ((div) :: uint8 \<Rightarrow> _) x (0 :: uint8)
     else Abs_uint8 (Rep_uint8 x sdiv Rep_uint8 y))"
 
 definition div0_uint8 :: "uint8 \<Rightarrow> uint8"
-where [code del]: "div0_uint8 x = undefined (op div :: uint8 \<Rightarrow> _) x (0 :: uint8)"
+where [code del]: "div0_uint8 x = undefined ((div) :: uint8 \<Rightarrow> _) x (0 :: uint8)"
 declare [[code abort: div0_uint8]]
 
 definition mod0_uint8 :: "uint8 \<Rightarrow> uint8"
-where [code del]: "mod0_uint8 x = undefined (op mod :: uint8 \<Rightarrow> _) x (0 :: uint8)"
+where [code del]: "mod0_uint8 x = undefined ((mod) :: uint8 \<Rightarrow> _) x (0 :: uint8)"
 declare [[code abort: mod0_uint8]]
 
 lemma uint8_divmod_code [code]:
@@ -353,7 +353,7 @@ by transfer(simp add: divmod_via_sdivmod)
 
 lemma uint8_sdiv_code [code abstract]:
   "Rep_uint8 (uint8_sdiv x y) =
-   (if y = 0 then Rep_uint8 (undefined (op div :: uint8 \<Rightarrow> _) x (0 :: uint8))
+   (if y = 0 then Rep_uint8 (undefined ((div) :: uint8 \<Rightarrow> _) x (0 :: uint8))
     else Rep_uint8 x sdiv Rep_uint8 y)"
 unfolding uint8_sdiv_def by(simp add: Abs_uint8_inverse)
 

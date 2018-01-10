@@ -795,7 +795,7 @@ lemma nil_in_permutations[simp]: "[] \<in> set (permutations xs) \<longleftright
 
 lemma permutations_not_nil:
   assumes "xs \<noteq> []"
-  shows "permutations xs = concat (map (\<lambda>x. map (op # x) (permutations (remove1 x xs))) xs)"
+  shows "permutations xs = concat (map (\<lambda>x. map ((#) x) (permutations (remove1 x xs))) xs)"
   using assms by (cases xs) (auto simp: permutations_Cons)
 
 lemma set_permutations_step:

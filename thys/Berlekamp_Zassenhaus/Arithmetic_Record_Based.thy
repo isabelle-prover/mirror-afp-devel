@@ -94,11 +94,11 @@ locale ring_ops = arith_ops ops for ops :: "'i arith_ops_record" +
   and right_total[transfer_rule]: "right_total R"
   and zero[transfer_rule]: "R zero 0"
   and one[transfer_rule]: "R one 1"
-  and plus[transfer_rule]: "(R ===> R ===> R) plus (op +)"
-  and minus[transfer_rule]: "(R ===> R ===> R) minus (op -)"
+  and plus[transfer_rule]: "(R ===> R ===> R) plus (+)"
+  and minus[transfer_rule]: "(R ===> R ===> R) minus (-)"
   and uminus[transfer_rule]: "(R ===> R) uminus Groups.uminus"
-  and times[transfer_rule]: "(R ===> R ===> R) times (op *)"
-  and eq[transfer_rule]: "(R ===> R ===> op =) op = op ="
+  and times[transfer_rule]: "(R ===> R ===> R) times (( * ))"
+  and eq[transfer_rule]: "(R ===> R ===> (=)) (=) (=)"
   and DPR[transfer_domain_rule]: "Domainp R = DP" 
 begin
 lemma left_right_unique[transfer_rule]: "left_unique R" "right_unique R"
@@ -125,7 +125,7 @@ locale idom_divide_ops = idom_ops ops R for ops :: "'i arith_ops_record" and
 
 locale euclidean_semiring_ops = idom_ops ops R for ops :: "'i arith_ops_record" and
   R :: "'i \<Rightarrow> 'a :: {idom,normalization_euclidean_semiring} \<Rightarrow> bool"  +
-  assumes modulo[transfer_rule]: "(R ===> R ===> R) modulo (op mod)"
+  assumes modulo[transfer_rule]: "(R ===> R ===> R) modulo (mod)"
     and normalize[transfer_rule]: "(R ===> R) normalize Rings.normalize"
     and unit_factor[transfer_rule]: "(R ===> R) unit_factor Rings.unit_factor"
 begin
@@ -157,7 +157,7 @@ end
 
 locale euclidean_ring_ops = euclidean_semiring_ops ops R for ops :: "'i arith_ops_record" and
   R :: "'i \<Rightarrow> 'a :: {idom,euclidean_ring_gcd} \<Rightarrow> bool"  +
-  assumes divide[transfer_rule]: "(R ===> R ===> R) divide (op div)"
+  assumes divide[transfer_rule]: "(R ===> R ===> R) divide (div)"
 begin
 lemma euclid_ext_aux_i[transfer_rule]: 
   "(R ===> R ===> R ===> R ===> R ===> R ===> rel_prod (rel_prod R R) R) euclid_ext_aux_i euclid_ext_aux"
@@ -199,7 +199,7 @@ locale field_ops = idom_divide_ops ops R + euclidean_semiring_ops ops R for ops 
   assumes inverse[transfer_rule]: "(R ===> R) inverse Fields.inverse"
   
 
-lemma nth_default_rel[transfer_rule]: "(S ===> list_all2 S ===> op = ===> S) nth_default nth_default"
+lemma nth_default_rel[transfer_rule]: "(S ===> list_all2 S ===> (=) ===> S) nth_default nth_default"
 proof (intro rel_funI, clarify, goal_cases)
   case (1 x y xs ys _ n)
   from 1(2) show ?case
@@ -213,7 +213,7 @@ proof (intro rel_funI, clarify, goal_cases)
 qed
 
 lemma strip_while_rel[transfer_rule]: 
-  "((A ===> op =) ===> list_all2 A ===> list_all2 A) strip_while strip_while"
+  "((A ===> (=)) ===> list_all2 A ===> list_all2 A) strip_while strip_while"
   unfolding strip_while_def[abs_def] by transfer_prover
 
 lemma list_all2_last[simp]: "list_all2 A (xs @ [x]) (ys @ [y]) \<longleftrightarrow> list_all2 A xs ys \<and> A x y"

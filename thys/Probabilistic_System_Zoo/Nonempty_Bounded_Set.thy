@@ -87,7 +87,7 @@ next
   then show "map_nebset f X = map_nebset g X" by transfer force
 next
   fix f
-  show "set_nebset \<circ> map_nebset f = op ` f \<circ> set_nebset" by (rule ext, transfer) auto
+  show "set_nebset \<circ> map_nebset f = (`) f \<circ> set_nebset" by (rule ext, transfer) auto
 next
   fix X :: "'a set!['k]"
   show "|set_nebset X| \<le>o natLeq +c |UNIV :: 'k set|"

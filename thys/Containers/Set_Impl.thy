@@ -860,7 +860,7 @@ qed
 lemma Set_bind_code [code]:
   fixes dxs :: "'a :: ceq set_dlist"
   and rbt :: "'b :: ccompare set_rbt" shows
-  "Set.bind (Set_Monad xs) f = fold (op \<union> \<circ> f) xs (Set_Monad [])" (is ?Set_Monad)
+  "Set.bind (Set_Monad xs) f = fold ((\<union>) \<circ> f) xs (Set_Monad [])" (is ?Set_Monad)
   "Set.bind (DList_set dxs) f' =
   (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''bind DList_set: ceq = None'') (\<lambda>_. Set.bind (DList_set dxs) f')
                   | Some _ \<Rightarrow> DList_Set.fold (union \<circ> f') dxs {})" (is ?DList)
@@ -1212,8 +1212,8 @@ context linorder begin
 
 lemma sorted_list_subset_correct:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk> 
-  \<Longrightarrow> sorted_list_subset op = xs ys \<longleftrightarrow> set xs \<subseteq> set ys"
-apply(induct "op = :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
+  \<Longrightarrow> sorted_list_subset (=) xs ys \<longleftrightarrow> set xs \<subseteq> set ys"
+apply(induct "(=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
 apply(auto 6 2 simp add: sorted_Cons)
 apply auto
 by (metis eq_iff insert_iff set_mp)
@@ -1249,9 +1249,9 @@ text {*
 *}
 
 definition subset_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"
-where [simp, code del]: "subset_eq = op \<subseteq>"
+where [simp, code del]: "subset_eq = (\<subseteq>)"
 
-lemma subseteq_code [code]: "op \<subseteq> = subset_eq"
+lemma subseteq_code [code]: "(\<subseteq>) = subset_eq"
 by simp
 
 lemma subset'_code [code]: "Cardinality.subset' = subset_eq"
@@ -1431,32 +1431,32 @@ lemma product_code [code]:
      case ID CCOMPARE('d) of None \<Rightarrow> Code.abort (STR ''product RBT_set RBT_set: ccompare2 = None'') (\<lambda>_. Product_Type.product (RBT_set rbt1) (RBT_set rbt2))
                        | Some _ \<Rightarrow> RBT_set (RBT_Set2.product rbt1 rbt2))"
 proof -
-  have [simp]: "\<And>a zs. fold (\<lambda>y. op # (a, y)) ys zs = rev (map (Pair a) ys) @ zs"
+  have [simp]: "\<And>a zs. fold (\<lambda>y. (#) (a, y)) ys zs = rev (map (Pair a) ys) @ zs"
     by(induct ys) simp_all
   have [simp]: "\<And>zs. fold (\<lambda>x. fold (\<lambda>y rest. (x, y) # rest) ys) xs zs = rev (concat (map (\<lambda>x. map (Pair x) ys) xs)) @ zs"
     by(induct xs) simp_all
   show ?Set_Monad by(auto simp add: Product_Type.product_def)
 
   { fix xs :: "'a list"
-    have "fold (\<lambda>x. op \<union> (Pair x ` B1)) xs {} = set xs \<times> B1"
+    have "fold (\<lambda>x. (\<union>) (Pair x ` B1)) xs {} = set xs \<times> B1"
       by(induct xs rule: rev_induct) auto }
   thus ?dlist1 
     by(simp add: Product_Type.product_def DList_set_def DList_Set.fold.rep_eq DList_Set.Collect_member split: option.split) 
 
   { fix ys :: "'b list"
-    have "fold (\<lambda>y. op \<union> ((\<lambda>x. (x, y)) ` A1)) ys {} = A1 \<times> set ys"
+    have "fold (\<lambda>y. (\<union>) ((\<lambda>x. (x, y)) ` A1)) ys {} = A1 \<times> set ys"
       by(induct ys rule: rev_induct) auto }
   thus ?dlist2
     by(simp add: Product_Type.product_def DList_set_def DList_Set.fold.rep_eq DList_Set.Collect_member split: option.split)
 
   { fix xs :: "'c list"
-    have "fold (\<lambda>x. op \<union> (Pair x ` B2)) xs {} = set xs \<times> B2"
+    have "fold (\<lambda>x. (\<union>) (Pair x ` B2)) xs {} = set xs \<times> B2"
       by(induct xs rule: rev_induct) auto }
   thus ?rbt1
     by(simp add: Product_Type.product_def RBT_set_def RBT_Set2.member_product RBT_Set2.member_conv_keys fold_conv_fold_keys split: option.split)
 
   { fix ys :: "'d list"
-    have "fold (\<lambda>y. op \<union> ((\<lambda>x. (x, y)) ` A2)) ys {} = A2 \<times> set ys"
+    have "fold (\<lambda>y. (\<union>) ((\<lambda>x. (x, y)) ` A2)) ys {} = A2 \<times> set ys"
       by(induct ys rule: rev_induct) auto }
   thus ?rbt2
     by(simp add: Product_Type.product_def RBT_set_def RBT_Set2.member_product RBT_Set2.member_conv_keys fold_conv_fold_keys split: option.split)
@@ -1804,7 +1804,7 @@ definition insert_monad :: "'a \<Rightarrow> 'a set \<Rightarrow> 'a set"
 where [simp]: "insert_monad = insert"
 
 definition union_monad :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
-where [simp]: "union_monad = op \<union>"
+where [simp]: "union_monad = (\<union>)"
 
 lemma insert_monad_code [code]:
   "insert_monad x (Set_Monad xs) = Set_Monad (x # xs)"

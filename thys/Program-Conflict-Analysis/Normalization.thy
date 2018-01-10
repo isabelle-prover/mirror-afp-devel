@@ -143,7 +143,7 @@ proof (erule ntrs.cases, auto)
 qed
 
 lemma ntrs_is_trss: "((s,c),w,(s',c'))\<in>trcl (ntrs fg) 
-  \<Longrightarrow> ((s,c),foldl (op @) [] w,(s',c'))\<in>trcl (trss fg)" 
+  \<Longrightarrow> ((s,c),foldl (@) [] w,(s',c'))\<in>trcl (trss fg)" 
 proof (induct rule: trcl_pair_induct)
   case empty thus ?case by simp
 next
@@ -154,7 +154,7 @@ qed
 lemma ntr_is_tr_s: "(c,w,c')\<in>ntr fg \<Longrightarrow> (c,w,c')\<in>trcl (tr fg)"
   by (erule gtrE) (auto dest: ntrs_is_trss_s intro: gtrI)
   
-lemma ntr_is_tr: "(c,ww,c')\<in>trcl (ntr fg) \<Longrightarrow> (c,foldl (op @) [] ww,c')\<in>trcl (tr fg)" 
+lemma ntr_is_tr: "(c,ww,c')\<in>trcl (ntr fg) \<Longrightarrow> (c,foldl (@) [] ww,c')\<in>trcl (tr fg)" 
 proof (induct rule: trcl.induct)
   case empty thus ?case by auto
 next
@@ -385,7 +385,7 @@ lemma (in flowgraph) ntrp_valid_preserve:
 subsubsection {* Monitors *}
 text {* The following defines the set of monitors used by a normalized path and shows its basic properties: *}
 definition 
-  "mon_ww fg ww == foldl (op \<union>) {} (map (mon_w fg) ww)"
+  "mon_ww fg ww == foldl (\<union>) {} (map (mon_w fg) ww)"
 
 definition 
   "mon_loc fg ww == mon_ww fg (map le_rem_s (loc ww))"
@@ -429,7 +429,7 @@ lemma mon_loc_unconc:
   by (unfold mon_loc_def) (auto simp add: mon_ww_unconc)
 
 
-lemma mon_ww_of_foldl[simp]: "mon_w fg (foldl (op @) [] ww) = mon_ww fg ww"
+lemma mon_ww_of_foldl[simp]: "mon_w fg (foldl (@) [] ww) = mon_ww fg ww"
   apply (induct ww)
   apply (unfold mon_ww_def) 
   apply simp

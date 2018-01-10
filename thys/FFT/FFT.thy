@@ -68,14 +68,14 @@ lemma sum_add_split_nat_ivl:
   using le g h by (simp add: sum_add_nat_ivl cong: sum.strong_cong)
 
 lemma ivl_splice_Un:
-  "{0..<2*n::nat} = (op * 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
+  "{0..<2*n::nat} = (( * ) 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
   apply (unfold image_def Bex_def)
   apply auto
   apply arith
   done
 
 lemma ivl_splice_Int:
-  "(op * 2 ` {0..<n}) \<inter> ((%i. Suc (2*i)) ` {0..<n}) = {}"
+  "(( * ) 2 ` {0..<n}) \<inter> ((%i. Suc (2*i)) ` {0..<n}) = {}"
   by auto arith
 
 lemma double_inj_on:
@@ -90,7 +90,7 @@ lemma sum_splice:
   "(\<Sum>i::nat = 0..<2*n. f i) = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
 proof -
   have "(\<Sum>i::nat = 0..<2*n. f i) =
-    sum f (op * 2 ` {0..<n}) + sum f ((%i. 2*i+1) ` {0..<n})"
+    sum f (( * ) 2 ` {0..<n}) + sum f ((%i. 2*i+1) ` {0..<n})"
     by (simp add: ivl_splice_Un ivl_splice_Int sum.union_disjoint)
   also have "... = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
     by (simp add: sum.reindex [OF double_inj_on]
@@ -417,10 +417,10 @@ theorem DFT_inverse:
     from i_less have i_diff: "!!k. i - k < n" by arith
     have diff_i: "!!k. k < n ==> k - i < n" by arith
 
-    let ?sum = "%i j n. sum (op ^ (if i <= j then root n ^ (j - i)
+    let ?sum = "%i j n. sum ((^) (if i <= j then root n ^ (j - i)
                   else (1 / root n) ^ (i - j))) {0..<n} * a j"
-    let ?sum1 = "%i j n. sum (op ^ (root n ^ (j - i))) {0..<n} * a j"
-    let ?sum2 = "%i j n. sum (op ^ ((1 / root n) ^ (i - j))) {0..<n} * a j"
+    let ?sum1 = "%i j n. sum ((^) (root n ^ (j - i))) {0..<n} * a j"
+    let ?sum2 = "%i j n. sum ((^) ((1 / root n) ^ (i - j))) {0..<n} * a j"
 
     from i_less have "(\<Sum>j = 0..<n. ?sum i j n) =
       (\<Sum>j = 0..<i. ?sum2 i j n) + (\<Sum>j = i..<n. ?sum1 i j n)"

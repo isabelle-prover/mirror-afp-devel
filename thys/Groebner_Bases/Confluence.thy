@@ -86,11 +86,11 @@ lemma rtrancl_is_final:
 proof -
   from rtranclpD[OF \<open>a \<rightarrow>\<^sup>* b\<close>] show ?thesis
   proof
-    assume "a \<noteq> b \<and> (op \<rightarrow>)\<^sup>+\<^sup>+ a b"
-    hence "(op \<rightarrow>)\<^sup>+\<^sup>+ a b" by simp
+    assume "a \<noteq> b \<and> (\<rightarrow>)\<^sup>+\<^sup>+ a b"
+    hence "(\<rightarrow>)\<^sup>+\<^sup>+ a b" by simp
     from \<open>is_final a\<close> final_NF have "a \<in> NF relset" by simp
     from NF_no_trancl_step[OF this] have "(a, b) \<notin> {(x, y). x \<rightarrow> y}\<^sup>+" ..
-    thus ?thesis using \<open>(op \<rightarrow>)\<^sup>+\<^sup>+ a b\<close> unfolding tranclp_unfold ..
+    thus ?thesis using \<open>(\<rightarrow>)\<^sup>+\<^sup>+ a b\<close> unfolding tranclp_unfold ..
   qed
 qed
 
@@ -139,7 +139,7 @@ lemma srtc_transitive:
   assumes "a \<leftrightarrow>\<^sup>* b" and "b \<leftrightarrow>\<^sup>* c"
   shows "a \<leftrightarrow>\<^sup>* c"
 proof -
-  from rtranclp_trans[of "(op \<leftrightarrow>)" a b c] assms show "a \<leftrightarrow>\<^sup>* c" unfolding srtc_def .
+  from rtranclp_trans[of "(\<leftrightarrow>)" a b c] assms show "a \<leftrightarrow>\<^sup>* c" unfolding srtc_def .
 qed
 
 lemma cs_implies_srtc:
@@ -166,7 +166,7 @@ proof (intro allI)
       from cs_refl show "a \<down>\<^sup>* a" .
     next
       fix y z
-      assume "(op \<leftrightarrow>)\<^sup>*\<^sup>* a y" and "y \<leftrightarrow> z" and "a \<down>\<^sup>* y"
+      assume "(\<leftrightarrow>)\<^sup>*\<^sup>* a y" and "y \<leftrightarrow> z" and "a \<down>\<^sup>* y"
       from \<open>a \<down>\<^sup>* y\<close> obtain w where "a \<rightarrow>\<^sup>* w" and "y \<rightarrow>\<^sup>* w" unfolding cs_def by auto
       from \<open>y \<leftrightarrow> z\<close> show "a \<down>\<^sup>* z"
       proof
@@ -207,8 +207,8 @@ proof
       next
         fix y z
         assume "a \<rightarrow>\<^sup>* y" and "y \<rightarrow> z" and "b1 \<leftrightarrow>\<^sup>* y"
-        hence "(op \<leftrightarrow>)\<^sup>*\<^sup>* b1 y" and "y \<leftrightarrow> z" unfolding srtc_def by simp_all
-        from rtranclp.intros(2)[OF \<open>(op \<leftrightarrow>)\<^sup>*\<^sup>* b1 y\<close> \<open>y \<leftrightarrow> z\<close>] show "b1 \<leftrightarrow>\<^sup>* z" unfolding srtc_def .
+        hence "(\<leftrightarrow>)\<^sup>*\<^sup>* b1 y" and "y \<leftrightarrow> z" unfolding srtc_def by simp_all
+        from rtranclp.intros(2)[OF \<open>(\<leftrightarrow>)\<^sup>*\<^sup>* b1 y\<close> \<open>y \<leftrightarrow> z\<close>] show "b1 \<leftrightarrow>\<^sup>* z" unfolding srtc_def .
       qed
     qed
   qed
@@ -410,11 +410,11 @@ next
 qed
 
 locale relation_order = relation + order +
-  assumes refines: "(op \<rightarrow>) \<le> less^--1" and wf: "wfP less"
+  assumes refines: "(\<rightarrow>) \<le> less^--1" and wf: "wfP less"
 begin
 
 definition is_loc_connective::"bool" where
-  "is_loc_connective \<equiv> (\<forall>a b1 b2. a \<rightarrow> b1 \<and> a \<rightarrow> b2 \<longrightarrow> cbelow less a (op \<leftrightarrow>) b1 b2)"
+  "is_loc_connective \<equiv> (\<forall>a b1 b2. a \<rightarrow> b1 \<and> a \<rightarrow> b2 \<longrightarrow> cbelow less a (\<leftrightarrow>) b1 b2)"
 
 lemma relation_refines:
   fixes a b::'a
@@ -423,21 +423,21 @@ lemma relation_refines:
 using refines assms by auto
 
 lemma relation_wf:
-  shows "wfP ((op \<rightarrow>)^--1)"
-using wfP_subset[OF wf, of "(op \<rightarrow>)^--1"] conversep_mono[of r "less^--1"] refines by simp
+  shows "wfP ((\<rightarrow>)^--1)"
+using wfP_subset[OF wf, of "(\<rightarrow>)^--1"] conversep_mono[of r "less^--1"] refines by simp
 
 lemma rtc_implies_cbelow:
   assumes main: "a \<rightarrow>\<^sup>* b" and "less a c"
-  shows "cbelow less c (op \<leftrightarrow>) a b"
+  shows "cbelow less c (\<leftrightarrow>) a b"
 using main
 proof (induct rule: rtranclp_induct)
-  from \<open>less a c\<close> show "cbelow less c (op \<leftrightarrow>) a a" unfolding cbelow_def by simp
+  from \<open>less a c\<close> show "cbelow less c (\<leftrightarrow>) a a" unfolding cbelow_def by simp
 next
   fix b0 b
-  assume "a \<rightarrow>\<^sup>* b0" and "b0 \<rightarrow> b" and IH: "cbelow less c (op \<leftrightarrow>) a b0"
-  show "cbelow less c (op \<leftrightarrow>) a b"
+  assume "a \<rightarrow>\<^sup>* b0" and "b0 \<rightarrow> b" and IH: "cbelow less c (\<leftrightarrow>) a b0"
+  show "cbelow less c (\<leftrightarrow>) a b"
   proof
-    from IH show "cbelow less c (op \<leftrightarrow>) a b0" .
+    from IH show "cbelow less c (\<leftrightarrow>) a b0" .
   next
     from \<open>b0 \<rightarrow> b\<close> show "b0 \<leftrightarrow> b" by simp
   next
@@ -447,10 +447,10 @@ qed
 
 lemma cs_implies_cbelow:
   assumes "a \<down>\<^sup>* b" and "less a c" and "less b c"
-  shows "cbelow less c (op \<leftrightarrow>) a b"
+  shows "cbelow less c (\<leftrightarrow>) a b"
 proof -
   from \<open>a \<down>\<^sup>* b\<close> obtain s where "a \<rightarrow>\<^sup>* s" and "b \<rightarrow>\<^sup>* s" unfolding cs_def by auto
-  have sym: "symp (op \<leftrightarrow>)" unfolding symp_def
+  have sym: "symp (\<leftrightarrow>)" unfolding symp_def
   proof (intro allI, intro impI)
     fix x y
     assume "x \<leftrightarrow> y"
@@ -469,8 +469,8 @@ lemma loc_connectivity_implies_confluence:
 using assms unfolding is_loc_connective_def relation.is_confluent_def
 proof (intro allI, intro impI)
   fix z x y::'a
-  assume "\<forall>a b1 b2. a \<rightarrow> b1 \<and> a \<rightarrow> b2 \<longrightarrow> cbelow less a (op \<leftrightarrow>) b1 b2"
-  hence A: "\<And>a b1 b2. a \<rightarrow> b1 \<Longrightarrow> a \<rightarrow> b2 \<Longrightarrow> cbelow less a (op \<leftrightarrow>) b1 b2" by simp
+  assume "\<forall>a b1 b2. a \<rightarrow> b1 \<and> a \<rightarrow> b2 \<longrightarrow> cbelow less a (\<leftrightarrow>) b1 b2"
+  hence A: "\<And>a b1 b2. a \<rightarrow> b1 \<Longrightarrow> a \<rightarrow> b2 \<Longrightarrow> cbelow less a (\<leftrightarrow>) b1 b2" by simp
   assume "z \<rightarrow>\<^sup>* x \<and> z \<rightarrow>\<^sup>* y"
   thus "x \<down>\<^sup>* y"
   proof (induct z arbitrary: x y rule: wfP_induct[OF wf])
@@ -505,13 +505,13 @@ proof (intro allI, intro impI)
           from cs_refl[of x1] show "x1 \<down>\<^sup>* x1" .
         next
           fix b c
-          assume "cbelow less z (op \<leftrightarrow>) x1 b" and "b \<leftrightarrow> c" and "less c z" and "x1 \<down>\<^sup>* b"
+          assume "cbelow less z (\<leftrightarrow>) x1 b" and "b \<leftrightarrow> c" and "less c z" and "x1 \<down>\<^sup>* b"
           from \<open>x1 \<down>\<^sup>* b\<close> obtain w1 where "x1 \<rightarrow>\<^sup>* w1" and "b \<rightarrow>\<^sup>* w1" unfolding cs_def by auto
           from \<open>b \<leftrightarrow> c\<close> show "x1 \<down>\<^sup>* c"
           proof
             assume "b \<rightarrow> c"
             hence "b \<rightarrow>\<^sup>* c" by simp
-            from \<open>cbelow less z (op \<leftrightarrow>) x1 b\<close> have "less b z" by (rule cbelow_induct)
+            from \<open>cbelow less z (\<leftrightarrow>) x1 b\<close> have "less b z" by (rule cbelow_induct)
             from IH[rule_format, OF this, of c w1] \<open>b \<rightarrow>\<^sup>* c\<close> \<open>b \<rightarrow>\<^sup>* w1\<close> have "c \<down>\<^sup>* w1" by simp
             then obtain w2 where "c \<rightarrow>\<^sup>* w2" and "w1 \<rightarrow>\<^sup>* w2" unfolding cs_def by auto
             show ?thesis unfolding cs_def
@@ -560,7 +560,7 @@ proof
     from srtc_transitive[OF this rtc_implies_srtc[OF \<open>a \<rightarrow>\<^sup>* b2\<close>]] have "b1 \<leftrightarrow>\<^sup>* b2" .
     with \<open>is_ChurchRosser\<close> have "b1 \<down>\<^sup>* b2" unfolding is_ChurchRosser_def by simp
     from cs_implies_cbelow[OF this] relation_refines[of a] \<open>a \<rightarrow> b1\<close> \<open>a \<rightarrow> b2\<close>
-      show "cbelow less a (op \<leftrightarrow>) b1 b2" by simp
+      show "cbelow less a (\<leftrightarrow>) b1 b2" by simp
   qed
 next
   assume "is_loc_connective"

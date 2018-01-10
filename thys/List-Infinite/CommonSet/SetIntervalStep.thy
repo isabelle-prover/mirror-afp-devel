@@ -513,7 +513,7 @@ lemma inext_cut_less_conv: "inext n I < t \<Longrightarrow> inext n (I \<down>< 
 apply (frule le_less_trans[OF inext_mono])
 apply (case_tac "n \<in> I")
  apply (simp add: inext_def)
- apply (simp add: i_cut_commute_disj[of "op \<down><" "op \<down>>"] cut_less_mem_iff)
+ apply (simp add: i_cut_commute_disj[of "(\<down><)" "(\<down>>)"] cut_less_mem_iff)
  apply (case_tac "I \<down>> n \<noteq> {}")
   apply simp
   apply (metis cut_less_Min_eq cut_less_Min_not_empty)
@@ -527,7 +527,7 @@ by (simp add: nat_cut_le_less_conv inext_cut_less_conv)
 lemma inext_cut_greater_conv: "t < n \<Longrightarrow> inext n (I \<down>> t) = inext n I"
 apply (case_tac "n \<in> I")
  apply (frule cut_greater_mem_iff[THEN iffD2, OF conjI], simp)
- apply (simp add: inext_def i_cut_commute_disj[of "op \<down>>" "op \<down>>"] cut_cut_greater max_def)
+ apply (simp add: inext_def i_cut_commute_disj[of "(\<down>>)" "(\<down>>)"] cut_cut_greater max_def)
 apply (simp add: not_in_inext_fix cut_greater_not_in_imp)
 done
 
@@ -547,7 +547,7 @@ lemma iprev_cut_greater_conv: "t < iprev n I \<Longrightarrow> iprev n (I \<down
 apply (frule less_le_trans[OF _ iprev_mono])
 apply (case_tac "n \<in> I")
  apply (simp add: iprev_def)
- apply (simp add: i_cut_commute_disj[of "op \<down>>" "op \<down><"] cut_greater_mem_iff)
+ apply (simp add: i_cut_commute_disj[of "(\<down>>)" "(\<down><)"] cut_greater_mem_iff)
  apply (case_tac "I \<down>< n \<noteq> {}")
   apply simp
   apply (metis cut_greater_Max_eq cut_greater_Max_not_empty nat_cut_less_finite)
@@ -564,7 +564,7 @@ done
 lemma iprev_cut_less_conv: "n < t \<Longrightarrow> iprev n (I \<down>< t) = iprev n I"
 apply (case_tac "n \<in> I")
  apply (frule cut_less_mem_iff[THEN iffD2, OF conjI], simp)
- apply (simp add: iprev_def i_cut_commute_disj[of "op \<down><" "op \<down><"] cut_cut_less min_def)
+ apply (simp add: iprev_def i_cut_commute_disj[of "(\<down><)" "(\<down><)"] cut_cut_less min_def)
 apply (simp add: not_in_iprev_fix cut_less_not_in_imp)
 done
 
@@ -987,7 +987,7 @@ apply (subgoal_tac "a \<notin> (I \<down>> a \<down>< b)")
 apply (subgoal_tac "(I \<down>\<ge> a \<down>< b) = insert a (I \<down>> a \<down>< b)")
  prefer 2
  apply (simp add:
-   i_cut_commute_disj[of "op \<down>\<ge>" "op \<down><"] i_cut_commute_disj[of "op \<down>>" "op \<down><"])
+   i_cut_commute_disj[of "(\<down>\<ge>)" "(\<down><)"] i_cut_commute_disj[of "(\<down>>)" "(\<down><)"])
  apply (simp add: cut_ge_greater_conv_if i_cut_mem_iff)
 apply (simp add: card_insert_disjoint[OF nat_cut_less_finite])
 apply (case_tac "P (inext a I)")

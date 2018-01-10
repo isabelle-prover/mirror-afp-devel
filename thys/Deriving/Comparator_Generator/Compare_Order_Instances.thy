@@ -24,7 +24,7 @@ derive compare_order sum
 instance list :: (compare_order)compare_order
 proof
   note [simp] = le_of_comp_def lt_of_comp_def comparator_of_def
-  show "le_of_comp (compare :: 'a list comparator) = op \<le>" 
+  show "le_of_comp (compare :: 'a list comparator) = (\<le>)" 
     unfolding compare_list_def compare_is_comparator_of 
   proof (intro ext)
     fix xs ys :: "'a list"
@@ -47,7 +47,7 @@ proof
       qed
     qed
   qed
-  show "lt_of_comp (compare :: 'a list comparator) = op <" 
+  show "lt_of_comp (compare :: 'a list comparator) = (<)" 
     unfolding compare_list_def compare_is_comparator_of 
   proof (intro ext)
     fix xs ys :: "'a list"
@@ -75,14 +75,14 @@ qed
 instance prod :: (compare_order, compare_order)compare_order
 proof
   note [simp] = le_of_comp_def lt_of_comp_def comparator_of_def
-  show "le_of_comp (compare :: ('a,'b)prod comparator) = op \<le>" 
+  show "le_of_comp (compare :: ('a,'b)prod comparator) = (\<le>)" 
     unfolding compare_prod_def compare_is_comparator_of 
   proof (intro ext)
     fix xy1 xy2 :: "('a,'b)prod"
     show "le_of_comp (comparator_prod comparator_of comparator_of) xy1 xy2 = (xy1 \<le> xy2)"
       by (cases xy1, cases xy2, auto)
   qed
-  show "lt_of_comp (compare :: ('a,'b)prod comparator) = op <" 
+  show "lt_of_comp (compare :: ('a,'b)prod comparator) = (<)" 
     unfolding compare_prod_def compare_is_comparator_of 
   proof (intro ext)
     fix xy1 xy2 :: "('a,'b)prod"
@@ -94,14 +94,14 @@ qed
 instance option :: (compare_order)compare_order
 proof
   note [simp] = le_of_comp_def lt_of_comp_def comparator_of_def
-  show "le_of_comp (compare :: 'a option comparator) = op \<le>" 
+  show "le_of_comp (compare :: 'a option comparator) = (\<le>)" 
     unfolding compare_option_def compare_is_comparator_of 
   proof (intro ext)
     fix xy1 xy2 :: "'a option"
     show "le_of_comp (comparator_option comparator_of) xy1 xy2 = (xy1 \<le> xy2)"
       by (cases xy1, (cases xy2, auto split: if_splits)+)
   qed
-  show "lt_of_comp (compare :: 'a option comparator) = op <" 
+  show "lt_of_comp (compare :: 'a option comparator) = (<)" 
     unfolding compare_option_def compare_is_comparator_of 
   proof (intro ext)
     fix xy1 xy2 :: "'a option"

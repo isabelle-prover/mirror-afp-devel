@@ -30,7 +30,7 @@ inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infi
   gt_wt: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t > wt s \<Longrightarrow> t >\<^sub>t s"
 | gt_diff: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> head t >\<^sub>h\<^sub>d head s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> head t = head s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head s). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
+    (\<forall>f \<in> ground_heads (head s). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
 lemma arity_hd_eq_inf[simp]: "arity_hd \<zeta> = \<infinity>"
   by (cases \<zeta>) auto
@@ -43,7 +43,7 @@ lemma basic_wt_eq_wt: "wt s = kbo_std.wt s"
 
 lemma
   basic_gt_and_gt_le_gt: "(\<lambda>t s. t >\<^sub>t s \<and> local.kbo_std.gt t s) \<le> kbo_std.gt" and
-  gt_and_basic_gt_le_basic_gt: "(\<lambda>t s. local.kbo_std.gt t s \<and> t >\<^sub>t s) \<le> op >\<^sub>t"
+  gt_and_basic_gt_le_basic_gt: "(\<lambda>t s. local.kbo_std.gt t s \<and> t >\<^sub>t s) \<le> (>\<^sub>t)"
   by auto
 
 lemma basic_gt_iff_lt: "t >\<^sub>t s \<longleftrightarrow> kbo_std.gt t s"

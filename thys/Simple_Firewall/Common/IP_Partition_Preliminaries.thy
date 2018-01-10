@@ -52,7 +52,7 @@ context begin
     by fast
   
   private definition addSubsetSet :: "'a set \<Rightarrow> 'a set set \<Rightarrow> 'a set set" where
-    "addSubsetSet s ts = insert (s - \<Union>ts) ((op \<inter> s) ` ts) \<union> ((\<lambda>x. x - s) ` ts)"
+    "addSubsetSet s ts = insert (s - \<Union>ts) (((\<inter>) s) ` ts) \<union> ((\<lambda>x. x - s) ` ts)"
   
   private fun partitioning :: "'a set list \<Rightarrow> 'a set set \<Rightarrow> 'a set set" where
     "partitioning [] ts = ts" |
@@ -283,7 +283,7 @@ context begin
     "partList0 s [] = []" |
     "partList0 s (t#ts) = (s \<inter> t)#((t - s)#(partList0 s ts))"
   
-  private lemma partList0_set_equi: "set(partList0 s ts) = ((op \<inter> s) ` (set ts)) \<union> ((\<lambda>x. x - s) ` (set ts))"
+  private lemma partList0_set_equi: "set(partList0 s ts) = (((\<inter>) s) ` (set ts)) \<union> ((\<lambda>x. x - s) ` (set ts))"
     by(induction ts arbitrary: s) auto
   
   private lemma partList_sub_equi0: "set(partList0 s ts) =

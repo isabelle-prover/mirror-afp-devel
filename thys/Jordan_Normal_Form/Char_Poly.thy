@@ -506,13 +506,13 @@ proof -
         unfolding signof_permutation_insert[OF p, unfolded n, OF a a] by simp
       show "g (permutation_insert a a p) a = signof p * (\<Prod>i = 0..<?n. ?B $$ (i, p i))" 
         unfolding g_def sign
-      proof (rule arg_cong[of _ _ "op * (signof p)"])
+      proof (rule arg_cong[of _ _ "( * ) (signof p)"])
         have "(\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, ?p i)) = 
-           prod (op $$ Sum) ((\<lambda>x. (x, ?p x)) ` ({0..<n} - {a}))"
+           prod (($$) Sum) ((\<lambda>x. (x, ?p x)) ` ({0..<n} - {a}))"
           unfolding prod.reindex[OF inj_on_convol_ident, of _ ?p] o_def ..
         also have "\<dots> = (\<Prod> ii \<in> {(i', ?p i') |i'. i' \<in> {0..<n} - {a}}. Sum $$ ii)" 
           by (rule prod.cong, auto)
-        also have "\<dots> = prod (op $$ Sum) ((\<lambda> i. (?i i, ?i (p i))) ` {0 ..< ?n})" 
+        also have "\<dots> = prod (($$) Sum) ((\<lambda> i. (?i i, ?i (p i))) ` {0 ..< ?n})" 
           unfolding Determinant.foo[of a ?n a, unfolded n, OF a a p]
           by (rule arg_cong[of _ _ "prod _"], auto) 
         also have "\<dots> = prod (\<lambda> i. Sum $$ (?i i, ?i (p i))) {0 ..< ?n}"

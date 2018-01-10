@@ -143,7 +143,7 @@ fun pref_classes_lists_aux where
 | "pref_classes_lists_aux acc (xs#xss) = insert acc (pref_classes_lists_aux (acc \<union> xs) xss)"
 
 lemma pref_classes_lists_append: 
-  "pref_classes_lists (xs @ ys) = (op \<union> (\<Union>set ys)) ` pref_classes_lists xs \<union> pref_classes_lists ys"
+  "pref_classes_lists (xs @ ys) = ((\<union>) (\<Union>set ys)) ` pref_classes_lists xs \<union> pref_classes_lists ys"
   by (induction xs) auto
 
 lemma pref_classes_lists_aux:
@@ -344,11 +344,11 @@ lemma strategyproof_aux':
   assumes perm: "list_permutes ys alts"
   defines "\<sigma> \<equiv> permutation_of_list ys" and "\<sigma>' \<equiv> inverse_permutation_of_list ys"
   defines "xs \<equiv> the (map_of xss1 i)"
-  defines xs': "xs' \<equiv> map (op ` \<sigma>) (the (map_of xss2 j))"
+  defines xs': "xs' \<equiv> map ((`) \<sigma>) (the (map_of xss2 j))"
   defines "Ri' \<equiv> of_weak_ranking xs'"
   assumes distinct_ps: "\<forall>A\<in>ps. distinct A"
   assumes eq:  "mset (map snd xss1) - {#the (map_of xss1 i)#} + {#xs'#} =
-                  mset (map (map (op ` \<sigma>) \<circ> snd) xss2)"
+                  mset (map (map ((`) \<sigma>) \<circ> snd) xss2)"
                "pref_classes_lists_aux (hd xs) (tl xs) = set ` ps" 
   shows   "list_permutes ys alts \<and> 
              ((\<exists>A\<in>ps. (\<Sum>x\<leftarrow>A. pmf (sds R2) (\<sigma>' x)) < (\<Sum>x\<leftarrow>A. pmf (sds R1) x)) \<or>
@@ -386,7 +386,7 @@ proof
   note xs = prefs_from_table_wfD(2)[OF wf(1)] prefs_from_table_wfD(5,6)[OF wf(1) this]
 
   from wf i wf' wf_xs' xs eq 
-    have eq': "anonymous_profile (R1(i := Ri')) = image_mset (map (op ` \<sigma>)) (anonymous_profile R2)"
+    have eq': "anonymous_profile (R1(i := Ri')) = image_mset (map ((`) \<sigma>)) (anonymous_profile R2)"
     by (subst R1.anonymous_profile_update)
        (simp_all add: Ri'_def weak_ranking_of_weak_ranking mset_map multiset.map_comp xs_def
           anonymise_prefs_from_table prefs_from_table_map_of)

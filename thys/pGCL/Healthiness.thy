@@ -402,12 +402,12 @@ next
   assume sP: "sound P" and pos: "0 \<le> c"
   from nonempty obtain x where xin: "x \<in> (\<lambda>a. wp (prog a) P s) ` S s" by(blast)
   have "c * Inf ((\<lambda>a. wp (prog a) P s) ` S s) =
-        Inf (op * c ` ((\<lambda>a. wp (prog a) P s) ` S s))" (is "?U = ?V")
+        Inf (( * ) c ` ((\<lambda>a. wp (prog a) P s) ` S s))" (is "?U = ?V")
   proof(rule antisym)
     show "?U \<le> ?V"
     proof(rule cInf_greatest)
-      from nonempty show "op * c ` (\<lambda>a. wp (prog a) P s) ` S s \<noteq> {}" by(auto)
-      fix x assume "x \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
+      from nonempty show "( * ) c ` (\<lambda>a. wp (prog a) P s) ` S s \<noteq> {}" by(auto)
+      fix x assume "x \<in> ( * ) c ` (\<lambda>a. wp (prog a) P s) ` S s"
       then obtain y where yin: "y \<in> (\<lambda>a. wp (prog a) P s) ` S s" and rwx: "x = c * y" by(auto)
       have "Inf ((\<lambda>a. wp (prog a) P s) ` S s) \<le> y"
       proof(intro cInf_lower[OF yin] bdd_belowI)

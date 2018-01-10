@@ -58,7 +58,7 @@ lift_definition mau_plus :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rig
   by (transfer, auto simp: ma_normalize_def split: if_splits)
 lift_definition mau_times :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_times 
   by (transfer, auto simp: ma_normalize_def split: if_splits)
-lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bool" is "op =" .
+lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bool" is "(=)" .
 lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity .
 lift_definition mau_is_rat :: "mini_alg_unique \<Rightarrow> bool" is ma_is_rat .
 
@@ -287,7 +287,7 @@ lemma mau_equal:
 lemma mau_ge_0: "ge_0 (real_of_u x) = mau_ge_0 x" using ma_ge_0
   by (transfer, auto)
 
-definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_lt = op <"
+definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_lt = (<)"
 
 text{* The following code equation terminates if it is started on two
   different inputs. *}

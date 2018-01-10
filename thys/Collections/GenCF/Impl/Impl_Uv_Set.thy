@@ -362,17 +362,17 @@ subsection {* Autoref Setup *}
     unfolding uv_set_rel_def by auto
 
   lemma uv_autoref[autoref_rules,param]:
-    "(uv_lookup,op \<in>) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
+    "(uv_lookup,(\<in>)) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
     "(uv_empty,{}) \<in> \<langle>nat_rel\<rangle>uv_set_rel"
     "(uv_set_bit,insert) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
     "(uv_reset_bit,op_set_delete) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
-    "(uv_union,op \<union>) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
-    "(uv_inter,op \<inter>) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
-    "(uv_diff,op -) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
+    "(uv_union,(\<union>)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
+    "(uv_inter,(\<inter>)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
+    "(uv_diff,(-)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel"
     "(uv_zeroes,op_set_isEmpty) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
-    "(uv_equal,op =) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
-    "(uv_subseteq,op \<subseteq>) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
-    "(uv_subset,op \<subset>) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
+    "(uv_equal,(=)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
+    "(uv_subseteq,(\<subseteq>)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
+    "(uv_subset,(\<subset>)) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
     "(uv_disjoint,op_set_disjoint) \<in> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> \<langle>nat_rel\<rangle>uv_set_rel \<rightarrow> bool_rel"
     by (auto 
       simp: uv_set_rel_def br_def

@@ -185,22 +185,22 @@ term op_set_delete
 lemma [autoref_rules]: "(bs_delete,op_set_delete)\<in>nat_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_mem,op \<in>)\<in>nat_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
+lemma [autoref_rules]: "(bs_mem,(\<in>))\<in>nat_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_eq,op =)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
+lemma [autoref_rules]: "(bs_eq,(=))\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_subset_eq,op \<subseteq>)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
+lemma [autoref_rules]: "(bs_subset_eq,(\<subseteq>))\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> bool_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_union,op \<union>)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
+lemma [autoref_rules]: "(bs_union,(\<union>))\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_inter,op \<inter>)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
+lemma [autoref_rules]: "(bs_inter,(\<inter>))\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
   by (auto simp: bs_set_rel_def br_def)
 
-lemma [autoref_rules]: "(bs_diff,op -)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
+lemma [autoref_rules]: "(bs_diff,(-))\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"
   by (auto simp: bs_set_rel_def br_def)
 
 lemma [autoref_rules]: "(bs_complement,uminus)\<in>\<langle>nat_rel\<rangle>bs_set_rel \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel"

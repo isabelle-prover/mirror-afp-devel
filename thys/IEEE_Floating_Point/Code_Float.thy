@@ -34,15 +34,15 @@ code_printing constant "Orderings.less :: float \<Rightarrow> float \<Rightarrow
   (SML) "Real.< ((_), (_))" and (OCaml) "Pervasives.(<)"
 declare less_eq_float_def[code del]
 
-code_printing constant "op + :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+code_printing constant "(+) :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
   (SML) "Real.+ ((_), (_))" and (OCaml) "Pervasives.( +. )"
 declare plus_float_def[code del]
 
-code_printing constant "op * :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+code_printing constant "( * ) :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
   (SML) "Real.* ((_), (_))" and (OCaml) "Pervasives.( *. )"
 declare times_float_def [code del]
 
-code_printing constant "op - :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+code_printing constant "(-) :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
   (SML) "Real.- ((_), (_))" and (OCaml) "Pervasives.( -. )"
 declare minus_float_def [code del]
 
@@ -50,7 +50,7 @@ code_printing constant "float_neg :: float \<Rightarrow> float" \<rightharpoonup
   (SML) "Real.~" and (OCaml) "Pervasives.( ~-. )"
 declare float_neg_def [code del]
 
-code_printing constant "op / :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+code_printing constant "(/) :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
   (SML) "Real.'/ ((_), (_))" and (OCaml) "Pervasives.( '/. )"
 declare divide_float_def [code del]
 

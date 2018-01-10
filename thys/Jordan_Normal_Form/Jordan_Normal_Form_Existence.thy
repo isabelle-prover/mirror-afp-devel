@@ -3119,7 +3119,7 @@ text \<open>We can estimate the complexity via the multiplicity of the eigenvalu
 lemma factored_char_poly_norm_bound_cof: assumes A: "A \<in> carrier_mat n n"
   and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: {conjugatable_ordered_field, real_normed_field}) \<leftarrow> as. [:- a, 1:])"
   and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
-  and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> N"
+  and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter ((=) a) as) \<le> N"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
   by (rule factored_char_poly_norm_bound[OF A linear_factors jordan_nf_exists[OF A linear_factors] le_1 le_N])
 
@@ -3131,7 +3131,7 @@ lemma counting_ones_complexity:
   assumes A: "A \<in> carrier_mat n n"
   and upper_t: "upper_triangular A"
   and le_1: "\<And> a. a \<in> set (diag_mat A) \<Longrightarrow> norm a \<le> 1"
-  and le_N: "\<And> a. a \<in> set (diag_mat A) \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) (diag_mat A)) \<le> N"
+  and le_N: "\<And> a. a \<in> set (diag_mat A) \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter ((=) a) (diag_mat A)) \<le> N"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
 proof -
   from triangular_to_jnf_vector[OF A upper_t] have jnf: "\<exists> n_as. jordan_nf A n_as" ..

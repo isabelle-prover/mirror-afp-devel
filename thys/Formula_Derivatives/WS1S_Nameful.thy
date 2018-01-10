@@ -356,13 +356,13 @@ setup_lifting type_definition_so
 
 instantiation fo :: equal
 begin
-  lift_definition equal_fo :: "fo \<Rightarrow> fo \<Rightarrow> bool" is "op =" .
+  lift_definition equal_fo :: "fo \<Rightarrow> fo \<Rightarrow> bool" is "(=)" .
   instance by (standard, transfer) simp
 end
 
 instantiation so :: equal
 begin
-  lift_definition equal_so :: "so \<Rightarrow> so \<Rightarrow> bool" is "op =" .
+  lift_definition equal_so :: "so \<Rightarrow> so \<Rightarrow> bool" is "(=)" .
   instance by (standard, transfer) simp
 end
 

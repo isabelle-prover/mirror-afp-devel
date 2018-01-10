@@ -112,14 +112,14 @@ fun find0 where
 abbreviation "decr0 ord k \<equiv> map_atomic (case_order (dec k) id ord) (case_order id (dec k) ord)"
 
 lemma sum_pow2_image_Suc:
-  "finite X \<Longrightarrow> sum (op ^ (2 :: nat)) (Suc ` X) = 2 * sum (op ^ 2) X"
+  "finite X \<Longrightarrow> sum ((^) (2 :: nat)) (Suc ` X) = 2 * sum ((^) 2) X"
   by (induct X rule: finite_induct) (auto intro: trans[OF sum.insert])
 
 lemma sum_pow2_insert0:
-  "\<lbrakk>finite X; 0 \<notin> X\<rbrakk> \<Longrightarrow> sum (op ^ (2 :: nat)) (insert 0 X) = Suc (sum (op ^ 2) X)"
+  "\<lbrakk>finite X; 0 \<notin> X\<rbrakk> \<Longrightarrow> sum ((^) (2 :: nat)) (insert 0 X) = Suc (sum ((^) 2) X)"
   by (induct X rule: finite_induct) (auto intro: trans[OF sum.insert])
 
-lemma sum_pow2_upto: "sum (op ^ (2 :: nat)) {0 ..< x} = 2 ^ x - 1"
+lemma sum_pow2_upto: "sum ((^) (2 :: nat)) {0 ..< x} = 2 ^ x - 1"
   by (induct x) (auto simp: algebra_simps)
 
 lemma sum_pow2_inj:
@@ -162,8 +162,8 @@ lemma finite_pow2_eq:
   fixes n :: nat
   shows "finite {i. 2 ^ i = n}"
 proof -
-  have "(op ^ 2) ` {i. 2 ^ i = n} \<subseteq> {n}" by auto
-  then have "finite ((op ^ (2 :: nat)) ` {i. 2 ^ i = n})" by (rule finite_subset) blast
+  have "((^) 2) ` {i. 2 ^ i = n} \<subseteq> {n}" by auto
+  then have "finite (((^) (2 :: nat)) ` {i. 2 ^ i = n})" by (rule finite_subset) blast
   then show "finite {i. 2 ^ i = n}" by (rule finite_imageD) (auto simp: inj_on_def)
 qed
 
@@ -435,14 +435,14 @@ global_interpretation WS1S: Formula SUC LESS assigns nvars Extend CONS SNOC Leng
     (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
-    (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (op =)"
+    (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (=)"
   and bounded_check_eqv = "\<lambda>idx. DAs.check_eqv
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
     nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
-    nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (op =)"
+    nullable (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>) (=)"
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
 proof
@@ -606,7 +606,7 @@ next
      case Eq_Diff then show ?case
        by (auto 0 1 simp add: fset_eq_iff split: prod.splits) (metis assigns_less_Length less_not_refl)+
    next
-     let ?f = "sum (op ^ (2 :: nat))"
+     let ?f = "sum ((^) (2 :: nat))"
      note fmember.rep_eq[symmetric, simp]
      case (Eq_Presb l M n)
      moreover

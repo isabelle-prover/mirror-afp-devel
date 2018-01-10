@@ -151,7 +151,7 @@ subsubsection \<open>Compute reach Using DFS\<close>
 
 definition Q\<^sub>L :: "'a list \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b \<Rightarrow> 'b set"
 where
-  "Q\<^sub>L \<Sigma> \<delta> q\<^sub>0 = (if \<Sigma> \<noteq> [] then gen_dfs (\<lambda>q. map (\<delta> q) \<Sigma>) Set.insert (op \<in>) {} [q\<^sub>0] else {})"
+  "Q\<^sub>L \<Sigma> \<delta> q\<^sub>0 = (if \<Sigma> \<noteq> [] then gen_dfs (\<lambda>q. map (\<delta> q) \<Sigma>) Set.insert (\<in>) {} [q\<^sub>0] else {})"
 
 definition list_dfs :: "(('a, 'b) transition \<Rightarrow> ('a, 'b) transition list) \<Rightarrow> ('a, 'b) transition list => ('a, 'b) transition list => ('a, 'b) transition list"
 where
@@ -188,7 +188,7 @@ proof (cases "\<Sigma> \<noteq> []")
     }
     note extend_run = this
     
-    interpret DFS "\<lambda>q. map (\<delta> q) \<Sigma>" "\<lambda>q. q \<in> reach (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. S \<subseteq> reach (set \<Sigma>) \<delta> q\<^sub>0" Set.insert "op \<in>" "{}" id
+    interpret DFS "\<lambda>q. map (\<delta> q) \<Sigma>" "\<lambda>q. q \<in> reach (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. S \<subseteq> reach (set \<Sigma>) \<delta> q\<^sub>0" Set.insert "(\<in>)" "{}" id
       apply (unfold_locales; auto simp add: member_rec reach_redef list_all_iff elim: extend_run)
       apply (metis extend_run image_eqI set_map)
       apply (metis assms[unfolded reach_redef])
@@ -719,12 +719,12 @@ lemma product_parametric [transfer_rule]:
   by (auto simp add: rel_fun_def rel_option_iff split: option.split)
 
 lemma run_parametric [transfer_rule]:
-  "((A ===> B ===> A) ===> A ===> ((op =) ===> B) ===> (op =) ===> A) run run"
+  "((A ===> B ===> A) ===> A ===> ((=) ===> B) ===> (=) ===> A) run run"
 proof -
   {
     fix \<delta> \<delta>' q q' n w 
     fix w' :: "nat \<Rightarrow> 'd" 
-    assume "(A ===> B ===> A) \<delta> \<delta>'" "A q q'" "(op = ===> B) w w'" 
+    assume "(A ===> B ===> A) \<delta> \<delta>'" "A q q'" "((=) ===> B) w w'" 
     hence "A (run \<delta> q w n) (run \<delta>' q' w' n)"
       by (induction n) (simp_all add: rel_fun_def)
   }

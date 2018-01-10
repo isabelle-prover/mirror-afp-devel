@@ -22,7 +22,7 @@ context CFG_base begin
   definition "addN' g n = fold (\<lambda>v m. m(v \<mapsto> case_option {n} (insert n) (m v))) (sorted_list_of_set (uses g n))"
 
   lemma addN_transfer [transfer_rule]:
-    "rel_fun op = (rel_fun op = (rel_fun (pcr_mapping op = op =) (pcr_mapping op = op =))) addN' addN"
+    "rel_fun (=) (rel_fun (=) (rel_fun (pcr_mapping (=) (=)) (pcr_mapping (=) (=)))) addN' addN"
     unfolding addN_def [abs_def] addN'_def [abs_def]
       Mapping.map_default_def [abs_def] Mapping.default_def
   apply (auto simp: mapping.pcr_cr_eq rel_fun_def cr_mapping_def)
@@ -148,7 +148,7 @@ context CFG_SSA_base begin
 
 lemma phis_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(op = ===> pcr_mapping op = op =) phis (\<lambda>g. Mapping.Mapping (phis g))"
+  shows "((=) ===> pcr_mapping (=) (=)) phis (\<lambda>g. Mapping.Mapping (phis g))"
   by (auto simp: mapping.pcr_cr_eq rel_fun_def cr_mapping_def Mapping.Mapping_inverse)
 
 end

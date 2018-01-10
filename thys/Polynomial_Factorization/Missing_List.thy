@@ -91,15 +91,15 @@ lemma empty_subseqs[simp]: "[] \<in> set (subseqs xs)" by (induct xs, auto simp:
 lemma full_list_subseqs: "{ys. ys \<in> set (subseqs xs) \<and> length ys = length xs} = {xs}" 
 proof (induct xs)
   case (Cons x xs)
-  have "?case = ({ys \<in> op # x ` set (subseqs xs) \<union> set (subseqs xs). 
-    length ys = Suc (length xs)} = op # x ` {xs})" (is "_ = (?l = ?r)")
+  have "?case = ({ys \<in> (#) x ` set (subseqs xs) \<union> set (subseqs xs). 
+    length ys = Suc (length xs)} = (#) x ` {xs})" (is "_ = (?l = ?r)")
     by (auto simp: Let_def)
-  also have "?l = {ys \<in> op # x ` set (subseqs xs). length ys = Suc (length xs)}" 
+  also have "?l = {ys \<in> (#) x ` set (subseqs xs). length ys = Suc (length xs)}" 
     using length_subseqs[of xs]
     using subseqs_length_simple_False by force
-  also have "\<dots> = op # x ` {ys \<in> set (subseqs xs). length ys = length xs}"
+  also have "\<dots> = (#) x ` {ys \<in> set (subseqs xs). length ys = length xs}"
     by auto
-  also have "\<dots> = op # x ` {xs}" unfolding Cons by auto
+  also have "\<dots> = (#) x ` {xs}" unfolding Cons by auto
   finally show ?case by simp
 qed simp
 
@@ -317,14 +317,14 @@ qed
 lemma is_partition_inj_map:
   assumes "is_partition xs"
   and "inj_on f (\<Union>x \<in> set xs. x)"
-  shows "is_partition (map (op ` f) xs)"
+  shows "is_partition (map ((`) f) xs)"
 proof (rule ccontr)
-  assume "\<not> is_partition (map (op ` f) xs)"
+  assume "\<not> is_partition (map ((`) f) xs)"
   then obtain i j where neq:"i \<noteq> j" 
-    and i:"i < length (map (op ` f) xs)" and j:"j < length (map (op ` f) xs)"
-    and "map (op ` f) xs ! i \<inter> map (op ` f) xs ! j \<noteq> {}" 
+    and i:"i < length (map ((`) f) xs)" and j:"j < length (map ((`) f) xs)"
+    and "map ((`) f) xs ! i \<inter> map ((`) f) xs ! j \<noteq> {}" 
     unfolding is_partition_alt is_partition_alt_def by auto
-  then obtain x where "x \<in> map (op ` f) xs ! i" and "x \<in> map (op ` f) xs ! j" by auto
+  then obtain x where "x \<in> map ((`) f) xs ! i" and "x \<in> map ((`) f) xs ! j" by auto
   then obtain y z where yi:"y \<in> xs ! i" and yx:"f y = x" and zj:"z \<in> xs ! j" and zx:"f z = x" 
     using i j by auto
   show False
@@ -935,7 +935,7 @@ declare permut_def[simp del]
 lemma foldl_assoc:
   fixes b :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>" 55)
   assumes "\<And>f g h. f \<cdot> (g \<cdot> h) = f \<cdot> g \<cdot> h"
-  shows "foldl op \<cdot> (x \<cdot> y) zs = x \<cdot> foldl op \<cdot> y zs"
+  shows "foldl (\<cdot>) (x \<cdot> y) zs = x \<cdot> foldl (\<cdot>) y zs"
   using assms[symmetric] by (induct zs arbitrary: y) simp_all
 
 lemma foldr_assoc:
@@ -944,7 +944,7 @@ lemma foldr_assoc:
   using assms by (induct xs) simp_all
 
 lemma foldl_foldr_o_id:
-  "foldl op \<circ> id fs = foldr op \<circ> fs id"
+  "foldl (\<circ>) id fs = foldr (\<circ>) fs id"
 proof (induct fs)
   case (Cons f fs)
   have "id \<circ> f = f \<circ> id" by simp
@@ -953,7 +953,7 @@ proof (induct fs)
 qed simp
 
 lemma foldr_o_o_id[simp]:
-  "foldr (op \<circ> \<circ> f) xs id a = foldr f xs a"
+  "foldr ((\<circ>) \<circ> f) xs id a = foldr f xs a"
   by (induct xs) simp_all
 
 lemma Ex_list_of_length_P:
@@ -1142,11 +1142,11 @@ lemma list_4_cases[case_names Nil 1 2 3]:
   using assms by (cases xs; cases "tl xs"; cases "tl (tl xs)", auto)
 
 lemma foldr_append2 [simp]:
-  "foldr (op @ \<circ> f) xs (ys @ zs) = foldr (op @ \<circ> f) xs ys @ zs"
+  "foldr ((@) \<circ> f) xs (ys @ zs) = foldr ((@) \<circ> f) xs ys @ zs"
   by (induct xs) simp_all
 
 lemma foldr_append2_Nil [simp]:
-  "foldr (op @ \<circ> f) xs [] @ zs = foldr (op @ \<circ> f) xs zs"
+  "foldr ((@) \<circ> f) xs [] @ zs = foldr ((@) \<circ> f) xs zs"
   unfolding foldr_append2 [symmetric] by simp
 
 lemma UNION_set_zip:

@@ -4,7 +4,7 @@ imports
   "HOL-Library.Permutations"
 begin
 
-section \<open>Auxiliary Lemmas about @{term "op ^^"}\<close>
+section \<open>Auxiliary Lemmas about @{term "(^^)"}\<close>
 
 lemma funpow_simp_l: "f ((f ^^ n) x) = (f ^^ Suc n) x"
   by (metis comp_apply funpow.simps(2))

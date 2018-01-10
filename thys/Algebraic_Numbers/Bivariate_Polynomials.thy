@@ -368,7 +368,7 @@ lemma pCons_as_add:
   fixes p :: "'a :: comm_semiring_1 poly"
   shows "pCons a p = [:a:] + monom 1 1 * p" by (auto simp: monom_Suc)
 
-lemma mult_pCons_0: "(op *) (pCons 0 1) = pCons 0" by auto
+lemma mult_pCons_0: "(( * )) (pCons 0 1) = pCons 0" by auto
 
 lemma pCons_0_as_mult:(*TODO: Move *)
   shows "pCons (0 :: 'a :: comm_semiring_1)  = (\<lambda>p. pCons 0 1 * p)" by auto

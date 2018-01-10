@@ -11,7 +11,7 @@ imports
   "HOL-Analysis.Analysis"
 begin
 
-lemma collinear_translate_iff: "collinear ((op + a) ` A) \<longleftrightarrow> collinear A"
+lemma collinear_translate_iff: "collinear (((+) a) ` A) \<longleftrightarrow> collinear A"
   by (auto simp: collinear_def)
 
 

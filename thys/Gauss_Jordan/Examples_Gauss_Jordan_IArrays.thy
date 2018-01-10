@@ -18,16 +18,16 @@ begin
 
 subsection{*Transformations between nested lists nested IArrays*}
 definition iarray_of_iarray_to_list_of_list :: "'a iarray iarray => 'a list list"
-  where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map (op !! A) [0..<IArray.length A])"
+  where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map ((!!) A) [0..<IArray.length A])"
 
 text{*The following definitions are also in the file @{text "Examples_on_Gauss_Jordan_Abstract"}.*}
 
 text{*Definitions to transform a matrix to a list of list and vice versa*}
 definition vec_to_list :: "'a^'n::{finite, enum} => 'a list"
-  where "vec_to_list A = map (op $ A) (enum_class.enum::'n list)"
+  where "vec_to_list A = map (($) A) (enum_class.enum::'n list)"
 
 definition matrix_to_list_of_list :: "'a^'n::{finite, enum}^'m::{finite, enum} => 'a list list"
-  where "matrix_to_list_of_list A = map (vec_to_list) (map (op $ A) (enum_class.enum::'m list))"
+  where "matrix_to_list_of_list A = map (vec_to_list) (map (($) A) (enum_class.enum::'m list))"
 
 text{*This definition should be equivalent to @{text "vector_def"} (in suitable types)*}
 definition list_to_vec :: "'a list => 'a^'n::{enum, mod_type}"

@@ -358,7 +358,7 @@ declare is_relevant_entry_def [simp del]
 declare set_drop_subset [simp del]
 
 lemma lesubstep_type_simple:
-  "xs [\<sqsubseteq>\<^bsub>Product.le (op =) r\<^esub>] ys \<Longrightarrow> set xs {\<sqsubseteq>\<^bsub>r\<^esub>} set ys"
+  "xs [\<sqsubseteq>\<^bsub>Product.le (=) r\<^esub>] ys \<Longrightarrow> set xs {\<sqsubseteq>\<^bsub>r\<^esub>} set ys"
 (*<*)
   apply (unfold lesubstep_type_def)
   apply clarify

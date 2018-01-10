@@ -279,7 +279,7 @@ locale od_powerprod =
 begin
 
 lemma wf_ord_strict:
-  shows "wfP (op \<prec>)"
+  shows "wfP (\<prec>)"
 proof (rule wfP_chain)
   show "\<not> (\<exists>seq. \<forall>i. seq (Suc i) \<prec> seq i)"
   proof
@@ -369,7 +369,7 @@ next
   proof transfer
     fix s t::"'a \<Rightarrow> 'b"
     assume "finite {x. t x \<noteq> 0}" and "finite {x. s x \<noteq> 0}"
-    from finite_neq_0'[OF this, of "op -"] have fin: "finite {x. t x - s x \<noteq> 0}" by simp
+    from finite_neq_0'[OF this, of "(-)"] have fin: "finite {x. t x - s x \<noteq> 0}" by simp
     assume a: "\<forall>x. s x \<le> t x"
     show "\<exists>k\<in>{f. finite {t. f t \<noteq> 0}}. t = (\<lambda>x. s x + k x)"
     proof (rule bexI[of _ "\<lambda>x. t x - s x"], rule)

@@ -27,7 +27,7 @@ definition "idx_iteratei get sz l c f \<sigma> == idx_iteratei_aux get (sz l) (s
 
 lemma idx_iteratei_eq_foldli:
   assumes sz: "(sz, length) \<in> arel \<rightarrow> nat_rel"
-  assumes get: "(get, op!) \<in> arel \<rightarrow> nat_rel \<rightarrow> Id"
+  assumes get: "(get, (!)) \<in> arel \<rightarrow> nat_rel \<rightarrow> Id"
   assumes "(s,s') \<in> arel"
   shows "(idx_iteratei get sz s, foldli s') \<in> Id" 
 proof-
@@ -75,9 +75,9 @@ text {*  Misc. *}
 lemma idx_iteratei_aux_nth_conv_foldli_drop:
   fixes xs :: "'b list"
   assumes "i \<le> length xs"
-  shows "idx_iteratei_aux op ! (length xs) i xs c f \<sigma> = foldli (drop (length xs - i) xs) c f \<sigma>"
+  shows "idx_iteratei_aux (!) (length xs) i xs c f \<sigma> = foldli (drop (length xs - i) xs) c f \<sigma>"
 using assms
-proof(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\<equiv>"length xs" i xs c f \<sigma> rule: idx_iteratei_aux.induct)
+proof(induct get\<equiv>"(!) :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\<equiv>"length xs" i xs c f \<sigma> rule: idx_iteratei_aux.induct)
   case (1 i l c f \<sigma>)
   show ?case
   proof(cases "i = 0 \<or> \<not> c \<sigma>")
@@ -86,7 +86,7 @@ proof(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\
   next
     case False
     hence i: "i > 0" and c: "c \<sigma>" by auto
-    hence "idx_iteratei_aux op ! (length l) i l c f \<sigma> = idx_iteratei_aux op ! (length l) (i - 1) l c f (f (l ! (length l - i)) \<sigma>)"
+    hence "idx_iteratei_aux (!) (length l) i l c f \<sigma> = idx_iteratei_aux (!) (length l) (i - 1) l c f (f (l ! (length l - i)) \<sigma>)"
       by(subst idx_iteratei_aux.simps) simp
     also have "\<dots> = foldli (drop (length l - (i - 1)) l) c f (f (l ! (length l - i)) \<sigma>)"
       using `i \<le> length l` i c by -(rule 1, auto)

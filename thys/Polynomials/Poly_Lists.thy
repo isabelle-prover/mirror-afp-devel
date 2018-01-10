@@ -389,7 +389,7 @@ proof -
 qed
 
 definition adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le::"('b \<Rightarrow>\<^sub>0 'a::{canonically_ordered_monoid_add,ordered_ab_semigroup_monoid_add_imp_le}) \<Rightarrow> _ \<Rightarrow> bool"
-  where [code_abbrev]: "adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le = op adds"
+  where [code_abbrev]: "adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le = (adds)"
 
 lemma compute_adds_pp[code]:
   "adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le (PP xs) (PP ys) =

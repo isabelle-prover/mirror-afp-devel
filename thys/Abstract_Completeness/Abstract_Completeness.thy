@@ -91,7 +91,7 @@ proof -
   qed
 qed
 
-definition "fair rs \<equiv> sset rs \<subseteq> R \<and> (\<forall> r \<in> R. alw (ev (holds (op= r))) rs)"
+definition "fair rs \<equiv> sset rs \<subseteq> R \<and> (\<forall> r \<in> R. alw (ev (holds ((=) r))) rs)"
 
 lemma fair_stl: "fair rs \<Longrightarrow> fair (stl rs)"
   unfolding fair_def by (metis alw.simps set_mp stl_sset subsetI)
@@ -116,7 +116,7 @@ proof -
     then obtain m where r: "r = rules !! m" unfolding sset_range by blast
     { fix n :: nat and rs let ?fenum = "\<lambda>n. flat (smap (\<lambda>n. stake n rules) (fromN n))"
       assume "n > 0"
-      hence "alw (ev (holds (op= r))) (rs @- ?fenum n)"
+      hence "alw (ev (holds ((=) r))) (rs @- ?fenum n)"
       proof (coinduction arbitrary: n rs)
         case alw
         show ?case
@@ -126,7 +126,7 @@ proof -
             case Nil thus ?thesis unfolding alw by (intro exI) auto
           qed (auto simp: alw intro: exI[of _ n])
         next
-          show "ev (holds (op = r)) (rs @- flat (smap (\<lambda>n. stake n rules) (fromN n)))"
+          show "ev (holds ((=) r)) (rs @- flat (smap (\<lambda>n. stake n rules) (fromN n)))"
             using alw r unfolding ev_holds_sset
             by (cases "m < n") (force simp: stream.set_map in_set_conv_nth)+
         qed

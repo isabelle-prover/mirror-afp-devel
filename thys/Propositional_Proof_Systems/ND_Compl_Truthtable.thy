@@ -14,7 +14,7 @@ unfolding turn_true_def by simp_all
 (* often more sensible than to unfold everything *)
 
 definition line_assm :: "'a valuation \<Rightarrow> 'a set \<Rightarrow> 'a formula set" where
-"line_assm \<A> \<equiv> op ` (\<lambda>k. turn_true \<A> (Atom k))"
+"line_assm \<A> \<equiv> (`) (\<lambda>k. turn_true \<A> (Atom k))"
 definition line_suitable :: "'a set \<Rightarrow> 'a formula \<Rightarrow> bool" where
 "line_suitable Z F \<equiv> (atoms F \<subseteq> Z)"
 lemma line_suitable_junctors[simp]:

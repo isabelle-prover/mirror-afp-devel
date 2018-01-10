@@ -659,7 +659,7 @@ proof (rule inj_onI)
 qed
 
 abbreviation perm_vars_inv :: "nat \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat"
-where "perm_vars_inv n vs i \<equiv> the_inv_into {0..<n} (op ! vs) i"
+where "perm_vars_inv n vs i \<equiv> the_inv_into {0..<n} ((!) vs) i"
 
 lemma perm_vars_inv_nth:
   assumes "perm_vars n vs"

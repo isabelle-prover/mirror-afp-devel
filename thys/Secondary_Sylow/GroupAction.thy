@@ -548,7 +548,7 @@ next
   with h show "h \<otimes> x \<in> carrier G" by (metis m_closed)
   from x h have "inv h \<otimes> x \<in> carrier G" by (metis m_closed inv_closed)
   moreover from x h have "h \<otimes> (inv h \<otimes> x)  = x" by (metis inv_closed r_inv m_assoc l_one)
-  ultimately show "x \<in> op \<otimes> h ` carrier G" by force
+  ultimately show "x \<in> (\<otimes>) h ` carrier G" by force
 qed
 
 lemma (in group) right_mult_group_action:

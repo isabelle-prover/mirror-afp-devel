@@ -45,7 +45,7 @@ lemma monom_list_x_x[simp]: "monom_list (var_monom x * var_monom x) = [(x,2)]"
   by (transfer, auto simp: monom_mult_list.simps)
 
 lemma assumes b: "b + a > 0" and a: "(a :: int) \<ge> 0"
-  shows "check_poly_strict_mono_discrete (op >) (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
+  shows "check_poly_strict_mono_discrete (>) (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
 proof -
   note [simp] = poly_add.simps poly_mult.simps monom_mult_poly.simps zero_poly_def one_poly_def 
     extract_def check_poly_strict_mono_discrete_def poly_subst.simps monom_subst_def poly_power.simps

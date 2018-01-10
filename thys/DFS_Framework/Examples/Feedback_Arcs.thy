@@ -222,7 +222,7 @@ lemma [autoref_rules]:
 schematic_goal find_fas_impl:
   fixes V :: "('vi\<times>'v) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode V eq bhc"
-  assumes [autoref_rules]: "(eq,op =) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eq,(=)) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE ('vi) sz"
   assumes [autoref_rules]: 
     "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
@@ -244,7 +244,7 @@ thm find_fas_code.refine
 lemma find_fas_code_refine[refine]:
   fixes V :: "('vi\<times>'v) set"
   assumes "is_bounded_hashcode V eq bhc"
-  assumes "(eq,op =) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
+  assumes "(eq,(=)) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
   assumes "is_valid_def_hm_size TYPE ('vi) sz"
   assumes 2: "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
   shows "RETURN (find_fas_code eq bhc sz Gi) \<le> \<Down>(\<langle>V\<times>\<^sub>rV\<rangle>ahs_rel (prod_bhc bhc bhc)) (find_fas G)"
@@ -261,7 +261,7 @@ theorem find_fas_code_autoref[autoref_rules]:
   fixes V :: "('vi\<times>'v) set" and bhc
   defines "RR \<equiv> \<langle>\<langle>V\<times>\<^sub>rV\<rangle>ahs_rel (prod_bhc bhc bhc)\<rangle>nres_rel"
   assumes BHC: "SIDE_GEN_ALGO (is_bounded_hashcode V eq bhc)"
-  assumes EQ: "GEN_OP eq op = (V \<rightarrow> V \<rightarrow> bool_rel)"
+  assumes EQ: "GEN_OP eq (=) (V \<rightarrow> V \<rightarrow> bool_rel)"
   assumes VDS: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE ('vi) sz)"
   assumes 2: "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
   shows "(RETURN (find_fas_code eq bhc sz Gi),
@@ -347,7 +347,7 @@ proof -
 qed
 
 lemma gen_cast_fun_set_rel[autoref_rules_raw]:
-  assumes INS: "GEN_OP mem op \<in> (Rk\<rightarrow>\<langle>Rk\<rangle>Rs\<rightarrow>bool_rel)"
+  assumes INS: "GEN_OP mem (\<in>) (Rk\<rightarrow>\<langle>Rk\<rangle>Rs\<rightarrow>bool_rel)"
   shows "(\<lambda>s x. mem x s,CAST) \<in> (\<langle>Rk\<rangle>Rs) \<rightarrow> (\<langle>Rk\<rangle>fun_set_rel)"
 proof -
   have A: "\<And>s. (\<lambda>x. x\<in>s,CAST s) \<in> br Collect (\<lambda>_. True)"
@@ -374,7 +374,7 @@ lemma find_fas_init_impl_aux_unfolds:
 schematic_goal find_fas_init_impl:
   fixes V :: "('vi\<times>'v) set" and bhc
   assumes [autoref_ga_rules]: "is_bounded_hashcode V eq bhc"
-  assumes [autoref_rules]: "(eq,op =) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eq,(=)) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE ('vi) sz"
   assumes [autoref_rules]: 
     "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
@@ -396,7 +396,7 @@ theorem find_fas_init_code_autoref[autoref_rules]:
   fixes V :: "('vi\<times>'v) set" and bhc
   defines "RR \<equiv> \<langle>V\<times>\<^sub>rV\<rangle>fun_set_rel"
   assumes "SIDE_GEN_ALGO (is_bounded_hashcode V eq bhc)"
-  assumes "GEN_OP eq op = (V \<rightarrow> V \<rightarrow> bool_rel)"
+  assumes "GEN_OP eq (=) (V \<rightarrow> V \<rightarrow> bool_rel)"
   assumes "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE ('vi) sz)"
   shows "(\<lambda>Gi FIi. RETURN (find_fas_init_code eq bhc sz Gi FIi),find_fas_init) 
     \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext \<rightarrow> RR \<rightarrow> \<langle>RR\<rangle>nres_rel"

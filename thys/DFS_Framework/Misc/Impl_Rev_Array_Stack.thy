@@ -47,7 +47,7 @@ definition "ras_push x s \<equiv> let
     (a,n+1)"
 
 lemma ras_push_refine[autoref_rules]: 
-  "(ras_push,op #) \<in> R \<rightarrow> \<langle>R\<rangle>ras_rel \<rightarrow> \<langle>R\<rangle>ras_rel"
+  "(ras_push,(#)) \<in> R \<rightarrow> \<langle>R\<rangle>ras_rel \<rightarrow> \<langle>R\<rangle>ras_rel"
   apply (intro fun_relI)
   apply (simp add: ras_push_def ras_rel_def br_def
     ras_raw_\<alpha>_def ras_raw_invar_def)

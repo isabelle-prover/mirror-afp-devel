@@ -537,18 +537,18 @@ lemma max_Var_floatariths_append[simp]: "max_Var_floatariths (xs @ ys) = max (ma
 
 lemma map_nth_append_upt[simp]:
   assumes "a \<ge> length xs"
-  shows "map (op ! (xs @ ys)) [a..<b] = map (op ! ys) [a - length xs..<b - length xs]"
+  shows "map ((!) (xs @ ys)) [a..<b] = map ((!) ys) [a - length xs..<b - length xs]"
   using assms
   by (auto intro!: nth_equalityI simp: nth_append)
 
 lemma map_nth_Cons_upt[simp]:
   assumes "a > 0"
-  shows "map (op ! (x # ys)) [a..<b] = map (op ! ys) [a - Suc 0..<b - Suc 0]"
+  shows "map ((!) (x # ys)) [a..<b] = map ((!) ys) [a - Suc 0..<b - Suc 0]"
   using assms
   by (auto intro!: nth_equalityI simp: nth_append)
 
 lemma map_nth_eq_self[simp]:
-  shows "length fas = l \<Longrightarrow> (map (op ! fas) [0..<l]) = fas"
+  shows "length fas = l \<Longrightarrow> (map ((!) fas) [0..<l]) = fas"
   by (auto simp: intro!: nth_equalityI)
 
 
@@ -600,7 +600,7 @@ lemma matrix_scaleR_left: "(a::'a::real_algebra_1^'n^'m) ** r *\<^sub>R b = r *\
   by (vector matrix_matrix_mult_def algebra_simps scaleR_sum_right)
 
 lemma bounded_bilinear_matrix_matrix_mult[bounded_bilinear]:
-   "bounded_bilinear (op **::
+   "bounded_bilinear (( ** )::
     ('a::{euclidean_space, real_normed_algebra_1}^'n^'m) \<Rightarrow>
     ('a::{euclidean_space, real_normed_algebra_1}^'p^'n) \<Rightarrow>
     ('a::{euclidean_space, real_normed_algebra_1}^'p^'m))"
@@ -922,7 +922,7 @@ lemma einterpret_scaleR[simp]:
 
 lemma einterpret_nth[simp]:
   assumes [simp]: "length xs = DIM('a)"
-  shows "(einterpret (map (op ! xs) [0..<DIM('a)]) vs::'a::executable_euclidean_space) = einterpret xs vs"
+  shows "(einterpret (map ((!) xs) [0..<DIM('a)]) vs::'a::executable_euclidean_space) = einterpret xs vs"
   by (auto intro!: euclidean_eqI[where 'a='a] simp: algebra_simps eucl_of_list_inner)
 
 type_synonym 'n rvec = "(real, 'n) vec"
@@ -952,7 +952,7 @@ qed
 
 lemmas [simp del] = fold_const_fa.simps
 
-lemma take_eq_map_nth: "n < length xs \<Longrightarrow> take n xs = map (op ! xs) [0..<n]"
+lemma take_eq_map_nth: "n < length xs \<Longrightarrow> take n xs = map ((!) xs) [0..<n]"
   by (induction xs) (auto intro!: nth_equalityI)
 
 lemmas [simp del] = upt_rec_numeral
@@ -983,7 +983,7 @@ fun mk_congeq ctxt fs th =
     val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop (Thm.prop_of th'));
     fun add_fterms (t as t1 $ t2) =
           if exists (fn f => Term.could_unify (t |> strip_comb |> fst, f)) fs
-          then insert (op aconv) t
+          then insert (aconv) t
           else add_fterms t1 #> add_fterms t2
       | add_fterms (t as Abs _) =
           if exists_Const (fn (c, _) => c = fN) t
@@ -996,11 +996,11 @@ fun mk_congeq ctxt fs th =
     val vs = map Free (xs ~~ tys);
     val env = fterms ~~ vs; (*FIXME*)
     fun replace_fterms (t as t1 $ t2) =
-        (case AList.lookup (op aconv) env t of
+        (case AList.lookup (aconv) env t of
             SOME v => v
           | NONE => replace_fterms t1 $ replace_fterms t2)
       | replace_fterms t =
-        (case AList.lookup (op aconv) env t of
+        (case AList.lookup (aconv) env t of
             SOME v => v
           | NONE => t);
     fun mk_def (Abs (x, xT, t), v) =
@@ -1021,13 +1021,13 @@ fun mk_congeq ctxt fs th =
 
 fun mk_congs ctxt eqs =
   let
-    val fs = fold_rev (fn eq => insert (op =) (eq |> Thm.prop_of |> HOLogic.dest_Trueprop
+    val fs = fold_rev (fn eq => insert (=) (eq |> Thm.prop_of |> HOLogic.dest_Trueprop
       |> HOLogic.dest_eq |> fst |> strip_comb
       |> fst)) eqs [];
-    val tys = fold_rev (fn f => fold (insert (op =)) (f |> fastype_of |> binder_types |> tl)) fs [];
+    val tys = fold_rev (fn f => fold (insert (=)) (f |> fastype_of |> binder_types |> tl)) fs [];
     val (vs, ctxt') = Variable.variant_fixes (replicate (length tys) "vs") ctxt;
     val subst =
-      the o AList.lookup (op =)
+      the o AList.lookup (=)
         (map2 (fn T => fn v => (T, Thm.cterm_of ctxt' (Free (v, T)))) tys vs);
     fun prep_eq eq =
       let
@@ -1113,13 +1113,13 @@ lemma interpret_floatarith_subst_floatarith:
 
 lemma max_Var_floatarith_subst_floatarith_le[THEN order_trans]:
   assumes "length xs \<ge> max_Var_floatarith fa"
-  shows "max_Var_floatarith (subst_floatarith (op ! xs) fa) \<le> max_Var_floatariths xs"
+  shows "max_Var_floatarith (subst_floatarith ((!) xs) fa) \<le> max_Var_floatariths xs"
   using assms
   by (induction fa) (auto intro!: max_Var_floatarith_le_max_Var_floatariths_nth)
 
 lemma max_Var_floatariths_subst_floatarith_le[THEN order_trans]:
   assumes "length xs \<ge> max_Var_floatariths fas"
-  shows "max_Var_floatariths (map (subst_floatarith (op ! xs)) fas) \<le> max_Var_floatariths xs"
+  shows "max_Var_floatariths (map (subst_floatarith ((!) xs)) fas) \<le> max_Var_floatariths xs"
   using assms
   by (induction fas) (auto simp: max_Var_floatarith_subst_floatarith_le)
 
@@ -1217,7 +1217,7 @@ lemma nth_nth_eucl_of_env_inner:
 
 lemma list_updates_idem[simp]:
   assumes "(\<And>i. i \<in> set X0 \<Longrightarrow> i < length vs)"
-  shows "(list_updates X0 (map (op ! vs) X0) vs) = vs"
+  shows "(list_updates X0 (map ((!) vs) X0) vs) = vs"
   using assms
   by (induction X0) auto
 

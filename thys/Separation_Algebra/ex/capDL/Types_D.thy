@@ -228,6 +228,6 @@ where
   "object_at P p s \<equiv> \<exists>object. s p = Some object \<and> P object"
 
 abbreviation
-  "ko_at k \<equiv> object_at (op = k)"
+  "ko_at k \<equiv> object_at ((=) k)"
 
 end

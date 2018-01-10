@@ -32,8 +32,8 @@ begin
     lemma [sepref_import_param]: "(prio,prio) \<in> Id \<rightarrow> Id" by simp
 
     lemma [sepref_import_param]: 
-      "(op \<le>, op \<le>::'b \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> bool_rel"
-      "(op <, op <::'b \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> bool_rel"
+      "((\<le>), (\<le>)::'b \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> bool_rel"
+      "((<), (<)::'b \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> bool_rel"
       by simp_all
 
 

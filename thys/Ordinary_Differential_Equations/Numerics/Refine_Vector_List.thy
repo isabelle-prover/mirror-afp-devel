@@ -25,7 +25,7 @@ lemma lv_rel_sv[relator_props]: "single_valued lv_rel"
 
 context begin interpretation autoref_syn .
 
-lemma lv_rel_le[autoref_rules]: "(list_all2 (\<lambda>x y. x \<le> y), op \<le>) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
+lemma lv_rel_le[autoref_rules]: "(list_all2 (\<lambda>x y. x \<le> y), (\<le>)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
   by (auto simp: lv_rel_def br_def eucl_le[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id)
      (metis distinct_Basis_list index_nth_id length_Basis_list nth_Basis_list_in_Basis)
@@ -40,12 +40,12 @@ lemma lv_rel_sup[autoref_rules]: "(map2 max, sup) \<in> lv_rel \<rightarrow> lv_
       index_nth_id sup_real_def
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_add[autoref_rules]: "(map2 op +, op +) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_add[autoref_rules]: "(map2 (+), (+)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_sup[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id sup_real_def algebra_simps
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_minus[autoref_rules]: "(map2 op -, op -) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_minus[autoref_rules]: "(map2 (-), (-)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_sup[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id sup_real_def algebra_simps
       intro!: euclidean_eqI[where 'a='a])
@@ -65,7 +65,7 @@ lemma lv_rel_abs[autoref_rules]: "(map abs, abs) \<in> lv_rel \<rightarrow> lv_r
       index_nth_id sup_real_def
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_inner[autoref_rules]: "(inner_lv_rel, op \<bullet>) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> rnv_rel"
+lemma lv_rel_inner[autoref_rules]: "(inner_lv_rel, (\<bullet>)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> rnv_rel"
   by (subst euclidean_inner[abs_def], subst sum_list_Basis_list[symmetric])
     (auto simp: lv_rel_def br_def eucl_of_list_inner sum_list_sum_nth index_nth_id inner_lv_rel_def)
 
@@ -160,7 +160,7 @@ proof
     done
 qed
 
-lemma lv_rel_eq[autoref_rules]: "(op =, op =) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
+lemma lv_rel_eq[autoref_rules]: "((=), (=)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
   by (auto simp: lv_rel_def br_def euclidean_eq_iff[where 'a='a] eucl_of_list_inner
       intro!: nth_equalityI)
      (metis distinct_Basis_list index_nth_id length_Basis_list nth_Basis_list_in_Basis)
@@ -180,7 +180,7 @@ lemma lv_rel_Basis_list[autoref_rules]:
       Basis_list_impl_def
       intro!: brI list_all2_all_nthI euclidean_eqI[where 'a='a])
 
-definition "lv_ivl xrs yrs = {zrs. list_all2 (op \<le>) xrs zrs \<and> list_all2 (op \<le>) zrs yrs}"
+definition "lv_ivl xrs yrs = {zrs. list_all2 (\<le>) xrs zrs \<and> list_all2 (\<le>) zrs yrs}"
 
 lemma lv_relI:
   "length x = DIM('a) \<Longrightarrow> (x, eucl_of_list x::'a::executable_euclidean_space) \<in> lv_rel"

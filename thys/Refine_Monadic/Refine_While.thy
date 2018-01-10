@@ -1317,7 +1317,7 @@ proof (rule ccontr)
   from P have SIR: "\<And>i. inres (step (f i)) (f (Suc i))"
     unfolding ipath_def rwof_rel_def by auto
 
-  define F where "F = (WHILEI_body op \<bind> RETURN I cond step)"
+  define F where "F = (WHILEI_body (\<bind>) RETURN I cond step)"
 
   {
     assume M: "trimono F"

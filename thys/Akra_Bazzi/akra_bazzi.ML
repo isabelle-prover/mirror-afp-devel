@@ -63,11 +63,11 @@ fun get_intros NONE b = if not b then master_intros else
 |   get_intros _ _ = error "invalid Master theorem case"
 
 val allowed_consts =
-  [@{term "op + :: nat => nat => nat"}, @{term "Suc :: nat => nat"},
-   @{term "op + :: real => real => real"}, @{term "op - :: real => real => real"},
-   @{term "uminus :: real => real"}, @{term "op * :: real => real => real"}, 
-   @{term "op / :: real => real => real"}, @{term "inverse :: real => real"},
-   @{term "op powr :: real => real => real"}, @{term "real_of_nat"}, @{term "real :: nat => real"},
+  [@{term "(+) :: nat => nat => nat"}, @{term "Suc :: nat => nat"},
+   @{term "(+) :: real => real => real"}, @{term "(-) :: real => real => real"},
+   @{term "uminus :: real => real"}, @{term "( * ) :: real => real => real"}, 
+   @{term "(/) :: real => real => real"}, @{term "inverse :: real => real"},
+   @{term "(powr) :: real => real => real"}, @{term "real_of_nat"}, @{term "real :: nat => real"},
    @{term "Num.numeral :: num => real"}, @{term "Num.Bit0"}, @{term "Num.Bit1"},
    @{term "0 :: real"}, @{term "1 :: real"}, @{term "Num.One"}, @{term "Num.BitM"},
    @{term "Num.numeral :: num => nat"}, @{term "0 :: nat"}, @{term "1 :: nat"},
@@ -75,10 +75,10 @@ val allowed_consts =
    @{term "greaterThanAtMost :: real => real => real set"},
    @{term "atLeastLessThan :: real => real => real set"},
    @{term "greaterThanLessThan :: real => real => real set"},
-   @{term "op = :: real => real => bool"}, @{term "op \<le> :: real => real => bool"},
-   @{term "op < :: real => real => bool"}, @{term "op \<in> :: real => real set => bool"},
-   @{term "op = :: nat => nat => bool"}, @{term "op \<le> :: nat => nat => bool"},
-   @{term "op < :: nat => nat => bool"}, @{term "Trueprop"},
+   @{term "(=) :: real => real => bool"}, @{term "(\<le>) :: real => real => bool"},
+   @{term "(<) :: real => real => bool"}, @{term "(\<in>) :: real => real set => bool"},
+   @{term "(=) :: nat => nat => bool"}, @{term "(\<le>) :: nat => nat => bool"},
+   @{term "(<) :: nat => nat => bool"}, @{term "Trueprop"},
    @{term "HOL.Not"}, @{term "HOL.conj"}, @{term "HOL.disj"}, @{term "HOL.implies"}]
 
 fun contains_only_numerals t =
@@ -261,18 +261,18 @@ end;
 
 fun mk_prod [] = @{term "1 :: real"}
 |   mk_prod (x::xs) = 
-      fold (fn x => fn acc => @{term "op * :: real => real => real"} $ x $ acc) xs x
+      fold (fn x => fn acc => @{term "( * ) :: real => real => real"} $ x $ acc) xs x
 
 fun mk_quot (xs, []) = mk_prod xs
   | mk_quot ([], ys) = @{term "inverse :: real => real"} $ mk_prod ys
-  | mk_quot (xs, ys) = @{term "op / :: real => real => real"} $ mk_prod xs $ mk_prod ys
+  | mk_quot (xs, ys) = @{term "(/) :: real => real => real"} $ mk_prod xs $ mk_prod ys
 
 fun analyze_prod ctxt f x minus t (acc1, acc2) =
 let 
   fun go inv (oper $ t1 $ t2) acc =
-        if oper = @{term "op * :: real => real => real"} then
+        if oper = @{term "( * ) :: real => real => real"} then
           go inv t1 (go inv t2 acc)
-        else if oper = @{term "op / :: real => real => real"} then
+        else if oper = @{term "(/) :: real => real => real"} then
           go inv t1 (go (not inv) t2 acc)
         else
           analyze_terminal ctxt f x inv t (oper $ t1 $ t2) acc
@@ -299,10 +299,10 @@ fun mk_sum [] = @{term "0 :: real"}
       let 
         fun go (f $ x) acc =
               if f = @{term "uminus :: real => real"} then
-                @{term "op - :: real => real => real"} $ acc $ x
+                @{term "(-) :: real => real => real"} $ acc $ x
               else
-                @{term "op + :: real => real => real"} $ acc $ (f $ x)
-          | go x acc = @{term "op + :: real => real => real"} $ acc $ x
+                @{term "(+) :: real => real => real"} $ acc $ (f $ x)
+          | go x acc = @{term "(+) :: real => real => real"} $ acc $ x
       in  
         fold go xs x
       end
@@ -311,9 +311,9 @@ fun mk_sum [] = @{term "0 :: real"}
 fun analyze_sum ctxt f x t =
   let 
     fun go minus (oper $ t1 $ t2) acc =
-          if oper = @{term "op + :: real => real => real"} then
+          if oper = @{term "(+) :: real => real => real"} then
             go minus t1 (go minus t2 acc)
-          else if oper = @{term "op - :: real => real => real"} then
+          else if oper = @{term "(-) :: real => real => real"} then
             go minus t1 (go (not minus) t2 acc)
           else analyze_prod ctxt f x minus (oper $ t1 $ t2) acc
     |   go minus (oper $ t) acc =
@@ -495,8 +495,8 @@ fun find_function goal =
       @{term "Set.member :: (nat => real) => _ set => bool"} $ f $ _ => f
     | _ => raise TERM ("find_function", [goal])
 
-val leq_nat = @{term "op <= :: nat => nat => bool"}
-val less_nat = @{term "op < :: nat => nat => bool"}
+val leq_nat = @{term "(<=) :: nat => nat => bool"}
+val less_nat = @{term "(<) :: nat => nat => bool"}
 
 fun find_x1 var eq =
   let
@@ -617,7 +617,7 @@ val setup_master_theorem =
         val _ =
           case caseno of
             SOME caseno =>
-              if member (op =) ["1","2.1","2.2","2.3","3"] caseno then
+              if member (=) ["1","2.1","2.2","2.3","3"] caseno then
                 ()
               else
                 cat_error "illegal Master theorem case: " caseno

@@ -78,9 +78,9 @@ subsection {* Sum type (a.k.a. either) *}
 lemma "Inl plus \<diamondop> (x :: nat + 'e list) \<diamondop> x = Inl (\<lambda>x. 2 * x) \<diamondop> x"
 by applicative_lifting simp
 
-lemma "rel_sum (op \<le>) (op \<le>) (x :: nat + nat) (Inl Suc \<diamondop> x)"
+lemma "rel_sum (\<le>) (\<le>) (x :: nat + nat) (Inl Suc \<diamondop> x)"
 proof -
-  interpret either_af "op \<le> :: nat \<Rightarrow> _" by unfold_locales (rule reflpI, simp)
+  interpret either_af "(\<le>) :: nat \<Rightarrow> _" by unfold_locales (rule reflpI, simp)
   show ?thesis by applicative_lifting simp
 qed
 
@@ -147,16 +147,16 @@ by applicative_lifting simp
 
 subsection {* Relators *}
 
-lemma "rel_fun (op =) (op \<le>) (const (0::nat)) x"
+lemma "rel_fun (=) (\<le>) (const (0::nat)) x"
 by applicative_lifting simp
 
-lemma "list_all2 (op \<subseteq>) (map (\<lambda>_. {}) x) (map set x)"
+lemma "list_all2 (\<subseteq>) (map (\<lambda>_. {}) x) (map set x)"
 by applicative_nf simp
 
-lemma "x = Some a \<Longrightarrow> rel_option (op \<le>) (map_option (\<lambda>_. a) x) (map_option Suc x)"
+lemma "x = Some a \<Longrightarrow> rel_option (\<le>) (map_option (\<lambda>_. a) x) (map_option Suc x)"
 by applicative_lifting simp
 
-schematic_goal "\<forall>g f x. rel_sum ?R (op =) (ap_either f x) (ap_either (ap_either (Inl g) f) x)"
+schematic_goal "\<forall>g f x. rel_sum ?R (=) (ap_either f x) (ap_either (ap_either (Inl g) f) x)"
 apply applicative_lifting
 oops
 

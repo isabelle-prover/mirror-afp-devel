@@ -33,18 +33,18 @@ code_printing
   type_constructor bit \<rightharpoonup> (SML) "IntInf.int"
  | constant "0::bit" \<rightharpoonup> (SML) "0"
  | constant "1::bit" \<rightharpoonup> (SML) "1"
- | constant "op + :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.rem ((IntInf.+ ((_), (_))), 2)"
- | constant "op * :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.* ((_), (_))"
- | constant "op / :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.* ((_), (_))"
+ | constant "(+) :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.rem ((IntInf.+ ((_), (_))), 2)"
+ | constant "( * ) :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.* ((_), (_))"
+ | constant "(/) :: bit => bit => bit" \<rightharpoonup> (SML) "IntInf.* ((_), (_))"
 *)
 (*
 code_printing
   type_constructor bit \<rightharpoonup> (Haskell) "Integer"
  | constant "0::bit" \<rightharpoonup> (Haskell) "0"
  | constant "1::bit" \<rightharpoonup> (Haskell) "1"
- | constant "op + :: bit => bit => bit" \<rightharpoonup> (Haskell) "Prelude.rem ((_) + (_))  2"
- | constant "op * :: bit => bit => bit" \<rightharpoonup> (Haskell) "(_) * (_)"
- | constant "op / :: bit => bit => bit" \<rightharpoonup> (Haskell) "(_) * (_)"
+ | constant "(+) :: bit => bit => bit" \<rightharpoonup> (Haskell) "Prelude.rem ((_) + (_))  2"
+ | constant "( * ) :: bit => bit => bit" \<rightharpoonup> (Haskell) "(_) * (_)"
+ | constant "(/) :: bit => bit => bit" \<rightharpoonup> (Haskell) "(_) * (_)"
  | class_instance bit :: "HOL.equal" => (Haskell) - (*This is necessary. See the tutorial on code generation, page 29*)
 *)
 
@@ -55,8 +55,8 @@ code_printing
   type_constructor bit \<rightharpoonup> (SML) "Int.int"
  | constant "0::bit" \<rightharpoonup> (SML) "0"
  | constant "1::bit" \<rightharpoonup> (SML) "1"
- | constant "op + :: bit => bit => bit" \<rightharpoonup> (SML) "Int.rem ((Int.+ ((_), (_))), 2)"
- | constant "op * :: bit => bit => bit" \<rightharpoonup> (SML) "Int.* ((_), (_))"
- | constant "op / :: bit => bit => bit" \<rightharpoonup> (SML) "Int.* ((_), (_))"
+ | constant "(+) :: bit => bit => bit" \<rightharpoonup> (SML) "Int.rem ((Int.+ ((_), (_))), 2)"
+ | constant "( * ) :: bit => bit => bit" \<rightharpoonup> (SML) "Int.* ((_), (_))"
+ | constant "(/) :: bit => bit => bit" \<rightharpoonup> (SML) "Int.* ((_), (_))"
 *)
 end

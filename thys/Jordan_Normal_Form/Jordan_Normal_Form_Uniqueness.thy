@@ -183,17 +183,17 @@ text \<open>This lemma finally shows uniqueness of JNFs. Take an arbitrary
 
 lemma compute_nr_of_jordan_blocks: assumes jnf: "jordan_nf A n_as"
   and no_0: "k \<noteq> 0"
-  shows "compute_nr_of_jordan_blocks A ev k = length (filter (op = (k,ev)) n_as)"
+  shows "compute_nr_of_jordan_blocks A ev k = length (filter ((=) (k,ev)) n_as)"
 proof -
   from no_0 obtain k1 where k: "k = Suc k1" by (cases k, auto)
   let ?k = "Suc k1" let ?k2 = "Suc ?k"
   let ?dim = "dim_gen_eigenspace A ev"
   let ?sizes = "map fst [(n, e)\<leftarrow>n_as . e = ev]"
   define sizes where "sizes = ?sizes"
-  let ?two = "length (filter (op = (k, ev)) n_as)"
+  let ?two = "length (filter ((=) (k, ev)) n_as)"
   have "compute_nr_of_jordan_blocks A ev k = 
     ?dim ?k + ?dim ?k - ?dim k1 - ?dim ?k2" unfolding compute_nr_of_jordan_blocks_def k by simp
-  also have "\<dots> = length (filter (op = k) ?sizes)"
+  also have "\<dots> = length (filter ((=) k) ?sizes)"
     unfolding dim_gen_eigenspace[OF jnf] k sizes_def[symmetric]
   proof (rule sym, induct sizes)
     case (Cons s sizes)
@@ -201,7 +201,7 @@ proof -
     proof (cases "s = ?k")
       case True
       let ?sum = "\<lambda> k sizes. sum_list (map (min k) sizes)"
-      let ?len = "\<lambda> sizes. length (filter (op = ?k) sizes)"
+      let ?len = "\<lambda> sizes. length (filter ((=) ?k) sizes)"
       have len: "?len (s # sizes) = Suc (?len sizes)" unfolding True by simp
       have IH: "?len sizes = ?sum ?k sizes + ?sum ?k sizes -
         ?sum k1 sizes - ?sum ?k2 sizes" by (rule Cons)
@@ -216,7 +216,7 @@ proof -
       finally show ?thesis by simp
     qed (insert Cons, auto)
   qed simp
-  also have "\<dots> = length (filter (op = (k, ev)) n_as)" by (induct n_as, force+)
+  also have "\<dots> = length (filter ((=) (k, ev)) n_as)" by (induct n_as, force+)
   finally show ?thesis .
 qed
 
@@ -262,10 +262,10 @@ proof -
       show ?thesis
       proof (cases "k < Suc kk")
         case True
-        have "length (filter (op = (k, ev)) n_as) \<noteq> 0 \<longleftrightarrow>
-          set (filter (op = (k, ev)) n_as) \<noteq> {}" by blast
-        have "(k,ev) \<in> ?N \<longleftrightarrow>  set (filter (op = (k, ev)) n_as) \<noteq> {}" using False by auto
-        also have "\<dots> \<longleftrightarrow> length (filter (op = (k, ev)) n_as) \<noteq> 0" by blast
+        have "length (filter ((=) (k, ev)) n_as) \<noteq> 0 \<longleftrightarrow>
+          set (filter ((=) (k, ev)) n_as) \<noteq> {}" by blast
+        have "(k,ev) \<in> ?N \<longleftrightarrow>  set (filter ((=) (k, ev)) n_as) \<noteq> {}" using False by auto
+        also have "\<dots> \<longleftrightarrow> length (filter ((=) (k, ev)) n_as) \<noteq> 0" by blast
         also have "\<dots> \<longleftrightarrow> compute_nr_of_jordan_blocks A ev k \<noteq> 0"
           unfolding compute_nr_of_jordan_blocks[OF jnf False] by simp
         also have "\<dots> \<longleftrightarrow> (k,ev) \<in> ?C" unfolding C using False True by auto

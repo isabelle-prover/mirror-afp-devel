@@ -6,7 +6,7 @@ default_sort type
 
 instantiation set :: (type) below
 begin
-  definition below_set where "op \<sqsubseteq> = op \<subseteq>"
+  definition below_set where "(\<sqsubseteq>) = (\<subseteq>)"
 instance..  
 end
 

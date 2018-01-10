@@ -268,13 +268,13 @@ proof -
   thus ?thesis
   proof cases
     assume "last xs \<noteq> 0" "xs \<noteq> []"
-    hence "no_trailing (op = 0) xs" by (auto simp: no_trailing_unfold)
+    hence "no_trailing ((=) 0) xs" by (auto simp: no_trailing_unfold)
     thus ?thesis by (simp add: degree_eq_length_coeffs)
   qed auto
 qed
 
 lemma degree_Poly': "degree (Poly xs) \<le> length xs - 1"
-  using length_strip_while_le[of "op = 0" xs] by (simp add: degree_eq_length_coeffs)
+  using length_strip_while_le[of "(=) 0" xs] by (simp add: degree_eq_length_coeffs)
 
 lemma degree_inverse_irred_power_poly_le:
   "degree (inverse_irred_power_poly c n) \<le> n - 1"

@@ -34,7 +34,7 @@ qed
 
 lemmas [autoref_rel_intf] = REL_INTFI[of fun_set_rel i_set]
 
-lemma fs_mem_refine[autoref_rules]: "(\<lambda>x f. f x,op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> bool_rel"
+lemma fs_mem_refine[autoref_rules]: "(\<lambda>x f. f x,(\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> bool_rel"
   apply (intro fun_relI)
   apply (auto simp add: fun_set_rel_def br_def dest: fun_relD)
   done
@@ -53,7 +53,7 @@ lemma fun_set_UNIV_refine[autoref_rules]:
   by (force simp add: fun_set_rel_def br_def)
 
 lemma fun_set_union_refine[autoref_rules]: 
-  "(\<lambda>a b x. a x \<or> b x,op \<union>)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+  "(\<lambda>a b x. a x \<or> b x,(\<union>))\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
 proof -
   have A: "\<And>a b. (\<lambda>x. x\<in>a \<or> x\<in>b, a \<union> b) \<in> br Collect (\<lambda>_. True)"
     by (auto simp: br_def)
@@ -70,7 +70,7 @@ proof -
 qed
 
 lemma fun_set_inter_refine[autoref_rules]: 
-  "(\<lambda>a b x. a x \<and> b x,op \<inter>)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+  "(\<lambda>a b x. a x \<and> b x,(\<inter>))\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
 proof -
   have A: "\<And>a b. (\<lambda>x. x\<in>a \<and> x\<in>b, a \<inter> b) \<in> br Collect (\<lambda>_. True)"
     by (auto simp: br_def)
@@ -88,7 +88,7 @@ qed
 
 
 lemma fun_set_diff_refine[autoref_rules]: 
-  "(\<lambda>a b x. a x \<and> \<not>b x,op -)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+  "(\<lambda>a b x. a x \<and> \<not>b x,(-))\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
 proof -
   have A: "\<And>a b. (\<lambda>x. x\<in>a \<and> \<not>x\<in>b, a - b) \<in> br Collect (\<lambda>_. True)"
     by (auto simp: br_def)

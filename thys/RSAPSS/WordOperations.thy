@@ -14,13 +14,13 @@ type_synonym bv = "bit list"
 datatype HEX = x0 | x1 | x2 | x3 | x4 | x5 | x6 | x7 | x8 | x9 | xA | xB | xC | xD | xE | xF
 
 definition
-  bvxor: "bvxor a b = bv_mapzip (op \<oplus>\<^sub>b) a b"
+  bvxor: "bvxor a b = bv_mapzip (\<oplus>\<^sub>b) a b"
 
 definition
-  bvand: "bvand a b = bv_mapzip (op \<and>\<^sub>b) a b"
+  bvand: "bvand a b = bv_mapzip (\<and>\<^sub>b) a b"
 
 definition
-  bvor: "bvor a b = bv_mapzip (op \<or>\<^sub>b) a b"
+  bvor: "bvor a b = bv_mapzip (\<or>\<^sub>b) a b"
 
 primrec last where
   "last [] = Zero"

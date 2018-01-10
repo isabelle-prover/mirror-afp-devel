@@ -56,7 +56,7 @@ definition
 
 definition
   SetMem :: "Nat \<rightarrow> NatSet \<rightarrow> tr" where
-  "SetMem \<equiv> lmember\<cdot>(bpred (op =))"
+  "SetMem \<equiv> lmember\<cdot>(bpred (=))"
 
 lemma SetMem_strict[simp]: "SetMem\<cdot>x\<cdot>\<bottom> = \<bottom>" by (simp add: SetMem_def)
 lemma SetMem_SetEmpty[simp]: "SetMem\<cdot>x\<cdot>SetEmpty = FF"

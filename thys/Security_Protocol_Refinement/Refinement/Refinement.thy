@@ -441,7 +441,7 @@ diagram:
 
 Here, $Ra$ and $Rc$ are the abstract and concrete transition relations, 
 and $pre$ and $post$ are the pre- and post-relations.
-(In the definiton below, the operator @{term "op O"} stands for relational 
+(In the definiton below, the operator @{term "(O)"} stands for relational 
 composition, which is defined as follows: @{thm relcomp_def [no_vars]}.) *}
 
 definition

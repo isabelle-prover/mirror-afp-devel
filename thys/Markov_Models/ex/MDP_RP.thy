@@ -235,16 +235,16 @@ instantiation mdpc :: (type) lattice
 begin
 
 lift_definition less_eq_mdpc :: "'s mdpc \<Rightarrow> 's mdpc \<Rightarrow> bool"
-  is "fun_ord (ord_option (op \<subseteq>))" .
+  is "fun_ord (ord_option (\<subseteq>))" .
 
 definition less_mdpc :: "'s mdpc \<Rightarrow> 's mdpc \<Rightarrow> bool"
   where "less_mdpc f g \<longleftrightarrow> (f \<le> g \<and> \<not> g \<le> f)"
 
 lift_definition inf_mdpc :: "'s mdpc \<Rightarrow> 's mdpc \<Rightarrow> 's mdpc"
-  is "\<lambda>f g s. lift_option (op \<inter>) (f s) (g s)" .
+  is "\<lambda>f g s. lift_option (\<inter>) (f s) (g s)" .
 
 lift_definition sup_mdpc :: "'s mdpc \<Rightarrow> 's mdpc \<Rightarrow> 's mdpc"
-  is "\<lambda>f g s. combine_options (op \<union>) (f s) (g s)" .
+  is "\<lambda>f g s. combine_options (\<union>) (f s) (g s)" .
 
 instance
 proof
@@ -252,9 +252,9 @@ proof
   show "(x < y) = (x \<le> y \<and> \<not> y \<le> x)"
     by (rule less_mdpc_def)
   note ord =
-    fun_ord_refl[where 'b="'s", OF reflp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
-    fun_ord_trans[where 'b="'s", OF transp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
-    fun_ord_antisym[where 'b="'s", OF antisymp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
+    fun_ord_refl[where 'b="'s", OF reflp_ord_option[where 'a="'s pmf set"], of "(\<subseteq>)"]
+    fun_ord_trans[where 'b="'s", OF transp_ord_option[where 'a="'s pmf set"], of "(\<subseteq>)"]
+    fun_ord_antisym[where 'b="'s", OF antisymp_ord_option[where 'a="'s pmf set"], of "(\<subseteq>)"]
   show  "x \<le> x" "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z" "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
     by (transfer; insert ord; auto simp: transp_def antisymp_def reflp_def)+
   show "x \<sqinter> y \<le> x" "x \<sqinter> y \<le> y"

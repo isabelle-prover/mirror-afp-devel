@@ -56,15 +56,15 @@ constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.
 (*19.04 seconds*)
 (*
 code_printing
-constant "op div :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.div ((_), (_)))"
-| constant "op mod :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.mod ((_), (_)))"
+constant "(div) :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.div ((_), (_)))"
+| constant "(mod) :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.mod ((_), (_)))"
 *)
 
 (*18.832 seconds*)
 (*
 code_printing
-constant "op div :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.quot ((_), (_)))"
-| constant "op mod :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.rem ((_), (_)))"
+constant "(div) :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.quot ((_), (_)))"
+| constant "(mod) :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.rem ((_), (_)))"
 *)
 
 (*18.792 seconds*)

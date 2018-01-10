@@ -55,7 +55,7 @@ done
 text \<open>Test case\<close>
 lemma
   includes applicative_syntax
-  shows "pure_monoid_add op + \<diamondop> (x :: (nat, int) monoid_ap) \<diamondop> y = pure op + \<diamondop> y \<diamondop> x"
+  shows "pure_monoid_add (+) \<diamondop> (x :: (nat, int) monoid_ap) \<diamondop> y = pure (+) \<diamondop> y \<diamondop> x"
 by(applicative_lifting comm_monoid_add) simp
 
 end

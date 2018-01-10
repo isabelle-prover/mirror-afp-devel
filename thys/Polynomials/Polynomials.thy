@@ -392,7 +392,7 @@ lemma sum_var_monom_var: "sum_var (var_monom x) y = (if x = y then 1 else 0)"
 instantiation monom :: ("{equal,linorder}")equal
 begin
 
-lift_definition equal_monom :: "'a monom \<Rightarrow> 'a monom \<Rightarrow> bool" is "op =" .
+lift_definition equal_monom :: "'a monom \<Rightarrow> 'a monom \<Rightarrow> bool" is "(=)" .
 
 instance by (standard, transfer, auto)
 end
@@ -547,13 +547,13 @@ next
     assume "mm \<in> fst ` set (monom_mult_poly (m,c) p)" 
        and two: "mm = m * m'"
     then obtain dd where one: "(mm,dd) \<in> set (monom_mult_poly (m,c) p)" by auto
-    have "poly_monoms (monom_mult_poly (m,c) p) \<subseteq> op * m ` poly_monoms p" 
+    have "poly_monoms (monom_mult_poly (m,c) p) \<subseteq> ( * ) m ` poly_monoms p" 
     proof (induct p, simp)
       case (Cons md p)
       thus ?case
         by (cases md, auto)
     qed
-    with one have "mm \<in> op * m ` poly_monoms p" by force
+    with one have "mm \<in> ( * ) m ` poly_monoms p" by force
     then obtain mmm where mmm: "mmm \<in> poly_monoms p" and mm: "mm = m * mmm" by blast
     from Cons(2)[simplified md] mmm have not1: "\<not> mmm = m'" unfolding poly_inv_def by auto
     from mm two have "m * mmm = m * m'" by simp
@@ -1478,7 +1478,7 @@ proof (intro allI impI)
   and v: "f v \<ge> g v"
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_ge have ge: "poly_ge (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_ge ?p1 p") unfolding check_poly_weak_mono_discrete_def by blast
-  from discrete[OF `discrete` v] obtain k' where id: "f v = ((op + 1)^^k') (g v)" by auto
+  from discrete[OF `discrete` v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   show "eval_poly f p \<ge> eval_poly g p"
   proof (cases k')
     case 0
@@ -1490,7 +1490,7 @@ proof (intro allI impI)
     thus ?thesis using ge_refl by simp
   next
     case (Suc k)
-    with id have "f v = ((op + 1)^^(Suc k))  (g v)" by simp 
+    with id have "f v = (((+) 1)^^(Suc k))  (g v)" by simp 
     with w gass show "eval_poly f p \<ge> eval_poly g p"
     proof (induct k arbitrary: f g rule: less_induct)
       case (less k)
@@ -1528,8 +1528,8 @@ proof (intro allI impI)
           hence "f w = g' w"
             unfolding g' by (simp add: less)
         } note w = this
-        have eq: "f v = (op + (1 :: 'a) ^^ Suc kk) ((g' v))"
-          by (simp add: less(4) g' Suc, rule arg_cong[where f = "op + 1"], induct kk, auto)
+        have eq: "f v = ((+) (1 :: 'a) ^^ Suc kk) ((g' v))"
+          by (simp add: less(4) g' Suc, rule arg_cong[where f = "(+) 1"], induct kk, auto)
         from Suc have kk: "kk < k" by simp
         from less(1)[OF kk w g'pos] eq
         have rec1: "eval_poly f p \<ge> eval_poly g' p" by simp
@@ -1560,7 +1560,7 @@ proof (intro allI impI)
   and v: "f v \<ge> g v"
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_ge have ge: "poly_ge p (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p)" (is "poly_ge p ?p1") unfolding check_poly_weak_anti_mono_discrete_def by blast
-  from discrete[OF `discrete` v] obtain k' where id: "f v = ((op + 1)^^k') (g v)" by auto
+  from discrete[OF `discrete` v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   show "eval_poly g p \<ge> eval_poly f p"
   proof (cases k')
     case 0
@@ -1572,7 +1572,7 @@ proof (intro allI impI)
     thus ?thesis using ge_refl by simp
   next
     case (Suc k)
-    with id have "f v = ((op + 1)^^(Suc k))  (g v)" by simp 
+    with id have "f v = (((+) 1)^^(Suc k))  (g v)" by simp 
     with w gass show "eval_poly g p \<ge> eval_poly f p"
     proof (induct k arbitrary: f g rule: less_induct)
       case (less k)
@@ -1610,8 +1610,8 @@ proof (intro allI impI)
           hence "f w = g' w"
             unfolding g' by (simp add: less)
         } note w = this
-        have eq: "f v = (op + (1 :: 'a) ^^ Suc kk) ((g' v))"
-          by (simp add: less(4) g' Suc, rule arg_cong[where f = "op + 1"], induct kk, auto)
+        have eq: "f v = ((+) (1 :: 'a) ^^ Suc kk) ((g' v))"
+          by (simp add: less(4) g' Suc, rule arg_cong[where f = "(+) 1"], induct kk, auto)
         from Suc have kk: "kk < k" by simp
         from less(1)[OF kk w g'pos] eq
         have rec1: "eval_poly g' p \<ge> eval_poly f p" by simp
@@ -1915,13 +1915,13 @@ proof (intro allI impI)
   from gass have g: "\<And> x. g x \<ge> 0" unfolding pos_assign_def ..
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_gt have gt: "poly_gt (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_gt ?p1 p") unfolding check_poly_strict_mono_discrete_def by blast
-  from discrete[OF `discrete` gt_imp_ge[OF v]] obtain k' where id: "f v = ((op + 1)^^k') (g v)" by auto
+  from discrete[OF `discrete` gt_imp_ge[OF v]] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   {
     assume "k' = 0"
     from v[unfolded id this] have "g v \<succ> g v" by simp
     hence False using SN g[of v] unfolding SN_defs by auto
   }
-  with id obtain k where id: "f v = ((op + 1)^^(Suc k)) (g v)" by (cases k', auto)
+  with id obtain k where id: "f v = (((+) 1)^^(Suc k)) (g v)" by (cases k', auto)
   with w gass
   show "eval_poly f p \<succ> eval_poly g p"
   proof (induct k arbitrary: f g rule: less_induct)
@@ -1960,8 +1960,8 @@ proof (intro allI impI)
         hence "f w = g' w"
           unfolding g' by (simp add: less)
       } note w = this
-      have eq: "f v = (op + (1 :: 'a) ^^ Suc kk) ((g' v))"
-        by (simp add: less(4) g' Suc, rule arg_cong[where f = "op + 1"], induct kk, auto)
+      have eq: "f v = ((+) (1 :: 'a) ^^ Suc kk) ((g' v))"
+        by (simp add: less(4) g' Suc, rule arg_cong[where f = "(+) 1"], induct kk, auto)
       from Suc have kk: "kk < k" by simp
       from less(1)[OF kk w g'pos] eq
       have rec1: "eval_poly f p \<succ> eval_poly g' p" by simp

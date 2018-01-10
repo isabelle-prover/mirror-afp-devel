@@ -183,7 +183,7 @@ lemma continuation_generat_lub:
 by(simp add: generat_lub_def)
 
 lemma generat_lub_map [simp]:
-  "generat_lub lub1 lub2 lub3 (map_generat f g h ` A) = generat_lub (lub1 \<circ> op ` f) (lub2 \<circ> op ` g) (lub3 \<circ> op ` h) A"
+  "generat_lub lub1 lub2 lub3 (map_generat f g h ` A) = generat_lub (lub1 \<circ> (`) f) (lub2 \<circ> (`) g) (lub3 \<circ> (`) h) A"
 by(auto 4 3 simp add: generat_lub_def intro: arg_cong[where f=lub1] arg_cong[where f=lub2] arg_cong[where f=lub3] rev_image_eqI del: ext intro!: ext)
 
 lemma map_generat_lub [simp]:

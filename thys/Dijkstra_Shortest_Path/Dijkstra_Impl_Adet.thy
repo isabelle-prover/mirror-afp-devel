@@ -79,12 +79,12 @@ definition "infty_eq eq v1 v2 \<equiv>
   | _ \<Rightarrow> False"
 
 lemma infty_eq_autoref[autoref_rules (overloaded)]:
-  "\<lbrakk> GEN_OP eq op= (R\<rightarrow>R\<rightarrow>bool_rel) \<rbrakk> 
-  \<Longrightarrow> (infty_eq eq,op=)\<in>\<langle>R\<rangle>infty_rel\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>bool_rel"
+  "\<lbrakk> GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>bool_rel) \<rbrakk> 
+  \<Longrightarrow> (infty_eq eq,(=))\<in>\<langle>R\<rangle>infty_rel\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>bool_rel"
   unfolding infty_eq_def[abs_def]
   by (auto split: infty.splits dest: fun_relD elim!: infty_relE)
 
-lemma infty_eq_expand[autoref_struct_expand]: "op = = infty_eq op="
+lemma infty_eq_expand[autoref_struct_expand]: "(=) = infty_eq (=)"
   by (auto intro!: ext simp: infty_eq_def split: infty.splits)
 
 context begin interpretation autoref_syn .
@@ -104,14 +104,14 @@ lemma infty_plus_param[param]:
   unfolding infty_plus_def[abs_def]
   by parametricity
 
-lemma infty_plus_eq_plus: "infty_plus op+ = op+"
+lemma infty_plus_eq_plus: "infty_plus (+) = (+)"
   unfolding infty_plus_def[abs_def] 
   by (auto intro!: ext split: infty.split)
   
 
 lemma infty_plus_autoref[autoref_rules]:
-  "GEN_OP pl op+ (R\<rightarrow>R\<rightarrow>R) 
-  \<Longrightarrow> (infty_plus pl,op+) \<in> \<langle>R\<rangle>infty_rel \<rightarrow> \<langle>R\<rangle>infty_rel \<rightarrow> \<langle>R\<rangle>infty_rel"
+  "GEN_OP pl (+) (R\<rightarrow>R\<rightarrow>R) 
+  \<Longrightarrow> (infty_plus pl,(+)) \<in> \<langle>R\<rangle>infty_rel \<rightarrow> \<langle>R\<rangle>infty_rel \<rightarrow> \<langle>R\<rangle>infty_rel"
   apply (fold infty_plus_eq_plus)
   apply simp
   apply parametricity
@@ -261,9 +261,9 @@ begin
   
   lemma weight_plus_autoref[autoref_rules]: 
     "(0,0) \<in> w_rel"
-    "(op+,op+) \<in> w_rel \<rightarrow> w_rel \<rightarrow> w_rel" 
-    "(op+,op+) \<in> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel" 
-    "(op<,op<) \<in> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel \<rightarrow> bool_rel" 
+    "((+),(+)) \<in> w_rel \<rightarrow> w_rel \<rightarrow> w_rel" 
+    "((+),(+)) \<in> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel" 
+    "((<),(<)) \<in> \<langle>w_rel\<rangle>infty_rel \<rightarrow> \<langle>w_rel\<rangle>infty_rel \<rightarrow> bool_rel" 
     by simp_all
 
   lemma [autoref_rules]: "(g,ga)\<in>\<langle>v_rel,w_rel\<rangle>g.rel" using ga_trans

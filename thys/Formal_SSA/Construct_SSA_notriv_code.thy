@@ -265,7 +265,7 @@ begin
     finally show ?thesis ..
   qed
 
-  lemma uses_transfer [transfer_rule]: "(rel_fun op = (pcr_mapping op = op =)) (\<lambda>g n. Mapping.lookup (uses g) n) uses"
+  lemma uses_transfer [transfer_rule]: "(rel_fun (=) (pcr_mapping (=) (=))) (\<lambda>g n. Mapping.lookup (uses g) n) uses"
     by (auto simp: mapping.pcr_cr_eq cr_mapping_def Mapping.lookup.rep_eq)
 
   lemma uses'_codem_correct:
@@ -288,10 +288,10 @@ begin
   lemma step_ign[simp]: "uninst_code.step_codem (const u) (const p) g = uninst_code.step_codem (u_g g u) (phis(g:=p)) g"
   by (rule ext)+ (simp add: uninst_code.step_codem_def Let_def)
 
-  lemma cN_transfer [transfer_rule]: "(rel_fun op = (rel_fun (pcr_mapping op = op =) op =)) cN chooseNext_all"
+  lemma cN_transfer [transfer_rule]: "(rel_fun (=) (rel_fun (pcr_mapping (=) (=)) (=))) cN chooseNext_all"
     by (auto simp: rel_fun_def mapping.pcr_cr_eq cr_mapping_def mapping.rep_inverse)
 
-  lemma usesOf_transfer [transfer_rule]: "(rel_fun (pcr_mapping op = op =) op =) (\<lambda>m x. case_option {} id (m x))  usesOf"
+  lemma usesOf_transfer [transfer_rule]: "(rel_fun (pcr_mapping (=) (=)) (=)) (\<lambda>m x. case_option {} id (m x))  usesOf"
     by (auto simp: rel_fun_def mapping.pcr_cr_eq cr_mapping_def Mapping.lookup.rep_eq)
 
   lemma dom_phis'_codem:

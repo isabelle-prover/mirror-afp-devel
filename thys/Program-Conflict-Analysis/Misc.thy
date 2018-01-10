@@ -47,10 +47,10 @@ lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
 subsection {* Abbreviations for list order *}
 
 abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<preceq>" 50) where
-  "op \<preceq> \<equiv> op \<le>"
+  "(\<preceq>) \<equiv> (\<le>)"
 
 abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<prec>" 50) where
-  "op \<prec> \<equiv> op <"
+  "(\<prec>) \<equiv> (<)"
 
 
 subsection {* Sets *}
@@ -509,10 +509,10 @@ next
   finally show ?case .
 qed
 
-lemmas foldl_conc_empty_eq = foldl_A1_eq[of "op @" "[]", simplified]
-lemmas foldl_un_empty_eq = foldl_A1_eq[of "op \<union>" "{}", simplified, OF Un_assoc[symmetric]]
+lemmas foldl_conc_empty_eq = foldl_A1_eq[of "(@)" "[]", simplified]
+lemmas foldl_un_empty_eq = foldl_A1_eq[of "(\<union>)" "{}", simplified, OF Un_assoc[symmetric]]
 
-lemma foldl_set: "foldl (op \<union>) {} l = \<Union>{x. x\<in>set l}"
+lemma foldl_set: "foldl (\<union>) {} l = \<Union>{x. x\<in>set l}"
   apply (induct l)
   apply simp_all
   apply (subst foldl_un_empty_eq)

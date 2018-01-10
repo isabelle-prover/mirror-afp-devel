@@ -407,7 +407,7 @@ ML {*
         fn ctxt => fn thm => fn ct => let
           val rthm = Conv.rewr_conv thm ct
           val _ = Pretty.block [
-            Pretty.str "Trying op-pat:", Pretty.brk 1, 
+            Pretty.str "Trying (-pat:)", Pretty.brk 1, 
             pretty_rewrite ctxt thm rthm
           ] |> Pretty.string_of |> tracing
         in

@@ -99,7 +99,7 @@ proof -
   then have "sparse_mult xs y = (\<Sum>x\<in>set xs. snd x * y !! fst x)"
     by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x) * y !! fst x)"
-    by (intro sum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
+    by (intro sum.cong refl arg_cong2[where f="( * )"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x * y !! x)"
     using `inj_on fst (set xs)` by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x * y !! x)"
@@ -119,7 +119,7 @@ proof -
   then have "sum_list (map snd xs) = (\<Sum>x\<in>set xs. snd x)"
     by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x))"
-    by (intro sum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
+    by (intro sum.cong refl arg_cong2[where f="( * )"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x)"
     using `inj_on fst (set xs)` by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x)"
@@ -153,13 +153,13 @@ definition
 
 definition
   "valid_pos_cert mdp c \<longleftrightarrow>
-    valid_sub_cert mdp c (op \<le>)
+    valid_sub_cert mdp c (\<le>)
       (\<lambda>D ((j, a), n). j < state_count mdp \<and> snd (witness c !! j) < n \<and> 0 < solution c !! j \<and>
         a < length D \<and> lookup 0 (D ! a) j \<noteq> 0)"
 
 definition
   "valid_neg_cert mdp c \<longleftrightarrow>
-    valid_sub_cert mdp c (op \<ge>)
+    valid_sub_cert mdp c (\<ge>)
       (\<lambda>D (J, n). list_all2 (\<lambda>j d. j < state_count mdp \<and> snd (witness c !! j) < n \<and>
         lookup 0 d j \<noteq> 0 \<and> 0 < solution c !! j) J D)"
 

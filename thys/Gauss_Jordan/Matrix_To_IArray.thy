@@ -88,7 +88,7 @@ lemma length_vec_to_iarray:
 subsubsection{*Isomorphism between matrix and nested iarrays*}
 
 definition matrix_to_iarray :: "'a^'n::{mod_type}^'m::{mod_type} => 'a iarray iarray"
-  where "matrix_to_iarray A = IArray (map (vec_to_iarray \<circ> (op $ A) \<circ> (from_nat::nat=>'m)) [0..<CARD('m)])"
+  where "matrix_to_iarray A = IArray (map (vec_to_iarray \<circ> (($) A) \<circ> (from_nat::nat=>'m)) [0..<CARD('m)])"
 
 definition iarray_to_matrix :: "'a iarray iarray \<Rightarrow> 'a^'n::{mod_type}^'m::{mod_type}"
   where "iarray_to_matrix A = (\<chi> i j. A !! (to_nat i) !! (to_nat j))"

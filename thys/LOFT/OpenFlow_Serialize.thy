@@ -11,7 +11,7 @@ definition "serialization_test_entry \<equiv> OFEntry 7 {EtherDst 0x1, IPv4Dst (
 
 
 
-value "(map (op << (1::48 word) \<circ> op * 8) \<circ> rev) [0..<6]"
+value "(map ((<<) (1::48 word) \<circ> ( * ) 8) \<circ> rev) [0..<6]"
 
 definition "serialize_mac (m::48 word) \<equiv> (intersperse (CHR '':'') \<circ> map (hex_string_of_word 1 \<circ> (\<lambda>h. (m >> h * 8) && 0xff)) \<circ> rev) [0..<6]"
 lemma "serialize_mac 0xdeadbeefcafe = ''de:ad:be:ef:ca:fe''" by eval
@@ -44,7 +44,7 @@ primrec serialize_of_match where
 
 definition serialize_of_matches :: "(string \<Rightarrow> string) \<Rightarrow> of_match_field set \<Rightarrow> string"
   where
-  "serialize_of_matches pids \<equiv> op @ ''hard_timeout=0,idle_timeout=0,'' \<circ> intersperse (CHR '','') \<circ> map (serialize_of_match pids) \<circ> sorted_list_of_set" 
+  "serialize_of_matches pids \<equiv> (@) ''hard_timeout=0,idle_timeout=0,'' \<circ> intersperse (CHR '','') \<circ> map (serialize_of_match pids) \<circ> sorted_list_of_set" 
 
 lemma "serialize_of_matches pids of_matches= 
 (List.append ''hard_timeout=0,idle_timeout=0,'') 

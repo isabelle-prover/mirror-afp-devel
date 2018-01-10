@@ -24,7 +24,7 @@ ML {*
       type T = (int * string * (theory -> thm -> thm)) list
       val empty = []
       val extend = I
-      val merge = op @ #> do_sort #> distinct (op = o apply2 #2)
+      val merge = (@) #> do_sort #> distinct ((=) o apply2 #2)
     );
 
     val get = Data.get

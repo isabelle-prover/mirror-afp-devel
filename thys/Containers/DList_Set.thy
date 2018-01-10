@@ -58,32 +58,32 @@ lemmas [simp] =
   equal_base.list_remdups.simps
 
 lemma list_member_conv_member [simp]: 
-  "equal_base.list_member op = = List.member"
+  "equal_base.list_member (=) = List.member"
 proof(intro ext)
   fix xs and x :: 'a
-  show "equal_base.list_member op = xs x = List.member xs x"
+  show "equal_base.list_member (=) xs x = List.member xs x"
     by(induct xs)(auto simp add: List.member_def)
 qed
 
 lemma list_distinct_conv_distinct [simp]:
-  "equal_base.list_distinct op = = List.distinct"
+  "equal_base.list_distinct (=) = List.distinct"
 proof
   fix xs :: "'a list"
-  show "equal_base.list_distinct op = xs = distinct xs"
+  show "equal_base.list_distinct (=) xs = distinct xs"
     by(induct xs)(auto simp add: List.member_def)
 qed
 
 lemma list_insert_conv_insert [simp]:
-  "equal_base.list_insert op = = List.insert"
+  "equal_base.list_insert (=) = List.insert"
 unfolding equal_base.list_insert_def[abs_def] List.insert_def[abs_def]
 by(simp add: List.member_def)
 
 lemma list_remove1_conv_remove1 [simp]:
-  "equal_base.list_remove1 op = = List.remove1"
+  "equal_base.list_remove1 (=) = List.remove1"
 unfolding equal_base.list_remove1_def List.remove1_def ..
 
 lemma list_remdups_conv_remdups [simp]:
-  "equal_base.list_remdups op = = List.remdups"
+  "equal_base.list_remdups (=) = List.remdups"
 unfolding equal_base.list_remdups_def List.remdups_def list_member_conv_member List.member_def ..
 
 context equal begin
@@ -195,13 +195,13 @@ proof -
     "equal_base.list_distinct ceq' ys \<or> ID CEQ('b) = None"
   let ?product = "concat (map (\<lambda>x. map (Pair x) ys) xs)"
   { assume neq: "ID CEQ('a) \<noteq> None" "ID CEQ('b) \<noteq> None"
-    hence ceq': "ceq' = (op = :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "ceq' = (op = :: 'b \<Rightarrow> 'b \<Rightarrow> bool)"
+    hence ceq': "ceq' = ((=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "ceq' = ((=) :: 'b \<Rightarrow> 'b \<Rightarrow> bool)"
       by(auto intro: equal.equal_eq[OF ID_ceq])
     with * neq have dist: "distinct xs" "distinct ys" by simp_all
     hence "distinct ?product"
       by(cases "ys = []")(auto simp add: distinct_map map_replicate_const intro!: inj_onI distinct_concat)
     hence "distinct (rev ?product)" by simp
-    moreover have "ceq' = (op = :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
+    moreover have "ceq' = ((=) :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
       using neq ceq' by (auto simp add: ceq_prod_def ID_Some fun_eq_iff list_all_eq_def)
     ultimately have "equal_base.list_distinct ceq' (rev ?product)" by simp }
   with * 
@@ -218,8 +218,8 @@ proof -
     assume ceq: "ID CEQ('a \<times> 'a) \<noteq> None"
       and xs: "equal_base.list_distinct ceq' xs"
     from ceq have "ID CEQ('a) \<noteq> None"
-      and "ceq' = (op = :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" 
-      and "ceq' = (op = :: ('a \<times> 'a) \<Rightarrow> ('a \<times> 'a) \<Rightarrow> bool)"
+      and "ceq' = ((=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" 
+      and "ceq' = ((=) :: ('a \<times> 'a) \<Rightarrow> ('a \<times> 'a) \<Rightarrow> bool)"
       by(auto simp add: equal.equal_eq[OF ID_ceq] ceq_prod_def ID_None ID_Some split: option.split_asm)
     hence "?thesis xs" using xs by(auto simp add: distinct_map intro: inj_onI) }
   thus "?thesis xs" using ceq by(auto dest: equal.equal_eq[OF ID_ceq] simp add: ceq_prod_def ID_None)
@@ -289,7 +289,7 @@ lemma equal_ceq: "equal (ceq' :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
 using ID_ceq_neq_None by(clarsimp)(rule ID_ceq)
 
 (* workaround for the next theorem *)
-declare Domainp_forall_transfer[where A = "pcr_set_dlist op=", simplified set_dlist.domain_eq, transfer_rule]
+declare Domainp_forall_transfer[where A = "pcr_set_dlist (=)", simplified set_dlist.domain_eq, transfer_rule]
 
 lemma set_dlist_induct [case_names Nil insert, induct type: set_dlist]:
   fixes dxs :: "'a :: ceq set_dlist"
@@ -316,8 +316,8 @@ begin
 
 lemma fold_transfer2 [transfer_rule]:
   assumes "is_equality A"
-  shows "((A ===> pcr_set_dlist op = ===> pcr_set_dlist op =) ===>
-    (pcr_set_dlist op = :: 'a list \<Rightarrow> 'a set_dlist \<Rightarrow> bool) ===> pcr_set_dlist op = ===> pcr_set_dlist op =)
+  shows "((A ===> pcr_set_dlist (=) ===> pcr_set_dlist (=)) ===>
+    (pcr_set_dlist (=) :: 'a list \<Rightarrow> 'a set_dlist \<Rightarrow> bool) ===> pcr_set_dlist (=) ===> pcr_set_dlist (=))
      List.fold DList_Set.fold"
 unfolding Transfer.Rel_def set_dlist.pcr_cr_eq
 proof(rule rel_funI)+
@@ -383,7 +383,7 @@ by transfer(auto simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] list_ex_
 
 lemma member_Id_on: "member (Id_on dxs) = (\<lambda>(x :: 'a, y). x = y \<and> member dxs x)"
 proof -
-  have "ID CEQ('a \<times> 'a) = Some op ="
+  have "ID CEQ('a \<times> 'a) = Some (=)"
     using equal.equal_eq[where ?'a='a, OF equal_ceq]
     by(auto simp add: ceq_prod_def list_all_eq_def ID_ceq_neq_None ID_Some fun_eq_iff split: option.split)
   thus ?thesis
@@ -397,9 +397,9 @@ lemma product_member:
   assumes "ID CEQ('a :: ceq) \<noteq> None" "ID CEQ('b :: ceq) \<noteq> None"
   shows "member (product dxs1 dxs2) = (\<lambda>(a :: 'a, b :: 'b). member dxs1 a \<and> member dxs2 b)"
 proof -
-  from assms have "ceq' = (op = :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "ceq' = (op = :: 'b \<Rightarrow> 'b \<Rightarrow> bool)"
+  from assms have "ceq' = ((=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "ceq' = ((=) :: 'b \<Rightarrow> 'b \<Rightarrow> bool)"
     by(auto intro: equal.equal_eq[OF ID_ceq])
-  moreover with assms have "ceq' = (op = :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
+  moreover with assms have "ceq' = ((=) :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
     by(auto simp add: ceq_prod_def list_all_eq_def ID_Some fun_eq_iff)
   ultimately show ?thesis by(transfer)(auto simp add: List.member_def[abs_def])
 qed

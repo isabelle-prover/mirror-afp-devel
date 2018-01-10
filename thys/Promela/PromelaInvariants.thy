@@ -12,7 +12,7 @@ those invariants are tailored towards proving the finitness of the generated sta
 (*<*)
 (*subsection {* Auxiliary lemmas *}*)
 lemma foldli_set:
-  "set (foldli list (\<lambda>_. True) op # xs) = set xs \<union> set list"
+  "set (foldli list (\<lambda>_. True) (#) xs) = set xs \<union> set list"
   by (induct list arbitrary: xs) simp_all
 
 lemma foldli_conj:

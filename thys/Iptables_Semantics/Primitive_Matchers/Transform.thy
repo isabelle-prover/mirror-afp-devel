@@ -205,12 +205,12 @@ lemma approximating_bigstep_fun_remdups_rev:
         next
         case True
         { fix rs s
-          have "approximating_bigstep_fun \<gamma> p (filter (op \<noteq> (Rule m Log)) rs) s = approximating_bigstep_fun \<gamma> p rs s"
+          have "approximating_bigstep_fun \<gamma> p (filter ((\<noteq>) (Rule m Log)) rs) s = approximating_bigstep_fun \<gamma> p rs s"
           proof(induction \<gamma> p rs s rule: approximating_bigstep_fun_induct)
           qed(auto simp add: Decision_approximating_bigstep_fun split: action.split)
         } note helper_Log=this
         { fix rs s
-          have "approximating_bigstep_fun \<gamma> p (filter (op \<noteq> (Rule m Empty)) rs) s = approximating_bigstep_fun \<gamma> p rs s"
+          have "approximating_bigstep_fun \<gamma> p (filter ((\<noteq>) (Rule m Empty)) rs) s = approximating_bigstep_fun \<gamma> p rs s"
           proof(induction \<gamma> p rs s rule: approximating_bigstep_fun_induct)
           qed(auto simp add: Decision_approximating_bigstep_fun split: action.split)
         } note helper_Empty=this

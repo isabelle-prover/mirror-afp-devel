@@ -97,7 +97,7 @@ proof (induct n arbitrary: f g m rule: less_induct)
     case False
     hence lhs: "?lhs = foldr (\<lambda>a p. smult a (poly_of_list f) + pCons 0 p) g 0" by simp
     have rhs: "?rhs = poly_of_list g * poly_of_list f" by simp 
-    also have "\<dots> = foldr (\<lambda>a p. smult a (poly_of_list f) + pCons 0 p) (strip_while (op = 0) g) 0" 
+    also have "\<dots> = foldr (\<lambda>a p. smult a (poly_of_list f) + pCons 0 p) (strip_while ((=) 0) g) 0" 
       unfolding times_poly_def fold_coeffs_def poly_of_list_impl ..
     also have "\<dots> = ?lhs" unfolding lhs 
     proof (induct g)
@@ -171,7 +171,7 @@ proof -
   qed
 qed
 
-lemma karatsuba_mult_poly_code_unfold[code_unfold]: "op * = karatsuba_mult_poly" 
+lemma karatsuba_mult_poly_code_unfold[code_unfold]: "( * ) = karatsuba_mult_poly" 
   by (intro ext, unfold karatsuba_mult_poly, auto)
 
 text \<open>The following declaration will resolve a race-conflict between @{thm karatsuba_mult_poly_code_unfold}

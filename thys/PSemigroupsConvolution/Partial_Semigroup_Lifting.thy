@@ -125,7 +125,7 @@ instance "fun" :: (pam, bool_ab_quantale) bool_ab_quantale ..
 
 instance "fun" :: (pam, bool_ab_unital_quantale) bool_ab_unital_quantale ..
 
-sublocale ab_quantale < abq: pas "op *" "\<lambda>_ _. True"
+sublocale ab_quantale < abq: pas "( * )" "\<lambda>_ _. True"
   apply standard
   apply (simp_all add: mult_assoc)
   by (simp add: mult_commute)

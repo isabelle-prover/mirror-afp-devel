@@ -267,7 +267,7 @@ lemma finite_nList[intro]:
 proof(induct n)
 case 0 thus ?case by (simp add:nList_def) next
 case (Suc n) hence finn: "finite (nList (A) n)" by simp
-  have "nList A (Suc n) = (case_prod op #) ` (A \<times> nList A n)" (is "?lhs = ?rhs")
+  have "nList A (Suc n) = (case_prod (#)) ` (A \<times> nList A n)" (is "?lhs = ?rhs")
   proof(rule subset_antisym[OF subsetI subsetI])
   fix l assume "l \<in> ?lhs" thus "l \<in> ?rhs"
     by (cases l, auto simp add:nList_def)

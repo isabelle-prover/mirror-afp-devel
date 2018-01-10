@@ -115,7 +115,7 @@ lemma
                 a \<leftarrow> assert_spmf (valid_plain msg1 \<and> valid_plain msg2);
                 z \<leftarrow> map_spmf f (sample_uniform (order \<G>));
                 guess \<leftarrow> \<A>2 (f xa, z) \<sigma>;
-                map_spmf (op \<longleftrightarrow> guess) coin_spmf
+                map_spmf ((\<longleftrightarrow>) guess) coin_spmf
               })
          xb
     }"

@@ -28,7 +28,7 @@ subsubsection {* Additions for Injectivity Proofs *}
 lemma inj_on_impl_inj_on_image:
   assumes "inj_on f A"
   assumes "\<And>x. x \<in> X \<Longrightarrow> x \<subseteq> A"
-  shows "inj_on (op ` f) X"
+  shows "inj_on ((`) f) X"
 using assms by (meson inj_onI inj_on_image_eq_iff)
 
 lemma injectivity_union:
@@ -164,12 +164,12 @@ proof -
     using bij_betw_imp_surj_on by blast
   have "\<forall>x \<in> {P. partition_on {0..<card A} P}. x \<subseteq> Pow {0..<card A}"
     by (auto elim: partition_onE)
-  from this inj have "inj_on (op ` (op ` f)) {P. partition_on {0..<card A} P}"
+  from this inj have "inj_on ((`) ((`) f)) {P. partition_on {0..<card A} P}"
     by (intro inj_on_impl_inj_on_image[of _ "Pow {0..<card A}"]
      inj_on_impl_inj_on_image[of _ "{0..<card A}"]) blast+
-  moreover from inj have "op ` (op ` f) ` {P. partition_on {0..<card A} P} = {P. partition_on A P}"
+  moreover from inj have "(`) ((`) f) ` {P. partition_on {0..<card A} P} = {P. partition_on A P}"
     by (subst image_f_eq, auto elim!: set_of_partition_on_map)
-  ultimately have "bij_betw (op ` (op ` f)) {P. partition_on {0..<card A} P} {P. partition_on A P}"
+  ultimately have "bij_betw ((`) ((`) f)) {P. partition_on {0..<card A} P} {P. partition_on A P}"
     by (auto intro: bij_betw_imageI)
   from this \<open>finite A\<close> show ?thesis
     unfolding Bell_def

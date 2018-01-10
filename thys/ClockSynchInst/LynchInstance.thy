@@ -78,7 +78,7 @@ reduce}\footnote{The name of this function was taken from
 \cite{lynch_cs}.}. This take a function of clock readings and a set of
 processes and return de set of readings of the not dicarded
 processes. In order to define this function we use the image operator
-(@{term "op `"}) of Isabelle.*}
+(@{term "(`)"}) of Isabelle.*}
 
 definition
 reduce :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> Clocktime set" where

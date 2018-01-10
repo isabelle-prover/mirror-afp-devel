@@ -13,7 +13,7 @@ lemma exec_gpv_oracle_bisim':
   assumes *: "X s1 s2"
   and bisim: "\<And>s1 s2 x. X s1 s2 \<Longrightarrow> rel_spmf (\<lambda>(a, s1') (b, s2'). a = b \<and> X s1' s2') (oracle1 s1 x) (oracle2 s2 x)"
   shows "rel_spmf (\<lambda>(a, s1') (b, s2'). a = b \<and> X s1' s2') (exec_gpv oracle1 gpv s1) (exec_gpv oracle2 gpv s2)"
-by(rule exec_gpv_parametric[of X "op =" "op =", unfolded gpv.rel_eq rel_prod_conv, THEN rel_funD, THEN rel_funD, THEN rel_funD, OF rel_funI refl, OF rel_funI *])(simp add: bisim)
+by(rule exec_gpv_parametric[of X "(=)" "(=)", unfolded gpv.rel_eq rel_prod_conv, THEN rel_funD, THEN rel_funD, THEN rel_funD, OF rel_funI refl, OF rel_funI *])(simp add: bisim)
 
 lemma exec_gpv_oracle_bisim:
   assumes *: "X s1 s2"
@@ -51,7 +51,7 @@ where
        else exec_until_bad (f x) s1' s2')))"
 
 lemma exec_until_bad_fixp_induct [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>f. P (\<lambda>gpv s1 s2. f ((gpv, s1), s2)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>f. P (\<lambda>gpv s1 s2. f ((gpv, s1), s2)))"
   and "P (\<lambda>_ _ _. return_pmf None)"
   and "\<And>exec_until_bad'. P exec_until_bad' \<Longrightarrow> 
      P (\<lambda>gpv s1 s2. if bad1 s1 \<or> bad2 s2 then pair_spmf (exec_gpv oracle1 gpv s1) (exec_gpv oracle2 gpv s2)
@@ -105,7 +105,7 @@ proof -
   proof
     show "map_spmf fst ?pq = exec_gpv oracle1 gpv s1"
     proof(rule spmf.leq_antisym)
-      show "ord_spmf op = (map_spmf fst ?pq) (exec_gpv oracle1 gpv s1)" using * bad WT_gpv lossless
+      show "ord_spmf (=) (map_spmf fst ?pq) (exec_gpv oracle1 gpv s1)" using * bad WT_gpv lossless
       proof(induction arbitrary: s1 s2 gpv rule: exec_until_bad_fixp_induct)
         case adm show ?case by simp
         case bottom show ?case by simp
@@ -134,7 +134,7 @@ proof -
             have *: "plossless_gpv \<I> (c r2)" using step.prems(4) IO r2 step.prems(3)
               by(rule plossless_gpv_ContD)
             then have "bad2 s2' \<Longrightarrow> weight_spmf (exec_gpv oracle2 (c r2) s2') = 1"
-              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf op = (map_spmf fst (exec_until_bad' (c r2) s1' s2')) (exec_gpv oracle1 (c r2) s1')"
+              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf (=) (map_spmf fst (exec_until_bad' (c r2) s1' s2')) (exec_gpv oracle1 (c r2) s1')"
               using callee_invariant_on.weight_exec_gpv[OF bad_sticky2 lossless2, of s1' "c r2" s2'] 
                 weight_spmf_le_1[of "exec_gpv oracle2 (c r2) s2'"] WT_gpv_ContD[OF step.prems(3) IO r2]
                 3[OF joint _ out] step.prems(1) False
@@ -144,7 +144,7 @@ proof -
               (fastforce simp add: split_def bind_map_spmf map_spmf_bind_spmf oracle1 WT_gpv_OutD[OF step.prems(3)] intro!: ord_spmf_bind_reflI split!: generat.split dest: 3)
         qed
       qed
-      show "ord_spmf op = (exec_gpv oracle1 gpv s1) (map_spmf fst ?pq)" using * bad WT_gpv lossless
+      show "ord_spmf (=) (exec_gpv oracle1 gpv s1) (map_spmf fst ?pq)" using * bad WT_gpv lossless
       proof(induction arbitrary: gpv s1 s2 rule: exec_gpv_fixp_induct_strong)
         case adm show ?case by simp
         case bottom show ?case by simp
@@ -175,7 +175,7 @@ proof -
             have *: "plossless_gpv \<I> (c r2)" using step.prems(4) IO r2 step.prems(3)
               by(rule plossless_gpv_ContD)
             then have "bad2 s2' \<Longrightarrow> weight_spmf (exec_gpv oracle2 (c r2) s2') = 1" 
-              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf op = (exec_gpv' (c r2) s1') (map_spmf fst (exec_until_bad (\<lambda>(x, y). joint_oracle x y) oracle1 bad1 oracle2 bad2 (c r2) s1' s2'))"
+              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf (=) (exec_gpv' (c r2) s1') (map_spmf fst (exec_until_bad (\<lambda>(x, y). joint_oracle x y) oracle1 bad1 oracle2 bad2 (c r2) s1' s2'))"
               using callee_invariant_on.weight_exec_gpv[OF bad_sticky2 lossless2, of s1' "c r2" s2'] 
                 weight_spmf_le_1[of "exec_gpv oracle2 (c r2) s2'"] WT_gpv_ContD[OF step.prems(3) IO r2]
                 3[OF joint _ out] step.prems(1) False
@@ -189,7 +189,7 @@ proof -
 
     show "map_spmf snd ?pq = exec_gpv oracle2 gpv s2"
     proof(rule spmf.leq_antisym)
-      show "ord_spmf op = (map_spmf snd ?pq) (exec_gpv oracle2 gpv s2)" using * bad WT_gpv lossless
+      show "ord_spmf (=) (map_spmf snd ?pq) (exec_gpv oracle2 gpv s2)" using * bad WT_gpv lossless
       proof(induction arbitrary: s1 s2 gpv rule: exec_until_bad_fixp_induct)
         case adm show ?case by simp
         case bottom show ?case by simp
@@ -218,7 +218,7 @@ proof -
             have *: "plossless_gpv \<I> (c r1)" using step.prems(4) IO r1 step.prems(3)
               by(rule plossless_gpv_ContD)
             then have "bad2 s2' \<Longrightarrow> weight_spmf (exec_gpv oracle1 (c r1) s1') = 1"
-              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf op = (map_spmf snd (exec_until_bad' (c r2) s1' s2')) (exec_gpv oracle2 (c r2) s2')"
+              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf (=) (map_spmf snd (exec_until_bad' (c r2) s1' s2')) (exec_gpv oracle2 (c r2) s2')"
               using callee_invariant_on.weight_exec_gpv[OF bad_sticky1 lossless1, of s2' "c r1" s1'] 
                 weight_spmf_le_1[of "exec_gpv oracle1 (c r1) s1'"] WT_gpv_ContD[OF step.prems(3) IO r1]
                 3[OF joint _ out] step.prems(1) False
@@ -228,7 +228,7 @@ proof -
               (fastforce simp add: split_def bind_map_spmf map_spmf_bind_spmf oracle2 WT_gpv_OutD[OF step.prems(3)] intro!: ord_spmf_bind_reflI split!: generat.split dest: 3)
         qed
       qed
-      show "ord_spmf op = (exec_gpv oracle2 gpv s2) (map_spmf snd ?pq)" using * bad WT_gpv lossless
+      show "ord_spmf (=) (exec_gpv oracle2 gpv s2) (map_spmf snd ?pq)" using * bad WT_gpv lossless
       proof(induction arbitrary: gpv s1 s2 rule: exec_gpv_fixp_induct_strong)
         case adm show ?case by simp
         case bottom show ?case by simp
@@ -259,7 +259,7 @@ proof -
             have *: "plossless_gpv \<I> (c r1)" using step.prems(4) IO r1 step.prems(3)
               by(rule plossless_gpv_ContD)
             then have "bad2 s2' \<Longrightarrow> weight_spmf (exec_gpv oracle1 (c r1) s1') = 1" 
-              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf op = (exec_gpv' (c r2) s2') (map_spmf snd (exec_until_bad (\<lambda>(x, y). joint_oracle x y) oracle1 bad1 oracle2 bad2 (c r2) s1' s2'))"
+              and "\<not> bad2 s2' \<Longrightarrow> ord_spmf (=) (exec_gpv' (c r2) s2') (map_spmf snd (exec_until_bad (\<lambda>(x, y). joint_oracle x y) oracle1 bad1 oracle2 bad2 (c r2) s1' s2'))"
               using callee_invariant_on.weight_exec_gpv[OF bad_sticky1 lossless1, of s2' "c r1" s1'] 
                 weight_spmf_le_1[of "exec_gpv oracle1 (c r1) s1'"] WT_gpv_ContD[OF step.prems(3) IO r1]
                 3[OF joint _ out] step.prems(1) False
@@ -374,10 +374,10 @@ proof -
     let ?C = "eq_onp (\<lambda>out. out \<in> outs_\<I> \<I>)"
 
     define oracle1' where "oracle1' \<equiv> (Rep1 ---> id ---> map_spmf (map_prod id Abs1)) oracle1"
-    have [transfer_rule]: "(cr1 ===> ?C ===> rel_spmf (rel_prod op = cr1)) oracle1 oracle1'"
+    have [transfer_rule]: "(cr1 ===> ?C ===> rel_spmf (rel_prod (=) cr1)) oracle1 oracle1'"
       by(auto simp add: oracle1'_def rel_fun_def cr1_def spmf_rel_map prod.rel_map td1.Abs_inverse eq_onp_def intro!: rel_spmf_reflI intro: td1.Rep[simplified] dest: I1.callee_invariant)
     define oracle2' where "oracle2' \<equiv> (Rep2 ---> id ---> map_spmf (map_prod id Abs2)) oracle2"
-    have [transfer_rule]: "(cr2 ===> ?C ===> rel_spmf (rel_prod op = cr2)) oracle2 oracle2'"
+    have [transfer_rule]: "(cr2 ===> ?C ===> rel_spmf (rel_prod (=) cr2)) oracle2 oracle2'"
       by(auto simp add: oracle2'_def rel_fun_def cr2_def spmf_rel_map prod.rel_map td2.Abs_inverse eq_onp_def intro!: rel_spmf_reflI intro: td2.Rep[simplified] dest: I2.callee_invariant)
 
     define s1' where "s1' \<equiv> Abs1 s1"
@@ -386,17 +386,17 @@ proof -
     have [transfer_rule]: "cr2 s2 s2'" using s2 by(simp add: cr2_def s2'_def td2.Abs_inverse)
 
     define bad1' where "bad1' \<equiv> (Rep1 ---> id) bad1"
-    have [transfer_rule]: "(cr1 ===> op =) bad1 bad1'" by(simp add: rel_fun_def bad1'_def cr1_def)
+    have [transfer_rule]: "(cr1 ===> (=)) bad1 bad1'" by(simp add: rel_fun_def bad1'_def cr1_def)
     define bad2' where "bad2' \<equiv> (Rep2 ---> id) bad2"
-    have [transfer_rule]: "(cr2 ===> op =) bad2 bad2'" by(simp add: rel_fun_def bad2'_def cr2_def)
+    have [transfer_rule]: "(cr2 ===> (=)) bad2 bad2'" by(simp add: rel_fun_def bad2'_def cr2_def)
 
     define X' where "X' \<equiv> (Rep1 ---> Rep2 ---> id) X"
-    have [transfer_rule]: "(cr1 ===> cr2 ===> op =) X X'" by(simp add: rel_fun_def X'_def cr1_def cr2_def)
+    have [transfer_rule]: "(cr1 ===> cr2 ===> (=)) X X'" by(simp add: rel_fun_def X'_def cr1_def cr2_def)
     define X_bad' where "X_bad' \<equiv> (Rep1 ---> Rep2 ---> id) X_bad"
-    have [transfer_rule]: "(cr1 ===> cr2 ===> op =) X_bad X_bad'" by(simp add: rel_fun_def X_bad'_def cr1_def cr2_def)
+    have [transfer_rule]: "(cr1 ===> cr2 ===> (=)) X_bad X_bad'" by(simp add: rel_fun_def X_bad'_def cr1_def cr2_def)
 
     define gpv' where "gpv' \<equiv> restrict_gpv \<I> gpv"
-    have [transfer_rule]: "rel_gpv op = ?C gpv' gpv'"
+    have [transfer_rule]: "rel_gpv (=) ?C gpv' gpv'"
       by(fold eq_onp_top_eq_eq)(auto simp add: gpv.rel_eq_onp eq_onp_same_args pred_gpv_def gpv'_def dest: in_outs'_restrict_gpvD)
 
     have "if bad2' s2' then X_bad' s1' s2' else X' s1' s2'" using * by transfer
@@ -405,7 +405,7 @@ proof -
     have "rel_spmf (\<lambda>(a, s1') (b, s2'). (bad1' s1' \<longleftrightarrow> bad2' s2') \<and> (if bad2' s2' then X_bad' s1' s2' else a = b \<and> X' s1' s2')) (oracle1' s1 x) (oracle2' s2 x)"
       if "X' s1 s2" and "x \<in> outs_\<I> \<I>" for s1 s2 x using that(1) supply that(2)[THEN x, transfer_rule]
       by(transfer)(rule bisim[OF _ that(2)])
-    moreover have [transfer_rule]: "rel_\<I> ?C op = \<I> \<I>" by(rule rel_\<I>I)(auto simp add: set_relator_eq_onp eq_onp_same_args rel_set_eq dest: eq_onp_to_eq)
+    moreover have [transfer_rule]: "rel_\<I> ?C (=) \<I> \<I>" by(rule rel_\<I>I)(auto simp add: set_relator_eq_onp eq_onp_same_args rel_set_eq dest: eq_onp_to_eq)
     have "callee_invariant_on oracle1' (\<lambda>s1. bad1' s1 \<and> X_bad' s1 s2) \<I>" if "bad2' s2" for s2
       using that unfolding callee_invariant_on_alt_def apply(transfer)
       using bad_sticky1[unfolded callee_invariant_on_alt_def] by blast
@@ -422,8 +422,8 @@ proof -
     moreover have "\<I> \<turnstile>g gpv' \<surd>" by(simp add: gpv'_def)
     ultimately have **: "rel_spmf (\<lambda>(a, s1') (b, s2'). bad1' s1' = bad2' s2' \<and> (if bad2' s2' then X_bad' s1' s2' else a = b \<and> X' s1' s2')) (exec_gpv oracle1' gpv' s1') (exec_gpv oracle2' gpv' s2')"
       by(rule exec_gpv_oracle_bisim_bad')
-    have [transfer_rule]: "(op = ===> ?C ===> rel_spmf (rel_prod op = op =)) oracle2 oracle2"
-      "(op = ===> ?C ===> rel_spmf (rel_prod op = op =)) oracle1 oracle1"
+    have [transfer_rule]: "((=) ===> ?C ===> rel_spmf (rel_prod (=) (=))) oracle2 oracle2"
+      "((=) ===> ?C ===> rel_spmf (rel_prod (=) (=))) oracle1 oracle1"
       by(simp_all add: rel_fun_def eq_onp_def prod.rel_eq)
     note [transfer_rule] = bi_unique_eq_onp bi_unique_eq
     from ** have "rel_spmf (\<lambda>(a, s1') (b, s2'). bad1 s1' = bad2 s2' \<and> (if bad2 s2' then X_bad s1' s2' else a = b \<and> X s1' s2')) (exec_gpv oracle1 gpv' s1) (exec_gpv oracle2 gpv' s2)"
@@ -482,7 +482,7 @@ proof -
   also have "\<dots> =
     \<bar>enn2ereal (\<integral>\<^sup>+ x. indicator (A \<times> {False}) (f x, bad x) + indicator (A \<times> {True}) (f x, bad x) \<partial>measure_spmf p) -
      enn2ereal (\<integral>\<^sup>+ x. indicator (A \<times> {False}) (f x, bad x) + indicator (A \<times> {True}) (f x, bad x) \<partial>measure_spmf q)\<bar>"
-    by(intro arg_cong[where f=abs] arg_cong2[where f="op -"] arg_cong[where f=enn2ereal] nn_integral_cong)(simp_all split: split_indicator)
+    by(intro arg_cong[where f=abs] arg_cong2[where f="(-)"] arg_cong[where f=enn2ereal] nn_integral_cong)(simp_all split: split_indicator)
   also have "\<dots> = 
     \<bar>enn2ereal (emeasure (measure_spmf (map_spmf (\<lambda>x. (f x, bad x)) p)) (A \<times> {False}) + (\<integral>\<^sup>+ x. indicator (A \<times> {True}) (f x, bad x) \<partial>measure_spmf p)) -
      enn2ereal (emeasure (measure_spmf (map_spmf (\<lambda>x. (f x, bad x)) q)) (A \<times> {False}) + (\<integral>\<^sup>+ x. indicator (A \<times> {True}) (f x, bad x) \<partial>measure_spmf q))\<bar>"
@@ -528,7 +528,7 @@ proof -
   let ?X = "\<lambda>s (ss, s'). s = s'"
   let ?callee = "\<lambda>(ss, s) x. map_spmf (\<lambda>(y, s'). (y, if I s' \<and> ss = None then Some s' else ss, s')) (callee s x)"
   let ?track = "exec_gpv1 ?callee gpv (None, s)"
-  have "rel_spmf (rel_prod op = ?X) (exec_gpv callee gpv s) ?track" unfolding exec_gpv1_def
+  have "rel_spmf (rel_prod (=) ?X) (exec_gpv callee gpv s) ?track" unfolding exec_gpv1_def
     by(rule exec_gpv_oracle_bisim[where X="?X"])(auto simp add: spmf_rel_map intro!: rel_spmf_reflI)
   hence "exec_gpv callee gpv s = map_spmf (\<lambda>(a, ss, s). (a, s)) ?track"
     by(auto simp add: spmf_rel_eq[symmetric] spmf_rel_map elim: rel_spmf_mono)
@@ -546,7 +546,7 @@ proof -
     for s ss :: 's and gpv :: "('x, 'a, 'b) gpv"
   proof -
     let ?X = "\<lambda>(ss', s') s. s = s' \<and> ss' = Some ss"
-    have "rel_spmf (rel_prod op = ?X) (exec_gpv ?callee gpv (Some ss, s)) (exec_gpv callee gpv s)"
+    have "rel_spmf (rel_prod (=) ?X) (exec_gpv ?callee gpv (Some ss, s)) (exec_gpv callee gpv s)"
       by(rule exec_gpv_oracle_bisim[where X="?X"])(auto simp add: spmf_rel_map intro!: rel_spmf_reflI)
     thus ?thesis by(auto simp add: spmf_rel_eq[symmetric] spmf_rel_map elim: rel_spmf_mono)
   qed
@@ -554,7 +554,7 @@ proof -
     for s :: 's and r :: 'r and gpv :: "('x, 'a, 'b) gpv"
   proof -
     let ?X = "\<lambda>(r', s') s. s' = s \<and> r' = Some r"
-    have "rel_spmf (rel_prod op = ?X) (exec_gpv ?callee2 gpv (Some r, s)) (exec_gpv callee gpv s)"
+    have "rel_spmf (rel_prod (=) ?X) (exec_gpv ?callee2 gpv (Some r, s)) (exec_gpv callee gpv s)"
       by(rule exec_gpv_oracle_bisim[where X="?X"])(auto simp add: spmf_rel_map map_spmf_conv_bind_spmf[symmetric] split_def intro!: rel_spmf_reflI)
     then show ?thesis by(auto simp add: spmf_rel_eq[symmetric] spmf_rel_map elim: rel_spmf_mono)
   qed
@@ -564,7 +564,7 @@ proof -
       replaces @{const exec_gpv} with approximations. So we do two separate fixpoint inductions
       instead and jump from the approximation to the fixpoint when the state has been found.\<close>
   proof(rule spmf.leq_antisym)
-    show "ord_spmf op = ?rhs' ?rhs" unfolding exec_gpv1_def
+    show "ord_spmf (=) ?rhs' ?rhs" unfolding exec_gpv1_def
     proof(induction arbitrary: gpv s rule: exec_gpv_fixp_induct_strong)
       case adm show ?case by simp
       case bottom show ?case by simp
@@ -592,7 +592,7 @@ proof -
           done
         done
     qed
-    show "ord_spmf op = ?rhs ?rhs'" unfolding exec_gpv2_def
+    show "ord_spmf (=) ?rhs ?rhs'" unfolding exec_gpv2_def
     proof(induction arbitrary: gpv s rule: exec_gpv_fixp_induct_strong)
       case adm show ?case by simp
       case bottom show ?case by simp
@@ -799,9 +799,9 @@ proof -
   qed
   note this(1)[OF go]
   also
-  have "\<not> stop s2 \<Longrightarrow> ord_spmf op = (map_spmf (\<lambda>(x, s1, s2). (x, s2)) (exec_until_stop joint callee1 (map_gpv Some id gpv) s1 s2 True)) (exec_gpv_stop callee2 gpv s2)"
-    and "ord_spmf op = (map_spmf (\<lambda>(x, s1, y). (x, y)) (exec_until_stop joint callee1 (Done None :: ('a option, 'c, 'r) gpv) s1 s2 b)) (return_spmf (None, s2))"
-    and "stop s2 \<Longrightarrow> ord_spmf op = (map_spmf (\<lambda>(x, s1, s2). (x, s2)) (exec_until_stop joint callee1 (map_gpv Some id gpv) s1 s2 False)) (return_spmf (None, s2))"
+  have "\<not> stop s2 \<Longrightarrow> ord_spmf (=) (map_spmf (\<lambda>(x, s1, s2). (x, s2)) (exec_until_stop joint callee1 (map_gpv Some id gpv) s1 s2 True)) (exec_gpv_stop callee2 gpv s2)"
+    and "ord_spmf (=) (map_spmf (\<lambda>(x, s1, y). (x, y)) (exec_until_stop joint callee1 (Done None :: ('a option, 'c, 'r) gpv) s1 s2 b)) (return_spmf (None, s2))"
+    and "stop s2 \<Longrightarrow> ord_spmf (=) (map_spmf (\<lambda>(x, s1, s2). (x, s2)) (exec_until_stop joint callee1 (map_gpv Some id gpv) s1 s2 False)) (return_spmf (None, s2))"
     for b using init
   proof(induction arbitrary: gpv s1 s2 b rule: exec_until_stop.fixp_induct[case_names adm bottom step])
     case adm show ?case by simp

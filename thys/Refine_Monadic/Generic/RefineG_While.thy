@@ -20,7 +20,7 @@ definition "iWHILET bind return \<equiv> iWHILEIT bind return (\<lambda>_. True)
 
 (* TODO: Move to refine_mono_prover*)
 lemma mono_prover_monoI[refine_mono]: 
-  "monotone (fun_ord op\<le>) (fun_ord op\<le>) B \<Longrightarrow> mono B"
+  "monotone (fun_ord (\<le>)) (fun_ord (\<le>)) B \<Longrightarrow> mono B"
   apply (rule ccpo_monoD)
   apply (simp add: le_fun_def[abs_def] fun_ord_def[abs_def])
   done
@@ -34,8 +34,8 @@ locale generic_WHILE =
   assumes imonad3: "bind (bind M f) g = bind M (\<lambda>x. bind (f x) g)"
   assumes ibind_mono_ge: "\<lbrakk>flat_ge m m'; \<And>x. flat_ge (f x) (f' x)\<rbrakk> 
     \<Longrightarrow> flat_ge (bind m f) (bind m' f')"
-  assumes ibind_mono: "\<lbrakk>op \<le> m m'; \<And>x. op \<le> (f x) (f' x)\<rbrakk> 
-    \<Longrightarrow> op \<le> (bind m f) (bind m' f')"
+  assumes ibind_mono: "\<lbrakk>(\<le>) m m'; \<And>x. (\<le>) (f x) (f' x)\<rbrakk> 
+    \<Longrightarrow> (\<le>) (bind m f) (bind m' f')"
   assumes WHILEIT_eq: "WHILEIT \<equiv> iWHILEIT bind return"
   assumes WHILEI_eq: "WHILEI \<equiv> iWHILEI bind return"
   assumes WHILET_eq: "WHILET \<equiv> iWHILET bind return"
@@ -233,7 +233,7 @@ locale generic_WHILE_rules =
   assumes ibind_rule: "\<lbrakk> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>) \<rbrakk> \<Longrightarrow> bind M f \<le> SPEC \<Phi>"
 begin
 
-  lemma ireturn_eq: "return x = SPEC (op = x)"
+  lemma ireturn_eq: "return x = SPEC ((=) x)"
     unfolding iSPEC_eq by auto
 
   lemma iSPEC_rule: "(\<And>x. \<Phi> x \<Longrightarrow> \<Psi> x) \<Longrightarrow> SPEC \<Phi> \<le> SPEC \<Psi>"

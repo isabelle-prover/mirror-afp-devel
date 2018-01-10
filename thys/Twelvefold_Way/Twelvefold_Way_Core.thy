@@ -514,7 +514,7 @@ lemma permutes_implies_multiset_of_partition_cards_eq:
   assumes "p\<^sub>A permutes A" "p\<^sub>B permutes B"
   shows "image_mset card (mset_set ((\<lambda>b. {x \<in> A. p\<^sub>B (f' (p\<^sub>A x)) = b}) ` B - {{}})) = image_mset card (mset_set ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}}))"
 proof -
-  have "inj_on (op ` (inv p\<^sub>A)) ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})"
+  have "inj_on ((`) (inv p\<^sub>A)) ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})"
     by (meson \<open>p\<^sub>A permutes A\<close> inj_image_eq_iff inj_onI permutes_surj surj_imp_inj_inv)
   have "image_mset card (mset_set ((\<lambda>b. {x \<in> A. p\<^sub>B (f' (p\<^sub>A x)) = b}) ` B - {{}})) =
     image_mset card (mset_set ((\<lambda>X. inv p\<^sub>A ` X) ` ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})))"
@@ -553,7 +553,7 @@ proof -
     finally show ?thesis by simp
   qed
   also have "\<dots> = image_mset (\<lambda>X. card (inv p\<^sub>A ` X)) (mset_set ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}}))"
-    using \<open>inj_on (op ` (inv p\<^sub>A)) ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})\<close>
+    using \<open>inj_on ((`) (inv p\<^sub>A)) ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})\<close>
     by (simp only: image_mset_mset_set[symmetric] image_mset.compositionality) (meson comp_apply)
   also have "\<dots> = image_mset card (mset_set ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}}))"
     using \<open>p\<^sub>A permutes A\<close> by (simp add: card_image inj_on_inv_into permutes_surj)
@@ -823,15 +823,15 @@ proof -
   moreover note partition_implies_permutes[OF \<open>finite A\<close> _ _ eq]
   ultimately obtain p\<^sub>A where "p\<^sub>A permutes A" and
     inv_image_eq: "(\<lambda>b. {x \<in> A. f x = b}) ` B - {{}} =
-      op ` p\<^sub>A ` ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})" by blast
-  from \<open>p\<^sub>A permutes A\<close> have "inj (op ` p\<^sub>A)"
+      (`) p\<^sub>A ` ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}})" by blast
+  from \<open>p\<^sub>A permutes A\<close> have "inj ((`) p\<^sub>A)"
     by (meson injI inj_image_eq_iff permutes_inj)
   have inv_image_eq': "(\<lambda>b. {x \<in> A. f x = b}) ` B - {{}} = (\<lambda>b. {x \<in> A. f' (inv p\<^sub>A x) = b}) ` B - {{}}"
   proof -
     note inv_image_eq
     also have "(\<lambda>X. p\<^sub>A ` X) ` ((\<lambda>b. {x \<in> A. f' x = b}) ` B - {{}}) = (\<lambda>b. {x \<in> A. f' (inv p\<^sub>A x) = b}) ` B - {{}}"
       using image_domain_partition_eq[OF \<open>f' \<in> A \<rightarrow>\<^sub>E B\<close> \<open>p\<^sub>A permutes A\<close>]
-      by (simp add: image_set_diff[OF \<open>inj (op ` p\<^sub>A)\<close>])
+      by (simp add: image_set_diff[OF \<open>inj ((`) p\<^sub>A)\<close>])
     finally show ?thesis .
   qed
   from \<open>p\<^sub>A permutes A\<close> have "inv p\<^sub>A permutes A"

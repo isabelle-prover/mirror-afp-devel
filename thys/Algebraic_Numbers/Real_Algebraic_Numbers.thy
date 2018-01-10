@@ -2260,7 +2260,7 @@ proof -
     show "converges_to
         (\<lambda>i. bnd ((tighten_poly_bounds_binary p1 p2 ^^ i)
         ((l1,r1,sgn (ipoly p1 r1)),(l2,r2, sgn (ipoly p2 r2))))) (?x * ?y)"
-    proof (intro tighten_poly_bounds_binary[where f = "op *" and I = "\<lambda> l. l > 0"]
+    proof (intro tighten_poly_bounds_binary[where f = "( * )" and I = "\<lambda> l. l > 0"]
       basic l1_pos l2_pos, goal_cases)
       case (1 L1 R1 L2 R2 L R)
       hence "L = L1 * L2" "R = R1 * R2" unfolding bnd_def by auto
@@ -3375,9 +3375,9 @@ lemma compare_real_alg: "compare (real_of x) (real_of y) = (compare x y)"
 
 instance
 proof (intro_classes, unfold compare_real_alg[symmetric, abs_def])
-  show "le_of_comp (\<lambda>x y. compare (real_of x) (real_of y)) = op \<le>" 
+  show "le_of_comp (\<lambda>x y. compare (real_of x) (real_of y)) = (\<le>)" 
     by (intro ext, auto simp: compare_real_def comparator_of_def le_of_comp_def less_eq_real_alg_def)
-  show "lt_of_comp (\<lambda>x y. compare (real_of x) (real_of y)) = op <"
+  show "lt_of_comp (\<lambda>x y. compare (real_of x) (real_of y)) = (<)"
     by (intro ext, auto simp: compare_real_def comparator_of_def lt_of_comp_def less_real_alg_def)
   show "comparator (\<lambda>x y. compare (real_of x) (real_of y))" 
     unfolding comparator_def 

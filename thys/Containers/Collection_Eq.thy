@@ -11,13 +11,13 @@ section {* A type class for optional equality testing *}
 
 class ceq =
   fixes ceq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) option"
-  assumes ceq: "ceq = Some eq \<Longrightarrow> eq = op ="
+  assumes ceq: "ceq = Some eq \<Longrightarrow> eq = (=)"
 begin
 
 lemma ceq_equality: "ceq = Some eq \<Longrightarrow> equality eq"
   by (drule ceq, rule Equality_Generator.equalityI, simp)
 
-lemma ID_ceq: "ID ceq = Some eq \<Longrightarrow> eq = op ="
+lemma ID_ceq: "ID ceq = Some eq \<Longrightarrow> eq = (=)"
 unfolding ID_def id_apply by(rule ceq)
 
 abbreviation ceq' :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "ceq' \<equiv> the (ID ceq)"
@@ -54,7 +54,7 @@ subsection {* Generator for the @{class ceq}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the class @{class ceq}.
-To be more precise, one can choose whether one wants to take @{term "op ="} as function
+To be more precise, one can choose whether one wants to take @{term "(=)"} as function
 for @{term ceq} by passing "eq" as parameter, 
 whether equality should not be supported by passing "no" as parameter,
 or whether an own definition for equality should be derived by not passing
@@ -105,11 +105,11 @@ lemma is_ceq_fun [simp]: "\<not> is_ceq TYPE('a \<Rightarrow> 'b)"
   by(simp add: is_ceq_def ceq_fun_def ID_None) 
 
 definition set_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" 
-where [code del]: "set_eq = op ="
+where [code del]: "set_eq = (=)"
 
 lemma set_eq_code:
   shows [code]: "set_eq A B \<longleftrightarrow> A \<subseteq> B \<and> B \<subseteq> A"
-  and [code_unfold]: "op = = set_eq"
+  and [code_unfold]: "(=) = set_eq"
 unfolding set_eq_def by blast+
 
 instantiation set :: (ceq) ceq begin
@@ -162,7 +162,7 @@ by(simp add: leq_seq_def Seq_def)
 definition predicate_eq :: "'a Predicate.pred \<Rightarrow> 'a Predicate.pred \<Rightarrow> bool"
 where "predicate_eq P Q \<longleftrightarrow> leq_pred P Q \<and> leq_pred Q P"
 
-context assumes eq: "eq = op =" begin
+context assumes eq: "eq = (=)" begin
 
 lemma member_pred_eq: "member_pred = Predicate.eval"
 unfolding fun_eq_iff member_pred_def by(simp add: eq)
@@ -170,10 +170,10 @@ unfolding fun_eq_iff member_pred_def by(simp add: eq)
 lemma member_seq_eq: "member_seq = Predicate.member"
 by(simp add: member_seq_def fun_eq_iff eval_member member_pred_eq)
 
-lemma leq_pred_eq: "leq_pred = op \<le>"
+lemma leq_pred_eq: "leq_pred = (\<le>)"
 unfolding fun_eq_iff leq_pred_def by(auto simp add: eq less_eq_pred_def)
 
-lemma predicate_eq_eq: "predicate_eq = op ="
+lemma predicate_eq_eq: "predicate_eq = (=)"
 unfolding predicate_eq_def fun_eq_iff by(auto simp add: leq_pred_eq)
 
 end

@@ -31,7 +31,7 @@ begin
 
 lift_definition literal_append 
   :: "String.literal \<Rightarrow> String.literal \<Rightarrow> String.literal"  (infixr "@@" 65)
-  is "op @" .
+  is "(@)" .
 
 end
 

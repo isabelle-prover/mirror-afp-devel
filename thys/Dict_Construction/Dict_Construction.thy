@@ -38,10 +38,10 @@ ML_file "dict_construction_util.ML"
 ML_file "class_graph.ML"
 ML_file "dict_construction.ML"
 
-declare [[code drop: "op \<and>"]]
+declare [[code drop: "(\<and>)"]]
 lemma [code]: "True \<and> p \<longleftrightarrow> p" "False \<and> p \<longleftrightarrow> False" by auto
 
-declare [[code drop: "op \<or>"]]
+declare [[code drop: "(\<or>)"]]
 lemma [code]: "True \<or> p \<longleftrightarrow> True" "False \<or> p \<longleftrightarrow> p" by auto
 
 end

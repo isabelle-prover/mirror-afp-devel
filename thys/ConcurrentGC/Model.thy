@@ -611,7 +611,7 @@ definition do_write_action :: "('field, 'ref) mem_write_action \<Rightarrow> ('f
 definition
   fold_writes :: "('field, 'ref) mem_write_action list \<Rightarrow> ('field, 'mut, 'ref) local_state \<Rightarrow> ('field, 'mut, 'ref) local_state"
 where
-  "fold_writes ws \<equiv> fold (\<lambda>w. op \<circ> (do_write_action w)) ws id"
+  "fold_writes ws \<equiv> fold (\<lambda>w. (\<circ>) (do_write_action w)) ws id"
 
 abbreviation
   processors_view_of_memory :: "'mut process_name \<Rightarrow> ('field, 'mut, 'ref) local_state \<Rightarrow> ('field, 'mut, 'ref) local_state"

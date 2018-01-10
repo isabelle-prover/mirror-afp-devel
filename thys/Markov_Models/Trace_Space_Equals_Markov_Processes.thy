@@ -231,7 +231,7 @@ proof (rule stream_space_eq_sstart)
         using * MC[of ?l "\<lambda>i. (s # xs) ! i" "?xs' ! ?lt"] by simp
       also have "\<dots> = \<P>(\<omega> in M. \<forall>i\<le>?lt. X i \<omega> = ?xs' ! i) / \<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i)"
         unfolding cond_prob_def
-        by (intro arg_cong2[where f="op /"] arg_cong2[where f=measure]) (auto simp: nth_Cons nth_append split: nat.splits)
+        by (intro arg_cong2[where f="(/)"] arg_cong2[where f=measure]) (auto simp: nth_Cons nth_append split: nat.splits)
       finally show ?thesis
         using * by simp
     qed

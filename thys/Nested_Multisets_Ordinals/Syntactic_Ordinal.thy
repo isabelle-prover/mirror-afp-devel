@@ -27,10 +27,10 @@ abbreviation \<omega> :: hmultiset where
   "\<omega> \<equiv> \<omega>^1"
 
 definition times_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset"  where
-  "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times># hmsetmset B))"
+  "A * B = HMSet (image_mset (case_prod (+)) (hmsetmset A \<times># hmsetmset B))"
 
 lemma hmsetmset_times:
-  "hmsetmset (m * n) = image_mset (case_prod (op +)) (hmsetmset m \<times># hmsetmset n)"
+  "hmsetmset (m * n) = image_mset (case_prod (+)) (hmsetmset m \<times># hmsetmset n)"
   unfolding times_hmultiset_def by simp
 
 instance
@@ -74,10 +74,10 @@ lemma empty_times_left_hmset[simp]: "HMSet {#} * M = 0"
 lemma empty_times_right_hmset[simp]: "M * HMSet {#} = 0"
   by (metis mult_zero_right zero_hmultiset_def)
 
-lemma singleton_times_left_hmset[simp]: "\<omega>^M * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
+lemma singleton_times_left_hmset[simp]: "\<omega>^M * N = HMSet (image_mset ((+) M) (hmsetmset N))"
   by (simp add: times_hmultiset_def Times_mset_single_left)
 
-lemma singleton_times_right_hmset[simp]: "N * \<omega>^M = HMSet (image_mset ((op +) M) (hmsetmset N))"
+lemma singleton_times_right_hmset[simp]: "N * \<omega>^M = HMSet (image_mset ((+) M) (hmsetmset N))"
   by (metis mult.commute singleton_times_left_hmset)
 
 
@@ -95,7 +95,7 @@ lemma plus_nmultiset_mono:
         elim!: no_elem.cases)
 
 lemma plus_hmultiset_transfer[transfer_rule]:
-  "(rel_fun pcr_hmultiset (rel_fun pcr_hmultiset pcr_hmultiset)) plus_nmultiset op +"
+  "(rel_fun pcr_hmultiset (rel_fun pcr_hmultiset pcr_hmultiset)) plus_nmultiset (+)"
   unfolding rel_fun_def plus_nmultiset_def pcr_hmultiset_def nmultiset.rel_eq eq_OO cr_hmultiset_def
   by (auto simp: type_definition.Rep_inverse[OF type_definition_hmultiset])
 

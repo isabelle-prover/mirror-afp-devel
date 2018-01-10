@@ -1237,7 +1237,7 @@ term init_wit_blue_early
 
 lemma [autoref_itype]:
   "NO_CYC ::\<^sub>i i_blue_wit"
-  "op = ::\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_bool"
+  "(=) ::\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_bool"
   "init_wit_blue ::\<^sub>i I \<rightarrow>\<^sub>i i_red_wit I \<rightarrow>\<^sub>i i_blue_wit"
   "init_wit_blue_early ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_blue_wit"
   "prep_wit_blue ::\<^sub>i I \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit"
@@ -1259,7 +1259,7 @@ term lasso_rel_ext
 
 lemma autoref_wit[autoref_rules_raw]:
   "(NO_CYC,NO_CYC)\<in>blue_wit_rel"
-  "(op =, op =) \<in> blue_wit_rel \<rightarrow> blue_wit_rel \<rightarrow> bool_rel"
+  "((=), (=)) \<in> blue_wit_rel \<rightarrow> blue_wit_rel \<rightarrow> bool_rel"
   "\<And>R. PREFER_id R 
     \<Longrightarrow> (init_wit_blue, init_wit_blue) \<in> R \<rightarrow> red_wit_rel R \<rightarrow> blue_wit_rel"
   "\<And>R. PREFER_id R 

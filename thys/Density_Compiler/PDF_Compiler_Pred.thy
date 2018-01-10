@@ -388,7 +388,7 @@ next
   let ?f' = "\<lambda>\<sigma> x. let c = expr_sem_rf \<sigma> e'
                     in  f \<sigma> (IntVal (extract_int x - extract_int c))"
   note Mf[unfolded A, measurable] and rf[measurable] and vars[measurable] and t[unfolded A, measurable]
-  have Mdiff: "case_prod (op - :: int \<Rightarrow> _) \<in>
+  have Mdiff: "case_prod ((-) :: int \<Rightarrow> _) \<in>
                  measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) (count_space UNIV)" by simp
   have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     unfolding Let_def A by measurable
@@ -1335,11 +1335,11 @@ next
          (rule measurable_expr_sem, auto)
 
     let ?N' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t)
-                          (lift_RealIntVal (op + ?v1) (op + ?v2))"
+                          (lift_RealIntVal ((+) ?v1) ((+) ?v2))"
     have "has_density ?N' (stock_measure t) (?f \<rho>)" using t_disj
     proof (elim disjE)
       assume t: "t = REAL"
-      let ?N'' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) (lift_RealVal (op + ?v2))"
+      let ?N'' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) (lift_RealVal ((+) ?v2))"
       let ?f' = "(\<lambda>x. f \<rho> (RealVal (x - ?v2))) \<circ> extract_real"
       from dens' have "has_density ?N'' (stock_measure t) ?f'"
         by (subst (1 2) t, intro distr_lift_RealVal)
@@ -1355,7 +1355,7 @@ next
       finally show "has_density ?N' (stock_measure t) (?f \<rho>)" .
     next
       assume t: "t = INTEG"
-      let ?N'' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) (lift_IntVal (op + ?v1))"
+      let ?N'' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) (lift_IntVal ((+) ?v1))"
       let ?f' = "(\<lambda>x. f \<rho> (IntVal (x - ?v1))) \<circ> extract_int"
       from dens' have "has_density ?N'' (stock_measure t) ?f'"
         by (subst (1 2) t, intro distr_lift_IntVal)
@@ -1417,7 +1417,7 @@ next
          (rule measurable_expr_sem, auto)
 
     let ?N' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t)
-                          (lift_RealVal (op * (extract_real c)))"
+                          (lift_RealVal (( * ) (extract_real c)))"
     let ?g = "\<lambda>f x. f (x / extract_real c) * ennreal (inverse (abs (extract_real c)))"
     let ?f' = "(\<lambda>x. f \<rho> (RealVal (x / extract_real c)) *
                     inverse (abs (extract_real c))) \<circ> extract_real"

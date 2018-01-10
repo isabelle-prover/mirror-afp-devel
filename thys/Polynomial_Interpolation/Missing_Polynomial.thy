@@ -472,11 +472,11 @@ lemma poly_root_constant: "c \<noteq> 0 \<Longrightarrow> (poly (p * [:c:]) (k :
 
 
 lemma poly_linear_exp_linear_factors_rev: 
-  "([:b,1:])^(length (filter (op = b) as)) dvd (\<Prod> (a :: 'a :: comm_ring_1) \<leftarrow> as. [: a, 1:])"
+  "([:b,1:])^(length (filter ((=) b) as)) dvd (\<Prod> (a :: 'a :: comm_ring_1) \<leftarrow> as. [: a, 1:])"
 proof (induct as)
   case (Cons a as)
-  let ?ls = "length (filter (op = b) (a # as))"
-  let ?l = "length (filter (op = b) as)"
+  let ?ls = "length (filter ((=) b) (a # as))"
+  let ?l = "length (filter ((=) b) as)"
   have prod: "(\<Prod> a \<leftarrow> Cons a as. [: a, 1:]) = [: a, 1 :] * (\<Prod> a \<leftarrow> as. [: a, 1:])" by simp
   show ?case
   proof (cases "a = b")
@@ -527,7 +527,7 @@ qed
 
 lemma poly_linear_exp_linear_factors: 
   assumes dvd: "([:b,1:])^n dvd (\<Prod> (a :: 'a) \<leftarrow> as. [: a, 1:])"
-  shows "length (filter (op = b) as) \<ge> n"
+  shows "length (filter ((=) b) as) \<ge> n"
 proof -
   let ?p = "\<lambda> as. (\<Prod> a \<leftarrow> as. [: a, 1:])"
   let ?b = "[:b,1:]"
@@ -1322,7 +1322,7 @@ lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult 
 definition sdiv_poly :: "'a :: idom_divide poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
   "sdiv_poly p a = (map_poly (\<lambda> c. c div a) p)"  
 
-lemma smult_map_poly: "smult a = map_poly (op * a)"
+lemma smult_map_poly: "smult a = map_poly (( * ) a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
   
 lemma smult_exact_sdiv_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"

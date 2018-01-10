@@ -150,7 +150,7 @@ inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infi
     t >\<^sub>t s"
 | gt_diff: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> head t >\<^sub>h\<^sub>d head s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> head t = head s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
+    (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
 abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
@@ -167,7 +167,7 @@ inductive gt_unary :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool"
 
 inductive gt_same :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
   gt_sameI: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> head t = head s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> gt_same t s"
+    (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> gt_same t s"
 
 lemma gt_iff_wt_unary_diff_same: "t >\<^sub>t s \<longleftrightarrow> gt_wt t s \<or> gt_unary t s \<or> gt_diff t s \<or> gt_same t s"
   by (subst gt.simps) (auto simp: gt_wt.simps gt_unary.simps gt_diff.simps gt_same.simps)
@@ -193,7 +193,7 @@ proof (induct "size s" arbitrary: s rule: less_induct)
       using s_gt_s
     proof (cases rule: gt.cases)
       case gt_same
-      then obtain f where f: "extf f (op >\<^sub>t) (args s) (args s)"
+      then obtain f where f: "extf f (>\<^sub>t) (args s) (args s)"
         by fastforce
       thus False
         using wary_s ih by (metis wary_args extf_irrefl size_in_args)
@@ -209,13 +209,13 @@ lemma gt_imp_wt_ge: "t >\<^sub>t s \<Longrightarrow> wt t \<ge> wt s"
 
 lemma not_extf_gt_nil_singleton_if_\<delta>_eq_\<epsilon>:
   assumes wary_s: "wary s" and \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
-  shows "\<not> extf f (op >\<^sub>t) [] [s]"
+  shows "\<not> extf f (>\<^sub>t) [] [s]"
 proof
-  assume nil_gt_s: "extf f (op >\<^sub>t) [] [s]"
+  assume nil_gt_s: "extf f (>\<^sub>t) [] [s]"
   note s_gt_nil = extf_singleton_nil_if_\<delta>_eq_\<epsilon>[OF \<delta>_eq_\<epsilon>, of f gt s]
-  have "\<not> extf f (op >\<^sub>t) [] []"
+  have "\<not> extf f (>\<^sub>t) [] []"
     by (rule extf_irrefl) simp
-  moreover have "extf f (op >\<^sub>t) [] []"
+  moreover have "extf f (>\<^sub>t) [] []"
     using extf_trans_from_irrefl[of "{s}", OF _ _ _ _ _ _ nil_gt_s s_gt_nil] gt_irrefl[OF wary_s]
     by fastforce
   ultimately show False
@@ -290,7 +290,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       hence nargs_t_le: "num_args t \<le> 1"
         using ary_hd_s wary_num_args_le_arity_head[OF wary_t] by (simp add: one_enat_def)
 
-      have extf: "extf f op >\<^sub>t [t] (args t)" for f
+      have extf: "extf f (>\<^sub>t) [t] (args t)" for f
       proof (cases "args t")
         case Nil
         thus ?thesis
@@ -412,7 +412,7 @@ proof (simp only: atomize_imp,
               using ground_heads_arity gt_unary_u_t(3,4) hd_u_eq_s one_enat_def
                 wary_num_args_le_arity_head wary_u by fastforce
 
-            have extf: "extf f op >\<^sub>t (args u) (args s)" for f
+            have extf: "extf f (>\<^sub>t) (args u) (args s)" for f
             proof (cases "args s")
               case Nil
               thus ?thesis
@@ -625,7 +625,7 @@ proof (simp only: atomize_imp,
               (meson ua_in ta_in sa_in Un_iff max.strict_coboundedI1 max.strict_coboundedI2
                  size_in_args)+
         qed
-        have "\<forall>f \<in> ground_heads (head u). extf f (op >\<^sub>t) (args u) (args s)"
+        have "\<forall>f \<in> ground_heads (head u). extf f (>\<^sub>t) (args u) (args s)"
           by (clarify, rule extf_trans_from_irrefl[of ?S _ "args t", OF _ _ _ _ _ gt_trans_args])
             (auto simp: gt_same_u_t(3,4) gt_same_t_s(4) wary_args wary_u wary_t wary_s gt_irrefl)
         thus ?thesis
@@ -659,7 +659,7 @@ next
     by auto
   have hd_st: "head (App s t) = head s"
     by auto
-  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
+  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (>\<^sub>t) (args (App s t)) (args s)"
     by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>_eq_\<epsilon>)
   show ?thesis
     by (rule gt_same[OF vars_st wt_st hd_st extf])
@@ -697,7 +697,7 @@ proof -
     have head_st': "head (App s t') = head (App s t)"
       by simp
 
-    have extf: "\<And>f. extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
+    have extf: "\<And>f. extf f (>\<^sub>t) (args s @ [t']) (args s @ [t])"
       using t'_gt_t by (metis extf_compat_list gt_irrefl[OF wary_t])
 
     show ?thesis
@@ -739,7 +739,7 @@ proof -
       by (simp add: gt_same_s'_s(2))
     have hd_s't: "head (App s' t) = head (App s t)"
       by (simp add: gt_same_s'_s(3))
-    have "\<forall>f \<in> ground_heads (head (App s' t)). extf f (op >\<^sub>t) (args (App s' t)) (args (App s t))"
+    have "\<forall>f \<in> ground_heads (head (App s' t)). extf f (>\<^sub>t) (args (App s' t)) (args (App s t))"
       using gt_same_s'_s(4) by (auto intro: extf_compat_append_right)
     thus ?thesis
       by (rule gt_same[OF vars_s't wt_s't hd_s't])
@@ -918,9 +918,9 @@ proof (simp only: atomize_imp,
 
         let ?S = "set (args t) \<union> set (args s)"
 
-        have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
+        have extf_args_s_t: "extf f (>\<^sub>t) (args t) (args s)"
           using extf f_in_grs wary_subst_ground_heads wary_\<rho> by blast
-        have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
+        have "extf f (>\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
         proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
           show "\<forall>x \<in> ?S. \<not> subst \<rho> x >\<^sub>t subst \<rho> x"
             using gt_irrefl wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
@@ -934,11 +934,11 @@ proof (simp only: atomize_imp,
           show "\<forall>y \<in> ?S. \<forall>x \<in> ?S. y >\<^sub>t x \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x"
             using ih sz_a size_in_args wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
         qed auto
-        hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+        hence "extf f (>\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
           by (auto simp: hd_s_eq_hd_t intro: extf_compat_append_left)
       }
       hence "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
-        extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+        extf f (>\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
         by blast
       thus ?thesis
         by (rule gt_same[OF vars_\<rho>s wt_\<rho>t_eq_\<rho>s hd_\<rho>t])
@@ -1027,19 +1027,19 @@ proof (induct t arbitrary: s rule: tm_induct_apps)
             using s \<xi> \<zeta> g_eq_f ts_eq_ss by blast
         next
           case False
-          hence "extf g (op >\<^sub>t) ts ss \<or> extf g (op >\<^sub>t) ss ts"
+          hence "extf g (>\<^sub>t) ts ss \<or> extf g (>\<^sub>t) ss ts"
             using ih gr_ss gr_ts
-              ext_total.total[OF extf_total, rule_format, of "set ts" "set ss" "op >\<^sub>t" ts ss g]
+              ext_total.total[OF extf_total, rule_format, of "set ts" "set ss" "(>\<^sub>t)" ts ss g]
             by blast
           moreover
           {
-            assume extf: "extf g (op >\<^sub>t) ts ss"
+            assume extf: "extf g (>\<^sub>t) ts ss"
             have "?t >\<^sub>t s"
               by (rule gt_same[OF vars_t wt_t hd_t]) (simp add: extf \<xi> s)
           }
           moreover
           {
-            assume extf: "extf g (op >\<^sub>t) ss ts"
+            assume extf: "extf g (>\<^sub>t) ss ts"
             have "s >\<^sub>t ?t"
               by (rule gt_same[OF vars_s wt_s hd_s]) (simp add: extf[unfolded g_eq_f] \<zeta> s)
           }
@@ -1057,10 +1057,10 @@ qed
 subsection \<open>Well-foundedness\<close>
 
 abbreviation gtw :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>w" 50) where
-  "op >\<^sub>t\<^sub>w \<equiv> \<lambda>t s. wary t \<and> wary s \<and> t >\<^sub>t s"
+  "(>\<^sub>t\<^sub>w) \<equiv> \<lambda>t s. wary t \<and> wary s \<and> t >\<^sub>t s"
 
 abbreviation gtwg :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>w\<^sub>g" 50) where
-  "op >\<^sub>t\<^sub>w\<^sub>g \<equiv> \<lambda>t s. ground t \<and> t >\<^sub>t\<^sub>w s"
+  "(>\<^sub>t\<^sub>w\<^sub>g) \<equiv> \<lambda>t s. ground t \<and> t >\<^sub>t\<^sub>w s"
 
 lemma ground_gt_unary:
   assumes gr_t: "ground t"
@@ -1084,18 +1084,18 @@ proof -
   have ground_wfP: "wfP (\<lambda>s t. t >\<^sub>t\<^sub>w\<^sub>g s)"
     unfolding wfP_iff_no_inf_chain
   proof
-    assume "\<exists>f. inf_chain (op >\<^sub>t\<^sub>w\<^sub>g) f"
-    then obtain t where t_bad: "bad (op >\<^sub>t\<^sub>w\<^sub>g) t"
+    assume "\<exists>f. inf_chain (>\<^sub>t\<^sub>w\<^sub>g) f"
+    then obtain t where t_bad: "bad (>\<^sub>t\<^sub>w\<^sub>g) t"
       unfolding inf_chain_def bad_def by blast
 
-    let ?ff = "worst_chain (op >\<^sub>t\<^sub>w\<^sub>g) (\<lambda>t s. size t > size s)"
+    let ?ff = "worst_chain (>\<^sub>t\<^sub>w\<^sub>g) (\<lambda>t s. size t > size s)"
 
     note wf_sz = wf_app[OF wellorder_class.wf, of size, simplified]
 
     have ffi_ground: "\<And>i. ground (?ff i)" and ffi_wary: "\<And>i. wary (?ff i)"
       using worst_chain_bad[OF wf_sz t_bad, unfolded inf_chain_def] by fast+
 
-    have "inf_chain (op >\<^sub>t\<^sub>w\<^sub>g) ?ff"
+    have "inf_chain (>\<^sub>t\<^sub>w\<^sub>g) ?ff"
       by (rule worst_chain_bad[OF wf_sz t_bad])
     hence bad_wt_diff_same:
       "inf_chain (\<lambda>t s. ground t \<and> (gt_wt t s \<or> gt_diff t s \<or> gt_same t s)) ?ff"
@@ -1183,9 +1183,9 @@ proof -
     have wary_u: "\<And>u. u \<in> U \<Longrightarrow> wary u"
       unfolding U_def by (blast dest: wary_args[OF _ ffi_wary])
 
-    have "\<not> bad (op >\<^sub>t\<^sub>w\<^sub>g) u" if u_in: "u \<in> ?U_of i" for u i
+    have "\<not> bad (>\<^sub>t\<^sub>w\<^sub>g) u" if u_in: "u \<in> ?U_of i" for u i
     proof
-      assume u_bad: "bad (op >\<^sub>t\<^sub>w\<^sub>g) u"
+      assume u_bad: "bad (>\<^sub>t\<^sub>w\<^sub>g) u"
       have sz_u: "size u < size (?ff (i + k2))"
         by (rule size_in_args[OF u_in])
 
@@ -1206,7 +1206,7 @@ proof -
           using Suc sz_u min_worst_chain_Suc[OF wf_sz u_bad] ffi_ground by fastforce
       qed
     qed
-    hence u_good: "\<And>u. u \<in> U \<Longrightarrow> \<not> bad (op >\<^sub>t\<^sub>w\<^sub>g) u"
+    hence u_good: "\<And>u. u \<in> U \<Longrightarrow> \<not> bad (>\<^sub>t\<^sub>w\<^sub>g) u"
       unfolding U_def by blast
 
     let ?gtwu = "\<lambda>t s. t \<in> U \<and> t >\<^sub>t\<^sub>w s"
@@ -1217,7 +1217,7 @@ proof -
     have "\<And>i j. \<forall>t \<in> set (args (?ff (i + k2))). \<forall>s \<in> set (args (?ff (j + k2))). t >\<^sub>t s \<longrightarrow>
       t \<in> U \<and> t >\<^sub>t\<^sub>w s"
       using wary_u unfolding U_def by blast
-    moreover have "\<And>i. extf f (op >\<^sub>t) (args (?ff (i + k2))) (args (?ff (Suc i + k2)))"
+    moreover have "\<And>i. extf f (>\<^sub>t) (args (?ff (i + k2))) (args (?ff (Suc i + k2)))"
       using bad_same hd_eq_f unfolding inf_chain_def gt_same.simps by auto
     ultimately have "\<And>i. extf f ?gtwu (args (?ff (i + k2))) (args (?ff (Suc i + k2)))"
       by (rule extf_mono_strong)
@@ -1227,7 +1227,7 @@ proof -
       "\<not> wfP (\<lambda>xs ys. length ys \<le> max_args \<and> length xs \<le> max_args \<and> extf f ?gtwu ys xs)"
       unfolding inf_chain_def wfP_def wf_iff_no_infinite_down_chain using nargs_le_max_args by fast
 
-    have gtwu_le_gtwg: "?gtwu \<le> op >\<^sub>t\<^sub>w\<^sub>g"
+    have gtwu_le_gtwg: "?gtwu \<le> (>\<^sub>t\<^sub>w\<^sub>g)"
       by (auto intro!: gr_u)
 
     have "wfP (\<lambda>s t. ?gtwu t s)"
@@ -1239,7 +1239,7 @@ proof -
         by (rule inf_chain_bad)
       hence "f 0 \<in> U"
         using bad_f unfolding inf_chain_def by blast
-      hence "\<not> bad (op >\<^sub>t\<^sub>w\<^sub>g) (f 0)"
+      hence "\<not> bad (>\<^sub>t\<^sub>w\<^sub>g) (f 0)"
         using u_good by blast
       hence "\<not> bad ?gtwu (f 0)"
         using bad_f inf_chain_bad inf_chain_subset[OF _ gtwu_le_gtwg] by blast

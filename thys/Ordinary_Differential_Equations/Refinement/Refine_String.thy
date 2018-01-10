@@ -31,7 +31,7 @@ lemmas [autoref_rel_intf] = REL_INTFI[of char_rel i_char]
 
 definition op_str_Nil::"string" where [simp]: "op_str_Nil = Nil"
 definition op_str_Cons::"char \<Rightarrow> string \<Rightarrow> string" where [simp]: "op_str_Cons = Cons"
-definition op_str_append::"string \<Rightarrow> string \<Rightarrow> string" where [simp]: "op_str_append = op @"
+definition op_str_append::"string \<Rightarrow> string \<Rightarrow> string" where [simp]: "op_str_append = (@)"
 
 context begin interpretation autoref_syn .
 lemma
@@ -42,11 +42,11 @@ lemma
   and [autoref_rules]:
     "(Nil, op_str_Nil::string) \<in> string_rel"
     "(Cons, op_str_Cons) \<in> char_rel \<rightarrow> string_rel \<rightarrow> string_rel"
-    "(op @, op_str_append) \<in> string_rel \<rightarrow> string_rel \<rightarrow> string_rel"
+    "((@), op_str_append) \<in> string_rel \<rightarrow> string_rel \<rightarrow> string_rel"
   and [autoref_op_pat_def]:
     "Nil \<equiv> op_str_Nil"
     "Cons \<equiv> op_str_Cons"
-    "op @ \<equiv> op_str_append"
+    "(@) \<equiv> op_str_append"
   by (simp_all add: string_rel_def)
 end
 

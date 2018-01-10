@@ -95,7 +95,7 @@ proof -
        _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
        z \<leftarrow> map_spmf (\<lambda>z. \<^bold>g [^] z) (sample_uniform (order \<G>));
        guess \<leftarrow> \<A>2 (\<^bold>g [^] y, z) \<sigma>;
-       map_spmf (op = guess) coin_spmf
+       map_spmf ((=) guess) coin_spmf
      } ELSE coin_spmf"
     by(simp add: sample_uniform_one_time_pad map_spmf_conv_bind_spmf[where p=coin_spmf])
   also have "\<dots> = coin_spmf"

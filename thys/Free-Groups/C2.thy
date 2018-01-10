@@ -10,9 +10,9 @@ use the equality of boolean values as the group operation.
 *}
 
 definition "C2"
-  where "C2 = \<lparr> carrier = UNIV, mult = op =, one = True \<rparr>"
+  where "C2 = \<lparr> carrier = UNIV, mult = (=), one = True \<rparr>"
 
-lemma [simp]: "op \<otimes>\<^bsub>C2\<^esub> = op ="
+lemma [simp]: "(\<otimes>\<^bsub>C2\<^esub>) = (=)"
   unfolding C2_def by simp
 
 lemma [simp]: "\<one>\<^bsub>C2\<^esub> = True"

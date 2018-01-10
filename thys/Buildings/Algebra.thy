@@ -277,7 +277,7 @@ begin
 primrec sums :: "'a list \<Rightarrow> 'a list"
   where
     "sums [] = [0]"
-  | "sums (x#xs) = 0 # map (op + x) (sums xs)"
+  | "sums (x#xs) = 0 # map ((+) x) (sums xs)"
 
 lemma length_sums: "length (sums xs) = Suc (length xs)"
   by (induct xs) auto
@@ -286,7 +286,7 @@ lemma sums_snoc: "sums (xs@[x]) = sums xs @ [sum_list (xs@[x])]"
   by (induct xs) (auto simp add: add.assoc)
 
 lemma sums_append2:
-  "sums (xs@ys) = butlast (sums xs) @ map (op + (sum_list xs)) (sums ys)"
+  "sums (xs@ys) = butlast (sums xs) @ map ((+) (sum_list xs)) (sums ys)"
 proof (induct ys rule: rev_induct)
   case Nil show ?case by (cases xs rule: rev_cases) (auto simp add: sums_snoc)
 next
@@ -294,7 +294,7 @@ next
 qed
 
 lemma sums_Cons_conv_append_tl:
-  "sums (x#xs) = 0 # x # map (op + x) (tl (sums xs))"
+  "sums (x#xs) = 0 # x # map ((+) x) (tl (sums xs))"
   by (cases xs) auto
 
 lemma pullback_sums_map_middle2:
@@ -777,8 +777,8 @@ lemma lcoset_eq_reps_subset:
 lemma lcoset_eq_reps: "(a::'a::group_add) +o A = a +o B \<Longrightarrow> A = B"
   using lcoset_eq_reps_subset[of a A B] lcoset_eq_reps_subset[of a B A] by auto
 
-lemma lcoset_inj_on: "inj (op +o (a::'a::group_add))"
-  using lcoset_eq_reps inj_onI[of UNIV "op +o a"] by auto
+lemma lcoset_inj_on: "inj ((+o) (a::'a::group_add))"
+  using lcoset_eq_reps inj_onI[of UNIV "(+o) a"] by auto
 
 lemma lcoset_conv_set: "(a::'g::group_add) \<in> b +o A \<Longrightarrow> -b + a \<in> A"
   by (auto simp add: elt_set_plus_def)
@@ -787,21 +787,21 @@ subsubsection {* The supset order on cosets *}
 
 lemma supset_lbound_lcoset_shift:
   "supset_lbound_of X Y B \<Longrightarrow>
-    ordering.lbound_of (op \<supseteq>) (a +o X) (a +o Y) (a +o B)"
+    ordering.lbound_of (\<supseteq>) (a +o X) (a +o Y) (a +o B)"
   using ordering.lbound_of_def[OF supset_poset, of X Y B] 
   by    (fast intro: ordering.lbound_ofI supset_poset)
 
 lemma supset_glbound_in_of_lcoset_shift:
   fixes   P :: "'a::group_add set set"
   assumes "supset_glbound_in_of P X Y B"
-  shows   "supset_glbound_in_of (op +o a ` P) (a +o X) (a +o Y) (a +o B)"
+  shows   "supset_glbound_in_of ((+o) a ` P) (a +o X) (a +o Y) (a +o B)"
   using   ordering.glbound_in_ofD_in[OF supset_poset, OF assms]
           ordering.glbound_in_ofD_lbound[OF supset_poset, OF assms]
           supset_lbound_lcoset_shift[of X Y B a]
           supset_lbound_lcoset_shift[of "a +o X" "a +o Y" _ "-a"]
           ordering.glbound_in_ofD_glbound[OF supset_poset, OF assms]
           ordering.glbound_in_ofI[
-            OF supset_poset, of "a +o B" "op +o a ` P" "a +o X" "a +o Y"
+            OF supset_poset, of "a +o B" "(+o) a ` P" "a +o X" "a +o Y"
           ]
   by      (fastforce simp add: set_plus_rearrange2)
 
@@ -1595,7 +1595,7 @@ abbreviation "quotient_set H \<equiv> G // LCoset_rel H"
 
 lemma BinOpSetGroup_normal_quotient:
   assumes "Subgroup H" "normal H"
-  shows   "BinOpSetGroup (quotient_set H) (op +) H"
+  shows   "BinOpSetGroup (quotient_set H) (+) H"
 proof
   from assms(1) have H0: "H = LCoset_rel H `` {0}"
     using trivial_LCoset by auto
@@ -1630,7 +1630,7 @@ proof
 qed (rule add.assoc)
 
 abbreviation "abs_lcoset_perm H \<equiv>
-                BinOpSetGroup.Abs_G_perm (quotient_set H) (op +)"
+                BinOpSetGroup.Abs_G_perm (quotient_set H) (+)"
 abbreviation "abs_lcoset_perm_lift H g \<equiv> abs_lcoset_perm H (LCoset_rel H `` {g})"
 abbreviation "abs_lcoset_perm_lift_arg_permutation g H \<equiv> abs_lcoset_perm_lift H g"
 
@@ -1654,7 +1654,7 @@ lemmas bij_lcoset_perm =
 
 lemma trivial_lcoset_perm:
   assumes "Subgroup H" "normal H" "h\<in>H"
-  shows   "restrict1 (op + (LCoset_rel H `` {h})) (quotient_set H) = id"
+  shows   "restrict1 ((+) (LCoset_rel H `` {h})) (quotient_set H) = id"
 proof (rule ext, simp, rule impI)
   fix x assume x: "x \<in> quotient_set H"
   then obtain k where k: "k\<in>G" "x = LCoset_rel H `` {k}"
@@ -1669,7 +1669,7 @@ proof (rule ext, simp, rule impI)
 qed
 
 definition quotient_group :: "'g set \<Rightarrow> 'g set permutation set" where
-  "quotient_group H \<equiv> BinOpSetGroup.pG (quotient_set H) (op +)"
+  "quotient_group H \<equiv> BinOpSetGroup.pG (quotient_set H) (+)"
 
 abbreviation "natural_quotient_hom H \<equiv> restrict0 (\<lambda>g. \<lceil>g|H\<rceil>) G"
 
@@ -1726,7 +1726,7 @@ lemma respects_Ker_lcosets: "H \<subseteq> Ker \<Longrightarrow> T respects (LCo
   by        (blast intro: congruentI)
 
 abbreviation "quotient_hom H \<equiv>
-  BinOpSetGroup.lift_hom (quotient_set H) (op +) (quotientfun T)"
+  BinOpSetGroup.lift_hom (quotient_set H) (+) (quotientfun T)"
 
 lemmas normal_subgroup_quotientfun_classrep_equality =
   quotientfun_classrep_equality[

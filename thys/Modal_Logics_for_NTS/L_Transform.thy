@@ -297,7 +297,7 @@ lemma alpha_Tree_L_transform_Tree:
   shows "L_transform_Tree t1 = L_transform_Tree t2"
 using assms proof (induction t1 t2 rule: alpha_Tree_induct')
   case (alpha_tConj tset1 tset2)
-  then have "rel_bset (op =) (map_bset L_transform_Tree tset1) (map_bset L_transform_Tree tset2)"
+  then have "rel_bset (=) (map_bset L_transform_Tree tset1) (map_bset L_transform_Tree tset2)"
     by (simp add: bset.rel_map(1) bset.rel_map(2) bset.rel_mono_strong)
   then show ?case
     by (simp add: bset.rel_eq)
@@ -305,7 +305,7 @@ next
   case (alpha_tAct f1 \<alpha>1 t1 f2 \<alpha>2 t2)
   from `alpha_Tree (FL_Formula.Tree.tAct f1 \<alpha>1 t1) (FL_Formula.Tree.tAct f2 \<alpha>2 t2)`
     obtain p where *: "(bn \<alpha>1, t1) \<approx>set alpha_Tree (supp_rel alpha_Tree) p (bn \<alpha>2, t2)"
-      and **: "(bn \<alpha>1, \<alpha>1) \<approx>set (op =) supp p (bn \<alpha>2, \<alpha>2)" and "f1 = f2"
+      and **: "(bn \<alpha>1, \<alpha>1) \<approx>set (=) supp p (bn \<alpha>2, \<alpha>2)" and "f1 = f2"
     by auto
   from * have fresh: "(supp_rel alpha_Tree t1 - bn \<alpha>1) \<sharp>* p" and alpha: "alpha_Tree (p \<bullet> t1) t2" and eq: "p \<bullet> bn \<alpha>1 = bn \<alpha>2"
     by (auto simp add: alpha_set)
@@ -319,7 +319,7 @@ next
     by (metis (mono_tags) Diff_eqvt Formula.alpha_Tree_eqvt' Formula.alpha_Tree_eqvt_aux Formula.alpha_Tree_supp_rel atom_set_perm_eq)
   ultimately have "(bn \<alpha>1, Formula.rep_Tree\<^sub>\<alpha> (L_transform_Tree t1)) \<approx>set Formula.alpha_Tree (supp_rel Formula.alpha_Tree) p (bn \<alpha>2, Formula.rep_Tree\<^sub>\<alpha> (L_transform_Tree t2))"
     using eq by (simp add: alpha_set)
-  moreover from ** have "(bn \<alpha>1, Act \<alpha>1) \<approx>set op = supp p (bn \<alpha>2, Act \<alpha>2)"
+  moreover from ** have "(bn \<alpha>1, Act \<alpha>1) \<approx>set (=) supp p (bn \<alpha>2, Act \<alpha>2)"
     by (metis (mono_tags, lifting) L_Transform.supp_Act alpha_set permute_L_action.simps(1))
   ultimately have "Formula.Act\<^sub>\<alpha> (Act \<alpha>1) (L_transform_Tree t1) = Formula.Act\<^sub>\<alpha> (Act \<alpha>2) (L_transform_Tree t2)"
     by (auto simp add: Formula.Act\<^sub>\<alpha>_eq_iff)
@@ -448,7 +448,7 @@ lemma L_transform_Act [simp]: "L_transform (FL_Formula.Act f \<alpha> x) = Formu
 context effect_nominal_ts
 begin
 
-  interpretation L_transform: nominal_ts "op \<turnstile>\<^sub>L" "op \<rightarrow>\<^sub>L"
+  interpretation L_transform: nominal_ts "(\<turnstile>\<^sub>L)" "(\<rightarrow>\<^sub>L)"
   by unfold_locales (fact L_satisfies_eqvt, fact L_transition_eqvt)
 
   text \<open>The $L$-transform preserves satisfaction of formulas in the following sense:\<close>
@@ -573,7 +573,7 @@ context effect_nominal_ts
 begin
 
   (* Not quite sure why this is needed again? *)
-  interpretation L_transform: nominal_ts "op \<turnstile>\<^sub>L" "op \<rightarrow>\<^sub>L"
+  interpretation L_transform: nominal_ts "(\<turnstile>\<^sub>L)" "(\<rightarrow>\<^sub>L)"
   by unfold_locales (fact L_satisfies_eqvt, fact L_transition_eqvt)
 
   notation L_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>L" 100)
@@ -779,7 +779,7 @@ locale L_transform_indexed_effect_nominal_ts = indexed_effect_nominal_ts L satis
   assumes card_idx_L_transform_state: "|UNIV::('state, 'effect) L_state set| <o |UNIV::'idx set|"
 begin
 
-  interpretation L_transform: indexed_nominal_ts "op \<turnstile>\<^sub>L" "op \<rightarrow>\<^sub>L"
+  interpretation L_transform: indexed_nominal_ts "(\<turnstile>\<^sub>L)" "(\<rightarrow>\<^sub>L)"
     by unfold_locales (fact L_satisfies_eqvt, fact L_transition_eqvt, fact card_idx_perm, fact card_idx_L_transform_state)
 
   notation L_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>L" 100)

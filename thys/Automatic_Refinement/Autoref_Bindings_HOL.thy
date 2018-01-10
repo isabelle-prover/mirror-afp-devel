@@ -9,10 +9,10 @@ begin
     In some situations, autoref imitates the operations on typeclasses and
     the typeclass hierarchy. This may result in structural mismatches, e.g.,
     a hashcode side-condition may look like:
-      @{text [display] "is_hashcode (prod_eq op= op=) hashcode"}
+      @{text [display] "is_hashcode (prod_eq (=) (=)) hashcode"}
 
     This cannot be discharged by the rule
-      @{text [display] "is_hashcode op= hashcode"}
+      @{text [display] "is_hashcode (=) hashcode"}
     
     In order to handle such cases, we introduce a set of simplification lemmas
     that expand the structure of an operator as far as possible.
@@ -81,8 +81,8 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     "True ::\<^sub>i i_bool"
     "False ::\<^sub>i i_bool"
     "conj ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
-    "op \<longleftrightarrow> ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
-    "op \<longrightarrow> ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
+    "(\<longleftrightarrow>) ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
+    "(\<longrightarrow>) ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "disj ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "Not ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "case_bool ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i I"
@@ -96,8 +96,8 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     "(Not,Not)\<in>bool_rel\<rightarrow>bool_rel"
     "(case_bool,case_bool)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
     "(old.rec_bool,old.rec_bool)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
-    "(op \<longleftrightarrow>, op \<longleftrightarrow>)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
-    "(op \<longrightarrow>, op \<longrightarrow>)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
+    "((\<longleftrightarrow>), (\<longleftrightarrow>))\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
+    "((\<longrightarrow>), (\<longrightarrow>))\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
     by (auto split: bool.split simp: rec_bool_is_case)
 
 
@@ -109,14 +109,14 @@ context begin interpretation autoref_syn .
     We allow these operators for all interfaces.
     *}
   lemma [autoref_itype]:
-    "op < ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
-    "op \<le> ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
-    "op = ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
-    "op + ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
-    "op - ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
-    "op div ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
-    "op mod ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
-    "op * ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "(<) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
+    "(\<le>) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
+    "(=) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
+    "(+) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "(-) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "(div) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "(mod) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "( * ) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "0 ::\<^sub>i I"
     "1 ::\<^sub>i I"
     "numeral x ::\<^sub>i I"
@@ -131,9 +131,9 @@ context begin interpretation autoref_syn .
 
   lemma [autoref_rules]: 
     assumes "PRIO_TAG_GEN_ALGO"
-    shows "(op <, op <) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
-    and "(op \<le>, op \<le>) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
-    and "(op =, op =) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
+    shows "((<), (<)) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
+    and "((\<le>), (\<le>)) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
+    and "((=), (=)) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
     and "(numeral x,OP (numeral x) ::: Id) \<in> Id"
     and "(uminus,uminus) \<in> Id \<rightarrow> Id"
     and "(0,0) \<in> Id"
@@ -144,11 +144,11 @@ context begin interpretation autoref_syn .
   lemma [autoref_itype]: "id ::\<^sub>i I \<rightarrow>\<^sub>i I" by simp
   lemma autoref_id[autoref_rules]: "(id,id)\<in>R\<rightarrow>R" by auto
 
-  term "op o"
-  lemma [autoref_itype]: "op \<circ> ::\<^sub>i (Ia\<rightarrow>\<^sub>iIb) \<rightarrow>\<^sub>i (Ic \<rightarrow>\<^sub>i Ia) \<rightarrow>\<^sub>i Ic \<rightarrow>\<^sub>i Ib" 
+  term "(o)"
+  lemma [autoref_itype]: "(\<circ>) ::\<^sub>i (Ia\<rightarrow>\<^sub>iIb) \<rightarrow>\<^sub>i (Ic \<rightarrow>\<^sub>i Ia) \<rightarrow>\<^sub>i Ic \<rightarrow>\<^sub>i Ib" 
     by simp
   lemma autoref_comp[autoref_rules]: 
-    "(op o, op o) \<in> (Ra \<rightarrow> Rb) \<rightarrow> (Rc \<rightarrow> Ra) \<rightarrow> Rc \<rightarrow> Rb"
+    "((o), (o)) \<in> (Ra \<rightarrow> Rb) \<rightarrow> (Rc \<rightarrow> Ra) \<rightarrow> Rc \<rightarrow> Rb"
     by (auto dest: fun_relD)
 
   lemma [autoref_itype]: "If ::\<^sub>i i_bool \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I" by simp
@@ -190,14 +190,14 @@ context begin interpretation autoref_syn .
       "(Suc, Suc) \<in> nat_rel \<rightarrow> nat_rel"
       "(1, 1::nat) \<in> nat_rel"
       "(numeral n::nat,numeral n::nat) \<in> nat_rel"
-      "(op <, op < ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-      "(op \<le>, op \<le> ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-      "(op =, op = ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-      "(op + ::nat\<Rightarrow>_,op +)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
-      "(op - ::nat\<Rightarrow>_,op -)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
-      "(op div ::nat\<Rightarrow>_,op div)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
-      "(op *, op *)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
-      "(op mod, op mod)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "((<), (<) ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
+      "((\<le>), (\<le>) ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
+      "((=), (=) ::nat \<Rightarrow> _) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
+      "((+) ::nat\<Rightarrow>_,(+))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "((-) ::nat\<Rightarrow>_,(-))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "((div) ::nat\<Rightarrow>_,(div))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "(( * ), ( * ))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "((mod), (mod))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       by auto
     
     lemma autoref_case_nat[autoref_rules]: 
@@ -229,12 +229,12 @@ context begin interpretation autoref_syn .
       by simp_all
 
     (*lemma [autoref_itype]:
-      "(op < :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
-      "(op \<le> :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
-      "(op = :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
-      "(op + :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
-      "(op - :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
-      "(op div :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
+      "((<) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
+      "((\<le>) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
+      "((=) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_bool"
+      "((+) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
+      "((-) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
+      "((div) :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
       "(uminus :: int \<Rightarrow> _) ::\<^sub>i i_int \<rightarrow>\<^sub>i i_int"
       by auto*)
 
@@ -242,15 +242,15 @@ context begin interpretation autoref_syn .
       "(0, 0::int) \<in> int_rel"
       "(1, 1::int) \<in> int_rel"
       "(numeral n::int,numeral n::int) \<in> int_rel"
-      "(op <, op < ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
-      "(op \<le>, op \<le> ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
-      "(op =, op = ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
-      "(op + ::int\<Rightarrow>_,op +)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
-      "(op - ::int\<Rightarrow>_,op -)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
-      "(op div ::int\<Rightarrow>_,op div)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "((<), (<) ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
+      "((\<le>), (\<le>) ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
+      "((=), (=) ::int \<Rightarrow> _) \<in> int_rel \<rightarrow> int_rel \<rightarrow> bool_rel"
+      "((+) ::int\<Rightarrow>_,(+))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "((-) ::int\<Rightarrow>_,(-))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "((div) ::int\<Rightarrow>_,(div))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       "(uminus,uminus)\<in>int_rel\<rightarrow>int_rel"
-      "(op *, op *)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
-      "(op mod, op mod)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "(( * ), ( * ))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "((mod), (mod))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       by auto
 end
   
@@ -266,7 +266,7 @@ context begin interpretation autoref_syn .
       "old.rec_prod ::\<^sub>i (Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i I"
       "fst ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i Ia"
       "snd ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i Ib"
-      "(op = :: _\<times>_ \<Rightarrow> _) ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i i_bool"
+      "((=) :: _\<times>_ \<Rightarrow> _) ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i i_bool"
       by auto
       *)
 
@@ -283,12 +283,12 @@ context begin interpretation autoref_syn .
       case x1 of (a1,b1) \<Rightarrow> case x2 of (a2,b2) \<Rightarrow> eqa a1 a2 \<and> eqb b1 b2"
 
     lemma prod_eq_autoref[autoref_rules (overloaded)]:
-      "\<lbrakk>GEN_OP eqa op = (Ra\<rightarrow>Ra\<rightarrow>Id); GEN_OP eqb op = (Rb\<rightarrow>Rb\<rightarrow>Id)\<rbrakk> 
-      \<Longrightarrow> (prod_eq eqa eqb,op =) \<in> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Id"
+      "\<lbrakk>GEN_OP eqa (=) (Ra\<rightarrow>Ra\<rightarrow>Id); GEN_OP eqb (=) (Rb\<rightarrow>Rb\<rightarrow>Id)\<rbrakk> 
+      \<Longrightarrow> (prod_eq eqa eqb,(=)) \<in> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Id"
       unfolding prod_eq_def[abs_def]
       by (fastforce dest: fun_relD)
 
-    lemma prod_eq_expand[autoref_struct_expand]: "op = = prod_eq op= op="
+    lemma prod_eq_expand[autoref_struct_expand]: "(=) = prod_eq (=) (=)"
       unfolding prod_eq_def[abs_def]
       by (auto intro!: ext)
 end
@@ -305,7 +305,7 @@ context begin interpretation autoref_syn .
       "the ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
       "case_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
       "rec_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
-      "(op = :: _ option \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool"
+      "((=) :: _ option \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool"
       by auto
       *)
 
@@ -347,13 +347,13 @@ context begin interpretation autoref_syn .
       | _ \<Rightarrow> False"
 
     lemma option_eq_autoref[autoref_rules (overloaded)]:
-      "\<lbrakk>GEN_OP eq op = (R\<rightarrow>R\<rightarrow>Id)\<rbrakk> 
-      \<Longrightarrow> (option_eq eq,op =) \<in> \<langle>R\<rangle>option_rel \<rightarrow> \<langle>R\<rangle>option_rel \<rightarrow> Id"
+      "\<lbrakk>GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>Id)\<rbrakk> 
+      \<Longrightarrow> (option_eq eq,(=)) \<in> \<langle>R\<rangle>option_rel \<rightarrow> \<langle>R\<rangle>option_rel \<rightarrow> Id"
       unfolding option_eq_def[abs_def]
       by (auto dest: fun_relD split: option.splits elim!: option_relE)
 
     lemma option_eq_expand[autoref_struct_expand]: 
-      "op = = option_eq op="
+      "(=) = option_eq (=)"
       by (auto intro!: ext simp: option_eq_def split: option.splits)
 end
 
@@ -363,7 +363,7 @@ end
 
 context begin interpretation autoref_syn .
   (*lemma [autoref_itype]:
-    "(op = :: _+_ \<Rightarrow> _) ::\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i i_bool"
+    "((=) :: _+_ \<Rightarrow> _) ::\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i i_bool"
     "Inl ::\<^sub>i Il \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum"
     "Inr ::\<^sub>i Ir \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum"
     "case_sum ::\<^sub>i (Il\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i (Ir \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i I"
@@ -385,12 +385,12 @@ context begin interpretation autoref_syn .
     | _ \<Rightarrow> False"
 
   lemma sum_eq_autoref[autoref_rules (overloaded)]:
-    "\<lbrakk>GEN_OP eql op = (Rl\<rightarrow>Rl\<rightarrow>Id); GEN_OP eqr op = (Rr\<rightarrow>Rr\<rightarrow>Id)\<rbrakk> 
-    \<Longrightarrow> (sum_eq eql eqr,op =) \<in> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> Id"
+    "\<lbrakk>GEN_OP eql (=) (Rl\<rightarrow>Rl\<rightarrow>Id); GEN_OP eqr (=) (Rr\<rightarrow>Rr\<rightarrow>Id)\<rbrakk> 
+    \<Longrightarrow> (sum_eq eql eqr,(=)) \<in> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> Id"
     unfolding sum_eq_def[abs_def]
     by (fastforce dest: fun_relD elim!: sum_relE)
 
-  lemma sum_eq_expand[autoref_struct_expand]: "op = = sum_eq op= op="
+  lemma sum_eq_expand[autoref_struct_expand]: "(=) = sum_eq (=) (=)"
     by (auto intro!: ext simp: sum_eq_def split: sum.splits)
 
   lemmas [autoref_rules] = is_Inl_param is_Inr_param
@@ -415,10 +415,10 @@ context begin interpretation autoref_syn .
   (*
   term nth
   lemma [autoref_itype]:
-    "(op = :: _ list \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i i_bool"
+    "((=) :: _ list \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i i_bool"
     "[] ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
-    "op # ::\<^sub>i I \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
-    "op @ ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
+    "(#) ::\<^sub>i I \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
+    "(@) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
     "case_list ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
     "rec_list ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
     "map ::\<^sub>i (I1\<rightarrow>\<^sub>iI2) \<rightarrow>\<^sub>i \<langle>I1\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I2\<rangle>\<^sub>ii_list"
@@ -523,17 +523,17 @@ context begin interpretation autoref_syn .
       done
   qed
 
-  lemma list_eq_expand[autoref_struct_expand]: "(op =) = (list_eq op =)"
+  lemma list_eq_expand[autoref_struct_expand]: "(=) = (list_eq (=))"
   proof (intro ext)
     fix l1 l2 :: "'a list"
-    show "(l1 = l2) \<longleftrightarrow> list_eq op = l1 l2"
-      apply (induct "op = :: 'a \<Rightarrow> _" l1 l2 rule: list_eq.induct)
+    show "(l1 = l2) \<longleftrightarrow> list_eq (=) l1 l2"
+      apply (induct "(=) :: 'a \<Rightarrow> _" l1 l2 rule: list_eq.induct)
       apply simp_all
       done
   qed
 
   lemma autoref_list_eq[autoref_rules (overloaded)]:
-    "GEN_OP eq op = (R\<rightarrow>R\<rightarrow>Id) \<Longrightarrow> (list_eq eq, op =) 
+    "GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>Id) \<Longrightarrow> (list_eq eq, (=)) 
     \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
     unfolding autoref_tag_defs
     apply (subst list_eq_expand)

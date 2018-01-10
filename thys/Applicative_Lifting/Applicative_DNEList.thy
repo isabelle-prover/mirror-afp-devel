@@ -60,7 +60,7 @@ qualified lemma map_def: "Applicative_DNEList.map = map_fun id (map_fun list_of_
 unfolding map_def by(simp add: fun_eq_iff distinct_remdups_id list_of_dnelist[simplified])
 
 qualified lemma map_transfer [transfer_rule]:
-  "rel_fun op = (rel_fun (pcr_dnelist op =) (pcr_dnelist op =)) (\<lambda>f xs. remdups (map f xs)) Applicative_DNEList.map"
+  "rel_fun (=) (rel_fun (pcr_dnelist (=)) (pcr_dnelist (=))) (\<lambda>f xs. remdups (map f xs)) Applicative_DNEList.map"
 by(simp add: map_def rel_fun_def dnelist.pcr_cr_eq cr_dnelist_def list_of_dnelist[simplified] Abs_dnelist_inverse)
 
 qualified lift_definition single :: "'a \<Rightarrow> 'a dnelist" is "\<lambda>x. [x]" by simp
@@ -139,7 +139,7 @@ text \<open>@{typ "_ dnelist"} does not have combinator C, so it cannot have W e
 context begin 
 private lift_definition x :: "int dnelist" is "[2,3]" by simp
 private lift_definition y :: "int dnelist" is "[5,7]" by simp
-private lemma "pure_dnelist (\<lambda>f x y. f y x) \<diamondop> pure_dnelist (op *) \<diamondop> x \<diamondop> y \<noteq> pure_dnelist (op *) \<diamondop> y \<diamondop> x"
+private lemma "pure_dnelist (\<lambda>f x y. f y x) \<diamondop> pure_dnelist (( * )) \<diamondop> x \<diamondop> y \<noteq> pure_dnelist (( * )) \<diamondop> y \<diamondop> x"
   by transfer(simp add: ap_list_def fun_eq_iff)
 end
 

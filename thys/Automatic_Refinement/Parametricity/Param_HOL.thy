@@ -9,7 +9,7 @@ lemma param_empty[param]:
   "({},{})\<in>\<langle>R\<rangle>set_rel" by (auto simp: set_rel_def)
 
 lemma param_member[param]:
-  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> (op \<in>, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"  
+  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> ((\<in>), (\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"  
   unfolding set_rel_def
   by (blast dest: single_valuedD)
 
@@ -19,30 +19,30 @@ lemma param_insert[param]:
   by (auto simp: set_rel_def)
 
 lemma param_union[param]:
-  "(op \<union>, op \<union>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  "((\<union>), (\<union>)) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
   by (auto simp: set_rel_def)
 
 lemma param_inter[param]:
   assumes "single_valued R" "single_valued (R\<inverse>)"
-  shows "(op \<inter>, op \<inter>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  shows "((\<inter>), (\<inter>)) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
   using assms  
   unfolding set_rel_def
   by (blast dest: single_valuedD)
 
 lemma param_diff[param]:
   assumes "single_valued R" "single_valued (R\<inverse>)"
-  shows "(op -, op -) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  shows "((-), (-)) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
   using assms 
   unfolding set_rel_def
   by (blast dest: single_valuedD)
     
 lemma param_subseteq[param]: 
-  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> (op \<subseteq>, op \<subseteq>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
+  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> ((\<subseteq>), (\<subseteq>)) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
   unfolding set_rel_def
   by (blast dest: single_valuedD)
 
 lemma param_subset[param]: 
-  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> (op \<subset>, op \<subset>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
+  "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> ((\<subset>), (\<subset>)) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
   unfolding set_rel_def 
   by (blast dest: single_valuedD)
 
@@ -98,11 +98,11 @@ subsection \<open>Functions\<close>
     
 lemma param_id[param]: "(id,id)\<in>R\<rightarrow>R" unfolding id_def by parametricity
 
-lemma param_fun_comp[param]: "(op o, op o) \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Ra) \<rightarrow> Rc\<rightarrow>Rb" 
+lemma param_fun_comp[param]: "((o), (o)) \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Ra) \<rightarrow> Rc\<rightarrow>Rb" 
   unfolding comp_def[abs_def] by parametricity
 
 lemma param_fun_upd[param]: "
-  (op =, op =) \<in> Ra\<rightarrow>Ra\<rightarrow>Id 
+  ((=), (=)) \<in> Ra\<rightarrow>Ra\<rightarrow>Id 
   \<Longrightarrow> (fun_upd,fun_upd) \<in> (Ra\<rightarrow>Rb) \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> Ra \<rightarrow> Rb"
   unfolding fun_upd_def[abs_def]
   by (parametricity)
@@ -122,8 +122,8 @@ lemma param_bool[param]:
   "(Not,Not)\<in>Id\<rightarrow>Id"
   "(case_bool,case_bool)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
   "(old.rec_bool,old.rec_bool)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
-  "(op \<longleftrightarrow>, op \<longleftrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op \<longrightarrow>, op \<longrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((\<longleftrightarrow>), (\<longleftrightarrow>))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((\<longrightarrow>), (\<longrightarrow>))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by (auto split: bool.split simp: rec_bool_is_case)
 
 lemma param_and_cong1: "\<lbrakk> (a,a')\<in>bool_rel; \<lbrakk>a; a'\<rbrakk> \<Longrightarrow> (b,b')\<in>bool_rel \<rbrakk> \<Longrightarrow> (a\<and>b,a'\<and>b')\<in>bool_rel"
@@ -139,14 +139,14 @@ lemma param_nat1[param]:
   "(Suc, Suc) \<in> Id \<rightarrow> Id"
   "(1, 1::nat) \<in> Id"
   "(numeral n::nat,numeral n::nat) \<in> Id"
-  "(op <, op < ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op \<le>, op \<le> ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op =, op = ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op + ::nat\<Rightarrow>_,op +)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op - ::nat\<Rightarrow>_,op -)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op * ::nat\<Rightarrow>_,op *)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op div ::nat\<Rightarrow>_,op div)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op mod ::nat\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((<), (<) ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((\<le>), (\<le>) ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((=), (=) ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((+) ::nat\<Rightarrow>_,(+))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((-) ::nat\<Rightarrow>_,(-))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(( * ) ::nat\<Rightarrow>_,( * ))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((div) ::nat\<Rightarrow>_,(div))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((mod) ::nat\<Rightarrow>_,(mod))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
 
 lemma param_case_nat[param]:
@@ -170,14 +170,14 @@ lemma param_int[param]:
   "(0, 0::int) \<in> Id"
   "(1, 1::int) \<in> Id"
   "(numeral n::int,numeral n::int) \<in> Id"
-  "(op <, op < ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op \<le>, op \<le> ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op =, op = ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
-  "(op + ::int\<Rightarrow>_,op +)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op - ::int\<Rightarrow>_,op -)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op * ::int\<Rightarrow>_,op *)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op div ::int\<Rightarrow>_,op div)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(op mod ::int\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((<), (<) ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((\<le>), (\<le>) ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((=), (=) ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "((+) ::int\<Rightarrow>_,(+))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((-) ::int\<Rightarrow>_,(-))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(( * ) ::int\<Rightarrow>_,( * ))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((div) ::int\<Rightarrow>_,(div))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((mod) ::int\<Rightarrow>_,(mod))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
 
 subsection \<open>Product\<close>  
@@ -454,18 +454,18 @@ proof (intro fun_relI, goal_cases)
     done
 qed
 
-lemma id_list_eq_aux[simp]: "(list_eq op =) = (op =)"
+lemma id_list_eq_aux[simp]: "(list_eq (=)) = (=)"
 proof (intro ext)
   fix l1 l2 :: "'a list"
-  show "list_eq op = l1 l2 = (l1 = l2)"
-    apply (induct "op = :: 'a \<Rightarrow> _" l1 l2 rule: list_eq.induct)
+  show "list_eq (=) l1 l2 = (l1 = l2)"
+    apply (induct "(=) :: 'a \<Rightarrow> _" l1 l2 rule: list_eq.induct)
     apply simp_all
     done
 qed
 
 lemma param_list_equals[param]:
-  "\<lbrakk> (op =, op =) \<in> R\<rightarrow>R\<rightarrow>Id \<rbrakk> 
-  \<Longrightarrow> (op =, op =) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
+  "\<lbrakk> ((=), (=)) \<in> R\<rightarrow>R\<rightarrow>Id \<rbrakk> 
+  \<Longrightarrow> ((=), (=)) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
   unfolding id_list_eq_aux[symmetric]
   by (parametricity) 
 

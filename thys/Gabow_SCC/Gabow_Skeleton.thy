@@ -1540,7 +1540,7 @@ locale GS_invar = GS +
   
   assumes P_sorted: "sorted (map fst P)"
   assumes P_distinct: "distinct (map fst P)"
-  assumes P_bound: "set P \<subseteq> {0..<length S}\<times>Collect (op \<noteq> {})"
+  assumes P_bound: "set P \<subseteq> {0..<length S}\<times>Collect ((\<noteq>) {})"
 begin
   lemma locale_this: "GS_invar SBIP" by unfold_locales
 

@@ -362,7 +362,7 @@ proof -
     fix F show "(\<lambda>s. ?F (HLD {t}) F s * ?P) = ?F ({t} \<cdot> P) (\<lambda>s. F s * ?P)"
       unfolding emeasure_HLD emeasure_HLD_nxt[OF assms] distrib_right
       by (auto simp: fun_eq_iff nn_integral_multc[symmetric]
-               intro!: arg_cong2[where f="op +"] nn_integral_cong ac_simps
+               intro!: arg_cong2[where f="(+)"] nn_integral_cong ac_simps
                split: split_indicator)
   qed (auto intro!: order_continuous_intros sup_continuous_mono lfp_upperbound
             intro: le_funI add_nonneg_nonneg
@@ -716,10 +716,10 @@ lemma T_subprob[measurable]: "T \<in> measurable (measure_pmf I) (subprob_algebr
 subsection {* Markov chain with Initial Distribution *}
 
 definition T' :: "'s pmf \<Rightarrow> 's stream measure" where
-  "T' I = bind I (\<lambda>s. distr (T s) S (op ## s))"
+  "T' I = bind I (\<lambda>s. distr (T s) S ((##) s))"
 
 lemma distr_Stream_subprob:
-  "(\<lambda>s. distr (T s) S (op ## s)) \<in> measurable (measure_pmf I) (subprob_algebra S)"
+  "(\<lambda>s. distr (T s) S ((##) s)) \<in> measurable (measure_pmf I) (subprob_algebra S)"
   apply (intro measurable_distr2[OF _ T_subprob])
   apply (subst measurable_cong_sets[where M'="count_space UNIV \<Otimes>\<^sub>M S" and N'=S])
   apply (rule sets_pair_measure_cong)
@@ -732,7 +732,7 @@ lemma sets_T': "sets (T' I) = sets S"
 lemma prob_space_T': "prob_space (T' I)"
   unfolding T'_def
 proof (rule measure_pmf.prob_space_bind)
-  show "AE s in I. prob_space (distr (T s) S (op ## s))"
+  show "AE s in I. prob_space (distr (T s) S ((##) s))"
     by (intro AE_measure_pmf_iff[THEN iffD2] ballI T.prob_space_distr) simp
 qed (rule distr_Stream_subprob)
 
@@ -777,7 +777,7 @@ proof (rule measure_eqI)
     done
 qed (simp add: sets_T')
 
-lemma T_eq_bind: "T s = (measure_pmf (K s) \<bind> (\<lambda>t. distr (T t) S (op ## t)))"
+lemma T_eq_bind: "T s = (measure_pmf (K s) \<bind> (\<lambda>t. distr (T t) S ((##) t)))"
   by (subst T_eq_T') (simp add: T'_def)
 
 lemma T_split:
@@ -793,15 +793,15 @@ next
   let ?K = "measure_pmf (K s)" and ?m = "\<lambda>n \<omega> \<omega>'. stake n \<omega> @- \<omega>'"
   note sets_stream_space_cong[simp, measurable_cong]
 
-  have "T s = (?K \<bind> (\<lambda>t. distr (T t) S (op ## t)))"
+  have "T s = (?K \<bind> (\<lambda>t. distr (T t) S ((##) t)))"
     by (rule T_eq_bind)
-  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t \<bind> (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>))) S (op ## t)))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t \<bind> (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>))) S ((##) t)))"
     unfolding Suc[symmetric] ..
-  also have "\<dots> = (?K \<bind> (\<lambda>t. T t \<bind> (\<lambda>\<omega>. distr (distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>)) S (op ## t))))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. T t \<bind> (\<lambda>\<omega>. distr (distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>)) S ((##) t))))"
     by (simp add: distr_bind[where K=S, OF measurable_distr2[where M=S]] space_stream_space)
   also have "\<dots> = (?K \<bind> (\<lambda>t. T t \<bind> (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m (Suc n) (t ## \<omega>)))))"
     by (simp add: distr_distr space_stream_space comp_def)
-  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t) S (op ## t) \<bind> (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>))))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t) S ((##) t) \<bind> (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>))))"
     by (simp add: space_stream_space bind_distr[OF _ measurable_distr2[where M=S]] del: stake.simps)
   also have "\<dots> = (T s \<bind> (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>)))"
     unfolding T_eq_bind[of s]
@@ -972,7 +972,7 @@ lemma T_coinduct[consumes 1, case_names prob sets cont]:
   assumes prob: "\<And>x M. R x M \<Longrightarrow> prob_space M"
     and sets: "\<And>x M. R x M \<Longrightarrow> sets M = sets S"
     and cont: "\<And>x M. R x M \<Longrightarrow> \<exists>M'. (\<forall>y\<in>K x. R y (M' y)) \<and> (\<forall>y. sets (M' y) = S \<and> prob_space (M' y)) \<and>
-      M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S (op ## y)))"
+      M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S ((##) y)))"
   shows "T x = M"
 proof (intro stream_space_eq_sstart)
   show "prob_space (T x)"
@@ -1009,21 +1009,21 @@ proof (intro stream_space_eq_sstart)
     using sets[THEN sets_eq_imp_space_eq] .
 
   have "\<forall>x M. R x M \<longrightarrow> (\<exists>M'. (\<forall>y\<in>K x. R y (M' y)) \<and> (\<forall>y. sets (M' y) = S \<and> prob_space (M' y)) \<and>
-      M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S (op ## y))))"
+      M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' y) S ((##) y))))"
     using cont by auto
   then guess M' unfolding choice_iff' choice_iff ..
   then have
     R_closed: "\<And>x M y. R x M \<Longrightarrow> y \<in> K x \<Longrightarrow> R y (M' x M y)" and
     M'_sets[simp, measurable_cong]: "\<And>x M y. R x M \<Longrightarrow> sets (M' x M y) = sets S" and
     M'_prob: "\<And>x M y. R x M \<Longrightarrow> prob_space (M' x M y)" and
-    M'_eq: "\<And>x M y. R x M \<Longrightarrow> M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' x M y) S (op ## y)))"
+    M'_eq: "\<And>x M y. R x M \<Longrightarrow> M = (measure_pmf (K x) \<bind> (\<lambda>y. distr (M' x M y) S ((##) y)))"
     by auto
 
   have M'_subprob: "\<And>x M y. R x M \<Longrightarrow> subprob_space (M' x M y)"
     using M'_prob by (rule prob_space_imp_subprob_space)
 
   have *: "R x M \<Longrightarrow>
-    (\<lambda>s. distr (M' x M s) S (op ## s)) \<in> K x \<rightarrow>\<^sub>M subprob_algebra S" for x M
+    (\<lambda>s. distr (M' x M s) S ((##) s)) \<in> K x \<rightarrow>\<^sub>M subprob_algebra S" for x M
     by (intro measurable_distr2[where M=S])
        (auto simp: measurable_split_conv space_subprob_algebra
              intro!: measurable_Stream measurable_compose[OF measurable_fst] M'_subprob)
@@ -1087,7 +1087,7 @@ qed
 
 lemma T_bisim:
   assumes M: "\<And>x. prob_space (M x)" "\<And>x. sets (M x) = sets S"
-    and M_eq: "\<And>x. M x = (measure_pmf (K x) \<bind> (\<lambda>s. distr (M s) S (op ## s)))"
+    and M_eq: "\<And>x. M x = (measure_pmf (K x) \<bind> (\<lambda>s. distr (M s) S ((##) s)))"
   shows "T = M"
 proof
   fix x show "T x = M x"
@@ -1211,7 +1211,7 @@ proof -
       done }
   note step = this
   show ?unfold
-    by (subst step) (auto intro!: arg_cong2[where f="op +"])
+    by (subst step) (auto intro!: arg_cong2[where f="(+)"])
 qed
 
 lemma reward_until_simps[simp]:
@@ -1351,7 +1351,7 @@ proof (rule T_bisim)
 
   obtain a b where x_eq: "x = (a, b)"
     by (cases x) auto
-  show "?B x = (measure_pmf (Kp x) \<bind> (\<lambda>s. distr (?B s) S (op ## s)))"
+  show "?B x = (measure_pmf (Kp x) \<bind> (\<lambda>s. distr (?B s) S ((##) s)))"
     unfolding x_eq
     apply (subst K1.T_eq_bind')
     apply (subst K2.T_eq_bind')

@@ -807,7 +807,7 @@ lemma factored_char_poly_norm_bound: assumes A: "A \<in> carrier_mat n n"
   and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: real_normed_field) \<leftarrow> as. [:- a, 1:])"
   and jnf_exists: "\<exists> n_as. jordan_nf A n_as" 
   and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
-  and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> N"
+  and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter ((=) a) as) \<le> N"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
 proof -
   from jnf_exists obtain n_as 
@@ -827,15 +827,15 @@ proof -
       unfolding in_set_conv_decomp by auto
     then obtain p where "?cp2 = [: -a, 1 :]^n * p" unfolding n_as by auto
     from cp[unfolded this] have dvd: "[: -a, 1 :] ^ n dvd ?cp1" by auto
-    let ?as = "filter (op = a) as"
+    let ?as = "filter ((=) a) as"
     let ?pn = "\<lambda> as. \<Prod>a\<leftarrow>as. [:- a, 1:]"
     let ?p = "\<lambda> as. \<Prod>a\<leftarrow>as. [: a, 1:]"
     have "?pn as = ?p (map uminus as)" by (induct as, auto)
     from poly_linear_exp_linear_factors[OF dvd[unfolded this]] 
-    have "n \<le> length (filter (op = (- a)) (map uminus as))" .
-    also have "\<dots> = length (filter (op = a) as)" 
+    have "n \<le> length (filter ((=) (- a)) (map uminus as))" .
+    also have "\<dots> = length (filter ((=) a) as)" 
       by (induct as, auto)
-    finally have filt: "n \<le> length (filter (op = a) as)" .
+    finally have filt: "n \<le> length (filter ((=) a) as)" .
     {
       assume "0 < n"
       with filt obtain b bs where "?as = b # bs" by (cases ?as, auto)

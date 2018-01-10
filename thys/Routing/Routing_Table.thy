@@ -38,7 +38,7 @@ definition valid_prefixes where
 lemma valid_prefixes_split: "valid_prefixes (r#rs) \<Longrightarrow> valid_prefix (routing_match r) \<and> valid_prefixes rs"
   using valid_prefixes_def by force
 
-lemma foldr_True_set: "foldr (\<lambda>x. op \<and> (f x)) l True = (\<forall>x \<in> set l. f x)"
+lemma foldr_True_set: "foldr (\<lambda>x. (\<and>) (f x)) l True = (\<forall>x \<in> set l. f x)"
   by (induction l) simp_all
 lemma valid_prefixes_alt_def: "valid_prefixes r = (\<forall>e \<in> set r. valid_prefix (routing_match e))"
   unfolding valid_prefixes_def
@@ -399,7 +399,7 @@ The resulting list will represent a function from port to IP wordinterval.
 
 definition "reduce_range_destination l \<equiv>
 let ps = remdups (map fst l) in
-let c = \<lambda>s. (wordinterval_Union \<circ> map snd \<circ> filter ((op = s) \<circ> fst)) l in
+let c = \<lambda>s. (wordinterval_Union \<circ> map snd \<circ> filter (((=) s) \<circ> fst)) l in
 [(p, c p). p \<leftarrow> ps]
 "
 

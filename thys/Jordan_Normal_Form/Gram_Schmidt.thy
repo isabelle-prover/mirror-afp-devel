@@ -90,7 +90,7 @@ proof (rule sum.cong[OF refl])
 qed
 
 abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring" (infix "\<bullet>c" 70)
-  where "op \<bullet>c == \<lambda>v w. v \<bullet> conjugate\<^sub>v w"
+  where "(\<bullet>c) == \<lambda>v w. v \<bullet> conjugate\<^sub>v w"
 
 lemma vec_conjugate_conjugate_sprod[simp]:
   assumes v[simp]: "v : carrier_vec n" and w[simp]: "w : carrier_vec n"

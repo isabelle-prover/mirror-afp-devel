@@ -51,7 +51,7 @@ where "rel_envir p f g \<longleftrightarrow> all_envir (const p \<diamondop> f \
 lemma rel_envir_conv: "rel_envir p f g \<longleftrightarrow> (\<forall>x. p (f x) (g x))"
 by(auto simp add: rel_envir_def)
 
-lemma rel_envir_conv_rel_fun: "rel_envir = rel_fun op ="
+lemma rel_envir_conv_rel_fun: "rel_envir = rel_fun (=)"
 by(simp add: rel_envir_conv rel_fun_def fun_eq_iff)
 
 lemma rel_envirI [Pure.intro!, intro!]: "(\<And>x. p (f x) (g x)) \<Longrightarrow> rel_envir p f g"

@@ -45,7 +45,7 @@ by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 lemma shiftl_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(pcr_word ===> op = ===> pcr_word) op << op <<"
+  shows "(pcr_word ===> (=) ===> pcr_word) (<<) (<<)"
 by(auto intro!: rel_funI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
 
 lemma set_bits_K_False [simp]: "set_bits (\<lambda>_. False) = (0 :: 'a :: len0 word)"

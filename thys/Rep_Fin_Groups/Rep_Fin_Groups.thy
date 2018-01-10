@@ -121,7 +121,7 @@ qed
 subsubsection {* @{text strip_while} *}
 
 lemma strip_while_0_nnil :
-  "as \<noteq> [] \<Longrightarrow> set as \<noteq> 0 \<Longrightarrow> strip_while (op = 0) as \<noteq> []"
+  "as \<noteq> [] \<Longrightarrow> set as \<noteq> 0 \<Longrightarrow> strip_while ((=) 0) as \<noteq> []"
   by (induct as rule: rev_nonempty_induct) auto
 
 subsubsection {* @{text sum_list} *}
@@ -2737,7 +2737,7 @@ proof (intro_locales)
     fix x y assume xy: "x \<in> (\<Oplus>G\<leftarrow>Gs. G)" "y \<in> (\<Oplus>G\<leftarrow>Gs. G)"
     with assms(1,2) have "(\<Oplus>Gs\<leftarrow>(x+y)) = [x+y. (x,y)\<leftarrow>zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y)]"
       using AbGroup_inner_dirsum_el_decomp_plus by fast
-    hence "(\<Oplus>Gs\<leftarrow>(x+y)) = map (case_prod op +) (zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y))"
+    hence "(\<Oplus>Gs\<leftarrow>(x+y)) = map (case_prod (+)) (zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y))"
       using concat_map_split_eq_map_split_zip by simp
     moreover from assms xy
       have  "n < length (\<Oplus>Gs\<leftarrow>x)" "n < length (\<Oplus>Gs\<leftarrow>y)"
@@ -3073,7 +3073,7 @@ lemmas set_plus_closed = set_plus_closed
 lemmas sum_closed   = AbGroup.sum_closed[OF AbGroup]
 
 lemma map_smult_closed :
-  "r \<in> R \<Longrightarrow> set ms \<subseteq> M \<Longrightarrow> set (map (op \<cdot> r) ms) \<subseteq> M"
+  "r \<in> R \<Longrightarrow> set ms \<subseteq> M \<Longrightarrow> set (map ((\<cdot>) r) ms) \<subseteq> M"
   using smult_closed by (induct ms) auto
 
 lemma zero_smult : "m \<in> M \<Longrightarrow> 0 \<cdot> m = 0"
@@ -3467,16 +3467,16 @@ lemma lincomb_snoc0 : "set ms \<subseteq> M \<Longrightarrow> (as@[0]) \<bullet>
 
 lemma lincomb_strip_while_0coeffs :
   assumes "set ms \<subseteq> M"
-  shows   "(strip_while (op = 0) as) \<bullet>\<cdot> ms = as \<bullet>\<cdot> ms"
+  shows   "(strip_while ((=) 0) as) \<bullet>\<cdot> ms = as \<bullet>\<cdot> ms"
 proof (induct as rule: rev_induct)
   case (snoc a as)
-  hence caseassm: "strip_while (op = 0) as \<bullet>\<cdot> ms = as \<bullet>\<cdot> ms" by fast
+  hence caseassm: "strip_while ((=) 0) as \<bullet>\<cdot> ms = as \<bullet>\<cdot> ms" by fast
   show ?case
   proof (cases "a = 0")
     case True
     moreover with assms have "(as@[a]) \<bullet>\<cdot> ms = as \<bullet>\<cdot> ms"
       using lincomb_snoc0 by fast
-    ultimately show "strip_while (op = 0) (as @ [a]) \<bullet>\<cdot> ms = (as@[a]) \<bullet>\<cdot> ms"
+    ultimately show "strip_while ((=) 0) (as @ [a]) \<bullet>\<cdot> ms = (as@[a]) \<bullet>\<cdot> ms"
       using caseassm by simp
   qed simp
 qed simp
@@ -4327,7 +4327,7 @@ lemma (in RModule) RModuleIsoI :
           "\<And>r m. r \<in> R \<Longrightarrow> m \<in> M \<Longrightarrow> T (r \<cdot> m) = smult' r (T m)"
   shows   "RModuleIso R smult M smult' T N"
 proof (rule RModuleIso.intro)
-  from assms show "RModuleHom R op \<cdot> M smult' T"
+  from assms show "RModuleHom R (\<cdot>) M smult' T"
     using GroupIso.axioms(1) RModuleHomI by fastforce
   from assms(1) show "RModuleIso_axioms M T N"
     using GroupIso.bijective by unfold_locales
@@ -4342,7 +4342,7 @@ lemma (in RModule) trivial_RModuleHom :
 lemma (in RModule) RModHom_idhom : "RModuleHom R smult M smult (id\<down>M)"
   using RModule_axioms GroupHom_idhom
 proof (rule RModuleHom.intro)
-  show "RModuleHom_axioms R op \<cdot> M op \<cdot> (id \<down> M)"
+  show "RModuleHom_axioms R (\<cdot>) M (\<cdot>) (id \<down> M)"
     using smult_closed by unfold_locales simp
 qed
 
@@ -4417,10 +4417,10 @@ lemma RModuleHom_restrict0_submodule :
   assumes "RSubmodule N"
   shows   "RModuleHom R smult N smult' (T \<down> N)"
 proof (rule RModuleHom.intro)
-  from assms show "RModule R op \<cdot> N" by fast
+  from assms show "RModule R (\<cdot>) N" by fast
   from assms show "GroupHom N (T \<down> N)"
     using RModule.Group GroupHom_restrict0_subgroup by fast
-  show "RModuleHom_axioms R op \<cdot> N op \<star> (T \<down> N)"
+  show "RModuleHom_axioms R (\<cdot>) N (\<star>) (T \<down> N)"
   proof
     fix r m assume "r \<in> R" "m \<in> N"
     with assms show "(T \<down> N) (r \<cdot> m) = r \<star> (T \<down> N) m"
@@ -4629,7 +4629,7 @@ locale FinDimVectorSpace = VectorSpace
 + assumes findim: "findim V"
 
 lemma (in VectorSpace) FinDimVectorSpaceI :
-  "findim V \<Longrightarrow> FinDimVectorSpace op \<cdot> V"
+  "findim V \<Longrightarrow> FinDimVectorSpace (\<cdot>) V"
   by unfold_locales fast
 
 context VectorSpace
@@ -4980,15 +4980,15 @@ lemma smult_unique_scalars :
   assumes vs: "basis_for V vs" and v: "v \<in> V"
   defines as: "as \<equiv> (THE cs. length cs = length vs \<and> v = cs \<bullet>\<cdot> vs)"
   and     bs: "bs \<equiv> (THE cs. length cs = length vs \<and> a \<cdot> v = cs \<bullet>\<cdot> vs)"
-  shows   "bs = map (op * a) as"
+  shows   "bs = map (( * ) a) as"
 proof-
   from vs v as have "length as = length vs \<and> v = as \<bullet>\<cdot> vs"
     using basis_for_obtain_unique_scalars theI'[
             of "\<lambda>cs. length cs = length vs \<and> v = cs \<bullet>\<cdot> vs"
           ]
     by    auto
-  with vs have "length (map (op * a) as)
-                      = length vs \<and> a \<cdot> v = (map (op * a) as) \<bullet>\<cdot> vs"
+  with vs have "length (map (( * ) a) as)
+                      = length vs \<and> a \<cdot> v = (map (( * ) a) as) \<bullet>\<cdot> vs"
     using smult_lincomb by auto
   moreover from vs v have "\<exists>! cs. length cs = length vs \<and> a \<cdot> v = cs \<bullet>\<cdot> vs"
     using smult_closed basis_for_obtain_unique_scalars by fast
@@ -5111,12 +5111,12 @@ lemma Subspace_dim_le :
 proof-
   from assms obtain us where "basis_for U us"
     using Subspace_is_findim SubspaceD1
-          VectorSpace.FinDimVectorSpaceI[of "op \<cdot>" U]
-          FinDimVectorSpace.basis_ex[of "op \<cdot>" U]
+          VectorSpace.FinDimVectorSpaceI[of "(\<cdot>)" U]
+          FinDimVectorSpace.basis_ex[of "(\<cdot>)" U]
     by    auto
   with assms show ?thesis
     using RSpan_contains_spanset[of us] lin_independent_length_le_dim[of us]
-          SubspaceD1 VectorSpace.dim_eq_size_basis[of "op \<cdot>" U us]
+          SubspaceD1 VectorSpace.dim_eq_size_basis[of "(\<cdot>)" U us]
     by    auto
 qed
 
@@ -5126,8 +5126,8 @@ lemma Subspace_eqdim_imp_equal :
 proof-
   from assms(1) obtain us where us: "basis_for U us"
     using Subspace_is_findim SubspaceD1
-          VectorSpace.FinDimVectorSpaceI[of "op \<cdot>" U]
-          FinDimVectorSpace.basis_ex[of "op \<cdot>" U]
+          VectorSpace.FinDimVectorSpaceI[of "(\<cdot>)" U]
+          FinDimVectorSpace.basis_ex[of "(\<cdot>)" U]
     by    auto
   with assms(1) obtain vs where vs: "basis_for V (vs@us)"
     using extend_Subspace_basis[of U us] by fast
@@ -5315,7 +5315,7 @@ lemma (in VectorSpace) basis_im_defines_hom :
   shows   "\<exists>! T. VectorSpaceHom smult V smult' T \<and> map T vs = ws"
 proof (rule ex_ex1I)
   define T where "T = restrict0 (\<lambda>v. (THE as. length as = length vs \<and> v = as \<bullet>\<cdot> vs) \<bullet>\<star> ws) V"
-  have "VectorSpaceHom op \<cdot> V smult' T"
+  have "VectorSpaceHom (\<cdot>) V smult' T"
   proof
     fix v v' assume vv': "v \<in> V" "v' \<in> V"
     with T_def lincomb' basisV basisV_im(1) show "T (v + v') = T v + T v'"
@@ -5351,12 +5351,12 @@ proof (rule ex_ex1I)
     qed
     thus "\<forall>i<length (map T vs). map T vs ! i = ws ! i" by fast
   qed
-  ultimately have "VectorSpaceHom op \<cdot> V smult' T \<and> map T vs = ws" by fast
-  thus "\<exists>T. VectorSpaceHom op \<cdot> V smult' T \<and> map T vs = ws" by fast
+  ultimately have "VectorSpaceHom (\<cdot>) V smult' T \<and> map T vs = ws" by fast
+  thus "\<exists>T. VectorSpaceHom (\<cdot>) V smult' T \<and> map T vs = ws" by fast
 next
   fix S T assume
-    "VectorSpaceHom op \<cdot> V smult' S \<and> map S vs = ws" 
-    "VectorSpaceHom op \<cdot> V smult' T \<and> map T vs = ws"
+    "VectorSpaceHom (\<cdot>) V smult' S \<and> map S vs = ws" 
+    "VectorSpaceHom (\<cdot>) V smult' T \<and> map T vs = ws"
   with basisV show "S = T"
     using VectorSpaceHom.same_image_on_spanset_imp_same_hom map_eq_conv
     by    fastforce  (* slow *)
@@ -5408,7 +5408,7 @@ proof
                           \<inter> {T. \<forall>a. \<forall>v\<in>V. T (a \<cdot> v) = a \<star> (T v)}"
     have "VectorSpaceHom smult V smult' T"
     proof (rule VectorSpaceHom.intro, rule ModuleHom.intro, rule RModuleHom.intro)
-      show "RModule UNIV op \<cdot> V" ..
+      show "RModule UNIV (\<cdot>) V" ..
       from T show "GroupHom V T" using GroupHomSetD_GroupHom by fast
       from T show "RModuleHom_axioms UNIV smult V smult' T"
         by unfold_locales fast
@@ -5448,7 +5448,7 @@ next
             VectorSpace.smult_distrib_left_diff[OF assms, of a "S v" "T v"]
       by    fastforce
   qed
-  ultimately show "S - T \<in> VectorSpaceHomSet op \<cdot> V op \<star> W"
+  ultimately show "S - T \<in> VectorSpaceHomSet (\<cdot>) V (\<star>) W"
     using VectorSpaceHomSet_is_fmaps_in_GroupHomSet[of smult' W] by fast
 qed
 
@@ -5460,17 +5460,17 @@ lemma VectorSpace_VectorSpaceHomSet :
   shows   "VectorSpace hom_smult (VectorSpaceHomSet smult V smult' W)"
 proof (rule VectorSpace.intro, rule Module.intro, rule RModule.intro, rule R_scalar_mult)
 
-  from VSpW show "Group (VectorSpaceHomSet op \<cdot> V op \<star> W)"
+  from VSpW show "Group (VectorSpaceHomSet (\<cdot>) V (\<star>) W)"
     using Group_VectorSpaceHomSet by fast
 
-  show "RModule_axioms UNIV hom_smult (VectorSpaceHomSet op \<cdot> V op \<star> W)"
+  show "RModule_axioms UNIV hom_smult (VectorSpaceHomSet (\<cdot>) V (\<star>) W)"
   proof
     fix a b S T
-    assume S: "S \<in> VectorSpaceHomSet op \<cdot> V op \<star> W"
-      and  T: "T \<in> VectorSpaceHomSet op \<cdot> V op \<star> W"
-    show "a \<star>\<cdot> T \<in> VectorSpaceHomSet op \<cdot> V op \<star> W"
+    assume S: "S \<in> VectorSpaceHomSet (\<cdot>) V (\<star>) W"
+      and  T: "T \<in> VectorSpaceHomSet (\<cdot>) V (\<star>) W"
+    show "a \<star>\<cdot> T \<in> VectorSpaceHomSet (\<cdot>) V (\<star>) W"
     proof (rule VectorSpaceHomSetI)
-      from assms T show "VectorSpaceHom op \<cdot> V op \<star> (a \<star>\<cdot> T)"
+      from assms T show "VectorSpaceHom (\<cdot>) V (\<star>) (a \<star>\<cdot> T)"
         using VectorSpaceHomSetD_VectorSpaceHom VectorSpaceHomSetD_Im
               VectorSpaceHom.VectorSpaceHom_scalar_mul
         by    fast
@@ -5699,19 +5699,19 @@ lemma endpow_list_apply_closed :
   using VEnd_endpow VectorSpaceEnd.endomorph by fastforce
 
 lemma map_endpow_Suc :
-  "map endpow [0..<Suc n] = (id\<down>V) # map (op \<circ> T) (map endpow [0..<n])"
+  "map endpow [0..<Suc n] = (id\<down>V) # map ((\<circ>) T) (map endpow [0..<n])"
 proof (induct n)
   case (Suc k)
   hence "map endpow [0..<Suc (Suc k)] = id \<down> V
-              # map (op \<circ> T) (map endpow [0..<k]) @ map (op \<circ> T) [endpow k]"
+              # map ((\<circ>) T) (map endpow [0..<k]) @ map ((\<circ>) T) [endpow k]"
     by auto
-  also have "\<dots> = id \<down> V # map (op \<circ> T) (map endpow ([0..<Suc k]))" by simp
+  also have "\<dots> = id \<down> V # map ((\<circ>) T) (map endpow ([0..<Suc k]))" by simp
   finally show ?case by fast
 qed simp
 
 lemma T_endpow_list_apply_commute :
   "map T (map (\<lambda>S. S v) (map endpow [0..<n]))
-        = map (\<lambda>S. S v) (map (op \<circ> T) (map endpow [0..<n]))"
+        = map (\<lambda>S. S v) (map ((\<circ>) T) (map endpow [0..<n]))"
   by (induct n) auto
 
 lemma polymap0 : "polymap 0 = 0"
@@ -5750,20 +5750,20 @@ next
               = (a # (coeffs p)) \<bullet>\<cdot>\<cdot> (map endpow [0..<Suc (Suc (degree p))])"
     using polymap_def by simp
   also have "\<dots> = (a # (coeffs p))
-                   \<bullet>\<cdot>\<cdot> ((id\<down>V) # map (op \<circ> T) (map endpow [0..<Suc (degree p)]))"
+                   \<bullet>\<cdot>\<cdot> ((id\<down>V) # map ((\<circ>) T) (map endpow [0..<Suc (degree p)]))"
     using map_endpow_Suc[of "Suc (degree p)"] by fastforce
   also have "\<dots> = a \<cdot>\<cdot> (id\<down>V) + (coeffs p)
-                  \<bullet>\<cdot>\<cdot> (map (op \<circ> T) (map endpow [0..<Suc (degree p)]))"
+                  \<bullet>\<cdot>\<cdot> (map ((\<circ>) T) (map endpow [0..<Suc (degree p)]))"
     using scalar_mult.lincomb_Cons by simp
   also have "\<dots> = a \<cdot>\<cdot> (id\<down>V) + (\<Sum>(c,S)
-                  \<leftarrow>zip (coeffs p) (map (op \<circ> T) (map endpow [0..<Suc (degree p)])).
+                  \<leftarrow>zip (coeffs p) (map ((\<circ>) T) (map endpow [0..<Suc (degree p)])).
                       c \<cdot>\<cdot> S)"
     using scalar_mult.lincomb_def by simp
   finally have calc:
     "polymap (pCons a p) = a \<cdot>\<cdot> (id\<down>V)
       + (\<Sum>(c,k)\<leftarrow>zip (coeffs p) [0..<Suc (degree p)]. c \<cdot>\<cdot> (T \<circ> (endpow k)))"
     using sum_list_prod_map2[
-            of "\<lambda>c S. c \<cdot>\<cdot> S" "coeffs p" "op \<circ> T" "map endpow [0..<Suc (degree p)]"
+            of "\<lambda>c S. c \<cdot>\<cdot> S" "coeffs p" "(\<circ>) T" "map endpow [0..<Suc (degree p)]"
           ]
           sum_list_prod_map2[
             of "\<lambda>c S. c \<cdot>\<cdot> (T \<circ> S)" "coeffs p" endpow "[0..<Suc (degree p)]"
@@ -5909,22 +5909,22 @@ next
       using endpow_list_apply_closed[of v "Suc (degree p)"] distrib_lincomb lincomb_Cons
       by    auto
     have 2: "map T (map (\<lambda>S. S v) (map endpow [0..<Suc (degree p)]))
-                  = map (\<lambda>S. S v) (map (op \<circ> T) (map endpow [0..<Suc (degree p)]))"
+                  = map (\<lambda>S. S v) (map ((\<circ>) T) (map endpow [0..<Suc (degree p)]))"
       using T_endpow_list_apply_commute[of v "Suc (degree p)"] by simp
     from 1 2
       have  "polymap (pCons a p) v = (coeffs (pCons a p)) \<bullet>\<cdot> (v #
-                  map (\<lambda>S. S v) (map (op \<circ> T) (map endpow [0..<Suc (degree p)])))"
+                  map (\<lambda>S. S v) (map ((\<circ>) T) (map endpow [0..<Suc (degree p)])))"
       using subst[
               OF 2, of "\<lambda>x. polymap (pCons a p) v = (coeffs (pCons a p)) \<bullet>\<cdot> (v # x)"
             ]
       by    simp
     with assms
       have 3: "polymap (pCons a p) v = (coeffs (pCons a p))
-                    \<bullet>\<cdot> (map (\<lambda>S. S v) (id\<down>V # map (op \<circ> T)
+                    \<bullet>\<cdot> (map (\<lambda>S. S v) (id\<down>V # map ((\<circ>) T)
                       (map endpow [0..<Suc (degree p)])))"
       by   simp
     from False pCons(1)
-      have  4: "id \<down> V # map (op \<circ> T) (map endpow [0..<Suc (degree p)])
+      have  4: "id \<down> V # map ((\<circ>) T) (map endpow [0..<Suc (degree p)])
                       = map endpow [0..<Suc (degree (pCons a p))]"
       using map_endpow_Suc[of "Suc (degree p)", THEN sym]
       by    simp
@@ -6027,7 +6027,7 @@ proof-
       by    simp
     from p_n0 p_def as(2) Tpows_v_def Tpows_def
       have  2: "take (Suc (degree p)) [0..<Suc (dim V)] = [0..<Suc (degree p)]"
-      using length_coeffs_degree[of p] length_strip_while_le[of "op = 0" as]
+      using length_coeffs_degree[of p] length_strip_while_le[of "(=) 0" as]
             take_upt[of 0 "Suc (degree p)" "Suc (dim V)"]
       by    simp
     from 1 Tpows'_def have "take (Suc (degree p)) Tpows = Tpows'"
@@ -6169,7 +6169,7 @@ lemma Gmult_closed : "g \<in> G \<Longrightarrow> v \<in> V \<Longrightarrow> g 
   using FG_fddg_closed smult_closed GmultD by simp
 
 lemma map_Gmult_closed :
-  "g \<in> G \<Longrightarrow> set vs \<subseteq> V \<Longrightarrow> set (map (op *\<cdot> g) vs) \<subseteq> V"
+  "g \<in> G \<Longrightarrow> set vs \<subseteq> V \<Longrightarrow> set (map (( *\<cdot>) g) vs) \<subseteq> V"
   using Gmult_def FG_fddg_closed map_smult_closed[of "1 \<delta>\<delta> g" vs] by auto
 
 lemma Gmult0 :
@@ -6235,7 +6235,7 @@ lemma GSubspace_is_FGModule :
   assumes "GSubspace U"
   shows   "FGModule G smult U"
 proof (rule FGModule.intro, rule GroupG)
-  from assms show "RModule FG op \<cdot> U" by fast
+  from assms show "RModule FG (\<cdot>) U" by fast
 qed (unfold_locales)
 
 lemma restriction_to_subgroup_is_module :
@@ -6244,7 +6244,7 @@ lemma restriction_to_subgroup_is_module :
   shows   "FGModule H smult V"
 proof (rule FGModule.intro)
   from subgrp show "Group H" by fast
-  from assms show "RModule (Group.group_ring H) op \<cdot> V"
+  from assms show "RModule (Group.group_ring H) (\<cdot>) V"
     using ActingGroup.Subgroup_imp_Subring SModule_restrict_scalars by fast
 qed
 
@@ -6335,12 +6335,12 @@ proof-
   have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs = (1 \<delta>\<delta> g) \<cdot> (\<Sum>(a,v)\<leftarrow>zip as vs. a \<sharp>\<cdot> v)"
     using Gmult_def scalar_mult.lincomb_def[of fsmult] by simp
   with assms have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs
-                        = sum_list (map (op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y)) (zip as vs))"
+                        = sum_list (map ((\<cdot>) (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y)) (zip as vs))"
     using set_zip_rightD fsmult_closed FG_fddg_closed[of g "1::'f"]
-          smult_sum_list_distrib[of "1 \<delta>\<delta> g" "map (case_prod op \<sharp>\<cdot>) (zip as vs)"]
-          map_map[of "op \<cdot> (1 \<delta>\<delta> g)" "case_prod op \<sharp>\<cdot>" "zip as vs"]
+          smult_sum_list_distrib[of "1 \<delta>\<delta> g" "map (case_prod (\<sharp>\<cdot>)) (zip as vs)"]
+          map_map[of "(\<cdot>) (1 \<delta>\<delta> g)" "case_prod (\<sharp>\<cdot>)" "zip as vs"]
     by    fastforce
-  moreover have "op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y) = (\<lambda>(x,y). (1 \<delta>\<delta> g) \<cdot> (x \<sharp>\<cdot> y))"
+  moreover have "(\<cdot>) (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y) = (\<lambda>(x,y). (1 \<delta>\<delta> g) \<cdot> (x \<sharp>\<cdot> y))"
     by auto
   ultimately have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs = sum_list (map (\<lambda>(x,y). g *\<cdot> x \<sharp>\<cdot> y) (zip as vs))"
     using Gmult_def by simp
@@ -6413,7 +6413,7 @@ lemma trivial_FGModuleHom :
   assumes "\<And>r. r \<in> FG \<Longrightarrow> smult' r 0 = 0"
   shows   "FGModuleHom G smult V smult' 0"
 proof (rule FGModuleHom.intro)
-  from assms show "RModuleHom FG op \<cdot> V smult' 0"
+  from assms show "RModuleHom FG (\<cdot>) V smult' 0"
     using trivial_RModuleHom by auto
 qed (unfold_locales)
 
@@ -6479,7 +6479,7 @@ lemma VecHom_GMap_on_fbasis_is_FGModuleHom :
   shows   "FGModuleHom G smult V smult' T"
 proof (rule VecHom_GMap_is_FGModuleHom)
   from fsmult' hom
-    show "VectorSpaceHom op \<sharp>\<cdot> V (aezfun_scalar_mult.fsmult op \<star>) T"
+    show "VectorSpaceHom (\<sharp>\<cdot>) V (aezfun_scalar_mult.fsmult (\<star>)) T"
     by   fast
 next
   fix g v assume g: "g \<in> G" and v: "v \<in> V"
@@ -6499,7 +6499,7 @@ next
     using g(1) fbasis Im_W(2) Gmult' flincomb' 
           FGModule.Gmult_flincomb_comm[OF Im_W(1), of g "map T vs"]
     by    fastforce
-  thus "T (g *\<cdot> v) = aezfun_scalar_mult.Gmult op \<star> g (T v)"
+  thus "T (g *\<cdot> v) = aezfun_scalar_mult.Gmult (\<star>) g (T v)"
     using fbasis fsmult' Gmult' flincomb' cs
           VectorSpaceHom.distrib_lincomb[OF hom]
     by auto
@@ -6562,7 +6562,7 @@ lemma restriction_to_subgroup_is_hom :
   shows   "FGModuleHom H smult V smult' T"
 proof (rule FGModule.FGModuleHomI_fromaxioms)
   have "FGModule G smult V" ..
-  with assms show "FGModule H op \<cdot> V"
+  with assms show "FGModule H (\<cdot>) V"
     using FGModule.restriction_to_subgroup_is_module by fast
   from supp show "supp T \<subseteq> V" by fast
   from assms
@@ -6574,7 +6574,7 @@ lemma FGModuleHom_restrict0_GSubspace :
   assumes "GSubspace U"
   shows   "FGModuleHom G smult U smult' (T \<down> U)"
 proof (rule FGModuleHom.intro)
-  from assms show "RModuleHom FG op \<cdot> U op \<star> (T \<down> U)"
+  from assms show "RModuleHom FG (\<cdot>) U (\<star>) (T \<down> U)"
     using RModuleHom_restrict0_submodule by fast
 qed (unfold_locales)
 
@@ -6637,7 +6637,7 @@ lemma (in FGModule) VecEnd_GMap_is_FGModuleEnd :
   and     G_map: "\<And>g v. g \<in> G \<Longrightarrow> v \<in> V \<Longrightarrow> T (g *\<cdot> v) = g *\<cdot> (T v)"
   shows   "FGModuleEnd G smult V T"
 proof (rule FGModuleEnd.intro, rule VecHom_GMap_is_FGModuleHom)
-  from endo show "VectorSpaceHom op \<sharp>\<cdot> V op \<sharp>\<cdot> T"
+  from endo show "VectorSpaceHom (\<sharp>\<cdot>) V (\<sharp>\<cdot>) T"
     using VectorSpaceEnd.axioms(1) by fast
   from endo show "T ` V \<subseteq> V" using VectorSpaceEnd.endomorph by fast
   from endo show "FGModuleEnd_axioms V T"
@@ -6680,7 +6680,7 @@ abbreviation "invT \<equiv> (the_inv_into V T) \<down> W"
 
 lemma RModuleIso : "RModuleIso FG smult V smult' T W"
 proof (rule RModuleIso.intro)
-  show "RModuleHom FG op \<cdot> V op \<star> T"
+  show "RModuleHom FG (\<cdot>) V (\<star>) T"
     using FGModuleIso_axioms FGModuleIso.axioms(1) FGModuleHom.axioms(2)
     by    fast
 qed (unfold_locales, rule bijective)
@@ -6691,7 +6691,7 @@ lemma FGModuleIso_restrict0_GSubspace :
   assumes "GSubspace U"
   shows   "FGModuleIso G smult U smult' (T \<down> U) (T ` U)"
 proof (rule FGModuleIso.intro)
-  from assms show "FGModuleHom G op \<cdot> U op \<star> (T \<down> U)"
+  from assms show "FGModuleHom G (\<cdot>) U (\<star>) (T \<down> U)"
     using FGModuleHom_restrict0_GSubspace by fast
   show "FGModuleIso_axioms U (T \<down> U) (T ` U)"
   proof
@@ -6703,7 +6703,7 @@ qed
 
 lemma inv : "FGModuleIso G smult' W smult invT V"
 proof (rule FGModuleIso.intro, rule FGModuleHom.intro)
-  show "RModuleHom FG op \<star> W op \<cdot> invT"
+  show "RModuleHom FG (\<star>) W (\<cdot>) invT"
     using RModuleIso.inv[OF RModuleIso] RModuleIso.axioms(1) by fast
   show "FGModuleIso_axioms W invT V" 
     using RModuleIso.inv[OF RModuleIso] RModuleIso.bijective by unfold_locales
@@ -6713,7 +6713,7 @@ lemma FGModIso_composite_left :
   assumes "FGModuleIso G smult' W smult'' S X"
   shows   "FGModuleIso G smult V smult'' (S \<circ> T) X"
 proof (rule FGModuleIso.intro)
-  from assms show "FGModuleHom G op \<cdot> V smult'' (S \<circ> T)"
+  from assms show "FGModuleHom G (\<cdot>) V smult'' (S \<circ> T)"
     using FGModuleIso.axioms(1) Im FGModHom_composite_left by fast
   show "FGModuleIso_axioms V (S \<circ> T) X"
     using bijective FGModuleIso.bijective[OF assms] bij_betw_trans by unfold_locales
@@ -6842,13 +6842,13 @@ proof
     show "T \<in> FGModuleHomSet G smult V smult' W"
     proof (rule FGModuleHomSetI, rule VecHom_GMap_is_FGModuleHom)
       from T fsmult'
-        show  "VectorSpaceHom op \<sharp>\<cdot> V (aezfun_scalar_mult.fsmult smult') T"
+        show  "VectorSpaceHom (\<sharp>\<cdot>) V (aezfun_scalar_mult.fsmult smult') T"
         using VectorSpaceHomSetD_VectorSpaceHom
         by    fast
       from T show "T ` V \<subseteq> W" using VectorSpaceHomSetD_Im by fast
       from T Gmult' 
         show  "\<And>g v. g \<in> G \<Longrightarrow> v \<in> V
-                    \<Longrightarrow> T (g *\<cdot> v) = aezfun_scalar_mult.Gmult op \<star> g (T v)" 
+                    \<Longrightarrow> T (g *\<cdot> v) = aezfun_scalar_mult.Gmult (\<star>) g (T v)" 
         by    fast
       from T show "T ` V \<subseteq> W" using VectorSpaceHomSetD_Im by fast
     qed (rule FGModW)
@@ -6864,14 +6864,14 @@ lemma Group_FGModuleHomSet :
   assumes FGModW   : "FGModule G smult' W"
   shows   "Group (FGModuleHomSet G smult V smult' W)"
 proof
-  from FGModW show "FGModuleHomSet G op \<cdot> V smult' W \<noteq> {}"
+  from FGModW show "FGModuleHomSet G (\<cdot>) V smult' W \<noteq> {}"
     using FGModule.smult_zero trivial_FGModuleHom[of smult'] FGModule.zero_closed
           FGModuleHomSetI
     by    fastforce
 next
   fix S T
-  assume S: "S \<in> FGModuleHomSet G op \<cdot> V smult' W"
-    and  T: "T \<in> FGModuleHomSet G op \<cdot> V smult' W"
+  assume S: "S \<in> FGModuleHomSet G (\<cdot>) V smult' W"
+    and  T: "T \<in> FGModuleHomSet G (\<cdot>) V smult' W"
   with assms
     have  ST: "S \<in> (VectorSpaceHomSet fsmult V fsmult' W)
                     \<inter> {T. \<forall>g\<in>G. \<forall>v\<in>V. T (g *\<cdot> v) = g *\<star> T v}"
@@ -6896,7 +6896,7 @@ next
             FGModule.Gmult_distrib_left[OF FGModW, of g "S v" "- T v"]
       by    auto
   qed
-  ultimately show "S - T \<in> FGModuleHomSet G op \<cdot> V smult' W"
+  ultimately show "S - T \<in> FGModuleHomSet G (\<cdot>) V smult' W"
     using fsmult' Gmult'
           FGModuleHomSet_is_Gmaps_in_VectorSpaceHomSet[OF FGModW]
     by    fast
@@ -6916,18 +6916,18 @@ lemma Subspace_FGModuleHomSet :
                   (FGModuleHomSet G smult V smult' W)"
 proof (rule VectorSpace.SubspaceI)
   from hom_fsmult fsmult'
-    show  "VectorSpace op \<sharp>\<star>\<cdot> (VectorSpaceHomSet op \<sharp>\<cdot> V op \<sharp>\<star> W)"
+    show  "VectorSpace (\<sharp>\<star>\<cdot>) (VectorSpaceHomSet (\<sharp>\<cdot>) V (\<sharp>\<star>) W)"
     using FGModule.fVectorSpace[OF FGModW]
           VectorSpace.VectorSpace_VectorSpaceHomSet[OF fVectorSpace]
     by    fast
   from fsmult' Gmult' FGModW
-    show  "Group (FGModuleHomSet G op \<cdot> V op \<star> W)
-                \<and> FGModuleHomSet G op \<cdot> V op \<star> W
-                  \<subseteq> VectorSpaceHomSet op \<sharp>\<cdot> V op \<sharp>\<star> W"
+    show  "Group (FGModuleHomSet G (\<cdot>) V (\<star>) W)
+                \<and> FGModuleHomSet G (\<cdot>) V (\<star>) W
+                  \<subseteq> VectorSpaceHomSet (\<sharp>\<cdot>) V (\<sharp>\<star>) W"
     using Group_FGModuleHomSet FGModuleHomSet_is_Gmaps_in_VectorSpaceHomSet
     by    fast
 next
-  fix a T assume T: "T \<in> FGModuleHomSet G op \<cdot> V op \<star> W"
+  fix a T assume T: "T \<in> FGModuleHomSet G (\<cdot>) V (\<star>) W"
   from hom_fsmult fsmult' have "FGModuleHom G smult V smult' (a \<sharp>\<star>\<cdot> T)"
     using FGModuleHomSetD_FGModuleHom[OF T]
           FGModuleHomSetD_Im[OF T] 
@@ -6936,7 +6936,7 @@ next
   moreover from hom_fsmult fsmult' have "(a \<sharp>\<star>\<cdot> T) ` V \<subseteq> W"
     using FGModuleHomSetD_Im[OF T] FGModule.fsmult_closed[OF FGModW]
     by    auto
-  ultimately show "a \<sharp>\<star>\<cdot> T \<in> FGModuleHomSet G op \<cdot> V op \<star> W"
+  ultimately show "a \<sharp>\<star>\<cdot> T \<in> FGModuleHomSet G (\<cdot>) V (\<star>) W"
     using FGModuleHomSetI by fastforce
 qed
 
@@ -7176,7 +7176,7 @@ proof (rule RModuleI)
 
   from assms show "Group (addfunset R M)" using Group_addfunset by fast
 
-  show "RModule_axioms R op \<currency> (addfunset R M)"
+  show "RModule_axioms R (\<currency>) (addfunset R M)"
   proof
     fix r f assume r: "r \<in> R" and f: "f \<in> addfunset R M"
     show "r \<currency> f \<in> addfunset R M"
@@ -7277,7 +7277,7 @@ lemma rrsmult_range : "range (r \<currency> f) \<subseteq> {0} \<union> range f"
 
 lemma FHModule_addfunset : "FGModule H rrsmult (addfunset FH V)"
 proof (rule FGModule.intro)
-  from FH rrsmult show "RModule Supgroup.group_ring op \<currency> (addfunset FH V)"
+  from FH rrsmult show "RModule Supgroup.group_ring (\<currency>) (addfunset FH V)"
     using Group Supgroup.Ring1_RG Ring1.RModule_addfunset by fast
 qed (unfold_locales)
 
@@ -7317,7 +7317,7 @@ qed
 
 lemma FHModule_indspace : "FGModule H rrsmult indV"
 proof (rule FGModule.intro)
-  show "RModule Supgroup.group_ring op \<currency> indV" using FHSubmodule_indspace by fast
+  show "RModule Supgroup.group_ring (\<currency>) indV" using FHSubmodule_indspace by fast
 qed (unfold_locales)
 
 lemmas fVectorSpace_indspace = FGModule.fVectorSpace[OF FHModule_indspace]
@@ -7624,11 +7624,11 @@ lemmas AbGroup = AbGroup
 
 lemma zero_isomorphic_to_FG_zero :
   assumes "V = 0"
-  shows   "isomorphic op * (0::('b,'a) aezfun set)"
+  shows   "isomorphic ( * ) (0::('b,'a) aezfun set)"
 proof
-  show "GRepIso op * 0 0"
+  show "GRepIso ( * ) 0 0"
   proof (rule FGModuleIso.intro)
-    show "GRepHom op * 0" using trivial_FGModuleHom[of "op *"] by simp
+    show "GRepHom ( * ) 0" using trivial_FGModuleHom[of "( * )"] by simp
     show "FGModuleIso_axioms V 0 0"
     proof
       from assms show "bij_betw 0 V 0" unfolding bij_betw_def inj_on_def by simp
@@ -7655,8 +7655,8 @@ qed
 
 lemma (in Group) trivial_IrrFinGroupRepresentation_in_FG :
   "of_nat (card G) \<noteq> (0::'f::field)
-        \<Longrightarrow> IrrFinGroupRepresentation G op * (0::('f,'g) aezfun set)"
-  using trivial_IrrFinGroupRepI[of "op *"] by simp
+        \<Longrightarrow> IrrFinGroupRepresentation G ( * ) (0::('f,'g) aezfun set)"
+  using trivial_IrrFinGroupRepI[of "( * )"] by simp
 
 context FinGroupRepresentation
 begin
@@ -7772,7 +7772,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
   have sumCP_V: "\<And>v. v \<in> V \<Longrightarrow> (\<Sum>g\<in>G. CP g v) \<in> V"
     using finiteG im_CP_V sum_closed by force
 
-  show "VectorSpaceEnd op \<sharp>\<cdot> V T"
+  show "VectorSpaceEnd (\<sharp>\<cdot>) V T"
   proof (
     rule VectorSpaceEndI, rule VectorSpace.VectorSpaceHomI, rule fVectorSpace
   )
@@ -8041,7 +8041,7 @@ proof (induct n rule: full_nat_induct)
           and   indWs: "add_independentS Ws"
           using inner_dirsumD2
           by    auto
-        moreover from IGRep_def Us(1) have "Ball (set Us) (op \<in> 0)"
+        moreover from IGRep_def Us(1) have "Ball (set Us) ((\<in>) 0)"
           using IrrFinGroupRepresentation.axioms(1)[of G fgsmult]
                 FinGroupRepresentation.zero_closed[of G fgsmult]
           by    fast
@@ -8084,7 +8084,7 @@ proof-
     using inner_dirsumD2 by fastforce
   have "FGModuleIso G smult U smult' (T \<down> U) (T ` V)"
   proof (rule FGModuleIso.intro)
-    from U(1) show "FGModuleHom G op \<cdot> U smult' (T \<down> U)"
+    from U(1) show "FGModuleHom G (\<cdot>) U smult' (T \<down> U)"
       using FGModuleHom.FGModuleHom_restrict0_GSubspace[OF hom] by fast
     show "FGModuleIso_axioms U (T \<down> U) (T ` V)"
       unfolding FGModuleIso_axioms_def bij_betw_def
@@ -8188,11 +8188,11 @@ subsubsection {* The group ring is a representation space *}
 
 lemma (in Group) FGModule_FG :
   defines FG: "FG \<equiv> group_ring :: ('f::field, 'g) aezfun set"
-  shows   "FGModule G op * FG"
+  shows   "FGModule G ( * ) FG"
 proof (rule FGModule.intro, rule Group_axioms, rule RModuleI)
   show 1: "Ring1 group_ring" using Ring1_RG by fast
   from 1 FG show "Group FG" using Ring1.axioms(1) by fast
-  from 1 FG show "RModule_axioms group_ring op * FG"
+  from 1 FG show "RModule_axioms group_ring ( * ) FG"
     using Ring1.mult_closed
     by    unfold_locales (auto simp add: algebra_simps)
 qed
@@ -8200,10 +8200,10 @@ qed
 theorem (in Group) FinGroupRepresentation_FG :
   defines FG: "FG \<equiv> group_ring :: ('f::field, 'g) aezfun set"
   assumes good_char: "of_nat (card G) \<noteq> (0::'f)"
-  shows   "FinGroupRepresentation G op * FG"
+  shows   "FinGroupRepresentation G ( * ) FG"
 proof (rule FinGroupRepresentation.intro)
-  from FG show "FGModule G op * FG" using FGModule_FG by fast
-  show "FinGroupRepresentation_axioms G op * FG"
+  from FG show "FGModule G ( * ) FG" using FGModule_FG by fast
+  show "FinGroupRepresentation_axioms G ( * ) FG"
   proof
     from FG good_char obtain gs
       where gs: "set gs = G"
@@ -8211,13 +8211,13 @@ proof (rule FinGroupRepresentation.intro)
                       \<and> f = (\<Sum>(b,g)\<leftarrow>zip bs gs. (b \<delta>\<delta> 0) * (1 \<delta>\<delta> g))"
       using good_card_imp_finite FinGroupI FinGroup.group_ring_spanning_set
       by    fast
-    define xs where "xs = map (op \<delta>\<delta> (1::'f)) gs"
+    define xs where "xs = map ((\<delta>\<delta>) (1::'f)) gs"
     with FG gs(1) have 1: "set xs \<subseteq> FG" using RG_aezdeltafun_closed by auto
-    moreover have "aezfun_scalar_mult.fSpan op * xs = FG"
+    moreover have "aezfun_scalar_mult.fSpan ( * ) xs = FG"
     proof
-      from 1 FG show "aezfun_scalar_mult.fSpan op * xs \<subseteq> FG"
+      from 1 FG show "aezfun_scalar_mult.fSpan ( * ) xs \<subseteq> FG"
         using FGModule_FG FGModule.fSpan_closed by fast
-      show "aezfun_scalar_mult.fSpan op * xs \<supseteq> FG"
+      show "aezfun_scalar_mult.fSpan ( * ) xs \<supseteq> FG"
       proof
         fix x assume "x \<in> FG"
         from this gs(2) obtain bs
@@ -8226,30 +8226,30 @@ proof (rule FinGroupRepresentation.intro)
           by    fast
         from bs(2) xs_def have "x = (\<Sum>(b,a)\<leftarrow>zip bs xs. (b \<delta>\<delta> 0) * a)"
           using sum_list_prod_map2[THEN sym] by fast
-        with bs(1) xs_def show "x \<in> aezfun_scalar_mult.fSpan op * xs"
-          using aezfun_scalar_mult.fsmultD[of "op *", THEN sym]
+        with bs(1) xs_def show "x \<in> aezfun_scalar_mult.fSpan ( * ) xs"
+          using aezfun_scalar_mult.fsmultD[of "( * )", THEN sym]
                 sum_list_prod_cong[
                   of "zip bs xs" "\<lambda>b a. (b \<delta>\<delta> 0) * a"
-                     "\<lambda>b a. aezfun_scalar_mult.fsmult op * b a"
+                     "\<lambda>b a. aezfun_scalar_mult.fsmult ( * ) b a"
                 ]
-                scalar_mult.lincomb_def[of "aezfun_scalar_mult.fsmult op *" bs xs]
-                scalar_mult.SpanD_lincomb[of "aezfun_scalar_mult.fsmult op *"]
+                scalar_mult.lincomb_def[of "aezfun_scalar_mult.fsmult ( * )" bs xs]
+                scalar_mult.SpanD_lincomb[of "aezfun_scalar_mult.fsmult ( * )"]
           by    force
       qed
     qed
-    ultimately show "\<exists>xs. set xs \<subseteq> FG \<and> aezfun_scalar_mult.fSpan op * xs = FG"
+    ultimately show "\<exists>xs. set xs \<subseteq> FG \<and> aezfun_scalar_mult.fSpan ( * ) xs = FG"
       by fast
   qed (rule good_char)
 qed
 
 lemma (in FinGroupRepresentation) FinGroupRepresentation_FG :
-  "FinGroupRepresentation G op * FG"
+  "FinGroupRepresentation G ( * ) FG"
   using good_char ActingGroup.FinGroupRepresentation_FG by fast
 
 lemma (in Group) FG_reducible :
   assumes "of_nat (card G) \<noteq> (0::'f::field)"
   shows   "\<exists>Us::('f,'g) aezfun set list.
-                (\<forall>U\<in>set Us. IrrFinGroupRepresentation G op * U) \<and> 0 \<notin> set Us
+                (\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U) \<and> 0 \<notin> set Us
                   \<and> group_ring = (\<Oplus>U\<leftarrow>Us. U)"
   using   assms FinGroupRepresentation_FG FinGroupRepresentation.reducible
   by      fast
@@ -8260,7 +8260,7 @@ lemma (in FGModuleIso) isomorphic_to_irr_right :
   assumes "IrrFinGroupRepresentation G smult' W"
   shows   "IrrFinGroupRepresentation G smult V"
 proof (rule FinGroupRepresentation.IrrI)
-  from assms show "FinGroupRepresentation G op \<cdot> V"
+  from assms show "FinGroupRepresentation G (\<cdot>) V"
     using IrrFinGroupRepresentation.axioms(1) isomorphic_sym
           FinGroupRepresentation.isomorphic_imp_GRep
     by    fast
@@ -8324,15 +8324,15 @@ qed
 
 theorem (in IrrFinGroupRepresentation) iso_FG_constituent :
   assumes nonzero  : "V \<noteq> 0"
-  and     FG_decomp: "\<forall>U\<in>set Us. IrrFinGroupRepresentation G op * U"
+  and     FG_decomp: "\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U"
                      "0 \<notin> set Us" "FG = (\<Oplus>U\<leftarrow>Us. U)"
-  shows   "\<exists>U\<in>set Us. isomorphic op * U"
+  shows   "\<exists>U\<in>set Us. isomorphic ( * ) U"
 proof-
   from nonzero obtain v where v: "v \<in> V" "v \<noteq> 0" using nonempty by auto
   define T where "T = (\<lambda>x. x \<cdot> v)\<down>FG"
-  have "FGModuleHom G op * FG smult T"
+  have "FGModuleHom G ( * ) FG smult T"
   proof (rule FGModule.FGModuleHomI_fromaxioms)
-    show "FGModule G op * FG"
+    show "FGModule G ( * ) FG"
       using ActingGroup.FGModule_FG by fast
     from T_def v(1) show "\<And>v v'. v \<in> FG \<Longrightarrow> v' \<in> FG \<Longrightarrow> T (v + v') = T v + T v'"
       using Ring1.add_closed[OF Ring1] smult_distrib_right by auto
@@ -8341,23 +8341,23 @@ proof-
       using ActingGroup.RG_mult_closed by auto
   qed
   then obtain W
-    where W: "FGModule.GSubspace G op * FG W" "FG = W \<oplus> (ker T \<inter> FG)"
-             "FGModule.isomorphic G op * W smult (T ` FG)"
+    where W: "FGModule.GSubspace G ( * ) FG W" "FG = W \<oplus> (ker T \<inter> FG)"
+             "FGModule.isomorphic G ( * ) W smult (T ` FG)"
     using FG_n0
           FinGroupRepresentation.GRepHom_decomp[
             OF FinGroupRepresentation_FG
           ]
     by    fast
   from T_def v have "T ` FG = V" using eq_GSpan_single RSpan_single by auto
-  with W(3) have W': "FGModule.isomorphic G op * W smult V" by fast
+  with W(3) have W': "FGModule.isomorphic G ( * ) W smult V" by fast
   with W(1) nonzero have "W \<noteq> 0"
     using FGModule.GSubspace_is_FGModule[OF ActingGroup.FGModule_FG]
           FGModule.isomorphic_to_zero_left
     by    fastforce
-  moreover from W' have "IrrFinGroupRepresentation G op * W"
+  moreover from W' have "IrrFinGroupRepresentation G ( * ) W"
     using IrrFinGroupRepresentation_axioms FGModuleIso.isomorphic_to_irr_right
     by    fast
-  ultimately have "\<exists>U\<in>set Us. FGModule.isomorphic G op * W op * U"
+  ultimately have "\<exists>U\<in>set Us. FGModule.isomorphic G ( * ) W ( * ) U"
     using FG_decomp W(1) good_char FG_n0
           FinGroupRepresentation.IrrGSubspace_iso_constituent[
             OF ActingGroup.FinGroupRepresentation_FG, of W
@@ -8365,7 +8365,7 @@ proof-
     by    simp
   with W(1) W' show ?thesis
     using FGModule.GSubspace_is_FGModule[OF ActingGroup.FGModule_FG]
-          FGModule.isomorphic_sym[of G "op *" W smult] isomorphic_trans
+          FGModule.isomorphic_sym[of G "( * )" W smult] isomorphic_trans
     by    fast
 qed
 
@@ -8385,20 +8385,20 @@ begin
 primrec remisodups :: "('f::field,'g) aezfun set list \<Rightarrow> ('f,'g) aezfun set list" where
   "remisodups [] = []"
 | "remisodups (U # Us) = (if
-        (\<exists>W\<in>set Us. FGModule.isomorphic G op * U op * W)
+        (\<exists>W\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) W)
           then remisodups Us else U # remisodups Us)"
 
 lemma set_remisodups : "set (remisodups Us) \<subseteq> set Us"
   by (induct Us) auto
 
 lemma isodistinct_remisodups :
-  "\<lbrakk> \<forall>U\<in>set Us. FGModule G op * U; V \<in> set (remisodups Us);
+  "\<lbrakk> \<forall>U\<in>set Us. FGModule G ( * ) U; V \<in> set (remisodups Us);
         W \<in> set (remisodups Us); V \<noteq> W \<rbrakk>
-          \<Longrightarrow> \<not> (FGModule.isomorphic G op * V op * W)"
+          \<Longrightarrow> \<not> (FGModule.isomorphic G ( * ) V ( * ) W)"
 proof (induct Us arbitrary: V W)
   case (Cons U Us)
   show ?case
-  proof (cases "\<exists>X\<in>set Us. FGModule.isomorphic G op * U op * X")
+  proof (cases "\<exists>X\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) X")
     case True with Cons show ?thesis by simp
   next
     case False show ?thesis
@@ -8409,7 +8409,7 @@ proof (induct Us arbitrary: V W)
         using set_remisodups by auto
     next
       case OtherTrue with False Cons(2,3) show ?thesis
-        using set_remisodups FGModule.isomorphic_sym[of G "op *" V "op *" W]
+        using set_remisodups FGModule.isomorphic_sym[of G "( * )" V "( * )" W]
         by    fastforce
     next
       case BothFalse with Cons False show ?thesis by simp
@@ -8418,13 +8418,13 @@ proof (induct Us arbitrary: V W)
 qed simp
 
 definition "FG_constituents \<equiv> SOME Us.
-                  (\<forall>U\<in>set Us. IrrFinGroupRepresentation G op * U)
+                  (\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U)
                     \<and> 0 \<notin> set Us \<and> group_ring = (\<Oplus>U\<leftarrow>Us. U)"
 
 lemma FG_constituents_irr :
   "of_nat (card G) \<noteq> (0::'f::field)
         \<Longrightarrow> \<forall>U\<in>set (FG_constituents::('f,'g) aezfun set list). 
-          IrrFinGroupRepresentation G op * U"
+          IrrFinGroupRepresentation G ( * ) U"
   using someI_ex[OF FG_reducible] unfolding FG_constituents_def by fast
 
 lemma FG_consitutents_n0:
@@ -8445,10 +8445,10 @@ lemma finite_GIrrRep_repset : "finite GIrrRep_repset"
 lemma all_irr_GIrrRep_repset :
   assumes "of_nat (card G) \<noteq> (0::'f::field)"
   shows "\<forall>U\<in>(GIrrRep_repset::('f,'g) aezfun set set).
-              IrrFinGroupRepresentation G op * U"
+              IrrFinGroupRepresentation G ( * ) U"
 proof
   fix U :: "('f,'g) aezfun set" assume "U \<in> GIrrRep_repset"
-  with assms show "IrrFinGroupRepresentation G op * U"
+  with assms show "IrrFinGroupRepresentation G ( * ) U"
     using trivial_IrrFinGroupRepresentation_in_FG GIrrRep_repset_def
           set_remisodups FG_constituents_irr
     by    (cases "U = 0") auto
@@ -8457,13 +8457,13 @@ qed
 lemma isodistinct_GIrrRep_repset :
   defines "GIRRS \<equiv> GIrrRep_repset :: ('f::field,'g) aezfun set set"
   assumes "of_nat (card G) \<noteq> (0::'f)" "V \<in> GIRRS" "W \<in> GIRRS" "V \<noteq> W"
-  shows   "\<not> (FGModule.isomorphic G op * V op * W)"
+  shows   "\<not> (FGModule.isomorphic G ( * ) V ( * ) W)"
 proof (cases "V = 0" "W = 0" rule: conjcases)
   case BothTrue with assms(5) show ?thesis by fast
 next
   case OneTrue with assms(1,2,4,5) show ?thesis
     using GIrrRep_repset_def set_remisodups FG_consitutents_n0
-          trivial_FGModule[of "op *"] FGModule.isomorphic_to_zero_left[of G "op *"]
+          trivial_FGModule[of "( * )"] FGModule.isomorphic_to_zero_left[of G "( * )"]
     by    fastforce
 next
   case OtherTrue
@@ -8473,7 +8473,7 @@ next
     using assms(2) FG_consitutents_n0 FG_constituents_irr
           IrrFinGroupRepresentation.axioms(1)
           FinGroupRepresentation.axioms(1)
-          FGModule.isomorphic_to_zero_right[of G "op *" V "op *"]
+          FGModule.isomorphic_to_zero_right[of G "( * )" V "( * )"]
     by    fastforce
 next
   case BothFalse
@@ -8489,19 +8489,19 @@ qed
 end (* context Group *)
 
 lemma (in FGModule) iso_in_list_imp_iso_in_remisodups :
-  "\<exists>U\<in>set Us. isomorphic op * U
-        \<Longrightarrow> \<exists>U\<in>set (ActingGroup.remisodups Us). isomorphic op * U"
+  "\<exists>U\<in>set Us. isomorphic ( * ) U
+        \<Longrightarrow> \<exists>U\<in>set (ActingGroup.remisodups Us). isomorphic ( * ) U"
 proof (induct Us)
   case (Cons U Us)
-  from Cons(2) obtain W where W: "W \<in> set (U#Us)" "isomorphic op * W"
+  from Cons(2) obtain W where W: "W \<in> set (U#Us)" "isomorphic ( * ) W"
     by fast
   show ?case
   proof (
-    cases "W = U" "\<exists>X\<in>set Us. FGModule.isomorphic G op * U op * X"
+    cases "W = U" "\<exists>X\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) X"
     rule: conjcases
   )
     case BothTrue with W(2) Cons(1) show ?thesis
-      using isomorphic_trans[of "op *" W] by force
+      using isomorphic_trans[of "( * )" W] by force
   next
     case OneTrue with W(2) show ?thesis by simp
   next
@@ -8512,7 +8512,7 @@ proof (induct Us)
 qed simp
 
 lemma (in IrrFinGroupRepresentation) iso_to_GIrrRep_rep :
-  "\<exists>U\<in>ActingGroup.GIrrRep_repset. isomorphic op * U"
+  "\<exists>U\<in>ActingGroup.GIrrRep_repset. isomorphic ( * ) U"
   using zero_isomorphic_to_FG_zero ActingGroup.GIrrRep_repset_def
         good_char ActingGroup.FG_constituents_irr
         ActingGroup.FG_consitutents_n0 ActingGroup.FG_constituents_constituents
@@ -8524,11 +8524,11 @@ theorem (in Group) iso_class_reps :
   defines "GIRRS \<equiv> GIrrRep_repset :: ('f::field,'g) aezfun set set"
   assumes "of_nat (card G) \<noteq> (0::'f)"
   shows "finite GIRRS"
-        "\<forall>U\<in>GIRRS. IrrFinGroupRepresentation G op * U"
+        "\<forall>U\<in>GIRRS. IrrFinGroupRepresentation G ( * ) U"
         "\<And>U W. \<lbrakk> U \<in> GIRRS; W \<in> GIRRS; U \<noteq> W \<rbrakk>
-              \<Longrightarrow> \<not> (FGModule.isomorphic G op * U op * W)"
+              \<Longrightarrow> \<not> (FGModule.isomorphic G ( * ) U ( * ) W)"
         "\<And>fgsmult V. IrrFinGroupRepresentation G fgsmult V
-              \<Longrightarrow> \<exists>U\<in>GIRRS. FGModule.isomorphic G fgsmult V op * U"
+              \<Longrightarrow> \<exists>U\<in>GIRRS. FGModule.isomorphic G fgsmult V ( * ) U"
   using assms finite_GIrrRep_repset all_irr_GIrrRep_repset
         isodistinct_GIrrRep_repset IrrFinGroupRepresentation.iso_to_GIrrRep_rep
   by    auto
@@ -8721,7 +8721,7 @@ proof (rule VectorSpace.SpanI[OF fVectorSpace_indspace])
     using Supgroup.is_rcoset_replistD_set[OF rcoset_reps]
           induced_vector_indV negHorbit_list_indV
     by    fast
-  show "indV \<subseteq> R_scalar_mult.RSpan UNIV (aezfun_scalar_mult.fsmult op \<currency>)
+  show "indV \<subseteq> R_scalar_mult.RSpan UNIV (aezfun_scalar_mult.fsmult (\<currency>))
               (concat hfvss)"
   proof
 
@@ -8905,7 +8905,7 @@ theorem FinGroupRepresentation_indspace :
   "FinGroupRepresentation H rrsmult indV"
   using FHModule_indspace
 proof (rule FinGroupRepresentation.intro)
-  from good_ordSupgrp show "FinGroupRepresentation_axioms H op \<currency> indV" 
+  from good_ordSupgrp show "FinGroupRepresentation_axioms H (\<currency>) indV" 
     using indspace_findim by unfold_locales fast
 qed
 
@@ -8946,7 +8946,7 @@ definition Tsmult1 ::
 definition Tsmult2 :: "'f \<Rightarrow> ('v\<Rightarrow>'w) \<Rightarrow> ('v\<Rightarrow>'w)" (infixr "\<star>\<cdot>" 70) 
   where "Tsmult2 \<equiv> \<lambda>a T. \<lambda>v. a \<sharp>\<star> (T v)"
 
-lemma FHModuleW : "FGModule H op \<star> W" ..
+lemma FHModuleW : "FGModule H (\<star>) W" ..
 
 lemma FGModuleW: "FGModule G smult' W"
  using FHModuleW Subgroup HRep.restriction_to_subgroup_is_module
@@ -9018,18 +9018,18 @@ text {* The following function will demonstrate the required isomorphism of Hom-
 definition \<phi> :: "((('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)"
   where "\<phi> \<equiv> restrict0 (\<lambda>T. T \<circ> GRep.induced_vector) (HRepHomSet smult' W)"
 
-lemma \<phi>_im : "\<phi> ` HRepHomSet op \<star> W \<subseteq> GRepHomSet op \<star> W"
+lemma \<phi>_im : "\<phi> ` HRepHomSet (\<star>) W \<subseteq> GRepHomSet (\<star>) W"
 proof (rule image_subsetI)
 
-  fix T assume T: "T \<in> HRepHomSet op \<star> W"
-  show "\<phi> T \<in> GRepHomSet op \<star> W"
+  fix T assume T: "T \<in> HRepHomSet (\<star>) W"
+  show "\<phi> T \<in> GRepHomSet (\<star>) W"
   proof (rule FGModuleHomSetI)
 
     from T have "FGModuleHom G rrsmult indV smult' T"
       using FGModuleHomSetD_FGModuleHom GRep.Subgroup
             FGModuleHom.restriction_to_subgroup_is_hom
       by    fast
-    thus "BaseRep.GRepHom op \<star> (\<phi> T)"
+    thus "BaseRep.GRepHom (\<star>) (\<phi> T)"
       using T \<phi>_def GRep.hom_induced_vector GRep.induced_vector_indV
             FGModuleHom.FGModHom_composite_left
       by    fastforce
@@ -9056,7 +9056,7 @@ definition \<psi>_condition :: "('v \<Rightarrow> 'w) \<Rightarrow> ((('f, 'g) a
                 \<and> map (map S) indVfbasis = negHorbit_homVfbasis T"
 
 lemma inverse_im_exists' :
-  assumes "T \<in> GRepHomSet op \<star> W"
+  assumes "T \<in> GRepHomSet (\<star>) W"
   shows   "\<exists>! S. VectorSpaceHom induced_smult.fsmult indV fsmult' S
                 \<and> map S (concat indVfbasis) = concat (negHorbit_homVfbasis T)"
 proof (
@@ -9072,7 +9072,7 @@ proof (
 qed
 
 lemma inverse_im_exists :
-  assumes "T \<in> GRepHomSet op \<star> W"
+  assumes "T \<in> GRepHomSet (\<star>) W"
   shows   "\<exists>! S. \<psi>_condition T S"
 proof-
   have "\<exists> S. \<psi>_condition T S"
@@ -9125,23 +9125,23 @@ proof-
 qed
 
 definition \<psi> :: "('v \<Rightarrow> 'w) \<Rightarrow> ((('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> 'w)"
-  where "\<psi> \<equiv> restrict0 (\<lambda>T. THE S. \<psi>_condition T S) (GRepHomSet op \<star> W)"
+  where "\<psi> \<equiv> restrict0 (\<lambda>T. THE S. \<psi>_condition T S) (GRepHomSet (\<star>) W)"
 
-lemma \<psi>D : "T \<in> GRepHomSet op \<star> W \<Longrightarrow> \<psi>_condition T (\<psi> T)"
+lemma \<psi>D : "T \<in> GRepHomSet (\<star>) W \<Longrightarrow> \<psi>_condition T (\<psi> T)"
   using \<psi>_def inverse_im_exists[of T] theI'[of "\<lambda>S. \<psi>_condition T S"] by simp
 
 lemma \<psi>D_VectorSpaceHom :
-  "T \<in> GRepHomSet op \<star> W
+  "T \<in> GRepHomSet (\<star>) W
         \<Longrightarrow> VectorSpaceHom induced_smult.fsmult indV fsmult' (\<psi> T)"
   using \<psi>D \<psi>_condition_def by fast
 
 lemma \<psi>D_im :
-  "T \<in> GRepHomSet op \<star> W \<Longrightarrow> map (map (\<psi> T)) indVfbasis
-        = aezfun_scalar_mult.negGorbit_list op \<star> H_rcoset_reps T Vfbasis"
+  "T \<in> GRepHomSet (\<star>) W \<Longrightarrow> map (map (\<psi> T)) indVfbasis
+        = aezfun_scalar_mult.negGorbit_list (\<star>) H_rcoset_reps T Vfbasis"
   using \<psi>D \<psi>_condition_def by fast
 
 lemma \<psi>D_im_single :
-  assumes "T \<in> GRepHomSet op \<star> W" "h \<in> set H_rcoset_reps" "v \<in> set Vfbasis"
+  assumes "T \<in> GRepHomSet (\<star>) W" "h \<in> set H_rcoset_reps" "v \<in> set Vfbasis"
   shows   "\<psi> T ((- h) *\<currency> (induced_vector v)) = (-h) *\<star> (T v)"
 proof-
   from assms(2,3) obtain i j
@@ -9163,7 +9163,7 @@ proof-
 qed
 
 lemma \<psi>T_W :
-  assumes "T \<in> GRepHomSet op \<star> W"
+  assumes "T \<in> GRepHomSet (\<star>) W"
   shows   "\<psi> T ` indV \<subseteq> W"
 proof (rule image_subsetI)
   from assms have T: "VectorSpaceHom induced_smult.fsmult indV fsmult' (\<psi> T)"
@@ -9208,7 +9208,7 @@ proof (rule image_subsetI)
 qed
 
 lemma \<psi>T_Hmap_on_indVfbasis :
-  assumes "T \<in> GRepHomSet op \<star> W"
+  assumes "T \<in> GRepHomSet (\<star>) W"
   shows   "\<And>x f. x \<in> H \<Longrightarrow> f \<in> set (concat indVfbasis)
                 \<Longrightarrow> \<psi> T (x *\<currency> f) = x *\<star> (\<psi> T f)"
 proof-
@@ -9310,8 +9310,8 @@ proof-
 qed
 
 lemma \<psi>T_hom :
-  assumes "T \<in> GRepHomSet op \<star> W"
-  shows   "HRepHom op \<star> (\<psi> T)"
+  assumes "T \<in> GRepHomSet (\<star>) W"
+  shows   "HRepHom (\<star>) (\<psi> T)"
   using indVfbasis \<psi>D_VectorSpaceHom[OF assms] FHModuleW
 proof (
   rule FGModule.VecHom_GMap_on_fbasis_is_FGModuleHom[
@@ -9324,7 +9324,7 @@ proof (
     using \<psi>T_Hmap_on_indVfbasis[OF assms] by fast
 qed
 
-lemma \<psi>_im : "\<psi> ` GRepHomSet op \<star> W \<subseteq> HRepHomSet op \<star> W"
+lemma \<psi>_im : "\<psi> ` GRepHomSet (\<star>) W \<subseteq> HRepHomSet (\<star>) W"
   using \<psi>T_W \<psi>T_hom FGModuleHomSetI by fastforce
 
 end (* context FrobeniusReciprocity *)
@@ -9391,18 +9391,18 @@ proof
   qed
 qed
 
-lemma \<phi>_inverse_im : "\<phi> ` HRepHomSet op \<star> W \<supseteq> GRepHomSet op \<star> W"
+lemma \<phi>_inverse_im : "\<phi> ` HRepHomSet (\<star>) W \<supseteq> GRepHomSet (\<star>) W"
   using \<phi>\<psi> \<psi>_im by force
 
-lemma bij_\<phi> : "bij_betw \<phi> (HRepHomSet op \<star> W) (GRepHomSet op \<star> W)"
+lemma bij_\<phi> : "bij_betw \<phi> (HRepHomSet (\<star>) W) (GRepHomSet (\<star>) W)"
   unfolding bij_betw_def
 proof
 
-  have "\<And> S T. \<lbrakk> S \<in> HRepHomSet op \<star> W; T \<in> HRepHomSet op \<star> W;
+  have "\<And> S T. \<lbrakk> S \<in> HRepHomSet (\<star>) W; T \<in> HRepHomSet (\<star>) W;
             \<phi> S = \<phi> T \<rbrakk> \<Longrightarrow> S = T"
   proof (rule VectorSpaceHom.same_image_on_spanset_imp_same_hom)
     fix S T
-    assume ST: "S \<in> HRepHomSet op \<star> W" "T \<in> HRepHomSet op \<star> W" "\<phi> S = \<phi> T"
+    assume ST: "S \<in> HRepHomSet (\<star>) W" "T \<in> HRepHomSet (\<star>) W" "\<phi> S = \<phi> T"
     from ST(1,2) have ST': "HRepHom smult' S" "HRepHom smult' T"
       using FGModuleHomSetD_FGModuleHom[of _ H rrsmult] by auto
 
@@ -9442,9 +9442,9 @@ proof
 
     qed
   qed
-  thus "inj_on \<phi> (HRepHomSet op \<star> W)" unfolding inj_on_def by fast
+  thus "inj_on \<phi> (HRepHomSet (\<star>) W)" unfolding inj_on_def by fast
 
-  show "\<phi> ` HRepHomSet op \<star> W = GRepHomSet op \<star> W"
+  show "\<phi> ` HRepHomSet (\<star>) W = GRepHomSet (\<star>) W"
     using \<phi>_im \<phi>_inverse_im by fast
 
 qed
@@ -9462,33 +9462,33 @@ context FrobeniusReciprocity
 begin
 
 lemma VectorSpaceIso_\<phi> :
-  "VectorSpaceIso Tsmult1 (HRepHomSet op \<star> W) Tsmult2 \<phi>
-        (GRepHomSet op \<star> W)"
+  "VectorSpaceIso Tsmult1 (HRepHomSet (\<star>) W) Tsmult2 \<phi>
+        (GRepHomSet (\<star>) W)"
 proof (rule VectorSpaceIso.intro, rule VectorSpace.VectorSpaceHomI_fromaxioms)
 
-  from Tsmult1_def show "VectorSpace Tsmult1 (HRepHomSet op \<star> W)"
+  from Tsmult1_def show "VectorSpace Tsmult1 (HRepHomSet (\<star>) W)"
     using FHModule_indspace FHModuleW
           FGModule.VectorSpace_FGModuleHomSet
     by    simp
 
-  from \<phi>_def show "supp \<phi> \<subseteq> HRepHomSet op \<star> W"
+  from \<phi>_def show "supp \<phi> \<subseteq> HRepHomSet (\<star>) W"
     using suppD_contra[of \<phi>] by fastforce
 
-  have "bij_betw \<phi> (HRepHomSet op \<star> W) (GRepHomSet op \<star> W)"
+  have "bij_betw \<phi> (HRepHomSet (\<star>) W) (GRepHomSet (\<star>) W)"
     using bij_\<phi> by fast
-  thus "VectorSpaceIso_axioms (HRepHomSet op \<star> W) \<phi> (GRepHomSet op \<star> W)"
+  thus "VectorSpaceIso_axioms (HRepHomSet (\<star>) W) \<phi> (GRepHomSet (\<star>) W)"
     by unfold_locales
 
 next    
-  fix S T assume "S \<in> HRepHomSet op \<star> W" "T \<in> HRepHomSet op \<star> W"
+  fix S T assume "S \<in> HRepHomSet (\<star>) W" "T \<in> HRepHomSet (\<star>) W"
   thus "\<phi> (S + T) = \<phi> S + \<phi> T"
     using \<phi>_def Group.add_closed
           FGModule.Group_FGModuleHomSet[OF FHModule_indspace FHModuleW]
     by    auto
 
 next
-  fix a T assume T: "T \<in> HRepHomSet op \<star> W"
-  moreover with Tsmult1_def have aT: "a \<star>\<currency> T \<in> HRepHomSet op \<star> W"
+  fix a T assume T: "T \<in> HRepHomSet (\<star>) W"
+  moreover with Tsmult1_def have aT: "a \<star>\<currency> T \<in> HRepHomSet (\<star>) W"
     using FGModule.VectorSpace_FGModuleHomSet[
             OF FHModule_indspace FHModuleW
           ]

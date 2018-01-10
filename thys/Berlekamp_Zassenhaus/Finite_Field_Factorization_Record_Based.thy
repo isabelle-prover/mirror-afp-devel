@@ -250,7 +250,7 @@ lemma berlekamp_basis_i[transfer_rule]: "(poly_rel ===> list_all2 poly_rel)
   by transfer_prover
 
 lemma berlekamp_factorization_main_i[transfer_rule]: 
-  "(op = ===> list_all2 poly_rel ===> list_all2 poly_rel ===> op = ===> list_all2 poly_rel) 
+  "((=) ===> list_all2 poly_rel ===> list_all2 poly_rel ===> (=) ===> list_all2 poly_rel) 
      (berlekamp_factorization_main_i p ff_ops (arith_ops_record.zero ff_ops) 
        (arith_ops_record.one ff_ops)) 
      berlekamp_factorization_main" 
@@ -375,14 +375,14 @@ proof (intro rel_funI, clarify, goal_cases)
 qed
     
 lemma berlekamp_monic_factorization_i[transfer_rule]: 
-  "(op = ===> poly_rel ===> list_all2 poly_rel) 
+  "((=) ===> poly_rel ===> list_all2 poly_rel) 
      (berlekamp_monic_factorization_i p ff_ops) berlekamp_monic_factorization" 
   unfolding berlekamp_monic_factorization_i_def[abs_def] berlekamp_monic_factorization_def[abs_def] Let_def
   by transfer_prover
 
 lemma dist_degree_factorize_main_i: 
-  "poly_rel F f \<Longrightarrow> poly_rel G g \<Longrightarrow> list_all2 (rel_prod op = poly_rel) Res res 
-   \<Longrightarrow> list_all2 (rel_prod op = poly_rel) 
+  "poly_rel F f \<Longrightarrow> poly_rel G g \<Longrightarrow> list_all2 (rel_prod (=) poly_rel) Res res 
+   \<Longrightarrow> list_all2 (rel_prod (=) poly_rel) 
       (dist_degree_factorize_main_i p ff_ops 
          (arith_ops_record.zero ff_ops) (arith_ops_record.one ff_ops) (degree_i F) F G d Res)
       (dist_degree_factorize_main f g d res)" 
@@ -394,7 +394,7 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
     dist_degree_factorize_main_i.simps[of p ff_ops ?ze ?on "degree_i V" V W d]
   have v[transfer_rule]: "poly_rel V v" by (rule 1)
   have w[transfer_rule]: "poly_rel W w" by (rule 1)
-  have res[transfer_rule]: "list_all2 (rel_prod op = poly_rel) Res res" by (rule 1)
+  have res[transfer_rule]: "list_all2 (rel_prod (=) poly_rel) Res res" by (rule 1)
   have [transfer_rule]: "poly_rel [?on] 1"
     by (simp add: one poly_rel_def)
   have id1: "(V = [?on]) = (v = 1)" unfolding finite_field_ops_int_def by transfer_prover
@@ -446,7 +446,7 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
           (div_field_poly_i ff_ops V G)) (w ^ CARD('a) mod v mod (v div g))" by transfer_prover        
         note IH = IH(2)[OF False[unfolded g_def] refl vg[unfolded G_def g_def] this[unfolded G_def g_def],
             folded g_def G_def]
-        have "list_all2 (rel_prod op = poly_rel) ((Suc d, G) # Res) ((Suc d, g) # res)" 
+        have "list_all2 (rel_prod (=) poly_rel) ((Suc d, G) # Res) ((Suc d, g) # res)" 
           using g res by auto
         note IH = IH[OF this]
         from False have "(g = 1) = False" by simp
@@ -457,7 +457,7 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
   qed
 qed
       
-lemma distinct_degree_factorization_i[transfer_rule]: "(poly_rel ===> list_all2 (rel_prod op = poly_rel)) 
+lemma distinct_degree_factorization_i[transfer_rule]: "(poly_rel ===> list_all2 (rel_prod (=) poly_rel)) 
   (distinct_degree_factorization_i p ff_ops) distinct_degree_factorization"
 proof 
   fix F f
@@ -466,14 +466,14 @@ proof
   note d = distinct_degree_factorization_i_def distinct_degree_factorization_def
   let ?ze = "arith_ops_record.zero ff_ops" 
   let ?on = "arith_ops_record.one ff_ops"
-  show "list_all2 (rel_prod op = poly_rel) (distinct_degree_factorization_i p ff_ops F)
+  show "list_all2 (rel_prod (=) poly_rel) (distinct_degree_factorization_i p ff_ops F)
             (distinct_degree_factorization f)" 
   proof (cases "degree f = 1")
     case True
     with id f show ?thesis unfolding d by auto
   next
     case False
-    from False id have "?thesis = (list_all2 (rel_prod op = poly_rel) 
+    from False id have "?thesis = (list_all2 (rel_prod (=) poly_rel) 
       (dist_degree_factorize_main_i p ff_ops ?ze ?on (degree_i F) F [?ze, ?on] 0 [])
       (dist_degree_factorize_main f (monom 1 1) 0 []))" unfolding d Let_def by simp    
     also have \<dots>
@@ -524,7 +524,7 @@ proof -
   }
   hence fs': "Ball (set fs') (is_poly ff_ops)" by auto
   define mon :: "'a mod_ring poly \<Rightarrow> bool" where "mon = monic"
-  have [transfer_rule]: "(poly_rel ===> op =) (monic_i ff_ops) mon" unfolding mon_def 
+  have [transfer_rule]: "(poly_rel ===> (=)) (monic_i ff_ops) mon" unfolding mon_def 
     by (rule poly_rel_monic)
   have len: "length fs' = length fs''" by transfer_prover
   have fs': "fs = map to_int_poly fs''" unfolding fs 

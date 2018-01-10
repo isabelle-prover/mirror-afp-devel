@@ -1608,7 +1608,7 @@ context digraph_map begin
         by (auto simp: tail_swap swap_swap_id swap_in_arcs intro: image_eqI[where x="(a \<rightleftharpoons>\<^sub>F b) y" for y])
       also have "(a \<rightleftharpoons>\<^sub>F b) `  out_arcs G v = (a \<rightleftharpoons>\<^sub>F b) `  orbit (edge_succ M) ((a \<rightleftharpoons>\<^sub>F b) c)"
         using edge_succ_cyclic using A \<open>c \<in> _\<close> 
-        by (intro arg_cong[where f="op ` (a \<rightleftharpoons>\<^sub>F b)"])
+        by (intro arg_cong[where f="(`) (a \<rightleftharpoons>\<^sub>F b)"])
            (intro orbit_cyclic_eq3[symmetric], auto simp: swap_in_arcs tail_swap)
       also have "\<dots> = orbit (edge_succ ?M') c"
         by (simp add: orbit_perm_swap rev_swap_def)

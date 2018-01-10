@@ -18,14 +18,14 @@ context notes [[function_internals]] begin
 partial_function (spmf) geometric_spmf :: "real \<Rightarrow> nat spmf" where
   "geometric_spmf p = do {
      b \<leftarrow> bernoulli p;
-     if b then return_spmf 0 else map_spmf (op + 1) (geometric_spmf p)
+     if b then return_spmf 0 else map_spmf ((+) 1) (geometric_spmf p)
   }"
 end
 
 lemma geometric_spmf_fixp_induct [case_names adm bottom step]:
   assumes "spmf.admissible P"
     and "P (\<lambda>geometric_spmf. return_pmf None)"
-    and "\<And>geometric_spmf'. P geometric_spmf' \<Longrightarrow> P (\<lambda>p. bernoulli p \<bind> (\<lambda>b. if b then return_spmf 0 else map_spmf (op + 1) (geometric_spmf' p)))"
+    and "\<And>geometric_spmf'. P geometric_spmf' \<Longrightarrow> P (\<lambda>p. bernoulli p \<bind> (\<lambda>b. if b then return_spmf 0 else map_spmf ((+) 1) (geometric_spmf' p)))"
   shows "P geometric_spmf"
   using assms by(rule geometric_spmf.fixp_induct)
 
@@ -48,9 +48,9 @@ interpretation loop_spmf fst body
 lemma geometric_spmf_conv_while:
   shows "geometric_spmf p = map_spmf snd (while (True, 0))"
 proof -
-  have "map_spmf (op + x) (geometric_spmf p) = map_spmf snd (while (True, x))" (is "?lhs = ?rhs") for x
+  have "map_spmf ((+) x) (geometric_spmf p) = map_spmf snd (while (True, x))" (is "?lhs = ?rhs") for x
   proof(rule spmf.leq_antisym)
-    show "ord_spmf op = ?lhs ?rhs"
+    show "ord_spmf (=) ?lhs ?rhs"
     proof(induction arbitrary: x rule: geometric_spmf_fixp_induct)
       case adm show ?case by simp
       case bottom show ?case by simp
@@ -62,8 +62,8 @@ proof -
         apply(clarsimp simp add: spmf.map_comp o_def)
         done
     qed
-    have "ord_spmf op = ?rhs ?lhs"
-      and "ord_spmf op = (map_spmf snd (while (False, x))) (return_spmf x)"
+    have "ord_spmf (=) ?rhs ?lhs"
+      and "ord_spmf (=) (map_spmf snd (while (False, x))) (return_spmf x)"
     proof(induction arbitrary: x and x rule: while_fixp_induct)
       case adm show ?case by simp
       case bottom case 1 show ?case by simp
@@ -74,7 +74,7 @@ proof -
         by(rewrite geometric_spmf.simps)(clarsimp simp add: map_spmf_bind_spmf bind_map_spmf spmf.map_comp o_def intro!: ord_spmf_bind_reflI)
       case 2 show ?case by simp
     qed
-    then show "ord_spmf op = ?rhs ?lhs" by -
+    then show "ord_spmf (=) ?rhs ?lhs" by -
   qed
   from this[of 0] show ?thesis by(simp cong: map_spmf_cong)
 qed

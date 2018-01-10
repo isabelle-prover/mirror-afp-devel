@@ -80,7 +80,7 @@ proof -
   show ?thesis
   proof (rule factored_char_poly_norm_bound[OF A cA jnf_exists])
     fix a
-    show "length (filter (op = a) as) \<le> n" using len by auto
+    show "length (filter ((=) a) as) \<le> n" using len by auto
     assume "a \<in> set as"
     from linear_poly_root[OF this]
     have "poly ?p a = 0" unfolding cA by simp
@@ -113,7 +113,7 @@ proof -
     from spectral_radius_mem_max(2)[OF A this mem] sr_1 
     have lt: "norm a < 1" by auto
     thus "norm a \<le> 1" by auto
-    from lt show "norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> 0" by auto
+    from lt show "norm a = 1 \<Longrightarrow> length (filter ((=) a) as) \<le> 0" by auto
   qed
   thus ?thesis by auto
 qed
@@ -177,8 +177,8 @@ proof -
     assume "ev \<in> set as"
     hence root: "poly (char_poly A) ev = 0" unfolding cA by (rule linear_poly_root)
     from le_1[OF root] show "norm ev \<le> 1" .
-    let ?k = "length (filter (op = ev) as)"
-    have len: "length (filter (op = (- ev)) (map uminus as)) = length (filter (op = ev) as)"
+    let ?k = "length (filter ((=) ev) as)"
+    have len: "length (filter ((=) (- ev)) (map uminus as)) = length (filter ((=) ev) as)"
       by (induct as, auto)
     have prod: "(\<Prod>a\<leftarrow>map uminus as. [:a, 1:]) = (\<Prod>a\<leftarrow>as. [:- a, 1:])"
       by (induct as, auto)
