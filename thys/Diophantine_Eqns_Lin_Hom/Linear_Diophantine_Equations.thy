@@ -109,6 +109,10 @@ definition Solutions :: "(nat list \<times> nat list) set"
   where
     "Solutions = {(x, y). a \<bullet> x = b \<bullet> y \<and> length x = m \<and> length y = n}"
 
+lemma in_Solutions_iff:
+  "(x, y) \<in> Solutions \<longleftrightarrow> length x = m \<and> length y = n \<and> a \<bullet> x = b \<bullet> y"
+  by (auto simp: Solutions_def)
+
 -- \<open>The set of pointwise minimal solutions.\<close>
 definition Minimal_Solutions :: "(nat list \<times> nat list) set"
   where
@@ -267,7 +271,7 @@ declare hlde_ops.eij_def [code]
 declare hlde_ops.sij_def [code]
 
 lemma Solutions_sym: "(x, y) \<in> Solutions a b \<longleftrightarrow> (y, x) \<in> Solutions b a"
-  by (auto simp: hlde_ops.Solutions_def)
+  by (auto simp: hlde_ops.in_Solutions_iff)
 
 lemma Minimal_Solutions_imp_Solutions: "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> (x, y) \<in> Solutions a b"
   by (auto simp: hlde_ops.Minimal_Solutions_def)
@@ -317,7 +321,7 @@ qed
 
 lemma Minimal_Solutions_length:
   "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> length x = length a \<and> length y = length b"
-  by (auto simp: hlde_ops.Minimal_Solutions_def hlde_ops.Solutions_def)
+  by (auto simp: hlde_ops.Minimal_Solutions_def hlde_ops.in_Solutions_iff)
 
 lemma Minimal_Solutions_gt0:
   "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> zeroes (length x) <\<^sub>v x"
@@ -337,7 +341,7 @@ begin
 lemma nonzero_Solutions_iff:
   assumes "(x, y) \<in> Solutions"
   shows "nonzero x \<longleftrightarrow> nonzero y"
-  using assms and no0 by (auto simp: Solutions_def dest: dotprod_eq_nonzero_iff)
+  using assms and no0 by (auto simp: in_Solutions_iff dest: dotprod_eq_nonzero_iff)
 
 lemma Minimal_Solutions_min:
   assumes "(x, y) \<in> Minimal_Solutions"
@@ -348,7 +352,7 @@ lemma Minimal_Solutions_min:
   shows False
 proof -
   have [simp]: "length v = n" using assms by (force dest: less_appendD Minimal_Solutions_length)
-  have "(u, v) \<in> Solutions" using \<open>a \<bullet> u = b \<bullet> v\<close> by (simp add: Solutions_def)
+  have "(u, v) \<in> Solutions" using \<open>a \<bullet> u = b \<bullet> v\<close> by (simp add: in_Solutions_iff)
   moreover from nonzero_Solutions_iff [OF this] have "nonzero u" using non0 by auto
   ultimately show False using assms by (auto simp: hlde_ops.Minimal_Solutions_def)
 qed
@@ -545,12 +549,11 @@ proof (rule ccontr)
     by (metis in_set_conv_nth)
   have sol: "(xs, ys) \<in> Solutions"
     using assms Minimal_Solutions_def by auto
-  then have len: "m = length xs"
-    using Solutions_def by simp
+  then have len: "m = length xs" by (simp add: in_Solutions_iff)
   have max_suml: "?m * sum_list ys \<ge> b \<bullet> ys"
-    using Solutions_def maxne0_times_sum_list_gt_dotprod sol by auto
+    using maxne0_times_sum_list_gt_dotprod sol by (auto simp: in_Solutions_iff)
   then have is_sol: "b \<bullet> ys = a \<bullet> xs"
-    using sol by (auto simp: Solutions_def)
+    using sol by (auto simp: in_Solutions_iff)
   then have a_ge_ak: "a \<bullet> xs \<ge> a ! k * xs ! k"
     using dotprod_pointwise_le k_def len by auto
   then have ak_gt_max: "a ! k * xs ! k > a ! k * ?m"
@@ -647,7 +650,7 @@ proof (rule ccontr)
                 less_le_trans not_le nth_mem prop_4_2 w_def)
         qed
         have "b \<bullet> u mod a ! k = 0"
-          by (metis (mono_tags, lifting) Solutions_def \<open>w \<le>\<^sub>v ys\<close> u_def ass no0(2)
+          by (metis (mono_tags, lifting) in_Solutions_iff \<open>w \<le>\<^sub>v ys\<close> u_def ass no0(2)
               less_eq_def mem_Collect_eq mod_eq mods_with_vec_2 prod.simps(2) sol)
         then show False using neg_th
           by (metis (mono_tags, lifting) Us_def less_eq_def mem_Collect_eq
@@ -672,7 +675,7 @@ proof (rule ccontr)
                 less_le_trans nth_mem prop_4_2 le_sum_list_mono v_def)
         qed
         have "b \<bullet> u mod a ! k = 0"
-          by (metis (mono_tags, lifting) Solutions_def \<open>v \<le>\<^sub>v ys\<close> u_def ass no0(2)
+          by (metis (mono_tags, lifting) in_Solutions_iff \<open>v \<le>\<^sub>v ys\<close> u_def ass no0(2)
               less_eq_def mem_Collect_eq mod_eq mods_with_vec_2 prod.simps(2) sol)
         then show False
           by (metis (mono_tags, lifting) neg_th Us_def less_eq_def mem_Collect_eq prop_3 prop_4_1 prop_4_2)
@@ -684,7 +687,7 @@ proof (rule ccontr)
     "length u = length ys"
     unfolding Us_def by auto
   have u_b_len: "length u = n"
-    using  less_eq_def u3_4 Solutions_def sol by simp
+    using  less_eq_def u3_4 in_Solutions_iff sol by simp
   have "b \<bullet> u \<le> maxne0 u b * sum_list u"
     by (simp add: maxne0_times_sum_list_gt_dotprod u_b_len)
   also have "... \<le> ?m * a ! k"
@@ -726,7 +729,7 @@ proof (rule ccontr)
   then have "z @ u <\<^sub>v xs @ ys"
     by (intro less_append) (auto simp add: u3_4(1) z_less_xs)
   moreover have "(z, u) \<in> Solutions"
-    by (auto simp add: bu_eq_akzk Solutions_def z_def u_b_len \<open>k < length xs\<close> len)
+    by (auto simp add: bu_eq_akzk in_Solutions_iff z_def u_b_len \<open>k < length xs\<close> len)
   moreover have "nonzero z"
     using \<open>length z = length xs\<close> and \<open>zk \<noteq> 0\<close> and k_def and zk_zk by (auto simp: nonzero_iff)
   ultimately show False using assms by (auto simp: Minimal_Solutions_def)
@@ -742,6 +745,22 @@ proof -
     using assms and Minimal_Solutions_sym [OF no0, of xs ys]
     by (auto simp: max_coeff_bound_right ba.max_coeff_bound_right)
 qed
+
+lemma max_coeff_bound':
+  assumes "(x, y) \<in> Minimal_Solutions"
+  shows "\<forall>i<length x. x ! i \<le> Max (set b)" and "\<forall>j<length y. y ! j \<le> Max (set a)"
+  using max_coeff_bound [OF assms] and maxne0_le_Max
+  by auto (metis le_eq_less_or_eq less_le_trans nth_mem)+
+
+lemma Minimal_Solutions_alt_def:
+  "Minimal_Solutions = {(x, y)\<in>Solutions.
+    (x, y) \<noteq> (zeroes m, zeroes n) \<and>
+    x \<le>\<^sub>v replicate m (Max (set b)) \<and>
+    y \<le>\<^sub>v replicate n (Max (set a)) \<and>
+    \<not> (\<exists>(u, v)\<in>Solutions. nonzero u \<and> u @ v <\<^sub>v x @ y)}"
+  by (auto simp: not_nonzero_iff Minimal_Solutions_imp_Solutions less_eq_def Minimal_Solutions_length max_coeff_bound'
+    intro!: Minimal_SolutionsI' dest: Minimal_Solutions_gt0)
+    (auto simp: Minimal_Solutions_def nonzero_Solutions_iff not_nonzero_iff)
 
 
 subsection \<open>Special Solutions\<close>
@@ -777,14 +796,14 @@ qed
 
 lemma Special_Solutions_in_Solutions:
   "x \<in> Special_Solutions \<Longrightarrow> x \<in> Solutions"
-  by (auto simp: Solutions_def Special_Solutions_def sij_def dij_def eij_def)
+  by (auto simp: in_Solutions_iff Special_Solutions_def sij_def dij_def eij_def)
 
 lemma Special_Solutions_in_Minimal_Solutions:
   assumes "(x, y) \<in> Special_Solutions"
   shows "(x, y) \<in> Minimal_Solutions"
 proof (intro Minimal_SolutionsI')
   show "(x, y) \<in> Solutions" by (fact Special_Solutions_in_Solutions [OF assms])
-  then have [simp]: "length x = m" "length y = n" by (auto simp: Solutions_def)
+  then have [simp]: "length x = m" "length y = n" by (auto simp: in_Solutions_iff)
   show "nonzero x" using assms and dij_neq_0
     by (auto simp: Special_Solutions_def sij_def nonzero_iff)
      (metis length_replicate set_update_memI)
@@ -793,7 +812,7 @@ proof (intro Minimal_SolutionsI')
     assume "\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y"
     then obtain u and v where uv: "(u, v) \<in> Minimal_Solutions" and "u @ v <\<^sub>v x @ y"
       and [simp]: "length u = m" "length v = n"
-      and "nonzero u" by (auto simp: Minimal_Solutions_def Solutions_def)
+      and "nonzero u" by (auto simp: Minimal_Solutions_def in_Solutions_iff)
     then consider "u <\<^sub>v x" and "v \<le>\<^sub>v y" | "v <\<^sub>v y" and "u \<le>\<^sub>v x" by (auto elim: less_append_cases)
     then show False
     proof (cases)
@@ -812,7 +831,7 @@ proof (intro Minimal_SolutionsI')
       define c where "c = a ! i * u ! i"
       then have ac: "a ! i dvd c" by simp
 
-      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def Solutions_def)
+      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def in_Solutions_iff)
       then have "c = b ! j * v ! j"
         using ij unfolding c_def by (subst (asm) u, subst (asm)v, subst u, subst v) auto
       then have bc: "b ! j dvd c" by simp
@@ -842,7 +861,7 @@ proof (intro Minimal_SolutionsI')
       define c where "c = b ! j * v ! j"
       then have bc: "b ! j dvd c" by simp
 
-      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def Solutions_def)
+      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def in_Solutions_iff)
       then have "c = a ! i * u ! i"
         using ij unfolding c_def by (subst (asm) u, subst (asm)v, subst u, subst v) auto
       then have ac: "a ! i dvd c" by simp
@@ -916,7 +935,7 @@ proof (unfold boundr_def, intro allI impI)
   fix j
   assume ass: "j < n"
   have ln: "m = length x \<and> n = length y"
-    using assms Minimal_Solutions_def Solutions_def min by auto
+    using assms Minimal_Solutions_def in_Solutions_iff min by auto
   have is_sol: "(x, y) \<in> Solutions"
     using assms Minimal_Solutions_def min by auto
   have j_less_l: "j < n"
@@ -983,7 +1002,7 @@ proof (unfold boundl_def, intro allI impI)
   fix i
   assume ass: "i < m"
   have ln: "n = length y \<and> m = length x"
-    using assms Minimal_Solutions_def Solutions_def min by auto
+    using assms Minimal_Solutions_def in_Solutions_iff min by auto
   have is_sol: "(x, y) \<in> Solutions"
     using assms Minimal_Solutions_def min by auto
   have i_less_l: "i < m"
@@ -1046,13 +1065,13 @@ qed
 lemma Solution_imp_cond_D:
   assumes "(x, y) \<in> Solutions"
   shows "cond_D x y"
-  using assms and dotprod_le_take by (auto simp: cond_D_def Solutions_def)
+  using assms and dotprod_le_take by (auto simp: cond_D_def in_Solutions_iff)
 
 lemma Solution_imp_subprodl:
   assumes "(x, y) \<in> Solutions"
   shows "subprodl x y"
   using assms and dotprod_le_take
-  by (auto simp: subprodl_def Solutions_def) metis
+  by (auto simp: subprodl_def in_Solutions_iff) metis
 
 theorem conds:
   assumes min: "(x, y) \<in> Minimal_Solutions"
@@ -1063,9 +1082,8 @@ theorem conds:
     and subprodr: "(x, y) \<notin> Special_Solutions \<Longrightarrow> subprodr y"
     and subprodl: "subprodl x y"
 proof -
-  have sol: "a \<bullet> x = b \<bullet> y" using min by (auto simp: Solutions_def Minimal_Solutions_def)
-  have ln: "m = length x \<and> n = length y"
-    using min by (auto simp: Minimal_Solutions_def Solutions_def)
+  have sol: "a \<bullet> x = b \<bullet> y" and ln: "m = length x \<and> n = length y"
+    using min by (auto simp: Minimal_Solutions_def in_Solutions_iff)
   then have "\<forall>i<m. x ! i \<le> maxne0 y b"
     by (metis min max_coeff_bound_right nth_mem)
   then show "cond_A x y"
