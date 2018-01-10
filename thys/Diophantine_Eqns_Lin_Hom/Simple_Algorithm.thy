@@ -173,7 +173,7 @@ proof (rule subrelI)
       using sol by (auto simp: set_solutions_iff in_Solutions_iff check_def set_generate set_gen)
     show "nonzero x"
       using sol and nonzero_iff and replicate_eqI and nonzero_Solutions_iff [OF *]
-      by (fastforce simp: solutions_def minimize_def check_def set_generate set_gen dest!: minimize_wrt_subset [THEN subsetD])
+      by (fastforce simp: solutions_def minimize_def check_def set_generate set_gen dest!: minimize_wrtD)
     show "\<not> (\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y)"
     proof
       have min_cg: "(x, y) \<in> set (minimize (check_generate a b))"
@@ -184,7 +184,7 @@ proof (rule subrelI)
       then obtain u and v where "(u, v) \<in> Minimal_Solutions" and less: "u @ v <\<^sub>v x @ y" by blast
       then have "(u, v) \<in> set (solutions a b)" by (auto intro: solutions_complete [THEN subsetD])
       then have "(u, v) \<in> set (check_generate a b)"
-        by (auto simp: solutions_def minimize_def dest: minimize_wrt_subset [THEN subsetD])
+        by (auto simp: solutions_def minimize_def dest: minimize_wrtD)
       from * [OF _ _ _ this] and less show False
         using less_imp_rlex and rlex_not_sym by force
     qed

@@ -478,7 +478,7 @@ proof -
     All_lex: "All_lex = gen2 (Max (set b)) (Max (set a)) a b"
   define z where z: "z = (zeroes m, zeroes n)"
   have "set (non_special_solutions a b) \<subseteq> set (tl (All_lex))"
-    by (auto simp: All_lex generate_def non_special_solutions_def minimize_def dest: subsetD [OF minimize_wrt_subset])
+    by (auto simp: All_lex generate_def non_special_solutions_def minimize_def dest: minimize_wrtD)
   moreover have "z \<notin> set (tl (All_lex))"
     using zeroes_ni_generate All_lex z by (auto simp: generate_def)
   ultimately show ?thesis
