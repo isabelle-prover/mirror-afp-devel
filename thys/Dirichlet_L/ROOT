@@ -1,0 +1,24 @@
+chapter AFP
+
+session Dirichlet_L (AFP) = "Dirichlet_Series" +
+  options [timeout = 600]
+  sessions
+    "HOL-Analysis"
+    "HOL-Algebra"
+    "Landau_Symbols"
+    "Dirichlet_Series"
+    "Zeta_Function"
+    "Bertrands_Postulate"
+  theories [document = false]
+    "Landau_Symbols.Landau_Symbols"
+    "Zeta_Function.Zeta_Function"
+    "HOL-Number_Theory.Residues"
+    "Dirichlet_Series.Multiplicative_Function"
+    "HOL-Algebra.Multiplicative_Group"
+    "Bertrands_Postulate.Bertrand"
+  theories
+    Dirichlet_Theorem
+  document_files
+    "root.tex"
+    "root.bib"
+
