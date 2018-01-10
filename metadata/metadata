@@ -1,3 +1,19 @@
+[Knuth_Morris_Pratt]
+title = The string search algorithm by Knuth, Morris and Pratt
+author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www4.in.tum.de/~lammich/>
+topic = Computer Science/Algorithms
+date = 2017-12-18
+notify = hellauer@in.tum.de, lammich@in.tum.de
+abstract =
+  The Knuth-Morris-Pratt algorithm is often used to show that the
+  problem of finding a string <i>s</i> in a text
+  <i>t</i> can be solved deterministically in
+  <i>O(|s| + |t|)</i> time. We use the Isabelle
+  Refinement Framework to formulate and verify the algorithm. Via
+  refinement, we apply some optimisations and finally use the
+  <em>Sepref</em> tool to obtain executable code in
+  <em>Imperative/HOL</em>.
+
 [Minkowskis_Theorem]
 title = Minkowski's Theorem
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -5073,10 +5089,10 @@ abstract =
 	the above characterization is the determination of all
 	<em>complex</em> eigenvalues. In case A contains only non-negative
 	real values, a simplification is possible with the help of the
-	Perron-Frobenius theorem, which tells us that it suffices to consider only
+	Perron&ndash;Frobenius theorem, which tells us that it suffices to consider only
 	the <em>real</em> eigenvalues of A, i.e., applying Sturm's method can
 	decide the polynomial growth of A<sup>n</sup>. </p><p> We formalize
-	the Perron-Frobenius theorem based on a proof via Brouwer's fixpoint
+	the Perron&ndash;Frobenius theorem based on a proof via Brouwer's fixpoint
 	theorem, which is available in the HOL multivariate analysis (HMA)
 	library. Since the results on the spectral radius is based on matrices
 	in the Jordan normal form (JNF) library, we further develop a
@@ -5089,6 +5105,22 @@ extra-history =
         [2017-10-18]:
         added Perron-Frobenius theorem for irreducible matrices with generalization 
         (revision bda1f1ce8a1c)
+
+[Stochastic_Matrices]
+title = Stochastic Matrices and the Perron-Frobenius Theorem
+author = René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+topic = Mathematics/Algebra, Computer Science/Automata and Formal Languages
+date = 2017-11-22
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  Stochastic matrices are a convenient way to model discrete-time and
+  finite state Markov chains. The Perron&ndash;Frobenius theorem
+  tells us something about the existence and uniqueness of non-negative
+  eigenvectors of a stochastic matrix.  In this entry, we formalize
+  stochastic matrices, link the formalization to the existing AFP-entry
+  on Markov chains, and apply the Perron&ndash;Frobenius theorem to
+  prove that stationary distributions always exist, and they are unique
+  if the stochastic matrix is irreducible.
 
 [Formal_SSA]
 title = Verified Construction of Static Single Assignment Form
@@ -5409,6 +5441,50 @@ abstract =
 	mistake in precisely this lifting step.
 notify = eberlm@in.tum.de
 
+[Median_Of_Medians_Selection]
+title = The Median-of-Medians Selection Algorithm
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-12-21
+notify = eberlm@in.tum.de
+abstract =
+  <p>This entry provides an executable functional implementation
+  of the Median-of-Medians algorithm for selecting the
+  <em>k</em>-th smallest element of an unsorted list
+  deterministically in linear time. The size bounds for the recursive
+  call that lead to the linear upper bound on the run-time of the
+  algorithm are also proven. </p>
+
+[Mason_Stothers]
+title = The Mason–Stother's Theorem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2017-12-21
+notify = eberlm@in.tum.de
+abstract =
+  <p>This article provides a formalisation of Snyder’s simple and
+  elegant proof of the Mason&ndash;Stothers theorem, which is the
+  polynomial analogue of the famous abc Conjecture for integers.
+  Remarkably, Snyder found this very elegant proof when he was still a
+  high-school student.</p> <p>In short, the statement of the
+  theorem is that three non-zero coprime polynomials
+  <em>A</em>, <em>B</em>, <em>C</em>
+  over a field which sum to 0 and do not all have vanishing derivatives
+  fulfil max{deg(<em>A</em>), deg(<em>B</em>),
+  deg(<em>C</em>)} < deg(rad(<em>ABC</em>))
+  where the rad(<em>P</em>) denotes the
+  <em>radical</em> of <em>P</em>,
+  i.&thinsp;e. the product of all unique irreducible factors of
+  <em>P</em>.</p> <p>This theorem also implies a
+  kind of polynomial analogue of Fermat’s Last Theorem for polynomials:
+  except for trivial cases,
+  <em>A<sup>n</sup></em> +
+  <em>B<sup>n</sup></em> +
+  <em>C<sup>n</sup></em> = 0 implies
+  n&nbsp;&le;&nbsp;2 for coprime polynomials
+  <em>A</em>, <em>B</em>, <em>C</em>
+  over a field.</em></p>
+
 [FLP]
 title = A Constructive Proof for FLP
 author = Benjamin Bisping <mailto:benjamin.bisping@campus.tu-berlin.de>,  Paul-David Brodmann <mailto:p.brodmann@tu-berlin.de>,  Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>,  Christina Rickmann <mailto:c.rickmann@tu-berlin.de>,  Henning Seidler <mailto:henning.seidler@mailbox.tu-berlin.de>,  Anke Stüber <mailto:anke.stueber@campus.tu-berlin.de>, Arno Wilhelm-Weidner <mailto:arno.wilhelm-weidner@tu-berlin.de>,  Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>,  Uwe Nestmann <https://www.mtv.tu-berlin.de/nestmann/>
@@ -5602,6 +5678,25 @@ abstract =
 	In this formalization, we use ideas from John Harrison's HOL Light
 	formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
 	This theorem is the 95th theorem of the Top 100 Theorems list.
+
+[Falling_Factorial_Sum]
+title = The Falling Factorial of a Sum
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+topic = Mathematics/Combinatorics
+date = 2017-12-22
+notify = lukas.bulwahn@gmail.com
+abstract =
+  This entry shows that the falling factorial of a sum can be computed
+  with an expression using binomial coefficients and the falling
+  factorial of its summands. The entry provides three different proofs:
+  a combinatorial proof, an induction proof and an algebraic proof using
+  the Vandermonde identity.  The three formalizations try to follow
+  their informal presentations from a Mathematics Stack Exchange page as
+  close as possible. The induction and algebraic formalization end up to
+  be very close to their informal presentation, whereas the
+  combinatorial proof first requires the introduction of list
+  interleavings, and significant more detail than its informal
+  presentation.
 
 [InfPathElimination]
 title = Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths
@@ -6385,4 +6480,20 @@ abstract =
   coprime, there are infinitely many primes <em>p</em> with
   <em>p</em> &equiv; <em>h</em> (mod
   <em>n</em>).</p>
-  
+
+[Taylor_Models]
+title = Taylor Models
+author = Christoph Traut<>, Fabian Immler <http://home.in.tum.de/~immler/>
+topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
+date = 2018-01-08
+notify = immler@in.tum.de
+abstract = 
+  We present a formally verified implementation of multivariate Taylor
+  models. Taylor models are a form of rigorous polynomial approximation,
+  consisting of an approximation polynomial based on Taylor expansions,
+  combined with a rigorous bound on the approximation error. Taylor
+  models were introduced as a tool to mitigate the dependency problem of
+  interval arithmetic. Our implementation automatically computes Taylor
+  models for the class of elementary functions, expressed by composition
+  of arithmetic operations and basic functions like exp, sin, or square
+  root.

@@ -114,6 +114,7 @@ FFT
 FLP
 FOL-Fitting
 FOL_Harrison
+Falling_Factorial_Sum
 FeatherweightJava
 Featherweight_OCL
 Fermat3_4
@@ -181,6 +182,7 @@ KBPs
 Key_Agreement_Strong_Adversaries
 Kleene_Algebra
 Knot_Theory
+Knuth_Morris_Pratt
 Koenigsberg_Friendship
 Kuratowski_Closure_Complement
 Lam-ml-Normalization
@@ -214,9 +216,11 @@ LTL_to_DRA
 LTL_to_GBA
 Markov_Models
 Marriage
+Mason_Stothers
 Matrix
 Matrix_Tensor
 Max-Card-Matching
+Median_Of_Medians_Selection
 Menger
 MFMC_Countable
 MiniML
@@ -345,6 +349,7 @@ Stable_Matching
 Stern_Brocot
 Stewart_Apollonius
 Stirling_Formula
+Stochastic_Matrices
 Stone_Algebras
 Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
@@ -361,6 +366,7 @@ Surprise_Paradox
 TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
+Taylor_Models
 Timed_Automata
 Topology
 TortoiseHare
