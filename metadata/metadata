@@ -6365,3 +6365,24 @@ abstract =
   definition of sensors, we relax these assumptions and show how to
   amend the controller constraints to still guarantee safety.
 
+[Dirichlet_L]
+title = Dirichlet L-Functions and Dirichlet's Theorem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory, Mathematics/Algebra
+date = 2017-12-21
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This article provides a formalisation of Dirichlet characters
+  and Dirichlet <em>L</em>-functions including proofs of
+  their basic properties &ndash; most notably their analyticity,
+  their areas of convergence, and their non-vanishing for &Re;(s)
+  &ge; 1. All of this is built in a very high-level style using
+  Dirichlet series. The proof of the non-vanishing follows a very short
+  and elegant proof by Newman, which we attempt to reproduce faithfully
+  in a similar level of abstraction in Isabelle.</p> <p>This
+  also leads to a relatively short proof of Dirichlet’s Theorem, which
+  states that, if <em>h</em> and <em>n</em> are
+  coprime, there are infinitely many primes <em>p</em> with
+  <em>p</em> &equiv; <em>h</em> (mod
+  <em>n</em>).</p>
+  
