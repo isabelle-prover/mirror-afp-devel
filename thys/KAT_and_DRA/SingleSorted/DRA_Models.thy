@@ -18,7 +18,7 @@ text {*
 
 no_notation 
   plus (infixl "+" 65) and 
-  less_eq  ("(_/ \<le> _)"  [51, 51] 50)
+  less_eq  (infix "\<le>" 50)
 
 notation comp (infixl "\<cdot>" 55)
 
@@ -45,7 +45,7 @@ definition fun_strict_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool
   "f <. g \<equiv> f \<le> g \<and> f \<noteq> g"
 
 definition N :: "'a bfun \<Rightarrow> 'a bfun" where
-  "N f \<equiv> (adjoint f o bot) \<sqinter> id"
+  "N f \<equiv> ((adjoint f o bot) \<sqinter> id)"
 
 lemma top_max: "f \<le> top"
   by (auto simp: top_def fun_order_def)
