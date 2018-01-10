@@ -120,23 +120,19 @@ abbreviation elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" wh
   "elem_zmset a M \<equiv> a \<in> set_zmset M"
 
 notation
-  elem_zmset ("'(\<in>#\<^sub>z')") and
-  elem_zmset ("(_/ \<in>#\<^sub>z _)" [51, 51] 50)
+  elem_zmset (infix "\<in>#\<^sub>z" 50)
 
 notation (ASCII)
-  elem_zmset ("'(:#z')") and
-  elem_zmset ("(_/ :#z _)" [51, 51] 50)
+  elem_zmset (infix ":#z" 50)
 
 abbreviation not_elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" where
   "not_elem_zmset a M \<equiv> a \<notin> set_zmset M"
 
 notation
-  not_elem_zmset ("'(\<notin>#\<^sub>z')") and
-  not_elem_zmset ("(_/ \<notin>#\<^sub>z _)" [51, 51] 50)
+  not_elem_zmset (infix "\<notin>#\<^sub>z" 50)
 
 notation (ASCII)
-  not_elem_zmset ("'(~:#z')") and
-  not_elem_zmset ("(_/ ~:#z _)" [51, 51] 50)
+  not_elem_zmset (infix "~:#z" 50)
 
 context
 begin

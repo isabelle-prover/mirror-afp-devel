@@ -10,6 +10,8 @@ theory Data_List
     Numeral_Cpo
 begin
 
+no_notation Set.member ("'(:')")
+
 subsection \<open>Datatype definition\<close>
 
 domain 'a list ("[_]") =
@@ -22,10 +24,8 @@ domain 'a list ("[_]") =
 subsubsection \<open>Section syntax for @{const Cons}\<close>
 
 syntax
-  "_Cons_section" :: "'a \<rightarrow> ['a] \<rightarrow> ['a]" ("'(:')")
   "_Cons_section_left" :: "'a \<Rightarrow> ['a] \<rightarrow> ['a]" ("'(_:')")
 translations
-  "(:)" == "CONST Cons"
   "(x:)" == "(CONST Rep_cfun) (CONST Cons) x"
 
 abbreviation Cons_section_right :: "['a] \<Rightarrow> 'a \<rightarrow> ['a]" ("'(:_')") where
