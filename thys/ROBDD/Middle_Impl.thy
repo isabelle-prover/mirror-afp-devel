@@ -232,13 +232,13 @@ lemma updS_Rmi: "Rmi (updS s x r) = Rmi s"
   unfolding Rmi_def updS_Rmi_g by blast
 
 
-interpretation mi: bdd_impl_cmp bdd_sane Rmi tmi' fmi' ifmi' destrmi' dcl updS "op ="
+interpretation mi: bdd_impl_cmp bdd_sane Rmi tmi' fmi' ifmi' destrmi' dcl updS "(=)"
 proof  -
   note s = mi_pre.les_def[simp] Rmi_def
 
   note [simp] = tmi'_def fmi'_def ifmi'_def destrmi'_def apfst_def map_prod_def
 
-  show "bdd_impl_cmp bdd_sane Rmi tmi' fmi' ifmi' destrmi' dcl updS (op =)"
+  show "bdd_impl_cmp bdd_sane Rmi tmi' fmi' ifmi' destrmi' dcl updS (=)"
   proof(unfold_locales, goal_cases)
     case 1 thus ?case by(clarsimp split: if_splits simp: Rmi_def)
   next case 2 thus ?case by(clarsimp split: if_splits simp: Rmi_def)

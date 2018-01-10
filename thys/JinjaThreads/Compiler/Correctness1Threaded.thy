@@ -507,7 +507,7 @@ qed
 
 lemma Red1'_Red1_bisimulation:
   assumes wf: "wf_J1_prog P"
-  shows "bisimulation (Red1_mthr.redT False P) (Red1_mthr.redT True P) mbisim_Red1'_Red1 op ="
+  shows "bisimulation (Red1_mthr.redT False P) (Red1_mthr.redT True P) mbisim_Red1'_Red1 (=)"
 proof
   fix s1 s2 tl1 s1'
   assume "mbisim_Red1'_Red1 s1 s2" and "Red1_mthr.redT False P s1 tl1 s1'"
@@ -523,7 +523,7 @@ qed
 lemma Red1'_Red1_bisimulation_final:
   "wf_J1_prog P 
   \<Longrightarrow> bisimulation_final (Red1_mthr.redT False P) (Red1_mthr.redT True P) 
-       mbisim_Red1'_Red1 (op =) Red1_mthr.mfinal Red1_mthr.mfinal"
+       mbisim_Red1'_Red1 (=) Red1_mthr.mfinal Red1_mthr.mfinal"
 apply(intro_locales)
  apply(erule Red1'_Red1_bisimulation)
 apply(unfold_locales)
@@ -557,9 +557,9 @@ qed
 
 lemma Red1'_Red1_bisim_into_weak:
   assumes wf: "wf_J1_prog P"
-  shows "bisimulation_into_delay (Red1_mthr.redT False P) (Red1_mthr.redT True P) mbisim_Red1'_Red1 (op =) (Red1_mthr.m\<tau>move P) (Red1_mthr.m\<tau>move P)"
+  shows "bisimulation_into_delay (Red1_mthr.redT False P) (Red1_mthr.redT True P) mbisim_Red1'_Red1 (=) (Red1_mthr.m\<tau>move P) (Red1_mthr.m\<tau>move P)"
 proof -
-  interpret b: bisimulation "Red1_mthr.redT False P" "Red1_mthr.redT True P" "mbisim_Red1'_Red1" "op ="
+  interpret b: bisimulation "Red1_mthr.redT False P" "Red1_mthr.redT True P" "mbisim_Red1'_Red1" "(=)"
     by(rule Red1'_Red1_bisimulation[OF wf])
   show ?thesis by(unfold_locales)(simp add: mbisim_Red1'_Red1_def)
 qed
@@ -699,7 +699,7 @@ qed
 
 lemma Red1'_Red1_if_bisimulation:
   assumes wf: "wf_J1_prog P"
-  shows "bisimulation (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 op ="
+  shows "bisimulation (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 (=)"
 proof
   fix s1 s2 tl1 s1'
   assume "if_mbisim_Red1'_Red1 s1 s2" and "Red1_mthr.if.redT False P s1 tl1 s1'"
@@ -724,9 +724,9 @@ qed
 
 lemma if_Red1'_Red1_bisim_into_weak:
   assumes wf: "wf_J1_prog P"
-  shows "bisimulation_into_delay (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 (op =) (Red1_mthr.if.m\<tau>move P) (Red1_mthr.if.m\<tau>move P)"
+  shows "bisimulation_into_delay (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 (=) (Red1_mthr.if.m\<tau>move P) (Red1_mthr.if.m\<tau>move P)"
 proof -
-  interpret b: bisimulation "Red1_mthr.if.redT False P" "Red1_mthr.if.redT True P" "if_mbisim_Red1'_Red1" "op ="
+  interpret b: bisimulation "Red1_mthr.if.redT False P" "Red1_mthr.if.redT True P" "if_mbisim_Red1'_Red1" "(=)"
     by(rule Red1'_Red1_if_bisimulation[OF wf])
   show ?thesis by(unfold_locales)(simp add: if_mbisim_Red1'_Red1_def)
 qed
@@ -734,7 +734,7 @@ qed
 lemma if_Red1'_Red1_bisimulation_final:
   "wf_J1_prog P 
   \<Longrightarrow> bisimulation_final (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) 
-       if_mbisim_Red1'_Red1 (op =) Red1_mthr.if.mfinal Red1_mthr.if.mfinal"
+       if_mbisim_Red1'_Red1 (=) Red1_mthr.if.mfinal Red1_mthr.if.mfinal"
 apply(intro_locales)
  apply(erule Red1'_Red1_if_bisimulation)
 apply(unfold_locales)

@@ -117,14 +117,14 @@ proof (transfer, unfold o_def, clarify)
     case True
     obtain v where mm: "mm ! i = IArray v" by (cases "mm ! i")
     with True all[of "mm ! i"] have len: "length v = nc" unfolding set_conv_nth by force
-    from mm True have "?l = map (op ! v) [0..<nc] ! j" (is "_ = ?m") unfolding m mk_mat_def undef_mat_def by simp
+    from mm True have "?l = map ((!) v) [0..<nc] ! j" (is "_ = ?m") unfolding m mk_mat_def undef_mat_def by simp
     also have "?m = m !! i !! j"
     proof (cases "j < length v")
       case True
       thus ?thesis unfolding m using mm len by auto
     next
       case False
-      hence j: "\<not> j < length (map (op ! v) [0..<length v])" by simp
+      hence j: "\<not> j < length (map ((!) v) [0..<length v])" by simp
       show ?thesis unfolding m using mm len by (auto simp: empty_nth[OF j] empty_nth[OF False])
     qed
     also have "\<dots> = ?r" using True m by simp
@@ -164,14 +164,14 @@ lemma dim_col_code[code]: "dim_col (mat_impl m) = dim_col_impl m"
 
 instantiation vec :: (type)equal
 begin
-  definition "(equal_vec :: ('a vec \<Rightarrow> 'a vec \<Rightarrow> bool)) = (op =)"
+  definition "(equal_vec :: ('a vec \<Rightarrow> 'a vec \<Rightarrow> bool)) = (=)"
 instance
   by (intro_classes, auto simp: equal_vec_def)
 end
 
 instantiation mat :: (type)equal
 begin
-  definition "(equal_mat :: ('a mat \<Rightarrow> 'a mat \<Rightarrow> bool)) = (op =)"
+  definition "(equal_mat :: ('a mat \<Rightarrow> 'a mat \<Rightarrow> bool)) = (=)"
 instance
   by (intro_classes, auto simp: equal_mat_def)
 end

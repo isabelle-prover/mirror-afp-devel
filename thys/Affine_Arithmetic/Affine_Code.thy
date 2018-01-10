@@ -121,15 +121,15 @@ lemma distinct_binop:
 lemma binop_plus:
   fixes b::"(nat * 'a::euclidean_space) list"
   shows
-    "(\<Sum>(i, y)\<leftarrow>binop op + 0 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
-  by (induct "op +::'a\<Rightarrow>_" "0::'a" "0::'a" b ba rule: binop.induct)
+    "(\<Sum>(i, y)\<leftarrow>binop (+) 0 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
+  by (induct "(+) ::'a\<Rightarrow>_" "0::'a" "0::'a" b ba rule: binop.induct)
     (auto simp: algebra_simps)
 
 lemma binop_compose:
   "binop (\<lambda>x y. f (g x y)) z1 z2 xs ys = map (apsnd f) (binop g z1 z2 xs ys)"
   by (induct "\<lambda>x y. f (g x y)" z1 z2 xs ys rule: binop.induct) auto
 
-lemma linear_cmul_left[intro, simp]: "linear (op * x::real \<Rightarrow> _)"
+lemma linear_cmul_left[intro, simp]: "linear (( * ) x::real \<Rightarrow> _)"
   by (auto intro!: linearI simp: algebra_simps)
 
 lemma length_merge_sorted_eq:
@@ -140,7 +140,7 @@ lemma length_merge_sorted_eq:
 subsection \<open>Pointswise Addition\<close>
 
 lift_definition add_slist::"(nat, 'a::{plus, zero}) slist \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist" is
-  "\<lambda>xs ys. binop op + 0 0 xs ys"
+  "\<lambda>xs ys. binop (+) 0 0 xs ys"
   by (auto simp: intro!: distinct_binop rsorted_binop)
 
 lemma map_of_binop[simp]: "rsorted (map fst xs) \<Longrightarrow> rsorted (map fst ys) \<Longrightarrow>

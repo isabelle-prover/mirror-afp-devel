@@ -1943,7 +1943,7 @@ apply (drule_tac x=t in le_imp_less_or_eq, erule disjE)
  prefer 2
  apply simp
 apply (simp add: iMODb_cut_greater_aux)
-apply (rule arg_cong[where f="op - c"])
+apply (rule arg_cong[where f="(-) c"])
 apply (simp add: diff_add_assoc2 del: add_diff_assoc2)
 apply (rule_tac t="t - Suc r" and s="t - r - Suc 0" in subst, simp)
 apply (subst div_diff1_eq[of _ "Suc 0"])

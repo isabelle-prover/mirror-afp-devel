@@ -59,13 +59,13 @@ begin
       done  
   qed
 
-  lemma GEN_OP_EQ_Id: "GEN_OP op= op= (Id\<rightarrow>Id\<rightarrow>bool_rel)" by simp
+  lemma GEN_OP_EQ_Id: "GEN_OP (=) (=) (Id\<rightarrow>Id\<rightarrow>bool_rel)" by simp
 
   hide_const (open) Intf_Set.op_set_isEmpty Intf_Set.op_set_delete
 
   lemma autoref_import_set_unfolds:
     "{} = op_set_empty"
-    "uncurry (RETURN oo op\<in>) = uncurry (RETURN oo op_set_member)"
+    "uncurry (RETURN oo (\<in>)) = uncurry (RETURN oo op_set_member)"
     "Intf_Set.op_set_isEmpty = IICF_Set.op_set_is_empty"
     "Intf_Set.op_set_delete = IICF_Set.op_set_delete"
     "insert = IICF_Set.op_set_insert"

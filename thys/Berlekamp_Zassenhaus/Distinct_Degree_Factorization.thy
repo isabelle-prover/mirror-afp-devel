@@ -49,13 +49,13 @@ hide_const up_ring.monom
 theorem (in field) finite_field_mult_group_has_gen2:
   assumes finite:"finite (carrier R)"
   shows "\<exists>a \<in> carrier (mult_of R). group.ord (mult_of R) a = order (mult_of R) 
-  \<and> carrier (mult_of R) = {a(^)i | i::nat . i \<in> UNIV}"
+  \<and> carrier (mult_of R) = {a[^]i | i::nat . i \<in> UNIV}"
 proof -
   note mult_of_simps[simp]
   have finite': "finite (carrier (mult_of R))" using finite by (rule finite_mult_of)
 
   interpret G: group "mult_of R" rewrites
-      "op (^)\<^bsub>mult_of R\<^esub> = (op (^) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
+      "([^]\<^bsub>mult_of R\<^esub>) = (([^]) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
     by (rule field_mult_group) (simp_all add: fun_eq_iff nat_pow_def)
 
   let ?N = "\<lambda> x . card {a \<in> carrier (mult_of R). group.ord (mult_of R) a  = x}"
@@ -117,17 +117,17 @@ proof -
   hence "?N (order (mult_of R)) > 0" using * by (simp add: phi'_nonzero)
   then obtain a where a:"a \<in> carrier (mult_of R)" and a_ord:"group.ord (mult_of R) a = order (mult_of R)"
     by (auto simp add: card_gt_0_iff)
-  hence set_eq:"{a(^)i | i::nat. i \<in> UNIV} = (\<lambda>x. a(^)x) ` {0 .. group.ord (mult_of R) a - 1}"
+  hence set_eq:"{a[^]i | i::nat. i \<in> UNIV} = (\<lambda>x. a[^]x) ` {0 .. group.ord (mult_of R) a - 1}"
     using G.ord_elems[OF finite'] by auto
-  have card_eq:"card ((\<lambda>x. a(^)x) ` {0 .. group.ord (mult_of R) a - 1}) = card {0 .. group.ord (mult_of R) a - 1}"
+  have card_eq:"card ((\<lambda>x. a[^]x) ` {0 .. group.ord (mult_of R) a - 1}) = card {0 .. group.ord (mult_of R) a - 1}"
     by (intro card_image G.ord_inj finite' a)
-  hence "card ((\<lambda> x . a(^)x) ` {0 .. group.ord (mult_of R) a - 1}) = card {0 ..order (mult_of R) - 1}"
+  hence "card ((\<lambda> x . a[^]x) ` {0 .. group.ord (mult_of R) a - 1}) = card {0 ..order (mult_of R) - 1}"
     using assms by (simp add: card_eq a_ord)
-  hence card_R_minus_1:"card {a(^)i | i::nat. i \<in> UNIV} =  order (mult_of R)"
+  hence card_R_minus_1:"card {a[^]i | i::nat. i \<in> UNIV} =  order (mult_of R)"
     using * by (subst set_eq) auto
-  have **:"{a(^)i | i::nat. i \<in> UNIV} \<subseteq> carrier (mult_of R)"
+  have **:"{a[^]i | i::nat. i \<in> UNIV} \<subseteq> carrier (mult_of R)"
     using G.nat_pow_closed[OF a] by auto
-  with _ have "carrier (mult_of R) = {a(^)i|i::nat. i \<in> UNIV}"
+  with _ have "carrier (mult_of R) = {a[^]i|i::nat. i \<in> UNIV}"
     by (rule card_seteq[symmetric]) (simp_all add: card_R_minus_1 finite Coset.order_def del: UNIV_I)
   thus ?thesis using a a_ord by blast
 qed
@@ -211,26 +211,26 @@ lemma x_power_aq_minus_1_rw:
   assumes x: "x > 1" 
     and a: "a > 0" 
     and b: "b > 0"
-  shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}"
+  shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum ((^) (x^a)) {..<q}"
 proof (cases "q=0")
   case False
   note q0 = False     
   have xa: "(x ^ a) > 0" using x by auto
   have int_rw1: "int (x ^ a) - 1 = int ((x ^ a) - 1)"
     using xa by linarith
-  have int_rw2: "sum (op ^ (int (x ^ a))) {..<q} = int (sum (op ^ ((x ^ a))) {..<q})" 
+  have int_rw2: "sum ((^) (int (x ^ a))) {..<q} = int (sum ((^) ((x ^ a))) {..<q})" 
     unfolding int_sum by simp
   have "int (x ^ a) ^ q = int (Suc ((x ^ a) ^ q - 1))" using xa by auto
   hence "int ((x ^ a) ^ q - 1) = int (x ^ a) ^ q - 1" using xa by presburger    
-  also have "... = (int (x ^ a) - 1) * sum (op ^ (int (x ^ a))) {..<q}" 
+  also have "... = (int (x ^ a) - 1) * sum ((^) (int (x ^ a))) {..<q}" 
     by (rule power_diff_1_eq[OF q0])
-  also have "... = (int ((x ^ a) - 1)) * int (sum (op ^ ( (x ^ a))) {..<q})" 
+  also have "... = (int ((x ^ a) - 1)) * int (sum ((^) ( (x ^ a))) {..<q})" 
     unfolding int_rw1 int_rw2 by simp
-  also have "... = int (((x ^ a) - 1) * (sum (op ^ ( (x ^ a))) {..<q}))" by auto
-  finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q})" .     
+  also have "... = int (((x ^ a) - 1) * (sum ((^) ( (x ^ a))) {..<q}))" by auto
+  finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum ((^) (x ^ a)) {..<q})" .     
   have "x ^ (a * q) - 1 = (x^a)^q - 1"
     by (simp add: power_mult)
-  also have "... = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}" 
+  also have "... = ((x^a) - 1) * sum ((^) (x^a)) {..<q}" 
     using aux unfolding int_int_eq .
   finally show ?thesis .
 qed auto
@@ -276,7 +276,7 @@ lemma dvd_power_minus_1_conv2:
 proof -
   define q where q[simp]: "q = b div a"  
   have b: "b = a * q" using a_dvd_b by auto
-  have "x^b - 1 = ((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q}" 
+  have "x^b - 1 = ((x ^ a) - 1) * sum ((^) (x ^ a)) {..<q}" 
     unfolding b by (rule x_power_aq_minus_1_rw[OF x a b0])
   thus ?thesis unfolding dvd_def by auto
 qed
@@ -457,32 +457,32 @@ lemma order_irr: "Coset.order (mult_of R) = CARD('a)^degree f - 1"
  
 lemma element_power_order_eq_1:
     assumes x: "x \<in> carrier (mult_of R)" 
-    shows "x (^)\<^bsub>(mult_of R)\<^esub> Coset.order (mult_of R) = \<one>\<^bsub>(mult_of R)\<^esub>"
+    shows "x [^]\<^bsub>(mult_of R)\<^esub> Coset.order (mult_of R) = \<one>\<^bsub>(mult_of R)\<^esub>"
 by (rule Multiplicative_Group.group.pow_order_eq_1[OF field_R.field_mult_group], auto simp add: x)
 
 corollary element_power_order_eq_1': 
 assumes x: "x \<in> carrier (mult_of R)"
-shows"x (^)\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = x"
+shows"x [^]\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = x"
 proof -  
-  have "x (^)\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f 
-  = x \<otimes>\<^bsub>(mult_of R)\<^esub> x (^)\<^bsub>(mult_of R)\<^esub> (CARD('a)^degree f - 1)" 
+  have "x [^]\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f 
+  = x \<otimes>\<^bsub>(mult_of R)\<^esub> x [^]\<^bsub>(mult_of R)\<^esub> (CARD('a)^degree f - 1)" 
     by (metis Diff_iff One_nat_def Suc_pred field_R.m_comm field_R.nat_pow_Suc field_R.nat_pow_closed 
         mult_of_simps(1) mult_of_simps(2) nat_pow_mult_of neq0_conv power_eq_0_iff x zero_less_card_finite)  
-  also have "x \<otimes>\<^bsub>(mult_of R)\<^esub> x (^)\<^bsub>(mult_of R)\<^esub> (CARD('a)^degree f - 1) = x"     
+  also have "x \<otimes>\<^bsub>(mult_of R)\<^esub> x [^]\<^bsub>(mult_of R)\<^esub> (CARD('a)^degree f - 1) = x"     
     by (metis carrier_mult_of element_power_order_eq_1 field_R.Units_closed field_R.field_Units 
         field_R.r_one monoid.simps(2) mult_mult_of mult_of_def order_irr x)
   finally show ?thesis .  
 qed  
 
-lemma pow_irr[simp]: "x (^)\<^bsub>(R)\<^esub> n= x^n mod f"
+lemma pow_irr[simp]: "x [^]\<^bsub>(R)\<^esub> n= x^n mod f"
   by (induct n, auto simp add: mod_poly_less nat_pow_def R_def mult_of_def mult_irr_def 
       carrier_irr_def mod_mult_right_eq mult.commute)
 
-lemma pow_irr_mult_of[simp]: "x (^)\<^bsub>(mult_of R)\<^esub> n= x^n mod f"
+lemma pow_irr_mult_of[simp]: "x [^]\<^bsub>(mult_of R)\<^esub> n= x^n mod f"
   by (induct n, auto simp add: mod_poly_less nat_pow_def R_def mult_of_def mult_irr_def 
       carrier_irr_def mod_mult_right_eq mult.commute)
 
-lemma fermat_theorem_power_poly_R[simp]: "[:a:] (^)\<^bsub>R\<^esub> CARD('a) ^ n = [:a:]"
+lemma fermat_theorem_power_poly_R[simp]: "[:a:] [^]\<^bsub>R\<^esub> CARD('a) ^ n = [:a:]"
   by (auto simp add: Missing_Polynomial.poly_const_pow mod_poly_less)
 
 lemma times_mod_expand:
@@ -492,20 +492,20 @@ lemma times_mod_expand:
 (*Elements that satisfy y^p^m = y in the field are closed under addition and multiplication.*)
 lemma mult_closed_power:
 assumes x: "x \<in> carrier R" and y: "y \<in> carrier R"
-and "x (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
-and "y (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = y"
-shows "(x \<otimes>\<^bsub>(R)\<^esub> y) (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = (x \<otimes>\<^bsub>(R)\<^esub> y)" 
+and "x [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
+and "y [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = y"
+shows "(x \<otimes>\<^bsub>(R)\<^esub> y) [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = (x \<otimes>\<^bsub>(R)\<^esub> y)" 
   using assms assms field_R.nat_pow_distr by auto
 
 lemma add_closed_power:
-assumes x1: "x (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
-and y1: "y (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = y"
-shows "(x \<oplus>\<^bsub>(R)\<^esub> y) (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = (x \<oplus>\<^bsub>(R)\<^esub> y)"
+assumes x1: "x [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
+and y1: "y [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = y"
+shows "(x \<oplus>\<^bsub>(R)\<^esub> y) [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = (x \<oplus>\<^bsub>(R)\<^esub> y)"
 proof -
   have "(x + y) ^ CARD('a) ^ m' = x^(CARD('a) ^ m') + y ^ (CARD('a) ^ m')" by auto  
   hence "(x + y) ^ CARD('a) ^ m' mod f = (x^(CARD('a) ^ m') + y ^ (CARD('a) ^ m')) mod f" by auto
-  hence "(x \<oplus>\<^bsub>(R)\<^esub> y) (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' 
-  = (x (^)\<^bsub>(R)\<^esub> CARD('a)^m') \<oplus>\<^bsub>(R)\<^esub> (y (^)\<^bsub>(R)\<^esub> CARD('a)^m')"    
+  hence "(x \<oplus>\<^bsub>(R)\<^esub> y) [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' 
+  = (x [^]\<^bsub>(R)\<^esub> CARD('a)^m') \<oplus>\<^bsub>(R)\<^esub> (y [^]\<^bsub>(R)\<^esub> CARD('a)^m')"    
     by (auto, unfold R_def plus_irr_def, auto simp add: mod_add_eq power_mod)
   also have "... = x \<oplus>\<^bsub>(R)\<^esub> y" unfolding x1 y1 by simp
   finally show ?thesis .
@@ -513,8 +513,8 @@ qed
 
 lemma x_power_pm_minus_1: 
   assumes x: "x \<in> carrier (mult_of R)"
-  and "x (^)\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
-  shows "x (^)\<^bsub>(R)\<^esub> (CARD('a) ^ m' - 1) = \<one>\<^bsub>(R)\<^esub>"
+  and "x [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
+  shows "x [^]\<^bsub>(R)\<^esub> (CARD('a) ^ m' - 1) = \<one>\<^bsub>(R)\<^esub>"
   by (metis (no_types, lifting) One_nat_def Suc_pred assms(2) carrier_mult_of field_R.Units_closed 
       field_R.Units_l_cancel field_R.field_Units field_R.l_one field_R.m_rcancel field_R.nat_pow_Suc 
       field_R.nat_pow_closed field_R.one_closed field_R.r_null field_R.r_one x zero_less_card_finite 
@@ -525,8 +525,8 @@ begin
 
 private lemma monom_a_1_P:
   assumes m: "monom 1 1 \<in> carrier R"
-  and eq: "monom 1 1 (^)\<^bsub>(R)\<^esub> (CARD('a) ^ m') = monom 1 1"
-  shows "monom a 1 (^)\<^bsub>(R)\<^esub> (CARD('a) ^ m') = monom a 1"
+  and eq: "monom 1 1 [^]\<^bsub>(R)\<^esub> (CARD('a) ^ m') = monom 1 1"
+  shows "monom a 1 [^]\<^bsub>(R)\<^esub> (CARD('a) ^ m') = monom a 1"
 proof -
   have "monom a 1 = [:a:] * (monom 1 1)"
     by (metis One_nat_def monom_0 monom_Suc mult.commute pCons_0_as_mult)
@@ -539,7 +539,7 @@ proof -
 qed
 
 private lemma prod_monom_1_1:
-  defines "P == (\<lambda> x n. (x(^)\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
+  defines "P == (\<lambda> x n. (x[^]\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
   assumes m: "monom 1 1 \<in> carrier R"
   and eq: "P (monom 1 1) n"
   shows "P ((\<Prod>i = 0..<b::nat. monom 1 1) mod f) n"
@@ -560,16 +560,16 @@ next
   show ?case 
   unfolding eq2 P_def 
   proof (rule mult_closed_power)
-    show "(monom 1 1 mod f) (^)\<^bsub>R\<^esub> CARD('a) ^ n = monom 1 1 mod f"
+    show "(monom 1 1 mod f) [^]\<^bsub>R\<^esub> CARD('a) ^ n = monom 1 1 mod f"
       using eq field_R.nat_pow_eone m P_def by auto
-    show "((\<Prod>i = 0..<b. monom 1 1) mod f) (^)\<^bsub>R\<^esub> CARD('a) ^ n = (\<Prod>i = 0..<b. monom 1 1) mod f"      
+    show "((\<Prod>i = 0..<b. monom 1 1) mod f) [^]\<^bsub>R\<^esub> CARD('a) ^ n = (\<Prod>i = 0..<b. monom 1 1) mod f"      
       using P_def Suc.hyps by blast
   qed (auto)
 qed
 
 
 private lemma monom_1_b:
-  defines "P == (\<lambda> x n. (x(^)\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
+  defines "P == (\<lambda> x n. (x[^]\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
   assumes m: "monom 1 1 \<in> carrier R"
   and monom_1_1: "P (monom 1 1) m'"
   and b: "b < degree f"
@@ -588,7 +588,7 @@ qed
 
 
 private lemma monom_a_b:
-  defines "P == (\<lambda> x n. (x(^)\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
+  defines "P == (\<lambda> x n. (x[^]\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
   assumes m: "monom 1 1 \<in> carrier R"
   and m1: "P (monom 1 1) m'"
   and b: "b < degree f"
@@ -603,8 +603,8 @@ proof -
   finally have eq: "monom a b = [:a:] \<otimes>\<^bsub>(R)\<^esub> (monom 1 b)" .
   show ?thesis unfolding eq P_def 
   proof (rule mult_closed_power)
-    show "[:a:] (^)\<^bsub>R\<^esub> CARD('a) ^ m' = [:a:]" by (rule fermat_theorem_power_poly_R)
-    show "monom 1 b (^)\<^bsub>R\<^esub> CARD('a) ^ m' = monom 1 b" 
+    show "[:a:] [^]\<^bsub>R\<^esub> CARD('a) ^ m' = [:a:]" by (rule fermat_theorem_power_poly_R)
+    show "monom 1 b [^]\<^bsub>R\<^esub> CARD('a) ^ m' = monom 1 b" 
       unfolding P_def by (rule monom_1_b[OF m m1[unfolded P_def] b])
     show "monom 1 b \<in> carrier R" unfolding element_in_carrier using b
       by (simp add: degree_monom_eq)
@@ -613,7 +613,7 @@ qed
 
 
 private lemma sum_monoms_P:
-  defines "P == (\<lambda> x n. (x(^)\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
+  defines "P == (\<lambda> x n. (x[^]\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
   assumes m: "monom 1 1 \<in> carrier R"
   and monom_1_1: "P (monom 1 1) n"
   and b: "b < degree f"
@@ -641,15 +641,15 @@ next
     = monom (g (Suc b)) (Suc b) \<oplus>\<^bsub>R\<^esub> (\<Sum>i\<le>b. monom (g i) i)" .  
   show ?case unfolding eq P_def 
   proof (rule add_closed_power)
-    show "monom (g (Suc b)) (Suc b) (^)\<^bsub>R\<^esub> CARD('a) ^ n = monom (g (Suc b)) (Suc b)"
+    show "monom (g (Suc b)) (Suc b) [^]\<^bsub>R\<^esub> CARD('a) ^ n = monom (g (Suc b)) (Suc b)"
       by (rule monom_a_b[OF m monom_1_1[unfolded P_def] Suc.prems])
-    show "(\<Sum>i\<le>b. monom (g i) i) (^)\<^bsub>R\<^esub> CARD('a) ^ n = (\<Sum>i\<le>b. monom (g i) i)" 
+    show "(\<Sum>i\<le>b. monom (g i) i) [^]\<^bsub>R\<^esub> CARD('a) ^ n = (\<Sum>i\<le>b. monom (g i) i)" 
       using hyp unfolding P_def by simp
   qed
 qed
 
 lemma element_carrier_P:
-  defines "P \<equiv> (\<lambda> x n. (x(^)\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
+  defines "P \<equiv> (\<lambda> x n. (x[^]\<^bsub>(R)\<^esub> (CARD('a) ^ n) = x))"
   assumes m: "monom 1 1 \<in> carrier R"
   and monom_1_1: "P (monom 1 1) m'"
   and a: "a \<in> carrier R"
@@ -689,9 +689,9 @@ proof -
         let ?g2 = "(monom 1 1) mod f"
         have deg_g1: "degree ?g1 < degree f" and deg_g2: "degree ?g2 < degree f"
           by (metis True card_UNIV_unit d degree_0 degree_mod_less' zero_less_card_finite zero_neq_one)+   
-        have g2: "?g2 (^)\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = ?g2 ^ (CARD('a)^degree f) mod f"
+        have g2: "?g2 [^]\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = ?g2 ^ (CARD('a)^degree f) mod f"
           by (rule pow_irr_mult_of)
-        have "?g2 (^)\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = ?g2" 
+        have "?g2 [^]\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = ?g2" 
           by (rule element_power_order_eq_1', insert mod_f_not0 deg_g2, 
               auto simp add: carrier_mult_of R_def carrier_irr_def )  
         hence "?g2 ^ CARD('a) mod f = ?g2 mod f" using True d by auto    
@@ -704,7 +704,7 @@ proof -
     case False
     have deg_f1: "1 < degree f"
       using False d degree_f by linarith
-    have "monom 1 1 (^)\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = monom 1 1"
+    have "monom 1 1 [^]\<^bsub>(mult_of R)\<^esub> CARD('a)^degree f = monom 1 1"
       by (rule element_power_order_eq_1', insert deg_f1) 
           (auto simp add: carrier_mult_of R_def carrier_irr_def degree_monom_eq) 
     hence "monom 1 1^CARD('a)^degree f mod f = monom 1 1 mod f" 
@@ -727,23 +727,23 @@ proof (rule ccontr)
   hence f_dvd: "f dvd monom 1 1 ^ CARD('a) ^ c - monom 1 1" by simp 
   obtain a where a_R: "a \<in> carrier (mult_of R)" 
     and ord_a: "group.ord (mult_of R) a = order (mult_of R)" 
-    and gen: "carrier (mult_of R) = {a (^)\<^bsub>R\<^esub> i |i. i \<in> (UNIV::nat set)}" 
+    and gen: "carrier (mult_of R) = {a [^]\<^bsub>R\<^esub> i |i. i \<in> (UNIV::nat set)}" 
     using field.finite_field_mult_group_has_gen2[OF field_R] by auto
   have d_not1: "d>1" using c_ge_1 cd by auto
   have monom_in_carrier: "monom 1 1 \<in> carrier (mult_of R)" 
     using d_not1 unfolding carrier_mult_of R_def carrier_irr_def
     by (simp add: d degree_monom_eq)
-  obtain k::nat where "a (^)\<^bsub>R\<^esub> k = monom 1 1" using monom_in_carrier gen by auto
-  have a_m_1: "a (^)\<^bsub>R\<^esub> (CARD('a)^c - 1) = \<one>\<^bsub>R\<^esub>"
+  obtain k::nat where "a [^]\<^bsub>R\<^esub> k = monom 1 1" using monom_in_carrier gen by auto
+  have a_m_1: "a [^]\<^bsub>R\<^esub> (CARD('a)^c - 1) = \<one>\<^bsub>R\<^esub>"
   proof (rule x_power_pm_minus_1[OF a_R])
     let ?x = "monom 1 1::'a mod_ring poly"
-    show "a (^)\<^bsub>R\<^esub> CARD('a) ^ c = a" 
+    show "a [^]\<^bsub>R\<^esub> CARD('a) ^ c = a" 
     proof (rule element_carrier_P)
       show "?x \<in> carrier R"
-        by (metis \<open>a (^)\<^bsub>R\<^esub> k = monom 1 1\<close> mod_in_carrier pow_irr)
+        by (metis \<open>a [^]\<^bsub>R\<^esub> k = monom 1 1\<close> mod_in_carrier pow_irr)
       have "?x ^ CARD('a)^ c mod f = ?x mod f" using f_dvd
         using mod_eq_dvd_iff_poly by blast
-      thus "?x (^)\<^bsub>R\<^esub> CARD('a)^ c = ?x"
+      thus "?x [^]\<^bsub>R\<^esub> CARD('a)^ c = ?x"
         by (metis d d_not1 degree_monom_eq mod_poly_less one_neq_zero pow_irr)
       show "a \<in> carrier R" using a_R unfolding carrier_mult_of by auto
     qed  
@@ -754,7 +754,7 @@ proof (rule ccontr)
       by (simp add: field_R.field_mult_group)
     show "finite (carrier (mult_of R))" by auto
     show "a \<in> carrier (mult_of R)" by (rule a_R )
-    show "a (^)\<^bsub>mult_of R\<^esub> (CARD('a) ^ c - 1) = \<one>\<^bsub>mult_of R\<^esub>" 
+    show "a [^]\<^bsub>mult_of R\<^esub> (CARD('a) ^ c - 1) = \<one>\<^bsub>mult_of R\<^esub>" 
       using a_m_1 unfolding mult_of_def 
       by (auto, metis mult_of_def pow_irr_mult_of nat_pow_mult_of)
   qed

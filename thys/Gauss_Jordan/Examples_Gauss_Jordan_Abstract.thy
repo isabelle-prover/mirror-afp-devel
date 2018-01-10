@@ -18,10 +18,10 @@ subsection{*Transforming a list of lists to an abstract matrix*}
 
 text{*Definitions to transform a matrix to a list of list and vice versa*}
 definition vec_to_list :: "'a^'n::{finite, enum} => 'a list"
-  where "vec_to_list A = map (op $ A) (enum_class.enum::'n list)"
+  where "vec_to_list A = map (($) A) (enum_class.enum::'n list)"
 
 definition matrix_to_list_of_list :: "'a^'n::{finite, enum}^'m::{finite, enum} => 'a list list"
-  where "matrix_to_list_of_list A = map (vec_to_list) (map (op $ A) (enum_class.enum::'m list))"
+  where "matrix_to_list_of_list A = map (vec_to_list) (map (($) A) (enum_class.enum::'m list))"
 
 text{*This definition should be equivalent to @{text "vector_def"} (in suitable types)*}
 definition list_to_vec :: "'a list => 'a^'n::{finite, enum, mod_type}"

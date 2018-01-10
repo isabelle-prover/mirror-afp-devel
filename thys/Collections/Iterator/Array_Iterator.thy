@@ -4,8 +4,8 @@ begin
 
 lemma idx_iteratei_aux_array_get_Array_conv_nth:
   "idx_iteratei_aux array_get sz i (Array xs) c f \<sigma> = 
-   idx_iteratei_aux op ! sz i xs c f \<sigma>"
-apply(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz i xs c f \<sigma> rule: idx_iteratei_aux.induct)
+   idx_iteratei_aux (!) sz i xs c f \<sigma>"
+apply(induct get\<equiv>"(!) :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz i xs c f \<sigma> rule: idx_iteratei_aux.induct)
 apply(subst (1 2) idx_iteratei_aux.simps)
 apply simp
 done

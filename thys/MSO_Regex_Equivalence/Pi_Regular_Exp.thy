@@ -370,7 +370,7 @@ lemma lang_PLUS[simp]:
   by (induct xs rule: list_singleton_induct) auto
   
 lemma lang_TIMES[simp]:
-  "lang n (TIMES xs) = foldr op @@ (map (lang n) xs) {[]}"
+  "lang n (TIMES xs) = foldr (@@) (map (lang n) xs) {[]}"
   by (induct xs rule: list_singleton_induct) auto
 
 lemma lang_flatten_PLUS:

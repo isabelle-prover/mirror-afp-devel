@@ -11,7 +11,7 @@ text {*
 subsection {* Nondeterministic Result Monad *}
 
 interpretation nrec:
-  partial_function_definitions "op \<le>" "Sup::'a nres set \<Rightarrow> 'a nres"
+  partial_function_definitions "(\<le>)" "Sup::'a nres set \<Rightarrow> 'a nres"
   by unfold_locales (auto simp add: Sup_upper Sup_least)
 
 lemma nrec_admissible: "nrec.admissible (\<lambda>(f::'a \<Rightarrow> 'b nres).
@@ -76,9 +76,9 @@ declaration {* Partial_Function.init "nrec" @{term nrec.fixp_fun}
 lemma bind_mono_pfun[partial_function_mono]:
   fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c nres) \<Rightarrow> ('d nres)"
   shows
-  "\<lbrakk> monotone (fun_ord op \<le>) op \<le> B; 
-    \<And>y. monotone (fun_ord op \<le>) op \<le> (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
-     monotone (fun_ord op \<le>) op \<le> (\<lambda>f. bind (B f) (\<lambda>y. C y f))"
+  "\<lbrakk> monotone (fun_ord (\<le>)) (\<le>) B; 
+    \<And>y. monotone (fun_ord (\<le>)) (\<le>) (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
+     monotone (fun_ord (\<le>)) (\<le>) (\<lambda>f. bind (B f) (\<lambda>y. C y f))"
   apply rule
   apply (rule Refine_Basic.bind_mono)
   apply (blast dest: monotoneD)+
@@ -88,7 +88,7 @@ lemma bind_mono_pfun[partial_function_mono]:
 subsection {* Deterministic Result Monad *}
 
 interpretation drec:
-  partial_function_definitions "op \<le>" "Sup::'a dres set \<Rightarrow> 'a dres"
+  partial_function_definitions "(\<le>)" "Sup::'a dres set \<Rightarrow> 'a dres"
   by unfold_locales (auto simp add: Sup_upper Sup_least)
 
 lemma drec_admissible: "drec.admissible (\<lambda>(f::'a \<Rightarrow> 'b dres).
@@ -96,7 +96,7 @@ lemma drec_admissible: "drec.admissible (\<lambda>(f::'a \<Rightarrow> 'b dres).
     (f x \<noteq> dFAIL \<and> 
     (\<forall>r. f x = dRETURN r \<longrightarrow> Q x r))))"
 proof -
-  have [simp]: "fun_ord (op \<le>::'b dres \<Rightarrow> _ \<Rightarrow> _) = op \<le>"
+  have [simp]: "fun_ord ((\<le>) ::'b dres \<Rightarrow> _ \<Rightarrow> _) = (\<le>)"
     apply (intro ext)
     unfolding fun_ord_def le_fun_def
     by (rule refl)
@@ -123,9 +123,9 @@ declaration {* Partial_Function.init "drec" @{term drec.fixp_fun}
 lemma drec_bind_mono_pfun[partial_function_mono]:
   fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c dres) \<Rightarrow> ('d dres)"
   shows
-  "\<lbrakk> monotone (fun_ord op \<le>) op \<le> B; 
-    \<And>y. monotone (fun_ord op \<le>) op \<le> (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
-     monotone (fun_ord op \<le>) op \<le> (\<lambda>f. dbind (B f) (\<lambda>y. C y f))"
+  "\<lbrakk> monotone (fun_ord (\<le>)) (\<le>) B; 
+    \<And>y. monotone (fun_ord (\<le>)) (\<le>) (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
+     monotone (fun_ord (\<le>)) (\<le>) (\<lambda>f. dbind (B f) (\<lambda>y. C y f))"
   apply rule
   apply (rule dbind_mono)
   apply (blast dest: monotoneD)+

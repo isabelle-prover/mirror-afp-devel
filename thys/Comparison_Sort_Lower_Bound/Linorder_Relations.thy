@@ -480,7 +480,7 @@ proof -
   proof safe
     fix y assume "y \<in> set xs" "index xs y < j"
     moreover from this and j have "y = xs ! index xs y" by simp
-    ultimately show "y \<in> op ! xs ` {i. i < j}" by blast
+    ultimately show "y \<in> (!) xs ` {i. i < j}" by blast
   qed (insert assms j, auto simp: index_nth_id)
   also from assms and j have "card \<dots> = card {i. i < j}" 
     by (intro card_image) (auto simp: inj_on_def nth_eq_iff_index_eq)

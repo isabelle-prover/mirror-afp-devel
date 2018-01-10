@@ -27,7 +27,7 @@ lemma (in residues) res_of_natural_eq: "\<guillemotleft>n\<guillemotright>\<^sub
 lemma (in residues) res_of_integer_eq: "\<guillemotleft>i\<guillemotright> = i mod m"
   by (simp add: of_integer_def res_of_natural_eq res_neg_eq mod_minus_eq)
 
-lemma (in residues) res_pow_eq: "x (^) (n::nat) = x ^ n mod m"
+lemma (in residues) res_pow_eq: "x [^] (n::nat) = x ^ n mod m"
   using m_gt_one
   by (induct n)
     (simp_all add: res_one_eq res_mult_eq mult_ac mod_mult_right_eq)

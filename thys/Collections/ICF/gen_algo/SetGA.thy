@@ -501,7 +501,7 @@ context StdBasicSetDefs
 begin
   definition "g_sng x \<equiv> ins x (empty ())"
   definition "g_isEmpty s \<equiv> iteratei s (\<lambda>c. c) (\<lambda>_ _. False) True"
-  definition "g_sel' s P \<equiv> iteratei s (op = None) 
+  definition "g_sel' s P \<equiv> iteratei s ((=) None) 
     (\<lambda>x _. if P x then Some x else None) None"
 
   definition "g_ball s P \<equiv> iteratei s (\<lambda>c. c) (\<lambda>x \<sigma>. P x) True"
@@ -517,7 +517,7 @@ begin
 
   definition "g_equal s1 s2 \<equiv> g_subset s1 s2 \<and> g_subset s2 s1"
 
-  definition "g_to_list s \<equiv> iterate s (op #) []"
+  definition "g_to_list s \<equiv> iterate s (#) []"
 
   fun g_from_list_aux where
     "g_from_list_aux accs [] = accs" |
@@ -797,8 +797,8 @@ begin
   definition "g_max s P \<equiv> rev_iterateoi s (\<lambda>x. x = None)
     (\<lambda>x _. if P x then Some x else None) None"
 
-  definition "g_to_sorted_list s \<equiv> rev_iterateo s (op #) []"
-  definition "g_to_rev_list s \<equiv> iterateo s (op #) []"
+  definition "g_to_sorted_list s \<equiv> rev_iterateo s (#) []"
+  definition "g_to_rev_list s \<equiv> iterateo s (#) []"
 
   definition dflt_oops :: "('x::linorder,'s) oset_ops" 
     where [icf_rec_def]:

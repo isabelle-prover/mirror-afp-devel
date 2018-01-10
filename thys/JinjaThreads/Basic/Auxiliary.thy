@@ -192,7 +192,7 @@ unfolding list_all2_conv_all_nth Ball_def in_set_conv_nth
 by auto
 
 lemma list_all2_op_eq [simp]:
-  "list_all2 op = xs ys \<longleftrightarrow> xs = ys"
+  "list_all2 (=) xs ys \<longleftrightarrow> xs = ys"
 by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1)
 
 lemmas filter_replicate_conv = filter_replicate
@@ -582,7 +582,7 @@ by(simp add: fun_eq_iff)
 lemma inj_Pair_snd [simp]: "inj (Pair x)"
 by(rule injI) auto
 
-lemma rtranclp_False [simp]: "(\<lambda>a b. False)\<^sup>*\<^sup>* = op ="
+lemma rtranclp_False [simp]: "(\<lambda>a b. False)\<^sup>*\<^sup>* = (=)"
 by(auto simp add: fun_eq_iff elim: rtranclp_induct)
 
 lemmas rtranclp_induct3 =

@@ -97,7 +97,7 @@ lemma special_cosets_lcoset_closed: "w\<in>W \<Longrightarrow> X\<in>\<P> \<Long
   using genby_add_closed unfolding special_cosets_def
   by    (fastforce simp add: set_plus_rearrange2)
 
-lemma special_cosets_lcoset_shift: "w\<in>W \<Longrightarrow> (op +o w) ` \<P> = \<P>"
+lemma special_cosets_lcoset_shift: "w\<in>W \<Longrightarrow> ((+o) w) ` \<P> = \<P>"
   using special_cosets_lcoset_closed genby_uminus_closed
   by    (force simp add: set_plus_rearrange2)
 
@@ -367,7 +367,7 @@ proof-
 qed
 
 lemma flip_altsublist_chain_map_Cons_grow:
-  "flip_altsublist_chain tss \<Longrightarrow> flip_altsublist_chain (map (op # t) tss)"
+  "flip_altsublist_chain tss \<Longrightarrow> flip_altsublist_chain (map ((#) t) tss)"
   by  (induct tss rule: list_induct_CCons)
       (auto simp add:
         binrelchain_Cons_reduce[of flip_altsublist_adjacent]
@@ -1345,33 +1345,33 @@ lemma special_coset_eq_imp_eq_gensets:
   by    force
 
 lemma special_subgroup_special_coset_subset_ordering_iso:
-  "subset_ordering_iso (genby ` Pow S) (op +o w)"
+  "subset_ordering_iso (genby ` Pow S) ((+o) w)"
 proof
   show "\<And>a b. a \<subseteq> b \<Longrightarrow> w +o a \<subseteq> w +o b" using elt_set_plus_def by auto
-  show 2: "inj_on (op +o w) (genby ` Pow S)"
+  show 2: "inj_on ((+o) w) (genby ` Pow S)"
     using lcoset_inj_on inj_inj_on by fast
-  show  "\<And>a b. a \<in> op +o w ` genby ` Pow S \<Longrightarrow>
-          b \<in> op +o w ` genby ` Pow S \<Longrightarrow>
+  show  "\<And>a b. a \<in> (+o) w ` genby ` Pow S \<Longrightarrow>
+          b \<in> (+o) w ` genby ` Pow S \<Longrightarrow>
           a \<subseteq> b \<Longrightarrow>
-          the_inv_into (genby ` Pow S) (op +o w) a \<subseteq>
-            the_inv_into (genby ` Pow S) (op +o w) b"
+          the_inv_into (genby ` Pow S) ((+o) w) a \<subseteq>
+            the_inv_into (genby ` Pow S) ((+o) w) b"
   proof-
     fix a b
-    assume ab : "a \<in> op +o w ` genby ` Pow S" "b \<in> op +o w ` genby ` Pow S"
+    assume ab : "a \<in> (+o) w ` genby ` Pow S" "b \<in> (+o) w ` genby ` Pow S"
       and  a_b: "a\<subseteq>b"
     from ab obtain Ta Tb
       where "Ta\<in>Pow S" "a = w +o \<langle>Ta\<rangle>" "Tb\<in>Pow S" "b = w +o \<langle>Tb\<rangle>"
       by    auto
     with a_b
-      show  "the_inv_into (genby ` Pow S) (op +o w) a \<subseteq>
-              the_inv_into (genby ` Pow S) (op +o w) b"
+      show  "the_inv_into (genby ` Pow S) ((+o) w) a \<subseteq>
+              the_inv_into (genby ` Pow S) ((+o) w) b"
       using the_inv_into_f_eq[OF 2] lcoset_eq_reps_subset[of w "\<langle>Ta\<rangle>" "\<langle>Tb\<rangle>"]
       by    simp
   qed
 qed
 
 lemma special_coset_subset_ordering_iso:
-  "subset_ordering_iso (Pow S) (op +o w \<circ> genby)"
+  "subset_ordering_iso (Pow S) ((+o) w \<circ> genby)"
   using special_subgroup_genby_subset_ordering_iso
         special_subgroup_special_coset_subset_ordering_iso
   by    (fast intro: OrderingSetIso.iso_comp)
@@ -1380,11 +1380,11 @@ lemmas special_coset_subset_rev_mono =
   OrderingSetIso.rev_ordsetmap[OF special_coset_subset_ordering_iso]
 
 lemma special_coset_below_in_subset_ordering_iso:
-  "subset_ordering_iso ((Pow S).\<supseteq>T) (op +o w \<circ> genby)"
+  "subset_ordering_iso ((Pow S).\<supseteq>T) ((+o) w \<circ> genby)"
   using special_coset_subset_ordering_iso by (auto intro: OrderingSetIso.iso_subset)
 
 lemma special_coset_below_in_supset_ordering_iso:
-  "OrderingSetIso (op \<supseteq>) (op \<supset>) (op \<supseteq>) (op \<supset>) ((Pow S).\<supseteq>T) (op +o w \<circ> genby)"
+  "OrderingSetIso (\<supseteq>) (\<supset>) (\<supseteq>) (\<supset>) ((Pow S).\<supseteq>T) ((+o) w \<circ> genby)"
   using special_coset_below_in_subset_ordering_iso OrderingSetIso.iso_dual by fast
 
 lemma special_coset_pseudominimals:
@@ -1769,7 +1769,7 @@ proof (induct ss)
       from this obtain xss where "flip_altsublist_chain (ss # xss @ [s#as@bs])"
         using ss_red_w asbs reduced_word_problem by fast
       hence "flip_altsublist_chain (
-              (s#ss) # map (op # s) xss @ [[]@[s,s]@(as@bs)]
+              (s#ss) # map ((#) s) xss @ [[]@[s,s]@(as@bs)]
             )"
         using flip_altsublist_chain_map_Cons_grow by fastforce
       thus ?thesis by fast
@@ -1778,7 +1778,7 @@ proof (induct ss)
     case False
     with Cons(1,2) obtain xss as t bs
       where "flip_altsublist_chain (
-              (s#ss) # map (op # s) xss @ [(s#as)@[t,t]@bs]
+              (s#ss) # map ((#) s) xss @ [(s#as)@[t,t]@bs]
             )"
       using flip_altsublist_chain_map_Cons_grow
       by    fastforce
@@ -1893,7 +1893,7 @@ next
     using zero_notin_S reduced_word_singleton[of s S] by fastforce
 next
   case (Cons_snoc s ts t) have ss: "ss = s#ts@[t]" by fact
-  define Ms where "Ms = map (\<lambda>w. w`\<rightarrow>C0) (map (op + s) (sums ts))"
+  define Ms where "Ms = map (\<lambda>w. w`\<rightarrow>C0) (map ((+) s) (sums ts))"
   with ss
     have  C0_ms_ss_C0: "map (\<lambda>w. w`\<rightarrow>C0) (sums ss) =
                           C0 # Ms @ [sum_list ss `\<rightarrow> C0]"
@@ -1919,7 +1919,7 @@ next
       by    (fastforce simp add: length_sums)
   next
     case (Cons_snoc p qs q)
-    define Ns where "Ns = map (\<lambda>w. w`\<rightarrow>C0) (map (op + p) (sums qs))"
+    define Ns where "Ns = map (\<lambda>w. w`\<rightarrow>C0) (map ((+) p) (sums qs))"
     from assms rs_def have "length rs < length ss"
       using word_length_lt[of ss S]
             reduced_word_for_length reduced_word_for_arg_min[of ss S]
@@ -2208,7 +2208,7 @@ locale CoxeterComplex = CoxeterSystem S
 begin
 
 definition TheComplex :: "'w set set set"
-  where "TheComplex \<equiv> ordering.PosetComplex (op \<supseteq>) (op \<supset>) \<P>"
+  where "TheComplex \<equiv> ordering.PosetComplex (\<supseteq>) (\<supset>) \<P>"
 abbreviation "\<Sigma> \<equiv> TheComplex"
 
 end (* context CoxeterComplex *)
@@ -2234,7 +2234,7 @@ proof-
   from assms obtain w T where "w\<in>W" "T \<in> Pow S" "X = w +o \<langle>T\<rangle>"
     using special_cosets_def by auto
   thus ?thesis
-    using image_eq_UN[where f= "op +o w \<circ> genby"]
+    using image_eq_UN[where f= "(+o) w \<circ> genby"]
           finite_genset simplex_like_pow_above_in
           OrderingSetIso.simplex_like_map[
             OF special_coset_below_in_supset_ordering_iso, of T w
@@ -2246,16 +2246,16 @@ qed
 lemma SimplicialComplex_\<Sigma>: "SimplicialComplex \<Sigma>"
   unfolding TheComplex_def
 proof (rule ordering.poset_is_SimplicialComplex)
-  show "ordering (op \<supseteq>) (op \<supset>)" ..
+  show "ordering (\<supseteq>) (\<supset>)" ..
   show "\<forall>X\<in>\<P>. supset_simplex_like (\<P>.\<supseteq>X)"
     using simplex_like_special_cosets by fast
 qed
 
-lemma ComplexLikePoset_special_cosets: "ComplexLikePoset (op \<supseteq>) (op \<supset>) \<P>"
+lemma ComplexLikePoset_special_cosets: "ComplexLikePoset (\<supseteq>) (\<supset>) \<P>"
   using simplex_like_special_cosets special_cosets_has_bottom special_cosets_have_glbs
   by    unfold_locales
 
-abbreviation "smap \<equiv> ordering.poset_simplex_map (op \<supseteq>) (op \<supset>) \<P>"
+abbreviation "smap \<equiv> ordering.poset_simplex_map (\<supseteq>) (\<supset>) \<P>"
 
 lemmas smap_def = ordering.poset_simplex_map_def[OF supset_poset, of \<P>]
 
@@ -2362,14 +2362,14 @@ proof
 qed (rule smap0_conv_special_subgroups[THEN sym])
 
 lemma smap_singleton_conv_W_image: 
-  "w\<in>W \<Longrightarrow> smap {w} = (op +o w) ` (smap 0)"
+  "w\<in>W \<Longrightarrow> smap {w} = ((+o) w) ` (smap 0)"
   using genby_0_closed[of S] maxsimp_vertices[of 0] maxsimp_vertices[of w]
         maxsimp_vertex_conv_special_coset
   by    force
 
 lemma W_lcoset_bij_betw_singletons:
   assumes "w\<in>W"
-  shows   "bij_betw (op +o w) (smap 0) (smap {w})"
+  shows   "bij_betw ((+o) w) (smap 0) (smap {w})"
   unfolding bij_betw_def
 proof (rule conjI, rule inj_onI)
   fix X Y assume XY: "X \<in> smap 0" "Y \<in> smap 0" "w +o X = w +o Y"
@@ -2598,7 +2598,7 @@ proof-
     next
       case (snoc ts t)
       define Ms Cn
-        where "Ms = map (\<lambda>w. w`\<rightarrow>C0) (map (op + s) (sums ts))"
+        where "Ms = map (\<lambda>w. w`\<rightarrow>C0) (map ((+) s) (sums ts))"
           and "Cn = sum_list (s#ss) `\<rightarrow> C0"
       with snoc Cs_def have "Cs = C0 # Ms @ [Cn]"
         by (simp add: sums_snoc zero_permutation.rep_eq)
@@ -2818,11 +2818,11 @@ lemma label_stab_map_bij_betw_W_chambers:
   unfolding bij_betw_def
 proof (rule conjI, rule inj_on_inverseI)
   define f1 f2
-    where "f1 = the_inv_into (CoxeterComplex.smap S 0) (op +o w0)"
+    where "f1 = the_inv_into (CoxeterComplex.smap S 0) ((+o) w0)"
       and "f2 = the_inv_into S (\<lambda>s. \<langle>S-{s}\<rangle>)"
-  define g where "g = (op \<rightarrow> w0) \<circ> fundantivertex \<circ> f2 \<circ> f1"
+  define g where "g = ((\<rightarrow>) w0) \<circ> fundantivertex \<circ> f2 \<circ> f1"
 
-  from assms(3) have inj_opw0: "inj_on (op +o w0) (CoxeterComplex.smap S 0)"
+  from assms(3) have inj_opw0: "inj_on ((+o) w0) (CoxeterComplex.smap S 0)"
     using bij_betw_imp_inj_on[OF CoxeterComplex.W_lcoset_bij_betw_singletons]
           CoxeterComplex
     by    fast
@@ -2878,9 +2878,9 @@ next
     using CoxeterComplex.chamber_is_singleton[OF CoxeterComplex] by fast
   with assms have "bij_betw \<psi> (w`\<rightarrow>C0) z"
     using label_stab_map_bij_betw_W_chambers by fast
-  hence 1: "bij_betw (op ` \<psi>) (Pow (w`\<rightarrow>C0)) (Pow z)"
+  hence 1: "bij_betw ((`) \<psi>) (Pow (w`\<rightarrow>C0)) (Pow z)"
     using bij_betw_imp_bij_betw_Pow by fast
-  define x where x: "x \<equiv> the_inv_into (Pow (w`\<rightarrow>C0)) (op ` \<psi>) y"
+  define x where x: "x \<equiv> the_inv_into (Pow (w`\<rightarrow>C0)) ((`) \<psi>) y"
   with z(2) have "x \<subseteq> w`\<rightarrow>C0" using bij_betw_the_inv_into_onto[OF 1] by auto
   with w(1) have "x\<in>X"
     using faces fundchamber_W_image_chamber chamberD_simplex

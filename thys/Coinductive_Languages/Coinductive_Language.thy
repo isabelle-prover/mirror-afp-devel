@@ -176,11 +176,11 @@ inductive Plus_cong for R where
 
 lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]:
   assumes R: "R L K" and hyp:
-    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K))"
+    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun (=) (Plus_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "Plus_cong R"])
   fix L K assume "Plus_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)"
+  then show "\<oo> L = \<oo> K \<and> rel_fun (=) (Plus_cong R) (\<dd> L) (\<dd> K)"
     by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def intro: Sym dest: hyp)
 qed (intro Base R)
 
@@ -350,11 +350,11 @@ inductive regular_cong for R where
 
 lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]:
   assumes R: "R L K" and hyp:
-    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K))"
+    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun (=) (regular_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "regular_cong R"])
   fix L K assume "regular_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K)"
+  then show "\<oo> L = \<oo> K \<and> rel_fun (=) (regular_cong R) (\<dd> L) (\<dd> K)"
     by (induct rule: regular_cong.induct) (auto dest: hyp simp: rel_fun_def)
 qed (intro Base R)
 
@@ -411,7 +411,7 @@ lemma \<dd>_mono[dest]: "r \<le> s \<Longrightarrow> \<dd> r a \<le> \<dd> s a"
   unfolding less_eq_language_def by (metis Plus.simps(2))
 
 text {*
-  For reasoning about @{term "op \<le>"}, we prove a coinduction principle and generalize it
+  For reasoning about @{term "(\<le>)"}, we prove a coinduction principle and generalize it
   to support up-to reasoning.
 *}
 

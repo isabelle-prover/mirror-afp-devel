@@ -219,8 +219,8 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       interpret grpGMod\<GG>Pn: group "(G Mod \<GG> ! (n - 1))" by (metis \<GG>PnnormG normal.factorgroup_is_group)
       
       -- {* Instantiate several composition series used to build up the equality of quotient multisets. *}
-      define \<KK> where "\<KK> = remdups_adj (map (op \<inter> (\<HH> ! (m - 1))) \<GG>)"
-      define \<LL> where "\<LL> = remdups_adj (map (op \<inter> (\<GG> ! (n - 1))) \<HH>)"
+      define \<KK> where "\<KK> = remdups_adj (map ((\<inter>) (\<HH> ! (m - 1))) \<GG>)"
+      define \<LL> where "\<LL> = remdups_adj (map ((\<inter>) (\<GG> ! (n - 1))) \<HH>)"
       interpret \<KK>: composition_series \<HH>Pm \<KK> using comp\<GG>.intersect_normal 1(3) \<HH>PmnormG unfolding \<KK>_def \<HH>Pm_def by auto
       interpret \<LL>: composition_series \<GG>Pn \<LL> using comp\<HH>.intersect_normal 1(3) \<GG>PnnormG unfolding \<LL>_def \<GG>Pn_def by auto
 
@@ -234,9 +234,9 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have Inteq\<LL>sndlast:"\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1) = \<LL> ! (length \<LL> - 1 - 1)"
       proof -
         have "length \<LL> - 1 - 1 + 1 < length \<LL>" using length\<LL>' by auto
-        moreover have KGnotempty:"(map (op \<inter> (\<GG> ! (n - 1))) \<HH>) \<noteq> []" using comp\<HH>.notempty by (metis Nil_is_map_conv)
-        ultimately obtain i where i:"i + 1 < length (map (op \<inter> (\<GG> ! (n - 1))) \<HH>)"
-          "\<LL> ! (length \<LL> - 1 - 1) = (map (op \<inter> (\<GG> ! (n - 1))) \<HH>) ! i" "\<LL> ! (length \<LL> - 1 - 1 + 1) = (map (op \<inter> (\<GG> ! (n - 1))) \<HH>) ! (i + 1)"
+        moreover have KGnotempty:"(map ((\<inter>) (\<GG> ! (n - 1))) \<HH>) \<noteq> []" using comp\<HH>.notempty by (metis Nil_is_map_conv)
+        ultimately obtain i where i:"i + 1 < length (map ((\<inter>) (\<GG> ! (n - 1))) \<HH>)"
+          "\<LL> ! (length \<LL> - 1 - 1) = (map ((\<inter>) (\<GG> ! (n - 1))) \<HH>) ! i" "\<LL> ! (length \<LL> - 1 - 1 + 1) = (map ((\<inter>) (\<GG> ! (n - 1))) \<HH>) ! (i + 1)"
           using remdups_adj_obtain_adjacency unfolding \<LL>_def by force
         hence "\<LL> ! (length \<LL> - 1 - 1) = \<HH> ! i \<inter> \<GG> ! (n - 1)" "\<LL> ! (length \<LL> - 1 - 1 + 1) = \<HH> ! (i + 1) \<inter> \<GG> ! (n - 1)" by auto
         hence "\<LL> ! (length \<LL> - 1) = \<HH> ! (i + 1) \<inter> \<GG> ! (n - 1)" using length\<LL>'(2) by (metis Suc_diff_1 Suc_eq_plus1)
@@ -264,9 +264,9 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have Inteq\<KK>sndlast:"\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1) = \<KK> ! (length \<KK> - 1 - 1)"
       proof -
         have "length \<KK> - 1 - 1 + 1 < length \<KK>" using length\<KK>' by auto
-        moreover have KGnotempty:"(map (op \<inter> (\<HH> ! (m - 1))) \<GG>) \<noteq> []" using comp\<GG>.notempty by (metis Nil_is_map_conv)
-        ultimately obtain i where i:"i + 1 < length (map (op \<inter> (\<HH> ! (m - 1))) \<GG>)"
-          "\<KK> ! (length \<KK> - 1 - 1) = (map (op \<inter> (\<HH> ! (m - 1))) \<GG>) ! i" "\<KK> ! (length \<KK> - 1 - 1 + 1) = (map (op \<inter> (\<HH> ! (m - 1))) \<GG>) ! (i + 1)"
+        moreover have KGnotempty:"(map ((\<inter>) (\<HH> ! (m - 1))) \<GG>) \<noteq> []" using comp\<GG>.notempty by (metis Nil_is_map_conv)
+        ultimately obtain i where i:"i + 1 < length (map ((\<inter>) (\<HH> ! (m - 1))) \<GG>)"
+          "\<KK> ! (length \<KK> - 1 - 1) = (map ((\<inter>) (\<HH> ! (m - 1))) \<GG>) ! i" "\<KK> ! (length \<KK> - 1 - 1 + 1) = (map ((\<inter>) (\<HH> ! (m - 1))) \<GG>) ! (i + 1)"
           using remdups_adj_obtain_adjacency unfolding \<KK>_def by force
         hence "\<KK> ! (length \<KK> - 1 - 1) = \<GG> ! i \<inter> \<HH> ! (m - 1)" "\<KK> ! (length \<KK> - 1 - 1 + 1) = \<GG> ! (i + 1) \<inter> \<HH> ! (m - 1)" by auto
         hence "\<KK> ! (length \<KK> - 1) = \<GG> ! (i + 1) \<inter> \<HH> ! (m - 1)" using length\<KK>'(1) by (metis Suc_diff_1 Suc_eq_plus1)

@@ -16,7 +16,7 @@ sepref_register op_graph_succ :: "'a i_graph \<Rightarrow> 'a \<Rightarrow> 'a s
 
 thm intf_of_assnI
 
-lemma [pat_rules]: "op``$E$(insert$u${}) \<equiv> op_graph_succ$E$u" by simp
+lemma [pat_rules]: "((``))$E$(insert$u${}) \<equiv> op_graph_succ$E$u" by simp
 
 definition [to_relAPP]: "graph_rel A \<equiv> \<langle>A\<times>\<^sub>rA\<rangle>set_rel"
 

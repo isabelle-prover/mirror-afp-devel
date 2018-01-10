@@ -545,7 +545,7 @@ locale list_bot = list_rightmost
 
 instantiation rbt :: ("{equal,linorder}",equal) equal 
 begin
-  (*definition equal_rbt :: "('a,'b) RBT.rbt \<Rightarrow> _" where "equal_rbt \<equiv> op ="*)
+  (*definition equal_rbt :: "('a,'b) RBT.rbt \<Rightarrow> _" where "equal_rbt \<equiv> (=)"*)
 
   definition "equal_class.equal (r :: ('a, 'b) rbt) r' 
     == RBT.impl_of r = RBT.impl_of r'"

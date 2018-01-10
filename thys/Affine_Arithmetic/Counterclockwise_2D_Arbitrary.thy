@@ -170,7 +170,7 @@ lemma sum_list_eq0I: "(\<forall>x\<in>set xs. x = 0) \<Longrightarrow> sum_list 
 
 lemma sum_list_nlex_eq_zero_iff:
   assumes nlex: "list_all (\<lambda>x. lex x 0) xs"
-  shows "sum_list xs = 0 \<longleftrightarrow> list_all (op = 0) xs"
+  shows "sum_list xs = 0 \<longleftrightarrow> list_all ((=) 0) xs"
   using assms
   by (auto intro: sum_list_nlex_eq_zeroI sum_list_eq0I simp: list_all_iff)
 
@@ -254,28 +254,28 @@ lemma lexs_trans: "lexs x y \<Longrightarrow> lexs y z \<Longrightarrow> lexs x 
   by (auto simp: lexs_def lex_def prod_eq_iff)
 
 declare
-  lexs_irrefl[THEN notE, order add less_reflE: linorder "op = :: point => point => bool" lex lexs]
-declare lex_refl[order add le_refl: linorder "op = :: point => point => bool" lex lexs]
-declare lexs_imp_lex[order add less_imp_le: linorder "op = :: point => point => bool" lex lexs]
+  lexs_irrefl[THEN notE, order add less_reflE: linorder "(=) :: point => point => bool" lex lexs]
+declare lex_refl[order add le_refl: linorder "(=) :: point => point => bool" lex lexs]
+declare lexs_imp_lex[order add less_imp_le: linorder "(=) :: point => point => bool" lex lexs]
 declare
-  not_lexs[THEN iffD2, order add not_lessI: linorder "op = :: point => point => bool" lex lexs]
-declare not_lex[THEN iffD2, order add not_leI: linorder "op = :: point => point => bool" lex lexs]
+  not_lexs[THEN iffD2, order add not_lessI: linorder "(=) :: point => point => bool" lex lexs]
+declare not_lex[THEN iffD2, order add not_leI: linorder "(=) :: point => point => bool" lex lexs]
 declare
-  not_lexs[THEN iffD1, order add not_lessD: linorder "op = :: point => point => bool" lex lexs]
-declare not_lex[THEN iffD1, order add not_leD: linorder "op = :: point => point => bool" lex lexs]
-declare lex_sym_eqI[order add eqI: linorder "op = :: point => point => bool" lex lexs]
-declare eq_lex_refl[order add eqD1: linorder "op = :: point => point => bool" lex lexs]
-declare sym[THEN eq_lex_refl, order add eqD2: linorder "op = :: point => point => bool" lex lexs]
-declare lexs_trans[order add less_trans: linorder "op = :: point => point => bool" lex lexs]
-declare lexs_lex_trans[order add less_le_trans: linorder "op = :: point => point => bool" lex lexs]
-declare lex_lexs_trans[order add le_less_trans: linorder "op = :: point => point => bool" lex lexs]
-declare lex_trans[order add le_trans: linorder "op = :: point => point => bool" lex lexs]
-declare lex_neq_trans[order add le_neq_trans: linorder "op = :: point => point => bool" lex lexs]
-declare neq_lex_trans[order add neq_le_trans: linorder "op = :: point => point => bool" lex lexs]
-declare lexs_imp_neq[order add less_imp_neq: linorder "op = :: point => point => bool" lex lexs]
+  not_lexs[THEN iffD1, order add not_lessD: linorder "(=) :: point => point => bool" lex lexs]
+declare not_lex[THEN iffD1, order add not_leD: linorder "(=) :: point => point => bool" lex lexs]
+declare lex_sym_eqI[order add eqI: linorder "(=) :: point => point => bool" lex lexs]
+declare eq_lex_refl[order add eqD1: linorder "(=) :: point => point => bool" lex lexs]
+declare sym[THEN eq_lex_refl, order add eqD2: linorder "(=) :: point => point => bool" lex lexs]
+declare lexs_trans[order add less_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare lexs_lex_trans[order add less_le_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare lex_lexs_trans[order add le_less_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare lex_trans[order add le_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare lex_neq_trans[order add le_neq_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare neq_lex_trans[order add neq_le_trans: linorder "(=) :: point => point => bool" lex lexs]
+declare lexs_imp_neq[order add less_imp_neq: linorder "(=) :: point => point => bool" lex lexs]
 declare
-  eq_neq_eq_imp_neq[order add eq_neq_eq_imp_neq: linorder "op = :: point => point => bool" lex lexs]
-declare not_sym[order add not_sym: linorder "op = :: point => point => bool" lex lexs]
+  eq_neq_eq_imp_neq[order add eq_neq_eq_imp_neq: linorder "(=) :: point => point => bool" lex lexs]
+declare not_sym[order add not_sym: linorder "(=) :: point => point => bool" lex lexs]
 
 
 subsection \<open>Contradictions\<close>
@@ -905,7 +905,7 @@ qed
 interpretation ccw: ccw_convex ccw S "\<lambda>a b. lex b a" for S
   by unfold_locales (rule ccw_convex)
 
-lemma ccw_sorted_scaleR: "ccw.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw.sortedP 0 (map (op *\<^sub>R r) xs)"
+lemma ccw_sorted_scaleR: "ccw.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw.sortedP 0 (map (( *\<^sub>R) r) xs)"
   by (induct xs)
     (auto intro!: ccw.sortedP.Cons ccw_scale23 elim!: ccw.sortedP_Cons simp del: scaleR_Pair)
 

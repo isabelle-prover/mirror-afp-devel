@@ -9,13 +9,7 @@ begin
   
 subsection \<open>Auxiliary facts\<close>
 
-(* TODO Move *)
-lemma minus_one_power_If: "(-1 :: 'a :: ring_1) ^ n = (if even n then 1 else -1)"
-  by auto  
-
-lemma of_real_inner_1 [simp]: "of_real x \<bullet> (1 :: 'a :: {real_normed_algebra_1, real_inner}) = x"
-  by (simp add: of_real_def dot_square_norm)
-
+(* TODO Move? *)
 lemma pbernpoly_of_int [simp]: "pbernpoly n (of_int a) = bernoulli n"
   by (simp add: pbernpoly_def)
 
@@ -23,56 +17,6 @@ lemma continuous_on_bernpoly' [continuous_intros]:
   assumes "continuous_on A f"
   shows   "continuous_on A (\<lambda>x. bernpoly n (f x) :: 'a :: real_normed_algebra_1)"
   using continuous_on_compose2[OF continuous_on_bernpoly assms, of UNIV n] by auto
-
-lemma filterlim_at_infinity_imp_norm_at_top:
-  fixes F
-  assumes "filterlim f at_infinity F"
-  shows   "filterlim (\<lambda>x. norm (f x)) at_top F"
-proof -
-  {
-    fix r :: real 
-    have "\<forall>\<^sub>F x in F. r \<le> norm (f x)" using filterlim_at_infinity[of 0 f F] assms 
-      by (cases "r > 0") 
-         (auto simp: not_less intro: always_eventually order.trans[OF _ norm_ge_zero])
-  }
-  thus ?thesis by (auto simp: filterlim_at_top)
-qed
-  
-lemma filterlim_norm_at_top_imp_at_infinity:
-  fixes F
-  assumes "filterlim (\<lambda>x. norm (f x)) at_top F"
-  shows   "filterlim f at_infinity F"
-  using filterlim_at_infinity[of 0 f F] assms by (auto simp: filterlim_at_top)
-
-lemma filterlim_int_of_nat_at_topD:
-  fixes F
-  assumes "filterlim (\<lambda>x. f (int x)) F at_top"
-  shows   "filterlim f F at_top"
-proof -
-  have "filterlim (\<lambda>x. f (int (nat x))) F at_top"
-    by (rule filterlim_compose[OF assms filterlim_nat_sequentially])
-  also have "?this \<longleftrightarrow> filterlim f F at_top"
-    by (intro filterlim_cong refl eventually_mono [OF eventually_ge_at_top[of "0::int"]]) auto
-  finally show ?thesis .
-qed
-
-lemma filterlim_int_sequentially [tendsto_intros]:
-  "filterlim int at_top sequentially"
-  unfolding filterlim_at_top
-proof
-  fix C :: int
-  show "eventually (\<lambda>n. int n \<ge> C) at_top"
-    using eventually_ge_at_top[of "nat \<lceil>C\<rceil>"] by eventually_elim linarith
-qed
-
-lemma filterlim_real_of_int_at_top [tendsto_intros]:
-  "filterlim real_of_int at_top at_top"
-  unfolding filterlim_at_top
-proof
-  fix C :: real
-  show "eventually (\<lambda>n. real_of_int n \<ge> C) at_top"
-    using eventually_ge_at_top[of "\<lceil>C\<rceil>"] by eventually_elim linarith
-qed
 
 lemma sum_atLeastAtMost_int_last:
   assumes "a < (b :: int)"
@@ -94,177 +38,10 @@ proof -
   finally show ?thesis .
 qed
 
-lemma filterlim_power_at_infinity [tendsto_intros]:
-  fixes F and f :: "'a \<Rightarrow> 'b :: real_normed_div_algebra"
-  assumes "filterlim f at_infinity F" "n > 0"
-  shows   "filterlim (\<lambda>x. f x ^ n) at_infinity F"
-  by (rule filterlim_norm_at_top_imp_at_infinity)
-     (auto simp: norm_power intro!: filterlim_pow_at_top assms 
-           intro: filterlim_at_infinity_imp_norm_at_top)
-
-lemma filterlim_abs_real: "filterlim (abs::real \<Rightarrow> real) at_top at_top"
-proof (subst filterlim_cong[OF refl refl])
-  from eventually_ge_at_top[of "0::real"] show "eventually (\<lambda>x::real. \<bar>x\<bar> = x) at_top"
-    by eventually_elim simp
-qed (simp_all add: filterlim_ident)
-
-lemma filterlim_of_real_at_infinity [tendsto_intros]:
-  "filterlim (of_real :: real \<Rightarrow> 'a :: real_normed_algebra_1) at_infinity at_top"
-  by (intro filterlim_norm_at_top_imp_at_infinity) (auto simp: filterlim_abs_real)
-    
 lemma not_in_nonpos_Reals_imp_add_nonzero:
   assumes "z \<notin> \<real>\<^sub>\<le>\<^sub>0" "x \<ge> 0"
   shows   "z + of_real x \<noteq> 0"
   using assms by (auto simp: add_eq_0_iff2)
-
-lemma continuous_on_Ln' [continuous_intros]: 
-  "continuous_on s f \<Longrightarrow> (\<And>z. z \<in> s \<Longrightarrow> f z \<notin> \<real>\<^sub>\<le>\<^sub>0) \<Longrightarrow> continuous_on s (\<lambda>s. Ln (f s))"
-  by (rule continuous_on_compose2[OF continuous_on_Ln, of "UNIV - nonpos_Reals" s f]) auto
-
-lemma tendsto_Ln [tendsto_intros]:
-  fixes L F
-  assumes "(f \<longlongrightarrow> L) F" "L \<notin> \<real>\<^sub>\<le>\<^sub>0"
-  shows   "((\<lambda>x. Ln (f x)) \<longlongrightarrow> Ln L) F"
-proof -
-  have "nhds L \<ge> filtermap f F"
-    using assms(1) by (simp add: filterlim_def)
-  moreover have "\<forall>\<^sub>F y in nhds L. y \<in> - \<real>\<^sub>\<le>\<^sub>0"
-    using eventually_nhds_in_open[of "- \<real>\<^sub>\<le>\<^sub>0" L] assms by (auto simp: open_Compl)
-  ultimately have "\<forall>\<^sub>F y in filtermap f F. y \<in> - \<real>\<^sub>\<le>\<^sub>0" by (rule filter_leD)
-  moreover have "continuous_on (-\<real>\<^sub>\<le>\<^sub>0) Ln" by (rule continuous_on_Ln) auto
-  ultimately show ?thesis using continuous_on_tendsto_compose[of "- \<real>\<^sub>\<le>\<^sub>0" Ln f L F] assms
-    by (simp add: eventually_filtermap)
-qed
-
-lemma filterlim_norm_at_top: "filterlim norm at_top at_infinity"
-  by (rule filterlim_at_infinity_imp_norm_at_top) (rule filterlim_ident)
-
-lemma eventually_not_equal_at_infinity:
-  "eventually (\<lambda>x. x \<noteq> (a :: 'a :: {real_normed_vector})) at_infinity"
-proof -
-  from filterlim_norm_at_top[where 'a = 'a]
-    have "\<forall>\<^sub>F x in at_infinity. norm a < norm (x::'a)" by (auto simp: filterlim_at_top_dense)
-  thus ?thesis by eventually_elim auto
-qed
-
-lemma uniformly_convergent_improper_integral:
-  fixes f :: "'b \<Rightarrow> real \<Rightarrow> 'a :: {banach}"
-  assumes deriv: "\<And>x. x \<ge> a \<Longrightarrow> (G has_field_derivative g x) (at x within {a..})"
-  assumes integrable: "\<And>a' b x. x \<in> A \<Longrightarrow> a' \<ge> a \<Longrightarrow> b \<ge> a' \<Longrightarrow> f x integrable_on {a'..b}"
-  assumes G: "convergent G"
-  assumes le: "\<And>y x. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
-  shows   "uniformly_convergent_on A (\<lambda>b x. integral {a..b} (f x))"
-proof (intro Cauchy_uniformly_convergent uniformly_Cauchy_onI', goal_cases)
-  case (1 \<epsilon>)
-  from G have "Cauchy G"
-    by (auto intro!: convergent_Cauchy)
-  with 1 obtain M where M: "dist (G (real m)) (G (real n)) < \<epsilon>" if "m \<ge> M" "n \<ge> M" for m n
-    by (force simp: Cauchy_def)
-  define M' where "M' = max (nat \<lceil>a\<rceil>) M"
-
-  show ?case
-  proof (rule exI[of _ M'], safe, goal_cases)
-    case (1 x m n)
-    have M': "M' \<ge> a" "M' \<ge> M" unfolding M'_def by linarith+
-    have int_g: "(g has_integral (G (real n) - G (real m))) {real m..real n}"
-      using 1 M' by (intro fundamental_theorem_of_calculus) 
-                    (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] 
-                          intro!: DERIV_subset[OF deriv])
-    have int_f: "f x integrable_on {a'..real n}" if "a' \<ge> a" for a'
-      using that 1 by (cases "a' \<le> real n") (auto intro: integrable)
-
-    have "dist (integral {a..real m} (f x)) (integral {a..real n} (f x)) =
-            norm (integral {a..real n} (f x) - integral {a..real m} (f x))"
-      by (simp add: dist_norm norm_minus_commute)
-    also have "integral {a..real m} (f x) + integral {real m..real n} (f x) = 
-                 integral {a..real n} (f x)"
-      using M' and 1 by (intro integral_combine int_f) auto
-    hence "integral {a..real n} (f x) - integral {a..real m} (f x) = 
-             integral {real m..real n} (f x)"
-      by (simp add: algebra_simps)
-    also have "norm \<dots> \<le> integral {real m..real n} g"
-      using le 1 M' int_f int_g by (intro integral_norm_bound_integral) auto 
-    also from int_g have "integral {real m..real n} g = G (real n) - G (real m)"
-      by (simp add: has_integral_iff)
-    also have "\<dots> \<le> dist (G m) (G n)" 
-      by (simp add: dist_norm)
-    also from 1 and M' have "\<dots> < \<epsilon>"
-      by (intro M) auto
-    finally show ?case .
-  qed
-qed
-
-lemma uniformly_convergent_on_const [simp,intro]:
-  "uniformly_convergent_on A (\<lambda>_. c)"
-  by (auto simp: uniformly_convergent_on_def uniform_limit_iff intro!: exI[of _ c])
-
-lemma uniformly_convergent_cong:
-  assumes "eventually (\<lambda>x. \<forall>y\<in>A. f x y = g x y) sequentially" "A = B"
-  shows "uniformly_convergent_on A f \<longleftrightarrow> uniformly_convergent_on B g"
-  unfolding uniformly_convergent_on_def assms(2) [symmetric]
-  by (intro iff_exI uniform_limit_cong eventually_mono [OF assms(1)]) auto
-
-lemma uniformly_convergent_improper_integral':
-  fixes f :: "'b \<Rightarrow> real \<Rightarrow> 'a :: {banach, real_normed_algebra}"
-  assumes deriv: "\<And>x. x \<ge> a \<Longrightarrow> (G has_field_derivative g x) (at x within {a..})"
-  assumes integrable: "\<And>a' b x. x \<in> A \<Longrightarrow> a' \<ge> a \<Longrightarrow> b \<ge> a' \<Longrightarrow> f x integrable_on {a'..b}"
-  assumes G: "convergent G"
-  assumes le: "eventually (\<lambda>x. \<forall>y\<in>A. norm (f y x) \<le> g x) at_top"
-  shows   "uniformly_convergent_on A (\<lambda>b x. integral {a..b} (f x))"
-proof -
-  from le obtain a'' where le: "\<And>y x. y \<in> A \<Longrightarrow> x \<ge> a'' \<Longrightarrow> norm (f y x) \<le> g x"
-    by (auto simp: eventually_at_top_linorder)
-  define a' where "a' = max a a''"
-
-  have "uniformly_convergent_on A (\<lambda>b x. integral {a'..real b} (f x))"
-  proof (rule uniformly_convergent_improper_integral)
-    fix t assume t: "t \<ge> a'"
-    hence "(G has_field_derivative g t) (at t within {a..})"
-      by (intro deriv) (auto simp: a'_def)
-    moreover have "{a'..} \<subseteq> {a..}" unfolding a'_def by auto
-    ultimately show "(G has_field_derivative g t) (at t within {a'..})"
-      by (rule DERIV_subset)
-  qed (insert le, auto simp: a'_def intro: integrable G)
-  hence "uniformly_convergent_on A (\<lambda>b x. integral {a..a'} (f x) + integral {a'..real b} (f x))" 
-    (is ?P) by (intro uniformly_convergent_add) auto
-  also have "eventually (\<lambda>x. \<forall>y\<in>A. integral {a..a'} (f y) + integral {a'..x} (f y) =
-                   integral {a..x} (f y)) sequentially"
-    by (intro eventually_mono [OF eventually_ge_at_top[of "nat \<lceil>a'\<rceil>"]] ballI integral_combine)
-       (auto simp: a'_def intro: integrable)
-  hence "?P \<longleftrightarrow> ?thesis"
-    by (intro uniformly_convergent_cong) simp_all
-  finally show ?thesis .
-qed
-
-lemma (in bounded_linear) uniformly_convergent_on:
-  assumes "uniformly_convergent_on A g"
-  shows   "uniformly_convergent_on A (\<lambda>x y. f (g x y))"
-proof -
-  from assms obtain l where "uniform_limit A g l sequentially"
-    unfolding uniformly_convergent_on_def by blast
-  hence "uniform_limit A (\<lambda>x y. f (g x y)) (\<lambda>x. f (l x)) sequentially"
-    by (rule uniform_limit)
-  thus ?thesis unfolding uniformly_convergent_on_def by blast
-qed
-
-lemma leibniz_rule_field_differentiable:
-  fixes f::"'a::{real_normed_field, banach} \<Rightarrow> 'b::euclidean_space \<Rightarrow> 'a"
-  assumes "\<And>x t. x \<in> U \<Longrightarrow> t \<in> cbox a b \<Longrightarrow> ((\<lambda>x. f x t) has_field_derivative fx x t) (at x within U)"
-  assumes "\<And>x. x \<in> U \<Longrightarrow> (f x) integrable_on cbox a b"
-  assumes "continuous_on (U \<times> (cbox a b)) (\<lambda>(x, t). fx x t)"
-  assumes "x0 \<in> U" "convex U"
-  shows "(\<lambda>x. integral (cbox a b) (f x)) field_differentiable at x0 within U"
-  using leibniz_rule_field_derivative[OF assms] by (auto simp: field_differentiable_def)
-
-lemma leibniz_rule_holomorphic:
-  fixes f::"complex \<Rightarrow> 'b::euclidean_space \<Rightarrow> complex"
-  assumes "\<And>x t. x \<in> U \<Longrightarrow> t \<in> cbox a b \<Longrightarrow> ((\<lambda>x. f x t) has_field_derivative fx x t) (at x within U)"
-  assumes "\<And>x. x \<in> U \<Longrightarrow> (f x) integrable_on cbox a b"
-  assumes "continuous_on (U \<times> (cbox a b)) (\<lambda>(x, t). fx x t)"
-  assumes "convex U"
-  shows "(\<lambda>x. integral (cbox a b) (f x)) holomorphic_on U"
-  using leibniz_rule_field_differentiable[OF assms(1-3) _ assms(4)]
-  by (auto simp: holomorphic_on_def)
 (* END TODO *)
 
 lemma negligible_atLeastAtMostI: "b \<le> a \<Longrightarrow> negligible {a..(b::real)}"

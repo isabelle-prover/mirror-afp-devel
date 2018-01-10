@@ -21,10 +21,10 @@ lemma wf_wellorderI2:
   apply (rule class.wellorder_axioms.intro) by (blast intro: wf_induct_rule [OF wf])
 
 
-lemma (in preorder) tranclp_less': "op >\<^sup>+\<^sup>+ = op >"
+lemma (in preorder) tranclp_less': "(>)\<^sup>+\<^sup>+ = (>)"
   by(auto simp add: fun_eq_iff intro: less_trans elim: tranclp.induct)
 
-interpretation dual_wellorder: wellorder "(op \<ge>)::('a::{linorder, finite}=>'a=>bool)" "(op >)" 
+interpretation dual_wellorder: wellorder "(\<ge>)::('a::{linorder, finite}=>'a=>bool)" "(>)" 
 proof (rule wf_wellorderI2)
   show "wf {(x :: 'a, y). y < x}"
     by(auto simp add: trancl_def tranclp_less' intro!: finite_acyclic_wf acyclicI)

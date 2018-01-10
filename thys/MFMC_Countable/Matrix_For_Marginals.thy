@@ -221,7 +221,7 @@ next
 
     have sum_h: "sum (?h x) {..n} = max_flow (s, x)" if "x \<le> n" for x
     proof -
-      have "sum (?h x) {..n} = sum max_flow (Pair x ` (op + (n + 1)) ` {..n})"
+      have "sum (?h x) {..n} = sum max_flow (Pair x ` ((+) (n + 1)) ` {..n})"
         by(simp add: sum.reindex add.commute inj_on_def)
       also have "\<dots> = sum max_flow (outgoing x)" using that
         apply(intro sum.mono_neutral_cong_right)
@@ -303,7 +303,7 @@ proof -
       by(auto simp add: o_def convergent_def)
   qed
   { fix k
-    have "convergent (\<lambda>n. f ((diagseq \<circ> op + (Suc k)) n) k)"
+    have "convergent (\<lambda>n. f ((diagseq \<circ> (+) (Suc k)) n) k)"
       by(rule diagseq_holds)(auto dest: convergent_subseq_convergent simp add: o_def)
     hence "convergent (\<lambda>n. f (diagseq n) k)" unfolding o_def
       by(subst (asm) add.commute)(simp only: convergent_ignore_initial_segment[where f="\<lambda>x. f (diagseq x) k"])

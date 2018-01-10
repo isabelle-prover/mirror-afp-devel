@@ -60,7 +60,7 @@ qed
 
 instantiation mod_ring :: (finite) equal
 begin
-lift_definition equal_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> bool" is "op =" .
+lift_definition equal_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> bool" is "(=)" .
 instance by (intro_classes, transfer, auto)
 end
 
@@ -160,11 +160,11 @@ lemma pcr_mod_ring_to_int_mod_ring: "pcr_mod_ring = (\<lambda>x y. x = to_int_mo
  unfolding mod_ring.pcr_cr_eq unfolding cr_mod_ring_def to_int_mod_ring.rep_eq ..
 
 lemma [transfer_rule]:
-  "(op = ===> pcr_mod_ring) (\<lambda> x. int x mod int (CARD('a :: nontriv))) (of_nat :: nat \<Rightarrow> 'a mod_ring)"
+  "((=) ===> pcr_mod_ring) (\<lambda> x. int x mod int (CARD('a :: nontriv))) (of_nat :: nat \<Rightarrow> 'a mod_ring)"
   by (intro rel_funI, unfold pcr_mod_ring_to_int_mod_ring of_nat_of_int_mod_ring, transfer, auto)
 
 lemma [transfer_rule]:
-  "(op = ===> pcr_mod_ring) (\<lambda> x. x mod int (CARD('a :: nontriv))) (of_int :: int \<Rightarrow> 'a mod_ring)"
+  "((=) ===> pcr_mod_ring) (\<lambda> x. x mod int (CARD('a :: nontriv))) (of_int :: int \<Rightarrow> 'a mod_ring)"
   by (intro rel_funI, unfold pcr_mod_ring_to_int_mod_ring of_int_of_int_mod_ring, transfer, auto)
 
 lemma one_mod_card [simp]: "1 mod CARD('a::nontriv) = 1"
@@ -182,8 +182,8 @@ proof -
 qed
 
 lemma pow_mod_ring_transfer[transfer_rule]:
-  "(pcr_mod_ring ===> op = ===> pcr_mod_ring) 
-   (\<lambda>a::int. \<lambda>n. a^n mod CARD('a::nontriv)) (op ^::'a mod_ring \<Rightarrow> nat \<Rightarrow> 'a mod_ring)"
+  "(pcr_mod_ring ===> (=) ===> pcr_mod_ring) 
+   (\<lambda>a::int. \<lambda>n. a^n mod CARD('a::nontriv)) ((^)::'a mod_ring \<Rightarrow> nat \<Rightarrow> 'a mod_ring)"
 unfolding pcr_mod_ring_to_int_mod_ring
 proof (intro rel_funI,simp)
   fix x::"'a mod_ring" and n
@@ -206,8 +206,8 @@ qed
 
 lemma dvd_mod_ring_transfer[transfer_rule]:
 "((pcr_mod_ring :: int \<Rightarrow> 'a :: nontriv mod_ring \<Rightarrow> bool) ===>
-  (pcr_mod_ring :: int \<Rightarrow> 'a mod_ring \<Rightarrow> bool) ===> op =)
-  (\<lambda> i j. \<exists>k \<in> {0..<int CARD('a)}. j = i * k mod int CARD('a)) (op dvd)"
+  (pcr_mod_ring :: int \<Rightarrow> 'a mod_ring \<Rightarrow> bool) ===> (=))
+  (\<lambda> i j. \<exists>k \<in> {0..<int CARD('a)}. j = i * k mod int CARD('a)) (dvd)"
 proof (unfold pcr_mod_ring_to_int_mod_ring, intro rel_funI iffI)
   fix x y :: "'a mod_ring" and i j
   assume i: "i = to_int_mod_ring x" and j: "j = to_int_mod_ring y"

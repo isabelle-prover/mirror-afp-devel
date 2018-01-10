@@ -15,7 +15,7 @@ end
 lemmas [code] = equal_base.fun_upd_apply
 lemmas [simp] = equal_base.fun_upd_apply
 
-lemma fun_upd_conv_fun_upd: "equal_base.fun_upd op = = fun_upd"
+lemma fun_upd_conv_fun_upd: "equal_base.fun_upd (=) = fun_upd"
 by(simp add: fun_eq_iff)
 
 end

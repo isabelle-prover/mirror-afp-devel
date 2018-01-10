@@ -17,7 +17,7 @@ subsection "Monitors of lists of monitor pairs"
 text {* The following defines the set of all monitors that occur in a list of pairs of monitors. This definition is used in the following context:
   @{text "mon_pl (map \<alpha> w)"} is the set of monitors used by a word @{text w} w.r.t. the abstraction @{text "\<alpha>"} *}
 definition 
-  "mon_pl w == foldl (op \<union>) {} (map (\<lambda>e. fst e \<union> snd e) w)"
+  "mon_pl w == foldl (\<union>) {} (map (\<lambda>e. fst e \<union> snd e) w)"
 
 lemma mon_pl_empty[simp]: "mon_pl [] = {}"
   by (unfold mon_pl_def, auto)

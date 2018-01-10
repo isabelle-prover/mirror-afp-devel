@@ -67,7 +67,7 @@ qed
 
 text {* Next we show that joins are least upper bounds. *}
 
-sublocale join: semilattice_sup "op +"
+sublocale join: semilattice_sup "(+)"
   by (unfold_locales; simp add: ac_simps local.less_eq_def)
 
 text {* Next we prove that joins are isotone (order preserving). *}
@@ -115,7 +115,7 @@ begin
 subclass comm_monoid_add
   by (unfold_locales, simp_all add: add_assoc') (simp add: add_comm)
 
-sublocale join: bounded_semilattice_sup_bot "op +" "op \<le>" "op <" 0
+sublocale join: bounded_semilattice_sup_bot "(+)" "(\<le>)" "(<)" 0
   by unfold_locales (simp add: local.order_prop)
   
 lemma no_trivial_inverse: "x \<noteq> 0 \<Longrightarrow> \<not>(\<exists>y. x + y = 0)"
@@ -448,11 +448,11 @@ definition (in times) opp_mult (infixl "\<odot>" 70)
   where "x \<odot> y \<equiv> y \<cdot> x"
 
 lemma (in semiring_1) dual_semiring_1:
-  "class.semiring_1 1 (op \<odot>) (op +) 0"
+  "class.semiring_1 1 (\<odot>) (+) 0"
   by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 lemma (in dioid_one_zero) dual_dioid_one_zero:
-  "class.dioid_one_zero (op +) (op \<odot>) 1 0 (op \<le>) (op <)"
+  "class.dioid_one_zero (+) (\<odot>) 1 0 (\<le>) (<)"
   by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 subsection {* Selective Near Semirings *}

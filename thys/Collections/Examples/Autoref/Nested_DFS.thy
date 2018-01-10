@@ -1021,7 +1021,7 @@ term extract_res
 
 lemma [autoref_itype]:
   "NO_CYC ::\<^sub>i i_blue_wit"
-  "op = ::\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_bool"
+  "(=) ::\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_bool"
   "init_wit_blue ::\<^sub>i i_nat \<rightarrow>\<^sub>i i_red_wit \<rightarrow>\<^sub>i i_blue_wit"
   "prep_wit_blue ::\<^sub>i i_nat \<rightarrow>\<^sub>i i_blue_wit \<rightarrow>\<^sub>i i_blue_wit"
   "red_init_witness ::\<^sub>i i_nat \<rightarrow>\<^sub>i i_nat \<rightarrow>\<^sub>i i_red_wit"
@@ -1035,7 +1035,7 @@ end
 
 lemma autoref_wit[autoref_rules_raw]:
   "(NO_CYC,NO_CYC)\<in>blue_wit_rel"
-  "(op =, op =) \<in> blue_wit_rel \<rightarrow> blue_wit_rel \<rightarrow> bool_rel"
+  "((=), (=)) \<in> blue_wit_rel \<rightarrow> blue_wit_rel \<rightarrow> bool_rel"
   "(init_wit_blue, init_wit_blue) \<in> nat_rel \<rightarrow> red_wit_rel \<rightarrow> blue_wit_rel"
   "(prep_wit_blue,prep_wit_blue)\<in>nat_rel \<rightarrow> blue_wit_rel \<rightarrow> blue_wit_rel"
   "(red_init_witness, red_init_witness) \<in> nat_rel\<rightarrow>nat_rel\<rightarrow>red_wit_rel"

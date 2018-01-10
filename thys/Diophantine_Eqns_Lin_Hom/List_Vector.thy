@@ -76,6 +76,7 @@ lemma rep_upd_unit:
 
 definition nonzero_iff: "nonzero xs \<longleftrightarrow> (\<exists>x\<in>set xs. x \<noteq> 0)"
 
+
 lemma nonzero_append [simp]:
   "nonzero (xs @ ys) \<longleftrightarrow> nonzero xs \<or> nonzero ys" by (auto simp: nonzero_iff)
 
@@ -172,6 +173,9 @@ lemma dotprod_eq_nonzero_iff:
 lemma eq_0_iff:
   "xs = zeroes n \<longleftrightarrow> length xs = n \<and> (\<forall>x\<in>set xs. x = 0)"
   using in_set_replicate [of _ n 0] and replicate_eqI [of xs n 0] by auto
+
+lemma not_nonzero_iff: "\<not> nonzero x \<longleftrightarrow> x = zeroes (length x)"
+  by (auto simp: nonzero_iff replicate_length_same eq_0_iff)
 
 lemma neq_0_iff':
   "xs \<noteq> zeroes n \<longleftrightarrow> length xs \<noteq> n \<or> (\<exists>x\<in>set xs. x > 0)"
@@ -369,7 +373,7 @@ qed
 lemma le_sum_list_mono:
   assumes "xs \<le>\<^sub>v ys"
   shows "sum_list xs \<le> sum_list ys"
-  using assms and sum_list_mono [of "[0..<length ys]" "op ! xs" "op ! ys"]
+  using assms and sum_list_mono [of "[0..<length ys]" "(!) xs" "(!) ys"]
   by (auto simp: less_eq_def) (metis map_nth)
 
 lemma sum_list_less_diff_Ex:
@@ -707,7 +711,7 @@ fun exists2
   | "exists2 d P (x#xs) (y#ys) \<longleftrightarrow> P x y \<or> exists2 d P xs ys"
   | "exists2 d P _ _ \<longleftrightarrow> d"
 
-lemma not_le_code [code_unfold]: "\<not> xs \<le>\<^sub>v ys \<longleftrightarrow> exists2 True (op >) xs ys"
-  by (induct "True" "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" xs ys rule: exists2.induct) (auto simp: le_Cons)
+lemma not_le_code [code_unfold]: "\<not> xs \<le>\<^sub>v ys \<longleftrightarrow> exists2 True (>) xs ys"
+  by (induct "True" "(>) :: nat \<Rightarrow> nat \<Rightarrow> bool" xs ys rule: exists2.induct) (auto simp: le_Cons)
 
 end

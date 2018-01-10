@@ -512,9 +512,9 @@ begin
 
   lemmas [autoref_rel_intf] = REL_INTFI[of lasso_run_rel i_run]
 
-  definition [simp]: "op_map_run \<equiv> op o"
+  definition [simp]: "op_map_run \<equiv> (o)"
 
-  lemma [autoref_op_pat]: "op o \<equiv> op_map_run" by simp
+  lemma [autoref_op_pat]: "(o) \<equiv> op_map_run" by simp
 
   lemma map_lasso_run_refine[autoref_rules]:
     shows "(map_lasso,op_map_run) \<in> (R\<rightarrow>R') \<rightarrow> \<langle>R\<rangle>lasso_run_rel \<rightarrow> \<langle>R'\<rangle>lasso_run_rel"

@@ -67,14 +67,14 @@ abbreviation "msum_aforms' \<equiv> \<lambda>X Y. msum_aforms (degree_aforms_rea
 
 lemma aform_val_msum_aforms:
   assumes "degree_aforms xs \<le> d"
-  shows "aform_vals e (msum_aforms d xs ys) = map2 op+ (aform_vals e xs) (aform_vals (\<lambda>i. e (i + d)) ys)"
+  shows "aform_vals e (msum_aforms d xs ys) = map2 (+) (aform_vals e xs) (aform_vals (\<lambda>i. e (i + d)) ys)"
   using assms
 proof (induction xs ys rule: msum_aforms.induct)
   case (1 d x xs y ys)
   from 1 have "degree_aforms xs \<le> d"
     by (auto simp: degrees_def)
   from 1(1)[OF this] 1
-  have "aform_vals e (msum_aforms d xs ys) = map2 op + (aform_vals e xs) (aform_vals (\<lambda>i. e (i + d)) ys)"
+  have "aform_vals e (msum_aforms d xs ys) = map2 (+) (aform_vals e xs) (aform_vals (\<lambda>i. e (i + d)) ys)"
     by simp
   then show ?case
     using 1
@@ -84,7 +84,7 @@ qed (auto simp: aform_vals_def)
 lemma Joints_msum_aforms:
   assumes "degree_aforms xs \<le> d"
   assumes "degree_aforms ys \<le> d"
-  shows "Joints (msum_aforms d xs ys) = {map2 op + a b |a b. a \<in> Joints xs \<and> b \<in> Joints ys}"
+  shows "Joints (msum_aforms d xs ys) = {map2 (+) a b |a b. a \<in> Joints xs \<and> b \<in> Joints ys}"
   apply (auto simp: Joints_def valuate_def aform_vals_def[symmetric]
       aform_val_msum_aforms assms)
    apply force
@@ -377,7 +377,7 @@ context begin
 interpretation autoref_syn .
 
 lemma Option_bind_param[param, autoref_rules]:
-  "(op \<bind>, op \<bind>) \<in> \<langle>S\<rangle>option_rel \<rightarrow> (S \<rightarrow> \<langle>R\<rangle>option_rel) \<rightarrow> \<langle>R\<rangle>option_rel"
+  "((\<bind>), (\<bind>)) \<in> \<langle>S\<rangle>option_rel \<rightarrow> (S \<rightarrow> \<langle>R\<rangle>option_rel) \<rightarrow> \<langle>R\<rangle>option_rel"
   unfolding Option.bind_def
   by parametricity
 
@@ -430,7 +430,7 @@ lemma eucl_of_list_autoref[autoref_rules]:
 definition "inner2s x b c = (inner_lv_rel x b, inner_lv_rel x c)"
 
 lemma inner_lv_rel_autoref[autoref_rules]:
-  "(inner_lv_rel, op \<bullet>) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> rnv_rel"
+  "(inner_lv_rel, (\<bullet>)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> rnv_rel"
   using lv_rel_inner[unfolded inner_lv_rel_def[symmetric]]
   by auto
 
@@ -551,7 +551,7 @@ definition inter_aform_plane
     }"
 
 lemma [autoref_rules]:
-  assumes [THEN GEN_OP_D, param]: "GEN_OP op = op = (A \<rightarrow> A \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, param]: "GEN_OP (=) (=) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(index, index) \<in> \<langle>A\<rangle>list_rel \<rightarrow> A \<rightarrow> nat_rel"
   unfolding index_def find_index_def
   by parametricity
@@ -1095,17 +1095,17 @@ proof -
 qed
 
 lemma Joints_aforms_of_ivlsD1:
-  "zs \<in> Joints (aforms_of_ivls xs ys) \<Longrightarrow> list_all2 op \<le> xs ys \<Longrightarrow> list_all2 op \<le> xs zs"
+  "zs \<in> Joints (aforms_of_ivls xs ys) \<Longrightarrow> list_all2 (\<le>) xs ys \<Longrightarrow> list_all2 (\<le>) xs zs"
   by (auto simp: Joints_def valuate_def aforms_of_ivls_def aform_val_def Pi_iff
       list_all2_conv_all_nth intro!: list_all2_all_nthI aforms_of_ivl_leI1)
 
 lemma Joints_aforms_of_ivlsD2:
-  "zs \<in> Joints (aforms_of_ivls xs ys) \<Longrightarrow> list_all2 op \<le> xs ys \<Longrightarrow> list_all2 op \<le> zs ys"
+  "zs \<in> Joints (aforms_of_ivls xs ys) \<Longrightarrow> list_all2 (\<le>) xs ys \<Longrightarrow> list_all2 (\<le>) zs ys"
   by (auto simp: Joints_def valuate_def aforms_of_ivls_def aform_val_def Pi_iff
       list_all2_conv_all_nth intro!: list_all2_all_nthI aforms_of_ivl_leI2)
 
 lemma aforms_of_ivls_refine:
-  "list_all2 op \<le> xrs yrs \<Longrightarrow>
+  "list_all2 (\<le>) xrs yrs \<Longrightarrow>
        (xri, xrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
        (yri, yrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow> (aforms_of_ivls xri yri, lv_ivl xrs yrs) \<in> aforms_rel"
   apply (auto simp: aforms_rel_def br_def list_all2_lengthD lv_ivl_def
@@ -1124,7 +1124,7 @@ lemma Joints_product_aforms:
   subgoal for e
     apply (rule image_eqI[where
           x="(aform_vals e a,
-              map2 op + (aform_vals e (replicate (length b) (0, zero_pdevs))) (aform_vals (\<lambda>i. e (i + degree_aforms a)) b))"])
+              map2 (+) (aform_vals e (replicate (length b) (0, zero_pdevs))) (aform_vals (\<lambda>i. e (i + degree_aforms a)) b))"])
      apply (auto simp: split_beta')
     apply (auto simp: aform_vals_def intro!: nth_equalityI image_eqI[where x="\<lambda>i. e (i + degree_aforms a)"])
     done
@@ -1159,18 +1159,18 @@ lemma eucl_of_list_mem_lv_rel: "length x = DIM('a::executable_euclidean_space) \
 
 lemma
   mem_Joints_msum_aforms'I:
-  "a \<in> Joints x \<Longrightarrow> b \<in> Joints y \<Longrightarrow> map2 op + a b \<in> Joints (msum_aforms' x y)"
+  "a \<in> Joints x \<Longrightarrow> b \<in> Joints y \<Longrightarrow> map2 (+) a b \<in> Joints (msum_aforms' x y)"
   by (auto simp: Joints_msum_aforms degrees_def)
 
 lemma
   mem_Joints_msum_aforms'E:
   assumes "xa \<in> Joints (msum_aforms' x y)" 
-  obtains a b where "xa = map2 op + a b" "a \<in> Joints x" "b \<in> Joints y"
+  obtains a b where "xa = map2 (+) a b" "a \<in> Joints x" "b \<in> Joints y"
   using assms
   by (auto simp: Joints_msum_aforms degrees_def)
 
 lemma msum_aforms'_refine_raw:
-  shows "(msum_aforms' x y, {map2 op + a b|a b. a \<in> Joints x \<and> b \<in> Joints y}) \<in> aforms_rel"
+  shows "(msum_aforms' x y, {map2 (+) a b|a b. a \<in> Joints x \<and> b \<in> Joints y}) \<in> aforms_rel"
   unfolding aforms_rel_def br_def
   by (safe elim!: mem_Joints_msum_aforms'E intro!: mem_Joints_msum_aforms'I) (auto simp: Joints_imp_length_eq)
 
@@ -1181,7 +1181,7 @@ lemma aforms_relD: "(a, b) \<in> aforms_rel \<Longrightarrow> b = Joints a"
   by (auto simp: aforms_rel_def br_def)
 
 lemma msum_aforms'_refine:
-  "(msum_aforms', \<lambda>xs ys. {map2 op + x y |x y. x \<in> xs \<and> y \<in> ys}) \<in> aforms_rel \<rightarrow> aforms_rel \<rightarrow> aforms_rel"
+  "(msum_aforms', \<lambda>xs ys. {map2 (+) x y |x y. x \<in> xs \<and> y \<in> ys}) \<in> aforms_rel \<rightarrow> aforms_rel \<rightarrow> aforms_rel"
   by (safe dest!: aforms_relD intro!: msum_aforms'_refine_raw)
 
 lemma length_inf_aforms[simp]: "length (inf_aforms optns x) = length x"
@@ -1431,7 +1431,7 @@ lemma inner_aforms'_inner_lv_rel:
   unfolding mem_lv_rel_set_rel_iff
   unfolding lv_rel_def aforms_rel_def
   apply (auto simp: br_def)
-  apply (subst arg_cong2[where f="op \<in>", OF _ refl])
+  apply (subst arg_cong2[where f="(\<in>)", OF _ refl])
   defer
    apply (rule inner_aforms')
      apply (auto simp: br_def Joints_imp_length_eq inner_lv_rel_def)

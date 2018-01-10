@@ -126,7 +126,7 @@ declare map_is_empty_folds[containers_pre]
 
 lemma map_is_empty_transfer [transfer_rule]:
   assumes "bi_total A"
-  shows "(pcr_mapping A B ===> op =) map_is_empty Mapping.is_empty"
+  shows "(pcr_mapping A B ===> (=)) map_is_empty Mapping.is_empty"
 unfolding map_is_empty_def[abs_def] Mapping.is_empty_def[abs_def] dom_eq_empty_conv[symmetric]
 by(rule rel_funI)+(auto simp del: dom_eq_empty_conv dest: rel_setD2 rel_setD1 Mapping.keys.transfer[THEN rel_funD, OF assms])
 

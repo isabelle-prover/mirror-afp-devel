@@ -188,7 +188,7 @@ lemma inner_eucl_of_list:
   using eucl_of_list_inner[OF assms] by (auto simp: inner_commute)
 
 
-definition "list_of_eucl x = map (op \<bullet> x) Basis_list"
+definition "list_of_eucl x = map ((\<bullet>) x) Basis_list"
 
 lemma index_Basis_list_nth[simp]:
   "i < DIM('a::executable_euclidean_space) \<Longrightarrow> index Basis_list ((Basis_list::'a list) ! i) = i"
@@ -444,13 +444,13 @@ qed
 
 lemma map_nth_append1:
   assumes "length xs = d"
-  shows "map (op ! (xs @ ys)) [0..<d] = xs"
+  shows "map ((!) (xs @ ys)) [0..<d] = xs"
   using assms
   by (auto simp: nth_append intro!: nth_equalityI)
 
 lemma map_nth_append2:
   assumes "length ys = d"
-  shows "map (op ! (xs @ ys)) [length xs..<length xs + d] = ys"
+  shows "map ((!) (xs @ ys)) [length xs..<length xs + d] = ys"
   using assms
   by (auto simp: intro!: nth_equalityI)
 
@@ -461,7 +461,7 @@ lemma map2_nth[simp]: "map2 f xs ys ! n = f (xs ! n) (ys ! n)"
   if "n < length xs" "n < length ys"
   using that by (auto simp: map2_def)
 
-lemma list_of_eucl_add: "list_of_eucl (x + y) = map2 op + (list_of_eucl x) (list_of_eucl y)"
+lemma list_of_eucl_add: "list_of_eucl (x + y) = map2 (+) (list_of_eucl x) (list_of_eucl y)"
   by (auto intro!: nth_equalityI simp: inner_simps)
 
 lemma list_of_eucl_inj:
@@ -487,7 +487,7 @@ lemma eucl_of_list_if:
   by (rule euclidean_eqI) (auto simp: eucl_of_list_inner inner_Basis index_nth_id)
 
 
-lemma take_append_take_minus_idem: "take n XS @ map (op ! XS) [n..<length XS] = XS"
+lemma take_append_take_minus_idem: "take n XS @ map ((!) XS) [n..<length XS] = XS"
   by (auto intro!: nth_equalityI simp: nth_append min_def)
 
 lemma sum_list_Basis_list[simp]: "sum_list (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
@@ -497,7 +497,7 @@ lemma hd_Basis_list[simp]: "hd Basis_list \<in> Basis"
   unfolding Basis_list[symmetric]
   by (rule hd_in_set) (auto simp: set_empty[symmetric])
 
-definition "inner_lv_rel a b = sum_list (map2 op * a b)"
+definition "inner_lv_rel a b = sum_list (map2 ( * ) a b)"
 
 lemma eucl_of_list_inner_eq: "(eucl_of_list xs::'a) \<bullet> eucl_of_list ys = inner_lv_rel xs ys"
   if "length xs = DIM('a::executable_euclidean_space)" "length ys = DIM('a)"
@@ -784,7 +784,7 @@ definition blinfun_scaleR::"('a::real_normed_vector \<Rightarrow>\<^sub>L real) 
   where "blinfun_scaleR a b = blinfun_scaleR_left b o\<^sub>L a"
 
 lemma blinfun_scaleR_transfer[transfer_rule]:
-  "rel_fun (pcr_blinfun op = op =) (rel_fun op = (pcr_blinfun op = op =))
+  "rel_fun (pcr_blinfun (=) (=)) (rel_fun (=) (pcr_blinfun (=) (=)))
     (\<lambda>a b c. a c *\<^sub>R b) blinfun_scaleR"
   by (auto simp: blinfun_scaleR_def rel_fun_def pcr_blinfun_def cr_blinfun_def OO_def)
 

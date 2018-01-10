@@ -68,7 +68,7 @@ lemma sorted_wrt_concat_map:
   shows "sorted_wrt P (concat (map (map h \<circ> f) xs))"
   using assms by (induct xs) (auto simp: sorted_wrt_append sorted_wrt_Cons)
 
-lemma sorted_wrt_upt [intro, simp]: "sorted_wrt (op <) [m ..< n]"
+lemma sorted_wrt_upt [intro, simp]: "sorted_wrt (<) [m ..< n]"
   by (induct n) (simp_all add: sorted_wrt_append)
 
 lemma sorted_wrt_map_distr:

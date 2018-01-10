@@ -47,7 +47,7 @@ where "bisimJ2JVM = red_red0.mbisim \<circ>\<^sub>B red0_Red1'.mbisim \<circ>\<^
 definition tlsimJ2JVM ::
   "('thread_id \<times> ('addr, 'thread_id, 'heap) J_thread_action,
     'thread_id \<times> ('addr, 'thread_id, 'heap) jvm_thread_action) bisim"
-where "tlsimJ2JVM = red_red0.mta_bisim \<circ>\<^sub>B red0_Red1'.mta_bisim \<circ>\<^sub>B op = \<circ>\<^sub>B Red1_execd.mta_bisim"
+where "tlsimJ2JVM = red_red0.mta_bisim \<circ>\<^sub>B red0_Red1'.mta_bisim \<circ>\<^sub>B (=) \<circ>\<^sub>B Red1_execd.mta_bisim"
 
 end
 

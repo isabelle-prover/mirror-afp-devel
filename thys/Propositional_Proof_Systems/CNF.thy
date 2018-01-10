@@ -15,7 +15,7 @@ primrec atoms_of_lit where
 case_of_simps lit_atoms_cases: atoms_of_lit.simps
 
 definition "atoms_of_cnf c = atoms_of_lit ` \<Union>c"
-lemma atoms_of_cnf_alt: "atoms_of_cnf c = \<Union>((op ` atoms_of_lit) ` c)" 
+lemma atoms_of_cnf_alt: "atoms_of_cnf c = \<Union>(((`) atoms_of_lit) ` c)" 
   unfolding atoms_of_cnf_def by blast (* alt as in the German alt *)
 
 lemma atoms_of_cnf_Un: "atoms_of_cnf (S \<union> T) = atoms_of_cnf S \<union> atoms_of_cnf T"

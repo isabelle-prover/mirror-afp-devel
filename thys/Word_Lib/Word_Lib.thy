@@ -138,7 +138,7 @@ corollary uint_of_bl_is_bl_to_bin:
 
 
 lemma bin_to_bl_or:
-  "bin_to_bl n (a OR b) = map2 (op \<or>) (bin_to_bl n a) (bin_to_bl n b)"
+  "bin_to_bl n (a OR b) = map2 (\<or>) (bin_to_bl n a) (bin_to_bl n b)"
   using bl_or_aux_bin[where n=n and v=a and w=b and bs="[]" and cs="[]"]
   by simp
 

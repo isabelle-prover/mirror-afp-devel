@@ -248,7 +248,7 @@ proof (induct m arbitrary: nc)
       assume mem: "(a,b) \<in> set (zip v (transpose nr m))"
       from mem have "b \<in> set (transpose nr m)" by (rule set_zip_rightD)
       with wfRec have "length b = ncc" unfolding mat_def using vec_def[of ncc] by auto
-      hence "length (case_prod op # (a,b)) = Suc ncc" by auto
+      hence "length (case_prod (#) (a,b)) = Suc ncc" by auto
     }
     thus ?thesis
       by (auto simp: vec_def nc)
@@ -1098,7 +1098,7 @@ where "vec1 \<equiv> vec1I zero one"
 abbreviation mat1 :: "nat \<Rightarrow> 'a mat"
 where "mat1 \<equiv> mat1I zero one"
 
-abbreviation mat_pow where "mat_pow \<equiv> mat_powI (0 :: 'a) 1 (op +) (op *)"
+abbreviation mat_pow where "mat_pow \<equiv> mat_powI (0 :: 'a) 1 (+) (( * ))"
 
 
 lemma scalar_left_one: assumes wf: "vec nn v"
@@ -1259,8 +1259,8 @@ proof -
       mat_mult_plus_distrib_right, auto)
 qed
 
-lemma mat_pow_ring_pow: assumes mat: "mat n n (m :: ('a :: semiring_1)mat)" shows "mat_pow n m k = m (^)\<^bsub>mat_ring n b\<^esub> k" 
-  (is "_ = m (^)\<^bsub>?C\<^esub> k")
+lemma mat_pow_ring_pow: assumes mat: "mat n n (m :: ('a :: semiring_1)mat)" shows "mat_pow n m k = m [^]\<^bsub>mat_ring n b\<^esub> k" 
+  (is "_ = m [^]\<^bsub>?C\<^esub> k")
 proof -
   interpret semiring ?C by (rule mat_semiring)
   show ?thesis

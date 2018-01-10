@@ -57,7 +57,7 @@ lemma iwf_it:
 definition vertices :: "'form vertex fset"  where
   "vertices = Abs_fset (Union ( set (map (\<lambda> c. insert (c, []) ((\<lambda> p. (c, 0 # p)) ` (it_paths (it' c))))  conclusions)))"
 
-lemma mem_vertices: "v |\<in>| vertices \<longleftrightarrow>  (fst v \<in> set conclusions \<and> (snd v = [] \<or> snd v \<in> (op # 0) ` it_paths (it' (fst v))))"
+lemma mem_vertices: "v |\<in>| vertices \<longleftrightarrow>  (fst v \<in> set conclusions \<and> (snd v = [] \<or> snd v \<in> ((#) 0) ` it_paths (it' (fst v))))"
   unfolding vertices_def fmember.rep_eq ffUnion.rep_eq 
   by (cases v)(auto simp add: Abs_fset_inverse Bex_def )
 
@@ -202,7 +202,7 @@ using assms by (auto simp add: hyp_edge_to_def)
 
 inductive scope' :: "'form vertex \<Rightarrow> ('form,'var) in_port \<Rightarrow> 'form \<times> nat list \<Rightarrow> bool" where
   "c \<in> set conclusions \<Longrightarrow>
-   is' \<in> (op # 0) ` it_paths (it' c) \<Longrightarrow>
+   is' \<in> ((#) 0) ` it_paths (it' c) \<Longrightarrow>
    prefix (is@[i]) is' \<Longrightarrow> 
    ip = in_port_at (c,is) i \<Longrightarrow>
    scope' (c, is) ip (c, is')"
@@ -317,7 +317,7 @@ next
   then obtain c is' i "is" where
     "v' = (c, is')" and "v = (c, is)" and "c \<in> set conclusions" and
     "p' = in_port_at v' i" and
-    "is \<in> op # 0 ` it_paths (it' c)" and  "prefix (is' @ [i]) is"
+    "is \<in> (#) 0 ` it_paths (it' c)" and  "prefix (is' @ [i]) is"
     by (auto simp add: scope'.simps)
 
   from `scope' v' p' v`

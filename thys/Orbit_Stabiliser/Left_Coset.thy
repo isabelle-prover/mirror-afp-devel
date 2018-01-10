@@ -157,7 +157,7 @@ apply (rule card_bij_eq)
 proof
   fix a x
   assume "H \<subseteq> carrier G" and "finite (carrier G)" and "a \<in> carrier G" and "c = a <# H"
-  assume a:"x \<in> op \<otimes> (inv a) ` (a <# H)"
+  assume a:"x \<in> (\<otimes>) (inv a) ` (a <# H)"
   have "a \<otimes> inv a = \<one>" by (simp add: \<open>a \<in> carrier G\<close>) 
   from a have "x \<in> {y. \<exists>x\<in>\<Union>h\<in>H. {a \<otimes> h}. y = inv a \<otimes> x}" unfolding l_coset_def image_def by simp
   then have "(\<exists>x'\<in>\<Union>h\<in>H. {a \<otimes> h}. x = inv a \<otimes> x')" by blast  

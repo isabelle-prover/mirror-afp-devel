@@ -48,7 +48,7 @@ lemmas xor_ac = xor_assoc xor_commute xor_left_commute
 
 
 definition xor_list :: "'a :: {uminus,inf,sup} list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixr "[\<oplus>]" 67)
-where "xor_list xs ys = map (case_prod op \<oplus>) (zip xs ys)"
+where "xor_list xs ys = map (case_prod (\<oplus>)) (zip xs ys)"
 
 lemma xor_list_unfold:
   "xs [\<oplus>] ys = (case xs of [] \<Rightarrow> [] | x # xs' \<Rightarrow> (case ys of [] \<Rightarrow> [] | y # ys' \<Rightarrow> x \<oplus> y # xs' [\<oplus>] ys'))"

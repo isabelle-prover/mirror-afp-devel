@@ -8,7 +8,7 @@ declare [[show_variants]]
 
 definition "apply" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" where "apply f x = f x"
 
-lemma apply_eq_onp: includes lifting_syntax shows "(eq_onp P ===> op = ===> op =) apply apply"
+lemma apply_eq_onp: includes lifting_syntax shows "(eq_onp P ===> (=) ===> (=)) apply apply"
 by(simp add: rel_fun_def eq_onp_def)
 
 lemma case_option_apply: "case_option none some x y = case_option (none y) (\<lambda>a. some a y) x"
@@ -72,7 +72,7 @@ end
 
 lemma eval_parametric [transfer_rule]:
   includes lifting_syntax shows
-  "((op = ===> M) ===> (M ===> (op = ===> M) ===> M) ===> M ===> (V ===> M) ===> rel_exp V ===> M)
+  "(((=) ===> M) ===> (M ===> ((=) ===> M) ===> M) ===> M ===> (V ===> M) ===> rel_exp V ===> M)
    exp_base.eval exp_base.eval"
 unfolding exp_base.eval_def by transfer_prover
 
@@ -87,7 +87,7 @@ lemma eval_cong:
 proof -
   define V where "V \<equiv> eq_onp (\<lambda>x. x \<in> vars e)"
   have [transfer_rule]: "rel_exp V e e" by(rule exp.rel_refl_strong)(simp add: V_def eq_onp_def)
-  have [transfer_rule]: "(V ===> op =) E E'" using assms by(auto simp add: V_def rel_fun_def eq_onp_def)
+  have [transfer_rule]: "(V ===> (=)) E E'" using assms by(auto simp add: V_def rel_fun_def eq_onp_def)
   show ?thesis by transfer_prover
 qed
 
@@ -460,32 +460,32 @@ context includes lifting_syntax begin
 
 lemma cr_id_prob_eval:
   notes [transfer_rule] = cr_id_prob_transfer shows
-  "rel_stateT op = (rel_optionT (cr_id_prob op =))
+  "rel_stateT (=) (rel_optionT (cr_id_prob (=)))
      (SFI.eval SFI_lookup e)
      (SFP.eval SFP_lookup e)"
 unfolding SFP.lookup_def SFI.lookup_def by transfer_prover
 
 lemma cr_envT_stateT_lookup':
   notes [transfer_rule] = cr_envT_stateT_transfer apply_eq_onp shows
-  "(op = ===> cr_envT_stateT X (rel_optionT (rel_id (rel_option (cr_prod1 X op =)))))
+  "((=) ===> cr_envT_stateT X (rel_optionT (rel_id (rel_option (cr_prod1 X (=))))))
    RFI_lookup SFI_lookup"
 unfolding RFI.lookup_alt_def SFI.lookup_alt_def by transfer_prover
 
 lemma cr_envT_stateT_eval':
   notes [transfer_rule] = cr_envT_stateT_transfer cr_envT_stateT_lookup' shows
-  "(op = ===> cr_envT_stateT X (rel_optionT (rel_id (rel_option (cr_prod1 X op =)))))
+  "((=) ===> cr_envT_stateT X (rel_optionT (rel_id (rel_option (cr_prod1 X (=))))))
   (RFI.eval RFI_lookup) (SFI.eval SFI_lookup)"
 by transfer_prover
 
 lemma cr_envT_stateT_lookup [cr_envT_stateT_transfer]:
   notes [transfer_rule] = cr_id_prob_transfer cr_envT_stateT_transfer apply_eq_onp shows
-  "(op = ===> cr_envT_stateT X (rel_optionT (cr_id_prob (rel_option (cr_prod1 X op =)))))
+  "((=) ===> cr_envT_stateT X (rel_optionT (cr_id_prob (rel_option (cr_prod1 X (=))))))
    RFI_lookup SFP_lookup"
 unfolding RFI.lookup_alt_def SFP.lookup_alt_def by transfer_prover
 
 lemma cr_envT_stateT_eval [cr_envT_stateT_transfer]:
   notes [transfer_rule] = cr_id_prob_transfer cr_envT_stateT_transfer shows
-  "(op = ===> cr_envT_stateT X (rel_optionT (cr_id_prob (rel_option (cr_prod1 X op =)))))
+  "((=) ===> cr_envT_stateT X (rel_optionT (cr_id_prob (rel_option (cr_prod1 X (=))))))
   (RFI.eval RFI_lookup) (SFP.eval SFP_lookup)"
 by transfer_prover
 

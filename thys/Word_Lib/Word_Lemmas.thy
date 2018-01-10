@@ -1657,7 +1657,7 @@ qed
 lemma upto_enum_step_shift:
   "\<lbrakk> is_aligned p n \<rbrakk> \<Longrightarrow>
   ([p , p + 2 ^ m .e. p + 2 ^ n - 1])
-      = map (op + p) [0, 2 ^ m .e. 2 ^ n - 1]"
+      = map ((+) p) [0, 2 ^ m .e. 2 ^ n - 1]"
   apply (erule is_aligned_get_word_bits)
    prefer 2
    apply (simp add: map_idI)
@@ -2061,7 +2061,7 @@ definition
 lemma limited_and_eq_0:
   "\<lbrakk> limited_and x z; y && ~~ z = y \<rbrakk> \<Longrightarrow> x && y = 0"
   unfolding limited_and_def
-  apply (subst arg_cong2[where f="op &&"])
+  apply (subst arg_cong2[where f="(&&)"])
     apply (erule sym)+
   apply (simp(no_asm) add: word_bw_assocs word_bw_comms word_bw_lcs)
   done
@@ -2147,11 +2147,11 @@ lemma word_and_mask_shiftl:
   done
 
 lemma plus_Collect_helper:
-  "op + x ` {xa. P (xa :: 'a :: len word)} = {xa. P (xa - x)}"
+  "(+) x ` {xa. P (xa :: 'a :: len word)} = {xa. P (xa - x)}"
   by (fastforce simp add: image_def)
 
 lemma plus_Collect_helper2:
-  "op + (- x) ` {xa. P (xa :: 'a :: len word)} = {xa. P (x + xa)}"
+  "(+) (- x) ` {xa. P (xa :: 'a :: len word)} = {xa. P (x + xa)}"
   by (simp add: field_simps plus_Collect_helper)
 
 lemma word_FF_is_mask:
@@ -2409,7 +2409,7 @@ lemma i_hate_words:
   apply (rule diff_Suc_less)
   apply (subst neq0_conv[symmetric])
   apply (subst unat_eq_0)
-  apply (rule notI, drule arg_cong[where f="op + 1"])
+  apply (rule notI, drule arg_cong[where f="(+) 1"])
   apply simp
   done
 
@@ -3725,7 +3725,7 @@ lemma from_bool_0:
 
 definition
   to_bool :: "'a::len word \<Rightarrow> bool" where
-  "to_bool \<equiv> (op \<noteq>) 0"
+  "to_bool \<equiv> (\<noteq>) 0"
 
 lemma to_bool_and_1:
   "to_bool (x && 1) = (x !! 0)"
@@ -5251,7 +5251,7 @@ lemma is_aligned_diff_neg_mask:
   done
 
 lemma map_bits_rev_to_bl:
-  "map (op !! x) [0..<size x] = rev (to_bl x)"
+  "map ((!!) x) [0..<size x] = rev (to_bl x)"
   by (auto simp: list_eq_iff_nth_eq test_bit_bl word_size)
 
 (* negating a mask which has been shifted to the very left *)

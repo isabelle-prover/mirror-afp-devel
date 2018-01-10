@@ -127,7 +127,7 @@ begin
   lemma FL_bisimilar_reflp: "reflp (FL_bisimilar F)"
   proof (rule reflpI)
     fix x
-    have "is_L_bisimulation (\<lambda>_. op =)"
+    have "is_L_bisimulation (\<lambda>_. (=))"
       unfolding is_L_bisimulation_def by (simp add: symp_def)
     then show "x \<sim>\<cdot>[F] x"
       unfolding FL_bisimilar_def by auto

@@ -2428,7 +2428,7 @@ proof (rule infinite_super)
 next
   have "\<And>m n. Suc (2 * m) \<noteq> 2 * n" by arith
   then show "range (\<lambda>n::nat. (2::nat) * n + (1::nat))
-    \<subseteq> - (\<Union>p::(nat, 'a) form\<in>psubst (op * (2::nat)) ` S. params p)"
+    \<subseteq> - (\<Union>p::(nat, 'a) form\<in>psubst (( * ) (2::nat)) ` S. params p)"
     by auto
 qed
 

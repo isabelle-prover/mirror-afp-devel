@@ -3,7 +3,7 @@ theory Gen_Set
 imports "../Intf/Intf_Set" "../../Iterator/Iterator"
 begin
 
-  lemma foldli_union: "det_fold_set X (\<lambda>_. True) insert a (op \<union> a)"
+  lemma foldli_union: "det_fold_set X (\<lambda>_. True) insert a ((\<union>) a)"
   proof (rule, goal_cases)
     case (1 l) thus ?case
       by (induct l arbitrary: a) auto
@@ -19,7 +19,7 @@ begin
     assumes PRIO_TAG_GEN_ALGO
     assumes INS: "GEN_OP ins Set.insert (Rk\<rightarrow>\<langle>Rk\<rangle>Rs2\<rightarrow>\<langle>Rk\<rangle>Rs2)"
     assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs1 tsl)"
-    shows "(gen_union (\<lambda>x. foldli (tsl x)) ins,op \<union>) 
+    shows "(gen_union (\<lambda>x. foldli (tsl x)) ins,(\<union>)) 
     \<in> (\<langle>Rk\<rangle>Rs1) \<rightarrow> (\<langle>Rk\<rangle>Rs2) \<rightarrow> (\<langle>Rk\<rangle>Rs2)"
     apply (intro fun_relI)
     apply (subst Un_commute)
@@ -54,12 +54,12 @@ begin
     assumes PRIO_TAG_GEN_ALGO
     assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs1 tsl)"
     assumes MEMB:
-      "GEN_OP memb2 op \<in> (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
+      "GEN_OP memb2 (\<in>) (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
     assumes INS: 
       "GEN_OP ins3 Set.insert (Rk\<rightarrow>\<langle>Rk\<rangle>Rs3\<rightarrow>\<langle>Rk\<rangle>Rs3)"
     assumes EMPTY: 
       "GEN_OP empty3 {} (\<langle>Rk\<rangle>Rs3)"
-    shows "(gen_inter (\<lambda>x. foldli (tsl x)) memb2 ins3 empty3,op \<inter>) 
+    shows "(gen_inter (\<lambda>x. foldli (tsl x)) memb2 ins3 empty3,(\<inter>)) 
     \<in> (\<langle>Rk\<rangle>Rs1) \<rightarrow> (\<langle>Rk\<rangle>Rs2) \<rightarrow> (\<langle>Rk\<rangle>Rs3)"
     apply (intro fun_relI)
     unfolding gen_inter_def
@@ -70,7 +70,7 @@ begin
     done
  
   lemma foldli_diff: 
-    "det_fold_set X (\<lambda>_. True) (\<lambda>x s. op_set_delete x s) s (op - s)"
+    "det_fold_set X (\<lambda>_. True) (\<lambda>x s. op_set_delete x s) s ((-) s)"
   proof (rule, goal_cases)
     case (1 l) thus ?case
       by (induct l arbitrary: s) auto
@@ -85,7 +85,7 @@ begin
     assumes DEL:
       "GEN_OP del1 op_set_delete (Rk \<rightarrow> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs1)"
     assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs2 it2)"
-    shows "(gen_diff del1 (\<lambda>x. foldli (it2 x)),op -) 
+    shows "(gen_diff del1 (\<lambda>x. foldli (it2 x)),(-)) 
       \<in> (\<langle>Rk\<rangle>Rs1) \<rightarrow> (\<langle>Rk\<rangle>Rs2) \<rightarrow> (\<langle>Rk\<rangle>Rs1)"
     apply (intro fun_relI)
     unfolding gen_diff_def 
@@ -145,8 +145,8 @@ begin
   lemma gen_subseteq[autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
     assumes "GEN_OP ball1 Ball (\<langle>Rk\<rangle>Rs1 \<rightarrow> (Rk\<rightarrow>Id) \<rightarrow> Id)"
-    assumes "GEN_OP mem2 op \<in> (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
-    shows "(gen_subseteq ball1 mem2,op \<subseteq>) \<in> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id"
+    assumes "GEN_OP mem2 (\<in>) (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
+    shows "(gen_subseteq ball1 mem2,(\<subseteq>)) \<in> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id"
     apply (intro fun_relI)
     unfolding gen_subseteq_def using assms
     unfolding autoref_tag_defs
@@ -159,9 +159,9 @@ begin
 
   lemma gen_equal[autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
-    assumes "GEN_OP ss1 op \<subseteq> (\<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
-    assumes "GEN_OP ss2 op \<subseteq> (\<langle>Rk\<rangle>Rs2 \<rightarrow> \<langle>Rk\<rangle>Rs1 \<rightarrow> Id)"
-    shows "(gen_equal ss1 ss2, op =) \<in> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id"
+    assumes "GEN_OP ss1 (\<subseteq>) (\<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
+    assumes "GEN_OP ss2 (\<subseteq>) (\<langle>Rk\<rangle>Rs2 \<rightarrow> \<langle>Rk\<rangle>Rs1 \<rightarrow> Id)"
+    shows "(gen_equal ss1 ss2, (=)) \<in> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id"
     apply (intro fun_relI)
     unfolding gen_equal_def using assms
     unfolding autoref_tag_defs
@@ -292,7 +292,7 @@ begin
   lemma gen_disjoint[autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
     assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs1 it1)"
-    assumes MEM: "GEN_OP mem2 op \<in> (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
+    assumes MEM: "GEN_OP mem2 (\<in>) (Rk \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id)"
     shows "(gen_disjoint (\<lambda>x. foldli (it1 x)) mem2,op_set_disjoint) 
     \<in> \<langle>Rk\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs2 \<rightarrow> Id"
     apply (intro fun_relI)
@@ -339,7 +339,7 @@ begin
 
   lemma foldli_image: 
     "det_fold_set X (\<lambda>_. True) (\<lambda>x s. insert (f x) s) {} 
-      (op ` f)"
+      ((`) f)"
     apply rule using foldli_image_aux[where ?s0.0="{}"] by simp
 
   definition gen_image
@@ -353,7 +353,7 @@ begin
       "GEN_OP ins2 Set.insert (Rk'\<rightarrow>\<langle>Rk'\<rangle>Rs2\<rightarrow>\<langle>Rk'\<rangle>Rs2)"
     assumes EMPTY: 
       "GEN_OP empty2 {} (\<langle>Rk'\<rangle>Rs2)"
-    shows "(gen_image (\<lambda>x. foldli (it1 x)) empty2 ins2,op `) 
+    shows "(gen_image (\<lambda>x. foldli (it1 x)) empty2 ins2,(`)) 
     \<in> (Rk\<rightarrow>Rk') \<rightarrow> (\<langle>Rk\<rangle>Rs1) \<rightarrow> (\<langle>Rk'\<rangle>Rs2)"
     apply (intro fun_relI)
     unfolding gen_image_def
@@ -543,10 +543,10 @@ context begin interpretation autoref_syn .
 
 end
 
-lemma foldli_Union: "det_fold_set X (\<lambda>_. True) (op \<union>) {} Union"
+lemma foldli_Union: "det_fold_set X (\<lambda>_. True) (\<union>) {} Union"
 proof (rule, goal_cases)
   case (1 l)
-  have "\<forall>a. foldli l (\<lambda>_. True) op \<union> a = a \<union> \<Union>set l"
+  have "\<forall>a. foldli l (\<lambda>_. True) (\<union>) a = a \<union> \<Union>set l"
     by (induct l) auto
   thus ?case by auto
 qed
@@ -560,7 +560,7 @@ definition gen_Union
 lemma gen_Union[autoref_rules_raw]:
   assumes PRIO_TAG_GEN_ALGO
   assumes EMP: "GEN_OP emp {} (\<langle>Rk\<rangle>Rs3)"
-  assumes UN: "GEN_OP un (op \<union>) (\<langle>Rk\<rangle>Rs2\<rightarrow>\<langle>Rk\<rangle>Rs3\<rightarrow>\<langle>Rk\<rangle>Rs3)"
+  assumes UN: "GEN_OP un (\<union>) (\<langle>Rk\<rangle>Rs2\<rightarrow>\<langle>Rk\<rangle>Rs3\<rightarrow>\<langle>Rk\<rangle>Rs3)"
   assumes IT: "SIDE_GEN_ALGO (is_set_to_list (\<langle>Rk\<rangle>Rs2) Rs1 tsl)"
   shows "(gen_Union (\<lambda>x. foldli (tsl x)) emp un,Union) \<in> \<langle>\<langle>Rk\<rangle>Rs2\<rangle>Rs1 \<rightarrow> \<langle>Rk\<rangle>Rs3"
   apply (intro fun_relI)

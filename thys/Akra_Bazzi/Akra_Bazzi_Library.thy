@@ -121,7 +121,7 @@ proof (cases "x = 0")
   let ?f = "\<lambda>x. (1 + x) powr p"
   let ?f' = "\<lambda>x. p * (1 + x) powr (p - 1)"
   let ?f'' = "\<lambda>x. p * (p - 1) * (1 + x) powr (p - 2)"
-  let ?fs = "op! [?f, ?f', ?f'']"
+  let ?fs = "(!) [?f, ?f', ?f'']"
  
   have A: "\<forall>m t. m < 2 \<and> t \<ge> -0.5 \<and> t \<le> 0.5 \<longrightarrow> (?fs m has_real_derivative ?fs (Suc m) t) (at t)"
   proof (clarify)

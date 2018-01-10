@@ -43,7 +43,7 @@ begin
   definition [simp]: "((clause::Clause) el (formula::Formula)) == clause \<in> set formula"
 end
 
-overloading el_literal \<equiv> "op el :: Literal \<Rightarrow> Formula \<Rightarrow> bool"
+overloading el_literal \<equiv> "(el) :: Literal \<Rightarrow> Formula \<Rightarrow> bool"
 begin
 
 primrec el_literal where

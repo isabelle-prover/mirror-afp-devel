@@ -213,7 +213,7 @@ proof -
   { fix s assume "s \<in> S" let ?F = "\<lambda>P. HLD S2 or (HLD S1 aand nxt P)"
     have "P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)) = (\<Squnion>i. P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s ## \<omega>)))"
     proof (simp add: suntil_def, rule P_sup_lfp)
-      show "op ## s \<in> measurable St St"
+      show "(##) s \<in> measurable St St"
         by simp
       (* This proof should work automatically *)
       fix P assume P: "Measurable.pred St P"

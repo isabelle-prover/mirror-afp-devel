@@ -85,7 +85,7 @@ text {*
   definition "test_ls' == test_all' ls.empty ls.memb ls.ins ls.delete"
   (*definition "test_ts' == test_all' ts_empty ts_memb ts_ins ts_delete"*)
   definition "test_ahs' == test_all' ahs.empty ahs.memb ahs.ins ahs.delete"
-  definition "test_cg' == test_all' (\<lambda>_. {}) (op \<in>) insert (\<lambda>x s. s-{x})"
+  definition "test_cg' == test_all' (\<lambda>_. {}) (\<in>) insert (\<lambda>x s. s-{x})"
   definition "test_ias' == test_all' ias.empty ias.memb ias.ins ias.delete"
 
 
@@ -94,7 +94,7 @@ text {*
   definition "test_ls'' == test_all'' ls.empty ls.memb ls.ins"
   (*definition "test_ts'' == test_all'' ts_empty ts_memb ts_ins"*)
   definition "test_ahs'' == test_all'' ahs.empty ahs.memb ahs.ins"
-  definition "test_cg'' == test_all'' (\<lambda>_. {}) (op \<in>) insert"
+  definition "test_cg'' == test_all'' (\<lambda>_. {}) (\<in>) insert"
 
   definition "test_ias'' == test_all'' ias.empty ias.memb ias.ins"
 

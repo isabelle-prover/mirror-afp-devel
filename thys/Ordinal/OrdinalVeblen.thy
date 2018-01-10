@@ -399,7 +399,7 @@ lemma oFix_plus: "oFix (\<lambda>x. a + x) 0 = a * \<omega>"
  apply (simp add: ordinal_plus_assoc[symmetric])
 done
 
-lemma oDeriv_plus: "oDeriv (op + a) = (op + (a * \<omega>))"
+lemma oDeriv_plus: "oDeriv ((+) a) = ((+) (a * \<omega>))"
  apply (rule ext, rule_tac a=x in oLimit_induct)
    apply (simp add: oFix_plus)
   apply (simp add: oFix_eq_self
@@ -408,7 +408,7 @@ lemma oDeriv_plus: "oDeriv (op + a) = (op + (a * \<omega>))"
  apply simp
 done
 
-lemma oVeblen_1_plus: "oVeblen (op + 1) x = (op + (\<omega> ** x))"
+lemma oVeblen_1_plus: "oVeblen ((+) 1) x = ((+) (\<omega> ** x))"
  apply (rule_tac a=x in wf_induct[OF wf], simp)
  apply (rule_tac a=x in ordinal_cases)
    apply (simp add: normal.oVeblen_0[OF normal_plus])

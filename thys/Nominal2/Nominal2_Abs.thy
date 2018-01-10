@@ -164,19 +164,19 @@ fun
   alpha_abs_set 
 where
   [simp del]:
-  "alpha_abs_set (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set (op=) supp p (cs, y))"
+  "alpha_abs_set (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set ((=)) supp p (cs, y))"
 
 fun
   alpha_abs_lst
 where
   [simp del]:
-  "alpha_abs_lst (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>lst (op=) supp p (cs, y))"
+  "alpha_abs_lst (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>lst ((=)) supp p (cs, y))"
 
 fun
   alpha_abs_res
 where
   [simp del]:
-  "alpha_abs_res (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res (op=) supp p (cs, y))"
+  "alpha_abs_res (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res ((=)) supp p (cs, y))"
 
 notation
   alpha_abs_set (infix "\<approx>abs'_set" 50) and
@@ -241,7 +241,7 @@ using a b
 by (metis Int_Un_distrib2 Int_absorb2 Int_commute Un_upper2)
 
 lemma supp_property_res:
-  assumes a: "(as, x) \<approx>res (op =) supp p (as', x')"
+  assumes a: "(as, x) \<approx>res (=) supp p (as', x')"
   shows "p \<bullet> (supp x \<inter> as) = supp x' \<inter> as'"
 proof -
   from a have "(supp x - as) \<sharp>* p" by  (auto simp only: alphas)
@@ -268,8 +268,8 @@ proof -
 qed
 
 lemma alpha_abs_res_stronger1_aux:
-  assumes asm: "(as, x) \<approx>res (op =) supp p' (as', x')"
-  shows "\<exists>p. (as, x) \<approx>res (op =) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" 
+  assumes asm: "(as, x) \<approx>res (=) supp p' (as', x')"
+  shows "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" 
 proof -
   from asm have 0: "(supp x - as) \<sharp>* p'" by  (auto simp only: alphas)
   then have #: "p' \<bullet> (supp x - as) = (supp x - as)" 
@@ -295,19 +295,19 @@ proof -
   then 
   have "supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" using 2 by auto
   moreover 
-  have "(as, x) \<approx>res (op =) supp p (as', x')" using asm 1 a by (simp add: alphas)
+  have "(as, x) \<approx>res (=) supp p (as', x')" using asm 1 a by (simp add: alphas)
   ultimately 
-  show "\<exists>p. (as, x) \<approx>res (op =) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" by blast
+  show "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" by blast
 qed
 
 lemma alpha_abs_res_minimal:
-  assumes asm: "(as, x) \<approx>res (op =) supp p (as', x')"
-  shows "(as \<inter> supp x, x) \<approx>res (op =) supp p (as' \<inter> supp x', x')"
+  assumes asm: "(as, x) \<approx>res (=) supp p (as', x')"
+  shows "(as \<inter> supp x, x) \<approx>res (=) supp p (as' \<inter> supp x', x')"
   using asm unfolding alpha_res by (auto simp: Diff_Int)
 
 lemma alpha_abs_res_abs_set:
-  assumes asm: "(as, x) \<approx>res (op =) supp p (as', x')"
-  shows "(as \<inter> supp x, x) \<approx>set (op =) supp p (as' \<inter> supp x', x')"
+  assumes asm: "(as, x) \<approx>res (=) supp p (as', x')"
+  shows "(as \<inter> supp x, x) \<approx>set (=) supp p (as' \<inter> supp x', x')"
 proof -
   have c: "p \<bullet> x = x'"
     using alpha_abs_res_minimal[OF asm] unfolding alpha_res by clarify
@@ -321,18 +321,18 @@ proof -
 qed
 
 lemma alpha_abs_set_abs_res:
-  assumes asm: "(as \<inter> supp x, x) \<approx>set (op =) supp p (as' \<inter> supp x', x')"
-  shows "(as, x) \<approx>res (op =) supp p (as', x')"
+  assumes asm: "(as \<inter> supp x, x) \<approx>set (=) supp p (as' \<inter> supp x', x')"
+  shows "(as, x) \<approx>res (=) supp p (as', x')"
   using asm unfolding alphas by (auto simp: Diff_Int)
 
 lemma alpha_abs_res_stronger1:
-  assumes asm: "(as, x) \<approx>res (op =) supp p' (as', x')"
-  shows "\<exists>p. (as, x) \<approx>res (op =) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'"
+  assumes asm: "(as, x) \<approx>res (=) supp p' (as', x')"
+  shows "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'"
 using alpha_abs_res_stronger1_aux[OF asm] by auto
 
 lemma alpha_abs_set_stronger1:
-  assumes asm: "(as, x) \<approx>set (op =) supp p' (as', x')"
-  shows "\<exists>p. (as, x) \<approx>set (op =) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'"
+  assumes asm: "(as, x) \<approx>set (=) supp p' (as', x')"
+  shows "\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'"
 proof -
   from asm have 0: "(supp x - as) \<sharp>* p'" by  (auto simp only: alphas)
   then have #: "p' \<bullet> (supp x - as) = (supp x - as)" 
@@ -369,14 +369,14 @@ proof -
   finally have "supp p \<subseteq> (supp x - as) \<union> as \<union> p' \<bullet> as" .
   then have "supp p \<subseteq> as \<union> p' \<bullet> as" using 2 by blast
   moreover 
-  have "(as, x) \<approx>set (op =) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
+  have "(as, x) \<approx>set (=) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
   ultimately 
-  show "\<exists>p. (as, x) \<approx>set (op =) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'" using zc by blast
+  show "\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'" using zc by blast
 qed
 
 lemma alpha_abs_lst_stronger1:
-  assumes asm: "(as, x) \<approx>lst (op =) supp p' (as', x')"
-  shows "\<exists>p. (as, x) \<approx>lst (op =) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'"
+  assumes asm: "(as, x) \<approx>lst (=) supp p' (as', x')"
+  shows "\<exists>p. (as, x) \<approx>lst (=) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'"
 proof -
   from asm have 0: "(supp x - set as) \<sharp>* p'" by  (auto simp only: alphas)
   then have #: "p' \<bullet> (supp x - set as) = (supp x - set as)" 
@@ -409,16 +409,16 @@ proof -
   finally have "supp p \<subseteq> (supp x - set as) \<union> set as \<union> p' \<bullet> set as" .
   then have "supp p \<subseteq> set as \<union> p' \<bullet> set as" using 2 by blast
   moreover 
-  have "(as, x) \<approx>lst (op =) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
+  have "(as, x) \<approx>lst (=) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
   ultimately 
-  show "\<exists>p. (as, x) \<approx>lst (op =) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'" using zc by blast 
+  show "\<exists>p. (as, x) \<approx>lst (=) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'" using zc by blast 
 qed
 
 lemma alphas_abs_stronger:
-  shows "(as, x) \<approx>abs_set (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>set (op =) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
-  and   "(as, x) \<approx>abs_res (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>res (op =) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
+  shows "(as, x) \<approx>abs_set (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
+  and   "(as, x) \<approx>abs_res (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
   and   "(bs, x) \<approx>abs_lst (bs', x') \<longleftrightarrow> 
-   (\<exists>p. (bs, x) \<approx>lst (op =) supp p (bs', x') \<and> supp p \<subseteq> set bs \<union> set bs')"
+   (\<exists>p. (bs, x) \<approx>lst (=) supp p (bs', x') \<and> supp p \<subseteq> set bs \<union> set bs')"
 apply(rule iffI)
 apply(auto simp: alphas_abs alpha_abs_set_stronger1)[1]
 apply(auto simp: alphas_abs)[1]
@@ -431,7 +431,7 @@ apply(auto simp: alphas_abs)[1]
 done
 
 lemma alpha_res_alpha_set:
-  "(bs, x) \<approx>res op = supp p (cs, y) \<longleftrightarrow> (bs \<inter> supp x, x) \<approx>set op = supp p (cs \<inter> supp y, y)"
+  "(bs, x) \<approx>res (=) supp p (cs, y) \<longleftrightarrow> (bs \<inter> supp x, x) \<approx>set (=) supp p (cs \<inter> supp y, y)"
   using alpha_abs_set_abs_res alpha_abs_res_abs_set by blast
 
 section {* Quotient types *}
@@ -476,29 +476,29 @@ is
   "Pair::atom list \<Rightarrow> ('a::pt) \<Rightarrow> (atom list \<times> 'a)" .
 
 lemma [quot_respect]:
-  shows "(op= ===> op= ===> alpha_abs_set) Pair Pair"
-  and   "(op= ===> op= ===> alpha_abs_res) Pair Pair"
-  and   "(op= ===> op= ===> alpha_abs_lst) Pair Pair"
+  shows "((=) ===> (=) ===> alpha_abs_set) Pair Pair"
+  and   "((=) ===> (=) ===> alpha_abs_res) Pair Pair"
+  and   "((=) ===> (=) ===> alpha_abs_lst) Pair Pair"
   unfolding rel_fun_def
   by (auto intro: alphas_abs_refl)
 
 lemma [quot_respect]:
-  shows "(op= ===> alpha_abs_set ===> alpha_abs_set) permute permute"
-  and   "(op= ===> alpha_abs_res ===> alpha_abs_res) permute permute"
-  and   "(op= ===> alpha_abs_lst ===> alpha_abs_lst) permute permute"
+  shows "((=) ===> alpha_abs_set ===> alpha_abs_set) permute permute"
+  and   "((=) ===> alpha_abs_res ===> alpha_abs_res) permute permute"
+  and   "((=) ===> alpha_abs_lst ===> alpha_abs_lst) permute permute"
   unfolding rel_fun_def
   by (auto intro: alphas_abs_eqvt simp only: Pair_eqvt)
 
 lemma Abs_eq_iff:
-  shows "[bs]set. x = [bs']set. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set (op =) supp p (bs', y))"
-  and   "[bs]res. x = [bs']res. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res (op =) supp p (bs', y))"
-  and   "[cs]lst. x = [cs']lst. y \<longleftrightarrow> (\<exists>p. (cs, x) \<approx>lst (op =) supp p (cs', y))"
+  shows "[bs]set. x = [bs']set. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set (=) supp p (bs', y))"
+  and   "[bs]res. x = [bs']res. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res (=) supp p (bs', y))"
+  and   "[cs]lst. x = [cs']lst. y \<longleftrightarrow> (\<exists>p. (cs, x) \<approx>lst (=) supp p (cs', y))"
   by (lifting alphas_abs)
 
 lemma Abs_eq_iff2:
-  shows "[bs]set. x = [bs']set. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set (op=) supp p (bs', y) \<and> supp p \<subseteq> bs \<union> bs')"
-  and   "[bs]res. x = [bs']res. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res (op=) supp p (bs', y) \<and> supp p \<subseteq> bs \<union> bs')"
-  and   "[cs]lst. x = [cs']lst. y \<longleftrightarrow> (\<exists>p. (cs, x) \<approx>lst (op=) supp p (cs', y) \<and> supp p \<subseteq> set cs \<union> set cs')"
+  shows "[bs]set. x = [bs']set. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set ((=)) supp p (bs', y) \<and> supp p \<subseteq> bs \<union> bs')"
+  and   "[bs]res. x = [bs']res. y \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res ((=)) supp p (bs', y) \<and> supp p \<subseteq> bs \<union> bs')"
+  and   "[cs]lst. x = [cs']lst. y \<longleftrightarrow> (\<exists>p. (cs, x) \<approx>lst ((=)) supp p (cs', y) \<and> supp p \<subseteq> set cs \<union> set cs')"
   by (lifting alphas_abs_stronger)
 
 
@@ -926,7 +926,7 @@ fun alpha_single_simproc thm _ ctxt ctrm =
   let
     val thy = Proof_Context.theory_of ctxt
     val _ $ (_ $ x) $ (_ $ y) = Thm.term_of ctrm
-    val cvrs = union (op =) (Term.add_frees x []) (Term.add_frees y [])
+    val cvrs = union (=) (Term.add_frees x []) (Term.add_frees y [])
       |> filter (fn (_, ty) => Sign.of_sort thy (ty, @{sort fs}))
       |> map Free
       |> HOLogic.mk_tuple
@@ -1048,7 +1048,7 @@ where
  "prod_alpha = rel_prod"
 
 lemma [quot_respect]:
-  shows "((R1 ===> op =) ===> (R2 ===> op =) ===> rel_prod R1 R2 ===> op =) prod_fv prod_fv"
+  shows "((R1 ===> (=)) ===> (R2 ===> (=)) ===> rel_prod R1 R2 ===> (=)) prod_fv prod_fv"
   unfolding rel_fun_def
   by auto
 
@@ -1080,7 +1080,7 @@ by (rule ext)
    (auto simp: supp_Pair)
 
 lemma prod_alpha_eq:
-  shows "prod_alpha (op=) (op=) = (op=)"
+  shows "prod_alpha ((=)) ((=)) = ((=))"
   unfolding prod_alpha_def
   by (auto intro!: ext)
 

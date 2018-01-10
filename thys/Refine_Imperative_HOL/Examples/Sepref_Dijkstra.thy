@@ -58,9 +58,9 @@ lemma Infty_hnr[sepref_fr_rules]: "(uncurry0 (return Infty),uncurry0 (RETURN Inf
 sepref_register case_infty
 lemma [sepref_monadify_arity]: "case_infty \<equiv> \<lambda>\<^sub>2f1 f2 x. SP case_infty$f1$(\<lambda>\<^sub>2x. f2$x)$x"
   by simp
-lemma [sepref_monadify_comb]: "case_infty$f1$f2$x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$f1$f2$x)" by simp
+lemma [sepref_monadify_comb]: "case_infty$f1$f2$x \<equiv> (\<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$f1$f2$x)" by simp
 lemma [sepref_monadify_comb]: "EVAL$(case_infty$f1$(\<lambda>\<^sub>2x. f2 x)$x) 
-  \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$(EVAL $ f1)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
+  \<equiv> (\<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_infty$(EVAL $ f1)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
   apply (rule eq_reflection)
   by (simp split: infty.splits)
 
@@ -104,9 +104,9 @@ lemma hnr_val[sepref_fr_rules]: "(return o Weight.val,RETURN o Weight.val) \<in>
 context
   fixes A :: "'a::weight \<Rightarrow> 'b \<Rightarrow> assn"
   fixes plusi
-  assumes GA[unfolded GEN_ALGO_def, sepref_fr_rules]: "GEN_ALGO plusi (\<lambda>f. (uncurry f,uncurry (RETURN oo op +))\<in>A\<^sup>k*\<^sub>aA\<^sup>k \<rightarrow>\<^sub>a A)"
+  assumes GA[unfolded GEN_ALGO_def, sepref_fr_rules]: "GEN_ALGO plusi (\<lambda>f. (uncurry f,uncurry (RETURN oo (+)))\<in>A\<^sup>k*\<^sub>aA\<^sup>k \<rightarrow>\<^sub>a A)"
 begin
-  sepref_thm infty_plus_impl is "uncurry (RETURN oo op+)" :: "((infty_assn A)\<^sup>k *\<^sub>a (infty_assn A)\<^sup>k \<rightarrow>\<^sub>a infty_assn A)"
+  sepref_thm infty_plus_impl is "uncurry (RETURN oo (+))" :: "((infty_assn A)\<^sup>k *\<^sub>a (infty_assn A)\<^sup>k \<rightarrow>\<^sub>a infty_assn A)"
     unfolding infty_plus_eq_plus[symmetric] infty_plus_def[abs_def]
     by sepref
 end
@@ -121,7 +121,7 @@ lemma infty_less_param[param]:
   unfolding infty_less_def[abs_def]
   by parametricity
 
-lemma infty_less_eq_less: "infty_less op< = op<"
+lemma infty_less_eq_less: "infty_less (<) = (<)"
   unfolding infty_less_def[abs_def] 
   apply (clarsimp intro!: ext)
   subgoal for a b by (cases a; cases b; auto)
@@ -130,9 +130,9 @@ lemma infty_less_eq_less: "infty_less op< = op<"
 context
   fixes A :: "'a::weight \<Rightarrow> 'b \<Rightarrow> assn"
   fixes lessi
-  assumes GA[unfolded GEN_ALGO_def, sepref_fr_rules]: "GEN_ALGO lessi (\<lambda>f. (uncurry f,uncurry (RETURN oo op <))\<in>A\<^sup>k*\<^sub>aA\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
+  assumes GA[unfolded GEN_ALGO_def, sepref_fr_rules]: "GEN_ALGO lessi (\<lambda>f. (uncurry f,uncurry (RETURN oo (<)))\<in>A\<^sup>k*\<^sub>aA\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
 begin
-  sepref_thm infty_less_impl is "uncurry (RETURN oo op<)" :: "((infty_assn A)\<^sup>k *\<^sub>a (infty_assn A)\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
+  sepref_thm infty_less_impl is "uncurry (RETURN oo (<))" :: "((infty_assn A)\<^sup>k *\<^sub>a (infty_assn A)\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
     unfolding infty_less_eq_less[symmetric] infty_less_def[abs_def]
     by sepref
 end
@@ -186,12 +186,12 @@ begin
 
   abbreviation "weight_assn \<equiv> id_assn :: 'W \<Rightarrow> _"
 
-  lemma w_plus_param: "(op +, op +::'W\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
-  lemma w_less_param: "(op <, op <::'W\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
+  lemma w_plus_param: "((+), (+)::'W\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
+  lemma w_less_param: "((<), (<)::'W\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
   lemmas [sepref_import_param] = w_plus_param w_less_param
   lemma [sepref_gen_algo_rules]: 
-    "GEN_ALGO (return oo op+) (\<lambda>f. (uncurry f, uncurry (RETURN \<circ>\<circ> op +)) \<in> id_assn\<^sup>k *\<^sub>a id_assn\<^sup>k \<rightarrow>\<^sub>a id_assn)"
-    "GEN_ALGO (return oo op<) (\<lambda>f. (uncurry f, uncurry (RETURN \<circ>\<circ> op <)) \<in> id_assn\<^sup>k *\<^sub>a id_assn\<^sup>k \<rightarrow>\<^sub>a id_assn)"
+    "GEN_ALGO (return oo (+)) (\<lambda>f. (uncurry f, uncurry (RETURN \<circ>\<circ> (+))) \<in> id_assn\<^sup>k *\<^sub>a id_assn\<^sup>k \<rightarrow>\<^sub>a id_assn)"
+    "GEN_ALGO (return oo (<)) (\<lambda>f. (uncurry f, uncurry (RETURN \<circ>\<circ> (<))) \<in> id_assn\<^sup>k *\<^sub>a id_assn\<^sup>k \<rightarrow>\<^sub>a id_assn)"
     by (sep_auto simp: GEN_ALGO_def pure_def intro!: hfrefI hn_refineI)+
 
   lemma conv_prio_pop_min: "prio_pop_min m = do {

@@ -32,9 +32,9 @@ proof (rule funcsetI)
   assume f: "f \<in> Ar"
   thus "Hom(A,_)\<^bsub>\<a>\<^esub> f \<in> ar Set"
   proof (simp add: homf_def Set_def set_cat_def set_arrow_def U_def)
-    have 1: "(op \<bullet>) : Hom (Dom f) (Cod f) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Cod f)" ..
+    have 1: "(\<bullet>) : Hom (Dom f) (Cod f) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Cod f)" ..
     have 2: "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
-    from 1 and 2 have 3: "(op \<bullet>) f : Hom A (Dom f) \<rightarrow> Hom A (Cod f)" 
+    from 1 and 2 have 3: "(\<bullet>) f : Hom A (Dom f) \<rightarrow> Hom A (Cod f)" 
       by (rule funcset_mem)
     show "(\<lambda>g\<in>Hom A (Dom f). f \<bullet> g) : Hom A (Dom f) \<rightarrow> Hom A (Cod f)"
     proof (rule funcsetI)
@@ -139,12 +139,12 @@ proof-
     hence 11: "f \<bullet> h \<in> Hom A (Dom g)"
     proof-
       from 10 have "h \<in> Ar" by (simp add: hom_def)
-      have 100: "(op \<bullet>) : Hom (Dom f) (Dom g) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
+      have 100: "(\<bullet>) : Hom (Dom f) (Dom g) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
         by (rule AA.comp_types)
       have "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
       hence 101: "f \<in> Hom (Dom f) (Dom g)" using fg by simp
       from 100 and 101
-      have "(op \<bullet>) f : Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
+      have "(\<bullet>) f : Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
         by (rule funcset_mem)
       from this and 10 
       show "f \<bullet> h \<in> Hom A (Dom g)"

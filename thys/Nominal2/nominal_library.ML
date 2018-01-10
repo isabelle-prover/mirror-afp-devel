@@ -381,7 +381,7 @@ fun mk_measure_trm f ctxt T =
   HOLogic.dest_setT T
   |> fst o HOLogic.dest_prodT
   |> f
-  |> curry (op $) (Const (@{const_name "measure"}, dummyT))
+  |> curry ($) (Const (@{const_name "measure"}, dummyT))
   |> Syntax.check_term ctxt
   
 (* wf-goal arising in induction_schema *)    
@@ -504,7 +504,7 @@ fun conj_tac ctxt tac i =
      fun select (trm, i) =
        case trm of
          @{term "Trueprop"} $ t' => select (t', i)
-       | @{term "op &"} $ _ $ _ =>
+       | @{term "(&)"} $ _ $ _ =>
           EVERY' [resolve_tac ctxt @{thms conjI}, RANGE [conj_tac ctxt tac, conj_tac ctxt tac]] i
        | _ => tac i
   in

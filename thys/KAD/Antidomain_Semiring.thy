@@ -191,7 +191,7 @@ qed
 
 text {* Every antidomain monoid is a domain monoid. *}
 
-sublocale dm: domain_monoid am_d "op \<cdot>" 1
+sublocale dm: domain_monoid am_d "(\<cdot>)" 1
   apply (unfold_locales)
   apply (simp add: am_d_def)
   apply simp
@@ -417,7 +417,7 @@ qed
 
 text {* Every antidomain near-semiring is a domain near-semiring. *}
 
-sublocale dnsz: domain_near_semiring_one_zerol "op +" "op \<cdot>" 1 0 "ans_d" "op \<le>" "op <"
+sublocale dnsz: domain_near_semiring_one_zerol "(+)" "(\<cdot>)" 1 0 "ans_d" "(\<le>)" "(<)"
   apply (unfold_locales)
   apply simp
   using a2_eq ans_d_def apply auto[1]
@@ -673,7 +673,7 @@ qed
 
 text {* Antidomain pre-dioids are domain pre-dioids and antidomain near-semirings, but still not antidomain monoids. *}
 
-sublocale dpdz: domain_pre_dioid_one_zerol "op +" "op \<cdot>" 1 0 "op \<le>" "op <" "\<lambda>x. ad (ad x)"
+sublocale dpdz: domain_pre_dioid_one_zerol "(+)" "(\<cdot>)" 1 0 "(\<le>)" "(<)" "\<lambda>x. ad (ad x)"
   apply (unfold_locales)
   using apd_d_def d1_a' apply auto[1]
   using a2_eq' apd_d_def apply auto[1]
@@ -794,25 +794,25 @@ no_notation domain_semiringl_class.fd ("( |_\<rangle> _)" [61,81] 82)
 definition fdia :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_\<rangle> _)" [61,81] 82) where
   "|x\<rangle> y = ad (ad (x \<cdot> y))"
 
-sublocale ds: domain_semiringl "op +" "op \<cdot>" 1 0 "\<lambda>x. ad (ad x)" "op \<le>" "op <"
+sublocale ds: domain_semiringl "(+)" "(\<cdot>)" 1 0 "\<lambda>x. ad (ad x)" "(\<le>)" "(<)"
   rewrites "ds.fd x y \<equiv> fdia x y"
 proof -
-  show "class.domain_semiringl op + op \<cdot> 1 0 (\<lambda>x. ad (ad x)) op \<le> op < "
+  show "class.domain_semiringl (+) (\<cdot>) 1 0 (\<lambda>x. ad (ad x)) (\<le>) (<) "
     by (unfold_locales, auto simp: local.dpdz.dpd4 ans_d_def)
-  then interpret ds: domain_semiringl "op +" "op \<cdot>" 1 0 "\<lambda>x. ad (ad x)" "op \<le>" "op <" .
+  then interpret ds: domain_semiringl "(+)" "(\<cdot>)" 1 0 "\<lambda>x. ad (ad x)" "(\<le>)" "(<)" .
   show "ds.fd x y \<equiv> fdia x y"
     by (auto simp: fdia_def ds.fd_def)
 qed
 
-lemma fd_eq_fdia [simp]: "domain_semiringl.fd (op \<cdot>) d x y \<equiv> fdia x y"
+lemma fd_eq_fdia [simp]: "domain_semiringl.fd (\<cdot>) d x y \<equiv> fdia x y"
 proof -
-  have "class.domain_semiringl (op +) (op \<cdot>) 1 0 d (op \<le>) (op <)"
+  have "class.domain_semiringl (+) (\<cdot>) 1 0 d (\<le>) (<)"
     by (unfold_locales, auto simp: ads_d_def local.ans_d_def)
-  hence "domain_semiringl.fd (op \<cdot>) d x y = d ((op \<cdot>) x y)"
+  hence "domain_semiringl.fd (\<cdot>) d x y = d ((\<cdot>) x y)"
     by (rule domain_semiringl.fd_def)
   also have "... = ds.fd x y"
     by (simp add: ds.fd_def ads_d_def)
-  finally show "domain_semiringl.fd op \<cdot> d x y \<equiv> |x\<rangle> y"
+  finally show "domain_semiringl.fd (\<cdot>) d x y \<equiv> |x\<rangle> y"
     by auto
 qed
 
@@ -830,7 +830,7 @@ subclass antidomain_monoid
 lemma "a_zero = 0"
   by (simp add: local.a_zero_def)
 
-sublocale ds: domain_semiring "op +" "op \<cdot>" 1 0 "\<lambda>x. ad (ad x)" "op \<le>" "op <"
+sublocale ds: domain_semiring "(+)" "(\<cdot>)" 1 0 "\<lambda>x. ad (ad x)" "(\<le>)" "(<)"
   rewrites "ds.fd x y \<equiv> fdia x y"
   by unfold_locales
 
@@ -847,9 +847,9 @@ instantiation a2_element :: (antidomain_semiring) boolean_algebra
 
 begin
 
-lift_definition less_eq_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_eq_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> bool" is "(\<le>)" .
 
-lift_definition less_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> bool" is "op <" .
+lift_definition less_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> bool" is "(<)" .
 
 lift_definition bot_a2_element :: "'a a2_element" is 0
   by (simp add: ads_d_def)
@@ -857,10 +857,10 @@ lift_definition bot_a2_element :: "'a a2_element" is 0
 lift_definition top_a2_element :: "'a a2_element" is 1
   by (simp add: ads_d_def)
 
-lift_definition inf_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> 'a a2_element" is "op \<cdot>"
+lift_definition inf_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> 'a a2_element" is "(\<cdot>)"
   by (metis (no_types, lifting) ads_d_def dpdz.dom_mult_closed)
 
-lift_definition sup_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> 'a a2_element" is "op +"
+lift_definition sup_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> 'a a2_element" is "(+)"
   by (metis ads_d_def ds.dsr5)
 
 lift_definition minus_a2_element :: "'a a2_element \<Rightarrow> 'a a2_element \<Rightarrow> 'a a2_element" is "\<lambda>x y. x \<cdot> ad y"
@@ -1187,8 +1187,8 @@ class antidomain_left_kleene_algebra = antidomain_semiringl + left_kleene_algebr
 
 begin
 
-sublocale dka: domain_left_kleene_algebra "op +" "op \<cdot>" 1 0 d "op \<le>" "op <" star
-  rewrites "domain_semiringl.fd op \<cdot> d x y \<equiv> |x\<rangle> y"
+sublocale dka: domain_left_kleene_algebra "(+)" "(\<cdot>)" 1 0 d "(\<le>)" "(<)" star
+  rewrites "domain_semiringl.fd (\<cdot>) d x y \<equiv> |x\<rangle> y"
   by (unfold_locales, auto simp add: local.ads_d_def ans_d_def)
 
 lemma a_star [simp]: "ad (x\<^sup>\<star>) = 0"

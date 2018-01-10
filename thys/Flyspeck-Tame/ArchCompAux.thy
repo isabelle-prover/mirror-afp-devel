@@ -23,7 +23,7 @@ definition fgraph :: "graph \<Rightarrow> nat fgraph" where
 definition hash :: "nat fgraph \<Rightarrow> nat list" where
   "hash fs = (let n = nof_vertices fs in
      [n, size fs] @
-     qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
+     qsort (%x y. y < x) (map (%i. foldl (+) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
                              [0..<n]))"
 (*
 definition diff2 :: "nat fgraph list \<Rightarrow> nat fgraph list

@@ -51,7 +51,7 @@ subsection{* Individual Terms and Definite Descriptions *}
 text{* \label{TAO_Embedding_IndividualTerms} *}
 
 lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
-lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "op\<noteq> None" .
+lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "(\<noteq>) None" .
 lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
 
 lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is

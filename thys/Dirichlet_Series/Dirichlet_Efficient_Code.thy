@@ -17,7 +17,7 @@ begin
 definition prime_factorization_nat' :: "nat \<Rightarrow> (nat \<times> nat) list" where
   "prime_factorization_nat' n = (
      let ps = prime_factorization_nat n
-     in  map (\<lambda>p. (p, length (filter (op = p) ps) - 1)) (remdups_adj (sort ps)))"
+     in  map (\<lambda>p. (p, length (filter ((=) p) ps) - 1)) (remdups_adj (sort ps)))"
   
 lemma set_prime_factorization_nat':
   "set (prime_factorization_nat' n) = (\<lambda>p. (p, multiplicity p n - 1)) ` prime_factors n"

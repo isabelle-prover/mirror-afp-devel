@@ -37,7 +37,7 @@ where
 lemma eq_scheduler_refl[intro]: "eq_scheduler sc sc"
   by (coinduction arbitrary: sc) auto
 
-quotient_type 's cfg = "'s \<times> 's scheduler" / "rel_prod op = eq_scheduler"
+quotient_type 's cfg = "'s \<times> 's scheduler" / "rel_prod (=) eq_scheduler"
 proof (intro equivp_rel_prod equivpI reflpI sympI transpI)
   show "eq_scheduler sc1 sc2 \<Longrightarrow> eq_scheduler sc2 sc1" for sc1 sc2 :: "'s scheduler"
     by (coinduction arbitrary: sc1 sc2) (auto elim: eq_scheduler.cases)
@@ -94,7 +94,7 @@ lemma cfg_coinduct[consumes 1, case_names state action cont, coinduct pred]:
     (\<And>c d t. X c d \<Longrightarrow> t \<in> set_pmf (action c) \<Longrightarrow> X (cont c t) (cont d t)) \<Longrightarrow> c = d"
 proof (transfer, clarsimp)
   fix X :: "('a \<times> 'a scheduler) \<Rightarrow> ('a \<times> 'a scheduler) \<Rightarrow> bool" and B s1 s2 sc1 sc2
-  assume X: "X (s1, sc1) (s2, sc2)" and "rel_fun cr_cfg (rel_fun cr_cfg op =) X B"
+  assume X: "X (s1, sc1) (s2, sc2)" and "rel_fun cr_cfg (rel_fun cr_cfg (=)) X B"
     and 1: "\<And>s1 sc1 s2 sc2. X (s1, sc1) (s2, sc2) \<Longrightarrow> s1 = s2"
     and 2: "\<And>s1 sc1 s2 sc2. X (s1, sc1) (s2, sc2) \<Longrightarrow> action_sch sc1 = action_sch sc2"
     and 3: "\<And>s1 sc1 s2 sc2 t. X (s1, sc1) (s2, sc2) \<Longrightarrow> t \<in> set_pmf (action_sch sc2) \<Longrightarrow>
@@ -125,23 +125,23 @@ proof (rule pmf.rel_mono_strong)
     using P by (rule rel_cfg_cont)
 qed (auto dest: rel_cfg_state)
 
-lemma rel_cfg_eq: "rel_cfg op = cfg1 cfg2 \<longleftrightarrow> cfg1 = cfg2"
+lemma rel_cfg_eq: "rel_cfg (=) cfg1 cfg2 \<longleftrightarrow> cfg1 = cfg2"
 proof safe
-  show "rel_cfg op = cfg1 cfg2 \<Longrightarrow> cfg1 = cfg2"
+  show "rel_cfg (=) cfg1 cfg2 \<Longrightarrow> cfg1 = cfg2"
   proof (coinduction arbitrary: cfg1 cfg2)
     case cont
     have "action cfg1 = action cfg2"
-      using \<open>rel_cfg op = cfg1 cfg2\<close> by (auto dest: rel_cfg_action simp: pmf.rel_eq)
-    then have "rel_pmf (\<lambda>s t. rel_cfg op = (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg1)"
+      using \<open>rel_cfg (=) cfg1 cfg2\<close> by (auto dest: rel_cfg_action simp: pmf.rel_eq)
+    then have "rel_pmf (\<lambda>s t. rel_cfg (=) (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg1)"
       using cont by (auto dest: rel_cfg_cont)
-    then have "rel_pmf (\<lambda>s t. rel_cfg op = (cont cfg1 s) (cont cfg2 t) \<and> s = t) (action cfg1) (action cfg1)"
+    then have "rel_pmf (\<lambda>s t. rel_cfg (=) (cont cfg1 s) (cont cfg2 t) \<and> s = t) (action cfg1) (action cfg1)"
       by (rule pmf.rel_mono_strong) (auto dest: rel_cfg_state)
-    then have "pred_pmf (\<lambda>s. rel_cfg op = (cont cfg1 s) (cont cfg2 s)) (action cfg1)"
+    then have "pred_pmf (\<lambda>s. rel_cfg (=) (cont cfg1 s) (cont cfg2 s)) (action cfg1)"
       unfolding pmf.pred_rel by (rule pmf.rel_mono_strong) (auto simp: eq_onp_def)
     with \<open>t \<in> action cfg1\<close> show ?case
       by (auto simp: pmf.pred_set)
   qed (auto dest: rel_cfg_state rel_cfg_action simp: pmf.rel_eq)
-  show "rel_cfg op = cfg2 cfg2"
+  show "rel_cfg (=) cfg2 cfg2"
     by (coinduction arbitrary: cfg2) (auto intro!: rel_pmf_reflI)
 qed
 
@@ -259,7 +259,7 @@ proof -
   have "T \<circ> (memoryless_on ct) = MC_syntax.T ct"
   proof (rule ct.T_bisim[symmetric])
     fix s show "(T \<circ> memoryless_on ct) s =
-        measure_pmf (ct s) \<bind> (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St (op ## s))"
+        measure_pmf (ct s) \<bind> (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St ((##) s))"
       by (auto simp add: T_eq[of "memoryless_on ct s"] K_cfg_def map_pmf_rep_eq bind_distr[where K=St]
                          space_subprob_algebra T.prob_space_distr prob_space_imp_subprob_space
                intro!: bind_measure_pmf_cong)

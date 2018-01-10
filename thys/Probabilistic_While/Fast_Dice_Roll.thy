@@ -130,7 +130,7 @@ proof -
         by(subst ennreal_pmf_bind)(auto simp add: ennreal_mult[symmetric] nn_integral_measure_pmf nn_integral_0_iff_AE AE_count_space nn_integral_cmult[symmetric] split: split_indicator)
       also {
         assume *: "n < v"
-        then have "pmf_of_set {n..<v} = map_pmf (op + n) (pmf_of_set {..<v - n})"
+        then have "pmf_of_set {n..<v} = map_pmf ((+) n) (pmf_of_set {..<v - n})"
           by(subst map_pmf_of_set_inj)(auto 4 3 simp add: inj_on_def lessThan_empty_iff intro!: arg_cong[where f=pmf_of_set] intro: rev_image_eqI[where x="_ - n"] diff_less_mono)
         also have "bind_pmf \<dots> (\<lambda>c'. fdr (v - n) (c' - n)) = bind_pmf (pmf_of_set {..<v - n}) (fdr (v - n))"
           by(simp add: bind_map_pmf)
@@ -238,7 +238,7 @@ lemma fast_dice_roll_alt: "fdr_alt = fast_dice_roll"
 proof(intro ext)
   show "fdr_alt v c = fast_dice_roll v c" for v c
   proof(rule spmf.leq_antisym)
-    show "ord_spmf op = (fdr_alt v c) (fast_dice_roll v c)"
+    show "ord_spmf (=) (fdr_alt v c) (fast_dice_roll v c)"
     proof(induction arbitrary: v c rule: fdr_alt.fixp_induct[case_names adm bottom step])
       case adm show ?case by simp
       case bottom show ?case by simp
@@ -253,7 +253,7 @@ proof(intro ext)
           done
       qed
     qed
-    have "ord_spmf op = (fast_dice_roll v c) (fdr_alt v c)"
+    have "ord_spmf (=) (fast_dice_roll v c) (fdr_alt v c)"
       and "fast_dice_roll 0 c = return_pmf None"
     proof(induction arbitrary: v c rule: fast_dice_roll_fixp_induct)
       case adm thus ?case by simp
@@ -267,7 +267,7 @@ proof(intro ext)
         done
       case step case 2 from step.IH show ?case by(simp add: Let_def bind_eq_return_pmf_None)
     qed
-    then show "ord_spmf op = (fast_dice_roll v c) (fdr_alt v c)" by -
+    then show "ord_spmf (=) (fast_dice_roll v c) (fdr_alt v c)" by -
   qed
 qed
 

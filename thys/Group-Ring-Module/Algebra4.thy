@@ -91,9 +91,9 @@ by (simp add:b_ag_def)
 lemma (in aGroup) ag_pOp_closed:"\<lbrakk>x \<in> carrier A; y \<in> carrier A\<rbrakk> \<Longrightarrow>
                                      pop A x y \<in> carrier A"
 apply (cut_tac pop_closed)
-apply (frule funcset_mem[of "op \<plusminus> " "carrier A" "carrier A \<rightarrow> carrier A" "x"],
+apply (frule funcset_mem[of "(\<plusminus>) " "carrier A" "carrier A \<rightarrow> carrier A" "x"],
         assumption+)
-apply (rule funcset_mem[of "op \<plusminus> x" "carrier A" "carrier A" "y"], assumption+)
+apply (rule funcset_mem[of "(\<plusminus>) x" "carrier A" "carrier A" "y"], assumption+)
 done
 
 lemma (in aGroup) ag_mOp_closed:"x \<in> carrier A \<Longrightarrow> (-\<^sub>a x)  \<in> carrier A"
@@ -2209,10 +2209,10 @@ by (simp add:un_closed)
 lemma (in Ring) ring_tOp_closed:"\<lbrakk> x \<in> carrier R; y \<in> carrier R\<rbrakk> \<Longrightarrow>
                      x \<cdot>\<^sub>r y \<in> carrier R"
 apply (cut_tac tp_closed)
- apply (frule funcset_mem[of "op \<cdot>\<^sub>r" "carrier R" "carrier R \<rightarrow> carrier R"
+ apply (frule funcset_mem[of "(\<cdot>\<^sub>r)" "carrier R" "carrier R \<rightarrow> carrier R"
             "x"], assumption+,
-        thin_tac "op \<cdot>\<^sub>r \<in> carrier R \<rightarrow> carrier R \<rightarrow> carrier R")
- apply (rule funcset_mem[of "op \<cdot>\<^sub>r x" "carrier R" "carrier R" "y"],
+        thin_tac "(\<cdot>\<^sub>r) \<in> carrier R \<rightarrow> carrier R \<rightarrow> carrier R")
+ apply (rule funcset_mem[of "(\<cdot>\<^sub>r) x" "carrier R" "carrier R" "y"],
               assumption+)
 done
 

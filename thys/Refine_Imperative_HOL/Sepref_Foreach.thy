@@ -695,12 +695,12 @@ lemma fold_eq_nfoldli_assert:
 lemma fold_arity[sepref_monadify_arity]: "fold \<equiv> \<lambda>\<^sub>2f l s. SP fold$(\<lambda>\<^sub>2x s. f$x$s)$l$s" by auto
 
 lemma monadify_plain_fold[sepref_monadify_comb]: 
-  "EVAL$(fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> op\<bind>$(EVAL$l)$(\<lambda>\<^sub>2l. op\<bind>$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. EVAL$(f x s))$s))"
+  "EVAL$(fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> (\<bind>)$(EVAL$l)$(\<lambda>\<^sub>2l. (\<bind>)$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. EVAL$(f x s))$s))"
   by (simp add: fold_eq_nfoldli)
 
 
 lemma monadify_plain_fold_old_rl: 
-  "EVAL$(fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> op\<bind>$(EVAL$l)$(\<lambda>\<^sub>2l. op\<bind>$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. PR_CONST (op_ASSERT_bind (x\<in>set l))$(EVAL$(f x s)))$s))"
+  "EVAL$(fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> (\<bind>)$(EVAL$l)$(\<lambda>\<^sub>2l. (\<bind>)$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. PR_CONST (op_ASSERT_bind (x\<in>set l))$(EVAL$(f x s)))$s))"
   by (simp add: fold_eq_nfoldli_assert)
 
 text \<open>foldli\<close>
@@ -715,8 +715,8 @@ lemma foldli_arities[sepref_monadify_arity]:
 
 lemma monadify_plain_foldli[sepref_monadify_comb]: 
   "EVAL$(foldli$l$c$(\<lambda>\<^sub>2x s. f x s)$s) \<equiv>
-    op\<bind>$(EVAL$l)$
-     (\<lambda>\<^sub>2l. op\<bind>$(EVAL$s)$
+    (\<bind>)$(EVAL$l)$
+     (\<lambda>\<^sub>2l. (\<bind>)$(EVAL$s)$
       (\<lambda>\<^sub>2s. nfoldli$l$c$(\<lambda>\<^sub>2x s. (EVAL$(f x s)))$s))"
 by (simp add: foldli_eq_nfoldli)
 

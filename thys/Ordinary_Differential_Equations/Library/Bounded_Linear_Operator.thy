@@ -50,11 +50,11 @@ instance
 end
 
 
-lemma bounded_bilinear_blinop_apply: "bounded_bilinear op $"
+lemma bounded_bilinear_blinop_apply: "bounded_bilinear ($)"
   unfolding bounded_bilinear_def
   by transfer (simp add: blinfun.bilinear_simps blinfun.bounded)
 
-interpretation blinop: bounded_bilinear "op $"
+interpretation blinop: bounded_bilinear "($)"
   by (rule bounded_bilinear_blinop_apply)
 
 lemma blinop_eqI: "(\<And>i. x $ i = y $ i) \<Longrightarrow> x = y"

@@ -441,7 +441,7 @@ proof -
     by auto
 qed
 
-lemma op_vec_scaleR: "op *s = op *\<^sub>R"
+lemma op_vec_scaleR: "( *s) = ( *\<^sub>R)"
   using scalar_mult_eq_scaleR by auto
 
 end

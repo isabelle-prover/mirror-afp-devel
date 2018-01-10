@@ -21,7 +21,7 @@ begin
     by (auto intro!: frefI nres_relI simp: in_br_conv List.null_def split: list.split)
 
 
-  lemma lmso_insert_aref: "(uncurry (RETURN oo op # ), uncurry (RETURN oo op_mset_insert)) \<in> (Id \<times>\<^sub>r br mset (\<lambda>_. True)) \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"  
+  lemma lmso_insert_aref: "(uncurry (RETURN oo (#) ), uncurry (RETURN oo op_mset_insert)) \<in> (Id \<times>\<^sub>r br mset (\<lambda>_. True)) \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"  
     by (auto intro!: frefI nres_relI simp: in_br_conv)
     
   (*  

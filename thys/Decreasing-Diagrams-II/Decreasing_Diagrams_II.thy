@@ -291,8 +291,8 @@ qed simp
 lemma wqo_letter_less:
   assumes t: "trans r" and w: "wqo_on (\<lambda>a b. (a, b) \<in> r\<^sup>=) UNIV"
   shows "wqo_on (\<lambda>a b. (a, b) \<in> (letter_less r)\<^sup>=) UNIV"
-proof (rule wqo_on_hom[of _ id _ "prod_le (op =) (\<lambda>a b. (a, b) \<in> r\<^sup>=)", unfolded image_id id_apply])
-  show "wqo_on (prod_le (op = :: accent \<Rightarrow> accent \<Rightarrow> bool) (\<lambda>a b. (a, b) \<in> r\<^sup>=)) UNIV"
+proof (rule wqo_on_hom[of _ id _ "prod_le (=) (\<lambda>a b. (a, b) \<in> r\<^sup>=)", unfolded image_id id_apply])
+  show "wqo_on (prod_le ((=) :: accent \<Rightarrow> accent \<Rightarrow> bool) (\<lambda>a b. (a, b) \<in> r\<^sup>=)) UNIV"
   by (rule dickson[OF finite_eq_wqo_on[OF finite_accent] w, unfolded UNIV_Times_UNIV])
 qed (insert t, auto simp: transp_on_def trans_def prod_le_def)
 

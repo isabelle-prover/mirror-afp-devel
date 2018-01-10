@@ -240,14 +240,14 @@ end
 
 definition mat_ordered_semiring :: "nat \<Rightarrow> nat \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ordered_semiring_scheme" where
   "mat_ordered_semiring n sd gt b \<equiv> ring_mat TYPE('a) n \<lparr>
-    ordered_semiring.geq = op \<ge>\<^sub>m,
+    ordered_semiring.geq = (\<ge>\<^sub>m),
     gt = mat_gt gt sd,
     max = max\<^sub>m,
     \<dots> = b\<rparr>"
 
 lemma (in one_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
   shows "ordered_semiring 
-    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+    (mat_ordered_semiring n sd (\<succ>) b :: ('a mat,'b) ordered_semiring_scheme)" 
   (is "ordered_semiring ?R")
 proof -
   interpret semiring ?R unfolding mat_ordered_semiring_def by (rule semiring_mat)
@@ -306,7 +306,7 @@ begin
 lemma sum_mat_mono_gt: 
   assumes "sd \<le> n"
   and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
-  and AB: "mat_gt op \<succ> sd A (B :: 'a mat)"
+  and AB: "mat_gt (\<succ>) sd A (B :: 'a mat)"
   shows "sum_mat A \<succ> sum_mat B"
 proof -
   from A B have id: "dim_row B = dim_row A" "dim_col B = dim_col A" by auto
@@ -316,9 +316,9 @@ proof -
     by (rule sum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B `sd \<le> n`, auto)
 qed
 
-lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt op \<succ> sd A B"  
+lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt (\<succ>) sd A B"  
   and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n" and C: "C \<in> carrier_mat n n"
-  shows "mat_gt op \<succ> sd (A + C) (B + C)"
+  shows "mat_gt (\<succ>) sd (A + C) (B + C)"
 proof -
   note wf = A B C
   from mat_gtD[OF gt] obtain i j 
@@ -339,7 +339,7 @@ lemma mat_gt_ge_mono: "sd \<le> n \<Longrightarrow> mat_gt gt sd A B \<Longright
   auto)
 
 lemma mat_default_gt_mat0: assumes sd_pos: "sd > 0" and sd_n: "sd \<le> n"
-  shows "mat_gt op \<succ> sd (default\<^sub>m default n) (0\<^sub>m n n)"
+  shows "mat_gt (\<succ>) sd (default\<^sub>m default n) (0\<^sub>m n n)"
 proof -
   from assms have n: "n > 0" by auto
   show ?thesis
@@ -352,7 +352,7 @@ context SN_one_mono_ordered_semiring_1
 begin
 
 abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<succ>\<^sub>m _ _ _)" [51,51,51,51] 50)
- where "A \<succ>\<^sub>m n sd B \<equiv> (A \<in> carrier_mat n n \<and> B \<in> carrier_mat n n \<and> B \<ge>\<^sub>m 0\<^sub>m n n \<and> mat_gt op \<succ> sd A B)"
+ where "A \<succ>\<^sub>m n sd B \<equiv> (A \<in> carrier_mat n n \<and> B \<in> carrier_mat n n \<and> B \<ge>\<^sub>m 0\<^sub>m n n \<and> mat_gt (\<succ>) sd A B)"
 
 lemma mat_gt_SN: assumes sd_n: "sd \<le> n" shows "SN {(m1,m2) . m1 \<succ>\<^sub>m n sd m2}"
 proof 
@@ -361,7 +361,7 @@ proof
   hence "\<And> i. (A i, A (Suc i)) \<in> {(m1,m2). m1 \<succ>\<^sub>m n sd m2}" by blast
   hence A: "\<And> i. A i \<in> carrier_mat n n" 
     and ge: "\<And> i. A (Suc i) \<ge>\<^sub>m 0\<^sub>m n n" 
-    and gt: "\<And> i. mat_gt op \<succ> sd (A i) (A (Suc i))" by auto  
+    and gt: "\<And> i. mat_gt (\<succ>) sd (A i) (A (Suc i))" by auto  
   define s where "s = (\<lambda> i. sum_mat (A i))"
   {
     fix i
@@ -379,8 +379,8 @@ context SN_strict_mono_ordered_semiring_1
 begin 
 
 lemma mat_mono: assumes sd_n: "sd \<le> n" and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n" and C: "C \<in> carrier_mat n n" 
-  and gt: "mat_gt op \<succ> sd B C" and gez: "A \<ge>\<^sub>m 0\<^sub>m n n" and mmono: "mat_mono mono sd A"
-  shows "mat_gt op \<succ> sd (A * B) (A * C)" (is "mat_gt _ _ ?AB ?AC")
+  and gt: "mat_gt (\<succ>) sd B C" and gez: "A \<ge>\<^sub>m 0\<^sub>m n n" and mmono: "mat_mono mono sd A"
+  shows "mat_gt (\<succ>) sd (A * B) (A * C)" (is "mat_gt _ _ ?AB ?AC")
 proof -
   from mat_gtD[OF gt] obtain i j where 
     i: "i < sd" and j: "j < sd" and gt: "B $$ (i,j) \<succ> C $$ (i,j)" and BC: "B \<ge>\<^sub>m C" by auto
@@ -541,7 +541,7 @@ lemma mat_gt_arc_imp_mat_ge:
 
 lemma (in both_mono_ordered_semiring_1) mat_both_ordered_semiring: assumes n: "n > 0" 
   shows "ordered_semiring 
-    (mat_both_ordered_semiring n op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+    (mat_both_ordered_semiring n (\<succ>) b :: ('a mat,'b) ordered_semiring_scheme)" 
   (is "ordered_semiring ?R")
 proof -
   interpret semiring ?R unfolding mat_both_ordered_semiring_def by (rule semiring_mat)
@@ -716,7 +716,7 @@ proof (rule mat_comp_allI)
     show "row A i \<in> carrier_vec n" using A by auto
     show "row B i \<in> carrier_vec n" using B by auto
     show "col C j \<in> carrier_vec n" using C by auto
-    show rowAB: "vec_comp_all (op \<succ>) (row A i) (row B i)"
+    show rowAB: "vec_comp_all (\<succ>) (row A i) (row B i)"
     proof (intro vec_comp_allI)
       fix j assume j: "j < dim_vec (row A i)"
       have "A $$ (i,j) \<succ> B $$ (i,j)"
@@ -746,7 +746,7 @@ proof (rule mat_comp_allI)
     show "row A i \<in> carrier_vec n" using A by auto
     show "col B j \<in> carrier_vec n" using B by auto
     show "col C j \<in> carrier_vec n" using C by auto
-    show rowAB: "vec_comp_all (op \<succ>) (col B j) (col C j)"
+    show rowAB: "vec_comp_all (\<succ>) (col B j) (col C j)"
     proof (intro vec_comp_allI)
       fix i assume i: "i < dim_vec (col B j)"
       have "B $$ (i,j) \<succ> C $$ (i,j)"

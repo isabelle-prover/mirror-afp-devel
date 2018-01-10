@@ -97,7 +97,7 @@ definition limp_lan :: "'a lan \<Rightarrow> 'a lan \<Rightarrow> 'a lan" where
 definition rimp_lan :: "'a lan \<Rightarrow> 'a lan \<Rightarrow> 'a lan" where
   "rimp_lan X Z = {y. \<forall>x \<in> X. x @ y \<in> Z}"
 
-interpretation lan_residuated_join_semilattice: residuated_sup_lgroupoid "op +" "op \<subseteq>" "op \<subset>" "op \<cdot>" limp_lan rimp_lan
+interpretation lan_residuated_join_semilattice: residuated_sup_lgroupoid "(+)" "(\<subseteq>)" "(\<subset>)" "(\<cdot>)" limp_lan rimp_lan
 proof
   fix x y z :: "'a lan"
   show "x \<subseteq> limp_lan z y \<longleftrightarrow> x \<cdot> y \<subseteq> z"
@@ -106,7 +106,7 @@ proof
     by (auto simp add: c_prod_def rimp_lan_def times_list_def)
 qed
 
-interpretation lan_action_algebra: action_algebra "op +" "op \<cdot>" 1 0 "op \<subseteq>" "op \<subset>" "op +" limp_lan rimp_lan star
+interpretation lan_action_algebra: action_algebra "(+)" "(\<cdot>)" 1 0 "(\<subseteq>)" "(\<subset>)" "(+)" limp_lan rimp_lan star
 proof
   fix x y :: "'a lan"
   show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<subseteq> x\<^sup>\<star>"
@@ -124,7 +124,7 @@ definition limp_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
 definition rimp_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "rimp_rel R T = {(y,z) | y z. \<forall>x. (x,y) \<in> R \<longrightarrow> (x,z) \<in> T}"
 
-interpretation rel_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" "op O" limp_rel rimp_rel
+interpretation rel_residuated_join_semilattice: residuated_sup_lgroupoid "(\<union>)" "(\<subseteq>)" "(\<subset>)" "(O)" limp_rel rimp_rel
 proof
   fix x y z :: "'a rel"
   show "x \<subseteq> limp_rel z y \<longleftrightarrow> x O y \<subseteq> z"
@@ -133,7 +133,7 @@ proof
     by (auto simp add: rimp_rel_def)
 qed
 
-interpretation rel_action_algebra: action_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_rel rimp_rel rtrancl
+interpretation rel_action_algebra: action_algebra "(\<union>)" "(O)" Id "{}" "(\<subseteq>)" "(\<subset>)" "(\<union>)" limp_rel rimp_rel rtrancl
 proof
   fix x y :: "'a rel"
   show "Id \<union> x\<^sup>* O x\<^sup>* \<union> x \<subseteq> x\<^sup>*"
@@ -151,7 +151,7 @@ definition limp_trace :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<
 definition rimp_trace :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" where
   "rimp_trace X Z = \<Union> {Y. t_prod X Y \<subseteq> Z}"
 
-interpretation trace_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" t_prod limp_trace rimp_trace
+interpretation trace_residuated_join_semilattice: residuated_sup_lgroupoid "(\<union>)" "(\<subseteq>)" "(\<subset>)" t_prod limp_trace rimp_trace
 proof
   fix X Y Z :: "('a,'b) trace set"
   show "X \<subseteq> limp_trace Z Y \<longleftrightarrow> t_prod X Y \<subseteq> Z"
@@ -192,7 +192,7 @@ proof
     qed
 qed
 
-interpretation trace_action_algebra: action_algebra "op \<union>" t_prod t_one t_zero "op \<subseteq>" "op \<subset>" "op \<union>" limp_trace rimp_trace t_star
+interpretation trace_action_algebra: action_algebra "(\<union>)" t_prod t_one t_zero "(\<subseteq>)" "(\<subset>)" "(\<union>)" limp_trace rimp_trace t_star
 proof
   fix X Y :: "('a,'b) trace set"
   show "t_one \<union> t_prod (t_star X) (t_star X) \<union> X \<subseteq> t_star X"
@@ -212,7 +212,7 @@ definition limp_path :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a 
 definition rimp_path :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a path set" where
   "rimp_path X Z = \<Union> {Y. p_prod X Y \<subseteq> Z}"
 
-interpretation path_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" p_prod limp_path rimp_path
+interpretation path_residuated_join_semilattice: residuated_sup_lgroupoid "(\<union>)" "(\<subseteq>)" "(\<subset>)" p_prod limp_path rimp_path
 proof
   fix X Y Z :: "'a path set"
   show "X \<subseteq> limp_path Z Y \<longleftrightarrow> p_prod X Y \<subseteq> Z"
@@ -253,7 +253,7 @@ proof
     qed
 qed
 
-interpretation path_action_algebra: action_algebra "op \<union>" p_prod p_one "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_path rimp_path  p_star
+interpretation path_action_algebra: action_algebra "(\<union>)" p_prod p_one "{}" "(\<subseteq>)" "(\<subset>)" "(\<union>)" limp_path rimp_path  p_star
 proof
   fix X Y :: "'a path set"
   show "p_one \<union> p_prod (p_star X) (p_star X) \<union> X \<subseteq> p_star X"
@@ -271,7 +271,7 @@ definition limp_ppath :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 
 definition rimp_ppath :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" where
   "rimp_ppath X Z = \<Union> {Y. pp_prod X Y \<subseteq> Z}"
 
-interpretation ppath_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" pp_prod limp_ppath rimp_ppath
+interpretation ppath_residuated_join_semilattice: residuated_sup_lgroupoid "(\<union>)" "(\<subseteq>)" "(\<subset>)" pp_prod limp_ppath rimp_ppath
 proof
   fix X Y Z :: "'a ppath set"
   show "X \<subseteq> limp_ppath Z Y \<longleftrightarrow> pp_prod X Y \<subseteq> Z"
@@ -312,7 +312,7 @@ proof
     qed
 qed
 
-interpretation ppath_action_algebra: action_algebra "op \<union>" pp_prod pp_one "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_ppath rimp_ppath pp_star
+interpretation ppath_action_algebra: action_algebra "(\<union>)" pp_prod pp_one "{}" "(\<subseteq>)" "(\<subset>)" "(\<union>)" limp_ppath rimp_ppath pp_star
 proof
   fix X Y :: "'a ppath set"
   show "pp_one \<union> pp_prod (pp_star X) (pp_star X) \<union> X \<subseteq> pp_star X"

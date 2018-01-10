@@ -379,7 +379,7 @@ next
   by(auto dest!: LSC_BigAndL_inv intro!: LSC_BigAndL simp add: cnf_form_of_defs) (simp add: add_ac)
 next
   case (OrL F \<Gamma> G)
-  have 2: "image_mset disj_of_clause (mset (concat (map (\<lambda>f. map (op @ f) (cnf_lists G)) (cnf_lists F)))) + \<Gamma> \<Rightarrow>\<^sub>n"
+  have 2: "image_mset disj_of_clause (mset (concat (map (\<lambda>f. map ((@) f) (cnf_lists G)) (cnf_lists F)))) + \<Gamma> \<Rightarrow>\<^sub>n"
     if pig: "is_nnf_mset \<Gamma>" and a:
       "mset (concat (map (\<lambda>c. map (\<lambda>d. disj_of_clause c \<^bold>\<or> disj_of_clause d) (cnf_lists G)) (cnf_lists F))) + \<Gamma> \<Rightarrow>\<^sub>n"
     (* just some nasty modification of the conjunction *) for \<Gamma>
@@ -394,7 +394,7 @@ next
   qed
   have 1: "\<lbrakk>\<^bold>\<And> (map disj_of_clause (cnf_lists F)), \<Gamma> \<Rightarrow>\<^sub>n; \<^bold>\<And> (map disj_of_clause (cnf_lists G)), \<Gamma> \<Rightarrow>\<^sub>n\<rbrakk>
     \<Longrightarrow> is_nnf_mset \<Gamma>
-    \<Longrightarrow> \<^bold>\<And> (map disj_of_clause (concat (map (\<lambda>f. map (op @ f) (cnf_lists G)) (cnf_lists F)))), \<Gamma> \<Rightarrow>\<^sub>n" 
+    \<Longrightarrow> \<^bold>\<And> (map disj_of_clause (concat (map (\<lambda>f. map ((@) f) (cnf_lists G)) (cnf_lists F)))), \<Gamma> \<Rightarrow>\<^sub>n" 
     (* the actual disjunction is happening here *)
       for \<Gamma> using distrib[where 'a='a] 2 by(auto dest!: LSC_BigAndL_inv intro!: LSC_BigAndL)
   from OrL show ?case

@@ -833,7 +833,7 @@ proof -
         \<or> (randomEl x\<^sub>1 b_x::('a \<times> 'b set) set) \<in> x 
         \<or> \<not> set x\<^sub>1 \<subseteq> x" by (metis (no_types) randomElLemma subsetCE)
   thus "winningAllocationRel N (set G) 
-          (op \<in> (randomEl (takeAll (\<lambda>x. winningAllocationRel N (set G) (op \<in> x) bids)
+          ((\<in>) (randomEl (takeAll (\<lambda>x. winningAllocationRel N (set G) ((\<in>) x) bids)
                 (allAllocationsAlg N G)) random)) bids" 
        by (metis lm088 assms(1) assms(2) assms(3) assms(4) takeAllSubset set_empty)
 qed

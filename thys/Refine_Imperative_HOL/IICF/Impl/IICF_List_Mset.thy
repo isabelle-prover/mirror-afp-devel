@@ -16,10 +16,10 @@ subsection \<open>Abstract Operations\<close>
   lemma lms_is_empty_aref: "(is_Nil,op_mset_is_empty) \<in> list_mset_rel \<rightarrow> bool_rel"  
     unfolding list_mset_rel_def by (auto simp: in_br_conv split: list.splits)
 
-  lemma lms_insert_aref: "(op #, op_mset_insert) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
+  lemma lms_insert_aref: "((#), op_mset_insert) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
 
-  lemma lms_union_aref: "(op @, op_mset_plus) \<in> list_mset_rel \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
+  lemma lms_union_aref: "((@), op_mset_plus) \<in> list_mset_rel \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
 
   lemma lms_pick_aref: "(\<lambda>x#l \<Rightarrow> RETURN (x,l), mop_mset_pick) \<in> list_mset_rel \<rightarrow> \<langle>Id \<times>\<^sub>r list_mset_rel\<rangle>nres_rel"
@@ -30,7 +30,7 @@ subsection \<open>Abstract Operations\<close>
     applyS (clarsimp simp: in_br_conv algebra_simps)
     done
 
-  definition "list_contains x l \<equiv>  list_ex (op= x) l"
+  definition "list_contains x l \<equiv>  list_ex ((=) x) l"
   lemma lms_contains_aref: "(list_contains, op_mset_contains) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> bool_rel"  
     unfolding list_mset_rel_def list_contains_def[abs_def]
     by (auto simp: in_br_conv list_ex_iff in_multiset_in_set)
@@ -98,7 +98,7 @@ subsection \<open>Declaration of Implementations\<close>
   sepref_decl_impl lms_insert: lms_insert_aref[sepref_param] .
   sepref_decl_impl lms_union: lms_union_aref[sepref_param] .
 
-  -- \<open>Some extra work is required for nondetermistic op\<close>
+  -- \<open>Some extra work is required for nondetermistic ops\<close>
   lemma lms_pick_aref': 
     "(\<lambda>x#l \<Rightarrow> return (x,l), mop_mset_pick) \<in> (pure list_mset_rel)\<^sup>k \<rightarrow>\<^sub>a prod_assn id_assn (pure list_mset_rel)"
     apply (simp only: prod_assn_pure_conv)

@@ -43,8 +43,8 @@ context pred_on
 begin
 
 lemma chain_glb:
-  assumes "transp_on (op \<sqsubset>) A"
-  shows "chain C \<Longrightarrow> glb (op \<sqsubset>) C x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> chain ({y} \<union> C)"
+  assumes "transp_on (\<sqsubset>) A"
+  shows "chain C \<Longrightarrow> glb (\<sqsubset>) C x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> chain ({y} \<union> C)"
 using assms [unfolded transp_on_def]
 unfolding chain_def glb_def lb_def
 by (cases "C = {}") blast+
@@ -52,14 +52,14 @@ by (cases "C = {}") blast+
 
 subsection \<open>Open Properties\<close>
 
-definition "open Q \<longleftrightarrow> (\<forall>C. chain C \<and> C \<noteq> {} \<and> (\<exists>x\<in>A. glb (op \<sqsubset>) C x \<and> Q x) \<longrightarrow> (\<exists>y\<in>C. Q y))"
+definition "open Q \<longleftrightarrow> (\<forall>C. chain C \<and> C \<noteq> {} \<and> (\<exists>x\<in>A. glb (\<sqsubset>) C x \<and> Q x) \<longrightarrow> (\<exists>y\<in>C. Q y))"
 
 lemma openI [Pure.intro]:
-  "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb (op \<sqsubset>) C x \<and> Q x \<Longrightarrow> \<exists>y\<in>C. Q y) \<Longrightarrow> open Q"
+  "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb (\<sqsubset>) C x \<and> Q x \<Longrightarrow> \<exists>y\<in>C. Q y) \<Longrightarrow> open Q"
 by (auto simp: open_def)
 
 lemma open_glb:
-  "\<lbrakk>chain C; C \<noteq> {}; open Q; \<forall>x\<in>C. \<not> Q x; x \<in> A; glb (op \<sqsubset>) C x\<rbrakk> \<Longrightarrow> \<not> Q x"
+  "\<lbrakk>chain C; C \<noteq> {}; open Q; \<forall>x\<in>C. \<not> Q x; x \<in> A; glb (\<sqsubset>) C x\<rbrakk> \<Longrightarrow> \<not> Q x"
 by (auto simp: open_def)
 
 
@@ -69,10 +69,10 @@ text \<open>
   A relation \<open>\<sqsubset>\<close> is \emph{downward-complete} iff
   every non-empty \<open>\<sqsubset>\<close>-chain has a greatest lower bound.
 \<close>
-definition "downward_complete \<longleftrightarrow> (\<forall>C. chain C \<and> C \<noteq> {} \<longrightarrow> (\<exists>x\<in>A. glb (op \<sqsubset>) C x))"
+definition "downward_complete \<longleftrightarrow> (\<forall>C. chain C \<and> C \<noteq> {} \<longrightarrow> (\<exists>x\<in>A. glb (\<sqsubset>) C x))"
 
 lemma downward_completeI [Pure.intro]:
-  assumes "\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb (op \<sqsubset>) C x"
+  assumes "\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb (\<sqsubset>) C x"
   shows "downward_complete"
 using assms by (auto simp: downward_complete_def)
 
@@ -156,12 +156,12 @@ subsection \<open>Open Induction on Universal Domains\<close>
 
 text \<open>Open induction on quasi-orders (i.e., @{class preorder}).\<close>
 lemma (in preorder) dc_open_induct [consumes 2, case_names less]:
-  assumes "dc_on (op \<le>) UNIV"
-    and "open_on (op \<le>) Q UNIV"
+  assumes "dc_on (\<le>) UNIV"
+    and "open_on (\<le>) Q UNIV"
     and "\<And>x. (\<And>y. y < x \<Longrightarrow> Q y) \<Longrightarrow> Q x"
   shows "Q x"
 proof -
-  have "qo_on (op \<le>) UNIV" by (auto simp: qo_on_def transp_on_def reflp_on_def dest: order_trans)
+  have "qo_on (\<le>) UNIV" by (auto simp: qo_on_def transp_on_def reflp_on_def dest: order_trans)
   from open_induct_on [OF this assms(1,2)]
     show "Q x" using assms(3) unfolding less_le_not_le by blast
 qed
@@ -170,7 +170,7 @@ qed
 subsection \<open>Type Class of Downward Complete Orders\<close>
 
 class dcorder = preorder +
-  assumes dc_on_UNIV: "dc_on (op \<le>) UNIV"
+  assumes dc_on_UNIV: "dc_on (\<le>) UNIV"
 begin
 
 text \<open>Open induction on downward-complete orders.\<close>

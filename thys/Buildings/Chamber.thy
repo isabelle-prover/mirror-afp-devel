@@ -800,7 +800,7 @@ lemma iso_comp:
             ChamberComplexIsomorphism.surj_simplex_map
           )
 
-lemma inj_on_chamber_system: "inj_on (op ` f) domain.\<C>"
+lemma inj_on_chamber_system: "inj_on ((`) f) domain.\<C>"
 proof (rule inj_onI)
   fix C D show "\<lbrakk> C \<in> domain.\<C>; D \<in> domain.\<C>; f`C = f`D \<rbrakk> \<Longrightarrow> C=D"
     using domain.chamber_system_def domain.chamber_pconnect[of C D]
@@ -1396,8 +1396,8 @@ lemma inj_on_opp_chambers'':
   "\<lbrakk> C \<in> \<C>-f\<turnstile>\<C>; D \<in> \<C>-f\<turnstile>\<C>; f`C = f`D \<rbrakk> \<Longrightarrow> C=D"
   using chamber_system_def chamber_system_image inj_on_opp_chambers' by auto
 
-lemma inj_on_opp_chambers: "inj_on (op ` f) (\<C>-f\<turnstile>\<C>)"
-  using inj_on_opp_chambers'' inj_onI[of "\<C>-f\<turnstile>\<C>" "op ` f"] by fast
+lemma inj_on_opp_chambers: "inj_on ((`) f) (\<C>-f\<turnstile>\<C>)"
+  using inj_on_opp_chambers'' inj_onI[of "\<C>-f\<turnstile>\<C>" "(`) f"] by fast
 
 lemma opp_chambers_surj: "f\<turnstile>(\<C>-(f\<turnstile>\<C>)) = f\<turnstile>\<C>"
 proof (rule seteqI)
@@ -1409,8 +1409,8 @@ proof (rule seteqI)
     using chamber_system_image chamber_system_def by auto
 qed fast
 
-lemma opp_chambers_bij: "bij_betw (op ` f) (\<C>-(f\<turnstile>\<C>)) (f\<turnstile>\<C>)"
-  using inj_on_opp_chambers opp_chambers_surj bij_betw_def[of "op ` f"] by auto
+lemma opp_chambers_bij: "bij_betw ((`) f) (\<C>-(f\<turnstile>\<C>)) (f\<turnstile>\<C>)"
+  using inj_on_opp_chambers opp_chambers_surj bij_betw_def[of "(`) f"] by auto
 
 lemma folding':
   assumes "C\<in>f\<turnstile>\<C>"
@@ -2526,17 +2526,17 @@ proof
 qed
 
 lemma induced_automorphism_bij_between_half_chamber_systems_f:
-  "bij_betw (op ` \<s>) (\<C>-f\<turnstile>\<C>) (f\<turnstile>\<C>)"
+  "bij_betw ((`) \<s>) (\<C>-f\<turnstile>\<C>) (f\<turnstile>\<C>)"
   using induced_automorphism_simplex_image(2)
         flopped_half_chamber_systems_fg
-        folding_f.opp_chambers_bij bij_betw_cong[of "\<C>-f\<turnstile>\<C>" "op`\<s>"]
+        folding_f.opp_chambers_bij bij_betw_cong[of "\<C>-f\<turnstile>\<C>" "(`) \<s>"]
   by    auto
 
 lemmas indaut_bij_btw_halfchsys_f =
   induced_automorphism_bij_between_half_chamber_systems_f
 
 lemma induced_automorphism_bij_between_half_chamber_systems_g:
-  "bij_betw (op ` \<s>) (\<C>-g\<turnstile>\<C>) (g\<turnstile>\<C>)"
+  "bij_betw ((`) \<s>) (\<C>-g\<turnstile>\<C>) (g\<turnstile>\<C>)"
   using induced_automorphism_fg_symmetric
         OpposedThinChamberComplexFoldings.indaut_bij_btw_halfchsys_f[
           OF fg_symmetric
@@ -3905,14 +3905,14 @@ lemma fundadjset_eq_S_image: "D\<in>fundadjset \<Longrightarrow> \<exists>s\<in>
 
 lemma S_fixespointwise_fundchamber_image_int:
   assumes "s\<in>S"
-  shows   "fixespointwise (op \<rightarrow> s) (C0\<inter>s`\<rightarrow>C0)"
+  shows   "fixespointwise ((\<rightarrow>) s) (C0\<inter>s`\<rightarrow>C0)"
 proof-
   from assms(1) obtain f g
     where fg: "(f,g)\<in>fundfoldpairs" "s = Abs_induced_automorph f g"
     by    fast
   show ?thesis
   proof (rule fixespointwise_cong)
-    from fg show "fun_eq_on (op \<rightarrow> s) (induced_automorph f g) (C0\<inter>s`\<rightarrow>C0)"
+    from fg show "fun_eq_on ((\<rightarrow>) s) (induced_automorph f g) (C0\<inter>s`\<rightarrow>C0)"
       using permutation_conv_induced_automorph fun_eq_onI by fastforce
     from fg show "fixespointwise (induced_automorph f g) (C0\<inter>s`\<rightarrow>C0)"
       using fundfoldpairs_fundchamber_image fundfoldpairs_def
@@ -4226,7 +4226,7 @@ proof (induct rs Cs rule: list_induct2')
     by    simp
   from 4(2)
     have  "fold fst (map Spair (r#rs)) \<Turnstile> (C#Cs) =
-            map (op ` (fold fst (map Spair rs))) (fst (Spair r) \<Turnstile> (C#Cs))"
+            map ((`) (fold fst (map Spair rs))) (fst (Spair r) \<Turnstile> (C#Cs))"
     by    (auto simp add: image_comp)
   also from 4 have "\<dots> = C#Cs"
     using fundfold_trivial_f\<C>_list[of r "C#Cs"]
@@ -4573,7 +4573,7 @@ lemma fundantivertex_fundchamber_decomp:
 lemma fundantivertex_unstable:
   "s\<in>S \<Longrightarrow> s \<rightarrow> fundantivertex s \<noteq> fundantivertex s"
     using fundantivertex_fundchamber_decomp[of s]
-          image_insert[of "op \<rightarrow> s" "fundantivertex s" "C0\<inter>s`\<rightarrow>C0"]
+          image_insert[of "(\<rightarrow>) s" "fundantivertex s" "C0\<inter>s`\<rightarrow>C0"]
           S_fixes_fundchamber_image_int fundchamber_S_image_neq_fundchamber
     by    fastforce
 

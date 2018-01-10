@@ -82,7 +82,7 @@ proof -
         by auto
    qed
    
-   hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+   hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
      by (rule Up_To_Technique)
 
    thus ?thesis
@@ -139,7 +139,7 @@ proof -
         by auto
    qed
    
-   hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+   hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
      by (rule Up_To_Technique)
 
    with inR0 show ?thesis

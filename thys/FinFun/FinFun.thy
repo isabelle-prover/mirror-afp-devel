@@ -873,11 +873,11 @@ proof(unfold_locales)
   from this[of UNIV] show "Finite_Set.fold (\<lambda>a'. If (a = a') b') b UNIV = b'" by simp
 qed
 
-lemma finfun_apply_def: "op $ = (\<lambda>f a. finfun_rec (\<lambda>b. b) (\<lambda>a' b c. if (a = a') then b else c) f)"
+lemma finfun_apply_def: "($) = (\<lambda>f a. finfun_rec (\<lambda>b. b) (\<lambda>a' b c. if (a = a') then b else c) f)"
 proof(rule finfun_rec_unique)
-  fix c show "op $ (K$ c) = (\<lambda>a. c)" by(simp add: finfun_const.rep_eq)
+  fix c show "($) (K$ c) = (\<lambda>a. c)" by(simp add: finfun_const.rep_eq)
 next
-  fix g a b show "op $ g(a $:= b) = (\<lambda>c. if c = a then b else g $ c)"
+  fix g a b show "($) g(a $:= b) = (\<lambda>c. if c = a then b else g $ c)"
     by(auto simp add: finfun_update_def fun_upd_finfun Abs_finfun_inverse finfun_apply)
 qed auto
 
@@ -899,7 +899,7 @@ by(simp add: finfun_upd_apply)
 lemma finfun_ext: "(\<And>a. f $ a = g $ a) \<Longrightarrow> f = g"
 by(auto simp add: finfun_apply_inject[symmetric])
 
-lemma expand_finfun_eq: "(f = g) = (op $ f = op $ g)"
+lemma expand_finfun_eq: "(f = g) = (($) f = ($) g)"
 by(auto intro: finfun_ext)
 
 lemma finfun_upd_triv [simp]: "f(x $:= f $ x) = f"
@@ -946,7 +946,7 @@ lemma finfun_comp_update [simp]: "g \<circ>$ (f(a $:= b)) = (g \<circ>$ f)(a $:=
 by(simp_all add: finfun_comp_def)
 
 lemma finfun_comp_apply [simp]:
-  "op $ (g \<circ>$ f) = g \<circ> op $ f"
+  "($) (g \<circ>$ f) = g \<circ> ($) f"
 by(induct f rule: finfun_weak_induct)(auto simp add: finfun_upd_apply)
 
 lemma finfun_comp_comp_collapse [simp]: "f \<circ>$ g \<circ>$ h = (f \<circ> g) \<circ>$ h"
@@ -958,17 +958,17 @@ by(induct f rule: finfun_weak_induct)(auto intro: finfun_ext simp add: finfun_up
 lemma finfun_comp_id1 [simp]: "(\<lambda>x. x) \<circ>$ f = f" "id \<circ>$ f = f"
 by(induct f rule: finfun_weak_induct) auto
 
-lemma finfun_comp_conv_comp: "g \<circ>$ f = Abs_finfun (g \<circ> op $ f)"
+lemma finfun_comp_conv_comp: "g \<circ>$ f = Abs_finfun (g \<circ> ($) f)"
   including finfun
 proof -
-  have "(\<lambda>f. g \<circ>$ f) = (\<lambda>f. Abs_finfun (g \<circ> op $ f))"
+  have "(\<lambda>f. g \<circ>$ f) = (\<lambda>f. Abs_finfun (g \<circ> ($) f))"
   proof(rule finfun_rec_unique)
-    { fix c show "Abs_finfun (g \<circ> op $ (K$ c)) = (K$ g c)"
+    { fix c show "Abs_finfun (g \<circ> ($) (K$ c)) = (K$ g c)"
         by(simp add: finfun_comp_def o_def)(simp add: finfun_const_def) }
-    { fix g' a b show "Abs_finfun (g \<circ> op $ g'(a $:= b)) = (Abs_finfun (g \<circ> op $ g'))(a $:= g b)"
+    { fix g' a b show "Abs_finfun (g \<circ> ($) g'(a $:= b)) = (Abs_finfun (g \<circ> ($) g'))(a $:= g b)"
       proof -
         obtain y where y: "y \<in> finfun" and g': "g' = Abs_finfun y" by(cases g')
-        moreover from g' have "(g \<circ> op $ g') \<in> finfun" by(simp add: finfun_left_compose)
+        moreover from g' have "(g \<circ> ($) g') \<in> finfun" by(simp add: finfun_left_compose)
         moreover have "g \<circ> y(a := b) = (g \<circ> y)(a := g b)" by(auto)
         ultimately show ?thesis by(simp add: finfun_comp_def finfun_update_def)
       qed }
@@ -977,7 +977,7 @@ proof -
 qed
 
 definition finfun_comp2 :: "'b \<Rightarrow>f 'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow>f 'c"  (infixr "$\<circ>" 55)
-where [code del]: "g $\<circ> f = Abs_finfun (op $ g \<circ> f)"
+where [code del]: "g $\<circ> f = Abs_finfun (($) g \<circ> f)"
 
 notation (ASCII)
   finfun_comp2  (infixr "$o" 55)
@@ -992,11 +992,11 @@ lemma finfun_comp2_update:
   including finfun
 proof(cases "b \<in> range f")
   case True
-  from inj have "\<And>x. (op $ g)(f x := c) \<circ> f = (op $ g \<circ> f)(x := c)" by(auto intro!: ext dest: injD)
+  from inj have "\<And>x. (($) g)(f x := c) \<circ> f = (($) g \<circ> f)(x := c)" by(auto intro!: ext dest: injD)
   with inj True show ?thesis by(auto simp add: finfun_comp2_def finfun_update_def finfun_right_compose)
 next
   case False
-  hence "(op $ g)(b := c) \<circ> f = op $ g \<circ> f" by(auto simp add: fun_eq_iff)
+  hence "(($) g)(b := c) \<circ> f = ($) g \<circ> f" by(auto simp add: fun_eq_iff)
   with False show ?thesis by(auto simp add: finfun_comp2_def finfun_update_def)
 qed
 
@@ -1030,14 +1030,14 @@ by(simp add: finfun_All_def finfun_All_except_def)
 lemma finfun_All_update: "finfun_All f(a $:= b) = (b \<and> finfun_All_except [a] f)"
 by(simp add: finfun_All_def finfun_All_except_update)
 
-lemma finfun_All_All: "finfun_All P = All (op $ P)"
+lemma finfun_All_All: "finfun_All P = All (($) P)"
 by(simp add: finfun_All_def finfun_All_except_def)
 
 
 definition finfun_Ex :: "'a \<Rightarrow>f bool \<Rightarrow> bool"
 where "finfun_Ex P = Not (finfun_All (Not \<circ>$ P))"
 
-lemma finfun_Ex_Ex: "finfun_Ex P = Ex (op $ P)"
+lemma finfun_Ex_Ex: "finfun_Ex P = Ex (($) P)"
 unfolding finfun_Ex_def finfun_All_All by simp
 
 lemma finfun_Ex_const [simp]: "finfun_Ex (K$ b) = b"
@@ -1071,7 +1071,7 @@ lemma finfun_Diag_const1: "($K$ b, g$) = Pair b \<circ>$ g"
 by(simp add: finfun_Diag_def)
 
 text \<open>
-  Do not use @{thm finfun_Diag_const1} for the code generator because @{term "Pair b"} is injective, i.e. if @{term g} is free of redundant updates, there is no need to check for redundant updates as is done for @{term "op \<circ>$"}.
+  Do not use @{thm finfun_Diag_const1} for the code generator because @{term "Pair b"} is injective, i.e. if @{term g} is free of redundant updates, there is no need to check for redundant updates as is done for @{term "(\<circ>$)"}.
 \<close>
 
 lemma finfun_Diag_const_code [code]:
@@ -1104,7 +1104,7 @@ lemma finfun_Diag_update_update:
   "($f(a $:= b), g(a' $:= c)$) = (if a = a' then ($f, g$)(a $:= (b, c)) else ($f, g$)(a $:= (b, g $ a))(a' $:= (f $ a', c)))"
 by(auto simp add: finfun_Diag_update1 finfun_Diag_update2)
 
-lemma finfun_Diag_apply [simp]: "op $ ($f, g$) = (\<lambda>x. (f $ x, g $ x))"
+lemma finfun_Diag_apply [simp]: "($) ($f, g$) = (\<lambda>x. (f $ x, g $ x))"
 by(induct f rule: finfun_weak_induct)(auto simp add: finfun_Diag_const1 finfun_Diag_update1 finfun_upd_apply)
 
 lemma finfun_Diag_conv_Abs_finfun:
@@ -1142,7 +1142,7 @@ by(simp add: finfun_fst_def)
 lemma finfun_fst_conv [simp]: "finfun_fst ($f, g$) = f"
 by(induct f rule: finfun_weak_induct)(simp_all add: finfun_Diag_const1 finfun_fst_comp_conv o_def finfun_Diag_update1 finfun_fst_update)
 
-lemma finfun_fst_conv_Abs_finfun: "finfun_fst = (\<lambda>f. Abs_finfun (fst \<circ> op $ f))"
+lemma finfun_fst_conv_Abs_finfun: "finfun_fst = (\<lambda>f. Abs_finfun (fst \<circ> ($) f))"
 by(simp add: finfun_fst_def [abs_def] finfun_comp_conv_comp)
 
 
@@ -1164,7 +1164,7 @@ apply(induct f rule: finfun_weak_induct)
 apply(auto simp add: finfun_Diag_const1 finfun_snd_comp_conv o_def finfun_Diag_update1 finfun_snd_update finfun_upd_apply intro: finfun_ext)
 done
 
-lemma finfun_snd_conv_Abs_finfun: "finfun_snd = (\<lambda>f. Abs_finfun (snd \<circ> op $ f))"
+lemma finfun_snd_conv_Abs_finfun: "finfun_snd = (\<lambda>f. Abs_finfun (snd \<circ> ($) f))"
 by(simp add: finfun_snd_def [abs_def] finfun_comp_conv_comp)
 
 lemma finfun_Diag_collapse [simp]: "($finfun_fst f, finfun_snd f$) = f"
@@ -1235,9 +1235,9 @@ proof -
     show "Abs_finfun (\<lambda>a. Abs_finfun (curry (finfun_apply (K$ c)) a)) = (K$ K$ c)"
       by(simp add: finfun_curry_def finfun_const_def curry_def)
     fix g b
-    show "Abs_finfun (\<lambda>aa. Abs_finfun (curry (op $ g(a $:= b)) aa)) =
-      (Abs_finfun (\<lambda>a. Abs_finfun (curry (op $ g) a)))(
-      fst a $:= ((Abs_finfun (\<lambda>a. Abs_finfun (curry (op $ g) a))) $ (fst a))(snd a $:= b))"
+    show "Abs_finfun (\<lambda>aa. Abs_finfun (curry (($) g(a $:= b)) aa)) =
+      (Abs_finfun (\<lambda>a. Abs_finfun (curry (($) g) a)))(
+      fst a $:= ((Abs_finfun (\<lambda>a. Abs_finfun (curry (($) g) a))) $ (fst a))(snd a $:= b))"
       by(cases a)(auto intro!: ext arg_cong[where f=Abs_finfun] simp add: finfun_curry_def finfun_update_def finfun_Abs_finfun_curry)
   qed
   thus ?thesis by(auto simp add: fun_eq_iff)
@@ -1335,10 +1335,10 @@ proof (atomize (full))
     by(rule theI')(rule finite_sorted_distinct_unique finite_finfun_dom)+
 qed
 
-lemma finfun_const_False_conv_bot: "op $ (K$ False) = bot"
+lemma finfun_const_False_conv_bot: "($) (K$ False) = bot"
 by auto
 
-lemma finfun_const_True_conv_top: "op $ (K$ True) = top"
+lemma finfun_const_True_conv_top: "($) (K$ True) = top"
 by auto
 
 lemma finfun_to_list_const:

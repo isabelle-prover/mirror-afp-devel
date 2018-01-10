@@ -30,7 +30,7 @@ text {* The Free Group over one generator is isomorphic to the free abelian grou
 over one element, also known as the integers. *}
 
 abbreviation "int_group"
-  where "int_group \<equiv> \<lparr> carrier = carrier \<Z>, monoid.mult = op +, one = 0::int \<rparr>"
+  where "int_group \<equiv> \<lparr> carrier = carrier \<Z>, monoid.mult = (+), one = 0::int \<rparr>"
 
 lemma replicate_set_eq[simp]: "\<forall>x \<in> set xs. x = y \<Longrightarrow> xs = replicate (length xs) y"
   by(induct xs)auto

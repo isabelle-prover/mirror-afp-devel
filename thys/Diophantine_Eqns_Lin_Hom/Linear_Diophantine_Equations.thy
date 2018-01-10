@@ -320,7 +320,7 @@ lemma Minimal_Solutions_length:
   by (auto simp: hlde_ops.Minimal_Solutions_def hlde_ops.Solutions_def)
 
 lemma Minimal_Solutions_gt0:
-  "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> replicate (length x) 0 <\<^sub>v x"
+  "(x, y) \<in> Minimal_Solutions a b \<Longrightarrow> zeroes (length x) <\<^sub>v x"
   using zero_less by (auto simp: hlde_ops.Minimal_Solutions_def)
 
 lemma Minimal_Solutions_sym:
@@ -750,14 +750,6 @@ definition Special_Solutions :: "(nat list \<times> nat list) set"
   where
     "Special_Solutions = {sij i j | i j. i < m \<and> j < n}"
 
-lemma sij_is_unit:
-  assumes "j < n"
-    and "i < m"
-  assumes "(x, y) = sij i j"
-  shows "\<forall>k<length x. (k \<noteq> i \<longrightarrow> x ! k = 0) \<and> (k = i \<longrightarrow> x ! k = dij i j)"
-    and "\<forall>k<length y. (k \<noteq> j \<longrightarrow> y ! k = 0) \<and> (k = j \<longrightarrow> y ! k = eij i j)"
-  using assms sij_def by auto
-
 lemma dij_neq_0:
   assumes "i < m"
     and "j < n"
@@ -766,7 +758,7 @@ proof -
   have "a ! i > 0" and "b ! j > 0"
     using assms and no0 by (simp_all add: in_set_conv_nth)
   then have "dij i j > 0"
-    using lcm_div_gt_0 [of "a ! i" "b ! j"] dij_def by simp
+    using lcm_div_gt_0 [of "a ! i" "b ! j"] by (simp add: dij_def)
   then show ?thesis by simp
 qed
 
@@ -775,11 +767,10 @@ lemma eij_neq_0:
     and "j < n"
   shows "eij i j \<noteq> 0"
 proof -
-  have "a!i > 0" and "b!j > 0"
+  have "a ! i > 0" and "b ! j > 0"
     using assms and no0  by (simp_all add: in_set_conv_nth)
   then have "eij i j > 0"
-    using lcm_div_gt_0[of "b!j"  "a!i"] dij_def
-    by (simp add: eij_def lcm.commute)
+    using lcm_div_gt_0[of "b ! j"  "a ! i"] by (simp add: eij_def lcm.commute)
   then show ?thesis
     by simp
 qed
@@ -788,184 +779,82 @@ lemma Special_Solutions_in_Solutions:
   "x \<in> Special_Solutions \<Longrightarrow> x \<in> Solutions"
   by (auto simp: Solutions_def Special_Solutions_def sij_def dij_def eij_def)
 
-lemma sij_exactly_1_neq_0:
-  assumes "i < m"
-    and "j < n"
-  assumes "(x, y) = sij i j"
-  shows "\<exists>i < length x. x!i \<noteq> 0 \<and> (\<forall>j<length x. j \<noteq> i \<longrightarrow> x!j = 0)"
-     "\<exists>i < length y. y!i \<noteq> 0 \<and> (\<forall>j<length y. j \<noteq> i \<longrightarrow> y!j = 0)"
-  using assms dij_neq_0 sij_def eij_neq_0 by (auto)
-
 lemma Special_Solutions_in_Minimal_Solutions:
   assumes "(x, y) \<in> Special_Solutions"
   shows "(x, y) \<in> Minimal_Solutions"
-proof -
-  have xy_in_sol: "(x, y) \<in> Solutions"
-    using assms Special_Solutions_in_Solutions by auto
-  then have len_xa: "m = length x" and len_yb:"n = length y"
-    using assms by (auto simp: Solutions_def)
-  have "\<exists>i < length x. x!i \<noteq> 0 \<and> (\<forall>j<length x. j \<noteq> i \<longrightarrow> x!j = 0)"
-    using assms sij_exactly_1_neq_0 Special_Solutions_def by auto
-  then obtain i where
-    i: "i < length x" "x!i \<noteq> 0" "\<forall>j<length x. j \<noteq> i \<longrightarrow> x!j = 0"
-    by blast
-  then have less_x_prop: "\<forall>v. v \<le>\<^sub>v x \<longrightarrow> (v!i \<le> x!i \<and> (\<forall>j<length x. j \<noteq> i \<longrightarrow> v!j = 0))"
-    by (metis (no_types, lifting) le_zero_eq less_eq_def)
-  have "\<exists>i < length y. y!i \<noteq> 0 \<and> (\<forall>j<length y. j \<noteq> i \<longrightarrow> y!j = 0)"
-    using assms Special_Solutions_def sij_exactly_1_neq_0(2) by auto
-  then obtain j where
-    j: "j < length y" "y!j \<noteq> 0" "\<forall>k<length y. k \<noteq> j \<longrightarrow> y!k = 0"
-    by blast
-  then have less_y_prop: "\<forall>w. w \<le>\<^sub>v y \<longrightarrow> (w!j \<le> y!j \<and> (\<forall>i<length y. i \<noteq> j \<longrightarrow> w!i = 0))"
-    by (metis (no_types, lifting) le_zero_eq less_eq_def)
-  have "\<not> (\<exists>(u, v) \<in> Solutions. nonzero u \<and> u @ v <\<^sub>v x @ y)"
+proof (intro Minimal_SolutionsI')
+  show "(x, y) \<in> Solutions" by (fact Special_Solutions_in_Solutions [OF assms])
+  then have [simp]: "length x = m" "length y = n" by (auto simp: Solutions_def)
+  show "nonzero x" using assms and dij_neq_0
+    by (auto simp: Special_Solutions_def sij_def nonzero_iff)
+     (metis length_replicate set_update_memI)
+  show "\<not> (\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y)"
   proof
-    assume ass: "\<exists>(u, v)\<in>Solutions. nonzero u \<and> u @ v <\<^sub>v x @ y"
-    then obtain u v where
-      u_v: "(u, v) \<in> Solutions" "u @ v <\<^sub>v x @ y" "nonzero u"
-      by blast
-    have v_not_0: "nonzero v"
-      using Solutions_snd_not_0 [OF u_v(1)] and u_v(3) by blast
-    then have is_sol: "a \<bullet> u = b \<bullet> v"
-      using Solutions_def u_v(1) by auto
-    have x_i: "\<exists>\<alpha>. x = (replicate (m) 0)[i:=\<alpha>] \<and> \<alpha> \<noteq> 0"
-    proof -
-      have "\<exists>j k. (x, y) = sij j k \<and> j < m \<and> k < n"
-        using Special_Solutions_def assms(1) by blast
-      then show ?thesis
-        by (metis i(1) i(2) prod.sel(1) sij_def sij_is_unit(1))
-    qed
-    have y_i: "\<exists>\<alpha>. y = (replicate (n) 0)[j:=\<alpha>] \<and> \<alpha> \<noteq> 0"
-    proof -
-      have "\<exists>j k. y = (replicate (n) 0)[j:=eij k j]"
-        using Special_Solutions_def assms(1) sij_def by auto
-      then show ?thesis
-        by (metis j(1) j(2) len_yb list_update_id nth_list_update_neq nth_replicate)
-    qed
-    have len_u_x: "length u = length x"
-      using ass assms Solutions_def len_xa u_v(1) by auto
-    have y_rep: "y = (replicate (length y) 0)[j:=y!j]"
-      by (metis len_yb list_update_id list_update_overwrite y_i)
-    have x_rep: "x = (replicate (length x) 0)[i:=x!i]"
-      by (metis (full_types) len_xa list_update_id list_update_overwrite x_i)
-    then have "u <\<^sub>v x \<or> v <\<^sub>v y"
-      by (simp add: u_v(2) len_u_x  assms less_appendD ass)
+    assume "\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y"
+    then obtain u and v where uv: "(u, v) \<in> Minimal_Solutions" and "u @ v <\<^sub>v x @ y"
+      and [simp]: "length u = m" "length v = n"
+      and "nonzero u" by (auto simp: Minimal_Solutions_def Solutions_def)
+    then consider "u <\<^sub>v x" and "v \<le>\<^sub>v y" | "v <\<^sub>v y" and "u \<le>\<^sub>v x" by (auto elim: less_append_cases)
     then show False
-    proof (rule disjE)
-      assume ass: "u <\<^sub>v x"
-      have le_v:"v \<le>\<^sub>v y"
-        by (metis (no_types, lifting) le_append len_u_x order_vec.less_imp_le u_v(2))
-      have u_unit: "(\<forall>j<length u. j \<noteq> i \<longrightarrow> u!j = 0)"
-        by (simp add:len_u_x ass less_x_prop order_vec.less_imp_le)
-      have ui_less_xi: "u!i < x!i"
-        using  unit_less x_i \<open>u <\<^sub>v x\<close> i(1) by force
-      then have ua_ls_x_a: "u!i * a!i < x!i * a!i"
-        using no0 i(1) in_set_conv_nth len_xa by fastforce
-      moreover have xi_dij: "x!i = dij i j"
-      proof -
-        have "(\<exists>i j. (x, y) = sij i j \<and> i < m \<and> j < n)"
-          using Special_Solutions_def assms(1) by auto
-        then show ?thesis
-          by (metis i(1) i(2) j(1) j(2) sij_is_unit(1) sij_is_unit(2))
-      qed
-      then have "u!i < lcm (a!i) (b!j)"
-        by (metis dij_def div_le_dividend le_less_trans not_le ui_less_xi)
-      then have "a \<bullet> u > 0"
-        by (metis  antisym dotprod_pointwise_le  gr0I gr_zeroI i(1) in_set_conv_nth
-            lcm_0_iff_nat  leI len_u_x len_xa  no_zero_divisors
-            not_less0 not_less_zero u_unit u_v(3) nonzero_iff)
-      have ua_eq_vb: "a \<bullet> u = a!i * u!i"
-      proof -
-        have "u = (replicate (length u) 0)[i:=u!i]"
-          by (metis i(1) len_u_x len_xa length_list_update
-              list_eq_iff_nth_eq rep_upd_unit u_unit x_i)
-        then show ?thesis
-          by (metis dotprod_unit i(1) len_u_x len_xa)
-      qed
-      also have "... = b!j * v!j"
-      proof -
-        have "j < length v"
-          using j(1) le_v by auto
-        have "v!j \<noteq> 0"
-        proof
-          assume "v!j = 0"
-          then have "\<forall>i<length y. v!i = 0"
-            using le_v less_y_prop by blast
-          then show False
-            using v_not_0 by (metis in_set_conv_nth le_v less_eq_def nonzero_iff)
-        qed
-        have "\<forall>i < length v. i \<noteq> j \<longrightarrow> v!i = 0"
-          by (metis le_v less_eq_def less_y_prop)
-        then have "v = (replicate (length v) 0)[j:=v!j]"
-          by (metis \<open>j < length v\<close> length_list_update length_replicate
-              list_eq_iff_nth_eq rep_upd_unit)
-        then show ?thesis
-          using ass assms i j u_unit dotprod_unit by (metis (mono_tags, lifting)
-              is_sol dotprod_unit le_v len_yb less_eq_def ua_eq_vb)
-      qed
-      ultimately show False
-        by (metis \<open>0 < a \<bullet> u\<close> dij_def dvd_div_mult_self dvd_lcm1 dvd_triv_left
-            lcm_least mult.commute nat_dvd_not_less ua_eq_vb ua_ls_x_a xi_dij)
+    proof (cases)
+      case 1
+      then obtain i and j where ij: "i < m" "j < n"
+        and less_dij: "u ! i < dij i j"
+        and "u \<le>\<^sub>v (zeroes m)[i := dij i j]"
+        and "v \<le>\<^sub>v (zeroes n)[j := eij i j]"
+        using assms by (auto simp: Special_Solutions_def sij_def unit_less)
+      then have u: "u = (zeroes m)[i := u ! i]" and v: "v = (zeroes n)[j := v ! j]"
+        by (auto simp: less_eq_def list_eq_iff_nth_eq)
+          (metis le_zero_eq length_list_update length_replicate rep_upd_unit)+
+      then have "u ! i > 0" using \<open>nonzero u\<close> and ij
+        by (metis gr_implies_not0 neq0_conv unit_less zero_less)
+
+      define c where "c = a ! i * u ! i"
+      then have ac: "a ! i dvd c" by simp
+
+      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def Solutions_def)
+      then have "c = b ! j * v ! j"
+        using ij unfolding c_def by (subst (asm) u, subst (asm)v, subst u, subst v) auto
+      then have bc: "b ! j dvd c" by simp
+
+      have "a ! i * u ! i < a ! i * dij i j"
+        using less_dij and no0 and ij by (auto simp: in_set_conv_nth)
+      then have "c < lcm (a ! i) (b ! j)" by (auto simp: dij_def c_def)
+      moreover have "lcm (a ! i) (b ! j) dvd c" by (simp add: ac bc)
+      moreover have "c > 0" using \<open>u ! i > 0\<close> and no0 and ij by (auto simp: c_def in_set_conv_nth)
+      ultimately show False using ac and bc by (auto dest: nat_dvd_not_less)
     next
-      assume ass:"v <\<^sub>v y"
-      have le_v:"u \<le>\<^sub>v x"
-        by (metis (no_types, lifting) le_append len_u_x order_vec.less_imp_le u_v(2))
-      have len_vy: "length v = length y"
-        by (simp add: ass less_length)
-      then have v_unit: "(\<forall>i<length v. i \<noteq> j \<longrightarrow> v!i = 0)"
-        using assms ass less_imp_le by (simp add:  less_y_prop)
-      have "v!j < y!j"
-        using  unit_less x_i ass i(1)
-        using j(1) y_i by force
-      then have ua_ls_x_a: "v!j * b!j < y!j * b!j"
-        using no0 assms in_set_conv_nth len_xa j(1) len_yb by fastforce
-      moreover have y_ab: "y!j = eij i j"
-      proof -
-        have "(\<exists>i j. (x, y) = sij i j \<and> i < m \<and> j < n)"
-          using Special_Solutions_def assms by auto
-        then show ?thesis
-          by (metis i(1) i(2) j(1) j(2) sij_is_unit(1) sij_is_unit(2))
-      qed
-      also have ge_0: "b \<bullet> v > 0"
-        by (metis v_not_0 len_vy dotprod_gt0 in_set_conv_nth
-            len_yb mult_less_cancel2 not_gr_zero ua_ls_x_a v_unit nonzero_iff)
-      have ua_eq_vb: "b \<bullet> v = b!j * v!j"
-      proof -
-        have "v = (replicate (length v) 0)[j:=v!j]"
-          by (metis \<open>y = replicate (length y) 0[j := y ! j]\<close> len_vy
-              length_list_update list_eq_iff_nth_eq rep_upd_unit v_unit)
-        then show ?thesis
-          by (metis dotprod_unit j(1) len_vy len_yb)
-      qed
-      also have bv_au: "... = a!i * u!i"
-      proof -
-        have "u!i \<noteq> 0"
-        proof
-          assume "u!i = 0"
-          then have "\<forall>i<length u. u!i = 0"
-            using le_v len_u_x less_x_prop by auto
-          then show False
-            using u_v(3) by (metis in_set_conv_nth nonzero_iff)
-        qed
-        have "\<forall>j < length u. i \<noteq> j \<longrightarrow> u!j = 0"
-          by (simp add: le_v len_u_x less_x_prop)
-        then have "u = (replicate (length u) 0)[i:=u!i]"
-          by (metis x_rep len_u_x length_list_update
-              list_eq_iff_nth_eq rep_upd_unit)
-        then show ?thesis
-          by (metis dotprod_unit i(1) is_sol len_u_x len_xa ua_eq_vb)
-      qed
-      then have "a!i dvd u!i * a!i \<and> b!j dvd u!i * a!i"
-        by (metis dvd_triv_left mult.commute)
-      then show False
-        by (metis (no_types, lifting) y_ab bv_au dvd_div_mult_self
-            dvd_lcm2 eij_def ge_0 lcm.assoc lcm_proj1_iff_nat mult.commute
-            nat_dvd_not_less ua_eq_vb ua_ls_x_a)
+      case 2
+      then obtain i and j where ij: "i < m" "j < n"
+        and less_dij: "v ! j < eij i j"
+        and "u \<le>\<^sub>v (zeroes m)[i := dij i j]"
+        and "v \<le>\<^sub>v (zeroes n)[j := eij i j]"
+        using assms by (auto simp: Special_Solutions_def sij_def unit_less)
+      then have u: "u = (zeroes m)[i := u ! i]" and v: "v = (zeroes n)[j := v ! j]"
+        by (auto simp: less_eq_def list_eq_iff_nth_eq)
+          (metis le_zero_eq length_list_update length_replicate rep_upd_unit)+
+      moreover have "nonzero v"
+        using \<open>nonzero u\<close> and \<open>(u, v) \<in> Minimal_Solutions\<close>
+          and Minimal_Solutions_imp_Solutions Solutions_snd_not_0 by blast
+      ultimately have "v ! j > 0" using ij
+        by (metis gr_implies_not0 neq0_conv unit_less zero_less)
+
+      define c where "c = b ! j * v ! j"
+      then have bc: "b ! j dvd c" by simp
+
+      have "a \<bullet> u = b \<bullet> v" using uv by (auto simp: Minimal_Solutions_def Solutions_def)
+      then have "c = a ! i * u ! i"
+        using ij unfolding c_def by (subst (asm) u, subst (asm)v, subst u, subst v) auto
+      then have ac: "a ! i dvd c" by simp
+
+      have "b ! j * v ! j < b ! j * eij i j"
+        using less_dij and no0 and ij by (auto simp: in_set_conv_nth)
+      then have "c < lcm (a ! i) (b ! j)" by (auto simp: eij_def c_def)
+      moreover have "lcm (a ! i) (b ! j) dvd c" by (simp add: ac bc)
+      moreover have "c > 0" using \<open>v ! j > 0\<close> and no0 and ij by (auto simp: c_def in_set_conv_nth)
+      ultimately show False using ac and bc by (auto dest: nat_dvd_not_less)
     qed
   qed
-  then show ?thesis
-    using xy_in_sol and i
-    by (intro Minimal_SolutionsI) (auto simp: nonzero_iff)
 qed
 
 (*Lemma 2 of Huet*)
@@ -985,24 +874,10 @@ proof
     by (metis List_Vector.le0 Minimal_Solutions_length le_append le_list_update less_append order_vec.dual_order.strict_iff_order same_append_eq)
   moreover have "(case sij i j of (u, v) \<Rightarrow> nonzero u)"
     apply (auto simp: sij_def)
-    by (metis dij_neq_0 ij(1) ij(2) length_replicate nonzero_iff set_update_memI)
+    by (metis dij_neq_0 ij length_replicate nonzero_iff set_update_memI)
   ultimately show False
     by (auto simp: Minimal_Solutions_def)
 qed
-
-lemma eij_less_ai:
-  assumes "m = length x"
-    and "i < length x"
-    and "j < length y"
-  shows "eij i j \<le> a!i" and "a!i \<le> Max (set a)"
-proof (goal_cases)
-  case 1
-  have "lcm (a!i) (b!j) div b!j \<le> a!i"
-    by (metis div_eq_0_iff div_le_dividend div_le_mono
-        lcm_nat_def nonzero_mult_div_cancel_right)
-  then show ?case
-    by (simp add: eij_def)
-qed (simp add: assms)
 
 
 subsection \<open>Huet's conditions\<close>
@@ -1080,8 +955,7 @@ proof (unfold boundr_def, intro allI impI)
         using assms(1) assms(2) dij_neq_0 i(1) j_less_l ln by auto
       then have not_0_u: "nonzero u"
       proof (unfold nonzero_iff)
-        have "i < length (replicate (m) (0::nat))"
-          by (simp add: i(1) ln)
+        have "i < length (zeroes m)" by (simp add: i(1) ln)
         then show "\<exists>i\<in>set u. i \<noteq> 0"
           by (metis (no_types) Pair_inject dij_gt0 set_update_memI sij_def u_v(1) neq0_conv)
       qed

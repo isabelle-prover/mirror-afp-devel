@@ -1782,13 +1782,13 @@ lemma list2listNMT[rule_format]: "x \<noteq> [] \<longrightarrow>map sem x \<not
     
 lemma Norm_Distr2: 
   "r o_f ((P \<Otimes>\<^sub>2 (list2policy Q)) o d) = 
-  (list2policy ((P \<Otimes>\<^sub>L Q) (op \<Otimes>\<^sub>2) r d))"
+  (list2policy ((P \<Otimes>\<^sub>L Q) (\<Otimes>\<^sub>2) r d))"
   by (rule ext, rule Norm_Distr_2)
     
 lemma NATDistr: 
   "N \<noteq> [] \<Longrightarrow> F = Cp (list2policyR N) \<Longrightarrow> 
   ((\<lambda> (x,y). x) o_f ((NAT \<Otimes>\<^sub>2 F) o (\<lambda> x. (x,x)))  = 
-   (list2policy (  ((NAT \<Otimes>\<^sub>L (map Cp N)) (op \<Otimes>\<^sub>2) 
+   (list2policy (  ((NAT \<Otimes>\<^sub>L (map Cp N)) (\<Otimes>\<^sub>2) 
     (\<lambda> (x,y). x) (\<lambda> x. (x,x))))))"
   by (simp add: l2polR_eq)  (rule ext,rule Norm_Distr_2)
     
@@ -1833,7 +1833,7 @@ lemma normalizePrNAT:
    allNetsDistinct (policy2list Filter) \<Longrightarrow>  
    all_in_list (policy2list Filter) (Nets_List Filter) \<Longrightarrow> 
    ((\<lambda> (x,y). x) o_f (((NAT \<Otimes>\<^sub>2 Cp Filter) o (\<lambda>x. (x,x)))))  = 
-   list2policy ((NAT \<Otimes>\<^sub>L (map Cp (rev (normalizePr Filter)))) (op \<Otimes>\<^sub>2) (\<lambda> (x,y). x) (\<lambda> x. (x,x)))"
+   list2policy ((NAT \<Otimes>\<^sub>L (map Cp (rev (normalizePr Filter)))) (\<Otimes>\<^sub>2) (\<lambda> (x,y). x) (\<lambda> x. (x,x)))"
   by (simp add: C_eq_normalizePr NATDistr list2FWpolicys_eq_sym norm_notMT)
     
 lemma domSimpl[simp]: "dom (Cp (A \<oplus> DenyAll)) = dom (Cp (DenyAll))"

@@ -121,7 +121,7 @@ subsection {* Language Kleene Algebras *}
 
 text {* We now specialise this fact to languages. *}
 
-interpretation lan_kleene_algebra: kleene_algebra "op +" "op \<cdot>" "1::'a lan" "0" "op \<subseteq>" "op \<subset>" star ..
+interpretation lan_kleene_algebra: kleene_algebra "(+)" "(\<cdot>)" "1::'a lan" "0" "(\<subseteq>)" "(\<subset>)" star ..
 
 
 subsection {* Regular Languages *}
@@ -225,7 +225,7 @@ begin
 
 end  (* instantiation *)
 
-interpretation reg_lan_kleene_algebra: kleene_algebra "op +" "op \<cdot>" "1::'a reg_lan" 0 "op \<le>" "op <" star ..
+interpretation reg_lan_kleene_algebra: kleene_algebra "(+)" "(\<cdot>)" "1::'a reg_lan" 0 "(\<le>)" "(<)" star ..
 
 
 subsection {* Relation Kleene Algebras *}
@@ -252,7 +252,7 @@ by (metis rel_star_def relcomp_UNION_distrib)
 lemma rel_star_contr: "X^* O Y = (\<Union>n. (rel_dioid.power X n) O Y)"
 by (metis rel_star_def relcomp_UNION_distrib2)
 
-interpretation rel_kleene_algebra: kleene_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" rtrancl
+interpretation rel_kleene_algebra: kleene_algebra "(\<union>)" "(O)" Id "{}" "(\<subseteq>)" "(\<subset>)" rtrancl
 proof
   fix x y z :: "'a rel"
   show "Id \<union> x O x\<^sup>* \<subseteq> x\<^sup>*"
@@ -286,7 +286,7 @@ lemma t_star_contl: "t_prod X (t_star Y) = (\<Union>n. t_prod X (trace_dioid.pow
 lemma t_star_contr: "t_prod (t_star X) Y = (\<Union>n. t_prod (trace_dioid.power X n) Y)"
   by (auto simp add: t_star_elim t_prod_def)
 
-interpretation trace_kleene_algebra: kleene_algebra "op \<union>" t_prod t_one t_zero "op \<subseteq>" "op \<subset>" t_star
+interpretation trace_kleene_algebra: kleene_algebra "(\<union>)" t_prod t_one t_zero "(\<subseteq>)" "(\<subset>)" t_star
 proof
   fix X Y Z :: "('a, 'b) trace set"
   show "t_one \<union> t_prod X (t_star X) \<subseteq> t_star X"
@@ -333,7 +333,7 @@ apply (auto simp add: p_prod_def p_star_elim)
 apply (metis p_star_elim)
 done
 
-interpretation path_kleene_algebra: kleene_algebra "op \<union>" p_prod p_one "{}" "op \<subseteq>" "op \<subset>" p_star
+interpretation path_kleene_algebra: kleene_algebra "(\<union>)" p_prod p_one "{}" "(\<subseteq>)" "(\<subset>)" p_star
 proof
   fix X Y Z :: "'a path set"
   show "p_one \<union> p_prod X (p_star X) \<subseteq> p_star X"
@@ -368,7 +368,7 @@ by (auto simp add: pp_prod_def pp_star_elim)
 lemma pp_star_contr: "pp_prod (pp_star X) Y = (\<Union>n. pp_prod (ppath_dioid.power X n) Y)"
 by (auto simp add: pp_prod_def pp_star_elim)
 
-interpretation ppath_kleene_algebra: kleene_algebra "op \<union>" pp_prod pp_one "{}" "op \<subseteq>" "op \<subset>" pp_star
+interpretation ppath_kleene_algebra: kleene_algebra "(\<union>)" pp_prod pp_one "{}" "(\<subseteq>)" "(\<subset>)" pp_star
 proof
   fix X Y Z :: "'a ppath set"
   show "pp_one \<union> pp_prod X (pp_star X) \<subseteq> pp_star X"

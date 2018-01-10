@@ -138,7 +138,7 @@ where
       e = e + d - 1;
       mp = take 1 ds;
       ms = drop 1 ds;
-      ms = rev (dropWhile (op = 0) (rev ms));
+      ms = rev (dropWhile ((=) 0) (rev ms));
       show_digits = shows_list_gen (showsp_nat p) ''0'' '''' '''' ''''
     in (if m < 0 then shows_string ''-'' else (\<lambda>x. x)) o
         show_digits mp o

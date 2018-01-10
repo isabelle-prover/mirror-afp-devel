@@ -58,7 +58,7 @@ where "outs'_rpv rpv = range rpv \<bind> outs'_gpv"
 abbreviation rel_rpv
   :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('out \<Rightarrow> 'out' \<Rightarrow> bool)
   \<Rightarrow> ('in \<Rightarrow> ('a, 'out, 'in) gpv) \<Rightarrow> ('in \<Rightarrow> ('b, 'out', 'in) gpv) \<Rightarrow> bool"
-where "rel_rpv A B \<equiv> rel_fun op = (rel_gpv A B)"
+where "rel_rpv A B \<equiv> rel_fun (=) (rel_gpv A B)"
 
 lemma in_results'_rpv [iff]: "x \<in> results'_rpv rpv \<longleftrightarrow> (\<exists>input. x \<in> results'_gpv (rpv input))"
 by(simp add: results'_rpv_def)
@@ -202,7 +202,7 @@ context includes lifting_syntax begin
 primcorec map_gpv' :: "('a \<Rightarrow> 'b) \<Rightarrow> ('out \<Rightarrow> 'out') \<Rightarrow> ('ret' \<Rightarrow> 'ret) \<Rightarrow> ('a, 'out, 'ret) gpv \<Rightarrow> ('b, 'out', 'ret') gpv"
 where
   "map_gpv' f g h gpv = 
-   GPV (map_spmf (map_generat f g (op \<circ> (map_gpv' f g h))) (map_spmf (map_generat id id (map_fun h id)) (the_gpv gpv)))"
+   GPV (map_spmf (map_generat f g ((\<circ>) (map_gpv' f g h))) (map_spmf (map_generat id id (map_fun h id)) (the_gpv gpv)))"
 
 declare map_gpv'.sel [simp del]
 
@@ -255,16 +255,16 @@ lemma rel_gpv''_GPV [simp]:
    rel_spmf (rel_generat A C (R ===> rel_gpv'' A C R)) p q"
 by(simp add: rel_gpv''.simps)
 
-lemma rel_gpv_conv_rel_gpv'': "rel_gpv A C = rel_gpv'' A C op ="
+lemma rel_gpv_conv_rel_gpv'': "rel_gpv A C = rel_gpv'' A C (=)"
 proof(rule ext iffI)+
-  show "rel_gpv A C gpv gpv'" if "rel_gpv'' A C op = gpv gpv'" for gpv :: "('a, 'b, 'c) gpv" and gpv' :: "('d, 'e, 'c) gpv"
+  show "rel_gpv A C gpv gpv'" if "rel_gpv'' A C (=) gpv gpv'" for gpv :: "('a, 'b, 'c) gpv" and gpv' :: "('d, 'e, 'c) gpv"
     using that by(coinduct)(blast dest: rel_gpv''D)
-  show "rel_gpv'' A C op = gpv gpv'" if "rel_gpv A C gpv gpv'" for gpv :: "('a, 'b, 'c) gpv" and gpv' :: "('d, 'e, 'c) gpv"
+  show "rel_gpv'' A C (=) gpv gpv'" if "rel_gpv A C gpv gpv'" for gpv :: "('a, 'b, 'c) gpv" and gpv' :: "('d, 'e, 'c) gpv"
     using that by(coinduct)(auto elim!: gpv.rel_cases rel_spmf_mono generat.rel_mono_strong rel_fun_mono)
 qed
 
 lemma rel_gpv''_eq (* [relator_eq] do not use this attribute unless all transfer rules for gpv have been changed to rel_gvp'' *):
-  "rel_gpv'' op = op = op = = op ="
+  "rel_gpv'' (=) (=) (=) = (=)"
 by(simp add: rel_gpv_conv_rel_gpv''[symmetric] gpv.rel_eq)
 
 lemma rel_gpv''_mono:
@@ -776,7 +776,7 @@ lemma Done_parametric': "(A ===> rel_gpv'' A C R) Done Done"
 by(rule rel_funI) simp
 
 lemma Pause_parametric [transfer_rule]:
-  "(C ===> (op = ===> rel_gpv A C) ===> rel_gpv A C) Pause Pause"
+  "(C ===> ((=) ===> rel_gpv A C) ===> rel_gpv A C) Pause Pause"
 by(simp add: rel_fun_def)
 
 lemma Pause_parametric':
@@ -815,10 +815,10 @@ subsection {* Monad structure *}
 primcorec bind_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a \<Rightarrow> ('b, 'out, 'in) gpv) \<Rightarrow> ('b, 'out, 'in) gpv"
 where
   "the_gpv (bind_gpv r f) =
-   map_spmf (map_generat id id (op \<circ> (case_sum id (\<lambda>r. bind_gpv r f))))
+   map_spmf (map_generat id id ((\<circ>) (case_sum id (\<lambda>r. bind_gpv r f))))
      (the_gpv r \<bind>
       (case_generat
-        (\<lambda>x. map_spmf (map_generat id id (op \<circ> Inl)) (the_gpv (f x)))
+        (\<lambda>x. map_spmf (map_generat id id ((\<circ>) Inl)) (the_gpv (f x)))
         (\<lambda>out c. return_spmf (IO out (\<lambda>input. Inr (c input))))))"
 
 declare bind_gpv.sel [simp del]
@@ -868,7 +868,7 @@ lemma bind_gpv_Done [simp]: "f \<bind> Done = f"
 proof(coinduction arbitrary: f rule: gpv.coinduct)
   case (Eq_gpv f)
   have *: "the_gpv f \<bind> (case_generat (\<lambda>x. return_spmf (Pure x)) (\<lambda>out c. return_spmf (IO out (\<lambda>input. Inr (c input))))) =
-           map_spmf (map_generat id id (op \<circ> Inr)) (bind_spmf (the_gpv f) return_spmf)"
+           map_spmf (map_generat id id ((\<circ>) Inr)) (bind_spmf (the_gpv f) return_spmf)"
     unfolding map_spmf_bind_spmf
     by(rule arg_cong2[where f=bind_spmf])(auto simp add: fun_eq_iff split: generat.split)
   show ?case
@@ -909,7 +909,7 @@ proof(coinduction arbitrary: f g h rule: gpv.coinduct_strong)
   case (Eq_gpv f g h)
   show ?case
     apply(simp cong del: if_weak_cong)
-    apply(rule rel_spmf_bindI[where R="op ="])
+    apply(rule rel_spmf_bindI[where R="(=)"])
      apply(simp add: option.rel_eq pmf.rel_eq)
     apply(fastforce intro: rel_pmf_return_pmfI rel_generatI rel_spmf_reflI)
     done
@@ -1130,9 +1130,9 @@ text \<open>
 \<close>
 
 definition rel_gpv' :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> ('b, 'out, 'in) gpv \<Rightarrow> bool"
-where "rel_gpv' A = rel_gpv A op ="
+where "rel_gpv' A = rel_gpv A (=)"
 
-lemma rel_gpv'_eq [relator_eq]: "rel_gpv' op = = op ="
+lemma rel_gpv'_eq [relator_eq]: "rel_gpv' (=) = (=)"
 unfolding rel_gpv'_def gpv.rel_eq ..
 
 lemma rel_gpv'_mono [relator_mono]: "A \<le> B \<Longrightarrow> rel_gpv' A \<le> rel_gpv' B"
@@ -1200,9 +1200,9 @@ lemma rel_gpv_lift_spmf2: "rel_gpv A B gpv (lift_spmf q) \<longleftrightarrow> (
 by(subst gpv.rel_flip[symmetric])(simp add: rel_gpv_lift_spmf1 pmf.rel_flip option.rel_conversep)
 
 definition pcr_spmf_gpv :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a spmf \<Rightarrow> ('b, 'out, 'in) gpv \<Rightarrow> bool"
-where "pcr_spmf_gpv A = cr_spmf_gpv OO rel_gpv A op ="
+where "pcr_spmf_gpv A = cr_spmf_gpv OO rel_gpv A (=)"
 
-lemma pcr_cr_eq_spmf_gpv: "pcr_spmf_gpv op = = cr_spmf_gpv"
+lemma pcr_cr_eq_spmf_gpv: "pcr_spmf_gpv (=) = cr_spmf_gpv"
 by(simp add: pcr_spmf_gpv_def gpv.rel_eq OO_eq)
 
 lemma left_unique_cr_spmf_gpv: "left_unique cr_spmf_gpv"
@@ -1234,7 +1234,7 @@ unfolding pcr_spmf_gpv_def by(intro left_total_OO left_total_cr_spmf_gpv left_to
 context includes lifting_syntax begin
 
 lemma return_spmf_gpv_transfer':
-  "(op = ===> cr_spmf_gpv) return_spmf Done"
+  "((=) ===> cr_spmf_gpv) return_spmf Done"
 by(rule rel_funI)(simp add: cr_spmf_gpv_def)
 
 lemma return_spmf_gpv_transfer [transfer_rule]:
@@ -1248,7 +1248,7 @@ apply transfer_prover
 done
 
 lemma bind_spmf_gpv_transfer':
-  "(cr_spmf_gpv ===> (op = ===> cr_spmf_gpv) ===> cr_spmf_gpv) bind_spmf bind_gpv"
+  "(cr_spmf_gpv ===> ((=) ===> cr_spmf_gpv) ===> cr_spmf_gpv) bind_spmf bind_gpv"
 apply(clarsimp simp add: rel_fun_def cr_spmf_gpv_def)
 apply(rule gpv.expand)
 apply(simp add: bind_map_spmf map_spmf_bind_spmf o_def)
@@ -1273,7 +1273,7 @@ apply transfer_prover
 done
 
 lemma lift_spmf_gpv_transfer':
-  "(op = ===> cr_spmf_gpv) (\<lambda>x. x) lift_spmf"
+  "((=) ===> cr_spmf_gpv) (\<lambda>x. x) lift_spmf"
 by(simp add: rel_fun_def cr_spmf_gpv_def)
 
 lemma lift_spmf_gpv_transfer [transfer_rule]:
@@ -1297,7 +1297,7 @@ apply transfer_prover
 done
 
 lemma map_spmf_gpv_transfer':
-  "(op = ===> R ===> cr_spmf_gpv ===> cr_spmf_gpv) (\<lambda>f g. map_spmf f) map_gpv"
+  "((=) ===> R ===> cr_spmf_gpv ===> cr_spmf_gpv) (\<lambda>f g. map_spmf f) map_gpv"
 by(simp add: rel_fun_def cr_spmf_gpv_def map_lift_spmf)
 
 lemma map_spmf_gpv_transfer [transfer_rule]:
@@ -1344,11 +1344,11 @@ context includes lifting_syntax begin
 text \<open>These transfer rules should follow from merging the transfer rules, but this has not yet been implemented.\<close>
 
 lemma return_option_gpv_transfer [transfer_rule]:
-  "(op = ===> cr_option_gpv) Some Done"
+  "((=) ===> cr_option_gpv) Some Done"
 by(simp add: cr_option_gpv_def rel_fun_def)
 
 lemma bind_option_gpv_transfer [transfer_rule]:
-  "(cr_option_gpv ===> (op = ===> cr_option_gpv) ===> cr_option_gpv) Option.bind bind_gpv"
+  "(cr_option_gpv ===> ((=) ===> cr_option_gpv) ===> cr_option_gpv) Option.bind bind_gpv"
 apply(clarsimp simp add: cr_option_gpv_def rel_fun_def)
 subgoal for x f g by(cases x; simp)
 done
@@ -1357,7 +1357,7 @@ lemma fail_option_gpv_transfer [transfer_rule]: "cr_option_gpv None Fail"
 by(simp add: cr_option_gpv_def)
 
 lemma map_option_gpv_transfer [transfer_rule]:
-  "(op = ===> R ===> cr_option_gpv ===> cr_option_gpv) (\<lambda>f g. map_option f) map_gpv"
+  "((=) ===> R ===> cr_option_gpv ===> cr_option_gpv) (\<lambda>f g. map_option f) map_gpv"
 unfolding rel_fun_eq by(simp add: rel_fun_def cr_option_gpv_def map_lift_spmf)
 
 end
@@ -1375,11 +1375,11 @@ where "cr_option_le_gpv x gpv \<longleftrightarrow> gpv = (lift_spmf \<circ> ret
 context includes lifting_syntax begin
 
 lemma return_option_le_gpv_transfer [transfer_rule]:
-  "(op = ===> cr_option_le_gpv) Some Done"
+  "((=) ===> cr_option_le_gpv) Some Done"
 by(simp add: cr_option_le_gpv_def rel_fun_def)
 
 lemma bind_option_gpv_transfer [transfer_rule]:
-  "(cr_option_le_gpv ===> (op = ===> cr_option_le_gpv) ===> cr_option_le_gpv) Option.bind bind_gpv"
+  "(cr_option_le_gpv ===> ((=) ===> cr_option_le_gpv) ===> cr_option_le_gpv) Option.bind bind_gpv"
 apply(clarsimp simp add: cr_option_le_gpv_def rel_fun_def bind_eq_Some_conv)
 subgoal for f g x y by(erule allE[where x=y]) auto
 done
@@ -1389,7 +1389,7 @@ lemma fail_option_gpv_transfer [transfer_rule]:
 by(simp add: cr_option_le_gpv_def)
 
 lemma map_option_gpv_transfer [transfer_rule]:
-  "((op = ===> op =) ===> cr_option_le_gpv ===> cr_option_le_gpv) map_option (\<lambda>f. map_gpv f id)"
+  "(((=) ===> (=)) ===> cr_option_le_gpv ===> cr_option_le_gpv) map_option (\<lambda>f. map_gpv f id)"
 unfolding rel_fun_eq by(simp add: rel_fun_def cr_option_le_gpv_def map_lift_spmf)
 
 end
@@ -1403,7 +1403,7 @@ where
   "the_gpv (lift_resumption r) = 
   (case r of resumption.Done None \<Rightarrow> return_pmf None
     | resumption.Done (Some x') => return_spmf (Pure x')
-    | resumption.Pause out c => map_spmf (map_generat id id (op \<circ> lift_resumption)) (return_spmf (IO out c)))"
+    | resumption.Pause out c => map_spmf (map_generat id id ((\<circ>) lift_resumption)) (return_spmf (IO out c)))"
 
 lemma the_gpv_lift_resumption:
   "the_gpv (lift_resumption r) = 
@@ -1552,23 +1552,23 @@ subsection {* Order for @{typ "('a, 'out, 'in) gpv"} *}
 
 coinductive ord_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool"
 where
-  "ord_spmf (rel_generat op = op = (rel_fun op = ord_gpv)) f g \<Longrightarrow> ord_gpv (GPV f) (GPV g)"
+  "ord_spmf (rel_generat (=) (=) (rel_fun (=) ord_gpv)) f g \<Longrightarrow> ord_gpv (GPV f) (GPV g)"
 
 inductive_simps ord_gpv_simps [simp]:
   "ord_gpv (GPV f) (GPV g)"
 
 lemma ord_gpv_coinduct [consumes 1, case_names ord_gpv, coinduct pred: ord_gpv]:
   assumes "X f g"
-  and step: "\<And>f g. X f g \<Longrightarrow> ord_spmf (rel_generat op = op = (rel_fun op = X)) (the_gpv f) (the_gpv g)"
+  and step: "\<And>f g. X f g \<Longrightarrow> ord_spmf (rel_generat (=) (=) (rel_fun (=) X)) (the_gpv f) (the_gpv g)"
   shows "ord_gpv f g"
 using `X f g`
 by(coinduct)(auto dest: step simp add: eq_GPV_iff intro: ord_spmf_mono rel_generat_mono rel_fun_mono)
 
 lemma ord_gpv_the_gpvD:
-  "ord_gpv f g \<Longrightarrow> ord_spmf (rel_generat op = op = (rel_fun op = ord_gpv)) (the_gpv f) (the_gpv g)"
+  "ord_gpv f g \<Longrightarrow> ord_spmf (rel_generat (=) (=) (rel_fun (=) ord_gpv)) (the_gpv f) (the_gpv g)"
 by(erule ord_gpv.cases) simp
 
-lemma reflp_equality: "reflp op ="
+lemma reflp_equality: "reflp (=)"
 by(simp add: reflp_def)
 
 lemma ord_gpv_reflI [simp]: "ord_gpv f f"
@@ -1583,8 +1583,8 @@ lemma ord_gpv_trans:
 using assms
 proof(coinduction arbitrary: f g h)
   case (ord_gpv f g h)
-  have *: "ord_spmf (rel_generat op = op = (rel_fun op = (\<lambda>f h. \<exists>g. ord_gpv f g \<and> ord_gpv g h))) (the_gpv f) (the_gpv h) =
-    ord_spmf (rel_generat (op = OO op =) (op = OO op =) (rel_fun op = (ord_gpv OO ord_gpv))) (the_gpv f) (the_gpv h)"
+  have *: "ord_spmf (rel_generat (=) (=) (rel_fun (=) (\<lambda>f h. \<exists>g. ord_gpv f g \<and> ord_gpv g h))) (the_gpv f) (the_gpv h) =
+    ord_spmf (rel_generat ((=) OO (=)) ((=) OO (=)) (rel_fun (=) (ord_gpv OO ord_gpv))) (the_gpv f) (the_gpv h)"
     by(simp add: relcompp.simps[abs_def])
   then show ?case using ord_gpv
     by(auto elim!: ord_gpv.cases simp add: generat.rel_compp ord_spmf_compp fun.rel_compp)
@@ -1600,13 +1600,13 @@ lemma ord_gpv_antisym:
   "\<lbrakk> ord_gpv f g; ord_gpv g f \<rbrakk> \<Longrightarrow> f = g"
 proof(coinduction arbitrary: f g)
   case (Eq_gpv f g)
-  let ?R = "rel_generat op = op = (rel_fun op = ord_gpv)"
+  let ?R = "rel_generat (=) (=) (rel_fun (=) ord_gpv)"
   from \<open>ord_gpv f g\<close> have "ord_spmf ?R (the_gpv f) (the_gpv g)" by cases simp
   moreover
   from \<open>ord_gpv g f\<close> have "ord_spmf ?R (the_gpv g) (the_gpv f)" by cases simp
   ultimately have "rel_spmf (inf ?R ?R\<inverse>\<inverse>) (the_gpv f) (the_gpv g)"
     by(rule rel_spmf_inf)(auto 4 3 intro: transp_rel_generatI transp_ord_gpv reflp_ord_gpv reflp_equality reflp_fun1 is_equality_eq transp_rel_fun)
-  also have "inf ?R ?R\<inverse>\<inverse> = rel_generat (inf op = op =) (inf op = op =) (rel_fun op = (inf ord_gpv ord_gpv\<inverse>\<inverse>))"
+  also have "inf ?R ?R\<inverse>\<inverse> = rel_generat (inf (=) (=)) (inf (=) (=)) (rel_fun (=) (inf ord_gpv ord_gpv\<inverse>\<inverse>))"
     unfolding rel_generat_inf[symmetric] rel_fun_inf[symmetric]
     by(simp add: generat.rel_conversep[symmetric] fun.rel_conversep)
   finally show ?case by(simp add: inf_fun_def)
@@ -1631,7 +1631,7 @@ where
      | IO out c \<Rightarrow> if consider out then eSuc (SUP input. interaction_bound (c input)) else (SUP input. interaction_bound (c input)))"
 
 lemma interaction_bound_fixp_induct [case_names adm bottom step]:
-  "\<lbrakk> ccpo.admissible (fun_lub Sup) (fun_ord op \<le>) P;
+  "\<lbrakk> ccpo.admissible (fun_lub Sup) (fun_ord (\<le>)) P;
      P (\<lambda>_. 0);
     \<And>interaction_bound'. 
     \<lbrakk> P interaction_bound'; 
@@ -1774,7 +1774,7 @@ qed
 context includes lifting_syntax begin
 lemma interaction_bound_parametric':
   assumes [transfer_rule]: "bi_total R"
-  shows "((C ===> op =) ===> rel_gpv'' A C R ===> op =) interaction_bound interaction_bound"
+  shows "((C ===> (=)) ===> rel_gpv'' A C R ===> (=)) interaction_bound interaction_bound"
 unfolding interaction_bound_def[abs_def]
 apply(rule rel_funI)
 apply(rule fixp_lfp_parametric_eq[OF interaction_bound.mono interaction_bound.mono])
@@ -1784,7 +1784,7 @@ subgoal premises [transfer_rule]
 done
 
 lemma interaction_bound_parametric [transfer_rule]:
-  "((C ===> op =) ===> rel_gpv A C ===> op =) interaction_bound interaction_bound"
+  "((C ===> (=)) ===> rel_gpv A C ===> (=)) interaction_bound interaction_bound"
 unfolding rel_gpv_conv_rel_gpv'' by(rule interaction_bound_parametric')(rule bi_total_eq)
 end
 
@@ -1804,13 +1804,13 @@ hide_fact (open) interaction_bounded_by
 
 context includes lifting_syntax begin
 lemma interaction_bounded_by_parametric [transfer_rule]:
-  "((C ===> op =) ===> rel_gpv A C ===> op = ===> op =) interaction_bounded_by interaction_bounded_by"
+  "((C ===> (=)) ===> rel_gpv A C ===> (=) ===> (=)) interaction_bounded_by interaction_bounded_by"
 unfolding interaction_bounded_by.simps[abs_def] by transfer_prover
 
 lemma interaction_bounded_by_parametric':
   notes interaction_bound_parametric'[transfer_rule]
   assumes [transfer_rule]: "bi_total R"
-  shows "((C ===> op =) ===> rel_gpv'' A C R ===> op = ===> op =) 
+  shows "((C ===> (=)) ===> rel_gpv'' A C R ===> (=) ===> (=)) 
          interaction_bounded_by interaction_bounded_by"
 unfolding interaction_bounded_by.simps[abs_def] by transfer_prover
 end
@@ -1960,7 +1960,7 @@ subsection {* Typing *}
 
 subsubsection {* Interface between gpvs and rpvs / callees *}
 
-lemma is_empty_parametric [transfer_rule]: "rel_fun (rel_set A) op = Set.is_empty Set.is_empty" (* Move *)
+lemma is_empty_parametric [transfer_rule]: "rel_fun (rel_set A) (=) Set.is_empty Set.is_empty" (* Move *)
 by(auto simp add: rel_fun_def Set.is_empty_def dest: rel_setD1 rel_setD2)
 
 typedef ('call, 'ret) \<I> = "UNIV :: ('call \<Rightarrow> 'ret set) set" ..
@@ -1985,7 +1985,7 @@ lemma rel_\<I>I [intro?]:
   \<Longrightarrow> rel_\<I> C R \<I>1 \<I>2"
 by transfer(auto simp add: rel_fun_def)
 
-lemma rel_\<I>_eq [relator_eq]: "rel_\<I> op = op = = op ="
+lemma rel_\<I>_eq [relator_eq]: "rel_\<I> (=) (=) = (=)"
 unfolding fun_eq_iff by transfer(auto simp add: relator_eq)
 
 lemma rel_\<I>_conversep [simp]: "rel_\<I> C\<inverse>\<inverse> R\<inverse>\<inverse> = (rel_\<I> C R)\<inverse>\<inverse>"
@@ -1998,10 +1998,10 @@ apply(simp del: conversep_iff add: rel_fun_conversep)
 apply(simp)
 done
 
-lemma rel_\<I>_conversep1_eq [simp]: "rel_\<I> C\<inverse>\<inverse> op = = (rel_\<I> C op =)\<inverse>\<inverse>"
+lemma rel_\<I>_conversep1_eq [simp]: "rel_\<I> C\<inverse>\<inverse> (=) = (rel_\<I> C (=))\<inverse>\<inverse>"
 by(rewrite in "\<hole> = _" conversep_eq[symmetric])(simp del: conversep_eq)
 
-lemma rel_\<I>_conversep2_eq [simp]: "rel_\<I> op = R\<inverse>\<inverse> = (rel_\<I> op = R)\<inverse>\<inverse>"
+lemma rel_\<I>_conversep2_eq [simp]: "rel_\<I> (=) R\<inverse>\<inverse> = (rel_\<I> (=) R)\<inverse>\<inverse>"
 by(rewrite in "\<hole> = _" conversep_eq[symmetric])(simp del: conversep_eq)
 
 lemma responses_\<I>_empty_iff: "responses_\<I> \<I> out = {} \<longleftrightarrow> out \<notin> outs_\<I> \<I>"
@@ -2690,11 +2690,11 @@ using rel_gpv''_lossless_gpvD1[of "A\<inverse>\<inverse>" "C\<inverse>\<inverse>
 by(simp add: rel_gpv''_conversep prod.rel_conversep rel_fun_eq_conversep)
 
 lemma rel_gpv_lossless_gpvD1:
-  "\<lbrakk> rel_gpv A C gpv gpv'; lossless_gpv \<I> gpv; rel_\<I> C op = \<I> \<I>' \<rbrakk> \<Longrightarrow> lossless_gpv \<I>' gpv'"
-using rel_gpv''_lossless_gpvD1[of A C "op =" gpv gpv' \<I> \<I>'] by(simp add: rel_gpv_conv_rel_gpv'')
+  "\<lbrakk> rel_gpv A C gpv gpv'; lossless_gpv \<I> gpv; rel_\<I> C (=) \<I> \<I>' \<rbrakk> \<Longrightarrow> lossless_gpv \<I>' gpv'"
+using rel_gpv''_lossless_gpvD1[of A C "(=)" gpv gpv' \<I> \<I>'] by(simp add: rel_gpv_conv_rel_gpv'')
 
 lemma rel_gpv_lossless_gpvD2:
-  "\<lbrakk> rel_gpv A C gpv gpv'; lossless_gpv \<I>' gpv'; rel_\<I> C op = \<I> \<I>' \<rbrakk>
+  "\<lbrakk> rel_gpv A C gpv gpv'; lossless_gpv \<I>' gpv'; rel_\<I> C (=) \<I> \<I>' \<rbrakk>
   \<Longrightarrow> lossless_gpv \<I> gpv"
 using rel_gpv_lossless_gpvD1[of "A\<inverse>\<inverse>" "C\<inverse>\<inverse>" gpv' gpv \<I>' \<I>]
 by(simp add: gpv.rel_conversep prod.rel_conversep rel_fun_eq_conversep)
@@ -2739,28 +2739,28 @@ using rel_gpv''_colossless_gpvD1[of "A\<inverse>\<inverse>" "C\<inverse>\<invers
 by(simp add: rel_gpv''_conversep prod.rel_conversep rel_fun_eq_conversep)
 
 lemma rel_gpv_colossless_gpvD1:
-  "\<lbrakk> rel_gpv A C gpv gpv'; colossless_gpv \<I> gpv; rel_\<I> C op = \<I> \<I>' \<rbrakk> \<Longrightarrow> colossless_gpv \<I>' gpv'"
-using rel_gpv''_colossless_gpvD1[of A C "op =" gpv gpv' \<I> \<I>'] by(simp add: rel_gpv_conv_rel_gpv'')
+  "\<lbrakk> rel_gpv A C gpv gpv'; colossless_gpv \<I> gpv; rel_\<I> C (=) \<I> \<I>' \<rbrakk> \<Longrightarrow> colossless_gpv \<I>' gpv'"
+using rel_gpv''_colossless_gpvD1[of A C "(=)" gpv gpv' \<I> \<I>'] by(simp add: rel_gpv_conv_rel_gpv'')
 
 lemma rel_gpv_colossless_gpvD2:
-  "\<lbrakk> rel_gpv A C gpv gpv'; colossless_gpv \<I>' gpv'; rel_\<I> C op = \<I> \<I>' \<rbrakk>
+  "\<lbrakk> rel_gpv A C gpv gpv'; colossless_gpv \<I>' gpv'; rel_\<I> C (=) \<I> \<I>' \<rbrakk>
   \<Longrightarrow> colossless_gpv \<I> gpv"
 using rel_gpv_colossless_gpvD1[of "A\<inverse>\<inverse>" "C\<inverse>\<inverse>" gpv' gpv \<I>' \<I>]
 by(simp add: gpv.rel_conversep prod.rel_conversep rel_fun_eq_conversep)
 
 lemma gen_lossless_gpv_parametric':
-  "(op = ===> rel_\<I> C R ===> rel_gpv'' A C R ===> op =)
+  "((=) ===> rel_\<I> C R ===> rel_gpv'' A C R ===> (=))
    gen_lossless_gpv gen_lossless_gpv"
 proof(rule rel_funI; hypsubst)
-  show "(rel_\<I> C R ===> rel_gpv'' A C R ===> op =) (gen_lossless_gpv b) (gen_lossless_gpv b)" for b
+  show "(rel_\<I> C R ===> rel_gpv'' A C R ===> (=)) (gen_lossless_gpv b) (gen_lossless_gpv b)" for b
     by(cases b)(auto intro!: rel_funI dest: rel_gpv''_colossless_gpvD1 rel_gpv''_colossless_gpvD2 rel_gpv''_lossless_gpvD1 rel_gpv''_lossless_gpvD2)
 qed
 
 lemma gen_lossless_gpv_parametric [transfer_rule]:
-  "(op = ===> rel_\<I> C op = ===> rel_gpv A C ===> op =)
+  "((=) ===> rel_\<I> C (=) ===> rel_gpv A C ===> (=))
    gen_lossless_gpv gen_lossless_gpv"
 proof(rule rel_funI; hypsubst)
-  show "(rel_\<I> C op = ===> rel_gpv A C ===> op =) (gen_lossless_gpv b) (gen_lossless_gpv b)" for b
+  show "(rel_\<I> C (=) ===> rel_gpv A C ===> (=)) (gen_lossless_gpv b) (gen_lossless_gpv b)" for b
     by(cases b)(auto intro!: rel_funI dest: rel_gpv_colossless_gpvD1 rel_gpv_colossless_gpvD2 rel_gpv_lossless_gpvD1 rel_gpv_lossless_gpvD2)
 qed
 
@@ -3169,9 +3169,9 @@ lemma gpv_coinduct_bind [consumes 1, case_names Eq_gpv]:
   fixes gpv gpv' :: "('a, 'call, 'ret) gpv"
   assumes *: "R gpv gpv'"
   and step: "\<And>gpv gpv'. R gpv gpv' 
-    \<Longrightarrow> rel_spmf (rel_generat op = op = (rel_fun op = (\<lambda>gpv gpv'. R gpv gpv' \<or> gpv = gpv' \<or> 
+    \<Longrightarrow> rel_spmf (rel_generat (=) (=) (rel_fun (=) (\<lambda>gpv gpv'. R gpv gpv' \<or> gpv = gpv' \<or> 
       (\<exists>gpv2 :: ('b, 'call, 'ret) gpv. \<exists>gpv2' :: ('c, 'call, 'ret) gpv. \<exists>f f'. gpv = bind_gpv gpv2 f \<and> gpv' = bind_gpv gpv2' f' \<and> 
-        rel_gpv (\<lambda>x y. R (f x) (f' y)) op = gpv2 gpv2'))))
+        rel_gpv (\<lambda>x y. R (f x) (f' y)) (=) gpv2 gpv2'))))
       (the_gpv gpv) (the_gpv gpv')"
   shows "gpv = gpv'"
 proof -
@@ -3184,7 +3184,7 @@ proof -
       and "f = (\<lambda>_. gpv)"
       and "gpv1' = Done y"
       and "f' = (\<lambda>_. gpv')"
-  from * have "rel_gpv (\<lambda>x y. R (f x) (f' y)) op = gpv1 gpv1'"
+  from * have "rel_gpv (\<lambda>x y. R (f x) (f' y)) (=) gpv1 gpv1'"
     by(simp add: gpv1_def gpv1'_def f_def f'_def)
   then have "gpv1 \<bind> f = gpv1' \<bind> f'"
   proof(coinduction arbitrary: gpv1 gpv1' f f' rule: gpv.coinduct_strong)
@@ -3237,26 +3237,26 @@ lemma inline1_unfold:
 by(fact inline1.simps)
 
 lemma inline1_fixp_induct [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
   and "\<And>inline1'. P inline1' \<Longrightarrow> P (\<lambda>gpv s. the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out rpv'. return_spmf (Inr (out, rpv', rpv)))))"
   shows "P inline1"
 using assms by(rule inline1.fixp_induct[unfolded curry_conv[abs_def]])
 
 lemma inline1_fixp_induct_strong [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
-  and "\<And>inline1'. \<lbrakk> \<And>gpv s. ord_spmf op = (inline1' gpv s) (inline1 gpv s); P inline1' \<rbrakk>
+  and "\<And>inline1'. \<lbrakk> \<And>gpv s. ord_spmf (=) (inline1' gpv s) (inline1 gpv s); P inline1' \<rbrakk>
     \<Longrightarrow> P (\<lambda>gpv s. the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out rpv'. return_spmf (Inr (out, rpv', rpv)))))"
   shows "P inline1"
 using assms by(rule spmf.fixp_strong_induct_uc[where P="\<lambda>f. P (curry f)" and U=case_prod and C=curry, OF inline1.mono inline1_def, simplified curry_case_prod, simplified curry_conv[abs_def] fun_ord_def split_paired_All prod.case case_prod_eta, OF refl]) blast+
 
 lemma inline1_fixp_induct_strong2 [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
   and "\<And>inline1'. 
-    \<lbrakk> \<And>gpv s. ord_spmf op = (inline1' gpv s) (inline1 gpv s); 
-      \<And>gpv s. ord_spmf op = (inline1' gpv s) (the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out rpv'. return_spmf (Inr (out, rpv', rpv)))));
+    \<lbrakk> \<And>gpv s. ord_spmf (=) (inline1' gpv s) (inline1 gpv s); 
+      \<And>gpv s. ord_spmf (=) (inline1' gpv s) (the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out rpv'. return_spmf (Inr (out, rpv', rpv)))));
       P inline1' \<rbrakk>
     \<Longrightarrow> P (\<lambda>gpv s. the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out rpv'. return_spmf (Inr (out, rpv', rpv)))))"
   shows "P inline1"
@@ -3297,7 +3297,7 @@ lemma inline_aux_Inr:
 unfolding inline_def
 apply(coinduction arbitrary: oracl rule: gpv.coinduct_strong)
 apply(simp add: inline_aux.sel bind_gpv.sel spmf_rel_map del: bind_gpv_sel')
-apply(rule rel_spmf_bindI[where R="op ="])
+apply(rule rel_spmf_bindI[where R="(=)"])
 apply(auto simp add: spmf_rel_map inline_aux.sel rel_spmf_reflI generat.rel_map generat.rel_refl rel_fun_def split: generat.split)
 done
 
@@ -3342,7 +3342,7 @@ lemma inline1_bind_gpv:
   (is "?lhs = ?rhs")
 proof(rule spmf.leq_antisym)
   note [intro!] = ord_spmf_bind_reflI and [split] = generat.split
-  show "ord_spmf op = ?lhs ?rhs" unfolding inline11_def
+  show "ord_spmf (=) ?lhs ?rhs" unfolding inline11_def
   proof(induction arbitrary: gpv s f rule: inline1_fixp_induct)
     case adm show ?case by simp
     case bottom show ?case by simp
@@ -3357,7 +3357,7 @@ proof(rule spmf.leq_antisym)
       subgoal for out c ret s' using step.IH[of "c ret" f s'] by(simp cong del: sum.case_cong_weak)
       done
   qed
-  show "ord_spmf op = ?rhs ?lhs" unfolding inline12_def
+  show "ord_spmf (=) ?rhs ?lhs" unfolding inline12_def
   proof(induction arbitrary: gpv s rule: inline1_fixp_induct)
     case adm show ?case by simp
     case bottom show ?case by simp
@@ -3411,8 +3411,8 @@ proof(rule rel_funI)
 qed
 
 lemma inline1_parametric [transfer_rule]:
-  "((S ===> C ===> rel_gpv (rel_prod op = S) C') ===> rel_gpv A C ===> S
-   ===> rel_spmf (rel_sum (rel_prod A S) (rel_prod C' (rel_prod (rel_rpv (rel_prod op = S) C') (rel_rpv A C)))))
+  "((S ===> C ===> rel_gpv (rel_prod (=) S) C') ===> rel_gpv A C ===> S
+   ===> rel_spmf (rel_sum (rel_prod A S) (rel_prod C' (rel_prod (rel_rpv (rel_prod (=) S) C') (rel_rpv A C)))))
   inline1 inline1"
 unfolding rel_gpv_conv_rel_gpv'' by(rule inline1_parametric')
 
@@ -3427,7 +3427,7 @@ subgoal premises [transfer_rule] by transfer_prover
 done
 
 lemma inline_parametric [transfer_rule]:
-  "((S ===> C ===> rel_gpv (rel_prod op = S) C') ===> rel_gpv A C ===> S ===> rel_gpv (rel_prod A S) C')
+  "((S ===> C ===> rel_gpv (rel_prod (=) S) C') ===> rel_gpv A C ===> S ===> rel_gpv (rel_prod A S) C')
   inline inline"
 unfolding rel_gpv_conv_rel_gpv'' by(rule inline_parametric')
 end
@@ -3451,7 +3451,7 @@ where
          (\<lambda>(x, rpv'', rpv'). return_spmf (Inr (x, rpv'', rpv', rpv))))))"
 
 lemma inline2_fixp_induct [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>inline2. P (\<lambda>gpv s2 s1. inline2 ((gpv, s2), s1)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>inline2. P (\<lambda>gpv s2 s1. inline2 ((gpv, s2), s1)))"
   and "P (\<lambda>_ _ _. return_pmf None)"
   and "\<And>inline2'. P inline2' \<Longrightarrow>
        P (\<lambda>gpv s2 s1. bind_spmf (the_gpv gpv) (\<lambda>generat. case generat of
@@ -3472,13 +3472,13 @@ lemma inline1_inline_conv_inline2:
 proof(rule spmf.leq_antisym)
   define inline1_1 :: "('s1 \<Rightarrow> 'c1 \<Rightarrow> ('r1 \<times> 's1, 'c, 'r) gpv) \<Rightarrow> ('r2 \<times> 's2, 'c1, 'r1) gpv \<Rightarrow> 's1 \<Rightarrow> _"
     where "inline1_1 = inline1"
-  have "ord_spmf op = ?lhs ?rhs"
+  have "ord_spmf (=) ?lhs ?rhs"
     -- \<open> We need in the inductive step that the approximation behaves well with @{const bind_gpv}
          because of @{thm [source] inline_aux_Inr}. So we have to thread it through the induction
          and do one half of the proof from @{thm [source] inline1_bind_gpv} again. We cannot inline
          @{thm [source] inline1_bind_gpv} in this proof here because the types are too specific.
        \<close>
-    and "ord_spmf op = (inline1 callee1 (gpv' \<bind> f) s1') 
+    and "ord_spmf (=) (inline1 callee1 (gpv' \<bind> f) s1') 
       (do {
       res \<leftarrow> inline1_1 callee1 gpv' s1';
       case res of Inl (x, s') \<Rightarrow> inline1 callee1 (f x) s'
@@ -3493,7 +3493,7 @@ proof(rule spmf.leq_antisym)
     case (step inline1')
     note step_IH = step.IH[unfolded inline1_1_def] and step_hyps = step.hyps[unfolded inline1_1_def]
     { case 1
-      have inline1: "ord_spmf op =
+      have inline1: "ord_spmf (=)
          (inline1 callee2 gpv s2 \<bind> (\<lambda>lr. case lr of Inl as2 \<Rightarrow> return_spmf (Inl (as2, s1))
             | Inr (out1, rpv', rpv) \<Rightarrow> the_gpv (callee1 s1 out1) \<bind> (\<lambda>generat. case generat of
                 Pure (r1, s1) \<Rightarrow> inline1' (bind_gpv (rpv' r1) (\<lambda>(r2, s2). inline callee2 (rpv r2) s2)) s1
@@ -3528,9 +3528,9 @@ proof(rule spmf.leq_antisym)
       show ?case unfolding inline1_1_def
         by(rewrite inline1.simps)(auto simp del: bind_gpv_sel' simp add: bind_gpv.sel map_spmf_bind_spmf bind_map_spmf o_def bind_rpv_def intro!: ord_spmf_bind_reflI step_IH(2)[THEN spmf.leq_trans] step_hyps(2) split: generat.split sum.split) }
   qed simp_all
-  thus "ord_spmf op = ?lhs ?rhs" by -
+  thus "ord_spmf (=) ?lhs ?rhs" by -
 
-  show "ord_spmf op = ?rhs ?lhs"
+  show "ord_spmf (=) ?rhs ?lhs"
   proof(induction arbitrary: gpv s2 s1 rule: inline2_fixp_induct)
     case adm show ?case by simp
     case bottom show ?case by simp
@@ -3561,12 +3561,12 @@ lemma inline1_inline_conv_inline2':
      (inline2 gpv s2 s1)"
   (is "?lhs = ?rhs")
 proof(rule spmf.leq_antisym)
-  show "ord_spmf op = ?lhs ?rhs"
+  show "ord_spmf (=) ?lhs ?rhs"
   proof(induction arbitrary: gpv s2 s1 rule: inline1_fixp_induct)
     case (step inline1') show ?case
       by(rewrite inline2.simps)(auto simp add: map_spmf_bind_spmf o_def inline_sel gpv.map_sel bind_map_spmf id_def[symmetric] gpv.map_id map_gpv_bind_gpv split_def intro!: ord_spmf_bind_reflI step.IH[THEN spmf.leq_trans] split: generat.split sum.split)
   qed simp_all
-  show "ord_spmf op = ?rhs ?lhs"
+  show "ord_spmf (=) ?rhs ?lhs"
   proof(induction arbitrary: gpv s2 s1 rule: inline2_fixp_induct)
    case (step inline2')
    show ?case
@@ -3588,7 +3588,7 @@ proof(coinduction arbitrary: s2 s1 gpv rule: gpv_coinduct_bind[where ?'b = "('r2
           bind_gpv (bind_gpv (rpv'' r) (\<lambda>(r1, s1). inline callee1 (rpv' r1) s1)) (\<lambda>((r2, s2), s1). map_gpv (\<lambda>(r, s2, y). ((r, s2), y)) id (inline (\<lambda>(s2, s1) c2. map_gpv (\<lambda>((r, s2), s1). (r, s2, s1)) id (inline callee1 (callee2 s2 c2) s1)) (rpv r2) (s2, s1))) = gpv2' \<bind> f' \<and>
           rel_gpv (\<lambda>x y. \<exists>s2 s1 gpv. f x = inline callee1 (inline callee2 gpv s2) s1 \<and>
               f' y = map_gpv (\<lambda>(r, s2, y). ((r, s2), y)) id (inline (\<lambda>(s2, s1) c2. map_gpv (\<lambda>((r, s2), s1). (r, s2, s1)) id (inline callee1 (callee2 s2 c2) s1)) gpv (s2, s1)))
-            op = gpv2 gpv2'" 
+            (=) gpv2 gpv2'" 
     for rpv'' :: "('r1 \<times> 's1, 'c, 'r) rpv" and rpv' :: "('r2 \<times> 's2, 'c1, 'r1) rpv" and rpv :: "('a, 'c2, 'r2) rpv" and r :: 'r
     by(auto intro!: exI gpv.rel_refl)
   then show ?case
@@ -3634,7 +3634,7 @@ where
           (\<lambda>out' rpv'. return_spmf (Inr (out, out', rpv', rpv))))"
 
 private lemma inline1'_fixp_induct [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>inline1'. P (\<lambda>gpv s. inline1' (gpv, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
   and "\<And>inline1'. P inline1' \<Longrightarrow> P (\<lambda>gpv s. the_gpv gpv \<bind> case_generat (\<lambda>x. return_spmf (Inl (x, s))) (\<lambda>out rpv. the_gpv (callee s out) \<bind> case_generat (\<lambda>(x, y). inline1' (rpv x) y) (\<lambda>out' rpv'. return_spmf (Inr (out, out', rpv', rpv)))))"
   shows "P inline1'"
@@ -3829,7 +3829,7 @@ proof -
       using type_definition_Domainp[OF td cr_def[abs_def]] by simp
 
     define callee' where "callee' = (Rep --->  id ---> map_gpv (map_prod id Abs) id) callee"
-    have [transfer_rule]: "(cr ===> op = ===> rel_gpv (rel_prod op = cr) op =) callee callee'"
+    have [transfer_rule]: "(cr ===> (=) ===> rel_gpv (rel_prod (=) cr) (=)) callee callee'"
       by(auto simp add: callee'_def rel_fun_def cr_def gpv.rel_map prod.rel_map td.Abs_inverse intro!: gpv.rel_refl_strong intro: td.Rep[simplified] dest: invariant)
 
     define s' where "s' = Abs s"
@@ -4107,7 +4107,7 @@ abbreviation run_gpv :: "('a, 'call, 'ret) gpv \<Rightarrow> 's \<Rightarrow> 'a
 where "run_gpv gpv s \<equiv> map_spmf fst (exec_gpv gpv s)"
 
 lemma exec_gpv_fixp_induct [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
   and "\<And>exec_gpv. P exec_gpv \<Longrightarrow> 
      P (\<lambda>c s. the_gpv c \<bind> case_generat (\<lambda>x. return_spmf (x, s)) (\<lambda>out c. callee s out \<bind> (\<lambda>(x, y). exec_gpv (c x) y)))"
@@ -4116,20 +4116,20 @@ using assms(1)
 by(rule exec_gpv.fixp_induct[unfolded curry_conv[abs_def]])(simp_all add: assms(2-))
 
 lemma exec_gpv_fixp_induct_strong [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
-  and "\<And>exec_gpv'. \<lbrakk> \<And>c s. ord_spmf op = (exec_gpv' c s) (exec_gpv c s); P exec_gpv' \<rbrakk>
+  and "\<And>exec_gpv'. \<lbrakk> \<And>c s. ord_spmf (=) (exec_gpv' c s) (exec_gpv c s); P exec_gpv' \<rbrakk>
     \<Longrightarrow> P (\<lambda>c s. the_gpv c \<bind> case_generat (\<lambda>x. return_spmf (x, s)) (\<lambda>out c. callee s out \<bind> (\<lambda>(x, y). exec_gpv' (c x) y)))"
   shows "P exec_gpv"
 using assms
 by(rule spmf.fixp_strong_induct_uc[where P="\<lambda>f. P (curry f)" and U=case_prod and C=curry, OF exec_gpv.mono exec_gpv_def, simplified curry_case_prod, simplified curry_conv[abs_def] fun_ord_def split_paired_All prod.case case_prod_eta, OF refl]) blast
 
 lemma exec_gpv_fixp_induct_strong2 [case_names adm bottom step]:
-  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf op =)) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
+  assumes "ccpo.admissible (fun_lub lub_spmf) (fun_ord (ord_spmf (=))) (\<lambda>f. P (\<lambda>c s. f (c, s)))"
   and "P (\<lambda>_ _. return_pmf None)"
   and "\<And>exec_gpv'.
-    \<lbrakk> \<And>c s. ord_spmf op = (exec_gpv' c s) (exec_gpv c s); 
-      \<And>c s. ord_spmf op = (exec_gpv' c s) (the_gpv c \<bind> case_generat (\<lambda>x. return_spmf (x, s)) (\<lambda>out c. callee s out \<bind> (\<lambda>(x, y). exec_gpv' (c x) y)));
+    \<lbrakk> \<And>c s. ord_spmf (=) (exec_gpv' c s) (exec_gpv c s); 
+      \<And>c s. ord_spmf (=) (exec_gpv' c s) (the_gpv c \<bind> case_generat (\<lambda>x. return_spmf (x, s)) (\<lambda>out c. callee s out \<bind> (\<lambda>(x, y). exec_gpv' (c x) y)));
       P exec_gpv' \<rbrakk>
     \<Longrightarrow> P (\<lambda>c s. the_gpv c \<bind> case_generat (\<lambda>x. return_spmf (x, s)) (\<lambda>out c. callee s out \<bind> (\<lambda>(x, y). exec_gpv' (c x) y)))"
   shows "P exec_gpv"
@@ -4185,7 +4185,7 @@ subgoal premises [transfer_rule]
 done
 
 lemma exec_gpv_parametric [transfer_rule]:
-  "((S ===> CALL ===> rel_spmf (rel_prod (op = :: 'ret \<Rightarrow> _) S)) ===> rel_gpv A CALL ===> S ===> rel_spmf (rel_prod A S))
+  "((S ===> CALL ===> rel_spmf (rel_prod ((=) :: 'ret \<Rightarrow> _) S)) ===> rel_gpv A CALL ===> S ===> rel_spmf (rel_prod A S))
   exec_gpv exec_gpv"
 unfolding rel_gpv_conv_rel_gpv'' by(rule exec_gpv_parametric')
 
@@ -4198,9 +4198,9 @@ lemma exec_gpv_map_gpv_id:
   "exec_gpv oracle (map_gpv f id gpv) \<sigma> = map_spmf (apfst f) (exec_gpv oracle gpv \<sigma>)"
 proof(rule sym)
   define gpv' where "gpv' = map_gpv f id gpv"
-  have [transfer_rule]: "rel_gpv (\<lambda>x y. y = f x) op = gpv gpv'"
+  have [transfer_rule]: "rel_gpv (\<lambda>x y. y = f x) (=) gpv gpv'"
     unfolding gpv'_def by(simp add: gpv.rel_map gpv.rel_refl)
-  have "rel_spmf (rel_prod (\<lambda>x y. y = f x) op =) (exec_gpv oracle gpv \<sigma>) (exec_gpv oracle gpv' \<sigma>)"
+  have "rel_spmf (rel_prod (\<lambda>x y. y = f x) (=)) (exec_gpv oracle gpv \<sigma>) (exec_gpv oracle gpv' \<sigma>)"
     by transfer_prover
   thus "map_spmf (apfst f) (exec_gpv oracle gpv \<sigma>) = exec_gpv oracle (map_gpv f id gpv) \<sigma>"
     unfolding spmf_rel_eq[symmetric] gpv'_def spmf_rel_map by(rule rel_spmf_mono) clarsimp
@@ -4257,8 +4257,8 @@ proof -
 qed
 
 lemma ord_spmf_exec_gpv:
-  assumes callee: "\<And>s x. ord_spmf op = (callee1 s x) (callee2 s x)"
-  shows "ord_spmf op = (exec_gpv callee1 gpv s) (exec_gpv callee2 gpv s)"
+  assumes callee: "\<And>s x. ord_spmf (=) (callee1 s x) (callee2 s x)"
+  shows "ord_spmf (=) (exec_gpv callee1 gpv s) (exec_gpv callee2 gpv s)"
 proof(induction arbitrary: gpv s rule: exec_gpv_fixp_parallel_induct)
   case adm show ?case by simp
   case bottom show ?case by simp
@@ -4294,19 +4294,19 @@ qed
 
 lemma mcont2mcont_execp_resumption [THEN spmf.mcont2mcont, cont_intro, simp]:
   shows mcont_execp_resumption:
-  "mcont resumption_lub resumption_ord lub_spmf (ord_spmf op =) (\<lambda>r. execp_resumption r s)"
+  "mcont resumption_lub resumption_ord lub_spmf (ord_spmf (=)) (\<lambda>r. execp_resumption r s)"
 proof -
-  have "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord op =) lub_spmf (ord_spmf op =) (case_prod execp_resumption)"
+  have "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord (=)) lub_spmf (ord_spmf (=)) (case_prod execp_resumption)"
   proof(rule ccpo.fixp_preserves_mcont2[OF ccpo_spmf execp_resumption.mono execp_resumption_def])
     fix execp_resumption' :: "('b, 'call, 'ret) resumption \<Rightarrow> 's \<Rightarrow> ('b \<times> 's) spmf"
-    assume *: "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord op =) lub_spmf (ord_spmf op =) (\<lambda>(r, s). execp_resumption' r s)"
-    have [THEN spmf.mcont2mcont, cont_intro, simp]: "mcont resumption_lub resumption_ord lub_spmf (ord_spmf op =) (\<lambda>r. execp_resumption' r s)" 
+    assume *: "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord (=)) lub_spmf (ord_spmf (=)) (\<lambda>(r, s). execp_resumption' r s)"
+    have [THEN spmf.mcont2mcont, cont_intro, simp]: "mcont resumption_lub resumption_ord lub_spmf (ord_spmf (=)) (\<lambda>r. execp_resumption' r s)" 
       for s using * by simp
-    have "mcont resumption_lub resumption_ord lub_spmf (ord_spmf op =)
+    have "mcont resumption_lub resumption_ord lub_spmf (ord_spmf (=))
       (\<lambda>r. case r of resumption.Done x \<Rightarrow> return_pmf (map_option (\<lambda>a. (a, s)) x)
            | resumption.Pause out c \<Rightarrow> bind_spmf (callee s out) (\<lambda>(input, s'). execp_resumption' (c input) s'))"
       for s by(rule mcont_case_resumption)(auto simp add: ccpo_spmf intro!: mcont_bind_spmf)
-    thus "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord op =) lub_spmf (ord_spmf op =)
+    thus "mcont (prod_lub resumption_lub the_Sup) (rel_prod resumption_ord (=)) lub_spmf (ord_spmf (=))
           (\<lambda>(r, s). case r of resumption.Done x \<Rightarrow> return_pmf (map_option (\<lambda>a. (a, s)) x)
               | resumption.Pause out c \<Rightarrow> bind_spmf (callee s out) (\<lambda>(input, s'). execp_resumption' (c input) s'))"
       by simp
@@ -4346,7 +4346,7 @@ by(rule WT_calleeI) simp
 lemma WT_callee_parametric [transfer_rule]:
   includes lifting_syntax 
   assumes [transfer_rule]: "bi_unique R"
-  shows "(rel_\<I> C R ===> (C ===> rel_spmf (rel_prod R S)) ===> op =) WT_callee WT_callee"
+  shows "(rel_\<I> C R ===> (C ===> rel_spmf (rel_prod R S)) ===> (=)) WT_callee WT_callee"
 proof -
   have *: "WT_callee = (\<lambda>\<I> callee. \<forall>call\<in> outs_\<I> \<I>. \<forall>(ret, s) \<in> set_spmf (callee call). ret \<in> responses_\<I> \<I> call)"
     unfolding WT_callee.simps by blast
@@ -4514,7 +4514,7 @@ unfolding callee_invariant_on_def by blast
 
 lemma callee_invariant_on_parametric [transfer_rule]: includes lifting_syntax
   assumes [transfer_rule]: "bi_unique R" "bi_total S"
-  shows "((S ===> C ===> rel_spmf (rel_prod R S)) ===> (S ===> op =) ===> rel_\<I> C R ===> op =)
+  shows "((S ===> C ===> rel_spmf (rel_prod R S)) ===> (S ===> (=)) ===> rel_\<I> C R ===> (=))
     callee_invariant_on callee_invariant_on"
 unfolding callee_invariant_on_alt_def by transfer_prover
 
@@ -4708,8 +4708,8 @@ lemma restrict_gpv_parametric':
 unfolding restrict_gpv_def by transfer_prover
 
 lemma restrict_gpv_parametric [transfer_rule]: includes lifting_syntax shows 
-  "bi_unique C \<Longrightarrow> (rel_\<I> C op = ===> rel_gpv A C ===> rel_gpv A C) restrict_gpv restrict_gpv"
-using restrict_gpv_parametric'[of C "op =" A]
+  "bi_unique C \<Longrightarrow> (rel_\<I> C (=) ===> rel_gpv A C ===> rel_gpv A C) restrict_gpv restrict_gpv"
+using restrict_gpv_parametric'[of C "(=)" A]
 by(simp add: bi_unique_eq rel_gpv_conv_rel_gpv'')
 
 lemma map_restrict_gpv: "map_gpv f id (restrict_gpv \<I> gpv) = restrict_gpv \<I> (map_gpv f id gpv)"
@@ -4836,20 +4836,20 @@ proof(induction arbitrary: gpv')
   qed
 qed
 
-lemma finite_gpv_relD1: "\<lbrakk> rel_gpv A C gpv gpv'; finite_gpv \<I> gpv; rel_\<I> C op = \<I> \<I> \<rbrakk> \<Longrightarrow> finite_gpv \<I> gpv'"
-using finite_gpv_rel''D1[of A C "op =" gpv gpv' \<I> \<I>] by(simp add: rel_gpv_conv_rel_gpv'')
+lemma finite_gpv_relD1: "\<lbrakk> rel_gpv A C gpv gpv'; finite_gpv \<I> gpv; rel_\<I> C (=) \<I> \<I> \<rbrakk> \<Longrightarrow> finite_gpv \<I> gpv'"
+using finite_gpv_rel''D1[of A C "(=)" gpv gpv' \<I> \<I>] by(simp add: rel_gpv_conv_rel_gpv'')
 
 lemma finite_gpv_rel''D2: "\<lbrakk> rel_gpv'' A C R gpv gpv'; finite_gpv \<I> gpv'; rel_\<I> C R \<I>' \<I> \<rbrakk> \<Longrightarrow> finite_gpv \<I>' gpv"
 using finite_gpv_rel''D1[of "A\<inverse>\<inverse>" "C\<inverse>\<inverse>" "R\<inverse>\<inverse>" gpv' gpv \<I> \<I>'] by(simp add: rel_gpv''_conversep)
 
-lemma finite_gpv_relD2: "\<lbrakk> rel_gpv A C gpv gpv'; finite_gpv \<I> gpv'; rel_\<I> C op = \<I> \<I> \<rbrakk> \<Longrightarrow> finite_gpv \<I> gpv"
-using finite_gpv_rel''D2[of A C "op =" gpv gpv' \<I> \<I>] by(simp add: rel_gpv_conv_rel_gpv'')
+lemma finite_gpv_relD2: "\<lbrakk> rel_gpv A C gpv gpv'; finite_gpv \<I> gpv'; rel_\<I> C (=) \<I> \<I> \<rbrakk> \<Longrightarrow> finite_gpv \<I> gpv"
+using finite_gpv_rel''D2[of A C "(=)" gpv gpv' \<I> \<I>] by(simp add: rel_gpv_conv_rel_gpv'')
 
-lemma finite_gpv_parametric': "(rel_\<I> C R ===> rel_gpv'' A C R ===> op =) finite_gpv finite_gpv"
+lemma finite_gpv_parametric': "(rel_\<I> C R ===> rel_gpv'' A C R ===> (=)) finite_gpv finite_gpv"
 by(blast dest: finite_gpv_rel''D2 finite_gpv_rel''D1)
 
-lemma finite_gpv_parametric [transfer_rule]: "(rel_\<I> C op = ===> rel_gpv A C ===> op =) finite_gpv finite_gpv"
-using finite_gpv_parametric'[of C "op =" A] by(simp add: rel_gpv_conv_rel_gpv'')
+lemma finite_gpv_parametric [transfer_rule]: "(rel_\<I> C (=) ===> rel_gpv A C ===> (=)) finite_gpv finite_gpv"
+using finite_gpv_parametric'[of C "(=)" A] by(simp add: rel_gpv_conv_rel_gpv'')
 
 end
 
@@ -5134,22 +5134,22 @@ proof -
     let ?C = "eq_onp (\<lambda>x. x \<in> outs_\<I> \<I>)"
 
     define callee' where "callee' \<equiv> (Rep ---> id ---> map_spmf (map_prod id Abs)) callee"
-    have [transfer_rule]: "(cr ===> ?C ===> rel_spmf (rel_prod op = cr)) callee callee'"
+    have [transfer_rule]: "(cr ===> ?C ===> rel_spmf (rel_prod (=) cr)) callee callee'"
       by(auto simp add: callee'_def rel_fun_def cr_def spmf_rel_map prod.rel_map td.Abs_inverse eq_onp_def intro!: rel_spmf_reflI intro: td.Rep[simplified] dest: callee_invariant)
     define s' where "s' \<equiv> Abs s"
     have [transfer_rule]: "cr s s'" using I by(simp add: cr_def s'_def td.Abs_inverse)
     define bad' where "bad' \<equiv> (Rep ---> id) bad"
-    have [transfer_rule]: "(cr ===> op =) bad bad'" by(simp add: rel_fun_def bad'_def cr_def)
+    have [transfer_rule]: "(cr ===> (=)) bad bad'" by(simp add: rel_fun_def bad'_def cr_def)
     define count' where "count' \<equiv> (Rep ---> id) count"
-    have [transfer_rule]: "(cr ===> op =) count count'" by(simp add: rel_fun_def count'_def cr_def)
+    have [transfer_rule]: "(cr ===> (=)) count count'" by(simp add: rel_fun_def count'_def cr_def)
 
-    have [transfer_rule]: "(?C ===> op =) consider consider" by(simp add: eq_onp_def rel_fun_def)
-    have [transfer_rule]: "rel_\<I> ?C op = \<I> \<I>"
+    have [transfer_rule]: "(?C ===> (=)) consider consider" by(simp add: eq_onp_def rel_fun_def)
+    have [transfer_rule]: "rel_\<I> ?C (=) \<I> \<I>"
       by(rule rel_\<I>I)(auto simp add: rel_set_eq set_relator_eq_onp eq_onp_same_args dest: eq_onp_to_eq)
     note [transfer_rule] = bi_unique_eq_onp bi_unique_eq
 
     define gpv' where "gpv' \<equiv> restrict_gpv \<I> gpv"
-    have [transfer_rule]: "rel_gpv op = ?C gpv' gpv'"
+    have [transfer_rule]: "rel_gpv (=) ?C gpv' gpv'"
       by(fold eq_onp_top_eq_eq)(auto simp add: gpv.rel_eq_onp eq_onp_same_args pred_gpv_def gpv'_def dest: in_outs'_restrict_gpvD)
 
     have "interaction_bounded_by consider gpv' n" using bound by(simp add: gpv'_def)
@@ -5171,7 +5171,7 @@ proof -
     moreover have "\<And>s. \<I> \<turnstile>c callee' s \<surd>" by transfer(rule WT_callee)
     ultimately have **: "spmf (map_spmf (bad' \<circ> snd) (exec_gpv callee' gpv' s')) True \<le> ennreal k * n"
       by(rule interaction_bounded_by_exec_gpv_bad_count)
-    have [transfer_rule]: "(op = ===> ?C ===> rel_spmf (rel_prod op = op =)) callee callee"
+    have [transfer_rule]: "((=) ===> ?C ===> rel_spmf (rel_prod (=) (=))) callee callee"
       by(simp add: rel_fun_def eq_onp_def prod.rel_eq)
     have "spmf (map_spmf (bad \<circ> snd) (exec_gpv callee gpv' s)) True \<le> ennreal k * n" using **
       by(transfer)

@@ -94,8 +94,8 @@ lemma graph_restrict_right_aimpl: "op_graph_restrict_right Vr E =
 schematic_goal graph_restrict_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
-  assumes [autoref_rules]: "(meml, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
-  assumes [autoref_rules]: "(memr, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(meml, (\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(memr, (\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
   shows "(?c, op_graph_restrict) \<in> \<langle>R\<rangle>Rsl \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
   unfolding graph_restrict_aimpl[abs_def]
   apply (autoref (keep_goal))
@@ -104,7 +104,7 @@ schematic_goal graph_restrict_impl_aux:
 schematic_goal graph_restrict_left_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
-  assumes [autoref_rules]: "(meml, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(meml, (\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
   shows "(?c, op_graph_restrict_left) \<in> \<langle>R\<rangle>Rsl \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
   unfolding graph_restrict_left_aimpl[abs_def]
   apply (autoref (keep_goal, trace))
@@ -113,7 +113,7 @@ schematic_goal graph_restrict_left_impl_aux:
 schematic_goal graph_restrict_right_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
-  assumes [autoref_rules]: "(memr, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(memr, (\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
   shows "(?c, op_graph_restrict_right) \<in> \<langle>R\<rangle>Rsr \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
   unfolding graph_restrict_right_aimpl[abs_def]
   apply (autoref (keep_goal, trace))
@@ -147,8 +147,8 @@ lemma graph_minus_aimpl:
 
 schematic_goal graph_minus_impl_aux:
   fixes R :: "('vi\<times>'v) set"
-  assumes [autoref_rules]: "(eq,op =)\<in>R\<rightarrow>R\<rightarrow>bool_rel"
-  shows "(?c, op -) \<in> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
+  assumes [autoref_rules]: "(eq,(=))\<in>R\<rightarrow>R\<rightarrow>bool_rel"
+  shows "(?c, (-)) \<in> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
   apply (subst graph_minus_aimpl[abs_def])
   apply (autoref (keep_goal,trace))
   done
@@ -163,9 +163,9 @@ lemma graph_minus_set_aimpl:
 
 schematic_goal graph_minus_set_impl_aux:
   fixes R :: "('vi\<times>'v) set"
-  assumes [autoref_rules]: "(eq,op =)\<in>R\<rightarrow>R\<rightarrow>bool_rel"
-  assumes [autoref_rules]: "(mem,op \<in>) \<in> R \<times>\<^sub>r R \<rightarrow> \<langle>R \<times>\<^sub>r R\<rangle>Rs \<rightarrow> bool_rel"
-  shows "(?c, op -) \<in> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<times>\<^sub>rR\<rangle>Rs \<rightarrow> \<langle>R\<rangle>slg_rel"
+  assumes [autoref_rules]: "(eq,(=))\<in>R\<rightarrow>R\<rightarrow>bool_rel"
+  assumes [autoref_rules]: "(mem,(\<in>)) \<in> R \<times>\<^sub>r R \<rightarrow> \<langle>R \<times>\<^sub>r R\<rangle>Rs \<rightarrow> bool_rel"
+  shows "(?c, (-)) \<in> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<times>\<^sub>rR\<rangle>Rs \<rightarrow> \<langle>R\<rangle>slg_rel"
   apply (subst graph_minus_set_aimpl[abs_def])
   apply (autoref (keep_goal,trace))
   done
@@ -486,7 +486,7 @@ end
 term frv_rename_ext_aimpl
 schematic_goal fr_rename_ext_impl_aux:
   fixes Re and Rv' :: "('vti \<times> 'vt) set"
-  assumes [autoref_rules]: "(eq, op =) \<in> Rv' \<rightarrow> Rv' \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eq, (=)) \<in> Rv' \<rightarrow> Rv' \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv' eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('vti) def_size"
   shows "(?c,fr_rename_ext_aimpl) \<in> 

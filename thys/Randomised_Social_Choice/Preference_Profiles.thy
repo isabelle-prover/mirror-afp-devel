@@ -389,7 +389,7 @@ lemma (in pref_profile_wf) anonymous_profile_def:
 lemma (in pref_profile_wf) anonymous_profile_permute:
   assumes "\<sigma> permutes alts"  "finite agents" 
   shows   "anonymous_profile (permute_profile \<sigma> R) = 
-             image_mset (map (op ` \<sigma>)) (anonymous_profile R)"
+             image_mset (map ((`) \<sigma>)) (anonymous_profile R)"
 proof -
   from assms(1) interpret R': pref_profile_wf agents alts "permute_profile \<sigma> R"
     by (rule wf_permute_alts)
@@ -397,10 +397,10 @@ proof -
           {#weak_ranking (map_relation (inv \<sigma>) (R x)). x \<in># mset_set agents#}"
     unfolding R'.anonymous_profile_def
     by (simp add:  multiset.map_comp permute_profile_map_relation o_def)
-  also from assms have "\<dots> = {#map (op ` \<sigma>) (weak_ranking (R x)). x \<in># mset_set agents#}"
+  also from assms have "\<dots> = {#map ((`) \<sigma>) (weak_ranking (R x)). x \<in># mset_set agents#}"
     by (intro image_mset_cong)
        (simp add: finite_total_preorder_on.weak_ranking_permute[of alts])
-  also have "\<dots> = image_mset (map (op ` \<sigma>)) (anonymous_profile R)"
+  also have "\<dots> = image_mset (map ((`) \<sigma>)) (anonymous_profile R)"
     by (simp add: anonymous_profile_def multiset.map_comp o_def)
   finally show ?thesis .
 qed
@@ -562,19 +562,19 @@ lemma permute_profile_from_table:
   assumes wf: "prefs_from_table_wf agents alts xss"
   assumes perm: "\<sigma> permutes alts"
   shows   "permute_profile \<sigma> (prefs_from_table xss) = 
-             prefs_from_table (map (\<lambda>(x,y). (x, map (op ` \<sigma>) y)) xss)" (is "?f = ?g")
+             prefs_from_table (map (\<lambda>(x,y). (x, map ((`) \<sigma>) y)) xss)" (is "?f = ?g")
 proof
   fix i
-  have wf': "prefs_from_table_wf agents alts (map (\<lambda>(x, y). (x, map (op ` \<sigma>) y)) xss)"
+  have wf': "prefs_from_table_wf agents alts (map (\<lambda>(x, y). (x, map ((`) \<sigma>) y)) xss)"
   proof (intro prefs_from_table_wfI, goal_cases)
     case (5 xs)
-    then obtain y where "y \<in> set xss" "xs = map (op ` \<sigma>) (snd y)"
+    then obtain y where "y \<in> set xss" "xs = map ((`) \<sigma>) (snd y)"
       by (auto simp add: o_def case_prod_unfold)
     with assms show ?case
       by (simp add: image_Union [symmetric] prefs_from_table_wf_def permutes_image o_def case_prod_unfold)
   next
     case (6 xs)
-    then obtain y where "y \<in> set xss" "xs = map (op ` \<sigma>) (snd y)"
+    then obtain y where "y \<in> set xss" "xs = map ((`) \<sigma>) (snd y)"
       by (auto simp add: o_def case_prod_unfold)
     with assms show ?case
       by (auto simp: is_finite_weak_ranking_def is_weak_ranking_iff prefs_from_table_wf_def
@@ -595,10 +595,10 @@ proof
     with wf have set_xs: "\<Union>set xs = alts"
       by (simp add: prefs_from_table_wfD)
 
-    from i have "prefs_from_table (map (\<lambda>(x,y). (x, map (op ` \<sigma>) y)) xss) i =
-                   of_weak_ranking (the (map_of (map (\<lambda>(x,y). (x, map (op ` \<sigma>) y)) xss) i))"
+    from i have "prefs_from_table (map (\<lambda>(x,y). (x, map ((`) \<sigma>) y)) xss) i =
+                   of_weak_ranking (the (map_of (map (\<lambda>(x,y). (x, map ((`) \<sigma>) y)) xss) i))"
       using wf' by (intro prefs_from_table_map_of) simp_all
-    also have "\<dots> = of_weak_ranking (map (op ` \<sigma>) xs)"
+    also have "\<dots> = of_weak_ranking (map ((`) \<sigma>) xs)"
       by (subst map_of_map) (simp add: xs)
     also have "\<dots> = (\<lambda>a b. of_weak_ranking xs (inv \<sigma> a) (inv \<sigma> b))"
       by (intro ext) (simp add: of_weak_ranking_permute map_relation_def set_xs perm)
@@ -794,8 +794,8 @@ proof -
   from mset_eq_permutation[OF this] obtain \<pi> where
     \<pi>: "\<pi> permutes {0..<length xs}" "permute_list \<pi> (map g xs) = map f xs"
     by (auto simp: atLeast0LessThan)
-  define \<pi>' where "\<pi>' x = (if x \<in> A then (op ! xs \<circ> \<pi> \<circ> index xs) x else x)" for x
-  have "bij_betw (op ! xs \<circ> \<pi> \<circ> index xs) A A" (is "?P")
+  define \<pi>' where "\<pi>' x = (if x \<in> A then ((!) xs \<circ> \<pi> \<circ> index xs) x else x)" for x
+  have "bij_betw ((!) xs \<circ> \<pi> \<circ> index xs) A A" (is "?P")
     by (rule bij_betw_trans bij_betw_index xs refl permutes_imp_bij \<pi> bij_betw_nth)+
        (simp_all add: atLeast0LessThan xs)
   also have "?P \<longleftrightarrow> bij_betw \<pi>' A A"

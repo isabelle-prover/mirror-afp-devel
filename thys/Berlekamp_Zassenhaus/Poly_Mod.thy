@@ -381,7 +381,7 @@ lemma mod_ident_iff: "m > 0 \<Longrightarrow> (x :: int) mod m = x \<longleftrig
 
 declare prod_mset_prod_list[simp]
 
-lemma mult_1_is_id[simp]: "op * (1 :: 'a :: ring_1) = id" by auto
+lemma mult_1_is_id[simp]: "( * ) (1 :: 'a :: ring_1) = id" by auto
 
 context poly_mod
 begin

@@ -245,19 +245,19 @@ lemma param_distinct[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbra
 
 lemma param_Image[param]: 
   assumes "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A"
-  shows "(op``, op``) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
+  shows "((``), (``)) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
   apply (clarsimp simp: set_rel_def; intro conjI)  
   apply (fastforce dest: IS_RIGHT_UNIQUED[OF assms(2)])
   apply (fastforce dest: IS_LEFT_UNIQUED[OF assms(1)])
   done
 
-lemma pres_eq_iff_svb: "(op=,op=)\<in>K\<rightarrow>K\<rightarrow>bool_rel \<longleftrightarrow> (single_valued K \<and> single_valued (K\<inverse>))"
+lemma pres_eq_iff_svb: "((=),(=))\<in>K\<rightarrow>K\<rightarrow>bool_rel \<longleftrightarrow> (single_valued K \<and> single_valued (K\<inverse>))"
   apply (safe intro!: single_valuedI)
   apply (metis (full_types) IdD fun_relD1)
   apply (metis (full_types) IdD fun_relD1)
   by (auto dest: single_valuedD)
 
-definition "IS_PRES_EQ R \<equiv> (op =, op =)\<in>R\<rightarrow>R\<rightarrow>bool_rel"
+definition "IS_PRES_EQ R \<equiv> ((=), (=))\<in>R\<rightarrow>R\<rightarrow>bool_rel"
 lemma [constraint_rules]: "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> IS_PRES_EQ R"
   by (simp add: pres_eq_iff_svb IS_PRES_EQ_def)
 
@@ -880,7 +880,7 @@ lemma option_assn_eq[sepref_comb_rules]:
     (eq' va' vb') 
     (\<Gamma>' va va' vb vb') 
     bool_assn
-    (RETURN$(op=$va$vb))"
+    (RETURN$((=) $va$vb))"
   assumes F2: 
     "\<And>va va' vb vb'. 
       \<Gamma>' va va' vb vb' \<Longrightarrow>\<^sub>t hn_ctxt P va va' * hn_ctxt P vb vb' * \<Gamma>1"
@@ -889,7 +889,7 @@ lemma option_assn_eq[sepref_comb_rules]:
     (imp_option_eq eq' a' b') 
     (hn_ctxt (option_assn P) a a' * hn_ctxt (option_assn P) b b' * \<Gamma>1)
     bool_assn 
-    (RETURN$(op=$a$b))"
+    (RETURN$((=) $a$b))"
   apply (rule hn_refine_cons_pre[OF F1])
   unfolding imp_option_eq_def
   apply rule
@@ -911,8 +911,8 @@ lemma option_assn_eq[sepref_comb_rules]:
   done
 
 lemma [pat_rules]: 
-  "op=$a$None \<equiv> is_None$a"
-  "op=$None$a \<equiv> is_None$a"
+  "(=) $a$None \<equiv> is_None$a"
+  "(=) $None$a \<equiv> is_None$a"
   apply (rule eq_reflection, simp split: option.split)+
   done
 
@@ -1205,7 +1205,7 @@ lemma hn_Nil[sepref_fr_rules]:
 
 lemma hn_Cons[sepref_fr_rules]: "hn_refine (hn_ctxt P x x' * hn_ctxt (list_assn P) xs xs') 
   (return (x'#xs')) (hn_invalid P x x' * hn_invalid (list_assn P) xs xs') (list_assn P)
-  (RETURN$(op #$x$xs))"
+  (RETURN$((#) $x$xs))"
   unfolding hn_refine_def
   apply (sep_auto simp: hn_ctxt_def)
   apply (rule ent_frame_fwd[OF invalidate_clone'[of P]], frame_inference)
@@ -1229,7 +1229,7 @@ lemma list_assn_aux_eqlen_simp:
 
 lemma hn_append[sepref_fr_rules]: "hn_refine (hn_ctxt (list_assn P) l1 l1' * hn_ctxt (list_assn P) l2 l2')
   (return (l1'@l2')) (hn_invalid (list_assn P) l1 l1' * hn_invalid (list_assn P) l2 l2') (list_assn P)
-  (RETURN$(op @$l1$l2))"
+  (RETURN$((@) $l1$l2))"
   apply rule
   apply (sep_auto simp: hn_ctxt_def)
   apply (subst list_assn_aux_len)
@@ -1340,11 +1340,11 @@ lemma [sepref_monadify_arity]: "case_sum \<equiv> \<lambda>\<^sub>2f1 f2 x. SP c
   by simp
 
 text \<open>This determines an evaluation order for the first-order operands\<close>  
-lemma [sepref_monadify_comb]: "case_sum$f1$f2$x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$f1$f2$x)" by simp
+lemma [sepref_monadify_comb]: "case_sum$f1$f2$x \<equiv> (\<bind>) $(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$f1$f2$x)" by simp
 
 text \<open>This enables translation of the case-distinction in a non-monadic context.\<close>  
 lemma [sepref_monadify_comb]: "EVAL$(case_sum$(\<lambda>\<^sub>2x. f1 x)$(\<lambda>\<^sub>2x. f2 x)$x) 
-  \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$(\<lambda>\<^sub>2x. EVAL $ f1 x)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
+  \<equiv> (\<bind>) $(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$(\<lambda>\<^sub>2x. EVAL $ f1 x)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
   apply (rule eq_reflection)
   by (simp split: sum.splits)
 

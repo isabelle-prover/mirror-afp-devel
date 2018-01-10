@@ -104,7 +104,7 @@ lemma [autoref_itype]:
   "op_map_bex ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i (\<langle>Ik,Iv\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i i_bool) \<rightarrow>\<^sub>i i_bool"
   "op_map_size ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i i_nat"
   "op_map_size_abort ::\<^sub>i i_nat \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i i_nat"
-  "op ++ ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map"
+  "(++) ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map"
   "map_of ::\<^sub>i \<langle>\<langle>Ik,Iv\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map"
 
   "op_map_sel ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i (Ik \<rightarrow>\<^sub>i Iv \<rightarrow>\<^sub>i i_bool) 
@@ -117,7 +117,7 @@ lemma [autoref_itype]:
 lemma hom_map1[autoref_hom]:
   "CONSTRAINT Map.empty (\<langle>Rk,Rv\<rangle>Rm)"
   "CONSTRAINT map_of (\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel \<rightarrow> \<langle>Rk,Rv\<rangle>Rm)"
-  "CONSTRAINT op ++ (\<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk,Rv\<rangle>Rm)"
+  "CONSTRAINT (++) (\<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk,Rv\<rangle>Rm)"
   by simp_all
 
 term op_map_restrict

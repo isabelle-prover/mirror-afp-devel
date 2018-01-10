@@ -18,7 +18,7 @@ the applicative encoding of higher-order terms and assigning the lowest preceden
 application symbol.
 \<close>
 
-locale kbo_app = gt_sym "op >\<^sub>s"
+locale kbo_app = gt_sym "(>\<^sub>s)"
     for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) +
   fixes
     wt_sym :: "'s \<Rightarrow> nat" and
@@ -45,7 +45,7 @@ inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infi
 | gt_sym_sym: "wt_sym g = wt_sym f \<Longrightarrow> g >\<^sub>s f \<Longrightarrow> Hd (Sym g) >\<^sub>t Hd (Sym f)"
 | gt_sym_app: "vars s = {} \<Longrightarrow> wt t = wt s \<Longrightarrow> t = Hd (Sym g) \<Longrightarrow> is_App s \<Longrightarrow> t >\<^sub>t s"
 | gt_app_app: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t = wt s \<Longrightarrow> t = App t1 t2 \<Longrightarrow> s = App s1 s2 \<Longrightarrow>
-    ext (op >\<^sub>t) [t1, t2] [s1, s2] \<Longrightarrow> t >\<^sub>t s"
+    ext (>\<^sub>t) [t1, t2] [s1, s2] \<Longrightarrow> t >\<^sub>t s"
 
 abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"

@@ -85,10 +85,10 @@ subsection {*ENF*}
     apply(case_tac [!] "nP e2")
     apply(simp_all)
     done
-  lemma BLP_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (op \<le>)"
+  lemma BLP_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (\<le>)"
     unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def
     by simp
-  lemma BLP_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (op \<le>)"
+  lemma BLP_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (\<le>)"
     unfolding SecurityInvariant_withOffendingFlows.ENF_refl_def
     apply(rule conjI)
      apply(simp add: BLP_ENF)

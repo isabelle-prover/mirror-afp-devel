@@ -9,7 +9,7 @@ definition bool_RBT :: "bool set"
 where "bool_RBT = insert True (insert False (RBT_set RBT_Set2.empty))"
 
 definition mem :: "bool \<Rightarrow> bool set \<Rightarrow> bool"
-where "mem = op :"
+where "mem = (:)"
 
 ML_val {*
 fun bool_DList () = @{code bool_DList}

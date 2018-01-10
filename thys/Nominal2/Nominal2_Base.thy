@@ -1052,7 +1052,7 @@ by (perm_simp) (rule refl)
 
 text {* 
   In order to prove that lfp is equivariant we need two
-  auxiliary classes which specify that (op <=) and
+  auxiliary classes which specify that (<=) and
   Inf are equivariant. Instances for bool and fun are 
   given.
 *}
@@ -2952,7 +2952,7 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt =>
             (let 
                val atms = a :: HOLogic.strip_tuple b
              in
-               member (op=) atms lhs andalso member (op=) atms rhs
+               member ((=)) atms lhs andalso member ((=)) atms rhs
              end) 
             | _ => false)
          |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
@@ -3343,7 +3343,7 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of                    
            _ $ (Const (cfresh, _) $ (Const (catom, _) $ atm) $ _) => SOME (atm) | _ => NONE)
-      |> distinct (op=)
+      |> distinct ((=))
      
      fun get_thm atm = 
        let

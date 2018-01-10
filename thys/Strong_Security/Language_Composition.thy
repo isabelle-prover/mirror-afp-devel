@@ -158,7 +158,7 @@ proof -
             by auto
         qed          
   
-  hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+  hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
     by (rule Up_To_Technique)
   
   with inR0 show ?thesis
@@ -218,7 +218,7 @@ proof -
         by fastforce
     qed
      
-  hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+  hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
     by (rule Up_To_Technique)
   
   with inR0 show ?thesis
@@ -396,7 +396,7 @@ proof -
           by (auto simp add: R0_def)
         qed
        
-  hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+  hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
     by (rule Up_To_Technique)
   
   with inR0 show ?thesis
@@ -657,7 +657,7 @@ proof -
             qed
           qed
                   
-  hence "R0 \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
+  hence "R0 \<subseteq> \<approx>\<^bsub>d\<^esub>"
     by (rule Up_To_Technique)
   
   with inR0 show ?thesis

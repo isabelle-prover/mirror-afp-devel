@@ -15,7 +15,7 @@ subsection \<open>The Option Type is Well-Quasi-Ordered\<close>
 
 instantiation option :: (wqo) wqo
 begin
-definition "x \<le> y \<longleftrightarrow> option_le (op \<le>) x y"
+definition "x \<le> y \<longleftrightarrow> option_le (\<le>) x y"
 definition "(x :: 'a option) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
 
 instance
@@ -28,7 +28,7 @@ subsection \<open>The Sum Type is Well-Quasi-Ordered\<close>
 
 instantiation sum :: (wqo, wqo) wqo
 begin
-definition "x \<le> y \<longleftrightarrow> sum_le (op \<le>) (op \<le>) x y"
+definition "x \<le> y \<longleftrightarrow> sum_le (\<le>) (\<le>) x y"
 definition "(x :: 'a + 'b) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
 
 instance
@@ -45,7 +45,7 @@ the pointwise combination of @{text P} and @{text Q}.\<close>
 
 instantiation prod :: (wqo, wqo) wqo
 begin
-definition "p \<le> q \<longleftrightarrow> prod_le (op \<le>) (op \<le>) p q"
+definition "p \<le> q \<longleftrightarrow> prod_le (\<le>) (\<le>) p q"
 definition "(p :: 'a \<times> 'b) < q \<longleftrightarrow> p \<le> q \<and> \<not> (q \<le> p)"
 
 instance
@@ -62,7 +62,7 @@ embedding relation.\<close>
 
 instantiation list :: (wqo) wqo
 begin
-definition "xs \<le> ys \<longleftrightarrow> list_emb (op \<le>) xs ys"
+definition "xs \<le> ys \<longleftrightarrow> list_emb (\<le>) xs ys"
 definition "(xs :: 'a list) < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> (ys \<le> xs)"
 
 instance

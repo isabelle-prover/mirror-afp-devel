@@ -145,7 +145,7 @@ locale impl_model_checker =
     "\<And>cfg. (find_ce_impl cfg,find_ce_spec)
       \<in> igbg_rel \<rightarrow> \<langle>\<langle>\<langle>ce_rel\<rangle>option_rel\<rangle>option_rel\<rangle>plain_nres_rel"
 
-  assumes map_run_refine: "(map_run_impl,op o) \<in> (Id \<rightarrow> Id) \<rightarrow> ce_rel \<rightarrow> mce_rel"
+  assumes map_run_refine: "(map_run_impl,(o)) \<in> (Id \<rightarrow> Id) \<rightarrow> ce_rel \<rightarrow> mce_rel"
 
 
 begin

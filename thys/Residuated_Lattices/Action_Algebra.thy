@@ -34,7 +34,7 @@ class action_algebra = residuated_sup_lgroupoid + dioid_one_zero + star_op +
   and star_rtc2: "1 + y \<cdot> y + x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y"
 begin
 
-lemma plus_sup: "op + = op \<squnion>"
+lemma plus_sup: "(+) = (\<squnion>)"
   by (rule ext)+ (simp add: local.join.sup_unique)
 
 text {* We first prove a reflexivity property for residuals. *}

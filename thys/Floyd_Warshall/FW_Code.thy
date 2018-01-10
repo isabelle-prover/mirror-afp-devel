@@ -63,7 +63,7 @@ context
   fixes dummy :: "'a::{linordered_ab_monoid_add,zero,heap}"
 begin
 
-lemma [sepref_import_param]: "(op+,op+::'a\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
+lemma [sepref_import_param]: "((+),(+)::'a\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
 lemma [sepref_import_param]: "(min,min::'a\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
 
 abbreviation "node_assn \<equiv> nat_assn"

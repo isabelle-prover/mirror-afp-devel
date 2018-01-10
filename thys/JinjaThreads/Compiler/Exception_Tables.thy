@@ -131,7 +131,7 @@ lemma compxE2_size_convs [simp]: "n \<noteq> 0 \<Longrightarrow> compxE2 e n d =
  and compxEs2_size_convs: "n \<noteq> 0 \<Longrightarrow> compxEs2 es n d = shift n (compxEs2 es 0 d)" 
 by(simp_all add:shift_compxE2 shift_compxEs2)
 
-lemma pcs_shift_conv [simp]: "pcs (shift n xt) = op + n ` pcs xt"
+lemma pcs_shift_conv [simp]: "pcs (shift n xt) = (+) n ` pcs xt"
 apply(auto simp add: shift_def pcs_def)
 apply(rule_tac x="x-n" in image_eqI)
 apply(auto)
@@ -143,7 +143,7 @@ done
 
 lemma image_plus_const_conv [simp]:
   fixes m :: nat
-  shows "m \<in> op + n ` A \<longleftrightarrow> m \<ge> n \<and> m - n \<in> A"
+  shows "m \<in> (+) n ` A \<longleftrightarrow> m \<ge> n \<and> m - n \<in> A"
 by(force)
 
 lemma match_ex_table_shift_eq_None_conv [simp]:

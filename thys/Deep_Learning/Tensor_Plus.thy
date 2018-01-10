@@ -157,7 +157,7 @@ shows tensor_add_0_left[simp]:  "tensor0 (dims A) + A = A"
 
 
 definition listsum::"nat list \<Rightarrow> 'a::monoid_add tensor list \<Rightarrow> 'a tensor" where
-"listsum ds As = foldr (op +) As (tensor0 ds)"
+"listsum ds As = foldr (+) As (tensor0 ds)"
 
 definition listsum'::"'a::monoid_add tensor list \<Rightarrow> 'a tensor" where
 "listsum' As = listsum (dims (hd As)) As"

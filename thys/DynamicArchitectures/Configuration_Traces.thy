@@ -322,7 +322,7 @@ proof -
   also have "\<dots> = lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) (t @\<^sub>l t'))" by simp
   also from assms have "\<dots> = lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf))
     ((lfilter (active c) t) @\<^sub>l (lfilter (active c) t'))" by simp
-  also have "\<dots> = op @\<^sub>l (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t))
+  also have "\<dots> = (@\<^sub>l) (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t))
     (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t'))" using lmap_lappend_distrib by simp
   also have "\<dots> = ?rhs" using proj_def by simp
   finally show ?thesis .
@@ -615,12 +615,12 @@ qed
 subsubsection "Monotonicity and Continuity"
   
 lemma nAct_mcont:
-  shows "mcont lSup lprefix Sup op \<le> (nAct c n)"
+  shows "mcont lSup lprefix Sup (\<le>) (nAct c n)"
 proof -
   have "mcont lSup lprefix lSup lprefix (ltake n)" by simp
   hence "mcont lSup lprefix lSup lprefix (\<lambda>t. \<pi>\<^bsub>c\<^esub>(ltake n t))"
     using proj_mcont2mcont[of lSup lprefix "(ltake n)"] by simp
-  hence "mcont lSup lprefix Sup op \<le> (\<lambda>t. llength (\<pi>\<^bsub>c\<^esub>(ltake n t)))" by simp
+  hence "mcont lSup lprefix Sup (\<le>) (\<lambda>t. llength (\<pi>\<^bsub>c\<^esub>(ltake n t)))" by simp
   moreover have "nAct c n = (\<lambda>t. llength (\<pi>\<^bsub>c\<^esub>(ltake n t)))" using nAct_def by auto
   ultimately show ?thesis by simp
 qed

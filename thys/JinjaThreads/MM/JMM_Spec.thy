@@ -385,7 +385,7 @@ lemma actionsE:
 using assms unfolding actions_def by blast
 
 lemma actions_lappend:
-  "llength xs = enat n \<Longrightarrow> actions (lappend xs ys) = actions xs \<union> (op + n) ` actions ys"
+  "llength xs = enat n \<Longrightarrow> actions (lappend xs ys) = actions xs \<union> ((+) n) ` actions ys"
 unfolding actions_def
 apply safe
   apply(erule contrapos_np)
@@ -1033,7 +1033,7 @@ locale sc_legal =
   \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and>
                  (\<forall>a \<in> read_actions E'. if a < r then ws' a = ws a else P,E' \<turnstile> ws' a \<le>hb a) \<and>
                  action_tid E' r = action_tid E r \<and> 
-                 (if r \<in> read_actions E then sim_action else op =) (action_obs E' r) (action_obs E r) \<and>
+                 (if r \<in> read_actions E then sim_action else (=)) (action_obs E' r) (action_obs E r) \<and>
                  (r \<in> actions E \<longrightarrow> r \<in> actions E')"
 
 locale jmm_consistent =

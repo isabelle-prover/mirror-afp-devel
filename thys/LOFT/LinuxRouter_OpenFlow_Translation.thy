@@ -201,7 +201,7 @@ proof -
     qed
     show ?thesis
 	proof
-		let ?mf = "map_option (apsnd (wordNOT \<circ> mask \<circ> op - 16) \<circ> prefix_match_dtor)"
+		let ?mf = "map_option (apsnd (wordNOT \<circ> mask \<circ> (-) 16) \<circ> prefix_match_dtor)"
 		let ?gr = "simple_match_to_of_match_single r
 			(if iiface r = ifaceAny then None else Some (p_iiface p)) 
 			(if proto r = ProtoAny then ProtoAny else Proto (p_proto p))

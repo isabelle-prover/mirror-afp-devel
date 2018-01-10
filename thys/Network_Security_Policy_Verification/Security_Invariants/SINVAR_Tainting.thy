@@ -123,10 +123,10 @@ begin
   
   
   subsubsection {*ENF*}
-    private lemma Taints_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (op \<subseteq>)"
+    private lemma Taints_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (\<subseteq>)"
       unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def sinvar_def
       by simp
-    private lemma Taints_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (op \<subseteq>)"
+    private lemma Taints_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (\<subseteq>)"
       unfolding SecurityInvariant_withOffendingFlows.ENF_refl_def
        by(auto simp add: Taints_ENF)
   

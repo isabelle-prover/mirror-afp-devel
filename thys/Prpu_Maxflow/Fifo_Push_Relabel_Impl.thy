@@ -454,9 +454,9 @@ proof -
   from am_to_adj_nodes_refine[OF AM] have "set (am s) \<subseteq> V"
     using adjacent_nodes_ss_V
     by (auto simp: list_set_rel_def in_br_conv)
-  hence "q_init am \<le> RETURN (filter (op \<noteq> t) (am s))"
+  hence "q_init am \<le> RETURN (filter ((\<noteq>) t) (am s))"
     unfolding q_init_def q_empty_def q_enqueue_def am_get_def
-    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 _ l. l = filter (op \<noteq> t) l1"])  
+    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 _ l. l = filter ((\<noteq>) t) l1"])  
     by auto  
   also have "\<dots> 
     \<le> (spec l. distinct l \<and> set l = {v \<in> V - {s, t}. excess pp_init_f v \<noteq> 0})"    

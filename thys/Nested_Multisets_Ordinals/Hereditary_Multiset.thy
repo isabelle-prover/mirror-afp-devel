@@ -55,15 +55,15 @@ subsection \<open>Restriction of Dershowitz and Manna's Nested Multiset Order\<c
 instantiation hmultiset :: linorder
 begin
 
-lift_definition less_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> bool" is "op <" .
-lift_definition less_eq_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> bool" is "(<)" .
+lift_definition less_eq_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> bool" is "(\<le>)" .
 
 instance
   by (intro_classes; transfer) auto
 
 end
 
-lemma less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M: "HMSet M < HMSet N \<longleftrightarrow> less_multiset_ext\<^sub>D\<^sub>M (op <) M N"
+lemma less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M: "HMSet M < HMSet N \<longleftrightarrow> less_multiset_ext\<^sub>D\<^sub>M (<) M N"
   unfolding less_multiset_ext\<^sub>D\<^sub>M_def
 proof (transfer, unfold less_nmultiset.simps less_multiset_ext\<^sub>D\<^sub>M_def, safe)
   fix M N :: "unit nmultiset multiset" and X Y

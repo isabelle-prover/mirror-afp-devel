@@ -14,7 +14,7 @@ definition [simp]: "op_uprio_insert s e a \<equiv> s(e \<mapsto> a)"
 definition op_uprio_prio :: "('e\<rightharpoonup>'a)\<Rightarrow>'e\<rightharpoonup>'a"
   where [simp]: "op_uprio_prio s e \<equiv> s e"
 
-(* FIXME: Tune id-op phase such that it can distinguish those patterns!
+(* FIXME: Tune id-(phase) such that it can distinguish those patterns!
   For now: Only include this patterns on demand!
 *)
 context begin interpretation autoref_syn .
@@ -197,7 +197,7 @@ lemma (in set_empty) empty_autoref[autoref_rules]:
   by (simp add: br_def empty_correct)
 
 lemma (in set_memb) memb_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (memb,op \<in>)\<in>Rk\<rightarrow>\<langle>Rk\<rangle>rel\<rightarrow>Id"
+  "PREFER_id Rk \<Longrightarrow> (memb,(\<in>))\<in>Rk\<rightarrow>\<langle>Rk\<rangle>rel\<rightarrow>Id"
   apply simp
   by (auto simp add: memb_correct br_def)
 
@@ -255,7 +255,7 @@ lemma (in set_size_abort) size_abort_autoref[autoref_rules]:
     (auto simp add: size_abort_correct op_set_size_abort_def br_def)
 
 lemma (in set_union) union_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (union,op \<union>)\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s3.rel"
+  "PREFER_id Rk \<Longrightarrow> (union,(\<union>))\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s3.rel"
   by simp (auto simp add: union_correct br_def)
 
 context set_union_dj begin
@@ -266,7 +266,7 @@ lemma union_dj_autoref[autoref_rules]:
   assumes "SIDE_PRECOND_OPT (a'\<inter>b'={})"
   assumes "(a,a')\<in>\<langle>Rk\<rangle>s1.rel"
   assumes "(b,b')\<in>\<langle>Rk\<rangle>s2.rel"
-  shows "(union_dj a b,(OP op \<union> ::: \<langle>Rk\<rangle>s1.rel \<rightarrow> \<langle>Rk\<rangle>s2.rel \<rightarrow> \<langle>Rk\<rangle>s3.rel)$a'$b')
+  shows "(union_dj a b,(OP (\<union>) ::: \<langle>Rk\<rangle>s1.rel \<rightarrow> \<langle>Rk\<rangle>s2.rel \<rightarrow> \<langle>Rk\<rangle>s3.rel)$a'$b')
     \<in>\<langle>Rk\<rangle>s3.rel"
   using assms 
   by simp (auto simp: union_dj_correct br_def)
@@ -274,7 +274,7 @@ end
 end
 
 lemma (in set_diff) diff_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (diff,op -)\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s1.rel"
+  "PREFER_id Rk \<Longrightarrow> (diff,(-))\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s1.rel"
   by simp (auto simp add: diff_correct br_def)
 
 lemma (in set_filter) filter_autoref[autoref_rules]: 
@@ -283,15 +283,15 @@ lemma (in set_filter) filter_autoref[autoref_rules]:
     br_def)
 
 lemma (in set_inter) inter_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (inter,op \<inter>)\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s3.rel"
+  "PREFER_id Rk \<Longrightarrow> (inter,(\<inter>))\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>\<langle>Rk\<rangle>s3.rel"
   by simp (auto simp add: inter_correct br_def)
 
 lemma (in set_subset) subset_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (subset,op \<subseteq>)\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>Id"
+  "PREFER_id Rk \<Longrightarrow> (subset,(\<subseteq>))\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>Id"
   by simp (auto simp add: subset_correct br_def)
 
 lemma (in set_equal) equal_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (equal,op =)\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>Id"
+  "PREFER_id Rk \<Longrightarrow> (equal,(=))\<in>\<langle>Rk\<rangle>s1.rel\<rightarrow>\<langle>Rk\<rangle>s2.rel\<rightarrow>Id"
   by simp (auto simp add: equal_correct br_def)
 
 lemma (in set_disjoint) disjoint_autoref[autoref_rules]: 
@@ -347,7 +347,7 @@ lemma (in poly_set_iterateoi) proper_o[proper_it]:
 
 lemma (in poly_set_iterateoi) autoref_iterateoi[autoref_ga_rules]: 
   "REL_IS_ID Rk \<Longrightarrow> 
-    is_set_to_sorted_list op \<le> Rk rel (it_to_list iterateoi)"
+    is_set_to_sorted_list (\<le>) Rk rel (it_to_list iterateoi)"
   unfolding is_set_to_sorted_list_def it_to_list_def it_to_sorted_list_def
   apply (simp add: br_def, intro allI impI)
   apply (drule iterateoi_correct)
@@ -360,7 +360,7 @@ lemma (in poly_set_iterateoi) autoref_iterateoi[autoref_ga_rules]:
 
 lemma (in poly_set_rev_iterateoi) autoref_rev_iterateoi[autoref_ga_rules]: 
   "REL_IS_ID Rk \<Longrightarrow> 
-    is_set_to_sorted_list op \<ge> Rk rel (it_to_list rev_iterateoi)"
+    is_set_to_sorted_list (\<ge>) Rk rel (it_to_list rev_iterateoi)"
   unfolding is_set_to_sorted_list_def it_to_list_def it_to_sorted_list_def
   apply (simp add: br_def, intro allI impI)
   apply (drule rev_iterateoi_correct)
@@ -445,7 +445,7 @@ lemma (in map_restrict) restrict_autoref[autoref_rules]:
   done
 
 lemma (in map_add) add_autoref[autoref_rules]: 
-  "PREFER_id Rk \<Longrightarrow> (add,op ++)\<in>\<langle>Rk,Rv\<rangle>rel\<rightarrow>\<langle>Rk,Rv\<rangle>rel\<rightarrow>\<langle>Rk,Rv\<rangle>rel"
+  "PREFER_id Rk \<Longrightarrow> (add,(++))\<in>\<langle>Rk,Rv\<rangle>rel\<rightarrow>\<langle>Rk,Rv\<rangle>rel\<rightarrow>\<langle>Rk,Rv\<rangle>rel"
   apply (auto simp add: add_correct rel_alt Map.map_add_def
     split: option.split)
   apply (drule_tac x=x in spec)+
@@ -462,7 +462,7 @@ lemma add_dj_autoref[autoref_rules]:
   assumes "SIDE_PRECOND_OPT (dom a' \<inter> dom b' = {})"
   assumes "(a,a')\<in>\<langle>Rk,Rv\<rangle>rel"
   assumes "(b,b')\<in>\<langle>Rk,Rv\<rangle>rel"
-  shows "(add_dj a b, (OP op ++ ::: \<langle>Rk,Rv\<rangle>rel \<rightarrow> \<langle>Rk,Rv\<rangle>rel \<rightarrow> \<langle>Rk,Rv\<rangle>rel) $ a' $ b')\<in>\<langle>Rk,Rv\<rangle>rel"
+  shows "(add_dj a b, (OP (++) ::: \<langle>Rk,Rv\<rangle>rel \<rightarrow> \<langle>Rk,Rv\<rangle>rel \<rightarrow> \<langle>Rk,Rv\<rangle>rel) $ a' $ b')\<in>\<langle>Rk,Rv\<rangle>rel"
   using assms
   apply simp
   apply (subgoal_tac "dom (\<alpha> a) \<inter> dom (\<alpha> b) = {}")
@@ -614,7 +614,7 @@ lemma (in poly_map_iterateoi) proper_o[proper_it]:
 lemma (in poly_map_iterateoi) autoref_iterateoi[autoref_ga_rules]: 
   assumes ID: "REL_IS_ID Rk"
     "REL_IS_ID Rv" (* TODO: Unnecessary*)
-  shows "is_map_to_sorted_list op \<le> Rk Rv rel (it_to_list iterateoi)"
+  shows "is_map_to_sorted_list (\<le>) Rk Rv rel (it_to_list iterateoi)"
 proof -
   from ID have [simp]: "Rk=Id" "Rv = Id" by simp_all
 
@@ -644,7 +644,7 @@ proof -
     from M show "map_to_set m' = set (it_to_list iterateoi m)"
       by (simp add: M' map_of_map_to_set[OF D])
 
-    from S show "sorted_by_rel (key_rel op \<le>) (it_to_list iterateoi m)"
+    from S show "sorted_by_rel (key_rel (\<le>)) (it_to_list iterateoi m)"
       by (simp add: key_rel_def[abs_def])
 
   qed
@@ -658,7 +658,7 @@ lemma (in poly_map_rev_iterateoi) proper_ro[proper_it]:
 lemma (in poly_map_rev_iterateoi) autoref_rev_iterateoi[autoref_ga_rules]: 
   assumes ID: "REL_IS_ID Rk"
     "REL_IS_ID Rv" (* TODO: Unnecessary*)
-  shows "is_map_to_sorted_list op \<ge> Rk Rv rel (it_to_list rev_iterateoi)"
+  shows "is_map_to_sorted_list (\<ge>) Rk Rv rel (it_to_list rev_iterateoi)"
 proof -
   from ID have [simp]: "Rk=Id" "Rv = Id" by simp_all
 
@@ -688,7 +688,7 @@ proof -
     from M show "map_to_set m' = set (it_to_list rev_iterateoi m)"
       by (simp add: M' map_of_map_to_set[OF D])
 
-    from S show "sorted_by_rel (key_rel op \<ge>) (it_to_list rev_iterateoi m)"
+    from S show "sorted_by_rel (key_rel (\<ge>)) (it_to_list rev_iterateoi m)"
       by (simp add: key_rel_def[abs_def])
 
   qed

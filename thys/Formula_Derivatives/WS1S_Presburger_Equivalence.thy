@@ -34,12 +34,12 @@ global_interpretation WS1S_Presb: DAs
   "(\<lambda>\<phi>. presb_wf n \<phi> \<and> presb_lformula \<phi>)"
   "(\<lambda>\<phi>. Formula.lang Presburger_Formula.nvars
             Presburger_Formula.Extend Presburger_Formula.CONS Presburger_Formula.Length
-            Presburger_Formula.size_atom op \<Turnstile>0 n \<phi>)"
+            Presburger_Formula.size_atom (\<Turnstile>0) n \<phi>)"
   "(\<lambda>\<phi>. presb_wf n \<phi> \<and> presb_lformula \<phi>)"
   "(\<lambda>\<phi>. Formula.language Presburger_Formula.assigns
             Presburger_Formula.nvars Presburger_Formula.Extend Presburger_Formula.CONS
             Presburger_Formula.Length Presburger_Formula.size_atom (\<lambda>_ _. True)
-            Presburger_Formula.FV0 op \<Turnstile>0
+            Presburger_Formula.FV0 (\<Turnstile>0)
             n \<phi>)"
   "letter_eq idx n"
   defines check_eqv = "\<lambda>idx n. DAs.check_eqv

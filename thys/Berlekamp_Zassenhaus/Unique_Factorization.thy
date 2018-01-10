@@ -57,7 +57,7 @@ lemma (in comm_semiring_1) coprime_0 [simp]:
 
 
 (* TODO: move or...? *)
-lemma dvd_rewrites: "dvd.dvd (op *) = op dvd" by (unfold dvd.dvd_def dvd_def, rule)
+lemma dvd_rewrites: "dvd.dvd (( * )) = (dvd)" by (unfold dvd.dvd_def dvd_def, rule)
 
 (* put in the class context so that it can be used inside the context. *)
 lemma (in comm_monoid_mult) prod_mset_prod_list: "prod_mset (mset xs) = prod_list xs"
@@ -276,7 +276,7 @@ end
 
 context comm_monoid_mult begin
   lemma ddvd_trans[trans]: "x ddvd y \<Longrightarrow> y ddvd z \<Longrightarrow> x ddvd z" using dvd_trans by auto
-  lemma ddvd_transp: "transp (op ddvd)" by (intro transpI, fact ddvd_trans)
+  lemma ddvd_transp: "transp (ddvd)" by (intro transpI, fact ddvd_trans)
 end
 
 context comm_semiring_1 begin
@@ -327,13 +327,13 @@ qed
 
 class ufd = idom +
   assumes mset_factors_exist: "\<And>x. x \<noteq> 0 \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> \<exists>F. mset_factors F x"
-    and mset_factors_unique: "\<And>x F G. x \<noteq> 0 \<Longrightarrow> mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (op ddvd) F G"
+    and mset_factors_unique: "\<And>x F G. x \<noteq> 0 \<Longrightarrow> mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (ddvd) F G"
 
 subsubsection {* Connecting to HOL/Divisibility *}
 
 context comm_semiring_1 begin
 
-  abbreviation "mk_monoid \<equiv> \<lparr>carrier = UNIV - {0}, mult = op *, one = 1\<rparr>"
+  abbreviation "mk_monoid \<equiv> \<lparr>carrier = UNIV - {0}, mult = ( * ), one = 1\<rparr>"
 
   lemma carrier_0[simp]: "x \<in> carrier mk_monoid \<longleftrightarrow> x \<noteq> 0" by auto
 
@@ -346,7 +346,7 @@ context comm_semiring_1 begin
 
   lemma factors: "factors fs y \<longleftrightarrow> prod_list fs = y \<and> Ball (set fs) irred"
   proof -
-    have "prod_list fs = foldr op * fs 1" by (induct fs, auto)
+    have "prod_list fs = foldr ( * ) fs 1" by (induct fs, auto)
     thus ?thesis unfolding factors_def by auto
   qed
 
@@ -366,10 +366,10 @@ context idom begin
   lemma factor_idom[simp]: "factor (x::'a) y \<longleftrightarrow> (if y = 0 then x = 0 else x dvd y)"
     by (cases "y = 0"; auto intro: exI[of _ 1] elim: dvdE simp: factor)
 
-  lemma associated_connect[simp]: "op \<sim>\<^bsub>mk_monoid\<^esub> = op ddvd" by (intro ext, unfold associated_def, auto)
+  lemma associated_connect[simp]: "(\<sim>\<^bsub>mk_monoid\<^esub>) = (ddvd)" by (intro ext, unfold associated_def, auto)
 
   lemma essentially_equal_connect[simp]:
-    "essentially_equal mk_monoid fs gs \<longleftrightarrow> rel_mset (op ddvd) (mset fs) (mset gs)"
+    "essentially_equal mk_monoid fs gs \<longleftrightarrow> rel_mset (ddvd) (mset fs) (mset gs)"
     by (auto simp: essentially_equal_def rel_mset_via_perm)
 
   lemma irred_idom_nz:
@@ -466,7 +466,7 @@ context ufd begin
        and gs: "factors gs a"
        and a0: "a \<noteq> 0"
        and a1: "\<not> a dvd 1"
-    shows "rel_mset op ddvd (mset fs) (mset gs)"
+    shows "rel_mset (ddvd) (mset fs) (mset gs)"
   proof-
     from a1 have "a \<noteq> 1" by auto
     with a0 fs gs have "mset_factors (mset fs) a" "mset_factors (mset gs) a" by (unfold factors_as_mset_factors)
@@ -480,7 +480,7 @@ end
 
 lemma (in idom) factorial_monoid_imp_ufd:
   assumes "factorial_monoid (mk_monoid :: 'a monoid)"
-  shows "class.ufd (op * :: 'a \<Rightarrow> _) 1 (op +) 0 (op -) uminus"
+  shows "class.ufd (( * ) :: 'a \<Rightarrow> _) 1 (+) 0 (-) uminus"
 proof (unfold_locales)
   interpret factorial_monoid "mk_monoid :: 'a monoid" by (fact assms)
   {
@@ -496,7 +496,7 @@ proof (unfold_locales)
   from x1 have "x \<noteq> 1" by auto
   note FG[folded factors_as_mset_factors[OF x0 this]]
   from factors_unique[OF this, simplified, OF x0 x1, folded fsgs] 0
-  show "rel_mset op ddvd F G" by auto
+  show "rel_mset (ddvd) F G" by auto
 qed
 
 
@@ -592,7 +592,7 @@ lemma(in ufd) dvd_imp_subset_factors:
   assumes ab: "a dvd b"
       and F: "mset_factors F a"
       and G: "mset_factors G b"
-  shows "\<exists>G'. G' \<subseteq># G \<and> rel_mset (op ddvd) F G'"
+  shows "\<exists>G'. G' \<subseteq># G \<and> rel_mset (ddvd) F G'"
 proof-
   from F G have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by (simp_all add: mset_factors_imp_nonzero)
   from ab obtain c where c: "b = a * c" by (elim dvdE, auto)
@@ -617,10 +617,10 @@ proof-
           }
           ultimately have "mset_factors (F' + {#f * c#}) b" by (intro mset_factorsI, auto)
           from mset_factors_unique[OF b0 this G]
-          have F'G: "rel_mset op ddvd (F' + {#f * c#}) G".
-          from True add have FF': "rel_mset op ddvd F (F' + {#f * c#})"
+          have F'G: "rel_mset (ddvd) (F' + {#f * c#}) G".
+          from True add have FF': "rel_mset (ddvd) F (F' + {#f * c#})"
             by (auto simp add: multiset.rel_refl intro!: rel_mset_Plus)
-          have "rel_mset op ddvd F G"
+          have "rel_mset (ddvd) F G"
             apply(rule transpD[OF multiset.rel_transp[OF transpI] FF' F'G])
             using ddvd_trans.
           then show ?thesis by auto
@@ -631,7 +631,7 @@ proof-
       from c mset_factors_mult[OF F H] have "mset_factors (F + H) b" by auto
       note mset_factors_unique[OF b0 this G]
       from rel_mset_split[OF this] obtain G1 G2
-        where "G = G1 + G2" "rel_mset (op ddvd) F G1" "rel_mset (op ddvd) H G2" by auto
+        where "G = G1 + G2" "rel_mset (ddvd) F G1" "rel_mset (ddvd) H G2" by auto
       then show ?thesis by (intro exI[of _ "G1"], auto)
   qed
 qed
@@ -685,7 +685,7 @@ lemma(in ufd) irreducible_dvd_imp_factor:
 proof-
   from a have "mset_factors {#a#} a" by auto
   from dvd_imp_subset_factors[OF ab this G]
-  obtain G' where G'G: "G' \<subseteq># G" and rel: "rel_mset (op ddvd) {#a#} G'" by auto
+  obtain G' where G'G: "G' \<subseteq># G" and rel: "rel_mset (ddvd) {#a#} G'" by auto
   with rel_mset_size size_1_singleton_mset size_single
   obtain g where gG': "G' = {#g#}" by fastforce
   from rel[unfolded this rel_mset_def]
@@ -748,7 +748,7 @@ proof (intro iffI, fact prime_elem_imp_irreducible, rule prime_elemI)
         obtain hs where "mset hs = H" using ex_mset by auto
         then have "mset (x#hs) = add_mset x H" by auto
         from rel_mset_free[OF rel this]
-        obtain jjs where jjsGH: "mset jjs = F + G" and rel: "list_all2 op ddvd (x # hs) jjs" by auto
+        obtain jjs where jjsGH: "mset jjs = F + G" and rel: "list_all2 (ddvd) (x # hs) jjs" by auto
         then obtain j js where jjs: "jjs = j # js" by (cases jjs, auto)
         with rel have xj: "x ddvd j" by auto
         from jjs jjsGH have j: "j \<in> set_mset (F + G)" by (intro union_single_eq_member, auto)
@@ -1011,7 +1011,7 @@ end
 
 subclass (in ring_gcd) idom_gcd by (unfold_locales, auto)
 
-lemma coprime_rewrites: "comm_monoid_mult.coprime (op *) 1 = coprime"
+lemma coprime_rewrites: "comm_monoid_mult.coprime (( * )) 1 = coprime"
   apply (intro ext)
   apply (subst comm_monoid_mult.coprime_def')
   apply (unfold_locales)
@@ -1023,13 +1023,13 @@ locale gcd_condition =
   fixes ty :: "'a :: idom itself"
   assumes gcd_exists: "\<And>a b :: 'a. \<exists>x. is_gcd x a b"
 begin
-  sublocale idom_gcd "op *" "1 :: 'a" "op +" 0 "op -" uminus some_gcd 
-    rewrites "dvd.dvd (op *) = op dvd"
-        and "comm_monoid_mult.coprime (op * ) 1 = Unique_Factorization.coprime"
+  sublocale idom_gcd "( * )" "1 :: 'a" "(+)" 0 "(-)" uminus some_gcd 
+    rewrites "dvd.dvd (( * )) = (dvd)"
+        and "comm_monoid_mult.coprime (( * ) ) 1 = Unique_Factorization.coprime"
   proof-
     have "is_gcd (some_gcd a b) a b" for a b :: 'a by (intro is_gcd_some_gcdI gcd_exists)
     from this[unfolded is_gcd_def]
-    show "class.idom_gcd op * (1 :: 'a) op + 0 op - uminus some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
+    show "class.idom_gcd ( * ) (1 :: 'a) (+) 0 (-) uminus some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
   qed (simp_all add: dvd_rewrites coprime_rewrites)
 end
 
@@ -1091,8 +1091,8 @@ next
   case (2 x F G)
   note transpD[OF multiset.rel_transp[OF ddvd_transp],trans]
   obtain fs where F: "F = mset fs" by (metis ex_mset)
-  have "list_all2 (op ddvd) fs (map normalize fs)" by (intro list_all2_all_nthI, auto)
-  then have FH: "rel_mset (op ddvd) F (image_mset normalize F)" by (unfold rel_mset_def F, force)
+  have "list_all2 (ddvd) fs (map normalize fs)" by (intro list_all2_all_nthI, auto)
+  then have FH: "rel_mset (ddvd) F (image_mset normalize F)" by (unfold rel_mset_def F, force)
   also
     have FG: "image_mset normalize F = image_mset normalize G"
     proof (intro prime_factorization_unique')
@@ -1107,8 +1107,8 @@ next
     qed
   also
     obtain gs where G: "G = mset gs" by (metis ex_mset)
-    have "list_all2 (op ddvd\<inverse>\<inverse>) gs (map normalize gs)" by (intro list_all2_all_nthI, auto)
-    then have "rel_mset (op ddvd) (image_mset normalize G) G"
+    have "list_all2 ((ddvd)\<inverse>\<inverse>) gs (map normalize gs)" by (intro list_all2_all_nthI, auto)
+    then have "rel_mset (ddvd) (image_mset normalize G) G"
       by (subst multiset.rel_flip[symmetric], unfold rel_mset_def G, force)
   finally show ?case.
 qed

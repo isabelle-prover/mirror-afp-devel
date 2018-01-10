@@ -21,7 +21,7 @@ higher-order terms.
 
 subsection \<open>Setup\<close>
 
-locale rpo_basis = ground_heads "op >\<^sub>s" arity_sym arity_var
+locale rpo_basis = ground_heads "(>\<^sub>s)" arity_sym arity_var
     for
       gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
       arity_sym :: "'s \<Rightarrow> enat" and
@@ -73,9 +73,9 @@ lemma chksubs_mono[mono]: "gt \<le> gt' \<Longrightarrow> chksubs gt \<le> chksu
 
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_sub: "is_App t \<Longrightarrow> (fun t >\<^sub>t s \<or> fun t = s) \<or> (arg t >\<^sub>t s \<or> arg t = s) \<Longrightarrow> t >\<^sub>t s"
-| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
-| gt_same: "head t = head s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
+| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (>\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
+| gt_same: "head t = head s \<Longrightarrow> chksubs (>\<^sub>t) t s \<Longrightarrow>
+    (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
 abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
@@ -84,11 +84,11 @@ inductive gt_sub :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" w
   gt_subI: "is_App t \<Longrightarrow> fun t \<ge>\<^sub>t s \<or> arg t \<ge>\<^sub>t s \<Longrightarrow> gt_sub t s"
 
 inductive gt_diff :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
-  gt_diffI: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> gt_diff t s"
+  gt_diffI: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (>\<^sub>t) t s \<Longrightarrow> gt_diff t s"
 
 inductive gt_same :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
-  gt_sameI: "head t = head s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> gt_same t s"
+  gt_sameI: "head t = head s \<Longrightarrow> chksubs (>\<^sub>t) t s \<Longrightarrow>
+    (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> gt_same t s"
 
 lemma gt_iff_sub_diff_same: "t >\<^sub>t s \<longleftrightarrow> gt_sub t s \<or> gt_diff t s \<or> gt_same t s"
   by (subst gt.simps) (auto simp: gt_sub.simps gt_diff.simps gt_same.simps)
@@ -160,7 +160,7 @@ proof (simp only: atomize_imp,
   have chkvar: "chkvar u s"
     by clarsimp (meson u_gt_t t_gt_s gt_imp_vars hd.set_sel(2) vars_head_subseteq subsetCE)
 
-  have chk_u_s_if: "chksubs (op >\<^sub>t) u s" if chk_t_s: "chksubs (op >\<^sub>t) t s"
+  have chk_u_s_if: "chksubs (>\<^sub>t) u s" if chk_t_s: "chksubs (>\<^sub>t) t s"
   proof (cases s)
     case (App s1 s2)
     thus ?thesis
@@ -181,7 +181,7 @@ proof (simp only: atomize_imp,
   proof cases
     case gt_sub_t_s: gt_sub
 
-    have u_gt_s_if_chk_u_t: ?thesis if chk_u_t: "chksubs (op >\<^sub>t) u t"
+    have u_gt_s_if_chk_u_t: ?thesis if chk_u_t: "chksubs (>\<^sub>t) u t"
       using gt_sub_t_s(1)
     proof (cases t)
       case t: (App t1 t2)
@@ -237,13 +237,13 @@ proof (simp only: atomize_imp,
                size_in_args)+
       qed
 
-      have "\<forall>f \<in> ground_heads (head u). extf f (op >\<^sub>t) (args u) (args s)"
+      have "\<forall>f \<in> ground_heads (head u). extf f (>\<^sub>t) (args u) (args s)"
       proof (clarify, rule extf_trans[OF _ _ _ gt_trans_args])
         fix f
         assume f_in_grounds: "f \<in> ground_heads (head u)"
-        show "extf f (op >\<^sub>t) (args u) (args t)"
+        show "extf f (>\<^sub>t) (args u) (args t)"
           using f_in_grounds gt_same_u_t(3) by blast
-        show "extf f (op >\<^sub>t) (args t) (args s)"
+        show "extf f (>\<^sub>t) (args t) (args s)"
           using f_in_grounds gt_same_t_s(3) unfolding gt_same_u_t(1) by blast
       qed auto
       thus ?thesis
@@ -329,7 +329,7 @@ lemma gt_compat_fun:
 proof -
   have t'_ne_t: "t' \<noteq> t"
     using gt_antisym t'_gt_t by blast
-  have extf_args_single: "\<forall>f \<in> ground_heads (head s). extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
+  have extf_args_single: "\<forall>f \<in> ground_heads (head s). extf f (>\<^sub>t) (args s @ [t']) (args s @ [t])"
     by (simp add: extf_compat_list t'_gt_t t'_ne_t)
   show ?thesis
     by (rule gt_same) (auto simp: gt_sub gt_sub_fun t'_gt_t intro!: extf_args_single)
@@ -351,10 +351,10 @@ next
 
   show ?case
   proof (rule gt_same)
-    show "chksubs (op >\<^sub>t) ?v' ?v"
+    show "chksubs (>\<^sub>t) ?v' ?v"
       using ih by (auto intro: gt_sub gt_sub_arg)
   next
-    show "\<forall>f \<in> ground_heads (head ?v'). extf f (op >\<^sub>t) (args ?v') (args ?v)"
+    show "\<forall>f \<in> ground_heads (head ?v'). extf f (>\<^sub>t) (args ?v') (args ?v)"
       by (metis args_apps extf_compat_list gt_irrefl t'_gt_t)
   qed simp
 qed
@@ -374,7 +374,7 @@ proof -
       using gt_sub_fun gt_trans by blast
     moreover have "App s' t >\<^sub>t t"
       by (simp add: gt_sub_arg)
-    ultimately have "chksubs (op >\<^sub>t) (App s' t) (App s t)"
+    ultimately have "chksubs (>\<^sub>t) (App s' t) (App s t)"
       by auto
   }
   note chk_s't_st = this
@@ -387,7 +387,7 @@ proof -
       s'_gt_s: "s' >\<^sub>t s" and
       hd_s'_gt_s: "head s' >\<^sub>h\<^sub>d head s" and
       chkvar_s'_s: "chkvar s' s" and
-      chk_s'_s: "chksubs (op >\<^sub>t) s' s"
+      chk_s'_s: "chksubs (>\<^sub>t) s' s"
       using gt_diff.cases by (auto simp: gt_iff_sub_diff_same)
 
     have chkvar_s't_st: "chkvar (App s' t) (App s t)"
@@ -400,12 +400,12 @@ proof -
     hence
       s'_gt_s: "s' >\<^sub>t s" and
       hd_s'_eq_s: "head s' = head s" and
-      chk_s'_s: "chksubs (op >\<^sub>t) s' s" and
-      gts_args: "\<forall>f \<in> ground_heads (head s'). extf f (op >\<^sub>t) (args s') (args s)"
+      chk_s'_s: "chksubs (>\<^sub>t) s' s" and
+      gts_args: "\<forall>f \<in> ground_heads (head s'). extf f (>\<^sub>t) (args s') (args s)"
       using gt_same.cases by (auto simp: gt_iff_sub_diff_same, metis)
 
     have gts_args_t:
-      "\<forall>f \<in> ground_heads (head (App s' t)). extf f op >\<^sub>t (args (App s' t)) (args (App s t))"
+      "\<forall>f \<in> ground_heads (head (App s' t)). extf f (>\<^sub>t) (args (App s' t)) (args (App s t))"
       using gts_args ext_compat_snoc.compat_append_right[OF extf_compat_snoc] by simp
 
     show ?thesis
@@ -418,7 +418,7 @@ subsection \<open>Stability under Substitution\<close>
 
 lemma gt_imp_chksubs_gt:
   assumes t_gt_s: "t >\<^sub>t s"
-  shows "chksubs (op >\<^sub>t) t s"
+  shows "chksubs (>\<^sub>t) t s"
 proof -
   have "is_App s \<Longrightarrow> t >\<^sub>t fun s \<and> t >\<^sub>t arg s"
     using t_gt_s by (meson gt_sub gt_trans)
@@ -441,8 +441,8 @@ proof (simp only: atomize_imp,
     t_gt_s: "t >\<^sub>t s"
 
   {
-    assume chk_t_s: "chksubs (op >\<^sub>t) t s"
-    have "chksubs (op >\<^sub>t) (subst \<rho> t) (subst \<rho> s)"
+    assume chk_t_s: "chksubs (>\<^sub>t) t s"
+    have "chksubs (>\<^sub>t) (subst \<rho> t) (subst \<rho> s)"
     proof (cases s)
       case s: (Hd \<zeta>)
       show ?thesis
@@ -493,20 +493,20 @@ proof (simp only: atomize_imp,
 
       let ?S = "set (args t) \<union> set (args s)"
 
-      have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
+      have extf_args_s_t: "extf f (>\<^sub>t) (args t) (args s)"
         using gt_same_t_s(3) f_in_grounds wary_\<rho> wary_subst_ground_heads by blast
-      have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
+      have "extf f (>\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
       proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
         have sz_a: "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. {#size ta, size sa#} < {#size t, size s#}"
           by (fastforce intro: Max_lt_imp_lt_mset dest: size_in_args)
         show "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. ta >\<^sub>t sa \<longrightarrow> subst \<rho> ta >\<^sub>t subst \<rho> sa"
           using ih sz_a size_in_args by fastforce
       qed (auto intro!: gt_irrefl elim!: gt_trans)
-      hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+      hence "extf f (>\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
         by (auto simp: gt_same_t_s(1) intro: extf_compat_append_left)
     }
     hence "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
-      extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+      extf f (>\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
       by blast
     thus ?thesis
       by (rule gt_same[OF hd_\<rho>t_eq_\<rho>s chk_\<rho>t_\<rho>s_if[OF gt_same_t_s(2)]])
@@ -531,17 +531,17 @@ proof (simp only: atomize_imp,
 
   let ?case = "t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
 
-  have "chksubs (op >\<^sub>t) t s \<or> s >\<^sub>t t"
+  have "chksubs (>\<^sub>t) t s \<or> s >\<^sub>t t"
     unfolding chksubs_def tm.case_eq_if using ih[of t "fun s"] ih[of t "arg s"]
     by (metis gt_sub add_less_cancel_left gr_s gr_t ground_arg ground_fun size_arg_lt size_fun_lt)
-  moreover have "chksubs (op >\<^sub>t) s t \<or> t >\<^sub>t s"
+  moreover have "chksubs (>\<^sub>t) s t \<or> t >\<^sub>t s"
     unfolding chksubs_def tm.case_eq_if using ih[of "fun t" s] ih[of "arg t" s]
     by (metis gt_sub add_less_cancel_right gr_s gr_t ground_arg ground_fun size_arg_lt size_fun_lt)
   moreover
   {
     assume
-      chksubs_t_s: "chksubs (op >\<^sub>t) t s" and
-      chksubs_s_t: "chksubs (op >\<^sub>t) s t"
+      chksubs_t_s: "chksubs (>\<^sub>t) t s" and
+      chksubs_s_t: "chksubs (>\<^sub>t) s t"
 
     obtain g where g: "head t = Sym g"
       using gr_t by (metis ground_head hd.collapse(2))
@@ -583,19 +583,19 @@ proof (simp only: atomize_imp,
       }
       moreover
       {
-        assume ts_gt_ss: "extf g (op >\<^sub>t) ?ts ?ss"
+        assume ts_gt_ss: "extf g (>\<^sub>t) ?ts ?ss"
         have "t >\<^sub>t s"
           by (rule gt_same[OF hd_t chksubs_t_s]) (auto simp: g ts_gt_ss)
       }
       moreover
       {
-        assume ss_gt_ts: "extf g (op >\<^sub>t) ?ss ?ts"
+        assume ss_gt_ts: "extf g (>\<^sub>t) ?ss ?ts"
         have "s >\<^sub>t t"
           by (rule gt_same[OF hd_t[symmetric] chksubs_s_t]) (auto simp: f[folded g_eq_f] ss_gt_ts)
       }
       ultimately have ?case
         using ih gr_ss gr_ts
-          ext_total.total[OF extf_total, rule_format, of "set ?ts" "set ?ss" "op >\<^sub>t" ?ts ?ss g]
+          ext_total.total[OF extf_total, rule_format, of "set ?ts" "set ?ss" "(>\<^sub>t)" ?ts ?ss g]
         by (metis add_strict_mono in_listsI size_in_args)
     }
     ultimately have ?case
@@ -609,7 +609,7 @@ qed
 subsection \<open>Well-foundedness\<close>
 
 abbreviation gtg :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>g" 50) where
-  "op >\<^sub>t\<^sub>g \<equiv> \<lambda>t s. ground t \<and> t >\<^sub>t s"
+  "(>\<^sub>t\<^sub>g) \<equiv> \<lambda>t s. ground t \<and> t >\<^sub>t s"
 
 theorem gt_wf:
   assumes extf_wf: "\<And>f. ext_wf (extf f)"
@@ -618,11 +618,11 @@ proof -
   have ground_wfP: "wfP (\<lambda>s t. t >\<^sub>t\<^sub>g s)"
     unfolding wfP_iff_no_inf_chain
   proof
-    assume "\<exists>f. inf_chain (op >\<^sub>t\<^sub>g) f"
-    then obtain t where t_bad: "bad (op >\<^sub>t\<^sub>g) t"
+    assume "\<exists>f. inf_chain (>\<^sub>t\<^sub>g) f"
+    then obtain t where t_bad: "bad (>\<^sub>t\<^sub>g) t"
       unfolding inf_chain_def bad_def by blast
 
-    let ?ff = "worst_chain (op >\<^sub>t\<^sub>g) (\<lambda>t s. size t > size s)"
+    let ?ff = "worst_chain (>\<^sub>t\<^sub>g) (\<lambda>t s. size t > size s)"
     let ?U_of = "\<lambda>i. if is_App (?ff i) then {fun (?ff i)} \<union> set (args (?ff i)) else {}"
 
     note wf_sz = wf_app[OF wellorder_class.wf, of size, simplified]
@@ -638,11 +638,11 @@ proof -
     have gr_u: "\<And>u. u \<in> U \<Longrightarrow> ground u"
       unfolding U_def by (auto dest: gr_args) (metis (lifting) empty_iff gr_fun)
 
-    have "\<not> bad (op >\<^sub>t\<^sub>g) u" if u_in: "u \<in> ?U_of i" for u i
+    have "\<not> bad (>\<^sub>t\<^sub>g) u" if u_in: "u \<in> ?U_of i" for u i
     proof
       let ?ti = "?ff i"
 
-      assume u_bad: "bad (op >\<^sub>t\<^sub>g) u"
+      assume u_bad: "bad (>\<^sub>t\<^sub>g) u"
       have sz_u: "size u < size ?ti"
       proof (cases "?ff i")
         case Hd
@@ -680,7 +680,7 @@ proof -
           using Suc sz_u min_worst_chain_Suc[OF wf_sz u_bad] gr by fastforce
       qed
     qed
-    hence u_good: "\<And>u. u \<in> U \<Longrightarrow> \<not> bad (op >\<^sub>t\<^sub>g) u"
+    hence u_good: "\<And>u. u \<in> U \<Longrightarrow> \<not> bad (>\<^sub>t\<^sub>g) u"
       unfolding U_def by blast
 
     have bad_diff_same: "inf_chain (\<lambda>t s. ground t \<and> (gt_diff t s \<or> gt_same t s)) ?ff"
@@ -712,10 +712,10 @@ proof -
         hence uij_gt_i_plus_3: "uij >\<^sub>t ?ff (Suc (Suc i))"
           using gt_trans uij_cases by blast
 
-        have "inf_chain (op >\<^sub>t\<^sub>g) (\<lambda>j. if j = 0 then uij else ?ff (Suc (i + j)))"
+        have "inf_chain (>\<^sub>t\<^sub>g) (\<lambda>j. if j = 0 then uij else ?ff (Suc (i + j)))"
           unfolding inf_chain_def
           by (auto intro!: gr gr_u[OF uij_in] uij_gt_i_plus_3 worst_chain_pred[OF wf_sz t_bad])
-        hence "bad (op >\<^sub>t\<^sub>g) uij"
+        hence "bad (>\<^sub>t\<^sub>g) uij"
           unfolding bad_def by fastforce
         thus False
           using u_good[OF uij_in] by sat
@@ -776,16 +776,16 @@ proof -
       unfolding U_def
       by (cases "is_App (?ff i)", simp_all,
         metis (lifting) neq_iff size_in_args sub.cases sub_args tm.discI(2))
-    moreover have "\<And>i. extf f (op >\<^sub>t) (args (?ff (i + k))) (args (?ff (Suc i + k)))"
+    moreover have "\<And>i. extf f (>\<^sub>t) (args (?ff (i + k))) (args (?ff (Suc i + k)))"
       using bad_same hd_eq_f unfolding inf_chain_def gt_same.simps by auto
     ultimately have "\<And>i. extf f ?gtu (args (?ff (i + k))) (args (?ff (Suc i + k)))"
-      using extf_mono_strong[of _ _ "op >\<^sub>t" "\<lambda>t s. t \<in> U \<and> t >\<^sub>t s"] unfolding U_def by blast
+      using extf_mono_strong[of _ _ "(>\<^sub>t)" "\<lambda>t s. t \<in> U \<and> t >\<^sub>t s"] unfolding U_def by blast
     hence "inf_chain (extf f ?gtu) (\<lambda>i. args (?ff (i + k)))"
       unfolding inf_chain_def by blast
     hence nwf_ext: "\<not> wfP (\<lambda>xs ys. extf f ?gtu ys xs)"
       unfolding wfP_iff_no_inf_chain by fast
 
-    have gtu_le_gtg: "?gtu \<le> op >\<^sub>t\<^sub>g"
+    have gtu_le_gtg: "?gtu \<le> (>\<^sub>t\<^sub>g)"
       by (auto intro!: gr_u)
 
     have "wfP (\<lambda>s t. ?gtu t s)"

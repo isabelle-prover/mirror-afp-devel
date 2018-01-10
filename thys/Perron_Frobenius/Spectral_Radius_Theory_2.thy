@@ -452,7 +452,7 @@ qed
 text \<open>Now we will develop a tight criterion for non-negative real matrices.\<close>
 
 lemma sum_list_approx: assumes kn: "k \<ge> (n :: nat)" and n: "n \<noteq> 0" 
-  shows "0 \<notin> set ks \<Longrightarrow> n * length (filter (op dvd k) ks) \<le> sum_list ks" 
+  shows "0 \<notin> set ks \<Longrightarrow> n * length (filter ((dvd) k) ks) \<le> sum_list ks" 
 proof (induct ks)
   case (Cons x ks)
   {
@@ -524,7 +524,7 @@ proof (cases "n = 0")
     also have "\<dots> = [k'\<leftarrow>ks. k dvd k']" 
       by (unfold filter_id_conv, insert min, auto)
     finally have order_length: "order x (char_poly ?cA) = length [k'\<leftarrow>ks. k dvd k']" .
-    from d[unfolded this] have len: "d + 1 < length (filter (op dvd k) ks)" .
+    from d[unfolded this] have len: "d + 1 < length (filter ((dvd) k) ks)" .
     also have "\<dots> \<le> length ks" by simp
     finally have len3: "d + 1 < length ks" by auto
     from main[OF sum_ks len3 ks0 k_mem len k order_length, folded order_length, OF pf(6)]      
@@ -555,7 +555,7 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
   next
     case False
     with 1 have k: "k \<ge> 2" by auto
-    from 1(5) have "2 * (d + 2) \<le> 2 * length (filter (op dvd k) ks)" by auto
+    from 1(5) have "2 * (d + 2) \<le> 2 * length (filter ((dvd) k) ks)" by auto
     also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
     finally have "2 * (d + 2) \<le> n" by auto
     with size have False by auto
@@ -589,7 +589,7 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
       using compute_set_of_jordan_blocks_minus_1[OF A] by auto
   next
     case k
-    from 1(5) have "3 * (d + 2) \<le> 3 * length (filter (op dvd k) ks)" by auto
+    from 1(5) have "3 * (d + 2) \<le> 3 * length (filter ((dvd) k) ks)" by auto
     also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
     finally have "3 * (d + 2) \<le> n" by auto
     with size have False by auto
@@ -637,7 +637,7 @@ proof (rule jnf_perron_frobenius_generic, goal_cases)
     from 1 root_4 show ?thesis unfolding k4 primitive_root_unity_explicit by auto
   next
     case k
-    from 1(5) have "5 * (d + 2) \<le> 5 * length (filter (op dvd k) ks)" by auto
+    from 1(5) have "5 * (d + 2) \<le> 5 * length (filter ((dvd) k) ks)" by auto
     also have "\<dots> \<le> n" using sum_list_approx[OF k _ 1(3)] 1(1) by auto
     finally have "5 * (d + 2) \<le> n" by auto
     with size have False by auto
@@ -933,13 +933,13 @@ next
     from jnf12[folded sim'[unfolded similar_iff_same_jordan_nf[OF cA cC]]]
     have jnf12: "jordan_nf ?A (?j1 @ ?j2)"  .
     from compute_nr_of_jordan_blocks[OF jnf]
-    have comp1: "?comp A x 2 = length (filter (op = (2, x)) n_as)" for x by auto
+    have comp1: "?comp A x 2 = length (filter ((=) (2, x)) n_as)" for x by auto
     from compute_nr_of_jordan_blocks[OF jnf12]
-    have comp2: "?comp A x 2 = length (filter (op = (2, x)) (?j1 @ ?j2))" for x by auto
+    have comp2: "?comp A x 2 = length (filter ((=) (2, x)) (?j1 @ ?j2))" for x by auto
     note comp1[of "-1"]
-    also have "length (filter (op = (2, - 1)) n_as) \<ge> 1" unfolding n_as by auto
+    also have "length (filter ((=) (2, - 1)) n_as) \<ge> 1" unfolding n_as by auto
     finally have 21: "?comp A (-1) 2 \<ge> 1" .
-    also have "?comp A (-1) 2 = length (filter (op = (2, - 1)) (?j1 @ ?j2))" 
+    also have "?comp A (-1) 2 = length (filter ((=) (2, - 1)) (?j1 @ ?j2))" 
       unfolding comp2 by auto
     finally have g0: "g \<noteq> 0" by auto
     {
@@ -954,8 +954,8 @@ next
       with g0 have False ..
     }
     hence h0: "h \<noteq> 0" by auto
-    from comp2[unfolded comp1, of 1] g0 h0 have "set (filter (op = (2, 1)) n_as) \<noteq> {}" 
-      by (cases "filter (op = (2, 1)) n_as", auto)
+    from comp2[unfolded comp1, of 1] g0 h0 have "set (filter ((=) (2, 1)) n_as) \<noteq> {}" 
+      by (cases "filter ((=) (2, 1)) n_as", auto)
     hence "(2,1) \<in> set n_as" by auto
     thus ?thesis unfolding k2 by auto
   qed

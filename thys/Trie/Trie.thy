@@ -21,7 +21,7 @@ by transfer auto
 lift_definition set_mapping :: "('a,'b)mapping \<Rightarrow> 'b set" is "\<lambda>f. Union(set_option ` range f)" .
 
 lift_definition rel_mapping :: "('b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('a,'b)mapping \<Rightarrow> ('a,'c)mapping \<Rightarrow> bool"
-  is "\<lambda>r. rel_fun (op =) (rel_option r)" .
+  is "\<lambda>r. rel_fun (=) (rel_option r)" .
 
 bnf "('a,'b)mapping"
   map: "Mapping.map id"

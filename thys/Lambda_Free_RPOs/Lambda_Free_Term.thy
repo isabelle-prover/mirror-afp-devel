@@ -411,7 +411,7 @@ end
 
 subsection \<open>Potential Heads of Ground Instances of Variables\<close>
 
-locale ground_heads = gt_sym "op >\<^sub>s" + arity arity_sym arity_var
+locale ground_heads = gt_sym "(>\<^sub>s)" + arity arity_sym arity_var
     for
       gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
       arity_sym :: "'s \<Rightarrow> enat" and

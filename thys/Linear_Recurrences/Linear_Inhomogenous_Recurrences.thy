@@ -17,7 +17,7 @@ definition lir_fps_numerator where
 
 lemma lir_fps_numerator_code [code abstract]:
   "coeffs (lir_fps_numerator m cs f g) = (let N = length cs - 1 in 
-     strip_while (op = 0) [(\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i)) - g k. k \<leftarrow> [0..<N+m]])"
+     strip_while ((=) 0) [(\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i)) - g k. k \<leftarrow> [0..<N+m]])"
   by (simp add: lir_fps_numerator_def Let_def)
 
 
@@ -35,7 +35,7 @@ lemma coeff_0_lr_fps_denominator [simp]: "coeff (lr_fps_denominator cs) 0 = last
 
 lemma lir_fps_numerator_altdef:
   "lir_fps_numerator (length fs + 1 - length cs) cs f g =
-     lir_fps_numerator (length fs + 1 - length cs) cs (op ! fs) g"
+     lir_fps_numerator (length fs + 1 - length cs) cs ((!) fs) g"
 proof -
   define N where "N = length cs - 1"
   define m where "m = length fs + 1 - length cs"
@@ -54,7 +54,7 @@ proof -
   hence "map (\<lambda>k. (\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i)) - g k) [0..<length fs] =
            map (\<lambda>k. (\<Sum>i\<le>min N k. cs ! (N - i) * fs ! (k - i)) - g k) [0..<length fs]"
     by (intro map_cong) simp_all
-  also have "Poly \<dots> = lir_fps_numerator m cs (op ! fs) g" using enough_base
+  also have "Poly \<dots> = lir_fps_numerator m cs ((!) fs) g" using enough_base
     by (cases cs) (simp_all add: lir_fps_numerator_def Let_def m_def N_def)
   finally show ?thesis unfolding m_def .
 qed
@@ -221,7 +221,7 @@ proof -
   interpret linear_inhomogenous_recurrence f "eval_polyexp g" cs fs by fact
   define m where "m = length fs + 1 - length cs"
   let ?num = "lir_fps_numerator m cs f (eval_polyexp g)"
-  let ?num' = "lir_fps_numerator m cs (op ! fs) (eval_polyexp g)"
+  let ?num' = "lir_fps_numerator m cs ((!) fs) (eval_polyexp g)"
   let ?denom = "lr_fps_denominator cs"
  
   have "{..length cs - 1} = {..<length cs}" by (cases cs) auto

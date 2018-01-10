@@ -30,7 +30,7 @@ definition "default_prefix = PrefixMatch 0 0"
 lemma default_prefix_matchall: "prefix_match_semantics default_prefix ip"
   unfolding default_prefix_def by (simp add: valid_prefix_00 zero_prefix_match_all)
 
-definition "sanity_ip_route (r::('a::len) prefix_routing) \<equiv> correct_routing r \<and> unambiguous_routing r \<and> list_all (op \<noteq> '''' \<circ> routing_oiface) r"
+definition "sanity_ip_route (r::('a::len) prefix_routing) \<equiv> correct_routing r \<and> unambiguous_routing r \<and> list_all ((\<noteq>) '''' \<circ> routing_oiface) r"
 text\<open>The parser ensures that @{const sanity_ip_route} holds for any ruleset that is imported.\<close>
 
 (* Hide all the ugly ml in a file with the right extension *)

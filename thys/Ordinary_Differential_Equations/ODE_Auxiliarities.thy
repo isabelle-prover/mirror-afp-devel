@@ -238,7 +238,7 @@ lemma image_mult_atLeastAtMost:
   done
 
 lemma image_add_atLeastAtMost:
-  "op + c ` {x..y::real} = {c + x .. c + y}"
+  "(+) c ` {x..y::real} = {c + x .. c + y}"
   by (auto intro: image_eqI[where x="xa - c" for xa])
 
 lemma min_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longrightarrow> min 0 (h * k::real) \<le> h' * k"
@@ -303,7 +303,7 @@ lemma is_real_interval_union:
 
 lemma is_interval_translationI:
   assumes "is_interval X"
-  shows "is_interval (op + x ` X)"
+  shows "is_interval ((+) x ` X)"
   unfolding is_interval_def
 proof safe
   fix b d e
@@ -313,7 +313,7 @@ proof safe
   hence "e - x \<in> X"
     by (intro mem_is_intervalI[OF assms \<open>b \<in> X\<close> \<open>d \<in> X\<close>, of "e - x"])
       (auto simp: algebra_simps)
-  thus "e \<in> op + x ` X" by force
+  thus "e \<in> (+) x ` X" by force
 qed
 
 lemma is_interval_uminusI:
@@ -337,9 +337,9 @@ lemma is_interval_uminus[simp]: "is_interval (uminus ` x) = is_interval x"
 
 lemma is_interval_neg_translationI:
   assumes "is_interval X"
-  shows "is_interval (op - x ` X)"
+  shows "is_interval ((-) x ` X)"
 proof -
-  have "op - x ` X = op + x ` uminus ` X"
+  have "(-) x ` X = (+) x ` uminus ` X"
     by (force simp: algebra_simps)
   also have "is_interval \<dots>"
     by (metis is_interval_uminusI is_interval_translationI assms)
@@ -347,14 +347,14 @@ proof -
 qed
 
 lemma is_interval_translation[simp]:
-  "is_interval (op + x ` X) = is_interval X"
-  using is_interval_neg_translationI[of "op + x ` X" x]
+  "is_interval ((+) x ` X) = is_interval X"
+  using is_interval_neg_translationI[of "(+) x ` X" x]
   by (auto intro!: is_interval_translationI simp: image_image)
 
 lemma is_interval_minus_translation[simp]:
-  shows "is_interval (op - x ` X) = is_interval X"
+  shows "is_interval ((-) x ` X) = is_interval X"
 proof -
-  have "op - x ` X = op + x ` uminus ` X"
+  have "(-) x ` X = (+) x ` uminus ` X"
     by (force simp: algebra_simps)
   also have "is_interval \<dots> = is_interval X"
     by simp
@@ -384,30 +384,30 @@ lemma [simp]:
 
 lemma image_add_atLeast_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op + c ` {a..} = {c + a..}"
+  shows "(+) c ` {a..} = {c + a..}"
   by (auto intro!: image_eqI[where x="x - c" for x] simp: algebra_simps)
 
 lemma image_add_atMost_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op + c ` {..a} = {..c + a}"
+  shows "(+) c ` {..a} = {..c + a}"
   by (auto intro!: image_eqI[where x="x - c" for x] simp: algebra_simps)
 
 lemma image_add_atLeastLessThan_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op + c ` {a..<b} = {c + a..<c + b}"
+  shows "(+) c ` {a..<b} = {c + a..<c + b}"
   by (auto intro!: image_eqI[where x="x - c" for x] simp: algebra_simps)
 
 lemma image_add_greaterThanAtMost_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op + c ` {a<..b} = {c + a<..c + b}"
+  shows "(+) c ` {a<..b} = {c + a<..c + b}"
   by (auto intro!: image_eqI[where x="x - c" for x] simp: algebra_simps)
 
 
 lemma image_minus_const_atLeastLessThan_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op - c ` {a..<b} = {c - b<..c - a}"
+  shows "(-) c ` {a..<b} = {c - b<..c - a}"
 proof -
-  have "op - c ` {a..<b} = op + c ` uminus ` {a ..<b}"
+  have "(-) c ` {a..<b} = (+) c ` uminus ` {a ..<b}"
     unfolding image_image by simp
   also have "\<dots> = {c - b<..c - a}" by simp
   finally show ?thesis by simp
@@ -415,9 +415,9 @@ qed
 
 lemma image_minus_const_greaterThanAtMost_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
-  shows "op - c ` {a<..b} = {c - b..<c - a}"
+  shows "(-) c ` {a<..b} = {c - b..<c - a}"
 proof -
-  have "op - c ` {a<..b} = op + c ` uminus ` {a<..b}"
+  have "(-) c ` {a<..b} = (+) c ` uminus ` {a<..b}"
     unfolding image_image by simp
   also have "\<dots> = {c - b..<c - a}" by simp
   finally show ?thesis by simp
@@ -425,9 +425,9 @@ qed
 
 lemma image_minus_const_atLeast_real[simp]:
   fixes a c::"'a::ordered_real_vector"
-  shows "op - c ` {a..} = {..c - a}"
+  shows "(-) c ` {a..} = {..c - a}"
 proof -
-  have "op - c ` {a..} = op + c ` uminus ` {a ..}"
+  have "(-) c ` {a..} = (+) c ` uminus ` {a ..}"
     unfolding image_image by simp
   also have "\<dots> = {..c - a}" by simp
   finally show ?thesis by simp
@@ -435,9 +435,9 @@ qed
 
 lemma image_minus_const_AtMost_real[simp]:
   fixes b c::"'a::ordered_real_vector"
-  shows "op - c ` {..b} = {c - b..}"
+  shows "(-) c ` {..b} = {c - b..}"
 proof -
-  have "op - c ` {..b} = op + c ` uminus ` {..b}"
+  have "(-) c ` {..b} = (+) c ` uminus ` {..b}"
     unfolding image_image by simp
   also have "\<dots> = {c - b..}" by simp
   finally show ?thesis by simp
@@ -669,7 +669,7 @@ lemma uminus_image_real_of_ereal_image_greaterThanLessThan:
     ereal_uminus_less_reorder intro: image_eqI[where x="-x" for x])
 
 lemma add_image_real_of_ereal_image_greaterThanLessThan:
-  "op + c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c + l <..< c + u}"
+  "(+) c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c + l <..< c + u}"
   apply safe
   subgoal for x
     using ereal_less_add[of c]
@@ -685,10 +685,10 @@ lemma add2_image_real_of_ereal_image_greaterThanLessThan:
   by (metis add.commute image_cong)
 
 lemma minus_image_real_of_ereal_image_greaterThanLessThan:
-  "op - c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c - u <..< c - l}"
+  "(-) c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c - u <..< c - l}"
   (is "?l = ?r")
 proof -
-  have "?l = op + c ` uminus ` real_of_ereal ` {l <..< u}" by auto
+  have "?l = (+) c ` uminus ` real_of_ereal ` {l <..< u}" by auto
   also note uminus_image_real_of_ereal_image_greaterThanLessThan
   also note add_image_real_of_ereal_image_greaterThanLessThan
   finally show ?thesis by (simp add: minus_ereal_def)
@@ -915,29 +915,29 @@ qed
 lemma filterlim_times_real_le:
   fixes c::real
   assumes "c > 0"
-  shows "filtermap (op * c) (at_right 0) \<le> at_right 0"
+  shows "filtermap (( * ) c) (at_right 0) \<le> at_right 0"
   unfolding filterlim_def
 proof (rule filter_leI)
   fix P::"real\<Rightarrow>bool"
   assume "eventually P (at_right 0)"
   then obtain d where d: "d > 0" "\<And>x. x > 0 \<Longrightarrow> x < d \<Longrightarrow> P x"
     by (auto simp: eventually_at dist_real_def)
-  then show "eventually P (filtermap (op * c) (at_right 0))"
+  then show "eventually P (filtermap (( * ) c) (at_right 0))"
     by (auto simp: eventually_filtermap eventually_at intro!: exI[where x="d / c"]
       simp: \<open>0 < c\<close> dist_real_def field_simps)
 qed
 
 lemma filtermap_times_real:
   assumes "(c::real) > 0"
-  shows "filtermap (op * c) (at_right 0) = at_right 0"
+  shows "filtermap (( * ) c) (at_right 0) = at_right 0"
 proof (rule antisym)
-  have "filtermap (op * (inverse c)) (at_right 0) \<le> at_right 0"
+  have "filtermap (( * ) (inverse c)) (at_right 0) \<le> at_right 0"
     by (rule filterlim_times_real_le) (auto simp: assms)
-  also have "\<dots> = filtermap (op * (inverse c)) (filtermap (op * c) (at_right 0))"
+  also have "\<dots> = filtermap (( * ) (inverse c)) (filtermap (( * ) c) (at_right 0))"
     using \<open>c > 0\<close>
     by (simp add: filtermap_filtermap field_simps)
   finally
-  show "at_right 0 \<le> filtermap (op * c) (at_right 0)"
+  show "at_right 0 \<le> filtermap (( * ) c) (at_right 0)"
     using assms
     by (subst (asm) filtermap_mono_strong) (auto intro!: inj_onI)
 qed (intro filterlim_times_real_le assms)
@@ -948,9 +948,9 @@ lemma eventually_at_shift_zero:
   shows "eventually (\<lambda>h. P (x + h)) (at 0) \<longleftrightarrow> eventually P (at x)"
 proof -
   have "eventually (\<lambda>h. P (x + h)) (at 0) \<longleftrightarrow>
-    eventually P (filtermap (op + x) (at 0))"
+    eventually P (filtermap ((+) x) (at 0))"
     by (simp add: eventually_filtermap)
-  also have "filtermap (op + x) (at 0) = at x"
+  also have "filtermap ((+) x) (at 0) = at x"
     using filtermap_at_shift[of "-x" 0]
     by (subst add.commute[abs_def]) (simp add: )
   finally show ?thesis .
@@ -1120,7 +1120,7 @@ proof -
     by (rule exI[where x=d]) (auto intro!: d simp: dist_prod_def)
 qed
 
-lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>op has_derivative_on\<close>?\<close>
+lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>(has_derivative_on)\<close>?\<close>
   assumes "\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
   assumes "f ` s \<subseteq> t" "x \<in> s"
   assumes "(f has_derivative f') (at x within s)"
@@ -3145,10 +3145,10 @@ next
     by simp
   show ?thesis
   proof (intro antisym)
-    have "Sup S \<le> Sup (op * a ` S) / a" using assms
+    have "Sup S \<le> Sup (( * ) a ` S) / a" using assms
       by (intro cSup_least mult_imp_le_div_pos cSup_upper)
          (auto simp: bdd_above_cmult assms \<open>0 < a\<close> less_imp_le)
-    thus "a * Sup S \<le> Sup (op * a ` S)"
+    thus "a * Sup S \<le> Sup (( * ) a ` S)"
       by (simp add: ac_simps pos_le_divide_eq[OF \<open>0<a\<close>])
   qed (insert assms \<open>0 < a\<close>, auto intro!: cSUP_least cSup_upper)
 qed
@@ -3309,7 +3309,7 @@ lemma singleton_subsetI:"i \<in> B \<Longrightarrow> {i} \<subseteq> B"
 subsection \<open>Max\<close>
 
 lemma max_transfer[transfer_rule]:
-  assumes [transfer_rule]: "(rel_fun A (rel_fun A (op =))) (op \<le>) (op \<le>)"
+  assumes [transfer_rule]: "(rel_fun A (rel_fun A (=))) (\<le>) (\<le>)"
   shows "(rel_fun A (rel_fun A A)) max max"
   unfolding max_def[abs_def]
   by transfer_prover

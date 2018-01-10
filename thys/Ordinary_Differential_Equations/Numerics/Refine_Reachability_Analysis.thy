@@ -199,11 +199,11 @@ lemma phantom_rel_const[autoref_rules(overloaded)]:
   shows "(Some, mk_phantom) \<in> A \<rightarrow> \<langle>A\<rangle>phantom_rel"
   by (auto simp: phantom_rel_def)
 
-definition [simp]: "op_union_phantom = op \<union>"
-lemma [autoref_op_pat]: "op \<union> \<equiv> OP op_union_phantom"
+definition [simp]: "op_union_phantom = (\<union>)"
+lemma [autoref_op_pat]: "(\<union>) \<equiv> OP op_union_phantom"
   by simp
 lemma phantom_rel_union[autoref_rules]:
-  assumes [THEN GEN_OP_D, autoref_rules(overloaded)]: "GEN_OP un op \<union> (A \<rightarrow> A \<rightarrow> A)"
+  assumes [THEN GEN_OP_D, autoref_rules(overloaded)]: "GEN_OP un (\<union>) (A \<rightarrow> A \<rightarrow> A)"
   shows "(\<lambda>a b. do {a \<leftarrow> a; b \<leftarrow> b; Some (un a b)}, op_union_phantom) \<in> \<langle>A\<rangle>phantom_rel \<rightarrow> \<langle>A\<rangle>phantom_rel \<rightarrow> \<langle>A\<rangle>phantom_rel"
   using assms
   by (fastforce simp: phantom_rel_def dest: fun_relD)
@@ -941,11 +941,11 @@ definition ode_d2_na::"real \<times> _ \<Rightarrow> (real \<times> _) \<Rightar
   "ode_d2_na = (\<lambda>tx. flip_blinfun (flip_blinfun (ode_d2 (snd tx) o\<^sub>L snd_blinfun) o\<^sub>L snd_blinfun))"
 
 lemma map_ode_fa_nth[simp]:
-  "d \<le> length ode_e \<Longrightarrow> map (ode_fa_nth CX) [0..<d] = map (op ! (ode_fa CX)) [0..<d]"
+  "d \<le> length ode_e \<Longrightarrow> map (ode_fa_nth CX) [0..<d] = map ((!) (ode_fa CX)) [0..<d]"
   by (auto simp: ode_fa_nth cong: map_cong)
 
 lemma map_ode_d_fa_nth[simp]:
-  "d \<le> length ode_e \<Longrightarrow> map (ode_d_fa_nth i CX X) [0..<d] = map (op ! (ode_d_fa i CX X)) [0..<d]"
+  "d \<le> length ode_e \<Longrightarrow> map (ode_d_fa_nth i CX X) [0..<d] = map ((!) (ode_d_fa i CX X)) [0..<d]"
   by (auto simp: ode_d_fa_nth cong: map_cong)
 
 lemma einterpret_euler_incr_fas:
@@ -1012,7 +1012,7 @@ lemma rk2_increment_rk2_fas_err:
   done
 
 lemma map_rk2_fas_err_nth[simp]:
-  "d = length ode_e \<Longrightarrow> length b = length ode_e \<Longrightarrow> map (rk2_fas_err_nth a b c e f) [0..<d] = map (op ! (rk2_fas_err a b c e f)) [0..<d]"
+  "d = length ode_e \<Longrightarrow> length b = length ode_e \<Longrightarrow> map (rk2_fas_err_nth a b c e f) [0..<d] = map ((!) (rk2_fas_err a b c e f)) [0..<d]"
   unfolding rk2_fas_err_nth_def rk2_fas_err_def
   by (rule map_cong) auto
 
@@ -1474,7 +1474,7 @@ proof -
         apply (drule bspec[where x="h'' - t0"], force)
       proof goal_cases
         case (1)
-        have *: "map (op ! (list_of_eucl b)) [0..<DIM('a) - Suc 0] @ [b \<bullet> Basis_list ! (DIM('a) - Suc 0)]
+        have *: "map ((!) (list_of_eucl b)) [0..<DIM('a) - Suc 0] @ [b \<bullet> Basis_list ! (DIM('a) - Suc 0)]
           = list_of_eucl b" for b::'a
           apply (auto intro!: nth_equalityI simp: nth_append not_less)
           using Intersection.le_less_Suc_eq by blast
@@ -2695,7 +2695,7 @@ theorem einterpret_solve_poincare_fas:
     by (auto simp: eucl_of_list_prod length_concat o_def sum_list_distinct_conv_sum_set wdD[OF wd] take_eq_map_nth)
   subgoal premises prems
   proof -
-    have ode_e_eq: "interpret_floatarith (ode_e ! i) (map (op ! CXs) [0..<CARD('n)]) = interpret_floatarith (ode_e ! i) CXs"
+    have ode_e_eq: "interpret_floatarith (ode_e ! i) (map ((!) CXs) [0..<CARD('n)]) = interpret_floatarith (ode_e ! i) CXs"
       if "i < D"
       for i
       apply (rule interpret_floatarith_max_Var_cong)
@@ -2825,7 +2825,7 @@ lemma [autoref_rules]:
   "(eucl_truncate_up, eucl_truncate_up) \<in> nat_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "(max, max) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "(min, min) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
-  "(op /, op /) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((/), (/)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "(lfloat10, lfloat10) \<in> rnv_rel \<rightarrow> float10_rel"
   "(ufloat10, ufloat10) \<in> rnv_rel \<rightarrow> float10_rel"
   "(shows_prec, shows_prec) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> string_rel \<rightarrow> string_rel"
@@ -2994,11 +2994,11 @@ lemma fst_scaleR2_image[simp]: "ad \<le> ereal r \<Longrightarrow> ereal r \<le>
 
 definition [refine_vcg_def]: "scaleRe_ivl_spec l u X = SPEC (\<lambda>Y. Y = scaleR2 l u X)"
 
-definition [simp]: "op_image_fst_colle = op ` fst"
+definition [simp]: "op_image_fst_colle = (`) fst"
 
 lemma [autoref_op_pat]: "fst ` X \<equiv> OP op_image_fst_colle $ X"
   by auto
-definition [simp]: "op_image_fste = op ` fst"
+definition [simp]: "op_image_fste = (`) fst"
 lemma [autoref_op_pat]: "fst ` X \<equiv> OP op_image_fste $ X"
   by simp
 
@@ -3073,9 +3073,9 @@ abbreviation "appr1e_rel \<equiv> \<langle>appr1_rel\<rangle>scaleR2_rel"
 
 lemmas [autoref_rel_intf] = REL_INTFI[of appr1_rel i_appr1]
 
-definition [simp]: "op_image_flow1_of_vec1 = op ` flow1_of_vec1"
+definition [simp]: "op_image_flow1_of_vec1 = (`) flow1_of_vec1"
 
-lemma [autoref_op_pat]: "op ` flow1_of_vec1 \<equiv> OP op_image_flow1_of_vec1"
+lemma [autoref_op_pat]: "(`) flow1_of_vec1 \<equiv> OP op_image_flow1_of_vec1"
   by auto
 
 lemma op_image_flow1_of_vec1[autoref_rules]:
@@ -3089,7 +3089,7 @@ lemma op_image_flow1_of_vec1[autoref_rules]:
    apply (auto simp: power2_eq_square min_def appr_rel_br br_def)
   done
 
-definition [simp]: "op_image_flow1_of_vec1_coll = op ` flow1_of_vec1"
+definition [simp]: "op_image_flow1_of_vec1_coll = (`) flow1_of_vec1"
 
 lemma index_autoref[autoref_rules]:
   "(index, index) \<in> \<langle>lv_rel\<rangle>list_rel \<rightarrow> lv_rel \<rightarrow> nat_rel"
@@ -3098,9 +3098,9 @@ lemma index_autoref[autoref_rules]:
   apply (auto simp: lv_rel_def br_def list_rel_def)
   using list_of_eucl_eucl_of_list by force
 
-definition [simp]: "op_image_fst = op ` fst"
+definition [simp]: "op_image_fst = (`) fst"
 sublocale autoref_op_pat_def op_image_fst .
-lemma [autoref_op_pat]: "op ` fst \<equiv> OP op_image_fst"
+lemma [autoref_op_pat]: "(`) fst \<equiv> OP op_image_fst"
   by auto
 
 lemma op_image_fst_flow1[autoref_rules]:
@@ -3138,7 +3138,7 @@ definition [refine_vcg_def]:
 sublocale autoref_op_pat_def vec1rep .
 
 lemma vec1rep_impl[autoref_rules]:
-  "(\<lambda>(a, bs). RETURN (map_option (op @ a) bs), vec1rep) \<in> appr1_rel \<rightarrow> \<langle>\<langle>appr_rel\<rangle>option_rel\<rangle>nres_rel"
+  "(\<lambda>(a, bs). RETURN (map_option ((@) a) bs), vec1rep) \<in> appr1_rel \<rightarrow> \<langle>\<langle>appr_rel\<rangle>option_rel\<rangle>nres_rel"
   apply (auto simp: vec1rep_def appr1_rel_def set_rel_br appr_rel_def power2_eq_square nres_rel_def
       dest!: brD
       intro!: RETURN_SPEC_refine)
@@ -3157,7 +3157,7 @@ lemma op_times_UNIV_impl[autoref_rules]: "(\<lambda>x. (x, None), op_times_UNIV)
   by (auto simp: appr1_rel_internal)
 
 definition "solve_poincare_plane (n::'n::enum rvec) (CX::'n eucl1 set) = do {
-    X \<leftarrow> mk_safe ((op ` fst CX::'n rvec set));
+    X \<leftarrow> mk_safe (((`) fst CX::'n rvec set));
     F \<leftarrow> ode_set (set_of_sappr X);
     nonzero_component (ST ''solve_poincare_map: not nonzero!'') F n;
     let i = index Basis_list n;
@@ -3549,7 +3549,7 @@ lemma inter_sctn1_spec[le, refine_vcg]:
   done
 
 lemma is_empty_ivl_rel[autoref_rules]:
-  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le op \<le> (A \<rightarrow> A \<rightarrow> bool_rel)"
+  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(\<lambda>(x, y). \<not> le x y, is_empty) \<in> \<langle>A\<rangle>ivl_rel \<rightarrow> bool_rel"
   apply (auto simp: ivl_rel_def br_def set_of_ivl_def)
   subgoal premises prems for a b c d
@@ -3605,9 +3605,9 @@ lemma op_image_fst_coll_nres_spec[le, refine_vcg]: "op_image_fst_coll_nres X \<l
     apply force
   apply force
   done
-definition [simp]: "op_image_fst_coll = op ` fst"
+definition [simp]: "op_image_fst_coll = (`) fst"
 sublocale autoref_op_pat_def op_image_fst_coll_nres .
-lemma [autoref_op_pat]: "op ` fst \<equiv> OP op_image_fst_coll"
+lemma [autoref_op_pat]: "(`) fst \<equiv> OP op_image_fst_coll"
   by auto
 lemma op_image_fst_coll_impl[autoref_rules]:
   assumes "DIM_precond TYPE('n::executable_euclidean_space) D"
@@ -3644,7 +3644,7 @@ lemma fst_safe_coll[le, refine_vcg]:
   unfolding fst_safe_coll_def
   by refine_vcg
 
-lemma [autoref_op_pat]: "op ` flow1_of_vec1 \<equiv> OP op_image_flow1_of_vec1_coll"
+lemma [autoref_op_pat]: "(`) flow1_of_vec1 \<equiv> OP op_image_flow1_of_vec1_coll"
   by auto
 
 lemma op_image_flow1_of_vec1_coll[autoref_rules]:
@@ -5273,11 +5273,11 @@ lemma uninfo_autoref[autoref_rules]:
 
 definition [simp]: "op_subset_ivl a b \<longleftrightarrow> a \<subseteq> b"
 sublocale autoref_op_pat_def op_subset_ivl .
-lemma [autoref_op_pat]: "op \<subseteq> \<equiv> OP op_subset_ivl"
+lemma [autoref_op_pat]: "(\<subseteq>) \<equiv> OP op_subset_ivl"
   by (force intro!: eq_reflection)
 
 lemma op_subset_ivl:
-  assumes le[THEN GEN_OP_D, autoref_rules, param_fo]: "GEN_OP le op \<le> (A \<rightarrow> A \<rightarrow> bool_rel)"
+  assumes le[THEN GEN_OP_D, autoref_rules, param_fo]: "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(\<lambda>(a, b) (c, d). le a b \<longrightarrow> le c a \<and> le b d, op_subset_ivl) \<in> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> bool_rel"
   apply (clarsimp dest!: brD simp: ivl_rel_def)
   subgoal for a b c d e f g h
@@ -5291,10 +5291,10 @@ lemmas [autoref_rules] = op_subset_ivl_impl.refine
 
 definition [simp]: "op_eq_ivl a b \<longleftrightarrow> a = b"
 sublocale autoref_op_pat_def op_eq_ivl .
-lemma [autoref_op_pat]: "op = \<equiv> OP op_eq_ivl"
+lemma [autoref_op_pat]: "(=) \<equiv> OP op_eq_ivl"
   by (force intro!: eq_reflection)
 lemma eq_ivl_impl:
-  assumes le[THEN GEN_OP_D, autoref_rules, param_fo]: "GEN_OP le op \<le> (A \<rightarrow> A \<rightarrow> bool_rel)"
+  assumes le[THEN GEN_OP_D, autoref_rules, param_fo]: "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(\<lambda>(a, b) (c, d). (le a b \<longrightarrow> le c a \<and> le b d) \<and> (le c d \<longrightarrow> le a c \<and> le d b), op_eq_ivl) \<in> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> bool_rel"
   apply (clarsimp dest!: brD simp: )
   subgoal premises prems for a b c d e f
@@ -6214,7 +6214,7 @@ definition [simp]: "isets_of_iivls x = x"
 
 lemma isets_of_iivls[autoref_rules]:
   assumes "PREFER single_valued A"
-  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le op \<le> ((lv_rel::(_ \<times> 'a::executable_euclidean_space)set) \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le (\<le>) ((lv_rel::(_ \<times> 'a::executable_euclidean_space)set) \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   shows "(\<lambda>xs. map (\<lambda>((i, s), x). (appr_of_ivl i s, x)) [((i,s), x) \<leftarrow> xs. le i s], isets_of_iivls::_\<Rightarrow>'a set)
     \<in> clw_rel (\<langle>lvivl_rel, A\<rangle>inter_rel) \<rightarrow> clw_rel (\<langle>appr_rel, A\<rangle>inter_rel)"
   apply (rule fun_relI)
@@ -6288,7 +6288,7 @@ lemma
 lemma op_inter_fst_impl:
   assumes "DIM_precond TYPE('n::enum rvec) D"
   assumes "GEN_OP intr (op_inter_ivl::'n rvec set\<Rightarrow>_) (lvivl_rel \<rightarrow> lvivl_rel \<rightarrow> lvivl_rel)"
-  assumes "GEN_OP le   (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le   ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   shows "(\<lambda>x y.
     if le (fst x) (snd x) then
     case (intr (pairself (take D) x) y, pairself (drop D) x) of
@@ -6360,7 +6360,7 @@ definition "op_inter_fst_coll XS Y = do {
   }"
 schematic_goal op_inter_fst_coll_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n vec1) set) \<in> clw_rel lvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_coll XS Y) \<in> \<langle>clw_rel lvivl_rel\<rangle>nres_rel"
@@ -6369,7 +6369,7 @@ schematic_goal op_inter_fst_coll_impl:
 concrete_definition op_inter_fst_coll_impl uses op_inter_fst_coll_impl
 lemma op_inter_fst_coll_impl_refine[autoref_rules]:
   "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-  GEN_OP le (op \<le>::'a vec1 \<Rightarrow> _) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+  GEN_OP le ((\<le>) ::'a vec1 \<Rightarrow> _) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
   (\<lambda>XSi Yi. nres_of (op_inter_fst_coll_impl le XSi Yi), op_inter_fst_coll::'a vec1 set\<Rightarrow> _)
   \<in> clw_rel (\<langle>lv_rel\<rangle>ivl_rel) \<rightarrow> \<langle>lv_rel\<rangle>ivl_rel \<rightarrow> \<langle>clw_rel (\<langle>lv_rel\<rangle>ivl_rel)\<rangle>nres_rel"
   using op_inter_fst_coll_impl.refine[where 'a='a, of le]
@@ -6824,7 +6824,7 @@ lemma op_enlarge_ivl_sctn[le, refine_vcg]:
 
 lemma list_wset_autoref_delete[autoref_rules]:
   assumes "PREFER single_valued R"
-  assumes "GEN_OP eq (op =) (R \<rightarrow> R \<rightarrow> bool_rel)"
+  assumes "GEN_OP eq (=) (R \<rightarrow> R \<rightarrow> bool_rel)"
   shows "(\<lambda>y xs. [x\<leftarrow>xs. \<not>eq y x], op_set_delete) \<in> R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
   using assms
   apply (auto simp: list_wset_rel_def dest!: brD elim!: single_valued_as_brE)
@@ -6879,7 +6879,7 @@ lemma wd_stepD':
     "wd TYPE('a)"
   using assms by (auto simp: wd_step_def)
 
-definition "guardset guards = Union (case_prod op \<inter> ` (\<lambda>(x, y). (x, plane_of y)) ` guards)"
+definition "guardset guards = Union (case_prod (\<inter>) ` (\<lambda>(x, y). (x, plane_of y)) ` guards)"
 
 definition "resolve_ivlplanes (guards::'n::enum rvec set)
                           (ivlplanes::'n::enum rvec set)
@@ -7607,7 +7607,7 @@ lemma poincare_onto2[le, refine_vcg]:
   done
 
 lemma is_empty_autoref[autoref_rules]:
-  assumes "GEN_OP le op \<le> (R \<rightarrow> R \<rightarrow> bool_rel)"
+  assumes "GEN_OP le (\<le>) (R \<rightarrow> R \<rightarrow> bool_rel)"
   shows "(\<lambda>(a, b). \<not> le a b, is_empty) \<in> \<langle>R\<rangle>ivl_rel \<rightarrow> bool_rel"
   using assms
   by (fastforce simp: ivl_rel_def br_def set_of_ivl_def dest: fun_relD)
@@ -7615,7 +7615,7 @@ lemma is_empty_autoref[autoref_rules]:
 lemma inter_ivl_clw[autoref_rules]:\<comment>\<open>TODO: fix @{thm inter_ivl_clw}\<close>
   assumes sv[THEN PREFER_sv_D]: "PREFER single_valued A"
   assumes intr[THEN GEN_OP_D]: "GEN_OP intr op_inter_ivl (\<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel)"
-  assumes "GEN_OP le op \<le> (A \<rightarrow> A \<rightarrow> bool_rel)"
+  assumes "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(\<lambda>xs y. filter_empty_ivls_impl le (map (intr y) xs), op_inter_ivl_coll) \<in> clw_rel (\<langle>A\<rangle>ivl_rel) \<rightarrow> (\<langle>A\<rangle>ivl_rel) \<rightarrow> clw_rel (\<langle>A\<rangle>ivl_rel)"
   apply safe
   subgoal premises prems
@@ -7720,7 +7720,7 @@ definition "op_inter_fst_ivl_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_fst_ivl_scaleR2 .
 schematic_goal op_inter_fst_ivl_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_ivl_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7730,7 +7730,7 @@ schematic_goal op_inter_fst_ivl_scaleR2_impl:
 concrete_definition op_inter_fst_ivl_scaleR2_impl uses op_inter_fst_ivl_scaleR2_impl
 lemma op_inter_fst_ivl_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le ((\<le>) ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_fst_ivl_scaleR2_impl le XSi Yi),
  op_inter_fst_ivl_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7755,7 +7755,7 @@ definition "op_inter_fst_ivl_coll_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_fst_ivl_coll_scaleR2 .
 schematic_goal op_inter_fst_ivl_coll_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> clw_rel elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_fst_ivl_coll_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7765,7 +7765,7 @@ schematic_goal op_inter_fst_ivl_coll_scaleR2_impl:
 concrete_definition op_inter_fst_ivl_coll_scaleR2_impl uses op_inter_fst_ivl_coll_scaleR2_impl
 lemma op_inter_fst_ivl_coll_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le ((\<le>) ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_fst_ivl_coll_scaleR2_impl le XSi Yi),
  op_inter_fst_ivl_coll_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> clw_rel elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7787,7 +7787,7 @@ definition "op_inter_ivl_coll_scaleR2 X Y = do {
 sublocale autoref_op_pat_def op_inter_ivl_coll_scaleR2 .
 schematic_goal op_inter_ivl_coll_scaleR2_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes [THEN GEN_OP_D, autoref_rules]: "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   assumes [autoref_rules]: "(XSi, XS::('n::enum vec1) set) \<in> clw_rel elvivl_rel"
     "(Yi, Y::'n rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_inter_ivl_coll_scaleR2 XS Y) \<in> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7797,7 +7797,7 @@ schematic_goal op_inter_ivl_coll_scaleR2_impl:
 concrete_definition op_inter_ivl_coll_scaleR2_impl uses op_inter_ivl_coll_scaleR2_impl
 lemma op_inter_ivl_coll_scaleR2_impl_refine[autoref_rules]:
 "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
-GEN_OP le (op \<le>::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+GEN_OP le ((\<le>) ::'a vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
 (\<lambda>XSi Yi. nres_of (op_inter_ivl_coll_scaleR2_impl le XSi Yi),
  op_inter_ivl_coll_scaleR2::'a vec1 set \<Rightarrow> _)
 \<in> clw_rel elvivl_rel \<rightarrow> lvivl_rel \<rightarrow> \<langle>clw_rel elvivl_rel\<rangle>nres_rel"
@@ -7818,7 +7818,7 @@ sublocale autoref_op_pat_def op_image_fst_ivl .
 
 lemma op_image_fst_ivl[autoref_rules]:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
   shows "(\<lambda>(l,u). nres_of (if le l u then dRETURN (pairself (take D) (l, u)) else dSUCCEED)
     , op_image_fst_ivl::('n vec1) set\<Rightarrow>_) \<in> lvivl_rel \<rightarrow> \<langle>lvivl_rel\<rangle>nres_rel"
   using assms
@@ -7858,7 +7858,7 @@ lemma [le, refine_vcg]: "op_image_fst_ivl_coll X \<le> SPEC (\<lambda>R. R = fst
 
 schematic_goal op_image_fst_ivl_coll_impl[autoref_rules]:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) D"
-  assumes "GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
+  assumes "GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel)"
     assumes [autoref_rules]: "(Xi, X) \<in> clw_rel lvivl_rel"
     shows "(nres_of ?r, (op_image_fst_ivl_coll::('n vec1) set\<Rightarrow>_) X) \<in> \<langle>clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding op_image_fst_ivl_coll_def
@@ -7866,7 +7866,7 @@ schematic_goal op_image_fst_ivl_coll_impl[autoref_rules]:
 concrete_definition op_image_fst_ivl_coll_impl uses op_image_fst_ivl_coll_impl
 lemma op_image_fst_ivl_coll_impl_refine[autoref_rules]:
   "DIM_precond TYPE((real, 'n::enum) vec) D \<Longrightarrow>
-  GEN_OP le (op \<le>::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
+  GEN_OP le ((\<le>) ::'n vec1 \<Rightarrow>_) (lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel) \<Longrightarrow>
   (\<lambda>Xi. nres_of (op_image_fst_ivl_coll_impl Xi), op_image_fst_ivl_coll::('n vec1) set\<Rightarrow>_) \<in>
   clw_rel (lvivl_rel) \<rightarrow> \<langle>clw_rel (\<langle>lv_rel\<rangle>ivl_rel)\<rangle>nres_rel"
   using op_image_fst_ivl_coll_impl.refine
@@ -8058,7 +8058,7 @@ lemma [autoref_rules_raw]: "DIM_precond TYPE(real) (Suc 0)"
   by auto
 lemma [autoref_rules]: "(ereal, ereal) \<in> rnv_rel \<rightarrow> ereal_rel"
   "(real_divr, real_divr) \<in> nat_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
-  "(op *, op *) \<in> ereal_rel \<rightarrow> ereal_rel \<rightarrow> ereal_rel"
+  "(( * ), ( * )) \<in> ereal_rel \<rightarrow> ereal_rel \<rightarrow> ereal_rel"
   by auto
 
 schematic_goal scaleR2_rep1_impl:

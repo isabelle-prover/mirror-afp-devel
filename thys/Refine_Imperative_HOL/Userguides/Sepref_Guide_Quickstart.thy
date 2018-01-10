@@ -244,7 +244,7 @@ begin
 
   text \<open>Here, we use a feature of Sepref to import parametricity theorems.
     Note that the parametricity theorem we provide here is trivial, as 
-    @{const nat_rel} is identity, and @{const list_rel} as well as @{term "op\<rightarrow>"} 
+    @{const nat_rel} is identity, and @{const list_rel} as well as @{term "(\<rightarrow>)"} 
     preserve identity. 
     However, we have to specify a parametricity theorem that reflects the 
     structure of the involved types.
@@ -423,7 +423,7 @@ sepref_thm in_sorted_list2 is "uncurry in_sorted_list1'" :: "nat_assn\<^sup>k *\
     are described by @{term \<Gamma>'}, and the results are refined by @{term R}.
     
     Inspecting the first subgoal reveals that we got stuck on refining the abstract operation
-    @{term "RETURN $ (op_list_get $ b $ xf)"}. Note that the @{term "op $"} is just a constant for function 
+    @{term "RETURN $ (op_list_get $ b $ xf)"}. Note that the @{term "($)"} is just a constant for function 
     application, which is used to tame Isabelle's higher-order unification algorithms. You may use 
     \<open>unfolding APP_def\<close>, or even \<open>simp\<close> to get a clearer picture of the failed goal.
 
@@ -591,7 +591,7 @@ text \<open>
   management infrastructure. The main idea is to have interfaces and implementations.
 
   An interface specifies an abstract data type (e.g., @{typ "_ list"}) and some operations with preconditions 
-  on it (e.g., @{term "op @"} or @{term "nth"} with in-range precondition). 
+  on it (e.g., @{term "(@)"} or @{term "nth"} with in-range precondition). 
 
   An implementation of an interface provides a refinement assertion from the abstract data type to
   some concrete data type, as well as implementations for (a subset of) the interface's operations.
@@ -657,7 +657,7 @@ text \<open>In this example, we will discuss how to specify precondition of oper
   which are required for refinement to work.
   Consider the following function, which increments all members of a list by one:
 \<close>
-definition "incr_list l \<equiv> map (op + 1) l"
+definition "incr_list l \<equiv> map ((+) 1) l"
 text \<open>We might want to implement it as follows\<close>
 definition "incr_list1 l \<equiv> fold (\<lambda>i l. l[i:=1 + l!i]) [0..<length l] l"
   
@@ -666,7 +666,7 @@ proof (intro fun_relI; simp)
   fix l :: "'a list"
   { fix n m
     assume "n\<le>m" and "length l = m"
-    hence "fold (\<lambda>i l. l[i:=1+l!i]) [n..<m] l = take n l @ map (op+1) (drop n l)"
+    hence "fold (\<lambda>i l. l[i:=1+l!i]) [n..<m] l = take n l @ map (((+))1) (drop n l)"
       apply (induction  arbitrary: l rule: inc_induct)
       apply simp
       apply (clarsimp simp: upt_conv_Cons take_Suc_conv_app_nth)
@@ -724,7 +724,7 @@ proof (intro nres_relI fun_relI; simp)
     unfolding incr_list2_def incr_list_def
     -- \<open>@{const nfoldli} comes with an invariant proof rule. In order to use it, we have to specify
       the invariant manually:\<close>
-    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 l2 s. s = map (op+1) (take (length l1) l) @ drop (length l1) l"])
+    apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 l2 s. s = map (((+))1) (take (length l1) l) @ drop (length l1) l"])
     apply (vc_solve 
       simp: upt_eq_append_conv upt_eq_Cons_conv
       simp: nth_append list_update_append upd_conv_take_nth_drop take_Suc_conv_app_nth
@@ -1218,7 +1218,7 @@ context
       registered for @{typ int} and @{typ nat}. 
       \<close>
   notes [sepref_import_param] = IdI[of "PR_CONST (2::'a)"]
-  notes [sepref_import_param] = IdI[of "op *::'a\<Rightarrow>_", folded fun_rel_id_simp]
+  notes [sepref_import_param] = IdI[of "( * )::'a\<Rightarrow>_", folded fun_rel_id_simp]
 begin
 
 sepref_definition mtx_dup_diag_f1 is "uncurry (RETURN oo (mtx_dup_diag_f::_\<Rightarrow>'a\<Rightarrow>_))" :: "(prod_assn nat_assn nat_assn)\<^sup>k*\<^sub>aid_assn\<^sup>k \<rightarrow>\<^sub>a id_assn"
@@ -1248,14 +1248,14 @@ sepref_thm mtx_dup_test is "\<lambda>m. RETURN (mtx_dup_diag (mtx_dup_diag m))" 
 
 text \<open>Similarly, there are operations to combine to matrices, and to compare two matrices:\<close>
 
-interpretation pw_add: amtx_pointwise_binop_impl N M "(op+::(_::monoid_add) \<Rightarrow> _)" id_assn "return oo op+"
+interpretation pw_add: amtx_pointwise_binop_impl N M "(((+))::(_::monoid_add) \<Rightarrow> _)" id_assn "return oo ((+))"
   for N M
   apply standard
   apply simp
   apply (sepref_to_hoare) apply sep_auto -- \<open>Alternative to 
     synthesize concrete operation, for simple ad-hoc refinements\<close>
   done
-abbreviation "mtx_add \<equiv> mtx_pointwise_binop op+"
+abbreviation "mtx_add \<equiv> mtx_pointwise_binop ((+))"
 
 sepref_thm mtx_add_test is "uncurry2 (\<lambda>m1 m2 m3. RETURN (mtx_add m1 (mtx_add m2 m3)))" 
   :: "(amtx_assn N M int_assn)\<^sup>d *\<^sub>a (amtx_assn N M int_assn)\<^sup>d *\<^sub>a (amtx_assn N M int_assn)\<^sup>k \<rightarrow>\<^sub>a amtx_assn N M int_assn"
@@ -1280,7 +1280,7 @@ sepref_thm mtx_dup_alt_test is "(\<lambda>m. RETURN (mtx_add (op_mtx_copy m) m))
 
 text \<open>A compare operation checks that all pairs of entries fulfill some property \<open>f\<close>, and
   at least one entry fullfills a property \<open>g\<close>.\<close>
-interpretation pw_lt: amtx_pointwise_cmpop_impl N M "(op\<le>::(_::order) \<Rightarrow> _)" "(op\<noteq>::(_::order) \<Rightarrow> _)" id_assn "return oo op\<le>" "return oo op\<noteq>"
+interpretation pw_lt: amtx_pointwise_cmpop_impl N M "((\<le>)::(_::order) \<Rightarrow> _)" "((\<noteq>)::(_::order) \<Rightarrow> _)" id_assn "return oo (\<le>)" "return oo (\<noteq>)"
   for N M
   apply standard
   apply simp
@@ -1288,7 +1288,7 @@ interpretation pw_lt: amtx_pointwise_cmpop_impl N M "(op\<le>::(_::order) \<Righ
   apply (sepref_to_hoare) apply sep_auto
   apply (sepref_to_hoare) apply sep_auto
   done
-abbreviation "mtx_lt \<equiv> mtx_pointwise_cmpop op\<le> op\<noteq>"
+abbreviation "mtx_lt \<equiv> mtx_pointwise_cmpop (\<le>) (\<noteq>)"
 
 sepref_thm test_mtx_cmp is "(\<lambda>m. do { RETURN (mtx_lt (op_amtx_dfltNxM N M 0) m) })" :: "(amtx_assn N M int_assn)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
   by sepref -- \<open>Note: Better fold over single matrix (currently no locale for that), instead of creating a new matrix.\<close>

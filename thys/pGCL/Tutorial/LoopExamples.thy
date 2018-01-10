@@ -99,7 +99,7 @@ text {* We can't define a measure here, as we did previously, as neither of the
 definition
   wait_for_heads :: "coin prog"
 where
-  "wait_for_heads = do (op \<noteq> Heads) \<longrightarrow> flip od"
+  "wait_for_heads = do ((\<noteq>) Heads) \<longrightarrow> flip od"
 
 text {* Nonetheless, we can show termination .*}
 lemma wait_for_heads_term:
@@ -122,7 +122,7 @@ proof(rule termination_0_1)
   txt {* The verification condition for the loop body is one-step-termination,
     here shown to hold with probability 1/2.  As usual, this result falls to
     the VCG. *}
-  show "\<lambda>s. 1/2 \<tturnstile> wp flip \<guillemotleft>\<N> (op \<noteq> Heads)\<guillemotright>"
+  show "\<lambda>s. 1/2 \<tturnstile> wp flip \<guillemotleft>\<N> ((\<noteq>) Heads)\<guillemotright>"
     unfolding flip_def
     by(pvcg, simp add:o_def Heads_def Tails_def)
 

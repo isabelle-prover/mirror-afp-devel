@@ -96,7 +96,7 @@ context StdBasicMapDefs begin
   definition "g_isEmpty m \<equiv> g_size_abort 1 m = 0"
   definition "g_isSng m \<equiv> g_size_abort 2 m = 1"
 
-  definition "g_to_list m \<equiv> iterate m (op #) []"
+  definition "g_to_list m \<equiv> iterate m (#) []"
 
   definition "g_list_to_map l \<equiv> foldl (\<lambda>m (k,v). update k v m) (empty ()) 
     (rev l)"
@@ -403,8 +403,8 @@ begin
     "g_max m P \<equiv> 
       rev_iterateoi m (\<lambda>\<sigma>. \<sigma> = None) (\<lambda>x \<sigma>. if P x then Some x else None) None"
 
-  definition "g_to_sorted_list m \<equiv> rev_iterateo m (op #) []"
-  definition "g_to_rev_list m \<equiv> iterateo m (op #) []"
+  definition "g_to_sorted_list m \<equiv> rev_iterateo m (#) []"
+  definition "g_to_rev_list m \<equiv> iterateo m (#) []"
 
   definition dflt_oops :: "('k,'v,'s) omap_ops" 
     where [icf_rec_def]:

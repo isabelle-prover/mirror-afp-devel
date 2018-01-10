@@ -451,14 +451,14 @@ locale landau_pair =
   and     l'_def: "l' F' g' = {f. \<forall>c>0. eventually (\<lambda>x. R (norm (f x)) (c * norm (g' x))) F'}"
   and     Lr_def: "Lr F'' g'' = {f. \<exists>c>0. eventually (\<lambda>x. R (norm (f x)) (c * norm (g'' x))) F''}"
   and     lr_def: "lr F'' g'' = {f. \<forall>c>0. eventually (\<lambda>x. R (norm (f x)) (c * norm (g'' x))) F''}"
-  and     R:     "R = op \<le> \<or> R = op \<ge>"
+  and     R:     "R = (\<le>) \<or> R = (\<ge>)"
 
 interpretation landau_o: 
-    landau_pair bigo smallo bigo smallo bigo smallo "op \<le>"
+    landau_pair bigo smallo bigo smallo bigo smallo "(\<le>)"
   by unfold_locales (auto simp: bigo_def smallo_def intro!: ext)
 
 interpretation landau_omega: 
-    landau_pair bigomega smallomega bigomega smallomega bigomega smallomega "op \<ge>"
+    landau_pair bigomega smallomega bigomega smallomega bigomega smallomega "(\<ge>)"
   by unfold_locales (auto simp: bigomega_def smallomega_def intro!: ext)
 
 
@@ -612,7 +612,7 @@ lemma plus_aux:
   assumes "f \<in> o[F](g)"
   shows "g \<in> L F (\<lambda>x. f x + g x)"
 proof (rule R_E)
-  assume [simp]: "R = op \<le>"
+  assume [simp]: "R = (\<le>)"
   have A: "1/2 > (0::real)" by simp
   {
     fix x assume "norm (f x) \<le> 1/2 * norm (g x)"

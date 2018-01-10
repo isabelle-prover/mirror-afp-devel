@@ -24,13 +24,13 @@ definition "unit_matrix_list D = concat (map (\<lambda>i. map (\<lambda>j. if i 
 
 definition "with_unit_matrix D X = (fst X @ unit_matrix_list D, snd X @ unit_matrix_list D)"
 
-definition "list_interval l u = {x. list_all2 op \<le> l x \<and> list_all2 op \<le> x u}"
+definition "list_interval l u = {x. list_all2 (\<le>) l x \<and> list_all2 (\<le>) x u}"
 
 context includes lifting_syntax begin
 lemma list_interval_transfer[transfer_rule]:
   "((list_all2 A) ===> (list_all2 A) ===> rel_set (list_all2 A))
     list_interval list_interval"
-  if [transfer_rule]: "(A ===> A ===> op =) op \<le> op \<le>" "bi_total A"
+  if [transfer_rule]: "(A ===> A ===> (=)) (\<le>) (\<le>)" "bi_total A"
   unfolding list_interval_def
   by transfer_prover
 end
@@ -687,17 +687,17 @@ lemma flow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.flow0 ode_fas s
 definition "avf \<equiv> \<lambda>x::'n rvec. cast (aform.ode ode_fas (cast x)::'a)::'n rvec"
 
 context includes lifting_syntax begin
-lemma aform_ode_transfer[transfer_rule]: "(list_all2 op = ===> rel_ve ===> rel_ve) aform.ode aform.ode"
+lemma aform_ode_transfer[transfer_rule]: "(list_all2 (=) ===> rel_ve ===> rel_ve) aform.ode aform.ode"
   unfolding aform.ode_def
   by transfer_prover
 lemma cast_aform_ode: "cast (aform.ode ode_fas (cast (x::'n rvec))::'a) = aform.ode ode_fas x"
   by transfer simp
 
-lemma aform_safe_transfer[transfer_rule]: "(list_all2 op = ===> op = ===> rel_ve ===> op =) aform.safe aform.safe"
+lemma aform_safe_transfer[transfer_rule]: "(list_all2 (=) ===> (=) ===> rel_ve ===> (=)) aform.safe aform.safe"
   unfolding aform.safe_def
   by transfer_prover
 
-lemma aform_Csafe_transfer[transfer_rule]: "(list_all2 op = ===> op = ===> rel_set rel_ve) aform.Csafe aform.Csafe"
+lemma aform_Csafe_transfer[transfer_rule]: "(list_all2 (=) ===> (=) ===> rel_set rel_ve) aform.Csafe aform.Csafe"
   unfolding aform.Csafe_def
   by transfer_prover
 
@@ -706,19 +706,19 @@ lemma cast_safe_set: "(cast ` safe_set::'n rvec set) = aform.Csafe ode_fas safe_
   by transfer simp
 
 lemma aform_ode_d_raw_transfer[transfer_rule]:
-  "(list_all2 op = ===> op = ===> rel_ve ===> rel_ve ===> rel_ve ===> rel_ve) aform.ode_d_raw aform.ode_d_raw"
+  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_ve ===> rel_ve ===> rel_ve) aform.ode_d_raw aform.ode_d_raw"
   unfolding aform.ode_d_raw_def
   by transfer_prover
 
 lemma
   aform_ode_d_raw_aux_transfer:
-  "(list_all2 op = ===> op = ===> rel_ve ===> rel_ve ===> rel_ve)
+  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_ve ===> rel_ve)
     (\<lambda>x ya xb xa. if xb \<in> aform.Csafe x ya then aform.ode_d_raw x 0 xb 0 xa else 0)
     (\<lambda>x ya xb xa. if xb \<in> aform.Csafe x ya then aform.ode_d_raw x 0 xb 0 xa else 0)"
   by transfer_prover
 
 lemma aform_ode_d1_transfer[transfer_rule]:
-  "(list_all2 op = ===> op = ===> rel_ve ===> rel_blinfun rel_ve rel_ve) aform.ode_d1 aform.ode_d1"
+  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_blinfun rel_ve rel_ve) aform.ode_d1 aform.ode_d1"
   apply (auto simp: rel_blinfun_def aform.ode_d1_def intro!: rel_funI)
   unfolding aform.ode_d.rep_eq
   using aform_ode_d_raw_aux_transfer
@@ -729,14 +729,14 @@ lemma aform_ode_d1_transfer[transfer_rule]:
   done
 
 lemma cast_bl_transfer[transfer_rule]:
-  "(rel_blinfun op = op = ===> rel_blinfun rel_ve rel_ve) id_blinfun cast_bl"
+  "(rel_blinfun (=) (=) ===> rel_blinfun rel_ve rel_ve) id_blinfun cast_bl"
   by (auto simp: rel_ve_cast rel_blinfun_def intro!: rel_funI dest!: rel_funD)
 lemma cast_bl_transfer'[transfer_rule]:
-  "(rel_blinfun rel_ve rel_ve ===> rel_blinfun op = op =) id_blinfun cast_bl"
+  "(rel_blinfun rel_ve rel_ve ===> rel_blinfun (=) (=)) id_blinfun cast_bl"
   apply (auto simp: rel_ve_cast rel_blinfun_def cast_cast intro!: rel_funI dest!: rel_funD)
   by (subst cast_cast) auto
 
-lemma rel_blinfun_eq[relator_eq]: "rel_blinfun op = op = = op ="
+lemma rel_blinfun_eq[relator_eq]: "rel_blinfun (=) (=) = (=)"
   by (auto simp: Rel_def rel_blinfun_def blinfun_ext rel_fun_eq intro!: rel_funI ext)
 
 lemma cast_aform_ode_D1:
@@ -787,7 +787,7 @@ context includes lifting_syntax begin
 lemma id_cast_eucl1_transfer_eq: "(\<lambda>x. x) = (\<lambda>x. (fst x, 1\<^sub>L o\<^sub>L snd x o\<^sub>L 1\<^sub>L))"
   by auto
 lemma cast_eucl1_transfer[transfer_rule]:
-  "(rel_prod op = (rel_blinfun op = op =) ===> rel_prod rel_ve (rel_blinfun rel_ve rel_ve)) (\<lambda>x. x) cast_eucl1"
+  "(rel_prod (=) (rel_blinfun (=) (=)) ===> rel_prod rel_ve (rel_blinfun rel_ve rel_ve)) (\<lambda>x. x) cast_eucl1"
   unfolding cast_eucl1_def id_cast_eucl1_transfer_eq
   apply transfer_prover_start
        apply (transfer_step)
@@ -848,30 +848,30 @@ qed
 
 context includes lifting_syntax begin
 lemma flow1_of_list_transfer[transfer_rule]:
-  "(list_all2 op = ===> rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
+  "(list_all2 (=) ===> rel_prod rel_ve (rel_blinfun rel_ve rel_ve))
    flow1_of_list flow1_of_list"
   unfolding flow1_of_list_def blinfun_of_list_def o_def flow1_of_vec1_def
   by transfer_prover
 
 lemma c1_info_of_appr_transfer[transfer_rule]:
-  "(rel_prod (list_all2 op =) (rel_option (list_all2 op =)) ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
+  "(rel_prod (list_all2 (=)) (rel_option (list_all2 (=))) ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
     aform.c1_info_of_appr
     aform.c1_info_of_appr"
   unfolding aform.c1_info_of_appr_def
   by transfer_prover
 
 lemma c0_info_of_appr_transfer[transfer_rule]:
-  "((list_all2 op =) ===> rel_set rel_ve) aform.c0_info_of_appr aform.c0_info_of_appr"
+  "((list_all2 (=)) ===> rel_set rel_ve) aform.c0_info_of_appr aform.c0_info_of_appr"
   unfolding aform.c0_info_of_appr_def
   by transfer_prover
 
 lemma aform_scaleR2_transfer[transfer_rule]:
-  "(op = ===> op = ===> rel_set (rel_prod A B) ===> rel_set (rel_prod A B))
+  "((=) ===> (=) ===> rel_set (rel_prod A B) ===> rel_set (rel_prod A B))
     scaleR2 scaleR2"
-  if [unfolded Rel_def, transfer_rule]: "(op = ===> B ===> B) op *\<^sub>R op *\<^sub>R"
+  if [unfolded Rel_def, transfer_rule]: "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
   unfolding scaleR2_def
   by transfer_prover
-lemma scaleR_rel_blinfun_transfer[transfer_rule]: "(op = ===> rel_blinfun rel_ve rel_ve ===> rel_blinfun rel_ve rel_ve) op *\<^sub>R op *\<^sub>R"
+lemma scaleR_rel_blinfun_transfer[transfer_rule]: "((=) ===> rel_blinfun rel_ve rel_ve ===> rel_blinfun rel_ve rel_ve) ( *\<^sub>R) ( *\<^sub>R)"
   apply (auto intro!: rel_funI simp: rel_blinfun_def blinfun.bilinear_simps)
   apply (drule rel_funD)
    apply assumption
@@ -879,7 +879,7 @@ lemma scaleR_rel_blinfun_transfer[transfer_rule]: "(op = ===> rel_blinfun rel_ve
    apply auto
   done
 lemma c1_info_of_appre_transfer[transfer_rule]:
-  "(rel_prod (rel_prod op = op =) (rel_prod (list_all2 op =) (rel_option (list_all2 op =))) ===>
+  "(rel_prod (rel_prod (=) (=)) (rel_prod (list_all2 (=)) (rel_option (list_all2 (=)))) ===>
       rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
     aform.c1_info_of_appre
     aform.c1_info_of_appre"
@@ -887,25 +887,25 @@ lemma c1_info_of_appre_transfer[transfer_rule]:
   by transfer_prover
 
 lemma c1_info_of_apprs_transfer[transfer_rule]:
-  "(op = ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
+  "((=) ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
     aform.c1_info_of_apprs
     aform.c1_info_of_apprs"
   unfolding aform.c1_info_of_apprs_def
   by transfer_prover
 lemma c1_info_of_appr'_transfer[transfer_rule]:
-  "(rel_option (list_all2 op =) ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
+  "(rel_option (list_all2 (=)) ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
     aform.c1_info_of_appr' aform.c1_info_of_appr'"
   unfolding aform.c1_info_of_appr'_def
   by transfer_prover
 
 lemma c0_info_of_apprs_transfer[transfer_rule]:
-  "(op = ===> rel_set rel_ve)
+  "((=) ===> rel_set rel_ve)
     aform.c0_info_of_apprs
     aform.c0_info_of_apprs"
   unfolding aform.c0_info_of_apprs_def
   by transfer_prover
 lemma c0_info_of_appr'_transfer[transfer_rule]:
-  "(rel_option (list_all2 op =) ===> rel_set rel_ve)
+  "(rel_option (list_all2 (=)) ===> rel_set rel_ve)
     aform.c0_info_of_appr' aform.c0_info_of_appr'"
   unfolding aform.c0_info_of_appr'_def
   by transfer_prover
@@ -917,12 +917,12 @@ definition blinfuns_of_lvivl::"real list \<times> real list \<Rightarrow> ('b \<
   where "blinfuns_of_lvivl x = blinfun_of_list ` list_interval (fst x) (snd x)"
 
 lemma blinfun_of_list_transfer[transfer_rule]:
-  "(list_all2 op = ===> rel_blinfun rel_ve rel_ve) blinfun_of_list blinfun_of_list"
+  "(list_all2 (=) ===> rel_blinfun rel_ve rel_ve) blinfun_of_list blinfun_of_list"
   unfolding blinfun_of_list_def
   by transfer_prover
 
 lemma blinfuns_of_lvivl_transfer[transfer_rule]:
-  "(rel_prod (list_all2 op =) (list_all2 op =) ===> rel_set (rel_blinfun rel_ve rel_ve))
+  "(rel_prod (list_all2 (=)) (list_all2 (=)) ===> rel_set (rel_blinfun rel_ve rel_ve))
     blinfuns_of_lvivl
     blinfuns_of_lvivl"
   unfolding blinfuns_of_lvivl_def
@@ -931,7 +931,7 @@ lemma blinfuns_of_lvivl_transfer[transfer_rule]:
 definition "blinfuns_of_lvivl' x = (case x of None \<Rightarrow> UNIV | Some x \<Rightarrow> blinfuns_of_lvivl x)"
 
 lemma blinfuns_of_lvivl'_transfer[transfer_rule]:
-  "(rel_option (rel_prod (list_all2 op =) (list_all2 op =)) ===> rel_set (rel_blinfun rel_ve rel_ve))
+  "(rel_option (rel_prod (list_all2 (=)) (list_all2 (=))) ===> rel_set (rel_blinfun rel_ve rel_ve))
     blinfuns_of_lvivl'
     blinfuns_of_lvivl'"
   unfolding blinfuns_of_lvivl'_def
@@ -940,18 +940,18 @@ lemma blinfuns_of_lvivl'_transfer[transfer_rule]:
 
 lemma atLeastAtMost_transfer[transfer_rule]:
   "(A ===> A ===> rel_set A) atLeastAtMost atLeastAtMost"
-  if [transfer_rule]: "(A ===> A ===> op =) op \<le> op \<le>" "bi_total A" "bi_unique A"
+  if [transfer_rule]: "(A ===> A ===> (=)) (\<le>) (\<le>)" "bi_total A" "bi_unique A"
   unfolding atLeastAtMost_def atLeast_def atMost_def
   by transfer_prover
 
 lemma set_of_ivl_transfer[transfer_rule]:
   "(rel_prod A A ===> rel_set A) set_of_ivl set_of_ivl"
-  if [transfer_rule]: "(A ===> A ===> op =) op \<le> op \<le>" "bi_total A" "bi_unique A"
+  if [transfer_rule]: "(A ===> A ===> (=)) (\<le>) (\<le>)" "bi_total A" "bi_unique A"
   unfolding set_of_ivl_def
   by transfer_prover
 
 lemma set_of_lvivl_transfer[transfer_rule]:
-  "(rel_prod (list_all2 op =) (list_all2 op =) ===> rel_set rel_ve) set_of_lvivl set_of_lvivl"
+  "(rel_prod (list_all2 (=)) (list_all2 (=)) ===> rel_set rel_ve) set_of_lvivl set_of_lvivl"
   unfolding set_of_lvivl_def
   by transfer_prover
 
@@ -974,7 +974,7 @@ next
 qed
 
 lemma bounded_linear_matrix_vector_mul[THEN bounded_linear_compose, bounded_linear_intros]:
-  "bounded_linear (op *v x)" for x::"real^'x^'y"
+  "bounded_linear (( *v) x)" for x::"real^'x^'y"
   unfolding linear_linear
   by (rule matrix_vector_mul_linear)
 
@@ -1057,12 +1057,12 @@ lemmas one_step_result1 = one_step_result12[THEN conjunct1]
   and one_step_result2 = one_step_result12[THEN conjunct2]
 
 lemma plane_of_transfer[transfer_rule]: "(rel_sctn A ===> rel_set A) plane_of plane_of"
-  if [transfer_rule]: "(A ===> A ===> op =) op \<bullet> op \<bullet>" "bi_total A"
+  if [transfer_rule]: "(A ===> A ===> (=)) (\<bullet>) (\<bullet>)" "bi_total A"
   unfolding plane_of_def
   by transfer_prover
 
 lemma below_halfspace_transfer[transfer_rule]: "(rel_sctn A ===> rel_set A) below_halfspace below_halfspace"
-  if [transfer_rule]: "(A ===> A ===> op =) op \<bullet> op \<bullet>" "bi_total A"
+  if [transfer_rule]: "(A ===> A ===> (=)) (\<bullet>) (\<bullet>)" "bi_total A"
   unfolding below_halfspace_def le_halfspace_def
   by transfer_prover
 
@@ -1081,18 +1081,18 @@ lemma RETURN_dres_nres_relI:
 end
 
 lemma br_transfer[transfer_rule]:
-  "((B ===> C) ===> (B ===> op =) ===> rel_set (rel_prod B C)) br br"
+  "((B ===> C) ===> (B ===> (=)) ===> rel_set (rel_prod B C)) br br"
   if [transfer_rule]: "bi_total B"  "bi_unique C" "bi_total C"
   unfolding br_def
   by transfer_prover
 
 lemma aform_appr_rel_transfer[transfer_rule]:
-  "(rel_set (rel_prod (list_all2 op =) (rel_set rel_ve))) aform.appr_rel aform.appr_rel"
+  "(rel_set (rel_prod (list_all2 (=)) (rel_set rel_ve))) aform.appr_rel aform.appr_rel"
   unfolding aform.appr_rel_br
   by (transfer_prover)
 
 lemma appr1_rel_transfer[transfer_rule]: "(rel_set (rel_prod
-  (rel_prod (list_all2 op =) (rel_option (list_all2 op =)))
+  (rel_prod (list_all2 (=)) (rel_option (list_all2 (=))))
   (rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))))) aform.appr1_rel aform.appr1_rel"
   unfolding aform.appr1_rel_internal
   by transfer_prover
@@ -1159,7 +1159,7 @@ lemma fun_rel_transfer[transfer_rule]:
   by transfer_prover
 
 lemma c1_info_of_apprse_transfer[transfer_rule]:
-  "(list_all2 (rel_prod (rel_prod op = op =) (rel_prod (list_all2 op =) (rel_option (list_all2 op =))))
+  "(list_all2 (rel_prod (rel_prod (=) (=)) (rel_prod (list_all2 (=)) (rel_option (list_all2 (=)))))
     ===> rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve)))
     aform.c1_info_of_apprse
     aform.c1_info_of_apprse"
@@ -1174,14 +1174,14 @@ term scaleR2_rel
    \<Rightarrow> (((ereal \<times> ereal) \<times> 'b) \<times> ('c \<times> 'd) set) set"
 *)
 lemma scaleR2_rel_transfer[transfer_rule]:
-  "(rel_set (rel_prod op = (rel_set (rel_prod op = op =))) ===>
-    rel_set (rel_prod (rel_prod (rel_prod op = op =) op =) (rel_set (rel_prod op = op =)))) scaleR2_rel scaleR2_rel"
+  "(rel_set (rel_prod (=) (rel_set (rel_prod (=) (=)))) ===>
+    rel_set (rel_prod (rel_prod (rel_prod (=) (=)) (=)) (rel_set (rel_prod (=) (=))))) scaleR2_rel scaleR2_rel"
   unfolding scaleR2_rel_internal
   by transfer_prover
 
 lemma appr1_rele_transfer[transfer_rule]:
   "(rel_set (rel_prod
-    (rel_prod (rel_prod op = op =) (rel_prod (list_all2 op =) (rel_option (list_all2 op =))))
+    (rel_prod (rel_prod (=) (=)) (rel_prod (list_all2 (=)) (rel_option (list_all2 (=)))))
     (rel_set (rel_prod rel_ve (rel_blinfun rel_ve rel_ve))))) aform.appr1e_rel aform.appr1e_rel"
   unfolding scaleR2_rel_internal
   by transfer_prover
@@ -1190,7 +1190,7 @@ lemma flow1_of_vec1_times: "flow1_of_vec1 ` (A \<times> B) = A \<times> blinfun_
   by (auto simp: flow1_of_vec1_def vec1_of_flow1_def)
 
 lemma stable_on_transfer[transfer_rule]:
-  "(rel_set rel_ve ===> rel_set rel_ve ===> op =) v.stable_on stable_on"
+  "(rel_set rel_ve ===> rel_set rel_ve ===> (=)) v.stable_on stable_on"
   unfolding stable_on_def v.stable_on_def
   by transfer_prover
 
@@ -2112,7 +2112,7 @@ lemma eucl_of_list_le_iff: "eucl_of_list uX0 \<le> (t::'a::executable_euclidean_
   by (metis Basis_list in_Basis_index_Basis_list index_less_size_conv length_Basis_list)
 
 lemma Joints_aforms_of_ivls: "Joints (aforms_of_ivls lX0 uX0) = list_interval lX0 uX0"
-  if "list_all2 op \<le> lX0 uX0"
+  if "list_all2 (\<le>) lX0 uX0"
   using that
   apply (auto simp: list_interval_def dest: Joints_aforms_of_ivlsD1[OF _ that]
       Joints_aforms_of_ivlsD2[OF _ that] list_all2_lengthD
@@ -2178,7 +2178,7 @@ theorem solves_poincare_map_aform'_derivI:
          poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
 proof (rule ballI)
   fix x assume "x \<in> X0"
-  then have la2: "list_all2 op \<le> lX0 uX0"
+  then have la2: "list_all2 (\<le>) lX0 uX0"
     using X0
     by (force simp: subset_iff eucl_of_list_le_iff le_eucl_of_list_iff lens list_all2_conv_all_nth)
   have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))] \<Longrightarrow>
@@ -2344,26 +2344,26 @@ ML \<open>val ode_numerics_conv = @{computation_check
     ro
 
     (* nat *)
-    Suc "0::nat" "1::nat" "op +::nat \<Rightarrow> nat \<Rightarrow> nat" "op - ::nat \<Rightarrow> nat \<Rightarrow> nat" "op =::nat\<Rightarrow>nat\<Rightarrow>bool"
-    "op ^::nat\<Rightarrow>nat\<Rightarrow>nat"
+    Suc "0::nat" "1::nat" "(+)::nat \<Rightarrow> nat \<Rightarrow> nat" "(-) ::nat \<Rightarrow> nat \<Rightarrow> nat" "(=)::nat\<Rightarrow>nat\<Rightarrow>bool"
+    "(^)::nat\<Rightarrow>nat\<Rightarrow>nat"
 
     (* int / integer*)
-    "op =::int\<Rightarrow>int\<Rightarrow>bool"
-    "op +::int\<Rightarrow>int\<Rightarrow>int"
+    "(=)::int\<Rightarrow>int\<Rightarrow>bool"
+    "(+)::int\<Rightarrow>int\<Rightarrow>int"
     "uminus::_\<Rightarrow>int"
     "uminus::_\<Rightarrow>integer"
     int_of_integer integer_of_int
     "0::int"
     "1::int"
-    "op ^::int\<Rightarrow>nat\<Rightarrow>int"
+    "(^)::int\<Rightarrow>nat\<Rightarrow>int"
 
     (* real *)
-    "op =::real\<Rightarrow>real\<Rightarrow>bool"
+    "(=)::real\<Rightarrow>real\<Rightarrow>bool"
     "real_of_float"
-    "op /::real\<Rightarrow>real\<Rightarrow>real"
-    "op ^::real\<Rightarrow>nat\<Rightarrow>real"
+    "(/)::real\<Rightarrow>real\<Rightarrow>real"
+    "(^)::real\<Rightarrow>nat\<Rightarrow>real"
     "uminus::real\<Rightarrow>_"
-    "op +::real\<Rightarrow>real\<Rightarrow>real" "op -::real\<Rightarrow>real\<Rightarrow>real"  "op *::real\<Rightarrow>real\<Rightarrow>real"
+    "(+)::real\<Rightarrow>real\<Rightarrow>real" "(-)::real\<Rightarrow>real\<Rightarrow>real"  "( * )::real\<Rightarrow>real\<Rightarrow>real"
     real_divl real_divr
     real_of_int
     "0::real"
@@ -2373,12 +2373,12 @@ ML \<open>val ode_numerics_conv = @{computation_check
     Fract
     "0::rat"
     "1::rat"
-    "op +::rat\<Rightarrow>rat\<Rightarrow>rat"
-    "op -::rat\<Rightarrow>rat\<Rightarrow>rat"
-    "op *::rat\<Rightarrow>rat\<Rightarrow>rat"
+    "(+)::rat\<Rightarrow>rat\<Rightarrow>rat"
+    "(-)::rat\<Rightarrow>rat\<Rightarrow>rat"
+    "( * )::rat\<Rightarrow>rat\<Rightarrow>rat"
     "uminus::rat\<Rightarrow>_"
-    "op /::rat\<Rightarrow>rat\<Rightarrow>rat"
-    "op ^::rat\<Rightarrow>nat\<Rightarrow>rat"
+    "(/)::rat\<Rightarrow>rat\<Rightarrow>rat"
+    "(^)::rat\<Rightarrow>nat\<Rightarrow>rat"
 
     (* ereal *)
     "1::ereal"
@@ -2452,7 +2452,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "Cons::_\<Rightarrow>_\<Rightarrow>string"
 
     (* float *)
-    "op =::float\<Rightarrow>float\<Rightarrow>bool" "op +::float\<Rightarrow>float\<Rightarrow>float" "uminus::_\<Rightarrow>float" "op -::_\<Rightarrow>_\<Rightarrow>float"
+    "(=)::float\<Rightarrow>float\<Rightarrow>bool" "(+)::float\<Rightarrow>float\<Rightarrow>float" "uminus::_\<Rightarrow>float" "(-)::_\<Rightarrow>_\<Rightarrow>float"
     Float float_of_int float_of_nat
 
     (* approximation... *)
@@ -2467,10 +2467,10 @@ ML \<open>val ode_numerics_conv = @{computation_check
     (* floatarith *)
     "0::floatarith"
     "1::floatarith"
-    "op +::_\<Rightarrow>_\<Rightarrow>floatarith"
-    "op -::_\<Rightarrow>_\<Rightarrow>floatarith"
-    "op *::_\<Rightarrow>_\<Rightarrow>floatarith"
-    "op /::_\<Rightarrow>_\<Rightarrow>floatarith"
+    "(+)::_\<Rightarrow>_\<Rightarrow>floatarith"
+    "(-)::_\<Rightarrow>_\<Rightarrow>floatarith"
+    "( * )::_\<Rightarrow>_\<Rightarrow>floatarith"
+    "(/)::_\<Rightarrow>_\<Rightarrow>floatarith"
     "inverse::_\<Rightarrow>floatarith"
     "uminus::_\<Rightarrow>floatarith"
     "Sum\<^sub>e::_\<Rightarrow>nat list\<Rightarrow>floatarith"
@@ -2830,7 +2830,7 @@ theorem (in ode_interpretation) solves_poincare_map_aform'_derivI'[solves_one_st
          poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
 proof (rule ballI)
   fix x assume "x \<in> X0"
-  then have la2: "list_all2 op \<le> lX0 uX0"
+  then have la2: "list_all2 (\<le>) lX0 uX0"
     using X0
     by (force simp: subset_iff eucl_of_list_le_iff le_eucl_of_list_iff lens list_all2_conv_all_nth)
   have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))] \<Longrightarrow>

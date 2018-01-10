@@ -49,7 +49,7 @@ are well-quasi-ordered by the homeomorphic embedding relation.
 \<close>
 instantiation tree :: (wqo) wqo
 begin
-definition "s \<le> t \<longleftrightarrow> tree_emb UNIV (op \<le>) s t"
+definition "s \<le> t \<longleftrightarrow> tree_emb UNIV (\<le>) s t"
 definition "(s :: 'a tree) < t \<longleftrightarrow> s \<le> t \<and> \<not> (t \<le> s)"
 
 instance

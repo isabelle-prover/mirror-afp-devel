@@ -880,7 +880,7 @@ algebras.
 *}
 
 lemma dual_kleene_algebra:
-  "class.kleene_algebra (op +) (op \<odot>) 1 0 (op \<le>) (op <) star"
+  "class.kleene_algebra (+) (\<odot>) 1 0 (\<le>) (<) star"
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"

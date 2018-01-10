@@ -360,10 +360,10 @@ proof -
         degree_eq_length_coeffs length_greater_0_conv list.size(3) list.size(4) not_less_zero
         rev_exhaust) 
   have "f x=0" using assms(1) by (simp add: lead_coeff_list_def xs_def(1))
-  have "degree (map_poly f p) = length (strip_while (op = 0) (map f (xs@[x]))) - 1" 
+  have "degree (map_poly f p) = length (strip_while ((=) 0) (map f (xs@[x]))) - 1" 
     unfolding map_poly_def degree_eq_length_coeffs coeffs_Poly
     by (subst xs_def,auto)
-  also have "... = length (strip_while (op = 0) (map f xs)) - 1"   
+  also have "... = length (strip_while ((=) 0) (map f xs)) - 1"   
     using \<open>f x=0\<close> by simp
   also have "... \<le> length xs -1"
     using length_strip_while_le by (metis diff_le_mono length_map)

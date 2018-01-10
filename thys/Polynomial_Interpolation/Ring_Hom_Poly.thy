@@ -21,7 +21,7 @@ interpretation poly_hom: comm_ring_hom "\<lambda>p. poly p a"..
 
 interpretation poly_hom: idom_hom "\<lambda>p. poly p a"..
 
-text {* @{term "op \<circ>\<^sub>p"} as a homomorphism. *}
+text {* @{term "(\<circ>\<^sub>p)"} as a homomorphism. *}
 
 interpretation pcompose_hom: comm_semiring_hom "\<lambda>q. q \<circ>\<^sub>p p"
   using pcompose_add pcompose_mult pcompose_1 by (unfold_locales, auto)
@@ -101,7 +101,7 @@ proof (rule poly_eqI)
     unfolding coeff_monom using 2 by auto
 qed
 
-lemma smult_as_map_poly: "smult a = map_poly (op * a)"
+lemma smult_as_map_poly: "smult a = map_poly (( * ) a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
 
 

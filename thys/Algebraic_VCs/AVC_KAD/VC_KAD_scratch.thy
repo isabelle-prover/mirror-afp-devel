@@ -305,7 +305,7 @@ subsubsection {* Soundness and Relation KAD*}
 
 notation relcomp (infixl ";" 70)
 
-interpretation rel_d: dioid Id "{}" "op \<union>" "op ;" "op \<subseteq>" "op \<subset>"
+interpretation rel_d: dioid Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subset>)"
   by (standard, auto)
 
 lemma (in dioid) pow_inductl: "z + x \<cdot> y \<le> y \<Longrightarrow> x ^ i \<cdot> z \<le> y"
@@ -338,7 +338,7 @@ lemma rel_star_contr: "X^* ; Y = (\<Union>i. (rel_d.power X i) ; Y)"
 definition rel_ad :: "'a rel \<Rightarrow> 'a rel" where
   "rel_ad R = {(x,x) | x. \<not> (\<exists>y. (x,y) \<in> R)}" 
 
-interpretation rel_aka: antidomain_kleene_algebra Id "{}" "op \<union>"  "op ;" "op \<subseteq>" "op \<subset>" rtrancl rel_ad
+interpretation rel_aka: antidomain_kleene_algebra Id "{}" "(\<union>)"  "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_ad
   apply standard
   apply auto[2]
   by (auto simp: rel_star_contr rel_d.pow_inductl rel_star_contl SUP_least rel_d.pow_inductr rel_ad_def)
@@ -489,7 +489,7 @@ subsubsection {* Soundness and Relation RKAD*}
 definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where 
   "rel_R P Q = \<Union>{X. rel_aka.dom_op P \<subseteq> rel_aka.wp X Q}"
 
-interpretation rel_rkad: rkad Id "{}" "op \<union>"  "op ;" "op \<subseteq>" "op \<subset>" rtrancl rel_ad rel_R
+interpretation rel_rkad: rkad Id "{}" "(\<union>)"  "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_ad rel_R
   by (standard, auto simp: rel_R_def rel_aka.dom_op_def rel_ad_def rel_aka.wp_def, blast)
 
 subsubsection {* Assignment Laws *}

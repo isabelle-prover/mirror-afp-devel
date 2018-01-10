@@ -36,7 +36,7 @@ text {*
 *}
 definition shows_string :: "string \<Rightarrow> shows"
 where
-  "shows_string = op @"
+  "shows_string = (@)"
 
 class "show" =
   fixes shows_prec :: "nat \<Rightarrow> 'a \<Rightarrow> shows"
@@ -175,7 +175,7 @@ end
 instantiation char :: "show"
 begin
 
-definition "shows_prec d (c::char) = op # c"
+definition "shows_prec d (c::char) = (#) c"
 
 definition "shows_list (cs::string) = shows_string cs"
 

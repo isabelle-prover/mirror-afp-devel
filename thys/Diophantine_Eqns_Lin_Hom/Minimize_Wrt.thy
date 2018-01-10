@@ -17,6 +17,8 @@ fun minimize_wrt
 lemma minimize_wrt_subset: "set (minimize_wrt P xs) \<subseteq> set xs"
   by (induct xs) auto
 
+lemmas minimize_wrtD = minimize_wrt_subset [THEN subsetD]
+
 lemma sorted_wrt_minimize_wrt:
   "sorted_wrt P (minimize_wrt P xs)"
   by (induct xs) (auto simp: sorted_wrt_Cons sorted_wrt_filter)
@@ -73,5 +75,18 @@ lemma in_minimize_wrt_iff:
   shows "x \<in> set (minimize_wrt P xs) \<longleftrightarrow> x \<in> set xs \<and> (\<forall>y\<in>set xs. P y x)"
   using assms and in_minimize_wrtD [of Q xs x P, OF assms(1,2) _ assms(3,4)]
   by (blast intro: in_minimize_wrtI)
+
+lemma set_minimize_wrt_iff:
+  assumes "\<And>x y. Q x y \<Longrightarrow> \<not> Q y x"
+    and "sorted_wrt Q xs"
+    and "\<And>x y. \<not> P x y \<Longrightarrow> Q x y"
+    and "\<And>x. P x x"
+  shows "set (minimize_wrt P xs) = {x \<in> set xs. \<forall>y\<in>set xs. P y x}"
+  by (auto simp: in_minimize_wrt_iff [OF assms])
+
+lemma minimize_wrt_append:
+  assumes "\<forall>x\<in>set xs. \<forall>y\<in>set (xs @ ys). P y x"
+  shows "minimize_wrt P (xs @ ys) = xs @ filter (\<lambda>y. \<forall>x\<in>set xs. P x y) (minimize_wrt P ys)"
+  using assms by (induct xs) (auto intro: filter_cong)
 
 end

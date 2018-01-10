@@ -457,7 +457,7 @@ lemmas proper_it_monos =
 attribute_setup "proper_it" = {* 
   Scan.succeed (Thm.declaration_attribute (fn thm => fn context => 
     let
-      val mono_thms = map_filter (try (curry op RS thm)) @{thms proper_it_monos}
+      val mono_thms = map_filter (try (curry (RS) thm)) @{thms proper_it_monos}
       (*val mono_thms = map (fn mt => thm RS mt) @{thms proper_it_monos}*)
       val context = context 
         |> Icf_Proper_Iterator.add_thm thm

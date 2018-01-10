@@ -47,14 +47,14 @@ lemma hadd_succ_left [simp]: "Ord y \<Longrightarrow> succ x @+ y = succ (x @+ y
 lemma hadd_assoc: "(x @+ y) @+ z = x @+ (y @+ z)"
   by (induct z) (auto simp: hadd_hinsert_right)
 
-lemma RepFun_hadd_disjoint: "x \<sqinter> RepFun y (op @+ x) = 0"
+lemma RepFun_hadd_disjoint: "x \<sqinter> RepFun y ((@+) x) = 0"
   by (metis hf_equalityI RepFun_iff hinter_iff not_add_mem_right hmem_hempty)
 
 
 subsection \<open>Cancellation laws for addition\<close>
 
-lemma Rep_le_Cancel: "x \<squnion> RepFun y (op @+ x) \<le> x \<squnion> RepFun z (op @+ x)
-                      \<Longrightarrow> RepFun y (op @+ x) \<le> RepFun z (op @+ x)"
+lemma Rep_le_Cancel: "x \<squnion> RepFun y ((@+) x) \<le> x \<squnion> RepFun z ((@+) x)
+                      \<Longrightarrow> RepFun y ((@+) x) \<le> RepFun z ((@+) x)"
   by (auto simp add: not_add_mem_right)
 
 lemma hadd_cancel_right [simp]: "x @+ y = x @+ z \<longleftrightarrow> y=z"
@@ -62,7 +62,7 @@ proof (induct y arbitrary: z rule: hmem_induct)
   case (step y z) show ?case
   proof auto
     assume eq: "x @+ y = x @+ z"
-    hence  "RepFun y (op @+ x) = RepFun z (op @+ x)"
+    hence  "RepFun y ((@+) x) = RepFun z ((@+) x)"
       by (metis hadd Rep_le_Cancel order_antisym order_refl)
     thus  "y = z"
       by (metis hf_equalityI RepFun_iff step)

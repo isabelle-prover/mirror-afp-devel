@@ -266,7 +266,7 @@ lemma carrier_many_among[simp]: "carrier (many_among S) = S"
 subsubsection {* Intersection of two trees *}
 
 lift_definition intersect :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<inter>\<inter>" 80)
-  is "op \<inter>"
+  is "(\<inter>)"
   by (auto simp add: downset_def)
 
 lemma paths_intersect[simp]: "paths (t \<inter>\<inter> t') = paths t \<inter> paths t'"
@@ -280,7 +280,7 @@ lemma carrier_intersect: "carrier (t \<inter>\<inter> t') \<subseteq> carrier t 
 subsubsection {* Disjoint union of trees *}
 
 lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<oplus>\<oplus>" 80)
-  is "op \<union>"
+  is "(\<union>)"
   by (auto simp add: downset_def)
   
 lemma either_empty1[simp]: "empty \<oplus>\<oplus> t = t"

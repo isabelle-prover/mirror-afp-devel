@@ -76,19 +76,19 @@ lemma to_int_mod_ring_plus: "to_int_mod_ring ((x :: 'a mod_ring) + y) = M (to_in
 lemma to_int_mod_ring_times: "to_int_mod_ring ((x :: 'a mod_ring) * y) = M (to_int_mod_ring x * to_int_mod_ring y)"
   unfolding M_def using m by (transfer, auto)
 
-lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree"
+lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> (=)) degree_m degree"
   unfolding MP_Rel_def rel_fun_def 
   by (auto intro!: degree_map_poly)
 
-lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x = M y) (op =)"
+lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> (=)) (\<lambda> x y. M x = M y) (=)"
   unfolding M_Rel_def rel_fun_def by auto
 
 interpretation to_int_mod_ring_hom: map_poly_inj_zero_hom to_int_mod_ring..
 
-lemma eq_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op =m) (op =)"
+lemma eq_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> (=)) (=m) (=)"
   unfolding MP_Rel_def rel_fun_def by auto
 
-lemma eq_Mf_Rel[transfer_rule]: "(MF_Rel ===> MF_Rel ===> op =) (\<lambda> x y. Mf x = Mf y) (op =)"
+lemma eq_Mf_Rel[transfer_rule]: "(MF_Rel ===> MF_Rel ===> (=)) (\<lambda> x y. Mf x = Mf y) (=)"
 proof (intro rel_funI, goal_cases)
   case (1 cfs Cfs dgs Dgs)
   obtain c fs where cfs: "cfs = (c,fs)" by force
@@ -158,7 +158,7 @@ qed
 
 lemmas coeff_map_poly_of_int = coeff_map_poly[of of_int, OF of_int_0]
 
-lemma plus_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (op +) (op +)"
+lemma plus_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (+) (+)"
   unfolding MP_Rel_def 
 proof (intro rel_funI, goal_cases)
   case (1 x f y g)
@@ -169,7 +169,7 @@ proof (intro rel_funI, goal_cases)
   finally show ?case .
 qed
 
-lemma times_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (op *) (op *)"
+lemma times_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (( * )) (( * ))"
   unfolding MP_Rel_def
 proof (intro rel_funI, goal_cases)
   case (1 x f y g)
@@ -251,7 +251,7 @@ qed
 lemma prod_mset_MP_Rel[transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel) prod_mset prod_mset"
 proof (intro rel_funI, goal_cases)
   case (1 xs ys)
-  have "(MP_Rel ===> MP_Rel ===> MP_Rel) (op *) (op *)" "MP_Rel 1 1" by transfer_prover+
+  have "(MP_Rel ===> MP_Rel ===> MP_Rel) (( * )) (( * ))" "MP_Rel 1 1" by transfer_prover+
   from 1 this show ?case
   proof (induct xs ys rule: rel_mset_induct)
     case (add R x xs y ys)
@@ -321,7 +321,7 @@ proof
 qed
 
 
-lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> op =) (rel_some eq_m) (op \<in>)"
+lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> (=)) (rel_some eq_m) (\<in>)"
 proof (intro rel_funI iffI)
   fix x y X Y assume xy: "MP_Rel x y" and XY: "rel_set MP_Rel X Y"
   { assume "\<exists>x' \<in> X. x =m x'"
@@ -337,7 +337,7 @@ proof (intro rel_funI iffI)
   with x'X show "\<exists>x' \<in> X. x =m x'" by auto
 qed
 
-lemma conversep_MP_Rel_OO_MP_Rel [simp]: "MP_Rel\<inverse>\<inverse> OO MP_Rel = (op =)"
+lemma conversep_MP_Rel_OO_MP_Rel [simp]: "MP_Rel\<inverse>\<inverse> OO MP_Rel = (=)"
   using Mp_to_int_poly by (intro ext, auto simp: OO_def MP_Rel_def)
 
 lemma MP_Rel_OO_conversep_MP_Rel [simp]: "MP_Rel OO MP_Rel\<inverse>\<inverse> = eq_m"
@@ -349,7 +349,7 @@ lemma conversep_MP_Rel_OO_eq_m [simp]: "MP_Rel\<inverse>\<inverse> OO eq_m = MP_
 lemma eq_m_OO_MP_Rel [simp]: "eq_m OO MP_Rel = MP_Rel"
   by (intro ext, auto simp: OO_def MP_Rel_def)
 
-lemma eq_mset_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> rel_mset MP_Rel ===> op =) (rel_mset eq_m) (op =)"
+lemma eq_mset_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> rel_mset MP_Rel ===> (=)) (rel_mset eq_m) (=)"
 proof (intro rel_funI iffI)
   fix A B X Y
   assume AX: "rel_mset MP_Rel A X" and BY: "rel_mset MP_Rel B Y"
@@ -366,15 +366,15 @@ proof (intro rel_funI iffI)
   show "rel_mset eq_m A B" by simp
 qed
 
-lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op dvdm) (op dvd)"
+lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> (=)) (dvdm) (dvd)"
   unfolding dvdm_def[abs_def] dvd_def[abs_def]
   by transfer_prover
 
-lemma irreducible_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible_m irreducible"
+lemma irreducible_MP_Rel [transfer_rule]: "(MP_Rel ===> (=)) irreducible_m irreducible"
   unfolding irreducible_m_def irreducible_def
   by transfer_prover
 
-lemma irreducible\<^sub>d_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible\<^sub>d_m irreducible\<^sub>d"
+lemma irreducible\<^sub>d_MP_Rel [transfer_rule]: "(MP_Rel ===> (=)) irreducible\<^sub>d_m irreducible\<^sub>d"
   unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def[abs_def]
   by transfer_prover
 
@@ -382,24 +382,24 @@ lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV"
   unfolding rel_set_def M_Rel_def[abs_def] M_def 
   by (auto simp: M_def m, goal_cases, metis to_int_mod_ring_of_int_mod_ring, (transfer, auto)+)
 
-lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff"
+lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> (=) ===> M_Rel) coeff coeff"
   unfolding rel_fun_def M_Rel_def MP_Rel_def Mp_coeff[symmetric] by auto
 
 lemma M_1_1: "M 1 = 1" unfolding M_def unfolding m by simp
 
-lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
+lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> (=)) square_free_m square_free"
   unfolding square_free_m_def[abs_def] square_free_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma mset_factors_m_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel ===> op =) mset_factors_m mset_factors"
+lemma mset_factors_m_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel ===> (=)) mset_factors_m mset_factors"
   unfolding mset_factors_def mset_factors_m_def
   by (transfer_prover_start, transfer_step+, auto dest:eq_m_irreducible_m)
 
-lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
+lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> (=)) coprime_m coprime"
   unfolding coprime_m_def[abs_def] coprime_def' [abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma prime_elem_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) prime_elem_m prime_elem"
+lemma prime_elem_MP_Rel [transfer_rule]: "(MP_Rel ===> (=)) prime_elem_m prime_elem"
   unfolding prime_elem_m_def prime_elem_def by transfer_prover
 
 end
@@ -426,7 +426,7 @@ locale poly_mod_prime_type = poly_mod_type m ty for m :: int and
 begin 
 
 lemma factorization_MP_Rel [transfer_rule]:
-  "(MP_Rel ===> MF_Rel ===> op =) factorization_m (factorization Irr_Mon)"
+  "(MP_Rel ===> MF_Rel ===> (=)) factorization_m (factorization Irr_Mon)"
   unfolding rel_fun_def
 proof (intro allI impI, goal_cases)
   case (1 f F cfs Cfs)
@@ -454,7 +454,7 @@ proof (intro allI impI, goal_cases)
     factorization_m_def factorization_def split eq by simp
 qed
 
-lemma unique_factorization_MP_Rel [transfer_rule]: "(MP_Rel ===> MF_Rel ===> op =)
+lemma unique_factorization_MP_Rel [transfer_rule]: "(MP_Rel ===> MF_Rel ===> (=))
   unique_factorization_m (unique_factorization Irr_Mon)"
   unfolding rel_fun_def
 proof (intro allI impI, goal_cases)

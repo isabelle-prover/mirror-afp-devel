@@ -28,7 +28,7 @@ subsection \<open>Types\<close>
 datatype type = \<B> ("\<B>") | Fun type type (infixr "\<rightarrow>" 65)
 
 definition mk_fun  (infixr "\<rightarrow>\<rightarrow>" 65) where
-  "Ts \<rightarrow>\<rightarrow> T = fold op \<rightarrow> (rev Ts) T"
+  "Ts \<rightarrow>\<rightarrow> T = fold (\<rightarrow>) (rev Ts) T"
 
 primrec dest_fun where
   "dest_fun \<B> = []"
@@ -241,13 +241,13 @@ next
 qed
 
 lemma fold_eq_Bool_iff[simp]:
-  "fold op \<rightarrow> (rev Ts) T = \<B> \<longleftrightarrow> Ts = [] \<and> T = \<B>"
-  "\<B> = fold op \<rightarrow> (rev Ts) T \<longleftrightarrow> Ts = [] \<and> T = \<B>"
+  "fold (\<rightarrow>) (rev Ts) T = \<B> \<longleftrightarrow> Ts = [] \<and> T = \<B>"
+  "\<B> = fold (\<rightarrow>) (rev Ts) T \<longleftrightarrow> Ts = [] \<and> T = \<B>"
   by (induct Ts) auto
 
 lemma fold_eq_Fun_iff[simp]:
-  "fold op \<rightarrow> (rev Ts) T = U \<rightarrow> V \<longleftrightarrow>
-   (Ts = [] \<and> T = U \<rightarrow> V \<or> (\<exists>Us. Ts = U # Us \<and> fold op \<rightarrow> (rev Us) T = V))"
+  "fold (\<rightarrow>) (rev Ts) T = U \<rightarrow> V \<longleftrightarrow>
+   (Ts = [] \<and> T = U \<rightarrow> V \<or> (\<exists>Us. Ts = U # Us \<and> fold (\<rightarrow>) (rev Us) T = V))"
   by (induct Ts) auto
 
 
@@ -400,7 +400,7 @@ proof (intro welltyped_Abs[of _ "fv u"] allI impI)
 qed
 
 lemma Apps_alt: "f \<bullet> ts ::: T \<longleftrightarrow>
-  (\<exists>Ts. f ::: fold op \<rightarrow> (rev Ts) T \<and> list_all2 (op :::) ts Ts)"
+  (\<exists>Ts. f ::: fold (\<rightarrow>) (rev Ts) T \<and> list_all2 (:::) ts Ts)"
 proof (induct ts arbitrary: f)
   case (Cons t ts)
   from Cons(1)[of "f \<cdot> t"] show ?case
@@ -527,7 +527,7 @@ lemma Abss_Cons[simp]: "\<Lambda>[(x#xs)] b = \<Lambda>\<langle>snd x\<rangle> (
 lemma welltyped_Abss: "b ::: U \<Longrightarrow> T = map snd xTs \<rightarrow>\<rightarrow> U \<Longrightarrow> \<Lambda>[xTs] b ::: T"
   by (hypsubst_thin, induct xTs) (auto simp: mk_fun_def intro!: welltyped_Abs_fresh)
 
-lemma welltyped_Apps: "list_all2 (op :::) ts Ts \<Longrightarrow> f ::: Ts \<rightarrow>\<rightarrow> U \<Longrightarrow> f \<bullet> ts ::: U"
+lemma welltyped_Apps: "list_all2 (:::) ts Ts \<Longrightarrow> f ::: Ts \<rightarrow>\<rightarrow> U \<Longrightarrow> f \<bullet> ts ::: U"
   by (induct ts Ts arbitrary: f rule: list.rel_induct) (auto simp: mk_fun_def)
 
 lemma welltyped_open_Var_close_Var[intro!]:
@@ -568,7 +568,7 @@ lemma welltyped_Seqs_iff[simp]: "es ?? e ::: T \<longleftrightarrow>
 lemma welltyped_App_iff[simp]: "f \<cdot> t ::: U \<longleftrightarrow> (\<exists>T. f ::: T \<rightarrow> U \<and> t ::: T)"
   by auto
 
-lemma welltyped_Apps_iff[simp]: "f \<bullet> ts ::: U \<longleftrightarrow> (\<exists>Ts. f ::: Ts \<rightarrow>\<rightarrow> U \<and> list_all2 (op :::) ts Ts)"
+lemma welltyped_Apps_iff[simp]: "f \<bullet> ts ::: U \<longleftrightarrow> (\<exists>Ts. f ::: Ts \<rightarrow>\<rightarrow> U \<and> list_all2 (:::) ts Ts)"
   by (induct ts arbitrary: f) (auto 0 3 simp: mk_fun_def list_all2_Cons1 intro: exI[of _ "_ # _"])
 
 lemma eq_mk_fun_iff[simp]: "T = Ts \<rightarrow>\<rightarrow> \<B> \<longleftrightarrow> Ts = dest_fun T"

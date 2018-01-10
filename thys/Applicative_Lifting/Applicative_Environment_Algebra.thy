@@ -15,13 +15,13 @@ text \<open> Link between applicative instance of the environment functor with t
 context includes applicative_syntax
 begin
 
-lemma plus_fun_af [applicative_unfold]: "f + g = pure op + \<diamondop> f \<diamondop> g"
+lemma plus_fun_af [applicative_unfold]: "f + g = pure (+) \<diamondop> f \<diamondop> g"
 unfolding plus_fun_def const_def apf_def ..
 
 lemma zero_fun_af [applicative_unfold]: "0 = pure 0"
 unfolding zero_fun_def const_def ..
 
-lemma times_fun_af [applicative_unfold]: "f * g = pure op * \<diamondop> f \<diamondop> g"
+lemma times_fun_af [applicative_unfold]: "f * g = pure ( * ) \<diamondop> f \<diamondop> g"
 unfolding times_fun_def const_def apf_def ..
 
 lemma one_fun_af [applicative_unfold]: "1 = pure 1"

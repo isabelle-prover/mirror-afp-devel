@@ -7,7 +7,7 @@ begin
 lemma param_index[param]: 
   "\<lbrakk>single_valued A; single_valued (A\<inverse>)\<rbrakk> \<Longrightarrow> (index,index) \<in> \<langle>A\<rangle>list_rel \<rightarrow> A \<rightarrow> nat_rel"
   unfolding index_def[abs_def] find_index_def 
-  apply (subgoal_tac "((op =, op =) \<in> A \<rightarrow> A \<rightarrow> bool_rel)")
+  apply (subgoal_tac "(((=), (=)) \<in> A \<rightarrow> A \<rightarrow> bool_rel)")
   apply parametricity
   by (simp add: pres_eq_iff_svb)
 
@@ -80,9 +80,9 @@ end
 sepref_decl_op list_replicate: replicate :: "nat_rel \<rightarrow> A \<rightarrow> \<langle>A\<rangle>list_rel" .
 definition op_list_copy :: "'a list \<Rightarrow> 'a list" where [simp]:  "op_list_copy l \<equiv> l"
 sepref_decl_op (no_def) list_copy: "op_list_copy" :: "\<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" .
-sepref_decl_op list_prepend: "op #" :: "A \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" .
+sepref_decl_op list_prepend: "(#)" :: "A \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" .
 sepref_decl_op list_append: "\<lambda>xs x. xs@[x]" :: "\<langle>A\<rangle>list_rel \<rightarrow> A \<rightarrow> \<langle>A\<rangle>list_rel" .
-sepref_decl_op list_concat: "op @" :: "\<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" .
+sepref_decl_op list_concat: "(@)" :: "\<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" .
 sepref_decl_op list_length: length :: "\<langle>A\<rangle>list_rel \<rightarrow> nat_rel" .
 sepref_decl_op list_get: nth :: "[\<lambda>(l,i). i<length l]\<^sub>f \<langle>A\<rangle>list_rel \<times>\<^sub>r nat_rel \<rightarrow> A" .
 sepref_decl_op list_set: list_update :: "[\<lambda>((l,i),_). i<length l]\<^sub>f (\<langle>A\<rangle>list_rel \<times>\<^sub>r nat_rel) \<times>\<^sub>r A \<rightarrow> \<langle>A\<rangle>list_rel" .
@@ -103,12 +103,12 @@ sepref_decl_op list_index: index :: "\<langle>A\<rangle>list_rel \<rightarrow> A
 subsection \<open>Patterns\<close>
 lemma [def_pat_rules]:
   "[] \<equiv> op_list_empty"
-  "op=$l$[] \<equiv> op_list_is_empty$l"
-  "op=$[]$l \<equiv> op_list_is_empty$l"
+  "(=) $l$[] \<equiv> op_list_is_empty$l"
+  "(=) $[]$l \<equiv> op_list_is_empty$l"
   "replicate$n$v \<equiv> op_list_replicate$n$v"
   "Cons$x$xs \<equiv> op_list_prepend$x$xs"
-  "op@$xs$(Cons$x$[]) \<equiv> op_list_append$xs$x"
-  "op@$xs$ys \<equiv> op_list_concat$xs$ys"
+  "(@) $xs$(Cons$x$[]) \<equiv> op_list_append$xs$x"
+  "(@) $xs$ys \<equiv> op_list_concat$xs$ys"
   "op_list_concat$xs$(Cons$x$[]) \<equiv> op_list_append$xs$x"
   "length$xs \<equiv> op_list_length$xs"
   "nth$l$i \<equiv> op_list_get$l$i"
@@ -119,7 +119,7 @@ lemma [def_pat_rules]:
   "tl$l \<equiv> op_list_tl$l"
   "last$l \<equiv> op_list_last$l"
   "butlast$l \<equiv> op_list_butlast$l"
-  "op\<in>$x$(set$l) \<equiv> op_list_contains$x$l"
+  "(\<in>) $x$(set$l) \<equiv> op_list_contains$x$l"
   "swap$l$i$j \<equiv> op_list_swap$l$i$j"
   "rotate1$l \<equiv> op_list_rotate1$l"
   "rev$l \<equiv> op_list_rev$l"

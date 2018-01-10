@@ -227,7 +227,7 @@ proof (induction xs rule: length_induct)
     finally show ?thesis .
   qed
   
-  from "1.prems" have "bij_betw (op ! xs) {..<n} (set xs)"
+  from "1.prems" have "bij_betw ((!) xs) {..<n} (set xs)"
     by (intro bij_betw_byWitness[where f' = "index xs"]) (auto simp: n_def index_nth_id)
   moreover have "bij_betw (linorder_rank R (set xs)) (set xs) {..<card (set xs)}"
     using assms(1) by (rule bij_betw_linorder_rank) (insert "1.prems", auto)

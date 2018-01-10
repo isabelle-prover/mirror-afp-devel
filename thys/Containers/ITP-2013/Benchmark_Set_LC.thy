@@ -8,7 +8,7 @@ begin
 lemma [code_unfold del]: "card \<equiv> Cardinality.card'" by(simp)
 
 instantiation word :: (len0) ceq begin
-definition "CEQ('a word) = Some op ="
+definition "CEQ('a word) = Some (=)"
 instance by(intro_classes)(simp add: ceq_word_def)
 end
 

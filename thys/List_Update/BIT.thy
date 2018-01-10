@@ -1697,9 +1697,9 @@ text "Approximation of the Term for Free exchanges"
         have qsn: "{index init q} \<union> {} \<subseteq> {0..<?l}" using setinit queryinlist by auto
 
         have "{l::bool list. length l = ?l \<and> l!(index init q)}
-          = {xs. Ball {(index init q)} (op ! xs) \<and> (\<forall>i\<in>{}. \<not> xs ! i) \<and> length xs = ?l}" by auto
+          = {xs. Ball {(index init q)} ((!) xs) \<and> (\<forall>i\<in>{}. \<not> xs ! i) \<and> length xs = ?l}" by auto
         then have "card {l::bool list. length l = ?l \<and> l!(index init q)}
-          = card {xs. Ball {index init q} (op ! xs) \<and> (\<forall>i\<in>{}. \<not> xs ! i) \<and> length xs = length init} " by auto
+          = card {xs. Ball {index init q} ((!) xs) \<and> (\<forall>i\<in>{}. \<not> xs ! i) \<and> length xs = length init} " by auto
         also have "\<dots> = 2^(length init - card {index init q} - card {})" 
                   apply(subst card2[of "{(index init q)}" "{}" "?l"]) using qsn by auto
         finally have lulu: "card {l::bool list. length l = ?l \<and> l!(index init q)} = 2^(?l-1)" by auto
@@ -1742,7 +1742,7 @@ text "Approximation of the Term for Free exchanges"
               have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                   by (rule index_le_size)
               then have kxs': "k' \<le> length xs'" by simp
-              have "?S = op ! xs' ` {0..<k'}" by force
+              have "?S = (!) xs' ` {0..<k'}" by force
               also have "\<dots> = set (take k' xs')" apply(rule nth_image) by(rule kxs')
               finally show "?S = set (take k' xs')" .
           qed

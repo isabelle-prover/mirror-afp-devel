@@ -180,7 +180,7 @@ text {* Not strictly related to generators of groups, this is still a general
 group concept and not related to Free Groups. *}
 
 abbreviation (in monoid) m_concat
-  where "m_concat l \<equiv> foldr (op \<otimes>) l \<one>"
+  where "m_concat l \<equiv> foldr (\<otimes>) l \<one>"
 
 lemma (in monoid) m_concat_closed[simp]:
  "set l \<subseteq> carrier G \<Longrightarrow> m_concat l \<in> carrier G"
@@ -200,16 +200,16 @@ by(induct xs)(auto simp add: m_assoc)
 
 lemma (in monoid) nat_pow_mult1l:
   assumes x: "x \<in> carrier G"
-  shows "x \<otimes> x (^) n = x (^) Suc n"
+  shows "x \<otimes> x [^] n = x [^] Suc n"
 proof-
-  have "x \<otimes> x (^) n = x (^) (1::nat) \<otimes> x (^) n " using x by auto
-  also have "\<dots> = x (^) (1 + n)" using x 
+  have "x \<otimes> x [^] n = x [^] (1::nat) \<otimes> x [^] n " using x by auto
+  also have "\<dots> = x [^] (1 + n)" using x 
        by (auto dest:nat_pow_mult simp del:One_nat_def)
-  also have "\<dots> = x (^) Suc n" by simp
-  finally show "x \<otimes> x (^) n = x (^) Suc n" .
+  also have "\<dots> = x [^] Suc n" by simp
+  finally show "x \<otimes> x [^] n = x [^] Suc n" .
 qed
 
-lemma (in monoid) m_concat_power[simp]: "x \<in> carrier G \<Longrightarrow> m_concat (replicate n x) = x (^) n"
+lemma (in monoid) m_concat_power[simp]: "x \<in> carrier G \<Longrightarrow> m_concat (replicate n x) = x [^] n"
 by(induct n, auto simp add:nat_pow_mult1l)
 
 

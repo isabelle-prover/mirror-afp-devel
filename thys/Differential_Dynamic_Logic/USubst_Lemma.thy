@@ -4077,25 +4077,25 @@ lemma subst_sequent:
   shows "(\<nu> \<in> seq_sem I (Ssubst (\<Gamma>,\<Delta>) \<sigma>)) = (\<nu> \<in> seq_sem (adjoint I \<sigma> \<nu>) (\<Gamma>,\<Delta>))"
 proof -
   let ?f = "(seq2fml (\<Gamma>, \<Delta>))"
-  have subst_eqG:"Fsubst (foldr op && \<Gamma> TT) \<sigma> = foldr op && (map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Gamma>) TT"
+  have subst_eqG:"Fsubst (foldr (&&) \<Gamma> TT) \<sigma> = foldr (&&) (map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Gamma>) TT"
     by(induction \<Gamma>, auto simp add: TT_def)
-  have subst_eqD:"Fsubst (foldr op || \<Delta> FF) \<sigma> = foldr op || (map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Delta>) FF"
+  have subst_eqD:"Fsubst (foldr (||) \<Delta> FF) \<sigma> = foldr (||) (map (\<lambda>\<phi>. Fsubst \<phi> \<sigma>) \<Delta>) FF"
     by(induction \<Delta>, auto simp add: FF_def Or_def)
   have subst_eq:"Fsubst ?f \<sigma> = (seq2fml (Ssubst (\<Gamma>, \<Delta>) \<sigma>))"
     using subst_eqG subst_eqD 
     by (auto simp add: Implies_def Or_def)
-  have fsafeG:"fsafe (foldr op && \<Gamma> TT)" 
+  have fsafeG:"fsafe (foldr (&&) \<Gamma> TT)" 
     using Ssafe apply(induction \<Gamma>, auto simp add: Ssafe_def TT_def)
     by fastforce
-  have fsafeD:"fsafe (foldr op || \<Delta> FF)" 
+  have fsafeD:"fsafe (foldr (||) \<Delta> FF)" 
     using Ssafe Or_def apply(induction \<Delta>, auto simp add: Ssafe_def FF_def Or_def)
     by fastforce
   have fsafe:"fsafe ?f" 
     using fsafeD fsafeG by (auto simp add: Implies_def Or_def)
-  have FadmitG:"Fadmit \<sigma> (foldr op && \<Gamma> TT)"
+  have FadmitG:"Fadmit \<sigma> (foldr (&&) \<Gamma> TT)"
     using Sadmit Or_def apply(induction \<Gamma>, auto simp add: Sadmit_def TT_def Or_def)
     by fastforce
-  have FadmitD:"Fadmit \<sigma> (foldr op || \<Delta> FF)"
+  have FadmitD:"Fadmit \<sigma> (foldr (||) \<Delta> FF)"
     using Sadmit Or_def apply(induction \<Delta>, auto simp add: Sadmit_def FF_def Or_def)
     by fastforce
   have Fadmit:"Fadmit \<sigma> ?f" 

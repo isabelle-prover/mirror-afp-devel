@@ -83,7 +83,7 @@ sublocale mono_matrix_carrier \<subseteq> matrix_carrier ..
 subsection \<open>The Integers as Carrier\<close>
 
 lemma int_complexity:
-  "mono_matrix_carrier (op > :: int \<Rightarrow> int \<Rightarrow> bool) 1 nat int_mono"
+  "mono_matrix_carrier ((>) :: int \<Rightarrow> int \<Rightarrow> bool) 1 nat int_mono"
 proof (unfold_locales)
   fix x
   let ?R = "{(x, y). 0 \<le> (y :: int) \<and> y < x}" 
@@ -114,8 +114,8 @@ proof (unfold_locales)
 qed (insert int_SN.mono, auto)
 
 lemma int_weak_complexity:
-  "weak_complexity_linear_poly_order_carrier op > 1 int_mono"
-  by (unfold_locales, intro exI[of _ "op >"] exI[of _ nat] conjI, rule int_complexity, auto)
+  "weak_complexity_linear_poly_order_carrier (>) 1 int_mono"
+  by (unfold_locales, intro exI[of _ "(>)"] exI[of _ nat] conjI, rule int_complexity, auto)
 
 subsection \<open>The Rational and Real Numbers as Carrier\<close>
 
@@ -162,7 +162,7 @@ proof -
   next
     fix x :: 'a and n :: nat
     assume x: "0 \<le> x" 
-    interpret mono_matrix_carrier "op >" 1 nat int_mono by (rule int_complexity)
+    interpret mono_matrix_carrier "(>)" 1 nat int_mono by (rule int_complexity)
     have "?nat (x + of_nat n) = nat (ceiling (x * ?N + of_nat n * ?N))" 
       by (simp add: field_simps)
     also have id: "of_nat n * ?N = of_int (of_nat (n * nat N))" using N by (simp add: field_simps)
@@ -228,7 +228,7 @@ qed
 
 lemma delta_weak_complexity_carrier:
   assumes d0: "def > 0" 
-  shows "weak_complexity_linear_poly_order_carrier op > def delta_mono"
+  shows "weak_complexity_linear_poly_order_carrier (>) def delta_mono"
 proof
   fix xys :: "('a \<times> 'a) list"
   assume ass: "\<forall>x y. (x, y) \<in> set xys \<longrightarrow> y < x"
@@ -250,9 +250,9 @@ lemma arctic_delta_weak_carrier:
   "weak_SN_both_mono_ordered_semiring_1 weak_gt_arctic_delta 1 pos_arctic_delta" ..
 
 lemma arctic_weak_carrier:
-  "weak_SN_both_mono_ordered_semiring_1 op > 1 pos_arctic"
+  "weak_SN_both_mono_ordered_semiring_1 (>) 1 pos_arctic"
 proof -
-  have SN: "SN_both_mono_ordered_semiring_1 1 (op >) pos_arctic" ..
+  have SN: "SN_both_mono_ordered_semiring_1 1 (>) pos_arctic" ..
   show ?thesis
     by (unfold_locales, intro conjI exI, rule SN, auto)
 qed

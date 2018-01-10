@@ -2601,7 +2601,7 @@ compared to size, the size of an object is the sum of the size of its fields +1 
 
 definition fsize0 :: "(Label -~> sterm) \<Rightarrow> (sterm \<Rightarrow> nat) \<Rightarrow> nat" where
   "fsize0 f sts =
-    foldl (op +) 0 (map sts (Finite_Set.fold (\<lambda>x z. z@[THE y. Some y = f x]) [] (dom f)))"
+    foldl (+) 0 (map sts (Finite_Set.fold (\<lambda>x z. z@[THE y. Some y = f x]) [] (dom f)))"
 
 primrec
  ssize        :: "sterm \<Rightarrow> nat" 

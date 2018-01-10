@@ -38,7 +38,7 @@ definition "bot = finfun_const bot"
 instance by(intro_classes)(simp add: bot_finfun_def le_finfun_def)
 end
 
-lemma bot_finfun_apply [simp]: "op $ bot = (\<lambda>_. bot)"
+lemma bot_finfun_apply [simp]: "($) bot = (\<lambda>_. bot)"
 by(auto simp add: bot_finfun_def)
 
 instantiation "finfun" :: (type, order_top) order_top begin
@@ -46,7 +46,7 @@ definition "top = finfun_const top"
 instance by(intro_classes)(simp add: top_finfun_def le_finfun_def)
 end
 
-lemma top_finfun_apply [simp]: "op $ top = (\<lambda>_. top)"
+lemma top_finfun_apply [simp]: "($) top = (\<lambda>_. top)"
 by(auto simp add: top_finfun_def)
 
 instantiation "finfun" :: (type, inf) inf begin
@@ -54,7 +54,7 @@ definition [code]: "inf f g = (\<lambda>(x, y). inf x y) \<circ>$ ($f, g$)"
 instance ..
 end
 
-lemma inf_finfun_apply [simp]: "op $ (inf f g) = inf (op $ f) (op $ g)"
+lemma inf_finfun_apply [simp]: "($) (inf f g) = inf (($) f) (($) g)"
 by(auto simp add: inf_finfun_def o_def inf_fun_def)
 
 instantiation "finfun" :: (type, sup) sup begin
@@ -62,7 +62,7 @@ definition [code]: "sup f g = (\<lambda>(x, y). sup x y) \<circ>$ ($f, g$)"
 instance ..
 end
 
-lemma sup_finfun_apply [simp]: "op $ (sup f g) = sup (op $ f) (op $ g)"
+lemma sup_finfun_apply [simp]: "($) (sup f g) = sup (($) f) (($) g)"
 by(auto simp add: sup_finfun_def o_def sup_fun_def)
 
 instance "finfun" :: (type, semilattice_inf) semilattice_inf
@@ -80,11 +80,11 @@ instance "finfun" :: (type, distrib_lattice) distrib_lattice
 by(intro_classes)(simp add: sup_finfun_def inf_finfun_def expand_finfun_eq o_def sup_inf_distrib1)
 
 instantiation "finfun" :: (type, minus) minus begin
-definition "f - g = case_prod (op -) \<circ>$ ($f, g$)"
+definition "f - g = case_prod (-) \<circ>$ ($f, g$)"
 instance ..
 end
 
-lemma minus_finfun_apply [simp]: "op $ (f - g) = op $ f - op $ g"
+lemma minus_finfun_apply [simp]: "($) (f - g) = ($) f - ($) g"
 by(simp add: minus_finfun_def o_def fun_diff_def)
 
 instantiation "finfun" :: (type, uminus) uminus begin
@@ -92,7 +92,7 @@ definition "- A = uminus \<circ>$ A"
 instance ..
 end
 
-lemma uminus_finfun_apply [simp]: "op $ (- g) = - op $ g"
+lemma uminus_finfun_apply [simp]: "($) (- g) = - ($) g"
 by(simp add: uminus_finfun_def o_def fun_Compl_def)
 
 instance "finfun" :: (type, boolean_algebra) boolean_algebra
@@ -188,19 +188,19 @@ by(auto intro!: ext simp add: finfun_Bex_except_def finfun_Bex_def)
 text \<open>Automatically replace predicate operations by finfun predicate operations where possible\<close>
 
 lemma iso_finfun_le [code_unfold]:
-  "op $ A \<le> op $ B \<longleftrightarrow> A \<le> B"
+  "($) A \<le> ($) B \<longleftrightarrow> A \<le> B"
 by (metis le_finfun_def le_funD le_funI)
 
 lemma iso_finfun_less [code_unfold]:
-  "op $ A < op $ B \<longleftrightarrow> A < B"
+  "($) A < ($) B \<longleftrightarrow> A < B"
 by (metis iso_finfun_le less_finfun_def less_fun_def)
 
 lemma iso_finfun_eq [code_unfold]:
-  "op $ A = op $ B \<longleftrightarrow> A = B"
+  "($) A = ($) B \<longleftrightarrow> A = B"
 by(simp only: expand_finfun_eq)
 
 lemma iso_finfun_sup [code_unfold]:
-  "sup (op $ A) (op $ B) = op $ (sup A B)"
+  "sup (($) A) (($) B) = ($) (sup A B)"
 by(simp)
 
 lemma iso_finfun_disj [code_unfold]:
@@ -208,7 +208,7 @@ lemma iso_finfun_disj [code_unfold]:
 by(simp add: sup_fun_def)
 
 lemma iso_finfun_inf [code_unfold]:
-  "inf (op $ A) (op $ B) = op $ (inf A B)"
+  "inf (($) A) (($) B) = ($) (inf A B)"
 by(simp)
 
 lemma iso_finfun_conj [code_unfold]:
@@ -216,26 +216,26 @@ lemma iso_finfun_conj [code_unfold]:
 by(simp add: inf_fun_def)
 
 lemma iso_finfun_empty_conv [code_unfold]:
-  "(\<lambda>_. False) = op $ {}\<^sub>f"
+  "(\<lambda>_. False) = ($) {}\<^sub>f"
 by simp
 
 lemma iso_finfun_UNIV_conv [code_unfold]:
-  "(\<lambda>_. True) = op $ finfun_UNIV"
+  "(\<lambda>_. True) = ($) finfun_UNIV"
 by simp
 
 lemma iso_finfun_upd [code_unfold]:
   fixes A :: "'a pred\<^sub>f"
-  shows "(op $ A)(x := b) = op $ (A(x $:= b))"
+  shows "(($) A)(x := b) = ($) (A(x $:= b))"
 by(simp add: fun_eq_iff)
 
 lemma iso_finfun_uminus [code_unfold]:
   fixes A :: "'a pred\<^sub>f"
-  shows "- op $ A = op $ (- A)"
+  shows "- ($) A = ($) (- A)"
 by(simp)
 
 lemma iso_finfun_minus [code_unfold]:
   fixes A :: "'a pred\<^sub>f"
-  shows "op $ A - op $ B = op $ (A - B)"
+  shows "($) A - ($) B = ($) (A - B)"
 by(simp)
 
 text \<open>

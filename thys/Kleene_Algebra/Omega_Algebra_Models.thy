@@ -46,7 +46,7 @@ lemma omega_weak_coinduct: "X x z \<Longrightarrow>
   (x, z) \<in> omega R" 
 by (metis omega.coinduct)
 
-interpretation rel_omega_algebra: omega_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" rtrancl omega
+interpretation rel_omega_algebra: omega_algebra "(\<union>)" "(O)" Id "{}" "(\<subseteq>)" "(\<subset>)" rtrancl omega
 proof
   fix x :: "'a rel"
   show "omega x \<subseteq> x O omega x"

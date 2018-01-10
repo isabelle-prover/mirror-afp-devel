@@ -8,12 +8,12 @@ lemma hrule: "(S = UNIV) = (\<forall>x. x \<in> S)"
 
 subsection\<open>Single valuedness on lists\<close>
 
-lemma foldr_True_set: "foldr (\<lambda>x. op \<and> (f x)) l True = (\<forall>x \<in> set l. f x)"
+lemma foldr_True_set: "foldr (\<lambda>x. (\<and>) (f x)) l True = (\<forall>x \<in> set l. f x)"
   by (induction l) simp_all
 
 fun single_valued_code where
 "single_valued_code [] = True" |
-"single_valued_code (e#es) = (foldr (\<lambda>x. op \<and> (fst x \<noteq> fst e \<or> snd x = snd e)) es True \<and> single_valued_code es)"
+"single_valued_code (e#es) = (foldr (\<lambda>x. (\<and>) (fst x \<noteq> fst e \<or> snd x = snd e)) es True \<and> single_valued_code es)"
 lemma single_valued_code_lam[code_unfold]:
   "single_valued (set r) = single_valued_code r"
 proof(induction r)

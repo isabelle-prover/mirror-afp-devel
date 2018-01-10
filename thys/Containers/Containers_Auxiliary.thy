@@ -17,7 +17,7 @@ lemma set_bind_iff:
   "set (List.bind xs f) = Set.bind (set xs) (set \<circ> f)"
 by(induct xs)(simp_all add: insert_bind_set)
 
-lemma set_bind_conv_fold: "set xs \<bind> f = fold (op \<union> \<circ> f) xs {}"
+lemma set_bind_conv_fold: "set xs \<bind> f = fold ((\<union>) \<circ> f) xs {}"
 by(induct xs rule: rev_induct)(simp_all add: insert_bind_set)
 
 lemma card_gt_1D:
@@ -141,10 +141,10 @@ abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 
 where "less_prod' \<equiv> less_prod leq_a less_a less_b"
 
 lemma linorder_prod:
-  "class.linorder op \<sqsubseteq> op \<sqsubset>"
+  "class.linorder (\<sqsubseteq>) (\<sqsubset>)"
 proof -
-  interpret a: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
-  interpret b: linorder "op \<sqsubseteq>\<^sub>b" "op \<sqsubset>\<^sub>b" by(fact lin_b)
+  interpret a: linorder "(\<sqsubseteq>\<^sub>a)" "(\<sqsubset>\<^sub>a)" by(fact lin_a)
+  interpret b: linorder "(\<sqsubseteq>\<^sub>b)" "(\<sqsubset>\<^sub>b)" by(fact lin_b)
   show ?thesis by unfold_locales auto
 qed
 

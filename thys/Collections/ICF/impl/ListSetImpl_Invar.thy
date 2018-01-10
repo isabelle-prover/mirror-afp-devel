@@ -32,7 +32,7 @@ definition lsi_basic_ops :: "('a,'a lsi) set_basic_ops" where
     bset_op_empty = \<lambda>_. [],
     bset_op_memb = (\<lambda>x s. List.member s x),
     bset_op_ins = lsi_ins,
-    bset_op_ins_dj = op #,
+    bset_op_ins_dj = (#),
     bset_op_delete = \<lambda>x l. Dlist_add.dlist_remove1' x [] l,
     bset_op_list_it = foldli
     \<rparr>"
@@ -47,7 +47,7 @@ interpretation lsi_basic: StdBasicSet lsi_basic_ops
 setup Locale_Code.close_block
 
 definition [icf_rec_def]: "lsi_ops \<equiv> lsi_basic.dflt_ops \<lparr>
-  set_op_union_dj := op @,
+  set_op_union_dj := (@),
   set_op_to_list := id
 \<rparr>"
 

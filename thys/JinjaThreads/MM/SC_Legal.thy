@@ -17,7 +17,7 @@ where
       let (E', ws') = SOME (E', ws'). E' \<in> \<E> \<and> P \<turnstile> (E', ws') \<surd> \<and> enat n \<le> llength E' \<and>
                                       ltake (enat (n - 1)) E = ltake (enat (n - 1)) E' \<and> 
                                       (n > 0 \<longrightarrow> action_tid E' (n - 1) = action_tid E (n - 1) \<and> 
-                                                (if n - 1 \<in> read_actions E then sim_action else op =)
+                                                (if n - 1 \<in> read_actions E then sim_action else (=))
                                                    (action_obs E' (n - 1)) (action_obs E (n - 1)) \<and>
                                                 (\<forall>i < n - 1. i \<in> read_actions E  \<longrightarrow> ws' i = ws i)) \<and>
                                       (\<forall>r \<in> read_actions E'. n - 1 \<le> r \<longrightarrow> P,E' \<turnstile> ws' r \<le>hb r)
@@ -50,7 +50,7 @@ proof -
   let ?P = "\<lambda>n (E', ws'). E' \<in> \<E> \<and> P \<turnstile> (E', ws') \<surd> \<and> (enat n \<le> llength E \<longrightarrow> enat n \<le> llength E') \<and>
                          ltake (enat (n - 1)) E = ltake (enat (n - 1)) E' \<and> 
                          (n > 0 \<longrightarrow> action_tid E' (n - 1) = action_tid E (n - 1) \<and> 
-                                   (if n - 1 \<in> read_actions E then sim_action else op =) 
+                                   (if n - 1 \<in> read_actions E then sim_action else (=)) 
                                       (action_obs E' (n - 1)) (action_obs E (n - 1)) \<and>
                                    (\<forall>i < n - 1. i \<in> read_actions E  \<longrightarrow> ws' i = ws i)) \<and> 
                          (\<forall>r \<in> read_actions E'. n - 1 \<le> r \<longrightarrow> P,E' \<turnstile> ws' r \<le>hb r)"
@@ -93,7 +93,7 @@ proof -
           and eq: "ltake (enat n') E = ltake (enat n') E'"
           and hb: "\<forall>a\<in>read_actions E'. if a < n' then ws' a = ws a else P,E' \<turnstile> ws' a \<le>hb a"
           and n_sim: "action_tid E' n' = action_tid E n'"
-            "(if n' \<in> read_actions E then sim_action else op =) (action_obs E' n') (action_obs E n')"
+            "(if n' \<in> read_actions E then sim_action else (=)) (action_obs E' n') (action_obs E n')"
           and n: "n' \<in> actions E \<Longrightarrow> n' \<in> actions E'" by blast
         moreover {
           assume "enat n \<le> llength E"

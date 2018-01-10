@@ -29,7 +29,7 @@ definition dfs :: "('a \<Rightarrow>'a set) \<Rightarrow> 'a \<Rightarrow> 'a \<
     else if v\<in>V then RETURN False
     else do {
       let V=insert v V;
-      FOREACH\<^sub>C (succ v) (op = False) (\<lambda>v' _. D (V,v')) False }
+      FOREACH\<^sub>C (succ v) ((=) False) (\<lambda>v' _. D (V,v')) False }
   ) ({},v0)"
 
 subsection {* Correctness *}
@@ -104,7 +104,7 @@ text {* We can also leave the type of the nodes and its implementation
 schematic_goal dfs_impl_refine_aux3:
   fixes succi and succ :: "'a::linorder \<Rightarrow> 'a set" 
     and Rv :: "('ai\<times>'a) set"
-  assumes [autoref_rules_raw]: "(cmpk, dflt_cmp op \<le> op <)\<in>(Rv\<rightarrow>Rv\<rightarrow>Id)"
+  assumes [autoref_rules_raw]: "(cmpk, dflt_cmp (\<le>) (<))\<in>(Rv\<rightarrow>Rv\<rightarrow>Id)"
   notes [autoref_tyrel] = ty_REL[where 'a="'a set" and R="\<langle>Rv\<rangle>dflt_rs_rel"]
   assumes P_REF[autoref_rules]: 
     "(succi,succ)\<in>Rv\<rightarrow>\<langle>Rv\<rangle>list_set_rel"

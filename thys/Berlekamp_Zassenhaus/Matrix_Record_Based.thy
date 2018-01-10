@@ -40,8 +40,8 @@ lemma bi_unique_mat_rel: "bi_unique R \<Longrightarrow> bi_unique (mat_rel R)"
   using left_unique_mat_rel[of R] right_unique_mat_rel[of R]
   unfolding bi_unique_def left_unique_def right_unique_def by blast
 
-lemma mat_rel_eq: "((R ===> R ===> op =)) op = op = \<Longrightarrow> 
-  ((mat_rel R ===> mat_rel R ===> op =)) op = op ="
+lemma mat_rel_eq: "((R ===> R ===> (=))) (=) (=) \<Longrightarrow> 
+  ((mat_rel R ===> mat_rel R ===> (=))) (=) (=)"
   unfolding mat_rel_def rel_fun_def mat_eq_iff by (auto, blast+)
 
 definition vec_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a vec \<Rightarrow> 'b vec \<Rightarrow> bool" where
@@ -67,11 +67,11 @@ lemma bi_unique_vec_rel: "bi_unique R \<Longrightarrow> bi_unique (vec_rel R)"
   using left_unique_vec_rel[of R] right_unique_vec_rel[of R]
   unfolding bi_unique_def left_unique_def right_unique_def by blast
 
-lemma vec_rel_eq: "((R ===> R ===> op =)) op = op = \<Longrightarrow> 
-  ((vec_rel R ===> vec_rel R ===> op =)) op = op ="
+lemma vec_rel_eq: "((R ===> R ===> (=))) (=) (=) \<Longrightarrow> 
+  ((vec_rel R ===> vec_rel R ===> (=))) (=) (=)"
   unfolding vec_rel_def rel_fun_def vec_eq_iff by (auto, blast+)
 
-lemma multrow_transfer[transfer_rule]: "((R ===> R ===> R) ===> op = ===> R
+lemma multrow_transfer[transfer_rule]: "((R ===> R ===> R) ===> (=) ===> R
   ===> mat_rel R ===> mat_rel R) mat_multrow_gen mat_multrow_gen"
   unfolding mat_rel_def[abs_def] mat_multrow_gen_def[abs_def]
   by (intro rel_funI conjI allI impI eq_matI, auto simp: rel_fun_def) 
@@ -82,9 +82,9 @@ lemma swap_rows_transfer: "mat_rel R A B \<Longrightarrow> i < dim_row B \<Longr
   unfolding mat_rel_def mat_swaprows_def
   by (intro rel_funI conjI allI impI eq_matI, auto)
 
-lemma pivot_positions_gen_transfer: assumes [transfer_rule]: "(R ===> R ===> op =) op = op =" 
+lemma pivot_positions_gen_transfer: assumes [transfer_rule]: "(R ===> R ===> (=)) (=) (=)" 
   shows 
-  "(R ===> mat_rel R ===> op =) pivot_positions_gen pivot_positions_gen" 
+  "(R ===> mat_rel R ===> (=)) pivot_positions_gen pivot_positions_gen" 
 proof (intro rel_funI, goal_cases)
   case (1 ze ze' A A')
   note trans[transfer_rule] = 1  
@@ -134,7 +134,7 @@ proof (induct i j rule: pivot_positions_main_gen.induct[of nr nc A ze])
     by (cases "i < nr \<and> j < nc", auto)
 qed
   
-lemma find_base_vectors_transfer: assumes [transfer_rule]: "(R ===> R ===> op =) op = op ="
+lemma find_base_vectors_transfer: assumes [transfer_rule]: "(R ===> R ===> (=)) (=) (=)"
   shows "((R ===> R) ===> R ===> R ===> mat_rel R 
   ===> list_all2 (vec_rel R)) find_base_vectors_gen find_base_vectors_gen"
 proof (intro rel_funI, goal_cases)
@@ -265,10 +265,10 @@ lemma right_total_poly_rel[transfer_rule]: "right_total (mat_rel R)"
 lemma bi_unique_poly_rel[transfer_rule]: "bi_unique (mat_rel R)"
   using bi_unique_mat_rel[of R] bi_unique .
 
-lemma eq_mat_rel[transfer_rule]: "(mat_rel R ===> mat_rel R ===> op =) op = op ="
+lemma eq_mat_rel[transfer_rule]: "(mat_rel R ===> mat_rel R ===> (=)) (=) (=)"
   by (rule mat_rel_eq[OF eq])
 
-lemma multrow_i[transfer_rule]: "(op = ===> R ===> mat_rel R ===> mat_rel R)
+lemma multrow_i[transfer_rule]: "((=) ===> R ===> mat_rel R ===> mat_rel R)
   (multrow_i ops) multrow" 
   using multrow_transfer[of R] times unfolding multrow_i_def rel_fun_def by blast  
 

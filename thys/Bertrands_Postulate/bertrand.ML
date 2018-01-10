@@ -147,10 +147,10 @@ fun prove_psi ctxt n =
             |> Thm.concl_of |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> snd
           val y' = HOLogic.dest_number y |> snd
           val eq_thm1 = prove_nat_eq ctxt
-            (@{term "op + :: nat \<Rightarrow> _"} $ mk_nat (k - 1) $ @{term "1 :: nat"}, mk_nat k)
+            (@{term "(+) :: nat \<Rightarrow> _"} $ mk_nat (k - 1) $ @{term "1 :: nat"}, mk_nat k)
           val z = if y' = 1 then x else mk_nat (x' * y')
           val eq_thm2 = prove_nat_eq ctxt
-            (@{term "op * :: nat => _"} $ x $ y, z)
+            (@{term "( * ) :: nat => _"} $ x $ y, z)
           val thm' = @{thm eval_psi_aux2} OF [thm, pre_mangoldt_thm, eq_thm1, eq_thm2]
         in
           go thm' z (x' * y') (k + 1) ((k - 1, x', thm) :: acc)

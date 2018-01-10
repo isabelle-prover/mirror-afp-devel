@@ -369,7 +369,7 @@ proof (rule mk_rtrancl_main_complete[OF _ _ a])
   thus "\<exists> b. b \<in> set_of init \<union> {} \<and> subsumes b a" using subsumes_refl[of a] by blast
 qed auto
 
-lemma mk_rtrancl_no_subsumption: assumes "subsumes = (op =)"
+lemma mk_rtrancl_no_subsumption: assumes "subsumes = (=)"
   shows "mk_rtrancl init = R^* `` set_of init"
   using mk_rtrancl_sound[of init] mk_rtrancl_complete[of _ init] assms
   by auto

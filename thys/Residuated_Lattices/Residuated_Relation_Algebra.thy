@@ -93,7 +93,7 @@ proof (standard, fact conv)
 qed
 
 sublocale relation_algebra where
-  composition = "op \<cdot>" and unit = 1 and
+  composition = "(\<cdot>)" and unit = 1 and
   converse = "\<lambda>x. x \<rhd> 1"
 proof
   fix x y z

@@ -167,7 +167,7 @@ proof -
         from choice have choice: "k = 1 \<and> y = 1 \<or> k = 2 \<and> y = (-1) \<and> 2 \<le> max_list ks" 
           unfolding x of_real_eq_iff by auto 
         from choice 2(5) False x check
-        have "check_jordan_block A d y (length (filter (op dvd k) ks))" by auto
+        have "check_jordan_block A d y (length (filter ((dvd) k) ks))" by auto
         from this[unfolded 2(7)[symmetric] x order_of_real_char_poly[OF A]]
         have "check_jordan_block A d y (order y (char_poly A))" by auto
         from this[unfolded check_jordan_block_def compute_set_of_jordan_blocks_order]

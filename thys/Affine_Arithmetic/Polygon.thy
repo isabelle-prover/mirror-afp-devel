@@ -149,7 +149,7 @@ lemma last_polychain_of: "length xs > 0 \<Longrightarrow> snd (last (polychain_o
 lemma polychain_of_singleton_iff: "polychain_of p xs = [a] \<longleftrightarrow> fst a = p \<and> xs = [(snd a - p)]"
   by (induct xs) auto
 
-lemma polychain_of_add: "polychain_of (x + y) xs = map ((op + (y, y))) (polychain_of x xs)"
+lemma polychain_of_add: "polychain_of (x + y) xs = map (((+) (y, y))) (polychain_of x xs)"
   by (induct xs arbitrary: x y) (auto simp: algebra_simps)
 
 subsection \<open>Dirvec: Inverse of Polychain\<close>
@@ -175,7 +175,7 @@ lemma map_dirvec_polychain_of[simp]: "map dirvec (polychain_of x xs) = xs"
 subsection \<open>Polychain of Sorted (@{term polychain_of}, @{term ccw'.sortedP})\<close>
 
 lemma ccw'_sortedP_translateD:
-  "linorder_list0.sortedP (ccw' x0) (map (op + x \<circ> g) xs) \<Longrightarrow>
+  "linorder_list0.sortedP (ccw' x0) (map ((+) x \<circ> g) xs) \<Longrightarrow>
     linorder_list0.sortedP (ccw' (x0 - x)) (map g xs)"
 proof (induct xs arbitrary: x0 x)
   case Nil thus ?case by (auto simp: linorder_list0.sortedP.Nil)
@@ -190,16 +190,16 @@ qed
 
 lemma ccw'_sortedP_translateI:
   "linorder_list0.sortedP (ccw' (x0 - x)) (map g xs) \<Longrightarrow>
-    linorder_list0.sortedP (ccw' x0) (map (op + x \<circ> g) xs)"
-  using ccw'_sortedP_translateD[of "x0 - x" "-x" "op + x o g" xs]
+    linorder_list0.sortedP (ccw' x0) (map ((+) x \<circ> g) xs)"
+  using ccw'_sortedP_translateD[of "x0 - x" "-x" "(+) x o g" xs]
   by (simp add: o_def)
 
 lemma ccw'_sortedP_translate_comp[simp]:
-  "linorder_list0.sortedP (ccw' x0) (map (op + x \<circ> g) xs) \<longleftrightarrow>
+  "linorder_list0.sortedP (ccw' x0) (map ((+) x \<circ> g) xs) \<longleftrightarrow>
     linorder_list0.sortedP (ccw' (x0 - x)) (map g xs)"
   by (metis ccw'_sortedP_translateD ccw'_sortedP_translateI)
 
-lemma snd_plus_commute: "snd \<circ> op + (x0, x0) = op + x0 o snd"
+lemma snd_plus_commute: "snd \<circ> (+) (x0, x0) = (+) x0 o snd"
   by auto
 
 lemma ccw'_sortedP_renormalize:

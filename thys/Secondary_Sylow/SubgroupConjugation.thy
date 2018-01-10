@@ -69,7 +69,7 @@ lemma cardeq_lcoset:
 proof -
   have "bij_betw (\<lambda>m. g \<otimes> m) M (g <# M)"
   proof(auto simp add: bij_betw_def)
-    show "inj_on (op \<otimes> g) M"
+    show "inj_on ((\<otimes>) g) M"
     proof(rule inj_onI)
         from g have invg:"inv g \<in> carrier G" by (rule inv_closed)
         fix x y
@@ -88,7 +88,7 @@ proof -
     fix x
     assume x:"x \<in> g <# M"
     then obtain m where "x = g \<otimes> m" "m \<in> M" unfolding l_coset_def by auto
-    thus "x \<in> op \<otimes> g ` M" by simp
+    thus "x \<in> (\<otimes>) g ` M" by simp
   qed
   thus "card (g <# M) = card M" by (metis bij_betw_same_card)
 qed

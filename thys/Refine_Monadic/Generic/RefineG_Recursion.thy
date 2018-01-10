@@ -68,7 +68,7 @@ lemmas trimonoD = trimonoD_flatf_ge trimonoD_mono
 
 (* TODO: Optimize mono-prover to only do derivations once. 
   Will cause problem with higher-order unification on ord - variable! *)
-definition "triords \<equiv> {flat_ge,op \<le>}"
+definition "triords \<equiv> {flat_ge,(\<le>)}"
 lemma trimono_alt: 
   "trimono B \<longleftrightarrow> (\<forall>ord\<in>fun_ord`triords. monotone ord ord B)"
   unfolding trimono_def
@@ -395,7 +395,7 @@ lemma (in transfer) transfer_RECT'[refine_transfer]:
 proof clarsimp
   assume MONO: "trimono B"
   show "\<alpha> (fr x) \<le> flatf_gfp B x"
-    apply (rule flatf_fixp_transfer[where B=B and fp'=fr and P="op =", 
+    apply (rule flatf_fixp_transfer[where B=B and fp'=fr and P="(=)", 
         OF _ trimonoD_flatf_ge[OF MONO]])
     apply simp
     apply (rule ext, fact)
@@ -419,7 +419,7 @@ lemma (in dist_transfer) transfer_REC[refine_transfer]:
   unfolding REC_def
   (* TODO: Clean up *)
   apply (clarsimp simp: M)
-  apply (rule lfp_induct_pointwise[where B=b and pre="op="])
+  apply (rule lfp_induct_pointwise[where B=b and pre="(=)"])
   apply (rule)
   apply clarsimp
   apply (subst \<alpha>_dist)

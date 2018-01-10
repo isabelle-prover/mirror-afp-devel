@@ -20,7 +20,7 @@ definition ddh_0 :: "'grp adversary \<Rightarrow> bool spmf"
 where "ddh_0 \<A> = do {
      x \<leftarrow> sample_uniform (order \<G>);
      y \<leftarrow> sample_uniform (order \<G>);
-     \<A> (\<^bold>g (^) x) (\<^bold>g (^) y) (\<^bold>g (^) (x * y))
+     \<A> (\<^bold>g [^] x) (\<^bold>g [^] y) (\<^bold>g [^] (x * y))
   }"
 
 definition ddh_1 :: "'grp adversary \<Rightarrow> bool spmf"
@@ -28,7 +28,7 @@ where "ddh_1 \<A> = do {
      x \<leftarrow> sample_uniform (order \<G>);
      y \<leftarrow> sample_uniform (order \<G>);
      z \<leftarrow> sample_uniform (order \<G>);
-     \<A> (\<^bold>g (^) x) (\<^bold>g (^) y) (\<^bold>g (^) z)
+     \<A> (\<^bold>g [^] x) (\<^bold>g [^] y) (\<^bold>g [^] z)
   }"
 
 definition advantage :: "'grp adversary \<Rightarrow> real"
@@ -61,8 +61,8 @@ definition lcdh :: "'grp adversary \<Rightarrow> bool spmf"
 where "lcdh \<A> = do { 
      x \<leftarrow> sample_uniform (order \<G>);
      y \<leftarrow> sample_uniform (order \<G>);
-     zs \<leftarrow> \<A> (\<^bold>g (^) x) (\<^bold>g (^) y);
-     return_spmf (\<^bold>g (^) (x * y) \<in> zs)
+     zs \<leftarrow> \<A> (\<^bold>g [^] x) (\<^bold>g [^] y);
+     return_spmf (\<^bold>g [^] (x * y) \<in> zs)
   }"
 
 definition advantage :: "'grp adversary \<Rightarrow> real"

@@ -371,7 +371,7 @@ fun generalize_master_thm ctxt thm =
     val a = @{term "nth as"} $ Bound 0
     val b = @{term "Transcendental.powr :: real => real => real"} $ 
               (@{term "nth bs"} $ Bound 0) $ p'
-    val f = Abs ("i", HOLogic.natT, @{term "op * :: real => real => real"} $ a $ b)
+    val f = Abs ("i", HOLogic.natT, @{term "( * ) :: real => real => real"} $ a $ b)
     val sum = @{term "sum :: (nat => real) => nat set => real"} $ f $ @{term "{..<k}"}
     val prop = HOLogic.mk_Trueprop (HOLogic.mk_eq (sum, @{term "1::real"}))
     val cprop = Thm.cterm_of ctxt' prop

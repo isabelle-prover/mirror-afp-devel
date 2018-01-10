@@ -77,7 +77,7 @@ lemma augment_Abs_listfun [simp]:
   by (simp add: augment_def build_Abs_listfun)
 
 lemma cont_augment_body [simp]:
-  "cont (\<lambda>g. Abs_cfun (op ++ (Product_Type.snd (Rep_listfun g))))"
+  "cont (\<lambda>g. Abs_cfun ((++) (Product_Type.snd (Rep_listfun g))))"
   by (simp add: cont_Rep_listfun)
 
 lemma "fold/build":

@@ -26,27 +26,27 @@ definition key_gen :: "('grp pub_key \<times> 'grp priv_key) spmf"
 where 
   "key_gen = do {
      x \<leftarrow> sample_uniform (order \<G>);
-     return_spmf (\<^bold>g (^) x, x)
+     return_spmf (\<^bold>g [^] x, x)
   }"
 
 lemma key_gen_alt:
-  "key_gen = map_spmf (\<lambda>x. (\<^bold>g (^) x, x)) (sample_uniform (order \<G>))"
+  "key_gen = map_spmf (\<lambda>x. (\<^bold>g [^] x, x)) (sample_uniform (order \<G>))"
 by(simp add: map_spmf_conv_bind_spmf key_gen_def)
 
 definition aencrypt :: "'grp pub_key \<Rightarrow> 'grp \<Rightarrow> 'grp cipher spmf"
 where
   "aencrypt \<alpha> msg = do {
     y \<leftarrow> sample_uniform (order \<G>);
-    return_spmf (\<^bold>g (^) y, (\<alpha> (^) y) \<otimes> msg)
+    return_spmf (\<^bold>g [^] y, (\<alpha> [^] y) \<otimes> msg)
   }"
 
 lemma aencrypt_alt:
-  "aencrypt \<alpha> msg = map_spmf (\<lambda>y. (\<^bold>g (^) y, (\<alpha> (^) y) \<otimes> msg)) (sample_uniform (order \<G>))"
+  "aencrypt \<alpha> msg = map_spmf (\<lambda>y. (\<^bold>g [^] y, (\<alpha> [^] y) \<otimes> msg)) (sample_uniform (order \<G>))"
 by(simp add: map_spmf_conv_bind_spmf aencrypt_def)
 
 definition adecrypt :: "'grp priv_key \<Rightarrow> 'grp cipher \<Rightarrow> 'grp option"
 where
-  "adecrypt x = (\<lambda>(\<beta>, \<zeta>). Some (\<zeta> \<otimes> (inv (\<beta> (^) x))))"
+  "adecrypt x = (\<lambda>(\<beta>, \<zeta>). Some (\<zeta> \<otimes> (inv (\<beta> [^] x))))"
 
 abbreviation valid_plains :: "'grp \<Rightarrow> 'grp \<Rightarrow> bool"
 where "valid_plains msg1 msg2 \<equiv> msg1 \<in> carrier \<G> \<and> msg2 \<in> carrier \<G>"
@@ -80,22 +80,22 @@ proof -
   have "ddh.ddh_1 (elgamal_adversary \<A>) = TRY do {
        x \<leftarrow> sample_uniform (order \<G>);
        y \<leftarrow> sample_uniform (order \<G>);
-       ((msg1, msg2), \<sigma>) \<leftarrow> \<A>1 (\<^bold>g (^) x);
+       ((msg1, msg2), \<sigma>) \<leftarrow> \<A>1 (\<^bold>g [^] x);
        _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
        b \<leftarrow> coin_spmf;
-       z \<leftarrow> map_spmf (\<lambda>z. \<^bold>g (^) z \<otimes> (if b then msg1 else msg2)) (sample_uniform (order \<G>));
-       guess \<leftarrow> \<A>2 (\<^bold>g (^) y, z) \<sigma>;
+       z \<leftarrow> map_spmf (\<lambda>z. \<^bold>g [^] z \<otimes> (if b then msg1 else msg2)) (sample_uniform (order \<G>));
+       guess \<leftarrow> \<A>2 (\<^bold>g [^] y, z) \<sigma>;
        return_spmf (guess \<longleftrightarrow> b)
      } ELSE coin_spmf"
     by(simp add: ddh.ddh_1_def)
   also have "\<dots> = TRY do {
        x \<leftarrow> sample_uniform (order \<G>);
        y \<leftarrow> sample_uniform (order \<G>);
-       ((msg1, msg2), \<sigma>) \<leftarrow> \<A>1 (\<^bold>g (^) x);
+       ((msg1, msg2), \<sigma>) \<leftarrow> \<A>1 (\<^bold>g [^] x);
        _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
-       z \<leftarrow> map_spmf (\<lambda>z. \<^bold>g (^) z) (sample_uniform (order \<G>));
-       guess \<leftarrow> \<A>2 (\<^bold>g (^) y, z) \<sigma>;
-       map_spmf (op = guess) coin_spmf
+       z \<leftarrow> map_spmf (\<lambda>z. \<^bold>g [^] z) (sample_uniform (order \<G>));
+       guess \<leftarrow> \<A>2 (\<^bold>g [^] y, z) \<sigma>;
+       map_spmf ((=) guess) coin_spmf
      } ELSE coin_spmf"
     by(simp add: sample_uniform_one_time_pad map_spmf_conv_bind_spmf[where p=coin_spmf])
   also have "\<dots> = coin_spmf"

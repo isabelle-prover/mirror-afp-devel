@@ -89,11 +89,11 @@ proof(induct arbitrary: X Y rule: finite_induct)
       then show ?thesis using list_eq_iff_nth_eq by auto
     qed
   qed
-  then obtain w where " {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m}
-         = { w }" using Nitpick.Ex1_unfold[where P="(\<lambda>xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m)"]
+  then obtain w where " {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m}
+         = { w }" using Nitpick.Ex1_unfold[where P="(\<lambda>xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m)"]
          by auto
 
-  then have "card {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m} = card { w }" by auto
+  then have "card {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i)  \<and> length xs = m} = card { w }" by auto
   also have "\<dots> = 1" by auto 
   also have "\<dots> = 2^(m - card X - card Y)" using cardXY by auto
   finally show ?case .
@@ -112,17 +112,17 @@ next
   have "  m > card X + card Y" using psubset_card_mono[OF fm sub] cardm cardXY by(auto)
   then have carde: "1 + (  m - card X - card Y - 1) =   m - card X - card Y" by auto
 
-  have is1: "{xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
-          = {xs. Ball (insert e X) (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}" by auto
-  have is2: "{xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e}
-          = {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>(insert e Y). \<not> xs ! i) \<and> length xs =   m}" by auto
+  have is1: "{xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
+          = {xs. Ball (insert e X) ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}" by auto
+  have is2: "{xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e}
+          = {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>(insert e Y). \<not> xs ! i) \<and> length xs =   m}" by auto
          
-  have 2: "{xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
-        \<union> {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e}
-          = {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}" by auto
+  have 2: "{xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
+        \<union> {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e}
+          = {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}" by auto
 
-  have 3: "{xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
-      \<inter> {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e} = {}" by auto
+  have 3: "{xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> xs!e}
+      \<inter> {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m \<and> ~xs!e} = {}" by auto
 
   have fX: "finite (insert e X)" 
     and disjeXY: "insert e X \<inter> Y = {}" 
@@ -133,14 +133,14 @@ next
     and cutY: "S \<inter> (X \<union> insert e Y) = {}"
     and uniY: "S \<union>  X \<union> insert e Y = {0..<m}" using insert by auto
 
-  have "card {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m}
-      = card {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m \<and> xs!e}
-        + card {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m \<and> ~xs!e}"
+  have "card {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m}
+      = card {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m \<and> xs!e}
+        + card {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs = m \<and> ~xs!e}"
       apply(subst card_Un_Int)
         apply(rule fbool) apply(rule fbool) using 2 3 by auto
   also
-  have "\<dots> = card {xs. Ball (insert e X) (op ! xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}
-        + card {xs. Ball X (op ! xs) \<and> (\<forall>i\<in>(insert e Y). \<not> xs ! i) \<and> length xs =   m}" by (simp only: is1 is2)
+  have "\<dots> = card {xs. Ball (insert e X) ((!) xs) \<and> (\<forall>i\<in>Y. \<not> xs ! i) \<and> length xs =   m}
+        + card {xs. Ball X ((!) xs) \<and> (\<forall>i\<in>(insert e Y). \<not> xs ! i) \<and> length xs =   m}" by (simp only: is1 is2)
   
   also
   have "\<dots> = 2 ^ (  m - card (insert e X) - card Y)

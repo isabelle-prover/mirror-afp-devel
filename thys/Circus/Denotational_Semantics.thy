@@ -326,7 +326,7 @@ lemmas Seq_is_CSP = Seq_is_action[simplified]
 lemma relation_of_Seq: "relation_of (P `;` Q) = (relation_of P ;; relation_of Q)"
 by (simp add: Seq_def action_of_inverse Seq_is_CSP)
 
-lemma mono_Seq: "mono (op `;` P)"
+lemma mono_Seq: "mono ((`;`) P)"
   by (auto simp: mono_def less_eq_action ref_def relation_of_Seq)
 
 
@@ -368,7 +368,7 @@ lemmas Ndet_is_CSP = Ndet_is_action[simplified]
 lemma relation_of_Ndet: "relation_of (P \<sqinter> Q) = ((relation_of P) \<or> (relation_of Q))"
 by (simp add: Ndet_def action_of_inverse Ndet_is_CSP)
 
-lemma mono_Ndet: "mono (op \<sqinter> P)"
+lemma mono_Ndet: "mono ((\<sqinter>) P)"
 by (auto simp: mono_def less_eq_action ref_def relation_of_Ndet)
 
 subsection {* External choice *}
@@ -402,7 +402,7 @@ apply (rule action_of_inverse)
 apply (rule Det_is_action)
 done
 
-lemma mono_Det: "mono (op \<box> P)"
+lemma mono_Det: "mono ((\<box>) P)"
 by (auto simp: mono_def less_eq_action ref_def relation_of_Det design_defs rp_defs fun_eq_iff 
             split: cond_splits dest: relation_of_spec_f_f[simplified] 
                                      relation_of_spec_t_f[simplified])
@@ -512,10 +512,10 @@ fun ParMergel :: "'\<theta>::ev_eq list \<Rightarrow> '\<theta> list \<Rightarro
 definition ParMerge::"'\<theta>::ev_eq list \<Rightarrow> '\<theta> list \<Rightarrow> '\<theta> set \<Rightarrow> '\<theta> list set" where
 "ParMerge tr1 tr2 cs = set (ParMergel tr1 tr2 cs)"
 
-lemma set_Cons1: "tr1 \<in> set l \<Longrightarrow> a # tr1 \<in> op # a ` set l"
+lemma set_Cons1: "tr1 \<in> set l \<Longrightarrow> a # tr1 \<in> (#) a ` set l"
 by (auto)
 
-lemma tr_in_set_eq: "(tr1 \<in> op # b ` set l) = (tr1 \<noteq> [] \<and> hd tr1 = b \<and> tl tr1 \<in> set l)"
+lemma tr_in_set_eq: "(tr1 \<in> (#) b ` set l) = (tr1 \<noteq> [] \<and> hd tr1 = b \<and> tl tr1 \<in> set l)"
 by (induct l) auto
 
 

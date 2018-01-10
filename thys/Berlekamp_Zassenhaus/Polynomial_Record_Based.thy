@@ -61,13 +61,13 @@ definition one_poly_i :: "'i list" where
   [code_unfold]: "one_poly_i = [one]"
 
 definition smult_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" where
-  "smult_i a pp = (if a = zero then [] else strip_while (op = zero) (map (times a) pp))"
+  "smult_i a pp = (if a = zero then [] else strip_while ((=) zero) (map (times a) pp))"
 
 definition sdiv_i :: "'i list \<Rightarrow> 'i \<Rightarrow> 'i list" where
-  "sdiv_i pp a = (strip_while (op = zero) (map (\<lambda> c. divide c a) pp))"
+  "sdiv_i pp a = (strip_while ((=) zero) (map (\<lambda> c. divide c a) pp))"
 
 definition poly_of_list_i :: "'i list \<Rightarrow> 'i list" where
-  "poly_of_list_i = strip_while (op = zero)"
+  "poly_of_list_i = strip_while ((=) zero)"
 
 fun coeffs_minus_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "coeffs_minus_i (x # xs) (y # ys) = (minus x y # coeffs_minus_i xs ys)" 
@@ -232,10 +232,10 @@ definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Righta
      (q, r) = divmod_poly_one_main_list [] (rev cf) (rev cg) (1 + length cf - length cg)
          in (poly_of_list q, poly_of_list (rev r))"
 
-lemma coeffs_smult': "coeffs (smult a p) = (if a = 0 then [] else strip_while (op = 0) (map (Groups.times a) (coeffs p)))" 
+lemma coeffs_smult': "coeffs (smult a p) = (if a = 0 then [] else strip_while ((=) 0) (map (Groups.times a) (coeffs p)))" 
    by (simp add: coeffs_map_poly smult_conv_map_poly)
 
-lemma coeffs_sdiv: "coeffs (sdiv_poly p a) = (strip_while (op = 0) (map (\<lambda> x. x div a) (coeffs p)))"
+lemma coeffs_sdiv: "coeffs (sdiv_poly p a) = (strip_while ((=) 0) (map (\<lambda> x. x div a) (coeffs p)))"
   unfolding sdiv_poly_def by (rule coeffs_map_poly)
 
 lifting_forget poly.lifting
@@ -317,12 +317,12 @@ lemma poly_rel_pCons[transfer_rule]: "(R ===> poly_rel ===> poly_rel) (cCons_i o
   using poly_rel_cCons[unfolded rel_fun_def] by auto
 
 (* equality *)
-lemma poly_rel_eq[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (op =) (op =)"
+lemma poly_rel_eq[transfer_rule]: "(poly_rel ===> poly_rel ===> (=)) (=) (=)"
   unfolding poly_rel_def[abs_def] coeffs_eq_iff[abs_def] rel_fun_def
   by (metis bi_unique bi_uniqueDl bi_uniqueDr list.bi_unique_rel)
 
 (* addition *)
-lemma poly_rel_plus[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (plus_poly_i ops) (op +)"
+lemma poly_rel_plus[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (plus_poly_i ops) (+)"
 proof (intro rel_funI)
   fix x1 y1 x2 y2
   assume "poly_rel x1 x2" and "poly_rel y1 y2"
@@ -358,7 +358,7 @@ proof (intro rel_funI)
 qed
 
 (* subtraction *)
-lemma poly_rel_minus[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (minus_poly_i ops) (op -)"
+lemma poly_rel_minus[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (minus_poly_i ops) (-)"
 proof (intro rel_funI)
   fix x1 y1 x2 y2
   assume "poly_rel x1 x2" and "poly_rel y1 y2"
@@ -411,7 +411,7 @@ proof (intro allI impI, goal_cases)
 qed
 
 lemma poly_rel_monom_mult[transfer_rule]: 
-  "(op = ===> poly_rel ===> poly_rel) (monom_mult_i ops) monom_mult" 
+  "((=) ===> poly_rel ===> poly_rel) (monom_mult_i ops) monom_mult" 
   unfolding rel_fun_def monom_mult_i_def poly_rel_def monom_mult_code Let_def
 proof (auto, goal_cases)
   case (1 x xs y)
@@ -515,7 +515,7 @@ proof (induct n arbitrary: x1 y1 x2 y2 m rule: less_induct)
 qed
   
 
-lemma poly_rel_times[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (times_poly_i ops) (op *)"  
+lemma poly_rel_times[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (times_poly_i ops) (( * ))"  
 proof (intro rel_funI)
   fix x1 y1 x2 y2
   assume x12[transfer_rule]: "poly_rel x1 x2" and y12 [transfer_rule]: "poly_rel y1 y2"
@@ -552,7 +552,7 @@ proof (intro rel_funI)
 qed
 
 (* coeff *)  
-lemma poly_rel_coeff[transfer_rule]: "(poly_rel ===> op = ===> R) (coeff_i ops) coeff"
+lemma poly_rel_coeff[transfer_rule]: "(poly_rel ===> (=) ===> R) (coeff_i ops) coeff"
   unfolding poly_rel_def rel_fun_def coeff_i_def nth_default_coeffs_eq[symmetric]
 proof (intro allI impI, clarify)
   fix x y n
@@ -561,7 +561,7 @@ proof (intro allI impI, clarify)
 qed
 
 (* degree *)
-lemma poly_rel_degree[transfer_rule]: "(poly_rel ===> op =) degree_i degree"
+lemma poly_rel_degree[transfer_rule]: "(poly_rel ===> (=)) degree_i degree"
   unfolding poly_rel_def rel_fun_def degree_i_def degree_eq_length_coeffs 
   by (simp add: list_all2_lengthD)
 
@@ -614,7 +614,7 @@ proof (induct N arbitrary: x X y Y z Z)
      (divmod_poly_one_main_i ops (cCons_i ops (hd y) x)
        (tl (if hd y = zero then y else minus_poly_rev_list_i ops y (map (times (hd y)) z))) z n)
      (divmod_poly_one_main_list (cCons (hd Y) X)
-       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (op * (hd Y)) Z))) Z n))"
+       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (( * ) (hd Y)) Z))) Z n))"
      by (simp add: Let_def)
   show ?case unfolding id
   proof (rule Suc(1), goal_cases)
@@ -637,7 +637,7 @@ proof (induct N arbitrary: x X y Y)
      (mod_poly_one_main_i ops
        (tl (if hd y = zero then y else minus_poly_rev_list_i ops y (map (times (hd y)) z))) z n)
      (mod_poly_one_main_list 
-       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (op * (hd Y)) Z))) Z n))"
+       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (( * ) (hd Y)) Z))) Z n))"
      by (simp add: Let_def)
   show ?case unfolding id
   proof (rule Suc(1), goal_cases)
@@ -646,11 +646,11 @@ proof (induct N arbitrary: x X y Y)
   qed (transfer_prover+)
 qed simp
 
-lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (dvd_poly_i ops) (op dvd)"
+lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> (=)) (dvd_poly_i ops) (dvd)"
   unfolding dvd_poly_i_def[abs_def] dvd_def[abs_def] 
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
+lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> (=)) (monic_i ops) monic"
   unfolding monic_i_def lead_coeff_i_def' by transfer_prover
 
 lemma poly_rel_pdivmod_monic: assumes mon: "monic Y" 
@@ -707,7 +707,7 @@ proof (intro rel_funI, unfold poly_rel_def coeffs_pderiv_code pderiv_i_def pderi
   qed simp
 qed 
 
-lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i ops) irreducible\<^sub>d"
+lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> (=)) (irreducible_i ops) irreducible\<^sub>d"
   unfolding irreducible_i_def[abs_def] irreducible\<^sub>d_def[abs_def] 
   by (transfer_prover_start, transfer_step+, auto)
 
@@ -731,7 +731,7 @@ context field_ops
 begin
 (* division *)
 lemma poly_rel_div[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) 
-  (div_field_poly_i ops) (op div)"
+  (div_field_poly_i ops) (div)"
 proof (intro rel_funI, goal_cases)
   case (1 x X y Y)
   note [transfer_rule] = this
@@ -755,7 +755,7 @@ proof (intro rel_funI, goal_cases)
       (divmod_poly_one_main_i ops [] (rev x) (rev (map (times (inverse yl)) y))
         (1 + length x - length y))
       (divmod_poly_one_main_list [] (rev (coeffs X))
-                (rev (map (op * (Fields.inverse Yl)) (coeffs Y)))
+                (rev (map (( * ) (Fields.inverse Yl)) (coeffs Y)))
                 (1 + length (coeffs X) - length (coeffs Y)))"
     proof (rule divmod_poly_one_main_i, goal_cases)
       case 5
@@ -770,7 +770,7 @@ qed
 
 (* modulo *)
 lemma poly_rel_mod[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) 
-  (mod_field_poly_i ops) (op mod)"
+  (mod_field_poly_i ops) (mod)"
 proof (intro rel_funI, goal_cases)
   case (1 x X y Y)
   note [transfer_rule] = this
@@ -794,7 +794,7 @@ proof (intro rel_funI, goal_cases)
       (mod_poly_one_main_i ops (rev x) (rev (map (times (inverse yl)) y))
         (1 + length x - length y))
       (mod_poly_one_main_list (rev (coeffs X))
-                (rev (map (op * (Fields.inverse Yl)) (coeffs Y)))
+                (rev (map (( * ) (Fields.inverse Yl)) (coeffs Y)))
                 (1 + length (coeffs X) - length (coeffs Y)))"
     proof (rule mod_poly_one_main_i, goal_cases)
       case 4

@@ -43,7 +43,7 @@ where
 | "ifex_of_ltl \<phi> = IF \<phi> Trueif Falseif"
 
 lemma val_ifex: 
-  "val_ifex (ifex_of_ltl b) s = op \<Turnstile>\<^sub>P {x. s x} b"
+  "val_ifex (ifex_of_ltl b) s = (\<Turnstile>\<^sub>P) {x. s x} b"
   by (induction b) (simp add: agree_Nil val_normif)+
 
 lemma reduced_ifex: 
@@ -63,7 +63,7 @@ lemma [code]:
   by (simp add: ltl_prop_implies_def reduced_bdt_checkers.impl_test[OF ifex_of_ltl_reduced_bdt_checker]; force)
 
 -- \<open>Check Code Export\<close> 
-export_code "op \<equiv>\<^sub>P" "op \<longrightarrow>\<^sub>P" checking
+export_code "(\<equiv>\<^sub>P)" "(\<longrightarrow>\<^sub>P)" checking
 
 subsection \<open>Remove Constants\<close>
 

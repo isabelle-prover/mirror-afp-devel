@@ -340,7 +340,7 @@ proof-
   qed  
   also have "(\<Sum>p\<in> ?pone. ?f p) = (\<Sum>p\<in> ?one. ?f (?p o p))"
   proof (rule trans[OF sum.reindex])
-    show "inj_on (op \<circ> ?p) ?one" 
+    show "inj_on ((\<circ>) ?p) ?one" 
       using fun.inj_map[OF injp] unfolding inj_on_def by auto
   qed simp
   also have "(\<Sum>p\<in> ?one. ?f p) + (\<Sum>p\<in> ?one. ?f (?p o p))
@@ -1281,10 +1281,10 @@ next
   hence "det ?B = det (four_block_mat ?B1 ?B2 ?B3 ?B4)" by simp
   also have "\<dots> = det ?B1 * det ?B4" 
     by (rule det_four_block_mat_upper_right_zero_col[of _ "n + m"], insert A1 A2 B3 B4, auto)
-  also have "det ?B1 = det A1 * det (mat m m (op $$ B4))"  
+  also have "det ?B1 = det A1 * det (mat m m (($$) B4))"  
     by (rule Suc(1), insert B3 B4, auto)
-  also have "\<dots> * det ?B4 = det A1 * (det (mat m m (op $$ B4)) * det ?B4)" by simp
-  also have "det (mat m m (op $$ B4)) * det ?B4 = det B4"
+  also have "\<dots> * det ?B4 = det A1 * (det (mat m m (($$) B4)) * det ?B4)" by simp
+  also have "det (mat m m (($$) B4)) * det ?B4 = det B4"
     unfolding arg_cong[OF B44, of det] 
     by (subst det_four_block_mat_upper_right_zero_col[OF _ refl], auto)
   finally have id: "det ?B = det A1 * det B4" .

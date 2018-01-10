@@ -20,28 +20,28 @@ end
 
 instantiation stream :: (plus) plus begin
 context includes applicative_syntax begin
-definition [applicative_unfold]: "x + y = pure op + \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x + y = pure (+) \<diamondop> x \<diamondop> (y :: 'a stream)"
 end
 instance ..
 end
 
 instantiation stream :: (minus) minus begin
 context includes applicative_syntax begin
-definition [applicative_unfold]: "x - y = pure op - \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x - y = pure (-) \<diamondop> x \<diamondop> (y :: 'a stream)"
 end
 instance ..
 end
 
 instantiation stream :: (uminus) uminus begin
 context includes applicative_syntax begin
-definition [applicative_unfold stream]: "uminus = (op \<diamondop> (pure uminus) :: 'a stream \<Rightarrow> 'a stream)"
+definition [applicative_unfold stream]: "uminus = ((\<diamondop>) (pure uminus) :: 'a stream \<Rightarrow> 'a stream)"
 end
 instance ..
 end
 
 instantiation stream :: (times) times begin
 context includes applicative_syntax begin
-definition [applicative_unfold]: "x * y = pure op * \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x * y = pure ( * ) \<diamondop> x \<diamondop> (y :: 'a stream)"
 end
 instance ..
 end
@@ -50,8 +50,8 @@ instance stream :: (Rings.dvd) Rings.dvd ..
 
 instantiation stream :: (modulo) modulo begin
 context includes applicative_syntax begin
-definition [applicative_unfold]: "x div y = pure op div \<diamondop> x \<diamondop> (y :: 'a stream)"
-definition [applicative_unfold]: "x mod y = pure op mod \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x div y = pure (div) \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x mod y = pure (mod) \<diamondop> x \<diamondop> (y :: 'a stream)"
 end
 instance ..
 end

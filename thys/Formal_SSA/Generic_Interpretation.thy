@@ -54,12 +54,12 @@ lift_definition gen_wf_uses :: "('node::linorder, 'var::linorder, 'edge) gen_cfg
 abbreviation "gen_wf_invar \<equiv> const True"
 abbreviation "gen_wf_inEdges' g n \<equiv> map (\<lambda>(f,d,t). (f,d)) (gen_wf_inEdges g n)"
 
-lemma gen_wf_inEdges'_transfer [transfer_rule]: "rel_fun cr_gen_cfg_wf op = gen_inEdges' gen_wf_inEdges'"
+lemma gen_wf_inEdges'_transfer [transfer_rule]: "rel_fun cr_gen_cfg_wf (=) gen_inEdges' gen_wf_inEdges'"
   using gen_wf_inEdges.transfer
   apply (auto simp: rel_fun_def cr_gen_cfg_wf_def)
   by (erule_tac x=y in allE) simp
 
-lemma gen_wf_invar_trans: "rel_fun cr_gen_cfg_wf op = gen_wf_invar gen_wf_invar"
+lemma gen_wf_invar_trans: "rel_fun cr_gen_cfg_wf (=) gen_wf_invar gen_wf_invar"
 by auto
 
 
@@ -125,7 +125,7 @@ lift_definition gen_ssa_wf_var :: "('node::linorder, 'var::linorder, 'edge, 'val
 
 abbreviation "gen_ssa_wf_inEdges' g n \<equiv> map (\<lambda>(f,d,t). (f,d)) (gen_ssa_wf_inEdges g n)"
 
-lemma gen_ssa_wf_inEdges'_transfer [transfer_rule]: "rel_fun cr_gen_ssa_cfg_wf op = gen_inEdges' gen_ssa_wf_inEdges'"
+lemma gen_ssa_wf_inEdges'_transfer [transfer_rule]: "rel_fun cr_gen_ssa_cfg_wf (=) gen_inEdges' gen_ssa_wf_inEdges'"
   using gen_ssa_wf_inEdges.transfer
   apply (auto simp: rel_fun_def cr_gen_cfg_wf_def)
   by (erule_tac x=x in allE) simp
@@ -153,7 +153,7 @@ global_interpretation uninst: CFG_SSA_wf_base_code gen_ssa_wf_\<alpha>e gen_ssa_
 
 definition "uninst_chooseNext u p g \<equiv> Max (uninst_trivial_phis (const p) g)"
 
-lemma gen_ssa_wf_invar_trans: "rel_fun cr_gen_ssa_cfg_wf op = gen_wf_invar gen_wf_invar"
+lemma gen_ssa_wf_invar_trans: "rel_fun cr_gen_ssa_cfg_wf (=) gen_wf_invar gen_wf_invar"
 by auto
 
 declare graph_path_base.transfer_rules[OF gen_ssa_cfg_wf.right_total gen_ssa_wf_\<alpha>e.transfer gen_ssa_wf_\<alpha>n.transfer gen_ssa_wf_invar_trans gen_ssa_wf_inEdges'_transfer, transfer_rule]
@@ -440,10 +440,10 @@ lemma fold_Cons_commute: "(\<And>a b. \<lbrakk>a \<in> set (x # xs); b \<in> set
   \<Longrightarrow> fold f (x # xs) = f x \<circ> (fold f xs)"
   by (simp add: fold_commute)
 
-lemma Union_of_code [code]: "Union_of f (RBT_Set.Set r) = RBT.fold (\<lambda>a _. op \<union> (f a)) r {}"
+lemma Union_of_code [code]: "Union_of f (RBT_Set.Set r) = RBT.fold (\<lambda>a _. (\<union>) (f a)) r {}"
 proof -
   { fix xs
-    have "(\<Union>x\<in>{x. (x, ()) \<in> set xs}. f x) = fold (\<lambda>(a,_). op \<union> (f a)) xs {}"
+    have "(\<Union>x\<in>{x. (x, ()) \<in> set xs}. f x) = fold (\<lambda>(a,_). (\<union>) (f a)) xs {}"
       apply (induction xs)
        apply simp
       by (subst fold_Cons_commute) auto

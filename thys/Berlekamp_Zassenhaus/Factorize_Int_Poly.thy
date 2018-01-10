@@ -245,7 +245,7 @@ lemma content_free_reflect_poly:
   fixes f :: "'a :: comm_semiring_1 poly"
   shows "content_free (reflect_poly f) = content_free f"
 proof-
-  have "(\<forall> a \<in> set (coeffs f). x dvd a) \<longleftrightarrow> (\<forall>a \<in> set (dropWhile (op = 0) (coeffs f)). x dvd a)" for x
+  have "(\<forall> a \<in> set (coeffs f). x dvd a) \<longleftrightarrow> (\<forall>a \<in> set (dropWhile ((=) 0) (coeffs f)). x dvd a)" for x
     by (auto dest: not_mem_set_dropWhileD set_dropWhileD)
   then show ?thesis by (auto simp: content_free_def coeffs_reflect_poly)
 qed
@@ -258,7 +258,7 @@ lemma gcd_list_sub:
 lemma content_reflect_poly:
   "content (reflect_poly f) = content f" (is "?l = ?r")
 proof-
-  have l: "?l = gcd_list (dropWhile (op = 0) (coeffs f))" (is "_ = gcd_list ?xs")
+  have l: "?l = gcd_list (dropWhile ((=) 0) (coeffs f))" (is "_ = gcd_list ?xs")
     by (simp add: content_def reflect_poly_def)
   have "set ?xs \<subseteq> set (coeffs f)" by (auto dest: set_dropWhileD)
   from gcd_list_sub[OF this]

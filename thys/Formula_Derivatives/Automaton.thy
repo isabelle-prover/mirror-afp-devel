@@ -16,7 +16,7 @@ coinductive rel_language where
 declare rel_language.coinduct[consumes 1, case_names Lang, coinduct pred]
 
 lemma rel_language_alt:
-  "rel_language R L K = rel_fun (list_all2 R) (op =) (in_language L) (in_language K)"
+  "rel_language R L K = rel_fun (list_all2 R) (=) (in_language L) (in_language K)"
 unfolding rel_fun_def proof (rule iffI, safe del: iffI)
   fix xs ys
   assume "list_all2 R xs ys" "rel_language R L K"
@@ -27,7 +27,7 @@ next
   then show "rel_language R L K" by (coinduction arbitrary: L K) (auto dest: spec2)
 qed
 
-lemma rel_language_eq: "rel_language op = = op ="
+lemma rel_language_eq: "rel_language (=) = (=)"
   unfolding rel_language_alt[abs_def] list.rel_eq fun.rel_eq
   by (subst (2) fun_eq_iff)+
     (auto intro: box_equals[OF _ to_language_in_language to_language_in_language])
@@ -319,12 +319,12 @@ end
 
 sublocale DA < DAs
   alphabet init delta accept wellformed Language wf Lang
-  alphabet init delta accept wellformed Language wf Lang "(op =)"
+  alphabet init delta accept wellformed Language wf Lang "(=)"
   by unfold_locales auto
 
 sublocale DFA < DFAs
   alphabet init delta accept wellformed Language wf Lang
-  alphabet init delta accept wellformed Language wf Lang "(op =)"
+  alphabet init delta accept wellformed Language wf Lang "(=)"
   by unfold_locales auto
 
 lemma (in DA) step_alt: "step = (\<lambda>(p, q). map (\<lambda>a. (delta a p, delta a q)) alphabet)"

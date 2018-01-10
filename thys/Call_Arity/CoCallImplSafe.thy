@@ -326,7 +326,7 @@ next
 
   show "CCexp e\<cdot>a \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
     by (cases "nonrec \<Delta>")
-       (auto simp add: ccHeap_simp1 ccHeap_simp2 arg_cong[OF CCfix_unroll, where f = "op \<sqsubseteq> x" for x ] elim!: nonrecE)
+       (auto simp add: ccHeap_simp1 ccHeap_simp2 arg_cong[OF CCfix_unroll, where f = "(\<sqsubseteq>) x" for x ] elim!: nonrecE)
 
   fix x e' a'
   assume "map_of \<Delta> x = Some e'"
@@ -344,7 +344,7 @@ next
     also
     have "ccBind x e'\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCfix \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCexp e\<cdot>a)) \<sqsubseteq>  ccHeap \<Delta> e\<cdot>a"
       using `map_of \<Delta> x = Some e'` False
-      by (fastforce simp add: ccHeap_simp1 ccHeap_rec_eq ccBindsExtra_simp  ccBinds_eq  arg_cong[OF CCfix_unroll, where f = "op \<sqsubseteq> x" for x ]
+      by (fastforce simp add: ccHeap_simp1 ccHeap_rec_eq ccBindsExtra_simp  ccBinds_eq  arg_cong[OF CCfix_unroll, where f = "(\<sqsubseteq>) x" for x ]
                   intro: below_trans[OF _ join_above2])
     finally
     show "CCexp e'\<cdot>a' \<sqsubseteq> ccHeap \<Delta> e\<cdot>a" by this simp_all
@@ -389,7 +389,7 @@ next
     also have "\<dots> \<sqsubseteq> ccBindsExtra \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), ccHeap \<Delta> e\<cdot>a)"
       by (simp add: ccBindsExtra_simp  below_trans[OF _ join_above2])
     also have "\<dots> \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
-      by (simp add: ccHeap_simp1  arg_cong[OF CCfix_unroll, where f = "op \<sqsubseteq> x" for x])
+      by (simp add: ccHeap_simp1  arg_cong[OF CCfix_unroll, where f = "(\<sqsubseteq>) x" for x])
     finally
     show ?thesis by this simp_all
   next

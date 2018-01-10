@@ -240,14 +240,14 @@ lemma yun_factorization_main_int: assumes f: "f = p div gcd p (pderiv p)"
     and "g = pderiv p div gcd p (pderiv p)" "monic p" 
     and "yun_gcd.yun_factorization_main gcd f g i hs = res"
     and "yun_gcd.yun_factorization_main gcd F G i Hs = Res" 
-    and "yun_rel F c f" "yun_wrel G c g" "list_all2 (rel_prod yun_erel op =) Hs hs"
-  shows "list_all2 (rel_prod yun_erel op =) Res res" 
+    and "yun_rel F c f" "yun_wrel G c g" "list_all2 (rel_prod yun_erel (=)) Hs hs"
+  shows "list_all2 (rel_prod yun_erel (=)) Res res" 
 proof -
   let ?P = "\<lambda> f g. \<forall> i hs res F G Hs Res c. 
     yun_gcd.yun_factorization_main gcd f g i hs = res
     \<longrightarrow> yun_gcd.yun_factorization_main gcd F G i Hs = Res 
-    \<longrightarrow> yun_rel F c f \<longrightarrow> yun_wrel G c g \<longrightarrow> list_all2 (rel_prod yun_erel op =) Hs hs
-    \<longrightarrow> list_all2 (rel_prod yun_erel op =) Res res" 
+    \<longrightarrow> yun_rel F c f \<longrightarrow> yun_wrel G c g \<longrightarrow> list_all2 (rel_prod yun_erel (=)) Hs hs
+    \<longrightarrow> list_all2 (rel_prod yun_erel (=)) Res res" 
   note simps = yun_gcd.yun_factorization_main.simps
   note rel = yun_relD
   let ?rel = "\<lambda> F f. map_poly rat_of_int F = smult (rat_of_int (lead_coeff F)) f" 
@@ -279,7 +279,7 @@ proof -
       have a: "yun_rel A c' a" unfolding A_def a_def
         by (rule yun_rel_gcd[OF f d c c'])
       hence "yun_erel A a" unfolding yun_erel_def by auto
-      thus "list_all2 (rel_prod yun_erel op =) ((A, i) # Hs) ((a, i) # hs)" 
+      thus "list_all2 (rel_prod yun_erel (=)) ((A, i) # Hs) ((a, i) # hs)" 
         using hs by auto      
       have A0: "A \<noteq> 0" by (rule rel(4)[OF a])
       have "A dvd D" "a dvd d" unfolding A_def a_def by auto
@@ -296,7 +296,7 @@ lemma yun_monic_factorization_int_yun_rel: assumes
     res: "yun_gcd.yun_monic_factorization gcd f = res"
     and Res: "yun_gcd.yun_monic_factorization gcd F = Res" 
     and f: "yun_rel F c f" 
-  shows "list_all2 (rel_prod yun_erel op =) Res res" 
+  shows "list_all2 (rel_prod yun_erel (=)) Res res" 
 proof -
   note ff = yun_relD[OF f]
   let ?g = "gcd f (pderiv f)"
@@ -315,7 +315,7 @@ proof -
   from yun_wrel_div[OF f' yun_relD(1)[OF g] _ _ yun_relD(4)[OF g]] 
   have 2: "yun_wrel (pderiv F div ?G) (c / d) (pderiv f div ?g)" by auto
   from yun_factorization_main_int[OF refl refl ff(6) r R 1 2] 
-  have "list_all2 (rel_prod yun_erel op =) R r" by simp
+  have "list_all2 (rel_prod yun_erel (=)) R r" by simp
   thus ?thesis unfolding res Res
     by (induct R r rule: list_all2_induct, auto dest: yun_erel_1_eq)
 qed
@@ -380,7 +380,7 @@ proof (cases "square_free_heuristic f")
   have in_rel: "yun_rel f c G" unfolding yun_rel_def yun_wrel_def
     using rp mon lc ct by auto
   from yun_monic_factorization_int_yun_rel[OF Fs fs in_rel]
-  have out_rel: "list_all2 (rel_prod yun_erel op =) fs Fs" by auto
+  have out_rel: "list_all2 (rel_prod yun_erel (=)) fs Fs" by auto
   from yun_monic_factorization[OF Fs mon]
   have "square_free_factorization G (1, Fs)" and dist: "distinct (map snd Fs)" by auto
   note sff = square_free_factorizationD[OF this(1)]
@@ -395,7 +395,7 @@ proof (cases "square_free_heuristic f")
     {
       fix a i
       assume a: "(a,i) \<in> set fs" 
-      with out_rel obtain bj where "bj \<in> set Fs" and "rel_prod yun_erel op = (a,i) bj" 
+      with out_rel obtain bj where "bj \<in> set Fs" and "rel_prod yun_erel (=) (a,i) bj" 
         unfolding list_all2_conv_all_nth set_conv_nth by fastforce
       then obtain b where b: "(b,i) \<in> set Fs" and ab: "yun_erel a b" by (cases bj, auto simp: rel_prod.simps)
       from sff(2)[OF b] have b': "square_free b" "degree b \<noteq> 0" by auto
@@ -413,7 +413,7 @@ proof (cases "square_free_heuristic f")
       from diff k K have kK: "k \<noteq> K" by auto
       from dist'[unfolded distinct_conv_nth length_map, rule_format, OF k(2) K(2) kK] 
       have iI: "i \<noteq> I" using k K by simp
-      from A out_rel obtain Bj where "Bj \<in> set Fs" and "rel_prod yun_erel op = (A,I) Bj" 
+      from A out_rel obtain Bj where "Bj \<in> set Fs" and "rel_prod yun_erel (=) (A,I) Bj" 
         unfolding list_all2_conv_all_nth set_conv_nth by fastforce
       then obtain B where B: "(B,I) \<in> set Fs" and AB: "yun_erel A B" by (cases Bj, auto simp: rel_prod.simps)
       then obtain C where Rel: "yun_rel A C B" unfolding yun_erel_def by auto
@@ -537,13 +537,13 @@ qed
 
  
 definition x_split :: "'a :: semiring_0 poly \<Rightarrow> nat \<times> 'a poly" where
-  "x_split f = (let fs = coeffs f; zs = takeWhile (op = 0) fs
-     in case zs of [] \<Rightarrow> (0,f) | _ \<Rightarrow> (length zs, poly_of_list (dropWhile (op = 0) fs)))" 
+  "x_split f = (let fs = coeffs f; zs = takeWhile ((=) 0) fs
+     in case zs of [] \<Rightarrow> (0,f) | _ \<Rightarrow> (length zs, poly_of_list (dropWhile ((=) 0) fs)))" 
   
 lemma x_split: assumes "x_split f = (n, g)" 
   shows "f = monom 1 n * g" "n \<noteq> 0 \<or> f \<noteq> 0 \<Longrightarrow> \<not> monom 1 1 dvd g"
 proof -
-  define zs where "zs = takeWhile (op = 0) (coeffs f)" 
+  define zs where "zs = takeWhile ((=) 0) (coeffs f)" 
   note res = assms[unfolded zs_def[symmetric] x_split_def Let_def]
   have "f = monom 1 n * g \<and> ((n \<noteq> 0 \<or> f \<noteq> 0) \<longrightarrow> \<not> (monom 1 1 dvd g))" (is "_ \<and> (_ \<longrightarrow> \<not> (?x dvd _))")
   proof (cases "f = 0")
@@ -561,7 +561,7 @@ proof -
       from True choice res f show ?thesis unfolding dvd by auto
     next
       case False
-      define ys where "ys = dropWhile (op = 0) (coeffs f)" 
+      define ys where "ys = dropWhile ((=) 0) (coeffs f)" 
       have dvd: "?x dvd h \<longleftrightarrow> coeff h 0 = 0" for h by (simp add: monom_1_dvd_iff')
       from res False have n: "n = length zs" and g: "g = poly_of_list ys" unfolding ys_def
         by (cases zs, auto)+

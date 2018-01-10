@@ -82,7 +82,7 @@ definition ahm_isEmpty where
 text {*
   Now follow correctness lemmas, that relate the hashmap operations to
   operations on the corresponding map. Those lemmas are named op\_correct, where
-  op is the operation.
+  (is) the operation.
 *}
 
 lemma ahm_invarI: "\<lbrakk> 
@@ -295,7 +295,7 @@ text {*
   The following lemmas establish the correctness of the operations w.r.t. the 
   abstract hashmap.
 
-  They have the naming scheme op\_correct', where op is the name of the 
+  They have the naming scheme op\_correct', where (is) the name of the 
   operation.
 *}
 

@@ -126,12 +126,12 @@ lemma rewrite_sum_of_powers:
 assumes p: "(p::nat)>1"
 shows "(\<Sum> {p^m | m . m<=(n::nat)}) = (\<Sum> i = 0 .. n . p^i)" (is "?l = ?r")
 proof -
-  have "?l = sum (%x. x) {(op ^ p) m |m . m<= n}" by auto
-  also have "... = sum (%x. x) ((op ^ p)`{m . m<= n})"
+  have "?l = sum (%x. x) {((^) p) m |m . m<= n}" by auto
+  also have "... = sum (%x. x) (((^) p)`{m . m<= n})"
     by (simp add: setcompr_eq_image)
-  moreover with p have "inj_on (op ^p) {m . m<=n}"
+  moreover with p have "inj_on ((^) p) {m . m<=n}"
     by (simp add: inj_on_def)
-  ultimately have "?l = sum (op ^ p) {m . m<=n}"
+  ultimately have "?l = sum ((^) p) {m . m<=n}"
     by (simp add: sum.reindex)
   moreover have "{m::nat . m<=n} = {0..n}" by auto
   ultimately show "?l = (\<Sum> i = 0 .. n . p^i)" by auto

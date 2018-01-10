@@ -98,7 +98,7 @@ lemma lemma_4_3_ii_b: "a \<squnion>2 b = (b r\<rightarrow> a) l\<rightarrow> a"
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice1:pseudo_hoop_lattice_b "op \<squnion>1" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale wajsberg_pseudo_hoop_algebra < lattice1:pseudo_hoop_lattice_b "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   apply (simp add: lemma_4_3_i_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
@@ -112,12 +112,12 @@ begin
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice2:pseudo_hoop_lattice_b "op \<squnion>2" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale wajsberg_pseudo_hoop_algebra < lattice2:pseudo_hoop_lattice_b "(\<squnion>2)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   apply (simp add: lemma_4_3_ii_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
 
-lemma (in wajsberg_pseudo_hoop_algebra) sup1_eq_sup2: "op \<squnion>1 = op \<squnion>2"
+lemma (in wajsberg_pseudo_hoop_algebra) sup1_eq_sup2: "(\<squnion>1) = (\<squnion>2)"
   apply (simp add: fun_eq_iff)
   apply safe
   apply (cut_tac a = x and b = xa in lattice1.supremum_pair)
@@ -139,7 +139,7 @@ lemma [simp]: "0 r\<rightarrow> a = 1"
   by (simp add: order_r [THEN sym])
 end
 
-sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algebra "1"  "op l\<rightarrow>"  "op r\<rightarrow>"  "op \<le>" "op <" "0" "negl" "negr"
+sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algebra "1"  "(l\<rightarrow>)"  "(r\<rightarrow>)"  "(\<le>)" "(<)" "0" "negl" "negr"
   apply unfold_locales
   apply simp_all
   apply (simp add:  lemma_4_3_i_a [THEN sym])
@@ -181,7 +181,7 @@ sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algeb
 
 context pseudo_wajsberg_algebra
 begin
-  lemma "class.bounded_wajsberg_pseudo_hoop_algebra mult inf_a (op l\<rightarrow>) (op \<le>) (op <) 1 (op r\<rightarrow>) (0::'a)"
+  lemma "class.bounded_wajsberg_pseudo_hoop_algebra mult inf_a (l\<rightarrow>) (\<le>) (<) 1 (r\<rightarrow>) (0::'a)"
   apply unfold_locales
   apply (simp add: inf_a_def mult_def W6)
   apply (simp add: strict)
@@ -377,13 +377,13 @@ lemma lemma_4_5: "a \<squnion>1 b = a \<squnion>2 b"
   by (simp_all add: lemma_4_5_a lemma_4_5_b)
 end
 
-sublocale basic_pseudo_hoop_algebra <  basic_lattice:lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>1"
+sublocale basic_pseudo_hoop_algebra <  basic_lattice:lattice "(\<sqinter>)" "(\<le>)" "(<)" "(\<squnion>1)"
   apply unfold_locales
   by (simp_all add: lemma_4_5_a)
 
 context pseudo_hoop_lattice begin end
 
-sublocale basic_pseudo_hoop_algebra <  pseudo_hoop_lattice "op \<squnion>1" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale basic_pseudo_hoop_algebra <  pseudo_hoop_lattice "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp_all add: basic_lattice.sup_assoc)
 
@@ -391,11 +391,11 @@ class sup_assoc_pseudo_hoop_algebra = pseudo_hoop_algebra +
   assumes sup1_assoc: "a \<squnion>1 (b \<squnion>1 c) = (a \<squnion>1 b) \<squnion>1 c"
   and sup2_assoc: "a \<squnion>2 (b \<squnion>2 c) = (a \<squnion>2 b) \<squnion>2 c"
 
-sublocale sup_assoc_pseudo_hoop_algebra <  sup1_lattice: pseudo_hoop_lattice "op \<squnion>1" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale sup_assoc_pseudo_hoop_algebra <  sup1_lattice: pseudo_hoop_lattice "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp add: sup1_assoc)
 
-sublocale sup_assoc_pseudo_hoop_algebra <  sup2_lattice: pseudo_hoop_lattice "op \<squnion>2" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale sup_assoc_pseudo_hoop_algebra <  sup2_lattice: pseudo_hoop_lattice "(\<squnion>2)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp add: sup2_assoc)
 
@@ -432,7 +432,7 @@ lemma (in pseudo_hoop_lattice) sup_times_right:
 
 context basic_pseudo_hoop_algebra begin end
 
-sublocale sup_assoc_pseudo_hoop_algebra_1 <  basic_1: basic_pseudo_hoop_algebra  "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>" 
+sublocale sup_assoc_pseudo_hoop_algebra_1 <  basic_1: basic_pseudo_hoop_algebra  "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)" 
   apply unfold_locales
   apply (subst left_residual [THEN sym])
   apply (rule_tac y = "(a l\<rightarrow> b) \<squnion>1 (b l\<rightarrow> a) l\<rightarrow> c" in order_trans)
@@ -538,7 +538,7 @@ class inf_a =
 
 
 class pseudo_bl_algebra = zero + sup + inf + monoid_mult + ord + left_imp + right_imp +
-  assumes  bounded_lattice: "class.bounded_lattice inf (op \<le>) (op <) sup 0 1"
+  assumes  bounded_lattice: "class.bounded_lattice inf (\<le>) (<) sup 0 1"
   and left_residual_bl: "(x * a \<le> b) = (x \<le> a l\<rightarrow> b)"
   and right_residual_bl: "(a * x \<le> b) = (x \<le> a r\<rightarrow> b)"
   and inf_l_bl_def: "a \<sqinter> b = (a l\<rightarrow> b) * a"
@@ -550,7 +550,7 @@ end
 
 context pseudo_bl_algebra begin end
 
-sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "op *" "0"  "op \<sqinter>" "op \<squnion>1" "op l\<rightarrow>" "op r\<rightarrow>" "op \<le>" "op <"
+sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "( * )" "0"  "(\<sqinter>)" "(\<squnion>1)" "(l\<rightarrow>)" "(r\<rightarrow>)" "(\<le>)" "(<)"
   apply unfold_locales 
   apply (rule zero_smallest) 
   apply (rule left_residual) 
@@ -561,7 +561,7 @@ sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "op *" "
   apply (simp add: lemma_4_5) 
   by (rule lemma_4_5_ii)
 
-sublocale pseudo_bl_algebra < bounded_lattice: bounded_lattice "inf" "op \<le>" "op <" "sup" "0" "1"
+sublocale pseudo_bl_algebra < bounded_lattice: bounded_lattice "inf" "(\<le>)" "(<)" "sup" "0" "1"
   by (rule bounded_lattice)
 
 context pseudo_bl_algebra

@@ -247,7 +247,7 @@ proof
     by (rule c_prod_comm)
 qed
 
-sublocale proto_trioid \<subseteq> dioid_one_zero "op +" "op \<parallel>" "1\<^sub>\<pi>" 0 "op \<le>" "op <"
+sublocale proto_trioid \<subseteq> dioid_one_zero "(+)" "(\<parallel>)" "1\<^sub>\<pi>" 0 "(\<le>)" "(<)"
 proof
   fix x y z
   show "(x + y) \<parallel> z = x \<parallel> z + y \<parallel> z"
@@ -497,7 +497,7 @@ class pbl_monoid = proto_trioid +
 
 begin
 
-sublocale lattice "op \<sqinter>" "op \<le>" "op <" "op +"
+sublocale lattice "(\<sqinter>)" "(\<le>)" "(<)" "(+)"
 proof
   show a: "\<And>x y. x \<sqinter> y \<le> x"
     by (simp add: local.absorp2 local.less_eq_def add_commute)
@@ -2111,7 +2111,7 @@ class proto_quantale = complete_lattice + proto_monoid +
 
 begin
 
-sublocale pd?: proto_dioid "1\<^sub>\<sigma>" "op \<cdot>" sup "op \<le>" "op <" "Sup {}"
+sublocale pd?: proto_dioid "1\<^sub>\<sigma>" "(\<cdot>)" sup "(\<le>)" "(<)" "Sup {}"
 proof
   show "\<And>x y. (x \<le> y) = (sup x y = y)"
     by (simp add: local.le_iff_sup)

@@ -116,7 +116,7 @@ subsection \<open>XML-Parsing\<close>
 definition parse_text :: "string option parser"
 where
   "parse_text = do {
-    ts \<leftarrow> many (op \<noteq> CHR ''<'');
+    ts \<leftarrow> many ((\<noteq>) CHR ''<'');
     let text = trim ts;
     if text = [] then return None
     else return (Some (List.rev (trim (List.rev text))))
@@ -134,8 +134,8 @@ proof -
   from * obtain a tss where ts: "ts = a # tss" and not: "a \<noteq> CHR ''<''" 
     by (cases ts, auto)
   note parse = parse [unfolded parse_text_def Let_def ts]
-  from parse obtain x1 x2 where many: "many (op \<noteq> CHR ''<'') tss = Inr (x1, x2)"
-    using not by (cases "many (op \<noteq> CHR ''<'') tss", 
+  from parse obtain x1 x2 where many: "many ((\<noteq>) CHR ''<'') tss = Inr (x1, x2)"
+    using not by (cases "many ((\<noteq>) CHR ''<'') tss", 
       auto simp: bind_def)
   from is_parser_many many have len: "length x2 \<le> length tss" by blast
   from parse many have "length ts' \<le> length x2"
@@ -147,7 +147,7 @@ definition parse_attribute_value :: "string parser"
 where
   "parse_attribute_value = do {
     exactly [CHR ''\"''];
-    v \<leftarrow> many (op \<noteq> CHR ''\"'');
+    v \<leftarrow> many ((\<noteq>) CHR ''\"'');
     exactly [CHR ''\"''];
     return v
   }"

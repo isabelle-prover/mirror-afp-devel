@@ -4,7 +4,7 @@ begin
 
 instantiation ttree :: (type) below
 begin
-  lift_definition below_ttree :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> bool" is "op \<subseteq>".
+  lift_definition below_ttree :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> bool" is "(\<subseteq>)".
 instance..
 end
 
@@ -248,9 +248,9 @@ proof-
   thus "t \<squnion> t' = t \<oplus>\<oplus> t'" by (metis lub_is_join is_lub_ttree)
 qed  
 
-lemma ttree_join_transfer[transfer_rule]: "rel_fun (pcr_ttree op =) (rel_fun (pcr_ttree op =) (pcr_ttree op =)) op \<union> op \<squnion>"
+lemma ttree_join_transfer[transfer_rule]: "rel_fun (pcr_ttree (=)) (rel_fun (pcr_ttree (=)) (pcr_ttree (=))) (\<union>) (\<squnion>)"
 proof-
-  have "op \<squnion> = (op \<oplus>\<oplus> :: 'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree)" using ttree_join_is_either by blast
+  have "(\<squnion>) = ((\<oplus>\<oplus>) :: 'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree)" using ttree_join_is_either by blast
   thus ?thesis using either.transfer  by metis
 qed
 

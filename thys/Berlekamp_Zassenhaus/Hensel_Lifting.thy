@@ -191,13 +191,13 @@ proof -
   from poly_rel_inj[OF b Bb(1)] B have B: "B' = ?I B" by simp
   note Mp = dd(2) hh(2) ss(2) tt(2) uu(2)
   note [transfer_rule] = Mp
-  have "(op =) (D * S + H * T =m 1) (?I D * ?I S + ?I H * ?I T = 1)" by transfer_prover
+  have "(=) (D * S + H * T =m 1) (?I D * ?I S + ?I H * ?I T = 1)" by transfer_prover
   with 1 have 11: "?I D * ?I S + ?I H * ?I T = 1" by simp
   from dupe_monic[OF 11 monic_of_int_poly[OF mon] dupe, unfolded A B]
   have res: "?I A * ?I D + ?I B * ?I H = ?I U" "?I B = 0 \<or> degree (?I B) < degree (?I D)" by auto  
   note [transfer_rule] = Aa(2) Bb(2)
-  have "(op =) (A * D + B * H =m U) (?I A * ?I D + ?I B * ?I H = ?I U)"
-       "(op =) (B =m 0 \<or> degree_m B < degree_m D) (?I B = 0 \<or> degree (?I B) < degree (?I D))" by transfer_prover+
+  have "(=) (A * D + B * H =m U) (?I A * ?I D + ?I B * ?I H = ?I U)"
+       "(=) (B =m 0 \<or> degree_m B < degree_m D) (?I B = 0 \<or> degree (?I B) < degree (?I D))" by transfer_prover+
   with res have *: "A * D + B * H =m U" "B =m 0 \<or> degree_m B < degree_m D" by auto
   show "A * D + B * H =m U" by fact
   have B: "Mp B = B" using Mp_rel_i_Mp_to_int_poly_i assms(5) bb by blast

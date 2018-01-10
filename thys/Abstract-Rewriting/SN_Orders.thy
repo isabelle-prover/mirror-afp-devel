@@ -148,7 +148,7 @@ locale poly_order_carrier = SN_one_mono_ordered_semiring_1 default gt
   and   discrete :: "bool"
   assumes times_gt_mono: "\<lbrakk>y \<succ> z; x \<ge> 1\<rbrakk> \<Longrightarrow> y * x \<succ> z * x"
   and power_mono: "power_mono \<Longrightarrow> x \<succ> y \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 1 \<Longrightarrow> x ^ n \<succ> y ^ n"
-  and discrete: "discrete \<Longrightarrow> x \<ge> y \<Longrightarrow> \<exists> k. x = ((op + 1)^^k) y"
+  and discrete: "discrete \<Longrightarrow> x \<ge> y \<Longrightarrow> \<exists> k. x = (((+) 1)^^k) y"
 
 class large_ordered_semiring_1 = poly_carrier +
   assumes ex_large_of_nat: "\<exists> x. of_nat x \<ge> y"

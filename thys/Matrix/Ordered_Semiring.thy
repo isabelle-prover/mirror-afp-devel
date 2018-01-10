@@ -65,7 +65,7 @@ hide_const (open) gt geq max
 subsection {* A connection between class based semirings and set based semirings *}
 
 definition class_semiring :: "'a itself \<Rightarrow> 'b \<Rightarrow> ('a :: {plus,times,one,zero},'b)ring_scheme" where
-  "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = op *, one = 1, zero = 0, add = op +, \<dots> = b\<rparr>"
+  "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = ( * ), one = 1, zero = 0, add = (+), \<dots> = b\<rparr>"
 
 lemma class_semiring: "semiring (class_semiring (TYPE('a :: ordered_semiring_1)) b)"
   unfolding class_semiring_def
@@ -73,7 +73,7 @@ lemma class_semiring: "semiring (class_semiring (TYPE('a :: ordered_semiring_1))
 
 definition class_ordered_semiring :: "'a itself \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a,'b) ordered_semiring_scheme" where
   "class_ordered_semiring a gt b \<equiv> class_semiring a \<lparr>
-    ordered_semiring.geq = op \<ge>,
+    ordered_semiring.geq = (\<ge>),
     gt = gt,
     max = max,
     \<dots> = b\<rparr>"
@@ -93,12 +93,12 @@ qed
 
 lemma (in one_mono_ordered_semiring_1) class_ordered_semiring:  
   "ordered_semiring 
-    (class_ordered_semiring (TYPE('a)) op \<succ> b)" 
+    (class_ordered_semiring (TYPE('a)) (\<succ>) b)" 
   by (rule class_ordered_semiring[of _ default], unfold_locales)
 
 lemma (in both_mono_ordered_semiring_1) class_ordered_semiring:  
   "ordered_semiring 
-    (class_ordered_semiring (TYPE('a)) op \<succ> b)" 
+    (class_ordered_semiring (TYPE('a)) (\<succ>) b)" 
   by (rule class_ordered_semiring[of _ default], unfold_locales)
 
 

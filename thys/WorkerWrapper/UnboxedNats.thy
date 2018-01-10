@@ -63,7 +63,7 @@ definition
   unwrapB :: "(Nat \<rightarrow> Nat) \<rightarrow> UNat \<rightarrow> UNat\<^sub>\<bottom>" where
   "unwrapB \<equiv> \<Lambda> f. unbox oo f oo box"
 
-text{* Note that the monadic bind operator @{term "op >>="} here stands
+text{* Note that the monadic bind operator @{term "(>>=)"} here stands
 in for the \textsf{case} construct in the paper. *}
 
 definition
@@ -171,7 +171,7 @@ tail-recursive. We can apply worker/wrapper once more to introduce an
 accumulator, similar to \S\ref{sec:accum}.
 
 The monadic machinery complicates things slightly here. We use
-\emph{Kleisli composition}, denoted @{term "op >=>"}, in the
+\emph{Kleisli composition}, denoted @{term "(>=>)"}, in the
 homomorphism.
 
 Firstly we introduce an ``accumulator'' monoid and show the

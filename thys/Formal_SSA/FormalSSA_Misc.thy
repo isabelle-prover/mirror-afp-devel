@@ -73,26 +73,26 @@ lemma fold_induct[case_names Nil Cons]: "P s \<Longrightarrow> (\<And>x s. x \<i
 by (rule fold_invariant [where Q = "\<lambda>x. x \<in> set xs"]) simp
 
 lemma fold_union_elem:
-  assumes "x \<in> fold (op \<union>) xss xs"
+  assumes "x \<in> fold (\<union>) xss xs"
   obtains ys where "x \<in> ys" "ys \<in> set xss \<union> {xs}"
 using assms
 by (induction rule:fold_induct) auto
 
 lemma fold_union_elemI:
   assumes "x \<in> ys" "ys \<in> set xss \<union> {xs}"
-  shows "x \<in> fold (op \<union>) xss xs"
+  shows "x \<in> fold (\<union>) xss xs"
 using assms
 by (metis Sup_empty Sup_insert Sup_set_fold Un_insert_right UnionI ccpo_Sup_singleton fold_simps(2) list.simps(15))
 
 lemma fold_union_elemI':
   assumes "x \<in> xs \<or> (\<exists>xs \<in> set xss. x \<in> xs)"
-  shows "x \<in> fold (op \<union>) xss xs"
+  shows "x \<in> fold (\<union>) xss xs"
 using assms
 using fold_union_elemI by fastforce
 
 lemma fold_union_finite[intro!]:
   assumes "finite xs" "\<forall>xs \<in> set xss. finite xs"
-  shows "finite (fold (op \<union>) xss xs)"
+  shows "finite (fold (\<union>) xss xs)"
 using assms by - (rule fold_invariant, auto)
 
 lemma in_set_zip_map:

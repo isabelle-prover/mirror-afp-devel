@@ -95,17 +95,17 @@ code_printing
   | constant "denominator_integer" \<rightharpoonup> (Haskell) "Rational.denominator (_)"  
   | constant "HOL.equal :: rat \<Rightarrow> rat \<Rightarrow> bool" \<rightharpoonup>
     (Haskell) "(_) == (_)"
-  |  constant "op < :: rat => rat => bool" \<rightharpoonup>
+  |  constant "(<) :: rat => rat => bool" \<rightharpoonup>
     (Haskell) "_ < _"
-  |  constant "op \<le> :: rat => rat => bool" \<rightharpoonup>
+  |  constant "(\<le>) :: rat => rat => bool" \<rightharpoonup>
     (Haskell) "_ <= _"
-  | constant "op + :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
+  | constant "(+) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) "(_) + (_)"
-  | constant "op - :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
+  | constant "(-) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) "(_) - (_)"
-  | constant "op * :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
+  | constant "( * ) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) "(_) * (_)"
-  | constant "op / :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
+  | constant "(/) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) " (_) '/ (_)"
  | constant "uminus :: rat => rat" \<rightharpoonup>
     (Haskell) "Prelude.negate"

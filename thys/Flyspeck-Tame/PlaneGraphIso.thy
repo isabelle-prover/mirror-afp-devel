@@ -261,7 +261,7 @@ done
 
 
 lemma Collect_congs_eq_iff[simp]:
-  "Collect (op \<cong> x) = Collect (op \<cong> y) \<longleftrightarrow> (x \<cong> (y::'a list))"
+  "Collect ((\<cong>) x) = Collect ((\<cong>) y) \<longleftrightarrow> (x \<cong> (y::'a list))"
 using eq_equiv_class_iff2[OF equiv_EqF]
 apply(simp add: quotient_def Iso_def)
 apply blast
@@ -896,7 +896,7 @@ done
 
 subsection{* Elementhood and containment modulo *}
 
-interpretation qle_gr: quasi_order "op \<simeq>"
+interpretation qle_gr: quasi_order "(\<simeq>)"
 proof qed (auto intro:iso_fgraph_trans)
 
 abbreviation qle_gr_in :: "'a fgraph \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<in>\<^sub>\<simeq>" 60)

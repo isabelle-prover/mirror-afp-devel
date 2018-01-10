@@ -109,7 +109,7 @@ lemma exprSec_Lo_eval_eq: "exprSec expr = Lo \<Longrightarrow> (s, t) \<in> indi
 lemma compatAtmSyntactic[simp]: "exprSec expr = Lo \<or> sec v = Hi \<Longrightarrow> Example_PL.compatAtm (Assign v expr)"
   unfolding Example_PL.compatAtm_def
   by (induct expr)
-     (auto simp: indis_def intro!: arg_cong2[where f="op +"] arg_cong2[where f="op -"] exprSec_Lo_eval_eq)
+     (auto simp: indis_def intro!: arg_cong2[where f="(+)"] arg_cong2[where f="(-)"] exprSec_Lo_eval_eq)
 
 lemma presAtmSyntactic[simp]: "sec v = Hi \<Longrightarrow> Example_PL.presAtm (Assign v expr)"
   unfolding Example_PL.presAtm_def by (simp add: indis_def)
@@ -118,7 +118,7 @@ lemma compatTstSyntactic[simp]: "tstSec tst = Lo \<Longrightarrow> Example_PL.co
   unfolding Example_PL.compatTst_def
   by (induct tst)
      (simp_all, safe del: iffI
-              intro!: arg_cong2[where f="op ="] arg_cong2[where f="op < :: nat \<Rightarrow> nat \<Rightarrow> bool"] exprSec_Lo_eval_eq)
+              intro!: arg_cong2[where f="(=)"] arg_cong2[where f="(<) :: nat \<Rightarrow> nat \<Rightarrow> bool"] exprSec_Lo_eval_eq)
 
 (* Stateless choices are always compatible: *)
 lemma compatPrchSyntactic[simp]: "Example_PL.compatCh (Inl p)"

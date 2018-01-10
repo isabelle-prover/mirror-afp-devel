@@ -133,13 +133,13 @@ proof
   assume *: "?l"
   then have "[bn \<alpha>1]set. (\<alpha>1, P1) = [bn \<alpha>2]set. (\<alpha>2, P2)"
     by (simp add: residual.abs_eq_iff)
-  then obtain p where "(bn \<alpha>1, (\<alpha>1,P1)) \<approx>set (op=) supp p (bn \<alpha>2, (\<alpha>2,P2))"
+  then obtain p where "(bn \<alpha>1, (\<alpha>1,P1)) \<approx>set ((=)) supp p (bn \<alpha>2, (\<alpha>2,P2))"
     using Abs_eq_iff(1) by blast
   then show "?r"
     by (metis (mono_tags, lifting) alpha_set.simps)
 next
   assume *: "?r"
-  then obtain p where "(bn \<alpha>1, (\<alpha>1,P1)) \<approx>set (op=) supp p (bn \<alpha>2, (\<alpha>2,P2))"
+  then obtain p where "(bn \<alpha>1, (\<alpha>1,P1)) \<approx>set ((=)) supp p (bn \<alpha>2, (\<alpha>2,P2))"
     using alpha_set.simps by blast
   then have "[bn \<alpha>1]set. (\<alpha>1, P1) = [bn \<alpha>2]set. (\<alpha>2, P2)"
     using Abs_eq_iff(1) by blast
@@ -218,7 +218,7 @@ proof
   assume "\<langle>\<alpha>1,P1\<rangle> = \<langle>\<alpha>2,P2\<rangle>"
   with assms have "[{}]set. (\<alpha>1, P1) = [bn \<alpha>2]set. (\<alpha>2, P2)"
     by (simp add: residual.abs_eq_iff)
-  then obtain p where "({}, (\<alpha>1, P1)) \<approx>set (op=) supp p (bn \<alpha>2, (\<alpha>2, P2))"
+  then obtain p where "({}, (\<alpha>1, P1)) \<approx>set ((=)) supp p (bn \<alpha>2, (\<alpha>2, P2))"
     using Abs_eq_iff(1) by blast
   then show "\<alpha>1 = \<alpha>2 \<and> P1 = P2"
     unfolding alpha_set using supp_perm_eq by fastforce

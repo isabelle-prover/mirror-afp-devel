@@ -104,7 +104,7 @@ qed
 
 text {* This relation is indeed an order. *}
 
-sublocale  ds: order "op \<sqsubseteq>" "\<lambda>x y. (x \<sqsubseteq> y \<and> x \<noteq> y)"
+sublocale  ds: order "(\<sqsubseteq>)" "\<lambda>x y. (x \<sqsubseteq> y \<and> x \<noteq> y)"
 proof
   show "\<And>x y. (x \<sqsubseteq> y \<and> x \<noteq> y) = (x \<sqsubseteq> y \<and> \<not> y \<sqsubseteq> x)"
     using ds_ord_antisym by blast
@@ -614,9 +614,9 @@ instantiation d_element :: (domain_semiring) bounded_lattice
 
 begin
 
-lift_definition less_eq_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_eq_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> bool" is "(\<le>)" .
 
-lift_definition less_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> bool" is "op <" .
+lift_definition less_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> bool" is "(<)" .
 
 lift_definition bot_d_element :: "'a d_element" is 0
   by simp
@@ -624,10 +624,10 @@ lift_definition bot_d_element :: "'a d_element" is 0
 lift_definition top_d_element :: "'a d_element" is 1
   by simp
 
-lift_definition inf_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> 'a d_element" is "op \<cdot>"
+lift_definition inf_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> 'a d_element" is "(\<cdot>)"
   by (metis dsg3)
 
-lift_definition sup_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> 'a d_element" is "op +"
+lift_definition sup_d_element :: "'a d_element \<Rightarrow> 'a d_element \<Rightarrow> 'a d_element" is "(+)"
   by simp
 
 instance

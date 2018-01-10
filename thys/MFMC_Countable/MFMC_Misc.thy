@@ -34,7 +34,7 @@ by(cases x) auto
 lemma Chains_into_chain: "M \<in> Chains {(x, y). R x y} \<Longrightarrow> Complete_Partial_Order.chain R M"
 by(simp add: Chains_def chain_def)
 
-lemma chain_dual: "Complete_Partial_Order.chain op \<ge> = Complete_Partial_Order.chain op \<le>"
+lemma chain_dual: "Complete_Partial_Order.chain (\<ge>) = Complete_Partial_Order.chain (\<le>)"
 by(auto simp add: fun_eq_iff chain_def)
 
 subsection \<open>@{typ ereal} legacy theorems\<close>
@@ -100,7 +100,7 @@ next
 qed
 
 lemma complete_lattice_ccpo_dual:
-  "class.ccpo Inf op \<ge> (op > :: _ :: complete_lattice \<Rightarrow> _)"
+  "class.ccpo Inf (\<ge>) ((>) :: _ :: complete_lattice \<Rightarrow> _)"
 by(unfold_locales)(auto intro: Inf_lower Inf_greatest)
 
 lemma card_eq_1_iff: "card A = Suc 0 \<longleftrightarrow> (\<exists>x. A = {x})"
@@ -240,7 +240,7 @@ by(auto simp add: order_on_defs trans_def antisym_def)
 lemma partial_order_ge [simp]: "partial_order_on UNIV {(x :: _ :: order, x'). x' \<le> x}"
 by(auto simp add: order_on_defs trans_def antisym_def)
 
-lemma incseq_chain_range: "incseq f \<Longrightarrow> Complete_Partial_Order.chain op \<le> (range f)"
+lemma incseq_chain_range: "incseq f \<Longrightarrow> Complete_Partial_Order.chain (\<le>) (range f)"
 apply(rule chainI; clarsimp)
  using linear by (auto dest: incseqD)
 

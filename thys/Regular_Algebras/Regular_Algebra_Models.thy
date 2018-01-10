@@ -18,9 +18,9 @@ abbreviation w_length :: "'a list \<Rightarrow> nat" ( "|_|")
 definition l_ewp :: "'a lan \<Rightarrow> bool" where
   "l_ewp X \<longleftrightarrow> {[]} \<subseteq> X"
 
-interpretation lan_kozen: K2_algebra "op +" "op \<cdot>" "1 :: 'a lan" 0 "(op \<subseteq>)" "(op \<subset>)" "star" ..
+interpretation lan_kozen: K2_algebra "(+)" "(\<cdot>)" "1 :: 'a lan" 0 "(\<subseteq>)" "(\<subset>)" "star" ..
 
-interpretation lan_boffa: B1_algebra "op +" "op \<cdot>" "1 :: 'a lan" 0 "(op \<subseteq>)" "(op \<subset>)" "star" ..
+interpretation lan_boffa: B1_algebra "(+)" "(\<cdot>)" "1 :: 'a lan" 0 "(\<subseteq>)" "(\<subset>)" "star" ..
 
 lemma length_lang_pow_lb:
   assumes "\<forall>x\<in>X. |x| \<ge> k" "x \<in> X^n" 
@@ -112,7 +112,7 @@ context K1_algebra
 begin
 
 lemma power_dual_transfer [simp]: 
-  "power.power (1::'a) op \<odot> x n = x\<^bsup>n\<^esup>"
+  "power.power (1::'a) (\<odot>) x n = x\<^bsup>n\<^esup>"
   by (induct n, simp_all, metis opp_mult_def power_commutes)
 
 lemma aarden_aux_l:
@@ -198,7 +198,7 @@ proof -
     by (metis kleene_algebra_class.dual.add_zerol kleene_algebra_class.dual.add_zeror)
 qed
 
-interpretation lan_salomaa_l: Sl_algebra "op +" "op \<cdot>" "1 :: 'a lan" 0 "(op \<subseteq>)" "(op \<subset>)" "star" "l_ewp"
+interpretation lan_salomaa_l: Sl_algebra "(+)" "(\<cdot>)" "1 :: 'a lan" 0 "(\<subseteq>)" "(\<subset>)" "star" "l_ewp"
 proof
   fix x y z :: "'a lan"
   show "(1 + x)\<^sup>\<star> = x\<^sup>\<star>"
@@ -211,7 +211,7 @@ proof
     by (metis arden_l)
 qed
 
-interpretation lan_salomaa_r: Sr_algebra "op +" "op \<cdot>" "1 :: 'a lan" 0 "(op \<subseteq>)" "(op \<subset>)" "star" "l_ewp"
+interpretation lan_salomaa_r: Sr_algebra "(+)" "(\<cdot>)" "1 :: 'a lan" 0 "(\<subseteq>)" "(\<subset>)" "star" "l_ewp"
 proof
   fix x y z :: "'a lan"
   show "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"

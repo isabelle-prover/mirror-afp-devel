@@ -13,24 +13,24 @@ context includes lifting_syntax
 begin
 
 lemmas weak_All_transfer1 [transfer_rule] = iffD1 [OF right_total_alt_def2]
-lemma weak_All_transfer2 [transfer_rule]: "right_total R \<Longrightarrow> ((R ===> op =) ===> op \<longrightarrow>) All All"
+lemma weak_All_transfer2 [transfer_rule]: "right_total R \<Longrightarrow> ((R ===> (=)) ===> (\<longrightarrow>)) All All"
   by (auto 4 4 elim: right_totalE rel_funE)
 
 lemma weak_imp_transfer [transfer_rule]:
-  "(op = ===> op = ===> op \<longrightarrow>) op \<longrightarrow> op \<longrightarrow>"
+  "((=) ===> (=) ===> (\<longrightarrow>)) (\<longrightarrow>) (\<longrightarrow>)"
   by auto
 
 lemma weak_conj_transfer [transfer_rule]:
-  "(op \<longrightarrow> ===> op \<longrightarrow> ===> op \<longrightarrow>) op \<and> op \<and>"
+  "((\<longrightarrow>) ===> (\<longrightarrow>) ===> (\<longrightarrow>)) (\<and>) (\<and>)"
   by auto
 
 lemma graph_path_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges inEdges2"
-  shows "op \<longrightarrow> (graph_path \<alpha>e \<alpha>n invar inEdges) (graph_path \<alpha>e2 \<alpha>n2 invar2 inEdges2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges inEdges2"
+  shows "(\<longrightarrow>) (graph_path \<alpha>e \<alpha>n invar inEdges) (graph_path \<alpha>e2 \<alpha>n2 invar2 inEdges2)"
   unfolding graph_path_def [abs_def] graph_def valid_graph_def graph_nodes_it_def graph_pred_it_def
   graph_nodes_it_axioms_def graph_pred_it_axioms_def set_iterator_def set_iterator_genord_def 
   foldri_def
@@ -62,11 +62,11 @@ begin
 
 lemma inEdges_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
-    and [transfer_rule]: "(A ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(A ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(A ===> op =) invar invar2"
-    and [transfer_rule]: "(A ===> op =) inEdges' inEdges2"
-  shows "(A ===> op =) inEdges (graph_path_base.inEdges inEdges2)"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(A ===> (=)) invar invar2"
+    and [transfer_rule]: "(A ===> (=)) inEdges' inEdges2"
+  shows "(A ===> (=)) inEdges (graph_path_base.inEdges inEdges2)"
 proof -
   interpret gp2: graph_path_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 .
   show ?thesis
@@ -76,11 +76,11 @@ qed
 
 lemma predecessors_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
-    and [transfer_rule]: "(A ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(A ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(A ===> op =) invar invar2"
-    and [transfer_rule]: "(A ===> op =) inEdges' inEdges2"
-  shows "(A ===> op =) predecessors (graph_path_base.predecessors inEdges2)"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(A ===> (=)) invar invar2"
+    and [transfer_rule]: "(A ===> (=)) inEdges' inEdges2"
+  shows "(A ===> (=)) predecessors (graph_path_base.predecessors inEdges2)"
 proof -
   interpret gp2: graph_path_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 .
   show ?thesis
@@ -90,11 +90,11 @@ qed
 
 lemma successors_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
-    and [transfer_rule]: "(A ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(A ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(A ===> op =) invar invar2"
-    and [transfer_rule]: "(A ===> op =) inEdges' inEdges2"
-  shows "(A ===> op =) successors (graph_path_base.successors \<alpha>n2 inEdges2)"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(A ===> (=)) invar invar2"
+    and [transfer_rule]: "(A ===> (=)) inEdges' inEdges2"
+  shows "(A ===> (=)) successors (graph_path_base.successors \<alpha>n2 inEdges2)"
 proof -
   interpret gp2: graph_path_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 .
   show ?thesis
@@ -104,11 +104,11 @@ qed
 
 lemma path_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
-    and [transfer_rule]: "(A ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(A ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(A ===> op =) invar invar2"
-    and [transfer_rule]: "(A ===> op =) inEdges' inEdges2"
-  shows "(A ===> op =) path (graph_path_base.path \<alpha>n2 invar2 inEdges2)"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(A ===> (=)) invar invar2"
+    and [transfer_rule]: "(A ===> (=)) inEdges' inEdges2"
+  shows "(A ===> (=)) path (graph_path_base.path \<alpha>n2 invar2 inEdges2)"
 proof -
   interpret gp2: graph_path_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 .
   show ?thesis
@@ -118,11 +118,11 @@ qed
 
 lemma path2_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
-    and [transfer_rule]: "(A ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(A ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(A ===> op =) invar invar2"
-    and [transfer_rule]: "(A ===> op =) inEdges' inEdges2"
-  shows "(A ===> op =) path2 (graph_path_base.path2 \<alpha>n2 invar2 inEdges2)"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(A ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(A ===> (=)) invar invar2"
+    and [transfer_rule]: "(A ===> (=)) inEdges' inEdges2"
+  shows "(A ===> (=)) path2 (graph_path_base.path2 \<alpha>n2 invar2 inEdges2)"
 proof -
   interpret gp2: graph_path_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 .
   show ?thesis
@@ -130,7 +130,7 @@ proof -
   by transfer_prover
 qed
 
-lemma weak_Ex_transfer [transfer_rule]: "((op = ===> op \<longrightarrow>) ===> op \<longrightarrow>) Ex Ex"
+lemma weak_Ex_transfer [transfer_rule]: "(((=) ===> (\<longrightarrow>)) ===> (\<longrightarrow>)) Ex Ex"
   by (auto elim: rel_funE)
 
 lemmas transfer_rules = inEdges_transfer predecessors_transfer successors_transfer path_transfer path2_transfer
@@ -142,12 +142,12 @@ end
 lemma graph_Entry_transfer [transfer_rule]:
   includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar1 invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges1 inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry1 Entry2"
-  shows "op \<longrightarrow> (graph_Entry \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1) (graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e1 \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n1 \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar1 invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges1 inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry1 Entry2"
+  shows "(\<longrightarrow>) (graph_Entry \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1) (graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   {
     assume a: "graph_path \<alpha>e1 \<alpha>n1 invar1 inEdges1 \<and> graph_Entry_axioms \<alpha>n1 invar1 inEdges1 Entry1"
@@ -165,12 +165,12 @@ context graph_Entry_base begin
 lemma dominates_transfer [transfer_rule]:
   includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-  shows "(G ===> op =) dominates (graph_Entry_base.dominates \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+  shows "(G ===> (=)) dominates (graph_Entry_base.dominates \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   interpret gE2: graph_Entry_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 .
   show ?thesis
@@ -187,12 +187,12 @@ begin
 
 lemma shortestPath_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-  shows "(G ===> op =) shortestPath (graph_Entry.shortestPath \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+  shows "(G ===> (=)) shortestPath (graph_Entry.shortestPath \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   interpret gE2: graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2
     by transfer' unfold_locales
@@ -203,12 +203,12 @@ qed
 
 lemma dominators_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-  shows "(G ===> op =) dominators (graph_Entry.dominators \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+  shows "(G ===> (=)) dominators (graph_Entry.dominators \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   interpret gE2: graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2
     by transfer' unfold_locales
@@ -219,12 +219,12 @@ qed
 
 lemma isIdom_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-  shows "(G ===> op =) isIdom (graph_Entry.isIdom \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+  shows "(G ===> (=)) isIdom (graph_Entry.isIdom \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   interpret gE2: graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2
     by transfer' unfold_locales
@@ -235,12 +235,12 @@ qed
 
 lemma idom_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-  shows "(G ===> op =) idom (graph_Entry.idom \<alpha>n2 invar2 inEdges2 Entry2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+  shows "(G ===> (=)) idom (graph_Entry.idom \<alpha>n2 invar2 inEdges2 Entry2)"
 proof -
   interpret gE2: graph_Entry \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2
     by transfer' unfold_locales
@@ -262,13 +262,13 @@ end
 lemma CFG_transfer [transfer_rule]:
   includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar1 invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges1 inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry1 Entry2"
-    and [transfer_rule]: "(G ===> op =) defs1 defs2"
-    and [transfer_rule]: "(G ===> op =) uses1 uses2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e1 \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n1 \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar1 invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges1 inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry1 Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs1 defs2"
+    and [transfer_rule]: "(G ===> (=)) uses1 uses2"
   shows "SSA_CFG.CFG \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1 defs1 uses1
     \<longrightarrow> SSA_CFG.CFG \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2"
   unfolding SSA_CFG.CFG_def [abs_def] CFG_axioms_def [abs_def]
@@ -281,14 +281,14 @@ begin
 
 lemma vars_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) vars (CFG_base.vars \<alpha>n2 uses2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) vars (CFG_base.vars \<alpha>n2 uses2)"
 proof -
   interpret CFG_base2: CFG_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 .
   show ?thesis
@@ -298,14 +298,14 @@ qed
 
 lemma defAss'_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) defAss' (CFG_base.defAss' \<alpha>n2 invar2 inEdges2 Entry2 defs2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) defAss' (CFG_base.defAss' \<alpha>n2 invar2 inEdges2 Entry2 defs2)"
 proof -
   interpret CFG2: CFG_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 .
   show ?thesis
@@ -315,14 +315,14 @@ qed
 
 lemma defAss'Uses_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) defAss'Uses (CFG_base.defAss'Uses \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) defAss'Uses (CFG_base.defAss'Uses \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2)"
 proof -
   interpret CFG2: CFG_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 .
   show ?thesis
@@ -346,26 +346,26 @@ begin
 
 lemma CFG_Construct_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar1 invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges1 inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry1 Entry2"
-    and [transfer_rule]: "(G ===> op =) defs1 defs2"
-    and [transfer_rule]: "(G ===> op =) uses1 uses2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e1 \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n1 \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar1 invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges1 inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry1 Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs1 defs2"
+    and [transfer_rule]: "(G ===> (=)) uses1 uses2"
   shows "CFG_Construct \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1 defs1 uses1
     \<longrightarrow> CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2"
   unfolding CFG_Construct_def [abs_def] by transfer_prover
 
 lemma CFG_Construct_linorder_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar1 invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges1 inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry1 Entry2"
-    and [transfer_rule]: "(G ===> op =) defs1 defs2"
-    and [transfer_rule]: "(G ===> op =) uses1 uses2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e1 \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n1 \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar1 invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges1 inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry1 Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs1 defs2"
+    and [transfer_rule]: "(G ===> (=)) uses1 uses2"
   shows "CFG_Construct_linorder \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1 defs1 uses1
     \<longrightarrow> CFG_Construct_linorder \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2"
 proof -
@@ -389,14 +389,14 @@ begin
 
 lemma phiDefNodes_aux_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) phiDefNodes_aux (CFG_Construct.phiDefNodes_aux inEdges2 defs2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) phiDefNodes_aux (CFG_Construct.phiDefNodes_aux inEdges2 defs2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -410,21 +410,21 @@ proof -
     apply (subst i.phiDefNodes_aux.simps)
     apply (subgoal_tac "i.predecessors g2 n = predecessors g n")
      prefer 2 apply (clarsimp simp: i.predecessors_def predecessors_def i.inEdges_def inEdges_def)
-    by (simp cong: if_cong arg_cong2 [where f="fold op \<union>"] map_cong)
+    by (simp cong: if_cong arg_cong2 [where f="fold (\<union>)"] map_cong)
   }
   thus ?thesis by blast
 qed
 
 lemma phiDefNodes_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) phiDefNodes (CFG_Construct.phiDefNodes \<alpha>n2 inEdges2 defs2 uses2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) phiDefNodes (CFG_Construct.phiDefNodes \<alpha>n2 inEdges2 defs2 uses2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -435,14 +435,14 @@ qed
 
 lemma lookupDef_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) lookupDef (CFG_Construct.lookupDef \<alpha>n2 inEdges2 defs2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) lookupDef (CFG_Construct.lookupDef \<alpha>n2 inEdges2 defs2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -463,14 +463,14 @@ qed
 
 lemma defs'_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) defs' (CFG_Construct.defs' defs2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) defs' (CFG_Construct.defs' defs2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -481,14 +481,14 @@ qed
 
 lemma uses'_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) uses' (CFG_Construct.uses' \<alpha>n2 inEdges2 defs2 uses2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) uses' (CFG_Construct.uses' \<alpha>n2 inEdges2 defs2 uses2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -499,14 +499,14 @@ qed
 
 lemma phis'_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-  shows "(G ===> op =) phis' (CFG_Construct.phis' \<alpha>n2 inEdges2 defs2 uses2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+  shows "(G ===> (=)) phis' (CFG_Construct.phis' \<alpha>n2 inEdges2 defs2 uses2)"
 proof -
   interpret i: CFG_Construct \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2
     by transfer' unfold_locales
@@ -533,15 +533,15 @@ begin
 
 lemma phiDefs_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) phiDefs (CFG_SSA_base.phiDefs phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) phiDefs (CFG_SSA_base.phiDefs phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -551,15 +551,15 @@ qed
 
 lemma allDefs_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs (defs2::'a \<Rightarrow> 'node \<Rightarrow> 'val set)"
-    and [transfer_rule]: "(G ===> op =) uses (uses2::'a \<Rightarrow> 'node \<Rightarrow> 'val set)"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) allDefs (CFG_SSA_base.allDefs defs2 phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs (defs2::'a \<Rightarrow> 'node \<Rightarrow> 'val set)"
+    and [transfer_rule]: "(G ===> (=)) uses (uses2::'a \<Rightarrow> 'node \<Rightarrow> 'val set)"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) allDefs (CFG_SSA_base.allDefs defs2 phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -569,15 +569,15 @@ qed
 
 lemma phiUses_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) phiUses (CFG_SSA_base.phiUses \<alpha>n2 inEdges2 phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) phiUses (CFG_SSA_base.phiUses \<alpha>n2 inEdges2 phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -587,15 +587,15 @@ qed
 
 lemma allUses_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) allUses (CFG_SSA_base.allUses \<alpha>n2 inEdges2 uses2 phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) allUses (CFG_SSA_base.allUses \<alpha>n2 inEdges2 uses2 phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -605,15 +605,15 @@ qed
 
 lemma allVars_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) allVars (CFG_SSA_base.allVars \<alpha>n2 inEdges2 defs2 uses2 phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) allVars (CFG_SSA_base.allVars \<alpha>n2 inEdges2 defs2 uses2 phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -623,15 +623,15 @@ qed
 
 lemma defAss_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) defAss (CFG_SSA_base.defAss \<alpha>n2 invar2 inEdges2 Entry2 defs2 phis2)"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) defAss (CFG_SSA_base.defAss \<alpha>n2 invar2 inEdges2 Entry2 defs2 phis2)"
 proof -
   interpret i: CFG_SSA_base \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2 .
   show ?thesis
@@ -655,19 +655,19 @@ context CFG_SSA_base_code begin
 lemma CFG_SSA_base_code_transfer_rules [transfer_rule]:
   includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges' inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry Entry2"
-    and [transfer_rule]: "(G ===> op =) defs defs2"
-    and [transfer_rule]: "(G ===> op =) uses uses2"
-    and [transfer_rule]: "(G ===> op =) phis phis2"
-  shows "(G ===> op =) phiDefs (CFG_SSA_base.phiDefs (\<lambda>g. Mapping.lookup (phis2 g)))"
-        "(G ===> op =) allDefs (CFG_SSA_base.allDefs defs2 (\<lambda>g. Mapping.lookup (phis2 g)))"
-        "(G ===> op =) phiUses (CFG_SSA_base.phiUses \<alpha>n2 inEdges2 (\<lambda>g. Mapping.lookup (phis2 g)))"
-        "(G ===> op =) allUses (CFG_SSA_base.allUses \<alpha>n2 inEdges2 (usesOf \<circ> uses2) (\<lambda>g. Mapping.lookup (phis2 g)))"
-        "(G ===> op =) defAss (CFG_SSA_base.defAss \<alpha>n2 invar2 inEdges2 Entry2 defs2 (\<lambda>g. Mapping.lookup (phis2 g)))"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges' inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs defs2"
+    and [transfer_rule]: "(G ===> (=)) uses uses2"
+    and [transfer_rule]: "(G ===> (=)) phis phis2"
+  shows "(G ===> (=)) phiDefs (CFG_SSA_base.phiDefs (\<lambda>g. Mapping.lookup (phis2 g)))"
+        "(G ===> (=)) allDefs (CFG_SSA_base.allDefs defs2 (\<lambda>g. Mapping.lookup (phis2 g)))"
+        "(G ===> (=)) phiUses (CFG_SSA_base.phiUses \<alpha>n2 inEdges2 (\<lambda>g. Mapping.lookup (phis2 g)))"
+        "(G ===> (=)) allUses (CFG_SSA_base.allUses \<alpha>n2 inEdges2 (usesOf \<circ> uses2) (\<lambda>g. Mapping.lookup (phis2 g)))"
+        "(G ===> (=)) defAss (CFG_SSA_base.defAss \<alpha>n2 invar2 inEdges2 Entry2 defs2 (\<lambda>g. Mapping.lookup (phis2 g)))"
 apply (simp add: CFG_SSA_base.CFG_SSA_defs[abs_def], transfer_prover)
    apply (simp add: CFG_SSA_base.CFG_SSA_defs[abs_def], transfer_prover)
   apply (simp add: CFG_SSA_base.CFG_SSA_defs[abs_def], transfer_prover)
@@ -680,14 +680,14 @@ end
 lemma CFG_SSA_transfer [transfer_rule]:
   includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
-    and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
-    and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
-    and [transfer_rule]: "(G ===> op =) invar1 invar2"
-    and [transfer_rule]: "(G ===> op =) inEdges1 inEdges2"
-    and [transfer_rule]: "(G ===> op =) Entry1 Entry2"
-    and [transfer_rule]: "(G ===> op =) defs1 defs2"
-    and [transfer_rule]: "(G ===> op =) uses1 uses2"
-    and [transfer_rule]: "(G ===> op =) phis1 phis2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>e1 \<alpha>e2"
+    and [transfer_rule]: "(G ===> (=)) \<alpha>n1 \<alpha>n2"
+    and [transfer_rule]: "(G ===> (=)) invar1 invar2"
+    and [transfer_rule]: "(G ===> (=)) inEdges1 inEdges2"
+    and [transfer_rule]: "(G ===> (=)) Entry1 Entry2"
+    and [transfer_rule]: "(G ===> (=)) defs1 defs2"
+    and [transfer_rule]: "(G ===> (=)) uses1 uses2"
+    and [transfer_rule]: "(G ===> (=)) phis1 phis2"
   shows "CFG_SSA  \<alpha>e1 \<alpha>n1 invar1 inEdges1 Entry1 defs1 uses1 phis1
     \<longrightarrow> CFG_SSA  \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2 phis2"
 proof -

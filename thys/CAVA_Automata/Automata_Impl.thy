@@ -952,8 +952,8 @@ lemma prod_impl_aux_alt:
 
 schematic_goal prod_impl_aux:
   fixes Re
-  (*assumes [autoref_rules]: "(eqq,op =) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
-  assumes [autoref_rules]: "(eqs,op =) \<in> Rs \<rightarrow> Rs \<rightarrow> bool_rel"*)
+  (*assumes [autoref_rules]: "(eqq,(=)) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eqs,(=)) \<in> Rs \<rightarrow> Rs \<rightarrow> bool_rel"*)
   assumes [autoref_rules]: "(Gi,G) \<in> igba_impl_rel_ext Re Rq Rl"
   assumes [autoref_rules]: "(Si,S) \<in> sa_impl_rel_ext Re2 Rs Rl"
   shows "(?c, prod) \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs)"

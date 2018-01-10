@@ -1283,7 +1283,7 @@ lemma map_key_single [simp]:
 
 end
 
-lemma mult_map_scale_conv_mult: "map (op * s) p = single 0 s * p"
+lemma mult_map_scale_conv_mult: "map (( * ) s) p = single 0 s * p"
 proof(transfer fixing: s)
   fix p :: "'a \<Rightarrow> 'b"
   assume *: "finite {x. p x \<noteq> 0}"
@@ -1308,7 +1308,7 @@ subsection \<open>Canonical dense representation of @{typ "nat \<Rightarrow>\<^s
 
 abbreviation no_trailing_zeros :: "'a :: zero list \<Rightarrow> bool"
 where
-  "no_trailing_zeros \<equiv> no_trailing (op = 0)"
+  "no_trailing_zeros \<equiv> no_trailing ((=) 0)"
 
 lift_definition "nth" :: "'a list \<Rightarrow> (nat \<Rightarrow>\<^sub>0 'a::zero)"
   is "nth_default 0"
@@ -1340,7 +1340,7 @@ proof (transfer, rule ext)
 qed
 
 lemma nth_strip_while [simp]:
-  "nth (strip_while (op = 0) xs) = nth xs"
+  "nth (strip_while ((=) 0) xs) = nth xs"
   by transfer (fact nth_default_strip_while_dflt)
 
 lemma nth_strip_while' [simp]:

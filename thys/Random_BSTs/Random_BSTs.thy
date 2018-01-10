@@ -430,7 +430,7 @@ theorem height_expectation_bound:
   shows   "measure_pmf.expectation (random_bst A) height
              \<le> height_exp_approx (card A)"
 proof -
-  have "convex_on UNIV (op powr 2)"
+  have "convex_on UNIV ((powr) 2)"
     by (intro convex_on_realI[where f' = "\<lambda>x. ln 2 * 2 powr x"])
        (auto intro!: derivative_eq_intros DERIV_powr simp: powr_def [abs_def])
   hence "2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t - 1)) \<le>

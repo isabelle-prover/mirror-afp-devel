@@ -1187,7 +1187,7 @@ lemma finite_deriv: "finite (deriv s) = (\<exists>m. f [s] m = [])"
    prefer 2 apply force
   apply(erule_tac t="UNIV::nat set" in ssubst) 
   apply(simp)
-  apply(subgoal_tac "(UN x:Collect (op \<le> m). Pair x ` set (f [s] x)) =  (UN x:Collect (op \<le> m). {})") apply(simp only:) apply(force)
+  apply(subgoal_tac "(UN x:Collect ((\<le>) m). Pair x ` set (f [s] x)) =  (UN x:Collect ((\<le>) m). {})") apply(simp only:) apply(force)
   apply(rule SUP_cong) apply(force) apply(drule_tac x="x-m" in spec) apply(force)
   done
 

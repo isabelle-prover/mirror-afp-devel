@@ -1106,7 +1106,7 @@ lemma Un_set_drop_impl_correct:
 
 schematic_goal Un_set_drop_code_aux: 
   assumes [autoref_rules]: "(es_impl,{})\<in>\<langle>R\<rangle>Rs"
-  assumes [autoref_rules]: "(un_impl,op \<union>)\<in>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs"
+  assumes [autoref_rules]: "(un_impl,(\<union>))\<in>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs"
   shows "(?c,Un_set_drop_impl)\<in>nat_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>as_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>nres_rel"
   unfolding Un_set_drop_impl_def[abs_def]
   apply (autoref (trace, keep_goal))
@@ -1122,7 +1122,7 @@ concrete_definition Un_set_drop_tr for es_impl un_impl i A
 
 lemma Un_set_drop_autoref[autoref_rules]: 
   assumes "GEN_OP es_impl {} (\<langle>R\<rangle>Rs)"
-  assumes "GEN_OP un_impl op \<union> (\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs)"
+  assumes "GEN_OP un_impl (\<union>) (\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs)"
   shows "(\<lambda>i A. RETURN (Un_set_drop_tr es_impl un_impl i A),Un_set_drop_impl)
     \<in>nat_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>as_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>nres_rel"
   apply (intro fun_relI nres_relI)
@@ -1890,9 +1890,9 @@ context igb_fr_graph begin
       }) (va,[],acc va);
 
     p_close_r \<leftarrow> (if p=[] then 
-        find_path1 E vd (op = va)
+        find_path1 E vd ((=) va)
       else
-        find_path E {vd} (op = va));
+        find_path E {vd} ((=) va));
 
     ASSERT (p_close_r \<noteq> None);
     let (p_close,_) = the p_close_r;

@@ -80,7 +80,7 @@ begin
     the monadify theorem determines an execution order: The list-argument is evaluated first.
     \<close>
   lemma mmap_arity[sepref_monadify_arity]: "mmap \<equiv> \<lambda>\<^sub>2f l. SP mmap$(\<lambda>\<^sub>2x. f$x)$l" by simp
-  lemma mmap_mcomb[sepref_monadify_comb]: "mmap$f$x \<equiv> op\<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP mmap$f$x)" by simp
+  lemma mmap_mcomb[sepref_monadify_comb]: "mmap$f$x \<equiv> (\<bind>)$(EVAL$x)$(\<lambda>\<^sub>2x. SP mmap$f$x)" by simp
 
   text \<open>We can massage the refinement theorem @{thm mmap_impl.refine} a bit, to get a valid 
     combinator rule\<close>

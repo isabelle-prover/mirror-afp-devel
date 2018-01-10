@@ -52,7 +52,7 @@ hide_fact (open) rel_pmf_measureI
 lemma Sup_conv_fun_lub: "Sup = fun_lub Sup"
   by(auto simp add: Sup_fun_def fun_eq_iff fun_lub_def intro: arg_cong[where f=Sup])
 
-lemma le_conv_fun_ord: "op \<le> = fun_ord op \<le>"
+lemma le_conv_fun_ord: "(\<le>) = fun_ord (\<le>)"
   by(auto simp add: fun_eq_iff fun_ord_def le_fun_def)
 
 lemmas parallel_fixp_induct_2_1 = parallel_fixp_induct_uc[
@@ -79,24 +79,24 @@ by(rule mcontI)(simp_all add: monotone_Pair mcont_mono cont_Pair)
 
 lemma mono2mono_emeasure_spmf [THEN lfp.mono2mono]:
   shows monotone_emeasure_spmf:
-  "monotone (ord_spmf op =) op \<le> (\<lambda>p. emeasure (measure_spmf p))"
+  "monotone (ord_spmf (=)) (\<le>) (\<lambda>p. emeasure (measure_spmf p))"
   by(rule monotoneI le_funI ord_spmf_eqD_emeasure)+
 
-lemma cont_emeasure_spmf: "cont lub_spmf (ord_spmf op =) Sup op \<le> (\<lambda>p. emeasure (measure_spmf p))"
+lemma cont_emeasure_spmf: "cont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p. emeasure (measure_spmf p))"
   by(rule contI)(simp add: emeasure_lub_spmf fun_eq_iff)
 
 lemma mcont2mcont_emeasure_spmf [THEN lfp.mcont2mcont, cont_intro]:
-  shows mcont_emeasure_spmf: "mcont lub_spmf (ord_spmf op =) Sup op \<le> (\<lambda>p. emeasure (measure_spmf p))"
+  shows mcont_emeasure_spmf: "mcont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p. emeasure (measure_spmf p))"
   by(simp add: mcont_def monotone_emeasure_spmf cont_emeasure_spmf)
 
 lemma mcont2mcont_emeasure_spmf' [THEN lfp.mcont2mcont, cont_intro]:
-  shows mcont_emeasure_spmf': "mcont lub_spmf (ord_spmf op =) Sup op \<le> (\<lambda>p. emeasure (measure_spmf p) A)"
+  shows mcont_emeasure_spmf': "mcont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p. emeasure (measure_spmf p) A)"
   using mcont_emeasure_spmf[unfolded Sup_conv_fun_lub le_conv_fun_ord]
   by(subst (asm) mcont_fun_lub_apply) blast
 
 lemma mcont_bind_pmf [cont_intro]:
-  assumes g: "\<And>y. mcont luba orda lub_spmf (ord_spmf op =) (g y)"
-  shows "mcont luba orda lub_spmf (ord_spmf op =) (\<lambda>x. bind_pmf p (\<lambda>y. g y x))"
+  assumes g: "\<And>y. mcont luba orda lub_spmf (ord_spmf (=)) (g y)"
+  shows "mcont luba orda lub_spmf (ord_spmf (=)) (\<lambda>x. bind_pmf p (\<lambda>y. g y x))"
 using mcont_bind_spmf[where f="\<lambda>_. spmf_of_pmf p" and g=g, OF _ assms] by(simp)
 
 lemma ennreal_less_top_iff: "x < \<top> \<longleftrightarrow> x \<noteq> (\<top> :: ennreal)"
@@ -115,11 +115,11 @@ qed
 context includes lifting_syntax begin
 
 lemma weight_spmf_parametric [transfer_rule]:
-  "(rel_spmf A ===> op =) weight_spmf weight_spmf"
+  "(rel_spmf A ===> (=)) weight_spmf weight_spmf"
 by(simp add: rel_fun_def rel_spmf_weightD)
 
 lemma lossless_spmf_parametric [transfer_rule]:
-  "(rel_spmf A ===> op =) lossless_spmf lossless_spmf"
+  "(rel_spmf A ===> (=)) lossless_spmf lossless_spmf"
 by(simp add: rel_fun_def lossless_spmf_def rel_spmf_weightD)
 
 lemma UNIV_parametric_pred: "rel_pred R UNIV UNIV"
@@ -142,7 +142,7 @@ where [simp]: "measure_measure_spmf p = measure (measure_spmf p)"
 
 lemma measure_measure_spmf_parametric [transfer_rule]:
   includes lifting_syntax shows
-  "(rel_spmf A ===> rel_pred A ===> op =) measure_measure_spmf measure_measure_spmf"
+  "(rel_spmf A ===> rel_pred A ===> (=)) measure_measure_spmf measure_measure_spmf"
 unfolding measure_measure_spmf_def[abs_def] by(rule measure_spmf_parametric)
 
 lemma of_nat_le_one_cancel_iff [simp]:
@@ -214,7 +214,7 @@ end
 
 lemma while_spmf_parametric [transfer_rule]:
   includes lifting_syntax shows
-  "((S ===> op =) ===> (S ===> rel_spmf S) ===> S ===> rel_spmf S) loop_spmf.while loop_spmf.while"
+  "((S ===> (=)) ===> (S ===> rel_spmf S) ===> S ===> rel_spmf S) loop_spmf.while loop_spmf.while"
 unfolding loop_spmf.while_def[abs_def]
 apply(rule rel_funI)
 apply(rule rel_funI)
@@ -483,7 +483,7 @@ proof -
     have [transfer_domain_rule]: "Domainp cr = I" using type_definition_Domainp[OF td cr_def] by simp
 
     define guard' where "guard' \<equiv> (Rep ---> id) guard"
-    have [transfer_rule]: "(cr ===> op =) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
+    have [transfer_rule]: "(cr ===> (=)) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
     define body1 where "body1 \<equiv> \<lambda>s. if guard s then body s else return_pmf None"
     define body1' where "body1' \<equiv> (Rep ---> map_spmf Abs) body1"
     have [transfer_rule]: "(cr ===> rel_spmf cr) body1 body1'"
@@ -518,7 +518,7 @@ proof-
     have [transfer_domain_rule]: "Domainp cr = I" using type_definition_Domainp[OF td cr_def] by simp
 
     define guard' where "guard' \<equiv> (Rep ---> id) guard"
-    have [transfer_rule]: "(cr ===> op =) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
+    have [transfer_rule]: "(cr ===> (=)) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
     define body1 where "body1 \<equiv> \<lambda>s. if guard s then body s else return_pmf None"
     define body1' where "body1' \<equiv> (Rep ---> map_spmf Abs) body1"
     have [transfer_rule]: "(cr ===> rel_spmf cr) body1 body1'"
@@ -615,7 +615,7 @@ proof -
     have [transfer_domain_rule]: "Domainp cr = I" using type_definition_Domainp[OF td cr_def] by simp
 
     define guard' where "guard' \<equiv> (Rep ---> id) guard"
-    have [transfer_rule]: "(cr ===> op =) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
+    have [transfer_rule]: "(cr ===> (=)) guard guard'" by(simp add: rel_fun_def cr_def guard'_def)
     define body1 where "body1 \<equiv> \<lambda>s. if guard s then body s else return_pmf None"
     define body1' where "body1' \<equiv> (Rep ---> map_spmf Abs) body1"
     have [transfer_rule]: "(cr ===> rel_spmf cr) body1 body1'"
@@ -623,7 +623,7 @@ proof -
     define s' where "s' \<equiv> Abs s"
     have [transfer_rule]: "cr s s'" by(simp add: s'_def cr_def I td.Abs_inverse)
     define f' where "f' \<equiv> (Rep ---> id) f"
-    have [transfer_rule]: "(cr ===> op =) f f'" by(simp add: rel_fun_def cr_def f'_def)
+    have [transfer_rule]: "(cr ===> (=)) f f'" by(simp add: rel_fun_def cr_def f'_def)
 
     have "\<And>s. guard' s \<Longrightarrow> f' s \<le> bound" by(transfer fixing: bound)(rule bound)
     moreover have "\<And>s. guard' s \<Longrightarrow> p \<le> spmf (map_spmf (\<lambda>s'. f' s' < f' s) (body1' s)) True"

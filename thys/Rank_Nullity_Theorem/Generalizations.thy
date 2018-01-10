@@ -33,7 +33,7 @@ hide_const (open) dependent
 hide_const (open) independent
 hide_const (open) dim
 
-interpretation vec: vector_space "op *s :: 'a::field => 'a^'b => 'a^'b"
+interpretation vec: vector_space "( *s) :: 'a::field => 'a^'b => 'a^'b"
   by (unfold_locales, simp_all)
 
 (*A linear map is a mapping between the elements of two vector spaces over same field*)
@@ -128,13 +128,13 @@ qed
 
 (*This lemma doesn't appear in the file Linear_Algebra.thy, but it's useful in my case.*)
 lemma linear_iff2:
-  "linear (op *s) (op *s)  f \<longleftrightarrow> (\<forall>x y. f (x + y) = f x + f y) \<and> (\<forall>c x. f (c *s x) = c *s (f x))"
-  (is "linear (op *s) (op *s)  f \<longleftrightarrow> ?rhs")
+  "linear (( *s)) (( *s))  f \<longleftrightarrow> (\<forall>x y. f (x + y) = f x + f y) \<and> (\<forall>c x. f (c *s x) = c *s (f x))"
+  (is "linear (( *s)) (( *s))  f \<longleftrightarrow> ?rhs")
 proof
-  assume "linear  (op *s) (op *s) f" then interpret f: linear  "(op *s)" "(op *s)" f .
+  assume "linear  (( *s)) (( *s)) f" then interpret f: linear  "(( *s))" "(( *s))" f .
   show "?rhs" by (metis f.linear_add f.linear_cmul)
 next
-  assume "?rhs" then show "linear (op *s) (op *s) f" by (unfold_locales,auto)
+  assume "?rhs" then show "linear (( *s)) (( *s)) f" by (unfold_locales,auto)
 qed
 
 lemma linear_compose_sub: "linear scale scaleC f \<Longrightarrow> linear scale scaleC g \<Longrightarrow> linear scale scaleC (\<lambda>x. f x - g x)"
@@ -1288,7 +1288,7 @@ context two_vector_spaces_over_same_field
 begin
 
 lemma linear_indep_image_lemma:
-  assumes lf: "linear (op *b) (op *c) f"
+  assumes lf: "linear (( *b)) (( *c)) f"
     and fB: "finite B"
     and ifB: "C.independent (f ` B)"
     and fi: "inj_on f B"
@@ -1486,9 +1486,9 @@ sublocale two_vector_spaces?: two_vector_spaces_over_same_field by unfold_locale
 
 lemma linear_independent_extend:
   assumes iB: "B.independent B"
-  shows "\<exists>g. linear (op *b) (op *c) g \<and> (\<forall>x\<in>B. g x = f x)"
+  shows "\<exists>g. linear (( *b)) (( *c)) g \<and> (\<forall>x\<in>B. g x = f x)"
 proof -
-  have 1: "vector_space (op *b)" and 2: "vector_space (op *c)" by unfold_locales
+  have 1: "vector_space (( *b))" and 2: "vector_space (( *c))" by unfold_locales
   from B.maximal_independent_subset_extend[of B UNIV] iB
   obtain C where C: "B \<subseteq> C" "B.independent C" "\<And>x. x \<in> B.span C"
     by auto
@@ -1569,29 +1569,29 @@ context linear_between_finite_dimensional_vector_spaces
 begin
 
 lemma linear_eq_stdbasis:
-  assumes lg: "linear (op *b) (op *c) g"
+  assumes lg: "linear (( *b)) (( *c)) g"
   and fg: "\<forall>b\<in>BasisB. f b = g b"
   shows "f = g"
 proof -
-  have l: "linear (op *b) (op *c) f" by unfold_locales
+  have l: "linear (( *b)) (( *c)) f" by unfold_locales
   show ?thesis
   using B.linear_eq[OF l lg, of UNIV BasisB] fg using B.span_Basis by auto
 qed
 
 lemma linear_injective_left_inverse:
   assumes fi: "inj f"
-  shows "\<exists>g. linear (op *c) (op *b) g \<and> g o f = id"
+  shows "\<exists>g. linear (( *c)) (( *b)) g \<and> g o f = id"
 proof -
-  interpret fd: two_finite_dimensional_vector_spaces_over_same_field "(op *c)" "(op *b)" BasisC BasisB
+  interpret fd: two_finite_dimensional_vector_spaces_over_same_field "(( *c))" "(( *b))" BasisC BasisB
     by unfold_locales
- have lf: "linear op *b op *c f" by unfold_locales
+ have lf: "linear ( *b) ( *c) f" by unfold_locales
   from fd.linear_independent_extend[OF independent_injective_image, OF B.independent_Basis, OF fi]
-  obtain h:: "'c \<Rightarrow> 'b" where h: "linear (op *c) (op *b) h" "\<forall>x \<in> f ` BasisB. h x = inv f x"
+  obtain h:: "'c \<Rightarrow> 'b" where h: "linear (( *c)) (( *b)) h" "\<forall>x \<in> f ` BasisB. h x = inv f x"
     by blast
   from h(2) have th: "\<forall>i\<in>BasisB. (h \<circ> f) i = id i"
     using inv_o_cancel[OF fi, unfolded fun_eq_iff id_def o_def]
     by auto
-  interpret l_hg: linear_between_finite_dimensional_vector_spaces "op *b" "op *b" BasisB BasisB "(h \<circ> f)"
+  interpret l_hg: linear_between_finite_dimensional_vector_spaces "( *b)" "( *b)" BasisB BasisB "(h \<circ> f)"
   apply (unfold_locales) using linear_compose[OF lf h(1)] unfolding linear_iff by fast+
   show ?thesis
     using h(1)  l_hg.linear_eq_stdbasis[OF B.linear_id th] by blast
@@ -1602,15 +1602,15 @@ by unfold_locales
 
 lemma linear_surjective_right_inverse:
   assumes sf: "surj f"
-  shows "\<exists>g. linear (op *c) (op *b) g \<and> f o g = id"
+  shows "\<exists>g. linear (( *c)) (( *b)) g \<and> f o g = id"
 proof -
-  interpret lh: two_finite_dimensional_vector_spaces_over_same_field "op *c" "op *b" BasisC BasisB
+  interpret lh: two_finite_dimensional_vector_spaces_over_same_field "( *c)" "( *b)" BasisC BasisB
     by unfold_locales
-  have lf: "linear (op *b) (op *c) f" by unfold_locales
+  have lf: "linear (( *b)) (( *c)) f" by unfold_locales
   from lh.linear_independent_extend[OF independent_Basis]
-  obtain h:: "'c \<Rightarrow> 'b" where h: "linear (op *c) (op *b) h" "\<forall>x\<in>BasisC. h x = inv f x"
+  obtain h:: "'c \<Rightarrow> 'b" where h: "linear (( *c)) (( *b)) h" "\<forall>x\<in>BasisC. h x = inv f x"
     by blast
-  interpret l_fg: linear_between_finite_dimensional_vector_spaces  "op *c" "op *c" BasisC BasisC "(f \<circ> h)"
+  interpret l_fg: linear_between_finite_dimensional_vector_spaces  "( *c)" "( *c)" BasisC BasisC "(f \<circ> h)"
      using linear_compose[OF h(1) lf] by (unfold_locales, auto simp add: linear_def linear_axioms_def)
   from h(2) have th: "\<forall>i\<in>BasisC. (f o h) i = id i"
     using sf by (metis comp_apply surj_iff)
@@ -1761,11 +1761,11 @@ end
 (********************** Here ends the generalization of Linear_Algebra.thy **********************)
 
 (*Some interpretations:*)
-interpretation vec: finite_dimensional_vector_space "op *s" "(cart_basis)"
+interpretation vec: finite_dimensional_vector_space "( *s)" "(cart_basis)"
   by (unfold_locales, auto simp add: finite_cart_basis independent_cart_basis span_cart_basis)
 
 lemma matrix_vector_mul_linear_between_finite_dimensional_vector_spaces:
-  "linear_between_finite_dimensional_vector_spaces (op *s) (op *s)
+  "linear_between_finite_dimensional_vector_spaces (( *s)) (( *s))
     (cart_basis) (cart_basis) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (unfold_locales)
     (auto simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
@@ -1776,7 +1776,7 @@ interpretation euclidean_space:
 proof
   have v: "vector_space (scaleR :: real => 'a => 'a::{euclidean_space})" by (unfold_locales)
   show "finite (Basis::'a set)" by (metis finite_Basis)
-  show "vector_space.independent op *\<^sub>R (Basis::'a set)"
+  show "vector_space.independent ( *\<^sub>R) (Basis::'a set)"
     unfolding vector_space.dependent_def[OF v]
     apply (subst vector_space.span_finite[OF v])
     apply simp
@@ -1784,7 +1784,7 @@ proof
     apply (drule_tac f="inner a" in arg_cong)
     apply (simp add: inner_Basis inner_sum_right eq_commute)
     done
-  show "vector_space.span op *\<^sub>R (Basis::'a set) = UNIV"
+  show "vector_space.span ( *\<^sub>R) (Basis::'a set) = UNIV"
     unfolding vector_space.span_finite [OF v finite_Basis]
     by (fast intro: euclidean_representation)
 qed
@@ -1799,10 +1799,10 @@ lemma vector_mul_lcancel_imp: "a \<noteq> (0::'a::{field}) ==>  a *s x = a *s y 
 
 lemma linear_componentwise:
   fixes f:: "'a::field ^'m \<Rightarrow> 'a ^ 'n"
-  assumes lf: "linear (op *s) (op *s) f"
+  assumes lf: "linear (( *s)) (( *s)) f"
   shows "(f x)$j = sum (\<lambda>i. (x$i) * (f (axis i 1)$j)) (UNIV :: 'm set)" (is "?lhs = ?rhs")
 proof -
-  interpret lf: linear "(op *s)" "(op *s)" f
+  interpret lf: linear "(( *s))" "(( *s))" f
     using lf .
   let ?M = "(UNIV :: 'm set)"
   let ?N = "(UNIV :: 'n set)"
@@ -1815,35 +1815,35 @@ proof -
 qed
 
 
-lemma matrix_vector_mul_linear: "linear (op *s) (op *s) (\<lambda>x. A *v (x::'a::{field} ^ _))"
+lemma matrix_vector_mul_linear: "linear (( *s)) (( *s)) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
       field_simps sum_distrib_left sum.distrib)
 
 (*Two new interpretations*)
-interpretation vec: linear "op *s" "op *s" "(\<lambda>x. A *v (x::'a::{field} ^ _))"
+interpretation vec: linear "( *s)" "( *s)" "(\<lambda>x. A *v (x::'a::{field} ^ _))"
   using matrix_vector_mul_linear .
 
-interpretation vec: linear_between_finite_dimensional_vector_spaces "op *s" "op *s"
-  "(cart_basis)" "(cart_basis)" "(op *v A)"
+interpretation vec: linear_between_finite_dimensional_vector_spaces "( *s)" "( *s)"
+  "(cart_basis)" "(cart_basis)" "(( *v) A)"
   by unfold_locales
 
 lemma matrix_works:
-  assumes lf: "linear (op *s) (op *s) f"
+  assumes lf: "linear (( *s)) (( *s)) f"
   shows "matrix f *v x = f (x::'a::field ^ 'n)"
   apply (simp add: matrix_def matrix_vector_mult_def vec_eq_iff mult.commute)
   apply clarify
   apply (rule linear_componentwise[OF lf, symmetric])
   done
 
-lemma matrix_vector_mul: "linear (op *s) (op *s) f ==> f = (\<lambda>x. matrix f *v (x::'a::{field}^ 'n))"
+lemma matrix_vector_mul: "linear (( *s)) (( *s)) f ==> f = (\<lambda>x. matrix f *v (x::'a::{field}^ 'n))"
   by (simp add: ext matrix_works)
 
 lemma matrix_of_matrix_vector_mul: "matrix(\<lambda>x. A *v (x :: 'a::{field} ^ 'n)) = A"
   by (simp add: matrix_eq matrix_vector_mul_linear matrix_works)
 
 lemma matrix_compose:
-  assumes lf: "linear (op *s) (op *s) (f::'a::{field}^'n \<Rightarrow> 'a^'m)"
-    and lg: "linear (op *s) (op *s) (g::'a^'m \<Rightarrow> 'a^_)"
+  assumes lf: "linear (( *s)) (( *s)) (f::'a::{field}^'n \<Rightarrow> 'a^'m)"
+    and lg: "linear (( *s)) (( *s)) (g::'a^'m \<Rightarrow> 'a^_)"
   shows "matrix (g o f) = matrix g ** matrix f"
   using lf lg linear_compose[OF lf lg] matrix_works[OF linear_compose[OF lf lg]]
   by (simp add: matrix_eq matrix_works matrix_vector_mul_assoc[symmetric] o_def)
@@ -1858,9 +1858,9 @@ proof -
       unfolding matrix_vector_mul_assoc B matrix_vector_mul_lid . }
   moreover
   { assume A: "\<forall>x y. A *v x = A *v y \<longrightarrow> x = y"
-    hence i: "inj (op *v A)" unfolding inj_on_def by auto
+    hence i: "inj (( *v) A)" unfolding inj_on_def by auto
     from vec.linear_injective_left_inverse[OF i]
-    obtain g where g: "linear (op *s)  (op *s) g" "g o op *v A = id" by blast
+    obtain g where g: "linear (( *s))  (( *s)) g" "g o ( *v) A = id" by blast
     have "matrix g ** A = mat 1"
       unfolding matrix_eq matrix_vector_mul_lid matrix_vector_mul_assoc[symmetric] matrix_works[OF g(1)]
       using g(2) by (metis comp_apply id_apply)
@@ -1919,7 +1919,7 @@ lemma matrix_left_right_inverse:
 proof -
   { fix A A' :: "'a ^'n^'n"
     assume AA': "A ** A' = mat 1"
-    have sA: "surj (op *v A)"
+    have sA: "surj (( *v) A)"
       unfolding surj_def
       apply clarify
       apply (rule_tac x="(A' *v y)" in exI)
@@ -1927,7 +1927,7 @@ proof -
       done
     from vec.linear_surjective_isomorphism[OF matrix_vector_mul_linear sA]
     obtain f' :: "'a ^'n \<Rightarrow> 'a ^'n"
-      where f': "linear (op *s) (op *s) f'" "\<forall>x. f' (A *v x) = x" "\<forall>x. A *v f' x = x" by blast
+      where f': "linear (( *s)) (( *s)) f'" "\<forall>x. f' (A *v x) = x" "\<forall>x. A *v f' x = x" by blast
     have th: "matrix f' ** A = mat 1"
       by (simp add: matrix_eq matrix_works[OF f'(1)]
           matrix_vector_mul_assoc[symmetric] matrix_vector_mul_lid f'(2)[rule_format])
@@ -1990,7 +1990,7 @@ lemma independent_inj_on_image:
     and fi: "inj_on f (B.span S)"
   shows "C.independent (f ` S)"
 proof -
-  have l: "linear (op *b) (op *c) f"
+  have l: "linear (( *b)) (( *c)) f"
     by unfold_locales
   {
     fix a
@@ -2102,7 +2102,7 @@ have PU_decomposition: "?PU = ?S1 \<union> ?S2"
    show "Fun.swap j k id \<circ> p permutes UNIV" by (metis p permutes_compose tjk_permutes)
 qed
 have "sum ?f ?S2 = sum ((\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))
-  \<circ> op \<circ> (Fun.swap j k id)) {p \<in> {p. p permutes UNIV}. evenperm p}"
+  \<circ> (\<circ>) (Fun.swap j k id)) {p \<in> {p. p permutes UNIV}. evenperm p}"
     unfolding g_S1 by (rule sum.reindex[OF inj_g])
 also have "... = sum (\<lambda>p. of_int (sign (?t_jk \<circ> p)) * (\<Prod>i\<in>UNIV. A $ i $ p i)) ?S1"
   unfolding o_def by (rule sum.cong, auto simp add: tjk_eq)
@@ -2423,7 +2423,7 @@ proof -
       unfolding matrix_right_invertible_independent_rows
       by blast
     have *: "\<And>(a::'a^'n) b. a + b = 0 \<Longrightarrow> -a = b"
-      apply (drule_tac f="op + (- a)" in cong[OF refl])
+      apply (drule_tac f="(+) (- a)" in cong[OF refl])
       apply (simp only: ab_left_minus add.assoc[symmetric])
       apply simp
       done
@@ -2491,40 +2491,40 @@ proof -
   finally show ?thesis .
 qed
 
-interpretation vector_space_over_itself: vector_space "op * :: 'a::field => 'a => 'a"
+interpretation vector_space_over_itself: vector_space "( * ) :: 'a::field => 'a => 'a"
   by unfold_locales (simp_all add: algebra_simps)
 
 interpretation vector_space_over_itself: finite_dimensional_vector_space
-  "op * :: 'a::field => 'a => 'a" "{1}"
+  "( * ) :: 'a::field => 'a => 'a" "{1}"
 proof (unfold_locales, auto)
- (* interpret v: vector_space "op * :: 'a::field => 'a => 'a" by unfold_locales*)
-  have v: "vector_space (op * :: 'a::field => 'a => 'a)" by unfold_locales
+ (* interpret v: vector_space "( * ) :: 'a::field => 'a => 'a" by unfold_locales*)
+  have v: "vector_space (( * ) :: 'a::field => 'a => 'a)" by unfold_locales
   fix x::'a
-  show "x \<in> vector_space.span (op *) {1::'a}" unfolding vector_space.span_singleton[OF v] by auto
+  show "x \<in> vector_space.span (( * )) {1::'a}" unfolding vector_space.span_singleton[OF v] by auto
 qed
 
 lemma dimension_eq_1[code_unfold]: "vector_space_over_itself.dimension TYPE('a::field)= 1"
   unfolding vector_space_over_itself.dimension_def by simp
 
-interpretation complex_over_reals: finite_dimensional_vector_space "(op *\<^sub>R)::real=>complex=>complex"
+interpretation complex_over_reals: finite_dimensional_vector_space "(( *\<^sub>R))::real=>complex=>complex"
   "{1, \<i>}"
 proof unfold_locales
 show "finite {1, \<i>}" by auto
-show "vector_space.independent (op *\<^sub>R) {1, \<i>}"
+show "vector_space.independent (( *\<^sub>R)) {1, \<i>}"
   by (metis Basis_complex_def euclidean_space.independent_Basis)
-show "vector_space.span (op *\<^sub>R) {1, \<i>} = UNIV"
+show "vector_space.span (( *\<^sub>R)) {1, \<i>} = UNIV"
   by (metis Basis_complex_def euclidean_space.span_Basis)
 qed
 
 lemma complex_over_reals_dimension[code_unfold]:
   "complex_over_reals.dimension = 2" unfolding complex_over_reals.dimension_def by auto
 
-term "op *s"
-term "op *\<^sub>R"
+term "( *s)"
+term "( *\<^sub>R)"
 
 (* The following definition will be very useful in our formalization. The problem was that
-  (op *\<^sub>R) has type real=>'a=>'a but (op *s) has type 'a \<Rightarrow> ('a, 'b) vec \<Rightarrow> ('a, 'b) vec,
-  so we can't use (op *s) to multiply a matrix by a scalar.*)
+  (( *\<^sub>R)) has type real=>'a=>'a but (( *s)) has type 'a \<Rightarrow> ('a, 'b) vec \<Rightarrow> ('a, 'b) vec,
+  so we can't use (( *s)) to multiply a matrix by a scalar.*)
 (*
   definition matrix_scalar_mult :: "'a => ('a::semiring_1) ^'n^'m => ('a::semiring_1) ^'n^'m"
     (infixl "*k" 70)

@@ -18,7 +18,7 @@ class relation_algebra_rtc = relation_algebra + star_op +
     and rtc_inductl: "z + x ; y \<le> y \<longrightarrow> x\<^sup>\<star> ; z \<le> y"
     and rtc_inductr: "z + y ; x \<le> y \<longrightarrow> z ; x\<^sup>\<star> \<le> y"
 
-sublocale relation_algebra_rtc \<subseteq> kleene_algebra "op +" "op ;" "1'" 0 "op \<le>" "op <" star
+sublocale relation_algebra_rtc \<subseteq> kleene_algebra "(+)" "(;)" "1'" 0 "(\<le>)" "(<)" star
 apply (unfold_locales)
   apply (rule rtc_unfoldl)
  apply (simp add: local.rtc_inductl)

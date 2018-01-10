@@ -13,13 +13,13 @@ begin
     (* TODO: This is the easy variant: Operations cannot depend on additional heap. *)
     assumes [sepref_fr_rules]: "(uncurry0 a\<^sub>0i, uncurry0 (RETURN (PR_CONST a\<^sub>0))) \<in> unit_assn\<^sup>k \<rightarrow>\<^sub>a A"
     assumes [sepref_fr_rules]: "(Fi,RETURN o PR_CONST F) \<in> A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
-    assumes [sepref_fr_rules]: "(uncurry Lei,uncurry (RETURN oo PR_CONST op \<preceq>)) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
+    assumes [sepref_fr_rules]: "(uncurry Lei,uncurry (RETURN oo PR_CONST (\<preceq>))) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
     assumes [sepref_fr_rules]: "(succsi,RETURN o PR_CONST succs) \<in> A\<^sup>k \<rightarrow>\<^sub>a list_assn A"
   begin
-    sepref_register "PR_CONST a\<^sub>0" "PR_CONST F" "PR_CONST op \<preceq>" "PR_CONST succs"
+    sepref_register "PR_CONST a\<^sub>0" "PR_CONST F" "PR_CONST (\<preceq>)" "PR_CONST succs"
 
     lemma [def_pat_rules]:
-      "a\<^sub>0 \<equiv> UNPROTECT a\<^sub>0" "F \<equiv> UNPROTECT F" "op \<preceq> \<equiv> UNPROTECT op \<preceq>" "succs \<equiv> UNPROTECT succs"
+      "a\<^sub>0 \<equiv> UNPROTECT a\<^sub>0" "F \<equiv> UNPROTECT F" "(\<preceq>) \<equiv> UNPROTECT (\<preceq>)" "succs \<equiv> UNPROTECT succs"
       by simp_all
     
     lemma take_from_mset_as_mop_mset_pick: "take_from_mset = mop_mset_pick"
@@ -45,7 +45,7 @@ begin
   thm worklist_algo2_def
 
   context Worklist2 begin
-    lemma Worklist2_this: "Worklist2 E a\<^sub>0 F op\<preceq> succs A succsi a\<^sub>0i Fi Lei" 
+    lemma Worklist2_this: "Worklist2 E a\<^sub>0 F (\<preceq>) succs A succsi a\<^sub>0i Fi Lei" 
       by unfold_locales
 
     lemma hnr_F_reachable: "(uncurry0 (worklist_algo2 Lei a\<^sub>0i Fi succsi), uncurry0 (RETURN F_reachable)) 
@@ -65,12 +65,12 @@ begin
     lemma hnr_op_F_reachable:
       assumes "GEN_ALGO a\<^sub>0i (\<lambda>a\<^sub>0i. (uncurry0 a\<^sub>0i, uncurry0 (RETURN a\<^sub>0)) \<in> unit_assn\<^sup>k \<rightarrow>\<^sub>a A)"
       assumes "GEN_ALGO Fi (\<lambda>Fi. (Fi,RETURN o F) \<in> A\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
-      assumes "GEN_ALGO Lei (\<lambda>Lei. (uncurry Lei,uncurry (RETURN oo op \<preceq>)) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
+      assumes "GEN_ALGO Lei (\<lambda>Lei. (uncurry Lei,uncurry (RETURN oo (\<preceq>))) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn)"
       assumes "GEN_ALGO succsi (\<lambda>succsi. (succsi,RETURN o succs) \<in> A\<^sup>k \<rightarrow>\<^sub>a list_assn A)"
       shows "(uncurry0 (worklist_algo2 Lei a\<^sub>0i Fi succsi), uncurry0 (RETURN (PR_CONST op_F_reachable))) 
         \<in> unit_assn\<^sup>k \<rightarrow>\<^sub>a bool_assn"
     proof -
-      from assms interpret Worklist2 E a\<^sub>0 F "op\<preceq>" succs A succsi a\<^sub>0i Fi Lei 
+      from assms interpret Worklist2 E a\<^sub>0 F "(\<preceq>)" succs A succsi a\<^sub>0i Fi Lei 
         by (unfold_locales; simp add: GEN_ALGO_def)
     
       from hnr_F_reachable show ?thesis by simp    

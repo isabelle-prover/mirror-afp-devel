@@ -197,7 +197,7 @@ next
   hence "x = (H #> h) #> s" by (metis h s coset_mult_assoc mem_carrier subgroup.mem_carrier subgrpS subset)
   also have "... = H #> s" by (metis h is_group rcos_const)
   finally have "x = H #> s".
-  with s show "x \<in> op #> H ` S" by simp
+  with s show "x \<in> (#>) H ` S" by simp
 qed
 
 text {* Finally we can prove the actual isomorphism theorem: *}

@@ -24,7 +24,7 @@ definition "monitor_finfun_to_list (ls :: addr \<Rightarrow>f nat) = (SOME xs. s
 instance
 proof
   fix ls :: "addr \<Rightarrow>f nat"
-  show "set (monitor_finfun_to_list ls) = Collect (op $ (finfun_dom ls))"
+  show "set (monitor_finfun_to_list ls) = Collect (($) (finfun_dom ls))"
     unfolding monitor_finfun_to_list_addr_def
     using finite_list[OF finite_finfun_dom, where ?f.1 = "ls"]
     by(rule someI_ex)

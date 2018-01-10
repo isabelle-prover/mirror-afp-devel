@@ -517,7 +517,7 @@ next
   fix xs a b xsa x
   assume "node_deliver_messages xsa = xs @ [(a, b)]"
     and "xsa prefix of x"
-  thus "\<exists>xsa. Ex (op prefix of xsa) \<and> node_deliver_messages xsa = xs"
+  thus "\<exists>xsa. (EX x. xsa prefix of x) \<and> node_deliver_messages xsa = xs"
     using drop_last_message by blast
 qed
 

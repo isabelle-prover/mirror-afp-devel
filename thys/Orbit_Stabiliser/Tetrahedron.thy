@@ -626,7 +626,7 @@ the identity function
 *}
 
 definition tetrahedral_group :: "Rotation monoid" where
-  "tetrahedral_group = \<lparr>carrier = complex_rotations, mult = op \<circ>, one = id\<rparr>"
+  "tetrahedral_group = \<lparr>carrier = complex_rotations, mult = (\<circ>), one = id\<rparr>"
 
 text {*
 We now prove that this indeed forms a group. Most of the subgoals are trivial, the last goal uses

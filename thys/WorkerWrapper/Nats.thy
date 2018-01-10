@@ -314,15 +314,15 @@ lemma bpred_eval[simp]: "bpred p\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = (if p
 
 abbreviation
   beq_syn :: "'a::countable discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "=\<^sub>B" 50) where
-  "x =\<^sub>B y \<equiv> bpred (op =)\<cdot>x\<cdot>y"
+  "x =\<^sub>B y \<equiv> bpred (=)\<cdot>x\<cdot>y"
 
 abbreviation
   ble_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "\<le>\<^sub>B" 50) where
-  "x \<le>\<^sub>B y \<equiv> bpred (op \<le>)\<cdot>x\<cdot>y"
+  "x \<le>\<^sub>B y \<equiv> bpred (\<le>)\<cdot>x\<cdot>y"
 
 abbreviation
   blt_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "<\<^sub>B" 50) where
-  "x <\<^sub>B y \<equiv> bpred (op <)\<cdot>x\<cdot>y"
+  "x <\<^sub>B y \<equiv> bpred (<)\<cdot>x\<cdot>y"
 
 subsection{* The flat domain of natural numbers *}
 

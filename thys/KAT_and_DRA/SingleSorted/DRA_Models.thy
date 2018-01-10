@@ -18,7 +18,7 @@ text {*
 
 no_notation 
   plus (infixl "+" 65) and 
-  less_eq  ("(_/ \<le> _)"  [51, 51] 50)
+  less_eq  (infix "\<le>" 50)
 
 notation comp (infixl "\<cdot>" 55)
 
@@ -45,7 +45,7 @@ definition fun_strict_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool
   "f <. g \<equiv> f \<le> g \<and> f \<noteq> g"
 
 definition N :: "'a bfun \<Rightarrow> 'a bfun" where
-  "N f \<equiv> (adjoint f o bot) \<sqinter> id"
+  "N f \<equiv> ((adjoint f o bot) \<sqinter> id)"
 
 lemma top_max: "f \<le> top"
   by (auto simp: top_def fun_order_def)
@@ -109,7 +109,7 @@ instantiation bool_op :: (type) dioid_one_zerol
 begin
   lift_definition less_eq_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is fun_order .
 
-  lift_definition less_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is "op <." .
+  lift_definition less_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is "(<.)" .
 
   lift_definition zero_bool_op :: "'a bool_op" is "bot"
     by (auto simp: bot_def fun_union_def fun_order_def mono_def)
@@ -117,10 +117,10 @@ begin
   lift_definition one_bool_op :: "'a bool_op" is "id"
     by (auto simp: fun_union_def fun_order_def mono_def)
 
-  lift_definition times_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> 'a bool_op" is "op o" 
+  lift_definition times_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> 'a bool_op" is "(o)" 
     by (auto simp: o_def fun_union_def fun_order_def bot_def mono_def) metis
 
-  lift_definition plus_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> 'a bool_op" is "op +"
+  lift_definition plus_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> 'a bool_op" is "(+)"
     apply (auto simp: o_def fun_union_def fun_order_def bot_def mono_def)
     apply (metis set_mp)
     apply (metis set_mp)

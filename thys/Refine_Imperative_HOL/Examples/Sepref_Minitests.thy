@@ -20,8 +20,8 @@ begin
       \<close>)
   *)
 
-  definition [simp]: "mop_plus = RETURN oo op+"
-  definition [simp]: "mop_plusi = return oo op+"
+  definition [simp]: "mop_plus = RETURN oo (+)"
+  definition [simp]: "mop_plusi = return oo (+)"
   lemma [sepref_fr_rules]: "(uncurry mop_plusi,uncurry mop_plus) \<in> nat_assn\<^sup>k*\<^sub>anat_assn\<^sup>k \<rightarrow>\<^sub>a nat_assn"
     by (sep_auto intro!: hfrefI hn_refineI simp: pure_def)
   sepref_register mop_plus
@@ -460,7 +460,7 @@ schematic_goal
 
   (* Regression from incomplete monadify, that could not not handle nested 
     plain operations that get converted to monadic operations. *)
-  sepref_thm regr_incomplete_monadify is "RETURN o (\<lambda>l. fold (\<lambda>x. op # (case x of (x, xa) \<Rightarrow> x + xa)) l [])" :: "(list_assn (prod_assn nat_assn nat_assn))\<^sup>k \<rightarrow>\<^sub>a list_assn nat_assn"
+  sepref_thm regr_incomplete_monadify is "RETURN o (\<lambda>l. fold (\<lambda>x. (#) (case x of (x, xa) \<Rightarrow> x + xa)) l [])" :: "(list_assn (prod_assn nat_assn nat_assn))\<^sup>k \<rightarrow>\<^sub>a list_assn nat_assn"
     unfolding test_def[abs_def] "HOL_list.fold_custom_empty"
     by sepref
   

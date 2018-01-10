@@ -928,7 +928,7 @@ class mbt_algebra_fusion = mbt_algebra +
           \<Longrightarrow> (x ^ \<omega>) * y \<sqinter> z \<le> (u ^ \<omega>) * v "
 
 lemma 
-    "class.mbt_algebra_fusion (1::'a::complete_mbt_algebra) (op *) (op \<sqinter>) (op \<le>) (op <) (op \<squnion>) dual dual_star omega star \<bottom> \<top>"
+    "class.mbt_algebra_fusion (1::'a::complete_mbt_algebra) (( * )) (\<sqinter>) (\<le>) (<) (\<squnion>) dual dual_star omega star \<bottom> \<top>"
     apply unfold_locales
     apply (cut_tac h = "\<lambda> t . t \<sqinter> z" and f = "\<lambda> t . x * t \<sqinter> y" and g = "\<lambda> t . u * t \<sqinter> v" in weak_fusion)
     apply (rule inf_Disj)

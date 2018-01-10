@@ -77,7 +77,7 @@ abbreviation ex_system :: "ex_system" where
   "ex_system \<equiv> (ex_pgms, ex_init)"
 
 definition filter_on_channel :: "ex_chname \<Rightarrow> ex_history \<Rightarrow> ex_val list" where
-  "filter_on_channel ch \<equiv> map (snd \<circ> fst) \<circ> filter (op = ch \<circ> fst \<circ> fst)"
+  "filter_on_channel ch \<equiv> map (snd \<circ> fst) \<circ> filter ((=) ch \<circ> fst \<circ> fst)"
 
 lemma filter_on_channel_simps [simp]:
   "filter_on_channel ch [] = []"

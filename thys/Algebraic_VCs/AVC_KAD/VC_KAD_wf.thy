@@ -86,7 +86,7 @@ qed
 lemma rel_nabla_coinduct: "P \<subseteq> relfdia X P \<union> rdom Q \<Longrightarrow> P \<subseteq> rel_nabla X \<union> relfdia (rtrancl X) Q"
   by (meson nabla_fusion2 order_trans rel_nabla_bin_coinduct)
 
-interpretation rel_fdivka: fdivergence_kleene_algebra rel_ad "op \<union>" "op ; " Id "{}" "op \<subseteq>" "op \<subset>" rtrancl rel_nabla
+interpretation rel_fdivka: fdivergence_kleene_algebra rel_ad "(\<union>)" "(;) " Id "{}" "(\<subseteq>)" "(\<subset>)" rtrancl rel_nabla
 proof 
   fix x y z:: "'a rel"
   show "rdom (rel_nabla x) = rel_nabla x"

@@ -39,7 +39,7 @@ proof -
 qed
 
 lemma (in conway_dioid) dual_conway_dioid:
-  "class.conway_dioid (op +) (op \<odot>) 1 0 (op \<le>) (op <) star"
+  "class.conway_dioid (+) (\<odot>) 1 0 (\<le>) (<) star"
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot>(y \<odot> z)"
@@ -66,7 +66,7 @@ proof
     by (metis C12 mult.assoc opp_mult_def)
 qed
 
-lemma (in strong_conway_dioid) dual_strong_conway_dioid: "class.strong_conway_dioid (op  + ) (op  \<odot> ) 1 0 (op \<le>) (op <) star"
+lemma (in strong_conway_dioid) dual_strong_conway_dioid: "class.strong_conway_dioid ((+) ) ((\<odot>) ) 1 0 (\<le>) (<) star"
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"
@@ -158,7 +158,7 @@ context dioid_one_zero
 begin
 
 lemma opp_power_def:
-  "power.power 1 op \<odot> x n = x\<^bsup>n\<^esup>"
+  "power.power 1 (\<odot>) x n = x\<^bsup>n\<^esup>"
 proof (induction n)
   case 0 thus ?case
     by (metis power.power.power_0)
@@ -168,12 +168,12 @@ next
 qed
 
 lemma opp_powsum_def: 
-  "dioid_one_zero.powsum op + op \<odot> 1 0 x m n = x\<^bsub>m\<^esub>\<^bsup>n\<^esup>"
+  "dioid_one_zero.powsum (+) (\<odot>) 1 0 x m n = x\<^bsub>m\<^esub>\<^bsup>n\<^esup>"
 proof -
-  have "sum (power.power 1 op \<odot> x) {m..n + m} = sum (op ^ x) {m..n + m}"
+  have "sum (power.power 1 (\<odot>) x) {m..n + m} = sum ((^) x) {m..n + m}"
     by (induction n, simp_all add:opp_power_def)
   thus ?thesis
-    by (simp add: dioid_one_zero.powsum_def[of _ _ _ _ "op \<le>" "op <"] dual_dioid_one_zero powsum_def)
+    by (simp add: dioid_one_zero.powsum_def[of _ _ _ _ "(\<le>)" "(<)"] dual_dioid_one_zero powsum_def)
 qed
 
 end
@@ -195,7 +195,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma C_algebra: "class.C_algebra (op +) (op \<odot>) (1::'a::C_algebra) 0 (op \<le>) (op <) star"
+lemma C_algebra: "class.C_algebra (+) (\<odot>) (1::'a::C_algebra) 0 (\<le>) (<) star"
 proof
   fix x y :: 'a and n :: nat
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
@@ -204,7 +204,7 @@ proof
     by (metis C12 mult.assoc opp_mult_def)
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
     by (metis C13)
-  show "x\<^sup>\<star> = power.power 1 op \<odot> x (n + 1)\<^sup>\<star> \<odot> dioid_one_zero.powsum op + op \<odot> 1 0 x 0 n"
+  show "x\<^sup>\<star> = power.power 1 (\<odot>) x (n + 1)\<^sup>\<star> \<odot> dioid_one_zero.powsum (+) (\<odot>) 1 0 x 0 n"
     by (metis C14_dual opp_mult_def opp_power_def opp_powsum_def)
 qed (simp_all add: opp_mult_def mult.assoc distrib_left)
 
@@ -221,7 +221,7 @@ class B2_algebra = star_dioid +
   and B23: "\<lbrakk> 1 + x \<le> y; y \<cdot> y = y \<rbrakk> \<Longrightarrow> x\<^sup>\<star> \<le> y"
 
 lemma (in B1_algebra) B1_algebra:
-  "class.B1_algebra (op +) (op \<odot>) 1 0 (op \<le>) (op <) star"
+  "class.B1_algebra (+) (\<odot>) 1 0 (\<le>) (<) star"
 proof 
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -251,7 +251,7 @@ proof
 qed
 
 lemma (in B2_algebra) B2_algebra:
-  "class.B2_algebra (op +) (op \<odot>) 1 0 (op \<le>) (op <) star"
+  "class.B2_algebra (+) (\<odot>) 1 0 (\<le>) (<) star"
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -830,7 +830,7 @@ class C3r_algebra = conway_dioid +
   assumes C3r:  "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^sup>\<star> \<le> y"
 
 sublocale C1r_algebra \<subseteq> dual: C1l_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star"
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -862,7 +862,7 @@ proof
 qed
 
 sublocale C2r_algebra \<subseteq> dual: C2l_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star"
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -892,7 +892,7 @@ proof
 qed
 
 sublocale C3r_algebra \<subseteq> dual: C3l_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star"
 proof 
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -1055,7 +1055,7 @@ class K1_algebra = K1l_algebra + K1r_algebra
 class K2_algebra = K2l_algebra + K2r_algebra
 
 sublocale K1r_algebra \<subseteq> dual: K1l_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star"
 proof
   fix x y z :: 'a
   show  "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -1114,7 +1114,7 @@ sublocale K1_algebra \<subseteq> C0_algebra
 sublocale C0_algebra \<subseteq> K1l_algebra ..
 
 sublocale K2r_algebra \<subseteq> dual: K2l_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star"
 proof 
   fix x y z :: 'a
   show  "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
@@ -1190,7 +1190,7 @@ class Sl_algebra = salomaa_base +
 class S_algebra = Sl_algebra + Sr_algebra
 
 sublocale Sl_algebra \<subseteq> dual: Sr_algebra
-  "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star" "ewp"
+  "(+)" "(\<odot>)" "1" "0" "(\<le>)" "(<)" "star" "ewp"
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"

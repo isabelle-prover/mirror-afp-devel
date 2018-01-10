@@ -1760,13 +1760,13 @@ lemma list2listNMT[rule_format]: "x \<noteq> [] \<longrightarrow>map sem x \<not
   by (case_tac x) simp_all
 
 lemma Norm_Distr2: 
-  "r o_f ((P \<Otimes>\<^sub>2 (list2policy Q)) o d) = (list2policy ((P \<Otimes>\<^sub>L Q) (op \<Otimes>\<^sub>2) r d))"
+  "r o_f ((P \<Otimes>\<^sub>2 (list2policy Q)) o d) = (list2policy ((P \<Otimes>\<^sub>L Q) (\<Otimes>\<^sub>2) r d))"
   by (rule ext, rule Norm_Distr_2)
 
 lemma NATDistr: 
   "N \<noteq> [] \<Longrightarrow> F = C (list2policyR N) \<Longrightarrow>
     (\<lambda>(x, y). x) o\<^sub>f (NAT \<Otimes>\<^sub>2 F \<circ> (\<lambda>x. (x, x))) = 
-    list2policy ((NAT \<Otimes>\<^sub>L map C N) op \<Otimes>\<^sub>2 (\<lambda>(x, y). x) (\<lambda>x. (x, x)))"
+    list2policy ((NAT \<Otimes>\<^sub>L map C N) (\<Otimes>\<^sub>2) (\<lambda>(x, y). x) (\<lambda>x. (x, x)))"
   apply (simp add: l2polR_eq) 
   apply (rule ext)
   apply (rule Norm_Distr_2)
@@ -1806,7 +1806,7 @@ lemma normalizeNAT:
   "DenyAll \<in> set (policy2list Filter) \<Longrightarrow> allNetsDistinct (policy2list Filter) \<Longrightarrow>
    all_in_list (policy2list Filter) (Nets_List Filter) \<Longrightarrow>
    (\<lambda>(x, y). x) o\<^sub>f (NAT \<Otimes>\<^sub>2 C Filter \<circ> (\<lambda>x. (x, x))) =
-   list2policy ((NAT \<Otimes>\<^sub>L map C (rev (FWNormalisationCore.normalize Filter))) op \<Otimes>\<^sub>2 
+   list2policy ((NAT \<Otimes>\<^sub>L map C (rev (FWNormalisationCore.normalize Filter))) (\<Otimes>\<^sub>2) 
        (\<lambda>(x, y). x) (\<lambda>x. (x, x)))"
   by (simp add: C_eq_normalize NATDistr list2FWpolicys_eq_sym norm_notMT)
 

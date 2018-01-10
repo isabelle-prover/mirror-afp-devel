@@ -321,7 +321,7 @@ proof-
     hence dec_j: "decisions (tr ! (i - j)) p = Some v" 
       by simp
     thus "decisions t p = Some v" using Suc
-    -- {* As @{term "op -"} is a total function on naturals, we perform a case distinction;
+    -- {* As @{term "(-)"} is a total function on naturals, we perform a case distinction;
           if @{term "i < j"}, the induction step is trivial. *}
     proof(cases "i \<le> j") 
       -- {* The non-trivial case. *}
@@ -391,7 +391,7 @@ proof-
   next
     case (Suc j)
     thus ?thesis
-    -- {* Again, the totality of @{term "op -"} makes the claim trivial if @{term "i < j"}. *}
+    -- {* Again, the totality of @{term "(-)"} makes the claim trivial if @{term "i < j"}. *}
     proof(cases "i \<le> j")
       case False
       -- {* In the non-trivial case, the proof follows from the decision stability theorem 

@@ -74,7 +74,7 @@ lemma [synth_rules]: "\<lbrakk>INTF_OF_REL K TYPE('k); INTF_OF_REL V TYPE('v)\<r
 subsection \<open>Operations\<close>
   sepref_decl_op map_empty: "Map.empty" :: "\<langle>K,V\<rangle>map_rel" .
   
-  sepref_decl_op map_is_empty: "op = Map.empty" :: "\<langle>K,V\<rangle>map_rel \<rightarrow> bool_rel"
+  sepref_decl_op map_is_empty: "(=) Map.empty" :: "\<langle>K,V\<rangle>map_rel \<rightarrow> bool_rel"
     apply (rule fref_ncI)
     apply parametricity
     apply (rule fun_relI; auto)
@@ -131,10 +131,10 @@ subsection \<open>Patterns\<close>
 lemma pat_map_empty[pat_rules]: "\<lambda>\<^sub>2_. None \<equiv> op_map_empty" by simp
 
 lemma pat_map_is_empty[pat_rules]: 
-  "op =$m$(\<lambda>\<^sub>2_. None) \<equiv> op_map_is_empty$m" 
-  "op =$(\<lambda>\<^sub>2_. None)$m \<equiv> op_map_is_empty$m" 
-  "op =$(dom$m)${} \<equiv> op_map_is_empty$m"
-  "op =${}$(dom$m) \<equiv> op_map_is_empty$m"
+  "(=) $m$(\<lambda>\<^sub>2_. None) \<equiv> op_map_is_empty$m" 
+  "(=) $(\<lambda>\<^sub>2_. None)$m \<equiv> op_map_is_empty$m" 
+  "(=) $(dom$m)${} \<equiv> op_map_is_empty$m"
+  "(=) ${}$(dom$m) \<equiv> op_map_is_empty$m"
   unfolding atomize_eq
   by (auto dest: sym)
 
@@ -145,13 +145,13 @@ lemma pat_map_lookup[pat_rules]: "m$k \<equiv> op_map_lookup$'k$'m"
   by simp
 
 lemma op_map_delete_pat[pat_rules]: 
-  "op |` $ m $ (uminus $ (insert $ k $ {})) \<equiv> op_map_delete$'k$'m"
+  "(|`) $ m $ (uminus $ (insert $ k $ {})) \<equiv> op_map_delete$'k$'m"
   "fun_upd$m$k$None \<equiv> op_map_delete$'k$'m"
   by (simp_all add: map_upd_eq_restrict)
 
 lemma op_map_contains_key[pat_rules]: 
-  "op \<in> $ k $ (dom$m) \<equiv> op_map_contains_key$'k$'m"
-  "Not$(op =$(m$k)$None) \<equiv> op_map_contains_key$'k$'m"
+  "(\<in>) $ k $ (dom$m) \<equiv> op_map_contains_key$'k$'m"
+  "Not$((=) $(m$k)$None) \<equiv> op_map_contains_key$'k$'m"
    by (auto intro!: eq_reflection)
 
 

@@ -603,7 +603,7 @@ qed
 declare [[goals_limit = 100]]
 
 global_interpretation Presb: Formula
-  where SUC = SUC and LESS = "\<lambda>_. op <" and Length = Length
+  where SUC = SUC and LESS = "\<lambda>_. (<)" and Length = Length
   and assigns = assigns and nvars = nvars and Extend = Extend and CONS = CONS and SNOC = SNOC
   and extend = extend and size = size_atom and zero = zero and alphabet = \<sigma> and eval = test_bit
   and downshift = downshift and upshift = upshift and add = set_bit and cut = cut_bits and len = len
@@ -638,7 +638,7 @@ global_interpretation Presb: Formula
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: formula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
     (final idx) (\<lambda>\<phi> :: formula. presb_wf idx \<phi> \<and> presb_lformula \<phi>)
-    (op =)"
+    (=)"
   and bounded_check_eqv = "\<lambda>idx. DAs.check_eqv
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: formula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
@@ -646,7 +646,7 @@ global_interpretation Presb: Formula
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: formula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
     nullable (\<lambda>\<phi> :: formula. presb_wf idx \<phi> \<and> presb_lformula \<phi>)
-    (op =)"
+    (=)"
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
   by standard (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists

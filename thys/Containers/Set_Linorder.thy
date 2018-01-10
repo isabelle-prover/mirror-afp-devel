@@ -343,7 +343,7 @@ by(auto simp add: sorted_Cons intro: Min_eqI)
 
 lemma set_less_aux_code:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk>
-  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp op > xs ys"
+  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp (>) xs ys"
 apply(induct xs ys rule: splice.induct)
 apply(simp_all add: empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
 apply(auto simp add: sorted_Cons cong: conj_cong)
@@ -351,9 +351,9 @@ done
 
 lemma set_less_eq_aux_code:
   assumes "sorted xs" "distinct xs" "sorted ys" "distinct ys"
-  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> ord.lexordp_eq op > xs ys"
+  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> ord.lexordp_eq (>) xs ys"
 proof -
-  have dual: "class.linorder op \<ge> op >"
+  have dual: "class.linorder (\<ge>) (>)"
     by(rule linorder.dual_linorder) unfold_locales
   from assms show ?thesis
     by(auto simp add: set_less_eq_aux_def finite_complement_partition linorder.lexordp_eq_conv_lexord[OF dual] set_less_aux_code intro: sorted_distinct_set_unique)
@@ -533,7 +533,7 @@ by(auto simp add: set_less_eq_def split: if_split_asm intro: set_less_eq_aux''_t
 lemma set_less_eq_total: "A \<sqsubseteq> B \<or> B \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False intro: set_less_eq_aux_finite_total2 finite_subset[OF subset_UNIV] del: disjCI dest: set_less_eq_aux''_total)
 
-lemma set_less_eq_linorder: "class.linorder op \<sqsubseteq> op \<sqsubset>"
+lemma set_less_eq_linorder: "class.linorder (\<sqsubseteq>) (\<sqsubset>)"
 by(unfold_locales)(auto simp add: set_less_def set_less_eq_antisym set_less_eq_total intro: set_less_eq_trans)
 
 lemma set_less_eq_conv_set_less: "set_less_eq A B \<longleftrightarrow> A = B \<or> set_less A B"

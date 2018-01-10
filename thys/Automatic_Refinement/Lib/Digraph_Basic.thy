@@ -292,7 +292,7 @@ lemma dropWhileNot_path:
   assumes "p \<noteq> []"
   and "path E w p x"
   and "v \<in> set p"
-  and "dropWhile (op \<noteq> v) p = c"
+  and "dropWhile ((\<noteq>) v) p = c"
   shows "path E v c x"
   using assms
 proof (induction arbitrary: w c rule: list_nonempty_induct)
@@ -303,7 +303,7 @@ next
   proof (cases "p=v")
     case True with cons show ?thesis by simp
   next
-    case False with cons have "c = dropWhile (op\<noteq> v) ps" by simp
+    case False with cons have "c = dropWhile ((\<noteq>) v) ps" by simp
     moreover from cons.prems obtain y where "path E y ps x" 
       using path_uncons by metis
     moreover from cons.prems False have "v \<in> set ps" by simp
@@ -315,7 +315,7 @@ lemma takeWhileNot_path:
   assumes "p \<noteq> []"
   and "path E w p x"
   and "v \<in> set p"
-  and "takeWhile (op \<noteq> v) p = c"
+  and "takeWhile ((\<noteq>) v) p = c"
   shows "path E w c v"
   using assms
 proof (induction arbitrary: w c rule: list_nonempty_induct)
@@ -327,7 +327,7 @@ next
     case True with cons show ?thesis by simp
   next
     case False with cons obtain c' where 
-      "c' = takeWhile (op \<noteq> v) ps" and 
+      "c' = takeWhile ((\<noteq>) v) ps" and 
       [simp]: "c = p#c'"
       by simp_all
     moreover from cons.prems obtain y where 

@@ -64,7 +64,7 @@ lemma matrix_to_iarray_bezout_matrix:
   = bezout_matrix_iarrays (matrix_to_iarray A) (to_nat a) (to_nat b) (to_nat j) bezout"
   (is "?lhs = ?rhs")
 proof -
-  have n: "nrows_iarray (IArray (map (vec_to_iarray \<circ> op $ A \<circ> from_nat) [0..<CARD('b)])) 
+  have n: "nrows_iarray (IArray (map (vec_to_iarray \<circ> ($) A \<circ> from_nat) [0..<CARD('b)])) 
     = CARD('b)" unfolding nrows_iarray_def vec_to_iarray_def o_def by auto
   have rw1:"(map (\<lambda>x. IArray.of_fun 
     (\<lambda>i. A $ from_nat x $ from_nat i) CARD('c)) [0..<CARD('b)] ! to_nat a !! to_nat j) = A $ a $ j"

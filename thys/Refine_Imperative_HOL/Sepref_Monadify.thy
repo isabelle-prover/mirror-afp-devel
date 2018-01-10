@@ -151,7 +151,7 @@ ML {*
         val pps = strip_star P |> map_filter (dest_hn_ctxt_opt #> map_option #2)
 
         fun tr env (t as @{mpat "RETURN$?x"}) = 
-              if is_Bound x orelse member (op aconv) pps x then
+              if is_Bound x orelse member (aconv) pps x then
                 @{mk_term env: "PASS$?x"}
               else t
           | tr env (t1$t2) = tr env t1 $ tr env t2
@@ -186,7 +186,7 @@ ML {*
                 (t',ps)
               end
   
-            val dup = member (op aconv) ps p
+            val dup = member (aconv) ps p
             val t = if dup then
               @{mk_term "Refine_Basic.bind$(RETURN$(COPY$?p))$?t'"}
             else
@@ -296,7 +296,7 @@ lemma dflt_plain_comb[sepref_monadify_comb]:
     Refine_Basic.bind$(EVAL$p)$(\<lambda>\<^sub>2p. case_prod$(\<lambda>\<^sub>2a b. EVAL$(fp a b))$p)"
   "EVAL$(case_option$fn$(\<lambda>\<^sub>2x. fs x)$ov) \<equiv> 
     Refine_Basic.bind$(EVAL$ov)$(\<lambda>\<^sub>2ov. case_option$(EVAL$fn)$(\<lambda>\<^sub>2x. EVAL$(fs x))$ov)"
-  "EVAL $ (Let $ v $ (\<lambda>\<^sub>2x. f x)) \<equiv> op \<bind> $ (EVAL $ v) $ (\<lambda>\<^sub>2x. EVAL $ (f x))"
+  "EVAL $ (Let $ v $ (\<lambda>\<^sub>2x. f x)) \<equiv> (\<bind>) $ (EVAL $ v) $ (\<lambda>\<^sub>2x. EVAL $ (f x))"
   apply (rule eq_reflection, simp split: list.split prod.split option.split)+
   done
 

@@ -108,7 +108,7 @@ primrec fv :: "tm \<Rightarrow> vname set" where
 subsection "Iterated Term Application"
 
 abbreviation foldl_At (infix "\<bullet>\<bullet>" 90) where
-"t \<bullet>\<bullet> ts \<equiv> foldl (op \<bullet>) t ts"
+"t \<bullet>\<bullet> ts \<equiv> foldl (\<bullet>) t ts"
 
 text{*Auxiliary measure function:*}
 primrec depth_At :: "tm \<Rightarrow> nat"

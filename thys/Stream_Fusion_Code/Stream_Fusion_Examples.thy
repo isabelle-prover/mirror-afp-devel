@@ -29,13 +29,13 @@ by(unfold rhs_def) rule
 subsection {* Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM} *}
 
 definition test_enum :: "nat \<Rightarrow> nat" -- {* @{const id} required to avoid eta contraction *}
-where "test_enum n = foldl (op +) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
+where "test_enum n = foldl (+) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
 
 definition test_nested :: "nat \<Rightarrow> nat"
-where "test_nested n = foldl (op +) 0 (List.maps (\<lambda>x. List.maps (\<lambda>y. upt y x) (upt 1 x)) (upt 1 n))"
+where "test_nested n = foldl (+) 0 (List.maps (\<lambda>x. List.maps (\<lambda>y. upt y x) (upt 1 x)) (upt 1 n))"
 
 definition test_merge :: "integer \<Rightarrow> nat"
-where "test_merge n = foldl (op +) 0 (List.maps (\<lambda>x. if 2 dvd x then upt 1 x else upt 2 x) (upt 1 (nat_of_integer n)))"
+where "test_merge n = foldl (+) 0 (List.maps (\<lambda>x. if 2 dvd x then upt 1 x else upt 2 x) (upt 1 (nat_of_integer n)))"
 
 text {*
   This rule performs the merge operation from \cite[\S 5.2]{FarmerHoenerGill2014PEPM} for @{text "if"}.

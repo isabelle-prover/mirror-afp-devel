@@ -73,18 +73,18 @@ declare Quotient_uint[transfer_rule]
 instantiation uint :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
 lift_definition zero_uint :: uint is "0 :: dflt_size word" .
 lift_definition one_uint :: uint is "1" .
-lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op + :: dflt_size word \<Rightarrow> _" .
-lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op -" .
+lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(+) :: dflt_size word \<Rightarrow> _" .
+lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(-)" .
 lift_definition uminus_uint :: "uint \<Rightarrow> uint" is uminus .
-lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op *" .
-lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op div" .
-lift_definition modulo_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op mod" .
+lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "( * )" .
+lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(div)" .
+lift_definition modulo_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+
 end
 
 instantiation uint :: linorder begin
-lift_definition less_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "op <" .
-lift_definition less_eq_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "(<)" .
+lift_definition less_eq_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "(\<le>)" .
 instance by standard (transfer, simp add: less_le_not_le linear)+
 end
 
@@ -126,7 +126,7 @@ lift_definition sshiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" (inf
 lift_definition uint_of_int :: "int \<Rightarrow> uint" is "word_of_int" .
 
 lemma of_bool_integer_transfer [transfer_rule]:
-  "(rel_fun op = pcr_integer) of_bool of_bool"
+  "(rel_fun (=) pcr_integer) of_bool of_bool"
 by(auto simp add: integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 text {* Use pretty numerals from integer for pretty printing *}
@@ -139,7 +139,7 @@ lemma Rep_uint_numeral [simp]: "Rep_uint (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint_def Abs_uint_inverse numeral.simps plus_uint_def)
 
 lemma numeral_uint_transfer [transfer_rule]:
-  "(rel_fun op = cr_uint) numeral numeral"
+  "(rel_fun (=) cr_uint) numeral numeral"
 by(auto simp add: cr_uint_def)
 
 lemma numeral_uint [code_unfold]: "numeral n = Uint (numeral n)"
@@ -520,7 +520,7 @@ code_printing
 
 definition uint_divmod :: "uint \<Rightarrow> uint \<Rightarrow> uint \<times> uint" where
   "uint_divmod x y = 
-  (if y = 0 then (undefined (op div :: uint \<Rightarrow> _) x (0 :: uint), undefined (op mod :: uint \<Rightarrow> _) x (0 :: uint)) 
+  (if y = 0 then (undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint), undefined ((mod) :: uint \<Rightarrow> _) x (0 :: uint)) 
   else (x div y, x mod y))"
 
 definition uint_div :: "uint \<Rightarrow> uint \<Rightarrow> uint" 
@@ -540,15 +540,15 @@ by transfer(simp add: word_mod_def)
 definition uint_sdiv :: "uint \<Rightarrow> uint \<Rightarrow> uint"
 where [code del]:
   "uint_sdiv x y =
-   (if y = 0 then undefined (op div :: uint \<Rightarrow> _) x (0 :: uint)
+   (if y = 0 then undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint)
     else Abs_uint (Rep_uint x sdiv Rep_uint y))"
 
 definition div0_uint :: "uint \<Rightarrow> uint"
-where [code del]: "div0_uint x = undefined (op div :: uint \<Rightarrow> _) x (0 :: uint)"
+where [code del]: "div0_uint x = undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint)"
 declare [[code abort: div0_uint]]
 
 definition mod0_uint :: "uint \<Rightarrow> uint"
-where [code del]: "mod0_uint x = undefined (op mod :: uint \<Rightarrow> _) x (0 :: uint)"
+where [code del]: "mod0_uint x = undefined ((mod) :: uint \<Rightarrow> _) x (0 :: uint)"
 declare [[code abort: mod0_uint]]
 
 definition wivs_overflow_uint :: uint 
@@ -578,7 +578,7 @@ lemma uint_divmod_code [code]:
 
 lemma uint_sdiv_code [code abstract]:
   "Rep_uint (uint_sdiv x y) =
-   (if y = 0 then Rep_uint (undefined (op div :: uint \<Rightarrow> _) x (0 :: uint))
+   (if y = 0 then Rep_uint (undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint))
     else Rep_uint x sdiv Rep_uint y)"
 unfolding uint_sdiv_def by(simp add: Abs_uint_inverse)
 

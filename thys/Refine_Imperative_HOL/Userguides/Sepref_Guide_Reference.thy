@@ -134,15 +134,15 @@ thm id_rules
 text \<open>
   The operation identification phase, and all further phases, work on a tagged 
   version of the input term, where all function applications are replaced by the
-  tagging constant @{term "op $"}, and all abstractions are replaced by 
+  tagging constant @{term "($)"}, and all abstractions are replaced by 
   @{term "\<lambda>x. PROTECT2 (t x) DUMMY"} (syntax: @{term "\<lambda>x. (#t x#)"}, 
   input syntax: @{term "\<lambda>\<^sub>2x. t x"}). This is required to tame Isabelle's 
   higher-order unification. However, it makes tagged terms quite unreadable, and it
   may be helpful to \<open>unfold APP_def PROTECT2_def\<close> to get back the untagged form when inspecting
   internal states for debugging purposes.
 
-  To prevent looping, rewrite-rules can use @{term "op $'"} on the RHS. This is
-  a synonym for @{term "op $"}, and gets rewritten to @{term "op $"} after the operation
+  To prevent looping, rewrite-rules can use @{term "($')"} on the RHS. This is
+  a synonym for @{term "($)"}, and gets rewritten to @{term "($)"} after the operation
   identification phase. During the operation identification phase, it prevents infinite
   loops of pattern rewrite rules.
 
@@ -253,7 +253,7 @@ text \<open>In the first sub-phase, the rules from @{attribute sepref_monadify_a
   The method @{method sepref_dbg_monadify_arity} gives you direct access to this phase.
 
   In the Sepref-tool, we use the terminology @{emph \<open>operator/operation\<close>} for a function that
-  only has first-order arguments, which are evaluated before the function is applied (e.g. @{term "op+"}),
+  only has first-order arguments, which are evaluated before the function is applied (e.g. @{term "(+)"}),
   and @{emph \<open>combinator\<close>} for operations with higher-order arguments or custom 
   evaluation orders (e.g. @{term "fold"}, @{term "If"}).
 
@@ -307,7 +307,7 @@ lemma my_fold_arity[sepref_monadify_arity]: "my_fold \<equiv> \<lambda>\<^sub>2f
 
 text \<open>The combinator-rule rewrites to the already existing and set up combinator @{term nfoldli}:\<close>
 lemma monadify_plain_my_fold[sepref_monadify_comb]: 
-  "EVAL$(my_fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> op\<bind>$(EVAL$l)$(\<lambda>\<^sub>2l. op\<bind>$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. EVAL$(f x s))$s))"
+  "EVAL$(my_fold$(\<lambda>\<^sub>2x s. f x s)$l$s) \<equiv> (\<bind>)$(EVAL$l)$(\<lambda>\<^sub>2l. (\<bind>)$(EVAL$s)$(\<lambda>\<^sub>2s. nfoldli$l$(\<lambda>\<^sub>2_. True)$(\<lambda>\<^sub>2x s. EVAL$(f x s))$s))"
   by (simp add: fold_eq_nfoldli my_fold_def)
 
 sepref_thm my_fold_test is "\<lambda>l. do { RETURN (my_fold (\<lambda>x y. x+y*2) l 0)}" :: "(list_assn nat_assn)\<^sup>k\<rightarrow>\<^sub>anat_assn"
@@ -338,7 +338,7 @@ text \<open>
 \<close>
 sepref_thm monadify_step_thru_test is "\<lambda>l. do {
     let i = length l;
-    RETURN (fold (\<lambda>x. op + (x*x)) l i)
+    RETURN (fold (\<lambda>x. (+) (x*x)) l i)
   }" :: "(list_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a nat_assn"
   apply sepref_dbg_preproc
   apply sepref_dbg_cons_init
@@ -664,7 +664,7 @@ text \<open>The optimization phase simplifies the generated
   Consider the following example:
 \<close>
 
-sepref_thm opt_example is "\<lambda>n. do { let r = fold op+ [1..<n] 0; RETURN (n*n+2) }"
+sepref_thm opt_example is "\<lambda>n. do { let r = fold (+) [1..<n] 0; RETURN (n*n+2) }"
   :: "nat_assn\<^sup>k \<rightarrow>\<^sub>a nat_assn"
   apply sepref_dbg_preproc
   apply sepref_dbg_cons_init
@@ -713,7 +713,7 @@ text \<open>
       where either \<open>B\<^sub>i = A\<^sub>i\<close> or \<open>B\<^sub>i = invalid_assn A\<^sub>i\<close>. This means that each argument to
       the program is either preserved or destroyed.
     \<^item> \<open>R\<close> must not contain a \<open>hn_ctxt\<close> tag.
-    \<^item> \<open>a\<close> must be in protected form (@{term "op $"} and @{term "PROTECT2"} tags)
+    \<^item> \<open>a\<close> must be in protected form (@{term "($)"} and @{term "PROTECT2"} tags)
 
   The high-level \<open>hfref\<close> form formally enforces these restrictions. Moreover,
   it assumes \<open>c\<close> and \<open>a\<close> to be presented as functions from exactly one argument.
@@ -773,9 +773,9 @@ text \<open>For pure refinements, it is sometimes simpler to specify a parametri
   and in the Lifting/Transfer tool.
   
   Autoref uses a set-based notation for parametricity theorems 
-  (e.g. @{term "(op@,op@) \<in> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel"}), 
+  (e.g. @{term "((@),(@)) \<in> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel"}), 
   while lifting/transfer uses a predicate based notation (e.g. 
-    @{term "rel_fun (list_all2 A) (rel_fun (list_all2 A) (list_all2 A)) op@ op@"}).
+    @{term "rel_fun (list_all2 A) (rel_fun (list_all2 A) (list_all2 A)) (@) (@)"}).
 
   Currently, we only support the Autoref style, but provide a few lemmas that 
   ease manual conversion from the Lifting/Transfer style.
@@ -841,7 +841,7 @@ text \<open>
   and without precondition, we have \<open>(...(R\<^sub>1\<times>\<^sub>rR\<^sub>2)\<times>\<^sub>r...)\<times>\<^sub>rR\<^sub>n) \<rightarrow>\<^sub>f R\<close>. 
   Note the left-bracketing of the tuples, which is non-standard in Isabelle.
   As we currently have no syntax for a left-associative product relation, we
-  use the right-associative syntax @{term "op \<times>\<^sub>r"} and explicit brackets.
+  use the right-associative syntax @{term "(\<times>\<^sub>r)"} and explicit brackets.
 
   The attribute @{attribute to_fref} can convert (higher-order form) parametricity 
   theorems to the fref-form.

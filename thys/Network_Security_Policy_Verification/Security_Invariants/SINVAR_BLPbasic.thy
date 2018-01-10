@@ -87,16 +87,16 @@ done
  
 
 subsubsection {*ENF*}
-  lemma zero_default_candidate: "\<And> nP e1 e2. \<not> (op \<le>::security_level \<Rightarrow> security_level \<Rightarrow> bool) (nP e1) (nP e2) \<Longrightarrow> \<not> (op \<le>) (nP e1) 0"
+  lemma zero_default_candidate: "\<And> nP e1 e2. \<not> ((\<le>)::security_level \<Rightarrow> security_level \<Rightarrow> bool) (nP e1) (nP e2) \<Longrightarrow> \<not> (\<le>) (nP e1) 0"
     by simp_all
   lemma zero_default_candidate_rule: "\<And> (nP::('v \<Rightarrow> security_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> (nP e1) \<le> 0"
     by simp_all
-  lemma privacylevel_refl: "(op \<le>::security_level \<Rightarrow> security_level \<Rightarrow> bool) e e"
+  lemma privacylevel_refl: "((\<le>)::security_level \<Rightarrow> security_level \<Rightarrow> bool) e e"
     by(simp_all)
-  lemma BLP_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (op \<le>)"
+  lemma BLP_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (\<le>)"
     unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def
     by simp
-  lemma BLP_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (op \<le>)"
+  lemma BLP_ENF_refl: "SecurityInvariant_withOffendingFlows.ENF_refl sinvar (\<le>)"
     unfolding SecurityInvariant_withOffendingFlows.ENF_refl_def
     apply(rule conjI)
      apply(simp add: BLP_ENF)

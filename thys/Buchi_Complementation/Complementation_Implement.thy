@@ -584,7 +584,7 @@ begin
 
     private lemma [autoref_op_pat]: "accepting A \<equiv> OP (accepting A)" by simp
 
-    private lemma [autoref_rules]: "(op dvd, op dvd) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel" by simp
+    private lemma [autoref_rules]: "((dvd), (dvd)) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel" by simp
     private lemma [autoref_rules]: "(\<lambda> k. upt 0 (Suc k), atMost) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
       by (auto simp: list_set_rel_def in_br_conv)
 
