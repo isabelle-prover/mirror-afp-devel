@@ -267,7 +267,7 @@ text{*
 definition prod_2_list :: "[('\<alpha> \<mapsto>'\<beta>), (('\<gamma> \<mapsto>'\<delta>) list)] \<Rightarrow> 
                   (('\<beta> \<times> '\<delta>) \<Rightarrow> 'y) \<Rightarrow> ('x \<Rightarrow> ('\<alpha> \<times> '\<gamma>)) \<Rightarrow> 
                   (('x \<mapsto> 'y) list)" (infixr "\<Otimes>\<^sub>2\<^sub>L" 55) where 
-  "x \<Otimes>\<^sub>2\<^sub>L y =  (\<lambda> d r. (x \<Otimes>\<^sub>L y) (op \<Otimes>\<^sub>2) d r)"  
+  "x \<Otimes>\<^sub>2\<^sub>L y =  (\<lambda> d r. (x \<Otimes>\<^sub>L y) (\<Otimes>\<^sub>2) d r)"  
   
 lemma list2listNMT:  "x \<noteq> [] \<Longrightarrow> map sem x \<noteq> []"
   apply (case_tac x)
@@ -288,25 +288,25 @@ definition is_distr where
 definition is_strict where
  "is_strict p = (\<lambda> r d. \<forall> P1. (r o_f (p P1 \<emptyset> \<circ> d)) = \<emptyset>)"
 
-lemma is_distr_orD: "is_distr (op \<Otimes>\<^sub>\<or>\<^sub>D) d r"
+lemma is_distr_orD: "is_distr (\<Otimes>\<^sub>\<or>\<^sub>D) d r"
   apply (simp add: is_distr_def)
   apply (rule allI)+
   apply (rule distr_orD)
   apply (simp)
   done
     
-lemma is_strict_orD: "is_strict (op \<Otimes>\<^sub>\<or>\<^sub>D) d r"
+lemma is_strict_orD: "is_strict (\<Otimes>\<^sub>\<or>\<^sub>D) d r"
   apply (simp add: is_strict_def)
   apply (simp add: policy_range_comp_def)
   done
     
-lemma is_distr_2: "is_distr (op \<Otimes>\<^sub>2) d r"
+lemma is_distr_2: "is_distr (\<Otimes>\<^sub>2) d r"
   apply (simp add: is_distr_def)
   apply (rule allI)+
   apply (rule distr_or2)
   by simp
     
-lemma is_strict_2: "is_strict (op \<Otimes>\<^sub>2) d r"
+lemma is_strict_2: "is_strict (\<Otimes>\<^sub>2) d r"
   apply (simp only: is_strict_def)
   apply simp
   apply (simp add: policy_range_comp_def)
@@ -323,8 +323,8 @@ lemma notDom: "x \<in> dom A \<Longrightarrow> \<not> A x = None"
 text{* 
   The following theorems are crucial: they establish the correctness of the distribution.
 *}
-lemma Norm_Distr_1:  "((r o_f (((op \<Otimes>\<^sub>1) P1 (list2policy P2)) o d)) x = 
-                                                   ((list2policy ((P1 \<Otimes>\<^sub>L P2) (op \<Otimes>\<^sub>1) r d)) x))"
+lemma Norm_Distr_1:  "((r o_f (((\<Otimes>\<^sub>1) P1 (list2policy P2)) o d)) x = 
+                                                   ((list2policy ((P1 \<Otimes>\<^sub>L P2) (\<Otimes>\<^sub>1) r d)) x))"
 proof (induct P2) 
   case Nil show ?case
     by (simp add: policy_range_comp_def  list2policy_def) 
@@ -341,8 +341,8 @@ next
   qed
 qed
   
-lemma Norm_Distr_2: "((r o_f (((op \<Otimes>\<^sub>2) P1 (list2policy P2)) o d)) x = 
-                               ((list2policy ((P1 \<Otimes>\<^sub>L P2) (op \<Otimes>\<^sub>2) r d)) x))"proof (induct P2) 
+lemma Norm_Distr_2: "((r o_f (((\<Otimes>\<^sub>2) P1 (list2policy P2)) o d)) x = 
+                               ((list2policy ((P1 \<Otimes>\<^sub>L P2) (\<Otimes>\<^sub>2) r d)) x))"proof (induct P2) 
   case Nil show ?case
     by (simp add: policy_range_comp_def  list2policy_def) 
 next
@@ -358,8 +358,8 @@ next
   qed
 qed
   
-lemma Norm_Distr_A: "((r o_f (((op \<Otimes>\<^sub>\<or>\<^sub>A) P1 (list2policy P2)) o d)) x = 
-                                                 ((list2policy ((P1 \<Otimes>\<^sub>L P2) (op \<Otimes>\<^sub>\<or>\<^sub>A) r d)) x))"
+lemma Norm_Distr_A: "((r o_f (((\<Otimes>\<^sub>\<or>\<^sub>A) P1 (list2policy P2)) o d)) x = 
+                                                 ((list2policy ((P1 \<Otimes>\<^sub>L P2) (\<Otimes>\<^sub>\<or>\<^sub>A) r d)) x))"
 proof (induct P2) 
   case Nil show ?case
     by (simp add: policy_range_comp_def  list2policy_def) 
@@ -377,8 +377,8 @@ next
 qed
 
   
-lemma Norm_Distr_D: "((r o_f (((op \<Otimes>\<^sub>\<or>\<^sub>D) P1 (list2policy P2)) o d)) x = 
-                                                  ((list2policy ((P1 \<Otimes>\<^sub>L P2) (op \<Otimes>\<^sub>\<or>\<^sub>D) r d)) x))"
+lemma Norm_Distr_D: "((r o_f (((\<Otimes>\<^sub>\<or>\<^sub>D) P1 (list2policy P2)) o d)) x = 
+                                                  ((list2policy ((P1 \<Otimes>\<^sub>L P2) (\<Otimes>\<^sub>\<or>\<^sub>D) r d)) x))"
 proof (induct P2) 
   case Nil show ?case
     by (simp add: policy_range_comp_def  list2policy_def) 

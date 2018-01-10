@@ -345,7 +345,7 @@ lemma lift_opts_map:
 by (induct cl_var_ty_list, auto)
 
 lemma m_in_list[rule_format]:
-  "(\<forall>x\<in>set meth_def_meth_list. case_prod (\<lambda>meth_def. op = (method_name_f meth_def)) x) \<and>
+  "(\<forall>x\<in>set meth_def_meth_list. case_prod (\<lambda>meth_def. (=) (method_name_f meth_def)) x) \<and>
    find_meth_def_in_list_f (map fst meth_def_meth_list) m = Some md \<longrightarrow>
        m \<in> snd ` set meth_def_meth_list"
 by (induct meth_def_meth_list, auto simp add: method_name_f_def split: meth_def.splits meth_sig.splits)
@@ -1139,7 +1139,7 @@ lemma subtypes_through_tr:
   "\<lbrakk>distinct (map (\<lambda>(cl, var, ty). var) cl_var_ty_list); distinct (map (\<lambda>(y, cl, var, var', v). var') y_cl_var_var'_v_list);
     x' \<notin> (\<lambda>(y, cl, var, var', v). x_var var') ` set y_cl_var_var'_v_list; map fst y_cl_var_var'_v_list = map fst y_ty_list;
     map (\<lambda>(cl, var, ty). ty) cl_var_ty_list = map snd y_ty_list; map (\<lambda>(y, cl, var, u). var) y_cl_var_var'_v_list = map (\<lambda>(cl, var, ty). var) cl_var_ty_list;
-    \<forall>x\<in>set y_y'_list. case_prod (\<lambda>y. op = (case if y = x_this then Some x' else map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) y of
+    \<forall>x\<in>set y_y'_list. case_prod (\<lambda>y. (=) (case if y = x_this then Some x' else map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) y of
                                        None \<Rightarrow> y | Some x' \<Rightarrow> x')) x;
     \<forall>x\<in>set y_ty_lista. (\<lambda>(y, ty). sty_option P (if y = x_this then Some ty_x_m else map_of (map (\<lambda>(cl, var, y). (x_var var, y)) cl_var_ty_list) y) (Some ty)) x;
     map fst y_y'_list = map fst y_ty_lista; (y, y') = y_y'_list ! i; (yy, ty) = y_ty_lista ! i; i < length y_y'_list; i < length y_ty_lista\<rbrakk> \<Longrightarrow>

@@ -829,19 +829,19 @@ qed
 
 lemma is_relation_order:
   fixes F::"('a, 'b::field) poly_mapping set"
-  shows "Confluence.relation_order (red F) (op \<preceq>p) (op \<prec>p)"
+  shows "Confluence.relation_order (red F) (\<preceq>p) (\<prec>p)"
 proof
-  show "red F \<le> (op \<prec>p)\<inverse>\<inverse>"
+  show "red F \<le> (\<prec>p)\<inverse>\<inverse>"
   proof
     fix x y
     assume "red F x y"
-    show "(op \<prec>p)\<inverse>\<inverse> x y"
+    show "(\<prec>p)\<inverse>\<inverse> x y"
     proof
       from red_ord[OF \<open>red F x y\<close>] show "y \<prec>p x" .
     qed
   qed
 next
-  from ord_p_wf show "wfP op \<prec>p" .
+  from ord_p_wf show "wfP (\<prec>p)" .
 qed
 
 subsection \<open>Gr\"obner Bases and Buchberger's Theorem\<close>
@@ -922,7 +922,7 @@ theorem Buchberger_criterion:
   assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
   shows "is_Groebner_basis F"
 proof -
-  have "relation_order.is_loc_connective (red F) (op \<prec>p)"
+  have "relation_order.is_loc_connective (red F) (\<prec>p)"
     unfolding relation_order.is_loc_connective_def[OF is_relation_order]
   proof (intro allI, intro impI)
     fix a b1 b2
@@ -934,7 +934,7 @@ proof -
     from red_single_ord[OF r2] have "b2 \<prec>p a" .
     from r1 r2 have "f1 \<noteq> 0" and "f2 \<noteq> 0" unfolding red_single_def by simp_all
     hence lc1: "lc f1 \<noteq> 0" and lc2: "lc f2 \<noteq> 0" using lc_not_0 by auto
-    show "cbelow (op \<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 b2"
+    show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 b2"
     proof (cases "t1 + lp f1 = t2 + lp f2")
       case False
       from confluent_distinct[OF r1 r2 False \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>] obtain s where
@@ -980,15 +980,15 @@ proof -
       from red_rtrancl_uminus[OF this] have "(red F)\<^sup>*\<^sup>* (b1 - b2) 0" by simp
       thus ?thesis
       proof (rule red_rtrancl_diff_0_induct)
-        show "cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) b1 b1" unfolding cbelow_def
+        show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 b1" unfolding cbelow_def
           by (intro disjI1, intro conjI, simp, fact)
       next
         fix y z
         assume "(red F)\<^sup>*\<^sup>* (b1 - b2) y" and "red F y z"
-          and "cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)"
-        show "cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) b1 (z + b2)"
+          and "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)"
+        show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (z + b2)"
         proof (rule cbelow_transitive)
-          show "cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)" by fact
+          show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)" by fact
         next
           from True red_single_lookup[OF r1]
             have c1: "lookup b1 t = 0" unfolding t_def by simp
@@ -999,9 +999,9 @@ proof -
           from red_single_higher[OF r2]
             have h2: "higher b2 t = higher a t" unfolding t_def by simp
           from h1 h2 have h: "higher b1 t = higher b2 t" by simp
-          from cbelow_second_below[OF \<open>cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)\<close>]
+          from cbelow_second_below[OF \<open>cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)\<close>]
             have "y + b2 \<prec>p a" .
-          show "cbelow op \<prec>p a (\<lambda>a b. red F a b \<or> red F b a) (y + b2) (z + b2)"
+          show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) (y + b2) (z + b2)"
           proof (rule relation_order.cs_implies_cbelow[OF is_relation_order red_plus_cs[OF \<open>red F y z\<close>]])
             from \<open>(red F)\<^sup>*\<^sup>* (b1 - b2) y\<close> \<open>red F y z\<close> have "(red F)\<^sup>*\<^sup>* (b1 - b2) z" by simp
             hence "lookup z t = 0 \<and> higher z t = 0"
@@ -1728,7 +1728,7 @@ proof -
 qed
 
 lemma red_supset_wf:
-  shows "wfP (op \<sqsupset>p)"
+  shows "wfP (\<sqsupset>p)"
 proof (rule wfP_chain)
   show "\<not>(\<exists>f::(nat \<Rightarrow> (('a, 'b) poly_mapping set)). \<forall>i. f (Suc i) \<sqsupset>p f i)"
   proof (intro notI, erule exE)

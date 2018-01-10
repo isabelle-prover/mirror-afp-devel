@@ -463,7 +463,7 @@ lemma those_param[param]: "(those, those) \<in> \<langle>\<langle>R\<rangle>opti
 
 lemma image_param[param]:
   shows "single_valued A \<Longrightarrow> single_valued B \<Longrightarrow>
-    (op `, op `) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
+    ((`), (`)) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
   by (force simp: set_rel_def fun_rel_def elim!: single_valued_as_brE)
 
 end

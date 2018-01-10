@@ -362,7 +362,7 @@ where
 definition
   measure_on :: "('a \<Rightarrow> nat) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  "measure_on f A = inv_image_betw (op <) f A UNIV"
+  "measure_on f A = inv_image_betw (<) f A UNIV"
 
 lemma in_inv_image_betw [simp]:
   "inv_image_betw P f A B x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y)"
@@ -382,7 +382,7 @@ proof (rule ccontr)
 qed
 
 lemma wfp_less:
-  "wfp_on (op <) (UNIV :: nat set)"
+  "wfp_on (<) (UNIV :: nat set)"
   using wf_less by (auto simp: wfP_def)
 
 lemma wfp_on_measure_on [iff]:

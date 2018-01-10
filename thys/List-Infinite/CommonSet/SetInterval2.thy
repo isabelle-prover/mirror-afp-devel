@@ -599,8 +599,8 @@ by (simp add: iMax_def)
 lemma iMax_infinite_conv: "infinite I = (iMax I = \<infinity>)"
 by (simp add: iMax_def)
 
-lemma "class.distrib_lattice (min::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) (op \<le>) (op <) max"
-apply (subgoal_tac "class.order (op \<le>) (op <)")
+lemma "class.distrib_lattice (min::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) (\<le>) (<) max"
+apply (subgoal_tac "class.order (\<le>) (<)")
  prefer 2
  apply (rule class.order.intro)
   apply (rule class.preorder.intro)
@@ -609,7 +609,7 @@ apply (subgoal_tac "class.order (op \<le>) (op <)")
   apply (rule order_trans, assumption+)
  apply (rule class.order_axioms.intro)
  apply (rule order_antisym, assumption+)
-apply (subgoal_tac "class.linorder (op \<le>) (op <)")
+apply (subgoal_tac "class.linorder (\<le>) (<)")
  prefer 2
  apply (rule class.linorder.intro, assumption)
  apply (rule class.linorder_axioms.intro)
@@ -855,19 +855,19 @@ abbreviation (input) irreflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
 
 
 text {* Example for @{text "reflP"} *}
-lemma "reflP ((op \<le>)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
+lemma "reflP ((\<le>)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
 by (simp add: refl_on_def)
 
 text {* Example for @{text "symP"} *}
-lemma "symP (op =)"
+lemma "symP (=)"
 by (simp add: sym_def)
 
 text {* Example for @{text "equivP"} *}
-lemma "equivP (op =)"
+lemma "equivP (=)"
 by (simp add: trans_def refl_on_def sym_def)
 
 text {* Example for @{text "irreflP"} *}
-lemma "irreflP ((op <)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
+lemma "irreflP ((<)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
 by (simp add: irrefl_def)
 
 
@@ -1229,7 +1229,7 @@ done
 lemma infinite_atMost_int: "infinite {..(n::int)}"
 apply (rule_tac f="\<lambda>x. n - x" in inj_on_infinite_image_iff[THEN iffD1, rule_format])
  apply (simp add: inj_on_def)
-apply (rule_tac t="(op - n ` {..n})" and s="{0..}" in subst)
+apply (rule_tac t="((-) n ` {..n})" and s="{0..}" in subst)
  apply (simp add: set_eq_iff image_iff Bex_def)
  apply (rule allI, rename_tac n1)
  apply (rule iffI)

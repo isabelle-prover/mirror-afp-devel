@@ -260,7 +260,7 @@ proof
   have sameness: "\<And>i j. CHR ''a'' ^^^ i @ CHR ''b'' ^^^ j \<in> A \<longleftrightarrow> i = j"
     unfolding A_def 
     apply auto
-    apply(drule_tac f="\<lambda>s. length (filter (op= (CHR ''a'')) s) = length (filter (op= (CHR ''b'')) s)" 
+    apply(drule_tac f="\<lambda>s. length (filter ((=) (CHR ''a'')) s) = length (filter ((=) (CHR ''b'')) s)" 
       in arg_cong)
     apply(simp)
     done

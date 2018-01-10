@@ -154,11 +154,11 @@ locale inner_product_space = vector_space scale
 interpretation RV_inner: inner_product_space scaleR inner
 by (unfold_locales, auto simp add: cnj_real_def inner_add_left real_of_real_def, rule inner_commute)
 
-interpretation RR_inner: inner_product_space scaleR "op *"
+interpretation RR_inner: inner_product_space scaleR "( * )"
 by (unfold_locales, auto simp add: cnj_real_def distrib_right real_of_real_def) 
    (metis not_real_square_gt_zero)
 
-interpretation CC_inner: inner_product_space "(op *::complex\<Rightarrow>complex\<Rightarrow>complex)" "\<lambda>x y. x*cnj y"
+interpretation CC_inner: inner_product_space "(( * )::complex\<Rightarrow>complex\<Rightarrow>complex)" "\<lambda>x y. x*cnj y"
   apply (unfold_locales) 
   apply (auto simp add: real_of_complex_def cnj_complex_def distrib_left distrib_right complex_mult_cnj complex_neq_0 cmod_power2 complex_norm_square)
   apply (metis Re_complex_of_real complex_neq_0 less_numeral_extra(3) of_real_add of_real_power zero_complex.simps(1))
@@ -371,7 +371,7 @@ lemma sum_0_all:
 
 subsection{*Vecs as inner product spaces*}
 
-locale vec_real_inner = F?: inner_product_space "(op * :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
+locale vec_real_inner = F?: inner_product_space "(( * ) :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
  for inner_field :: "'a\<Rightarrow>'a\<Rightarrow>'a::{field,cnj,real_of_extended}" 
  + fixes inner :: "'a^'n \<Rightarrow> 'a^'n \<Rightarrow>'a" 
  assumes inner_vec_def: "inner x y = sum (\<lambda>i. inner_field (x$i) (y$i)) UNIV"
@@ -414,7 +414,7 @@ qed
 lemma inner_0_0[simp]: "inner 0 0 = 0"
   unfolding inner_vec_def by auto
 
-sublocale v?: inner_product_space "(op *s :: 'a \<Rightarrow> 'a^'n \<Rightarrow> 'a^'n)" "inner"
+sublocale v?: inner_product_space "(( *s) :: 'a \<Rightarrow> 'a^'n \<Rightarrow> 'a^'n)" "inner"
 proof (unfold_locales, auto simp add: real_scalar_mult2)
   fix x y z::"'a^'n" and r
   show "inner x y = cnj (inner y x)" using i1[of x y] by simp

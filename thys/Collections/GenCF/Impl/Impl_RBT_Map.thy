@@ -486,7 +486,7 @@ lemma param_rm_reverse_iterateoi[param]:
 
 
 lemma param_color_eq[param]: 
-  "(op =, op =)\<in>color_rel\<rightarrow>color_rel\<rightarrow>Id"
+  "((=), (=))\<in>color_rel\<rightarrow>color_rel\<rightarrow>Id"
   by (auto elim: color_rel.cases)
 
 lemma param_color_of[param]: 
@@ -539,13 +539,13 @@ lemma is_rbt_param[param]: "(ord.is_rbt,ord.is_rbt) \<in>
 definition "rbt_map_rel' lt = br (ord.rbt_lookup lt) (ord.is_rbt lt)"
 
 lemma (in linorder) rbt_map_impl:
-  "(rbt.Empty,Map.empty) \<in> rbt_map_rel' op <"
+  "(rbt.Empty,Map.empty) \<in> rbt_map_rel' (<)"
   "(rbt_insert,\<lambda>k v m. m(k\<mapsto>v)) 
-    \<in> Id \<rightarrow> Id \<rightarrow> rbt_map_rel' op < \<rightarrow> rbt_map_rel' op <"
-  "(rbt_lookup,\<lambda>m k. m k) \<in> rbt_map_rel' op < \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle>option_rel"
-  "(rbt_delete,\<lambda>k m. m|`(-{k})) \<in> Id \<rightarrow> rbt_map_rel' op < \<rightarrow> rbt_map_rel' op <"
-  "(rbt_union,op ++) 
-    \<in> rbt_map_rel' op < \<rightarrow> rbt_map_rel' op < \<rightarrow> rbt_map_rel' op <"
+    \<in> Id \<rightarrow> Id \<rightarrow> rbt_map_rel' (<) \<rightarrow> rbt_map_rel' (<)"
+  "(rbt_lookup,\<lambda>m k. m k) \<in> rbt_map_rel' (<) \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle>option_rel"
+  "(rbt_delete,\<lambda>k m. m|`(-{k})) \<in> Id \<rightarrow> rbt_map_rel' (<) \<rightarrow> rbt_map_rel' (<)"
+  "(rbt_union,(++)) 
+    \<in> rbt_map_rel' (<) \<rightarrow> rbt_map_rel' (<) \<rightarrow> rbt_map_rel' (<)"
   by (auto simp add: 
     rbt_lookup_rbt_insert rbt_lookup_rbt_delete rbt_lookup_rbt_union
     rbt_union_is_rbt
@@ -558,7 +558,7 @@ lemma sorted_by_rel_keys_true[simp]: "sorted_by_rel (\<lambda>(_,_) (_,_). True)
 
 (*
 lemma (in linorder) rbt_it_linord_impl: 
-  "is_map_iterator_linord (rbt_map_rel' op <) Id Id Id 
+  "is_map_iterator_linord (rbt_map_rel' (<)) Id Id Id 
     (rm_iterateoi::_ \<Rightarrow> ('a,'v,'s) map_iterator)"
   unfolding is_map_iterator_genord_def is_map_iterator_linord_def 
     gen_map_iterator_genord_def[abs_def]
@@ -588,7 +588,7 @@ proof -
 qed
 
 lemma (in linorder) rbt_it_rev_linord_impl: 
-  "is_map_iterator_rev_linord (rbt_map_rel' op <) Id Id Id 
+  "is_map_iterator_rev_linord (rbt_map_rel' (<)) Id Id Id 
     (rm_reverse_iterateoi::_ \<Rightarrow> ('a,'v,'s) map_iterator)"
   unfolding is_map_iterator_genord_def is_map_iterator_rev_linord_def 
     gen_map_iterator_genord_def[abs_def]
@@ -618,7 +618,7 @@ proof -
 qed
 
 lemma (in linorder) rbt_it_impl: 
-  "is_map_iterator (rbt_map_rel' op <) Id Id Id rm_iterateoi"
+  "is_map_iterator (rbt_map_rel' (<)) Id Id Id rm_iterateoi"
   unfolding is_map_iterator_def 
   apply (rule is_map_iterator_genord_weaken)
   apply (rule rbt_it_linord_impl[unfolded is_map_iterator_linord_def])
@@ -636,7 +636,7 @@ lemma rbt_map_rel_def:
 (*
 lemma (in linorder) autoref_gen_rbt_iterate_linord:
   "is_map_iterator_linord 
-    (\<langle>Rk,Rv\<rangle>rbt_map_rel op <) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_iterateoi"
+    (\<langle>Rk,Rv\<rangle>rbt_map_rel (<)) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_iterateoi"
 proof -
   note param_rm_iterateoi[of Rk Rv R\<sigma>]
   also note rbt_it_linord_impl[
@@ -655,7 +655,7 @@ qed
 
 lemma (in linorder) autoref_gen_rbt_iterate_rev_linord:
   "is_map_iterator_rev_linord 
-    (\<langle>Rk,Rv\<rangle>rbt_map_rel op <) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_reverse_iterateoi"
+    (\<langle>Rk,Rv\<rangle>rbt_map_rel (<)) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_reverse_iterateoi"
 proof -
   note param_rm_reverse_iterateoi[of Rk Rv R\<sigma>]
   also note rbt_it_rev_linord_impl[
@@ -674,7 +674,7 @@ qed
 
 lemma (in linorder) autoref_gen_rbt_iterate:
   "is_map_iterator 
-    (\<langle>Rk,Rv\<rangle>rbt_map_rel op <) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_iterateoi"
+    (\<langle>Rk,Rv\<rangle>rbt_map_rel (<)) (Rk::(_\<times>'a) set) Rv R\<sigma> rm_iterateoi"
 proof -
   note param_rm_iterateoi[of Rk Rv R\<sigma>]
   also note rbt_it_impl[
@@ -693,15 +693,15 @@ qed
 *)
 
 lemma (in linorder) autoref_gen_rbt_empty: 
-  "(rbt.Empty,Map.empty) \<in> \<langle>Rk,Rv\<rangle>rbt_map_rel op <"
+  "(rbt.Empty,Map.empty) \<in> \<langle>Rk,Rv\<rangle>rbt_map_rel (<)"
   by (auto simp: rbt_map_rel_def 
     intro!: rbt_map_impl rbt_rel_intros)
 
 lemma (in linorder) autoref_gen_rbt_insert:
   fixes less_impl
-  assumes param_less: "(less_impl,op <) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  assumes param_less: "(less_impl,(<)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
   shows "(ord.rbt_insert less_impl,\<lambda>k v m. m(k\<mapsto>v)) \<in> 
-    Rk \<rightarrow> Rv \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op < \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op <"
+    Rk \<rightarrow> Rv \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<) \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<)"
   apply (intro fun_relI)
   unfolding rbt_map_rel_def
   apply (auto intro!: relcomp.intros)
@@ -713,9 +713,9 @@ lemma (in linorder) autoref_gen_rbt_insert:
 
 lemma (in linorder) autoref_gen_rbt_lookup:
   fixes less_impl
-  assumes param_less: "(less_impl,op <) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  assumes param_less: "(less_impl,(<)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
   shows "(ord.rbt_lookup less_impl, \<lambda>m k. m k) \<in> 
-    \<langle>Rk,Rv\<rangle>rbt_map_rel op < \<rightarrow> Rk \<rightarrow> \<langle>Rv\<rangle>option_rel"
+    \<langle>Rk,Rv\<rangle>rbt_map_rel (<) \<rightarrow> Rk \<rightarrow> \<langle>Rv\<rangle>option_rel"
   unfolding rbt_map_rel_def
   apply (intro fun_relI)
   apply (elim relcomp.cases)
@@ -732,9 +732,9 @@ lemma (in linorder) autoref_gen_rbt_lookup:
 
 lemma (in linorder) autoref_gen_rbt_delete:
   fixes less_impl
-  assumes param_less: "(less_impl,op <) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  assumes param_less: "(less_impl,(<)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
   shows "(ord.rbt_delete less_impl, \<lambda>k m. m |`(-{k})) \<in> 
-    Rk \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op < \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op <"
+    Rk \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<) \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<)"
   unfolding rbt_map_rel_def
   apply (intro fun_relI)
   apply (elim relcomp.cases)
@@ -749,9 +749,9 @@ lemma (in linorder) autoref_gen_rbt_delete:
 
 lemma (in linorder) autoref_gen_rbt_union:
   fixes less_impl
-  assumes param_less: "(less_impl,op <) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
-  shows "(ord.rbt_union less_impl, op ++) \<in> 
-    \<langle>Rk,Rv\<rangle>rbt_map_rel op < \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op < \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel op <"
+  assumes param_less: "(less_impl,(<)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  shows "(ord.rbt_union less_impl, (++)) \<in> 
+    \<langle>Rk,Rv\<rangle>rbt_map_rel (<) \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<) \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (<)"
   unfolding rbt_map_rel_def
   apply (intro fun_relI)
   apply (elim relcomp.cases)
@@ -788,7 +788,7 @@ definition
 
 lemma (in linorder) param_rbt_sorted_list_of_map[param]:
   shows "(rbt_to_list, sorted_list_of_map) \<in> 
-  \<langle>Rk, Rv\<rangle>rbt_map_rel op < \<rightarrow> \<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel"
+  \<langle>Rk, Rv\<rangle>rbt_map_rel (<) \<rightarrow> \<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel"
   apply (auto simp: rbt_map_rel_def rbt_map_rel'_def br_def
     rbt_to_list_correct[symmetric]
   )
@@ -929,7 +929,7 @@ qed
 lemma autoref_rbt_union[autoref_rules]:
   assumes ELO: "SIDE_GEN_ALGO (eq_linorder cmp')"
   assumes [simplified,param]: "GEN_OP cmp cmp' (Rk\<rightarrow>Rk\<rightarrow>Id)"
-  shows "(ord.rbt_union (comp2lt cmp),op ++) \<in>
+  shows "(ord.rbt_union (comp2lt cmp),(++)) \<in>
     \<langle>Rk,Rv\<rangle>rbt_map_rel (comp2lt cmp') \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (comp2lt cmp')
        \<rightarrow> \<langle>Rk,Rv\<rangle>rbt_map_rel (comp2lt cmp')"
 proof -
@@ -999,7 +999,7 @@ qed
 lemmas [autoref_ga_rules] = class_to_eq_linorder
 
 lemma (in linorder) dflt_cmp_id:
-  "(dflt_cmp op \<le> op <, dflt_cmp op \<le> op <)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(dflt_cmp (\<le>) (<), dflt_cmp (\<le>) (<))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
 
 lemmas [autoref_rules] = dflt_cmp_id
@@ -1034,7 +1034,7 @@ lemma set_linorder_impl[autoref_ga_rules]:
   using set_ord_eq_linorder .
 
 lemma (in linorder) rbt_map_rel_finite_aux:
-  "finite_map_rel (\<langle>Rk,Rv\<rangle>rbt_map_rel op <)"
+  "finite_map_rel (\<langle>Rk,Rv\<rangle>rbt_map_rel (<))"
   unfolding finite_map_rel_def
   by (auto simp: rbt_map_rel_def rbt_map_rel'_def br_def)
 
@@ -1049,11 +1049,11 @@ proof -
 qed
 
 abbreviation 
-  "dflt_rm_rel \<equiv> rbt_map_rel (comp2lt (dflt_cmp op \<le> op <))"
+  "dflt_rm_rel \<equiv> rbt_map_rel (comp2lt (dflt_cmp (\<le>) (<)))"
 
 lemmas [autoref_post_simps] = dflt_cmp_inv2 dflt_cmp_2inv
 
-lemma [simp,autoref_post_simps]: "ord.rbt_ins op < = rbt_ins"
+lemma [simp,autoref_post_simps]: "ord.rbt_ins (<) = rbt_ins"
 proof (intro ext, goal_cases)
   case (1 x xa xb xc) thus ?case
     apply (induct x xa xb xc rule: rbt_ins.induct)
@@ -1062,8 +1062,8 @@ proof (intro ext, goal_cases)
 qed
 
 lemma [simp,autoref_post_simps]:
-  "ord.rbt_insert_with_key op < = rbt_insert_with_key"
-  "ord.rbt_insert op < = rbt_insert"
+  "ord.rbt_insert_with_key (<) = rbt_insert_with_key"
+  "ord.rbt_insert (<) = rbt_insert"
   unfolding 
     ord.rbt_insert_with_key_def[abs_def] rbt_insert_with_key_def[abs_def]
     ord.rbt_insert_def[abs_def] rbt_insert_def[abs_def]
@@ -1074,7 +1074,7 @@ lemma autoref_comp2eq[autoref_rules_raw]:
   assumes PRIO_TAG_GEN_ALGO
   assumes ELC: "SIDE_GEN_ALGO (eq_linorder cmp')"
   assumes [simplified,param]: "GEN_OP cmp cmp' (R\<rightarrow>R\<rightarrow>Id)"
-  shows "(comp2eq cmp, op =) \<in> R\<rightarrow>R\<rightarrow>Id"
+  shows "(comp2eq cmp, (=)) \<in> R\<rightarrow>R\<rightarrow>Id"
 proof -
   from ELC have 1: "eq_linorder cmp'" by simp
   show ?thesis

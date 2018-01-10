@@ -38,7 +38,7 @@ begin
     apply (rule fref_ncI) 
     unfolding mtx_rel_def
   proof goal_cases case 1  
-    have [param]: "(op =, op =) \<in> nat_rel \<times>\<^sub>r nat_rel \<rightarrow> nat_rel \<times>\<^sub>r nat_rel \<rightarrow> bool_rel" by simp
+    have [param]: "((=), (=)) \<in> nat_rel \<times>\<^sub>r nat_rel \<rightarrow> nat_rel \<times>\<^sub>r nat_rel \<rightarrow> bool_rel" by simp
     show ?case by parametricity
   qed
 
@@ -50,7 +50,7 @@ begin
     case 1
     assume "IS_ID A"
     hence U: "A=Id" by (simp only: IS_ID_def)
-    have [param]: "(op=,op=)\<in>A\<rightarrow>A\<rightarrow>bool_rel" using U by simp
+    have [param]: "((=),(=))\<in>A\<rightarrow>A\<rightarrow>bool_rel" using U by simp
     show ?case
       apply (rule fref_ncI)
       unfolding mtx_rel_def

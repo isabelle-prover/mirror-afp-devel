@@ -32,7 +32,7 @@ by simp
 lemma if_False_eq: "\<lbrakk> b \<Longrightarrow> False; e = e' \<rbrakk> \<Longrightarrow> If b t e = e'"
 by auto
 
-lemma imp_OO_imp [simp]: "op \<longrightarrow> OO op \<longrightarrow> = op \<longrightarrow>"
+lemma imp_OO_imp [simp]: "(\<longrightarrow>) OO (\<longrightarrow>) = (\<longrightarrow>)"
 by auto
 
 lemma inj_on_fun_updD: "\<lbrakk> inj_on (f(x := y)) A; x \<notin> A \<rbrakk> \<Longrightarrow> inj_on f A"
@@ -125,7 +125,7 @@ by(rule restrict_relp_cong; simp add: simp_implies_def)
 
 lemma restrict_relp_parametric [transfer_rule]:
   includes lifting_syntax shows
-  "((A ===> B ===> op =) ===> (A ===> op =) ===> (B ===> op =) ===> A ===> B ===> op =) restrict_relp restrict_relp"
+  "((A ===> B ===> (=)) ===> (A ===> (=)) ===> (B ===> (=)) ===> A ===> B ===> (=)) restrict_relp restrict_relp"
 unfolding restrict_relp_def[abs_def] by transfer_prover
 
 lemma restrict_relp_mono: "\<lbrakk> R \<le> R'; P \<le> P'; Q \<le> Q' \<rbrakk> \<Longrightarrow> R \<upharpoonleft> P \<otimes> Q \<le> R' \<upharpoonleft> P' \<otimes> Q'"
@@ -276,7 +276,7 @@ by(simp_all add: option.rel_map restrict_relp_def fun_eq_iff)
 subsubsection {* Orders on option *}
 
 abbreviation le_option :: "'a option \<Rightarrow> 'a option \<Rightarrow> bool"
-where "le_option \<equiv> ord_option op ="
+where "le_option \<equiv> ord_option (=)"
 
 lemma le_option_bind_mono:
   "\<lbrakk> le_option x y; \<And>a. a \<in> set_option x \<Longrightarrow> le_option (f a) (g a) \<rbrakk>
@@ -415,7 +415,7 @@ lemma zip_option_parametric [transfer_rule]:
   "(rel_option R ===> rel_option Q ===> rel_option (rel_prod R Q)) zip_option zip_option"
 unfolding zip_conv_bind_option[abs_def] by transfer_prover
 
-lemma rel_option_eqI [simp]: "rel_option op = x x"
+lemma rel_option_eqI [simp]: "rel_option (=) x x"
 by(simp add: option.rel_eq)
 
 subsubsection \<open>Binary supremum on @{typ "'a option"}\<close>
@@ -610,7 +610,7 @@ lemma rel_set_Grp:
 by(auto simp add: rel_set_def BNF_Def.Grp_def fun_eq_iff)
 
 lemma rel_set_comp_Grp:
-  "rel_set R = (BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} (op ` fst))\<inverse>\<inverse> OO BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} (op ` snd)"
+  "rel_set R = (BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} ((`) fst))\<inverse>\<inverse> OO BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} ((`) snd)"
 apply(auto 4 3 del: ext intro!: ext simp add: BNF_Def.Grp_def intro!: rel_setI intro: rev_bexI)
 apply(simp add: relcompp_apply)
 subgoal for A B
@@ -691,7 +691,7 @@ lemma bi_total_vimage2p [simp]:
 unfolding bi_total_alt_def by simp
 
 lemma vimage2p_eq [simp]:
-  "inj f \<Longrightarrow> BNF_Def.vimage2p f f op = = op ="
+  "inj f \<Longrightarrow> BNF_Def.vimage2p f f (=) = (=)"
 by(auto simp add: vimage2p_def fun_eq_iff inj_on_def)
 
 lemma vimage2p_conversep: "BNF_Def.vimage2p f g R^--1 = (BNF_Def.vimage2p g f R)^--1"
@@ -703,24 +703,24 @@ context includes lifting_syntax begin
 
 lemma monotone_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total A"
-  shows "((A ===> A ===> op =) ===> (B ===> B ===> op =) ===> (A ===> B) ===> op =) monotone monotone"
+  shows "((A ===> A ===> (=)) ===> (B ===> B ===> (=)) ===> (A ===> B) ===> (=)) monotone monotone"
 unfolding monotone_def[abs_def] by transfer_prover
 
 lemma fun_ord_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total C"
-  shows "((A ===> B ===> op =) ===> (C ===> A) ===> (C ===> B) ===> op =) fun_ord fun_ord"
+  shows "((A ===> B ===> (=)) ===> (C ===> A) ===> (C ===> B) ===> (=)) fun_ord fun_ord"
 unfolding fun_ord_def[abs_def] by transfer_prover
 
 lemma Plus_parametric [transfer_rule]:
-  "(rel_set A ===> rel_set B ===> rel_set (rel_sum A B)) op <+> op <+>"
+  "(rel_set A ===> rel_set B ===> rel_set (rel_sum A B)) (<+>) (<+>)"
 unfolding Plus_def[abs_def] by transfer_prover
 
 lemma pred_fun_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total A"
-  shows "((A ===> op =) ===> (B ===> op =) ===> (A ===> B) ===> op =) pred_fun pred_fun"
+  shows "((A ===> (=)) ===> (B ===> (=)) ===> (A ===> B) ===> (=)) pred_fun pred_fun"
 unfolding pred_fun_def by(transfer_prover)
 
-lemma rel_fun_eq_OO: "(op = ===> A) OO (op = ===> B) = (op = ===> A OO B)"
+lemma rel_fun_eq_OO: "((=) ===> A) OO ((=) ===> B) = ((=) ===> A OO B)"
 by(clarsimp simp add: rel_fun_def fun_eq_iff relcompp.simps) metis
 
 end
@@ -728,7 +728,7 @@ end
 lemma Quotient_set_rel_eq:
   includes lifting_syntax
   assumes "Quotient R Abs Rep T"
-  shows "(rel_set T ===> rel_set T ===> op =) (rel_set R) op ="
+  shows "(rel_set T ===> rel_set T ===> (=)) (rel_set R) (=)"
 proof(rule rel_funI iffI)+
   fix A B C D
   assume AB: "rel_set T A B" and CD: "rel_set T C D"
@@ -755,7 +755,7 @@ proof(rule rel_funI iffI)+
   }
 qed
 
-lemma Domainp_eq: "Domainp op = = (\<lambda>_. True)"
+lemma Domainp_eq: "Domainp (=) = (\<lambda>_. True)"
 by(simp add: Domainp.simps fun_eq_iff)
 
 lemma rel_fun_eq_onpI: "eq_onp (pred_fun P Q) f g \<Longrightarrow> rel_fun (eq_onp P) (eq_onp Q) f g"
@@ -764,7 +764,7 @@ by(auto simp add: eq_onp_def rel_fun_def)
 lemma bi_unique_eq_onp: "bi_unique (eq_onp P)"
 by(simp add: bi_unique_def eq_onp_def)
 
-lemma rel_fun_eq_conversep: includes lifting_syntax shows "(A\<inverse>\<inverse> ===> op =) = (A ===> op =)\<inverse>\<inverse>"
+lemma rel_fun_eq_conversep: includes lifting_syntax shows "(A\<inverse>\<inverse> ===> (=)) = (A ===> (=))\<inverse>\<inverse>"
 by(auto simp add: fun_eq_iff rel_fun_def)
 
 
@@ -871,7 +871,7 @@ declaration \<open>Partial_Function.init "option'" @{term option.fixp_fun}
 lemma bot_fun_least [simp]: "(\<lambda>_. bot :: 'a :: order_bot) \<le> x"
 by(fold bot_fun_def) simp
 
-lemma fun_ord_conv_rel_fun: "fun_ord = rel_fun op ="
+lemma fun_ord_conv_rel_fun: "fun_ord = rel_fun (=)"
 by(simp add: fun_ord_def fun_eq_iff rel_fun_def)
 
 inductive finite_chains :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -929,12 +929,12 @@ by(auto simp add: rel_fun_def)
 
 lemma (in ccpo) Sup_image_mono:
   assumes ccpo: "class.ccpo luba orda lessa"
-  and mono: "monotone orda op \<le> f"
+  and mono: "monotone orda (\<le>) f"
   and chain: "Complete_Partial_Order.chain orda A"
   and "A \<noteq> {}"
   shows "Sup (f ` A) \<le> (f (luba A))"
 proof(rule ccpo_Sup_least)
-  from chain show "Complete_Partial_Order.chain op \<le> (f ` A)"
+  from chain show "Complete_Partial_Order.chain (\<le>) (f ` A)"
     by(rule chain_imageI)(rule monotoneD[OF mono])
   fix x
   assume "x \<in> f ` A"
@@ -945,28 +945,28 @@ proof(rule ccpo_Sup_least)
 qed
 
 lemma (in ccpo) admissible_le_mono:
-  assumes "monotone op \<le> op \<le> f"
-  shows "ccpo.admissible Sup op \<le> (\<lambda>x. x \<le> f x)"
+  assumes "monotone (\<le>) (\<le>) f"
+  shows "ccpo.admissible Sup (\<le>) (\<lambda>x. x \<le> f x)"
 proof(rule ccpo.admissibleI)
   fix Y
-  assume chain: "Complete_Partial_Order.chain op \<le> Y"
+  assume chain: "Complete_Partial_Order.chain (\<le>) Y"
     and Y: "Y \<noteq> {}"
     and le [rule_format]: "\<forall>x\<in>Y. x \<le> f x"
   have "\<Squnion>Y \<le> \<Squnion>(f ` Y)" using chain
     by(rule ccpo_Sup_least)(rule order_trans[OF le]; blast intro!: ccpo_Sup_upper chain_imageI[OF chain] intro: monotoneD[OF assms])
   also have "\<dots> \<le> f (\<Squnion>Y)"
-    by(rule Sup_image_mono[OF _ assms chain Y, where lessa="op <"]) unfold_locales
+    by(rule Sup_image_mono[OF _ assms chain Y, where lessa="(<)"]) unfold_locales
   finally show "\<Squnion>Y \<le> \<dots>" .
 qed
 
 lemma (in ccpo) fixp_induct_strong2:
-  assumes adm: "ccpo.admissible Sup op \<le> P"
-  and mono: "monotone op \<le> op \<le> f"
+  assumes adm: "ccpo.admissible Sup (\<le>) P"
+  and mono: "monotone (\<le>) (\<le>) f"
   and bot: "P (\<Squnion>{})"
   and step: "\<And>x. \<lbrakk> x \<le> ccpo_class.fixp f; x \<le> f x; P x \<rbrakk> \<Longrightarrow> P (f x)"
   shows "P (ccpo_class.fixp f)"
 proof(rule fixp_strong_induct[where P="\<lambda>x. x \<le> f x \<and> P x", THEN conjunct2])
-  show "ccpo.admissible Sup op \<le> (\<lambda>x. x \<le> f x \<and> P x)"
+  show "ccpo.admissible Sup (\<le>) (\<lambda>x. x \<le> f x \<and> P x)"
     using admissible_le_mono adm by(rule admissible_conj)(rule mono)
 next
   show "\<Squnion>{} \<le> f (\<Squnion>{}) \<and> P (\<Squnion>{})"
@@ -1009,9 +1009,9 @@ lemmas parallel_fixp_induct_2_4 = parallel_fixp_induct_uc[
   for P
   
 lemma (in ccpo) fixp_greatest:
-  assumes f: "monotone op \<le> op \<le> f"
+  assumes f: "monotone (\<le>) (\<le>) f"
     and ge: "\<And>y. f y \<le> y \<Longrightarrow> x \<le> y"
-  shows "x \<le> ccpo.fixp Sup op \<le> f"
+  shows "x \<le> ccpo.fixp Sup (\<le>) f"
   by(rule ge)(simp add: fixp_unfold[OF f, symmetric])
 
 lemma fixp_rolling:
@@ -1044,14 +1044,14 @@ lemma fixp_lfp_parametric_eq:
   includes lifting_syntax
   assumes f: "\<And>x. lfp.mono_body (\<lambda>f. F f x)"
   and g: "\<And>x. lfp.mono_body (\<lambda>f. G f x)"
-  and param: "((A ===> op =) ===> A ===> op =) F G"
-  shows "(A ===> op =) (lfp.fixp_fun F) (lfp.fixp_fun G)"
+  and param: "((A ===> (=)) ===> A ===> (=)) F G"
+  shows "(A ===> (=)) (lfp.fixp_fun F) (lfp.fixp_fun G)"
 using f g
-proof(rule parallel_fixp_induct_1_1[OF complete_lattice_partial_function_definitions complete_lattice_partial_function_definitions _ _ reflexive reflexive, where P="(A ===> op =)"])
-  show "ccpo.admissible (prod_lub lfp.lub_fun lfp.lub_fun) (rel_prod lfp.le_fun lfp.le_fun) (\<lambda>x. (A ===> op =) (fst x) (snd x))"
+proof(rule parallel_fixp_induct_1_1[OF complete_lattice_partial_function_definitions complete_lattice_partial_function_definitions _ _ reflexive reflexive, where P="(A ===> (=))"])
+  show "ccpo.admissible (prod_lub lfp.lub_fun lfp.lub_fun) (rel_prod lfp.le_fun lfp.le_fun) (\<lambda>x. (A ===> (=)) (fst x) (snd x))"
     unfolding rel_fun_def by simp
-  show "(A ===> op =) (\<lambda>_. \<Squnion>{}) (\<lambda>_. \<Squnion>{})" by auto
-  show "(A ===> op =) (F f) (G g)" if "(A ===> op =) f g" for f g
+  show "(A ===> (=)) (\<lambda>_. \<Squnion>{}) (\<lambda>_. \<Squnion>{})" by auto
+  show "(A ===> (=)) (F f) (G g)" if "(A ===> (=)) f g" for f g
     using that by(rule rel_funD[OF param])
 qed
 
@@ -1064,16 +1064,16 @@ lemma mcont2mcont_map_option[THEN option.mcont2mcont, simp, cont_intro]:
 by(rule mcont_finite_chains[OF _ _ flat_interpretation[THEN ccpo] flat_interpretation[THEN ccpo]]) simp_all
 
 lemma mono2mono_set_option [THEN lfp.mono2mono]:
-  shows monotone_set_option: "monotone option_ord op \<subseteq> set_option"
+  shows monotone_set_option: "monotone option_ord (\<subseteq>) set_option"
 by(auto intro!: monotoneI simp add: option_ord_Some1_iff)
 
 lemma mcont2mcont_set_option [THEN lfp.mcont2mcont, cont_intro, simp]:
-  shows mcont_set_option: "mcont (flat_lub None) option_ord Union op \<subseteq> set_option"
+  shows mcont_set_option: "mcont (flat_lub None) option_ord Union (\<subseteq>) set_option"
 by(rule mcont_finite_chains)(simp_all add: monotone_set_option ccpo option.partial_function_definitions_axioms)
 
 lemma eadd_gfp_partial_function_mono [partial_function_mono]:
-  "\<lbrakk> monotone (fun_ord op \<ge>) op \<ge> f; monotone (fun_ord op \<ge>) op \<ge> g \<rbrakk>
-  \<Longrightarrow> monotone (fun_ord op \<ge>) op \<ge> (\<lambda>x. f x + g x :: enat)"
+  "\<lbrakk> monotone (fun_ord (\<ge>)) (\<ge>) f; monotone (fun_ord (\<ge>)) (\<ge>) g \<rbrakk>
+  \<Longrightarrow> monotone (fun_ord (\<ge>)) (\<ge>) (\<lambda>x. f x + g x :: enat)"
 by(rule mono2mono_gfp_eadd)
 
 lemma map_option_mono [partial_function_mono]:
@@ -1190,7 +1190,7 @@ by(cases n) simp_all
 lemma in_nlists_Suc_iff: "xs \<in> nlists A (Suc n) \<longleftrightarrow> (\<exists>x xs'. xs = x # xs' \<and> x \<in> A \<and> xs' \<in> nlists A n)"
 by(cases xs) simp_all
 
-lemma nlists_Suc: "nlists A (Suc n) = (\<Union>x\<in>A. op # x ` nlists A n)"
+lemma nlists_Suc: "nlists A (Suc n) = (\<Union>x\<in>A. (#) x ` nlists A n)"
 by(auto 4 3 simp add: in_nlists_Suc_iff intro: rev_image_eqI)
 
 lemma replicate_in_nlists [simp, intro]: "x \<in> A \<Longrightarrow> replicate n x \<in> nlists A n"
@@ -1219,13 +1219,13 @@ by(auto dest: finite_nlistsD)
 lemma card_nlists: "card (nlists A n) = card A ^ n"
 proof(induction n)
   case (Suc n)
-  have "card (\<Union>x\<in>A. op # x ` nlists A n) = card A * card (nlists A n)"
+  have "card (\<Union>x\<in>A. (#) x ` nlists A n) = card A * card (nlists A n)"
   proof(cases "finite A")
     case True
     then show ?thesis by(subst card_UN_disjoint)(auto simp add: card_image inj_on_def)
   next
     case False
-    hence "\<not> finite (\<Union>x\<in>A. op # x ` nlists A n)"
+    hence "\<not> finite (\<Union>x\<in>A. (#) x ` nlists A n)"
       unfolding nlists_Suc[symmetric] by(auto dest: finite_nlistsD)
     then show ?thesis using False by simp
   qed
@@ -1373,7 +1373,7 @@ notepad begin
   define y where "y = pmf_of_set {True, False}"
   define f where "f x = pmf_of_set {True, False}" for x :: bool
   define g :: "bool \<Rightarrow> bool pmf" where "g = return_pmf"
-  define P :: "bool \<Rightarrow> bool \<Rightarrow> bool" where "P = op ="
+  define P :: "bool \<Rightarrow> bool \<Rightarrow> bool" where "P = (=)"
   have "rel_pmf P (bind_pmf x f) (bind_pmf y g)"
     by(simp add: P_def f_def[abs_def] g_def y_def bind_return_pmf' pmf.rel_eq)
   have "\<not> R x y" if "\<And>x y. R x y \<Longrightarrow> rel_pmf P (f x) (g y)" for R x y
@@ -1409,7 +1409,7 @@ done
 lemma pmf_rel_mono': "\<lbrakk> rel_pmf P x y; P \<le> Q \<rbrakk> \<Longrightarrow> rel_pmf Q x y"
 by(drule pmf.rel_mono) (auto)
 
-lemma rel_pmf_eqI [simp]: "rel_pmf op = x x"
+lemma rel_pmf_eqI [simp]: "rel_pmf (=) x x"
 by(simp add: pmf.rel_eq)
 
 lemma rel_pmf_bind_reflI:
@@ -1514,7 +1514,7 @@ lemma ord_spmf_return_spmf1: "ord_spmf R (return_spmf x) p \<longleftrightarrow>
 by(auto simp add: rel_pmf_return_pmf1 ord_option.simps in_set_spmf lossless_iff_set_pmf_None Ball_def) (metis option.exhaust)
 
 lemma ord_spmf_conv:
-  "ord_spmf R = rel_spmf R OO ord_spmf op ="
+  "ord_spmf R = rel_spmf R OO ord_spmf (=)"
 apply(subst pmf.rel_compp[symmetric])
 apply(rule arg_cong[where f="rel_pmf"])  
 apply(rule ext)+
@@ -1522,10 +1522,10 @@ apply(auto elim!: ord_option.cases option.rel_cases intro: option.rel_intros)
 done
 
 lemma ord_spmf_expand:
-  "NO_MATCH op = R \<Longrightarrow> ord_spmf R = rel_spmf R OO ord_spmf op ="
+  "NO_MATCH (=) R \<Longrightarrow> ord_spmf R = rel_spmf R OO ord_spmf (=)"
 by(rule ord_spmf_conv)
 
-lemma ord_spmf_eqD_measure: "ord_spmf op = p q \<Longrightarrow> measure (measure_spmf p) A \<le> measure (measure_spmf q) A"
+lemma ord_spmf_eqD_measure: "ord_spmf (=) p q \<Longrightarrow> measure (measure_spmf p) A \<le> measure (measure_spmf q) A"
 by(drule ord_spmf_eqD_measure_spmf)(simp add: le_measure measure_spmf.emeasure_eq_measure)
 
 lemma ord_spmf_measureD:
@@ -1533,7 +1533,7 @@ lemma ord_spmf_measureD:
   shows "measure (measure_spmf p) A \<le> measure (measure_spmf q) {y. \<exists>x\<in>A. R x y}"
     (is "?lhs \<le> ?rhs")
 proof -
-  from assms obtain p' where *: "rel_spmf R p p'" and **: "ord_spmf op = p' q"
+  from assms obtain p' where *: "rel_spmf R p p'" and **: "ord_spmf (=) p' q"
     by(auto simp add: ord_spmf_expand)
   have "?lhs \<le> measure (measure_spmf p') {y. \<exists>x\<in>A. R x y}" using * by(rule rel_spmf_measureD)
   also have "\<dots> \<le> ?rhs" using ** by(rule ord_spmf_eqD_measure)
@@ -1627,15 +1627,15 @@ lemma bind_spmf_map_pmf:
   "bind_spmf (map_pmf f p) g = bind_pmf p (\<lambda>x. bind_spmf (return_pmf (f x)) g)"
 by(simp add: map_pmf_def bind_spmf_def bind_assoc_pmf)
 
-lemma rel_spmf_eqI [simp]: "rel_spmf op = x x"
+lemma rel_spmf_eqI [simp]: "rel_spmf (=) x x"
 by(simp add: option.rel_eq)
 
 lemma set_spmf_map_pmf: "set_spmf (map_pmf f p) = (\<Union>x\<in>set_pmf p. set_option (f x))" (* Move up *)
 by(simp add: set_spmf_def bind_UNION)
 
-lemma ord_spmf_return_spmf [simp]: "ord_spmf op = (return_spmf x) p \<longleftrightarrow> p = return_spmf x"
+lemma ord_spmf_return_spmf [simp]: "ord_spmf (=) (return_spmf x) p \<longleftrightarrow> p = return_spmf x"
 proof -
-  have "p = return_spmf x \<Longrightarrow> ord_spmf op = (return_spmf x) p" by simp
+  have "p = return_spmf x \<Longrightarrow> ord_spmf (=) (return_spmf x) p" by simp
   thus ?thesis
     by (metis (no_types) ord_option_eq_simps(2) rel_pmf_return_pmf1 rel_pmf_return_pmf2 spmf.leq_antisym)
 qed
@@ -1757,11 +1757,11 @@ lemma spmf_of_pmf_parametric [transfer_rule]:
 unfolding spmf_of_pmf_def[abs_def] by transfer_prover
 
 lemma mono2mono_return_pmf[THEN spmf.mono2mono, simp, cont_intro]: (* Move to SPMF *)
-  shows monotone_return_pmf: "monotone option_ord (ord_spmf op =) return_pmf"
+  shows monotone_return_pmf: "monotone option_ord (ord_spmf (=)) return_pmf"
 by(rule monotoneI)(auto simp add: flat_ord_def)
 
 lemma mcont2mcont_return_pmf[THEN spmf.mcont2mcont, simp, cont_intro]:  (* Move to SPMF *)
-  shows mcont_return_pmf: "mcont (flat_lub None) option_ord lub_spmf (ord_spmf op =) return_pmf"
+  shows mcont_return_pmf: "mcont (flat_lub None) option_ord lub_spmf (ord_spmf (=)) return_pmf"
 by(rule mcont_finite_chains[OF _ _ flat_interpretation[THEN ccpo] ccpo_spmf]) simp_all
 
 lemma pred_spmf_top: (* Move up *)
@@ -1834,11 +1834,11 @@ end
 context includes lifting_syntax begin
 
 lemma return_option_spmf_transfer [transfer_parametric return_spmf_parametric, transfer_rule]:
-  "(op = ===> cr_spmf_option) return_spmf Some"
+  "((=) ===> cr_spmf_option) return_spmf Some"
 by(rule rel_funI)(simp add: cr_spmf_option_def)
 
 lemma map_option_spmf_transfer [transfer_parametric map_spmf_parametric, transfer_rule]:
-  "((op = ===> op =) ===> cr_spmf_option ===> cr_spmf_option) map_spmf map_option"
+  "(((=) ===> (=)) ===> cr_spmf_option ===> cr_spmf_option) map_spmf map_option"
 unfolding rel_fun_eq by(auto simp add: rel_fun_def cr_spmf_option_def)
 
 lemma fail_option_spmf_transfer [transfer_parametric return_spmf_None_parametric, transfer_rule]:
@@ -1846,17 +1846,17 @@ lemma fail_option_spmf_transfer [transfer_parametric return_spmf_None_parametric
 by(simp add: cr_spmf_option_def)
 
 lemma bind_option_spmf_transfer [transfer_parametric bind_spmf_parametric, transfer_rule]:
-  "(cr_spmf_option ===> (op = ===> cr_spmf_option) ===> cr_spmf_option) bind_spmf Option.bind"
+  "(cr_spmf_option ===> ((=) ===> cr_spmf_option) ===> cr_spmf_option) bind_spmf Option.bind"
 apply(clarsimp simp add: rel_fun_def cr_spmf_option_def)
 subgoal for x f g by(cases x; simp)
 done
 
 lemma set_option_spmf_transfer [transfer_parametric set_spmf_parametric, transfer_rule]:
-  "(cr_spmf_option ===> rel_set op =) set_spmf set_option"
+  "(cr_spmf_option ===> rel_set (=)) set_spmf set_option"
 by(clarsimp simp add: rel_fun_def cr_spmf_option_def rel_set_eq)
 
 lemma rel_option_spmf_transfer [transfer_parametric rel_spmf_parametric, transfer_rule]:
-  "((op = ===> op = ===> op =) ===> cr_spmf_option ===> cr_spmf_option ===> op =) rel_spmf rel_option"
+  "(((=) ===> (=) ===> (=)) ===> cr_spmf_option ===> cr_spmf_option ===> (=)) rel_spmf rel_option"
 unfolding rel_fun_eq by(simp add: rel_fun_def cr_spmf_option_def)
 
 end
@@ -1870,23 +1870,23 @@ text \<open>
 \<close>
 
 definition cr_option_le_spmf :: "'a option \<Rightarrow> 'a spmf \<Rightarrow> bool"
-where "cr_option_le_spmf x p \<longleftrightarrow> ord_spmf op = (return_pmf x) p"
+where "cr_option_le_spmf x p \<longleftrightarrow> ord_spmf (=) (return_pmf x) p"
 
 context includes lifting_syntax begin
 
 lemma return_option_le_spmf_transfer [transfer_rule]:
-  "(op = ===> cr_option_le_spmf) (\<lambda>x. x) return_pmf"
+  "((=) ===> cr_option_le_spmf) (\<lambda>x. x) return_pmf"
 by(rule rel_funI)(simp add: cr_option_le_spmf_def ord_option_reflI)
 
 lemma map_option_le_spmf_transfer [transfer_rule]:
-  "((op = ===> op =) ===> cr_option_le_spmf ===> cr_option_le_spmf) map_option map_spmf"
+  "(((=) ===> (=)) ===> cr_option_le_spmf ===> cr_option_le_spmf) map_option map_spmf"
 unfolding rel_fun_eq
 apply(clarsimp simp add: rel_fun_def cr_option_le_spmf_def rel_pmf_return_pmf1 ord_option_map1 ord_option_map2)
 subgoal for f x p y by(cases x; simp add: ord_option_reflI)
 done
 
 lemma bind_option_le_spmf_transfer [transfer_rule]:
-  "(cr_option_le_spmf ===> (op = ===> cr_option_le_spmf) ===> cr_option_le_spmf) Option.bind bind_spmf"
+  "(cr_option_le_spmf ===> ((=) ===> cr_option_le_spmf) ===> cr_option_le_spmf) Option.bind bind_spmf"
 apply(clarsimp simp add: rel_fun_def cr_option_le_spmf_def)
 subgoal for x p f g by(cases x; auto 4 3 simp add: rel_pmf_return_pmf1 set_pmf_bind_spmf)
 done

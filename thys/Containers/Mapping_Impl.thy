@@ -39,7 +39,7 @@ declare [[code drop: Mapping.is_empty]]
 
 lemma is_empty_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
+  shows "(pcr_mapping (=) (=) ===> (=)) (\<lambda>m. m = empty) Mapping.is_empty"
 unfolding mapping.pcr_cr_eq
 apply(rule rel_funI)
 apply(case_tac y)
@@ -100,7 +100,7 @@ declare [[code drop: Mapping.size]]
 
 lemma Mapping_size_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
+  shows "(pcr_mapping (=) (=) ===> (=)) (card \<circ> dom) Mapping.size"
 apply(rule rel_funI)
 apply(case_tac y)
 apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)

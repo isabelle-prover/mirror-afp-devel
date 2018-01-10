@@ -168,7 +168,7 @@ apply (subgoal_tac "length (xs \<Join>\<^sub>f I) = length xs")
  prefer 2
  apply (simp add: f_join_length cut_less_Int_conv Int_absorb1)
 apply (clarsimp simp: list_eq_iff[of _ xs] f_join_nth)
-apply (rule arg_cong[where f="op ! xs"])
+apply (rule arg_cong[where f="(!) xs"])
 apply (subgoal_tac "I \<down>< length xs = {..<length xs}")
  prefer 2
  apply fastforce

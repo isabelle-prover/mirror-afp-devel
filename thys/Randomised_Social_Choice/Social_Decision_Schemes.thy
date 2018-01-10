@@ -140,7 +140,7 @@ begin
 lemma sds_anonymous_neutral:
   assumes perm: "\<sigma> permutes alts" and wf: "is_pref_profile R1" "is_pref_profile R2"
   assumes eq: "anonymous_profile R1 = 
-                 image_mset (map (op ` \<sigma>)) (anonymous_profile R2)"
+                 image_mset (map ((`) \<sigma>)) (anonymous_profile R2)"
   shows   "sds R1 = map_pmf \<sigma> (sds R2)"
 proof -
   interpret R1: pref_profile_wf agents alts R1 by fact
@@ -163,7 +163,7 @@ qed
 lemma sds_anonymous_neutral':
   assumes perm: "\<sigma> permutes alts" and wf: "is_pref_profile R1" "is_pref_profile R2"
   assumes eq: "anonymous_profile R1 = 
-                 image_mset (map (op ` \<sigma>)) (anonymous_profile R2)"
+                 image_mset (map ((`) \<sigma>)) (anonymous_profile R2)"
   shows   "pmf (sds R1) (\<sigma> x) = pmf (sds R2) x"
 proof -
   have "sds R1 = map_pmf \<sigma> (sds R2)" by (intro sds_anonymous_neutral) fact+
@@ -173,7 +173,7 @@ qed
 
 lemma sds_automorphism:
   assumes perm: "\<sigma> permutes alts" and wf: "is_pref_profile R"
-  assumes eq: "image_mset (map (op ` \<sigma>)) (anonymous_profile R) = anonymous_profile R"
+  assumes eq: "image_mset (map ((`) \<sigma>)) (anonymous_profile R) = anonymous_profile R"
   shows   "map_pmf \<sigma> (sds R) = sds R"
   using sds_anonymous_neutral[OF perm wf wf eq [symmetric]] ..
 
@@ -182,7 +182,7 @@ end
 lemma an_sds_automorphism_aux:
   assumes wf: "prefs_from_table_wf agents alts yss" "R \<equiv> prefs_from_table yss"
   assumes an: "an_sds agents alts sds"
-  assumes eq: "mset (map ((map (op ` (permutation_of_list xs))) \<circ> snd) yss) = mset (map snd yss)"
+  assumes eq: "mset (map ((map ((`) (permutation_of_list xs))) \<circ> snd) yss) = mset (map snd yss)"
   assumes perm: "set (map fst xs) \<subseteq> alts" "set (map snd xs) = set (map fst xs)" 
                 "distinct (map fst xs)" 
       and x: "x \<in> alts" "y = permutation_of_list xs x"
@@ -197,7 +197,7 @@ proof -
     by (simp add: R.wf_permute_alts)
   from an interpret an_sds agents alts sds .
 
-  from eq wf have eq': "image_mset (map (op ` ?\<sigma>)) (anonymous_profile R) = anonymous_profile R"
+  from eq wf have eq': "image_mset (map ((`) ?\<sigma>)) (anonymous_profile R) = anonymous_profile R"
     by (simp add: anonymise_prefs_from_table mset_map multiset.map_comp)
   from perm' x have "pmf (sds R) x = pmf (map_pmf ?\<sigma> (sds R)) (?\<sigma> x)"
     by (simp add: pmf_map_inj' permutes_inj)

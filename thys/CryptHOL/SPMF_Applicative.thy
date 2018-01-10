@@ -22,7 +22,7 @@ context includes applicative_syntax begin
 lemma ap_spmf_id: "pure_spmf (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_spmf_def pair_spmf_return_spmf1 spmf.map_comp o_def)
 
-lemma ap_spmf_comp: "pure_spmf op \<circ> \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
+lemma ap_spmf_comp: "pure_spmf (\<circ>) \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
 by(simp add: ap_spmf_def pair_spmf_return_spmf1 pair_map_spmf1 pair_map_spmf2 spmf.map_comp o_def split_def pair_pair_spmf)
 
 lemma ap_spmf_homo: "pure_spmf f \<diamondop> pure_spmf x = pure_spmf (f x)"

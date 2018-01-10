@@ -11,7 +11,7 @@ theory Comparator
 imports Main
 begin
 
-text \<open>Instead of having to define a strict and a weak linear order, @{term "(op <, op \<le>)"},
+text \<open>Instead of having to define a strict and a weak linear order, @{term "((<), (\<le>))"},
  one can alternative use a comparator to define the linear order, which may deliver 
  three possible outcomes when comparing two values.\<close>
 

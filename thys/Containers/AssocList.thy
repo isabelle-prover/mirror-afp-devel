@@ -147,7 +147,7 @@ by transfer(simp add: set_delete_aux)
 
 lemma size_dalist_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(pcr_alist op= op= ===> op =) length size"
+  shows "(pcr_alist (=) (=) ===> (=)) length size"
 unfolding size_alist_def[abs_def]
 by transfer_prover
 

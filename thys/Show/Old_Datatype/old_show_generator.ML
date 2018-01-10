@@ -62,7 +62,7 @@ fun mk_shows_idx thy info =
             val show_cname = mk_shows (Long_Name.base_name cname)
             fun combine_dts C e [] = C e
               | combine_dts C e ((_, c) :: ics) = 
-                  combine_dts (fn e' => C (@{term "op +@+"} $ e $ e')) c ics
+                  combine_dts (fn e' => C (@{term "(+@+)"} $ e $ e')) c ics
             fun parenthise t = @{term shows_sep_paren} $ t
             fun shows_of_dty (i, Old_Datatype_Aux.DtRec j) =
                   res_var (j, rec_idx i dtysi) |> parenthise

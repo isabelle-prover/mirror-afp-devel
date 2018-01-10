@@ -108,7 +108,7 @@ begin
   abbreviation \<alpha>e :: "'g \<Rightarrow> ('node \<times> 'edgeD \<times> 'node) set"
   where "\<alpha>e g \<equiv> graph.edges (\<alpha> g)"
   definition \<alpha>n :: "'g \<Rightarrow> 'node list"
-  where "\<alpha>n g \<equiv> nodes_it g (\<lambda>_. True) (op #) []"
+  where "\<alpha>n g \<equiv> nodes_it g (\<lambda>_. True) (#) []"
 *)
 
   definition inEdges :: "'g \<Rightarrow> 'node \<Rightarrow> ('node \<times> 'edgeD \<times> 'node) list"
@@ -1007,7 +1007,7 @@ begin
     shows "n \<in> set (\<alpha>n g)"
   proof-
     from assms(1) obtain m where "m \<in> set (predecessors g n)" by (cases "predecessors g n", auto)
-    with assms(1) obtain m' e where "(m',e,n) \<in> \<alpha>e g" using inEdges_correct[of g n, THEN arg_cong[where f="op ` getTo"]]
+    with assms(1) obtain m' e where "(m',e,n) \<in> \<alpha>e g" using inEdges_correct[of g n, THEN arg_cong[where f="(`) getTo"]]
       by (auto simp: predecessors_def simp del: inEdges_correct)
     with assms(1) show ?thesis
       by (auto simp: predecessors_def)

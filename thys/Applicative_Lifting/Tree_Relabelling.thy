@@ -37,7 +37,7 @@ where
 | "fold_tree f g (Node l r) = g (fold_tree f g l) (fold_tree f g r)"
 
 definition leaves :: "'a tree \<Rightarrow> nat"
-where "leaves = fold_tree (\<lambda>_. 1) (op +)"
+where "leaves = fold_tree (\<lambda>_. 1) (+)"
 
 lemma leaves_simps [simp]:
   "leaves (Leaf x) = Suc 0"
@@ -72,9 +72,9 @@ by(simp_all add: label_tree_def)
 primrec label_list :: "'a list \<Rightarrow> ('s, 'x list) state"
 where
     "label_list [] = pure []"
-  | "label_list (x # xs) = pure (op #) \<diamondop> fresh \<diamondop> label_list xs"
+  | "label_list (x # xs) = pure (#) \<diamondop> fresh \<diamondop> label_list xs"
 
-lemma label_append: "label_list (a @ b) = pure (op @) \<diamondop> label_list a \<diamondop> label_list b"
+lemma label_append: "label_list (a @ b) = pure (@) \<diamondop> label_list a \<diamondop> label_list b"
   -- \<open>The proof lifts the defining equations of @{const append} to the state monad.\<close>
 proof (induction a)
   case Nil
@@ -178,7 +178,7 @@ text \<open>
 lemma ap_conv_bind_state: "State_Monad.ap f x = State_Monad.bind f (\<lambda>f. State_Monad.bind x (State_Monad.return \<circ> f))"
 by(simp add: State_Monad.ap_def State_Monad.bind_def Let_def split_def o_def fun_eq_iff)
 
-lemma ap_pure_bind_state: "pure x \<diamondop> State_Monad.bind y f = State_Monad.bind y (op \<diamondop> (pure x) \<circ> f)"
+lemma ap_pure_bind_state: "pure x \<diamondop> State_Monad.bind y f = State_Monad.bind y ((\<diamondop>) (pure x) \<circ> f)"
 by(simp add: ap_conv_bind_state o_def)
 
 definition kleisli_state :: "('b \<Rightarrow> ('s, 'c) state) \<Rightarrow> ('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a \<Rightarrow> ('s, 'c) state" (infixl "\<bullet>" 55)
@@ -319,7 +319,7 @@ text \<open>Repeating an effect\<close>
 primrec repeatM :: "nat \<Rightarrow> ('s, 'x) state \<Rightarrow> ('s, 'x list) state"
 where
   "repeatM 0 f = State_Monad.return []"
-| "repeatM (Suc n) f = pure op # \<diamondop> f \<diamondop> repeatM n f"
+| "repeatM (Suc n) f = pure (#) \<diamondop> f \<diamondop> repeatM n f"
 
 lemma repeatM_plus: "repeatM (n + m) f = pure append \<diamondop> repeatM n f \<diamondop> repeatM m f"
 by(induction n)(simp; applicative_nf; simp)+

@@ -302,28 +302,28 @@ proof-
 qed
 
 lemma inj_Plus[simp]:
-"inj (op + (a::nat))"
+"inj ((+) (a::nat))"
 unfolding inj_on_def by auto
 
 lemma inj_on_Plus[simp]:
-"inj_on (op + (a::nat)) A"
+"inj_on ((+) (a::nat)) A"
 unfolding inj_on_def by auto
 
 lemma Plus_int[simp]:
 fixes a :: nat
-shows "op + b ` {..< a} = {b ..< b + a}"
+shows "(+) b ` {..< a} = {b ..< b + a}"
 proof safe
   fix x::nat assume "x \<in> {b..< b + a}"
   hence "b \<le> x" and x: "x < a + b" by auto
   then obtain y where xb: "x = b + y" by (metis le_iff_add)
   hence "y < a" using x by simp
-  thus "x \<in> op + b ` {..<a}" using xb by auto
+  thus "x \<in> (+) b ` {..<a}" using xb by auto
 qed auto
 
 lemma sum_minus[simp]:
 fixes a :: nat
 shows "sum f {a ..< a + b} = sum (%x. f (a + x)) {..< b}"
-using sum.reindex[of "op + a" "{..< b}" f] by auto
+using sum.reindex[of "(+) a" "{..< b}" f] by auto
 
 lemma sum_Un_introL:
 assumes "A1 = B1 Un C1" and "x = x1 + x2"
@@ -1300,11 +1300,11 @@ qed
 
 lemma sum_wt_Par_sub[simp]:
 assumes cl: "properL cl" and n: "n < length cl" and I: "I \<subseteq> {..< brn (cl ! n)}"
-shows "sum (wt (Par cl) s) (op + (brnL cl n) ` I) =
+shows "sum (wt (Par cl) s) ((+) (brnL cl n) ` I) =
        1 /(length cl) * sum (wt (cl ! n) s) I" (is "?L = ?wSch * ?R")
 proof-
   have "?L = sum (%i. ?wSch * wt (cl ! n) s i) I"
-  apply(rule sum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  apply(rule sum.reindex_cong[of "(+) (brnL cl n)"]) using assms by auto
   also have "... = ?wSch * ?R"
   unfolding sum_distrib_left by simp
   finally show ?thesis .
@@ -1319,7 +1319,7 @@ using assms by (simp add: sum_distrib_left)
 lemma sum_wt_ParT_sub_WtFT_pickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
 and I: "I \<subseteq> {..< brn (cl ! (pickFT cl))}" "0 \<in> I"
-shows "sum (wt (ParT cl) s) (op + (brnL cl (pickFT cl)) ` I) = 1" (is "?L = 1")
+shows "sum (wt (ParT cl) s) ((+) (brnL cl (pickFT cl)) ` I) = 1" (is "?L = 1")
 proof-
   let ?n = "pickFT cl"
   let ?w = "%i. if i = 0 then (1::real) else 0"
@@ -1381,7 +1381,7 @@ qed
 lemma sum_wt_ParT_sub_WtFT_notPickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1" and n: "n < length cl"
 and I: "I \<subseteq> {..< brn (cl ! n)}" and nI: "n = pickFT cl \<longrightarrow> 0 \<notin> I"
-shows "sum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
+shows "sum (wt (ParT cl) s) ((+) (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
   have "?L = sum (%i. 0) I"
   proof (rule sum.reindex_cong [of "plus (brnL cl n)"])
@@ -1398,10 +1398,10 @@ qed
 lemma sum_wt_ParT_sub_notWtFT_finished[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "finished (cl!n)" and I: "I \<subseteq> {..< brn (cl ! n)}"
-shows "sum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
+shows "sum (wt (ParT cl) s) ((+) (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
   have "?L = sum (%i. 0) I"
-  apply(rule sum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  apply(rule sum.reindex_cong[of "(+) (brnL cl n)"]) using assms by auto
   also have "... = 0" by simp
   finally show ?thesis .
 qed
@@ -1410,12 +1410,12 @@ lemma sum_wt_ParT_sub_notWtFT_notFinished[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1" and n: "n < length cl"
 and cln: "\<not> finished (cl!n)" and I: "I \<subseteq> {..< brn (cl ! n)}"
 shows
-"sum (wt (ParT cl) s) (op + (brnL cl n) ` I) =
+"sum (wt (ParT cl) s) ((+) (brnL cl n) ` I) =
  (1 / (length cl)) / (1 - WtFT cl) * sum (wt (cl ! n) s) I"
 (is "?L = ?w / (1 - ?wF) * ?R")
 proof-
   have "?L = sum (%i. ?w / (1 - ?wF) * wt (cl ! n) s i) I"
-  apply(rule sum.reindex_cong[of "op + (brnL cl n)"])
+  apply(rule sum.reindex_cong[of "(+) (brnL cl n)"])
   using assms by auto
   also have "... = ?w / (1 - ?wF) * ?R"
   unfolding sum_distrib_left by simp
@@ -1428,7 +1428,7 @@ shows "sum (wt (ParT cl) s) {brnL cl (pickFT cl) ..<+ brn (cl ! (pickFT cl))} = 
 proof-
   let ?n = "pickFT cl"
   have 1: "{brnL cl ?n ..<+ brn (cl ! ?n)} =
-  op + (brnL cl ?n) ` {..< brn (cl ! ?n)}" by simp
+  (+) (brnL cl ?n) ` {..< brn (cl ! ?n)}" by simp
   show ?thesis unfolding 1
   apply(rule sum_wt_ParT_sub_WtFT_pickFT_0)
   using assms apply simp_all
@@ -1439,7 +1439,7 @@ lemma sum_wt_ParT_WtFT_notPickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1" and n: "n < length cl" "n \<noteq> pickFT cl"
 shows "sum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
 proof-
-  have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
+  have 1: "{brnL cl n ..<+ brn (cl!n)} = (+) (brnL cl n) ` {..< brn (cl!n)}" by simp
   show ?thesis unfolding 1 apply(rule sum_wt_ParT_sub_WtFT_notPickFT_0) using assms by auto
 qed
 
@@ -1448,7 +1448,7 @@ assumes cl: "properL cl" and "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "finished (cl!n)"
 shows "sum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
 proof-
-  have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
+  have 1: "{brnL cl n ..<+ brn (cl!n)} = (+) (brnL cl n) ` {..< brn (cl!n)}" by simp
   show ?thesis unfolding 1
   apply(rule sum_wt_ParT_sub_notWtFT_finished) using assms by auto
 qed
@@ -1461,7 +1461,7 @@ shows
  (1 / (length cl)) / (1 - WtFT cl) *
  sum (wt (cl ! n) s) {..< brn (cl ! n)}"
 proof-
-  have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
+  have 1: "{brnL cl n ..<+ brn (cl!n)} = (+) (brnL cl n) ` {..< brn (cl!n)}" by simp
   show ?thesis unfolding 1 apply(rule sum_wt_ParT_sub_notWtFT_notFinished) using assms by auto
 qed
 

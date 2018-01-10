@@ -269,12 +269,12 @@ qed
 subsection \<open>Natural Numbers\<close>
 
 lemma almost_full_on_UNIV_nat:
-  "almost_full_on (op \<le>) (UNIV :: nat set)"
+  "almost_full_on (\<le>) (UNIV :: nat set)"
 proof -
   let ?P = "subseq :: bool list \<Rightarrow> bool list \<Rightarrow> bool"
   have *: "length ` (UNIV :: bool list set) = (UNIV :: nat set)"
     by (metis Ex_list_of_length surj_def)
-  have "almost_full_on (op \<le>) (length ` (UNIV :: bool list set))"
+  have "almost_full_on (\<le>) (length ` (UNIV :: bool list set))"
   proof (rule almost_full_on_hom)
     fix xs ys :: "bool list"
     assume "?P xs ys"

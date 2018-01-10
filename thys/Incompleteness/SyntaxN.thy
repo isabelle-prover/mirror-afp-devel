@@ -125,7 +125,7 @@ simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = {* fn _ => fn ctxt => fn
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of
            _ $ (Const (@{const_name fresh}, _) $ atm $ _) => SOME (atm) | _ => NONE)
-      |> distinct (op=)
+      |> distinct ((=))
 
      fun get_thm atm =
        let

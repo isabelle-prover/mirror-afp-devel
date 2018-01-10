@@ -66,7 +66,7 @@ subsection{* Multirelations and Proto-Dioids *}
 text {* We can now show that multirelations form proto-trioids. 
 This is Proposition 5.1, and it subsumes Proposition 4.1, *}
 
-interpretation mrel_proto_trioid: proto_trioid "1\<^sub>\<sigma>" "op\<cdot>" "1\<^sub>\<pi>" "op \<parallel>" "op \<union>" "op \<subseteq>" "op \<subset>" "{}"
+interpretation mrel_proto_trioid: proto_trioid "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}"
 proof 
   show "\<And>x. 1\<^sub>\<sigma> \<cdot> x = x"
     by (auto simp: mr_simp)
@@ -285,7 +285,7 @@ declare mr_simp [mrd_simp] d_def [mrd_simp]
 lemma d_def_expl: "d R = (R \<cdot> 1\<^sub>\<pi>) \<parallel> 1\<^sub>\<sigma>"
   apply (simp add: mrd_simp) using set_eqI by force
 
-interpretation mrel_pbdl_monoid: pbdl_monoid "1\<^sub>\<sigma>" "op \<cdot>" "1\<^sub>\<pi>" "op \<parallel>" "op \<union>" "op \<subseteq>" "op \<subset>" "{}" "U" "op \<inter>"
+interpretation mrel_pbdl_monoid: pbdl_monoid "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}" "U" "(\<inter>)"
   by (unfold_locales, auto simp: mrd_simp)
 
 text {* Here come the properties of Lemma 2.2. *}
@@ -395,7 +395,7 @@ subsection {* Multirelations and C-Lattices *}
 
 text {* Next we show that multirelations form c-lattices (Proposition 7.3) and prove further facts in this setting. *}
 
-interpretation mrel_c_lattice: c_lattice "1\<^sub>\<sigma>" "op \<cdot>" "1\<^sub>\<pi>" "op \<parallel>" "op \<union>" "op \<subseteq>" "op \<subset>" "{}" "U" "op \<inter>" "NC"
+interpretation mrel_c_lattice: c_lattice "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}" "U" "(\<inter>)" "NC"
 proof
   fix x y z :: "('b \<times> 'b set) set"
   show "x \<cdot> 1\<^sub>\<pi> \<union> x \<cdot> NC = x \<cdot> U"
@@ -701,7 +701,7 @@ lemma "R - 1\<^sub>\<pi> = S - 1\<^sub>\<pi> \<Longrightarrow> (T \<cdot> R) - 1
 
 subsection {* Multirelations, Proto-Quantales and Iteration *}
 
-interpretation mrel_proto_quantale: proto_quantale "1\<^sub>\<sigma>" "op \<cdot>" Inter Union "op \<inter>" "op \<subseteq>" "op \<subset>" "op \<union>" "{}" "U"
+interpretation mrel_proto_quantale: proto_quantale "1\<^sub>\<sigma>" "(\<cdot>)" Inter Union "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" "U"
   by (unfold_locales, auto simp: mr_simp)
 
 text {* We reprove Corollary 13.2. because Isabelle does not pick it up from the quantale level. *}

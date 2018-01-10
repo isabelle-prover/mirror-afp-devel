@@ -8,7 +8,7 @@ section {* Locales to abstract over HOL equality *}
 locale equal_base = fixes equal :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 
 locale equal = equal_base +
-  assumes equal_eq: "equal = op ="
+  assumes equal_eq: "equal = (=)"
 begin
 
 lemma equal_conv_eq: "equal x y \<longleftrightarrow> x = y"

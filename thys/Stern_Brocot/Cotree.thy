@@ -128,7 +128,7 @@ lemma ap_tree_identity: "pure id \<diamondop> t = t"
 by(simp add: map_tree_ap_tree_pure_tree tree.map_id)
 
 lemma ap_tree_composition:
-  "pure (op \<circ>) \<diamondop> r1 \<diamondop> r2 \<diamondop> r3 = r1 \<diamondop> (r2 \<diamondop> r3)"
+  "pure (\<circ>) \<diamondop> r1 \<diamondop> r2 \<diamondop> r3 = r1 \<diamondop> (r2 \<diamondop> r3)"
 by(coinduction arbitrary: r1 r2 r3) auto
 
 lemma ap_tree_homomorphism:

@@ -59,11 +59,11 @@ fun mk_hash thy info =
               |> map res_var
             val x = nth lvars
             fun combine_dts [] = mk_num (cons_hash cname idx i 0)
-              | combine_dts ((_,c) :: ics) = @{term "op + :: hashcode => hashcode => hashcode"} $ c $ combine_dts ics
+              | combine_dts ((_,c) :: ics) = @{term "(+) :: hashcode => hashcode => hashcode"} $ c $ combine_dts ics
             fun multiply j t =
               let
                 val mult = mk_num (cons_hash cname idx i (j+1))
-              in @{term "op * :: hashcode => hashcode => hashcode"} $ mult $ t end
+              in @{term "( * ) :: hashcode => hashcode => hashcode"} $ mult $ t end
             fun hash_of_dty (i,Old_Datatype_Aux.DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
               | hash_of_dty (i,_) =
                   let

@@ -137,7 +137,7 @@ lemma mset_filter_compl: "mset (filter p xs) + mset (filter (Not \<circ> p) xs) 
 
 text \<open>Near duplicate of @{thm [source] filter_eq_replicate_mset}: @{thm filter_eq_replicate_mset}.\<close>
 
-lemma filter_mset_eq: "filter_mset (op = L) A = replicate_mset (count A L) L"
+lemma filter_mset_eq: "filter_mset ((=) L) A = replicate_mset (count A L) L"
   by (auto simp: multiset_eq_iff)
 
 lemma filter_mset_cong[fundef_cong]:
@@ -218,7 +218,7 @@ abbreviation removeAll_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a mu
 lemma mset_removeAll[simp, code]: "removeAll_mset C (mset L) = mset (removeAll C L)"
   by (induction L) (auto simp: ac_simps multiset_eq_iff split: if_split_asm)
 
-lemma removeAll_mset_filter_mset: "removeAll_mset C M = filter_mset (op \<noteq> C) M"
+lemma removeAll_mset_filter_mset: "removeAll_mset C M = filter_mset ((\<noteq>) C) M"
   by (induction M) (auto simp: ac_simps multiset_eq_iff)
 
 abbreviation remove1_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
@@ -513,10 +513,10 @@ lemma distinct_image_mset_inj:
 
 subsection \<open>Repeat Operation\<close>
 
-lemma repeat_mset_compower: "repeat_mset n A = ((op + A) ^^ n) {#}"
+lemma repeat_mset_compower: "repeat_mset n A = (((+) A) ^^ n) {#}"
   by (induction n) auto
 
-lemma repeat_mset_prod: "repeat_mset (m * n) A = ((op + (repeat_mset n A)) ^^ m) {#}"
+lemma repeat_mset_prod: "repeat_mset (m * n) A = (((+) (repeat_mset n A)) ^^ m) {#}"
   by (induction m) (auto simp: repeat_mset_distrib)
 
 
@@ -637,10 +637,10 @@ lemma split_paired_Bex_mset_Sigma_mset[simp]:
   by blast
 
 lemma sum_mset_if_eq_constant:
-  "(\<Sum>x\<in>#M. if a = x then (f x) else 0) = ((op + (f a)) ^^ (count M a)) 0"
+  "(\<Sum>x\<in>#M. if a = x then (f x) else 0) = (((+) (f a)) ^^ (count M a)) 0"
   by (induction M) (auto simp: ac_simps)
 
-lemma iterate_op_plus: "((op + k) ^^ m) 0 = k * m"
+lemma iterate_op_plus: "(((+) k) ^^ m) 0 = k * m"
   by (induction m) auto
 
 lemma untion_image_mset_Pair_distribute:
@@ -740,13 +740,13 @@ lemma Times_mset_assoc: "(A \<times># B) \<times># C = image_mset (\<lambda>(a, 
 subsection \<open>Transfer Rules\<close>
 
 lemma plus_multiset_transfer[transfer_rule]:
-  "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (rel_mset R))) (op +) (op +)"
+  "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (rel_mset R))) (+) (+)"
   by (unfold rel_fun_def rel_mset_def)
     (force dest: list_all2_appendI intro: exI[of _ "_ @ _"] conjI[rotated])
 
 lemma minus_multiset_transfer[transfer_rule]:
   assumes [transfer_rule]: "bi_unique R"
-  shows "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (rel_mset R))) (op -) (op -)"
+  shows "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (rel_mset R))) (-) (-)"
 proof (unfold rel_fun_def rel_mset_def, safe)
   fix xs ys xs' ys'
   assume [transfer_rule]: "list_all2 R xs ys" "list_all2 R xs' ys'"
@@ -765,7 +765,7 @@ declare rel_mset_Zero[transfer_rule]
 
 lemma count_transfer[transfer_rule]:
   assumes "bi_unique R"
-  shows "(rel_fun (rel_mset R) (rel_fun R op =)) count count"
+  shows "(rel_fun (rel_mset R) (rel_fun R (=))) count count"
 unfolding rel_fun_def rel_mset_def proof safe
   fix x y xs ys
   assume "list_all2 R xs ys" "R x y"
@@ -779,8 +779,8 @@ qed
 
 lemma subseteq_multiset_transfer[transfer_rule]:
   assumes [transfer_rule]: "bi_unique R" "right_total R"
-  shows "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (op =)))
-    (\<lambda>M N. filter_mset (Domainp R) M \<subseteq># filter_mset (Domainp R) N) (op \<subseteq>#)"
+  shows "(rel_fun (rel_mset R) (rel_fun (rel_mset R) (=)))
+    (\<lambda>M N. filter_mset (Domainp R) M \<subseteq># filter_mset (Domainp R) N) (\<subseteq>#)"
 proof -
   have count_filter_mset_less:
     "(\<forall>a. count (filter_mset (Domainp R) M) a \<le> count (filter_mset (Domainp R) N) a) \<longleftrightarrow>
@@ -790,7 +790,7 @@ proof -
 qed
 
 lemma sum_mset_transfer[transfer_rule]:
-  "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) op + op + \<Longrightarrow> (rel_fun (rel_mset R) R) sum_mset sum_mset"
+  "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) (+) (+) \<Longrightarrow> (rel_fun (rel_mset R) R) sum_mset sum_mset"
   using sum_list_transfer[of R] unfolding rel_fun_def rel_mset_def by auto
 
 lemma Sigma_mset_transfer[transfer_rule]:

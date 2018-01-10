@@ -81,12 +81,12 @@ proof -
       | None \<Rightarrow> bind_spmf (spmf_of_set A) (\<lambda>y. if y \<in> ran \<sigma> then map_spmf (\<lambda>y'. (y', (True, \<sigma>(x \<mapsto> y')))) (spmf_of_set (A - ran \<sigma>)) else return_spmf (y, (bad, (\<sigma>(x \<mapsto> y))))))"
     for bad \<sigma> x by(simp add: rp_bad_def)
 
-  let ?S = "rel_prod2 op ="
+  let ?S = "rel_prod2 (=)"
   define init :: "bool \<times> ('a \<rightharpoonup> 'a)" where "init = (False, Map.empty)"
   have rp: "rp.random_permutation = (\<lambda>\<sigma> x. case \<sigma> x of Some y \<Rightarrow> return_spmf (y, \<sigma>) 
     | None \<Rightarrow> bind_spmf (bind_spmf (spmf_of_set A) (\<lambda>y. if y \<in> ran \<sigma> then spmf_of_set (A - ran \<sigma>) else return_spmf y)) (\<lambda>y. return_spmf (y, \<sigma>(x \<mapsto> y))))"
     by(subst rp_resample)(auto simp add: finite_A rp.random_permutation_def[abs_def])
-  have [transfer_rule]: "(?S ===> op = ===> rel_spmf (rel_prod op = ?S)) rp.random_permutation rp_bad"
+  have [transfer_rule]: "(?S ===> (=) ===> rel_spmf (rel_prod (=) ?S)) rp.random_permutation rp_bad"
     unfolding rp rp_bad_def
     by(auto simp add: rel_fun_def map_spmf_conv_bind_spmf split: option.split intro!: rel_spmf_bind_reflI)
   have [transfer_rule]: "?S Map.empty init" by(simp add: init_def)

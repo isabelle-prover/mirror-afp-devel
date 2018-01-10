@@ -75,7 +75,7 @@ lemma bernoulli_neg [simp]:
   assumes "p \<le> 0"
   shows "bernoulli p = return_spmf False"
 proof -
-  from assms have "ord_spmf op = (bernoulli p) (return_spmf False)"
+  from assms have "ord_spmf (=) (bernoulli p) (return_spmf False)"
   proof(induction arbitrary: p rule: bernoulli.fixp_induct[case_names adm bottom step])
     case (step bernoulli' p)
     show ?case using step.prems step.IH[of "2 * p"]
@@ -90,7 +90,7 @@ lemma bernoulli_pos [simp]:
   assumes "1 \<le> p"
   shows "bernoulli p = return_spmf True"
 proof -
-  from assms have "ord_spmf op = (bernoulli p) (return_spmf True)"
+  from assms have "ord_spmf (=) (bernoulli p) (return_spmf True)"
   proof(induction arbitrary: p rule: bernoulli.fixp_induct[case_names adm bottom step])
     case (step bernoulli' p)
     show ?case using step.prems step.IH[of "2 * p - 1"]

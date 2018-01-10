@@ -100,7 +100,7 @@ begin
   lemma bisimilar_reflp: "reflp bisimilar"
   proof (rule reflpI)
     fix x
-    have "is_bisimulation (op =)"
+    have "is_bisimulation (=)"
       unfolding is_bisimulation_def by (simp add: symp_def)
     then show "x \<sim>\<cdot> x"
       unfolding bisimilar_def by auto
@@ -120,7 +120,7 @@ begin
 
   lemma bisimilar_is_bisimulation: "is_bisimulation bisimilar"
   unfolding is_bisimulation_def proof
-    show "symp op \<sim>\<cdot>"
+    show "symp (\<sim>\<cdot>)"
       by (fact bisimilar_symp)
   next
     show "(\<forall>P Q. P \<sim>\<cdot> Q \<longrightarrow> (\<forall>\<phi>. P \<turnstile> \<phi> \<longrightarrow> Q \<turnstile> \<phi>)) \<and>

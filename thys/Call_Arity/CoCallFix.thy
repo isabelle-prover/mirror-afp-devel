@@ -63,7 +63,7 @@ lemma ccBindsExtra_restr_subst':
   shows  "cc_restr S (ccBindsExtra  \<Gamma>[x::h=y]\<cdot>(ae, G)) 
        = cc_restr S (ccBindsExtra  \<Gamma>\<cdot>(ae f|` S , cc_restr S G))"
   apply (simp add: ccBindsExtra_simp ccBinds_eq ccBind_eq Int_absorb2[OF assms(4)] fv_subst_int[OF assms(3,2)])
-  apply (intro arg_cong2[where f = "op \<squnion>"] refl  arg_cong[OF mapCollect_cong])
+  apply (intro arg_cong2[where f = "(\<squnion>)"] refl  arg_cong[OF mapCollect_cong])
   apply (subgoal_tac "k \<in> S")
   apply (auto intro: fup_ccExp_restr_subst'[OF assms(1)[OF map_of_SomeD]] simp add: fv_subst_int[OF assms(3,2)]   fv_subst_int2[OF assms(3,2)] ccSquare_def)[1]
   apply (metis assms(4) contra_subsetD domI dom_map_of_conv_domA)
@@ -82,7 +82,7 @@ lemma ccBindsExtra_restr:
   shows "cc_restr S (ccBindsExtra \<Gamma>\<cdot>(ae, G)) = cc_restr S (ccBindsExtra \<Gamma>\<cdot>(ae f|` S, cc_restr S G))"
   using assms
   apply (simp add: ccBindsExtra_simp ccBinds_eq ccBind_eq Int_absorb2)
-  apply (intro arg_cong2[where f = "op \<squnion>"] refl arg_cong[OF mapCollect_cong])
+  apply (intro arg_cong2[where f = "(\<squnion>)"] refl arg_cong[OF mapCollect_cong])
   apply (subgoal_tac "k \<in> S")
   apply simp
   apply (metis contra_subsetD domI dom_map_of_conv_domA)

@@ -38,7 +38,7 @@ interpretation Apply: conjunctive "inf::'a::semilattice_inf \<Rightarrow> 'a \<R
   done
 
 interpretation Comp: conjunctive "inf::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" 
-  "inf::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
+  "inf::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" "(o)"
   done
 
 lemma "Apply.conjunctive = Comp.conjunctive"
@@ -73,7 +73,7 @@ interpretation Apply: disjunctive "sup::'a::semilattice_sup \<Rightarrow> 'a \<R
   done
 
 interpretation Comp: disjunctive "sup::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" 
-  "sup::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
+  "sup::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" "(o)"
   done
 
 lemma apply_comp_disjunctive: "Apply.disjunctive = Comp.disjunctive"
@@ -109,7 +109,7 @@ interpretation Apply: Conjunctive Inf Inf "\<lambda> f . f"
   done
 
 interpretation Comp: Conjunctive "Inf::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" 
-  "Inf::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
+  "Inf::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(o)"
   done
 
 lemma "Apply.Conjunctive = Comp.Conjunctive"
@@ -168,7 +168,7 @@ interpretation Apply: Disjunctive Sup Sup "\<lambda> f . f"
   done
 
 interpretation Comp: Disjunctive "Sup::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" 
-  "Sup::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
+  "Sup::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(o)"
   done
 
 lemma "Apply.Disjunctive = Comp.Disjunctive"

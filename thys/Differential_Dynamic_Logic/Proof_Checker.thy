@@ -548,31 +548,31 @@ next
       by (rule close_sub)
     have \<Gamma>C:"\<nu> \<in> fml_sem I (foldr And (close \<Gamma> (p \<rightarrow> q)) TT)"
       by (rule \<Gamma>_sub_sem[OF sub \<Gamma>])
-    have "\<nu> \<in> fml_sem I (foldr op || (p # \<Delta>) FF)"
+    have "\<nu> \<in> fml_sem I (foldr (||) (p # \<Delta>) FF)"
       by(rule seq_MP[OF sg2 \<Gamma>C])
-    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       by auto 
     { assume p:"\<nu> \<in> fml_sem I p"
       have q:"\<nu> \<in> fml_sem I q" using p imp by simp
-      have res: "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)" 
+      have res: "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)" 
         using disj \<Gamma> seq_semI
         proof -
-          have "\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+          have "\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
             using \<Gamma> q by auto
           then show ?thesis
             by (meson \<Gamma>_sub_sem close_sub seq_MP sg1)
         qed
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
         using q \<Gamma> by auto
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
         apply(rule \<Gamma>_sub_sem)
         defer
         apply(rule conj)
         by(rule close_sub)
-      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         by(rule seq_MP[OF sg1 conj])
       }
-    then show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using disj by auto
     qed
     have neq1:"close ([q] @ \<Gamma>) (p \<rightarrow> q) \<noteq> \<Gamma>"
@@ -650,43 +650,43 @@ next
       by (rule close_sub)
     have \<Gamma>C:"\<nu> \<in> fml_sem I (foldr And (close \<Gamma> (p \<rightarrow> q)) TT)"
       by (rule \<Gamma>_sub_sem[OF sub \<Gamma>])
-    have "\<nu> \<in> fml_sem I (foldr op || (p # \<Delta>) FF)"
+    have "\<nu> \<in> fml_sem I (foldr (||) (p # \<Delta>) FF)"
       by (metis \<Gamma> \<Gamma>_sub_sem close_sub iff_sem imp member_rec(1) or_foldl_sem or_foldl_sem_conv seq_MP sg2)
-    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       by auto 
     { assume p:"\<nu> \<in> fml_sem I p"
       have q:"\<nu> \<in> fml_sem I q" using p imp by simp
-      have res: "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)" 
+      have res: "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)" 
         using disj \<Gamma> seq_semI
         proof -
-          have "\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+          have "\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
             using \<Gamma> q by auto
           then show ?thesis
             proof -
-              have "\<forall>fs p i. (\<exists>f. List.member fs (f::('sf, 'sc, 'sz) formula) \<and> p \<notin> fml_sem i f) \<or> p \<in> fml_sem i (foldr op && fs TT)"
+              have "\<forall>fs p i. (\<exists>f. List.member fs (f::('sf, 'sc, 'sz) formula) \<and> p \<notin> fml_sem i f) \<or> p \<in> fml_sem i (foldr (&&) fs TT)"
                 using and_foldl_sem_conv by blast
               then obtain ff :: "('sf, 'sc, 'sz) formula list \<Rightarrow> (real, 'sz) vec \<times> (real, 'sz) vec \<Rightarrow> ('sf, 'sc, 'sz) interp \<Rightarrow> ('sf, 'sc, 'sz) formula" where
-                f1: "\<forall>fs p i. List.member fs (ff fs p i) \<and> p \<notin> fml_sem i (ff fs p i) \<or> p \<in> fml_sem i (foldr op && fs TT)"
+                f1: "\<forall>fs p i. List.member fs (ff fs p i) \<and> p \<notin> fml_sem i (ff fs p i) \<or> p \<in> fml_sem i (foldr (&&) fs TT)"
                 by metis
               have "\<And>f. \<nu> \<in> fml_sem I f \<or> \<not> List.member \<Gamma> f"
-                by (meson \<open>\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)\<close> and_foldl_sem member_rec(1))
-              then have "\<nu> \<in> fml_sem I (foldr op && (close (p # \<Gamma>) (p \<leftrightarrow> q)) TT)"
+                by (meson \<open>\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)\<close> and_foldl_sem member_rec(1))
+              then have "\<nu> \<in> fml_sem I (foldr (&&) (close (p # \<Gamma>) (p \<leftrightarrow> q)) TT)"
                 using f1 by (metis (no_types) close_sub local.sublist_def member_rec(1) p)
               then show ?thesis
                 using seq_MP sg1 by blast
             qed
         qed
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
         using q \<Gamma> by auto
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
         apply(rule \<Gamma>_sub_sem)
         defer
         apply(rule conj)
         by(rule close_sub)
-      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         using res by blast
       }
-    then show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using disj by auto
   qed
   have neq1:"close ([q] @ \<Gamma>) (p \<leftrightarrow> q) \<noteq> \<Gamma>"
@@ -762,31 +762,31 @@ next
       by (rule close_sub)
     have \<Gamma>C:"\<nu> \<in> fml_sem I (foldr And (close \<Gamma> (p \<rightarrow> q)) TT)"
       by (rule \<Gamma>_sub_sem[OF sub \<Gamma>])
-    have "\<nu> \<in> fml_sem I (foldr op || (p # \<Delta>) FF)"
+    have "\<nu> \<in> fml_sem I (foldr (||) (p # \<Delta>) FF)"
       by (metis \<Gamma> \<Gamma>_sub_sem close_sub iff_sem imp member_rec(1) or_foldl_sem or_foldl_sem_conv seq_MP sg2)
-    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then have disj:"\<nu> \<in> fml_sem I p \<or> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       by auto 
     { assume p:"\<nu> \<in> fml_sem I p"
       have q:"\<nu> \<in> fml_sem I q" using p imp by simp
-      have res: "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)" 
+      have res: "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)" 
         using disj \<Gamma> seq_semI
         proof -
-          have "\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+          have "\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
             using \<Gamma> q by auto
           then show ?thesis
-            by (meson \<open>\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)\<close> and_foldl_sem and_foldl_sem_conv close_sub local.sublist_def seq_MP sg1)
+            by (meson \<open>\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)\<close> and_foldl_sem and_foldl_sem_conv close_sub local.sublist_def seq_MP sg1)
         qed
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT)"
         using q \<Gamma> by auto
-      have conj:"\<nu> \<in> fml_sem I (foldr op && (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
+      have conj:"\<nu> \<in> fml_sem I (foldr (&&) (close (q # \<Gamma>) (p \<rightarrow> q)) TT)"
         apply(rule \<Gamma>_sub_sem)
         defer
         apply(rule conj)
         by(rule close_sub)
-      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+      have \<Delta>1:"\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         using res by blast
       }
-    then show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using disj by auto
   qed
   have neq1:"close ([q] @ \<Gamma>) (p \<leftrightarrow> q) \<noteq> \<Gamma>"
@@ -849,23 +849,23 @@ proof(induction rule: rrule_ok.induct)
     assume sgs:"(\<And>i. 0 \<le> i \<Longrightarrow>
              i < length [(\<Gamma>, p # close \<Delta> (nth \<Delta>  j)), (\<Gamma>, q # close \<Delta> (nth \<Delta>  j))] \<Longrightarrow>
              \<nu> \<in> seq_sem I (nth [(\<Gamma>, p # close \<Delta> (nth \<Delta>  j)), (\<Gamma>, q # close \<Delta> (nth \<Delta> j))] i))"
-    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr op && \<Gamma> TT)"
+    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr (&&) \<Gamma> TT)"
     have sg1:"\<nu> \<in> seq_sem I (\<Gamma>, p # close \<Delta> (nth \<Delta> j))" using sgs[of 0] by auto
     have sg2:"\<nu> \<in> seq_sem I (\<Gamma>, q # close \<Delta> (nth \<Delta> j))" using sgs[of 1] by auto
-    have \<Delta>1:"\<nu> \<in> fml_sem I (foldr op || (p # close \<Delta> (nth \<Delta> j)) FF)"
+    have \<Delta>1:"\<nu> \<in> fml_sem I (foldr (||) (p # close \<Delta> (nth \<Delta> j)) FF)"
       by(rule seq_MP[OF sg1 \<Gamma>_sem])
-    have \<Delta>2:"\<nu> \<in> fml_sem I (foldr op || (q # close \<Delta> (nth \<Delta> j)) FF)"
+    have \<Delta>2:"\<nu> \<in> fml_sem I (foldr (||) (q # close \<Delta> (nth \<Delta> j)) FF)"
       by(rule seq_MP[OF sg2 \<Gamma>_sem])
-    have \<Delta>':"\<nu> \<in> fml_sem I (foldr op || ((p && q) # close \<Delta> (nth \<Delta> j)) FF)"
+    have \<Delta>':"\<nu> \<in> fml_sem I (foldr (||) ((p && q) # close \<Delta> (nth \<Delta> j)) FF)"
       using \<Delta>1 \<Delta>2 by auto
     have mem_eq:"\<And>x. List.member ((p && q) # close \<Delta> (nth \<Delta> j)) x \<Longrightarrow> List.member \<Delta> x"
       using Rrule_And.prems SG_dec eq  member_rec(1) nth_member
       by (metis close_sub local.sublist_def snd_conv)
-    have myeq:"\<nu> \<in> fml_sem I (foldr op || ((p && q) # close \<Delta> (nth \<Delta> j)) FF) \<Longrightarrow>  \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    have myeq:"\<nu> \<in> fml_sem I (foldr (||) ((p && q) # close \<Delta> (nth \<Delta> j)) FF) \<Longrightarrow>  \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         using  seq_semI Rrule_And.prems SG_dec eq  seq_MP seq_semI' mem_eq
         or_foldl_sem or_foldl_sem_conv
         by metis
-    then show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using \<Delta>' by auto  
   qed
   have list_neqI1:"\<And>L1 L2 x. List.member L1 x \<Longrightarrow> \<not>(List.member L2 x) \<Longrightarrow> L1 \<noteq> L2"
@@ -953,20 +953,20 @@ next
     assume "is_interp I"
     assume sgs:"(\<And>i. 0 \<le> i \<Longrightarrow> i < length [(p # \<Gamma>, q # close \<Delta> (\<Delta> ! j))] \<Longrightarrow> \<nu> \<in> seq_sem I ([(p # \<Gamma>, q # close \<Delta> (\<Delta> ! j))] ! i))"
       have sg:"\<nu> \<in> seq_sem I (p # \<Gamma>, q # close \<Delta> (\<Delta> ! j))" using sgs[of 0] by auto
-    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr op && \<Gamma> TT)"
-    show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr (&&) \<Gamma> TT)"
+    show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using \<Gamma>_sem sg 
         AIjeq Rrule_Imply.prems(2) SG_dec and_foldl_sem_conv close_sub impl_sem local.sublist_def member_rec(1) nth_member or_foldl_sem_conv seq_MP seq_semI snd_conv
         \<Gamma>_sub_sem and_foldl_sem or_foldl_sem seq_sem.simps sublistI
     proof -
-      have f1: "\<forall>fs p i. \<exists>f. (p \<in> fml_sem i (foldr op && fs (TT::('sf, 'sc, 'sz) formula)) \<or> List.member fs f) \<and> (p \<notin> fml_sem i f \<or> p \<in> fml_sem i (foldr op && fs TT))"
+      have f1: "\<forall>fs p i. \<exists>f. (p \<in> fml_sem i (foldr (&&) fs (TT::('sf, 'sc, 'sz) formula)) \<or> List.member fs f) \<and> (p \<notin> fml_sem i f \<or> p \<in> fml_sem i (foldr (&&) fs TT))"
         using and_foldl_sem_conv by blast
-      have "\<forall>p i fs. \<exists>f. \<forall>pa ia fa fb pb ib fc fd. p \<in> fml_sem i (f::('sf, 'sc, 'sz) formula) \<and> (pa \<in> fml_sem ia (fa::('sf, 'sc, 'sz) formula) \<or> pa \<in> fml_sem ia (fa \<rightarrow> fb)) \<and> (pb \<notin> fml_sem ib (fc::('sf, 'sc, 'sz) formula) \<or> pb \<in> fml_sem ib (fd \<rightarrow> fc)) \<and> (p \<notin> fml_sem i (foldr op || fs FF) \<or> List.member fs f)"
+      have "\<forall>p i fs. \<exists>f. \<forall>pa ia fa fb pb ib fc fd. p \<in> fml_sem i (f::('sf, 'sc, 'sz) formula) \<and> (pa \<in> fml_sem ia (fa::('sf, 'sc, 'sz) formula) \<or> pa \<in> fml_sem ia (fa \<rightarrow> fb)) \<and> (pb \<notin> fml_sem ib (fc::('sf, 'sc, 'sz) formula) \<or> pb \<in> fml_sem ib (fd \<rightarrow> fc)) \<and> (p \<notin> fml_sem i (foldr (||) fs FF) \<or> List.member fs f)"
         by (metis impl_sem or_foldl_sem_conv)
       then obtain ff :: "(real, 'sz) vec \<times> (real, 'sz) vec \<Rightarrow> ('sf, 'sc, 'sz) interp \<Rightarrow> ('sf, 'sc, 'sz) formula list \<Rightarrow> ('sf, 'sc, 'sz) formula" where
-        f2: "\<And>p i fs pa ia f fa pb ib fb fc. p \<in> fml_sem i (ff p i fs) \<and> (pa \<in> fml_sem ia (f::('sf, 'sc, 'sz) formula) \<or> pa \<in> fml_sem ia (f \<rightarrow> fa)) \<and> (pb \<notin> fml_sem ib (fb::('sf, 'sc, 'sz) formula) \<or> pb \<in> fml_sem ib (fc \<rightarrow> fb)) \<and> (p \<notin> fml_sem i (foldr op || fs FF) \<or> List.member fs (ff p i fs))"
+        f2: "\<And>p i fs pa ia f fa pb ib fb fc. p \<in> fml_sem i (ff p i fs) \<and> (pa \<in> fml_sem ia (f::('sf, 'sc, 'sz) formula) \<or> pa \<in> fml_sem ia (f \<rightarrow> fa)) \<and> (pb \<notin> fml_sem ib (fb::('sf, 'sc, 'sz) formula) \<or> pb \<in> fml_sem ib (fc \<rightarrow> fb)) \<and> (p \<notin> fml_sem i (foldr (||) fs FF) \<or> List.member fs (ff p i fs))"
         by metis
-      then have "\<And>fs. \<nu> \<notin> fml_sem I (foldr op && (p # \<Gamma>) TT) \<or> \<not> local.sublist (close \<Delta> (p \<rightarrow> q)) fs \<or> ff \<nu> I (q # close \<Delta> (p \<rightarrow> q)) = q \<or> List.member fs (ff \<nu> I (q # close \<Delta> (p \<rightarrow> q)))"
+      then have "\<And>fs. \<nu> \<notin> fml_sem I (foldr (&&) (p # \<Gamma>) TT) \<or> \<not> local.sublist (close \<Delta> (p \<rightarrow> q)) fs \<or> ff \<nu> I (q # close \<Delta> (p \<rightarrow> q)) = q \<or> List.member fs (ff \<nu> I (q # close \<Delta> (p \<rightarrow> q)))"
         by (metis (no_types) AIjeq local.sublist_def member_rec(1) seq_MP sg)
       then have "\<exists>f. List.member \<Delta> f \<and> \<nu> \<in> fml_sem I f"
         using f2 f1 by (metis (no_types) AIjeq Rrule_Imply.prems(2) SG_dec \<Gamma>_sem and_foldl_sem close_sub member_rec(1) nth_member snd_conv)
@@ -1059,14 +1059,14 @@ next
   assume sound:"sound (SG, C)"
   obtain \<Gamma> and \<Delta> where SG_dec:"(\<Gamma>,\<Delta>) = (SG ! i)"
     by (metis seq2fml.cases)
-  have "\<And>I \<nu>. is_interp I \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op|| \<Delta> FF)"
+  have "\<And>I \<nu>. is_interp I \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
     proof -
       fix I::"('sf,'sc,'sz)interp" and \<nu>::"'sz state"
       assume good:"is_interp I"
       have mem2:"List.member \<Delta> (\<Delta> ! j)"
         using iJ nth_member 
         by (metis SG_dec snd_conv)
-      then show "\<nu> \<in> fml_sem I (foldr op|| \<Delta> FF)"
+      then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         using mem2
         using or_foldl_sem 
         by (metis SG_dec UNIV_I snd_conv tt tt_sem)
@@ -1110,13 +1110,13 @@ next
     assume sgs:"(\<And>i. 0 \<le> i \<Longrightarrow> i < length [(p # \<Gamma>, q # (closeI \<Delta> j)), (q # \<Gamma>, p # (closeI \<Delta> j))] \<Longrightarrow> \<nu> \<in> seq_sem I ([(p # \<Gamma>, q # (closeI \<Delta> j)), (q # \<Gamma>, p # (closeI \<Delta> j))] ! i))"
     have sg1:"\<nu> \<in> seq_sem I (p # \<Gamma>, q # close \<Delta> (\<Delta> ! j))" using sgs[of 0] by auto
     have sg2:"\<nu> \<in> seq_sem I (q # \<Gamma>, p # (closeI \<Delta> j))" using sgs[of 1] by auto
-    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr op && \<Gamma> TT)"
-    have case1:"\<nu> \<in> fml_sem I p \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr (&&) \<Gamma> TT)"
+    have case1:"\<nu> \<in> fml_sem I p \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
     proof -
       assume sem:"\<nu> \<in> fml_sem I p"
-      have "\<nu> \<in> fml_sem I (foldr op || (q # (close \<Delta> (nth \<Delta> j))) FF)"
+      have "\<nu> \<in> fml_sem I (foldr (||) (q # (close \<Delta> (nth \<Delta> j))) FF)"
         using sem \<Gamma>_sem sg1 by auto
-      then show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+      then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
         using AIjeq SG_dec close_sub[of \<Delta> "nth \<Delta> j"] iff_sem[of "\<nu>" I p q] jL local.sublist_def
         member_rec(1)[of q "close \<Delta> (nth \<Delta> j)"] sem snd_conv
         or_foldl_sem_conv[of \<nu> I "q # close \<Delta> (nth \<Delta> j)"]
@@ -1124,10 +1124,10 @@ next
         nth_member[of j "snd (SG ! i)"]
         by metis
     qed
-    have case2:"\<nu> \<notin> fml_sem I p \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    have case2:"\<nu> \<notin> fml_sem I p \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
     proof -
       assume sem:"\<nu> \<notin> fml_sem I p"
-      have "\<nu> \<in> fml_sem I q \<Longrightarrow>  \<nu> \<notin> fml_sem I (foldr op || \<Delta> FF) \<Longrightarrow> False"
+      have "\<nu> \<in> fml_sem I q \<Longrightarrow>  \<nu> \<notin> fml_sem I (foldr (||) \<Delta> FF) \<Longrightarrow> False"
         using  
           and_foldl_sem[OF \<Gamma>_sem]
           and_foldl_sem_conv
@@ -1143,17 +1143,17 @@ next
           seq_MP[of \<nu> I "q # \<Gamma>" "p # closeI \<Delta> j", OF sg2]
       proof -
         assume a1: "\<nu> \<in> fml_sem I q"
-        assume a2: "\<nu> \<notin> fml_sem I (foldr op || \<Delta> FF)"
+        assume a2: "\<nu> \<notin> fml_sem I (foldr (||) \<Delta> FF)"
         obtain ff :: "('sf, 'sc, 'sz) formula" where
           "\<nu> \<in> fml_sem I ff \<and> List.member (p # close \<Delta> (\<Delta> ! j)) ff"
-          using a1 by (metis (no_types) \<open>\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>\<close> \<open>\<And>y. List.member (q # \<Gamma>) y = (q = y \<or> List.member \<Gamma> y)\<close> \<open>\<nu> \<in> fml_sem I (foldr op && (q # \<Gamma>) TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op || (p # closeI \<Delta> j) FF)\<close> \<open>\<nu> \<in> fml_sem I (foldr op || (p # closeI \<Delta> j) FF) \<Longrightarrow> \<exists>\<phi>. \<nu> \<in> fml_sem I \<phi> \<and> List.member (p # closeI \<Delta> j) \<phi>\<close> and_foldl_sem_conv closeI.simps)
+          using a1 by (metis (no_types) \<open>\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>\<close> \<open>\<And>y. List.member (q # \<Gamma>) y = (q = y \<or> List.member \<Gamma> y)\<close> \<open>\<nu> \<in> fml_sem I (foldr (&&) (q # \<Gamma>) TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) (p # closeI \<Delta> j) FF)\<close> \<open>\<nu> \<in> fml_sem I (foldr (||) (p # closeI \<Delta> j) FF) \<Longrightarrow> \<exists>\<phi>. \<nu> \<in> fml_sem I \<phi> \<and> List.member (p # closeI \<Delta> j) \<phi>\<close> and_foldl_sem_conv closeI.simps)
         then show ?thesis
-          using a2 by (metis (no_types) \<open>\<And>\<phi> \<nu> I. \<lbrakk>List.member \<Delta> \<phi>; \<nu> \<in> fml_sem I \<phi>\<rbrakk> \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op || \<Delta> FF)\<close> \<open>\<And>y. List.member (p # closeI \<Delta> j) y = (p = y \<or> List.member (closeI \<Delta> j) y)\<close> closeI.simps close_sub local.sublist_def sem)
+          using a2 by (metis (no_types) \<open>\<And>\<phi> \<nu> I. \<lbrakk>List.member \<Delta> \<phi>; \<nu> \<in> fml_sem I \<phi>\<rbrakk> \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)\<close> \<open>\<And>y. List.member (p # closeI \<Delta> j) y = (p = y \<or> List.member (closeI \<Delta> j) y)\<close> closeI.simps close_sub local.sublist_def sem)
       qed
-      show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
-        by (metis AIjeq SG_dec \<open>\<lbrakk>\<nu> \<in> fml_sem I q; \<nu> \<notin> fml_sem I (foldr op || \<Delta> FF)\<rbrakk> \<Longrightarrow> False\<close> iff_sem jL nth_member or_foldl_sem sem snd_eqD)
+      show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
+        by (metis AIjeq SG_dec \<open>\<lbrakk>\<nu> \<in> fml_sem I q; \<nu> \<notin> fml_sem I (foldr (||) \<Delta> FF)\<rbrakk> \<Longrightarrow> False\<close> iff_sem jL nth_member or_foldl_sem sem snd_eqD)
     qed
-    show "\<nu> \<in> fml_sem I (foldr op || \<Delta> FF)"
+    show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       by(cases "\<nu> \<in> fml_sem I p", (simp add: case1 case2)+)
     qed
   show ?case
@@ -1316,11 +1316,11 @@ next
   have k\<Delta>:"k < length \<Delta>"
     using SG_dec kL
     by (metis snd_conv)
-  have "\<And>I \<nu>. is_interp I \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op&& \<Gamma> TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr op|| \<Delta> FF)"
+  have "\<And>I \<nu>. is_interp I \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (&&) \<Gamma> TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
   proof -
     fix I::"('sf,'sc,'sz)interp" and \<nu>::"'sz state"
     assume good:"is_interp I"
-    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr op&& \<Gamma> TT)"
+    assume \<Gamma>_sem:"\<nu> \<in> fml_sem I (foldr (&&) \<Gamma> TT)"
     have mem:"List.member \<Gamma> (\<Gamma> ! j)"
       using j\<Gamma> nth_member by blast
     have mem2:"List.member \<Delta> (\<Delta> ! k)"
@@ -1331,7 +1331,7 @@ next
     then have "\<nu> \<in> fml_sem I (\<Delta> ! k)"
       using match SG_dec
       by (metis fst_conv snd_conv)
-    then show "\<nu> \<in> fml_sem I (foldr op|| \<Delta> FF)"
+    then show "\<nu> \<in> fml_sem I (foldr (||) \<Delta> FF)"
       using mem2
       using or_foldl_sem by blast
   qed

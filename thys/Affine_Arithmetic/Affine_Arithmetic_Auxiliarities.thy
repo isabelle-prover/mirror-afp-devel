@@ -10,7 +10,7 @@ lemma DERIV_compose_FDERIV:
   assumes "DERIV f (g x) :> f'"
   assumes "(g has_derivative g') (at x within s)"
   shows "((\<lambda>x. f (g x)) has_derivative (\<lambda>x. g' x * f')) (at x within s)"
-  using assms has_derivative_compose[of g g' x s f "op * f'"]
+  using assms has_derivative_compose[of g g' x s f "( * ) f'"]
   by (auto simp: has_field_derivative_def ac_simps)
 
 lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]

@@ -66,7 +66,7 @@ proof (induct n arbitrary: M)
   have in_Mne_lt_n: "\<forall>m \<in># ?Mne. m < n"
     using in_M_lt_Sn by auto
 
-  have "sum_mset (image_mset (op ^ base) ?Meq) \<le> (base - 1) * base ^ n"
+  have "sum_mset (image_mset ((^) base) ?Meq) \<le> (base - 1) * base ^ n"
     unfolding filter_eq_replicate_mset using base_ge_2
     by simp (metis Suc_pred diff_self_eq_0 le_SucE less_imp_le less_le_trans less_numeral_extra(3)
       pos2 well_M well_base.cases zero_less_diff)

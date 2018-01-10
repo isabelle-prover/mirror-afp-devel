@@ -64,7 +64,7 @@ abbreviation (input)
 primrec coalesce :: "'a err list \<Rightarrow> 'a list err"
 where
   "coalesce [] = OK[]"
-| "coalesce (ex#exs) = Err.sup (op #) ex (coalesce exs)"
+| "coalesce (ex#exs) = Err.sup (#) ex (coalesce exs)"
 
 definition sl :: "nat \<Rightarrow> 'a sl \<Rightarrow> 'a list sl"
 where
@@ -489,7 +489,7 @@ apply force
 done 
 (*>*)
 
-lemma lem: "\<And>x xs. x \<squnion>\<^bsub>(op #)\<^esub> xs = x#xs"
+lemma lem: "\<And>x xs. x \<squnion>\<^bsub>(#)\<^esub> xs = x#xs"
 (*<*) by (simp add: plussub_def) (*>*)
 
 lemma coalesce_eq_OK1_D [rule_format]:

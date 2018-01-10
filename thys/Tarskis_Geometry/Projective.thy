@@ -1871,31 +1871,31 @@ text {* All theorems with names beginning with \emph{statement} are based
 
 lemma statement52_existence:
   fixes a :: "proj2^3" and a3 :: "proj2"
-  assumes "proj2_no_3_Col (insert a3 (range (op $ a)))"
+  assumes "proj2_no_3_Col (insert a3 (range (($) a)))"
   shows "\<exists> A. apply_cltn2 (proj2_abs (vector [1,1,1])) A = a3 \<and>
   (\<forall> j. apply_cltn2 (proj2_abs (axis j 1)) A = a$j)"
 proof -
   let ?v = "proj2_rep a3"
-  let ?B = "proj2_rep ` range (op $ a)"
+  let ?B = "proj2_rep ` range (($) a)"
 
-  from `proj2_no_3_Col (insert a3 (range (op $ a)))`
-  have "card (insert a3 (range (op $ a))) = 4" unfolding proj2_no_3_Col_def ..
+  from `proj2_no_3_Col (insert a3 (range (($) a)))`
+  have "card (insert a3 (range (($) a))) = 4" unfolding proj2_no_3_Col_def ..
 
-  from card_image_le [of UNIV "op $ a"]
-  have "card (range (op $ a)) \<le> 3" by simp
-  with card_insert_if [of "range (op $ a)" a3]
-    and `card (insert a3 (range (op $ a))) = 4`
-  have "a3 \<notin> range (op $ a)" by auto
-  hence "(insert a3 (range (op $ a))) - {a3} = range (op $ a)" by simp
-  with `proj2_no_3_Col (insert a3 (range (op $ a)))`
-    and proj2_no_3_Col_span [of "insert a3 (range (op $ a))" a3]
+  from card_image_le [of UNIV "($) a"]
+  have "card (range (($) a)) \<le> 3" by simp
+  with card_insert_if [of "range (($) a)" a3]
+    and `card (insert a3 (range (($) a))) = 4`
+  have "a3 \<notin> range (($) a)" by auto
+  hence "(insert a3 (range (($) a))) - {a3} = range (($) a)" by simp
+  with `proj2_no_3_Col (insert a3 (range (($) a)))`
+    and proj2_no_3_Col_span [of "insert a3 (range (($) a))" a3]
   have "span ?B = UNIV" by simp
 
-  from card_suc_ge_insert [of a3 "range (op $ a)"]
-    and `card (insert a3 (range (op $ a))) = 4`
-    and `card (range (op $ a)) \<le> 3`
-  have "card (range (op $ a)) = 3" by simp
-  with card_image [of proj2_rep "range (op $ a)"]
+  from card_suc_ge_insert [of a3 "range (($) a)"]
+    and `card (insert a3 (range (($) a))) = 4`
+    and `card (range (($) a)) \<le> 3`
+  have "card (range (($) a)) = 3" by simp
+  with card_image [of proj2_rep "range (($) a)"]
     and proj2_rep_inj
     and subset_inj_on
   have "card ?B = 3" by auto
@@ -1905,16 +1905,16 @@ proof -
   let ?C = "\<chi> i. c (proj2_rep (a$i)) *\<^sub>R (proj2_rep (a$i))"
   let ?A = "cltn2_abs ?C"
 
-  from proj2_rep_inj and `a3 \<notin> range (op $ a)` have "?v \<notin> ?B"
+  from proj2_rep_inj and `a3 \<notin> range (($) a)` have "?v \<notin> ?B"
     unfolding inj_on_def
     by auto
 
   have "\<forall> i. c (proj2_rep (a$i)) \<noteq> 0"
   proof
     fix i
-    let ?Bi = "proj2_rep ` (range (op $ a) - {a$i})"
+    let ?Bi = "proj2_rep ` (range (($) a) - {a$i})"
 
-    have "a$i \<in> insert a3 (range (op $ a))" by simp
+    have "a$i \<in> insert a3 (range (($) a))" by simp
 
     have "proj2_rep (a$i) \<in> ?B" by auto
 
@@ -1927,14 +1927,14 @@ proof -
       (\<Sum> w \<in> ?B. (c w) *\<^sub>R w) - c (proj2_rep (a$i)) *\<^sub>R proj2_rep (a$i)"
       by simp
 
-    from `a3 \<notin> range (op $ a)` have "a3 \<noteq> a$i" by auto
-    hence "insert a3 (range (op $ a)) - {a$i} =
-      insert a3 (range (op $ a) - {a$i})" by auto
-    hence "proj2_rep ` (insert a3 (range (op $ a)) - {a$i}) = insert ?v ?Bi"
+    from `a3 \<notin> range (($) a)` have "a3 \<noteq> a$i" by auto
+    hence "insert a3 (range (($) a)) - {a$i} =
+      insert a3 (range (($) a) - {a$i})" by auto
+    hence "proj2_rep ` (insert a3 (range (($) a)) - {a$i}) = insert ?v ?Bi"
       by simp
-    moreover from `proj2_no_3_Col (insert a3 (range (op $ a)))`
-      and `a$i \<in> insert a3 (range (op $ a))`
-    have "span (proj2_rep ` (insert a3 (range (op $ a)) - {a$i})) = UNIV"
+    moreover from `proj2_no_3_Col (insert a3 (range (($) a)))`
+      and `a$i \<in> insert a3 (range (($) a))`
+    have "span (proj2_rep ` (insert a3 (range (($) a)) - {a$i})) = UNIV"
       by (rule proj2_no_3_Col_span)
     ultimately have "span (insert ?v ?Bi) = UNIV" by simp
 
@@ -2005,8 +2005,8 @@ proof -
   have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A =
     proj2_abs (vector [1,1,1] v* ?C)"
     by simp
-  from inj_on_iff_eq_card [of UNIV "op $ a"] and `card (range (op $ a)) = 3`
-  have "inj (op $ a)" by simp
+  from inj_on_iff_eq_card [of UNIV "($) a"] and `card (range (($) a)) = 3`
+  have "inj (($) a)" by simp
   from exhaust_3 have "\<forall> i::3. (vector [1::real,1,1])$i = 1"
     unfolding vector_def
     by auto
@@ -2015,13 +2015,13 @@ proof -
     (\<Sum> i\<in>UNIV. (c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i)))"
     by simp
   also from sum.reindex
-  [of "op $ a" UNIV "\<lambda> x. (c (proj2_rep x)) *\<^sub>R (proj2_rep x)"]
-    and `inj (op $ a)`
-  have "\<dots> = (\<Sum> x\<in>(range (op $ a)). (c (proj2_rep x)) *\<^sub>R (proj2_rep x))"
+  [of "($) a" UNIV "\<lambda> x. (c (proj2_rep x)) *\<^sub>R (proj2_rep x)"]
+    and `inj (($) a)`
+  have "\<dots> = (\<Sum> x\<in>(range (($) a)). (c (proj2_rep x)) *\<^sub>R (proj2_rep x))"
     by simp
   also from sum.reindex
-  [of proj2_rep "range (op $ a)" "\<lambda> w. (c w) *\<^sub>R w"]
-    and proj2_rep_inj and subset_inj_on [of proj2_rep UNIV "range (op $ a)"]
+  [of proj2_rep "range (($) a)" "\<lambda> w. (c w) *\<^sub>R w"]
+    and proj2_rep_inj and subset_inj_on [of proj2_rep UNIV "range (($) a)"]
   have "\<dots> = (\<Sum> w\<in>?B. (c w) *\<^sub>R w)" by simp
   also from `(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v` have "\<dots> = ?v" by simp
   finally have "(vector [1,1,1]) v* ?C = ?v" .
@@ -2059,7 +2059,7 @@ qed
 
 lemma statement53_existence:
   fixes p :: "proj2^4^2"
-  assumes "\<forall> i. proj2_no_3_Col (range (op $ (p$i)))"
+  assumes "\<forall> i. proj2_no_3_Col (range (($) (p$i)))"
   shows "\<exists> C. \<forall> j. apply_cltn2 (p$0$j) C = p$1$j"
 proof -
   let ?q = "\<chi> i. \<chi> j::3. p$i $ (of_int (Rep_bit1 j))"
@@ -2069,21 +2069,21 @@ proof -
     \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$i) = ?q$i$j')"
   proof
     fix i
-    have "range (op $ (p$i)) = insert (p$i$3) (range (op $ (?q$i)))"
+    have "range (($) (p$i)) = insert (p$i$3) (range (($) (?q$i)))"
     proof
-      show "range (op $ (p$i)) \<supseteq> insert (p$i$3) (range (op $ (?q$i)))" by auto
-      show "range (op $ (p$i)) \<subseteq> insert (p$i$3) (range (op $ (?q$i)))"
+      show "range (($) (p$i)) \<supseteq> insert (p$i$3) (range (($) (?q$i)))" by auto
+      show "range (($) (p$i)) \<subseteq> insert (p$i$3) (range (($) (?q$i)))"
       proof
         fix r
-        assume "r \<in> range (op $ (p$i))"
+        assume "r \<in> range (($) (p$i))"
         then obtain j where "r = p$i$j" by auto
         with eq_3_or_of_3 [of j]
-        show "r \<in> insert (p$i$3) (range (op $ (?q$i)))" by auto
+        show "r \<in> insert (p$i$3) (range (($) (?q$i)))" by auto
       qed
     qed
-    moreover from `\<forall> i. proj2_no_3_Col (range (op $ (p$i)))`
-    have "proj2_no_3_Col (range (op $ (p$i)))" ..
-    ultimately have "proj2_no_3_Col (insert (p$i$3) (range (op $ (?q$i))))"
+    moreover from `\<forall> i. proj2_no_3_Col (range (($) (p$i)))`
+    have "proj2_no_3_Col (range (($) (p$i)))" ..
+    ultimately have "proj2_no_3_Col (insert (p$i$3) (range (($) (?q$i))))"
       by simp
     hence "\<exists> D. apply_cltn2 (proj2_abs (vector [1,1,1])) D = p$i$3
       \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) D = ?q$i$j')"

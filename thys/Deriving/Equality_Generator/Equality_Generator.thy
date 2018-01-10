@@ -80,13 +80,13 @@ lemma equalityI: "(\<And> x y. aeq x y \<longleftrightarrow> x = y) \<Longrighta
   by (intro equalityI2 pequalityI)
 
 lemma equality_imp_eq:
-  "equality aeq \<Longrightarrow> aeq = (op =)" 
+  "equality aeq \<Longrightarrow> aeq = (=)" 
   by (intro ext, auto dest: equalityD)
 
-lemma eq_equality: "equality (op =)"
+lemma eq_equality: "equality (=)"
   by (rule equalityI, simp)
 
-lemma equality_def': "equality f = (f = op =)" 
+lemma equality_def': "equality f = (f = (=))" 
   using equality_imp_eq eq_equality by blast
 
 

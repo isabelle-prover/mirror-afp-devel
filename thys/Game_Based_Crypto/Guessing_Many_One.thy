@@ -114,15 +114,15 @@ proof -
   let ?game3 = "initialize body3"
 
   { define S :: "bool \<Rightarrow> nat \<times> nat option \<Rightarrow> bool" where "S \<equiv> \<lambda>b' (id, occ). b' \<longleftrightarrow> (\<exists>j\<^sub>0. occ = Some j\<^sub>0)"
-    let ?S = "rel_prod S op ="
+    let ?S = "rel_prod S (=)"
 
     define initial :: "nat \<times> nat option" where "initial = (0, None)"
     define result :: "nat \<times> nat option \<Rightarrow> bool" where "result p = (snd p \<noteq> None)" for p
-    have [transfer_rule]: "(S ===> op =) (\<lambda>b. b) result" by(simp add: rel_fun_def result_def S_def)
+    have [transfer_rule]: "(S ===> (=)) (\<lambda>b. b) result" by(simp add: rel_fun_def result_def S_def)
     have [transfer_rule]: "S False initial" by (simp add: S_def initial_def)
 
     have eval_oracle'[transfer_rule]: 
-      "(op = ===> op = ===> ?S ===> op = ===> rel_spmf (rel_prod op = ?S))
+      "((=) ===> (=) ===> ?S ===> (=) ===> rel_spmf (rel_prod (=) ?S))
        eval_oracle eval_oracle'"
       unfolding eval_oracle_def[abs_def] eval_oracle'_def[abs_def]
       by (auto simp add: rel_fun_def S_def map_spmf_conv_bind_spmf intro!: rel_spmf_bind_reflI split: option.split)
@@ -192,7 +192,7 @@ proof -
     by (auto intro!: integral_cong_AE simp del: integral_mult_left_zero simp add: integral_mult_left_zero[symmetric])
 
   moreover
-  have "ord_spmf op \<longrightarrow> (body2 c_o c_a s j\<^sub>s) (body3 c_o c_a s j\<^sub>s)"
+  have "ord_spmf (\<longrightarrow>) (body2 c_o c_a s j\<^sub>s) (body3 c_o c_a s j\<^sub>s)"
     if init: "(c_o, c_a, s) \<in> set_spmf init" and j\<^sub>s: "j\<^sub>s < Suc q" for c_o c_a s j\<^sub>s
   proof -
     define oracle2' where "oracle2' \<equiv> \<lambda>(b, (id, gs), s) guess. if id = j\<^sub>s then do {
@@ -201,11 +201,11 @@ proof -
       } else return_spmf ((), (b, (Suc id, gs), s))"
 
     let ?R = "\<lambda>((id1, j\<^sub>0), s1) (b', (id2, gs), s2). s1 = s2 \<and> id1 = id2 \<and> (j\<^sub>0 = Some j\<^sub>s \<longrightarrow> b' = Some True) \<and> (id2 \<le> j\<^sub>s \<longrightarrow> b' = None)"
-    from init have "rel_spmf (rel_prod op = ?R)
+    from init have "rel_spmf (rel_prod (=) ?R)
       (exec_gpv (extend_state_oracle (oracle c_o) \<oplus>\<^sub>O eval_oracle' c_o c_a) (\<A> c_a) ((0, None), s))
       (exec_gpv (extend_state_oracle (extend_state_oracle (oracle c_o)) \<oplus>\<^sub>O oracle2') (\<A> c_a) (None, (0, None), s))"
       by(intro exec_gpv_oracle_bisim[where X="?R"])(auto simp add: oracle2'_def eval_oracle'_def spmf_rel_map map_spmf_conv_bind_spmf[symmetric] rel_spmf_return_spmf2 lossless_eval o_def intro!: rel_spmf_reflI split: option.split_asm plus_oracle_split if_split_asm)
-    then have "rel_spmf (op \<longrightarrow>) (body2 c_o c_a s j\<^sub>s) 
+    then have "rel_spmf (\<longrightarrow>) (body2 c_o c_a s j\<^sub>s) 
       (do {
         (_, b', _, _) \<leftarrow> exec_gpv (\<dagger>\<dagger>(oracle c_o) \<oplus>\<^sub>O oracle2') (\<A> c_a) (None, (0, None), s);
         return_spmf (b' = Some True) })"
@@ -244,7 +244,7 @@ proof -
       supply lift_stop_oracle_transfer[transfer_rule] gpv_stop_transfer[transfer_rule] exec_gpv_parametric'[transfer_rule]
       by transfer simp
     also let ?S = "\<lambda>((id1, gs1), s1) ((id2, gs2), s2). gs1 = gs2 \<and> (gs2 = None \<longrightarrow> s1 = s2 \<and> id1 = id2) \<and> (gs1 = None \<longleftrightarrow> id1 \<le> j\<^sub>s)"
-    have "ord_spmf op \<longrightarrow> \<dots> (exec_gpv_stop ((\<lambda>((id, gs), s) x. case gs of None \<Rightarrow> lift_stop_oracle (\<dagger>(oracle c_o)) ((id, gs), s) x | Some _ \<Rightarrow> return_spmf (None, ((id, gs), s))) \<oplus>\<^sub>O\<^sup>S
+    have "ord_spmf (\<longrightarrow>) \<dots> (exec_gpv_stop ((\<lambda>((id, gs), s) x. case gs of None \<Rightarrow> lift_stop_oracle (\<dagger>(oracle c_o)) ((id, gs), s) x | Some _ \<Rightarrow> return_spmf (None, ((id, gs), s))) \<oplus>\<^sub>O\<^sup>S
             (\<lambda>((id, gs), s) guess. return_spmf (if id \<ge> j\<^sub>s then None else Some (), (Suc id, if id = j\<^sub>s then Some (guess, s) else gs), s)))
            (\<A> c_a) ((0, None), s) \<bind>
           (\<lambda>us'. case snd (fst (snd us')) of None \<Rightarrow> return_spmf False | Some a \<Rightarrow> eval c_o c_a (snd a) (fst a)))"
@@ -257,17 +257,17 @@ proof -
         (auto split: option.split_asm plus_oracle_stop_split nat.splits split!: sum.split simp add: spmf_rel_map intro!: rel_spmf_reflI)
     finally show ?thesis by(rule pmf.rel_mono_strong)(auto elim!: option.rel_cases ord_option.cases)
   qed
-  { then have "ord_spmf (op \<longrightarrow>) ?game2 ?game3"
+  { then have "ord_spmf (\<longrightarrow>) ?game2 ?game3"
       by(clarsimp simp add: initialize_def intro!: ord_spmf_bind_reflI)
     also
-    let ?X = "\<lambda>(gsid, s) (gid, s'). s = s' \<and> rel_sum (\<lambda>(g, s1) g'. g = g' \<and> s1 = s') op = gsid gid"
-    have "rel_spmf (op \<longrightarrow>) ?game3 (game_single (reduction q \<A>))"
+    let ?X = "\<lambda>(gsid, s) (gid, s'). s = s' \<and> rel_sum (\<lambda>(g, s1) g'. g = g' \<and> s1 = s') (=) gsid gid"
+    have "rel_spmf (\<longrightarrow>) ?game3 (game_single (reduction q \<A>))"
       unfolding body3_def stop_oracle_def game_single_def reduction_def split_def initialize_def
       apply(clarsimp simp add: bind_map_spmf exec_gpv_bind exec_gpv_inline intro!: rel_spmf_bind_reflI)
       apply(rule rel_spmf_bindI[OF exec_gpv_oracle_bisim'[where X="?X"]])
       apply(auto split: plus_oracle_stop_split elim!: rel_sum.cases simp add: map_spmf_conv_bind_spmf[symmetric] split_def spmf_rel_map rel_spmf_reflI rel_spmf_return_spmf1 lossless_eval split: nat.split)
       done
-    finally have "ord_spmf op \<longrightarrow> ?game2 (game_single (reduction q \<A>))"
+    finally have "ord_spmf (\<longrightarrow>) ?game2 (game_single (reduction q \<A>))"
       by(rule pmf.rel_mono_strong)(auto elim!: option.rel_cases ord_option.cases)
     from this[THEN ord_spmf_measureD, of "{True}"]
     have "spmf ?game2 True \<le> spmf (game_single (reduction q \<A>)) True" unfolding spmf_conv_measure_spmf

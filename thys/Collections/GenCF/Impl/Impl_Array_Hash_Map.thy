@@ -50,7 +50,7 @@ where [simp]: "ahm_lookup_aux eq bhc k a  = list_map_lookup eq k (array_get a (b
 primrec ahm_lookup where
 "ahm_lookup eq bhc k (HashMap a _) = ahm_lookup_aux eq bhc k a"
 
-definition "ahm_\<alpha> bhc m \<equiv> \<lambda>k. ahm_lookup op= bhc k m"
+definition "ahm_\<alpha> bhc m \<equiv> \<lambda>k. ahm_lookup (=) bhc k m"
 
 definition ahm_map_rel_def_internal: 
     "ahm_map_rel Rk Rv \<equiv> {(HashMap a n, HashMap a' n)| a a' n n'.
@@ -296,11 +296,11 @@ subsection {* @{term "ahm_\<alpha>"} *}
 
 (* TODO: Move this *)
 lemma list_map_lookup_is_map_of:
-     "list_map_lookup op= k l = map_of l k"
-      using list_map_autoref_lookup_aux[where eq="op=" and
+     "list_map_lookup (=) k l = map_of l k"
+      using list_map_autoref_lookup_aux[where eq="(=)" and
            Rk=Id and Rv=Id] by force
 definition "ahm_\<alpha>_aux bhc a \<equiv> 
-    (\<lambda>k. ahm_lookup_aux op= bhc k a)"
+    (\<lambda>k. ahm_lookup_aux (=) bhc k a)"
 lemma ahm_\<alpha>_aux_def2: "ahm_\<alpha>_aux bhc a = (\<lambda>k. map_of (array_get a 
     (bhc (array_length a) k)) k)"
     unfolding ahm_\<alpha>_aux_def ahm_lookup_aux_def
@@ -309,7 +309,7 @@ lemma ahm_\<alpha>_def2: "ahm_\<alpha> bhc (HashMap a n) = ahm_\<alpha>_aux bhc 
     unfolding ahm_\<alpha>_def ahm_\<alpha>_aux_def by simp
 
 lemma finite_dom_ahm_\<alpha>_aux:
-  assumes "is_bounded_hashcode Id op= bhc" "ahm_invar_aux bhc n a"
+  assumes "is_bounded_hashcode Id (=) bhc" "ahm_invar_aux bhc n a"
   shows "finite (dom (ahm_\<alpha>_aux bhc a))"
 proof -
   have "dom (ahm_\<alpha>_aux bhc a) \<subseteq> (\<Union>h \<in> range (bhc (array_length a) :: 'a \<Rightarrow> nat). dom (map_of (array_get a h)))" 
@@ -327,13 +327,13 @@ proof -
 qed
 
 lemma ahm_\<alpha>_aux_new_array[simp]:
-  assumes bhc: "is_bounded_hashcode Id op= bhc" "1 < sz"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc" "1 < sz"
   shows "ahm_\<alpha>_aux bhc (new_array [] sz) k = None"
   using is_bounded_hashcodeD(3)[OF assms]
   unfolding ahm_\<alpha>_aux_def ahm_lookup_aux_def by simp
 
 lemma ahm_\<alpha>_aux_conv_map_of_concat:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   assumes inv: "ahm_invar_aux bhc n (Array xs)"
   shows "ahm_\<alpha>_aux bhc (Array xs) = map_of (concat xs)"
 proof
@@ -368,7 +368,7 @@ proof
 qed
 
 lemma ahm_invar_aux_card_dom_ahm_\<alpha>_auxD:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   assumes inv: "ahm_invar_aux bhc n a"
   shows "card (dom (ahm_\<alpha>_aux bhc a)) = n"
 proof(cases a)
@@ -379,7 +379,7 @@ proof(cases a)
     by(simp add: ahm_invar_distinct_fst_concatD)
   hence "card (dom (map_of (concat xs))) = length (concat xs)"
     by(rule card_dom_map_of)
-  also have "length (concat xs) = foldl op + 0 (map length xs)"
+  also have "length (concat xs) = foldl (+) 0 (map length xs)"
     by (simp add: length_concat foldl_conv_fold add.commute fold_plus_sum_list_rev)
   also from inv
   have "\<dots> = n" unfolding foldl_map by(simp add: ahm_invar_aux_def array_foldl_foldl)
@@ -387,7 +387,7 @@ proof(cases a)
 qed
 
 lemma finite_dom_ahm_\<alpha>:
-  assumes "is_bounded_hashcode Id op= bhc" "ahm_invar bhc hm"
+  assumes "is_bounded_hashcode Id (=) bhc" "ahm_invar bhc hm"
   shows "finite (dom (ahm_\<alpha> bhc hm))"
   using assms by (cases hm, force intro: finite_dom_ahm_\<alpha>_aux 
       simp: ahm_\<alpha>_def2)
@@ -409,13 +409,13 @@ lemma ahm_invar_new_hashmap_with:
 by(auto simp add: ahm_invar_def new_hashmap_with_def intro: ahm_invar_aux_new_array)
 
 lemma ahm_\<alpha>_new_hashmap_with:
-  assumes "is_bounded_hashcode Id op= bhc" and "n > 1"
+  assumes "is_bounded_hashcode Id (=) bhc" and "n > 1"
   shows "Map.empty = ahm_\<alpha> bhc (new_hashmap_with n)"
   unfolding new_hashmap_with_def ahm_\<alpha>_def
   using is_bounded_hashcodeD(3)[OF assms] by force
 
 lemma ahm_empty_impl:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   assumes def_size: "def_size > 1"
   shows "(ahm_empty def_size, Map.empty) \<in> ahm_map_rel' bhc"
 proof-
@@ -438,9 +438,9 @@ lemma autoref_ahm_empty[autoref_rules]:
   assumes def_size: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('kc) def_size)"
   shows "(ahm_empty def_size, op_map_empty) \<in> \<langle>Rk, Rv\<rangle>ahm_rel bhc"
 proof-
-  from bhc have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" 
+  from bhc have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" 
     by (simp add: is_bounded_hashcodeD)
-  with bhc have "is_bounded_hashcode Id op= 
+  with bhc have "is_bounded_hashcode Id (=) 
       (abstract_bounded_hashcode Rk bhc)" 
     unfolding autoref_tag_defs
     by blast
@@ -462,10 +462,10 @@ lemma param_ahm_lookup[param]:
   assumes inv: "ahm_invar bhc' m'"
   assumes K: "(k,k') \<in> Rk"
   assumes M: "(m,m') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
-  shows "(ahm_lookup eq bhc k m, ahm_lookup op= bhc' k' m') \<in> 
+  shows "(ahm_lookup eq bhc k m, ahm_lookup (=) bhc' k' m') \<in> 
              \<langle>Rv\<rangle>option_rel"
 proof-
-  from bhc have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)
+  from bhc have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)
   moreover from abstract_bhc_correct[OF bhc] 
       have bhc': "(bhc,bhc') \<in> nat_rel \<rightarrow> Rk \<rightarrow> nat_rel" unfolding bhc'_def .
   moreover from M obtain a a' n n' where 
@@ -486,8 +486,8 @@ qed
 
 
 lemma ahm_lookup_impl:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
-  shows "(ahm_lookup op= bhc, op_map_lookup) \<in> Id \<rightarrow> ahm_map_rel' bhc \<rightarrow> Id"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
+  shows "(ahm_lookup (=) bhc, op_map_lookup) \<in> Id \<rightarrow> ahm_map_rel' bhc \<rightarrow> Id"
 unfolding ahm_map_rel'_def br_def ahm_\<alpha>_def by force
 
 lemma autoref_ahm_lookup[autoref_rules]:
@@ -500,7 +500,7 @@ proof (intro fun_relI)
   fix k k' a m'
   assume K: "(k,k') \<in> Rk"
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  from bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" 
+  from bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" 
     by blast
 
   from M obtain a' where M1: "(a,a') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel" and
@@ -535,7 +535,7 @@ lemma param_ahm_to_list[param]:
 unfolding it_to_list_def[abs_def] by parametricity
 
 lemma ahm_to_list_distinct[simp,intro]:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   assumes inv: "ahm_invar bhc m"
   shows "distinct (ahm_to_list m)"
 proof-
@@ -548,7 +548,7 @@ qed
 
 
 lemma set_ahm_to_list:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   assumes ref: "(m,m') \<in> ahm_map_rel' bhc"
   shows "map_to_set m' = set (ahm_to_list m)"
 proof-
@@ -597,7 +597,7 @@ qed
 
 lemma ahm_iteratei_aux_impl:
   assumes inv: "ahm_invar_aux bhc n a"
-  and bhc: "is_bounded_hashcode Id op= bhc"
+  and bhc: "is_bounded_hashcode Id (=) bhc"
   shows "map_iterator (ahm_iteratei_aux a) (ahm_\<alpha>_aux bhc a)"
 proof (cases a, rule)
   fix xs assume [simp]: "a = Array xs"
@@ -611,20 +611,20 @@ qed
 
 lemma ahm_iteratei_impl:
   assumes inv: "ahm_invar bhc m"
-  and bhc: "is_bounded_hashcode Id op= bhc"
+  and bhc: "is_bounded_hashcode Id (=) bhc"
   shows "map_iterator (ahm_iteratei m) (ahm_\<alpha> bhc m)"
   by (insert assms, cases m, simp add: ahm_\<alpha>_def2,
           erule (1) ahm_iteratei_aux_impl)
 
 lemma autoref_ahm_is_iterator[autoref_ga_rules]:
-  (*assumes eq: "GEN_OP_tag ((eq,OP op = ::: (Rk \<rightarrow> Rk \<rightarrow> bool_rel)) \<in> (Rk \<rightarrow> Rk \<rightarrow> bool_rel))"*)
+  (*assumes eq: "GEN_OP_tag ((eq,OP (=) ::: (Rk \<rightarrow> Rk \<rightarrow> bool_rel)) \<in> (Rk \<rightarrow> Rk \<rightarrow> bool_rel))"*)
   assumes bhc: "GEN_ALGO_tag (is_bounded_hashcode Rk eq bhc)"
   shows "is_map_to_list Rk Rv (ahm_rel bhc) ahm_to_list"
   unfolding is_map_to_list_def is_map_to_sorted_list_def
 proof (intro allI impI)
   let ?bhc' = "abstract_bounded_hashcode Rk bhc"
   fix a m' assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  from bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" 
+  from bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" 
     unfolding autoref_tag_defs
     apply (rule_tac abstract_bhc_is_bhc)
     by simp_all
@@ -655,7 +655,7 @@ proof(cases a)
   case [simp]: (Array xs)
   have "ahm_iteratei_aux a c f \<sigma> = foldli (concat xs) c f \<sigma>" by simp
   also have "\<dots> = foldli xs c (\<lambda>x. foldli x c f) \<sigma>" by (simp add: foldli_concat)
-  also have "\<dots> = idx_iteratei op ! length xs c (\<lambda>x. foldli x c f) \<sigma>" 
+  also have "\<dots> = idx_iteratei (!) length xs c (\<lambda>x. foldli x c f) \<sigma>" 
       by (simp add: idx_iteratei_nth_length_conv_foldli)
   also have "\<dots> = idx_iteratei array_get array_length a c (\<lambda>x. foldli x c f) \<sigma>"
     by(simp add: idx_iteratei_array_get_Array_conv_nth)
@@ -671,7 +671,7 @@ by(simp add: ahm_rehash_aux'_def Let_def)
 
 lemma ahm_rehash_aux'_preserves_ahm_invar_aux:
   assumes inv: "ahm_invar_aux bhc n a"
-  and bhc: "is_bounded_hashcode Id op= bhc"
+  and bhc: "is_bounded_hashcode Id (=) bhc"
   and fresh: "k \<notin> fst ` set (array_get a (bhc (array_length a) k))"
   shows "ahm_invar_aux bhc (Suc n) (ahm_rehash_aux' bhc (array_length a) (k, v) a)"
   (is "ahm_invar_aux bhc _ ?a")
@@ -719,7 +719,7 @@ qed
 
 lemma ahm_rehash_aux_correct:
   fixes a :: "('k\<times>'v) list array"
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   and inv: "ahm_invar_aux bhc n a"
   and "sz > 1"
   shows "ahm_invar_aux bhc n (ahm_rehash_aux bhc a sz)" (is "?thesis1")
@@ -811,7 +811,7 @@ qed
 
 lemma ahm_rehash_correct:
   fixes hm :: "('k, 'v) hashmap"
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
   and inv: "ahm_invar bhc hm"
   and "sz > 1"
   shows "ahm_invar bhc (ahm_rehash bhc hm sz)" 
@@ -933,9 +933,9 @@ lemma param_ahm_update_aux[param]:
   assumes V: "(v,v') \<in> Rv"
   assumes M: "(m,m') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
   shows "(ahm_update_aux eq bhc m k v, 
-          ahm_update_aux op= bhc' m' k' v' ) \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
+          ahm_update_aux (=) bhc' m' k' v' ) \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
 proof-
-  from bhc have eq[param]: "(eq, op=)\<in>Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)
+  from bhc have eq[param]: "(eq, (=))\<in>Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)
   obtain a a' n n' where 
       [simp]: "m = HashMap a n" and [simp]: "m' = HashMap a' n'"
       by (cases m, cases m')
@@ -970,7 +970,7 @@ lemma param_ahm_update[param]:
   assumes K: "(k,k') \<in> Rk"
   assumes V: "(v,v') \<in> Rv"
   assumes M: "(m,m') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
-  shows "(ahm_update eq bhc k v m, ahm_update op= bhc' k' v' m') \<in> 
+  shows "(ahm_update eq bhc k v m, ahm_update (=) bhc' k' v' m') \<in> 
              \<langle>Rk,Rv\<rangle>ahm_map_rel"
 proof-
   have "1 < hm_grow (ahm_update_aux eq bhc m k v)" by simp
@@ -981,39 +981,39 @@ qed
 
 (* TODO: Move *)
 lemma length_list_map_update:
-  "length (list_map_update op= k v xs) =
-    (if list_map_lookup op= k xs = None then Suc (length xs) else length xs)"
+  "length (list_map_update (=) k v xs) =
+    (if list_map_lookup (=) k xs = None then Suc (length xs) else length xs)"
         (is "?l_new = _")
-proof (cases "list_map_lookup op= k xs", simp_all)
+proof (cases "list_map_lookup (=) k xs", simp_all)
   case None
     hence "k \<notin> dom (map_of xs)" by (force simp: list_map_lookup_is_map_of)
-    hence "\<And>a. list_map_update_aux op= k v xs a = (k,v) # rev xs @ a"
+    hence "\<And>a. list_map_update_aux (=) k v xs a = (k,v) # rev xs @ a"
         by (induction xs, auto)
     thus "?l_new = Suc (length xs)" unfolding list_map_update_def by simp
 next
   case (Some v')
     hence "(k,v') \<in> set xs" unfolding list_map_lookup_is_map_of
         by (rule map_of_SomeD)
-    hence "\<And>a. length (list_map_update_aux op= k v xs a) = 
+    hence "\<And>a. length (list_map_update_aux (=) k v xs a) = 
         length xs + length a" by (induction xs, auto)
     thus "?l_new = length xs" unfolding list_map_update_def by simp
 qed
   
 lemma length_list_map_delete:
-  "length (list_map_delete op= k xs) =
-    (if list_map_lookup op= k xs = None then length xs else length xs - 1)"
+  "length (list_map_delete (=) k xs) =
+    (if list_map_lookup (=) k xs = None then length xs else length xs - 1)"
         (is "?l_new = _")
-proof (cases "list_map_lookup op= k xs", simp_all)
+proof (cases "list_map_lookup (=) k xs", simp_all)
   case None
     hence "k \<notin> dom (map_of xs)" by (force simp: list_map_lookup_is_map_of)
-    hence "\<And>a. list_map_delete_aux op= k xs a = rev xs @ a"
+    hence "\<And>a. list_map_delete_aux (=) k xs a = rev xs @ a"
         by (induction xs, auto)
     thus "?l_new = length xs" unfolding list_map_delete_def by simp
 next
   case (Some v')
     hence "(k,v') \<in> set xs" unfolding list_map_lookup_is_map_of
         by (rule map_of_SomeD)
-    hence "\<And>a. k \<notin> fst`set a \<Longrightarrow> length (list_map_delete_aux op= k xs a) = 
+    hence "\<And>a. k \<notin> fst`set a \<Longrightarrow> length (list_map_delete_aux (=) k xs a) = 
         length xs + length a - 1" by (induction xs, auto)
     thus "?l_new = length xs - Suc 0" unfolding list_map_delete_def by simp
 qed
@@ -1021,8 +1021,8 @@ qed
 
 
 lemma ahm_update_impl:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
-  shows "(ahm_update op= bhc, op_map_update) \<in> (Id::('k\<times>'k) set) \<rightarrow> 
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
+  shows "(ahm_update (=) bhc, op_map_update) \<in> (Id::('k\<times>'k) set) \<rightarrow> 
               (Id::('v\<times>'v) set) \<rightarrow> ahm_map_rel' bhc \<rightarrow> ahm_map_rel' bhc"
 proof (intro fun_relI, clarsimp)
   fix k::'k and v::'v and hm::"('k,'v) hashmap" and  m::"'k\<rightharpoonup>'v"
@@ -1040,8 +1040,8 @@ proof (intro fun_relI, clarsimp)
 
   let ?l = "array_length a"
   let ?h = "bhc (array_length a) k"
-  let ?a' = "array_set a ?h (list_map_update op= k v (array_get a ?h))"
-  let ?n' = "if list_map_lookup op= k (array_get a ?h) = None 
+  let ?a' = "array_set a ?h (list_map_update (=) k v (array_get a ?h))"
+  let ?n' = "if list_map_lookup (=) k (array_get a ?h) = None 
                  then n + 1 else n"
 
   let ?list = "array_get a (bhc ?l k)"
@@ -1049,7 +1049,7 @@ proof (intro fun_relI, clarsimp)
   have L: "(?list, ?list') \<in> br map_of list_map_invar"
       using inv unfolding ahm_invar_def ahm_invar_aux_def br_def by simp
   hence list: "list_map_invar ?list" by (simp_all add: br_def)
-  let ?list_new = "list_map_update op= k v ?list"
+  let ?list_new = "list_map_update (=) k v ?list"
   let ?list_new' = "op_map_update k v (map_of (?list))"
   from list_map_autoref_update2[param_fo, OF K V L]
       have list_updated: "map_of ?list_new = ?list_new'" 
@@ -1130,11 +1130,11 @@ proof (intro fun_relI, clarsimp)
   next
   qed
 
-  moreover have "ahm_\<alpha> bhc (ahm_update_aux op= bhc hm k v) = 
+  moreover have "ahm_\<alpha> bhc (ahm_update_aux (=) bhc hm k v) = 
                      ahm_\<alpha> bhc hm(k \<mapsto> v)"
   proof
     fix k'
-    show "ahm_\<alpha> bhc (ahm_update_aux op= bhc hm k v) k' = (ahm_\<alpha> bhc hm(k \<mapsto> v)) k'"
+    show "ahm_\<alpha> bhc (ahm_update_aux (=) bhc hm k v) k' = (ahm_\<alpha> bhc hm(k \<mapsto> v)) k'"
     proof (cases "bhc ?l k = bhc ?l k'") 
       case False
         thus ?thesis by (force simp add: Let_def 
@@ -1147,11 +1147,11 @@ proof (intro fun_relI, clarsimp)
     qed
   qed
 
-  ultimately have ref: "(ahm_update_aux op= bhc hm k v, 
+  ultimately have ref: "(ahm_update_aux (=) bhc hm k v, 
                     m(k \<mapsto> v)) \<in> ahm_map_rel' bhc" (is "(?hm',_)\<in>_")
   unfolding ahm_map_rel'_def br_def using \<alpha> by (auto simp: Let_def)
 
-  show "(ahm_update op= bhc k v hm, m(k \<mapsto> v))
+  show "(ahm_update (=) bhc k v hm, m(k \<mapsto> v))
             \<in> ahm_map_rel' bhc"
   proof (cases "ahm_filled ?hm'")
     case False
@@ -1178,8 +1178,8 @@ proof (intro fun_relI)
   fix k k' v v' a m'
   assume K: "(k,k') \<in> Rk" and V: "(v,v') \<in> Rv"
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  (*from eq have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp*)
-  with bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" by blast
+  (*from eq have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp*)
+  with bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" by blast
   from abstract_bhc_correct[OF bhc] 
       have bhc_rel: "(bhc,?bhc') \<in> nat_rel \<rightarrow> Rk \<rightarrow> nat_rel" .
 
@@ -1198,17 +1198,17 @@ qed
 subsection {* @{term "ahm_delete"} *}
 
 lemma param_ahm_delete[param]:
-  (*assumes eq: "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel"*)
+  (*assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel"*)
   assumes isbhc: "is_bounded_hashcode Rk eq bhc"
   assumes bhc: "(bhc,bhc') \<in> nat_rel \<rightarrow> Rk \<rightarrow> nat_rel"
   assumes inv: "ahm_invar bhc' m'"
   assumes K: "(k,k') \<in> Rk"
   assumes M: "(m,m') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel"
   shows
-  "(ahm_delete eq bhc k m, ahm_delete op= bhc' k' m') \<in> 
+  "(ahm_delete eq bhc k m, ahm_delete (=) bhc' k' m') \<in> 
        \<langle>Rk,Rv\<rangle>ahm_map_rel"
 proof-
-  from isbhc have eq: "(eq,op=)\<in>Rk\<rightarrow>Rk\<rightarrow>bool_rel" by (simp add: is_bounded_hashcodeD)
+  from isbhc have eq: "(eq,(=))\<in>Rk\<rightarrow>Rk\<rightarrow>bool_rel" by (simp add: is_bounded_hashcodeD)
 
   obtain a a' n n' where 
       [simp]: "m = HashMap a n" and [simp]: "m' = HashMap a' n'"
@@ -1238,8 +1238,8 @@ qed
 
 
 lemma ahm_delete_impl:
-  assumes bhc: "is_bounded_hashcode Id op= bhc"
-  shows "(ahm_delete op= bhc, op_map_delete) \<in> (Id::('k\<times>'k) set) \<rightarrow> 
+  assumes bhc: "is_bounded_hashcode Id (=) bhc"
+  shows "(ahm_delete (=) bhc, op_map_delete) \<in> (Id::('k\<times>'k) set) \<rightarrow> 
               ahm_map_rel' bhc \<rightarrow> ahm_map_rel' bhc"
 proof (intro fun_relI, clarsimp)
   fix k::'k and hm::"('k,'v) hashmap" and  m::"'k\<rightharpoonup>'v"
@@ -1257,10 +1257,10 @@ proof (intro fun_relI, clarsimp)
 
   let ?l = "array_length a"
   let ?h = "bhc ?l k"
-  let ?a' = "array_set a ?h (list_map_delete op= k (array_get a ?h))"
-  let ?n' = "if list_map_lookup op= k (array_get a ?h) = None then n else n - 1"
+  let ?a' = "array_set a ?h (list_map_delete (=) k (array_get a ?h))"
+  let ?n' = "if list_map_lookup (=) k (array_get a ?h) = None then n else n - 1"
   let ?list = "array_get a ?h" let ?list' = "map_of ?list"
-  let ?list_new = "list_map_delete op= k ?list"
+  let ?list_new = "list_map_delete (=) k ?list"
   let ?list_new' = "?list' |` (-{k})"
   from inv have "(?list, ?list') \<in> br map_of list_map_invar"
       unfolding br_def ahm_invar_def ahm_invar_aux_def by simp
@@ -1325,7 +1325,7 @@ proof (intro fun_relI, clarsimp)
       by(auto elim: ahm_invar_auxE)
     hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"
       by(simp add: array_foldl_foldl)(subst xs, simp, subst (1 2 3 4) fold, simp)
-    moreover have "\<And>v a b. list_map_lookup op= k (xs ! ?h) = Some v
+    moreover have "\<And>v a b. list_map_lookup (=) k (xs ! ?h) = Some v
         \<Longrightarrow> a + (length (xs ! ?h) - 1) + b = a + length (xs ! ?h) + b - 1"
          by (cases "xs ! ?h", simp_all)
     ultimately show "?n' = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 ?a'"
@@ -1363,7 +1363,7 @@ apply (intro conjI impI)
   ultimately have "(HashMap ?a' ?n', op_map_delete k m) \<in> ahm_map_rel' bhc"
       unfolding ahm_map_rel'_def br_def by simp
 
-  thus "(ahm_delete op= bhc k hm, m |` (-{k})) \<in> ahm_map_rel' bhc"
+  thus "(ahm_delete (=) bhc k hm, m |` (-{k})) \<in> ahm_map_rel' bhc"
       by (simp only: `hm = HashMap a n` ahm_delete.simps Let_def 
                  op_map_delete_def, force)
 qed
@@ -1378,8 +1378,8 @@ proof (intro fun_relI)
   fix k k' a m'
   assume K: "(k,k') \<in> Rk"
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  (*from bhc have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)*)
-  with bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" by blast
+  (*from bhc have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by (simp add: is_bounded_hashcodeD)*)
+  with bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" by blast
   from abstract_bhc_correct[OF bhc] 
       have bhc_rel: "(bhc,?bhc') \<in> nat_rel \<rightarrow> Rk \<rightarrow> nat_rel" .
 
@@ -1414,7 +1414,7 @@ by parametricity
 
 
 lemma ahm_isEmpty_impl:
-  assumes "is_bounded_hashcode Id op= bhc"
+  assumes "is_bounded_hashcode Id (=) bhc"
   shows "(ahm_isEmpty, op_map_isEmpty) \<in> ahm_map_rel' bhc \<rightarrow> bool_rel"
 proof (intro fun_relI)
   fix hm m assume rel: "(hm,m) \<in> ahm_map_rel' bhc"
@@ -1429,7 +1429,7 @@ proof (intro fun_relI)
 qed
 
 lemma ahm_isSng_impl:
-  assumes "is_bounded_hashcode Id op= bhc"
+  assumes "is_bounded_hashcode Id (=) bhc"
   shows "(ahm_isSng, op_map_isSng) \<in> ahm_map_rel' bhc \<rightarrow> bool_rel"
 proof (intro fun_relI)
   fix hm m assume rel: "(hm,m) \<in> ahm_map_rel' bhc"
@@ -1444,7 +1444,7 @@ proof (intro fun_relI)
 qed
 
 lemma ahm_size_impl:
-  assumes "is_bounded_hashcode Id op= bhc"
+  assumes "is_bounded_hashcode Id (=) bhc"
   shows "(ahm_size, op_map_size) \<in> ahm_map_rel' bhc \<rightarrow> nat_rel"
 proof (intro fun_relI)
   fix hm m assume rel: "(hm,m) \<in> ahm_map_rel' bhc"
@@ -1459,7 +1459,7 @@ qed
 
 
 lemma autoref_ahm_isEmpty[autoref_rules]:
-  (*assumes eq: "GEN_OP eq op= (Rk \<rightarrow> Rk \<rightarrow> bool_rel)"*)
+  (*assumes eq: "GEN_OP eq (=) (Rk \<rightarrow> Rk \<rightarrow> bool_rel)"*)
   assumes bhc[unfolded autoref_tag_defs]: 
       "SIDE_GEN_ALGO (is_bounded_hashcode Rk eq bhc)"
   shows "(ahm_isEmpty, op_map_isEmpty) \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc \<rightarrow> bool_rel"
@@ -1467,8 +1467,8 @@ proof (intro fun_relI)
   let ?bhc' = "abstract_bounded_hashcode Rk bhc"
   fix k k' a m'
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  (*from eq have "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp*)
-  from bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" 
+  (*from eq have "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp*)
+  from bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" 
     by blast
 
   from M obtain a' where M1: "(a,a') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel" and
@@ -1487,7 +1487,7 @@ proof (intro fun_relI)
   let ?bhc' = "abstract_bounded_hashcode Rk bhc"
   fix k k' a m'
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  from bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" 
+  from bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" 
     by blast
 
   from M obtain a' where M1: "(a,a') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel" and
@@ -1506,7 +1506,7 @@ proof (intro fun_relI)
   let ?bhc' = "abstract_bounded_hashcode Rk bhc"
   fix k k' a m'
   assume M: "(a,m') \<in> \<langle>Rk,Rv\<rangle>ahm_rel bhc"
-  from bhc have bhc': "is_bounded_hashcode Id op= ?bhc'" 
+  from bhc have bhc': "is_bounded_hashcode Id (=) ?bhc'" 
     by blast
 
   from M obtain a' where M1: "(a,a') \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel" and

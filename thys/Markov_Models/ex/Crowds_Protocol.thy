@@ -598,7 +598,7 @@ proof -
        (auto simp: nn_integral_indicator_finite sum.reindex emeasure_measure_pmf_finite
              intro!: sum.cong[OF refl])
   also have "\<dots> = (\<Sum>i\<in>I. ennreal (p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)) * p_i i)"
-  proof (intro sum.cong refl arg_cong2[where f="op *"])
+  proof (intro sum.cong refl arg_cong2[where f="( * )"])
     fix i assume "i \<in> I"
     with I have i: "i \<in> H"
       by auto
@@ -916,7 +916,7 @@ proof -
       apply (simp add: Pr_visit_before_C P_visit init_H Pr_before_C
                   del: sum_constant)
       apply (simp add: divide_simps distrib_left)
-      apply (intro arg_cong2[where f="op*"] refl arg_cong2[where f=log])
+      apply (intro arg_cong2[where f="( * )"] refl arg_cong2[where f=log])
       apply (auto simp: field_simps)
       done
     also have "\<dots> = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h"

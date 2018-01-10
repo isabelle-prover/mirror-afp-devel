@@ -76,7 +76,7 @@ text {*
 *}
 lemma append_assoc_trans:
   assumes "\<And>r s. b r @ s = b (r @ s)"
-  shows "(op @ a +@+ b) r @ s = (op @ a +@+ b) (r @ s)"
+  shows "((@) a +@+ b) r @ s = ((@) a +@+ b) (r @ s)"
   using assms by simp
 
 lemma shows_sep_paren:

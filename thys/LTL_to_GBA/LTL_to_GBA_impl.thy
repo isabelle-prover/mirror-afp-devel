@@ -164,8 +164,8 @@ primrec ltln_eq where
   | _ \<Rightarrow> False)"
 
 lemma ltln_eq_autoref[autoref_rules]:
-  assumes EQP: "(eq,op=) \<in> R \<rightarrow> R \<rightarrow> bool_rel"
-  shows "(ltln_eq eq, op=) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> bool_rel"
+  assumes EQP: "(eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel"
+  shows "(ltln_eq eq, (=)) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> bool_rel"
 proof (intro fun_relI)
   fix \<mu>' \<mu> \<nu>' \<nu>
   assume "(\<mu>',\<mu>)\<in>\<langle>R\<rangle>ltln_rel" and "(\<nu>',\<nu>)\<in>\<langle>R\<rangle>ltln_rel"
@@ -193,7 +193,7 @@ qed
 lemma ltln_dflt_cmp[autoref_rules_raw]: 
   assumes "PREFER_id R"
   shows
-  "(dflt_cmp op \<le> op <, dflt_cmp op \<le> op <) 
+  "(dflt_cmp (\<le>) (<), dflt_cmp (\<le>) (<)) 
   \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> comp_res_rel"
   using assms
   by simp
@@ -962,7 +962,7 @@ qed
 lemma ls_nds_image_autoref[autoref_rules]:
   assumes "(fi,f) \<in> Ra \<rightarrow> Rb"
   assumes "SIDE_PRECOND (\<forall>x. name (f x) = name x)"
-  shows "(map fi, (OP op ` ::: (Ra\<rightarrow>Rb) \<rightarrow> \<langle>Ra\<rangle>ls_nds_rel \<rightarrow> \<langle>Rb\<rangle>ls_nds_rel)$f) 
+  shows "(map fi, (OP (`) ::: (Ra\<rightarrow>Rb) \<rightarrow> \<langle>Ra\<rangle>ls_nds_rel \<rightarrow> \<langle>Rb\<rangle>ls_nds_rel)$f) 
     \<in> \<langle>Ra\<rangle>ls_nds_rel \<rightarrow> \<langle>Rb\<rangle>ls_nds_rel"
   using assms
   unfolding autoref_tag_defs

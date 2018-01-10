@@ -805,7 +805,7 @@ next
         apply (unfold make_fmap_union)
         apply (metis (lifting) funion_absorb2 vs_def vs_in_S)
         apply (intro arg_cong2[of _ _ "[ S - fst3 e |=> Bot ]"
-            "[ S - fst3 e |=> Bot ]" "op ++\<^sub>f"])
+            "[ S - fst3 e |=> Bot ]" "(++\<^sub>f)"])
         apply (intro arg_cong2[of _ _ "Top" "Top" "make_fmap"])
         defer 1
         apply (simp, simp)
@@ -975,7 +975,7 @@ next
     hence \<pi>_cs: "\<And>i. i < length \<pi> \<Longrightarrow>
       case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi> ! i) (cs ! i)" by auto
     assume G_def: "G = Graph V \<Lambda> E"
-    assume c_def: "c = foldr op ;; cs Skip"
+    assume c_def: "c = foldr (;;) cs Skip"
     assume \<pi>_lin: "\<pi> \<in> lins (Graph V \<Lambda> E)"
 
     note lins = linsD[OF \<pi>_lin]
@@ -988,7 +988,7 @@ next
     by (insert wf_chains G_def wf_G, auto simp add: wf_ps_chain_def)
 
     show "prov_triple (asn (\<Otimes>v|\<in>|initials (Graph V \<Lambda> E). top_ass (\<Lambda> v)),
-      foldr op ;; cs Skip, asn (\<Otimes>v|\<in>|terminals (Graph V \<Lambda> E). bot_ass (\<Lambda> v)))"
+      foldr (;;) cs Skip, asn (\<Otimes>v|\<in>|terminals (Graph V \<Lambda> E). bot_ass (\<Lambda> v)))"
     using [[unfold_abs_def = false]]
     apply (intro seq_fold[of _ "ps_chain_to_int_chain G \<Pi>"])
     apply (unfold len_cs)

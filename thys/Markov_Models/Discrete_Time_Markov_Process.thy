@@ -395,7 +395,7 @@ lemma AE_lim_stream:
 
 lemma emeasure_lim_stream:
   assumes x[measurable, simp]: "x \<in> space M" and A[measurable, simp]: "A \<in> sets (stream_space M)"
-  shows "lim_stream x A = (\<integral>\<^sup>+y. emeasure (lim_stream y) ((op ## y) -` A \<inter> space (stream_space M)) \<partial>K x)"
+  shows "lim_stream x A = (\<integral>\<^sup>+y. emeasure (lim_stream y) (((##) y) -` A \<inter> space (stream_space M)) \<partial>K x)"
   apply (subst lim_stream_eq, simp)
   apply (subst emeasure_bind[OF _ _ A], simp add: prob_space.not_empty prob_space_K)
    apply (rule measurable_prob_algebraD)
@@ -539,7 +539,7 @@ proof (rule stopping_timeI, rule measurable_cong[THEN iffD2])
        (auto simp add: space_stream_filtration space_stream_space dest!: stopping_time_0[OF T x \<omega>])
   show "Measurable.pred (stream_filtration M t) (\<lambda>w. T (x ## w) \<le> eSuc t)" for t
   proof (rule measurable_compose[of "SCons x"])
-    show "op ## x \<in> stream_filtration M t \<rightarrow>\<^sub>M stream_filtration M (eSuc t)"
+    show "(##) x \<in> stream_filtration M t \<rightarrow>\<^sub>M stream_filtration M (eSuc t)"
     proof (intro measurable_stream_filtration2)
       show "enat i \<le> eSuc t \<Longrightarrow> (\<lambda>xa. (x ## xa) !! i) \<in> stream_filtration M t \<rightarrow>\<^sub>M M" for i
         using \<open>x\<in>space M\<close>

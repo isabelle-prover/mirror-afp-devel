@@ -386,7 +386,7 @@ lemma flow_has_vector_derivative_at_0:
 proof -
   from flow_has_vector_derivative[OF assms]
   have
-    "(op + t has_vector_derivative 1) (at 0)"
+    "((+) t has_vector_derivative 1) (at 0)"
     "(flow t0 x0 has_vector_derivative f t (flow t0 x0 t)) (at (t + 0))"
     by (auto intro!: derivative_eq_intros)
   from vector_diff_chain_at[OF this]
@@ -1770,18 +1770,18 @@ definition "existence_ivl0 x0 = ll_on_open.existence_ivl UNIV (\<lambda>_. f) X 
 
 sublocale ll_on_open_it UNIV "\<lambda>_. f" X 0
   rewrites "flow = (\<lambda>t0 x0 t. flow0 x0 (t - t0))"
-       and "existence_ivl = (\<lambda>t0 x0. op + t0 ` existence_ivl0 x0)"
-       and "op + 0 = (\<lambda>x::real. x)"
+       and "existence_ivl = (\<lambda>t0 x0. (+) t0 ` existence_ivl0 x0)"
+       and "(+) 0 = (\<lambda>x::real. x)"
        and "s - 0 = s"
        and "(\<lambda>x. x) ` S = S"
-       and "s \<in> op + t ` S \<longleftrightarrow> s - t \<in> (S::real set)"
+       and "s \<in> (+) t ` S \<longleftrightarrow> s - t \<in> (S::real set)"
        and "P (s + t - s) = P (t::real)"\<comment>\<open>TODO: why does just the equation not work?\<close>
        and "P (t + s - s) = P t"\<comment>\<open>TODO: why does just the equation not work?\<close>
 proof -
   interpret ll_on_open UNIV "\<lambda>_. f" X
     by unfold_locales (auto intro!: continuous_on_const auto_local_lipschitz)
   show "ll_on_open_it UNIV (\<lambda>_. f) X" ..
-  show "op + 0 = (\<lambda>x::real. x)" "(\<lambda>x. x) ` S = S" "s - 0 = s" "P (t + s - s) = P t" "P (s + t - s) = P (t::real)"
+  show "(+) 0 = (\<lambda>x::real. x)" "(\<lambda>x. x) ` S = S" "s - 0 = s" "P (t + s - s) = P t" "P (s + t - s) = P (t::real)"
     by auto
   show "flow = (\<lambda>t0 x0 t. flow0 x0 (t - t0))"
     unfolding flow0_def
@@ -1791,7 +1791,7 @@ proof -
     apply (auto intro: flow_shift_autonomous1
        mem_existence_ivl_shift_autonomous1 mem_existence_ivl_shift_autonomous2)
     done
-  show "existence_ivl = (\<lambda>t0 x0. op + t0 ` existence_ivl0 x0)"
+  show "existence_ivl = (\<lambda>t0 x0. (+) t0 ` existence_ivl0 x0)"
     unfolding existence_ivl0_def
     apply (safe intro!: ext)
     subgoal using image_iff mem_existence_ivl_shift_autonomous1 by fastforce
@@ -1806,10 +1806,10 @@ proof -
         by presburger
     qed
     done
-  show "(s \<in> op + t ` S) = (s - t \<in> S)" by force
+  show "(s \<in> (+) t ` S) = (s - t \<in> S)" by force
 qed
 \<comment>\<open> at this point, there should be no theorems about \<open>existence_ivl\<close>, only \<open>existence_ivl0\<close>.
-Moreover, \<open>op + _ ` _\<close> and \<open>_ + _ - _\<close> etc should have been removed\<close>
+Moreover, \<open>(+) _ ` _\<close> and \<open>_ + _ - _\<close> etc should have been removed\<close>
 
 lemma existence_ivl_zero: "x0 \<in> X \<Longrightarrow> 0 \<in> existence_ivl0 x0" by simp
 
@@ -2577,7 +2577,7 @@ proof-
 qed
 
 lemma local_lipschitz_A:
-  "OT \<subseteq> existence_ivl0 x0 \<Longrightarrow> local_lipschitz OT (OS::('a \<Rightarrow>\<^sub>L 'a) set) (\<lambda>t. op o\<^sub>L (vareq x0 t))"
+  "OT \<subseteq> existence_ivl0 x0 \<Longrightarrow> local_lipschitz OT (OS::('a \<Rightarrow>\<^sub>L 'a) set) (\<lambda>t. (o\<^sub>L) (vareq x0 t))"
   by (rule local_lipschitz_on_subset[OF _ _ subset_UNIV, where T="existence_ivl0 x0"])
      (auto simp: split_beta' vareq_def
       intro!: c1_implies_local_lipschitz[where f'="\<lambda>(t, x). comp3 (f' (flow0 x0 t))"]
@@ -2713,7 +2713,7 @@ proof (safe intro!: tendstoI)
       continuous_on_subset[OF mvar.flow_continuous_on ])
 
   from mvar.local_lipschitz \<open>?T \<subseteq> _\<close>
-  have llc: "local_lipschitz ?T ?X (\<lambda>t. op o\<^sub>L (vareq x t))"
+  have llc: "local_lipschitz ?T ?X (\<lambda>t. (o\<^sub>L) (vareq x t))"
     by (rule local_lipschitz_on_subset) auto
 
   have cont: "\<And>xa. xa \<in> ?X \<Longrightarrow> continuous_on ?T (\<lambda>t. vareq x t o\<^sub>L xa)"
@@ -2721,12 +2721,12 @@ proof (safe intro!: tendstoI)
     by (auto intro!: continuous_intros \<open>x \<in> X\<close>)
 
   from local_lipschitz_on_compact_implies_lipschitz[OF llc \<open>compact ?X\<close> \<open>compact ?T\<close> cont]
-  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (vareq x ta)) K'"
+  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X ((o\<^sub>L) (vareq x ta)) K'"
     by blast
   define K where "K \<equiv> abs K' + 1"
   have "K > 0"
     by (simp add: K_def)
-  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (vareq x ta)) K"
+  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X ((o\<^sub>L) (vareq x ta)) K"
     by (auto intro!: lipschitzI mult_right_mono order_trans[OF lipschitzD[OF K']] simp: K_def)
 
   have ex_ivlI: "\<And>y. y \<in> cball x dx \<Longrightarrow> ?T \<subseteq> existence_ivl0 y"
@@ -2776,12 +2776,12 @@ proof (safe intro!: tendstoI)
     have "?X' \<subseteq> ?X"
       by (auto intro!: infdist_le2 simp: dist_commute)
 
-    interpret oneR: ll_on_open "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (vareq x t))" ?X'
+    interpret oneR: ll_on_open "existence_ivl0 x" "(\<lambda>t. (o\<^sub>L) (vareq x t))" ?X'
       by standard (auto intro!: \<open>x \<in> X\<close> continuous_intros local_lipschitz_A[OF order_refl])
-    interpret twoR: ll_on_open "existence_ivl0 y" "(\<lambda>t. op o\<^sub>L (vareq y t))" ?X'
+    interpret twoR: ll_on_open "existence_ivl0 y" "(\<lambda>t. (o\<^sub>L) (vareq y t))" ?X'
       by standard (auto intro!: \<open>y \<in> X\<close> continuous_intros local_lipschitz_A[OF order_refl])
     interpret both:
-      two_ll_on_open "(\<lambda>t. op o\<^sub>L (vareq x t))" "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (vareq y t))" "existence_ivl0 y" ?X' ?T "id_blinfun" d K
+      two_ll_on_open "(\<lambda>t. (o\<^sub>L) (vareq x t))" "existence_ivl0 x" "(\<lambda>t. (o\<^sub>L) (vareq y t))" "existence_ivl0 y" ?X' ?T "id_blinfun" d K
     proof unfold_locales
       show "0 < K" by (simp add: \<open>0 < K\<close>)
       show iv_defined: "0 \<in> {t..0} \<union> {0..t} \<union> cball t dt"
@@ -2804,7 +2804,7 @@ proof (safe intro!: tendstoI)
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> by blast
         done
       fix s assume s: "s \<in> ?T"
-      then show "lipschitz ?X' (op o\<^sub>L (vareq x s)) K"
+      then show "lipschitz ?X' ((o\<^sub>L) (vareq x s)) K"
         by (intro lipschitz_subset[OF K \<open>?X' \<subseteq> ?X\<close>]) auto
       fix j assume j: "j \<in> ?X'"
       show "norm ((vareq x s o\<^sub>L j) - (vareq y s o\<^sub>L j)) < d"

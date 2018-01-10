@@ -606,7 +606,7 @@ termination proof -
 qed
 
 text \<open>@{const times_poly_mapping_class} was used in Maletzky's original formalization,
-  but it is equivalent to the definition of @{term "op *"} on poly mapping, see below...\<close>
+  but it is equivalent to the definition of @{term "( * )"} on poly mapping, see below...\<close>
 
 lemma times_mpoly_induct:
   assumes base: "P 0 q 0"
@@ -842,7 +842,7 @@ text \<open>the lifted version is times on type mpoly...\<close>
 
 lift_definition times_mpoly_class::"('b::semiring_0) mpoly \<Rightarrow> ('b) mpoly \<Rightarrow> ('b) mpoly"
   (infixl "*mp" 70)
-  is "(op *pm)::((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b) \<Rightarrow> _ \<Rightarrow> _" .
+  is "(( *pm))::((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b) \<Rightarrow> _ \<Rightarrow> _" .
 
 lemma times_mpoly_class_eq_times[simp]: "p *mp q = p * q" for p q::"('b::semiring_0) mpoly"
   apply transfer
@@ -1742,7 +1742,7 @@ proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_ord_strict])
 qed
 
 theorem ord_p_wf:
-  shows "wfP (op \<prec>p)"
+  shows "wfP (\<prec>p)"
 unfolding wfP_def
 proof (intro wfI_min)
   fix Q::"('a, 'b) poly_mapping set" and x::"('a, 'b) poly_mapping"

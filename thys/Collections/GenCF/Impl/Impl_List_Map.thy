@@ -148,7 +148,7 @@ lemma param_list_map_lookup[param]:
 unfolding list_map_lookup_def[abs_def] by parametricity
 
 lemma list_map_autoref_lookup_aux:
-  assumes eq: "GEN_OP eq op= (Rk\<rightarrow>Rk\<rightarrow>Id)"
+  assumes eq: "GEN_OP eq (=) (Rk\<rightarrow>Rk\<rightarrow>Id)"
   assumes K: "(k, k') \<in> Rk"
   assumes M: "(m, m') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
   shows "(list_map_lookup eq k m, op_map_lookup k' (map_of m'))
@@ -159,13 +159,13 @@ proof (induction rule: list_rel_induct[OF M, case_names Nil Cons])
     show ?case by simp
 next
   case (Cons x x' xs xs')
-    from eq have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
+    from eq have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
     with eq'[param_fo] and K  and Cons 
         show ?case by (force simp: prod_rel_def)
 qed
 
 lemma list_map_autoref_lookup[autoref_rules]:
-  assumes "GEN_OP eq op= (Rk\<rightarrow>Rk\<rightarrow>Id)"
+  assumes "GEN_OP eq (=) (Rk\<rightarrow>Rk\<rightarrow>Id)"
   shows "(list_map_lookup eq, op_map_lookup) \<in> 
        Rk \<rightarrow> \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> \<langle>Rv\<rangle>option_rel"
    by (force simp: list_map_rel_def br_def
@@ -186,13 +186,13 @@ unfolding list_map_update_def[abs_def] by parametricity
 
 
 lemma list_map_autoref_update_aux1:
-  assumes eq: "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
   assumes K: "(k, k') \<in> Rk"
   assumes V: "(v, v') \<in> Rv"
   assumes A: "(accu, accu') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
   assumes M: "(m, m') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
   shows "(list_map_update_aux eq k v m accu, 
-          list_map_update_aux op= k' v' m' accu')
+          list_map_update_aux (=) k' v' m' accu')
                \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
 proof (insert A, induction arbitrary: accu accu' 
            rule: list_rel_induct[OF M, case_names Nil Cons])
@@ -200,7 +200,7 @@ proof (insert A, induction arbitrary: accu accu'
       thus ?case by (simp add: K V)
 next
   case (Cons x x' xs xs')
-    from eq have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
+    from eq have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
     from eq'[param_fo] Cons(1) K 
         have [simp]: "(eq (fst x) k) \<longleftrightarrow> ((fst x') = k')" 
         by (force simp: prod_rel_def)
@@ -219,8 +219,8 @@ next
 qed
 
 lemma list_map_autoref_update1[param]:
-  assumes eq: "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
-  shows "(list_map_update eq, list_map_update op=) \<in> Rk \<rightarrow> Rv \<rightarrow> 
+  assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  shows "(list_map_update eq, list_map_update (=)) \<in> Rk \<rightarrow> Rv \<rightarrow> 
              \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel \<rightarrow> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
 unfolding list_map_update_def[abs_def]
   by (intro fun_relI, erule (1) list_map_autoref_update_aux1[OF eq], 
@@ -241,7 +241,7 @@ lemma list_map_autoref_update_aux2:
   assumes A1: "distinct (map fst (m @ accu))"
   assumes A2: "k \<notin> set (map fst accu)"
   assumes M: "(m, m') \<in> br map_of list_map_invar"
-  shows "(list_map_update_aux op= k v m accu, 
+  shows "(list_map_update_aux (=) k v m accu, 
           accu' ++ op_map_update k' v' m')
                \<in> br map_of list_map_invar" (is "(?f m accu, _) \<in> _")
 using M A A1 A2
@@ -285,7 +285,7 @@ next
 qed
 
 lemma list_map_autoref_update2[param]:
-  shows "(list_map_update op=, op_map_update) \<in> Id \<rightarrow> Id \<rightarrow> 
+  shows "(list_map_update (=), op_map_update) \<in> Id \<rightarrow> Id \<rightarrow> 
              br map_of list_map_invar \<rightarrow> br map_of list_map_invar"
 unfolding list_map_update_def[abs_def]
 apply (intro fun_relI)
@@ -295,7 +295,7 @@ apply (auto simp: br_def list_map_invar_def)
 done
 
 lemma list_map_autoref_update[autoref_rules]:
-  assumes eq: "GEN_OP eq op= (Rk\<rightarrow>Rk\<rightarrow>Id)"
+  assumes eq: "GEN_OP eq (=) (Rk\<rightarrow>Rk\<rightarrow>Id)"
   shows "(list_map_update eq, op_map_update) \<in>
       Rk \<rightarrow> Rv \<rightarrow> \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> \<langle>Rk,Rv\<rangle>list_map_rel"
 unfolding list_map_rel_def
@@ -341,12 +341,12 @@ lemma param_list_map_delete[param]:
 unfolding list_map_delete_def[abs_def] by parametricity
 
 lemma list_map_autoref_delete_aux1:
-  assumes eq: "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
   assumes K: "(k, k') \<in> Rk"
   assumes A: "(accu, accu') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
   assumes M: "(m, m') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
   shows "(list_map_delete_aux eq k m accu, 
-          list_map_delete_aux op= k' m' accu')
+          list_map_delete_aux (=) k' m' accu')
                \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
 proof (insert A, induction arbitrary: accu accu' 
            rule: list_rel_induct[OF M, case_names Nil Cons])
@@ -354,7 +354,7 @@ proof (insert A, induction arbitrary: accu accu'
       thus ?case by (simp add: K)
 next
   case (Cons x x' xs xs')
-    from eq have eq': "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
+    from eq have eq': "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id" by simp
     from eq'[param_fo] Cons(1) K 
         have [simp]: "(eq (fst x) k) \<longleftrightarrow> ((fst x') = k')" 
         by (force simp: prod_rel_def)
@@ -373,8 +373,8 @@ next
 qed
 
 lemma list_map_autoref_delete1[param]:
-  assumes eq: "(eq,op=) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
-  shows "(list_map_delete eq, list_map_delete op=) \<in> Rk \<rightarrow> 
+  assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> Id"
+  shows "(list_map_delete eq, list_map_delete (=)) \<in> Rk \<rightarrow> 
              \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel \<rightarrow> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"
 unfolding list_map_delete_def[abs_def]
   by (intro fun_relI, erule list_map_autoref_delete_aux1[OF eq], 
@@ -387,7 +387,7 @@ lemma list_map_autoref_delete_aux2:
   assumes A1: "distinct (map fst (m @ accu))"
   assumes A2: "k \<notin> set (map fst accu)"
   assumes M: "(m, m') \<in> br map_of list_map_invar"
-  shows "(list_map_delete_aux op= k m accu, 
+  shows "(list_map_delete_aux (=) k m accu, 
           accu' ++ op_map_delete k' m')
                \<in> br map_of list_map_invar" (is "(?f m accu, _) \<in> _")
 using M A A1 A2
@@ -442,7 +442,7 @@ next
 qed
 
 lemma list_map_autoref_delete2[param]:
-  shows "(list_map_delete op=, op_map_delete) \<in> Id \<rightarrow> 
+  shows "(list_map_delete (=), op_map_delete) \<in> Id \<rightarrow> 
              br map_of list_map_invar \<rightarrow> br map_of list_map_invar"
 unfolding list_map_delete_def[abs_def]
 apply (intro fun_relI)
@@ -452,7 +452,7 @@ apply (auto simp: br_def list_map_invar_def)
 done
 
 lemma list_map_autoref_delete[autoref_rules]:
-  assumes eq: "GEN_OP eq op= (Rk\<rightarrow>Rk\<rightarrow>Id)"
+  assumes eq: "GEN_OP eq (=) (Rk\<rightarrow>Rk\<rightarrow>Id)"
   shows "(list_map_delete eq, op_map_delete) \<in>
       Rk \<rightarrow> \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> \<langle>Rk,Rv\<rangle>list_map_rel"
 unfolding list_map_rel_def

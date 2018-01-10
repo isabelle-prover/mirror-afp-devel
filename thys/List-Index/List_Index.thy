@@ -173,7 +173,7 @@ by(induct xs) auto
 
 lemma index_take: "index xs x >= i \<Longrightarrow> x \<notin> set(take i xs)"
 apply(subst (asm) index_conv_takeWhile)
-apply(subgoal_tac "set(take i xs) <= set(takeWhile (op \<noteq> x) xs)")
+apply(subgoal_tac "set(take i xs) <= set(takeWhile ((\<noteq>) x) xs)")
  apply(blast dest: set_takeWhileD)
 apply(metis set_take_subset_set_take takeWhile_eq_take)
 done

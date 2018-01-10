@@ -101,9 +101,9 @@ private lemma multiset_of_sort: "mset (sort xs) = mset xs"
 proof (induction xs rule: sort.induct)
   case (2 x xs)
   let ?M = "\<lambda>oper. {#y:# mset xs. oper (f y) (f x)#}"
-  from 2 have "mset (sort (x#xs)) = ?M (op <) + ?M (op =) + ?M (op >) + {#x#}"
+  from 2 have "mset (sort (x#xs)) = ?M (<) + ?M (=) + ?M (>) + {#x#}"
     by (simp add: part Multiset.union_assoc mset_filter)
-  also have "?M (op <) + ?M (op =) + ?M (op >) = mset xs"
+  also have "?M (<) + ?M (=) + ?M (>) = mset xs"
     by ((subst filter_mset_union, force)+, subst multiset_eq_iff, force)
   finally show ?case by simp
 qed simp

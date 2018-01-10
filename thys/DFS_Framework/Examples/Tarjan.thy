@@ -12,8 +12,8 @@ subsection \<open>Preliminaries\<close>
 (* Though this is a general lemma about dropWhile/takeWhile, it is probably only of use for this algorithm. *)
 lemma tjs_union:
   fixes tjs u
-  defines "dw \<equiv> dropWhile (op \<noteq> u) tjs"
-  defines "tw \<equiv> takeWhile (op \<noteq> u) tjs"
+  defines "dw \<equiv> dropWhile ((\<noteq>) u) tjs"
+  defines "tw \<equiv> takeWhile ((\<noteq>) u) tjs"
   assumes "u \<in> set tjs"
   shows "set tjs = set (tl dw) \<union> insert u (set tw)"
 proof -
@@ -51,7 +51,7 @@ begin
                                  tj_stack = v#tj_stack s\<rparr>"
 
   definition tj_stack_pop :: "'v list \<Rightarrow> 'v \<Rightarrow> ('v list \<times> 'v set) nres" where
-    "tj_stack_pop tjs u = RETURN (tl (dropWhile (op \<noteq> u) tjs), insert u (set (takeWhile (op \<noteq> u) tjs)))"
+    "tj_stack_pop tjs u = RETURN (tl (dropWhile ((\<noteq>) u) tjs), insert u (set (takeWhile ((\<noteq>) u) tjs)))"
 
   lemma tj_stack_pop_set:
     "tj_stack_pop tjs u \<le> SPEC (\<lambda>(tjs',scc). u \<in> set tjs \<longrightarrow> set tjs = set tjs' \<union> scc \<and> u \<in> scc)"
@@ -224,8 +224,8 @@ context Tarjan begin
     case (finish s s' u)
 
     {
-      let ?dw = "dropWhile (op \<noteq> u) (tj_stack s)"
-      let ?tw = "takeWhile (op \<noteq> u) (tj_stack s)"
+      let ?dw = "dropWhile ((\<noteq>) u) (tj_stack s)"
+      let ?tw = "takeWhile ((\<noteq>) u) (tj_stack s)"
 
       fix a k j
       assume A: "a = tl ?dw" "k < length a" "j < k"
@@ -269,8 +269,8 @@ context Tarjan_invar begin context begin interpretation timing_syntax .
 
   lemma tjs_disc_dw_tw:
     fixes u
-    defines "dw \<equiv> dropWhile (op \<noteq> u) (tj_stack s)"
-    defines "tw \<equiv> takeWhile (op \<noteq> u) (tj_stack s)"
+    defines "dw \<equiv> dropWhile ((\<noteq>) u) (tj_stack s)"
+    defines "tw \<equiv> takeWhile ((\<noteq>) u) (tj_stack s)"
     assumes "x \<in> set dw" "y \<in> set tw"
     shows "\<delta> s x < \<delta> s y"
   proof -
@@ -293,8 +293,8 @@ context Tarjan begin context begin interpretation timing_syntax .
   proof (induct rule: establish_invarI)
     case (finish s s' u) then interpret Tarjan_invar where s=s by simp
 
-    let ?tw = "takeWhile (op \<noteq> u) (tj_stack s)"
-    let ?dw = "dropWhile (op \<noteq> u) (tj_stack s)"
+    let ?tw = "takeWhile ((\<noteq>) u) (tj_stack s)"
+    let ?dw = "dropWhile ((\<noteq>) u) (tj_stack s)"
 
     {
       fix x
@@ -474,7 +474,7 @@ context Tarjan begin context begin interpretation timing_syntax .
         with s'.scc_root_transfer'[where s'=s'] finish have "scc_root s' u (scc_of E u)" by simp
 
         moreover
-        hence [simp]: "tj_stack ?s = tl (dropWhile (op \<noteq> u) (tj_stack s))"
+        hence [simp]: "tj_stack ?s = tl (dropWhile ((\<noteq>) u) (tj_stack s))"
           apply (rule_tac TRANS)
           unfolding tarjan_fin_def tj_stack_pop_def
           apply (refine_vcg)
@@ -482,8 +482,8 @@ context Tarjan begin context begin interpretation timing_syntax .
           done
 
         {
-          let ?dw = "dropWhile (op \<noteq> u) (tj_stack s)"
-          let ?tw = "takeWhile (op \<noteq> u) (tj_stack s)"
+          let ?dw = "dropWhile ((\<noteq>) u) (tj_stack s)"
+          let ?tw = "takeWhile ((\<noteq>) u) (tj_stack s)"
           fix x
           define j::nat where "j = 0"
           
@@ -615,8 +615,8 @@ context Tarjan begin context begin interpretation timing_syntax .
         thus ?thesis by (simp add: finish)
       next
         case True
-        let ?dw = "dropWhile (op \<noteq> u) (tj_stack s)"
-        let ?tw = "takeWhile (op \<noteq> u) (tj_stack s)"
+        let ?dw = "dropWhile ((\<noteq>) u) (tj_stack s)"
+        let ?tw = "takeWhile ((\<noteq>) u) (tj_stack s)"
         let ?tw' = "insert u (set ?tw)"
 
         have [simp]: "sccs ?s = insert ?tw' (sccs s)"

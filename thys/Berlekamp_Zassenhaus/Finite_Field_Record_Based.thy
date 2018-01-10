@@ -242,7 +242,7 @@ next
   show ?thesis unfolding id using * using mod_pos_pos_trivial by fastforce
 qed
 
-lemma mod_ring_plus[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (plus_p p) (op +)"
+lemma mod_ring_plus[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (plus_p p) (+)"
 proof -
   {
     fix x y :: "'a mod_ring"
@@ -266,7 +266,7 @@ next
   show ?thesis unfolding id using * using mod_pos_pos_trivial by fastforce
 qed
 
-lemma mod_ring_minus[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (minus_p p) (op -)"
+lemma mod_ring_minus[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (minus_p p) (-)"
 proof -
   {
     fix x y :: "'a mod_ring"
@@ -290,7 +290,7 @@ proof -
 qed
 
 (* multiplication *)
-lemma mod_ring_mult[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (mult_p p) (op *)"
+lemma mod_ring_mult[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (mult_p p) (( * ))"
 proof -
   {
     fix x y :: "'a mod_ring"
@@ -302,11 +302,11 @@ proof -
 qed
 
 (* equality *)
-lemma mod_ring_eq[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> op =) (op =) (op =)"
+lemma mod_ring_eq[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> (=)) (=) (=)"
   by (intro rel_funI, auto simp: mod_ring_rel_def)
 
 (* power *)
-lemma mod_ring_power[transfer_rule]: "(mod_ring_rel ===> op = ===> mod_ring_rel) (power_p p) (op ^)"
+lemma mod_ring_power[transfer_rule]: "(mod_ring_rel ===> (=) ===> mod_ring_rel) (power_p p) (^)"
 proof (intro rel_funI, clarify, unfold binary_power[symmetric], goal_cases)
   fix x y n
   assume xy: "mod_ring_rel x y"
@@ -358,7 +358,7 @@ lemma prime: "prime p" unfolding p using prime_card[where 'a = 'a] by simp
 
 (* mod *)
 lemma mod_ring_mod[transfer_rule]:
- "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) ((\<lambda> x y. if y = 0 then x else 0)) (op mod)"
+ "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) ((\<lambda> x y. if y = 0 then x else 0)) (mod)"
 proof -
   {
     fix x y :: "'a mod_ring"
@@ -409,7 +409,7 @@ qed
 
 (* division *)
 lemma mod_ring_divide[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel)
-  (divide_p p) (op /)"
+  (divide_p p) (/)"
   unfolding divide_p_def[abs_def] divide_mod_ring_def[abs_def] inverse_mod_ring_def[symmetric]
   by transfer_prover
 
@@ -654,16 +654,16 @@ lemma mod_ring_1_32: "mod_ring_rel32 1 1"
 lemma mod_ring_uminus32: "(mod_ring_rel32 ===> mod_ring_rel32) (uminus_p32 pp) uminus"
   using urel32_uminus mod_ring_uminus unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_plus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (plus_p32 pp) (op +)"
+lemma mod_ring_plus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (plus_p32 pp) (+)"
   using urel32_plus mod_ring_plus unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_minus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (minus_p32 pp) (op -)"
+lemma mod_ring_minus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (minus_p32 pp) (-)"
   using urel32_minus mod_ring_minus unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) (op *)"
+lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) (( * ))"
   using urel32_mult mod_ring_mult unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_eq32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> op =) op = op =" 
+lemma mod_ring_eq32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> (=)) (=) (=)" 
   using urel32_eq mod_ring_eq unfolding mod_ring_rel32_def rel_fun_def by blast
 
 lemma urel32_inj: "urel32 x y \<Longrightarrow> urel32 x z \<Longrightarrow> y = z" 
@@ -746,7 +746,7 @@ begin
 lemma mod_ring_normalize32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
   using urel32_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_mod32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+lemma mod_ring_mod32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x y. if y = 0 then x else 0) (mod)" 
   using urel32_mod[OF *] mod_ring_mod unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
 
 lemma mod_ring_unit_factor32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. x) unit_factor" 
@@ -755,7 +755,7 @@ lemma mod_ring_unit_factor32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x.
 lemma mod_ring_inverse32: "(mod_ring_rel32 ===> mod_ring_rel32) (inverse_p32 pp) inverse"
   using urel32_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_divide32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (divide_p32 pp) op /"
+lemma mod_ring_divide32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (divide_p32 pp) (/)"
   using mod_ring_inverse32 mod_ring_mult32[OF *]
   unfolding divide_p32_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
     rel_fun_def by blast
@@ -1066,16 +1066,16 @@ lemma mod_ring_1_64: "mod_ring_rel64 1 1"
 lemma mod_ring_uminus64: "(mod_ring_rel64 ===> mod_ring_rel64) (uminus_p64 pp) uminus"
   using urel64_uminus mod_ring_uminus unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_plus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (plus_p64 pp) (op +)"
+lemma mod_ring_plus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (plus_p64 pp) (+)"
   using urel64_plus mod_ring_plus unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_minus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (minus_p64 pp) (op -)"
+lemma mod_ring_minus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (minus_p64 pp) (-)"
   using urel64_minus mod_ring_minus unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_mult64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (mult_p64 pp) (op *)"
+lemma mod_ring_mult64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (mult_p64 pp) (( * ))"
   using urel64_mult mod_ring_mult unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_eq64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> op =) op = op =" 
+lemma mod_ring_eq64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> (=)) (=) (=)" 
   using urel64_eq mod_ring_eq unfolding mod_ring_rel64_def rel_fun_def by blast
 
 lemma urel64_inj: "urel64 x y \<Longrightarrow> urel64 x z \<Longrightarrow> y = z" 
@@ -1158,7 +1158,7 @@ begin
 lemma mod_ring_normalize64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
   using urel64_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_mod64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+lemma mod_ring_mod64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x y. if y = 0 then x else 0) (mod)" 
   using urel64_mod[OF *] mod_ring_mod unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
 
 lemma mod_ring_unit_factor64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. x) unit_factor" 
@@ -1167,7 +1167,7 @@ lemma mod_ring_unit_factor64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x.
 lemma mod_ring_inverse64: "(mod_ring_rel64 ===> mod_ring_rel64) (inverse_p64 pp) inverse"
   using urel64_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_divide64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (divide_p64 pp) op /"
+lemma mod_ring_divide64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (divide_p64 pp) (/)"
   using mod_ring_inverse64 mod_ring_mult64[OF *]
   unfolding divide_p64_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
     rel_fun_def by blast
@@ -1474,16 +1474,16 @@ lemma mod_ring_1__integer: "mod_ring_rel_integer 1 1"
 lemma mod_ring_uminus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (uminus_p_integer pp) uminus"
   using urel_integer_uminus mod_ring_uminus unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
-lemma mod_ring_plus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (plus_p_integer pp) (op +)"
+lemma mod_ring_plus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (plus_p_integer pp) (+)"
   using urel_integer_plus mod_ring_plus unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
-lemma mod_ring_minus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (minus_p_integer pp) (op -)"
+lemma mod_ring_minus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (minus_p_integer pp) (-)"
   using urel_integer_minus mod_ring_minus unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
-lemma mod_ring_mult_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (mult_p_integer pp) (op *)"
+lemma mod_ring_mult_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (mult_p_integer pp) (( * ))"
   using urel_integer_mult mod_ring_mult unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
-lemma mod_ring_eq_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> op =) op = op =" 
+lemma mod_ring_eq_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> (=)) (=) (=)" 
   using urel_integer_eq mod_ring_eq unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
 lemma urel_integer_inj: "urel_integer x y \<Longrightarrow> urel_integer x z \<Longrightarrow> y = z" 
@@ -1566,7 +1566,7 @@ begin
 lemma mod_ring_normalize_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
   using urel_integer_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_mod_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+lemma mod_ring_mod_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x y. if y = 0 then x else 0) (mod)" 
   using urel_integer_mod[OF *] mod_ring_mod unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
 
 lemma mod_ring_unit_factor_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x. x) unit_factor" 
@@ -1575,7 +1575,7 @@ lemma mod_ring_unit_factor_integer: "(mod_ring_rel_integer ===> mod_ring_rel_int
 lemma mod_ring_inverse_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (inverse_p_integer pp) inverse"
   using urel_integer_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
 
-lemma mod_ring_divide_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (divide_p_integer pp) op /"
+lemma mod_ring_divide_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (divide_p_integer pp) (/)"
   using mod_ring_inverse_integer mod_ring_mult_integer[OF *]
   unfolding divide_p_integer_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
     rel_fun_def by blast

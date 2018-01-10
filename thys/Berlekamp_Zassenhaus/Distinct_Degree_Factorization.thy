@@ -55,7 +55,7 @@ proof -
   have finite': "finite (carrier (mult_of R))" using finite by (rule finite_mult_of)
 
   interpret G: group "mult_of R" rewrites
-      "op [^]\<^bsub>mult_of R\<^esub> = (op [^] :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
+      "([^]\<^bsub>mult_of R\<^esub>) = (([^]) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
     by (rule field_mult_group) (simp_all add: fun_eq_iff nat_pow_def)
 
   let ?N = "\<lambda> x . card {a \<in> carrier (mult_of R). group.ord (mult_of R) a  = x}"
@@ -211,26 +211,26 @@ lemma x_power_aq_minus_1_rw:
   assumes x: "x > 1" 
     and a: "a > 0" 
     and b: "b > 0"
-  shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}"
+  shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum ((^) (x^a)) {..<q}"
 proof (cases "q=0")
   case False
   note q0 = False     
   have xa: "(x ^ a) > 0" using x by auto
   have int_rw1: "int (x ^ a) - 1 = int ((x ^ a) - 1)"
     using xa by linarith
-  have int_rw2: "sum (op ^ (int (x ^ a))) {..<q} = int (sum (op ^ ((x ^ a))) {..<q})" 
+  have int_rw2: "sum ((^) (int (x ^ a))) {..<q} = int (sum ((^) ((x ^ a))) {..<q})" 
     unfolding int_sum by simp
   have "int (x ^ a) ^ q = int (Suc ((x ^ a) ^ q - 1))" using xa by auto
   hence "int ((x ^ a) ^ q - 1) = int (x ^ a) ^ q - 1" using xa by presburger    
-  also have "... = (int (x ^ a) - 1) * sum (op ^ (int (x ^ a))) {..<q}" 
+  also have "... = (int (x ^ a) - 1) * sum ((^) (int (x ^ a))) {..<q}" 
     by (rule power_diff_1_eq[OF q0])
-  also have "... = (int ((x ^ a) - 1)) * int (sum (op ^ ( (x ^ a))) {..<q})" 
+  also have "... = (int ((x ^ a) - 1)) * int (sum ((^) ( (x ^ a))) {..<q})" 
     unfolding int_rw1 int_rw2 by simp
-  also have "... = int (((x ^ a) - 1) * (sum (op ^ ( (x ^ a))) {..<q}))" by auto
-  finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q})" .     
+  also have "... = int (((x ^ a) - 1) * (sum ((^) ( (x ^ a))) {..<q}))" by auto
+  finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum ((^) (x ^ a)) {..<q})" .     
   have "x ^ (a * q) - 1 = (x^a)^q - 1"
     by (simp add: power_mult)
-  also have "... = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}" 
+  also have "... = ((x^a) - 1) * sum ((^) (x^a)) {..<q}" 
     using aux unfolding int_int_eq .
   finally show ?thesis .
 qed auto
@@ -276,7 +276,7 @@ lemma dvd_power_minus_1_conv2:
 proof -
   define q where q[simp]: "q = b div a"  
   have b: "b = a * q" using a_dvd_b by auto
-  have "x^b - 1 = ((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q}" 
+  have "x^b - 1 = ((x ^ a) - 1) * sum ((^) (x ^ a)) {..<q}" 
     unfolding b by (rule x_power_aq_minus_1_rw[OF x a b0])
   thus ?thesis unfolding dvd_def by auto
 qed

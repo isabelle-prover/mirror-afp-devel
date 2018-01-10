@@ -344,24 +344,24 @@ lemma of_weak_ranking_indifference:
 
 
 lemma of_weak_ranking_map:
-  "map_relation f (of_weak_ranking xs) = of_weak_ranking (map (op -` f) xs)"
+  "map_relation f (of_weak_ranking xs) = of_weak_ranking (map ((-`) f) xs)"
   by (intro ext, induction xs)
      (simp_all add: map_relation_def of_weak_ranking_Cons)
 
 lemma of_weak_ranking_permute':
   assumes "f permutes (\<Union>set xs)"
-  shows   "map_relation f (of_weak_ranking xs) = of_weak_ranking (map (op ` (inv f)) xs)"
+  shows   "map_relation f (of_weak_ranking xs) = of_weak_ranking (map ((`) (inv f)) xs)"
 proof -
-  have "map_relation f (of_weak_ranking xs) = of_weak_ranking (map (op -` f) xs)"
+  have "map_relation f (of_weak_ranking xs) = of_weak_ranking (map ((-`) f) xs)"
     by (rule of_weak_ranking_map)
-  also from assms have "map (op -` f) xs = map (op ` (inv f)) xs"
+  also from assms have "map ((-`) f) xs = map ((`) (inv f)) xs"
     by (intro map_cong refl) (simp_all add: bij_vimage_eq_inv_image permutes_bij)
   finally show ?thesis .
 qed 
 
 lemma of_weak_ranking_permute:
   assumes "f permutes (\<Union>set xs)"
-  shows   "of_weak_ranking (map (op ` f) xs) = map_relation (inv f) (of_weak_ranking xs)"
+  shows   "of_weak_ranking (map ((`) f) xs) = map_relation (inv f) (of_weak_ranking xs)"
   using of_weak_ranking_permute'[OF permutes_inv[OF assms]] assms
   by (simp add: inv_inv_eq permutes_bij)
 
@@ -414,7 +414,7 @@ lemma is_weak_ranking_rev [simp]: "is_weak_ranking (rev xs) \<longleftrightarrow
 
 lemma is_weak_ranking_map_inj:
   assumes "is_weak_ranking xs" "inj_on f (\<Union>set xs)"
-  shows   "is_weak_ranking (map (op ` f) xs)"
+  shows   "is_weak_ranking (map ((`) f) xs)"
   using assms by (auto simp: is_weak_ranking_iff distinct_map inj_on_image disjoint_image)
 
 lemma of_weak_ranking_rev [simp]:
@@ -486,23 +486,23 @@ lemma is_weak_ranking_code [code]:
 lemma of_weak_ranking_altdef:
   assumes "is_weak_ranking xs" "x \<in> \<Union>set xs" "y \<in> \<Union>set xs"
   shows   "of_weak_ranking xs x y \<longleftrightarrow> 
-             find_index (op \<in> x) xs \<ge> find_index (op \<in> y) xs"
+             find_index ((\<in>) x) xs \<ge> find_index ((\<in>) y) xs"
 proof -
  from assms 
-    have A: "find_index (op \<in> x) xs < length xs" "find_index (op \<in> y) xs < length xs"
+    have A: "find_index ((\<in>) x) xs < length xs" "find_index ((\<in>) y) xs < length xs"
     by (simp_all add: find_index_less_size_conv)
  from this[THEN nth_find_index] 
-    have B: "x \<in> xs ! find_index (op \<in> x) xs" "y \<in> xs ! find_index (op \<in> y) xs" .
+    have B: "x \<in> xs ! find_index ((\<in>) x) xs" "y \<in> xs ! find_index ((\<in>) y) xs" .
   show ?thesis
   proof
     assume "of_weak_ranking xs x y"
     then obtain i j where ij: "j \<le> i" "i < length xs" "j < length xs" "x \<in> xs ! i" "y \<in> xs !j"
       by (cases rule: of_weak_ranking.cases) simp_all
-    with A B have "i = find_index (op \<in> x) xs" "j = find_index (op \<in> y) xs"
+    with A B have "i = find_index ((\<in>) x) xs" "j = find_index ((\<in>) y) xs"
       using assms(1) unfolding is_weak_ranking_def by blast+
-    with ij show "find_index (op \<in> x) xs \<ge> find_index (op \<in> y) xs" by simp
+    with ij show "find_index ((\<in>) x) xs \<ge> find_index ((\<in>) y) xs" by simp
   next
-    assume "find_index (op \<in> x) xs \<ge> find_index (op \<in> y) xs"
+    assume "find_index ((\<in>) x) xs \<ge> find_index ((\<in>) y) xs"
     from this A(2,1) B(2,1) show "of_weak_ranking xs x y"
       by (rule of_weak_ranking.intros)
   qed
@@ -830,13 +830,13 @@ lemma weak_ranking_unique:
 
 lemma weak_ranking_permute:
   assumes "f permutes carrier"
-  shows   "weak_ranking (map_relation (inv f) le) = map (op ` f) (weak_ranking le)"
+  shows   "weak_ranking (map_relation (inv f) le) = map ((`) f) (weak_ranking le)"
 proof -
   from assms have "inv f -` carrier = carrier"
     by (simp add: permutes_vimage permutes_inv)
   then interpret R: finite_total_preorder_on "inv f -` carrier" "map_relation (inv f) le"
     by (intro finite_total_preorder_on_map) (simp_all add: finite_carrier)
-  from assms have "is_weak_ranking (map (op ` f) (weak_ranking le))"
+  from assms have "is_weak_ranking (map ((`) f) (weak_ranking le))"
     by (intro is_weak_ranking_map_inj) 
        (simp_all add: weak_ranking_total_preorder permutes_inj_on)
   with assms show ?thesis
@@ -851,10 +851,10 @@ lemma weak_ranking_index_unique:
 
 lemma weak_ranking_index_unique':
   assumes "is_weak_ranking xs" "i < length xs" "x \<in> xs ! i"
-  shows   "i = find_index (op \<in> x) xs"
+  shows   "i = find_index ((\<in>) x) xs"
   using assms find_index_less_size_conv nth_mem
   by (intro weak_ranking_index_unique[OF assms(1,2) _ assms(3)]
-        nth_find_index[of "op \<in> x"]) blast+
+        nth_find_index[of "(\<in>) x"]) blast+
 
 lemma weak_ranking_eqclass1:
   assumes "A \<in> set (weak_ranking le)" "x \<in> A" "y \<in> A"

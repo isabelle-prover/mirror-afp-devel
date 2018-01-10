@@ -37,19 +37,19 @@ context includes lifting_syntax
 begin
 
 lemma HMA_real_non_neg_mat [transfer_rule]:
-  "((HMA_M :: complex mat \<Rightarrow> complex ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op =) 
+  "((HMA_M :: complex mat \<Rightarrow> complex ^ 'nc ^ 'nr \<Rightarrow> bool) ===> (=)) 
   real_nonneg_mat real_non_neg_mat"
   unfolding real_nonneg_mat_def[abs_def] real_non_neg_mat_def[abs_def]
   by transfer_prover
 
 lemma HMA_real_non_neg_vec [transfer_rule]:
-  "((HMA_V :: complex Matrix.vec \<Rightarrow> complex ^ 'n \<Rightarrow> bool) ===> op =) 
+  "((HMA_V :: complex Matrix.vec \<Rightarrow> complex ^ 'n \<Rightarrow> bool) ===> (=)) 
   real_nonneg_vec real_non_neg_vec"
   unfolding real_nonneg_vec_def[abs_def] real_non_neg_vec_def[abs_def]
   by transfer_prover
 
 lemma HMA_non_neg_mat [transfer_rule]:
-  "((HMA_M :: 'a :: linordered_idom mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op =) 
+  "((HMA_M :: 'a :: linordered_idom mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool) ===> (=)) 
   nonneg_mat non_neg_mat"
   unfolding nonneg_mat_def[abs_def] non_neg_mat_def[abs_def]
   by transfer_prover
@@ -63,7 +63,7 @@ primrec matpow :: "'a::semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n
 context includes lifting_syntax
 begin  
 lemma HMA_pow_mat[transfer_rule]:
-  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> op = ===> HMA_M) pow_mat matpow"
+  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> (=) ===> HMA_M) pow_mat matpow"
 proof -
   {
     fix A :: "'a mat" and A' :: "'a^'n^'n" and n :: nat
@@ -284,12 +284,12 @@ lemma norm1_ge_norm: "norm1 v \<ge> norm v" unfolding norm1_def norm_vec_def
 text \<open>The following continuity lemmas have been proven with hints from Fabian Immler.\<close>
 
 lemma tendsto_matrix_vector_mult[tendsto_intros]:
-  "(op *v (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A *v v) (at v within S)"
+  "(( *v) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A *v v) (at v within S)"
   unfolding matrix_vector_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 
 lemma tendsto_matrix_matrix_mult[tendsto_intros]:
-  "(op ** (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A ** B) (at B within S)"
+  "(( ** ) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A ** B) (at B within S)"
   unfolding matrix_matrix_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 

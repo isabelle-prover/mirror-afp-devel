@@ -73,12 +73,12 @@ qed simp
 abbreviation "gen2 A B m n \<equiv> [(x, y) . y \<leftarrow> gen B n, x \<leftarrow> gen A m]"
 
 lemma sorted_wrt_gen:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (gen B n)"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (gen B n)"
   by (induct n) (auto simp: rlex_Cons sorted_wrt_append
-    intro!: sorted_wrt_concat_map [where h = id, simplified] sorted_wrt_map_mono [of "op <"])
+    intro!: sorted_wrt_concat_map [where h = id, simplified] sorted_wrt_map_mono [of "(<)"])
 
-lemma sorted_wrt_gen2: "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (gen2 A B m n)"
-  by (intro sorted_wrt_concat_map_map [where Q = "op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x"] sorted_wrt_gen)
+lemma sorted_wrt_gen2: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (gen2 A B m n)"
+  by (intro sorted_wrt_concat_map_map [where Q = "(<\<^sub>r\<^sub>l\<^sub>e\<^sub>x)"] sorted_wrt_gen)
     (auto simp: set_gen rlex_def intro:  lex_append_left lex_append_right)
 
 lemma gen_ne [simp]:
@@ -89,12 +89,12 @@ lemma gen2_ne:
   "gen2 A B m n \<noteq> []"
   by auto
 
-lemma sorted_wrt_generate: "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate A B m n)"
+lemma sorted_wrt_generate: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate A B m n)"
   by (auto simp: generate_def intro: sorted_wrt_tl sorted_wrt_gen2)
 
 abbreviation "check_generate a b \<equiv> check a b (generate (Max (set b)) (Max (set a)) (length a) (length b))"
 
-lemma sorted_wrt_check_generate: "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check_generate a b)"
+lemma sorted_wrt_check_generate: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check_generate a b)"
   by (auto simp: check_def intro: sorted_wrt_filter sorted_wrt_generate)
 
 lemma in_tl_gen2: "x \<in> set (tl (gen2 A B m n)) \<Longrightarrow> x \<in> set (gen2 A B m n)"
@@ -155,7 +155,7 @@ lemma set_solutions_iff:
     {(x, y) \<in> set (check_generate a b). \<not> (\<exists>(u, v)\<in>set (check_generate a b). u @ v <\<^sub>v x @ y)}"
 proof -
   { fix x
-    note * = in_minimize_wrt_iff [where xs = "check_generate a b" and P = "(\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v)" and Q = "op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2"]
+    note * = in_minimize_wrt_iff [where xs = "check_generate a b" and P = "(\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v)" and Q = "(<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2)"]
     have "x \<in> set (minimize (check_generate a b)) \<longleftrightarrow>
       x \<in> set (check_generate a b) \<and> (\<forall>y\<in>set (check_generate a b). (case y of (x, y) \<Rightarrow> \<lambda>(u, v). \<not> x @ y <\<^sub>v u @ v) x)"
       using rlex_not_sym and less_imp_rlex

@@ -66,7 +66,7 @@ definition "map2set_memb l k s \<equiv> case l k s of None \<Rightarrow> False |
 lemma map2set_memb[autoref_rules_raw]:
   assumes "PRIO_TAG_GEN_ALGO"
   assumes "GEN_OP l op_map_lookup (Rk \<rightarrow> \<langle>Rk,Id\<rangle>R \<rightarrow> \<langle>Id\<rangle>option_rel)"
-  shows "(map2set_memb l ,op\<in>)
+  shows "(map2set_memb l ,(\<in>))
     \<in> Rk\<rightarrow>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>Id"
   using assms
   unfolding map2set_rel_def map2set_memb_def[abs_def]
@@ -132,8 +132,8 @@ text {* Transfering also non-basic operations results in specializations
   of map-algorithms to also be used for sets *}
 lemma map2set_union[autoref_rules_raw]:
   assumes "MINOR_PRIO_TAG (- 9)"
-  assumes "GEN_OP u op ++ (\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R)"
-  shows "(u,op \<union>)\<in>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R"
+  assumes "GEN_OP u (++) (\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R)"
+  shows "(u,(\<union>))\<in>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R"
   using assms
   unfolding map2set_rel_def
   by (force dest: fun_relD)

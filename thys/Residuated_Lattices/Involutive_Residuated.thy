@@ -100,7 +100,7 @@ text {*
   by a lemma to avoid cyclic definitions
 *}
 lemma (in involutive_division_order) inv_pogroupoid: 
-  "class.involutive_pogroupoid (\<lambda>x y. -(y \<rightarrow> -'x)) uminus uminus' (op \<le>) (op <)"
+  "class.involutive_pogroupoid (\<lambda>x y. -(y \<rightarrow> -'x)) uminus uminus' (\<le>) (<)"
 proof
   fix x y z
   have "(- (y \<rightarrow> -' x) \<le> z) = (-z \<le> -y \<leftarrow> x)"

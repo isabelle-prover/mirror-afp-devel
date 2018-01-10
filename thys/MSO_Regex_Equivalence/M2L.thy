@@ -1135,7 +1135,7 @@ next
       wf_rexp_of_alt'[OF wf] 0
     unfolding rexp_of_alt.simps rexp_of_alt'.simps lang.simps Int_Diff_both
     unfolding map_project_empty FExists.IH[OF wf, unfolded lang.simps]
-    by (intro trans[OF arg_cong2[of _ _ _ _ "op \<inter>", OF map_project_ENC[OF _ lang_subset_lists] refl]])
+    by (intro trans[OF arg_cong2[of _ _ _ _ "(\<inter>)", OF map_project_ENC[OF _ lang_subset_lists] refl]])
       fastforce+
 next
   case (FEXISTS \<phi>)
@@ -1145,7 +1145,7 @@ next
       wf_rexp_of_alt'[OF wf] 0
     unfolding rexp_of_alt.simps rexp_of_alt'.simps lang.simps Int_Diff_both
     unfolding map_project_empty FEXISTS.IH[OF wf, unfolded lang.simps]
-    by (intro trans[OF arg_cong2[of _ _ _ _ "op \<inter>", OF map_project_ENC[OF _ lang_subset_lists] refl]])
+    by (intro trans[OF arg_cong2[of _ _ _ _ "(\<inter>)", OF map_project_ENC[OF _ lang_subset_lists] refl]])
       fastforce+
 qed simp_all
 

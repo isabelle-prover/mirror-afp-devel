@@ -40,7 +40,7 @@ lemmas it_paths_intros(1)[simp]
 lemma it_paths_RNode_Nil[simp]: "it_paths (RNode r []) = {[]}"
   by (auto elim: it_paths_cases)
 
-lemma it_paths_Union: "it_paths t \<subseteq> insert [] (Union (((\<lambda> (i,t). (op # i) ` it_paths t) ` set (List.enumerate (0::nat) (children t)))))"
+lemma it_paths_Union: "it_paths t \<subseteq> insert [] (Union (((\<lambda> (i,t). ((#) i) ` it_paths t) ` set (List.enumerate (0::nat) (children t)))))"
   apply (rule)
   apply (erule it_paths_cases)
   apply (auto intro!: bexI simp add: in_set_enumerate_eq)

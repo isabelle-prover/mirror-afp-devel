@@ -188,7 +188,7 @@ qed
 schematic_goal find_reachable_implT:
   fixes V :: "('vi\<times>'v) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode V eq bhc"
-  assumes [autoref_rules]: "(eq,op =) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eq,(=)) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE ('vi) sz"
   assumes [autoref_rules]: 
     "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
@@ -209,7 +209,7 @@ lemma find_reachable_codeT_correct:
   assumes G: "graph G"
   assumes FR: "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes BHC: "is_bounded_hashcode V eq bhc"
-  assumes EQ: "(eq,op =) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
+  assumes EQ: "(eq,(=)) \<in> V \<rightarrow> V \<rightarrow> bool_rel"
   assumes VDS: "is_valid_def_hm_size TYPE ('vi) sz"
   assumes 2: "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
   shows "(find_reachable_codeT eq bhc sz Gi, (g_E G)\<^sup>* `` g_V0 G)\<in>\<langle>V\<rangle>ahs_rel bhc"
@@ -240,7 +240,7 @@ lemmas [autoref_rel_intf] = REL_INTFI[of unit_list_rel i_list]
 lemma [autoref_rules]:
   "((),[])\<in>\<langle>R\<rangle>unit_list_rel"
   "(\<lambda>_. (),tl)\<in>\<langle>R\<rangle>unit_list_rel\<rightarrow>\<langle>R\<rangle>unit_list_rel"
-  "(\<lambda>_ _. (),op #)\<in>R \<rightarrow> \<langle>R\<rangle>unit_list_rel\<rightarrow>\<langle>R\<rangle>unit_list_rel"
+  "(\<lambda>_ _. (),(#))\<in>R \<rightarrow> \<langle>R\<rangle>unit_list_rel\<rightarrow>\<langle>R\<rangle>unit_list_rel"
   by auto
 
 
@@ -284,7 +284,7 @@ lemma autoref_op_reachable[autoref_rules]:
   assumes G: "SIDE_PRECOND (graph G)"
   assumes FR: "SIDE_PRECOND (finite ((g_E G)\<^sup>* `` g_V0 G))"
   assumes BHC: "SIDE_GEN_ALGO (is_bounded_hashcode V eq bhc)"
-  assumes EQ: "GEN_OP eq op = (V \<rightarrow> V \<rightarrow> bool_rel)"
+  assumes EQ: "GEN_OP eq (=) (V \<rightarrow> V \<rightarrow> bool_rel)"
   assumes VDS: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE ('vi) sz)"
   assumes 2: "(Gi, G) \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext"
   shows "(find_reachable_codeT eq bhc sz Gi,

@@ -702,7 +702,7 @@ assumes
 class total_strict_order = strict_order +
 assumes trichotomy: "a = c \<Longrightarrow> (\<not> (ls a  c) \<and> \<not> (ls c  a))"
 
-interpretation nest:total_strict_order "op \<lless> "
+interpretation nest:total_strict_order "(\<lless>) "
 proof
 { fix a::"'a nest"
 show "\<not> a \<lless> a"

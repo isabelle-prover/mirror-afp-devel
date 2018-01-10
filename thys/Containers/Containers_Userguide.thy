@@ -169,7 +169,7 @@ axiomatization where simple_tycon_equal: "OFCLASS(simple_tycon, equal_class)"
 instance simple_tycon :: equal by (rule simple_tycon_equal)
 
 instantiation simple_tycon :: ceq begin
-definition "CEQ(simple_tycon) = Some op ="
+definition "CEQ(simple_tycon) = Some (=)"
 instance by(intro_classes)(simp add: ceq_simple_tycon_def)
 end
 
@@ -191,7 +191,7 @@ end
 
 text {* If we give HOL equality as parameter, the relator is equality: *}
 
-lemma expr'_rel_eq: "expr'_rel op = e\<^sub>1 e\<^sub>2 \<longleftrightarrow> e\<^sub>1 = e\<^sub>2"
+lemma expr'_rel_eq: "expr'_rel (=) e\<^sub>1 e\<^sub>2 \<longleftrightarrow> e\<^sub>1 = e\<^sub>2"
 by(induct e\<^sub>1 e\<^sub>2 rule: expr'_rel.induct) simp_all
 text {*
   Then, the instantiation is again canonical:
@@ -209,7 +209,7 @@ end
 (*<*)context fixes dummy :: "'a :: ceq" begin(*>*)
 text {*
   Note the following two points:
-  First, the instantiation should avoid to use @{term "op ="} on terms of the polymorphic type.
+  First, the instantiation should avoid to use @{term "(=)"} on terms of the polymorphic type.
   This keeps the LC framework separate from the type class @{class equal}, i.e., every choice of @{typ "'a"}
   in @{typ "'a expr'"} can be of sort @{class "ceq"}.
   The easiest way to achieve this is to obtain the equality test from @{term "CEQ('a)"}.
@@ -226,7 +226,7 @@ text_raw {* \label{subsection:ccompare} *}
 
 (*<*)context fixes dummy :: "'a :: {ccompare, ceq}" begin(*>*)
 text {* 
-  LC takes the order for storing elements in search trees from the type class @{class ccompare} rather than @{class compare}, because we cannot instantiate @{class compare} for some types (e.g., @{typ "'a set"} as @{term "op \<subseteq>"} is not linear).
+  LC takes the order for storing elements in search trees from the type class @{class ccompare} rather than @{class compare}, because we cannot instantiate @{class compare} for some types (e.g., @{typ "'a set"} as @{term "(\<subseteq>)"} is not linear).
   Similar to @{term "CEQ('a)"} in class @{term ceq}, the class @{class ccompare} specifies an optional comparator @{term [source] "CCOMPARE('a) :: (('a \<Rightarrow> 'a \<Rightarrow> order)) option" }.
   If you cannot or do not want to implement a comparator on your type, you can default to @{term "None"}.
   In that case, you will not be able to use your type as elements of sets or as keys in maps implemented by search trees.
@@ -518,7 +518,7 @@ text {*
 (*
 instantiation expr :: proper_interval begin
 
-lemma less_expr_conv: "(op <) = lt_of_comp comparator_expr" "(op \<le>) = le_of_comp comparator_expr"
+lemma less_expr_conv: "(<) = lt_of_comp comparator_expr" "(\<le>) = le_of_comp comparator_expr"
   using less_expr_def less_eq_expr_def unfolding compare_expr_def by auto
 
 lemma lt_of_comp_expr: "lt_of_comp comparator_expr e1 e2 = (
@@ -822,7 +822,7 @@ end
 text {*
   These equations do not replace the existing equations for the other constructors, but they do take precedence over them.
   If there is already a generic implementation for an operation @{term "foo"}, say @{term "foo A = gen_foo A"}, and you prove a specialised equation @{term "foo (Trie_Mapping t) = trie_foo t"}, then when you call @{term "foo"} on some @{term "Trie_Mapping t"}, your equation will kick in.
-  LC exploits this sequentiality especially for binary operators on sets like @{term "op \<inter>"}, where there are generic implementations and faster specialised ones.
+  LC exploits this sequentiality especially for binary operators on sets like @{term "(\<inter>)"}, where there are generic implementations and faster specialised ones.
 *}
 
 subsubsection {* Configure the heuristics *}
@@ -1017,7 +1017,7 @@ text {*
     You have misconfigured the heuristics that picks implementations (\S\ref{subsection:set_impl}), or you have manually picked an implementation that requires an operation that the element type does not provide.
     Printing a stack trace for the exception may help you in locating the error.
 
-  \item You are trying to invoke an operation on a set complement which cannot be implemented on a complement representation, e.g., @{term "op `"}.
+  \item You are trying to invoke an operation on a set complement which cannot be implemented on a complement representation, e.g., @{term "(`)"}.
     If the element type is enumerable, provide an instance of @{class cenum} and choose to represent complements of sets of enumerable types by the elements rather than the elements of the complement (see \S\ref{subsection:cenum} for how to do this).
 
   \item You use set comprehensions on types which do not provide an enumeration (i.e., they are represented as closures) or you chose to represent a map as a closure.

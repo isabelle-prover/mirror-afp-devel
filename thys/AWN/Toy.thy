@@ -723,16 +723,16 @@ lemma ocnet_bigger_than_next:
         global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
   proof (rule inclosed_closed)
     show "opnet (\<lambda>i. optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) n
-            \<Turnstile> (otherwith op = (net_tree_ips n) inoclosed, other nos_inc (net_tree_ips n) \<rightarrow>)
+            \<Turnstile> (otherwith (=) (net_tree_ips n) inoclosed, other nos_inc (net_tree_ips n) \<rightarrow>)
                global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
     proof (rule oinvariant_weakenE [OF opnet_bigger_than_next])
       fix s s':: "nat \<Rightarrow> state" and a :: "msg node_action"
-      assume "otherwith op = (net_tree_ips n) inoclosed s s' a"
+      assume "otherwith (=) (net_tree_ips n) inoclosed s s' a"
       thus "otherwith nos_inc (net_tree_ips n) (oarrivemsg msg_ok) s s' a"
       proof (rule otherwithE, intro otherwithI)
         assume "inoclosed s a"
            and "\<forall>j. j \<notin> net_tree_ips n \<longrightarrow> s j = s' j"
-           and "otherwith (op=) (net_tree_ips n) inoclosed s s' a"
+           and "otherwith ((=)) (net_tree_ips n) inoclosed s s' a"
         thus "oarrivemsg msg_ok s a"
           by (cases a) auto
       qed auto

@@ -22,7 +22,7 @@ lemma generatorE [elim?]:
   obtains n :: nat where "x = generator G [^] n"
 using generator assms by auto
 
-lemma inj_on_generator: "inj_on (op [^] \<^bold>g) {..<order G}"
+lemma inj_on_generator: "inj_on (([^]) \<^bold>g) {..<order G}"
 proof(rule inj_onI)
   fix n m
   assume "n \<in> {..<order G}" "m \<in> {..<order G}"

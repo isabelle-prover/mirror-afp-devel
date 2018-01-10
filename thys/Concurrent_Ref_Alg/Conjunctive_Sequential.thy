@@ -29,7 +29,7 @@ proof unfold_locales
   have "{d\<^sub>0, d\<^sub>1} \<noteq> {}" by simp
   then have "c ; \<Sqinter>{d\<^sub>0, d\<^sub>1} = \<Sqinter>{c ; d |d. d \<in> {d\<^sub>0, d\<^sub>1}}" using seq_Inf_distrib
   proof -
-    have "INFIMUM {d\<^sub>0, d\<^sub>1} (op ; c) = \<Sqinter>{c ; a |a. a \<in> {d\<^sub>0, d\<^sub>1}}"
+    have "INFIMUM {d\<^sub>0, d\<^sub>1} ((;) c) = \<Sqinter>{c ; a |a. a \<in> {d\<^sub>0, d\<^sub>1}}"
       using INF_Inf by blast
     then show ?thesis
       using \<open>\<And>(c::'a::refinement_lattice) D::'a::refinement_lattice set. D \<noteq> {} \<Longrightarrow> c ; \<Sqinter>D = (\<Sqinter>d::'a::refinement_lattice\<in>D. c ; d)\<close> \<open>{d\<^sub>0::'a::refinement_lattice, d\<^sub>1::'a::refinement_lattice} \<noteq> {}\<close> by presburger

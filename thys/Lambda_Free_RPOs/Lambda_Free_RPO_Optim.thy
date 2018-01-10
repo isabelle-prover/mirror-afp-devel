@@ -39,9 +39,9 @@ lemma chkargs_mono[mono]: "gt \<le> gt' \<Longrightarrow> chkargs gt \<le> chkar
 
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_arg: "ti \<in> set (args t) \<Longrightarrow> ti >\<^sub>t s \<or> ti = s \<Longrightarrow> t >\<^sub>t s"
-| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chkargs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
-| gt_same: "head t = head s \<Longrightarrow> chkargs (op >\<^sub>t) t s \<Longrightarrow>
-    (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
+| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chkargs (>\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
+| gt_same: "head t = head s \<Longrightarrow> chkargs (>\<^sub>t) t s \<Longrightarrow>
+    (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
 abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
@@ -110,7 +110,7 @@ proof (simp only: atomize_imp,
   have chkvar: "chkvar u s"
     by clarsimp (meson u_gt_t t_gt_s gt_imp_vars hd.set_sel(2) vars_head_subseteq subsetCE)
 
-  have chk_u_s_if: "chkargs (op >\<^sub>t) u s" if chk_t_s: "chkargs (op >\<^sub>t) t s"
+  have chk_u_s_if: "chkargs (>\<^sub>t) u s" if chk_t_s: "chkargs (>\<^sub>t) t s"
   proof (clarsimp simp only: chkargs_def)
     fix s'
     assume "s' \<in> set (args s)"
@@ -126,7 +126,7 @@ proof (simp only: atomize_imp,
     using t_gt_s
   proof cases
     case gt_arg_t_s: (gt_arg ti)
-    have u_gt_s_if_chk_u_t: ?thesis if chk_u_t: "chkargs (op >\<^sub>t) u t"
+    have u_gt_s_if_chk_u_t: ?thesis if chk_u_t: "chkargs (>\<^sub>t) u t"
       using ih[of u ti s] gt_arg_t_s chk_u_t size_in_args by force
     show ?thesis
       using u_gt_t by cases (auto intro: u_gt_s_if_ui u_gt_s_if_chk_u_t)
@@ -176,13 +176,13 @@ proof (simp only: atomize_imp,
                size_in_args)+
       qed
 
-      have "\<forall>f \<in> ground_heads (head u). extf f (op >\<^sub>t) (args u) (args s)"
+      have "\<forall>f \<in> ground_heads (head u). extf f (>\<^sub>t) (args u) (args s)"
       proof (clarify, rule extf_trans[OF _ _ _ gt_trans_args])
         fix f
         assume f_in_grounds: "f \<in> ground_heads (head u)"
-        show "extf f op >\<^sub>t (args u) (args t)"
+        show "extf f (>\<^sub>t) (args u) (args t)"
           using f_in_grounds gt_same_u_t(3) by blast
-        show "extf f op >\<^sub>t (args t) (args s)"
+        show "extf f (>\<^sub>t) (args t) (args s)"
           using f_in_grounds gt_same_t_s(3) unfolding gt_same_u_t(1) by blast
       qed auto
       thus ?thesis
@@ -206,7 +206,7 @@ context
   assumes extf_ext_snoc: "\<And>f. ext_snoc (extf f)"
 begin
 
-lemma rpo_optim: "rpo_optim ground_heads_var (op >\<^sub>s) extf arity_sym arity_var"
+lemma rpo_optim: "rpo_optim ground_heads_var (>\<^sub>s) extf arity_sym arity_var"
   unfolding rpo_optim_def rpo_optim_axioms_def using rpo_basis_axioms extf_ext_snoc by auto
 
 abbreviation
@@ -215,10 +215,10 @@ where
   "chkargs \<equiv> rpo_optim.chkargs"
 
 abbreviation gt_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>o" 50) where
-  "op >\<^sub>t\<^sub>o \<equiv> rpo_optim.gt ground_heads_var (op >\<^sub>s) extf"
+  "(>\<^sub>t\<^sub>o) \<equiv> rpo_optim.gt ground_heads_var (>\<^sub>s) extf"
 
 abbreviation ge_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t\<^sub>o" 50) where
-  "op \<ge>\<^sub>t\<^sub>o \<equiv> rpo_optim.ge ground_heads_var (op >\<^sub>s) extf"
+  "(\<ge>\<^sub>t\<^sub>o) \<equiv> rpo_optim.ge ground_heads_var (>\<^sub>s) extf"
 
 theorem gt_iff_optim: "t >\<^sub>t s \<longleftrightarrow> t >\<^sub>t\<^sub>o s"
 proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
@@ -231,7 +231,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
   proof
     assume t_gt_s: "t >\<^sub>t s"
 
-    have chkargs_if_chksubs: "chkargs (op >\<^sub>t\<^sub>o) t s" if chksubs: "chksubs (op >\<^sub>t) t s"
+    have chkargs_if_chksubs: "chkargs (>\<^sub>t\<^sub>o) t s" if chksubs: "chksubs (>\<^sub>t) t s"
       unfolding rpo_optim.chkargs_def[OF rpo_optim]
     proof (cases s, simp_all, intro conjI ballI)
       fix s1 s2
@@ -301,8 +301,8 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
       case gt_same
       note hd_t_eq_s = this(1) and chksubs = this(2) and extf = this(3)
 
-      have extf_gto: "\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t\<^sub>o) (args t) (args s)"
-      proof (rule ballI, rule extf_mono_strong[of _ _ "op >\<^sub>t", rule_format])
+      have extf_gto: "\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t\<^sub>o) (args t) (args s)"
+      proof (rule ballI, rule extf_mono_strong[of _ _ "(>\<^sub>t)", rule_format])
         fix f
         assume f_in_ground: "f \<in> ground_heads (head t)"
 
@@ -315,7 +315,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
               (simp add: ta_in sa_in add_less_mono size_in_args)
         }
 
-        show "extf f (op >\<^sub>t) (args t) (args s)"
+        show "extf f (>\<^sub>t) (args t) (args s)"
           using f_in_ground extf by simp
       qed
 
@@ -325,7 +325,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
   next
     assume t_gto_s: "t >\<^sub>t\<^sub>o s"
 
-    have chksubs_if_chkargs: "chksubs (op >\<^sub>t) t s" if chkargs: "chkargs (op >\<^sub>t\<^sub>o) t s"
+    have chksubs_if_chkargs: "chksubs (>\<^sub>t) t s" if chkargs: "chkargs (>\<^sub>t\<^sub>o) t s"
       unfolding chksubs_def
     proof (cases s, simp_all, rule conjI)
       fix s1 s2
@@ -373,24 +373,24 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
     next
       case gto_diff
       hence hd_t_gt_s: "head t >\<^sub>h\<^sub>d head s" and chkvar: "chkvar t s" and
-        chkargs: "chkargs (op >\<^sub>t\<^sub>o) t s"
+        chkargs: "chkargs (>\<^sub>t\<^sub>o) t s"
         by blast+
 
-      have "chksubs (op >\<^sub>t) t s"
+      have "chksubs (>\<^sub>t) t s"
         by (rule chksubs_if_chkargs[OF chkargs])
       thus ?thesis
         by (rule gt_diff[OF hd_t_gt_s chkvar])
     next
       case gto_same
-      hence hd_t_eq_s: "head t = head s" and chkargs: "chkargs (op >\<^sub>t\<^sub>o) t s" and
-        extf_gto: "\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t\<^sub>o) (args t) (args s)"
+      hence hd_t_eq_s: "head t = head s" and chkargs: "chkargs (>\<^sub>t\<^sub>o) t s" and
+        extf_gto: "\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t\<^sub>o) (args t) (args s)"
         by blast+
 
-      have chksubs: "chksubs (op >\<^sub>t) t s"
+      have chksubs: "chksubs (>\<^sub>t) t s"
         by (rule chksubs_if_chkargs[OF chkargs])
 
-      have extf: "\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)"
-      proof (rule ballI, rule extf_mono_strong[of _ _ "op >\<^sub>t\<^sub>o", rule_format])
+      have extf: "\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)"
+      proof (rule ballI, rule extf_mono_strong[of _ _ "(>\<^sub>t\<^sub>o)", rule_format])
         fix f
         assume f_in_ground: "f \<in> ground_heads (head t)"
 
@@ -403,7 +403,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
               (simp add: ta_in sa_in add_less_mono size_in_args)
         }
 
-        show "extf f (op >\<^sub>t\<^sub>o) (args t) (args s)"
+        show "extf f (>\<^sub>t\<^sub>o) (args t) (args s)"
           using f_in_ground extf_gto by simp
       qed
 

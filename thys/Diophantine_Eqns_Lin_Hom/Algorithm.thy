@@ -62,9 +62,9 @@ lemma alls_Cons_tl_conv: "alls A as = (zeroes (length as), 0) # tl (alls A as)"
   by (rule nth_equalityI) (auto simp: nth_Cons nth_tl split: nat.splits)
 
 lemma sorted_wrt_alls:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (alls B xs))"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (alls B xs))"
   by (induct xs) (auto simp: map_concat rlex_Cons sorted_wrt_append
-      intro!: sorted_wrt_concat_map sorted_wrt_map_mono [of "op <"])
+      intro!: sorted_wrt_concat_map sorted_wrt_map_mono [of "(<)"])
 
 definition "alls2 A B a b = [(xs, ys). ys \<leftarrow> alls B b, xs \<leftarrow> alls A a]"
 
@@ -95,7 +95,7 @@ lemma alls2_Cons_tl_conv: "alls2 A B as bs =
   done
 
 lemma sorted_wrt_alls2:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (map (\<lambda>(x, y). (fst x, fst y)) (alls2 A B as bs))"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (map (\<lambda>(x, y). (fst x, fst y)) (alls2 A B as bs))"
   apply (rule sorted_wrt_map_mono [of "\<lambda>(x, y) (u, v). (fst x, fst y) <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2 (fst u, fst v)"])
    apply (auto simp: alls2_def map_concat)
   apply (fold rlex2.simps)
@@ -109,7 +109,7 @@ definition generate where
   "generate mx my a b = map (\<lambda>(x, y). (fst x, fst y)) (alls2 mx my a b)"
 
 lemma sorted_wrt_generate:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate A B a b)"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate A B a b)"
   by (auto simp: generate_def sorted_wrt_alls2)
 
 lemma generate_nth0 [simp]:
@@ -264,7 +264,7 @@ definition "solve = special_solutions @ non_special_solutions"
 end
 
 lemma sorted_wrt_check_generate:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check a b (tl (generate A B a b)))"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check a b (tl (generate A B a b)))"
   by (auto simp: check_def intro!: sorted_wrt_filter sorted_wrt_generate sorted_wrt_tl)
 
 lemma big_e:
@@ -513,7 +513,7 @@ proof -
           let ?A = "Max (set b)" and ?B = "Max (set a)"
           let ?xs = "check a b (tl (generate ?A ?B a b))"
           have xy: "(x, y) \<in> set (minimize ?xs)" using nonspecial by (auto simp: non_special_solutions_def)
-          have sorted: "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) ?xs" by (intro sorted_wrt_check_generate)
+          have sorted: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) ?xs" by (intro sorted_wrt_check_generate)
           have rlex2: "(u, v) <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2 (x, y)" by (intro less_imp_rlex2) (auto simp: less)
           note minimize_False = in_minimize_wrt_False [OF rlex2_not_sym sorted _ _ rlex2, of ?P, folded minimize_def]
           show False using less
@@ -807,12 +807,12 @@ lemma in_gen_check_cond:
   done
 
 lemma sorted_gen_check:
-  "sorted_wrt (op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (gen_check xs))"
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (map fst (gen_check xs))"
 proof -
   have sort_map: "sorted_wrt (\<lambda>x y. x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y) (map fst (alls B xs))"
     using sorted_wrt_alls by auto
   then have "sorted_wrt (\<lambda>x y. fst x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x fst y) (alls B xs)"
-    using sorted_wrt_map_distr [of "op <\<^sub>r\<^sub>l\<^sub>e\<^sub>x" fst "alls B xs"]
+    using sorted_wrt_map_distr [of "(<\<^sub>r\<^sub>l\<^sub>e\<^sub>x)" fst "alls B xs"]
     by (auto)
   then have "sorted_wrt (\<lambda>x y. fst x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x fst y) (filter (suffs C xs) (alls B xs))"
     using sorted_wrt_alls sorted_wrt_filter sorted_wrt_map

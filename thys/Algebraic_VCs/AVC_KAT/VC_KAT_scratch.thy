@@ -175,7 +175,7 @@ subsubsection{* Soundness and Relation KAT *}
 
 notation relcomp (infixl ";" 70)
 
-interpretation rel_d: dioid Id "{}" "op \<union>" "op ;" "op \<subseteq>" "op \<subset>" 
+interpretation rel_d: dioid Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subset>)" 
   by (standard, auto)
 
 lemma (in dioid) power_inductl: "z + x \<cdot> y \<le> y \<Longrightarrow> x ^ i \<cdot> z \<le> y"
@@ -208,7 +208,7 @@ lemma rel_star_contr: "X^* ; Y = (\<Union>i. (rel_d.power X i) ; Y)"
 definition rel_at :: "'a rel \<Rightarrow> 'a rel" where 
   "rel_at X = Id \<inter> - X"  
 
-interpretation rel_kat: kat Id "{}" "op \<union>" "op ;" "op \<subseteq>" "op \<subset>" rtrancl rel_at
+interpretation rel_kat: kat Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_at
   apply standard 
   apply auto[2]
   by (auto simp: rel_star_contr rel_d.power_inductl rel_star_contl  SUP_least rel_d.power_inductr rel_at_def)
@@ -310,7 +310,7 @@ subsubsection {* Soundness and Relation RKAT *}
 definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where 
   "rel_R P Q = \<Union>{X. rel_kat.H P X Q}"
 
-interpretation rel_rkat: rkat Id "{}" "op \<union>"  "op ;" "op \<subseteq>" "op \<subset>" rtrancl rel_at rel_R
+interpretation rel_rkat: rkat Id "{}" "(\<union>)"  "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_at rel_R
   by (standard, auto simp: rel_R_def rel_kat.H_def rel_kat.t_op_def rel_at_def)
 
 subsubsection {* Assignment Laws *}

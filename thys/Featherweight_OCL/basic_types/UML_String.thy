@@ -106,7 +106,7 @@ definition OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g ::"('\<AA>)Str
 where "x +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then \<lfloor>\<lfloor>concat [\<lceil>\<lceil>x \<tau>\<rceil>\<rceil>, \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>]\<rfloor>\<rfloor>
                        else invalid \<tau> "
-interpretation OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g : profile_bin\<^sub>d_\<^sub>d "op +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g" "\<lambda> x y. \<lfloor>\<lfloor>concat [\<lceil>\<lceil>x\<rceil>\<rceil>, \<lceil>\<lceil>y\<rceil>\<rceil>]\<rfloor>\<rfloor>"
+interpretation OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g : profile_bin\<^sub>d_\<^sub>d "(+\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g)" "\<lambda> x y. \<lfloor>\<lfloor>concat [\<lceil>\<lceil>x\<rceil>\<rceil>, \<lceil>\<lceil>y\<rceil>\<rceil>]\<rfloor>\<rfloor>"
          by unfold_locales (auto simp:OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g_def bot_option_def null_option_def)
          
 (* TODO : size(), concat, substring(s:string) toInteger, toReal, at(i:Integer), characters() etc. *)

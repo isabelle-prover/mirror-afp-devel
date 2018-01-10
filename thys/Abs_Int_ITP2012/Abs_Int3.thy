@@ -114,10 +114,10 @@ fun map2_acom :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a acom \
   ({f a1 a3} WHILE b DO map2_acom f c c' {f a2 a4})"
 
 abbreviation widen_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix "\<nabla>\<^sub>c" 65)
-where "widen_acom == map2_acom (op \<nabla>)"
+where "widen_acom == map2_acom (\<nabla>)"
 
 abbreviation narrow_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix "\<triangle>\<^sub>c" 65)
-where "narrow_acom == map2_acom (op \<triangle>)"
+where "narrow_acom == map2_acom (\<triangle>)"
 
 lemma widen1_acom: "strip c = strip c' \<Longrightarrow> c \<sqsubseteq> c \<nabla>\<^sub>c c'"
 by(induct c c' rule: le_acom.induct)(simp_all add: widen1)

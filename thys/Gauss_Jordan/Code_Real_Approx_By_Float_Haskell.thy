@@ -24,17 +24,17 @@ code_printing
   | class_instance real :: "HOL.equal" => (Haskell) - (*This is necessary. See the tutorial on code generation, page 29*)
   | constant "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool" \<rightharpoonup>
     (Haskell) "(_) == (_)"
-  |  constant "op < :: real => real => bool" \<rightharpoonup>
+  |  constant "(<) :: real => real => bool" \<rightharpoonup>
     (Haskell) "_ < _"
-  |  constant "op \<le> :: real => real => bool" \<rightharpoonup>
+  |  constant "(\<le>) :: real => real => bool" \<rightharpoonup>
     (Haskell) "_ <= _"
-  | constant "op + :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
+  | constant "(+) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) "(_) + (_)"
-  | constant "op - :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
+  | constant "(-) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) "(_) - (_)"
-  | constant "op * :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
+  | constant "( * ) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) "(_) * (_)"
-  | constant "op / :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
+  | constant "(/) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) " (_) '/ (_)"
   | constant "uminus :: real => real" \<rightharpoonup>
     (Haskell) "Prelude.negate"
@@ -59,7 +59,7 @@ code_printing
   | constant arcsin \<rightharpoonup>
     (Haskell) "Prelude.asin"
 
-text{*The following lemmas have to be removed from the code generator in order to be able to execute @{term "op <"} and @{term "op \<le>"}*}
+text{*The following lemmas have to be removed from the code generator in order to be able to execute @{term "(<)"} and @{term "(\<le>)"}*}
 declare real_less_code[code del]
 declare real_less_eq_code[code del]
 

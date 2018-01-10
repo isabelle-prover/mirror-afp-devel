@@ -181,7 +181,7 @@ text {*
   that converts a hashset to a list that contains precisely the elements of the set.
 *}
 
-definition "hs_to_list' s == hs.iteratei s (\<lambda>_. True) (op #) []"
+definition "hs_to_list' s == hs.iteratei s (\<lambda>_. True) (#) []"
 
 text {*
   The correctness proof works by establishing the invariant that the list contains

@@ -117,7 +117,7 @@ so we can establish @{text "Etern_pred"}.
 abbreviation
   filter_on_channel :: "ex_chname \<Rightarrow> ex_history \<Rightarrow> ex_val list"
 where
-  "filter_on_channel ch \<equiv> map (snd \<circ> fst) \<circ> filter (op = ch \<circ> fst \<circ> fst)"
+  "filter_on_channel ch \<equiv> map (snd \<circ> fst) \<circ> filter ((=) ch \<circ> fst \<circ> fst)"
 
 definition Ip1_0 :: ex_pred where
   "Ip1_0 \<equiv> at p1 s12 imp (\<lambda>s. filter_on_channel \<xi>12 (hist s) = [])"

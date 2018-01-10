@@ -411,8 +411,8 @@ lemma ltl_prop_implies_equiv:
   unfolding ltl_prop_implies_def ltl_prop_equiv_def by meson
 
 lemma ltl_prop_equiv_equivp:
-  "equivp (op \<equiv>\<^sub>P)"
-  by (blast intro: equivpI[of "op \<equiv>\<^sub>P", simplified transp_def symp_def reflp_def ltl_prop_equiv_def])
+  "equivp (\<equiv>\<^sub>P)"
+  by (blast intro: equivpI[of "(\<equiv>\<^sub>P)", simplified transp_def symp_def reflp_def ltl_prop_equiv_def])
 
 lemma [trans]:
   "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> \<psi> \<equiv>\<^sub>P \<chi> \<Longrightarrow> \<phi> \<equiv>\<^sub>P \<chi>"
@@ -420,7 +420,7 @@ lemma [trans]:
 
 subsubsection \<open>Quotient Type for Propositional Equivalence\<close>
 
-quotient_type 'a ltl_prop_equiv_quotient = "'a ltl" / "op \<equiv>\<^sub>P"
+quotient_type 'a ltl_prop_equiv_quotient = "'a ltl" / "(\<equiv>\<^sub>P)"
   morphisms Rep Abs
   by (simp add: ltl_prop_equiv_equivp)
 
@@ -442,10 +442,10 @@ end
 lemma ltl\<^sub>P_abs_rep: "Abs (Rep \<phi>) = \<phi>"
   by (meson Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient)
 
-lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<Turnstile>\<^sub>P _") is "op \<Turnstile>\<^sub>P"
+lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<Turnstile>\<^sub>P _") is "(\<Turnstile>\<^sub>P)"
   by (simp add: ltl_prop_equiv_def)
 
-lift_definition ltl_prop_implies_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<longrightarrow>\<^sub>P _") is "op \<longrightarrow>\<^sub>P"
+lift_definition ltl_prop_implies_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<longrightarrow>\<^sub>P _") is "(\<longrightarrow>\<^sub>P)"
   by (simp add: ltl_prop_equiv_def ltl_prop_implies_def)
 
 subsubsection \<open>Propositional Equivalence implies LTL Equivalence\<close>

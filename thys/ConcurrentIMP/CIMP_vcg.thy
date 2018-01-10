@@ -318,7 +318,7 @@ using assms
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+
 
 lemma vcg_name_pre_state:
-  assumes "\<And>s. P s \<Longrightarrow> \<lbrace>op = s\<rbrace> c \<lbrace>Q\<rbrace>"
+  assumes "\<And>s. P s \<Longrightarrow> \<lbrace>(=) s\<rbrace> c \<lbrace>Q\<rbrace>"
   shows "\<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace>"
 using assms
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+

@@ -961,7 +961,7 @@ definition "lift_mono P c f g == \<forall>x y. c x y \<longrightarrow> P c (f x)
 definition "lift_mono1 P c f g == \<forall>x y. (\<forall>a. c (x a) (y a)) \<longrightarrow> P c (f x) (g y)"
 definition "lift_mono2 P c f g == \<forall>x y. (\<forall>a b. c (x a b) (y a b)) \<longrightarrow> P c (f x) (g y)"
 
-definition "trimono_spec L f == ((L id op \<le> f f) \<and> (L id flat_ge f f))"
+definition "trimono_spec L f == ((L id (\<le>) f f) \<and> (L id flat_ge f f))"
 
 lemmas trimono_atomize = atomize_imp atomize_conj atomize_all
 lemmas trimono_deatomize = trimono_atomize[symmetric]
@@ -1742,7 +1742,7 @@ subsection {* Miscellanneous Utility Lemmas *}
 (* TODO: Can we make this somewhat more general ? *)
 lemma map_foreach:
   assumes "finite S"
-  shows "FOREACH S (\<lambda>x \<sigma>. RETURN (insert (f x) \<sigma>)) R0 \<le> SPEC (op = (R0 \<union> f`S))"
+  shows "FOREACH S (\<lambda>x \<sigma>. RETURN (insert (f x) \<sigma>)) R0 \<le> SPEC ((=) (R0 \<union> f`S))"
   apply (rule FOREACH_rule[where I="\<lambda>it \<sigma>. \<sigma>=R0 \<union> f`(S-it)"])
   apply (auto intro: assms)
   done
@@ -1753,7 +1753,7 @@ lemma map_sigma_foreach:
   assumes "\<And>x. x\<in>A \<Longrightarrow> finite (B x)"
   shows "FOREACH A (\<lambda>a \<sigma>. 
     FOREACH (B a) (\<lambda>b \<sigma>. RETURN (insert (f (a,b)) \<sigma>)) \<sigma>
-  ) R0 \<le> SPEC (op = (R0 \<union> f`Sigma A B))"
+  ) R0 \<le> SPEC ((=) (R0 \<union> f`Sigma A B))"
   apply (rule FOREACH_rule[where I="\<lambda>it \<sigma>. \<sigma>=R0 \<union> f`(Sigma (A-it) B)"])
   apply (auto intro: assms) [2]
   
@@ -1776,7 +1776,7 @@ lemma map_sigma_sigma_foreach:
     FOREACH (B a) (\<lambda>b \<sigma>. 
       FOREACH (C a b) (\<lambda>c \<sigma>.
         RETURN (insert (f (a,(b,c))) \<sigma>)) \<sigma>) \<sigma>
-  ) R0 \<le> SPEC (op = (R0 \<union> f`Sigma A (\<lambda>a. Sigma (B a) (C a))))"
+  ) R0 \<le> SPEC ((=) (R0 \<union> f`Sigma A (\<lambda>a. Sigma (B a) (C a))))"
   apply (rule FOREACH_rule[where 
     I="\<lambda>it \<sigma>. \<sigma>=R0 \<union> f`(Sigma (A-it) (\<lambda>a. Sigma (B a) (C a)))"])
   apply (auto intro: assms) [2]

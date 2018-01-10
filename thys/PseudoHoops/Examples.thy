@@ -1444,7 +1444,7 @@ end
 
 context cancel_pseudo_hoop_algebra begin end
 
-lemma "\<not> class.cancel_pseudo_hoop_algebra op * op \<sqinter>  op l\<rightarrow> op \<le> op < (1:: bool) op r\<rightarrow> "
+lemma "\<not> class.cancel_pseudo_hoop_algebra ( * ) (\<sqinter>)  (l\<rightarrow>) (\<le>) (<) (1:: bool) (r\<rightarrow>) "
   apply (unfold  class.cancel_pseudo_hoop_algebra_def)
   apply (unfold  class.cancel_pseudo_hoop_algebra_axioms_def)
   apply safe
@@ -1456,7 +1456,7 @@ lemma "\<not> class.cancel_pseudo_hoop_algebra op * op \<sqinter>  op l\<rightar
   by (simp add: times_bool_def)
 
 context pseudo_hoop_algebra begin
-lemma classorder: "class.order op \<le> op <"
+lemma classorder: "class.order (\<le>) (<)"
   proof qed
 end
 
@@ -1480,9 +1480,9 @@ context pseudo_hoop_algebra begin end
 context linear_pseudo_hoop_algebra begin end
 context basic_pseudo_hoop_algebra begin end
 
-lemma "class.pseudo_hoop_algebra op * op \<sqinter> op l\<rightarrow> op \<le> op < (1::'a::pseudo_hoop_algebra) op r\<rightarrow>
-          \<Longrightarrow> \<not> (class.linear_pseudo_hoop_algebra op \<le> op <  op * op \<sqinter> op l\<rightarrow> (1::'a) op r\<rightarrow>)
-          \<Longrightarrow> \<not> class.basic_pseudo_hoop_algebra op * op \<sqinter> op l\<rightarrow> op \<le> op < (1::('a, bool) OrdSum) op r\<rightarrow>" 
+lemma "class.pseudo_hoop_algebra ( * ) (\<sqinter>) (l\<rightarrow>) (\<le>) (<) (1::'a::pseudo_hoop_algebra) (r\<rightarrow>)
+          \<Longrightarrow> \<not> (class.linear_pseudo_hoop_algebra (\<le>) (<)  ( * ) (\<sqinter>) (l\<rightarrow>) (1::'a) (r\<rightarrow>))
+          \<Longrightarrow> \<not> class.basic_pseudo_hoop_algebra ( * ) (\<sqinter>) (l\<rightarrow>) (\<le>) (<) (1::('a, bool) OrdSum) (r\<rightarrow>)" 
   apply (unfold class.linear_pseudo_hoop_algebra_def)
   apply (unfold class.linorder_def)
   apply (unfold class.linorder_axioms_def)

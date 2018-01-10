@@ -23,7 +23,7 @@ text \<open>The rational numbers are not a datatype, so it will not be possible 
 text \<open>Use the linear order on rationals to define the @{class compare_order}-instance.\<close>
 derive (linorder) compare_order rat
 
-text \<open>Use @{term "op = :: rat => rat => bool"} as equality function.\<close>
+text \<open>Use @{term "(=) :: rat => rat => bool"} as equality function.\<close>
 derive (eq) equality rat
 
 text \<open>First manually define a hashcode function.\<close>

@@ -28,7 +28,7 @@ subsection \<open>Operations\<close>
 
   lemma param_mop_prio_pop_min[param]: 
     assumes [param]: "(prio',prio) \<in> A \<rightarrow> B"
-    assumes [param]: "(op\<le>,op\<le>) \<in> B \<rightarrow> B \<rightarrow> bool_rel"
+    assumes [param]: "((\<le>),(\<le>)) \<in> B \<rightarrow> B \<rightarrow> bool_rel"
     shows "(mop_prio_pop_min prio',mop_prio_pop_min prio) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A \<times>\<^sub>r \<langle>A\<rangle>mset_rel\<rangle>nres_rel"
     unfolding mop_prio_pop_min_def[abs_def]
     apply (clarsimp simp: mop_prio_pop_min_def nres_rel_def pw_le_iff refine_pw_simps)
@@ -63,7 +63,7 @@ subsection \<open>Operations\<close>
 
   lemma param_mop_prio_peek_min[param]: 
     assumes [param]: "(prio',prio) \<in> A \<rightarrow> B"
-    assumes [param]: "(op\<le>,op\<le>) \<in> B \<rightarrow> B \<rightarrow> bool_rel"
+    assumes [param]: "((\<le>),(\<le>)) \<in> B \<rightarrow> B \<rightarrow> bool_rel"
     shows "(mop_prio_peek_min prio',mop_prio_peek_min prio) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>nres_rel"
     unfolding mop_prio_peek_min_def[abs_def]
     apply (clarsimp 

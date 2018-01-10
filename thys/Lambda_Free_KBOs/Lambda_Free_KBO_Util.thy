@@ -9,7 +9,7 @@ theory Lambda_Free_KBO_Util
 imports Lambda_Free_RPOs.Lambda_Free_Term Lambda_Free_RPOs.Extension_Orders Polynomials.Polynomials
 begin
 
-locale kbo_basic_basis = gt_sym "op >\<^sub>s"
+locale kbo_basic_basis = gt_sym "(>\<^sub>s)"
     for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) +
   fixes
     wt_sym :: "'s \<Rightarrow> nat" and
@@ -31,7 +31,7 @@ lemma wt_sym_gt_0: "wt_sym f > 0"
 
 end
 
-locale kbo_std_basis = ground_heads "op >\<^sub>s" arity_sym arity_var
+locale kbo_std_basis = ground_heads "(>\<^sub>s)" arity_sym arity_var
     for
       gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
       arity_sym :: "'s \<Rightarrow> enat" and

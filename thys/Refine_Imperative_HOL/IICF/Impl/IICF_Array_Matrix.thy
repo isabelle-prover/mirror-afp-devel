@@ -444,7 +444,7 @@ begin
       text \<open>After declaration of an implementation for multiplication,
         refinement is straightforward. Note that we use the fixed @{term N} in
         the refinement assertions.\<close>
-      private lemma times_param: "(op*,op*::'a\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
+      private lemma times_param: "(( * ),( * )::'a\<Rightarrow>_) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
   
       context
         notes [sepref_import_param] = times_param

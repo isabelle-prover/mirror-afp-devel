@@ -770,7 +770,7 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
 (* rsp lemmas for alpha_bn relations *)
 
 val rsp_equivp =
-  @{lemma "[|equivp Q; !!x y. R x y ==> Q x y|] ==> (R ===> R ===> op =) Q Q"
+  @{lemma "[|equivp Q; !!x y. R x y ==> Q x y|] ==> (R ===> R ===> (=)) Q Q"
     by (simp only: rel_fun_def equivp_def, metis)}
 
 
@@ -799,7 +799,7 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
 
 (* rsp for permute_bn functions *)
 
-val perm_bn_rsp = @{lemma "(!x y p. R x y --> R (f p x) (f p y)) ==> (op= ===> R ===> R) f f"
+val perm_bn_rsp = @{lemma "(!x y p. R x y --> R (f p x) (f p y)) ==> ((=) ===> R ===> R) f f"
  by (simp add: rel_fun_def)}
 
 fun raw_prove_perm_bn_tac alpha_result simps ctxt = 
@@ -853,7 +853,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
 (* transformation of the natural rsp-lemmas into standard form *)
 
 val fun_rsp = @{lemma
-  "(!x y. R x y --> f x = f y) ==> (R ===> (op =)) f f" by (simp add: rel_fun_def)}
+  "(!x y. R x y --> f x = f y) ==> (R ===> (=)) f f" by (simp add: rel_fun_def)}
 
 fun mk_funs_rsp ctxt thm = 
   thm
@@ -864,7 +864,7 @@ fun mk_funs_rsp ctxt thm =
 
 val permute_rsp = @{lemma 
   "(!x y p. R x y --> R (permute p x) (permute p y)) 
-     ==> ((op =) ===> R ===> R) permute permute"  by (simp add: rel_fun_def)}
+     ==> ((=) ===> R ===> R) permute permute"  by (simp add: rel_fun_def)}
 
 fun mk_alpha_permute_rsp ctxt thm = 
   thm

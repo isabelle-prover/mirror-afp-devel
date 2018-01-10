@@ -24,7 +24,7 @@ lemma fun_lub_Sup[simp]: "fun_lub Sup = Sup"
   unfolding fun_lub_def[abs_def]
   by (clarsimp intro!: ext; metis image_def)
 
-lemma fun_ord_le[simp]: "fun_ord op \<le> = op \<le>"
+lemma fun_ord_le[simp]: "fun_ord (\<le>) = (\<le>)"
   unfolding fun_ord_def[abs_def]
   by (auto intro!: ext simp: le_fun_def)
 

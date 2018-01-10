@@ -180,7 +180,7 @@ text {* Not strictly related to generators of groups, this is still a general
 group concept and not related to Free Groups. *}
 
 abbreviation (in monoid) m_concat
-  where "m_concat l \<equiv> foldr (op \<otimes>) l \<one>"
+  where "m_concat l \<equiv> foldr (\<otimes>) l \<one>"
 
 lemma (in monoid) m_concat_closed[simp]:
  "set l \<subseteq> carrier G \<Longrightarrow> m_concat l \<in> carrier G"

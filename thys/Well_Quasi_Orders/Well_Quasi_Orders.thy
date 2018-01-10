@@ -130,10 +130,10 @@ text \<open>
   In a well-quasi-order (wqo) every infinite sequence is good.
 \<close>
 class wqo = preorder +
-  assumes good: "good (op \<le>) f"
+  assumes good: "good (\<le>) f"
 
 lemma wqo_on_class [simp, intro]:
-  "wqo_on (op \<le>) (UNIV :: ('a :: wqo) set)"
+  "wqo_on (\<le>) (UNIV :: ('a :: wqo) set)"
   using good by (auto simp: wqo_on_def transp_on_def almost_full_on_def dest: order_trans)
 
 lemma wqo_on_UNIV_class_wqo [intro!]:
@@ -157,10 +157,10 @@ qed
 text \<open>
   The strict part of a wqo is well-founded.
 \<close>
-lemma (in wqo) "wfP (op <)"
+lemma (in wqo) "wfP (<)"
 proof -
-  have "class.wqo (op \<le>) (op <)" ..
-  hence "wqo_on (op \<le>) UNIV"
+  have "class.wqo (\<le>) (<)" ..
+  hence "wqo_on (\<le>) UNIV"
     unfolding less_le_not_le [abs_def] wqo_on_UNIV_conv [symmetric] .
   from wqo_on_imp_wfp_on [OF this]
     show ?thesis unfolding less_le_not_le [abs_def] wfp_on_UNIV .
@@ -259,12 +259,12 @@ lemma finite_wqo_on:
 
 lemma finite_eq_wqo_on:
   assumes "finite A"
-  shows "wqo_on (op =) A"
-  using finite_wqo_on [OF assms, of "op ="]
+  shows "wqo_on (=) A"
+  using finite_wqo_on [OF assms, of "(=)"]
   by (auto simp: reflp_on_def transp_on_def)
 
 lemma wqo_on_lists_over_finite_sets:
-  "wqo_on (list_emb (op =)) (UNIV::('a::finite) list set)"
+  "wqo_on (list_emb (=)) (UNIV::('a::finite) list set)"
   using wqo_on_lists [OF finite_eq_wqo_on [OF finite [of "UNIV::('a::finite) set"]]] by simp
 
 lemma wqo_on_map:
@@ -310,7 +310,7 @@ proof
 qed
 
 lemma wqo_on_UNIV_nat:
-  "wqo_on (op \<le>) (UNIV :: nat set)"
+  "wqo_on (\<le>) (UNIV :: nat set)"
   unfolding wqo_on_def transp_on_def
   using almost_full_on_UNIV_nat by simp
 

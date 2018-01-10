@@ -280,7 +280,7 @@ lemma (in order) mono_sup_fun [simp]:
 
 lemma mono_comp_fun:
   fixes f :: "'a::order \<Rightarrow> 'b::order"
-  shows "mono f \<Longrightarrow> mono (op \<circ> f)"
+  shows "mono f \<Longrightarrow> mono ((\<circ>) f)"
   by (rule monoI) (auto simp add: le_fun_def elim: monoE)
 
 definition

@@ -18,7 +18,7 @@ context includes applicative_syntax begin
 lemma ap_gpv_id: "pure_gpv (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_gpv_def)
 
-lemma ap_gpv_comp: "pure_gpv op \<circ> \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
+lemma ap_gpv_comp: "pure_gpv (\<circ>) \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
 by(simp add: ap_gpv_def bind_gpv_assoc)
 
 lemma ap_gpv_homo: "pure_gpv f \<diamondop> pure_gpv x = pure_gpv (f x)"

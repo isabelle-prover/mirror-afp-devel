@@ -125,7 +125,7 @@ proof -
 		moreover from as(3) have "(\<forall>fo\<in>set (a # ft). ofe_prio x < ofe_prio fo \<longrightarrow> \<not> \<gamma> (ofe_fields fo) p)" using nm by simp
 		ultimately show "x \<in> {f |f. f \<in> set (a # ft) \<and> \<gamma> (ofe_fields f) p \<and> (\<forall>fo\<in>set (a # ft). ofe_prio f < ofe_prio fo \<longrightarrow> \<not> \<gamma> (ofe_fields fo) p)}" using as(2) by blast
 	qed
-	note uf = arg_cong[OF aa, of "op ` ofe_action", unfolded image_Collect]
+	note uf = arg_cong[OF aa, of "(`) ofe_action", unfolded image_Collect]
 	show ?thesis unfolding OF_same_priority_match2_def using uf by presburger
 qed
 

@@ -68,7 +68,7 @@ end
 text \<open>Convert a string to a show-function that simply prepends the string unchanged.\<close>
 definition shows_string :: "string \<Rightarrow> shows"
 where
-  "shows_string = op @"
+  "shows_string = (@)"
 
 lemma shows_string_append [show_law_simps]:
   "shows_string x (r @ s) = shows_string x r @ s"
@@ -136,7 +136,7 @@ subsection \<open>Show-Functions for Characters and Strings\<close>
 instantiation char :: "show"
 begin
 
-definition "shows_prec p (c::char) = op # c"
+definition "shows_prec p (c::char) = (#) c"
 definition "shows_list (cs::string) = shows_string cs"
 instance
   by standard (simp_all add: shows_prec_char_def shows_list_char_def show_law_simps)

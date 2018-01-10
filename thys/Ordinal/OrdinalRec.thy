@@ -69,7 +69,7 @@ assumes po_refl:    "\<And>x. x << x"
     and po_trans:   "\<And>x y z. \<lbrakk>x << y; y << z\<rbrakk> \<Longrightarrow> x << z"
     and po_antisym: "\<And>x y. \<lbrakk>x << y; y << x\<rbrakk> \<Longrightarrow> x = y"
 
-lemma porder_order: "porder (op \<le> :: 'a::order \<Rightarrow> 'a \<Rightarrow> bool)"
+lemma porder_order: "porder ((\<le>) :: 'a::order \<Rightarrow> 'a \<Rightarrow> bool)"
  apply (rule porder.intro)
    apply (rule order_refl)
   apply (rule order_trans, assumption+)
@@ -192,7 +192,7 @@ definition
     "[ordinal, ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal, ordinal] \<Rightarrow> ordinal" where
   "ordinal_rec z s = ordinal_rec0 z s oLimit"
 
-lemma omega_complete_oLimit: "omega_complete (op \<le>) oLimit"
+lemma omega_complete_oLimit: "omega_complete (\<le>) oLimit"
  apply (rule omega_complete.intro)
   apply (rule porder_order)
  apply (rule omega_complete_axioms.intro)

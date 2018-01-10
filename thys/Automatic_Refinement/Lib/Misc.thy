@@ -1302,7 +1302,7 @@ lemma ran_nth_set_encoding_conv[simp]:
   apply (auto simp: in_set_conv_nth intro: ranI) []
   done
 
-lemma nth_image_indices[simp]: "op ! l ` {0..<length l} = set l"
+lemma nth_image_indices[simp]: "(!) l ` {0..<length l} = set l"
   by (auto simp: in_set_conv_nth)
 
 lemma nth_update_invalid[simp]:"\<not>i<length l \<Longrightarrow> l[j:=x]!i = l!i"  
@@ -1448,17 +1448,17 @@ next
 qed
 
 
-lemmas foldl_conc_empty_eq = foldl_A1_eq[of "op @" "[]", simplified]
-lemmas foldl_un_empty_eq = foldl_A1_eq[of "op \<union>" "{}", simplified, OF Un_assoc[symmetric]]
+lemmas foldl_conc_empty_eq = foldl_A1_eq[of "(@)" "[]", simplified]
+lemmas foldl_un_empty_eq = foldl_A1_eq[of "(\<union>)" "{}", simplified, OF Un_assoc[symmetric]]
 
-lemma foldl_set: "foldl (op \<union>) {} l = \<Union>{x. x\<in>set l}"
+lemma foldl_set: "foldl (\<union>) {} l = \<Union>{x. x\<in>set l}"
   apply (induct l)
   apply simp_all
   apply (subst foldl_un_empty_eq)
   apply auto
   done
 
-lemma (in monoid_mult) foldl_absorb1: "x*foldl (op *) 1 zs = foldl (op *) x zs"
+lemma (in monoid_mult) foldl_absorb1: "x*foldl (( * )) 1 zs = foldl (( * )) x zs"
   apply (rule sym)
   apply (rule foldl_A1_eq)
   apply (auto simp add: mult.assoc)
@@ -1793,7 +1793,7 @@ definition "filter_rev == filter_rev_aux []"
 lemma filter_rev_alt: "filter_rev P l = filter P (rev l)"
   unfolding filter_rev_def by (simp add: filter_rev_aux_alt)
 
-definition "remove_rev x == filter_rev (Not o op = x)"
+definition "remove_rev x == filter_rev (Not o (=) x)"
 lemma remove_rev_alt_def :
   "remove_rev x xs = (filter (\<lambda>y. y \<noteq> x) (rev xs))"
   unfolding remove_rev_def
@@ -1883,7 +1883,7 @@ lemma laz_conj[simp]: "list_all_zip (\<lambda>x y. P x y \<and> Q x y) a b
 lemma laz_len: "list_all_zip P a b \<Longrightarrow> length a = length b"
   by (simp add: list_all_zip_alt)
 
-lemma laz_eq: "list_all_zip (op =) a b \<longleftrightarrow> a=b"
+lemma laz_eq: "list_all_zip (=) a b \<longleftrightarrow> a=b"
   apply (induct a arbitrary: b)
   apply (case_tac b)
   apply simp
@@ -1988,11 +1988,11 @@ lemma sorted_by_rel_true [simp] :
 by (induct l0) (simp_all)
 
 lemma (in linorder) sorted_by_rel_linord[simp]:
-  "sorted_by_rel op \<le> l \<longleftrightarrow> sorted l"
+  "sorted_by_rel (\<le>) l \<longleftrightarrow> sorted l"
   by (induct l) (auto simp: sorted_Cons)
 
 lemma (in linorder) sorted_by_rel_rev_linord [simp] :
-  "sorted_by_rel op \<ge> l \<longleftrightarrow> sorted (rev l)"
+  "sorted_by_rel (\<ge>) l \<longleftrightarrow> sorted (rev l)"
   by (induct l) (auto simp add: sorted_Cons sorted_append)
 
 lemma (in linorder) sorted_by_rel_map_linord [simp] :
@@ -2310,9 +2310,9 @@ lemma in_set_upd_eq:
   lemma last_in_set[intro]: "\<lbrakk>l\<noteq>[]\<rbrakk> \<Longrightarrow> last l \<in> set l"
     by (induct l) auto
 
-  lemma empty_append_eq_id[simp]: "op @ [] = (\<lambda>x. x)" by auto
+  lemma empty_append_eq_id[simp]: "(@) [] = (\<lambda>x. x)" by auto
       
-  lemma op_conc_empty_img_id[simp]: "(op @ [] ` L) = L" by auto
+  lemma op_conc_empty_img_id[simp]: "((@) [] ` L) = L" by auto
 
 
   lemma distinct_match: "\<lbrakk> distinct (al@e#bl) \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e#bl') \<longleftrightarrow> (al=al' \<and> bl=bl')"
@@ -2704,17 +2704,17 @@ proof (induct xs rule: measure_induct_rule[of "length"])
 qed
 
 lemma sorted_quicksort_by_rel:
-  "sorted (quicksort_by_rel op\<le> [] xs)"
+  "sorted (quicksort_by_rel (\<le>) [] xs)"
 unfolding sorted_by_rel_linord[symmetric]
 by (rule sorted_by_rel_quicksort_by_rel) auto
 
 lemma sort_quicksort_by_rel:
-  "sort = quicksort_by_rel op\<le> []"
+  "sort = quicksort_by_rel (\<le>) []"
   apply (rule ext, rule properties_for_sort)
   apply(simp_all add: sorted_quicksort_by_rel)
 done
 
-lemma [code]: "quicksort = quicksort_by_rel op\<le> []"
+lemma [code]: "quicksort = quicksort_by_rel (\<le>) []"
   apply (subst sort_quicksort[symmetric])
   by (rule sort_quicksort_by_rel)
 
@@ -2916,17 +2916,17 @@ proof (induct xs rule: measure_induct_rule[of "length"])
 qed
 
 lemma sorted_mergesort_by_rel:
-  "sorted (mergesort_by_rel op\<le> xs)"
+  "sorted (mergesort_by_rel (\<le>) xs)"
 unfolding sorted_by_rel_linord[symmetric]
 by (rule sorted_by_rel_mergesort_by_rel) auto
 
 lemma sort_mergesort_by_rel:
-  "sort = mergesort_by_rel op\<le>"
+  "sort = mergesort_by_rel (\<le>)"
   apply (rule ext, rule properties_for_sort)
   apply(simp_all add: sorted_mergesort_by_rel)
 done
 
-definition "mergesort = mergesort_by_rel op\<le>"
+definition "mergesort = mergesort_by_rel (\<le>)"
 
 lemma sort_mergesort: "sort = mergesort"
   unfolding mergesort_def by (rule sort_mergesort_by_rel)
@@ -3244,7 +3244,7 @@ lemma some_opt_eq_trivial[simp] :
 unfolding Eps_Opt_def by simp
 
 lemma some_opt_sym_eq_trivial[simp] :
-  "Eps_Opt (op = x) = Some x"
+  "Eps_Opt ((=) x) = Some x"
 unfolding Eps_Opt_def by simp
 
 lemma some_opt_false_trivial[simp] :
@@ -4551,8 +4551,8 @@ context ccpo
 begin
 
 lemma ccpo_Sup_mono:
-  assumes C: "Complete_Partial_Order.chain (op \<le>) A"
-    "Complete_Partial_Order.chain (op \<le>) B"
+  assumes C: "Complete_Partial_Order.chain (\<le>) A"
+    "Complete_Partial_Order.chain (\<le>) B"
   assumes B: "\<forall>x\<in>A. \<exists>y\<in>B. x\<le>y"
   shows "Sup A \<le> Sup B"
 proof (rule ccpo_Sup_least)
@@ -4565,7 +4565,7 @@ proof (rule ccpo_Sup_least)
 qed (rule C)
 
 lemma fixp_mono:
-  assumes M: "monotone op\<le> op\<le> f" "monotone op\<le> op\<le> g"
+  assumes M: "monotone (\<le>) (\<le>) f" "monotone (\<le>) (\<le>) g"
   assumes LE: "\<And>Z. f Z \<le> g Z"
   shows "ccpo_class.fixp f \<le> ccpo_class.fixp g"
   unfolding fixp_def[abs_def]
@@ -4603,7 +4603,7 @@ proof rule
 
     have "N \<subseteq> ccpo_class.iterates g" using Sup
       using N1 by auto
-    hence C_chain: "Complete_Partial_Order.chain op\<le> N"
+    hence C_chain: "Complete_Partial_Order.chain (\<le>) N"
       using chain_iterates[OF M(2)]
       unfolding chain_def by auto
 

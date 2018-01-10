@@ -671,7 +671,7 @@ schematic_goal find_path0_restr_code:
   fixes vis_rel :: "('v\<times>'v) set \<Rightarrow> ('visi\<times>'v set) set"
   notes [autoref_rel_intf] = REL_INTFI[of vis_rel "i_set" for I]
   assumes [autoref_rules]: "(op_vis_insert, insert)\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> \<langle>Id\<rangle>vis_rel"
-  assumes [autoref_rules]: "(op_vis_memb, op \<in>)\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(op_vis_memb, (\<in>))\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> bool_rel"
   assumes [autoref_rules]: 
     "(Gi, G) \<in> \<langle>Rm, Id\<rangle>g_impl_rel_ext"
     "(Pi,P)\<in>Id \<rightarrow> bool_rel"
@@ -692,7 +692,7 @@ export_code find_path0_restr_code checking SML
 
 lemma find_path0_restr_autoref_aux:
   assumes 1: "(op_vis_insert, insert)\<in>Rv \<rightarrow> \<langle>Rv\<rangle>vis_rel \<rightarrow> \<langle>Rv\<rangle>vis_rel"
-  assumes 2: "(op_vis_memb, op \<in>)\<in>Rv \<rightarrow> \<langle>Rv\<rangle>vis_rel \<rightarrow> bool_rel"
+  assumes 2: "(op_vis_memb, (\<in>))\<in>Rv \<rightarrow> \<langle>Rv\<rangle>vis_rel \<rightarrow> bool_rel"
   assumes Vid: "Rv = Id"
   shows "(\<lambda> G P R. nres_of (find_path0_restr_code op_vis_insert op_vis_memb G P R), 
     find_path0_restr_spec) 
@@ -714,7 +714,7 @@ schematic_goal find_path1_restr_code:
   fixes vis_rel :: "('v\<times>'v) set \<Rightarrow> ('visi\<times>'v set) set"
   notes [autoref_rel_intf] = REL_INTFI[of vis_rel "i_set" for I]
   assumes [autoref_rules]: "(op_vis_insert, insert)\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> \<langle>Id\<rangle>vis_rel"
-  assumes [autoref_rules]: "(op_vis_memb, op \<in>)\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(op_vis_memb, (\<in>))\<in>Id \<rightarrow> \<langle>Id\<rangle>vis_rel \<rightarrow> bool_rel"
   assumes [autoref_rules]: 
     "(Gi, G) \<in> \<langle>Rm, Id\<rangle>g_impl_rel_ext"
     "(Pi,P)\<in>Id \<rightarrow> bool_rel"
@@ -731,7 +731,7 @@ export_code find_path1_restr_code checking SML
 
 lemma find_path1_restr_autoref_aux:
   assumes G: "(op_vis_insert, insert)\<in>V \<rightarrow> \<langle>V\<rangle>vis_rel \<rightarrow> \<langle>V\<rangle>vis_rel"
-             "(op_vis_memb, op \<in>)\<in>V \<rightarrow> \<langle>V\<rangle>vis_rel \<rightarrow> bool_rel"
+             "(op_vis_memb, (\<in>))\<in>V \<rightarrow> \<langle>V\<rangle>vis_rel \<rightarrow> bool_rel"
   assumes Vid[simp]: "V=Id"
   shows "(\<lambda> G P R. nres_of (find_path1_restr_code op_vis_insert op_vis_memb G P R),find_path1_restr_spec)
   \<in> \<langle>Rm, V\<rangle>g_impl_rel_ext \<rightarrow> (V \<rightarrow> bool_rel) \<rightarrow> \<langle>V\<rangle>vis_rel \<rightarrow>

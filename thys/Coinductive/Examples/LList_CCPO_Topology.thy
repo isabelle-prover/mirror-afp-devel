@@ -542,14 +542,14 @@ end
 
 declare lup'.mono[cont_intro]
 
-lemma monotone_lup': "monotone (rel_prod op = lprefix) lprefix (\<lambda>(a, xs). lup' a xs)"
+lemma monotone_lup': "monotone (rel_prod (=) lprefix) lprefix (\<lambda>(a, xs). lup' a xs)"
 by(rule llist.fixp_preserves_mono2[OF lup'.mono lup'_def]) simp
 
 lemma mono2mono_lup'2[THEN llist.mono2mono, simp, cont_intro]:
   shows monotone_lup'2: "monotone lprefix lprefix (lup' a)"
 using monotone_lup' by auto
 
-lemma mcont_lup': "mcont (prod_lub the_Sup lSup) (rel_prod op = lprefix) lSup lprefix (\<lambda>(a, xs). lup' a xs)"
+lemma mcont_lup': "mcont (prod_lub the_Sup lSup) (rel_prod (=) lprefix) lSup lprefix (\<lambda>(a, xs). lup' a xs)"
 by(rule llist.fixp_preserves_mcont2[OF lup'.mono lup'_def]) simp
 
 lemma mcont2mcont_lup'2[THEN llist.mcont2mcont, simp, cont_intro]:

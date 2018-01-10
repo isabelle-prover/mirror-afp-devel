@@ -32,8 +32,8 @@ subsection \<open>Multiset Order\<close>
 instantiation zhmultiset :: linorder
 begin
 
-lift_definition less_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> bool" is "op <" .
-lift_definition less_eq_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> bool" is "op \<le>" .
+lift_definition less_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> bool" is "(<)" .
+lift_definition less_eq_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> bool" is "(\<le>)" .
 
 instance
   by (intro_classes; transfer) auto

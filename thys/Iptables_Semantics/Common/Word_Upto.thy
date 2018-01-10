@@ -17,7 +17,7 @@ by pat_completeness auto
   reaches the word wrap-around!*)
 
 termination word_upto
-apply(relation "measure (unat \<circ> uncurry (op -) \<circ> prod.swap)")
+apply(relation "measure (unat \<circ> uncurry (-) \<circ> prod.swap)")
  apply(rule wf_measure; fail)
 apply(simp)
 apply(subgoal_tac "unat (b - a - 1) < unat (b - a)")

@@ -76,7 +76,7 @@ proof -
     have factorization: "is_factorization_of fctrs (lr_fps_denominator' cs)" . 
 
   have "f = interp_ratfps_solution (solve_factored_ratfps' (lhr_fps_numerator 
-              (length fs + 1 - length cs) cs (op ! fs)) fctrs)"
+              (length fs + 1 - length cs) cs ((!) fs)) fctrs)"
     (is "_ = interp_ratfps_solution ?sol") by (intro solve_lhr_aux) fact+
   also from assms(2) have "?sol = sol"
     by (auto simp: solve_lhr_def Let_def case_prod_unfold fctrs split: if_splits)

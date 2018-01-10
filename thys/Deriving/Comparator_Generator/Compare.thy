@@ -33,11 +33,11 @@ lemma compare_refl [simp]:
 end
 
 lemma (in linorder) le_lt_comparator_of:
-  "le_of_comp comparator_of = op \<le>" "lt_of_comp comparator_of = op <"
+  "le_of_comp comparator_of = (\<le>)" "lt_of_comp comparator_of = (<)"
   by (intro ext, auto simp: comparator_of_def le_of_comp_def lt_of_comp_def)+
 
 class compare_order = ord + compare +
-  assumes ord_defs: "le_of_comp compare = op \<le> " "lt_of_comp compare = op <"
+  assumes ord_defs: "le_of_comp compare = (\<le>) " "lt_of_comp compare = (<)"
 
 text \<open> @{class compare_order} is @{class compare} and @{class linorder}, where comparator and orders 
   define the same ordering.\<close>
@@ -66,7 +66,7 @@ end
 ML_file "compare_code.ML"
 
 text \<open>@{text "Compare_Code.change_compare_code const ty-vars"} changes the code equations of some constant such that
-  two consecutive comparisons via @{term "op <="}, @{term "op <"}", or @{term "op ="} are turned into one
+  two consecutive comparisons via @{term "(<=)"}, @{term "(<)"}", or @{term "(=)"} are turned into one
   invocation of @{const compare}. 
   The difference to a standard @{text "code_unfold"} is that here we change the code-equations
   where an additional sort-constraint on @{class compare_order} can be added. Otherwise, there would

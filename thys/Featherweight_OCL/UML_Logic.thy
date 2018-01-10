@@ -1063,9 +1063,9 @@ lemmas cp_intro[intro!,simp,code_unfold] =
        cp_defined[THEN allI[THEN allI[THEN cpI1], of defined]]
        cp_valid[THEN allI[THEN allI[THEN cpI1], of valid]]
        cp_OclNot[THEN allI[THEN allI[THEN cpI1], of not]]
-       cp_OclAnd[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "op and"]]
-       cp_OclOr[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "op or"]]
-       cp_OclImplies[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "op implies"]]
+       cp_OclAnd[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "(and)"]]
+       cp_OclOr[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "(or)"]]
+       cp_OclImplies[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "(implies)"]]
        cp_StrongEq[THEN allI[THEN allI[THEN allI[THEN cpI2]],
                    of "StrongEq"]]
 

@@ -22,7 +22,7 @@ applicative env (K, W)
 for
   pure: const
   ap: apf
-  rel: "rel_fun op ="
+  rel: "rel_fun (=)"
   set: range
 by(simp_all add: const_def apf_def rel_fun_def)
 

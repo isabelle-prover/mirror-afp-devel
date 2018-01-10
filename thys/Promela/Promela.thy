@@ -1154,7 +1154,7 @@ definition atomize :: "nat \<Rightarrow> nat \<Rightarrow> edge list \<Rightarro
                     else e\<lparr> atomic := InAtomic \<rparr>
       in e'#es) es []"
 
-fun skip -- "No-op edge"
+fun skip -- "No-(edge)"
 where 
   "skip (lbls, pri, pos, nxt, _) = 
   ([[\<lparr>cond = ECExpr (ExprConst 1), 

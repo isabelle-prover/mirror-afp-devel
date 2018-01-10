@@ -478,7 +478,7 @@ definition "fstp = apsnd fst"
 definition "the_thing_By f l = (let 
   nub = remdups (map fst l) in
   map (\<lambda>e. (e, map snd (filter (\<lambda>g. (f e (fst g))) l))) nub)"
-definition "the_thing = the_thing_By (op =)"
+definition "the_thing = the_thing_By (=)"
 
 
 definition graphifyci :: "string \<Rightarrow> nat \<Rightarrow> bddi \<Rightarrow> string Heap" where

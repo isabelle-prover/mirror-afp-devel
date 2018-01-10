@@ -29,7 +29,7 @@ definition
 where
   "make_map ks v \<equiv> \<lambda>k. if k \<in> fset ks then Some v else None"
 
-lemma make_map_transfer[transfer_rule]: "(rel_fset op = ===> A ===> rel_map A) make_map make_map"
+lemma make_map_transfer[transfer_rule]: "(rel_fset (=) ===> A ===> rel_map A) make_map make_map"
 unfolding make_map_def
 by transfer_prover
 
@@ -74,7 +74,7 @@ subsection {* Lookup *}
 
 lift_definition
   lookup :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k \<Rightarrow> 'v"
-is "op \<circ> the" .
+is "(\<circ>) the" .
 
 lemma lookup_make_fmap:
   assumes "k \<in> fset ks"

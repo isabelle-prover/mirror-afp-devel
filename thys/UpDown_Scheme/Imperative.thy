@@ -64,7 +64,7 @@ theorem copy_array [sep_heap_rules]:
   by sep_auto
 
 definition sum_array :: "rat array \<Rightarrow> rat array \<Rightarrow> unit Heap" where
-  "sum_array a b = zipWithA (op +) a b \<then> return ()"
+  "sum_array a b = zipWithA (+) a b \<then> return ()"
 
 theorem sum_array [sep_heap_rules]:
   fixes xs ys :: "rat list"

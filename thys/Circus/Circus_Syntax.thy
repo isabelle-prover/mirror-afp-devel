@@ -49,14 +49,14 @@ parse_translation {*
         fun get_selector x =
           let val c = Consts.intern (Proof_Context.consts_of ctxt) x
           in
-                if member (op =) av x then SOME (Const ("Circus_Syntax.list_select", dummyT) $ (Syntax.const c)) else
-                  if member (op =) sv x then SOME (Syntax.const c) else NONE end;
+                if member (=) av x then SOME (Const ("Circus_Syntax.list_select", dummyT) $ (Syntax.const c)) else
+                  if member (=) sv x then SOME (Syntax.const c) else NONE end;
 
         fun get_update x =
           let val c = Consts.intern (Proof_Context.consts_of ctxt) x
           in
-                if member (op =) av x then SOME (Const ("Circus_Syntax.list_update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else
-                  if member (op =) sv x then SOME (Const ("Circus_Syntax.update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else NONE end;
+                if member (=) av x then SOME (Const ("Circus_Syntax.list_update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else
+                  if member (=) sv x then SOME (Const ("Circus_Syntax.update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else NONE end;
 
         fun print text =  (fn x => let val _ = writeln text; in x end);
 

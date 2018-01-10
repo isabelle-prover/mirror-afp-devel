@@ -18,7 +18,7 @@ for
 fixes "defs" :: "'g \<Rightarrow> 'node \<Rightarrow> 'var::linorder set"
 fixes "uses" :: "'g \<Rightarrow> 'node \<Rightarrow> 'var set"
 begin
-  definition "vars g \<equiv> fold (op \<union>) (map (uses g) (\<alpha>n g)) {}"
+  definition "vars g \<equiv> fold (\<union>) (map (uses g) (\<alpha>n g)) {}"
   definition defAss' :: "'g \<Rightarrow> 'node \<Rightarrow> 'var \<Rightarrow> bool" where
     "defAss' g m v \<longleftrightarrow> (\<forall>ns. g \<turnstile> Entry g-ns\<rightarrow>m \<longrightarrow> (\<exists>n \<in> set ns. v \<in> defs g n))"
 

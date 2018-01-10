@@ -2231,7 +2231,7 @@ qed
 
 definition
   and_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "and_dfa = binop_dfa op \<and>"
+  "and_dfa = binop_dfa (\<and>)"
 
 lemma and_wf_dfa:
   assumes "wf_dfa M n"
@@ -2248,7 +2248,7 @@ lemma and_dfa_accepts:
 
 definition
   or_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "or_dfa = binop_dfa op \<or>"
+  "or_dfa = binop_dfa (\<or>)"
 
 lemma or_wf_dfa:
   assumes "wf_dfa M n" and "wf_dfa N n"
@@ -2263,7 +2263,7 @@ lemma or_dfa_accepts:
     
 definition
   imp_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "imp_dfa = binop_dfa op \<longrightarrow>"
+  "imp_dfa = binop_dfa (\<longrightarrow>)"
 
 lemma imp_wf_dfa:
   assumes "wf_dfa M n" and "wf_dfa N n"

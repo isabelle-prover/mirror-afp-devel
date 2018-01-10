@@ -305,11 +305,11 @@ lemma divmod_field_poly_code [code]:
    (let cg = coeffs q
     in if cg = [] then (0, p)
        else let cf = coeffs p; ilc = inverse (last cg);
-                ch = map (op * ilc) cg;
+                ch = map (( * ) ilc) cg;
                 (q, r) =
                   divmod_poly_one_main_list [] (rev cf) (rev ch)
                   (1 + length cf - length cg)
-            in (poly_of_list (map (op * ilc) q), poly_of_list (rev r)))"
+            in (poly_of_list (map (( * ) ilc) q), poly_of_list (rev r)))"
   unfolding divmod_field_poly_def by (rule pdivmod_via_divmod_list)
 
 definition normalise_decomp_poly :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> 'a poly \<times> 'a poly list" 

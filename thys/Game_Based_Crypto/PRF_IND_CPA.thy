@@ -120,7 +120,7 @@ proof -
     using TrueI
     by(rule exec_gpv_oracle_bisim)(auto simp add: encrypt_def prf_encrypt_oracle_def ind_cpa.encrypt_oracle_def prf.prf_oracle_def o_def)
    
-  have ind_cpa_0: "rel_spmf op = (ind_cpa.ind_cpa \<A>) (prf.game_0 (prf_adversary \<A>))"
+  have ind_cpa_0: "rel_spmf (=) (ind_cpa.ind_cpa \<A>) (prf.game_0 (prf_adversary \<A>))"
     unfolding IND_CPA.ind_cpa.ind_cpa_def \<A> key_gen_def Let_def prf_adversary_def Pseudo_Random_Function.prf.game_0_def
     apply(simp)
     apply(rewrite in "bind_spmf _ \<hole>" bind_commute_spmf)
@@ -158,7 +158,7 @@ proof -
   have bisim2: "\<And>cipher \<sigma> s. rel_spmf ?I (exec_gpv ?oracle2 (\<A>2 cipher \<sigma>) ((), s)) (exec_gpv rf_encrypt (\<A>2 cipher \<sigma>) s)"
     by(rule exec_gpv_oracle_bisim[where X="\<lambda>(_, s) s'. s = s'"])
       (auto simp add: prf_encrypt_oracle_def rf_encrypt_def intro!: rel_spmf_bind_reflI)
-  have game1_2 [unfolded spmf_rel_eq]: "rel_spmf op = (prf.game_1 (prf_adversary \<A>)) game2"
+  have game1_2 [unfolded spmf_rel_eq]: "rel_spmf (=) (prf.game_1 (prf_adversary \<A>)) game2"
     unfolding prf.game_1_def game2_def prf_adversary_def
     by(rewrite in "if _ then \<hole> else _" rf_encrypt_def)
       (auto simp add: Let_def \<A> if_distribs intro!: rel_spmf_bindI[OF bisim2] rel_spmf_bind_reflI rel_spmf_bindI[OF bisim1])
@@ -210,7 +210,7 @@ proof -
   have "map_spmf snd game2_a = map_spmf snd game2_b" unfolding game2_a_def game2_b_def
     by(auto simp add: o_def Let_def split_def if_distribs weight2 split: option.split intro: bind_spmf_cong[OF refl])
   moreover
-  have "rel_spmf op = (map_spmf fst (game2_a \<upharpoonleft> (snd -` {False}))) (map_spmf fst (game2_b \<upharpoonleft> (snd -` {False})))"
+  have "rel_spmf (=) (map_spmf fst (game2_a \<upharpoonleft> (snd -` {False}))) (map_spmf fst (game2_b \<upharpoonleft> (snd -` {False})))"
     unfolding game2_a_def game2_b_def
     by(clarsimp simp add: restrict_bind_spmf o_def Let_def if_distribs split_def restrict_return_spmf prf.random_oracle_def intro!: rel_spmf_bind_reflI split: option.splits)
   hence "spmf game2_a (True, False) = spmf game2_b (True, False)" 
@@ -276,7 +276,7 @@ proof -
     by(rule exec_gpv_oracle_bisim[where X="\<lambda>s (s', _). s = s'"])
       (auto simp add: rf_encrypt_bad_def rf_encrypt_def intro!: rel_spmf_bind_reflI)
 
-  have game2b_c [unfolded spmf_rel_eq]: "rel_spmf op = (map_spmf fst game2_b) (map_spmf fst game2_c)"
+  have game2b_c [unfolded spmf_rel_eq]: "rel_spmf (=) (map_spmf fst game2_b) (map_spmf fst game2_c)"
     by(auto simp add: game2_b_def game2_c_def o_def split_def Let_def if_distribs intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF bisim2c_bad])
 
   define game2_d where "game2_d = do {
@@ -304,10 +304,10 @@ proof -
              (exec_gpv (rf_encrypt_bad x) (\<A>2 cipher \<sigma>) (s, False))"
       by(rule exec_gpv_oracle_bisim_bad_full)(auto simp add: lossless2) }
   note bisim_bad = this
-  have game2c_2d_bad [unfolded spmf_rel_eq]: "rel_spmf op = (map_spmf snd game2_c) (map_spmf snd game2_d)"
+  have game2c_2d_bad [unfolded spmf_rel_eq]: "rel_spmf (=) (map_spmf snd game2_c) (map_spmf snd game2_d)"
     by(auto simp add: game2_c_def game2_d_def o_def Let_def split_def if_distribs intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF bisim_bad])
   moreover
-  have "rel_spmf op = (map_spmf fst (game2_c \<upharpoonleft> (snd -` {False}))) (map_spmf fst (game2_d \<upharpoonleft> (snd -` {False})))"
+  have "rel_spmf (=) (map_spmf fst (game2_c \<upharpoonleft> (snd -` {False}))) (map_spmf fst (game2_d \<upharpoonleft> (snd -` {False})))"
     unfolding game2_c_def game2_d_def
     by(clarsimp simp add: restrict_bind_spmf o_def Let_def if_distribs split_def restrict_return_spmf intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF bisim_bad])
   hence "spmf game2_c (True, False) = spmf game2_d (True, False)"
@@ -354,7 +354,7 @@ proof -
              (exec_gpv (rf_encrypt_bad r) (\<A>2 cipher \<sigma>) (s, False))
              (exec_gpv rf_encrypt (\<A>2 cipher \<sigma>) s)"
     by(rule exec_gpv_oracle_bisim[where X="\<lambda>(s1, _) s2. s1 = s2"])(auto simp add: rf_encrypt_bad_def rf_encrypt_def intro!: rel_spmf_bind_reflI)
-  have game2d_3: "rel_spmf op = (map_spmf fst game2_d) game3"
+  have game2d_3: "rel_spmf (=) (map_spmf fst game2_d) game3"
     unfolding game2_d_def game3_def Let_def including monad_normalisation
     by(clarsimp simp add: o_def split_def if_distribs cong: if_cong intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF bisim2d_3])
 
@@ -405,7 +405,7 @@ proof -
         pad \<leftarrow> spmf_of_set (nlists UNIV len);
         let cipher = (r, pad);
         (b', _) \<leftarrow> exec_gpv rf_encrypt (\<A>2 cipher \<sigma>) s1;
-        map_spmf (op = b') coin_spmf
+        map_spmf ((=) b') coin_spmf
       } else coin_spmf
     }"
     including monad_normalisation by(simp add: map_spmf_conv_bind_spmf split_def Let_def)

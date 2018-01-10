@@ -2504,7 +2504,7 @@ apply (rule contrapos_pp, simp+)
 apply (simp add:ExPre_def)
 apply (erule exE, (erule conjE)+)
 apply (frule forball_contra[of "carrier (Iod D (insert (Sup D W) W))" _ _ _
-       "op = (Sup D W)"],
+       "(=) (Sup D W)"],
        thin_tac "\<forall>y\<in>carrier (Iod D (insert (Sup D W) W)).
             x \<prec>\<^bsub>Iod D (insert (Sup D W) W)\<^esub> y \<longrightarrow>
             \<not> y \<prec>\<^bsub>Iod D (insert (Sup D W) W)\<^esub> Sup D W")
@@ -3571,7 +3571,7 @@ done
 lemma (in Order) fTo_conditional_inc_C:"C \<in> carrier (fTo D) \<Longrightarrow> 
         C \<in> carrier (Iod (fTo D) {S \<in> carrier fTo D. C \<subseteq> S})"
 apply (cut_tac fTOrder,
-       cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"])
+       cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
 apply (simp add:Order.Iod_carrier)
 done
 
@@ -3580,7 +3580,7 @@ lemma (in Order) fTo_conditional_Un_Chain_mem1:" \<lbrakk>C \<in> carrier (fTo D
       \<Union>Ca \<in> upper_bounds (Iod (fTo D) {S \<in> carrier fTo D. C \<subseteq> S}) Ca"
  
 apply (cut_tac fTOrder,
-       cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"])
+       cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
 
 apply (simp add:upper_bounds_def upper_bound_def)
 apply (subgoal_tac "\<Union>Ca \<in>carrier (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S})")
@@ -3629,7 +3629,7 @@ apply (frule fTo_conditional_Un_Chain_mem1[of "C" "Ca"], assumption+,
 apply (rule ballI)
  apply (simp add:upper_bounds_def upper_bound_def, (erule conjE)+,
         cut_tac fTOrder,
-        cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"])
+        cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
  apply (simp only:Order.Iod_carrier,
         simp only:Order.Iod_le[of "fTo D"])
  apply (frule_tac c = "\<Union>Ca" in subsetD[of "{S \<in> carrier fTo D. C \<subseteq> S}"
@@ -3660,7 +3660,7 @@ lemma (in Order) fTo_conditional_Un_Chain_mem2:" \<lbrakk>C \<in> carrier (fTo D
        Chain (Iod (fTo D) {S \<in> carrier fTo D. C \<subseteq> S}) Ca; Ca = {}\<rbrakk> \<Longrightarrow>
        C \<in> upper_bounds (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}) Ca"
 apply (cut_tac fTOrder,
-       cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"])
+       cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
 apply (simp add:upper_bounds_def upper_bound_def, simp add:Order.Iod_carrier)
 done
 
@@ -3670,7 +3670,7 @@ lemma (in Order) fTo_conditional_min2:" \<lbrakk>C \<in> carrier (fTo D);
         (upper_bounds (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}) Ca) C"
 apply (simp add:minimum_elem_def upper_bounds_def upper_bound_def)
 apply (cut_tac fTOrder,
-       cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"],
+       cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"],
        simp add:Order.Iod_carrier)
 apply (rule allI, rule impI, erule conjE,
        subst Order.Iod_le[of "fTo D" "{x \<in> carrier (fTo D). C \<subseteq> x}"],
@@ -3722,7 +3722,7 @@ apply (simp add:S_inductive_set_def)
  apply (frule_tac Ca = Ca in conditional_min_upper_bound[of "C"],
          assumption+)
  apply (erule exE, cut_tac fTOrder)
- apply (cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"])
+ apply (cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
  apply (frule Order.Iod_Order[of "fTo D" "{S \<in> carrier fTo D. C \<subseteq> S}"],
           assumption+)
  apply (frule_tac X = "upper_bounds (Iod (fTo D) 
@@ -3754,7 +3754,7 @@ by blast
 lemma (in Order) maximal_conditional_maximal:" \<lbrakk>C \<in> carrier (fTo D);
        maximal\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> m\<rbrakk> \<Longrightarrow> maximal\<^bsub>(fTo D)\<^esub> m"
 apply (unfold maximal_element_def, erule conjE)
-apply (cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"],
+apply (cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"],
        cut_tac fTOrder,
        frule Order.Iod_Order[of "fTo D" "{x \<in> carrier fTo D. C \<subseteq> x}"],
        assumption+,
@@ -3767,17 +3767,17 @@ apply (rule ballI, rule impI)
         thin_tac "\<forall>b. b \<in> carrier (fTo D) \<and> C \<subseteq> b \<longrightarrow>
              m \<preceq>\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> b \<longrightarrow> m = b")
  apply (frule_tac x = m in 
-         satisfy_cond_mem_set[of _ "carrier (fTo D)" "op \<subseteq> C"], assumption+,
+         satisfy_cond_mem_set[of _ "carrier (fTo D)" "(\<subseteq>) C"], assumption+,
         frule_tac A = C and B = m and C = b in subset_trans, assumption+,
         frule_tac x = b in 
-         satisfy_cond_mem_set[of _ "carrier (fTo D)" "op \<subseteq> C"], assumption+,
+         satisfy_cond_mem_set[of _ "carrier (fTo D)" "(\<subseteq>) C"], assumption+,
         simp only:Order.Iod_le, simp only:fTo_Order_sub)
 done
 
 lemma (in Order) Hausdorff_ac:"C \<in> carrier (fTo D) \<Longrightarrow> 
                     \<exists>M\<in>carrier (fTo D). C \<subseteq> M \<and> maximal\<^bsub>(fTo D)\<^esub> M"
 apply (frule_tac Hausdorff_acTr[of "C"],
-       cut_tac conditional_subset[of "carrier (fTo D)" "op \<subseteq> C"],
+       cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"],
        cut_tac fTOrder,
        frule Order.Iod_Order[of "fTo D" "{x \<in> carrier fTo D. C \<subseteq> x}"],
        assumption+)
@@ -3879,9 +3879,9 @@ locale Group =
 lemma (in Group) mult_closed:"\<lbrakk>a \<in> carrier G; b \<in> carrier G\<rbrakk> \<Longrightarrow>
            a \<cdot> b \<in> carrier G"
 apply (cut_tac top_closed)
-apply (frule funcset_mem[of "op \<cdot>" "carrier G" "carrier G \<rightarrow> carrier G" "a"],
+apply (frule funcset_mem[of "(\<cdot>)" "carrier G" "carrier G \<rightarrow> carrier G" "a"],
        assumption+,
-       frule funcset_mem[of "op \<cdot> a" "carrier G" "carrier G" "b"],
+       frule funcset_mem[of "(\<cdot>) a" "carrier G" "carrier G" "b"],
        assumption+ )
 done
     

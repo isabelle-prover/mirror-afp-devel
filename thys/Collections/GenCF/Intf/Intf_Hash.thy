@@ -14,7 +14,7 @@ subsection {* Abstract and concrete hash functions *}
 
 definition is_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c eq \<Rightarrow> 'c bhc \<Rightarrow> bool"
   where "is_bounded_hashcode R eq bhc \<equiv> 
-             ((eq,op =) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<and>
+             ((eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<and>
              (\<forall>n x y. eq x y \<longrightarrow> bhc n x = bhc n y) \<and>
              (\<forall>n x. 1 < n \<longrightarrow> bhc n x < n)"
 definition abstract_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c bhc \<Rightarrow> 'a bhc"
@@ -24,14 +24,14 @@ definition abstract_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c bhc
                  else 0"
 
 lemma is_bounded_hashcodeI[intro]:
-  "((eq,op =) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<Longrightarrow>
+  "((eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<Longrightarrow>
    (\<And>x y n. eq x y \<Longrightarrow> bhc n x = bhc n y) \<Longrightarrow>
    (\<And>x n. 1 < n \<Longrightarrow> bhc n x < n) \<Longrightarrow> is_bounded_hashcode R eq bhc"
   unfolding is_bounded_hashcode_def by force
 
 lemma is_bounded_hashcodeD[dest]:
   assumes "is_bounded_hashcode R eq bhc"
-  shows "(eq,op =) \<in> R \<rightarrow> R \<rightarrow> bool_rel" and
+  shows "(eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel" and
         "\<And>n x y. eq x y \<Longrightarrow> bhc n x = bhc n y" and
         "\<And>n x. 1 < n \<Longrightarrow> bhc n x < n"
   using assms unfolding is_bounded_hashcode_def by simp_all
@@ -41,7 +41,7 @@ lemma bounded_hashcode_welldefined:
           R1: "(x1,x') \<in> Rk" and R2: "(x2,x') \<in> Rk"
   shows "bhc n x1 = bhc n x2"
 proof-
-  from is_bounded_hashcodeD[OF BHC] have "(eq,op =) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp
+  from is_bounded_hashcodeD[OF BHC] have "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp
   with R1 R2 have "eq x1 x2" by (force dest: fun_relD)
   thus ?thesis using BHC by blast
 qed
@@ -67,8 +67,8 @@ qed
 lemma abstract_bhc_is_bhc[intro]:
   fixes Rk :: "('c\<times>'a) set"
   assumes bhc: "is_bounded_hashcode Rk eq bhc"
-  shows "is_bounded_hashcode Id op= (abstract_bounded_hashcode Rk bhc)"
-      (is "is_bounded_hashcode _ op= ?bhc'")
+  shows "is_bounded_hashcode Id (=) (abstract_bounded_hashcode Rk bhc)"
+      (is "is_bounded_hashcode _ (=) ?bhc'")
 proof
   fix x'::'a and y'::'a and n'::nat assume "x' = y'"
   thus "?bhc' n' x' = ?bhc' n' y'" by simp
@@ -94,14 +94,14 @@ next
 qed simp
 
 (*lemma hashable_bhc_is_bhc[autoref_ga_rules]:
-  "\<lbrakk>STRUCT_EQ_tag eq op=; REL_IS_ID R\<rbrakk> \<Longrightarrow> is_bounded_hashcode R eq bounded_hashcode"
+  "\<lbrakk>STRUCT_EQ_tag eq (=;) REL_IS_ID R\<rbrakk> \<Longrightarrow> is_bounded_hashcode R eq bounded_hashcode"
   unfolding is_bounded_hashcode_def
   by (simp add: bounded_hashcode_bounds)*)
 
 (* TODO: This is a hack that causes the relation to be instantiated to Id, if it is not
     yet fixed! *)
 lemma hashable_bhc_is_bhc[autoref_ga_rules]:
-  "\<lbrakk>STRUCT_EQ_tag eq (op =); REL_FORCE_ID R\<rbrakk> \<Longrightarrow> is_bounded_hashcode R eq bounded_hashcode_nat"
+  "\<lbrakk>STRUCT_EQ_tag eq (=); REL_FORCE_ID R\<rbrakk> \<Longrightarrow> is_bounded_hashcode R eq bounded_hashcode_nat"
   unfolding is_bounded_hashcode_def
   by (simp add: bounded_hashcode_nat_bounds)
 

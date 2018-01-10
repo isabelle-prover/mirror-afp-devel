@@ -134,9 +134,9 @@ proof -
   also have "\<dots> \<le> (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (5/3)"
     by (intro mult_left_mono prime_harmonic_aux2 sum_nonneg)
        (auto simp: P_def intro!: prod_nonneg)
-  also have "(\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) = (\<Sum>A\<in>(op` real) ` Pow (P n). 1 / \<Prod>A)"
+  also have "(\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) = (\<Sum>A\<in>((`) real) ` Pow (P n). 1 / \<Prod>A)"
     by (subst sum.reindex) (auto simp: inj_on_def inj_image_eq_iff prod.reindex)
-  also have "(op` real) ` Pow (P n) = Pow (real ` P n)" by (intro image_Pow_surj refl)
+  also have "((`) real) ` Pow (P n) = Pow (real ` P n)" by (intro image_Pow_surj refl)
   also have "(\<Sum>A\<in>Pow (real ` P n). 1 / \<Prod>A) = (\<Prod>x\<in>real ` P n. 1 + 1 / x)"
     by (intro prime_harmonic_aux1 [symmetric] finite_imageI) simp_all
   also have "\<dots> = (\<Prod>i\<in>P n. 1 + 1 / real i)" by (subst prod.reindex) (auto simp: inj_on_def)

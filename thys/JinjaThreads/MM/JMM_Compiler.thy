@@ -149,7 +149,7 @@ definition if_tlsimJ2JVM ::
 where
   "if_tlsimJ2JVM = 
    FWbisimulation_base.mta_bisim red_red0.init_fin_bisim \<circ>\<^sub>B 
-   FWbisimulation_base.mta_bisim red0_Red1'.init_fin_bisim \<circ>\<^sub>B op = \<circ>\<^sub>B 
+   FWbisimulation_base.mta_bisim red0_Red1'.init_fin_bisim \<circ>\<^sub>B (=) \<circ>\<^sub>B 
    FWbisimulation_base.mta_bisim Red1_execd.init_fin_bisim"
 
 end
@@ -247,7 +247,7 @@ proof -
     let ?E = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
     from tlsim have "llist_all2 if_tlsimJ2JVM (llist_of_tllist E') (llist_of_tllist E'')"
       by(rule tllist_all2D_llist_all2_llist_of_tllist)
-    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))
+    hence "llist_all2 (=) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))
                              (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
       unfolding llist_all2_lmap1 llist_all2_lmap2
       by(rule llist_all2_mono)(auto simp add: if_tlsimJ2JVM_def FWbisimulation_base.mta_bisim_def ta_bisim_def)
@@ -266,7 +266,7 @@ proof -
     let ?E = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
     from tlsim have "llist_all2 if_tlsimJ2JVM (llist_of_tllist E'') (llist_of_tllist E')"
       by(rule tllist_all2D_llist_all2_llist_of_tllist)
-    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))
+    hence "llist_all2 (=) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))
                              (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
       unfolding llist_all2_lmap1 llist_all2_lmap2
       by(rule llist_all2_mono)(auto simp add: if_tlsimJ2JVM_def FWbisimulation_base.mta_bisim_def ta_bisim_def)

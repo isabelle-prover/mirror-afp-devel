@@ -132,7 +132,7 @@ lemma wfp_on_imp_af:
   using assms by (auto simp: wfp_on_accessible_on_iff intro: accessible_on_imp_af af.later)
 
 lemma af_leq:
-  "af UNIV (op \<le> :: nat \<Rightarrow> nat \<Rightarrow> bool)"
+  "af UNIV ((\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
   using wf_less [folded wfP_def wfp_on_UNIV, THEN wfp_on_imp_af] by (simp add: not_less)
 
 definition "NOTAF A P = (SOME x. x \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P x y))"
@@ -408,8 +408,8 @@ qed
 
 lemma eq_almost_full_on_finite_set:
   assumes "finite A"
-  shows "almost_full_on (op =) A"
-  using finite_almost_full_on [OF assms, of "op ="]
+  shows "almost_full_on (=) A"
+  using finite_almost_full_on [OF assms, of "(=)"]
   by (auto simp: reflp_on_def)
 
 

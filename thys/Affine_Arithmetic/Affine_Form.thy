@@ -378,7 +378,7 @@ lemma Least_True_nat[intro, simp]: "(LEAST i::nat. True) = 0"
   by (metis (lifting) One_nat_def less_one not_less_Least not_less_eq)
 
 lemma sorted_list_of_pdevs_domain_eq:
-  "sorted_list_of_set (pdevs_domain X) = filter (op \<noteq> 0 o pdevs_apply X) [0..<degree X]"
+  "sorted_list_of_set (pdevs_domain X) = filter ((\<noteq>) 0 o pdevs_apply X) [0..<degree X]"
   by (auto simp: degree_gt intro!: sorted_distinct_set_unique sorted_filter[of "\<lambda>x. x", simplified])
 
 
@@ -417,7 +417,7 @@ lemma pdevs_apply_binop_pdevs[simp]: "pdevs_apply (binop_pdevs f x y) i =
 subsection \<open>Addition\<close>
 
 definition add_pdevs::"'a::real_vector pdevs \<Rightarrow> 'a pdevs \<Rightarrow> 'a pdevs"
-  where "add_pdevs = binop_pdevs op +"
+  where "add_pdevs = binop_pdevs (+)"
 
 lemma pdevs_apply_add_pdevs[simp]:
   "pdevs_apply (add_pdevs X Y) n = pdevs_apply X n + pdevs_apply Y n"
@@ -508,7 +508,7 @@ qed
 subsection \<open>Pointwise Scaling of Partial Deviations\<close>
 
 definition scaleR_pdevs::"real \<Rightarrow> 'a::real_vector pdevs \<Rightarrow> 'a pdevs"
-  where "scaleR_pdevs r x = unop_pdevs (op *\<^sub>R r) x"
+  where "scaleR_pdevs r x = unop_pdevs (( *\<^sub>R) r) x"
 
 lemma pdevs_apply_scaleR_pdevs[simp]:
   "pdevs_apply (scaleR_pdevs x Y) n = x *\<^sub>R pdevs_apply Y n"
@@ -687,7 +687,7 @@ definition msum_pdevs_raw::"nat\<Rightarrow>(nat \<Rightarrow> 'a::real_vector)\
   "msum_pdevs_raw n x y i = (if i < n then x i else y (i - n))"
 
 lemma nonzeros_msum_pdevs_raw:
-  "{i. msum_pdevs_raw n f g i \<noteq> 0} = ({0..<n} \<inter> {i. f i \<noteq> 0}) \<union> op + n ` ({i. g i \<noteq> 0})"
+  "{i. msum_pdevs_raw n f g i \<noteq> 0} = ({0..<n} \<inter> {i. f i \<noteq> 0}) \<union> (+) n ` ({i. g i \<noteq> 0})"
   by (force simp: msum_pdevs_raw_def not_less split: if_split_asm)
 
 lift_definition msum_pdevs::"nat\<Rightarrow>'a::real_vector pdevs\<Rightarrow>'a pdevs\<Rightarrow>'a pdevs" is msum_pdevs_raw
@@ -1095,11 +1095,11 @@ lemma pdevs_apply_pdevs_of_list_Cons:
   by transfer auto
 
 lemma pdevs_domain_pdevs_of_list_Cons[simp]: "pdevs_domain (pdevs_of_list (x # xs)) =
-  (if x = 0 then {} else {0}) \<union> op + 1 ` pdevs_domain (pdevs_of_list xs)"
+  (if x = 0 then {} else {0}) \<union> (+) 1 ` pdevs_domain (pdevs_of_list xs)"
   by (force simp: pdevs_apply_pdevs_of_list_Cons split: if_split_asm)
 
 lemma pdevs_val_pdevs_of_list_eq[simp]:
-  "pdevs_val e (pdevs_of_list (x # xs)) = e 0 *\<^sub>R x + pdevs_val (e o op + 1) (pdevs_of_list xs)"
+  "pdevs_val e (pdevs_of_list (x # xs)) = e 0 *\<^sub>R x + pdevs_val (e o (+) 1) (pdevs_of_list xs)"
 proof -
   have "pdevs_val e (pdevs_of_list (x # xs)) =
     (\<Sum>i\<in>pdevs_domain (pdevs_of_list (x # xs)) \<inter> {0}. e i *\<^sub>R x) +
@@ -1110,7 +1110,7 @@ proof -
   also
   have "?r = (\<Sum>i\<in>pdevs_domain (pdevs_of_list xs). e (Suc i) *\<^sub>R pdevs_apply (pdevs_of_list xs) i)"
     by (rule sum.reindex_cong[of "\<lambda>i. i + 1"]) auto
-  also have "\<dots> = pdevs_val (e o op + 1) (pdevs_of_list xs)"
+  also have "\<dots> = pdevs_val (e o (+) 1) (pdevs_of_list xs)"
     by (simp add: pdevs_val_pdevs_domain  )
   also have "?l = (\<Sum>i\<in>{0}. e i *\<^sub>R x)"
     by (rule sum.mono_neutral_cong_left) auto
@@ -1357,9 +1357,9 @@ proof (induct arbitrary: e)
     by auto
 next
   case (Cons xs ys z)
-  hence "(e \<circ> op + (Suc 0)) \<in> UNIV \<rightarrow> I" by auto
+  hence "(e \<circ> (+) (Suc 0)) \<in> UNIV \<rightarrow> I" by auto
   from Cons(2)[OF this] obtain e' where "e' \<in> UNIV \<rightarrow> I"
-      "pdevs_val (e \<circ> op + (Suc 0)) (pdevs_of_list xs) = pdevs_val e' (pdevs_of_list ys)"
+      "pdevs_val (e \<circ> (+) (Suc 0)) (pdevs_of_list xs) = pdevs_val e' (pdevs_of_list ys)"
     by metis
   thus ?case using Cons
     by (auto intro!: exI[where x="\<lambda>x. if x = 0 then e 0 else e' (x - 1)"] simp: o_def Pi_iff)
@@ -1514,15 +1514,15 @@ lemma list_of_pdevs_nonzero: "x \<in> set (map snd (list_of_pdevs xs)) \<Longrig
 
 lemma pdevs_of_list_scaleR_0[simp]:
   fixes xs::"'a::real_vector list"
-  shows "pdevs_of_list (map (op *\<^sub>R 0) xs) = zero_pdevs"
+  shows "pdevs_of_list (map (( *\<^sub>R) 0) xs) = zero_pdevs"
   by (auto simp: pdevs_apply_pdevs_of_list intro!: pdevs_eqI)
 
 lemma degree_pdevs_of_list_scaleR:
-  "degree (pdevs_of_list (map (op *\<^sub>R c) xs)) = (if c \<noteq> 0 then degree (pdevs_of_list xs) else 0)"
+  "degree (pdevs_of_list (map (( *\<^sub>R) c) xs)) = (if c \<noteq> 0 then degree (pdevs_of_list xs) else 0)"
   by (auto simp: pdevs_apply_pdevs_of_list intro!: degree_cong)
 
 lemma list_of_pdevs_eq:
-  "rev (list_of_pdevs X) = (filter (op \<noteq> 0 o snd) (map (\<lambda>i. (i, pdevs_apply X i)) [0..<degree X]))"
+  "rev (list_of_pdevs X) = (filter ((\<noteq>) 0 o snd) (map (\<lambda>i. (i, pdevs_apply X i)) [0..<degree X]))"
   (is "_ = filter ?P (map ?f ?xs)")
   using map_filter[of ?f ?P ?xs]
   by (auto simp: list_of_pdevs_def o_def sorted_list_of_pdevs_domain_eq rev_map)
@@ -1575,21 +1575,21 @@ lemma rev_perm: "rev xs <~~> ys \<longleftrightarrow> xs <~~> ys"
   by (metis perm.trans perm_rev rev_rev_ident)
 
 lemma list_of_pdevs_perm_filter_nonzero:
-  "map snd (list_of_pdevs X) <~~> (filter (op \<noteq> 0) (dense_list_of_pdevs X))"
+  "map snd (list_of_pdevs X) <~~> (filter ((\<noteq>) 0) (dense_list_of_pdevs X))"
 proof -
   have zip_map:
     "zip [0..<degree X] (dense_list_of_pdevs X) = map (\<lambda>i. (i, pdevs_apply X i)) [0..<degree X]"
     by (auto simp: dense_list_of_pdevs_def intro!: nth_equalityI)
   have "rev (list_of_pdevs X) <~~>
-      filter (op \<noteq> 0 o snd) (zip [0..<degree X] (dense_list_of_pdevs X))"
+      filter ((\<noteq>) 0 o snd) (zip [0..<degree X] (dense_list_of_pdevs X))"
     by (auto simp: list_of_pdevs_eq o_def zip_map)
   from map_permI[OF this, of snd]
   have "map snd (list_of_pdevs X) <~~>
-      map snd (filter (op \<noteq> 0 \<circ> snd) (zip [0..<degree X] (dense_list_of_pdevs X)))"
+      map snd (filter ((\<noteq>) 0 \<circ> snd) (zip [0..<degree X] (dense_list_of_pdevs X)))"
     by (simp add: rev_map[symmetric] rev_perm)
-  also have "map snd (filter (op \<noteq> 0 \<circ> snd) (zip [0..<degree X] (dense_list_of_pdevs X))) =
-      filter (op \<noteq> 0) (dense_list_of_pdevs X)"
-    using map_filter[of snd "op \<noteq> 0" "(zip [0..<degree X] (dense_list_of_pdevs X))"]
+  also have "map snd (filter ((\<noteq>) 0 \<circ> snd) (zip [0..<degree X] (dense_list_of_pdevs X))) =
+      filter ((\<noteq>) 0) (dense_list_of_pdevs X)"
+    using map_filter[of snd "(\<noteq>) 0" "(zip [0..<degree X] (dense_list_of_pdevs X))"]
     by (simp add: o_def dense_list_of_pdevs_def)
    finally
    show ?thesis .
@@ -1631,10 +1631,10 @@ lemma
 proof -
   obtain e' where "e' \<in> UNIV \<rightarrow> I"
     and "pdevs_val e (pdevs_of_list (map snd (list_of_pdevs X))) =
-      pdevs_val e' (pdevs_of_list (filter (op \<noteq> 0) (dense_list_of_pdevs X)))"
+      pdevs_val e' (pdevs_of_list (filter ((\<noteq>) 0) (dense_list_of_pdevs X)))"
     by (rule pdevs_val_perm[OF list_of_pdevs_perm_filter_nonzero assms(1)])
   note this(2)
-  also from pdevs_val_filter[OF \<open>e' \<in> _\<close> \<open>0 \<in> I\<close>, of "op \<noteq> 0" "dense_list_of_pdevs X"]
+  also from pdevs_val_filter[OF \<open>e' \<in> _\<close> \<open>0 \<in> I\<close>, of "(\<noteq>) 0" "dense_list_of_pdevs X"]
   obtain e'' where "e'' \<in> UNIV \<rightarrow> I"
     and "\<dots> = pdevs_val e'' (pdevs_of_list (dense_list_of_pdevs X))"
     by metis
@@ -1651,14 +1651,14 @@ lemma
     "e' \<in> UNIV \<rightarrow> I"
 proof -
   from list_of_pdevs_perm_filter_nonzero[of X]
-  have perm: "(filter (op \<noteq> 0) (dense_list_of_pdevs X)) <~~> map snd (list_of_pdevs X)"
+  have perm: "(filter ((\<noteq>) 0) (dense_list_of_pdevs X)) <~~> map snd (list_of_pdevs X)"
     by (simp add: perm_sym)
   have "pdevs_val e X = pdevs_val e (pdevs_of_list (dense_list_of_pdevs X))"
     by (simp add: pdevs_of_list_dense_list_of_pdevs)
-  also from pdevs_val_partition[OF \<open>e \<in> _\<close>, of "dense_list_of_pdevs X" "op \<noteq> 0"]
+  also from pdevs_val_partition[OF \<open>e \<in> _\<close>, of "dense_list_of_pdevs X" "(\<noteq>) 0"]
   obtain f g where "f \<in> UNIV \<rightarrow> I" "g \<in> UNIV \<rightarrow> I"
-    "\<dots> = pdevs_val f (pdevs_of_list (filter (op \<noteq> 0) (dense_list_of_pdevs X))) +
-      pdevs_val g (pdevs_of_list (filter (Not \<circ> op \<noteq> 0) (dense_list_of_pdevs X)))"
+    "\<dots> = pdevs_val f (pdevs_of_list (filter ((\<noteq>) 0) (dense_list_of_pdevs X))) +
+      pdevs_val g (pdevs_of_list (filter (Not \<circ> (\<noteq>) 0) (dense_list_of_pdevs X)))"
     (is "_ = ?f + ?g")
     by metis
   note this(3)
@@ -1675,7 +1675,7 @@ proof -
 qed
 
 lemma dense_list_of_pdevs_scaleR:
-  "r \<noteq> 0 \<Longrightarrow> map (op *\<^sub>R r) (dense_list_of_pdevs x) = dense_list_of_pdevs (scaleR_pdevs r x)"
+  "r \<noteq> 0 \<Longrightarrow> map (( *\<^sub>R) r) (dense_list_of_pdevs x) = dense_list_of_pdevs (scaleR_pdevs r x)"
   by (auto simp: dense_list_of_pdevs_def)
 
 lemma degree_pdevs_of_list_eq:

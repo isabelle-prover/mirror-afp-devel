@@ -413,7 +413,7 @@ by (rule le_inf_prefix_iff[THEN iffD2], simp)
 
 interpretation prefix:
   semilattice_inf
-    "op \<sqinter> :: 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
+    "(\<sqinter>) :: 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
     "prefix"
     "strict_prefix"
 apply intro_locales

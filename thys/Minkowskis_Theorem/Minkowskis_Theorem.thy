@@ -80,9 +80,9 @@ lemma emeasure_lborel_cbox_eq':
   "emeasure lborel (cbox a b) = ennreal (\<Prod>e\<in>Basis. max 0 ((b - a) \<bullet> e))"
 proof (cases "\<forall>ba\<in>Basis. a \<bullet> ba \<le> b \<bullet> ba")
   case True
-  hence "emeasure lborel (cbox a b) = ennreal (prod (op \<bullet> (b - a)) Basis)"
+  hence "emeasure lborel (cbox a b) = ennreal (prod ((\<bullet>) (b - a)) Basis)"
     unfolding emeasure_lborel_cbox_eq by auto
-  also have "prod (op \<bullet> (b - a)) Basis = (\<Prod>e\<in>Basis. max 0 ((b - a) \<bullet> e))"
+  also have "prod ((\<bullet>) (b - a)) Basis = (\<Prod>e\<in>Basis. max 0 ((b - a) \<bullet> e))"
     using True by (intro prod.cong refl) (auto simp: max_def inner_simps)
   finally show ?thesis .
 next
@@ -399,10 +399,10 @@ next
   case True
   -- \<open>If the volume is precisely one, we look at what happens when @{term B} is
       scaled with a factor of $1 + \varepsilon$.\<close>
-  define B' where "B' = (\<lambda>\<epsilon>. op *\<^sub>R (1 + \<epsilon>) ` B)"
+  define B' where "B' = (\<lambda>\<epsilon>. ( *\<^sub>R) (1 + \<epsilon>) ` B)"
   from \<open>compact B\<close> have compact': "compact (B' \<epsilon>)" for \<epsilon>
     unfolding B'_def by (intro compact_scaling)
-  have B'_altdef: "B' \<epsilon> = op *\<^sub>R (inverse (1 + \<epsilon>)) -` B" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
+  have B'_altdef: "B' \<epsilon> = ( *\<^sub>R) (inverse (1 + \<epsilon>)) -` B" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
     using \<epsilon> unfolding B'_def by force
 
   -- \<open>Since the scaled sets are convex, they are stable under scaling.\<close>

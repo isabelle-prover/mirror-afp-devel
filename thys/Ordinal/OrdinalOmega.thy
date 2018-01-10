@@ -454,7 +454,7 @@ done
 subsection {* Epsilon 0 *}
 
 definition epsilon0 :: ordinal  ("\<epsilon>\<^sub>0") where
-  "epsilon0 = oFix (op ** \<omega>) 0"
+  "epsilon0 = oFix (( ** ) \<omega>) 0"
 
 lemma less_omega_exp: "x < \<epsilon>\<^sub>0 \<Longrightarrow> x < \<omega> ** x"
  apply (unfold epsilon0_def)

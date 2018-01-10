@@ -355,15 +355,15 @@ where
 | "list_ord ord xs = True"
 
 definition list_asc :: "('a::ord) list \<Rightarrow> bool" where
-  "list_asc xs \<equiv> list_ord (op \<le>) xs"
+  "list_asc xs \<equiv> list_ord (\<le>) xs"
 definition list_strict_asc :: "('a::ord) list \<Rightarrow> bool" where
-  "list_strict_asc xs \<equiv> list_ord (op <) xs"
+  "list_strict_asc xs \<equiv> list_ord (<) xs"
 value "list_asc  [1::nat, 2, 2]"
 value "list_strict_asc  [1::nat, 2, 2]"
 definition list_desc :: "('a::ord) list \<Rightarrow> bool" where
-  "list_desc xs \<equiv> list_ord (op \<ge>) xs"
+  "list_desc xs \<equiv> list_ord (\<ge>) xs"
 definition list_strict_desc :: "('a::ord) list \<Rightarrow> bool" where
-  "list_strict_desc xs \<equiv> list_ord (op >) xs"
+  "list_strict_desc xs \<equiv> list_ord (>) xs"
 
 lemma list_ord_Nil: "list_ord ord []"
 by simp
@@ -417,10 +417,10 @@ apply fastforce
 done
 corollary list_strict_asc_imp_list_asc: "
   list_strict_asc (xs::'a::preorder list) \<Longrightarrow> list_asc xs"
-by (unfold list_strict_asc_def list_asc_def, rule list_ord_imp[of "op <"], rule order_less_imp_le)
+by (unfold list_strict_asc_def list_asc_def, rule list_ord_imp[of "(<)"], rule order_less_imp_le)
 corollary list_strict_desc_imp_list_desc: "
   list_strict_desc (xs::'a::preorder list) \<Longrightarrow> list_desc xs"
-by (unfold list_strict_desc_def list_desc_def, rule list_ord_imp[of "op >"], rule order_less_imp_le)
+by (unfold list_strict_desc_def list_desc_def, rule list_ord_imp[of "(>)"], rule order_less_imp_le)
 
 lemma list_ord_trans_imp: "\<And>i.
   \<lbrakk> transP ord; list_ord ord xs; j < length xs; i < j \<rbrakk> \<Longrightarrow>
@@ -501,11 +501,11 @@ corollary
     (list_strict_asc (xs::'a::preorder list)) \<Longrightarrow>
     (\<forall>j < length xs. \<forall>i \<le> j. xs ! i \<le> xs ! j)"
 apply (unfold list_strict_asc_def)
-apply (rule list_ord_trans_refl_le_imp[where ord="op \<le>"])
+apply (rule list_ord_trans_refl_le_imp[where ord="(\<le>)"])
    apply (unfold trans_def, blast intro: order_trans)
   apply assumption
  apply (unfold refl_on_def, clarsimp)
-apply (rule list_ord_imp[where ord="op <"], simp_all add: less_imp_le)
+apply (rule list_ord_imp[where ord="(<)"], simp_all add: less_imp_le)
 done
 
 lemma list_ord_le_sorted_eq: "list_asc xs = sorted xs"
@@ -515,7 +515,7 @@ apply (induct xs, simp)
 apply (rename_tac x xs)
 apply (simp add: list_ord_Cons sorted_Cons)
 apply (case_tac "xs = []", simp_all)
-apply (case_tac "list_ord op \<le> xs", simp_all)
+apply (case_tac "list_ord (\<le>) xs", simp_all)
 apply (rule iffI)
  apply (drule_tac x="hd xs" in bspec, simp_all)
 apply clarify
@@ -556,13 +556,13 @@ apply (simp add: list_ord_distinct_aux[THEN not_sym])
 done
 
 lemma list_strict_asc_distinct: "list_strict_asc (xs::'a::preorder list) \<Longrightarrow> distinct xs"
-apply (rule_tac ord="op <" in list_ord_distinct)
+apply (rule_tac ord="(<)" in list_ord_distinct)
 apply (unfold irrefl_def list_strict_asc_def trans_def)
 apply (blast intro: less_trans)+
 done
 
 lemma list_strict_desc_distinct: "list_strict_desc (xs::'a::preorder list) \<Longrightarrow> distinct xs"
-apply (rule_tac ord="op >" in list_ord_distinct)
+apply (rule_tac ord="(>)" in list_ord_distinct)
 apply (unfold irrefl_def list_strict_desc_def trans_def)
 apply (blast intro: less_trans)+
 done

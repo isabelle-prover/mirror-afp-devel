@@ -193,7 +193,7 @@ begin
   lemma weakly_bisimilar_reflp: "reflp weakly_bisimilar"
   proof (rule reflpI)
     fix x
-    have "is_weak_bisimulation (op =)"
+    have "is_weak_bisimulation (=)"
       unfolding is_weak_bisimulation_def by (simp add: symp_def)
     then show "x \<approx>\<cdot> x"
       unfolding weakly_bisimilar_def by auto
@@ -213,7 +213,7 @@ begin
 
   lemma weakly_bisimilar_is_weak_bisimulation: "is_weak_bisimulation weakly_bisimilar"
   unfolding is_weak_bisimulation_def proof
-    show "symp op \<approx>\<cdot>"
+    show "symp (\<approx>\<cdot>)"
       by (fact weakly_bisimilar_symp)
   next
     show "(\<forall>P Q \<phi>. P \<approx>\<cdot> Q \<and> P \<turnstile> \<phi> \<longrightarrow> (\<exists>Q'. Q \<Rightarrow> Q' \<and> P \<approx>\<cdot> Q' \<and> Q' \<turnstile> \<phi>)) \<and>

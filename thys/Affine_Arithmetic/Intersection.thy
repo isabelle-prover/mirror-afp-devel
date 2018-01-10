@@ -165,7 +165,7 @@ proof (induction xs arbitrary: x0)
 next
   case (Cons x xs)
   have contra:
-    "\<And>d. xs \<noteq> [] \<Longrightarrow> list_all (\<lambda>x. x \<noteq> 0) xs \<Longrightarrow> list_all (op = 0) (take (Suc d) xs) \<Longrightarrow> False"
+    "\<And>d. xs \<noteq> [] \<Longrightarrow> list_all (\<lambda>x. x \<noteq> 0) xs \<Longrightarrow> list_all ((=) 0) (take (Suc d) xs) \<Longrightarrow> False"
     by (auto simp: neq_Nil_conv)
   from Cons have "\<And>d. list_all (\<lambda>x. lex x 0) (take (Suc d) xs)"
     by (auto simp: list_all_iff dest!: in_set_takeD)
@@ -639,7 +639,7 @@ next
   case (2 x xs)
   let ?coll = "(filter (coll 0 x) (x#xs))"
   let ?ncoll = "(filter (Not o coll 0 x) (x#xs))"
-  let ?e0 = "if sum_list ?coll = 0 then e else e \<circ> op + (Suc 0)"
+  let ?e0 = "if sum_list ?coll = 0 then e else e \<circ> (+) (Suc 0)"
   have "pdevs_val e (pdevs_of_list (independent_pdevs (x#xs))) =
     e 0 *\<^sub>R (sum_list ?coll) + pdevs_val ?e0 (pdevs_of_list (independent_pdevs ?ncoll))"
     (is "_ = ?vc + ?vnc")
@@ -897,7 +897,7 @@ qed
 lemma sorted_inl: "ccw.sortedP 0 (ccw.selsort 0 (inl (snd X)))"
   by (rule ccw0.sortedP_selsort) auto
 
-lemma sorted_scaled_inl: "ccw.sortedP 0 (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X))))"
+lemma sorted_scaled_inl: "ccw.sortedP 0 (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X))))"
   using sorted_inl
   by (rule ccw_sorted_scaleR) simp
 
@@ -906,15 +906,15 @@ lemma distinct_selsort_inl: "distinct (ccw.selsort 0 (inl (snd X)))"
 
 lemma distinct_map_scaleRI:
   fixes xs::"'a::real_vector list"
-  shows "distinct xs \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> distinct (map (op *\<^sub>R c) xs)"
+  shows "distinct xs \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> distinct (map (( *\<^sub>R) c) xs)"
   by (induct xs) auto
 
-lemma distinct_scaled_inl: "distinct (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X))))"
+lemma distinct_scaled_inl: "distinct (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X))))"
   using distinct_selsort_inl
   by (rule distinct_map_scaleRI) simp
 
 lemma ccw'_sortedP_scaled_inl:
-  "ccw'.sortedP 0 (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X))))"
+  "ccw'.sortedP 0 (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X))))"
   using ccw_sorted_implies_ccw'_sortedP
   by (rule ccw'_sorted_scaleR) (auto simp: sorted_inl inl_ncoll)
 
@@ -992,7 +992,7 @@ definition half_segments_of_aform::"point aform \<Rightarrow> (point*point) list
     (let
       x0 = lowest_vertex (fst X, nlex_pdevs (snd X))
     in
-      polychain_of x0 (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X)))))"
+      polychain_of x0 (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X)))))"
 
 lemma subsequent_half_segments:
   fixes X
@@ -1020,7 +1020,7 @@ proof -
   have
     "list_all (\<lambda>(xi, xj). ccw xi xj (fst (c, d)) \<and> ccw xi xj (snd (c, d)))
       (polychain_of (lowest_vertex (fst X, nlex_pdevs (snd X)))
-        ((map (op *\<^sub>R 2) (linorder_list0.selsort (ccw 0) (inl (snd X))))))"
+        ((map (( *\<^sub>R) 2) (linorder_list0.selsort (ccw 0) (inl (snd X))))))"
     using ccw'_sortedP_scaled_inl cd[unfolded half_segments_of_aform_def Let_def]
     by (rule polychain_of_ccw_conjunction)
   thus ?thesis
@@ -1065,7 +1065,7 @@ lemma
 proof -
   from assms obtain d where
     "y2 = lowest_vertex (fst X, nlex_pdevs (snd X)) +
-      sum_list (take (Suc d) (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X)))))"
+      sum_list (take (Suc d) (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X)))))"
     by (auto simp: half_segments_of_aform_def elim!: in_set_polychain_of_imp_sum_list)
   also have "lowest_vertex (fst X, nlex_pdevs (snd X)) =
       fst X - sum_list (map snd (list_of_pdevs (nlex_pdevs (snd X))))"
@@ -1075,7 +1075,7 @@ proof -
     by (auto simp: pdevs_val_sum_list)
   also
 
-  have "sum_list (take (Suc d) (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X))))) =
+  have "sum_list (take (Suc d) (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X))))) =
       pdevs_val (\<lambda>i. if i \<le> d then 2 else 0) (pdevs_of_list (ccw.selsort 0 (inl (snd X))))"
     (is "_ = pdevs_val ?e _")
     by (subst sum_list_take_pdevs_val_eq)
@@ -1144,7 +1144,7 @@ lemma half_segments_of_aform_strict:
   shows "ccw' (fst seg) (snd seg) (aform_val e X)"
   using assms unfolding half_segments_of_aform_def Let_def
 proof -
-  have len: "length (map (op *\<^sub>R 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))) \<noteq> 1"
+  have len: "length (map (( *\<^sub>R) 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))) \<noteq> 1"
     using assms by (auto simp: half_segments_of_aform_def)
 
   have "aform_val e X = fst X + pdevs_val e (snd X)"
@@ -1187,7 +1187,7 @@ proof -
         sum_list_list_of_pdevs in_set_inl_nonzero dense_list_of_pdevs_pdevs_of_list)
   qed
   also have "pdevs_val (\<lambda>i. f i + 1) (pdevs_of_list ?sl) =
-      pdevs_val (\<lambda>i. 1/2 * (f i + 1)) (pdevs_of_list (map (op *\<^sub>R 2) ?sl))"
+      pdevs_val (\<lambda>i. 1/2 * (f i + 1)) (pdevs_of_list (map (( *\<^sub>R) 2) ?sl))"
     (is "_ = pdevs_val ?f' (pdevs_of_list ?ssl)")
     by (subst pdevs_val_cmul) (simp add: pdevs_of_list_map_scaleR)
   also
@@ -1288,7 +1288,7 @@ lemma ccw_hd_last_half_segments_dirvec:
   shows "ccw' 0 (dirvec (hd (half_segments_of_aform X))) (dirvec (last (half_segments_of_aform X)))"
 proof -
   let ?i = "ccw.selsort 0 (inl (snd X))"
-  let ?s = "map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X)))"
+  let ?s = "map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X)))"
   from assms have l: "1 < length (inl (snd X))" "inl (snd X) \<noteq> []"
     using assms by (auto simp add: half_segments_of_aform_def)
   hence "hd ?i \<in> set ?i" "last ?i \<in> set ?i"
@@ -1297,8 +1297,8 @@ proof -
     by (intro inl_ncoll[of _ X]) (auto simp: hd_distinct_neq_last)
   hence "\<not>coll 0 (hd ?s) (last ?s)" using l
     by (auto simp: hd_map last_map)
-  hence "ccw' 0 (hd (map (op *\<^sub>R 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))))
-     (last (map (op *\<^sub>R 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))))"
+  hence "ccw' 0 (hd (map (( *\<^sub>R) 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))))
+     (last (map (( *\<^sub>R) 2) (linorder_list0.selsort (ccw 0) (inl (snd X)))))"
     using assms
     by (auto simp add: half_segments_of_aform_def
       intro!: sorted_inl ccw_sorted_scaleR ccw.hd_last_sorted ccw_ncoll_imp_ccw)
@@ -1648,13 +1648,13 @@ next
     have "butlast (map (?m \<circ> snd) (half_segments_of_aform X)) =
       butlast
        (map (?m \<circ> snd) (polychain_of (lowest_vertex (fst X, nlex_pdevs (snd X)))
-         (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X))))))"
+         (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X))))))"
       by (simp add: half_segments_of_aform_def)
     also have "\<dots> =
        map snd
         (butlast
           (polychain_of (?m (lowest_vertex (fst X, nlex_pdevs (snd X))))
-            (map uminus (map (op *\<^sub>R 2) (ccw.selsort 0 (inl (snd X)))))))"
+            (map uminus (map (( *\<^sub>R) 2) (ccw.selsort 0 (inl (snd X)))))))"
       (is "_ = map snd (butlast (polychain_of ?x ?xs))")
       by (simp add: map_mirror_o_snd_polychain_of_eq map_butlast)
     also

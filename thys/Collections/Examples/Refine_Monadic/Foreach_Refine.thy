@@ -19,7 +19,7 @@ definition find_max_invar where
 
 definition find_max :: "('a::{linorder} \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a option) nres" where
   "find_max P S \<equiv> 
-   FOREACHoci (op\<ge>) (find_max_invar P S) S
+   FOREACHoci ((\<ge>)) (find_max_invar P S) S
      (\<lambda>\<sigma>. \<sigma> = None) (\<lambda>x _. RETURN (if P x then Some x else None)) None"
 
 subsection {* Correctness *}

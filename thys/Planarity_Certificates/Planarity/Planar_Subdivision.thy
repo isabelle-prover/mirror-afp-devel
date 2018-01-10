@@ -164,7 +164,7 @@ context subdiv1_contr begin
     using w_reach by (auto simp: reachableHD)
       (auto simp: proj_verts_H_def verts_H split: if_splits dest: reachableGD intro: H.reachable_trans)
 
-  lemma sccs_eq: "G.sccs_verts = op ` proj_verts_H ` H.sccs_verts" (is "?L = ?R")
+  lemma sccs_eq: "G.sccs_verts = (`) proj_verts_H ` H.sccs_verts" (is "?L = ?R")
   proof (intro set_eqI iffI)
     fix S assume "S \<in> ?L"
     then have "w \<notin> S" using G.sccs_verts_subsets not_in_verts_G by blast
@@ -173,7 +173,7 @@ context subdiv1_contr begin
     then have "proj_verts_H -` S \<noteq> {}" using \<open>S \<in> ?L\<close> by safe (auto simp: G.sccs_verts_def)
     with \<open>S \<in> ?L\<close> have "proj_verts_H -` S \<in> H.sccs_verts"
       by (auto simp: G.in_sccs_verts_conv_reachable H.in_sccs_verts_conv_reachable H_reach_conv)
-    then have "proj_verts_H ` proj_verts_H -` S \<in> op ` proj_verts_H ` H.sccs_verts" by (rule imageI)
+    then have "proj_verts_H ` proj_verts_H -` S \<in> (`) proj_verts_H ` H.sccs_verts" by (rule imageI)
     then show "S \<in> ?R" by (simp only: S_eq)
   next
     fix S assume "S \<in> ?R"
@@ -184,7 +184,7 @@ context subdiv1_contr begin
         H.in_sccs_verts_conv_reachable H_reach_conv dest: X)
   qed
 
-  lemma inj_on_proj_verts_H: "inj_on (op ` proj_verts_H) (pre_digraph.sccs_verts H)"
+  lemma inj_on_proj_verts_H: "inj_on ((`) proj_verts_H) (pre_digraph.sccs_verts H)"
   proof (rule inj_onI)
     fix S T assume A: "S \<in> H.sccs_verts" "T \<in> H.sccs_verts" "proj_verts_H ` S = proj_verts_H ` T"
     have "\<And>x. w \<notin> x \<Longrightarrow> proj_verts_H ` x = x" by (auto simp: proj_verts_H_def)
@@ -410,11 +410,11 @@ context subdiv1_contr begin
       simp: proj_arcs_H_in_arcs_G fcs_proj_arcs_GH)
 
   lemma face_cycle_sets:
-    shows "GM.face_cycle_sets = op ` proj_arcs_H ` H.face_cycle_sets" (is "?L = ?R")
+    shows "GM.face_cycle_sets = (`) proj_arcs_H ` H.face_cycle_sets" (is "?L = ?R")
     unfolding GM.face_cycle_sets_def H.face_cycle_sets_def
     by (blast intro!: H_fcs_eq G_fcs_eq proj_arcs_G_in_arcs_H proj_arcs_H_in_arcs_G)
 
-  lemma inj_on_proj_arcs_H: "inj_on (op ` proj_arcs_H) H.face_cycle_sets"
+  lemma inj_on_proj_arcs_H: "inj_on ((`) proj_arcs_H) H.face_cycle_sets"
   proof (rule inj_onI)
     fix A B assume fcs: "A \<in> H.face_cycle_sets" "B \<in> H.face_cycle_sets"
       and pa_eq: "proj_arcs_H ` A = proj_arcs_H ` B"

@@ -120,22 +120,22 @@ abbreviation elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" wh
   "elem_zmset a M \<equiv> a \<in> set_zmset M"
 
 notation
-  elem_zmset ("op \<in>#\<^sub>z") and
+  elem_zmset ("(\<in>#\<^sub>z)") and
   elem_zmset ("(_/ \<in>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  elem_zmset ("op :#z") and
+  elem_zmset ("(:#z)") and
   elem_zmset ("(_/ :#z _)" [51, 51] 50)
 
 abbreviation not_elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" where
   "not_elem_zmset a M \<equiv> a \<notin> set_zmset M"
 
 notation
-  not_elem_zmset ("op \<notin>#\<^sub>z") and
+  not_elem_zmset ("(\<notin>#\<^sub>z)") and
   not_elem_zmset ("(_/ \<notin>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  not_elem_zmset ("op ~:#z") and
+  not_elem_zmset ("(~:#z)") and
   not_elem_zmset ("(_/ ~:#z _)" [51, 51] 50)
 
 context
@@ -421,12 +421,12 @@ notation (ASCII)
   supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50) and
   supset_zmset (infix ">#\<^sub>z" 50)
 
-interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
+interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "(+)" "(-)" "(\<subseteq>#\<^sub>z)" "(\<subset>#\<^sub>z)"
   by unfold_locales (auto simp add: subset_zmset_def subseteq_zmset_def zmultiset_eq_iff
     intro: order_trans antisym)
 
 interpretation subset_zmset:
-  ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
+  ordered_ab_semigroup_monoid_add_imp_le "(+)" 0 "(-)" "(\<subseteq>#\<^sub>z)" "(\<subset>#\<^sub>z)"
   by unfold_locales
 
 lemma zmset_subset_eqI: "(\<And>a. zcount A a \<le> zcount B a) \<Longrightarrow> A \<subseteq>#\<^sub>z B"
@@ -491,7 +491,7 @@ lemma subseteq_mset_zmsetE:
 
 subsubsection \<open>Subset is an Order\<close>
 
-interpretation subset_zmset: order "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
+interpretation subset_zmset: order "(\<subseteq>#\<^sub>z)" "(\<subset>#\<^sub>z)"
   by unfold_locales
 
 

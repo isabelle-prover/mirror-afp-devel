@@ -15,7 +15,7 @@ begin
 subsection{*Some previous definitions, lemmas and instantiations about iarrays*}
 
 definition iarray_of_iarray_to_list_of_list :: "'a iarray iarray => 'a list list"
-  where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map (op !! A) [0..<IArray.length A])"
+  where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map ((!!) A) [0..<IArray.length A])"
 
 instantiation iarray :: (scaleR) scaleR
 begin 
@@ -316,7 +316,7 @@ next
         show "\<forall>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. i < IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x)"
         proof (unfold column_iarray_def, auto)
           fix x :: nat
-          have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> op $ A \<circ> mod_type_class.from_nat) [0..<card (UNIV::'rows set)])))"
+          have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> ($) A \<circ> mod_type_class.from_nat) [0..<card (UNIV::'rows set)])))"
             by (metis i_nrows_iarray IArray.length_def matrix_to_iarray_def nrows_iarray_def)
           thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
             by (simp add: matrix_to_iarray_def scaleR_iarray_def)

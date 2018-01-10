@@ -72,7 +72,7 @@ definition "dflt_cmp le lt a b \<equiv>
   else GREATER"
 
 lemma (in linorder) class_to_linorder:
-  "linorder (dflt_cmp op \<le> op <)"
+  "linorder (dflt_cmp (\<le>) (<))"
   apply (unfold_locales)
   unfolding dflt_cmp_def
   by (auto split: if_split_asm)
@@ -581,15 +581,15 @@ lemma dflt_cmp_2inv[simp]:
 
 lemma (in linorder) dflt_cmp_inv2[simp]:
   shows 
-  "(comp2le (dflt_cmp op \<le> op <))= op \<le>"
-  "(comp2lt (dflt_cmp op \<le> op <))= op <"
+  "(comp2le (dflt_cmp (\<le>) (<)))= (\<le>)"
+  "(comp2lt (dflt_cmp (\<le>) (<)))= (<)"
 proof -
-  show "(comp2lt (dflt_cmp op \<le> op <))= op <"
+  show "(comp2lt (dflt_cmp (\<le>) (<)))= (<)"
     unfolding dflt_cmp_def[abs_def] comp2le_def[abs_def] comp2lt_def[abs_def]
     apply (auto split: comp_res.splits intro!: ext)
     done
 
-  show "(comp2le (dflt_cmp op \<le> op <)) = op \<le>"
+  show "(comp2le (dflt_cmp (\<le>) (<))) = (\<le>)"
     unfolding dflt_cmp_def[abs_def] comp2le_def[abs_def] comp2lt_def[abs_def]
     apply (auto split: comp_res.splits intro!: ext)
     done
@@ -623,9 +623,9 @@ next
 qed
   
 lemma (in linorder) class_to_eq_linorder:
-  "eq_linorder (dflt_cmp op \<le> op <)"
+  "eq_linorder (dflt_cmp (\<le>) (<))"
 proof -
-  interpret linorder_on UNIV "dflt_cmp op \<le> op <"
+  interpret linorder_on UNIV "dflt_cmp (\<le>) (<)"
     by (rule class_to_linorder)
 
   show ?thesis
@@ -636,7 +636,7 @@ qed
 
 lemma eq_linorder_comp2eq_eq: 
   assumes "eq_linorder cmp"
-  shows "comp2eq cmp = op ="
+  shows "comp2eq cmp = (=)"
 proof -
   interpret eq_linorder_on UNIV cmp by fact
   show ?thesis

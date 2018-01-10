@@ -108,7 +108,7 @@ where
 "distinct_names_f P =
   (distinct (map class_name_f P))"
 lemma distinct_names_map[rule_format]:
-  "(\<forall>x\<in>set cld_dcl_list. case_prod (\<lambda>cld. op = (class_name_f cld)) x) \<and> distinct (map snd cld_dcl_list)
+  "(\<forall>x\<in>set cld_dcl_list. case_prod (\<lambda>cld. (=) (class_name_f cld)) x) \<and> distinct (map snd cld_dcl_list)
       \<longrightarrow> distinct_names_f (map fst cld_dcl_list)"
 apply(induct cld_dcl_list)
  apply(clarsimp simp add: distinct_names_f_def)+ apply(force)
@@ -834,7 +834,7 @@ lemma [simp]: "(\<forall>x\<in>set s_s'_list. case x of (s_XXX, s_') \<Rightarro
        tr_ss_f T (map fst s_s'_list) = map snd s_s'_list"
 by (induct s_s'_list, auto)
 
-lemma [simp]: "(\<forall>x\<in>set y_y'_list. case_prod (\<lambda>y_XXX. op = (case T y_XXX of None \<Rightarrow> y_XXX | Some x' \<Rightarrow> x')) x) \<longrightarrow> map (tr_x T) (map fst y_y'_list) = map snd y_y'_list"
+lemma [simp]: "(\<forall>x\<in>set y_y'_list. case_prod (\<lambda>y_XXX. (=) (case T y_XXX of None \<Rightarrow> y_XXX | Some x' \<Rightarrow> x')) x) \<longrightarrow> map (tr_x T) (map fst y_y'_list) = map snd y_y'_list"
 apply(induct y_y'_list) apply(simp) apply(clarsimp) apply(simp only: tr_x_def) done
 
 lemma set_zip_tr[simp]: "(s, s') \<in> set (zip ss (tr_ss_f T ss)) \<longrightarrow> s' = tr_s_f T s" by (induct ss, auto)

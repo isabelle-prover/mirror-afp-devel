@@ -125,7 +125,7 @@ proof -
     unfolding bsingleton_def by transfer auto
 
   define R where "R a b = b" for a b :: bool
-  have "rel_var R op = X Z'"
+  have "rel_var R (=) X Z'"
     unfolding R_def var.in_rel mem_Collect_eq subset_eq
     apply (intro exI[of _ C])
     apply transfer
@@ -133,13 +133,13 @@ proof -
     done
   moreover
   define S where "S a b = a" for a b :: bool
-  have "rel_var S op = Z Y"
+  have "rel_var S (=) Z Y"
     unfolding S_def var.in_rel mem_Collect_eq subset_eq
     apply (intro exI[of _ C'])
     apply transfer
     apply (auto simp: fsts.simps snds.simps pmf.map_comp comp_def split_beta map_fst_pair_pmf map_snd_pair_pmf)
     done
-  ultimately have "rel_var (R OO S) (op = OO op =) X Y" (is "rel_var ?R ?S X Y")
+  ultimately have "rel_var (R OO S) ((=) OO (=)) X Y" (is "rel_var ?R ?S X Y")
     unfolding var.rel_compp unfolding Z_eq_Z' by blast
   moreover have "\<not> rel_var ?R ?S X Y"
     unfolding var.in_rel mem_Collect_eq subset_eq

@@ -1472,7 +1472,7 @@ proof -
   let ?n = "n1 + n2"
   show ?thesis
   proof (rule exI[of _ ?as], rule exI[of _ ?sel], rule relto_fun)
-    have id: "{ i . i < ?m \<and> ?sel i} = { i . i < m1 \<and> sel1 i} \<union> (op + m1) ` { i. i < m2 \<and> sel2 i}"
+    have id: "{ i . i < ?m \<and> ?sel i} = { i . i < m1 \<and> sel1 i} \<union> ((+) m1) ` { i. i < m2 \<and> sel2 i}"
       (is "_ = ?A \<union> ?f ` ?B")
       by force
     have "card (?A \<union> ?f ` ?B) = card ?A + card (?f ` ?B)"

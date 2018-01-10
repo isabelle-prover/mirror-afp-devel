@@ -1275,7 +1275,7 @@ proof(induction s taking: g rule: unstream.induct)
   qed(simp_all add: remove1_trans.rep_eq)
 qed
 
-subsubsection {* @{term "op #"} *}
+subsubsection {* @{term "(#)"} *}
 
 fun Cons_raw :: "'a \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, bool \<times> 's) raw_generator"
 where

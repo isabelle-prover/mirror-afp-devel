@@ -40,7 +40,7 @@ lemma ap_sum_ichng: "ap_sum c f (Inl x) = ap_sum c (Inl (\<lambda>f. f x)) f"
 by (cases f) simp_all
 
 lemma (in semigroup) ap_sum_comp:
-  "ap_sum f (ap_sum f (ap_sum f (Inl op o) h) g) x = ap_sum f h (ap_sum f g x)"
+  "ap_sum f (ap_sum f (ap_sum f (Inl (o)) h) g) x = ap_sum f h (ap_sum f g x)"
 by(cases h g x rule: sum.exhaust[case_product sum.exhaust, case_product sum.exhaust])
   (simp_all add: local.assoc)
 
@@ -78,7 +78,7 @@ qed (auto intro: ap_sum_id[simplified id_def] ap_sum_ichng)
 
 end  (* locale *)
 
-interpretation either_af "op =" by unfold_locales simp
+interpretation either_af "(=)" by unfold_locales simp
 
 applicative semigroup_sum
 for

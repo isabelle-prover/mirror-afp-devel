@@ -19,14 +19,14 @@ lemma par_step_no_change_on_send_or_receive:
   using assms by (rule qmsg_no_change_on_send_or_receive)
 
 lemma par_nhop_quality_increases:
-  shows "opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile> (otherwith (op=) {i} (orecvmsg (\<lambda>\<sigma> m.
+  shows "opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile> (otherwith ((=)) {i} (orecvmsg (\<lambda>\<sigma> m.
                                     msg_fresh \<sigma> m \<and> msg_zhops m)),
                                   other quality_increases {i} \<rightarrow>)
                         global (\<lambda>\<sigma>. \<forall>dip. let nhip = the (nhop (rt (\<sigma> i)) dip)
                                           in dip \<in> vD (rt (\<sigma> i)) \<inter> vD (rt (\<sigma> nhip)) \<and> nhip \<noteq> dip
                                              \<longrightarrow> (rt (\<sigma> i)) \<sqsubset>\<^bsub>dip\<^esub> (rt (\<sigma> nhip)))"
     proof (rule lift_into_qmsg [OF seq_nhop_quality_increases])
-    show "opaodv i \<Turnstile>\<^sub>A (otherwith (op=) {i}
+    show "opaodv i \<Turnstile>\<^sub>A (otherwith ((=)) {i}
                          (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)),
                         other quality_increases {i} \<rightarrow>)
                        globala (\<lambda>(\<sigma>, _, \<sigma>'). quality_increases (\<sigma> i) (\<sigma>' i))"
@@ -37,7 +37,7 @@ lemma par_nhop_quality_increases:
         by (cases t) (clarsimp dest!: onllD, metis aodv_ex_label)
     next
       fix \<sigma> \<sigma>' a
-      assume "otherwith (op=) {i}
+      assume "otherwith ((=)) {i}
                 (orecvmsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)) \<sigma> \<sigma>' a"
       thus "otherwith quality_increases {i} (orecvmsg (\<lambda>_. rreq_rrep_sn)) \<sigma> \<sigma>' a"
         by - (erule weaken_otherwith, auto)
@@ -111,7 +111,7 @@ lemma node_step_no_change_on_send_or_receive:
 
 lemma node_nhop_quality_increases:
   shows "\<langle> i : opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R \<rangle>\<^sub>o \<Turnstile>
-           (otherwith (op=) {i}
+           (otherwith ((=)) {i}
               (oarrivemsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)),
               other quality_increases {i}
             \<rightarrow>) global (\<lambda>\<sigma>. \<forall>dip. let nhip = the (nhop (rt (\<sigma> i)) dip)
@@ -167,7 +167,7 @@ lemma arrive_rreq_rrep_nsqn_fresh_inc_sn [simp]:
 
 lemma opnet_nhop_quality_increases:
   shows "opnet (\<lambda>i. opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) p \<Turnstile>
-           (otherwith (op=) (net_tree_ips p)
+           (otherwith ((=)) (net_tree_ips p)
               (oarrivemsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)),
                other quality_increases (net_tree_ips p) \<rightarrow>)
               global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips p. \<forall>dip.
@@ -227,11 +227,11 @@ lemma onet_nhop_quality_increases:
   proof (rule inclosed_closed)
     from opnet_nhop_quality_increases
       show "opnet (\<lambda>i. opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) p
-               \<Turnstile> (otherwith (op=) (net_tree_ips p) inoclosed, ?U \<rightarrow>) ?inv"
+               \<Turnstile> (otherwith ((=)) (net_tree_ips p) inoclosed, ?U \<rightarrow>) ?inv"
     proof (rule oinvariant_weakenE)
       fix \<sigma> \<sigma>' :: "ip \<Rightarrow> state" and a :: "msg node_action"
-      assume "otherwith (op=) (net_tree_ips p) inoclosed \<sigma> \<sigma>' a"
-      thus "otherwith (op=) (net_tree_ips p)
+      assume "otherwith ((=)) (net_tree_ips p) inoclosed \<sigma> \<sigma>' a"
+      thus "otherwith ((=)) (net_tree_ips p)
               (oarrivemsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m)) \<sigma> \<sigma>' a"
       proof (rule otherwithEI)
         fix \<sigma> :: "ip \<Rightarrow> state" and a :: "msg node_action"

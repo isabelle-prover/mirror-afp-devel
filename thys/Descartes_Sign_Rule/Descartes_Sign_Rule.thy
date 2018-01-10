@@ -13,7 +13,7 @@ imports
   "HOL-Computational_Algebra.Polynomial"
 begin
 
-lemma op_plus_0: "(op + (0 :: 'a :: monoid_add)) = id"
+lemma op_plus_0: "((+) (0 :: 'a :: monoid_add)) = id"
   by auto
 
 lemma filter_dropWhile: 
@@ -96,7 +96,7 @@ lemma length_psums [simp]: "length (psums xs) = length xs"
   by (induction xs rule: psums.induct) simp_all
 
 lemma psums_Cons: 
-  "psums (x#xs) = (x :: 'a :: semigroup_add) # map (op + x) (psums xs)"
+  "psums (x#xs) = (x :: 'a :: semigroup_add) # map ((+) x) (psums xs)"
   by (induction xs rule: psums.induct) (simp_all add: algebra_simps)
 
 lemma last_psums: 
@@ -377,15 +377,15 @@ next
   have psums_decompose: "psums xs = replicate p 0 @ psums (xs!p # xs2)" 
     by (subst xs_decompose) (simp add: xs1_def psums_replicate_0_append)
   have v_psums_decompose: "sign_changes (xs' @ psums xs) = sign_changes (xs' @ [xs!p]) + 
-         sign_changes (xs!p # map (op+ (xs!p)) (psums xs2))" for xs'
+         sign_changes (xs!p # map ((+) (xs!p)) (psums xs2))" for xs'
   proof -
     fix xs' :: "'a list"
     have "sign_changes (xs' @ psums xs) = 
-            sign_changes (xs' @ xs ! p # map (op + (xs!p)) (psums xs2))"
+            sign_changes (xs' @ xs ! p # map ((+) (xs!p)) (psums xs2))"
       by (subst psums_decompose, subst (1 2) sign_changes_filter [symmetric]) 
          (simp_all add: psums_Cons)
     also have "\<dots> = sign_changes (xs' @ [xs!p]) + 
-                      sign_changes (xs!p # map (op+ (xs!p)) (psums xs2))"
+                      sign_changes (xs!p # map ((+) (xs!p)) (psums xs2))"
       by (subst sign_changes_decompose[OF p_nz]) simp_all
     finally show "sign_changes (xs' @ psums xs) = \<dots>" .
   qed
@@ -419,7 +419,7 @@ next
       proof (rule linorder_cases[of "x + y" 0])
         assume xy: "x + y < 0"
         with x have different': "x * (x + y) < 0" by (rule mult_pos_neg)
-        have "(\<lambda>t. t + (x + y)) = (op + (x + y))" by (rule ext) simp
+        have "(\<lambda>t. t + (x + y)) = ((+) (x + y))" by (rule ext) simp
         moreover from y xy have "sign_changes ((x+y) # xs) = sign_changes (y # xs)" 
           by (intro sign_changes_cong) auto
         ultimately show ?thesis using xy different different' y
@@ -452,7 +452,7 @@ next
           assume p: "xs ! p > 0"
           from xy p have same': "(x + y) * xs ! p > 0" by (intro mult_pos_pos)
           from p y have different': "y * xs ! p < 0" by (intro mult_neg_pos)
-          have "(\<lambda>t. t + (x + y)) = (op + (x + y))" by (rule ext) simp
+          have "(\<lambda>t. t + (x + y)) = ((+) (x + y))" by (rule ext) simp
           with v_decompose[of "[x, y]"] v_decompose[of "[x+y]"] different different' same same'
           show ?thesis by (auto simp add: algebra_simps v_def psums_Cons o_def
                              sign_changes_Cons_Cons_different sign_changes_Cons_Cons_same)
@@ -461,7 +461,7 @@ next
           with p_nz have p: "xs ! p < 0" by simp
           from xy p have different': "(x + y) * xs ! p < 0" by (rule mult_pos_neg)
           from y p have same': "y * xs ! p > 0" by (rule mult_neg_neg)
-          have "(\<lambda>t. t + (x + y)) = (op + (x + y))" by (rule ext) simp
+          have "(\<lambda>t. t + (x + y)) = ((+) (x + y))" by (rule ext) simp
           with v_decompose[of "[x, y]"] v_decompose[of "[x+y]"] different different' same same'
           show ?thesis by (auto simp add: algebra_simps v_def psums_Cons o_def
                               sign_changes_Cons_Cons_different sign_changes_Cons_Cons_same)
@@ -578,8 +578,8 @@ lemma sign_changes_coeff_sign_changes:
   shows   "sign_changes xs = coeff_sign_changes p"
 proof -
   have "coeffs p = coeffs (Poly xs)" by (subst assms) (rule refl)
-  also have "\<dots> = strip_while (op= 0) xs" by simp
-  also have "filter (op\<noteq> 0) \<dots> = filter (op\<noteq> 0) xs" unfolding strip_while_def o_def
+  also have "\<dots> = strip_while ((=) 0) xs" by simp
+  also have "filter ((\<noteq>) 0) \<dots> = filter ((\<noteq>) 0) xs" unfolding strip_while_def o_def
     by (subst rev_filter [symmetric], subst filter_dropWhile) (simp_all add: rev_filter)
   also have "sign_changes \<dots> = sign_changes xs" by (simp add: sign_changes_filter)
   finally show ?thesis by (simp add: sign_changes_filter)

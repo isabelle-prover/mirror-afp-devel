@@ -904,7 +904,7 @@ on the real line, but on any euclidean space\<close>
 
 lemma lborel_distr_plus2:
   fixes c :: "'a::euclidean_space"
-  shows "distr lborel borel (op + c) = lborel"
+  shows "distr lborel borel ((+) c) = lborel"
 by (subst lborel_affine[of 1 c], auto simp: density_1)
 
 

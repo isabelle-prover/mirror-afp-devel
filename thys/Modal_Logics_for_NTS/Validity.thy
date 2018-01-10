@@ -41,7 +41,7 @@ next
           using hull_rel.cases by blast
         from "***" have "tConj tset =\<^sub>\<alpha> x4"
           by (rule alpha_Tree_relE)
-        then obtain tset' where x4: "x4 = tConj tset'" and "rel_bset (op =\<^sub>\<alpha>) tset tset'"
+        then obtain tset' where x4: "x4 = tConj tset'" and "rel_bset (=\<^sub>\<alpha>) tset tset'"
           by (cases "x4") simp_all
         with "*" obtain t' where t': "t' \<in> set_bset tset'" and "t =\<^sub>\<alpha> t'"
           by (metis rel_bset.rep_eq rel_set_def)

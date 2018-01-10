@@ -18,10 +18,10 @@ begin
     unfolding glist_member_def
     by (parametricity)
 
-  lemma list_member_alt: "List.member = (\<lambda>l x. glist_member op = x l)"
+  lemma list_member_alt: "List.member = (\<lambda>l x. glist_member (=) x l)"
   proof (intro ext)
     fix x l
-    show "List.member l x = glist_member op = x l"
+    show "List.member l x = glist_member (=) x l"
       by (induct l) (auto simp: List.member_rec)
   qed
 
@@ -134,14 +134,14 @@ qed
   lemma Id_comp_Id: "Id O Id = Id" by simp
 
   lemma glist_member_id_impl: 
-    "(glist_member op =, op \<in>) \<in> Id \<rightarrow> br set distinct \<rightarrow> Id"
+    "(glist_member (=), (\<in>)) \<in> Id \<rightarrow> br set distinct \<rightarrow> Id"
   proof (intro fun_relI, goal_cases)
     case (1 x x' l s') thus ?case
       by (induct l arbitrary: s') (auto simp: br_def)
   qed
 
   lemma glist_insert_id_impl:
-    "(glist_insert op =, Set.insert) \<in> Id \<rightarrow> br set distinct \<rightarrow> br set distinct"
+    "(glist_insert (=), Set.insert) \<in> Id \<rightarrow> br set distinct \<rightarrow> br set distinct"
   proof -
     have IC: "\<And>x s. insert x s = (if x\<in>s then s else insert x s)" by auto
 
@@ -155,7 +155,7 @@ qed
   qed
 
   lemma glist_delete_id_impl:
-    "(glist_delete op =, \<lambda>x s. s-{x})
+    "(glist_delete (=), \<lambda>x s. s-{x})
     \<in> Id\<rightarrow>br set distinct \<rightarrow> br set distinct"
   proof (intro fun_relI)
     fix x x':: 'a and s and s' :: "'a set"
@@ -165,7 +165,7 @@ qed
     {
       fix a and a' :: "'a set"
       assume "(a,a')\<in>br set distinct" and "s' \<inter> a' = {}"
-      hence "(glist_delete_aux op = x s a, s'-{x'} \<union> a')\<in>br set distinct"
+      hence "(glist_delete_aux (=) x s a, s'-{x'} \<union> a')\<in>br set distinct"
         using SREL
       proof (induction s arbitrary: a s' a')
         case Nil thus ?case by (simp add: br_def)
@@ -176,8 +176,8 @@ qed
             by (auto simp add: br_def rev_append_eq)
         next
           case False
-          have "glist_delete_aux op = x (y # s) a 
-            = glist_delete_aux op = x s (y#a)" by (simp add: False)
+          have "glist_delete_aux (=) x (y # s) a 
+            = glist_delete_aux (=) x s (y#a)" by (simp add: False)
           also have "(\<dots>,set s - {x'} \<union> insert y a')\<in>br set distinct"
             apply (rule Cons.IH[of "y#a" "insert y a'" "set s"])
             using Cons.prems by (auto simp: br_def)
@@ -192,7 +192,7 @@ qed
       qed
     }
     from this[of "[]" "{}"]     
-    show "(glist_delete op = x s, s' - {x'}) \<in> br set distinct"
+    show "(glist_delete (=) x s, s' - {x'}) \<in> br set distinct"
       unfolding glist_delete_def
       by (simp add: br_def)
   qed
@@ -202,8 +202,8 @@ qed
     by (auto simp: list_set_rel_def br_def)
 
   lemma list_set_autoref_member[autoref_rules]:
-    assumes "GEN_OP eq op= (R\<rightarrow>R\<rightarrow>Id)"
-    shows "(glist_member eq,op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>list_set_rel \<rightarrow> Id"
+    assumes "GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>Id)"
+    shows "(glist_member eq,(\<in>)) \<in> R \<rightarrow> \<langle>R\<rangle>list_set_rel \<rightarrow> Id"
     using assms
     apply (intro fun_relI)
     unfolding list_set_rel_def
@@ -218,7 +218,7 @@ qed
     done
 
   lemma list_set_autoref_insert[autoref_rules]:
-    assumes "GEN_OP eq op= (R\<rightarrow>R\<rightarrow>Id)"
+    assumes "GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>Id)"
     shows "(glist_insert eq,Set.insert) 
       \<in> R \<rightarrow> \<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>list_set_rel"
     using assms
@@ -234,7 +234,7 @@ qed
     done
 
   lemma list_set_autoref_delete[autoref_rules]:
-    assumes "GEN_OP eq op= (R\<rightarrow>R\<rightarrow>Id)"
+    assumes "GEN_OP eq (=) (R\<rightarrow>R\<rightarrow>Id)"
     shows "(glist_delete eq,op_set_delete) 
       \<in> R \<rightarrow> \<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>list_set_rel"
     using assms
@@ -320,7 +320,7 @@ end
     assumes [param]: "(fi,f)\<in>Ra\<rightarrow>Rb"
     assumes LP: "(l,s)\<in>\<langle>Ra\<rangle>list_set_rel"
     shows "(map fi l, 
-      (OP op ` ::: (Ra\<rightarrow>Rb) \<rightarrow> \<langle>Ra\<rangle>list_set_rel \<rightarrow> \<langle>Rb\<rangle>list_set_rel)$f$s) 
+      (OP (`) ::: (Ra\<rightarrow>Rb) \<rightarrow> \<langle>Ra\<rangle>list_set_rel \<rightarrow> \<langle>Rb\<rangle>list_set_rel)$f$s) 
       \<in> \<langle>Rb\<rangle>list_set_rel"
   proof -
     from LP obtain l' where 

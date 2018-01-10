@@ -14,19 +14,19 @@ definition bisimilar where
   "bisimilar Q s1 s2 x y \<equiv> (\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> Q R (s1 x) (s2 y)))"
 
 abbreviation "bisimilar_mc \<equiv> bisimilar (\<lambda>R. rel_pmf R)"
-abbreviation "bisimilar_dlts \<equiv> bisimilar (\<lambda>R. rel_fun (op =) (rel_option R))"
-abbreviation "bisimilar_lts \<equiv> bisimilar (\<lambda>R. rel_bset (rel_prod (op =) R))"
-abbreviation "bisimilar_react \<equiv> bisimilar (\<lambda>R. rel_fun (op =) (rel_option (rel_pmf R)))"
-abbreviation "bisimilar_lmc \<equiv> bisimilar (\<lambda>R. rel_prod (op =) (rel_pmf R))"
-abbreviation "bisimilar_lmdp \<equiv> bisimilar (\<lambda>R. rel_prod (op =) (rel_nebset (rel_pmf R)))"
-abbreviation "bisimilar_gen \<equiv> bisimilar (\<lambda>R. rel_option (rel_pmf (rel_prod (op =) R)))"
-abbreviation "bisimilar_str \<equiv> bisimilar (\<lambda>R. rel_sum (rel_pmf R) (rel_option (rel_prod (op =) R)))"
-abbreviation "bisimilar_alt \<equiv> bisimilar (\<lambda>R. rel_sum (rel_pmf R) (rel_bset (rel_prod (op =) R)))"
-abbreviation "bisimilar_sseg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_prod (op =) (rel_pmf R)))"
-abbreviation "bisimilar_seg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_prod (op =) R)))"
-abbreviation "bisimilar_bun \<equiv> bisimilar (\<lambda>R. rel_pmf (rel_bset (rel_prod (op =) R)))"
-abbreviation "bisimilar_pz \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_bset (rel_prod (op =) R))))"
-abbreviation "bisimilar_mg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_bset (rel_sum (rel_prod (op =) R) R))))"
+abbreviation "bisimilar_dlts \<equiv> bisimilar (\<lambda>R. rel_fun (=) (rel_option R))"
+abbreviation "bisimilar_lts \<equiv> bisimilar (\<lambda>R. rel_bset (rel_prod (=) R))"
+abbreviation "bisimilar_react \<equiv> bisimilar (\<lambda>R. rel_fun (=) (rel_option (rel_pmf R)))"
+abbreviation "bisimilar_lmc \<equiv> bisimilar (\<lambda>R. rel_prod (=) (rel_pmf R))"
+abbreviation "bisimilar_lmdp \<equiv> bisimilar (\<lambda>R. rel_prod (=) (rel_nebset (rel_pmf R)))"
+abbreviation "bisimilar_gen \<equiv> bisimilar (\<lambda>R. rel_option (rel_pmf (rel_prod (=) R)))"
+abbreviation "bisimilar_str \<equiv> bisimilar (\<lambda>R. rel_sum (rel_pmf R) (rel_option (rel_prod (=) R)))"
+abbreviation "bisimilar_alt \<equiv> bisimilar (\<lambda>R. rel_sum (rel_pmf R) (rel_bset (rel_prod (=) R)))"
+abbreviation "bisimilar_sseg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_prod (=) (rel_pmf R)))"
+abbreviation "bisimilar_seg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_prod (=) R)))"
+abbreviation "bisimilar_bun \<equiv> bisimilar (\<lambda>R. rel_pmf (rel_bset (rel_prod (=) R)))"
+abbreviation "bisimilar_pz \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_bset (rel_prod (=) R))))"
+abbreviation "bisimilar_mg \<equiv> bisimilar (\<lambda>R. rel_bset (rel_pmf (rel_bset (rel_sum (rel_prod (=) R) R))))"
 
 
 section \<open>Systems\<close>
@@ -227,15 +227,15 @@ definition pz_of_alt2 :: "('a, 'k) alt \<Rightarrow> ('a option, 'k, 'k2) pz" wh
 section \<open>Automation Setup\<close>
 
 lemma mc_rel_eq[unfolded vimage2p_def]:
-  "BNF_Def.vimage2p un_MC un_MC (rel_pmf (op =)) = op ="
+  "BNF_Def.vimage2p un_MC un_MC (rel_pmf (=)) = (=)"
   by (auto simp add: vimage2p_def pmf.rel_eq option.rel_eq fun.rel_eq fun_eq_iff mc.expand)
 
 lemma dlts_rel_eq[unfolded vimage2p_def]:
-  "BNF_Def.vimage2p un_DLTS un_DLTS (rel_fun op = (rel_option (op =))) = op ="
+  "BNF_Def.vimage2p un_DLTS un_DLTS (rel_fun (=) (rel_option (=))) = (=)"
   by (auto simp add: vimage2p_def pmf.rel_eq option.rel_eq fun.rel_eq fun_eq_iff dlts.expand)
 
 lemma react_rel_eq[unfolded vimage2p_def]:
-  "BNF_Def.vimage2p un_React un_React (rel_fun op = (rel_option (rel_pmf (op =)))) = op ="
+  "BNF_Def.vimage2p un_React un_React (rel_fun (=) (rel_option (rel_pmf (=)))) = (=)"
   by (auto simp add: vimage2p_def pmf.rel_eq option.rel_eq fun.rel_eq fun_eq_iff react.expand)
 
 lemma all_neq_Inl_ex_eq_Inr[dest]: "(\<forall>l. x \<noteq> Inl l) \<Longrightarrow> (\<exists>r. x = Inr r)" by (cases x) auto
@@ -516,7 +516,7 @@ fun get_edge thm = thm
 
 val edges = map get_edge @{thms hierarchy[unfolded bisimilar_alt emb_commute o_apply, THEN iffD1]};
 
-val nodes = distinct (op =) (maps (fn (x, y) => [x, y]) edges);
+val nodes = distinct (=) (maps (fn (x, y) => [x, y]) edges);
 
 val node_graph = map (fn s => ((s, Graph_Display.content_node s []), [] : string list)) nodes;
 

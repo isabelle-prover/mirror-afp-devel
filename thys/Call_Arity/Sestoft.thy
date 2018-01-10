@@ -42,7 +42,7 @@ text {* An induction rule that skips the annoying case of a lambda taken off the
 lemma step_invariant_induction[consumes 4, case_names app\<^sub>1 app\<^sub>2 thunk lamvar var\<^sub>2 let\<^sub>1 if\<^sub>1 if\<^sub>2 refl trans]:
   assumes "c \<Rightarrow>\<^sup>* c'"
   assumes "\<not> boring_step c'"
-  assumes "invariant op \<Rightarrow> I"
+  assumes "invariant (\<Rightarrow>) I"
   assumes "I c"
   assumes app\<^sub>1:  "\<And> \<Gamma> e x S . I (\<Gamma>, App e x, S) \<Longrightarrow> P (\<Gamma>, App e x, S)  (\<Gamma>, e , Arg x # S)"
   assumes app\<^sub>2:  "\<And> \<Gamma> y e x S . I (\<Gamma>, Lam [y]. e, Arg x # S) \<Longrightarrow> P (\<Gamma>, Lam [y]. e, Arg x # S) (\<Gamma>, e[y ::= x] , S)"

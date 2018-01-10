@@ -742,7 +742,7 @@ lemma Lemma_3:
   fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
     and h :: "nat \<Rightarrow> 'a"
   assumes "associative f"
-  shows "map (foldl1 f \<circ> map h) (candidate (op @) (map wrap [0..<n+1])) 
+  shows "map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n+1])) 
          = candidate f (map h [0..<n+1])"
 proof - 
   -- "The following three properties @{text P1}, @{text P2} and @{text P3}"
@@ -758,9 +758,9 @@ proof -
 
   -- "The proof for the thesis is now equal to the one of the original paper:"
   from Lemma_1 [where h="foldl1 f \<circ> map h" and zs="map wrap [0..<n+1]"
-       and f="op @"] and P1 P2 P3
+       and f="(@)"] and P1 P2 P3
   have 
-  "map (foldl1 f \<circ> map h) (candidate (op @) (map wrap [0..<n+1])) 
+  "map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n+1])) 
    = candidate f (map (foldl1 f \<circ> map h) (map wrap [0..<n+1]))"
       by auto
   also have 
@@ -1717,7 +1717,7 @@ the used list datatype allows also for empty lists. Therefore, we need to
 exclude non-empty lists to have a similar setting as in the original paper.
 
 In the case of Proposition 1, we need to show that every list contained in
-the result of @{text "candidate (op @) (map wrap [0..<n + 1])"} is non-empty.
+the result of @{text "candidate (@) (map wrap [0..<n + 1])"} is non-empty.
 The idea is to interpret empty lists by the value @{text Zero} and non-empty
 lists by the value @{text One}, and to apply the assumptions.
 *}
@@ -1725,7 +1725,7 @@ lists by the value @{text One}, and to apply the assumptions.
 lemma non_empty_candidate_results:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) (xs :: three list). 
              \<lbrakk> associative f ; xs \<noteq> [] \<rbrakk>  \<Longrightarrow> candidate f xs = scanl1 f xs"
-      and "js \<in> set (candidate (op @) (map wrap [0..<n + 1]))"
+      and "js \<in> set (candidate (@) (map wrap [0..<n + 1]))"
   shows   "js \<noteq> []"
 proof -
   -- "We define a mapping of lists to values of @{text three} as explained"
@@ -1822,17 +1822,17 @@ proof -
    = candidate ?g (map ?h (map wrap [0..<n + 1]))" 
       using assms and g_assoc by auto
   also have 
-  "\<dots> = map ?h (candidate (op @) (map wrap [0..<n + 1]))"
-      using candidate_free_theorem [symmetric, where f="op @" and g="?g" 
+  "\<dots> = map ?h (candidate (@) (map wrap [0..<n + 1]))"
+      using candidate_free_theorem [symmetric, where f="(@)" and g="?g" 
       and h="?h" and zs="(map wrap [0..<n + 1])"] and req_free_theorem by auto
   finally have set_is_One: 
-  "\<And>x. x \<in> set (map ?h (candidate (op @) (map wrap [0..<n + 1])))
+  "\<And>x. x \<in> set (map ?h (candidate (@) (map wrap [0..<n + 1])))
        \<Longrightarrow> x = One" 
       using set_scanl1_is_One by auto
 
   -- "Now, it is easy to conclude the thesis."
   from assms
-  have "?h js \<in> ?h ` set (candidate (op @) (map wrap [0..<n + 1]))" by auto
+  have "?h js \<in> ?h ` set (candidate (@) (map wrap [0..<n + 1]))" by auto
   with set_is_One have "?h js = One" by simp
   thus "js \<noteq> []" by auto
 qed
@@ -1854,28 +1854,28 @@ applications of the final theorem.
 lemma Proposition_1:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) (xs :: three list). 
              \<lbrakk> associative f ; xs \<noteq> [] \<rbrakk>  \<Longrightarrow> candidate f xs = scanl1 f xs"
-  shows "candidate (op @) (map wrap [0..<n + 1]) = ups n"
+  shows "candidate (@) (map wrap [0..<n + 1]) = ups n"
 proof -
   -- "This addition is necessary because we are using Isabelle's list datatype"
   -- "which allows for empty lists."
   from assms and non_empty_candidate_results have non_empty_candidate: 
-  "\<And>js. js \<in> set (candidate (op @) (map wrap [0..<n + 1])) \<Longrightarrow> js \<noteq> []"
+  "\<And>js. js \<in> set (candidate (@) (map wrap [0..<n + 1])) \<Longrightarrow> js \<noteq> []"
       by auto
 
   have "\<And>(f:: three \<Rightarrow> three \<Rightarrow> three) h. associative f
-        \<Longrightarrow> map (foldl1 f \<circ> map h) (candidate (op @) (map wrap [0..<n + 1])) 
+        \<Longrightarrow> map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n + 1])) 
            = scanl1 f (map h [0..<n + 1])" 
     proof -
       fix f h
       assume f_assoc: "associative (f :: three \<Rightarrow> three \<Rightarrow> three)"
       hence 
-      "map (foldl1 f \<circ> map h) (candidate (op @) (map wrap [0..<n + 1])) 
+      "map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n + 1])) 
        = candidate f (map h [0..<n + 1])" using Lemma_3 by auto
       also have 
       "\<dots> = scanl1 f (map h [0..<n + 1])" 
           using assms [where xs="map h [0..<n + 1]"] and f_assoc by simp
       finally show 
-      "map (foldl1 f \<circ> map h) (candidate (op @) (map wrap [0..<n + 1]))
+      "map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n + 1]))
        = scanl1 f (map h [0..<n + 1])" .
     qed
   with Lemma_5 and non_empty_candidate show ?thesis by auto
@@ -1952,7 +1952,7 @@ shown before.
 *}
 
 lemma Proposition_2:
-  assumes A1: "\<And> n. candidate (op @) (map wrap [0..<n + 1]) = ups n"
+  assumes A1: "\<And> n. candidate (@) (map wrap [0..<n + 1]) = ups n"
       and A2: "associative g"
       and A3: "xs \<noteq> []"
   shows "candidate g xs = scanl1 g xs"
@@ -1994,7 +1994,7 @@ proof -
    = candidate g (map (nth xs) [0..<length xs])" by simp
   also have 
   "\<dots> = map (foldl1 g \<circ> map (nth xs))
-           (candidate (op @) (map wrap [0..<length xs]))"
+           (candidate (@) (map wrap [0..<length xs]))"
       using Lemma_3 [symmetric, where h="nth xs" and n="length xs - 1"] 
       and A2 and A3 by auto
   also have 

@@ -61,7 +61,7 @@ map ipcidr_tuple_to_wordinterval (mergesort_by_rel (\<lambda> (a1,a2) (b1, b2). 
  (5:52:28 elapsed time, 41:50:10 cpu time, factor 7.12)
 
 
-map ipcidr_tuple_to_wordinterval (mergesort_by_rel (op \<le>)
+map ipcidr_tuple_to_wordinterval (mergesort_by_rel (\<le>)
                          ((map (src \<circ> match_sel) rs) @ (map (dst \<circ> match_sel) rs))))
   (3:10:57 elapsed time, 19:12:25 cpu time, factor 6.03)
 

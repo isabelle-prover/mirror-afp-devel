@@ -21,7 +21,7 @@ qed
 
 lemma inj_on_f_imageI:
   assumes "inj_on f S" "\<And>t. t \<in> T \<Longrightarrow> t \<subseteq> S"
-  shows "inj_on (op ` f) T"
+  shows "inj_on ((`) f) T"
   using assms by (auto simp: inj_on_image_eq_iff intro: inj_onI)
 
 

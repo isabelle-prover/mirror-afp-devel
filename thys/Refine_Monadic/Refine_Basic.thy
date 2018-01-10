@@ -839,7 +839,7 @@ lemma SUCCEED_rule[refine_vcg]: "SUCCEED \<le> SPEC \<Phi>" by auto
 lemma FAIL_rule: "False \<Longrightarrow> FAIL \<le> SPEC \<Phi>" by auto
 lemma SPEC_rule[refine_vcg]: "\<lbrakk>\<And>x. \<Phi> x \<Longrightarrow> \<Phi>' x\<rbrakk> \<Longrightarrow> SPEC \<Phi> \<le> SPEC \<Phi>'" by auto
 
-lemma RETURN_to_SPEC_rule[refine_vcg]: "m\<le>SPEC (op = v) \<Longrightarrow> m\<le>RETURN v"
+lemma RETURN_to_SPEC_rule[refine_vcg]: "m\<le>SPEC ((=) v) \<Longrightarrow> m\<le>RETURN v"
   by (simp add: pw_le_iff refine_pw_simps)
 
 lemma Sup_img_rule_complete: 
@@ -1329,7 +1329,7 @@ lemma intro_bind_refine:
   done
 
 lemma intro_bind_refine_id:
-  assumes "m \<le> (SPEC (op = m'))"
+  assumes "m \<le> (SPEC ((=) m'))"
   assumes "f m' \<le> \<Down>R m''"
   shows "bind m f \<le> \<Down>R m''"
   using assms
@@ -1621,7 +1621,7 @@ lemma ret_le_down_conv:
   by (auto simp: pw_le_iff refine_pw_simps)
     
 lemma SPEC_eq_is_RETURN:
-  "SPEC (op = x) = RETURN x"
+  "SPEC ((=) x) = RETURN x"
   "SPEC (\<lambda>x. x=y) = RETURN y"
   by (auto simp: RETURN_def)
 

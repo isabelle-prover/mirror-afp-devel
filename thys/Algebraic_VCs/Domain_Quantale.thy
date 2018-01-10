@@ -44,10 +44,10 @@ class bd_lattice_ordered_monoid = bounded_lattice + distrib_lattice + monoid_mul
 
 begin
 
-sublocale semiring_one_zero "op \<squnion>" "op \<cdot>" "1" "bot" 
+sublocale semiring_one_zero "(\<squnion>)" "(\<cdot>)" "1" "bot" 
   by (standard, auto simp: sup.assoc sup.commute sup_left_commute left_distrib right_distrib sup_absorb1)   
   
-sublocale dioid_one_zero "op \<squnion>" "op \<cdot>" "1" bot "op \<le>" "op <"
+sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" bot "(\<le>)" "(<)"
   by (standard, simp add: le_iff_sup, auto)
 
 end
@@ -63,7 +63,7 @@ begin
 
 definition "d x = 1 \<sqinter> x \<cdot> \<top>"
 
-sublocale ds: domain_semiring "op \<squnion>" "op \<cdot>" "1" "\<bottom>" "d" "op \<le>" "op <"
+sublocale ds: domain_semiring "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "d" "(\<le>)" "(<)"
 proof standard
   fix x y
   show "x \<squnion> d x \<cdot> x = d x \<cdot> x"
@@ -103,7 +103,7 @@ class domain_boolean_monoid = boolean_monoid +
 
 begin
 
-sublocale dblo: domain_bdlo_monoid "1" "op \<cdot>" "op \<sqinter>" "op \<le>" "op <" "op \<squnion>" "\<bottom>" "\<top>"
+sublocale dblo: domain_bdlo_monoid "1" "(\<cdot>)" "(\<sqinter>)" "(\<le>)" "(<)" "(\<squnion>)" "\<bottom>" "\<top>"
   by (standard, simp add: rdv')
 
 definition "a x = 1 \<sqinter> -(dblo.d x)"
@@ -153,12 +153,12 @@ subclass domain_bdlo_monoid ..
 text {* The next statement shows that every boolean monoid with domain is an antidomain semiring. 
 In this setting the domain operation has been defined explicitly. *}
 
-sublocale ad: antidomain_semiring a "op \<squnion>" "op \<cdot>" "1" "\<bottom>" "op \<le>" "op <"
+sublocale ad: antidomain_semiring a "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)"
   rewrites ad_eq: "ad.ads_d x = d x"
 proof -
-  show "class.antidomain_semiring a op \<squnion> op \<cdot> 1 \<bottom> op \<le> op <"
+  show "class.antidomain_semiring a (\<squnion>) (\<cdot>) 1 \<bottom> (\<le>) (<)"
     by (standard, simp_all)
-  then interpret ad: antidomain_semiring a "op \<squnion>" "op \<cdot>" "1" "\<bottom>" "op \<le>" "op <" .
+  then interpret ad: antidomain_semiring a "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)" .
   show "ad.ads_d x = d x"
     by (simp add: ad.ads_d_def dd_a)
 qed
@@ -213,12 +213,12 @@ lemma ar2 [simp]: "ar (x \<cdot> y) \<squnion> ar (ar (ar x) \<cdot> y) = ar (ar
 lemma ar3 [simp]: "ar (ar x) \<squnion> ar x = 1 "
   by (metis ar_def rar_ar inf.commute sup.commute sup_compl_top sup_inf_absorb sup_inf_distrib1)
 
-sublocale ar: antirange_semiring "op \<squnion>" "op \<cdot>" "1" "\<bottom>" ar "op \<le>" "op <"
+sublocale ar: antirange_semiring "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" ar "(\<le>)" "(<)"
   rewrites ar_eq: "ar.ars_r x = r x"
 proof -
-  show "class.antirange_semiring op \<squnion> op \<cdot> 1 \<bottom> ar op \<le> op <"
+  show "class.antirange_semiring (\<squnion>) (\<cdot>) 1 \<bottom> ar (\<le>) (<)"
     by (standard, simp_all)
-  then interpret ar: antirange_semiring "op \<squnion>" "op \<cdot>" "1" "\<bottom>" ar "op \<le>" "op <" .
+  then interpret ar: antirange_semiring "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" ar "(\<le>)" "(<)" .
   show "ar.ars_r x = r x"
     by (simp add: ar.ars_r_def r_ar)
 qed
@@ -247,10 +247,10 @@ lemma sup_distl: "x \<cdot> (y \<squnion> z) = x \<cdot> y \<squnion> x \<cdot> 
 lemma sup_distr: "(x \<squnion> y) \<cdot> z = x \<cdot> z \<squnion> y \<cdot> z"
   using Sup_distr[where X="{x, y}"] by (fastforce intro!: Sup_eqI)
 
-sublocale semiring_one_zero "op \<squnion>" "op \<cdot>" "1" "\<bottom>" 
+sublocale semiring_one_zero "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" 
   by (standard, auto simp: sup.assoc sup.commute sup_left_commute sup_distl sup_distr)     
 
-sublocale dioid_one_zero "op \<squnion>" "op \<cdot>" "1" "\<bottom>" "op \<le>" "op <"
+sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)"
   by (standard, simp add: le_iff_sup, auto)
 
 lemma Sup_sup_pred: "x \<squnion> Sup{y. P y} = Sup{y. y = x \<or> P y}"
@@ -356,7 +356,7 @@ proof -
     by (simp add: star_def_var1)
 qed
 
-sublocale ka: kleene_algebra "op \<squnion>" "op \<cdot>" "1" "\<bottom>" "op \<le>" "op <" star
+sublocale ka: kleene_algebra "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)" star
   by standard (simp_all add: star_inductl' star_inductr')
 
 end
@@ -464,7 +464,7 @@ end
 
 subsection{* Relational Model of Boolean Domain Quantales *}
 
-interpretation rel_dbq: domain_boolean_quantale Inter Union "op \<inter>" "op \<subseteq>" "op \<subset>" "op \<union>" "{}" UNIV minus uminus Id "op O"
+interpretation rel_dbq: domain_boolean_quantale Inter Union "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" UNIV minus uminus Id "(O)"
   apply (standard, simp_all add: O_assoc)
   by blast +
 
@@ -499,7 +499,7 @@ class modal_boolean_quantale = domain_boolean_quantale + range_boolean_quantale 
 
 begin
 
-sublocale mka: modal_kleene_algebra "op \<squnion>" "op \<cdot>" 1 \<bottom> "op \<le>" "op <" star a ar
+sublocale mka: modal_kleene_algebra "(\<squnion>)" "(\<cdot>)" 1 \<bottom> "(\<le>)" "(<)" star a ar
   by standard (simp_all add: ar_eq ad_eq)
 
 end

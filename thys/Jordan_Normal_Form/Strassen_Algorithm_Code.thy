@@ -18,7 +18,7 @@ text \<open>The aim is to replace the implementation of @{thm times_mat_def} by 
 
 text \<open>We first need a copy of standard matrix multiplication to execute the base case.\<close>
 
-definition "basic_mat_mult = op *"
+definition "basic_mat_mult = ( * )"
 lemma basic_mat_mult_code[code]: "basic_mat_mult A B = mat (dim_row A) (dim_col B) (\<lambda> (i,j). row A i \<bullet> col B j)"
   unfolding basic_mat_mult_def by auto
 

@@ -37,7 +37,7 @@ definition star :: "'a lang \<Rightarrow> 'a lang" where
 "star A = (\<Union>n. A ^^ n)"
 
 
-subsection\<open>@{term "op @@"}\<close>
+subsection\<open>@{term "(@@)"}\<close>
 
 lemma concI[simp,intro]: "u : A \<Longrightarrow> v : B \<Longrightarrow> u@v : A @@ B"
 by (auto simp add: conc_def)

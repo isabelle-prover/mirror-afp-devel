@@ -226,8 +226,8 @@ lemmas i_cut_eq_set_restriction_fun =
   cut_greater_eq_set_restriction_fun cut_ge_eq_set_restriction_fun
 
 lemma i_cut_set_restriction_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = (op \<down>\<ge>);
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>);
     f = (\<lambda>I. cut_op I t)  \<rbrakk> \<Longrightarrow> set_restriction f"
 apply safe
 apply (simp_all only: i_cut_eq_set_restriction_fun set_restriction_fun_is_set_restriction)
@@ -245,10 +245,10 @@ lemmas i_cut_set_restriction =
   i_cut_ge_set_restriction i_cut_greater_set_restriction
 
 lemma i_cut_commute_disj: "\<lbrakk>
-  cut_op1 = op \<down>< \<or> cut_op1 = op \<down>\<le> \<or>
-  cut_op1 = op \<down>> \<or> cut_op1 = (op \<down>\<ge>);
-  cut_op2 = op \<down>< \<or> cut_op2 = op \<down>\<le> \<or>
-  cut_op2 = op \<down>> \<or> cut_op2 = op \<down>\<ge> \<rbrakk> \<Longrightarrow>
+  cut_op1 = (\<down><) \<or> cut_op1 = (\<down>\<le>) \<or>
+  cut_op1 = (\<down>>) \<or> cut_op1 = (\<down>\<ge>);
+  cut_op2 = (\<down><) \<or> cut_op2 = (\<down>\<le>) \<or>
+  cut_op2 = (\<down>>) \<or> cut_op2 = (\<down>\<ge>) \<rbrakk> \<Longrightarrow>
   cut_op2 (cut_op1 I t1) t2 = cut_op1 (cut_op2 I t2) t1"
 apply (rule set_restriction_commute)
 apply (simp_all only: i_cut_set_restriction_disj)
@@ -298,8 +298,8 @@ lemmas i_cut_subset =
   cut_greater_subset cut_ge_subset
 
 lemma i_cut_Un_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge> \<rbrakk>
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>) \<rbrakk>
   \<Longrightarrow> cut_op (A \<union> B) t = cut_op A t \<union> cut_op B t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], simp)
 by (rule set_restriction_Un)
@@ -319,8 +319,8 @@ lemmas i_cut_Un =
 
 
 lemma i_cut_Int_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge> \<rbrakk>
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>) \<rbrakk>
   \<Longrightarrow> cut_op (A \<inter> B) t = cut_op A t \<inter> cut_op B t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], simp)
 by (rule set_restriction_Int)
@@ -356,8 +356,8 @@ lemmas i_cut_Int_right =
   cut_greater_Int_right cut_ge_Int_right
 
 lemma i_cut_Diff_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge> \<rbrakk>
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>) \<rbrakk>
   \<Longrightarrow> cut_op (A - B) t = cut_op A t - cut_op B t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], simp)
 by (rule set_restriction_Diff)
@@ -372,8 +372,8 @@ lemmas i_cut_Diff =
   cut_greater_Diff cut_ge_Diff
 
 lemma i_cut_subset_mono_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = (op \<down>\<ge>); A \<subseteq> B \<rbrakk>
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>); A \<subseteq> B \<rbrakk>
   \<Longrightarrow> cut_op A t \<subseteq> cut_op B t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], simp)
 by (rule set_restriction_mono[where f="\<lambda>I. cut_op I t"])
@@ -417,8 +417,8 @@ lemmas i_cut_cut =
   cut_cut_ge cut_cut_greater
 
 lemma i_cut_absorb_disj: "
-  \<lbrakk> cut_op = op \<down>< \<or> cut_op = op \<down>\<le> \<or>
-    cut_op = op \<down>> \<or> cut_op = op \<down>\<ge> \<rbrakk>
+  \<lbrakk> cut_op = (\<down><) \<or> cut_op = (\<down>\<le>) \<or>
+    cut_op = (\<down>>) \<or> cut_op = (\<down>\<ge>) \<rbrakk>
   \<Longrightarrow> cut_op (cut_op I t) t = cut_op I t"
 apply (drule i_cut_set_restriction_disj[where f="\<lambda>I. cut_op I t"], blast)
 apply (blast dest: set_restriction_absorb)

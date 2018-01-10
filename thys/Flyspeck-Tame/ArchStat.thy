@@ -8,9 +8,9 @@ definition stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat" w
 "stat A =
  (length A,
   foldl (%x y. if x<y then y else x) 0 (map length A),
-  foldl (op +) 0 (map length A),
+  foldl (+) 0 (map length A),
   foldl (%x y. if x<y then y else x)  0 (map nof_vertices A),
-  foldl (op +) 0 (map nof_vertices A)
+  foldl (+) 0 (map nof_vertices A)
  )"
 
 value "stat Tri"

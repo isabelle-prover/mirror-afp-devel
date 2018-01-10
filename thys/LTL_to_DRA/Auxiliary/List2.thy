@@ -246,7 +246,7 @@ proof -
 qed
 
 lemma set_foldl_append:
-  "set (foldl op @ i xs) = set i \<union> \<Union>{set x | x. x \<in> set xs}"
+  "set (foldl (@) i xs) = set i \<union> \<Union>{set x | x. x \<in> set xs}"
   by (induction xs arbitrary: i) auto
 
 subsection \<open>Short-circuited Version of @{const foldl}\<close>

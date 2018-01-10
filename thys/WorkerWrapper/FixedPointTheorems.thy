@@ -63,7 +63,7 @@ proof -
   hence "g\<cdot>((f oo g)\<cdot>(fix\<cdot>(f oo g))) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
     using fix_eq[where F="f oo g"] by simp -- {* computation *}
   hence "(g oo f)\<cdot>(g\<cdot>(fix\<cdot>(f oo g))) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    by simp -- {* re-associate @{term "op oo"} *}
+    by simp -- {* re-associate @{term "(oo)"} *}
   thus "fix\<cdot>(g oo f) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
     using fix_least_below by blast -- {* induction *}
 qed

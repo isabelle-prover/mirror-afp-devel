@@ -288,7 +288,7 @@ coinductive resumption_ord :: "('a, 'out, 'in) resumption \<Rightarrow> ('a, 'ou
 where
   Done_Done: "flat_ord None a a' \<Longrightarrow> resumption_ord (Done a) (Done a')"
 | Done_Pause: "resumption_ord ABORT (Pause out c)"
-| Pause_Pause: "(op = ===> resumption_ord) c c' \<Longrightarrow> resumption_ord (Pause out c) (Pause out c')"
+| Pause_Pause: "((=) ===> resumption_ord) c c' \<Longrightarrow> resumption_ord (Pause out c) (Pause out c')"
 
 inductive_simps resumption_ord_simps [simp]:
   "resumption_ord (Pause out c) r"
@@ -307,7 +307,7 @@ lemma resumption_ord_outputD:
 by(cases r) auto
 
 lemma resumption_ord_resumeD:
-  "\<lbrakk> resumption_ord r r'; \<not> is_Done r \<rbrakk> \<Longrightarrow> (op = ===> resumption_ord) (resume r) (resume r')"
+  "\<lbrakk> resumption_ord r r'; \<not> is_Done r \<rbrakk> \<Longrightarrow> ((=) ===> resumption_ord) (resume r) (resume r')"
 by(cases r) auto
 
 lemma resumption_ord_abort:
@@ -319,7 +319,7 @@ lemma resumption_ord_coinduct [consumes 1, case_names Done Abort Pause, case_con
   and Done: "\<And>r r'. \<lbrakk> X r r'; is_Done r' \<rbrakk> \<Longrightarrow> is_Done r \<and> flat_ord None (result r) (result r')"
   and Abort: "\<And>r r'. \<lbrakk> X r r'; \<not> is_Done r'; is_Done r \<rbrakk> \<Longrightarrow> result r = None"
   and Pause: "\<And>r r'. \<lbrakk> X r r'; \<not> is_Done r; \<not> is_Done r' \<rbrakk> 
-  \<Longrightarrow> output r = output r' \<and> (op = ===> (\<lambda>r r'. X r r' \<or> resumption_ord r r')) (resume r) (resume r')"
+  \<Longrightarrow> output r = output r' \<and> ((=) ===> (\<lambda>r r'. X r r' \<or> resumption_ord r r')) (resume r) (resume r')"
   shows "resumption_ord r r'"
 using `X r r'`
 proof coinduct
@@ -588,8 +588,8 @@ qed
 
 lemma fixes f F
   defines "F \<equiv> \<lambda>results r. case r of resumption.Done x \<Rightarrow> set_option x | resumption.Pause out c \<Rightarrow> \<Union>input. results (c input)"
-  shows results_conv_fixp: "results \<equiv> ccpo.fixp (fun_lub Union) (fun_ord op \<subseteq>) F" (is "_ \<equiv> ?fixp")
-  and results_mono: "\<And>x. monotone (fun_ord op \<subseteq>) op \<subseteq> (\<lambda>f. F f x)" (is "PROP ?mono")
+  shows results_conv_fixp: "results \<equiv> ccpo.fixp (fun_lub Union) (fun_ord (\<subseteq>)) F" (is "_ \<equiv> ?fixp")
+  and results_mono: "\<And>x. monotone (fun_ord (\<subseteq>)) (\<subseteq>) (\<lambda>f. F f x)" (is "PROP ?mono")
 proof(rule eq_reflection ext antisym subsetI)+
   show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
   fix x r
@@ -658,20 +658,20 @@ proof(rule resumption.mcont_if_bot[OF ccpo bot, where bound=ABORT and f=h])
 qed
     
 lemma mcont2mcont_results[THEN mcont2mcont, cont_intro, simp]:
-  shows mcont_results: "mcont resumption_lub resumption_ord Union op \<subseteq> results"
+  shows mcont_results: "mcont resumption_lub resumption_ord Union (\<subseteq>) results"
 apply(rule lfp.fixp_preserves_mcont1[OF results_mono results_conv_fixp])
 apply(rule mcont_case_resumption)
 apply(simp_all add: mcont_applyI)
 done
 
 lemma mono2mono_results[THEN lfp.mono2mono, cont_intro, simp]:
-  shows monotone_results: "monotone resumption_ord op \<subseteq> results"
+  shows monotone_results: "monotone resumption_ord (\<subseteq>) results"
 using mcont_results by(rule mcont_mono)
 
 lemma fixes f F
   defines "F \<equiv> \<lambda>outputs xs. case xs of resumption.Done x \<Rightarrow> {} | resumption.Pause out c \<Rightarrow> insert out (\<Union>input. outputs (c input))"
-  shows outputs_conv_fixp: "outputs \<equiv> ccpo.fixp (fun_lub Union) (fun_ord op \<subseteq>) F" (is "_ \<equiv> ?fixp")
-  and outputs_mono: "\<And>x. monotone (fun_ord op \<subseteq>) op \<subseteq> (\<lambda>f. F f x)" (is "PROP ?mono")
+  shows outputs_conv_fixp: "outputs \<equiv> ccpo.fixp (fun_lub Union) (fun_ord (\<subseteq>)) F" (is "_ \<equiv> ?fixp")
+  and outputs_mono: "\<And>x. monotone (fun_ord (\<subseteq>)) (\<subseteq>) (\<lambda>f. F f x)" (is "PROP ?mono")
 proof(rule eq_reflection ext antisym subsetI)+
   show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
   show "?fixp r \<subseteq> outputs r" for r
@@ -681,13 +681,13 @@ proof(rule eq_reflection ext antisym subsetI)+
 qed
 
 lemma mcont2mcont_outputs[THEN lfp.mcont2mcont, cont_intro, simp]: 
-  shows mcont_outputs: "mcont resumption_lub resumption_ord Union op \<subseteq> outputs"
+  shows mcont_outputs: "mcont resumption_lub resumption_ord Union (\<subseteq>) outputs"
 apply(rule lfp.fixp_preserves_mcont1[OF outputs_mono outputs_conv_fixp])
 apply(auto intro: lfp.mcont2mcont intro!: mcont2mcont_insert mcont_SUP mcont_case_resumption)
 done
 
 lemma mono2mono_outputs[THEN lfp.mono2mono, cont_intro, simp]:
-  shows monotone_outputs: "monotone resumption_ord op \<subseteq> outputs"
+  shows monotone_outputs: "monotone resumption_ord (\<subseteq>) outputs"
 using mcont_outputs by(rule mcont_mono)
 
 lemma pred_resumption_antimono:

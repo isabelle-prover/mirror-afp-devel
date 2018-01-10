@@ -1162,7 +1162,7 @@ lemma transfer_\<Gamma>[transfer_rule]: "(rel_set lorenz.rel_ve) \<Gamma>\<^sub>
 lemma transfer_\<Sigma>\<^sub>l\<^sub>e[transfer_rule]: "(rel_set lorenz.rel_ve) (cast ` \<Sigma>\<^sub>l\<^sub>e) \<Sigma>\<^sub>l\<^sub>e"
   by (auto simp: lorenz.rel_ve_cast' intro!: rel_setI)
 
-lemma transfer_\<Gamma>\<^sub>i[transfer_rule]: "(rel_fun op = (rel_set lorenz.rel_ve)) \<Gamma>\<^sub>i\<^sub>v \<Gamma>\<^sub>i"
+lemma transfer_\<Gamma>\<^sub>i[transfer_rule]: "(rel_fun (=) (rel_set lorenz.rel_ve)) \<Gamma>\<^sub>i\<^sub>v \<Gamma>\<^sub>i"
   unfolding \<Gamma>\<^sub>i\<^sub>v_def
   by (auto simp: lorenz.rel_ve_cast' intro!: rel_setI)
 
@@ -1298,8 +1298,8 @@ lemma mat_nres[le, refine_vcg]:
         matrix_vector_mult_eq_list_of_eucl_nth ll3 inner_axis_axis)
   done
 
-definition [simp]: "op_image_cast_eucl1e = op ` cast_eucl1"
-definition [simp]: "op_image_cast_eucl1e_coll = op ` cast_eucl1"
+definition [simp]: "op_image_cast_eucl1e = (`) cast_eucl1"
+definition [simp]: "op_image_cast_eucl1e_coll = (`) cast_eucl1"
 
 lemma prod_relI'': "\<lbrakk>(fst ab, a')\<in>R1; (snd ab, b')\<in>R2\<rbrakk> \<Longrightarrow> (ab,(a', b'))\<in>\<langle>R1,R2\<rangle>prod_rel"
   by  (auto simp: prod_rel_def)
@@ -1437,7 +1437,7 @@ lemma closed_cast_\<Sigma>[intro, simp]: "closed (cast ` \<Sigma>::3 rvec set)"
   by (auto simp: \<Sigma>_def )
 lemma blinfun_apply_transfer[transfer_rule]:
   "(rel_fun (rel_blinfun lorenz.rel_ve lorenz.rel_ve)
-       (rel_fun (rel_prod op = (rel_prod op = op =)) lorenz.rel_ve))
+       (rel_fun (rel_prod (=) (rel_prod (=) (=))) lorenz.rel_ve))
      (blinfun_apply o cast_bl) blinfun_apply"
   by (auto intro!: rel_funI simp: rel_blinfun_def lorenz.rel_ve_cast
       dest!: rel_funD)
@@ -2917,7 +2917,7 @@ ML \<open>val check_line = @{computation_check
     Float float_of_int float_of_nat
 
     (* real *)
-    "numeral::num\<Rightarrow>real" "real_of_float" "op /::real\<Rightarrow>real\<Rightarrow>real" "uminus::real\<Rightarrow>_"
+    "numeral::num\<Rightarrow>real" "real_of_float" "(/)::real\<Rightarrow>real\<Rightarrow>real" "uminus::real\<Rightarrow>_"
     real_divl real_divr
     real_of_int
 

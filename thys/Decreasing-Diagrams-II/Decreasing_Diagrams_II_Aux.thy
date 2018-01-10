@@ -65,11 +65,11 @@ lemma lfp_chain_induct:
   shows "P (lfp f)"
 unfolding lfp_eq_fixp[OF mono]
 proof (rule fixp_induct)
-  show "monotone (op \<le>) (op \<le>) f" using mono unfolding order_class.mono_def monotone_def .
+  show "monotone (\<le>) (\<le>) f" using mono unfolding order_class.mono_def monotone_def .
 next
   show "P (Sup {})" using chain[of "{}"] by simp
 next
-  show "ccpo.admissible Sup (op \<le>) P"
+  show "ccpo.admissible Sup (\<le>) P"
   by (auto simp add: chain ccpo.admissible_def Complete_Partial_Order.chain_def)
 qed fact
 

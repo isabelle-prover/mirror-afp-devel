@@ -108,7 +108,7 @@ unfolding term_equiv_def by (blast intro: joinablep_refl reflpI)
 lemma term_sym[sym]: "(s \<leftrightarrow> t) \<Longrightarrow> (t \<leftrightarrow> s)"
 unfolding term_equiv_def by (rule joinable_sym[to_pred])
 
-lemma conversep_term [simp]: "conversep (op \<leftrightarrow>) = op \<leftrightarrow>"
+lemma conversep_term [simp]: "conversep (\<leftrightarrow>) = (\<leftrightarrow>)"
 by (auto simp add: fun_eq_iff intro: term_sym)
 
 lemma term_trans[trans]: "s \<leftrightarrow> t \<Longrightarrow> t \<leftrightarrow> u \<Longrightarrow> s \<leftrightarrow> u"

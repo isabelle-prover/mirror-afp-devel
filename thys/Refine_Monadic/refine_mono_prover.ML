@@ -141,7 +141,7 @@ structure Refine_Mono_Prover : REFINE_MONO_PROVER = struct
 
   val decl_setup = 
     Tagged_Solver.declare_solver 
-      @{thms monoI monotoneI[of "op \<le>" "op \<le>"]} mono_solver_bnd
+      @{thms monoI monotoneI[of "(\<le>)" "(\<le>)"]} mono_solver_bnd
       "Refine_Monadic: Monotonicity prover" 
       mono_tac
 

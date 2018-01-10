@@ -585,7 +585,7 @@ fun ltlc_to_pltl :: "'a ltlc \<Rightarrow> 'a set pltl"
 where
   "ltlc_to_pltl true\<^sub>c = true\<^sub>p"
 | "ltlc_to_pltl false\<^sub>c = false\<^sub>p"
-| "ltlc_to_pltl (prop\<^sub>c(q)) = atom\<^sub>p (op \<in> q)"
+| "ltlc_to_pltl (prop\<^sub>c(q)) = atom\<^sub>p ((\<in>) q)"
 | "ltlc_to_pltl (not\<^sub>c \<phi>) = not\<^sub>p (ltlc_to_pltl \<phi>)"
 | "ltlc_to_pltl (\<phi> and\<^sub>c \<psi>) = (ltlc_to_pltl \<phi>) and\<^sub>p (ltlc_to_pltl \<psi>)"
 | "ltlc_to_pltl (\<phi> or\<^sub>c \<psi>) = (ltlc_to_pltl \<phi>) or\<^sub>p (ltlc_to_pltl \<psi>)"

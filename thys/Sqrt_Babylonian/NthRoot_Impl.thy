@@ -111,7 +111,7 @@ lemma start_value: assumes x: "x \<ge> 0" and p: "p > 0" shows "x \<le> (start_v
   using start_value_main[OF x p] by auto
 
 text {* We now define the Newton iteration to compute the $p$-th root. We are working on the integers,
-  where every @{term "op /"} is replaced by @{term "op div"}. We are proving several things within
+  where every @{term "(/)"} is replaced by @{term "(div)"}. We are proving several things within
   a locale which ensures that $p > 0$, and where $pm = p - 1$.
   *}
 

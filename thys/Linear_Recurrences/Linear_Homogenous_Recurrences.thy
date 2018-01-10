@@ -21,7 +21,7 @@ definition lhr_fps_numerator where
       
 lemma lhr_fps_numerator_code [code abstract]:
   "coeffs (lhr_fps_numerator m cs f) = (let N = length cs - 1 in 
-     strip_while (op = 0) [(\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i)). k \<leftarrow> [0..<N+m]])"
+     strip_while ((=) 0) [(\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i)). k \<leftarrow> [0..<N+m]])"
   by (simp add: lhr_fps_numerator_def Let_def)
  
 lemma lhr_fps_aux:
@@ -156,7 +156,7 @@ begin
 
 lemma lhr_fps_numerator_altdef:
   "lhr_fps_numerator (length fs + 1 - length cs) cs f =
-     lhr_fps_numerator (length fs + 1 - length cs) cs (op ! fs)"
+     lhr_fps_numerator (length fs + 1 - length cs) cs ((!) fs)"
 proof -
   define N where "N = length cs - 1"
   define m where "m = length fs + 1 - length cs"
@@ -175,7 +175,7 @@ proof -
   hence "map (\<lambda>k. (\<Sum>i\<le>min N k. cs ! (N - i) * f (k - i))) [0..<length fs] =
            map (\<lambda>k. (\<Sum>i\<le>min N k. cs ! (N - i) * fs ! (k - i))) [0..<length fs]"
     by (intro map_cong) simp_all
-  also have "Poly \<dots> = lhr_fps_numerator m cs (op ! fs)" using enough_base
+  also have "Poly \<dots> = lhr_fps_numerator m cs ((!) fs)" using enough_base
     by (cases cs) (simp_all add: lhr_fps_numerator_def Let_def m_def N_def)
   finally show ?thesis unfolding m_def .
 qed
@@ -187,7 +187,7 @@ lemma solve_lhr_aux:
   assumes "linear_homogenous_recurrence f cs fs"
   assumes "is_factorization_of fctrs (lr_fps_denominator' cs)"
   shows   "f = interp_ratfps_solution (solve_factored_ratfps' (lhr_fps_numerator 
-                  (length fs + 1 - length cs) cs (op ! fs)) fctrs)"
+                  (length fs + 1 - length cs) cs ((!) fs)) fctrs)"
 proof -
   interpret linear_homogenous_recurrence f cs fs by fact
 
@@ -204,7 +204,7 @@ proof -
 
   define m where "m = length fs + 1 - length cs"
   obtain a ds where fctrs: "fctrs = (a, ds)" by (cases fctrs) simp_all
-  define p and p' where "p = lhr_fps_numerator m cs (op ! fs)" and "p' = smult (inverse a) p"
+  define p and p' where "p = lhr_fps_numerator m cs ((!) fs)" and "p' = smult (inverse a) p"
   obtain b es where sol: "solve_factored_ratfps' p fctrs = (b, es)" 
     by (cases "solve_factored_ratfps' p fctrs") simp_all
   have sol': "(b, es) = solve_factored_ratfps p' ds"
@@ -238,12 +238,12 @@ proof -
       by (intro rec) (simp_all add: m_def algebra_simps)
     finally show "(\<Sum>k\<le>length cs - 1. cs ! k * f (n + k)) = 0" .
   qed (simp_all add: m_def)
-  also have "lhr_fps_numerator m cs f = lhr_fps_numerator m cs (op ! fs)"
+  also have "lhr_fps_numerator m cs f = lhr_fps_numerator m cs ((!) fs)"
     unfolding lhr_fps_numerator_def using enough_base
     by (auto simp: Let_def poly_eq_iff nth_default_def base 
                    m_def Suc_le_eq intro!: sum.cong)
   also have "fps_of_poly \<dots> / fps_of_poly (lr_fps_denominator cs) = 
-               fps_of_poly (lhr_fps_numerator m cs (op ! fs)) / 
+               fps_of_poly (lhr_fps_numerator m cs ((!) fs)) / 
                  (fps_const (fst fctrs) * 
                    fps_of_poly (\<Prod>p\<leftarrow>snd fctrs. [:1, - fst p:] ^ Suc (snd p)))"
     unfolding assms factorization' interp_alt_factorization_def
@@ -275,7 +275,7 @@ proof -
   interpret linear_homogenous_recurrence f cs fs by fact
   define m where "m = length fs + 1 - length cs"
   let ?num = "lhr_fps_numerator m cs f"
-  let ?num' = "lhr_fps_numerator m cs (op ! fs)"
+  let ?num' = "lhr_fps_numerator m cs ((!) fs)"
   let ?denom = "lr_fps_denominator cs"
  
   have "{..length cs - 1} = {..<length cs}" by (cases cs) auto

@@ -110,7 +110,7 @@ begin
       "('V,'W,'G) graph_to_list"
       where 
       "gga_to_list g \<equiv> 
-        (nodes_it g (\<lambda>_. True) (op #) [], edges_it g (\<lambda>_. True) (op #) [])
+        (nodes_it g (\<lambda>_. True) (#) [], edges_it g (\<lambda>_. True) (#) [])
       "
   end
 
@@ -130,11 +130,11 @@ begin
       assume [simp, intro!]: "invar g"
       then interpret valid_graph "\<alpha> g" by (rule valid)
 
-      have "set (nodes_it g (\<lambda>_. True) (op #) []) = V"
+      have "set (nodes_it g (\<lambda>_. True) (#) []) = V"
         apply (rule_tac I="\<lambda>it \<sigma>. set \<sigma> = V - it" 
           in set_iterator_rule_P[OF nodes_it_correct])
         by auto
-      moreover have "set (edges_it g (\<lambda>_. True) (op #) []) = E"
+      moreover have "set (edges_it g (\<lambda>_. True) (#) []) = E"
         apply (rule_tac I="\<lambda>it \<sigma>. set \<sigma> = E - it" 
           in set_iterator_rule_P[OF edges_it_correct])
         by auto

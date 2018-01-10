@@ -37,31 +37,31 @@ apply(rule bdd_belowI[where m=0])
 apply auto
 done
 
-lemma monotone_times_ennreal1: "monotone op \<le> op \<le> (\<lambda>x. x * y :: ennreal)"
+lemma monotone_times_ennreal1: "monotone (\<le>) (\<le>) (\<lambda>x. x * y :: ennreal)"
 by(auto intro!: monotoneI mult_right_mono)
 
-lemma monotone_times_ennreal2: "monotone op \<le> op \<le> (\<lambda>x. y * x :: ennreal)"
+lemma monotone_times_ennreal2: "monotone (\<le>) (\<le>) (\<lambda>x. y * x :: ennreal)"
 by(auto intro!: monotoneI mult_left_mono)
 
 lemma mono2mono_times_ennreal[THEN lfp.mono2mono2, cont_intro, simp]:
-  shows monotone_times_ennreal: "monotone (rel_prod op \<le> op \<le>) op \<le> (\<lambda>(x, y). x * y :: ennreal)"
+  shows monotone_times_ennreal: "monotone (rel_prod (\<le>) (\<le>)) (\<le>) (\<lambda>(x, y). x * y :: ennreal)"
 by(simp add: monotone_times_ennreal1 monotone_times_ennreal2)
 
-lemma mcont_times_ennreal1: "mcont Sup op \<le> Sup op \<le> (\<lambda>y. x * y :: ennreal)"
+lemma mcont_times_ennreal1: "mcont Sup (\<le>) Sup (\<le>) (\<lambda>y. x * y :: ennreal)"
 by(auto intro!: mcontI contI simp add: SUP_mult_left_ennreal[symmetric])
 
-lemma mcont_times_ennreal2: "mcont Sup op \<le> Sup op \<le> (\<lambda>y. y * x :: ennreal)"
+lemma mcont_times_ennreal2: "mcont Sup (\<le>) Sup (\<le>) (\<lambda>y. y * x :: ennreal)"
 by(subst mult.commute)(rule mcont_times_ennreal1)
 
 lemma mcont2mcont_times_ennreal [cont_intro, simp]:
-  "\<lbrakk> mcont lub ord Sup op \<le> (\<lambda>x. f x);
-    mcont lub ord Sup op \<le> (\<lambda>x. g x) \<rbrakk>
-  \<Longrightarrow> mcont lub ord Sup op \<le> (\<lambda>x. f x * g x :: ennreal)"
+  "\<lbrakk> mcont lub ord Sup (\<le>) (\<lambda>x. f x);
+    mcont lub ord Sup (\<le>) (\<lambda>x. g x) \<rbrakk>
+  \<Longrightarrow> mcont lub ord Sup (\<le>) (\<lambda>x. f x * g x :: ennreal)"
 by(best intro: ccpo.mcont2mcont'[OF complete_lattice_ccpo] mcont_times_ennreal1 mcont_times_ennreal2 ccpo.mcont_const[OF complete_lattice_ccpo])
 
 lemma ereal_INF_cmult: "0 < c \<Longrightarrow> (INF i:I. c * f i) = ereal c * (INF i:I. f i)"
 using ereal_Inf_cmult[where P="\<lambda>x. \<exists>i\<in>I. x = f i", of c]
-by(rule box_equals)(auto intro!: arg_cong[where f="Inf"] arg_cong2[where f="op *"])
+by(rule box_equals)(auto intro!: arg_cong[where f="Inf"] arg_cong2[where f="( * )"])
 
 lemma ereal_INF_multc: "0 < c \<Longrightarrow> (INF i:I. f i * c) = (INF i:I. f i) * ereal c"
 using ereal_INF_cmult[of c f I] by(simp add: mult.commute)
@@ -118,11 +118,11 @@ definition nn_integral_spmf :: "'a spmf \<Rightarrow> ('a \<Rightarrow> ennreal)
 
 lemma nn_integral_spmf_parametric [transfer_rule]:
   includes lifting_syntax
-  shows "(rel_spmf A ===> (A ===> op =) ===> op =) nn_integral_spmf nn_integral_spmf"
+  shows "(rel_spmf A ===> (A ===> (=)) ===> (=)) nn_integral_spmf nn_integral_spmf"
   unfolding nn_integral_spmf_def
 proof(rule rel_funI)+
   fix p q and f g :: "_ \<Rightarrow> ennreal"
-  assume pq: "rel_spmf A p q" and fg: "(A ===> op =) f g"
+  assume pq: "rel_spmf A p q" and fg: "(A ===> (=)) f g"
   from pq obtain pq where pq [rule_format]: "\<forall>(x, y)\<in>set_spmf pq. A x y"
     and p: "p = map_spmf fst pq" and q: "q = map_spmf snd pq"
     by(cases rule: rel_spmfE) auto
@@ -131,7 +131,7 @@ proof(rule rel_funI)+
 qed
 
 lemma weight_spmf_mcont2mcont [THEN lfp.mcont2mcont, cont_intro]:
-  shows weight_spmf_mcont: "mcont (lub_spmf) (ord_spmf op =) Sup op \<le> (\<lambda>p. ennreal (weight_spmf p))"
+  shows weight_spmf_mcont: "mcont (lub_spmf) (ord_spmf (=)) Sup (\<le>) (\<lambda>p. ennreal (weight_spmf p))"
 apply(simp add: mcont_def cont_def weight_spmf_def measure_spmf.emeasure_eq_measure[symmetric] emeasure_lub_spmf)
 apply(rule call_mono[THEN lfp.mono2mono])
 apply(unfold fun_ord_def)
@@ -139,14 +139,14 @@ apply(rule monotone_emeasure_spmf[unfolded le_fun_def])
 done
 
 lemma mono2mono_nn_integral_spmf [THEN lfp.mono2mono, cont_intro]:
-  shows monotone_nn_integral_spmf: "monotone (ord_spmf op =) op \<le> (\<lambda>p. integral\<^sup>N (measure_spmf p) f)"
+  shows monotone_nn_integral_spmf: "monotone (ord_spmf (=)) (\<le>) (\<lambda>p. integral\<^sup>N (measure_spmf p) f)"
 by(rule monotoneI)(auto simp add: nn_integral_measure_spmf intro!: nn_integral_mono mult_right_mono dest: monotone_spmf[THEN monotoneD])
 
 lemma cont_nn_integral_spmf:
-  "cont lub_spmf (ord_spmf op =) Sup op \<le> (\<lambda>p :: 'a spmf. nn_integral (measure_spmf p) f)"
+  "cont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p :: 'a spmf. nn_integral (measure_spmf p) f)"
 proof
   fix Y :: "'a spmf set"
-  assume Y: "Complete_Partial_Order.chain (ord_spmf op =) Y" "Y \<noteq> {}"
+  assume Y: "Complete_Partial_Order.chain (ord_spmf (=)) Y" "Y \<noteq> {}"
   let ?M = "count_space (set_spmf (lub_spmf Y))"
   have "nn_integral (measure_spmf (lub_spmf Y)) f = \<integral>\<^sup>+ x. ennreal (spmf (lub_spmf Y) x) * f x \<partial>?M"
     by(simp add: nn_integral_measure_spmf')
@@ -154,7 +154,7 @@ proof
     by(simp add: spmf_lub_spmf Y ennreal_SUP[OF SUP_spmf_neq_top'] SUP_mult_right_ennreal)
   also have "\<dots> = (SUP p:Y. \<integral>\<^sup>+ x. ennreal (spmf p x) * f x \<partial>?M)"
   proof(rule nn_integral_monotone_convergence_SUP_countable)
-    show "Complete_Partial_Order.chain op \<le> ((\<lambda>i x. ennreal (spmf i x) * f x) ` Y)"
+    show "Complete_Partial_Order.chain (\<le>) ((\<lambda>i x. ennreal (spmf i x) * f x) ` Y)"
       using Y(1) by(rule chain_imageI)(auto simp add: le_fun_def intro!: mult_right_mono dest: monotone_spmf[THEN monotoneD])
   qed(simp_all add: Y(2))
   also have "\<dots> = (SUP p:Y. nn_integral (measure_spmf p) f)"
@@ -164,13 +164,13 @@ qed
 
 lemma mcont2mcont_nn_integral_spmf [THEN lfp.mcont2mcont, cont_intro]:
   shows mcont_nn_integral_spmf:
-  "mcont lub_spmf (ord_spmf op =) Sup op \<le> (\<lambda>p :: 'a spmf. nn_integral (measure_spmf p) f)"
+  "mcont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p :: 'a spmf. nn_integral (measure_spmf p) f)"
 by(rule mcontI)(simp_all add: cont_nn_integral_spmf)
  
 
 lemma nn_integral_mono2mono:
-  assumes "\<And>x. x \<in> space M \<Longrightarrow> monotone ord op \<le> (\<lambda>f. F f x)"
-  shows "monotone ord op \<le> (\<lambda>f. nn_integral M (F f))"
+  assumes "\<And>x. x \<in> space M \<Longrightarrow> monotone ord (\<le>) (\<lambda>f. F f x)"
+  shows "monotone ord (\<le>) (\<lambda>f. nn_integral M (F f))"
   by(rule monotoneI nn_integral_mono monotoneD[OF assms])+
 
 lemma nn_integral_mono_lfp [partial_function_mono]:
@@ -189,19 +189,19 @@ lemmas parallel_fixp_induct_1_2 = parallel_fixp_induct_uc[
   OF _ _ _ _ _ _ refl refl]
   for P
 
-lemma monotone_ennreal_add1: "monotone op \<le> op \<le> (\<lambda>x. x + y :: ennreal)"
+lemma monotone_ennreal_add1: "monotone (\<le>) (\<le>) (\<lambda>x. x + y :: ennreal)"
 by(auto intro!: monotoneI)
 
-lemma monotone_ennreal_add2: "monotone op \<le> op \<le> (\<lambda>y. x + y :: ennreal)"
+lemma monotone_ennreal_add2: "monotone (\<le>) (\<le>) (\<lambda>y. x + y :: ennreal)"
 by(auto intro!: monotoneI)
 
 lemma mono2mono_ennreal_add[THEN lfp.mono2mono2, cont_intro, simp]:
-  shows monotone_eadd: "monotone (rel_prod op \<le> op \<le>) op \<le> (\<lambda>(x, y). x + y :: ennreal)"
+  shows monotone_eadd: "monotone (rel_prod (\<le>) (\<le>)) (\<le>) (\<lambda>(x, y). x + y :: ennreal)"
 by(simp add: monotone_ennreal_add1 monotone_ennreal_add2)
 
 lemma ennreal_add_partial_function_mono [partial_function_mono]:
-  "\<lbrakk> monotone (fun_ord op \<le>) op \<le> f; monotone (fun_ord op \<le>) op \<le> g \<rbrakk>
-  \<Longrightarrow> monotone (fun_ord op \<le>) op \<le> (\<lambda>x. f x + g x :: ennreal)"
+  "\<lbrakk> monotone (fun_ord (\<le>)) (\<le>) f; monotone (fun_ord (\<le>)) (\<le>) g \<rbrakk>
+  \<Longrightarrow> monotone (fun_ord (\<le>)) (\<le>) (\<lambda>x. f x + g x :: ennreal)"
 by(rule mono2mono_ennreal_add)
 
 context
@@ -246,7 +246,7 @@ private definition "weight_spmf' p = weight_spmf p"
 lemmas weight_spmf'_parametric = weight_spmf_parametric[folded weight_spmf'_def]
 lemma expectation_gpv_parametric':
   includes lifting_syntax notes weight_spmf'_parametric[transfer_rule]
-  shows "(op = ===> rel_\<I> C R ===> (A ===> op =) ===> rel_gpv'' A C R ===> op =) expectation_gpv expectation_gpv"
+  shows "((=) ===> rel_\<I> C R ===> (A ===> (=)) ===> rel_gpv'' A C R ===> (=)) expectation_gpv expectation_gpv"
   unfolding expectation_gpv_def
   apply(rule rel_funI)
   apply(rule rel_funI)
@@ -260,8 +260,8 @@ end
 
 lemma expectation_gpv_parametric [transfer_rule]:
   includes lifting_syntax
-  shows "(op = ===> rel_\<I> C op = ===> (A ===> op =) ===> rel_gpv A C ===> op =) expectation_gpv expectation_gpv"
-using expectation_gpv_parametric'[of C "op =" A] by(simp add: rel_gpv_conv_rel_gpv'')
+  shows "((=) ===> rel_\<I> C (=) ===> (A ===> (=)) ===> rel_gpv A C ===> (=)) expectation_gpv expectation_gpv"
+using expectation_gpv_parametric'[of C "(=)" A] by(simp add: rel_gpv_conv_rel_gpv'')
 
 lemma expectation_gpv_cong:
   fixes fail fail'
@@ -275,7 +275,7 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   case adm show ?case by simp
   case bottom show ?case by simp
   case (step expectation_gpv' expectation_gpv'') show ?case
-    by(rule arg_cong2[where f="op +"] nn_integral_cong_AE)+(clarsimp simp add: step.prems results_gpv.intros split!: generat.split intro!: INF_cong[OF refl] step.IH)+
+    by(rule arg_cong2[where f="(+)"] nn_integral_cong_AE)+(clarsimp simp add: step.prems results_gpv.intros split!: generat.split intro!: INF_cong[OF refl] step.IH)+
 qed
 
 lemma expectation_gpv_cong_fail:
@@ -420,7 +420,7 @@ proof(induction arbitrary: gpv rule: expectation_gpv_fixp_induct)
   case (step expectation_gpv'')
   show ?case
     apply(simp add: pmf_map vimage_def)
-    apply(rule arg_cong2[where f="op +"])
+    apply(rule arg_cong2[where f="(+)"])
     subgoal by(clarsimp simp add: measure_spmf_def nn_integral_distr nn_integral_restrict_space step.IH WT_gpv_ContD[OF step.prems] AE_measure_pmf_iff in_set_spmf[symmetric] WT_gpv_OutD[OF step.prems] split!: option.split generat.split intro!: nn_integral_cong_AE INF_cong[OF refl])
     apply(simp add: measure_pmf_single[symmetric])
     apply(rule arg_cong[where f="\<lambda>x. _ * ennreal x"])
@@ -466,7 +466,7 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   case bottom show ?case by(simp add: bot_ennreal_def)
   case (step expectation_gpv' expectation_gpv'')
   show ?case using assms
-    apply(simp add: distrib_left mult_ac nn_integral_cmult[symmetric] generat.case_distrib[where h="op * _"])
+    apply(simp add: distrib_left mult_ac nn_integral_cmult[symmetric] generat.case_distrib[where h="( * ) _"])
     apply(subst INF_mult_left_ennreal, simp_all add: step.IH)
     done
 qed
@@ -555,22 +555,22 @@ proof -
     let ?C = "eq_onp (\<lambda>x. x \<in> outs_\<I> \<I>)"
 
     define callee' where "callee' \<equiv> (Rep ---> id ---> map_spmf (map_prod id Abs)) callee"
-    have [transfer_rule]: "(cr ===> ?C ===> rel_spmf (rel_prod op = cr)) callee callee'"
+    have [transfer_rule]: "(cr ===> ?C ===> rel_spmf (rel_prod (=) cr)) callee callee'"
       by(auto simp add: callee'_def rel_fun_def cr_def spmf_rel_map prod.rel_map td.Abs_inverse eq_onp_def intro!: rel_spmf_reflI intro: td.Rep[simplified] dest: callee_invariant)
     define s' where "s' \<equiv> Abs s"
     have [transfer_rule]: "cr s s'" using I by(simp add: cr_def s'_def td.Abs_inverse)
 
-    have [transfer_rule]: "rel_\<I> ?C op = \<I> \<I>"
+    have [transfer_rule]: "rel_\<I> ?C (=) \<I> \<I>"
       by(rule rel_\<I>I)(auto simp add: rel_set_eq set_relator_eq_onp eq_onp_same_args dest: eq_onp_to_eq)
     note [transfer_rule] = bi_unique_eq_onp bi_unique_eq
 
     define gpv' where "gpv' \<equiv> restrict_gpv \<I> gpv"
-    have [transfer_rule]: "rel_gpv op = ?C gpv' gpv'"
+    have [transfer_rule]: "rel_gpv (=) ?C gpv' gpv'"
       by(fold eq_onp_top_eq_eq)(auto simp add: gpv.rel_eq_onp eq_onp_same_args pred_gpv_def gpv'_def dest: in_outs'_restrict_gpvD)
 
     define weight_spmf' :: "('c \<times> 's') spmf \<Rightarrow> real" where "weight_spmf' \<equiv> weight_spmf"
     define weight_spmf'' :: "('c \<times> 's) spmf \<Rightarrow> real" where "weight_spmf'' \<equiv> weight_spmf"
-    have [transfer_rule]: "(rel_spmf (rel_prod op = cr) ===> op =) weight_spmf'' weight_spmf'"
+    have [transfer_rule]: "(rel_spmf (rel_prod (=) cr) ===> (=)) weight_spmf'' weight_spmf'"
       by(simp add: weight_spmf'_def weight_spmf''_def weight_spmf_parametric)
 
     have [rule_format]: "\<And>s. \<forall>x \<in> outs_\<I> \<I>. lossless_spmf (callee' s x)"
@@ -579,7 +579,7 @@ proof -
     moreover have "\<And>s. \<I> \<turnstile>c callee' s \<surd>" by transfer(rule WT_callee)
     ultimately have **: "weight_gpv \<I> gpv' \<le> weight_spmf' (exec_gpv callee' gpv' s')"
       unfolding weight_spmf'_def by(rule weight_exec_gpv)
-    have [transfer_rule]: "(op = ===> ?C ===> rel_spmf (rel_prod op = op =)) callee callee"
+    have [transfer_rule]: "((=) ===> ?C ===> rel_spmf (rel_prod (=) (=))) callee callee"
       by(simp add: rel_fun_def eq_onp_def prod.rel_eq)
     have "weight_gpv \<I> gpv' \<le> weight_spmf'' (exec_gpv callee gpv' s)" using ** by transfer
     also have "exec_gpv callee gpv' s = exec_gpv callee gpv s"
@@ -632,7 +632,7 @@ proof
     then have "expectation_gpv 1 \<I> (\<lambda>_. 1) gpv = nn_integral (measure_spmf (the_gpv gpv)) (case_generat (\<lambda>_. 1) (\<lambda>out c. INF r:responses_\<I> \<I> out. 1)) + pmf (the_gpv gpv) None"
       by(subst expectation_gpv.simps)(clarsimp intro!: nn_integral_cong_AE INF_cong[OF refl] split!: generat.split simp add: WT_gpv_ContD)
     also have "\<dots> = nn_integral (measure_spmf (the_gpv gpv)) (\<lambda>_. 1) + pmf (the_gpv gpv) None"
-      by(intro arg_cong2[where f="op +"] nn_integral_cong_AE)
+      by(intro arg_cong2[where f="(+)"] nn_integral_cong_AE)
         (auto split: generat.split dest!: WT_gpv_OutD[OF finite_gpv.prems] simp add: in_outs_\<I>_iff_responses_\<I>)
     finally show ?case
       by(simp add: measure_spmf.emeasure_eq_measure ennreal_plus[symmetric] del: ennreal_plus)

@@ -42,8 +42,8 @@ lemma [simp]: "s\<lparr> state.more := \<lparr> lasso = foo, red = bar \<rparr> 
   by (cases s) simp
 
 
-abbreviation "dropWhileNot v \<equiv> dropWhile (op \<noteq> v)"
-abbreviation "takeWhileNot v \<equiv> takeWhile (op \<noteq> v)"
+abbreviation "dropWhileNot v \<equiv> dropWhile ((\<noteq>) v)"
+abbreviation "takeWhileNot v \<equiv> takeWhile ((\<noteq>) v)"
 
 locale BlueDFS_defs = graph_defs G
   for G :: "('v, 'more) graph_rec_scheme"  +

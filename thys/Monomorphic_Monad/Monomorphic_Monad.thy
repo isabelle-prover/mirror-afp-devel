@@ -45,7 +45,7 @@ begin
 primrec sequence :: "'m list \<Rightarrow> ('a list \<Rightarrow> 'm) \<Rightarrow> 'm"
 where
   "sequence [] f = f []"
-| "sequence (x # xs) f = bind x (\<lambda>a. sequence xs (f \<circ> op # a))"
+| "sequence (x # xs) f = bind x (\<lambda>a. sequence xs (f \<circ> (#) a))"
 
 definition lift :: "('a \<Rightarrow> 'a) \<Rightarrow> 'm \<Rightarrow> 'm"
 where "lift f x = bind x (\<lambda>x. return (f x))"
@@ -167,7 +167,7 @@ end
 declare monad_fail_base.assert_def [code]
 
 lemma assert_parametric [transfer_rule]: includes lifting_syntax shows
-  "((A ===> M) ===> (M ===> (A ===> M) ===> M) ===> M ===> (A ===> op =) ===> M ===> M)
+  "((A ===> M) ===> (M ===> (A ===> M) ===> M) ===> M ===> (A ===> (=)) ===> M ===> M)
    monad_fail_base.assert monad_fail_base.assert"
 unfolding monad_fail_base.assert_def by transfer_prover
 
@@ -576,7 +576,7 @@ using assms by(cases m; cases m'; simp add: rel_nondetT_def)
 lemma rel_nondetT_simps [simp]: "rel_nondetT M (NondetT m) (NondetT m') \<longleftrightarrow> M m m'"
 by(simp add: rel_nondetT_def)
 
-lemma rel_nondetT_eq [relator_eq]: "rel_nondetT op = = op ="
+lemma rel_nondetT_eq [relator_eq]: "rel_nondetT (=) = (=)"
 by(auto simp add: fun_eq_iff rel_nondetT_def intro: nondetT.rel_refl_strong elim: nondetT.rel_cases)
 
 lemma rel_nondetT_mono [relator_mono]: "rel_nondetT A \<le> rel_nondetT B" if "A \<le> B"
@@ -829,7 +829,7 @@ context includes lifting_syntax begin
 definition rel_stateT :: "('s \<Rightarrow> 's' \<Rightarrow> bool) \<Rightarrow> ('m \<Rightarrow> 'm' \<Rightarrow> bool) \<Rightarrow> ('s, 'm) stateT \<Rightarrow> ('s', 'm') stateT \<Rightarrow> bool"
 where "rel_stateT S M m m' \<longleftrightarrow> (S ===> M) (run_state m) (run_state m')"
 
-lemma rel_stateT_eq [relator_eq]: "rel_stateT op = op = = op ="
+lemma rel_stateT_eq [relator_eq]: "rel_stateT (=) (=) = (=)"
 by(auto simp add: rel_stateT_def fun_eq_iff rel_fun_eq intro: stateT.expand)
 
 lemma rel_stateT_mono [relator_mono]: "\<lbrakk> S' \<le> S; M \<le> M' \<rbrakk> \<Longrightarrow> rel_stateT S M \<le> rel_stateT S' M'"
@@ -1255,7 +1255,7 @@ using assms by(cases m; cases m'; simp add: rel_optionT_def)
 lemma rel_optionT_simps [simp]: "rel_optionT M (OptionT m) (OptionT m') \<longleftrightarrow> M m m'"
 by(simp add: rel_optionT_def)
 
-lemma rel_optionT_eq [relator_eq]: "rel_optionT op = = op ="
+lemma rel_optionT_eq [relator_eq]: "rel_optionT (=) = (=)"
 by(auto simp add: fun_eq_iff rel_optionT_def intro: optionT.rel_refl_strong elim: optionT.rel_cases)
 
 lemma rel_optionT_mono [relator_mono]: "rel_optionT A \<le> rel_optionT B" if "A \<le> B"
@@ -1679,7 +1679,7 @@ lemma rel_envTE [cases pred]:
   obtains f g where "m = EnvT f" "m' = EnvT g" "(R ===> M) f g"
 using assms by(cases m; cases m'; auto  simp add: rel_envT_simps)
 
-lemma rel_envT_eq [relator_eq]: "rel_envT op = op = = op ="
+lemma rel_envT_eq [relator_eq]: "rel_envT (=) (=) = (=)"
 by(auto simp add: rel_envT_def rel_fun_eq BNF_Def.vimage2p_def fun_eq_iff intro: envT.expand)
 
 lemma rel_envT_mono [relator_mono]: "\<lbrakk> R \<le> R'; M \<le> M' \<rbrakk> \<Longrightarrow> rel_envT R' M \<le> rel_envT R M'"
@@ -2590,14 +2590,14 @@ by(simp add: cr_prod1_def)
 
 lemma cr_prod1I: "A a b \<Longrightarrow> cr_prod1 c' A a (b, c')" by simp
 
-lemma cr_prod1_Pair_transfer [cr_envT_stateT_transfer]: "(A ===> eq_onp (op = c) ===> cr_prod1 c A) (\<lambda>a _. a) Pair"
+lemma cr_prod1_Pair_transfer [cr_envT_stateT_transfer]: "(A ===> eq_onp ((=) c) ===> cr_prod1 c A) (\<lambda>a _. a) Pair"
 by(auto simp add: rel_fun_def eq_onp_def)
 
 lemma cr_prod1_fst_transfer [cr_envT_stateT_transfer]: "(cr_prod1 c A ===> A) (\<lambda>a. a) fst"
 by(auto simp add: rel_fun_def)
 
 lemma cr_prod1_case_prod_transfer [cr_envT_stateT_transfer]:
-  "((A ===> eq_onp (op = c) ===> C) ===> cr_prod1 c A ===> C) (\<lambda>f a. f a c) case_prod"
+  "((A ===> eq_onp ((=) c) ===> C) ===> cr_prod1 c A ===> C) (\<lambda>f a. f a c) case_prod"
 by(simp add: rel_fun_def eq_onp_def)
 
 lemma cr_prod1_Grp: "cr_prod1 c (BNF_Def.Grp A f) = BNF_Def.Grp A (\<lambda>b. (f b, c))"
@@ -2605,7 +2605,7 @@ by(auto simp add: Grp_def fun_eq_iff)
 
 
 definition cr_envT_stateT :: "'s \<Rightarrow> ('m1 \<Rightarrow> 'm2 \<Rightarrow> bool) \<Rightarrow> ('s, 'm1) envT \<Rightarrow> ('s, 'm2) stateT \<Rightarrow> bool"
-where "cr_envT_stateT s M m1 m2 = (eq_onp (op = s) ===> M) (run_env m1) (run_state m2)"
+where "cr_envT_stateT s M m1 m2 = (eq_onp ((=) s) ===> M) (run_env m1) (run_state m2)"
 
 lemma cr_envT_stateT_simps [simp]:
   "cr_envT_stateT s M (EnvT f) (StateT g) \<longleftrightarrow> M (f s) (g s)"
@@ -2613,22 +2613,22 @@ by(simp add: cr_envT_stateT_def rel_fun_def eq_onp_def)
 
 lemma cr_envT_stateTE:
   assumes "cr_envT_stateT s M m1 m2"
-  obtains f g where "m1 = EnvT f" "m2 = StateT g" "(eq_onp (op = s) ===> M) f g"
+  obtains f g where "m1 = EnvT f" "m2 = StateT g" "(eq_onp ((=) s) ===> M) f g"
 using assms by(cases m1; cases m2; auto simp add: eq_onp_def)
 
 lemma cr_envT_stateTD: "cr_envT_stateT s M m1 m2 \<Longrightarrow> M (run_env m1 s) (run_state m2 s)"
 by(auto elim!: cr_envT_stateTE dest: rel_funD simp add: eq_onp_def)
 
 lemma cr_envT_stateT_run [cr_envT_stateT_transfer]:
-  "(cr_envT_stateT s M ===> eq_onp (op = s) ===> M) run_env run_state"
+  "(cr_envT_stateT s M ===> eq_onp ((=) s) ===> M) run_env run_state"
 by(rule rel_funI)(auto elim!: cr_envT_stateTE)
 
 lemma cr_envT_stateT_StateT_EnvT [cr_envT_stateT_transfer]:
-  "((eq_onp (op = s) ===> M) ===> cr_envT_stateT s M) EnvT StateT"
+  "((eq_onp ((=) s) ===> M) ===> cr_envT_stateT s M) EnvT StateT"
 by(auto 4 3 dest: rel_funD simp add: eq_onp_def)
 
 lemma cr_envT_stateT_rec [cr_envT_stateT_transfer]:
-  "(((eq_onp (op = s) ===> M) ===> C) ===> cr_envT_stateT s M ===> C) rec_envT rec_stateT"
+  "(((eq_onp ((=) s) ===> M) ===> C) ===> cr_envT_stateT s M ===> C) rec_envT rec_stateT"
 by(auto simp add: rel_fun_def elim!: cr_envT_stateTE)
 
 lemma cr_envT_stateT_return [cr_envT_stateT_transfer]:
@@ -2654,7 +2654,7 @@ apply(simp add: eq_onp_def)
 done
 
 lemma cr_envT_stateT_ask_get [cr_envT_stateT_transfer]:
-  "((eq_onp (op = s) ===> cr_envT_stateT s M) ===> cr_envT_stateT s M) ask_env get_state"
+  "((eq_onp ((=) s) ===> cr_envT_stateT s M) ===> cr_envT_stateT s M) ask_env get_state"
 unfolding ask_env_def get_state_def
 apply(rule rel_funI)+
 apply simp

@@ -15,7 +15,7 @@ begin
 subsection{*Properties about ranks and linear maps*}
 
 lemma rank_matrix_dim_range:
-assumes lf: "linear (op *s) (op *s) f"
+assumes lf: "linear (( *s)) (( *s)) f"
 shows "rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = vec.dim (range f)"
 unfolding rank_col_rank[of "matrix f"] col_rank_def
 unfolding col_space_eq' using matrix_works[OF lf] by metis
@@ -23,10 +23,10 @@ unfolding col_space_eq' using matrix_works[OF lf] by metis
 text{*The following two lemmas are the demonstration of theorem 2.11 that appears the book "Advanced Linear Algebra" by Steven Roman.*}
 
 lemma linear_injective_rank_eq_ncols:
-assumes lf: "linear (op *s) (op *s) f"
+assumes lf: "linear (( *s)) (( *s)) f"
 shows "inj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
 proof (rule)
-interpret lf: linear "(op *s)" "(op *s)" f using lf by simp
+interpret lf: linear "(( *s))" "(( *s))" f using lf by simp
 assume inj: "inj f"
 hence "{x. f x = 0} = {0}" using lf.linear_injective_ker_0 by blast
 hence "vec.dim {x. f x = 0} = 0" using vec.dim_zero_eq' by blast
@@ -46,7 +46,7 @@ thus "inj f" using vec.linear_injective_ker_0[of "matrix f"]
 qed
 
 lemma linear_surjective_rank_eq_ncols:
-assumes lf: "linear (op *s) (op *s) f"
+assumes lf: "linear (( *s)) (( *s)) f"
 shows "surj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = nrows (matrix f)"
 proof (rule)
 assume surj: "surj f"
@@ -65,7 +65,7 @@ qed
 
 lemma linear_bij_rank_eq_ncols:
 fixes f::"('a::{field}^'n::{mod_type})=>('a::{field}^'n::{mod_type})"
-assumes lf: "linear (op *s) (op *s) f"
+assumes lf: "linear (( *s)) (( *s)) f"
 shows "bij f \<longleftrightarrow> rank (matrix f) = ncols (matrix f)" 
 unfolding bij_def
 using vec.linear_injective_imp_surjective[OF lf]
@@ -76,18 +76,18 @@ by auto
 
 subsection{*Invertible linear maps*}
 
-text{*We could get rid of the property @{text "linear (op *c) (op *b) g"} using 
+text{*We could get rid of the property @{text "linear (( *c)) (( *b)) g"} using 
   @{thm "finite_dimensional_vector_space.left_inverse_linear"}*}
 
 locale invertible_lf = linear + 
-  assumes invertible_lf: "(\<exists>g. linear (op *c) (op *b) g \<and> (g \<circ> f = id) \<and> (f \<circ> g = id))"
+  assumes invertible_lf: "(\<exists>g. linear (( *c)) (( *b)) g \<and> (g \<circ> f = id) \<and> (f \<circ> g = id))"
 
 context linear_between_finite_dimensional_vector_spaces
 begin
 
 lemma invertible_lf_intro[intro]:
   assumes "(g \<circ> f = id)"  and "(f \<circ> g = id)"
-  shows "invertible_lf (op *b) (op *c) f"
+  shows "invertible_lf (( *b)) (( *c)) f"
   by (unfold_locales, metis assms(1) assms(2) inj_on_id inj_on_imageI2  left_right_inverse_eq linear_injective_left_inverse)
 end  
 
@@ -101,23 +101,23 @@ lemma invertible_imp_bijective:
 lemma invertible_matrix_imp_invertible_lf:
   fixes A::"'a::{field}^'n^'n"
   assumes invertible_A: "invertible A"
-  shows "invertible_lf (op *s) (op *s) (\<lambda>x. A *v x)"
+  shows "invertible_lf (( *s)) (( *s)) (\<lambda>x. A *v x)"
 proof -
   obtain B where AB: "A**B=mat 1" and BA: "B**A=mat 1" using invertible_A unfolding invertible_def by blast
   show ?thesis 
   proof (rule vec.invertible_lf_intro [of "(\<lambda>x. B *v x)"]) 
-    show id1: "op *v B \<circ> op *v A = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
-    show "op *v A \<circ> op *v B = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
+    show id1: "( *v) B \<circ> ( *v) A = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
+    show "( *v) A \<circ> ( *v) B = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
   qed
 qed
 
 lemma invertible_lf_imp_invertible_matrix:
   fixes f::"'a::{field}^'n\<Rightarrow>'a^'n"
-  assumes invertible_f: "invertible_lf (op *s) (op *s) f"
+  assumes invertible_f: "invertible_lf (( *s)) (( *s)) f"
   shows "invertible (matrix f)" 
 proof -
-  interpret i: invertible_lf "(op *s)" "(op *s)" f using invertible_f .
-  obtain g where linear_g: "linear (op *s) (op *s)  g" and gf: "(g \<circ> f = id)" and fg: "(f \<circ> g = id)"
+  interpret i: invertible_lf "(( *s))" "(( *s))" f using invertible_f .
+  obtain g where linear_g: "linear (( *s)) (( *s))  g" and gf: "(g \<circ> f = id)" and fg: "(f \<circ> g = id)"
     by (metis invertible_f invertible_lf.invertible_lf)
   show ?thesis proof (unfold invertible_def, rule exI[of _ "matrix g"], rule conjI)
     show "matrix f ** matrix g = mat 1"
@@ -130,13 +130,13 @@ qed
 
 lemma invertible_matrix_iff_invertible_lf:
   fixes A::"'a::{field}^'n^'n"
-  shows "invertible A \<longleftrightarrow> invertible_lf (op *s) (op *s) (\<lambda>x. A *v x)" 
+  shows "invertible A \<longleftrightarrow> invertible_lf (( *s)) (( *s)) (\<lambda>x. A *v x)" 
   by (metis invertible_lf_imp_invertible_matrix invertible_matrix_imp_invertible_lf matrix_of_matrix_vector_mul)
 
 lemma invertible_matrix_iff_invertible_lf':
   fixes  f::"'a::{field}^'n\<Rightarrow>'a^'n"
-  assumes linear_f: "linear (op *s) (op *s) f"
-  shows "invertible (matrix f) \<longleftrightarrow> invertible_lf (op *s) (op *s) f"
+  assumes linear_f: "linear (( *s)) (( *s)) f"
+  shows "invertible (matrix f) \<longleftrightarrow> invertible_lf (( *s)) (( *s)) f"
   by (metis (lifting) assms invertible_matrix_iff_invertible_lf matrix_vector_mul) 
 
 
@@ -149,7 +149,7 @@ proof -
   define TQ where "TQ x = Q *v x" for x
   define TA where "TA x = A *v x" for x
   define TAQ where "TAQ x = (A**Q) *v x" for x
-  have "invertible_lf (op *s) (op *s) TQ" using invertible_matrix_imp_invertible_lf[OF invertible_Q] unfolding TQ_def .
+  have "invertible_lf (( *s)) (( *s)) TQ" using invertible_matrix_imp_invertible_lf[OF invertible_Q] unfolding TQ_def .
   hence bij_TQ: "bij TQ" using invertible_imp_bijective by auto
   have "range TAQ = range (TA \<circ> TQ)" unfolding TQ_def TA_def TAQ_def o_def matrix_vector_mul_assoc ..
   also have "... = TA `(range TQ)" unfolding fun.set_map ..
@@ -180,9 +180,9 @@ proof -
   define L where "L = (\<lambda>x. P *v x)"
   define C where "C = L`B"
   have finite_B: "finite B" using vec.indep_card_eq_dim_span[OF ind_B] by simp
-  have linear_L: "linear (op *s) (op *s) L"  using matrix_vector_mul_linear unfolding L_def .
+  have linear_L: "linear (( *s)) (( *s)) L"  using matrix_vector_mul_linear unfolding L_def .
   have finite_C: "finite C" using vec.indep_card_eq_dim_span[OF ind_B] unfolding C_def by simp
-  have inv_TP: "invertible_lf (op *s) (op *s) (\<lambda>x. P *v x)" using invertible_matrix_imp_invertible_lf[OF inv_P] .
+  have inv_TP: "invertible_lf (( *s)) (( *s)) (\<lambda>x. P *v x)" using invertible_matrix_imp_invertible_lf[OF inv_P] .
   have inj_on_LW: "inj_on L W" using invertible_imp_bijective[OF inv_TP] unfolding bij_def L_def unfolding inj_on_def 
     by blast
   hence inj_on_LB: "inj_on L B" unfolding inj_on_def using B_in_W by auto  
@@ -245,7 +245,7 @@ proof -
   define TP where "TP = (\<lambda>x. P *v x)"
   define TA where "TA = (\<lambda>x. A *v x)"
   define TPA where "TPA = (\<lambda>x. (P**A) *v x)"
-  have sub: "vec.subspace (range (op *v A))"
+  have sub: "vec.subspace (range (( *v) A))"
     by (metis matrix_vector_mul_linear vec.subspace_UNIV vec.subspace_linear_image)
   have "vec.dim (range TPA) = vec.dim (range (TP \<circ> TA))" 
     unfolding TP_def TA_def TPA_def o_def matrix_vector_mul_assoc ..
@@ -310,7 +310,7 @@ lemma cart_basis_eq_set_of_vector_cart_basis':
 
 lemma basis_image_linear:
   fixes f::"'b::{field}^'n => 'b^'n"
-  assumes invertible_lf: "invertible_lf (op *s) (op *s) f"
+  assumes invertible_lf: "invertible_lf (( *s)) (( *s)) f"
   and basis_X: "is_basis (set_of_vector X)"
   shows "is_basis (f` (set_of_vector X))"
 proof (rule iffD1[OF independent_is_basis], rule conjI)
@@ -320,7 +320,7 @@ proof (rule iffD1[OF independent_is_basis], rule conjI)
   finally show "card (f ` set_of_vector X) = card (UNIV::'n set)" .
   show "vec.independent (f ` set_of_vector X)"
   proof (rule linear.independent_injective_image)
-    show "linear (op *s) (op *s) f" using invertible_lf unfolding invertible_lf_def by simp
+    show "linear (( *s)) (( *s)) f" using invertible_lf unfolding invertible_lf_def by simp
     show "vec.independent (set_of_vector X)" using basis_X unfolding is_basis_def by simp
     show "inj f"  using invertible_imp_bijective[OF invertible_lf] unfolding bij_def by simp
   qed
@@ -375,11 +375,11 @@ lemma sum_basis_eq:
 proof -
 have card_set_of_vector:"card(set_of_vector X) = CARD('n)" 
   using independent_is_basis[of "set_of_vector X"] using is_basis by auto
-have fact_1: "set_of_vector X = range (op $ X)" unfolding set_of_vector_def by auto
-have inj: "inj (op $ X)"
+have fact_1: "set_of_vector X = range (($) X)" unfolding set_of_vector_def by auto
+have inj: "inj (($) X)"
   proof (rule eq_card_imp_inj_on) 
     show "finite (UNIV::'n set)" using finite_class.finite_UNIV .
-    show "card (range (op $ X)) = card (UNIV::'n set)" 
+    show "card (range (($) X)) = card (UNIV::'n set)" 
       using card_set_of_vector using fact_1 unfolding set_of_vector_def by simp
   qed
 show ?thesis using sum.reindex[OF inj, of "(\<lambda>x. f x *s x)", unfolded o_def] unfolding fact_1 .
@@ -388,20 +388,20 @@ qed
 corollary sum_basis_eq2:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis:"is_basis  (set_of_vector X)"
-  shows "sum (\<lambda>x. f x *s x) (set_of_vector X) = sum (\<lambda>i. (f \<circ> op $ X) i *s (X$i)) UNIV" 
+  shows "sum (\<lambda>x. f x *s x) (set_of_vector X) = sum (\<lambda>i. (f \<circ> ($) X) i *s (X$i)) UNIV" 
   using sum_basis_eq[OF is_basis] by simp
 
 lemma inj_op_nth:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis: "is_basis (set_of_vector X)"
-  shows "inj (op $ X)"
+  shows "inj (($) X)"
 proof -
-  have fact_1: "set_of_vector X = range (op $ X)" unfolding set_of_vector_def by auto
+  have fact_1: "set_of_vector X = range (($) X)" unfolding set_of_vector_def by auto
   have card_set_of_vector:"card(set_of_vector X) = CARD('n)" using independent_is_basis[of "set_of_vector X"] using is_basis by auto
-  show "inj (op $ X)"
+  show "inj (($) X)"
   proof (rule eq_card_imp_inj_on) 
     show "finite (UNIV::'n set)" using finite_class.finite_UNIV .
-    show "card (range (op $ X)) = card (UNIV::'n set)" using card_set_of_vector using fact_1 unfolding set_of_vector_def by simp
+    show "card (range (($) X)) = card (UNIV::'n set)" using card_set_of_vector using fact_1 unfolding set_of_vector_def by simp
   qed
 qed
 
@@ -417,10 +417,10 @@ proof -
   proof (clarify)
     fix f
     show "\<exists>g. (\<Sum>i\<in>UNIV. g i *s X $ i) = (\<Sum>i\<in>set_of_vector X. f i *s i)"
-    proof (rule exI[of _ "(\<lambda>i. (f \<circ> op $ X) i)"], unfold o_def)
-      have fact_1: "set_of_vector X = range (op $ X)" unfolding set_of_vector_def by auto
+    proof (rule exI[of _ "(\<lambda>i. (f \<circ> ($) X) i)"], unfold o_def)
+      have fact_1: "set_of_vector X = range (($) X)" unfolding set_of_vector_def by auto
       have card_set_of_vector:"card(set_of_vector X) = CARD('n)" using independent_is_basis[of "set_of_vector X"] using is_basis by auto
-      have inj: "inj (op $ X)" using inj_op_nth[OF is_basis] .
+      have inj: "inj (($) X)" using inj_op_nth[OF is_basis] .
       show " (\<Sum>i\<in>UNIV. f (X $ i) *s X $ i) = (\<Sum>i\<in>set_of_vector X. f i *s i)" 
         using sum.reindex[symmetric, OF inj, of "\<lambda>i. f i *s i"] unfolding fact_1 by simp
     qed
@@ -442,8 +442,8 @@ proof -
   proof -
     have "(\<Sum>v\<in>(set_of_vector X). g v *s v)  = (\<Sum>i\<in>(UNIV::'n set). f i *s X$i)"
     proof -
-      have inj: "inj (op $ X)" using inj_op_nth[OF is_basis] .
-      have rw: "set_of_vector X = range (op $ X)" unfolding set_of_vector_def by auto
+      have inj: "inj (($) X)" using inj_op_nth[OF is_basis] .
+      have rw: "set_of_vector X = range (($) X)" unfolding set_of_vector_def by auto
       {
         fix a
         have "f a = g (X $ a)"
@@ -537,7 +537,7 @@ qed
 lemma linear_coord:
   fixes X::"'a::{field}^'n^'n"
   assumes basis_X: "is_basis (set_of_vector X)"
-  shows "linear (op *s) (op *s) (coord X)"
+  shows "linear (( *s)) (( *s)) (coord X)"
 proof (unfold linear_def additive_def linear_axioms_def coord_def, auto)
   fix x y::"('a, 'n) vec" 
   show  "vec_lambda (THE f. x + y = (\<Sum>x\<in>UNIV. f x *s X $ x)) 
@@ -595,7 +595,7 @@ next
     thus ?thesis
       by (unfold the_f the_g, vector, auto, unfold t_def, auto)    
   qed
-  show "vector_space op *s" by unfold_locales
+  show "vector_space ( *s)" by unfold_locales
 qed
 
 
@@ -718,7 +718,7 @@ text{*This is the theorem 2.14 in the book "Advanced Linear Algebra" by Steven R
 lemma coord_matrix':
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'m^'m"
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
-  and linear_f: "linear (op *s) (op *s) f"
+  and linear_f: "linear (( *s)) (( *s)) f"
   shows "coord Y (f v) = (matrix' X Y f) *v (coord X v)"  
 proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
   fix i 
@@ -768,12 +768,12 @@ text{*This is the second part of the theorem 2.15 in the book "Advanced Linear A
 lemma matrix'_compose:
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'m^'m" and Z::"'a^'p^'p"
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"  and basis_Z: "is_basis (set_of_vector Z)"
-  and linear_f: "linear (op *s) (op *s) f" and linear_g: "linear (op *s) (op *s) g"
+  and linear_f: "linear (( *s)) (( *s)) f" and linear_g: "linear (( *s)) (( *s)) g"
   shows "matrix' X Z (g \<circ> f) = (matrix' Y Z g) ** (matrix' X Y f)"
 proof (unfold matrix_eq, clarify)
   fix a::"('a, 'n) vec"
   obtain v where v: "a = coord X v" using bij_coord[OF basis_X] unfolding bij_iff by metis
-  have linear_gf: "linear (op *s) (op *s) (g \<circ> f)" using linear_compose[OF linear_f linear_g] .
+  have linear_gf: "linear (( *s)) (( *s)) (g \<circ> f)" using linear_compose[OF linear_f linear_g] .
   have "matrix' X Z (g \<circ> f) *v a = matrix' X Z (g \<circ> f) *v (coord X v)" unfolding v ..
   also have "... = coord Z ((g \<circ> f) v)" unfolding coord_matrix'[OF basis_X basis_Z linear_gf, symmetric] ..
   also have "... = coord Z (g (f v))" unfolding o_def ..
@@ -787,10 +787,10 @@ qed
 lemma exists_linear_eq_matrix':
   fixes A::"'a::{field}^'m^'n" and X::"'a^'m^'m" and Y::"'a^'n^'n"
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
-  shows "\<exists>f. matrix' X Y f = A \<and> linear (op *s) (op *s) f" 
+  shows "\<exists>f. matrix' X Y f = A \<and> linear (( *s)) (( *s)) f" 
 proof -
   define f where "f v = sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV" for v
-  obtain g where linear_g: "linear (op *s) (op *s) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)" 
+  obtain g where linear_g: "linear (( *s)) (( *s)) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)" 
     using vec.linear_independent_extend using basis_X unfolding is_basis_def by blast  
   show ?thesis
   proof (rule exI[of _ g], rule conjI)
@@ -813,7 +813,7 @@ proof -
         finally show "g (X $ i) = (\<Sum>j\<in>UNIV. A $ j $ i *s  Y $ j)" .
       qed
     qed
-    show "linear (op *s) (op *s) g" using linear_g .
+    show "linear (( *s)) (( *s)) g" using linear_g .
   qed
 qed
 
@@ -919,7 +919,7 @@ lemma matrix'_matrix_change_of_basis:
   fixes B::"'a::{field}^'n^'n" and B'::"'a^'n^'n" and C::"'a^'m^'m" and C'::"'a^'m^'m"
   assumes basis_B: "is_basis (set_of_vector B)" and basis_B': "is_basis (set_of_vector B')"
   and basis_C: "is_basis (set_of_vector C)" and basis_C': "is_basis (set_of_vector C')"
-  and linear_f: "linear (op *s) (op *s) f"
+  and linear_f: "linear (( *s)) (( *s)) f"
   shows "matrix' B' C' f = matrix_change_of_basis C C' ** matrix' B C f ** matrix_change_of_basis B' B"
 proof (unfold matrix_eq, clarify)
   fix x
@@ -949,7 +949,7 @@ lemma matrix_inv_matrix_change_of_basis:
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   shows"matrix_change_of_basis Y X = matrix_inv (matrix_change_of_basis X Y)"
 proof (rule matrix_inv_unique[symmetric])
-  have linear_id: "linear (op *s) (op *s) id" by (metis vec.linear_id)  
+  have linear_id: "linear (( *s)) (( *s)) id" by (metis vec.linear_id)  
   have "(matrix_change_of_basis Y X) ** (matrix_change_of_basis X Y) = (matrix' Y X id) ** (matrix' X Y id)"
     unfolding matrix'_id_eq_matrix_change_of_basis[OF basis_X basis_Y]
     unfolding matrix'_id_eq_matrix_change_of_basis[OF basis_Y basis_X] ..
@@ -978,7 +978,7 @@ corollary invertible_matrix_change_of_basis:
 
 lemma invertible_lf_imp_invertible_matrix':
 fixes f:: "'a::{field}^'b \<Rightarrow> 'a^'b"
-assumes "invertible_lf (op *s) (op *s) f" and basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
+assumes "invertible_lf (( *s)) (( *s)) f" and basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
 shows "invertible (matrix' X Y f)"
   by (metis (lifting) assms(1) basis_X basis_Y invertible_lf_def invertible_lf_imp_invertible_matrix
     invertible_matrix_change_of_basis invertible_mult is_basis_cart_basis' matrix'_eq_matrix matrix'_matrix_change_of_basis)
@@ -986,8 +986,8 @@ shows "invertible (matrix' X Y f)"
 lemma invertible_matrix'_imp_invertible_lf:
 fixes f:: "'a::{field}^'b \<Rightarrow> 'a^'b"
   assumes "invertible (matrix' X Y f)"  and basis_X: "is_basis (set_of_vector X)" 
-  and linear_f: "linear (op *s) (op *s) f" and basis_Y: "is_basis (set_of_vector Y)"
-  shows "invertible_lf (op *s) (op *s) f"
+  and linear_f: "linear (( *s)) (( *s)) f" and basis_Y: "is_basis (set_of_vector Y)"
+  shows "invertible_lf (( *s)) (( *s)) f"
   unfolding invertible_matrix_iff_invertible_lf'[OF linear_f, symmetric]
   by (metis assms(1) basis_X basis_Y id_o invertible_matrix_change_of_basis 
      invertible_mult is_basis_cart_basis' linear_f vec.linear_id 
@@ -1000,12 +1000,12 @@ proof (auto)
   show "\<exists>Y. matrix_change_of_basis Y X = P \<and> is_basis (set_of_vector Y)"
   proof -
     fix i j
-    obtain f where P: "P = matrix' X X f" and linear_f: "linear (op *s) (op *s) f"
+    obtain f where P: "P = matrix' X X f" and linear_f: "linear (( *s)) (( *s)) f"
       using exists_linear_eq_matrix'[OF basis_X basis_X, of P] by blast
     show ?thesis    
     proof (rule exI[of _ "\<chi> j. f (X$j)"], rule conjI) 
       show "matrix_change_of_basis (\<chi> j. f (X $ j)) X = P" unfolding matrix_change_of_basis_def P matrix'_def by vector
-      have invertible_f: "invertible_lf (op *s) (op *s) f" using invertible_matrix'_imp_invertible_lf[OF _ basis_X linear_f basis_X] using invertible_P unfolding P by simp
+      have invertible_f: "invertible_lf (( *s)) (( *s)) f" using invertible_matrix'_imp_invertible_lf[OF _ basis_X linear_f basis_X] using invertible_P unfolding P by simp
       have rw: "set_of_vector (\<chi> j. f (X $ j)) = f`(set_of_vector X)" unfolding set_of_vector_def by auto
       show "is_basis (set_of_vector (\<chi> j. f (X $ j)))" unfolding rw using basis_image_linear[OF invertible_f basis_X] .
     qed
@@ -1029,14 +1029,14 @@ lemma exists_basis: "\<exists>X::'a::{field}^'n^'n. is_basis (set_of_vector X)"
 lemma equivalent_implies_exist_matrix':
   assumes equivalent: "equivalent_matrices A B"
   shows "\<exists>X Y X' Y' f::'a::{field}^'n\<Rightarrow>'a^'m. 
-  linear (op *s) (op *s) f \<and> matrix' X Y f = A \<and> matrix' X' Y' f = B \<and> is_basis (set_of_vector X) 
+  linear (( *s)) (( *s)) f \<and> matrix' X Y f = A \<and> matrix' X' Y' f = B \<and> is_basis (set_of_vector X) 
   \<and> is_basis (set_of_vector Y) \<and> is_basis (set_of_vector X') \<and> is_basis (set_of_vector Y')"
 proof -
   obtain X::"'a^'n^'n" where X: "is_basis (set_of_vector X)" using exists_basis by blast
   obtain Y::"'a^'m^'m" where Y: "is_basis (set_of_vector Y)" using exists_basis by blast
   obtain P Q where B_PAQ: "B=(matrix_inv P)**A**Q" and inv_P: "invertible P" and inv_Q: "invertible Q" 
     using equivalent unfolding equivalent_matrices_def by auto
-  obtain f where f_A: "matrix' X Y f = A" and linear_f: "linear (op *s) (op *s) f" 
+  obtain f where f_A: "matrix' X Y f = A" and linear_f: "linear (( *s)) (( *s)) f" 
     using exists_linear_eq_matrix'[OF X Y] by auto   
   obtain X'::"'a^'n^'n" where X': "is_basis (set_of_vector X')" and Q:"matrix_change_of_basis X' X = Q" 
     using invertible_matrix_is_change_of_basis[OF inv_Q X] by fast
@@ -1059,7 +1059,7 @@ lemma exist_matrix'_implies_equivalent:
   and Y: "is_basis (set_of_vector Y)" 
   and X': "is_basis (set_of_vector X')"
   and Y': "is_basis (set_of_vector Y')"
-  and linear_f: "linear (op *s) (op *s) f"
+  and linear_f: "linear (( *s)) (( *s)) f"
   shows "equivalent_matrices A B"
 proof (unfold equivalent_matrices_def, rule exI[of _ "matrix_change_of_basis Y' Y"], rule exI[of _ "matrix_change_of_basis X' X"], auto)
   have inv: "matrix_change_of_basis Y Y' = matrix_inv (matrix_change_of_basis Y' Y)" using matrix_inv_matrix_change_of_basis[OF Y' Y] .
@@ -1073,7 +1073,7 @@ qed
 text{*This is the proof of the theorem 2.18 in the book "Advanced Linear Algebra" by Steven Roman.*}
 corollary equivalent_iff_exist_matrix':
   shows "equivalent_matrices A B \<longleftrightarrow> (\<exists>X Y X' Y' f::'a::{field}^'n\<Rightarrow>'a^'m. 
-  linear (op *s) (op *s) f \<and> matrix' X Y f = A \<and> matrix' X' Y' f = B 
+  linear (( *s)) (( *s)) f \<and> matrix' X Y f = A \<and> matrix' X' Y' f = B 
   \<and> is_basis (set_of_vector X) \<and> is_basis (set_of_vector Y) 
   \<and> is_basis (set_of_vector X') \<and> is_basis (set_of_vector Y'))"
   by (rule, auto simp add: exist_matrix'_implies_equivalent equivalent_implies_exist_matrix')
@@ -1087,12 +1087,12 @@ definition similar_matrices :: "'a::{semiring_1}^'n^'n \<Rightarrow> 'a::{semiri
 lemma similar_implies_exist_matrix':
   fixes A B::"'a::{field}^'n^'n"
   assumes similar: "similar_matrices A B"
-  shows "\<exists>X Y f. linear (op *s) (op *s) f \<and> matrix' X X f = A \<and> matrix' Y Y f = B 
+  shows "\<exists>X Y f. linear (( *s)) (( *s)) f \<and> matrix' X X f = A \<and> matrix' Y Y f = B 
     \<and> is_basis (set_of_vector X) \<and> is_basis (set_of_vector Y)"
 proof -
  obtain P where inv_P: "invertible P" and B_PAP: "B=(matrix_inv P)**A**P" using similar unfolding similar_matrices_def by blast
  obtain X::"'a^'n^'n" where X: "is_basis (set_of_vector X)" using exists_basis by blast
- obtain f where linear_f: "linear (op *s) (op *s) f" and A: "matrix' X X f = A" using exists_linear_eq_matrix'[OF X X] by blast
+ obtain f where linear_f: "linear (( *s)) (( *s)) f" and A: "matrix' X X f = A" using exists_linear_eq_matrix'[OF X X] by blast
  obtain Y::"'a^'n^'n" where Y: "is_basis (set_of_vector Y)" and P: "P = matrix_change_of_basis Y X"
   using invertible_matrix_is_change_of_basis[OF inv_P X] by fast 
  have P': "matrix_inv P = matrix_change_of_basis X Y" by (metis (lifting) P X Y matrix_inv_matrix_change_of_basis)
@@ -1106,7 +1106,7 @@ qed
 
 lemma exist_matrix'_implies_similar:
   fixes A B::"'a::{field}^'n^'n"
-  assumes linear_f: "linear (op *s) (op *s) f" and A: "matrix' X X f = A" and B: "matrix' Y Y f = B"
+  assumes linear_f: "linear (( *s)) (( *s)) f" and A: "matrix' X X f = A" and B: "matrix' Y Y f = B"
   and X: "is_basis (set_of_vector X)" and Y: "is_basis (set_of_vector Y)"
   shows "similar_matrices A B"
 proof (unfold similar_matrices_def, rule exI[of _ "matrix_change_of_basis Y X"], rule conjI)
@@ -1120,7 +1120,7 @@ qed
 text{*This is the proof of the theorem 2.19 in the book "Advanced Linear Algebra" by Steven Roman.*}
 corollary similar_iff_exist_matrix':
   fixes A B::"'a::{field}^'n^'n"
-  shows "similar_matrices A B \<longleftrightarrow> (\<exists>X Y f. linear (op *s) (op *s) f \<and> matrix' X X f = A 
+  shows "similar_matrices A B \<longleftrightarrow> (\<exists>X Y f. linear (( *s)) (( *s)) f \<and> matrix' X X f = A 
     \<and> matrix' Y Y f = B \<and> is_basis (set_of_vector X) \<and> is_basis (set_of_vector Y))"
   by (rule, auto simp add: exist_matrix'_implies_similar similar_implies_exist_matrix')
 

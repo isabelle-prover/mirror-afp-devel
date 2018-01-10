@@ -253,7 +253,7 @@ next
     unfolding less_eq_nmultiset_def by (metis trans_less_nmultiset)
 qed
 
-lemma less_multiset_ext\<^sub>D\<^sub>M_less: "less_multiset_ext\<^sub>D\<^sub>M op < = (op <)"
+lemma less_multiset_ext\<^sub>D\<^sub>M_less: "less_multiset_ext\<^sub>D\<^sub>M (<) = (<)"
   unfolding fun_eq_iff less_multiset_ext\<^sub>D\<^sub>M_def less_multiset\<^sub>D\<^sub>M by blast
 
 end

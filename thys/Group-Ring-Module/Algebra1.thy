@@ -5516,7 +5516,7 @@ apply (simp add:ord_isom_mem)
 apply (rule ballI)
 apply (simp add:minimum_elem_def)
 apply (frule_tac x = x in bspec, assumption,
-       thin_tac "Ball S (op \<preceq> a)")
+       thin_tac "Ball S ((\<preceq>) a)")
 apply (frule_tac b = x in ord_isom_le[of E f a], assumption+)
 apply (simp add:subsetD)
 apply simp
@@ -5950,7 +5950,7 @@ apply (rule ballI)
 apply (case_tac "x \<in> segment D d")
  apply (simp add:minimum_elem_def)
  apply (drule_tac x = x in bspec,
-     (* thin_tac "Ball (X \<inter> segment D d) (op \<preceq>\<^bsub>Iod D (segment D d)\<^esub> m)", *)
+     (* thin_tac "Ball (X \<inter> segment D d) ((\<preceq>\<^bsub>Iod) D (segment D d)\<^esub> m)", *)
         simp) apply (
         simp add:Iod_le)
  apply (frule subsetD[of X "carrier D" d], assumption+,
@@ -6788,7 +6788,7 @@ apply (rule equalityI)
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
  apply (frule_tac x = x in bspec, simp,
-        thin_tac "Ball (carrier D - T) (op \<preceq>\<^bsub>D\<^esub> a)")
+        thin_tac "Ball (carrier D - T) ((\<preceq>\<^bsub>D\<^esub>) a)")
  apply (simp add:Ssegment_inc[THEN sym])
  apply (simp add:Torder.not_le_less[THEN sym])
 done

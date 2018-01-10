@@ -23,7 +23,7 @@ lemma trans_fst_oclosed_fst3 [dest]:
 
 lemma oclosed_oreachable_inclosed:
   assumes "(\<sigma>, \<zeta>) \<in> oreachable (oclosed (opnet np p)) (\<lambda>_ _ _. True) U"
-    shows "(\<sigma>, \<zeta>) \<in> oreachable (opnet np p) (otherwith (op=) (net_tree_ips p) inoclosed) U"
+    shows "(\<sigma>, \<zeta>) \<in> oreachable (opnet np p) (otherwith ((=)) (net_tree_ips p) inoclosed) U"
     (is "_ \<in> oreachable _ ?owS _")
   using assms proof (induction rule: oreachable_pair_induct)
     fix \<sigma> \<zeta>
@@ -51,7 +51,7 @@ lemma oclosed_oreachable_inclosed:
          and "\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
       from this(3) have "\<forall>j. j \<notin> net_tree_ips p \<longrightarrow> \<sigma>' j = \<sigma> j"
         using \<open>net_ips \<zeta> = net_tree_ips p\<close> by auto
-      hence "otherwith (op=) (net_tree_ips p) inoclosed \<sigma> \<sigma>' ({i}\<not>K:arrive(msg_class.newpkt (d, di)))"
+      hence "otherwith ((=)) (net_tree_ips p) inoclosed \<sigma> \<sigma>' ({i}\<not>K:arrive(msg_class.newpkt (d, di)))"
         by auto
       with zor tr show ?thesis
         by - (rule oreachable_local')
@@ -61,7 +61,7 @@ lemma oclosed_oreachable_inclosed:
          and "\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
       from this(3) have "\<forall>j. j \<notin> net_tree_ips p \<longrightarrow> \<sigma>' j = \<sigma> j"
         using \<open>net_ips \<zeta> = net_tree_ips p\<close> by auto
-      hence "otherwith (op=) (net_tree_ips p) inoclosed \<sigma> \<sigma>' \<tau>"
+      hence "otherwith ((=)) (net_tree_ips p) inoclosed \<sigma> \<sigma>' \<tau>"
         by auto
       with zor tr show ?thesis by - (rule oreachable_local')
     qed (insert \<open>net_ips \<zeta> = net_tree_ips p\<close>,
@@ -74,7 +74,7 @@ lemma oclosed_oreachable_oreachable [elim]:
   using assms by (rule oclosed_oreachable_inclosed [THEN oreachable_weakenE]) simp
 
 lemma inclosed_closed [intro]:
-  assumes cinv: "opnet np p \<Turnstile> (otherwith (op=) (net_tree_ips p) inoclosed, U \<rightarrow>) P"
+  assumes cinv: "opnet np p \<Turnstile> (otherwith ((=)) (net_tree_ips p) inoclosed, U \<rightarrow>) P"
     shows "oclosed (opnet np p) \<Turnstile> (\<lambda>_ _ _. True, U \<rightarrow>) P"
   using assms unfolding oinvariant_def
   by (clarsimp dest!: oclosed_oreachable_inclosed)

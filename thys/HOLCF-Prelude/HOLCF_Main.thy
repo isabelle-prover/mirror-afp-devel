@@ -29,7 +29,7 @@ no_notation
   Rings.modulo (infixl "mod" 70)
 
 no_notation
-  Set.member  ("op :") and
+  Set.member  ("(:)") and
   Set.member  ("(_/ : _)" [51, 51] 50)
 
 no_translations

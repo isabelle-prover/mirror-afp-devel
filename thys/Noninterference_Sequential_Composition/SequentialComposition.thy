@@ -3497,14 +3497,14 @@ sequentiality are generalized, too.
 
 lemma seq_comp_list_weakly_sequential [rule_format]:
  "(\<forall>X \<in> set (P # PS). weakly_sequential X) \<longrightarrow>
-    weakly_sequential (foldl op ; P PS)"
+    weakly_sequential (foldl (;) P PS)"
 proof (induction PS rule: rev_induct, simp, rule impI, simp, (erule conjE)+)
 qed (rule seq_comp_weakly_sequential)
 
 lemma seq_comp_list_ref_union_closed [rule_format]:
  "(\<forall>X \<in> set (butlast (P # PS)). weakly_sequential X) \<longrightarrow>
   (\<forall>X \<in> set (P # PS). ref_union_closed X) \<longrightarrow>
-    ref_union_closed (foldl op ; P PS)"
+    ref_union_closed (foldl (;) P PS)"
 proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_asm,
  simp, rule seq_comp_ref_union_closed, assumption+)
   fix PS and Q :: "'a option process"
@@ -3513,8 +3513,8 @@ proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_a
     B: "\<forall>X \<in> set PS. weakly_sequential X" and
     C: "ref_union_closed Q" and
     D: "(\<forall>X \<in> set (P # butlast PS). weakly_sequential X) \<longrightarrow>
-      ref_union_closed (foldl op ; P PS)"
-  have "weakly_sequential (foldl op ; P PS)"
+      ref_union_closed (foldl (;) P PS)"
+  have "weakly_sequential (foldl (;) P PS)"
   proof (rule seq_comp_list_weakly_sequential, simp, erule disjE, simp add: A)
     fix X
     assume "X \<in> set PS"
@@ -3528,14 +3528,14 @@ proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_a
      by (rule in_set_butlastD)
     with B show "weakly_sequential X" ..
   qed
-  with D have "ref_union_closed (foldl op ; P PS)" ..
-  ultimately show "ref_union_closed (foldl op ; P PS ; Q)"
+  with D have "ref_union_closed (foldl (;) P PS)" ..
+  ultimately show "ref_union_closed (foldl (;) P PS ; Q)"
    using C by (rule seq_comp_ref_union_closed)
 qed
 
 lemma seq_comp_list_sequential [rule_format]:
  "(\<forall>X \<in> set (P # PS). sequential X) \<longrightarrow>
-    sequential (foldl op ; P PS)"
+    sequential (foldl (;) P PS)"
 proof (induction PS rule: rev_induct, simp, rule impI, simp, (erule conjE)+)
 qed (rule seq_comp_sequential)
 
@@ -3544,7 +3544,7 @@ theorem seq_comp_list_secure [rule_format]:
   shows
    "(\<forall>X \<in> set (butlast (P # PS)). ref_union_closed X \<and> sequential X) \<longrightarrow>
     (\<forall>X \<in> set (P # PS). secure X I D) \<longrightarrow>
-      secure (foldl op ; P PS) I D"
+      secure (foldl (;) P PS) I D"
 proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_asm,
  simp, rule seq_comp_secure [OF A], assumption+)
   fix PS Q
@@ -3555,8 +3555,8 @@ proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_a
     E: "\<forall>X \<in> set PS. ref_union_closed X \<and> sequential X" and
     F: "secure Q I D" and
     G: "(\<forall>X \<in> set (P # butlast PS). ref_union_closed X \<and> sequential X) \<longrightarrow>
-      secure (foldl op ; P PS) I D"
-  have "ref_union_closed (foldl op ; P PS)"
+      secure (foldl (;) P PS) I D"
+  have "ref_union_closed (foldl (;) P PS)"
   proof (rule seq_comp_list_ref_union_closed, simp_all add: B, erule_tac [!] disjE,
    simp_all add: C)
     show "weakly_sequential P"
@@ -3576,7 +3576,7 @@ proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_a
     with E have "ref_union_closed X \<and> sequential X" ..
     thus "ref_union_closed X" ..
   qed
-  moreover have "sequential (foldl op ; P PS)"
+  moreover have "sequential (foldl (;) P PS)"
   proof (rule seq_comp_list_sequential, simp, erule disjE, simp add: D)
     fix X
     assume "X \<in> set PS"
@@ -3591,8 +3591,8 @@ proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_a
      by (rule in_set_butlastD)
     with E show "ref_union_closed X \<and> sequential X" ..
   qed
-  with G have "secure (foldl op ; P PS) I D" ..
-  ultimately show "secure (foldl op ; P PS ; Q) I D"
+  with G have "secure (foldl (;) P PS) I D" ..
+  ultimately show "secure (foldl (;) P PS ; Q) I D"
    using F by (rule seq_comp_secure [OF A])
 qed
 

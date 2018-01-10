@@ -76,10 +76,10 @@ lemma totient_prime_power_Suc:
   assumes "prime p"
   shows   "totient (p ^ Suc n) = p ^ Suc n - p ^ n"
 proof -
-  have "totient (p ^ Suc n) = p ^ Suc n - card (op * p ` {0<..p ^ n})"
+  have "totient (p ^ Suc n) = p ^ Suc n - card (( * ) p ` {0<..p ^ n})"
     unfolding totient_def totatives_prime_power_Suc[OF assms]
     by (subst card_Diff_subset) (insert assms, auto simp: prime_gt_0_nat)
-  also from assms have "card (op * p ` {0<..p^n}) = p ^ n"
+  also from assms have "card (( * ) p ` {0<..p^n}) = p ^ n"
     by (subst card_image) (auto simp: inj_on_def)
   finally show ?thesis .
 qed

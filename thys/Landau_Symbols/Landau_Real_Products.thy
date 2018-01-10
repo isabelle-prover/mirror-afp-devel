@@ -415,12 +415,12 @@ proof-
 qed
 
 lemma bigtheta_iff:
-  "(\<lambda>_. 1) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
+  "(\<lambda>_. 1) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> list_all ((=) 0) (map get_param gs)"
 proof-
   have "((\<lambda>_. 1) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
           ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_theta.in_cong gs_powr_0_eq_one)
-  also from gs_pos dominating_chain' have "... \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
+  also from gs_pos dominating_chain' have "... \<longleftrightarrow> list_all ((=) 0) (map get_param gs)"
   proof (induction gs)
     case Nil
     then show ?case by (simp add: func_one)
@@ -806,9 +806,9 @@ next
   show ?case
   proof
     fix x
-    have "eval_primfuns fs x = fold op* (map (\<lambda>f. eval_primfun f x) fs) 1"
+    have "eval_primfuns fs x = fold ( * ) (map (\<lambda>f. eval_primfun f x) fs) 1"
       unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)
-    also have "fold op* (map (\<lambda>f. eval_primfun f x) fs) = fold op* (map (\<lambda>f. eval_primfun f x) gs)"
+    also have "fold ( * ) (map (\<lambda>f. eval_primfun f x) fs) = fold ( * ) (map (\<lambda>f. eval_primfun f x) gs)"
       using 2 by (intro fold_multiset_equiv ext) auto
     also have "... 1 = eval_primfuns gs x"
       unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)
@@ -822,7 +822,7 @@ lemma nonneg_primfun_list_iff: "nonneg_primfun_list fs = nonneg_list (map snd fs
 lemma pos_primfun_list_iff: "pos_primfun_list fs = pos_list (map snd fs)"
   by (induction fs rule: pos_primfun_list.induct) simp_all
 
-lemma iszero_primfun_list_iff: "iszero_primfun_list fs = list_all (op= 0) (map snd fs)"
+lemma iszero_primfun_list_iff: "iszero_primfun_list fs = list_all ((=) 0) (map snd fs)"
   by (induction fs rule: iszero_primfun_list.induct) simp_all
 
 lemma landau_primfuns_iff:
@@ -849,7 +849,7 @@ proof-
 
   have "(\<lambda>_. 1) \<in> \<Theta>(eval_primfuns fs) \<longleftrightarrow> (\<lambda>_. 1) \<in> \<Theta>(eval_primfuns (group_primfuns fs))"
     by (simp_all add: groupsort_primfun.g_group_sort group_primfuns_def)
-  also have "... \<longleftrightarrow> list_all (op= 0) (map snd (group_primfuns fs))" using bigtheta_iff
+  also have "... \<longleftrightarrow> list_all ((=) 0) (map snd (group_primfuns fs))" using bigtheta_iff
     by (simp add: eval_primfuns_def[abs_def] eval_primfun_altdef)
   finally show ?C by (simp add: iszero_primfun_list_iff)
 qed

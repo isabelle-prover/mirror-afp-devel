@@ -123,13 +123,13 @@ qed
 
 lemma bij_betw_prime_power_divisors:
   assumes "prime (p :: nat)"
-  shows   "bij_betw (op ^ p) {..k} {d. d dvd p ^ k}"
+  shows   "bij_betw ((^) p) {..k} {d. d dvd p ^ k}"
   unfolding bij_betw_def
 proof 
   from assms have *: "p > 1" by (simp add: prime_gt_Suc_0_nat)
-  show "inj_on (op ^ p) {..k}" using assms
+  show "inj_on ((^) p) {..k}" using assms
     by (auto simp: inj_on_def prime_gt_Suc_0_nat power_inject_exp[OF *])
-  show "op ^ p ` {..k} = {d. d dvd p ^ k}"
+  show "(^) p ` {..k} = {d. d dvd p ^ k}"
     using assms by (auto simp: le_imp_power_dvd divides_primepow_nat)
 qed
 

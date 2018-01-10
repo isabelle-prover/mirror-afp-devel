@@ -12,7 +12,7 @@ setup_lifting type_definition_CoCalls
 
 instantiation CoCalls :: po
 begin
-lift_definition below_CoCalls :: "CoCalls \<Rightarrow> CoCalls \<Rightarrow> bool" is "op \<subseteq>".
+lift_definition below_CoCalls :: "CoCalls \<Rightarrow> CoCalls \<Rightarrow> bool" is "(\<subseteq>)".
 instance
   apply standard
   apply ((transfer, auto)+)
@@ -52,22 +52,22 @@ qed
 
 lift_definition is_cc_lub :: "CoCalls set \<Rightarrow> CoCalls \<Rightarrow> bool" is "(\<lambda> S x . x = Union S)".
 
-lemma ccis_lubTransfer[transfer_rule]: "(rel_set pcr_CoCalls  ===> pcr_CoCalls ===> op =) (\<lambda> S x . x = Union S) op <<|"
+lemma ccis_lubTransfer[transfer_rule]: "(rel_set pcr_CoCalls  ===> pcr_CoCalls ===> (=)) (\<lambda> S x . x = Union S) (<<|)"
 proof-
   have "\<And> x xa . is_cc_lub x xa \<longleftrightarrow> xa = coCallsLub x" by transfer auto
-  hence "is_cc_lub = op <<|"
+  hence "is_cc_lub = (<<|)"
   apply -
   apply (rule, rule)
   by (metis coCallsLub_is_lub is_lub_unique)
   thus ?thesis using is_cc_lub.transfer by simp
 qed
 
-lift_definition coCallsJoin :: "CoCalls \<Rightarrow> CoCalls  \<Rightarrow> CoCalls" is "op \<union>"
+lift_definition coCallsJoin :: "CoCalls \<Rightarrow> CoCalls  \<Rightarrow> CoCalls" is "(\<union>)"
     by (rule sym_Un)
 
-lemma ccJoinTransfer[transfer_rule]: "(pcr_CoCalls ===> pcr_CoCalls ===> pcr_CoCalls) op \<union> op \<squnion>"
+lemma ccJoinTransfer[transfer_rule]: "(pcr_CoCalls ===> pcr_CoCalls ===> pcr_CoCalls) (\<union>) (\<squnion>)"
 proof-
-  have "op \<squnion> = coCallsJoin"
+  have "(\<squnion>) = coCallsJoin"
     apply (rule)
     apply rule
     apply (rule lub_is_join)

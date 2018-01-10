@@ -20,7 +20,7 @@ begin
 text {* Every Kleene algebra with domain is a Kleene algebra with tests. This fact should eventually move into
 the AFP KAD entry.  *}
 
-sublocale kat "op +" "op \<cdot>" "1" "0" "op \<le>" "op <" star antidomain_op
+sublocale kat "(+)" "(\<cdot>)" "1" "0" "(\<le>)" "(<)" star antidomain_op
   apply standard
   apply simp
   using a_d_mult_closure am_d_def apply auto[1]

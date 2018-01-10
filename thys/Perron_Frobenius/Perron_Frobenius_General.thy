@@ -25,7 +25,7 @@ text \<open>Next, we have to install transfer rules\<close>
 context 
   includes lifting_syntax
 begin
-lemma HMA_irreducible[transfer_rule]: "((HMA_M :: _ \<Rightarrow> _ ^ 'n ^ 'n \<Rightarrow> _) ===> op =) 
+lemma HMA_irreducible[transfer_rule]: "((HMA_M :: _ \<Rightarrow> _ ^ 'n ^ 'n \<Rightarrow> _) ===> (=)) 
   irreducible_mat fixed_mat.irreducible" 
 proof (intro rel_funI, goal_cases)
   case (1 a A)
@@ -52,7 +52,7 @@ proof (intro rel_funI, goal_cases)
   show ?case unfolding part1 part2 irreducible_def by auto
 qed
 
-lemma HMA_nonneg_irreducible_mat[transfer_rule]: "(HMA_M ===> op =) nonneg_irreducible_mat perron_frobenius" 
+lemma HMA_nonneg_irreducible_mat[transfer_rule]: "(HMA_M ===> (=)) nonneg_irreducible_mat perron_frobenius" 
   unfolding perron_frobenius_def pf_nonneg_mat_def perron_frobenius_axioms_def 
     nonneg_irreducible_mat_def
   by transfer_prover

@@ -40,7 +40,7 @@ treat the zero (the minimal element of the boolean reduct) since the proof of
 the annihilation laws is rather tricky to automate. Following Maddux we derive
 them from properties of Boolean algebras with operators. *}
 
-sublocale relation_algebra \<subseteq> dioid_one "op +" "op ;" "op \<le> " "op <" "1'"
+sublocale relation_algebra \<subseteq> dioid_one "(+)" "(;)" "(\<le>) " "(<)" "1'"
 proof
   fix x y z :: 'a
   show "x ; y ; z = x ; (y ; z)"
@@ -215,7 +215,7 @@ text {* The Schr\"oder laws allow us, finally, to prove the annihilation laws
 for zero. We formalise this by proving that relation algebras form dioids with
 zero. *}
 
-sublocale relation_algebra < dioid_one_zero "op +" "op ;" "1'" 0 "op \<le>" "op <"
+sublocale relation_algebra < dioid_one_zero "(+)" "(;)" "1'" 0 "(\<le>)" "(<)"
 proof
   fix x :: 'a
   show "0 + x = x"

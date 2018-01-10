@@ -886,7 +886,7 @@ named_theorems rel2p
 named_theorems p2rel
   
 lemma rel2p_dflt[rel2p]:
-  "rel2p Id = op ="
+  "rel2p Id = (=)"
   "rel2p (A\<rightarrow>B) = rel_fun (rel2p A) (rel2p B)"
   "rel2p (A\<times>\<^sub>rB) = rel_prod (rel2p A) (rel2p B)"
   "rel2p (\<langle>A,B\<rangle>sum_rel) = rel_sum (rel2p A) (rel2p B)"
@@ -905,7 +905,7 @@ lemma rel2p_dflt[rel2p]:
  
   
 lemma p2rel_dflt[p2rel]: 
-  "p2rel op= = Id"
+  "p2rel (=) = Id"
   "p2rel (rel_fun A B) = p2rel A \<rightarrow> p2rel B"
   "p2rel (rel_prod A B) = p2rel A \<times>\<^sub>r p2rel B"
   "p2rel (rel_sum A B) = \<langle>p2rel A, p2rel B\<rangle>sum_rel"

@@ -86,9 +86,9 @@ proof-
   have "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
   with `Cod f = Dom g` have f_homset: "f \<in> Hom (Dom f) (Dom g)" by simp
   have g_homset: "g \<in> Hom (Dom g) (Cod g)" using g by (simp add: hom_def)
-  have "(op \<bullet>) : Hom (Dom g) (Cod g) \<rightarrow> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" ..
+  have "(\<bullet>) : Hom (Dom g) (Cod g) \<rightarrow> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" ..
   from this and g_homset 
-  have "(op \<bullet>) g \<in> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" 
+  have "(\<bullet>) g \<in> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" 
     by (rule funcset_mem)
   from this and f_homset 
   have gf_homset: "g \<bullet> f \<in> Hom (Dom f) (Cod g)"

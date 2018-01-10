@@ -1526,7 +1526,7 @@ notation subs ("_[_::=_]" [100, 100, 100] 100)
 notation AssertionStatEq ("_ \<simeq> _" [80, 80] 80)
 notation FrameStatEq ("_ \<simeq>\<^sub>F _" [80, 80] 80)
 notation SBottom' ("\<one>" 190)
-abbreviation insertAssertion' ("insertAssertion") where "insertAssertion' \<equiv> assertionAux.insertAssertion (op \<otimes>)"
+abbreviation insertAssertion' ("insertAssertion") where "insertAssertion' \<equiv> assertionAux.insertAssertion (\<otimes>)"
 
 inductive semantics :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) residual \<Rightarrow> bool"
                        ("_ \<rhd> _ \<longmapsto> _" [50, 50, 50] 50)

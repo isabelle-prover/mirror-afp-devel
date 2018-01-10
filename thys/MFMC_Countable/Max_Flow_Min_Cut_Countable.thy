@@ -246,14 +246,14 @@ lemma support_flow_Sup: "support_flow (Sup Y) = (\<Union>f\<in>Y. support_flow f
 by(auto simp add: support_flow_conv less_SUP_iff)
 
 lemma
-  assumes chain: "Complete_Partial_Order.chain op \<le> Y"
+  assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
   and countable: "countable (support_flow (Sup Y))"
   shows d_OUT_Sup: "d_OUT (Sup Y) x = (SUP f:Y. d_OUT f x)" (is "?OUT x" is "?lhs1 x = ?rhs1 x")
   and d_IN_Sup: "d_IN (Sup Y) y = (SUP f:Y. d_IN f y)" (is "?IN" is "?lhs2 = ?rhs2")
   and SINK_Sup: "SINK (Sup Y) = (\<Inter>f\<in>Y. SINK f)" (is "?SINK")
 proof -
-  have chain': "Complete_Partial_Order.chain op \<le> ((\<lambda>f y. f (x, y)) ` Y)" for x using chain
+  have chain': "Complete_Partial_Order.chain (\<le>) ((\<lambda>f y. f (x, y)) ` Y)" for x using chain
     by(rule chain_imageI)(simp add: le_fun_def)
   have countable': "countable {y. (x, y) \<in> support_flow (Sup Y)}" for x
     using _ countable[THEN countable_image[where f=snd]]
@@ -268,7 +268,7 @@ proof -
     finally show "?OUT x" . }
   note out = this
 
-  have chain'': "Complete_Partial_Order.chain op \<le> ((\<lambda>f x. f (x, y)) ` Y)" for y using chain
+  have chain'': "Complete_Partial_Order.chain (\<le>) ((\<lambda>f x. f (x, y)) ` Y)" for y using chain
     by(rule chain_imageI)(simp add: le_fun_def)
   have countable'': "countable {x. (x, y) \<in> support_flow (Sup Y)}" for y
     using _ countable[THEN countable_image[where f=fst]]
@@ -285,7 +285,7 @@ proof -
 qed
 
 lemma
-  assumes chain: "Complete_Partial_Order.chain op \<le> Y"
+  assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
   and countable: "countable (support_flow f)"
   and bounded: "\<And>g e. g \<in> Y \<Longrightarrow> g e \<le> f e"
@@ -302,8 +302,8 @@ proof -
     by(clarsimp simp add: support_flow.simps less_SUP_iff elim!: less_le_trans intro!: diff_le_self_ennreal)
   then have countable': "countable (support_flow (SUP g:Y. (\<lambda>e. f e - g e)))" by(rule countable_subset)(rule countable)
 
-  have "Complete_Partial_Order.chain op \<ge> Y" using chain by(simp add: chain_dual)
-  hence chain': "Complete_Partial_Order.chain op \<le> ((\<lambda>g e. f e - g e) ` Y)"
+  have "Complete_Partial_Order.chain (\<ge>) Y" using chain by(simp add: chain_dual)
+  hence chain': "Complete_Partial_Order.chain (\<le>) ((\<lambda>g e. f e - g e) ` Y)"
     by(rule chain_imageI)(auto simp add: le_fun_def intro: ennreal_minus_mono)
 
   { assume finite: "d_OUT f x \<noteq> top"
@@ -494,7 +494,7 @@ proof -
     unfolding d_OUT_def d_IN_def using finite_IN finite_OUT
     apply(simp add: nn_integral_count_space_indicator)
     apply(subst (2) nn_integral_diff[symmetric])
-    apply(auto simp add: AE_count_space finite_in split: split_indicator intro!: arg_cong2[where f="op -"] intro!: nn_integral_cong)
+    apply(auto simp add: AE_count_space finite_in split: split_indicator intro!: arg_cong2[where f="(-)"] intro!: nn_integral_cong)
     done
   also have "\<dots> = (d_IN f x - (\<Sum>\<^sup>+ y\<in>?M. f (y, x))) - (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (x, y))"
     using KIR by(simp add: diff_diff_commute_ennreal)
@@ -502,7 +502,7 @@ proof -
     using finite_IN finite_IN[of "{ _ }"]
     apply(simp add: d_IN_def nn_integral_count_space_indicator)
     apply(subst nn_integral_diff[symmetric])
-    apply(auto simp add: d_IN_def AE_count_space split: split_indicator intro!: arg_cong2[where f="op -"] intro!: nn_integral_cong)
+    apply(auto simp add: d_IN_def AE_count_space split: split_indicator intro!: arg_cong2[where f="(-)"] intro!: nn_integral_cong)
     done
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (y, x) - f (x, y))" using finite_OUT
     by(subst nn_integral_diff)(auto simp add: AE_count_space)
@@ -899,7 +899,7 @@ next
     unfolding d_OUT_def by(simp add: if_distrib C_def \<delta>_def cong del: if_weak_cong)
   also have "\<dots> = d_OUT (h_minus_aux j) x + (\<Sum>\<^sup>+ y. \<delta> * indicator (set (cycle_edges C)) (x, y))"
     (is "_ = _ + ?add")
-    by(subst nn_integral_add)(auto simp add: AE_count_space d_OUT_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
+    by(subst nn_integral_add)(auto simp add: AE_count_space d_OUT_def intro!: arg_cong2[where f="(+)"] nn_integral_cong)
   also have "?add = (\<Sum>\<^sup>+ e\<in>range (Pair x). \<delta> * indicator {(x', y). (x', y) \<in> set (cycle_edges C) \<and> x' = x} e)"
     by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = \<delta> * card (set (filter (\<lambda>(x', y). x' = x) (cycle_edges C)))"
@@ -1329,7 +1329,7 @@ proof -
     apply simp
     by(subst nn_integral_add[symmetric])(simp_all add:)
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. (\<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x) - ?diff x)"
-    by(auto intro!: nn_integral_cong arg_cong2[where f="op -"] split: split_indicator)
+    by(auto intro!: nn_integral_cong arg_cong2[where f="(-)"] split: split_indicator)
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y\<in>UNIV. h_diff i (x, y) * indicator X x) - (\<Sum>\<^sup>+ x. ?diff x)"
     by(subst nn_integral_diff)(auto simp add: AE_count_space finite2 intro!: nn_integral_mono split: split_indicator)
   also have "(\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y\<in>UNIV. h_diff i (x, y) * indicator X x) = (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator X x)"
@@ -3287,7 +3287,7 @@ qed
 
 lemma current_Sup:
   fixes \<Gamma> (structure)
-  assumes chain: "Complete_Partial_Order.chain op \<le> Y"
+  assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
   and current: "\<And>f. f \<in> Y \<Longrightarrow> current \<Gamma> f"
   and countable [simp]: "countable (support_flow (Sup Y))"
@@ -3333,7 +3333,7 @@ qed
 
 lemma wave_lub: -- \<open>Lemma 4.3\<close>
   fixes \<Gamma> (structure)
-  assumes chain: "Complete_Partial_Order.chain op \<le> Y"
+  assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
   and wave: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f"
   and countable [simp]: "countable (support_flow (Sup Y))"
@@ -3344,7 +3344,7 @@ proof
     define P where "P = {x} \<union> set p"
 
     let ?f = "\<lambda>f. SINK f \<inter> P"
-    have "Complete_Partial_Order.chain op \<supseteq> (?f ` Y)" using chain
+    have "Complete_Partial_Order.chain (\<supseteq>) (?f ` Y)" using chain
       by(rule chain_imageI)(auto dest: SINK_mono')
     moreover have "\<dots> \<subseteq> Pow P" by auto
     hence "finite (?f ` Y)" by(rule finite_subset)(simp add: P_def)
@@ -3416,7 +3416,7 @@ proof -
   proof(rule Zorns_po_lemma; intro strip)
     fix Y
     assume "Y \<in> Chains r"
-    hence Y: "Complete_Partial_Order.chain op \<le> Y"
+    hence Y: "Complete_Partial_Order.chain (\<le>) Y"
       and w: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f"
       and f: "\<And>f. f \<in> Y \<Longrightarrow> current \<Gamma> f"
       by(auto simp add: Chains_def r_def chain_def Field_r_def)
@@ -3730,8 +3730,8 @@ proof -
 
     from M have "M \<in> Chains {(g, g'). g' \<le> g}"
       by(rule mono_Chains[THEN subsetD, rotated])(auto simp add: leq_def in_restrict_rel_iff)
-    then have chain: "Complete_Partial_Order.chain op \<ge> M" by(rule Chains_into_chain)
-    hence chain': "Complete_Partial_Order.chain op \<le> M" by(simp add: chain_dual)
+    then have chain: "Complete_Partial_Order.chain (\<ge>) M" by(rule Chains_into_chain)
+    hence chain': "Complete_Partial_Order.chain (\<le>) M" by(simp add: chain_dual)
 
     have countable': "countable (support_flow f)"
       using current_support_flow[OF f] by(rule countable_subset)(rule countable)
@@ -4407,7 +4407,7 @@ lemma d_OUT_plus_web:
 proof -
   have "?lhs = d_OUT f x + (\<Sum>\<^sup>+ y. (if x \<in> RF\<^sup>\<circ> (TER f) then 0 else g (x, y) * indicator (- RF (TER f)) y))"
     unfolding d_OUT_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = ?rhs" by(auto simp add: d_OUT_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
+  also have "\<dots> = ?rhs" by(auto simp add: d_OUT_def intro!: arg_cong2[where f="(+)"] nn_integral_cong)
   finally show "?thesis" .
 qed
 
@@ -4417,7 +4417,7 @@ lemma d_IN_plus_web:
 proof -
   have "?lhs = d_IN f y + (\<Sum>\<^sup>+ x. (if y \<in> RF (TER f) then 0 else g (x, y) * indicator (- RF\<^sup>\<circ> (TER f)) x))"
     unfolding d_IN_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = ?rhs" by(auto simp add: d_IN_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
+  also have "\<dots> = ?rhs" by(auto simp add: d_IN_def intro!: arg_cong2[where f="(+)"] nn_integral_cong)
   finally show ?thesis .
 qed
 
@@ -4602,7 +4602,7 @@ lemma RF_TER_Sup:
   fixes \<Gamma> (structure)
   assumes f: "\<And>f. f \<in> Y \<Longrightarrow> current \<Gamma> f"
   and w: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f"
-  and Y: "Complete_Partial_Order.chain op \<le> Y" "Y \<noteq> {}" "countable (support_flow (Sup Y))"
+  and Y: "Complete_Partial_Order.chain (\<le>) Y" "Y \<noteq> {}" "countable (support_flow (Sup Y))"
   shows "RF (TER (Sup Y)) = RF (\<Union>f\<in>Y. TER f)"
 proof(rule set_eqI iffI)+
   fix x
@@ -6510,8 +6510,8 @@ proof(rule ccontr)
     also have "\<dots> = f (Suc k)" by simp
     finally show ?case .
   qed simp
-  have chain_f: "Complete_Partial_Order.chain op \<le> (range f)"
-    by(rule chain_imageI[where le_a="op \<le>"])(simp_all add: f_inc)
+  have chain_f: "Complete_Partial_Order.chain (\<le>) (range f)"
+    by(rule chain_imageI[where le_a="(\<le>)"])(simp_all add: f_inc)
   have "countable (support_flow (f n))" for n using current_support_flow[OF f, of n]
     by(rule countable_subset) simp
   hence supp_f: "countable (support_flow (SUP n. f n))" by(subst support_flow_Sup)simp
@@ -7245,10 +7245,10 @@ proof -
 
     from M have chain: "Complete_Partial_Order.chain (\<lambda>\<epsilon> \<epsilon>'. (\<epsilon>, \<epsilon>') \<in> leq) M"
       by(intro Chains_into_chain) simp
-    hence chain': "Complete_Partial_Order.chain op \<le> M"
+    hence chain': "Complete_Partial_Order.chain (\<le>) M"
       by(auto simp add: chain_def leq_def in_restrict_rel_iff)
-    hence chain1: "Complete_Partial_Order.chain op \<le> (fst ` M)"
-      and chain2: "Complete_Partial_Order.chain op \<le> (snd ` M)"
+    hence chain1: "Complete_Partial_Order.chain (\<le>) (fst ` M)"
+      and chain2: "Complete_Partial_Order.chain (\<le>) (snd ` M)"
       by(rule chain_imageI; auto)+
 
     have outside1: "Sup (fst ` M) (x, y) = 0" if "\<not> edge \<Gamma> x y" for x y using that
@@ -7412,7 +7412,7 @@ proof -
         assume "\<not> ?thesis"
         hence greater: "d_OUT (plus_current \<epsilon> h) a + \<delta> \<le> d_OUT f a" if "(\<epsilon>, h) \<in> M" for \<epsilon> h using that by auto
 
-        have chain'': "Complete_Partial_Order.chain op \<le> ((\<lambda>(\<epsilon>, h). plus_current \<epsilon> h) ` M)"
+        have chain'': "Complete_Partial_Order.chain (\<le>) ((\<lambda>(\<epsilon>, h). plus_current \<epsilon> h) ` M)"
           using chain' by(rule chain_imageI)(auto simp add: le_fun_def add_mono)
 
         have "d_OUT f a + 0 < d_OUT f a + \<delta>"
@@ -8059,7 +8059,7 @@ next
   have f_mono: "f n \<le> f (Suc n)" for n using someI_ex[OF Ex_P, of n]
     by(auto simp add: le_fun_def f_Suc enum_A intro: add_increasing2 dest: )
   hence incseq: "incseq f" by(rule incseq_SucI)
-  hence chain: "Complete_Partial_Order.chain op \<le> (range f)" by(rule incseq_chain_range)
+  hence chain: "Complete_Partial_Order.chain (\<le>) (range f)" by(rule incseq_chain_range)
 
   define g where "g = Sup (range f)"
   have "support_flow g \<subseteq> \<^bold>E"
@@ -8686,8 +8686,8 @@ proof -
 
     from M have "M \<in> Chains {(g, g'). g' \<le> g}"
       by(rule mono_Chains[THEN subsetD, rotated])(auto simp add: leq_def in_restrict_rel_iff)
-    then have "Complete_Partial_Order.chain op \<ge> M" by(rule Chains_into_chain)
-    hence chain': "Complete_Partial_Order.chain op \<le> M" by(simp add: chain_dual)
+    then have "Complete_Partial_Order.chain (\<ge>) M" by(rule Chains_into_chain)
+    hence chain': "Complete_Partial_Order.chain (\<le>) M" by(simp add: chain_dual)
 
     have "support_flow f' \<subseteq> \<^bold>E" using F_outside[OF f'] by(auto intro: ccontr simp add: support_flow.simps)
     then have countable': "countable (support_flow f')"

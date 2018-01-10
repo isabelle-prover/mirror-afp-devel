@@ -21,8 +21,8 @@ derive linorder rexp_dual
 
 abbreviation "CoPLUS_dual b \<equiv> rexp_of_list (CoPlus b) (CoZero b)"
 abbreviation "bool_unop_dual b \<equiv> (if b then id else HOL.Not)"
-abbreviation "bool_binop_dual b \<equiv> (if b then op \<or> else op \<and>)"
-abbreviation "set_binop_dual b \<equiv> (if b then op \<union> else op \<inter>)"
+abbreviation "bool_binop_dual b \<equiv> (if b then (\<or>) else (\<and>))"
+abbreviation "set_binop_dual b \<equiv> (if b then (\<union>) else (\<inter>))"
 
 primrec final_dual :: "'a rexp_dual \<Rightarrow> bool"
 where

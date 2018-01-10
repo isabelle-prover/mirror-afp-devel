@@ -282,7 +282,7 @@ schematic_goal "(?f::?'c,
 
 
 text {* The next two lemmas demonstrate optimization: The insert-operation
-  is translated by @{term "op #"} *}
+  is translated by @{term "(#)"} *}
 schematic_goal "(?f::?'c, {1,2,3,4::nat}:::\<langle>Id\<rangle>list_set_rel
   )\<in>?R"
   by (autoref (keep_goal))

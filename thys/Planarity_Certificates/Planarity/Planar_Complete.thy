@@ -97,7 +97,7 @@ lemma (in digraph_map) card_face_cycle_sets_iso:
   assumes hom: "digraph_isomorphism hom"
   shows "card (pre_digraph_map.face_cycle_sets (app_iso hom G) (map_iso hom)) = card face_cycle_sets"
 proof -
-  have "inj_on (op ` (iso_arcs hom)) face_cycle_sets"
+  have "inj_on ((`) (iso_arcs hom)) face_cycle_sets"
     by (rule inj_on_f_imageI digraph_isomorphism_inj_on_arcs hom in_face_cycle_setsD)+
   then show ?thesis using hom by (simp add: face_cycle_sets_iso card_image)
 qed

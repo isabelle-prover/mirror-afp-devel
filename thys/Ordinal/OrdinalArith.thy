@@ -16,13 +16,13 @@ instantiation ordinal :: plus
 begin
 
 definition
-  "op + = (\<lambda>x. ordinal_rec x (\<lambda>p. oSuc))"
+  "(+) = (\<lambda>x. ordinal_rec x (\<lambda>p. oSuc))"
 
 instance ..
 
 end
 
-lemma normal_plus: "normal (op + x)"
+lemma normal_plus: "normal ((+) x)"
 by (simp add: plus_ordinal_def normal_ordinal_rec)
 
 lemma ordinal_plus_0 [simp]: "x + 0 = (x::ordinal)"
@@ -187,16 +187,16 @@ instantiation ordinal :: times
 begin
 
 definition
-  times_ordinal_def: "op * = (\<lambda>x. ordinal_rec 0 (\<lambda>p w. w + x))"
+  times_ordinal_def: "( * ) = (\<lambda>x. ordinal_rec 0 (\<lambda>p w. w + x))"
 
 instance ..
 
 end
 
-lemma continuous_times: "continuous (op * x)"
+lemma continuous_times: "continuous (( * ) x)"
 by (simp add: times_ordinal_def continuous_ordinal_rec)
 
-lemma normal_times: "0 < x \<Longrightarrow> normal (op * x)"
+lemma normal_times: "0 < x \<Longrightarrow> normal (( * ) x)"
  apply (unfold times_ordinal_def)
  apply (rule normal_ordinal_rec[rule_format], rename_tac y)
  apply (subgoal_tac "y + 0 < y + x", simp)
@@ -292,10 +292,10 @@ subsection {* Exponentiation *}
 
 definition
   exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr "**" 75) where
-  "op ** = (\<lambda>x. if 0 < x then ordinal_rec 1 (\<lambda>p w. w * x)
+  "( ** ) = (\<lambda>x. if 0 < x then ordinal_rec 1 (\<lambda>p w. w * x)
                          else (\<lambda>y. if y = 0 then 1 else 0))"
 
-lemma continuous_exp: "0 < x \<Longrightarrow> continuous (op ** x)"
+lemma continuous_exp: "0 < x \<Longrightarrow> continuous (( ** ) x)"
 by (simp add: exp_ordinal_def continuous_ordinal_rec)
 
 lemma ordinal_exp_0 [simp]: "x ** 0 = (1::ordinal)"
@@ -352,7 +352,7 @@ lemma ordinal_exp_monoL [rule_format]:
  apply simp
 done
 
-lemma normal_exp: "oSuc 0 < x \<Longrightarrow> normal (op ** x)"
+lemma normal_exp: "oSuc 0 < x \<Longrightarrow> normal (( ** ) x)"
  apply (frule_tac order_less_trans[OF less_oSuc])
  apply (rule normalI, simp, rename_tac y)
  apply (subgoal_tac "x ** y * 1 < x ** y * x", simp)

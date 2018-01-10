@@ -136,7 +136,7 @@ by (auto intro: rev_image_eqI)
 lemma right_total_const: "right_total (\<lambda>x y. x = c)"
   by (rule right_totalI) simp
 
-lemma const_transfer: "rel_fun (\<lambda>x y. x = c) op = f (\<lambda>_. f c)"
+lemma const_transfer: "rel_fun (\<lambda>x y. x = c) (=) f (\<lambda>_. f c)"
   by (clarsimp simp: rel_fun_def)
 
 interpretation while_ign: graph_path "\<lambda>_. while_cfg_\<alpha>e cmd" "\<lambda>_. while_cfg_\<alpha>n cmd" "\<lambda>_. while_cfg_invar cmd" "\<lambda>_. while_cfg_inEdges' cmd"

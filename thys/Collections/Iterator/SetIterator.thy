@@ -474,9 +474,9 @@ text {* Selecting according to a linear order is another case that is interestin
 
 context linorder begin
   definition "set_iterator_linord it S0 
-    \<equiv> set_iterator_genord it S0 op \<le>"
+    \<equiv> set_iterator_genord it S0 (\<le>)"
   definition "set_iterator_rev_linord it S0 
-    \<equiv> set_iterator_genord it S0 op \<ge>"
+    \<equiv> set_iterator_genord it S0 (\<ge>)"
   definition "set_iterator_map_linord it S0 \<equiv> 
      set_iterator_genord it S0 (\<lambda>(k,_) (k',_). k\<le>k')"
   definition "set_iterator_map_rev_linord it S0 \<equiv> 
@@ -494,7 +494,7 @@ context linorder begin
      !!\<sigma> S. S \<subseteq> S0 \<Longrightarrow> S \<noteq> {} \<Longrightarrow> (\<And>x x'. \<lbrakk>x \<in> S; x' \<in> S0-S\<rbrakk> \<Longrightarrow> x' \<le> x) \<Longrightarrow> \<not> c \<sigma> \<Longrightarrow> I S \<sigma> \<Longrightarrow> P \<sigma>
    \<rbrakk> \<Longrightarrow> P (it c f \<sigma>0)"
   unfolding set_iterator_linord_def
-  apply (rule set_iterator_genord.iteratei_rule_P [of it S0 "op\<le>" I \<sigma>0 c f P])
+  apply (rule set_iterator_genord.iteratei_rule_P [of it S0 "(\<le>)" I \<sigma>0 c f P])
   apply (simp_all add: Ball_def)
   apply (metis order_refl)
   done
@@ -507,7 +507,7 @@ context linorder begin
      !!\<sigma> S. S \<subseteq> S0 \<Longrightarrow> S \<noteq> S0 \<Longrightarrow> (\<And>x x'. \<lbrakk>x \<in> S0-S; x' \<in> S\<rbrakk> \<Longrightarrow> x' \<le> x) \<Longrightarrow> \<not> c \<sigma> \<Longrightarrow> I S \<sigma> \<Longrightarrow> P \<sigma>
    \<rbrakk> \<Longrightarrow> P (it c f \<sigma>0)"
   unfolding set_iterator_linord_def
-  apply (rule set_iterator_genord.iteratei_rule_insert_P [of it S0 "op\<le>" I \<sigma>0 c f P])
+  apply (rule set_iterator_genord.iteratei_rule_insert_P [of it S0 "(\<le>)" I \<sigma>0 c f P])
   apply (simp_all add: Ball_def)
   apply (metis order_refl)
   done
@@ -520,7 +520,7 @@ context linorder begin
      !!\<sigma> S. S \<subseteq> S0 \<Longrightarrow> S \<noteq> {} \<Longrightarrow> (\<And>x x'. \<lbrakk>x \<in> S; x' \<in> S0-S\<rbrakk> \<Longrightarrow> x \<le> x') \<Longrightarrow> \<not> c \<sigma> \<Longrightarrow> I S \<sigma> \<Longrightarrow> P \<sigma>
    \<rbrakk> \<Longrightarrow> P (it c f \<sigma>0)"
   unfolding set_iterator_rev_linord_def
-  apply (rule set_iterator_genord.iteratei_rule_P [of it S0 "op\<ge>" I \<sigma>0 c f P])
+  apply (rule set_iterator_genord.iteratei_rule_P [of it S0 "(\<ge>)" I \<sigma>0 c f P])
   apply (simp_all add: Ball_def)
   apply (metis order_refl)
   done
@@ -533,7 +533,7 @@ context linorder begin
      !!\<sigma> S. S \<subseteq> S0 \<Longrightarrow> S \<noteq> S0 \<Longrightarrow>  (\<And>x x'. \<lbrakk>x \<in> S0-S; x' \<in> S\<rbrakk> \<Longrightarrow> x \<le> x') \<Longrightarrow> \<not> c \<sigma> \<Longrightarrow> I S \<sigma> \<Longrightarrow> P \<sigma>
    \<rbrakk> \<Longrightarrow> P (it c f \<sigma>0)"
   unfolding set_iterator_rev_linord_def
-  apply (rule set_iterator_genord.iteratei_rule_insert_P [of it S0 "op\<ge>" I \<sigma>0 c f P])
+  apply (rule set_iterator_genord.iteratei_rule_insert_P [of it S0 "(\<ge>)" I \<sigma>0 c f P])
   apply (simp_all add: Ball_def)
   apply (metis order_refl)
   done

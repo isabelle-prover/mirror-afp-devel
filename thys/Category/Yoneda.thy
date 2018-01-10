@@ -138,9 +138,9 @@ proof-
     apply (simp add:  set_comp_def sandwich_def compose_def)
     apply (rule extensionalityI, rule restrict_extensional, rule restrict_extensional)
     by (simp add: F_comp_func compose_def)
-  have "(op \<bullet>) : Hom B C \<rightarrow> Hom A B \<rightarrow> Hom A C" ..  
+  have "(\<bullet>) : Hom B C \<rightarrow> Hom A B \<rightarrow> Hom A C" ..  
   from this and fBC 
-  have opfType: "(op \<bullet>) f : Hom A B \<rightarrow> Hom A C"
+  have opfType: "(\<bullet>) f : Hom A B \<rightarrow> Hom A C"
     by (rule funcset_mem)
   from 1 and 2
   have "set_func ((\<sigma>(A,a) C) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f)) =

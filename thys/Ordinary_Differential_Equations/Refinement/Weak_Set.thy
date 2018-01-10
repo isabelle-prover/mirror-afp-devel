@@ -222,7 +222,7 @@ lemma isEmpty_wset_refine[autoref_rules]:
 subsection \<open>union\<close>
 
 lemma union_wset_refine[autoref_rules]:
-  "(append, op \<union>) \<in> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
+  "(append, (\<union>)) \<in> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
   by (auto 0 3 simp: list_wset_rel_def set_rel_def relcomp_unfold br_def)
 
 
@@ -291,7 +291,7 @@ subsection \<open>image\<close>
 
 lemma image_list_wset_rel[autoref_rules]:
   assumes "PREFER single_valued B"
-  shows "(map, op `) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>B\<rangle>list_wset_rel"
+  shows "(map, (`)) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>B\<rangle>list_wset_rel"
   unfolding list_wset_rel_def relcomp_unfold
 proof safe
   show "(a, a') \<in> A \<rightarrow> B \<Longrightarrow> (aa, y) \<in> br set top \<Longrightarrow> (y, a'a) \<in> \<langle>A\<rangle>set_rel \<Longrightarrow>

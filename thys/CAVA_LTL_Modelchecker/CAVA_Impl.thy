@@ -50,7 +50,7 @@ lemma frv_edge_set_aimpl_correct:
 
 schematic_goal frv_edge_set_impl_aux:
   fixes R Re
-  assumes [autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eq,(=))\<in>R \<rightarrow> R \<rightarrow> bool_rel"
   assumes [relator_props]: "single_valued R"
   shows "(?c, frv_edge_set_aimpl) \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext \<rightarrow> \<langle>\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel\<rangle>nres_rel"
   unfolding frv_edge_set_aimpl_def[abs_def]
@@ -66,7 +66,7 @@ lemmas [refine_transfer] = frv_edge_set_code.refine
 
 lemma frv_edge_set_autoref[autoref_rules]:
   fixes Re R
-  assumes EQ[unfolded autoref_tag_defs]: "GEN_OP eq op = (R \<rightarrow> R \<rightarrow> bool_rel)"
+  assumes EQ[unfolded autoref_tag_defs]: "GEN_OP eq (=) (R \<rightarrow> R \<rightarrow> bool_rel)"
   assumes SV[unfolded autoref_tag_defs]: "PREFER single_valued R"
   shows "(frv_edge_set_code eq,frv_edge_set) \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext \<rightarrow> \<langle>R \<times>\<^sub>r R\<rangle>list_set_rel"
 proof (intro fun_relI)
@@ -96,7 +96,7 @@ definition "frv_export G \<equiv> do {
 schematic_goal frv_export_impl_aux:
   fixes Re and R :: "('vi \<times> 'v) set"
   notes [autoref_tyrel] = TYRELI[where R = "\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel"]
-  assumes EQ[autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
+  assumes EQ[autoref_rules]: "(eq,(=))\<in>R \<rightarrow> R \<rightarrow> bool_rel"
   assumes SVR[relator_props]: "single_valued R"
   shows "(?c, frv_export) 
   \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext 
@@ -359,7 +359,7 @@ locale cava_inter_impl_loc =
   for S :: "('s, 'l set) sa_rec"
   and G :: "('q,'l set) igba_rec" +
   fixes Gi Si Rq Rs Rl eqq
-  assumes [autoref_rules]: "(eqq,op =) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
+  assumes [autoref_rules]: "(eqq,(=)) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
   assumes [autoref_rules]: "(Gi,G) \<in> igbav_impl_rel_ext unit_rel Rq Rl"
   assumes [autoref_rules]: "(Si,S) \<in> sa_impl_rel_ext unit_rel Rs Rl"
 begin
@@ -474,7 +474,7 @@ lemma dflt_inter_autoref[autoref_rules]:
   fixes Gi Si Rq Rs Rl eqq
   assumes "SIDE_PRECOND (igba G)"
   assumes "SIDE_PRECOND (sa S)"
-  assumes "GEN_OP eqq op = (Rq \<rightarrow> Rq \<rightarrow> bool_rel)"
+  assumes "GEN_OP eqq (=) (Rq \<rightarrow> Rq \<rightarrow> bool_rel)"
   assumes "(Gi,G) \<in> igbav_impl_rel_ext unit_rel Rq Rl"
   assumes "(Si,S) \<in> sa_impl_rel_ext unit_rel Rs Rl"
   shows "(dflt_inter_impl eqq Si Gi,
@@ -514,7 +514,7 @@ lemma dflt_inter_impl_refine:
   assumes [relator_props]: "single_valued Rs" "Range Rs = UNIV" 
     "single_valued Rq" "Range Rq = UNIV"
 
-  assumes EQ: "(eqq,op=) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
+  assumes EQ: "(eqq,(=)) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
 
   shows "(dflt_inter_impl eqq, inter_spec)
   \<in> sa_impl_rel_ext unit_rel Rs (\<langle>Rprop\<rangle>fun_set_rel) \<rightarrow>
@@ -553,7 +553,7 @@ interpretation cava_sys_agn: impl_model_checker
   "\<langle>Id \<times>\<^sub>r Id\<rangle>lasso_run_rel" "\<langle>Id\<rangle>lasso_run_rel"
 
   "ltl_to_gba_code"
-  "\<lambda>_::unit. dflt_inter_impl op ="
+  "\<lambda>_::unit. dflt_inter_impl (=)"
   "find_ce_code"
   "map_lasso"
   apply unfold_locales
@@ -561,7 +561,7 @@ interpretation cava_sys_agn: impl_model_checker
 
   apply (rule ltl_to_gba_code_refine[unfolded is_ltl_to_gba_algo_def])
   
-  using dflt_inter_impl_refine[of Id Id "op =" Id] apply simp
+  using dflt_inter_impl_refine[of Id Id "(=)" Id] apply simp
 
   using find_ce_code_refine[unfolded is_find_ce_algo_def] 
   apply simp apply assumption

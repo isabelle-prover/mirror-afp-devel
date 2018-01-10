@@ -54,7 +54,7 @@ begin
       where "single_valued K" "single_valued (K\<inverse>)" "IS_BELOW_ID V"
     proof goal_cases  
       case 1 
-      have [param]: "(op\<le>,op\<le>)\<in>Id\<rightarrow>Id\<rightarrow>bool_rel" by simp
+      have [param]: "((\<le>),(\<le>))\<in>Id\<rightarrow>Id\<rightarrow>bool_rel" by simp
       from 1 show ?case
         apply (parametricity add: param_and_cong1)
         apply (auto simp: IS_BELOW_ID_def map_rel_def dest!: fun_relD)
@@ -66,7 +66,7 @@ begin
       where "single_valued K" "single_valued (K\<inverse>)" "IS_BELOW_ID V"
     proof goal_cases  
       case 1 
-      have [param]: "(op\<le>,op\<le>)\<in>Id\<rightarrow>Id\<rightarrow>bool_rel" by simp
+      have [param]: "((\<le>),(\<le>))\<in>Id\<rightarrow>Id\<rightarrow>bool_rel" by simp
       from 1 show ?case
         apply (parametricity add: param_and_cong1)
         apply (auto simp: IS_BELOW_ID_def map_rel_def dest!: fun_relD)

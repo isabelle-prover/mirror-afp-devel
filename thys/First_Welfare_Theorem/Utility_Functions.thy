@@ -78,7 +78,7 @@ text \<open> This utility function definition is ordinal.
 
 lemma ordinality_of_utility_function :
   fixes f :: "real \<Rightarrow> real"
-  assumes monot: "monotone (op>) (op>) f"
+  assumes monot: "monotone ((>)) ((>)) f"
   shows "(f \<circ> u) x > (f \<circ> u) y \<longleftrightarrow> u x > u y"
 proof -
   let ?func = "(\<lambda>x. f(u x))"
@@ -92,7 +92,7 @@ qed
 
 corollary utility_prefs_corresp :
   fixes f :: "real \<Rightarrow> real"
-  assumes monotonicity : "monotone (op>) (op>) f"
+  assumes monotonicity : "monotone ((>)) ((>)) f"
   shows "\<forall>x\<in>carrier. \<forall>y\<in>carrier. (x,y) \<in> relation \<longleftrightarrow> (f \<circ> u) x \<ge> (f \<circ> u) y"
   by (meson monotonicity not_less ordinality_of_utility_function util_def_conf)
 

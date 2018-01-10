@@ -37,24 +37,24 @@ next
   assume ?r with Resolution_weaken show ?l by blast
 qed
 
-lemma Resolution_taint_assumptions: "S \<union> T \<turnstile> C \<Longrightarrow> \<exists>R \<subseteq> D. (op \<union> D ` S) \<union> T \<turnstile> R \<union> C"
+lemma Resolution_taint_assumptions: "S \<union> T \<turnstile> C \<Longrightarrow> \<exists>R \<subseteq> D. ((\<union>) D ` S) \<union> T \<turnstile> R \<union> C"
 (* No, we don't need to show this for an arbitrary clause D, but the proof doesn't get any more readable if you only allow a single atom. *)
 proof(induction "S \<union> T" "C" rule: Resolution.induct)
  case (Ass C)
   show ?case proof(cases "C \<in> S")
     case True
-    hence "D \<union> C \<in> op \<union> D ` S \<union> T" by simp
-    with Resolution.Ass have "(op \<union> D ` S) \<union> T \<turnstile> D \<union> C" .
+    hence "D \<union> C \<in> (\<union>) D ` S \<union> T" by simp
+    with Resolution.Ass have "((\<union>) D ` S) \<union> T \<turnstile> D \<union> C" .
     thus ?thesis by blast
   next
     case False
     with Ass have "C \<in> T" by simp
-    hence "(op \<union> D ` S) \<union> T \<turnstile> C" by(simp add: Resolution.Ass)
+    hence "((\<union>) D ` S) \<union> T \<turnstile> C" by(simp add: Resolution.Ass)
     thus ?thesis by(intro exI[where x="{}"]) simp
   qed
 next
   case (R C1 C2 k)
-  let ?m = "(op \<union> D ` S) \<union> T"
+  let ?m = "((\<union>) D ` S) \<union> T"
   from R obtain R1 where IH1: "R1 \<subseteq> D" "?m \<turnstile> R1 \<union> C1" by blast
   from R obtain R2 where IH2: "R2 \<subseteq> D" "?m \<turnstile> R2 \<union> C2" by blast
   from R have "k\<^sup>+ \<in> R1 \<union> C1" "k\<inverse> \<in> R2 \<union> C2" by simp_all

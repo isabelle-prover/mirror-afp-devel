@@ -98,12 +98,12 @@ proof (intro measure_eqI)
   then have [measurable]: "(\<lambda>x. x / l) -` A \<in> sets borel"
     by (rule measurable_sets_borel[rotated]) simp
   have "emeasure (exponential l) A =
-    (\<integral>\<^sup>+x. ennreal l * (indicator ((op * (1/l) -` A) \<inter> {0 ..}) (l * x) * ennreal (exp (- (l * x)))) \<partial>lborel)"
+    (\<integral>\<^sup>+x. ennreal l * (indicator ((( * ) (1/l) -` A) \<inter> {0 ..}) (l * x) * ennreal (exp (- (l * x)))) \<partial>lborel)"
     using \<open>0 < l\<close>
     by (auto simp: ac_simps emeasure_distr exponential_def emeasure_density exponential_density_def
                    ennreal_mult zero_le_mult_iff
              intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = (\<integral>\<^sup>+x. indicator ((op * (1/l) -` A) \<inter> {0 ..}) x * ennreal (exp (- x)) \<partial>lborel)"
+  also have "\<dots> = (\<integral>\<^sup>+x. indicator ((( * ) (1/l) -` A) \<inter> {0 ..}) x * ennreal (exp (- x)) \<partial>lborel)"
     using \<open>0<l\<close>
     apply (subst nn_integral_stretch)
       apply (auto simp: nn_integral_cmult)
@@ -117,7 +117,7 @@ qed (simp add: sets_exponential)
 
 lemma uniform_measure_exponential:
   assumes "0 < l" "0 \<le> t"
-  shows "uniform_measure (exponential l) {t <..} = distr (exponential l) borel (op + t)" (is "?L = ?R")
+  shows "uniform_measure (exponential l) {t <..} = distr (exponential l) borel ((+) t)" (is "?L = ?R")
 proof (rule measure_eqI_lessThan)
   fix x
   have "0 < emeasure (exponential l) {t<..}"
@@ -125,7 +125,7 @@ proof (rule measure_eqI_lessThan)
   with assms show "?L {x<..} < \<infinity>"
     by (simp add: ennreal_divide_eq_top_iff less_top[symmetric] lessThan_Int_lessThan
       emeasure_exponential_Ioi)
-  have *: "(op + t -` {x<..} \<inter> space (exponential l)) = {x - t <..}"
+  have *: "((+) t -` {x<..} \<inter> space (exponential l)) = {x - t <..}"
     by (auto simp: space_exponential)
   show "?L {x<..} = ?R {x<..}"
     using assms by (simp add: lessThan_Int_lessThan emeasure_exponential_Ioi divide_ennreal
@@ -381,18 +381,18 @@ qed
 lemma set_pmf_J: "set_pmf (J x) = I x"
   using escape_rate_pos[of x] by (auto simp: set_pmf_iff J.rep_eq less_le)
 
-interpretation exp_esc: pair_prob_space "distr (exponential (escape_rate x)) borel (op + t)" "J x" for x
+interpretation exp_esc: pair_prob_space "distr (exponential (escape_rate x)) borel ((+) t)" "J x" for x
 proof -
-  interpret prob_space "distr (exponential (escape_rate x)) borel (op + t)"
+  interpret prob_space "distr (exponential (escape_rate x)) borel ((+) t)"
     by (intro prob_space.prob_space_distr prob_space_exponential_escape_rate) simp
-  show "pair_prob_space (distr (exponential (escape_rate x)) borel (op + t)) (measure_pmf (J x))"
+  show "pair_prob_space (distr (exponential (escape_rate x)) borel ((+) t)) (measure_pmf (J x))"
     by standard
 qed
 
 subsection \<open>Continuous-time Kernel\<close>
 
 definition K :: "(real \<times> 'a) \<Rightarrow> (real \<times> 'a) measure" where
-  "K = (\<lambda>(t, x). (distr (exponential (escape_rate x)) borel (op + t)) \<Otimes>\<^sub>M J x)"
+  "K = (\<lambda>(t, x). (distr (exponential (escape_rate x)) borel ((+) t)) \<Otimes>\<^sub>M J x)"
 
 interpretation K: discrete_Markov_process "borel \<Otimes>\<^sub>M count_space UNIV" K
 proof
@@ -532,7 +532,7 @@ proof -
       unfolding ennreal_escape_rate by (subst nn_integral_add[symmetric]) (auto simp: less_le split: split_indicator intro!: nn_integral_cong)
     also have "\<dots> = R x y + (\<integral>\<^sup>+y'. R x y' \<partial>count_space (I x - {y}))"
       by (auto simp add: nn_integral_count_space_indicator less_le simp del: nn_integral_indicator_singleton
-               intro!: arg_cong2[where f="op +"] nn_integral_cong split: split_indicator)
+               intro!: arg_cong2[where f="(+)"] nn_integral_cong split: split_indicator)
     finally have "(\<integral>\<^sup>+y'. R x y' \<partial>count_space (I x - {y})) = escape_rate x - R x y \<and> R x y \<le> escape_rate x"
       using escape_rate_pos[THEN less_imp_le]
       by (cases "(\<integral>\<^sup>+y'. R x y' \<partial>count_space (I x - {y}))")
@@ -556,7 +556,7 @@ proof -
              split: split_indicator intro!: nn_integral_cong )
   also have "\<dots> = pmf (J x) y * emeasure (exponential (escape_rate x)) {t..}"
     using AE_exponential[OF escape_rate_pos[of x]]
-    by (intro arg_cong2[where f="op *"] emeasure_eq_AE) (auto simp: J.rep_eq )
+    by (intro arg_cong2[where f="( * )"] emeasure_eq_AE) (auto simp: J.rep_eq )
   finally show ?thesis
     using assms by (simp add: mult_ac select_first_def)
 qed
@@ -572,7 +572,7 @@ proof -
     using I_countable by (intro emeasure_UN_countable D) auto
   also have "\<dots> = (\<integral>\<^sup>+y. PAR x {p\<in>space (PAR x). 0 \<le> p y \<and> select_first x p y} \<partial>count_space (I x))"
   proof (intro nn_integral_cong emeasure_eq_AE, goal_cases)
-    case (1 y) with AE_PiM_component[of "I x" "\<lambda>y. exponential (R x y)" y "op < 0"] AE_exponential[of "R x y"] show ?case
+    case (1 y) with AE_PiM_component[of "I x" "\<lambda>y. exponential (R x y)" y "(<) 0"] AE_exponential[of "R x y"] show ?case
       by (auto simp: prob_space_exponential)
   qed (insert I_countable, auto)
   also have "\<dots> = (\<integral>\<^sup>+y. emeasure (exponential (escape_rate x)) {0 ..} * ennreal (pmf (J x) y) \<partial>count_space (I x))"
@@ -606,7 +606,7 @@ proof (rule measure_eqI_generator_eq_countable)
   show "countable ((\<lambda>(t, A). {t ..} \<times> A) ` (\<rat> \<times> ({- I x} \<union> (\<lambda>s. {s}) ` I x)))"
     by (intro countable_image countable_SIGMA countable_rat countable_Un I_countable) auto
 
-   have *: "op + t -` {t'..} \<inter> space (exponential (escape_rate x)) = {t' - t..}" for t'
+   have *: "(+) t -` {t'..} \<inter> space (exponential (escape_rate x)) = {t' - t..}" for t'
      by (auto simp: space_exponential)
   { fix X assume "X \<in> ?E"
     then consider
@@ -800,7 +800,7 @@ proof (coinduction arbitrary: t s rule: K.lim_stream_eq_coinduct)
       also have "(\<integral>\<^sup>+x. ?C x A * indicator {j <..} (fst x) \<partial>K (t, s)) =
         (\<integral>\<^sup>+y. emeasure (B' y \<bind> (\<lambda>\<omega>. return T (y ## \<omega>))) A * indicator {j <..} (fst y) \<partial>K (t, s))"
       proof -
-        have *: "op + t -` {j<..} = {j - t <..}"
+        have *: "(+) t -` {j<..} = {j - t <..}"
           by auto
 
         have "(\<integral>\<^sup>+x. ?C x A * indicator {j <..} (fst x) \<partial>K (t, s)) =
@@ -832,7 +832,7 @@ qed (simp add: space_pair_measure)
 
 lemma K_eq: "K (t, s) = distr (exponential (escape_rate s) \<Otimes>\<^sub>M J s) S (\<lambda>(t', s). (t + t', s))"
 proof -
-  have "distr (exponential (escape_rate s)) borel (op + t) \<Otimes>\<^sub>M distr (J s) (J s) (\<lambda>x. x) =
+  have "distr (exponential (escape_rate s)) borel ((+) t) \<Otimes>\<^sub>M distr (J s) (J s) (\<lambda>x. x) =
     distr (exponential (escape_rate s) \<Otimes>\<^sub>M J s) (borel \<Otimes>\<^sub>M J s) (\<lambda>(x, y). (t + x, y))"
   proof (intro pair_measure_distr)
     interpret prob_space "distr (measure_pmf (J s)) (measure_pmf (J s)) (\<lambda>x. x)"
@@ -1145,7 +1145,7 @@ lemma p_eq:
   assumes "0 \<le> t"
   shows "p s s'' t = (of_bool (s = s'') + (LINT u:{0..t}|lborel. escape_rate s * exp (escape_rate s * u) * (LINT s'|J s. p s' s'' u))) / exp (t * escape_rate s)"
 proof -
-  have *: "op + 0 = (\<lambda>x::real. x)"
+  have *: "(+) 0 = (\<lambda>x::real. x)"
     by auto
   interpret L: prob_space "K.lim_stream x" for x
     by (rule K.prob_space_lim_stream) simp
@@ -1444,7 +1444,7 @@ proof -
      by (auto intro!: nn_integral_cong simp: nn_integral_multc)
   also have "\<dots> = (\<integral>\<^sup>+z. ennreal (p x z t) * ennreal (p z y t') \<partial>count_space (DTMC.acc``{x}))"
     unfolding p_def L.emeasure_eq_measure[symmetric]
-    by (auto intro!: nn_integral_cong arg_cong2[where f="op *"]
+    by (auto intro!: nn_integral_cong arg_cong2[where f="( * )"]
              simp: nn_integral_indicator[symmetric] simp del: nn_integral_indicator )
   finally have "(\<integral>\<^sup>+z. p x z t * p z y t' \<partial>count_space (DTMC.acc``{x})) = p x y (t + t')"
     by (simp add: ennreal_mult)
