@@ -94,15 +94,15 @@ end
 subsection \<open>Subgroup indicators and adjoining elements\<close>
 
 definition subgroup_indicator :: "('a, 'b) monoid_scheme \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> nat" where
-  "subgroup_indicator G H a = (LEAST k. k > 0 \<and> a (^)\<^bsub>G\<^esub> k \<in> H)"
+  "subgroup_indicator G H a = (LEAST k. k > 0 \<and> a [^]\<^bsub>G\<^esub> k \<in> H)"
 
 definition adjoin :: "('a, 'b) monoid_scheme \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set" where
-  "adjoin G H a = {x \<otimes>\<^bsub>G\<^esub> a (^)\<^bsub>G\<^esub> k |x k. x \<in> H \<and> k < subgroup_indicator G H a}"
+  "adjoin G H a = {x \<otimes>\<^bsub>G\<^esub> a [^]\<^bsub>G\<^esub> k |x k. x \<in> H \<and> k < subgroup_indicator G H a}"
 
 lemma (in subgroup) nat_pow_closed [simp,intro]: "a \<in> H \<Longrightarrow> pow G a (n::nat) \<in> H"
   by (induction n) (auto simp: nat_pow_def)
 
-lemma nat_pow_modify_carrier: "a (^)\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> b = a (^)\<^bsub>G\<^esub> (b::nat)"
+lemma nat_pow_modify_carrier: "a [^]\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> b = a [^]\<^bsub>G\<^esub> (b::nat)"
   by (simp add: nat_pow_def)
 
 lemma subgroup_indicator_modify_carrier [simp]:
@@ -126,7 +126,7 @@ proof -
 qed
 
 lemma subgroup_indicator_le:
-  assumes "a (^) n \<in> H" "n > 0"  "a \<in> carrier G"
+  assumes "a [^] n \<in> H" "n > 0"  "a \<in> carrier G"
   shows   "subgroup_indicator G H a \<le> n"
   using assms unfolding subgroup_indicator_def by (intro Least_le) auto
 
@@ -148,14 +148,14 @@ qed
 lemma 
   assumes "subgroup H G" and a: "a \<in> carrier G"
   shows subgroup_indicator_pos: "subgroup_indicator G H a > 0" (is "?h > 0")
-  and   pow_subgroup_indicator: "a (^) subgroup_indicator G H a \<in> H"
+  and   pow_subgroup_indicator: "a [^] subgroup_indicator G H a \<in> H"
 proof -
   interpret subgroup H G by fact
-  from a have "\<exists>h>0. a (^) (h::nat) \<in> H"
+  from a have "\<exists>h>0. a [^] (h::nat) \<in> H"
     by (intro exI[of _ "ord a"]) (auto simp: ord_pos pow_ord_eq_1 fin)
-  hence "?h > 0 \<and> a (^) ?h \<in> H" unfolding subgroup_indicator_def
+  hence "?h > 0 \<and> a [^] ?h \<in> H" unfolding subgroup_indicator_def
     by (rule LeastI_ex)
-  thus "?h > 0" and "a (^) ?h \<in> H" by auto
+  thus "?h > 0" and "a [^] ?h \<in> H" by auto
 qed
 
 lemma subgroup_indicator_le_ord:
@@ -198,21 +198,21 @@ next
   define h where "h = subgroup_indicator G H a"
   from assms have [simp]: "h > 0" 
     unfolding h_def by (intro subgroup_indicator_pos) auto
-  from 2(1) obtain x' :: 'a and k :: nat where [simp]: "x' \<in> H" "x = x' \<otimes> a (^) k"
+  from 2(1) obtain x' :: 'a and k :: nat where [simp]: "x' \<in> H" "x = x' \<otimes> a [^] k"
     by (auto simp: adjoin_def)
-  from 2(2) obtain y' :: 'a and l :: nat where [simp]: "y' \<in> H" "y = y' \<otimes> a (^) l"
+  from 2(2) obtain y' :: 'a and l :: nat where [simp]: "y' \<in> H" "y = y' \<otimes> a [^] l"
     by (auto simp: adjoin_def)
-  define a' where "a' = (a (^) h) (^) ((k + l) div h)"
+  define a' where "a' = (a [^] h) [^] ((k + l) div h)"
   have [simp]: "a' \<in> H" unfolding a'_def
     by (rule nat_pow_closed) (insert assms, auto simp: h_def intro!: pow_subgroup_indicator)
-  from a have "x \<otimes> y = (x' \<otimes> y') \<otimes> a (^) (k + l)"
+  from a have "x \<otimes> y = (x' \<otimes> y') \<otimes> a [^] (k + l)"
     by (simp add: nat_pow_mult [symmetric] m_ac)
   also have "k + l = h * ((k + l) div h) + (k + l) mod h"
     by (rule mult_div_mod_eq [symmetric])
-  also from a fin have "a (^) \<dots> = a' \<otimes> a (^) ((k + l) mod h)"
+  also from a fin have "a [^] \<dots> = a' \<otimes> a [^] ((k + l) mod h)"
     by (subst nat_pow_mult [symmetric]) 
        (simp_all add: nat_pow_pow [symmetric] pow_ord_eq_1 a'_def [symmetric])
-  finally have "x \<otimes> y = x' \<otimes> y' \<otimes> a' \<otimes> a (^) ((k + l) mod h)" 
+  finally have "x \<otimes> y = x' \<otimes> y' \<otimes> a' \<otimes> a [^] ((k + l) mod h)" 
     using a by (simp add: m_ac)
   moreover from a have "(k + l) mod h < h"
     by (intro mod_less_divisor) (auto simp: ord_pos)
@@ -227,10 +227,10 @@ next
   case (4 x)
   interpret H: subgroup H G by fact
   define h where "h = subgroup_indicator G H a"
-  define a' where "a' = a (^) h"
+  define a' where "a' = a [^] h"
   from assms have [simp]: "a' \<in> H" unfolding a'_def h_def
     by (intro pow_subgroup_indicator) auto
-  from 4 obtain x' and k :: nat where [simp]: "x' \<in> H" "x = x' \<otimes> a (^) k" and "k < h"
+  from 4 obtain x' and k :: nat where [simp]: "x' \<in> H" "x = x' \<otimes> a [^] k" and "k < h"
     by (auto simp: adjoin_def h_def)
   show ?case
   proof (cases "k = 0")
@@ -239,18 +239,18 @@ next
       by (auto simp: mem_adjoin)
   next
     case False
-    from a have "inv x = inv x' \<otimes> inv (a (^) k)"
+    from a have "inv x = inv x' \<otimes> inv (a [^] k)"
       by (simp add: inv_mult)
-    also have "\<dots> = inv x' \<otimes> (inv a' \<otimes> a') \<otimes> inv (a (^) k)" by simp
-    also have "\<dots> = inv x' \<otimes> inv a' \<otimes> (a' \<otimes> inv (a (^) k))"
+    also have "\<dots> = inv x' \<otimes> (inv a' \<otimes> a') \<otimes> inv (a [^] k)" by simp
+    also have "\<dots> = inv x' \<otimes> inv a' \<otimes> (a' \<otimes> inv (a [^] k))"
       by (simp only: \<open>a' \<in> H\<close> \<open>x' \<in> H\<close> inv_closed m_closed H.mem_carrier m_ac nat_pow_closed a)
-    also from a have "a' \<otimes> inv (a (^) k) = a (^) (int h - int k)"
+    also from a have "a' \<otimes> inv (a [^] k) = a [^] (int h - int k)"
       by (subst int_pow_diff) (auto simp: a'_def int_pow_int)
     also from \<open>k < h\<close> have "int h - int k = int (h - k)"
       by simp
-    also have "a (^) \<dots> = a (^) (h - k)" 
+    also have "a [^] \<dots> = a [^] (h - k)" 
       by (simp add: int_pow_int)
-    finally have "inv x = inv x' \<otimes> inv a' \<otimes> a (^) (h - k)" .
+    finally have "inv x = inv x' \<otimes> inv a' \<otimes> a [^] (h - k)" .
     moreover have "h - k < h" using \<open>k < h\<close> and False by simp
     ultimately show ?thesis
       by (auto simp: adjoin_def h_def intro!: exI[of _ "inv x' \<otimes> inv a'"] exI[of _ "h - k"])
@@ -299,37 +299,37 @@ qed
 lemma inj_on_adjoin:
   assumes "subgroup H G" and a: "a \<in> carrier G" "a \<notin> H"
   defines "h \<equiv> subgroup_indicator G H a"
-  shows   "inj_on (\<lambda>(x, k). x \<otimes> a (^) k) (H \<times> {..<h})"
+  shows   "inj_on (\<lambda>(x, k). x \<otimes> a [^] k) (H \<times> {..<h})"
 proof (intro inj_onI, clarify, goal_cases)
   case (1 x k y l)
   interpret H: subgroup H G by fact
-  have wf: "x \<in> carrier G" "y \<in> carrier G" "a (^) k \<in> carrier G" "a (^) l \<in> carrier G"
+  have wf: "x \<in> carrier G" "y \<in> carrier G" "a [^] k \<in> carrier G" "a [^] l \<in> carrier G"
     using 1 a by auto
-  have "x \<otimes> inv y = (x \<otimes> inv y) \<otimes> (a (^) k \<otimes> inv (a (^) k))"
+  have "x \<otimes> inv y = (x \<otimes> inv y) \<otimes> (a [^] k \<otimes> inv (a [^] k))"
     by (simp add: wf)
-  also have "\<dots> = x \<otimes> a (^) k \<otimes> inv y \<otimes> inv (a (^) k)"
+  also have "\<dots> = x \<otimes> a [^] k \<otimes> inv y \<otimes> inv (a [^] k)"
     by (simp only: m_ac wf inv_closed m_closed)
-  also from a have "\<dots> = y \<otimes> a (^) l \<otimes> inv y \<otimes> inv (a (^) k)"
+  also from a have "\<dots> = y \<otimes> a [^] l \<otimes> inv y \<otimes> inv (a [^] k)"
     by (subst 1) (simp_all)
-  also have "\<dots> = y \<otimes> inv y \<otimes> (a (^) l \<otimes> inv (a (^) k))"
+  also have "\<dots> = y \<otimes> inv y \<otimes> (a [^] l \<otimes> inv (a [^] k))"
     by (simp only: m_ac wf inv_closed m_closed)
-  also from wf have "\<dots> = a (^) int l \<otimes> inv (a (^) int k)"
+  also from wf have "\<dots> = a [^] int l \<otimes> inv (a [^] int k)"
     by (simp add: int_pow_int)
-  also have "\<dots> = a (^) (int l - int k)"
+  also have "\<dots> = a [^] (int l - int k)"
     by (rule int_pow_diff [symmetric]) fact+
-  finally have *: "x \<otimes> inv y = a (^) (int l - int k)" .
+  finally have *: "x \<otimes> inv y = a [^] (int l - int k)" .
 
-  have **: "a (^) (nat \<bar>int l - int k\<bar>) \<in> H"
+  have **: "a [^] (nat \<bar>int l - int k\<bar>) \<in> H"
   proof (cases "k \<le> l")
     case True
-    from 1 have "a (^) (int l - int k) \<in> H" by (subst * [symmetric]) auto
-    also have "a (^) (int l - int k) = a (^) (nat \<bar>int l - int k\<bar>)"
+    from 1 have "a [^] (int l - int k) \<in> H" by (subst * [symmetric]) auto
+    also have "a [^] (int l - int k) = a [^] (nat \<bar>int l - int k\<bar>)"
       using True by (simp add: nat_diff_distrib int_pow_int [symmetric] of_nat_diff)
     finally show ?thesis .
   next
     case False
-    from 1 have "inv (a (^) (int l - int k)) \<in> H" by (subst * [symmetric]) auto
-    also have "inv (a (^) (int l - int k)) = a (^) (nat \<bar>int l - int k\<bar>)" using False a 
+    from 1 have "inv (a [^] (int l - int k)) \<in> H" by (subst * [symmetric]) auto
+    also have "inv (a [^] (int l - int k)) = a [^] (nat \<bar>int l - int k\<bar>)" using False a 
       by (simp add: int_pow_neg [symmetric] nat_diff_distrib int_pow_int [symmetric] of_nat_diff)
     finally show ?thesis .
   qed
@@ -350,7 +350,7 @@ lemma card_adjoin:
 proof -
   interpret H: subgroup H G by fact
   define h where "h = subgroup_indicator G H a"
-  have "adjoin G H a = (\<lambda>(x,k). x \<otimes> a (^) k) ` (H \<times> {..<h})"
+  have "adjoin G H a = (\<lambda>(x,k). x \<otimes> a [^] k) ` (H \<times> {..<h})"
     by (auto simp: adjoin_def h_def)
   also have "card \<dots> = card (H \<times> {..<h})" unfolding h_def
     by (intro card_image inj_on_adjoin assms)
@@ -368,12 +368,12 @@ begin
 
 definition unadjoin :: "'a \<Rightarrow> 'a \<times> nat"  where
   "unadjoin x = 
-     (THE z. z \<in> H \<times> {..<subgroup_indicator G H a} \<and> x = fst z \<otimes>\<^bsub>G\<^esub> a (^)\<^bsub>G\<^esub> snd z)"
+     (THE z. z \<in> H \<times> {..<subgroup_indicator G H a} \<and> x = fst z \<otimes>\<^bsub>G\<^esub> a [^]\<^bsub>G\<^esub> snd z)"
 
 lemma adjoin_unique:
   assumes "x \<in> adjoin G H a"
   defines "h \<equiv> subgroup_indicator G H a"
-  shows   "\<exists>!z. z \<in> H \<times> {..<subgroup_indicator G H a} \<and> x = fst z \<otimes>\<^bsub>G\<^esub> a (^)\<^bsub>G\<^esub> snd z"
+  shows   "\<exists>!z. z \<in> H \<times> {..<subgroup_indicator G H a} \<and> x = fst z \<otimes>\<^bsub>G\<^esub> a [^]\<^bsub>G\<^esub> snd z"
 proof (rule ex_ex1I, goal_cases)
   case 1
   from assms show ?case by (auto simp: adjoin_def)
@@ -387,21 +387,21 @@ qed
 lemma unadjoin_correct:
   assumes "x \<in> adjoin G H a"
   shows   "fst (unadjoin x) \<in> H" and "snd (unadjoin x) < subgroup_indicator G H a"
-          "fst (unadjoin x) \<otimes> a (^) snd (unadjoin x) = x"
+          "fst (unadjoin x) \<otimes> a [^] snd (unadjoin x) = x"
   using theI'[OF adjoin_unique[OF assms], folded unadjoin_def] by auto
 
 lemma unadjoin_unique:
   assumes "y \<in> H" "h < subgroup_indicator G H a"
-  shows   "unadjoin (y \<otimes> a (^) h) = (y, h)"
+  shows   "unadjoin (y \<otimes> a [^] h) = (y, h)"
 proof -
-  from assms have "y \<otimes> a (^) h \<in> adjoin G H a" by (auto simp: adjoin_def)
+  from assms have "y \<otimes> a [^] h \<in> adjoin G H a" by (auto simp: adjoin_def)
   note * = theI'[OF adjoin_unique[OF this], folded unadjoin_def]
   from inj_on_adjoin[OF is_subgroup a_in_carrier a_notin_subgroup] show ?thesis
     by (rule inj_onD) (insert * assms, auto)
 qed
 
 lemma unadjoin_unique':
-  assumes "y \<in> H" "h < subgroup_indicator G H a" "x = y \<otimes> a (^) h"
+  assumes "y \<in> H" "h < subgroup_indicator G H a" "x = y \<otimes> a [^] h"
   shows   "unadjoin x = (y, h)"
   using unadjoin_unique[OF assms(1,2)] assms(3) by simp
 

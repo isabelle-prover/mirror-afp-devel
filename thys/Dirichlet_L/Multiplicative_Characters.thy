@@ -67,15 +67,15 @@ proof-
   with char_one_nz show ?thesis by simp
 qed
 
-lemma char_power [simp]: "a \<in> carrier G \<Longrightarrow> \<chi> (a (^) k) = \<chi> a ^ k"
+lemma char_power [simp]: "a \<in> carrier G \<Longrightarrow> \<chi> (a [^] k) = \<chi> a ^ k"
   by (induction k) auto
 
 lemma char_root:
   assumes "a \<in> carrier G"
   shows   "\<chi> a ^ ord a = 1"
 proof -
-  from assms have "\<chi> a ^ ord a = \<chi> (a (^) ord a)" by simp
-  also from fin and assms have "a (^) ord a = \<one>" by (intro pow_ord_eq_1) auto
+  from assms have "\<chi> a ^ ord a = \<chi> (a [^] ord a)" by simp
+  also from fin and assms have "a [^] ord a = \<one>" by (intro pow_ord_eq_1) auto
   finally show ?thesis by simp
 qed
 
@@ -83,8 +83,8 @@ lemma char_root':
   assumes "a \<in> carrier G"
   shows   "\<chi> a ^ order G = 1"
 proof -
-  from assms have "\<chi> a ^ order G = \<chi> (a (^) order G)" by simp
-  also from fin and assms have "a (^) order G = \<one>" by (intro pow_order_eq_1) auto
+  from assms have "\<chi> a ^ order G = \<chi> (a [^] order G)" by simp
+  also from fin and assms have "a [^] order G = \<one>" by (intro pow_order_eq_1) auto
   finally show ?thesis by simp
 qed
 
@@ -302,7 +302,7 @@ definition lift_character :: "('a \<Rightarrow> complex) \<times> complex \<Righ
 
 lemma lift_character:
   defines "h \<equiv> subgroup_indicator G H a"
-  assumes "character (G\<lparr>carrier := H\<rparr>) \<chi>" (is "character ?G' _") and "z ^ h = \<chi> (a (^) h)"
+  assumes "character (G\<lparr>carrier := H\<rparr>) \<chi>" (is "character ?G' _") and "z ^ h = \<chi> (a [^] h)"
   shows   "character (G\<lparr>carrier := adjoin G H a\<rparr>) (lift_character (\<chi>, z))" (is "character ?G'' _")
 proof -
   interpret H': subgroup "adjoin G H a" G by (intro adjoin_subgroup is_subgroup) auto
@@ -322,24 +322,24 @@ proof -
     thus ?case by (auto simp: lift_character_def)
   next
     case (3 x y)
-    from 3(1) obtain x' k where x: "x' \<in> H" "x = x' \<otimes> a (^) k" and k: "k < h"
+    from 3(1) obtain x' k where x: "x' \<in> H" "x = x' \<otimes> a [^] k" and k: "k < h"
       by (auto simp: adjoin_def h_def)
-    from 3(2) obtain y' l where y: "y' \<in> H" "y = y' \<otimes> a (^) l" and l: "l < h"
+    from 3(2) obtain y' l where y: "y' \<in> H" "y = y' \<otimes> a [^] l" and l: "l < h"
       by (auto simp: adjoin_def h_def)
     have [simp]: "unadjoin x = (x', k)" using x k by (intro unadjoin_unique') (auto simp: h_def)
     have [simp]: "unadjoin y = (y', l)" using y l by (intro unadjoin_unique') (auto simp: h_def)
     have char_mult': "\<chi> (x \<otimes> y) = \<chi> x * \<chi> y" if "x \<in> H" "y \<in> H" for x y
       using char_mult[of x y] that by simp
-    have char_power': "\<chi> (x (^) n) = \<chi> x ^ n" if "x \<in> H" for x n
+    have char_power': "\<chi> (x [^] n) = \<chi> x ^ n" if "x \<in> H" for x n
       using that char_one by (induction n) (simp_all add: char_mult' del: char_one)
 
     define r where "r = (k + l) mod h"
     have r: "r < subgroup_indicator G H a" unfolding h_def r_def
       by (intro mod_less_divisor subgroup_indicator_pos is_subgroup) auto
-    define zz where "zz = (a (^) h) (^) ((k + l) div h)"
+    define zz where "zz = (a [^] h) [^] ((k + l) div h)"
     have [simp]: "zz \<in> H" unfolding zz_def h_def 
       by (rule nat_pow_closed) (auto intro: pow_subgroup_indicator is_subgroup)
-    have "a (^) k \<otimes> a (^) l = zz \<otimes> a (^) r"
+    have "a [^] k \<otimes> a [^] l = zz \<otimes> a [^] r"
       by (simp add: nat_pow_mult zz_def nat_pow_pow r_def)
     with x y r have "unadjoin (x \<otimes> y) = (x' \<otimes> y' \<otimes> zz, r)"
       by (intro unadjoin_unique' m_closed) (auto simp: m_ac)
@@ -365,7 +365,7 @@ proof -
   from assms interpret \<chi>: character "G\<lparr>carrier := H\<rparr>" \<chi> by (simp add: characters_def)
   have char_mult: "\<chi> (x \<otimes> y) = \<chi> x * \<chi> y" if "x \<in> H" "y \<in> H" for x y
     using \<chi>.char_mult[of x y] that by simp
-  have char_power: "\<chi> (x (^) n) = \<chi> x ^ n" if "x \<in> H" for x n
+  have char_power: "\<chi> (x [^] n) = \<chi> x ^ n" if "x \<in> H" for x n
     using \<chi>.char_one that by (induction n) (simp_all add: char_mult)
   show ?th1 using \<chi>.char_eq_0 mem_adjoin[OF is_subgroup _ a_in_carrier]
     by (auto simp: lift_character_def)
@@ -388,12 +388,12 @@ proof -
       note * = unadjoin_correct[OF this]
       interpret H': subgroup "adjoin G H a" G
         by (intro adjoin_subgroup is_subgroup a_in_carrier)
-      have "x = fst (unadjoin x) \<otimes>\<^bsub>?G'\<^esub> a (^)\<^bsub>?G'\<^esub> snd (unadjoin x)" 
+      have "x = fst (unadjoin x) \<otimes>\<^bsub>?G'\<^esub> a [^]\<^bsub>?G'\<^esub> snd (unadjoin x)" 
         using *(3) by (simp add: nat_pow_def)
-      also have "\<chi> \<dots> = \<chi> (fst (unadjoin x)) * \<chi> (a (^)\<^bsub>?G'\<^esub> snd (unadjoin x))"
+      also have "\<chi> \<dots> = \<chi> (fst (unadjoin x)) * \<chi> (a [^]\<^bsub>?G'\<^esub> snd (unadjoin x))"
         using * is_subgroup by (intro \<chi>.char_mult) 
                                (auto simp: nat_pow_modify_carrier mem_adjoin adjoined_in_adjoin)
-      also have "\<chi> (a (^)\<^bsub>?G'\<^esub> snd (unadjoin x)) = \<chi> a ^ snd (unadjoin x)"
+      also have "\<chi> (a [^]\<^bsub>?G'\<^esub> snd (unadjoin x)) = \<chi> a ^ snd (unadjoin x)"
         using is_subgroup by (intro \<chi>.char_power) (auto simp: adjoined_in_adjoin)
       finally show ?thesis using True * by (auto simp: lift_character_def)
     qed (auto simp: lift_character_def \<chi>.char_eq_0)
@@ -403,7 +403,7 @@ qed
 lemma bij_betw_characters_adjoin:
   defines "h \<equiv> subgroup_indicator G H a"
   shows "bij_betw lift_character
-                  (SIGMA \<chi>:characters (G\<lparr>carrier := H\<rparr>). {z. z ^ h = \<chi> (a (^) h)})
+                  (SIGMA \<chi>:characters (G\<lparr>carrier := H\<rparr>). {z. z ^ h = \<chi> (a [^] h)})
                   (characters (G\<lparr>carrier := adjoin G H a\<rparr>))"
 proof (rule bij_betwI[where ?g = "\<lambda>\<chi>. (\<lambda>x. if x \<in> H then \<chi> x else 0, \<chi> a)"], goal_cases)
   case 1
@@ -417,7 +417,7 @@ next
   next
     case (2 \<chi>)
     interpret \<chi>: character "G\<lparr>carrier := adjoin G H a\<rparr>" \<chi> by fact
-    have [simp]: "\<chi> (a (^) n) = \<chi> a ^ n" for n using \<chi>.char_power[of a n] is_subgroup 
+    have [simp]: "\<chi> (a [^] n) = \<chi> a ^ n" for n using \<chi>.char_power[of a n] is_subgroup 
       by (auto simp: adjoined_in_adjoin nat_pow_def simp del: \<chi>.char_power)
     from is_subgroup a_in_carrier pow_subgroup_indicator show ?case
       by (auto simp: h_def intro!: subgroup_indicator_pos \<chi>.char_eq_0)
@@ -465,7 +465,7 @@ next
   case (adjoin H a)
   define h where "h = subgroup_indicator G H a"
   from adjoin have [simp]: "h > 0" unfolding h_def by (intro subgroup_indicator_pos) auto
-  define c where "c = a (^) h"
+  define c where "c = a [^] h"
   from adjoin have [simp]: "c \<in> H"
     by (auto simp: c_def h_def pow_subgroup_indicator)
 
@@ -643,19 +643,19 @@ next
     finally have "x \<in> H" .
 
     have "(\<Sum>\<chi>\<in>characters (G\<lparr>carrier := adjoin G H a\<rparr>). \<chi> x) = 
-             (\<Sum>(\<chi>,z)\<in>(SIGMA \<chi>:characters (G\<lparr>carrier := H\<rparr>). {z. z ^ h = \<chi> (a (^) h)}). \<chi> x)"
+             (\<Sum>(\<chi>,z)\<in>(SIGMA \<chi>:characters (G\<lparr>carrier := H\<rparr>). {z. z ^ h = \<chi> (a [^] h)}). \<chi> x)"
       using adjoin \<open>x \<in> H\<close>
       by (subst sum.reindex_bij_betw [OF bij_betw_characters_adjoin, symmetric])
          (simp_all add: lift_character_def case_prod_unfold mem_adjoin h_def [symmetric])
-    also have "\<dots> = (\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H\<rparr>). card {z. z ^ h = \<chi> (a (^) h)} * \<chi> x)"
+    also have "\<dots> = (\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H\<rparr>). card {z. z ^ h = \<chi> (a [^] h)} * \<chi> x)"
       using \<open>h > 0\<close> by (subst sum.Sigma [symmetric]) auto
     also have "\<dots> = (\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H\<rparr>). h * \<chi> x)"
     proof (intro sum.cong refl, goal_cases)
       case (1 \<chi>)
       then interpret character "G\<lparr>carrier := H\<rparr>" \<chi> by (simp add: characters_def)
-      from adjoin have "\<chi> (a (^) h) \<noteq> 0" 
+      from adjoin have "\<chi> (a [^] h) \<noteq> 0" 
         by (subst char_eq_0_iff) (auto simp: h_def pow_subgroup_indicator)
-      hence "card {z. z ^ h = \<chi> (a (^) h)} = h" using \<open>h > 1\<close>
+      hence "card {z. z ^ h = \<chi> (a [^] h)} = h" using \<open>h > 1\<close>
         by (intro card_nth_roots) auto
       thus ?case by simp
     qed
