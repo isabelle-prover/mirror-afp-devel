@@ -529,11 +529,11 @@ definition "relabel_to_front \<equiv> do {
       (f,l,n) \<leftarrow> discharge f l n u;
   
       if (l u \<noteq> old_lu) then do {
-        (* Move u to front of l, and restart scanning L *)
+        \<comment> \<open>Move \<open>u\<close> to front of \<open>l\<close>, and restart scanning \<open>L\<close>\<close>
         let (L_left,L_right) = ([u],L_left @ tl L_right);
         return (f,l,n,L_left,L_right)
       } else do {
-        (* Goto next node in l *)
+        \<comment> \<open>Goto next node in \<open>l\<close>\<close>
         let (L_left,L_right) = (L_left@[u], tl L_right);
         return (f,l,n,L_left,L_right)
       }
@@ -637,10 +637,9 @@ theorem relabel_to_front_correct:
             have TS1: "is_top_sorted (adm_edges f l) (L_left @ L_right')"
               using L_sorted by (auto intro: is_top_sorted_remove_elem)
 
-            (* intuition: 
-                new edges come from u, but u has no incoming edges, nor is it in L_left@L_right'.
-                thus, these new edges cannot add effective constraints. 
-            *)
+            \<comment> \<open>Intuition:\<close>
+              \<comment> \<open>new edges come from \<open>u\<close>, but \<open>u\<close> has no incoming edges, nor is it in \<open>L_left@L_right'\<close>.\<close>
+              \<comment> \<open>thus, these new edges cannot add effective constraints.\<close>
             from l'.adm_edges_leaving_u 
               and l'.relabel_u_no_incoming_adm[OF RELABEL[symmetric]]
             have "adm_edges f' l' \<subseteq> adm_edges f l \<union> {u}\<times>UNIV" 
@@ -659,7 +658,7 @@ theorem relabel_to_front_correct:
           subgoal using l'.algo_rel by (auto dest: rtranclD)
           subgoal proof -
             assume NO_RELABEL[simp]: "l' u = l u"
-            (*Intuition: non-zero excess would imply an admissible edge contrary to top_sorted.*)
+            \<comment> \<open>Intuition: non-zero excess would imply an admissible edge contrary to \<open>top_sorted\<close>.\<close>
             have AUX: "excess f' v = 0" if "v\<in>set L_left" for v
             proof (rule ccontr)
               from that \<open>u\<notin>set L_left\<close> have "u \<noteq> v" by blast 

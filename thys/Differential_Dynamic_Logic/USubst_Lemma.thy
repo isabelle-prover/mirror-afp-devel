@@ -644,7 +644,7 @@ next
     done
 qed (auto)  
   
-(* Not used, but good practice for dterm adjoint *)
+\<comment> \<open>Not used, but good practice for \<open>dterm\<close> adjoint\<close>
 lemma uadmit_sterm_adjoint:
   assumes TUA:"TUadmit \<sigma> \<theta> U"
   assumes VA:"Vagree \<nu> \<omega> (-U)"
@@ -2351,7 +2351,7 @@ next
         by(induction ODE, auto) 
       have agree:"\<And>t. Vagree (mk_v I (OsubstFO ODE \<sigma>) (sol 0, b) (sol t)) (sol 0, b) (- BVO ODE)"
         using agree_sub[OF bv_sub agree_sem] by auto
-      (* Necessary *)
+      \<comment> \<open>Necessary\<close>
       have mkv:"\<And>t. mk_v I (OsubstFO ODE \<sigma>) (sol 0, b) (sol t) = mk_v (adjointFO I \<sigma> (sol t, b)) ODE (sol 0, b) (sol t)"
         using nsubst_mkv[OF good_interp NOU osafe frees]
         by auto
@@ -2454,7 +2454,7 @@ next
       by(induction ODE, auto) 
     have agree:"\<And>t. Vagree (mk_v I (OsubstFO ODE \<sigma>) (sol 0, b) (sol t)) (sol 0, b) (- BVO ODE)"
       using agree_sub[OF bv_sub agree_sem] by auto
-    (* Necessary *)
+    \<comment> \<open>Necessary\<close>
     have mkv:"\<And>t. mk_v I (OsubstFO ODE \<sigma>) (sol 0, b) (sol t) = mk_v (adjointFO I \<sigma> (sol t, b)) ODE (sol 0, b) (sol t)"
       using nsubst_mkv[OF good_interp NOU osafe frees]
       by auto

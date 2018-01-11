@@ -1025,7 +1025,7 @@ section{* Accessors on Object *}
 subsection{* Definition *}
 
 definition "select_object mt incl smash deref l = smash (foldl incl mt (map deref l))
- (* smash returns null with mt in input (in this case, object contains null pointer) *)"
+ \<comment> \<open>smash returns null with \<open>mt\<close> in input (in this case, object contains null pointer)\<close>"
 
 text{* The continuation @{text f} is usually instantiated with a smashing
 function which is either the identity @{term id} or, for \inlineocl{0..1} cardinalities

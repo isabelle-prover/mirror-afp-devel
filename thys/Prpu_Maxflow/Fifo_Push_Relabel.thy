@@ -297,7 +297,7 @@ definition "fifo_push_relabel \<equiv> do {
   let f = pp_init_f;
   let l = pp_init_l;
 
-  Q \<leftarrow> spec l. distinct l \<and> set l = {v\<in>V - {s,t}. excess f v \<noteq> 0}; (* TODO: This is exactly E``{s} - {t}! *)
+  Q \<leftarrow> spec l. distinct l \<and> set l = {v\<in>V - {s,t}. excess f v \<noteq> 0}; \<comment> \<open>TODO: This is exactly \<open>E``{s} - {t}\<close>!\<close>
 
   (f,l,_) \<leftarrow> while\<^sub>T (\<lambda>(f,l,Q). Q \<noteq> []) (\<lambda>(f,l,Q). do {
     fifo_discharge f l Q

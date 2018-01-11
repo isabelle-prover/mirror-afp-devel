@@ -438,8 +438,8 @@ proof (rule usolves_odeI)
     by (meson \<open>\<And>z ta T'. \<lbrakk>t0 \<in> T'; is_interval T'; T' \<subseteq> T; (z solves_ode f) T' X; z t0 = x t0; ta \<in> T'\<rbrakk> \<Longrightarrow> z ta = x ta\<close> assms(2) dual_order.trans)
 qed
 
-(* Example of using lemmas above to show a lemma that could be useful for dL: The constant ODE
- * 0 does not change the state.  *)
+\<comment> \<open>Example of using lemmas above to show a lemma that could be useful for dL: The constant ODE\<close>
+\<comment> \<open>0 does not change the state.\<close>
 lemma example:
   fixes x t::real and i::"('sz::finite)"
   assumes "t > 0"

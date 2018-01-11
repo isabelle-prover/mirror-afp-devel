@@ -244,7 +244,7 @@ begin
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom>   \<Rightarrow> invalid \<tau>
                             | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> null \<tau>
-                            | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow>  invalid \<tau>   (* down-cast exception *)
+                            | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow>  invalid \<tau>   \<comment> \<open>down-cast exception\<close>
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor> \<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a\<rfloor>\<rfloor>)"
 end
 
@@ -320,7 +320,7 @@ begin
         "(X::OclAny) .oclIsTypeOf(OclAny) \<equiv>
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom>   \<Rightarrow> invalid \<tau>
-                            | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> true \<tau>  (* invalid ?? *)
+                            | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> true \<tau>  \<comment> \<open>invalid ??\<close>
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow> true \<tau>
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>_\<rfloor> \<rfloor>\<rfloor> \<Rightarrow> false \<tau>)"
 end
@@ -339,7 +339,7 @@ interpretation OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAn
        profile_mono_schemeV 
        "OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y::OclAny \<Rightarrow> Boolean" 
        "\<lambda> X. (case X of
-                    \<lfloor>None\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>True\<rfloor>\<rfloor>  (* invalid ?? *)
+                    \<lfloor>None\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>True\<rfloor>\<rfloor>  \<comment> \<open>invalid ??\<close>
                   | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid None \<rfloor>\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>True\<rfloor>\<rfloor>
                   | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>_\<rfloor> \<rfloor>\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>False\<rfloor>\<rfloor>)"                     
       apply(unfold_locales, simp add: atomize_eq, rule ext)
@@ -352,8 +352,8 @@ begin
         "(X::Person) .oclIsTypeOf(OclAny) \<equiv>
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom>   \<Rightarrow> invalid \<tau>
-                            | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> true \<tau>    (* invalid ?? *)
-                            | \<lfloor>\<lfloor> _ \<rfloor>\<rfloor> \<Rightarrow> false \<tau>)"  (* must have actual type Person otherwise  *)
+                            | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> true \<tau>    \<comment> \<open>invalid ??\<close>
+                            | \<lfloor>\<lfloor> _ \<rfloor>\<rfloor> \<Rightarrow> false \<tau>)  \<comment> \<open>must have actual type \<open>Person\<close> otherwise\<close>"
 end
 
 overloading OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n \<equiv> "OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: OclAny \<Rightarrow> Boolean"
@@ -801,8 +801,8 @@ definition eval_extract :: "('\<AA>,('a::object) option option) val
                             \<Rightarrow> (oid \<Rightarrow> ('\<AA>,'c::null) val)
                             \<Rightarrow> ('\<AA>,'c::null) val"
 where "eval_extract X f = (\<lambda> \<tau>. case X \<tau> of
-                                    \<bottom> \<Rightarrow> invalid \<tau>   (* exception propagation *)
-                               | \<lfloor>  \<bottom> \<rfloor> \<Rightarrow> invalid \<tau> (* dereferencing null pointer *)
+                                    \<bottom> \<Rightarrow> invalid \<tau>   \<comment> \<open>exception propagation\<close>
+                               | \<lfloor>  \<bottom> \<rfloor> \<Rightarrow> invalid \<tau> \<comment> \<open>dereferencing null pointer\<close>
                                | \<lfloor>\<lfloor> obj \<rfloor>\<rfloor> \<Rightarrow> f (oid_of obj) \<tau>)"
 
 definition "choose\<^sub>2_1 = fst"

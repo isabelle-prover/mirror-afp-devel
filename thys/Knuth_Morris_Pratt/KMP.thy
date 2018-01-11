@@ -340,7 +340,7 @@ definition "kmp s t \<equiv> do {
     if pos=None then do {
       ASSERT (j < length s);
       let i = i + (j - \<ff> s j + 1);
-      let j = max 0 (\<ff> s j - 1); (*max not necessary*)
+      let j = max 0 (\<ff> s j - 1); \<comment> \<open>\<open>max\<close> not necessary\<close>
       RETURN (i,j,None)
     } else RETURN (i,j,Some i)
   }) (i,j,pos);
@@ -493,7 +493,7 @@ definition "kmp1 s t \<equiv> do {
   let i=0;
   let j=0;
   let pos=None;
-  \<ff>s \<leftarrow> compute_\<ff>s_SPEC (butlast s);(*At the last char, we abort instead.*)
+  \<ff>s \<leftarrow> compute_\<ff>s_SPEC (butlast s); \<comment> \<open>At the last char, we abort instead.\<close>
   (_,_,pos) \<leftarrow> WHILEIT (I_outer s t) (\<lambda>(i,j,pos). i + length s \<le> length t \<and> pos=None) (\<lambda>(i,j,pos). do {
     ASSERT (i + length s \<le> length t);
     (j,pos) \<leftarrow> WHILEIT (I_in_na s t i) (\<lambda>(j,pos). t!(i+j) = s!j \<and> pos=None) (\<lambda>(j,pos). do {
@@ -503,7 +503,7 @@ definition "kmp1 s t \<equiv> do {
     if pos=None then do {
       ASSERT (j < length \<ff>s);
       let i = i + (j - \<ff>s!j + 1);
-      let j = max 0 (\<ff>s!j - 1); (*max not necessary*)
+      let j = max 0 (\<ff>s!j - 1); \<comment> \<open>\<open>max\<close> not necessary\<close>
       RETURN (i,j,None)
     } else RETURN (i,j,Some i)
   }) (i,j,pos);
@@ -535,7 +535,7 @@ definition "I_out_cb s \<equiv> \<lambda>(\<ff>s,i,j).
   \<ff>s!(j-1) = i \<and>
   0 < j"
 definition "I_in_cb s j \<equiv> \<lambda>i.
-  if j=1 then i=0 (* first iteration *)
+  if j=1 then i=0 \<comment> \<open>first iteration\<close>
   else
     strict_border (take (i-1) s) (take (j-1) s) \<and>
     \<ff> s j \<le> i + 1"
@@ -548,7 +548,7 @@ This allows us to remove the precondition @{prop \<open>s \<noteq> []\<close>}, 
 
 definition compute_\<ff>s :: "'a list \<Rightarrow> nat list nres" where
   "compute_\<ff>s s = do {
-  let \<ff>s=replicate (length s + 1) 0;(*only the first 0 is needed*)
+  let \<ff>s=replicate (length s + 1) 0; \<comment> \<open>only the first 0 is needed\<close>
   let i=0;
   let j=1;
   (\<ff>s,_,_) \<leftarrow> WHILEIT (I_out_cb s) (\<lambda>(\<ff>s,_,j). j < length \<ff>s) (\<lambda>(\<ff>s,i,j). do {
@@ -823,7 +823,7 @@ definition "kmp2 s t \<equiv> do {
     if pos=None then do {
       ASSERT (j < length \<ff>s);
       let i = i + (j - \<ff>s!j + 1);
-      let j = max 0 (\<ff>s!j - 1); (*max not necessary*)
+      let j = max 0 (\<ff>s!j - 1); \<comment> \<open>\<open>max\<close> not necessary\<close>
       RETURN (i,j,None)
     } else RETURN (i,j,Some i)
   }) (i,j,pos);

@@ -191,7 +191,7 @@ datatype ('a, 'b, 'c) step =
 | CQ  "('a, 'c) trm" "('a, 'c) trm" "('a, 'b, 'c) subst"
 | CE  "('a, 'b, 'c) formula" "('a, 'b, 'c) formula" "('a, 'b, 'c) subst"
 | Skolem
-(* Apply Usubst to some other (valid) formula *)
+\<comment> \<open>Apply \<open>Usubst\<close> to some other (valid) formula\<close>
 | VSubst "('a, 'b, 'c) formula" "('a, 'b, 'c) subst"
 | AxSubst axiom "('a, 'b, 'c) subst"
 | URename
@@ -262,9 +262,9 @@ where "Lrule_result AndL j (A,S) = (case (nth A j) of And p q \<Rightarrow> [(cl
 | "Lrule_result EquivBackwardL j (A,S) = (case (nth A j) of Not(And (Not (And p q)) (Not (And (Not p') (Not q')))) \<Rightarrow>
    [(close (p # A) (nth A j), S), (close A (nth A j), q # S)])"
 
-(* Note: Some of the pattern-matching here is... interesting. The reason for this is that we can only
-   match on things in the base grammar, when we would quite like to check things in the derived grammar.
-   So all the pattern-matches have the definitions expanded, sometimes in a silly way. *)
+\<comment> \<open>Note: Some of the pattern-matching here is... interesting. The reason for this is that we can only\<close>
+\<comment> \<open>match on things in the base grammar, when we would quite like to check things in the derived grammar.\<close>
+\<comment> \<open>So all the pattern-matches have the definitions expanded, sometimes in a silly way.\<close>
 fun Rrule_result :: "rrule \<Rightarrow> nat \<Rightarrow> ('sf, 'sc, 'sz) sequent \<Rightarrow> ('sf, 'sc, 'sz) sequent list"
 where 
   Rstep_Imply:"Rrule_result ImplyR j (A,S) = (case (nth S j) of Not (And (Not q) (Not (Not p))) \<Rightarrow> [(p # A, q # (closeI S j))] | _ \<Rightarrow> undefined)"
@@ -1182,7 +1182,7 @@ proof(induction rule: step_ok.induct)
     by(rule axiom_valid)
   then have seq_valid:"seq_valid (SG ! i)"
     using is_axiom by auto
-  (*  i0 iL *)
+  \<comment> \<open>\<open>i0 iL\<close>\<close>
   then show ?case 
     using closeI_valid_sound[OF sound seq_valid] by simp
 next
@@ -1208,7 +1208,7 @@ next
     by(rule subst_valid)
   then have seq_valid:"seq_valid (SG ! i)"
     using is_axiom by auto
-  (*  i0 iL *)
+  \<comment> \<open>\<open>i0 iL\<close>\<close>
   then show ?case 
     using closeI_valid_sound[OF sound seq_valid] by simp
 next
@@ -1371,7 +1371,7 @@ next
     by(rule subst_valid)
   then have seq_valid:"seq_valid (SG ! i)"
     using isNth by auto
-  (*  i0 iL *)
+  \<comment> \<open>\<open>i0 iL\<close>\<close>
   then show ?case 
   using closeI_valid_sound[OF sound seq_valid] by simp
 next
@@ -1466,8 +1466,7 @@ where "DIAndSubst =
     SODEs = (\<lambda>_. None)
   \<rparr>"
   
-(*[a]R&H->R->[a]R&H->[a]R DIAndSubst34*)
-
+\<comment> \<open>\<open>[a]R&H->R->[a]R&H->[a]R DIAndSubst34\<close>\<close>
 definition DIAndSubst341::"('sf,'sc,'sz) subst"
 where "DIAndSubst341 = 
   \<lparr> SFunctions = (\<lambda>_. None),
@@ -1487,7 +1486,7 @@ where "DIAndSubst342 =
     SODEs = (\<lambda>_. None)
   \<rparr>"
   
-(*[a]P, [a]R&H, P, Q |- [a]Q->P&Q->[a]Q->[a]P&Q, [a]P&Q;;*)
+\<comment> \<open>\<open>[a]P, [a]R&H, P, Q |- [a]Q->P&Q->[a]Q->[a]P&Q, [a]P&Q;;\<close>\<close>
 definition DIAndSubst12::"('sf,'sc,'sz) subst"
 where "DIAndSubst12 = 
   \<lparr> SFunctions = (\<lambda>_. None),
@@ -1498,7 +1497,7 @@ where "DIAndSubst12 =
     SODEs = (\<lambda>_. None)
   \<rparr>"
 
-  (*  P ->  Q->P&Q *)
+\<comment> \<open>\<open>P ->  Q->P&Q\<close>\<close>
 definition DIAndCurry12::"('sf,'sc,'sz) subst"
 where "DIAndCurry12 = 
   \<lparr> SFunctions = (\<lambda>_. None),
@@ -1539,7 +1538,7 @@ where "DIAndCut12Intro = (([[Pvar vid1]](Pc pid2  \<rightarrow> (Pc pid1 && Pc p
 definition DIAndProof :: "('sf, 'sc, 'sz) pf"
 where "DIAndProof =
   (DIAndConcl, [
-   (0, Rrule ImplyR 0)  (* 1 *)
+   (0, Rrule ImplyR 0)  \<comment> \<open>1\<close>
   ,(0, Lrule AndL 0)
   ,(0, Rrule ImplyR 0)
   ,(0, Cut DIAndCutP1)
@@ -1549,7 +1548,7 @@ where "DIAndProof =
   ,(Suc (Suc (Suc 0)), CloseId 1 0)
   ,(Suc (Suc 0), Lrule ImplyL 0)
   ,(Suc (Suc 0), CloseId 0 0)
-  ,(Suc (Suc 0), Cut DIAndCut34Elim1) (* 11 *)
+  ,(Suc (Suc 0), Cut DIAndCut34Elim1) \<comment> \<open>11\<close>
   ,(0, Lrule ImplyL 0)
   ,(Suc (Suc (Suc 0)), Lrule ImplyL 0)
   ,(0, Rrule CohideRR 0)
@@ -1559,7 +1558,7 @@ where "DIAndProof =
   ,(0, Rrule ImplyR 0)
   ,(Suc (Suc (Suc (Suc (Suc 0)))), Lrule AndL 0)
   ,(Suc (Suc (Suc (Suc (Suc 0)))), CloseId 0 0)
-  ,(Suc (Suc (Suc 0)), AxSubst AK DIAndSubst341) (* 21 *)
+  ,(Suc (Suc (Suc 0)), AxSubst AK DIAndSubst341) \<comment> \<open>21\<close>
   ,(Suc (Suc 0), CloseId 0 0)
   ,(Suc 0, CloseId 0 0)
   ,(0, Cut DIAndCut12Intro)
@@ -1569,7 +1568,7 @@ where "DIAndProof =
   ,(1, Lrule ImplyL 0)
   ,(Suc (Suc 0), CloseId 0 0)
   ,(Suc 0, Cut DIAndCutP12)
-  ,(0, Lrule ImplyL 0) (* 31 *)
+  ,(0, Lrule ImplyL 0) \<comment> \<open>31\<close>
   ,(0, Rrule CohideRR 0)
   ,(Suc (Suc (Suc (Suc 0))), AxSubst AK DIAndCurry12)
   ,(Suc (Suc (Suc 0)), Rrule CohideRR 0)
@@ -1579,16 +1578,16 @@ where "DIAndProof =
   ,(Suc (Suc (Suc (Suc 0))), Rrule ImplyR 0)  
   ,(Suc (Suc (Suc (Suc 0))), Rrule AndR 0)  
   ,(Suc (Suc (Suc (Suc (Suc 0)))), CloseId 0 0)
-  ,(Suc (Suc (Suc (Suc 0))), CloseId 1 0) (* 41 *)
+  ,(Suc (Suc (Suc (Suc 0))), CloseId 1 0) \<comment> \<open>41\<close>
   ,(Suc (Suc  0), CloseId 0 0)   
   ,(Suc 0, Cut DIAndCut34Elim2)
   ,(0, Lrule ImplyL 0)
   ,(0, Rrule CohideRR 0)
-  ,(Suc (Suc (Suc (Suc 0))), AxSubst AK DIAndSubst342) (* 46 *)
+  ,(Suc (Suc (Suc (Suc 0))), AxSubst AK DIAndSubst342) \<comment> \<open>46\<close>
   ,(Suc (Suc (Suc 0)), Rrule CohideRR 0)
-  ,(Suc (Suc (Suc 0)), G) (* 48 *)
+  ,(Suc (Suc (Suc 0)), G) \<comment> \<open>48\<close>
   ,(0, Rrule ImplyR 0)
-  ,(Suc (Suc (Suc 0)), Lrule AndL 0) (* 50 *)
+  ,(Suc (Suc (Suc 0)), Lrule AndL 0) \<comment> \<open>50\<close>
   ,(Suc (Suc (Suc 0)), CloseId 1 0)
   ,(Suc (Suc 0), Lrule ImplyL 0)
   ,(Suc 0, CloseId 0 0)
@@ -1613,14 +1612,14 @@ lemma DIAndSound_lemma:"sound (proof_result (proof_take 61 DIAndProof))"
   apply(rule proof_sound)
   unfolding DIAndProof_def DIAndConcl_def  DIAndCutP1_def DIAndSG1_def DIAndCut34Elim1_def  DIAndSubst341_def DIAndCut12Intro_def DIAndSubst12_def
     DIAndCutP12_def DIAndCurry12_def DIAndSubst342_def
-    DIAndCut34Elim2_def (* 43*)
-    DIAndSG2_def (* 54*)(* slow *)
+    DIAndCut34Elim2_def \<comment> \<open>43\<close>
+    DIAndSG2_def \<comment> \<open>54\<close> (* slow *)
   apply (auto simp add: prover)
   done
   
 section \<open>Example 2: Concrete Hybrid System\<close>
 
-(* v \<ge> 0 \<and> A() \<ge> 0 \<longrightarrow> [v' = A, x' = v]v' \<ge> 0*)
+\<comment> \<open>\<open>v \<ge> 0 \<and> A() \<ge> 0 \<longrightarrow> [v' = A, x' = v]v' \<ge> 0\<close>\<close>
 definition SystemConcl::"('sf,'sc,'sz) sequent"
 where "SystemConcl = 
   ([],[
@@ -1782,7 +1781,7 @@ lemma almost_diff_const_sound:"sound ([], ([], [Equals (Differential (Const 0)) 
 lemma almost_diff_const:"valid (Equals (Differential (Const 0)) (Const 0))"
   using almost_diff_const_sound valid_of_sound by auto
 
-(* Note: this is just unpacking the definition: the axiom is defined as literally this formula *)
+\<comment> \<open>Note: this is just unpacking the definition: the axiom is defined as literally this formula\<close>
 lemma almost_diff_var:"valid (Equals (Differential (trm.Var vid1)) ($' vid1))"
   using diff_var_axiom_valid unfolding diff_var_axiom_def by auto
 
@@ -1902,12 +1901,11 @@ lemma systemdesubst_correct:"\<exists> ODE.(([[EvolveODE (OProd (OSing vid1 (f0 
   apply(rule exI[where x="OSing vid2 (trm.Var vid1)"])
   by(auto simp add: f0_def f1_def Box_def Or_def Equiv_def empty_def TT_def P_def p1_def SystemDESubst_def empty_def)
   
-(*[{dx=, dy=x&r>=r&>=r}]r>=r&>=r->[D{x}:=]D{x}>=D{r}->
-  [{dx=, dy=x&r>=r&>=r}]r>=r&>=r->
-  [{dx=, dy=x&r>=r&>=r}][D{x}:=]D{x}>=D{r}
-  ([[$\<alpha> vid1]]((Predicational pid1) \<rightarrow> (Predicational pid2)))
-    \<rightarrow> ([[$\<alpha> vid1]]Predicational pid1) \<rightarrow> ([[$\<alpha> vid1]]Predicational pid2)
-  *)
+\<comment> \<open>\<open>[{dx=, dy=x&r>=r&>=r}]r>=r&>=r->[D{x}:=]D{x}>=D{r}->\<close>\<close>
+\<comment> \<open>\<open>[{dx=, dy=x&r>=r&>=r}]r>=r&>=r->\<close>\<close>
+\<comment> \<open>\<open>[{dx=, dy=x&r>=r&>=r}][D{x}:=]D{x}>=D{r}\<close>\<close>
+\<comment> \<open>\<open>([[$\<alpha> vid1]]((Predicational pid1) \<rightarrow> (Predicational pid2)))\<close>\<close>
+\<comment> \<open>\<open>\<rightarrow> ([[$\<alpha> vid1]]Predicational pid1) \<rightarrow> ([[$\<alpha> vid1]]Predicational pid2)\<close>\<close>
 definition SystemKSubst::"('sf,'sc,'sz) subst"
 where "SystemKSubst = \<lparr> SFunctions = (\<lambda>f.  None),
     SPredicates = (\<lambda>_. None),
@@ -1969,9 +1967,9 @@ lemma SystemCESubstOK:
   unfolding SystemCESubst_def Equiv_def Or_def SystemCEFml1_def SystemCEFml2_def TUadmit_def apply (auto simp add: TUadmit_def FUadmit_def Box_def Implies_def Or_def)
      unfolding PFUadmit_def by auto
   
-(* [D{x}:=f]Dv{x}>=r<->f>=r
- [[DiffAssign vid1  ($f fid1 empty)]] (Prop vid1 (singleton (DiffVar vid1))))
-      \<leftrightarrow> Prop vid1 (singleton ($f fid1 empty))*)
+\<comment> \<open>\<open>[D{x}:=f]Dv{x}>=r<->f>=r\<close>\<close>
+\<comment> \<open>\<open>[[DiffAssign vid1  ($f fid1 empty)]] (Prop vid1 (singleton (DiffVar vid1))))\<close>\<close>
+\<comment> \<open>\<open>\<leftrightarrow> Prop vid1 (singleton ($f fid1 empty))\<close>\<close>
 definition SystemDiffAssignSubst::"('sf,'sc,'sz) subst"
 where "SystemDiffAssignSubst = \<lparr> SFunctions = (\<lambda>f.  None),
     SPredicates = (\<lambda>p. if p = vid1 then Some (Geq (Function (Inr vid1) empty) (Const 0)) else None),
@@ -1984,7 +1982,7 @@ lemma SystemDICutCorrect:"SystemDICut = Fsubst DIGeqaxiom SystemDISubst"
   unfolding SystemDICut_def DIGeqaxiom_def SystemDISubst_def 
   by (auto simp add: f1_def p1_def f0_def Implies_def Or_def id_simps TT_def Box_def empty_def)
 
-(* v\<ge>0 \<and> A()\<ge>0 \<rightarrow> [{x'=v, v'=A()}]v\<ge>0 *)
+\<comment> \<open>\<open>v\<ge>0 \<and> A()\<ge>0 \<rightarrow> [{x'=v, v'=A()}]v\<ge>0\<close>\<close>
 definition SystemProof :: "('sf, 'sc, 'sz) pf"
 where "SystemProof =
   (SystemConcl, [
@@ -1995,7 +1993,7 @@ where "SystemProof =
   ,(0, Rrule CohideRR 0)
   ,(0, Lrule ImplyL 0)
   ,(Suc (Suc 0), CloseId 0 0)
-  ,(Suc 0, AxSubst ADIGeq SystemDISubst) (* 8 *)
+  ,(Suc 0, AxSubst ADIGeq SystemDISubst) \<comment> \<open>8\<close>
   ,(Suc 0, Rrule ImplyR 0)
 (*  ,(0, CloseId 0 0)        *)
   ,(Suc 0, CloseId 1 0)        
@@ -2006,7 +2004,7 @@ where "SystemProof =
   ,(0, Rrule CohideRR 0)
   ,(0, Lrule EquivBackwardL 0)
   ,(0, Rrule CohideR 0)
-  ,(0, AxSubst ADC SystemDCSubst) (* 17 *)
+  ,(0, AxSubst ADC SystemDCSubst) \<comment> \<open>17\<close>
   ,(0, CloseId 0 0)
   ,(0, Rrule CohideRR 0)
   ,(0, Cut SystemVCut)
@@ -2015,9 +2013,9 @@ where "SystemProof =
   ,(0, Cut SystemDECut)
   ,(0, Lrule EquivBackwardL 0)
   ,(0, Rrule CohideRR 0)
-  ,(1, CloseId (Suc 1) 0) (* Last step *)
+  ,(1, CloseId (Suc 1) 0) \<comment> \<open>Last step\<close>
   ,(Suc 1, CloseId 0 0)
-  ,(1, AxSubst AV SystemVSubst) (* 28 *)
+  ,(1, AxSubst AV SystemVSubst) \<comment> \<open>28\<close>
   ,(0, Cut SystemVCut2)
   
   ,(0, Lrule ImplyL 0)
@@ -2025,25 +2023,25 @@ where "SystemProof =
   ,(Suc 1, CloseId 0 0)
   ,(Suc 1, CloseId (Suc 2) 0)
   
-  ,(Suc 1, AxSubst AV SystemVSubst2) (* 34 *)
+  ,(Suc 1, AxSubst AV SystemVSubst2) \<comment> \<open>34\<close>
   ,(0, Rrule CohideRR 0)
-  ,(0, DEAxiomSchema (OSing vid2 (trm.Var vid1)) SystemDESubst) (* 36 *)
+  ,(0, DEAxiomSchema (OSing vid2 (trm.Var vid1)) SystemDESubst) \<comment> \<open>36\<close>
   ,(0, Cut SystemKCut)
   ,(0, Lrule ImplyL 0)
   ,(0, Rrule CohideRR 0)
   ,(0, Lrule ImplyL 0)
   ,(0, Rrule CohideRR 0)
-  ,(0, AxSubst AK SystemKSubst) (* 42 *)
+  ,(0, AxSubst AK SystemKSubst) \<comment> \<open>42\<close>
   ,(0, CloseId 0 0)
   ,(0, Rrule CohideR 0)
-  ,(1, AxSubst ADW SystemDWSubst) (* 45 *)
+  ,(1, AxSubst ADW SystemDWSubst) \<comment> \<open>45\<close>
   ,(0, G)
   ,(0, Cut SystemEquivCut)
   ,(0, Lrule EquivBackwardL 0)
   ,(0, Rrule CohideR 0)
   ,(0, CloseId 0 0)
   ,(0, Rrule CohideR 0)
-  ,(0, CE SystemCEFml1 SystemCEFml2 SystemCESubst) (* 52 *)
+  ,(0, CE SystemCEFml1 SystemCEFml2 SystemCESubst) \<comment> \<open>52\<close>
   ,(0, Rrule ImplyR 0)
   ,(0, Lrule AndL 0)
   ,(0, Cut SystemDiffAssignCut) 
@@ -2051,7 +2049,7 @@ where "SystemProof =
   ,(0, Rrule CohideRR 0)
   ,(0, CloseId 0 0)
   ,(0, CloseId 1 0)
-  ,(0, AxSubst Adassign SystemDiffAssignSubst) (* 60 *)
+  ,(0, AxSubst Adassign SystemDiffAssignSubst) \<comment> \<open>60\<close>
   ])"
   
 lemma system_result_correct:"proof_result SystemProof = 

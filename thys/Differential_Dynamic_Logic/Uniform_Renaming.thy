@@ -103,7 +103,7 @@ lemma TUren_frechet:
   assumes good_interp:"is_interp I"
   shows "dfree \<theta> \<Longrightarrow> frechet I (TUrename x y \<theta>) \<nu> \<nu>' = frechet I \<theta> (RSadj x y \<nu>) (RSadj x y \<nu>')"
 proof (induction rule: dfree.induct)
-  (* There's got to be a more elegant proof of this... *)
+  \<comment> \<open>There's got to be a more elegant proof of this...\<close>
   case (dfree_Var i)
   then show ?case 
     unfolding RSadj_def apply auto 
@@ -256,7 +256,7 @@ lemma Radj_repd3:
     using zx zy unfolding Radj_def RSadj_def by auto
   done
 
-(* i.e. shows Radj x y is a bijection for all x y *)
+\<comment> \<open>i.e. shows \<open>Radj x y\<close> is a bijection for all \<open>x y\<close>\<close>
 lemma Radj_eq_iff:"(a = b) = ((Radj x y a) = (Radj x y b))"
   unfolding Radj_def RSadj_def apply auto
   apply (rule state_eq)

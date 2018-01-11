@@ -27,11 +27,11 @@ text \<open>We formalize a state S as a pair $(S_V, S_V') : R^n \times R^n $, wh
   I and J.
   \<close>
 
-(* Vector of reals of length 'a *)
+\<comment> \<open>Vector of reals of length \<open>'a\<close>\<close>
 type_synonym 'a Rvec = "real^('a::finite)"
-(* A state specifies one vector of values for unprimed variables x and a second vector for x'*)
+\<comment> \<open>A state specifies one vector of values for unprimed variables \<open>x\<close> and a second vector for \<open>x'\<close>\<close>
 type_synonym 'a state = "'a Rvec \<times> 'a Rvec"
-(* 'a simple_state is half a state - either the xs or the x's *)
+\<comment> \<open>\<open>'a simple_state\<close> is half a state - either the \<open>x\<close>s or the \<open>x'\<close>s\<close>
 type_synonym 'a simple_state = "'a Rvec"
 
 definition Vagree :: "'c::finite state \<Rightarrow> 'c state \<Rightarrow> ('c + 'c) set \<Rightarrow> bool"
@@ -42,7 +42,7 @@ where "Vagree \<nu> \<nu>' V \<equiv>
 definition VSagree :: "'c::finite simple_state \<Rightarrow> 'c simple_state \<Rightarrow> 'c set \<Rightarrow> bool"
 where "VSagree \<nu> \<nu>' V \<longleftrightarrow> (\<forall>i \<in> V. (\<nu> $ i) = (\<nu>' $ i))"
 
-(* Agreement lemmas *)
+\<comment> \<open>Agreement lemmas\<close>
 lemma agree_nil:"Vagree \<nu> \<omega> {}"
   by (auto simp add: Vagree_def)
 
@@ -112,7 +112,7 @@ record ('a, 'b, 'c) interp =
 fun FunctionFrechet :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> 'a \<Rightarrow> 'c Rvec \<Rightarrow> 'c Rvec \<Rightarrow> real"
   where "FunctionFrechet I i = (THE f'. \<forall> x. (Functions I i has_derivative f' x) (at x))"
 
-(* For an interpretation to be valid, all functions must be differentiable everywhere.*)
+\<comment> \<open>For an interpretation to be valid, all functions must be differentiable everywhere.\<close>
 definition is_interp :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> bool"
   where "is_interp I \<equiv>
    \<forall>x. \<forall>i. ((FDERIV (Functions I i) x :> (FunctionFrechet I i x)) \<and> continuous_on UNIV (\<lambda>x. Blinfun (FunctionFrechet I i x)))"
@@ -120,7 +120,7 @@ definition is_interp :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarro
 lemma is_interpD:"is_interp I \<Longrightarrow> \<forall>x. \<forall>i. (FDERIV (Functions I i) x :> (FunctionFrechet I i x))"
   unfolding is_interp_def by auto
   
-(* Agreement between interpretations. *)
+\<comment> \<open>Agreement between interpretations.\<close>
 definition Iagree :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a + 'b + 'c) set \<Rightarrow> bool"
 where "Iagree I J V \<equiv>
   (\<forall>i\<in>V.
@@ -155,8 +155,8 @@ lemma Iagree_sub:"\<And>I J A B . A \<subseteq> B \<Longrightarrow> Iagree I J B
 lemma Iagree_refl:"Iagree I I A"
   by (auto simp add: Iagree_def)
 
-(* Semantics for differential-free terms. Because there are no differentials, depends only on the "x" variables
- * and not the "x'" variables. *)
+\<comment> \<open>Semantics for differential-free terms. Because there are no differentials, depends only on the \<open>x\<close> variables\<close>
+\<comment> \<open>and not the \<open>x'\<close> variables.\<close>
 primrec sterm_sem :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c) trm \<Rightarrow> 'c simple_state \<Rightarrow> real"
 where
   "sterm_sem I (Var x) v = v $ x"
@@ -167,10 +167,9 @@ where
 | "sterm_sem I ($' c) v = undefined"
 | "sterm_sem I (Differential d) v = undefined"
   
-(* frechet I \<theta> \<nu> syntactically computes the frechet derivative of the term \<theta> in the interpretation
- * I at state \<nu> (containing only the unprimed variables). The frechet derivative is a
- * linear map from the differential state \<nu> to reals.
- *)
+\<comment> \<open>\<open>frechet I \<theta> \<nu>\<close> syntactically computes the frechet derivative of the term \<open>\<theta>\<close> in the interpretation\<close>
+\<comment> \<open>\<open>I\<close> at state \<open>\<nu>\<close> (containing only the unprimed variables). The frechet derivative is a\<close>
+\<comment> \<open>linear map from the differential state \<open>\<nu>\<close> to reals.\<close>
 primrec frechet :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c) trm \<Rightarrow> 'c simple_state \<Rightarrow> 'c simple_state \<Rightarrow> real"
 where
   "frechet I (Var x) v = (\<lambda>v'. v' \<bullet> axis x 1)"
@@ -186,8 +185,8 @@ where
 definition directional_derivative :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c) trm \<Rightarrow> 'c state \<Rightarrow> real"
 where "directional_derivative I t = (\<lambda>v. frechet I t (fst v) (snd v))"
 
-(* Sem for terms that are allowed to contain differentials.
- * Note there is some duplication with sterm_sem.*)
+\<comment> \<open>Sem for terms that are allowed to contain differentials.\<close>
+\<comment> \<open>Note there is some duplication with \<open>sterm_sem\<close>.\<close>
 primrec dterm_sem :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c) trm \<Rightarrow> 'c state \<Rightarrow> real"
 where
   "dterm_sem I (Var x) = (\<lambda>v. fst v $ x)"
@@ -209,11 +208,11 @@ fun ODE_sem:: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c
   where
   ODE_sem_OVar:"ODE_sem I (OVar x) = ODEs I x"
 | ODE_sem_OSing:"ODE_sem I (OSing x \<theta>) =  (\<lambda>\<nu>. (\<chi> i. if i = x then sterm_sem I \<theta> \<nu> else 0))"
-(* Note: Could define using SOME operator in a way that more closely matches above description,
- * but that gets complicated in the OVar case because not all variables are bound by the OVar *)
+\<comment> \<open>Note: Could define using \<open>SOME\<close> operator in a way that more closely matches above description,\<close>
+\<comment> \<open>but that gets complicated in the \<open>OVar\<close> case because not all variables are bound by the \<open>OVar\<close>\<close>
 | ODE_sem_OProd:"ODE_sem I (OProd ODE1 ODE2) = (\<lambda>\<nu>. ODE_sem I ODE1 \<nu> + ODE_sem I ODE2 \<nu>)"
 
-(* The bound variables of an ODE *)
+\<comment> \<open>The bound variables of an ODE\<close>
 fun ODE_vars :: "('a,'b,'c) interp \<Rightarrow> ('a, 'c) ODE \<Rightarrow> 'c set"
   where 
   "ODE_vars I (OVar c) = ODEBV I c"
@@ -238,15 +237,15 @@ where "mk_v I ODE \<nu> sol = (THE \<omega>.
   Vagree \<omega> \<nu> (- semBV I ODE) 
 \<and> Vagree \<omega> (mk_xode I ODE sol) (semBV I ODE))"
 
-(* repv \<nu> x r replaces the value of (unprimed) variable x in the state \<nu> with r *)
+\<comment> \<open>\<open>repv \<nu> x r\<close> replaces the value of (unprimed) variable \<open>x\<close> in the state \<open>\<nu>\<close> with r\<close>
 fun repv :: "'c::finite state \<Rightarrow> 'c \<Rightarrow> real \<Rightarrow> 'c state"
 where "repv v x r = ((\<chi> y. if x = y then r else vec_nth (fst v) y), snd v)"
 
-(* repd \<nu> x' r replaces the value of (primed) variable x' in the state \<nu> with r *)
+\<comment> \<open>\<open>repd \<nu> x' r\<close> replaces the value of (primed) variable \<open>x'\<close> in the state \<open>\<nu>\<close> with \<open>r\<close>\<close>
 fun repd :: "'c::finite state \<Rightarrow> 'c \<Rightarrow> real \<Rightarrow> 'c state"
 where "repd v x r = (fst v, (\<chi> y. if x = y then r else vec_nth (snd v) y))"  
   
-(* Semantics for formulas, differential formulas, programs. *)
+\<comment> \<open>Semantics for formulas, differential formulas, programs.\<close>
 fun fml_sem  :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'b::finite, 'c::finite) formula \<Rightarrow> 'c::finite state set" and
   prog_sem :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'b::finite, 'c::finite) hp \<Rightarrow> ('c::finite state * 'c::finite state) set"
 where

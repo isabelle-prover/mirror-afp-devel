@@ -34,7 +34,7 @@ where [axiom_defs]:"diff_times_axiom \<equiv> Equals (Differential (Times (state
     (Plus (Times (Differential (state_fun fid1)) (state_fun fid2)) 
           (Times (state_fun fid1) (Differential (state_fun fid2))))"
 
-(* [y=g(x)][y'=1](f(g(x))' = f(y)')*)
+\<comment> \<open>\<open>[y=g(x)][y'=1](f(g(x))' = f(y)')\<close>\<close>
 definition diff_chain_axiom::"('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"diff_chain_axiom \<equiv> [[Assign vid2 (f1 fid2 vid1)]]([[DiffAssign vid2 (Const 1)]] 
   (Equals (Differential ($f fid1 (singleton (f1 fid2 vid1)))) (Times (Differential (f1 fid1 vid2)) (Differential (f1 fid2 vid1)))))"
@@ -72,11 +72,9 @@ where [axiom_defs]:"DSaxiom =
         (Prop vid2 (singleton (Plus (Var vid1) (Times (f0 fid1) (Var vid3)))))))
    ([[Assign vid1 (Plus (Var vid1) (Times (f0 fid1) (Var vid2)))]]p1 vid3 vid1)))))"
 
-(* 
-(Q \<rightarrow> [c&Q](f(x)' \<ge> g(x)')) 
-\<rightarrow>
-([c&Q](f(x) \<ge> g(x))) --> (Q \<rightarrow> (f(x) \<ge> g(x))
-*)
+\<comment> \<open>\<open>(Q \<rightarrow> [c&Q](f(x)' \<ge> g(x)'))\<close>\<close> 
+\<comment> \<open>\<open>\<rightarrow>\<close>\<close>
+\<comment> \<open>\<open>([c&Q](f(x) \<ge> g(x))) --> (Q \<rightarrow> (f(x) \<ge> g(x))\<close>\<close> 
 definition DIGeqaxiom :: "('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"DIGeqaxiom = 
 Implies 
@@ -86,14 +84,11 @@ Implies
      ([[EvolveODE (OVar vid1) (Prop vid1 empty)]](Geq (f1 fid1 vid1) (f1 fid2 vid1))))"
 
 
-  (* 
-g(x) > h(x) \<rightarrow> [x'=f(x), c & p(x)](g(x)' \<ge> h(x)') \<rightarrow> [x'=f(x), c & p(x)]g(x) > h(x)
-*)
-(* 
-(Q \<rightarrow> [c&Q](f(x)' \<ge> g(x)')) 
-\<rightarrow>
-([c&Q](f(x) > g(x))) <-> (Q \<rightarrow> (f(x) > g(x))
-*)
+\<comment> \<open>\<open>g(x) > h(x) \<rightarrow> [x'=f(x), c & p(x)](g(x)' \<ge> h(x)') \<rightarrow> [x'=f(x), c & p(x)]g(x) > h(x)\<close>\<close> 
+
+\<comment> \<open>\<open>(Q \<rightarrow> [c&Q](f(x)' \<ge> g(x)'))\<close>\<close> 
+\<comment> \<open>\<open>\<rightarrow>\<close>\<close>
+\<comment> \<open>\<open>([c&Q](f(x) > g(x))) <-> (Q \<rightarrow> (f(x) > g(x))\<close>\<close>
 definition DIGraxiom :: "('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"DIGraxiom = 
 Implies 
@@ -102,8 +97,8 @@ Implies
      (Implies(Prop vid1 empty) (Greater (f1 fid1 vid1) (f1 fid2 vid1)))
      ([[EvolveODE (OVar vid1) (Prop vid1 empty)]](Greater (f1 fid1 vid1) (f1 fid2 vid1))))"
 
-(* [{1' = 1(1) & 1(1)}]2(1) <->
-   \<exists>2. [{1'=1(1), 2' = 2(1)*2 + 3(1) & 1(1)}]2(1)*)
+\<comment> \<open>\<open>[{1' = 1(1) & 1(1)}]2(1) <->\<close>\<close>
+\<comment> \<open>\<open>\<exists>2. [{1'=1(1), 2' = 2(1)*2 + 3(1) & 1(1)}]2(1)*)\<close>\<close>
 definition DGaxiom :: "('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"DGaxiom = (([[EvolveODE (OSing vid1 (f1 fid1 vid1)) (p1 vid1 vid1)]]p1 vid2 vid1) \<leftrightarrow> 
   (Exists vid2 
@@ -669,7 +664,7 @@ proof -
       apply (subst scaleR_vec_def)
       apply (rule refl)
      apply (auto intro!: derivative_eq_intros)
-    (* Domain constraint satisfied*)
+    \<comment> \<open>Domain constraint satisfied\<close>
     using constraint apply (auto)
     subgoal for t
       apply(erule allE[where x="t"])
@@ -706,7 +701,7 @@ proof -
     done
   from inPred sem_eq have  inPred':"(aa,ba) \<in> fml_sem I (p1 vid3 vid1)"
     by auto
-  (* thus by lemma 6 consequence for formulas *)
+  \<comment> \<open>thus by lemma 6 consequence for formulas\<close>
   show "repv (repv (a, b) vid2 r) vid1
        (dterm_sem I (Plus (trm.Var vid1) (Times (f0 fid1) (trm.Var vid2))) (repv (a, b) vid2 r))
        \<in> fml_sem I (p1 vid3 vid1)" 
@@ -734,7 +729,7 @@ next
         {x. mk_v I (OSing vid1 (f0 fid1)) (ab, bb) x \<in> fml_sem I (p1 vid2 vid1)}"
   hence constraint:"\<And>s. s \<in> {0 .. t} \<Longrightarrow> sol s \<in> {x. mk_v I (OSing vid1 (f0 fid1)) (ab, bb) x \<in> fml_sem I (p1 vid2 vid1)}"
     using solves_ode_domainD by fastforce
-  (* sol 0 = fst (ab, bb)*)
+  \<comment> \<open>\<open>sol 0 = fst (ab, bb)\<close>\<close>
   assume sol0:"  (sol 0) = (fst (ab, bb)) "
   have impl:"dterm_sem I (Const 0) (repv (ab, bb) vid2 t) \<le> dterm_sem I (trm.Var vid2) (repv (ab, bb) vid2 t) \<longrightarrow>
            (\<forall>ra. repv (repv (ab, bb) vid2 t) vid3 ra
@@ -759,7 +754,7 @@ next
       apply(unfold f0_def empty_def sterm_sem.simps)
       by(metis add.right_neutral mult_zero_left order_refl)
     done
-  (* Combine with flow_usolves_ode and equals_flowI to get uniqueness of solution *)
+  \<comment> \<open>Combine with \<open>flow_usolves_ode\<close> and \<open>equals_flowI\<close> to get uniqueness of solution\<close>
   let ?f = "(\<lambda>_. ODE_sem I (OSing vid1 (f0 fid1)))"
   have sol_UNIV: "\<And>t x. (ll.flow 0 x usolves_ode ?f from 0) (ll.existence_ivl 0 x) UNIV"
     using ll.flow_usolves_ode by auto    
@@ -999,8 +994,8 @@ lemma rift_in_space_time:
   assumes FVT:"FVT \<theta> \<subseteq> semBV I ODE"  
   assumes ivl:"s \<in> {0..t}"
   shows "((\<lambda>t. sterm_sem I \<theta> (fst (mk_v I ODE (sol 0, b) (sol t))))
-    (* This is Frechet derivative, so equivalent to
-       has_real_derivative frechet I \<theta> (fst((mk_v I ODE (sol 0, b) (sol s)))) (snd (mk_v I ODE (sol 0, b) (sol s))))) (at s within {0..t})*)
+    \<comment> \<open>This is Frechet derivative, so equivalent to:\<close>
+    \<comment> \<open>\<open>has_real_derivative frechet I \<theta> (fst((mk_v I ODE (sol 0, b) (sol s)))) (snd (mk_v I ODE (sol 0, b) (sol s))))) (at s within {0..t})\<close>\<close>
     has_derivative (\<lambda>t'. t' * frechet I \<theta> (fst((mk_v I ODE (sol 0, b) (sol s)))) (snd (mk_v I ODE (sol 0, b) (sol s))))) (at s within {0..t})"
 proof -
   let ?\<phi> = "(\<lambda>t. (mk_v I ODE (sol 0, b) (sol t)))"
@@ -1149,9 +1144,7 @@ lemma dterm_sterm_dfree:
    "dfree \<theta> \<Longrightarrow> (\<And>\<nu> \<nu>'. sterm_sem I \<theta> \<nu> = dterm_sem I \<theta> (\<nu>, \<nu>'))"
   by(induction rule: dfree.induct, auto)
 
-(*  
-g(x)\<ge> h(x) \<rightarrow>  [x'=f(x), c & p(x)](g(x)' \<ge> h(x)') \<rightarrow> [x'=f(x), c]g(x) \<ge> h(x)
-*)                        
+\<comment> \<open>\<open>g(x)\<ge> h(x) \<rightarrow>  [x'=f(x), c & p(x)](g(x)' \<ge> h(x)') \<rightarrow> [x'=f(x), c]g(x) \<ge> h(x)\<close>\<close>  
 lemma DIGeq_valid:"valid DIGeqaxiom"
   unfolding DIGeqaxiom_def
   apply(unfold DIGeqaxiom_def valid_def impl_sem iff_sem)
@@ -2253,7 +2246,7 @@ proof -
             using conF conFlow continuous_on_fst by (auto)
       qed
     let ?ivl = "ll_old.existence_ivl 0 (sol 0)"
-    (* Construct solution to ODE for y' here: *)
+    \<comment> \<open>Construct solution to ODE for \<open>y'\<close> here:\<close>
     let ?yode = "(\<lambda>t y. y * sterm_sem I (f1 fid2 vid1) (?flow t) + sterm_sem I (f1 fid3 vid1) (?flow t))"
     let ?ysol0 = r
     interpret ll_new: ll_on_open_it "?ivl" "?yode" "UNIV" 0

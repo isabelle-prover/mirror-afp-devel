@@ -26,50 +26,50 @@ text \<open>
   variables because they cannot contain contexts.
 \<close>
 datatype ('a, 'c) trm =
-(* Real-valued variables given meaning by the state and modified by programs. *)
+\<comment> \<open>Real-valued variables given meaning by the state and modified by programs.\<close>
   Var 'c
-(* N.B. This is technically more expressive than true dL since most reals
- * can't be written down. *)
+\<comment> \<open>N.B. This is technically more expressive than true dL since most reals\<close>
+\<comment> \<open>can't be written down.\<close>
 | Const real
-(* A function (applied to its arguments) consists of an identifier for the function
- * and a function 'c \<Rightarrow> ('a, 'c) trm (where 'c is a finite type) which specifies one
- * argument of the function for each element of type 'c. To simulate a function with
- * less than 'c arguments, set the remaining arguments to a constant, such as Const 0*)
+\<comment> \<open>A function (applied to its arguments) consists of an identifier for the function\<close>
+\<comment> \<open>and a function \<open>'c \<Rightarrow> ('a, 'c) trm\<close> (where \<open>'c\<close> is a finite type) which specifies one\<close>
+\<comment> \<open>argument of the function for each element of type \<open>'c\<close>. To simulate a function with\<close>
+\<comment> \<open>less than \<open>'c\<close> arguments, set the remaining arguments to a constant, such as \<open>Const 0\<close>\<close>
 | Function 'a "'c \<Rightarrow> ('a, 'c) trm" ("$f")
 | Plus "('a, 'c) trm" "('a, 'c) trm"
 | Times "('a, 'c) trm" "('a, 'c) trm"
-(* A (real-valued) variable standing for a differential, such as x', given meaning by the state
- * and modified by programs. *)
+\<comment> \<open>A (real-valued) variable standing for a differential, such as \<open>x'\<close>, given meaning by the state\<close>
+\<comment> \<open>and modified by programs.\<close>
 | DiffVar 'c ("$'")
-(* The differential of an arbitrary term (\<theta>)' *)
+\<comment> \<open>The differential of an arbitrary term \<open>(\<theta>)'\<close>\<close>
 | Differential "('a, 'c) trm"
 
 datatype('a, 'c) ODE =
-(* Variable standing for an ODE system, given meaning by the interpretation *)
-  OVar 'c
-(* Singleton ODE defining x' = \<theta>, where \<theta> may or may not contain x
- * (but must not contain differentials) *)
+\<comment> \<open>Variable standing for an ODE system, given meaning by the interpretation\<close>
+OVar 'c
+\<comment> \<open>Singleton ODE defining \<open>x' = \<theta>\<close>, where \<open>\<theta>\<close> may or may not contain \<open>x\<close>\<close>
+\<comment> \<open>(but must not contain differentials)\<close>
 | OSing 'c "('a, 'c) trm"
-(* The product OProd ODE1 ODE2 composes two ODE systems in parallel, e.g. 
- * OProd (x' = y) (y' = -x) is the system {x' = y, y' = -x} *)
+\<comment> \<open>The product \<open>OProd ODE1 ODE2\<close> composes two ODE systems in parallel, e.g.\<close>
+\<comment> \<open>\<open>OProd (x' = y) (y' = -x)\<close> is the system \<open>{x' = y, y' = -x}\<close>\<close>
 | OProd "('a, 'c) ODE" "('a, 'c) ODE"
 
 datatype ('a, 'b, 'c) hp =
-(* Variables standing for programs, given meaning by the interpretation. *)
+\<comment> \<open>Variables standing for programs, given meaning by the interpretation.\<close>
   Pvar 'c                           ("$\<alpha>")
-(* Assignment to a real-valued variable x := \<theta> *)
+\<comment> \<open>Assignment to a real-valued variable \<open>x := \<theta>\<close>\<close>
 | Assign 'c "('a, 'c) trm"                (infixr ":=" 10)
-(* Assignment to a differential variable*)
+\<comment> \<open>Assignment to a differential variable\<close>
 | DiffAssign 'c "('a, 'c) trm"
-(* Program ?\<phi> succeeds iff \<phi> holds in current state. *)
+\<comment> \<open>Program \<open>?\<phi>\<close> succeeds iff \<open>\<phi>\<close> holds in current state.\<close>
 | Test "('a, 'b, 'c) formula"                 ("?")
-(* An ODE program is an ODE system with some evolution domain. *)
+\<comment> \<open>An ODE program is an ODE system with some evolution domain.\<close>
 | EvolveODE "('a, 'c) ODE" "('a, 'b, 'c) formula"
-(* Non-deterministic choice between two programs a and b *)
+\<comment> \<open>Non-deterministic choice between two programs \<open>a\<close> and \<open>b\<close>\<close>
 | Choice "('a, 'b, 'c) hp" "('a, 'b, 'c) hp"            (infixl "\<union>\<union>" 10)
-(* Sequential composition of two programs a and b *)
+\<comment> \<open>Sequential composition of two programs \<open>a\<close> and \<open>b\<close>\<close>
 | Sequence "('a, 'b, 'c) hp"  "('a, 'b, 'c) hp"         (infixr ";;" 8)
-(* Nondeterministic repetition of a program "a", zero or more times. *)
+\<comment> \<open>Nondeterministic repetition of a program \<open>a\<close>, zero or more times.\<close>
 | Loop "('a, 'b, 'c) hp"                      ("_**")
 
 and ('a, 'b, 'c) formula =
@@ -78,14 +78,14 @@ and ('a, 'b, 'c) formula =
 | Not "('a, 'b, 'c) formula"            ("!")
 | And "('a, 'b, 'c) formula" "('a, 'b, 'c) formula"    (infixl "&&" 8)
 | Exists 'c "('a, 'b, 'c) formula"
-(* \<langle>\<alpha>\<rangle>\<phi> iff exists run of \<alpha> where \<phi> is true in end state *)
+\<comment> \<open>\<open>\<langle>\<alpha>\<rangle>\<phi>\<close> iff exists run of \<open>\<alpha>\<close> where \<open>\<phi>\<close> is true in end state\<close>
 | Diamond "('a, 'b, 'c) hp" "('a, 'b, 'c) formula"         ("(\<langle> _ \<rangle> _)" 10)
-(* Contexts C are symbols standing for functions from (the semantics of) formulas to 
- * (the semantics of) formulas, thus C(\<phi>) is another formula. While not necessary
- * in terms of expressiveness, contexts allow for more efficient reasoning principles. *)
+\<comment> \<open>Contexts \<open>C\<close> are symbols standing for functions from (the semantics of) formulas to\<close>
+\<comment> \<open>(the semantics of) formulas, thus \<open>C(\<phi>)\<close> is another formula. While not necessary\<close>
+\<comment> \<open>in terms of expressiveness, contexts allow for more efficient reasoning principles.\<close>
 | InContext 'b "('a, 'b, 'c) formula"
     
-(* Derived forms *)
+\<comment> \<open>Derived forms\<close>
 definition Or :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixl "||" 7)
 where "Or P Q = Not (And (Not P) (Not Q))"
 
@@ -114,11 +114,11 @@ definition FF ::"('a,'b,'c) formula"
 where "FF = Geq (Const 0) (Const 1)"
 
 type_synonym ('a,'b,'c) sequent = "('a,'b,'c) formula list * ('a,'b,'c) formula list"
-(* Rule: assumptions, then conclusion *)
+\<comment> \<open>Rule: assumptions, then conclusion\<close>
 type_synonym ('a,'b,'c) rule = "('a,'b,'c) sequent list * ('a,'b,'c) sequent"
 
   
-(* silliness to enable proving disequality lemmas *)
+\<comment> \<open>silliness to enable proving disequality lemmas\<close>
 primrec sizeF::"('sf,'sc, 'sz) formula \<Rightarrow> nat"
   and   sizeP::"('sf,'sc, 'sz) hp \<Rightarrow> nat"
 where 
@@ -154,41 +154,41 @@ lemma [expr_diseq]:"p \<noteq> Exists x p" by(induction p, auto)
 lemma [expr_diseq]:"p \<noteq> Diamond a p" by(induction p, auto)
 lemma [expr_diseq]:"p \<noteq> InContext C p" by(induction p, auto)
 
-(* A predicational is like a context with no argument, i.e. a variable standing for a 
- * state-dependent formula, given meaning by the interpretation. This differs from a predicate
- * because predicates depend only on their arguments (which might then indirectly depend on the state).
- * We encode a predicational as a context applied to a formula whose truth value is constant with
- * respect to the state (specifically, always true)*)
+\<comment> \<open>A predicational is like a context with no argument, i.e. a variable standing for a\<close>
+\<comment> \<open>state-dependent formula, given meaning by the interpretation. This differs from a predicate\<close>
+\<comment> \<open>because predicates depend only on their arguments (which might then indirectly depend on the state).\<close>
+\<comment> \<open>We encode a predicational as a context applied to a formula whose truth value is constant with\<close>
+\<comment> \<open>respect to the state (specifically, always true)\<close>
 fun Predicational :: "'b \<Rightarrow> ('a, 'b, 'c) formula" ("Pc")
 where "Predicational P = InContext P (Geq (Const 0) (Const 0))"
 
-(* Abbreviations for common syntactic constructs in order to make axiom definitions, etc. more
- * readable. *)
+\<comment> \<open>Abbreviations for common syntactic constructs in order to make axiom definitions, etc. more\<close>
+\<comment> \<open>readable.\<close>
 context ids begin
-(* "Empty" function argument tuple, encoded as tuple where all arguments assume a constant value. *)
+\<comment> \<open>"Empty" function argument tuple, encoded as tuple where all arguments assume a constant value.\<close>
 definition empty::" 'b \<Rightarrow> ('a, 'b) trm"
 where "empty \<equiv> \<lambda>i.(Const 0)"
 
-(* Function argument tuple with (effectively) one argument, where all others have a constant value. *)
+\<comment> \<open>Function argument tuple with (effectively) one argument, where all others have a constant value.\<close>
 fun singleton :: "('a, 'sz) trm \<Rightarrow> ('sz \<Rightarrow> ('a, 'sz) trm)"
 where "singleton t i = (if i = vid1 then t else (Const 0))"
 
 lemma expand_singleton:"singleton t = (\<lambda>i. (if i = vid1 then t else (Const 0)))"
   by auto
 
-(* Function applied to one argument *)
+\<comment> \<open>Function applied to one argument\<close>
 definition f1::"'sf \<Rightarrow> 'sz \<Rightarrow> ('sf,'sz) trm"
 where "f1 f x = Function f (singleton (Var x))"
 
-(* Function applied to zero arguments (simulates a constant symbol given meaning by the interpretation) *)
+\<comment> \<open>Function applied to zero arguments (simulates a constant symbol given meaning by the interpretation)\<close>
 definition f0::"'sf \<Rightarrow> ('sf,'sz) trm"
 where "f0 f = Function f empty"
 
-(* Predicate applied to one argument *)
+\<comment> \<open>Predicate applied to one argument\<close>
 definition p1::"'sz \<Rightarrow> 'sz \<Rightarrow> ('sf, 'sc, 'sz) formula"
 where "p1 p x = Prop p (singleton (Var x))"
 
-(* Predicational *)
+\<comment> \<open>Predicational\<close>
 definition P::"'sc \<Rightarrow> ('sf, 'sc, 'sz) formula"
 where "P p = Predicational p"
 end
@@ -212,8 +212,8 @@ where
 | dsafe_Diff: "dfree \<theta> \<Longrightarrow> dsafe (Differential \<theta>)"
 | dsafe_DiffVar: "dsafe ($' i)"
 
-(* Explictly-written variables that are bound by the ODE. Needed to compute whether
- * ODE's are valid (e.g. whether they bind the same variable twice) *)
+\<comment> \<open>Explictly-written variables that are bound by the ODE. Needed to compute whether\<close>
+\<comment> \<open>ODE's are valid (e.g. whether they bind the same variable twice)\<close>
 fun ODE_dom::"('a, 'c) ODE \<Rightarrow> 'c set"
 where 
   "ODE_dom (OVar c) =  {}"
@@ -226,17 +226,17 @@ where
 | osafe_Sing:"dfree \<theta> \<Longrightarrow> osafe (OSing x \<theta>)"
 | osafe_Prod:"osafe ODE1 \<Longrightarrow> osafe ODE2 \<Longrightarrow> ODE_dom ODE1 \<inter> ODE_dom ODE2 = {} \<Longrightarrow> osafe (OProd ODE1 ODE2)"
 
-(* Programs/formulas without any differential terms. This definition not currently used but may
- * be useful in the future. *)
+\<comment> \<open>Programs/formulas without any differential terms. This definition not currently used but may\<close>
+\<comment> \<open>be useful in the future.\<close>
 inductive hpfree:: "('a, 'b, 'c) hp \<Rightarrow> bool"
   and     ffree::  "('a, 'b, 'c) formula \<Rightarrow> bool"
 where
   "hpfree (Pvar x)"
 | "dfree e \<Longrightarrow> hpfree (Assign x e)"
-(* Differential programs allowed but not differential terms  *)
+\<comment> \<open>Differential programs allowed but not differential terms\<close>
 | "dfree e \<Longrightarrow> hpfree (DiffAssign x e)"
 | "ffree P \<Longrightarrow> hpfree (Test P)" 
-(* Differential programs allowed but not differential terms  *)
+\<comment> \<open>Differential programs allowed but not differential terms\<close>
 | "osafe ODE \<Longrightarrow> ffree P \<Longrightarrow> hpfree (EvolveODE ODE P)"
 | "hpfree a \<Longrightarrow> hpfree b \<Longrightarrow> hpfree (Choice a b )"
 | "hpfree a \<Longrightarrow> hpfree b \<Longrightarrow> hpfree (Sequence a b)"
@@ -270,7 +270,7 @@ where
  | fsafe_Diamond:"hpsafe a \<Longrightarrow> fsafe p \<Longrightarrow> fsafe (Diamond a p)"
  | fsafe_InContext:"fsafe f \<Longrightarrow> fsafe (InContext C f)"
 
-(* Auto-generated simplifier rules for safety predicates *)  
+\<comment> \<open>Auto-generated simplifier rules for safety predicates\<close>
 inductive_simps
       dfree_Plus_simps[simp]: "dfree (Plus a b)"
   and dfree_Times_simps[simp]: "dfree (Times a b)"
@@ -320,7 +320,7 @@ definition Rsafe::"('sf,'sc,'sz) rule \<Rightarrow> bool"
 where "Rsafe R \<longleftrightarrow> ((\<forall>i. i \<ge> 0 \<longrightarrow> i < length (fst R) \<longrightarrow> Ssafe (nth (fst R) i)) 
                     \<and> Ssafe (snd R))"
   
-(* Basic reasoning principles about syntactic constructs, including inductive principles *)
+\<comment> \<open>Basic reasoning principles about syntactic constructs, including inductive principles\<close>
 lemma dfree_is_dsafe: "dfree \<theta> \<Longrightarrow> dsafe \<theta>"
   by (induction rule: dfree.induct) (auto intro: dsafe.intros)
   

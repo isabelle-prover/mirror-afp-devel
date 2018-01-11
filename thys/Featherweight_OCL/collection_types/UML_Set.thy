@@ -3072,11 +3072,11 @@ lemma StrictRefEq\<^sub>S\<^sub>e\<^sub>t_exec[simp,code_unfold] :
   (if \<delta> x then (if \<delta> y
                 then ((x->forAll\<^sub>S\<^sub>e\<^sub>t(z| y->includes\<^sub>S\<^sub>e\<^sub>t(z)) and (y->forAll\<^sub>S\<^sub>e\<^sub>t(z| x->includes\<^sub>S\<^sub>e\<^sub>t(z)))))
                 else if \<upsilon> y
-                      then false (* x'->includes = null *)
+                      then false \<comment> \<open>\<open>x'->includes = null\<close>\<close>
                       else invalid
                       endif
                 endif)
-         else if \<upsilon> x (* null = ??? *)
+         else if \<upsilon> x \<comment> \<open>\<open>null = ???\<close>\<close>
               then if \<upsilon> y then not(\<delta> y) else invalid endif
               else invalid
               endif
