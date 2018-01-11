@@ -24,11 +24,11 @@ lemma safe_def:
 
 definition sv_round :: "round \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> (process, val)map \<Rightarrow> (v_state \<times> v_state) set" where
   "sv_round r S v r_decisions = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s
      \<and> (S \<noteq> {} \<longrightarrow> safe s r v)
      \<and> d_guard r_decisions (const_map v S)
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        next_round := Suc r
        , votes := (votes s)(r := const_map v S)

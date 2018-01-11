@@ -52,8 +52,8 @@ subsection\<open>IPv6 Parser\<close>
 
   definition mk_ipv6addr :: "16 word option list \<Rightarrow> ipv6addr_syntax option" where
     "mk_ipv6addr partslist = (
-      let (*remove empty lists to the beginning and end if omission occurs at start/end
-            to join over ':' properly *)
+      let \<comment> \<open>remove empty lists to the beginning and end if omission occurs at start/end\<close>
+          \<comment> \<open>to join over \<^verbatim>\<open>:\<close> properly\<close>
           fix_start = (\<lambda>ps. case ps of None#None#_ \<Rightarrow> tl ps | _ \<Rightarrow> ps);
           fix_end = (\<lambda>ps. case rev ps of None#None#_ \<Rightarrow> butlast ps | _ \<Rightarrow> ps);
           ps = (fix_end \<circ> fix_start) partslist

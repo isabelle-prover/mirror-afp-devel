@@ -68,7 +68,7 @@ partial_function (tailrec) reconstruction :: "'state \<Rightarrow> int poly \<Ri
       (case next_subseqs_foldr sl_impl state of (cands,state') \<Rightarrow>
         reconstruction state' u luu lu d' r vs res cands)
    | (lv',ws) # cands' \<Rightarrow> let
-       lv = inv_M2 lv' (* lv is last coefficient of vb below *)
+       lv = inv_M2 lv' \<comment> \<open>\<open>lv\<close> is last coefficient of \<open>vb\<close> below\<close>
      in if lv dvd coeff luu 0 then let
        vb = inv_Mp2 (Mp (smult lu (prod_list_m ws))) 
     in if vb dvd luu then 

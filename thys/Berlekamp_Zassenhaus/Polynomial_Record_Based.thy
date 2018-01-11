@@ -204,12 +204,12 @@ definition poly_ops :: "'i list arith_ops_record" where
       minus_poly_i
       uminus_poly_i
       div_field_poly_i
-      (\<lambda> _. []) (* not defined *) 
+      (\<lambda> _. []) \<comment> \<open>not defined\<close>
       mod_field_poly_i
       normalize_poly_i
       unit_factor_poly_i
       (\<lambda> i. if i = 0 then [] else [arith_ops_record.of_int ops i])
-      (\<lambda> _. 0) (* not defined *)
+      (\<lambda> _. 0) \<comment> \<open>not defined\<close>
       is_poly"
 
 

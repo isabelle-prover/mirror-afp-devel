@@ -136,7 +136,7 @@ definition [icf_rec_def]: "hm_basic_ops \<equiv> \<lparr>
   bmap_op_empty = hm_empty,
   bmap_op_lookup = hm_lookup,
   bmap_op_update = hm_update,
-  bmap_op_update_dj = hm_update, (* TODO: Optimize bucket-ins here *)
+  bmap_op_update_dj = hm_update, \<comment> \<open>TODO: Optimize bucket-ins here\<close>
   bmap_op_delete = hm_delete,
   bmap_op_list_it = hm_iteratei
 \<rparr>"

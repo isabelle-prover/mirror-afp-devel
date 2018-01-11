@@ -213,20 +213,20 @@ begin
     let x = E1 True;
 
     _ \<leftarrow> case x of
-      E1 a \<Rightarrow> RETURN (Some a)  (* Access and invalidate compound inside case *)
+      E1 a \<Rightarrow> RETURN (Some a)  \<comment> \<open>Access and invalidate compound inside case\<close>
     | _ \<Rightarrow> RETURN (Some True);  
 
-    _ \<leftarrow> test1 x; (* Rely on structure being there, with valid compound *)
+    _ \<leftarrow> test1 x; \<comment> \<open>Rely on structure being there, with valid compound\<close>
 
-    (* Same thing again, with merge *)
+    \<comment> \<open>Same thing again, with merge\<close>
     _ \<leftarrow> if True then
       case x of
-        E1 a \<Rightarrow> RETURN (Some a)  (* Access and invalidate compound inside case *)
+        E1 a \<Rightarrow> RETURN (Some a)  \<comment> \<open>Access and invalidate compound inside case\<close>
       | _ \<Rightarrow> RETURN (Some True)
      else RETURN None; 
-    _ \<leftarrow> test1 x; (* Rely on structure being there, with valid compound *)
+    _ \<leftarrow> test1 x; \<comment> \<open>Rely on structure being there, with valid compound\<close>
     
-    (* Now test with non-pure *)
+    \<comment> \<open>Now test with non-pure\<close>
     let a = op_array_replicate 4 (3::nat);
     let x = E5 False a;
     
@@ -237,7 +237,7 @@ begin
     | E4 _ _ \<Rightarrow> RETURN 0
     | E5 _ a \<Rightarrow> mop_list_get a 0;
 
-    (* Rely on that compound still exists (it's components are only read in the case above) *)
+    \<comment> \<open>Rely on that compound still exists (it's components are only read in the case above)\<close>
     case x of
       E1 a \<Rightarrow> do {mop_list_set a 0 0; RETURN (0::nat)}
     | E2 _ \<Rightarrow> RETURN 1

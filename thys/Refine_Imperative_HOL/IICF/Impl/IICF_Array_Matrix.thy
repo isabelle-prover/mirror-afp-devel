@@ -492,7 +492,7 @@ begin
         by (auto simp: mtx_nonzero_def diagonalN_def split: if_split_asm)
 
       private definition "init_test2 \<equiv> do {
-        ASSERT (N>2); (* Ensure that the coordinate (1,2) is valid *)
+        ASSERT (N>2); \<comment> \<open>Ensure that the coordinate \<open>(1,2)\<close> is valid\<close>
         let m = op_mtx_new (diagonalN (1::int));
         RETURN (m(1,2))
       }"

@@ -191,7 +191,7 @@ corollary equal_pair_count_maximality1b[rule_format]: "
 by (insert equal_pair_count_maximality1a[of ps], simp)
 
 lemma equal_pair_count_maximality2a[rule_format]: "
-  equal_pair_count ps = length ps \<or> (* either all pairs are equal *)
+  equal_pair_count ps = length ps \<or> \<comment> \<open>either all pairs are equal\<close>
   (\<forall>i\<ge>equal_pair_count ps.(\<exists>j\<le>i. \<not>equal_pair (ps ! j)))"
 apply clarsimp
 apply (rule_tac x="equal_pair_count ps" in exI)

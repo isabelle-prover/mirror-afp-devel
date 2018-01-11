@@ -507,7 +507,7 @@ product of two state predicates.  *}
 
 lemma relhoare_conj_right_det:                 
   "\<lbrakk> {pre} Ra, Rc {> post1}; {pre} Ra, Rc {> post2};
-     single_valued Ra \<rbrakk>                           (* only for deterministic Ra! *)  
+     single_valued Ra \<rbrakk>                           \<comment> \<open>only for deterministic \<open>Ra\<close>!\<close>
   \<Longrightarrow> {pre} Ra, Rc {> post1 \<inter> post2}"
 by (auto simp add: PO_rhoare_defs dest: single_valuedD dest!: subsetD)
 
@@ -522,7 +522,7 @@ text {* Separate rule for cartesian products. *}
 
 corollary relhoare_cartesian:
   "\<lbrakk> {Domain pre} Ra {> I}; {Range pre} Rc {> J};
-     {pre} Ra, Rc {> post} \<rbrakk>                      (* any post, including UNIV! *)
+     {pre} Ra, Rc {> post} \<rbrakk>                      \<comment> \<open>any \<open>post\<close>, including \<open>UNIV\<close>!\<close>
   \<Longrightarrow> {pre} Ra, Rc {> I \<times> J}"
 by (auto intro: relhoare_conseq_right)
 

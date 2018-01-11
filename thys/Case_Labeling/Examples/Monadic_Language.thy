@@ -181,10 +181,10 @@ valid
   True
   (
     while
-      (*COND *) (\<lambda>(r,j). j < (b :: nat))
-      (*INV  *) (\<lambda>(r,j). j \<le> b \<and> r = a + j)
-      (*BODY *) (\<lambda>(r,j). return (r + 1, j + 1))
-      (*START*) (a,0)
+      \<comment> \<open>COND:\<close> (\<lambda>(r,j). j < (b :: nat))
+      \<comment> \<open>INV:\<close> (\<lambda>(r,j). j \<le> b \<and> r = a + j)
+      \<comment> \<open>BODY:\<close> (\<lambda>(r,j). return (r + 1, j + 1))
+      \<comment> \<open>START:\<close> (a,0)
     |>> (\<lambda>(r,_). return r)
   )
   (\<lambda>r. r = a + b)
@@ -197,17 +197,17 @@ valid
   True
   (
     while
-      (*COND *) (\<lambda>(r,i). i < (a :: nat))
-      (*INV  *) (\<lambda>(r,i). i \<le> a \<and> r = i * b)
-      (*BODY *) (\<lambda>(r,i).
+      \<comment> \<open>COND:\<close> (\<lambda>(r,i). i < (a :: nat))
+      \<comment> \<open>INV:\<close> (\<lambda>(r,i). i \<le> a \<and> r = i * b)
+      \<comment> \<open>BODY:\<close> (\<lambda>(r,i).
         while
-          (*COND *) (\<lambda>(r,j). j < b)
-          (*INV  *) (\<lambda>(r,j). i < a \<and> j \<le> b \<and> r = i * b + j)
-          (*BODY *) (\<lambda>(r,j). return (r + 1, j + 1))
-          (*START*) (r,0)
+          \<comment> \<open>COND:\<close> (\<lambda>(r,j). j < b)
+          \<comment> \<open>INV:\<close> (\<lambda>(r,j). i < a \<and> j \<le> b \<and> r = i * b + j)
+          \<comment> \<open>BODY:\<close> (\<lambda>(r,j). return (r + 1, j + 1))
+          \<comment> \<open>START:\<close> (r,0)
         |>> (\<lambda>(r,_). return (r, i + 1))
       )
-      (*START*) (0,0)
+      \<comment> \<open>START:\<close> (0,0)
     |>> (\<lambda>(r,_). return r)
   )
   (\<lambda>r. r = a * b)
@@ -222,17 +222,17 @@ valid
   True
   (
     while
-      (*COND *) (\<lambda>(r,i). i < (a :: nat))
-      (*INV  *) (\<lambda>(r,i). i \<le> a \<and> r = i * b)
-      (*BODY *) (\<lambda>(r,i).
+      \<comment> \<open>COND:\<close> (\<lambda>(r,i). i < (a :: nat))
+      \<comment> \<open>INV:\<close> (\<lambda>(r,i). i \<le> a \<and> r = i * b)
+      \<comment> \<open>BODY:\<close> (\<lambda>(r,i).
         while
-          (*COND *) (\<lambda>(r,j). j < b)
-          (*INV  *) (\<lambda>(r,j). i < a \<and> j \<le> b \<and> r = i * b + j)
-          (*BODY *) (\<lambda>(r,j). return (r + 1, j + 1))
-          (*START*) (r,0)
+          \<comment> \<open>COND:\<close> (\<lambda>(r,j). j < b)
+          \<comment> \<open>INV:\<close> (\<lambda>(r,j). i < a \<and> j \<le> b \<and> r = i * b + j)
+          \<comment> \<open>BODY:\<close> (\<lambda>(r,j). return (r + 1, j + 1))
+          \<comment> \<open>START:\<close> (r,0)
         |>> (\<lambda>(r,_). return (r, i + 1))
       )
-      (*START*) (0,0)
+      \<comment> \<open>START:\<close> (0,0)
     |>> (\<lambda>(r,_). return r)
   )
   (\<lambda>r. r = a * b)
@@ -259,9 +259,9 @@ lemma L_paths: "
 valid
   (path \<noteq> [])
   ( while
-      (*COND *) (\<lambda>(p,r). p \<noteq> [])
-      (*INV  *) (\<lambda>(p,r). distinct r \<and> hd (r @ p) = hd path \<and> last (r @ p) = last path)
-      (*BODY *) (\<lambda>(p,r).
+      \<comment> \<open>COND:\<close> (\<lambda>(p,r). p \<noteq> [])
+      \<comment> \<open>INV:\<close> (\<lambda>(p,r). distinct r \<and> hd (r @ p) = hd path \<and> last (r @ p) = last path)
+      \<comment> \<open>BODY:\<close> (\<lambda>(p,r).
         return (hd p)
         |>> (\<lambda>x.
           if (r \<noteq> [] \<and> x = hd r)
@@ -273,7 +273,7 @@ valid
         )
         )
         )
-      (*START*) (path, [])
+      \<comment> \<open>START:\<close> (path, [])
     |>> (\<lambda>(_,r). return r)
   )
   (\<lambda>r. distinct r \<and> hd r = hd path \<and> last r = last path)

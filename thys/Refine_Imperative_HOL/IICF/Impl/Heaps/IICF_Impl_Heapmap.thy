@@ -90,7 +90,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
 
     term hm_lookup  
     definition "hm_lookup_op' \<equiv> \<lambda>(pq,ml) k. do {
-      if (k<maxsize) then do {    (* TODO: This check can be eliminated, but this will complicate refinement of keys in basic ops *)
+      if (k<maxsize) then do {    \<comment> \<open>TODO: This check can be eliminated, but this will complicate refinement of keys in basic ops\<close>
         let c = op_list_contains k pq;
         if c then do {
           v \<leftarrow> mop_list_get ml k;
@@ -109,7 +109,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
 
     term hm_contains_key_op  
     definition "hm_contains_key_op' \<equiv> \<lambda>k (pq,ml). do {
-      if (k<maxsize) then do {    (* TODO: This check can be eliminated, but this will complicate refinement of keys in basic ops *)
+      if (k<maxsize) then do {    \<comment> \<open>TODO: This check can be eliminated, but this will complicate refinement of keys in basic ops\<close>
         RETURN (op_list_contains k pq)
       } else RETURN False  
     }"

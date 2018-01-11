@@ -62,7 +62,7 @@ partial_function (tailrec) prime_nat_main
     else True))"
 
 definition prime_nat :: "nat \<Rightarrow> bool" where
-  "prime_nat n \<equiv> if n < 2 then False else (* TODO: integrate precomputed map *)
+  "prime_nat n \<equiv> if n < 2 then False else \<comment> \<open>TODO: integrate precomputed map\<close>
      case next_candidates 0 of (j,is) \<Rightarrow> prime_nat_main n j is"
 
 definition prime_factorization_nat :: "nat \<Rightarrow> nat list" where

@@ -532,9 +532,9 @@ fun linear_hensel_main where
 | "linear_hensel_main (Suc n) = (
       let (D,H) = linear_hensel_main n;
         q = p ^ n;
-        U = poly_mod.Mp p (sdiv_poly (C - D * H) q);   (* H2 + H3 *)
+        U = poly_mod.Mp p (sdiv_poly (C - D * H) q);   \<comment> \<open>\<open>H2 + H3\<close>\<close>
         (A,B) = poly_mod.dupe_monic_int p D1 H1 S T U
-      in (D + smult q B, H + smult q A))" (* H4 *)
+      in (D + smult q B, H + smult q A)) \<comment> \<open>\<open>H4\<close>\<close>"
     | "linear_hensel_main 0 = (D1,H1)" 
 
 lemma linear_hensel_main: assumes 1: "poly_mod.eq_m p (D1 * S + H1 * T) 1" 
@@ -543,7 +543,7 @@ lemma linear_hensel_main: assumes 1: "poly_mod.eq_m p (D1 * S + H1 * T) 1"
   and normDH1: "poly_mod.Mp p D1 = D1" "poly_mod.Mp p H1 = H1"
   and res: "linear_hensel_main n = (D,H)" 
   and n: "n \<noteq> 0" 
-  and prime: "prime p" (* p > 1 suffices if one does not need uniqueness *)
+  and prime: "prime p" \<comment> \<open>\<open>p > 1\<close> suffices if one does not need uniqueness\<close>
   and cop: "poly_mod.coprime_m p D1 H1"
   shows "poly_mod.eq_m (p^n) (D * H) C
     \<and> monic D
@@ -764,11 +764,11 @@ lemma (in poly_mod_prime) unique_hensel_binary:
   and normalized_input: "Mp D = D" "Mp H = H"
   and monic_input: "monic D" 
   and n: "n \<noteq> 0" 
-shows "\<exists>! (D',H'). (* D', H' are computed via linear_hensel_binary *)
-      poly_mod.eq_m (p^n) (D' * H') C (* the main result: equivalence mod p^n *)
-    \<and> monic D' (* monic output *)
-    \<and> eq_m D D' \<and> eq_m H H' (* apply `mod p` on D' and H' yields D and H again *)
-    \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H'" (* output is normalized *)
+shows "\<exists>! (D',H'). \<comment> \<open>\<open>D'\<close>, \<open>H'\<close> are computed via \<open>linear_hensel_binary\<close>\<close>
+      poly_mod.eq_m (p^n) (D' * H') C \<comment> \<open>the main result: equivalence mod \<open>p^n\<close>\<close>
+    \<and> monic D' \<comment> \<open>monic output\<close>
+    \<and> eq_m D D' \<and> eq_m H H' \<comment> \<open>apply \<open>`mod p`\<close> on \<open>D'\<close> and \<open>H'\<close> yields \<open>D\<close> and \<open>H\<close> again\<close>
+    \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H' \<comment> \<open>output is normalized\<close>"
 proof -
   obtain D' H' where hensel_result: "linear_hensel_binary p n C D H = (D',H')" by force
   from m1 have p: "p > 1" .
@@ -935,14 +935,14 @@ qed
 
 definition hensel_step where 
   "hensel_step p q S1 T1 D1 H1 S T D H = (
-      let U = poly_mod.Mp p (sdiv_poly (C - D * H) q); (* Z2 and Z3 *)        
+      let U = poly_mod.Mp p (sdiv_poly (C - D * H) q); \<comment> \<open>\<open>Z2 and Z3\<close>\<close>        
         (A,B) = dupe_monic_dynamic p D1 H1 S1 T1 U;
-        D' = D + smult q B; (* Z4 *)
+        D' = D + smult q B; \<comment> \<open>\<open>Z4\<close>\<close>
         H' = H + smult q A;
-        U' = poly_mod.Mp q (sdiv_poly (S*D' + T*H' - 1) p); (* Z5 + Z6 *)
+        U' = poly_mod.Mp q (sdiv_poly (S*D' + T*H' - 1) p); \<comment> \<open>\<open>Z5 + Z6\<close>\<close>
         (A',B') = dupe_monic_dynamic q D H S T U';
         q' = p * q;
-        S' = poly_mod.Mp q' (S - smult p A'); (* Z7 *)
+        S' = poly_mod.Mp q' (S - smult p A'); \<comment> \<open>\<open>Z7\<close>\<close>
         T' = poly_mod.Mp q' (T - smult p B')
      in (S',T',D',H'))" 
 
@@ -950,7 +950,7 @@ definition "quadratic_hensel_step q S T D H = hensel_step q q S T D H S T D H"
 
 lemma quadratic_hensel_step_code[code]:
   "quadratic_hensel_step q S T D H =
-    (let dupe = dupe_monic_dynamic q D H S T; (* this will share the conversions of D H S T *)
+    (let dupe = dupe_monic_dynamic q D H S T; \<comment> \<open>this will share the conversions of \<open>D H S T\<close>\<close>
          U = poly_mod.Mp q (sdiv_poly (C - D * H) q); 
          (A, B) = dupe U; 
          D' = D + Polynomial.smult q B;
@@ -963,11 +963,11 @@ lemma quadratic_hensel_step_code[code]:
            in (S', T', D', H'))" 
   unfolding quadratic_hensel_step_def[unfolded hensel_step_def] Let_def ..
 
-definition simple_quadratic_hensel_step where (* do not compute new values S' and T' *)
+definition simple_quadratic_hensel_step where \<comment> \<open>do not compute new values \<open>S'\<close> and \<open>T'\<close>\<close>
   "simple_quadratic_hensel_step q S T D H = (
-      let U = poly_mod.Mp q (sdiv_poly (C - D * H) q); (* Z2 + Z3 *)
+      let U = poly_mod.Mp q (sdiv_poly (C - D * H) q); \<comment> \<open>\<open>Z2 + Z3\<close>\<close>
         (A,B) = dupe_monic_dynamic q D H S T U;
-        D' = D + smult q B; (* Z4 *)
+        D' = D + smult q B; \<comment> \<open>\<open>Z4\<close>\<close>
         H' = H + smult q A
      in (D',H'))" 
 
@@ -1078,12 +1078,12 @@ fun quadratic_hensel_loop where
           (case quadratic_hensel_loop (j div 2) of
              (q, S, T, D, H) \<Rightarrow>
           let qq = q * q in 
-          (case quadratic_hensel_step q S T D H of (* quadratic step *)
+          (case quadratic_hensel_step q S T D H of \<comment> \<open>quadratic step\<close>
             (S', T', D', H') \<Rightarrow> (qq, S', T', D', H')))
-     else (* odd j *)
+     else \<comment> \<open>odd \<open>j\<close>\<close>
         (case quadratic_hensel_loop (j div 2 + 1) of
            (q, S, T, D, H) \<Rightarrow>       
-          (case quadratic_hensel_step q S T D H of (* quadratic step *)
+          (case quadratic_hensel_step q S T D H of \<comment> \<open>quadratic step\<close>
             (S', T', D', H') \<Rightarrow> 
                 let qq = q * q; pj = qq div p; down = poly_mod.Mp pj in
                   (pj, down S', down T', down D', down H'))))"
@@ -1093,7 +1093,7 @@ definition "quadratic_hensel_main j = (case quadratic_hensel_loop j of
 
 declare quadratic_hensel_loop.simps[simp del]
 
-(* unroll the definition of hensel_loop so that in outermost iteration we can use simple_hensel_step *)
+\<comment> \<open>unroll the definition of \<open>hensel_loop\<close> so that in outermost iteration we can use \<open>simple_hensel_step\<close>\<close>
 lemma quadratic_hensel_main_code[code]: "quadratic_hensel_main j = (
    if j \<le> 1 then (D1, H1)
       else if even j
@@ -1539,10 +1539,10 @@ lemma hensel_binary:
   and normalized_input: "Mp D = D" "Mp H = H"
   and monic_input: "monic D" 
   and hensel_result: "hensel_binary C D H = (D',H')" 
-  shows "poly_mod.eq_m (p^n) C (D' * H') (* the main result: equivalence mod p^n *)
-    \<and> monic D' (* monic output *)
-    \<and> eq_m D D' \<and> eq_m H H' (* apply `mod p` on D' and H' yields D and H again *)
-    \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H'" (* output is normalized *)
+  shows "poly_mod.eq_m (p^n) C (D' * H') \<comment> \<open>the main result: equivalence mod \<open>p^n\<close>\<close>
+    \<and> monic D' \<comment> \<open>monic output\<close>
+    \<and> eq_m D D' \<and> eq_m H H' \<comment> \<open>apply \<open>`mod p`\<close> on \<open>D'\<close> and \<open>H'\<close> yields \<open>D\<close> and \<open>H\<close> again\<close>
+    \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H' \<comment> \<open>output is normalized\<close>"
 proof -
   from m1 have p: "p > 1" .
   obtain S T where ext: "euclid_ext_poly_dynamic p D H = (S,T)" by force
@@ -1561,7 +1561,7 @@ lemma hensel_main:
   and C: "monic C" "poly_mod.Mp (p^n) C = C" 
   and sf: "square_free_m C" 
   and "\<And> f t. t \<in> sub_trees Fs \<Longrightarrow> factor_node_info t = f \<Longrightarrow> f = Mp (prod_mset (factors_of_factor_tree t))"
-  shows "poly_mod.eq_m (p^n) C (prod_list Gs) (* the main result: equivalence mod p^n *)
+  shows "poly_mod.eq_m (p^n) C (prod_list Gs) \<comment> \<open>the main result: equivalence mod \<open>p^n\<close>\<close>
     \<and> factors_of_factor_tree Fs = mset (map Mp Gs)
     \<and> (\<forall> G. G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)"
   using assms
@@ -1688,17 +1688,17 @@ proof -
 qed
 
 lemma hensel_lifting:
-  assumes res: "hensel_lifting p n f fs = gs"                      (* result of hensel is fact. gs *)
+  assumes res: "hensel_lifting p n f fs = gs"                      \<comment> \<open>result of hensel is fact. \<open>gs\<close>\<close>
     and cop: "coprime (lead_coeff f) p"
     and sf: "poly_mod.square_free_m p f"
-    and fact: "poly_mod.factorization_m p f (c, mset fs)"          (* input is fact. fs mod p *)
+    and fact: "poly_mod.factorization_m p f (c, mset fs)"          \<comment> \<open>input is fact. \<open>fs mod p\<close>\<close>
     and c: "c \<in> {0..<p}"
     and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})"
-  shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-      "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
-      "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-        irreducible\<^sub>d_m g \<and>                               (* irreducibility even mod p *)
-        degree_m g = degree g"   (* mod p does not change degree of g *)
+  shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
+      "sort (map degree fs) = sort (map degree gs)                \<comment> \<open>degrees stay the same\<close>"
+      "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>   \<comment> \<open>monic and normalized\<close>
+        irreducible\<^sub>d_m g \<and>                               \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+        degree_m g = degree g   \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   interpret poly_mod_prime p using prime by unfold_locales
   interpret q: poly_mod_2 "p^n" using m1 n unfolding poly_mod_2_def by auto

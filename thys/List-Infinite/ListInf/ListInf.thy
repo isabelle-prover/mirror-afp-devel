@@ -692,9 +692,9 @@ by (simp add: expand_ilist_eq i_zip_nth)
 subsubsection {* Mapping functions with two arguments to infinite lists *}
 
 definition i_map2 :: "
-  (* Function taking two parameters *)
+  \<comment> \<open>Function taking two parameters\<close>
   ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow>
-  (* Lists of parameters *)
+  \<comment> \<open>Lists of parameters\<close>
   'a ilist \<Rightarrow> 'b ilist \<Rightarrow>
   'c ilist"
 where

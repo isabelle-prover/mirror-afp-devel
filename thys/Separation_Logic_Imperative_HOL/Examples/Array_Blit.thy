@@ -121,7 +121,7 @@ subsection "Code Generator Setup"
 
 subsection {* Derived Functions *}
   definition "array_shrink a s \<equiv> do {
-    (* Avoiding the need for default value *)
+    \<comment> \<open>Avoiding the need for default value\<close>
     l\<leftarrow>Array.len a;
     if l=s then 
       return a

@@ -290,33 +290,33 @@ text {* Assuming that @{term P} is a partition of a set @{term S}, and @{term "n
 definition coarser_partitions_with ::"'a \<Rightarrow> 'a set set \<Rightarrow> 'a set set set"
   where "coarser_partitions_with new_el P = 
     insert
-    (* Let P be a partition of a set Set,
-     and suppose new_el \<notin> Set, i.e. {new_el} \<notin> P,
-     then the following constructs a partition of 'Set \<union> {new_el}' obtained by
-     inserting a new class {new_el} and leaving all previous classes unchanged. *)
+    \<comment> \<open>Let \<open>P\<close> be a partition of a set \<open>Set\<close>,\<close>
+    \<comment> \<open>and suppose \<open>new_el \<notin> Set\<close>, i.e. \<open>{new_el} \<notin> P\<close>,\<close>
+    \<comment> \<open>then the following constructs a partition of \<open>Set \<union> {new_el}\<close> obtained by\<close>
+    \<comment> \<open>inserting a new class \<open>{new_el}\<close> and leaving all previous classes unchanged.\<close>
     (insert {new_el} P)
-  (* Let P be a partition of a set Set,
-     and suppose new_el \<notin> Set,
-     then the following constructs
-     the set of those partitions of 'Set \<union> {new_el}' obtained by
-     inserting new_el into one class of P at a time. *)
+    \<comment> \<open>Let \<open>P\<close> be a partition of a set \<open>Set\<close>,\<close>
+    \<comment> \<open>and suppose \<open>new_el \<notin> Set\<close>,\<close>
+    \<comment> \<open>then the following constructs\<close>
+    \<comment> \<open>the set of those partitions of \<open>Set \<union> {new_el}\<close> obtained by\<close>
+    \<comment> \<open>inserting \<open>new_el\<close> into one class of \<open>P\<close> at a time.\<close>
     ((insert_into_member new_el P) ` P)"
 
 
 text {* the list variant of @{const coarser_partitions_with} *}
 definition coarser_partitions_with_list ::"'a \<Rightarrow> 'a set list \<Rightarrow> 'a set list list"
   where "coarser_partitions_with_list new_el P = 
-  (* Let P be a partition of a set Set,
-     and suppose new_el \<notin> Set, i.e. {new_el} \<notin> set P,
-     then the following constructs a partition of 'Set \<union> {new_el}' obtained by
-     inserting a new class {new_el} and leaving all previous classes unchanged. *)
+    \<comment> \<open>Let \<open>P\<close> be a partition of a set \<open>Set\<close>,\<close>
+    \<comment> \<open>and suppose \<open>new_el \<notin> Set\<close>, i.e. \<open>{new_el} \<notin> set P\<close>,\<close>
+    \<comment> \<open>then the following constructs a partition of \<open>Set \<union> {new_el}\<close> obtained by\<close>
+    \<comment> \<open>inserting a new class \<open>{new_el}\<close> and leaving all previous classes unchanged.\<close>
     ({new_el} # P)
     #
-  (* Let P be a partition of a set Set,
-     and suppose new_el \<notin> Set,
-     then the following constructs
-     the set of those partitions of 'Set \<union> {new_el}' obtained by
-     inserting new_el into one class of P at a time. *)
+    \<comment> \<open>Let \<open>P\<close> be a partition of a set \<open>Set\<close>,\<close>
+    \<comment> \<open>and suppose \<open>new_el \<notin> Set\<close>,\<close>
+    \<comment> \<open>then the following constructs\<close>
+    \<comment> \<open>the set of those partitions of \<open>Set \<union> {new_el}\<close> obtained by\<close>
+    \<comment> \<open>inserting \<open>new_el\<close> into one class of \<open>P\<close> at a time.\<close>
     (map ((insert_into_member_list new_el P)) P)"
 
 text {* @{const coarser_partitions_with_list} and @{const coarser_partitions_with} are equivalent. *}

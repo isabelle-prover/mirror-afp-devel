@@ -471,7 +471,7 @@ datatype (discs_sels) ('sequent, 'rule, 'link) ctree =
 corecursive treeOf where
   "treeOf pointsTo ct =
    (if \<exists>l l'. pointsTo l = Link l'
-    (* makes sense only if backward links point to normal nodes, not to backwards links: *)
+    \<comment> \<open>makes sense only if backward links point to normal nodes, not to backwards links:\<close>
      then undefined
      else (case ct of
              Link l \<Rightarrow> treeOf pointsTo (pointsTo l)
@@ -619,7 +619,7 @@ lemma rel: "wf rel"
 corecursive treeOf' where
   "treeOf' pointsTo ct =
    (if \<not> wf {(l',l).  pointsTo l = Link l'}
-    (* makes sense only if backward links point to normal nodes, not to backwards links: *)
+    \<comment> \<open>makes sense only if backward links point to normal nodes, not to backwards links:\<close>
      then undefined
      else (case ct of
              Link l \<Rightarrow> treeOf' pointsTo (pointsTo l)

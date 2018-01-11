@@ -32,11 +32,11 @@ begin
     -- "Specifies a correct counter-example"
     where
     "ce_correct Vr Vl \<equiv> (\<exists>pr pl. 
-        Vr \<subseteq> E\<^sup>*``V0 \<and> Vl \<subseteq> E\<^sup>*``V0 (* Only reachable nodes are covered *)
-      \<and> set pr\<subseteq>Vr \<and> set pl\<subseteq>Vl     (* The paths are inside the specified sets *)
-      \<and> Vl\<times>Vl \<subseteq> (E \<inter> Vl\<times>Vl)\<^sup>*      (* Vl is mutually connected *)
-      \<and> Vl\<times>Vl \<inter> E \<noteq> {}            (* Vl is non-trivial *)
-      \<and> is_lasso_prpl (pr,pl))    (* Paths form a lasso *)
+        Vr \<subseteq> E\<^sup>*``V0 \<and> Vl \<subseteq> E\<^sup>*``V0 \<comment> \<open>Only reachable nodes are covered\<close>
+      \<and> set pr\<subseteq>Vr \<and> set pl\<subseteq>Vl     \<comment> \<open>The paths are inside the specified sets\<close>
+      \<and> Vl\<times>Vl \<subseteq> (E \<inter> Vl\<times>Vl)\<^sup>*      \<comment> \<open>\<open>Vl\<close> is mutually connected\<close>
+      \<and> Vl\<times>Vl \<inter> E \<noteq> {}            \<comment> \<open>\<open>Vl\<close> is non-trivial\<close>
+      \<and> is_lasso_prpl (pr,pl))    \<comment> \<open>Paths form a lasso\<close>
     "     
 
   definition find_ce_spec :: "('Q set \<times> 'Q set) option nres" where
@@ -109,14 +109,14 @@ begin
             (brk,p,D,pE) \<leftarrow> WHILEIT (fgl_invar v0 D0)
               (\<lambda>(brk,p,D,pE). brk=None \<and> p \<noteq> []) (\<lambda>(_,p,D,pE). 
             do {
-              (* Select edge from end of path *)
+              \<comment> \<open>Select edge from end of path\<close>
               (vo,(p,D,pE)) \<leftarrow> select_edge (p,D,pE);
 
               ASSERT (p\<noteq>[]);
               case vo of 
                 Some v \<Rightarrow> do {
                   if v \<in> \<Union>set p then do {
-                    (* Collapse *)
+                    \<comment> \<open>Collapse\<close>
                     let (p,D,pE) = collapse v (p,D,pE);
 
                     ASSERT (p\<noteq>[]);
@@ -126,12 +126,12 @@ begin
                     else
                       RETURN (None,p,D,pE)
                   } else if v\<notin>D then do {
-                    (* Edge to new node. Append to path *)
+                    \<comment> \<open>Edge to new node. Append to path\<close>
                     RETURN (None,push v (p,D,pE))
                   } else RETURN (None,p,D,pE)
                 }
               | None \<Rightarrow> do {
-                  (* No more outgoing edges from current node on path *)
+                  \<comment> \<open>No more outgoing edges from current node on path\<close>
                   ASSERT (pE \<inter> last p \<times> UNIV = {});
                   RETURN (None,pop (p,D,pE))
                 }
@@ -958,14 +958,14 @@ begin
           (brk,a,p,D,pE) \<leftarrow> WHILEIT (\<lambda>(brk,a,s). fgl_invar v0 (goD s0) (brk,s))
             (\<lambda>(brk,a,p,D,pE). brk=None \<and> p \<noteq> []) (\<lambda>(_,a,p,D,pE). 
           do {
-            (* Select edge from end of path *)
+            \<comment> \<open>Select edge from end of path\<close>
             (vo,(a,p,D,pE)) \<leftarrow> gselect_edge (a,p,D,pE);
 
             ASSERT (p\<noteq>[]);
             case vo of 
               Some v \<Rightarrow> do {
                 if v \<in> \<Union>set p then do {
-                  (* Collapse *)
+                  \<comment> \<open>Collapse\<close>
                   let (a,p,D,pE) = gcollapse v (a,p,D,pE);
 
                   ASSERT (p\<noteq>[]);
@@ -976,12 +976,12 @@ begin
                   else
                     RETURN (None,a,p,D,pE)
                 } else if v\<notin>D then do {
-                  (* Edge to new node. Append to path *)
+                  \<comment> \<open>Edge to new node. Append to path\<close>
                   RETURN (None,gpush v (a,p,D,pE))
                 } else RETURN (None,a,p,D,pE)
               }
             | None \<Rightarrow> do {
-                (* No more outgoing edges from current node on path *)
+                \<comment> \<open>No more outgoing edges from current node on path\<close>
                 ASSERT (pE \<inter> last p \<times> UNIV = {});
                 RETURN (None,gpop (a,p,D,pE))
               }
@@ -1732,7 +1732,7 @@ begin
             (\<lambda>(brk,s). fgl_invar v0 (oGS_\<alpha> (goD_impl s0)) (brk,snd (gGS_\<alpha> s)))
             (\<lambda>(brk,s). brk=None \<and> \<not>gpath_is_empty_impl s) (\<lambda>(l,s).
           do {
-            (* Select edge from end of path *)
+            \<comment> \<open>Select edge from end of path\<close>
             (vo,s) \<leftarrow> gselect_edge_impl s;
 
             case vo of 
@@ -1745,15 +1745,15 @@ begin
                   else 
                     RETURN (None,s)
                 } else if \<not>gis_done_impl v s then do {
-                  (* Edge to new node. Append to path *)
+                  \<comment> \<open>Edge to new node. Append to path\<close>
                   RETURN (None,gpush_impl v s)
                 } else do {
-                  (* Edge to done node. Skip *)
+                  \<comment> \<open>Edge to done node. Skip\<close>
                   RETURN (None,s)
                 }
               }
             | None \<Rightarrow> do {
-                (* No more outgoing edges from current node on path *)
+                \<comment> \<open>No more outgoing edges from current node on path\<close>
                 s\<leftarrow>gpop_impl s;
                 RETURN (None,s)
               }

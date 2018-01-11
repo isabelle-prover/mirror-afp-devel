@@ -2668,7 +2668,7 @@ lemma
     done
   done
 
-definition "solve_poincare_fas n = map floatarith.Var [0..<D] @ concat (map (\<lambda>i (* row *). map (\<lambda>j (* column *).
+definition "solve_poincare_fas n = map floatarith.Var [0..<D] @ concat (map (\<lambda>i \<comment> \<open>(row)\<close>. map (\<lambda>j \<comment> \<open>(column)\<close>.
     (if i \<noteq> n then Var (D + i * D + j) - (Var(D + n * D + j) * (ode_e ! i) / (ode_e ! n))
     else 0)
   ) [0..<D]) [0..<D])"
@@ -4132,8 +4132,8 @@ definition "do_intersection guards ivl sctn (X::'n::enum eucl1 set) (h::real) =
     GUARDS \<leftarrow> unintersect_coll guards;
     a \<leftarrow> sbelow_sctn (op_image_fst X) sctn;
     b \<leftarrow> disjoints_spec (mk_coll (op_image_fst X)) GUARDS;
-    let inside = sp \<and> a \<and> b; (* this is a bit of a hack: if the ivl is not subset of the plane,
-      then do not do intersections*)
+    let inside = sp \<and> a \<and> b; \<comment> \<open>this is a bit of a hack: if the \<open>ivl\<close> is not subset of the plane,\<close>
+      \<comment> \<open>then do not do intersections\<close>
     (X, T, PDPS, PDPS2, CXS, intersects, inside) \<leftarrow>
       WHILE\<^bsup>do_intersection_invar guards GUARDS ivl sctn X\<^esup>
       (\<lambda>(X, T, PDPS, PDPS2, CXS, intersects, inside). intersects \<and> inside)
@@ -7048,10 +7048,10 @@ lemma resolve_ivlplanes[le]:
     done
 
 
-definition "poincare_onto ro (* options*)
-                          symstart trap (* symbolic start and trap *)
-                          (guards::'n::enum rvec set) (* avoiding guards *)
-                          (ivlplanes::'n::enum rvec set) (* target sections *)
+definition "poincare_onto ro \<comment> \<open>options\<close>
+                          symstart trap \<comment> \<open>symbolic start and trap\<close>
+                          (guards::'n::enum rvec set) \<comment> \<open>avoiding guards\<close>
+                          (ivlplanes::'n::enum rvec set) \<comment> \<open>target sections\<close>
                           (XS0::'n eucl1 set)
                           (CXS0::'n rvec set)
      =
@@ -7199,9 +7199,9 @@ lemma empty_symstart_impl[autoref_rules]:
   using mk_coll[unfolded autoref_tag_defs, OF sv_appr1e_rel[OF sv_appr1_rel], param_fo]
   by (auto intro!: nres_relI simp:)
 
-definition "poincare_onto_empty ro (* options*)
-                          (guards::'n::enum rvec set) (* avoiding guards *)
-                          (ivlplanes::'n::enum rvec set) (* target sections *)
+definition "poincare_onto_empty ro \<comment> \<open>options\<close>
+                          (guards::'n::enum rvec set) \<comment> \<open>avoiding guards\<close>
+                          (ivlplanes::'n::enum rvec set) \<comment> \<open>target sections\<close>
                           (XS0::'n eucl1 set) =
   poincare_onto ro (OP empty_symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel)
     empty_trap guards ivlplanes XS0"
@@ -7259,10 +7259,10 @@ concrete_definition poincare_onto_empty_impl for guardsi XSi CXSi uses poincare_
 lemmas [autoref_rules] = poincare_onto_empty_impl.refine
 
 
-definition "poincare_onto2 ro (* options*)
-                          symstart trap (* symbolic start and trap *)
-                          (guards::'n::enum rvec set) (* avoiding guards *)
-                          (ivlplanes::'n::enum rvec set) (* target sections *)
+definition "poincare_onto2 ro \<comment> \<open>options\<close>
+                          symstart trap \<comment> \<open>symbolic start and trap\<close>
+                          (guards::'n::enum rvec set) \<comment> \<open>avoiding guards\<close>
+                          (ivlplanes::'n::enum rvec set) \<comment> \<open>target sections\<close>
                           (XS0::'n eucl1 set) =
   do {
     (PS) \<leftarrow> (poincare_onto ro (symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel)
@@ -9082,10 +9082,10 @@ lemma
   done
 
 definition "poincare_onto_from interrupt trap
-                               S                      (* leaving this (half)space in the beginning *)
-                          (guards)                    (* avoiding guards *)
-                          (ivl::'n rvec set)          (* onto ivl *)
-                          sctn                        (* which is part of sctn *)
+                               S                      \<comment> \<open>leaving this (half)space in the beginning\<close>
+                          (guards)                    \<comment> \<open>avoiding guards\<close>
+                          (ivl::'n rvec set)          \<comment> \<open>onto \<open>ivl\<close>\<close>
+                          sctn                        \<comment> \<open>which is part of \<open>sctn\<close>\<close>
                           ro
                           (XS0::'n::enum eucl1 set) =
   do {
@@ -9878,10 +9878,10 @@ lemma c0_info_of_appr'I:
 lemmas rel_prod_br = br_rel_prod
 
 definition "poincare_onto_from_in_ivl interrupt trap
-                               S                      (* leaving this (half)space in the beginning *)
-                          (guards)                    (* avoiding guards *)
-                          (ivl::'n rvec set)          (* onto ivl *)
-                          sctn                        (* which is part of sctn *)
+                               S                      \<comment> \<open>leaving this (half)space in the beginning\<close>
+                          (guards)                    \<comment> \<open>avoiding guards\<close>
+                          (ivl::'n rvec set)          \<comment> \<open>onto \<open>ivl\<close>\<close>
+                          sctn                        \<comment> \<open>which is part of \<open>sctn\<close>\<close>
                           ro
                           (XS0::'n::enum eucl1 set)
                           P dP =

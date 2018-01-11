@@ -56,21 +56,21 @@ by(cases c)(simp_all add: SINVAR_BLPtrusted.default_node_properties_def)
 lemma "all_security_requirements_fulfilled (new_meta_system_boundary C description) G \<longleftrightarrow>
        (\<forall>(v\<^sub>1, v\<^sub>2) \<in> set (edgesL G). case ((map_of C) v\<^sub>1, (map_of C) v\<^sub>2)
           of 
-          (*No restrictions outside of the component*)
+          \<comment> \<open>No restrictions outside of the component\<close>
              (None, None) \<Rightarrow> True
 
-          (*no restrictions inside the component*)
+          \<comment> \<open>no restrictions inside the component\<close>
           |  (Some c1, Some c2) \<Rightarrow> True
 
-          (*System Boundaries Input*)
+          \<comment> \<open>System Boundaries Input\<close>
           |  (None, Some SystemBoundaryInputOutput) \<Rightarrow> True
           |  (None, Some SystemBoundaryInput) \<Rightarrow> True
 
-          (*System Boundaries Output*)
+          \<comment> \<open>System Boundaries Output\<close>
           |  (Some SystemBoundaryOutput, None) \<Rightarrow> True
           |  (Some SystemBoundaryInputOutput, None) \<Rightarrow> True
 
-          (*everything else is prohibited*)
+          \<comment> \<open>everything else is prohibited\<close>
           |  _ \<Rightarrow> False
        )"
 apply(simp)

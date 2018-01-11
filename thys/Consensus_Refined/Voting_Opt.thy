@@ -37,11 +37,11 @@ lemma opt_no_defection_def:
                     
 definition flv_round :: "round \<Rightarrow> (process, val)map \<Rightarrow>  (process, val)map \<Rightarrow> (opt_v_state \<times> opt_v_state) set" where
   "flv_round r r_votes r_decisions = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s
      \<and> opt_no_defection s r_votes
      \<and> d_guard r_decisions r_votes
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        next_round := Suc r
        , last_vote := last_vote s ++ r_votes

@@ -14,24 +14,24 @@ case !Graphviz.open_viewer of
 subsection\<open>Architecture Definition\<close>
 
 definition policy :: "string list_graph" where
-  "policy \<equiv> \<lparr> nodesL = [ (*SmartPhone A:*)
+  "policy \<equiv> \<lparr> nodesL = [ \<comment> \<open>SmartPhone A:\<close>
                          ''Sensors_A'',
                          ''Encryption_A'',
                          ''Client_A_out'',
 
-                         (*SmartPhone B:*)
+                         \<comment> \<open>SmartPhone B:\<close>
                          ''Sensors_B'',
                          ''Encryption_B'',
                          ''Client_B_out'',
 
-                         (*SmartPhone C:*)
+                         \<comment> \<open>SmartPhone C:\<close>
                          ''Sensors_C'',
                          ''Encryption_C'',
                          ''Client_C_out'',
 
                          ''UploadDroid'',
 
-                         (*CollectDroid:*)
+                         \<comment> \<open>CollectDroid:\<close>
                          ''C3PO_in'',
                          ''C3PO_Dec_A'',
                          ''C3PO_Dec_B'',

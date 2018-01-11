@@ -19,7 +19,7 @@ definition
   "g_comp c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m in
-    (* We have key = <n, x>; n = <?, m>; m = <m1, m2>. *)
+    \<comment> \<open>We have \<open>key = <n, x>; n = <?, m>; m = <m1, m2>\<close>.\<close>
     if c_assoc_have_key c_ls (c_pair m2 x) = 0 then
       (let y = c_assoc_value c_ls (c_pair m2 x) in
        if c_assoc_have_key c_ls (c_pair m1 y) = 0 then
@@ -35,7 +35,7 @@ definition
   "g_pair c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m in
-    (* We have key = <n, x>; n = <?, m>; m = <m1, m2>. *)
+    \<comment> \<open>We have \<open>key = <n, x>; n = <?, m>; m = <m1, m2>\<close>.\<close>
     if c_assoc_have_key c_ls (c_pair m1 x) = 0 then
       (let y1 = c_assoc_value c_ls (c_pair m1 x) in
        if c_assoc_have_key c_ls (c_pair m2 x) = 0 then
@@ -51,7 +51,7 @@ definition
   "g_rec c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m; y1 = c_fst x; x1 = c_snd x in
-    (* We have key = <n, x>; n = <?, m>; m = <m1, m2>; x = <y1, x1>. *)
+    \<comment> \<open>We have \<open>key = <n, x>; n = <?, m>; m = <m1, m2>; x = <y1, x1>\<close>.\<close>
     if y1 = 0 then
     (
       if c_assoc_have_key c_ls (c_pair m1 x1) = 0 then

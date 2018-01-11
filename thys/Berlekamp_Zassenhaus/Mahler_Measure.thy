@@ -769,7 +769,7 @@ function mahler_approximation_main :: "nat \<Rightarrow> int \<Rightarrow> int p
   "mahler_approximation_main dd c g mm k kk = (let mmm = mahler_landau_graeffe_approximation kk dd g;
      new_mm = (if k = 0 then mmm else min mm mmm)
      in (if k \<ge> bnd then new_mm else 
-     (* abort after \<open>bnd\<close> iterations of Graeffe transformation *)
+     \<comment> \<open>abort after \<open>bnd\<close> iterations of Graeffe transformation\<close>
       mahler_approximation_main (dd * dd) c (graeffe_one_step c g) new_mm (Suc k) (2 * kk)))" 
   by pat_completeness auto
 

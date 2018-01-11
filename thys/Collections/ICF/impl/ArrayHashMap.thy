@@ -99,8 +99,7 @@ definition [icf_rec_def]: "ahm_basic_ops \<equiv> \<lparr>
   bmap_op_empty = ahm_empty,
   bmap_op_lookup = ahm_lookup,
   bmap_op_update = ahm_update,
-  bmap_op_update_dj = ahm_update, (* TODO: We could use a more efficient 
-    bucket update here *)
+  bmap_op_update_dj = ahm_update, \<comment> \<open>TODO: We could use a more efficient bucket update here\<close>
   bmap_op_delete = ahm_delete,
   bmap_op_list_it = ahm_iteratei
 \<rparr>"

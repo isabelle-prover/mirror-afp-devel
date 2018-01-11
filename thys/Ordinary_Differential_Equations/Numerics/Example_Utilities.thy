@@ -60,10 +60,10 @@ lemma \<comment>\<open>for illustration\<close>
   by (simp add: varvec_fas_def mvmult_fa_def eval_nat_numeral)
 
 definition "vareq_projections
-    n  (* dimension *)
-    ps (* pairs of coordinates to project onto *)
-    ds (* partial derivatives w.r.t. which variables *)
-    cs (* (color) coding for partial derivatives *)
+    n  \<comment> \<open>dimension\<close>
+    ps \<comment> \<open>pairs of coordinates to project onto\<close>
+    ds \<comment> \<open>partial derivatives w.r.t. which variables\<close>
+    cs \<comment> \<open>(color) coding for partial derivatives\<close>
   =
   [(i + n * (x + 1)::nat, i + n * (y + 1), c). (i, c) \<leftarrow> zip ds cs, (x, y) \<leftarrow> ps]"
 
@@ -78,14 +78,14 @@ definition "varvec_aforms_vec D X s = varvec_aforms_line D (map (\<lambda>x. (fs
 
 definition
   "shows_aforms_vareq
-      n                (* dimension *)
-      ps               (* pairs of coordinates to project onto *)
-      ds               (* partial derivatives w.r.t. which variables *)
-      csl              (* color coding for partial derivatives ('arrow' heads) *)
-      csh              (* color coding for partial derivatives (lines) *)
-      s                (* scale vectors for partial derivatives *)
-      (no_str::string) (* default string if no C1 info is present *)
-      X                (* affine form with C1 info *)
+      n                \<comment> \<open>dimension\<close>
+      ps               \<comment> \<open>pairs of coordinates to project onto\<close>
+      ds               \<comment> \<open>partial derivatives w.r.t. which variables\<close>
+      csl              \<comment> \<open>color coding for partial derivatives ('arrow' heads)\<close>
+      csh              \<comment> \<open>color coding for partial derivatives (lines)\<close>
+      s                \<comment> \<open>scale vectors for partial derivatives\<close>
+      (no_str::string) \<comment> \<open>default string if no C1 info is present\<close>
+      X                \<comment> \<open>affine form with C1 info\<close>
    =
     (case (varvec_aforms_head n X s, varvec_aforms_vec n X s) of (Some X, Some Y) \<Rightarrow>
         shows_sep (\<lambda>(x, y, c). shows_segments_of_aform x y X c) shows_nl (vareq_projections n ps ds csl) o shows_nl

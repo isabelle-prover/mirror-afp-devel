@@ -701,9 +701,9 @@ text\<open>Examples\<close>
   \<close>
   lemma "no_spoofing TYPE('pkt_ext)
       [Iface ''eth0'' \<mapsto> [(ipv4addr_of_dotdecimal (192,168,0,0), 24)]]
-      [Rule (MatchAnd (Match (IIface (Iface ''wlan+''))) (Match (Extra ''no idea what this is''))) action.Accept, (*not interesting for spoofing*)
-       Rule (MatchNot (Match (IIface (Iface ''eth0+'')))) action.Accept, (*not interesting for spoofing*)
-       Rule (MatchAnd (MatchNot (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (192,168,0,0)) 24)))) (Match (IIface (Iface ''eth0'')))) action.Drop, (*spoof-protect here*)
+      [Rule (MatchAnd (Match (IIface (Iface ''wlan+''))) (Match (Extra ''no idea what this is''))) action.Accept, \<comment> \<open>not interesting for spoofing\<close>
+       Rule (MatchNot (Match (IIface (Iface ''eth0+'')))) action.Accept, \<comment> \<open>not interesting for spoofing\<close>
+       Rule (MatchAnd (MatchNot (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (192,168,0,0)) 24)))) (Match (IIface (Iface ''eth0'')))) action.Drop, \<comment> \<open>spoof-protect here\<close>
        Rule MatchAny action.Accept]
           "
     apply(rule no_spoofing_iface)
@@ -717,7 +717,7 @@ text\<open>Examples\<close>
 \<close>
   lemma "\<not> no_spoofing TYPE('pkt_ext)
           [Iface ''eth0'' \<mapsto> [(ipv4addr_of_dotdecimal (192,168,0,0), 24)]]
-          [Rule (MatchNot (Match (IIface (Iface ''wlan+'')))) action.Accept, (*accidently allow everything for eth0*)
+          [Rule (MatchNot (Match (IIface (Iface ''wlan+'')))) action.Accept, \<comment> \<open>accidently allow everything for eth0\<close>
            Rule (MatchAnd (MatchNot (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (192,168,0,0)) 24)))) (Match (IIface (Iface ''eth0'')))) action.Drop,
            Rule MatchAny action.Accept]
           "
@@ -739,7 +739,7 @@ text\<open>Examples\<close>
    lemma "\<not> no_spoofing_iface 
           (Iface ''eth0'') 
           [Iface ''eth0'' \<mapsto> [(ipv4addr_of_dotdecimal (192,168,0,0), 24)]]
-          [Rule (MatchNot (Match (IIface (Iface ''wlan+'')))) action.Accept, (*accidently allow everything for eth0*)
+          [Rule (MatchNot (Match (IIface (Iface ''wlan+'')))) action.Accept, \<comment> \<open>accidently allow everything for eth0\<close>
            Rule (MatchAnd (MatchNot (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (192,168,0,0)) 24)))) (Match (IIface (Iface ''eth0'')))) action.Drop,
            Rule MatchAny action.Accept]
           " by eval

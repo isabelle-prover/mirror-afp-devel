@@ -20,13 +20,13 @@ definition opt_obs_safe where
 
 definition olv_round where
   "olv_round r S v r_decisions Ob \<equiv> {(s, s').
-    (* guards *)
+    \<comment> \<open>guards\<close>
     r = next_round s
     \<and> (S \<noteq> {} \<longrightarrow> opt_obs_safe (last_obs s) v)
     \<and> (S \<in> Quorum \<longrightarrow> Ob = UNIV)
     \<and> d_guard r_decisions (const_map v S)
     \<and> (Ob \<noteq> {} \<longrightarrow> S \<noteq> {})
-    \<and> (* actions *)
+    \<and> \<comment> \<open>actions\<close>
     s' = s\<lparr> 
      next_round := Suc r
      , decisions := decisions s ++ r_decisions

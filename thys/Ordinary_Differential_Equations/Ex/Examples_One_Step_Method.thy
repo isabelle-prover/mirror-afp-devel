@@ -133,7 +133,7 @@ concrete_definition laub_fas uses laub_fas
 
 interpretation ll: ode_interpretation "Less (Var 4) (Num 50)"
   "{(t, x1, x2, x3, x4, x5, x6, x7).
-      x4 < 50 (* modify for safety requirements of ARCH-competition *)}"
+      x4 < 50 \<comment> \<open>modify for safety requirements of ARCH-competition\<close>}"
   laub_fas
   "\<lambda>(t, x1, x2, x3, x4, x5, x6, x7).
     (1,
@@ -210,7 +210,7 @@ lemma lorenz_c0: "t \<in> point_ivl 1.558652210 \<longrightarrow> (x, y, z) \<in
   by (tactic \<open>ode_bnds_tac @{thm lorenz_fas_def} 30 35 9 16
     [(0, 1, "0x7f0000"), (0, 2, "0x00007f")] (* "out_lorenz_c0.out" *) "" @{context} 1\<close>)
 
-lemma lorenz_c1: "t \<in> point_ivl (FloatR 52299689 (- 25) (* for C1-info, the target time needs to be a float *)) \<longrightarrow>
+lemma lorenz_c1: "t \<in> point_ivl (FloatR 52299689 (- 25) \<comment> \<open>for C1-info, the target time needs to be a float\<close>) \<longrightarrow>
   (x, y, z) \<in> point_ivl ( -2.147367631, 2.078048211, 27) \<longrightarrow>
    t \<in> lorenz.existence_ivl0 (x, y, z) \<and>
    lorenz.flow0 (x, y, z) t \<in> {(-2.158, 2.064, 26.98) .. (-2.137, 2.092, 27.02)} \<and>
@@ -506,24 +506,24 @@ abbreviation "\<tau>\<^sub>\<theta> x \<equiv> - (x ! 8 - u x 3) - x!11"
 abbreviation "\<tau>\<^sub>\<psi> x \<equiv> 0"
 
 schematic_goal quadrot_fas:
-  "[(* t *) 1,
-    (* x\<^sub>1  *) cos (x!8) * cos (x!9)* x ! 4 + (sin(x!7) * sin(x!8) * cos (x!9) - cos(x!7) * sin(x!9))*x!5
+  "[\<comment> \<open>\<open>t:\<close>\<close> 1,
+    \<comment> \<open>\<open>x\<^sub>1:\<close>\<close> cos (x!8) * cos (x!9)* x ! 4 + (sin(x!7) * sin(x!8) * cos (x!9) - cos(x!7) * sin(x!9))*x!5
               + (cos(x!7) * sin(x!8) * cos(x!9) + sin(x!7) * sin(x!9)) * x!6,
-    (* x\<^sub>2  *) cos(x!8) * sin (x!9) * x!4 + (sin(x!7) * sin (x!8) * sin(x!9) + cos(x!7) * cos (x!9))*x!5
+    \<comment> \<open>\<open>x\<^sub>2:\<close>\<close> cos(x!8) * sin (x!9) * x!4 + (sin(x!7) * sin (x!8) * sin(x!9) + cos(x!7) * cos (x!9))*x!5
               + (cos(x!7) * sin(x!8) * sin(x!9) - sin ( x!7) * cos (x!9)) * x!6,
-    (* x\<^sub>3  *) sin(x!8) * x!4 - sin(x!7) * cos (x!8) * x!5 - cos(x!7) *cos(x!8)*x!6,
-    (* x\<^sub>4  *) x!12 * x!5- x!11*x!6 - g * sin(x!8),
-    (* x\<^sub>5  *) x!10 * x!6 - x!12*x!4 + g * cos(x!8 * sin(x!7)),
-    (* x\<^sub>6  *) x!11 * x!4 - x!10*x!5 + g * cos(x!8 * cos(x!7)) - F x / m,
-    (* x\<^sub>7  *) x!10 + (sin(x!7)*tan(x!8))*x!11 + (cos(x!7)*tan(x!8))*x!12,
-    (* x\<^sub>8  *) cos(x!7) * x!11 - sin(x!7)*x!12,
-    (* x\<^sub>9  *) sin(x!7) / cos(x!8) * x!11 + cos(x!7)/cos(x!8)*x!12,
-    (* x\<^sub>1\<^sub>0 *) (J\<^sub>y - J\<^sub>z)/J\<^sub>x*x!11*x!12 + \<tau>\<^sub>\<phi> x / J\<^sub>x,
-    (* x\<^sub>1\<^sub>1 *) (J\<^sub>z - J\<^sub>x)/J\<^sub>y*x!10*x!12 + \<tau>\<^sub>\<theta> x / J\<^sub>y,
-    (* x\<^sub>1\<^sub>2 *) (J\<^sub>x - J\<^sub>y)/J\<^sub>z*x!10*x!11 + \<tau>\<^sub>\<psi> x / J\<^sub>z,
-    (* u\<^sub>1  *) 0,
-    (* u\<^sub>2  *) 0,
-    (* u\<^sub>3  *) 0]
+    \<comment> \<open>\<open>x\<^sub>3:\<close>\<close> sin(x!8) * x!4 - sin(x!7) * cos (x!8) * x!5 - cos(x!7) *cos(x!8)*x!6,
+    \<comment> \<open>\<open>x\<^sub>4:\<close>\<close> x!12 * x!5- x!11*x!6 - g * sin(x!8),
+    \<comment> \<open>\<open>x\<^sub>5:\<close>\<close> x!10 * x!6 - x!12*x!4 + g * cos(x!8 * sin(x!7)),
+    \<comment> \<open>\<open>x\<^sub>6:\<close>\<close> x!11 * x!4 - x!10*x!5 + g * cos(x!8 * cos(x!7)) - F x / m,
+    \<comment> \<open>\<open>x\<^sub>7:\<close>\<close> x!10 + (sin(x!7)*tan(x!8))*x!11 + (cos(x!7)*tan(x!8))*x!12,
+    \<comment> \<open>\<open>x\<^sub>8:\<close>\<close> cos(x!7) * x!11 - sin(x!7)*x!12,
+    \<comment> \<open>\<open>x\<^sub>9:\<close>\<close> sin(x!7) / cos(x!8) * x!11 + cos(x!7)/cos(x!8)*x!12,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>0:\<close>\<close> (J\<^sub>y - J\<^sub>z)/J\<^sub>x*x!11*x!12 + \<tau>\<^sub>\<phi> x / J\<^sub>x,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>1:\<close>\<close> (J\<^sub>z - J\<^sub>x)/J\<^sub>y*x!10*x!12 + \<tau>\<^sub>\<theta> x / J\<^sub>y,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>2:\<close>\<close> (J\<^sub>x - J\<^sub>y)/J\<^sub>z*x!10*x!11 + \<tau>\<^sub>\<psi> x / J\<^sub>z,
+    \<comment> \<open>\<open>u\<^sub>1:\<close>\<close> 0,
+    \<comment> \<open>\<open>u\<^sub>2:\<close>\<close> 0,
+    \<comment> \<open>\<open>u\<^sub>3:\<close>\<close> 0]
   = interpret_floatariths ?fas x"
   by (reify_floatariths)
 concrete_definition quadrot_fas uses quadrot_fas
@@ -565,23 +565,23 @@ interpretation quadrot: ode_interpretation "Conj (Less (- Half Pi\<^sub>e) (Var 
     x3 < 89/64 \<and> x8 \<in> {-pi/2<..<pi/2}}"
   quadrot_fas
   "\<lambda>(t::real, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, u1, u2, u3). (1,
-    (* x\<^sub>1  *) cos (x8) * cos (x9)* x4 + (sin(x7) * sin(x8) * cos (x9) - cos(x7) * sin(x9))*x5
+    \<comment> \<open>\<open>x\<^sub>1\<close>:\<close> cos (x8) * cos (x9)* x4 + (sin(x7) * sin(x8) * cos (x9) - cos(x7) * sin(x9))*x5
               + (cos(x7) * sin(x8) * cos(x9) + sin(x7) * sin(x9)) * x6,
-    (* x\<^sub>2  *) cos(x8) * sin (x9) * x4 + (sin(x7) * sin (x8) * sin(x9) + cos(x7) * cos (x9))*x5
+    \<comment> \<open>\<open>x\<^sub>2\<close>:\<close> cos(x8) * sin (x9) * x4 + (sin(x7) * sin (x8) * sin(x9) + cos(x7) * cos (x9))*x5
               + (cos(x7) * sin(x8) * sin(x9) - sin ( x7) * cos (x9)) * x6,
-    (* x\<^sub>3  *) sin(x8) * x4 - sin(x7) * cos (x8) * x5 - cos(x7) *cos(x8)*x6,
-    (* x\<^sub>4  *) x12 * x5- x11*x6 - g * sin(x8),
-    (* x\<^sub>5  *) x10 * x6 - x12*x4 + g * cos(x8 * sin(x7)),
-    (* x\<^sub>6  *) x11 * x4 - x10*x5 + g * cos(x8 * cos(x7)) - Fr x3 x6 u1 / m,
-    (* x\<^sub>7  *) x10 + (sin(x7)*tan(x8))*x11 + (cos(x7)*tan(x8))*x12,
-    (* x\<^sub>8  *) cos(x7) * x11 - sin(x7)*x12,
-    (* x\<^sub>9  *) sin(x7) / cos(x8) * x11 + cos(x7)/cos(x8)*x12,
-    (* x\<^sub>1\<^sub>0 *) (J\<^sub>y - J\<^sub>z)/J\<^sub>x*x11*x12 + (- (x7 - u2) - x10) / J\<^sub>x,
-    (* x\<^sub>1\<^sub>1 *) (J\<^sub>z - J\<^sub>x)/J\<^sub>y*x10*x12 + (- (x8 - u3) - x11) / J\<^sub>y,
-    (* x\<^sub>1\<^sub>2 *) (J\<^sub>x - J\<^sub>y)/J\<^sub>z*x10*x11 + 0 / J\<^sub>z,
-    (* u\<^sub>1  *) 0::real,
-    (* u\<^sub>2  *) 0::real,
-    (* u\<^sub>3  *) 0::real)" "sixteen::16"
+    \<comment> \<open>\<open>x\<^sub>3\<close>:\<close> sin(x8) * x4 - sin(x7) * cos (x8) * x5 - cos(x7) *cos(x8)*x6,
+    \<comment> \<open>\<open>x\<^sub>4\<close>:\<close> x12 * x5- x11*x6 - g * sin(x8),
+    \<comment> \<open>\<open>x\<^sub>5\<close>:\<close> x10 * x6 - x12*x4 + g * cos(x8 * sin(x7)),
+    \<comment> \<open>\<open>x\<^sub>6\<close>:\<close> x11 * x4 - x10*x5 + g * cos(x8 * cos(x7)) - Fr x3 x6 u1 / m,
+    \<comment> \<open>\<open>x\<^sub>7\<close>:\<close> x10 + (sin(x7)*tan(x8))*x11 + (cos(x7)*tan(x8))*x12,
+    \<comment> \<open>\<open>x\<^sub>8\<close>:\<close> cos(x7) * x11 - sin(x7)*x12,
+    \<comment> \<open>\<open>x\<^sub>9\<close>:\<close> sin(x7) / cos(x8) * x11 + cos(x7)/cos(x8)*x12,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>0\<close>:\<close> (J\<^sub>y - J\<^sub>z)/J\<^sub>x*x11*x12 + (- (x7 - u2) - x10) / J\<^sub>x,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>1\<close>:\<close> (J\<^sub>z - J\<^sub>x)/J\<^sub>y*x10*x12 + (- (x8 - u3) - x11) / J\<^sub>y,
+    \<comment> \<open>\<open>x\<^sub>1\<^sub>2\<close>:\<close> (J\<^sub>x - J\<^sub>y)/J\<^sub>z*x10*x11 + 0 / J\<^sub>z,
+    \<comment> \<open>\<open>u\<^sub>1\<close>:\<close> 0::real,
+    \<comment> \<open>\<open>u\<^sub>2\<close>:\<close> 0::real,
+    \<comment> \<open>\<open>u\<^sub>3\<close>:\<close> 0::real)" "sixteen::16"
   apply standard
   subgoal by simp
   subgoal

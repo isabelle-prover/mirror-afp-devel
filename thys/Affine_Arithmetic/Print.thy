@@ -70,7 +70,7 @@ subsubsection \<open>Version that should be easy to prove correct, but slow!\<cl
 definition "float_to_float10_approximation f = the
   (do {
     let (x, y) = (mantissa f * 1024, exponent f - 10);
-    let p = nat (bitlen (abs x) + bitlen (abs y) + 80);(* FIXME: are there guarantees? *)
+    let p = nat (bitlen (abs x) + bitlen (abs y) + 80); \<comment> \<open>FIXME: are there guarantees?\<close>
     y_log \<leftarrow> approx p (Approximation.Mult (Approximation.Num (of_int y))
       ((Approximation.Mult (Approximation.Ln (Approximation.Num 2))
         (Approximation.Inverse (Approximation.Ln (Approximation.Num 10)))))) [];

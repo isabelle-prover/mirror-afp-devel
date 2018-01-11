@@ -94,7 +94,7 @@ fun simplify_consts where
   if isstop S then \<bottom> else \<^bold>\<not> S)" |
 "simplify_consts (And F G) = (let S = simplify_consts F; T = simplify_consts G in (
   if S = \<bottom> then \<bottom> else
-  if isstop S then T (* not \<top>, T *) else
+  if isstop S then T \<comment> \<open>not \<open>\<top>\<close>, \<open>T\<close>\<close> else
   if T = \<bottom> then \<bottom> else
   if isstop T then S else
   if S = T then S else

@@ -221,7 +221,7 @@ subsection\<open>@{term match_list}\<close>
               | Reject \<Rightarrow> Decision FinalDeny
               | Log \<Rightarrow> Undecided
               | Empty \<Rightarrow> Undecided
-              (*unhandled cases*)
+              \<comment> \<open>unhandled cases\<close>
               )"
     apply(induction ms)
      apply(simp)

@@ -1127,10 +1127,10 @@ begin
   apply fastforce
   done
   
-  corollary semantics_bigstep_defined: "finite (calls_chain \<Gamma>) \<Longrightarrow> wf (calls_chain \<Gamma>) \<Longrightarrow> (*call relation finite and terminating*)
-    \<forall>rsg \<in> ran \<Gamma> \<union> {rs}. wf_chain \<Gamma> rsg \<Longrightarrow> (*All calls to defined chains*)
-    \<forall>rsg \<in> ran \<Gamma> \<union> {rs}. \<forall> r \<in> set rsg. (\<forall>x. get_action r \<noteq> Goto x) \<and> get_action r \<noteq> Unknown \<Longrightarrow> (*no bad actions*)
-    \<forall> r \<in> set rs. get_action r \<noteq> Return (*no toplevel return*) \<Longrightarrow>
+  corollary semantics_bigstep_defined: "finite (calls_chain \<Gamma>) \<Longrightarrow> wf (calls_chain \<Gamma>) \<Longrightarrow> \<comment> \<open>call relation finite and terminating\<close>
+    \<forall>rsg \<in> ran \<Gamma> \<union> {rs}. wf_chain \<Gamma> rsg \<Longrightarrow> \<comment> \<open>All calls to defined chains\<close>
+    \<forall>rsg \<in> ran \<Gamma> \<union> {rs}. \<forall> r \<in> set rsg. (\<forall>x. get_action r \<noteq> Goto x) \<and> get_action r \<noteq> Unknown \<Longrightarrow> \<comment> \<open>no bad actions\<close>
+    \<forall> r \<in> set rs. get_action r \<noteq> Return \<comment> \<open>no toplevel return\<close> \<Longrightarrow>
     \<exists>t. \<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow> t"
   apply(drule(1) wf_called_by_chain)
   apply(thin_tac "wf (calls_chain \<Gamma>)")

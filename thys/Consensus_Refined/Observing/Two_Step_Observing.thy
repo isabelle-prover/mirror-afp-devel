@@ -19,11 +19,11 @@ definition tso_round0
   :: "round \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> (tso_state \<times> tso_state)set"
   where
   "tso_round0 r S v \<equiv> {(s, s').
-    (* guards *)
+    \<comment> \<open>guards\<close>
     r = next_round s
     \<and> two_step r = 0
     \<and> (S \<noteq> {} \<longrightarrow> opt_obs_safe (last_obs s) v)
-    (* actions *)
+    \<comment> \<open>actions\<close>
     \<and> s' = s\<lparr>
       next_round := Suc r
       , r_votes := const_map v S
@@ -39,12 +39,12 @@ definition tso_round1
   :: "round \<Rightarrow> (process, val)map \<Rightarrow> (process, val)map \<Rightarrow> (tso_state \<times> tso_state)set" 
   where
   "tso_round1 r r_decisions r_obs \<equiv> {(s, s').
-    (* guards *)
+    \<comment> \<open>guards\<close>
     r = next_round s
     \<and> two_step r = 1
     \<and> d_guard r_decisions (r_votes s)
     \<and> obs_guard r_obs (r_votes s)
-    (* actions *)
+    \<comment> \<open>actions\<close>
     \<and> s' = s\<lparr>
       next_round := Suc r
       , decisions := decisions s ++ r_decisions

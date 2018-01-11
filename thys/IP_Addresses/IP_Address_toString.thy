@@ -39,8 +39,8 @@ subsection\<open>IPv6 Pretty Printing\<close>
   definition ipv6addr_toString :: "ipv6addr \<Rightarrow> string" where
     "ipv6addr_toString ip = (
       let partslist = ipv6_preferred_to_compressed (int_to_ipv6preferred ip);
-          (*add empty lists to the beginning and end if omission occurs at start/end
-            to join over ':' properly *)
+          \<comment> \<open>add empty lists to the beginning and end if omission occurs at start/end\<close>
+          \<comment> \<open>to join over \<^verbatim>\<open>:\<close> properly\<close>
           fix_start = (\<lambda>ps. case ps of None#_ \<Rightarrow> None#ps | _ \<Rightarrow> ps);
           fix_end = (\<lambda>ps. case rev ps of None#_ \<Rightarrow> ps@[None] | _ \<Rightarrow> ps)
       in list_separated_toString '':''

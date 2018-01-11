@@ -197,10 +197,10 @@ lemma cirules2[sep_heap_rules]:
 lemma litci_rule[sep_heap_rules]:
   "<bdd_relator rp s> litci v s <\<lambda>(r,s'). bdd_relator (insert (bf_lit v,r) rp) s'>"
   apply(unfold litci_def)
-  apply(subgoal_tac "\<And>t ab bb. (* introducing some vars\<dots> *)
+  apply(subgoal_tac \<open>\<And>t ab bb. \<comment> \<open>introducing some vars \dots\<close>
          <bdd_relator (insert (bf_False, ab) (insert (bf_True, t) rp)) bb * true> 
            ifci v t ab bb
-         <\<lambda>r. case r of (r, x) \<Rightarrow> bdd_relator (insert (bf_lit v, r) rp) x>")
+         <\<lambda>r. case r of (r, x) \<Rightarrow> bdd_relator (insert (bf_lit v, r) rp) x>\<close>)
    apply(sep_auto; fail)
   apply(rename_tac tc fc sc)
   apply(unfold bdd_relator_def[abs_def])

@@ -36,11 +36,11 @@ lemma berlekamp_hensel_main:
     and cop: "coprime (lead_coeff f) p" 
     and sf: "square_free_m f" 
     and berl: "finite_field_factorization_int p f = (c,fs)" 
-  shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
+  shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
     and "sort (map degree fs) = sort (map degree gs)"
-    and "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
-        poly_mod.irreducible\<^sub>d_m p g \<and> (* irreducibility even mod p *)
-        poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
+    and "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  \<comment> \<open>monic and normalized\<close>
+        poly_mod.irreducible\<^sub>d_m p g \<and> \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+        poly_mod.degree_m p g = degree g  \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   from res[unfolded berlekamp_hensel_def berl split] 
   have hen: "hensel_lifting p n f fs = gs" .
@@ -60,9 +60,9 @@ theorem berlekamp_hensel:
     and sf: "square_free_m f"
     and res: "berlekamp_hensel p n f = gs"
     and n: "n \<noteq> 0"
-  shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    and "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g"
-   (* normalized and irreducible\<^sub>d even mod p *)
+  shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
+    and "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g
+      \<comment> \<open>normalized and \<open>irreducible\<^sub>d\<close> even mod \<open>p\<close>\<close>"
 proof -
   obtain c fs where "finite_field_factorization_int p f = (c,fs)" by force
   from berlekamp_hensel_main[OF n res cop sf this]
@@ -496,8 +496,8 @@ theorem berlekamp_hensel_unique:
   and sf: "poly_mod.square_free_m p f"
   and res: "berlekamp_hensel p n f = gs"
   and n: "n \<noteq> 0"
-  shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" (* unique factorization mod p^n *)
-    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g"   (* normalized *)
+  shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs) \<comment> \<open>unique factorization mod \<open>p^n\<close>\<close>"
+    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g   \<comment> \<open>normalized\<close>"
 proof -
   let ?q = "p^n" 
   interpret q: poly_mod_2 ?q unfolding poly_mod_2_def using m1 n by simp
@@ -569,17 +569,17 @@ qed
 
 lemma hensel_lifting_unique:
   assumes n: "n \<noteq> 0" 
-  and res: "hensel_lifting p n f fs = gs"                        (* result of hensel is fact. gs *)
+  and res: "hensel_lifting p n f fs = gs"                        \<comment> \<open>result of hensel is fact. \<open>gs\<close>\<close>
   and cop: "coprime (lead_coeff f) p" 
   and sf: "poly_mod.square_free_m p f" 
-  and fact: "poly_mod.factorization_m p f (c, mset fs)"          (* input is fact. fs mod p *)
+  and fact: "poly_mod.factorization_m p f (c, mset fs)"          \<comment> \<open>input is fact. \<open>fs mod p\<close>\<close>
   and c: "c \<in> {0..<p}" 
   and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
-shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" (* unique factorization mod p^n *)
-    "sort (map degree fs) = sort (map degree gs)"                              (* degrees stay the same *)
-    "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-      poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
-      poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
+shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" \<comment> \<open>unique factorization mod \<open>p^n\<close>\<close>
+    "sort (map degree fs) = sort (map degree gs)"                       \<comment> \<open>degrees stay the same\<close>
+    "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    \<comment> \<open>monic and normalized\<close>
+      poly_mod.irreducible\<^sub>d_m p g \<and>                              \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+      poly_mod.degree_m p g = degree g   \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   note hensel = hensel_lifting[OF assms]
   show "sort (map degree fs) = sort (map degree gs)" 

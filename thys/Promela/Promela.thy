@@ -87,10 +87,10 @@ fun lookupVar :: "variable \<Rightarrow> integer option \<Rightarrow> integer" w
 primrec checkVarValue :: "varType \<Rightarrow> integer \<Rightarrow> integer" where
   "checkVarValue (VTBounded lRange hRange) val = (
      if val \<le> hRange \<and> val \<ge> lRange then val
-     else (* overflowing is well-defined and may actually be used (e.g. bool) *)
+     else \<comment> \<open>overflowing is well-defined and may actually be used (e.g. bool)\<close>
         if lRange = 0 \<and> val > 0 
         then val mod (hRange + 1)
-        else (* we do not want to implement C-semantics (ie type casts) *)
+        else \<comment> \<open>we do not want to implement C-semantics (ie type casts)\<close>
            abort ''Value overflow'' (\<lambda>_. lRange))"
 | "checkVarValue VTChan val = (
      if val < min_var_value \<or> val > max_var_value 
@@ -178,7 +178,7 @@ definition setVar'
  where
   "setVar' gl v idx val g p = (
      if gl then
-        if v = STR ''_'' then (g,p) (* '_' is a write-only scratch variable *) 
+        if v = STR ''_'' then (g,p) \<comment> \<open>\<open>''_''\<close> is a write-only scratch variable\<close>
         else case lm.lookup v (gState.vars g) of
                None \<Rightarrow> abortv ''Unknown global variable: '' v (\<lambda>_. (g,p))
              | Some x \<Rightarrow> (g\<lparr>gState.vars := lm.update v (editVar x idx val) 
@@ -831,26 +831,26 @@ where
                    Index x \<Rightarrow> x
                  | _ \<Rightarrow> abortv ''Process start is not index: '' name (\<lambda>_. 0) 
      in
-      (* sanity check *)
+      \<comment> \<open>sanity check\<close>
       if length args \<noteq> length argDecls 
       then abortv ''Signature mismatch: '' name (\<lambda>_. (g,emptyProc))
       else
         let
-          (* evaluate args (in the context of the calling process) *)
+          \<comment> \<open>evaluate args (in the context of the calling process)\<close>
           eArgs = map (exprArith g p) args;
         
-          (* replace the init part of argDecls *)
+          \<comment> \<open>replace the init part of \<open>argDecls\<close>\<close>
           argVars = map modProcArg (zip argDecls eArgs);
         
-          (* add _pid to vars *)
+          \<comment> \<open>add \<open>_pid\<close> to vars\<close>
           pidI = integer_of_nat pidN;
           argVars = (STR ''_pid'', Var (VTBounded 0 pidI) pidI)#argVars;
           argVars = lm.to_map argVars;
         
-          (* our new process *)
+          \<comment> \<open>our new process\<close>
           p = \<lparr> pid = pidN, vars = argVars, pc = start, channels = [], idx = sidx \<rparr>
         in
-          (* apply the declarations *)
+          \<comment> \<open>apply the declarations\<close>
           foldl (\<lambda>(g,p) d. mkVarChannel d (apsnd \<circ> pState.vars_update) g p) 
                 (g,p) 
                 decls)"
@@ -1139,12 +1139,10 @@ definition atomize :: "nat \<Rightarrow> nat \<Rightarrow> edge list \<Rightarro
   "atomize lp hp es = fold (\<lambda>e es. 
      let e' = case target e of
                  LabelJump _ None \<Rightarrow> 
-                    (* 
-                       Labels are checked again later on, when they 
-                       are going to be resolved. Hence it is safe to say 
-                       'atomic' here, especially as the later algorithm
-                       relies on targets in atomic blocks to be marked as such.
-                    *)
+                    \<comment> \<open>Labels are checked again later on, when they\<close>
+                    \<comment> \<open>are going to be resolved. Hence it is safe to say\<close>
+                    \<comment> \<open>\<open>atomic\<close> here, especially as the later algorithm\<close>
+                    \<comment> \<open>relies on targets in atomic blocks to be marked as such.\<close>
                     e\<lparr> atomic := InAtomic \<rparr>
                 | LabelJump _ (Some via) \<Rightarrow> 
                     if lp \<le> via \<and> hp \<ge> via then e\<lparr> atomic := Atomic \<rparr> 
@@ -1187,20 +1185,20 @@ where
   "stepToState (StepStmnt s None) data = stmntToState s data"
 | "stepToState (StepStmnt s (Some u)) (lbls, pri, pos, nxt, onxt, _) = (
      let
-        (* the 'unless' part *)
+        \<comment> \<open>the \<open>unless\<close> part\<close>
         (ues,_,lbls') = stmntToState u (lbls, pri, pos, nxt, onxt, True);
         u = last ues; ues = butlast ues;
         pos' = pos + length ues;
     
-        (* find minimal current priority *)
+        \<comment> \<open>find minimal current priority\<close>
         pri = min_prio u pri;
 
-        (* the guarded part -- 
-           priority is decreased, because there is now a new unless part with  
-           higher prio *)
+        \<comment> \<open>the guarded part --\<close>
+        \<comment> \<open>priority is decreased, because there is now a new unless part with\<close>
+        \<comment> \<open>higher prio\<close>
         (ses,spos,lbls'') = stmntToState s (lbls', pri - 1, pos', nxt, onxt, False);
  
-        (* add an edge to the unless part for each generated state *)
+        \<comment> \<open>add an edge to the unless part for each generated state\<close>
         ses = map (List.append u) ses
      in
         (ues@ses,spos,lbls''))"
@@ -1223,8 +1221,8 @@ where
      let 
          (es, pos', lbls) = stmntToState s (lbls, pri, pos, d);
          
-         (* We don't resolve goto-chains. If the labeled stmnt returns only a jump,
-            use this goto state. *)
+         \<comment> \<open>We don't resolve goto-chains. If the labeled stmnt returns only a jump,\<close>
+         \<comment> \<open>use this goto state.\<close>
          lpos = case pos' of Index p \<Rightarrow> p | _ \<Rightarrow> pos;
          lbls' = add_label l lbls lpos
      in
@@ -1232,20 +1230,18 @@ where
 
 | "stmntToState (StmntDo stepss) (lbls, pri, pos, nxt, onxt, inBlock) = (
     let
-       (*
-           construct the different branches
-          'nxt' in those branches points current pos (it is a loop after all)
-          'onxt' then is the current 'nxt' (needed for break, f.ex.)
-       *) 
+       \<comment> \<open>construct the different branches\<close>
+       \<comment> \<open>\<open>nxt\<close> in those branches points current pos (it is a loop after all)\<close>
+       \<comment> \<open>\<open>onxt\<close> then is the current \<open>nxt\<close> (needed for break, f.ex.)\<close>
        (_,_,lbls,es,is) = step_foldL stepToState stepss lbls pri 
                                      (pos+1) (Index pos) (Some nxt);
 
-       (* put the branch starting points ('is') into the array *)
+       \<comment> \<open>put the branch starting points (\<open>is\<close>) into the array\<close>
        es' = concat is # es
     in
       if inBlock then 
-           (* inside another DO or IF or UNLESS 
-              \<longrightarrow> append branches again, so they can be consumed *) 
+           \<comment> \<open>inside another DO or IF or UNLESS\<close>
+           \<comment> \<open>\<open>\<longrightarrow>\<close> append branches again, so they can be consumed\<close>
            (es' @ [concat is], Index pos, lbls)
       else 
           (es', Index pos, lbls)
@@ -1327,7 +1323,7 @@ primrec resolveLabels :: "edge list list \<Rightarrow> labels \<Rightarrow> edge
      | LabelJump l (Some via) \<Rightarrow> 
           let pos = resolveLabel l lbls in
             e\<lparr>target := Index pos,
-               (* NB: isAtomic instead of inAtomic, cf atomize() *) 
+               \<comment> \<open>NB: \<open>isAtomic\<close> instead of \<open>inAtomic\<close>, cf \<open>atomize()\<close>\<close>
                atomic := if isAtomic e then
                             if check_atomic pos \<and> check_atomic via then Atomic
                             else InAtomic
@@ -1629,7 +1625,7 @@ where
                g = if rem 
                    then gState.channels_update (\<lambda>cs. cs[ i := Channel cap ts qs']) g
                    else g
-                     (* messages are not removed -- so no need to update anything *)
+                     \<comment> \<open>messages are not removed -- so no need to update anything\<close>
              in (g,l)
       | HSChannel _ \<Rightarrow> 
              let (g,l) = evalRecvArgs rs (hsdata g) g l in
@@ -2342,31 +2338,29 @@ where
           E \<leftarrow> executable (states prog) g;
           if E = [] then 
             if handshake g \<noteq> 0 then
-              (* HS not possible -- remove current step *)
+              \<comment> \<open>HS not possible -- remove current step\<close>
               RETURN (ls.empty()) 
             else if exclusive g \<noteq> 0 then
-              (* Atomic blocks -- just return current state *)
+              \<comment> \<open>Atomic blocks -- just return current state\<close>
               RETURN (ls.sng (f g)) 
             else if \<not> timeout g then
-              (* Set timeout *)
+              \<comment> \<open>Set timeout\<close>
               D (g\<lparr>timeout := True\<rparr>)
             else 
-              (* If all else fails: stutter *)
+              \<comment> \<open>If all else fails: stutter\<close>
               RETURN (ls.sng (f (reset\<^sub>I g)))
           else
-             (* 
-              Setting the internal variables (exclusive, handshake, \<dots>) to 0 
-              is safe -- they are either set by the edges, or not thought 
-              to be used outside executable..
-             *)
+             \<comment> \<open>Setting the internal variables (exclusive, handshake, ...) to 0\<close>
+             \<comment> \<open>is safe -- they are either set by the edges, or not thought\<close>
+             \<comment> \<open>to be used outside executable.\<close>
              let g = reset\<^sub>I g in
              nfoldli E (\<lambda>_. True) (\<lambda>(e,p) G.
                  applyEdge prog e p g \<bind> (\<lambda> g'.
                  if handshake g' \<noteq> 0 \<or> isAtomic e then do {
                     G\<^sub>R \<leftarrow> D g';
                     if ls.isEmpty G\<^sub>R \<and> handshake g' = 0 then
-                       (* this only happens if the next step is a handshake, which fails
-                          hence we stay at the current state *)
+                       \<comment> \<open>this only happens if the next step is a handshake, which fails\<close>
+                       \<comment> \<open>hence we stay at the current state\<close>
                        RETURN (ls.ins (f g') G)
                     else
                        RETURN (ls.union G\<^sub>R G)

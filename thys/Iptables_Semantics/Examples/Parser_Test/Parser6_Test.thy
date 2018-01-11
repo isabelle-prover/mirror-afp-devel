@@ -25,7 +25,7 @@ lemma "parser6_test_firewall =
          (MatchAnd (Match (IIface (Iface ''eth0'')))
                    (Match (OIface (Iface ''foobar''))))))
      (Call ''gh32_-2qns''),
-    Rule (MatchAnd (Match (Extra ''-d ::ffff:127.0.0.1/128'') (*We do not support this IPv6 notation!*))
+    Rule (MatchAnd (Match (Extra ''-d ::ffff:127.0.0.1/128'')) \<comment> \<open>We do not support this IPv6 notation!\<close>
          (MatchAnd (Match (IIface (Iface ''eth0'')))
                    (Match (OIface (Iface ''foobar'')))))
      (Call ''gh32_-2qns''),

@@ -76,9 +76,9 @@ assumes empty_in_AS_set: "[] \<in> AS_set"
     and kprecondition_def: "kprecondition s a \<equiv> invariant s \<and> AS_precondition s (current s) a"
     and realistic_execution_def: "realistic_execution aseq \<equiv> set aseq \<subseteq> AS_set"
     and control_spec: "\<forall> s d aseqs . case control s d aseqs of (a,aseqs',s') \<Rightarrow>
-                                 (thread_empty aseqs \<and> (a,aseqs') = (None,[])) \<or> (* Nothing happens *)
-                                 (aseqs \<noteq> [] \<and> hd aseqs \<noteq> [] \<and> \<not>aborting s' d (the a) \<and> \<not> waiting s' d (the a) \<and> (a,aseqs') = (Some (hd (hd aseqs)), (tl (hd aseqs))#(tl aseqs))) \<or> (* Execute the first action of the current action sequence *)
-                                 (aseqs \<noteq> [] \<and> hd aseqs \<noteq> [] \<and> waiting s' d (the a) \<and> (a,aseqs',s') = (Some (hd (hd aseqs)),aseqs,s)) \<or> (* Nothing happens, waiting to execute the next action *)
+                                 (thread_empty aseqs \<and> (a,aseqs') = (None,[])) \<or> \<comment> \<open>Nothing happens\<close>
+                                 (aseqs \<noteq> [] \<and> hd aseqs \<noteq> [] \<and> \<not>aborting s' d (the a) \<and> \<not> waiting s' d (the a) \<and> (a,aseqs') = (Some (hd (hd aseqs)), (tl (hd aseqs))#(tl aseqs))) \<or> \<comment> \<open>Execute the first action of the current action sequence\<close>
+                                 (aseqs \<noteq> [] \<and> hd aseqs \<noteq> [] \<and> waiting s' d (the a) \<and> (a,aseqs',s') = (Some (hd (hd aseqs)),aseqs,s)) \<or> \<comment> \<open>Nothing happens, waiting to execute the next action\<close>
                                  (a,aseqs') = (None,tl aseqs)" (* The current action sequence is skipped *)
     and next_action_after_cswitch: "\<forall> s n d aseqs . fst (control (cswitch n s) d aseqs) = fst (control s d aseqs)"
     and next_action_after_next_state: "\<forall> s execs d  . current s \<noteq> d \<longrightarrow>  fst (control (next_state s execs) d (execs d)) = None \<or> fst (control (next_state s execs) d (execs d)) = fst (control s d (execs d))"

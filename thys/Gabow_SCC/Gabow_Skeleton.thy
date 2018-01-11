@@ -342,26 +342,26 @@ begin
           (p,D,pE) \<leftarrow> WHILEIT (invar v0 D0)
             (\<lambda>(p,D,pE). p \<noteq> []) (\<lambda>(p,D,pE). 
           do {
-            (* Select edge from end of path *)
+            \<comment> \<open>Select edge from end of path\<close>
             (vo,(p,D,pE)) \<leftarrow> select_edge (p,D,pE);
 
             ASSERT (p\<noteq>[]);
             case vo of 
-              Some v \<Rightarrow> do { (* Found outgoing edge to node v *)
+              Some v \<Rightarrow> do { \<comment> \<open>Found outgoing edge to node \<open>v\<close>\<close>
                 if v \<in> \<Union>set p then do {
-                  (* Back edge: Collapse path *)
+                  \<comment> \<open>Back edge: Collapse path\<close>
                   RETURN (collapse v (p,D,pE))
                 } else if v\<notin>D then do {
-                  (* Edge to new node. Append to path *)
+                  \<comment> \<open>Edge to new node. Append to path\<close>
                   RETURN (push v (p,D,pE))
                 } else do {
-                  (* Edge to done node. Skip *)
+                  \<comment> \<open>Edge to done node. Skip\<close>
                   RETURN (p,D,pE)
                 }
               }
             | None \<Rightarrow> do {
                 ASSERT (pE \<inter> last p \<times> UNIV = {});
-                (* No more outgoing edges from current node on path *)
+                \<comment> \<open>No more outgoing edges from current node on path\<close>
                 RETURN (pop (p,D,pE))
               }
           }) s;
@@ -2579,7 +2579,7 @@ context fr_graph begin
           (S,B,I,P)\<leftarrow>WHILEIT (invar v0 (oGS_\<alpha> I0) o GS.\<alpha>)
             (\<lambda>s. \<not>path_is_empty_impl s) (\<lambda>s.
           do {
-            (* Select edge from end of path *)
+            \<comment> \<open>Select edge from end of path\<close>
             (vo,s) \<leftarrow> select_edge_impl s;
 
             case vo of 
@@ -2587,15 +2587,15 @@ context fr_graph begin
                 if is_on_stack_impl v s then do {
                   collapse_impl v s
                 } else if \<not>is_done_impl v s then do {
-                  (* Edge to new node. Append to path *)
+                  \<comment> \<open>Edge to new node. Append to path\<close>
                   RETURN (push_impl v s)
                 } else do {
-                  (* Edge to done node. Skip *)
+                  \<comment> \<open>Edge to done node. Skip\<close>
                   RETURN s
                 }
               }
             | None \<Rightarrow> do {
-                (* No more outgoing edges from current node on path *)
+                \<comment> \<open>No more outgoing edges from current node on path\<close>
                 pop_impl s
               }
           }) s;

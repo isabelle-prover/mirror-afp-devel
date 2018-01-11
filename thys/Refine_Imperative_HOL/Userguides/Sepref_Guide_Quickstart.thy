@@ -294,7 +294,7 @@ definition "in_sorted_list1 x xs \<equiv> do {
   (_,_,r) \<leftarrow> WHILEIT (in_sorted_list1_invar x xs)
     (\<lambda>(l,u,found). l<u \<and> \<not>found) (\<lambda>(l,u,found). do {
       let i = (l+u) div 2;
-      ASSERT (i<length xs); (* Added here to help synthesis to prove precondition for array indexing *)
+      ASSERT (i<length xs); \<comment> \<open>Added here to help synthesis to prove precondition for array indexing\<close>
       let xi = xs!i;
       if x=xi then
         RETURN (l,u,True)
@@ -390,7 +390,7 @@ definition "in_sorted_list1' x xs \<equiv> do {
   (_,_,r) \<leftarrow> WHILEIT (in_sorted_list1_invar x xs)
     (\<lambda>(l,u,found). l<u \<and> \<not>found) (\<lambda>(l,u,found). do {
       let i = (l+u) div 2;
-      let xi = xs!i; (* It's not trivial to show that i is in range *)
+      let xi = xs!i; \<comment> \<open>It's not trivial to show that \<open>i\<close> is in range\<close>
       if x=xi then
         RETURN (l,u,True)
       else if x<xi then
@@ -1098,7 +1098,7 @@ text \<open>In the previous section, we have presented a refinement using an arr
 definition "bremdup l \<equiv> do {
   (s,r) \<leftarrow> nfoldli l (\<lambda>_. True) 
     (\<lambda>x (s,r). do {
-      ASSERT (distinct r \<and> s = set r); (* Less assertions than last time *)
+      ASSERT (distinct r \<and> s = set r); \<comment> \<open>Less assertions than last time\<close>
       if x\<in>s then RETURN (s,r) else RETURN (insert x s, r@[x])
     }) 
     ({},[]);
@@ -1171,7 +1171,7 @@ lemmas [sepref_fr_rules] = test_bremdup1_refine
 subsubsection \<open>Fixed-Value Restriction\<close>
 text \<open>Initialization only works with fixed values, not with dynamically computed values\<close>
 sepref_definition copy_list_to_array is "\<lambda>l. do {
-  let N = length l; (*Introduce a let, such that we have a single variable as size-init*)
+  let N = length l; \<comment> \<open>Introduce a \<open>let\<close>, such that we have a single variable as size-init\<close>
   let l' = op_arl_empty_sz N;
   nfoldli l (\<lambda>x. True) (\<lambda>x s. mop_list_append s x) l'
 }" :: "(list_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a arl_assn nat_assn"

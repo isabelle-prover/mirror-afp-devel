@@ -20,31 +20,30 @@ subsection "Tools for DFS Algorithms"
 
 subsubsection "Invariants"
 definition "gen_dfs_pre E U S V u0 \<equiv>
-  E``U \<subseteq> U   (* Upper bound is closed under transitions *)
-  \<and> finite U (* Upper bound is finite *)
-  \<and> V \<subseteq> U    (* Visited set below upper bound *)
-  \<and> u0 \<in> U   (* Start node in upper bound *)
-  \<and> E``(V-S) \<subseteq> V (* Visited nodes closed under reachability, or on stack *)
-  \<and> u0\<notin>V     (* Start node not yet visited *)
-  \<and> S \<subseteq> V    (* Stack is visited *)     
-  \<and> (\<forall>v\<in>S. (v,u0)\<in>(E\<inter>S\<times>UNIV)\<^sup>*) (* u0 reachable from stack, only over stack *)
+  E``U \<subseteq> U   \<comment> \<open>Upper bound is closed under transitions\<close>
+  \<and> finite U \<comment> \<open>Upper bound is finite\<close>
+  \<and> V \<subseteq> U    \<comment> \<open>Visited set below upper bound\<close>
+  \<and> u0 \<in> U   \<comment> \<open>Start node in upper bound\<close>
+  \<and> E``(V-S) \<subseteq> V \<comment> \<open>Visited nodes closed under reachability, or on stack\<close>
+  \<and> u0\<notin>V     \<comment> \<open>Start node not yet visited\<close>
+  \<and> S \<subseteq> V    \<comment> \<open>Stack is visited\<close>
+  \<and> (\<forall>v\<in>S. (v,u0)\<in>(E\<inter>S\<times>UNIV)\<^sup>*) \<comment> \<open>\<open>u0\<close> reachable from stack, only over stack\<close>
   "
 
 definition "gen_dfs_var U \<equiv> finite_psupset U"
 
 definition "gen_dfs_fe_inv E U S V0 u0 it V brk \<equiv> 
-  (\<not>brk \<longrightarrow> E``(V-S) \<subseteq> V)  (* Visited set closed under reachability *)
-  \<and> E``{u0} - it \<subseteq> V     (* Successors of u0 visited *)
-  \<and> V0 \<subseteq> V               (* Visited set increasing *)
-  \<and> V \<subseteq> V0 \<union> (E - UNIV\<times>S)\<^sup>* `` (E``{u0} - it - S) (* All visited 
-                                                     nodes reachable *)
+  (\<not>brk \<longrightarrow> E``(V-S) \<subseteq> V)  \<comment> \<open>Visited set closed under reachability\<close>
+  \<and> E``{u0} - it \<subseteq> V     \<comment> \<open>Successors of \<open>u0\<close> visited\<close>
+  \<and> V0 \<subseteq> V               \<comment> \<open>Visited set increasing\<close>
+  \<and> V \<subseteq> V0 \<union> (E - UNIV\<times>S)\<^sup>* `` (E``{u0} - it - S) \<comment> \<open>All visited nodes reachable\<close>
 "
 
 definition "gen_dfs_post E U S V0 u0 V brk \<equiv> 
-  (\<not>brk \<longrightarrow> E``(V-S) \<subseteq> V) (* Visited set closed under reachability *)
-  \<and> u0 \<in> V               (* u0 visited *)
-  \<and> V0 \<subseteq> V               (* Visited set increasing *)
-  \<and> V \<subseteq> V0 \<union> (E - UNIV\<times>S)\<^sup>* `` {u0} (* All visited nodes reachable *)
+  (\<not>brk \<longrightarrow> E``(V-S) \<subseteq> V) \<comment> \<open>Visited set closed under reachability\<close>
+  \<and> u0 \<in> V               \<comment> \<open>\<open>u0\<close> visited\<close>
+  \<and> V0 \<subseteq> V               \<comment> \<open>Visited set increasing\<close>
+  \<and> V \<subseteq> V0 \<union> (E - UNIV\<times>S)\<^sup>* `` {u0} \<comment> \<open>All visited nodes reachable\<close>
 "
 
 subsubsection "Invariant Preservation"
@@ -259,12 +258,12 @@ definition red_dfs where
     REC\<^sub>T (\<lambda>D (V,u). do {
       let V=insert u V;
 
-      (* Check whether we have a successor on stack *)
+      \<comment> \<open>Check whether we have a successor on stack\<close>
       brk \<leftarrow> FOREACH\<^sub>C (E``{u}) (\<lambda>brk. brk=None) 
         (\<lambda>t _. if t\<in>onstack then RETURN (red_init_witness u t) else RETURN None)
         None;
 
-      (* Recurse for successors *)
+      \<comment> \<open>Recurse for successors\<close>
       case brk of
         None \<Rightarrow>
           FOREACH\<^sub>C (E``{u}) (\<lambda>(V,brk). brk=None)
@@ -360,11 +359,11 @@ subsection "Correctness"
 
 text {* Additional invariant to be maintained between calls of red dfs *}
 definition "red_dfs_inv E U reds onstack \<equiv> 
-  E``U \<subseteq> U           (* Upper bound is closed under transitions *)
-  \<and> finite U         (* Upper bound is finite *)
-  \<and> reds \<subseteq> U         (* Red set below upper bound *)
-  \<and> E``reds \<subseteq> reds   (* Red nodes closed under reachability *)
-  \<and> E``reds \<inter> onstack = {} (* No red node with edge to stack *)
+  E``U \<subseteq> U           \<comment> \<open>Upper bound is closed under transitions\<close>
+  \<and> finite U         \<comment> \<open>Upper bound is finite\<close>
+  \<and> reds \<subseteq> U         \<comment> \<open>Red set below upper bound\<close>
+  \<and> E``reds \<subseteq> reds   \<comment> \<open>Red nodes closed under reachability\<close>
+  \<and> E``reds \<inter> onstack = {} \<comment> \<open>No red node with edge to stack\<close>
 "
 
 lemma red_dfs_inv_initial:
@@ -394,14 +393,14 @@ proof -
     REC\<^sub>T (\<lambda>D (V,u). do {
       let V=insert u V;
 
-      (* Check whether we have a successor on stack *)
+      \<comment> \<open>Check whether we have a successor on stack\<close>
       brk \<leftarrow> FOREACH\<^sub>C (E``{u}) (\<lambda>brk. brk=None) 
         (\<lambda>t _. if t\<in>onstack then 
             RETURN (red_init_witness u t) 
           else RETURN None) 
         None;
 
-      (* Recurse for successors *)
+      \<comment> \<open>Recurse for successors\<close>
       case brk of
         None \<Rightarrow>
           FOREACH\<^sub>C (E``{u}) (\<lambda>(V,brk). brk=None)
@@ -495,7 +494,7 @@ proof -
       apply (rename_tac D S u)
       apply (intro refine_vcg)
 
-      (* First foreach loop, checking for onstack-successor*)
+      \<comment> \<open>First foreach loop, checking for onstack-successor\<close>
       apply (rule_tac I="\<lambda>it cyc. 
         (case cyc of None \<Rightarrow> (E``{b} - it) \<inter> onstack = {}
           | Some (p,v) \<Rightarrow> (v\<in>onstack \<and> p\<noteq>[] \<and> path E b p v))" 
@@ -508,7 +507,7 @@ proof -
 
       apply (intro refine_vcg)
 
-      (* Second foreach loop, iterating over sucessors *)
+      \<comment> \<open>Second foreach loop, iterating over sucessors\<close>
       apply (rule_tac I="fe_inv (insert b S) (insert b a) b" in
         FOREACHc_rule
       )
@@ -518,7 +517,7 @@ proof -
 
       apply (intro refine_vcg)
 
-      (* Recursive call *)
+      \<comment> \<open>Recursive call\<close>
       apply (rule order_trans)
       apply (rprems)
       apply (clarsimp simp add: pre_def fe_inv_def)
@@ -593,10 +592,9 @@ proof -
   let ?U = "E\<^sup>*``{v0}"
 
   define add_inv where "add_inv = (\<lambda>blues reds onstack. 
-    \<not>(\<exists>v\<in>(blues-onstack)\<inter>A. (v,v)\<in>E\<^sup>+)  (* No cycles over finished,
-                                           accepting states *)
-    \<and> reds \<subseteq> blues                     (* Red nodes are also blue *)
-    \<and> reds \<inter> onstack = {}              (* No red nodes on stack *)
+    \<not>(\<exists>v\<in>(blues-onstack)\<inter>A. (v,v)\<in>E\<^sup>+)  \<comment> \<open>No cycles over finished, accepting states\<close>
+    \<and> reds \<subseteq> blues                     \<comment> \<open>Red nodes are also blue\<close>
+    \<and> reds \<inter> onstack = {}              \<comment> \<open>No red nodes on stack\<close>
     \<and> red_dfs_inv E ?U reds onstack)"
 
   define cyc_post where "cyc_post = (\<lambda>blues reds onstack u0 cyc. (case cyc of 
@@ -944,7 +942,7 @@ proof -
       apply (blast intro!: gen_dfs_pre_imp_wf[OF GENPRE])
       apply (rule INV0)
 
-      (* Foreach loop *)
+      \<comment> \<open>Foreach loop\<close>
       apply (rule_tac 
         I="fe_inv (insert bb a) bb (insert bb ab)" 
         in FOREACHc_rule')
@@ -955,7 +953,7 @@ proof -
 
       apply (intro refine_vcg)
 
-      (* Recursive call *)
+      \<comment> \<open>Recursive call\<close>
       apply (rule order_trans)
       apply (rprems)
       apply (clarsimp simp add: pre_def fe_inv_def cyc_post_def)
@@ -969,7 +967,7 @@ proof -
 
       apply (intro refine_vcg)
 
-      (* Nested DFS call *)
+      \<comment> \<open>Nested DFS call\<close>
       apply (rule order_trans)
       apply (rule red_dfs_correct[where U="E\<^sup>* `` {v0}"])
       apply (auto simp add: fe_inv_def add_inv_def cyc_post_def) []

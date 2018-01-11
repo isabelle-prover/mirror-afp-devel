@@ -46,9 +46,9 @@ definition simple_linux_router ::
          interface list \<Rightarrow> 'i simple_packet_ext \<Rightarrow> 'i simple_packet_ext option" where
 "simple_linux_router rt fw mlf ifl p \<equiv> do {
 	_ \<leftarrow> iface_packet_check ifl p;
-	let rd (* routing decision *) = routing_table_semantics rt (p_dst p);
+	let rd \<comment> \<open>(routing decision)\<close> = routing_table_semantics rt (p_dst p);
 	let p = p\<lparr>p_oiface := output_iface rd\<rparr>;
-	let fd (* firewall decision *) = simple_fw fw p;
+	let fd \<comment> \<open>(firewall decision)\<close> = simple_fw fw p;
 	_ \<leftarrow> (case fd of Decision FinalAllow \<Rightarrow> Some () | Decision FinalDeny \<Rightarrow> None);
 	let nh = fromMaybe (p_dst p) (next_hop rd);
 	ma \<leftarrow> mlf nh;
@@ -95,7 +95,7 @@ by(clarsimp simp add: Let_def split: option.splits state.splits final_decision.s
 lemma rtr_nomac_e3:
   fixes pi
 	assumes "simple_linux_router_nol12 rt fw pi = Some po"
-	assumes "iface_packet_check ifl pi = Some i(*don'tcare*)"
+	assumes "iface_packet_check ifl pi = Some i \<comment> \<open>don't care\<close>"
 	assumes "mlf (fromMaybe (p_dst pi) (next_hop (routing_table_semantics rt (p_dst pi)))) = Some i2"
 	shows "\<exists>po'. simple_linux_router rt fw mlf ifl pi = Some po'"
 using assms

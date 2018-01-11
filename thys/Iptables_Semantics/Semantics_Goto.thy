@@ -81,19 +81,18 @@ begin
     call_return:  "\<lbrakk> matches \<gamma> m p; \<Gamma> chain = Some (rs\<^sub>1@[Rule m' Return]@rs\<^sub>2);
                      matches \<gamma> m' p; \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>rs\<^sub>1, Undecided\<rangle> \<Rightarrow> Undecided;
                      no_matching_Goto \<gamma> p rs\<^sub>1\<rbrakk> \<Longrightarrow>
-                     (*we do not support a goto in the first part if you want to return
-                     probably unhandled case:
-                     main:
-                       call foo
-                     foo:
-                       goto bar
-                     bar:
-                       Return //returns to `call foo'
-                     But this would be a really awkward ruleset!
-                     *)
+                     \<comment> \<open>we do not support a goto in the first part if you want to return\<close>
+                     \<comment> \<open>probably unhandled case:\<close>
+                     \<comment> \<open>\<^verbatim>\<open>main:\<close>\<close>
+                     \<comment> \<open>\<^verbatim>\<open>  call foo\<close>\<close>
+                     \<comment> \<open>\<^verbatim>\<open>foo:\<close>\<close>
+                     \<comment> \<open>\<^verbatim>\<open>  goto bar\<close>\<close>
+                     \<comment> \<open>\<^verbatim>\<open>bar:\<close>\<close>
+                     \<comment> \<open>  Return //returns to \<^verbatim>\<open>call foo\<close>\<close>
+                     \<comment> \<open>But this would be a really awkward ruleset!\<close>
                    \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>[Rule m (Call chain)], Undecided\<rangle> \<Rightarrow> Undecided" |
     call_result:  "\<lbrakk> matches \<gamma> m p; \<Gamma> chain = Some rs; \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>rs, Undecided\<rangle> \<Rightarrow> t \<rbrakk> \<Longrightarrow>
-                   \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>[Rule m (Call chain)], Undecided\<rangle> \<Rightarrow> t" | (*goto handling here seems okay*)
+                   \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>[Rule m (Call chain)], Undecided\<rangle> \<Rightarrow> t" | \<comment> \<open>goto handling here seems okay\<close>
     goto_decision:  "\<lbrakk> matches \<gamma> m p; \<Gamma> chain = Some rs; \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>rs, Undecided\<rangle> \<Rightarrow> Decision X \<rbrakk> \<Longrightarrow>
                    \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>(Rule m (Goto chain))#rest, Undecided\<rangle> \<Rightarrow> Decision X" |
     goto_no_decision:  "\<lbrakk> matches \<gamma> m p; \<Gamma> chain = Some rs; \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>rs, Undecided\<rangle> \<Rightarrow> Undecided \<rbrakk> \<Longrightarrow>

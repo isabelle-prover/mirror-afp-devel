@@ -223,7 +223,7 @@ definition "print_lorenz_aform print_fun cx cy cz
           (FloatR 1 s1 * (if n then
               real_divl 30 1 (max (mig_aforms 30 (map (\<lambda>i. b ! i) [3,6,9]))
                          (mig_aforms 30 (map (\<lambda>i. b ! i) [4,7,10])))
-            else 1)) (* always length 2^s! *)
+            else 1)) \<comment> \<open>always length \<open>2^s!\<close>\<close>
           ''# no C1 info'' b ''''))
         else ())"
 
@@ -517,7 +517,7 @@ definition "ivls_of_aforms' p r = (map (Inf_aform' p) r, map (Sup_aform' p) r)"
 
 definition "compute_half_exit p t XDX = (case XDX of ((l, u::ereal), (X, DX)) \<Rightarrow>
    let
-    (* ASSERTING that Y straddles zero *)
+    \<comment> \<open>ASSERTING that \<open>Y\<close> straddles zero\<close>
     (x0, y0, _) = case map (Inf_aform' p) X of [x,y,z] \<Rightarrow> (x, y, z);
     (x1, y1, _) = case map (Sup_aform' p) X of [x,y,z] \<Rightarrow> (x, y, z);
     splitting = x0 = 0 \<or> x1 = 0;
@@ -547,13 +547,13 @@ definition "compute_half_exit p t XDX = (case XDX of ((l, u::ereal), (X, DX)) \<
         ux\<^sub>e = Var (3);
         uy\<^sub>e = Var (6);
         P21\<^sub>e = if splitting
-          then (MU\<^sub>e / exit_rad\<^sub>e) * Y\<^sub>e * sign_x\<^sub>e * Powr (max_x_over_r\<^sub>e) (MU\<^sub>e - 1)(* No need for Hull(0) because y straddles zero*)
+          then (MU\<^sub>e / exit_rad\<^sub>e) * Y\<^sub>e * sign_x\<^sub>e * Powr (max_x_over_r\<^sub>e) (MU\<^sub>e - 1) \<comment> \<open>No need for \<open>Hull(0)\<close> because \<open>y\<close> straddles zero\<close>
           else (MU\<^sub>e / exit_rad\<^sub>e) * Y\<^sub>e * sign_x\<^sub>e * Powr (abs_x_over_r\<^sub>e) (MU\<^sub>e - 1);
         P22\<^sub>e = if splitting
           then Powr (max_x_over_r\<^sub>e) MU\<^sub>e
           else Powr (abs_x_over_r\<^sub>e) MU\<^sub>e;
         P31\<^sub>e = if splitting
-          then sign_x\<^sub>e * (NU\<^sub>e / exit_rad\<^sub>e) * Z\<^sub>e * Powr (max_x_over_r\<^sub>e) (NU\<^sub>e - 1) (* No need for Hull(\<infinity>) because scaling afterwards *)
+          then sign_x\<^sub>e * (NU\<^sub>e / exit_rad\<^sub>e) * Z\<^sub>e * Powr (max_x_over_r\<^sub>e) (NU\<^sub>e - 1) \<comment> \<open>No need for \<open>Hull(\<infinity>)\<close> because scaling afterwards\<close>
           else sign_x\<^sub>e * (NU\<^sub>e / exit_rad\<^sub>e) * Z\<^sub>e * Powr (abs_x_over_r\<^sub>e) (NU\<^sub>e - 1);
         ry = (P21\<^sub>e * ux\<^sub>e) + (P22\<^sub>e * uy\<^sub>e);
         rz = P31\<^sub>e * ux\<^sub>e;
@@ -1624,11 +1624,11 @@ definition aform_numeric_optns::"_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow>
 
 fun zbucket::"real \<Rightarrow>  real \<times> real \<Rightarrow> real \<times> real \<Rightarrow> real \<times> real \<Rightarrow> ((real list \<times> real list) \<times> real list sctn) list"
   where "zbucket d (x0,x1) (y0, y1) (z0, z1) =
-    [zsec' (x0 - d, x0 + d) (y0 - d, y1 + d) z0, (* bottom *)
-     xsec' x0 (y0 - d, y1 + d) (z0 - d, z1),     (* left *)
-     xsec x1 (y0 - d, y1 + d) (z0 - d, z1),      (* right *)
-     ysec' (x0 - d, x1 + d) y0 (z0 - d, z1),     (* backno *)
-     ysec (x0 - d, x1 + d) y1  (z0 - d, z1)      (* front *)]"
+    [zsec' (x0 - d, x0 + d) (y0 - d, y1 + d) z0, \<comment> \<open>bottom\<close>
+     xsec' x0 (y0 - d, y1 + d) (z0 - d, z1),     \<comment> \<open>left\<close>
+     xsec x1 (y0 - d, y1 + d) (z0 - d, z1),      \<comment> \<open>right\<close>
+     ysec' (x0 - d, x1 + d) y0 (z0 - d, z1),     \<comment> \<open>backno\<close>
+     ysec (x0 - d, x1 + d) y1  (z0 - d, z1)]     \<comment> \<open>front\<close>"
 
 subsubsection \<open>Hybridizations\<close>
 
@@ -1658,7 +1658,7 @@ definition mode_middle::"_ \<Rightarrow> run_options" where "mode_middle c1 = (r
    xsecs p1      10  (6) @
    [zsec' (-p1, p1) (-p1, p1) p1],
       ro_split_hard c1 (-5) (-2)),
-  (xsecs (3/2/2) 10 (10), ro_split_not2 c1 0 (-2)) (* To collect after interrupt *),
+  (xsecs (3/2/2) 10 (10), ro_split_not2 c1 0 (-2)), \<comment> \<open>To collect after interrupt\<close>
     ([zsec (-30, -6) (-10, 10) 30, zsec (6, 30) (-10, 10) 30], ro_split_not2 c1 (-1) (-3))
   ], ro_split_weak4' c1 (-5))"
 

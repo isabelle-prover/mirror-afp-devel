@@ -72,7 +72,7 @@ definition
 
 definition
   "QQ5_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
-      p \<noteq> nil \<and> (*not needed in the proof*)
+      p \<noteq> nil \<and> \<comment> \<open>not needed in the proof\<close>
       \<not> gg mrk atom left p \<and> \<not> gg mrk atom right p \<and>
       t \<noteq> nil \<and> \<not> atom t \<and>
       p' = t \<and> t' = left t \<and> mrk' = mrk \<and> 
@@ -81,7 +81,7 @@ definition
 
 definition
   "QQ6_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
-      p \<noteq> nil \<and> (*not needed in the proof*)
+      p \<noteq> nil \<and> \<comment> \<open>not needed in the proof\<close>
       \<not> gg mrk atom left p \<and> \<not> gg mrk atom right p \<and>
       t \<noteq> nil \<and> atom t \<and>
       p' = t \<and> t' = right t \<and> mrk' = mrk \<and> 

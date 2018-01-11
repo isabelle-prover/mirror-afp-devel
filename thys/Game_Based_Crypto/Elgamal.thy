@@ -59,7 +59,7 @@ where
   "elgamal_adversary (\<A>1, \<A>2) \<alpha> \<beta> \<gamma> = TRY do {
     b \<leftarrow> coin_spmf;
     ((msg1, msg2), \<sigma>) \<leftarrow> \<A>1 \<alpha>;
-    (* have to check that the attacker actually sends two elements from the group; otherwise flip a coin *)
+    \<comment> \<open>have to check that the attacker actually sends two elements from the group; otherwise flip a coin\<close>
     _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
     guess \<leftarrow> \<A>2 (\<beta>, \<gamma> \<otimes> (if b then msg1 else msg2)) \<sigma>;
     return_spmf (guess = b)

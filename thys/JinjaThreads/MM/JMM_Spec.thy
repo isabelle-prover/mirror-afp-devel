@@ -1206,7 +1206,7 @@ where
    justification_well_formed P J \<and>
    committed_subset_actions J \<and>
    happens_before_committed_weak P E ws J \<and>
-   (* no sync_order constraint *)
+   \<comment> \<open>no sync_order constraint\<close>
    value_written_committed P E J \<and>
    write_seen_committed ws J \<and> 
    uncommitted_reads_see_hb P J \<and>

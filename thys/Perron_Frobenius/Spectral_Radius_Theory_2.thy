@@ -475,11 +475,11 @@ begin
 lemma jnf_perron_frobenius_generic:  
   assumes main: "\<And> x k. 
      sum_list ks \<le> n \<Longrightarrow> 
-     length ks > d + 1 \<Longrightarrow>     (* length ks = multiplicity of root 1, cheap test *)
+     length ks > d + 1 \<Longrightarrow>     \<comment> \<open>\<open>length ks\<close> = multiplicity of root 1, cheap test\<close>
      0 \<notin> set ks \<Longrightarrow> k \<in> {1 .. max_list ks} \<Longrightarrow>  
      length [k'\<leftarrow>ks . k dvd k'] > d + 1 \<Longrightarrow> 
-        (* length [k'\<leftarrow>ks . k dvd k'] is the multiplicity of x when x^k = 1 and k is minimal *)
-     primitive_root_unity k x \<Longrightarrow> (* consider primitive root of unity *)
+        \<comment> \<open>\<open>length [k'\<leftarrow>ks . k dvd k']\<close> is the multiplicity of \<open>x\<close> when \<open>x^k = 1\<close> and \<open>k\<close> is minimal\<close>
+     primitive_root_unity k x \<Longrightarrow> \<comment> \<open>consider primitive root of unity\<close>
      order x (char_poly (map_mat complex_of_real A)) = length [k'\<leftarrow>ks. k dvd k'] \<Longrightarrow>
      (\<And> x. cmod x = 1 \<Longrightarrow> order x (char_poly (map_mat complex_of_real A)) = length [k\<leftarrow>ks . x ^ k = 1]) \<Longrightarrow>
     (\<forall> bsize \<in> fst ` set (compute_set_of_jordan_blocks (map_mat complex_of_real A) x). 

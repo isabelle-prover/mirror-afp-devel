@@ -200,13 +200,13 @@ where
      ModeDecl Skip (Acq h_mem AsmNoWrite) ;;
      ModeDecl Skip (Acq y_mem AsmNoWrite) ;;
      ModeDecl Skip (Acq z_mem AsmNoWrite) ;;
-     (* Just set up the memory to match our assumptions *)
+     \<comment> \<open>Just set up the memory to match our assumptions\<close>
      Assign y_mem (Const 0) ;;
      Assign z_mem (Const 0) ;;
      Assign x_mem (Load y_mem) ;;
-     (* From this point onwards we model the if-statement using registers.
-        Note that we can just as well (re-)use reg0 instead of reg3 - verify with a search-replace.
-        Leaving it this way to make the reg usages easier to distinguish for the reader, though. *)
+     \<comment> \<open>From this point onwards we model the if-statement using registers.\<close>
+     \<comment> \<open>Note that we can just as well (re-)use reg0 instead of reg3 - verify with a search-replace.\<close>
+     \<comment> \<open>Leaving it this way to make the reg usages easier to distinguish for the reader, though.\<close>
      Assign reg3 (Load h_mem) ;;
      If (Neq (Load reg3) (Const 0)) (
        Skip ;;
@@ -1163,9 +1163,9 @@ where
         (
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* The change in mem\<^sub>C does not affect mem\<^sub>A *)
+         \<comment> \<open>The change in \<open>mem\<^sub>C\<close> does not affect \<open>mem\<^sub>A\<close>\<close>
          mem\<^sub>A'' = mem\<^sub>A' \<and>
-         (* The concrete and abstract versions of the bool condition must become consistent *)
+         \<comment> \<open>The concrete and abstract versions of the bool condition must become consistent\<close>
          ev\<^sub>B mem\<^sub>C' (Neq (Load reg3) (Const 0)) = ev\<^sub>B mem\<^sub>A' (Neq (Load x) (Const 0)) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C,
           \<langle>Stop ;; (If (Neq (Load reg3) (Const 0)) c\<^sub>C_then c\<^sub>C_else), mds\<^sub>C, mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
@@ -1184,15 +1184,15 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     x \<in> mds\<^sub>A AsmNoWrite \<and> x \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* We will need to carry this through to the if_reg_rel case. *)
+    \<comment> \<open>We will need to carry this through to the \<open>if_reg_rel\<close> case.\<close>
     ev\<^sub>B mem\<^sub>C (Neq (Load reg3) (Const 0)) = ev\<^sub>B mem\<^sub>A (Neq (Load x) (Const 0));
     (\<forall>mem\<^sub>A' mem\<^sub>C' mem\<^sub>A'' mem\<^sub>C''.
         (
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* The change in mem\<^sub>C does not affect mem\<^sub>A *)
+         \<comment> \<open>The change in \<open>mem\<^sub>C\<close> does not affect \<open>mem\<^sub>A\<close>\<close>
          mem\<^sub>A'' = mem\<^sub>A' \<and>
-         (* The concrete and abstract versions of the bool condition must remain consistent *)
+         \<comment> \<open>The concrete and abstract versions of the bool condition must remain consistent\<close>
          ev\<^sub>B mem\<^sub>C' (Neq (Load reg3) (Const 0)) = ev\<^sub>B mem\<^sub>A' (Neq (Load x) (Const 0)) \<and>
          ev\<^sub>B mem\<^sub>C'' (Neq (Load reg3) (Const 0)) = ev\<^sub>B mem\<^sub>A'' (Neq (Load x) (Const 0)) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C,
@@ -1206,23 +1206,22 @@ where
     (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C) \<in> RefRel_HighBranch" |
 
   if_reg_rel: "\<lbrakk>
-(* Is a more generic version possible for an arbitrary b\<^sub>A?
-    c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else);
-    b\<^sub>A = Eq (Load x) (Const 0); (* ev\<^sub>B mem\<^sub>A b\<^sub>A *)
-*)
+    \<comment> \<open>Is a more generic version possible for an arbitrary \<open>b\<^sub>A\<close>?\<close>
+    \<comment> \<open>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else);\<close>\<close>
+    \<comment> \<open>\<open>b\<^sub>A = Eq (Load x) (Const 0);\<close> \<open>(* ev\<^sub>B mem\<^sub>A b\<^sub>A *)\<close>\<close>
     c\<^sub>A = (If (Neq (Load x) (Const 0)) c\<^sub>A_then c\<^sub>A_else);
     c\<^sub>C = (If (Neq (Load reg3) (Const 0)) c\<^sub>C_then c\<^sub>C_else);
     mds\<^sub>A = mds\<^sub>A_of mds\<^sub>C;
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     x \<in> mds\<^sub>A AsmNoWrite \<and> x \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The concrete and abstract versions of the bool condition must have remained consistent *)
+    \<comment> \<open>The concrete and abstract versions of the bool condition must have remained consistent\<close>
     ev\<^sub>B mem\<^sub>C (Neq (Load reg3) (Const 0)) = ev\<^sub>B mem\<^sub>A (Neq (Load x) (Const 0));
-    (* As for if_reg_load_rel *)
+    \<comment> \<open>As for \<comment> \<open>if_reg_load_rel\<close>\<close>
     reg3 \<notin> mds\<^sub>C GuarNoReadOrWrite \<and> reg3 \<notin> mds\<^sub>C GuarNoWrite;
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
     \<forall>x'. x \<in> \<C>_vars x' \<longrightarrow> x' \<notin> mds\<^sub>A GuarNoReadOrWrite;
-    (* As we would expect, the two branches must be related by the coupling invariant. *)
+    \<comment> \<open>As we would expect, the two branches must be related by the coupling invariant.\<close>
     \<forall>mem\<^sub>C' mem\<^sub>C''. (\<langle>c\<^sub>C_then, mds\<^sub>C, mem\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>C_else, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C;
     (\<forall>mem\<^sub>A' mem\<^sub>C' mem\<^sub>A'' mem\<^sub>C''.
        mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
@@ -1346,7 +1345,7 @@ where
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* The value of reg0 and y_var must now become consistent *)
+         \<comment> \<open>The value of \<open>reg0\<close> and \<open>y_var\<close> must now become consistent\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg0) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>Stop ;; c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
         )
@@ -1363,14 +1362,14 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The value of reg0 and y_var at this point must be consistent *)
+    \<comment> \<open>The value of \<open>reg0\<close> and \<open>y_var\<close> at this point must be consistent\<close>
     ev\<^sub>A mem\<^sub>C (Load reg0) = ev\<^sub>A mem\<^sub>A (Load y_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* and must remain consistent *)
+         \<comment> \<open>and must remain consistent\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg0) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg0) = ev\<^sub>A mem\<^sub>A'' (Load y_var) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
@@ -1387,7 +1386,7 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The value of reg0 and y_var at this point must be consistent *)
+    \<comment> \<open>The value of \<open>reg0\<close> and \<open>y_var\<close> at this point must be consistent\<close>
     ev\<^sub>A mem\<^sub>C (Load reg0) = ev\<^sub>A mem\<^sub>A (Load y_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
@@ -1426,7 +1425,7 @@ where
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* Now reg1 takes on y_var *)
+         \<comment> \<open>Now \<open>reg1\<close> takes on \<open>y_var\<close>\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg1) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>Stop ;; c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
         )
@@ -1446,14 +1445,14 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* At this point reg1 contains y_var *)
+    \<comment> \<open>At this point \<open>reg1\<close> contains \<open>y_var\<close>\<close>
     ev\<^sub>A mem\<^sub>C (Load reg1) = ev\<^sub>A mem\<^sub>A (Load y_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* maintain it *)
+         \<comment> \<open>maintain it\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg1) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg1) = ev\<^sub>A mem\<^sub>A'' (Load y_var) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
@@ -1473,17 +1472,17 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* At this point reg1 contains y_var *)
+    \<comment> \<open>At this point \<open>reg1\<close> contains \<open>y_var\<close>\<close>
     ev\<^sub>A mem\<^sub>C (Load reg1) = ev\<^sub>A mem\<^sub>A (Load y_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* maintain it *)
+         \<comment> \<open>maintain it\<close>
          ev\<^sub>A mem\<^sub>C'' (Load reg1) = ev\<^sub>A mem\<^sub>A'' (Load y_var) \<and>
          ev\<^sub>A mem\<^sub>C' (Load reg1) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
-         (* Now reg2 takes on z_var *)
+         \<comment> \<open>Now \<open>reg2\<close> takes on \<open>z_var\<close>\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg2) = ev\<^sub>A mem\<^sub>A' (Load z_var) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>Stop ;; c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
         )
@@ -1503,7 +1502,7 @@ where
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
     z_var \<in> mds\<^sub>A AsmNoWrite \<and> z_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* At this point reg1 contains y_var and reg2 contains z_var *)
+    \<comment> \<open>At this point \<open>reg1\<close> contains \<open>y_var\<close> and \<open>reg2\<close> contains z_var\<close>
     ev\<^sub>A mem\<^sub>C (Load reg1) = ev\<^sub>A mem\<^sub>A (Load y_var);
     ev\<^sub>A mem\<^sub>C (Load reg2) = ev\<^sub>A mem\<^sub>A (Load z_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
@@ -1511,7 +1510,7 @@ where
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* maintain it *)
+         \<comment> \<open>maintain it\<close>
          ev\<^sub>A mem\<^sub>C'' (Load reg1) = ev\<^sub>A mem\<^sub>A'' (Load y_var) \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg2) = ev\<^sub>A mem\<^sub>A'' (Load z_var) \<and>
          ev\<^sub>A mem\<^sub>C' (Load reg1) = ev\<^sub>A mem\<^sub>A' (Load y_var) \<and>
@@ -1532,7 +1531,7 @@ where
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
     z_var \<in> mds\<^sub>A AsmNoWrite \<and> z_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* At this point reg1 contains y_var and reg2 contains z_var *)
+    \<comment> \<open>At this point \<open>reg1\<close> contains \<open>y_var\<close> and \<open>reg2\<close> contains \<open>z_var\<close>\<close>
     ev\<^sub>A mem\<^sub>C (Load reg1) = ev\<^sub>A mem\<^sub>A (Load y_var);
     ev\<^sub>A mem\<^sub>C (Load reg2) = ev\<^sub>A mem\<^sub>A (Load z_var);
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
@@ -1542,7 +1541,7 @@ where
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg1) = ev\<^sub>A mem\<^sub>A'' (Load y_var) \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg2) = ev\<^sub>A mem\<^sub>A'' (Load z_var) \<and>
-         (* Thus the value of reg0 becomes consistent with y_var + z_var *)
+         \<comment> \<open>Thus the value of \<open>reg0\<close> becomes consistent with \<open>y_var + z_var\<close>\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg0) = ev\<^sub>A mem\<^sub>A' (Add (Load y_var) (Load z_var)) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>Stop ;; c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
         )
@@ -1560,14 +1559,14 @@ where
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
     z_var \<in> mds\<^sub>A AsmNoWrite \<and> z_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The value of reg0 and y_var + z_var at this point must be consistent *)
+    \<comment> \<open>The value of \<open>reg0\<close> and \<open>y_var + z_var\<close> at this point must be consistent\<close>
     ev\<^sub>A mem\<^sub>C (Load reg0) = ev\<^sub>A mem\<^sub>A (Add (Load y_var) (Load z_var));
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
          mds\<^sub>A' = mds\<^sub>A_of mds\<^sub>C' \<and>
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* and must remain consistent *)
+         \<comment> \<open>and must remain consistent\<close>
          ev\<^sub>A mem\<^sub>C' (Load reg0) = ev\<^sub>A mem\<^sub>A' (Add (Load y_var) (Load z_var)) \<and>
          ev\<^sub>A mem\<^sub>C'' (Load reg0) = ev\<^sub>A mem\<^sub>A'' (Add (Load y_var) (Load z_var)) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C, \<langle>c\<^sub>C_tail, mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
@@ -1585,7 +1584,7 @@ where
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range var\<^sub>C_of \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     y_var \<in> mds\<^sub>A AsmNoWrite \<and> y_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
     z_var \<in> mds\<^sub>A AsmNoWrite \<and> z_var \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The value of reg0 and y_var + z_var at this point must be consistent *)
+    \<comment> \<open>The value of \<open>reg0\<close> and \<open>y_var + z_var\<close> at this point must be consistent\<close>
     ev\<^sub>A mem\<^sub>C (Load reg0) = ev\<^sub>A mem\<^sub>A (Add (Load y_var) (Load z_var));
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
         (
@@ -2221,8 +2220,8 @@ lemma refrel_helper_If_Reg_Load_exI:
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A
   \<Longrightarrow>
-  (* Distinguish between the different concrete cases
-     for which the abstract program remains the same. *)
+  \<comment> \<open>Distinguish between the different concrete cases\<close>
+  \<comment> \<open>for which the abstract program remains the same.\<close>
   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C
   \<Longrightarrow>
   \<exists>then\<^sub>C' else\<^sub>C'.
@@ -2263,7 +2262,7 @@ lemma refrel_helper_If_Reg_Stop_exI:
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A
   \<Longrightarrow>
-  (* Distinguish between concrete cases for which abstract program remains the same. *)
+  \<comment> \<open>Distinguish between concrete cases for which abstract program remains the same.\<close>
   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C
   \<Longrightarrow>
   \<exists>then\<^sub>C' else\<^sub>C'.
@@ -2284,7 +2283,7 @@ assumes
   conds_match: "ev\<^sub>B (sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C) (Neq (Load x) (Const 0)) =
     ev\<^sub>B mem\<^sub>2\<^sub>C ((Neq::t_Neq_C) (Load reg3) (Const 0))" and
   rest_assms: "c\<^sub>C = Stmt.If ((Neq::t_Neq_C) (Load reg3) (Const 0)) then\<^sub>C else\<^sub>C \<and>
-  (* Distinguish between concrete cases for which abstract program remains the same. *)
+  \<comment> \<open>Distinguish between concrete cases for which abstract program remains the same.\<close>
   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C"
 shows
 "

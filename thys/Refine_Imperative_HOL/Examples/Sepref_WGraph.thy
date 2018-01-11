@@ -21,7 +21,7 @@ begin
   definition succi :: "'w::heap graph_impl \<Rightarrow> nat \<Rightarrow> ('w\<times>nat) list Heap"
   where "succi G v = do {
     l \<leftarrow> Array.len G;
-    if v<l then do { (* TODO: Alternatively, require v to be a valid node as precondition! *)
+    if v<l then do { \<comment> \<open>TODO: Alternatively, require \<open>v\<close> to be a valid node as precondition!\<close>
       r \<leftarrow> Array.nth G v;
       return r
     } else return []

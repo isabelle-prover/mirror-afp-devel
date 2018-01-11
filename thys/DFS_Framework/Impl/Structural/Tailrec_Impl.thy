@@ -35,7 +35,7 @@ begin
       V0
       (Not o gds_is_break gds) 
       (\<lambda>v0 s. do {
-        let (*ghost*) s0 = s;
+        let \<comment> \<open>ghost:\<close> s0 = s;
         if gds_is_discovered gds v0 s then
           RETURN s
         else do {
@@ -60,7 +60,7 @@ begin
       V0
       (Not o gds_is_break gds) 
       (\<lambda>v0 s. do {
-        let (*ghost*) s0 = s;
+        let \<comment> \<open>ghost:\<close> s0 = s;
         if gds_is_discovered gds v0 s then
           RETURN s
         else do {

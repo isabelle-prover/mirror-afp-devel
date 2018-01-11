@@ -250,12 +250,12 @@ context
   fixes s :: complex assumes s: "Re s > 0"
   fixes approx :: "nat \<Rightarrow> complex"
   defines "approx \<equiv> (\<lambda>N. 
-    (\<Sum>n = 1..<N. s / of_nat n - ln (1 + s / of_nat n)) - (euler_mascheroni * s + ln s) - (* \<longrightarrow> ln_Gamma s *)
-    (ln_Gamma (of_nat N) - ln (2 * pi / of_nat N) / 2 - of_nat N * ln (of_nat N) + of_nat N) - (* \<longrightarrow> 0 *)
-    s * (harm (N - 1) - ln (of_nat (N - 1)) - euler_mascheroni) + (* \<longrightarrow> 0 *)
-    s * (ln (of_nat N + s) - ln (of_nat (N - 1))) - (* \<longrightarrow> 0 *)
-    (1/2) * (ln (of_nat N + s) - ln (of_nat N)) +       (* \<longrightarrow> 0 *)
-    of_nat N * (ln (of_nat N + s) - ln (of_nat N)) -  (* \<longrightarrow> s *)
+    (\<Sum>n = 1..<N. s / of_nat n - ln (1 + s / of_nat n)) - (euler_mascheroni * s + ln s) - \<comment> \<open>\<open>\<longrightarrow> ln_Gamma s\<close>\<close>
+    (ln_Gamma (of_nat N) - ln (2 * pi / of_nat N) / 2 - of_nat N * ln (of_nat N) + of_nat N) - \<comment> \<open>\<open>\<longrightarrow> 0\<close>\<close>
+    s * (harm (N - 1) - ln (of_nat (N - 1)) - euler_mascheroni) + \<comment> \<open>\<open>\<longrightarrow> 0\<close>\<close>
+    s * (ln (of_nat N + s) - ln (of_nat (N - 1))) - \<comment> \<open>\<open>\<longrightarrow> 0\<close>\<close>
+    (1/2) * (ln (of_nat N + s) - ln (of_nat N)) +       \<comment> \<open>\<open>\<longrightarrow> 0\<close>\<close>
+    of_nat N * (ln (of_nat N + s) - ln (of_nat N)) -  \<comment> \<open>\<open>\<longrightarrow> s\<close>\<close>
     (s - 1/2) * ln s - ln (2 * pi) / 2)"
 begin       
   

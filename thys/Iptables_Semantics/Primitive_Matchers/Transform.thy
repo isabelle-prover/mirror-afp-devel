@@ -559,12 +559,12 @@ subsection\<open>Normalizing and Transforming Primitives\<close>
 text\<open>Rewrite the primitives IPs and Ports such that can be used by the simple firewall.\<close>
 definition transform_normalize_primitives :: "'i::len common_primitive rule list \<Rightarrow> 'i common_primitive rule list" where 
     "transform_normalize_primitives =
-      optimize_matches_option compress_normalize_besteffort (*normalizes protocols, needs to go last*) \<circ>
+      optimize_matches_option compress_normalize_besteffort \<circ> \<comment> \<open>normalizes protocols, needs to go last\<close>
       normalize_rules normalize_dst_ips \<circ>
       normalize_rules normalize_src_ips \<circ>
-      normalize_rules normalize_dst_ports (*may introduce new matches on protocols*) \<circ>
-      normalize_rules normalize_src_ports (*may introduce new matches in protocols*) \<circ>
-      normalize_rules rewrite_MultiportPorts (*introduces Src_Ports and Dst_Ports matches*)"
+      normalize_rules normalize_dst_ports \<circ> \<comment> \<open>may introduce new matches on protocols\<close>
+      normalize_rules normalize_src_ports \<circ> \<comment> \<open>may introduce new matches in protocols\<close>
+      normalize_rules rewrite_MultiportPorts \<comment> \<open>introduces \<open>Src_Ports\<close> and \<open>Dst_Ports\<close> matches\<close>"
 
 
  thm normalize_primitive_extract_preserves_unrelated_normalized_n_primitive
@@ -1147,7 +1147,7 @@ theorem transform_normalize_primitives:
    have case_disc3_is_prot: "disc3 = is_Prot \<Longrightarrow>
   \<forall> r \<in> set rs. \<not> has_disc_negated disc3 False (get_match r) \<and> normalized_nnf_match (get_match r) \<and>
          \<not> has_disc_negated is_Src_Ports False (get_match r) \<and> \<not> has_disc_negated is_Dst_Ports False (get_match r) &
-         \<not> has_disc is_MultiportPorts (get_match r) (*MultiportPorts could be rewritten to negated Src/Dst Ports*) \<Longrightarrow>
+         \<not> has_disc is_MultiportPorts (get_match r) \<comment> \<open>MultiportPorts could be rewritten to negated \<open>Src\<close>/\<open>Dst\<close> Ports\<close> \<Longrightarrow>
     \<forall> r \<in> set (transform_normalize_primitives rs). normalized_nnf_match (get_match r) \<and> \<not> has_disc_negated disc3 False (get_match r) \<and>
               \<not> has_disc_negated is_Src_Ports False (get_match r) \<and> \<not> has_disc_negated is_Dst_Ports False (get_match r)"
    unfolding transform_normalize_primitives_def
@@ -1335,7 +1335,7 @@ lemma transform_upper_closure:
   and "\<forall>a. \<not> disc (Src_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Dst_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Src a) \<Longrightarrow> \<forall>a. \<not> disc (Dst a) \<Longrightarrow>
        \<forall>a. \<not> disc (IIface a) \<or> disc = is_Iiface \<Longrightarrow> \<forall>a. \<not> disc (OIface a) \<or> disc = is_Oiface \<Longrightarrow>
        (\<forall>a. \<not> disc (Prot a)) \<or>
-        disc = is_Prot \<and> (*if it is prot, there must not be negated matches on ports*)
+        disc = is_Prot \<and> \<comment> \<open>if it is prot, there must not be negated matches on ports\<close>
         (\<forall> r \<in> set rs. \<not> has_disc_negated is_Src_Ports False (get_match r) \<and>
                        \<not> has_disc_negated is_Dst_Ports False (get_match r) \<and>
                        \<not> has_disc is_MultiportPorts (get_match r)) \<Longrightarrow>

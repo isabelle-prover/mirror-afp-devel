@@ -353,7 +353,7 @@ definition mark_object_fn :: "location \<Rightarrow> ('field, 'mut, 'ref) gc_com
        \<lbrace>l @ ''_mo_mtest''\<rbrace> IF mark neq Some \<circ> fM THEN
          \<lbrace>l @ ''_mo_phase''\<rbrace> read_phase ;;
          \<lbrace>l @ ''_mo_ptest''\<rbrace> IF phase neq \<langle>ph_Idle\<rangle> THEN
-           (* CAS: claim object *)
+           \<comment> \<open>CAS: claim object\<close>
            \<lbrace>l @ ''_mo_co_lock''\<rbrace> lock ;;
            \<lbrace>l @ ''_mo_co_cmark''\<rbrace> read_mark (the \<circ> ref) cas_mark_update ;;
            \<lbrace>l @ ''_mo_co_ctest''\<rbrace> IF cas_mark eq mark THEN
@@ -843,13 +843,13 @@ definition
   store :: "('field, 'mut, 'ref) gc_com"
 where
   "store \<equiv>
-     (* Choose vars for: ref\<rightarrow>field := new_ref *)
+     \<comment> \<open>Choose vars for: \<open>ref\<rightarrow>field := new_ref\<close>\<close>
      \<lbrace>''store_choose''\<rbrace> LocalOp (\<lambda>s. { s\<lparr> tmp_ref := r, field := f, new_ref := r' \<rparr>
                                      |r f r'. r \<in> roots s \<and> r' \<in> Some ` roots s \<union> {None} }) ;;
-     (* Mark the reference we're about to overwrite. Does not update roots.  *)
+     \<comment> \<open>Mark the reference we're about to overwrite. Does not update roots.\<close>
      \<lbrace>''deref_del''\<rbrace> deref tmp_ref field ref_update ;;
      \<lbrace>''store_del''\<rbrace> mark_object ;;
-     (* Mark the reference we're about to insert. *)
+     \<comment> \<open>Mark the reference we're about to insert.\<close>
      \<lbrace>''lop_store_ins''\<rbrace> \<acute>ref := \<acute>new_ref ;;
      \<lbrace>''store_ins''\<rbrace> mark_object ;;
      \<lbrace>''store_ins''\<rbrace> write_ref tmp_ref field new_ref"
@@ -947,25 +947,25 @@ definition (in gc)
 where
   "com \<equiv>
      LOOP DO
-       \<lbrace>''idle_noop''\<rbrace> handshake_noop ;; (* hp_Idle *)
+       \<lbrace>''idle_noop''\<rbrace> handshake_noop ;; \<comment> \<open>\<open>hp_Idle\<close>\<close>
 
        \<lbrace>''idle_read_fM''\<rbrace> read_fM ;;
        \<lbrace>''idle_invert_fM''\<rbrace> \<acute>fM := (\<not> \<acute>fM) ;;
        \<lbrace>''idle_write_fM''\<rbrace> write_fM ;;
 
-       \<lbrace>''idle_flip_noop''\<rbrace> handshake_noop ;; (* hp_IdleInit *)
+       \<lbrace>''idle_flip_noop''\<rbrace> handshake_noop ;; \<comment> \<open>\<open>hp_IdleInit\<close>\<close>
 
        \<lbrace>''idle_phase_init''\<rbrace> write_phase ph_Init ;;
 
-       \<lbrace>''init_noop''\<rbrace> handshake_noop ;; (* hp_InitMark *)
+       \<lbrace>''init_noop''\<rbrace> handshake_noop ;; \<comment> \<open>\<open>hp_InitMark\<close>\<close>
 
        \<lbrace>''init_phase_mark''\<rbrace> write_phase ph_Mark ;;
        \<lbrace>''mark_read_fM''\<rbrace> read_fM ;;
        \<lbrace>''mark_write_fA''\<rbrace> write_fA fM ;;
 
-       \<lbrace>''mark_noop''\<rbrace> handshake_noop ;; (* hp_Mark *)
+       \<lbrace>''mark_noop''\<rbrace> handshake_noop ;; \<comment> \<open>\<open>hp_Mark\<close>\<close>
 
-       \<lbrace>''mark_loop_get_roots''\<rbrace> handshake_get_roots ;; (* hp_IdleMarkSweep *)
+       \<lbrace>''mark_loop_get_roots''\<rbrace> handshake_get_roots ;; \<comment> \<open>\<open>hp_IdleMarkSweep\<close>\<close>
 
        \<lbrace>''mark_loop''\<rbrace> WHILE not empty W DO
          \<lbrace>''mark_loop_inner''\<rbrace> WHILE not empty W DO
@@ -982,7 +982,7 @@ where
          \<lbrace>''mark_loop_get_work''\<rbrace> handshake_get_work
        OD ;;
 
-       (* sweep *)
+       \<comment> \<open>sweep\<close>
 
        \<lbrace>''mark_end''\<rbrace> write_phase ph_Sweep ;;
        \<lbrace>''sweep_read_fM''\<rbrace> read_fM ;;

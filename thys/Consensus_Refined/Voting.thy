@@ -62,11 +62,11 @@ text {* The sole system event. *}
 
 definition v_round :: "round \<Rightarrow> (process, val)map \<Rightarrow> (process, val)map \<Rightarrow> (v_state \<times> v_state) set" where
   "v_round r r_votes r_decisions = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s
      \<and> no_defection s r_votes r
      \<and> d_guard r_decisions r_votes
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        next_round := Suc r,
        votes := (votes s)(r := r_votes),

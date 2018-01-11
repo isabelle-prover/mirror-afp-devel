@@ -339,10 +339,10 @@ lemma lfp_gen_induct:
   notes MONO'[refine_mono] = monoD[OF M]
   assumes I0: "m0 \<le> P"
   assumes IS: "\<And>m. \<lbrakk>
-      m \<le> lfp (\<lambda>s. sup m0 (f s));  (* Assume already established invariants *)
-      m \<le> P;                       (* Assume invariant *)
-      f m \<le> lfp (\<lambda>s. sup m0 (f s)) (* Assume that step preserved est. invars *)
-    \<rbrakk> \<Longrightarrow> f m \<le> P"                 (* Show that step preserves invariant *)
+      m \<le> lfp (\<lambda>s. sup m0 (f s));  \<comment> \<open>Assume already established invariants\<close>
+      m \<le> P;                       \<comment> \<open>Assume invariant\<close>
+      f m \<le> lfp (\<lambda>s. sup m0 (f s)) \<comment> \<open>Assume that step preserved est. invars\<close>
+    \<rbrakk> \<Longrightarrow> f m \<le> P"                 \<comment> \<open>Show that step preserves invariant\<close>
   shows "lfp (\<lambda>s. sup m0 (f s)) \<le> P"
   apply (rule lfp_induct')
   apply (meson MONO' monoI order_mono_setup.refl sup_mono)

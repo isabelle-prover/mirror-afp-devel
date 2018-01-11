@@ -2200,7 +2200,7 @@ shows "\<exists>v. v \<in> {h. [h^(CARD('a)) = h] (mod u) \<and> degree h < degr
   \<and> v mod p_i \<noteq> v mod p_j
   \<and> degree (v mod p_i) = 0
   \<and> degree (v mod p_j) = 0
-(*This implies that the algorithm decreases the degree of the reducible polynomials in each step: *)
+\<comment> \<open>This implies that the algorithm decreases the degree of the reducible polynomials in each step:\<close>
   \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> gcd w (v - [:s:]) \<noteq> 1)"
 proof -
   have f_not_0: "u \<noteq> 0" using monic_f by auto
@@ -2367,7 +2367,7 @@ assumes finite_P: "finite P"
 shows "\<exists>v \<in> B. v mod p_i \<noteq> v mod p_j
   \<and> degree (v mod p_i) = 0
   \<and> degree (v mod p_j) = 0
-(*This implies that the algorithm decreases the degree of the reducible polynomials in each step: *)
+\<comment> \<open>This implies that the algorithm decreases the degree of the reducible polynomials in each step:\<close>
   \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> \<not> coprime w (v - [:s:]))"
 proof -
   have f_not_0: "u \<noteq> 0" using monic_f by auto

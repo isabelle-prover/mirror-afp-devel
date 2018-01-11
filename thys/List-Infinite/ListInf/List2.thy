@@ -1045,9 +1045,9 @@ by (induct xs, simp+)
 subsubsection {* Mapping functions with two arguments to lists *}
 
 primrec map2 :: "
-  (* Function taking two parameters *)
+  \<comment> \<open>Function taking two parameters\<close>
   ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow>
-  (* Lists of parameters *)
+  \<comment> \<open>Lists of parameters\<close>
   'a list \<Rightarrow> 'b list \<Rightarrow>
   'c list"
 where
