@@ -54,7 +54,7 @@ proof -
     (is "_ = (?sum = 1)")
     unfolding stoch_vec_def matrix_vector_mult_def by auto
   also have "?sum = (\<Sum>j\<in>UNIV. \<Sum>i\<in>UNIV. a $ i $ j * v $ j)" 
-    by (rule sum.commute)
+    by (rule sum.swap)
   also have "\<dots> = (\<Sum>j\<in>UNIV. v $ j)" 
     by (rule sum.cong[OF refl], insert *, auto simp: sum_distrib_right[symmetric])
   also have "\<dots> = 1" using * by auto

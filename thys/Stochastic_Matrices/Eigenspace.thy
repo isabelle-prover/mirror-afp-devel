@@ -38,7 +38,7 @@ lemma unique_eigenvector_jnf: assumes jnf: "jordan_nf (A :: 'a :: field mat) n_a
 shows "\<exists> a. v = a \<cdot>\<^sub>v w" 
 proof -
   let ?cA = "char_matrix A lam" 
-  from similar_matD[OF jnf[unfolded jordan_nf_def]] obtain n where 
+  from similar_matD jnf[unfolded jordan_nf_def] obtain n where 
     A: "A \<in> carrier_mat n n" by auto
   from dim_gen_eigenspace_order_char_poly[OF jnf, of lam 1, unfolded ord]
   have dim: "kernel_dim ?cA \<le> 1" 

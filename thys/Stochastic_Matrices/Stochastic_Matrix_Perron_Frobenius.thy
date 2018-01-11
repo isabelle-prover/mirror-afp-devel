@@ -94,8 +94,8 @@ proof -
       from multiplicity_sr_1[unfolded sr1] have "order 1 (charpoly A) = 1" .
       from unique_eigen_vector_real[OF this *(1,3)] obtain a where 
         vw: "v = a *s w" by auto
-      from 1(2,4)[unfolded stoch_vec_def] have "sum (op $h v) UNIV = sum (op $h w) UNIV" by auto
-      also have "sum (op $h v) UNIV = a * sum (op $h w) UNIV" unfolding vw 
+      from 1(2,4)[unfolded stoch_vec_def] have "sum (($h) v) UNIV = sum (($h) w) UNIV" by auto
+      also have "sum (($h) v) UNIV = a * sum (($h) w) UNIV" unfolding vw 
         by (auto simp: sum_distrib_left)
       finally have "a = 1" using 1(2)[unfolded stoch_vec_def] by auto
       with vw show "v = w" by auto

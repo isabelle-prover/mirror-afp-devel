@@ -42,8 +42,7 @@ proof -
     by blast
   define q::nat where "q \<equiv> 2 ^ nat \<bar>bitlen q'\<bar>"
   from bitlen_bounds[of q'] \<open>0 < q'\<close> have "q' < q"
-    apply (auto simp: q_def)
-    by (metis of_nat_less_iff of_nat_power transfer_int_nat_numerals(3))
+    by (auto simp: q_def)
   then have "inverse q < inverse q'"
     using \<open>0 < q'\<close>
     by (auto simp: divide_simps)
