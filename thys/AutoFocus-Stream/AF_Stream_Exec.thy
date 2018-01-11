@@ -37,17 +37,17 @@ text {*
 type_synonym ('comp, 'input) Comp_Trans_Fun = "'input \<Rightarrow> 'comp \<Rightarrow> 'comp"
 
 
-(* Execute a component for all inputs in the input stream ('input list) *)
+\<comment> \<open>Execute a component for all inputs in the input stream @{typ "'input list"}\<close>
 primrec f_Exec_Comp :: "('comp, 'input) Comp_Trans_Fun \<Rightarrow> 'input list \<Rightarrow> 'comp \<Rightarrow> 'comp"
 where
   f_Exec_Nil:  "f_Exec_Comp trans_fun [] c = c"
 | f_Exec_Cons: "f_Exec_Comp trans_fun (x#xs) c = f_Exec_Comp trans_fun xs (trans_fun x c)"
 
-(* Execute the component for at most n steps *)
+\<comment> \<open>Execute the component for at most n steps\<close>
 definition f_Exec_Comp_N :: "('comp, 'input) Comp_Trans_Fun \<Rightarrow> nat \<Rightarrow> 'input list \<Rightarrow> 'comp \<Rightarrow> 'comp"
   where "f_Exec_Comp_N trans_fun n xs c \<equiv> f_Exec_Comp trans_fun (xs \<down> n) c"
 
-(* Produce the component stream for all inputs in the input stream *)
+\<comment> \<open>Produce the component stream for all inputs in the input stream\<close>
 primrec f_Exec_Comp_Stream :: "('comp, 'input) Comp_Trans_Fun \<Rightarrow> 'input list \<Rightarrow> 'comp \<Rightarrow> 'comp list"
 where
   f_Exec_Stream_Nil:  "f_Exec_Comp_Stream trans_fun [] c = []"
@@ -1261,11 +1261,11 @@ text {*
 definition
   Equiv_Exec :: "
     'input \<Rightarrow>
-    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> (* Equivalence predicate for local states *)
+    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> \<comment> \<open>Equivalence predicate for local states\<close>
     ('comp1, 'state1) Comp_Local_State \<Rightarrow>
     ('comp2, 'state2) Comp_Local_State \<Rightarrow>
-    ('input, 'input1) Port_Input_Value \<Rightarrow> (* Input adaptor for first component *)
-    ('input, 'input2) Port_Input_Value \<Rightarrow> (* Input adaptor for second component *)
+    ('input, 'input1) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for first component\<close>
+    ('input, 'input2) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for second component\<close>
     ('comp1, 'output) Port_Output_Value \<Rightarrow>
     ('comp2, 'output) Port_Output_Value \<Rightarrow>
     ('comp1, 'input1 message_af) Comp_Trans_Fun \<Rightarrow>
@@ -1301,11 +1301,11 @@ text {*
 definition
   Equiv_Exec_stable_set :: "
     'input set \<Rightarrow>
-    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> (* Equivalence predicate for local states *)
+    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> \<comment> \<open>Equivalence predicate for local states\<close>
     ('comp1, 'state1) Comp_Local_State \<Rightarrow>
     ('comp2, 'state2) Comp_Local_State \<Rightarrow>
-    ('input, 'input1) Port_Input_Value \<Rightarrow> (* Input adaptor for first component *)
-    ('input, 'input2) Port_Input_Value \<Rightarrow> (* Input adaptor for second component *)
+    ('input, 'input1) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for first component\<close>
+    ('input, 'input2) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for second component\<close>
     ('comp1, 'output) Port_Output_Value \<Rightarrow>
     ('comp2, 'output) Port_Output_Value \<Rightarrow>
     ('comp1, 'input1 message_af) Comp_Trans_Fun \<Rightarrow>
@@ -1324,11 +1324,11 @@ where
 
 definition
   Equiv_Exec_stable :: "
-    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> (* Equivalence predicate for local states *)
+    ('state1 \<Rightarrow> 'state2 \<Rightarrow> bool) \<Rightarrow> \<comment> \<open>Equivalence predicate for local states\<close>
     ('comp1, 'state1) Comp_Local_State \<Rightarrow>
     ('comp2, 'state2) Comp_Local_State \<Rightarrow>
-    ('input, 'input1) Port_Input_Value \<Rightarrow> (* Input adaptor for first component *)
-    ('input, 'input2) Port_Input_Value \<Rightarrow> (* Input adaptor for second component *)
+    ('input, 'input1) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for first component\<close>
+    ('input, 'input2) Port_Input_Value \<Rightarrow> \<comment> \<open>Input adaptor for second component\<close>
     ('comp1, 'output) Port_Output_Value \<Rightarrow>
     ('comp2, 'output) Port_Output_Value \<Rightarrow>
     ('comp1, 'input1 message_af) Comp_Trans_Fun \<Rightarrow>
@@ -1791,8 +1791,8 @@ subsubsection {* Basic definitions for accelerated execution *}
 text {* Stream processing with accelerated components *}
 
 definition f_Exec_Comp_Stream_Acc_Output ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> (* Output extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> \<comment> \<open>Output extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input fstream_af \<Rightarrow> 'comp \<Rightarrow>
     'output fstream_af"
@@ -1800,8 +1800,8 @@ definition f_Exec_Comp_Stream_Acc_Output ::
     (map output_fun (f_Exec_Comp_Stream trans_fun (xs \<odot>\<^sub>f k) c)) \<div>\<^sub>f k"
 
 definition f_Exec_Comp_Stream_Acc_LocalState ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'state) \<Rightarrow> (* Local state extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'state) \<Rightarrow> \<comment> \<open>Local state extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input fstream_af \<Rightarrow> 'comp \<Rightarrow>
     'state list"
@@ -1809,8 +1809,8 @@ definition f_Exec_Comp_Stream_Acc_LocalState ::
     (map localState (f_Exec_Comp_Stream trans_fun (xs \<odot>\<^sub>f k) c)) \<div>\<^bsub>fl\<^esub> k"
 
 definition i_Exec_Comp_Stream_Acc_Output ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> (* Output extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> \<comment> \<open>Output extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input istream_af \<Rightarrow> 'comp \<Rightarrow>
     'output istream_af"
@@ -1818,8 +1818,8 @@ definition i_Exec_Comp_Stream_Acc_Output ::
     (output_fun \<circ> (i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c)) \<div>\<^sub>i k"
 
 definition i_Exec_Comp_Stream_Acc_LocalState ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'state) \<Rightarrow> (* Local state extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'state) \<Rightarrow> \<comment> \<open>Local state extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input istream_af \<Rightarrow> 'comp \<Rightarrow>
     'state ilist"
@@ -1827,8 +1827,8 @@ definition i_Exec_Comp_Stream_Acc_LocalState ::
     (localState \<circ> (i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c)) \<div>\<^bsub>il\<^esub> k"
 
 definition f_Exec_Comp_Stream_Acc_Output_Init ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> (* Output extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> \<comment> \<open>Output extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input fstream_af \<Rightarrow> 'comp \<Rightarrow>
     'output fstream_af"
@@ -1836,16 +1836,16 @@ definition f_Exec_Comp_Stream_Acc_Output_Init ::
     (output_fun c) # f_Exec_Comp_Stream_Acc_Output k output_fun trans_fun xs c"
 
 definition f_Exec_Comp_Stream_Acc_LocalState_Init ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'state) \<Rightarrow> (* Local state extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'state) \<Rightarrow> \<comment> \<open>Local state extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow> 'input fstream_af \<Rightarrow> 'comp \<Rightarrow>
     'state list"
   where "f_Exec_Comp_Stream_Acc_LocalState_Init k localState trans_fun xs c \<equiv>
     (localState c) # f_Exec_Comp_Stream_Acc_LocalState k localState trans_fun xs c"
 
 definition i_Exec_Comp_Stream_Acc_Output_Init ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> (* Output extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> \<comment> \<open>Output extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input istream_af \<Rightarrow> 'comp \<Rightarrow>
     'output istream_af"
@@ -1853,8 +1853,8 @@ definition i_Exec_Comp_Stream_Acc_Output_Init ::
     [output_fun c] \<frown> (i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c)"
 
 definition i_Exec_Comp_Stream_Acc_LocalState_Init ::
-  "nat \<Rightarrow> (* Acceleration factor *)
-    ('comp \<Rightarrow> 'state) \<Rightarrow> (* Local state extraction function *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
+    ('comp \<Rightarrow> 'state) \<Rightarrow> \<comment> \<open>Local state extraction function\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
     'input istream_af \<Rightarrow> 'comp \<Rightarrow>
     'state ilist"
@@ -2174,24 +2174,24 @@ done
 text {* Complete execution cycles/steps of accelrated execution *}
 
 definition Acc_Trans_Fun_Step ::
-  "nat \<Rightarrow> (* Acceleration factor *)
+  "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
     ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow>
-    ('comp list \<Rightarrow> 'comp) \<Rightarrow> (* Pointwise output shrink function *)
+    ('comp list \<Rightarrow> 'comp) \<Rightarrow> \<comment> \<open>Pointwise output shrink function\<close>
     'input message_af \<Rightarrow> 'comp \<Rightarrow>
     'comp"
   where "Acc_Trans_Fun_Step k trans_fun pointwise_shrink x c \<equiv>
     pointwise_shrink (f_Exec_Comp_Stream trans_fun (x # \<NoMsg>\<^bsup>k - Suc 0\<^esup>) c)"
 
 definition is_Pointwise_Output_Shrink ::
-  "('comp list \<Rightarrow> 'comp) \<Rightarrow> (* Pointwise output shrink function *)
-    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> (* Output extraction function for consideration *)
+  "('comp list \<Rightarrow> 'comp) \<Rightarrow> \<comment> \<open>Pointwise output shrink function\<close>
+    ('comp \<Rightarrow> 'output message_af) \<Rightarrow> \<comment> \<open>Output extraction function for consideration\<close>
     bool"
   where "is_Pointwise_Output_Shrink pointwise_shrink output_fun \<equiv>
     \<forall>cs. output_fun (pointwise_shrink cs) = last_message (map output_fun cs)"
 
 primrec is_Pointwise_Output_Shrink_list ::
-  "('comp list \<Rightarrow> 'comp) \<Rightarrow> (* Pointwise output shrink function *)
-    ('comp \<Rightarrow> 'output message_af) list \<Rightarrow> (* List of output extraction functions for consideration *)
+  "('comp list \<Rightarrow> 'comp) \<Rightarrow> \<comment> \<open>Pointwise output shrink function\<close>
+    ('comp \<Rightarrow> 'output message_af) list \<Rightarrow> \<comment> \<open>List of output extraction functions for consideration\<close>
     bool"
 where
   "is_Pointwise_Output_Shrink_list pointwise_shrink [] = True"
@@ -2200,8 +2200,8 @@ where
      is_Pointwise_Output_Shrink_list pointwise_shrink fs)"
 
 definition is_correct_localState_Pointwise_Output_Shrink ::
-  "('comp list \<Rightarrow> 'comp) \<Rightarrow> (* Pointwise output shrink function *)
-    ('comp \<Rightarrow> 'state) \<Rightarrow> (* Local state extraction function *)
+  "('comp list \<Rightarrow> 'comp) \<Rightarrow> \<comment> \<open>Pointwise output shrink function\<close>
+    ('comp \<Rightarrow> 'state) \<Rightarrow> \<comment> \<open>Local state extraction function\<close>
     bool"
   where "is_correct_localState_Pointwise_Output_Shrink pointwise_shrink localState \<equiv>
     \<forall>cs. cs \<noteq> [] \<longrightarrow> localState (pointwise_shrink cs) = localState (last cs)"
@@ -2470,8 +2470,8 @@ lemma f_Equiv_Exec_Stream_expand_shrink_equiv_state_set[rule_format]: "
       trans_fun1 trans_fun2 k1 k2
       (f_Exec_Comp trans_fun1 (map input_fun1 input0 \<odot>\<^sub>f k1) c1)
       (f_Exec_Comp trans_fun2 (map input_fun2 input0 \<odot>\<^sub>f k2) c2));
-      (* equiv_states relation implies equivalent executions
-         not only at the beginning but also after processing an input *)
+      \<comment> \<open>\<open>equiv_states\<close> relation implies equivalent executions\<close>
+      \<comment> \<open>not only at the beginning but also after processing an input\<close>
    set input \<subseteq> A; i < length input \<rbrakk> \<Longrightarrow>
    equiv_states
      (localState1 ((f_Exec_Comp_Stream trans_fun1 (map input_fun1 input \<odot>\<^sub>f k1) c1) \<div>\<^bsub>fl\<^esub> k1 ! i))
@@ -2686,8 +2686,8 @@ lemma f_Equiv_Exec_Stream_Acc_LocalState_set: "
       equiv_states localState1 localState2
       input_fun1 input_fun2 output_fun1 output_fun2
       trans_fun1 trans_fun2 k1 k2 c1 c2;
-      (* equiv_states relation implies equivalent executions
-         not only at the beginning but also after processing an input *)
+      \<comment> \<open>\<open>equiv_states\<close> relation implies equivalent executions\<close>
+      \<comment> \<open>not only at the beginning but also after processing an input\<close>
     set input \<subseteq> A;
     i < length input \<rbrakk> \<Longrightarrow>
   equiv_states
@@ -2708,8 +2708,8 @@ lemma f_Equiv_Exec_Stream_Acc_LocalState: "
       equiv_states localState1 localState2
       input_fun1 input_fun2 output_fun1 output_fun2
       trans_fun1 trans_fun2 k1 k2 c1 c2;
-      (* equiv_states relation implies equivalent executions
-         not only at the beginning but also after processing an input *)
+      \<comment> \<open>\<open>equiv_states\<close> relation implies equivalent executions\<close>
+      \<comment> \<open>not only at the beginning but also after processing an input\<close>
     i < length input \<rbrakk> \<Longrightarrow>
   equiv_states
     (f_Exec_Comp_Stream_Acc_LocalState k1 localState1 trans_fun1 (map input_fun1 input) c1 ! i)

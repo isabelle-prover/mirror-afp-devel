@@ -53,7 +53,7 @@ definition "lookup2 rbt = (\<lambda>(x1, x2). Option.bind (RBT.lookup rbt x1) (\
 definition "insert2 = (\<lambda>(x1, x2) v. RBT.modify_def RBT.empty x1 (RBT.insert x2 v))"
 end
 lemmas [code] =
-  (*def*)
+  \<comment> \<open>def\<close>
   RBT.modify_def_def
   RBT.lookup2_def
   RBT.insert2_def
@@ -72,7 +72,7 @@ definition "unique f l = List.map_filter id (fst
     RBT.empty))"
 end
 lemmas [code] =
-  (*def*)
+  \<comment> \<open>def\<close>
   L.unique_def
 
 end

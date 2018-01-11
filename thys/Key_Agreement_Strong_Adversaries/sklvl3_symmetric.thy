@@ -15,7 +15,7 @@
 
 *******************************************************************************)
 
-section {* SKEME Protocol (L3 with symmetric implementation) *}
+section \<open>SKEME Protocol (L3 with symmetric implementation)\<close>
 
 theory sklvl3_symmetric
 imports sklvl3 Implem_symmetric

@@ -15,14 +15,14 @@
 
 *******************************************************************************)
 
-section {* Injective Agreement (L0) *}
+section \<open>Injective Agreement (L0)\<close>
 
 theory AuthenticationI
 imports AuthenticationN
 begin
 
 (**************************************************************************************************)
-subsection {* State and events *}
+subsection \<open>State and events\<close>
 (**************************************************************************************************)
 
 type_synonym
@@ -47,9 +47,9 @@ definition
   a0i_commit :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0i_state \<times> a0i_state) set"
 where 
   "a0i_commit A B M \<equiv> {(s, s').
-   (*guard*)
+   \<comment> \<open>guard\<close>
      signals s (Commit A B M) < signals s (Running A B M) \<and>
-   (* actions: *)
+   \<comment> \<open>actions:\<close>
      s' = s\<lparr>signals := addSignal (signals s) (Commit A B M)\<rparr>
   }"
 
@@ -77,7 +77,7 @@ by (auto)
 
 
 (**************************************************************************************************)
-subsection {* Injective agreement invariant *}
+subsection \<open>Injective agreement invariant\<close>
 (**************************************************************************************************)
 
 definition 
@@ -116,7 +116,7 @@ done
 
 
 (**************************************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (**************************************************************************************************)
 
 definition
@@ -162,7 +162,7 @@ by (rule Refinement_basic) (auto)
 
 
 (**************************************************************************************************)
-subsection {* Derived invariant *}
+subsection \<open>Derived invariant\<close>
 (**************************************************************************************************)
 
 lemma iagreement_implies_niagreement [iff]: "a0i_agreement \<subseteq> a0n_agreement"

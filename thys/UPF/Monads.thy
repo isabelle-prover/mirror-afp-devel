@@ -221,7 +221,7 @@ where "mbind' [] iostep \<sigma> = Some([], \<sigma>)" |
                 (case iostep a \<sigma> of 
                      None   \<Rightarrow> None
                   |  Some (out, \<sigma>') \<Rightarrow> (case mbind H iostep \<sigma>' of 
-                                          None    \<Rightarrow> None   (*  fail-strict *) 
+                                          None    \<Rightarrow> None   \<comment> \<open>fail-strict\<close>
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
 
 text{* 

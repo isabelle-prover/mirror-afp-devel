@@ -15,12 +15,12 @@
 
 *******************************************************************************)
 
-section {* Runs *}
+section \<open>Runs\<close>
 
 theory Runs imports Messages
 begin
 
-subsection {* Type definitions *}
+subsection \<open>Type definitions\<close>
 
 
 datatype role_t = Init | Resp 

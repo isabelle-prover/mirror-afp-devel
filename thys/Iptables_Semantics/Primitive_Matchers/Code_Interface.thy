@@ -158,7 +158,7 @@ begin
       (\<lambda> m. case m of Src_Ports (L4Ports x pts) \<Rightarrow> if x \<noteq> 0 then undefined else Src_Ports (L4Ports protocol pts)
                    |  Dst_Ports (L4Ports x pts) \<Rightarrow> if x \<noteq> 0 then undefined else Dst_Ports (L4Ports protocol pts)
                    |  MultiportPorts (L4Ports x pts) \<Rightarrow> if x \<noteq> 0 then undefined else MultiportPorts (L4Ports protocol pts)
-                   |  Prot _ \<Rightarrow> undefined (*there should be no more match on the protocol if it was parsed from an iptables-save line*)
+                   |  Prot _ \<Rightarrow> undefined \<comment> \<open>there should be no more match on the protocol if it was parsed from an iptables-save line\<close>
                    | m \<Rightarrow> m
       )"
 

@@ -457,7 +457,7 @@ definition
     ('Com\<^sub>C \<times> (Mode \<Rightarrow> 'Var\<^sub>C set)) \<times> ('Var\<^sub>C \<Rightarrow> 'Val)) set"
 where
   "R\<^sub>C_of \<R>\<^sub>A \<R> P \<equiv> {(x,y). \<exists>x\<^sub>A y\<^sub>A. (x\<^sub>A,x) \<in> \<R> \<and> (y\<^sub>A,y) \<in> \<R> \<and> (x\<^sub>A,y\<^sub>A) \<in> \<R>\<^sub>A \<and>
-     snd (fst x) = snd (fst y) (* TODO: annoying to have to say *) \<and>
+     snd (fst x) = snd (fst y) \<comment> \<open>TODO: annoying to have to say\<close> \<and>
      conc.low_mds_eq (snd (fst x)) (snd x) (snd y) \<and>
      (x,y) \<in> P}"
 

@@ -170,7 +170,7 @@ begin
     qed
 
   lemma matches_oiface_rewrite:
-       "normalized_nnf_match m \<Longrightarrow> ipassmt_sanity_nowildcards ipassmt (*TODO: check?*) \<Longrightarrow>
+       "normalized_nnf_match m \<Longrightarrow> ipassmt_sanity_nowildcards ipassmt \<comment> \<open>TODO: check?\<close> \<Longrightarrow>
         correct_routing rt \<Longrightarrow>
         ipassmt = map_of (routing_ipassmt rt) \<Longrightarrow>
         output_iface (routing_table_semantics rt (p_dst p)) = p_oiface p \<Longrightarrow>

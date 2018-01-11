@@ -24,8 +24,8 @@ definition root_bound :: "int poly \<Rightarrow> rat" where
      n = degree p;
      m = 1 + div_ceiling (max_list_non_empty (map (\<lambda>i. abs (coeff p i)) [0..<n])) 
           (abs (lead_coeff p))
-     (* round to the next higher number 2^n, so that bisection will 
-       stay on integers for as long as possible *)
+     \<comment> \<open>round to the next higher number \<open>2^n\<close>, so that bisection will\<close>
+     \<comment> \<open>stay on integers for as long as possible\<close>
    in of_int (2 ^ (log_ceiling 2 m))"
   
 partial_function (tailrec) roots_of_2_main :: 

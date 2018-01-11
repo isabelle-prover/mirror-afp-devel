@@ -22,13 +22,13 @@ definition obsv_round
   :: "round \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> (process, val)map \<Rightarrow> process set \<Rightarrow> (obsv_state \<times> obsv_state) set" 
   where
   "obsv_round r S v r_decisions Os = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s
      \<and> (S \<noteq> {} \<longrightarrow> obs_safe r s v)
      \<and> d_guard r_decisions (const_map v S)
      \<and> (S \<in> Quorum \<longrightarrow> Os = UNIV)
      \<and> (Os \<noteq> {} \<longrightarrow> S \<noteq> {})
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        next_round := Suc r
        , votes := (votes s)(r := const_map v S)

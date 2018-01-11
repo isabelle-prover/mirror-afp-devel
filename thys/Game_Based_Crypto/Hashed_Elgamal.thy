@@ -122,7 +122,7 @@ fun elgamal_adversary
 where
   "elgamal_adversary (\<A>1, \<A>2) \<alpha> \<beta> = do {
     (((msg1, msg2), \<sigma>), s) \<leftarrow> exec_gpv hash.oracle (\<A>1 \<alpha>) hash.initial;
-    (* have to check that the attacker actually sends an element from the group; otherwise stop early *)
+    \<comment> \<open>have to check that the attacker actually sends an element from the group; otherwise stop early\<close>
     TRY do {
       _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
       h' \<leftarrow> spmf_of_set (nlists UNIV len_plain);
@@ -235,7 +235,7 @@ proof -
     TRY do {
       _ :: unit \<leftarrow> assert_spmf (valid_plains msg1 msg2);
       h \<leftarrow> spmf_of_set (nlists UNIV len_plain);
-      (* We do not do the lookup in s_h here, so the rest differs only if the adversary guessed y *)
+      \<comment> \<open>We do not do the lookup in \<open>s_h\<close> here, so the rest differs only if the adversary guessed \<open>y\<close>\<close>
       let cipher = (\<^bold>g [^] y, h [\<oplus>] (if b then msg1 else msg2));
       (guess, (s', s_h')) \<leftarrow> exec_gpv hash_oracle'' (\<A>2 cipher \<sigma>) (s, s_h);
       return_spmf (guess = b, \<^bold>g [^] (x * y) \<in> s')

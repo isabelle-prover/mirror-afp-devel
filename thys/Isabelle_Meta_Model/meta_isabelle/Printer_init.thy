@@ -262,18 +262,16 @@ end
 subsection\<open>Interface with Types\<close>
 
 datatype ml_int = ML_int
-code_printing type_constructor ml_int \<rightharpoonup> (Haskell) "CodeType.MlInt" (* syntax! *)
+code_printing type_constructor ml_int \<rightharpoonup> (Haskell) "CodeType.MlInt" \<comment> \<open>syntax!\<close>
             | type_constructor ml_int \<rightharpoonup> (OCaml) "CodeType.mlInt"
             | type_constructor ml_int \<rightharpoonup> (Scala) "CodeType.mlInt"
             | type_constructor ml_int \<rightharpoonup> (SML) "CodeType.mlInt"
 
 datatype 'a ml_monad = ML_monad 'a
-code_printing type_constructor ml_monad \<rightharpoonup> (Haskell) "CodeType.MlMonad _" (* syntax! *)
+code_printing type_constructor ml_monad \<rightharpoonup> (Haskell) "CodeType.MlMonad _" \<comment> \<open>syntax!\<close>
             | type_constructor ml_monad \<rightharpoonup> (OCaml) "_ CodeType.mlMonad"
             | type_constructor ml_monad \<rightharpoonup> (Scala) "CodeType.mlMonad [_]"
             | type_constructor ml_monad \<rightharpoonup> (SML) "_ CodeType.mlMonad"
-
-(* *)
 
 type_synonym ml_string = String.literal
 
@@ -281,13 +279,13 @@ subsection\<open>Interface with Constants\<close>
 
 text\<open>module CodeConst\<close>
 
-consts out_file1 :: "((ml_string \<Rightarrow> '\<alpha>1 \<Rightarrow> unit ml_monad) (* fprintf *) \<Rightarrow> unit ml_monad) \<Rightarrow> ml_string \<Rightarrow> unit ml_monad"
+consts out_file1 :: "((ml_string \<Rightarrow> '\<alpha>1 \<Rightarrow> unit ml_monad) \<comment> \<open>fprintf\<close> \<Rightarrow> unit ml_monad) \<Rightarrow> ml_string \<Rightarrow> unit ml_monad"
 code_printing constant out_file1 \<rightharpoonup> (Haskell) "CodeConst.outFile1"
             | constant out_file1 \<rightharpoonup> (OCaml) "CodeConst.outFile1"
             | constant out_file1 \<rightharpoonup> (Scala) "CodeConst.outFile1"
             | constant out_file1 \<rightharpoonup> (SML) "CodeConst.outFile1"
 
-consts out_stand1 :: "((ml_string \<Rightarrow> '\<alpha>1 \<Rightarrow> unit ml_monad) (* fprintf *) \<Rightarrow> unit ml_monad) \<Rightarrow> unit ml_monad"
+consts out_stand1 :: "((ml_string \<Rightarrow> '\<alpha>1 \<Rightarrow> unit ml_monad) \<comment> \<open>fprintf\<close> \<Rightarrow> unit ml_monad) \<Rightarrow> unit ml_monad"
 code_printing constant out_stand1 \<rightharpoonup> (Haskell) "CodeConst.outStand1"
             | constant out_stand1 \<rightharpoonup> (OCaml) "CodeConst.outStand1"
             | constant out_stand1 \<rightharpoonup> (Scala) "CodeConst.outStand1"
@@ -304,7 +302,7 @@ code_printing constant bind \<rightharpoonup> (Haskell) "CodeConst.Monad.bind"
 consts return :: "'a \<Rightarrow> 'a ml_monad"
 code_printing constant return \<rightharpoonup> (Haskell) "CodeConst.Monad.return"
             | constant return \<rightharpoonup> (OCaml) "CodeConst.Monad.return"
-            | constant return \<rightharpoonup> (Scala) "CodeConst.Monad.Return" (* syntax! *)
+            | constant return \<rightharpoonup> (Scala) "CodeConst.Monad.Return" \<comment> \<open>syntax!\<close>
             | constant return \<rightharpoonup> (SML) "CodeConst.Monad.return"
 
 text\<open>module Printf\<close>
@@ -409,7 +407,7 @@ parse_translation \<open>
            | (5, x) => f' @{const_syntax sprintf5} x
           end)
         :: cartouche_grammar)
-       (fn 37 (* #"%" *) => (fn x => x + 1)
+       (fn 37 \<comment> \<open>\<^verbatim>\<open>#"%"\<close>\<close> => (fn x => x + 1)
          | _ => I)
        0)]
 \<close>

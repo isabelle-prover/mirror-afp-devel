@@ -433,7 +433,7 @@ lemma "map simple_rule_ipv6_toString
   ''DROP     udp  --  ::/0            ::/0   sports: 65002:65535 dports: 5003'',
   ''DROP     udp  --  ::/0            ::/0   sports: 65002:65535 dports: 5005:65000'',
   ''DROP     udp  --  ::/0            ::/0   sports: 65002:65535 dports: 65002:65535'',
-  (*The following eth0 rules are shadowed*)
+  \<comment> \<open>The following eth0 rules are shadowed\<close>
   ''DROP     tcp  --  ::/0            ::/0 in: eth0   dports: 0:79'',
   ''DROP     tcp  --  ::/0            ::/0 in: eth0   dports: 81:442'',
   ''DROP     tcp  --  ::/0            ::/0 in: eth0   dports: 444:9024'',

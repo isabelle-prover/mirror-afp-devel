@@ -97,7 +97,7 @@ definition only_allow_tcp_and_udp :: "(string \<times> 32 common_primitive rule 
     [(''FORWARD'',
       [Rule MatchAny (Call ''OnlyTCPandUDP''),
        Rule (Match (Extra ''more fine-grained filtering'')) action.Drop
-      (*now further more fine-grained filtering rules here*)]),
+      \<comment> \<open>now further more fine-grained filtering rules here\<close>]),
      (''OnlyTCPandUDP'',
       [Rule (Match (Prot (Proto TCP))) Return,
        Rule (Match (Prot (Proto UDP))) Return,

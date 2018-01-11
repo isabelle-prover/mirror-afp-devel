@@ -14,40 +14,40 @@
 
 *******************************************************************************)
 
-section {* Refinement 3b: Encryption-based Dolev-Yao Protocol (Variant A) *}
+section \<open>Refinement 3b: Encryption-based Dolev-Yao Protocol (Variant A)\<close>
 
 theory m3_enc imports m2_confid_chan "../Refinement/Message"
 begin
 
-text {* This refines the channel protocol using public-key encryption and
+text \<open>This refines the channel protocol using public-key encryption and
 adds a full-fledged Dolev-Yao adversary.  In this variant, the adversary is 
 realized using Paulson's message derivation closure operators (as opposed to
 a collection of one-step message construction and decomposition events a la 
-Strand spaces). *}
+Strand spaces).\<close>
 
-text {* Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"} (again). *}
+text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
+@{text "dom"} (again).\<close>
 
 declare domIff [simp, iff del]
 
 
-text {* A general lemma about @{text "parts"} (move?!). *}
+text \<open>A general lemma about @{text "parts"} (move?!).\<close>
 
 lemmas parts_insertD = parts_insert [THEN equalityD1, THEN subsetD]
 
 
 (******************************************************************************)
-subsection {* State and observations *}
+subsection \<open>State and observations\<close>
 (******************************************************************************)
 
-text {* We extend the state of @{term m1} with two confidential channels
-between each pair of agents, one channel for each protocol message. *}
+text \<open>We extend the state of @{term m1} with two confidential channels
+between each pair of agents, one channel for each protocol message.\<close>
 
 record m3_state = m1_state +
-  IK :: "msg set"                                 -- {* intruder knowledge *}
+  IK :: "msg set"                                 \<comment> \<open>intruder knowledge\<close>
 
 
-text {* Observations: local agent states. *}
+text \<open>Observations: local agent states.\<close>
 
 type_synonym 
   m3_obs = m1_obs
@@ -60,7 +60,7 @@ definition
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
 definition
@@ -68,11 +68,11 @@ definition
 where
   "m3_step1 Ra A B Na \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
        IK := insert (Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace>)  (IK s)
@@ -85,13 +85,13 @@ definition
 where
   "m3_step2 Rb A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace> \<in> IK s \<and>      (* receive msg 1 *)
+     Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace> \<in> IK s \<and>      \<comment> \<open>receive msg 1\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
        IK := insert (Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace>) (IK s) 
@@ -103,32 +103,32 @@ definition
 where
   "m3_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace> \<in> IK s \<and>   (* recv msg2 *)
+     Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace> \<in> IK s \<and>   \<comment> \<open>recv msg2\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
   }"
 
 
-text {* Standard Dolev-Yao intruder. *}
+text \<open>Standard Dolev-Yao intruder.\<close>
 
 definition 
   m3_DY_fake :: "(m3_state \<times> m3_state) set"
 where
   "m3_DY_fake \<equiv> {(s, s1).
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr> IK := synth (analz (IK s)) \<rparr>  
   }"
 
 
-text {* Transition system. *}
+text \<open>Transition system.\<close>
 
 definition 
   m3_init :: "m3_state set" 
@@ -163,17 +163,17 @@ lemmas m3_defs =
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-text {* Automatic tool tuning. Tame too-agressive pair decomposition, which is
-declared as a safe elim rule ([elim!]). *}
+text \<open>Automatic tool tuning. Tame too-agressive pair decomposition, which is
+declared as a safe elim rule ([elim!]).\<close>
 
 lemmas MPair_parts [rule del, elim]
 lemmas MPair_analz [rule del, elim]
 
-text {* Specialize injectiveness of @{term "parts"} and @{term "analz"} to 
-enable aggressive application. *}
+text \<open>Specialize injectiveness of @{term "parts"} and @{term "analz"} to 
+enable aggressive application.\<close>
 
 lemmas parts_Inj_IK = parts.Inj [where H="IK s" for s]
 lemmas analz_Inj_IK = analz.Inj [where H="IK s" for s]
@@ -181,11 +181,11 @@ lemmas analz_Inj_IK = analz.Inj [where H="IK s" for s]
 declare analz_into_parts [dest]
 
 
-subsubsection {* inv1: Key secrecy *}
+subsubsection \<open>inv1: Key secrecy\<close>
 (******************************************************************************)
  
-text {* Decryption keys are secret, that is, the intruder only knows private 
-keys of corrupted agents. *}
+text \<open>Decryption keys are secret, that is, the intruder only knows private 
+keys of corrupted agents.\<close>
 
 definition
   m3_inv1_keys :: "m3_state set" where
@@ -214,16 +214,16 @@ by (rule inv_rule_basic, auto)
 
 
 (******************************************************************************)
-subsection {* Simulation relation *}
+subsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* Simulation relation is canonical. It states that the protocol messages
+text \<open>Simulation relation is canonical. It states that the protocol messages
 appearing in the intruder knowledge refine those occurring on the abstract
 confidential channels. Moreover, if the concrete intruder knows a nonce then so 
-does the abstract one (as defined by @{text "ink"}). *}
+does the abstract one (as defined by @{text "ink"}).\<close>
 
 
-text {* Abstraction function on sets of messages. *}
+text \<open>Abstraction function on sets of messages.\<close>
 
 inductive_set 
   abs_msg :: "msg set \<Rightarrow> chmsg set"
@@ -241,13 +241,13 @@ declare abs_msg.intros [intro!]
 declare abs_msg.cases [elim!]
 
 
-text {* The simulation relation is canonical. It states that the protocol 
+text \<open>The simulation relation is canonical. It states that the protocol 
 messages in the intruder knowledge refine the abstract messages appearing on
-the confidential channels. *}
+the confidential channels.\<close>
 
 definition
   R23_msgs :: "(m2_state \<times> m3_state) set" where
-  "R23_msgs \<equiv> {(s, t). abs_msg (parts (IK t)) \<subseteq> chan s}"   (* with parts! *)
+  "R23_msgs \<equiv> {(s, t). abs_msg (parts (IK t)) \<subseteq> chan s}"   \<comment> \<open>with \<open>parts\<close>!\<close>
 
 definition 
   R23_non :: "(m2_state \<times> m3_state) set" where
@@ -284,7 +284,7 @@ lemmas R23_presE [elim] =
 lemmas R23_intros = R23_msgsI R23_nonI R23_presI
 
 
-text {* Mediator function. *}
+text \<open>Mediator function.\<close>
 
 abbreviation
   med32 :: "m3_obs \<Rightarrow> m2_obs" where
@@ -292,10 +292,10 @@ abbreviation
 
 
 (******************************************************************************)
-subsection {* Misc lemmas *}
+subsection \<open>Misc lemmas\<close>
 (******************************************************************************)
 
-text {* General facts about @{term "abs_msg"} *}
+text \<open>General facts about @{term "abs_msg"}\<close>
 
 lemma abs_msg_empty: "abs_msg {} = {}"
 by (auto)
@@ -313,8 +313,8 @@ lemma abs_msg_insert_mono [intro]:
 by (auto)
 
 
-text {* Abstraction of concretely fakeable message yields abstractly fakeable 
-messages. This is the key lemma for the refinement of the intruder. *}
+text \<open>Abstraction of concretely fakeable message yields abstractly fakeable 
+messages. This is the key lemma for the refinement of the intruder.\<close>
 
 lemma abs_msg_DY_subset_fake:
   "\<lbrakk> (s, t) \<in> R23_msgs; (s, t) \<in> R23_non; t \<in> m3_inv1_keys \<rbrakk>
@@ -336,10 +336,10 @@ declare abs_msg_parts_subset_fake [simp, intro!]
 
 
 (******************************************************************************)
-subsection {* Refinement proof *}
+subsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
-text {* Proofs obligations. *}
+text \<open>Proofs obligations.\<close>
 
 lemma PO_m3_step1_refines_m2_step1:
   "{R23 \<inter> UNIV \<times> m3_inv1_keys} 
@@ -362,7 +362,7 @@ lemma PO_m3_step3_refines_m2_step3:
 by (auto simp add: PO_rhoare_defs R23_def m2_defs m3_defs intro!: R23_intros)
 
 
-text {* Dolev-Yao fake event refines abstract fake event. *}
+text \<open>Dolev-Yao fake event refines abstract fake event.\<close>
 
 lemma PO_m3_DY_fake_refines_m2_fake:
   "{R23 \<inter> UNIV \<times> m3_inv1_keys} 
@@ -372,7 +372,7 @@ by (auto simp add: PO_rhoare_defs R23_def m2_defs m3_defs)
    (rule R23_intros, auto)+
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m3_trans_refines_m2_trans = 
   PO_m3_step1_refines_m2_step1 PO_m3_step2_refines_m2_step2 

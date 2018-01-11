@@ -53,8 +53,8 @@ lemma "simple_proto_conjunct p1 (Proto p2) \<noteq> None \<Longrightarrow> \<for
                          else if (\<exists>p \<in> set (getNeg ps). simple_proto_conjunct proto p \<noteq> None) then
                            None
                          else
-                          (*proto is a primitive_protocol here. This is  strict equality match, e.g.
-                            protocol must be TCP. Thus, we can remove all negative matches!*)
+                          \<comment> \<open>\<open>proto\<close> is a \<open>primitive_protocol\<close> here. This is strict equality match, e.g.\<close>
+                          \<comment> \<open>protocol must be TCP. Thus, we can remove all negative matches!\<close>
                            Some ([proto], [])"
   
   (* It is kind of messy to find a definition that checks whether a match is the exhaustive list
@@ -240,7 +240,7 @@ subsection\<open>Importing the matches on @{typ primitive_protocol} from @{const
   lemma import_protocols_from_ports_erule: "normalized_nnf_match m \<Longrightarrow> P m \<Longrightarrow>
     (\<And>srcpts rst1 dstpts rst2.
        normalized_nnf_match m \<Longrightarrow>
-       (*P m \<Longrightarrow> erule consumes only first argument*)
+       \<comment> \<open>\<open>P m \<Longrightarrow>\<close> erule consumes only first argument\<close>
        primitive_extractor (is_Src_Ports, src_ports_sel) m = (srcpts, rst1) \<Longrightarrow>
        primitive_extractor (is_Dst_Ports, dst_ports_sel) rst1 = (dstpts, rst2) \<Longrightarrow>
        normalized_nnf_match rst1 \<Longrightarrow>

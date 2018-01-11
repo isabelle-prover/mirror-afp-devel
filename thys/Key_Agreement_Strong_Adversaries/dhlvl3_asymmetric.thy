@@ -16,7 +16,7 @@
 
 *******************************************************************************)
 
-section {* Authenticated Diffie-Hellman Protocol (L3, asymmetric) *}
+section \<open>Authenticated Diffie-Hellman Protocol (L3, asymmetric)\<close>
 
 theory dhlvl3_asymmetric
 imports dhlvl3 Implem_asymmetric

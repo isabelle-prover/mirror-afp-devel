@@ -169,17 +169,17 @@ fun step_3_c :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat \<tim
 function step_3_main :: "nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
   "step_3_main k A = (if k \<ge> n then A 
     else let 
-      B = step_3_a (k-1) k A; (* 3_a *)
+      B = step_3_a (k-1) k A; \<comment> \<open>\<open>3_a\<close>\<close>
       all_blocks = identify_blocks B k;
       blocks = filter (\<lambda> block. B $$ (snd block,k) \<noteq> 0) all_blocks;
-      F = (if blocks = [] (* column k has only 0s *)
+      F = (if blocks = [] \<comment> \<open>column \<open>k\<close> has only 0s\<close>
         then B
         else let          
-          (l_start,l) = find_largest_block (hd blocks) (tl blocks); (* 3_b *)
+          (l_start,l) = find_largest_block (hd blocks) (tl blocks); \<comment> \<open>\<open>3_b\<close>\<close>
           x = B $$ (l,k); 
-          C = step_3_c x l k blocks B; (* 3_c *)
-          D = mult_col_div_row (inverse x) k C; (* 3_d *)
-          E = swap_cols_rows_block (Suc l) k D (* 3_e *)
+          C = step_3_c x l k blocks B; \<comment> \<open>\<open>3_c\<close>\<close>
+          D = mult_col_div_row (inverse x) k C; \<comment> \<open>\<open>3_d\<close>\<close>
+          E = swap_cols_rows_block (Suc l) k D \<comment> \<open>\<open>3_e\<close>\<close>
         in E)
       in step_3_main (Suc k) F)"
   by pat_completeness auto
@@ -2245,7 +2245,7 @@ private lemma step_3_c_inv: "A \<in> carrier_mat n n
   \<Longrightarrow> ev_block n A
   \<Longrightarrow> set bs \<subseteq> set (identify_blocks A k)
   \<Longrightarrow> (\<And> be. be \<notin> snd ` set bs \<Longrightarrow> be \<notin> {l,k} \<Longrightarrow> be < n \<Longrightarrow> A $$ (be,k) = 0)
-  \<Longrightarrow> (\<And> bb be. (bb,be) \<in> set bs \<Longrightarrow> be - bb \<le> l - lb) (* largest block *)
+  \<Longrightarrow> (\<And> bb be. (bb,be) \<in> set bs \<Longrightarrow> be - bb \<le> l - lb) \<comment> \<open>largest block\<close>
   \<Longrightarrow> x = A $$ (l,k)
   \<Longrightarrow> x \<noteq> 0
   \<Longrightarrow> inv_all uppert (step_3_c x l k bs A)

@@ -43,7 +43,7 @@ begin
     define inv where "inv = (\<lambda>(res,V,ws). case res of
         None \<Rightarrow> 
           dom ws\<subseteq>V 
-        \<and> finite (dom ws)  (* Derived *)
+        \<and> finite (dom ws)  \<comment> \<open>Derived\<close>
         \<and> V\<subseteq>E\<^sup>*``U0 
         \<and> E``(V-dom ws) \<subseteq> V 
         \<and> (\<forall>v\<in>V-dom ws. \<not> P v)

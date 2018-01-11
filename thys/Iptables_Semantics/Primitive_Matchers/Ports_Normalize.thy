@@ -221,8 +221,8 @@ subsection\<open>Rewriting Negated Matches on Ports\<close>
 
   (*TODO: this one is generic, move?*)
   definition rewrite_negated_primitives
-    :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b)) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> (*disc_sel C*)
-        (('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'a match_expr) \<Rightarrow> (*negate_one function*)
+    :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b)) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> \<comment> \<open>\<open>disc_sel C\<close>\<close>
+        (('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'a match_expr) \<Rightarrow> \<comment> \<open>\<open>negate_one\<close> function\<close>
         'a match_expr \<Rightarrow> 'a match_expr" where
     "rewrite_negated_primitives disc_sel C negate m \<equiv>
         let (spts, rst) = primitive_extractor disc_sel m
@@ -230,7 +230,7 @@ subsection\<open>Rewriting Negated Matches on Ports\<close>
           MatchAnd
             (andfold_MatchExp (map (negate C) (getNeg spts)))
             (MatchAnd
-              (andfold_MatchExp (map (Match \<circ> C) (getPos spts))) (*TODO: compress all the positive ports into one?*)
+              (andfold_MatchExp (map (Match \<circ> C) (getPos spts))) \<comment> \<open>TODO: compress all the positive ports into one?\<close>
             rst)"
 
   text\<open>It does nothing of there is not even a negated primitive in it\<close>
@@ -1055,8 +1055,8 @@ lemma "normalize_match (andfold_MatchExp (map (l4_ports_negate_one C) [])) = [Ma
 (*TODO: move?*)
   (*TODO: add nnf_normalization directly afterwards?*)
   definition replace_primitive_matchexpr
-    :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b)) \<Rightarrow> (*disc_sel*)
-        ('b negation_type \<Rightarrow> 'a match_expr) \<Rightarrow> (*replace function*)
+    :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b)) \<Rightarrow> \<comment> \<open>\<open>disc_sel\<close>\<close>
+        ('b negation_type \<Rightarrow> 'a match_expr) \<Rightarrow> \<comment> \<open>replace function\<close>
         'a match_expr \<Rightarrow> 'a match_expr" where
     "replace_primitive_matchexpr disc_sel replace_f m \<equiv>
         let (as, rst) = primitive_extractor disc_sel m

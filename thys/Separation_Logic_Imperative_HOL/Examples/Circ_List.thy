@@ -143,7 +143,7 @@ fun cs_pop :: "'a::heap cs_list \<Rightarrow> ('a\<times>'a cs_list) Heap" where
 | "cs_pop (Some p) = do {
     n1 \<leftarrow> !p;
     if next n1 = Some p then
-      return (val n1,None) (* Singleton list becomes empty list *)
+      return (val n1,None) \<comment> \<open>Singleton list becomes empty list\<close>
     else do {
       let p2 = the (next n1);
       n2 \<leftarrow> !p2;

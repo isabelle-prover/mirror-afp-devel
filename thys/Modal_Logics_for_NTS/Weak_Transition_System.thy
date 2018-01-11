@@ -117,9 +117,9 @@ begin
   definition is_weak_bisimulation :: "('state \<Rightarrow> 'state \<Rightarrow> bool) \<Rightarrow> bool" where
     "is_weak_bisimulation R \<equiv>
       symp R \<and>
-      (* weak static implication *)
+      \<comment> \<open>weak static implication\<close>
       (\<forall>P Q \<phi>. R P Q \<and> P \<turnstile> \<phi> \<longrightarrow> (\<exists>Q'. Q \<Rightarrow> Q' \<and> R P Q' \<and> Q' \<turnstile> \<phi>)) \<and>
-      (* weak simulation *)
+      \<comment> \<open>weak simulation\<close>
       (\<forall>P Q. R P Q \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* Q \<longrightarrow> P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q' \<and> R P' Q')))"
 
   definition weakly_bisimilar :: "'state \<Rightarrow> 'state \<Rightarrow> bool"  (infix "\<approx>\<cdot>" 100) where

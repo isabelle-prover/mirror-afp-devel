@@ -23,15 +23,15 @@ end
 context param_DFS begin context begin interpretation timing_syntax .
 
   definition "timing_common_inv s \<equiv> 
-  (* \<delta> s v < \<phi> s v *)
+  \<comment> \<open>\<open>\<delta> s v < \<phi> s v\<close>\<close>
    (\<forall>v \<in> dom (finished s). \<delta> s v < \<phi> s v)
 
-  (* v \<noteq> w \<longrightarrow> \<delta> s v \<noteq> \<delta> s w \<and> \<phi> s v \<noteq> \<phi> s w
-     Can't use 'card dom = card ran' as the maps may be infinite ... *)
+  \<comment> \<open>\<open>v \<noteq> w \<longrightarrow> \<delta> s v \<noteq> \<delta> s w \<and> \<phi> s v \<noteq> \<phi> s w\<close>\<close>
+  \<comment> \<open>Can't use \<open>card dom = card ran\<close> as the maps may be infinite ...\<close>
   \<and> (\<forall>v \<in> dom (discovered s). \<forall>w \<in> dom (discovered s). v \<noteq> w \<longrightarrow> \<delta> s v \<noteq> \<delta> s w)
   \<and> (\<forall>v \<in> dom (finished s). \<forall>w \<in> dom (finished s). v \<noteq> w \<longrightarrow> \<phi> s v \<noteq> \<phi> s w)
 
-  (* \<delta> s v < counter \<and> \<phi> s v < counter *)
+  \<comment> \<open>\<open>\<delta> s v < counter \<and> \<phi> s v < counter\<close>\<close>
   \<and> (\<forall>v \<in> dom (discovered s). \<delta> s v < counter s)
   \<and> (\<forall>v \<in> dom (finished s). \<phi> s v < counter s)
 
@@ -244,7 +244,7 @@ context param_DFS begin context begin interpretation timing_syntax .
   definition "parenthesis s \<equiv>
     \<forall>v \<in> dom (discovered s). \<forall>w \<in> dom (discovered s).
      \<delta> s v < \<delta> s w \<and> v \<in> dom (finished s) \<longrightarrow> (
-             \<phi> s v < \<delta> s w (* disjoint *)
+             \<phi> s v < \<delta> s w \<comment> \<open>disjoint\<close>
            \<or> (\<phi> s v > \<delta> s w \<and> w \<in> dom (finished s) \<and> \<phi> s w < \<phi> s v))"
 
   lemma i_parenthesis: "is_invar parenthesis"
@@ -365,7 +365,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
   lemma parenthesis:
     assumes "v \<in> dom (finished s)" "w \<in> dom (discovered s)"
     and "\<delta> s v < \<delta> s w"
-    shows "\<phi> s v < \<delta> s w (* disjoint *)
+    shows "\<phi> s v < \<delta> s w \<comment> \<open>disjoint\<close>
            \<or> (\<phi> s v > \<delta> s w \<and> w \<in> dom (finished s) \<and> \<phi> s w < \<phi> s v)"
     using assms
     using i_parenthesis[THEN make_invar_thm]

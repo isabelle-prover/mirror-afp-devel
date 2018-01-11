@@ -75,14 +75,13 @@ where
   "wf_kernel P \<equiv>
   let F = set (map proc_name (procs P)) in
  
-  (* The main statement must not refer to *any*
-     variable, except those it locally defines. *)
+  \<comment> \<open>The main statement must not refer to \<^emph>\<open>any\<close> variable, except those it locally defines.\<close>
   wf_stmt {} F (main P)
 
-  (* The main statement contains no return statement. *)
+  \<comment> \<open>The main statement contains no return statement.\<close>
 \<and> no_return (main P)
  
-  (* A procedure body may refer only to its argument. *)
+  \<comment> \<open>A procedure body may refer only to its argument.\<close>
 \<and> list_all (\<lambda>f. wf_stmt {param f} F (body f)) (procs P)"
 
 

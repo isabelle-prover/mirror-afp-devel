@@ -54,7 +54,7 @@ definition simple_match_to_of_match_single ::
     where
 "simple_match_to_of_match_single m iif prot sport dport \<equiv>
 	   uncurry L4Src ` option2set sport \<union> uncurry L4Dst ` option2set dport
-	 \<union> IPv4Proto ` (case prot of ProtoAny \<Rightarrow> {} | Proto p \<Rightarrow> {p}) (* protocol is an 8 word option anyway\<dots> *)
+	 \<union> IPv4Proto ` (case prot of ProtoAny \<Rightarrow> {} | Proto p \<Rightarrow> {p}) \<comment> \<open>protocol is an 8 word option anyway...\<close>
 	 \<union> IngressPort ` option2set iif
 	 \<union> IPv4Src ` option2set (toprefixmatch (src m)) \<union> IPv4Dst ` option2set (toprefixmatch (dst m))
 	 \<union> {EtherType 0x0800}"
@@ -466,8 +466,8 @@ definition "lr_of_tran_s4 ard ifs \<equiv> generalized_fw_join ard (oif_ne_iif i
 definition "lr_of_tran_s1 rt = [(route2match r, output_iface (routing_action r)). r \<leftarrow> rt]"
 
 definition "lr_of_tran_fbs rt fw ifs \<equiv> let
-	gfw = map simple_rule_dtor fw; (* generalized simple fw, hopefully for FORWARD *)
-	frt = lr_of_tran_s1 rt; (* rt as fw *)
+	gfw = map simple_rule_dtor fw; \<comment> \<open>generalized simple fw, hopefully for FORWARD\<close>
+	frt = lr_of_tran_s1 rt; \<comment> \<open>rt as fw\<close>
 	prd = generalized_fw_join frt gfw
 	in prd
 "
@@ -480,7 +480,7 @@ definition "lr_of_tran rt fw ifs \<equiv>
     then Inl ''Error in creating OpenFlow table: prerequisites not satisifed''
     else (
   let	nrd = lr_of_tran_fbs rt fw ifs;
-	ard = map (apfst of_nat) (annotate_rlen nrd) (* give them a priority *)
+	ard = map (apfst of_nat) (annotate_rlen nrd) \<comment> \<open>give them a priority\<close>
 	in
 	if length nrd < unat (max_word :: 16 word)
 	then Inr (pack_OF_entries ifs ard)

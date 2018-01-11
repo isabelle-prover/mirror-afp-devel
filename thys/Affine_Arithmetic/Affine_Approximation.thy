@@ -450,7 +450,7 @@ lemma affine_binop:
 
 definition "affine_binop' p (X::real aform) Y a b c d k =
   (let
-    (* TODO: more round-off operations here? *)
+    \<comment> \<open>TODO: more round-off operations here?\<close>
     (r, e1) = trunc_bound_eucl p (a * fst X + b * fst Y + c);
     (Z, e2) = trunc_bound_pdevs p (add_pdevs (scaleR_pdevs a (snd X)) (scaleR_pdevs b (snd Y)))
   in

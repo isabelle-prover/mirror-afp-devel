@@ -460,11 +460,11 @@ qed
 
 definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
   "square_free_factorization_int' f = (if degree f = 0
-    then (lead_coeff f,[]) else (let (* content factorization *)
+    then (lead_coeff f,[]) else (let \<comment> \<open>content factorization\<close>
       c = content f;
       d = (sgn (lead_coeff f) * c);
       g = sdiv_poly f d
-      (* and square_free factorization *)
+      \<comment> \<open>and \<open>square_free\<close> factorization\<close>
     in (d, square_free_factorization_int_main g)))"
 
 
@@ -588,7 +588,7 @@ qed
       
 
 definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
-  "square_free_factorization_int f = (case x_split f of (n,g) (* extract x^n *)
+  "square_free_factorization_int f = (case x_split f of (n,g) \<comment> \<open>extract \<open>x^n\<close>\<close>
     \<Rightarrow> case square_free_factorization_int' g of (d,fs)
     \<Rightarrow> if n = 0 then (d,fs) else (d, (monom 1 1, n - 1) # fs))" 
 

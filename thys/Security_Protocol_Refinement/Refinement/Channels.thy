@@ -13,13 +13,13 @@
 
 *******************************************************************************)
 
-section {* Channel Messages *}
+section \<open>Channel Messages\<close>
 
 theory Channels imports Atoms
 begin
 
 (******************************************************************************)
-subsection {* Channel messages *}
+subsection \<open>Channel messages\<close>
 (******************************************************************************)
 
 datatype secprop = auth | confid
@@ -38,7 +38,7 @@ datatype chmsg =
 | DynCh "chtyp" "key" "payload" 
 
 
-text {* Abbreviations for use in protocol defs *}
+text \<open>Abbreviations for use in protocol defs\<close>
 
 abbreviation 
   Insec :: "[agent, agent, payload] \<Rightarrow> chmsg" where
@@ -70,7 +70,7 @@ abbreviation
 
 
 (******************************************************************************)
-subsection {* Keys used in dynamic channel messages *}
+subsection \<open>Keys used in dynamic channel messages\<close>
 (******************************************************************************)
 
 definition 
@@ -100,12 +100,12 @@ by (auto simp add: keys_for_def)
 
 
 (******************************************************************************)
-subsection {* Atoms in a set of channel messages *}
+subsection \<open>Atoms in a set of channel messages\<close>
 (******************************************************************************)
 
-text {* The set of atoms contained in a set of channel messages. We also 
+text \<open>The set of atoms contained in a set of channel messages. We also 
 include the public atoms, i.e., the agent names, numbers, and corrupted keys. 
-*}
+\<close>
 
 inductive_set 
   atoms :: "chmsg set \<Rightarrow> atom set"
@@ -135,10 +135,10 @@ by (auto elim!: atoms.cases)
 
 
 (******************************************************************************)
-subsection {* Intruder knowledge (atoms) *}
+subsection \<open>Intruder knowledge (atoms)\<close>
 (******************************************************************************)
 
-text {* Atoms that the intruder can extract from a set of channel messages. *}
+text \<open>Atoms that the intruder can extract from a set of channel messages.\<close>
 
 inductive_set 
   extr :: "atom set \<Rightarrow> chmsg set \<Rightarrow> atom set"
@@ -157,7 +157,7 @@ declare extr.intros [intro]
 declare extr.cases [elim]
 
 
-text{* Typical parameter describing initial intruder knowledge. *}
+text\<open>Typical parameter describing initial intruder knowledge.\<close>
 
 definition
   ik0 :: "atom set" where 
@@ -176,7 +176,7 @@ lemma ik0_aKey_corr [simp]: "(aKey K \<in> ik0) = (K \<in> corrKey)"
 by (auto simp add: ik0_def)
 
 
-subsubsection {* Basic lemmas *}
+subsubsection \<open>Basic lemmas\<close>
 (******************************************************************************)
 
 lemma extr_empty [simp]: "extr T {} = T"
@@ -199,7 +199,7 @@ lemma extr_into_atoms [dest]: "At \<in> extr T H \<Longrightarrow> At \<in> T \<
 by (erule extr.induct, auto)
 
 
-subsubsection {* Insertion lemmas for atom parameters *}
+subsubsection \<open>Insertion lemmas for atom parameters\<close>
 (******************************************************************************)
 
 lemma extr_insert_non_key_param [simp]:
@@ -228,12 +228,12 @@ qed
 
 
 
-subsubsection {* Insertion lemmas for each type of channel message *}
+subsubsection \<open>Insertion lemmas for each type of channel message\<close>
 (******************************************************************************)
 
-text {* Note that the parameter accumulates the extracted atoms. In particular, 
+text \<open>Note that the parameter accumulates the extracted atoms. In particular, 
 these may include keys that may open further dynamically confidential messages. 
-*}
+\<close>
 
 lemma extr_insert_StatCh [simp]: 
   "extr T (insert (StatCh c A B (Msg M)) H) 
@@ -298,10 +298,10 @@ declare extr.cases [rule del, elim]
 
 
 (******************************************************************************)
-subsection {* Faking messages *}
+subsection \<open>Faking messages\<close>
 (******************************************************************************)
 
-text {* Channel messages that are fakeable from a given set of channel
+text \<open>Channel messages that are fakeable from a given set of channel
 messages.  Parameters are a set of atoms and a set of freshness identifiers.
 
 For faking messages on dynamic non-authentic channels, we cannot allow the
@@ -309,7 +309,7 @@ intruder to use arbitrary keys. Otherwise, we would lose the possibility to
 generate fresh values in our model. Therefore, the chosen keys must correspond
 to session keys associated with existing runs (i.e., from set 
 @{term "rkeys U"}).
-*}
+\<close>
 
 abbreviation 
   rkeys :: "fid_t set \<Rightarrow> key set" where
@@ -353,7 +353,7 @@ lemmas fake_mono [elim] = fake_monotone [THEN [2] rev_subsetD]
 lemmas fake_mono_param1 [elim] = fake_monotone_param1 [THEN [2] rev_subsetD]
 
 
-subsubsection {* Atoms and extr together with fake *}
+subsubsection \<open>Atoms and extr together with fake\<close>
 (******************************************************************************)
 
 lemma atoms_fake [simp]: "atoms (fake T U H) = T \<union> atoms H"
@@ -365,7 +365,7 @@ proof -
     proof -
       {
         fix A B 
-        have "Insec A B (Msg [At]) \<in> fake T U H" using `At \<in> T`
+        have "Insec A B (Msg [At]) \<in> fake T U H" using \<open>At \<in> T\<close>
         by (intro fake_StatCh) (auto)
       }
       thus ?thesis by (intro at_StatCh) (auto)

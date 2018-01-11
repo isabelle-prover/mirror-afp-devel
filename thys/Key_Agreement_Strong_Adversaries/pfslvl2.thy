@@ -14,7 +14,7 @@
 
 *******************************************************************************)
 
-section {* Key Transport Protocol with PFS (L2) *}
+section \<open>Key Transport Protocol with PFS (L2)\<close>
 
 theory pfslvl2
 imports pfslvl1 Channels
@@ -23,10 +23,10 @@ begin
 declare domIff [simp, iff del]
 
 (**************************************************************************************************)
-subsection {* State and Events*}
+subsection \<open>State and Events\<close>
 (**************************************************************************************************)
 
-text {*initial compromise*}
+text \<open>initial compromise\<close>
 
 consts
   bad_init :: "agent set" 
@@ -37,7 +37,7 @@ by auto
 
 
 
-text {*level 2 state*}
+text \<open>level 2 state\<close>
 record l2_state = 
   l1_state +
   chan :: "chan set"
@@ -54,14 +54,14 @@ type_synonym
 
 
 
-text {*attacker events*}
+text \<open>attacker events\<close>
 definition
   l2_dy_fake_msg :: "msg \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_msg m \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     m \<in> dy_fake_msg (bad s) (ik s) (chan s) \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {m} \<union> ik s\<rparr>
   }"
 
@@ -69,14 +69,14 @@ definition
   l2_dy_fake_chan :: "chan \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_chan M \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     M \<in> dy_fake_chan (bad s) (ik s) (chan s)\<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>chan := {M} \<union> chan s\<rparr>
   }"
 
 
-text {*partnering*}
+text \<open>partnering\<close>
 fun
   role_comp :: "role_t \<Rightarrow> role_t"
 where
@@ -161,15 +161,15 @@ lemma partner_test:
   "R \<in> partners \<Longrightarrow> partner_runs R R' \<Longrightarrow> R' = test"
 by (auto intro!:partner_unique simp add:partners_def partner_symmetric)
 
-text {*compromising events*}
+text \<open>compromising events\<close>
 definition
   l2_lkr_others :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_others A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A \<noteq> test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -177,10 +177,10 @@ definition
   l2_lkr_actor :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_actor A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A = test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -188,9 +188,9 @@ definition
   l2_lkr_after :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_after A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     test_ended s \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -198,24 +198,24 @@ definition
   l2_skr :: "rid_t \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_skr R K \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     R \<noteq> test \<and> R \<notin> partners \<and>
     in_progress (progress s R) xsk \<and>
     guessed_frame R xsk = Some K \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {K} \<union> ik s\<rparr>
   }"
 
 
-text {*protocol events*}
+text \<open>protocol events\<close>
 definition
     l2_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l2_trans"
 where
   "l2_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xpkE, xskE}),
       chan := {Auth A B (\<langle>Number 0, epubKF (Ra$kE)\<rangle>)} \<union> (chan s)
@@ -226,12 +226,12 @@ definition
   l2_step2 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step2 Rb A B KE \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xpkE = Some KE \<and>
     Auth A B \<langle>Number 0, KE\<rangle> \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Rb \<mapsto> {xpkE, xsk}),
       chan := {Auth B A (Aenc (NonceF (Rb$sk)) KE)} \<union> (chan s),
@@ -248,12 +248,12 @@ definition
   l2_step3 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step3 Ra A B K \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xpkE, xskE} \<and>
     guessed_frame Ra xsk = Some K \<and>
     Auth B A (Aenc K (epubKF (Ra$kE))) \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xpkE, xskE, xsk}),
             signals := if can_signal s A B then
                          addSignal (signals s) (Commit A B \<langle>epubKF (Ra$kE),K\<rangle>)
@@ -264,7 +264,7 @@ where
   }"
 
 
-text {*specification*}
+text \<open>specification\<close>
 definition 
   l2_init :: "l2_state set"
 where
@@ -315,8 +315,8 @@ lemma l2_obs_id [simp]: "obs l2 = id"
 by (simp add: l2_def)
 
 
-text {*Once a run is finished, it stays finished, therefore if the test is not finished at some
-point then it was not finished before either*}
+text \<open>Once a run is finished, it stays finished, therefore if the test is not finished at some
+point then it was not finished before either\<close>
 declare domIff [iff]
 lemma l2_run_ended_trans:
   "run_ended (progress s R) \<Longrightarrow>
@@ -335,14 +335,14 @@ by (auto simp add: can_signal_def l2_run_ended_trans)
 
 
 (**************************************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (**************************************************************************************************)
 
-subsubsection {* inv1 *}
+subsubsection \<open>inv1\<close>
 (**************************************************************************************************)
 
-text {* If @{term "can_signal s A B"} (i.e., @{term "A"}, @{term "B"} are the test session 
-agents and the test is not finished), then @{term "A"}, @{term "B"} are honest. *}
+text \<open>If @{term "can_signal s A B"} (i.e., @{term "A"}, @{term "B"} are the test session 
+agents and the test is not finished), then @{term "A"}, @{term "B"} are honest.\<close>
 
 definition
   l2_inv1 :: "l2_state set"
@@ -381,12 +381,12 @@ lemma PO_l2_inv1 [iff]: "reach l2 \<subseteq> l2_inv1"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv2 (authentication guard)*}
+subsubsection \<open>inv2 (authentication guard)\<close>
 (**************************************************************************************************)
 
-text {*
+text \<open>
   If @{term "Auth A B (\<langle>Number 0, KE\<rangle>) \<in> chan s"} and @{term "A"}, @{term "B"} are honest
-  then the message has indeed been sent by an initiator run (with the right agents etc.)*}
+  then the message has indeed been sent by an initiator run (with the right agents etc.)\<close>
 
 definition
   l2_inv2 :: "l2_state set"
@@ -419,12 +419,12 @@ lemma PO_l2_inv2 [iff]: "reach l2 \<subseteq> l2_inv2"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv3 (authentication guard) *}
+subsubsection \<open>inv3 (authentication guard)\<close>
 (**************************************************************************************************)
 
-text {* If @{term "Auth B A (Aenc K (epubKF (Ra $ kE))) \<in> chan s"}
+text \<open>If @{term "Auth B A (Aenc K (epubKF (Ra $ kE))) \<in> chan s"}
  and @{term "A"}, @{term "B"} are honest then the message has indeed been sent by a
- responder run (etc). *}
+ responder run (etc).\<close>
 
 definition
   l2_inv3 :: "l2_state set"
@@ -460,11 +460,11 @@ lemma PO_l2_inv3 [iff]: "reach l2 \<subseteq> l2_inv3"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv4 *}
+subsubsection \<open>inv4\<close>
 (**************************************************************************************************)
 
-text {* If the test run is finished and has the session key generated by a run,
-  then this run is also finished. *}
+text \<open>If the test run is finished and has the session key generated by a run,
+  then this run is also finished.\<close>
 
 definition
   l2_inv4 :: "l2_state set"
@@ -495,11 +495,11 @@ lemma PO_l2_inv4 [iff]: "reach l2 \<subseteq> l2_inv4"
 by (rule_tac J="l2_inv3 \<inter> l2_inv1" in inv_rule_incr) (auto)
 
 
-subsubsection {* inv5 *}
+subsubsection \<open>inv5\<close>
 (**************************************************************************************************)
 
-text {* The only confidential or secure messages on the channel have been put there
-  by the attacker. *}
+text \<open>The only confidential or secure messages on the channel have been put there
+  by the attacker.\<close>
 
 definition
   l2_inv5 :: "l2_state set"
@@ -527,11 +527,11 @@ lemma PO_l2_inv5 [iff]: "reach l2 \<subseteq> l2_inv5"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv6 *}
+subsubsection \<open>inv6\<close>
 (**************************************************************************************************)
 
-text {* If an initiator @{term "Ra"} knows a session key @{term "K"}, then the attacker
-  knows @{term "Aenc K (epubKF (Ra$kE))"}. *}
+text \<open>If an initiator @{term "Ra"} knows a session key @{term "K"}, then the attacker
+  knows @{term "Aenc K (epubKF (Ra$kE))"}.\<close>
 
 definition
   l2_inv6 :: "l2_state set"
@@ -561,11 +561,11 @@ lemma PO_l2_inv6 [iff]: "reach l2 \<subseteq> l2_inv6"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv7 *}
+subsubsection \<open>inv7\<close>
 (**************************************************************************************************)
 
-text {*Form of the messages in @{term "extr (bad s) (ik s) (chan s)"} =
-  @{term "synth (analz (generators))"}. *}
+text \<open>Form of the messages in @{term "extr (bad s) (ik s) (chan s)"} =
+  @{term "synth (analz (generators))"}.\<close>
 
 abbreviation
   "generators \<equiv> range epubK \<union>
@@ -613,10 +613,10 @@ proof (auto simp add: PO_hoare_defs l2_nostep_defs intro!: l2_inv7I)
   assume Hs:"(s, s') \<in> l2_step2 Rb A B KE"
   from Hx Hi Hs show " x \<in> synth (analz (generators))"
     proof (auto simp add: l2_defs dest: l2_inv7D [THEN [2] rev_subsetD])
-      txt {*first case: @{term "can_signal s A B"}, which implies that @{term "A"}, @{term "B"} are
+      txt \<open>first case: @{term "can_signal s A B"}, which implies that @{term "A"}, @{term "B"} are
       honest, and therefore the public key received by @{term "B"} is not from the attacker,
       which proves that the
-      message added to the channel is in @{term "{z. \<exists>x k. z = Aenc x (epubKF k)}"}*}
+      message added to the channel is in @{term "{z. \<exists>x k. z = Aenc x (epubKF k)}"}\<close>
       assume Hc:"Auth A B \<langle>Number 0, KE\<rangle> \<in> chan s"
       assume HRb:"guessed_runs Rb = \<lparr>role = Resp, owner = B, partner = A\<rparr>"
                  "guessed_frame Rb xpkE = Some KE"
@@ -629,14 +629,14 @@ proof (auto simp add: PO_hoare_defs l2_nostep_defs intro!: l2_inv7I)
       with HRb show "Aenc (NonceF (Rb $ sk)) KE \<in> synth (analz generators)"
         by blast
     next
-      txt {*second case: @{term "\<not> can_signal s A B"}. We show that @{term "Rb"} is not test and
+      txt \<open>second case: @{term "\<not> can_signal s A B"}. We show that @{term "Rb"} is not test and
         not a partner:
       - @{term "Rb"} is not test because in that case test is not finished and
         @{term "A"}, @{term "B"} are the test agents, thus
         @{term "can_signal s A B"}
       - @{term "Rb"} is not a partner for the same reason
       therefore the message added to the channel can be constructed from
-      @{term "{NonceF (R $ sk) |R. R \<noteq> test \<and> R \<notin> partners}"}*}
+      @{term "{NonceF (R $ sk) |R. R \<noteq> test \<and> R \<notin> partners}"}\<close>
       assume Hc:"Auth A B \<langle>Number 0, KE\<rangle> \<in> chan s"
       assume Hcs:"\<not> can_signal s A B"
       assume HRb:"Rb \<notin> dom (progress s)"
@@ -698,13 +698,13 @@ proof (auto simp add: PO_hoare_defs l2_defs extr_insert_IK_eq intro!: l2_inv7I,
   assume HRsk: "in_progress (progress s R) xsk" "guessed_frame R xsk = Some K"
   show "K \<in> synth (analz generators)"
     proof (cases "role (guessed_runs R)")
-      txt {*first case: @{term "R"} is the initiator, then @{term "Aenc K epk"}
+      txt \<open>first case: @{term "R"} is the initiator, then @{term "Aenc K epk"}
         is in @{term "extr (bad s) (ik s) (chan s)"} (by invariant)
         therefore either @{term "K \<in> synth (analz generators)"} which proves the goal
         or @{term "Aenc K epk \<in> generators"}, which means that
         @{term "K = NonceF (Rb$sk)"} where @{term "R"} and @{term "Rb"} are matching
         and since @{term "R"} is not partner or test, neither is
-        @{term "Rb"}, and therefore @{term "K \<in> synth (analz (generators))"}*}
+        @{term "Rb"}, and therefore @{term "K \<in> synth (analz (generators))"}\<close>
       assume HRI: "role (guessed_runs R) = Init"
       with HRsk Hi Hi' have "Aenc K (epubKF (R$kE)) \<in> synth (analz generators)"
         by (auto dest!: l2_inv7D)
@@ -725,9 +725,9 @@ proof (auto simp add: PO_hoare_defs l2_defs extr_insert_IK_eq intro!: l2_inv7I,
             by blast
         qed
     next
-      txt {*second case: @{term "R"} is the Responder, then @{term "K"} is @{term "R$sk"}
+      txt \<open>second case: @{term "R"} is the Responder, then @{term "K"} is @{term "R$sk"}
         which is in @{term "synth (analz (generators))"}
-        since @{term "R"} is not test or partner*}
+        since @{term "R"} is not test or partner\<close>
       assume HRI: "role (guessed_runs R) = Resp"
       with HRsk HRtest show ?thesis
         by auto
@@ -763,8 +763,8 @@ proof -
 qed
 
 
-subsubsection {* inv8 *}
-text {* Form of the secrets = nonces generated by test or partners*}
+subsubsection \<open>inv8\<close>
+text \<open>Form of the secrets = nonces generated by test or partners\<close>
 (**************************************************************************************************)
 definition
   l2_inv8 :: "l2_state set"
@@ -794,10 +794,10 @@ by (rule_tac J="l2_inv1 \<inter> l2_inv3" in inv_rule_incr) (auto)
 
 
 (**************************************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (**************************************************************************************************)
 
-text {*mediator function*}
+text \<open>mediator function\<close>
 definition 
   med12s :: "l2_obs \<Rightarrow> l1_obs"
 where
@@ -809,7 +809,7 @@ where
     \<rparr>"
 
 
-text {*relation between states*}
+text \<open>relation between states\<close>
 definition
   R12s :: "(l1_state * l2_state) set"
 where
@@ -825,7 +825,7 @@ lemma can_signal_R12 [simp]:
    can_signal s1 A B \<longleftrightarrow> can_signal s2 A B"
 by (auto simp add: can_signal_def R12s_defs)
 
-text {*protocol events*}
+text \<open>protocol events\<close>
 
 lemma l2_step1_refines_step1:
   "{R12s} l1_step1 Ra A B, l2_step1 Ra A B {>R12s}"
@@ -839,8 +839,8 @@ apply (auto simp add: PO_rhoare_defs R12s_defs l1_step2_def, simp_all add: l2_st
 apply (auto dest!: l2_inv7_aux l2_inv2D)
 done
 
-text {*auxiliary lemma needed to prove that the nonce received by the test in step 3
-comes from a partner*}
+text \<open>auxiliary lemma needed to prove that the nonce received by the test in step 3
+comes from a partner\<close>
 lemma l2_step3_partners:
   "guessed_runs test = \<lparr>role = Init, owner = A, partner = B\<rparr> \<Longrightarrow>
    guessed_frame test xsk = Some (NonceF (Rb$sk)) \<Longrightarrow>
@@ -859,7 +859,7 @@ apply (auto simp add: can_signal_def)
 done
 
 
-text {*attacker events*}
+text \<open>attacker events\<close>
 lemma l2_dy_fake_chan_refines_skip:
   "{R12s} Id, l2_dy_fake_chan M {>R12s}"
 by (auto simp add: PO_rhoare_defs R12s_defs l2_defs)
@@ -873,7 +873,7 @@ apply (auto simp add: analz_generators dest!: l2_inv8D)
 apply (drule subsetD, simp, drule subsetD, simp, auto) (*change this ?*)
 done
 
-text {*compromising events*}
+text \<open>compromising events\<close>
 lemma l2_lkr_others_refines_skip:
   "{R12s} Id, l2_lkr_others A {>R12s}"
 by (auto simp add: PO_rhoare_defs R12s_defs l2_loc_defs l1_defs)
@@ -899,7 +899,7 @@ proof (auto simp add: PO_rhoare_defs R12s_defs l2_loc_defs l1_defs)
 qed
 
  
-text {*refinement proof*}
+text \<open>refinement proof\<close>
 lemmas l2_trans_refines_l1_trans = 
   l2_dy_fake_msg_refines_learn l2_dy_fake_chan_refines_skip
   l2_lkr_others_refines_skip l2_lkr_after_refines_skip l2_skr_refines_learn
@@ -930,9 +930,9 @@ lemma l2_implements_l1 [iff]:
 by (rule refinement_soundness) (auto)
 
 
-subsection {* Derived invariants *}
+subsection \<open>Derived invariants\<close>
 (**************************************************************************************************)
-text {*
+text \<open>
   We want to prove @{term "l2_secrecy"}:
   @{term "dy_fake_msg (bad s) (ik s) (chan s) \<inter> secret s = {}"}
   but by refinement we only get @{term "l2_partial_secrecy"}:
@@ -940,7 +940,7 @@ text {*
   This is fine, since a message in
   @{term "dy_fake_msg (bad s) (ik s) (chan s)"} could be added to @{term "ik s"},
   and @{term "l2_partial_secrecy"} would still hold for this new state.
-*}
+\<close>
 
 definition
   l2_partial_secrecy :: "('a l2_state_scheme) set"

@@ -18,17 +18,16 @@ definition atomic_step_precondition :: "state_t \<Rightarrow> thread_id_t \<Righ
   "atomic_step_precondition s tid ipt \<equiv>
     case ipt of
        SK_IPC dir WAIT partner page \<Rightarrow>
-         (* the thread managed it past PREP stage *)
+         \<comment> \<open>the thread managed it past PREP stage\<close>
          ipc_precondition tid dir partner page s
      | SK_IPC dir (BUF page') partner page \<Rightarrow>
-         (* both the calling thread and its communication partner
-            managed it past PREP and WAIT stages *)
+         \<comment> \<open>both the calling thread and its communication partner managed it past PREP and WAIT stages\<close>
          ipc_precondition tid dir partner page s
          \<and> ipc_precondition partner (opposite_ipc_direction dir) tid page' s
      | SK_EV_SIGNAL EV_SIGNAL_FINISH partner \<Rightarrow>
         ev_signal_precondition tid partner s 
      | _ \<Rightarrow>
-         (* No precondition for other interrupt points. *)
+         \<comment> \<open>No precondition for other interrupt points.\<close>
          True"
 
 text {* The invariant to be preserved by the atomic step function. The invariant is independent from the type of the atomic action. *}

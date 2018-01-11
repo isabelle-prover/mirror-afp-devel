@@ -14,17 +14,17 @@
 
 *******************************************************************************)
 
-chapter {* Unidirectional Authentication Protocols *}
+chapter \<open>Unidirectional Authentication Protocols\<close>
 
-text {* In this chapter, we derive some simple unilateral authentication 
+text \<open>In this chapter, we derive some simple unilateral authentication 
 protocols. We have a single abstract model at Level 1. We then refine this model 
 into two channel protocols (Level 2), one using authentic channels and one using 
 confidential channels. We then refine these in turn into cryptographic protocols 
 (Level 3) respectively using signatures and public-key encryption.
-*}
+\<close>
 
 
-section {* Refinement 1: Abstract Protocol *}
+section \<open>Refinement 1: Abstract Protocol\<close>
 
 theory m1_auth imports "../Refinement/Runs" "../Refinement/a0i_agree"
 begin
@@ -33,10 +33,10 @@ begin
 declare domIff [simp, iff del]
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* We introduce protocol runs. *}
+text \<open>We introduce protocol runs.\<close>
 
 record m1_state = 
   runs :: runs_t
@@ -51,19 +51,19 @@ definition
   \<rparr> }"
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-definition   -- {* refines @{term skip} *}
+definition   \<comment> \<open>refines @{term skip}\<close>
   m1_step1 :: "[rid_t, agent, agent, nonce] \<Rightarrow> (m1_state \<times> m1_state) set" 
 where  
   "m1_step1 Ra A B Na \<equiv> {(s, s1).  
 
-     (* guards *)
-     Ra \<notin> dom (runs s) \<and>              (* new initiator run *)
-     Na = Ra$0 \<and>                      (* generated nonce *)
+     \<comment> \<open>guards\<close>
+     Ra \<notin> dom (runs s) \<and>              \<comment> \<open>new initiator run\<close>
+     Na = Ra$0 \<and>                      \<comment> \<open>generated nonce\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(
          Ra \<mapsto> (Init, [A, B], [])
@@ -71,42 +71,42 @@ where
      \<rparr>
   }"
 
-definition   -- {* refines @{term a0i_running} *}
+definition   \<comment> \<open>refines @{term a0i_running}\<close>
   m1_step2 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m1_state \<times> m1_state) set" 
 where
-  "m1_step2 Rb A B Na Nb \<equiv> {(s, s1).  (* Ni is completely arbitrary *)
+  "m1_step2 Rb A B Na Nb \<equiv> {(s, s1).  \<comment> \<open>\<open>Ni\<close> is completely arbitrary\<close>
 
-     (* guards *)
-     Rb \<notin> dom (runs s) \<and>              (* new responder run *)
-     Nb = Rb$0 \<and>                      (* generated nonce *)
+     \<comment> \<open>guards\<close>
+     Rb \<notin> dom (runs s) \<and>              \<comment> \<open>new responder run\<close>
+     Nb = Rb$0 \<and>                      \<comment> \<open>generated nonce\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na]))
      \<rparr>
   }"
 
-definition   -- {* refines @{term a0i_commit} *}
+definition   \<comment> \<open>refines @{term a0i_commit}\<close>
   m1_step3 :: 
     "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m1_state \<times> m1_state) set" 
 where
   "m1_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     (* authentication guard: *)
+     \<comment> \<open>authentication guard:\<close>
      (A \<notin> bad \<and> B \<notin> bad \<longrightarrow> (\<exists>Rb. 
         Nb = Rb$0 \<and> runs s Rb = Some (Resp, [A, B], [aNon Na]))) \<and>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>
   }"
 
-text {* Transition system. *}
+text \<open>Transition system.\<close>
 
 definition 
   m1_trans :: "(m1_state \<times> m1_state) set" where
@@ -131,11 +131,11 @@ lemmas m1_defs =
 
 
 (******************************************************************************)
-subsection {* Simulation relation *}
+subsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* We define two auxiliary functions to reconstruct the signals of the
-initial model from completed initiator and responder runs of the current one. *}
+text \<open>We define two auxiliary functions to reconstruct the signals of the
+initial model from completed initiator and responder runs of the current one.\<close>
 
 type_synonym 
   irsig = "nonce \<times> nonce"
@@ -152,8 +152,8 @@ where
 | "runs2sigs runz _ = 0"
 
 
-text {* Simulation relation and mediator function. We map completed initiator 
-and responder runs to commit and running signals, respectively. *}
+text \<open>Simulation relation and mediator function. We map completed initiator 
+and responder runs to commit and running signals, respectively.\<close>
 
 definition 
   med10 :: "m1_obs \<Rightarrow> irsig a0i_obs" where
@@ -166,10 +166,10 @@ definition
 lemmas R01_defs = R01_def med10_def 
 
 
-subsubsection {* Lemmas about the auxiliary functions *}
+subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
-text {* Basic lemmas *}
+text \<open>Basic lemmas\<close>
 
 lemma runs2sigs_empty [simp]: 
   "runz = empty \<Longrightarrow> runs2sigs runz = (\<lambda>x. 0)"
@@ -177,7 +177,7 @@ by (rule ext, erule rev_mp)
    (rule runs2sigs.induct, auto)
 
 
-text {* Update lemmas *}
+text \<open>Update lemmas\<close>
 
 lemma runs2sigs_upd_init_none [simp]:
   "\<lbrakk> Ra \<notin> dom runz \<rbrakk>
@@ -201,7 +201,7 @@ by (rule ext, (erule rev_mp)+)
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 lemma PO_m1_step1_refines_skip:
@@ -227,7 +227,7 @@ lemmas PO_m1_trans_refines_a0i_trans =
   PO_m1_step3_refines_a0i_commit
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemma PO_m1_refines_init_a0i [iff]:
   "init m1 \<subseteq> R01``(init a0i)"

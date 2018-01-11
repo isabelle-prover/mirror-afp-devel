@@ -56,54 +56,54 @@ where
   \<forall> (t::nat) 
      (r::reqType list) (x::aType list) 
      (y::stopType list) (z::bool list).
-   (*1*)
+   \<comment> \<open>1:\<close>
    ( st_in t = init_state \<and> req t = [init]
      \<longrightarrow> ack t = [call] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = call ) 
    \<and>     
-   (*2*)
+   \<comment> \<open>2:\<close>
    ( st_in t = init_state \<and> req t \<noteq> [init]
      \<longrightarrow>  ack t = [init_state] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = init_state ) 
    \<and>
-   (*3*)
+   \<comment> \<open>3:\<close>
    ( (st_in t = call \<or> (st_in t = connection_ok \<and> r \<noteq> [send])) \<and>
      req t = r \<and> lose t = [False]
      \<longrightarrow>  ack t = [connection_ok] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = connection_ok ) 
    \<and>
-   (*4*)
+   \<comment> \<open>4:\<close>
    ( (st_in t = call \<or> st_in t = connection_ok \<or> st_in t = sending_data)
      \<and> lose t = [True]
      \<longrightarrow>  ack t = [init_state] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = init_state ) 
    \<and>
-   (*5*)
+   \<comment> \<open>5:\<close>
    ( st_in t = connection_ok \<and> req t = [send] \<and> lose t = [False]
      \<longrightarrow> ack t = [sending_data] \<and> i1 t = buffer_in t \<and> vc t = [] 
          \<and> st_out t = sending_data ) 
    \<and>
-   (*6*)
+   \<comment> \<open>6:\<close>
    ( st_in t = sending_data \<and> a1 t = [] \<and> lose t = [False]
      \<longrightarrow> ack t = [sending_data] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = sending_data ) 
    \<and>
-   (*7*)
+   \<comment> \<open>7:\<close>
    ( st_in t = sending_data \<and> a1 t = [sc_ack] \<and> lose t = [False]
      \<longrightarrow> ack t = [voice_com] \<and> i1 t = [] \<and> vc t = [vc_com] 
          \<and> st_out t = voice_com ) 
    \<and>
-   (*8*)
+   \<comment> \<open>8:\<close>
    ( st_in t = voice_com \<and> stop t = [] \<and> lose t = [False]
      \<longrightarrow> ack t = [voice_com] \<and> i1 t = [] \<and> vc t = [vc_com] 
          \<and> st_out t = voice_com ) 
    \<and>
-   (*9*)
+   \<comment> \<open>9:\<close>
    ( st_in t = voice_com \<and> stop t = [] \<and> lose t = [True]
      \<longrightarrow> ack t = [voice_com] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = voice_com ) 
    \<and>
-   (*10*)
+   \<comment> \<open>10:\<close>
    ( st_in t = voice_com \<and> stop t = [stop_vc] 
      \<longrightarrow> ack t = [init_state] \<and> i1 t = [] \<and> vc t = [] 
          \<and> st_out t = init_state )" 

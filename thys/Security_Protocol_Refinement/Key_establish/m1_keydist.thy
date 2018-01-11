@@ -15,43 +15,43 @@
 
 *******************************************************************************)
 
-chapter {* Key Establishment Protocols *}
+chapter \<open>Key Establishment Protocols\<close>
 
-text {* In this chapter, we develop several key establishment protocols:
+text \<open>In this chapter, we develop several key establishment protocols:
 \begin{itemize} 
 \item Needham-Schroeder Shared Key (NSSK) 
 \item core Kerberos IV and V, and
 \item Denning-Sacco. 
 \end{itemize}
-*}
+\<close>
 
 
-section {* Basic abstract key distribution (L1) *}
+section \<open>Basic abstract key distribution (L1)\<close>
 
 theory m1_keydist imports "../Refinement/Runs" "../Refinement/s0g_secrecy"
 begin
 
-text {* The first refinement introduces the protocol roles, local memory of the
+text \<open>The first refinement introduces the protocol roles, local memory of the
 agents and the communication structure of the protocol.  For actual 
 communication, the "receiver" directly reads the memory of the "sender". 
 
 It captures the core of essentials of server-based key distribution protocols:
 The server generates a key that the clients read from his memory. At this
 stage we are only interested in secrecy preservation, not in authentication.
-*}
+\<close>
 
 declare option.split_asm [split]
 declare domIff [simp, iff del] 
 
 consts
-  sk :: "nat"             -- {* identifier used for session keys *}
+  sk :: "nat"             \<comment> \<open>identifier used for session keys\<close>
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* Runs record the protocol participants (initiator, responder) and the 
+text \<open>Runs record the protocol participants (initiator, responder) and the 
 keys learned during the execution. In later refinements, we will also add
 nonces and timestamps to the run record.
 
@@ -62,20 +62,20 @@ concretized into variable @{text "leak"}.
 We define the state in two separate record definitions. The first one has 
 just a runs field and the second extends this with a leak field.  Later 
 refinements may define different state for leaks (e.g. to record more context).
-*}
+\<close>
 
 record m1r_state = 
   runs :: runs_t
 
 record m1x_state = m1r_state +  
-  leak :: "key set"             -- {* keys leaked to attacker *}
+  leak :: "key set"             \<comment> \<open>keys leaked to attacker\<close>
 
 type_synonym m1x_obs = "m1x_state"
 
-text {* Predicate types for invariants and transition relation types. Use the
+text \<open>Predicate types for invariants and transition relation types. Use the
 r-version for invariants and transitions if there is no reference to the leak
 variable. This improves reusability in later refinements.
-*}
+\<close>
 type_synonym 'x m1r_pred = "'x m1r_state_scheme set"
 type_synonym 'x m1x_pred = "'x m1x_state_scheme set"
 
@@ -83,14 +83,14 @@ type_synonym 'x m1r_trans = "('x m1r_state_scheme \<times> 'x m1r_state_scheme) 
 type_synonym 'x m1x_trans = "('x m1x_state_scheme \<times> 'x m1x_state_scheme) set"
 
 
-subsubsection {* Key knowledge and authorization (reconstruction) *}
+subsubsection \<open>Key knowledge and authorization (reconstruction)\<close>
 (******************************************************************************)
 
-text {* Key knowledge and authorization relations, reconstructed from the runs 
+text \<open>Key knowledge and authorization relations, reconstructed from the runs 
 and an unspecified initial key setup. These auxiliary definitions are used in 
-some event guards and in the simulation relation (see below). *}
+some event guards and in the simulation relation (see below).\<close>
 
-text {* Knowledge relation (reconstructed) *}
+text \<open>Knowledge relation (reconstructed)\<close>
 
 inductive_set
   knC :: "runs_t \<Rightarrow> (key \<times> agent) set" for runz :: "runs_t" 
@@ -105,7 +105,7 @@ where
     "(K, A) \<in> keySetup \<Longrightarrow> (K, A) \<in> knC runz"
 
 
-text {* Authorization relation (reconstructed) *}
+text \<open>Authorization relation (reconstructed)\<close>
 
 inductive_set
   azC :: "runs_t \<Rightarrow> (key \<times> agent) set" for runz :: "runs_t"
@@ -124,7 +124,7 @@ declare knC.intros [intro]
 declare azC.intros [intro]
 
 
-text {* Misc lemmas: empty state, projections, ... *}
+text \<open>Misc lemmas: empty state, projections, ...\<close>
 
 lemma knC_empty [simp]: "knC empty = keySetup"
 by (auto elim: knC.cases)
@@ -133,13 +133,13 @@ lemma azC_empty [simp]: "azC empty = keySetup"
 by (auto elim: azC.cases)
 
 
-text {* @{text "azC"} and run abstraction *}
+text \<open>@{text "azC"} and run abstraction\<close>
 
 lemma azC_map_runs [simp]: "azC (map_runs h runz) = azC runz"
 by (auto simp add: map_runs_def elim!: azC.cases)
 
 
-text {* Update lemmas for @{term "knC"}*}
+text \<open>Update lemmas for @{term "knC"}\<close>
 
 lemma knC_upd_Init_Resp_None:
   "\<lbrakk> R \<notin> dom runz; rol \<in> {Init, Resp} \<rbrakk>
@@ -150,7 +150,7 @@ lemma knC_upd_Init_Some:
   "\<lbrakk> runz Ra = Some (Init, [A, B], []) \<rbrakk> 
   \<Longrightarrow> knC (runz(Ra \<mapsto> (Init, [A, B], [aKey Kab]))) = insert (Kab, A) (knC runz)"
 apply (auto elim!: knC.cases) 
--- {* 3 subgoals *}
+\<comment> \<open>3 subgoals\<close>
 apply (rename_tac Raa Aa Ba K al, rule_tac A=Aa and B=Ba and al=al in knC_init, auto)
 apply (rename_tac Rb Aa Ba K al, rule_tac A=Aa and B=Ba and al=al in knC_resp, auto)
 apply (rule_tac knC_serv, auto)
@@ -160,7 +160,7 @@ lemma knC_upd_Resp_Some:
   "\<lbrakk> runz Ra = Some (Resp, [A, B], []) \<rbrakk> 
   \<Longrightarrow> knC (runz(Ra \<mapsto> (Resp, [A, B], [aKey Kab]))) = insert (Kab, B) (knC runz)"
 apply (auto elim!: knC.cases)
--- {* 3 subgoals *}
+\<comment> \<open>3 subgoals\<close>
 apply (rename_tac Raa Aa Ba K al, rule_tac A=Aa and B=Ba and al=al in knC_init, auto)
 apply (rename_tac Raa Aa Ba K al, rule_tac A=Aa and B=Ba and al=al in knC_resp, auto)
 apply (rule_tac knC_serv, auto)
@@ -170,7 +170,7 @@ lemma knC_upd_Server:
   "\<lbrakk> Rs \<notin> dom runz \<rbrakk>
   \<Longrightarrow> knC (runz(Rs \<mapsto> (Serv, [A, B], []))) = insert (sesK (Rs$sk), Sv) (knC runz)"
 apply (auto elim!: knC.cases)
--- {* 2 subgoals *}
+\<comment> \<open>2 subgoals\<close>
 apply (rename_tac Raa Aa Ba K al, rule_tac A=Aa and B=Ba in knC_init, auto dest: dom_lemmas)
 apply (rename_tac Raa Aa Ba K al, rule_tac A=Aa and B=Ba in knC_resp, auto dest: dom_lemmas)
 done
@@ -180,7 +180,7 @@ lemmas knC_upd_lemmas [simp] =
   knC_upd_Server 
 
 
-text {* Update lemmas for @{term "azC"}*}
+text \<open>Update lemmas for @{term "azC"}\<close>
 
 lemma azC_upd_Init_None:
   "\<lbrakk> Ra \<notin> dom runz \<rbrakk>
@@ -196,7 +196,7 @@ lemma azC_upd_Init_Some:
   "\<lbrakk> runz Ra = Some (Init, [A, B], []) \<rbrakk>
   \<Longrightarrow> azC (runz(Ra \<mapsto> (Init, [A, B], al))) = azC runz"
 apply (auto elim!: azC.cases)
--- {* 5 subgoals *}
+\<comment> \<open>5 subgoals\<close>
 apply (rule_tac azC_good, auto)
 apply (rule_tac azC_good, auto)
 apply (rule_tac azC_good, auto)
@@ -207,7 +207,7 @@ lemma azC_upd_Resp_Some:
   "\<lbrakk> runz Rb = Some (Resp, [A, B], []) \<rbrakk>
   \<Longrightarrow> azC (runz(Rb \<mapsto> (Resp, [A, B], al))) = azC runz"
 apply (auto elim!: azC.cases)
--- {* 5 subgoals *}
+\<comment> \<open>5 subgoals\<close>
 apply (rule_tac azC_good, auto)
 apply (rule_tac azC_good, auto)
 apply (rule_tac azC_good, auto)
@@ -218,7 +218,7 @@ lemma azC_upd_Serv_bad:
   "\<lbrakk> Rs \<notin> dom runz; A \<in> bad \<or> B \<in> bad \<rbrakk>
   \<Longrightarrow> azC (runz(Rs \<mapsto> (Serv, [A, B], al))) = azC runz \<union> {sesK (Rs$sk)} \<times> UNIV"
 apply (auto elim!: azC.cases)
--- {* 10 subgoals *}
+\<comment> \<open>10 subgoals\<close>
 apply (
   rename_tac Rsa Aa Ba ala, rule_tac A=Aa and B=Ba and al=ala in azC_good, auto dest: dom_lemmas,
   rename_tac Rsa Aa Ba ala, rule_tac A=Aa and B=Ba and al=ala in azC_good, auto dest: dom_lemmas,
@@ -233,7 +233,7 @@ lemma azC_upd_Serv_good:
   \<Longrightarrow> azC (runz(Rs \<mapsto> (Serv, [A, B], al))) 
       = azC runz \<union> {(K, A), (K, B), (K, Sv)}"
 apply (auto elim!: azC.cases)
--- {* 5 subgoals *}
+\<comment> \<open>5 subgoals\<close>
 apply (
   rename_tac Rsa Aa Ba ala, rule_tac A=Aa and B=Ba and al=ala in azC_good, auto dest: dom_lemmas,
   rename_tac Rsa Aa Ba ala, rule_tac A=Aa and B=Ba and al=ala in azC_good, auto dest: dom_lemmas,
@@ -255,87 +255,87 @@ lemmas azC_upd_lemmas [simp] =
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-definition     -- {* by @{term "A"}, refines skip *}
+definition     \<comment> \<open>by @{term "A"}, refines skip\<close>
   m1x_step1 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1r_trans"
 where
   "m1x_step1 Ra A B \<equiv> {(s, s1).
 
-    (* guards: *)
-    Ra \<notin> dom (runs s) \<and>                (* Ra is fresh *)
+    \<comment> \<open>guards:\<close>
+    Ra \<notin> dom (runs s) \<and>                \<comment> \<open>\<open>Ra\<close> is fresh\<close>
 
-    (* actions: *)
-    (* create initiator thread *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create initiator thread\<close>
     s1 = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])) \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines skip *}
+definition     \<comment> \<open>by @{term "B"}, refines skip\<close>
   m1x_step2 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1r_trans"
 where
   "m1x_step2 Rb A B \<equiv> {(s, s1).
 
-    (* guards: *)
-    Rb \<notin> dom (runs s) \<and>               (* Rb is fresh *)
+    \<comment> \<open>guards:\<close>
+    Rb \<notin> dom (runs s) \<and>               \<comment> \<open>\<open>Rb\<close> is fresh\<close>
 
-    (* actions: *)
-    (* create responder thread *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create responder thread\<close>
     s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [])) \<rparr>
   }"
 
-definition     -- {* by @{term "Server"}, refines @{term s0g_gen} *}
+definition     \<comment> \<open>by @{term "Server"}, refines @{term s0g_gen}\<close>
   m1x_step3 :: "[rid_t, agent, agent, key] \<Rightarrow> 'x m1r_trans"
 where
   "m1x_step3 Rs A B Kab \<equiv> {(s, s1).
 
-    (* guards: *)
-    Rs \<notin> dom (runs s) \<and>                        (* Rs is fresh *) 
-    Kab = sesK (Rs$sk) \<and>                        (* generate session key *)
+    \<comment> \<open>guards:\<close>
+    Rs \<notin> dom (runs s) \<and>                        \<comment> \<open>\<open>Rs\<close> is fresh\<close>
+    Kab = sesK (Rs$sk) \<and>                       \<comment> \<open>generate session key\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [])) \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term s0g_learn} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term s0g_learn}\<close>
   m1x_step4 :: "[rid_t, agent, agent, key] \<Rightarrow> 'x m1x_trans"
 where
   "m1x_step4 Ra A B Kab \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     runs s Ra = Some (Init, [A, B], []) \<and>
-    (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   (* authorization guard *)
+    (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   \<comment> \<open>authorization guard\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab])) \<rparr>
   }"
 
-definition     -- {* by @{text "B"}, refines @{term s0g_learn} *}
+definition     \<comment> \<open>by @{text "B"}, refines @{term s0g_learn}\<close>
   m1x_step5 :: "[rid_t, agent, agent, key] \<Rightarrow> 'x m1x_trans"
 where
   "m1x_step5 Rb A B Kab \<equiv> {(s, s1).
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Rb = Some (Resp, [A, B], []) \<and> 
-    (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    (* authorization guard *)
+    (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    \<comment> \<open>authorization guard\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab])) \<rparr>
   }"
 
-definition     -- {* by attacker, refines @{term s0g_leak} *}
+definition     \<comment> \<open>by attacker, refines @{term s0g_leak}\<close>
   m1x_leak :: "rid_t \<Rightarrow> 'x m1x_trans"
 where
   "m1x_leak Rs \<equiv> {(s, s1).           
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     Rs \<in> dom (runs s) \<and>
-    fst (the (runs s Rs)) = Serv \<and>         (* compromise server run Rs *)
+    fst (the (runs s Rs)) = Serv \<and>         \<comment> \<open>compromise server run \<open>Rs\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk)) (leak s) \<rparr>
   }"
 
 
 (******************************************************************************)
-subsection {* Specification *}
+subsection \<open>Specification\<close>
 (******************************************************************************)
 
 definition 
@@ -343,7 +343,7 @@ definition
 where
   "m1x_init \<equiv> { \<lparr>
      runs = empty,
-     leak = corrKey         (* statically corrupted keys initially leaked *) 
+     leak = corrKey         \<comment> \<open>statically corrupted keys initially leaked\<close>
   \<rparr> }"
 
 definition 
@@ -376,15 +376,15 @@ by (simp add: m1x_def)
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* inv1: Key definedness *}
+subsubsection \<open>inv1: Key definedness\<close>
 (*inv**************************************************************************)
 
-text {* Only run identifiers or static keys can be (concretely) known or 
+text \<open>Only run identifiers or static keys can be (concretely) known or 
 authorized keys. (This reading corresponds to the contraposition of the 
-property expressed below.) *}
+property expressed below.)\<close>
 
 definition 
   m1x_inv1_key :: "m1x_state set" 
@@ -403,7 +403,7 @@ lemmas m1x_inv1_keyD [dest] =
   m1x_inv1_key_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m1x_inv1_key_init [iff]:
   "init m1x \<subseteq> m1x_inv1_key"
@@ -418,11 +418,11 @@ by (rule inv_rule_basic) (auto)
 
 
 (******************************************************************************)
-subsection {* Refinement of s0g *}
+subsection \<open>Refinement of s0g\<close>
 (******************************************************************************)
 
-text {* med10: The mediator function maps a concrete observation to an 
-abstract one. *}
+text \<open>med10: The mediator function maps a concrete observation to an 
+abstract one.\<close>
 
 definition 
   med01x :: "m1x_obs \<Rightarrow> key s0g_obs"
@@ -430,8 +430,8 @@ where
   "med01x t \<equiv> \<lparr> kn = knC (runs t), az = azC (runs t), lk = leak t \<rparr>"
 
 
-text {* R01: The simulation relation expreses key knowledge and authorization
-in terms of the client and server run information. *}
+text \<open>R01: The simulation relation expreses key knowledge and authorization
+in terms of the client and server run information.\<close>
 
 definition
   R01x :: "(key s0g_state \<times> m1x_state) set" where
@@ -440,7 +440,7 @@ definition
 lemmas R01x_defs = R01x_def med01x_def
 
 
-text {* Refinement proof. *}
+text \<open>Refinement proof.\<close>
 
 lemma PO_m1x_step1_refines_skip:
   "{R01x} 
@@ -479,7 +479,7 @@ lemma PO_m1x_leak_refines_s0g_leak:
 by (fastforce simp add: PO_rhoare_defs R01x_defs s0g_defs m1x_defs)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m1x_trans_refines_s0g_trans = 
   PO_m1x_step1_refines_skip PO_m1x_step2_refines_skip
@@ -498,14 +498,14 @@ by (auto simp add: m1x_def m1x_trans_def s0g_def s0g_trans_def
          intro!: PO_m1x_trans_refines_s0g_trans)
 
 
-text {* Observation consistency. *}
+text \<open>Observation consistency.\<close>
 
 lemma obs_consistent_med01x [iff]: 
   "obs_consistent R01x med01x s0g m1x"
 by (auto simp add: obs_consistent_def R01x_defs s0g_def m1x_def)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma PO_m1x_refines_s0g [iff]: 
   "refines 
@@ -517,13 +517,13 @@ lemma  m1x_implements_s0g [iff]: "implements med01x s0g m1x"
 by (rule refinement_soundness) (fast)
 
 
-subsection {* Derived invariants *}
+subsection \<open>Derived invariants\<close>
 (******************************************************************************)
 
-subsubsection {* inv2: Secrecy *}
+subsubsection \<open>inv2: Secrecy\<close>
 (*invh*************************************************************************)
 
-text {* Secrecy, expressed in terms of runs.*}
+text \<open>Secrecy, expressed in terms of runs.\<close>
 
 definition 
   m1x_secrecy :: "'x m1x_pred"
@@ -534,7 +534,7 @@ lemmas m1x_secrecyI = m1x_secrecy_def [THEN setc_def_to_intro, rule_format]
 lemmas m1x_secrecyE [elim] = m1x_secrecy_def [THEN setc_def_to_elim, rule_format]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m1x_obs_secrecy [iff]: "oreach m1x \<subseteq> m1x_secrecy"
 apply (rule external_invariant_translation [OF PO_s0g_obs_secrecy _ m1x_implements_s0g])

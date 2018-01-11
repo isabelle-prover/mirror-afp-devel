@@ -16,10 +16,10 @@ begin
 
 definition opt_mru_step0 :: "round \<Rightarrow> val set \<Rightarrow>  (three_step_mru_state \<times> three_step_mru_state) set" where
   "opt_mru_step0 r C = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s \<and> three_step r = 0
      \<and> (\<forall>cand \<in> C. \<exists>Q. opt_mru_guard (mru_vote s) Q cand)
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        candidates := C
        , next_round := Suc r
@@ -29,10 +29,10 @@ definition opt_mru_step0 :: "round \<Rightarrow> val set \<Rightarrow>  (three_s
 definition opt_mru_step1 :: "round \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> 
   (three_step_mru_state \<times> three_step_mru_state) set" where
   "opt_mru_step1 r S v = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s \<and> three_step r = 1
      \<and> (S \<noteq> {} \<longrightarrow> v \<in> candidates s)
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        mru_vote := mru_vote s ++ const_map (three_phase r, v) S
        , next_round := Suc r
@@ -50,10 +50,10 @@ definition r_votes :: "three_step_mru_state \<Rightarrow> round \<Rightarrow> (p
 
 definition opt_mru_step2 :: "round \<Rightarrow> (process, val)map \<Rightarrow> (three_step_mru_state \<times> three_step_mru_state) set" where
   "opt_mru_step2 r r_decisions = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s \<and> three_step r = 2
      \<and> step2_d_guard r_decisions  (r_votes s r)
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        next_round := Suc r
        , decisions := decisions s ++ r_decisions

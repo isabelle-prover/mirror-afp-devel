@@ -404,12 +404,12 @@ definition red_dfs where
     REC\<^sub>T (\<lambda>D (V,u). do {
       let V=(insert u V);
 
-      (* Check whether we have a successor on stack *)
+      \<comment> \<open>Check whether we have a successor on stack\<close>
       brk \<leftarrow> FOREACH\<^sub>C (E``{u}) (\<lambda>brk. brk=None) 
         (\<lambda>t _. if t\<in>onstack then RETURN (red_init_witness u t) else RETURN None)
         None;
 
-      (* Recurse for successors *)
+      \<comment> \<open>Recurse for successors\<close>
       case brk of
         None \<Rightarrow>
           FOREACH\<^sub>C ((E``{u})) (\<lambda>(V,brk). brk=None)

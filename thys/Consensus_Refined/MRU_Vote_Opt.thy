@@ -28,11 +28,11 @@ definition opt_mru_round
   :: "round \<Rightarrow> process set \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> (process, val)map \<Rightarrow> (opt_mru_state \<times> opt_mru_state) set" 
   where
   "opt_mru_round r Q S v r_decisions = {(s, s').
-     (* guards *)
+     \<comment> \<open>guards\<close>
      r = next_round s
      \<and> (S \<noteq> {} \<longrightarrow> opt_mru_guard (mru_vote s) Q v)
      \<and> d_guard r_decisions (const_map v S)
-     \<and> (* actions *)
+     \<and> \<comment> \<open>actions\<close>
      s' = s\<lparr> 
        mru_vote := mru_vote s ++ const_map (r, v) S
        , next_round := Suc r

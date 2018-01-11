@@ -19,7 +19,7 @@ definition [to_relAPP]: "simple_state_rel erel \<equiv> { (s,s') .
   ss_stack s = map (\<lambda>u. (u,pending s' `` {u})) (stack s') \<and>
   on_stack s = set (stack s') \<and>
   visited s = dom (discovered s') \<and>
-  dom (finished s') = dom (discovered s') - set (stack s') \<and> (* TODO: Hmm, this is an invariant of the abstract*)
+  dom (finished s') = dom (discovered s') - set (stack s') \<and> \<comment> \<open>TODO: Hmm, this is an invariant of the abstract\<close>
   set (stack s') \<subseteq> dom (discovered s') \<and>
   (simple_state.more s, state.more s') \<in> erel
 }"

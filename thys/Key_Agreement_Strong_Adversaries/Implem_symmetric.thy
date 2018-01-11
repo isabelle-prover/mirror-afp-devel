@@ -15,14 +15,14 @@
 
 *******************************************************************************)
 
-section {* Symmetric Implementation of Channel Messages *}
+section \<open>Symmetric Implementation of Channel Messages\<close>
 
 theory Implem_symmetric
 imports Implem
 begin
 
 (**************************************************************************************************)
-subsection {* Implementation of channel messages *}
+subsection \<open>Implementation of channel messages\<close>
 (**************************************************************************************************)
 
 fun implem_sym :: "chan \<Rightarrow> msg" where
@@ -32,23 +32,23 @@ fun implem_sym :: "chan \<Rightarrow> msg" where
  |"implem_sym (Secure A B M) = Enc \<langle>SecureTag, M\<rangle> (shrK A B)"
 
 
-text {* 
+text \<open>
 First step: @{locale "basic_implem"}. 
 Trivial as there are no assumption, this locale just defines some useful abbreviations and valid.
-*}
+\<close>
 interpretation sym: basic_implem implem_sym
 done
 
 
-text {* Second step: @{locale "semivalid_implem"}.
+text \<open>Second step: @{locale "semivalid_implem"}.
 Here we prove some basic properties such as injectivity and some properties about the 
 interaction of sets of implementation messages with @{term analz}; these properties are 
 proved as separate lemmas as the proofs are more complex. 
-*}
+\<close>
 
-text {* Auxiliary: simpler definitions of the @{text implSets} for the proofs, using the 
+text \<open>Auxiliary: simpler definitions of the @{text implSets} for the proofs, using the 
 @{text msgSet} definitions. 
-*}
+\<close>
 
 abbreviation implInsecSet_aux :: "msg set \<Rightarrow> msg set" where 
   "implInsecSet_aux G \<equiv> PairSet Tags (PairSet (range Agent) (PairSet (range Agent) G))"
@@ -62,7 +62,7 @@ abbreviation implConfidSet_aux :: "(agent * agent) set \<Rightarrow> msg set \<R
 abbreviation implSecureSet_aux :: "(agent * agent) set \<Rightarrow> msg set \<Rightarrow> msg set" where 
 "implSecureSet_aux Ag G \<equiv> EncSet (PairSet Tags G) (case_prod shrK`Ag)"
 
-text {* These auxiliary definitions are overapproximations. *}
+text \<open>These auxiliary definitions are overapproximations.\<close>
 
 lemma implInsecSet_implInsecSet_aux: "sym.implInsecSet G \<subseteq> implInsecSet_aux G"
 by auto
@@ -84,10 +84,10 @@ declare Enc_keys_clean_msgSet_Un [intro]
 
 
 (**************************************************************************************************)
-subsection {* Lemmas to pull implementation sets out of @{term analz} *}
+subsection \<open>Lemmas to pull implementation sets out of @{term analz}\<close>
 (**************************************************************************************************)
 
-text {*
+text \<open>
 All these proofs are similar:
 \begin{enumerate}
 \item prove the lemma for the @{term "implSet_aux"} and with the set added outside of  
@@ -98,10 +98,10 @@ All these proofs are similar:
 There  are two cases for the confidential and secure messages:
 the general case (the payloads stay in @{term  analz}) and the case where the key is unknown
 (the messages cannot be opened and are completely removed from the @{term analz}).
-*}
+\<close>
 
 
-subsubsection {* Pull @{term implInsecSet} out of @{term analz} *}
+subsubsection \<open>Pull @{term implInsecSet} out of @{term analz}\<close>
 (**************************************************************************************************)
 
 lemma analz_Un_implInsecSet_aux_1:
@@ -195,7 +195,7 @@ using analz_Un_implInsecSet_aux_3 apply blast
 done
 
 
-subsection {* Pull @{term implConfidSet} out of @{term analz} *}
+subsection \<open>Pull @{term implConfidSet} out of @{term analz}\<close>
 (**************************************************************************************************)
 
 lemma analz_Un_implConfidSet_aux_1:
@@ -245,7 +245,7 @@ apply (rule analz_mono, rule Un_mono, blast intro!: implSet_implSet_aux, simp)
 using analz_Un_implConfidSet_aux_3 apply blast
 done
 
-text {* Pull @{term implConfidSet} out of @{term analz}, 2nd case where the agents are honest. *}
+text \<open>Pull @{term implConfidSet} out of @{term analz}, 2nd case where the agents are honest.\<close>
 
 lemma analz_Un_implConfidSet_2_aux_1:
   "Enc_keys_clean H \<Longrightarrow>
@@ -271,7 +271,7 @@ using analz_Un_implConfidSet_2_aux_3 apply auto
 done
 
 
-subsection {* Pull @{term implSecureSet} out of @{term analz} *}
+subsection \<open>Pull @{term implSecureSet} out of @{term analz}\<close>
 (**************************************************************************************************)
 
 lemma analz_Un_implSecureSet_aux_1:
@@ -321,9 +321,9 @@ apply (rule analz_mono, rule Un_mono, blast intro!: implSet_implSet_aux, simp)
 using analz_Un_implSecureSet_aux_3 apply blast
 done
 
-text {* 
+text \<open>
 Pull @{term implSecureSet} out of @{term analz}, 2nd case, where the agents are honest. 
-*}
+\<close>
 lemma analz_Un_implSecureSet_2_aux_1:
   "Enc_keys_clean H \<Longrightarrow>
    Ag \<inter> broken (parts H \<inter> range LtK) = {} \<Longrightarrow>
@@ -348,7 +348,7 @@ using analz_Un_implSecureSet_2_aux_3 apply auto
 done
 
 
-subsection {* Pull @{term implAuthSet} out of @{term analz} *}
+subsection \<open>Pull @{term implAuthSet} out of @{term analz}\<close>
 (**************************************************************************************************)
 
 lemma analz_Un_implAuthSet_aux_1:
@@ -416,7 +416,7 @@ done
 declare Enc_keys_clean_msgSet_Un [rule del]
 
 
-subsection {* Locale interpretations *}
+subsection \<open>Locale interpretations\<close>
 (**************************************************************************************************)
 
 interpretation sym: semivalid_implem implem_sym
@@ -441,7 +441,7 @@ next
       fix X Y
       assume "Enc X Y \<in> parts I"
       obtain x A B M where "M \<in> payload" and "Enc X Y \<in> parts {implem_sym (Chan x A B M)}"
-      using parts_singleton [OF `Enc X Y \<in> parts I`] `I \<subseteq> sym.valid`
+      using parts_singleton [OF \<open>Enc X Y \<in> parts I\<close>] \<open>I \<subseteq> sym.valid\<close>
         by (auto elim!: sym.validE)
       then show "Y \<in> range LtK \<or> Y \<in> payload" by (cases x, auto)
     qed
@@ -509,11 +509,11 @@ next
     by (rule analz_Un_implSecureSet_2)
 qed
 
-text {*
+text \<open>
 Third step: @{locale "valid_implem"}.
 The lemmas giving conditions on $M$, $A$ and $B$ for 
 @{prop "implXXX A B M \<in> synth (analz Z)"}.
-*}
+\<close>
 
 lemma implInsec_synth_analz:
   "H \<subseteq> payload \<union> sym.valid \<union> range LtK \<union> Tags \<Longrightarrow>
@@ -527,7 +527,7 @@ lemma implConfid_synth_analz:
    sym.implConfid A B M \<in> synth (analz H) \<Longrightarrow>
    sym.implConfid A B M \<in> H \<or> M \<in> synth (analz H)"
 apply (erule synth.cases, auto)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (frule sym.analz_valid [where x=confid], auto)
 done
 
@@ -562,7 +562,7 @@ next
       with H have "hmac \<langle>AuthTag, M\<rangle> (shrK A B) \<in> parts H" 
         by (auto dest!:payload_parts elim!:payload_Hash)
       from H obtain Z where "Z \<in> H" and H'':"hmac \<langle>AuthTag, M\<rangle> (shrK A B) \<in> parts {Z}"
-        using parts_singleton [OF `hmac \<langle>AuthTag, M\<rangle> (shrK A B) \<in> parts H`] by blast
+        using parts_singleton [OF \<open>hmac \<langle>AuthTag, M\<rangle> (shrK A B) \<in> parts H\<close>] by blast
       moreover with H have "Z \<in> sym.valid" by (auto dest!: subsetD)
       moreover with H'' have "Z = sym.implAuth A B M"
         by (auto) (erule sym.valid_cases, auto)

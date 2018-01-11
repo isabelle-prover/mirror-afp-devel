@@ -34,7 +34,7 @@ fun isReg where
 fun toNatRule  where
   "toNatRule v p = (case p of Hyp h c \<Rightarrow> Axiom | Reg  c \<Rightarrow>
       (case nodeOf v of
-        Conclusion a \<Rightarrow> Axiom (* a lie *)
+        Conclusion a \<Rightarrow> Axiom \<comment> \<open>a lie\<close>
       | Assumption a \<Rightarrow> Axiom
       | Rule r \<Rightarrow> NatRule (r,c)
       | Helper \<Rightarrow> Cut

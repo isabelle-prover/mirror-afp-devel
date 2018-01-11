@@ -13,25 +13,25 @@
 
 *******************************************************************************)
 
-section {* Atomic messages *}
+section \<open>Atomic messages\<close>
 
 theory Agents imports Main 
 begin
 
-text {* The definitions below are moved here from the message theory, since
+text \<open>The definitions below are moved here from the message theory, since
 the higher levels of protocol abstraction do not know about cryptographic 
-messages. *}
+messages.\<close>
 
 
 (******************************************************************************)
-subsection {* Agents *}
+subsection \<open>Agents\<close>
 (******************************************************************************)
 
-datatype  (*We allow any number of agents plus an honest server. *)
+datatype  \<comment> \<open>We allow any number of agents plus an honest server.\<close>
   agent = Server | Agent nat
 
 consts 
-  bad :: "agent set"			      -- {*compromised agents*}
+  bad :: "agent set"			      \<comment> \<open>compromised agents\<close>
 
 specification (bad)
   Server_not_bad [iff]: "Server \<notin> bad"
@@ -49,11 +49,11 @@ where
 
 
 (******************************************************************************)
-subsection {* Nonces *}
+subsection \<open>Nonces\<close>
 (******************************************************************************)
 
-text {* We have an unspecified type of freshness identifiers. 
-For executability, we may need to assume that this type is infinite. *}
+text \<open>We have an unspecified type of freshness identifiers. 
+For executability, we may need to assume that this type is infinite.\<close>
 
 typedecl fid_t
 
@@ -67,7 +67,7 @@ fun num :: "fresh_t \<Rightarrow> nat" where
   "num (f $ n) = n"
 
 
-text {* Nonces *}
+text \<open>Nonces\<close>
 
 type_synonym 
   nonce = "fresh_t"

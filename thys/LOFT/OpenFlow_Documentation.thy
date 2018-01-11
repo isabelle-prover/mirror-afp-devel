@@ -54,9 +54,9 @@ We draft the first description of our linux router model:
 We decided that this description is best formalized as an abortable program in the option monad:\<close>
 lemma "simple_linux_router rt fw mlf ifl p \<equiv> do {
 	_ \<leftarrow> iface_packet_check ifl p;
-	let rd (* routing decision *) = routing_table_semantics rt (p_dst p);
+	let rd \<comment> \<open>(routing decision)\<close> = routing_table_semantics rt (p_dst p);
 	let p = p\<lparr>p_oiface := output_iface rd\<rparr>;
-	let fd (* firewall decision *) = simple_fw fw p;
+	let fd \<comment> \<open>(firewall decision)\<close> = simple_fw fw p;
 	_ \<leftarrow> (case fd of Decision FinalAllow \<Rightarrow> Some () | Decision FinalDeny \<Rightarrow> None);
 	let nh = (case next_hop rd of None \<Rightarrow> p_dst p | Some a \<Rightarrow> a);
 	ma \<leftarrow> mlf nh;

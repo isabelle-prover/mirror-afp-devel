@@ -15,7 +15,7 @@
 
 *******************************************************************************)
 
-section {* Non-injective Agreement (L0) *}
+section \<open>Non-injective Agreement (L0)\<close>
 
 theory AuthenticationN imports Refinement Messages
 begin
@@ -23,10 +23,10 @@ begin
 declare domIff [simp, iff del]
 
 (**************************************************************************************************)
-subsection {* Signals *}
+subsection \<open>Signals\<close>
 (**************************************************************************************************)
 
-text {* signals *}
+text \<open>signals\<close>
 datatype signal =
   Running agent agent msg
 | Commit agent agent msg
@@ -38,24 +38,24 @@ where
 
 
 (**************************************************************************************************)
-subsection {* State and events *}
+subsection \<open>State and events\<close>
 (**************************************************************************************************)
 
-text {* level 0 non-injective agreement *}
+text \<open>level 0 non-injective agreement\<close>
 record a0n_state = 
-  signals :: "signal \<Rightarrow> nat"    -- {* multi-set of signals *}
+  signals :: "signal \<Rightarrow> nat"    \<comment> \<open>multi-set of signals\<close>
 
 type_synonym 
   a0n_obs = a0n_state
 
 
-text {* Events *}
+text \<open>Events\<close>
 
 definition 
   a0n_running :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0n_state \<times> a0n_state) set"
 where 
   "a0n_running A B M \<equiv> {(s,s').
-     (*action*)
+     \<comment> \<open>action\<close>
      s' = s\<lparr>signals := addSignal (signals s) (Running A B M)\<rparr>
   }"
 
@@ -63,9 +63,9 @@ definition
   a0n_commit :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0n_state \<times> a0n_state) set"
 where 
   "a0n_commit A B M \<equiv> {(s, s').
-  (*guard*)
+  \<comment> \<open>guard\<close>
     signals s (Running A B M) > 0 \<and>
-  (*action*)
+  \<comment> \<open>action\<close>
     s' = s\<lparr>signals := addSignal (signals s) (Commit A B M)\<rparr>
   }"
 
@@ -75,7 +75,7 @@ definition
   "a0n_trans \<equiv> (\<Union>A B M. a0n_running A B M) \<union> (\<Union>A B M. a0n_commit A B M) \<union> Id"
 
 
-text {* Level 0 state *}
+text \<open>Level 0 state\<close>
 
 definition
   a0n_init :: "a0n_state set"
@@ -103,10 +103,10 @@ by (auto)
 
 
 (**************************************************************************************************)
-subsection {* Non injective agreement invariant *}
+subsection \<open>Non injective agreement invariant\<close>
 (**************************************************************************************************)
 
-text {* Invariant: non injective agreement *}
+text \<open>Invariant: non injective agreement\<close>
 
 definition 
   a0n_agreement :: "a0n_state set" 

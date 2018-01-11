@@ -42,7 +42,7 @@ definition Subnet_m::"(string SecurityInvariant)" where
           node_properties = [''DB'' \<mapsto> Member,
                              ''Log'' \<mapsto> Member,
                              ''WebApp'' \<mapsto> Member,
-                             ''WebFrnt'' \<mapsto> InboundGateway (*DMZ*)
+                             ''WebFrnt'' \<mapsto> InboundGateway \<comment> \<open>DMZ\<close>
                              ]
           \<rparr> ''internal/DMZ structure''"
 

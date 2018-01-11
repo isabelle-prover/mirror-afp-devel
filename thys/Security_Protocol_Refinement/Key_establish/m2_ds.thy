@@ -15,12 +15,12 @@
 
 *******************************************************************************)
 
-section {* Abstract Denning-Sacco protocol (L2) *}
+section \<open>Abstract Denning-Sacco protocol (L2)\<close>
 
 theory m2_ds imports m1_ds "../Refinement/Channels"
 begin
 
-text {* 
+text \<open>
 We model an abstract version of the Denning-Sacco protocol:
 \[
 \begin{array}{lll}
@@ -41,19 +41,19 @@ a parallel version of the DS protocol:
 \]
 Message 1 is sent over an insecure channel, the other two message over
 secure channels.
-*}
+\<close>
 
 declare domIff [simp, iff del]
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* State and observations *}
+text \<open>State and observations\<close>
 
 record m2_state = "m1_state" +
-  chan :: "chmsg set"              -- {* channel messages *}
+  chan :: "chmsg set"              \<comment> \<open>channel messages\<close>
 
 type_synonym 
   m2_obs = "m1_state" 
@@ -74,133 +74,133 @@ type_synonym
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-text {* Protocol events. *}
+text \<open>Protocol events.\<close>
 
-definition     -- {* by @{term "A"}, refines @{term "m1a_step1"} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term "m1a_step1"}\<close>
   m2_step1 :: "[rid_t, agent, agent] \<Rightarrow> m2_trans"
 where
   "m2_step1 Ra A B \<equiv> {(s, s1).
 
-     (* guards: *)
-     Ra \<notin> dom (runs s) \<and>                                (* Ra is fresh *)
+     \<comment> \<open>guards:\<close>
+     Ra \<notin> dom (runs s) \<and>                                \<comment> \<open>\<open>Ra\<close> is fresh\<close>
 
-     (* actions: *)
-     (* create initiator thread and send message 1 *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>create initiator thread and send message 1\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-       chan := insert (Insec A B (Msg [])) (chan s)     (* send M1 *)
+       chan := insert (Insec A B (Msg [])) (chan s)     \<comment> \<open>send M1\<close>
      \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term "m1e_step2"} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term "m1e_step2"}\<close>
   m2_step2 :: "[rid_t, agent, agent] \<Rightarrow> m2_trans"
 where
   "m2_step2 \<equiv> m1_step2"
 
-definition     -- {* by @{text "Server"}, refines @{term m1e_step3} *}
+definition     \<comment> \<open>by @{text "Server"}, refines @{term m1e_step3}\<close>
   m2_step3 :: "[rid_t, agent, agent, key, time] \<Rightarrow> m2_trans"
 where
   "m2_step3 Rs A B Kab Ts \<equiv> {(s, s1). 
 
-     (* guards: *)
-     Rs \<notin> dom (runs s) \<and>                           (* fresh server run *)
-     Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
-     Ts = clk s \<and>                                  (* fresh timestamp *) 
+     \<comment> \<open>guards:\<close>
+     Rs \<notin> dom (runs s) \<and>                           \<comment> \<open>fresh server run\<close>
+     Kab = sesK (Rs$sk) \<and>                          \<comment> \<open>fresh session key\<close>
+     Ts = clk s \<and>                                  \<comment> \<open>fresh timestamp\<close> 
 
-     Insec A B (Msg []) \<in> chan s \<and>                 (* recv M1 *)
+     Insec A B (Msg []) \<in> chan s \<and>                 \<comment> \<open>recv M1\<close>
    
-     (* actions: *)
-     (* record key and send messages 2 and 3 *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record key and send messages 2 and 3\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNum Ts])), 
-       chan := {Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]),    (* send M2a/b *)
+       chan := {Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]),    \<comment> \<open>send \<open>M2a/b\<close>\<close>
                 Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts])} \<union> chan s
      \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term m1e_step4} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term m1e_step4}\<close>
   m2_step4 :: "[rid_t, agent, agent, key, time] \<Rightarrow> m2_trans"
 where
   "m2_step4 Ra A B Kab Ts \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Ra = Some (Init, [A, B], []) \<and> 
-     Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]) \<in> chan s \<and>  (* recv M2a *)
+     Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]) \<in> chan s \<and>  \<comment> \<open>recv \<open>M2a\<close>\<close>
 
-     clk s < Ts + Ls \<and>                              (* ensure key freshness *)
+     clk s < Ts + Ls \<and>                              \<comment> \<open>ensure key freshness\<close>
 
-     (* actions: *)
-     (* record session key *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts]))
      \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term m1e_step5} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term m1e_step5}\<close>
   m2_step5 :: "[rid_t, agent, agent, key, time] \<Rightarrow> m2_trans"
 where
   "m2_step5 Rb A B Kab Ts \<equiv> {(s, s1). 
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Rb = Some (Resp, [A, B], []) \<and>
-     Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts]) \<in> chan s \<and>  (* recv M2b *)
+     Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts]) \<in> chan s \<and>  \<comment> \<open>recv \<open>M2b\<close>\<close>
 
-     (* ensure freshness of session key *)
+     \<comment> \<open>ensure freshness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* actions: *)
-     (* record session key *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, aNum Ts]))
      \<rparr>
   }"
 
-text {* Clock tick event *}
+text \<open>Clock tick event\<close>
 
-definition     -- {* refines @{term m1_tick} *}
+definition     \<comment> \<open>refines @{term m1_tick}\<close>
   m2_tick :: "time \<Rightarrow> m2_trans" 
 where
   "m2_tick \<equiv> m1_tick"
 
 
-text {* Session key compromise. *}
+text \<open>Session key compromise.\<close>
 
-definition     -- {* refines @{term m1_leak} *} 
+definition     \<comment> \<open>refines @{term m1_leak}\<close> 
   m2_leak :: "rid_t \<Rightarrow> m2_trans"
 where
   "m2_leak Rs \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     Rs \<in> dom (runs s) \<and>
-    fst (the (runs s Rs)) = Serv \<and>         (* compromise server run Rs *)
+    fst (the (runs s Rs)) = Serv \<and>         \<comment> \<open>compromise server run \<open>Rs\<close>\<close>
 
-    (* actions: *)
-    (* record session key as leaked; *)
-    (* intruder sends himself an insecure channel message containing the key*)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key as leaked;\<close>
+    \<comment> \<open>intruder sends himself an insecure channel message containing the key\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk)) (leak s), 
             chan := insert (Insec undefined undefined (Msg [aKey (sesK (Rs$sk))])) (chan s) \<rparr> 
   }"
 
 
-text {* Intruder fake event (new). *}
+text \<open>Intruder fake event (new).\<close>
 
-definition     -- {* refines @{term Id} *} 
+definition     \<comment> \<open>refines @{term Id}\<close> 
   m2_fake :: "m2_trans"
 where
   "m2_fake \<equiv> {(s, s1). 
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
-       (* close under fakeable messages *)
+       \<comment> \<open>close under fakeable messages\<close>
        chan := fake ik0 (dom (runs s)) (chan s) 
      \<rparr>
   }"
 
 
 (******************************************************************************)
-subsection {* Transition system *}
+subsection \<open>Transition system\<close>
 (******************************************************************************)
 
 definition 
@@ -210,7 +210,7 @@ where
      runs = empty,
      leak = corrKey,
      clk = 0,
-     chan = {}              (* Channels.ik0 contains aKey`corrKey *)
+     chan = {}              \<comment> \<open>\<open>Channels.ik0\<close> contains \<open>aKey`corrKey\<close>\<close>
   \<rparr> }"
 
 definition 
@@ -244,7 +244,7 @@ lemmas m2_defs = m2_loc_defs m1_defs
 
 
 (******************************************************************************)
-subsection {* Invariants and simulation relation *}
+subsection \<open>Invariants and simulation relation\<close>
 (******************************************************************************)
 
 (*
@@ -329,14 +329,14 @@ by (subgoal_tac "sesK (R$sk) \<notin> keys_for (chan s)")
    (auto)
 *)
 
-subsubsection {* inv3a: Session key compromise *}
+subsubsection \<open>inv3a: Session key compromise\<close>
 (******************************************************************************)
 
-text {* A L2 version of a session key comprise invariant. Roughly, it states
+text \<open>A L2 version of a session key comprise invariant. Roughly, it states
 that adding a set of keys @{term KK} to the parameter @{text T} of @{term extr} 
 does not help the intruder to extract keys other than those in @{term KK} or
 extractable without adding @{term KK}.
-*}
+\<close>
 
 definition 
   m2_inv3a_sesK_compr :: "m2_state set"
@@ -352,14 +352,14 @@ lemmas m2_inv3a_sesK_comprE [elim] =
 lemmas m2_inv3a_sesK_comprD = 
   m2_inv3a_sesK_compr_def [THEN setc_def_to_dest, rule_format]
 
-text {* Additional lemma *}
+text \<open>Additional lemma\<close>
 lemmas insert_commute_aKey = insert_commute [where x="aKey K" for K] 
 
 lemmas m2_inv3a_sesK_compr_simps = 
   m2_inv3a_sesK_comprD
   m2_inv3a_sesK_comprD [where KK="insert Kab KK" for Kab KK, simplified]
   m2_inv3a_sesK_comprD [where KK="{Kab}" for Kab, simplified]
-  insert_commute_aKey   (* to get the keys to the front *)
+  insert_commute_aKey   \<comment> \<open>to get the keys to the front\<close>
 
 lemma PO_m2_inv3a_sesK_compr_init [iff]:
   "init m2 \<subseteq> m2_inv3a_sesK_compr"
@@ -373,19 +373,19 @@ lemma PO_m2_inv3a_sesK_compr [iff]: "reach m2 \<subseteq> m2_inv3a_sesK_compr"
 by (rule inv_rule_basic) (auto) 
 
 
-subsubsection {* inv3: Extracted session keys *}
+subsubsection \<open>inv3: Extracted session keys\<close>
 (******************************************************************************)
 
-text {* inv3: Extracted non-leaked session keys were generated by the server 
+text \<open>inv3: Extracted non-leaked session keys were generated by the server 
 for at least one bad agent. This invariant is needed in the proof of the 
 strengthening of the authorization guards in steps 4 and 5 
-(e.g., @{term "(Kab, A) \<in> azC (runs s)"} for the initiator's step4). *}
+(e.g., @{term "(Kab, A) \<in> azC (runs s)"} for the initiator's step4).\<close>
 
 definition 
   m2_inv3_extrKey :: "m2_state set"
 where
   "m2_inv3_extrKey \<equiv> {s. \<forall>K.
-     aKey K \<in> extr ik0 (chan s) \<longrightarrow>  K \<notin> leak s \<longrightarrow> (* was: K \<notin> corrKey \<longrightarrow> *)
+     aKey K \<in> extr ik0 (chan s) \<longrightarrow>  K \<notin> leak s \<longrightarrow> \<comment> \<open>was: \<open>K \<notin> corrKey \<longrightarrow>\<close>\<close>
        (\<exists>R A' B' Ts'. K = sesK (R$sk) \<and>
           runs s R = Some (Serv, [A', B'], [aNum Ts']) \<and> 
                     (A' \<in> bad \<or> B' \<in> bad))
@@ -446,12 +446,12 @@ by (rule_tac J="m2_inv3a_sesK_compr" in inv_rule_incr) (auto)
 
 
 
-subsubsection {* inv4: Messages M2a/M2b for good agents and server state *}
+subsubsection \<open>inv4: Messages M2a/M2b for good agents and server state\<close>
 (******************************************************************************)
 
-text {* inv4: Secure messages to honest agents and server state; one variant 
+text \<open>inv4: Secure messages to honest agents and server state; one variant 
 for each of M2a and M2b. These invariants establish guard strengthening for
-server authentication by the initiator and the responder. *}
+server authentication by the initiator and the responder.\<close>
 
 definition 
   m2_inv4_M2a :: "m2_state set"
@@ -485,7 +485,7 @@ lemmas m2_inv4_M2bD =
   m2_inv4_M2b_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proofs. *}
+text \<open>Invariance proofs.\<close>
 
 lemma PO_m2_inv4_M2a_init [iff]:
   "init m2 \<subseteq> m2_inv4_M2a"
@@ -495,7 +495,7 @@ lemma PO_m2_inv4_M2a_trans [iff]:
   "{m2_inv4_M2a} trans m2 {> m2_inv4_M2a}"
 apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv4_M2aI)
 apply (auto dest!: m2_inv4_M2aD dest: dom_lemmas)
--- {* 3 subgoals *}
+\<comment> \<open>3 subgoals\<close>
 apply (force dest!: spec)+
 done
 
@@ -511,7 +511,7 @@ lemma PO_m2_inv4_M2b_trans [iff]:
   "{m2_inv4_M2b} trans m2 {> m2_inv4_M2b}"
 apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv4_M2bI) 
 apply (auto dest!: m2_inv4_M2bD dest: dom_lemmas)
--- {* 3 subgoals *}
+\<comment> \<open>3 subgoals\<close>
 apply (force dest!: spec)+
 done
 
@@ -519,9 +519,9 @@ lemma PO_m2_inv4_M2b [iff]: "reach m2 \<subseteq> m2_inv4_M2b"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-text {* Consequence needed in proof of inv8/step5 and inv9/step4: The 
+text \<open>Consequence needed in proof of inv8/step5 and inv9/step4: The 
 session key uniquely identifies other fields in M2a and M2b, provided it 
-is secret. *}
+is secret.\<close>
 
 lemma m2_inv4_M2a_M2b_match:
   "\<lbrakk> Secure Sv A' (Msg [aAgt B', aKey Kab, aNum Ts']) \<in> chan s; 
@@ -533,8 +533,8 @@ apply (auto dest!: m2_inv4_M2aD m2_inv4_M2bD)
 done
 
 
-text {* More consequences of invariants. Needed in ref/step4 and ref/step5 
-respectively to show the strengthening of the authorization guards. *}
+text \<open>More consequences of invariants. Needed in ref/step4 and ref/step5 
+respectively to show the strengthening of the authorization guards.\<close>
 
 lemma m2_inv34_M2a_authorized:
   assumes "Secure Sv A (Msg [aAgt B, aKey K, aNum T]) \<in> chan s" 
@@ -563,11 +563,11 @@ next
 qed
 
 
-subsubsection {* inv5: Key secrecy for server *}
+subsubsection \<open>inv5: Key secrecy for server\<close>
 (******************************************************************************)
 
-text {* inv5: Key secrecy from server perspective. This invariant links the 
-abstract notion of key secrecy to the intruder key knowledge. *}
+text \<open>inv5: Key secrecy from server perspective. This invariant links the 
+abstract notion of key secrecy to the intruder key knowledge.\<close>
 
 definition 
   m2_inv5_ikk_sv :: "m2_state set"
@@ -586,7 +586,7 @@ lemmas m2_inv5_ikk_svD =
   m2_inv5_ikk_sv_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv5_ikk_sv_init [iff]:
   "init m2 \<subseteq> m2_inv5_ikk_sv"
@@ -603,10 +603,10 @@ lemma PO_m2_inv5_ikk_sv [iff]: "reach m2 \<subseteq> m2_inv5_ikk_sv"
 by (rule_tac J="m2_inv3_extrKey \<inter> m2_inv3a_sesK_compr" in inv_rule_incr) (auto)
 
 
-subsubsection {* inv6/7: Key secrecy for initiator and responder *}
+subsubsection \<open>inv6/7: Key secrecy for initiator and responder\<close>
 (******************************************************************************)
 
-text {* These invariants are derivable. *}
+text \<open>These invariants are derivable.\<close>
 
 definition 
   m2_inv6_ikk_init :: "m2_state set"
@@ -637,23 +637,23 @@ lemmas m2_inv7_ikk_respD = m2_inv7_ikk_resp_def [THEN setc_def_to_dest, rule_for
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
-text {* The simulation relation. This is a pure superposition refinement. *}
+text \<open>The simulation relation. This is a pure superposition refinement.\<close>
 
 definition
   R12 :: "(m1_state \<times> m2_state) set" where
   "R12 \<equiv> {(s, t). runs s = runs t \<and> leak s = leak t \<and> clk s = clk t}"
 
-text {* The mediator function is the identity. *}
+text \<open>The mediator function is the identity.\<close>
 
 definition 
   med21 :: "m2_obs \<Rightarrow> m1_obs" where
   "med21 = id"
 
 
-text {* Refinement proof. *}
+text \<open>Refinement proof.\<close>
 
 lemma PO_m2_step1_refines_m1_step1:
   "{R12} 
@@ -681,7 +681,7 @@ by (simp add: PO_rhoare_defs R12_def m2_defs, safe, simp_all)
    (auto dest: m2_inv34_M2a_authorized)
 
 lemma PO_m2_step5_refines_m1_step5:
-  "{R12 \<inter> UNIV \<times> (m2_inv4_M2b \<inter> m2_inv3_extrKey)}          (* REMOVED!: m2_inv5_ikk_sv *)
+  "{R12 \<inter> UNIV \<times> (m2_inv4_M2b \<inter> m2_inv3_extrKey)}          \<comment> \<open>REMOVED!: \<open>m2_inv5_ikk_sv\<close>\<close>
      (m1_step5 Rb A B Kab Ts), (m2_step5 Rb A B Kab Ts) 
    {> R12}"
 by (simp add: PO_rhoare_defs R12_def m2_defs, safe, simp_all)
@@ -706,7 +706,7 @@ lemma PO_m2_fake_refines_skip:
 by (simp add: PO_rhoare_defs R12_def m2_defs, safe, auto)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m2_trans_refines_m1_trans = 
   PO_m2_step1_refines_m1_step1 PO_m2_step2_refines_m1_step2
@@ -732,7 +732,7 @@ lemma PO_obs_consistent_R12 [iff]:
 by (auto simp add: obs_consistent_def R12_def med21_def m2_defs)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma m2_refines_m1 [iff]:
   "refines 
@@ -747,7 +747,7 @@ by (rule refinement_soundness) (auto)
 
 
 (******************************************************************************)
-subsection {* Inherited and derived invariants *}
+subsection \<open>Inherited and derived invariants\<close>
 (******************************************************************************)
 (*
 text {* Show preservation of invariants @{term "m1_inv2i_serv"} and

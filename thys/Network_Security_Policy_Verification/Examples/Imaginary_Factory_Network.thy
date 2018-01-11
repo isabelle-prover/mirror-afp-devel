@@ -110,7 +110,7 @@ text{*Privacy for employees.
 context begin
   private definition "BLP_privacy_host_attributes \<equiv> [''Statistics'' \<mapsto> 3,
                            ''SensorSink'' \<mapsto> 3,
-                           ''PresenceSensor'' \<mapsto> 2, (*less critical data*)
+                           ''PresenceSensor'' \<mapsto> 2, \<comment> \<open>less critical data\<close>
                            ''Webcam'' \<mapsto> 3
                            ]"
   private lemma "dom (BLP_privacy_host_attributes) \<subseteq> set (nodesL policy)"
@@ -379,13 +379,13 @@ context begin
                  ''PresenceSensor'' \<mapsto> Unrelated,
                  ''Webcam'' \<mapsto> Unrelated,
                  ''TempSensor'' \<mapsto> Unrelated,
-                 ''FireSensor'' \<mapsto> Interfering, (*!*)
+                 ''FireSensor'' \<mapsto> Interfering, \<comment> \<open>(!)\<close>
                  ''MissionControl1'' \<mapsto> Unrelated,
                  ''MissionControl2'' \<mapsto> Unrelated,
                  ''Watchdog'' \<mapsto> Unrelated,
                  ''Robot1'' \<mapsto> Unrelated,
                  ''Robot2'' \<mapsto> Unrelated,
-                 ''AdminPc'' \<mapsto> Interfering, (*!*)
+                 ''AdminPc'' \<mapsto> Interfering, \<comment> \<open>(!)\<close>
                  ''INET'' \<mapsto> Unrelated
                  ]"
   private lemma "dom NonInterference_host_attributes \<subseteq> set (nodesL policy)"
@@ -792,7 +792,7 @@ definition "invariants_tuned \<equiv> [BLP_privacy_m, BLP_employee_export_m,
                                       ''Robot1'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
                                       ''Robot2'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
                                       ''Watchdog'' \<mapsto> \<lparr> security_level = 1, trusted = True \<rparr>,
-                                        (*trust because bot2 must send to it. security_level 1 to interact with bot 1*)
+                                        \<comment> \<open>trust because \<open>bot2\<close> must send to it. \<open>security_level\<close> 1 to interact with \<open>bot\<close> 1\<close>
                                       ''AdminPc'' \<mapsto> \<lparr> security_level = 1, trusted = True \<rparr>
                                       ] \<rparr>
                  ''trade secrets''

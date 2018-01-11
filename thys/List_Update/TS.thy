@@ -23,7 +23,7 @@ definition TS_step_d where
 "TS_step_d s q = ((
       ( 
         let li = index (snd s) q in
-        (if li = length  (snd s) then 0 (* requested for first time *)
+        (if li = length  (snd s) then 0 \<comment> \<open>requested for first time\<close>
         else (let sincelast = take li  (snd s)
           in (let S={x. x < q in (fst s) \<and> count_list sincelast x \<le> 1}
             in
@@ -45,7 +45,7 @@ fun TSstep where
       = ((qs!n)#is, 
         step s (qs!n) (( 
           let li = index is (qs!n) in
-          (if li = length is then 0 (* requested for first time *)
+          (if li = length is then 0 \<comment> \<open>requested for first time\<close>
           else (let sincelast = take li is
             in (let S={x. x < (qs!n) in s \<and> count_list sincelast x \<le> 1}
               in

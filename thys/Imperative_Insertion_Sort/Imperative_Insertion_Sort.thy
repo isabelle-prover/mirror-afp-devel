@@ -33,7 +33,7 @@ definition
   "insertion_sort a = do {
     l \<leftarrow> Array.len a;
     for [1 ..< l] (\<lambda>j. do {
-      (*Insert a[j] into the sorted subarray a[1 .. j - 1].*)
+      \<comment> \<open>Insert \<open>a[j]\<close> into the sorted subarray \<open>a[1 .. j - 1].\<close>\<close>
       key \<leftarrow> a.(j);
       i \<leftarrow> ref j;
       while (do {

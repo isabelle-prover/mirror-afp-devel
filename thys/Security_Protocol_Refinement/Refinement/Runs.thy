@@ -13,17 +13,17 @@
 
 *******************************************************************************)
 
-section {* Protocol runs *}
+section \<open>Protocol runs\<close>
 
 theory Runs imports Atoms
 begin
 
 
 (******************************************************************************)
-subsection {* Runs *}
+subsection \<open>Runs\<close>
 (******************************************************************************)
 
-text {* Define some typical roles. *}
+text \<open>Define some typical roles.\<close>
 
 datatype role_t = Init | Resp | Serv
 
@@ -35,11 +35,11 @@ where
 | "roleIdx Serv = 2"
 
 
-text {* The type of runs is a partial function from run identifiers to 
+text \<open>The type of runs is a partial function from run identifiers to 
 a triple consisting of a role, a list of agents, and a list of atomic messages 
 recorded during the run's execution. 
 
-The type of roles could be made a parameter for more flexibility. *}
+The type of roles could be made a parameter for more flexibility.\<close>
 
 type_synonym
   rid_t = "fid_t"
@@ -48,11 +48,11 @@ type_synonym
   runs_t = "rid_t \<rightharpoonup> role_t \<times> agent list \<times> atom list"
 
 
-subsection {* Run abstraction *}
+subsection \<open>Run abstraction\<close>
 (******************************************************************************)
 
-text {* Define a function that lifts a function on roles and atom lists 
-to a function on runs. *}
+text \<open>Define a function that lifts a function on roles and atom lists 
+to a function on runs.\<close>
 
 definition 
   map_runs :: "([role_t, atom list] \<Rightarrow> atom list) \<Rightarrow> runs_t \<Rightarrow> runs_t"

@@ -17,7 +17,7 @@
 
 *******************************************************************************)
 
-section {* Secrecy Model (L0) *}
+section \<open>Secrecy Model (L0)\<close>
 
 theory Secrecy 
 imports Refinement IK
@@ -26,17 +26,17 @@ begin
 declare domIff [simp, iff del] 
 
 (**************************************************************************************************)
-subsection {* State and events *}
+subsection \<open>State and events\<close>
 (**************************************************************************************************)
 
-text {* Level 0 secrecy state: extend intruder knowledge with set of secrets. *}
+text \<open>Level 0 secrecy state: extend intruder knowledge with set of secrets.\<close>
 
 record s0_state = ik_state + 
   secret :: "msg set"
 
 
-text {* Definition of the secrecy invariant: DY closure of intruder knowledge and set of
-secrets are disjoint. *}
+text \<open>Definition of the secrecy invariant: DY closure of intruder knowledge and set of
+secrets are disjoint.\<close>
 
 definition
   s0_secrecy :: "'a s0_state_scheme set"
@@ -47,16 +47,16 @@ lemmas s0_secrecyI = s0_secrecy_def [THEN setc_def_to_intro, rule_format]
 lemmas s0_secrecyE [elim] = s0_secrecy_def [THEN setc_def_to_elim, rule_format]
 
 
-text {* Two events: add/declare a message as a secret and learn a (non-secret) message. *}
+text \<open>Two events: add/declare a message as a secret and learn a (non-secret) message.\<close>
 
 definition
   s0_add_secret :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_add_secret m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     m \<notin> synth (analz (ik s)) \<and>
     
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>secret := insert m (secret s)\<rparr>
   }"
 
@@ -64,10 +64,10 @@ definition
   s0_learn :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_learn m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     s\<lparr>ik := insert m (ik s)\<rparr> \<in> s0_secrecy \<and> 
 
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>ik := insert m (ik s)\<rparr>
   }"
 
@@ -75,10 +75,10 @@ definition
   s0_learn' :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_learn' m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     synth (analz (insert m (ik s))) \<inter> secret s = {} \<and> 
 
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>ik := insert m (ik s)\<rparr>
   }"
 
@@ -89,8 +89,8 @@ where
   "s0_trans \<equiv> (\<Union>m. s0_add_secret m) \<union> (\<Union>m. s0_learn m) \<union> Id"
 
 
-text {* Initial state is any state satisfying the invariant. The whole state is
-observable. Put all together to define the L0 specification. *}
+text \<open>Initial state is any state satisfying the invariant. The whole state is
+observable. Put all together to define the L0 specification.\<close>
 
 definition
   s0_init :: "'a s0_state_scheme set"
@@ -116,7 +116,7 @@ by (simp add: s0_def)
 
 
 (**************************************************************************************************)
-subsection {* Proof of secrecy invariant *}
+subsection \<open>Proof of secrecy invariant\<close>
 (**************************************************************************************************)
 
 lemma s0_secrecy_init [iff]: "init s0 \<subseteq> s0_secrecy"

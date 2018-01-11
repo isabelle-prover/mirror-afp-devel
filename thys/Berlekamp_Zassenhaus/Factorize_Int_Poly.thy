@@ -37,12 +37,12 @@ definition reflect_factorization :: "int \<times> (int poly \<times> nat) list \
 definition factorize_int_last_nz_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "factorize_int_last_nz_poly f = (let df = degree f
     in if df = 0 then (coeff f 0, []) else if df = 1 then (content f,[(primitive_part f,0)]) else
-    if abs (coeff f 0) < abs (coeff f df) (* take reverse polynomial, if f(0) < lc(f) *)
+    if abs (coeff f 0) < abs (coeff f df) \<comment> \<open>take reverse polynomial, if \<open>f(0) < lc(f)\<close>\<close>
      then reflect_factorization (internal_int_poly_factorization (reflect_poly f))
      else internal_int_poly_factorization f)"   
 
 definition factorize_int_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
-  "factorize_int_poly f = (case x_split f of (n,g) (* extract x^n *)
+  "factorize_int_poly f = (case x_split f of (n,g) \<comment> \<open>extract \<open>x^n\<close>\<close>
     \<Rightarrow> if g = 0 then (0,[]) else case factorize_int_last_nz_poly g of (a,fs) 
     \<Rightarrow> if n = 0 then (a,fs) else (a, (monom 1 1, n - 1) # fs))" 
 

@@ -14,14 +14,14 @@
 
 *******************************************************************************)
 
-section {* Channel Messages *}
+section \<open>Channel Messages\<close>
 
 theory Channels
 imports Message_derivation
 begin
 
 (**************************************************************************************************)
-subsection {* Channel messages *}
+subsection \<open>Channel messages\<close>
 (**************************************************************************************************)
 
 datatype chan = 
@@ -46,13 +46,13 @@ abbreviation
 
 
 (**************************************************************************************************)
-subsection {* Extract *}
+subsection \<open>Extract\<close>
 (**************************************************************************************************)
 
-text {* The set of payload messages that can be extracted from a set of (crypto) messages 
+text \<open>The set of payload messages that can be extracted from a set of (crypto) messages 
 and a set of channel messages, given a set of bad agents. The second rule states that 
 the payload can be extracted from insecure and authentic channels as well as from channels
-with a compromised endpoint. *}
+with a compromised endpoint.\<close>
 
 inductive_set 
   extr :: "agent set \<Rightarrow> msg set \<Rightarrow> chan set \<Rightarrow> msg set"  
@@ -122,13 +122,13 @@ by auto
 
 
 (**************************************************************************************************)
-subsection {* Fake *}
+subsection \<open>Fake\<close>
 (**************************************************************************************************)
 
-text {* The set of channel messages that an attacker can fake given a set of compromised
+text \<open>The set of channel messages that an attacker can fake given a set of compromised
 agents, a set of crypto messages and a set of channel messages. The second rule states
 that an attacker can fake an insecure or confidential messages or a channel message
-with a compromised endpoint using a payload that he knows. *}
+with a compromised endpoint using a payload that he knows.\<close>
 
 inductive_set 
   fake :: "agent set \<Rightarrow> msg set \<Rightarrow> chan set \<Rightarrow> chan set"
@@ -219,14 +219,14 @@ qed
 
 
 (**************************************************************************************************)
-subsection {* Closure of Dolev-Yao, extract and fake *}
+subsection \<open>Closure of Dolev-Yao, extract and fake\<close>
 (**************************************************************************************************)
 
-subsubsection {* @{text "dy_fake_msg"}: returns messages, closure of DY and extr is sufficient *}
+subsubsection \<open>@{text "dy_fake_msg"}: returns messages, closure of DY and extr is sufficient\<close>
 (**************************************************************************************************)
 
-text {* Close @{term extr} under Dolev-Yao closure using @{term synth} and @{term analz}. 
-This will be used in Level 2 attacker events to fake crypto messages. *}
+text \<open>Close @{term extr} under Dolev-Yao closure using @{term synth} and @{term analz}. 
+This will be used in Level 2 attacker events to fake crypto messages.\<close>
 
 definition 
   dy_fake_msg :: "agent set \<Rightarrow> msg set \<Rightarrow> chan set \<Rightarrow> msg set"
@@ -266,12 +266,12 @@ lemma dy_fake_msg_insert_chan:
 by (auto simp add: dy_fake_msg_def)
 
 
-subsubsection {* @{text "dy_fake_chan"}: returns channel messages *}
+subsubsection \<open>@{text "dy_fake_chan"}: returns channel messages\<close>
 (**************************************************************************************************)
 
-text {* The set of all channel messages that an attacker can fake is obtained using
+text \<open>The set of all channel messages that an attacker can fake is obtained using
 @{term fake} with the sets of possible payload messages derived with @{term dy_fake_msg}
-defined above. This will be used in Level 2 attacker events to fake channel messages. *}
+defined above. This will be used in Level 2 attacker events to fake channel messages.\<close>
 
 definition
   dy_fake_chan :: "agent set \<Rightarrow> msg set \<Rightarrow> chan set \<Rightarrow> chan set"

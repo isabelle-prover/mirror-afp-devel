@@ -38,7 +38,7 @@ fun Acc_fin\<^sub>C
 where
   "Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> ((_, m'), \<nu>, _) = (
     let 
-      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass a dummy value. *)
+      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); \<comment> \<open>Third element is unused. Hence it is safe to pass a dummy value.\<close>
       \<G> = Mapping.keys \<pi>
     in 
       fail_filt \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs \<G>) t 
@@ -48,7 +48,7 @@ fun Acc_inf\<^sub>C
 where
   "Acc_inf\<^sub>C \<pi> \<chi> ((_, m'), \<nu>, _) = (
     let 
-      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass a dummy value. *)
+      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); \<comment> \<open>Third element is unused. Hence it is safe to pass a dummy value.\<close>
       \<G> = Mapping.keys \<pi>
     in 
       succeed_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs \<G>) (the (Mapping.lookup \<pi> \<chi>)) t)"
@@ -68,7 +68,7 @@ where
       \<delta>_LTS = reachable_transitions\<^sub>C \<Sigma> \<phi>; 
       \<alpha>_fin_filter = \<lambda>\<pi> t. M_fin\<^sub>C \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin\<^sub>C (set \<Sigma>) \<pi> \<chi> t);
       to_pair = \<lambda>\<pi>. (Set.filter (\<alpha>_fin_filter \<pi>) \<delta>_LTS, (\<lambda>\<chi>. Set.filter (Acc_inf\<^sub>C \<pi> \<chi>) \<delta>_LTS) ` Mapping.keys \<pi>);
-      \<alpha> = to_pair ` (mappings\<^sub>C \<Sigma> \<phi>) (* Multi-thread here!, prove mappings (set ... ) equation *)
+      \<alpha> = to_pair ` (mappings\<^sub>C \<Sigma> \<phi>) \<comment> \<open>Multi-thread here!, prove \<open>mappings (set \<dots>)\<close> equation\<close>
     in
       (\<delta>_LTS, initial\<^sub>C \<phi>, \<alpha>))"
 

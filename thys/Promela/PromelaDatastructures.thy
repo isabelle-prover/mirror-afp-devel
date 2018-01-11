@@ -118,7 +118,7 @@ datatype proc = ProcType (*active*) "(integer option) option"
                            (*seq*)    "step list"
               | Init "varDecl list" "step list"
 
-type_synonym ltl = "(*name*) String.literal \<times> (*formula*) String.literal"
+type_synonym ltl = "\<comment> \<open>name:\<close> String.literal \<times> \<comment> \<open>formula:\<close> String.literal"
 type_synonym promela = "varDecl list \<times> proc list \<times> ltl list"
 
 subsection {* Preprocess the AST of the parser into our variant *}
@@ -198,10 +198,10 @@ where
 
 text {* The data structure holding all information on variables we found so far. *}
 type_synonym var_data = "
-     (String.literal, (integer option \<times> bool)) lm (* channels *)
-     \<times> (String.literal, (integer option \<times> bool)) lm (* variables *)
-     \<times> (String.literal, integer) lm (* mtypes *)
-     \<times> (String.literal, varRef) lm (* aliases (used for inlines) *)"
+     (String.literal, (integer option \<times> bool)) lm \<comment> \<open>channels\<close>
+     \<times> (String.literal, (integer option \<times> bool)) lm \<comment> \<open>variables\<close>
+     \<times> (String.literal, integer) lm \<comment> \<open>mtypes\<close>
+     \<times> (String.literal, varRef) lm \<comment> \<open>aliases (used for inlines)\<close>"
 
 definition dealWithVar 
   :: "var_data \<Rightarrow> String.literal
@@ -479,19 +479,19 @@ text {*
 definition forFromTo :: "varRef \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forFromTo i lb ub steps = (
       let
-        (* i = lb *)
+        \<comment> \<open>\<open>i = lb\<close>\<close>
         loop_pre = StepStmnt (StmntAssign i lb) None;
-        (* i \<le> ub *)
+        \<comment> \<open>\<open>i \<le> ub\<close>\<close>
         loop_cond = StepStmnt (StmntCond 
                                   (ExprBinOp BinOpLEq (ExprVarRef i) ub))
                                   None;
-        (* i++ *)
+        \<comment> \<open>\<open>i++\<close>\<close>
         loop_incr = StepStmnt (incr i) None;
-        (* i \<le> ub -> ...; i++ *)
+        \<comment> \<open>\<open>i \<le> ub -> ...; i++\<close>\<close>
         loop_body = loop_cond # steps @ [loop_incr];
-        (* else -> break *)
+        \<comment> \<open>\<open>else -> break\<close>\<close>
         loop_abort = [StepStmnt StmntElse None, StepStmnt StmntBreak None];
-        (* do :: i \<le> ub -> ... :: else -> break od *)
+        \<comment> \<open>\<open>do :: i \<le> ub -> ... :: else -> break od\<close>\<close>
         loop = StepStmnt (StmntDo [loop_body, loop_abort]) None
       in
         StmntSeq [loop_pre, loop])"
@@ -511,20 +511,20 @@ text {*
 definition forInArray :: "varRef \<Rightarrow> integer \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forInArray i N steps = (
       let
-        (* i = 0 *)
+        \<comment> \<open>\<open>i = 0\<close>\<close>
         loop_pre = StepStmnt (StmntAssign i (ExprConst 0)) None;
-        (* i < N *)
+        \<comment> \<open>\<open>i < N\<close>\<close>
         loop_cond = StepStmnt (StmntCond 
                                  (ExprBinOp BinOpLe (ExprVarRef i) 
                                     (ExprConst N))) 
                                  None;
-        (* i++ *)
+        \<comment> \<open>\<open>i++\<close>\<close>
         loop_incr = StepStmnt (incr i) None;
-        (* i < N -> ...; i++ *)
+        \<comment> \<open>\<open>i < N -> ...; i++\<close>\<close>
         loop_body = loop_cond # steps @ [loop_incr];
-        (* else -> break *)
+        \<comment> \<open>\<open>else -> break\<close>\<close>
         loop_abort = [StepStmnt StmntElse None, StepStmnt StmntBreak None];
-        (* do :: i < N -> ... :: else -> break od *)
+        \<comment> \<open>\<open>do :: i < N -> ... :: else -> break od\<close>\<close>
         loop = StepStmnt (StmntDo [loop_body, loop_abort]) None
       in
         StmntSeq [loop_pre, loop])"
@@ -547,27 +547,27 @@ text {*
 definition forInChan :: "varRef \<Rightarrow> chanRef \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forInChan msg c steps = (
       let  
-        (* byte :tmp: = 0 *)
+        \<comment> \<open>\<open>byte :tmp: = 0\<close>\<close>
         tmpStr = STR '':tmp:'';
         loop_pre = StepDecl 
                     [ProcVarDeclNum 0 255 tmpStr None (Some (ExprConst 0))];
         tmp = VarRef False tmpStr None; 
-        (* :tmp: < len(c) *)
+        \<comment> \<open>\<open>:tmp: < len(c)\<close>\<close>
         loop_cond = StepStmnt (StmntCond 
                                  (ExprBinOp BinOpLe (ExprVarRef tmp) 
                                     (ExprLen c))) 
                               None;
-        (* :tmp:++ *)
+        \<comment> \<open>\<open>:tmp:++\<close>\<close>
         loop_incr = StepStmnt (incr tmp) None;
-        (* c?msg *)
+        \<comment> \<open>\<open>c?msg\<close>\<close>
         recv = StepStmnt (StmntRecv c [RecvArgVar msg] False True) None;
-        (* c!msg *)
+        \<comment> \<open>\<open>c!msg\<close>\<close>
         send = StepStmnt (StmntSend c [ExprVarRef msg] False) None;
-        (* :tmp: < len(c) -> c?msg; c!msg; ...; :tmp:++ *)
+        \<comment> \<open>\<open>:tmp: < len(c) -> c?msg; c!msg; ...; :tmp:++\<close>\<close>
         loop_body = [loop_cond, recv, send] @ steps @ [loop_incr];
-        (* else -> break *)
+        \<comment> \<open>\<open>else -> break\<close>\<close>
         loop_abort = [StepStmnt StmntElse None, StepStmnt StmntBreak None];
-        (* do :: :tmp: < len(c) -> ... :: else -> break od *)
+        \<comment> \<open>\<open>do :: :tmp: < len(c) -> ... :: else -> break od\<close>\<close>
         loop = StepStmnt (StmntDo [loop_body, loop_abort]) None
       in
         StmntSeq [loop_pre, loop])"
@@ -587,18 +587,18 @@ text {*
 definition select :: "varRef \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> stmnt" where
   "select i lb ub = (
       let
-        (* i = lb *)
+        \<comment> \<open>\<open>i = lb\<close>\<close>
         pre = StepStmnt (StmntAssign i lb) None;
-        (* i < ub *)
+        \<comment> \<open>\<open>i < ub\<close>\<close>
         cond = StepStmnt (StmntCond (ExprBinOp BinOpLe (ExprVarRef i) ub)) 
                          None;
-        (* i++ *)
+        \<comment> \<open>\<open>i++\<close>\<close>
         incr = StepStmnt (incr i) None;
-        (* i < ub -> i++ *)
+        \<comment> \<open>\<open>i < ub -> i++\<close>\<close>
         loop_body = [cond, incr];
-        (* break *)
+        \<comment> \<open>\<open>break\<close>\<close>
         loop_abort = [StepStmnt StmntBreak None];
-        (* do :: i < ub -> ... :: break od *)
+        \<comment> \<open>\<open>do :: i < ub -> ... :: break od\<close>\<close>
         loop = StepStmnt (StmntDo [loop_body, loop_abort]) None
       in
         StmntSeq [pre, loop])"
@@ -866,14 +866,14 @@ datatype channel = Channel integer "varType list" "integer list list"
 type_synonym var_dict = "(String.literal, variable) lm"
 type_synonym labels   = "(String.literal, nat) lm"
 type_synonym ltls     = "(String.literal, String.literal) lm"
-type_synonym states   = "(integer (*prio*) \<times> edge list) iarray"
+type_synonym states   = "(\<comment> \<open>prio:\<close> integer \<times> edge list) iarray"
 type_synonym channels = "channel list"
 
 type_synonym process  = 
-  "nat (*offset*) 
- \<times> edgeIndex (*start*) 
- \<times> procArg list (*args*) 
- \<times> varDecl list (* top decls *)"
+  "nat \<comment> \<open>offset\<close>
+ \<times> edgeIndex \<comment> \<open>start\<close>
+ \<times> procArg list \<comment> \<open>args\<close>
+ \<times> varDecl list \<comment> \<open>top decls\<close>"
 
 record program =
   processes :: "process iarray"

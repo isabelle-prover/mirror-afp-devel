@@ -53,19 +53,19 @@ where
     mds\<^sub>A = mds\<^sub>A_of mds\<^sub>C;
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range Eg2_var\<^sub>C_of_Eg1 \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
-    (* With this requirement it is possible to establish x \<notin> mds\<^sub>A GuarNoReadOrWrite. *)
-    (* x \<noteq> y; *)
-    (* However since we've deemed it reasonable to require x \<notin> mds\<^sub>A GuarNoWrite,
-       it makes little sense not to just require x \<notin> mds\<^sub>A GuarNoReadOrWrite as well. *)
+    \<comment> \<open>With this requirement it is possible to establish \<open>x \<notin> mds\<^sub>A GuarNoReadOrWrite\<close>.\<close>
+    \<comment> \<open>\<open>x \<noteq> y;\<close>\<close>
+    \<comment> \<open>However since we've deemed it reasonable to require \<open>x \<notin> mds\<^sub>A GuarNoWrite\<close>,\<close>
+    \<comment> \<open>it makes little sense not to just require \<open>x \<notin> mds\<^sub>A GuarNoReadOrWrite\<close> as well.\<close>
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
-    (* Without this requirement, we would have to prove preservation of doesnt_modify c x
-       because x \<in> mds\<^sub>A GuarNoWrite holds in the case where mem\<^sub>A x = mem\<^sub>A y.
-       It makes more sense just to assume a blanket ban on this guarantee for this instruction,
-       seeing as it is clearly a write operation to x. *)
+    \<comment> \<open>Without this requirement, we would have to prove preservation of \<open>doesnt_modify c x\<close>\<close>
+    \<comment> \<open>because \<open>x \<in> mds\<^sub>A GuarNoWrite\<close> holds in the case where \<open>mem\<^sub>A x = mem\<^sub>A y\<close>.\<close>
+    \<comment> \<open>It makes more sense just to assume a blanket ban on this guarantee for this instruction,\<close>
+    \<comment> \<open>seeing as it is clearly a write operation to \<open>x\<close>.\<close>
     x \<notin> mds\<^sub>A GuarNoWrite;
-    (* This command loads from y, so it makes little sense to guarantee we're not reading it *)
+    \<comment> \<open>This command loads from \<open>y\<close>, so it makes little sense to guarantee we're not reading it\<close>
     y \<notin> mds\<^sub>A GuarNoReadOrWrite;
-    (* Requirements for sound mode use preservation for variables other than x and y *)
+    \<comment> \<open>Requirements for sound mode use preservation for variables other than \<open>x\<close> and \<open>y\<close>\<close>
     x \<notin> \<C>;
     y \<notin> \<C>;
     \<forall>mds\<^sub>A' mem\<^sub>A' mem\<^sub>A'' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C''.
@@ -113,16 +113,16 @@ where
     reg\<^sub>C \<notin> mds\<^sub>C GuarNoReadOrWrite;
     reg\<^sub>C \<notin> mds\<^sub>C GuarNoWrite;
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
-    (* Nope: need to make this one versatile enough to allow c = control_var for our example *)
-    (* x \<notin> \<C>; *)
+    \<comment> \<open>Nope: need to make this one versatile enough to allow \<open>c = control_var\<close> for our example\<close>
+    \<comment> \<open>\<open>x \<notin> \<C>;\<close>\<close>
     \<forall>x'. x \<in> \<C>_vars x' \<longrightarrow> x' \<notin> mds\<^sub>A GuarNoReadOrWrite;
     (\<forall>mem\<^sub>A' mem\<^sub>C' mem\<^sub>A'' mem\<^sub>C''.
         (
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* The change in mem\<^sub>C does not affect mem\<^sub>A *)
+         \<comment> \<open>The change in \<open>mem\<^sub>C\<close> does not affect \<open>mem\<^sub>A\<close>\<close>
          mem\<^sub>A'' = mem\<^sub>A' \<and>
-         (* The concrete and abstract versions of the bool condition must become consistent *)
+         \<comment> \<open>The concrete and abstract versions of the bool condition must become consistent\<close>
          ev\<^sub>B\<^sub>C mem\<^sub>C' (Eq reg\<^sub>C 0) = ev\<^sub>B mem\<^sub>A' (Eg1.Eq x 0) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C,
           \<langle>Stop ;; (If (Eq reg\<^sub>C 0) c\<^sub>C_then c\<^sub>C_else) ;; c\<^sub>C_tail, mds\<^sub>C, mem\<^sub>C'\<rangle>\<^sub>C) \<in> C.eval\<^sub>w
@@ -141,15 +141,15 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range Eg2_var\<^sub>C_of_Eg1 \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     x \<in> mds\<^sub>A AsmNoWrite \<and> x \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* Likely we will need to carry this through to the if_reg_rel case. *)
+    \<comment> \<open>Likely we will need to carry this through to the \<open>if_reg_rel\<close> case.\<close>
     ev\<^sub>B\<^sub>C mem\<^sub>C (Eq reg\<^sub>C 0) = ev\<^sub>B mem\<^sub>A (Eg1.Eq x 0);
     (\<forall>mem\<^sub>A' mem\<^sub>C' mem\<^sub>A'' mem\<^sub>C''.
         (
          mem\<^sub>A' = mem\<^sub>A_of mem\<^sub>C' \<and>
          mem\<^sub>A'' = mem\<^sub>A_of mem\<^sub>C'' \<and>
-         (* The change in mem\<^sub>C does not affect mem\<^sub>A *)
+         \<comment> \<open>The change in \<open>mem\<^sub>C\<close> does not affect \<open>mem\<^sub>A\<close>\<close>
          mem\<^sub>A'' = mem\<^sub>A' \<and>
-         (* The concrete and abstract versions of the bool condition must remain consistent *)
+         \<comment> \<open>The concrete and abstract versions of the bool condition must remain consistent\<close>
          ev\<^sub>B\<^sub>C mem\<^sub>C' (Eq reg\<^sub>C 0) = ev\<^sub>B mem\<^sub>A' (Eg1.Eq x 0) \<and>
          ev\<^sub>B\<^sub>C mem\<^sub>C'' (Eq reg\<^sub>C 0) = ev\<^sub>B mem\<^sub>A'' (Eg1.Eq x 0) \<and>
          (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C''\<rangle>\<^sub>C,
@@ -163,19 +163,18 @@ where
     (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C) \<in> RelS_Eg1Eg2" |
 
   if_reg_rel: "\<lbrakk>
-(* Is a more generic version possible for an arbitrary b\<^sub>A?
-    c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;
-    b\<^sub>A = Eg1.Eq x 0; (* ev\<^sub>B mem\<^sub>A b\<^sub>A *)
-*)
+\<comment> \<open>Is a more generic version possible for an arbitrary \<open>b\<^sub>A\<close>?\<close>
+\<comment> \<open>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;\<close>\<close>
+\<comment> \<open>\<open>b\<^sub>A = Eg1.Eq x 0; (* ev\<^sub>B mem\<^sub>A b\<^sub>A *)\<close>\<close>
     c\<^sub>A = (If (Eg1.Eq x 0) c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;
     c\<^sub>C = (If (Eq reg\<^sub>C 0) c\<^sub>C_then c\<^sub>C_else) ;; c\<^sub>C_tail;
     mds\<^sub>A = mds\<^sub>A_of mds\<^sub>C;
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range Eg2_var\<^sub>C_of_Eg1 \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     x \<in> mds\<^sub>A AsmNoWrite \<and> x \<notin> mds\<^sub>A AsmNoReadOrWrite;
-    (* The concrete and abstract versions of the bool condition must have remained consistent *)
+    \<comment> \<open>The concrete and abstract versions of the bool condition must have remained consistent\<close>
     ev\<^sub>B\<^sub>C mem\<^sub>C (Eq reg\<^sub>C 0) = ev\<^sub>B mem\<^sub>A (Eg1.Eq x 0);
-    (* As for if_reg_load_rel *)
+    \<comment> \<open>As for \<open>if_reg_load_rel\<close>\<close>
     reg\<^sub>C \<notin> mds\<^sub>C GuarNoReadOrWrite;
     reg\<^sub>C \<notin> mds\<^sub>C GuarNoWrite;
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
@@ -192,7 +191,7 @@ where
        \<longrightarrow>
        (\<langle>(if (ev\<^sub>B mem\<^sub>A'' (Eg1.Eq x 0)) then c\<^sub>A_then else c\<^sub>A_else) ;; c\<^sub>A_tail, mds\<^sub>A, mem\<^sub>A'\<rangle>\<^sub>A,
         \<langle>(if (ev\<^sub>B\<^sub>C mem\<^sub>C'' (Eq reg\<^sub>C 0)) then c\<^sub>C_then else c\<^sub>C_else) ;; c\<^sub>C_tail, mds\<^sub>C, mem\<^sub>C'\<rangle>\<^sub>C) \<in> RelS_Eg1Eg2);
-    (* Disallow branching on variables that can potentially be in the high domain *)
+    \<comment> \<open>Disallow branching on variables that can potentially be in the high domain\<close>
     x \<noteq> buffer \<and> x \<noteq> high_var
     \<rbrakk>
     \<Longrightarrow>

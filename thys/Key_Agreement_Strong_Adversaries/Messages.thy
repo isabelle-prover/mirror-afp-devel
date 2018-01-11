@@ -15,21 +15,21 @@
 
 *******************************************************************************)
 
-section {* Message definitions *} 
+section \<open>Message definitions\<close> 
 
 theory Messages
 imports Main
 begin
 
 (****************************************************************************************)
-subsection {* Messages *}
+subsection \<open>Messages\<close>
 (****************************************************************************************)
 
-text {* Agents *}
+text \<open>Agents\<close>
 datatype
   agent = Agent nat
 
-text {* Nonces *}
+text \<open>Nonces\<close>
 typedecl fid_t
 
 datatype fresh_t = 
@@ -47,7 +47,7 @@ datatype
   | nonce_atk "nat"
 
 
-text {* Keys *}
+text \<open>Keys\<close>
 datatype ltkey =
   sharK "agent" "agent"
 | publK "agent"
@@ -59,7 +59,7 @@ datatype ephkey =
 
 datatype tag = insec | auth | confid | secure
 
-text {* Messages *}
+text \<open>Messages\<close>
 
 datatype cmsg =
   cAgent "agent"
@@ -88,9 +88,9 @@ where
 
 inductive eq :: "cmsg \<Rightarrow> cmsg \<Rightarrow> bool"
 where
--- {* equations *}
+\<comment> \<open>equations\<close>
   Permute [intro]:"eq (cExp (cExp a b) c) (cExp (cExp a c) b)"
--- {* closure by context *}
+\<comment> \<open>closure by context\<close>
  | Tag[intro]: "eq (cTag t) (cTag t)"
  | Agent[intro]: "eq (cAgent A) (cAgent A)"
  | Nonce[intro]:"eq (cNonce x) (cNonce x)"
@@ -103,9 +103,9 @@ where
  | Sign[intro]:"eq a b \<Longrightarrow> eq c d \<Longrightarrow> eq (cSign a c) (cSign b d)"
  | Hash[intro]:"eq a b \<Longrightarrow> eq (cHash a) (cHash b)"
  | Exp[intro]:"eq a b \<Longrightarrow> eq c d \<Longrightarrow> eq (cExp a c) (cExp b d)"
--- {* reflexive closure is not needed here because the context closure implies it *}
--- {* symmetric closure is not needed as it is easier to include equations in both directions *}
--- {* transitive closure *}
+\<comment> \<open>reflexive closure is not needed here because the context closure implies it\<close>
+\<comment> \<open>symmetric closure is not needed as it is easier to include equations in both directions\<close>
+\<comment> \<open>transitive closure\<close>
  | Tr[intro]: "eq a b \<Longrightarrow> eq b c \<Longrightarrow> eq a c"
 
 lemma eq_sym: "eq a b \<longleftrightarrow> eq b a"
@@ -117,7 +117,7 @@ by (auto elim: eq.induct)
 lemma eq_refl [simp, intro]: "eq a a"
 by (induction a, auto)
 
-text {* inductive cases; keep the transitivity case, so we prove the the right lemmas by hand. *}
+text \<open>inductive cases; keep the transitivity case, so we prove the the right lemmas by hand.\<close>
 lemma eq_Number: "eq (cNumber N) y \<Longrightarrow>  y = cNumber N"
   by (induction "cNumber N" y rule: eq.induct, auto)
 lemma eq_Agent: "eq (cAgent A) y \<Longrightarrow>  y = cAgent A"
@@ -164,7 +164,7 @@ lemmas eqD_aux = eq_Number eq_Agent eq_Nonce eq_LtK eq_EphK eq_Tag
 lemmas eqD [dest] = eqD_aux eqD_aux [OF eq_Sym]
 
 
-text {* Quotient construction *}
+text \<open>Quotient construction\<close>
 
 quotient_type msg = cmsg / eq
 morphisms Re Ab
@@ -189,7 +189,7 @@ lemmas msg_defs =
   Enc_def Aenc_def Exp_def Hash_def Tag_def Sign_def
 
 
-text {* Commutativity of exponents *}
+text \<open>Commutativity of exponents\<close>
 
 lemma permute_exp [simp]: "Exp (Exp X Y) Z = Exp (Exp X Z) Y"
 by (transfer, auto)
@@ -465,7 +465,7 @@ abbreviation
   "epriKA N \<equiv> EphK (eprivK (nonce_atk N))"
 
 
-text{* Concrete syntax: messages appear as <A,B,NA>, etc... *}
+text\<open>Concrete syntax: messages appear as <A,B,NA>, etc...\<close>
 
 syntax
   "_MTuple"      :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
@@ -473,13 +473,13 @@ translations
   "\<langle>x, y, z\<rangle>" \<rightleftharpoons> "\<langle>x, \<langle>y, z\<rangle>\<rangle>"
   "\<langle>x, y\<rangle>"    \<rightleftharpoons> "CONST Pair x y"
 
-text {*  hash macs  *}
+text \<open>hash macs\<close>
 abbreviation
   hmac :: "msg \<Rightarrow> msg \<Rightarrow> msg" where
   "hmac M K \<equiv> Hash \<langle>M, K\<rangle>"
 
 
-text {* recover some kind of injectivity for Exp *}
+text \<open>recover some kind of injectivity for Exp\<close>
 lemma eq_expgen: 
   "eq X Y \<Longrightarrow> (\<forall> X'. X = cExp cGen X' \<longrightarrow> (\<exists> Z. Y = (cExp cGen Z) \<and> eq X' Z)) \<and>
               (\<forall> Y'. Y = cExp cGen Y' \<longrightarrow> (\<exists> Z. X = (cExp cGen Z) \<and> eq Y' Z))"

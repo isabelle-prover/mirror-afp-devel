@@ -64,7 +64,7 @@ private lemma "pfxes TYPE(32) = map nat [0 .. 32]" by eval
 
 private definition "largest_contained_prefix (a::('a :: len) word) r = (
   let cs = (map (\<lambda>s. PrefixMatch a s) (pfxes TYPE('a)));
-      (* anything that is a subset should also be a valid prefix. but try proving that.*)
+      \<comment> \<open>anything that is a subset should also be a valid prefix. but try proving that.\<close>
       cfs = find (\<lambda>s. valid_prefix s \<and> wordinterval_subset (prefix_to_wordinterval s) r) cs in
   cfs)
 "

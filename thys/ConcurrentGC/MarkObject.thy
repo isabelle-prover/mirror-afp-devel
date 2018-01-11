@@ -684,12 +684,12 @@ definition (in mut_m) mark_object_invL :: "('field, 'mut, 'ref) gc_pred" where
 
   and atS_mut ghost_honorary_grey_empty_locs (empty mut_ghost_honorary_grey)
 
-(* insertion barrier *)
+\<comment> \<open>insertion barrier\<close>
   and at_mut ''store_ins''                  ( (mut_ghost_handshake_phase in \<langle>{hp_InitMark, hp_Mark}\<rangle>
                                             or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))
                                            and not null mut_new_ref
                                            imp marked \<triangleright> mut_the_new_ref )
-(* deletion barrier *)
+\<comment> \<open>deletion barrier\<close>
   and atS_mut (prefixed ''store_del_mo'' \<union> {''lop_store_ins''})
                                             ( (mut_ghost_handshake_phase eq \<langle>hp_Mark\<rangle>
                                             or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))

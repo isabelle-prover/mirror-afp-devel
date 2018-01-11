@@ -16,12 +16,12 @@
 
 *******************************************************************************)
 
-section {* Abstract Denning-Sacco protocol (L1) *}
+section \<open>Abstract Denning-Sacco protocol (L1)\<close>
 
 theory m1_ds imports m1_keydist_inrn "../Refinement/a0n_agree"
 begin
 
-text {* We augment the basic abstract key distribution model such that 
+text \<open>We augment the basic abstract key distribution model such that 
 the server sends a timestamp along with the session key. We check the 
 timestamp's validity to ensure recentness of the session key. 
 
@@ -29,27 +29,27 @@ We establish one refinement for this model, namely that this model refines
 the basic authenticated key transport model @{text "m1_keydist_inrn"}, 
 which guarantees non-injective agreement with the server on the session key
 and the server-generated timestamp.
-*}
+\<close>
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* We extend the basic key distribution by adding timestamps. 
+text \<open>We extend the basic key distribution by adding timestamps. 
 We add a clock variable modeling the current time.  The frames, runs, and 
 observations remain the same as in the previous model, but we will use 
 the @{typ "nat list"}'s to store timestamps. 
-*}
+\<close>
 
 type_synonym
-  time = "nat"                     -- {* for clock and timestamps *}
+  time = "nat"                     \<comment> \<open>for clock and timestamps\<close>
 
 consts
-  Ls :: "time"                     -- {* life time for session keys *}
+  Ls :: "time"                     \<comment> \<open>life time for session keys\<close>
 
 
-text {* State and observations *}
+text \<open>State and observations\<close>
 
 record
   m1_state = "m1x_state" +
@@ -65,8 +65,8 @@ type_synonym
   'x m1_trans = "('x m1_state_scheme \<times> 'x m1_state_scheme) set"
 
 
-text {* Instantiate parameters regarding list of freshness identifiers stored
-at server. *}
+text \<open>Instantiate parameters regarding list of freshness identifiers stored
+at server.\<close>
 
 overloading is_len' \<equiv> "is_len" rs_len' \<equiv> "rs_len" begin
 definition is_len_def [simp]: "is_len' \<equiv> 1::nat"
@@ -75,61 +75,61 @@ end
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-definition         -- {* by @{term "A"}, refines @{term "m1x_step1"} *}
+definition         \<comment> \<open>by @{term "A"}, refines @{term "m1x_step1"}\<close>
   m1_step1 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1_trans"
 where
   "m1_step1 \<equiv> m1a_step1"
 
-definition       -- {* by @{term "B"}, refines @{term "m1x_step2"} *}
+definition       \<comment> \<open>by @{term "B"}, refines @{term "m1x_step2"}\<close>
   m1_step2 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1_trans"
 where
   "m1_step2 \<equiv> m1a_step2"
 
-definition       -- {* by @{term "Server"}, refines @{term m1x_step3} *}
+definition       \<comment> \<open>by @{term "Server"}, refines @{term m1x_step3}\<close>
   m1_step3 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step3 Rs A B Kab Ts \<equiv> {(s, s').
-     (* new guards: *)
-     Ts = clk s \<and>                      (* fresh timestamp *)
+     \<comment> \<open>new guards:\<close>
+     Ts = clk s \<and>                      \<comment> \<open>fresh timestamp\<close>
 
-     (* rest as before: *)
+     \<comment> \<open>rest as before:\<close>
      (s, s') \<in> m1a_step3 Rs A B Kab [aNum Ts]
   }"
 
-definition         -- {* by @{text "A"}, refines @{term m1x_step5} *}
+definition         \<comment> \<open>by @{text "A"}, refines @{term m1x_step5}\<close>
   m1_step4 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step4 Ra A B Kab Ts \<equiv> {(s, s').
-     (* new guards: *)
-     clk s < Ts + Ls \<and>                (* ensure session key recentness *)
+     \<comment> \<open>new guards:\<close>
+     clk s < Ts + Ls \<and>                \<comment> \<open>ensure session key recentness\<close>
 
-     (* rest as before *) 
+     \<comment> \<open>rest as before\<close>
      (s, s') \<in> m1a_step4 Ra A B Kab [aNum Ts] 
   }"
 
-definition         -- {* by @{term "B"}, refines @{term m1x_step4} *}
+definition         \<comment> \<open>by @{term "B"}, refines @{term m1x_step4}\<close>
   m1_step5 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step5 Rb A B Kab Ts \<equiv> {(s, s'). 
-     (* new guards: *)
-     (* ensure freshness of session key *)
+     \<comment> \<open>new guards:\<close>
+     \<comment> \<open>ensure freshness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* rest as before *)
+     \<comment> \<open>rest as before\<close>
      (s, s') \<in> m1a_step5 Rb A B Kab [aNum Ts] 
   }"
 
-definition     -- {* refines @{term skip} *}
+definition     \<comment> \<open>refines @{term skip}\<close>
   m1_tick :: "time \<Rightarrow> 'x m1_trans"
 where
   "m1_tick T \<equiv> {(s, s').
      s' = s\<lparr> clk := clk s + T \<rparr> 
   }"
 
-definition         -- {* by attacker, refines @{term m1x_leak} *}
+definition         \<comment> \<open>by attacker, refines @{term m1x_leak}\<close>
   m1_leak :: "[rid_t] \<Rightarrow> 'x m1_trans"
 where
   "m1_leak \<equiv> m1a_leak"
@@ -137,7 +137,7 @@ where
 
 
 (******************************************************************************)
-subsection {* Specification *}
+subsection \<open>Specification\<close>
 (******************************************************************************)
 
 definition
@@ -178,14 +178,14 @@ by (simp add: m1_def)
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* inv0: Finite domain *}
+subsubsection \<open>inv0: Finite domain\<close>
 (******************************************************************************)
 
-text {* There are only finitely many runs. This is needed to establish
-the responder/initiator agreement. *}
+text \<open>There are only finitely many runs. This is needed to establish
+the responder/initiator agreement.\<close>
 
 definition 
   m1_inv0_fin :: "'x m1_pred"
@@ -196,7 +196,7 @@ lemmas m1_inv0_finI = m1_inv0_fin_def [THEN setc_def_to_intro, rule_format]
 lemmas m1_inv0_finE [elim] = m1_inv0_fin_def [THEN setc_def_to_elim, rule_format]
 lemmas m1_inv0_finD = m1_inv0_fin_def [THEN setc_def_to_dest, rule_format]
 
-text {* Invariance proofs. *}
+text \<open>Invariance proofs.\<close>
 
 lemma PO_m1_inv0_fin_init [iff]:
   "init m1 \<subseteq> m1_inv0_fin"
@@ -211,13 +211,13 @@ by (rule inv_rule_incr, auto del: subsetI)
 
 
 (******************************************************************************)
-subsection {* Refinement of @{text "m1a"} *}
+subsection \<open>Refinement of @{text "m1a"}\<close>
 (******************************************************************************)
 
-subsubsection {* Simulation relation *}
+subsubsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* R1a1: The simulation relation and mediator function are identities. *}
+text \<open>R1a1: The simulation relation and mediator function are identities.\<close>
 
 definition
   med1a1 :: "m1_obs \<Rightarrow> m1a_obs" where
@@ -230,7 +230,7 @@ definition
 lemmas R1a1_defs = R1a1_def med1a1_def 
 
 
-subsubsection {* Refinement proof *}
+subsubsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
 lemma PO_m1_step1_refines_m1a_step1:
@@ -276,7 +276,7 @@ lemma PO_m1_tick_refines_m1a_skip:
 by (auto simp add: PO_rhoare_defs R1a1_defs m1_defs)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m1_trans_refines_m1a_trans = 
   PO_m1_step1_refines_m1a_step1 PO_m1_step2_refines_m1a_step2
@@ -297,14 +297,14 @@ apply (auto simp add: m1_def m1_trans_def m1a_def m1a_trans_def
 apply (force intro!: PO_m1_trans_refines_m1a_trans)+
 done
 
-text {* Observation consistency. *}
+text \<open>Observation consistency.\<close>
 
 lemma obs_consistent_med1a1 [iff]: 
   "obs_consistent R1a1 med1a1 m1a m1"
 by (auto simp add: obs_consistent_def R1a1_def m1a_def m1_def)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma PO_m1_refines_m1a [iff]: 
   "refines R1a1 med1a1 m1a m1"

@@ -17,8 +17,8 @@ section\<open>Example: Implementing spoofing protection\<close>
   (Iface ''loben'', [(ipv4addr_of_dotdecimal (10,13,42,144), 28)]),
   (Iface ''wg'', [(ipv4addr_of_dotdecimal (10,13,42,176), 28)]),
   (Iface ''wt'', [(ipv4addr_of_dotdecimal (10,13,42,160), 28)]),
-  (Iface ''lup'', everything_but_private_ips), (*INET*)
-  (*no protection fo the following interfaces*)
+  (Iface ''lup'', everything_but_private_ips), \<comment> \<open>INET\<close>
+  \<comment> \<open>no protection fo the following interfaces\<close>
   (Iface ''lo'', [(0,0)]),
   (Iface ''vpriv'', [(0,0)]),
   (Iface ''vshit'', [(0,0)]),

@@ -14,12 +14,12 @@
 
 *******************************************************************************)
 
-section {* Refinement 2a: Authentic Channel Protocol *}
+section \<open>Refinement 2a: Authentic Channel Protocol\<close>
 
 theory m2_auth_chan imports m1_auth "../Refinement/Channels"
 begin
 
-text {* We refine the abstract authentication protocol to a version of the 
+text \<open>We refine the abstract authentication protocol to a version of the 
 ISO/IEC 9798-3 protocol using abstract channels. In standard protocol notation, 
 the original protocol is specified as follows.
 \[
@@ -29,23 +29,23 @@ the original protocol is specified as follows.
 \end{array}
 \]
 We introduce insecure channels between pairs of agents for the first message and 
-authentic channels for the second. *}
+authentic channels for the second.\<close>
 
 declare domIff [simp, iff del]
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* State: we extend the state with insecure and authentic channels 
-defined above. *}
+text \<open>State: we extend the state with insecure and authentic channels 
+defined above.\<close>
 
 record m2_state = m1_state +
   chan :: "chmsg set"
 
 
-text {* Observations. *}
+text \<open>Observations.\<close>
 
 type_synonym 
   m2_obs = m1_state 
@@ -58,18 +58,18 @@ definition
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
 definition
   m2_step1 :: "[rid_t, agent, agent, nonce] \<Rightarrow> (m2_state \<times> m2_state) set" 
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
        chan := insert (Insec A B (Msg [aNon Na])) (chan s)  
@@ -80,16 +80,16 @@ definition
   m2_step2 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m2_state \<times> m2_state) set"
 where
   "m2_step2 Rb A B Na Nb \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Insec A B (Msg [aNon Na]) \<in> chan s \<and>                          (* rcv M1 *)
+     Insec A B (Msg [aNon Na]) \<in> chan s \<and>                          \<comment> \<open>\<open>rcv M1\<close>\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
-       chan := insert (Auth B A (Msg [aNon Nb, aNon Na])) (chan s)  (* snd M2 *) 
+       chan := insert (Auth B A (Msg [aNon Nb, aNon Na])) (chan s)  \<comment> \<open>\<open>snd M2\<close>\<close>
      \<rparr>  
   }"
 
@@ -97,32 +97,32 @@ definition
   m2_step3 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m2_state \<times> m2_state) set"
 where
   "m2_step3 Ra A B Na Nb \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Auth B A (Msg [aNon Nb, aNon Na]) \<in> chan s \<and>            (* recv M2 *)
+     Auth B A (Msg [aNon Nb, aNon Na]) \<in> chan s \<and>            \<comment> \<open>\<open>recv M2\<close>\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
   }"
 
 
-text {* Intruder fake event. *}
+text \<open>Intruder fake event.\<close>
 
-definition     -- {* refines @{term Id} *} 
+definition     \<comment> \<open>refines @{term Id}\<close> 
   m2_fake :: "(m2_state \<times> m2_state) set"
 where
   "m2_fake \<equiv> {(s, s1). 
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> chan := fake ik0 (dom (runs s)) (chan s) \<rparr>
   }"
 
 
-text {* Transition system. *}
+text \<open>Transition system.\<close>
 
 definition 
   m2_init :: "m2_state set" 
@@ -156,14 +156,14 @@ lemmas m2_defs =
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* Authentic channel and responder *}
+subsubsection \<open>Authentic channel and responder\<close>
 (******************************************************************************)
 
-text {* This property relates the messages in the authentic channel to the 
-responder run frame. *}
+text \<open>This property relates the messages in the authentic channel to the 
+responder run frame.\<close>
 
 definition 
   m2_inv1_auth :: "m2_state set" where
@@ -180,7 +180,7 @@ lemmas m2_inv1_authD [dest] =
   m2_inv1_auth_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv2_init [iff]:
   "init m2 \<subseteq> m2_inv1_auth"
@@ -190,7 +190,7 @@ lemma PO_m2_inv2_trans [iff]:
   "{m2_inv1_auth} trans m2 {> m2_inv1_auth}"
 apply (auto simp add: PO_hoare_def m2_defs intro!: m2_inv1_authI) 
 apply (auto dest: dom_lemmas)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (force)                            (* SLOW *)
 done
 
@@ -199,22 +199,22 @@ by (rule_tac inv_rule_incr) (auto)
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
-text {* Simulation relation and mediator function. This is a pure superposition 
-refinement. *}
+text \<open>Simulation relation and mediator function. This is a pure superposition 
+refinement.\<close>
 
 definition
   R12 :: "(m1_state \<times> m2_state) set" where
-  "R12 \<equiv> {(s, t). runs s = runs t}"           -- {* That's it! *}
+  "R12 \<equiv> {(s, t). runs s = runs t}"           \<comment> \<open>That's it!\<close>
  
 definition 
   med21 :: "m2_obs \<Rightarrow> m1_obs" where
   "med21 \<equiv> id" 
 
 
-text {* Refinement proof *}
+text \<open>Refinement proof\<close>
 
 lemma PO_m2_step1_refines_m1_step1:
   "{R12} 
@@ -235,7 +235,7 @@ lemma PO_m2_step3_refines_m1_step3:
 by (auto simp add: PO_rhoare_defs R12_def m1_defs m2_defs)
 
 
-text {* New fake event refines skip. *}
+text \<open>New fake event refines skip.\<close>
 
 lemma PO_m2_fake_refines_m1_skip:
   "{R12} Id, m2_fake {> R12}"
@@ -246,7 +246,7 @@ lemmas PO_m2_trans_refines_m1_trans =
   PO_m2_step3_refines_m1_step3 PO_m2_fake_refines_m1_skip 
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemma PO_m2_refines_init_m1 [iff]:
   "init m2 \<subseteq> R12``(init m1)"

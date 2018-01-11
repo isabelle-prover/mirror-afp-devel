@@ -697,10 +697,10 @@ definition
   POR_base_lf_rep :: "(Three \<Rightarrow> ValD) lf_rep"
 where
   "POR_base_lf_rep \<equiv> \<lambda>(mR, pR).
-     { (\<lambda>i. ValTT) } \<union> { (\<lambda>i. ValFF) } (* x = y = z for bools *)
-   \<union> (\<Union>n. { (\<lambda>i. ValN\<cdot>n) }) (* x = y = z for numerals *)
-   \<union> { f . f One = \<bottom> } (* x = \<bottom> *)
-   \<union> { f . f Two = \<bottom> } (* y = \<bottom> *)"
+     { (\<lambda>i. ValTT) } \<union> { (\<lambda>i. ValFF) } \<comment> \<open>\<open>x = y = z\<close> for bools\<close>
+   \<union> (\<Union>n. { (\<lambda>i. ValN\<cdot>n) }) \<comment> \<open>\<open>x = y = z\<close> for numerals\<close>
+   \<union> { f . f One = \<bottom> } \<comment> \<open>\<open>x = \<bottom>\<close>\<close>
+   \<union> { f . f Two = \<bottom> } \<comment> \<open>\<open>y = \<bottom>\<close>\<close>"
 
 text{*
 
@@ -1120,9 +1120,9 @@ argument can diverge but not the result.
 definition PE_base_lf_rep :: "(nat \<Rightarrow> ValD) lf_rep" where
   "PE_base_lf_rep \<equiv> \<lambda>(mR, pR).
      { \<bottom> }
-   \<union> { (\<lambda>i. ValTT) } \<union> { (\<lambda>i. ValFF) } (* x = y = z for bools *)
-   \<union> (\<Union>n. { (\<lambda>i. ValN\<cdot>n) }) (* x = y = z for numerals *)
-   \<union> { f . f 1 = \<bottom> \<or> f 2 = \<bottom> } (* Vectors that diverge on one or two. *)"
+   \<union> { (\<lambda>i. ValTT) } \<union> { (\<lambda>i. ValFF) } \<comment> \<open>\<open>x = y = z\<close> for bools\<close>
+   \<union> (\<Union>n. { (\<lambda>i. ValN\<cdot>n) }) \<comment> \<open>\<open>x = y = z\<close> for numerals\<close>
+   \<union> { f . f 1 = \<bottom> \<or> f 2 = \<bottom> } \<comment> \<open>Vectors that diverge on one or two.\<close>"
 (*<*)
 
 lemma adm_PE_base_lf_rep:

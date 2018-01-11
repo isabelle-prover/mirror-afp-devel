@@ -75,10 +75,10 @@ end
 definition "write_file = Print.write_file (String.implode o String.to_list) (ToNat integer_of_natural)"
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   Print.write_file_def
 
-  (* fun *)
+  \<comment> \<open>fun\<close>
 
 section\<open>Miscellaneous: Garbage Collection of Notations\<close>
 

@@ -76,15 +76,15 @@ begin
             case vo of 
               Some v \<Rightarrow> do {
                 if v \<in> \<Union>set p then do {
-                  (* Collapse *)
+                  \<comment> \<open>Collapse\<close>
                   RETURN (l,collapse v (p,D,pE))
                 } else if v\<notin>D then do {
-                  (* Edge to new node. Append to path *)
+                  \<comment> \<open>Edge to new node. Append to path\<close>
                   RETURN (l,push v (p,D,pE))
                 } else RETURN (l,p,D,pE)
               }
             | None \<Rightarrow> do {
-                (* No more outgoing edges from current node on path *)
+                \<comment> \<open>No more outgoing edges from current node on path\<close>
                 ASSERT (pE \<inter> last p \<times> UNIV = {});
                 let V = last p;
                 let (p,D,pE) = pop (p,D,pE);
@@ -473,7 +473,7 @@ begin
             (l,(S,B,I,P))\<leftarrow>WHILEIT (\<lambda>(l,s). cscc_invar v0 (oGS_\<alpha> I0) (l,GS.\<alpha> s))
               (\<lambda>(l,s). \<not>path_is_empty_impl s) (\<lambda>(l,s).
             do {
-              (* Select edge from end of path *)
+              \<comment> \<open>Select edge from end of path\<close>
               (vo,s) \<leftarrow> select_edge_impl s;
 
               case vo of 
@@ -482,15 +482,15 @@ begin
                     s\<leftarrow>collapse_impl v s;
                     RETURN (l,s)
                   } else if \<not>is_done_impl v s then do {
-                    (* Edge to new node. Append to path *)
+                    \<comment> \<open>Edge to new node. Append to path\<close>
                     RETURN (l,push_impl v s)
                   } else do {
-                    (* Edge to done node. Skip *)
+                    \<comment> \<open>Edge to done node. Skip\<close>
                     RETURN (l,s)
                   }
                 }
               | None \<Rightarrow> do {
-                  (* No more outgoing edges from current node on path *)
+                  \<comment> \<open>No more outgoing edges from current node on path\<close>
                   scc \<leftarrow> last_seg_impl s;
                   s\<leftarrow>pop_impl s;
                   let l = scc#l;

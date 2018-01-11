@@ -74,8 +74,8 @@ text{* A partial latin square is a square that contains each number at most once
    inj\_on predicate: *}
 definition partial_latin_square :: "latin_entry set \<Rightarrow> nat \<Rightarrow> bool" where
 "partial_latin_square s n \<equiv>
-  (\<forall>t. inj_on (without t) s) \<and> (* numbers are unique in each column (t=Row), numbers are unique in each row (t=Col), rows-column combinations are specified unambiguously (t=Num)*)
-  (\<forall>e\<in>s. \<forall>t. e t < n)" (* all numbers, column indices and row indices are <n *)
+  (\<forall>t. inj_on (without t) s) \<and> \<comment> \<open>numbers are unique in each column (t=Row), numbers are unique in each row (t=Col), rows-column combinations are specified unambiguously (t=Num)\<close>
+  (\<forall>e\<in>s. \<forall>t. e t < n) \<comment> \<open>all numbers, column indices and row indices are <n\<close>"
 
 value "partial_latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0),

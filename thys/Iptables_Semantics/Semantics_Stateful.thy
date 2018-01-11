@@ -19,13 +19,13 @@ text\<open>Processing a packet with state can be modeled as follows:
 
 inductive semantics_stateful ::
   "'a ruleset \<Rightarrow>
-   ('\<sigma> \<Rightarrow> ('a, 'p) matcher) \<Rightarrow> (*matcher, first parameter is the state*)
-   ('\<sigma> \<Rightarrow> final_decision \<Rightarrow> 'p \<Rightarrow> '\<sigma>) \<Rightarrow> (*state update function after firewall has decision for a packet*)
-   '\<sigma> \<Rightarrow> (*Starting state. constant*)
-   (string \<times> action) \<Rightarrow> (*The chain and default policy the firewall evaluates. For example ''FORWARD'', Drop*)
-   'p list \<Rightarrow> (*packets to be processed*)
-   ('p \<times> final_decision) list \<Rightarrow> (*packets which have been processed and their decision. ordered the same as the firewall processed them. oldest packet first*)
-   '\<sigma> \<Rightarrow> (*final state*)
+   ('\<sigma> \<Rightarrow> ('a, 'p) matcher) \<Rightarrow> \<comment> \<open>matcher, first parameter is the state\<close>
+   ('\<sigma> \<Rightarrow> final_decision \<Rightarrow> 'p \<Rightarrow> '\<sigma>) \<Rightarrow> \<comment> \<open>state update function after firewall has decision for a packet\<close>
+   '\<sigma> \<Rightarrow> \<comment> \<open>Starting state. constant\<close>
+   (string \<times> action) \<Rightarrow> \<comment> \<open>The chain and default policy the firewall evaluates. For example ''FORWARD'', Drop\<close>
+   'p list \<Rightarrow> \<comment> \<open>packets to be processed\<close>
+   ('p \<times> final_decision) list \<Rightarrow> \<comment> \<open>packets which have been processed and their decision. ordered the same as the firewall processed them. oldest packet first\<close>
+   '\<sigma> \<Rightarrow> \<comment> \<open>final state\<close>
    bool" for \<Gamma> and \<gamma>\<^sub>\<sigma> and state_update and \<sigma>\<^sub>0 where
   --\<open>A list of packets @{term ps} waiting to be processed. Nothing has happened, start and final state are the same, the list of processed packets is empty.\<close>
   "semantics_stateful \<Gamma> \<gamma>\<^sub>\<sigma> state_update \<sigma>\<^sub>0 (built_in_chain, default_policy) ps [] \<sigma>\<^sub>0" |
@@ -58,13 +58,13 @@ text\<open>In this model, the matcher is completely stateless but packets are pr
 inductive semantics_stateful_packet_tagging ::
    "'a ruleset \<Rightarrow>
     ('a, 'ptagged) matcher \<Rightarrow>
-    ('\<sigma> \<Rightarrow> 'p \<Rightarrow> 'ptagged) \<Rightarrow> (*taggs the packet accordig to the current state before processing by firewall*)
-    ('\<sigma> \<Rightarrow> final_decision \<Rightarrow> 'p \<Rightarrow> '\<sigma>) \<Rightarrow> (*state updater*)
-    '\<sigma> \<Rightarrow> (*Starting state. constant*)
+    ('\<sigma> \<Rightarrow> 'p \<Rightarrow> 'ptagged) \<Rightarrow> \<comment> \<open>taggs the packet accordig to the current state before processing by firewall\<close>
+    ('\<sigma> \<Rightarrow> final_decision \<Rightarrow> 'p \<Rightarrow> '\<sigma>) \<Rightarrow> \<comment> \<open>state updater\<close>
+    '\<sigma> \<Rightarrow> \<comment> \<open>Starting state. constant\<close>
     (string \<times> action) \<Rightarrow>
-    'p list \<Rightarrow> (*packets to be processed*)
-    ('p \<times> final_decision) list \<Rightarrow> (*packets which have been processed*)
-    '\<sigma> \<Rightarrow> (*final state*)
+    'p list \<Rightarrow> \<comment> \<open>packets to be processed\<close>
+    ('p \<times> final_decision) list \<Rightarrow> \<comment> \<open>packets which have been processed\<close>
+    '\<sigma> \<Rightarrow> \<comment> \<open>final state\<close>
     bool" for \<Gamma> and \<gamma> and packet_tagger and state_update and \<sigma>\<^sub>0 where
   "semantics_stateful_packet_tagging \<Gamma> \<gamma> packet_tagger state_update \<sigma>\<^sub>0 (built_in_chain, default_policy) ps [] \<sigma>\<^sub>0" |
 

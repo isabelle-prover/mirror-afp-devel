@@ -64,7 +64,7 @@ primrec is_in\<^sub>0 :: "('a::preorder) \<Rightarrow> 'a tree\<^sub>0 \<Rightar
 primrec l_bal\<^sub>0 :: "'a \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> 'a tree\<^sub>0" where
   "l_bal\<^sub>0 n (MKT\<^sub>0 ln ll lr) r =
    (if height ll < height lr
-    then case lr of ET\<^sub>0 \<Rightarrow> ET\<^sub>0 (* impossible *)
+    then case lr of ET\<^sub>0 \<Rightarrow> ET\<^sub>0 \<comment> \<open>impossible\<close>
                   | MKT\<^sub>0 lrn lrl lrr \<Rightarrow> MKT\<^sub>0 lrn (MKT\<^sub>0 ln ll lrl) (MKT\<^sub>0 n lrr r)
     else MKT\<^sub>0 ln ll (MKT\<^sub>0 n lr r))"
 
@@ -72,7 +72,7 @@ primrec l_bal\<^sub>0 :: "'a \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> 'a tree
 primrec r_bal\<^sub>0 :: "'a \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> 'a tree\<^sub>0" where
   "r_bal\<^sub>0 n l (MKT\<^sub>0 rn rl rr) =
    (if height rl > height rr
-    then case rl of ET\<^sub>0 \<Rightarrow> ET\<^sub>0 (* impossible *)
+    then case rl of ET\<^sub>0 \<Rightarrow> ET\<^sub>0 \<comment> \<open>impossible\<close>
                   | MKT\<^sub>0 rln rll rlr \<Rightarrow> MKT\<^sub>0 rln (MKT\<^sub>0 n l rll) (MKT\<^sub>0 rn rlr rr)
     else MKT\<^sub>0 rn (MKT\<^sub>0 n l rl) rr)"
 
@@ -250,7 +250,7 @@ definition mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 
 primrec l_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "l_bal n (MKT ln ll lr h) r =
    (if ht ll < ht lr
-    then case lr of ET \<Rightarrow> ET (* impossible *)
+    then case lr of ET \<Rightarrow> ET \<comment> \<open>impossible\<close>
                   | MKT lrn lrl lrr lrh \<Rightarrow>
                     mkt lrn (mkt ln ll lrl) (mkt n lrr r)
     else mkt ln ll (mkt n lr r))"
@@ -258,7 +258,7 @@ primrec l_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> '
 primrec r_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
  "r_bal n l (MKT rn rl rr h) =
    (if ht rl > ht rr
-    then case rl of ET \<Rightarrow> ET (* impossible *)
+    then case rl of ET \<Rightarrow> ET \<comment> \<open>impossible\<close>
                   | MKT rln rll rlr h \<Rightarrow> mkt rln (mkt n l rll) (mkt rn rlr rr)
     else mkt rn (mkt n l rl) rr)"
 

@@ -14,12 +14,12 @@
 
 *******************************************************************************)
 
-section {* Refinement 2b: Confidential Channel Protocol *}
+section \<open>Refinement 2b: Confidential Channel Protocol\<close>
 
 theory m2_confid_chan imports m1_auth "../Refinement/Channels"
 begin
 
-text {* We refine the abstract authentication protocol to the first two
+text \<open>We refine the abstract authentication protocol to the first two
 steps of the Needham-Schroeder-Lowe protocol, which we call NSL/2.
 In standard protocol notation, the original protocol is specified as follows.
 \[
@@ -29,17 +29,17 @@ In standard protocol notation, the original protocol is specified as follows.
 \end{array}
 \]
 At this refinement level, we abstract the encrypted messages to 
-non-cryptographic messages transmitted on confidential channels. *}
+non-cryptographic messages transmitted on confidential channels.\<close>
 
 declare domIff [simp, iff del]
 
 
 (******************************************************************************)
-subsection {* State and observations *}
+subsection \<open>State and observations\<close>
 (******************************************************************************)
 
 record m2_state = m1_state +
-  chan :: "chmsg set"                     -- {* channels *}
+  chan :: "chmsg set"                     \<comment> \<open>channels\<close>
 
 type_synonym 
   m2_obs = m1_state 
@@ -52,7 +52,7 @@ definition
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
 definition 
@@ -69,14 +69,14 @@ definition
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
-       (* send Na on confidential channel 1 *)
+       \<comment> \<open>send \<open>Na\<close> on confidential channel 1\<close>
        chan := insert (Confid A B (Msg [aNon Na])) (chan s)
      \<rparr>
   }"
@@ -87,13 +87,13 @@ definition
 where
   "m2_step2 Rb A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Confid A B (Msg [aNon Na]) \<in> chan s \<and>           (* receive M1 *)
+     Confid A B (Msg [aNon Na]) \<in> chan s \<and>           \<comment> \<open>receive M1\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
        chan := insert (Confid B A (Msg [aNon Na, aNon Nb])) (chan s)
@@ -106,31 +106,31 @@ definition
 where
   "m2_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Confid B A (Msg [aNon Na, aNon Nb]) \<in> chan s \<and>  (* receive M2 *)
+     Confid B A (Msg [aNon Na, aNon Nb]) \<in> chan s \<and>  \<comment> \<open>receive M2\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
   }"
 
 
-text {* Intruder fake event. *}
+text \<open>Intruder fake event.\<close>
 
-definition     -- {* refines @{term Id} *} 
+definition     \<comment> \<open>refines @{term Id}\<close> 
   m2_fake :: "(m2_state \<times> m2_state) set"
 where
   "m2_fake \<equiv> {(s, s1). 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> chan := fake ik0 (dom (runs s)) (chan s) \<rparr>
   }"
 
 
-text {* Transition system. *}
+text \<open>Transition system.\<close>
 
 definition 
   m2_trans :: "(m2_state \<times> m2_state) set" where
@@ -156,10 +156,10 @@ lemmas m2_defs =
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* Invariant 1: Messages only contains generated nonces. *}
+subsubsection \<open>Invariant 1: Messages only contains generated nonces.\<close>
 (******************************************************************************)
 
 definition 
@@ -183,7 +183,7 @@ lemma PO_m2_inv1_trans [iff]:
   "{m2_inv1_nonces} trans m2 {> m2_inv1_nonces}"
 apply (auto simp add: PO_hoare_def m2_defs intro!: m2_inv1_noncesI) 
 apply (auto dest: m2_inv1_noncesD)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (subgoal_tac "aNon (R$0) \<in> atoms (chan xa)", auto)
 done
 
@@ -192,15 +192,15 @@ lemma PO_m2_inv012 [iff]:
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* Invariant 3: relates message 2 with the responder run *}
+subsubsection \<open>Invariant 3: relates message 2 with the responder run\<close>
 (******************************************************************************)
 (*
  1. \<And>a y. \<lbrakk>runs a = runs y; runs y Ra = Some (Init, [A, B], []);
            Confid A B (Msg [aNon (Ra$0), aNon Nb]) \<in> chan y; A \<notin> bad; B \<notin> bad\<rbrakk>
           \<Longrightarrow> \<exists>Rb. Nb = Rb $ 0 \<and> runs y Rb = Some (Resp, [A, B], [aNon (Ra $ 0)])
 *)
-text {* It is needed, together with initiator nonce secrecy, in proof 
-obligation REF/@{term m2_step2}. *}
+text \<open>It is needed, together with initiator nonce secrecy, in proof 
+obligation REF/@{term m2_step2}.\<close>
 
 definition 
   m2_inv3_msg2 :: "m2_state set" where
@@ -223,7 +223,7 @@ lemma PO_m2_inv4_trans [iff]:
   "{m2_inv3_msg2} trans m2 {> m2_inv3_msg2}"
 apply (auto simp add: PO_hoare_def m2_defs intro!: m2_inv3_msg2I)
 apply (auto dest: m2_inv3_msg2D dom_lemmas)
--- {* 2 subgoals *}
+\<comment> \<open>2 subgoals\<close>
   apply (drule m2_inv3_msg2D, auto dest: dom_lemmas)
   apply (drule m2_inv3_msg2D, auto, force)
 done
@@ -232,12 +232,12 @@ lemma PO_m2_inv4 [iff]: "reach m2 \<subseteq> m2_inv3_msg2"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-subsubsection {* Invariant 4: Initiator nonce secrecy. *}
+subsubsection \<open>Invariant 4: Initiator nonce secrecy.\<close>
 (******************************************************************************)
 
-text {* It is needed in the proof 
+text \<open>It is needed in the proof 
 obligation REF/@{term m2_step2}. It would be sufficient to prove the invariant 
-for the case @{term "x=None"}, but we have generalized it here. *}
+for the case @{term "x=None"}, but we have generalized it here.\<close>
 
 definition 
   m2_inv4_inon_secret :: "m2_state set" where
@@ -265,10 +265,10 @@ lemma PO_m2_inv3_trans [iff]:
    {> m2_inv4_inon_secret}"
 apply (auto simp add: PO_hoare_def m2_defs intro!: m2_inv4_inon_secretI)  
 apply (auto dest: m2_inv4_inon_secretD) 
--- {* 3 subgoals *}
-  apply (fastforce)                -- {* requires @{text "m2_inv1_nonces"} *}
-  apply (fastforce)                -- {* requires ind hyp *}
-  apply (fastforce)                -- {* requires ind hyp *}
+\<comment> \<open>3 subgoals\<close>
+  apply (fastforce)                \<comment> \<open>requires @{text "m2_inv1_nonces"}\<close>
+  apply (fastforce)                \<comment> \<open>requires ind hyp\<close>
+  apply (fastforce)                \<comment> \<open>requires ind hyp\<close>
 done 
 
 lemma PO_m2_inv3 [iff]: "reach m2 \<subseteq> m2_inv4_inon_secret"
@@ -276,7 +276,7 @@ by (rule inv_rule_incr [where J="m2_inv1_nonces"]) (auto)
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition
@@ -288,7 +288,7 @@ abbreviation
   "med21 \<equiv> id"
 
 
-text {* Proof obligations. *}
+text \<open>Proof obligations.\<close>
 
 lemma PO_m2_step1_refines_m1_step1:
   "{R12} 
@@ -309,7 +309,7 @@ lemma PO_m2_step3_refines_m1_step3:
 by (auto simp add: PO_rhoare_defs R12_def m1_defs m2_defs)
    (blast)
 
-text {* New fake events refine skip. *}
+text \<open>New fake events refine skip.\<close>
 
 lemma PO_m2_fake_refines_skip:
   "{R12} Id, m2_fake {> R12}"
@@ -320,7 +320,7 @@ lemmas PO_m2_trans_refines_m1_trans =
   PO_m2_step3_refines_m1_step3 PO_m2_fake_refines_skip 
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemma PO_m2_refines_init_m1 [iff]:
   "init m2 \<subseteq> R12``(init m1)"
