@@ -652,14 +652,6 @@ lemma rlex_trans:
   shows "x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x z"
     using assms lex_trans rlex_def by blast
 
-lemma lex_append_leftD:
-  "\<forall>x. (x,x) \<notin> r \<Longrightarrow> (xs @ ys, xs @ zs) \<in> lex r \<Longrightarrow> (ys, zs) \<in> lex r"
-  by (induct xs) auto
-
-lemma lex_append_left_iff:
-  "\<forall>x. (x,x) \<notin> r \<Longrightarrow> (xs @ ys, xs @ zs) \<in> lex r \<longleftrightarrow> (ys, zs) \<in> lex r"
-  by (metis lex_append_leftD lex_append_leftI)
-
 lemma lex_append_rightD:
   assumes "xs @ us <\<^sub>l\<^sub>e\<^sub>x ys @ vs" and "length xs = length ys"
     and "\<not> xs <\<^sub>l\<^sub>e\<^sub>x ys"
