@@ -51,7 +51,7 @@ datatype ('a, 'b) embedding = Embed_theories "('a \<Rightarrow> 'b \<Rightarrow>
                             | Embed_locale "'a \<Rightarrow> 'b \<Rightarrow> semi__locale \<times> 'b"
                                            "('a \<Rightarrow> 'b \<Rightarrow> semi__theory list \<times> 'b) list"
 
-type_synonym 'a embedding' = "('a, compiler_env_config) embedding" (* polymorphism weakening needed by code_reflect *)
+type_synonym 'a embedding' = "('a, compiler_env_config) embedding" \<comment> \<open>polymorphism weakening needed by \<^theory_text>\<open>code_reflect\<close>\<close>
 
 definition "L_fold f =
  (\<lambda> Embed_theories l \<Rightarrow> List.fold f l
@@ -68,7 +68,7 @@ definition "txt' s = txt (\<lambda>_. s)"
 definition "txt'' = txt' o S.flatten"
 
 definition thy_class ::
-  (* polymorphism weakening needed by code_reflect *)
+  \<comment> \<open>polymorphism weakening needed by \<^theory_text>\<open>code_reflect\<close>\<close>
   "_ embedding'" where \<open>thy_class =
   Embed_theories
           [ txt'' [ \<open>
@@ -156,7 +156,7 @@ definition "compiler_env_config_reset_all env =
        , [META_flush_all ToyFlushAll] ] ))"
 
 definition "compiler_env_config_update f env =
-  (* WARNING The semantics of the meta-embedded language is not intended to be reset here (like oid_start), only syntactic configurations of the compiler (path, etc...) *)
+  \<comment> \<open>WARNING The semantics of the meta-embedded language is not intended to be reset here (like \<open>oid_start\<close>), only syntactic configurations of the compiler (path, etc...)\<close>
   f env
     \<lparr> D_output_disable_thy := D_output_disable_thy env
     , D_output_header_thy := D_output_header_thy env

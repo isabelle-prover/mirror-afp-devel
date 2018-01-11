@@ -44,50 +44,50 @@ begin
 subsection\<open>Type Definition\<close>
 
 datatype internal_oid = Oid nat
-datatype internal_oids = Oids nat (* start *)
-                              nat (* oid for assoc (incremented from start) *)
-                              nat (* oid for inh (incremented from start) *)
+datatype internal_oids = Oids nat \<comment> \<open>start\<close>
+                              nat \<comment> \<open>oid for assoc (incremented from start)\<close>
+                              nat \<comment> \<open>oid for inh (incremented from start)\<close>
 
-datatype toy_def_base = ToyDefInteger "string" (* integer digit *)
-                      | ToyDefReal "string (* integer digit (left) *) \<times> string (* integer digit (right) *)"
+datatype toy_def_base = ToyDefInteger "string" \<comment> \<open>integer digit\<close>
+                      | ToyDefReal "string \<comment> \<open>integer digit (left)\<close> \<times> string \<comment> \<open>integer digit (right)\<close>"
                       | ToyDefString "string"
 
 datatype toy_data_shallow = ShallB_term toy_def_base
-                          | ShallB_str string (* binding *)
+                          | ShallB_str string \<comment> \<open>binding\<close>
                           | ShallB_self internal_oid
                           | ShallB_list "toy_data_shallow list"
 
-datatype 'a toy_list_attr = ToyAttrNoCast 'a (* inh, own *)
+datatype 'a toy_list_attr = ToyAttrNoCast 'a \<comment> \<open>inh, own\<close>
                           | ToyAttrCast
-                              string (* cast from *)
-                              "'a toy_list_attr" (* cast entity *)
-                              'a (* inh, own *)
+                              string \<comment> \<open>cast from\<close>
+                              "'a toy_list_attr" \<comment> \<open>cast entity\<close>
+                              'a \<comment> \<open>inh, own\<close>
 
-record toy_instance_single = Inst_name :: "string option" (* None: fresh name to be generated *)
-                             Inst_ty :: "string option" (* type *)
-                             Inst_attr :: "((  (string (* pre state *) \<times> string (* post state *)) option
-                                               (* state used when toy_data_shallow is an object variable (for retrieving its oid) *)
-                                             \<times> string (*name*)
-                                             \<times> toy_data_shallow) list) (* inh and own *)
+record toy_instance_single = Inst_name :: "string option" \<comment> \<open>None: fresh name to be generated\<close>
+                             Inst_ty :: "string option" \<comment> \<open>type\<close>
+                             Inst_attr :: "((  (string \<comment> \<open>pre state\<close> \<times> string \<comment> \<open>post state\<close>) option
+                                               \<comment> \<open>state used when \<open>toy_data_shallow\<close> is an object variable (for retrieving its oid)\<close>
+                                             \<times> string \<comment> \<open>name\<close>
+                                             \<times> toy_data_shallow) list) \<comment> \<open>inh and own\<close>
                                            toy_list_attr"
 
-datatype toy_instance = ToyInstance "toy_instance_single list" (* mutual recursive *)
+datatype toy_instance = ToyInstance "toy_instance_single list" \<comment> \<open>mutual recursive\<close>
 
 datatype toy_def_base_l = ToyDefBase "toy_def_base list"
 
 datatype 'a toy_def_state_core = ToyDefCoreAdd toy_instance_single
                                | ToyDefCoreBinding 'a
 
-datatype toy_def_state = ToyDefSt  string (* name *)
-                                  "string (* name *) toy_def_state_core list"
+datatype toy_def_state = ToyDefSt  string \<comment> \<open>name\<close>
+                                  "string \<comment> \<open>name\<close> toy_def_state_core list"
 
-datatype toy_def_pp_core = ToyDefPPCoreAdd "string (* name *) toy_def_state_core list"
-                         | ToyDefPPCoreBinding string (* name *)
+datatype toy_def_pp_core = ToyDefPPCoreAdd "string \<comment> \<open>name\<close> toy_def_state_core list"
+                         | ToyDefPPCoreBinding string \<comment> \<open>name\<close>
 
 datatype toy_def_pre_post = ToyDefPP
-                              "string option" (* None: fresh name to be generated *)
-                              toy_def_pp_core (* pre *)
-                              "toy_def_pp_core option" (* post *) (* None: same as pre *)
+                              "string option" \<comment> \<open>None: fresh name to be generated\<close>
+                              toy_def_pp_core \<comment> \<open>pre\<close>
+                              "toy_def_pp_core option" \<comment> \<open>post\<close> \<comment> \<open>None: same as pre\<close>
 
 subsection\<open>Object ID Management\<close>
 

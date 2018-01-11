@@ -57,8 +57,8 @@ fun of_pure_term where "of_pure_term l e = (\<lambda>
 end
 
 lemmas [code] =
-  (* def *)
-  (* fun *)
+  \<comment> \<open>def\<close>
+  \<comment> \<open>fun\<close>
   Print.of_pure_term.simps
 
 end

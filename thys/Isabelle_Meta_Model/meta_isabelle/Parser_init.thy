@@ -98,14 +98,14 @@ subsection\<open>Generic Locale for Parsing\<close>
 locale Parse =
   fixes ext :: "string \<Rightarrow> string"
 
-  (* (effective) first order *)
+  \<comment> \<open>(effective) first order\<close>
   fixes of_string :: "('a \<Rightarrow> 'a list \<Rightarrow> 'a) \<Rightarrow> (string \<Rightarrow> 'a) \<Rightarrow> string \<Rightarrow> 'a"
   fixes of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a \<Rightarrow> 'a list \<Rightarrow> 'a) \<Rightarrow> (string \<Rightarrow> 'a) \<Rightarrow> string\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> 'a"
   fixes of_nat :: "('a \<Rightarrow> 'a list \<Rightarrow> 'a) \<Rightarrow> (string \<Rightarrow> 'a) \<Rightarrow> natural \<Rightarrow> 'a"
   fixes of_unit :: "(string \<Rightarrow> 'a) \<Rightarrow> unit \<Rightarrow> 'a"
   fixes of_bool :: "(string \<Rightarrow> 'a) \<Rightarrow> bool \<Rightarrow> 'a"
 
-  (* (simulation) higher order *)
+  \<comment> \<open>(simulation) higher order\<close>
   fixes Of_Pair Of_Nil Of_Cons Of_None Of_Some :: string
 begin
 

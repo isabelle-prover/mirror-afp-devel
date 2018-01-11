@@ -192,14 +192,14 @@ definition "of_lemmas _ = (\<lambda> Lemmas_simp_thm simp s l \<Rightarrow>
                             \<close> (L.map To_string l)))"
 
 definition "(of_semi__attrib_genA :: (semi__thm list \<Rightarrow> String.literal)
-   \<Rightarrow> String.literal \<Rightarrow> semi__thm list \<Rightarrow> String.literal) f attr l = (* error reflection: to be merged *)
+   \<Rightarrow> String.literal \<Rightarrow> semi__thm list \<Rightarrow> String.literal) f attr l = \<comment> \<open>error reflection: to be merged\<close>
  (if l = [] then
     \<open>\<close>
   else
     \<open> %s: %s\<close> attr (f l))"
 
 definition "(of_semi__attrib_genB :: (string list \<Rightarrow> String.literal)
-   \<Rightarrow> String.literal \<Rightarrow> string list \<Rightarrow> String.literal) f attr l = (* error reflection: to be merged *)
+   \<Rightarrow> String.literal \<Rightarrow> string list \<Rightarrow> String.literal) f attr l = \<comment> \<open>error reflection: to be merged\<close>
  (if l = [] then
     \<open>\<close>
   else
@@ -208,7 +208,7 @@ definition "(of_semi__attrib_genB :: (string list \<Rightarrow> String.literal)
 definition "of_semi__attrib = of_semi__attrib_genA of_semi__thm_l"
 definition "of_semi__attrib1 = of_semi__attrib_genB (\<lambda>l. String_concat \<open> \<close> (L.map To_string l))"
 
-definition "of_semi__method_simp (s :: (* polymorphism weakening needed by code_reflect *)
+definition "of_semi__method_simp (s :: \<comment> \<open>polymorphism weakening needed by \<^theory_text>\<open>code_reflect\<close>\<close>
                                        String.literal) =
  (\<lambda> Method_simp_only l \<Rightarrow> \<open>%s only: %s\<close> s (of_semi__thm_l l)
   | Method_simp_add_del_split l1 l2 [] \<Rightarrow> \<open>%s%s%s\<close>
@@ -405,7 +405,7 @@ assumes %s: "%s"\<close> (To_string name) (of_semi__term e)))
 end
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   Print.of_datatype_def
   Print.of_type_synonym_def
   Print.of_type_notation_def
@@ -442,7 +442,7 @@ lemmas [code] =
   Print.String_concat_map_def
   Print.of_semi__theories_def
 
-  (* fun *)
+  \<comment> \<open>fun\<close>
   Print.of_semi__typ.simps
   Print.of_semi__term.simps
   Print.of_semi__thm_attribute_aux.simps

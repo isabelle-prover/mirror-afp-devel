@@ -165,7 +165,7 @@ definition "Of_Cons = \<open>Cons\<close>"
 definition "Of_None = \<open>None\<close>"
 definition "Of_Some = \<open>Some\<close>"
 
-(* recursor types *)
+\<comment> \<open>recursor types\<close>
 
 definition "of_pair a b f1 f2 = (\<lambda>f. \<lambda>(c, d) \<Rightarrow> f c d)
   (ap2 a (b Of_Pair) f1 f2)"
@@ -178,7 +178,7 @@ definition "of_option a b f = rec_option
   (b Of_None)
   (ap1 a (b Of_Some) f)"
 
-(* ground types *)
+\<comment> \<open>ground types\<close>
 
 definition "of_unit b = case_unit
   (b \<open>()\<close>)"

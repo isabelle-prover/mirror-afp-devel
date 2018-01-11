@@ -52,13 +52,13 @@ datatype semi__val_fun = Sval
                        | Sfun
 
 datatype semi__term' = SML_string string
-                     | SML_rewrite semi__val_fun semi__term' (* left *) string (* symb rewriting *) semi__term' (* right *)
+                     | SML_rewrite semi__val_fun semi__term' \<comment> \<open>left\<close> string \<comment> \<open>symb rewriting\<close> semi__term' \<comment> \<open>right\<close>
                      | SML_basic "string list"
                      | SML_binop semi__term' string semi__term'
-                     | SML_annot semi__term' string (* type *)
-                     | SML_function "(semi__term' (* pattern *) \<times> semi__term' (* to return *)) list"
+                     | SML_annot semi__term' string \<comment> \<open>type\<close>
+                     | SML_function "(semi__term' \<comment> \<open>pattern\<close> \<times> semi__term' \<comment> \<open>to return\<close>) list"
                      | SML_apply semi__term' "semi__term' list"
-                     | SML_paren string (* left *) string (* right *) semi__term'
+                     | SML_paren string \<comment> \<open>left\<close> string \<comment> \<open>right\<close> semi__term'
                      | SML_let_open string semi__term'
 
 subsection\<open>Extending the Meta-Model\<close>
@@ -80,7 +80,7 @@ definition "none = basic [\<open>NONE\<close>]"
 definition "some s = app \<open>SOME\<close> [s]"
 definition "option' f l = (case map_option f l of None \<Rightarrow> none | Some s \<Rightarrow> some s)"
 definition "option = option' id"
-definition "parenthesis (* mandatory parenthesis *) = paren \<open>(\<close> \<open>)\<close>"
+definition "parenthesis \<comment> \<open>mandatory parenthesis\<close> = paren \<open>(\<close> \<open>)\<close>"
 definition "binop_l s l = (case rev l of x # xs \<Rightarrow> List.fold (\<lambda>x. binop x s) xs x)"
 definition "list l = (case l of [] \<Rightarrow> basic [\<open>[]\<close>] | _ \<Rightarrow> paren \<open>[\<close> \<open>]\<close> (binop_l \<open>,\<close> l))"
 definition "list' f l = list (L.map f l)"
@@ -91,7 +91,7 @@ definition "rewrite_fun = rewrite Sfun"
 end
 
 lemmas [code] =
-  (*def*)
+  \<comment> \<open>def\<close>
   SML.string_def
   SML.rewrite_def
   SML.basic_def

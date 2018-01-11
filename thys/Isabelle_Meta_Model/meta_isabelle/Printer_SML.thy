@@ -63,9 +63,9 @@ fun of_semi__term' where \<open>of_semi__term' e = (\<lambda>
 end
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   Print.of_semi__val_fun_def
-  (* fun *)
+  \<comment> \<open>fun\<close>
   Print.of_semi__term'.simps
 
 end

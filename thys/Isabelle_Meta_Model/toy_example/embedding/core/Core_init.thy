@@ -110,8 +110,8 @@ definition "arrange_ass with_aggreg with_optim_ass l_c l_enum =
       ; l_class = List.map_filter (\<lambda> META_class_raw Floor1 cflat \<Rightarrow> Some cflat
                                    | META_ass_class Floor1 (ToyAssClass _ cflat) \<Rightarrow> Some cflat
                                    | _ \<Rightarrow> None) l_c
-      ; l_class = (* map classes: change the (enumeration) type of every attributes to 'raw'
-                                instead of the default 'object' type *)
+      ; l_class = \<comment> \<open>map classes: change the (enumeration) type of every attributes to \<open>raw\<close>\<close>
+                  \<comment> \<open>instead of the default \<open>object\<close> type\<close>
         L.map
           (\<lambda> cflat \<Rightarrow>
             cflat \<lparr> ClassRaw_own :=
@@ -123,9 +123,9 @@ definition "arrange_ass with_aggreg with_optim_ass l_c l_enum =
       ; ToyMult = \<lambda>l set. toy_multiplicity_ext l None set ()
       ; (l_class, l_ass0) = 
           if with_optim_ass then
-            (* move from classes to associations:
-                 attributes of object types
-                 + those constructed with at most 1 recursive call to ToyTy_collection *)
+            \<comment> \<open>move from classes to associations:\<close>
+            \<comment> \<open>attributes of object types\<close>
+            \<comment> \<open>+ those constructed with at most 1 recursive call to \<open>ToyTy_collection\<close>\<close>
             map_prod rev rev (List.fold
                   (\<lambda>c (l_class, l_ass).
                     let default = [Set]
@@ -147,8 +147,8 @@ definition "arrange_ass with_aggreg with_optim_ass l_c l_enum =
             (l_class, [])
       ; (l_class, l_ass) =
           if with_aggreg then
-            (* move from associations to classes:
-                 attributes of aggregation form *)
+            \<comment> \<open>move from associations to classes:\<close>
+            \<comment> \<open>attributes of aggregation form\<close>
             map_prod rev rev (List.fold
             (\<lambda>ass (l_class, l_ass).
               if ToyAss_type ass = ToyAssTy_aggregation then

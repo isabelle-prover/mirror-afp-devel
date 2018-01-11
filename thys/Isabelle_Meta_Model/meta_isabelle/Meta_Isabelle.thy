@@ -50,48 +50,48 @@ text\<open>The following datatypes beginning with \verb|semi__| represent semi-c
        or for manipulating recursively data-structures through an abstract and typed API.\<close>
 
 datatype semi__typ = Typ_apply semi__typ "semi__typ list"
-                   | Typ_apply_bin string (* binop *) semi__typ semi__typ
-                   | Typ_apply_paren string (* left *) string (* right *) semi__typ
+                   | Typ_apply_bin string \<comment> \<open>binop\<close> semi__typ semi__typ
+                   | Typ_apply_paren string \<comment> \<open>left\<close> string \<comment> \<open>right\<close> semi__typ
                    | Typ_base string
 
-datatype "datatype" = Datatype string (* name *)
-                               "(string (* name *) \<times> semi__typ list (* arguments *)) list" (* constructors *)
+datatype "datatype" = Datatype string \<comment> \<open>name\<close>
+                               "(string \<comment> \<open>name\<close> \<times> semi__typ list \<comment> \<open>arguments\<close>) list" \<comment> \<open>constructors\<close>
 
-datatype "type_synonym" = Type_synonym string (* name *)
-                                       "string list" (* parametric variables *)
-                                       semi__typ (* content *)
+datatype "type_synonym" = Type_synonym string \<comment> \<open>name\<close>
+                                       "string list" \<comment> \<open>parametric variables\<close>
+                                       semi__typ \<comment> \<open>content\<close>
 
-datatype semi__term = Term_rewrite semi__term (* left *) string (* symb rewriting *) semi__term (* right *)
+datatype semi__term = Term_rewrite semi__term \<comment> \<open>left\<close> string \<comment> \<open>symb rewriting\<close> semi__term \<comment> \<open>right\<close>
                     | Term_basic "string list"
                     | Term_annot semi__term semi__typ
-                    | Term_bind string (* symbol *) semi__term (* arg *) semi__term
-                    | Term_fun_case "semi__term (* value *) option" (* none: function *) "(semi__term (* pattern *) \<times> semi__term (* to return *)) list"
+                    | Term_bind string \<comment> \<open>symbol\<close> semi__term \<comment> \<open>arg\<close> semi__term
+                    | Term_fun_case "semi__term \<comment> \<open>value\<close> option" \<comment> \<open>none: function\<close> "(semi__term \<comment> \<open>pattern\<close> \<times> semi__term \<comment> \<open>to return\<close>) list"
                     | Term_apply semi__term "semi__term list"
-                    | Term_paren string (* left *) string (* right *) semi__term
+                    | Term_paren string \<comment> \<open>left\<close> string \<comment> \<open>right\<close> semi__term
                     | Term_if_then_else semi__term semi__term semi__term
-                    | Term_term "string list" (* simulate a pre-initialized context (de bruijn variables under "lam") *)
-                                "term" (* usual continuation of inner syntax term *)
+                    | Term_term "string list" \<comment> \<open>simulate a pre-initialized context (de bruijn variables under "lam")\<close>
+                                "term" \<comment> \<open>usual continuation of inner syntax term\<close>
 
-datatype "type_notation" = Type_notation string (* name *)
-                                         string (* content *)
+datatype "type_notation" = Type_notation string \<comment> \<open>name\<close>
+                                         string \<comment> \<open>content\<close>
 
-datatype "instantiation" = Instantiation string (* name *)
-                                         string (* name in definition *)
+datatype "instantiation" = Instantiation string \<comment> \<open>name\<close>
+                                         string \<comment> \<open>name in definition\<close>
                                          semi__term
 
-datatype "overloading" = Overloading string (* name consts *) semi__term
-                                     string (* name def *) semi__term (* content *)
+datatype "overloading" = Overloading string \<comment> \<open>name consts\<close> semi__term
+                                     string \<comment> \<open>name def\<close> semi__term \<comment> \<open>content\<close>
 
-datatype "consts" = Consts string (* name *)
+datatype "consts" = Consts string \<comment> \<open>name\<close>
                            semi__typ
-                           string (* expression in 'post' mixfix *)
+                           string \<comment> \<open>expression in 'post' mixfix\<close>
 
 datatype "definition" = Definition semi__term
-                      | Definition_where1 string (* name *) "semi__term (* syntax extension *) \<times> nat (* priority *)" semi__term
-                      | Definition_where2 string (* name *) semi__term (* syntax extension *) semi__term
+                      | Definition_where1 string \<comment> \<open>name\<close> "semi__term \<comment> \<open>syntax extension\<close> \<times> nat \<comment> \<open>priority\<close>" semi__term
+                      | Definition_where2 string \<comment> \<open>name\<close> semi__term \<comment> \<open>syntax extension\<close> semi__term
 
-datatype semi__thm_attribute = Thm_thm string (* represents a single thm *)
-                             | Thm_thms string (* represents several thms *)
+datatype semi__thm_attribute = Thm_thm string \<comment> \<open>represents a single thm\<close>
+                             | Thm_thms string \<comment> \<open>represents several thms\<close>
                              | Thm_THEN semi__thm_attribute semi__thm_attribute
                              | Thm_simplified semi__thm_attribute semi__thm_attribute
                              | Thm_symmetric semi__thm_attribute
@@ -104,22 +104,22 @@ datatype semi__thm = Thms_single semi__thm_attribute
 
 type_synonym semi__thm_l = "semi__thm list"
 
-datatype "lemmas" = Lemmas_simp_thm bool (* True : simp *)
-                                    string (* name *)
+datatype "lemmas" = Lemmas_simp_thm bool \<comment> \<open>True : simp\<close>
+                                    string \<comment> \<open>name\<close>
                                     "semi__thm_attribute list"
-                  | Lemmas_simp_thms string (* name *)
-                                     "string (* thms *) list"
+                  | Lemmas_simp_thms string \<comment> \<open>name\<close>
+                                     "string \<comment> \<open>thms\<close> list"
 
 datatype semi__method_simp = Method_simp_only semi__thm_l
-                           | Method_simp_add_del_split semi__thm_l (* add *) semi__thm_l (* del *) semi__thm_l (* split *)
+                           | Method_simp_add_del_split semi__thm_l \<comment> \<open>add\<close> semi__thm_l \<comment> \<open>del\<close> semi__thm_l \<comment> \<open>split\<close>
 
 datatype semi__method = Method_rule "semi__thm_attribute option"
                       | Method_drule semi__thm_attribute
                       | Method_erule semi__thm_attribute
                       | Method_intro "semi__thm_attribute list"
                       | Method_elim semi__thm_attribute
-                      | Method_subst bool (* asm *)
-                                     "string (* nat *) list" (* pos *)
+                      | Method_subst bool \<comment> \<open>asm\<close>
+                                     "string \<comment> \<open>nat\<close> list" \<comment> \<open>pos\<close>
                                      semi__thm_attribute
                       | Method_insert semi__thm_l
                       | Method_plus "semi__method list"
@@ -132,43 +132,43 @@ datatype semi__method = Method_rule "semi__thm_attribute option"
                       | Method_case_tac semi__term
                       | Method_blast "nat option"
                       | Method_clarify
-                      | Method_metis "string list" (* e.g. "no_types" (override_type_encs) *)
+                      | Method_metis "string list" \<comment> \<open>e.g. \<open>no_types\<close> (\<open>override_type_encs\<close>)\<close>
                                      "semi__thm_attribute list"
 
 datatype semi__command_final = Command_done
                              | Command_by "semi__method list"
                              | Command_sorry
 
-datatype semi__command_state = Command_apply_end "semi__method list" (* apply_end (... ',' ...) *)
+datatype semi__command_state = Command_apply_end "semi__method list" \<comment> \<open>\<^theory_text>\<open>apply_end (\<dots>, \<dots>)\<close>\<close>
 
-datatype semi__command_proof = Command_apply "semi__method list" (* apply (... ',' ...) *)
-                             | Command_using semi__thm_l (* using ... *)
-                             | Command_unfolding semi__thm_l (* unfolding ... *)
-                             | Command_let semi__term (* name *) semi__term
-                             | Command_have string (* name *)
-                                            bool (* true: add [simp] *)
+datatype semi__command_proof = Command_apply "semi__method list" \<comment> \<open>\<^theory_text>\<open>apply_end (\<dots>, \<dots>)\<close>\<close>
+                             | Command_using semi__thm_l \<comment> \<open>\<^theory_text>\<open>using \<dots>\<close>\<close>
+                             | Command_unfolding semi__thm_l \<comment> \<open>\<^theory_text>\<open>unfolding \<dots>\<close>\<close>
+                             | Command_let semi__term \<comment> \<open>name\<close> semi__term
+                             | Command_have string \<comment> \<open>name\<close>
+                                            bool \<comment> \<open>true: add \<open>[simp]\<close>\<close>
                                             semi__term
                                             semi__command_final
                              | Command_fix_let "string list"
-                                               "(semi__term (* name *) \<times> semi__term) list" (* let statements *) (* TODO merge recursively *)
-                                               "( semi__term list (* show ... ==> ... *)
-                                                \<times> semi__term list (* when ... ... *)) option" (* None => ?thesis *)
-                                               "semi__command_state list" (* qed apply_end ... *)
+                                               "(semi__term \<comment> \<open>name\<close> \<times> semi__term) list" \<comment> \<open>let statements\<close> (* TODO merge recursively *)
+                                               "( semi__term list \<comment> \<open>\<^theory_text>\<open>show \<dots> \<Longrightarrow> \<dots> \<close>\<close>
+                                                \<times> semi__term list \<comment> \<open>\<^theory_text>\<open>when \<dots> \<dots>\<close>\<close>) option" \<comment> \<open>\<open>None \<Rightarrow> ?thesis\<close>\<close>
+                                               "semi__command_state list" \<comment> \<open>\<^theory_text>\<open>qed apply_end \<dots>\<close>\<close>
 
-datatype "lemma" = Lemma string (* name *) "semi__term list" (* specification to prove *)
-                         "semi__method list list" (* tactics : apply (... ',' ...) '\n' apply ... *)
+datatype "lemma" = Lemma string \<comment> \<open>name\<close> "semi__term list" \<comment> \<open>specification to prove\<close>
+                         "semi__method list list" \<comment> \<open>tactics: \<^theory_text>\<open>apply (\<dots>, \<dots>) apply \<dots>\<close>\<close>
                          semi__command_final
-                 | Lemma_assumes string (* name *)
-                                 "(string (* name *) \<times> bool (* true: add [simp] *) \<times> semi__term) list" (* specification to prove (assms) *)
-                                 semi__term (* specification to prove (conclusion) *)
+                 | Lemma_assumes string \<comment> \<open>name\<close>
+                                 "(string \<comment> \<open>name\<close> \<times> bool \<comment> \<open>true: add \<open>[simp]\<close>\<close> \<times> semi__term) list" \<comment> \<open>specification to prove (assms)\<close>
+                                 semi__term \<comment> \<open>specification to prove (conclusion)\<close>
                                  "semi__command_proof list"
                                  semi__command_final
 
-datatype "axiomatization" = Axiomatization string (* name *)
+datatype "axiomatization" = Axiomatization string \<comment> \<open>name\<close>
                                            semi__term
 
-datatype "section" = Section nat (* nesting level *)
-                             string (* content *)
+datatype "section" = Section nat \<comment> \<open>nesting level\<close>
+                             string \<comment> \<open>content\<close>
 
 datatype "text" = Text string
 
@@ -178,9 +178,9 @@ datatype "setup" = Setup semi__term'
 
 datatype "thm" = Thm "semi__thm_attribute list"
 
-datatype "interpretation" = Interpretation string (* name *)
-                                           string (* locale name *)
-                                           "semi__term list" (* locale param *)
+datatype "interpretation" = Interpretation string \<comment> \<open>name\<close>
+                                           string \<comment> \<open>locale name\<close>
+                                           "semi__term list" \<comment> \<open>locale param\<close>
                                            semi__command_final
 
 datatype semi__theory = Theory_datatype "datatype"
@@ -202,11 +202,11 @@ datatype semi__theory = Theory_datatype "datatype"
 
 record semi__locale = 
   HolThyLocale_name :: string
-  HolThyLocale_header :: "( (semi__term (* name *) \<times> semi__typ (* 'fix' statement *)) list
-                          \<times> (string (* name *) \<times> semi__term (* 'assumes' statement *)) option (* None: no 'assumes' to generate *)) list"
+  HolThyLocale_header :: "( (semi__term \<comment> \<open>name\<close> \<times> semi__typ \<comment> \<open>\<^theory_text>\<open>fix\<close> statement\<close>) list
+                          \<times> (string \<comment> \<open>name\<close> \<times> semi__term \<comment> \<open>\<^theory_text>\<open>assumes\<close> statement\<close>) option \<comment> \<open>None: no \<^theory_text>\<open>assumes\<close> to generate\<close>) list"
 
 datatype semi__theories = Theories_one semi__theory
-                        | Theories_locale semi__locale "semi__theory list (* positioning comments can occur before and after this group of commands *) list"
+                        | Theories_locale semi__locale "semi__theory list \<comment> \<open>positioning comments can occur before and after this group of commands\<close> list"
 
 subsection\<open>Extending the Meta-Model\<close>
 
@@ -225,7 +225,7 @@ definition "simplified_l s l = List.fold (\<lambda>x acc. Thm_simplified acc x) 
 end
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   T.thm_def
   T.thms_def
   T.THEN_def
@@ -247,8 +247,8 @@ definition "Term_lambda x = Term_lambdas [x]"
 definition "Term_lambdas0 = Term_bind \<open>\<lambda>\<close>"
 definition "Term_lam x f = Term_lambdas0 (Term_basic [x]) (f x)"
 definition "Term_some = Term_paren \<open>\<lfloor>\<close> \<open>\<rfloor>\<close>"
-definition "Term_parenthesis (* mandatory parenthesis *) = Term_paren \<open>(\<close> \<open>)\<close>"
-definition "Term_warning_parenthesis (* optional parenthesis that can be removed but a warning will be raised *) = Term_parenthesis"
+definition "Term_parenthesis \<comment> \<open>mandatory parenthesis\<close> = Term_paren \<open>(\<close> \<open>)\<close>"
+definition "Term_warning_parenthesis \<comment> \<open>optional parenthesis that can be removed but a warning will be raised\<close> = Term_parenthesis"
 definition "Term_pat b = Term_basic [\<open>?\<close> @@ b]"
 definition "Term_And x f = Term_bind \<open>\<And>\<close> (Term_basic [x]) (f x)"
 definition "Term_exists x f = Term_bind \<open>\<exists>\<close> (Term_basic [x]) (f x)"
@@ -264,8 +264,8 @@ definition \<open>Term_string s = Term_basic [S.flatten [\<open>"\<close>, s, \<
 definition "Term_applys0 e l = Term_parenthesis (Term_apply e (L.map Term_parenthesis l))"
 definition "Term_applys e l = Term_applys0 (Term_parenthesis e) l"
 definition "Term_app e = Term_applys0 (Term_basic [e])"
-definition "Term_preunary e1 e2 = Term_apply e1 [e2]" (* no parenthesis and separated with one space *)
-definition "Term_postunary e1 e2 = Term_apply e1 [e2]" (* no parenthesis and separated with one space *)
+definition "Term_preunary e1 e2 = Term_apply e1 [e2]" \<comment> \<open>no parenthesis and separated with one space\<close>
+definition "Term_postunary e1 e2 = Term_apply e1 [e2]" \<comment> \<open>no parenthesis and separated with one space\<close>
 definition "Term_case = Term_fun_case o Some"
 definition "Term_function = Term_fun_case None"
 definition "Term_term' = Term_term []"
@@ -350,7 +350,7 @@ definition "auto = auto_simp_add []"
 end
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   M.Method_simp_add_del_def
   M.Method_subst_l_def
   M.rule'_def
@@ -418,7 +418,7 @@ definition "have0 = Command_have"
 end
 
 lemmas [code] =
-  (* def *)
+  \<comment> \<open>def\<close>
   C.done_def
   C.by_def
   C.sorry_def

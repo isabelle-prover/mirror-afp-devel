@@ -90,7 +90,7 @@ definition "print_access_choose = start_map'''' O.definition o (\<lambda>expr _.
      ; lets = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> exp)
      ; lets' = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (b exp))
      ; lets'' = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (Term_lam \<open>l\<close> (\<lambda>var_l. Term_binop (b var_l) \<open>!\<close> (b exp))))
-     ; _(* ignored *) = 
+     ; _\<comment> \<open>(ignored)\<close> =
         let l_flatten = \<open>L.flatten\<close> in
         [ lets l_flatten (let fun_foldl = \<lambda>f base.
                              Term_lam \<open>l\<close> (\<lambda>var_l. Term_app \<open>foldl\<close> [Term_lam \<open>acc\<close> f, base, a \<open>rev\<close> (b var_l)]) in
