@@ -59,7 +59,7 @@ where "fa_translate v (Add a b) = Add (fa_translate v a) (fa_translate v b)"
 lemma fa_translate_correct:
   assumes "max_Var_floatarith f \<le> length I"
   assumes "length v = length I"
-  shows "interpret_floatarith (fa_translate v f) I = interpret_floatarith f (map2 op+ I v)"
+  shows "interpret_floatarith (fa_translate v f) I = interpret_floatarith f (map2 (+) I v)"
   using assms
   by (induction f, simp_all)
 
