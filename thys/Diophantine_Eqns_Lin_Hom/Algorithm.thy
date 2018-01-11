@@ -55,7 +55,7 @@ next
       then obtain x and xs where [simp]: "xs' = (x # xs, (a # as) \<bullet> (x # xs))"
         and "length as = length xs"
         and B: "x \<le> B" "\<forall>i<length as. xs ! i \<le> B"
-        by (cases xs', case_tac a) (auto simp: all_Suc_conv)
+        by (cases xs', case_tac a) (auto simp: All_less_Suc2)
       then have "(xs, as \<bullet> xs) \<in> ?L as" using Cons by auto
       then show "xs' \<in> ?L (a # as)"
         using B
@@ -111,7 +111,7 @@ lemma sorted_wrt_gen2:
   apply (rule sorted_wrt_concat_map_map)
      apply (rule sorted_wrt_map_distr, rule sorted_wrt_alls)
     apply (rule sorted_wrt_map_distr, rule sorted_wrt_alls)
-   apply (auto simp: rlex_def set_alls intro: lex_append_left lex_append_right)
+   apply (auto simp: rlex_def set_alls intro: lex_append_leftI lex_append_rightI)
   done
 
 definition generate
@@ -950,7 +950,7 @@ proof -
   { fix x x' xs s s' assume "cond2 a b (x # xs) s" and "x' \<le> x" and "s' \<le> s"
     moreover have "map (maxx_impl' a b (x # xs)) [0..<length a] \<le>\<^sub>v map (maxx_impl' a b (x' # xs)) [0..<length a]"
       using le_imp_maxx_impl'_ge [of "x' # xs" "x # xs"] and \<open>x' \<le> x\<close>
-      by (auto simp: le_Cons less_eq_def all_Suc_conv)
+      by (auto simp: le_Cons less_eq_def All_less_Suc2)
     ultimately have "cond2 a b (x' # xs) s'"
       by (auto simp: le_Cons) (metis dotprod_le_right le_trans length_map map_nth) }
   note 2 = this

@@ -52,7 +52,7 @@ proof (induct n)
   case [simp]: (Suc n)
   { fix xs assume "xs \<in> ?A (Suc n)"
     then have "xs \<in> set (gen B (Suc n))"
-      by (cases xs) (force simp: all_Suc_conv)+ }
+      by (cases xs) (force simp: All_less_Suc2)+ }
   then show ?case by (auto simp: less_Suc_eq_0_disj)
 qed simp
 
@@ -65,7 +65,7 @@ lemma sorted_wrt_gen:
 
 lemma sorted_wrt_gen2: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (gen2 A B m n)"
   by (intro sorted_wrt_concat_map_map [where Q = "(<\<^sub>r\<^sub>l\<^sub>e\<^sub>x)"] sorted_wrt_gen)
-    (auto simp: set_gen rlex_def intro:  lex_append_left lex_append_right)
+    (auto simp: set_gen rlex_def intro:  lex_append_leftI lex_append_rightI)
 
 lemma gen_ne [simp]: "gen B n \<noteq> []" by (induct n) auto
 

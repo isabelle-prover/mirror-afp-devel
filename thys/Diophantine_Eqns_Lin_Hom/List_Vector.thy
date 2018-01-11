@@ -26,16 +26,6 @@ proof -
 qed
 
 (*TODO: move*)
-lemma lex_append_right:
-  "(xs, ys) \<in> lex r \<Longrightarrow> length vs = length us \<Longrightarrow> (xs @ us, ys @ vs) \<in> lex r"
-  by (force simp: lex_def lexn_conv)
-
-(*TODO: move*)
-lemma lex_append_left:
-  "(ys, zs) \<in> lex r \<Longrightarrow> (xs @ ys, xs @ zs) \<in> lex r"
-  by (induct xs) auto
-
-(*TODO: move*)
 lemma lex_take_index:
   assumes "(xs, ys) \<in> lex r"
   obtains i where "length ys = length xs"
@@ -48,14 +38,6 @@ proof -
   then show ?thesis by (intro that [of "length us"]) auto
 qed
 
-(*TODO: move; should be part of Main*)
-lemma all_Suc_conv: "(\<forall>i<Suc n. P i) \<longleftrightarrow> P 0 \<and> (\<forall>i<n. P (Suc i))"
-  using less_Suc_eq_0_disj by auto
-
-(*TODO: move; should be part of Main*)
-lemma ex_Suc_conv: "(\<exists>i<Suc n. P i) \<longleftrightarrow> P 0 \<or> (\<exists>i<n. P (Suc i))"
-  using less_Suc_eq_0_disj by auto
-
 (*TODO: move*)
 lemma mods_with_nats:
   assumes "(v::nat) > w"
@@ -67,7 +49,7 @@ lemma mods_with_nats:
 -- \<open>The 0-vector of length \<open>n\<close>.\<close>
 abbreviation zeroes :: "nat \<Rightarrow> nat list"
   where
-    "zeroes n == replicate n 0"
+    "zeroes n \<equiv> replicate n 0"
 
 lemma rep_upd_unit:
   assumes "x = (zeroes n)[i := a]"
@@ -127,7 +109,7 @@ lemma dotprod_gt0D:
   assumes "length x = length y"
     and  "x \<bullet> y > 0"
   shows "\<exists>i<length y. x ! i > 0 \<and> y ! i > 0"
-  using assms by (induct x y rule: list_induct2) (auto simp: ex_Suc_conv)
+  using assms by (induct x y rule: list_induct2) (auto simp: Ex_less_Suc2)
 
 lemma dotprod_gt0_iff [iff]:
   assumes "length x = length y"
@@ -244,7 +226,7 @@ lemma le_append:
 
 lemma less_Cons:
   "(x # xs) <\<^sub>v (y # ys) \<longleftrightarrow> length xs = length ys \<and> (x \<le> y \<and> xs <\<^sub>v ys \<or> x < y \<and> xs \<le>\<^sub>v ys)"
-  by (simp add: less_def less_eq_def all_Suc_conv) (auto dest: leD)
+  by (simp add: less_def less_eq_def All_less_Suc2) (auto dest: leD)
 
 lemma le_length [dest]:
   assumes "xs \<le>\<^sub>v ys"
@@ -296,7 +278,7 @@ proof -
   then show ?thesis
     using \<open>sum_list xs < sum_list ys\<close>
     by (induct xs ys rule: list_induct2)
-      (auto simp: less_Cons all_Suc_conv less_eq_def)
+      (auto simp: less_Cons All_less_Suc2 less_eq_def)
 qed
 
 lemma dotprod_le_right:
@@ -385,7 +367,7 @@ proof -
     using \<open>u \<le>\<^sub>v y\<close> by (auto simp: less_eq_def)
   then show ?thesis
     using \<open>sum_list u < sum_list y\<close>
-    by (induct u y rule: list_induct2) (force simp: ex_Suc_conv all_Suc_conv)+
+    by (induct u y rule: list_induct2) (force simp: Ex_less_Suc2 All_less_Suc2)+
 qed
 
 lemma less_vec_sum_list_less:
@@ -467,7 +449,7 @@ proof (cases "length y = length a")
     apply (induct y x arbitrary: a rule: list_induct2)
      apply auto
     apply (case_tac a)
-     apply (auto simp: less_eq_def all_Suc_conv)
+     apply (auto simp: less_eq_def All_less_Suc2)
      apply (simp add: le_max_iff_disj)+
     done
 next
@@ -542,7 +524,7 @@ proof -
   proof (induct v w arbitrary: b rule: list_induct2)
     case (Cons x xs y ys)
     then show ?case
-      by (cases b) (auto simp: all_Suc_conv diff_mult_distrib
+      by (cases b) (auto simp: All_less_Suc2 diff_mult_distrib
           dotprod_commute dotprod_pointwise_le_right)
   qed simp
 qed
@@ -676,7 +658,7 @@ lemma lex_append_leftD:
 
 lemma lex_append_left_iff:
   "\<forall>x. (x,x) \<notin> r \<Longrightarrow> (xs @ ys, xs @ zs) \<in> lex r \<longleftrightarrow> (ys, zs) \<in> lex r"
-  by (metis lex_append_leftD lex_append_left)
+  by (metis lex_append_leftD lex_append_leftI)
 
 lemma lex_append_rightD:
   assumes "xs @ us <\<^sub>l\<^sub>e\<^sub>x ys @ vs" and "length xs = length ys"
@@ -689,7 +671,7 @@ lemma lex_append_rightD:
 
 lemma rlex_Cons:
   "x # xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y # ys \<longleftrightarrow> xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x ys \<or> ys = xs \<and> x < y"
-  apply (auto simp: rlex_def intro: lex_append_right lex_append_left)
+  apply (auto simp: rlex_def intro: lex_append_rightI lex_append_leftI)
    apply (subgoal_tac "length ys = length xs")
     apply (auto dest: lex_append_rightD)
    apply (simp add: lexord_lex)
