@@ -792,7 +792,7 @@ lemma compute_\<ff>s_inner_bounds:
     by (auto simp: I_out_cb_def I_in_cb_def split: if_splits)
 
 lemma compute_butlast_\<ff>s_refine[refine]:
-  assumes "(s,s') \<in> br butlast (op\<noteq> [])"
+  assumes "(s,s') \<in> br butlast ((\<noteq>) [])"
   shows "compute_butlast_\<ff>s s \<le> \<Down> Id (compute_\<ff>s_SPEC s')"
 proof -
   have "compute_butlast_\<ff>s s \<le> \<Down> Id (compute_\<ff>s s')"
@@ -860,7 +860,7 @@ lemma kmp3_correct: "kmp3 s t \<le> kmp_SPEC s t"
 
 section \<open>Refinement to Imperative/HOL\<close>
 
-lemma eq_id_param: "(op =, op =) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
+lemma eq_id_param: "((=), (=)) \<in> Id \<rightarrow> Id \<rightarrow> Id" by simp
 
 lemmas in_bounds_aux = compute_\<ff>s_inner_bounds[of "butlast s" for s, simplified]
 
