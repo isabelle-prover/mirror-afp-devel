@@ -48,8 +48,8 @@ proof (simp, simp add: countably_additive_def measure_of_st_vec'_def disjoint_fa
   }
   with * have fin: "finite N" by auto
   have id: "UNION UNIV A = ?A" unfolding N_def by auto
-  show "(\<Sum>i. ennreal (sum (op $h ?x) (A i))) =
-    ennreal (sum (op $h ?x) (UNION UNIV A))" unfolding id
+  show "(\<Sum>i. ennreal (sum (($h) ?x) (A i))) =
+    ennreal (sum (($h) ?x) (UNION UNIV A))" unfolding id
     apply (subst suminf_finite[OF fin], (auto simp: N_def)[1])
     apply (subst sum_ennreal, (insert non_neg_vec_st_vec[of x], auto simp: non_neg_vec_def intro!: sum_nonneg)[1])
     apply (rule arg_cong[of _ _ ennreal])

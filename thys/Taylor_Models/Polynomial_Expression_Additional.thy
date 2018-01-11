@@ -394,7 +394,7 @@ text \<open>Translating a polynomial is equivalent to translating its argument.\
 lemma poly_translate_correct:
   assumes "num_params p \<le> length x"
   assumes "length x = length v"
-  shows "Ipoly x (poly_translate v p) = Ipoly (map2 op+ x v) p"
+  shows "Ipoly x (poly_translate v p) = Ipoly (map2 (+) x v) p"
   using assms
   by (induction p, simp_all)
 
