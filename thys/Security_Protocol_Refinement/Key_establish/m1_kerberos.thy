@@ -97,10 +97,10 @@ definition       -- {* by @{term "Server"}, refines @{term m1x_step3} *}
   m1_step3 :: "[rid_t, agent, agent, key, nonce, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step3 Rs A B Kab Na Ts \<equiv> {(s, s').
-     (* new guards: *)
-     Ts = clk s \<and>                      (* fresh timestamp *)
+     \<comment> \<open>new guards:\<close>
+     Ts = clk s \<and>                      \<comment> \<open>fresh timestamp\<close>
 
-     (* rest as before: *)
+     \<comment> \<open>rest as before:\<close>
      (s, s') \<in> m1a_step3 Rs A B Kab Na [aNum Ts]
   }"
 
@@ -108,21 +108,21 @@ definition         -- {* by @{text "A"}, refines @{term m1x_step5} *}
   m1_step4 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step4 Ra A B Na Kab Ts Ta \<equiv> {(s, s').
-     (* previous guards: *)
+     \<comment> \<open>previous guards:\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
-     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   (* authorization guard *)
-     Na = Ra$na \<and>                                     (* fix parameter *)
+     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   \<comment> \<open>authorization guard\<close>
+     Na = Ra$na \<and>                                     \<comment> \<open>fix parameter\<close>
 
-     (* guard for agreement with server on (Kab, B, Na, isl), *)
-     (* where isl = take is_len nla; injectiveness by including Na *)
+     \<comment> \<open>guard for agreement with server on \<open>(Kab, B, Na, isl)\<close>,\<close>
+     \<comment> \<open>where \<open>isl = take is_len nla\<close>; injectiveness by including \<open>Na\<close>\<close>
      (A \<notin> bad \<longrightarrow> (\<exists>Rs. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], [aNon Na, aNum Ts]))) \<and>
 
-     (* new guards: *)
-     Ta = clk s \<and>                     (* fresh timestamp *)
-     clk s < Ts + Ls \<and>                (* ensure session key recentness *)
+     \<comment> \<open>new guards:\<close>
+     Ta = clk s \<and>                     \<comment> \<open>fresh timestamp\<close>
+     clk s < Ts + Ls \<and>                \<comment> \<open>ensure session key recentness\<close>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s' = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta])) \<rparr>
   }"
 
@@ -130,29 +130,29 @@ definition         -- {* by @{term "B"}, refines @{term m1x_step4} *}
   m1_step5 :: "[rid_t, agent, agent, key, time, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step5 Rb A B Kab Ts Ta \<equiv> {(s, s'). 
-     (* previous guards: *)
+     \<comment> \<open>previous guards:\<close>
      runs s Rb = Some (Resp, [A, B], []) \<and> 
-     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>  (* authorization guard *)
+     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>  \<comment> \<open>authorization guard\<close>
 
-     (* guard for showing agreement with server on (Kab, A, rsl), *)
-     (* where rsl = take rs_len nlb; this agreement is non-injective *)
+     \<comment> \<open>guard for showing agreement with server on \<open>(Kab, A, rsl)\<close>,\<close>
+     \<comment> \<open>where \<open>rsl = take rs_len nlb\<close>; this agreement is non-injective\<close>
      (B \<notin> bad \<longrightarrow> (\<exists>Rs Na. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], [aNon Na, aNum Ts]))) \<and>
 
-     (* new guards: *)
-     (* guard for showing agreement with initiator A on (Kab, Ts, Ta) *)
+     \<comment> \<open>new guards:\<close>
+     \<comment> \<open>guard for showing agreement with initiator \<open>A\<close> on \<open>(Kab, Ts, Ta)\<close>\<close>
      (A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow> 
        (\<exists>Ra nl. runs s Ra = Some (Init, [A, B], aKey Kab # aNum Ts # aNum Ta # nl))) \<and>
 
-     (* ensure recentness of session key *)
+     \<comment> \<open>ensure recentness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* check validity of authenticator and prevent its replay *)
-     (* 'replays' with fresh authenticator ok! *)
+     \<comment> \<open>check validity of authenticator and prevent its replay\<close>
+     \<comment> \<open>'replays' with fresh authenticator ok!\<close>
      clk s < Ta + La \<and> 
      (B, Kab, Ta) \<notin> cache s \<and> 
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s' = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, aNum Ts, aNum Ta])),
        cache := insert (B, Kab, Ta) (cache s) 
@@ -163,17 +163,17 @@ definition         -- {* by @{term "A"}, refines @{term skip} *}
   m1_step6 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step6 Ra A B Na Kab Ts Ta \<equiv> {(s, s').
-     runs s Ra = Some (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta]) \<and>  (* key recv'd before *)
-     Na = Ra$na \<and>                                                     (* fix parameter *)
+     runs s Ra = Some (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta]) \<and>  \<comment> \<open>key recv'd before\<close>
+     Na = Ra$na \<and>                                                     \<comment> \<open>fix parameter\<close>
 
-     (* check key's freshness [NEW] *)
-     (* clk s < Ts + Ls \<and> *)
+     \<comment> \<open>check key's freshness [NEW]\<close>
+     \<comment> \<open>\<open>clk s < Ts + Ls \<and>\<close>\<close>
 
-     (* guard for showing agreement with B on Kab, Ts, and Ta *)
+     \<comment> \<open>guard for showing agreement with \<open>B\<close> on \<open>Kab\<close>, \<open>Ts\<close>, and \<open>Ta\<close>\<close>
      (A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow> 
        (\<exists>Rb. runs s Rb = Some (Resp, [A, B], [aKey Kab, aNum Ts, aNum Ta]))) \<and> 
 
-     (* actions: (redundant) update local state marks successful termination *)
+     \<comment> \<open>actions: (redundant) update local state marks successful termination\<close>
      s' = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta, END])) 
      \<rparr>
@@ -183,12 +183,12 @@ definition         -- {* by attacker, refines @{term m1a_leak} *}
   m1_leak :: "[rid_t, agent, agent, nonce, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_leak Rs A B Na Ts \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     runs s Rs = Some (Serv, [A, B], [aNon Na, aNum Ts]) \<and> 
-    (clk s \<ge> Ts + Ls) \<and>             (* only compromise 'old' session keys *)
+    (clk s \<ge> Ts + Ls) \<and>             \<comment> \<open>only compromise 'old' session keys\<close>
 
-    (* actions: *)
-    (* record session key as leaked; *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key as leaked;\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk), A, B, Na, Ts) (leak s) \<rparr> 
   }"
 
@@ -347,9 +347,9 @@ end
 fun 
   rm1a1 :: "role_t \<Rightarrow> atom list \<Rightarrow> atom list"
 where
-  "rm1a1 Init = take (Suc is_len)"       (* take Kab, Ts; drop Ta *)
-| "rm1a1 Resp = take (Suc rs_len)"       (* take Kab, Ts; drop Ta *)
-| "rm1a1 Serv = id"                      (* take Na, Ts *)
+  "rm1a1 Init = take (Suc is_len)"       \<comment> \<open>take \<open>Kab\<close>, \<open>Ts\<close>; drop \<open>Ta\<close>\<close>
+| "rm1a1 Resp = take (Suc rs_len)"       \<comment> \<open>take \<open>Kab\<close>, \<open>Ts\<close>; drop \<open>Ta\<close>\<close>
+| "rm1a1 Serv = id"                      \<comment> \<open>take \<open>Na\<close>, \<open>Ts\<close>\<close>
 
 abbreviation 
   runs1a1 :: "runs_t \<Rightarrow> runs_t" where

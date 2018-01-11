@@ -56,11 +56,11 @@ definition
     "[agent list, 'ds] \<Rightarrow> ('ds a0i_state \<times> 'ds a0i_state) set"
 where 
   "a0i_commit h d \<equiv> {(s, s').
-    (* guards: *)   
+    \<comment> \<open>guards:\<close>
     (set h \<subseteq> good \<longrightarrow> d \<notin> corrupted s \<longrightarrow>
        signals s (Commit h d) < signals s (Running h d)) \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> 
       signals := (signals s)(Commit h d := signals s (Commit h d) + 1) 
     \<rparr>

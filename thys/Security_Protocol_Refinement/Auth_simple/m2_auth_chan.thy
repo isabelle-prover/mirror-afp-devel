@@ -65,11 +65,11 @@ definition
   m2_step1 :: "[rid_t, agent, agent, nonce] \<Rightarrow> (m2_state \<times> m2_state) set" 
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
        chan := insert (Insec A B (Msg [aNon Na])) (chan s)  
@@ -80,16 +80,16 @@ definition
   m2_step2 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m2_state \<times> m2_state) set"
 where
   "m2_step2 Rb A B Na Nb \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Insec A B (Msg [aNon Na]) \<in> chan s \<and>                          (* rcv M1 *)
+     Insec A B (Msg [aNon Na]) \<in> chan s \<and>                          \<comment> \<open>\<open>rcv M1\<close>\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
-       chan := insert (Auth B A (Msg [aNon Nb, aNon Na])) (chan s)  (* snd M2 *) 
+       chan := insert (Auth B A (Msg [aNon Nb, aNon Na])) (chan s)  \<comment> \<open>\<open>snd M2\<close>\<close>
      \<rparr>  
   }"
 
@@ -97,13 +97,13 @@ definition
   m2_step3 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m2_state \<times> m2_state) set"
 where
   "m2_step3 Ra A B Na Nb \<equiv> {(s, s1).
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Auth B A (Msg [aNon Nb, aNon Na]) \<in> chan s \<and>            (* recv M2 *)
+     Auth B A (Msg [aNon Nb, aNon Na]) \<in> chan s \<and>            \<comment> \<open>\<open>recv M2\<close>\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
@@ -117,7 +117,7 @@ definition     -- {* refines @{term Id} *}
 where
   "m2_fake \<equiv> {(s, s1). 
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> chan := fake ik0 (dom (runs s)) (chan s) \<rparr>
   }"
 

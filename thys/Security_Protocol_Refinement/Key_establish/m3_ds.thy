@@ -89,13 +89,13 @@ definition     -- {* by @{term "A"}, refines @{term "m2_step1"} *}
   m3_step1 :: "[rid_t, agent, agent] \<Rightarrow> m3_trans"
 where
   "m3_step1 Ra A B \<equiv> {(s, s1).
-    (* guards: *)
-    Ra \<notin> dom (runs s) \<and>                                 (* Ra is fresh *)
+    \<comment> \<open>guards:\<close>
+    Ra \<notin> dom (runs s) \<and>                                 \<comment> \<open>\<open>Ra\<close> is fresh\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-      IK := insert \<lbrace>Agent A, Agent B\<rbrace> (IK s)        (* send M1 *)
+      IK := insert \<lbrace>Agent A, Agent B\<rbrace> (IK s)        \<comment> \<open>send \<open>M1\<close>\<close>
     \<rparr>
   }"
 
@@ -108,18 +108,18 @@ definition     -- {* by @{text "Server"}, refines @{term m2_step3} *}
   m3_step3 :: "[rid_t, agent, agent, key, time] \<Rightarrow> m3_trans"
 where
   "m3_step3 Rs A B Kab Ts \<equiv> {(s, s1).
-    (* guards: *)
-    Rs \<notin> dom (runs s) \<and>                           (* fresh server run *)
-    Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
+    \<comment> \<open>guards:\<close>
+    Rs \<notin> dom (runs s) \<and>                           \<comment> \<open>fresh server run\<close>
+    Kab = sesK (Rs$sk) \<and>                          \<comment> \<open>fresh session key\<close>
 
-    \<lbrace>Agent A, Agent B\<rbrace> \<in> IK s \<and>               (* recv M1 *)
-    Ts = clk s \<and>                                  (* fresh timestamp *)
+    \<lbrace>Agent A, Agent B\<rbrace> \<in> IK s \<and>                   \<comment> \<open>recv \<open>M1\<close>\<close>
+    Ts = clk s \<and>                                  \<comment> \<open>fresh timestamp\<close>
 
-    (* actions: *)
-    (* record session key and send M2 *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key and send \<open>M2\<close>\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNum Ts])),
-      IK := insert (Crypt (shrK A)                        (* send M2 *)
+      IK := insert (Crypt (shrK A)                        \<comment> \<open>send \<open>M2\<close>\<close>
                      \<lbrace>Key Kab, Agent B, Number Ts,
                         Crypt (shrK B) \<lbrace>Key Kab, Agent A, Number Ts\<rbrace>\<rbrace>)
                    (IK s)
@@ -131,20 +131,20 @@ definition     -- {* by @{term "A"}, refines @{term m2_step4} *}
 where
   "m3_step4 Ra A B Kab Ts X \<equiv> {(s, s1).
 
-    (* guards: *)
-     runs s Ra = Some (Init, [A, B], []) \<and>           (* key not yet recv'd *)
+     \<comment> \<open>guards:\<close>
+     runs s Ra = Some (Init, [A, B], []) \<and>           \<comment> \<open>key not yet recv'd\<close>
 
-     Crypt (shrK A)                                  (* recv M2 *)
+     Crypt (shrK A)                                  \<comment> \<open>recv \<open>M2\<close>\<close>
        \<lbrace>Key Kab, Agent B, Number Ts, X\<rbrace> \<in> IK s \<and>
 
-     (* check freshness of session key *)
+     \<comment> \<open>check freshness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* actions: *)
-     (* record session key and send M3 *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key and send \<open>M3\<close>\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts])),
-       IK := insert X (IK s)                         (* send M3 *)
+       IK := insert X (IK s)                         \<comment> \<open>send \<open>M3\<close>\<close>
      \<rparr>
   }"
 
@@ -152,16 +152,16 @@ definition     -- {* by @{term "B"}, refines @{term m2_step5} *}
   m3_step5 :: "[rid_t, agent, agent, key, time] \<Rightarrow> m3_trans"
 where
   "m3_step5 Rb A B Kab Ts \<equiv> {(s, s1).
-     (* guards: *)
-     runs s Rb = Some (Resp, [A, B], []) \<and>             (* key not yet recv'd *)
+     \<comment> \<open>guards:\<close>
+     runs s Rb = Some (Resp, [A, B], []) \<and>             \<comment> \<open>key not yet recv'd\<close>
 
-     Crypt (shrK B) \<lbrace>Key Kab, Agent A, Number Ts\<rbrace> \<in> IK s \<and>    (* recv M3 *)
+     Crypt (shrK B) \<lbrace>Key Kab, Agent A, Number Ts\<rbrace> \<in> IK s \<and>    \<comment> \<open>recv \<open>M3\<close>\<close>
 
-     (* ensure freshness of session key; replays with fresh authenticator ok! *)
+     \<comment> \<open>ensure freshness of session key; replays with fresh authenticator ok!\<close>
      clk s < Ts + Ls \<and>
 
-     (* actions: *)
-     (* record session key *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, aNum Ts]))
      \<rparr>
@@ -182,12 +182,12 @@ definition     -- {* refines @{term m2_leak} *}
   m3_leak :: "rid_t \<Rightarrow> m3_trans"
 where
   "m3_leak Rs \<equiv> {(s, s1).
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Rs \<in> dom (runs s) \<and>
-    fst (the (runs s Rs)) = Serv \<and>         (* compromise server run Rs *)
+    fst (the (runs s Rs)) = Serv \<and>         \<comment> \<open>compromise server run \<open>Rs\<close>\<close>
 
-    (* actions: *)
-    (* record session key as leaked and add it to intruder knowledge *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key as leaked and add it to intruder knowledge\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk)) (leak s),
             IK := insert (Key (sesK (Rs$sk))) (IK s) \<rparr>
   }"
@@ -201,8 +201,8 @@ definition     -- {* refines @{term "m2_fake"} *}
 where
   "m3_DY_fake \<equiv> {(s, s1).
 
-     (* actions: *)
-     s1 = s\<lparr> IK := synth (analz (IK s)) \<rparr>       (* take DY closure *)
+     \<comment> \<open>actions:\<close>
+     s1 = s\<lparr> IK := synth (analz (IK s)) \<rparr>       \<comment> \<open>take DY closure\<close>
   }"
 
 
@@ -366,7 +366,7 @@ lemmas m3_inv3_sesK_compr_simps =
   m3_inv3_sesK_comprD
   m3_inv3_sesK_comprD [where KK="{Kab}" for Kab, simplified]
   m3_inv3_sesK_comprD [where KK="insert Kab KK" for Kab KK, simplified]
-  insert_commute_Key    (* to get the keys to the front *)
+  insert_commute_Key    \<comment> \<open>to get the keys to the front\<close>
 
 
 text {* Invariance proof. *}

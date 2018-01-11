@@ -92,11 +92,11 @@ definition
   s0g_gen :: "['d, agent, agent set] \<Rightarrow> ('d s0g_state \<times> 'd s0g_state) set"
 where 
   "s0g_gen d A G \<equiv> {(s, s1).
-    (* guards: *)   
+    \<comment> \<open>guards:\<close>
     A \<in> G \<and>    
-    d \<notin> Domain (kn s) \<and>                      (* fresh item *)
+    d \<notin> Domain (kn s) \<and>                      \<comment> \<open>fresh item\<close>
  
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> 
       kn := insert (d, A) (kn s), 
       az := az s \<union> {d} \<times> (if G \<inter> bad = {} then G else UNIV)
@@ -111,13 +111,13 @@ definition
     "['d, agent] \<Rightarrow> ('d s0g_state \<times> 'd s0g_state) set"
 where 
   "s0g_learn d B \<equiv> {(s, s1).
-    (* guards: *)  
-    (* d \<in> Domain (kn s) \<and>     someone knows d (follows from authorization) *)
+    \<comment> \<open>guards:\<close>
+    \<comment> \<open>\<open>d \<in> Domain (kn s) \<and>\<close> someone knows \<open>d\<close> (follows from authorization)\<close>
 
-    (* check authorization or leakage to preserve secrecy *)
+    \<comment> \<open>check authorization or leakage to preserve secrecy\<close>
     (d, B) \<in> az s \<union> lkr s \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> kn := insert (d, B) (kn s) \<rparr>
   }"
 
@@ -129,10 +129,10 @@ definition
     "'d \<Rightarrow> ('d s0g_state \<times> 'd s0g_state) set"
 where 
   "s0g_leak d \<equiv> {(s, s1).
-    (* guards: *)  
-    d \<in> Domain (kn s) \<and>       (* someone knows d *)
+    \<comment> \<open>guards:\<close>
+    d \<in> Domain (kn s) \<and>       \<comment> \<open>someone knows \<open>d\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> lk := insert d (lk s) \<rparr>
   }"
 

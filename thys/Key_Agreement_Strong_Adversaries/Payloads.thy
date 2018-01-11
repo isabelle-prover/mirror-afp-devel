@@ -301,7 +301,7 @@ where
     IK \<inter> range LtK \<subseteq> range pubK \<union> \<Union> (keys_of ` Bad)
     \<and> range pubK \<subseteq> IK"
 
-(* basic lemmas *)
+\<comment> \<open>basic lemmas\<close>
 
 lemma Keys_badI:
   "\<lbrakk> IK \<inter> range LtK \<subseteq> range pubK \<union> priK`Bad \<union> {shrK A B | A B. A \<in> Bad \<or> B \<in> Bad}; 
@@ -416,9 +416,9 @@ lemma Enc_keys_cleanI:
   "\<forall>X Y. Enc X Y \<in> parts S \<longrightarrow> Y \<in> range LtK \<union> payload \<Longrightarrow> Enc_keys_clean S"
 by (simp add: Enc_keys_clean_def)
 
-(*general lemmas about Enc_keys_clean*)
+\<comment> \<open>general lemmas about \<open>Enc_keys_clean\<close>\<close>
 lemma Enc_keys_clean_mono: 
-  "Enc_keys_clean H \<Longrightarrow> G \<subseteq> H \<Longrightarrow> Enc_keys_clean G"  (* anti-tone *)
+  "Enc_keys_clean H \<Longrightarrow> G \<subseteq> H \<Longrightarrow> Enc_keys_clean G"  \<comment> \<open>anti-tone\<close>
 by (auto simp add: Enc_keys_clean_def dest!: parts_monotone [where G=G])
 
 lemma Enc_keys_clean_Un [simp]: 
@@ -426,13 +426,13 @@ lemma Enc_keys_clean_Un [simp]:
 by (auto simp add: Enc_keys_clean_def)
 
 
-(* from Enc_keys_clean S, the property on parts S also holds for analz S*)
+\<comment> \<open>from \<open>Enc_keys_clean S\<close>, the property on \<open>parts S\<close> also holds for \<open>analz S\<close>\<close>
 lemma Enc_keys_clean_analz:
   "Enc X K \<in> analz S \<Longrightarrow> Enc_keys_clean S \<Longrightarrow> K \<in> range LtK \<union> payload"
 by (auto simp add: Enc_keys_clean_def dest: analz_into_parts)
 
 
-(* Enc_keys_clean and different types of messages *)
+\<comment> \<open>\<open>Enc_keys_clean\<close> and different types of messages\<close>
 lemma Enc_keys_clean_Tags [simp,intro]: "Enc_keys_clean Tags"
 by (auto simp add: Enc_keys_clean_def)
 
@@ -701,7 +701,7 @@ proof
   qed auto
 qed
 
-(*move the SignSet out of the analz*)
+\<comment> \<open>move the \<open>SignSet\<close> out of the \<open>analz\<close>\<close>
 lemma analz_Un_SignSet:
 assumes "K \<subseteq> range LtK" and "Enc_keys_clean (G \<union> H)"
 shows "analz (SignSet G K \<union> H) \<subseteq> SignSet G K \<union> analz (G \<union> H)"

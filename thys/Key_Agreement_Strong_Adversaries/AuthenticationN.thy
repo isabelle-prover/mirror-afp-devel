@@ -55,7 +55,7 @@ definition
   a0n_running :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0n_state \<times> a0n_state) set"
 where 
   "a0n_running A B M \<equiv> {(s,s').
-     (*action*)
+     \<comment> \<open>action\<close>
      s' = s\<lparr>signals := addSignal (signals s) (Running A B M)\<rparr>
   }"
 
@@ -63,9 +63,9 @@ definition
   a0n_commit :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0n_state \<times> a0n_state) set"
 where 
   "a0n_commit A B M \<equiv> {(s, s').
-  (*guard*)
+  \<comment> \<open>guard\<close>
     signals s (Running A B M) > 0 \<and>
-  (*action*)
+  \<comment> \<open>action\<close>
     s' = s\<lparr>signals := addSignal (signals s) (Commit A B M)\<rparr>
   }"
 

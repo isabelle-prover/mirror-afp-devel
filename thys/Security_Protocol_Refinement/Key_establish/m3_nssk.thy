@@ -93,14 +93,14 @@ definition     -- {* by @{term "A"}, refines @{term "m2_step1"} *}
 where
   "m3_step1 Ra A B Na \<equiv> {(s, s1).
 
-    (* guards: *)
-    Ra \<notin> dom (runs s) \<and>                      (* Ra is fresh *)
-    Na = Ra$na \<and>                             (* generate nonce Na *)
+    \<comment> \<open>guards:\<close>
+    Ra \<notin> dom (runs s) \<and>                      \<comment> \<open>\<open>Ra\<close> is fresh\<close>
+    Na = Ra$na \<and>                             \<comment> \<open>generate nonce \<open>Na\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-      IK := insert \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> (IK s)    (* send msg 1 *)
+      IK := insert \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> (IK s)    \<comment> \<open>send msg 1\<close>
     \<rparr>
   }"
 
@@ -109,11 +109,11 @@ definition     -- {* by @{term "B"}, refines @{term "m2_step2"} *}
 where
   "m3_step2 Rb A B \<equiv> {(s, s1).
 
-    (* guards: *)
-    Rb \<notin> dom (runs s) \<and>                       (* Rb is fresh *)
+    \<comment> \<open>guards:\<close>
+    Rb \<notin> dom (runs s) \<and>                       \<comment> \<open>\<open>Rb\<close> is fresh\<close>
 
-    (* actions: *)
-    (* create responder thread *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create responder thread\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], []))
     \<rparr>
@@ -123,15 +123,15 @@ definition     -- {* by @{text "Server"}, refines @{term m2_step3} *}
   m3_step3 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> m3_trans"
 where
   "m3_step3 Rs A B Na Kab \<equiv> {(s, s1).
-    (* guards: *)
-    Rs \<notin> dom (runs s) \<and>                           (* fresh server run *)
-    Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
+    \<comment> \<open>guards:\<close>
+    Rs \<notin> dom (runs s) \<and>                           \<comment> \<open>fresh server run\<close>
+    Kab = sesK (Rs$sk) \<and>                          \<comment> \<open>fresh session key\<close>
 
-    \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> \<in> IK s \<and>     (* recv msg 1 *)
+    \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> \<in> IK s \<and>     \<comment> \<open>recv msg 1\<close>
 
-    (* actions: *)
-    (* record session key and send messages 2 and 3 *)
-    (* note that last field in server record is for responder nonce *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key and send messages 2 and 3\<close>
+    \<comment> \<open>note that last field in server record is for responder nonce\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
       IK := insert
@@ -147,14 +147,14 @@ definition     -- {* by @{term "A"}, refines @{term m2_step4} *}
 where
   "m3_step4 Ra A B Na Kab X \<equiv> {(s, s1).
 
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Ra = Some (Init, [A, B], []) \<and>
     Na = Ra$na \<and>
 
-    Crypt (shrK A) \<lbrace>Nonce Na, Agent B, Key Kab, X\<rbrace> \<in> IK s \<and> (* recv msg 2 *)
+    Crypt (shrK A) \<lbrace>Nonce Na, Agent B, Key Kab, X\<rbrace> \<in> IK s \<and>  \<comment> \<open>recv msg 2\<close>
 
-    (* actions: *)
-    (* record session key, and forward X *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key, and forward \<open>X\<close>\<close>
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab])),
       IK := insert X (IK s)
@@ -166,14 +166,14 @@ definition     -- {* by @{term "B"}, refines @{term m2_step5} *}
 where
   "m3_step5 Rb A B Nb Kab \<equiv> {(s, s1).
 
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Rb = Some (Resp, [A, B], []) \<and>
     Nb = Rb$nb \<and>
 
-    Crypt (shrK B) \<lbrace>Key Kab, Agent A\<rbrace> \<in> IK s \<and>              (* recv msg 3 *)
+    Crypt (shrK B) \<lbrace>Key Kab, Agent A\<rbrace> \<in> IK s \<and>              \<comment> \<open>recv msg 3\<close>
 
-    (* actions: *)
-    (* record session key *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab])),
       IK := insert (Crypt Kab (Nonce Nb)) (IK s)
@@ -184,12 +184,12 @@ definition     -- {* by @{term "A"}, refines @{term m2_step6} *}
   m3_step6 :: "[rid_t, agent, agent, nonce, nonce, key] \<Rightarrow> m3_trans"
 where
   "m3_step6 Ra A B Na Nb Kab \<equiv> {(s, s').
-    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>      (* key recv'd before *)
+    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>      \<comment> \<open>key recv'd before\<close>
     Na = Ra$na \<and>
 
-    Crypt Kab (Nonce Nb) \<in> IK s \<and>                      (* receive M4 *)
+    Crypt Kab (Nonce Nb) \<in> IK s \<and>                      \<comment> \<open>receive \<open>M4\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNon Nb])),
       IK := insert (Crypt Kab \<lbrace>Nonce Nb, Nonce Nb\<rbrace>) (IK s)
@@ -200,12 +200,12 @@ definition     -- {* by @{term "B"}, refines @{term m2_step6} *}
   m3_step7 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> m3_trans"
 where
   "m3_step7 Rb A B Nb Kab \<equiv> {(s, s').
-    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>       (* key recv'd before *)
+    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>       \<comment> \<open>key recv'd before\<close>
     Nb = Rb$nb \<and>
 
-    Crypt Kab \<lbrace>Nonce Nb, Nonce Nb\<rbrace> \<in> IK s \<and>         (* receive M5 *)
+    Crypt Kab \<lbrace>Nonce Nb, Nonce Nb\<rbrace> \<in> IK s \<and>         \<comment> \<open>receive \<open>M5\<close>\<close>
 
-    (* actions: (redundant) update local state marks successful termination *)
+    \<comment> \<open>actions: (redundant) update local state marks successful termination\<close>
     s' = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, END]))
     \<rparr>
@@ -218,13 +218,13 @@ definition     -- {* refines @{term m2_leak} *}
   m3_leak :: "[rid_t, rid_t, rid_t, agent, agent] \<Rightarrow> m3_trans"
 where
   "m3_leak Rs Ra Rb A B \<equiv> {(s, s1).
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Rs = Some (Serv, [A, B], [aNon (Ra$na)]) \<and>
     runs s Ra = Some (Init, [A, B], [aKey (sesK (Rs$sk)), aNon (Rb$nb)]) \<and>
     runs s Rb = Some (Resp, [A, B], [aKey (sesK (Rs$sk)), END]) \<and>
 
-    (* actions: *)
-    (* record session key as leaked and add it to intruder knowledge *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key as leaked and add it to intruder knowledge\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk), Ra$na, Rb$nb) (leak s),
             IK := insert (Key (sesK (Rs$sk))) (IK s) \<rparr>
   }"
@@ -236,7 +236,7 @@ definition     -- {* refines @{term "m2_fake"} *}
 where
   "m3_DY_fake \<equiv> {(s, s1).
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s(|
        IK := synth (analz (IK s))
      |)

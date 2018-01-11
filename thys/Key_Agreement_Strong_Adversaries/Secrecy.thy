@@ -53,10 +53,10 @@ definition
   s0_add_secret :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_add_secret m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     m \<notin> synth (analz (ik s)) \<and>
     
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>secret := insert m (secret s)\<rparr>
   }"
 
@@ -64,10 +64,10 @@ definition
   s0_learn :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_learn m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     s\<lparr>ik := insert m (ik s)\<rparr> \<in> s0_secrecy \<and> 
 
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>ik := insert m (ik s)\<rparr>
   }"
 
@@ -75,10 +75,10 @@ definition
   s0_learn' :: "msg \<Rightarrow> ('a s0_state_scheme * 'a s0_state_scheme) set"
 where
   "s0_learn' m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     synth (analz (insert m (ik s))) \<inter> secret s = {} \<and> 
 
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s\<lparr>ik := insert m (ik s)\<rparr>
   }"
 

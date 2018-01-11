@@ -69,14 +69,14 @@ definition
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
-       (* send Na on confidential channel 1 *)
+       \<comment> \<open>send \<open>Na\<close> on confidential channel 1\<close>
        chan := insert (Confid A B (Msg [aNon Na])) (chan s)
      \<rparr>
   }"
@@ -87,13 +87,13 @@ definition
 where
   "m2_step2 Rb A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Confid A B (Msg [aNon Na]) \<in> chan s \<and>           (* receive M1 *)
+     Confid A B (Msg [aNon Na]) \<in> chan s \<and>           \<comment> \<open>receive M1\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
        chan := insert (Confid B A (Msg [aNon Na, aNon Nb])) (chan s)
@@ -106,13 +106,13 @@ definition
 where
   "m2_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Confid B A (Msg [aNon Na, aNon Nb]) \<in> chan s \<and>  (* receive M2 *)
+     Confid B A (Msg [aNon Na, aNon Nb]) \<in> chan s \<and>  \<comment> \<open>receive M2\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
@@ -125,7 +125,7 @@ definition     -- {* refines @{term Id} *}
   m2_fake :: "(m2_state \<times> m2_state) set"
 where
   "m2_fake \<equiv> {(s, s1). 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> chan := fake ik0 (dom (runs s)) (chan s) \<rparr>
   }"
 

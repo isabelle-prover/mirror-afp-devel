@@ -84,15 +84,15 @@ definition     -- {* by @{term "A"}, refines @{term "m1a_step1"} *}
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
 
-    (* guards: *)
-    Ra \<notin> dom (runs s) \<and>                      (* fresh run identifier *)
-    Na = Ra$na \<and>                             (* generate nonce Na *)
+    \<comment> \<open>guards:\<close>
+    Ra \<notin> dom (runs s) \<and>                      \<comment> \<open>fresh run identifier\<close>
+    Na = Ra$na \<and>                             \<comment> \<open>generate nonce \<open>Na\<close>\<close>
 
-    (* actions: *)
-    (* create initiator thread and send message 1 *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create initiator thread and send message 1\<close>
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-      chan := insert (Insec A B (Msg [aNon Na])) (chan s)   (* msg 1 *)
+      chan := insert (Insec A B (Msg [aNon Na])) (chan s)   \<comment> \<open>msg 1\<close>
     \<rparr>
   }"
 
@@ -105,15 +105,15 @@ definition     -- {* by @{text "Server"}, refines @{term m1a_step3} *}
   m2_step3 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> m2_trans"
 where
   "m2_step3 Rs A B Na Kab \<equiv> {(s, s1). 
-    (* guards: *)
-    Rs \<notin> dom (runs s) \<and>                           (* new server run *) 
-    Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
+    \<comment> \<open>guards:\<close>
+    Rs \<notin> dom (runs s) \<and>                           \<comment> \<open>new server run\<close>
+    Kab = sesK (Rs$sk) \<and>                          \<comment> \<open>fresh session key\<close>
 
-    Insec A B (Msg [aNon Na]) \<in> chan s \<and>          (* recv msg 1 *)
+    Insec A B (Msg [aNon Na]) \<in> chan s \<and>          \<comment> \<open>recv msg 1\<close>
 
-    (* actions: *)
-    (* record key and send messages 2 and 3 *)
-    (* note that last field in server record is for responder nonce *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record key and send messages 2 and 3\<close>
+    \<comment> \<open>note that last field in server record is for responder nonce\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na])), 
       chan := {Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]), 
@@ -126,14 +126,14 @@ definition     -- {* by @{term "A"}, refines @{term m1a_step4} *}
 where
   "m2_step4 Ra A B Na Kab \<equiv> {(s, s1).
 
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Ra = Some (Init, [A, B], []) \<and> 
     Na = Ra$na \<and>
 
-    Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]) \<in> chan s \<and>  (* recv msg 2 *)
+    Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]) \<in> chan s \<and>  \<comment> \<open>recv msg 2\<close>
 
-    (* actions: *)
-    (* record session key *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key\<close>
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab]))
     \<rparr>
@@ -144,14 +144,14 @@ definition     -- {* by @{term "B"}, refines @{term m1_step5} *}
 where
   "m2_step5 Rb A B Nb Kab \<equiv> {(s, s1). 
 
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Rb = Some (Resp, [A, B], []) \<and>
     Nb = Rb$nb \<and>
 
-    Secure Sv B (Msg [aKey Kab, aAgt A]) \<in> chan s \<and>     (* recv msg 3 *)
+    Secure Sv B (Msg [aKey Kab, aAgt A]) \<in> chan s \<and>     \<comment> \<open>recv msg 3\<close>
 
-    (* actions: *)
-    (* record session key *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key\<close>
     s1 = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab])), 
       chan := insert (dAuth Kab (Msg [aNon Nb])) (chan s)
@@ -162,12 +162,12 @@ definition     -- {* by @{term "A"}, refines @{term m1_step6} *}
   m2_step6 :: "[rid_t, agent, agent, nonce, nonce, key] \<Rightarrow> m2_trans"
 where
   "m2_step6 Ra A B Na Nb Kab \<equiv> {(s, s'). 
-    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>    (* key recv'd before *)
+    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>    \<comment> \<open>key recv'd before\<close>
     Na = Ra$na \<and>
 
-    dAuth Kab (Msg [aNon Nb]) \<in> chan s \<and>             (* receive M4 *)
+    dAuth Kab (Msg [aNon Nb]) \<in> chan s \<and>             \<comment> \<open>receive \<open>M4\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNon Nb])),
       chan := insert (dAuth Kab (Msg [aNon Nb, aNon Nb])) (chan s)
@@ -178,12 +178,12 @@ definition     -- {* by @{term "B"}, refines @{term m1_step6} *}
   m2_step7 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> m2_trans"
 where
   "m2_step7 Rb A B Nb Kab \<equiv> {(s, s').
-    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>     (* key recv'd before *)
+    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>     \<comment> \<open>key recv'd before\<close>
     Nb = Rb$nb \<and>
 
-    dAuth Kab (Msg [aNon Nb, aNon Nb]) \<in> chan s \<and>     (* receive M5 *)
+    dAuth Kab (Msg [aNon Nb, aNon Nb]) \<in> chan s \<and>     \<comment> \<open>receive \<open>M5\<close>\<close>
 
-    (* actions: (redundant) update local state marks successful termination *)
+    \<comment> \<open>actions: (redundant) update local state marks successful termination\<close>
     s' = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, END]))
     \<rparr>
@@ -196,12 +196,12 @@ definition     -- {* refines @{term m1_leak} *}
   m2_leak :: "[rid_t, rid_t, rid_t, agent, agent] \<Rightarrow> m2_trans" 
 where
   "m2_leak Rs Ra Rb A B \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     runs s Rs = Some (Serv, [A, B], [aNon (Ra$na)]) \<and>
     runs s Ra = Some (Init, [A, B], [aKey (sesK (Rs$sk)), aNon (Rb$nb)]) \<and>  
     runs s Rb = Some (Resp, [A, B], [aKey (sesK (Rs$sk)), END]) \<and>  
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk), Ra$na, Rb$nb) (leak s), 
             chan := insert (Insec undefined undefined (Msg [aKey (sesK (Rs$sk))])) (chan s) \<rparr>
   }"
@@ -211,7 +211,7 @@ definition     -- {* refines @{term Id} *}
 where
   "m2_fake \<equiv> {(s, s1). 
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr>
       chan := fake ik0  (dom (runs s)) (chan s)
     \<rparr>
@@ -440,7 +440,7 @@ lemmas m2_inv3b_sesK_compr_non_simps =
   m2_inv3b_sesK_compr_nonD
   m2_inv3b_sesK_compr_nonD [where KK="{Kab}" for Kab, simplified] 
   m2_inv3b_sesK_compr_nonD [where KK="insert Kab KK" for Kab KK, simplified] 
-  insert_commute_aKey    (* to get the keys to the front *)
+  insert_commute_aKey    \<comment> \<open>to get the keys to the front\<close>
 
 lemma PO_m2_inv3b_sesK_compr_non_init [iff]:
   "init m2 \<subseteq> m2_inv3b_sesK_compr_non"

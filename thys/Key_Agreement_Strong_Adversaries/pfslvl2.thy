@@ -59,9 +59,9 @@ definition
   l2_dy_fake_msg :: "msg \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_msg m \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     m \<in> dy_fake_msg (bad s) (ik s) (chan s) \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {m} \<union> ik s\<rparr>
   }"
 
@@ -69,9 +69,9 @@ definition
   l2_dy_fake_chan :: "chan \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_chan M \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     M \<in> dy_fake_chan (bad s) (ik s) (chan s)\<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>chan := {M} \<union> chan s\<rparr>
   }"
 
@@ -166,10 +166,10 @@ definition
   l2_lkr_others :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_others A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A \<noteq> test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -177,10 +177,10 @@ definition
   l2_lkr_actor :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_actor A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A = test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -188,9 +188,9 @@ definition
   l2_lkr_after :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_after A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     test_ended s \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -198,11 +198,11 @@ definition
   l2_skr :: "rid_t \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_skr R K \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     R \<noteq> test \<and> R \<notin> partners \<and>
     in_progress (progress s R) xsk \<and>
     guessed_frame R xsk = Some K \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {K} \<union> ik s\<rparr>
   }"
 
@@ -212,10 +212,10 @@ definition
     l2_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l2_trans"
 where
   "l2_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xpkE, xskE}),
       chan := {Auth A B (\<langle>Number 0, epubKF (Ra$kE)\<rangle>)} \<union> (chan s)
@@ -226,12 +226,12 @@ definition
   l2_step2 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step2 Rb A B KE \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xpkE = Some KE \<and>
     Auth A B \<langle>Number 0, KE\<rangle> \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Rb \<mapsto> {xpkE, xsk}),
       chan := {Auth B A (Aenc (NonceF (Rb$sk)) KE)} \<union> (chan s),
@@ -248,12 +248,12 @@ definition
   l2_step3 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step3 Ra A B K \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xpkE, xskE} \<and>
     guessed_frame Ra xsk = Some K \<and>
     Auth B A (Aenc K (epubKF (Ra$kE))) \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xpkE, xskE, xsk}),
             signals := if can_signal s A B then
                          addSignal (signals s) (Commit A B \<langle>epubKF (Ra$kE),K\<rangle>)

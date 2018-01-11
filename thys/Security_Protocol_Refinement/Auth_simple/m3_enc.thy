@@ -68,11 +68,11 @@ definition
 where
   "m3_step1 Ra A B Na \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      Ra \<notin> dom (runs s) \<and>
      Na = Ra$0 \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])), 
        IK := insert (Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace>)  (IK s)
@@ -85,13 +85,13 @@ definition
 where
   "m3_step2 Rb A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      Rb \<notin> dom (runs s) \<and>
      Nb = Rb$0 \<and>
 
-     Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace> \<in> IK s \<and>      (* receive msg 1 *)
+     Crypt (pubK B) \<lbrace>Nonce Na, Agent A\<rbrace> \<in> IK s \<and>      \<comment> \<open>receive msg 1\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na])), 
        IK := insert (Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace>) (IK s) 
@@ -103,13 +103,13 @@ definition
 where
   "m3_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace> \<in> IK s \<and>   (* recv msg2 *)
+     Crypt (pubK A) \<lbrace>Nonce Na, Nonce Nb, Agent B\<rbrace> \<in> IK s \<and>   \<comment> \<open>recv msg2\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>  
@@ -123,7 +123,7 @@ definition
 where
   "m3_DY_fake \<equiv> {(s, s1).
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr> IK := synth (analz (IK s)) \<rparr>  
   }"
 
@@ -247,7 +247,7 @@ the confidential channels. *}
 
 definition
   R23_msgs :: "(m2_state \<times> m3_state) set" where
-  "R23_msgs \<equiv> {(s, t). abs_msg (parts (IK t)) \<subseteq> chan s}"   (* with parts! *)
+  "R23_msgs \<equiv> {(s, t). abs_msg (parts (IK t)) \<subseteq> chan s}"   \<comment> \<open>with \<open>parts\<close>!\<close>
 
 definition 
   R23_non :: "(m2_state \<times> m3_state) set" where

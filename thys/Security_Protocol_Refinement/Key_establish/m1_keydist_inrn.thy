@@ -75,11 +75,11 @@ definition       -- {* by @{term "Server"}, refines @{term m1x_step3} *}
   m1a_step3 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1r_trans"
 where
   "m1a_step3 Rs A B Kab al \<equiv> {(s, s1).
-     (* guards: *)
-     Rs \<notin> dom (runs s) \<and>                 (* fresh run id *) 
-     Kab = sesK (Rs$sk) \<and>                 (* generate session key *)
+     \<comment> \<open>guards:\<close>
+     Rs \<notin> dom (runs s) \<and>                 \<comment> \<open>fresh run id\<close>
+     Kab = sesK (Rs$sk) \<and>                 \<comment> \<open>generate session key\<close>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], al)) \<rparr>
   }"
 
@@ -87,16 +87,16 @@ definition         -- {* by @{text "A"}, refines @{term m1x_step4} *}
   m1a_step4 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1a_trans"
 where
   "m1a_step4 Ra A B Kab nla \<equiv> {(s, s').
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
-     (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>      (* authorization guard *)
+     (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>      \<comment> \<open>authorization guard\<close>
 
-     (* new guard for non-injective agreement with server on (Kab, B, isl), *)
-     (* where isl = take is_len nla *)
+     \<comment> \<open>new guard for non-injective agreement with server on \<open>(Kab, B, isl)\<close>,\<close>
+     \<comment> \<open>where \<open>isl = take is_len nla\<close>\<close>
      (A \<notin> bad \<longrightarrow> (\<exists>Rs. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], take is_len nla))) \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s' = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], aKey Kab # nla)) \<rparr>
   }" 
 
@@ -104,16 +104,16 @@ definition         -- {* by @{term "B"}, refines @{term m1x_step5} *}
   m1a_step5 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1a_trans"
 where
   "m1a_step5 Rb A B Kab nlb \<equiv> {(s, s1). 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Rb = Some (Resp, [A, B], []) \<and> 
-     (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>         (* authorization guard *)
+     (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>         \<comment> \<open>authorization guard\<close>
 
-     (* guard for non-injective agreement with server on (Kab, A, rsl) *)
-     (* where rsl = take rs_len nlb *)
+     \<comment> \<open>guard for non-injective agreement with server on \<open>(Kab, A, rsl)\<close>\<close>
+     \<comment> \<open>where \<open>rsl = take rs_len nlb\<close>\<close>
      (B \<notin> bad \<longrightarrow> (\<exists>Rs. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], take rs_len nlb))) \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], aKey Kab # nlb)) \<rparr>
   }"
 
@@ -214,9 +214,9 @@ text {* Define run abstraction. *}
 fun 
   rm1x1a :: "role_t \<Rightarrow> atom list \<Rightarrow> atom list"
 where
-  "rm1x1a Init = take 1"         (* take Kab from Kab # nla *)
-| "rm1x1a Resp = take 1"         (* take Kab from Kab # nlb *)
-| "rm1x1a Serv = take 0"         (* drop all from nls *)
+  "rm1x1a Init = take 1"         \<comment> \<open>take \<open>Kab\<close> from \<open>Kab # nla\<close>\<close>
+| "rm1x1a Resp = take 1"         \<comment> \<open>take \<open>Kab\<close> from \<open>Kab # nlb\<close>\<close>
+| "rm1x1a Serv = take 0"         \<comment> \<open>drop all from \<open>nls\<close>\<close>
 
 abbreviation
   runs1x1a :: "runs_t \<Rightarrow> runs_t" where 

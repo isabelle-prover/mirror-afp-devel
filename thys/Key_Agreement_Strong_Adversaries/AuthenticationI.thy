@@ -47,9 +47,9 @@ definition
   a0i_commit :: "agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> (a0i_state \<times> a0i_state) set"
 where 
   "a0i_commit A B M \<equiv> {(s, s').
-   (*guard*)
+   \<comment> \<open>guard\<close>
      signals s (Commit A B M) < signals s (Running A B M) \<and>
-   (* actions: *)
+   \<comment> \<open>actions:\<close>
      s' = s\<lparr>signals := addSignal (signals s) (Commit A B M)\<rparr>
   }"
 

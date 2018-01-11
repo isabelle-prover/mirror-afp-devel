@@ -263,11 +263,11 @@ definition     -- {* by @{term "A"}, refines skip *}
 where
   "m1x_step1 Ra A B \<equiv> {(s, s1).
 
-    (* guards: *)
-    Ra \<notin> dom (runs s) \<and>                (* Ra is fresh *)
+    \<comment> \<open>guards:\<close>
+    Ra \<notin> dom (runs s) \<and>                \<comment> \<open>\<open>Ra\<close> is fresh\<close>
 
-    (* actions: *)
-    (* create initiator thread *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create initiator thread\<close>
     s1 = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])) \<rparr>
   }"
 
@@ -276,11 +276,11 @@ definition     -- {* by @{term "B"}, refines skip *}
 where
   "m1x_step2 Rb A B \<equiv> {(s, s1).
 
-    (* guards: *)
-    Rb \<notin> dom (runs s) \<and>               (* Rb is fresh *)
+    \<comment> \<open>guards:\<close>
+    Rb \<notin> dom (runs s) \<and>               \<comment> \<open>\<open>Rb\<close> is fresh\<close>
 
-    (* actions: *)
-    (* create responder thread *)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>create responder thread\<close>
     s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [])) \<rparr>
   }"
 
@@ -289,11 +289,11 @@ definition     -- {* by @{term "Server"}, refines @{term s0g_gen} *}
 where
   "m1x_step3 Rs A B Kab \<equiv> {(s, s1).
 
-    (* guards: *)
-    Rs \<notin> dom (runs s) \<and>                        (* Rs is fresh *) 
-    Kab = sesK (Rs$sk) \<and>                        (* generate session key *)
+    \<comment> \<open>guards:\<close>
+    Rs \<notin> dom (runs s) \<and>                        \<comment> \<open>\<open>Rs\<close> is fresh\<close>
+    Kab = sesK (Rs$sk) \<and>                       \<comment> \<open>generate session key\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [])) \<rparr>
   }"
 
@@ -301,11 +301,11 @@ definition     -- {* by @{term "A"}, refines @{term s0g_learn} *}
   m1x_step4 :: "[rid_t, agent, agent, key] \<Rightarrow> 'x m1x_trans"
 where
   "m1x_step4 Ra A B Kab \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     runs s Ra = Some (Init, [A, B], []) \<and>
-    (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   (* authorization guard *)
+    (Kab \<notin> leak s \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>   \<comment> \<open>authorization guard\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab])) \<rparr>
   }"
 
@@ -313,11 +313,11 @@ definition     -- {* by @{text "B"}, refines @{term s0g_learn} *}
   m1x_step5 :: "[rid_t, agent, agent, key] \<Rightarrow> 'x m1x_trans"
 where
   "m1x_step5 Rb A B Kab \<equiv> {(s, s1).
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     runs s Rb = Some (Resp, [A, B], []) \<and> 
-    (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    (* authorization guard *)
+    (Kab \<notin> leak s \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    \<comment> \<open>authorization guard\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab])) \<rparr>
   }"
 
@@ -325,11 +325,11 @@ definition     -- {* by attacker, refines @{term s0g_leak} *}
   m1x_leak :: "rid_t \<Rightarrow> 'x m1x_trans"
 where
   "m1x_leak Rs \<equiv> {(s, s1).           
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     Rs \<in> dom (runs s) \<and>
-    fst (the (runs s Rs)) = Serv \<and>         (* compromise server run Rs *)
+    fst (the (runs s Rs)) = Serv \<and>         \<comment> \<open>compromise server run \<open>Rs\<close>\<close>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk)) (leak s) \<rparr>
   }"
 
@@ -343,7 +343,7 @@ definition
 where
   "m1x_init \<equiv> { \<lparr>
      runs = empty,
-     leak = corrKey         (* statically corrupted keys initially leaked *) 
+     leak = corrKey         \<comment> \<open>statically corrupted keys initially leaked\<close>
   \<rparr> }"
 
 definition 

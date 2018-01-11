@@ -27,7 +27,7 @@ messages. *}
 subsection {* Agents *}
 (******************************************************************************)
 
-datatype  (*We allow any number of agents plus an honest server. *)
+datatype  \<comment> \<open>We allow any number of agents plus an honest server.\<close>
   agent = Server | Agent nat
 
 consts 

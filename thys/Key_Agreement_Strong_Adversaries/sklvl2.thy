@@ -61,9 +61,9 @@ definition
   l2_dy_fake_msg :: "msg \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_msg m \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     m \<in> dy_fake_msg (bad s) (ik s) (chan s) \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {m} \<union> ik s\<rparr>
   }"
 
@@ -71,9 +71,9 @@ definition
   l2_dy_fake_chan :: "chan \<Rightarrow> l2_trans"
 where
   "l2_dy_fake_chan M \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     M \<in> dy_fake_chan (bad s) (ik s) (chan s)\<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>chan := {M} \<union> chan s\<rparr>
   }"
 
@@ -171,10 +171,10 @@ definition
   l2_lkr_others :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_others A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A \<noteq> test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -182,10 +182,10 @@ definition
   l2_lkr_actor :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_actor A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A = test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -193,9 +193,9 @@ definition
   l2_lkr_after :: "agent \<Rightarrow> l2_trans"
 where
   "l2_lkr_after A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     test_ended s \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s\<rparr>
   }"
 
@@ -203,11 +203,11 @@ definition
   l2_skr :: "rid_t \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_skr R K \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     R \<noteq> test \<and> R \<notin> partners \<and>
     in_progress (progress s R) xsk \<and>
     guessed_frame R xsk = Some K \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {K} \<union> ik s\<rparr>
   }"
 
@@ -241,10 +241,10 @@ definition
     l2_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l2_trans"
 where
   "l2_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xnx, xni, xgnx}),
       chan := {Confid A B (NonceF (Ra$ni))} \<union> 
@@ -258,7 +258,7 @@ definition
   l2_step2 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step2 Rb A B Ni gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
@@ -266,7 +266,7 @@ where
     guessed_frame Rb xsk = Some (Exp gnx (NonceF (Rb$ny))) \<and>
     Confid A B Ni \<in> chan s \<and>
     Insec A B gnx \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xni, xnr, xgny, xgnx, xsk}),
             chan := {Confid B A (NonceF (Rb$nr))} \<union>
                    ({Insec B A 
@@ -293,7 +293,7 @@ definition
   l2_step3 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step3 Ra A B Nr gny \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xnx, xni, xgnx} \<and>
     guessed_frame Ra xgny = Some gny \<and>
@@ -302,7 +302,7 @@ where
     Confid B A Nr \<in> chan s \<and>
     Insec B A \<langle>gny, hmac \<langle>Number 0, Exp Gen (NonceF (Ra$nx)), gny, Agent B, Agent A\<rangle>
                          (Hash \<langle>NonceF (Ra$ni), Nr\<rangle>)\<rangle> \<in> chan s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xnx, xni, xnr, xgnx, xgny, xsk, xEnd}),
             chan := {Insec A B 
                        (hmac \<langle>Number 1, gny, Exp Gen (NonceF (Ra$nx)), Agent A, Agent B\<rangle>
@@ -339,7 +339,7 @@ definition
   l2_step4 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> l2_trans"
 where
   "l2_step4 Rb A B Ni gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     progress s Rb = Some {xny, xni, xnr, xgnx, xgny, xsk} \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
@@ -347,7 +347,7 @@ where
     Insec A B (hmac \<langle>Number 1, Exp Gen (NonceF (Rb$ny)), gnx, Agent A, Agent B\<rangle>
                     (Hash \<langle>Ni, NonceF (Rb$nr)\<rangle>)) \<in> chan s \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xni, xnr, xgnx, xgny, xsk, xEnd}),
             secret := {x. x = Exp gnx (NonceF (Rb$ny)) \<and> Rb = test} \<union> secret s,
             signalsResp := 
@@ -537,13 +537,13 @@ abbreviation
   generators :: "l2_state \<Rightarrow> msg set"
 where
   "generators s \<equiv> 
-     (*from the insec messages in steps 1 2*)
+     \<comment> \<open>from the \<open>insec\<close> messages in steps 1 2\<close>
      {x. \<exists> N. x = Exp Gen (Nonce N)} \<union> 
-     (*from the opened confid messages in steps 1 2*)
+     \<comment> \<open>from the opened \<open>confid\<close> messages in steps 1 2\<close>
      {x. \<exists> R \<in> bad_runs s. x = NonceF (R$ni) \<or> x = NonceF (R$nr)} \<union> 
-     (*from the insec messages in steps 2 3*)
+     \<comment> \<open>from the \<open>insec\<close> messages in steps 2 3\<close>
      {x. \<exists> y y' z. x = hmac \<langle>y, y'\<rangle> (Hash z)} \<union> 
-     (*from the skr*)
+     \<comment> \<open>from the \<open>skr\<close>\<close>
      {Exp y (NonceF (R$N)) | y N R. R \<noteq> test \<and> R \<notin> partners}" 
 
 lemma analz_generators: "analz (generators s) = generators s"
@@ -559,7 +559,7 @@ where
 definition
   chan_generators :: "chan set"
 where
-  "chan_generators = {x. \<exists> n R. (*the messages that can't be opened*)
+  "chan_generators = {x. \<exists> n R. \<comment> \<open>the messages that can't be opened\<close>
      x = Confid (owner (guessed_runs R)) (partner (guessed_runs R)) (NonceF (R$n)) \<and> 
      (n = ni \<or> n = nr)
   }"
@@ -736,8 +736,8 @@ by (auto,erule parts.induct, auto)
 
 lemma hmac_trans_1_4_skr_extr_fake:
   "hmac X K \<in> parts (extr (bad s') (ik s') (chan s')) \<Longrightarrow>
-   K \<notin> synth (analz (extr (bad s) (ik s) (chan s))) \<Longrightarrow> (*necessary for the dy_fake_msg case*)
-   s \<in> l2_inv2 \<Longrightarrow> (*necessary for the skr case*)
+   K \<notin> synth (analz (extr (bad s) (ik s) (chan s))) \<Longrightarrow> \<comment> \<open>necessary for the \<open>dy_fake_msg\<close> case\<close>
+   s \<in> l2_inv2 \<Longrightarrow> \<comment> \<open>necessary for the \<open>skr\<close> case\<close>
    (s, s') \<in> l2_step1 Ra A B \<union> l2_step4 Rb A B Ni gnx \<union> l2_skr R KK \<union> 
              l2_dy_fake_msg M \<union> l2_dy_fake_chan MM \<Longrightarrow>
      hmac X K \<in> parts (extr (bad s) (ik s) (chan s))"

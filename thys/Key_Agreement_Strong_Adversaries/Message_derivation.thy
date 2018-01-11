@@ -58,7 +58,7 @@ lemma synth_mono [mono_set]: "G \<subseteq> H \<Longrightarrow> synth G \<subset
 
 lemmas synth_monotone = synth_mono [THEN [2] rev_subsetD]
 
-(* [elim!] slows down certain proofs, e.g., "\<lbrakk> synth H \<inter> B \<subseteq> {} \<rbrakk> \<Longrightarrow> P" *)
+\<comment> \<open>\<open>[elim!]\<close> slows down certain proofs, e.g., \<open>\<lbrakk> synth H \<inter> B \<subseteq> {} \<rbrakk> \<Longrightarrow> P\<close>\<close>
 inductive_cases NonceF_synth: "NonceF n \<in> synth H"
 inductive_cases LtK_synth: "LtK K \<in> synth H"
 inductive_cases EpubKF_synth: "epubKF K \<in> synth H"

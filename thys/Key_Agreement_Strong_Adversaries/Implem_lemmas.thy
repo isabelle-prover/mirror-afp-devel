@@ -199,7 +199,7 @@ The ultimate goal is to show @{prop [display]
 
 subsubsection {* First: we only keep the extractable messages*}
 
-(*the synth is probably not needed*)
+\<comment> \<open>the \<open>synth\<close> is probably not needed\<close>
 lemma analz_NI_I_K_analz_NI_EI:
 assumes HNI: "NI \<subseteq> payload"
     and HK: "K \<subseteq> range LtK"

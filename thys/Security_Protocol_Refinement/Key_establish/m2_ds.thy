@@ -84,14 +84,14 @@ definition     -- {* by @{term "A"}, refines @{term "m1a_step1"} *}
 where
   "m2_step1 Ra A B \<equiv> {(s, s1).
 
-     (* guards: *)
-     Ra \<notin> dom (runs s) \<and>                                (* Ra is fresh *)
+     \<comment> \<open>guards:\<close>
+     Ra \<notin> dom (runs s) \<and>                                \<comment> \<open>\<open>Ra\<close> is fresh\<close>
 
-     (* actions: *)
-     (* create initiator thread and send message 1 *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>create initiator thread and send message 1\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-       chan := insert (Insec A B (Msg [])) (chan s)     (* send M1 *)
+       chan := insert (Insec A B (Msg [])) (chan s)     \<comment> \<open>send M1\<close>
      \<rparr>
   }"
 
@@ -105,18 +105,18 @@ definition     -- {* by @{text "Server"}, refines @{term m1e_step3} *}
 where
   "m2_step3 Rs A B Kab Ts \<equiv> {(s, s1). 
 
-     (* guards: *)
-     Rs \<notin> dom (runs s) \<and>                           (* fresh server run *)
-     Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
-     Ts = clk s \<and>                                  (* fresh timestamp *) 
+     \<comment> \<open>guards:\<close>
+     Rs \<notin> dom (runs s) \<and>                           \<comment> \<open>fresh server run\<close>
+     Kab = sesK (Rs$sk) \<and>                          \<comment> \<open>fresh session key\<close>
+     Ts = clk s \<and>                                  \<comment> \<open>fresh timestamp\<close> 
 
-     Insec A B (Msg []) \<in> chan s \<and>                 (* recv M1 *)
+     Insec A B (Msg []) \<in> chan s \<and>                 \<comment> \<open>recv M1\<close>
    
-     (* actions: *)
-     (* record key and send messages 2 and 3 *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record key and send messages 2 and 3\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNum Ts])), 
-       chan := {Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]),    (* send M2a/b *)
+       chan := {Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]),    \<comment> \<open>send \<open>M2a/b\<close>\<close>
                 Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts])} \<union> chan s
      \<rparr>
   }"
@@ -126,14 +126,14 @@ definition     -- {* by @{term "A"}, refines @{term m1e_step4} *}
 where
   "m2_step4 Ra A B Kab Ts \<equiv> {(s, s1).
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Ra = Some (Init, [A, B], []) \<and> 
-     Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]) \<in> chan s \<and>  (* recv M2a *)
+     Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]) \<in> chan s \<and>  \<comment> \<open>recv \<open>M2a\<close>\<close>
 
-     clk s < Ts + Ls \<and>                              (* ensure key freshness *)
+     clk s < Ts + Ls \<and>                              \<comment> \<open>ensure key freshness\<close>
 
-     (* actions: *)
-     (* record session key *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts]))
      \<rparr>
@@ -144,15 +144,15 @@ definition     -- {* by @{term "B"}, refines @{term m1e_step5} *}
 where
   "m2_step5 Rb A B Kab Ts \<equiv> {(s, s1). 
 
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Rb = Some (Resp, [A, B], []) \<and>
-     Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts]) \<in> chan s \<and>  (* recv M2b *)
+     Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts]) \<in> chan s \<and>  \<comment> \<open>recv \<open>M2b\<close>\<close>
 
-     (* ensure freshness of session key *)
+     \<comment> \<open>ensure freshness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* actions: *)
-     (* record session key *)
+     \<comment> \<open>actions:\<close>
+     \<comment> \<open>record session key\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, aNum Ts]))
      \<rparr>
@@ -172,13 +172,13 @@ definition     -- {* refines @{term m1_leak} *}
   m2_leak :: "rid_t \<Rightarrow> m2_trans"
 where
   "m2_leak Rs \<equiv> {(s, s1).
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     Rs \<in> dom (runs s) \<and>
-    fst (the (runs s Rs)) = Serv \<and>         (* compromise server run Rs *)
+    fst (the (runs s Rs)) = Serv \<and>         \<comment> \<open>compromise server run \<open>Rs\<close>\<close>
 
-    (* actions: *)
-    (* record session key as leaked; *)
-    (* intruder sends himself an insecure channel message containing the key*)
+    \<comment> \<open>actions:\<close>
+    \<comment> \<open>record session key as leaked;\<close>
+    \<comment> \<open>intruder sends himself an insecure channel message containing the key\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk)) (leak s), 
             chan := insert (Insec undefined undefined (Msg [aKey (sesK (Rs$sk))])) (chan s) \<rparr> 
   }"
@@ -191,9 +191,9 @@ definition     -- {* refines @{term Id} *}
 where
   "m2_fake \<equiv> {(s, s1). 
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s1 = s\<lparr>
-       (* close under fakeable messages *)
+       \<comment> \<open>close under fakeable messages\<close>
        chan := fake ik0 (dom (runs s)) (chan s) 
      \<rparr>
   }"
@@ -210,7 +210,7 @@ where
      runs = empty,
      leak = corrKey,
      clk = 0,
-     chan = {}              (* Channels.ik0 contains aKey`corrKey *)
+     chan = {}              \<comment> \<open>\<open>Channels.ik0\<close> contains \<open>aKey`corrKey\<close>\<close>
   \<rparr> }"
 
 definition 
@@ -359,7 +359,7 @@ lemmas m2_inv3a_sesK_compr_simps =
   m2_inv3a_sesK_comprD
   m2_inv3a_sesK_comprD [where KK="insert Kab KK" for Kab KK, simplified]
   m2_inv3a_sesK_comprD [where KK="{Kab}" for Kab, simplified]
-  insert_commute_aKey   (* to get the keys to the front *)
+  insert_commute_aKey   \<comment> \<open>to get the keys to the front\<close>
 
 lemma PO_m2_inv3a_sesK_compr_init [iff]:
   "init m2 \<subseteq> m2_inv3a_sesK_compr"
@@ -385,7 +385,7 @@ definition
   m2_inv3_extrKey :: "m2_state set"
 where
   "m2_inv3_extrKey \<equiv> {s. \<forall>K.
-     aKey K \<in> extr ik0 (chan s) \<longrightarrow>  K \<notin> leak s \<longrightarrow> (* was: K \<notin> corrKey \<longrightarrow> *)
+     aKey K \<in> extr ik0 (chan s) \<longrightarrow>  K \<notin> leak s \<longrightarrow> \<comment> \<open>was: \<open>K \<notin> corrKey \<longrightarrow>\<close>\<close>
        (\<exists>R A' B' Ts'. K = sesK (R$sk) \<and>
           runs s R = Some (Serv, [A', B'], [aNum Ts']) \<and> 
                     (A' \<in> bad \<or> B' \<in> bad))
@@ -681,7 +681,7 @@ by (simp add: PO_rhoare_defs R12_def m2_defs, safe, simp_all)
    (auto dest: m2_inv34_M2a_authorized)
 
 lemma PO_m2_step5_refines_m1_step5:
-  "{R12 \<inter> UNIV \<times> (m2_inv4_M2b \<inter> m2_inv3_extrKey)}          (* REMOVED!: m2_inv5_ikk_sv *)
+  "{R12 \<inter> UNIV \<times> (m2_inv4_M2b \<inter> m2_inv3_extrKey)}          \<comment> \<open>REMOVED!: \<open>m2_inv5_ikk_sv\<close>\<close>
      (m1_step5 Rb A B Kab Ts), (m2_step5 Rb A B Kab Ts) 
    {> R12}"
 by (simp add: PO_rhoare_defs R12_def m2_defs, safe, simp_all)

@@ -77,17 +77,17 @@ definition     -- {* by @{text "A"}, refines @{term m1a_step4} *}
   m1_step4 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> 'x m1_trans"
 where
   "m1_step4 Ra A B Na Kab \<equiv> {(s, s').
-     (* guards: *)
+     \<comment> \<open>guards:\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
-     Na = Ra$na \<and>                                              (* fix parameter *)
-     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>     (* authorization guard *)
+     Na = Ra$na \<and>                                              \<comment> \<open>fix parameter\<close>
+     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, A) \<in> azC (runs s)) \<and>     \<comment> \<open>authorization guard\<close>
 
-     (* new guard for agreement with server on (Kab, B, Na), *)
-     (* injectiveness by including Na *)
+     \<comment> \<open>new guard for agreement with server on \<open>(Kab, B, Na)\<close>,\<close>
+     \<comment> \<open>injectiveness by including \<open>Na\<close>\<close>
      (A \<notin> bad \<longrightarrow> (\<exists>Rs. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], [aNon Na]))) \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s' = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab])) \<rparr>
   }"
 
@@ -95,19 +95,19 @@ definition     -- {* by @{term "B"}, refines @{term m1a_step5} *}
   m1_step5 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> 'x m1_trans"
 where
   "m1_step5 Rb A B Nb Kab \<equiv> {(s, s'). 
-     (* new guards: *)
-     Nb = Rb$nb \<and>                                              (* generate Nb *)
+     \<comment> \<open>new guards:\<close>
+     Nb = Rb$nb \<and>                                              \<comment> \<open>generate Nb\<close>
 
-     (* prev guards: *)
+     \<comment> \<open>prev guards:\<close>
      runs s Rb = Some (Resp, [A, B], []) \<and> 
-     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    (* authorization guard *)
+     (Kab \<notin> Domain (leak s) \<longrightarrow> (Kab, B) \<in> azC (runs s)) \<and>    \<comment> \<open>authorization guard\<close>
 
-     (* guard for showing agreement with server on (Kab, A), *)
-     (* this agreement is non-injective *)
+     \<comment> \<open>guard for showing agreement with server on \<open>(Kab, A)\<close>,\<close>
+     \<comment> \<open>this agreement is non-injective\<close>
      (B \<notin> bad \<longrightarrow> (\<exists>Rs Na. Kab = sesK (Rs$sk) \<and>
         runs s Rs = Some (Serv, [A, B], [aNon Na]))) \<and>
 
-     (* actions: *)
+     \<comment> \<open>actions:\<close>
      s' = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab])) \<rparr>
   }"
 
@@ -115,15 +115,15 @@ definition     -- {* by @{term "A"}, refines @{term skip} *}
   m1_step6 :: "[rid_t, agent, agent, nonce, nonce, key] \<Rightarrow> 'x m1_trans"
 where
   "m1_step6 Ra A B Na Nb Kab \<equiv> {(s, s'). 
-    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>      (* key recv'd before *)
+    runs s Ra = Some (Init, [A, B], [aKey Kab]) \<and>      \<comment> \<open>key recv'd before\<close>
     Na = Ra$na \<and>
 
-    (* guard for showing agreement with B on Kab and Nb *)
+    \<comment> \<open>guard for showing agreement with \<open>B\<close> on \<open>Kab\<close> and \<open>Nb\<close>\<close>
     (A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow> 
-    (\<forall>Nb'. (Kab, Na, Nb') \<notin> leak s) \<longrightarrow>    (* NEW: weaker condition *)
+    (\<forall>Nb'. (Kab, Na, Nb') \<notin> leak s) \<longrightarrow>    \<comment> \<open>NEW: weaker condition\<close>
        (\<exists>Rb nl. Nb = Rb$nb \<and> runs s Rb = Some (Resp, [A, B], aKey Kab # nl))) \<and> 
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNon Nb])) 
     \<rparr>
@@ -133,15 +133,15 @@ definition     -- {* by @{term "B"}, refines @{term skip} *}
   m1_step7 :: "[rid_t, agent, agent, nonce, key] \<Rightarrow> 'x m1_trans"
 where
   "m1_step7 Rb A B Nb Kab \<equiv> {(s, s').
-    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>      (* key recv'd before *)
+    runs s Rb = Some (Resp, [A, B], [aKey Kab]) \<and>      \<comment> \<open>key recv'd before\<close>
     Nb = Rb$nb \<and>
 
-    (* guard for showing agreement with A on Kab and Nb *)
+    \<comment> \<open>guard for showing agreement with \<open>A\<close> on \<open>Kab\<close> and \<open>Nb\<close>\<close>
     (A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow> Kab \<notin> Domain (leak s) \<longrightarrow> 
-(*    (\<forall>Na'. (Kab, Na', Nb) \<notin> leak s) \<longrightarrow>     (too strong, does not work) *)
+      \<comment> \<open>\<open>(\<forall>Na'. (Kab, Na', Nb) \<notin> leak s) \<longrightarrow>\<close> too strong, does not work\<close>
       (\<exists>Ra. runs s Ra = Some (Init, [A, B], [aKey Kab, aNon Nb]))) \<and> 
      
-    (* actions: (redundant) update local state marks successful termination *)
+    \<comment> \<open>actions: (redundant) update local state marks successful termination\<close>
     s' = s\<lparr>
       runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aKey Kab, END]))
     \<rparr>
@@ -151,12 +151,12 @@ definition     -- {* by attacker, refines @{term s0g_leak} *}
   m1_leak :: "[rid_t, rid_t, rid_t, agent, agent] \<Rightarrow> 'x m1_trans"
 where
   "m1_leak Rs Ra Rb A B \<equiv> {(s, s1).           
-    (* guards: *) 
+    \<comment> \<open>guards:\<close>
     runs s Rs = Some (Serv, [A, B], [aNon (Ra$na)]) \<and>
     runs s Ra = Some (Init, [A, B], [aKey (sesK (Rs$sk)), aNon (Rb$nb)]) \<and>  
     runs s Rb = Some (Resp, [A, B], [aKey (sesK (Rs$sk)), END]) \<and>  
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s1 = s\<lparr> leak := insert (sesK (Rs$sk), Ra$na, Rb$nb) (leak s) \<rparr>
   }"
 
@@ -170,7 +170,7 @@ abbreviation
 where
   "m1_init \<equiv> { \<lparr>
      runs = empty,
-     leak = corrKey \<times> {undefined} \<times> {undefined}      (* initial leakage *) 
+     leak = corrKey \<times> {undefined} \<times> {undefined}      \<comment> \<open>initial leakage\<close>
   \<rparr> }" 
 
 definition 
@@ -264,9 +264,9 @@ end
 fun 
   rm1a1 :: "role_t \<Rightarrow> atom list \<Rightarrow> atom list"
 where
-  "rm1a1 Init = take (Suc is_len)"       (* take Kab *)
-| "rm1a1 Resp = take (Suc rs_len)"       (* take Kab *)
-| "rm1a1 Serv = id"                      (* take all *)
+  "rm1a1 Init = take (Suc is_len)"       \<comment> \<open>take \<open>Kab\<close>\<close>
+| "rm1a1 Resp = take (Suc rs_len)"       \<comment> \<open>take \<open>Kab\<close>\<close>
+| "rm1a1 Serv = id"                      \<comment> \<open>take all\<close>
 
 abbreviation 
   runs1a1 :: "runs_t \<Rightarrow> runs_t" where

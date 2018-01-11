@@ -146,9 +146,9 @@ definition
   l1_learn :: "msg \<Rightarrow> ('a l1_state_scheme * 'a l1_state_scheme) set"
 where
   "l1_learn m \<equiv> {(s,s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     synth (analz (insert m (ik s))) \<inter> (secret s) = {}  \<and>
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s \<lparr>ik := ik s \<union> {m}\<rparr>
   }"
 
@@ -170,10 +170,10 @@ definition
   l1_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> ('a l1_state_scheme * 'a l1_state_scheme) set"
 where
   "l1_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xpkE, xskE})
       \<rparr>
@@ -184,15 +184,15 @@ definition
   l1_step2 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> ('a l1_state_scheme * 'a l1_state_scheme) set"
 where
   "l1_step2 Rb A B KE \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xpkE = Some KE \<and>
-    (can_signal s A B \<longrightarrow> (*authentication guard*)
+    (can_signal s A B \<longrightarrow> \<comment> \<open>authentication guard\<close>
       (\<exists> Ra. guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
              in_progress (progress s Ra) xpkE \<and> guessed_frame Ra xpkE = Some KE)) \<and>
     (Rb = test \<longrightarrow> NonceF (Rb$sk) \<notin> synth (analz (ik s))) \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xpkE, xsk}),
             secret := {x. x = NonceF (Rb$sk) \<and> Rb = test} \<union> secret s,
             signals := if can_signal s A B then
@@ -206,18 +206,18 @@ definition
   l1_step3 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> ('a l1_state_scheme * 'a l1_state_scheme) set"
 where
   "l1_step3 Ra A B K \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xpkE, xskE} \<and>
     guessed_frame Ra xsk = Some K \<and>
-    (can_signal s A B \<longrightarrow> (*authentication guard*)
+    (can_signal s A B \<longrightarrow> \<comment> \<open>authentication guard\<close>
       (\<exists> Rb. guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
              progress s Rb = Some {xpkE, xsk} \<and>
              guessed_frame Rb xpkE = Some (epubKF (Ra$kE)) \<and>
              guessed_frame Rb xsk = Some K)) \<and>
     (Ra = test \<longrightarrow> K \<notin> synth (analz (ik s))) \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xpkE, xskE, xsk}),
             secret := {x. x = K \<and> Ra = test} \<union> secret s,
             signals := if can_signal s A B then

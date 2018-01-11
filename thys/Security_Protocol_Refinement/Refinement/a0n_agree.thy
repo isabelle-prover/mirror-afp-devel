@@ -75,7 +75,7 @@ definition
   a0n_running :: "[agent list, 'ds] \<Rightarrow> ('ds a0n_state \<times> 'ds a0n_state) set"
 where 
   "a0n_running h d \<equiv> {(s, s').
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> 
       signals := (signals s)(Running h d := signals s (Running h d) + 1) 
     \<rparr>
@@ -88,10 +88,10 @@ definition
   a0n_commit :: "[agent list, 'ds] \<Rightarrow> ('ds a0n_state \<times> 'ds a0n_state) set"
 where 
   "a0n_commit h d \<equiv> {(s, s').
-    (* guards: *)   
+    \<comment> \<open>guards:\<close>
     (set h \<subseteq> good \<longrightarrow> d \<notin> corrupted s \<longrightarrow> signals s (Running h d) > 0) \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> 
       signals := (signals s)(Commit h d := signals s (Commit h d) + 1) 
     \<rparr>
@@ -103,7 +103,7 @@ definition
   a0n_corrupt :: "'ds set \<Rightarrow> ('ds a0n_state \<times> 'ds a0n_state) set"
 where
   "a0n_corrupt ds \<equiv> {(s, s').
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> 
       corrupted := corrupted s \<union> ds 
     \<rparr>   

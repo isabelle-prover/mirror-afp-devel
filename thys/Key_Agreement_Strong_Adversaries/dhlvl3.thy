@@ -56,10 +56,10 @@ definition
   l3_lkr_others :: "agent \<Rightarrow> l3_trans"
 where
   "l3_lkr_others A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A \<noteq> test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s,
            ik := keys_of A \<union> ik s\<rparr>
   }"
@@ -68,10 +68,10 @@ definition
   l3_lkr_actor :: "agent \<Rightarrow> l3_trans"
 where
   "l3_lkr_actor A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     A = test_owner \<and>
     A \<noteq> test_partner \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s,
            ik := keys_of A \<union> ik s\<rparr>
   }"
@@ -80,9 +80,9 @@ definition
   l3_lkr_after :: "agent \<Rightarrow> l3_trans"
 where
   "l3_lkr_after A \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     test_ended s \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>bad := {A} \<union> bad s,
            ik := keys_of A \<union> ik s\<rparr>
   }"
@@ -91,11 +91,11 @@ definition
   l3_skr :: "rid_t \<Rightarrow> msg \<Rightarrow> l3_trans"
 where
   "l3_skr R K \<equiv> {(s,s').
-    (*guards*)
+    \<comment> \<open>guards\<close>
     R \<noteq> test \<and> R \<notin> partners \<and>
     in_progress (progress s R) xsk \<and>
     guessed_frame R xsk = Some K \<and>
-    (*actions*)
+    \<comment> \<open>actions\<close>
     s' = s\<lparr>ik := {K} \<union> ik s\<rparr>
   }"
 
@@ -131,10 +131,10 @@ definition
     l3_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l3_trans"
 where
   "l3_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xnx, xgnx}),
       ik := {implInsec A B (Exp Gen (NonceF (Ra$nx)))} \<union> ik s
@@ -145,13 +145,13 @@ definition
   l3_step2 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l3_trans"
 where
   "l3_step2 Rb A B gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
     guessed_frame Rb xsk = Some (Exp gnx (NonceF (Rb$ny))) \<and>
     implInsec A B gnx \<in> ik s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xgny, xgnx, xsk}),
             ik := {implAuth B A \<langle>Number 0, Exp Gen (NonceF (Rb$ny)), gnx\<rangle>} \<union> ik s,
             signalsInit := if can_signal s A B then
@@ -166,13 +166,13 @@ definition
   l3_step3 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l3_trans"
 where
   "l3_step3 Ra A B gny \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xnx, xgnx} \<and>
     guessed_frame Ra xgny = Some gny \<and>
     guessed_frame Ra xsk = Some (Exp gny (NonceF (Ra$nx))) \<and>
     implAuth B A \<langle>Number 0, gny, Exp Gen (NonceF (Ra$nx))\<rangle> \<in> ik s \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xnx, xgnx, xgny, xsk, xEnd}),
             ik := {implAuth A B \<langle>Number 1, Exp Gen (NonceF (Ra$nx)), gny\<rangle>} \<union> ik s,
             secret := {x. x = Exp gny (NonceF (Ra$nx)) \<and> Ra = test} \<union> secret s,
@@ -192,13 +192,13 @@ definition
   l3_step4 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> l3_trans"
 where
   "l3_step4 Rb A B gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     progress s Rb = Some {xny, xgnx, xgny, xsk} \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
     implAuth A B \<langle>Number 1, gnx, Exp Gen (NonceF (Rb$ny))\<rangle> \<in> ik s \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xgnx, xgny, xsk, xEnd}),
             secret := {x. x = Exp gnx (NonceF (Rb$ny)) \<and> Rb = test} \<union> secret s,
             signalsResp := if can_signal s A B then

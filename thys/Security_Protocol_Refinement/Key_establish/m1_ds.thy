@@ -92,10 +92,10 @@ definition       -- {* by @{term "Server"}, refines @{term m1x_step3} *}
   m1_step3 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step3 Rs A B Kab Ts \<equiv> {(s, s').
-     (* new guards: *)
-     Ts = clk s \<and>                      (* fresh timestamp *)
+     \<comment> \<open>new guards:\<close>
+     Ts = clk s \<and>                      \<comment> \<open>fresh timestamp\<close>
 
-     (* rest as before: *)
+     \<comment> \<open>rest as before:\<close>
      (s, s') \<in> m1a_step3 Rs A B Kab [aNum Ts]
   }"
 
@@ -103,10 +103,10 @@ definition         -- {* by @{text "A"}, refines @{term m1x_step5} *}
   m1_step4 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step4 Ra A B Kab Ts \<equiv> {(s, s').
-     (* new guards: *)
-     clk s < Ts + Ls \<and>                (* ensure session key recentness *)
+     \<comment> \<open>new guards:\<close>
+     clk s < Ts + Ls \<and>                \<comment> \<open>ensure session key recentness\<close>
 
-     (* rest as before *) 
+     \<comment> \<open>rest as before\<close>
      (s, s') \<in> m1a_step4 Ra A B Kab [aNum Ts] 
   }"
 
@@ -114,11 +114,11 @@ definition         -- {* by @{term "B"}, refines @{term m1x_step4} *}
   m1_step5 :: "[rid_t, agent, agent, key, time] \<Rightarrow> 'x m1_trans"
 where
   "m1_step5 Rb A B Kab Ts \<equiv> {(s, s'). 
-     (* new guards: *)
-     (* ensure freshness of session key *)
+     \<comment> \<open>new guards:\<close>
+     \<comment> \<open>ensure freshness of session key\<close>
      clk s < Ts + Ls \<and>
 
-     (* rest as before *)
+     \<comment> \<open>rest as before\<close>
      (s, s') \<in> m1a_step5 Rb A B Kab [aNum Ts] 
   }"
 

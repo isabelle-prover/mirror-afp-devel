@@ -35,10 +35,10 @@ definition
   ik_dy :: "msg \<Rightarrow> ('a ik_state_scheme * 'a ik_state_scheme) set"
 where
   "ik_dy m \<equiv> {(s, s').
-    (*guard*)
+    \<comment> \<open>guard\<close>
     m \<in> synth (analz (ik s)) \<and>
 
-    (*action*)
+    \<comment> \<open>action\<close>
     s' = s \<lparr>ik := ik s \<union> {m}\<rparr>
   }"
 

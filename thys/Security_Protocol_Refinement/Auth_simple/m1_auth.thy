@@ -59,11 +59,11 @@ definition   -- {* refines @{term skip} *}
 where  
   "m1_step1 Ra A B Na \<equiv> {(s, s1).  
 
-     (* guards *)
-     Ra \<notin> dom (runs s) \<and>              (* new initiator run *)
-     Na = Ra$0 \<and>                      (* generated nonce *)
+     \<comment> \<open>guards\<close>
+     Ra \<notin> dom (runs s) \<and>              \<comment> \<open>new initiator run\<close>
+     Na = Ra$0 \<and>                      \<comment> \<open>generated nonce\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr> 
        runs := (runs s)(
          Ra \<mapsto> (Init, [A, B], [])
@@ -74,13 +74,13 @@ where
 definition   -- {* refines @{term a0i_running} *}
   m1_step2 :: "[rid_t, agent, agent, nonce, nonce] \<Rightarrow> (m1_state \<times> m1_state) set" 
 where
-  "m1_step2 Rb A B Na Nb \<equiv> {(s, s1).  (* Ni is completely arbitrary *)
+  "m1_step2 Rb A B Na Nb \<equiv> {(s, s1).  \<comment> \<open>\<open>Ni\<close> is completely arbitrary\<close>
 
-     (* guards *)
-     Rb \<notin> dom (runs s) \<and>              (* new responder run *)
-     Nb = Rb$0 \<and>                      (* generated nonce *)
+     \<comment> \<open>guards\<close>
+     Rb \<notin> dom (runs s) \<and>              \<comment> \<open>new responder run\<close>
+     Nb = Rb$0 \<and>                      \<comment> \<open>generated nonce\<close>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Rb \<mapsto> (Resp, [A, B], [aNon Na]))
      \<rparr>
@@ -92,15 +92,15 @@ definition   -- {* refines @{term a0i_commit} *}
 where
   "m1_step3 Ra A B Na Nb \<equiv> {(s, s1).
 
-     (* guards *)
+     \<comment> \<open>guards\<close>
      runs s Ra = Some (Init, [A, B], []) \<and>
      Na = Ra$0 \<and>
 
-     (* authentication guard: *)
+     \<comment> \<open>authentication guard:\<close>
      (A \<notin> bad \<and> B \<notin> bad \<longrightarrow> (\<exists>Rb. 
         Nb = Rb$0 \<and> runs s Rb = Some (Resp, [A, B], [aNon Na]))) \<and>
 
-     (* actions *)
+     \<comment> \<open>actions\<close>
      s1 = s\<lparr>
        runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aNon Nb]))
      \<rparr>

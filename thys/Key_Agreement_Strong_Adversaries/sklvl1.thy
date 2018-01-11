@@ -128,10 +128,10 @@ definition
   skl1_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> ('a skl1_state_scheme * 'a skl1_state_scheme) set"
 where
   "skl1_step1 Ra A B \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     Ra \<notin> dom (progress s) \<and>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr>
       progress := (progress s)(Ra \<mapsto> {xnx, xni, xgnx})
       \<rparr>
@@ -143,13 +143,13 @@ definition
     "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> ('a skl1_state_scheme * 'a skl1_state_scheme) set"
 where
   "skl1_step2 Rb A B Ni gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     Rb \<notin> dom (progress s) \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
     guessed_frame Rb xni = Some Ni \<and>
     guessed_frame Rb xsk = Some (Exp gnx (NonceF (Rb$ny))) \<and>
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xni, xnr, xgny, xgnx, xsk}),
             signalsInit := 
               if can_signal s A B then
@@ -170,13 +170,13 @@ definition
     "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> ('a skl1_state_scheme * 'a skl1_state_scheme) set"
 where
   "skl1_step3 Ra A B Nr gny \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
     progress s Ra = Some {xnx, xni, xgnx} \<and>
     guessed_frame Ra xgny = Some gny \<and>
     guessed_frame Ra xnr = Some Nr \<and>
     guessed_frame Ra xsk = Some (Exp gny (NonceF (Ra$nx))) \<and>
-    (can_signal s A B \<longrightarrow> (*authentication guard*)
+    (can_signal s A B \<longrightarrow> \<comment> \<open>authentication guard\<close>
       (\<exists> Rb. guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
              in_progressS (progress s Rb) {xny, xni, xnr, xgnx, xgny, xsk} \<and>
              guessed_frame Rb xgny = Some gny \<and>
@@ -185,7 +185,7 @@ where
              guessed_frame Rb xgnx = Some (Exp Gen (NonceF (Ra$nx))))) \<and>
     (Ra = test \<longrightarrow> Exp gny (NonceF (Ra$nx)) \<notin> synth (analz (ik s))) \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Ra \<mapsto> {xnx, xni, xnr, xgnx, xgny, xsk, xEnd}),
             secret := {x. x = Exp gny (NonceF (Ra$nx)) \<and> Ra = test} \<union> secret s,
             signalsInit := 
@@ -219,12 +219,12 @@ definition
     "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> msg \<Rightarrow> msg \<Rightarrow> ('a skl1_state_scheme * 'a skl1_state_scheme) set"
 where
   "skl1_step4 Rb A B Ni gnx \<equiv> {(s, s').
-    (* guards: *)
+    \<comment> \<open>guards:\<close>
     guessed_runs Rb = \<lparr>role=Resp, owner=B, partner=A\<rparr> \<and>
     progress s Rb = Some {xny, xni, xnr, xgnx, xgny, xsk} \<and>
     guessed_frame Rb xgnx = Some gnx \<and>
     guessed_frame Rb xni = Some Ni \<and>
-    (can_signal s A B \<longrightarrow> (*authentication guard*)
+    (can_signal s A B \<longrightarrow> \<comment> \<open>authentication guard\<close>
       (\<exists> Ra. guessed_runs Ra = \<lparr>role=Init, owner=A, partner=B\<rparr> \<and>
              in_progressS (progress s Ra) {xnx, xni, xnr, xgnx, xgny, xsk, xEnd} \<and>
              guessed_frame Ra xgnx = Some gnx \<and>
@@ -233,7 +233,7 @@ where
              guessed_frame Ra xgny = Some (Exp Gen (NonceF (Rb$ny))))) \<and>
     (Rb = test \<longrightarrow> Exp gnx (NonceF (Rb$ny)) \<notin> synth (analz (ik s))) \<and>
 
-    (* actions: *)
+    \<comment> \<open>actions:\<close>
     s' = s\<lparr> progress := (progress s)(Rb \<mapsto> {xny, xni, xnr, xgnx, xgny, xsk, xEnd}),
             secret := {x. x = Exp gnx (NonceF (Rb$ny)) \<and> Rb = test} \<union> secret s,
             signalsResp := 
