@@ -18,7 +18,8 @@ text {*
 
 no_notation 
   plus (infixl "+" 65) and 
-  less_eq  (infix "\<le>" 50)
+  less_eq  ("'(\<le>')") and
+  less_eq  ("(_/ \<le> _)"  [51, 51] 50)
 
 notation comp (infixl "\<cdot>" 55)
 
