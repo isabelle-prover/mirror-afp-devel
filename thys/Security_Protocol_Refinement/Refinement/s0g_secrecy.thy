@@ -14,26 +14,26 @@
 
 *******************************************************************************)
 
-section {* Secrecy with Leaking (global version) *}
+section \<open>Secrecy with Leaking (global version)\<close>
 
 theory s0g_secrecy imports Refinement Agents
 begin
 
-text {* This model extends the global secrecy model by adding a @{text leak} 
+text \<open>This model extends the global secrecy model by adding a @{text leak} 
 event, which models that the adversary can learn messages through leaks of 
-some (unspecified) kind.  *}
+some (unspecified) kind.\<close>
 
-text {* Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}. *}
+text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
+@{text "dom"}.\<close>
 
 declare domIff [simp, iff del] 
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* The only state variable is a knowledge relation, an authorization 
+text \<open>The only state variable is a knowledge relation, an authorization 
 relation, and a leakage relation. 
 
 @{term "(d, A) \<in> kn s"} means that the agent @{term "A"} knows data @{term "d"}.
@@ -41,12 +41,12 @@ relation, and a leakage relation.
 know data @{term "d"}. 
 @{term "(d, A) \<in> lk s"} means that data @{term "d"} has leaked to agent 
 @{term "A"}. Leakage models potential unauthorized knowledge.
-*}
+\<close>
 
 record 'd s0g_state = 
   kn :: "('d \<times> agent) set"
   az :: "('d \<times> agent) set"
-  lk :: "'d set"                         -- {* leaked data *}
+  lk :: "'d set"                         \<comment> \<open>leaked data\<close>
 
 type_synonym
   'd s0g_obs = "'d s0g_state"
@@ -55,10 +55,10 @@ abbreviation
   "lkr s \<equiv> lk s \<times> UNIV"
 
 (******************************************************************************)
-subsection {* Invariant definitions *}
+subsection \<open>Invariant definitions\<close>
 (******************************************************************************)
 
-text {* Global secrecy is stated as an invariant. *}
+text \<open>Global secrecy is stated as an invariant.\<close>
 
 definition 
   s0g_secrecy :: "'d s0g_state set"
@@ -70,8 +70,8 @@ lemmas s0g_secrecyE [elim] =
   s0g_secrecy_def [THEN setc_def_to_elim, rule_format]
 
 
-text {* Data that someone is authorized to know and leaked data is known 
-by someone. *}
+text \<open>Data that someone is authorized to know and leaked data is known 
+by someone.\<close>
 
 definition 
   s0g_dom :: "'d s0g_state set"
@@ -83,10 +83,10 @@ lemmas s0g_domE [elim] = s0g_dom_def [THEN setc_def_to_elim, rule_format]
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-text {* New secrets may be generated anytime. *}
+text \<open>New secrets may be generated anytime.\<close>
 
 definition 
   s0g_gen :: "['d, agent, agent set] \<Rightarrow> ('d s0g_state \<times> 'd s0g_state) set"
@@ -104,7 +104,7 @@ where
   }"
 
 
-text {* Learning secrets. *}
+text \<open>Learning secrets.\<close>
 
 definition 
   s0g_learn :: 
@@ -122,7 +122,7 @@ where
   }"
 
 
-text {* Leaking secrets. *}
+text \<open>Leaking secrets.\<close>
 
 definition 
   s0g_leak :: 
@@ -138,13 +138,13 @@ where
 
 
 (******************************************************************************)
-subsection {* Specification *}
+subsection \<open>Specification\<close>
 (******************************************************************************)
 
 definition 
   s0g_init :: "'d s0g_state set"
 where
-  "s0g_init \<equiv> s0g_secrecy \<inter> s0g_dom"   -- {* any state satisfying invariants *}
+  "s0g_init \<equiv> s0g_secrecy \<inter> s0g_dom"   \<comment> \<open>any state satisfying invariants\<close>
 
 definition 
   s0g_trans :: "('d s0g_state \<times> 'd s0g_state) set" where
@@ -171,17 +171,17 @@ lemma s0g_obs_id [simp]: "obs s0g = id"
 by (simp add: s0g_def)
 
 
-text {* All state predicates are trivially observable. *}
+text \<open>All state predicates are trivially observable.\<close>
 
 lemma s0g_anyP_observable [iff]: "observable (obs s0g) P"
 by (auto)
 
 
 (******************************************************************************)
-subsection {* Invariant proofs *}
+subsection \<open>Invariant proofs\<close>
 (******************************************************************************)
 
-subsection {* inv1: Secrecy *}
+subsection \<open>inv1: Secrecy\<close>
 (******************************************************************************)
 
 lemma PO_s0g_secrecy_init [iff]:
@@ -197,13 +197,13 @@ done
 lemma PO_s0g_secrecy [iff]:"reach s0g \<subseteq> s0g_secrecy"
 by (rule inv_rule_basic, auto)
 
-text {* As en external invariant. *}
+text \<open>As en external invariant.\<close>
 
 lemma PO_s0g_obs_secrecy [iff]:"oreach s0g \<subseteq> s0g_secrecy"
 by (rule external_from_internal_invariant) (auto del: subsetI)
 
 
-subsection {* inv2: Authorized and leaked data is known to someone *}
+subsection \<open>inv2: Authorized and leaked data is known to someone\<close>
 (******************************************************************************)
 
 lemma PO_s0g_dom_init [iff]:
@@ -219,7 +219,7 @@ done
 lemma PO_s0g_dom [iff]: "reach s0g \<subseteq> s0g_dom"
 by (rule inv_rule_basic, auto)
 
-text {* As en external invariant. *}
+text \<open>As en external invariant.\<close>
 
 lemma PO_s0g_obs_dom [iff]: "oreach s0g \<subseteq> s0g_dom"
 by (rule external_from_internal_invariant) (auto del: subsetI)

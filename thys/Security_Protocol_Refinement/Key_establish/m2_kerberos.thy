@@ -15,12 +15,12 @@
 
 *******************************************************************************)
 
-section {* Abstract Kerberos core protocol (L2) *}
+section \<open>Abstract Kerberos core protocol (L2)\<close>
 
 theory m2_kerberos imports m1_kerberos "../Refinement/Channels"
 begin
 
-text {* 
+text \<open>
 We model an abstract version of the core Kerberos protocol:
 \[
 \begin{array}{lll}
@@ -33,19 +33,19 @@ We model an abstract version of the core Kerberos protocol:
 \]
 Message 1 is sent over an insecure channel, the other four (cleartext) messages 
 over secure channels.
-*}
+\<close>
 
 declare domIff [simp, iff del]
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* State and observations *}
+text \<open>State and observations\<close>
 
 record m2_state = "m1_state" +
-  chan :: "chmsg set"              -- {* channel messages *}
+  chan :: "chmsg set"              \<comment> \<open>channel messages\<close>
 
 type_synonym 
   m2_obs = "m1_state" 
@@ -67,12 +67,12 @@ type_synonym
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-text {* Protocol events. *}
+text \<open>Protocol events.\<close>
 
-definition     -- {* by @{term "A"}, refines @{term "m1a_step1"} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term "m1a_step1"}\<close>
   m2_step1 :: "[rid_t, agent, agent, nonce] \<Rightarrow> m2_trans"
 where
   "m2_step1 Ra A B Na \<equiv> {(s, s1).
@@ -88,12 +88,12 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term "m1e_step2"} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term "m1e_step2"}\<close>
   m2_step2 :: "[rid_t, agent, agent] \<Rightarrow> m2_trans"
 where
   "m2_step2 \<equiv> m1_step2"
 
-definition     -- {* by @{text "Server"}, refines @{term m1e_step3} *}
+definition     \<comment> \<open>by @{text "Server"}, refines @{term m1e_step3}\<close>
   m2_step3 :: 
     "[rid_t, agent, agent, key, nonce, time] \<Rightarrow> m2_trans"
 where
@@ -115,7 +115,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term m1e_step4} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term m1e_step4}\<close>
   m2_step4 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> m2_trans"
 where
   "m2_step4 Ra A B Na Kab Ts Ta \<equiv> {(s, s1).
@@ -135,7 +135,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term m1e_step5} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term m1e_step5}\<close>
   m2_step5 :: "[rid_t, agent, agent, key, time, time] \<Rightarrow> m2_trans"
 where
   "m2_step5 Rb A B Kab Ts Ta \<equiv> {(s, s1). 
@@ -160,7 +160,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term m1e_step6} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term m1e_step6}\<close>
   m2_step6 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> m2_trans"
 where
   "m2_step6 Ra A B Na Kab Ts Ta \<equiv> {(s, s'). 
@@ -178,25 +178,25 @@ where
   }"
 
 
-text {* Clock tick event *}
+text \<open>Clock tick event\<close>
 
-definition     -- {* refines @{term m1_tick} *}
+definition     \<comment> \<open>refines @{term m1_tick}\<close>
   m2_tick :: "time \<Rightarrow> m2_trans" 
 where
   "m2_tick \<equiv> m1_tick"
 
 
-text {* Purge event: purge cache of expired timestamps *}
+text \<open>Purge event: purge cache of expired timestamps\<close>
 
-definition     -- {* refines @{term "m1_purge"} *}
+definition     \<comment> \<open>refines @{term "m1_purge"}\<close>
   m2_purge :: "agent \<Rightarrow> m2_trans" 
 where
   "m2_purge \<equiv> m1_purge"
 
 
-text {* Intruder events. *}
+text \<open>Intruder events.\<close>
 
-definition     -- {* refines @{term m1_leak} *}
+definition     \<comment> \<open>refines @{term m1_leak}\<close>
   m2_leak :: "[rid_t, agent, agent, nonce, time] \<Rightarrow> m2_trans" 
 where
   "m2_leak Rs A B Na Ts \<equiv> {(s, s1).
@@ -211,7 +211,7 @@ where
             chan := insert (Insec undefined undefined (Msg [aKey (sesK (Rs$sk))])) (chan s) \<rparr> 
   }"
 
-definition     -- {* refines @{term Id} *} 
+definition     \<comment> \<open>refines @{term Id}\<close> 
   m2_fake :: "m2_trans"
 where
   "m2_fake \<equiv> {(s, s1). 
@@ -225,7 +225,7 @@ where
 
 
 (******************************************************************************)
-subsection {* Transition system *}
+subsection \<open>Transition system\<close>
 (******************************************************************************)
 
 definition 
@@ -272,13 +272,13 @@ lemmas m2_defs = m2_loc_defs m1_defs
 
 
 (******************************************************************************)
-subsection {* Invariants and simulation relation *}
+subsection \<open>Invariants and simulation relation\<close>
 (******************************************************************************)
 
-subsubsection {* inv1: Key definedness *}
+subsubsection \<open>inv1: Key definedness\<close>
 (*inv**************************************************************************)
 
-text {* All session keys in channel messages stem from existing runs. *}
+text \<open>All session keys in channel messages stem from existing runs.\<close>
 
 definition 
   m2_inv1_keys :: "m2_state set"
@@ -293,7 +293,7 @@ lemmas m2_inv1_keysE [elim] = m2_inv1_keys_def [THEN setc_def_to_elim, rule_form
 lemmas m2_inv1_keysD = m2_inv1_keys_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv1_keys_init [iff]:
   "init m2 \<subseteq> m2_inv1_keys"
@@ -309,7 +309,7 @@ lemma PO_m2_inv1_keys [iff]: "reach m2 \<subseteq> m2_inv1_keys"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv2: Definedness of used keys *}
+subsubsection \<open>inv2: Definedness of used keys\<close>
 (*inv*************************************************************************)
 
 definition 
@@ -324,7 +324,7 @@ lemmas m2_inv2_keys_forE [elim] = m2_inv2_keys_for_def [THEN setc_def_to_elim, r
 lemmas m2_inv2_keys_forD = m2_inv2_keys_for_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv2_keys_for_init [iff]:
   "init m2 \<subseteq> m2_inv2_keys_for"
@@ -334,7 +334,7 @@ lemma PO_m2_inv2_keys_for_trans [iff]:
   "{m2_inv2_keys_for \<inter> m2_inv1_keys} trans m2 {> m2_inv2_keys_for}"
 apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv2_keys_forI)
 apply (auto dest: m2_inv2_keys_forD m2_inv1_keysD dest: dom_lemmas)
--- {* 2 subgoals, from step3 and fake *}
+\<comment> \<open>2 subgoals, from step3 and fake\<close>
 apply (rename_tac R s xb xc xd xi, 
        subgoal_tac "aKey (sesK (R$sk)) \<in> atoms (chan s)", auto)
 apply (auto simp add: keys_for_def, erule fake.cases, fastforce+)
@@ -344,14 +344,14 @@ lemma PO_m2_inv2_keys_for [iff]: "reach m2 \<subseteq> m2_inv2_keys_for"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-subsubsection {* inv3a: Session key compromise *}
+subsubsection \<open>inv3a: Session key compromise\<close>
 (*inv**************************************************************************)
 
-text {* A L2 version of a session key comprise invariant. Roughly, it states
+text \<open>A L2 version of a session key comprise invariant. Roughly, it states
 that adding a set of keys @{term KK} to the parameter @{text T} of @{term extr} 
 does not help the intruder to extract keys other than those in @{term KK} or
 extractable without adding @{term KK}. 
-*}
+\<close>
 
 definition 
   m2_inv3a_sesK_compr :: "m2_state set"
@@ -365,7 +365,7 @@ lemmas m2_inv3a_sesK_comprI = m2_inv3a_sesK_compr_def [THEN setc_def_to_intro, r
 lemmas m2_inv3a_sesK_comprE [elim] = m2_inv3a_sesK_compr_def [THEN setc_def_to_elim, rule_format]
 lemmas m2_inv3a_sesK_comprD = m2_inv3a_sesK_compr_def [THEN setc_def_to_dest, rule_format]
 
-text {* Additional lemma to get the keys in front *}
+text \<open>Additional lemma to get the keys in front\<close>
 lemmas insert_commute_aKey = insert_commute [where x="aKey K" for K] 
 
 lemmas m2_inv3a_sesK_compr_simps = 
@@ -386,10 +386,10 @@ lemma PO_m2_inv3a_sesK_compr [iff]: "reach m2 \<subseteq> m2_inv3a_sesK_compr"
 by (rule inv_rule_basic) (auto) 
 
 
-subsubsection {* inv3b: Leakage of old session keys *}
+subsubsection \<open>inv3b: Leakage of old session keys\<close>
 (*inv**************************************************************************)
 
-text {* Only old session keys are leaked to the intruder. *}
+text \<open>Only old session keys are leaked to the intruder.\<close>
 
 definition
   m2_inv3b_leak :: "m2_state set"
@@ -403,7 +403,7 @@ lemmas m2_inv3b_leakE [elim] = m2_inv3b_leak_def [THEN setc_def_to_elim, rule_fo
 lemmas m2_inv3b_leakD = m2_inv3b_leak_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv3b_leak_init [iff]:
   "init m2 \<subseteq> m2_inv3b_leak"
@@ -417,14 +417,14 @@ lemma PO_m2_inv3b_leak [iff]: "reach m2 \<subseteq> m2_inv3b_leak"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-subsubsection {* inv3: Lost session keys *}
+subsubsection \<open>inv3: Lost session keys\<close>
 (*inv**************************************************************************)
 
-text {* inv3: Lost but not leaked session keys generated by the server for at 
+text \<open>inv3: Lost but not leaked session keys generated by the server for at 
 least one bad agent. This invariant is needed in the proof of the strengthening 
 of the authorization guards in steps 4 and 5 (e.g., 
 @{term "Kab \<notin> Domain (leaks s) \<longrightarrow> (Kab, A) \<in> azC (runs s)"} for the initiator's step4). 
-*}
+\<close>
 
 definition 
   m2_inv3_extrKey :: "m2_state set"
@@ -457,12 +457,12 @@ lemma PO_m2_inv3_extrKey [iff]: "reach m2 \<subseteq> m2_inv3_extrKey"
 by (rule_tac J="m2_inv3a_sesK_compr" in inv_rule_incr) (auto) 
 
 
-subsubsection {* inv4: Messages M2a/M2b for good agents and server state *}
+subsubsection \<open>inv4: Messages M2a/M2b for good agents and server state\<close>
 (*inv**************************************************************************)
 
-text {* inv4: Secure messages to honest agents and server state; one variant 
+text \<open>inv4: Secure messages to honest agents and server state; one variant 
 for each of M2a and M2b. These invariants establish guard strengthening for
-server authentication by the initiator and the responder. *}
+server authentication by the initiator and the responder.\<close>
 
 definition 
   m2_inv4_M2a :: "m2_state set"
@@ -491,7 +491,7 @@ lemmas m2_inv4_M2bE [elim] = m2_inv4_M2b_def [THEN setc_def_to_elim, rule_format
 lemmas m2_inv4_M2bD = m2_inv4_M2b_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proofs. *}
+text \<open>Invariance proofs.\<close>
 
 lemma PO_m2_inv4_M2a_init [iff]:
   "init m2 \<subseteq> m2_inv4_M2a"
@@ -501,7 +501,7 @@ lemma PO_m2_inv4_M2a_trans [iff]:
   "{m2_inv4_M2a} trans m2 {> m2_inv4_M2a}"
 apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv4_M2aI)
 apply (auto dest!: m2_inv4_M2aD dest: dom_lemmas) 
--- {* 4 subgoals *}
+\<comment> \<open>4 subgoals\<close>
 apply (force dest!: spec)
 apply (force dest!: spec)
 apply (force dest!: spec)
@@ -520,7 +520,7 @@ lemma PO_m2_inv4_M2b_trans [iff]:
   "{m2_inv4_M2b} trans m2 {> m2_inv4_M2b}"
 apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv4_M2bI) 
 apply (auto dest!: m2_inv4_M2bD dest: dom_lemmas)  
--- {* 4 subgoals *}
+\<comment> \<open>4 subgoals\<close>
 apply (force dest!: spec)
 apply (force dest!: spec)
 apply (force dest!: spec)
@@ -531,9 +531,9 @@ lemma PO_m2_inv4_M2b [iff]: "reach m2 \<subseteq> m2_inv4_M2b"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-text {* Consequence needed in proof of inv8/step5 and inv9/step4: The 
+text \<open>Consequence needed in proof of inv8/step5 and inv9/step4: The 
 session key uniquely identifies other fields in M2a and M2b, provided it 
-is secret. *}
+is secret.\<close>
 
 lemma m2_inv4_M2a_M2b_match:
   "\<lbrakk> Secure Sv A' (Msg [aKey Kab, aAgt B', aNum Ts', aNon N]) \<in> chan s; 
@@ -545,8 +545,8 @@ apply (auto dest!: m2_inv4_M2aD m2_inv4_M2bD)
 done
 
 
-text {* More consequences of invariants. Needed in ref/step4 and ref/step5 
-respectively to show the strengthening of the authorization guards. *}
+text \<open>More consequences of invariants. Needed in ref/step4 and ref/step5 
+respectively to show the strengthening of the authorization guards.\<close>
 
 lemma m2_inv34_M2a_authorized:
   assumes "Secure Sv A (Msg [aKey K, aAgt B, aNum T, aNon N]) \<in> chan s" 
@@ -578,11 +578,11 @@ next
 qed
 
 
-subsubsection {* inv5 (derived): Key secrecy for server *}
+subsubsection \<open>inv5 (derived): Key secrecy for server\<close>
 (*invd**************************************************************************)
 
-text {* inv5: Key secrecy from server perspective. This invariant links the 
-abstract notion of key secrecy to the intruder key knowledge. *}
+text \<open>inv5: Key secrecy from server perspective. This invariant links the 
+abstract notion of key secrecy to the intruder key knowledge.\<close>
 
 definition 
   m2_inv5_ikk_sv :: "m2_state set"
@@ -598,7 +598,7 @@ lemmas m2_inv5_ikk_svE [elim] = m2_inv5_ikk_sv_def [THEN setc_def_to_elim, rule_
 lemmas m2_inv5_ikk_svD = m2_inv5_ikk_sv_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. This invariant follows from @{text m2_inv3_extrKey}. *}
+text \<open>Invariance proof. This invariant follows from @{text m2_inv3_extrKey}.\<close>
 
 lemma m2_inv5_ikk_sv_derived: 
   "s \<in> m2_inv3_extrKey \<Longrightarrow> s \<in> m2_inv5_ikk_sv"
@@ -628,10 +628,10 @@ lemma PO_m2_inv5_ikk_sv [iff]: "reach m2 \<subseteq> m2_inv5_ikk_sv"
 by (rule_tac J="m2_inv3a_sesK_compr \<inter> m2_inv3_extrKey" in inv_rule_incr) (auto)
 *)
 
-subsubsection {* inv6 (derived): Key secrecy for initiator *}
+subsubsection \<open>inv6 (derived): Key secrecy for initiator\<close>
 (*invd**************************************************************************)
 
-text {* This invariant is derivable (see below). *}
+text \<open>This invariant is derivable (see below).\<close>
 
 definition 
   m2_inv6_ikk_init :: "m2_state set"
@@ -647,10 +647,10 @@ lemmas m2_inv6_ikk_initE [elim] = m2_inv6_ikk_init_def [THEN setc_def_to_elim, r
 lemmas m2_inv6_ikk_initD = m2_inv6_ikk_init_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-subsubsection {* inv7 (derived): Key secrecy for responder *}
+subsubsection \<open>inv7 (derived): Key secrecy for responder\<close>
 (*invd**************************************************************************)
 
-text {* This invariant is derivable (see below). *}
+text \<open>This invariant is derivable (see below).\<close>
 
 definition 
   m2_inv7_ikk_resp :: "m2_state set"
@@ -666,12 +666,12 @@ lemmas m2_inv7_ikk_respE [elim] = m2_inv7_ikk_resp_def [THEN setc_def_to_elim, r
 lemmas m2_inv7_ikk_respD = m2_inv7_ikk_resp_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-subsubsection {* inv8: Relating M4 to the responder state *}
+subsubsection \<open>inv8: Relating M4 to the responder state\<close>
 (*inv**************************************************************************)
 
-text {* This invariant relates message M4 from the responder to the responder's 
+text \<open>This invariant relates message M4 from the responder to the responder's 
 state. It is required in the refinement of step 6 to prove that the initiator 
-agrees with the responder on (A, B, Ta, Kab). *}
+agrees with the responder on (A, B, Ta, Kab).\<close>
 
 definition
   m2_inv8_M4 :: "m2_state set"  
@@ -688,7 +688,7 @@ lemmas m2_inv8_M4E [elim] = m2_inv8_M4_def [THEN setc_def_to_elim, rule_format]
 lemmas m2_inv8_M4D = m2_inv8_M4_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv8_M4_init [iff]:
   "init m2 \<subseteq> m2_inv8_M4"
@@ -712,7 +712,7 @@ proof -
     fix Ra A B Na Kab Ts Ta
     have "{m2_inv8_M4} m2_step4 Ra A B Na Kab Ts Ta {> m2_inv8_M4}"
       apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv8_M4I)
-      -- {* 1 subgoal *}
+      \<comment> \<open>1 subgoal\<close>
       apply (drule m2_inv8_M4D, auto) 
       apply (rename_tac Rb, rule_tac x=Rb in exI, auto)
       done
@@ -720,7 +720,7 @@ proof -
     fix Rb A B Kab Ts Ta 
     have "{m2_inv8_M4 \<inter> m2_inv4_M2a \<inter> m2_inv4_M2b} m2_step5 Rb A B Kab Ts Ta {> m2_inv8_M4}" 
       apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv8_M4I)
-      -- {* 2 subgoals *}
+      \<comment> \<open>2 subgoals\<close>
         apply (drule m2_inv4_M2a_M2b_match, auto)
 
         apply (auto dest!: m2_inv8_M4D)
@@ -731,13 +731,13 @@ proof -
     have "{m2_inv8_M4} m2_step6 Ra A B Na Kab Ts Ta {> m2_inv8_M4}"
       apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv8_M4I)
       apply (auto dest!: m2_inv8_M4D)
-      -- {* 1 subgoal *}
+      \<comment> \<open>1 subgoal\<close>
       apply (rename_tac Rb, rule_tac x=Rb in exI, auto)
       done
   } moreover {
     have "{m2_inv8_M4} m2_fake {> m2_inv8_M4}"
       apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv8_M4I)
-      -- {* 1 subgoal *}
+      \<comment> \<open>1 subgoal\<close>
       apply (erule fake.cases, auto dest!: m2_inv8_M4D)
       done
   } 
@@ -753,7 +753,7 @@ by (rule_tac J="m2_inv4_M2a \<inter> m2_inv4_M2b \<inter> m2_inv3a_sesK_compr \<
     in inv_rule_incr) (auto)
 
 
-subsubsection {* inv9a: Relating the initiator state to M2a *}
+subsubsection \<open>inv9a: Relating the initiator state to M2a\<close>
 (*inv**************************************************************************)
 
 definition
@@ -769,7 +769,7 @@ lemmas m2_inv9a_init_M2aE [elim] = m2_inv9a_init_M2a_def [THEN setc_def_to_elim,
 lemmas m2_inv9a_init_M2aD = m2_inv9a_init_M2a_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv9a_init_M2a_init [iff]:
   "init m2 \<subseteq> m2_inv9a_init_M2a"
@@ -784,12 +784,12 @@ lemma PO_m2_inv9a_init_M2a [iff]: "reach m2 \<subseteq> m2_inv9a_init_M2a"
 by (rule inv_rule_incr) (auto del: subsetI)
 
 
-subsubsection {* inv9: Relating M3 to the initiator state *}
+subsubsection \<open>inv9: Relating M3 to the initiator state\<close>
 (*inv**************************************************************************)
 
-text {* This invariant relates message M3 to the initiator's state. It is 
+text \<open>This invariant relates message M3 to the initiator's state. It is 
 required in step 5 of the refinement to prove that the initiator agrees with 
-the responder on (A, B, Ta, Kab). *}
+the responder on (A, B, Ta, Kab).\<close>
 
 definition
   m2_inv9_M3 :: "m2_state set"  
@@ -806,7 +806,7 @@ lemmas m2_inv9_M3E [elim] = m2_inv9_M3_def [THEN setc_def_to_elim, rule_format]
 lemmas m2_inv9_M3D = m2_inv9_M3_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m2_inv9_M3_init [iff]:
   "init m2 \<subseteq> m2_inv9_M3"
@@ -831,7 +831,7 @@ proof -
   have "{m2_inv9_M3 \<inter> m2_inv4_M2a \<inter> m2_inv4_M2b} m2_step4 Ra A B Na Kab Ts Ta {> m2_inv9_M3}"
     apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv9_M3I)
     apply (auto dest: m2_inv4_M2a_M2b_match)
-    -- {* 1 subgoal *}
+    \<comment> \<open>1 subgoal\<close>
     apply (frule m2_inv9_M3D, auto)
     apply (rule_tac x=Raa in exI, auto)
     done
@@ -840,21 +840,21 @@ proof -
   have "{m2_inv9_M3} m2_step5 Rb A B Kab Ts Ta {> m2_inv9_M3}"
     apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv9_M3I)
     apply (auto dest!: m2_inv9_M3D dest: dom_lemmas)
-    -- {* 2 subgoals *}
-    apply (auto dest!: spec intro!: exI)    -- {* witness Na in both cases *}
+    \<comment> \<open>2 subgoals\<close>
+    apply (auto dest!: spec intro!: exI)    \<comment> \<open>witness Na in both cases\<close>
     done
 } moreover {
   fix Ra A B Na Kab Ts Ta
   have "{m2_inv9_M3} m2_step6 Ra A B Na Kab Ts Ta {> m2_inv9_M3}"
     apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv9_M3I)
-    -- {* 1 subgoals *}
+    \<comment> \<open>1 subgoals\<close>
     apply (auto dest!: m2_inv9_M3D dest: dom_lemmas)
     apply (rename_tac Raa nl, case_tac "Raa = Ra", auto)
     done
 } moreover {
   have "{m2_inv9_M3} m2_fake {> m2_inv9_M3}"
     apply (auto simp add: PO_hoare_defs m2_defs intro!: m2_inv9_M3I)
-    -- {* 1 subgoals *}
+    \<comment> \<open>1 subgoals\<close>
     apply (erule fake.cases, auto)+
     done
 } ultimately 
@@ -871,23 +871,23 @@ by (rule_tac J="m2_inv4_M2a \<inter> m2_inv4_M2b \<inter> m2_inv3a_sesK_compr \<
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
-text {* The simulation relation. This is a pure superposition refinement. *}
+text \<open>The simulation relation. This is a pure superposition refinement.\<close>
 
 definition
   R12 :: "(m1_state \<times> m2_state) set" where
   "R12 \<equiv> {(s, t). runs s = runs t \<and> leak s = leak t \<and> clk s = clk t \<and> cache s = cache t}"
 
-text {* The mediator function is the identity. *}
+text \<open>The mediator function is the identity.\<close>
 
 definition 
   med21 :: "m2_obs \<Rightarrow> m1_obs" where
   "med21 = id"
 
 
-text {* Refinement proof. *}
+text \<open>Refinement proof.\<close>
 
 lemma PO_m2_step1_refines_m1_step1:
   "{R12} 
@@ -922,7 +922,7 @@ lemma PO_m2_step5_refines_m1_step5:
    {> R12}"
 apply (simp add: PO_rhoare_defs R12_def m2_defs, safe, simp_all)
 apply (auto dest: m2_inv34_M2b_authorized)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (frule m2_inv4_M2bD, auto)
 apply (auto dest: m2_inv9_M3D m2_inv5_ikk_svD [THEN m2_inv3b_leakD])
 done
@@ -933,7 +933,7 @@ lemma PO_m2_step6_refines_m1_step6:
      (m1_step6 Ra A B Na Kab Ts Ta), (m2_step6 Ra A B Na Kab Ts Ta) 
    {> R12}"
 apply (auto simp add: PO_rhoare_defs R12_def m2_defs)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (frule m2_inv9a_init_M2aD [THEN m2_inv4_M2aD], auto)
 apply (auto dest: m2_inv9a_init_M2aD [THEN m2_inv8_M4D] m2_inv5_ikk_svD [THEN m2_inv3b_leakD])
 done
@@ -963,7 +963,7 @@ lemma PO_m2_fake_refines_skip:
 by (simp add: PO_rhoare_defs R12_def m2_defs, safe, auto)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m2_trans_refines_m1_trans = 
   PO_m2_step1_refines_m1_step1 PO_m2_step2_refines_m1_step2
@@ -984,7 +984,7 @@ lemma PO_m2_refines_trans_m1 [iff]:
      (trans m1), (trans m2) 
    {> R12}"
 proof -
-  -- {* derive invariant @{text "m2_inv5_ikk_sv"} from @{text "m2_inv3_extrKey"}*}
+  \<comment> \<open>derive invariant @{text "m2_inv5_ikk_sv"} from @{text "m2_inv3_extrKey"}\<close>
   let ?pre' = "R12 \<inter> 
     UNIV \<times> (m2_inv9_M3 \<inter> m2_inv9a_init_M2a \<inter> m2_inv8_M4 \<inter> m2_inv5_ikk_sv \<inter>
             m2_inv4_M2b \<inter> m2_inv4_M2a \<inter> m2_inv3_extrKey \<inter> m2_inv3b_leak)"
@@ -1004,7 +1004,7 @@ lemma PO_obs_consistent_R12 [iff]:
 by (auto simp add: obs_consistent_def R12_def med21_def m2_defs)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma m2_refines_m1 [iff]:
   "refines 
@@ -1022,11 +1022,11 @@ by (rule refinement_soundness) (auto)
 
 
 (******************************************************************************)
-subsection {* Inherited and derived invariants *}
+subsection \<open>Inherited and derived invariants\<close>
 (******************************************************************************)
 
-text {* Show preservation of invariants @{term "m1_inv2i_serv"} and
-@{term "m1_inv2r_serv"} from @{text "m1"}. *}
+text \<open>Show preservation of invariants @{term "m1_inv2i_serv"} and
+@{term "m1_inv2r_serv"} from @{text "m1"}.\<close>
 
 (*invh*************************************************************************)
 
@@ -1043,8 +1043,8 @@ by (rule_tac Pa=m1_inv2r_serv and Qa=m1_inv2r_serv and Q=m1_inv2r_serv
    (fastforce simp add: m2_loc_defs med21_def intro!: m1_inv2r_servI)+
 
 
-text {* Now we derive the L2 key secrecy invariants for the initiator and the responder 
-(see above for the definitions). *}
+text \<open>Now we derive the L2 key secrecy invariants for the initiator and the responder 
+(see above for the definitions).\<close>
 
 lemma PO_m2_inv6_init_ikk [iff]: "reach m2 \<subseteq> m2_inv6_ikk_init"
 proof -

@@ -14,19 +14,19 @@
 
 *******************************************************************************)
 
-section {* Injective Agreement *}
+section \<open>Injective Agreement\<close>
 
 theory a0i_agree imports a0n_agree
 begin
 
-text {* This refinement adds injectiveness to the agreement property. *}
+text \<open>This refinement adds injectiveness to the agreement property.\<close>
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* The state and observations are the same as in the previous model. *}
+text \<open>The state and observations are the same as in the previous model.\<close>
 
 type_synonym
   'd a0i_state = "'d a0n_state"
@@ -36,10 +36,10 @@ type_synonym
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-text {* We just refine the commit event. Everything else remains the same. *}
+text \<open>We just refine the commit event. Everything else remains the same.\<close>
 
 abbreviation
   a0i_init :: "'ds a0n_state set"
@@ -72,7 +72,7 @@ where
   "a0i_corrupt \<equiv> a0n_corrupt"
 
 
-text {* Transition system. *}
+text \<open>Transition system.\<close>
 
 definition 
   a0i_trans :: "('ds a0i_state \<times> 'ds a0i_state) set" where
@@ -95,7 +95,7 @@ lemmas a0i_defs =
   a0n_defs a0i_def a0i_trans_def a0i_commit_def
 
 
-text {* Any property is trivially observable. *}
+text \<open>Any property is trivially observable.\<close>
 
 lemma a0i_obs [simp]: "obs a0i = id"
 by (simp add: a0i_def)
@@ -105,10 +105,10 @@ by (auto)
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* Injective agreement. *}
+subsubsection \<open>Injective agreement.\<close>
 (******************************************************************************)
 
 definition 
@@ -141,7 +141,7 @@ lemma PO_a0i_inv1_iagree [iff]: "reach a0i \<subseteq> a0i_inv1_iagree"
 by (rule inv_rule_basic) (auto)
 
 
-text {* As an external invariant. *}
+text \<open>As an external invariant.\<close>
 
 lemma PO_a0i_obs_inv1_iagree [iff]: "oreach a0i \<subseteq> a0i_inv1_iagree"
 apply (rule external_from_internal_invariant, fast) 
@@ -150,7 +150,7 @@ done
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition
@@ -187,7 +187,7 @@ lemmas PO_a0i_trans_refines_a0n_trans =
   PO_a0i_corrupt_refines_a0n_corrupt
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemma PO_m1_refines_init_a0n [iff]:
   "init a0i \<subseteq> R0n0i``(init a0n)"
@@ -211,7 +211,7 @@ by (rule Refinement_basic) (auto)
 
 
 (******************************************************************************)
-subsection {* Derived invariants *}
+subsection \<open>Derived invariants\<close>
 (******************************************************************************)
 
 lemma iagree_implies_niagree [iff]: "a0i_inv1_iagree \<subseteq> a0n_inv1_niagree"
@@ -220,7 +220,7 @@ apply (drule_tac d=d in a0i_inv1_iagreeD, auto)
 done
 
 
-text {* Non-injective agreeement as internal and external invariants. *}
+text \<open>Non-injective agreeement as internal and external invariants.\<close>
 
 lemma PO_a0i_a0n_inv1_niagree [iff]: "reach a0i \<subseteq> a0n_inv1_niagree"
 by (rule subset_trans, rule, rule)

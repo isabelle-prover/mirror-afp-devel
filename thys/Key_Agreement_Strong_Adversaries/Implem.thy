@@ -16,21 +16,21 @@
 
 *******************************************************************************)
 
-section {* Assumptions for Channel Message Implementation *}
+section \<open>Assumptions for Channel Message Implementation\<close>
 
-text {* We define a series of locales capturing our assumptions on channel message 
-implementations. *}
+text \<open>We define a series of locales capturing our assumptions on channel message 
+implementations.\<close>
 
 theory Implem
 imports Channels Payloads
 begin
 
-subsection {* First step: basic implementation locale *}
+subsection \<open>First step: basic implementation locale\<close>
 (**************************************************************************************************)
 
-text {* This locale has no assumptions, it only fixes an implementation function and 
+text \<open>This locale has no assumptions, it only fixes an implementation function and 
 defines some useful abbreviations (impl*, impl*Set) and @{text "valid"}.
-*}
+\<close>
 
 locale basic_implem =
   fixes implem :: "chan \<Rightarrow> msg"
@@ -88,10 +88,10 @@ qed
 
 end
 
-subsection {* Second step: basic and analyze assumptions *}
+subsection \<open>Second step: basic and analyze assumptions\<close>
 (**************************************************************************************************)
 
-text {* This locale contains most of the assumptions on implem, i.e.:
+text \<open>This locale contains most of the assumptions on implem, i.e.:
 \begin{itemize}
 \item @{text "impl_inj"}: injectivity
 \item @{text "parts_impl_inj"}: injectivity through parts
@@ -103,14 +103,14 @@ text {* This locale contains most of the assumptions on implem, i.e.:
 \item @{text "LtK_parts_impl"}: no exposed long term keys in the implementations 
   (i.e., they are only used as keys, or under hashes)
 \end{itemize}
-*}
+\<close>
 
 locale semivalid_implem = basic_implem +
--- {* injectivity *}
+\<comment> \<open>injectivity\<close>
 assumes impl_inj:
   "implem (Chan x A B M) = implem (Chan x' A' B' M') 
    \<longleftrightarrow> x = x' \<and> A = A' \<and> B = B' \<and> M = M'"
--- {* implementations and parts *}
+\<comment> \<open>implementations and parts\<close>
 and parts_impl_inj:
   "M' \<in> payload \<Longrightarrow>
    implem (Chan x A B M) \<in> parts {implem (Chan x' A' B' M')} \<Longrightarrow> 
@@ -118,10 +118,10 @@ and parts_impl_inj:
 and Enc_keys_clean_valid: "I \<subseteq> valid \<Longrightarrow> Enc_keys_clean I"
 and impl_composed: "composed (implem Z)"
 and impl_Impl: "implem (Chan x A B M) \<notin> payload"
--- {* no ltk in the parts of an implementation *}
+\<comment> \<open>no ltk in the parts of an implementation\<close>
 and LtK_parts_impl: "X \<in> valid \<Longrightarrow> LtK K \<notin> parts {X}"
 
--- {* analyze assumptions: *}
+\<comment> \<open>analyze assumptions:\<close>
 and analz_Un_implInsecSet:
   "\<lbrakk> G \<subseteq> payload; Enc_keys_clean H \<rbrakk> 
  \<Longrightarrow> analz (implInsecSet G \<union> H) \<subseteq> synth (analz (G \<union> H)) \<union> -payload"
@@ -142,8 +142,8 @@ and analz_Un_implSecureSet_2:
  \<Longrightarrow> analz (implSecureSet Ag G \<union> H) \<subseteq> synth (analz H) \<union> -payload"
 
 begin
--- {*declare some attributes and abbreviations for the hypotheses *}
--- {*and prove some simple consequences of the hypotheses*}
+\<comment> \<open>declare some attributes and abbreviations for the hypotheses\<close>
+\<comment> \<open>and prove some simple consequences of the hypotheses\<close>
 declare impl_inj [simp]
 
 lemmas parts_implE [elim] = parts_impl_inj [rotated 1]
@@ -174,11 +174,11 @@ declare Enc_keys_clean_valid [simp, intro]
 lemma valid_composed [simp,dest]: "M \<in> valid \<Longrightarrow> composed M"
 by (auto elim: validE)
 
--- {* lemmas: valid/payload are mutually exclusive *}
+\<comment> \<open>lemmas: valid/payload are mutually exclusive\<close>
 lemma valid_payload [dest]: "\<lbrakk> X \<in> valid; X \<in> payload \<rbrakk> \<Longrightarrow> P"
 by (auto elim!: validE)
     
--- {* valid/LtK are mutually exclusive *}
+\<comment> \<open>valid/LtK are mutually exclusive\<close>
 lemma valid_isLtKey [dest]: "\<lbrakk> X \<in> valid; X \<in> range LtK \<rbrakk> \<Longrightarrow> P"
 by (auto)
 
@@ -208,20 +208,20 @@ done
 end
 
 
-subsection {* Third step: @{text "valid_implem"} *}
+subsection \<open>Third step: @{text "valid_implem"}\<close>
 (**************************************************************************************************)
 
-text {* This extends @{locale "semivalid_implem"} with four new assumptions, which under certain 
+text \<open>This extends @{locale "semivalid_implem"} with four new assumptions, which under certain 
   conditions give information on $A$, $B$, $M$ when @{term "implXXX A B M \<in> synth (analz Z)"}.
   These assumptions are separated because interpretations are more easily proved, if the 
   conclusions that follow from the @{locale "semivalid_implem"} assumptions are already 
   available.
-*}
+\<close>
 
 locale valid_implem = semivalid_implem +
 
--- {* Synthesize assumptions: conditions on payloads $M$ implied by derivable *}
--- {* channel messages with payload $M$. *}
+\<comment> \<open>Synthesize assumptions: conditions on payloads $M$ implied by derivable\<close>
+\<comment> \<open>channel messages with payload $M$.\<close>
 assumes implInsec_synth_analz:
   "H \<subseteq> payload \<union> valid \<union> range LtK \<union> Tags \<Longrightarrow>
    implInsec A B M \<in> synth (analz H) \<Longrightarrow>

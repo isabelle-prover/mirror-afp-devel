@@ -15,7 +15,7 @@
 
 *******************************************************************************)
 
-section {* Key Transport Protocol with PFS (L3, asymmetric implementation) *}
+section \<open>Key Transport Protocol with PFS (L3, asymmetric implementation)\<close>
 
 theory pfslvl3_asymmetric
 imports pfslvl3 Implem_asymmetric

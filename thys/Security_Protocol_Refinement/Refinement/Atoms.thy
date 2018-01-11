@@ -13,13 +13,13 @@
 
 *******************************************************************************)
 
-section {* Atomic messages *}
+section \<open>Atomic messages\<close>
 
 theory Atoms imports Keys
 begin
 
 (******************************************************************************)
-subsection {* Atoms datatype *}
+subsection \<open>Atoms datatype\<close>
 (******************************************************************************)
 
 datatype atom =
@@ -30,28 +30,28 @@ datatype atom =
 
 
 (******************************************************************************)
-subsection {* Long-term key setup (abstractly) *}
+subsection \<open>Long-term key setup (abstractly)\<close>
 (******************************************************************************)
 
-text {* Suppose an initial long-term key setup without looking into the 
+text \<open>Suppose an initial long-term key setup without looking into the 
 structure of long-term keys. 
 
 Remark: This setup is agnostic with respect to the structure of the
 type @{typ "ltkey"}. Ideally, the type @{typ "ltkey"} should be a
 parameter of the type @{typ "key"}, which is instantiated only at
-Level 3. *}
+Level 3.\<close>
 
 consts
-  ltkeySetup :: "(ltkey \<times> agent) set"  -- {* LT key setup, for now unspecified *}
+  ltkeySetup :: "(ltkey \<times> agent) set"  \<comment> \<open>LT key setup, for now unspecified\<close>
 
-text {* The initial key setup contains static, long-term keys. *}
+text \<open>The initial key setup contains static, long-term keys.\<close>
 
 definition
   keySetup :: "(key \<times> agent) set" where
   "keySetup \<equiv> {(ltK K, A) | K A. (K, A) \<in> ltkeySetup}"
 
 
-text {* Corrupted keys are the long-term keys known by bad agents. *}
+text \<open>Corrupted keys are the long-term keys known by bad agents.\<close>
 
 definition
   corrKey :: "key set" where 

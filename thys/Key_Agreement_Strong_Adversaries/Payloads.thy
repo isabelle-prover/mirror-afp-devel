@@ -17,20 +17,20 @@
 
 *******************************************************************************)
 
-section {* Payloads and Support for Channel Message Implementations *} 
+section \<open>Payloads and Support for Channel Message Implementations\<close> 
 
-text {* Definitions and lemmas that do not require the implementations. *}
+text \<open>Definitions and lemmas that do not require the implementations.\<close>
 
 theory Payloads
 imports Message_derivation
 begin
 
-subsection {* Payload messages *}
+subsection \<open>Payload messages\<close>
 (**************************************************************************************************)
 
-text {* Payload messages contain no implementation material ie no long term keys or tags. *}
+text \<open>Payload messages contain no implementation material ie no long term keys or tags.\<close>
 
-text {* Define set of payloads for basic messages. *}
+text \<open>Define set of payloads for basic messages.\<close>
 inductive_set cpayload :: "cmsg set" where
   "cAgent A \<in> cpayload"
 | "cNumber T \<in> cpayload"
@@ -43,10 +43,10 @@ inductive_set cpayload :: "cmsg set" where
 | "\<lbrakk> X \<in> cpayload; Y \<in> cpayload \<rbrakk> \<Longrightarrow> cSign X Y \<in> cpayload"
 | "\<lbrakk> X \<in> cpayload; Y \<in> cpayload \<rbrakk> \<Longrightarrow> cExp X Y \<in> cpayload"
 
-text {* Lift @{term cpayload} to the quotiented message type. *}
+text \<open>Lift @{term cpayload} to the quotiented message type.\<close>
 lift_definition payload :: "msg set" is cpayload by -
 
-text {* Lemmas used to prove the intro and inversion rules for @{term payload}. *}
+text \<open>Lemmas used to prove the intro and inversion rules for @{term payload}.\<close>
 lemma eq_rep_abs: "eq x (Re (Ab x))"
 by (simp add: Quotient3_msg rep_abs_rsp)
 
@@ -68,7 +68,7 @@ using Quotient3_abs_rep Quotient3_msg by fastforce
 lemma payload_rep_cpayload: "Re x \<in> cpayload \<longleftrightarrow> x \<in> payload"
 by (auto simp add: payload_def abs_cpayload_rep)
 
-text {* Manual proof of payload introduction rules. Transfer does not work for these *}
+text \<open>Manual proof of payload introduction rules. Transfer does not work for these\<close>
 
 declare cpayload.intros [intro]
 lemma payload_AgentI: "Agent A \<in> payload"
@@ -96,7 +96,7 @@ lemmas payload_intros [simp, intro] =
   payload_AgentI payload_NonceI payload_NumberI payload_EphKI payload_HashI
   payload_PairI payload_EncI payload_AencI payload_SignI payload_ExpI
 
-text {* Manual proof of payload inversion rules, transfer does not work for these. *}
+text \<open>Manual proof of payload inversion rules, transfer does not work for these.\<close>
 
 declare cpayload.cases[elim]
 lemma payload_Tag: "Tag X \<in> payload \<Longrightarrow> P"
@@ -194,7 +194,7 @@ by (erule msg_exhaust [of a], auto elim: payload_inductive_cases)
 declare payload_cases [elim]
 declare payload_inductive_cases [elim]
 
-text {* Properties of payload; messages constructed from payload messages are also payloads. *}
+text \<open>Properties of payload; messages constructed from payload messages are also payloads.\<close>
 
 lemma payload_parts [simp, dest]:
   "\<lbrakk> X \<in> parts S; S \<subseteq> payload \<rbrakk> \<Longrightarrow> X \<in> payload" 
@@ -212,8 +212,8 @@ lemma payload_synth_analz:
   "\<lbrakk> X \<in> synth (analz S); S \<subseteq> payload \<rbrakk> \<Longrightarrow> X \<in> payload" 
 by (erule synth.induct) (auto intro: payload_analz)
 
-text {* Important lemma: using messages with implementation material one can only 
-synthesise more such messages. *}
+text \<open>Important lemma: using messages with implementation material one can only 
+synthesise more such messages.\<close>
 
 lemma synth_payload: 
   "Y \<inter> payload = {} \<Longrightarrow> synth (X \<union> Y) \<subseteq> synth X \<union> -payload"
@@ -223,15 +223,15 @@ lemma synth_payload2:
   "Y \<inter> payload = {} \<Longrightarrow> synth (Y \<union> X) \<subseteq> synth X \<union> -payload"
 by (rule, erule synth.induct) (auto) 
 
-text {* Lemma: in the case of the previous lemma, @{term synth} can be applied on the 
-left with no consequence. *}
+text \<open>Lemma: in the case of the previous lemma, @{term synth} can be applied on the 
+left with no consequence.\<close>
 
 lemma synth_idem_payload:
   "X \<subseteq> synth Y \<union> -payload \<Longrightarrow> synth X \<subseteq> synth Y \<union> -payload"
 by (auto dest: synth_mono subset_trans [OF _ synth_payload])
 
 
-subsection {*@{text "isLtKey"}: is a long term key *}
+subsection \<open>@{text "isLtKey"}: is a long term key\<close>
 (**************************************************************************************************)
 
 lemma LtKeys_payload [dest]: "NI \<subseteq> payload \<Longrightarrow> NI \<inter> range LtK = {}"
@@ -247,7 +247,7 @@ lemma parts_of_LtKeys [simp]: "K \<subseteq> range LtK \<Longrightarrow> parts K
 by (rule, rule, erule parts.induct, auto) 
 
 
-subsection{* @{text "keys_of"}: the long term keys of an agent *}
+subsection\<open>@{text "keys_of"}: the long term keys of an agent\<close>
 (**************************************************************************************************)
 
 definition
@@ -288,11 +288,11 @@ by (auto intro!: parts_of_LtKeys)
 lemma analz_keys_of [simp]: "analz (keys_of A) = keys_of A"
 by (rule, rule, erule analz.induct, auto)
 
-subsection {* @{text "Keys_bad"}: bounds on the attacker's knowledge of long-term keys. *}
+subsection \<open>@{text "Keys_bad"}: bounds on the attacker's knowledge of long-term keys.\<close>
 (**************************************************************************************************)
 
-text {* A set of keys contains all public long term keys, and only the private/shared keys 
-of bad agents. *}
+text \<open>A set of keys contains all public long term keys, and only the private/shared keys 
+of bad agents.\<close>
 
 definition
   Keys_bad :: "msg set \<Rightarrow> agent set \<Rightarrow> bool"
@@ -331,7 +331,7 @@ by (auto simp add: Keys_bad_def)
 lemmas Keys_bad_dests [dest] = Keys_bad_priK_D Keys_bad_shrK_D
 
 
-text {* interaction with @{term insert}. *}
+text \<open>interaction with @{term insert}.\<close>
 
 lemma Keys_bad_insert_non_LtK: 
   "X \<notin> range LtK \<Longrightarrow> Keys_bad (insert X IK) Bad \<longleftrightarrow> Keys_bad IK Bad"
@@ -382,10 +382,10 @@ lemma Keys_bad_insert_payload:
 by (auto simp add: Keys_bad_def)
 
 
-subsection {* @{text "broken K"}: pairs of agents where at least one is compromised. *}
+subsection \<open>@{text "broken K"}: pairs of agents where at least one is compromised.\<close>
 (**************************************************************************************************)
 
-text {* Set of pairs (A,B) such that the priK of A or B, or their shared key, is in K *}
+text \<open>Set of pairs (A,B) such that the priK of A or B, or their shared key, is in K\<close>
 
 definition
   broken :: "msg set \<Rightarrow> (agent * agent) set"
@@ -401,11 +401,11 @@ lemma brokenI [intro!]:
 by (auto simp add: broken_def)
 
 
-subsection {* @{text "Enc_keys_clean S"}: messages with ``clean'' symmetric encryptions. *}
+subsection \<open>@{text "Enc_keys_clean S"}: messages with ``clean'' symmetric encryptions.\<close>
 (**************************************************************************************************)
 
-text {* All terms used as symmetric keys in S are either long term keys or messages without 
-implementation material. *}
+text \<open>All terms used as symmetric keys in S are either long term keys or messages without 
+implementation material.\<close>
 
 definition
   Enc_keys_clean :: "msg set \<Rightarrow> bool"
@@ -443,10 +443,10 @@ lemma Enc_keys_clean_payload [simp,intro]: "NI \<subseteq> payload \<Longrightar
 by (auto simp add: Enc_keys_clean_def)
 
 
-subsection {* Sets of messages with particular constructors *}
+subsection \<open>Sets of messages with particular constructors\<close>
 (**************************************************************************************************)
 
-text {* Sets of all pairs, ciphertexts, and signatures constructed from a set of messages. *}
+text \<open>Sets of all pairs, ciphertexts, and signatures constructed from a set of messages.\<close>
 (*
  FIX: These should probably be turned into definitions, since they may create automation problems 
 *)
@@ -469,8 +469,8 @@ abbreviation HashSet :: "msg set \<Rightarrow> msg set"
 where "HashSet G \<equiv> {Hash X | X. X \<in> G}"
 
 
-text {* Move @{term Enc}, @{term Aenc}, @{term Sign}, and @{term Pair} sets out of @{term parts}. 
-*}
+text \<open>Move @{term Enc}, @{term Aenc}, @{term Sign}, and @{term Pair} sets out of @{term parts}. 
+\<close>
 
 lemma parts_PairSet:
   "parts (PairSet G H) \<subseteq> PairSet G H \<union> parts G \<union> parts H"
@@ -495,9 +495,9 @@ by (rule, erule parts.induct, auto)
 lemmas parts_msgSet = parts_PairSet parts_EncSet parts_AencSet parts_SignSet parts_HashSet
 lemmas parts_msgSetD = parts_msgSet [THEN [2] rev_subsetD]
 
-text {*
+text \<open>
 Remove the message sets from under the @{term "Enc_keys_clean"} predicate.
-Only when the first part is a set of agents or tags for @{term Pair}, this is sufficient. *}
+Only when the first part is a set of agents or tags for @{term Pair}, this is sufficient.\<close>
 
 lemma Enc_keys_clean_PairSet_Agent_Un: 
   "Enc_keys_clean (G \<union> H) \<Longrightarrow> Enc_keys_clean (PairSet (Agent`X) G \<union> H)"
@@ -529,10 +529,10 @@ lemmas Enc_keys_clean_msgSet_Un =
   Enc_keys_clean_SignSet_Un Enc_keys_clean_HashSet_Un
 
 
-subsubsection {* Lemmas for moving message sets out of @{term "analz"} *}
+subsubsection \<open>Lemmas for moving message sets out of @{term "analz"}\<close>
 (**************************************************************************************************)
 
-text {* Pull @{term EncSet} out of @{term analz}. *}
+text \<open>Pull @{term EncSet} out of @{term analz}.\<close>
 
 lemma analz_Un_EncSet:
 assumes "K \<subseteq> range LtK" and "Enc_keys_clean (G \<union> H)" 
@@ -566,7 +566,7 @@ proof
   qed (auto)
 qed 
 
-text {* Pull @{term EncSet} out of @{term analz}, 2nd case: the keys are unknown. *}
+text \<open>Pull @{term EncSet} out of @{term analz}, 2nd case: the keys are unknown.\<close>
 
 lemma analz_Un_EncSet2:
 assumes "Enc_keys_clean H" and "K \<subseteq> range LtK" and "K \<inter> synth (analz H) = {}"
@@ -592,8 +592,8 @@ proof
           proof (rule synth_payload2 [THEN [2] rev_subsetD], auto elim!: payload_Enc)
             fix X Y
             assume "Y \<in> K" "Y \<in> payload"
-            with `K \<subseteq> range LtK` obtain KK where "Y = LtK KK" by auto
-            with `Y \<in> payload` show False by auto
+            with \<open>K \<subseteq> range LtK\<close> obtain KK where "Y = LtK KK" by auto
+            with \<open>Y \<in> payload\<close> show False by auto
           qed
         ultimately 
         show ?thesis by auto
@@ -602,10 +602,10 @@ proof
     next
       assume "Enc Y K' \<in> EncSet G K"
       moreover hence "K' \<in> K" by auto
-      moreover with `K \<subseteq> range LtK` obtain KK where "K' = LtK KK" by auto
+      moreover with \<open>K \<subseteq> range LtK\<close> obtain KK where "K' = LtK KK" by auto
       moreover with Dec.IH(2) have "K' \<in> analz H" 
         by (auto simp add: Collect_disj_eq dest: synth_Int2)
-      ultimately show ?case using `K \<inter> synth (analz H) = {}` by auto
+      ultimately show ?case using \<open>K \<inter> synth (analz H) = {}\<close> by auto
     qed
   next 
     case (Adec_eph Y K') 
@@ -614,7 +614,7 @@ proof
 qed
 
 
-text {* Pull @{term AencSet} out of the @{term analz}. *}
+text \<open>Pull @{term AencSet} out of the @{term analz}.\<close>
 
 lemma analz_Un_AencSet:
 assumes "K \<subseteq> range LtK" and "Enc_keys_clean (G \<union> H)" 
@@ -646,7 +646,7 @@ proof
   qed auto
 qed
 
-text {* Pull @{term AencSet} out of @{term analz}, 2nd case: the keys are unknown. *}
+text \<open>Pull @{term AencSet} out of @{term analz}, 2nd case: the keys are unknown.\<close>
 
 lemma analz_Un_AencSet2:
 assumes "Enc_keys_clean H" and "priK`Ag \<inter> synth (analz H) = {}"
@@ -678,7 +678,7 @@ proof
   qed (insert assms(2), auto)
 qed
 
-text {* Pull @{term PairSet} out of @{term analz}. *}
+text \<open>Pull @{term PairSet} out of @{term analz}.\<close>
 lemma analz_Un_PairSet:
   "analz (PairSet G G' \<union> H) \<subseteq> PairSet G G' \<union> analz (G \<union> G' \<union> H)"
 proof 
@@ -732,7 +732,7 @@ proof
   qed auto
 qed
 
-text {* Pull @{term Tags} out of @{term analz}. *}
+text \<open>Pull @{term Tags} out of @{term analz}.\<close>
 
 lemma analz_Un_Tag:
 assumes "Enc_keys_clean H"
@@ -763,7 +763,7 @@ proof
   qed auto
 qed 
 
-text {* Pull the @{term AgentSet} out of the @{term analz}. *}
+text \<open>Pull the @{term AgentSet} out of the @{term analz}.\<close>
 
 lemma analz_Un_AgentSet:
 shows "analz (AgentSet \<union> H) \<subseteq> AgentSet \<union> analz H"
@@ -789,7 +789,7 @@ proof
   qed auto
 qed 
 
-text {* Pull @{term HashSet} out of @{term analz}. *}
+text \<open>Pull @{term HashSet} out of @{term analz}.\<close>
 lemma analz_Un_HashSet:
 assumes "Enc_keys_clean H" and "G \<subseteq> - payload" 
 shows "analz (HashSet G  \<union> H) \<subseteq> HashSet G \<union> analz H"
@@ -820,7 +820,7 @@ proof
         ultimately
         have "K' \<in> synth (analz H) \<union> -payload" 
           by (auto dest: synth_payload2 [THEN [2] rev_subsetD])
-        with `K' \<in> payload` show ?thesis by auto 
+        with \<open>K' \<in> payload\<close> show ?thesis by auto 
       qed
     qed
     ultimately show ?case by auto

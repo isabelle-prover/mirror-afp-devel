@@ -15,18 +15,18 @@
 
 *******************************************************************************)
 
-section {* SKEME Protocol (L3 locale) *}
+section \<open>SKEME Protocol (L3 locale)\<close>
 
 theory sklvl3
 imports sklvl2 Implem_lemmas
 begin
 
 (**************************************************************************************************)
-subsection {* State and Events *}
+subsection \<open>State and Events\<close>
 (**************************************************************************************************)
 
-text {* Level 3 state. *}
-text {* (The types have to be defined outside the locale.) *}
+text \<open>Level 3 state.\<close>
+text \<open>(The types have to be defined outside the locale.)\<close>
 
 record l3_state = skl1_state +  
   bad :: "agent set"
@@ -40,14 +40,14 @@ type_synonym
   l3_trans = "(l3_state \<times> l3_state) set"
 
 
-text {*attacker event*}
+text \<open>attacker event\<close>
 definition
   l3_dy :: "msg \<Rightarrow> l3_trans"
 where
   "l3_dy \<equiv> ik_dy"
 
 
-text {* Compromise events. *}
+text \<open>Compromise events.\<close>
 
 definition
   l3_lkr_others :: "agent \<Rightarrow> l3_trans"
@@ -97,13 +97,13 @@ where
   }"
 
 
-text {* New locale for the level 3 protocol. This locale does not add new assumptions, it is 
-only used to separate the level 3 protocol from the implementation locale. *}
+text \<open>New locale for the level 3 protocol. This locale does not add new assumptions, it is 
+only used to separate the level 3 protocol from the implementation locale.\<close>
 
 locale sklvl3 = valid_implem
 begin
 
-text {* Protocol events (with $K=H(ni, nr))$:
+text \<open>Protocol events (with $K=H(ni, nr))$:
 \begin{itemize}
 \item step 1: create @{term "Ra"}, @{term "A"} generates @{term "nx"} and @{term "ni"},
   confidentially sends @{term "ni"},
@@ -128,7 +128,7 @@ text {* Protocol events (with $K=H(ni, nr))$:
   $@{term "g"}^@{term "nx*ny"}$,
   declares the secret $@{term "g"}^@{term "nx*ny"}$
 \end{itemize}
-*}
+\<close>
 definition
   l3_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l3_trans"
 where
@@ -254,9 +254,9 @@ where
   }"
 
 
-text {* Specification. *}
+text \<open>Specification.\<close>
 
-text {* Initial compromise. *}
+text \<open>Initial compromise.\<close>
 
 definition
   ik_init :: "msg set"
@@ -264,7 +264,7 @@ where
   "ik_init \<equiv> {priK C |C. C \<in> bad_init} \<union> {pubK A | A. True} \<union> 
              {shrK A B |A B. A \<in> bad_init \<or> B \<in> bad_init} \<union> Tags"
 
-text {*lemmas about @{term "ik_init"}*}
+text \<open>lemmas about @{term "ik_init"}\<close>
 lemma parts_ik_init [simp]: "parts ik_init = ik_init"
 by (auto elim!: parts.induct, auto simp add: ik_init_def)
 
@@ -338,10 +338,10 @@ by (simp add: l3_def)
 
 
 (**************************************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (**************************************************************************************************)
 
-subsubsection {* inv1: No long-term keys as message parts *}
+subsubsection \<open>inv1: No long-term keys as message parts\<close>
 (**************************************************************************************************)
 
 definition
@@ -377,7 +377,7 @@ by (rule inv_rule_basic) (auto)
 
 
 
-subsubsection {* inv2: @{term "bad s"} indeed contains "bad" keys *}
+subsubsection \<open>inv2: @{term "bad s"} indeed contains "bad" keys\<close>
 (**************************************************************************************************)
 
 definition
@@ -400,7 +400,7 @@ lemma l3_inv2_trans [simp,intro!]:
   "{l3_inv2 \<inter> l3_inv1} trans l3 {> l3_inv2}"
 apply (auto simp add: PO_hoare_defs l3_nostep_defs intro!: l3_inv2I)
 apply (auto simp add: l3_defs dy_fake_msg_def dy_fake_chan_def)
-text {* 4 subgoals: dy, lkr*, skr.*}
+text \<open>4 subgoals: dy, lkr*, skr.\<close>
 apply (auto intro: Keys_bad_insert_Fake Keys_bad_insert_keys_of)
 apply (auto intro!: Keys_bad_insert_payload)
 done
@@ -410,14 +410,14 @@ by (rule_tac J="l3_inv1" in inv_rule_incr) (auto)
 
 
 
-subsubsection {* inv3 *}
+subsubsection \<open>inv3\<close>
 (**************************************************************************************************)
 
-text {* If a message can be analyzed from the intruder knowledge then it can
+text \<open>If a message can be analyzed from the intruder knowledge then it can
 be derived (using @{term "synth"}/@{term "analz"}) from the sets of implementation, 
 non-implementation, and long-term key messages and the tags. That is, intermediate messages 
 are not needed.
-*}
+\<close>
 
 definition
   l3_inv3 :: "l3_state set"      
@@ -439,8 +439,8 @@ done
 
 declare domIff [iff del]
 
-text {* Most of the cases in this proof are simple and very similar.
-The proof could probably be shortened. *}
+text \<open>Most of the cases in this proof are simple and very similar.
+The proof could probably be shortened.\<close>
 
 lemma l3_inv3_trans [simp,intro!]:
   "{l3_inv3} trans l3 {> l3_inv3}"
@@ -500,7 +500,7 @@ by (rule inv_rule_basic) (auto)
 
 
 
-subsubsection {* inv4: the intruder knows the tags *}
+subsubsection \<open>inv4: the intruder knows the tags\<close>
 (**************************************************************************************************)
 
 definition
@@ -528,19 +528,19 @@ lemma PO_l3_inv4 [simp,intro!]: "reach l3 \<subseteq> l3_inv4"
 by (rule inv_rule_basic) (auto)
 
 
-text {* The remaining invariants are derived from the others.
-They are not protocol dependent provided the previous invariants hold. *}
+text \<open>The remaining invariants are derived from the others.
+They are not protocol dependent provided the previous invariants hold.\<close>
   
-subsubsection {* inv5 *}
+subsubsection \<open>inv5\<close>
 (**************************************************************************************************)
 
-text {* The messages that the L3 DY intruder can derive from the intruder knowledge 
+text \<open>The messages that the L3 DY intruder can derive from the intruder knowledge 
 (using @{term "synth"}/@{term "analz"}), are either implementations or intermediate messages or
 can also be derived by the L2 intruder from the set 
 @{term "extr (bad s) ((ik s) \<inter> payload) (abs (ik s))"}, that is, given the 
 non-implementation messages and the abstractions of (implementation) messages
 in the intruder knowledge. 
-*}
+\<close>
 
 definition
   l3_inv5 :: "l3_state set"
@@ -564,16 +564,16 @@ using l3_inv5_derived PO_l3_inv2 PO_l3_inv3
 by blast
 
 
-subsubsection {* inv6 *}
+subsubsection \<open>inv6\<close>
 (**************************************************************************************************)
 
-text {* If the level 3 intruder can deduce a message implementing an insecure channel message, 
+text \<open>If the level 3 intruder can deduce a message implementing an insecure channel message, 
 then either:
 \begin{itemize}
   \item the message is already in the intruder knowledge, or
   \item the message is constructed, and the payload can also be deduced by the intruder.
 \end{itemize}
-*}
+\<close>
 
 definition
   l3_inv6 :: "l3_state set"
@@ -590,7 +590,7 @@ lemmas l3_inv6D = l3_inv6_def [THEN setc_def_to_dest, rule_format]
 lemma l3_inv6_derived [simp,intro!]:
   "l3_inv3 \<inter> l3_inv4 \<subseteq> l3_inv6"
 apply (auto intro!: l3_inv6I dest!: l3_inv3D)
-text {* 1 subgoal *}
+text \<open>1 subgoal\<close>
 apply (drule synth_mono, simp, drule subsetD, assumption)
 apply (auto dest!: implInsec_synth_analz [rotated 1, where H="_ \<union> _"])
 apply (auto dest!: synth_analz_monotone [of _ "_ \<union> _" "ik _"])
@@ -600,16 +600,16 @@ lemma PO_l3_inv6 [simp,intro!]: "reach l3 \<subseteq> l3_inv6"
 using l3_inv6_derived PO_l3_inv3 PO_l3_inv4
 by (blast)
 
-subsubsection {* inv7 *}
+subsubsection \<open>inv7\<close>
 (**************************************************************************************************)
 
-text {* If the level 3 intruder can deduce a message implementing a confidential channel message,
+text \<open>If the level 3 intruder can deduce a message implementing a confidential channel message,
 then either:
 \begin{itemize}
  \item the message is already in the intruder knowledge, or
  \item the message is constructed, and the payload can also be deduced by the intruder.
 \end{itemize}
-*}
+\<close>
 
 definition
   l3_inv7 :: "l3_state set"
@@ -626,7 +626,7 @@ lemmas l3_inv7D = l3_inv7_def [THEN setc_def_to_dest, rule_format]
 lemma l3_inv7_derived [simp,intro!]:
   "l3_inv3 \<inter> l3_inv4 \<subseteq> l3_inv7"
 apply (auto intro!: l3_inv7I dest!: l3_inv3D)
-text {*1 subgoal*}
+text \<open>1 subgoal\<close>
 apply (drule synth_mono, simp, drule subsetD, assumption)
 apply (auto dest!: implConfid_synth_analz [rotated 1, where H="_ \<union> _"])
 apply (auto dest!: synth_analz_monotone [of _ "_ \<union> _" "ik _"])
@@ -637,17 +637,17 @@ using l3_inv7_derived PO_l3_inv3 PO_l3_inv4
 by (blast)
 
 
-subsubsection {* inv8 *}
+subsubsection \<open>inv8\<close>
 (**************************************************************************************************)
 
-text {* If the level 3 intruder can deduce a message implementing an authentic channel message 
+text \<open>If the level 3 intruder can deduce a message implementing an authentic channel message 
 then either:
 \begin{itemize}
   \item the message is already in the intruder knowledge, or
   \item the message is constructed, and in this case the payload can also be deduced
      by the intruder, and one of the agents is bad.
 \end{itemize}
-*}
+\<close>
 
 
 definition
@@ -665,7 +665,7 @@ lemmas l3_inv8D = l3_inv8_def [THEN setc_def_to_dest, rule_format]
 lemma l3_inv8_derived [iff]:
   "l3_inv2 \<inter> l3_inv3 \<inter> l3_inv4 \<subseteq> l3_inv8"
 apply (auto intro!: l3_inv8I dest!: l3_inv3D l3_inv2D)
-text {* 2 subgoals: M is deducible and the agents are bad *}
+text \<open>2 subgoals: M is deducible and the agents are bad\<close>
 apply (drule synth_mono, simp, drule subsetD, assumption)
 apply (auto dest!: implAuth_synth_analz [rotated 1, where H="_ \<union> _"] elim!: synth_analz_monotone)
 
@@ -679,17 +679,17 @@ using l3_inv8_derived
 by blast
 
 
-subsubsection {* inv9 *}
+subsubsection \<open>inv9\<close>
 (**************************************************************************************************)
 
-text {* If the level 3 intruder can deduce a message implementing a secure channel message 
+text \<open>If the level 3 intruder can deduce a message implementing a secure channel message 
 then either:
 \begin{itemize}
   \item the message is already in the intruder knowledge, or
   \item the message is constructed, and in this case the payload can also be deduced 
  by the intruder, and one of the agents is bad.
 \end{itemize}
-*}
+\<close>
 
 definition
   l3_inv9 :: "l3_state set"
@@ -706,7 +706,7 @@ lemmas l3_inv9D = l3_inv9_def [THEN setc_def_to_dest, rule_format]
 lemma l3_inv9_derived [iff]:
   "l3_inv2 \<inter> l3_inv3 \<inter> l3_inv4 \<subseteq> l3_inv9"
 apply (auto intro!: l3_inv9I dest!:l3_inv3D l3_inv2D)
-text {*2 subgoals: M is deducible and the agents are bad. *}
+text \<open>2 subgoals: M is deducible and the agents are bad.\<close>
 apply (drule synth_mono, simp, drule subsetD, assumption)
 apply (auto dest!: implSecure_synth_analz [rotated 1, where H="_ \<union> _"] 
             elim!: synth_analz_monotone)
@@ -722,10 +722,10 @@ by blast
 
 
 (**************************************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (**************************************************************************************************)
 
-text {* Mediator function. *}
+text \<open>Mediator function.\<close>
 definition 
   med23s :: "l3_obs \<Rightarrow> l2_obs"
 where
@@ -741,7 +741,7 @@ where
     bad = bad t
     \<rparr>"
 
-text {* Relation between states. *}
+text \<open>Relation between states.\<close>
 
 definition
   R23s :: "(l2_state * l3_state) set"
@@ -784,7 +784,7 @@ lemma can_signal_R23 [simp]:
 by (auto simp add: can_signal_def)
 
 
-subsubsection {* Protocol events *}
+subsubsection \<open>Protocol events\<close>
 (**************************************************************************************************)
 
 lemma l3_step1_refines_step1:
@@ -811,7 +811,7 @@ apply (auto simp add: PO_rhoare_defs R23s_defs l2_step4_def)
 apply (auto simp add: l3_step4_def)
 done
 
-subsubsection {* Intruder events *}
+subsubsection \<open>Intruder events\<close>
 (**************************************************************************************************)
 
 lemma l3_dy_payload_refines_dy_fake_msg:
@@ -828,15 +828,15 @@ lemma l3_dy_valid_refines_dy_fake_chan:
    {>R23s}"
 apply (auto simp add: PO_rhoare_defs R23s_defs, simp add: l2_dy_fake_chan_def)
 apply (auto simp add: l3_defs)
-text {* 1 subgoal *}
+text \<open>1 subgoal\<close>
 apply (erule valid_cases, simp_all add: dy_fake_chan_def)
-  text {*Insec*}
+  text \<open>Insec\<close>
   apply (blast dest: l3_inv6D l3_inv5D)
-  text {*Confid*}
+  text \<open>Confid\<close>
   apply (blast dest: l3_inv7D l3_inv5D)
-  text {*Auth*}
+  text \<open>Auth\<close>
   apply (blast dest: l3_inv8D l3_inv5D)
-  text {*Secure*}
+  text \<open>Secure\<close>
   apply (blast dest: l3_inv9D l3_inv5D)
 done
 
@@ -873,7 +873,7 @@ by (cases "M \<in> payload \<union> valid \<union> range LtK")
          intro: l3_dy_isLtKey_refines_skip dest!: l3_dy_others_refines_skip)
 
 
-subsubsection {* Compromise events *}
+subsubsection \<open>Compromise events\<close>
 (**************************************************************************************************)
 
 lemma l3_lkr_others_refines_lkr_others:
@@ -941,10 +941,10 @@ by (rule refinement_soundness) (auto)
 
 
 (**************************************************************************************************)
-subsection {* Derived invariants *}
+subsection \<open>Derived invariants\<close>
 (**************************************************************************************************)
 
-subsubsection {* inv10: secrets contain no implementation material *}
+subsubsection \<open>inv10: secrets contain no implementation material\<close>
 (**************************************************************************************************)
 
 definition
@@ -976,10 +976,10 @@ by (auto simp add: oreach_def)
 
 
 
-subsubsection {* Partial secrecy *}
+subsubsection \<open>Partial secrecy\<close>
 (**************************************************************************************************)
 
-text {* We want to prove @{term "l3_secrecy"}, ie
+text \<open>We want to prove @{term "l3_secrecy"}, ie
   @{term "synth (analz (ik s)) \<inter> secret s = {}"},
   but by refinement we only get @{term "l3_partial_secrecy"}: 
     @{term "dy_fake_msg (bad s) (payloadSet (ik s)) (abs (ik s)) \<inter> secret s = {}"}.
@@ -987,7 +987,7 @@ text {* We want to prove @{term "l3_secrecy"}, ie
   Then, by @{term "inv5"}, a message in @{term "synth (analz (ik s))"} is in
     @{term "dy_fake_msg (bad s) (payloadSet (ik s)) (abs (ik s)) \<union> -payload"},
   and @{term "l3_partial_secrecy"} proves it is not a secret.
-*}
+\<close>
 
 definition
   l3_partial_secrecy :: "('a l3_state_scheme) set"
@@ -1003,7 +1003,7 @@ apply (auto simp add: med23s_def l2_secrecy_def l3_partial_secrecy_def)
 done
 
 
-subsubsection {* Secrecy *}
+subsubsection \<open>Secrecy\<close>
 (**************************************************************************************************)
 
 definition 
@@ -1024,7 +1024,7 @@ lemma l3_secrecy [iff]: "reach l3 \<subseteq> l3_secrecy"
 by (rule external_to_internal_invariant [OF l3_obs_secrecy], auto)
 
 
-subsubsection {* Injective agreement *}
+subsubsection \<open>Injective agreement\<close>
 (**************************************************************************************************)
 
 abbreviation "l3_iagreement_Init \<equiv> l1_iagreement_Init"

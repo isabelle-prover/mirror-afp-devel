@@ -14,21 +14,21 @@
 
 *******************************************************************************)
 
-section {* Symmetric and Assymetric Keys *}
+section \<open>Symmetric and Assymetric Keys\<close>
 
 theory Keys imports Agents begin
 
-text {* Divide keys into session and long-term keys. Define different kinds
-of long-term keys in second step. *}
+text \<open>Divide keys into session and long-term keys. Define different kinds
+of long-term keys in second step.\<close>
 
-datatype ltkey =    -- {* long-term keys *}
-  sharK "agent"     -- {* key shared with server *}
-| publK "agent"     -- {* agent's public key *}
-| privK "agent"     -- {* agent's private key *}
+datatype ltkey =    \<comment> \<open>long-term keys\<close>
+  sharK "agent"     \<comment> \<open>key shared with server\<close>
+| publK "agent"     \<comment> \<open>agent's public key\<close>
+| privK "agent"     \<comment> \<open>agent's private key\<close>
 
 datatype key = 
-  sesK "fresh_t"   -- {* session key *}
-| ltK "ltkey"      -- {* long-term key *}
+  sesK "fresh_t"   \<comment> \<open>session key\<close>
+| ltK "ltkey"      \<comment> \<open>long-term key\<close>
 
 abbreviation
   shrK :: "agent \<Rightarrow> key" where
@@ -43,8 +43,8 @@ abbreviation
   "priK A \<equiv> ltK (privK A)"
 
 
-text{* The inverse of a symmetric key is itself; that of a public key
-       is the private key and vice versa *}
+text\<open>The inverse of a symmetric key is itself; that of a public key
+       is the private key and vice versa\<close>
 
 fun invKey :: "key \<Rightarrow> key" where
   "invKey (ltK (publK A)) = priK A"
@@ -59,8 +59,8 @@ lemma invKey_K: "K \<in> symKeys \<Longrightarrow> invKey K = K"
 by (simp add: symKeys_def)
 
 
-text {* Most lemmas we need come for free with the inductive type definition:
-injectiveness and distinctness. *}
+text \<open>Most lemmas we need come for free with the inductive type definition:
+injectiveness and distinctness.\<close>
 
 lemma invKey_invKey_id [simp]: "invKey (invKey K) = K"
 by (cases K, auto) 
@@ -72,15 +72,15 @@ apply (drule_tac f=invKey in arg_cong, simp)
 done
 
 
-text {* We get most lemmas below for free from the inductive definition
-of type @{typ key}. Many of these are just proved as a reality check. *}
+text \<open>We get most lemmas below for free from the inductive definition
+of type @{typ key}. Many of these are just proved as a reality check.\<close>
 
 
-subsection{* Asymmetric Keys *}
+subsection\<open>Asymmetric Keys\<close>
 (******************************************************************************)
 
-text {* No private key equals any public key (essential to ensure that private
-keys are private!). A similar statement an axiom in Paulson's theory! *}
+text \<open>No private key equals any public key (essential to ensure that private
+keys are private!). A similar statement an axiom in Paulson's theory!\<close>
 
 lemma privateKey_neq_publicKey: "priK A \<noteq> pubK A'"
 by auto
@@ -89,7 +89,7 @@ lemma publicKey_neq_privateKey: "pubK A \<noteq> priK A'"
 by auto
 
 
-subsection{*Basic properties of @{term pubK} and @{term priK}*}
+subsection\<open>Basic properties of @{term pubK} and @{term priK}\<close>
 
 lemma publicKey_inject [iff]: "(pubK A = pubK A') = (A = A')"
 by (auto)
@@ -110,7 +110,7 @@ lemma symKeys_invKey_iff [iff]: "(invKey K \<in> symKeys) = (K \<in> symKeys)"
 by (unfold symKeys_def, auto)
 
 
-subsection{* "Image" equations that hold for injective functions *}
+subsection\<open>"Image" equations that hold for injective functions\<close>
 
 lemma invKey_image_eq [simp]: "(invKey x \<in> invKey`A) = (x \<in> A)"
 by auto
@@ -134,25 +134,25 @@ by auto
 
 
 
-subsection{* Symmetric Keys *}
+subsection\<open>Symmetric Keys\<close>
 (******************************************************************************)
 
-text {* The following was stated as an axiom in Paulson's theory. *}
+text \<open>The following was stated as an axiom in Paulson's theory.\<close>
 
-lemma sym_sesK: "sesK f \<in> symKeys"   --{*All session keys are symmetric*}
+lemma sym_sesK: "sesK f \<in> symKeys"   \<comment>\<open>All session keys are symmetric\<close>
 by (simp add: symKeys_def)
 
-lemma sym_shrK: "shrK X \<in> symKeys"   --{*All shared keys are symmetric*}
+lemma sym_shrK: "shrK X \<in> symKeys"   \<comment>\<open>All shared keys are symmetric\<close>
 by (simp add: symKeys_def)
 
 
-text {* Symmetric keys and inversion *}
+text \<open>Symmetric keys and inversion\<close>
 
 lemma symK_eq_invKey: "\<lbrakk> SK = invKey K; SK \<in> symKeys \<rbrakk> \<Longrightarrow> K = SK" 
 by (auto simp add: symKeys_def)
 
 
-text {* Image-related lemmas. *}
+text \<open>Image-related lemmas.\<close>
 
 lemma publicKey_notin_image_shrK: "pubK x \<notin> shrK ` AA"
 by auto

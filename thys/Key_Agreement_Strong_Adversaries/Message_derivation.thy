@@ -18,20 +18,20 @@
 
 *******************************************************************************)
 
-section {* Message theory *} 
+section \<open>Message theory\<close> 
 
 theory Message_derivation
 imports Messages
 begin
 
-text {* This theory is adapted from Larry Paulson's original Message theory. *}
+text \<open>This theory is adapted from Larry Paulson's original Message theory.\<close>
 
 
 (****************************************************************************************)
-subsection {* Message composition *}
+subsection \<open>Message composition\<close>
 (****************************************************************************************)
 
-text {* Dolev-Yao message synthesis. *}
+text \<open>Dolev-Yao message synthesis.\<close>
 
 inductive_set
   synth :: "msg set \<Rightarrow> msg set"   
@@ -51,7 +51,7 @@ inductive_set
   | Exp [intro]: "X \<in> synth H \<Longrightarrow> Y \<in> synth H \<Longrightarrow> (Exp X Y) \<in> synth H"
 
 
-text {* Lemmas about Dolev-Yao message synthesis. *}
+text \<open>Lemmas about Dolev-Yao message synthesis.\<close>
 
 lemma synth_mono [mono_set]: "G \<subseteq> H \<Longrightarrow> synth G \<subseteq> synth H"
   by (auto, erule synth.induct, auto) 
@@ -154,10 +154,10 @@ lemma Sign_synth_eq2 [simp]:
 by blast
 
 (****************************************************************************************)
-subsection {* Message decomposition *}
+subsection \<open>Message decomposition\<close>
 (****************************************************************************************)
 
-text {* Dolev-Yao message decomposition using known keys. *}
+text \<open>Dolev-Yao message decomposition using known keys.\<close>
 
 inductive_set
   analz :: "msg set \<Rightarrow> msg set"
@@ -176,7 +176,7 @@ inductive_set
       "Sign X (priK Y) \<in> analz H \<Longrightarrow> pubK Y \<in> analz H \<Longrightarrow> X \<in> analz H"
 
 
-text {* Lemmas about Dolev-Yao message decomposition. *}
+text \<open>Lemmas about Dolev-Yao message decomposition.\<close>
 
 lemma analz_mono: "G \<subseteq> H \<Longrightarrow> analz(G) \<subseteq> analz(H)"
 by (safe, erule analz.induct) (auto dest: Fst Snd synth_Int2)
@@ -266,7 +266,7 @@ lemma analz_Un_analz [simp]: "analz (G \<union> analz H) = analz (G \<union> H)"
 by (subst Un_commute, auto)+
 
 
-text {* Lemmas about analz and insert. *} 
+text \<open>Lemmas about analz and insert.\<close> 
 
 lemma analz_insert_Agent [simp]:
   "analz (insert (Agent A) H) = insert (Agent A) (analz H)"
@@ -296,7 +296,7 @@ done
 
 
 (****************************************************************************************)
-subsection {* Lemmas about combined composition/decomposition *}
+subsection \<open>Lemmas about combined composition/decomposition\<close>
 (****************************************************************************************)
 
 lemma synth_analz_incr: "H \<subseteq> synth (analz H)"
@@ -370,12 +370,12 @@ qed (auto intro: synth_analz_monotone)
 
 
 (****************************************************************************************)
-subsection {* Accessible message parts *}
+subsection \<open>Accessible message parts\<close>
 (****************************************************************************************)
 
-text {* Accessible message parts: all subterms that are in principle extractable
+text \<open>Accessible message parts: all subterms that are in principle extractable
 by the Dolev-Yao attacker, i.e., provided he knows all keys. Note that keys in
-key positions and messages under hashes are not message parts in this sense. *}
+key positions and messages under hashes are not message parts in this sense.\<close>
 
 inductive_set
   parts :: "msg set => msg set"
@@ -389,7 +389,7 @@ where
   | Sign_getmsg [intro]: "Sign X Y \<in> parts H \<Longrightarrow> X \<in> parts H"
 
 
-text {* Lemmas about accessible message parts. *}
+text \<open>Lemmas about accessible message parts.\<close>
 
 lemma parts_mono [mono_set]: "G \<subseteq> H \<Longrightarrow> parts G \<subseteq> parts H"
 by (auto, erule parts.induct, auto)
@@ -547,7 +547,7 @@ apply (erule parts.induct, auto)
 done
 
 
-subsubsection {* Lemmas about combinations with composition and decomposition *}
+subsubsection \<open>Lemmas about combinations with composition and decomposition\<close>
 (****************************************************************************************)
 
 lemma analz_subset_parts: "analz H \<subseteq> parts H"
@@ -603,10 +603,10 @@ by (blast intro: analz_subset_parts [THEN subsetD])
 
 
 (****************************************************************************************)
-subsection {* More lemmas about combinations of closures *}
+subsection \<open>More lemmas about combinations of closures\<close>
 (****************************************************************************************)
 
-text {* Combinations of @{term synth} and @{term analz}. *}
+text \<open>Combinations of @{term synth} and @{term analz}.\<close>
 
 lemma Pair_synth_analz [simp]:
   "Pair X Y \<in> synth (analz H) \<longleftrightarrow> X \<in> synth (analz H) \<and> Y \<in> synth (analz H)"

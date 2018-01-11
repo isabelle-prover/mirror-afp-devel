@@ -16,20 +16,20 @@
 
 *******************************************************************************)
 
-section {* Environment: Dolev-Yao Intruder *}
+section \<open>Environment: Dolev-Yao Intruder\<close>
 
 theory IK
 imports Message_derivation 
 begin
 
-text {* Basic state contains intruder knowledge. The secrecy model and concrete Level 1 
-states will be record extensions of this state. *}
+text \<open>Basic state contains intruder knowledge. The secrecy model and concrete Level 1 
+states will be record extensions of this state.\<close>
 
 record ik_state =
   ik :: "msg set"
 
 
-text {* Dolev-Yao intruder event adds a derived message. *}
+text \<open>Dolev-Yao intruder event adds a derived message.\<close>
 
 definition
   ik_dy :: "msg \<Rightarrow> ('a ik_state_scheme * 'a ik_state_scheme) set"

@@ -16,12 +16,12 @@
 
 *******************************************************************************)
 
-section {* Abstract (n/n)-authenticated key transport (L1) *}
+section \<open>Abstract (n/n)-authenticated key transport (L1)\<close>
 
 theory m1_keydist_inrn imports m1_keydist "../Refinement/a0i_agree"
 begin
 
-text {* We add authentication for the initiator and responder to the basic
+text \<open>We add authentication for the initiator and responder to the basic
 server-based key transport protocol: 
 \begin{enumerate}
 \item the initiator injectively agrees with the server on the key and some
@@ -29,18 +29,18 @@ additional data
 \item the responder non-injectively agrees with the server on the key and 
 some additional data.
 \end{enumerate}
-The "additional data" is a parameter of this model. *}
+The "additional data" is a parameter of this model.\<close>
 
 declare option.split [split]
 (* declare option.split_asm [split] *)
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* The state type remains the same, but in this model we will record
-nonces and timestamps in the run frame. *}
+text \<open>The state type remains the same, but in this model we will record
+nonces and timestamps in the run frame.\<close>
 
 type_synonym m1a_state = "m1x_state"
 type_synonym m1a_obs = "m1x_obs"
@@ -49,29 +49,29 @@ type_synonym 'x m1a_pred = "'x m1x_pred"
 type_synonym 'x m1a_trans = "'x m1x_trans"
 
 
-text {* We need some parameters regarding the list of freshness values
-stored by the server. These should be defined in further refinements. *}
+text \<open>We need some parameters regarding the list of freshness values
+stored by the server. These should be defined in further refinements.\<close>
 
 consts 
-  is_len :: "nat"   -- {* num of agreeing list elements for initiator-server *}  
-  rs_len :: "nat"   -- {* num of agreeing list elements for responder-server *}
+  is_len :: "nat"   \<comment> \<open>num of agreeing list elements for initiator-server\<close>  
+  rs_len :: "nat"   \<comment> \<open>num of agreeing list elements for responder-server\<close>
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-definition         -- {* by @{term "A"}, refines @{term "m1x_step1"} *}
+definition         \<comment> \<open>by @{term "A"}, refines @{term "m1x_step1"}\<close>
   m1a_step1 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1r_trans"
 where
   "m1a_step1 \<equiv> m1x_step1"
 
-definition       -- {* by @{term "B"}, refines @{term "m1x_step2"} *}
+definition       \<comment> \<open>by @{term "B"}, refines @{term "m1x_step2"}\<close>
   m1a_step2 :: "[rid_t, agent, agent] \<Rightarrow> 'x m1r_trans"
 where
   "m1a_step2 \<equiv> m1x_step2"
 
-definition       -- {* by @{term "Server"}, refines @{term m1x_step3} *}
+definition       \<comment> \<open>by @{term "Server"}, refines @{term m1x_step3}\<close>
   m1a_step3 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1r_trans"
 where
   "m1a_step3 Rs A B Kab al \<equiv> {(s, s1).
@@ -83,7 +83,7 @@ where
      s1 = s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], al)) \<rparr>
   }"
 
-definition         -- {* by @{text "A"}, refines @{term m1x_step4} *}
+definition         \<comment> \<open>by @{text "A"}, refines @{term m1x_step4}\<close>
   m1a_step4 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1a_trans"
 where
   "m1a_step4 Ra A B Kab nla \<equiv> {(s, s').
@@ -100,7 +100,7 @@ where
      s' = s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], aKey Kab # nla)) \<rparr>
   }" 
 
-definition         -- {* by @{term "B"}, refines @{term m1x_step5} *}
+definition         \<comment> \<open>by @{term "B"}, refines @{term m1x_step5}\<close>
   m1a_step5 :: "[rid_t, agent, agent, key, atom list] \<Rightarrow> 'x m1a_trans"
 where
   "m1a_step5 Rb A B Kab nlb \<equiv> {(s, s1). 
@@ -117,14 +117,14 @@ where
      s1 = s\<lparr> runs := (runs s)(Rb \<mapsto> (Resp, [A, B], aKey Kab # nlb)) \<rparr>
   }"
 
-definition     -- {* by attacker, refines @{term m1x_leak} *}
+definition     \<comment> \<open>by attacker, refines @{term m1x_leak}\<close>
   m1a_leak :: "rid_t \<Rightarrow> 'x m1x_trans"
 where
   "m1a_leak = m1x_leak" 
 
 
 (******************************************************************************)
-subsection {* Specification *}
+subsection \<open>Specification\<close>
 (******************************************************************************)
 
 definition
@@ -170,14 +170,14 @@ lemmas m1a_defs = m1a_loc_defs m1x_defs
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-subsubsection {* inv0: Finite domain *}
+subsubsection \<open>inv0: Finite domain\<close>
 (*inv**************************************************************************)
 
-text {* There are only finitely many runs. This is needed to establish
-the responder/initiator agreement. *}
+text \<open>There are only finitely many runs. This is needed to establish
+the responder/initiator agreement.\<close>
 
 definition 
   m1a_inv0_fin :: "'x m1r_pred"
@@ -188,7 +188,7 @@ lemmas m1a_inv0_finI = m1a_inv0_fin_def [THEN setc_def_to_intro, rule_format]
 lemmas m1a_inv0_finE [elim] = m1a_inv0_fin_def [THEN setc_def_to_elim, rule_format]
 lemmas m1a_inv0_finD = m1a_inv0_fin_def [THEN setc_def_to_dest, rule_format]
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m1a_inv0_fin_init [iff]:
   "init m1a \<subseteq> m1a_inv0_fin"
@@ -203,13 +203,13 @@ by (rule inv_rule_incr, auto del: subsetI)
 
 
 (******************************************************************************)
-subsection {* Refinement of @{text "m1x"} *}
+subsection \<open>Refinement of @{text "m1x"}\<close>
 (******************************************************************************)
 
-subsubsection {* Simulation relation *}
+subsubsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* Define run abstraction. *}
+text \<open>Define run abstraction.\<close>
 
 fun 
   rm1x1a :: "role_t \<Rightarrow> atom list \<Rightarrow> atom list"
@@ -222,15 +222,15 @@ abbreviation
   runs1x1a :: "runs_t \<Rightarrow> runs_t" where 
   "runs1x1a \<equiv> map_runs rm1x1a"
 
-text {* med1x1: The mediator function maps a concrete observation to an 
-abstract one. *}
+text \<open>med1x1: The mediator function maps a concrete observation to an 
+abstract one.\<close>
 
 definition
   med1x1a :: "m1a_obs \<Rightarrow> m1x_obs" where
   "med1x1a t \<equiv> \<lparr> runs = runs1x1a (runs t), leak = leak t \<rparr>"
 
-text {* R1x1a: The simulation relation is defined in terms of the mediator
-function. *}
+text \<open>R1x1a: The simulation relation is defined in terms of the mediator
+function.\<close>
 
 definition
   R1x1a :: "(m1x_state \<times> m1a_state) set" where
@@ -240,7 +240,7 @@ lemmas R1x1a_defs =
   R1x1a_def med1x1a_def 
 
 
-subsubsection {* Refinement proof *}
+subsubsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
 lemma PO_m1a_step1_refines_m1x_step1:
@@ -280,7 +280,7 @@ lemma PO_m1a_leak_refines_m1x_leak:
 by (auto simp add: PO_rhoare_defs R1x1a_defs m1a_defs map_runs_def)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m1a_trans_refines_m1x_trans = 
   PO_m1a_step1_refines_m1x_step1 PO_m1a_step2_refines_m1x_step2
@@ -301,14 +301,14 @@ apply (auto simp add: m1a_def m1a_trans_def m1x_def m1x_trans_def
 apply (force intro!: PO_m1a_trans_refines_m1x_trans)+
 done
 
-text {* Observation consistency. *}
+text \<open>Observation consistency.\<close>
 
 lemma obs_consistent_med1x1a [iff]: 
   "obs_consistent R1x1a med1x1a m1x m1a"
 by (auto simp add: obs_consistent_def R1x1a_def m1a_defs)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma PO_m1a_refines_m1x [iff]: 
   "refines R1x1a med1x1a m1x m1a"
@@ -319,18 +319,18 @@ by (rule refinement_soundness) (fast)
 
 
 (******************************************************************************)
-subsection {* Refinement of @{text "a0n"} for initiator/server *}
+subsection \<open>Refinement of @{text "a0n"} for initiator/server\<close>
 (******************************************************************************)
 
-text {* For the initiator, we get an non-injective agreement with the server on 
-the session key, the responder name, and the atom list @{term "isl"}. *}
+text \<open>For the initiator, we get an non-injective agreement with the server on 
+the session key, the responder name, and the atom list @{term "isl"}.\<close>
 
 
-subsubsection {* Simulation relation *}
+subsubsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* We define two auxiliary functions to reconstruct the signals of the
-initial model from completed initiator and server runs. *}
+text \<open>We define two auxiliary functions to reconstruct the signals of the
+initial model from completed initiator and server runs.\<close>
 
 type_synonym
   issig = "key \<times> agent \<times> atom list"
@@ -356,8 +356,8 @@ where
 | "is_runs2sigs runz _ = 0"
 
 
-text {* Simulation relation and mediator function. We map completed initiator 
-and responder runs to commit and running signals, respectively. *}
+text \<open>Simulation relation and mediator function. We map completed initiator 
+and responder runs to commit and running signals, respectively.\<close>
 
 definition 
   med_a0m1a_is :: "m1a_obs \<Rightarrow> issig a0i_obs" where
@@ -370,7 +370,7 @@ definition
 lemmas R_a0m1a_is_defs = R_a0m1a_is_def med_a0m1a_is_def 
 
 
-subsubsection {* Lemmas about the auxiliary functions *}
+subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
 lemma is_runs2sigs_empty [simp]: 
@@ -383,7 +383,7 @@ lemma is_commit_finite [simp, intro]:
 by (auto intro: finite_subset dest: dom_lemmas)
 
 
-text {* Update lemmas *}
+text \<open>Update lemmas\<close>
 
 lemma is_runs2sigs_upd_init_none [simp]:
   "\<lbrakk> Ra \<notin> dom runz \<rbrakk>
@@ -414,7 +414,7 @@ lemma is_runs2sigs_upd_init_some [simp]:
 apply (rule ext, erule rev_mp, erule rev_mp, erule rev_mp)
 apply (rename_tac s)
 apply (rule_tac ?a0.0=runz and ?a1.0=s in is_runs2sigs.induct, auto)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (rename_tac runz)
 apply (rule_tac s="card (insert Ra (is_commit runz A B Kab (take is_len nla)))" 
       in trans, fast, auto)
@@ -428,7 +428,7 @@ by (rule ext, erule rev_mp)
    (rule is_runs2sigs.induct, auto dest: dom_lemmas)  
 
 
-subsubsection {* Refinement proof *}
+subsubsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
 lemma PO_m1a_step1_refines_a0_is_skip:
@@ -471,7 +471,7 @@ lemma PO_m1a_leak_refines_a0_is_skip:
 by (simp add: PO_rhoare_defs R_a0m1a_is_defs m1a_defs, safe, auto)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m1a_trans_refines_a0_is_trans = 
   PO_m1a_step1_refines_a0_is_skip PO_m1a_step2_refines_a0_is_skip
@@ -495,7 +495,7 @@ lemma obs_consistent_med_a0m1a_is [iff]:
 by (auto simp add: obs_consistent_def R_a0m1a_is_def med_a0m1a_is_def 
                    a0n_def m1a_def)
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma PO_m1a_refines_a0_is [iff]: 
   "refines (R_a0m1a_is \<inter> UNIV \<times> m1a_inv0_fin) med_a0m1a_is a0n m1a"
@@ -506,18 +506,18 @@ by (rule refinement_soundness) (fast)
 
 
 (******************************************************************************)
-subsection {* Refinement of @{text "a0n"} for responder/server *}
+subsection \<open>Refinement of @{text "a0n"} for responder/server\<close>
 (******************************************************************************)
 
-text {* For the responder, we get a non-injective agreement with the server on 
-the session key, the initiator's name, and additional data. *}
+text \<open>For the responder, we get a non-injective agreement with the server on 
+the session key, the initiator's name, and additional data.\<close>
 
 
-subsubsection {* Simulation relation *}
+subsubsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
-text {* We define two auxiliary functions to reconstruct the signals of the
-initial model from completed responder and server runs. *}
+text \<open>We define two auxiliary functions to reconstruct the signals of the
+initial model from completed responder and server runs.\<close>
 
 type_synonym
   rssig = "key \<times> agent \<times> atom list"
@@ -543,8 +543,8 @@ where
 | "rs_runs2sigs runz _ = 0"
 
 
-text {* Simulation relation and mediator function. We map completed initiator 
-and responder runs to commit and running signals, respectively. *}
+text \<open>Simulation relation and mediator function. We map completed initiator 
+and responder runs to commit and running signals, respectively.\<close>
 
 definition 
   med_a0m1a_rs :: "m1a_obs \<Rightarrow> rssig a0n_obs" where
@@ -557,10 +557,10 @@ definition
 lemmas R_a0m1a_rs_defs = R_a0m1a_rs_def med_a0m1a_rs_def 
 
 
-subsubsection {* Lemmas about the auxiliary functions *}
+subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
-text {* Other lemmas *}
+text \<open>Other lemmas\<close>
 
 lemma rs_runs2sigs_empty [simp]: 
   "runz = empty \<Longrightarrow> rs_runs2sigs runz = (\<lambda>s. 0)"
@@ -572,7 +572,7 @@ lemma rs_commit_finite [simp, intro]:
 by (auto intro: finite_subset dest: dom_lemmas)
 
 
-text {* Update lemmas *}
+text \<open>Update lemmas\<close>
 
 lemma rs_runs2sigs_upd_init_none [simp]:
   "\<lbrakk> Ra \<notin> dom runz \<rbrakk>
@@ -608,14 +608,14 @@ lemma rs_runs2sigs_upd_resp_some [simp]:
       Commit [B, Sv] (Kab, A, rsl) := Suc (card (rs_commit runz A B Kab rsl)))"
 apply (rule ext, erule rev_mp, erule rev_mp, erule rev_mp) 
 apply (rule rs_runs2sigs.induct, auto dest: dom_lemmas)
--- {* 1 subgoal *}
+\<comment> \<open>1 subgoal\<close>
 apply (rename_tac runz)
 apply (rule_tac s="card (insert Rb (rs_commit runz A B Kab (take rs_len nlb)))" 
        in trans, fast, auto)
 done
 
 
-subsubsection {* Refinement proof *}
+subsubsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
 lemma PO_m1a_step1_refines_a0_rs_skip:
@@ -658,7 +658,7 @@ lemma PO_m1a_leak_refines_a0_rs_skip:
 by (auto simp add: PO_rhoare_defs R_a0m1a_rs_defs a0i_defs m1a_defs)
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m1a_trans_refines_a0_rs_trans = 
   PO_m1a_step1_refines_a0_rs_skip PO_m1a_step2_refines_a0_rs_skip
@@ -683,7 +683,7 @@ by (auto simp add: obs_consistent_def R_a0m1a_rs_def med_a0m1a_rs_def
                    a0n_def m1a_def)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma PO_m1a_refines_a0_rs [iff]: 
   "refines (R_a0m1a_rs \<inter> UNIV \<times> m1a_inv0_fin) med_a0m1a_rs a0n m1a"

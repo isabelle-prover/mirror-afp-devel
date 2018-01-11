@@ -14,7 +14,7 @@
 
 *******************************************************************************)
 
-section {* Authenticated Diffie-Hellman Protocol (L2) *}
+section \<open>Authenticated Diffie-Hellman Protocol (L2)\<close>
 
 theory dhlvl2
 imports dhlvl1 Channels
@@ -23,10 +23,10 @@ begin
 declare domIff [simp, iff del]
 
 (**************************************************************************************************)
-subsection {* State and Events*}
+subsection \<open>State and Events\<close>
 (**************************************************************************************************)
 
-text {* Initial compromise. *}
+text \<open>Initial compromise.\<close>
 consts
   bad_init :: "agent set" 
 
@@ -35,7 +35,7 @@ specification (bad_init)
 by auto
 
 
-text {* Level 2 state. *}
+text \<open>Level 2 state.\<close>
 
 record l2_state = 
   l1_state +
@@ -52,7 +52,7 @@ type_synonym
   l2_trans = "(l2_state \<times> l2_state) set"
 
 
-text {* Attacker events. *}
+text \<open>Attacker events.\<close>
 
 definition
   l2_dy_fake_msg :: "msg \<Rightarrow> l2_trans"
@@ -75,7 +75,7 @@ where
   }"
 
 
-text {* Partnering.*}
+text \<open>Partnering.\<close>
 
 fun
   role_comp :: "role_t \<Rightarrow> role_t"
@@ -124,8 +124,8 @@ lemma partner_symmetric:
   "partner_runs R R' \<Longrightarrow> partner_runs R' R"
 by (auto simp add: partner_runs_def matching_symmetric)
 
-text {* The unicity of the parther is actually protocol dependent:
-it only holds if there are generated fresh nonces (which identify the runs) in the frames. *}
+text \<open>The unicity of the parther is actually protocol dependent:
+it only holds if there are generated fresh nonces (which identify the runs) in the frames.\<close>
 
 lemma partner_unique:
   "partner_runs R R'' \<Longrightarrow> partner_runs R R' \<Longrightarrow> R' = R''"
@@ -165,7 +165,7 @@ lemma partner_test:
 by (auto intro!:partner_unique simp add:partners_def partner_symmetric)
 
 
-text {* Compromising events. *}
+text \<open>Compromising events.\<close>
 
 definition
   l2_lkr_others :: "agent \<Rightarrow> l2_trans"
@@ -212,7 +212,7 @@ where
   }"
 
 
-text {* Protocol events:
+text \<open>Protocol events:
 \begin{itemize}
   \item step 1: create @{term "Ra"}, @{term "A"} generates @{term "nx"},
     computes and insecurely sends $@{term "g"}^@{term "nx"}$
@@ -232,7 +232,7 @@ text {* Protocol events:
     emits a commit signal for @{term "Resp"}, $@{term "g"}^@{term "nx*ny"}$,
     declares the secret $@{term "g"}^@{term "nx*ny"}$
 \end{itemize}
-*}
+\<close>
 
 definition
     l2_step1 :: "rid_t \<Rightarrow> agent \<Rightarrow> agent \<Rightarrow> l2_trans"
@@ -316,7 +316,7 @@ where
           \<rparr>
   }"
 
-text {* Specification. *}
+text \<open>Specification.\<close>
 definition 
   l2_init :: "l2_state set"
 where
@@ -369,8 +369,8 @@ lemma l2_obs_id [simp]: "obs l2 = id"
 by (simp add: l2_def)
 
 
-text {* Once a run is finished, it stays finished, therefore if the test is not finished at some
-point then it was not finished before either. *}
+text \<open>Once a run is finished, it stays finished, therefore if the test is not finished at some
+point then it was not finished before either.\<close>
 
 declare domIff [iff]
 lemma l2_run_ended_trans:
@@ -390,15 +390,15 @@ by (auto simp add: can_signal_def l2_run_ended_trans)
 
 
 (**************************************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (**************************************************************************************************)
 
-subsubsection {* inv1 *}
+subsubsection \<open>inv1\<close>
 (**************************************************************************************************)
 
-text {* If @{term "can_signal s A B"}
+text \<open>If @{term "can_signal s A B"}
 (i.e., @{term "A"}, @{term "B"} are the test session agents and the test is not finished),
-then A and B are honest. *}
+then A and B are honest.\<close>
 
 definition
   l2_inv1 :: "l2_state set"
@@ -437,11 +437,11 @@ lemma PO_l2_inv1 [iff]: "reach l2 \<subseteq> l2_inv1"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv2 (authentication guard)*}
+subsubsection \<open>inv2 (authentication guard)\<close>
 (**************************************************************************************************)
 
-text {* If @{term "Auth B A \<langle>Number 0, gny, Exp Gen (NonceF (Ra$nx))\<rangle> \<in> chan s"} and @{term "A"},
-  @{term "B"} are honest then the message has indeed been sent by a responder run (etc). *}
+text \<open>If @{term "Auth B A \<langle>Number 0, gny, Exp Gen (NonceF (Ra$nx))\<rangle> \<in> chan s"} and @{term "A"},
+  @{term "B"} are honest then the message has indeed been sent by a responder run (etc).\<close>
 
 definition
   l2_inv2 :: "l2_state set"
@@ -474,12 +474,12 @@ lemma PO_l2_inv2 [iff]: "reach l2 \<subseteq> l2_inv2"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv3 (authentication guard) *}
+subsubsection \<open>inv3 (authentication guard)\<close>
 (**************************************************************************************************)
 
-text {* If @{text "Auth A B \<langle>Number 1, gnx, Exp Gen (NonceF (Rb$ny))\<rangle> \<in> chan s"} and @{term "A"},
+text \<open>If @{text "Auth A B \<langle>Number 1, gnx, Exp Gen (NonceF (Rb$ny))\<rangle> \<in> chan s"} and @{term "A"},
   @{term "B"} are honest
-  then the message has indeed been sent by an initiator run (etc). *}
+  then the message has indeed been sent by an initiator run (etc).\<close>
 
 definition
   l2_inv3 :: "l2_state set"
@@ -513,10 +513,10 @@ lemma PO_l2_inv3 [iff]: "reach l2 \<subseteq> l2_inv3"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv4 *}
+subsubsection \<open>inv4\<close>
 (**************************************************************************************************)
 
-text {* For an initiator, the session key is always @{text "gny^nx"}. *}
+text \<open>For an initiator, the session key is always @{text "gny^nx"}.\<close>
 
 definition
   l2_inv4 :: "l2_state set"
@@ -546,10 +546,10 @@ lemma PO_l2_inv4 [iff]: "reach l2 \<subseteq> l2_inv4"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv4' *}
+subsubsection \<open>inv4'\<close>
 (**************************************************************************************************)
 
-text {* For a responder, the session key is always @{text "gnx^ny"}. *}
+text \<open>For a responder, the session key is always @{text "gnx^ny"}.\<close>
 
 definition
   l2_inv4' :: "l2_state set"
@@ -580,11 +580,11 @@ by (rule inv_rule_basic) (auto)
 
 
 
-subsubsection {* inv5 *}
+subsubsection \<open>inv5\<close>
 (**************************************************************************************************)
 
-text {* The only confidential or secure messages on the channel have been put there
-  by the attacker. *}
+text \<open>The only confidential or secure messages on the channel have been put there
+  by the attacker.\<close>
 
 definition
   l2_inv5 :: "l2_state set"
@@ -612,11 +612,11 @@ lemma PO_l2_inv5 [iff]: "reach l2 \<subseteq> l2_inv5"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv6*}
+subsubsection \<open>inv6\<close>
 (**************************************************************************************************)
 
-text {* For a run @{term "R"} (with any role), the session key always has the form
-$something^n$ where $n$ is a nonce generated by @{term "R"}. *}
+text \<open>For a run @{term "R"} (with any role), the session key always has the form
+$something^n$ where $n$ is a nonce generated by @{term "R"}.\<close>
 
 definition
   l2_inv6 :: "l2_state set"
@@ -645,11 +645,11 @@ lemma PO_l2_inv6 [iff]: "reach l2 \<subseteq> l2_inv6"
 by (rule inv_rule_basic) (auto)
 
 
-subsubsection {* inv7 *}
+subsubsection \<open>inv7\<close>
 (**************************************************************************************************)
 
-text {* Form of the messages in @{term "extr (bad s) (ik s) (chan s)"} =
-  @{term "synth (analz (generators))"}. *}
+text \<open>Form of the messages in @{term "extr (bad s) (ik s) (chan s)"} =
+  @{term "synth (analz (generators))"}.\<close>
 
 abbreviation
   "generators \<equiv> {x. \<exists> N. x = Exp Gen (Nonce N)} \<union> 
@@ -748,13 +748,13 @@ by (auto simp add: l2_nostep_defs intro:l2_inv7_trans_aux)
 lemma PO_l2_inv7 [iff]: "reach l2 \<subseteq> l2_inv7"
 by (rule_tac J="l2_inv5 \<inter> l2_inv6" in inv_rule_incr) (auto)
 
-text {* Auxiliary dest rule for inv7. *}
+text \<open>Auxiliary dest rule for inv7.\<close>
 lemmas l2_inv7D_aux = 
   l2_inv7D [THEN [2] subset_trans, THEN synth_analz_mono, simplified, 
             THEN [2] rev_subsetD, rotated 1, OF IK_subset_extr]
 
 
-subsubsection {* inv8: form of the secrets *}
+subsubsection \<open>inv8: form of the secrets\<close>
 (**************************************************************************************************)
 
 definition
@@ -773,7 +773,7 @@ lemma l2_inv8_init [iff]:
   "init l2 \<subseteq> l2_inv8"
 by (auto simp add: l2_def l2_init_def l2_inv8_def)
 
-text {* Steps 3 and 4 are the hard part. *}
+text \<open>Steps 3 and 4 are the hard part.\<close>
 
 lemma l2_inv8_step3:
   "{l2_inv8 \<inter> l2_inv1 \<inter> l2_inv2 \<inter> l2_inv4'} l2_step3 Ra A B gny {> l2_inv8}"
@@ -871,7 +871,7 @@ lemma PO_l2_inv8 [iff]: "reach l2 \<subseteq> l2_inv8"
 by (rule_tac J="l2_inv1 \<inter> l2_inv2 \<inter> l2_inv3 \<inter> l2_inv4 \<inter> l2_inv4'" in inv_rule_incr) (auto)
 
 
-text {* Auxiliary destruction rule for inv8. *}
+text \<open>Auxiliary destruction rule for inv8.\<close>
 
 lemma Exp_Exp_Gen_synth: 
   "Exp (Exp Gen X) Y \<in> synth H \<Longrightarrow> Exp (Exp Gen X) Y \<in> H \<or> X \<in> synth H \<or> Y \<in> synth H"
@@ -886,10 +886,10 @@ apply (auto dest!: Exp_Exp_Gen_synth Exp_Exp_Gen_inj2)
 done
 
 (**************************************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (**************************************************************************************************)
 
-text {* Mediator function. *}
+text \<open>Mediator function.\<close>
 definition
   med12s :: "l2_obs \<Rightarrow> l1_obs"
 where
@@ -902,7 +902,7 @@ where
     \<rparr>"
 
 
-text {* Relation between states. *}
+text \<open>Relation between states.\<close>
 
 definition
   R12s :: "(l1_state * l2_state) set"
@@ -919,7 +919,7 @@ lemma can_signal_R12 [simp]:
    can_signal s1 A B \<longleftrightarrow> can_signal s2 A B"
 by (auto simp add: can_signal_def R12s_defs)
 
-text {* Protocol events. *}
+text \<open>Protocol events.\<close>
 
 lemma l2_step1_refines_step1:
   "{R12s} l1_step1 Ra A B, l2_step1 Ra A B {>R12s}"
@@ -929,10 +929,10 @@ lemma l2_step2_refines_step2:
   "{R12s} l1_step2 Rb A B gnx, l2_step2 Rb A B gnx {>R12s}"
 by (auto simp add: PO_rhoare_defs R12s_defs l1_step2_def, simp_all add: l2_step2_def)
 
-text {* For step3 and 4, we prove the level 1 guard, i.e.,
+text \<open>For step3 and 4, we prove the level 1 guard, i.e.,
 "the future session key is not in @{term "synth (analz (ik s))"}"
   using the fact that inv8 also holds for the future state in which the session key is already in 
-  @{term "secret s"}. *}
+  @{term "secret s"}.\<close>
 
 lemma l2_step3_refines_step3:
   "{R12s \<inter> UNIV \<times> (l2_inv1 \<inter> l2_inv2 \<inter> l2_inv4' \<inter> l2_inv7 \<inter> l2_inv8)} 
@@ -1004,7 +1004,7 @@ proof (auto simp add: PO_rhoare_defs R12s_defs)
     done
 qed
 
-text {* Attacker events.*}
+text \<open>Attacker events.\<close>
 
 lemma l2_dy_fake_chan_refines_skip:
   "{R12s} Id, l2_dy_fake_chan M {>R12s}"
@@ -1018,7 +1018,7 @@ apply (drule Fake_insert_dy_fake_msg, erule l2_inv7D)
 apply (auto dest!: l2_inv8_aux)
 done
 
-text {* Compromising events. *}
+text \<open>Compromising events.\<close>
 
 lemma l2_lkr_others_refines_skip:
   "{R12s} Id, l2_lkr_others A {>R12s}"
@@ -1047,7 +1047,7 @@ proof (auto simp add: PO_rhoare_defs R12s_defs l2_loc_defs l1_defs)
     by (auto dest!: Exp_Exp_Gen_synth dest: Exp_Exp_Gen_inj2 simp add: analz_generators)
 qed
 
-text {* Refinement proof. *}
+text \<open>Refinement proof.\<close>
 
 lemmas l2_trans_refines_l1_trans = 
   l2_dy_fake_msg_refines_learn l2_dy_fake_chan_refines_skip
@@ -1084,9 +1084,9 @@ lemma l2_implements_l1 [iff]:
 by (rule refinement_soundness) (auto)
 
 
-subsection {* Derived invariants *}
+subsection \<open>Derived invariants\<close>
 (**************************************************************************************************)
-text {*
+text \<open>
   We want to prove @{term "l2_secrecy"}:
   @{term "dy_fake_msg (bad s) (ik s) (chan s) \<inter> secret s = {}"}
   but by refinement we only get @{term "l2_partial_secrecy"}:
@@ -1094,7 +1094,7 @@ text {*
   This is fine, since a message in
   @{term "dy_fake_msg (bad s) (ik s) (chan s)"} could be added to @{term "ik s"},
   and @{term "l2_partial_secrecy"} would still hold for this new state.
-*}
+\<close>
 
 definition
   l2_partial_secrecy :: "('a l2_state_scheme) set"

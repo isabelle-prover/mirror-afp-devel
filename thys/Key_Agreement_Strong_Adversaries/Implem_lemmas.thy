@@ -17,21 +17,21 @@
 
 *******************************************************************************)
 
-section {* Lemmas Following from Channel Message Implementation Assumptions *}
+section \<open>Lemmas Following from Channel Message Implementation Assumptions\<close>
 
 theory Implem_lemmas
 imports Implem
 begin
 
-text {* These lemmas require the assumptions added in the @{locale "valid_implem"} locale. *}
+text \<open>These lemmas require the assumptions added in the @{locale "valid_implem"} locale.\<close>
 
 context semivalid_implem
 begin
 (**************************************************************************************************)
-subsection {* Message implementations and abstractions *}
+subsection \<open>Message implementations and abstractions\<close>
 (**************************************************************************************************)
 
-text {* Abstracting a set of messages into channel messages. *}
+text \<open>Abstracting a set of messages into channel messages.\<close>
 
 definition
   abs :: "msg set \<Rightarrow> chan set"
@@ -58,7 +58,7 @@ by (auto simp add: abs_def)
 lemma abs_Un_eq: "abs (G \<union> H) = abs G \<union> abs H"
 by (auto simp add: abs_def)
 
-text {* General lemmas about implementations and @{term abs}. *}
+text \<open>General lemmas about implementations and @{term abs}.\<close>
 lemma abs_insert_payload [simp]: "M \<in> payload \<Longrightarrow> abs (insert M S) = abs S"
 by (auto simp add: abs_def)
 
@@ -79,7 +79,7 @@ lemma abs_Un_keys_of [simp]:
 by (auto intro!: abs_Un_LtK)
 
 
-text {* Lemmas about @{term valid} and @{term abs} *}
+text \<open>Lemmas about @{term valid} and @{term abs}\<close>
 
 lemma abs_validSet: "abs (S \<inter> valid) = abs S"
 by (auto elim: absE intro: validI)
@@ -89,12 +89,12 @@ by (auto elim: validE)
 
 
 (**************************************************************************************************)
-subsection {* Extractable messages *}
+subsection \<open>Extractable messages\<close>
 (**************************************************************************************************)
 
-text {* @{text "extractable K I"}: subset of messages in $I$ which are implementations 
+text \<open>@{text "extractable K I"}: subset of messages in $I$ which are implementations 
 (not necessarily valid since we do not require that they are payload) and can be extracted 
-using the keys in K. It corresponds to L2 @{term extr}. *}
+using the keys in K. It corresponds to L2 @{term extr}.\<close>
 
 definition
   extractable :: "msg set \<Rightarrow> msg set \<Rightarrow> msg set"
@@ -123,14 +123,14 @@ lemma extractableE:
   P"
 by (auto simp add: extractable_def brokenI)
 
-text {* General lemmas about implementations and extractable. *}
+text \<open>General lemmas about implementations and extractable.\<close>
 lemma implem_extractable [simp]:
   "\<lbrakk> Keys_bad K Bad; implem (Chan x A B M) \<in> extractable K I; M \<in> payload \<rbrakk> 
  \<Longrightarrow> M \<in> extr Bad NI (abs I)"
 by (erule extractableE, auto)
 
 
-text {* Auxiliary lemmas about extractable messages: they are implementations. *}
+text \<open>Auxiliary lemmas about extractable messages: they are implementations.\<close>
 lemma valid_extractable [simp]: "I \<subseteq> valid \<Longrightarrow> extractable K I \<subseteq> valid"
 by (auto intro: subset_trans extractable_red del: subsetI)
 
@@ -157,10 +157,10 @@ lemmas LtKeys_parts = LtKeys_parts_payload parts_valid_LtKeys_disjoint
                       LtKeys_parts_implSecureSet_elt
 
 
-subsubsection{* Partition $I$ to keep only the extractable messages *}
+subsubsection\<open>Partition $I$ to keep only the extractable messages\<close>
 (**************************************************************************************************)
 
-text {* Partition the implementation set. *}
+text \<open>Partition the implementation set.\<close>
 
 lemma impl_partition:
   "\<lbrakk> NI \<subseteq> payload; I \<subseteq> valid \<rbrakk> \<Longrightarrow>
@@ -170,11 +170,11 @@ lemma impl_partition:
 by (auto dest!: subsetD [where A=I] elim!: valid_cases intro:  extractableI)
 
 
-subsubsection {* Partition of @{term "extractable"} *}
+subsubsection \<open>Partition of @{term "extractable"}\<close>
 (**************************************************************************************************)
 
-text {* We partition the @{term "extractable"} set into insecure, confidential, authentic 
-implementations. *}
+text \<open>We partition the @{term "extractable"} set into insecure, confidential, authentic 
+implementations.\<close>
 
 lemma extractable_partition:
   "\<lbrakk>Keys_bad K Bad; NI \<subseteq> payload; I \<subseteq> valid\<rbrakk> \<Longrightarrow>
@@ -189,15 +189,15 @@ done
 
 
 (**************************************************************************************************)
-subsection {* Lemmas for proving intruder refinement (L2-L3) *}
+subsection \<open>Lemmas for proving intruder refinement (L2-L3)\<close>
 (**************************************************************************************************)
 
-text {* Chain of lemmas used to prove the refinement for @{text "l3_dy"}. 
+text \<open>Chain of lemmas used to prove the refinement for @{text "l3_dy"}. 
 The ultimate goal is to show @{prop [display] 
   "synth (analz (NI \<union> I \<union> K \<union> Tags)) \<subseteq> synth (analz (extr Bad NI (abs I))) \<union> -payload"
-} *}
+}\<close>
 
-subsubsection {* First: we only keep the extractable messages*}
+subsubsection \<open>First: we only keep the extractable messages\<close>
 
 \<comment> \<open>the \<open>synth\<close> is probably not needed\<close>
 lemma analz_NI_I_K_analz_NI_EI:
@@ -257,7 +257,7 @@ proof -
 qed
 
 
-subsubsection {* Only keep the extracted messages (instead of extractable) *}
+subsubsection \<open>Only keep the extracted messages (instead of extractable)\<close>
 (**************************************************************************************************)
 
 lemma analz_NI_EI_K_synth_analz_NI_E_K:
@@ -384,7 +384,7 @@ proof -
 qed
 
 
-subsubsection {* Keys and Tags can be moved out of the @{term "analz"} *}
+subsubsection \<open>Keys and Tags can be moved out of the @{term "analz"}\<close>
 
 lemma analz_LtKeys_Tag:
 assumes "NI \<subseteq> payload" and "K \<subseteq> range LtK"
@@ -422,7 +422,7 @@ lemma analz_NI_E_K_analz_NI_E:
 by (rule analz_LtKeys_Tag) auto
 
 
-subsubsection {* Final lemmas, using all the previous ones *}
+subsubsection \<open>Final lemmas, using all the previous ones\<close>
 (**************************************************************************************************)
 
 lemma analz_NI_I_K_synth_analz_NI_E:
@@ -463,7 +463,7 @@ proof -
 qed
 
 
-text {* Lemma actually used to prove the refinement. *}
+text \<open>Lemma actually used to prove the refinement.\<close>
 lemma synth_analz_NI_I_K_synth_analz_NI_E:
   "\<lbrakk> Keys_bad K Bad; NI \<subseteq> payload; K \<subseteq> range LtK; I \<subseteq> valid\<rbrakk>
  \<Longrightarrow> synth (analz (NI \<union> I \<union> K \<union> Tags)) 
@@ -471,11 +471,11 @@ lemma synth_analz_NI_I_K_synth_analz_NI_E:
 by (intro synth_idem_payload analz_NI_I_K_synth_analz_NI_E) (assumption+)
 
 
-subsubsection {* Partitioning @{term "analz (ik)"} *}
+subsubsection \<open>Partitioning @{term "analz (ik)"}\<close>
 (**************************************************************************************************)
-text {* Two lemmas useful for proving the invariant
+text \<open>Two lemmas useful for proving the invariant
   @{term [display] "analz ik \<subseteq> synth (analz (ik \<inter> payload \<union> ik \<inter> valid \<union> ik \<inter> range LtK \<union> Tags))"}
-*}
+\<close>
 
 lemma analz_Un_partition:
   "analz S \<subseteq> synth (analz ((S \<inter> payload) \<union> (S \<inter> valid) \<union> (S \<inter> range LtK) \<union> Tags)) \<Longrightarrow>

@@ -15,12 +15,12 @@
 
 *******************************************************************************)
 
-section {* Core Kerberos, "parallel" variant (L3) *}
+section \<open>Core Kerberos, "parallel" variant (L3)\<close>
 
 theory m3_kerberos_par imports m2_kerberos "../Refinement/Message"
 begin
 
-text {*
+text \<open>
 We model a direct implementation of the channel-based core Kerberos protocol
 at Level 2 without ticket forwarding:
 \[
@@ -32,19 +32,19 @@ at Level 2 without ticket forwarding:
   \mathrm{M4.} & B \rightarrow A: & \{Ta\}_{Kab} \\
 \end{array}
 \]
-*}
+\<close>
 
-text {* Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}. *}
+text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
+@{text "dom"}.\<close>
 
 declare domIff [simp, iff del]
 
 
 (******************************************************************************)
-subsection {* Setup *}
+subsection \<open>Setup\<close>
 (******************************************************************************)
 
-text {* Now we can define the initial key knowledge. *}
+text \<open>Now we can define the initial key knowledge.\<close>
 
 overloading ltkeySetup' \<equiv> ltkeySetup begin
 definition ltkeySetup_def: "ltkeySetup' \<equiv> {(sharK C, A) | C A. A = C \<or> A = Sv}"
@@ -55,18 +55,18 @@ by (auto simp add: keySetup_def ltkeySetup_def corrKey_def)
 
 
 (******************************************************************************)
-subsection {* State *}
+subsection \<open>State\<close>
 (******************************************************************************)
 
-text {* The secure channels are star-shaped to/from the server.  Therefore,
-we have only one agent in the relation. *}
+text \<open>The secure channels are star-shaped to/from the server.  Therefore,
+we have only one agent in the relation.\<close>
 
 record m3_state = "m1_state" +
-  IK :: "msg set"                                -- {* intruder knowledge *}
+  IK :: "msg set"                                \<comment> \<open>intruder knowledge\<close>
 
 
-text {* Observable state:
-@{term "runs"}, @{term "leak"}, @{term "clk"}, and @{term "cache"}. *}
+text \<open>Observable state:
+@{term "runs"}, @{term "leak"}, @{term "clk"}, and @{term "cache"}.\<close>
 
 type_synonym
   m3_obs = "m2_obs"
@@ -83,12 +83,12 @@ type_synonym
 
 
 (******************************************************************************)
-subsection {* Events *}
+subsection \<open>Events\<close>
 (******************************************************************************)
 
-text {* Protocol events. *}
+text \<open>Protocol events.\<close>
 
-definition     -- {* by @{term "A"}, refines @{term "m2_step1"} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term "m2_step1"}\<close>
   m3_step1 :: "[rid_t, agent, agent, nonce] \<Rightarrow> m3_trans"
 where
   "m3_step1 Ra A B Na \<equiv> {(s, s1).
@@ -103,12 +103,12 @@ where
     \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term "m2_step2"} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term "m2_step2"}\<close>
   m3_step2 :: "[rid_t, agent, agent] \<Rightarrow> m3_trans"
 where
   "m3_step2 \<equiv> m1_step2"
 
-definition     -- {* by @{text "Server"}, refines @{term m2_step3} *}
+definition     \<comment> \<open>by @{text "Server"}, refines @{term m2_step3}\<close>
   m3_step3 :: "[rid_t, agent, agent, key, nonce, time] \<Rightarrow> m3_trans"
 where
   "m3_step3 Rs A B Kab Na Ts \<equiv> {(s, s1).
@@ -128,7 +128,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term m2_step4} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term m2_step4}\<close>
   m3_step4 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> m3_trans"
 where
   "m3_step4 Ra A B Na Kab Ts Ta \<equiv> {(s, s1).
@@ -153,7 +153,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "B"}, refines @{term m2_step5} *}
+definition     \<comment> \<open>by @{term "B"}, refines @{term m2_step5}\<close>
   m3_step5 :: "[rid_t, agent, agent, key, time, time] \<Rightarrow> m3_trans"
 where
   "m3_step5 Rb A B Kab Ts Ta \<equiv> {(s, s1).
@@ -179,7 +179,7 @@ where
      \<rparr>
   }"
 
-definition     -- {* by @{term "A"}, refines @{term m2_step6} *}
+definition     \<comment> \<open>by @{term "A"}, refines @{term m2_step6}\<close>
   m3_step6 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> m3_trans"
 where
   "m3_step6 Ra A B Na Kab Ts Ta \<equiv> {(s, s').
@@ -196,25 +196,25 @@ where
      \<rparr>
   }"
 
-text {* Clock tick event *}
+text \<open>Clock tick event\<close>
 
-definition   -- {* refines @{term "m2_tick"} *}
+definition   \<comment> \<open>refines @{term "m2_tick"}\<close>
   m3_tick :: "time \<Rightarrow> m3_trans"
 where
   "m3_tick \<equiv> m1_tick"
 
 
-text {* Purge event: purge cache of expired timestamps *}
+text \<open>Purge event: purge cache of expired timestamps\<close>
 
-definition     -- {* refines @{term "m2_purge"} *}
+definition     \<comment> \<open>refines @{term "m2_purge"}\<close>
   m3_purge :: "agent \<Rightarrow> m3_trans"
 where
   "m3_purge \<equiv> m1_purge"
 
 
-text {* Session key compromise. *}
+text \<open>Session key compromise.\<close>
 
-definition     -- {* refines @{term m2_leak} *}
+definition     \<comment> \<open>refines @{term m2_leak}\<close>
   m3_leak :: "[rid_t, agent, agent, nonce, time] \<Rightarrow> m3_trans"
 where
   "m3_leak Rs A B Na Ts \<equiv> {(s, s1).
@@ -228,10 +228,10 @@ where
             IK := insert (Key (sesK (Rs$sk))) (IK s) \<rparr>
   }"
 
-text {* Intruder fake event. The following "Dolev-Yao" event generates all
-intruder-derivable messages. *}
+text \<open>Intruder fake event. The following "Dolev-Yao" event generates all
+intruder-derivable messages.\<close>
 
-definition     -- {* refines @{term "m2_fake"} *}
+definition     \<comment> \<open>refines @{term "m2_fake"}\<close>
   m3_DY_fake :: "m3_trans"
 where
   "m3_DY_fake \<equiv> {(s, s1).
@@ -242,7 +242,7 @@ where
 
 
 (******************************************************************************)
-subsection {* Transition system *}
+subsection \<open>Transition system\<close>
 (******************************************************************************)
 
 definition
@@ -289,10 +289,10 @@ lemmas m3_defs = m3_loc_defs m2_defs
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-text {* Specialized injection that we can apply more aggressively. *}
+text \<open>Specialized injection that we can apply more aggressively.\<close>
 
 lemmas analz_Inj_IK = analz.Inj [where H="IK s" for s]
 lemmas parts_Inj_IK = parts.Inj [where H="IK s" for s]
@@ -302,10 +302,10 @@ declare parts_Inj_IK [dest!]
 declare analz_into_parts [dest]
 
 
-subsubsection {* inv1: Secrecy of pre-distributed shared keys *}
+subsubsection \<open>inv1: Secrecy of pre-distributed shared keys\<close>
 (******************************************************************************)
 
-text {* inv1: Secrecy of long-term keys *}
+text \<open>inv1: Secrecy of long-term keys\<close>
 
 definition
   m3_inv1_lkeysec :: "m3_pred"
@@ -320,7 +320,7 @@ lemmas m3_inv1_lkeysecE [elim] = m3_inv1_lkeysec_def [THEN setc_def_to_elim, rul
 lemmas m3_inv1_lkeysec_dest = m3_inv1_lkeysec_def [THEN setc_def_to_dest, rule_format]
 
 
-text {* Invariance proof. *}
+text \<open>Invariance proof.\<close>
 
 lemma PO_m3_inv1_lkeysec_init [iff]:
   "init m3 \<subseteq> m3_inv1_lkeysec"
@@ -334,7 +334,7 @@ lemma PO_m3_inv1_lkeysec [iff]: "reach m3 \<subseteq> m3_inv1_lkeysec"
 by (rule inv_rule_basic) (fast+)
 
 
-text {* Useful simplifier lemmas *}
+text \<open>Useful simplifier lemmas\<close>
 
 lemma m3_inv1_lkeysec_for_parts [simp]:
   "\<lbrakk> s \<in> m3_inv1_lkeysec \<rbrakk> \<Longrightarrow> Key (shrK C) \<in> parts (IK s) \<longleftrightarrow> C \<in> bad"
@@ -345,15 +345,15 @@ lemma m3_inv1_lkeysec_for_analz [simp]:
 by auto
 
 
-subsubsection {* inv7a: Session keys not used to encrypt other session keys *}
+subsubsection \<open>inv7a: Session keys not used to encrypt other session keys\<close>
 (******************************************************************************)
 
-text {* Session keys are not used to encrypt other keys. Proof requires
+text \<open>Session keys are not used to encrypt other keys. Proof requires
 generalization to sets of session keys.
 
 NOTE: This invariant will be derived from the corresponding L2 invariant
 using the simulation relation.
-*}
+\<close>
 
 definition
   m3_inv7a_sesK_compr :: "m3_pred"
@@ -367,7 +367,7 @@ lemmas m3_inv7a_sesK_comprI = m3_inv7a_sesK_compr_def [THEN setc_def_to_intro, r
 lemmas m3_inv7a_sesK_comprE = m3_inv7a_sesK_compr_def [THEN setc_def_to_elim, rule_format]
 lemmas m3_inv7a_sesK_comprD = m3_inv7a_sesK_compr_def [THEN setc_def_to_dest, rule_format]
 
-text {* Additional lemma *}
+text \<open>Additional lemma\<close>
 lemmas insert_commute_Key = insert_commute [where x="Key K" for K]
 
 lemmas m3_inv7a_sesK_compr_simps =
@@ -378,13 +378,13 @@ lemmas m3_inv7a_sesK_compr_simps =
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
-subsubsection {* Message abstraction and simulation relation *}
+subsubsection \<open>Message abstraction and simulation relation\<close>
 (******************************************************************************)
 
-text {* Abstraction function on sets of messages. *}
+text \<open>Abstraction function on sets of messages.\<close>
 
 inductive_set
   abs_msg :: "msg set \<Rightarrow> chmsg set"
@@ -407,8 +407,8 @@ where
   \<Longrightarrow> dAuth K (Msg [aNum T]) \<in> abs_msg H"
 
 
-text {* R23: The simulation relation. This is a data refinement of
-the insecure and secure channels of refinement 2. *}
+text \<open>R23: The simulation relation. This is a data refinement of
+the insecure and secure channels of refinement 2.\<close>
 
 definition
   R23_msgs :: "(m2_state \<times> m3_state) set" where
@@ -438,7 +438,7 @@ lemmas R23_defs =
   R23_def R23_msgs_def R23_keys_def R23_non_def R23_pres_def
 
 
-text {* The mediator function is the identity here. *}
+text \<open>The mediator function is the identity here.\<close>
 
 definition
   med32 :: "m3_obs \<Rightarrow> m2_obs" where
@@ -461,7 +461,7 @@ lemmas R23_presE [elim] = R23_pres_def [THEN rel_def_to_elim, simplified, rule_f
 lemmas R23_intros = R23_msgsI R23_keysI R23_nonI R23_presI
 
 
-text {* Simplifier lemmas for various instantiations (keys and nonces). *}
+text \<open>Simplifier lemmas for various instantiations (keys and nonces).\<close>
 
 lemmas R23_keys_simp = R23_keys_def [THEN rel_def_to_dest, simplified, rule_format]
 lemmas R23_keys_simps =
@@ -491,10 +491,10 @@ lemmas R23_non_emptyD =
 lemmas R23_emptyD = R23_keys_emptyD R23_non_emptyD
 *)
 
-subsubsection {* General lemmas *}
+subsubsection \<open>General lemmas\<close>
 (******************************************************************************)
 
-text {* General facts about @{term "abs_msg"} *}
+text \<open>General facts about @{term "abs_msg"}\<close>
 
 declare abs_msg.intros [intro!]
 declare abs_msg.cases [elim!]
@@ -515,34 +515,34 @@ lemma abs_msg_insert_mono [intro]:
 by (auto)
 
 
-text {* Facts about @{term "abs_msg"} concerning abstraction of fakeable
-messages. This is crucial for proving the refinement of the intruder event. *}
+text \<open>Facts about @{term "abs_msg"} concerning abstraction of fakeable
+messages. This is crucial for proving the refinement of the intruder event.\<close>
 
 lemma abs_msg_DY_subset_fakeable:
   "\<lbrakk> (s, t) \<in> R23_msgs; (s, t) \<in> R23_keys; (s, t) \<in> R23_non; t \<in> m3_inv1_lkeysec \<rbrakk>
   \<Longrightarrow> abs_msg (synth (analz (IK t))) \<subseteq> fake ik0 (dom (runs s)) (chan s)"
 apply (auto)
--- {* 9 subgoals, deal with replays first *}
+\<comment> \<open>9 subgoals, deal with replays first\<close>
 prefer 2 apply (blast)
 prefer 3 apply (blast)
 prefer 4 apply (blast)
 prefer 5 apply (blast)
--- {* remaining 5 subgoals are real fakes *}
+\<comment> \<open>remaining 5 subgoals are real fakes\<close>
 apply (intro fake_StatCh fake_DynCh, auto simp add: R23_simps)+
 done
 
 
-subsubsection {* Refinement proof *}
+subsubsection \<open>Refinement proof\<close>
 (******************************************************************************)
 
-text {* Pair decomposition. These were set to \texttt{elim!}, which is too
-agressive here. *}
+text \<open>Pair decomposition. These were set to \texttt{elim!}, which is too
+agressive here.\<close>
 
 declare MPair_analz [rule del, elim]
 declare MPair_parts [rule del, elim]
 
 
-text {* Protocol events. *}
+text \<open>Protocol events.\<close>
 
 lemma PO_m3_step1_refines_m2_step1:
   "{R23}
@@ -576,7 +576,7 @@ proof -
       "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
           IK := insert (Crypt (shrK A) \<lbrace> Key Kab, Agent B, Number (clk t), Nonce Na \<rbrace>)
                 (insert (Crypt (shrK B) \<lbrace> Key Kab, Agent A, Number (clk t) \<rbrace>) (IK t)) \<rparr>"
-  -- {* here we go *}
+  \<comment> \<open>here we go\<close>
     have "(?s', ?t') \<in> R23_msgs" using H
     by (-) (rule R23_intros, auto)
   moreover
@@ -633,7 +633,7 @@ lemma PO_m3_purge_refines_m2_purge:
 by (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros)
 
 
-text {* Intruder events. *}
+text \<open>Intruder events.\<close>
 
 lemma PO_m3_leak_refines_m2_leak:
   "{R23}
@@ -659,7 +659,7 @@ apply (auto simp add: R23_simps)
 done
 
 
-text {* All together now... *}
+text \<open>All together now...\<close>
 
 lemmas PO_m3_trans_refines_m2_trans =
   PO_m3_step1_refines_m2_step1 PO_m3_step2_refines_m2_step2
@@ -686,7 +686,7 @@ lemma PO_m3_observation_consistent [iff]:
 by (auto simp add: obs_consistent_def R23_def med32_def m3_defs)
 
 
-text {* Refinement result. *}
+text \<open>Refinement result.\<close>
 
 lemma m3_refines_m2 [iff]:
   "refines
@@ -704,10 +704,10 @@ lemma m3_implements_m2 [iff]:
 by (rule refinement_soundness) (auto)
 
 
-subsection {* Inherited invariants *}
+subsection \<open>Inherited invariants\<close>
 (******************************************************************************)
 
-subsubsection {* inv3 (derived): Key secrecy for initiator *}
+subsubsection \<open>inv3 (derived): Key secrecy for initiator\<close>
 (*invh*************************************************************************)
 
 definition
@@ -731,7 +731,7 @@ proof (rule INV_from_Refinement_using_invariants [OF m3_refines_m2])
 qed auto
 
 
-subsubsection {* inv4 (derived): Key secrecy for responder *}
+subsubsection \<open>inv4 (derived): Key secrecy for responder\<close>
 (*invh*************************************************************************)
 
 definition
