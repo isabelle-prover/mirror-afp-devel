@@ -1,7 +1,7 @@
 section \<open>Topology for Floating Point Numbers\<close>
 theory Float_Topology
   imports
-    "Analysis"
+    "HOL-Analysis.Analysis"
     "HOL-Library.Float"
 begin
 

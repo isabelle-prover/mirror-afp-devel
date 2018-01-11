@@ -4,7 +4,7 @@
 section \<open>Interval Type\<close>
 theory Interval
   imports
-    "Analysis"
+    "HOL-Analysis.Analysis"
     "HOL-Library.Set_Algebras"
     "HOL-Library.Float"
 begin
