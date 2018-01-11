@@ -67,7 +67,7 @@ next
         have "(\<Sum>k = Suc 0..n. (n choose k) * ?t k) = (\<Sum>k = Suc 0..Suc n. (n choose k) * ?t k)"
           by simp
         also have "\<dots> = (sum ((\<lambda>k. (n choose k) * ?t k) o Suc) {0..n})"
-          by (simp only: sum.reindex[symmetric, of Suc] inj_Suc image_Suc_atLeastAtMost)
+          by (simp only: sum.reindex[symmetric, of Suc] inj_Suc image_Suc_atLeast_atMost)
         also have "\<dots> = (\<Sum>k = 0..n. (n choose Suc k) * ?u k)"
           by simp
         finally show ?thesis .
@@ -139,7 +139,7 @@ next
         have "(\<Sum>k = Suc 0..n. of_nat (n choose k) * ?t k) = (\<Sum>k = Suc 0..Suc n. of_nat (n choose k) * ?t k)"
           by (simp add: binomial_eq_0)
         also have "\<dots> = (sum ((\<lambda>k. of_nat (n choose k) * ?t k) o Suc) {0..n})"
-          by (simp only: sum.reindex[symmetric, of Suc] inj_Suc image_Suc_atLeastAtMost)
+          by (simp only: sum.reindex[symmetric, of Suc] inj_Suc image_Suc_atLeast_atMost)
         also have "\<dots> = (\<Sum>k = 0..n. of_nat (n choose Suc k) * ?u k)"
           by simp
         finally show ?thesis .
