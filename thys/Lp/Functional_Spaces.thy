@@ -675,8 +675,10 @@ abbreviation quasinorm_subset_eq :: "('a::real_vector) quasinorm \<Rightarrow> '
   where "quasinorm_subset_eq \<equiv> less_eq"
 
 notation
-  quasinorm_subset (infix "\<subset>\<^sub>N" 50) and
-  quasinorm_subset_eq (infix "\<subseteq>\<^sub>N" 50)
+  quasinorm_subset ("'(\<subset>\<^sub>N')") and
+  quasinorm_subset ("(_/ \<subset>\<^sub>N _)" [51, 51] 50) and
+  quasinorm_subset_eq ("'(\<subseteq>\<^sub>N')") and
+  quasinorm_subset_eq ("(_/ \<subseteq>\<^sub>N _)" [51, 51] 50)
 
 
 lemma quasinorm_subsetD:

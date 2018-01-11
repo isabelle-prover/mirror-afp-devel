@@ -10,7 +10,9 @@ theory Data_List
     Numeral_Cpo
 begin
 
-no_notation Set.member ("'(:')")
+no_notation (ASCII)
+  Set.member  ("'(:')") and
+  Set.member  ("(_/ : _)" [51, 51] 50)
 
 subsection \<open>Datatype definition\<close>
 
@@ -24,6 +26,7 @@ domain 'a list ("[_]") =
 subsubsection \<open>Section syntax for @{const Cons}\<close>
 
 syntax
+  "_Cons_section" :: "'a \<rightarrow> ['a] \<rightarrow> ['a]" ("'(:')")
   "_Cons_section_left" :: "'a \<Rightarrow> ['a] \<rightarrow> ['a]" ("'(_:')")
 translations
   "(x:)" == "(CONST Rep_cfun) (CONST Cons) x"
