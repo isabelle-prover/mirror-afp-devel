@@ -134,7 +134,7 @@ context
 begin
 
 lemma chop_transfer [transfer_rule]: 
-  "(op = ===> list_all2 R ===> list_all2 (list_all2 R)) chop chop"
+  "((=) ===> list_all2 R ===> list_all2 (list_all2 R)) chop chop"
 proof (intro rel_funI)
   fix m n ::nat and xs :: "'a list" and ys :: "'b list"
   assume "m = n" "list_all2 R xs ys"
@@ -364,8 +364,8 @@ context
   includes lifting_syntax
 begin
 lemma transfer_is_median [transfer_rule]:
-  assumes [transfer_rule]: "(r ===> r ===> op =) op < op <"
-  shows   "(r ===> list_all2 r ===> op =) is_median is_median"
+  assumes [transfer_rule]: "(r ===> r ===> (=)) (<) (<)"
+  shows   "(r ===> list_all2 r ===> (=)) is_median is_median"
   unfolding is_median_def by transfer_prover
 
 lemma list_all2_eq_fun_conv_map: "list_all2 (\<lambda>x y. x = f y) xs ys \<longleftrightarrow> xs = map f ys"
@@ -380,7 +380,7 @@ next
 qed
 
 lemma transfer_is_median_dual_ord [transfer_rule]:
-  "(pcr_dual_ord op = ===> list_all2 (pcr_dual_ord op =) ===> op =) is_median is_median"
+  "(pcr_dual_ord (=) ===> list_all2 (pcr_dual_ord (=)) ===> (=)) is_median is_median"
   by (auto simp: pcr_dual_ord_def cr_dual_ord_def OO_def rel_fun_def is_median_def 
         list_all2_eq_fun_conv_map o_def less_dual_ord.rep_eq)
 end
@@ -576,7 +576,7 @@ proof -
   define med' where "med' = (\<lambda>xs. to_dual_ord (med (map of_dual_ord xs)))"
   have "xs = map of_dual_ord ys" if "list_all2 cr_dual_ord xs ys" for xs :: "'a list" and ys
     using that by induction (auto simp: cr_dual_ord_def)
-  hence [transfer_rule]: "(list_all2 (pcr_dual_ord op =) ===> pcr_dual_ord op =) med med'"
+  hence [transfer_rule]: "(list_all2 (pcr_dual_ord (=)) ===> pcr_dual_ord (=)) med med'"
     by (auto simp: rel_fun_def pcr_dual_ord_def OO_def med'_def cr_dual_ord_def 
                    dual_ord.to_dual_ord_inverse)
 

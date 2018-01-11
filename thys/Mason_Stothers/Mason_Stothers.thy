@@ -123,7 +123,7 @@ lemma radical_mult_coprime:
 proof (cases "a = 0 \<or> b = 0")
   case False
   with assms have "prime_factors a \<inter> prime_factors b = {}"
-    using not_prime_unit by (auto simp: prime_factors_dvd)
+    using not_prime_unit coprime_common_divisor by (auto simp: prime_factors_dvd)
   hence "\<Prod>(prime_factors a \<union> prime_factors b) = \<Prod>(prime_factors a) * \<Prod>(prime_factors b)"
     by (intro prod.union_disjoint) auto
   with False show ?thesis by (simp add: radical_def prime_factorization_mult)
@@ -210,9 +210,10 @@ proof -
   have C_eq: "C = -A - B" "-C = A + B" using sum by algebra+
   from coprime have "gcd A (gcd B (-C)) = 1" by simp
   also note C_eq(2)
-  finally have "coprime A B" by (simp add: gcd.commute add.commute[of A B])
+  finally have "coprime A B" by (simp add: gcd.commute add.commute[of A B] coprime_iff_gcd_eq_1)
   hence "coprime A (-C)" "coprime B (-C)"
-    unfolding C_eq by (simp_all add: gcd.commute[of B A] gcd.commute[of B "A + B"] add.commute)
+    unfolding C_eq by (simp_all add: gcd.commute[of B A] gcd.commute[of B "A + B"]
+                                     add.commute coprime_iff_gcd_eq_1)
   hence "coprime A C" "coprime B C" by simp_all
   note coprime = coprime \<open>coprime A B\<close> this
   have coprime1: "coprime (A div radical A) (B div radical B)"
@@ -222,7 +223,7 @@ proof -
   have coprime3: "coprime (B div radical B) (C div radical C)"
     by (rule coprime_divisors[OF _ _ \<open>coprime B C\<close>]) (insert nz, auto simp: div_dvd_iff_mult)
   have coprime4: "coprime (A div radical A * (B div radical B)) (C div radical C)"
-    using coprime2 coprime3 by (subst coprime_mul_eq') auto
+    using coprime2 coprime3 by (subst coprime_mult_left_iff) auto
 
   have eq: "A * pderiv B - pderiv A * B = pderiv C * B - C * pderiv B"
     by (simp add: C_eq pderiv_add pderiv_diff pderiv_minus algebra_simps)
@@ -243,7 +244,7 @@ proof -
   also have "radical A * radical B * radical C = radical (A * B) * radical C"
     using coprime by (subst radical_mult_coprime) auto
   also have "\<dots> = radical (A * B * C)"
-    using coprime by (subst radical_mult_coprime [symmetric]) (auto simp: coprime_mul_eq')
+    using coprime by (subst radical_mult_coprime [symmetric]) auto
   finally have dvd: "((A * B * C) div radical (A * B * C)) dvd (pderiv C * B - C * pderiv B)" . 
 
   have "pderiv B = 0 \<and> pderiv C = 0"
@@ -280,7 +281,7 @@ proof -
       have "C dvd C * pderiv B" by simp
       also from eq' have "\<dots> = pderiv C * B" by simp
       finally have "C dvd pderiv C" using coprime
-        by (subst (asm) coprime_dvd_mult_iff) (auto simp: gcd.commute)
+        by (subst (asm) coprime_dvd_mult_left_iff) (auto simp: coprime_commute)
       hence "degree C \<le> degree (pderiv C)" by (intro dvd_imp_degree_le) auto
       moreover have "degree (pderiv C) < degree C" by (intro degree_pderiv_less) auto
       ultimately show False by simp
@@ -289,7 +290,7 @@ proof -
       have "B dvd B * pderiv C" by simp
       also from eq' have "\<dots> = pderiv B * C" by (simp add: mult_ac)
       finally have "B dvd pderiv B" using coprime
-        by (subst (asm) coprime_dvd_mult_iff) (auto simp: gcd.commute)
+        by (subst (asm) coprime_dvd_mult_left_iff) auto
       hence "degree B \<le> degree (pderiv B)" by (intro dvd_imp_degree_le) auto
       moreover have "degree (pderiv B) < degree B" by (intro degree_pderiv_less) auto
       ultimately show False by simp
