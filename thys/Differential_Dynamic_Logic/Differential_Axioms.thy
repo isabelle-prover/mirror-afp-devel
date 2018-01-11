@@ -1,13 +1,13 @@
 theory "Differential_Axioms" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"     
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
-  "./Axioms"
-  "./Coincidence"
+  "Ids"
+  "Lib"
+  "Syntax"     
+  "Denotational_Semantics"
+  "Frechet_Correctness"
+  "Axioms"
+  "Coincidence"
 begin context ids begin
 section \<open>Differential Axioms\<close>
 text \<open>Differential axioms fall into two categories:

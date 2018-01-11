@@ -1,9 +1,9 @@
 theory "Denotational_Semantics" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Lib"
-  "./Ids"
-  "./Syntax"
+  "Lib"
+  "Ids"
+  "Syntax"
 begin
 subsection \<open>Denotational Semantics\<close>
 text \<open>

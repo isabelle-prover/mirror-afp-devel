@@ -1,7 +1,7 @@
 theory Syntax
 imports
   Complex_Main
-  "./Ids"
+  "Ids"
 begin 
 section \<open>Syntax\<close>
 text \<open>

@@ -1,10 +1,10 @@
 theory "Frechet_Correctness"
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Ids"
 begin
 context ids begin
 section \<open>Characterization of Term Derivatives\<close>

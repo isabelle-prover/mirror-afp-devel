@@ -1,14 +1,14 @@
 theory "Uniform_Renaming" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
-  "./Static_Semantics"
-  "./Coincidence"
-  "./Bound_Effect"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Frechet_Correctness"
+  "Static_Semantics"
+  "Coincidence"
+  "Bound_Effect"
 begin context ids begin
 
 section \<open>Uniform and Bound Renaming\<close>

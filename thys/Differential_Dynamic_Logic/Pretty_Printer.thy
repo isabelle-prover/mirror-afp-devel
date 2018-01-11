@@ -1,9 +1,9 @@
 theory "Pretty_Printer" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
+  "Ids"
+  "Lib"
+  "Syntax"
 begin
 context ids begin
 

@@ -1,11 +1,11 @@
 theory "Static_Semantics"
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Frechet_Correctness"
 begin
 section \<open>Static Semantics\<close>
 text \<open>This section introduces functions for computing properties of the static semantics, specifically

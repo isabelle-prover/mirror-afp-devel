@@ -1,13 +1,13 @@
 theory "Bound_Effect"
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
-  "./Static_Semantics"
-  "./Coincidence"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Frechet_Correctness"
+  "Static_Semantics"
+  "Coincidence"
 begin
 section \<open>Bound Effect Theorem\<close>
 text \<open>The bound effect lemma says that a program can only modify its bound variables and nothing else.

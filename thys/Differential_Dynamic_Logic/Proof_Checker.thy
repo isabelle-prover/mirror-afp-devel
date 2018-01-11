@@ -1,19 +1,19 @@
 theory "Proof_Checker" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Axioms"
-  "./Differential_Axioms"
-  "./Frechet_Correctness"
-  "./Static_Semantics"
-  "./Coincidence"
-  "./Bound_Effect"
-  "./Uniform_Renaming"
-  "./USubst_Lemma"
-  "./Pretty_Printer"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Axioms"
+  "Differential_Axioms"
+  "Frechet_Correctness"
+  "Static_Semantics"
+  "Coincidence"
+  "Bound_Effect"
+  "Uniform_Renaming"
+  "USubst_Lemma"
+  "Pretty_Printer"
   
 begin context ids begin
 section \<open>Proof Checker\<close>

@@ -1,12 +1,12 @@
 theory "Coincidence" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
-  "./Static_Semantics"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Frechet_Correctness"
+  "Static_Semantics"
 begin
 section \<open>Coincidence Theorems and Corollaries\<close>
 text \<open>This section proves coincidence: semantics of terms, odes, formulas and programs depend only

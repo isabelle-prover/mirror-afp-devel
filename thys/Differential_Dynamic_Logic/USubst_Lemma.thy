@@ -1,15 +1,15 @@
 theory "USubst_Lemma"
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Frechet_Correctness"
-  "./Static_Semantics"
-  "./Coincidence"
-  "./Bound_Effect"
-  "./USubst"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Frechet_Correctness"
+  "Static_Semantics"
+  "Coincidence"
+  "Bound_Effect"
+  "USubst"
 begin context ids begin
 section \<open>Soundness proof for uniform substitution rule\<close>
 lemma interp_eq:

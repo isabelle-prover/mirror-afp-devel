@@ -1,10 +1,10 @@
 theory "Axioms" 
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
 begin context ids begin
 
 section \<open>Axioms\<close>

@@ -1,11 +1,11 @@
 theory "USubst"
 imports
   Ordinary_Differential_Equations.ODE_Analysis
-  "./Ids"
-  "./Lib"
-  "./Syntax"
-  "./Denotational_Semantics"
-  "./Static_Semantics"
+  "Ids"
+  "Lib"
+  "Syntax"
+  "Denotational_Semantics"
+  "Static_Semantics"
 begin 
 section \<open>Uniform Substitution Definitions\<close>
 text\<open>This section defines substitutions and implements the substitution operation.
