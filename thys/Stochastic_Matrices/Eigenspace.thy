@@ -10,7 +10,7 @@ text \<open>Using results on Jordan-Normal forms, we prove that the geometric
 theory Eigenspace
 imports 
   Jordan_Normal_Form.Jordan_Normal_Form_Uniqueness
-  Perron_Frobenius.Perron_Frobenius_Aux_2
+  Perron_Frobenius.Perron_Frobenius_Aux
 begin
 hide_const (open) Coset.order
 
