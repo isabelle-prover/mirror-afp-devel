@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Source Coding Theorem - Archive of Formal Proofs
+<title>An Isabelle/HOL formalisation of Green's Theorem - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>ource
+  <h1>          <font class="first">A</font>n
   
-          <font class="first">C</font>oding
+          <font class="first">I</font>sabelle/HOL
+  
+          formalisation
+  
+          of
+  
+          <font class="first">G</font>reen's
   
           <font class="first">T</font>heorem
   
@@ -74,7 +80,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Source Coding Theorem</td>
+  <td class="data" width="80%">An Isabelle/HOL formalisation of Green's Theorem</td>
 </tr>
 
 <tr>
@@ -82,7 +88,7 @@
           Authors:
       </td>
   <td class="data">
-                    Quentin Hibon (qh225 /at/ cl /dot/ cam /dot/ ac /dot/ uk) and
+                    Mohammad Abdulaziz (mohammad /dot/ abdulaziz8 /at/ gmail /dot/ com) and
           <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
       </td>
 </tr>
@@ -91,29 +97,34 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-10-19</td>
+  <td class="data">2018-01-11</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This document contains a proof of the necessary condition on the code
-rate of a source code, namely that this code rate is bounded by the
-entropy of the source. This represents one half of Shannon's source
-coding theorem, which is itself an equivalence.</td>
+We formalise a statement of Green’s theorem—the first formalisation to
+our knowledge—in Isabelle/HOL. The theorem statement that we formalise
+is enough for most applications, especially in physics and
+engineering. Our formalisation is made possible by a novel proof that
+avoids the ubiquitous line integral cancellation argument. This
+eliminates the need to formalise orientations and region boundaries
+explicitly with respect to the outwards-pointing normal vector.
+Instead we appeal to a homological argument about equivalences between
+paths.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Source_Coding_Theorem-AFP,
-  author  = {Quentin Hibon and Lawrence C. Paulson},
-  title   = {Source Coding Theorem},
+        <pre>@article{Green-AFP,
+  author  = {Mohammad Abdulaziz and Lawrence C. Paulson},
+  title   = {An Isabelle/HOL formalisation of Green's Theorem},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Source_Coding_Theorem.html},
+  month   = jan,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Green.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -137,34 +148,23 @@ coding theorem, which is itself an equivalence.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Source_Coding_Theorem/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Source_Coding_Theorem/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Green/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Green/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Source_Coding_Theorem/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Green/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Source_Coding_Theorem-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Green-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Source_Coding_Theorem-2016-12-17.tar.gz">
-            afp-Source_Coding_Theorem-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-Source_Coding_Theorem-2016-10-19.tar.gz">
-            afp-Source_Coding_Theorem-2016-10-19.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

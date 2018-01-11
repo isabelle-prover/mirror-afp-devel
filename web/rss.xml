@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Jan 2018 00:00:00 +0000</pubDate>
+    <pubDate>11 Jan 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>An Isabelle/HOL formalisation of Green's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Green.html</link>
+       <guid>https://www.isa-afp.org/entries/Green.html</guid>
+       <dc:creator> Mohammad Abdulaziz, Lawrence C. Paulson       </dc:creator>
+       <pubDate>11 Jan 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalise a statement of Green’s theorem—the first formalisation to
+our knowledge—in Isabelle/HOL. The theorem statement that we formalise
+is enough for most applications, especially in physics and
+engineering. Our formalisation is made possible by a novel proof that
+avoids the ubiquitous line integral cancellation argument. This
+eliminates the need to formalise orientations and region boundaries
+explicitly with respect to the outwards-pointing normal vector.
+Instead we appeal to a homological argument about equivalences between
+paths.</description>
+    </item>
     <item>
        <title>Taylor Models</title>
               <link>https://www.isa-afp.org/entries/Taylor_Models.html</link>
@@ -587,24 +604,6 @@ theorem, which states that any subset of
 contains two different points whose difference vector has integer
 components.&lt;/p&gt;  &lt;p&gt;The entry contains a proof of both
 theorems.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-              <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.html</link>
-       <guid>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.html</guid>
-       <dc:creator> Michael Rawson       </dc:creator>
-       <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-I formalise a Church-style simply-typed
-\(\lambda\)-calculus, extended with pairs, a unit value, and
-projection functions, and show some metatheory of the calculus, such
-as the subject reduction property. Particular attention is paid to the
-treatment of names in the calculus. A nominal style of binding is
-used, but I use a manual approach over Nominal Isabelle in order to
-extract an executable type inference algorithm. More information can
-be found in my &lt;a
-href=&#34;http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html&#34;&gt;undergraduate
-dissertation&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

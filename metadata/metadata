@@ -5784,7 +5784,7 @@ abstract =
 
 [Source_Coding_Theorem]
 title = Source Coding Theorem
-author = Quentin Hibon <mailto:qh225@cl.cam.ac.uk>, Lawrence Paulson <mailto:lp15@cam.ac.uk>
+author = Quentin Hibon <mailto:qh225@cl.cam.ac.uk>, Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
 notify = qh225@cl.cam.ac.uk
 date = 2016-10-19
 topic = Mathematics/Probability Theory
@@ -6464,3 +6464,20 @@ abstract =
   models for the class of elementary functions, expressed by composition
   of arithmetic operations and basic functions like exp, sin, or square
   root.
+
+[Green]
+title = An Isabelle/HOL formalisation of Green's Theorem
+author = Mohammad Abdulaziz <mailto:mohammad.abdulaziz8@gmail.com>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Analysis
+date = 2018-01-11
+notify = mohammad.abdulaziz8@gmail.com, lp15@cam.ac.uk
+abstract = 
+  We formalise a statement of Green’s theorem—the first formalisation to
+  our knowledge—in Isabelle/HOL. The theorem statement that we formalise
+  is enough for most applications, especially in physics and
+  engineering. Our formalisation is made possible by a novel proof that
+  avoids the ubiquitous line integral cancellation argument. This
+  eliminates the need to formalise orientations and region boundaries
+  explicitly with respect to the outwards-pointing normal vector.
+  Instead we appeal to a homological argument about equivalences between
+  paths.
