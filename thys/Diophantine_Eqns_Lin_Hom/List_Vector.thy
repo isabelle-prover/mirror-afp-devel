@@ -13,6 +13,10 @@ theory List_Vector
 begin
 
 (*TODO: move*)
+lemma lex_lengthD: "(x, y) \<in> lex P \<Longrightarrow> length x = length y"
+  by (auto simp: lexord_lex)
+
+(*TODO: move*)
 lemma lexI:
   assumes "length ys = length xs" and "i < length xs"
     and "take i xs = take i ys" and "(xs ! i, ys ! i) \<in> r"
@@ -58,7 +62,6 @@ lemma rep_upd_unit:
 
 definition nonzero_iff: "nonzero xs \<longleftrightarrow> (\<exists>x\<in>set xs. x \<noteq> 0)"
 
-
 lemma nonzero_append [simp]:
   "nonzero (xs @ ys) \<longleftrightarrow> nonzero xs \<or> nonzero ys" by (auto simp: nonzero_iff)
 
@@ -78,8 +81,7 @@ lemma dotprod_commute:
   shows "xs \<bullet> ys = ys \<bullet> xs"
   using assms by (auto simp: dotprod_def mult.commute)
 
-lemma dotprod_Nil [simp]:
-  "[] \<bullet> [] = 0"
+lemma dotprod_Nil [simp]: "[] \<bullet> [] = 0"
   by (simp add: dotprod_def)
 
 lemma dotprod_Cons [simp]:
@@ -107,7 +109,7 @@ lemma dotprod_gt0:
 
 lemma dotprod_gt0D:
   assumes "length x = length y"
-    and  "x \<bullet> y > 0"
+    and "x \<bullet> y > 0"
   shows "\<exists>i<length y. x ! i > 0 \<and> y ! i > 0"
   using assms by (induct x y rule: list_induct2) (auto simp: Ex_less_Suc2)
 
@@ -325,7 +327,7 @@ qed
 
 lemma le_append_swap:
   assumes "length y = length v"
-  assumes "x @ y \<le>\<^sub>v w @ v"
+    and "x @ y \<le>\<^sub>v w @ v"
   shows "y @ x \<le>\<^sub>v v @ w"
 proof -
   have "length w = length x" using assms by auto
@@ -337,8 +339,7 @@ lemma le_append_swap_iff:
   assumes "length y = length v"
   shows "y @ x \<le>\<^sub>v v @ w  \<longleftrightarrow> x @ y \<le>\<^sub>v w @ v"
   using assms and le_append_swap
-  by (auto) (metis (no_types, lifting)
-      add_left_imp_eq le_length length_append)
+  by (auto) (metis (no_types, lifting) add_left_imp_eq le_length length_append)
 
 lemma unit_less:
   assumes "i < n"
@@ -422,7 +423,7 @@ lemma maxne0_times_sum_list_gt_dotprod:
   shows "maxne0 ys b * sum_list ys \<ge> b \<bullet> ys"
   using assms
   apply (induct b ys rule: list_induct2)
-   apply (auto simp: max_def ring_distribs add_mono_thms_linordered_semiring(1))
+   apply (auto  simp: max_def ring_distribs add_mono_thms_linordered_semiring(1))
   by (meson leI le_trans mult_less_cancel2 nat_less_le)
 
 lemma max_times_sum_list_gt_dotprod:
@@ -445,13 +446,12 @@ lemma maxne0_mono:
 proof (cases "length y = length a")
   case True
   have "length y = length x" using assms by (auto)
-  then show ?thesis using assms and True
-    apply (induct y x arbitrary: a rule: list_induct2)
-     apply auto
-    apply (case_tac a)
-     apply (auto simp: less_eq_def All_less_Suc2)
-     apply (simp add: le_max_iff_disj)+
-    done
+  then show ?thesis
+    using assms and True
+  proof (induct y x arbitrary: a rule: list_induct2)
+    case (Cons x xs y ys)
+    then show ?case by (cases a) (force simp: less_eq_def All_less_Suc2 le_max_iff_disj)+
+  qed simp
 next
   case False
   then show ?thesis
@@ -650,27 +650,19 @@ qed
 lemma rlex_trans:
   assumes "x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y" and "y <\<^sub>r\<^sub>l\<^sub>e\<^sub>x z"
   shows "x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x z"
-    using assms lex_trans rlex_def by blast
+  using assms lex_trans rlex_def by blast
 
 lemma lex_append_rightD:
   assumes "xs @ us <\<^sub>l\<^sub>e\<^sub>x ys @ vs" and "length xs = length ys"
     and "\<not> xs <\<^sub>l\<^sub>e\<^sub>x ys"
   shows "ys = xs \<and> us <\<^sub>l\<^sub>e\<^sub>x vs"
   using assms(2,1,3)
-  apply (induct xs ys rule: list_induct2)
-   apply simp_all
-  done
+  by (induct xs ys rule: list_induct2) simp_all
 
 lemma rlex_Cons:
-  "x # xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y # ys \<longleftrightarrow> xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x ys \<or> ys = xs \<and> x < y"
-  apply (auto simp: rlex_def intro: lex_append_rightI lex_append_leftI)
-   apply (subgoal_tac "length ys = length xs")
-    apply (auto dest: lex_append_rightD)
-   apply (simp add: lexord_lex)
-  apply (subgoal_tac "length ys = length xs")
-   apply (auto dest: lex_append_rightD)
-  apply (simp add: lexord_lex)
-  done
+  "x # xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y # ys \<longleftrightarrow> xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x ys \<or> ys = xs \<and> x < y" (is "?A = ?B")
+  by (cases "length ys = length xs")
+    (auto simp: rlex_def intro: lex_append_rightI lex_append_leftI dest: lex_append_rightD lex_lengthD)
 
 lemma rlex_irrefl:
   "\<not> x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x x"
