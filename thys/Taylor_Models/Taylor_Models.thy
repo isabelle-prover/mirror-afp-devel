@@ -508,8 +508,8 @@ fun tm_floatarith :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<
   where "tm_floatarith prec ord I a f = (
   map_option (\<lambda>cs. 
     let (pf, pi) = tmf_polys cs;
-        _ = compute_bound_tm prec (map2 op - I a);
-        e = round_interval prec (Ipoly (map2 op - I a) pi) (* TODO: use compute_bound_tm here?! *)
+        _ = compute_bound_tm prec (map2 (-) I a);
+        e = round_interval prec (Ipoly (map2 (-) I a) pi) (* TODO: use compute_bound_tm here?! *)
     in TaylorModel pf e
   ) (tmf_ivl_cs prec ord I a f)
 )" \<comment>\<open>Compute a taylor model from an arbitrary, univariate floatarith expression, if possible.
@@ -656,7 +656,7 @@ proof -
     by (auto simp: nth_list_update x)
   from t obtain z where z: "tmf_ivl_cs prec ord I xs f = Some z"
     and tz: "tm_poly t = fst (tmf_polys z)"
-    and tb: "tm_bound t = round_interval prec (Ipoly (map2 op - I xs) (snd (tmf_polys z)))"
+    and tb: "tm_bound t = round_interval prec (Ipoly (map2 (-) I xs) (snd (tmf_polys z)))"
     using assms(1)
     by (cases t) (auto simp: those_eq_Some_iff split_beta' Let_def simp del: tmf_ivl_cs.simps)
   from tmf_ivl_cs_correct[OF a z(1)]
@@ -689,7 +689,7 @@ proof -
     by (auto simp: ci_def set_of_eq cr_def)
 
   have enclosure: "(\<Sum>m<ord. cr s m * (x - (xs ! 0)) ^ m) + cr s ord * (x - (xs ! 0)) ^ ord
-      \<in>\<^sub>r round_interval prec (Ipoly (map2 op - I (map interval_of xs)) (snd (tmf_polys z)))"
+      \<in>\<^sub>r round_interval prec (Ipoly (map2 (-) I (map interval_of xs)) (snd (tmf_polys z)))"
     if cr_ord: "cr s ord \<in>\<^sub>i ci ord" for s
   proof -
     have "(\<Sum>m<ord. cr s m  * (x - xs!0) ^ m) + cr s ord * (x - xs!0) ^ ord =
@@ -708,7 +708,7 @@ proof -
             (metis in_set_of_interval_of list_update_id map_update nth_map real_interval_of)
       qed (simp add: cr_ord)
     qed (auto intro!: minus_in_intervalI simp: real_interval_minus x)
-    also have "\<dots> = set_of (horner_eval (real_interval o centered \<circ> op ! z)
+    also have "\<dots> = set_of (horner_eval (real_interval o centered \<circ> (!) z)
       (real_interval (I ! 0 - xs ! 0)) (length z))"
       by (auto simp: ci_def centered_def real_interval_minus real_interval_of lz)
     also have "\<dots> \<subseteq> set_of (Ipoly [real_interval (I ! 0 - xs ! 0)]
@@ -720,7 +720,7 @@ proof -
     also have "\<dots> \<subseteq> set_of (real_interval (round_interval prec (Ipoly [(I ! 0 - xs ! 0)] (snd (tmf_polys z)))))"
       by (rule set_of_real_interval_subset) (rule round_ivl_correct)
     also
-    have "Ipoly [I ! 0 - interval_of (xs ! 0)] (snd (tmf_polys z)) = Ipoly (map2 op - I (map interval_of xs)) (snd (tmf_polys z))"
+    have "Ipoly [I ! 0 - interval_of (xs ! 0)] (snd (tmf_polys z)) = Ipoly (map2 (-) I (map interval_of xs)) (snd (tmf_polys z))"
       using  a
       apply (auto intro!: Ipoly_num_params_cong nth_equalityI
           simp: nth_Cons  simp del:length_greater_0_conv split: nat.splits dest!: less_le_trans[OF _ num_params_tmf_polys2[of z]])
@@ -738,7 +738,7 @@ proof -
       by blast
 
     have "interpret_floatarith f (map real_of_float xs[0 := x]) -
-    Ipoly (map2 op - [x] [xs!0]) (fst (tmf_polys z)) =
+    Ipoly (map2 (-) [x] [xs!0]) (fst (tmf_polys z)) =
     (\<Sum>m<?n. ?diff m ?c / fact m * (?x - ?c) ^ m) + ?diff ?n s / fact ?n * (?x - ?c) ^ ?n -
     (\<Sum>m\<le>?n. (x - xs!0) ^ m * mid (z ! m))"
       unfolding tse
@@ -752,7 +752,7 @@ proof -
           tmf_c_correct[OF _ z_ord])
       by (smt "4"(1) "4"(2) "4"(3) "4"(4) a all_in_def in_real_intervalI length_greater_0_conv nth_list_update s xs_ne)
     note enclosure[OF this]
-    also have "Ipoly (map2 op - [x] (map real_of_float [xs ! 0])) (map_poly real_of_float (fst (tmf_polys z))) =
+    also have "Ipoly (map2 (-) [x] (map real_of_float [xs ! 0])) (map_poly real_of_float (fst (tmf_polys z))) =
         insertion e (map_poly real_of_float (fst (tmf_polys z)))"
       using diff_e
       by (auto intro!: Ipoly_eq_insertionI simp: nth_Cons split: nat.splits dest: less_le_trans[OF _ num_params_tmf_polys1[of z]])
