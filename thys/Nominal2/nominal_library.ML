@@ -381,7 +381,7 @@ fun mk_measure_trm f ctxt T =
   HOLogic.dest_setT T
   |> fst o HOLogic.dest_prodT
   |> f
-  |> curry ($) (Const (@{const_name "measure"}, dummyT))
+  |> curry (op $) (Const (@{const_name "measure"}, dummyT))
   |> Syntax.check_term ctxt
   
 (* wf-goal arising in induction_schema *)    

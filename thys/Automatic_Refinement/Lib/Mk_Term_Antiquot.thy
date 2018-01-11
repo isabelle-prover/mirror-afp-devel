@@ -45,11 +45,11 @@ local
     val expl_tvars = Term.add_tvars t []
       |> filter (is_expl_tvar o #1)
   
-    val spec_tvars = union (=) vtvars expl_tvars
+    val spec_tvars = union (op =) vtvars expl_tvars
   
-    val _ = subset (=) (tvars, spec_tvars)
+    val _ = subset (op =) (tvars, spec_tvars)
       orelse let
-        val loose = subtract (=) spec_tvars tvars 
+        val loose = subtract (op =) spec_tvars tvars 
           |> map (TVar #> Syntax.pretty_typ ctxt)
           |> Pretty.commas |> Pretty.block
 
@@ -73,7 +73,7 @@ local
       vars ()
   
     (* ARGH!!! "subtract eq a b" computes "b - a" *)
-    val unused_tvars = subtract (=) tvars vtvars 
+    val unused_tvars = subtract (op =) tvars vtvars 
       |> map #1
   
     (*
@@ -85,7 +85,7 @@ local
     fun 
       lin_type (TFree f) Ts = (TFree f, Ts)
     | lin_type (TVar (iname,S)) Ts = 
-        if is_expl_tvar iname orelse member (=) Ts iname then (TVar (("_",0),S), Ts)
+        if is_expl_tvar iname orelse member (op =) Ts iname then (TVar (("_",0),S), Ts)
         else (TVar (iname,S), iname::Ts)
     | lin_type (Type (name,args)) Ts = let
         val (args,Ts) = map_fold lin_type args Ts

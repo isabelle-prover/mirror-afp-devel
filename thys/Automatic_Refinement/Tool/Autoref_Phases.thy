@@ -69,12 +69,12 @@ ML {*
       phase_data.map (Ord_List.insert phase_order (n,i,p))
 
     fun delete_phase n _ = 
-      phase_data.map (filter (curry (=) n o #1))
+      phase_data.map (filter (curry (op =) n o #1))
 
     val get_phases = phase_data.get o Context.Proof
 
     fun get_phase name ctxt = phase_data.get (Context.Proof ctxt) 
-      |> find_first (curry (=) name o #1)
+      |> find_first (curry (op =) name o #1)
 
     fun init_phase (_,_,p) ctxt = #init p ctxt
     val init_phases = fold init_phase 

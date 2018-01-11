@@ -40,7 +40,7 @@ ML \<open>
       val ushift = length uas - length Ts;
       val tbs = fold add_bound (enumerate (rev ts)) [] |> map (apfst (fn i => i - tshift));
       val ubs = fold add_bound (enumerate (rev us)) [] |> map (apfst (fn i => i - ushift));
-      val bounds = inter (=) (map fst tbs) (map fst ubs) |> distinct (=);
+      val bounds = inter (op =) (map fst tbs) (map fst ubs) |> distinct (=);
       val T' = map (nth Ts) bounds ---> T;
       val v = Var (("simon", idx), T');
       val tbs' = map (fn i => find_first (fn (j, _) => i = j) tbs |> the |> snd |> Bound) bounds;

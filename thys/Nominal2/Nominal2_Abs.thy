@@ -926,7 +926,7 @@ fun alpha_single_simproc thm _ ctxt ctrm =
   let
     val thy = Proof_Context.theory_of ctxt
     val _ $ (_ $ x) $ (_ $ y) = Thm.term_of ctrm
-    val cvrs = union (=) (Term.add_frees x []) (Term.add_frees y [])
+    val cvrs = union (op =) (Term.add_frees x []) (Term.add_frees y [])
       |> filter (fn (_, ty) => Sign.of_sort thy (ty, @{sort fs}))
       |> map Free
       |> HOLogic.mk_tuple

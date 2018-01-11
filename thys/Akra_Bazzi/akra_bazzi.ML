@@ -617,7 +617,7 @@ val setup_master_theorem =
         val _ =
           case caseno of
             SOME caseno =>
-              if member (=) ["1","2.1","2.2","2.3","3"] caseno then
+              if member (op =) ["1","2.1","2.2","2.3","3"] caseno then
                 ()
               else
                 cat_error "illegal Master theorem case: " caseno

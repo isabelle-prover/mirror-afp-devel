@@ -51,14 +51,14 @@ ML {*
     structure solvers = Generic_Data (
       type T = solver Item_Net.T * solver Symtab.table
       val empty = (Item_Net.init 
-        ((=) o apply2 #2) 
+        ((op =) o apply2 #2) 
         (fn p:solver => #1 p |> map Thm.concl_of)
       ,
         Symtab.empty
       )
   
       fun merge ((n1,t1),(n2,t2)) 
-        = (Item_Net.merge (n1,n2), Symtab.merge ((=) o apply2 #2) (t1,t2))
+        = (Item_Net.merge (n1,n2), Symtab.merge ((op =) o apply2 #2) (t1,t2))
       val extend = I 
     )
 

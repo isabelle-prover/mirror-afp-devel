@@ -298,7 +298,7 @@ ML {*
     (*********************)
     structure Rel_Prio_List = Prio_List (
       type item = string * term
-      val eq = (=) o apply2 fst 
+      val eq = (op =) o apply2 fst 
     )
 
     structure Rel_Prio = Generic_Data (
@@ -355,7 +355,7 @@ ML {*
         fun f @{mpat "?R1.0\<rightarrow>?R2.0"} = f R1 @ f R2
           | f R = [R]
       in
-        f R |> map Refine_Util.anorm_term |> distinct (=)
+        f R |> map Refine_Util.anorm_term |> distinct (op =)
       end
 
       fun dest_prio_tag @{mpat "Trueprop (PRIO_TAG ?ma ?mi)"} = 
@@ -554,7 +554,7 @@ ML {*
         open Relators
         val (args,_) = strip_relAPP t
         val res = fold add_relators args acc
-        val res = insert ((=)) t res
+        val res = insert (op =) t res
       in
         res
       end

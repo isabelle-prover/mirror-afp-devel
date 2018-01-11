@@ -61,8 +61,8 @@ structure RefineG_Transfer = struct
     Post_Simp.map do_it context
   end
     
-  val add_post_simps = post_simps_op (addsimps)
-  val del_post_simps = post_simps_op (delsimps)
+  val add_post_simps = post_simps_op (op addsimps)
+  val del_post_simps = post_simps_op (op delsimps)
 
   fun get_post_ss ctxt = let
     val ss = Post_Simp.get (Context.Proof ctxt)

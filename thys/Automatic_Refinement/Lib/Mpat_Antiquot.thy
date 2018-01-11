@@ -86,7 +86,7 @@ ML {*
       | tcheck (TFree (name,_)) _ = 
           error ("Pattern contains free type variable: " ^ name)
       | tcheck (TVar ((name,idx),S)) tnames = 
-          if String.isPrefix "'v_" name andalso not (member (=) tnames name) 
+          if String.isPrefix "'v_" name andalso not (member (op =) tnames name) 
           then (TVar ((unprefix "'v_" name,idx),S),name::tnames)
           else (TVar (("_",0),S),tnames)
 
@@ -105,7 +105,7 @@ ML {*
           val (T,tnames) = tcheck T tnames
           val _ = idx <> 0 andalso error ("Variable index greater zero: "
             ^ Term.string_of_vname (name,idx)) 
-          val _ = member (=) vnames name andalso error ("Non-linear pattern: "
+          val _ = member (op =) vnames name andalso error ("Non-linear pattern: "
             ^ Term.string_of_vname (name,idx))
         in (Var ((name,0),T),(name::vnames,tnames)) end
       | vcheck (Bound i) p = (Bound i,p)

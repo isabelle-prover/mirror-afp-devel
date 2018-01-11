@@ -339,7 +339,7 @@ ML {*
 
     fun ALL_GOALS_FWD tac = ALL_GOALS_FWD' tac 1;
 
-    fun APPEND_LIST' tacs = fold_rev (curry (APPEND')) tacs (K no_tac);
+    fun APPEND_LIST' tacs = fold_rev (curry (op APPEND')) tacs (K no_tac);
 
     fun SINGLE_INTERVAL tac i = tac i i
 
@@ -522,7 +522,7 @@ ML {*
         |> length
 
       val net = fold 
-        (fn rhs => Net.insert_term_safe (=) (rhs,rhs)) rhss Net.empty 
+        (fn rhs => Net.insert_term_safe (op =) (rhs,rhs)) rhss Net.empty 
 
       val freqs = map (freqf thy net) rhss
 
@@ -813,7 +813,7 @@ ML {*
 
       fun RS_fst thm thms = let
         fun r [] = raise THM ("RS_fst, no matches",~1,thm::thms)
-          | r (thm'::thms) = case try (RS) (thm,thm') of
+          | r (thm'::thms) = case try (op RS) (thm,thm') of
               NONE => r thms | SOME thm => thm
   
       in
@@ -822,7 +822,7 @@ ML {*
 
       fun OF_fst thms insts = let
         fun r [] = raise THM ("OF_fst, no matches",length thms,thms@insts)
-          | r (thm::thms) = case try (OF) (thm,insts) of
+          | r (thm::thms) = case try (op OF) (thm,insts) of
               NONE => r thms | SOME thm => thm
       in
         r thms

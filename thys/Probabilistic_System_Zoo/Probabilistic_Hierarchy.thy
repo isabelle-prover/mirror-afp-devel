@@ -516,7 +516,7 @@ fun get_edge thm = thm
 
 val edges = map get_edge @{thms hierarchy[unfolded bisimilar_alt emb_commute o_apply, THEN iffD1]};
 
-val nodes = distinct (=) (maps (fn (x, y) => [x, y]) edges);
+val nodes = distinct (op =) (maps (fn (x, y) => [x, y]) edges);
 
 val node_graph = map (fn s => ((s, Graph_Display.content_node s []), [] : string list)) nodes;
 

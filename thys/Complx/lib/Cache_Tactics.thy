@@ -55,7 +55,7 @@ fun SUBGOAL_CACHE id (tac : (term * int) -> tactic) i st =
 CSUBGOAL (fn (prem,i) =>
   (fn st =>
    let
-      val tab = case (AList.lookup (=) (Synchronized.value caches |> snd) id)
+      val tab = case (AList.lookup (op =) (Synchronized.value caches |> snd) id)
       of SOME x => x | NONE => error "Missing cache"
 
       val pprem = Thm.term_of prem;
@@ -66,7 +66,7 @@ CSUBGOAL (fn (prem,i) =>
                let
                 val othm = Option.map fst (Seq.pull (tac (pprem,1) (Goal.init prem)))
                 val _ = Synchronized.change caches (fn (maxidx,nets) =>
-                        (maxidx,AList.map_entry (=) id
+                        (maxidx,AList.map_entry (op =) id
                             (Termtab.update (pprem,othm)) nets))
                in
                 othm
@@ -84,7 +84,7 @@ CSUBGOAL (fn (prem,i) =>
 
 
 fun clear_subgoal_cache id = Synchronized.change caches
-  (fn (maxidx,cache_list) => (maxidx,AList.delete (=) id cache_list))
+  (fn (maxidx,cache_list) => (maxidx,AList.delete (op =) id cache_list))
 
 local
 
@@ -102,7 +102,7 @@ fun retrofit st' =
 in
 
 fun PARALLEL_GOALS_CACHE cache_id tac = if cache_id < 0 then 
-  (Synchronized.change pcaches (AList.map_default (=) (~cache_id,Termtab.empty) (K Termtab.empty));PARALLEL_GOALS tac) else
+  (Synchronized.change pcaches (AList.map_default (op =) (~cache_id,Termtab.empty) (K Termtab.empty));PARALLEL_GOALS tac) else
   Thm.adjust_maxidx_thm ~1 #>
   (fn st =>
     if not (Multithreading.enabled ()) orelse Thm.maxidx_of st >= 0 orelse Thm.nprems_of st <= 1
@@ -110,8 +110,8 @@ fun PARALLEL_GOALS_CACHE cache_id tac = if cache_id < 0 then
     else
       let
          val tab = Synchronized.change_result pcaches (fn caches =>
-              case (AList.lookup (=) caches cache_id) of SOME net => (net,caches)
-                | NONE => (Termtab.empty,(AList.update (=) (cache_id,Termtab.empty) caches)))
+              case (AList.lookup (op =) caches cache_id) of SOME net => (net,caches)
+                | NONE => (Termtab.empty,(AList.update (op =) (cache_id,Termtab.empty) caches)))
 
         fun do_cache p result = 
         let
@@ -136,7 +136,7 @@ fun PARALLEL_GOALS_CACHE cache_id tac = if cache_id < 0 then
         val results = Par_List.map (`try_tac) uncached;
 
         val _ = Synchronized.change pcaches (
-          AList.map_default (=) (cache_id,Termtab.empty)
+          AList.map_default (op =) (cache_id,Termtab.empty)
             (fold (fn ((_,result),(_,goal))  =>
                Termtab.update (Thm.term_of goal,Thm.prop_of result)
              ) results))

@@ -100,7 +100,7 @@ structure Select_Solve :SELECT_SOLVE = struct
       val vars = Term.add_vars t []
       val tvars = Term.add_tvars t []
       val vtvars = fold (Term.add_tvarsT o #2) vars []
-      val tvars = subtract (=) vtvars tvars
+      val tvars = subtract (op =) vtvars tvars
 
       val tvars_tag = tvars
         |> map (Drule.mk_term o Thm.cterm_of ctxt o Logic.mk_type o TVar)

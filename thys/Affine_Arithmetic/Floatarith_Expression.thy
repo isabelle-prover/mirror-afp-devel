@@ -983,7 +983,7 @@ fun mk_congeq ctxt fs th =
     val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop (Thm.prop_of th'));
     fun add_fterms (t as t1 $ t2) =
           if exists (fn f => Term.could_unify (t |> strip_comb |> fst, f)) fs
-          then insert (aconv) t
+          then insert (op aconv) t
           else add_fterms t1 #> add_fterms t2
       | add_fterms (t as Abs _) =
           if exists_Const (fn (c, _) => c = fN) t
@@ -996,11 +996,11 @@ fun mk_congeq ctxt fs th =
     val vs = map Free (xs ~~ tys);
     val env = fterms ~~ vs; (*FIXME*)
     fun replace_fterms (t as t1 $ t2) =
-        (case AList.lookup (aconv) env t of
+        (case AList.lookup (op aconv) env t of
             SOME v => v
           | NONE => replace_fterms t1 $ replace_fterms t2)
       | replace_fterms t =
-        (case AList.lookup (aconv) env t of
+        (case AList.lookup (op aconv) env t of
             SOME v => v
           | NONE => t);
     fun mk_def (Abs (x, xT, t), v) =
@@ -1021,13 +1021,13 @@ fun mk_congeq ctxt fs th =
 
 fun mk_congs ctxt eqs =
   let
-    val fs = fold_rev (fn eq => insert (=) (eq |> Thm.prop_of |> HOLogic.dest_Trueprop
+    val fs = fold_rev (fn eq => insert (op =) (eq |> Thm.prop_of |> HOLogic.dest_Trueprop
       |> HOLogic.dest_eq |> fst |> strip_comb
       |> fst)) eqs [];
-    val tys = fold_rev (fn f => fold (insert (=)) (f |> fastype_of |> binder_types |> tl)) fs [];
+    val tys = fold_rev (fn f => fold (insert (op =)) (f |> fastype_of |> binder_types |> tl)) fs [];
     val (vs, ctxt') = Variable.variant_fixes (replicate (length tys) "vs") ctxt;
     val subst =
-      the o AList.lookup (=)
+      the o AList.lookup (op =)
         (map2 (fn T => fn v => (T, Thm.cterm_of ctxt' (Free (v, T)))) tys vs);
     fun prep_eq eq =
       let
