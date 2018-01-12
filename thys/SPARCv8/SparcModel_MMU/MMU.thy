@@ -289,9 +289,10 @@ where
     else Some ((ucast va), ((0b11101111)::word8)) 
 "
 
-text \<open>\newpage"\<close>
+text \<open>
+\newpage
 
-text \<open>The below function gives the initial values of MMU registers. 
+The below function gives the initial values of MMU registers.
 In particular, the MMU context register CR is 0 because:
 We don't know the bits for IMPL, VER, and SC;
 the bits for PSO are 0s because we use TSO;

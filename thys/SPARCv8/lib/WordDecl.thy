@@ -18,13 +18,12 @@ require \<open>a'::len\<close> word instances,
 while other word operations such @{term "ucast"} 
 (gets an integer from a word) 
 can be defined for \<open>len0\<close> words. 
-\par
-For each length @{term "N"}, we:
-\begin{enumerate}
-  \item declare a type \<open>word-lengthN\<close>;
-  \item make it an instance of both length classes;
- \item and introduce a short type synonym \<open>wordN\<close>, and a suitable translation.
-\end{enumerate}
+
+For each length \<open>N\<close>, we:
+  \<^enum> declare a type \<open>word_lengthN\<close>;
+  \<^enum> make it an instance of both length classes;
+  \<^enum> and introduce a short type synonym \<open>wordN\<close>, and a suitable translation.
+
 In essence, this theory is just a lot of boilerplate.
 \newpage
 \<close>

@@ -44,7 +44,8 @@ type_synonym word_length_machine_word = word_length32
 definition length_machine_word :: "nat" 
  where "length_machine_word \<equiv> len_of TYPE(word_length_machine_word)"
 
-text "\\newpage"
+text_raw \<open>\newpage\<close>
+
 section \<open>CPU Register Definitions\<close>
 
 text\<open>
@@ -541,50 +542,48 @@ where
 text\<open>
 Operations to be defined.
 The SPARC V8 architecture is composed of the following set of instructions:
-	\begin{itemize}
-	\item Load Integer Instructions
-	\item Load Floating-point Instructions
-	\item Load Coprocessor Instructions
-	\item Store Integer Instructions
-	\item Store Floating-point Instructions
-	\item Store Coprocessor Instructions
-	\item Atomic Load-Store Unsigned Byte Instructions
-	\item SWAP Register With Memory Instruction
-	\item SETHI Instructions
-	\item NOP Instruction
-	\item Logical Instructions
-	\item Shift Instructions
-	\item Add Instructions
-	\item Tagged Add Instructions
-	\item Subtract Instructions
-	\item Tagged Subtract Instructions
-	\item Multiply Step Instruction
-	\item Multiply Instructions
-	\item Divide Instructions
-	\item SAVE and RESTORE Instructions
-	\item Branch on Integer Condition Codes Instructions
-	\item Branch on Floating-point Condition Codes Instructions
-	\item Branch on Coprocessor Condition Codes Instructions
-	\item Call and Link Instruction
-	\item Jump and Link Instruction
-	\item Return from Trap Instruction
-	\item Trap on Integer Condition Codes Instructions
-	\item Read State Register Instructions
-	\item Write State Register Instructions
-	\item STBAR Instruction
-	\item Unimplemented Instruction
-	\item Flush Instruction Memory
-	\item Floating-point Operate (FPop) Instructions
-	\item Convert Integer to Floating point Instructions
-	\item Convert Floating point to Integer Instructions
-	\item Convert Between Floating-point Formats Instructions
-	\item Floating-point Move Instructions
-	\item Floating-point Square Root Instructions
-	\item Floating-point Add and Subtract Instructions
-	\item Floating-point Multiply and Divide Instructions
-	\item Floating-point Compare Instructions
-	\item Coprocessor Operate Instructions
-	\end{itemize}
+  \<^item> Load Integer Instructions
+  \<^item> Load Floating-point Instructions
+  \<^item> Load Coprocessor Instructions
+  \<^item> Store Integer Instructions
+  \<^item> Store Floating-point Instructions
+  \<^item> Store Coprocessor Instructions
+  \<^item> Atomic Load-Store Unsigned Byte Instructions
+  \<^item> SWAP Register With Memory Instruction
+  \<^item> SETHI Instructions
+  \<^item> NOP Instruction
+  \<^item> Logical Instructions
+  \<^item> Shift Instructions
+  \<^item> Add Instructions
+  \<^item> Tagged Add Instructions
+  \<^item> Subtract Instructions
+  \<^item> Tagged Subtract Instructions
+  \<^item> Multiply Step Instruction
+  \<^item> Multiply Instructions
+  \<^item> Divide Instructions
+  \<^item> SAVE and RESTORE Instructions
+  \<^item> Branch on Integer Condition Codes Instructions
+  \<^item> Branch on Floating-point Condition Codes Instructions
+  \<^item> Branch on Coprocessor Condition Codes Instructions
+  \<^item> Call and Link Instruction
+  \<^item> Jump and Link Instruction
+  \<^item> Return from Trap Instruction
+  \<^item> Trap on Integer Condition Codes Instructions
+  \<^item> Read State Register Instructions
+  \<^item> Write State Register Instructions
+  \<^item> STBAR Instruction
+  \<^item> Unimplemented Instruction
+  \<^item> Flush Instruction Memory
+  \<^item> Floating-point Operate (FPop) Instructions
+  \<^item> Convert Integer to Floating point Instructions
+  \<^item> Convert Floating point to Integer Instructions
+  \<^item> Convert Between Floating-point Formats Instructions
+  \<^item> Floating-point Move Instructions
+  \<^item> Floating-point Square Root Instructions
+  \<^item> Floating-point Add and Subtract Instructions
+  \<^item> Floating-point Multiply and Divide Instructions
+  \<^item> Floating-point Compare Instructions
+  \<^item> Coprocessor Operate Instructions
 \<close>
 
 text \<open>The CALL instruction.\<close>
