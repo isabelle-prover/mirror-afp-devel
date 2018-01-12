@@ -983,7 +983,9 @@ lemma pair_tagged_partial_division_to_euclid_tagged_partial_division_twoD:
                  apply (auto simp add: tagged_partial_division_of_def pair_to_euclid_def euclid_to_pair_def
                                     image_def)
                  apply (metis (no_types, lifting) fst_conv snd_conv subsetCE)
-                 by (smt Pair_inject image_def in_euclid_partial_div mem_Collect_eq pair_cbox_to_euclid_cbox prod.collapse)
+                 using in_euclid_partial_div pair_cbox_to_euclid_cbox
+                 apply auto
+                 by metis
             have "x \<in> k \<and> k \<subseteq> pair_to_euclid ` cbox (x1, y1) (x2, y2) \<and> (\<exists>a b. k = cbox a b)"
                  using 0 and 1 by auto
           }
