@@ -4,19 +4,19 @@
 *)
 
 
-section {* Memory Management Unit (MMU) *}
+section \<open>Memory Management Unit (MMU)\<close>
 
 theory MMU
 imports Main RegistersOps Sparc_Types
 begin
 
-section {* MMU  Sizing *} 
+section \<open>MMU  Sizing\<close> 
 
-text{*
+text\<open>
   We need some citation here for documentation about the MMU.
-*}
-text{* The MMU uses the Address Space Identifiers (ASI) to control memory access.
-ASI = 8, 10 are for user; ASI = 9, 11 are for supervisor. *}
+\<close>
+text\<open>The MMU uses the Address Space Identifiers (ASI) to control memory access.
+ASI = 8, 10 are for user; ASI = 9, 11 are for supervisor.\<close>
 
 subsection "MMU Types"
 
@@ -25,8 +25,8 @@ type_synonym word_length_PTE_flags = word_length8
 
 subsection "MMU length values"
 
-text{* Definitions for the length of the virtua address, page size,  
-virtual translation tables indexes, virtual address offset and Page protection flags *}
+text\<open>Definitions for the length of the virtua address, page size,  
+virtual translation tables indexes, virtual address offset and Page protection flags\<close>
 
 
 definition length_entry_type :: "nat" 
@@ -54,14 +54,14 @@ where "pa_page_index \<equiv> length_phys_address - length_page"
 definition pa_offset_index :: "nat" where 
 "pa_offset_index \<equiv> pa_page_index -length_page"
 
-section {* MMU Definition *}
+section \<open>MMU Definition\<close>
 
 record MMU_state =
    registers :: "MMU_context"
 (*   contexts:: context_table*)
 
-text {* The following functions access MMU registers via addresses. 
-  See UT699LEON3FT manual page 35. *}
+text \<open>The following functions access MMU registers via addresses. 
+  See UT699LEON3FT manual page 35.\<close>
 
 definition mmu_reg_val:: "MMU_state \<Rightarrow> virtua_address \<Rightarrow> machine_word option"
 where "mmu_reg_val mmu_state addr \<equiv>
@@ -92,9 +92,9 @@ definition mmu_reg_mod:: "MMU_state \<Rightarrow> virtua_address \<Rightarrow> m
     Some (mmu_state\<lparr>registers := (registers mmu_state)(FAR := w)\<rparr>)
   else None"
 
-section {*Virtual Memory*}
+section \<open>Virtual Memory\<close>
 
-subsection {* MMU Auxiliary Definitions *}
+subsection \<open>MMU Auxiliary Definitions\<close>
 
 definition getCTPVal:: "MMU_state \<Rightarrow> machine_word"
 where "getCTPVal mmu \<equiv>  (registers mmu) CTP"
@@ -103,7 +103,7 @@ definition getCNRVal::"MMU_state \<Rightarrow> machine_word"
 where "getCNRVal mmu \<equiv>  (registers mmu) CNR"
 
 
-text{* 
+text\<open>
  The physical context table address is got from the ConText Pointer register (CTP) and the 
 Context Register (CNR) MMU registers. 
  The CTP is shifted to align it with 
@@ -111,7 +111,7 @@ the physical address (36 bits) and we add the table index given on CNR.
 CTP is right shifted 2 bits, cast to phys address and left shifted 6 bytes 
 to be aligned with the context register.  
 CNR is 2 bits left shifted for alignment with the context table.
-*}
+\<close>
 
 definition compose_context_table_addr :: "machine_word \<Rightarrow>machine_word 
                                           \<Rightarrow> phys_address"
@@ -119,9 +119,9 @@ where
  "compose_context_table_addr ctp cnr 
     \<equiv> ((ucast (ctp >> 2)) << 6) + (ucast cnr << 2)"
 
-subsection {* Virtual Address Translation*}
+subsection \<open>Virtual Address Translation\<close>
 
-text{*Get the context table phys address from the MMU registers*}
+text\<open>Get the context table phys address from the MMU registers\<close>
 definition get_context_table_addr :: "MMU_state \<Rightarrow> phys_address"
 where 
  "get_context_table_addr mmu 
@@ -142,8 +142,8 @@ definition index_len_table :: "nat list" where "index_len_table \<equiv> [8,6,6,
 
 definition n_context_tables :: "nat" where "n_context_tables \<equiv> 3"
 
-text {* The following are basic physical memory read functions. 
-At this level we don't need the write memory yet. *}
+text \<open>The following are basic physical memory read functions. 
+At this level we don't need the write memory yet.\<close>
 
 definition mem_context_val:: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                       mem_context \<Rightarrow> mem_val_type option"
@@ -157,12 +157,12 @@ where
   else r1
 "
 
-text {* Given an ASI (word8), an address (word32) addr, 
+text \<open>Given an ASI (word8), an address (word32) addr, 
         read the 32bit value from the memory addresses 
         starting from address addr' where addr' = addr 
         exception that the last two bits are 0's. 
         That is, read the data from 
-        addr', addr'+1, addr'+2, addr'+3. *}
+        addr', addr'+1, addr'+2, addr'+3.\<close>
 definition mem_context_val_w32 :: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                            mem_context \<Rightarrow> word32 option"
 where
@@ -191,7 +191,7 @@ where
                 (ucast(byte3)))
 "
 
-text {*
+text \<open>
   @{term "get_addr_from_table"} browses the page description tables  
   until it finds a PTE (bits==suc (suc 0).
 
@@ -203,7 +203,7 @@ text {*
   
  If the table entry is a PTD (bits== Suc 0),
   the index is obtained from the virtual address depending on the current level and or-ed with the PTD. 
-*}
+\<close>
 
 function ptd_lookup:: "virtua_address \<Rightarrow> virtua_address \<Rightarrow>
 mem_context \<Rightarrow> nat \<Rightarrow> (phys_address \<times> PTE_flags) option" 
@@ -289,9 +289,9 @@ where
     else Some ((ucast va), ((0b11101111)::word8)) 
 "
 
-text {*\newpage"*}
+text \<open>\newpage"\<close>
 
-text {* The below function gives the initial values of MMU registers. 
+text \<open>The below function gives the initial values of MMU registers. 
 In particular, the MMU context register CR is 0 because:
 We don't know the bits for IMPL, VER, and SC;
 the bits for PSO are 0s because we use TSO;
@@ -300,7 +300,7 @@ we assume NF bits are 0s;
 and most importantly, the E bit is 0 because when the machine 
 starts up, MMU is disabled. 
 An initial boot procedure (bootloader or something like that) should 
-configure the MMU and then enable it if the OS uses MMU. *}
+configure the MMU and then enable it if the OS uses MMU.\<close>
 
 definition MMU_registers_init :: "MMU_context"
 where "MMU_registers_init r \<equiv> 0" 

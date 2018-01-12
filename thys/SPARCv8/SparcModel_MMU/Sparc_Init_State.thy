@@ -39,8 +39,8 @@ definition emp_bbyte :: "virtua_address \<Rightarrow> bool" where
 definition emp_bword :: "virtua_address \<Rightarrow> bool" where
 "emp_bword add \<equiv> False"
 
-text {* ANNUL = False, RESET_TRAP = False, EXECUTE_MODE = True,
-  RESET_MODE = False, ERROR_MODE = False. *}
+text \<open>ANNUL = False, RESET_TRAP = False, EXECUTE_MODE = True,
+  RESET_MODE = False, ERROR_MODE = False.\<close>
 definition init_svar :: "sparc_state_var" where
 "init_svar \<equiv> \<lparr>annul=False,resett=False,exe=True,
 reset=False,err=False,ticc=(0b0000000::word7),
@@ -56,18 +56,18 @@ mem=emp_mem, mmu=init_mmu, cache=emp_cpu_cache, dwrite=emp_dw_pool,
 state_var=init_svar,
 traps=emp_trap, undef=False\<rparr>"
 
-text {* PSR.ET = 1, PS= 1, S = 1, in init_state.
+text \<open>PSR.ET = 1, PS= 1, S = 1, in init_state.
   By default, CWP = 0.
   icc = 0000, ver = 0011, impl = 1111.
-  This is the default setting of LEON3. *}
+  This is the default setting of LEON3.\<close>
 definition init_state0 :: "leon3_state" where
 "init_state0 \<equiv>
   let s1 = cpu_reg_mod (0b11110011000000000000000011100000) PSR emp_state in
   cpu_reg_mod (0b00000000000000000000000000000010) TBR s1"
 
-text {* Initialise PC and nPC.
+text \<open>Initialise PC and nPC.
   And initialise r[14] in window 0 to 0x4ffffff0,
-  according to the LEON3 setup. *}
+  according to the LEON3 setup.\<close>
 definition init_state1 :: "leon3_state" where
 "init_state1 \<equiv>
   let s1 = cpu_reg_mod (0b01000000000000000000000000000000) PC init_state0;
@@ -77,10 +77,10 @@ definition init_state1 :: "leon3_state" where
 (*  s1*)
 "
 
-text {* Initialise the memory address
+text \<open>Initialise the memory address
   0b01000000000000000000000000000000
   and the following ones
-  with an example sequence of instructions. *}
+  with an example sequence of instructions.\<close>
 definition init_state2 :: "leon3_state" where
 "init_state2 \<equiv>
       \<comment> \<open>\<open>ld r1 + r2 to r3\<close>\<close>

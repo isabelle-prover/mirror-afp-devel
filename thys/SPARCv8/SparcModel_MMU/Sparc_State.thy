@@ -8,23 +8,23 @@
  * Author: Zhe Hou, David Sanan.
  *)
 
-section {* SPARC V8 state model*}
+section \<open>SPARC V8 state model\<close>
 theory Sparc_State
 imports Main Sparc_Types  "../lib/wp/DetMonadLemmas" MMU
 begin                                                                    
-section {* state as a function *}
+section \<open>state as a function\<close>
 
 record cpu_cache = 
 dcache:: cache_context
 icache:: cache_context
 
-text{*
+text\<open>
 The state @{term sparc_state} is defined as a tuple @{term cpu_context}, 
 @{term user_context}, @{term mem_context}, defining the state of the CPU registers, 
 user registers, memory, cache, and delayed write pool respectively. 
 Additionally, a boolean indicates whether the state is 
 undefined or not.
-*}
+\<close>
 
 record (overloaded) ('a) sparc_state =
 cpu_reg:: cpu_context
@@ -38,7 +38,7 @@ state_var:: sparc_state_var
 traps:: "Trap set"
 undef:: bool
 
-section{* functions for state member access *}
+section\<open>functions for state member access\<close>
 
 definition cpu_reg_val:: "CPU_register \<Rightarrow> ('a) sparc_state \<Rightarrow> reg_type"
 where
@@ -49,14 +49,14 @@ definition cpu_reg_mod :: "word32 \<Rightarrow> CPU_register \<Rightarrow> ('a) 
 where "cpu_reg_mod data_w32 cpu state \<equiv> 
   state\<lparr>cpu_reg := ((cpu_reg state)(cpu := data_w32))\<rparr>"
 
-text {* r[0] = 0. Otherwise read the actual value. *}
+text \<open>r[0] = 0. Otherwise read the actual value.\<close>
 definition user_reg_val:: "('a) window_size \<Rightarrow> user_reg_type \<Rightarrow> ('a) sparc_state \<Rightarrow> reg_type"
 where
 "user_reg_val window ur state \<equiv> 
   if ur = 0 then 0
   else (user_reg state) window ur"
 
-text {* Write a global register. win should be initialised as NWINDOWS. *}
+text \<open>Write a global register. win should be initialised as NWINDOWS.\<close>
 fun (sequential) global_reg_mod :: "word32 \<Rightarrow> nat \<Rightarrow> user_reg_type \<Rightarrow> 
   ('a::len0) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -70,7 +70,7 @@ where
     global_reg_mod data_w32 (win-1) ur ns
 )"
 
-text {* Compute the next window. *}
+text \<open>Compute the next window.\<close>
 definition next_window :: "('a::len0) window_size \<Rightarrow> ('a) window_size"
 where
 "next_window win \<equiv>
@@ -78,7 +78,7 @@ where
   else 0
 "
 
-text {* Compute the previous window. *}
+text \<open>Compute the previous window.\<close>
 definition pre_window :: "('a::len0) window_size \<Rightarrow> ('a::len0) window_size"
 where
 "pre_window win \<equiv>
@@ -86,8 +86,8 @@ where
   else (word_of_int (NWINDOWS - 1))
 "
 
-text {* write an output register. 
-  Also write ur+16 of the previous window. *}
+text \<open>write an output register. 
+  Also write ur+16 of the previous window.\<close>
 definition out_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -101,8 +101,8 @@ where
     (user_reg state')(win' := ((user_reg state') win')(ur' := data_w32))\<rparr>
 "
 
-text {* Write a input register.
-  Also write ur-16 of the next window. *}
+text \<open>Write a input register.
+  Also write ur-16 of the next window.\<close>
 definition in_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow>
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -116,7 +116,7 @@ where
     (user_reg state')(win' := ((user_reg state') win')(ur' := data_w32))\<rparr>
 "
 
-text {* Do not modify r[0]. *}
+text \<open>Do not modify r[0].\<close>
 definition user_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
  ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -143,16 +143,16 @@ definition sys_reg_mod :: "word32 \<Rightarrow> sys_reg \<Rightarrow>
 where
 "sys_reg_mod data_w32 sys state \<equiv> state\<lparr>sys_reg := (sys_reg state)(sys := data_w32)\<rparr>"
 
-text {* The following fucntions deal with physical memory. 
-N.B. Physical memory address in SPARCv8 is 36-bit. *}
+text \<open>The following fucntions deal with physical memory. 
+N.B. Physical memory address in SPARCv8 is 36-bit.\<close>
 
-text {* LEON3 doesn't distinguish ASI 8 and 9; 10 and 11 for read access
+text \<open>LEON3 doesn't distinguish ASI 8 and 9; 10 and 11 for read access
   for both user and supervisor. 
 We recently discovered that the compiled machine code by
 the sparc-elf compiler often reads asi = 10 (user data) 
 when the actual content is store in asi = 8 (user instruction).
 For testing purposes, we don't distinguish asi = 8,9,10,11
-for reading access. *}
+for reading access.\<close>
 
 definition mem_val:: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                       ('a) sparc_state \<Rightarrow> mem_val_type option"
@@ -175,8 +175,8 @@ where
   else r1
 "
 
-text {* An alternative way to read values from memory. 
-Some implementations may use this definition. *}
+text \<open>An alternative way to read values from memory. 
+Some implementations may use this definition.\<close>
 
 definition mem_val_alt:: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                       ('a) sparc_state \<Rightarrow> mem_val_type option"
@@ -229,8 +229,8 @@ where
   else state1
 "
 
-text {* An alternative way to write memory. This method insists that 
-for each address, it can only hold a value in one of ASI = 8,9,10,11. *}
+text \<open>An alternative way to write memory. This method insists that 
+for each address, it can only hold a value in one of ASI = 8,9,10,11.\<close>
 
 definition mem_mod_alt :: "asi_type \<Rightarrow> phys_address \<Rightarrow> mem_val_type \<Rightarrow> 
                          ('a) sparc_state \<Rightarrow> ('a) sparc_state"
@@ -283,12 +283,12 @@ where
   else state1
 "
 
-text {* Given an ASI (word8), an address (word32) addr, 
+text \<open>Given an ASI (word8), an address (word32) addr, 
         read the 32bit value from the memory addresses 
         starting from address addr' where addr' = addr 
         exception that the last two bits are 0's. 
         That is, read the data from 
-        addr', addr'+1, addr'+2, addr'+3. *}
+        addr', addr'+1, addr'+2, addr'+3.\<close>
 definition mem_val_w32 :: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                            ('a) sparc_state \<Rightarrow> word32 option"
 where
@@ -352,8 +352,8 @@ where
   s3
 "
 
-text {* The following functions deal with virtual addresses. 
-These are based on functions written by David Sanan. *}
+text \<open>The following functions deal with virtual addresses. 
+These are based on functions written by David Sanan.\<close>
 
 definition load_word_mem :: "('a) sparc_state \<Rightarrow> virtua_address \<Rightarrow> asi_type \<Rightarrow> 
                              machine_word option"
@@ -397,7 +397,7 @@ where "dcache_mod c val state \<equiv>
     \<lparr>dcache := (dcache (cache state))(c := Some val)\<rparr>)\<rparr>
 "
 
-text {* Check if the memory address is in the cache or not. *}
+text \<open>Check if the memory address is in the cache or not.\<close>
 definition icache_miss :: "virtua_address \<Rightarrow> ('a) sparc_state \<Rightarrow> bool"
 where
 "icache_miss addr state \<equiv>
@@ -409,7 +409,7 @@ where
   else False    
 "
 
-text {* Check if the memory address is in the cache or not. *}
+text \<open>Check if the memory address is in the cache or not.\<close>
 definition dcache_miss :: "virtua_address \<Rightarrow> ('a) sparc_state \<Rightarrow> bool"
 where
 "dcache_miss addr state \<equiv>
@@ -541,9 +541,9 @@ definition flush_cache_all:: "('a) sparc_state \<Rightarrow> ('a) sparc_state" w
 "flush_cache_all state \<equiv> state\<lparr>cache := ((cache state)\<lparr>
   icache := empty_cache, dcache := empty_cache\<rparr>)\<rparr>"
 
-text {* Check if the FI or FD bit of CCR is 1. 
+text \<open>Check if the FI or FD bit of CCR is 1. 
 If FI is 1 then flush instruction cache. 
-If FD is 1 then flush data cache. *}
+If FD is 1 then flush data cache.\<close>
 definition ccr_flush :: "('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "ccr_flush state \<equiv>
@@ -561,15 +561,15 @@ where "get_delayed_pool state \<equiv> dwrite state"
 definition exe_pool :: "(int \<times> reg_type \<times> CPU_register) \<Rightarrow> (int \<times> reg_type \<times> CPU_register)"
 where "exe_pool w \<equiv> case w of (n,v,c) \<Rightarrow> ((n-1),v,c)"
 
-text {* Minus 1 to the delayed count for all the members in the set. 
-        Assuming all members have delay > 0. *}
+text \<open>Minus 1 to the delayed count for all the members in the set. 
+        Assuming all members have delay > 0.\<close>
 primrec delayed_pool_minus :: "delayed_write_pool \<Rightarrow> delayed_write_pool"
 where
 "delayed_pool_minus [] = []"
 |
 "delayed_pool_minus (x#xs) = (exe_pool x)#(delayed_pool_minus xs)"
 
-text {* Add a delayed-write to the pool. *}
+text \<open>Add a delayed-write to the pool.\<close>
 definition delayed_pool_add :: "(int \<times> reg_type \<times> CPU_register) \<Rightarrow> 
                                 ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where 
@@ -581,9 +581,9 @@ where
     let curr_pool = get_delayed_pool s in
     s\<lparr>dwrite := curr_pool@[dw]\<rparr>"
 
-text {* Remove a delayed-write from the pool. 
+text \<open>Remove a delayed-write from the pool. 
         Assume that the delayed-write to be removed has delay 0.
-        i.e., it has been executed. *}
+        i.e., it has been executed.\<close>
 definition delayed_pool_rm :: "(int \<times> reg_type \<times> CPU_register) \<Rightarrow> 
                                ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -595,7 +595,7 @@ where
      else s)
 "
 
-text {* Remove all the entries with delay = 0, i.e., those that are written. *}
+text \<open>Remove all the entries with delay = 0, i.e., those that are written.\<close>
 primrec delayed_pool_rm_written :: "delayed_write_pool \<Rightarrow> delayed_write_pool"
 where
 "delayed_pool_rm_written [] = []"
@@ -666,16 +666,16 @@ where "pb_block_ldst_byte_mod add b s \<equiv>
   s\<lparr>state_var := ((state_var s)
     \<lparr>atm_ldst_byte := (atm_ldst_byte (state_var s))(add := b)\<rparr>)\<rparr>"
 
-text {* We only read the address such that add mod 4 = 0. 
-  add mod 4 represents the current word. *}
+text \<open>We only read the address such that add mod 4 = 0. 
+  add mod 4 represents the current word.\<close>
 definition pb_block_ldst_word_val :: "virtua_address \<Rightarrow> ('a) sparc_state
   \<Rightarrow> bool"
 where "pb_block_ldst_word_val add state \<equiv>
   let add0 = (bitAND add (0b11111111111111111111111111111100::word32)) in
   (atm_ldst_word (state_var state)) add0"
 
-text {* We only write the address such that add mod 4 = 0.
-  add mod 4 represents the current word. *}
+text \<open>We only write the address such that add mod 4 = 0.
+  add mod 4 represents the current word.\<close>
 definition pb_block_ldst_word_mod :: "virtua_address \<Rightarrow> bool \<Rightarrow> 
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where "pb_block_ldst_word_mod add b s \<equiv>
@@ -695,7 +695,7 @@ where "emp_trap_set s \<equiv> s\<lparr>traps := {}\<rparr>"
 definition state_undef:: "('a) sparc_state \<Rightarrow> bool"
 where "state_undef state \<equiv> (undef state)"
 
-text {* The \<open>memory_read\<close> interface that conforms with the SPARCv8 manual. *}
+text \<open>The \<open>memory_read\<close> interface that conforms with the SPARCv8 manual.\<close>
 definition memory_read :: "asi_type \<Rightarrow> virtua_address \<Rightarrow> 
                            ('a) sparc_state \<Rightarrow> 
                            ((word32 option) \<times> ('a) sparc_state)"
@@ -779,12 +779,12 @@ where "memory_read asi addr state \<equiv>
     (None, state)
 "
 
-text {* Get the value of a memory address and an ASI. *}
+text \<open>Get the value of a memory address and an ASI.\<close>
 definition mem_val_asi:: "asi_type \<Rightarrow> phys_address \<Rightarrow> 
                       ('a) sparc_state \<Rightarrow> mem_val_type option"
 where "mem_val_asi asi add state \<equiv> (mem state) asi add"
 
-text {* Check if an address is used in ASI 9 or 11. *}
+text \<open>Check if an address is used in ASI 9 or 11.\<close>
 definition sup_addr :: "phys_address \<Rightarrow> ('a) sparc_state \<Rightarrow> bool"
 where
 "sup_addr addr state \<equiv>
@@ -808,8 +808,8 @@ where
   else True
 "
 
-text {* The \<open>memory_write\<close> interface that conforms with SPARCv8 manual. *}
-text {* LEON3 forbids user to write an address in ASI 9 and 11. *}
+text \<open>The \<open>memory_write\<close> interface that conforms with SPARCv8 manual.\<close>
+text \<open>LEON3 forbids user to write an address in ASI 9 and 11.\<close>
 definition memory_write_asi :: "asi_type \<Rightarrow> virtua_address \<Rightarrow> word4 \<Rightarrow> word32 \<Rightarrow> 
                             ('a) sparc_state \<Rightarrow> 
                             ('a) sparc_state option"
@@ -885,11 +885,11 @@ where
   None \<Rightarrow> None
   | Some s1 \<Rightarrow> Some (store_barrier_pending_mod False s1)"
 
-text {* monad for sequential operations over the register representation*}
+text \<open>monad for sequential operations over the register representation\<close>
 type_synonym ('a,'e) sparc_state_monad = "(('a) sparc_state,'e) det_monad" 
 
-text {* Given a word32 value, a cpu register, 
-        write the value in the cpu register. *}
+text \<open>Given a word32 value, a cpu register, 
+        write the value in the cpu register.\<close>
 definition write_cpu :: "word32 \<Rightarrow> CPU_register \<Rightarrow> ('a,unit) sparc_state_monad"
 where "write_cpu w cr \<equiv>
   do
@@ -906,10 +906,10 @@ where "write_cpu_tt w \<equiv>
     return ()
   od"
 
-text {* Given a word32 value, a word4 window, a user register, 
+text \<open>Given a word32 value, a word4 window, a user register, 
         write the value in the user register. 
         N.B. CWP is a 5 bit value, but we only use the last 4 bits,
-        since there are only 16 windows. *}
+        since there are only 16 windows.\<close>
 definition write_reg :: "word32 \<Rightarrow> ('a::len0) word \<Rightarrow> user_reg_type \<Rightarrow> 
   ('a,unit) sparc_state_monad"
 where "write_reg w win ur \<equiv>
@@ -962,7 +962,7 @@ where
   (if fst x = 0 then x # (get_delayed_0 xs)
   else get_delayed_0 xs)"
 
-text {* Get a list of delayed-writes with delay 0.  *}
+text \<open>Get a list of delayed-writes with delay 0.\<close>
 definition get_delayed_write :: "delayed_write_pool \<Rightarrow> (int \<times> reg_type \<times> CPU_register) list"
 where
 "get_delayed_write dwp \<equiv> get_delayed_0 dwp"

@@ -123,10 +123,10 @@ lemma linorder_min_same2 [simp]:
   "(min x y = y) = (y \<le> (x::'a::linorder))"
   by (auto simp: min_def linorder_not_le)
 
-text {* A combinator for pairing up well-formed relations.
+text \<open>A combinator for pairing up well-formed relations.
         The divisor function splits the population in halves,
         with the True half greater than the False half, and
-        the supplied relations control the order within the halves. *}
+        the supplied relations control the order within the halves.\<close>
 
 definition
   wf_sum :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set"

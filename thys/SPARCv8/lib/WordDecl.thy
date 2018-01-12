@@ -8,26 +8,26 @@ theory WordDecl
 imports Main "HOL-Word.Word"
 begin
 
-text {*
-This theory provides @{text "len0"} and @{text "len"} instantiations 
+text \<open>
+This theory provides \<open>len0\<close> and \<open>len\<close> instantiations 
 for the most common used word sizes in the model (1,2,4,5,6,8,12,16,18,20,24,32,36).
-The @{text "len0"} class defines lengths that range from 0 upwards,
-whilst the @{text "len"} class caters for non-zero lengths.
-Bit-operators like @{text "<<"}, @{text ">>"}, @{text "and"}, or @{text "or"} 
-require @{text "a'::len"} word instances,
+The \<open>len0\<close> class defines lengths that range from 0 upwards,
+whilst the \<open>len\<close> class caters for non-zero lengths.
+Bit-operators like \<open><<\<close>, \<open>>>\<close>, \<open>and\<close>, or \<open>or\<close> 
+require \<open>a'::len\<close> word instances,
 while other word operations such @{term "ucast"} 
 (gets an integer from a word) 
-can be defined for @{text "len0"} words. 
+can be defined for \<open>len0\<close> words. 
 \par
 For each length @{term "N"}, we:
 \begin{enumerate}
-  \item declare a type @{text "word-lengthN"};
+  \item declare a type \<open>word-lengthN\<close>;
   \item make it an instance of both length classes;
- \item and introduce a short type synonym @{text "wordN"}, and a suitable translation.
+ \item and introduce a short type synonym \<open>wordN\<close>, and a suitable translation.
 \end{enumerate}
 In essence, this theory is just a lot of boilerplate.
 \newpage
-*}
+\<close>
 
 section "Words of length 1"
 

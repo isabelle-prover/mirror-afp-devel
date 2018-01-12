@@ -1,29 +1,29 @@
-section{* Register Operations*}
+section\<open>Register Operations\<close>
 theory RegistersOps
 imports Main "../lib/WordDecl" 
 begin
 
-text{*
+text\<open>
  This theory provides operations to get, set and clear bits in registers
-*}
+\<close>
 
 section "Getting Fields"
   
-text{* 
+text\<open>
   Get a field of type @{typ "'b::len word"} 
   starting at @{term "index"} from @{term "addr"} of type @{typ "'a::len word"}
-*}
+\<close>
 definition get_field_from_word_a_b:: "'a::len word \<Rightarrow> nat \<Rightarrow> 'b::len word"
  where
   "get_field_from_word_a_b addr index 
     \<equiv> let off = (size addr - len_of TYPE('b)) 
        in ucast ((addr << (off-index)) >> off)"
 
-text{* 
+text\<open>
   Obtain, from addr of type @{typ "'a::len word"}, 
-  another @{typ "'a::len word"} containing the field of length @{text "len"}
-  starting at @{text "index"} in @{text "addr"}. 
-*}
+  another @{typ "'a::len word"} containing the field of length \<open>len\<close>
+  starting at \<open>index\<close> in \<open>addr\<close>. 
+\<close>
 definition get_field_from_word_a_a:: "'a::len word \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a::len word"
  where
   "get_field_from_word_a_a addr index len 
@@ -31,11 +31,11 @@ definition get_field_from_word_a_a:: "'a::len word \<Rightarrow> nat \<Rightarro
 
 section "Setting Fields"
 
-text{* 
+text\<open>
   Set the field of type @{typ "'b::len word"} 
-  at @{text "index"} from @{text "record"}
+  at \<open>index\<close> from \<open>record\<close>
   of type @{typ "'a::len word"}. 
-*}
+\<close>
 definition set_field :: "'a::len word \<Rightarrow> 'b::len word \<Rightarrow> nat \<Rightarrow> 'a::len word"
  where 
   "set_field record field index 
@@ -45,16 +45,16 @@ definition set_field :: "'a::len word \<Rightarrow> 'b::len word \<Rightarrow> n
 
 section "Clearing Fields"
 
-text{* 
-  Zero the @{text "n"} initial bits of @{text "addr"}.
-*}
+text\<open>
+  Zero the \<open>n\<close> initial bits of \<open>addr\<close>.
+\<close>
 definition clear_n_bits:: "'a::len word \<Rightarrow> nat \<Rightarrow> 'a::len word" 
  where
    "clear_n_bits addr n \<equiv> addr AND (NOT (mask n))"
 
-text{*
+text\<open>
   Gets the natural value of a 32 bit mask 
-*}
+\<close>
 
 definition get_nat_from_mask::"word32 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (word32 \<times> nat)" 
 where

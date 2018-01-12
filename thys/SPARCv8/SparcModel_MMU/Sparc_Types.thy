@@ -8,13 +8,13 @@
  * Author: Zhe Hou, David Sanan. 
  *)
 
-section {* SPARC V8 architecture CPU model*}
+section \<open>SPARC V8 architecture CPU model\<close>
 theory Sparc_Types    
 imports Main "../lib/WordDecl" 
 begin
 
-text {* The following type definitions are taken from David Sanan's 
-definitions for SPARC machines. *}
+text \<open>The following type definitions are taken from David Sanan's 
+definitions for SPARC machines.\<close>
 
 type_synonym machine_word = word32
 type_synonym byte = word8
@@ -45,30 +45,30 @@ definition length_machine_word :: "nat"
  where "length_machine_word \<equiv> len_of TYPE(word_length_machine_word)"
 
 text "\\newpage"
-section {* CPU Register Definitions *}
+section \<open>CPU Register Definitions\<close>
 
-text{*
+text\<open>
  The definitions below come from the SPARC Architecture Manual, Version 8.
  The LEON3 processor has been certified SPARC V8 conformant (2005).
-*}
+\<close>
 
 definition leon3khz ::"word32"
 where
 "leon3khz \<equiv> 33000"
 
-text {* The following type definitions for MMU is taken from 
-David Sanan's definitions for MMU. *}
+text \<open>The following type definitions for MMU is taken from 
+David Sanan's definitions for MMU.\<close>
 
-text{*
+text\<open>
   The definitions below come from the UT699 LEON 3FT/SPARC V8 Microprocessor Functional Manual, 
    Aeroflex, June 20, 2012, p35.
-*}
+\<close>
 datatype MMU_register
- = CR    --  "Control Register"
- | CTP   --  "ConText Pointer register"
- | CNR   --  "Context Register"
- | FTSR   --  "Fault Status Register"
- | FAR   --  "Fault Address Register"
+ = CR    \<comment>  "Control Register"
+ | CTP   \<comment>  "ConText Pointer register"
+ | CNR   \<comment>  "Context Register"
+ | FTSR   \<comment>  "Fault Status Register"
+ | FAR   \<comment>  "Fault Address Register"
 
 lemma MMU_register_induct: 
   "P CR \<Longrightarrow> P CTP \<Longrightarrow> P CNR \<Longrightarrow> P FTSR \<Longrightarrow> P FAR 
@@ -97,36 +97,36 @@ definition
 end
 type_synonym MMU_context = "MMU_register \<Rightarrow> machine_word"
 
-text {* \<open>PTE_flags\<close> is the last 8 bits of a PTE. See page 242 of SPARCv8 manual.
+text \<open>\<open>PTE_flags\<close> is the last 8 bits of a PTE. See page 242 of SPARCv8 manual.
 \<^item> C - bit 7
 \<^item> M - bit 6,
 \<^item> R - bit 5
 \<^item> ACC - bit 4~2
-\<^item> ET - bit 1~0. *}
+\<^item> ET - bit 1~0.\<close>
 
 type_synonym PTE_flags = word8
 
-text {*
+text \<open>
   @{term CPU_register} datatype is an enumeration with the CPU registers defined in the SPARC V8 
   architecture.
-*}
+\<close>
 datatype CPU_register = 
-   PSR   --   "Processor State Register"
- | WIM   --   "Window Invalid Mask"
- | TBR   --   "Trap Base Register"
- | Y     --   "Multiply/Divide Register"
- | PC    --   "Program Counter"
- | nPC   --   "next Program Counter"
- | DTQ   --   "Deferred-Trap Queue"
- | FSR   --   "Floating-Point State Register"
- | FQ    --   "Floating-Point Deferred-Trap Queue"
- | CSR   --   "Coprocessor State Register"
- | CQ    --   "Coprocessor Deferred-Trap Queue"
+   PSR   \<comment>   "Processor State Register"
+ | WIM   \<comment>   "Window Invalid Mask"
+ | TBR   \<comment>   "Trap Base Register"
+ | Y     \<comment>   "Multiply/Divide Register"
+ | PC    \<comment>   "Program Counter"
+ | nPC   \<comment>   "next Program Counter"
+ | DTQ   \<comment>   "Deferred-Trap Queue"
+ | FSR   \<comment>   "Floating-Point State Register"
+ | FQ    \<comment>   "Floating-Point Deferred-Trap Queue"
+ | CSR   \<comment>   "Coprocessor State Register"
+ | CQ    \<comment>   "Coprocessor Deferred-Trap Queue"
  (*| CCR   --   "Cache Control Register"*)
- | ASR "word5"  --   "Ancillary State Register"
+ | ASR "word5"  \<comment>   "Ancillary State Register"
 
-text {* The following two functions are dummies since we will not use 
-        ASRs. Future formalisation may add more details to this. *}
+text \<open>The following two functions are dummies since we will not use 
+        ASRs. Future formalisation may add more details to this.\<close>
 
 definition privileged_ASR :: "word5 \<Rightarrow> bool"
 where
@@ -144,8 +144,8 @@ where
   ucast ((bitAND tbr 0b00000000000000000000111111110000) >> 4)
 "
 
-text {* Write the tt field of the TBR register. 
-        Return the new value of TBR. *}
+text \<open>Write the tt field of the TBR register. 
+        Return the new value of TBR.\<close>
 definition write_tt :: "word8 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "write_tt new_tt_val tbr_val \<equiv>
@@ -153,8 +153,8 @@ where
       bitOR tmp (((ucast new_tt_val)::word32) << 4)
 "
 
-text {* Get the nth bit of WIM. This equals (bitAND WIM $2^n$). 
-        N.B. the first bit of WIM is the 0th bit. *}
+text \<open>Get the nth bit of WIM. This equals (bitAND WIM $2^n$). 
+        N.B. the first bit of WIM is the 0th bit.\<close>
 definition get_WIM_bit :: "nat \<Rightarrow> word32 \<Rightarrow> word1"
 where
 "get_WIM_bit n wim \<equiv>
@@ -225,8 +225,8 @@ where
   bitOR tmp0 (((ucast s_val)::word32) << 7)
 "
 
-text {* Update the CWP field of PSR. 
-        Return the new value of PSR. *}
+text \<open>Update the CWP field of PSR. 
+        Return the new value of PSR.\<close>
 definition update_CWP :: "word5 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_CWP cwp_val psr_val \<equiv>
@@ -239,8 +239,8 @@ where
     bitOR (bitOR tmp0 ((ucast cwp_val)::word32)) (0b00000000000000000000000010000000::word32)
 "
 
-text {* Update the the ET, CWP, and S fields of PSR. 
-        Return the new value of PSR. *}
+text \<open>Update the the ET, CWP, and S fields of PSR. 
+        Return the new value of PSR.\<close>
 definition update_PSR_rett :: "word5 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_rett cwp_val et_val s_val psr_val \<equiv>
@@ -263,8 +263,8 @@ where
   tmp3
 "
 
-text {* Update the N, Z, V, C fields of PSR. 
-        Return the new value of PSR. *}
+text \<open>Update the N, Z, V, C fields of PSR. 
+        Return the new value of PSR.\<close>
 definition update_PSR_icc :: "word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_icc n_val z_val v_val c_val psr_val \<equiv>
@@ -286,8 +286,8 @@ where
   tmp4
 "
 
-text {* Update the ET, PIL fields of PSR. 
-        Return the new value of PSR. *}
+text \<open>Update the ET, PIL fields of PSR. 
+        Return the new value of PSR.\<close>
 definition update_PSR_et_pil :: "word1 \<Rightarrow> word4 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_et_pil et pil psr_val \<equiv>
@@ -298,68 +298,68 @@ where
   tmp2
 "
 
-text {*
+text \<open>
    SPARC V8 architecture is organized in windows of 32 user registers.
    The data stored in a register is defined as a 32 bits word @{term reg_type}:
-*}
+\<close>
 type_synonym reg_type = "word32"
 
-text {*
+text \<open>
   The access to the value of a CPU register of type @{term CPU_register} is
   defined by a total function @{term cpu_context}
-*}
+\<close>
 
 type_synonym cpu_context = "CPU_register \<Rightarrow> reg_type"
 
-text {*  
+text \<open>
   User registers are defined with the type @{term user_reg} represented by a 5 bits word.
-*}
+\<close>
 
 type_synonym user_reg_type = "word5"
 
 definition PSR_S ::"reg_type"
 where "PSR_S \<equiv> 6"
-text {*    
+text \<open>
   Each window context is defined by a total function @{term window_context} from @{term user_register} 
   to @{term reg_type} (32 bits word storing the actual value of the register).
-*}
+\<close>
 
 type_synonym window_context = "user_reg_type \<Rightarrow> reg_type"
-text {* 
+text \<open>
   The number of windows is implementation dependent. 
   The LEON architecture is composed of 16 different windows (a 4 bits word).
-*}
+\<close>
 
 definition NWINDOWS :: "int"
 where "NWINDOWS \<equiv> 8"
 
-text {* Maximum number of windows is 32 in SPARCv8. *}
+text \<open>Maximum number of windows is 32 in SPARCv8.\<close>
 type_synonym ('a) window_size = "'a word"
 
-text {* 
+text \<open>
 Finally the user context is defined by another total function @{term user_context} from 
 @{term window_size} to @{term window_context}. That is, the user context is a function taking as
 argument a register set window and a register within that window, and it returns the value stored
 in that user register.
-*}
+\<close>
 type_synonym ('a) user_context = "('a) window_size \<Rightarrow> window_context"
 
 datatype sys_reg = 
-         CCR    --  "Cache control register"
-        |ICCR   --  "Instruction cache configuration register"
-        |DCCR   --  "Data cache configuration register"
+         CCR    \<comment>  "Cache control register"
+        |ICCR   \<comment>  "Instruction cache configuration register"
+        |DCCR   \<comment>  "Data cache configuration register"
 
 type_synonym sys_context = "sys_reg \<Rightarrow> reg_type"
 
-text{* 
+text\<open>
 The memory model is defined by a total function from 32 bits words to 8 bits words
-*}
+\<close>
 type_synonym asi_type = "word8"
 
-text {* 
+text \<open>
  The memory is defined as a function from page address to page, which is also defined
   as a function from physical address to @{term "machine_word"}
-*}
+\<close>
 
 type_synonym mem_val_type = "word8"
 type_synonym mem_context = "asi_type \<Rightarrow> phys_address \<Rightarrow> mem_val_type option"
@@ -369,13 +369,13 @@ type_synonym cache_line_size = "word12"
 type_synonym cache_type = "(cache_tag \<times> cache_line_size)"
 type_synonym cache_context = "cache_type \<Rightarrow> mem_val_type option"
 
-text {* The delayed-write pool generated from write state register instructions. *}
+text \<open>The delayed-write pool generated from write state register instructions.\<close>
 type_synonym delayed_write_pool = "(int \<times> reg_type \<times> CPU_register) list"
 
 definition DELAYNUM :: "int"
 where "DELAYNUM \<equiv> 0"
 
-text {* Convert a set to a list. *}
+text \<open>Convert a set to a list.\<close>
 definition list_of_set :: "'a set \<Rightarrow> 'a list"
   where "list_of_set s = (SOME l. set l = s)"
 
@@ -392,14 +392,14 @@ type_synonym TICC_TRAP_TYPE = "word7"
 type_synonym INTERRUPT_LEVEL = "word3"
 type_synonym STORE_BARRIER_PENDING = "bool"
 
-text {* The processor asserts this signal to ensure that the
+text \<open>The processor asserts this signal to ensure that the
 memory system will not process another SWAP or
-LDSTUB operation to the same memory byte. *}
+LDSTUB operation to the same memory byte.\<close>
 type_synonym pb_block_ldst_byte = "virtua_address \<Rightarrow> bool"
 
-text{* The processor asserts this signal to ensure that the
+text\<open>The processor asserts this signal to ensure that the
 memory system will not process another SWAP or
-LDSTUB operation to the same memory word. *}
+LDSTUB operation to the same memory word.\<close>
 type_synonym pb_block_ldst_word = "virtua_address \<Rightarrow> bool"
 
 record sparc_state_var =
@@ -462,8 +462,8 @@ where "write_interrupt_level w v \<equiv> v\<lparr>itrpt_lvl := w\<rparr>"
 definition write_store_barrier_pending :: "bool \<Rightarrow> sparc_state_var \<Rightarrow> sparc_state_var"
 where "write_store_barrier_pending b v \<equiv> v\<lparr>st_bar := b\<rparr>"
 
-text {* Given a word7 value, find the highest bit,
-        and fill the left bits to be the highest bit. *}
+text \<open>Given a word7 value, find the highest bit,
+        and fill the left bits to be the highest bit.\<close>
 definition sign_ext7::"word7 \<Rightarrow> word32"
 where
 "sign_ext7 w \<equiv> 
@@ -478,8 +478,8 @@ where
 "zero_ext8 w \<equiv> (ucast w)::word32
 "
 
-text {* Given a word8 value, find the highest bit,
-        and fill the left bits to be the highest bit. *}
+text \<open>Given a word8 value, find the highest bit,
+        and fill the left bits to be the highest bit.\<close>
 definition sign_ext8::"word8 \<Rightarrow> word32"
 where
 "sign_ext8 w \<equiv> 
@@ -489,8 +489,8 @@ where
   else bitOR ((ucast w)::word32) 0b11111111111111111111111100000000
 "
 
-text {* Given a word13 value, find the highest bit,
-        and fill the left bits to be the highest bit. *}
+text \<open>Given a word13 value, find the highest bit,
+        and fill the left bits to be the highest bit.\<close>
 definition sign_ext13::"word13 \<Rightarrow> word32"
 where
 "sign_ext13 w \<equiv> 
@@ -505,8 +505,8 @@ where
 "zero_ext16 w \<equiv> (ucast w)::word32
 "
 
-text {* Given a word16 value, find the highest bit,
-        and fill the left bits to be the highest bit. *}
+text \<open>Given a word16 value, find the highest bit,
+        and fill the left bits to be the highest bit.\<close>
 definition sign_ext16::"word16 \<Rightarrow> word32"
 where
 "sign_ext16 w \<equiv> 
@@ -516,8 +516,8 @@ where
   else bitOR ((ucast w)::word32) 0b11111111111111110000000000000000
 "
 
-text {* Given a word22 value, find the highest bit,
-        and fill the left bits to tbe the highest bit. *}
+text \<open>Given a word22 value, find the highest bit,
+        and fill the left bits to tbe the highest bit.\<close>
 definition sign_ext22::"word22 \<Rightarrow> word32"
 where
 "sign_ext22 w \<equiv>
@@ -527,8 +527,8 @@ where
   else bitOR ((ucast w)::word32) 0b11111111110000000000000000000000
 "
 
-text {* Given a word24 value, find the highest bit,
-        and fill the left bits to tbe the highest bit. *}
+text \<open>Given a word24 value, find the highest bit,
+        and fill the left bits to tbe the highest bit.\<close>
 definition sign_ext24::"word24 \<Rightarrow> word32"
 where
 "sign_ext24 w \<equiv>
@@ -538,7 +538,7 @@ where
   else bitOR ((ucast w)::word32) 0b11111111000000000000000000000000
 "
 
-text{* 
+text\<open>
 Operations to be defined.
 The SPARC V8 architecture is composed of the following set of instructions:
 	\begin{itemize}
@@ -585,151 +585,151 @@ The SPARC V8 architecture is composed of the following set of instructions:
 	\item Floating-point Compare Instructions
 	\item Coprocessor Operate Instructions
 	\end{itemize}
-*}
+\<close>
 
-text {* The CALL instruction. *}
-datatype call_type = CALL -- "Call and Link"
+text \<open>The CALL instruction.\<close>
+datatype call_type = CALL \<comment> "Call and Link"
 
-text {* The SETHI instruction. *}
-datatype sethi_type = SETHI    --    "Set High 22 bits of r Register"
+text \<open>The SETHI instruction.\<close>
+datatype sethi_type = SETHI    \<comment>    "Set High 22 bits of r Register"
 
-text {* The NOP instruction. *}
-datatype nop_type = NOP      --    "No Operation"
+text \<open>The NOP instruction.\<close>
+datatype nop_type = NOP      \<comment>    "No Operation"
 
-text {* The Branch on integer condition codes instructions. *} 
+text \<open>The Branch on integer condition codes instructions.\<close> 
 datatype bicc_type = 
-  BE       --    "Branch on Equal"
- | BNE      --    "Branch on Not Equal"
- | BGU      --    "Branch on Greater Unsigned"
- | BLE      --    "Branch on Less or Equal"
- | BL       --    "Branch on Less"
- | BGE      --    "Branch on Greater or Equal"
- | BNEG     --    "Branch on Negative"
- | BG       --    "Branch on Greater"
- | BCS      --    "Branch on Carry Set (Less than, Unsigned)"
- | BLEU     --    "Branch on Less or Equal Unsigned"
- | BCC      --    "Branch on Carry Clear (Greater than or Equal, Unsigned)"
- | BA       --    "Branch Always"
- | BN       --    "Branch Never" \<comment> \<open>Added for unconditional branches\<close>
- | BPOS     --  "Branch on Positive"
- | BVC      --  "Branch on Overflow Clear"
- | BVS      --  "Branch on Overflow Set"
+  BE       \<comment>    "Branch on Equal"
+ | BNE      \<comment>    "Branch on Not Equal"
+ | BGU      \<comment>    "Branch on Greater Unsigned"
+ | BLE      \<comment>    "Branch on Less or Equal"
+ | BL       \<comment>    "Branch on Less"
+ | BGE      \<comment>    "Branch on Greater or Equal"
+ | BNEG     \<comment>    "Branch on Negative"
+ | BG       \<comment>    "Branch on Greater"
+ | BCS      \<comment>    "Branch on Carry Set (Less than, Unsigned)"
+ | BLEU     \<comment>    "Branch on Less or Equal Unsigned"
+ | BCC      \<comment>    "Branch on Carry Clear (Greater than or Equal, Unsigned)"
+ | BA       \<comment>    "Branch Always"
+ | BN       \<comment>    "Branch Never" \<comment> \<open>Added for unconditional branches\<close>
+ | BPOS     \<comment>  "Branch on Positive"
+ | BVC      \<comment>  "Branch on Overflow Clear"
+ | BVS      \<comment>  "Branch on Overflow Set"
 
-text {* Memory instructions. That is, load and store. *}
+text \<open>Memory instructions. That is, load and store.\<close>
 datatype load_store_type =
-  LDSB     --    "Load Signed Byte"
- | LDUB     --    "Load Unsigned Byte"
- | LDUBA    --    "Load Unsigned Byte from Alternate space"
- | LDUH     --    "Load Unsigned Halfword"
- | LD       --    "Load Word"
- | LDA      --    "Load Word from Alternate space"
- | LDD      --    "Load Doubleword"
- | STB      --    "Store Byte"
- | STH      --    "Store Halfword"
- | ST       --    "Store Word"
- | STA      --    "Store Word into Alternate space"
- | STD      --    "Store Doubleword"
- | LDSBA    --  "Load Signed Byte from Alternate space"
- | LDSH     --  "Load Signed Halfword"
- | LDSHA    --  "Load Signed Halfword from Alternate space"
- | LDUHA    --  "Load Unsigned Halfword from Alternate space"
- | LDDA     --  "Load Doubleword from Alternate space"
- | STBA     --  "Store Byte into Alternate space"
- | STHA     --  "Store Halfword into Alternate space"
- | STDA     --  "Store Doubleword into Alternate space"
- | LDSTUB   --  "Atomic Load Store Unsigned Byte"
- | LDSTUBA  --  "Atomic Load Store Unsinged Byte in Alternate space"
- | SWAP     --  "Swap r Register with Mmemory"
- | SWAPA    --  "Swap r Register with Mmemory in Alternate space"
- | FLUSH    --    "Flush Instruction Memory"
- | STBAR    --  "Store Barrier"
+  LDSB     \<comment>    "Load Signed Byte"
+ | LDUB     \<comment>    "Load Unsigned Byte"
+ | LDUBA    \<comment>    "Load Unsigned Byte from Alternate space"
+ | LDUH     \<comment>    "Load Unsigned Halfword"
+ | LD       \<comment>    "Load Word"
+ | LDA      \<comment>    "Load Word from Alternate space"
+ | LDD      \<comment>    "Load Doubleword"
+ | STB      \<comment>    "Store Byte"
+ | STH      \<comment>    "Store Halfword"
+ | ST       \<comment>    "Store Word"
+ | STA      \<comment>    "Store Word into Alternate space"
+ | STD      \<comment>    "Store Doubleword"
+ | LDSBA    \<comment>  "Load Signed Byte from Alternate space"
+ | LDSH     \<comment>  "Load Signed Halfword"
+ | LDSHA    \<comment>  "Load Signed Halfword from Alternate space"
+ | LDUHA    \<comment>  "Load Unsigned Halfword from Alternate space"
+ | LDDA     \<comment>  "Load Doubleword from Alternate space"
+ | STBA     \<comment>  "Store Byte into Alternate space"
+ | STHA     \<comment>  "Store Halfword into Alternate space"
+ | STDA     \<comment>  "Store Doubleword into Alternate space"
+ | LDSTUB   \<comment>  "Atomic Load Store Unsigned Byte"
+ | LDSTUBA  \<comment>  "Atomic Load Store Unsinged Byte in Alternate space"
+ | SWAP     \<comment>  "Swap r Register with Mmemory"
+ | SWAPA    \<comment>  "Swap r Register with Mmemory in Alternate space"
+ | FLUSH    \<comment>    "Flush Instruction Memory"
+ | STBAR    \<comment>  "Store Barrier"
 
-text {* Arithmetic instructions. *}
+text \<open>Arithmetic instructions.\<close>
 datatype arith_type =
-  ADD      --    "Add"
- | ADDcc    --    "Add and modify icc"
- | ADDX     --    "Add with Carry"
- | SUB      --    "Subtract"
- | SUBcc    --    "Subtract and modify icc"
- | SUBX     --    "Subtract with Carry"
- | UMUL     --    "Unsigned Integer Multiply"
- | SMUL     --    "Signed Integer Multiply"
- | SMULcc   --    "Signed Integer Multiply and modify icc"
- | UDIV     --    "Unsigned Integer Divide"
- | UDIVcc   --    "Unsigned Integer Divide and modify icc"
- | SDIV     --    "Signed Integer Divide" 
- | ADDXcc   --  "Add with Carry and modify icc"
- | TADDcc   --  "Tagged Add and modify icc"
- | TADDccTV --  "Tagged Add and modify icc and Trap on overflow"
- | SUBXcc   --  "Subtract with Carry and modify icc"
- | TSUBcc   --  "Tagged Subtract and modify icc"
- | TSUBccTV --  "Tagged Subtract and modify icc and Trap on overflow"
- | MULScc   --  "Multiply Step and modify icc"
- | UMULcc   --  "Unsigned Integer Multiply and modify icc"
- | SDIVcc   --  "Signed Integer Divide and modify icc"
+  ADD      \<comment>    "Add"
+ | ADDcc    \<comment>    "Add and modify icc"
+ | ADDX     \<comment>    "Add with Carry"
+ | SUB      \<comment>    "Subtract"
+ | SUBcc    \<comment>    "Subtract and modify icc"
+ | SUBX     \<comment>    "Subtract with Carry"
+ | UMUL     \<comment>    "Unsigned Integer Multiply"
+ | SMUL     \<comment>    "Signed Integer Multiply"
+ | SMULcc   \<comment>    "Signed Integer Multiply and modify icc"
+ | UDIV     \<comment>    "Unsigned Integer Divide"
+ | UDIVcc   \<comment>    "Unsigned Integer Divide and modify icc"
+ | SDIV     \<comment>    "Signed Integer Divide" 
+ | ADDXcc   \<comment>  "Add with Carry and modify icc"
+ | TADDcc   \<comment>  "Tagged Add and modify icc"
+ | TADDccTV \<comment>  "Tagged Add and modify icc and Trap on overflow"
+ | SUBXcc   \<comment>  "Subtract with Carry and modify icc"
+ | TSUBcc   \<comment>  "Tagged Subtract and modify icc"
+ | TSUBccTV \<comment>  "Tagged Subtract and modify icc and Trap on overflow"
+ | MULScc   \<comment>  "Multiply Step and modify icc"
+ | UMULcc   \<comment>  "Unsigned Integer Multiply and modify icc"
+ | SDIVcc   \<comment>  "Signed Integer Divide and modify icc"
 
-text {* Logical instructions. *}
+text \<open>Logical instructions.\<close>
 datatype logic_type =
-  ANDs      --    "And"
- | ANDcc    --    "And and modify icc"
- | ANDN     --    "And Not"
- | ANDNcc   --    "And Not and modify icc"
- | ORs       --    "Inclusive-Or"
- | ORcc     --    "Inclusive-Or and modify icc"
- | ORN      --    "Inclusive Or Not"
- | XORs      --    "Exclusive-Or"
- | XNOR     --    "Exclusive-Nor"
- | ORNcc    --  "Inclusive-Or Not and modify icc"
- | XORcc    --  "Exclusive-Or and modify icc"
- | XNORcc   --  "Exclusive-Nor and modify icc"
+  ANDs      \<comment>    "And"
+ | ANDcc    \<comment>    "And and modify icc"
+ | ANDN     \<comment>    "And Not"
+ | ANDNcc   \<comment>    "And Not and modify icc"
+ | ORs       \<comment>    "Inclusive-Or"
+ | ORcc     \<comment>    "Inclusive-Or and modify icc"
+ | ORN      \<comment>    "Inclusive Or Not"
+ | XORs      \<comment>    "Exclusive-Or"
+ | XNOR     \<comment>    "Exclusive-Nor"
+ | ORNcc    \<comment>  "Inclusive-Or Not and modify icc"
+ | XORcc    \<comment>  "Exclusive-Or and modify icc"
+ | XNORcc   \<comment>  "Exclusive-Nor and modify icc"
  
-text {* Shift instructions.*}
+text \<open>Shift instructions.\<close>
 datatype shift_type =
-  SLL      --    "Shift Left Logical"
- | SRL      --    "Shift Right Logical"
- | SRA      --    "Shift Right Arithmetic" 
+  SLL      \<comment>    "Shift Left Logical"
+ | SRL      \<comment>    "Shift Right Logical"
+ | SRA      \<comment>    "Shift Right Arithmetic" 
 
-text {* Other Control-transfer instructions. *}
+text \<open>Other Control-transfer instructions.\<close>
 datatype ctrl_type = 
-  JMPL     --    "Jump and Link"
- | RETT     --    "Return from Trap"
- | SAVE     --    "Save caller's window"
- | RESTORE  --    "Restore caller's window" 
+  JMPL     \<comment>    "Jump and Link"
+ | RETT     \<comment>    "Return from Trap"
+ | SAVE     \<comment>    "Save caller's window"
+ | RESTORE  \<comment>    "Restore caller's window" 
 
-text {* Access state registers instructions. *}
+text \<open>Access state registers instructions.\<close>
 datatype sreg_type =
-  RDASR    --    "Read Ancillary State Register"
- | RDY      --    "Read Y Register"
- | RDPSR    --    "Read Processor State Register"
- | RDWIM    --    "Read Window Invalid Mask Register"
- | RDTBR    --    "Read Trap Base Regiser"
- | WRASR    --    "Write Ancillary State Register"
- | WRY      --    "Write Y Register"
- | WRPSR    --    "Write Processor State Register"
- | WRWIM    --    "Write Window Invalid Mask Register"
- | WRTBR    --    "Write Trap Base Register" 
+  RDASR    \<comment>    "Read Ancillary State Register"
+ | RDY      \<comment>    "Read Y Register"
+ | RDPSR    \<comment>    "Read Processor State Register"
+ | RDWIM    \<comment>    "Read Window Invalid Mask Register"
+ | RDTBR    \<comment>    "Read Trap Base Regiser"
+ | WRASR    \<comment>    "Write Ancillary State Register"
+ | WRY      \<comment>    "Write Y Register"
+ | WRPSR    \<comment>    "Write Processor State Register"
+ | WRWIM    \<comment>    "Write Window Invalid Mask Register"
+ | WRTBR    \<comment>    "Write Trap Base Register" 
 
-text {* Unimplemented instruction. *}
-datatype uimp_type = UNIMP    --  "Unimplemented" 
+text \<open>Unimplemented instruction.\<close>
+datatype uimp_type = UNIMP    \<comment>  "Unimplemented" 
 
-text {* Trap on integer condition code instructions. *}
+text \<open>Trap on integer condition code instructions.\<close>
 datatype ticc_type =
- TA       --  "Trap Always"
- | TN       --  "Trap Never"
- | TNE      --  "Trap on Not Equal"
- | TE       --  "Trap on Equal"
- | TG       --  "Trap on Greater"
- | TLE      --  "Trap on Less or Equal"
- | TGE      --  "Trap on Greater or Equal"
- | TL       --  "Trap on Less"
- | TGU      --  "Trap on Greater Unsigned"
- | TLEU     --  "Trap on Less or Equal Unsigned"
- | TCC      --  "Trap on Carry Clear (Greater than or Equal, Unsigned)"
- | TCS      --  "Trap on Carry Set (Less Than, Unsigned)"
- | TPOS     --  "Trap on Postive"
- | TNEG     --  "Trap on Negative"
- | TVC      --  "Trap on Overflow Clear"
- | TVS      --  "Trap on Overflow Set"
+ TA       \<comment>  "Trap Always"
+ | TN       \<comment>  "Trap Never"
+ | TNE      \<comment>  "Trap on Not Equal"
+ | TE       \<comment>  "Trap on Equal"
+ | TG       \<comment>  "Trap on Greater"
+ | TLE      \<comment>  "Trap on Less or Equal"
+ | TGE      \<comment>  "Trap on Greater or Equal"
+ | TL       \<comment>  "Trap on Less"
+ | TGU      \<comment>  "Trap on Greater Unsigned"
+ | TLEU     \<comment>  "Trap on Less or Equal Unsigned"
+ | TCC      \<comment>  "Trap on Carry Clear (Greater than or Equal, Unsigned)"
+ | TCS      \<comment>  "Trap on Carry Set (Less Than, Unsigned)"
+ | TPOS     \<comment>  "Trap on Postive"
+ | TNEG     \<comment>  "Trap on Negative"
+ | TVC      \<comment>  "Trap on Overflow Clear"
+ | TVS      \<comment>  "Trap on Overflow Set"
 
 datatype sparc_operation =
   call_type call_type

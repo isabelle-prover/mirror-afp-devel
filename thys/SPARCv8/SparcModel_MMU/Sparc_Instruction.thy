@@ -8,18 +8,18 @@
  * Author: Zhe Hou, David Sanan.
  *)
 
-section {* SPARC instruction model *}
+section \<open>SPARC instruction model\<close>
 theory Sparc_Instruction
 imports Main Sparc_Types Sparc_State "HOL-Eisbach.Eisbach_Tools"
 begin
-text{*
+text\<open>
 This theory provides a formal model for assembly instruction to be executed in the model.
 
 An instruction is defined as a tuple composed of a @{term sparc_operation} element,
 defining the operation the instruction carries out, and a list of operands 
 @{term inst_operand}. @{term inst_operand} can be a user register @{term user_reg} 
 or a memory address @{term mem_add_type}.
-*}
+\<close>
 datatype inst_operand = 
 W5 word5
 |W30 word30
@@ -196,8 +196,8 @@ where "parse_instr_f2 w \<equiv>
   else Inl [invalid_op2_f2]
 "
 
-text {* We don't consider floating-point operations, 
-        so we don't consider the third type of format 3. *}
+text \<open>We don't consider floating-point operations, 
+        so we don't consider the third type of format 3.\<close>
 definition parse_instr_f3::"word32 \<Rightarrow> (Exception list + instruction)"
 where "parse_instr_f3 w \<equiv>
   let this_op = get_op w in
@@ -1095,9 +1095,9 @@ where "parse_instr_f3 w \<equiv>
   else Inl [invalid_op_f3]
 "
 
-text {* Read the word32 value from the Program Counter in the current state. 
+text \<open>Read the word32 value from the Program Counter in the current state. 
         Find the instruction in the memory address of the word32 value. 
-        Return a word32 value of the insturction. *}
+        Return a word32 value of the insturction.\<close>
 definition fetch_instruction::"('a) sparc_state \<Rightarrow>
   (Exception list + word32)"
 where "fetch_instruction s \<equiv> 
@@ -1120,8 +1120,8 @@ where "fetch_instruction s \<equiv>
     else Inl [fetch_instruction_error]
 "
 
-text {* Decode the word32 value of an instruction into 
-        the name of the instruction and its operands. *}
+text \<open>Decode the word32 value of an instruction into 
+        the name of the instruction and its operands.\<close>
 definition decode_instruction::"word32 \<Rightarrow> 
   Exception list + instruction"
 where "decode_instruction w \<equiv> 
@@ -1134,7 +1134,7 @@ where "decode_instruction w \<equiv>
     parse_instr_f3 w
 "
 
-text {* Get the current window from the PSR *}
+text \<open>Get the current window from the PSR\<close>
 definition get_curr_win::"unit \<Rightarrow> ('a,('a::len0 window_size)) sparc_state_monad"
 where "get_curr_win _ \<equiv> 
   do
@@ -1142,7 +1142,7 @@ where "get_curr_win _ \<equiv>
     return curr_win 
   od"
 
-text {* Operational semantics for CALL *}
+text \<open>Operational semantics for CALL\<close>
 definition call_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "call_instr instr \<equiv>
   let op_list = snd instr;
@@ -1158,9 +1158,9 @@ where "call_instr instr \<equiv>
     return ()
   od"
 
-text{* Evaluate icc based on the bits N, Z, V, C in PSR 
+text\<open>Evaluate icc based on the bits N, Z, V, C in PSR 
        and the type of branching instruction. 
-       See Sparcv8 manual Page 178. *}
+       See Sparcv8 manual Page 178.\<close>
 definition eval_icc::"sparc_operation \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> int"
 where
 "eval_icc instr_name n_val z_val v_val c_val \<equiv>
@@ -1206,11 +1206,11 @@ where "branch_instr_sub1 instr_name s \<equiv>
   in
   eval_icc instr_name n_val z_val v_val c_val"
 
-text {* Operational semantics for Branching insturctions. 
+text \<open>Operational semantics for Branching insturctions. 
         Return exception or a bool value for annulment. 
         If the bool value is 1, then the delay instruciton 
         is not executed, otherwise the delay instruction
-        is executed. *}
+        is executed.\<close>
 definition branch_instr::"instruction \<Rightarrow> ('a,unit) sparc_state_monad"
 where "branch_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1246,11 +1246,11 @@ where "branch_instr instr \<equiv>
       od
   od"
 
-text {* Operational semantics for NOP *}
+text \<open>Operational semantics for NOP\<close>
 definition nop_instr::"instruction \<Rightarrow> ('a,unit) sparc_state_monad"
 where "nop_instr instr \<equiv> return ()"
 
-text {* Operational semantics for SETHI *}
+text \<open>Operational semantics for SETHI\<close>
 definition sethi_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "sethi_instr instr \<equiv>
   let op_list = snd instr;
@@ -1323,7 +1323,7 @@ where "get_addr op_list s \<equiv>
   (rs1_val + op2)
 "
 
-text {* Operational semantics for JMPL *}
+text \<open>Operational semantics for JMPL\<close>
 definition jmpl_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "jmpl_instr instr \<equiv>
   let op_list = snd instr;
@@ -1351,7 +1351,7 @@ where "jmpl_instr instr \<equiv>
       od
   od"
 
-text {* Operational semantics for RETT *}
+text \<open>Operational semantics for RETT\<close>
 definition rett_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "rett_instr instr \<equiv>
   let op_list = snd instr in
@@ -1421,7 +1421,7 @@ where "save_retore_sub1 result new_cwp rd \<equiv>
   return ()
   od"
 
-text {* Operational semantics for SAVE and RESTORE. *}
+text \<open>Operational semantics for SAVE and RESTORE.\<close>
 definition save_restore_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "save_restore_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1468,8 +1468,8 @@ where "flush_cache_line \<equiv> undefined"
 definition flush_Ibuf_and_pipeline :: "word32 \<Rightarrow> ('a,unit) sparc_state_monad"
 where "flush_Ibuf_and_pipeline \<equiv> undefined"
 
-text {* Operational semantics for FLUSH. 
-        Flush the all the caches. *}
+text \<open>Operational semantics for FLUSH. 
+        Flush the all the caches.\<close>
 definition flush_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "flush_instr instr \<equiv>
   let op_list = snd instr in
@@ -1481,8 +1481,8 @@ where "flush_instr instr \<equiv>
     return ()
   od"
 
-text {* Operational semantics for read state register instructions. 
-        We do not consider RDASR here. *}
+text \<open>Operational semantics for read state register instructions. 
+        We do not consider RDASR here.\<close>
 definition read_state_reg_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "read_state_reg_instr instr \<equiv> 
   let instr_name = fst instr;
@@ -1539,8 +1539,8 @@ where "read_state_reg_instr instr \<equiv>
     else return ()  
   od"
 
-text {* Operational semantics for write state register instructions. 
-        We do not consider WRASR here. *}
+text \<open>Operational semantics for write state register instructions. 
+        We do not consider WRASR here.\<close>
 definition write_state_reg_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "write_state_reg_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1669,7 +1669,7 @@ where
     else return () 
 "
 
-text {* Operational semantics for logical instructions. *}
+text \<open>Operational semantics for logical instructions.\<close>
 definition logical_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "logical_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1688,7 +1688,7 @@ where "logical_instr instr \<equiv>
     logical_instr_sub1 instr_name result
   od"
 
-text {* Operational semantics for shift instructions. *}
+text \<open>Operational semantics for shift instructions.\<close>
 definition shift_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "shift_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1757,8 +1757,8 @@ where "add_instr_sub1 instr_name result rs1_val operand2 \<equiv>
     else return ()
 "
 
-text {* Operational semantics for add instructions. 
-        These include ADD, ADDcc, ADDX. *}
+text \<open>Operational semantics for add instructions. 
+        These include ADD, ADDcc, ADDX.\<close>
 definition add_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "add_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1815,8 +1815,8 @@ where "sub_instr_sub1 instr_name result rs1_val operand2 \<equiv>
     else return ()
 "
 
-text {* Operational semantics for subtract instructions. 
-        These include SUB, SUBcc, SUBX. *}
+text \<open>Operational semantics for subtract instructions. 
+        These include SUB, SUBcc, SUBX.\<close>
 definition sub_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "sub_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1861,7 +1861,7 @@ where "mul_instr_sub1 instr_name result \<equiv>
     else return ()
 "
 
-text {* Operational semantics for multiply instructions. *}
+text \<open>Operational semantics for multiply instructions.\<close>
 definition mul_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "mul_instr instr \<equiv>
   let instr_name = fst instr;
@@ -1972,7 +1972,7 @@ where "div_comp instr rs1 rd operand2 \<equiv>
     div_write_new_val instr result temp_V 
   od"
 
-text {* Operational semantics for divide instructions. *}
+text \<open>Operational semantics for divide instructions.\<close>
 definition div_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "div_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2106,7 +2106,7 @@ where "load_sub1 instr rd s_val \<equiv>
       load_sub3 instr curr_win rd asi address
   od"
 
-text {* Operational semantics for Load instructions. *}
+text \<open>Operational semantics for Load instructions.\<close>
 definition load_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "load_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2262,7 +2262,7 @@ where "store_sub1 instr rd s_val \<equiv>
       store_sub2 instr curr_win rd asi address
   od"
 
-text {* Operational semantics for Store instructions. *}
+text \<open>Operational semantics for Store instructions.\<close>
 definition store_instr :: "instruction \<Rightarrow> 
   ('a::len0,unit) sparc_state_monad"
 where "store_instr instr \<equiv>
@@ -2294,8 +2294,8 @@ where "store_instr instr \<equiv>
       store_sub1 instr rd s_val
   od"
 
-text {* The instructions below are not used by Xtratum and they are 
-  not tested. *}
+text \<open>The instructions below are not used by Xtratum and they are 
+  not tested.\<close>
 
 definition ldst_asi :: "instruction \<Rightarrow> word1 \<Rightarrow> asi_type"
 where "ldst_asi instr s_val \<equiv>
@@ -2394,7 +2394,7 @@ where "load_store_sub1 instr rd s_val \<equiv>
     od
   od"
 
-text {* Operational semantics for atomic load-store. *}
+text \<open>Operational semantics for atomic load-store.\<close>
 definition load_store_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "load_store_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2483,7 +2483,7 @@ where "swap_sub1 instr rd s_val \<equiv>
     od
   od"
 
-text {* Operational semantics for swap. *}
+text \<open>Operational semantics for swap.\<close>
 definition swap_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "swap_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2514,7 +2514,7 @@ where "swap_instr instr \<equiv>
 definition bit2_zero :: "word2 \<Rightarrow> word1"
 where "bit2_zero w2 \<equiv> if w2 \<noteq> 0 then 1 else 0"
 
-text {* Operational semantics for tagged add instructions. *}
+text \<open>Operational semantics for tagged add instructions.\<close>
 definition tadd_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "tadd_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2571,7 +2571,7 @@ where "tadd_instr instr \<equiv>
     od
   od"
 
-text {* Operational semantics for tagged add instructions. *}
+text \<open>Operational semantics for tagged add instructions.\<close>
 definition tsub_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "tsub_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2635,7 +2635,7 @@ where "muls_op2 op_list s \<equiv>
   else get_operand2 op_list s
 "
 
-text {* Operational semantics for multiply step instruction. *}
+text \<open>Operational semantics for multiply step instruction.\<close>
 definition muls_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "muls_instr instr \<equiv>
   let instr_name = fst instr;
@@ -2684,9 +2684,9 @@ where "muls_instr instr \<equiv>
     return ()
   od"
 
-text{* Evaluate icc based on the bits N, Z, V, C in PSR 
+text\<open>Evaluate icc based on the bits N, Z, V, C in PSR 
        and the type of ticc instruction. 
-       See Sparcv8 manual Page 182. *}
+       See Sparcv8 manual Page 182.\<close>
 definition trap_eval_icc::"sparc_operation \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> int"
 where "trap_eval_icc instr_name n_val z_val v_val c_val \<equiv>
     if instr_name = ticc_type TNE then
@@ -2743,7 +2743,7 @@ where "get_trap_op2 op_list s \<equiv>
     ext_simm7
 "
 
-text {* Operational semantics for Ticc insturctions. *}
+text \<open>Operational semantics for Ticc insturctions.\<close>
 definition ticc_instr::"instruction \<Rightarrow> 
   ('a::len0,unit) sparc_state_monad"
 where "ticc_instr instr \<equiv>
@@ -2777,7 +2777,7 @@ where "ticc_instr instr \<equiv>
       od
   od"
 
-text {* Operational semantics for store barrier. *}
+text \<open>Operational semantics for store barrier.\<close>
 definition store_barrier_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
 where "store_barrier_instr instr \<equiv>
   do

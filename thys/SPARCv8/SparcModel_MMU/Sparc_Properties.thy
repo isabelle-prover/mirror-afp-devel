@@ -16,13 +16,13 @@ begin
 
 (*********************************************************************)
 
-section{* Single step theorem *}
+section\<open>Single step theorem\<close>
 
 (*********************************************************************)
 
-text {* The following shows that, if the pre-state satisfies certain 
+text \<open>The following shows that, if the pre-state satisfies certain 
   conditions called \<open>good_context\<close>, there must be a defined post-state 
-  after a single step execution. *}
+  after a single step execution.\<close>
 
 method save_restore_proof =
 ((simp add: save_restore_instr_def),
@@ -1983,12 +1983,12 @@ by (simp add: no_error next_match)
 
 (*********************************************************************)
 
-section {* Privilege safty *}
+section \<open>Privilege safty\<close>
 
 (*********************************************************************)
 
-text {* The following shows that, if the pre-state is under user mode,
-  then after a singel step execution, the post-state is aslo under user mode. *}
+text \<open>The following shows that, if the pre-state is under user mode,
+  then after a singel step execution, the post-state is aslo under user mode.\<close>
 
 lemma write_cpu_pc_privilege: "s' = snd (fst (write_cpu w PC s)) \<and>
   ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
@@ -2579,8 +2579,8 @@ shows "((ucast (get_S (cpu_reg_val PSR
 proof -
   have "\<forall>x. Some x \<noteq> None" by auto
   then have "r \<noteq> None" using a1
-    by (simp add: `r = memory_write asi addr byte_mask data s \<and> 
-        r = Some s' \<and> ucast (get_S (cpu_reg_val PSR s)) = 0`)  
+    by (simp add: \<open>r = memory_write asi addr byte_mask data s \<and> 
+        r = Some s' \<and> ucast (get_S (cpu_reg_val PSR s)) = 0\<close>)  
   then have "\<exists>s''. r = Some (store_barrier_pending_mod False s'')" using a1
     by (metis (no_types, lifting) memory_write_def option.case_eq_if) 
   then have "\<exists>s''. s' = store_barrier_pending_mod False s''" using a1
@@ -3629,12 +3629,12 @@ next
   by auto
 qed
 
-text {* 
+text \<open>
   Assume that there is no \<open>delayed_write\<close> and 
   there is no traps to be executed.
   If an instruction is executed as a user,
   the privilege will not be changed to supervisor after 
-  the execution. *}
+  the execution.\<close>
 theorem safe_privilege : 
 assumes a1: "get_delayed_pool s = [] \<and> get_trap_set s = {} \<and>
   snd (execute_instruction() s) = False \<and>
@@ -3709,7 +3709,7 @@ qed
 
 (*********************************************************************)
 
-section {* Single step non-interference property. *}
+section \<open>Single step non-interference property.\<close>
 
 (*********************************************************************)
 
@@ -3743,9 +3743,9 @@ definition mem_equal:: "('a) sparc_state \<Rightarrow> ('a) sparc_state \<Righta
   (mem s1) 11 ((pa AND 68719476732) + 2) = (mem s2) 11 ((pa AND 68719476732) + 2) \<and>
   (mem s1) 11 ((pa AND 68719476732) + 3) = (mem s2) 11 ((pa AND 68719476732) + 3)"
 
-text {* \<open>low_equal\<close> defines the equivalence relation over two sparc
+text \<open>\<open>low_equal\<close> defines the equivalence relation over two sparc
 states that is an analogy to the \<open>=\<^sub>L\<close> relation over memory contexts
-in the traditional non-interference theorem. *}
+in the traditional non-interference theorem.\<close>
 
 definition low_equal:: "('a::len0) sparc_state \<Rightarrow> ('a) sparc_state \<Rightarrow> bool" where
 "low_equal s1 s2 \<equiv> 
@@ -8441,7 +8441,7 @@ definition user_seq_exe:: "nat \<Rightarrow> ('a::len0) sparc_state \<Rightarrow
 "user_seq_exe n s \<equiv> \<forall>i t. (i \<le> n \<and> SEQ i s = Some t) \<longrightarrow>
   (good_context t \<and> get_delayed_pool t = [] \<and> get_trap_set t = {})"
 
-text {* NIA is short for non-interference assumption. *}
+text \<open>NIA is short for non-interference assumption.\<close>
 definition "NIA t1 t2 \<equiv> 
     ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
     ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
@@ -8449,7 +8449,7 @@ definition "NIA t1 t2 \<equiv>
     good_context t2 \<and> get_delayed_pool t2 = [] \<and> get_trap_set t2 = {} \<and>
     low_equal t1 t2"
 
-text {* NIC is short for non-interference conclusion. *}
+text \<open>NIC is short for non-interference conclusion.\<close>
 definition "NIC t1 t2 \<equiv> (\<exists>u1 u2. Some u1 = NEXT t1 \<and> Some u2 = NEXT t2 \<and> 
     ((ucast (get_S (cpu_reg_val PSR u1)))::word1) = 0 \<and>
     ((ucast (get_S (cpu_reg_val PSR u2)))::word1) = 0 \<and>
