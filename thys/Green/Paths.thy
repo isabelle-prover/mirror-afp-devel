@@ -427,9 +427,9 @@ proof -
       by auto
   qed
   have lem1: "((\<lambda>x. \<Sum>b\<in>basis. f ((g1+++g2) x) \<bullet> b * (vector_derivative (g1+++g2) (at x within {0..1}) \<bullet> b)) has_integral i1) {0..1/2}"
-    apply (rule has_integral_spike_finite [OF _ _ i1, of "insert (1/2) (op*2 -` s1)"])
+    apply (rule has_integral_spike_finite [OF _ _ i1, of "insert (1/2) (( * )2 -` s1)"])
     using s1
-     apply (force intro: finite_vimageI [where h = "op*2"] inj_onI)
+     apply (force intro: finite_vimageI [where h = "( * )2"] inj_onI)
     apply (clarsimp simp add: joinpaths_def scaleR_conv_of_real mult_ac g1)
     by (simp add: sum_distrib_left)
   moreover have lem2: "((\<lambda>x. \<Sum>b\<in>basis. f ((g1+++g2) x) \<bullet> b * (vector_derivative (g1+++g2) (at x within {0..1}) \<bullet> b)) has_integral i2) {1/2..1}"
@@ -571,7 +571,7 @@ lemma has_line_integral_on_reverse_path:
   shows  "((\<lambda>x. \<Sum>b\<in>basis. F ((reversepath g) x) \<bullet> b * (vector_derivative (reversepath g) (at x within {0..1}) \<bullet> b)) has_integral -c){0..1}"
 proof -
   { fix s x
-    assume xs: "g C1_differentiable_on ({0..1} - s)" "x \<notin> op - 1 ` s" "0 \<le> x" "x \<le> 1"
+    assume xs: "g C1_differentiable_on ({0..1} - s)" "x \<notin> (-) 1 ` s" "0 \<le> x" "x \<le> 1"
     have "vector_derivative (\<lambda>x. g (1 - x)) (at x within {0..1}) =
                 - vector_derivative g (at (1 - x) within {0..1})"
     proof -
@@ -2075,7 +2075,7 @@ proof -
       by (simp add: has_vector_derivative_def scaleR_conv_of_real)
     have "(f has_field_derivative (f' (g x))) (at (g x) within g ` {a..b})"
       using assms by (metis a atLeastAtMost_iff b DERIV_subset image_subset_iff less_eq_real_def)
-    then have fdiff: "(f has_derivative op * (f' (g x))) (at (g x) within g ` {a..b})"
+    then have fdiff: "(f has_derivative ( * ) (f' (g x))) (at (g x) within g ` {a..b})"
       by (simp add: has_field_derivative_def)
     have "((\<lambda>x. f (g x)) has_vector_derivative f' (g x) * vector_derivative g (at x within {a..b})) (at x within {a..b})"
       using diff_chain_within [OF gdiff fdiff]
@@ -2114,7 +2114,7 @@ proof -
       by (simp add: has_vector_derivative_def scaleR_conv_of_real)
     have "(f has_field_derivative (f' (g x))) (at (g x) within g ` {0..1})"
       using assms by (metis a atLeastAtMost_iff b DERIV_subset image_subset_iff less_eq_real_def)
-    then have fdiff: "(f has_derivative op * (f' (g x))) (at (g x) within g ` {0..1})"
+    then have fdiff: "(f has_derivative ( * ) (f' (g x))) (at (g x) within g ` {0..1})"
       by (simp add: has_field_derivative_def)
     have "((\<lambda>x. f (g x)) has_vector_derivative f' (g x) * vector_derivative g (at x within {0..1})) (at x within {0..1})"
       using diff_chain_within [OF gdiff fdiff]

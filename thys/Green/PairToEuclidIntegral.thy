@@ -1104,7 +1104,7 @@ lemma pair_tagged_division_to_euclid_tagged_division_twoD:
                      proof -
                        assume "pair_p tagged_division_of {x. x1 \<le> x \<bullet> (1, 0) \<and> x \<bullet> (1, 0) \<le> x2 \<and> y1 \<le> x \<bullet> (0, 1) \<and> x \<bullet> (0, 1) \<le> y2}"
                        assume "{x. \<exists>xa. (\<exists>a b. ((a, b), xa) \<in> pair_p) \<and> x \<in> xa} = {x. x1 \<le> x \<bullet> (1, 0) \<and> x \<bullet> (1, 0) \<le> x2 \<and> y1 \<le> x \<bullet> (0, 1) \<and> x \<bullet> (0, 1) \<le> y2}"
-                       then have "{p. \<exists>r. (\<exists>ra rb. ((ra, rb), r) \<in> pair_p) \<and> p \<in> r} \<in> Collect (op \<in> (a, b))"
+                       then have "{p. \<exists>r. (\<exists>ra rb. ((ra, rb), r) \<in> pair_p) \<and> p \<in> r} \<in> Collect ((\<in>) (a, b))"
                          using a_b_in_cbox by auto
                        then show "\<exists>p\<in>pair_p. case p of (p, r) \<Rightarrow> (a, b) \<in> r"
                        by blast

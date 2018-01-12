@@ -1,5 +1,5 @@
 theory Integrals
-  imports Analysis General_Utils
+  imports "HOL-Analysis.Analysis" General_Utils
 begin
 
 lemma gauge_integral_Fubini_universe_x:

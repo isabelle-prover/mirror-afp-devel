@@ -1,8 +1,6 @@
 theory General_Utils
-  imports Analysis
+  imports "HOL-Analysis.Analysis"
 begin
-
-
 
 lemma lambda_skolem_gen: "(\<forall>i. \<exists>f'::('a ^ 'n) \<Rightarrow> 'a. P i f') \<longleftrightarrow>
    (\<exists>f'::('a ^ 'n) \<Rightarrow> ('a ^ 'n). \<forall>i. P i ((\<lambda>x. (f' x) $ i)))" (is "?lhs \<longleftrightarrow> ?rhs")
