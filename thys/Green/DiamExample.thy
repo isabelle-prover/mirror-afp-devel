@@ -327,8 +327,8 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
       let ?f = "rot_diamond_cube_boundary_to_subdiv"
       have 1: "(vertical_boundary (rot_diamond_cube) - ?pi) = {diamond_left_edges, diamond_right_edges}"
         apply (auto simp add: rot_diamond_cube_vertical_boundary_explicit  diamond_left_edges_def diamond_right_edges_def)
-         apply (metis (no_types, hide_lams) add.inverse_inverse add_diff_cancel_right' diff_numeral_special(11) mult.left_neutral mult.right_neutral prod.inject neqs1 uminus_add_conv_diff)
-        by (metis (no_types, hide_lams) diff_0 mult.left_neutral mult_minus_left mult_zero_right prod.inject neqs1)
+         apply (metis (no_types, hide_lams) add.inverse_inverse add_diff_cancel_right' diff_numeral_special(11) mult.left_neutral mult.right_neutral prod.inject neqs1(2) uminus_add_conv_diff)
+        by (metis (no_types, hide_lams) diff_0 mult.left_neutral mult_minus_left mult_zero_right prod.inject neqs1(2))
       show "UNION (vertical_boundary (rot_diamond_cube) - ?pi) ?f = ?subdiv"
         apply (simp add: rot_diamond_cube_boundary_to_subdiv_def 1 UNION_eq subpath_def)
         apply (auto simp add: set_eq_iff diamond_right_edges_def diamond_left_edges_def)

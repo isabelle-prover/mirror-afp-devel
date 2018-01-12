@@ -193,7 +193,7 @@ proof -
       apply  (simp add: s_is_bounded_by_g1_and_g2 f_is_g_indicator cbox_def)
       by auto
     then show "x \<notin> cbox a b \<longrightarrow> integral UNIV (\<lambda>y. f (x, y)) = 0"
-      by (simp add: integral_0)
+      by (simp)
   qed
   have RHS: "integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x,y))) = integral (cbox a b) (\<lambda>x. integral (cbox (g1 x) (g2 x)) (\<lambda>y. g(x,y)))"
   proof -
@@ -299,7 +299,7 @@ proof -
       apply  (simp add: s_is_bounded_by_g1_and_g2 f_is_g_indicator cbox_def)
       by auto
     then show "x \<notin> cbox a b \<longrightarrow> integral UNIV (\<lambda>y. f (y, x)) = 0"
-      by (simp add: integral_0)
+      by (simp)
   qed
   have RHS: "integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x))) = integral (cbox a b) (\<lambda>x. integral (cbox (g1 x) (g2 x)) (\<lambda>y. g(y, x)))"
   proof -
