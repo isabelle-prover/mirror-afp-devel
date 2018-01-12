@@ -97,12 +97,12 @@ definition
 end
 type_synonym MMU_context = "MMU_register \<Rightarrow> machine_word"
 
-text {* PTE\_flags is the last 8 bits of a PTE. See page 242 of SPARCv8 manual.
-C - bit 7
-M - bit 6,
-R - bit 5
-ACC - bit 4~2
-ET - bit 1~0. *}
+text {* \<open>PTE_flags\<close> is the last 8 bits of a PTE. See page 242 of SPARCv8 manual.
+\<^item> C - bit 7
+\<^item> M - bit 6,
+\<^item> R - bit 5
+\<^item> ACC - bit 4~2
+\<^item> ET - bit 1~0. *}
 
 type_synonym PTE_flags = word8
 
@@ -610,7 +610,7 @@ datatype bicc_type =
  | BLEU     --    "Branch on Less or Equal Unsigned"
  | BCC      --    "Branch on Carry Clear (Greater than or Equal, Unsigned)"
  | BA       --    "Branch Always"
- | BN       --    "Branch Never" (* Added for unconditional branches *)
+ | BN       --    "Branch Never" \<comment> \<open>Added for unconditional branches\<close>
  | BPOS     --  "Branch on Positive"
  | BVC      --  "Branch on Overflow Clear"
  | BVS      --  "Branch on Overflow Set"
@@ -772,15 +772,15 @@ reset
 |interrupt_level_n
 
 datatype Exception =
-(* The following are processor states that are not in the instruction model,
-   but we MAY want to deal with these from hardware perspective. 
-|execute_mode
-|reset_mode
-|error_mode*)
-(* The following are self-defined exceptions. *)
+\<comment> \<open>The following are processor states that are not in the instruction model,\<close>
+\<comment> \<open>but we MAY want to deal with these from hardware perspective.\<close>
+\<comment> \<open>\<open>|execute_mode\<close>\<close>
+\<comment> \<open>\<open>|reset_mode\<close>\<close>
+\<comment> \<open>\<open>|error_mode\<close>\<close>
+\<comment> \<open>The following are self-defined exceptions.\<close>
 invalid_cond_f2
 |invalid_op2_f2
-|illegal_instruction2 (* when i = 0 for load/store not from alternate space *)
+|illegal_instruction2 \<comment> \<open>when \<open>i = 0\<close> for load/store not from alternate space\<close>
 |invalid_op3_f3_op11
 |case_impossible
 |invalid_op3_f3_op10

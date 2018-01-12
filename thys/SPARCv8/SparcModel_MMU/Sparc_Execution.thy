@@ -25,15 +25,15 @@ where "select_trap _ \<equiv>
     psr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val PSR s));
     et_val \<leftarrow> gets (\<lambda>s. (get_ET psr_val));
     modify (\<lambda>s. (emp_trap_set s));
-    if rt_val = True then (* ignore ET, and leave tt unchaged *)
+    if rt_val = True then \<comment> \<open>ignore \<open>ET\<close>, and leave \<open>tt\<close> unchaged\<close>
       return ()
-    else if et_val = 0 then (* go to error mode, machine needs reset *)
+    else if et_val = 0 then \<comment> \<open>go to error mode, machine needs reset\<close>
       do
         set_err_mode True;
         set_exe_mode False;
         fail ()
       od
-    (* By the SPARCv8 manual only 1 of the following traps could be in traps. *)
+    \<comment> \<open>By the SPARCv8 manual only 1 of the following traps could be in traps.\<close>
     else if data_store_error \<in> traps  then
       do
         write_cpu_tt (0b00101011::word8);
@@ -130,8 +130,8 @@ where "select_trap _ \<equiv>
         write_cpu_tt (word_cat (1::word1) ticc_trap_type);
         return ()
       od
-    (*else if interrupt_level > 0 then *)
-    (* We don't consider interrupt_level *)
+    \<comment> \<open>\<open>else if interrupt_level > 0 then\<close>\<close>
+    \<comment> \<open>We don't consider \<open>interrupt_level\<close>\<close>
     else return ()
   od"
 
@@ -148,7 +148,7 @@ where "exe_trap_st_pc _ \<equiv>
         write_reg npc_val curr_win (word_of_int 18);
         return ()
       od
-    else (* annul = True *) 
+    else \<comment> \<open>\<open>annul = True\<close>\<close>
       do
         write_reg npc_val curr_win (word_of_int 17);
         write_reg (npc_val + 4) curr_win (word_of_int 18);
@@ -171,7 +171,7 @@ where "exe_trap_wr_pc _ \<equiv>
         write_cpu (tbr_val + 4) nPC;
         return ()
       od
-    else (* reset_trap = True *)
+    else \<comment> \<open>\<open>reset_trap = True\<close>\<close>
       do
         write_cpu 0 PC;
         write_cpu 4 nPC;
@@ -186,7 +186,7 @@ where "execute_trap _ \<equiv>
     select_trap();
     err_mode \<leftarrow> gets (\<lambda>s. (err_mode_val s));
     if err_mode = True then 
-      (* The SparcV8 manual doesn't say what to do. *)
+      \<comment> \<open>The SparcV8 manual doesn't say what to do.\<close>
       return ()
     else
       do
@@ -321,15 +321,15 @@ where "execute_instruction _ \<equiv>
         modify (\<lambda>s. (delayed_pool_write s));
         fetch_result \<leftarrow> gets (\<lambda>s. (fetch_instruction s));
         case fetch_result of 
-        Inl e1 \<Rightarrow> (do (* Memory address in PC is not aligned. *)
-                      (* Actually, SparcV8 manual doens't check alignment here. *)
+        Inl e1 \<Rightarrow> (do \<comment> \<open>Memory address in PC is not aligned.\<close>
+                      \<comment> \<open>Actually, SparcV8 manual doens't check alignment here.\<close>
                     raise_trap instruction_access_exception;
                     return ()
                   od) 
         | Inr v1 \<Rightarrow> (do
           dec \<leftarrow> gets (\<lambda>s. (decode_instruction v1));
           case dec of 
-            Inl e2 \<Rightarrow> ( (* Instruction is ill-formatted. *)
+            Inl e2 \<Rightarrow> (\<comment> \<open>Instruction is ill-formatted.\<close>
                         fail ()
                       )
             | Inr v2 \<Rightarrow> (do
@@ -341,7 +341,7 @@ where "execute_instruction _ \<equiv>
                 execute_instr_sub1 instr;
                 return ()
               od
-              else (* annul \<noteq> False *)
+              else \<comment> \<open>\<open>annul \<noteq> False\<close>\<close>
               do
                 set_annul False;
                 npc_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val nPC s));
@@ -352,9 +352,9 @@ where "execute_instruction _ \<equiv>
             od)
         od) 
       od
-      else return () (* Not in execute_mode. *)
+      else return () \<comment> \<open>Not in \<open>execute_mode\<close>.\<close>
     od
-    else (* traps is not empty, which means trap = 1. *)
+    else \<comment> \<open>traps is not empty, which means \<open>trap = 1\<close>.\<close>
     do
       execute_trap();
       return ()
@@ -372,11 +372,11 @@ where "good_context s \<equiv>
       et_val = get_ET psr_val;
       rt_val = reset_trap_val s
   in
-  if traps \<noteq> {} \<and> rt_val = False \<and> et_val = 0 then False (* enter error_mode in select_traps. *)
+  if traps \<noteq> {} \<and> rt_val = False \<and> et_val = 0 then False \<comment> \<open>enter \<open>error_mode\<close> in \<open>select_traps\<close>.\<close>
   else
     let s' = delayed_pool_write s in
     case fetch_instruction s' of
-    (* instruction_access_exception is handled in the next state. *)
+    \<comment> \<open>\<open>instruction_access_exception\<close> is handled in the next state.\<close>
     Inl _ \<Rightarrow> True 
     |Inr v \<Rightarrow> (
       case decode_instruction v of 
@@ -384,9 +384,9 @@ where "good_context s \<equiv>
       |Inr instr \<Rightarrow> (
         let annul = annul_val s' in
         if annul = True then True
-        else (* annul = False *)
+        else \<comment> \<open>\<open>annul = False\<close>\<close>
           if supported_instruction (fst instr) then
-            (* The only instruction that could fail is RETT. *)
+            \<comment> \<open>The only instruction that could fail is \<open>RETT\<close>.\<close>
             if (fst instr) = ctrl_type RETT then
               let curr_win_r = (get_CWP (cpu_reg_val PSR s'));
                   new_cwp_int_r = (((uint curr_win_r) + 1) mod NWINDOWS);
@@ -403,7 +403,7 @@ where "good_context s \<equiv>
               else if (bitAND addr_r (0b00000000000000000000000000000011::word32)) \<noteq> 0 then False
               else True
             else True
-          else False (* Unsupported instruction. *)
+          else False \<comment> \<open>Unsupported instruction.\<close>
       )  
     )
 "

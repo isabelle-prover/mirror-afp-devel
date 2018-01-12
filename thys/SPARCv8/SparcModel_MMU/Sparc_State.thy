@@ -218,7 +218,7 @@ where
 "mem_mod asi addr val state \<equiv>
   let state1 = state\<lparr>mem := (mem state)
     (asi := ((mem state) asi)(addr := Some val))\<rparr>
-  in (* Only allow one of asi 8 and 9 (10 and 11) to have value. *)
+  in \<comment> \<open>Only allow one of \<open>asi\<close> 8 and 9 (10 and 11) to have value.\<close>
   if (uint asi) = 8 \<or> (uint asi) = 10 then
     let asi2 = word_of_int ((uint asi) + 1) in
     state1\<lparr>mem := (mem state1)
@@ -243,7 +243,7 @@ where
     asi10 = word_of_int 10;
     asi11 = word_of_int 11
   in 
-  (* Only allow one of asi 8, 9, 10, 11 to have value. *)
+  \<comment> \<open>Only allow one of \<open>asi\<close> 8, 9, 10, 11 to have value.\<close>
   if (uint asi) = 8 then 
     let state2 = state1\<lparr>mem := (mem state1)
       (asi9 := ((mem state1) asi9)(addr := None))\<rparr>;
@@ -317,10 +317,12 @@ where
                 (ucast(byte3)))
 "
 
-text {* Let addr' be addr with last two bits set to 0's.
-        Write the 32bit data in the memory address addr' 
-        (and the following 3 addresses). 
-        byte\_mask decides which byte of the 32bits are written. *}
+text \<open>
+  Let \<open>addr'\<close> be \<open>addr\<close> with last two bits set to 0's.
+  Write the 32bit data in the memory address \<open>addr'\<close>
+  (and the following 3 addresses). 
+  \<open>byte_mask\<close> decides which byte of the 32bits are written.
+\<close>
 definition mem_mod_w32 :: "asi_type \<Rightarrow> phys_address \<Rightarrow> word4 \<Rightarrow> word32 \<Rightarrow> 
                            ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
@@ -546,7 +548,7 @@ definition ccr_flush :: "('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "ccr_flush state \<equiv>
   let ccr_val = sys_reg_val CCR state;
-      (* FI is bit 21 of CCR *)
+      \<comment> \<open>\<open>FI\<close> is bit 21 of \<open>CCR\<close>\<close>
       fi_val = (bitAND ccr_val (0b00000000001000000000000000000000)) >> 21;
       fd_val = (bitAND ccr_val (0b00000000010000000000000000000000)) >> 22;
       state1 = (if fi_val = 1 then flush_instr_cache state else state)
@@ -573,9 +575,9 @@ definition delayed_pool_add :: "(int \<times> reg_type \<times> CPU_register) \<
 where 
 "delayed_pool_add dw s \<equiv>
   let (i,v,cr) = dw in
-  if i = 0 then (* Write the value to the register immediately. *)
+  if i = 0 then \<comment> \<open>Write the value to the register immediately.\<close>
     cpu_reg_mod v cr s
-  else (* Add to delayed write pool. *)
+  else \<comment> \<open>Add to delayed write pool.\<close>
     let curr_pool = get_delayed_pool s in
     s\<lparr>dwrite := curr_pool@[dw]\<rparr>"
 
@@ -693,14 +695,14 @@ where "emp_trap_set s \<equiv> s\<lparr>traps := {}\<rparr>"
 definition state_undef:: "('a) sparc_state \<Rightarrow> bool"
 where "state_undef state \<equiv> (undef state)"
 
-text {* The memory\_read interface that conforms with the SPARCv8 manual. *}
+text {* The \<open>memory_read\<close> interface that conforms with the SPARCv8 manual. *}
 definition memory_read :: "asi_type \<Rightarrow> virtua_address \<Rightarrow> 
                            ('a) sparc_state \<Rightarrow> 
                            ((word32 option) \<times> ('a) sparc_state)"
 where "memory_read asi addr state \<equiv>
-  let asi_int = uint asi in (* See Page 25 and 35 for ASI usage in LEON 3FT. *)
-  if asi_int = 1 then (* Forced cache miss. *)
-    (* Directly read from memory. *)
+  let asi_int = uint asi in \<comment> \<open>See Page 25 and 35 for ASI usage in LEON 3FT.\<close>
+  if asi_int = 1 then \<comment> \<open>Forced cache miss.\<close>
+    \<comment> \<open>Directly read from memory.\<close>
     let r1 = load_word_mem state addr (word_of_int 8) in
     if r1 = None then
       let r2 = load_word_mem state addr (word_of_int 10) in
@@ -708,72 +710,72 @@ where "memory_read asi addr state \<equiv>
         (None,state)
       else (r2,state)
     else (r1,state)
-  else if asi_int = 2 then (* System registers. *)
-    (* See Table 19, Page 34 for System Register address map in LEON 3FT. *)
-    if uint addr = 0 then (* Cache control register. *)
+  else if asi_int = 2 then \<comment> \<open>System registers.\<close>
+    \<comment> \<open>See Table 19, Page 34 for System Register address map in LEON 3FT.\<close>
+    if uint addr = 0 then \<comment> \<open>Cache control register.\<close>
       ((Some (sys_reg_val CCR state)), state)
-    else if uint addr = 8 then (* Instruction cache configuration register. *)
+    else if uint addr = 8 then \<comment> \<open>Instruction cache configuration register.\<close>
       ((Some (sys_reg_val ICCR state)), state)
-    else if uint addr = 12 then (* Data cache configuration register. *)
+    else if uint addr = 12 then \<comment> \<open>Data cache configuration register.\<close>
       ((Some (sys_reg_val DCCR state)), state)
-    else (* Invalid address. *)
+    else \<comment> \<open>Invalid address.\<close>
       (None, state)
-  else if asi_int \<in> {8,9} then (* Access instruction memory. *)    
+  else if asi_int \<in> {8,9} then \<comment> \<open>Access instruction memory.\<close>
     let ccr_val = (sys_reg state) CCR in
-    if ccr_val AND 1 \<noteq> 0 then (* Cache is enabled. Update cache. *)
-    (* We don't go through the tradition, i.e., read from cache first,
-      if the address is not cached, then read from memory, 
-      because performance is not an issue here. 
-      Thus we directly read from memory and update the cache. *)
+    if ccr_val AND 1 \<noteq> 0 then \<comment> \<open>Cache is enabled. Update cache.\<close>
+    \<comment> \<open>We don't go through the tradition, i.e., read from cache first,\<close>
+    \<comment> \<open>if the address is not cached, then read from memory,\<close>
+    \<comment> \<open>because performance is not an issue here.\<close>
+    \<comment> \<open>Thus we directly read from memory and update the cache.\<close>
       let data = load_word_mem state addr asi in
       case data of
       Some w \<Rightarrow> (Some w,(add_instr_cache state addr w (0b1111::word4)))
       |None \<Rightarrow> (None, state)
-    else (* Cache is disabled. Just read from memory. *)
+    else \<comment> \<open>Cache is disabled. Just read from memory.\<close>
       ((load_word_mem state addr asi),state)
-  else if asi_int \<in> {10,11} then (* Access data memory. *)
+  else if asi_int \<in> {10,11} then \<comment> \<open>Access data memory.\<close>
     let ccr_val = (sys_reg state) CCR in
-    if ccr_val AND 1 \<noteq> 0 then (* Cache is enabled. Update cache. *)
-    (* We don't go through the tradition, i.e., read from cache first,
-      if the address is not cached, then read from memory, 
-      because performance is not an issue here. 
-      Thus we directly read from memory and update the cache. *)
+    if ccr_val AND 1 \<noteq> 0 then \<comment> \<open>Cache is enabled. Update cache.\<close>
+    \<comment> \<open>We don't go through the tradition, i.e., read from cache first,\<close>
+    \<comment> \<open>if the address is not cached, then read from memory,\<close>
+    \<comment> \<open>because performance is not an issue here.\<close>
+    \<comment> \<open>Thus we directly read from memory and update the cache.\<close>
       let data = load_word_mem state addr asi in
       case data of
       Some w \<Rightarrow> (Some w,(add_data_cache state addr w (0b1111::word4)))
       |None \<Rightarrow> (None, state)
-    else (* Cache is disabled. Just read from memory. *)
+    else \<comment> \<open>Cache is disabled. Just read from memory.\<close>
       ((load_word_mem state addr asi),state)
-  (* We don't access instruction cache tag. i.e., asi = 12. *)    
-  else if asi_int = 13 then (* Read instruction cache data. *)
+  \<comment> \<open>We don't access instruction cache tag. i.e., \<open>asi = 12\<close>.\<close>
+  else if asi_int = 13 then \<comment> \<open>Read instruction cache data.\<close>
     let cache_result = read_instr_cache state addr in
     case cache_result of
     Some w \<Rightarrow> (Some w, state)
     |None \<Rightarrow> (None, state)
-  (* We don't access data cache tag. i.e., asi = 14. *)
-  else if asi_int = 15 then (* Read data cache data. *)
+  \<comment> \<open>We don't access data cache tag. i.e., \<open>asi = 14\<close>.\<close>
+  else if asi_int = 15 then \<comment> \<open>Read data cache data.\<close>
     let cache_result = read_data_cache state addr in
     case cache_result of
     Some w \<Rightarrow> (Some w, state)
     |None \<Rightarrow> (None, state)
-  else if asi_int \<in> {16,17} then (* Flush entire instruction/data cache. *)
-    (None, state) (* Has no effect for memory read. *)
-  else if asi_int \<in> {20,21} then (* MMU diagnostic cache access. *)
-    (None, state) (* Not considered in this model. *)
-  else if asi_int = 24 then (* Flush cache and TLB in LEON3. 
-    But is not used for memory read. *)
+  else if asi_int \<in> {16,17} then \<comment> \<open>Flush entire instruction/data cache.\<close>
+    (None, state) \<comment> \<open>Has no effect for memory read.\<close>
+  else if asi_int \<in> {20,21} then \<comment> \<open>MMU diagnostic cache access.\<close>
+    (None, state) \<comment> \<open>Not considered in this model.\<close>
+  else if asi_int = 24 then \<comment> \<open>Flush cache and TLB in LEON3.\<close>
+    \<comment> \<open>But is not used for memory read.\<close>
     (None, state)
-  else if asi_int = 25 then (* MMU registers. *)
-    (* Treat MMU registers as memory addresses that are not in the main memory. *)
+  else if asi_int = 25 then \<comment> \<open>MMU registers.\<close>
+    \<comment> \<open>Treat MMU registers as memory addresses that are not in the main memory.\<close>
     ((mmu_reg_val (mmu state) addr), state) 
-  else if asi_int = 28 then (* MMU bypass. 
-    Directly use addr as a physical address. 
-    Append 0000 in the front of addr. 
-    In this case, (ucast addr) suffices. *)
+  else if asi_int = 28 then \<comment> \<open>MMU bypass.\<close>
+    \<comment> \<open>Directly use addr as a physical address.\<close>
+    \<comment> \<open>Append 0000 in the front of addr.\<close>
+    \<comment> \<open>In this case, (ucast addr) suffices.\<close>
     ((mem_val_w32 asi (ucast addr) state), state)
-  else if asi_int = 29 then (* MMU diagnostic access. *)
-    (None, state) (* Not considered in this model. *)
-  else (* Not considered in this model. *)
+  else if asi_int = 29 then \<comment> \<open>MMU diagnostic access.\<close>
+    (None, state) \<comment> \<open>Not considered in this model.\<close>
+  else \<comment> \<open>Not considered in this model.\<close>
     (None, state)
 "
 
@@ -806,70 +808,70 @@ where
   else True
 "
 
-text {* The memory\_write interface that conforms with SPARCv8 manual. *}
+text {* The \<open>memory_write\<close> interface that conforms with SPARCv8 manual. *}
 text {* LEON3 forbids user to write an address in ASI 9 and 11. *}
 definition memory_write_asi :: "asi_type \<Rightarrow> virtua_address \<Rightarrow> word4 \<Rightarrow> word32 \<Rightarrow> 
                             ('a) sparc_state \<Rightarrow> 
                             ('a) sparc_state option"
 where
 "memory_write_asi asi addr byte_mask data_w32 state \<equiv> 
-  let asi_int = uint asi; (* See Page 25 and 35 for ASI usage in LEON 3FT. *)
+  let asi_int = uint asi; \<comment> \<open>See Page 25 and 35 for ASI usage in LEON 3FT.\<close>
       psr_val = cpu_reg_val PSR state;
       s_val = get_S psr_val
   in 
-  if asi_int = 1 then (* Forced cache miss. *)
-    (* Directly write to memory. *)
-    (* Assuming writing into asi = 10. *)
+  if asi_int = 1 then \<comment> \<open>Forced cache miss.\<close>
+    \<comment> \<open>Directly write to memory.\<close>
+    \<comment> \<open>Assuming writing into \<open>asi = 10\<close>.\<close>
     store_word_mem state addr data_w32 byte_mask (word_of_int 10) 
-  else if asi_int = 2 then (* System registers. *)
-    (* See Table 19, Page 34 for System Register address map in LEON 3FT. *)
-    if uint addr = 0 then (* Cache control register. *)      
+  else if asi_int = 2 then \<comment> \<open>System registers.\<close>
+    \<comment> \<open>See Table 19, Page 34 for System Register address map in LEON 3FT.\<close>
+    if uint addr = 0 then \<comment> \<open>Cache control register.\<close>
       let s1 = (sys_reg_mod data_w32 CCR state) in
-      (* Flush the instruction cache if FI of CCR is 1;
-         flush the data cache if FD of CCR is 1. *)
+      \<comment> \<open>Flush the instruction cache if FI of CCR is 1;\<close>
+      \<comment> \<open>flush the data cache if FD of CCR is 1.\<close>
       Some (ccr_flush s1)
-    else if uint addr = 8 then (* Instruction cache configuration register. *)
+    else if uint addr = 8 then \<comment> \<open>Instruction cache configuration register.\<close>
       Some (sys_reg_mod data_w32 ICCR state)
-    else if uint addr = 12 then (* Data cache configuration register. *)
+    else if uint addr = 12 then \<comment> \<open>Data cache configuration register.\<close>
       Some (sys_reg_mod data_w32 DCCR state)
-    else (* Invalid address. *)
+    else \<comment> \<open>Invalid address.\<close>
       None
-  else if asi_int \<in> {8,9} then (* Access instruction memory. *)
-    (* Write to memory. LEON3 does write-through. Both cache and the memory are updated. *) 
+  else if asi_int \<in> {8,9} then \<comment> \<open>Access instruction memory.\<close>
+    \<comment> \<open>Write to memory. LEON3 does write-through. Both cache and the memory are updated.\<close>
     let ns = add_instr_cache state addr data_w32 byte_mask in
     store_word_mem ns addr data_w32 byte_mask asi
-  else if asi_int \<in> {10,11} then (* Access data memory. *)
-    (* Write to memory. LEON3 does write-through. Both cache and the memory are updated. *)    
+  else if asi_int \<in> {10,11} then \<comment> \<open>Access data memory.\<close>
+    \<comment> \<open>Write to memory. LEON3 does write-through. Both cache and the memory are updated.\<close>
     let ns = add_data_cache state addr data_w32 byte_mask in
     store_word_mem ns addr data_w32 byte_mask asi
-  (* We don't access instruction cache tag. i.e., asi = 12. *) 
-  else if asi_int = 13 then (* Write instruction cache data. *)
+  \<comment> \<open>We don't access instruction cache tag. i.e., \<open>asi = 12\<close>.\<close>
+  else if asi_int = 13 then \<comment> \<open>Write instruction cache data.\<close>
     Some (add_instr_cache state addr data_w32 (0b1111::word4))
-  (* We don't access data cache tag. i.e., asi = 14. *)
-  else if asi_int = 15 then (* Write data cache data. *)
+  \<comment> \<open>We don't access data cache tag. i.e., asi = 14.\<close>
+  else if asi_int = 15 then \<comment> \<open>Write data cache data.\<close>
     Some (add_data_cache state addr data_w32 (0b1111::word4))
-  else if asi_int = 16 then (* Flush instruction cache. *)
+  else if asi_int = 16 then \<comment> \<open>Flush instruction cache.\<close>
     Some (flush_instr_cache state)
-  else if asi_int = 17 then (* Flush data cache. *)
+  else if asi_int = 17 then \<comment> \<open>Flush data cache.\<close>
     Some (flush_data_cache state)
-  else if asi_int \<in> {20,21} then (* MMU diagnostic cache access. *)
-    None (* Not considered in this model. *)
-  else if asi_int = 24 then (* Flush TLB and cache in LEON3. *)
-    (* We don't consider TLB here. *)
+  else if asi_int \<in> {20,21} then \<comment> \<open>MMU diagnostic cache access.\<close>
+    None \<comment> \<open>Not considered in this model.\<close>
+  else if asi_int = 24 then \<comment> \<open>Flush TLB and cache in LEON3.\<close>
+    \<comment> \<open>We don't consider TLB here.\<close>
     Some (flush_cache_all state)
-  else if asi_int = 25 then (* MMU registers. *)
-    (* Treat MMU registers as memory addresses that are not in the main memory. *)
+  else if asi_int = 25 then \<comment> \<open>MMU registers.\<close>
+    \<comment> \<open>Treat MMU registers as memory addresses that are not in the main memory.\<close>
     let mmu_state' = mmu_reg_mod (mmu state) addr data_w32 in
     case mmu_state' of
     Some mmus \<Rightarrow> Some (state\<lparr>mmu := mmus\<rparr>)
     |None \<Rightarrow> None 
-  else if asi_int = 28 then (* MMU bypass. *)
-    (* Write to virtual address as physical address. 
-      Append 0000 in front of addr. *)
+  else if asi_int = 28 then \<comment> \<open>MMU bypass.\<close>
+    \<comment> \<open>Write to virtual address as physical address.\<close>
+    \<comment> \<open>Append 0000 in front of addr.\<close>
     Some (mem_mod_w32 asi (ucast addr) byte_mask data_w32 state)
-  else if asi_int = 29 then (* MMU diagnostic access. *)
-    None (* Not considered in this model. *)
-  else (* Not considered in this model. *)
+  else if asi_int = 29 then \<comment> \<open>MMU diagnostic access.\<close>
+    None \<comment> \<open>Not considered in this model.\<close>
+  else \<comment> \<open>Not considered in this model.\<close>
     None
 "
 

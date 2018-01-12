@@ -83,19 +83,19 @@ text {* Initialise the memory address
   with an example sequence of instructions. *}
 definition init_state2 :: "leon3_state" where
 "init_state2 \<equiv>
-      (* ld r1 + r2 to r3*)
+      \<comment> \<open>\<open>ld r1 + r2 to r3\<close>\<close>
   let s1 = mem_mod_w32 8 (0b01000000000000000000000000000000) (0b1111)
            (0b11000110000000000100000101000010) init_state1;
-      (* ld r5 + r6 to r4*)
+      \<comment> \<open>\<open>ld r5 + r6 to r4\<close>\<close>
       s2 = mem_mod_w32 8 (0b01000000000000000000000000000100) (0b1111)
            (0b11001000000000010100000101000110) s1;
-      (* add r3 r4 to r8*)
+      \<comment> \<open>\<open>add r3 r4 to r8\<close>\<close>
       s3 = mem_mod_w32 8 (0b01000000000000000000000000001000) (0b1111)
            (0b10010000000000001100000000000100) s2;
-      (* st r8 to address at r1 + r2*)
+      \<comment> \<open>\<open>st r8 to address at r1 + r2\<close>\<close>
       s4 = mem_mod_w32 8 (0b01000000000000000000000000001100) (0b1111)
            (0b11010000001000000100000101000010) s3;
-      (* ld r1 + r2 to r9*)
+      \<comment> \<open>\<open>ld r1 + r2 to r9\<close>\<close>
       s5 = mem_mod_w32 8 (0b01000000000000000000000000010000) (0b1111)
            (0b11010010000000000100000101000010) s4
   in
@@ -105,22 +105,22 @@ definition init_state2 :: "leon3_state" where
 definition init_state3:: "leon3_state" where
 "init_state3 \<equiv>
   let curr_win = ucast (get_CWP (cpu_reg_val PSR init_state2));
-      (* r1 = 0x40000000 *)
+      \<comment> \<open>\<open>r1 = 0x40000000\<close>\<close>
       s1 = user_reg_mod (0b01000000000000000000000000000000)
            curr_win (0b00001) init_state2;
-      (* r2 = 0x1000 *)
+      \<comment> \<open>\<open>r2 = 0x1000\<close>\<close>
       s2 = user_reg_mod (0b00000000000000000001000000000000)
            curr_win (0b00010) s1;
-      (* r5 = 0x40000000 *)
+      \<comment> \<open>\<open>r5 = 0x40000000\<close>\<close>
       s3 = user_reg_mod (0b01000000000000000000000000000000)
            curr_win (0b00101) s2;
-      (* r6 = 0x1004 *)
+      \<comment> \<open>\<open>r6 = 0x1004\<close>\<close>
       s4 = user_reg_mod (0b00000000000000000001000000000100)
            curr_win (0b00110) s3;
-      (* 0x40001000 = 1 *)
+      \<comment> \<open>\<open>0x40001000 = 1\<close>\<close>
       s5 = mem_mod_w32 10 (0b01000000000000000001000000000000) (0b1111)
            (0b00000000000000000000000000000010) s4;
-      (* 0x40001004 = 2 *)
+      \<comment> \<open>\<open>0x40001004 = 2\<close>\<close>
       s6 = mem_mod_w32 10 (0b01000000000000000001000000000100) (0b1111)
            (0b00000000000000000000000000000100) s5
   in

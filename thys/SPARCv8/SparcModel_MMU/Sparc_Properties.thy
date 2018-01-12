@@ -21,7 +21,7 @@ section{* Single step theorem *}
 (*********************************************************************)
 
 text {* The following shows that, if the pre-state satisfies certain 
-  conditions called "good\_context", there must be a defined post-state 
+  conditions called \<open>good_context\<close>, there must be a defined post-state 
   after a single step execution. *}
 
 method save_restore_proof =
@@ -1042,7 +1042,7 @@ lemma good_context_4 :
  fetch_instruction s'' = Inr v1 \<and> 
  ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
  annul_val s'' = False \<and> 
- supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+ supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0
  \<Longrightarrow> False"
@@ -1052,7 +1052,7 @@ proof -
   fetch_instruction s'' = Inr v1 \<and> 
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> 
-  supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0"
   then have "(fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
@@ -1077,7 +1077,7 @@ lemma good_context_5 :
  fetch_instruction s'' = Inr v1 \<and> 
  ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
  annul_val s'' = False \<and> 
- supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+ supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
  (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
@@ -1089,7 +1089,7 @@ proof -
   fetch_instruction s'' = Inr v1 \<and> 
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> 
-  supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
@@ -1119,7 +1119,7 @@ lemma good_context_6 :
  fetch_instruction s'' = Inr v1 \<and> 
  ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
  annul_val s'' = False \<and> 
- supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+ supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
  (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
@@ -1132,7 +1132,7 @@ proof -
   fetch_instruction s'' = Inr v1 \<and> 
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> 
-  supported_instruction (fst v2) = True \<and> (* This line is redundant *)
+  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
@@ -1914,7 +1914,7 @@ proof -
               by (auto simp add: execute_instr_sub1_result return_def Let_def)
             qed
           next
-            case False (* Instruction is not RETT. *)
+            case False \<comment> \<open>Instruction is not \<open>RETT\<close>.\<close>
             then have "\<exists>v1 v2. fetch_instruction ?s' = Inr v1 \<and> 
             ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and> 
             (fst v2) \<noteq> ctrl_type RETT" using f7 by auto
@@ -2286,7 +2286,7 @@ next
           next
             case False
             then show ?thesis using a1 f1 f2 f5 f8 f10
-            apply (simp add: memory_read_def) (* The rest cases are easy. *)
+            apply (simp add: memory_read_def) \<comment> \<open>The rest cases are easy.\<close>
             by (simp add: Let_def)
           qed
         qed
@@ -2551,7 +2551,7 @@ next
                       apply (simp add: memory_write_asi_def)
                       by (auto simp add: mem_mod_w32_privilege)
                     next
-                      case False (* The remaining cases are easy. *)
+                      case False \<comment> \<open>The remaining cases are easy.\<close>
                       then show ?thesis using a1 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10
                       apply (simp add: memory_write_asi_def)
                       apply (auto simp add: Let_def)
@@ -3630,7 +3630,7 @@ next
 qed
 
 text {* 
-  Assume that there is no delayed\_write and 
+  Assume that there is no \<open>delayed_write\<close> and 
   there is no traps to be executed.
   If an instruction is executed as a user,
   the privilege will not be changed to supervisor after 
@@ -3716,7 +3716,7 @@ section {* Single step non-interference property. *}
 definition user_accessible:: "('a::len0) sparc_state \<Rightarrow> phys_address \<Rightarrow> bool" where
 "user_accessible s pa \<equiv> \<exists>va p. (virt_to_phys va (mmu s) (mem s)) = Some p \<and>
   mmu_readable (get_acc_flag (snd p)) 10 \<and>
-  (fst p) = pa" (* Passing asi = 8 is the same. *)
+  (fst p) = pa" \<comment> \<open>Passing \<open>asi = 8\<close> is the same.\<close>
 
 lemma user_accessible_8: 
 assumes a1: "mmu_readable (get_acc_flag (snd p)) 8"
@@ -3743,8 +3743,8 @@ definition mem_equal:: "('a) sparc_state \<Rightarrow> ('a) sparc_state \<Righta
   (mem s1) 11 ((pa AND 68719476732) + 2) = (mem s2) 11 ((pa AND 68719476732) + 2) \<and>
   (mem s1) 11 ((pa AND 68719476732) + 3) = (mem s2) 11 ((pa AND 68719476732) + 3)"
 
-text {* low\_equal defines the equivalence relation over two sparc
-states that is an analogy to the =\_L relation over memory contexts
+text {* \<open>low_equal\<close> defines the equivalence relation over two sparc
+states that is an analogy to the \<open>=\<^sub>L\<close> relation over memory contexts
 in the traditional non-interference theorem. *}
 
 definition low_equal:: "('a::len0) sparc_state \<Rightarrow> ('a) sparc_state \<Rightarrow> bool" where

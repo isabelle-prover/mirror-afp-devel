@@ -65,30 +65,30 @@ text {* The following functions access MMU registers via addresses.
 
 definition mmu_reg_val:: "MMU_state \<Rightarrow> virtua_address \<Rightarrow> machine_word option"
 where "mmu_reg_val mmu_state addr \<equiv>
-  if addr = 0x000 then (* MMU control register *)
+  if addr = 0x000 then \<comment> \<open>MMU control register\<close>
     Some ((registers mmu_state) CR)
-  else if addr = 0x100 then (* Context pointer register *)
+  else if addr = 0x100 then \<comment> \<open>Context pointer register\<close>
     Some ((registers mmu_state) CTP)
-  else if addr = 0x200 then (* Context register *)
+  else if addr = 0x200 then \<comment> \<open>Context register\<close>
     Some ((registers mmu_state) CNR)
-  else if addr = 0x300 then (* Fault status register *)
+  else if addr = 0x300 then \<comment> \<open>Fault status register\<close>
     Some ((registers mmu_state) FTSR)
-  else if addr = 0x400 then (* Fault address register *)
+  else if addr = 0x400 then \<comment> \<open>Fault address register\<close>
     Some ((registers mmu_state) FAR)
   else None"
 
 definition mmu_reg_mod:: "MMU_state \<Rightarrow> virtua_address \<Rightarrow> machine_word \<Rightarrow>
   MMU_state option" where
 "mmu_reg_mod mmu_state addr w \<equiv>
-  if addr = 0x000 then (* MMU control register *)
+  if addr = 0x000 then \<comment> \<open>MMU control register\<close>
     Some (mmu_state\<lparr>registers := (registers mmu_state)(CR := w)\<rparr>)
-  else if addr = 0x100 then (* Context pointer register *)
+  else if addr = 0x100 then \<comment> \<open>Context pointer register\<close>
     Some (mmu_state\<lparr>registers := (registers mmu_state)(CTP := w)\<rparr>)
-  else if addr = 0x200 then (* Context register *)
+  else if addr = 0x200 then \<comment> \<open>Context register\<close>
     Some (mmu_state\<lparr>registers := (registers mmu_state)(CNR := w)\<rparr>)
-  else if addr = 0x300 then (* Fault status register *)
+  else if addr = 0x300 then \<comment> \<open>Fault status register\<close>
     Some (mmu_state\<lparr>registers := (registers mmu_state)(FTSR := w)\<rparr>)
-  else if addr = 0x400 then (* Fault address register *)
+  else if addr = 0x400 then \<comment> \<open>Fault address register\<close>
     Some (mmu_state\<lparr>registers := (registers mmu_state)(FAR := w)\<rparr>)
   else None"
 
@@ -220,18 +220,18 @@ where "ptd_lookup va pt m lvl = (
     case thislvl_data of 
     Some v \<Rightarrow> (
       let et_val = bitAND v 0b00000000000000000000000000000011 in
-      if et_val = 0 then (* Invalid *)
+      if et_val = 0 then \<comment> \<open>Invalid\<close>
         None
-      else if et_val = 1 then (* Page Table Descriptor *)
+      else if et_val = 1 then \<comment> \<open>Page Table Descriptor\<close>
         let ptp = bitAND v 0b11111111111111111111111111111100 in
         ptd_lookup va ptp m (lvl+1)
-      else if et_val = 2 then (* Page Table Entry *)
+      else if et_val = 2 then \<comment> \<open>Page Table Entry\<close>
         let ppn = (ucast (v >> 8))::word24;
             va_offset = (ucast ((ucast va)::word12))::word36
         in
         Some ((bitOR (((ucast ppn)::word36) << 12) va_offset), 
               ((ucast v)::word8))
-      else (* et_val = 3, reserved. *)
+      else \<comment> \<open>\<open>et_val = 3\<close>, reserved.\<close>
         None
     )
     |None \<Rightarrow> None)
@@ -273,7 +273,7 @@ where
         cnr_val = mmu_reg_val mmu (0x200);
         mmu_cr_val = (registers mmu) CR
     in
-    if bitAND mmu_cr_val 1 \<noteq> 0 then (* MMU enabled. *)
+    if bitAND mmu_cr_val 1 \<noteq> 0 then \<comment> \<open>MMU enabled.\<close>
       case (ctp_val,cnr_val) of
       (Some v1, Some v2) \<Rightarrow>
         let context_table_entry = bitOR ((v1 >> 11) << 11)

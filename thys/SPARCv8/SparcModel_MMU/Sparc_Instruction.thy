@@ -140,7 +140,7 @@ where "get_trap_imm7 w \<equiv>
 
 definition parse_instr_f1::"word32 \<Rightarrow> 
   (Exception list + instruction)"
-where (* CALL, with a single operand disp30+"00" *)
+where \<comment> \<open>\<open>CALL\<close>, with a single operand \<open>disp30+"00"\<close>\<close>
 "parse_instr_f1 w \<equiv>                                                     
   Inr (call_type CALL,[W30 (word_of_int (get_disp30 w))])"
 
@@ -148,49 +148,49 @@ definition parse_instr_f2::"word32 \<Rightarrow>
   (Exception list + instruction)"
 where "parse_instr_f2 w \<equiv>
   let op2 = get_op2 w in
-  if op2 = uint(0b100::word3) then (* SETHI or NOP *)
+  if op2 = uint(0b100::word3) then \<comment> \<open>\<open>SETHI\<close> or \<open>NOP\<close>\<close>
     let rd = get_rd w in
     let imm22 = get_disp_imm22 w in
-    if rd = 0 \<and> imm22 = 0 then (* NOP *)
+    if rd = 0 \<and> imm22 = 0 then \<comment> \<open>\<open>NOP\<close>\<close>
       Inr (nop_type NOP,[])
-    else (* SETHI, with operands [imm22,rd] *)
+    else \<comment> \<open>\<open>SETHI\<close>, with operands \<open>[imm22,rd]\<close>\<close>
       Inr (sethi_type SETHI,[(W22 (word_of_int imm22)),
                    (W5 (word_of_int rd))])
-  else if op2 = uint(0b010::word3) then (* Bicc, with operands [a,disp22]  *)
+  else if op2 = uint(0b010::word3) then \<comment> \<open>\<open>Bicc\<close>, with operands \<open>[a,disp22]\<close>\<close>
     let cond = get_cond w in
     let flaga = Flag (word_of_int (get_a w)) in
     let disp22 = W22 (word_of_int (get_disp_imm22 w)) in
-    if cond = uint(0b0001::word4) then (* BE *)
+    if cond = uint(0b0001::word4) then \<comment> \<open>\<open>BE\<close>\<close>
       Inr (bicc_type BE,[flaga,disp22])
-    else if cond = uint(0b1001::word4) then (* BNE *)
+    else if cond = uint(0b1001::word4) then \<comment> \<open>\<open>BNE\<close>\<close>
       Inr (bicc_type BNE,[flaga,disp22])
-    else if cond = uint(0b1100::word4) then (* BGU *)
+    else if cond = uint(0b1100::word4) then \<comment> \<open>\<open>BGU\<close>\<close>
       Inr (bicc_type BGU,[flaga,disp22])
-    else if cond = uint(0b0010::word4) then (* BLE *)
+    else if cond = uint(0b0010::word4) then \<comment> \<open>\<open>BLE\<close>\<close>
       Inr (bicc_type BLE,[flaga,disp22])
-    else if cond = uint(0b0011::word4) then (* BL *)
+    else if cond = uint(0b0011::word4) then \<comment> \<open>\<open>BL\<close>\<close>
       Inr (bicc_type BL,[flaga,disp22])
-    else if cond = uint(0b1011::word4) then (* BGE *)
+    else if cond = uint(0b1011::word4) then \<comment> \<open>\<open>BGE\<close>\<close>
       Inr (bicc_type BGE,[flaga,disp22])
-    else if cond = uint(0b0110::word4) then (* BNEG *)
+    else if cond = uint(0b0110::word4) then \<comment> \<open>\<open>BNEG\<close>\<close>
       Inr (bicc_type BNEG,[flaga,disp22])
-    else if cond = uint(0b1010::word4) then (* BG *)
+    else if cond = uint(0b1010::word4) then \<comment> \<open>\<open>BG\<close>\<close>
       Inr (bicc_type BG,[flaga,disp22])
-    else if cond = uint(0b0101::word4) then (* BCS *)
+    else if cond = uint(0b0101::word4) then \<comment> \<open>\<open>BCS\<close>\<close>
       Inr (bicc_type BCS,[flaga,disp22])
-    else if cond = uint(0b0100::word4) then (* BLEU *)
+    else if cond = uint(0b0100::word4) then \<comment> \<open>\<open>BLEU\<close>\<close>
       Inr (bicc_type BLEU,[flaga,disp22])
-    else if cond = uint(0b1101::word4) then (* BCC *)
+    else if cond = uint(0b1101::word4) then \<comment> \<open>\<open>BCC\<close>\<close>
       Inr (bicc_type BCC,[flaga,disp22])
-    else if cond = uint(0b1000::word4) then (* BA *)
+    else if cond = uint(0b1000::word4) then \<comment> \<open>\<open>BA\<close>\<close>
       Inr (bicc_type BA,[flaga,disp22])
-    else if cond = uint(0b0000::word4) then (* BN *)
+    else if cond = uint(0b0000::word4) then \<comment> \<open>\<open>BN\<close>\<close>
       Inr (bicc_type BN,[flaga,disp22])
-    else if cond = uint(0b1110::word4) then (* BPOS *)
+    else if cond = uint(0b1110::word4) then \<comment> \<open>\<open>BPOS\<close>\<close>
       Inr (bicc_type BPOS,[flaga,disp22])
-    else if cond = uint(0b1111::word4) then (* BVC *)
+    else if cond = uint(0b1111::word4) then \<comment> \<open>\<open>BVC\<close>\<close>
       Inr (bicc_type BVC,[flaga,disp22])
-    else if cond = uint(0b0111::word4) then (* BVS *)
+    else if cond = uint(0b0111::word4) then \<comment> \<open>\<open>BVS\<close>\<close>
       Inr (bicc_type BVS,[flaga,disp22])
     else Inl [invalid_cond_f2]
   else Inl [invalid_op2_f2]
@@ -208,885 +208,885 @@ where "parse_instr_f3 w \<equiv>
   let asi = get_asi w in
   let rs2 = get_rs2 w in
   let simm13 = get_simm13 w in
-  if this_op = uint(0b11::word2) then (* Load and Store *)
-  (* If an instruction accesses alternative space but flagi = 1, 
-     may need to throw a trap. *)
-    if op3 = uint(0b001001::word6) then (* LDSB *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+  if this_op = uint(0b11::word2) then \<comment> \<open>Load and Store\<close>
+  \<comment> \<open>If an instruction accesses alternative space but \<open>flagi = 1\<close>,\<close>
+  \<comment> \<open>may need to throw a trap.\<close>
+    if op3 = uint(0b001001::word6) then \<comment> \<open>\<open>LDSB\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDSB,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDSB,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011001::word6) then (* LDSBA *) 
+    else if op3 = uint(0b011001::word6) then \<comment> \<open>\<open>LDSBA\<close>\<close>
        Inr (load_store_type LDSBA,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (Asi (word_of_int asi)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b001010::word6) then (* LDSH *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b001010::word6) then \<comment> \<open>\<open>LDSH\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDSH,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDSH,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011010::word6) then (* LDSHA *) 
+    else if op3 = uint(0b011010::word6) then \<comment> \<open>\<open>LDSHA\<close>\<close>
        Inr (load_store_type LDSHA,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (Asi (word_of_int asi)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b000001::word6) then (* LDUB *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000001::word6) then \<comment> \<open>\<open>LDUB\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDUB,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDUB,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010001::word6) then (* LDUBA *) 
+    else if op3 = uint(0b010001::word6) then \<comment> \<open>\<open>LDUBA\<close>\<close>
        Inr (load_store_type LDUBA,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (Asi (word_of_int asi)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b000010::word6) then (* LDUH *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000010::word6) then \<comment> \<open>\<open>LDUH\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDUH,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDUH,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010010::word6) then (* LDUHA *) 
+    else if op3 = uint(0b010010::word6) then \<comment> \<open>\<open>LDUHA\<close>\<close>
        Inr (load_store_type LDUHA,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (Asi (word_of_int asi)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b000000::word6) then (* LD *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000000::word6) then \<comment> \<open>\<open>LD\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LD,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (Simm13 (word_of_int simm13)),
                       (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LD,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (W5 (word_of_int rs2)),
                       (W5 (word_of_int rd))])
-    else if op3 = uint(0b010000::word6) then (* LDA *)
+    else if op3 = uint(0b010000::word6) then \<comment> \<open>\<open>LDA\<close>\<close>
        Inr (load_store_type LDA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000011::word6) then (* LDD *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000011::word6) then \<comment> \<open>\<open>LDD\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010011::word6) then (* LDDA *) 
+    else if op3 = uint(0b010011::word6) then \<comment> \<open>\<open>LDDA\<close>\<close>
        Inr (load_store_type LDDA,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (Asi (word_of_int asi)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b001101::word6) then (* LDSTUB *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b001101::word6) then \<comment> \<open>\<open>LDSTUB\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type LDSTUB,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (Simm13 (word_of_int simm13)),
                       (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type LDSTUB,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (W5 (word_of_int rs2)),
                       (W5 (word_of_int rd))])
-    else if op3 = uint(0b011101::word6) then (* LDSTUBA *)
+    else if op3 = uint(0b011101::word6) then \<comment> \<open>\<open>LDSTUBA\<close>\<close>
        Inr (load_store_type LDSTUBA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000101::word6) then (* STB *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000101::word6) then \<comment> \<open>\<open>STB\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type STB,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type STB,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010101::word6) then (* STBA *)
+    else if op3 = uint(0b010101::word6) then \<comment> \<open>\<open>STBA\<close>\<close>
        Inr (load_store_type STBA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000110::word6) then (* STH *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000110::word6) then \<comment> \<open>\<open>STH\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type STH,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type STH,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010110::word6) then (* STHA *)
+    else if op3 = uint(0b010110::word6) then \<comment> \<open>\<open>STHA\<close>\<close>
        Inr (load_store_type STHA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000100::word6) then (* ST *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000100::word6) then \<comment> \<open>\<open>ST\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type ST,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (Simm13 (word_of_int simm13)),
                       (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type ST,[(Flag (word_of_int flagi)),
                       (W5 (word_of_int rs1)),
                       (W5 (word_of_int rs2)),
                       (W5 (word_of_int rd))])
-    else if op3 = uint(0b010100::word6) then (* STA *)
+    else if op3 = uint(0b010100::word6) then \<comment> \<open>\<open>STA\<close>\<close>
        Inr (load_store_type STA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000111::word6) then (* STD *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b000111::word6) then \<comment> \<open>\<open>STD\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type STD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type STD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010111::word6) then (* STDA *)
+    else if op3 = uint(0b010111::word6) then \<comment> \<open>\<open>STDA\<close>\<close>
        Inr (load_store_type STDA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b001111::word6) then (* SWAP *)
-      if flagi = 1 then (* Operant list is [i,rs1,simm13,rd] *)
+    else if op3 = uint(0b001111::word6) then \<comment> \<open>\<open>SWAP\<close>\<close>
+      if flagi = 1 then \<comment> \<open>Operant list is \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (load_store_type SWAP,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-      else (* Operant list is [i,rs1,rs2,rd] *)
+      else \<comment> \<open>Operant list is \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (load_store_type SWAP,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b011111::word6) then (* SWAPA *)
+    else if op3 = uint(0b011111::word6) then \<comment> \<open>\<open>SWAPA\<close>\<close>
        Inr (load_store_type SWAPA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (Asi (word_of_int asi)),
                        (W5 (word_of_int rd))])
     else Inl [invalid_op3_f3_op11]
-  else if this_op = uint(0b10::word2) then (* Others *)
-    if op3 = uint(0b111000::word6) then (* JMPL *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+  else if this_op = uint(0b10::word2) then \<comment> \<open>Others\<close>
+    if op3 = uint(0b111000::word6) then \<comment> \<open>\<open>JMPL\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (ctrl_type JMPL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (ctrl_type JMPL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b111001::word6) then (* RETT *)
-      if flagi = 0 then (* return [i,rs1,rs2] *)
+    else if op3 = uint(0b111001::word6) then \<comment> \<open>\<open>RETT\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
          Inr (ctrl_type RETT,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2))])
-      else (* return [i,rs1,simm13]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13]\<close>\<close>
          Inr (ctrl_type RETT,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13))])
-    (* The following are Read and Write instructions, 
-       only return [rs1,rd] as operand. *)
-    else if op3 = uint(0b101000::word6) \<and> rs1 \<noteq> 0 then (* RDASR *)
-      if rs1 = uint(0b01111::word6) \<and> rd = 0 then (* STBAR is a special case of RDASR *)
+    \<comment> \<open>The following are Read and Write instructions,\<close>
+    \<comment> \<open>only return \<open>[rs1,rd]\<close> as operand.\<close>
+    else if op3 = uint(0b101000::word6) \<and> rs1 \<noteq> 0 then \<comment> \<open>\<open>RDASR\<close>\<close>
+      if rs1 = uint(0b01111::word6) \<and> rd = 0 then \<comment> \<open>\<open>STBAR\<close> is a special case of \<open>RDASR\<close>\<close>
         Inr (load_store_type STBAR,[])
       else Inr (sreg_type RDASR,[(W5 (word_of_int rs1)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b101000::word6) \<and> rs1 = 0 then (* RDY *)
+    else if op3 = uint(0b101000::word6) \<and> rs1 = 0 then \<comment> \<open>\<open>RDY\<close>\<close>
        Inr (sreg_type RDY,[(W5 (word_of_int rs1)),
                      (W5 (word_of_int rd))])
-    else if op3 = uint(0b101001::word6) then (* RDPSR *)
+    else if op3 = uint(0b101001::word6) then \<comment> \<open>\<open>RDPSR\<close>\<close>
        Inr (sreg_type RDPSR,[(W5 (word_of_int rs1)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b101010::word6) then (* RDWIM *)
+    else if op3 = uint(0b101010::word6) then \<comment> \<open>\<open>RDWIM\<close>\<close>
        Inr (sreg_type RDWIM,[(W5 (word_of_int rs1)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b101011::word6) then (* RDTBR *)
+    else if op3 = uint(0b101011::word6) then \<comment> \<open>\<open>RDTBR\<close>\<close>
        Inr (sreg_type RDTBR,[(W5 (word_of_int rs1)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b110000::word6) \<and> rd \<noteq> 0 then (* WRASR *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b110000::word6) \<and> rd \<noteq> 0 then \<comment> \<open>\<open>WRASR\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (sreg_type WRASR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (sreg_type WRASR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b110000::word6) \<and> rd = 0 then (* WRY *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b110000::word6) \<and> rd = 0 then \<comment> \<open>\<open>WRY\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (sreg_type WRY,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (sreg_type WRY,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b110001::word6) then (* WRPSR *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b110001::word6) then \<comment> \<open>\<open>WRPSR\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (sreg_type WRPSR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (sreg_type WRPSR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b110010::word6) then (* WRWIM *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b110010::word6) then \<comment> \<open>\<open>WRWIM\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (sreg_type WRWIM,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (sreg_type WRWIM,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b110011::word6) then (* WRTBR *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b110011::word6) then \<comment> \<open>\<open>WRTBR\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (sreg_type WRTBR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (sreg_type WRTBR,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    (* FLUSH instruction *)
-    else if op3 = uint(0b111011::word6) then (* FLUSH *)
-      if flagi = 0 then (* return [1,rs1,rs2] *)
+    \<comment> \<open>\<open>FLUSH\<close> instruction\<close>
+    else if op3 = uint(0b111011::word6) then \<comment> \<open>\<open>FLUSH\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[1,rs1,rs2]\<close>\<close>
          Inr (load_store_type FLUSH,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2))])
-      else (* return [i,rs1,simm13] *)
+      else \<comment> \<open>return \<open>[i,rs1,simm13]\<close>\<close>
          Inr (load_store_type FLUSH,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13))])
-    (* The following are arithmetic instructions. *)
-    else if op3 = uint(0b000001::word6) then (* AND *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    \<comment> \<open>The following are arithmetic instructions.\<close>
+    else if op3 = uint(0b000001::word6) then \<comment> \<open>\<open>AND\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ANDs,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ANDs,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010001::word6) then (* ANDcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010001::word6) then \<comment> \<open>\<open>ANDcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ANDcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ANDcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b000101::word6) then (* ANDN *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000101::word6) then \<comment> \<open>\<open>ANDN\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ANDN,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ANDN,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010101::word6) then (* ANDNcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010101::word6) then \<comment> \<open>\<open>ANDNcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ANDNcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (W5 (word_of_int rs2)),
                           (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ANDNcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (Simm13 (word_of_int simm13)),
                           (W5 (word_of_int rd))])
-    else if op3 = uint(0b000010::word6) then (* OR *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000010::word6) then \<comment> \<open>\<open>OR\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ORs,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ORs,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010010::word6) then (* ORcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010010::word6) then \<comment> \<open>\<open>ORcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ORcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ORcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b000110::word6) then (* ORN *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000110::word6) then \<comment> \<open>\<open>ORN\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ORN,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ORN,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010110::word6) then (* ORNcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010110::word6) then \<comment> \<open>\<open>ORNcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type ORNcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type ORNcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000011::word6) then (* XORs *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000011::word6) then \<comment> \<open>\<open>XORs\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type XORs,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type XORs,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010011::word6) then (* XORcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010011::word6) then \<comment> \<open>\<open>XORcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type XORcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type XORcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000111::word6) then (* XNOR *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000111::word6) then \<comment> \<open>\<open>XNOR\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type XNOR,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type XNOR,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b010111::word6) then (* XNORcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010111::word6) then \<comment> \<open>\<open>XNORcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (logic_type XNORcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (logic_type XNORcc,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b100101::word6) then (* SLL *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100101::word6) then \<comment> \<open>\<open>SLL\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (shift_type SLL,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,shcnt,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,shcnt,rd]\<close>\<close>
         let shcnt = rs2 in
          Inr (shift_type SLL,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int shcnt)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint (0b100110::word6) then (* SRL *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint (0b100110::word6) then \<comment> \<open>\<open>SRL\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (shift_type SRL,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,shcnt,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,shcnt,rd]\<close>\<close>
         let shcnt = rs2 in
          Inr (shift_type SRL,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int shcnt)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b100111::word6) then (* SRA *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100111::word6) then \<comment> \<open>\<open>SRA\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (shift_type SRA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,shcnt,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,shcnt,rd]\<close>\<close>
         let shcnt = rs2 in
          Inr (shift_type SRA,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int shcnt)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b000000::word6) then (* ADD *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000000::word6) then \<comment> \<open>\<open>ADD\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type ADD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type ADD,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010000::word6) then (* ADDcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010000::word6) then \<comment> \<open>\<open>ADDcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type ADDcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type ADDcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b001000::word6) then (* ADDX *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001000::word6) then \<comment> \<open>\<open>ADDX\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type ADDX,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type ADDX,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011000::word6) then (* ADDXcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011000::word6) then \<comment> \<open>\<open>ADDXcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type ADDXcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type ADDXcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b100000::word6) then (* TADDcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100000::word6) then \<comment> \<open>\<open>TADDcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type TADDcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type TADDcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b100010::word6) then (* TADDccTV *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100010::word6) then \<comment> \<open>\<open>TADDccTV\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type TADDccTV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type TADDccTV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b000100::word6) then (* SUB *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b000100::word6) then \<comment> \<open>\<open>SUB\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SUB,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (W5 (word_of_int rs2)),
                        (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SUB,[(Flag (word_of_int flagi)),
                        (W5 (word_of_int rs1)),
                        (Simm13 (word_of_int simm13)),
                        (W5 (word_of_int rd))])
-    else if op3 = uint(0b010100::word6) then (* SUBcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b010100::word6) then \<comment> \<open>\<open>SUBcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SUBcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (W5 (word_of_int rs2)),
                          (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SUBcc,[(Flag (word_of_int flagi)),
                          (W5 (word_of_int rs1)),
                          (Simm13 (word_of_int simm13)),
                          (W5 (word_of_int rd))])
-    else if op3 = uint(0b001100::word6) then (* SUBX *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001100::word6) then \<comment> \<open>\<open>SUBX\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SUBX,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SUBX,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011100::word6) then (* SUBXcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011100::word6) then \<comment> \<open>\<open>SUBXcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SUBXcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SUBXcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b100001::word6) then (* TSUBcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100001::word6) then \<comment> \<open>\<open>TSUBcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type TSUBcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type TSUBcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b100011::word6) then (* TSUBccTV *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100011::word6) then \<comment> \<open>\<open>TSUBccTV\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type TSUBccTV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type TSUBccTV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b100100::word6) then (* MULScc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b100100::word6) then \<comment> \<open>\<open>MULScc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type MULScc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type MULScc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b001010::word6) then (* UMUL *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001010::word6) then \<comment> \<open>\<open>UMUL\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type UMUL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type UMUL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011010::word6) then (* UMULcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011010::word6) then \<comment> \<open>\<open>UMULcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type UMULcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type UMULcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b001011::word6) then (* SMUL *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001011::word6) then \<comment> \<open>\<open>SMUL\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SMUL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SMUL,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011011::word6) then (* SMULcc*)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011011::word6) then \<comment> \<open>\<open>SMULcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SMULcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (W5 (word_of_int rs2)),
                           (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SMULcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (Simm13 (word_of_int simm13)),
                           (W5 (word_of_int rd))])
-    else if op3 = uint(0b001110::word6) then (* UDIV *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001110::word6) then \<comment> \<open>\<open>UDIV\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type UDIV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type UDIV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011110::word6) then (* UDIVcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011110::word6) then \<comment> \<open>\<open>UDIVcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type UDIVcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (W5 (word_of_int rs2)),
                           (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type UDIVcc,[(Flag (word_of_int flagi)),
                           (W5 (word_of_int rs1)),
                           (Simm13 (word_of_int simm13)),
                           (W5 (word_of_int rd))])
-    else if op3 = uint(0b001111::word6) then (* SDIV *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b001111::word6) then \<comment> \<open>\<open>SDIV\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SDIV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SDIV,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b011111::word6) then (* SDIVcc *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b011111::word6) then \<comment> \<open>\<open>SDIVcc\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (arith_type SDIVcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (arith_type SDIVcc,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b111100::word6) then (* SAVE *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b111100::word6) then \<comment> \<open>\<open>SAVE\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (ctrl_type SAVE,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (W5 (word_of_int rs2)),
                         (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (ctrl_type SAVE,[(Flag (word_of_int flagi)),
                         (W5 (word_of_int rs1)),
                         (Simm13 (word_of_int simm13)),
                         (W5 (word_of_int rd))])
-    else if op3 = uint(0b111101::word6) then (* RESTORE *)
-      if flagi = 0 then (* return [i,rs1,rs2,rd] *)
+    else if op3 = uint(0b111101::word6) then \<comment> \<open>\<open>RESTORE\<close>\<close>
+      if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2,rd]\<close>\<close>
          Inr (ctrl_type RESTORE,[(Flag (word_of_int flagi)),
                            (W5 (word_of_int rs1)),
                            (W5 (word_of_int rs2)),
                            (W5 (word_of_int rd))])
-      else (* return [i,rs1,simm13,rd]*)
+      else \<comment> \<open>return \<open>[i,rs1,simm13,rd]\<close>\<close>
          Inr (ctrl_type RESTORE,[(Flag (word_of_int flagi)),
                            (W5 (word_of_int rs1)),
                            (Simm13 (word_of_int simm13)),
                            (W5 (word_of_int rd))])
-    else if op3 = uint(0b111010::word6) then (* Ticc *)
+    else if op3 = uint(0b111010::word6) then \<comment> \<open>\<open>Ticc\<close>\<close>
       let trap_cond = get_trap_cond w in
       let trap_imm7 = get_trap_imm7 w in
-      if trap_cond = uint(0b1000::word4) then (* TA *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      if trap_cond = uint(0b1000::word4) then \<comment> \<open>\<open>TA\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TA,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TA,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0000::word4) then (* TN *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0000::word4) then \<comment> \<open>\<open>TN\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TN,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TN,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1001::word4) then (* TNE *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1001::word4) then \<comment> \<open>\<open>TNE\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TNE,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TNE,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0001::word4) then (* TE *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0001::word4) then \<comment> \<open>\<open>TE\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TE,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TE,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1010::word4) then (* TG *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1010::word4) then \<comment> \<open>\<open>TG\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TG,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TG,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0010::word4) then (* TLE *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0010::word4) then \<comment> \<open>\<open>TLE\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TLE,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TLE,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1011::word4) then (* TGE *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1011::word4) then \<comment> \<open>\<open>TGE\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TGE,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TGE,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0011::word4) then (* TL *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0011::word4) then \<comment> \<open>\<open>TL\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TL,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TL,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1100::word4) then (* TGU *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1100::word4) then \<comment> \<open>\<open>TGU\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TGU,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TGU,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0100::word4) then (* TLEU *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0100::word4) then \<comment> \<open>\<open>TLEU\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TLEU,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TLEU,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1101::word4) then (* TCC *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1101::word4) then \<comment> \<open>\<open>TCC\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TCC,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TCC,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0101::word4) then (* TCS *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0101::word4) then \<comment> \<open>\<open>TCS\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TCS,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TCS,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1110::word4) then (* TPOS *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1110::word4) then \<comment> \<open>\<open>TPOS\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TPOS,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TPOS,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0110::word4) then (* TNEG *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0110::word4) then \<comment> \<open>\<open>TNEG\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TNEG,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TNEG,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b1111::word4) then (* TVC *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b1111::word4) then \<comment> \<open>\<open>TVC\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TVC,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TVC,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
-      else if trap_cond = uint(0b0111::word4) then (* TVS *)
-        if flagi = 0 then (* return [i,rs1,rs2] *)
+      else if trap_cond = uint(0b0111::word4) then \<comment> \<open>\<open>TVS\<close>\<close>
+        if flagi = 0 then \<comment> \<open>return \<open>[i,rs1,rs2]\<close>\<close>
           Inr (ticc_type TVS,[(Flag (word_of_int flagi)),
                    (W5 (word_of_int rs1)),
                    (W5 (word_of_int rs2))])
-        else (* return [i,rs1,trap_imm7] *)
+        else \<comment> \<open>return \<open>[i,rs1,trap_imm7]\<close>\<close>
           Inr (ticc_type TVS,[(Flag (word_of_int flagi)),
                     (W5 (word_of_int rs1)),
                     (Imm7 (word_of_int trap_imm7))])
@@ -1101,18 +1101,18 @@ text {* Read the word32 value from the Program Counter in the current state.
 definition fetch_instruction::"('a) sparc_state \<Rightarrow>
   (Exception list + word32)"
 where "fetch_instruction s \<equiv> 
-  (* pc_val is the 32-bit memory address of the instruction. *)
+  \<comment> \<open>\<open>pc_val\<close> is the 32-bit memory address of the instruction.\<close>
   let pc_val = cpu_reg_val PC s;
       psr_val = cpu_reg_val PSR s;
       s_val = get_S psr_val;
       asi = if s_val = 0 then word_of_int 8 else word_of_int 9
   in
-  (* Check if pc_val is aligned to 4-byte (32-bit) boundary. 
-     That is, check if the least significant two bits of 
-     pc_val are 0s. *)
+  \<comment> \<open>Check if \<open>pc_val\<close> is aligned to 4-byte (32-bit) boundary.\<close>
+  \<comment> \<open>That is, check if the least significant two bits of\<close>
+  \<comment> \<open>\<open>pc_val\<close> are 0s.\<close>
     if uint(bitAND (0b00000000000000000000000000000011) pc_val) = 0 then
-    (* Get the 32-bit value from the address of pc_val 
-       to the address of pc_val+3 *)
+    \<comment> \<open>Get the 32-bit value from the address of \<open>pc_val\<close>\<close>
+    \<comment> \<open>to the address of \<open>pc_val+3\<close>\<close>
         let (mem_result,n_s) = memory_read asi pc_val s in
         case mem_result of 
          None \<Rightarrow> Inl [fetch_instruction_error]
@@ -1126,9 +1126,9 @@ definition decode_instruction::"word32 \<Rightarrow>
   Exception list + instruction"
 where "decode_instruction w \<equiv> 
   let this_op = get_op w in 
-  if this_op = uint(0b01::word2) then (* Instruction format 1 *)
+  if this_op = uint(0b01::word2) then \<comment> \<open>Instruction format 1\<close>
     parse_instr_f1 w
-  else if this_op = uint(0b00::word2) then (* Instruction format 2 *)
+  else if this_op = uint(0b00::word2) then \<comment> \<open>Instruction format 2\<close>
     parse_instr_f2 w
   else (* (=) 11 0r 10, instructionrett format 3 *)
     parse_instr_f3 w
@@ -1234,7 +1234,7 @@ where "branch_instr instr \<equiv>
         else
           return ()
       od
-    else (* icc_val = 0 *) 
+    else \<comment> \<open>\<open>icc_val = 0\<close>\<close>
       do
         write_cpu (npc_val + 4) nPC;
         if flaga = 1 then
@@ -1266,10 +1266,12 @@ where "sethi_instr instr \<equiv>
   else return ()
 "
 
-text {* Get operand2 based on the flag i, rs1, rs2, and simm13. 
-        If i = 0 then operand2 = r[rs2],
-        else operand2 = sign\_ext13(simm13). 
-        op\_list should be [i,rs1,rs2,...] or [i,rs1,simm13,...]. *}
+text \<open>
+  Get \<open>operand2\<close> based on the flag \<open>i\<close>, \<open>rs1\<close>, \<open>rs2\<close>, and \<open>simm13\<close>.
+  If \<open>i = 0\<close> then \<open>operand2 = r[rs2]\<close>,
+  else \<open>operand2 = sign_ext13(simm13)\<close>.
+  \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
+\<close>
 definition get_operand2::"inst_operand list \<Rightarrow> ('a::len0) sparc_state
   \<Rightarrow> virtua_address"
 where "get_operand2 op_list s \<equiv>
@@ -1285,11 +1287,12 @@ where "get_operand2 op_list s \<equiv>
     ext_simm13
 "
 
-text {* Get operand2\_val based on the flag i, rs1, rs2, and simm13. 
-        If i = 0 then operand2\_val = uint r[rs2],
-        else operand2\_val = sint sign\_ext13(simm13). 
-        op\_list should be [i,rs1,rs2,...] or [i,rs1,simm13,...].         
-*}
+text \<open>
+  Get \<open>operand2_val\<close> based on the flag \<open>i\<close>, \<open>rs1\<close>, \<open>rs2\<close>, and \<open>simm13\<close>.
+  If \<open>i = 0\<close> then \<open>operand2_val = uint r[rs2]\<close>,
+  else \<open>operand2_val = sint sign_ext13(simm13)\<close>.
+  \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
+\<close>
 definition get_operand2_val::"inst_operand list \<Rightarrow> ('a::len0) sparc_state \<Rightarrow> int"
 where "get_operand2_val op_list s \<equiv>
   let flagi = get_operand_flag (op_list!0);
@@ -1304,10 +1307,12 @@ where "get_operand2_val op_list s \<equiv>
     sint ext_simm13
 "
 
-text {* Get the address based on the flag i, rs1, rs2, and simm13. 
-        If i = 0 then addr = r[rs1] + r[rs2],
-        else addr = r[rs1] + sign\_ext13(simm13). 
-        op\_list should be [i,rs1,rs2,...] or [i,rs1,simm13,...]. *}
+text \<open>
+  Get the address based on the flag \<open>i\<close>, \<open>rs1\<close>, \<open>rs2\<close>, and \<open>simm13\<close>.
+  If \<open>i = 0\<close> then \<open>addr = r[rs1] + r[rs2]\<close>,
+  else \<open>addr = r[rs1] + sign_ext13(simm13)\<close>.
+  \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
+\<close>
 definition get_addr::"inst_operand list \<Rightarrow> ('a::len0) sparc_state \<Rightarrow> virtua_address"
 where "get_addr op_list s \<equiv>
   let rs1 = get_operand_w5 (op_list!1);
@@ -1411,8 +1416,8 @@ where "save_retore_sub1 result new_cwp rd \<equiv>
   do
   psr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val PSR s));
   new_psr_val \<leftarrow> gets (\<lambda>s. (update_CWP new_cwp psr_val));
-  write_cpu new_psr_val PSR; (* Change CWP to the new window value. *)
-  write_reg result (ucast new_cwp) rd; (* Write result in rd of the new window. *)
+  write_cpu new_psr_val PSR; \<comment> \<open>Change \<open>CWP\<close> to the new window value.\<close>
+  write_reg result (ucast new_cwp) rd; \<comment> \<open>Write result in \<open>rd\<close> of the new window.\<close>
   return ()
   od"
 
@@ -1437,11 +1442,11 @@ where "save_restore_instr instr \<equiv>
           od
         else
           do
-            result \<leftarrow> gets (\<lambda>s. (get_addr op_list s)); (* operands are from the old window. *)            
+            result \<leftarrow> gets (\<lambda>s. (get_addr op_list s)); \<comment> \<open>operands are from the old window.\<close>
             save_retore_sub1 result new_cwp rd
           od
       od
-    else (* instr_name = RESTORE *)
+    else \<comment> \<open>\<open>instr_name = RESTORE\<close>\<close>
       do
         new_cwp \<leftarrow> gets (\<lambda>s. ((word_of_int (((uint curr_win) + 1) mod NWINDOWS)))::word5);
         if (get_WIM_bit (unat new_cwp) wim_val) \<noteq> 0 then 
@@ -1451,7 +1456,7 @@ where "save_restore_instr instr \<equiv>
           od
         else
           do
-            result \<leftarrow> gets (\<lambda>s. (get_addr op_list s)); (* operands are from the old window. *)
+            result \<leftarrow> gets (\<lambda>s. (get_addr op_list s)); \<comment> \<open>operands are from the old window.\<close>
             save_retore_sub1 result new_cwp rd
           od
       od
@@ -1525,7 +1530,7 @@ where "read_state_reg_instr instr \<equiv>
           write_reg wim_val curr_win rd;
           return ()
         od
-      else (* Must be RDTBR. *)
+      else \<comment> \<open>Must be \<open>RDTBR\<close>.\<close>
         do
           tbr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val TBR s));
           write_reg tbr_val curr_win rd;
@@ -1583,7 +1588,7 @@ where "write_state_reg_instr instr \<equiv>
           return ()
         od
       else 
-        do (* ET and PIL appear to be written IMMEDIATELY w.r.t. interrupts. *)
+        do \<comment> \<open>\<open>ET\<close> and \<open>PIL\<close> appear to be written IMMEDIATELY w.r.t. interrupts.\<close>
           pil_val \<leftarrow> gets (\<lambda>s. (get_PIL result));
           et_val \<leftarrow> gets (\<lambda>s. (get_ET result));
           new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_et_pil et_val pil_val psr_val));
@@ -1598,19 +1603,19 @@ where "write_state_reg_instr instr \<equiv>
           return ()
         od
       else 
-        do (* Don't write bits corresponding to non-existent windows. *)
+        do \<comment> \<open>Don't write bits corresponding to non-existent windows.\<close>
           result_f \<leftarrow> gets (\<lambda>s. ((result << nat (32 - NWINDOWS)) >> nat (32 - NWINDOWS)));
           modify (\<lambda>s. (delayed_pool_add (DELAYNUM, result_f, WIM) s));
           return ()
         od
-    else  (* Must be WRTBR *)
+    else  \<comment> \<open>Must be \<open>WRTBR\<close>\<close>
       if s_val = 0 then
         do
           raise_trap privileged_instruction;
           return ()
         od
       else 
-        do (* Only write the bits <31:12> of the result to TBR. *)
+        do \<comment> \<open>Only write the bits \<open><31:12>\<close> of the result to \<open>TBR\<close>.\<close>
           tbr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val TBR s));
           tbr_val_11_0 \<leftarrow> gets (\<lambda>s. (bitAND tbr_val 0b00000000000000000000111111111111));
           result_tmp \<leftarrow> gets (\<lambda>s. (bitAND result 0b11111111111111111111000000000000));
@@ -1635,7 +1640,7 @@ where "logical_result instr_name rs1_val operand2 \<equiv>
                           bitOR rs1_val (bitNOT operand2)
                          else if instr_name \<in> {logic_type XORs,logic_type XORcc} then 
                           bitXOR rs1_val operand2
-                         else (* Must be XNOR or XNORcc *)
+                         else \<comment> \<open>Must be \<open>XNOR\<close> or \<open>XNORcc\<close>\<close>
                           bitXOR rs1_val (bitNOT operand2)
 "
 
@@ -1770,7 +1775,7 @@ where "add_instr instr \<equiv>
     result \<leftarrow> gets (\<lambda>s. (if (instr_name = arith_type ADD) \<or> 
                             (instr_name = arith_type ADDcc) then
                           rs1_val + operand2
-                         else (* Must be ADDX or ADDXcc *) 
+                         else \<comment> \<open>Must be \<open>ADDX\<close> or \<open>ADDXcc\<close>\<close>
                           rs1_val + operand2 + (ucast c_val)));
     rd_val \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win rd s));
     new_rd_val \<leftarrow> gets (\<lambda>s. (if rd \<noteq> 0 then result else rd_val));
@@ -1828,7 +1833,7 @@ where "sub_instr instr \<equiv>
     result \<leftarrow> gets (\<lambda>s. (if (instr_name = arith_type SUB) \<or> 
                             (instr_name = arith_type SUBcc) then
                           rs1_val - operand2
-                         else (* Must be SUBX or SUBXcc *) 
+                         else \<comment> \<open>Must be \<open>SUBX\<close> or \<open>SUBXcc\<close>\<close>
                           rs1_val - operand2 - (ucast c_val)));
     rd_val \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win rd s));
     new_rd_val \<leftarrow> gets (\<lambda>s. (if rd \<noteq> 0 then result else rd_val));
@@ -1872,10 +1877,10 @@ where "mul_instr instr \<equiv>
     result0 \<leftarrow> gets (\<lambda>s. (if instr_name \<in> {arith_type UMUL,arith_type UMULcc} then 
                             (word_of_int ((uint rs1_val) * 
                                           (uint operand2)))::word64
-                          else (* Must be SMUL or SMULcc *)
+                          else \<comment> \<open>Must be \<open>SMUL\<close> or \<open>SMULcc\<close>\<close>
                             (word_of_int ((sint rs1_val) * 
                                           (sint operand2)))::word64));
-    (* whether to use ucast or scast does not matter below. *)
+    \<comment> \<open>whether to use \<open>ucast\<close> or \<open>scast\<close> does not matter below.\<close>
     y_val \<leftarrow> gets (\<lambda>s. ((ucast (result0 >> 32))::word32));
     write_cpu y_val Y;
     result \<leftarrow> gets (\<lambda>s. ((ucast result0)::word32));
@@ -1890,9 +1895,9 @@ definition div_comp_temp_64bit :: "instruction \<Rightarrow> word64 \<Rightarrow
 where "div_comp_temp_64bit i y_rs1 operand2 \<equiv> 
   if ((fst i) = arith_type UDIV) \<or> ((fst i) = arith_type UDIVcc) then 
     (word_of_int ((uint y_rs1) div (uint operand2)))::word64
-  else (* Must be SDIV or SDIVcc. *) 
-    (* Due to Isabelle's rounding method is not nearest to zero, 
-       we have to implement division in a different way. *)
+  else \<comment> \<open>Must be \<open>SDIV\<close> or \<open>SDIVcc\<close>.\<close>
+    \<comment> \<open>Due to Isabelle's rounding method is not nearest to zero,\<close>
+    \<comment> \<open>we have to implement division in a different way.\<close>
     let sop1 = sint y_rs1;
         sop2 = sint operand2;
         pop1 = abs sop1;
@@ -1904,14 +1909,14 @@ where "div_comp_temp_64bit i y_rs1 operand2 \<equiv>
       (word_of_int (- (sop1 div pop2)))
     else if sop1 < 0 \<and> sop2 > 0 then
       (word_of_int (- (pop1 div sop2)))
-    else (* sop1 < 0 \<and> sop2 < 0 *)
+    else \<comment> \<open>\<open>sop1 < 0 \<and> sop2 < 0\<close>\<close>
       (word_of_int (pop1 div pop2))"
 
 definition div_comp_temp_V :: "instruction \<Rightarrow> word32 \<Rightarrow> word33 \<Rightarrow> word1"
 where "div_comp_temp_V i w32 w33 \<equiv> 
   if ((fst i) = arith_type UDIV) \<or> ((fst i) = arith_type UDIVcc) then
     if w32 = 0 then 0 else 1
-  else (* Must be SDIV or SDIVcc. *) 
+  else \<comment> \<open>Must be \<open>SDIV\<close> or \<open>SDIVcc\<close>.\<close>
     if (w33 = 0) \<or> (w33 = (0b111111111111111111111111111111111::word33)) 
     then 0 else 1"
 
@@ -1996,7 +2001,7 @@ where "ld_word0 instr data_word address \<equiv>
                  (ucast (data_word >> 16))::word8
                else if (uint ((ucast address)::word2)) = 2 then
                  (ucast (data_word >> 8))::word8
-               else (* Must be 3. *) 
+               else \<comment> \<open>Must be 3.\<close>
                  (ucast data_word)::word8
     in
     if (fst instr) = load_store_type LDSB \<or> (fst instr) = load_store_type LDSBA then
@@ -2008,14 +2013,14 @@ where "ld_word0 instr data_word address \<equiv>
        then  
     let halfword = if (uint ((ucast address)::word2)) = 0 then
                      (ucast (data_word >> 16))::word16
-                   else (* Must be 2. *) 
+                   else \<comment> \<open>Must be 2.\<close>
                      (ucast data_word)::word16
     in
     if (fst instr) = load_store_type LDSH \<or> (fst instr) = load_store_type LDSHA then
       sign_ext16 halfword
     else
       zero_ext16 halfword
-  else (* Must be LDD*) 
+  else \<comment> \<open>Must be LDD\<close>
     data_word
 "
 
@@ -2025,7 +2030,7 @@ where "ld_asi instr s_val \<equiv>
     load_store_type LDSB,load_store_type LDUB,load_store_type LDSH} then
     if s_val = 0 then (word_of_int 10)::asi_type
     else (word_of_int 11)::asi_type
-  else (* Must be LDA, LDUBA, LDSBA, LDSHA, LDUHA, or LDDA. *)
+  else \<comment> \<open>Must be \<open>LDA\<close>, \<open>LDUBA\<close>, \<open>LDSBA\<close>, \<open>LDSHA\<close>, \<open>LDUHA\<close>, or \<open>LDDA\<close>.\<close>
     get_operand_asi ((snd instr)!3)
 "
 
@@ -2073,7 +2078,7 @@ where "load_sub3 instr curr_win rd asi address \<equiv>
         write_reg word0 curr_win rd;
         return ()
       od
-      else (* Must be LDD or LDDA *)
+      else \<comment> \<open>Must be \<open>LDD\<close> or \<open>LDDA\<close>\<close>
         load_sub2 address asi rd curr_win word0
     od
   od"
@@ -2109,9 +2114,9 @@ where "load_instr instr \<equiv>
       flagi = get_operand_flag (op_list!0);
       rd = if instr_name \<in> {load_store_type LDUBA,load_store_type LDA,
         load_store_type LDSBA,load_store_type LDSHA,
-        load_store_type LDSHA,load_store_type LDDA} then (* rd is member 4 *)
+        load_store_type LDSHA,load_store_type LDDA} then \<comment> \<open>\<open>rd\<close> is member 4\<close>
             get_operand_w5 (op_list!4)
-           else (* rd is member 3*)      
+           else \<comment> \<open>\<open>rd\<close> is member 3\<close>
             get_operand_w5 (op_list!3)
   in  
   do
@@ -2141,7 +2146,7 @@ where "st_asi instr s_val \<equiv>
     load_store_type STH,load_store_type STB} then
     if s_val = 0 then (word_of_int 10)::asi_type
     else (word_of_int 11)::asi_type
-  else (* Must be STA, STBA, STHA, STDA. *)
+  else \<comment> \<open>Must be \<open>STA\<close>, \<open>STBA\<close>, \<open>STHA\<close>, \<open>STDA\<close>.\<close>
     get_operand_asi ((snd instr)!3)
 "
 
@@ -2153,16 +2158,16 @@ where "st_byte_mask instr address \<equiv>
   else if (fst instr) \<in> {load_store_type STH,load_store_type STHA} then
     if ((ucast address)::word2) = 0 then
       (0b1100::word4)
-    else (* Must be 2 . *)
+    else \<comment> \<open>Must be 2.\<close>
       (0b0011::word4)
-  else (* Must be STB or STBA. *)
+  else \<comment> \<open>Must be \<open>STB\<close> or \<open>STBA\<close>.\<close>
     if ((ucast address)::word2) = 0 then 
       (0b1000::word4)
     else if ((ucast address)::word2) = 1 then 
       (0b0100::word4)
     else if ((ucast address)::word2) = 2 then 
       (0b0010::word4)
-    else (* Must be 3. *)
+    else \<comment> \<open>Must be 3.\<close>
       (0b0001::word4)
 "
 
@@ -2176,16 +2181,16 @@ where "st_data0 instr curr_win rd address s \<equiv>
   else if (fst instr) \<in> {load_store_type STH,load_store_type STHA} then
     if ((ucast address)::word2) = 0 then 
       (user_reg_val curr_win rd s) << 16
-    else (* Must be 2. *)
+    else \<comment> \<open>Must be 2.\<close>
       user_reg_val curr_win rd s
-  else (* Must be STB or STBA. *)
+  else \<comment> \<open>Must be \<open>STB\<close> or \<open>STBA\<close>.\<close>
     if ((ucast address)::word2) = 0 then 
        (user_reg_val curr_win rd s) << 24
     else if ((ucast address)::word2) = 1 then
        (user_reg_val curr_win rd s) << 16
     else if ((ucast address)::word2) = 2 then
         (user_reg_val curr_win rd s) << 8
-    else (* Must be 3. *) 
+    else \<comment> \<open>Must be 3.\<close>
         user_reg_val curr_win rd s
 "
 
@@ -2234,7 +2239,7 @@ where "store_sub1 instr rd s_val \<equiv>
     curr_win \<leftarrow> get_curr_win();
     address \<leftarrow> gets (\<lambda>s. (get_addr (snd instr) s));
     asi \<leftarrow> gets (\<lambda>s. (st_asi instr s_val));
-    (* The following code is intentionally long to match the definitions in SPARCv8. *)
+    \<comment> \<open>The following code is intentionally long to match the definitions in SPARCv8.\<close>
     if ((fst instr) = load_store_type STH \<or> (fst instr) = load_store_type STHA) 
        \<and> ((ucast address)::word1) \<noteq> 0 then
     do  
@@ -2265,9 +2270,9 @@ where "store_instr instr \<equiv>
       op_list = snd instr;
       flagi = get_operand_flag (op_list!0);
       rd = if instr_name \<in> {load_store_type STA,load_store_type STBA,
-            load_store_type STHA,load_store_type STDA} then (* rd is member 4 *)
+            load_store_type STHA,load_store_type STDA} then \<comment> \<open>\<open>rd\<close> is member 4\<close>
             get_operand_w5 (op_list!4)
-           else (* rd is member 3*)      
+           else \<comment> \<open>\<open>rd\<close> is member 3\<close>
             get_operand_w5 (op_list!3)
   in
   do   
@@ -2297,7 +2302,7 @@ where "ldst_asi instr s_val \<equiv>
   if (fst instr) \<in> {load_store_type LDSTUB} then
     if s_val = 0 then (word_of_int 10)::asi_type
     else (word_of_int 11)::asi_type
-  else (* Must be LDSTUBA. *)
+  else \<comment> \<open>Must be \<open>LDSTUBA\<close>.\<close>
     get_operand_asi ((snd instr)!3)
 "
 
@@ -2309,7 +2314,7 @@ where "ldst_word0 instr data_word address \<equiv>
                  (ucast (data_word >> 16))::word8
                else if (uint ((ucast address)::word2)) = 2 then
                  (ucast (data_word >> 8))::word8
-               else (* Must be 3. *) 
+               else \<comment> \<open>Must be 3.\<close>
                  (ucast data_word)::word8
   in
   zero_ext8 byte
@@ -2323,7 +2328,7 @@ where "ldst_byte_mask instr address \<equiv>
       (0b0100::word4)
     else if ((ucast address)::word2) = 2 then 
       (0b0010::word4)
-    else (* Must be 3. *)
+    else \<comment> \<open>Must be 3.\<close>
       (0b0001::word4)
 "
 
@@ -2334,14 +2339,14 @@ where "load_store_sub1 instr rd s_val \<equiv>
     curr_win \<leftarrow> get_curr_win();
     address \<leftarrow> gets (\<lambda>s. (get_addr (snd instr) s));
     asi \<leftarrow> gets (\<lambda>s. (ldst_asi instr s_val));
-    (* wait for locks to be lifted. *)
-    (* an implementation actually need only block when another LDSTUB or SWAP
-      is pending on the same byte in memory as the one addressed by this LDSTUB*)
-    (* Should wait when block_type = 1 \<or> block_word = 1 *)
-    (* until another processes write both to be 0. *)
-    (* We implement this as setting pc as npc when the instruction 
-      is blocked. This way, in the next iteration, we will still execution
-      the current instruction. *)
+    \<comment> \<open>wait for locks to be lifted.\<close>
+    \<comment> \<open>an implementation actually need only block when another \<open>LDSTUB\<close> or \<open>SWAP\<close>\<close>
+    \<comment> \<open>is pending on the same byte in memory as the one addressed by this \<open>LDSTUB\<close>\<close>
+    \<comment> \<open>Should wait when \<open>block_type = 1 \<or> block_word = 1\<close>\<close>
+    \<comment> \<open>until another processes write both to be 0.\<close>
+    \<comment> \<open>We implement this as setting \<open>pc\<close> as \<open>npc\<close> when the instruction\<close>
+    \<comment> \<open>is blocked. This way, in the next iteration, we will still execution\<close>
+    \<comment> \<open>the current instruction.\<close>
     block_byte \<leftarrow> gets (\<lambda>s. (pb_block_ldst_byte_val address s));
     block_word \<leftarrow> gets (\<lambda>s. (pb_block_ldst_word_val address s));
     if block_byte \<or> block_word then 
@@ -2395,9 +2400,9 @@ where "load_store_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
       flagi = get_operand_flag (op_list!0);
-      rd = if instr_name \<in> {load_store_type LDSTUBA} then (* rd is member 4 *)
+      rd = if instr_name \<in> {load_store_type LDSTUBA} then \<comment> \<open>\<open>rd\<close> is member 4\<close>
             get_operand_w5 (op_list!4)
-           else (* rd is member 3*)      
+           else \<comment> \<open>\<open>rd\<close> is member 3\<close>
             get_operand_w5 (op_list!3)
   in
   do
@@ -2425,14 +2430,14 @@ where "swap_sub1 instr rd s_val \<equiv>
     address \<leftarrow> gets (\<lambda>s. (get_addr (snd instr) s));
     asi \<leftarrow> gets (\<lambda>s. (ldst_asi instr s_val));    
     temp \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win rd s));
-    (* wait for locks to be lifted. *)
-    (* an implementation actually need only block when another LDSTUB or SWAP
-      is pending on the same byte in memory as the one addressed by this LDSTUB*)
-    (* Should wait when block_type = 1 \<or> block_word = 1 *)
-    (* until another processes write both to be 0. *)
-    (* We implement this as setting pc as npc when the instruction 
-      is blocked. This way, in the next iteration, we will still execution
-      the current instruction. *)
+    \<comment> \<open>wait for locks to be lifted.\<close>
+    \<comment> \<open>an implementation actually need only block when another \<open>LDSTUB\<close> or \<open>SWAP\<close>\<close>
+    \<comment> \<open>is pending on the same byte in memory as the one addressed by this \<open>LDSTUB\<close>\<close>
+    \<comment> \<open>Should wait when \<open>block_type = 1 \<or> block_word = 1\<close>\<close>
+    \<comment> \<open>until another processes write both to be 0.\<close>
+    \<comment> \<open>We implement this as setting \<open>pc\<close> as \<open>npc\<close> when the instruction\<close>
+    \<comment> \<open>is blocked. This way, in the next iteration, we will still execution\<close>
+    \<comment> \<open>the current instruction.\<close>
     block_byte \<leftarrow> gets (\<lambda>s. (pb_block_ldst_byte_val address s));
     block_word \<leftarrow> gets (\<lambda>s. (pb_block_ldst_word_val address s));
     if block_byte \<or> block_word then 
@@ -2484,9 +2489,9 @@ where "swap_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
       flagi = get_operand_flag (op_list!0);
-      rd = if instr_name \<in> {load_store_type SWAPA} then (* rd is member 4 *)
+      rd = if instr_name \<in> {load_store_type SWAPA} then \<comment> \<open>\<open>rd\<close> is member 4\<close>
             get_operand_w5 (op_list!4)
-           else (* rd is member 3*)      
+           else \<comment> \<open>\<open>rd\<close> is member 3\<close>
             get_operand_w5 (op_list!3)
   in
   do
@@ -2717,10 +2722,12 @@ where "trap_eval_icc instr_name n_val z_val v_val c_val \<equiv>
     else -1
 "
 
-text {* Get operand2 for ticc based on the flag i, rs1, rs2, and trap\_imm7. 
-        If i = 0 then operand2 = r[rs2],
-        else operand2 = sign\_ext7(trap\_imm7). 
-        op\_list should be [i,rs1,rs2] or [i,rs1,trap\_imm7]. *}
+text \<open>
+  Get \<open>operand2\<close> for \<open>ticc\<close> based on the flag \<open>i\<close>, \<open>rs1\<close>, \<open>rs2\<close>, and \<open>trap_imm7\<close>.
+  If \<open>i = 0\<close> then \<open>operand2 = r[rs2]\<close>,
+  else \<open>operand2 = sign_ext7(trap_imm7)\<close>.
+  \<open>op_list\<close> should be \<open>[i,rs1,rs2]\<close> or \<open>[i,rs1,trap_imm7]\<close>.
+\<close>
 definition get_trap_op2::"inst_operand list \<Rightarrow> ('a::len0) sparc_state
   \<Rightarrow> virtua_address"
 where "get_trap_op2 op_list s \<equiv>
@@ -2762,7 +2769,7 @@ where "ticc_instr instr \<equiv>
         modify (\<lambda>s. (ticc_trap_type_mod trap_number7 s)); 
         return ()
       od
-    else (* icc_val = 0 *) 
+    else \<comment> \<open>\<open>icc_val = 0\<close>\<close>
       do
         write_cpu npc_val PC;
         write_cpu (npc_val + 4) nPC;
