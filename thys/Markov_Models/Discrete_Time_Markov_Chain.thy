@@ -1063,6 +1063,97 @@ proof -
     by simp
 qed
 
+lemma ev_eq_lfp: "ev P = lfp (\<lambda>F \<omega>. P \<omega> \<or> (\<not> P \<omega> \<and> F (stl \<omega>)))"
+  unfolding ev_def by (intro antisym lfp_mono) blast+
+
+lemma INF_eq_zero_iff_ennreal: "((\<Sqinter>i\<in>A. f i) = (0::ennreal)) = (\<forall>x>0. \<exists>i\<in>A. f i < x)"
+  using INF_eq_bot_iff[where 'a=ennreal] unfolding bot_ennreal_def zero_ennreal_def by auto
+
+lemma inf_continuous_cmul: 
+  fixes c :: ennreal
+  assumes f: "inf_continuous f" and c: "c < \<top>" 
+  shows "inf_continuous (\<lambda>x. c * f x)"
+proof (rule inf_continuous_compose[OF _ f], clarsimp simp add: inf_continuous_def)
+  fix M :: "nat \<Rightarrow> ennreal" assume M: "decseq M" 
+  show "c * (\<Sqinter>i. M i) = (\<Sqinter>i. c * M i)"
+    using M
+    by (intro LIMSEQ_unique[OF ennreal_tendsto_cmult[OF c] LIMSEQ_INF] LIMSEQ_INF)
+       (auto simp: decseq_def mult_left_mono)
+qed
+
+lemma AE_T_ev_HLD_infinite:
+  fixes X :: "'s set" and r :: real
+  assumes "r < 1"
+  assumes r: "\<And>x. x \<in> X \<Longrightarrow> measure (K x) X \<le> r"
+  shows "AE \<omega> in T x. ev (HLD (- X)) \<omega>"
+proof -
+  { fix x assume "x \<in> X"
+    have "0 \<le> r" using r[OF \<open>x \<in> X\<close>] measure_nonneg[of "K x" X] by (blast  intro: order.trans)
+    define P where "P F x = \<integral>\<^sup>+y. indicator X y * (F y \<sqinter> 1) \<partial>K x" for F x
+    have [measurable]: "X \<in> sets (count_space UNIV)" by auto
+    have bnd: "(\<integral>\<^sup>+ y. indicator X y * (f y \<sqinter> 1) \<partial>K x) \<le> 1" for x f
+      by (intro measure_pmf.nn_integral_le_const AE_pmfI) (auto split: split_indicator)
+    have "emeasure (T x) {\<omega>\<in>space (T x). alw (HLD X) \<omega>} =
+      emeasure (T x) {\<omega>\<in>space (T x). gfp (\<lambda>F \<omega>. shd \<omega> \<in> X \<and> F (stl \<omega>)) \<omega>}"
+      by (simp add: alw_def HLD_def)
+    also have "\<dots> = gfp P x"
+      apply (rule emeasure_gfp)
+      apply (auto intro!: order_continuous_intros inf_continuous_cmul split: split_indicator simp: P_def)
+      subgoal for x f using bnd[of x f] by (auto simp: top_unique)
+      subgoal for P x
+        apply (subst T_eq_bind)
+        apply (subst emeasure_bind[where N=S])
+        apply simp
+        apply (rule measurable_distr2[where M=S])
+        apply (auto intro: T_subprob[THEN measurable_space] intro!: nn_integral_cong_AE AE_pmfI
+            simp: emeasure_distr split: split_indicator)
+        apply (simp_all add: space_stream_space T.emeasure_le_1 inf.absorb1)
+        done
+      apply (intro le_funI)
+      apply (subst nn_integral_indicator[symmetric])
+      apply simp
+      apply (intro nn_integral_mono)
+      apply (auto split: split_indicator)
+      done
+    also have "\<dots> \<le> (INF n. ennreal r ^ n)"
+    proof (intro INF_greatest)
+      have mono_P: "mono P"
+        by (force simp: le_fun_def mono_def P_def intro!: nn_integral_mono intro: le_infI1 split: split_indicator)
+      fix n show "gfp P x \<le> ennreal r ^ n"
+        using \<open>x \<in> X\<close>
+      proof (induction n arbitrary: x)
+        case 0 then show ?case
+          by (subst gfp_unfold[OF mono_P]) (auto intro!: measure_pmf.nn_integral_le_const AE_pmfI split: split_indicator simp: P_def)
+      next
+        case (Suc n x)
+        have "gfp P x = P (gfp P) x" by (subst gfp_unfold[OF mono_P]) rule
+        also have "\<dots> \<le> P (\<lambda>x. ennreal r ^ n) x"
+          unfolding P_def[of _ x] by (auto intro!: nn_integral_mono le_infI1 Suc split: split_indicator)
+        also have "\<dots> \<le> ennreal r ^ (Suc n)"
+          using Suc by (auto simp: P_def nn_integral_multc measure_pmf.emeasure_eq_measure intro!: mult_mono ennreal_leI r)
+        finally show ?case .
+      qed
+    qed
+    also have "\<dots> = 0"
+      unfolding ennreal_power[OF \<open>0 \<le> r\<close>]
+    proof (intro LIMSEQ_unique[OF LIMSEQ_INF])
+      show "decseq (\<lambda>i. ennreal (r ^ i))"
+        using \<open>0 \<le> r\<close> \<open>r < 1\<close> by (auto intro!: ennreal_leI power_decreasing simp: decseq_def)
+      have "(\<lambda>i. ennreal (r ^ i)) \<longlonglongrightarrow> ennreal 0"
+        using \<open>0 \<le> r\<close> \<open>r < 1\<close> by (intro tendsto_ennrealI LIMSEQ_power_zero) auto
+      then show "(\<lambda>i. ennreal (r ^ i)) \<longlonglongrightarrow> 0" by simp
+    qed
+    finally have *: "emeasure (T x) {\<omega>\<in>space (T x). alw (HLD X) \<omega>} = 0" by auto
+    have "AE \<omega> in T x. ev (HLD (- X)) \<omega>"
+      by (rule AE_I[OF _ *]) (auto simp: not_ev_iff not_HLD[symmetric]) }
+  note * = this
+  show ?thesis
+    apply (clarsimp simp add: AE_T_iff[of _ x])
+    subgoal for x'
+      by (cases "x' \<in> X") (auto simp add: ev_Stream *)
+    done
+qed
+  
 subsection \<open>Trace space with Restriction\<close>
 
 definition "rT x = restrict_space (T x) {\<omega>. enabled x \<omega>}"
