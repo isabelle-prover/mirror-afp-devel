@@ -54,7 +54,7 @@ where
     mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C;
     (\<forall>v\<^sub>C. v\<^sub>C \<notin> range Eg2_var\<^sub>C_of_Eg1 \<longrightarrow> v\<^sub>C \<in> mds\<^sub>C AsmNoReadOrWrite);
     \<comment> \<open>With this requirement it is possible to establish \<open>x \<notin> mds\<^sub>A GuarNoReadOrWrite\<close>.\<close>
-    \<comment> \<open>\<open>x \<noteq> y;\<close>\<close>
+    \<^cancel>\<open>x \<noteq> y;\<close>
     \<comment> \<open>However since we've deemed it reasonable to require \<open>x \<notin> mds\<^sub>A GuarNoWrite\<close>,\<close>
     \<comment> \<open>it makes little sense not to just require \<open>x \<notin> mds\<^sub>A GuarNoReadOrWrite\<close> as well.\<close>
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
@@ -114,7 +114,7 @@ where
     reg\<^sub>C \<notin> mds\<^sub>C GuarNoWrite;
     x \<notin> mds\<^sub>A GuarNoReadOrWrite;
     \<comment> \<open>Nope: need to make this one versatile enough to allow \<open>c = control_var\<close> for our example\<close>
-    \<comment> \<open>\<open>x \<notin> \<C>;\<close>\<close>
+    \<^cancel>\<open>x \<notin> \<C>;\<close>
     \<forall>x'. x \<in> \<C>_vars x' \<longrightarrow> x' \<notin> mds\<^sub>A GuarNoReadOrWrite;
     (\<forall>mem\<^sub>A' mem\<^sub>C' mem\<^sub>A'' mem\<^sub>C''.
         (
@@ -164,8 +164,8 @@ where
 
   if_reg_rel: "\<lbrakk>
 \<comment> \<open>Is a more generic version possible for an arbitrary \<open>b\<^sub>A\<close>?\<close>
-\<comment> \<open>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;\<close>\<close>
-\<comment> \<open>\<open>b\<^sub>A = Eg1.Eq x 0; (* ev\<^sub>B mem\<^sub>A b\<^sub>A *)\<close>\<close>
+    \<^cancel>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;\<close>
+    \<^cancel>\<open>b\<^sub>A = Eg1.Eq x 0;\<close>  \<comment> \<open>\<open>ev\<^sub>B mem\<^sub>A b\<^sub>A\<close>\<close>
     c\<^sub>A = (If (Eg1.Eq x 0) c\<^sub>A_then c\<^sub>A_else) ;; c\<^sub>A_tail;
     c\<^sub>C = (If (Eq reg\<^sub>C 0) c\<^sub>C_then c\<^sub>C_else) ;; c\<^sub>C_tail;
     mds\<^sub>A = mds\<^sub>A_of mds\<^sub>C;

@@ -130,7 +130,7 @@ where "select_trap _ \<equiv>
         write_cpu_tt (word_cat (1::word1) ticc_trap_type);
         return ()
       od
-    \<comment> \<open>\<open>else if interrupt_level > 0 then\<close>\<close>
+    \<^cancel>\<open>else if interrupt_level > 0 then\<close>
     \<comment> \<open>We don't consider \<open>interrupt_level\<close>\<close>
     else return ()
   od"
