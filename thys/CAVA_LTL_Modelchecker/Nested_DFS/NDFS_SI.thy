@@ -1281,13 +1281,8 @@ term "map2set_rel (rbt_map_rel ord)"
 
 term rbt_set_rel
 
-schematic_goal red_dfs_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::linorder))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
-    ty_REL[where 'a="'a::linorder set" and R="\<langle>Id\<rangle>dflt_rs_rel"]
-  shows "(?f::?'c, red_dfs::(('a \<times> _) set\<Rightarrow>_)) \<in> ?R"
-  apply -
+schematic_goal red_dfs_refine_aux: "(?f::?'c, red_dfs::(('a::linorder \<times> _) set\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] = ty_REL[where 'a="'a set" and R="\<langle>Id\<rangle>dflt_rs_rel"]
   unfolding red_dfs_def[abs_def]
   apply (autoref (trace,keep_goal))
   done
@@ -1313,13 +1308,8 @@ declare code_red_dfs.refine[refine_transfer]
 
 export_code code_red_dfs checking SML
 
-schematic_goal red_dfs_hash_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
-    ty_REL[where 'a="'a::hashable set" and R="\<langle>Id\<rangle>hs.rel"]
-  shows "(?f::?'c, red_dfs::(('a \<times> _) set\<Rightarrow>_)) \<in> ?R"
-  apply -
+schematic_goal red_dfs_hash_refine_aux: "(?f::?'c, red_dfs::(('a::hashable \<times> _) set\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] = ty_REL[where 'a="'a set" and R="\<langle>Id\<rangle>hs.rel"] 
   unfolding red_dfs_def[abs_def]
   apply (autoref (trace,keep_goal))
   done
@@ -1345,13 +1335,8 @@ declare code_red_dfs_hash.refine[refine_transfer]
 
 export_code code_red_dfs_hash checking SML
 
-schematic_goal red_dfs_ahs_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
-    ty_REL[where 'a="'a::hashable set" and R="\<langle>Id\<rangle>ahs.rel"]
-  shows "(?f::?'c, red_dfs::(('a \<times> _) set\<Rightarrow>_)) \<in> ?R"
-  apply -
+schematic_goal red_dfs_ahs_refine_aux: "(?f::?'c, red_dfs::(('a::hashable \<times> _) set\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] = ty_REL[where 'a="'a::hashable set" and R="\<langle>Id\<rangle>ahs.rel"]
   unfolding red_dfs_def[abs_def]
   apply (autoref (trace,keep_goal))
   done
@@ -1377,14 +1362,10 @@ export_code code_red_dfs_ahs checking SML
 
 (*abbreviation "blue_dfs_annot E A u \<equiv> blue_dfs E (A:::\<^sub>r\<langle>Id\<rangle>fun_set_rel) u"*)
 
-schematic_goal blue_dfs_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::linorder))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
-    ty_REL[where 'a="'a::linorder" and R="Id"]
-    ty_REL[where 'a="'a::linorder set" and R="\<langle>Id\<rangle>dflt_rs_rel"]
-  shows "(?f::?'c, blue_dfs::('a b_graph_rec\<Rightarrow>_)) \<in> ?R"
-  apply -
+schematic_goal blue_dfs_refine_aux: "(?f::?'c, blue_dfs::('a::linorder b_graph_rec\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] =
+    ty_REL[where 'a="'a" and R="Id"]
+    ty_REL[where 'a="'a set" and R="\<langle>Id\<rangle>dflt_rs_rel"]
   unfolding blue_dfs_def[abs_def]
   apply (autoref (trace,keep_goal))
   done
@@ -1412,14 +1393,10 @@ declare code_blue_dfs.refine[refine_transfer]
 
 export_code code_blue_dfs checking SML
 
-schematic_goal blue_dfs_hash_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
+schematic_goal blue_dfs_hash_refine_aux: "(?f::?'c, blue_dfs::('a::hashable b_graph_rec\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] =
     ty_REL[where 'a="'a" and R="Id"]
     ty_REL[where 'a="'a::hashable set" and R="\<langle>Id\<rangle>hs.rel"]
-  shows "(?f::?'c, blue_dfs::('a b_graph_rec\<Rightarrow>_)) \<in> ?R"
-  apply -
   unfolding blue_dfs_def[abs_def]
   using [[autoref_trace_failed_id]]
   apply (autoref (trace,keep_goal))
@@ -1445,14 +1422,10 @@ declare code_blue_dfs_hash.refine[refine_transfer]
 
 export_code code_blue_dfs_hash checking SML
 
-schematic_goal blue_dfs_ahs_refine_aux[OF TERMI]:
-  assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
-    a low-level exception on the sort-constrained 'a here *)
-  notes [autoref_tyrel] = 
+schematic_goal blue_dfs_ahs_refine_aux: "(?f::?'c, blue_dfs::('a::hashable b_graph_rec\<Rightarrow>_)) \<in> ?R"
+  supply [autoref_tyrel] =
     ty_REL[where 'a="'a" and R="Id"]
     ty_REL[where 'a="'a::hashable set" and R="\<langle>Id\<rangle>ahs.rel"]
-  shows "(?f::?'c, blue_dfs::('a b_graph_rec\<Rightarrow>_)) \<in> ?R"
-  apply -
   unfolding blue_dfs_def[abs_def]
   apply (autoref (trace,keep_goal))
   done
