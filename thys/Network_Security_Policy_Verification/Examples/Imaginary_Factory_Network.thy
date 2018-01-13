@@ -539,14 +539,14 @@ lemma "all_security_requirements_fulfilled invariants (make_policy invariants (n
 
 
 text{*Side note: what if we exclude subnets?*}
-ML_val{*
+ML_val \<open>
 visualize_edges @{context} @{term "edgesL (make_policy invariants (nodesL policy))"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
-     @{term "[e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_tradesecrets_m, BLP_employee_export_m,
+     @{term \<open>[e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_tradesecrets_m, BLP_employee_export_m,
                            ACL_bot2_m, Control_hierarchy_m,
-                           PolEnforcePoint_m, SinkRobots_m, (*Subnets_m, *)SubnetsInGW_m]  (nodesL policy)).
-                e \<notin> set (edgesL (make_policy invariants (nodesL policy)))]"})] ""; 
-*}
+                           PolEnforcePoint_m, SinkRobots_m, \<^cancel>\<open>Subnets_m,\<close> SubnetsInGW_m]  (nodesL policy)).
+                e \<notin> set (edgesL (make_policy invariants (nodesL policy)))]\<close>})] ""; 
+\<close>
 
 
 subsection{*About NonInterference*}
