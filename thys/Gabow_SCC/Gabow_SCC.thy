@@ -69,7 +69,7 @@ begin
           WHILEIT (cscc_invar v0 D0)
             (\<lambda>(l,p,D,pE). p \<noteq> []) (\<lambda>(l,p,D,pE). 
           do {
-            (* Select edge from end of path *)
+            \<comment> \<open>Select edge from end of path\<close>
             (vo,(p,D,pE)) \<leftarrow> select_edge (p,D,pE);
 
             ASSERT (p\<noteq>[]);

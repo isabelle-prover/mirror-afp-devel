@@ -416,7 +416,7 @@ definition "expand_aimpl \<equiv> REC\<^sub>T (\<lambda>expand (n,ns).
         | \<mu> or\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {} {\<nu>}
         | \<mu> U\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {\<phi>} {\<nu>}
         | \<mu> V\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<nu> {\<phi>} {\<mu>,\<nu>}
-        (*| _ \<Rightarrow> do {
+        \<^cancel>\<open>| _ \<Rightarrow> do {
           (nm, nds) \<leftarrow> expand (
             n\<lparr> 
               new := new1 \<phi> \<union> new n, 
@@ -424,7 +424,7 @@ definition "expand_aimpl \<equiv> REC\<^sub>T (\<lambda>expand (n,ns).
               next := next1 \<phi> \<union> next n \<rparr>,
             ns);
           expand (n\<lparr> name := nm, new := new2 \<phi> \<union> new n, old := {\<phi>} \<union> old n \<rparr>, nds)
-        }*)
+        }\<close>
       }
      )"
 

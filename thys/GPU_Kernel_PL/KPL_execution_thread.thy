@@ -49,7 +49,7 @@ where
   \<Longrightarrow> step_t Adv_Abst (\<tau>, (Read (Var v) e, p)) (\<tau> (| l := l', R := R' |))"
 | T_Write_Adv:
   "\<lbrakk> eval_bool p \<tau> ; W' = W \<tau> \<union> { eval_word e1 \<tau> } \<rbrakk> 
-  \<Longrightarrow> step_t Adv_Abst (\<tau>, (Write e1 e2, p)) (\<tau> (| (* sh := sh',*) W := W' |))"
+  \<Longrightarrow> step_t Adv_Abst (\<tau>, (Write e1 e2, p)) (\<tau> (| \<^cancel>\<open>sh := sh',\<close> W := W' |))"
 
 text {* Rephrasing @{text T_Assign} to make it more usable *}
 lemma T_Assign_helper: 

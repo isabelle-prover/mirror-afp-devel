@@ -209,7 +209,7 @@ fun seq_to_string :: "('sf, 'sc, 'sz) sequent \<Rightarrow> char list"
 where "seq_to_string (A,S) = join '', '' (map fml_to_string A) @ '' |- '' @ join '', '' (map fml_to_string S)"
   
 fun rule_to_string :: "('sf, 'sc, 'sz) rule \<Rightarrow> char list"
-where "rule_to_string (SG, C) = (join '';;   '' (map seq_to_string SG)) @ ''            '' @  (*[char_of_nat 10] @ *)seq_to_string C"
+where "rule_to_string (SG, C) = (join '';;   '' (map seq_to_string SG)) @ ''            '' @  \<^cancel>\<open>[char_of_nat 10] @\<close> seq_to_string C"
 
 fun close :: "'a list \<Rightarrow> 'a \<Rightarrow>'a list"
 where "close L x = filter (\<lambda>y. y \<noteq> x) L"
@@ -1995,9 +1995,9 @@ where "SystemProof =
   ,(Suc (Suc 0), CloseId 0 0)
   ,(Suc 0, AxSubst ADIGeq SystemDISubst) \<comment> \<open>8\<close>
   ,(Suc 0, Rrule ImplyR 0)
-(*  ,(0, CloseId 0 0)        *)
+  \<^cancel>\<open>,(0, CloseId 0 0)\<close>
   ,(Suc 0, CloseId 1 0)        
-(*  ,(0, Rrule AndR 0)*)
+  \<^cancel>\<open>,(0, Rrule AndR 0)\<close>
   ,(0, Rrule ImplyR 0)   
   ,(0, Cut SystemDCCut)
   ,(0, Lrule ImplyL 0)

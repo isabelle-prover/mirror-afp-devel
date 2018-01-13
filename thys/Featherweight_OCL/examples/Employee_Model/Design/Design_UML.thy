@@ -1014,12 +1014,12 @@ definition "person9 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n 
 definition
       "\<sigma>\<^sub>1  \<equiv> \<lparr> heap = empty(oid0 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid0 \<lfloor>1000\<rfloor> \<lfloor>oid1\<rfloor>))
                            (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid1 \<lfloor>1200\<rfloor>  None))
-                          (*oid2*)
+                           \<^cancel>\<open>oid2\<close>
                            (oid3 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid3 \<lfloor>2600\<rfloor> \<lfloor>oid4\<rfloor>))
                            (oid4 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person5)
                            (oid5 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid5 \<lfloor>2300\<rfloor> \<lfloor>oid3\<rfloor>))
-                          (*oid6*)
-                          (*oid7*)
+                           \<^cancel>\<open>oid6\<close>
+                           \<^cancel>\<open>oid7\<close>
                            (oid8 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person9),
                assocs = empty \<rparr>"
 
@@ -1028,7 +1028,7 @@ definition
                            (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person2)
                            (oid2 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person3)
                            (oid3 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person4)
-                          (*oid4*)
+                           \<^cancel>\<open>oid4\<close>
                            (oid5 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person6)
                            (oid6 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person7)
                            (oid7 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person8)
@@ -1045,10 +1045,10 @@ by(auto simp: WFF_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
               person1_def person2_def person3_def person4_def
               person5_def person6_def person7_def person8_def person9_def)
 
-lemma [simp,code_unfold]: "dom (heap \<sigma>\<^sub>1) = {oid0,oid1,(*,oid2*)oid3,oid4,oid5(*,oid6,oid7*),oid8}"
+lemma [simp,code_unfold]: "dom (heap \<sigma>\<^sub>1) = {oid0,oid1\<^cancel>\<open>,oid2\<close>,oid3,oid4,oid5\<^cancel>\<open>,oid6,oid7\<close>,oid8}"
 by(auto simp: \<sigma>\<^sub>1_def)
 
-lemma [simp,code_unfold]: "dom (heap \<sigma>\<^sub>1') = {oid0,oid1,oid2,oid3,(*,oid4*)oid5,oid6,oid7,oid8}"
+lemma [simp,code_unfold]: "dom (heap \<sigma>\<^sub>1') = {oid0,oid1,oid2,oid3\<^cancel>\<open>,oid4\<close>,oid5,oid6,oid7,oid8}"
 by(auto simp: \<sigma>\<^sub>1'_def)
 
 text_raw{* \isatagafp *}
@@ -1191,13 +1191,13 @@ Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\
 
 lemma \<sigma>_modifiedonly: "(\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny)
                       , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclAsType(OclAny)
-                    (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny)*)
+                      \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny)\<close>
                       , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .oclAsType(OclAny)
-                    (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .oclAsType(OclAny)*)
+                      \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .oclAsType(OclAny)\<close>
                       , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny)
-                    (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(OclAny)*)
-                    (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(OclAny)*)
-                    (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny)*)}->oclIsModifiedOnly())"
+                      \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(OclAny)\<close>
+                      \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(OclAny)\<close>
+                      \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny)\<close>}->oclIsModifiedOnly())"
  apply(simp add: OclIsModifiedOnly_def OclValid_def
                  oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid7_def oid8_def
                  X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def
@@ -1245,13 +1245,13 @@ proof -
  show ?thesis
   apply(rule framing[where X = "Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny)
                        , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclAsType(OclAny)
-                     (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny)*)
+                       \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny)\<close>
                        , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .oclAsType(OclAny)
-                     (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .oclAsType(OclAny)*)
+                       \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .oclAsType(OclAny)\<close>
                        , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny)
-                     (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(OclAny)*)
-                     (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(OclAny)*)
-                     (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny)*)}"])
+                       \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(OclAny)\<close>
+                       \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(OclAny)\<close>
+                       \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny)\<close>}"])
    apply(cut_tac \<sigma>_modifiedonly)
    apply(simp only: OclValid_def
                     X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def
@@ -1278,7 +1278,7 @@ lemma perm_\<sigma>\<^sub>1' : "\<sigma>\<^sub>1' = \<lparr> heap = empty
                            (oid7 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person8)
                            (oid6 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person7)
                            (oid5 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person6)
-                          (*oid4*)
+                           \<^cancel>\<open>oid4\<close>
                            (oid3 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person4)
                            (oid2 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person3)
                            (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person2)
@@ -1302,8 +1302,8 @@ qed
 declare const_ss [simp]
 
 lemma "\<And>\<sigma>\<^sub>1.
- (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (Person .allInstances() \<doteq> Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4(*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5*), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6,
-                                           X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)(*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8*), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 })"
+ (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (Person .allInstances() \<doteq> Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4\<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5\<close>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6,
+                                           X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)\<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8\<close>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 })"
  apply(subst perm_\<sigma>\<^sub>1')
  apply(simp only: oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid7_def oid8_def
                   X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def
@@ -1324,7 +1324,7 @@ by(simp_all add: OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_\<AA>
 lemma "\<And>\<sigma>\<^sub>1.
  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (OclAny .allInstances() \<doteq> Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclAsType(OclAny),
                                            X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .oclAsType(OclAny)
-                                           (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5*), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny),
+                                           \<^cancel>\<open>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5\<close>, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny),
                                            X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny) })"
  apply(subst perm_\<sigma>\<^sub>1')
  apply(simp only: oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid7_def oid8_def

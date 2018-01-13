@@ -1349,7 +1349,7 @@ begin
     "gcollapse_impl_aux v s \<equiv> 
     do { 
       let (A,s)=s;
-      (*ASSERT (v\<in>\<Union>set (GS.p_\<alpha> s));*)
+      \<^cancel>\<open>ASSERT (v\<in>\<Union>set (GS.p_\<alpha> s));\<close>
       i \<leftarrow> GS.idx_of_impl s v;
       s \<leftarrow> collapse_impl v s;
       ASSERT (i < length A);

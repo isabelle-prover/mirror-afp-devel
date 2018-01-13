@@ -411,7 +411,7 @@ end
 
 schematic_goal "(?c::?'c, do { 
   let s = {1,2,3::nat}; 
-  (*ASSERT (inj_on Suc s); *)
+  \<^cancel>\<open>ASSERT (inj_on Suc s);\<close>
   RETURN (the_inv_into_map s Suc) }) \<in> ?R"
   apply (autoref (keep_goal))
   done

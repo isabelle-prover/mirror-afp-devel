@@ -509,7 +509,7 @@ fun tm_floatarith :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<
   map_option (\<lambda>cs. 
     let (pf, pi) = tmf_polys cs;
         _ = compute_bound_tm prec (map2 (-) I a);
-        e = round_interval prec (Ipoly (map2 (-) I a) pi) (* TODO: use compute_bound_tm here?! *)
+        e = round_interval prec (Ipoly (map2 (-) I a) pi) \<comment> \<open>TODO: use \<open>compute_bound_tm\<close> here?!\<close>
     in TaylorModel pf e
   ) (tmf_ivl_cs prec ord I a f)
 )" \<comment>\<open>Compute a taylor model from an arbitrary, univariate floatarith expression, if possible.

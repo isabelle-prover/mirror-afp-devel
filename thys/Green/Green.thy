@@ -145,8 +145,8 @@ qed
 definition analytically_valid:: "'a::euclidean_space set \<Rightarrow> ('a \<Rightarrow> 'b::{euclidean_space,times,one}) \<Rightarrow> 'a \<Rightarrow> bool" where
   "analytically_valid s F i \<equiv>
        (\<forall>a \<in> s. partially_vector_differentiable F i a) \<and>
-       continuous_on s F \<and> (*TODO: should we replace this with saying that F is partially diffrerentiable on Dy,
-                                                              i.e. there is a partial derivative on every dimension*)
+       continuous_on s F \<and> \<comment> \<open>TODO: should we replace this with saying that \<open>F\<close> is partially diffrerentiable on \<open>Dy\<close>,\<close>
+                           \<comment> \<open>i.e. there is a partial derivative on every dimension\<close>
        integrable lborel (\<lambda>p. (partial_vector_derivative F i) p * indicator s p) \<and>
        (\<lambda>x. integral UNIV (\<lambda>y. (partial_vector_derivative F i (y *\<^sub>R i + x *\<^sub>R (\<Sum> b \<in>(Basis - {i}). b)))
             * (indicator s (y *\<^sub>R i + x *\<^sub>R (\<Sum>b \<in> Basis - {i}. b)) ))) \<in> borel_measurable lborel"

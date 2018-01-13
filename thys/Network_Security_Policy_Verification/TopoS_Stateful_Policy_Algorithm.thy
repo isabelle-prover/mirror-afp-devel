@@ -348,7 +348,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
             \<not> (\<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = set accu \<union> {e} \<rparr>) 
                 \<subseteq> backflows (filternew_flows_state \<lparr> hosts = V, flows_fix = E, flows_state = set accu \<union> {e} \<rparr>))
             \<rbrakk> \<Longrightarrow>
-            \<forall>e \<in> E - (stateful \<union> {e \<in> E. e \<in> backflows E}). (* E - {computed stateful flows plus trivial stateful flows} *)
+            \<forall>e \<in> E - (stateful \<union> {e \<in> E. e \<in> backflows E}). \<^cancel>\<open>E - {computed stateful flows plus trivial stateful flows}\<close>
             \<not> (\<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = stateful \<union> {e} \<rparr>) 
                 \<subseteq> backflows (filternew_flows_state \<lparr> hosts = V, flows_fix = E, flows_state = stateful \<union> {e} \<rparr>))"
    proof(induction edgesList arbitrary: accu E)
@@ -533,7 +533,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
             (set edgesList) = E;
             stateful = set (filter_compliant_stateful_ACS \<lparr> nodes = V, edges = E \<rparr> M edgesList)
             \<rbrakk> \<Longrightarrow>
-            \<forall>e \<in> E - (stateful \<union> {e \<in> E. e \<in> backflows E}). (* E - {computed stateful flows plus trivial stateful flows} *)
+            \<forall>e \<in> E - (stateful \<union> {e \<in> E. e \<in> backflows E}). \<^cancel>\<open>E - {computed stateful flows plus trivial stateful flows}\<close>
             \<not> (\<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = stateful \<union> {e} \<rparr>) 
                 \<subseteq> backflows (filternew_flows_state \<lparr> hosts = V, flows_fix = E, flows_state = stateful \<union> {e} \<rparr>))"
     apply(drule(1) filter_compliant_stateful_ACS_accu_induction_maximal[where accu="[]", simplified])

@@ -598,7 +598,7 @@ proof (rule subrelI)
       by (simp add: Special_Solutions_in_Minimal_Solutions)
   next
     let ?xs = "[(x, y) \<leftarrow> generate ?b ?a a b.
-      static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y (*\<and> cond_B x \<and> cond_D x y*) \<and>
+      static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
       subprodl x y \<and>
       subprodr y]"
     case 2
@@ -617,7 +617,7 @@ proof (rule subrelI)
     moreover have "\<not> (\<exists>(u, v) \<in> Minimal_Solutions. u @ v <\<^sub>v x @ y)"
     proof
       let ?P = "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"
-      let ?Q = "(\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y (*\<and> cond_B x \<and> cond_D x y*) \<and>
+      let ?Q = "(\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
         subprodl x y \<and>
         subprodr y)"
       note sorted = sorted_wrt_generate [THEN sorted_wrt_filter, of ?Q ?b ?a a b]

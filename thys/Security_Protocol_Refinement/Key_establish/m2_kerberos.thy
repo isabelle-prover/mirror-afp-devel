@@ -357,7 +357,7 @@ definition
   m2_inv3a_sesK_compr :: "m2_state set"
 where 
   "m2_inv3a_sesK_compr \<equiv> {s. \<forall>K KK.
-     (* KK \<subseteq> range sesK \<longrightarrow> *)
+     \<^cancel>\<open>KK \<subseteq> range sesK \<longrightarrow>\<close>
      aKey K \<in> extr (aKey`KK \<union> ik0) (chan s) \<longleftrightarrow> (K \<in> KK \<or> aKey K \<in> extr ik0 (chan s)) 
   }"
 
@@ -797,7 +797,7 @@ where
   "m2_inv9_M3 \<equiv> {s. \<forall>Kab A B Ts Ta.
      Secure Sv B (Msg [aKey Kab, aAgt A, aNum Ts]) \<in> chan s \<longrightarrow>
      dAuth Kab (Msg [aAgt A, aNum Ta]) \<in> chan s \<longrightarrow> 
-     aKey Kab \<notin> extr ik0 (chan s) \<longrightarrow> (* A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow> *)
+     aKey Kab \<notin> extr ik0 (chan s) \<longrightarrow> \<^cancel>\<open>A \<notin> bad \<longrightarrow> B \<notin> bad \<longrightarrow>\<close>
        (\<exists>Ra nl. runs s Ra = Some (Init, [A, B], aKey Kab # aNum Ts # aNum Ta # nl))
   }"
 

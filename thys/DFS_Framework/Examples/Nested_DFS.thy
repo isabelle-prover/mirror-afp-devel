@@ -60,7 +60,7 @@ begin
     :: "'v blue_dfs_state \<Rightarrow> 'v fpr_result \<Rightarrow> ('v,unit) blue_dfs_state_ext"
     where
     "mk_blue_witness s redS \<equiv> case redS of
-                 Inl R' \<Rightarrow> \<lparr> lasso = None, red = (R' (*\<union> red s*)) \<rparr>
+                 Inl R' \<Rightarrow> \<lparr> lasso = None, red = (R' \<^cancel>\<open>\<union> red s\<close>) \<rparr>
                | Inr (vs, v) \<Rightarrow> let rs = rev (stack s) in 
                              \<lparr> lasso = Some (rs, vs@dropWhileNot v rs), red = red s\<rparr>"
 
@@ -76,9 +76,9 @@ begin
   text \<open> Schwoon-Esparza extension \<close>
   definition "se_back_edge u v s \<equiv> case lasso s of
     None \<Rightarrow> 
-      (* it's a back edge, so u and v are both on stack *)
-      (* we differentiate whether u or v is the 'culprit' 
-         to generate a better counter example *)
+      \<comment> \<open>it's a back edge, so \<open>u\<close> and \<open>v\<close> are both on stack\<close>
+      \<comment> \<open>we differentiate whether \<open>u\<close> or \<open>v\<close> is the 'culprit'\<close>
+      \<comment> \<open>to generate a better counter example\<close>
       if accpt u then
          let rs = rev (tl (stack s));
              ur = rs;
@@ -367,7 +367,7 @@ begin
 
     { (* TODO/FIXME: Ughly proof structure! *)
       fix R'::"'v set"
-      let ?R' = "R' (*\<union> red s*)"
+      let ?R' = "R' \<^cancel>\<open>\<union> red s\<close>"
       let ?s = "s'\<lparr> lasso := None, red := ?R'\<rparr>"
 
       assume "\<And>v. (hd (stack s), v) \<in> ?rE\<^sup>+ \<Longrightarrow> \<not> ?onstack v"
@@ -389,7 +389,7 @@ begin
     } with finish have
       "red_dfs (red s) ?onstack (hd (stack s))
          \<le> SPEC (\<lambda>x. \<forall>R. x = Inl R \<longrightarrow>
-             DFS_invar G blue_dfs_params (lasso_update Map.empty s'\<lparr>red := R (*\<union> red s*)\<rparr>) \<longrightarrow>
+             DFS_invar G blue_dfs_params (lasso_update Map.empty s'\<lparr>red := R \<^cancel>\<open>\<union> red s\<close>\<rparr>) \<longrightarrow>
              (\<forall>x. accpt x \<and> x\<in>dom (finished s') \<longrightarrow> (x, x) \<notin> E\<^sup>+))"
       apply -
       apply (rule find_path1_restr_spec_rule, intro conjI)
@@ -746,7 +746,7 @@ definition mk_blue_witness_impl
   where
   "mk_blue_witness_impl s redS \<equiv> 
     case redS of
-      Inl R' \<Rightarrow> \<lparr> lasso_impl = None, red_impl = (R' (*\<union> red_impl s*)) \<rparr>
+      Inl R' \<Rightarrow> \<lparr> lasso_impl = None, red_impl = (R' \<^cancel>\<open>\<union> red_impl s\<close>) \<rparr>
     | Inr (vs, v) \<Rightarrow> let 
         rs = rev (map fst (CAST (ss_stack s))) 
       in \<lparr> 

@@ -287,9 +287,9 @@ context begin
                              ''v3b'' \<mapsto> Care
                              ]
           \<rparr> ''v2b ACL'',
-          (*new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
+          \<^cancel>\<open>new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
           node_properties = [''v3b'' \<mapsto> InboundGateway]
-          \<rparr> ''v3b'',*)
+          \<rparr> ''v3b'',\<close>
           new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''v3b'' \<mapsto> Master [''v1b'', ''v2b''],
                              ''v1b'' \<mapsto> Care,

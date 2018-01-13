@@ -104,7 +104,7 @@ where
     case bop of Eq \<Rightarrow> T = Boolean
     | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer \<rbrakk>
    \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :' T"
-| "\<lbrakk> P,E,h \<turnstile> Var V :' T; P,E,h \<turnstile> e :' T' (* V \<noteq> This*); P \<turnstile> T' \<le> T \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> Var V :' T; P,E,h \<turnstile> e :' T' \<^cancel>\<open>V \<noteq> This\<close>; P \<turnstile> T' \<le> T \<rbrakk>
    \<Longrightarrow> P,E,h \<turnstile> V:=e :' T"
 | "\<lbrakk>P,E,h \<turnstile> e :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs\<rbrakk> 
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"

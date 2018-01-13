@@ -64,20 +64,20 @@ end
 
 definition berlekamp_zassenhaus_factorization :: "int poly \<Rightarrow> int poly list" where
   "berlekamp_zassenhaus_factorization f = (let 
-     (* find suitable prime *)
+     \<comment> \<open>find suitable prime\<close>
      p = suitable_prime_bz f;
-     (* compute finite field factorization *)
+     \<comment> \<open>compute finite field factorization\<close>
      (_, fs) = finite_field_factorization_int p f; 
-     (* determine maximal degree that we can build by multiplying at most half of the factors *)
+     \<comment> \<open>determine maximal degree that we can build by multiplying at most half of the factors\<close>
      max_deg = degree_bound fs;
-     (* determine a number large enough to represent all coefficients of every 
-        factor of lc * f that has at most degree most max-deg *)
+     \<comment> \<open>determine a number large enough to represent all coefficients of every\<close>
+     \<comment> \<open>factor of \<open>lc * f\<close> that has at most degree most \<open>max_deg\<close>\<close>
      bnd = 2 * \<bar>lead_coeff f\<bar> * factor_bound f max_deg;
-     (* determine k such that p^k > bnd *)
+     \<comment> \<open>determine \<open>k\<close> such that \<open>p^k > bnd\<close>\<close>
      k = find_exponent p bnd;
-     (* perform hensel lifting to lift factorization to mod (p^k) *)
+     \<comment> \<open>perform hensel lifting to lift factorization to mod \<open>p^k\<close>\<close>
      vs = hensel_lifting p k f fs
-     (* reconstruct integer factors *) 
+     \<comment> \<open>reconstruct integer factors\<close>
    in zassenhaus_reconstruction vs p k f)" 
   
 theorem berlekamp_zassenhaus_factorization_irreducible\<^sub>d:  

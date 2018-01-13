@@ -104,7 +104,7 @@ locale tailrec_impl =
   assumes get_pending_incr:
     "\<lbrakk>pre_get_pending s\<rbrakk> \<Longrightarrow> gds_get_pending gds s \<le>\<^sub>n SPEC (\<lambda>(_,_,s'). 
         gen_discovered s \<subseteq> gen_discovered s' 
-      (*\<and> gds_is_break gds s' = gds_is_break gds s*))"
+      \<^cancel>\<open>\<and> gds_is_break gds s' = gds_is_break gds s\<close>)"
   assumes finish_incr: "\<lbrakk>pre_finish u s0 s\<rbrakk> 
     \<Longrightarrow> gds_finish gds u s \<le>\<^sub>n SPEC (\<lambda>s'. 
       gen_discovered s \<subseteq> gen_discovered s')"

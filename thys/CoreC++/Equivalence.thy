@@ -1042,7 +1042,7 @@ declare fun_upd_apply[simp del] map_upds_twist[simp del]
 lemma assumes wf:"wf_prog wf_md P"
   shows blocksReds:
   "\<And>l\<^sub>0 E vs'. \<lbrakk> length Vs = length Ts; length vs = length Ts; 
-        distinct Vs; (*\<forall>T\<in>set Ts. is_type P T;*) P \<turnstile> Ts Casts vs to vs';
+        distinct Vs; \<^cancel>\<open>\<forall>T\<in>set Ts. is_type P T;\<close> P \<turnstile> Ts Casts vs to vs';
         P,E(Vs [\<mapsto>] Ts) \<turnstile> \<langle>e, (h\<^sub>0,l\<^sub>0(Vs [\<mapsto>] vs'))\<rangle> \<rightarrow>* \<langle>e', (h\<^sub>1,l\<^sub>1)\<rangle> \<rbrakk>
   \<Longrightarrow> \<exists>vs''. P,E \<turnstile> \<langle>blocks(Vs,Ts,vs,e), (h\<^sub>0,l\<^sub>0)\<rangle> \<rightarrow>* 
                    \<langle>blocks(Vs,Ts,vs'',e'), (h\<^sub>1,override_on l\<^sub>1 l\<^sub>0 (set Vs))\<rangle> \<and> 
@@ -1102,7 +1102,7 @@ qed simp_all
 lemma assumes wf:"wf_prog wf_md P"
   shows blocksFinal:
  "\<And>E l vs'. \<lbrakk> length Vs = length Ts; length vs = length Ts;
-           (*\<forall>T\<in>set Ts. is_type P T;*) final e; P \<turnstile> Ts Casts vs to vs' \<rbrakk> \<Longrightarrow>
+           \<^cancel>\<open>\<forall>T\<in>set Ts. is_type P T;\<close> final e; P \<turnstile> Ts Casts vs to vs' \<rbrakk> \<Longrightarrow>
        P,E \<turnstile> \<langle>blocks(Vs,Ts,vs,e), (h,l)\<rangle> \<rightarrow>* \<langle>e, (h,l)\<rangle>"
 
 proof(induct Vs Ts vs e rule:blocks_old_induct)

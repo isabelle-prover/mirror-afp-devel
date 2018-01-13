@@ -1134,8 +1134,8 @@ lemma T1_7': "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs \<Longrightarrow> 
       x\<in> set init \<Longrightarrow> y \<in> set init \<Longrightarrow> distinct init \<Longrightarrow>
       set qs \<subseteq> set init \<Longrightarrow>
       (\<exists>Strat2 sws. 
-        (*T\<^sub>p_opt (Lxy init {x,y}) (Lxy (take n qs) {x,y}) \<le> T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2
-          \<and>*)  length Strat2 = length (Lxy (take n qs) {x,y})
+        \<^cancel>\<open>T\<^sub>p_opt (Lxy init {x,y}) (Lxy (take n qs) {x,y}) \<le> T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2
+          \<and>\<close>  length Strat2 = length (Lxy (take n qs) {x,y})
           \<and>     (x < y in (steps' init (take n qs) (take n Strat) n))
               = (x < y in (swaps sws (steps' (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2 (length Strat2))))
           \<and> T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2 + length sws =            

@@ -52,7 +52,7 @@ definition policy :: "string list_graph" where
               (''Encryption_C'', ''Client_C_out''),
               (''Client_C_out'', ''UploadDroid''),
 
-              (*(''UploadDroid'', ''C3PO_in''), C3PO pulls!*)
+              \<^cancel>\<open>(''UploadDroid'', ''C3PO_in'')\<close>  \<comment> \<open>C3PO pulls!\<close>
               (''C3PO_in'', ''UploadDroid''),
 
               (''C3PO_in'', ''C3PO_Dec_A''),
