@@ -2863,7 +2863,7 @@ proof -
         } note gS = this
 
         have int_set: "int ` set [0..<CARD('a)] = {0 ..< int CARD('a)}"
-          by (simp add: image_int_atLeast_lessThan)
+          by (simp add: image_int_atLeastLessThan)
 
         have inj: "inj_on ?g ?S" unfolding inj_on_def
         proof (intro ballI impI)

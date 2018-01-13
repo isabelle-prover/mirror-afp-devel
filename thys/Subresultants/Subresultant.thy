@@ -826,7 +826,7 @@ proof -
         thus ?case by simp
       qed
       also have "sum ?g_b {off .. off + db} = sum ?gb {0 .. db}"
-        using sum.atLeast_atMost_shift_bounds [of ?g_b 0 off db]
+        using sum.atLeastAtMost_shift_bounds [of ?g_b 0 off db]
         by (auto intro: sum.cong simp add: b ac_simps)
       finally have id: "row ?G_F i \<bullet> col ?M j - ?H = ?Pj + sum ?gb {0 .. db} - ?H"
         (is "_ = ?E")

@@ -266,7 +266,7 @@ proof(cases "p = 0")
     apply(subst poly_as_sum_of_monoms')
     apply(subst Max_ge,simp,simp,force,simp)
     apply(rule cong[of "\<lambda>x. poly_lift a + x", OF refl])
-    apply(simp only: image_Suc_atLeast_atMost [symmetric])
+    apply(simp only: image_Suc_atLeastAtMost [symmetric])
     apply(unfold atLeast0AtMost)
     apply(subst sum.reindex,simp)
     apply(unfold o_def)
@@ -451,7 +451,7 @@ next
     unfolding atLeastAtMost_insertL[OF le0,symmetric]
     unfolding image_insert
     apply(subst Max_insert,simp,simp)
-    unfolding image_Suc_atLeast_atMost [symmetric]
+    unfolding image_Suc_atLeastAtMost [symmetric]
     unfolding image_image
     unfolding atLeast0AtMost by simp
 qed

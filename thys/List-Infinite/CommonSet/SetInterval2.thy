@@ -1090,11 +1090,11 @@ corollary image_Suc_atMost: "Suc ` {..i} = {Suc 0..Suc i}"
 by (insert image_add_atMost[of "Suc 0"], simp)
 
 lemmas image_add_lemmas =
-  image_add_atLeast_atMost
+  image_add_atLeastAtMost
   image_add_atLeast
   image_add_atMost
 lemmas image_Suc_lemmas =
-  image_Suc_atLeast_atMost
+  image_Suc_atLeastAtMost
   image_Suc_atLeast
   image_Suc_atMost
 
