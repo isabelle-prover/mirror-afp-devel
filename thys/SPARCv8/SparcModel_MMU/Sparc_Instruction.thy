@@ -1130,7 +1130,7 @@ where "decode_instruction w \<equiv>
     parse_instr_f1 w
   else if this_op = uint(0b00::word2) then \<comment> \<open>Instruction format 2\<close>
     parse_instr_f2 w
-  else (* (=) 11 0r 10, instructionrett format 3 *)
+  else \<comment> \<open>\<open>op = 11 0r 10\<close>, instruction format 3\<close>
     parse_instr_f3 w
 "
 
