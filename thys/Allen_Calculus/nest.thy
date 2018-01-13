@@ -30,7 +30,7 @@ definition (in arelations) NEST ::"'a nest \<Rightarrow> bool"
 where "NEST S \<equiv> \<exists>i. \<I> i \<and> (S = BEGIN i \<or> S = END i)"
 
 definition (in arelations) before :: "'a nest \<Rightarrow> 'a nest \<Rightarrow> bool" (infix "\<lless>" 100)
-where "before N M \<equiv> NEST N \<and> NEST M \<and> (\<exists>n m. (* \<I> m \<and> \<I> n \<and>*) n \<in> N \<and> m \<in> M \<and> (n,m) \<in> b)"
+where "before N M \<equiv> NEST N \<and> NEST M \<and> (\<exists>n m. \<^cancel>\<open>\<I> m \<and> \<I> n \<and>\<close> n \<in> N \<and> m \<in> M \<and> (n,m) \<in> b)"
 
 subsection {* Properties of Nests *}
 

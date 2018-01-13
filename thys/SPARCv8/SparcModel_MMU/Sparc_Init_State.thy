@@ -74,7 +74,7 @@ definition init_state1 :: "leon3_state" where
       s2 = cpu_reg_mod (0b01000000000000000000000000000100) nPC s1
   in
   user_reg_mod (0x4ffffff0) 0 (14) s2
-(*  s1*)
+  \<^cancel>\<open>s1\<close>
 "
 
 text \<open>Initialise the memory address

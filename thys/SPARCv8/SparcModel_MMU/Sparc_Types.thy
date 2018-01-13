@@ -190,7 +190,7 @@ where
 definition get_S :: "word32 \<Rightarrow> word1"
 where
 "get_S psr \<equiv> 
-(*  ucast ((bitAND psr 0b00000000000000000000000010000000) >> 7) *)
+  \<^cancel>\<open>ucast ((bitAND psr 0b00000000000000000000000010000000) >> 7)\<close>
   if (bitAND psr (0b00000000000000000000000010000000::word32)) = 0 then 0
   else 1
 "

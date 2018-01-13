@@ -1415,7 +1415,7 @@ definition brc_invar_add :: "('Q::hashable,'L::hashable) brc_state set"
     hs_invar Q \<and> 
     distinct W \<and> 
     hm_invar rcm
-    (*\<and> set W \<subseteq> hs_\<alpha> Q *)}
+    \<^cancel>\<open>\<and> set W \<subseteq> hs_\<alpha> Q\<close>}
   "
 
 definition "brc_invar \<delta> == brc_invar_add \<inter> {s. brc_\<alpha> s \<in> br'_invar \<delta>}"

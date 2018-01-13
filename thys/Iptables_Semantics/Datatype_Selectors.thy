@@ -18,7 +18,7 @@ text\<open>
   The are well-formed if the belong together.
 \<close>
 fun wf_disc_sel :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b)) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool" where
-  "wf_disc_sel (disc, sel) C \<longleftrightarrow> (\<forall>a. disc a \<longrightarrow> C (sel a) = a) \<and> (\<forall>a. (*disc (C a) \<longrightarrow>*) sel (C a) = a)"
+  "wf_disc_sel (disc, sel) C \<longleftrightarrow> (\<forall>a. disc a \<longrightarrow> C (sel a) = a) \<and> (\<forall>a. \<^cancel>\<open>disc (C a) \<longrightarrow>\<close> sel (C a) = a)"
 
 (* should the following be added to the definition?
  the discriminator is true for all C independent of the a

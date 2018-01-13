@@ -898,7 +898,7 @@ text \<open>
 definition "remdup l \<equiv> do {
   (s,r) \<leftarrow> nfoldli l (\<lambda>_. True) 
     (\<lambda>x (s,r). do {
-      ASSERT (distinct r \<and> set r \<subseteq> set l \<and> s = set r); (* Will be required to prove that list does not grow too long *)
+      ASSERT (distinct r \<and> set r \<subseteq> set l \<and> s = set r); \<comment> \<open>Will be required to prove that list does not grow too long\<close>
       if x\<in>s then RETURN (s,r) else RETURN (insert x s, r@[x])
     }) 
     ({},[]);

@@ -54,7 +54,7 @@ type_synonym ('s,'p,'f) config = "('s,'p,'f)com  \<times> ('s,'f) xstate"
 definition final:: "('s,'p,'f) config \<Rightarrow> bool" where
 "final cfg = (fst cfg=Skip \<or> (fst cfg=Throw \<and> (\<exists>s. snd cfg=Normal s)))"
 
-primrec atom_com :: "(*('s,'p,'f) body \<Rightarrow>*) ('s, 'p, 'f) com \<Rightarrow> bool" where
+primrec atom_com :: "\<^cancel>\<open>('s,'p,'f) body \<Rightarrow>\<close> ('s, 'p, 'f) com \<Rightarrow> bool" where
   "atom_com Skip = True" | 
   "atom_com (Basic f) = True" | 
   "atom_com (Spec r) = True" | 

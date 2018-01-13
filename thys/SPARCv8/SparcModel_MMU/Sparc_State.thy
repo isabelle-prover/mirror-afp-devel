@@ -129,9 +129,9 @@ where
   else if 15 < ur \<and> ur < 24 then
     state\<lparr>user_reg := 
       (user_reg state)(win := ((user_reg state) win)(ur := data_w32))\<rparr>
-  else (* if 23 < ur \<and> ur < 32 then *)
+  else \<^cancel>\<open>if 23 < ur \<and> ur < 32 then\<close>
     in_reg_mod data_w32 win ur state
-(*  else state *)
+  \<^cancel>\<open>else state\<close>
 "
 
 definition sys_reg_val :: "sys_reg \<Rightarrow> ('a) sparc_state \<Rightarrow> reg_type"

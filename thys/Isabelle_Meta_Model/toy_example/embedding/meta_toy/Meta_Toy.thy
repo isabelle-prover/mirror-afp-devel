@@ -424,7 +424,7 @@ fun str_of_ty where "str_of_ty e =
   | ToyTy_base_real \<Rightarrow> \<open>Real\<close>
   | ToyTy_base_string \<Rightarrow> \<open>String\<close>
   | ToyTy_object (ToyTyObj (ToyTyCore_pre s) _) \<Rightarrow> s
-  (*| ToyTy_object (ToyTyObj (ToyTyCore ty_obj) _)*)
+  \<^cancel>\<open>| ToyTy_object (ToyTyObj (ToyTyCore ty_obj) _)\<close>
   | ToyTy_collection t toy_ty \<Rightarrow> (if is_sequence t then
                                     S.flatten [\<open>Sequence(\<close>, str_of_ty toy_ty,\<open>)\<close>]
                                   else

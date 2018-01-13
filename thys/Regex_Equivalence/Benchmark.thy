@@ -5,7 +5,7 @@ begin
 definition bool_checkers :: "(string * (bool rexp \<Rightarrow> bool rexp \<Rightarrow> bool)) list" where
   "bool_checkers = [
     (''D '', check_eqv_brz),
-    (*(''DQ'', check_eqv_brzq),*)
+    \<^cancel>\<open>(''DQ'', check_eqv_brzq),\<close>
     (''N '', check_eqv_n),
     (''P '', check_eqv_p),
     (''PN'', check_eqv_pn),
@@ -18,7 +18,7 @@ definition bool_checkers :: "(string * (bool rexp \<Rightarrow> bool rexp \<Righ
 definition bool_matchers :: "(string * (bool rexp \<Rightarrow> bool list \<Rightarrow> bool)) list" where
   "bool_matchers = [
     (''D '', match_brz),
-    (*(''DQ'', match_brzq),*)
+    \<^cancel>\<open>(''DQ'', match_brzq),\<close>
     (''N '', match_n),
     (''P '', match_p),
     (''PN'', match_pn),

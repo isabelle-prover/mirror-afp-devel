@@ -170,7 +170,7 @@ locale rec_impl =
       | Some v \<Rightarrow> pending s' = pending s - {(u,v)}) \<and>
       stack s' = stack s \<and>
       (\<forall>x. gds_is_discovered gds x s' = gds_is_discovered gds x s) 
-      (*\<and> gds_is_break gds s' = gds_is_break gds s*)
+      \<^cancel>\<open>\<and> gds_is_break gds s' = gds_is_break gds s\<close>
     )"
   assumes finish_spec: "\<lbrakk>pre_finish u s0 s\<rbrakk> 
     \<Longrightarrow> gds_finish gds u s \<le>\<^sub>n SPEC (\<lambda>s'. 
@@ -324,7 +324,7 @@ begin
   \<and> inres (choose_pending u vo s0) s 
   \<and> stack s = stack s0
   \<and> (\<forall>x. gds_is_discovered gds x s = gds_is_discovered gds x s0)
-  (*\<and> gds_is_break gds s = gds_is_break gds s0*)
+  \<^cancel>\<open>\<and> gds_is_break gds s = gds_is_break gds s0\<close>
   \<and> (case vo of
       None \<Rightarrow> pending s0``{u}={} \<and> pending s = pending s0
     | Some v \<Rightarrow> v \<in> pending s0``{u} \<and> pending s = pending s0 - {(u,v)})"

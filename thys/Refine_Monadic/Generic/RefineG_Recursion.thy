@@ -46,7 +46,7 @@ lemma lfp_gfp_compare:
 
 (* TODO: Move to Domain *)
 definition trimono :: "(('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> ('b::{bot,order,top})) \<Rightarrow> bool" 
-  where "trimono B \<equiv> (*flatf_mono_le B \<and>*) flatf_mono_ge B \<and> mono B"
+  where "trimono B \<equiv> \<^cancel>\<open>flatf_mono_le B \<and>\<close> flatf_mono_ge B \<and> mono B"
 lemma trimonoI[refine_mono]: 
   "\<lbrakk>flatf_mono_ge B; mono B\<rbrakk> \<Longrightarrow> trimono B"
   unfolding trimono_def by auto

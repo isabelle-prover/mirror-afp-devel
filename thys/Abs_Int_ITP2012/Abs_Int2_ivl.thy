@@ -154,7 +154,7 @@ lemma gamma_minus_ivl:
   "n1 : \<gamma>_ivl i1 \<Longrightarrow> n2 : \<gamma>_ivl i2 \<Longrightarrow> n1-n2 : \<gamma>_ivl(minus_ivl i1 i2)"
 by(auto simp add: minus_ivl_def \<gamma>_ivl_def split: ivl.splits option.splits)
 
-definition "filter_plus_ivl i i1 i2 = ((*if is_empty i then empty else*)
+definition "filter_plus_ivl i i1 i2 = (\<^cancel>\<open>if is_empty i then empty else\<close>
   i1 \<sqinter> minus_ivl i i2, i2 \<sqinter> minus_ivl i i1)"
 
 fun filter_less_ivl :: "bool \<Rightarrow> ivl \<Rightarrow> ivl \<Rightarrow> ivl * ivl" where

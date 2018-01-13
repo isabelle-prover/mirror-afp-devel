@@ -63,9 +63,9 @@ definition "foo \<equiv> do {
     case l of 
       [] \<Rightarrow> RETURN (case [0,1] of [] \<Rightarrow> {} | x#xs \<Rightarrow> {x})
     | x#l \<Rightarrow> do {
-        (*r \<leftarrow> RETURN (y\<union>y);*)
+        \<^cancel>\<open>r \<leftarrow> RETURN (y\<union>y);\<close>
         r \<leftarrow> D l;
-        (*RETURN (insert (x+1) r)*)
+        \<^cancel>\<open>RETURN (insert (x+1) r)\<close>
         RETURN (if x<1 then insert x r else insert (x+1) r)
     }) s
   }
@@ -161,16 +161,15 @@ definition "big_list2 == do {
   x6 <- RETURN {};
   x7 <- RETURN {};
   x8 <- RETURN {};
-(*  x9 <- RETURN {};
+\<^cancel>\<open>  x9 <- RETURN {};
   x10 <- RETURN {};
   x11 <- RETURN {};
   x12 <- RETURN {};
   x13 <- RETURN {};
   x14 <- RETURN {};
   x15 <- RETURN {};
-  x16 <- RETURN {};
-*)
-  RETURN [x1,x2,x3,x4,x5,x6,x7,x8] (*,x9,x10,x11,x12,x13,x14,x14,x15,x16]*)
+  x16 <- RETURN {};\<close>
+  RETURN [x1,x2,x3,x4,x5,x6,x7,x8\<^cancel>\<open>,x9,x10,x11,x12,x13,x14,x14,x15,x16]\<close>]
 }"
 
 

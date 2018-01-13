@@ -421,7 +421,7 @@ by (auto simp add: PO_rhoare_defs R23_def m2_defs m3_defs intro!: R23_intros)
    (auto)
 
 lemma PO_m3_step2_refines_m2_step2:
-  "{R23 (* \<inter> UNIV \<times> m3_inv3_pubkeys *)}
+  "{R23 \<^cancel>\<open>\<inter> UNIV \<times> m3_inv3_pubkeys\<close>}
      (m2_step2 Rb A B Na Nb), (m3_step2 Rb A B Na Nb)
    {> R23}"
 by (auto simp add: PO_rhoare_defs R23_def m2_defs m3_defs intro!: R23_intros)

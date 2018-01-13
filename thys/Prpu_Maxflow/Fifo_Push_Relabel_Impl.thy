@@ -842,7 +842,7 @@ qed
 subsection \<open>Combination with Network Checker and Main Correctness Theorem\<close>
   
 definition "fifo_push_relabel_impl_tab_am c s t N am \<equiv> do {
-  ami \<leftarrow> Array.make N am;  (* TODO/DUP: Called init_ps in Edmonds-Karp impl *)
+  ami \<leftarrow> Array.make N am;  \<comment> \<open>TODO/DUP: Called \<open>init_ps\<close> in Edmonds-Karp impl\<close>
   cfi \<leftarrow> fifo_push_relabel_impl c s t N ami;
   return (ami,cfi)
 }"  

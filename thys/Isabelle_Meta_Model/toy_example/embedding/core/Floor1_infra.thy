@@ -65,7 +65,7 @@ definition "print_infra_type_synonym_class_higher expr = start_map O.type_synony
       (\<lambda>isub_name name _ _ _ _.
         [ Type_synonym' name
                        (option (option (Typ_base (isub_name datatype_name))))
-        (*, Type_synonym' name (Typ_apply_paren \<open>\<cdot>\<close> \<open>\<close> (Typ_base (name @@ \<open>'\<close>)))*)])
+        \<^cancel>\<open>, Type_synonym' name (Typ_apply_paren \<open>\<cdot>\<close> \<open>\<close> (Typ_base (name @@ \<open>'\<close>)))\<close>])
       expr))"
 
 end

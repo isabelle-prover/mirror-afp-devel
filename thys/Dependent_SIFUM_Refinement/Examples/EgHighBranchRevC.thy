@@ -1207,8 +1207,8 @@ where
 
   if_reg_rel: "\<lbrakk>
     \<comment> \<open>Is a more generic version possible for an arbitrary \<open>b\<^sub>A\<close>?\<close>
-    \<comment> \<open>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else);\<close>\<close>
-    \<comment> \<open>\<open>b\<^sub>A = Eq (Load x) (Const 0);\<close> \<open>(* ev\<^sub>B mem\<^sub>A b\<^sub>A *)\<close>\<close>
+    \<^cancel>\<open>c\<^sub>A = (If b\<^sub>A c\<^sub>A_then c\<^sub>A_else);\<close>
+    \<^cancel>\<open>b\<^sub>A = Eq (Load x) (Const 0);\<close>  \<comment> \<open>\<open>ev\<^sub>B mem\<^sub>A b\<^sub>A\<close>\<close>
     c\<^sub>A = (If (Neq (Load x) (Const 0)) c\<^sub>A_then c\<^sub>A_else);
     c\<^sub>C = (If (Neq (Load reg3) (Const 0)) c\<^sub>C_then c\<^sub>C_else);
     mds\<^sub>A = mds\<^sub>A_of mds\<^sub>C;

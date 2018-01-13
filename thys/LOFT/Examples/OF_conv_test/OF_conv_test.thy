@@ -75,11 +75,11 @@ definition "SQRL_ifs \<equiv> [
 value SQRL_ifs
 
 definition "SQRL_macs \<equiv> [
-	(*(''s1-lan'', (ipv4addr_of_dotdecimal (10,0,1,1), 0x3)),*)
+	\<^cancel>\<open>(''s1-lan'', (ipv4addr_of_dotdecimal (10,0,1,1), 0x3)),\<close>
 	(''s1-lan'', (ipv4addr_of_dotdecimal (10,0,1,2), 0x1)),
 	(''s1-lan'', (ipv4addr_of_dotdecimal (10,0,1,3), 0x2)),
 	(''s1-wan'', (ipv4addr_of_dotdecimal (10,0,2,1), 0x3))
-	(*(''s1-wan'', (ipv4addr_of_dotdecimal (10,0,2,4), 0xeabad0152059))*)
+	\<^cancel>\<open>(''s1-wan'', (ipv4addr_of_dotdecimal (10,0,2,4), 0xeabad0152059))\<close>
 ]"
 
 definition "SQRL_ports \<equiv> [

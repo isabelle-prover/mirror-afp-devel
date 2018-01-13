@@ -212,12 +212,12 @@ definition "relabel_to_front2 am \<equiv> do {
   
       lu \<leftarrow> l_get l u;
       if (lu \<noteq> old_lu) then do {
-        (* Move u to front of l, and restart scanning L. The cost for 
-           rev_append is amortized by going to next node in L *)
+        \<comment> \<open>Move \<open>u\<close> to front of \<open>l\<close>, and restart scanning \<open>L\<close>. The cost for\<close>
+        \<comment> \<open>\<open>rev_append\<close> is amortized by going to next node in \<open>L\<close>\<close>
         let (L_left,L_right) = ([u],rev_append L_left (tl L_right));
         return ((x,cf),l,n,L_left,L_right)
       } else do {
-        (* Goto next node in L *)
+        \<comment> \<open>Goto next node in \<open>L\<close>\<close>
         let (L_left,L_right) = (u#L_left, tl L_right);
         return ((x,cf),l,n,L_left,L_right)
       }
@@ -447,7 +447,7 @@ context Network_Impl begin
 end    
 
 definition "relabel_to_front_impl_tab_am c s t N am \<equiv> do {
-  ami \<leftarrow> Array.make N am;  (* TODO/DUP: Called init_ps in Edmonds-Karp impl *)
+  ami \<leftarrow> Array.make N am;  \<comment> \<open>TODO/DUP: Called \<open>init_ps\<close> in Edmonds-Karp impl\<close>
   relabel_to_front_impl c s t N ami
 }"  
   

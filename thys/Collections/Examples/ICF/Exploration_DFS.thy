@@ -185,7 +185,7 @@ proof -
     LC: "(while hs_dfs_cond (hs_dfs_step post) (hs_dfs_initial \<Sigma>i)) = dwa.loop"
     by (unfold dwa.loop_def) (simp add: hs_dfs_dwa_def)
 
-  have "?T1 (*\<and> ?T2*)"
+  have "?T1 \<^cancel>\<open>\<and> ?T2\<close>"
     apply (unfold hs_dfs_def)
     apply (simp only: LC)
     apply (rule dwa.while_proof)

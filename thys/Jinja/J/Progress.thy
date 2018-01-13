@@ -48,7 +48,7 @@ where
   \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>Eq\<guillemotright> e\<^sub>2 :' Boolean"
 | "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 :' Integer;  P,E,h \<turnstile> e\<^sub>2 :' Integer \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>Add\<guillemotright> e\<^sub>2 :' Integer"
-| "\<lbrakk> P,E,h \<turnstile> Var V :' T;  P,E,h \<turnstile> e :' T';  P \<turnstile> T' \<le> T (* V \<noteq> This*) \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> Var V :' T;  P,E,h \<turnstile> e :' T';  P \<turnstile> T' \<le> T \<^cancel>\<open>V \<noteq> This\<close> \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> V:=e :' Void"
 | "\<lbrakk> P,E,h \<turnstile> e :' Class C; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"
 | "P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"

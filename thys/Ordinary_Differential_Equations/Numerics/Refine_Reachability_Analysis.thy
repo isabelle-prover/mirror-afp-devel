@@ -3298,7 +3298,7 @@ definition "choose_step1 (X::'n::enum eucl1 set) h = do {
       do {
         sX \<leftarrow> mk_safe (fst ` X);
         (h, err, CX', X') \<leftarrow> choose_step sX h;
-        (* err \<leftarrow> width_spec (err:::appr_rel); *)
+        \<^cancel>\<open>err \<leftarrow> width_spec (err:::appr_rel);\<close>
         RETURN (h, err \<times> UNIV, (set_of_sappr CX') \<times> UNIV, (set_of_sappr X') \<times> UNIV)
       }
     | Some vX \<Rightarrow>
@@ -3308,7 +3308,7 @@ definition "choose_step1 (X::'n::enum eucl1 set) h = do {
         let CX' = flow1_of_vec1 ` (set_of_sappr (CX':::var.sappr_rel):::appr_rel);
         let X' = flow1_of_vec1 ` (set_of_sappr (X':::var.sappr_rel):::appr_rel);
         let err' = flow1_of_vec1 ` (err:::appr_rel);
-        (* err \<leftarrow> width_spec (fst ` (flow1_of_vec1 ` (err:::appr_rel)):::appr_rel); *)
+        \<^cancel>\<open>err \<leftarrow> width_spec (fst ` (flow1_of_vec1 ` (err:::appr_rel)):::appr_rel);\<close>
         RETURN (h, err', CX', X'::'n eucl1 set)
       }
   }"
@@ -4940,10 +4940,10 @@ lemma width_spec_appr1_impl_refine[autoref_rules]:
   (\<lambda>X. RETURN (width_spec_appr1_impl X), width_spec_appr1::'a eucl1 set \<Rightarrow> real nres) \<in> appr1_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
   using width_spec_appr1_impl.refine by force
 
-definition "tolerate_error Y E = (* do {
+definition "tolerate_error Y E = \<^cancel>\<open>do {
     vY \<leftarrow> vec1rep Y;
     vE \<leftarrow> vec1rep E;
-    case (vY, vE) of (None, None) \<Rightarrow> *)
+    case (vY, vE) of (None, None) \<Rightarrow>\<close>
       do {
         (ei, es) \<leftarrow> ivl_rep_of_set (fst ` E);
         (yi, ys) \<leftarrow> ivl_rep_of_set (fst ` Y);
@@ -4952,7 +4952,7 @@ definition "tolerate_error Y E = (* do {
 
         let errtol = sup (adaptive_rtol optns *\<^sub>R ya) (adaptive_atol optns *\<^sub>R sum_list Basis_list);
         RETURN (ea \<le> errtol, infnorm ea)
-    (*   }
+      \<^cancel>\<open>}
     | (Some vY, Some vE) \<Rightarrow>
       do {
         (ei, es) \<leftarrow> ivl_rep_of_set (vE);
@@ -4962,7 +4962,7 @@ definition "tolerate_error Y E = (* do {
         let errtol = sup (adaptive_rtol optns *\<^sub>R ya) (adaptive_atol optns *\<^sub>R sum_list Basis_list);
         RETURN (ea \<le> errtol, infnorm ea)
       }
-    | _ \<Rightarrow> do {CHECKs ''tolerate_error: different representations???'' False; SUCCEED} *)
+    | _ \<Rightarrow> do {CHECKs ''tolerate_error: different representations???'' False; SUCCEED}\<close>
   }"
 sublocale autoref_op_pat_def tolerate_error .
 schematic_goal tolerate_error_impl:

@@ -35,7 +35,7 @@ definition fp0_params :: "('v \<Rightarrow> bool) \<Rightarrow> 'v fp0_param"
   on_init = RETURN no_path,
   on_new_root = \<lambda>v0 s. if P v0 then RETURN (a_path [] v0) else RETURN no_path,
   on_discover = \<lambda>u v s. if P v 
-                   then (* v is already on the stack, so we need to pop it again *)
+                   then \<comment> \<open>\<open>v\<close> is already on the stack, so we need to pop it again\<close>
                       RETURN (a_path (rev (tl (stack s))) v) 
                    else RETURN no_path,
   on_finish = \<lambda>u s. RETURN (state.more s),
@@ -353,7 +353,7 @@ definition find_path1_restr
   :: "('v, 'more) graph_rec_scheme \<Rightarrow> ('v \<Rightarrow> bool) \<Rightarrow> 'v set \<Rightarrow> 'v fpr_result nres"
   where "find_path1_restr G P R \<equiv> 
   FOREACHc (g_V0 G) is_Inl (\<lambda>v0 s. do {
-    ASSERT (is_Inl s); (* TODO: Add FOREACH-condition as precondition in autoref!*)
+    ASSERT (is_Inl s); \<comment> \<open>TODO: Add FOREACH-condition as precondition in autoref!\<close>
     let R = projl s;
     f0 \<leftarrow> find_path0_restr_spec (G \<lparr> g_V0 := g_E G `` {v0} \<rparr>) P R;
     case f0 of 

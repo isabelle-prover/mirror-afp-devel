@@ -384,7 +384,7 @@ definition
   m2_inv3a_sesK_compr :: "m2_state set"
 where 
   "m2_inv3a_sesK_compr \<equiv> {s. \<forall>K KK.
-     (* KK \<subseteq> range sesK \<longrightarrow> *)
+     \<^cancel>\<open>KK \<subseteq> range sesK \<longrightarrow>\<close>
      aKey K \<in> extr (aKey`KK \<union> ik0) (chan s) \<longleftrightarrow> (K \<in> KK \<or> aKey K \<in> extr ik0 (chan s)) 
   }"
 
@@ -428,7 +428,7 @@ definition
   m2_inv3b_sesK_compr_non :: "m2_state set"
 where 
   "m2_inv3b_sesK_compr_non \<equiv> {s. \<forall>N KK.
-     (* KK \<subseteq> range sesK \<longrightarrow> *)
+     \<^cancel>\<open>KK \<subseteq> range sesK \<longrightarrow>\<close>
      aNon N \<in> extr (aKey`KK \<union> ik0) (chan s) \<longleftrightarrow> aNon N \<in> extr ik0 (chan s)
   }"
 

@@ -1130,7 +1130,7 @@ where "decode_instruction w \<equiv>
     parse_instr_f1 w
   else if this_op = uint(0b00::word2) then \<comment> \<open>Instruction format 2\<close>
     parse_instr_f2 w
-  else (* (=) 11 0r 10, instructionrett format 3 *)
+  else \<comment> \<open>\<open>op = 11 0r 10\<close>, instruction format 3\<close>
     parse_instr_f3 w
 "
 
@@ -1476,8 +1476,8 @@ where "flush_instr instr \<equiv>
   do
     addr \<leftarrow> gets (\<lambda>s. (get_addr op_list s));
     modify (\<lambda>s. (flush_cache_all s));
-(*    flush_cache_line(addr);*)
-(*    flush_Ibuf_and_pipeline(addr);*)
+    \<^cancel>\<open>flush_cache_line(addr);\<close>
+    \<^cancel>\<open>flush_Ibuf_and_pipeline(addr);\<close>
     return ()
   od"
 
@@ -1961,7 +1961,7 @@ where "div_comp instr rs1 rd operand2 \<equiv>
     y_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val Y s));
     y_rs1 \<leftarrow> gets (\<lambda>s. ((word_cat y_val rs1_val)::word64));
     temp_64bit \<leftarrow> gets (\<lambda>s. (div_comp_temp_64bit instr y_rs1 operand2));
-    (*result \<leftarrow>  gets (\<lambda>s. ((ucast temp_64bit)::word32));*)
+    \<^cancel>\<open>result \<leftarrow>  gets (\<lambda>s. ((ucast temp_64bit)::word32));\<close>
     temp_high32 \<leftarrow> gets (\<lambda>s. ((ucast (temp_64bit >> 32))::word32));
     temp_high33 \<leftarrow> gets (\<lambda>s. ((ucast (temp_64bit >> 31))::word33));
     temp_V \<leftarrow> gets (\<lambda>s. (div_comp_temp_V instr temp_high32 temp_high33));

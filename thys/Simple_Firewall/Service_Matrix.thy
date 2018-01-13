@@ -428,8 +428,8 @@ record parts_connection = pc_iiface :: string
 
 
 
-definition same_fw_behaviour :: "(*'pkt_ext itself \<Rightarrow>*) 'i::len word \<Rightarrow> 'i word \<Rightarrow> 'i simple_rule list \<Rightarrow> bool" where
-  "same_fw_behaviour (*TYPE('pkt_ext)*) a b rs \<equiv>
+definition same_fw_behaviour :: "\<^cancel>\<open>'pkt_ext itself \<Rightarrow>\<close> 'i::len word \<Rightarrow> 'i word \<Rightarrow> 'i simple_rule list \<Rightarrow> bool" where
+  "same_fw_behaviour \<^cancel>\<open>TYPE('pkt_ext)\<close> a b rs \<equiv>
       \<forall>(p:: 'i::len simple_packet).
                 simple_fw rs (p\<lparr>p_src:=a\<rparr>) = simple_fw rs (p\<lparr>p_src:=b\<rparr>) \<and>
                 simple_fw rs (p\<lparr>p_dst:=a\<rparr>) = simple_fw rs (p\<lparr>p_dst:=b\<rparr>)"
