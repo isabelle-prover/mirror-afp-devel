@@ -631,17 +631,17 @@ where
   v_Num[intro]: "val (DBNum n)"
 | v_FF[intro]:  "val DBff"
 | v_TT[intro]:  "val DBtt"
-| v_AbsN[intro]: "closed (DBAbsN e) \<Longrightarrow> val (DBAbsN e)"
-| v_AbsV[intro]: "closed (DBAbsV e) \<Longrightarrow> val (DBAbsV e)"
+| v_AbsN[intro]: "val (DBAbsN e)"
+| v_AbsV[intro]: "val (DBAbsV e)"
 
 inductive
   evalOP :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<Down> _" [50,50] 50)
 where
-  evalOP_AppN[intro]:  "\<lbrakk> P \<Down> DBAbsN M; M<Q/0> \<Down> V \<rbrakk> \<Longrightarrow> DBApp P Q \<Down> V" (* Lazy application *)
+  evalOP_AppN[intro]:  "\<lbrakk> P \<Down> DBAbsN M; M<Q/0> \<Down> V \<rbrakk> \<Longrightarrow> DBApp P Q \<Down> V" (* Non-strict application *)
 | evalOP_AppV[intro]:  "\<lbrakk> P \<Down> DBAbsV M; Q \<Down> q; M<q/0> \<Down> V \<rbrakk> \<Longrightarrow> DBApp P Q \<Down> V" (* Strict application *)
 | evalOP_AbsN[intro]:  "val (DBAbsN e) \<Longrightarrow> DBAbsN e \<Down> DBAbsN e"
 | evalOP_AbsV[intro]:  "val (DBAbsV e) \<Longrightarrow> DBAbsV e \<Down> DBAbsV e"
-| evalOP_Fix[intro]: "P<DBFix P/0> \<Down> V \<Longrightarrow> DBFix P \<Down> V" (* Lazy fix *)
+| evalOP_Fix[intro]: "P<DBFix P/0> \<Down> V \<Longrightarrow> DBFix P \<Down> V" (* Non-strict fix *)
 | evalOP_tt[intro]:  "DBtt \<Down> DBtt"
 | evalOP_ff[intro]:  "DBff \<Down> DBff"
 | evalOP_CondTT[intro]: "\<lbrakk> C \<Down> DBtt; T \<Down> V \<rbrakk> \<Longrightarrow> DBCond C T E \<Down> V"
@@ -660,13 +660,10 @@ sound with respect to the denotational semantics.
 \<close>
 (*<*)
 
-lemma closed_val [iff]:
-  "val e \<Longrightarrow> closed e"
-  by (cases e rule: val.cases) auto
-
 inductive_cases evalOP_inv [elim]:
   "DBApp P Q \<Down> v"
-  "DBAbs e \<Down> v"
+  "DBAbsN e \<Down> v"
+  "DBAbsV e \<Down> v"
   "DBFix P \<Down> v"
   "DBtt \<Down> v"
   "DBff \<Down> v"
@@ -677,22 +674,33 @@ inductive_cases evalOP_inv [elim]:
   "DBIsZero E \<Down> v"
 
 lemma eval_val:
-  assumes a: "val t"
+  assumes "val t"
   shows "t \<Down> t"
-  using a by (induct) blast+
+using assms by induct blast+
 
 lemma eval_to [iff]:
-  assumes a: "t \<Down> t'"
+  assumes "t \<Down> t'"
   shows "val t'"
-  using a by (induct) blast+
+using assms by induct blast+
 
 lemma evalOP_deterministic:
-  "\<lbrakk> P \<Down> V; P \<Down> V' \<rbrakk> \<Longrightarrow> V = V'"
-  apply (induct arbitrary: V' rule: evalOP.induct)
-  prefer 2 (* FIXME weird *)
-  apply (erule evalOP_inv, blast)
-  apply blast+
-  done
+  assumes "P \<Down> V"
+  assumes "P \<Down> V'"
+  shows "V = V'"
+using assms
+proof(induct arbitrary: V' rule: evalOP.induct)
+  case evalOP_AppV then show ?case by (metis db.distinct(47) db.inject(4) evalOP_inv(1))
+qed blast+
+
+lemma evalOP_closed:
+  assumes "P \<Down> V"
+  assumes "closed P"
+  shows "closed V"
+using assms
+apply induct
+apply auto
+using closed_def apply force+
+done
 
 text\<open>The denotational semantics respects substitution.\<close>
 
@@ -911,10 +919,9 @@ lemma bot_ca_lf_rep [intro, simp]:
 lemma synlr_cal_lr_rep [intro, simp]:
   "ca_lf_rep r \<in> synlr"
   unfolding ca_lf_rep_def
-  apply rule
-  by (auto intro!: adm_conj adm_disj adm_below_monic_exists
-             simp: split_def
-             dest: evalOP_deterministic)
+  by rule (auto intro!: adm_conj adm_disj adm_below_monic_exists
+                  simp: split_def
+                  dest: evalOP_deterministic)
 
 lemma mono_ca_lr:
   shows "mono ca_lr"
@@ -1036,6 +1043,7 @@ lemma ca_lrE:
      \<And>f M. \<lbrakk> d = ValF\<cdot>f; closed P; P \<Down> DBAbsN M; \<And>x X. x \<triangleleft> X \<Longrightarrow> f\<cdot>x \<triangleleft> M<X/0> \<rbrakk> \<Longrightarrow> Q;
      \<And>f M. \<lbrakk> d = ValF\<cdot>f; f\<cdot>\<bottom> = \<bottom>; closed P; P \<Down> DBAbsV M; \<And>x X V. \<lbrakk> x \<triangleleft> X; X \<Down> V \<rbrakk> \<Longrightarrow> f\<cdot>x \<triangleleft> M<V/0> \<rbrakk> \<Longrightarrow> Q
    \<rbrakk> \<Longrightarrow> Q"
+  apply (frule closed_ca_lr)
   apply (simp add: ca_lr_syn_def)
   apply (subst (asm) ca.delta_sol)
   apply simp
@@ -1055,8 +1063,7 @@ lemma ca_lrE:
   apply auto[1]
   apply (subst mkProg_inverse)
    apply simp
-  apply (drule eval_to)
-  apply (drule closed_val)
+  apply (frule (1) evalOP_closed)
   apply (subst (asm) closed_binders)
   apply (auto simp: closed_def
              split: nat.splits)[2]
@@ -1078,10 +1085,8 @@ lemma ca_lrE:
    defer
    apply simp
   apply simp
-  apply (drule eval_to)+
-  apply (drule closed_val)+
-  apply (simp add: closed_def split: nat.splits)
-  done
+  apply (drule (1) evalOP_closed)
+  using closed_def closed_invs(11) evalOP_closed unProg by force
 
 (*>*)
 text\<open>
@@ -1221,7 +1226,6 @@ next
       apply (rule v_AbsN)
       apply (clarsimp simp: closed_def split: nat.split)
      apply clarsimp
-    apply simp
     apply (subst subst_closing_subst)
       apply simp
      apply blast
@@ -1237,16 +1241,17 @@ next
     apply (rule ca_lr_DBAbsVI)
        apply (rule eval_val)
        apply (rule v_AbsV)
-       apply (clarsimp simp: closed_def split: nat.split)
+      apply (clarsimp simp: closed_def split: nat.split)
      apply clarsimp
-    apply simp
+    apply (frule closed_ca_lr)
+    apply (frule (1) evalOP_closed)
     apply (case_tac "x=\<bottom>")
      apply simp
-     apply (rule ca_lrI)
+      apply (rule ca_lrI)
      apply (subst subst_closing_subst)
        apply simp
       apply simp
-     apply (metis closed_closing_subst closed_val eval_to nat.case not0_implies_Suc)
+     apply (simp add: nat.split_sels(1))
     apply simp
     apply (subst subst_closing_subst)
       apply simp
@@ -1256,19 +1261,17 @@ next
       apply blast
      apply (auto simp: env_ext_db_def split: nat.splits)
     apply (erule ca_lrE)
-      apply (auto dest: evalOP_deterministic)[4]
+         apply ((blast dest: evalOP_deterministic)+)[4]
      apply clarsimp
      apply (subgoal_tac "V = DBAbsN M")
       apply clarsimp
       apply (rule ca_lr_DBAbsNI)
       apply (rule eval_val)
-      apply (auto dest: eval_to closed_val evalOP_deterministic)[4]
+      apply (auto dest: evalOP_deterministic)[4]
     apply (subgoal_tac "V = DBAbsV M")
      apply clarsimp
      apply (rule ca_lr_DBAbsVI)
-     apply (rule eval_val)
-     apply (auto dest: eval_to closed_val evalOP_deterministic)[4]
-    apply (auto dest: evalOP_deterministic)
+     apply (auto dest: evalOP_deterministic)
     done
 next
   case (DBFix e \<Gamma> \<rho>) then show ?case

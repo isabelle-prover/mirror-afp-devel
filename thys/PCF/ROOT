@@ -10,6 +10,7 @@ session PCF (AFP) = "HOLCF-Library" +
     PCF
     OpSem
     Continuations
+    SmallStep
   document_files
     "root.bib"
     "root.tex"

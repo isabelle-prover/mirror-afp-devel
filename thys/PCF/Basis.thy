@@ -155,19 +155,24 @@ where
 
 lemma below_monicI:
   "(\<And>x y. f x \<sqsubseteq> f y \<Longrightarrow> x \<sqsubseteq> y) \<Longrightarrow> below_monic f"
-  unfolding below_monic_def by simp
+unfolding below_monic_def by simp
 
 lemma below_monicE:
   "\<lbrakk> below_monic f; f x \<sqsubseteq> f y \<rbrakk> \<Longrightarrow> x \<sqsubseteq> y"
-  unfolding below_monic_def by simp
+unfolding below_monic_def by simp
 
 lemma below_monic_inj:
   "below_monic (f :: 'a::cpo \<Rightarrow> 'b::cpo) \<Longrightarrow> inj f"
-  by (auto intro!: below_antisym injI elim: below_monicE)
+by (auto intro!: below_antisym injI elim: below_monicE)
+
+lemma below_monic_indexed:
+  assumes "below_monic_cfun f"
+  shows "below_monic (\<lambda>y i. f\<cdot>(y i))"
+by (metis (no_types, lifting) assms below_fun_def below_monicE below_monicI)
 
 lemma below_monic_ID [iff]:
   "below_monic_cfun ID"
-  by (rule below_monicI) simp
+by (rule below_monicI) simp
 
 lemma below_monic_cfcomp [iff]:
   "below_monic_cfun f \<Longrightarrow> below_monic_cfun (cfcomp\<cdot>f)"
@@ -183,23 +188,23 @@ by (rule below_monicI) (auto simp: fun_below_iff dest: below_monicE)
 
 lemma below_monic_cfcomp2 [iff]:
   "\<lbrakk> below_monic_cfun f; below_monic_cfun g \<rbrakk> \<Longrightarrow> below_monic_cfun (f oo g)"
-  by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
+by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
 
 lemma below_monic_pair [iff]:
   "\<lbrakk> below_monic_cfun f; below_monic_cfun g \<rbrakk> \<Longrightarrow> below_monic_cfun (\<Lambda> x. (f\<cdot>x, g\<cdot>x))"
-  by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
+by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
 
 lemma below_monic_pair_split [iff]:
   "\<lbrakk> below_monic_cfun f; below_monic_cfun g \<rbrakk> \<Longrightarrow> below_monic_cfun (\<Lambda> x. (f\<cdot>(fst x), g\<cdot>(snd x)))"
-  by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
+by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
 
 lemma below_monic_sinl [iff]:
   "below_monic_cfun sinl"
-  by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
+by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
 
 lemma below_monic_sinr [iff]:
   "below_monic_cfun sinr"
-  by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
+by (rule below_monicI) (auto simp: cfun_below_iff elim: below_monicE)
 
 lemma below_monic_chain_inv:
   fixes f :: "'a::cpo \<Rightarrow> 'b::cpo"

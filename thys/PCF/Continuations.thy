@@ -910,57 +910,47 @@ lemma Lemma1:
   "\<eta>: x \<mapsto> x' \<Longrightarrow> x = KMtoD\<cdot>x'"
 (*<*)
 proof -
-  { fix x x' i
-    have "\<eta>: ValD_copy_i i\<cdot>x \<mapsto> DtoKM_i i\<cdot>x"
-     and "\<eta>: x \<mapsto> x' \<Longrightarrow> ValD_copy_i i\<cdot>x = KMtoD_i i\<cdot>x'"
-    proof(induct i arbitrary: x x')
-      case 0
-      { case 1 thus ?case by simp }
-      { case 2 thus ?case by simp }
-    next
-      case (Suc i)
-      { case 1 show ?case
-          apply (cases x)
-            apply simp_all
-          apply (rule eta_F)
-          apply (rule theta_F)
-          using Suc
-          apply simp
-          done }
-      { case 2 thus ?case
-          apply (induct rule: eta_induct)
-            using OV
-            apply (simp_all add: cfun_eq_iff retraction_strict)
-          apply (clarsimp simp: cfun_eq_iff)
-          apply (erule theta_induct)
-          using Suc
-          apply simp
-          done }
-    qed }
-  note K = this
+  have K: "\<eta>: ValD_copy_i i\<cdot>x \<mapsto> DtoKM_i i\<cdot>x"
+   and L: "\<eta>: x \<mapsto> x' \<Longrightarrow> ValD_copy_i i\<cdot>x = KMtoD_i i\<cdot>x'" for x x' i
+  proof(induct i arbitrary: x x')
+    case (Suc i)
+    { case 1 show ?case
+        apply (cases x)
+          apply simp_all
+        apply (rule eta_F)
+        apply (rule theta_F)
+        using Suc
+        apply simp
+        done }
+    { case 2 thus ?case
+        apply (induct rule: eta_induct)
+          using OV
+          apply (simp_all add: cfun_eq_iff retraction_strict)
+        apply (clarsimp simp: cfun_eq_iff)
+        apply (erule theta_induct)
+        using Suc
+        apply simp
+        done }
+  qed simp_all
   let ?C1 = "\<lambda>i. (ValD_copy_i i, DtoKM_i i)"
   let ?P1 = "\<lambda>f. \<eta>: (fst f)\<cdot>x \<mapsto> (snd f)\<cdot>x"
   have "adm ?P1" by (rule adm_subst) simp_all
-  with K(1)
+  with K
   have "?P1 (\<Squnion>i. ValD_copy_i i, \<Squnion>i. DtoKM_i i)"
-    using admD[where P="?P1" and Y="?C1"]
-    using lub_prod[where S="?C1"]
-    apply simp
-    done
+    using admD[where P="?P1" and Y="?C1"] lub_prod[where S="?C1"] by simp
   moreover
   { fix x :: ValD
     fix x' :: "'o ValKM"
     let ?C2 = "\<lambda>i. (ValD_copy_i i, KMtoD_i i)"
     let ?P2 = "\<lambda>f. (fst f)\<cdot>x = (snd f)\<cdot>x'"
     have "adm (\<lambda>f. ?P2 f)" by simp
-    with K(2) have "\<eta>: x \<mapsto> x' \<Longrightarrow> ?P2 (\<Squnion>i. ValD_copy_i i, \<Squnion>i. KMtoD_i i)"
+    with L have "\<eta>: x \<mapsto> x' \<Longrightarrow> ?P2 (\<Squnion>i. ValD_copy_i i, \<Squnion>i. KMtoD_i i)"
       using admD[where P="?P2" and Y="?C2"] lub_prod[where S="?C2"]
       by simp }
   ultimately show
     "\<eta>: x \<mapsto> DtoKM\<cdot>x"
     "\<eta>: x \<mapsto> x' \<Longrightarrow> x = KMtoD\<cdot>x'"
-    apply (simp_all add: ValD_copy_lub_ID)
-    done
+      by (simp_all add: ValD_copy_lub_ID)
 qed
 
 (*>*)

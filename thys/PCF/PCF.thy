@@ -16,9 +16,6 @@ text\<open>
 
 \label{sec:directsem}
 
-FIXME remove all FIXMEs
-FIXME nuke AbsN unless some proof is interesting
-
 Using this machinery we can demonstrate some classical results about
 PCF \citep{Plotkin77}. We diverge from the traditional treatment by
 considering PCF as an untyped language and including both call-by-name
@@ -126,12 +123,12 @@ proof -
     fix i :: nat
     have "ValD_take i\<cdot>(ValD_copy\<cdot>(ValD_take i\<cdot>x)) = ValD_take i\<cdot>x"
     proof (induct i arbitrary: x)
-      case (Suc n) thus ?case
+      case (Suc n) then show ?case
         by (cases x) (subst fix_eq, simp add: cfun_map_def)+
     qed simp }
-  hence "\<And>x :: ValD. (\<Squnion>i. ValD_take i\<cdot>(ValD_copy\<cdot>(ValD_take i\<cdot>x))) = (\<Squnion>i. ValD_take i\<cdot>x)"
+  then have "\<And>x :: ValD. (\<Squnion>i. ValD_take i\<cdot>(ValD_copy\<cdot>(ValD_take i\<cdot>x))) = (\<Squnion>i. ValD_take i\<cdot>x)"
     by (blast intro: lub_eq)
-  thus ?thesis by (simp add: lub_distribs ValD.lub_take cfun_eq_iff)
+  then show ?thesis by (simp add: lub_distribs ValD.lub_take cfun_eq_iff)
 qed
 
 (*>*)
@@ -272,7 +269,7 @@ next
        apply (erule (1) below_trans)
       apply (simp add: monofun_cfun_arg cfun_below_iff)
       done }
-  thus "\<lbrakk>Ycomb\<rbrakk>\<rho> \<sqsubseteq> ValF\<cdot>fixD"
+  then show "\<lbrakk>Ycomb\<rbrakk>\<rho> \<sqsubseteq> ValF\<cdot>fixD"
     unfolding Ycomb_def fixD_def
     apply (clarsimp simp: cfun_below_iff)
     apply (case_tac x)
@@ -419,7 +416,7 @@ lemma lr_fundamental:
 (*<*)
 using \<rho>
 proof(induct M arbitrary: \<rho>)
-  case (Var v \<rho>) thus ?case by simp
+  case (Var v \<rho>) then show ?case by simp
 next
   case (App e1 e2 \<rho>)
   with lr lr_l2r(1)[where fs="\<lambda>j. \<lbrakk>e1\<rbrakk>(\<rho> j)" and xs="\<lambda>j. \<lbrakk>e2\<rbrakk>(\<rho> j)"]
@@ -525,7 +522,7 @@ using args
 proof(induct args rule: rev_induct)
   case Nil with f show ?case by simp
 next
-  case (snoc x xs) thus ?case
+  case (snoc x xs) then show ?case
     using lr_l2r(1)[OF _ _ lr, where fs="\<lambda>i. (foldl (\<lambda>f x. appF\<cdot>f\<cdot>(x i)) f xs)" and xs=x]
     by simp
 qed
@@ -566,10 +563,11 @@ text \<open>
 We show that parallel-or is not \<open>\<lambda>\<close>-definable following
 \citet{Sieber:1992} and \citet{DBLP:conf/mfps/Stoughton93}.
 
-Parallel-or is similar to lazy-or except that if the first argument is
-@{term "\<bottom>"} and the second one is @{term "ValTT"}, we get @{term
-"ValTT"} (and not @{term "\<bottom>"}). It is continuous and hence included in
-the @{typ "ValD"} domain.
+Parallel-or is similar to the familiar short-circuting or except that
+if the first argument is @{term "\<bottom>"} and the second one is
+@{term "ValTT"}, we get @{term "ValTT"} (and not @{term
+"\<bottom>"}). It is continuous and then have included in the @{typ
+"ValD"} domain.
 
 \<close>
 
@@ -722,18 +720,12 @@ lemma mono_POR_base_lf_rep:
 unfolding POR_base_lf_rep_def by (blast intro!: monoI)
 
 lemma adm_fn:
-  "adm (\<lambda>x. x \<in> fn_lf_rep r)"
+  shows "adm (\<lambda>x. x \<in> fn_lf_rep r)"
 unfolding fn_lf_rep_def
 using adm_below_monic_exists[OF _ below_monic_fun_K[where f="ValF"], where P="\<lambda>_. True", simplified]
 apply (clarsimp simp: split_def)
 apply (rule adm_below_monic_exists)
-apply (auto simp: cont_fun)
-
-(* FIXME lemma *)
-apply (rule below_monicI)
-apply (rule fun_belowI)
-apply (subst (asm) fun_below_iff)
-apply auto
+apply (auto simp: cont_fun below_monic_indexed)
 done
 
 (*
@@ -981,21 +973,21 @@ proof(rule monofunI)
   {
     assume efn: "\<exists>n. appF\<cdot>f\<cdot>n = ValTT"
     then obtain n where fn: "appF\<cdot>f\<cdot>n = ValTT" by blast
-    hence fbot: "appF\<cdot>f\<cdot>\<bottom> \<noteq> ValFF"
+    then have fbot: "appF\<cdot>f\<cdot>\<bottom> \<noteq> ValFF"
       using monofun_cfun_arg[where f="appF\<cdot>f" and x="\<bottom>" and y="n"] by fastforce
     from fg have "appF\<cdot>f\<cdot>n \<sqsubseteq> appF\<cdot>g\<cdot>n"
       using monofun_cfun_arg[OF fg, where f=appF]
       by (simp only: cfun_below_iff)
     with fn have gn: "appF\<cdot>g\<cdot>n = ValTT"
       using ValD.nchotomy[where y="appF\<cdot>g\<cdot>\<bottom>"] by simp
-    hence gbot: "appF\<cdot>g\<cdot>\<bottom> \<noteq> ValFF"
+    then have gbot: "appF\<cdot>g\<cdot>\<bottom> \<noteq> ValFF"
       using monofun_cfun_arg[where f="appF\<cdot>g" and x="\<bottom>" and y="n"] by fastforce
     from fn gn fbot gbot have ?goal apply (unfold plotkin_exists_def) by fastforce
   }
   moreover
   {
     assume fbot: "appF\<cdot>f\<cdot>\<bottom> \<noteq> ValFF" and efn: "\<not>(\<exists>n. appF\<cdot>f\<cdot>n = ValTT)"
-    hence ?goal by (simp add: plotkin_exists_def)
+    then have ?goal by (simp add: plotkin_exists_def)
   }
   ultimately show ?goal unfolding plotkin_exists_def by blast
 qed
@@ -1019,13 +1011,13 @@ proof (rule contI2[OF monofun_pe])
     then obtain i where Yi: "appF\<cdot>(Y i)\<cdot>\<bottom> = ValFF" by blast
     have "Y i \<sqsubseteq> (\<Squnion> i. Y i)"
       using is_ub_thelub[OF Y, where x=i] by simp
-    hence "appF\<cdot>(Y i)\<cdot>\<bottom> \<sqsubseteq> appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom>" by (fastforce intro: monofun_cfun)
+    then have "appF\<cdot>(Y i)\<cdot>\<bottom> \<sqsubseteq> appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom>" by (fastforce intro: monofun_cfun)
     with Yi have "ValFF \<sqsubseteq> appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom>" by simp
-    hence "appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom> = ValFF" using ValD.nchotomy[where y="appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom>"] by simp
+    then have "appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom> = ValFF" using ValD.nchotomy[where y="appF\<cdot>(\<Squnion> i. Y i)\<cdot>\<bottom>"] by simp
     moreover
     from Yi have "plotkin_exists (Y i) = ValFF" by (simp add: plotkin_exists_def)
-    hence "ValFF \<sqsubseteq> (\<Squnion> i. plotkin_exists (Y i))" using is_ub_thelub[OF peY, where x=i] by simp
-    hence "ValFF = (\<Squnion> i. plotkin_exists (Y i))" using ValD.nchotomy[where y="\<Squnion> i. plotkin_exists (Y i)"] by simp
+    then have "ValFF \<sqsubseteq> (\<Squnion> i. plotkin_exists (Y i))" using is_ub_thelub[OF peY, where x=i] by simp
+    then have "ValFF = (\<Squnion> i. plotkin_exists (Y i))" using ValD.nchotomy[where y="\<Squnion> i. plotkin_exists (Y i)"] by simp
     ultimately have ?goal by (simp add: plotkin_exists_def)
   }
   moreover
@@ -1044,8 +1036,8 @@ proof (rule contI2[OF monofun_pe])
       using monofun_cfun_arg[where f="appF\<cdot>(\<Squnion> i. Y i)" and x="\<bottom>" and y=j] by auto
     moreover
     from Yib Yij have "plotkin_exists (Y i) = ValTT" by (auto simp add: plotkin_exists_def)
-    hence "ValTT \<sqsubseteq> (\<Squnion> i. plotkin_exists (Y i))" using is_ub_thelub[OF peY, where x=i] by simp
-    hence "ValTT = (\<Squnion> i. plotkin_exists (Y i))" using ValD.nchotomy[where y="\<Squnion> i. plotkin_exists (Y i)"] by simp
+    then have "ValTT \<sqsubseteq> (\<Squnion> i. plotkin_exists (Y i))" using is_ub_thelub[OF peY, where x=i] by simp
+    then have "ValTT = (\<Squnion> i. plotkin_exists (Y i))" using ValD.nchotomy[where y="\<Squnion> i. plotkin_exists (Y i)"] by simp
     ultimately have ?goal by (simp add: plotkin_exists_def)
   }
   moreover
