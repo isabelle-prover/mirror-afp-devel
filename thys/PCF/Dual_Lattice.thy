@@ -3,17 +3,17 @@
                 More modifications by Brian Huffman
 *)
 
-section {* Lattice operations on dually-ordered types *}
+section \<open>Lattice operations on dually-ordered types\<close>
 
 theory Dual_Lattice
 imports Main
 begin
 
-text {*
+text \<open>
   The \emph{dual} of an ordered structure is an isomorphic copy of the
-  underlying type, with the @{text \<le>} relation defined as the inverse
+  underlying type, with the \<open>\<le>\<close> relation defined as the inverse
   of the original one.
-*}
+\<close>
 
 datatype 'a dual = dual 'a
 
@@ -34,7 +34,7 @@ lemma dual_comp_undual [simp]:
 lemma dual_eq_iff: "x = y \<longleftrightarrow> undual x = undual y"
   by (induct x, induct y, simp)
 
-subsection {* Pointwise ordering *}
+subsection \<open>Pointwise ordering\<close>
 
 instantiation dual :: (ord) ord
 begin
@@ -55,18 +55,16 @@ lemma undual_leq [iff?]: "(undual x' \<le> undual y') = (y' \<le> x')"
 lemma dual_leq [intro?, simp]: "(dual x \<le> dual y) = (y \<le> x)"
   by (simp add: less_eq_dual_def)
 
-(* FIXME maybe this isn't so useful. *)
-
-text {*
+text \<open>
   \medskip Functions @{term dual} and @{term undual} are inverse to
   each other; this entails the following fundamental properties.
-*}
+\<close>
 
-text {*
+text \<open>
   \medskip Since @{term dual} (and @{term undual}) are both injective
   and surjective, the basic logical connectives (equality,
   quantification etc.) are transferred as follows.
-*}
+\<close>
 
 lemma undual_equality [iff?]: "(undual x' = undual y') = (x' = y')"
   by (cases x', cases y') simp
@@ -123,14 +121,14 @@ instance dual :: (order) order
   by standard (auto simp: less_eq_dual_def undual_equality)
 
 
-subsection {* Binary infimum and supremum *}
+subsection \<open>Binary infimum and supremum\<close>
 
-text {*
+text \<open>
   The class of lattices is closed under formation of dual structures.
   This means that for any theorem of lattice theory, the dualized
   statement holds as well; this important fact simplifies many proofs
   of lattice theory.
-*}
+\<close>
 
 instantiation dual :: (semilattice_sup) semilattice_inf
 begin
@@ -156,10 +154,10 @@ end
 
 instance dual :: (lattice) lattice ..
 
-text {*
-  Apparently, the @{text \<sqinter>} and @{text \<squnion>} operations are dual to each
+text \<open>
+  Apparently, the \<open>\<sqinter>\<close> and \<open>\<squnion>\<close> operations are dual to each
   other.
-*}
+\<close>
 
 theorem dual_inf [intro?]: "dual (inf x y) = sup (dual x) (dual y)"
   unfolding sup_dual_def by simp
@@ -174,9 +172,9 @@ lemma undual_inf [simp]: "undual (inf x y) = sup (undual x) (undual y)"
 lemma undual_sup [simp]: "undual (sup x y) = inf (undual x) (undual y)"
   unfolding sup_dual_def by (rule undual_dual)
 
-text {*
+text \<open>
   Infimum and supremum are dual to each other.
-*}
+\<close>
 
 theorem dual_inf' [iff?]:
     "(inf (dual x) (dual y) = s) = (sup x y = undual s)"
@@ -191,7 +189,7 @@ instance dual :: (distrib_lattice) distrib_lattice
   by standard (simp add: inf_dual_def sup_dual_def inf_sup_distrib1)
 
 
-subsection {* Top and bottom elements *}
+subsection \<open>Top and bottom elements\<close>
 
 instantiation dual :: (order_top) order_bot
 begin
@@ -221,9 +219,9 @@ instance dual :: (bounded_lattice_bot) bounded_lattice_top ..
 
 instance dual :: (bounded_lattice) bounded_lattice ..
 
-text {*
-  Likewise are @{text \<bottom>} and @{text \<top>} duals of each other.
-*}
+text \<open>
+  Likewise are \<open>\<bottom>\<close> and \<open>\<top>\<close> duals of each other.
+\<close>
 
 theorem dual_bot [intro?, simp]: "dual bot = top"
   unfolding bot_dual_def top_dual_def by simp
@@ -259,16 +257,16 @@ definition
 
 instance
   by standard
-    (auto simp: dual_eq_iff sup_compl_top inf_compl_bot minus_dual_def)
+    (auto simp: dual_eq_iff minus_dual_def)
 
 end
 
-subsection {* Complete lattice operations *}
+subsection \<open>Complete lattice operations\<close>
 
-text {*
+text \<open>
   The class of complete lattices is closed under formation of dual
   structures.
-*}
+\<close>
 
 instantiation dual :: (complete_lattice) complete_lattice
 begin
@@ -293,10 +291,10 @@ lemma INF_dual_unfold:
   "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
   by (simp add: Inf_dual_def)
 
-text {*
-  Apparently, the @{text \<Sqinter>} and @{text \<Squnion>} operations are dual to each
+text \<open>
+  Apparently, the \<open>\<Sqinter>\<close> and \<open>\<Squnion>\<close> operations are dual to each
   other.
-*}
+\<close>
 
 theorem dual_Inf [intro?]: "dual (Inf A) = SUPREMUM A dual"
   by (simp add: Inf_dual_def Sup_dual_def)

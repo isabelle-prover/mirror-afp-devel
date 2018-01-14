@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-section {* Logical relations for definability in PCF *}
+section \<open>Logical relations for definability in PCF\<close>
 (*<*)
 
 theory PCF
@@ -12,9 +12,12 @@ imports
 begin
 
 (*>*)
-text{*
+text\<open>
 
 \label{sec:directsem}
+
+FIXME remove all FIXMEs
+FIXME nuke AbsN unless some proof is interesting
 
 Using this machinery we can demonstrate some classical results about
 PCF \citep{Plotkin77}. We diverge from the traditional treatment by
@@ -27,7 +30,7 @@ making the fixed point operator a binding construct.
 We model the syntax of PCF as a HOL datatype, where variables have
 names drawn from the naturals:
 
-*}
+\<close>
 
 type_synonym var = nat
 
@@ -46,23 +49,23 @@ datatype expr =
   | Pred expr
   | IsZero expr
 
-subsection{* Direct denotational semantics *}
+subsection\<open>Direct denotational semantics\<close>
 
-text{*
+text\<open>
 
 \label{sec:densem}
 
 We give this language a direct denotational semantics by interpreting
 it into a domain of values.
 
-*}
+\<close>
 
 domain ValD =
    ValF (lazy appF :: "ValD \<rightarrow> ValD")
  | ValTT | ValFF
  | ValN (lazy "nat")
 
-text{*
+text\<open>
 
 The \textbf{lazy} keyword means that the @{term "ValF"} constructor is
 lifted, i.e. @{term "ValF\<cdot>\<bottom> \<noteq> \<bottom>"}, which further means that @{term
@@ -70,7 +73,7 @@ lifted, i.e. @{term "ValF\<cdot>\<bottom> \<noteq> \<bottom>"}, which further me
 
 The naturals are discretely ordered.
 
-*}
+\<close>
 (*<*)
 
 lemma ValD_case_ID [simp]:
@@ -89,12 +92,12 @@ lemma below_monic_ValN [iff]:
   by (rule below_monicI) simp
 
 (*>*)
-text{*
+text\<open>
 
 The minimal invariant for @{typ "ValD"} is straightforward; the
 function @{term "cfun_map\<cdot>f\<cdot>g\<cdot>h"} denotes @{term "g oo h oo f"}.
 
-*}
+\<close>
 
 fixrec
   ValD_copy_rec :: "(ValD \<rightarrow> ValD) \<rightarrow> (ValD \<rightarrow> ValD)"
@@ -132,12 +135,12 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We interpret the PCF constants in the obvious ways. ``Ill-typed'' uses
 of these combinators are mapped to @{term "\<bottom>"}.
 
-*}
+\<close>
 
 definition cond :: "ValD \<rightarrow> ValD \<rightarrow> ValD \<rightarrow> ValD" where
   "cond \<equiv> \<Lambda> i t e. case i of ValF\<cdot>f \<Rightarrow> \<bottom> | ValTT \<Rightarrow> t | ValFF \<Rightarrow> e | ValN\<cdot>n \<Rightarrow> \<bottom>"
@@ -151,12 +154,12 @@ definition pred :: "ValD \<rightarrow> ValD" where
 definition isZero :: "ValD \<rightarrow> ValD" where
   "isZero \<equiv> \<Lambda> (ValN\<cdot>n). if n = 0 then ValTT else ValFF"
 
-text{*
+text\<open>
 
 We model environments simply as continuous functions from variable
 names to values.
 
-*}
+\<close>
 
 type_synonym Var = "var"
 type_synonym 'a Env = "Var \<rightarrow> 'a"
@@ -177,12 +180,12 @@ lemma env_ext_neq: "v \<noteq> v' \<Longrightarrow> env_ext\<cdot>v\<cdot>x\<cdo
 lemmas env_ext_simps[simp] = env_ext_same env_ext_neq
 
 (*>*)
-text{*
+text\<open>
 
 The semantics is given by a function defined by primitive recursion
 over the syntax.
 
-*}
+\<close>
 
 type_synonym EnvD = "ValD Env"
 
@@ -207,23 +210,23 @@ abbreviation eval' :: "expr \<Rightarrow> ValD Env \<Rightarrow> ValD" ("\<lbrak
   "eval' M \<rho> \<equiv> evalD M\<cdot>\<rho>"
 
 
-subsection{* The Y Combinator *}
+subsection\<open>The Y Combinator\<close>
 
-text{*
+text\<open>
 
-We can shown the Y combinator is the least fixed point operator Using
+We can shown the Y combinator is the least fixed point operator using
 just the minimal invariant.  In other words, @{term "fix"} is
 definable in untyped PCF minus the @{term "Fix"} construct.
 
 This is Example~3.6 from \citet{PittsAM:relpod}. He attributes the
 proof to Plotkin.
 
-These two functions are @{text "\<Delta> \<equiv> \<lambda>f x. f (x x)"} and @{text "Y \<equiv>
-\<lambda>f. (\<Delta> f) (\<Delta> f)"}.
+These two functions are \<open>\<Delta> \<equiv> \<lambda>f x. f (x x)\<close> and \<open>Y \<equiv>
+\<lambda>f. (\<Delta> f) (\<Delta> f)\<close>.
 
 Note the numbers here are names, not de Bruijn indices.
 
-*}
+\<close>
 
 definition Y_delta :: expr where
   "Y_delta \<equiv> AbsN 0 (AbsN 1 (App (Var 0) (App (Var 1) (Var 1))))"
@@ -283,21 +286,21 @@ qed
 
 (*>*)
 
-subsection{* Logical relations for definability *}
+subsection\<open>Logical relations for definability\<close>
 
-text{*
+text\<open>
 
 \label{sec:pcfdefinability}
 
 An element of @{typ "ValD"} is definable if there is an expression
 that denotes it.
 
-*}
+\<close>
 
 definition definable :: "ValD \<Rightarrow> bool" where
   "definable d \<equiv> \<exists>M. \<lbrakk>M\<rbrakk>env_empty = d"
 
-text{*
+text\<open>
 
 A classical result about PCF is that while the denotational semantics
 is \emph{adequate}, as we show in \S\ref{sec:opsem}, it is not
@@ -315,7 +318,7 @@ over @{typ "ValD"} that is closed under continuous functions of type
 @{typ "ValD \<rightarrow> ValD"}. This is complicated by the @{term "ValF"} tag
 and having strict function abstraction.
 
-*}
+\<close>
 
 definition
   logical_relation :: "('i::type \<Rightarrow> ValD) set \<Rightarrow> bool"
@@ -363,12 +366,12 @@ lemma lr_r2l_strict:
   unfolding logical_relation_def by (simp add: cfcomp1)
 
 (*>*)
-text{*
+text\<open>
 
 In the context of PCF these relations also need to respect the
 constants.
 
-*}
+\<close>
 
 definition
   PCF_consts_rel :: "('i::type \<Rightarrow> ValD) set \<Rightarrow> bool"
@@ -395,19 +398,19 @@ lemma PCF_consts_relI:
 unfolding PCF_consts_rel_def by blast
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 abbreviation
   "PCF_lr R \<equiv> adm (\<lambda>x. x \<in> R) \<and> logical_relation R \<and> PCF_consts_rel R"
 
-text{*
+text\<open>
 
 The fundamental property of logical relations states that all PCF
 expressions satisfy all PCF logical relations. This result is
 essentially due to \citet{Plotkin:1973}.  The proof is by a
 straightforward induction on the expression @{term "M"}.
 
-*}
+\<close>
 
 lemma lr_fundamental:
   assumes lr: "PCF_lr R"
@@ -489,8 +492,6 @@ next
   case (IsZero e \<rho>)
   with lr lr_l2r(7)[where xs="\<lambda>j. \<lbrakk>e\<rbrakk>(\<rho> j)"]
   show ?case by simp
-
-(* FIXME weirdness *)
 next
   case Diverge with lr show ?case
     apply simp
@@ -499,7 +500,7 @@ next
 qed (insert lr, simp_all)
 (*>*)
 
-text{*
+text\<open>
 
 We can use this result to show that there is no PCF term that maps the
 vector @{term "args \<in> R"} to @{term "result \<notin> R"} for some logical
@@ -507,7 +508,7 @@ relation @{term "R"}. If we further show that there is a function
 @{term "f"} in @{term "ValD"} such that @{term "f args = result"} then
 we can conclude that @{term "f"} is not definable.
 
-*}
+\<close>
 
 abbreviation
   appFLv :: "ValD \<Rightarrow> ('i::type \<Rightarrow> ValD) list \<Rightarrow> ('i \<Rightarrow> ValD)"
@@ -525,14 +526,12 @@ proof(induct args rule: rev_induct)
   case Nil with f show ?case by simp
 next
   case (snoc x xs) thus ?case
-    apply simp
     using lr_l2r(1)[OF _ _ lr, where fs="\<lambda>i. (foldl (\<lambda>f x. appF\<cdot>f\<cdot>(x i)) f xs)" and xs=x]
-    apply simp
-    done
+    by simp
 qed
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 corollary not_definable:
   fixes R :: "('i::type \<Rightarrow> ValD) set"
@@ -558,13 +557,13 @@ proof
 qed
 (*>*)
 
-subsection{* Parallel OR is not definable *}
+subsection\<open>Parallel OR is not definable\<close>
 
-text {*
+text \<open>
 
 \label{sec:por}
 
-We show that parallel-or is not @{text "\<lambda>"}-definable following
+We show that parallel-or is not \<open>\<lambda>\<close>-definable following
 \citet{Sieber:1992} and \citet{DBLP:conf/mfps/Stoughton93}.
 
 Parallel-or is similar to lazy-or except that if the first argument is
@@ -572,7 +571,7 @@ Parallel-or is similar to lazy-or except that if the first argument is
 "ValTT"} (and not @{term "\<bottom>"}). It is continuous and hence included in
 the @{typ "ValD"} domain.
 
-*}
+\<close>
 
 definition por :: "ValD \<Rightarrow> ValD \<Rightarrow> ValD" ("_ por _" [31,30] 30) where
   "x por y \<equiv>
@@ -580,7 +579,7 @@ definition por :: "ValD \<Rightarrow> ValD \<Rightarrow> ValD" ("_ por _" [31,30
        else if y = ValTT then ValTT
               else if (x = ValFF \<and> y = ValFF) then ValFF else \<bottom>"
 
-text{* The defining properties of parallel-or. *}
+text\<open>The defining properties of parallel-or.\<close>
 
 lemma POR_simps [simp]:
   "(ValTT por y) = ValTT"
@@ -604,11 +603,11 @@ lemma POR_simps [simp]:
   unfolding por_def by simp_all
 (*<*)
 
-text{*
+text\<open>
 
 We show that parallel-or is a continuous function.
 
-*}
+\<close>
 
 lemma POR_sym: "(x por y) = (y por x)"
   unfolding por_def by simp
@@ -662,23 +661,19 @@ proof -
   have A: "\<And>f y. cont f \<Longrightarrow> cont (\<lambda>x. f x por y)"
     by (rule cont_apply) (simp_all add: cont_por1)
   from A[OF f] A[OF g] show ?thesis
-    apply -
-    apply (subst (asm) POR_sym) back
-    apply (rule cont_apply[OF f])
-    apply (simp_all add: cont_por1)
-    done
+    by (auto simp: cont_por1 POR_sym intro: cont_apply[OF f])
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We need three-element vectors.
 
-*}
+\<close>
 
 datatype Three = One | Two | Three
 
-text{*
+text\<open>
 
 The standard logical relation @{term "R"} that demonstrates POR is not
 definable is:
@@ -688,10 +683,10 @@ definable is:
 That POR satisfies this relation can be seen from its truth table (see
 below).
 
-Note we restrict the @{text "x = y = z"} clause to non-function
+Note we restrict the \<open>x = y = z\<close> clause to non-function
 values. Adding functions breaks the ``logical relations'' property.
 
-*}
+\<close>
 
 definition
   POR_base_lf_rep :: "(Three \<Rightarrow> ValD) lf_rep"
@@ -702,13 +697,13 @@ where
    \<union> { f . f One = \<bottom> } \<comment> \<open>\<open>x = \<bottom>\<close>\<close>
    \<union> { f . f Two = \<bottom> } \<comment> \<open>\<open>y = \<bottom>\<close>\<close>"
 
-text{*
+text\<open>
 
 We close this relation with respect to continuous functions. This
 functor yields an admissible relation for all @{term "r"} and is
 monotonic.
 
-*}
+\<close>
 
 definition
   fn_lf_rep :: "('i::type \<Rightarrow> ValD) lf_rep"
@@ -750,7 +745,7 @@ lemma mono_fn_lf_rep:
   by (rule monoI) (fastforce simp: fn_lf_rep_def unlr_leq[symmetric] undual_leq[symmetric])
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 definition POR_lf_rep :: "(Three \<Rightarrow> ValD) lf_rep" where
   "POR_lf_rep R \<equiv> POR_base_lf_rep R \<union> fn_lf_rep R"
@@ -780,13 +775,13 @@ lemma mono_POR_lf:
   done
 
 (*>*)
-text{*
+text\<open>
 
 Again it yields an admissible relation and is monotonic.
 
 We need to show the functor respects the minimal invariant.
 
-*}
+\<close>
 
 lemma min_inv_POR_lf:
   assumes "eRSV e R' S'"
@@ -822,10 +817,6 @@ lemma PORI [intro, simp]:
   by (subst POR.delta_sol, simp, subst POR_lf_rep_def,
       fastforce simp: POR_base_lf_rep_def fn_lf_rep_def eta_cfun cfcomp1)+
 
-lemma POR_fun_constI:
-  "\<lbrakk> \<And>xs. xs \<in> unlr POR.delta \<Longrightarrow> (\<lambda>j. f\<cdot>(xs j)) \<in> unlr POR.delta \<rbrakk> \<Longrightarrow> (\<lambda>i. ValF\<cdot>f) \<in> unlr POR.delta"
-  using PORI(6)[where fs="\<lambda>_. f"] by simp
-
 lemma PORE:
   "\<lbrakk> a \<in> unlr POR.delta;
      (a = (\<lambda>i. ValTT) \<Longrightarrow> P);
@@ -845,11 +836,7 @@ lemma POR_strict_appI:
   assumes "xs \<in> unlr POR.delta"
   assumes "\<And>xs. xs \<in> unlr POR.delta \<Longrightarrow> (\<lambda>j. fs j\<cdot>(xs j)) \<in> unlr POR.delta"
   shows "(\<lambda>j. strictify\<cdot>(fs j)\<cdot>(xs j)) \<in> unlr POR.delta"
-using assms
-apply -
-apply (erule PORE)
-apply simp_all
-done
+using assms by - (erule PORE; simp)
 
 lemma logical_relation_POR:
   "logical_relation (unlr POR.delta)"
@@ -877,24 +864,24 @@ lemma PCF_consts_rel_POR:
   by (rule PCF_consts_relI) simp_all
 
 (*>*)
-text{*
+text\<open>
 
 We can show that the solution satisfies the expectations of the
 fundamental theorem @{thm [source] "lr_fundamental"}.
 
-*}
+\<close>
 
 lemma PCF_lr_POR_delta: "PCF_lr (unlr POR.delta)"
 (*<*)
   using logical_relation_POR PCF_consts_rel_POR by fastforce
 (*>*)
-text{*
+text\<open>
 
 This is the truth-table for POR rendered as a vector: we seek a
 function that simultaneously maps the two argument vectors to the
 result.
 
-*}
+\<close>
 
 definition POR_arg1_rel where
   "POR_arg1_rel \<equiv> \<lambda>i. case i of One \<Rightarrow> ValTT | Two \<Rightarrow> \<bottom> | Three \<Rightarrow> ValFF"
@@ -920,22 +907,22 @@ lemma lr_POR_result_rel: "POR_result_rel \<notin> unlr POR.delta"
   done
 
 (*>*)
-text{*
+text\<open>
 
 Parallel-or satisfies these tests:
 
-*}
+\<close>
 
 theorem POR_sat:
   "appFLv (ValF\<cdot>(\<Lambda> x. ValF\<cdot>(\<Lambda> y. x por y))) [POR_arg1_rel, POR_arg2_rel] = POR_result_rel"
   unfolding POR_arg1_rel_def POR_arg2_rel_def POR_result_rel_def
   by (simp add: fun_eq_iff split: Three.splits)
 
-text{*
+text\<open>
 
 ... but is not PCF-definable:
 
-*}
+\<close>
 
 theorem POR_is_not_definable:
   shows "\<not>(\<exists>f. definable f \<and> appFLv f [POR_arg1_rel, POR_arg2_rel] = POR_result_rel)"
@@ -945,9 +932,9 @@ theorem POR_is_not_definable:
   done
 
 
-subsection{* Plotkin's existential quantifier *}
+subsection\<open>Plotkin's existential quantifier\<close>
 
-text{*
+text\<open>
 
 We can also show that the existential quantifier of
 \citet[\S5]{Plotkin77} is not PCF-definable using logical relations.
@@ -957,7 +944,7 @@ maps any value to @{term "ValTT"} then @{term "plotkin_exists"} yields
 @{term "ValTT"}. It may be more plausible to test @{term "f"} on
 numerals only.
 
-*}
+\<close>
 
 definition plotkin_exists :: "ValD \<Rightarrow> ValD" where
   "plotkin_exists f \<equiv>
@@ -1014,11 +1001,11 @@ proof(rule monofunI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We can show this function is continuous.
 
-*}
+\<close>
 
 lemma cont_pe [cont2cont, simp]: "cont plotkin_exists"
 (*<*)
@@ -1066,11 +1053,9 @@ proof (rule contI2[OF monofun_pe])
     assume nFF: "\<not>(\<exists>i. appF\<cdot>(Y i)\<cdot>\<bottom> = ValFF)" and nTT: "\<not>(\<exists>i j. appF\<cdot>(Y i)\<cdot>j = ValTT)"
     with Y have ?goal
       unfolding plotkin_exists_def
-      apply (simp add: contlub_cfun_arg contlub_cfun_fun)
       using compact_below_lub_iff[OF ValD.compacts(2)]
             compact_below_lub_iff[OF ValD.compacts(3)]
-      apply auto
-      done
+      by (simp add: contlub_cfun_arg contlub_cfun_fun)
   }
   ultimately show ?goal by blast
 qed
@@ -1079,13 +1064,13 @@ lemma cont_pe2[cont2cont, simp]: "cont f \<Longrightarrow> cont (\<lambda>x. plo
   by (rule cont_apply) simp_all
 
 (*>*)
-text{*
+text\<open>
 
 Again we construct argument and result test vectors such that @{term
 "plotkin_exists"} satisfies these tests but no PCF-definable term
 does.
 
-*}
+\<close>
 
 definition PE_arg_rel where
   "PE_arg_rel \<equiv> \<lambda>i. ValF\<cdot>(case i of
@@ -1095,7 +1080,7 @@ definition PE_arg_rel where
 definition PE_result_rel where
   "PE_result_rel \<equiv> \<lambda>i. case i of 0 \<Rightarrow> ValFF | Suc n \<Rightarrow> ValTT"
 
-text{*
+text\<open>
 
 Note that unlike the POR case the argument relation does not
 characterise PE: we don't treat functions that return @{term "ValTT"}s
@@ -1103,19 +1088,19 @@ and @{term "ValFF"}s.
 
 The Plotkin existential satisfies these tests:
 
-*}
+\<close>
 
 theorem pe_sat:
   "appFLv (ValF\<cdot>(\<Lambda> x. plotkin_exists x)) [PE_arg_rel] = PE_result_rel"
   unfolding PE_arg_rel_def PE_result_rel_def
   by (clarsimp simp: fun_eq_iff split: nat.splits)
 
-text{*
+text\<open>
 
 As for POR, the difference between the two vectors is that the
 argument can diverge but not the result.
 
-*}
+\<close>
 
 definition PE_base_lf_rep :: "(nat \<Rightarrow> ValD) lf_rep" where
   "PE_base_lf_rep \<equiv> \<lambda>(mR, pR).
@@ -1137,12 +1122,12 @@ unfolding PE_base_lf_rep_def
 by (blast intro!: monoI)
 
 (*>*)
-text{*
+text\<open>
 
 Again we close this under the function space, and show that it is
 admissible, monotonic and respects the minimal invariant.
 
-*}
+\<close>
 
 definition PE_lf_rep :: "(nat \<Rightarrow> ValD) lf_rep" where
   "PE_lf_rep R \<equiv> PE_base_lf_rep R \<union> fn_lf_rep R"
@@ -1260,11 +1245,11 @@ lemma PCF_consts_rel_PE:
   "PCF_consts_rel (unlr PE.delta)"
   by (rule PCF_consts_relI) simp_all
 (*>*)
-text{*
+text\<open>
 
 The solution satisfies the expectations of the fundamental theorem:
 
-*}
+\<close>
 
 lemma PCF_lr_PE_delta: "PCF_lr (unlr PE.delta)"
 (*<*)
@@ -1301,21 +1286,21 @@ apply (rule not_definable[where R="unlr PE.delta"])
 done
 (*>*)
 
-subsection{* Concluding remarks *}
+subsection\<open>Concluding remarks\<close>
 
-text{*
+text\<open>
 
-These techniques could be used to show that Haskell's @{text "seq"}
+These techniques could be used to show that Haskell's \<open>seq\<close>
 operation is not PCF-definable. (It is definable for each base
 ``type'' separately, and requires some care on function values.) If we
 added an (unlifted) product type then it should be provable that
-parallel evaluation is required to support @{text "seq"} on these
-objects (given @{text "seq"} on all other objects). (See
+parallel evaluation is required to support \<open>seq\<close> on these
+objects (given \<open>seq\<close> on all other objects). (See
 \citet[\S5.4]{DBLP:conf/hopl/HudakHJW07} and sundry posts to the
 internet by Lennart Augustsson.) This may be difficult to do plausibly
 without adding a type system.
 
-*}
+\<close>
 
 (*<*)
 

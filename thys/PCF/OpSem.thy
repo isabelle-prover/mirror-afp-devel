@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-section {* Logical relations for computational adequacy *}
+section \<open>Logical relations for computational adequacy\<close>
 (*<*)
 
 theory OpSem
@@ -11,8 +11,14 @@ imports
   PCF
 begin
 
+(* FIXME
+
+Show Sangiorgi's divergence results. Convergence should be simply the
+big-step semantics.
+
+*)
 (*>*)
-text{*
+text\<open>
 
 \label{sec:opsem}
 
@@ -20,22 +26,22 @@ We relate the denotational semantics for PCF of \S\ref{sec:densem} to
 a \emph{big-step} (or \emph{natural}) operational semantics. This
 follows \citet{DBLP:conf/mfps/Pitts93}.
 
-*}
+\<close>
 
-subsection{* Direct semantics using de Bruijn notation *}
+subsection\<open>Direct semantics using de Bruijn notation\<close>
 
-text{*
+text\<open>
 
 \label{sec:directsem_db}
 
 In contrast to \S\ref{sec:directsem} we must be more careful in our
-treatment of @{text "\<alpha>"}-equivalent terms, as we would like our
+treatment of \<open>\<alpha>\<close>-equivalent terms, as we would like our
 operational semantics to identify of all these. To that end we adopt
 de Bruijn notation, adapting the work of
 \citet{DBLP:journals/jar/Nipkow01}, and show that it is suitably
 equivalent to our original syntactic story.
 
-*}
+\<close>
 
 datatype db =
     DBVar var
@@ -52,14 +58,14 @@ datatype db =
   | DBPred db
   | DBIsZero db
 
-text{*
+text\<open>
 
 Nipkow et al's substitution operation is defined for arbitrary open
 terms. In our case we only substitute closed terms into terms where
 only the variable @{term "0"} may be free, and while we could develop
 a simpler account, we retain the traditional one.
 
-*}
+\<close>
 
 fun
   lift :: "db \<Rightarrow> nat \<Rightarrow> db"
@@ -133,13 +139,13 @@ lemma subst_subst:
              split: nat.split)
 
 (*>*)
-text{*
+text\<open>
 
 We elide the standard lemmas about these operations.
 
 A variable is free in a de Bruijn term in the standard way.
 
-*}
+\<close>
 
 fun
   freedb :: "db \<Rightarrow> var \<Rightarrow> bool"
@@ -164,64 +170,31 @@ lemma free_lift [simp]:
   by (induct t arbitrary: i k) (auto cong: conj_cong)
 
 lemma free_subst [simp]:
-    "freedb (s<t/k>) i \<longleftrightarrow> (freedb s k \<and> freedb t i \<or> freedb s (if i < k then i else i + 1))"
-  apply (induct s arbitrary: i k t)
-    prefer 2
-    apply simp
-    apply blast
-   prefer 2
-   apply simp
-  apply (simp add: diff_Suc subst_Var split: nat.split)
-  apply auto
-  done
+  "freedb (s<t/k>) i \<longleftrightarrow> (freedb s k \<and> freedb t i \<or> freedb s (if i < k then i else i + 1))"
+by (induct s arbitrary: i k t) (auto simp:  subst_Var split: nat.split)
 
-theorem lift_subst_dummy: "\<not> freedb s i \<Longrightarrow> lift (s<dummy/i>) i = s"
-  by (induct s arbitrary: i dummy) (simp_all add: not_less_eq if_not_P)
+theorem lift_subst_dummy:
+  "\<not> freedb s i \<Longrightarrow> lift (s<dummy/i>) i = s"
+by (induct s arbitrary: i dummy) (simp_all add: not_less_eq if_not_P)
 
 lemma closed_lift:
   "\<forall>v. freedb e v \<longrightarrow> v < k \<Longrightarrow> lift e k = e"
-  apply (induct e arbitrary: k)
-  apply simp_all
-  apply (metis less_Suc_eq_0_disj nat.exhaust)+
-  done
-
-(* FIXME this is terrible *)
+by (induct e arbitrary: k) (simp; metis less_Suc_eq_0_disj nat.exhaust)+
 
 lemma closed_subst:
-  "\<forall>v. freedb e v \<longrightarrow> v < k \<Longrightarrow> e<s/k> = e"
-  apply (induct e arbitrary: s k)
-  apply simp_all
-
-  apply (drule_tac x="lift s 0" in meta_spec)
-  apply (drule_tac x="Suc k" in meta_spec)
-  apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-   apply blast
-  apply clarsimp
-  apply (case_tac v)
-   apply simp
-  apply simp
-
-  apply (drule_tac x="lift s 0" in meta_spec)
-  apply (drule_tac x="Suc k" in meta_spec)
-  apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-   apply blast
-  apply clarsimp
-  apply (case_tac v)
-   apply simp
-  apply simp
-
-  apply (drule_tac x="lift s 0" in meta_spec)
-  apply (drule_tac x="Suc k" in meta_spec)
-  apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-   apply blast
-  apply clarsimp
-  apply (case_tac v)
-   apply simp
-  apply simp
-  done
+  assumes "\<forall>v. freedb e v \<longrightarrow> v < k"
+  shows "e<s/k> = e"
+using assms
+proof(induct e arbitrary: s k)
+  case (DBAbsN e) then show ?case by simp (metis lessE not_less_eq)
+next
+  case (DBAbsV e) then show ?case by simp (metis lessE not_less_eq)
+next
+  case (DBFix e) then show ?case by simp (metis lessE not_less_eq)
+qed simp_all
 
 (*>*)
-text{* Programs are closed expressions. *}
+text\<open>Programs are closed expressions.\<close>
 
 definition closed :: "db \<Rightarrow> bool" where
   "closed e \<equiv> \<forall>i. \<not> freedb e i"
@@ -253,13 +226,13 @@ lemmas closed_invs [iff] =
   closed_binders
 
 (*>*)
-text{*
+text\<open>
 
 The direct denotational semantics is almost identical to that given in
 \S\ref{sec:densem}, apart from this change in the representation of
 environments.
 
-*}
+\<close>
 
 definition env_empty_db :: "'a Env" where
   "env_empty_db \<equiv> \<bottom>"
@@ -278,7 +251,7 @@ lemmas env_ext_db_simps [simp] =
   env_ext_same_db
   env_ext_neq_db
 (*>*)
-text{**}
+text\<open>\<close>
 
 primrec
   evalDdb :: "db \<Rightarrow> ValD Env \<rightarrow> ValD"
@@ -313,16 +286,16 @@ next
     from DBAbsN.hyps[where \<rho>="env_ext_db\<cdot>x\<cdot>\<rho>" and \<rho>'="env_ext_db\<cdot>x\<cdot>\<rho>'"] DBAbsN.prems
     have "evalDdb e\<cdot>(env_ext_db\<cdot>x\<cdot>\<rho>) = evalDdb e\<cdot>(env_ext_db\<cdot>x\<cdot>\<rho>')"
       by (simp add: env_ext_db_def split: nat.splits) }
-  thus ?case by simp
+  then show ?case by simp
 next
   case (DBAbsV e \<rho> \<rho>')
   { fix x
     from DBAbsV.hyps[where \<rho>="env_ext_db\<cdot>x\<cdot>\<rho>" and \<rho>'="env_ext_db\<cdot>x\<cdot>\<rho>'"] DBAbsV.prems
     have "evalDdb e\<cdot>(env_ext_db\<cdot>x\<cdot>\<rho>) = evalDdb e\<cdot>(env_ext_db\<cdot>x\<cdot>\<rho>')"
       by (simp add: env_ext_db_def split: nat.splits) }
-  thus ?case by simp
+  then show ?case by simp
 next
-  case (DBFix e \<rho> \<rho>') thus ?case
+  case (DBFix e \<rho> \<rho>') then show ?case
     by simp (rule parallel_fix_ind, simp_all add: env_ext_db_def split: nat.splits)
 next
   case (DBCond i t e \<rho> \<rho>')
@@ -344,7 +317,7 @@ lemma evalDdb_env_closed:
 by (rule evalDdb_env_cong) (simp add: assms[unfolded closed_def])
 
 (*>*)
-text{*
+text\<open>
 
 We show that our direct semantics using de Bruijn notation coincides
 with the evaluator of \S\ref{sec:directsem} by translating between the
@@ -354,7 +327,7 @@ Firstly we show how to translate an expression using names into a
 nameless term. The following function finds the first mention of a
 variable in a list of variables.
 
-*}
+\<close>
 
 primrec index :: "var list \<Rightarrow> var \<Rightarrow> nat \<Rightarrow> nat" where
   "index [] v n = n"
@@ -377,14 +350,14 @@ where
 | "transdb (Pred e) \<Gamma> = DBPred (transdb e \<Gamma>)"
 | "transdb (IsZero e) \<Gamma> = DBIsZero (transdb e \<Gamma>)"
 
-text{*
+text\<open>
 
 This semantics corresponds with the direct semantics for named
 expressions.
 
-*}
+\<close>
 (*<*)
-text{* The free variables of an expression using names. *}
+text\<open>The free variables of an expression using names.\<close>
 
 fun
   free :: "expr \<Rightarrow> var list"
@@ -410,13 +383,13 @@ lemma evalD_evalDdb_open:
   shows "\<lbrakk>e\<rbrakk>\<rho> = evalDdb (transdb e \<Gamma>)\<cdot>\<rho>'"
 using assms
 proof(induct e arbitrary: \<Gamma> \<rho> \<rho>')
-  case AbsN thus ?case
+  case AbsN then show ?case
     apply (clarsimp simp: cfun_eq_iff)
     apply (subst AbsN.hyps)
     apply (auto simp: cfun_eq_iff env_ext_db_def index_Suc)
     done
 next
-  case AbsV thus ?case
+  case AbsV then show ?case
     apply (clarsimp simp: cfun_eq_iff)
     apply (case_tac "x=\<bottom>")
      apply simp
@@ -425,7 +398,7 @@ next
     apply (auto simp: cfun_eq_iff env_ext_db_def index_Suc)
     done
 next
-  case Fix thus ?case
+  case Fix then show ?case
     apply (clarsimp simp: cfun_eq_iff)
     apply (rule parallel_fix_ind)
       apply simp
@@ -442,11 +415,11 @@ lemma evalD_evalDdb:
   shows "\<lbrakk>e\<rbrakk>\<rho> = evalDdb (transdb e [])\<cdot>\<rho>"
   using assms by (simp add: evalD_evalDdb_open)
 
-text{*
+text\<open>
 
 Conversely, all de Bruijn expressions have named equivalents.
 
-*}
+\<close>
 
 primrec
   transdb_inv :: "db \<Rightarrow> (var \<Rightarrow> var) \<Rightarrow> var \<Rightarrow> var \<Rightarrow> expr"
@@ -476,9 +449,9 @@ lemma transdb_inv_open:
   shows "transdb (transdb_inv e \<Gamma> c k) \<Gamma>' = e"
 using assms
 proof(induct e arbitrary: \<Gamma> \<Gamma>' k)
-  case DBVar thus ?case by (simp split: if_splits)
+  case DBVar then show ?case by (simp split: if_splits)
 next
-  case (DBApp e1 e2 \<Gamma> \<Gamma>') thus ?case
+  case (DBApp e1 e2 \<Gamma> \<Gamma>') then show ?case
     apply -
     apply (drule_tac x=k in meta_spec)+
     apply (drule_tac x=\<Gamma> in meta_spec, drule_tac x=\<Gamma>' in meta_spec)+
@@ -542,7 +515,7 @@ next
     apply (auto simp: index_Suc)
     done
 next
-  case (DBCond i t e \<Gamma> \<Gamma>' k) thus ?case
+  case (DBCond i t e \<Gamma> \<Gamma>' k) then show ?case
     apply -
     apply (drule_tac x=k in meta_spec)+
     apply (drule_tac x=\<Gamma> in meta_spec, drule_tac x=\<Gamma>' in meta_spec)+
@@ -551,7 +524,7 @@ next
 qed simp_all
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma transdb_inv:
   assumes "closed e"
@@ -566,7 +539,7 @@ lemma closed_transdb_inv_aux:
   shows "i \<in> set (free (transdb_inv e \<Gamma> 0 k)) \<longleftrightarrow> (i < k \<and> freedb e (k - i - 1))"
 using assms
 proof(induct e arbitrary: \<Gamma> k)
-  case (DBAbsN e \<Gamma> k) thus ?case
+  case (DBAbsN e \<Gamma> k) then show ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
     apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
@@ -587,7 +560,7 @@ proof(induct e arbitrary: \<Gamma> k)
     apply simp
     done
 next
-  case (DBAbsV e \<Gamma> k) thus ?case
+  case (DBAbsV e \<Gamma> k) then show ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
     apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
@@ -608,7 +581,7 @@ next
     apply simp
     done
 next
-  case (DBFix e \<Gamma> k) thus ?case
+  case (DBFix e \<Gamma> k) then show ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
     apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
@@ -639,9 +612,9 @@ lemma closed_transdb_inv:
 (*>*)
 
 
-subsection{* Operational Semantics *}
+subsection\<open>Operational Semantics\<close>
 
-text {*
+text \<open>
 
 The evaluation relation (big-step, or natural operational
 semantics). This is similar to \citet[\S6.2]{Gunter:1992},
@@ -650,7 +623,7 @@ semantics). This is similar to \citet[\S6.2]{Gunter:1992},
 We firstly define the \emph{values} that expressions can evaluate to:
 these are either constants or closed abstractions.
 
-*}
+\<close>
 
 inductive
   val :: "db \<Rightarrow> bool"
@@ -679,12 +652,12 @@ where
 | evalOP_IsZeroTT[intro]: "\<lbrakk> E \<Down> DBNum 0 \<rbrakk> \<Longrightarrow> DBIsZero E \<Down> DBtt"
 | evalOP_IsZeroFF[intro]: "\<lbrakk> E \<Down> DBNum n; 0 < n \<rbrakk> \<Longrightarrow> DBIsZero E \<Down> DBff"
 
-text{*
+text\<open>
 
 It is straightforward to show that this relation is deterministic and
 sound with respect to the denotational semantics.
 
-*}
+\<close>
 (*<*)
 
 lemma closed_val [iff]:
@@ -721,18 +694,18 @@ lemma evalOP_deterministic:
   apply blast+
   done
 
-text{* The denotational semantics respects substitution. *}
+text\<open>The denotational semantics respects substitution.\<close>
 
 lemma evalDdb_lift [simp]:
   "evalDdb (lift s k)\<cdot>\<rho> = evalDdb s\<cdot>(\<Lambda> i. if i < k then \<rho>\<cdot>i else \<rho>\<cdot>(Suc i))"
-proof(induct s arbitrary: k \<rho> \<rho>')
-  case DBAbsN thus ?case
+proof(induct s arbitrary: k \<rho>)
+  case DBAbsN then show ?case
     apply (clarsimp simp: cfun_eq_iff env_ext_db_def)
     apply (rule cfun_arg_cong)
     apply (auto split: nat.split simp: cfun_eq_iff)
     done
 next
-  case DBAbsV thus ?case
+  case DBAbsV then show ?case
     apply (clarsimp simp: cfun_eq_iff env_ext_db_def)
     apply (case_tac "x=\<bottom>")
      apply simp
@@ -742,7 +715,7 @@ next
     apply (auto split: nat.split simp: cfun_eq_iff cong: cfun_cong)
     done
 next
-  case (DBFix s k \<rho>) thus ?case
+  case (DBFix s k \<rho>) then show ?case
     apply (clarsimp simp: cfun_eq_iff env_ext_db_def)
     apply (rule parallel_fix_ind)
       apply simp
@@ -756,61 +729,33 @@ qed simp_all
 lemma evalDdb_subst:
   "evalDdb (e<s/x>)\<cdot>\<rho> = evalDdb e\<cdot>(\<Lambda> i. if x < i then \<rho>\<cdot>(i - 1) else if i = x then evalDdb s\<cdot>\<rho> else \<rho>\<cdot>i)"
 proof(induct e arbitrary: s x \<rho>)
-  case DBAbsN thus ?case
-    apply simp
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (rule cfun_arg_cong)
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (auto simp: eta_cfun env_ext_db_def split: nat.split)
-    done
-next
-  case DBAbsV thus ?case
-    apply simp
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (intro cfun_cong)
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (auto simp: cfun_eq_iff eta_cfun env_ext_db_def split: nat.split)
-    apply (intro cfun_cong) (* FIXME weird *)
-    apply (auto simp: cfun_eq_iff eta_cfun env_ext_db_def split: nat.split)
-    done
-next
-  case (DBFix e s x \<rho>) thus ?case
-    apply simp
+  case (DBFix e s x \<rho>) then show ?case
+    apply (simp only: evalDdb.simps subst.simps)
     apply (rule parallel_fix_ind)
-      apply simp
-     apply simp
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (rule cfun_arg_cong)
-    apply (clarsimp simp: cfun_eq_iff)
-    apply (auto simp: eta_cfun env_ext_db_def split: nat.split)
+    apply (auto simp: cfun_eq_iff eta_cfun env_ext_db_def split: nat.split intro!: cfun_cong)
     done
-qed simp_all
+qed (auto simp: cfun_eq_iff eta_cfun env_ext_db_def split: nat.split intro!: cfun_cong)
 
 lemma evalDdb_subst_env_ext_db:
   "evalDdb (e<s/0>)\<cdot>\<rho> = evalDdb e\<cdot>(env_ext_db\<cdot>(evalDdb s\<cdot>\<rho>)\<cdot>\<rho>)"
-  apply (subst evalDdb_subst)
-  apply (rule cfun_arg_cong)
-  apply (auto simp: env_ext_db_def cfun_eq_iff split: nat.split)
-  done
+by (auto simp: evalDdb_subst env_ext_db_def cfun_eq_iff split: nat.split intro!: cfun_arg_cong)
 
 lemma eval_val_not_bot:
-  "P \<Down> V \<Longrightarrow> evalDdb V\<cdot>\<rho> \<noteq> \<bottom>"
-  apply (drule eval_to)
-  apply (cases rule: val.induct)
-  apply simp_all
-  done
+  assumes "P \<Down> V"
+  shows "evalDdb V\<cdot>\<rho> \<noteq> \<bottom>"
+by (rule val.induct[OF eval_to[OF assms]], simp_all)
 
 (*>*)
-lemma evalOP_sound:
+theorem evalOP_sound:
   assumes "P \<Down> V"
   shows "evalDdb P\<cdot>\<rho> = evalDdb V\<cdot>\<rho>"
 (*<*)
 using assms
 proof(induct arbitrary: \<rho>)
-  case evalOP_AppN thus ?case
+  case evalOP_AppN then show ?case
     by (simp add: evalOP_AppN(4)[symmetric] evalDdb_subst_env_ext_db)
 next
-  case (evalOP_AppV P M Q q V \<rho>) thus ?case
+  case (evalOP_AppV P M Q q V \<rho>) then show ?case
     apply simp
     apply (subst evalOP_AppV(4)[symmetric])
     apply (simp add: eval_val_not_bot strictify_cancel evalDdb_subst_env_ext_db)
@@ -826,7 +771,7 @@ next
     done
   also have "... = evalDdb (DBFix P)\<cdot>\<rho>"
     apply simp
-    apply (subst fix_eq) back
+    apply (subst (2) fix_eq)
     apply (simp add: env_ext_db_def)
     apply (rule cfun_arg_cong)
     apply (auto simp: cfun_eq_iff env_ext_db_def split: nat.split)
@@ -835,7 +780,7 @@ next
 qed (simp_all add: cond_def isZero_def pred_def succ_def)
 
 (*>*)
-text{*
+text\<open>
 
 We can use soundness to conclude that POR is not definable
 operationally either. We rely on @{thm [source] "transdb_inv"} to map
@@ -843,9 +788,9 @@ our de Bruijn term into the syntactic universe of
 \S\ref{sec:directsem} and appeal to the results of
 \S\ref{sec:por}. This takes some effort as @{typ "ValD"} contains
 irrelevant junk that makes it hard to draw obvious conclusions; we use
-@{text "DBCond"} to restrict the arguments to the putative witness.
+\<open>DBCond\<close> to restrict the arguments to the putative witness.
 
-*}
+\<close>
 
 definition
   "isPORdb e \<equiv> closed e
@@ -858,50 +803,34 @@ lemma ValD_strict:
   "\<lbrakk> f\<cdot>a\<cdot>b = ValTT; f\<cdot>x\<cdot>y = ValFF \<rbrakk> \<Longrightarrow> f\<cdot>\<bottom>\<cdot>\<bottom> = \<bottom>"
 using monofun_cfun[OF monofun_cfun_arg[where f=f and x="\<bottom>" and y=x], where x="\<bottom>" and y=y, simplified]
       monofun_cfun[OF monofun_cfun_arg[where f=f and x="\<bottom>" and y=a], where x="\<bottom>" and y=b, simplified]
-apply (cases "f\<cdot>\<bottom>\<cdot>\<bottom>")
-apply simp_all
-done
+by (cases "f\<cdot>\<bottom>\<cdot>\<bottom>") simp_all
 
 lemma ValD_ValTT:
   "\<lbrakk> f\<cdot>\<bottom>\<cdot>ValTT = ValTT; f\<cdot>ValTT\<cdot>\<bottom> = ValTT \<rbrakk> \<Longrightarrow> f\<cdot>ValTT\<cdot>ValTT = ValTT"
 using monofun_cfun[OF monofun_cfun_arg[where f=f and x="\<bottom>"], where x="ValTT" and y="ValTT"]
-apply (cases "f\<cdot>ValTT\<cdot>ValTT")
-apply simp_all
-done
+by (cases "f\<cdot>ValTT\<cdot>ValTT") simp_all
 (*>*)
 
 lemma POR_is_not_operationally_definable: "\<not>isPORdb e"
 (*<*)
-proof
+proof(rule notI)
   assume P: "isPORdb e"
   let ?porV = "ValF\<cdot>(\<Lambda> x. ValF\<cdot>(\<Lambda> y. x por y))"
-  { fix \<rho>
-    from P have "closed e
-       \<and> evalDdb (DBApp (DBApp e DBtt) DBDiverge)\<cdot>\<rho> = ValTT
-       \<and> evalDdb (DBApp (DBApp e DBDiverge) DBtt)\<cdot>\<rho> = ValTT
-       \<and> evalDdb (DBApp (DBApp e DBff) DBff)\<cdot>\<rho> = ValFF"
-      unfolding isPORdb_def
-      apply -
-      apply (elim conjE)
-      apply (drule evalOP_sound[where \<rho>=\<rho>])+
-      apply simp
-      done
-    hence "closed e
+  from P have "closed e
+     \<and> evalDdb (DBApp (DBApp e DBtt) DBDiverge)\<cdot>\<rho> = ValTT
+     \<and> evalDdb (DBApp (DBApp e DBDiverge) DBtt)\<cdot>\<rho> = ValTT
+     \<and> evalDdb (DBApp (DBApp e DBff) DBff)\<cdot>\<rho> = ValFF" for \<rho>
+    unfolding isPORdb_def by (force dest!: evalOP_sound[where \<rho>=\<rho>])
+  then have F: "closed e
       \<and> \<lbrakk>transdb_inv (DBApp (DBApp e DBtt) DBDiverge) id 0 0\<rbrakk>\<rho> = ValTT
       \<and> \<lbrakk>transdb_inv (DBApp (DBApp e DBDiverge) DBtt) id 0 0\<rbrakk>\<rho> = ValTT
-      \<and> \<lbrakk>transdb_inv (DBApp (DBApp e DBff) DBff) id 0 0\<rbrakk>\<rho> = ValFF"
-      (* id is arbitrary here *)
-      by (simp add: evalD_evalDdb transdb_inv closed_transdb_inv) }
-  note F = this
-  { fix \<rho>
-    from F have "appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>\<bottom>)\<cdot>\<bottom> = \<bottom>"
-      by (auto intro: ValD_strict[where f="\<Lambda> x y. appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>x)\<cdot>y", simplified]) }
-  note G = this
-  { fix \<rho>
-    from F have "appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>ValTT)\<cdot>ValTT = ValTT"
-      using ValD_ValTT[where f="\<Lambda> x y. appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>x)\<cdot>y"]
-      by simp }
-  note H = this
+      \<and> \<lbrakk>transdb_inv (DBApp (DBApp e DBff) DBff) id 0 0\<rbrakk>\<rho> = ValFF" for \<rho>
+    (* id is arbitrary here *)
+    by (simp add: evalD_evalDdb transdb_inv closed_transdb_inv)
+  from F have G: "appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>\<bottom>)\<cdot>\<bottom> = \<bottom>" for \<rho>
+    by (auto intro: ValD_strict[where f="\<Lambda> x y. appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>x)\<cdot>y", simplified])
+  from F have H: "appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>ValTT)\<cdot>ValTT = ValTT" for \<rho>
+    using ValD_ValTT[where f="\<Lambda> x y. appF\<cdot>(appF\<cdot>(\<lbrakk>transdb_inv e id 0 0\<rbrakk>\<rho>)\<cdot>x)\<cdot>y"] by simp
   let ?f = "AbsN 0 (AbsN 1 (App (App (transdb_inv e id 0 0)
                                      (Cond (Var 0) (Var 0) (Cond (Var 1) (Var 1) (Var 1))) )
                                      (Cond (Var 1) (Var 1) (Cond (Var 0) (Var 0) (Var 0))) ))"
@@ -917,9 +846,9 @@ qed
 (*>*)
 
 
-subsection{* Computational Adequacy *}
+subsection\<open>Computational Adequacy\<close>
 
-text{*
+text\<open>
 
 \label{sec:compad}
 
@@ -938,7 +867,7 @@ relations" by Plotkin. The machinery of \S\ref{sec:synlr} requires us
 to define a unique bottom element, which in this case is @{term "{\<bottom>} \<times>
 { P . closed P}"}. To that end we define the type of programs.
 
-*}
+\<close>
 
 typedef Prog = "{ P. closed P }"
   morphisms unProg mkProg by fastforce
@@ -961,14 +890,14 @@ where
 abbreviation ca_lr :: "(ValD, Prog) synlf" where
   "ca_lr \<equiv> \<lambda>r. mksynlr (ca_lf_rep r)"
 
-text{*
+text\<open>
 
 Intuitively we relate domain-theoretic values to all programs that
 converge to the corresponding syntatic values. If a program has a
 non-@{term "\<bottom>"} denotation then we can use this relation to conclude
 something about the value it (operationally) converges to.
 
-*}
+\<close>
 (*<*)
 
 lemmas Prog_simps [iff] =
@@ -1035,7 +964,7 @@ lemma min_inv_ca_lr:
   done
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 interpretation ca: DomSolSyn ValD_copy_rec ca_lr
   apply standard
@@ -1151,11 +1080,11 @@ lemma ca_lrE:
   apply simp
   apply (drule eval_to)+
   apply (drule closed_val)+
-  apply (simp add: closed_binders closed_def split: nat.splits)
+  apply (simp add: closed_def split: nat.splits)
   done
 
 (*>*)
-text{*
+text\<open>
 
 To establish this result we need a ``closing substitution'' operation.
 It seems easier to define it directly in this simple-minded way than
@@ -1165,7 +1094,7 @@ This is quite similar to a context-plugging (non-capturing)
 substitution operation, where the ``holes'' are free variables, and
 indeed we use it as such below.
 
-*}
+\<close>
 
 fun
   closing_subst :: "db \<Rightarrow> (var \<Rightarrow> db) \<Rightarrow> var \<Rightarrow> db"
@@ -1182,12 +1111,12 @@ where
 | "closing_subst (DBIsZero e) \<Gamma> k = DBIsZero (closing_subst e \<Gamma> k)"
 | "closing_subst x \<Gamma> k = x"
 
-text{*
+text\<open>
 
 We can show it has the expected properties when all terms in @{term
 "\<Gamma>"} are closed.
 
-*}
+\<close>
 
 (*<*)
 lemma freedb_closing_subst [iff]:
@@ -1195,163 +1124,62 @@ lemma freedb_closing_subst [iff]:
   shows "freedb (closing_subst e \<Gamma> k) i \<longleftrightarrow> (freedb e i \<and> i < k)"
   using assms
   apply (induct e arbitrary: i k)
+  using Suc_le_D
   apply (auto simp: closed_def not_less_eq diff_Suc split: nat.split)
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
-    apply (drule_tac x="Suc i" in meta_spec)
-    apply (drule_tac x="Suc k" in meta_spec)
-    apply simp
-    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)")
-     apply simp
-    apply clarsimp
-    apply (case_tac v)
-     apply simp
-    apply simp
-
+    apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k \<le> v \<longrightarrow> (\<forall>j. \<not> freedb (\<Gamma> (v - Suc k)) j)"; use Suc_le_D in force)+
     done
 
 lemma closed_closing_subst [intro, simp]:
   assumes "\<forall>v. freedb e v \<longrightarrow> closed (\<Gamma> v)"
   shows "closed (closing_subst e \<Gamma> 0)"
-  using assms freedb_closing_subst[where e=e and k=0]
-  unfolding closed_def
-  by fastforce
+using assms freedb_closing_subst[where e=e and k=0]
+unfolding closed_def by fastforce
 
 lemma subst_closing_subst:
   assumes "\<forall>v. freedb e v \<and> k < v \<longrightarrow> closed (\<Gamma> (v - Suc k))"
   assumes "closed X"
   shows "(closing_subst e \<Gamma> (Suc k))<X/k> = closing_subst e (case_nat X \<Gamma>) k"
-  using assms
-  apply (induct e arbitrary: i k)
-  apply (auto simp: not_less_eq split: nat.split)
-
-  apply (subst diff_Suc)
-  apply simp
-  apply (subst closed_subst)
-   apply (clarsimp simp: closed_def)
-   apply (metis Suc_lessE diff_Suc_Suc diff_diff_cancel diff_less_Suc order_le_less)
-  apply simp
-
-  apply (subst closed_lift)
-   apply (simp add: closed_def)
-  apply (drule_tac x="Suc k" in meta_spec)
-  apply (subgoal_tac "\<forall>v. freedb e v \<and> Suc k < v \<longrightarrow> closed (\<Gamma> (v - Suc (Suc k)))")
-   apply blast
-  apply (clarsimp simp: closed_def)
-  apply (case_tac v)
-  apply auto
-  done
+using assms
+proof(induct e arbitrary: k)
+  case DBVar then show ?case
+    unfolding closed_def
+    by (clarsimp simp: Suc_le_eq closed_subst) (metis Suc_diff_Suc old.nat.simps(5))
+next
+  case DBAbsN then show ?case
+    by clarsimp (metis Suc_less_eq2 closed_def closed_lift diff_Suc_Suc)
+next
+  case DBAbsV then show ?case
+    by clarsimp (metis Suc_less_eq2 closed_def closed_lift diff_Suc_Suc)
+next
+  case DBFix then show ?case
+    by clarsimp (metis Suc_less_eq2 closed_def closed_lift diff_Suc_Suc)
+qed (auto simp: not_less_eq split: nat.split)
 
 lemma closing_subst_closed [intro, simp]:
   assumes "\<forall>v. freedb e v \<longrightarrow> v < k"
   shows "closing_subst e \<Gamma> k = e"
   using assms
-  apply (induct e arbitrary: i k)
+  apply (induct e arbitrary: k)
   apply (auto simp: closed_def)
   apply (metis gr_implies_not0 nat.exhaust not_less_eq)+
   done
 
 lemma closing_subst_evalDdb_cong:
-  assumes 1: "\<forall>v. closed (\<Gamma> v) \<and> closed (\<Gamma>' v)"
-  assumes 2: "\<forall>v. evalDdb (\<Gamma> v)\<cdot>env_empty_db = evalDdb (\<Gamma>' v)\<cdot>env_empty_db"
+  assumes "\<forall>v. closed (\<Gamma> v) \<and> closed (\<Gamma>' v)"
+  assumes "\<forall>v. evalDdb (\<Gamma> v)\<cdot>env_empty_db = evalDdb (\<Gamma>' v)\<cdot>env_empty_db"
   shows "evalDdb (closing_subst e \<Gamma> k)\<cdot>\<rho> = evalDdb (closing_subst e \<Gamma>' k)\<cdot>\<rho>"
-  apply (induct e arbitrary: i k \<rho>)
-  apply simp
-  apply (subst evalDdb_env_closed[where \<rho>'=env_empty_db])
-   defer
-  apply (subst evalDdb_env_closed[where \<rho>'=env_empty_db]) back
-   defer
-  apply (simp add: 2)
-  using 1
-  apply auto
-  done
+proof(induct e arbitrary: k \<rho>)
+  case DBVar with assms show ?case
+    by (simp; subst (1 2) evalDdb_env_closed[where \<rho>'=env_empty_db]; simp)
+qed auto
 
 (*>*)
-text{*
+text\<open>
 
 The key lemma is shown by induction over @{term "e"} for arbitrary
 environments (@{term "\<Gamma>"} and @{term "\<rho>"}):
 
-*}
+\<close>
 
 lemma ca_open:
   assumes "\<forall>v. freedb e v \<longrightarrow> \<rho>\<cdot>v \<triangleleft> \<Gamma> v \<and> closed (\<Gamma> v)"
@@ -1359,10 +1187,8 @@ lemma ca_open:
 (*<*)
 using assms
 proof(induct e arbitrary: \<Gamma> \<rho>)
-  case (DBApp e1 e2 \<Gamma> \<rho>) thus ?case
-    apply simp
-    apply (drule_tac x=\<rho> in meta_spec)+
-    apply (drule_tac x=\<Gamma> in meta_spec)+
+  case (DBApp e1 e2 \<Gamma> \<rho>)
+  from DBApp.prems DBApp.hyps[of \<rho> \<Gamma>] show ?case
     apply simp
     apply (erule ca_lrE)
      apply simp_all
@@ -1387,7 +1213,8 @@ proof(induct e arbitrary: \<Gamma> \<rho>)
     apply auto
     done
 next
-  case (DBAbsN e \<Gamma> \<rho>) thus ?case
+  case (DBAbsN e \<Gamma> \<rho>)
+  from DBAbsN.prems show ?case
     apply simp
     apply (rule ca_lr_DBAbsNI)
       apply (rule eval_val)
@@ -1398,14 +1225,14 @@ next
     apply (subst subst_closing_subst)
       apply simp
      apply blast
-    apply (drule_tac x="env_ext_db\<cdot>x\<cdot>\<rho>" in meta_spec)
-    apply (drule_tac x="case_nat X \<Gamma>" in meta_spec)
-    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat X \<Gamma> v \<and> closed (case_nat X \<Gamma> v)")
-     apply blast
-    apply (auto simp: env_ext_db_def split: nat.splits)
+    apply (cut_tac \<rho>="env_ext_db\<cdot>x\<cdot>\<rho>" and \<Gamma>="case_nat X \<Gamma>" in DBAbsN.hyps)
+     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat X \<Gamma> v \<and> closed (case_nat X \<Gamma> v)")
+      apply blast
+     apply (auto simp: env_ext_db_def split: nat.splits)
     done
 next
-  case (DBAbsV e \<Gamma> \<rho>) thus ?case
+  case (DBAbsV e \<Gamma> \<rho>)
+  from DBAbsV.prems show ?case
     apply simp
     apply (rule ca_lr_DBAbsVI)
        apply (rule eval_val)
@@ -1418,17 +1245,16 @@ next
      apply (rule ca_lrI)
      apply (subst subst_closing_subst)
        apply simp
-      apply (simp add: eval_to)
-     apply (metis closed_closing_subst closed_def closed_val eval_to nat.case not0_implies_Suc)
+      apply simp
+     apply (metis closed_closing_subst closed_val eval_to nat.case not0_implies_Suc)
     apply simp
     apply (subst subst_closing_subst)
       apply simp
      apply blast
-    apply (drule_tac x="env_ext_db\<cdot>x\<cdot>\<rho>" in meta_spec)
-    apply (drule_tac x="case_nat V \<Gamma>" in meta_spec)
-    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat V \<Gamma> v \<and> closed (case_nat V \<Gamma> v)")
-     apply blast
-    apply (auto simp: env_ext_db_def split: nat.splits)
+    apply (cut_tac \<rho>="env_ext_db\<cdot>x\<cdot>\<rho>" and \<Gamma>="case_nat V \<Gamma>" in DBAbsV.hyps)
+     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat V \<Gamma> v \<and> closed (case_nat V \<Gamma> v)")
+      apply blast
+     apply (auto simp: env_ext_db_def split: nat.splits)
     apply (erule ca_lrE)
       apply (auto dest: evalOP_deterministic)[4]
      apply clarsimp
@@ -1445,7 +1271,7 @@ next
     apply (auto dest: evalOP_deterministic)
     done
 next
-  case (DBFix e \<Gamma> \<rho>) thus ?case
+  case (DBFix e \<Gamma> \<rho>) then show ?case
     apply simp
     apply (rule fix_ind)
       apply simp_all
@@ -1458,50 +1284,50 @@ next
 
       apply simp
       apply (rule ca_lrI)
-       apply (auto simp: subst_closing_subst freedb_closing_subst)[2]
+       apply (auto simp: subst_closing_subst)[2]
 
       apply simp
       apply (rule ca_lrI)
-       apply (auto simp: subst_closing_subst freedb_closing_subst)[2]
+       apply (auto simp: subst_closing_subst)[2]
 
       apply simp
       apply (rule ca_lrI)
-       apply (auto simp: subst_closing_subst freedb_closing_subst)[2]
+       apply (auto simp: subst_closing_subst)[2]
 
       apply simp
       apply (rule ca_lr_DBAbsNI)
-       apply (auto simp: subst_closing_subst freedb_closing_subst)[3]
+       apply (auto simp: subst_closing_subst)[3]
 
       apply simp
       apply (rule ca_lr_DBAbsVI)
-       apply (auto simp: subst_closing_subst freedb_closing_subst)[3]
+       apply (auto simp: subst_closing_subst)[3]
        apply force
 
       apply (clarsimp simp: env_ext_db_def split: nat.split)
     done
 next
-  case (DBCond c t e \<Gamma> \<rho>) thus ?case
+  case (DBCond c t e \<Gamma> \<rho>) then show ?case
     apply (simp add: cond_def)
     apply (drule_tac x=\<rho> in meta_spec, drule_tac x=\<Gamma> in meta_spec)+
     apply simp
     apply (erule ca_lrE, auto intro: ca_lr_DBAbsNI ca_lr_DBAbsVI)+
     done
 next
-  case (DBSucc e \<Gamma> \<rho>) thus ?case
+  case (DBSucc e \<Gamma> \<rho>) then show ?case
     apply (simp add: succ_def)
     apply (drule_tac x=\<rho> in meta_spec, drule_tac x=\<Gamma> in meta_spec)
     apply simp
     apply (erule ca_lrE, auto intro: ca_lr_DBAbsNI ca_lr_DBAbsVI)+
     done
 next
-  case (DBPred e \<Gamma> \<rho>) thus ?case
+  case (DBPred e \<Gamma> \<rho>) then show ?case
     apply (simp add: pred_def)
     apply (drule_tac x=\<rho> in meta_spec, drule_tac x=\<Gamma> in meta_spec)
     apply simp
     apply (erule ca_lrE, auto intro: ca_lr_DBAbsNI ca_lr_DBAbsVI split: nat.split)+
     done
 next
-  case (DBIsZero e \<Gamma> \<rho>) thus ?case
+  case (DBIsZero e \<Gamma> \<rho>) then show ?case
     apply (simp add: isZero_def)
     apply (drule_tac x=\<rho> in meta_spec, drule_tac x=\<Gamma> in meta_spec)
     apply simp
@@ -1510,7 +1336,7 @@ next
 qed auto
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma ca_closed:
   assumes "closed e"
@@ -1522,20 +1348,20 @@ theorem ca:
   assumes nb: "evalDdb e\<cdot>env_empty_db \<noteq> \<bottom>"
   assumes "closed e"
   shows "\<exists>V. e \<Down> V"
-  using ca_closed[OF `closed e`] nb
+  using ca_closed[OF \<open>closed e\<close>] nb
   by (auto elim!: ca_lrE)
 
-text{*
+text\<open>
 
 This last result justifies reasoning about contextual equivalence
 using the denotational semantics, as we now show.
 
-*}
+\<close>
 
 
-subsubsection{* Contextual Equivalence *}
+subsubsection\<open>Contextual Equivalence\<close>
 
-text{*
+text\<open>
 
 As we are using an un(i)typed language, we take a context @{term "C"}
 to be an arbitrary term, where the free variables are the
@@ -1546,7 +1372,7 @@ standard trick now, see e.g. \citet{DBLP:conf/popl/KoutavasW06}. If we
 didn't have CBN (only CBV) then it might be worth showing that this is
 an adequate treatment.
 
-*}
+\<close>
 
 definition ctxt_sub :: "db \<Rightarrow> db \<Rightarrow> db" ("(_<_>)" [300, 0] 300) where
   "C<e> \<equiv> closing_subst C (\<lambda>_. e) 0"
@@ -1561,20 +1387,16 @@ lemma ctxt_sub_cong:
   assumes "closed e2"
   assumes "evalDdb e1\<cdot>env_empty_db = evalDdb e2\<cdot>env_empty_db"
   shows "evalDdb (C<e1>)\<cdot>env_empty_db = evalDdb (C<e2>)\<cdot>env_empty_db"
-  unfolding ctxt_sub_def
-  apply (rule closing_subst_evalDdb_cong)
-  using assms
-  apply simp_all
-  done
+  unfolding ctxt_sub_def using assms by (auto intro: closing_subst_evalDdb_cong)
 
 (*>*)
-text{*
+text\<open>
 
 Following \citet{PittsAM:relpod} we define a relation between values
 that ``have the same form''. This is weak at functional values. We
 don't distinguish between strict and non-strict abstractions.
 
-*}
+\<close>
 
 inductive
   have_the_same_form :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<sim> _" [50,50] 50)
@@ -1596,22 +1418,22 @@ lemma have_the_same_form_sound:
   assumes "val v1"
   assumes "val v2"
   shows "v1 \<sim> v2"
-  using `val v1` D
+  using \<open>val v1\<close> D
   apply (induct rule: val.induct)
   apply simp_all
-  using `val v2`
+  using \<open>val v2\<close>
   apply (induct rule: val.induct)
   apply simp_all
-  using `val v2`
+  using \<open>val v2\<close>
   apply (induct rule: val.induct)
   apply simp_all
-  using `val v2`
+  using \<open>val v2\<close>
   apply (induct rule: val.induct)
   apply simp_all
-  using `val v2`
+  using \<open>val v2\<close>
   apply (induct rule: val.induct)
   apply simp_all
-  using `val v2`
+  using \<open>val v2\<close>
   apply (induct rule: val.induct)
   apply simp_all
   done
@@ -1620,24 +1442,24 @@ lemma have_the_same_form_sound:
 contextually_equivalent relation is compatible with the language. *)
 
 (*>*)
-text{*
+text\<open>
 
 A program @{term "e2"} \emph{refines} the program @{term "e1"} if it
 converges in context at least as often. This is a preorder on
 programs.
 
-*}
+\<close>
 
 definition
   refines :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<unlhd> _" [50,50] 50)
 where
   "e1 \<unlhd> e2 \<equiv> \<forall>C. \<exists>V1. C<e1> \<Down> V1 \<longrightarrow> (\<exists>V2. C<e2> \<Down> V2 \<and> V1 \<sim> V2)"
 
-text{*
+text\<open>
 
 Contextually-equivalent programs refine each other.
 
-*}
+\<close>
 
 definition
   contextually_equivalent :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<approx> _")
@@ -1659,12 +1481,9 @@ proof(rule refinesI)
   fix C V1 assume V1: "C<e1> \<Down> V1"
   from assms have D: "evalDdb (C<e2>)\<cdot>env_empty_db = evalDdb (C<e1>)\<cdot>env_empty_db"
     by (metis ctxt_sub_cong)
-  from D `closed e2` obtain V2 where V2: "C<e2> \<Down> V2"
-    using evalOP_sound[OF V1]
-    using ca[where e="C<e2>"]
-    using eval_val_not_bot[OF V1]
-    apply auto
-    done
+  from D \<open>closed e2\<close> obtain V2 where V2: "C<e2> \<Down> V2"
+    using evalOP_sound[OF V1] ca[where e="C<e2>"] eval_val_not_bot[OF V1]
+    by auto
   from D V1 V2 have V1V2: "evalDdb V1\<cdot>env_empty_db = evalDdb V2\<cdot>env_empty_db"
     by (simp add: evalOP_sound)
   from V1 V2 V1V2
@@ -1673,12 +1492,12 @@ proof(rule refinesI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 Our ultimate theorem states that if two programs have the same
 denotation then they are contextually equivalent.
 
-*}
+\<close>
 
 theorem computational_adequacy:
   assumes 1: "closed e1"
@@ -1691,7 +1510,7 @@ theorem computational_adequacy:
   by (simp add: computational_adequacy_refines)
 (*>*)
 
-text{*
+text\<open>
 
 This gives us a sound but incomplete method for demonstrating
 contextual equivalence. We expect this result is useful for showing
@@ -1709,7 +1528,7 @@ syntax, which is required by the evaluators of \S\ref{sec:directsem}
 and \S\ref{sec:directsem_db}. As observed above, in the setting of
 traditional programming language semantics one can get by with a much
 simpler notion of substitution than is needed for investigations into
-@{text "\<lambda>"}-calculi. Clearly this does not hold of languages that
+\<open>\<lambda>\<close>-calculi. Clearly this does not hold of languages that
 reduce ``under binders''.
 
 The ``fast and loose reasoning is morally correct'' work of
@@ -1727,7 +1546,7 @@ to richer languages, such as those with dynamic allocation of mutable
 references, especially if these references can contain (arbitrary)
 functional values.
 
-*}
+\<close>
 
 (*<*)
 

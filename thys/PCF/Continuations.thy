@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-section {* Relating direct and continuation semantics *}
+section \<open>Relating direct and continuation semantics\<close>
 (*<*)
 theory Continuations
 imports
@@ -10,7 +10,7 @@ imports
 begin
 
 (*>*)
-text{*
+text\<open>
 
 \label{sec:continuations}
 
@@ -23,10 +23,10 @@ language, which is difficult to model in Isabelle (but see
 
 We begin by giving PCF a continuation semantics following the modern
 account of \citet{wadler92:_essence_of_funct_progr}.  We use the
-symmetric function space @{text "('o ValK, 'o) K \<rightarrow> ('o ValK, 'o) K"}
+symmetric function space \<open>('o ValK, 'o) K \<rightarrow> ('o ValK, 'o) K\<close>
 as our language includes call-by-name.
 
-*}
+\<close>
 
 type_synonym ('a, 'o) K = "('a \<rightarrow> 'o) \<rightarrow> 'o"
 
@@ -54,12 +54,12 @@ lemma below_monic_ValKN [iff]:
   by (rule below_monicI) simp
 
 (*>*)
-text{*
+text\<open>
 
 We use the standard continuation monad to ease the semantic
 definition.
 
-*}
+\<close>
 
 definition unitK :: "'o ValK \<rightarrow> 'o ValKM" where
   "unitK \<equiv> \<Lambda> a. \<Lambda> c. c\<cdot>a"
@@ -94,7 +94,7 @@ lemma bindK_assoc:
 lemmas bindK_simps[simp] = bindK_strict bindK_unitl bindK_unitr bindK_assoc
 
 (*>*)
-text{* The interpretations of the constants. *}
+text\<open>The interpretations of the constants.\<close>
 
 definition
   condK :: "'o ValKM \<rightarrow> 'o ValKM \<rightarrow> 'o ValKM \<rightarrow> 'o ValKM"
@@ -111,13 +111,13 @@ definition predK :: "'o ValKM \<rightarrow> 'o ValKM" where
 definition isZeroK :: "'o ValKM \<rightarrow> 'o ValKM" where
   "isZeroK \<equiv> \<Lambda> nK. bindK\<cdot>nK\<cdot>(\<Lambda> (ValKN\<cdot>n). unitK\<cdot>(if n = 0 then ValKTT else ValKFF))"
 
-text {*
+text \<open>
 
 A continuation semantics for PCF. If we had defined our direct
 semantics using a monad then the correspondence would be more
 syntactically obvious.
 
-*}
+\<close>
 
 type_synonym 'o EnvK = "'o ValKM Env"
 
@@ -138,7 +138,7 @@ where
 | "evalK (Pred e) = (\<Lambda> \<rho>. predK\<cdot>(evalK e\<cdot>\<rho>))"
 | "evalK (IsZero e) = (\<Lambda> \<rho>. isZeroK\<cdot>(evalK e\<cdot>\<rho>))"
 
-text{*
+text\<open>
 
 To establish the chain completeness (admissibility) of our logical
 relation, we need to show that @{term "unitK"} is an \emph{order
@@ -150,18 +150,18 @@ able to distinguish converging and diverging computations. We
 therefore require our observation domain to contain at least two
 elements:
 
-*}
+\<close>
 
 locale at_least_two_elements =
   fixes some_non_bottom_element :: "'o::domain"
   assumes some_non_bottom_element: "some_non_bottom_element \<noteq> \<bottom>"
 
-text{*
+text\<open>
 
 Following \citet{DBLP:conf/icalp/Reynolds74} and \citet[Remark
 47]{DBLP:journals/tcs/Filinski07} we use the following continuation:
 
-*}
+\<close>
 
 lemma cont_below [simp, cont2cont]:
   "cont (\<lambda>x::'a::pcpo. if x \<sqsubseteq> d then \<bottom> else c)"
@@ -210,7 +210,7 @@ next
   qed
 qed
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma (in at_least_two_elements) below_monic_unitK [intro, simp]:
   "below_monic_cfun (unitK :: 'o ValK \<rightarrow> 'o ValKM)"
@@ -224,9 +224,9 @@ proof(rule below_monicI)
 qed
 
 
-subsection{* Logical relation *}
+subsection\<open>Logical relation\<close>
 
-text{*
+text\<open>
 
 We follow \citet{DBLP:conf/icalp/Reynolds74} by simultaneously
 defining a pair of relations over values and functions. Both are
@@ -235,7 +235,7 @@ adequacy in \S\ref{sec:compad}.  \citet{DBLP:journals/tcs/Filinski07}
 differs by assuming that values are always defined, and relates values
 and monadic computations.
 
-*}
+\<close>
 
 type_synonym 'o lfr = "(ValD, 'o ValKM, ValD \<rightarrow> ValD, 'o ValKM \<rightarrow> 'o ValKM) lf_pair_rep"
 type_synonym 'o lflf = "(ValD, 'o ValKM, ValD \<rightarrow> ValD, 'o ValKM \<rightarrow> 'o ValKM) lf_pair"
@@ -268,11 +268,11 @@ definition lr_rep :: "'o lfr" where
 abbreviation lr :: "'o lflf" where
   "lr \<equiv> \<lambda>r. (mklr (fst (lr_rep r)), mklr (snd (lr_rep r)))"
 (*<*)
-text{*
+text\<open>
 
 Properties of the logical relation.
 
-*}
+\<close>
 
 lemma admS_eta_rep [intro, simp]:
   "fst (lr_rep r) \<in> admS"
@@ -322,7 +322,7 @@ lemma mono_lr:
 (*>*)
 end (* context at_least_two_elements *)
 
-text{*
+text\<open>
 
 It takes some effort to set up the minimal invariant relating the two
 pairs of domains. One might hope this would be easier using deflations
@@ -331,7 +331,7 @@ don't).
 
 We elide these as they are tedious.
 
-*}
+\<close>
 (*<*)
 
 primrec
@@ -374,16 +374,12 @@ proof -
   thus ?thesis by (simp add: lub_distribs ValD.lub_take cfun_eq_iff)
 qed
 
-lemma ValD_copy_strict [intro, simp]:
-  "ValD_copy\<cdot>\<bottom> = \<bottom>"
-  using ValD_copy_lub_ID by simp
-
-text{*
+text\<open>
 
 Continuations: we need to ensure the observation type is always the
 same.
 
-*}
+\<close>
 
 definition
   KM_map :: "('o ValK \<rightarrow> 'o ValK) \<rightarrow> 'o ValKM \<rightarrow> 'o ValKM"
@@ -441,12 +437,12 @@ lemma ValK_strict [intro, simp]:
   "ValK_copy\<cdot>\<bottom> = \<bottom>"
   by (simp add: ValK_copy_fix)
 
-text{*
+text\<open>
 
 We need to respect the purported domain structure, and positive and
 negative occurrences.
 
-*}
+\<close>
 
 fixrec
   ValD_copy_rec :: "((ValD \<rightarrow> ValD) \<times> ((ValD \<rightarrow> ValD) \<rightarrow> (ValD \<rightarrow> ValD)))
@@ -642,15 +638,15 @@ sublocale at_least_two_elements < F: DomSolP ValD_copy_rec ValK_copy_rec lr
   done
 
 
-subsection{* A retraction between the two definitions *}
+subsection\<open>A retraction between the two definitions\<close>
 
-text{*
+text\<open>
 
 We can use the relation to establish a strong connection between the
 direct and continuation semantics.  All results depend on the
 observation type being rich enough.
 
-*}
+\<close>
 
 context at_least_two_elements
 begin
@@ -722,11 +718,11 @@ lemma theta_induct[case_names F, consumes 1]:
   done
 
 (*>*)
-text{*
+text\<open>
 
 Theorem 1 from \citet{DBLP:conf/icalp/Reynolds74}.
 
-*}
+\<close>
 
 lemma AbsV_aux:
   assumes "\<eta>: ValF\<cdot>f \<mapsto> unitK\<cdot>(ValKF\<cdot>f')"
@@ -745,7 +741,7 @@ lemma AbsV_aux:
   done
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 theorem Theorem1:
   assumes "\<forall>v. \<eta>: \<rho>\<cdot>v \<mapsto> \<rho>'\<cdot>v"
@@ -827,14 +823,14 @@ qed simp_all
 end
 
 
-text{*
+text\<open>
 
 The retraction between the two value and monadic value spaces.
 
 Note we need to work with an observation type that can represent the
 ``explicit values'', i.e. @{typ "'o ValK"}.
 
-*}
+\<close>
 
 locale value_retraction =
   fixes VtoO :: "'o ValK \<rightarrow> 'o"
@@ -903,11 +899,11 @@ proof -
 qed
 (*>*)
 
-text{*
+text\<open>
 
 Lemma 1 from \citet{DBLP:conf/icalp/Reynolds74}.
 
-*}
+\<close>
 
 lemma Lemma1:
   "\<eta>: x \<mapsto> DtoKM\<cdot>x"
@@ -968,18 +964,18 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 Theorem 2 from \citet{DBLP:conf/icalp/Reynolds74}.
 
-*}
+\<close>
 
 theorem Theorem2: "evalD e\<cdot>\<rho> = KMtoD\<cdot>(evalK e\<cdot>(DtoKM oo \<rho>))"
 using Lemma1(2)[OF Theorem1] Lemma1(1) by (simp add: cfcomp1)
 
 end
 
-text{*
+text\<open>
 
 \citet[Remark~48]{DBLP:journals/tcs/Filinski07} observes that there
 will not be a retraction between direct and continuation semantics for
@@ -994,7 +990,7 @@ direct semantics as proposed by
 retraction between two value domains to a retraction at higher types
 by synthesising a suitable logical relation.
 
-*}
+\<close>
 (*<*)
 
 end

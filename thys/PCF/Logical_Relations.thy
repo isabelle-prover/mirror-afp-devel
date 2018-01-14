@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-section {* Pitts's method for solving recursive domain predicates *}
+section \<open>Pitts's method for solving recursive domain predicates\<close>
 (*<*)
 
 theory Logical_Relations
@@ -11,7 +11,7 @@ imports
 begin
 
 (*>*)
-text{*
+text\<open>
 
 We adopt the general theory of \citet{PittsAM:relpod} for solving
 recursive domain predicates. This is based on the idea of
@@ -29,7 +29,7 @@ We begin by defining an \emph{admissible} set (aka an \emph{inclusive
 predicate}) to be one that contains @{term "\<bottom>"} and is closed under
 countable chains:
 
-*}
+\<close>
 
 definition admS :: "'a::pcpo set set" where
   "admS \<equiv> { R :: 'a set. \<bottom> \<in> R \<and> adm (\<lambda>x. x \<in> R) }"
@@ -37,11 +37,11 @@ definition admS :: "'a::pcpo set set" where
 typedef ('a::pcpo) admS = "{ x::'a::pcpo set . x \<in> admS }"
   morphisms unlr mklr unfolding admS_def by fastforce
 
-text{*
+text\<open>
 
 These sets form a complete lattice.
 
-*}
+\<close>
 (*<*)
 
 lemma admSI [intro]:
@@ -97,10 +97,7 @@ lemma unlr_inf: "unlr (inf x y) = unlr x \<inter> unlr y"
 lemma unlr_sup: "unlr (sup x y) = unlr x \<union> unlr y"
   unfolding sup_admS_def by (simp add: admS_def)
 
-instance
-apply intro_classes
-apply (auto simp: less_eq_admS_def unlr_inf unlr_sup)
-done
+instance by intro_classes (auto simp: less_eq_admS_def unlr_inf unlr_sup)
 
 end
 
@@ -154,9 +151,9 @@ end
 (*>*)
 
 
-subsection{* Sets of vectors *}
+subsection\<open>Sets of vectors\<close>
 
-text{*
+text\<open>
 
 The simplest case involves the recursive definition of a set of
 vectors over a single domain. This involves taking the fixed point of
@@ -170,26 +167,26 @@ functor is made monotonic with respect to the order on the domain
 with the same elements as @{typ "'a"} but with the reverse order. The
 functions @{term "dual"} and @{term "undual"} mediate the isomorphism.
 
-*}
+\<close>
 
 type_synonym 'd lf_rep = "'d admS dual \<times> 'd admS \<Rightarrow> 'd set"
 type_synonym 'd lf = "'d admS dual \<times> 'd admS \<Rightarrow> 'd admS"
 
-text{*
+text\<open>
 
 The predicate @{term "eRSV"} encodes our notion of relation.  (This is
-Pitts's @{text "e : R \<subset> S"}.) We model a vector as a function from
+Pitts's \<open>e : R \<subset> S\<close>.) We model a vector as a function from
 some index type @{typ "'i"} to the domain @{typ "'d"}. Note that the
 minimal invariant is for the domain @{typ "'d"} only.
 
-*}
+\<close>
 
 abbreviation
   eRSV :: "('d::pcpo \<rightarrow> 'd) \<Rightarrow> ('i::type \<Rightarrow> 'd) admS dual \<Rightarrow> ('i \<Rightarrow> 'd) admS \<Rightarrow> bool"
 where
   "eRSV e R S \<equiv> \<forall>d \<in> unlr (undual R). (\<lambda>x. e\<cdot>(d x)) \<in> unlr S"
 
-text{*
+text\<open>
 
 In general we can also assume that @{term "e"} here is strict, but we
 do not need to do so for our examples.
@@ -205,7 +202,7 @@ Our locale captures the key ingredients in Pitts's scheme:
 
 \end{itemize}
 
-*}
+\<close>
 
 locale DomSolV =
   fixes \<delta> :: "('d::pcpo \<rightarrow> 'd) \<rightarrow> 'd \<rightarrow> 'd"
@@ -227,13 +224,8 @@ where
 
 lemma sym_lr_mono:
   shows "mono sym_lr"
-  unfolding sym_lr_def
-  apply (rule monoI)
-  using monoF
-  apply (simp add: split_def monoD)
-  apply (rule monoD[OF monoF])
-  apply (simp add: undual_leq fst_mono snd_mono)
-  done
+unfolding sym_lr_def using monoF
+by (force simp: case_prod_unfold less_eq_prod_def monoD undual_leq intro: monoI)
 
 abbreviation
   f_lim :: "('i \<Rightarrow> 'd) admS dual \<times> ('i \<Rightarrow> 'd) admS"
@@ -252,29 +244,15 @@ where
 
 lemma delta:
   "(delta_neg, delta_pos) = f_lim"
-  apply (cases f_lim)
-  apply (simp add: delta_neg_def delta_pos_def)
-  done
+by (simp add: delta_neg_def delta_pos_def)
 
 lemma delta_neg_sol:
   "delta_neg = dual (F (dual delta_pos, undual delta_neg))"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_unfold delta_neg_def delta_pos_def fst_conv lfp_unfold sym_lr_def sym_lr_mono)
 
 lemma delta_pos_sol:
   "delta_pos = F (delta_neg, delta_pos)"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_conv delta lfp_unfold snd_conv sym_lr_def sym_lr_mono)
 
 lemma delta_pos_neg_least:
   assumes rm: "rm \<le> F (dual rp, rm)"
@@ -284,11 +262,8 @@ lemma delta_pos_neg_least:
 proof -
   from rm rp
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
-    apply (subst delta)
-    apply (rule lfp_lowerbound)
-    apply (simp add: sym_lr_def)
-    done
-  thus "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
+    by (simp add: delta lfp_lowerbound sym_lr_def)
+  then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
     by (simp_all add: undual_leq)
 qed
 
@@ -296,33 +271,23 @@ lemma delta_eq:
   "undual delta_neg = delta_pos"
 proof(rule antisym)
   show "delta_pos \<le> undual delta_neg"
-    apply (rule delta_pos_neg_least(2)[where rm="delta_pos"])
-     apply (simp_all add: delta_pos_sol[symmetric])
-    by (subst delta_neg_sol, simp)
+    by (metis delta_neg_sol delta_pos_neg_least(2) delta_pos_sol order_refl undual_dual)
 next
   let ?P = "\<lambda>x. eRSV x (delta_neg) (delta_pos)"
   have "?P (fix\<cdot>\<delta>)"
-    apply (rule fix_ind)
-      apply simp
-     apply (simp add: inst_fun_pcpo[symmetric])
-    apply clarsimp
-    apply (drule eRSV_deltaF[where R=delta_neg and S=delta_pos])
-    apply simp
-    apply (subst delta_pos_sol)
-    apply (subst (asm) delta_neg_sol)
-    apply force
-    done
+    by (rule fix_ind, simp_all add: inst_fun_pcpo[symmetric])
+       (metis delta_neg_sol delta_pos_sol eRSV_deltaF)
   with min_inv_ID
   show "undual delta_neg \<le> delta_pos"
     by (fastforce simp: unlr_leq[symmetric])
 qed
 (*>*)
-text{*
+text\<open>
 
 From these assumptions we can show that there is a unique object that
 is a solution to the recursive equation specified by @{term "F"}.
 
-*}
+\<close>
 
 definition "delta \<equiv> delta_pos"
 
@@ -343,24 +308,24 @@ proof(rule antisym)
 next
   have "delta_neg \<le> dual r"
     using assms delta_pos_neg_least[where rm=r and rp=r] by simp
-  hence "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
-  thus "r \<le> delta_pos"
+  then have "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
+  then show "r \<le> delta_pos"
     using delta_eq by simp
 qed
 (*>*)
 
 end
 
-text{*
+text\<open>
 
 We use this to show certain functions are not PCF-definable in
 \S\ref{sec:pcfdefinability}.
 
-*}
+\<close>
 
-subsection{* Relations between domains and syntax *}
+subsection\<open>Relations between domains and syntax\<close>
 
-text{*
+text\<open>
 
 \label{sec:synlr}
 
@@ -368,7 +333,7 @@ To show computational adequacy (\S\ref{sec:compad}) we need to relate
 elements of a domain to their syntactic counterparts. An advantage of
 Pitts's technique is that this is straightforward to do.
 
-*}
+\<close>
 
 definition synlr :: "('d::pcpo \<times> 'a::type) set set" where
   "synlr \<equiv> { R :: ('d \<times> 'a) set. \<forall>a. { d. (d, a) \<in> R } \<in> admS }"
@@ -376,14 +341,14 @@ definition synlr :: "('d::pcpo \<times> 'a::type) set set" where
 typedef ('d::pcpo, 'a::type) synlr = "{ x::('d \<times> 'a) set. x \<in> synlr }"
   morphisms unsynlr mksynlr unfolding synlr_def by fastforce
 
-text{*
+text\<open>
 
 An alternative representation (suggested by Brian Huffman) is to
 directly use the type @{typ "'a \<Rightarrow> 'b admS"} as this is automatically
 a complete lattice. However we end up fighting the automatic methods a
 lot.
 
-*}
+\<close>
 
 (*<*)
 lemma synlrI [intro]:
@@ -404,7 +369,7 @@ lemma adm_cont_unsynlr [intro, simp]:
 
 declare synlr.mksynlr_inverse[simp add]
 
-text{* Lattice machinery. *}
+text\<open>Lattice machinery.\<close>
 
 instantiation synlr :: (pcpo, type) order
 begin
@@ -441,10 +406,7 @@ lemma unsynlr_inf: "unsynlr (inf x y) = unsynlr x \<inter> unsynlr y"
 lemma unsynlr_sup: "unsynlr (sup x y) = unsynlr x \<union> unsynlr y"
   unfolding sup_synlr_def by (simp add: admS_def synlr_def)
 
-instance
-apply intro_classes
-apply (auto simp: less_eq_synlr_def unsynlr_inf unsynlr_sup)
-done
+instance by intro_classes (auto simp: less_eq_synlr_def unsynlr_inf unsynlr_sup)
 
 end
 
@@ -500,21 +462,21 @@ done
 end
 
 (*>*)
-text{*
+text\<open>
 
 Again we define functors on @{typ "('d, 'a) synlr"}.
 
-*}
+\<close>
 
 type_synonym ('d, 'a) synlf_rep = "('d, 'a) synlr dual \<times> ('d, 'a) synlr \<Rightarrow> ('d \<times> 'a) set"
 type_synonym ('d, 'a) synlf = "('d, 'a) synlr dual \<times> ('d, 'a) synlr \<Rightarrow> ('d, 'a) synlr"
 
-text{*
+text\<open>
 
 We capture our relations as before. Note we need the inclusion @{term
 "e"} to be strict for our example.
 
-*}
+\<close>
 
 abbreviation
   eRSS :: "('d::pcpo \<rightarrow> 'd) \<Rightarrow> ('d, 'a::type) synlr dual \<Rightarrow> ('d, 'a) synlr \<Rightarrow> bool"
@@ -544,13 +506,8 @@ where
 
 lemma sym_lr_mono:
   shows "mono sym_lr"
-  unfolding sym_lr_def
-  apply (rule monoI)
-  using monoF
-  apply (simp add: split_def monoD)
-  apply (rule monoD[OF monoF])
-  apply (simp add: undual_leq fst_mono snd_mono)
-  done
+unfolding sym_lr_def using monoF
+by (force simp: case_prod_unfold less_eq_prod_def monoD undual_leq intro: monoI)
 
 abbreviation
   f_lim :: "('d, 'a) synlr dual \<times> ('d, 'a) synlr"
@@ -569,29 +526,15 @@ where
 
 lemma delta:
   "(delta_neg, delta_pos) = f_lim"
-  apply (cases f_lim)
-  apply (simp add: delta_neg_def delta_pos_def)
-  done
+by (simp add: delta_neg_def delta_pos_def)
 
 lemma delta_neg_sol:
   "delta_neg = dual (F (dual delta_pos, undual delta_neg))"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_unfold delta_neg_def delta_pos_def fst_conv lfp_unfold sym_lr_def sym_lr_mono)
 
 lemma delta_pos_sol:
   "delta_pos = F (delta_neg, delta_pos)"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_conv delta lfp_unfold snd_conv sym_lr_def sym_lr_mono)
 
 lemma delta_pos_neg_least:
   assumes rm: "rm \<le> F (dual rp, rm)"
@@ -601,11 +544,8 @@ lemma delta_pos_neg_least:
 proof -
   from rm rp
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
-    apply (subst delta)
-    apply (rule lfp_lowerbound)
-    apply (simp add: sym_lr_def)
-    done
-  thus "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
+    by (simp add: delta lfp_lowerbound sym_lr_def)
+  then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
     by (simp_all add: undual_leq)
 qed
 
@@ -613,24 +553,12 @@ lemma delta_eq:
   "undual delta_neg = delta_pos"
 proof(rule antisym)
   show "delta_pos \<le> undual delta_neg"
-    apply (rule delta_pos_neg_least(2)[where rm="delta_pos"])
-     apply (simp_all add: delta_pos_sol[symmetric])
-    apply (subst delta_neg_sol) back
-    apply simp
-    done
+    by (metis delta_neg_sol delta_pos_neg_least(2) delta_pos_sol order_refl undual_dual)
 next
   let ?P = "\<lambda>x. x\<cdot>\<bottom> = \<bottom> \<and> eRSS x (delta_neg) (delta_pos)"
   have "?P (fix\<cdot>\<delta>)"
-    apply (rule fix_ind)
-      apply simp
-     apply simp
-    apply clarsimp
-    apply (drule (1) eRS_deltaF[where R=delta_neg and S=delta_pos])
-    apply (simp add: min_inv_strict)
-    apply (subst delta_pos_sol)
-    apply (subst delta_neg_sol)
-    apply force
-    done
+    by (rule fix_ind, simp_all)
+       (metis delta_neg_sol delta_pos_sol eRS_deltaF min_inv_strict)
   with min_inv_ID
   show "undual delta_neg \<le> delta_pos"
     by (fastforce simp: unsynlr_leq[symmetric])
@@ -641,11 +569,8 @@ definition
 
 lemma delta_sol:
   "delta = F (dual delta, delta)"
-  unfolding delta_def
-  apply (subst delta_eq[symmetric]) back
-  apply simp
-  apply (rule delta_pos_sol)
-  done
+unfolding delta_def
+by (subst delta_eq[symmetric], simp, rule delta_pos_sol)
 
 lemma delta_unique:
   assumes r: "F (dual r, r) = r"
@@ -657,31 +582,31 @@ proof(rule antisym)
 next
   have "delta_neg \<le> dual r"
     using assms delta_pos_neg_least[where rm=r and rp=r] by simp
-  hence "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
-  thus "r \<le> delta_pos"
+  then have "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
+  then show "r \<le> delta_pos"
     using delta_eq by simp
 qed
 
 end
 
 (*>*)
-text{*
+text\<open>
 
 Again, from these assumptions we can construct the unique solution to
 the recursive equation specified by @{term "F"}.
 
-*}
+\<close>
 
-subsection{* Relations between pairs of domains *}
+subsection\<open>Relations between pairs of domains\<close>
 
-text{*
+text\<open>
 
 Following \citet{DBLP:conf/icalp/Reynolds74} and
 \citet{DBLP:journals/tcs/Filinski07}, we want to relate two pairs of
 mutually-recursive domains. Each of the pairs represents a (monadic)
 computation and value space.
 
-*}
+\<close>
 
 type_synonym ('am, 'bm, 'av, 'bv) lr_pair = "('am \<times> 'bm) admS \<times> ('av \<times> 'bv) admS"
 
@@ -691,11 +616,11 @@ type_synonym ('am, 'bm, 'av, 'bv) lf_pair_rep =
 type_synonym ('am, 'bm, 'av, 'bv) lf_pair =
   "('am, 'bm, 'av, 'bv) lr_pair dual \<times> ('am, 'bm, 'av, 'bv) lr_pair \<Rightarrow> (('am \<times> 'bm) admS \<times> ('av \<times> 'bv) admS)"
 
-text{*
+text\<open>
 
 The inclusions need to be strict to get our example through.
 
-*}
+\<close>
 
 abbreviation
   eRSP :: "(('am::pcpo \<rightarrow> 'am) \<times> ('av::pcpo \<rightarrow> 'av))
@@ -733,13 +658,8 @@ where
 
 lemma sym_lr_mono:
   shows "mono sym_lr"
-  unfolding sym_lr_def
-  apply (rule monoI)
-  using monoF
-  apply (simp add: split_def monoD)
-  apply (rule monoD[OF monoF])
-  apply (simp add: undual_leq fst_mono snd_mono)
-  done
+unfolding sym_lr_def
+by (force simp: split_def undual_leq fst_mono snd_mono intro: monoI monoD[OF monoF])
 
 abbreviation
   f_lim :: "('am, 'bm, 'av, 'bv) lr_pair dual \<times> ('am, 'bm, 'av, 'bv) lr_pair"
@@ -758,29 +678,15 @@ where
 
 lemma delta:
   "(delta_neg, delta_pos) = f_lim"
-  apply (cases f_lim)
-  apply (simp add: delta_neg_def delta_pos_def)
-  done
+by (simp add: delta_neg_def delta_pos_def)
 
 lemma delta_neg_sol:
   "delta_neg = dual (F (dual delta_pos, undual delta_neg))"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_unfold delta_neg_def delta_pos_def fst_conv lfp_unfold sym_lr_def sym_lr_mono)
 
 lemma delta_pos_sol:
   "delta_pos = F (delta_neg, delta_pos)"
-  apply (simp add: delta_neg_def delta_pos_def sym_lr_def split_def)
-  apply (subst lfp_unfold)
-   apply (rule monoI)
-   apply (auto simp: less_eq_dual_def
-              split: prod.split
-              intro: monoD[OF monoF])
-  done
+by (metis (no_types, lifting) case_prod_conv delta lfp_unfold snd_conv sym_lr_def sym_lr_mono)
 
 lemma delta_pos_neg_least:
   assumes rm: "rm \<le> F (dual rp, rm)"
@@ -790,11 +696,8 @@ lemma delta_pos_neg_least:
 proof -
   from rm rp
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
-    apply (subst delta)
-    apply (rule lfp_lowerbound)
-    apply (simp add: sym_lr_def)
-    done
-  thus "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
+    by (simp add: delta lfp_lowerbound sym_lr_def)
+  then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
     by (simp_all add: undual_leq)
 qed
 
@@ -802,29 +705,23 @@ lemma delta_eq:
   "undual delta_neg = delta_pos"
 proof(rule antisym)
   show "delta_pos \<le> undual delta_neg"
-    apply (rule delta_pos_neg_least(2)[where rm="delta_pos"])
-     apply (simp_all add: delta_pos_sol[symmetric])
-    apply (subst delta_neg_sol) back
-    apply simp
-    done
+    by (metis delta_neg_sol delta_pos_neg_least(2) delta_pos_sol order_refl undual_dual)
 next
   let ?P = "\<lambda>(ea, eb). eRSP ea eb (delta_neg) (delta_pos) \<and> fst ea\<cdot>\<bottom> = \<bottom> \<and> snd ea\<cdot>\<bottom> = \<bottom> \<and> fst eb\<cdot>\<bottom> = \<bottom> \<and> snd eb\<cdot>\<bottom> = \<bottom>"
   have "?P (fix\<cdot>ad, fix\<cdot>bd)"
     apply (rule parallel_fix_ind)
-      apply simp
-     apply simp
+    apply simp_all
     using ad_strict bd_strict
     apply clarsimp
     apply (cut_tac ea="(a, b)" and eb="(aa, ba)" in eRSP_deltaF[where R=delta_neg and S=delta_pos])
-    apply simp_all
-    apply (simp add: delta_pos_sol[symmetric])
+    apply (simp_all add: delta_pos_sol[symmetric])
     apply (subst delta_neg_sol)
     apply simp
     apply (subst delta_neg_sol)
     apply simp
     done
-  hence "?P ((ID, ID), (ID, ID))" by (simp only: ad_ID bd_ID)
-  thus "undual delta_neg \<le> delta_pos"
+  then have "?P ((ID, ID), (ID, ID))" by (simp only: ad_ID bd_ID)
+  then show "undual delta_neg \<le> delta_pos"
     by (fastforce simp: unlr_leq[symmetric] less_eq_prod_def)
 qed
 
@@ -833,11 +730,8 @@ definition
 
 lemma delta_sol:
   "delta = F (dual delta, delta)"
-  unfolding delta_def
-  apply (subst delta_eq[symmetric]) back
-  apply simp
-  apply (rule delta_pos_sol)
-  done
+unfolding delta_def
+by (subst delta_eq[symmetric], simp, rule delta_pos_sol)
 
 lemma delta_unique:
   assumes r: "F (dual r, r) = r"
@@ -849,20 +743,20 @@ proof(rule antisym)
 next
   have "delta_neg \<le> dual r"
     using assms delta_pos_neg_least[where rm=r and rp=r] by simp
-  hence "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
-  thus "r \<le> delta_pos"
+  then have "r \<le> undual delta_neg" by (simp add: less_eq_dual_def)
+  then show "r \<le> delta_pos"
     using delta_eq by simp
 qed
 
 end
 (*>*)
 
-text{*
+text\<open>
 
 We use this solution to relate the direct and continuation semantics
 for PCF in \S\ref{sec:continuations}.
 
-*}
+\<close>
 (*<*)
 
 end
