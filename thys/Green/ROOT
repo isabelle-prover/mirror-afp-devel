@@ -11,7 +11,6 @@ session Green (AFP) = "HOL-Analysis" +
   Derivs
   General_Utils
   Integrals
-  PairToEuclidIntegral
   SymmetricR2Shapes
  document_files
    "root.tex"
