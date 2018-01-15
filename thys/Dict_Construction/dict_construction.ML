@@ -1,5 +1,7 @@
 signature DICT_CONSTRUCTION =
 sig
+  datatype cert_proof = Cert | Skip
+
   type const
 
   type 'a sccs = (string * 'a) list list
@@ -11,7 +13,7 @@ sig
   val axclass: class -> local_theory -> Class_Graph.node * local_theory
   val instance: (string * const) Symtab.table -> string -> class -> local_theory -> term * local_theory
   val term: term Symreltab.table -> (string * const) Symtab.table -> term -> local_theory -> (term * local_theory)
-  val consts: (string * const) Symtab.table -> (string * const) list -> local_theory -> local_theory
+  val consts: (string * const) Symtab.table -> cert_proof -> (string * const) list -> local_theory -> local_theory
 
   (* certification *)
 
@@ -31,12 +33,14 @@ sig
 
   type dict_target = (string * class) list * (term * string * class)
 
-  val prove_fun_cert: fun_target list -> const_info -> local_theory -> thm list
+  val prove_fun_cert: fun_target list -> const_info -> cert_proof -> local_theory -> thm list
   val prove_dict_cert: dict_target -> dict_thms -> local_theory -> thm
 
   val the_info: Proof.context -> string -> const_info
 
   (* utilities *)
+
+  val debug: bool Config.T
 
   val normalizer_conv: Proof.context -> conv
   val cong_of_const: Proof.context -> string -> thm option
@@ -51,7 +55,27 @@ struct
 open Class_Graph
 open Dict_Construction_Util
 
+(* FIXME copied from skip_proof.ML *)
+
+val (_, make_thm_cterm) =
+  Context.>>>
+    (Context.map_theory_result (Thm.add_oracle (@{binding cert_oracle}, I)))
+
+fun make_thm ctxt prop = make_thm_cterm (Thm.cterm_of ctxt prop)
+
+fun cheat_tac ctxt i st =
+  resolve_tac ctxt [make_thm ctxt (Var (("A", 0), propT))] i st
+
 (** utilities **)
+
+val debug = Attrib.setup_config_bool @{binding "dict_construction_debug"} (K false)
+
+fun if_debug ctxt f =
+  if Config.get ctxt debug then f () else ()
+
+fun ALLGOALS' ctxt = if Config.get ctxt debug then ALLGOALS else PARALLEL_ALLGOALS
+fun prove' ctxt = if Config.get ctxt debug then Goal.prove ctxt else Goal.prove_future ctxt
+fun prove_common' ctxt = Goal.prove_common ctxt (if Config.get ctxt debug then NONE else SOME ~1)
 
 val normalizer_conv = Axclass.overload_conv
 
@@ -93,6 +117,8 @@ fun get_code_eqs ctxt const =
 
 (** certification **)
 
+datatype cert_proof = Cert | Skip
+
 type const_info =
   {fun_info: Function.info option,
    inducts: thm list option,
@@ -118,8 +144,12 @@ type dict_thms =
 type dict_target = (string * class) list * (term * string * class)
 
 fun fun_cert_tac base_thms base_certs simps code_thms =
-  SOLVED' o Subgoal.FOCUS (fn {prems, context = ctxt, ...} =>
+  SOLVED' o Subgoal.FOCUS (fn {prems, context = ctxt, concl, ...} =>
     let
+      val _ =
+        if_debug ctxt (fn () =>
+          tracing ("Proving " ^ Syntax.string_of_term ctxt (Thm.term_of concl)))
+
       fun is_ih prem =
         Thm.prop_of prem |> Logic.strip_imp_concl |> HOLogic.dest_Trueprop |> can HOLogic.dest_eq
 
@@ -191,7 +221,7 @@ fun dict_cert_tac class def_thm base_thms =
       val tacs =
         [apply_intro, unfold_dict, normalize, smash_sels, solve, finally]
     in
-      EVERY (map PARALLEL_ALLGOALS tacs)
+      EVERY (map (ALLGOALS' ctxt) tacs)
     end)
 
 fun prepare_dicts classes names lthy =
@@ -270,7 +300,7 @@ fun prepare_dict_goal (classes, (term, _, class)) lthy =
     (dict_params, prop)
   end
 
-fun prove_fun_cert targets {inducts, base_thms, base_certs, simps, code_thms, ...} lthy =
+fun prove_fun_cert targets {inducts, base_thms, base_certs, simps, code_thms, ...} proof lthy =
   let
     (* the props contain dictionary certs as prems
        we can't exclude them from the induction because the dicts are part of the function
@@ -284,10 +314,15 @@ fun prove_fun_cert targets {inducts, base_thms, base_certs, simps, code_thms, ..
     (* we first prove the extensional variant (easier to prove), and then derive the
        contracted variant
        abs_def can't deal with premises, so we use our own version here *)
+    val tac =
+      case proof of
+        Cert => fun_cert_tac base_thms base_certs simps code_thms
+      | Skip => cheat_tac
+
     val long_thms =
-      Goal.prove_common lthy (SOME ~1) frees [] props (fn {context, ...} =>
-        maybe_induct_tac inducts argss [] context THEN
-          ALLGOALS (fun_cert_tac base_thms base_certs simps code_thms context))
+       prove_common' lthy frees [] props (fn {context, ...} =>
+          maybe_induct_tac inducts argss [] context THEN
+            ALLGOALS' context (tac context))
   in
     map (contract lthy) long_thms
   end
@@ -298,7 +333,7 @@ fun prove_dict_cert target {base_thms, def_thm} lthy =
     val frees = map (fst o dest_Free) args
     val (_, (_, _, class)) = target
   in
-    Goal.prove_future lthy frees [] prop (fn {context, ...} =>
+    prove' lthy frees [] prop (fn {context, ...} =>
       dict_cert_tac class def_thm base_thms context 1)
   end
 
@@ -644,7 +679,7 @@ fun new_names lthy consts =
     fst (fold_map (fold_map new_name) consts context)
   end
 
-fun consts consts group lthy =
+fun consts consts proof group lthy =
   let
     val fun_config = Function_Common.FunctionConfig
       {sequential=true, default=NONE, domintros=false, partials=false}
@@ -653,14 +688,14 @@ fun consts consts group lthy =
 
     val all_names = map fst group
 
-    fun print_info ctxt =
-      let
-        val pretty_consts = map (pretty_const ctxt) all_names |> Pretty.commas
-      in
-        Pretty.str "Redefining constant(s) " :: pretty_consts
-        |> Pretty.block
-        |> Pretty.writeln
-      end
+    val pretty_consts = map (pretty_const lthy) all_names |> Pretty.commas
+
+    fun print_info msg =
+      Pretty.str (msg ^ " ") :: pretty_consts
+      |> Pretty.block
+      |> Pretty.writeln
+
+    val _ = print_info "Redefining constant(s)"
 
     fun process_eqs (name, Fun {dicts, param_typs, new_typ, eqs, info, cong, ...}) lthy =
           let
@@ -708,6 +743,14 @@ fun consts consts group lthy =
       ||> split_list ||> apfst (flat #> split_list #>> map typify)
       |>> split_list
 
+    val _ = if_debug lthy (fn () =>
+      if null code_thms then ()
+      else
+        map (Syntax.pretty_term lthy o Thm.prop_of) code_thms
+        |> Pretty.big_list "Equations:"
+        |> Pretty.string_of
+        |> tracing)
+
     val is_fun =
       case distinct (op =) is_funs of
         [b] => b
@@ -730,7 +773,7 @@ fun consts consts group lthy =
           {fun_info = SOME info, inducts = SOME inducts, simps = simps, base_thms = base_thms,
            base_certs = base_certs, code_thms = code_thms}
       in
-        (prove_fun_cert targets args lthy, args)
+        (prove_fun_cert targets args proof lthy, args)
       end
 
     fun prove_eq_def defs lthy =
@@ -742,7 +785,7 @@ fun consts consts group lthy =
           {fun_info = NONE, inducts = NONE, simps = defs,
            base_thms = base_thms, base_certs = base_certs, code_thms = code_thms}
       in
-        (prove_fun_cert targets args lthy, args)
+        (prove_fun_cert targets args proof lthy, args)
       end
 
     fun add_constants ((((name, name', _), _), SOME _) :: xs) ((thm :: thms), info) =
@@ -759,7 +802,7 @@ fun consts consts group lthy =
             addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
 
         fun fallback_tac warn st =
-          (if warn then warning "Falling back to automatic termination proof ..." else ();
+          (if warn then warning "Falling back to automatic termination proof" else ();
            Function_Common.termination_prover_tac true termination_ctxt st)
 
         (*copied from BNF_Comp, in turn copied from Envir.expand_term_free*)
@@ -896,7 +939,7 @@ fun consts consts group lthy =
                     (warning "Termination relation has sort constraints; termination proof is unlikely to be automatic or may even be impossible";
                      Seq.empty)
                   else
-                    (tracing "Trying to re-use termination proof ...";
+                    (tracing "Trying to re-use termination proof";
                      tac st)
                 end)
               #> Exn.get_res
@@ -909,16 +952,15 @@ fun consts consts group lthy =
 
     fun prove_cong data lthy =
       let
-        fun rewr_cong _ NONE = NONE
-          | rewr_cong thm (SOME cong) =
-            if Thm.nprems_of thm > 0 then
-              (warning "No fundef_cong rule can be derived; this will likely not work later"; NONE)
-            else
-              (writeln "Porting fundef_cong rule ...";
-               SOME (Local_Defs.fold lthy [thm] cong))
+        fun rewr_cong thm cong =
+          if Thm.nprems_of thm > 0 then
+            (warning "No fundef_cong rule can be derived; this will likely not work later"; NONE)
+          else
+            (writeln "Porting fundef_cong rule";
+             SOME (Local_Defs.fold lthy [thm] cong))
 
         val congs' =
-          map2 rewr_cong (fst data) (map #cong infos)
+          map2 (Option.mapPartial o rewr_cong) (fst data) (map #cong infos)
           |> cat_options
 
         fun add_congs phi =
@@ -962,7 +1004,6 @@ fun consts consts group lthy =
            conceptually, everything happening locally would be great, but the type checker won't
            allow us to add sort constraints to TFrees after they have been declared *)
         val (prove_eq, (lthy', lthy)) = lthy'
-          |> tap print_info
           |> Local_Theory.open_target |> snd
           |> (if is_fun then mk_fun else mk_def)
           ||> `Local_Theory.close_target
@@ -970,19 +1011,25 @@ fun consts consts group lthy =
       in
         lthy'
         |> `(prove_eq phi)
+        |>> apfst (on_thms_complete (fn () => print_info "Proved equivalence for"))
         |-> prove_cong
         |-> add_constants items
       end
   end
 
-fun const_raw (binding, raw_consts) lthy =
+fun const_raw (binding, raw_consts) proof lthy =
   let
+    val _ =
+      if proof = Skip then
+        warning "Skipping certificate proofs"
+      else ()
+
     val (name, _) = Syntax.read_terms lthy raw_consts |> map dest_Const |> split_list
 
     val (eqs, lthy) = annotate_code_eqs lthy name
     val tab = symtab_of_sccs (new_names lthy eqs)
 
-    val lthy = fold (consts tab) eqs lthy
+    val lthy = fold (consts tab proof) eqs lthy
 
     val {instantiations, constants} = Definitions.get (Context.Proof lthy)
     val thms =
@@ -994,10 +1041,14 @@ fun const_raw (binding, raw_consts) lthy =
 
 (** setup **)
 
+val parse_flags =
+  Scan.optional (Args.parens (Parse.reserved "skip" >> K Skip)) Cert
+
 val _ =
   Outer_Syntax.local_theory
     @{command_keyword "declassify"}
     "redefines a constant after applying the dictionary construction"
-    (Parse_Spec.opt_thm_name ":" -- Scan.repeat1 Parse.const >> const_raw)
+    (parse_flags -- Parse_Spec.opt_thm_name ":" -- Scan.repeat1 Parse.const >>
+        (fn ((flags, def_binding), consts) => const_raw (def_binding, consts) flags))
 
 end

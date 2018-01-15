@@ -161,6 +161,8 @@ fun (tac CONTINUE_WITH_FW tacs) i st =
 
 fun SOLVED tac = tac THEN ALLGOALS (K no_tac)
 
+fun print_tac' ctxt str = SELECT_GOAL (print_tac ctxt str)
+
 (* theorem manipulation *)
 
 fun contract ctxt thm =
@@ -200,6 +202,9 @@ fun contract ctxt thm =
     Goal.prove_future ctxt' [] [] prop (fn {context, ...} => HEADGOAL (tac context count))
     |> singleton (Variable.export ctxt' ctxt)
   end
+
+fun on_thms_complete f thms =
+  (Future.fork (fn () => (Thm.consolidate thms; f ())); thms)
 
 (* theory *)
 

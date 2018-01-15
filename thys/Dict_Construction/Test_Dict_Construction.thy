@@ -245,6 +245,27 @@ lemma "Test__Dict__Construction_i = i" by (fact valid8)
 end
 
 
+subsection \<open>Complex termination arguments\<close>
+
+fun fac :: "nat \<Rightarrow> nat" where
+"fac n = (if n \<le> 1 then 1 else n * fac (n - 1))"
+
+experiment begin
+
+declassify valid9: fac
+
+end
+
+
+subsection \<open>Combination of various things\<close>
+
+experiment begin
+
+declassify valid10: sum_list
+
+end
+
+
 subsection \<open>Interaction with the code generator\<close>
 
 declassify h
