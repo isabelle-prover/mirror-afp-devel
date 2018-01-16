@@ -497,11 +497,11 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
    (fn lthy => lthy
     |> Interpretation.interpretation_cmd ( [ ( (To_string0 loc_n, Position.none)
                                          , ( (To_string0 n, true)
-                                           , if loc_param = [] then
+                                           , (if loc_param = [] then
                                                Expression.Named []
                                              else
                                                Expression.Positional (map (SOME o of_semi__term)
-                                                                          loc_param)))]
+                                                                          loc_param), [])))]
                                      , [])
                                      []
     |> global_terminal_proof o_by)

@@ -795,7 +795,7 @@ fun add_parameter_info phi cname (name,(inpars,outpars,state_kind)) ctxt =
     end;
 
 fun mk_loc_exp xs = 
-  let fun mk_expr s = (s,(("",false),Expression.Named []))
+  let fun mk_expr s = (s,(("",false),(Expression.Named [],[])))
   in (map mk_expr xs,[]) end;
 
 val parametersN = "_parameters";
