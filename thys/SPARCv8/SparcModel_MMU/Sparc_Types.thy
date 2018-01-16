@@ -773,9 +773,9 @@ reset
 datatype Exception =
 \<comment> \<open>The following are processor states that are not in the instruction model,\<close>
 \<comment> \<open>but we MAY want to deal with these from hardware perspective.\<close>
-\<comment> \<open>\<open>|execute_mode\<close>\<close>
-\<comment> \<open>\<open>|reset_mode\<close>\<close>
-\<comment> \<open>\<open>|error_mode\<close>\<close>
+\<^cancel>\<open>|execute_mode\<close>
+\<^cancel>\<open>|reset_mode\<close>
+\<^cancel>\<open>|error_mode\<close>
 \<comment> \<open>The following are self-defined exceptions.\<close>
 invalid_cond_f2
 |invalid_op2_f2
