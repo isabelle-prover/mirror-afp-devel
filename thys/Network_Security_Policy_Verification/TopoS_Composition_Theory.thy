@@ -11,20 +11,19 @@ The list corresponds to the security requirements.
 The list should have the type @{typ "('v graph \<Rightarrow> bool) list"}, i.e.\ a list of predicates over the policy. 
 We need in instantiated security invariant, i.e.\ get rid of @{typ "'a"} and @{typ "'b"}*}
 
- --{*An instance (configured) a security invariant I.e.\ a concrete security requirement, in different terminology. *}
+ \<comment> \<open>An instance (configured) a security invariant I.e.\ a concrete security requirement, in different terminology.\<close>
  record ('v) SecurityInvariant_configured =
     c_sinvar::"('v) graph \<Rightarrow> bool"
     c_offending_flows::"('v) graph \<Rightarrow> ('v \<times> 'v) set set"
     c_isIFS::"bool"
 
-  --{*  parameters 1-3 are the @{text "SecurityInvariant"}:
+  \<comment> \<open>parameters 1-3 are the @{text "SecurityInvariant"}:
       @{text sinvar} @{text "\<bottom>"} @{text "receiver_violation"}
 
       Fourth parameter is the host attribute mapping @{text nP}
 
       
-      TODO: probably check @{text "wf_graph"} here and optionally some host-attribute sanity checker as in DomainHierachy.
-      *}
+      TODO: probably check @{text "wf_graph"} here and optionally some host-attribute sanity checker as in DomainHierachy.\<close>
   fun new_configured_SecurityInvariant ::
     "((('v::vertex) graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool) \<times> 'a \<times> bool \<times> ('v \<Rightarrow> 'a)) \<Rightarrow> ('v SecurityInvariant_configured) option" where 
       "new_configured_SecurityInvariant (sinvar, defbot, receiver_violation, nP) = 
@@ -57,16 +56,16 @@ text{* We now collect all the core properties of a security invariant, but witho
 locale configured_SecurityInvariant =
   fixes m :: "('v::vertex) SecurityInvariant_configured"
   assumes
-    --"As in SecurityInvariant definition"
+    \<comment> \<open>As in SecurityInvariant definition\<close>
     valid_c_offending_flows:
     "c_offending_flows m G = {F. F \<subseteq> (edges G) \<and> \<not> c_sinvar m G \<and> c_sinvar m (delete_edges G F) \<and> 
       (\<forall> (e1, e2) \<in> F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))}"
   and
-    --"A empty network can have no security violations"
+    \<comment> \<open>A empty network can have no security violations\<close>
     defined_offending:
     "\<lbrakk> wf_graph \<lparr> nodes = N, edges = {} \<rparr> \<rbrakk> \<Longrightarrow> c_sinvar m \<lparr> nodes = N, edges = {}\<rparr>"
   and
-    --"prohibiting more does not decrease security"
+    \<comment> \<open>prohibiting more does not decrease security\<close>
     mono_sinvar:
     "\<lbrakk> wf_graph \<lparr> nodes = N, edges = E \<rparr>; E' \<subseteq> E; c_sinvar m \<lparr> nodes = N, edges = E \<rparr> \<rbrakk> \<Longrightarrow> 
       c_sinvar m \<lparr> nodes = N, edges = E' \<rparr>"
@@ -232,10 +231,10 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
       "generate_valid_topology [] G = G" |
       "generate_valid_topology (m#Ms) G = delete_edges (generate_valid_topology Ms G) (\<Union> (c_offending_flows m G))"
 
-     -- "return all Access Control Strategy models from a list of models"
+     \<comment> \<open>return all Access Control Strategy models from a list of models\<close>
     definition get_ACS :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> 'v SecurityInvariant_configured list" where
       "get_ACS M \<equiv> [m \<leftarrow> M. \<not> c_isIFS m]"
-     -- "return all Information Flows Strategy models from a list of models"
+     \<comment> \<open>return all Information Flows Strategy models from a list of models\<close>
     definition get_IFS :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> 'v SecurityInvariant_configured list" where
       "get_IFS M \<equiv> [m \<leftarrow> M. c_isIFS m]"
     lemma get_ACS_union_get_IFS: "set (get_ACS M) \<union> set (get_IFS M) = set M"
@@ -367,8 +366,8 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
           from wf_graph_generate_valid_topology[OF Cons(3)] E_IH_prop
           have valid_G_E_IH: "wf_graph \<lparr>nodes = V, edges = E_IH\<rparr>" by metis
     
-          -- "@{thm IH[simplified E_IH_prop]}"
-          -- "@{thm all_security_requirements_fulfilled_mono[OF `valid_reqs M` _  valid_G_E_IH IH[simplified E_IH_prop]]}"
+          \<comment> \<open>@{thm IH[simplified E_IH_prop]}\<close>
+          \<comment> \<open>@{thm all_security_requirements_fulfilled_mono[OF `valid_reqs M` _  valid_G_E_IH IH[simplified E_IH_prop]]}\<close>
     
           from all_security_requirements_fulfilled_mono[OF `valid_reqs M` _  valid_G_E_IH IH[simplified E_IH_prop]] have mono_rule:
             "\<And> E'. E' \<subseteq> E_IH \<Longrightarrow> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" .
@@ -450,7 +449,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
                 (\<forall>(e1, e2)\<in>F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))}" by auto
         have "c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})"
           proof(cases "c_sinvar m G")
-          case True thus ?thesis --{*@{term "{}"}*}
+          case True thus ?thesis \<comment> \<open>@{term "{}"}\<close>
             by(simp add: offending_formaldef)
           next
           case False thus ?thesis by(auto simp add: offending_formaldef graph_ops enf)
@@ -545,7 +544,7 @@ qed
       have "\<forall>(v1, v2)\<in>V \<times> V - E.  V \<union> {v1, v2} = V" by blast
       hence "\<forall>(v1, v2)\<in>V \<times> V - E. \<lparr>nodes = V \<union> {v1, v2}, edges = {(v1, v2)} \<union> E\<rparr> = \<lparr>nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by blast
       from this a show "\<forall>(v1, v2)\<in>V \<times> V - E. \<not> all_security_requirements_fulfilled M \<lparr>nodes = V \<union> {v1, v2}, edges = {(v1, v2)} \<union> E\<rparr>"
-        --"TODO: this should be trivial ..."
+        \<comment> \<open>TODO: this should be trivial ...\<close>
         apply(simp)
         apply(rule ballI)
         apply(erule_tac x=x and A="V \<times> V - E" in ballE)

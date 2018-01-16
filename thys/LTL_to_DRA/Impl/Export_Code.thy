@@ -15,7 +15,7 @@ begin
 
 subsection \<open>External Interface\<close>
 
---\<open>Fix the type to match the type of the LTL parser\<close>
+\<comment> \<open>Fix the type to match the type of the LTL parser\<close>
 
 definition 
   "ltlc_to_rabin eager mode (\<phi>\<^sub>c :: String.literal ltlc) \<equiv>
@@ -122,10 +122,10 @@ lemmas ltl_to_rabin_base_code_export [code, code_unfold] =
 lemmas M_fin\<^sub>C_lhs [code del, code_unfold] = 
   M_fin\<^sub>C_af\<^sub>\<UU>_lhs_def M_fin\<^sub>C_af_lhs_def 
 
---\<open>Test code export\<close>
+\<comment> \<open>Test code export\<close>
 export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to_rabin checking
 
---\<open>Export translator (and also constructors)\<close>
+\<comment> \<open>Export translator (and also constructors)\<close>
 export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to_rabin 
   in SML module_name LTL file "../Code/LTL_to_DRA_Translator.sml"
 

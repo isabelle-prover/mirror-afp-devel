@@ -2550,7 +2550,7 @@ proof -
 
   define g' where "g' = (\<lambda>s. if s \<in> {s. Re s > c} then eval_fds f s else g s)"
 
-  -- \<open>We can find some $\varepsilon > 0$ such that the Dirichlet series can be continued
+  \<comment> \<open>We can find some $\varepsilon > 0$ such that the Dirichlet series can be continued
       analytically in a ball of radius $1 + \varepsilon$ around $a$.\<close>
   from \<open>open A\<close> \<open>c \<in> A\<close> obtain \<delta> where \<delta>: "\<delta> > 0" "ball c \<delta> \<subseteq> A"
     by (auto simp: open_contains_ball)

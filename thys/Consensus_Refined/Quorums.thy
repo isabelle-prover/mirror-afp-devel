@@ -12,7 +12,7 @@ locale quorum =
   fixes Quorum :: "'a set set"
   assumes 
     qintersect: "\<lbrakk> Q \<in> Quorum; Q' \<in> Quorum \<rbrakk> \<Longrightarrow> Q \<inter> Q' \<noteq> {}"
-    -- {* Non-emptiness needed for some invariants of Coordinated Voting *}
+    \<comment> \<open>Non-emptiness needed for some invariants of Coordinated Voting\<close>
     and Quorum_not_empty: "\<exists>Q. Q \<in> Quorum"
 
 lemma (in quorum) quorum_non_empty: "Q \<in> Quorum \<Longrightarrow> Q \<noteq> {}"

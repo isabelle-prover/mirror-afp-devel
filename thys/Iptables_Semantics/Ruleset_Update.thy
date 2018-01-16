@@ -84,7 +84,7 @@ lemma update_Gamma_log_empty:
         from Call_return have "\<Gamma>(chain \<mapsto> rs),\<gamma>,p\<turnstile> \<langle>[Rule m' (Call chain')], Undecided\<rangle> \<Rightarrow> Undecided" (is ?Call_return_case)
           proof(cases "chain' = chain")
           case True with Call_return show ?Call_return_case
-            --\<open>@{term rs\<^sub>1} cannot be empty\<close>
+            \<comment> \<open>@{term rs\<^sub>1} cannot be empty\<close>
             proof(cases "rs\<^sub>1")
             case Nil with Call_return(3) \<open>chain' = chain\<close> assms have "False" by simp
               thus ?Call_return_case by simp

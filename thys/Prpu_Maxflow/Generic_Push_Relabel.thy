@@ -55,7 +55,7 @@ proof -
   from noAugPath_iff_maxFlow no_augmenting_path show "isMaxFlow f" by auto
 qed
   
-end -- \<open>Labeling\<close>
+end \<comment> \<open>Labeling\<close>
     
 subsection \<open>Basic Operations\<close>    
 text \<open>
@@ -151,7 +151,7 @@ lemma cfE_augment_ss:
   done
   
   
-end -- \<open>Network\<close>  
+end \<comment> \<open>Network\<close>  
   
 context NPreflow begin  
 
@@ -269,7 +269,7 @@ lemma augment_edge_preflow_preserve: "\<lbrakk>0\<le>\<Delta>; \<Delta> \<le> cf
     qed              
   qed          
   done            
-end -- \<open>Network with Preflow\<close> 
+end \<comment> \<open>Network with Preflow\<close> 
 
 subsubsection \<open>Push Operation\<close>  
 context Network 
@@ -323,7 +323,7 @@ text \<open>
 \<close>  
 definition "pp_init_l \<equiv> (\<lambda>x. 0)(s := card V)"
 
-end -- \<open>Network\<close>
+end \<comment> \<open>Network\<close>
 
 subsection \<open>Abstract Correctness\<close>
 text \<open>We formalize the abstract correctness argument of the algorithm. 
@@ -372,7 +372,7 @@ proof -
   show ?thesis by unfold_locales    
 qed  
   
-end -- \<open>Network\<close>  
+end \<comment> \<open>Network\<close>  
 
 context Labeling
 begin
@@ -470,7 +470,7 @@ proof -
   with no_excess_imp_maxflow show ?thesis . 
 qed      
   
-end -- \<open>Labeling\<close>  
+end \<comment> \<open>Labeling\<close>  
   
 subsection \<open>Convenience Lemmas\<close>
 text \<open>We define a locale to reflect the effect of a push operation\<close>  
@@ -620,7 +620,7 @@ begin
          else excess f x)"  
     by simp
     
-end -- \<open>Push Effect Locale\<close> 
+end \<comment> \<open>Push Effect Locale\<close> 
   
   
   
@@ -903,7 +903,7 @@ proof -
     using \<open>u\<in>V\<close>  
     by auto   
 qed        
-end -- \<open>Height Bounded Labeling\<close>  
+end \<comment> \<open>Height Bounded Labeling\<close>  
   
 lemma (in Network) sum_height_measure_is_OV2: 
   "sum_heights_measure l \<le> 2*(card V)\<^sup>2"
@@ -938,7 +938,7 @@ where
     \<Longrightarrow> ((f,l),RELABEL,(f,relabel_effect f l u))\<in>pr_algo_lts"
 
   
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 text \<open>We show invariant maintenance and correctness on termination\<close>  
   
@@ -1001,7 +1001,7 @@ lemma nonsat_push_alt: "nonsat_push_precond f l (u,v)
   unfolding push_effect_def push_precond_eq_sat_or_nonsat nonsat_push_precond_def 
   by (auto simp: min_absorb1)
 
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 context push_effect_locale
 begin
@@ -1046,7 +1046,7 @@ lemma is_PUSH_project_conv[simp]:
   "is_PUSH \<circ> project_operation = (\<lambda>x. is_SAT_PUSH' x \<or> is_NONSAT_PUSH' x)"
   apply (clarsimp intro!: ext) subgoal for x by (cases x) auto done
     
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 context Height_Bounded_Labeling
 begin  
@@ -1135,7 +1135,7 @@ qed
   
   
   
-end -- \<open>Height Bounded Labeling\<close> 
+end \<comment> \<open>Height Bounded Labeling\<close> 
 
   
 subsubsection \<open>Bounding the Relabel Operations\<close>  
@@ -1413,7 +1413,7 @@ proof -
   finally show "length (filter is_SAT_PUSH' p) \<le> 4 * card V * card E" .
 qed    
   
-end -- \<open>Network\<close>  
+end \<comment> \<open>Network\<close>  
   
 subsubsection \<open>Bounding the Non-Saturating Push Operations\<close>    
 
@@ -1569,7 +1569,7 @@ proof -
   finally show ?thesis .   
 qed  
 
-end -- \<open>Height Bounded Labeling\<close>  
+end \<comment> \<open>Height Bounded Labeling\<close>  
   
 context Network 
 begin
@@ -1633,7 +1633,7 @@ proof -
   qed
 qed    
         
-end --\<open>Network\<close>  
+end \<comment> \<open>Network\<close>  
         
 subsubsection \<open>Assembling the Final Theorem\<close>
   
@@ -1817,7 +1817,7 @@ lemma wf_pr_algo_rel[simp, intro!]: "wf pr_algo_rel"
   by (auto simp: pr_algo_measure)  
   
       
-end -- \<open>Network\<close>
+end \<comment> \<open>Network\<close>
   
 subsection \<open>Gap Heuristics\<close>  
 context Network
@@ -1931,7 +1931,7 @@ proof -
     by (rule_tac wf_subset; auto)
 qed  
   
-end -- \<open>Network\<close>
+end \<comment> \<open>Network\<close>
   
   
 end

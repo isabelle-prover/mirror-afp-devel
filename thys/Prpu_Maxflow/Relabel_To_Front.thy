@@ -28,7 +28,7 @@ begin
   
   
   
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 text \<open>The edge of a push operation is admissible.\<close>  
 lemma (in push_effect_locale) uv_adm: "(u,v)\<in>adm_edges f l" 
@@ -290,7 +290,7 @@ definition "discharge f l n u \<equiv> do {
   }) (f,l,n)
 }"
   
-end -- \<open>Network\<close>  
+end \<comment> \<open>Network\<close>  
   
 text \<open>Invariant for the discharge loop\<close>  
 locale discharge_invar = 
@@ -478,7 +478,7 @@ lemma discharge_correct[THEN order_trans, refine_vcg]:
   subgoal by (auto)
   done
   
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 subsection \<open>Main Algorithm\<close>  
 text \<open>We state the main algorithm and prove its 
@@ -546,7 +546,7 @@ definition "relabel_to_front \<equiv> do {
 }"
   
   
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
   
 text \<open>Invariant for the main algorithm:
@@ -689,6 +689,6 @@ theorem relabel_to_front_correct:
   subgoal by (auto intro: rtf_invar.terminated_imp_maxflow)  
   done
     
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 end

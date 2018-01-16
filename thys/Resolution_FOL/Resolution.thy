@@ -1117,7 +1117,7 @@ lemma extend_preserves_model2: (* only for ground *)
   assumes model_C: "\<forall>n. \<not>falsifies\<^sub>c (f n) C"
   shows C_false: "eval\<^sub>c HFun (extend f) C"
 proof -
-  -- {* Since C is finite, C has a largest index of a literal. *}
+  \<comment> \<open>Since C is finite, C has a largest index of a literal.\<close>
   obtain n where largest: "\<forall>l \<in> C. nat_from_fatom (get_atom l) \<le> n" using fin_c maximum[of C "\<lambda>l. nat_from_fatom (get_atom l)"] by blast
   moreover
   then have "\<not>falsifies\<^sub>c (f (Suc n)) C" using model_C by auto
@@ -1137,12 +1137,12 @@ unfolding eval\<^sub>c_def proof
   from fin_c have fin_c\<sigma>: "finite (C \<cdot>\<^sub>l\<^sub>s sub_of_denot E)" by auto
   have groundc\<sigma>: "ground\<^sub>l\<^sub>s (C \<cdot>\<^sub>l\<^sub>s sub_of_denot E)" using sub_of_denot_equiv_ground by auto
 
-  -- {* Here starts the proof *}
-  -- {* We go from syntactic FO world to syntactic ground world: *}
+  \<comment> \<open>Here starts the proof\<close>
+  \<comment> \<open>We go from syntactic FO world to syntactic ground world:\<close>
   from model_c have "\<forall>n. \<not>falsifies\<^sub>c (f n) (C \<cdot>\<^sub>l\<^sub>s ?\<sigma>)" using partial_equiv_subst by blast
-  -- {* Then from syntactic ground world to semantic ground world: *}
+  \<comment> \<open>Then from syntactic ground world to semantic ground world:\<close>
   then have "eval\<^sub>c HFun ?G (C \<cdot>\<^sub>l\<^sub>s ?\<sigma>)" using groundc\<sigma> f_infpath fin_c\<sigma> extend_preserves_model2[of f "C \<cdot>\<^sub>l\<^sub>s ?\<sigma>"] by blast
-  -- {* Then from semantic ground world to semantic FO world: *}
+  \<comment> \<open>Then from semantic ground world to semantic FO world:\<close>
   then have "\<forall>E. \<exists>l \<in> (C \<cdot>\<^sub>l\<^sub>s ?\<sigma>). eval\<^sub>l E HFun ?G l" unfolding eval\<^sub>c_def by auto
   then have "\<exists>l \<in> (C \<cdot>\<^sub>l\<^sub>s ?\<sigma>). eval\<^sub>l E HFun ?G l" by auto
   then show "\<exists>l \<in> C. eval\<^sub>l E HFun ?G l" using sub_of_denot_equiv_ground[of C E "extend f"] by blast
@@ -1248,7 +1248,7 @@ theorem herbrand':
   assumes finite_cs: "finite Cs" "\<forall>C\<in>Cs. finite C"
   shows "\<exists>G. eval\<^sub>c\<^sub>s HFun G Cs"
 proof -
-  -- {* Show T infinite: *}
+  \<comment> \<open>Show T infinite:\<close>
   let ?tree = "{G. \<not>falsifies\<^sub>c\<^sub>s G Cs}"
   let ?undiag = length
   let ?diag = "(\<lambda>l. SOME b. open_branch b (deeptree l) Cs) :: nat \<Rightarrow> partial_pred_denot"
@@ -1260,7 +1260,7 @@ proof -
   have "\<forall>n. (?diag n) \<in> ?tree" using diag_open by auto
   ultimately
   have "\<not>finite ?tree" using infinity[of _ "\<lambda>n. SOME b. open_branch b (_ n) Cs"] by simp
-  -- {* Get infinite path: *}
+  \<comment> \<open>Get infinite path:\<close>
   moreover 
   have "\<forall>ds d. \<not>falsifies\<^sub>c\<^sub>s (ds @ d) Cs \<longrightarrow> \<not>falsifies\<^sub>c\<^sub>s ds Cs" 
     using longer_falsifies[of Cs] by blast
@@ -1268,7 +1268,7 @@ proof -
   ultimately
   have "\<exists>c. wf_infpath c \<and> (\<forall>n. c n \<in> ?tree)" using konig[of ?tree] by blast
   then have "\<exists>G. wf_infpath G \<and> (\<forall>n. \<not> falsifies\<^sub>c\<^sub>s (G n) Cs)" by auto
-  -- {* Apply above infpath lemma: *}
+  \<comment> \<open>Apply above infpath lemma:\<close>
   then show "\<exists>G. eval\<^sub>c\<^sub>s HFun G Cs" using infpath_model finite_cs by auto
 qed
 

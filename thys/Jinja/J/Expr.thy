@@ -9,18 +9,18 @@ theory Expr
 imports "../Common/Exceptions"
 begin
 
-datatype bop = Eq | Add     -- "names of binary operations"
+datatype bop = Eq | Add     \<comment> \<open>names of binary operations\<close>
 
 datatype 'a exp
-  = new cname      -- "class instance creation"
-  | Cast cname "('a exp)"      -- "type cast"
-  | Val val      -- "value"
-  | BinOp "('a exp)" bop "('a exp)"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      -- "binary operation"
-  | Var 'a                                               -- "local variable (incl. parameter)"
-  | LAss 'a "('a exp)"     ("_:=_" [90,90]90)                    -- "local assignment"
-  | FAcc "('a exp)" vname cname     ("_\<bullet>_{_}" [10,90,99]90)      -- "field access"
-  | FAss "('a exp)" vname cname "('a exp)"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
-  | Call "('a exp)" mname "('a exp list)"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
+  = new cname      \<comment> \<open>class instance creation\<close>
+  | Cast cname "('a exp)"      \<comment> \<open>type cast\<close>
+  | Val val      \<comment> \<open>value\<close>
+  | BinOp "('a exp)" bop "('a exp)"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      \<comment> \<open>binary operation\<close>
+  | Var 'a                                               \<comment> \<open>local variable (incl. parameter)\<close>
+  | LAss 'a "('a exp)"     ("_:=_" [90,90]90)                    \<comment> \<open>local assignment\<close>
+  | FAcc "('a exp)" vname cname     ("_\<bullet>_{_}" [10,90,99]90)      \<comment> \<open>field access\<close>
+  | FAss "('a exp)" vname cname "('a exp)"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
+  | Call "('a exp)" mname "('a exp list)"     ("_\<bullet>_'(_')" [90,99,0] 90)            \<comment> \<open>method call\<close>
   | Block 'a ty "('a exp)"     ("'{_:_; _}")
   | Seq "('a exp)" "('a exp)"     ("_;;/ _"             [61,60]60)
   | Cond "('a exp)" "('a exp)" "('a exp)"     ("if '(_') _/ else _" [80,79,79]70)
@@ -29,11 +29,11 @@ datatype 'a exp
   | TryCatch "('a exp)" cname 'a "('a exp)"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
 
 type_synonym
-  expr = "vname exp"            -- "Jinja expression"
+  expr = "vname exp"            \<comment> \<open>Jinja expression\<close>
 type_synonym
-  J_mb = "vname list \<times> expr"    -- "Jinja method body: parameter names and expression"
+  J_mb = "vname list \<times> expr"    \<comment> \<open>Jinja method body: parameter names and expression\<close>
 type_synonym
-  J_prog = "J_mb prog"          -- "Jinja program"
+  J_prog = "J_mb prog"          \<comment> \<open>Jinja program\<close>
 
 text{*The semantics of binary operators: *}
 

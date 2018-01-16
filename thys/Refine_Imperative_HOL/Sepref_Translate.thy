@@ -100,7 +100,7 @@ lemma vassn_tag_simps[simp]:
   by (sep_auto simp: vassn_tag_def mod_emp)+
 
 definition "GEN_ALGO f \<Phi> \<equiv> \<Phi> f"
--- \<open> Tag to synthesize @{term f} with property @{term \<Phi>}. \<close>
+\<comment> \<open>Tag to synthesize @{term f} with property @{term \<Phi>}.\<close>
 
 lemma is_GEN_ALGO: "GEN_ALGO f \<Phi> \<Longrightarrow> GEN_ALGO f \<Phi>" .
 
@@ -123,14 +123,14 @@ lemma trans_frame_rule:
   solved
   done
 
-lemma recover_pure_cons: -- \<open>Used for debugging\<close>
+lemma recover_pure_cons: \<comment> \<open>Used for debugging\<close>
   assumes "RECOVER_PURE \<Gamma> \<Gamma>'"
   assumes "hn_refine \<Gamma>' c \<Gamma>'' R a"
   shows "hn_refine (\<Gamma>) c (\<Gamma>'') R a"
   using trans_frame_rule[where F=emp, OF assms] by simp
 
 
--- \<open>Tag to align structure of refinement assertions for consequence rule\<close>
+\<comment> \<open>Tag to align structure of refinement assertions for consequence rule\<close>
 definition CPR_TAG :: "assn \<Rightarrow> assn \<Rightarrow> bool" where [simp]: "CPR_TAG y x \<equiv> True"
 lemma CPR_TAG_starI:
   assumes "CPR_TAG P1 Q1"
@@ -142,7 +142,7 @@ lemma CPR_tag_fallbackI: "CPR_TAG P Q" by simp
 
 lemmas CPR_TAG_rules = CPR_TAG_starI CPR_tag_ctxtI CPR_tag_fallbackI
 
-lemma cons_pre_rule: -- \<open>Consequence rule to be applied if no direct operation rule matches\<close>
+lemma cons_pre_rule: \<comment> \<open>Consequence rule to be applied if no direct operation rule matches\<close>
   assumes "CPR_TAG P P'"
   assumes "P \<Longrightarrow>\<^sub>t P'"
   assumes "hn_refine P' c Q R m"

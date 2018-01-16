@@ -107,7 +107,7 @@ WTrtBinOp:
   "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 : T\<^sub>1;  P,E(V \<mapsto> Class C),h \<turnstile> e\<^sub>2 : T\<^sub>2; P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 : T\<^sub>2"
 
--- "well-typed expression lists"
+\<comment> \<open>well-typed expression lists\<close>
 
 | WTrtNil:
   "P,E,h \<turnstile> [] [:] []"

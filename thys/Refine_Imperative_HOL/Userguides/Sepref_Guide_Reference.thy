@@ -70,7 +70,7 @@ text \<open>
 text \<open>The method @{method sepref_dbg_preproc} gives direct access to the preprocessing phase.\<close>
 thm sepref_preproc
 thm intf_of_assn
-thm to_hnr_post -- \<open>Note: These rules are only instantiated for up to 5 arguments. 
+thm to_hnr_post \<comment> \<open>Note: These rules are only instantiated for up to 5 arguments. 
   If you have functions with more arguments, you need to add corresponding theorems here!\<close>
 
 subsubsection \<open>Consequence Rule  Phase\<close>
@@ -188,7 +188,7 @@ begin
   sepref_thm N_plus_2_example is "uncurry0 (RETURN (N+2))" :: "unit_assn\<^sup>k \<rightarrow>\<^sub>a nat_assn"
     apply sepref_dbg_keep
     apply sepref_dbg_id_keep
-    -- \<open>Forgot to register \<open>n\<close>\<close>
+    \<comment> \<open>Forgot to register \<open>n\<close>\<close>
     oops
 
   text \<open>Solution: Register \<open>n\<close>, be careful not to export meaningless registrations from context!\<close>
@@ -205,7 +205,7 @@ lemmas [sepref_fr_rules] = hm.empty_hnr[folded my_map_def]
 sepref_thm my_map_example is "uncurry0 (RETURN (my_map(False\<mapsto>1)))" :: "unit_assn\<^sup>k \<rightarrow>\<^sub>a hm.assn bool_assn nat_assn"
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
-  -- \<open>Stuck at refinement for function update on map\<close>
+  \<comment> \<open>Stuck at refinement for function update on map\<close>
   oops
 
 text \<open>Solution: Register with correct interface type\<close>
@@ -298,8 +298,8 @@ definition "my_fold \<equiv> fold"
 sepref_thm my_fold_test is "\<lambda>l. do { RETURN (my_fold (\<lambda>x y. x+y*2) l 0)}" :: "(list_assn nat_assn)\<^sup>k\<rightarrow>\<^sub>anat_assn"
   apply sepref_dbg_keep
   apply sepref_dbg_monadify_keep
-  -- \<open>An \<open>EVAL\<close>-tag with an abstraction remains. This is b/c the default heuristics
-    tries to interpret the function inside the fold as a plain value argument. \<close>
+  \<comment> \<open>An \<open>EVAL\<close>-tag with an abstraction remains. This is b/c the default heuristics
+    tries to interpret the function inside the fold as a plain value argument.\<close>
   oops
 
 text \<open>Solution: Register appropriate arity and combinator-rules\<close>
@@ -344,15 +344,15 @@ sepref_thm monadify_step_thru_test is "\<lambda>l. do {
   apply sepref_dbg_cons_init
   apply sepref_dbg_id
 
-  apply sepref_dbg_monadify_arity -- \<open>Second operand of fold-function is added\<close>
-  apply sepref_dbg_monadify_comb -- \<open>Flattened. \<open>fold\<close> rewritten to \<open>monadic_nfoldli\<close>.\<close>
+  apply sepref_dbg_monadify_arity \<comment> \<open>Second operand of fold-function is added\<close>
+  apply sepref_dbg_monadify_comb \<comment> \<open>Flattened. \<open>fold\<close> rewritten to \<open>monadic_nfoldli\<close>.\<close>
   (*apply (unfold APP_def PROTECT2_def) (* Make term readable for inspection*) *)
-  apply sepref_dbg_monadify_check_EVAL -- \<open>No \<open>EVAL\<close> tags left\<close>
-  apply sepref_dbg_monadify_mark_params -- \<open>Parameters marked by \<open>PASS\<close>. Note the multiplication \<open>x*x\<close>.\<close>
+  apply sepref_dbg_monadify_check_EVAL \<comment> \<open>No \<open>EVAL\<close> tags left\<close>
+  apply sepref_dbg_monadify_mark_params \<comment> \<open>Parameters marked by \<open>PASS\<close>. Note the multiplication \<open>x*x\<close>.\<close>
   (*apply (unfold APP_def PROTECT2_def) (* Make term readable for inspection*) *)
-  apply sepref_dbg_monadify_dup -- \<open>\<open>COPY\<close> tag inserted.\<close>
+  apply sepref_dbg_monadify_dup \<comment> \<open>\<open>COPY\<close> tag inserted.\<close>
   (*apply (unfold APP_def PROTECT2_def) (* Make term readable for inspection*) *)
-  apply sepref_dbg_monadify_remove_pass -- \<open>\<open>PASS\<close> tag removed again\<close>
+  apply sepref_dbg_monadify_remove_pass \<comment> \<open>\<open>PASS\<close> tag removed again\<close>
   (*apply (unfold APP_def PROTECT2_def) (* Make term readable for inspection*) *)
   
   apply sepref_dbg_opt_init
@@ -598,18 +598,18 @@ sepref_thm filter_N_test is "\<lambda>l. RETURN (fold (\<lambda>x s.
   
   apply sepref_dbg_opt_init
 
-  apply sepref_dbg_trans_step -- \<open>Combinator rule for bind, 
+  apply sepref_dbg_trans_step \<comment> \<open>Combinator rule for bind, 
     generating two \<open>hn_refine\<close> goals, and a frame rule to
-    separate the bound variable from the rest. \<close>
-  apply sepref_dbg_trans_step -- \<open>Rule for empty hashset, solves goal\<close>
-  apply sepref_dbg_trans_step -- \<open>Combinator rule for nfoldli (@{thm hn_monadic_nfoldli_rl'})\<close>
-    apply sepref_dbg_trans_step -- \<open>INDEP\<close>
-    apply sepref_dbg_trans_step -- \<open>INDEP\<close>
-    apply sepref_dbg_trans_step -- \<open>Frame to get list and initial state\<close>
-    apply sepref_dbg_trans_step -- \<open>Refinement of continuation condition\<close>
-    apply sepref_dbg_trans_step -- \<open>Frame to recover state after continuation condition\<close>
+    separate the bound variable from the rest.\<close>
+  apply sepref_dbg_trans_step \<comment> \<open>Rule for empty hashset, solves goal\<close>
+  apply sepref_dbg_trans_step \<comment> \<open>Combinator rule for nfoldli (@{thm hn_monadic_nfoldli_rl'})\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>INDEP\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>INDEP\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>Frame to get list and initial state\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>Refinement of continuation condition\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>Frame to recover state after continuation condition\<close>
 
-    -- \<open>Loop body\<close>
+    \<comment> \<open>Loop body\<close>
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
@@ -618,29 +618,29 @@ sepref_thm filter_N_test is "\<lambda>l. RETURN (fold (\<lambda>x s.
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
-    -- \<open>At this point, we arrived at the \<open>nbn_rel\<close> annotation. 
+    \<comment> \<open>At this point, we arrived at the \<open>nbn_rel\<close> annotation. 
       There is enough information to show \<open>x'a < N\<close>\<close>
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
     apply sepref_dbg_trans_step
-    -- \<open>At this point, we have to merge the postconditions from the two if 
+    \<comment> \<open>At this point, we have to merge the postconditions from the two if 
       branches. \<open>nat_rel\<close> gets merged with \<open>invalid_assn (nbn_assn n)\<close>, 
       yielding \<open>invalid_assn nat_assn\<close>\<close>
     apply sepref_dbg_trans_step
-    apply sepref_dbg_trans_step -- \<open>Frame rule separating bound variable from rest\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>Frame rule separating bound variable from rest\<close>
 
-    apply sepref_dbg_trans_step -- \<open>Frame rule separating fold-state from rest\<close>
-    apply sepref_dbg_trans_step -- \<open>Merging elements of list before body 
+    apply sepref_dbg_trans_step \<comment> \<open>Frame rule separating fold-state from rest\<close>
+    apply sepref_dbg_trans_step \<comment> \<open>Merging elements of list before body 
       with elements of list after body, to get refinement for resulting list\<close>
     
-    apply sepref_dbg_trans_step -- \<open>Frame rule from initial bind, separating 
+    apply sepref_dbg_trans_step \<comment> \<open>Frame rule from initial bind, separating 
       bound variable from the rest\<close>
 
   apply sepref_dbg_opt
-  apply sepref_dbg_cons_solve -- \<open>Frame rule, recovering the invalidated list 
+  apply sepref_dbg_cons_solve \<comment> \<open>Frame rule, recovering the invalidated list 
     or pure elements, propagating recovery over the list structure\<close>
-  apply sepref_dbg_cons_solve -- \<open>Trivial frame rule\<close>
+  apply sepref_dbg_cons_solve \<comment> \<open>Trivial frame rule\<close>
   apply sepref_dbg_constraints
   done
 
@@ -672,11 +672,11 @@ sepref_thm opt_example is "\<lambda>n. do { let r = fold (+) [1..<n] 0; RETURN (
   apply sepref_dbg_monadify
   apply sepref_dbg_opt_init
   apply sepref_dbg_trans
-  -- \<open>The generated program contains many superfluous binds, moreover, it actually 
+  \<comment> \<open>The generated program contains many superfluous binds, moreover, it actually 
     generates a list and then folds over it\<close>
   supply [[show_main_goal]]
   apply sepref_dbg_opt
-  -- \<open>The superfluous binds have been collapsed, and the fold over the list
+  \<comment> \<open>The superfluous binds have been collapsed, and the fold over the list
     has been replaced by @{const imp_for'}, which uses a counter.\<close>
   apply sepref_dbg_cons_solve
   apply sepref_dbg_cons_solve
@@ -800,8 +800,8 @@ text \<open>For pure refinements, it is sometimes simpler to specify a parametri
 \<close>
 
 thm sepref_import_rewrite
-thm param_append -- \<open>Parametricity theorem for append\<close>
-thm param_append[sepref_param] -- \<open>Converted to hfref-form. 
+thm param_append \<comment> \<open>Parametricity theorem for append\<close>
+thm param_append[sepref_param] \<comment> \<open>Converted to hfref-form. 
   \<open>list_rel\<close> is rewritten to \<open>list_assn\<close>, and the relation variable is replaced by an 
   assertion variable and a \<open>is_pure\<close> constraint.\<close>
 thm param_append[sepref_dbg_import_rl_only]
@@ -815,8 +815,8 @@ text \<open>For re-using Lifting/Transfer style theorems, the constants
   import parametricity lemmas for multisets from the Lifting/Transfer package.
 \<close>
 
-thm p2rel -- \<open>Simp rules to convert predicate to relational style\<close>
-thm rel2p -- \<open>Simp rules to convert relational to predicate style\<close>
+thm p2rel \<comment> \<open>Simp rules to convert predicate to relational style\<close>
+thm rel2p \<comment> \<open>Simp rules to convert relational to predicate style\<close>
 
 
 subsection \<open>Composition\<close>
@@ -878,16 +878,16 @@ text \<open>
 thm fcomp_norm_unfold
 thm fcomp_norm_simps
 
-thm array_get_hnr_aux -- \<open>Array indexing, array elements are refined by identity\<close>
-thm "op_list_get.fref" -- \<open>Parametricity theorem for list indexing\<close>
+thm array_get_hnr_aux \<comment> \<open>Array indexing, array elements are refined by identity\<close>
+thm "op_list_get.fref" \<comment> \<open>Parametricity theorem for list indexing\<close>
 
-thm array_get_hnr_aux[FCOMP op_list_get.fref] -- \<open>Composed theorem\<close>
+thm array_get_hnr_aux[FCOMP op_list_get.fref] \<comment> \<open>Composed theorem\<close>
 
--- \<open>Note the definition @{thm array_assn_def}\<close>
+\<comment> \<open>Note the definition @{thm array_assn_def}\<close>
 context
   notes [fcomp_norm_unfold] = array_assn_def[symmetric]
 begin
-  thm array_get_hnr_aux[FCOMP op_list_get.fref] -- \<open>Composed theorem, \<open>array_assn\<close> folded.\<close>
+  thm array_get_hnr_aux[FCOMP op_list_get.fref] \<comment> \<open>Composed theorem, \<open>array_assn\<close> folded.\<close>
 end
 
 subsection \<open>Registration of Interface Types\<close>
@@ -900,14 +900,13 @@ text \<open>
 \<close>
 
 sepref_decl_intf ('a,'b) i_my_intf is "'a*'a \<Rightarrow> 'b option"
--- \<open>Declares @{typ "('a,'b) i_my_intf"} as new interface type, and registers it
+\<comment> \<open>Declares @{typ "('a,'b) i_my_intf"} as new interface type, and registers it
   to correspond to @{typ "'a*'a \<Rightarrow> 'b option"}. 
   Note: For HOL, the interface type is just an arbitrary new type, which is 
-    not related to he corresponding HOL type.
-  \<close>
+    not related to he corresponding HOL type.\<close>
 
 sepref_decl_intf ('a,'b) i_my_intf2 (infix "*\<rightarrow>\<^sub>i" 0) is "'a*'a \<Rightarrow> 'b option"
--- \<open>There is also a version that declares infix-syntax for the interface type.
+\<comment> \<open>There is also a version that declares infix-syntax for the interface type.
   In this case we have @{typ "'a *\<rightarrow>\<^sub>i 'b"}. @{typ "'a\<rightharpoonup>'b"}
   Be aware of syntax space pollution, as the syntax for interface types and 
   HOL types is the same.\<close>
@@ -956,9 +955,9 @@ context
   notes [map_type_eqs] = map_type_eqI[of "TYPE('a\<rightharpoonup>'b)" "TYPE(('a,'b)i_map)"]
 begin
   sepref_register map_op1 map_op2 map_op3 
-  -- \<open>Registered interface types use \<open>i_map\<close>\<close>
+  \<comment> \<open>Registered interface types use \<open>i_map\<close>\<close>
   sepref_register map_op_to_map :: "('a\<rightharpoonup>'b) \<Rightarrow> ('a,'b) i_map"
-  -- \<open>Explicit type annotation is not rewritten\<close>
+  \<comment> \<open>Explicit type annotation is not rewritten\<close>
 end
 
 text \<open>Example for insertion of \<open>PR_CONST\<close> tag and attribute-version\<close>
@@ -966,13 +965,13 @@ text \<open>Example for insertion of \<open>PR_CONST\<close> tag and attribute-v
 context
   fixes N :: nat and D :: int
   notes [[sepref_register_adhoc N D]]
-  -- \<open>In order to use \<open>N\<close> and \<open>D\<close> as operators (constant) inside this context,
+  \<comment> \<open>In order to use \<open>N\<close> and \<open>D\<close> as operators (constant) inside this context,
     they have to be registered. However, issuing a \<open>sepref_register\<close> command 
     inside the context would export meaningless registrations to the global 
-    theory. \<close>
+    theory.\<close>
 
   notes [sepref_import_param] = IdI[of N] IdI[of D]
-  -- \<open>For declaring refinement rules, the \<open>sepref_import_param\<close> attribute comes 
+  \<comment> \<open>For declaring refinement rules, the \<open>sepref_import_param\<close> attribute comes 
     in handy here. If this is not possible, you have to work with nested contexts,
     proving the refinement lemmas in the first level, and declaring them as
     \<open>sepref_fr_rules\<close> on the second level.\<close>
@@ -982,15 +981,15 @@ begin
 
   sepref_register newlist
   print_theorems
-  -- \<open>\<open>PR_CONST\<close> tag is added, pattern rule is generated\<close>
+  \<comment> \<open>\<open>PR_CONST\<close> tag is added, pattern rule is generated\<close>
 
   sepref_register other_basename_newlist: newlist
   print_theorems
-  -- \<open>The base name for the generated theorems can be overridden\<close>
+  \<comment> \<open>The base name for the generated theorems can be overridden\<close>
 
   sepref_register yet_another_basename_newlist: "PR_CONST newlist"
   print_theorems
-  -- \<open>If \<open>PR_CONST\<close> tag is specified, no pattern rule is generated automatically\<close>
+  \<comment> \<open>If \<open>PR_CONST\<close> tag is specified, no pattern rule is generated automatically\<close>
 
 end
 
@@ -999,7 +998,7 @@ definition "select_a_one l \<equiv> SPEC (\<lambda>i. i<length l \<and> l!i = (1
 
 sepref_register "select_a_one"
   print_theorems
-  -- \<open>Arity and mcomb theorem is generated\<close>
+  \<comment> \<open>Arity and mcomb theorem is generated\<close>
 
 
 text \<open>

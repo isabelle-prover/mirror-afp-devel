@@ -15,9 +15,9 @@ which has successfully been applied to the analysis and verification of ontologi
 
 subsection \<open>Type Declarations\<close>  
 
-typedecl e                        --\<open> Type for entities \<close>             
-typedecl w                        --\<open> Type for worlds \<close>
-type_synonym wo = "w\<Rightarrow>bool" --\<open> Type for world-dependent formulas \<close>
+typedecl e                        \<comment> \<open>Type for entities\<close>             
+typedecl w                        \<comment> \<open>Type for worlds\<close>
+type_synonym wo = "w\<Rightarrow>bool" \<comment> \<open>Type for world-dependent formulas\<close>
   
 subsection \<open>Logical Constants as Truth-Sets\<close>
 text\<open>\noindent{Using the technique of \emph{shallow semantic embedding} each operator gets defined as a function
@@ -41,7 +41,7 @@ abbreviation mxor::"wo\<Rightarrow>wo\<Rightarrow>wo" (infix"\<^bold>\<oplus>"50
 text\<open>\noindent{We embed a modal logic \emph{K} by defining the box and diamond operators using restricted quantification
 over the set of `accessible' worlds (using an \emph{accessibility} relation \emph{R} as a guard).}\<close>
   
-consts R::"w\<Rightarrow>w\<Rightarrow>bool" (infix "r"(*<*)70(*>*)) --\<open> Accessibility relation \<close>
+consts R::"w\<Rightarrow>w\<Rightarrow>bool" (infix "r"(*<*)70(*>*)) \<comment> \<open>Accessibility relation\<close>
 abbreviation mbox :: "wo\<Rightarrow>wo" ("\<^bold>\<box>_"(*<*)[52]53(*>*))
   where "\<^bold>\<box>\<phi> \<equiv> \<lambda>w.\<forall>v. (w r v)\<longrightarrow>(\<phi> v)"
 abbreviation mdia :: "wo\<Rightarrow>wo" ("\<^bold>\<diamond>_"(*<*)[52]53(*>*))
@@ -76,12 +76,12 @@ subsection \<open>Verifying the Embedding\<close>
 text\<open>\noindent{The above definitions introduce modal logic \emph{K} with quantification,
 as evidenced by the following tests.}\<close>
   
-lemma K: "\<lfloor>(\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>)) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)\<rfloor>" by simp --\<open> Verifying \emph{K} principle \<close>
-lemma NEC: "\<lfloor>\<phi>\<rfloor> \<Longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" by simp        --\<open> Verifying \emph{necessitation} rule \<close>
+lemma K: "\<lfloor>(\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>)) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)\<rfloor>" by simp \<comment> \<open>Verifying \emph{K} principle\<close>
+lemma NEC: "\<lfloor>\<phi>\<rfloor> \<Longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" by simp        \<comment> \<open>Verifying \emph{necessitation} rule\<close>
  
 text\<open>\noindent{Local consequence implies global consequence (not the other way round).}\<close>
 lemma localImpGlobalCons: "\<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor>" by simp
-lemma "\<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor>" nitpick oops --\<open> Countersatisfiable \<close>
+lemma "\<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor>" nitpick oops \<comment> \<open>Countersatisfiable\<close>
 
 text\<open>\noindent{(Converse-)Barcan formulas are validated in this embedding.}\<close>
 lemma "\<lfloor>(\<^bold>\<forall>x.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>x.(\<phi> x))\<rfloor>" by simp
@@ -120,8 +120,8 @@ lemma "symmetric R \<Longrightarrow> \<lfloor>B\<rfloor>" by blast
 lemma "serial R  \<Longrightarrow> \<lfloor>D\<rfloor>" by blast         
 lemma "transitive R  \<Longrightarrow> \<lfloor>IV\<rfloor>" by blast   
 lemma "euclidean R \<Longrightarrow> \<lfloor>V\<rfloor>" by blast         
-lemma "preorder R \<Longrightarrow> \<lfloor>T\<rfloor> \<and> \<lfloor>IV\<rfloor>" by blast --\<open> S4: reflexive + transitive \<close>
-lemma "equivalence R \<Longrightarrow> \<lfloor>T\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast --\<open> S5: preorder + symmetric \<close>     
+lemma "preorder R \<Longrightarrow> \<lfloor>T\<rfloor> \<and> \<lfloor>IV\<rfloor>" by blast \<comment> \<open>S4: reflexive + transitive\<close>
+lemma "equivalence R \<Longrightarrow> \<lfloor>T\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast \<comment> \<open>S5: preorder + symmetric\<close>     
 (*<*) 
 end
 (*>*)   

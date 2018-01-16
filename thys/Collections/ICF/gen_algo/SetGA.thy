@@ -522,7 +522,7 @@ begin
   fun g_from_list_aux where
     "g_from_list_aux accs [] = accs" |
     "g_from_list_aux accs (x#l) = g_from_list_aux (ins x accs) l"
-    -- {* Tail recursive version *}
+    \<comment> \<open>Tail recursive version\<close>
 
   definition "g_from_list l == g_from_list_aux (empty ()) l"
 
@@ -700,7 +700,7 @@ begin
 
   lemma g_from_list_impl: "list_to_set \<alpha> invar g_from_list"
   proof -
-    { -- "Show a generalized lemma"
+    { \<comment> \<open>Show a generalized lemma\<close>
       fix l accs
       have "invar accs \<Longrightarrow> \<alpha> (g_from_list_aux accs l) = set l \<union> \<alpha> accs 
             \<and> invar (g_from_list_aux accs l)"

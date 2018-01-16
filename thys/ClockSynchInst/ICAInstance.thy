@@ -24,8 +24,8 @@ text {* The election of the basics types was based on
 the real time and the clock readings are reals. *}
 
 type_synonym process = nat
-type_synonym time = real       -- "real time"
-type_synonym Clocktime = real  -- "time of the clock readings (clock time)"
+type_synonym time = real       \<comment> \<open>real time\<close>
+type_synonym Clocktime = real  \<comment> \<open>time of the clock readings (clock time)\<close>
 
 subsubsection {* Some constants *}
 
@@ -37,8 +37,8 @@ this axiom (if $np = 0$ we have a division by cero in the definition
 of the convergence function).  *}
 
 axiomatization
-  np :: nat      -- "Number of processes" and
-  \<Delta> :: Clocktime -- "Fix value to discard processes" where
+  np :: nat      \<comment> \<open>Number of processes\<close> and
+  \<Delta> :: Clocktime \<comment> \<open>Fix value to discard processes\<close> where
   constants_ax: "0 <= \<Delta> \<and> np > 0" 
 
 text {* We define also the set of process that the algorithm
@@ -662,7 +662,7 @@ have
     have 
       "(cfni p f - f q) * real np = (\<Sum>l\<in>{..<np}. fiX f p l - f q)"
       .
--- cambia
+\<comment> \<open>cambia\<close>
     hence
       "(cfni p f - f q) * real np / real np = 
       (\<Sum>l\<in>{..<np}. fiX f p l - f q)/ real np"

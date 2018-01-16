@@ -7,10 +7,10 @@ begin
 subsection "Variables"
 
 datatype vbl = X nat
-  -- "FIXME there's a lot of stuff about this datatype that is
+  \<comment> \<open>FIXME there's a lot of stuff about this datatype that is
   really just a lifting from nat (what else could it be). Makes me
   wonder whether things wouldn't be clearer is we just identified vbls
-  with nats"
+  with nats\<close>
 
 primrec deX :: "vbl => nat" where "deX (X n) = n"
 
@@ -52,7 +52,7 @@ lemma ind': "P zeroX ==> (! v . P v --> P (nextX v)) ==> P v'"
 lemma ind: "\<lbrakk> P zeroX; \<And> v. P v \<Longrightarrow> P (nextX v) \<rbrakk> \<Longrightarrow> P v'"
   apply(rule ind') by auto
 
-lemma zeroX_nextX[iff]: "zeroX ~= nextX a" -- "FIXME iff?"
+lemma zeroX_nextX[iff]: "zeroX ~= nextX a" \<comment> \<open>FIXME iff?\<close>
   apply(case_tac a)
   apply(simp add: zeroX_def)
   done
@@ -183,7 +183,7 @@ lemma formula_signs_cases: "!!P.
   apply(rule signs.induct, force, force)+
   done
 
-    -- "induction using nat induction, not wellfounded induction"
+    \<comment> \<open>induction using nat induction, not wellfounded induction\<close>
 lemma strong_formula_induct': "!A. (! B. size B < size A --> P B) --> P A ==> ! A. size A = n --> P (A::formula)"
   by (induct_tac n rule: nat_less_induct, blast) 
 
@@ -262,7 +262,7 @@ lemma freeVarsFL_nil[simp]: "freeVarsFL ([]) = {}"
 
 lemma freeVarsFL_cons: "freeVarsFL (A#Gamma) = freeVarsF A \<union> freeVarsFL Gamma"
   by(simp add: freeVarsFL_def)
-    -- "FIXME not simp, since simp stops some later lemmas because the simpset isn't confluent"
+    \<comment> \<open>FIXME not simp, since simp stops some later lemmas because the simpset isn't confluent\<close>
 
 lemma finite_freeVarsFL[simp]: "finite (freeVarsFL gamma)"
   by(induct gamma) (auto simp: freeVarsFL_cons)
@@ -369,9 +369,9 @@ lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrighta
   apply clarify apply simp apply(rename_tac signs A f g) apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
   apply(rule_tac f = "sign signs" in arg_cong) apply(force intro: equalOn_vblcaseI')
   done
-    -- "FIXME tricky to automate cong args convincingly?"
+    \<comment> \<open>FIXME tricky to automate cong args convincingly?\<close>
 
-    -- "composition of substitutions"
+    \<comment> \<open>composition of substitutions\<close>
 lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o theta) A"
   apply(induct_tac A)
     apply(simp del: o_apply)
@@ -395,7 +395,7 @@ lemma evalF_instance: "evalF M phi (instanceF u A) = evalF M (vblcase (phi u) ph
   apply(simp add: instanceF_def evalF_subF_eq vblsimps)
   done
 
--- "FIXME move"
+\<comment> \<open>FIXME move\<close>
 
 lemma s[simp]:" FConj signs formula1 formula2 \<noteq> formula1"
   apply(induct_tac formula1, auto) done

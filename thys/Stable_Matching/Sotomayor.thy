@@ -154,7 +154,7 @@ text\<open>
 
 lemma simple_no_single_women_stable:
   assumes "simple \<mu>"
-  assumes "\<forall>w. w \<in> Range \<mu>" \<comment>\<open> No woman is single \<close>
+  assumes "\<forall>w. w \<in> Range \<mu>" \<comment> \<open>No woman is single\<close>
   shows "stable \<mu>"
 using assms unfolding simple_def stable_def by blast
 
@@ -325,8 +325,8 @@ proof(rule ccontr)
   from \<open>weakly_Pareto_optimal_for_men \<mu>\<close> have "simple \<mu>" by (rule weakly_Pareto_optimal_for_men_simple)
   from \<open>\<not>stable \<mu>\<close> \<open>simple \<mu>\<close> obtain m' w where "blocks m' w \<mu>" and "w \<notin> Range \<mu>"
     unfolding simple_def stable_def by blast+
-  \<comment>\<open> Choose an \<open>m\<close> that \<open>w\<close> weakly prefers to any blocking man. \<close>
-  \<comment>\<open> We restrict the preference order \<open>Pw w\<close> to the men who strictly prefer \<open>w\<close> over their match in \<open>\<mu>\<close>. \<close>
+  \<comment> \<open>Choose an \<open>m\<close> that \<open>w\<close> weakly prefers to any blocking man.\<close>
+  \<comment> \<open>We restrict the preference order \<open>Pw w\<close> to the men who strictly prefer \<open>w\<close> over their match in \<open>\<mu>\<close>.\<close>
   let ?r = "Restr (Pw w) {m. w \<in> m_strictly_prefers m \<mu>}"
   from trans_finite_has_maximal_elt[where r="?r"]
   obtain m where "m \<in> Field ?r" "\<forall>m'\<in>Field ?r. (m, m') \<in> ?r \<longrightarrow> (m', m) \<in> ?r"
@@ -340,9 +340,9 @@ proof(rule ccontr)
   with \<open>blocks m' w \<mu>\<close> \<open>w \<notin> Range \<mu>\<close>
   have "blocks m w \<mu>" and "\<forall>m'. blocks m' w \<mu> \<and> (m, m') \<in> Pw w \<longrightarrow> (m', m) \<in> Pw w"
     unfolding blocks_def w_strictly_prefers_def Field_def by auto
-  \<comment>\<open> Construct a new (simple) match containing the blocking pair\ldots \<close>
+  \<comment> \<open>Construct a new (simple) match containing the blocking pair\ldots\<close>
   let ?\<mu>' = "\<mu> - {(m, w') |w'. True} \<union> {(m, w)}"
-  \<comment>\<open> {\ldots}and show that it is a Pareto improvement for men over \<open>\<mu>\<close>. \<close>
+  \<comment> \<open>{\ldots}and show that it is a Pareto improvement for men over \<open>\<mu>\<close>.\<close>
   have "simple ?\<mu>'"
   proof(rule simpleI)
     from \<open>simple \<mu>\<close> \<open>blocks m w \<mu>\<close> show "match ?\<mu>'"

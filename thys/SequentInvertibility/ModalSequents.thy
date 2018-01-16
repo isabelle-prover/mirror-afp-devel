@@ -1784,14 +1784,14 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
              Modal M Ms = Modal F Fs"
        by auto
   moreover
-     {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')" -- "Contradiction"
+     {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')" \<comment> \<open>Contradiction\<close>
      then have "Modal M Ms \<in># M2\<cdot>\<Delta>''" by auto
      with (*<*)modal_not_contain[where M=M and N=M2 and A=Ms and \<Gamma>=\<Delta>''] and(*>*) neq
        have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" 
        by auto
     }
  moreover
-   {assume "Modal M Ms = Modal F Fs" -- "The last inference is principal"
+   {assume "Modal M Ms = Modal F Fs" \<comment> \<open>The last inference is principal\<close>
    then have "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)" 
         using `r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)` by simp
    with cb and rules have "rightPrincipal r' (Modal M Ms) R'" 
@@ -1824,7 +1824,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
    (*<*) using ee(*>*) by metis
   }
 moreover
-  {assume "Modal M Ms \<in> set_mset \<Delta>1" -- "Formula is in the implicit weakening"
+  {assume "Modal M Ms \<in> set_mset \<Delta>1" \<comment> \<open>Formula is in the implicit weakening\<close>
  (*<*)  then have "Modal M Ms \<in># \<Delta>1" by auto
   then have "\<exists> \<Delta>2. \<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Delta>1"]
                          apply auto apply (rule_tac x="\<Delta>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)(*>*)

@@ -364,13 +364,11 @@ definition convolution ::
   "('a::group_add \<Rightarrow> 'b::{comm_monoid_add,times}) \<Rightarrow> ('a\<Rightarrow>'b) \<Rightarrow> ('a\<Rightarrow>'b)"
   where "convolution f g
               = (\<lambda>x. \<Sum>y|x - y \<in> supp f \<and> y \<in> supp g. (f (x - y)) * g y)"
-  --{*
-        More often than not, this definition will be used in the case that @{text "'b"} is of class
+  \<comment> \<open>More often than not, this definition will be used in the case that @{text "'b"} is of class
         @{text "mult_zero"}, in which case the conditions @{term "x - y \<in> supp f"} and
         @{term "y \<in> supp g"} are obviously mathematically unnecessary. However, they also serve to
         ensure that the sum is taken over a finite set in the case that at least one of @{term f}
-        and @{term g} is almost everywhere zero.
-    *}
+        and @{term g} is almost everywhere zero.\<close>
 
 lemma convolution_zero :
   fixes     f g :: "'a::group_add \<Rightarrow> 'b::{comm_monoid_add,mult_zero}"
@@ -1516,7 +1514,7 @@ text{* Some syntactic sugar for @{text "inner_dirsum"}, borrowed from theory @{t
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"
   ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
-translations -- {* Beware of argument permutation! *}
+translations \<comment> \<open>Beware of argument permutation!\<close>
   "\<Oplus>M\<leftarrow>Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
 
 abbreviation inner_dirsum_double ::

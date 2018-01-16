@@ -63,7 +63,7 @@ lemma fixp_induct_set:
   and inverse2: "\<And>f. U (C f) = f"
 
   and step: "\<And>f' x y. \<lbrakk> \<And>x. U f' x = U f' x; y \<in> U (F (C (inf (U f) (\<lambda>x. {y. P x y})))) x \<rbrakk> \<Longrightarrow> P x y"
-    -- {* partial\_function requires a quantifier over f', so let's have a fake one *}
+    \<comment> \<open>partial\_function requires a quantifier over f', so let's have a fake one\<close>
   and elem: "y \<in> U f x"
   shows "P x y"
 proof -
@@ -144,7 +144,7 @@ lemma fixp_coinduct_set:
   and inverse2: "\<And>f. U (C f) = f"
 
   and step: "\<And>f' x y. \<lbrakk> \<And>x. U f' x = U f' x; \<not> P x y \<rbrakk> \<Longrightarrow> y \<in> U (F (C (sup (\<lambda>x. {y. \<not> P x y}) (U f)))) x"
-    -- {* partial\_function requires a quantifier over f', so let's have a fake one *}
+    \<comment> \<open>partial\_function requires a quantifier over f', so let's have a fake one\<close>
   and elem: "y \<notin> U f x"
   shows "P x y"
 using elem

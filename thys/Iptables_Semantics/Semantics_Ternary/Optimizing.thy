@@ -27,14 +27,14 @@ subsubsection\<open>Soundness\<close>
   case Nil thus ?case by simp
   next
   case (Cons r rs)
-    let ?fw="approximating_bigstep_fun \<gamma>" --"firewall semantics"
+    let ?fw="approximating_bigstep_fun \<gamma>" \<comment> \<open>firewall semantics\<close>
     let ?rm="rmshadow \<gamma>"
     let ?match="matches \<gamma> (get_match r) (get_action r)"
     let ?set="{p \<in> P. \<not> ?match p}"
     from Cons.IH Cons.prems have IH: "?fw p (?rm rs P) = ?fw p rs" by (simp add: simple_ruleset_def)
     from Cons.IH[of "?set"] Cons.prems have IH': "p \<in> ?set \<Longrightarrow> ?fw p (?rm rs ?set) = ?fw p rs" by (simp add: simple_ruleset_def)
     from Cons show ?case
-      proof(cases "\<forall>p\<in>P. \<not> ?match p") --"the if-condition of rmshadow"
+      proof(cases "\<forall>p\<in>P. \<not> ?match p") \<comment> \<open>the if-condition of rmshadow\<close>
       case True
         from True have 1: "?rm (r#rs) P = ?rm rs P" 
           apply(cases r)
@@ -53,7 +53,7 @@ subsubsection\<open>Soundness\<close>
         from this IH have "?fw p (?rm rs P) = ?fw p (r#rs) " by simp
         thus "?fw p (?rm (r#rs) P) = ?fw p (r#rs) " using 1 by simp
       next
-      case False --"else"
+      case False \<comment> \<open>else\<close>
         have "?fw p (r # (?rm rs ?set)) = ?fw p (r # rs)"
           proof(cases "p \<in> ?set")
             case True

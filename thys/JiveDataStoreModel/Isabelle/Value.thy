@@ -38,8 +38,8 @@ datatype Value = boolV  JavaBoolean
                | intgV  JavaInt  
                | shortV JavaShort
                | byteV  JavaByte
-               | objV   CTypeId ObjectId   --{*typed object reference *}
-               | arrV   Arraytype ObjectId --{*typed array reference *}
+               | objV   CTypeId ObjectId   \<comment> \<open>typed object reference\<close>
+               | arrV   Arraytype ObjectId \<comment> \<open>typed array reference\<close>
                | nullV
                
 

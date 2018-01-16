@@ -116,7 +116,7 @@ private theorem nat_euclid_pyth_triples:
 proof -
   have two0: "(2::nat) \<noteq> 0" by simp
   from abc have a2cb: "a^2 = c^2 - b^2" by arith
-  -- "factor $a^2$ in coprime factors $(c-b)$ and $(c+b)$; hence both are squares"
+  \<comment> \<open>factor $a^2$ in coprime factors $(c-b)$ and $(c+b)$; hence both are squares\<close>
   have a2factor: "a^2 = (c-b)*(c+b)"
   proof -
     have "c*b - c*b = 0" by simp
@@ -228,7 +228,7 @@ proof -
   with factors_relprime have "\<exists> k. c+b = k^2"
     by (simp only: nat_relprime_power_divisors ac_simps)
   then obtain s where s: "c+b = s^2" by auto
-  -- "now $p := (s+r)/2$ and $q := (s-r)/2$ is our solution"
+  \<comment> \<open>now $p := (s+r)/2$ and $q := (s-r)/2$ is our solution\<close>
   have rs_odd: "odd r \<and> odd s"
   proof (auto dest: ccontr)
     assume "even r" hence "2 dvd r"by presburger
@@ -374,7 +374,7 @@ private lemma smaller_fermat4:
   shows 
   "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> odd p \<and> coprime p q \<and> r^2 < c^2)"
 proof - 
-  -- "put equation in shape of a pythagorean triple and obtain $u$ and $v$"
+  \<comment> \<open>put equation in shape of a pythagorean triple and obtain $u$ and $v$\<close>
   from ab_relprime have a2b2relprime: "coprime (a^2) (b^2)"
     by simp
   moreover from aodd have "odd (a^2)" by presburger
@@ -395,12 +395,12 @@ proof -
     then show ?thesis
       by (simp add: gcd_eq_1_imp_coprime)
   qed
-  -- "make again a pythagorean triple and obtain $k$ and $l$"
+  \<comment> \<open>make again a pythagorean triple and obtain $k$ and $l$\<close>
   from uvabc have "a^2 + v^2 = u^2" by simp
   with av_relprime and aodd obtain k l where 
     klavu: "a = k^2-l^2 \<and> v = 2*k*l \<and> \<bar>u\<bar> = k^2+l^2" and kl_rel: "coprime k l" 
     by (frule_tac a="a" in int_euclid_pyth_triples, auto)
-  --"prove $b=2m$ and $kl(k^2 + l^2) = m^2$, for coprime $k$, $l$ and $k^2+l^2$"
+  \<comment> \<open>prove $b=2m$ and $kl(k^2 + l^2) = m^2$, for coprime $k$, $l$ and $k^2+l^2$\<close>
   from uvabc have "even (b^2)" by simp
   hence "even b" by simp
   then obtain m where bm: "b = 2*m" using evenE by blast
@@ -445,7 +445,7 @@ proof -
   then obtain \<alpha> \<beta> \<gamma> where albega: 
     "\<bar>k\<bar> = \<alpha>^2 \<and> \<bar>l\<bar> = \<beta>^2 \<and> \<bar>k^2+l^2\<bar> = \<gamma>^2" 
     by auto
-  -- "show this is a new solution"
+  \<comment> \<open>show this is a new solution\<close>
   have "k^2 = \<alpha>^4"
   proof -
     from albega have "\<bar>k\<bar>^2 = (\<alpha>^2)^2" by simp
@@ -463,7 +463,7 @@ proof -
   qed
   ultimately have newabc: "\<alpha>^4 + \<beta>^4 = \<gamma>^2" by auto 
   from uv0 klavu albega have albega0: "\<alpha> * \<beta> * \<gamma>  \<noteq> 0" by auto
-  -- "show the coprimality"
+  \<comment> \<open>show the coprimality\<close>
   have alphabeta_relprime: "coprime \<alpha> \<beta>"
   proof (rule classical)
     let ?g = "gcd \<alpha> \<beta>"
@@ -493,7 +493,7 @@ proof -
     ultimately have "gcd k l \<noteq> 1" by fastforce
     with kl_rel show ?thesis by auto
   qed
-  -- "choose $p$ and $q$ in the right way"
+  \<comment> \<open>choose $p$ and $q$ in the right way\<close>
   have "\<exists> p q. p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma> \<noteq> 0 \<and> odd p \<and> coprime p q"
   proof -
     have "odd \<alpha> \<or> odd \<beta>"      
@@ -518,7 +518,7 @@ proof -
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed
-  -- "show the solution is smaller"
+  \<comment> \<open>show the solution is smaller\<close>
   moreover have "\<gamma>^2 < c^2"
   proof -
     from gamma2 klavu have "\<gamma>^2 \<le> \<bar>u\<bar>" by simp
@@ -574,7 +574,7 @@ proof (rule ccontr)
   let ?g = "gcd x y"
   let ?c = "(z div ?g)^2"
   assume xyz0: "x*y*z \<noteq> 0"
-  -- "divide out the g.c.d."
+  \<comment> \<open>divide out the g.c.d.\<close>
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
   then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> coprime a b"
      using gcd_coprime_exists[of x y] by (auto simp: mult.commute)
@@ -609,7 +609,7 @@ proof (rule ccontr)
     moreover from ab xyz0 c0 have "a*b*?c\<noteq>0" by auto
     ultimately show ?thesis by simp
   qed
-  -- "choose the parity right"
+  \<comment> \<open>choose the parity right\<close>
   have "\<exists> p q. p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> odd p \<and> coprime p q"
   proof -
     have "odd a \<or> odd b"
@@ -632,7 +632,7 @@ proof (rule ccontr)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed
-  -- "show contradiction using the earlier result"
+  \<comment> \<open>show contradiction using the earlier result\<close>
   thus False by (auto simp only: no_rewritten_fermat4)
 qed
 

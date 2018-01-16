@@ -831,8 +831,8 @@ begin
           (\<lambda>(v,w,\<sigma>). (v,\<alpha>s \<sigma>)) 
           (\<lambda>(v,w,\<sigma>). dinvarm \<sigma> \<and> w = mpath_weight' (snd \<sigma> v)))
       (pop_min \<sigma>')"
-    -- "The two algorithms are structurally different, so we use the
-      nofail/inres method to prove refinement."
+    \<comment> \<open>The two algorithms are structurally different, so we use the
+      nofail/inres method to prove refinement.\<close>
     unfolding mpop_min_def pop_min_def prio_pop_min_def
 
     apply (rule pw_ref_I)

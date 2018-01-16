@@ -26,12 +26,12 @@ text {*
   of the generic HO model.
 *}
 
-typedecl Proc -- {* the set of processes *}
+typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
 instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
 text {*
   The algorithm proceeds in \emph{phases} of $2$ rounds each (we call
@@ -57,9 +57,9 @@ lemma phase_step: "(phase r * nSteps) + step r = r"
 text {* The following record models the local state of a process. *}
 
 record 'val pstate =
-  x :: 'val                -- {* current value held by process *}
-  vote :: "'val option"    -- {* value the process voted for, if any *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  x :: 'val                \<comment> \<open>current value held by process\<close>
+  vote :: "'val option"    \<comment> \<open>value the process voted for, if any\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 text {* Possible messages sent during the execution of the algorithm. *}
 
@@ -236,6 +236,6 @@ definition Ute_SHOMachine where
 abbreviation
   "Ute_M \<equiv> (Ute_SHOMachine::(Proc, 'val pstate, 'val msg) SHOMachine)"
 
-end   -- {* locale @{text "ute_parameters"} *}
+end   \<comment> \<open>locale @{text "ute_parameters"}\<close>
 
 end   (* theory UteDefs *)

@@ -11,15 +11,15 @@ theory Value imports Type begin
 
 
 type_synonym addr = nat
-type_synonym path = "cname list"            -- "Path-component in subobjects"
+type_synonym path = "cname list"            \<comment> \<open>Path-component in subobjects\<close>
 type_synonym reference = "addr \<times> path"
 
 datatype val
-  = Unit           -- "dummy result value of void expressions"
-  | Null           -- "null reference"
-  | Bool bool      -- "Boolean value"
-  | Intg int       -- "integer value" 
-  | Ref reference  -- "Address on the heap and subobject-path"
+  = Unit           \<comment> \<open>dummy result value of void expressions\<close>
+  | Null           \<comment> \<open>null reference\<close>
+  | Bool bool      \<comment> \<open>Boolean value\<close>
+  | Intg int       \<comment> \<open>integer value\<close> 
+  | Ref reference  \<comment> \<open>Address on the heap and subobject-path\<close>
 
 primrec the_Intg :: "val \<Rightarrow> int" where
   "the_Intg (Intg i) = i"
@@ -30,7 +30,7 @@ primrec the_addr :: "val \<Rightarrow> addr" where
 primrec the_path :: "val \<Rightarrow> path" where
   "the_path (Ref r) = snd r"
 
-primrec default_val :: "ty \<Rightarrow> val"   -- "default value for all types" where
+primrec default_val :: "ty \<Rightarrow> val"   \<comment> \<open>default value for all types\<close> where
   "default_val Void       = Unit"
 | "default_val Boolean    = Bool False"
 | "default_val Integer    = Intg 0"

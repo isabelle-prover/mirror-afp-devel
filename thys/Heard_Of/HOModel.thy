@@ -2,7 +2,7 @@ theory HOModel
 imports Main
 begin
 
-declare if_split_asm [split] -- {* perform default perform case splitting on conditionals *}
+declare if_split_asm [split] \<comment> \<open>perform default perform case splitting on conditionals\<close>
 
 section {* Heard-Of Algorithms *}
 
@@ -86,7 +86,7 @@ lemma binary_weak_consensus_then_consensus:
   assumes bc: "weak_consensus (vals::'proc \<Rightarrow> bool) dec rho"
   shows "consensus vals dec rho"
 proof -
-  { -- {* Show the Integrity property, the other conjuncts are the same. *}
+  { \<comment> \<open>Show the Integrity property, the other conjuncts are the same.\<close>
     fix n p v
     assume dec: "dec (rho n p) = Some v"
     have "v \<in> range vals"
@@ -97,7 +97,7 @@ proof -
       with dec w show ?thesis by (auto simp: image_def)
     next
       case False
-      -- {* In this case both possible values occur in @{text "vals"}, and the result is trivial. *}
+      \<comment> \<open>In this case both possible values occur in @{text "vals"}, and the result is trivial.\<close>
       thus ?thesis by (auto simp: image_def)
     qed
   } note integrity = this
@@ -430,4 +430,4 @@ record ('proc, 'pst, 'msg) CSHOMachine = "('proc, 'pst, 'msg) CHOAlgorithm" +
   CSHOcommGlobal::"(nat \<Rightarrow> 'proc HO) \<Rightarrow> (nat \<Rightarrow> 'proc HO)
                                      \<Rightarrow> (nat \<Rightarrow> 'proc coord) \<Rightarrow> bool"
 
-end -- {* theory HOModel *}
+end \<comment> \<open>theory HOModel\<close>

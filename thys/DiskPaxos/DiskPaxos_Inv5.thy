@@ -187,10 +187,10 @@ proof -
     thus ?thesis by auto
   qed
   from act pnq
-      -- {* $dblock$ and $hasRead$ do not change  *}
+      \<comment> \<open>$dblock$ and $hasRead$ do not change\<close>
   have  "dblock s' = dblock s"
     and "\<forall>d. hasRead s' p d q = hasRead s p d q"
-      -- {* In all disks $q$ blocks don't change *}
+      \<comment> \<open>In all disks $q$ blocks don't change\<close>
     and "\<forall>d. disk s' d q = disk s d q"
     by(auto simp add: Phase1or2Write_def hasRead_def)
   with i2 i1 i3 majority_nonempty
@@ -241,7 +241,7 @@ proof -
       and i3: "\<forall>d\<in>D. \<not>hasRead s q d qq"
     by(auto simp add: MajoritySet_def)
   from act pnq
-      -- {* $dblock$ and $hasRead$ do not change  *}
+      \<comment> \<open>$dblock$ and $hasRead$ do not change\<close>
   have  dblock': "dblock s' = dblock s"
     and hasread: "\<forall>d. hasRead s' q d qq = hasRead s q d qq"
     by(auto simp add: Phase1or2Write_def hasRead_def)
@@ -346,7 +346,7 @@ proof -
   have hasRead': "\<forall>d\<in>D. hasRead s' p d q = hasRead s p d q"
     by(auto simp add: Phase1or2ReadThen_def hasRead_def) 
   from act pnq
-      -- {* $dblock$ and $disk$ do not change  *}
+      \<comment> \<open>$dblock$ and $disk$ do not change\<close>
   have  "dblock s' = dblock s"
     and "\<forall>d. disk s' = disk s"
     by(auto simp add: Phase1or2ReadThen_def)
@@ -401,7 +401,7 @@ proof -
       and i3: "\<forall>d\<in>D. \<not>hasRead s q d qq"
     by(auto simp add: MajoritySet_def)
   from act pnq
-      -- {* $dblock$ and $hasRead$ do not change  *}
+      \<comment> \<open>$dblock$ and $hasRead$ do not change\<close>
   have  dblock': "dblock s' = dblock s"
     and   disk': "disk s' = disk s" 
     and hasread: "\<forall>d. hasRead s' q d qq = hasRead s q d qq"

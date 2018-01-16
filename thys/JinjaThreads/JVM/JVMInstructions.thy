@@ -11,30 +11,30 @@ imports
 begin
 
 datatype 'addr instr 
-  = Load nat                  -- "load from local variable"
-  | Store nat                 -- "store into local variable"
-  | Push "'addr val"          -- "push a value (constant)"
-  | New cname                 -- "create object"
-  | NewArray ty               -- "create array for elements of given type"
-  | ALoad                     -- "Load array element from heap to stack"
-  | AStore                    -- "Set element in array"
-  | ALength                   -- "Return the length of the array"
-  | Getfield vname cname      -- "Fetch field from object"
-  | Putfield vname cname      -- "Set field in object"
-  | CAS vname cname           -- "Compare-and-swap instruction"
-  | Checkcast ty              -- "Check whether object is of given type"
-  | Instanceof ty             -- "instanceof test"
-  | Invoke mname nat          -- "inv. instance meth of an object"
-  | Return                    -- "return from method"
-  | Pop                       -- "pop top element from opstack"
-  | Dup                       -- "duplicate top stack element"
-  | Swap                      -- "swap top stack elements"
-  | BinOpInstr bop            -- "binary operator instruction"
-  | Goto int                  -- "goto relative address"
-  | IfFalse int               -- "branch if top of stack false"
-  | ThrowExc                  -- "throw top of stack as exception"
-  | MEnter                    -- "enter the monitor of object on top of the stack"
-  | MExit                     -- "exit the monitor of object on top of the stack"
+  = Load nat                  \<comment> \<open>load from local variable\<close>
+  | Store nat                 \<comment> \<open>store into local variable\<close>
+  | Push "'addr val"          \<comment> \<open>push a value (constant)\<close>
+  | New cname                 \<comment> \<open>create object\<close>
+  | NewArray ty               \<comment> \<open>create array for elements of given type\<close>
+  | ALoad                     \<comment> \<open>Load array element from heap to stack\<close>
+  | AStore                    \<comment> \<open>Set element in array\<close>
+  | ALength                   \<comment> \<open>Return the length of the array\<close>
+  | Getfield vname cname      \<comment> \<open>Fetch field from object\<close>
+  | Putfield vname cname      \<comment> \<open>Set field in object\<close>
+  | CAS vname cname           \<comment> \<open>Compare-and-swap instruction\<close>
+  | Checkcast ty              \<comment> \<open>Check whether object is of given type\<close>
+  | Instanceof ty             \<comment> \<open>instanceof test\<close>
+  | Invoke mname nat          \<comment> \<open>inv. instance meth of an object\<close>
+  | Return                    \<comment> \<open>return from method\<close>
+  | Pop                       \<comment> \<open>pop top element from opstack\<close>
+  | Dup                       \<comment> \<open>duplicate top stack element\<close>
+  | Swap                      \<comment> \<open>swap top stack elements\<close>
+  | BinOpInstr bop            \<comment> \<open>binary operator instruction\<close>
+  | Goto int                  \<comment> \<open>goto relative address\<close>
+  | IfFalse int               \<comment> \<open>branch if top of stack false\<close>
+  | ThrowExc                  \<comment> \<open>throw top of stack as exception\<close>
+  | MEnter                    \<comment> \<open>enter the monitor of object on top of the stack\<close>
+  | MExit                     \<comment> \<open>exit the monitor of object on top of the stack\<close>
 
 abbreviation CmpEq :: "'addr instr"
 where "CmpEq \<equiv> BinOpInstr Eq"
@@ -89,17 +89,17 @@ type_synonym
 
 type_synonym
   ex_entry = "pc \<times> pc \<times> cname option \<times> pc \<times> nat" 
-  -- "start-pc, end-pc, exception type (None = Any), handler-pc, remaining stack depth"
+  \<comment> \<open>start-pc, end-pc, exception type (None = Any), handler-pc, remaining stack depth\<close>
 
 type_synonym
   ex_table = "ex_entry list"
 
 type_synonym
   'addr jvm_method = "nat \<times> nat \<times> 'addr bytecode \<times> ex_table"
-   -- "max stacksize"
-   -- "number of local variables. Add 1 + no. of parameters to get no. of registers"
-   -- "instruction sequence"
-   -- "exception handler table"
+   \<comment> \<open>max stacksize\<close>
+   \<comment> \<open>number of local variables. Add 1 + no. of parameters to get no. of registers\<close>
+   \<comment> \<open>instruction sequence\<close>
+   \<comment> \<open>exception handler table\<close>
 
 type_synonym
   'addr jvm_prog = "'addr jvm_method prog" 

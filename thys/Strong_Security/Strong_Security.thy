@@ -12,7 +12,7 @@ and DA :: "('id, 'd::order) DomainAssignment"
 
 begin
 
--- "define when two states are indistinguishable for an observer on domain d"
+\<comment> \<open>define when two states are indistinguishable for an observer on domain d\<close>
 definition d_equal :: "'d::order \<Rightarrow> ('id, 'val) State 
   \<Rightarrow> ('id, 'val) State \<Rightarrow> bool"
 where
@@ -24,7 +24,7 @@ abbreviation d_equal' :: "('id, 'val) State
 where
 "m =\<^bsub>d\<^esub> m' \<equiv> d_equal d m m'"
 
--- "transitivity of d-equality"
+\<comment> \<open>transitivity of d-equality\<close>
 lemma d_equal_trans:
 "\<lbrakk> m =\<^bsub>d\<^esub> m'; m' =\<^bsub>d\<^esub> m'' \<rbrakk> \<Longrightarrow> m =\<^bsub>d\<^esub> m''"
 by (simp add: d_equal_def)
@@ -35,7 +35,7 @@ abbreviation SRabbr :: "('exp, 'id, 'val, 'com) TSteps_curry"
 where
 "\<langle>c,m\<rangle> \<rightarrow> \<langle>c',m'\<rangle> \<equiv> ((c,m),(c',m')) \<in> SR"
 
--- "predicate for strong d-bisimulation"
+\<comment> \<open>predicate for strong d-bisimulation\<close>
 definition Strong_d_Bisimulation :: "'d \<Rightarrow> 'com Bisimulation_type \<Rightarrow> bool"
 where
 "Strong_d_Bisimulation d R \<equiv> 
@@ -45,7 +45,7 @@ where
   \<langle>V!i,m1\<rangle> \<rightarrow> \<langle>W,m2\<rangle> \<and> m1 =\<^bsub>d\<^esub> m1'
   \<longrightarrow> (\<exists>W' m2'. \<langle>V'!i,m1'\<rangle> \<rightarrow> \<langle>W',m2'\<rangle> \<and> (W,W') \<in> R \<and> m2 =\<^bsub>d\<^esub> m2'))"
 
--- "union of all strong d-bisimulations"
+\<comment> \<open>union of all strong d-bisimulations\<close>
 definition USdB :: "'d \<Rightarrow> 'com Bisimulation_type"
 ("\<approx>\<^bsub>_\<^esub>" 65)
 where
@@ -55,14 +55,14 @@ abbreviation relatedbyUSdB :: "'com list \<Rightarrow> 'd \<Rightarrow> 'com lis
 ("(_ \<approx>\<^bsub>_\<^esub> _)" [66,66] 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> USdB d"
 
--- "predicate to define when a program is strongly secure"
+\<comment> \<open>predicate to define when a program is strongly secure\<close>
 definition Strongly_Secure :: "'com list \<Rightarrow> bool"
 where
 "Strongly_Secure V \<equiv> (\<forall>d. V \<approx>\<^bsub>d\<^esub> V)"
 
 
--- "auxiliary lemma to obtain central strong d-Bisimulation property as Lemma
- in meta logic (allows instantiating all the variables manually if necessary)"
+\<comment> \<open>auxiliary lemma to obtain central strong d-Bisimulation property as Lemma
+ in meta logic (allows instantiating all the variables manually if necessary)\<close>
 lemma strongdB_aux: "\<And>V V' m1 m1' m2 W i. \<lbrakk> Strong_d_Bisimulation d R;
  i < length V ; (V,V') \<in> R; \<langle>V!i,m1\<rangle> \<rightarrow> \<langle>W,m2\<rangle>; m1 =\<^bsub>d\<^esub> m1' \<rbrakk>
  \<Longrightarrow> (\<exists>W' m2'. \<langle>V'!i,m1'\<rangle> \<rightarrow> \<langle>W',m2'\<rangle> \<and> (W,W') \<in> R \<and> m2 =\<^bsub>d\<^esub> m2')"

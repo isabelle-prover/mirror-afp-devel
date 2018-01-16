@@ -191,6 +191,6 @@ proof-
   thus ?thesis using `?B \<subseteq> V` by (simp add: attractor_def le_iff_inf)
 qed
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

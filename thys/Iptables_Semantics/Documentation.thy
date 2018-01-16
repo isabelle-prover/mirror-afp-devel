@@ -64,7 +64,7 @@ text\<open>The iptables firewall starts as follows:
 
 \<close>
 lemma unfold_optimize_common_matcher_univ_ruleset_CHAIN:
-    --"for IPv4 and IPv6 packets"
+    \<comment> \<open>for IPv4 and IPv6 packets\<close>
     fixes \<gamma> :: "'i::len common_primitive \<Rightarrow> ('i, 'pkt_ext) tagged_packet_scheme \<Rightarrow> bool"
     and   p :: "('i::len, 'pkt_ext) tagged_packet_scheme"
     assumes "sanity_wf_ruleset \<Gamma>" and "chain_name \<in> set (map fst \<Gamma>)"

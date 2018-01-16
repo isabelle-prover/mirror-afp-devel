@@ -148,7 +148,7 @@ where
 definition 
   observable3 :: "['s \<Rightarrow> 'o, 's set] \<Rightarrow> bool"
 where
-  "observable3 ob P \<equiv> ob-`ob`P \<subseteq> P"    -- {* other direction holds trivially *}
+  "observable3 ob P \<equiv> ob-`ob`P \<subseteq> P"    \<comment> \<open>other direction holds trivially\<close>
 
 lemma observableE [elim]:
   "\<lbrakk>observable ob P; ob s = ob s'; s' \<in> P\<rbrakk> \<Longrightarrow> s \<in> P"
@@ -381,7 +381,7 @@ text {* General invariant proof rule. This rule is complete (set
 lemma inv_rule:
   "\<lbrakk> init T \<subseteq> I; I \<subseteq> P; {I} (trans T) {> I} \<rbrakk>
   \<Longrightarrow> reach T \<subseteq> P"
-apply (rule subset_trans, auto)              -- {* strengthen goal *}
+apply (rule subset_trans, auto)              \<comment> \<open>strengthen goal\<close>
 apply (erule reach.induct, auto simp add: PO_hoare_def)
 done
 
@@ -464,16 +464,16 @@ lemma relhoare_conseq_left [intro]:
   \<Longrightarrow> {pre} Ra, Rc {> post}"
 by (auto simp add: PO_rhoare_defs dest!: subsetD)
 
-lemma relhoare_conseq_right:                    -- {* do NOT declare [intro] *}
+lemma relhoare_conseq_right:                    \<comment> \<open>do NOT declare [intro]\<close>
   "\<lbrakk> {pre} Ra, Rc {> post'}; post' \<subseteq> post \<rbrakk> 
   \<Longrightarrow> {pre} Ra, Rc {> post}"
 by (auto simp add: PO_rhoare_defs)
 
-lemma relhoare_false_left [simp]:               -- {* do NOT declare [intro] *}
+lemma relhoare_false_left [simp]:               \<comment> \<open>do NOT declare [intro]\<close>
   "{ {} } Ra, Rc {> post}"
 by (auto simp add: PO_rhoare_defs)
 
-lemma relhoare_true_right [simp]:                -- {* not true in general *}
+lemma relhoare_true_right [simp]:                \<comment> \<open>not true in general\<close>
   "{pre} Ra, Rc {> UNIV} = (Domain (pre O Rc) \<subseteq> Domain Ra)"
 by (auto simp add: PO_rhoare_defs)
 
@@ -552,7 +552,7 @@ lemma relhoare_abstract_Un_right [intro]:
   \<Longrightarrow> {pre} Ra1 \<union> Ra2, Rc {> post}"
 by (auto simp add: PO_rhoare_defs)
 
-lemma relhoare_abstract_UN [intro!]:   -- {* might be too aggressive? *}
+lemma relhoare_abstract_UN [intro!]:   \<comment> \<open>might be too aggressive?\<close>
   "\<lbrakk> {pre} Ra x, Rc {> post} \<rbrakk>
   \<Longrightarrow> {pre} \<Union>x. Ra x, Rc {> post}"
 apply (auto simp add: PO_rhoare_defs)

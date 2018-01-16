@@ -10,7 +10,7 @@ iptables supports wildcard matching, e.g. \texttt{eth+} will match \texttt{eth},
 The character `+' is only a wildcard if it appears at the end.
 \<close>
 
-datatype iface = Iface (iface_sel: "string")  --"no negation supported, but wildcards"
+datatype iface = Iface (iface_sel: "string")  \<comment> \<open>no negation supported, but wildcards\<close>
 
 
 text\<open>Just a normal lexicographical ordering on the interface strings. Used only for optimizing code.
@@ -137,7 +137,7 @@ begin
       ))"
     
     (*<*)
-    --"Examples"
+    \<comment> \<open>Examples\<close>
       lemma "internal_iface_name_match ''lo'' ''lo''" by eval
       lemma "internal_iface_name_match ''lo+'' ''lo''" by eval
       lemma "internal_iface_name_match ''l+'' ''lo''" by eval
@@ -194,7 +194,7 @@ begin
     fun match_iface :: "iface \<Rightarrow> string \<Rightarrow> bool" where
       "match_iface (Iface i) p_iface \<longleftrightarrow> internal_iface_name_match i p_iface"
     
-    --"Examples"
+    \<comment> \<open>Examples\<close>
       lemma "  match_iface (Iface ''lo'')    ''lo''"
             "  match_iface (Iface ''lo+'')   ''lo''"
             "  match_iface (Iface ''l+'')    ''lo''"
@@ -221,7 +221,7 @@ begin
       by(simp add: internal_iface_name_match_refl)
       
 
-    --\<open>@{const match_iface} explained by the individual cases\<close>
+    \<comment> \<open>@{const match_iface} explained by the individual cases\<close>
     lemma match_iface_case_nowildcard: "\<not> iface_name_is_wildcard i \<Longrightarrow> match_iface (Iface i) p_i \<longleftrightarrow> i = p_i"
       proof(induction i p_i rule: internal_iface_name_match.induct)
       qed(auto simp add: iface_name_is_wildcard_alt split: if_split_asm)

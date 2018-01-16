@@ -120,7 +120,7 @@ schematic_goal FOLD_bin_ne_impl:
   by (autoref_monadic (plain))
 concrete_definition FOLD_bin_ne_impl uses FOLD_bin_ne_impl
 lemmas [autoref_rules(overloaded)] = FOLD_bin_ne_impl.refine [OF GEN_OP_D GEN_OP_D SIDE_GEN_ALGO_D]
-  \<comment>"TODO: really? overloaded here?"
+  \<comment> \<open>TODO: really? overloaded here?\<close>
 
 schematic_goal Inf_ne_impl:
   assumes [autoref_rules(overloaded)]: "(del_impl,op_set_delete) \<in> R \<rightarrow> \<langle>R\<rangle>C \<rightarrow> \<langle>R\<rangle>C"

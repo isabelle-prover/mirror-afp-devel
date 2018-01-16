@@ -40,10 +40,10 @@ text \<open>
   a final state predicate, and a subsumption preorder.
 \<close>
 locale Search_Space_Defs =
-  fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool" -- \<open>Step relation\<close>
-    and a\<^sub>0 :: 'a                -- \<open>Start state\<close> 
-    and F :: "'a \<Rightarrow> bool"      -- \<open>Final states\<close>
-    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50) -- \<open>Subsumption preorder\<close>
+  fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>Step relation\<close>
+    and a\<^sub>0 :: 'a                \<comment> \<open>Start state\<close> 
+    and F :: "'a \<Rightarrow> bool"      \<comment> \<open>Final states\<close>
+    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50) \<comment> \<open>Subsumption preorder\<close>
 begin
   definition reachable where
     "reachable = E\<^sup>*\<^sup>* a\<^sub>0"
@@ -287,9 +287,9 @@ context Search_Space begin
 
   lemmas [refine_vcg] = worklist_algo_correct[THEN order_trans]
 
-  end -- \<open>Context\<close>
+  end \<comment> \<open>Context\<close>
 
-end -- \<open>Search Space\<close>
+end \<comment> \<open>Search Space\<close>
 
 
 subsection \<open>Towards an Implementation\<close>
@@ -350,4 +350,4 @@ begin
 end
 
 
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

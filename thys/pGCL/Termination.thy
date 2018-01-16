@@ -206,10 +206,10 @@ probability 1. *}
 lemma termination_0_1:
   fixes body :: "'s prog"
   assumes wb: "well_def body"
-      -- "The loop terminates in one step with nonzero probability"
+      \<comment> \<open>The loop terminates in one step with nonzero probability\<close>
       and onestep: "(\<lambda>s. p) \<tturnstile> wp body \<guillemotleft>\<N> G\<guillemotright>"
       and nzp:     "0 < p"
-      -- "The body is maximal i.e.~it terminates absolutely."
+      \<comment> \<open>The body is maximal i.e.~it terminates absolutely.\<close>
       and mb:      "maximal (wp body)"
   shows "\<lambda>s. 1 \<tturnstile> wp do G \<longrightarrow> body od (\<lambda>s. 1)"
 proof -

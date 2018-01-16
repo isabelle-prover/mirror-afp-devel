@@ -7,7 +7,7 @@ theory Factorials
   imports Complex_Main "HOL-Library.Stirling"
 begin
 
-lemma pochhammer_0 [simp]: -- \<open>TODO move\<close>
+lemma pochhammer_0 [simp]: \<comment> \<open>TODO move\<close>
   "pochhammer 0 n = (0::nat)" if "n > 0"
   using that by (simp add: pochhammer_prod)
 

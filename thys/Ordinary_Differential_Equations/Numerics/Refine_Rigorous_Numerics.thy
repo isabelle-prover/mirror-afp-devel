@@ -12,8 +12,8 @@ definition "shows_sctn (sctn::real list sctn) =
 
 text \<open>TODO: move!!\<close>
 
-lemma \<comment>"TODO: needed  because @{thm dres.transfer_rec_list} expects one argument,
-  but functions with more arguments defined by primrec take several arguments"
+lemma \<comment> \<open>TODO: needed  because @{thm dres.transfer_rec_list} expects one argument,
+  but functions with more arguments defined by primrec take several arguments\<close>
   uncurry_rec_list: "rec_list (\<lambda>a b. fn a b) (\<lambda>x xs rr a b. fs x xs rr a b) xs a b =
          rec_list (\<lambda>(a,b). fn a b) (\<lambda>x xs rr (a,b). fs x xs (\<lambda>a b. rr (a,b)) a b) xs (a,b)"
   apply (induction xs arbitrary: a b)
@@ -703,11 +703,11 @@ definition [refine_vcg_def]: "Inf_spec X = SPEC (\<lambda>r. \<forall>x \<in> X.
 definition [refine_vcg_def]: "Sup_specs d X = SPEC (\<lambda>r::real list. length r = d \<and> (\<forall>x \<in> X. list_all2 (\<le>) x r))"
 definition [refine_vcg_def]: "Sup_spec X = SPEC (\<lambda>r. \<forall>x \<in> X. x \<le> r)"
 
-definition [refine_vcg_def]: "Inf_inners X y = SPEC (\<lambda>r::real. (\<forall>x \<in> X. r \<le> inner_lv_rel x y))" \<comment>"TODO: generic image of aforms, then Inf"
-definition [refine_vcg_def]: "Inf_inner X y = SPEC (\<lambda>r. \<forall>x \<in> X. r \<le> x \<bullet> y)" \<comment>"TODO: generic image of aforms, then Inf"
+definition [refine_vcg_def]: "Inf_inners X y = SPEC (\<lambda>r::real. (\<forall>x \<in> X. r \<le> inner_lv_rel x y))" \<comment> \<open>TODO: generic image of aforms, then Inf\<close>
+definition [refine_vcg_def]: "Inf_inner X y = SPEC (\<lambda>r. \<forall>x \<in> X. r \<le> x \<bullet> y)" \<comment> \<open>TODO: generic image of aforms, then Inf\<close>
 
-definition [refine_vcg_def]: "Sup_inners X y = SPEC (\<lambda>r::real. (\<forall>x \<in> X. r \<ge> inner_lv_rel x y))" \<comment>"TODO: generic image of aforms, then Inf"
-definition [refine_vcg_def]: "Sup_inner X y = SPEC (\<lambda>r. \<forall>x \<in> X. x \<bullet> y \<le> r)" \<comment>"TODO: generic image of aforms. then Sup"
+definition [refine_vcg_def]: "Sup_inners X y = SPEC (\<lambda>r::real. (\<forall>x \<in> X. r \<ge> inner_lv_rel x y))" \<comment> \<open>TODO: generic image of aforms, then Inf\<close>
+definition [refine_vcg_def]: "Sup_inner X y = SPEC (\<lambda>r. \<forall>x \<in> X. x \<bullet> y \<le> r)" \<comment> \<open>TODO: generic image of aforms. then Sup\<close>
 
 definition "plane_ofs sctn = {x. inner_lv_rel x (normal sctn) = pstn sctn}"
 definition [refine_vcg_def]: "inter_sctn_specs d X sctn = SPEC (\<lambda>R. env_len R d \<and> X \<inter> plane_ofs sctn \<subseteq> R \<and> R \<subseteq> plane_ofs sctn)"
@@ -2047,7 +2047,7 @@ lemma Nil_mem_listset[simp]: "[] \<in> listset list \<longleftrightarrow> list =
   by (induction list) (auto simp: set_Cons_def)
 
 lemma sing_mem_listset_iff[simp]: "[b] \<in> listset ys \<longleftrightarrow> (\<exists>z. ys = [z] \<and> b \<in> z)"
-  \<comment>\<open>TODO: generalize to Cons?\<close>
+  \<comment> \<open>TODO: generalize to Cons?\<close>
   by (cases ys) (auto simp: set_Cons_def)
 
 
@@ -2197,7 +2197,7 @@ lemma is_empty_appr_rel[autoref_rules]:
   "(\<lambda>_. False, is_empty) \<in> appr_rel \<rightarrow> bool_rel"
   by (auto simp: appr_rel_br br_def)
 
-definition card_info::"_ set \<Rightarrow> nat nres" where [refine_vcg_def]: "card_info x = SPEC top" \<comment>\<open>\<open>op_set_wcard\<close>\<close>
+definition card_info::"_ set \<Rightarrow> nat nres" where [refine_vcg_def]: "card_info x = SPEC top" \<comment> \<open>\<open>op_set_wcard\<close>\<close>
 sublocale autoref_op_pat_def card_info .
 
 lemma card_info[autoref_rules]:

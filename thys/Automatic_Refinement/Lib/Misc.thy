@@ -98,7 +98,7 @@ thm List.length_greater_0_conv
 lemma length_ge_1_conv[iff]: "Suc 0 \<le> length l \<longleftrightarrow> l\<noteq>[]"
   by (cases l) auto
   
--- "Obtains a list from the pointwise characterization of its elements"
+\<comment> \<open>Obtains a list from the pointwise characterization of its elements\<close>
 lemma obtain_list_from_elements:
   assumes A: "\<forall>i<n. (\<exists>li. P li i)"
   obtains l where
@@ -180,7 +180,7 @@ lemma distinct_mapI: "distinct (map f l) \<Longrightarrow> distinct l"
     
 lemma map_distinct_upd_conv: 
   "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> map f l [i := x] = map (f(l!i := x)) l"
-  -- \<open>Updating a mapped distinct list is equal to updating the 
+  \<comment> \<open>Updating a mapped distinct list is equal to updating the 
     mapping function\<close>
   by (simp add: nth_eq_iff_index_eq nth_equalityI)  
 
@@ -372,7 +372,7 @@ lemma set_pair_flt_false[simp]: "{ (a,b). False } = {}"
 lemma in_pair_collect_simp[simp]: "(a,b)\<in>{(a,b). P a b} \<longleftrightarrow> P a b"
   by auto
 
-    -- "Contract quantification over two variables to pair"
+    \<comment> \<open>Contract quantification over two variables to pair\<close>
 lemma Ex_prod_contract: "(\<exists>a b. P a b) \<longleftrightarrow> (\<exists>z. P (fst z) (snd z))"
   by auto
 
@@ -559,8 +559,8 @@ qed
 lemma finite_Collect: "finite S \<Longrightarrow> inj f \<Longrightarrow> finite {a. f a : S}"
 by(simp add: finite_vimageI vimage_def[symmetric])
 
-  -- "Finite sets have an injective mapping to an initial segments of the
-      natural numbers"
+  \<comment> \<open>Finite sets have an injective mapping to an initial segments of the
+      natural numbers\<close>
   (* This lemma is also in the standard library (from Isabelle2009-1 on)
       as @{thm [source] Finite_Set.finite_imp_inj_to_nat_seg}. However, it is formulated with HOL's
       \<exists> there rather then with the meta-logic obtain *)
@@ -1368,10 +1368,10 @@ lemma map_of_rev_distinct[simp]:
   done
 
 
--- {* Tail-recursive, generalized @{const rev}. May also be used for
+\<comment> \<open>Tail-recursive, generalized @{const rev}. May also be used for
       tail-recursively getting a list with all elements of the two
       operands, if the order does not matter, e.g. when implementing
-      sets by lists. *}
+      sets by lists.\<close>
 fun revg where
   "revg [] b = b" |
   "revg (a#as) b = revg as (a#b)"
@@ -1502,11 +1502,11 @@ text {*
 *}
 lemma foldl_rule_P:
   fixes I :: "'\<sigma> \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-  -- "The invariant holds for the initial state, no items processed yet and all items to be processed:"
+  \<comment> \<open>The invariant holds for the initial state, no items processed yet and all items to be processed:\<close>
   assumes initial: "I \<sigma>0 [] l0"
-  -- "The invariant remains valid if one item from the list is processed"
+  \<comment> \<open>The invariant remains valid if one item from the list is processed\<close>
   assumes step: "!!l1 l2 x \<sigma>. \<lbrakk> l0=l1@x#l2; I \<sigma> l1 (x#l2) \<rbrakk> \<Longrightarrow> I (f \<sigma> x) (l1@[x]) l2"
-  -- "The proposition follows from the invariant in the final state, i.e. all items processed and nothing to be processed"
+  \<comment> \<open>The proposition follows from the invariant in the final state, i.e. all items processed and nothing to be processed\<close>
   assumes final: "!!\<sigma>. I \<sigma> l0 [] \<Longrightarrow> P \<sigma>"
   shows "P (foldl f \<sigma>0 l0)"
   using foldl_rule[of I, OF initial step] by (simp add: final)
@@ -1841,7 +1841,7 @@ lemma zipf_zip: "\<lbrakk>length l1 = length l2\<rbrakk> \<Longrightarrow> zipf 
   apply auto
   done
 
-  -- "All quantification over zipped lists"
+  \<comment> \<open>All quantification over zipped lists\<close>
 fun list_all_zip where
   "list_all_zip P [] [] \<longleftrightarrow> True" |
   "list_all_zip P (a#as) (b#bs) \<longleftrightarrow> P a b \<and> list_all_zip P as bs" |
@@ -2278,7 +2278,7 @@ lemma in_set_upd_eq:
   text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
   lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2"
   proof -
-    { -- "The proof is done by induction over the sum of the lengths of the lists"
+    { \<comment> \<open>The proof is done by induction over the sum of the lengths of the lists\<close>
       fix n
       have "!!w1 w2. \<lbrakk>length w1 + length w2 = n; P [] []; !!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2; !!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2') \<rbrakk> \<Longrightarrow> P w1 w2 "
         apply (induct n)
@@ -3756,7 +3756,7 @@ lemma cyclic_subset:
     thus P by (blast intro: C)
   qed
 
-    -- "Useful lemma to show well-foundedness of some process approaching a finite upper bound"
+    \<comment> \<open>Useful lemma to show well-foundedness of some process approaching a finite upper bound\<close>
   lemma wf_bounded_supset: "finite S \<Longrightarrow> wf {(Q',Q). Q'\<supset>Q \<and> Q'\<subseteq> S}"
   proof -
     assume [simp]: "finite S"

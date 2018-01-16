@@ -50,10 +50,10 @@ subsection\<open>IPv6 Pretty Printing\<close>
       )"
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0x2001 0xDB8 0x0 0x0 0x8 0x800 0x200C 0x417A))
-              = ''2001:db8::8:800:200c:417a''" by eval --\<open>a unicast address\<close>
+              = ''2001:db8::8:800:200c:417a''" by eval \<comment> \<open>a unicast address\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0xFF01 0x0 0x0 0x0 0x0 0x0 0x0 0x0101)) =
-              ''ff01::101''" by eval --\<open>a multicast address\<close>
+              ''ff01::101''" by eval \<comment> \<open>a multicast address\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0 0 0 0 0x8 0x800 0x200C 0x417A)) =
                ''::8:800:200c:417a''" by eval
@@ -62,36 +62,36 @@ subsection\<open>IPv6 Pretty Printing\<close>
                ''2001:db8::''" by eval 
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0xFF00 0 0 0 0 0 0 0)) =
-               ''ff00::''" by eval --\<open>Multicast\<close>
+               ''ff00::''" by eval \<comment> \<open>Multicast\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0xFE80 0 0 0 0 0 0 0)) =
-               ''fe80::''" by eval --\<open>Link-Local unicast\<close>
+               ''fe80::''" by eval \<comment> \<open>Link-Local unicast\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0 0 0 0 0 0 0 0)) =
-               ''::''" by eval --\<open>unspecified address\<close>
+               ''::''" by eval \<comment> \<open>unspecified address\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int (IPv6AddrPreferred 0 0 0 0 0 0 0 1)) =
-               ''::1''" by eval --\<open>loopback address\<close>
+               ''::1''" by eval \<comment> \<open>loopback address\<close>
   
   lemma "ipv6addr_toString (ipv6preferred_to_int
           (IPv6AddrPreferred 0x2001 0xdb8 0x0 0x0 0x0 0x0 0x0 0x1)) =
-              ''2001:db8::1''" by eval --\<open>Section 4.1 of RFC5952\<close>
+              ''2001:db8::1''" by eval \<comment> \<open>Section 4.1 of RFC5952\<close>
 
   lemma "ipv6addr_toString (ipv6preferred_to_int
           (IPv6AddrPreferred 0x2001 0xdb8 0x0 0x0 0x0 0x0 0x2 0x1)) =
-              ''2001:db8::2:1''" by eval --\<open>Section 4.2.1 of RFC5952\<close>
+              ''2001:db8::2:1''" by eval \<comment> \<open>Section 4.2.1 of RFC5952\<close>
 
   lemma "ipv6addr_toString (ipv6preferred_to_int
           (IPv6AddrPreferred 0x2001 0xdb8 0x0 0x1 0x1 0x1 0x1 0x1)) =
-              ''2001:db8:0:1:1:1:1:1''" by eval --\<open>Section 4.2.2 of RFC5952\<close>
+              ''2001:db8:0:1:1:1:1:1''" by eval \<comment> \<open>Section 4.2.2 of RFC5952\<close>
 
   lemma "ipv6addr_toString (ipv6preferred_to_int
           (IPv6AddrPreferred 0x2001 0x0 0x0 0x1 0x0 0x0 0x0 0x1)) =
-              ''2001:0:0:1::1''" by eval --\<open>Section 4.2.3 of RFC5952\<close>
+              ''2001:0:0:1::1''" by eval \<comment> \<open>Section 4.2.3 of RFC5952\<close>
 
   lemma "ipv6addr_toString (ipv6preferred_to_int
           (IPv6AddrPreferred 0x2001 0xdb8 0x0 0x0 0x1 0x0 0x0 0x1)) =
-              ''2001:db8::1:0:0:1''" by eval --\<open>Section 4.2.3 of RFC5952\<close>
+              ''2001:db8::1:0:0:1''" by eval \<comment> \<open>Section 4.2.3 of RFC5952\<close>
 
   lemma "ipv6addr_toString max_ipv6_addr = ''ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff''" by eval
   lemma "ipv6addr_toString (ipv6preferred_to_int

@@ -12,9 +12,9 @@ text {*
 
 locale NoSmallSeparationsInduct = v0_v1_Digraph +
   fixes sep_size :: nat
-  -- "The size of a minimum separator."
+  \<comment> \<open>The size of a minimum separator.\<close>
   assumes no_small_separations: "\<And>S. Separation G v0 v1 S \<Longrightarrow> card S \<ge> Suc sep_size"
-  -- "The induction hypothesis."
+  \<comment> \<open>The induction hypothesis.\<close>
   and no_small_separations_hyp: "\<And>G' :: ('a, 'b) Graph_scheme.
     (\<And>S. Separation G' v0 v1 S \<Longrightarrow> card S \<ge> sep_size)
     \<Longrightarrow> v0_v1_Digraph G' v0 v1
@@ -158,7 +158,7 @@ lemma P_k_hits_Q: "\<exists>y \<in> set P_k. hitting_Q_or_new_last y" proof (cas
     using Q.paths path_from_toE hitting_Q_or_new_last_def v0_neq_v1 by fastforce
 qed (metis P_new new_last_neq_v0 hitting_Q_or_new_last_def last_in_set path_from_toE new_last_def)
 
-end -- "locale @{locale ProofStepInduct_NonTrivial}"
+end \<comment> \<open>locale @{locale ProofStepInduct_NonTrivial}\<close>
 
 subsection {* Decomposing $P_k$ *}
 
@@ -247,6 +247,6 @@ context ProofStepInduct_NonTrivial_P_k_pre begin
     qed
     ultimately show ?thesis by blast
   qed
-end -- "locale @{locale ProofStepInduct_NonTrivial_P_k_pre}"
+end \<comment> \<open>locale @{locale ProofStepInduct_NonTrivial_P_k_pre}\<close>
 
 end

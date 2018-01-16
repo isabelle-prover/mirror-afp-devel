@@ -19,13 +19,13 @@ text {*
 
 
 definition
-  -- "The method type only contains declared classes:"
+  \<comment> \<open>The method type only contains declared classes:\<close>
   check_types :: "'m prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err list \<Rightarrow> bool"
 where 
   "check_types P mxs mxl \<tau>s \<equiv> set \<tau>s \<subseteq> states P mxs mxl"
 
-  -- "An instruction is welltyped if it is applicable and its effect"
-  -- "is compatible with the type at all successor instructions:"
+  \<comment> \<open>An instruction is welltyped if it is applicable and its effect\<close>
+  \<comment> \<open>is compatible with the type at all successor instructions:\<close>
 definition
   wt_instr :: "['m prog,ty,nat,pc,ex_table,instr,pc,ty\<^sub>m] \<Rightarrow> bool"
   ("_,_,_,_,_ \<turnstile> _,_ :: _" [60,0,0,0,0,0,0,61] 60)
@@ -34,16 +34,16 @@ where
   app i P mxs T pc mpc xt (\<tau>s!pc) \<and> 
   (\<forall>(pc',\<tau>') \<in> set (eff i P pc xt (\<tau>s!pc)). P \<turnstile> \<tau>' \<le>' \<tau>s!pc')"
 
-  -- {* The type at @{text "pc=0"} conforms to the method calling convention: *}
+  \<comment> \<open>The type at @{text "pc=0"} conforms to the method calling convention:\<close>
 definition wt_start :: "['m prog,cname,ty list,nat,ty\<^sub>m] \<Rightarrow> bool"
 where
   "wt_start P C Ts mxl\<^sub>0 \<tau>s \<equiv>
   P \<turnstile> Some ([],OK (Class C)#map OK Ts@replicate mxl\<^sub>0 Err) \<le>' \<tau>s!0"
 
-  -- "A method is welltyped if the body is not empty,"
-  -- "if the method type covers all instructions and mentions"
-  -- "declared classes only, if the method calling convention is respected, and"
-  -- "if all instructions are welltyped."
+  \<comment> \<open>A method is welltyped if the body is not empty,\<close>
+  \<comment> \<open>if the method type covers all instructions and mentions\<close>
+  \<comment> \<open>declared classes only, if the method calling convention is respected, and\<close>
+  \<comment> \<open>if all instructions are welltyped.\<close>
 definition wt_method :: "['m prog,cname,ty list,ty,nat,nat,instr list,
                  ex_table,ty\<^sub>m] \<Rightarrow> bool"
 where
@@ -53,7 +53,7 @@ where
   wt_start P C Ts mxl\<^sub>0 \<tau>s \<and>
   (\<forall>pc < size is. P,T\<^sub>r,mxs,size is,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
-  -- "A program is welltyped if it is wellformed and all methods are welltyped"
+  \<comment> \<open>A program is welltyped if it is wellformed and all methods are welltyped\<close>
 definition  wf_jvm_prog_phi :: "ty\<^sub>P \<Rightarrow> jvm_prog \<Rightarrow> bool" ("wf'_jvm'_prog\<^bsub>_\<^esub>")
 where
   "wf_jvm_prog\<^bsub>\<Phi>\<^esub> \<equiv>

@@ -14,7 +14,7 @@ begin
 sublocale multithreaded_base < trsys "r t" for t .
 sublocale multithreaded_base < mthr: trsys redT .
 
--- "Move to FWSemantics?"
+\<comment> \<open>Move to FWSemantics?\<close>
 definition redT_upd_\<epsilon> :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w) state"
 where [simp]: "redT_upd_\<epsilon> s t x' m' = (locks s, ((thr s)(t \<mapsto> (x', snd (the (thr s t)))), m'), wset s, interrupts s)"
 

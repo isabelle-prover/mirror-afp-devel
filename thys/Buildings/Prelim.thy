@@ -287,10 +287,8 @@ qed
 
 lemma bij_betw_f_the_inv_into_f:
   "bij_betw f A B \<Longrightarrow> y\<in>B \<Longrightarrow> f (the_inv_into A f y) = y"
--- {*
-  an equivalent lemma appears in the HOL library, but this version avoids the double
-  @{const bij_betw} premises
-*}
+\<comment> \<open>an equivalent lemma appears in the HOL library, but this version avoids the double
+  @{const bij_betw} premises\<close>
   unfolding bij_betw_def by (blast intro: f_the_inv_into_f)
 
 lemma bij_betw_the_inv_into_onto: "bij_betw f A B \<Longrightarrow> the_inv_into A f ` B = A"
@@ -697,8 +695,8 @@ primrec alternating_list :: "nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow>
   where zero: "alternating_list 0 s t = []"
       | Suc : "alternating_list (Suc k) s t =
                 alternating_list k s t @ [if even k then s else t]"
--- {* could be defined using Cons, but we want the alternating list to always start with the same
-letter as it grows, and it's easier to do that via append *}
+\<comment> \<open>could be defined using Cons, but we want the alternating list to always start with the same
+letter as it grows, and it's easier to do that via append\<close>
 
 lemma alternating_list2: "alternating_list 2 s t = [s,t]"
   using arg_cong[OF Suc_1, THEN sym, of "\<lambda>n. alternating_list n s t"] by simp
@@ -1268,7 +1266,7 @@ definition minimal_in :: "'a set \<Rightarrow> 'a \<Rightarrow> bool"
 
 definition pseudominimal_in :: "'a set \<Rightarrow> 'a \<Rightarrow> bool"
   where "pseudominimal_in P x \<equiv> minimal_in (P - {bottom P}) x"
--- {* only makes sense for @{term "has_bottom P"} *}
+\<comment> \<open>only makes sense for @{term "has_bottom P"}\<close>
 
 lemma minimal_inD1: "minimal_in P x \<Longrightarrow> x\<in>P"
   using minimal_in_def by fast

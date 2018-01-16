@@ -13,7 +13,7 @@ term "X::('v::vertex, 'a) TopoS_packed"
 
 subsection{*Generating instantiated (configured) network security invariants*}
 
-  --"a configured network security invariant in list implementaion"
+  \<comment> \<open>a configured network security invariant in list implementaion\<close>
   (*very minimal version, no eval, ...*)
   record ('v) SecurityInvariant =
     implc_type :: string
@@ -99,9 +99,9 @@ subsection{*Generating instantiated (configured) network security invariants*}
       (the (new_configured_SecurityInvariant (sinvar_spec, nm_default m, nm_receiver_violation m, nm_node_props m C)))"
     by(blast dest: new_configured_list_SecurityInvariant_complies)
 
-  --"From"
+  \<comment> \<open>From\<close>
   thm new_configured_SecurityInvariant_sound
-  --"we get that @{const new_configured_list_SecurityInvariant} has all the necessary properties (modulo @{const SecurityInvariant_complies_formal_def})"
+  \<comment> \<open>we get that @{const new_configured_list_SecurityInvariant} has all the necessary properties (modulo @{const SecurityInvariant_complies_formal_def})\<close>
 
 subsection{*About security invariants*}
 

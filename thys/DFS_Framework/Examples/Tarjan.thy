@@ -947,7 +947,7 @@ context begin interpretation timing_syntax .
             finally show ?thesis .
           qed
         next
-          case False -- \<open>\<open>w \<noteq> u\<close>\<close>
+          case False \<comment> \<open>\<open>w \<noteq> u\<close>\<close>
           hence "\<zeta> ?s w = \<zeta> s w"
             by (rule_tac TRANS) (simp add: tarjan_back_def cross_back_edge)
           also have "\<zeta> s w = LowLink s w" using w_disc False by (simp add: cross_back_edge)

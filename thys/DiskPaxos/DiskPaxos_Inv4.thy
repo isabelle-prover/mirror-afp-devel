@@ -392,7 +392,7 @@ lemma EndPhase0_44:
   shows "\<exists>d. \<exists>rb \<in> blocksRead s p d. bal bk \<le> mbal(block rb)"
 proof -
   from bk inv4d
-  have "\<exists>D1 \<in> MajoritySet.\<forall>d \<in> D1. bal bk \<le> mbal(disk s d p)"  -- {* 4.2 *}
+  have "\<exists>D1 \<in> MajoritySet.\<forall>d \<in> D1. bal bk \<le> mbal(disk s d p)"  \<comment> \<open>4.2\<close>
     by(auto simp add: HInv4d_def)
   with majorities_intersect
   have p43: "\<forall>D\<in>MajoritySet. \<exists>d\<in>D. bal bk \<le> mbal(disk s d p)"
@@ -400,10 +400,10 @@ proof -
   from act
   have "phase s p = 0" by(simp add: EndPhase0_def)
   with inv2c
-  have "\<forall>d. \<forall>rb \<in> blocksRead s p d. block rb = disk s d p" -- {* 5.1 *}
+  have "\<forall>d. \<forall>rb \<in> blocksRead s p d. block rb = disk s d p" \<comment> \<open>5.1\<close>
     by(simp add: Inv2c_inner_def)
   hence "\<forall>d. hasRead s p d p  
-              \<longrightarrow> (\<exists>rb\<in>blocksRead s p d. block rb = disk s d p)" --{* 5.2 *}
+              \<longrightarrow> (\<exists>rb\<in>blocksRead s p d. block rb = disk s d p)" \<comment> \<open>5.2\<close>
     (is "\<forall>d. ?H d \<longrightarrow> ?P d")
     by(auto simp add: hasRead_def)
   with act

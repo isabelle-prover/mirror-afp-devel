@@ -11,7 +11,7 @@ begin
 
 context auto_ll_on_open begin
 
-lemma nonneg_interval_mem_existence_ivlI[intro]:\<comment>\<open>TODO: move!\<close>
+lemma nonneg_interval_mem_existence_ivlI[intro]:\<comment> \<open>TODO: move!\<close>
   "0 \<le> t1 \<Longrightarrow> t1 \<le> t2 \<Longrightarrow> t2 \<in> existence_ivl0 x0 \<Longrightarrow> {t1..t2} \<subseteq> existence_ivl0 x0"
   "t1 \<le> t2 \<Longrightarrow> t2 \<le> 0 \<Longrightarrow> t1 \<in> existence_ivl0 x0 \<Longrightarrow> {t1..t2} \<subseteq> existence_ivl0 x0"
   "t1 \<le> 0 \<Longrightarrow> 0 \<le> t2 \<Longrightarrow> t1 \<in> existence_ivl0 x0 \<Longrightarrow> t2 \<in> existence_ivl0 x0 \<Longrightarrow> {t1..t2} \<subseteq> existence_ivl0 x0"
@@ -29,7 +29,7 @@ lemma interval_subset_existence_ivl:
 
 end
 
-lemma(in c1_on_open_euclidean) diff_existence_ivl_iff[simp]:\<comment>\<open>TODO: move!, also to @{term auto_ll_on_open}\<close>
+lemma(in c1_on_open_euclidean) diff_existence_ivl_iff[simp]:\<comment> \<open>TODO: move!, also to @{term auto_ll_on_open}\<close>
   "t2 - t1 \<in> existence_ivl0 (flow0 x0 t1) \<longleftrightarrow> t2 \<in> existence_ivl0 x0"
   if "t1 \<le> t2" "t1 \<in> existence_ivl0 x0"
   apply auto
@@ -56,7 +56,7 @@ lemma [autoref_rules]: "(x, ST x) \<in> string_rel"
   by (auto simp: string_rel_def)
 end
 
-lemma has_derivative_partials_openI:\<comment>\<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
+lemma has_derivative_partials_openI:\<comment> \<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::real_normed_vector \<Rightarrow> 'c::real_normed_vector"
   assumes fx: "((\<lambda>x. f x (snd xy)) has_derivative fx (fst xy) (snd xy)) (at (fst xy))"
   assumes fy: "\<And>x y. (x, y) \<in> XY \<Longrightarrow> ((\<lambda>y. f x y) has_derivative blinfun_apply (fy x y)) (at y)"
@@ -117,7 +117,7 @@ text \<open>Approximation\<close>
 
 record 'b numeric_options =
   precision :: nat
-  reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment>\<open>is this too special?\<close>
+  reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment> \<open>is this too special?\<close>
   adaptive_atol :: real
   adaptive_rtol :: real
   method_id :: nat
@@ -131,7 +131,7 @@ record 'b numeric_options =
 
 record 'b reach_options =
   max_tdev_thres :: "'b list \<Rightarrow> real"
-  pre_split_reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment>\<open>is this too special?\<close>
+  pre_split_reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment> \<open>is this too special?\<close>
 
   pre_inter_granularity :: "'b list \<Rightarrow> real"
   post_inter_granularity :: "'b list \<Rightarrow> real"
@@ -2115,7 +2115,7 @@ proof (goal_cases)
       apply (rule derivative_eq_intros)
         apply (rule derivative_intros)
         apply (rule derivative_intros)
-      subgoal by (force simp: ncc_def nonempty_def)\<comment>\<open>unnecessarily slow\<close>
+      subgoal by (force simp: ncc_def nonempty_def)\<comment> \<open>unnecessarily slow\<close>
       subgoal by force
       done
     subgoal
@@ -2306,7 +2306,7 @@ lemma isDERIV_simps[simp]:
 
 abbreviation "float10_rel \<equiv> Id::(float10 \<times> float10) set"
 
-locale approximate_sets_ode_slp' = approximate_sets_ode_slp\<comment>\<open>TODO: this prevents infinite chain of interpretations (?!)\<close>
+locale approximate_sets_ode_slp' = approximate_sets_ode_slp\<comment> \<open>TODO: this prevents infinite chain of interpretations (?!)\<close>
   where ode_e = ode_e
     and safe_form = safe_form
     and optns = "optns::'b numeric_options"
@@ -3925,11 +3925,11 @@ lemma sabove_not_le_halfspace:
   "x \<in> sabove_halfspace sctn \<longleftrightarrow> \<not> le_halfspace sctn x"
   by (auto simp: sabove_halfspace_def le_halfspace_def gt_halfspace_def)
 
-lemma (in c1_on_open_euclidean) flowsto_self:\<comment>\<open>TODO: move!\<close>
+lemma (in c1_on_open_euclidean) flowsto_self:\<comment> \<open>TODO: move!\<close>
   "0 \<in> T \<Longrightarrow> X0 \<subseteq> Z \<Longrightarrow> fst ` X0 \<subseteq> X \<Longrightarrow> flowsto X0 T Y Z"
   by (force simp: flowsto_def intro!: bexI[where x=0])
 
-lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto:\<comment>\<open>TODO: move!\<close>
+lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto:\<comment> \<open>TODO: move!\<close>
   assumes "flowpipe X0 hl hu CX Y" "hl > 0"
   shows "flowsto X0 {0<..hl} CX Y"
   using assms
@@ -4306,7 +4306,7 @@ proof -
     subgoal using AB by (auto simp: )
     subgoal
       apply (rule conjI)
-      subgoal using AB by auto\<comment>\<open>unnecessarily slow\<close>
+      subgoal using AB by auto\<comment> \<open>unnecessarily slow\<close>
       subgoal using AB by fastforce
       done
     subgoal using AB by (auto simp: )
@@ -4323,7 +4323,7 @@ proof -
       subgoal using AB by auto
       done
     subgoal using AB GUARDS by auto
-    subgoal using AB GUARDS by auto\<comment>\<open>unnecessarily slow\<close>
+    subgoal using AB GUARDS by auto\<comment> \<open>unnecessarily slow\<close>
     subgoal using AB GUARDS by auto
     subgoal premises prems for GUARDS b c d e f g h i j k l m n p q
       using \<open>\<forall>x\<in>PS \<union> PS2. \<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl\<close>
@@ -5106,7 +5106,7 @@ schematic_goal step_adapt_time_impl:
 concrete_definition step_adapt_time_impl for Xi hi uses step_adapt_time_impl
 lemmas [autoref_rules] = step_adapt_time_impl.refine
 
-lemma convex_halfspace[simp]:\<comment>\<open>TODO: move\<close>
+lemma convex_halfspace[simp]:\<comment> \<open>TODO: move\<close>
   "convex (below_halfspace sctn)"
   apply (auto simp: below_halfspace_def le_halfspace_def[abs_def])
   using convex_bound_le
@@ -5190,7 +5190,7 @@ schematic_goal resolve_step_impl:
 concrete_definition resolve_step_impl for roptnsi Xi hi uses resolve_step_impl
 lemmas [autoref_rules] = resolve_step_impl.refine
 
-lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto_nonneg:\<comment>\<open>TODO: move!\<close>
+lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto_nonneg:\<comment> \<open>TODO: move!\<close>
   assumes "flowpipe X0 hl hu CX Y"
   shows "flowsto X0 {0..} CX Y"
   using assms
@@ -7612,7 +7612,7 @@ lemma is_empty_autoref[autoref_rules]:
   using assms
   by (fastforce simp: ivl_rel_def br_def set_of_ivl_def dest: fun_relD)
 
-lemma inter_ivl_clw[autoref_rules]:\<comment>\<open>TODO: fix @{thm inter_ivl_clw}\<close>
+lemma inter_ivl_clw[autoref_rules]:\<comment> \<open>TODO: fix @{thm inter_ivl_clw}\<close>
   assumes sv[THEN PREFER_sv_D]: "PREFER single_valued A"
   assumes intr[THEN GEN_OP_D]: "GEN_OP intr op_inter_ivl (\<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel)"
   assumes "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
@@ -8637,7 +8637,7 @@ lemma
   by (induction xs arbitrary: ab) (auto simp: split_beta')
 
 lemma
-  poincare_onto_series_rec_list_eq:\<comment>\<open>TODO: here is a problem if interrupt gets uncurried, too\<close>
+  poincare_onto_series_rec_list_eq:\<comment> \<open>TODO: here is a problem if interrupt gets uncurried, too\<close>
   "poincare_onto_series interrupt trap guards XS ivl sctn ro = rec_list
       (\<lambda>(((((trap), XS0), ivl), sctn), ro).
           let guard0 = mk_coll (mk_inter ivl (plane_of sctn))
@@ -9320,7 +9320,7 @@ lemma ivl_rep_of_set_lvivl_rel[autoref_rules]:
     by (auto simp: lv_rel_def intro!: brI lv_rel_inf[param_fo])
   done
 
-lemma phantom_rel_union_coll[autoref_rules]:\<comment>\<open>TODO: move!\<close>
+lemma phantom_rel_union_coll[autoref_rules]:\<comment> \<open>TODO: move!\<close>
   assumes [THEN GEN_OP_D, autoref_rules(overloaded)]: "GEN_OP un op_union_coll (clw_rel A \<rightarrow> clw_rel A \<rightarrow> clw_rel A)"
   shows "(\<lambda>a b. do {a \<leftarrow> a; b \<leftarrow> b; Some (un a b)}, op_union_phantom) \<in> \<langle>clw_rel A\<rangle>phantom_rel \<rightarrow> \<langle>clw_rel A\<rangle>phantom_rel \<rightarrow> \<langle>clw_rel A\<rangle>phantom_rel"
   using assms
@@ -9509,7 +9509,7 @@ lemma one_step_until_time_ivl_spec[le, refine_vcg]:
 
 end
 
-locale approximate_sets_options' = approximate_sets_options\<comment>\<open>TODO: really?!\<close>
+locale approximate_sets_options' = approximate_sets_options\<comment> \<open>TODO: really?!\<close>
 
 context approximate_sets_options' begin
 
@@ -9582,7 +9582,7 @@ definition "init_ode_solver (x::unit) = do {
   RETURN (D, ode_slp,  euler_incr_slp,  euler_slp,  rk2_slp,
              ode_slp', euler_incr_slp', euler_slp', rk2_slp',
           solve_poincare_slp)
-}"\<comment>\<open>TODO: use definitions for slps\<close>
+}"\<comment> \<open>TODO: use definitions for slps\<close>
 sublocale autoref_op_pat_def init_ode_solver .
 
 lemma [autoref_rules]:

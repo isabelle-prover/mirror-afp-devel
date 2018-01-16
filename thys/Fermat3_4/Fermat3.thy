@@ -109,7 +109,7 @@ next
     by simp
   have "\<exists> \<alpha> \<beta> \<gamma>. ?P \<alpha> \<beta> \<gamma> \<and> nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
   proof -
-    -- "obtain coprime $p$ and $q$ such that $v = p+q$ and $w = p-q$"
+    \<comment> \<open>obtain coprime $p$ and $q$ such that $v = p+q$ and $w = p-q$\<close>
     have vwOdd: "odd v \<and> odd w"
     proof (rule ccontr, case_tac "odd v", simp_all)
       assume ve: "even v"
@@ -135,8 +135,8 @@ next
     then obtain p q where pq: "v+w = 2*p \<and> v-w = 2*q"
       using evenE[of "v+w"] evenE[of "v-w"] by meson
     hence vw: "v = p+q \<and> w = p-q" by auto
-    -- "show that $x^3 = (2p)(p^2 + 3q^2)$ and that these factors are"
-    -- "either coprime (first case), or have $3$ as g.c.d. (second case)"
+    \<comment> \<open>show that $x^3 = (2p)(p^2 + 3q^2)$ and that these factors are\<close>
+    \<comment> \<open>either coprime (first case), or have $3$ as g.c.d. (second case)\<close>
     have vwpq: "v^3 + w^3 = (2*p)*(p^2 + 3*q^2)"
     proof -
       have "2*(v^3 + w^3) = 2*(v+w)*(v^2 - v*w + w^2)" 
@@ -172,8 +172,8 @@ next
     qed
     then have even_odd_p_q: "even p \<and> odd q \<or> odd p \<and> even q"
       by auto
-    -- "first case: $p$ is not a multiple of $3$; hence $2p$ and $p^2+3q^2$"
-    -- "are coprime; hence both are cubes"
+    \<comment> \<open>first case: $p$ is not a multiple of $3$; hence $2p$ and $p^2+3q^2$\<close>
+    \<comment> \<open>are coprime; hence both are cubes\<close>
     { assume p3: "\<not> 3 dvd p"
       have g3: "\<not> 3 dvd ?g"
       proof (rule ccontr)
@@ -283,7 +283,7 @@ next
         by auto (auto simp add: ac_simps)
       then obtain \<alpha> \<beta> \<gamma> where albega: 
         "2*a = \<gamma>^3 \<and> a - 3*b = \<alpha>^3 \<and> a+3*b = \<beta>^3" by auto 
-      -- "show this is a (smaller) solution"
+      \<comment> \<open>show this is a (smaller) solution\<close>
       hence "\<alpha>^3 + \<beta>^3 = \<gamma>^3" by auto
       moreover have "\<alpha>*\<beta>*\<gamma> \<noteq> 0"
       proof (rule ccontr, safe)
@@ -357,8 +357,8 @@ next
       qed
       ultimately have ?thesis by auto }
     moreover
-    -- "second case: $p = 3r$ and hence $x^3 = (18r)(q^2+3r^2)$ and these"
-    -- "factors are coprime; hence both are cubes" 
+    \<comment> \<open>second case: $p = 3r$ and hence $x^3 = (18r)(q^2+3r^2)$ and these\<close>
+    \<comment> \<open>factors are coprime; hence both are cubes\<close> 
     { assume p3: "3 dvd p"
       then obtain r where r: "p = 3*r" by (auto simp add: dvd_def)
       moreover have "3 dvd 3*(3*r^2 + q^2)" by (rule dvd_triv_left)
@@ -538,7 +538,7 @@ next
       then obtain \<alpha>1 \<beta> \<gamma> where a1: "2*b = \<gamma>^3 \<and> a-b = \<alpha>1^3 \<and> a+b = \<beta>^3"
         by auto 
       then obtain \<alpha> where "\<alpha> = -\<alpha>1" by auto
-      -- "show this is a (smaller) solution"
+      \<comment> \<open>show this is a (smaller) solution\<close>
       with a1 have a2: "\<alpha>^3 = b-a" by auto
       with a1 have "\<alpha>^3 + \<beta>^3 = \<gamma>^3" by auto
       moreover have "\<alpha>*\<beta>*\<gamma> \<noteq> 0"
@@ -600,7 +600,7 @@ proof (rule ccontr)
   let ?g = "gcd x y"
   let ?c = "z div ?g"
   assume xyz0: "x*y*z\<noteq>0"
-  -- "divide out the g.c.d."
+  \<comment> \<open>divide out the g.c.d.\<close>
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
   then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> coprime a b"
     using gcd_coprime_exists[of x y] by (auto simp: mult.commute)
@@ -632,7 +632,7 @@ proof (rule ccontr)
     moreover from ab and xyz0 and cgz have "a*b*?c\<noteq>0" by auto
     ultimately show ?thesis by simp
   qed
-  -- "make both sides even"
+  \<comment> \<open>make both sides even\<close>
   from ab have "coprime (a ^ 3) (b ^ 3)"
     by simp
   have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>(0::int) \<and> even w \<and> coprime u v"
@@ -707,7 +707,7 @@ proof (rule ccontr)
   qed
   hence "\<exists> w. \<exists> u v. u^3 + v^3 = w^3 \<and> u*v*w \<noteq> (0::int) \<and> even w \<and> coprime u v"
     by auto
-  -- "show contradiction using the earlier result"
+  \<comment> \<open>show contradiction using the earlier result\<close>
   thus False by (auto simp only: no_rewritten_fermat3)
 qed
 

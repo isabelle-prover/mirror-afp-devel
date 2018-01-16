@@ -486,7 +486,7 @@ lemma dpWeakR:
 assumes (*<*)a:(*>*)"(\<Gamma> \<Rightarrow>* Em,n) \<in> derivable R*"
 and  (*<*)b:(*>*) "R' \<subseteq> upRules"
 and  (*<*)c:(*>*) "R = Ax \<union> R'" 
-shows "(\<Gamma> \<Rightarrow>* C,n) \<in> derivable R*"   -- "Proof omitted"
+shows "(\<Gamma> \<Rightarrow>* C,n) \<in> derivable R*"   \<comment> \<open>Proof omitted\<close>
 (*<*)
 using a
 proof (induct n arbitrary: \<Gamma> rule:nat_less_induct)
@@ -1079,11 +1079,11 @@ shows "\<exists> m\<le>n. (\<Gamma> \<oplus> A \<Rightarrow>* B, m) \<in> deriva
 proof-
   have "\<forall> r \<in> (Ax \<union> g3ip). rightPrincipal r (A \<supset> B) \<longrightarrow> 
                            (\<LM>A\<RM> \<Rightarrow>* B) \<in> set (fst r)"
-  proof-  -- {*Showing that $A \Rightarrow B$ is a premiss of every rule with $\implies{A}{B}$ principal*} 
+  proof-  \<comment> \<open>Showing that $A \Rightarrow B$ is a premiss of every rule with $\implies{A}{B}$ principal\<close> 
    {fix r
     assume "r \<in> (Ax \<union> g3ip)"
     moreover assume "rightPrincipal r (A \<supset> B)"
-    ultimately have "r \<in> g3ip" (*<*)apply auto apply (rule rightPrincipal.cases) apply auto (*>*)by(*<*) (rule Ax.cases) (*>*) auto  -- {* If $\implies{A}{B}$ was principal, then $r \notin Ax$ *}
+    ultimately have "r \<in> g3ip" (*<*)apply auto apply (rule rightPrincipal.cases) apply auto (*>*)by(*<*) (rule Ax.cases) (*>*) auto  \<comment> \<open>If $\implies{A}{B}$ was principal, then $r \notin Ax$\<close>
     from `rightPrincipal r (A \<supset> B)` have "snd r = (\<Empt> \<Rightarrow>* (A \<supset> B))" by(*<*) (rule rightPrincipal.cases)(*>*) auto
     with `r \<in> g3ip` and `rightPrincipal r (A \<supset> B)` 
         have "r = ([\<LM>A\<RM> \<Rightarrow>* B], \<Empt> \<Rightarrow>* (A\<supset>B))" (*<*) apply (cases r)(*>*) by (rule g3ip.cases) auto

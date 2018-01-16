@@ -3,7 +3,7 @@ theory Graph_Impl
 imports Maxflow_Lib.Refine_Add_Fofu Graph
 begin
 
--- \<open>Fixing capacities to integer values\<close>
+\<comment> \<open>Fixing capacities to integer values\<close>
 type_synonym capacity_impl = int (* TODO: DUP in Network_Impl. Remove here!*)
 
 

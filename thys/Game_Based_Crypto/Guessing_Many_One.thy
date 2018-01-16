@@ -210,7 +210,7 @@ proof -
         (_, b', _, _) \<leftarrow> exec_gpv (\<dagger>\<dagger>(oracle c_o) \<oplus>\<^sub>O oracle2') (\<A> c_a) (None, (0, None), s);
         return_spmf (b' = Some True) })"
       (is "rel_spmf _ _ ?body2'")
-      -- \<open>We do not get equality here because the right hand side may return @{const True} even
+      \<comment> \<open>We do not get equality here because the right hand side may return @{const True} even
         when the bad event has happened before the @{text j\<^sub>s}-th iteration.\<close>
       unfolding body2_def by(rule rel_spmf_bindI) clarsimp
     also

@@ -10,11 +10,11 @@ theory Value imports TypeRel begin
 type_synonym addr = nat
 
 datatype val
-  = Unit        -- "dummy result value of void expressions"
-  | Null        -- "null reference"
-  | Bool bool   -- "Boolean value"
-  | Intg int    -- "integer value" 
-  | Addr addr   -- "addresses of objects in the heap"
+  = Unit        \<comment> \<open>dummy result value of void expressions\<close>
+  | Null        \<comment> \<open>null reference\<close>
+  | Bool bool   \<comment> \<open>Boolean value\<close>
+  | Intg int    \<comment> \<open>integer value\<close> 
+  | Addr addr   \<comment> \<open>addresses of objects in the heap\<close>
 
 primrec the_Intg :: "val \<Rightarrow> int" where
   "the_Intg (Intg i) = i"
@@ -22,7 +22,7 @@ primrec the_Intg :: "val \<Rightarrow> int" where
 primrec the_Addr :: "val \<Rightarrow> addr" where
   "the_Addr (Addr a) = a"
 
-primrec default_val :: "ty \<Rightarrow> val"   -- "default value for all types" where
+primrec default_val :: "ty \<Rightarrow> val"   \<comment> \<open>default value for all types\<close> where
   "default_val Void      = Unit"
 | "default_val Boolean   = Bool False"
 | "default_val Integer   = Intg 0"

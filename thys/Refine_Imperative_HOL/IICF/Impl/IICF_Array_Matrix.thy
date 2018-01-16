@@ -422,11 +422,11 @@ begin
     text \<open>To work with a matrix, the dimension should be fixed in a context\<close>
     context
       fixes N M :: nat
-      -- \<open>We also register the dimension as an operation, such that we can 
+      \<comment> \<open>We also register the dimension as an operation, such that we can 
         use it like a constant\<close>
       notes [[sepref_register_adhoc N M]] 
       notes [sepref_import_param] = IdI[of N] IdI[of M]
-      -- \<open>Finally, we fix a type variable with the required type classes for matrix entries\<close>
+      \<comment> \<open>Finally, we fix a type variable with the required type classes for matrix entries\<close>
       fixes dummy:: "'a::{times,zero,heap}"
     begin
 

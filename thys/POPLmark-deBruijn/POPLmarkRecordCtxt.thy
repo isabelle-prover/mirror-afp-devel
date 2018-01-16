@@ -67,7 +67,7 @@ resulting term @{term "E t'"}.
 The proof is by mutual induction on the typing derivations for terms and records.
 *}
 
-lemma context_typing: -- {* A.18 *}
+lemma context_typing: \<comment> \<open>A.18\<close>
   "\<Gamma> \<turnstile> u : T \<Longrightarrow> E \<in> ctxt \<Longrightarrow> u = E t \<Longrightarrow>
      (\<And>T\<^sub>0. \<Gamma> \<turnstile> t : T\<^sub>0 \<Longrightarrow> \<Gamma> \<turnstile> t' : T\<^sub>0) \<Longrightarrow> \<Gamma> \<turnstile> E t' : T"
   "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> E\<^sub>r \<in> rctxt \<Longrightarrow> fs = E\<^sub>r t \<Longrightarrow>
@@ -133,7 +133,7 @@ proved in several parts. The proof of each statement is by induction
 on the typing derivation.
 *}
 
-theorem Abs_preservation: -- {* A.19(1) *}
+theorem Abs_preservation: \<comment> \<open>A.19(1)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> t\<^sub>2 : T"
   shows "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : T"
   using H
@@ -154,7 +154,7 @@ next
   thus ?case by (blast intro: typing_typings.intros)
 qed
 
-theorem TAbs_preservation: -- {* A.19(2) *}
+theorem TAbs_preservation: \<comment> \<open>A.19(2)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda><:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet>\<^sub>\<tau> T\<^sub>2 : T"
   shows "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2] : T"
   using H
@@ -172,7 +172,7 @@ next
   thus ?case by (blast intro: typing_typings.intros)
 qed
 
-theorem Let_preservation: -- {* A.19(3) *}
+theorem Let_preservation: \<comment> \<open>A.19(3)\<close>
   assumes H: "\<Gamma> \<turnstile> (LET p = t\<^sub>1 IN t\<^sub>2) : T"
   shows "\<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>2[0 \<mapsto>\<^sub>s ts] : T"
   using H
@@ -186,7 +186,7 @@ next
   thus ?case by (blast intro: typing_typings.intros)
 qed
 
-theorem Proj_preservation: -- {* A.19(4) *}
+theorem Proj_preservation: \<comment> \<open>A.19(4)\<close>
   assumes H: "\<Gamma> \<turnstile> Rcd fs..l : T"
   shows "fs\<langle>l\<rangle>\<^sub>? = \<lfloor>v\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile> v : T"
   using H
@@ -201,7 +201,7 @@ next
   thus ?case by (blast intro: typing_typings.intros)
 qed
 
-theorem preservation: -- {* A.20 *}
+theorem preservation: \<comment> \<open>A.20\<close>
   assumes H: "t \<longmapsto>\<^sub>c t'"
   shows "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> t' : T" using H
 proof (induct arbitrary: \<Gamma> T)
@@ -234,7 +234,7 @@ by induction on the typing derivation.
 A similar property is also needed for records.
 *}
 
-theorem context_decomp: -- {* A.15 *}
+theorem context_decomp: \<comment> \<open>A.15\<close>
   "[] \<turnstile> t : T \<Longrightarrow> 
      t \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')"
   "[] \<turnstile> fs [:] fTs \<Longrightarrow>
@@ -331,7 +331,7 @@ next
   thus ?case by (auto intro: ctxt_rctxt.intros)
 qed
 
-theorem progress: -- {* A.16 *}
+theorem progress: \<comment> \<open>A.16\<close>
   assumes H: "[] \<turnstile> t : T"
   shows "t \<in> value \<or> (\<exists>t'. t \<longmapsto>\<^sub>c t')"
 proof -

@@ -13,7 +13,7 @@ begin
 subsection "Well-Typedness"
 
 type_synonym 
-  env\<^sub>1  = "ty list"   --"type environment indexed by variable number"
+  env\<^sub>1  = "ty list"   \<comment> \<open>type environment indexed by variable number\<close>
 
 inductive
   WT\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1     , ty     ] \<Rightarrow> bool"
@@ -182,7 +182,7 @@ done
 
 subsection{* Well-formedness*}
 
---"Indices in blocks increase by 1"
+\<comment> \<open>Indices in blocks increase by 1\<close>
 
 primrec \<B> :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
   and \<B>s :: "expr\<^sub>1 list \<Rightarrow> nat \<Rightarrow> bool" where

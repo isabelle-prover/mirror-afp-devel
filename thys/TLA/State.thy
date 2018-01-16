@@ -191,7 +191,7 @@ and  all_def: "\<turnstile> (\<forall>\<forall> x. F x) = (\<not>(\<exists>\<exi
 and  eexSTUT: "STUTINV F x \<Longrightarrow> STUTINV (\<exists>\<exists> x. F x)"
 and  history: "\<turnstile> (I \<and> \<box>[A]_v) = (\<exists>\<exists> h. ($h = ha) \<and> I \<and> \<box>[A \<and> h$=hb]_(h,v))"
 
-lemmas eexI_unl = eexI[unlift_rule] --{* @{text "w \<Turnstile> F x \<Longrightarrow> w \<Turnstile> (\<exists>\<exists> x. F x)"} *}
+lemmas eexI_unl = eexI[unlift_rule] \<comment> \<open>@{text "w \<Turnstile> F x \<Longrightarrow> w \<Turnstile> (\<exists>\<exists> x. F x)"}\<close>
 
 text {*
   @{text tla_defs} can be used to unfold TLA definitions into lowest predicate level.

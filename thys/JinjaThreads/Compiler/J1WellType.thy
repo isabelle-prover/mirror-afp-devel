@@ -15,7 +15,7 @@ declare Listn.lesub_list_impl_same_size[simp del] listE_length [simp del]
 subsection "Well-Typedness"
 
 type_synonym
-  env1  = "ty list"   --"type environment indexed by variable number"
+  env1  = "ty list"   \<comment> \<open>type environment indexed by variable number\<close>
 
 inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile>1 _ :: _"   [51,0,0,51] 50)
   and WTs1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile>1 _ [::] _"   [51,0,0,51]50)

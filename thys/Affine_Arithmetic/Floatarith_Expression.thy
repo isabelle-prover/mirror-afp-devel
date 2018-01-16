@@ -203,7 +203,7 @@ lemma fold_const_fa[simp]: "interpret_floatarith (fold_const_fa fa) xs = interpr
 
 subsection \<open>Free Variables\<close>
 
-primrec max_Var_floatarith where\<comment>\<open>TODO: include bound in predicate\<close>
+primrec max_Var_floatarith where\<comment> \<open>TODO: include bound in predicate\<close>
   "max_Var_floatarith (Add a b) = max (max_Var_floatarith a) (max_Var_floatarith b)"
 | "max_Var_floatarith (Mult a b) = max (max_Var_floatarith a) (max_Var_floatarith b)"
 | "max_Var_floatarith (Inverse a) = max_Var_floatarith a"
@@ -700,7 +700,7 @@ lemma max_Var_floatarith_inner_floatariths[simp]:
 
 definition FDERIV_floatarith where
   "FDERIV_floatarith fa xs d = inner_floatariths (map (\<lambda>x. fold_const_fa (DERIV_floatarith x fa)) xs) d"
-\<comment>\<open>TODO: specialize to \<open>FDERIV_floatarith fa [0..<n] [m..<m + n]\<close> and do the rest with @{term subst_floatarith}?
+\<comment> \<open>TODO: specialize to \<open>FDERIV_floatarith fa [0..<n] [m..<m + n]\<close> and do the rest with @{term subst_floatarith}?
    TODO: introduce approximation on type @{typ "real^'i^'j"} and use @{term jacobian}?\<close>
 
 lemma interpret_floatariths_map: "interpret_floatariths (map f xs) vs = map (\<lambda>x. interpret_floatarith (f x) vs) xs"
@@ -1309,7 +1309,7 @@ fun subterms :: "floatarith \<Rightarrow> floatarith set" where
 lemma subterms_self[simp]: "fa2 \<in> subterms fa2"
   by (induction fa2) auto
 
-lemma interpret_floatarith_FDERIV_floatarith_eucl_of_env:\<comment>\<open>TODO: cleanup, reduce to DERIV?!\<close>
+lemma interpret_floatarith_FDERIV_floatarith_eucl_of_env:\<comment> \<open>TODO: cleanup, reduce to DERIV?!\<close>
   assumes iD: "\<And>i. i < DIM('a) \<Longrightarrow> isDERIV (xs ! i) fa vs"
   assumes ds_fresh: "freshs_floatarith fa ds"
   assumes [simp]: "length xs = DIM ('a)" "length ds = DIM ('a)"
@@ -2197,11 +2197,11 @@ fun plain_floatarith::"nat \<Rightarrow> floatarith \<Rightarrow> bool" where
 | "plain_floatarith N (floatarith.Max a b) \<longleftrightarrow> plain_floatarith N a \<and> plain_floatarith N b"
 | "plain_floatarith N (floatarith.Min a b) \<longleftrightarrow> plain_floatarith N a \<and> plain_floatarith N b"
 | "plain_floatarith N (floatarith.Power a n) \<longleftrightarrow> plain_floatarith N a"
-| "plain_floatarith N (floatarith.Cos a) \<longleftrightarrow> False" \<comment>\<open>TODO: should be plain!\<close>
-| "plain_floatarith N (floatarith.Arctan a) \<longleftrightarrow> False" \<comment>\<open>TODO: should be plain!\<close>
+| "plain_floatarith N (floatarith.Cos a) \<longleftrightarrow> False" \<comment> \<open>TODO: should be plain!\<close>
+| "plain_floatarith N (floatarith.Arctan a) \<longleftrightarrow> False" \<comment> \<open>TODO: should be plain!\<close>
 | "plain_floatarith N (floatarith.Abs a) \<longleftrightarrow> plain_floatarith N a"
-| "plain_floatarith N (floatarith.Exp a) \<longleftrightarrow> False" \<comment>\<open>TODO: should be plain!\<close>
-| "plain_floatarith N (floatarith.Sqrt a) \<longleftrightarrow> False" \<comment>\<open>TODO: should be plain!\<close>
+| "plain_floatarith N (floatarith.Exp a) \<longleftrightarrow> False" \<comment> \<open>TODO: should be plain!\<close>
+| "plain_floatarith N (floatarith.Sqrt a) \<longleftrightarrow> False" \<comment> \<open>TODO: should be plain!\<close>
 | "plain_floatarith N (floatarith.Floor a) \<longleftrightarrow> plain_floatarith N a"
 
 | "plain_floatarith N (floatarith.Powr a b) \<longleftrightarrow> False"

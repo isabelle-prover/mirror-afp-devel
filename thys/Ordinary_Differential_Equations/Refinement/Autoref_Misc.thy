@@ -149,7 +149,7 @@ lemma use_spec_rule:
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma strengthen_SPEC: "m \<le> SPEC \<Phi> \<Longrightarrow> m \<le> SPEC(\<lambda>s. inres m s \<and> \<Phi> s)"
-  \<comment> "Strengthen SPEC by adding trivial upper bound for result"
+  \<comment> \<open>Strengthen SPEC by adding trivial upper bound for result\<close>
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma weaken_SPEC:
@@ -355,9 +355,9 @@ method_setup refine_vcg =
   ))\<close>
   "Refinement framework: Generate refinement and verification conditions"
 
-lemmas [autoref_rules] = autoref_rec_nat \<comment>"TODO: add to Autoref"
-lemma \<comment>"TODO: needed  because @{thm dres.transfer_rec_nat} expects one argument,
-  but functions with more arguments defined by primrec take several arguments"
+lemmas [autoref_rules] = autoref_rec_nat \<comment> \<open>TODO: add to Autoref\<close>
+lemma \<comment> \<open>TODO: needed  because @{thm dres.transfer_rec_nat} expects one argument,
+  but functions with more arguments defined by primrec take several arguments\<close>
   uncurry_rec_nat: "rec_nat (\<lambda>a b. fn a b) (\<lambda>n rr a b. fs n rr a b) n a b =
   rec_nat (\<lambda>(a,b). fn a b) (\<lambda>n rr (a,b). fs n (\<lambda>a b. rr (a,b)) a b) n (a,b)"
   apply (induction n arbitrary: a b)

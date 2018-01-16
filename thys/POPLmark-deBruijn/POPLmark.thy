@@ -582,7 +582,7 @@ text {*
 By induction on types, we can prove that the subtyping relation is reflexive:
 *}
 
-lemma subtype_refl: -- {* A.1 *}
+lemma subtype_refl: \<comment> \<open>A.1\<close>
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
   by (induct T arbitrary: \<Gamma>) (blast intro:
     subtyping.intros wf_Nil wf_TVarB elim: well_formed_cases)+
@@ -650,7 +650,7 @@ The stronger result that appending a new context @{term \<Delta>} to a context
 using the previous result in the induction step:
 *}
 
-lemma subtype_weaken': -- {* A.2 *}
+lemma subtype_weaken': \<comment> \<open>A.2\<close>
   "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
   apply (induct \<Delta>)
   apply simp_all
@@ -687,7 +687,7 @@ the transitivity property, which yields
 easily by an application of @{text SA_trans_TVar}.
 *}
 
-lemma subtype_trans: -- {* A.3 *}
+lemma subtype_trans: \<comment> \<open>A.3\<close>
   "\<Gamma> \<turnstile> S <: Q \<Longrightarrow> \<Gamma> \<turnstile> Q <: T \<Longrightarrow> \<Gamma> \<turnstile> S <: T"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> M <: N \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> M <: N"
@@ -804,7 +804,7 @@ we will also need a substitution theorem, which is proved by
 induction on the subtyping derivation:
 *}
 
-lemma substT_subtype: -- {* A.10 *}
+lemma substT_subtype: \<comment> \<open>A.10\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> S <: T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   using H
@@ -1017,7 +1017,7 @@ The narrowing theorem for the typing judgement states that replacing the type
 of a variable in the context by a subtype preserves typability:
 *}
 
-lemma narrow_type: -- {* A.7 *}
+lemma narrow_type: \<comment> \<open>A.7\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> t : T"
   using H
@@ -1058,7 +1058,7 @@ proof (rule subtype_refl)
   from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" by (rule wf_typeE2)
 qed
 
-lemma Abs_type: -- {* A.13(1) *}
+lemma Abs_type: \<comment> \<open>A.13(1)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : T"
   shows "\<Gamma> \<turnstile> T <: U \<rightarrow> U' \<Longrightarrow>
     (\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
@@ -1086,7 +1086,7 @@ lemma Abs_type':
   shows "P" using H subtype_refl' [OF H]
   by (rule Abs_type) (rule R)
 
-lemma TAbs_type: -- {* A.13(2) *}
+lemma TAbs_type: \<comment> \<open>A.13(2)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda><:S. s) : T"
   shows "\<Gamma> \<turnstile> T <: (\<forall><:U. U') \<Longrightarrow>
     (\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> TVarB U \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
@@ -1168,7 +1168,7 @@ We can strengthen this result, so as to mean that concatenating a new context
 @{term \<Delta>} to the context @{term \<Gamma>} preserves typing:
 *}
 
-lemma type_weaken': -- {* A.5(6) *}
+lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp
@@ -1190,7 +1190,7 @@ in the substitution rule for term variables in order to compensate for the
 disappearance of the variable.
 *}
 
-theorem subst_type: -- {* A.8 *}
+theorem subst_type: \<comment> \<open>A.8\<close>
   assumes H: "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> u : U \<Longrightarrow>
     \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
@@ -1248,7 +1248,7 @@ theorem subst_type: -- {* A.8 *}
   apply assumption
   done
 
-theorem substT_type: -- {* A.11 *}
+theorem substT_type: \<comment> \<open>A.11\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow>
     \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" using H
@@ -1355,7 +1355,7 @@ is proved by induction on the derivation of @{term "\<Gamma> \<turnstile> t : T"
 distinction on the last rule used in the derivation of @{term "t \<longmapsto> t'"}.
 *}
 
-theorem preservation: -- {* A.20 *}
+theorem preservation: \<comment> \<open>A.20\<close>
   assumes H: "\<Gamma> \<turnstile> t : T"
   shows "t \<longmapsto> t' \<Longrightarrow> \<Gamma> \<turnstile> t' : T" using H
 proof (induct arbitrary: t')
@@ -1440,7 +1440,7 @@ stating that closed values of types @{term "T\<^sub>1 \<rightarrow> T\<^sub>2"} 
 must be abstractions over term and type variables, respectively.
 *}
 
-lemma Fun_canonical: -- {* A.14(1) *}
+lemma Fun_canonical: \<comment> \<open>A.14(1)\<close>
   assumes ty: "[] \<turnstile> v : T\<^sub>1 \<rightarrow> T\<^sub>2"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda>:S. t)" using ty
 proof (induct "[]::env" v "T\<^sub>1 \<rightarrow> T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2)
@@ -1462,7 +1462,7 @@ next
   show ?case by (rule T_Sub S)+
 qed simp
 
-lemma TyAll_canonical: -- {* A.14(3) *}
+lemma TyAll_canonical: \<comment> \<open>A.14(3)\<close>
   assumes ty: "[] \<turnstile> v : (\<forall><:T\<^sub>1. T\<^sub>2)"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda><:S. t)" using ty
 proof (induct "[]::env" v "\<forall><:T\<^sub>1. T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2)

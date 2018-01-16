@@ -137,11 +137,11 @@ qed
 
 lemma is_bal_l_bal:
   "is_bal l \<Longrightarrow> is_bal r \<Longrightarrow> height l = height r + 2 \<Longrightarrow> is_bal (l_bal\<^sub>0 n l r)"
-  by (cases l) (auto, auto split: tree\<^sub>0.split)  -- "separating the two auto's is just for speed"
+  by (cases l) (auto, auto split: tree\<^sub>0.split)  \<comment> \<open>separating the two auto's is just for speed\<close>
 
 lemma is_bal_r_bal:
   "is_bal l \<Longrightarrow> is_bal r \<Longrightarrow> height r = height l + 2 \<Longrightarrow> is_bal (r_bal\<^sub>0 n l r)"
-  by (cases r) (auto, auto split: tree\<^sub>0.split)  -- "separating the two auto's is just for speed"
+  by (cases r) (auto, auto split: tree\<^sub>0.split)  \<comment> \<open>separating the two auto's is just for speed\<close>
 
 theorem is_bal_insrt: 
   "is_bal t \<Longrightarrow> is_bal(insrt\<^sub>0 x t)"

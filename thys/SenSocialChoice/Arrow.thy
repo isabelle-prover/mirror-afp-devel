@@ -473,14 +473,14 @@ proof -
   let ?P = "\<lambda>S. S \<subseteq> Is \<and> S \<noteq> {} \<and> (\<exists>u v. hasw [u,v] A \<and> semidecisive swf A Is S u v)"
   obtain u v where uvA: "hasw [u,v] A" 
     using has_witness_two[OF has3A] by auto
-      -- {* The weak pareto requirement implies that the set of all
-      individuals is decisive between any given alternatives. *}
+      \<comment> \<open>The weak pareto requirement implies that the set of all
+      individuals is decisive between any given alternatives.\<close>
   hence "decisive swf A Is Is u v"
     by - (rule, auto intro: weak_paretoD[OF wp])
   hence "semidecisive swf A Is Is u v" by (rule d_imp_sd)
   with uvA twoIs has_suc_notempty[where n=1] nat_2[symmetric]
   have "?P Is" by auto
-      -- {* Obtain a minimally-sized semi-decisive set. *}
+      \<comment> \<open>Obtain a minimally-sized semi-decisive set.\<close>
   from ex_has_least_nat[where P="?P" and m="card", OF this]
   obtain V x y where VIs: "V \<subseteq> Is"
     and Vnotempty: "V \<noteq> {}"
@@ -489,13 +489,13 @@ proof -
     and Vmin: "\<And>V'. ?P V' \<Longrightarrow> card V \<le> card V'"
     by blast
   from VIs finiteIs have Vfinite: "finite V" by (rule finite_subset)
-      -- {* Show that minimal set contains a single individual. *}
+      \<comment> \<open>Show that minimal set contains a single individual.\<close>
   from Vfinite Vnotempty have "\<exists>j. V = {j}"
   proof(rule finite_set_singleton_contra)
     assume Vcard: "1 < card V"
     then obtain j where jV: "{j} \<subseteq> V"
       using has_extend_witness[where xs="[]", OF card_has[where n="card V"]] by auto
-        -- {* Split an individual from the "minimal" set. *}
+        \<comment> \<open>Split an individual from the "minimal" set.\<close>
     let ?V1 = "{j}"
     let ?V2 = "V - ?V1"
     let ?V3 = "Is - V"
@@ -505,7 +505,7 @@ proof -
     from jV VIs
     have jV2V3: "Is = ?V1 \<union> ?V2 \<union> ?V3 \<and> ?V1 \<inter> ?V2 = {} \<and> ?V1 \<inter> ?V3 = {} \<and> ?V2 \<inter> ?V3 = {}"
       by auto
-        -- {* Show that that individual is semi-decisive for $x$ over $z$. *}
+        \<comment> \<open>Show that that individual is semi-decisive for $x$ over $z$.\<close>
     from has_extend_witness'[OF has3A xyA]
     obtain z where threeDist: "hasw [x,y,z] A" by auto
     from sd_exists_witness[OF threeDist jV2V3] VIs Vnotempty
@@ -518,7 +518,7 @@ proof -
     proof(rule rpr_less_le_trans[where y="y"])
       from profileP swf show "rpr A (swf P)" by auto
     next
-        -- {* V2 is semi-decisive, and everyone else opposes their choice. Ergo they prevail. *}
+        \<comment> \<open>V2 is semi-decisive, and everyone else opposes their choice. Ergo they prevail.\<close>
       show "x \<^bsub>(swf P)\<^esub>\<prec> y"
       proof -
         from profileP V3xyzP
@@ -527,7 +527,7 @@ proof -
         show ?thesis unfolding semidecisive_def by auto
       qed
     next
-      -- {* This result is unfortunately quite tortuous. *}
+      \<comment> \<open>This result is unfortunately quite tortuous.\<close>
       from SWF_rpr[OF swf] show "y \<^bsub>(swf P)\<^esub>\<preceq> z"
       proof(rule rpr_less_not[OF _ _ notI])
         from threeDist show "hasw [z, y] A" by auto
@@ -572,7 +572,7 @@ proof -
     proof
       from jV VIs show "{j} \<subseteq> Is" by blast
     next
-      -- {* Use @{term "iia"} to show the SWF must allow the individual to prevail. *}
+      \<comment> \<open>Use @{term "iia"} to show the SWF must allow the individual to prevail.\<close>
       fix P'
       assume profileP': "profile A Is P'"
          and V1yz': "\<And>i. i \<in> ?V1 \<Longrightarrow> x \<^bsub>(P' i)\<^esub>\<prec> z"

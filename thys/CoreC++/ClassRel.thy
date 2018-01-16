@@ -11,7 +11,7 @@ section {* The subclass relation *}
 theory ClassRel imports Decl begin
 
 
--- "direct repeated subclass"
+\<comment> \<open>direct repeated subclass\<close>
 inductive_set
   subclsR :: "prog \<Rightarrow> (cname \<times> cname) set"
   and subclsR' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sub>R _" [71,71,71] 70)
@@ -20,7 +20,7 @@ where
   "P \<turnstile> C \<prec>\<^sub>R D \<equiv> (C,D) \<in> subclsR P"
 | subclsRI: "\<lbrakk>class P C = Some (Bs,rest); Repeats(D) \<in> set Bs\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sub>R D"
 
--- "direct shared subclass"
+\<comment> \<open>direct shared subclass\<close>
 inductive_set
   subclsS :: "prog \<Rightarrow> (cname \<times> cname) set"
   and subclsS' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sub>S _" [71,71,71] 70)
@@ -29,7 +29,7 @@ where
   "P \<turnstile> C \<prec>\<^sub>S D \<equiv> (C,D) \<in> subclsS P"
 | subclsSI: "\<lbrakk>class P C = Some (Bs,rest); Shares(D) \<in> set Bs\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sub>S D"
 
- -- "direct subclass"
+ \<comment> \<open>direct subclass\<close>
 inductive_set
   subcls1 :: "prog \<Rightarrow> (cname \<times> cname) set"
   and subcls1' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)

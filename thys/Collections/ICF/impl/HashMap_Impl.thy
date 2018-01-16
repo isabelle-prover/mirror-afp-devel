@@ -28,11 +28,11 @@ text {*
 type_synonym 
   ('k,'v) abs_hashmap = "hashcode \<rightharpoonup> ('k \<rightharpoonup> 'v)"
 
-  -- "Map entry of map by function"
+  \<comment> \<open>Map entry of map by function\<close>
 abbreviation map_entry where "map_entry k f m == m(k := f (m k))"
 
 
-  -- "Invariant: Buckets only contain entries with the right hashcode and there are no empty buckets"
+  \<comment> \<open>Invariant: Buckets only contain entries with the right hashcode and there are no empty buckets\<close>
 definition ahm_invar:: "('k::hashable,'v) abs_hashmap \<Rightarrow> bool" 
   where "ahm_invar m == 
     (\<forall>hc cm k. m hc = Some cm \<and> k\<in>dom cm \<longrightarrow> hashcode k = hc) \<and> 
@@ -40,21 +40,21 @@ definition ahm_invar:: "('k::hashable,'v) abs_hashmap \<Rightarrow> bool"
 
 
 
-  -- "Abstract a hashmap to the corresponding map"
+  \<comment> \<open>Abstract a hashmap to the corresponding map\<close>
 definition ahm_\<alpha> where
   "ahm_\<alpha> m k == case m (hashcode k) of 
     None \<Rightarrow> None |
     Some cm \<Rightarrow> cm k"
 
-  -- "Lookup an entry"
+  \<comment> \<open>Lookup an entry\<close>
 definition ahm_lookup :: "'k::hashable \<Rightarrow> ('k,'v) abs_hashmap \<Rightarrow> 'v option" 
   where "ahm_lookup k m == (ahm_\<alpha> m) k"
 
-  -- "The empty hashmap"
+  \<comment> \<open>The empty hashmap\<close>
 definition ahm_empty :: "('k::hashable,'v) abs_hashmap" 
   where "ahm_empty = Map.empty"
 
-  -- "Update/insert an entry"
+  \<comment> \<open>Update/insert an entry\<close>
 definition ahm_update where
   "ahm_update k v m ==
     case m (hashcode k) of
@@ -62,7 +62,7 @@ definition ahm_update where
       Some cm \<Rightarrow> m (hashcode k \<mapsto> cm (k \<mapsto> v))
   "
 
-  -- "Delete an entry"
+  \<comment> \<open>Delete an entry\<close>
 definition ahm_delete where 
   "ahm_delete k m == map_entry (hashcode k) 
     (\<lambda>v. case v of 
@@ -186,7 +186,7 @@ qed
 lemmas ahm_correct = ahm_empty_correct ahm_lookup_correct ahm_update_correct 
                      ahm_delete_correct ahm_isEmpty_correct
 
-  -- "Bucket entries correspond to map entries"
+  \<comment> \<open>Bucket entries correspond to map entries\<close>
 lemma ahm_be_is_e:
   assumes I: "ahm_invar m"
   assumes A: "m hc = Some bm" "bm k = Some v"
@@ -197,7 +197,7 @@ lemma ahm_be_is_e:
   apply auto
   done
 
-  -- "Map entries correspond to bucket entries"
+  \<comment> \<open>Map entries correspond to bucket entries\<close>
 lemma ahm_e_is_be: "\<lbrakk>
   ahm_\<alpha> m k = Some v; 
   !!bm. \<lbrakk>m (hashcode k) = Some bm; bm k = Some v \<rbrakk> \<Longrightarrow> P
@@ -219,7 +219,7 @@ type_synonym
 
 subsubsection "Operations"
 
-  -- "Auxiliary function: Apply function to value of an entry"
+  \<comment> \<open>Auxiliary function: Apply function to value of an entry\<close>
 definition rm_map_entry 
   :: "hashcode \<Rightarrow> ('v option \<Rightarrow> 'v option) \<Rightarrow> (hashcode, 'v) rm \<Rightarrow> (hashcode,'v) rm" 
   where 
@@ -237,10 +237,10 @@ definition rm_map_entry
         )
     "
 
-  -- "Empty hashmap"
+  \<comment> \<open>Empty hashmap\<close>
 definition empty :: "unit \<Rightarrow> ('k :: hashable, 'v) hm_impl" where "empty == rm.empty"
 
-  -- "Update/insert entry"
+  \<comment> \<open>Update/insert entry\<close>
 definition update :: "'k::hashable \<Rightarrow> 'v \<Rightarrow> ('k,'v) hm_impl \<Rightarrow> ('k,'v) hm_impl"
   where 
   "update k v m == 
@@ -249,14 +249,14 @@ definition update :: "'k::hashable \<Rightarrow> 'v \<Rightarrow> ('k,'v) hm_imp
        None \<Rightarrow> rm.update hc (lm.update k v (lm.empty ())) m |
        Some bm \<Rightarrow> rm.update hc (lm.update k v bm) m" 
 
-  -- "Lookup value by key"
+  \<comment> \<open>Lookup value by key\<close>
 definition lookup :: "'k::hashable \<Rightarrow> ('k,'v) hm_impl \<Rightarrow> 'v option" where
   "lookup k m ==
    case rm.lookup (hashcode k) m of
      None \<Rightarrow> None |
      Some lm \<Rightarrow> lm.lookup k lm"
 
-  -- "Delete entry by key"
+  \<comment> \<open>Delete entry by key\<close>
 definition delete :: "'k::hashable \<Rightarrow> ('k,'v) hm_impl \<Rightarrow> ('k,'v) hm_impl" where
   "delete k m ==
    rm_map_entry (hashcode k) 
@@ -268,10 +268,10 @@ definition delete :: "'k::hashable \<Rightarrow> ('k,'v) hm_impl \<Rightarrow> (
        )
      ) m"
 
-  -- "Emptiness check"
+  \<comment> \<open>Emptiness check\<close>
 definition "isEmpty == rm.isEmpty"
 
-  -- "Interruptible iterator"
+  \<comment> \<open>Interruptible iterator\<close>
 definition "iteratei m c f \<sigma>0 ==
   rm.iteratei m c (\<lambda>(hc, lm) \<sigma>. 
     lm.iteratei lm c f \<sigma>
@@ -299,15 +299,14 @@ text {*
   operation.
 *}
 
-  -- "Abstract concrete hashmap to abstract hashmap"
+  \<comment> \<open>Abstract concrete hashmap to abstract hashmap\<close>
 definition hm_\<alpha>' where "hm_\<alpha>' m == \<lambda>hc. case rm.\<alpha> m hc of
   None \<Rightarrow> None |
   Some lm \<Rightarrow> Some (lm.\<alpha> lm)"
 
-  -- "Invariant for concrete hashmap: 
+  \<comment> \<open>Invariant for concrete hashmap: 
     The hashcode-map and bucket-maps satisfy their invariants and
-    the invariant of the corresponding abstract hashmap is satisfied.
-  "
+    the invariant of the corresponding abstract hashmap is satisfied.\<close>
 
 definition "invar m == ahm_invar (hm_\<alpha>' m)"
 

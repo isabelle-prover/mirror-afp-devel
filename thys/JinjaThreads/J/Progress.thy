@@ -563,11 +563,11 @@ next
   case (WTrtFAccNT E e F D T l)
   show ?case
   proof cases
-    assume "final e"  --"@{term e} is @{term null} or @{term throw}"
+    assume "final e"  \<comment> \<open>@{term e} is @{term null} or @{term throw}\<close>
     with WTrtFAccNT show ?thesis
       by(fastforce simp:final_iff intro: RedFAccNull FAccThrow)
   next
-    assume "\<not> final e" --"@{term e} reduces by IH"
+    assume "\<not> final e" \<comment> \<open>@{term e} reduces by IH\<close>
     with WTrtFAccNT show ?thesis by simp (fast intro:FAccRed)
   qed
 next
@@ -615,19 +615,19 @@ next
   case (WTrtFAssNT E e\<^sub>1 e\<^sub>2 T\<^sub>2 F D l)
   show ?case
   proof cases
-    assume "final e\<^sub>1"  --"@{term e\<^sub>1} is @{term null} or @{term throw}"
+    assume "final e\<^sub>1"  \<comment> \<open>@{term e\<^sub>1} is @{term null} or @{term throw}\<close>
     show ?thesis
     proof cases
-      assume "final e\<^sub>2"  --"@{term e\<^sub>2} is @{term Val} or @{term throw}"
+      assume "final e\<^sub>2"  \<comment> \<open>@{term e\<^sub>2} is @{term Val} or @{term throw}\<close>
       with WTrtFAssNT `final e\<^sub>1` show ?thesis
         by(fastforce simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
-      assume "\<not> final e\<^sub>2" --"@{term e\<^sub>2} reduces by IH"
+      assume "\<not> final e\<^sub>2" \<comment> \<open>@{term e\<^sub>2} reduces by IH\<close>
       with WTrtFAssNT `final e\<^sub>1` show ?thesis
         by (fastforce  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
-    assume "\<not> final e\<^sub>1" --"@{term e\<^sub>1} reduces by IH"
+    assume "\<not> final e\<^sub>1" \<comment> \<open>@{term e\<^sub>1} reduces by IH\<close>
     with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next
@@ -829,7 +829,7 @@ next
           with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: CallThrowParams) }
         ultimately show ?thesis by(fastforce simp:finals_iff)
       next
-        assume "\<not> finals es" --"@{term es} reduces by IH"
+        assume "\<not> finals es" \<comment> \<open>@{term es} reduces by IH\<close>
         with WTrtCallNT `e = null` show ?thesis by(fastforce intro: CallParams)
       qed
     }
@@ -838,7 +838,7 @@ next
       with WTrtCallNT have ?case by(fastforce intro: CallThrowObj) }
     ultimately show ?thesis by(fastforce simp:final_iff)
   next
-    assume "\<not> final e" --"@{term e} reduces by IH"
+    assume "\<not> final e" \<comment> \<open>@{term e} reduces by IH\<close>
     with WTrtCallNT show ?thesis by (fastforce intro:CallObj)
   qed
 next
@@ -952,7 +952,7 @@ next
   case (WTrtThrow E e T T' l)
   show ?case
   proof cases
-    assume "final e" -- {*Then @{term e} must be @{term throw} or @{term null}*}
+    assume "final e" \<comment> \<open>Then @{term e} must be @{term throw} or @{term null}\<close>
     thus ?thesis
     proof(induct rule: finalE)
       case (Val v)
@@ -964,7 +964,7 @@ next
       thus ?thesis by(fastforce intro: ThrowThrow)
     qed
   next
-    assume "\<not> final e" -- {*Then @{term e} must reduce*}
+    assume "\<not> final e" \<comment> \<open>Then @{term e} must reduce\<close>
     with WTrtThrow show ?thesis by simp (blast intro:ThrowRed)
   qed
 next

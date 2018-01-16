@@ -43,11 +43,9 @@ where
 | AnnoVal: "is_lub,P,E \<turnstile> Val v \<leadsto> Val v"
 | AnnoVarVar: "\<lbrakk> E V = \<lfloor>T\<rfloor>; V \<noteq> super \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> Var V \<leadsto> Var V"
 | AnnoVarField:
-  -- {* 
-    There is no need to handle access of array fields explicitly,
+  \<comment> \<open>There is no need to handle access of array fields explicitly,
     because arrays do not implement methods, i.e. @{term "this"} is
-    always of a @{term "Class"} type.
-  *}
+    always of a @{term "Class"} type.\<close>
   "\<lbrakk> E V = None; V \<noteq> super; E this = \<lfloor>Class C\<rfloor>; P \<turnstile> C sees V:T (fm) in D \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> Var V \<leadsto> Var this\<bullet>V{D}"
 | AnnoBinOp:
@@ -64,11 +62,9 @@ where
   "\<lbrakk> is_lub,P,E \<turnstile> a \<leadsto> a'; is_lub,P,E \<turnstile> i \<leadsto> i'; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> a\<lfloor>i\<rceil> := e \<leadsto> a'\<lfloor>i'\<rceil> := e'"
 | AnnoALength:
   "is_lub,P,E \<turnstile> a \<leadsto> a' \<Longrightarrow> is_lub,P,E \<turnstile> a\<bullet>length \<leadsto> a'\<bullet>length"
-| -- {* 
-    All arrays implicitly declare a final field called @{term "array_length_field_name"} to
+| \<comment> \<open>All arrays implicitly declare a final field called @{term "array_length_field_name"} to
     store the array length, which hides a potential field of the same name in @{term "Object"} (cf. JLS 6.4.5).
-    The last premise implements the hiding because field lookup does does not model the implicit declaration.
-  *}
+    The last premise implements the hiding because field lookup does does not model the implicit declaration.\<close>
   AnnoFAcc:
   "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e';  is_lub,P,E \<turnstile> e' :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; 
      is_Array U \<longrightarrow> F \<noteq> array_length_field_name \<rbrakk>
@@ -77,7 +73,7 @@ where
   "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e'; is_lub,P,E \<turnstile> e' :: T\<lfloor>\<rceil> \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>array_length_field_name{STR []} \<leadsto> e'\<bullet>length"
 | AnnoFAccSuper:
-  -- {* In class C with super class D, "super" is syntactic sugar for "((D) this)" (cf. JLS, 15.11.2) *}
+  \<comment> \<open>In class C with super class D, "super" is syntactic sugar for "((D) this)" (cf. JLS, 15.11.2)\<close>
   "\<lbrakk> E this = \<lfloor>Class C\<rfloor>; C \<noteq> Object; class P C = \<lfloor>(D, fs, ms)\<rfloor>; 
      P \<turnstile> D sees F:T (fm) in D' \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR []} \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'}"

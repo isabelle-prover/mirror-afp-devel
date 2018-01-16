@@ -333,6 +333,6 @@ lemma (in vmc_path_no_deadend) attracted_path_step:
   shows "w0 \<in> A \<union> W"
   by (metis (no_types) DiffD1 P_LCons' \<sigma> strategy_attractsE strategy_attracts_invalid_path v0)
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

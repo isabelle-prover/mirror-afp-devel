@@ -37,7 +37,7 @@ next
   qed
 qed
 
--- {* lexord is extension of partial ordering List.lex *} 
+\<comment> \<open>lexord is extension of partial ordering List.lex\<close> 
 lemma lexordp_lex: "(xs, ys) \<in> lex {(xs, ys). xs < ys} \<longleftrightarrow> lexordp xs ys \<and> length xs = length ys"
 proof(induct xs arbitrary: ys)
   case Nil thus ?case by clarsimp

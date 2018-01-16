@@ -217,7 +217,7 @@ lemma infinite_path_is_maximal: "\<lbrakk> valid_path P; \<not>lfinite P \<rbrak
   by (coinduction arbitrary: P rule: maximal_path.coinduct)
      (cases rule: valid_path.cases, auto)
 
-end -- "locale Digraph"
+end \<comment> \<open>locale Digraph\<close>
 
 subsection {* Parity Games *}
 
@@ -512,7 +512,7 @@ proof-
     by blast
 qed
 
-end -- "locale ParityGame"
+end \<comment> \<open>locale ParityGame\<close>
 
 subsection {* Valid Maximal Paths *}
 

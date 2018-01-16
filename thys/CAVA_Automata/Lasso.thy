@@ -32,7 +32,7 @@ begin
 
 
   definition run_of_lasso :: "'q lasso \<Rightarrow> 'q word"
-    -- "Run described by a lasso"
+    \<comment> \<open>Run described by a lasso\<close>
     where "run_of_lasso L \<equiv> lasso_reach L \<frown> (lasso_cycle L)\<^sup>\<omega>"
 
   lemma run_of_lasso_of_prpl: 
@@ -112,7 +112,7 @@ begin
   context gb_graph begin
     definition is_lasso
       :: "'Q lasso \<Rightarrow> bool" 
-      -- "Predicate that defines a lasso"
+      \<comment> \<open>Predicate that defines a lasso\<close>
       where "is_lasso L \<equiv> 
         is_lasso_pre L
       \<and> (\<forall>A\<in>F. (set (lasso_cycle L)) \<inter> A \<noteq> {})"

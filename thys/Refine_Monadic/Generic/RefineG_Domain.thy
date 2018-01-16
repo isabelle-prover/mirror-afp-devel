@@ -99,7 +99,7 @@ begin
   abbreviation "flatf_fp b \<equiv> flatf_ord.fixp b"
 
   lemma flatf_fp_mono[refine_mono]:
-    -- "The fixed point combinator is monotonic"
+    \<comment> \<open>The fixed point combinator is monotonic\<close>
     assumes "flatf_mono b f"
       and "flatf_mono b g"
       and "\<And>Z x. flat_ord b (f Z x) (g Z x)"
@@ -134,7 +134,7 @@ begin
     fixed-point combinators to different domains.
   *}
   lemma flatf_fp_induct_pointwise:
-    -- "Fixed-point induction for pointwise properties"
+    \<comment> \<open>Fixed-point induction for pointwise properties\<close>
     fixes a :: 'a
     assumes cond_bot: "\<And>a x. pre a x \<Longrightarrow> post a x b"
     assumes MONO: "flatf_mono b B"
@@ -176,7 +176,7 @@ begin
     Note that one of the fixed points may be an arbitrary fixed point.
   *}
   lemma flatf_fixp_transfer:
-    -- "Transfer rule for fixed points"
+    \<comment> \<open>Transfer rule for fixed points\<close>
     assumes TR_BOT[simp]: "\<And>x'. tr b x'"
     assumes MONO: "flatf_mono b B"
     assumes FP': "fp' = B' fp'"
@@ -268,7 +268,7 @@ begin
     fixed point combinators.
   *}
   lemma wf_fixp_induct:
-    -- "Well-Founded induction for arbitrary fixed points"
+    \<comment> \<open>Well-Founded induction for arbitrary fixed points\<close>
     fixes a :: 'a
     assumes fixp_unfold: "fp B = B (fp B)"
     assumes WF: "wf V"
@@ -293,7 +293,7 @@ begin
 
 
   lemma flatf_lfp_transfer:
-    -- "Transfer rule for least fixed points"
+    \<comment> \<open>Transfer rule for least fixed points\<close>
     fixes B::"(_ \<Rightarrow> 'a::order_bot) \<Rightarrow> _"
     assumes TR_BOT[simp]: "\<And>x. tr bot x"
     assumes MONO: "flatf_mono_le B"
@@ -308,7 +308,7 @@ begin
     done
 
   lemma flatf_gfp_transfer:
-    -- "Transfer rule for greatest fixed points"
+    \<comment> \<open>Transfer rule for greatest fixed points\<close>
     fixes B::"(_ \<Rightarrow> 'a::order_top) \<Rightarrow> _"
     assumes TR_TOP[simp]: "\<And>x. tr x top"
     assumes MONO: "flatf_mono_ge B"

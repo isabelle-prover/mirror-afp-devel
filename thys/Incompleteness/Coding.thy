@@ -502,7 +502,7 @@ lemma htuple_minus_1: "n > 0 \<Longrightarrow> htuple n = \<langle>0, htuple (n 
 lemma HTuple_minus_1: "n > 0 \<Longrightarrow> HTuple n = HPair Zero (HTuple (n - 1))"
   by (metis Suc_diff_1 HTuple.simps(2))
 
-lemmas HTS = HTuple_minus_1 HTuple.simps --{*for freeness reasoning on codes*}
+lemmas HTS = HTuple_minus_1 HTuple.simps \<comment> \<open>for freeness reasoning on codes\<close>
 
 lemma quot_dbfm_inject_lemma [simp]: "\<lbrakk>quot_dbfm A\<rbrakk>e = \<lbrakk>quot_dbfm B\<rbrakk>e \<longleftrightarrow> A=B"
 proof (induct A arbitrary: B rule: dbfm.induct)

@@ -22,7 +22,7 @@ and semWhileSC: "WhileSideCondition e \<Longrightarrow> \<forall>d. e \<equiv>\<
 and semIfSC: "IfSideCondition e c1 c2 \<Longrightarrow> \<forall>d. e \<equiv>\<^bsub>d\<^esub> e \<or> [c1] \<approx>\<^bsub>d\<^esub> [c2]"
 begin
 
--- "Security typing rules for the language commands"
+\<comment> \<open>Security typing rules for the language commands\<close>
 inductive
 ComSecTyping :: "('exp, 'id) MWLfCom \<Rightarrow> bool"
   ("\<turnstile>\<^bsub>\<C>\<^esub> _")
@@ -42,7 +42,7 @@ Parallel: "\<lbrakk> \<forall>i < length V. \<turnstile>\<^bsub>\<C>\<^esub> V!i
 inductive_cases parallel_cases:
 "\<turnstile>\<^bsub>\<V>\<^esub> V"
 
---"soundness proof of abstract type system"
+\<comment> \<open>soundness proof of abstract type system\<close>
 theorem ComSecTyping_single_is_sound:
 "\<turnstile>\<^bsub>\<C>\<^esub> c \<Longrightarrow> Strongly_Secure [c]"
 by (induct rule: ComSecTyping_ComSecTypingL.inducts(1)

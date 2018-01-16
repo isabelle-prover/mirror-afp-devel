@@ -237,7 +237,7 @@ begin
   end
   
   theorem find_ce_autoref[autoref_rules]:
-    -- "Main Correctness theorem (inside locale)"
+    \<comment> \<open>Main Correctness theorem (inside locale)\<close>
     shows "(find_ce_code G_impl, find_ce_spec) \<in> \<langle>ce_rel\<rangle>nres_rel"
   proof -
     note find_ce_code.refine[OF locale_this, THEN nres_relD]
@@ -325,7 +325,7 @@ abbreviation fl_rel :: "(_ \<times> ('a list \<times> 'b list) option) set" wher
   "fl_rel \<equiv> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>Relators.option_rel"
 
 theorem find_lasso_tr_correct:
-  -- "Correctness theorem for the constant we extracted to SML"
+  \<comment> \<open>Correctness theorem for the constant we extracted to SML\<close>
   fixes Re
   assumes A: "(G_impl,G)\<in>igbg_impl_rel_ext Re Id"
   assumes B: "igb_fr_graph G"

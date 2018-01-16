@@ -96,11 +96,11 @@ context
     context_assms: "Only_G \<G>" "finite \<Sigma>" "range w \<subseteq> \<Sigma>"
 begin
 
---\<open>Create an interpretation of the mojmir locale for the standard construction\<close>
+\<comment> \<open>Create an interpretation of the mojmir locale for the standard construction\<close>
 interpretation \<MM>: ltl_FG_to_rabin \<Sigma> \<phi> \<G> w
   by (unfold_locales; insert context_assms; auto)
 
---\<open>Create an interpretation of the mojmir locale for the optimised construction\<close>
+\<comment> \<open>Create an interpretation of the mojmir locale for the optimised construction\<close>
 interpretation \<UU>: ltl_FG_to_rabin_opt \<Sigma> \<phi> \<G> w
   by (unfold_locales; insert context_assms; auto)
 
@@ -178,7 +178,7 @@ lemma unfold_\<S>_eq:
   assumes "\<MM>.accept"
   shows "\<forall>\<^sub>\<infinity>n. \<MM>.\<S> (Suc n) = (\<lambda>q. step_abs q (w n)) ` (\<UU>.\<S> n) \<union> {Abs \<phi>} \<union> {q. \<G> \<Turnstile>\<^sub>P Rep q}"
 proof -
-  --\<open>Obtain lower bounds for proof\<close>
+  \<comment> \<open>Obtain lower bounds for proof\<close>
   obtain i\<^sub>\<MM> where i\<^sub>\<MM>_def: "\<MM>.smallest_accepting_rank = Some i\<^sub>\<MM>"
     using assms unfolding \<MM>.smallest_accepting_rank_def by simp
   obtain n\<^sub>\<MM> where n\<^sub>\<MM>_def: "\<And>x m. m \<ge> n\<^sub>\<MM> \<Longrightarrow> \<MM>.token_succeeds x = (m < x \<or> (\<exists>j\<ge>i\<^sub>\<MM>. \<MM>.rank x m = Some j) \<or> \<MM>.token_run x m \<in> {q. \<G> \<Turnstile>\<^sub>P Rep q})"
@@ -197,7 +197,7 @@ proof -
     assume "m \<ge> max n\<^sub>\<MM> n\<^sub>\<UU>"
     hence "m \<ge> n\<^sub>\<MM>" and "m \<ge> n\<^sub>\<UU>" and "Suc m \<ge> n\<^sub>\<MM>" 
       by simp+
-    --\<open>Using the properties of @{term n\<^sub>\<MM>} and @{term n\<^sub>\<UU>} and the lemma @{thm unfold_token_succeeds_eq}, 
+    \<comment> \<open>Using the properties of @{term n\<^sub>\<MM>} and @{term n\<^sub>\<UU>} and the lemma @{thm unfold_token_succeeds_eq}, 
        we prove that the behaviour of x in @{text \<MM>} and @{text \<UU>} is similar in regards to 
        creation time, accepting rank or final states.\<close>
     hence token_trans: "\<And>x. Suc m < x \<or> (\<exists>j\<ge>i\<^sub>\<MM>. \<MM>.rank x (Suc m) = Some j) \<or> \<MM>.token_run x (Suc m) \<in> {q. \<G> \<Turnstile>\<^sub>P Rep q}
@@ -318,20 +318,20 @@ lemma unfold_optimisation_correct_M:
   assumes "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<up>\<Turnstile>\<^sub>P q}"
   shows "accepting_pair\<^sub>R (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w \<longleftrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w"
 proof -
-  --\<open>Preliminary Facts\<close>
+  \<comment> \<open>Preliminary Facts\<close>
   note \<G>_properties[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`]
 
   interpret \<A>: ltl_to_rabin_af
     using ltl_to_generalized_rabin_af_wellformed bounded_w finite_\<Sigma> by auto
 
-  --\<open>Define constants for both runs\<close>
+  \<comment> \<open>Define constants for both runs\<close>
   define r\<^sub>\<A> r\<^sub>\<UU>
     where "r\<^sub>\<A> = run\<^sub>t (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) w"
       and "r\<^sub>\<UU> = run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
   hence "finite (range r\<^sub>\<A>)" and "finite (range r\<^sub>\<UU>)"
     using run\<^sub>t_finite[OF \<A>.finite_reach] run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma> by simp+
 
-  --\<open>Prove that the limit of both runs behave the same in respect to the M acceptance condition\<close>
+  \<comment> \<open>Prove that the limit of both runs behave the same in respect to the M acceptance condition\<close>
   have "limit r\<^sub>\<A> \<inter> M_fin \<pi>\<^sub>\<A> = {} \<longleftrightarrow> limit r\<^sub>\<UU> \<inter> M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU> = {}"
   proof -
     have "ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w"
@@ -468,21 +468,21 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi> \<chi>) w"
       by (unfold ltl_to_generalized_rabin_af.simps; blast intro: \<A>.accept\<^sub>G\<^sub>R_I)
  
-    --\<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
+    \<comment> \<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
     then obtain \<pi>\<^sub>\<A> where A: "dom \<pi> = dom \<pi>\<^sub>\<A>"
       and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<up>\<Turnstile>\<^sub>P q}"
       and C: "accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
       and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
       using \<A>.normalize_\<pi> by blast
   
-    --\<open>Properties about the domain of @{text \<pi>}\<close>
+    \<comment> \<open>Properties about the domain of @{text \<pi>}\<close>
     note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
     hence \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
       using I II IV \<A>.Acc_to_mojmir_accept unfolding ltl_to_rabin_base_def.max_rank_of_def by (metis ltl.sel(8)) 
     hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
       using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w] unfolding ltl_prop_entails_abs.rep_eq by blast
   
-    --\<open>Define @{text \<pi>} for the other automaton\<close>
+    \<comment> \<open>Define @{text \<pi>} for the other automaton\<close>
     define \<pi>\<^sub>\<UU>
       where "\<pi>\<^sub>\<UU> \<chi> = (if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None)"
       for \<chi>
@@ -497,7 +497,7 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       using wellformed_mojmir_opt[OF \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w, THEN mojmir.smallest_accepting_rank_properties(6)]
        unfolding ltl_prop_entails_abs.rep_eq by fastforce
   
-    --\<open>Use correctness of the translation of individual accepting pairs\<close>
+    \<comment> \<open>Use correctness of the translation of individual accepting pairs\<close>
     have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi>\<^sub>\<UU> \<chi>) w"
       using mojmir_accept_to_Acc[OF _ `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] 
       using 1 2[of "G _"] 3[of "G _"] \<UU>_Accept[of "G _"] ltl.sel(8) unfolding comp_apply by metis
@@ -518,14 +518,14 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi> \<chi>) w"
       by (blast intro: accept\<^sub>G\<^sub>R_I)
   
-    --\<open>Normalize @{text \<pi>} to the smallest accepting ranks\<close>
+    \<comment> \<open>Normalize @{text \<pi>} to the smallest accepting ranks\<close>
     then obtain \<pi>\<^sub>\<UU> where A: "dom \<pi> = dom \<pi>\<^sub>\<UU>"
       and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<up>\<Turnstile>\<^sub>P q}"
       and C: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w" 
       and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi>\<^sub>\<UU> \<chi>) w"
       using normalize_\<pi> unfolding comp_apply by blast
   
-    --\<open>Properties about the domain of @{text \<pi>}\<close>
+    \<comment> \<open>Properties about the domain of @{text \<pi>}\<close>
     note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
     hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
       using I II IV Acc_to_mojmir_accept unfolding max_rank_of_def comp_apply by (metis ltl.sel(8)) 
@@ -533,7 +533,7 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w]
       unfolding ltl_prop_entails_abs.rep_eq by blast
   
-    --\<open>Define @{text \<pi>} for the other automaton\<close>
+    \<comment> \<open>Define @{text \<pi>} for the other automaton\<close>
     define \<pi>\<^sub>\<A>
       where "\<pi>\<^sub>\<A> \<chi> = (if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None)"
       for \<chi>
@@ -550,7 +550,7 @@ proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w],
       using ltl_FG_to_rabin.smallest_accepting_rank_properties(6)[OF `ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w`]
       unfolding ltl_prop_entails_abs.rep_eq by fastforce
   
-    --\<open>Use correctness of the translation of individual accepting pairs\<close>
+    \<comment> \<open>Use correctness of the translation of individual accepting pairs\<close>
     have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
       using \<A>.mojmir_accept_to_Acc[OF _ `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] 
       using 1 2[of "G _"] 3[of "G _"] \<MM>_Accept[of "G _"] ltl.sel(8) by metis 

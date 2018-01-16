@@ -29,7 +29,7 @@ datatype (FOV0: 'fo, SOV0: 'so) atomic =
   Eq_Presb "nat option" 'so nat
 
 derive linorder option
-derive linorder atomic -- \<open>very slow\<close>
+derive linorder atomic \<comment> \<open>very slow\<close>
 
 type_synonym fo = nat
 type_synonym so = nat
@@ -461,7 +461,7 @@ next
     assume "lformula0 a"
     then show ?thesis using *
       by (induct a rule: lformula0.induct)
-        (auto simp: dec_def split: if_splits order.split option.splits bool.splits) -- \<open>slow\<close>
+        (auto simp: dec_def split: if_splits order.split option.splits bool.splits) \<comment> \<open>slow\<close>
   next
     note dec_def[simp]
     assume "len P \<le> Length \<AA>"
@@ -515,7 +515,7 @@ next
   assume "Length \<AA> = 0"
   then show "nullable0 a = satisfies0 \<AA> a"
     by (induct a, unfold wf0.simps nullable0.simps satisfies0.simps Let_def)
-      (transfer, (auto 0 3 dest: MSB_greater split: prod.splits if_splits option.splits bool.splits nat.splits) [])+  -- \<open>slow\<close>
+      (transfer, (auto 0 3 dest: MSB_greater split: prod.splits if_splits option.splits bool.splits nat.splits) [])+  \<comment> \<open>slow\<close>
 next
    note Formula_Operations.satisfies_gen.simps[simp] Let_def[simp] upshift_def[simp]
    fix x :: atom and a :: ws1s and \<AA> :: interp

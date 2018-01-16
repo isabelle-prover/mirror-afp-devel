@@ -14,8 +14,8 @@ text {*
  *}
 
 locale prio = 
-  fixes \<alpha> :: "'p \<Rightarrow> ('e \<times> 'a::linorder) multiset" -- "Abstraction to multiset"
-  fixes invar :: "'p \<Rightarrow> bool"                     -- "Invariant"
+  fixes \<alpha> :: "'p \<Rightarrow> ('e \<times> 'a::linorder) multiset" \<comment> \<open>Abstraction to multiset\<close>
+  fixes invar :: "'p \<Rightarrow> bool"                     \<comment> \<open>Invariant\<close>
 
 locale prio_no_invar = prio +
   assumes invar[simp, intro!]: "\<And>s. invar s"

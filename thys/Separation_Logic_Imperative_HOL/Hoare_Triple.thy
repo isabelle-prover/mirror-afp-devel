@@ -432,7 +432,7 @@ lemma split_rule:
   done
 
 lemmas decon_if_split = if_rule_split split_rule
-  -- "Use with care: Complete splitting of if statements"
+  \<comment> \<open>Use with care: Complete splitting of if statements\<close>
 
 lemma case_prod_rule: 
   "(\<And>a b. x = (a, b) \<Longrightarrow> <P> f a b <Q>) \<Longrightarrow> <P> case x of (a, b) \<Rightarrow> f a b <Q>"

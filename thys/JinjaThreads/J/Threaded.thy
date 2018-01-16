@@ -14,7 +14,7 @@ imports
   "../Framework/FWProgressAux"
 begin
 
-context heap_base begin -- "Move to ?? - also used in BV"
+context heap_base begin \<comment> \<open>Move to ?? - also used in BV\<close>
 
 lemma wset_Suspend_ok_start_state:
   fixes final r convert_RA

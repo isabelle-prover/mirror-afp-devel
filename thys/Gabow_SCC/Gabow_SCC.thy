@@ -25,10 +25,10 @@ section {* Extended Invariant *}
 locale cscc_invar_ext = fr_graph G
   for G :: "('v,'more) graph_rec_scheme" + 
   fixes l :: "'v set list" and D :: "'v set"
-  assumes l_is_D: "\<Union>set l = D" -- "The output contains all done CNodes"
-  assumes l_scc: "set l \<subseteq> Collect (is_scc E)" -- "The output contains only SCCs"
+  assumes l_is_D: "\<Union>set l = D" \<comment> \<open>The output contains all done CNodes\<close>
+  assumes l_scc: "set l \<subseteq> Collect (is_scc E)" \<comment> \<open>The output contains only SCCs\<close>
   assumes l_no_fwd: "\<And>i j. \<lbrakk>i<j; j<length l\<rbrakk> \<Longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}" 
-    -- "The output contains no forward edges"
+    \<comment> \<open>The output contains no forward edges\<close>
 begin
   lemma l_no_empty: "{}\<notin>set l" using l_scc by (auto simp: in_set_conv_decomp)
 end

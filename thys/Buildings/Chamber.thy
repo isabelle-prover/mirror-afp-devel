@@ -930,7 +930,7 @@ locale ChamberComplexEndomorphism = ChamberComplexMorphism X X f
   for X :: "'a set set"
   and f :: "'a\<Rightarrow>'a"
 + assumes trivial_outside : "v\<notin>\<Union>X \<Longrightarrow> f v = v"
-  --{* to facilitate uniqueness arguments *}
+  \<comment> \<open>to facilitate uniqueness arguments\<close>
 
 lemma (in ChamberComplex) trivial_endomorphism:
   "ChamberComplexEndomorphism X id"
@@ -1156,7 +1156,7 @@ locale ChamberComplexAutomorphism = ChamberComplexIsomorphism X X f
   for X :: "'a set set"
   and f :: "'a\<Rightarrow>'a"
 + assumes trivial_outside : "v\<notin>\<Union>X \<Longrightarrow> f v = v"
-  --{* to facilitate uniqueness arguments *}
+  \<comment> \<open>to facilitate uniqueness arguments\<close>
 
 sublocale ChamberComplexAutomorphism < ChamberComplexEndomorphism
   using trivial_outside by unfold_locales fast
@@ -1469,8 +1469,8 @@ locale ThinishChamberComplex = ChamberComplex X
   for X :: "'a set set"
 + assumes thinish:
   "\<lbrakk> chamber C; z\<lhd>C; \<exists>D\<in>X-{C}. z\<lhd>D \<rbrakk> \<Longrightarrow> \<exists>!D\<in>X-{C}. z\<lhd>D"
-  -- {* being adjacent to a chamber, such a @{term D} would also be a chamber (see lemma
-@{text "chamber_adj"}) *}
+  \<comment> \<open>being adjacent to a chamber, such a @{term D} would also be a chamber (see lemma
+@{text "chamber_adj"})\<close>
 begin
 
 lemma facet_unique_other_chamber:
@@ -2289,7 +2289,7 @@ lemmas flopped_half_apartments_gf =
   ]
 
 lemma vertex_set_split: "\<Union>X = f`(\<Union>X) \<union> g`(\<Union>X)"
--- {* @{term f} and @{term g} will both be the identity on the intersection *}
+\<comment> \<open>@{term f} and @{term g} will both be the identity on the intersection\<close>
 proof
   show "\<Union>X \<supseteq> f`(\<Union>X) \<union> g`(\<Union>X)"
     using folding_f.simplex_map folding_g.simplex_map by auto
@@ -2409,7 +2409,7 @@ begin
 definition induced_automorphism :: "'a\<Rightarrow>'a"
   where "induced_automorphism v \<equiv>
           if v\<in>f`(\<Union>X) then g v else if v\<in>g`(\<Union>X) then f v else v"
--- {* @{term f} and @{term g} will both be the identity on the intersection of their images *}
+\<comment> \<open>@{term f} and @{term g} will both be the identity on the intersection of their images\<close>
 abbreviation "\<s> \<equiv> induced_automorphism"
 
 lemma induced_automorphism_fg_symmetric:
@@ -4450,7 +4450,7 @@ proof-
   obtain ss where ss: "set ss = S" using finite_S finite_list by fastforce
 
   define fgs where "fgs = map Spair ss"
-  -- {* for @{term "fg \<in> set fgs"}, have @{term "(fst fg) ` D = C0"} for some @{term "D \<in> fundajdset"} *}
+  \<comment> \<open>for @{term "fg \<in> set fgs"}, have @{term "(fst fg) ` D = C0"} for some @{term "D \<in> fundajdset"}\<close>
 
   define \<psi> where "\<psi> = fold fst fgs" (* \<psi> = fn \<circ> \<dots> \<circ> f1 *)
   define vdist where "vdist v = (LEAST n. (\<psi>^^n) v \<in> C0)" for v

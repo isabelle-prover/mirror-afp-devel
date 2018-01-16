@@ -322,7 +322,7 @@ subsection\<open>Sanity checking for an @{typ "'i ipassignment"}.\<close>
        by (metis domI iface.sel iface_is_wildcard_def ifce ipassmt_nowild ipassmt_sanity_nowildcards_def match_iface.elims(2) match_iface_case_nowildcard)
    next
      assume a: "p_src p \<in> ipcidr_union_set (set i_ips)"
-     --\<open>basically, we need to reverse the map @{term ipassmt}\<close>
+     \<comment> \<open>basically, we need to reverse the map @{term ipassmt}\<close>
 
      from ipassmt_disjoint_nonempty_inj[OF ipassmt_disjoint ifce] a have ipassmt_inj: "\<forall>k. ipassmt k = Some i_ips \<longrightarrow> k = ifce" by blast
 

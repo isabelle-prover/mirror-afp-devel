@@ -24,10 +24,9 @@ text {* At this point everything is available to prove the main result of this p
 theorem (in eflowgraph) RUV_is_sim_reach: 
   "(\<exists>w c'. ({#[entry fg (main fg)]#},w,c')\<in>trcl (refpoint fg) \<and> atUV U V c') 
     \<longleftrightarrow> (\<exists>Ml Me. (entry fg (main fg),Ml,Me)\<in>RUV_cs fg U V)" 
--- {* The proof uses the soundness and precision theorems wrt. to normalized paths (@{thm [source] flowgraph.RUV_sound}, @{thm [source] flowgraph.RUV_precise}) as well as the normalization result, 
+\<comment> \<open>The proof uses the soundness and precision theorems wrt. to normalized paths (@{thm [source] flowgraph.RUV_sound}, @{thm [source] flowgraph.RUV_precise}) as well as the normalization result, 
   i.e. that every reachable configuration is also reachable using a normalized path (@{thm [source] eflowgraph.normalize}) and, vice versa, that every normalized path is also a usual path (@{thm [source] ntr_is_tr}). 
-  Finally the conversion between our working semantics and the semantic reference point is exploited (@{thm [source] flowgraph.refpoint_eq}).
-*}
+  Finally the conversion between our working semantics and the semantic reference point is exploited (@{thm [source] flowgraph.refpoint_eq}).\<close>
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs

@@ -318,7 +318,7 @@ export_code test_uint checking SML Haskell? OCaml? Scala
 
 lemma "test_uint"
 quickcheck[exhaustive, expect=no_counterexample]
-oops -- "FIXME: prove correctness of test by reflective means (not yet supported)"
+oops \<comment> \<open>FIXME: prove correctness of test by reflective means (not yet supported)\<close>
 
 lemma "x AND y = x OR (y :: uint)"
 quickcheck[random, expect=counterexample]

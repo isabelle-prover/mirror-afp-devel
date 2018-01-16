@@ -93,7 +93,7 @@ locale env_no_step =
   assumes env_no_step_s[cases set, case_names csp]: 
     "\<lbrakk>((s,c),e,(s',c'))\<in>gtrs; !!csp. c'=csp+c \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 
--- "The property of not changing existing threads in the context transfers to paths"
+\<comment> \<open>The property of not changing existing threads in the context transfers to paths\<close>
 lemma (in env_no_step) env_no_step[cases set, case_names csp]: "\<lbrakk>
     ((s,c),w,(s',c'))\<in>trcl gtrs; 
     !! csp. c'=csp+c \<Longrightarrow> P 

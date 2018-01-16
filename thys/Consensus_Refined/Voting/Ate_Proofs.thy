@@ -255,7 +255,7 @@ next
       CSHO_trans_alt_def CHO_trans_alt Ate_trans_step_def)
 qed
 
-end   -- {* context @{text "ate_parameters"} *}
+end   \<comment> \<open>context @{text "ate_parameters"}\<close>
 
 subsubsection {* Termination *}
 (******************************************************************************)

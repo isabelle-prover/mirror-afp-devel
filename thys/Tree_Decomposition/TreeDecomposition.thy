@@ -9,12 +9,12 @@ locale TreeDecomposition = Graph G + T: Tree T
   for G :: "('a, 'b) Graph_scheme" (structure) and T :: "('c,'d) Graph_scheme" +
   fixes bag :: "'c \<Rightarrow> 'a set"
   assumes
-    -- "Every vertex appears somewhere"
+    \<comment> \<open>Every vertex appears somewhere\<close>
     bags_union: "\<Union> { bag t | t. t \<in> V\<^bsub>T\<^esub> } = V"
-     -- "Every edge is covered"
+     \<comment> \<open>Every edge is covered\<close>
     and bags_edges: "v\<rightarrow>w \<Longrightarrow> \<exists>t \<in> V\<^bsub>T\<^esub>. v \<in> bag t \<and> w \<in> bag t"
-    -- "Every vertex appearing in @{term s} and @{term u} also appears in every bag on the path
-        connecting @{term s} and @{term u}"
+    \<comment> \<open>Every vertex appearing in @{term s} and @{term u} also appears in every bag on the path
+        connecting @{term s} and @{term u}\<close>
     and bags_continuous: "\<lbrakk> s \<in> V\<^bsub>T\<^esub>; u \<in> V\<^bsub>T\<^esub>; t \<in> set (s \<leadsto>\<^bsub>T\<^esub> u) \<rbrakk> \<Longrightarrow> bag s \<inter> bag u \<subseteq> bag t"
 begin
 text {*
@@ -77,7 +77,7 @@ proof-
   thus ?thesis unfolding width_def using t(1) by fastforce
 qed
 
-end -- "locale TreeDecomposition"
+end \<comment> \<open>locale TreeDecomposition\<close>
 
 subsection {* Treewidth of a Graph *}
 
@@ -128,7 +128,7 @@ lemma treewidth_upper_bound_ex:
   unfolding treewidth_def
   by (metis (mono_tags, lifting) Min_le dual_order.trans mem_Collect_eq treewidth_cards_finite)
 
-end -- "locale Graph"
+end \<comment> \<open>locale Graph\<close>
 
 subsection {* Separations *}
 
@@ -266,5 +266,5 @@ proof-
   thus ?thesis using w(1) by auto
 qed
 
-end -- "locale TreeDecomposition"
+end \<comment> \<open>locale TreeDecomposition\<close>
 end

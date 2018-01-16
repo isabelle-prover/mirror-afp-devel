@@ -632,7 +632,7 @@ lemma Or_append:
 
 subsubsection \<open>$eval_G$\<close>
 
--- \<open>Partly evaluate a formula by only considering G-subformulae\<close>
+\<comment> \<open>Partly evaluate a formula by only considering G-subformulae\<close>
 
 fun eval\<^sub>G
 where
@@ -641,7 +641,7 @@ where
 | "eval\<^sub>G S (G \<phi>) = (if G \<phi> \<in> S then true else false)"
 | "eval\<^sub>G S \<phi> = \<phi>"
 
--- \<open>Syntactic Properties\<close>
+\<comment> \<open>Syntactic Properties\<close>
 
 lemma eval\<^sub>G_And_map:
   "eval\<^sub>G S (And xs) = And (map (eval\<^sub>G S) xs)"
@@ -667,7 +667,7 @@ lemma eval\<^sub>G_subst:
   "eval\<^sub>G S \<phi> = subst \<phi> (\<lambda>\<chi>. Some (eval\<^sub>G S \<chi>))"
   by (induction \<phi>) simp_all
 
--- \<open>Semantic Properties\<close>
+\<comment> \<open>Semantic Properties\<close>
 
 lemma eval\<^sub>G_prop_entailment:
   "S \<Turnstile>\<^sub>P eval\<^sub>G S \<phi> \<longleftrightarrow> S \<Turnstile>\<^sub>P \<phi>"
@@ -754,7 +754,7 @@ proof -
     obtain S where S_def: "S = {{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} | \<phi>. nested_propos \<phi> \<subseteq> P}"
       by blast
 
-    -- \<open>Prove S and ?map applied to it is finite\<close>
+    \<comment> \<open>Prove S and ?map applied to it is finite\<close>
     hence "S \<subseteq> Pow (Pow P)"
       by blast
     hence "finite S"
@@ -762,7 +762,7 @@ proof -
     hence "finite {?map P A | A. A \<in> S}"
       by fastforce
 
-    -- \<open>Prove that S' can be embedded into S using ?map\<close>
+    \<comment> \<open>Prove that S' can be embedded into S using ?map\<close>
 
     have "S' \<subseteq> {?map P A | A. A \<in> S}"
     proof

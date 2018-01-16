@@ -1693,7 +1693,7 @@ lemma sorted_list_of_set_code [code]:
   "sorted_list_of_set (RBT_set rbt) =
   (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''sorted_list_of_set RBT_set: ccompare = None'') (\<lambda>_. sorted_list_of_set (RBT_set rbt))
                      | Some _ \<Rightarrow> sort (RBT_Set2.keys rbt))"
-  -- {* We must sort the keys because @{term ccompare}'s ordering need not coincide with @{term linorder}'s. *}
+  \<comment> \<open>We must sort the keys because @{term ccompare}'s ordering need not coincide with @{term linorder}'s.\<close>
 by(auto simp add: DList_set_def RBT_set_def sorted_list_of_set_sort_remdups Collect_member distinct_remdups_id distinct_list_of_dlist member_conv_keys split: option.split)
 
 lemma map_project_set: "List.map_project f (set xs) = set (List.map_filter f xs)"

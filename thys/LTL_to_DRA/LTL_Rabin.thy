@@ -54,7 +54,7 @@ begin
 
 sublocale mojmir_to_rabin_def \<Sigma> "\<up>af\<^sub>G" "Abs \<phi>" w "{q. \<G> \<Turnstile>\<^sub>P Rep q}" .
 
---\<open>Import abbreviations from parent locale to simplify terms\<close>
+\<comment> \<open>Import abbreviations from parent locale to simplify terms\<close>
 abbreviation "\<delta>\<^sub>R \<equiv> step"
 abbreviation "q\<^sub>R \<equiv> initial"
 abbreviation "Acc\<^sub>R j \<equiv> (fail\<^sub>R \<union> merge\<^sub>R j, succeed\<^sub>R j)"
@@ -128,7 +128,7 @@ lemma ltl_to_rabin_correct_exposed:
   "\<PP>\<^sub>\<infinity> \<phi> \<G> w \<longleftrightarrow> accept\<^sub>R (\<delta>\<^sub>R, q\<^sub>R, {Acc\<^sub>R i | i. i < max_rank\<^sub>R}) w"  
   unfolding ltl_to_rabin_correct_exposed' mojmir_accept_iff_rabin_accept ..
 
---\<open>Import lemmas from parent locale to simplify assumptions\<close>
+\<comment> \<open>Import lemmas from parent locale to simplify assumptions\<close>
 lemmas max_rank_lowerbound = max_rank_lowerbound
 lemmas state_rank_step_foldl = state_rank_step_foldl
 lemmas smallest_accepting_rank_properties = smallest_accepting_rank_properties 
@@ -547,7 +547,7 @@ end
 
 subsection \<open>Automaton Template\<close>
 
--- \<open>This locale provides the construction template for all composed constructions.\<close>
+\<comment> \<open>This locale provides the construction template for all composed constructions.\<close>
 
 locale ltl_to_rabin_base_def =
   fixes
@@ -562,7 +562,7 @@ locale ltl_to_rabin_base_def =
     M_fin :: "('a ltl \<rightharpoonup> nat) \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) transition set"
 begin
 
--- \<open>Transition Function and Initial State\<close>
+\<comment> \<open>Transition Function and Initial State\<close>
 
 fun delta
 where
@@ -572,7 +572,7 @@ fun initial
 where
   "initial \<phi> = (q\<^sub>0 \<phi>, \<iota>\<^sub>\<times> (\<^bold>G \<phi>) (semi_mojmir_def.initial o q\<^sub>0\<^sub>M o theG))"
 
--- \<open>Acceptance Condition\<close>
+\<comment> \<open>Acceptance Condition\<close>
 
 definition max_rank_of
 where
@@ -808,7 +808,7 @@ proof -
    
   moreover
 
-  --\<open>Goal 2\<close>
+  \<comment> \<open>Goal 2\<close>
   {
     fix \<chi> assume "\<chi> \<in> dom \<pi>\<^sub>\<A>"
     hence "\<chi> = G (theG \<chi>)"
@@ -839,7 +839,7 @@ end
 
 subsection \<open>Generalized Deterministic Rabin Automaton\<close>
 
--- \<open>Instantiate Automaton Template\<close>
+\<comment> \<open>Instantiate Automaton Template\<close>
 
 subsubsection \<open>Definition\<close>
 
@@ -866,7 +866,7 @@ proof
   let ?q\<^sub>0 = "\<iota>\<^sub>\<A> \<phi>"
   let ?F = "F\<^sub>\<A> \<Sigma> \<phi>"
  
-  --\<open>Preliminary facts needed by both proof directions\<close>
+  \<comment> \<open>Preliminary facts needed by both proof directions\<close>
   define r where "r = run\<^sub>t ?\<Delta> ?q\<^sub>0 w"
   have r_alt_def': "\<And>i. fst (fst (r i)) = Abs (af \<phi> (w [0 \<rightarrow> i]))"
     using run_properties(1) unfolding r_def run\<^sub>t.simps fst_conv
@@ -880,7 +880,7 @@ proof
     using run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma>
     by (simp add: r_def)
 
-  --\<open>Assuming @{term "w \<Turnstile> \<phi>"} holds, we prove that @{term "ltl_to_generalized_rabin \<Sigma> \<phi>"} accepts @{term w}\<close>
+  \<comment> \<open>Assuming @{term "w \<Turnstile> \<phi>"} holds, we prove that @{term "ltl_to_generalized_rabin \<Sigma> \<phi>"} accepts @{term w}\<close>
   {
     assume ?lhs
     then obtain \<G> where "\<G> \<subseteq> \<^bold>G \<phi>" and "accept\<^sub>M \<phi> \<G> w" and "closed \<G> w"
@@ -1020,7 +1020,7 @@ proof
       unfolding ltl_to_rabin_base_def.ltl_to_generalized_rabin.simps accept\<^sub>G\<^sub>R_def fst_conv snd_conv by blast
   }
 
-  -- \<open>Assuming @{term "ltl_to_generalized_rabin \<Sigma> \<phi>"} accepts @{term w}, we prove that @{term "w \<Turnstile> \<phi>"} holds\<close>
+  \<comment> \<open>Assuming @{term "ltl_to_generalized_rabin \<Sigma> \<phi>"} accepts @{term w}, we prove that @{term "w \<Turnstile> \<phi>"} holds\<close>
   {
     assume ?rhs
     obtain \<pi>' where 0: "dom \<pi>' \<subseteq> \<^bold>G \<phi>"
@@ -1041,7 +1041,7 @@ proof
       using Acc_to_mojmir_accept[OF _ 0 3, of "theG _"] 1[of "G theG _", unfolded ltl.sel] \<G>_def 
       unfolding ltl_prop_entails_abs.rep_eq by (metis (no_types) ltl.sel(8)) 
  
-    --\<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
+    \<comment> \<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
     obtain \<pi> where "dom \<pi>' = dom \<pi>"
       and "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> \<pi> \<chi> = ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) w"
       and "accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>, UNIV) w" 

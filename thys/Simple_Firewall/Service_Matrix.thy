@@ -1135,7 +1135,7 @@ proof -
                    map (\<lambda>x. \<Union> set (map wordinterval_to_set x)) (groupWIs c rs)"
     unfolding build_ip_partition_def groupWIs3 by auto
 
-  --"generic rule"
+  \<comment> \<open>generic rule\<close>
   have "\<forall>x \<in> set xs. \<not> wordinterval_empty x \<Longrightarrow>
          disjoint_list (map wordinterval_to_set xs) \<Longrightarrow>
          distinct (map (\<lambda>x. \<Union>set (map wordinterval_to_set x)) (groupF f xs))"

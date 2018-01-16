@@ -27,7 +27,7 @@ text {* Given an LTL formula, the LTL to Buchi conversion
   returns a Generalized Buchi Automaton that accepts the same language. *}
 definition ltl_to_gba_spec 
   :: "'prop ltlc \<Rightarrow> ('q, 'prop set, _) igba_rec_scheme nres"
-  -- {* Conversion of LTL formula to generalized buchi automaton *}  
+  \<comment> \<open>Conversion of LTL formula to generalized buchi automaton\<close>  
   where "ltl_to_gba_spec \<phi> \<equiv> SPEC (\<lambda>gba. 
     igba.lang gba = language_ltlc \<phi> \<and> igba gba \<and> finite ((g_E gba)\<^sup>* `` g_V0 gba))"
 
@@ -35,7 +35,7 @@ definition inter_spec
   :: "('s,'prop set,_) sa_rec_scheme 
   \<Rightarrow> ('q,'prop set,_) igba_rec_scheme
   \<Rightarrow> (('prod_state,_) igb_graph_rec_scheme \<times> ('prod_state \<Rightarrow> 's)) nres"
-  -- "Intersection of system and IGBA"
+  \<comment> \<open>Intersection of system and IGBA\<close>
   where "\<And>sys ba. inter_spec sys ba \<equiv> do {
     ASSERT (sa sys);
     ASSERT (finite ((g_E sys)\<^sup>* `` g_V0 sys));
@@ -49,7 +49,7 @@ definition inter_spec
 
 definition find_ce_spec 
   :: "('q,_) igb_graph_rec_scheme \<Rightarrow> 'q word option option nres"
-  -- "Check Generalized Buchi graph for emptiness, with optional counterexample"
+  \<comment> \<open>Check Generalized Buchi graph for emptiness, with optional counterexample\<close>
   where "find_ce_spec G \<equiv> do {
     ASSERT (igb_graph G);
     ASSERT (finite ((g_E G)\<^sup>* `` g_V0 G));
@@ -121,7 +121,7 @@ text {*
 abbreviation "ltl_rel \<equiv> Id :: ('a ltlc \<times> _) set"
 
 locale impl_model_checker =
-  -- {* Assembly of a generic model-checker *}
+  \<comment> \<open>Assembly of a generic model-checker\<close>
   fixes sa_rel :: "('sai \<times> ('s,'prop set,'sa_more) sa_rec_scheme) set"
   fixes igba_rel :: "('igbai \<times> ('q, 'prop set, 'igba_more) igba_rec_scheme) set"
   fixes igbg_rel :: "('igbgi \<times> ('sq, 'igbg_more) igb_graph_rec_scheme) set"

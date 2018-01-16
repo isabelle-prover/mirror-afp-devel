@@ -9,10 +9,10 @@ begin
 subsection {* The IND-CPA game for public-key encryption with oracle access *}
 
 locale ind_cpa_pk = 
-  fixes key_gen :: "('pubkey \<times> 'privkey, 'call, 'ret) gpv" -- {*  probabilistic *}
-  and aencrypt :: "'pubkey \<Rightarrow> 'plain \<Rightarrow> ('cipher, 'call, 'ret) gpv"  -- {*  probabilistic w/ access to an oracle *}
-  and adecrypt :: "'privkey \<Rightarrow> 'cipher \<Rightarrow> ('plain, 'call, 'ret) gpv" -- {*  not used *}
-  and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" -- {* checks whether a pair of plaintexts is valid, i.e., they have the right format *}
+  fixes key_gen :: "('pubkey \<times> 'privkey, 'call, 'ret) gpv" \<comment> \<open>probabilistic\<close>
+  and aencrypt :: "'pubkey \<Rightarrow> 'plain \<Rightarrow> ('cipher, 'call, 'ret) gpv"  \<comment> \<open>probabilistic w/ access to an oracle\<close>
+  and adecrypt :: "'privkey \<Rightarrow> 'cipher \<Rightarrow> ('plain, 'call, 'ret) gpv" \<comment> \<open>not used\<close>
+  and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a pair of plaintexts is valid, i.e., they have the right format\<close>
 begin
 
 text {*

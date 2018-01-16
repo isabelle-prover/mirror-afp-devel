@@ -6,10 +6,10 @@ begin
 
 subsection "Integrate with Isabelle libraries?"
 
-    --  "Misc"
+    \<comment> \<open>Misc\<close>
 
-  -- "FIXME added by tjr, forms basis of a lot of proofs of existence of inf sets"
-  -- "something like this should be in FiniteSet, asserting nats are not finite"
+  \<comment> \<open>FIXME added by tjr, forms basis of a lot of proofs of existence of inf sets\<close>
+  \<comment> \<open>something like this should be in FiniteSet, asserting nats are not finite\<close>
 lemma natset_finite_max: assumes a: "finite A"
   shows "Suc (Max A) \<notin> A"
 proof (cases "A = {}")
@@ -21,13 +21,13 @@ next
   thus ?thesis by auto
 qed
 
-    -- "not used"
+    \<comment> \<open>not used\<close>
 lemma not_finite_univ: "~ finite (UNIV::nat set)"
   apply rule
   apply(drule_tac natset_finite_max)
   by force
 
-  -- "FIXME should be in main lib"
+  \<comment> \<open>FIXME should be in main lib\<close>
 lemma LeastI_ex: "(\<exists> x. P (x::'a::wellorder)) \<Longrightarrow> P (LEAST x. P x)"
   by(blast intro: LeastI)
 
@@ -89,7 +89,7 @@ lemma equalOn_UnD: "equalOn (A Un B) f g ==> equalOn A f g & equalOn B f g"
   by(auto simp: equalOn_def)
 
 
-    -- "FIXME move following elsewhere?"
+    \<comment> \<open>FIXME move following elsewhere?\<close>
 lemma inj_inv_singleton[simp]: "\<lbrakk> inj f; f z = y \<rbrakk> \<Longrightarrow> {x. f x = y} = {z}"
   apply rule
   apply(auto simp: inj_on_def) done

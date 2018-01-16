@@ -34,7 +34,7 @@ next
       by auto
     from 2 have "(x1,x4) \<in> alpha_Tree_rel O hull_rel O Tree_wf"
       using 1 and 3 proof (induct rule: Tree_wf.induct)
-        -- \<open>@{const tConj}\<close>
+        \<comment> \<open>@{const tConj}\<close>
         fix t and tset :: "('e,'f,'g,'h) Tree set['e]"
         assume *: "t \<in> set_bset tset" and **: "(x1,t) \<in> hull_rel" and ***: "(tConj tset, x4) \<in> alpha_Tree_rel"
         from "**" obtain p where x1: "x1 = p \<bullet> t"
@@ -54,7 +54,7 @@ next
         ultimately show "(x1,x4) \<in> alpha_Tree_rel O hull_rel O Tree_wf"
           by auto
       next
-        -- \<open>@{const tNot}\<close>
+        \<comment> \<open>@{const tNot}\<close>
         fix t
         assume *: "(x1,t) \<in> hull_rel" and **: "(tNot t, x4) \<in> alpha_Tree_rel"
         from "*" obtain p where x1: "x1 = p \<bullet> t"
@@ -72,7 +72,7 @@ next
         ultimately show "(x1,x4) \<in> alpha_Tree_rel O hull_rel O Tree_wf"
           by auto
       next
-        -- \<open>@{const tAct}\<close>
+        \<comment> \<open>@{const tAct}\<close>
         fix f \<alpha> t
         assume *: "(x1,t) \<in> hull_rel" and **: "(tAct f \<alpha> t, x4) \<in> alpha_Tree_rel"
         from "*" obtain p where x1: "x1 = p \<bullet> t"

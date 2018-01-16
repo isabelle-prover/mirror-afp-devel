@@ -6,7 +6,7 @@ theory Domain_example
 imports Expr
 begin
 
---"When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains."
+\<comment> \<open>When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains.\<close>
 
 datatype Dom = low | high
 

@@ -182,8 +182,7 @@ where
   "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>join([]), h\<rangle> -\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>\<rightarrow>ext \<langle>RetEXC InterruptedException, h\<rangle>"
 
-    -- {* 
-    Interruption should produce inter-thread actions (JLS 17.4.4) for the synchronizes-with order.
+    \<comment> \<open>Interruption should produce inter-thread actions (JLS 17.4.4) for the synchronizes-with order.
     They should synchronize with the inter-thread actions that determine whether a thread has been interrupted.
     Hence, interruption generates an @{term "ObsInterrupt"} action.
 
@@ -193,8 +192,7 @@ where
     while it competes for the monitor lock again.
 
     Interrupting a thread which has not yet been started does not set the interrupt flag 
-    (tested with Sun HotSpot JVM 1.6.0\_07).
-    *}
+    (tested with Sun HotSpot JVM 1.6.0\_07).\<close>
   
 | RedInterrupt:
   "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
@@ -218,11 +216,9 @@ where
   "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>isInterrupted([]), h\<rangle> -\<lbrace>IsInterrupted (addr2thread_id a) False\<rbrace>\<rightarrow>ext \<langle>RetVal (Bool False), h\<rangle>"
 
-    -- {*
-    The JLS leaves unspecified whether @{term wait} first checks for the monitor state
+    \<comment> \<open>The JLS leaves unspecified whether @{term wait} first checks for the monitor state
     (whether the thread holds a lock on the monitor) or for the interrupt flag of the current thread.
-    Sun Hotspot JVM 1.6.0\_07 seems to check for the monitor state first, so we do it here, too.
-    *}
+    Sun Hotspot JVM 1.6.0\_07 seems to check for the monitor state first, so we do it here, too.\<close>
 | RedWaitInterrupt:
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace> \<rightarrow>ext 
          \<langle>RetEXC InterruptedException, h\<rangle>"
@@ -237,28 +233,22 @@ where
 | RedWaitNotified:
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>Notified\<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
-    -- {*
-    This rule does NOT check that the interrupted flag is set, but still clears it.
-    The semantics will be that only the executing thread clears its interrupt.
-    *}
+    \<comment> \<open>This rule does NOT check that the interrupted flag is set, but still clears it.
+    The semantics will be that only the executing thread clears its interrupt.\<close>
 | RedWaitInterrupted:
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>\<rightarrow>ext \<langle>RetEXC InterruptedException, h\<rangle>"
 
-    -- {* 
-    Calls to wait may decide to immediately wake up spuriously. This is 
+    \<comment> \<open>Calls to wait may decide to immediately wake up spuriously. This is 
     indistinguishable from waking up spuriously any time before being 
     notified or interrupted. Spurious wakeups are configured by the
-    @{term spurious_wakeup} parameter of the @{term heap_base} locale.
-    *}
+    @{term spurious_wakeup} parameter of the @{term heap_base} locale.\<close>
 | RedWaitSpurious:
   "spurious_wakeups \<Longrightarrow> 
     P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace> \<rightarrow>ext
           \<langle>RetVal Unit, h\<rangle>"
 
-    -- {*
-    @{term notify} and @{term notifyAll} do not perform synchronization inter-thread actions
-    because they only tests whether the thread holds a lock, but do not change the lock state.
-    *}
+    \<comment> \<open>@{term notify} and @{term notifyAll} do not perform synchronization inter-thread actions
+    because they only tests whether the thread holds a lock, but do not change the lock state.\<close>
 
 | RedNotify:
   "P,t \<turnstile> \<langle>a\<bullet>notify([]), h\<rangle> -\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"

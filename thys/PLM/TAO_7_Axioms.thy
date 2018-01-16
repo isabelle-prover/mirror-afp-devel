@@ -176,7 +176,7 @@ text{* \label{TAO_Axioms_Actuality} *}
     by axiom_meta_solver
   lemma "[[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]]"
     nitpick[user_axioms, expect = genuine, card = 1, card i = 2]
-    oops --{* Counter-model by nitpick *}
+    oops \<comment> \<open>Counter-model by nitpick\<close>
 
   lemma logic_actual_nec_1[axiom]:
     "[[\<^bold>\<A>\<^bold>\<not>\<phi> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<A>\<phi>]]"

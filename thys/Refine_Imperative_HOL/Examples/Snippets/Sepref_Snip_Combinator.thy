@@ -23,16 +23,16 @@ begin
     fixes fi :: "'ai \<Rightarrow> 'bi Heap"
     fixes li :: "'ai list"
 
-    fixes A A' :: "'a \<Rightarrow> 'ai \<Rightarrow> assn" -- \<open>Refinement for list elements before and after map-function. 
+    fixes A A' :: "'a \<Rightarrow> 'ai \<Rightarrow> assn" \<comment> \<open>Refinement for list elements before and after map-function. 
       Different, as map function may invalidate list elements!\<close>
     fixes B :: "'b \<Rightarrow> 'bi \<Rightarrow> assn"
 
-    fixes F :: assn -- \<open>Symbolic frame, representing all heap content the map-function body may access\<close>
+    fixes F :: assn \<comment> \<open>Symbolic frame, representing all heap content the map-function body may access\<close>
 
-    notes [[sepref_register_adhoc f l]] -- \<open>Register for operation id\<close>
+    notes [[sepref_register_adhoc f l]] \<comment> \<open>Register for operation id\<close>
 
     assumes f_rl: "hn_refine (hn_ctxt A x xi * F) (fi xi) (hn_ctxt A' x xi * F) B (f$x)"
-      -- \<open>Refinement for \<open>f\<close>\<close>
+      \<comment> \<open>Refinement for \<open>f\<close>\<close>
 
   begin  
 
@@ -88,11 +88,11 @@ begin
 
   lemma mmap_comb_rl[sepref_comb_rules]:
     assumes "P \<Longrightarrow>\<^sub>t hn_ctxt (list_assn A) l li * F"
-        -- \<open>Initial frame\<close>
+        \<comment> \<open>Initial frame\<close>
       and "\<And>x xi. hn_refine (hn_ctxt A x xi * F) (fi xi) (Q x xi) B (f x)"
-        -- \<open>Refinement of map-function\<close>
+        \<comment> \<open>Refinement of map-function\<close>
       and "\<And>x xi. Q x xi \<Longrightarrow>\<^sub>t hn_ctxt A' x xi * F"
-        -- \<open>Recover refinement for list-element and original frame from what map-function produced\<close>
+        \<comment> \<open>Recover refinement for list-element and original frame from what map-function produced\<close>
     shows "hn_refine P (mmap_impl fi li) (hn_ctxt (list_assn A') l li * F) (list_assn B) (mmap$(\<lambda>\<^sub>2x. f x)$l)"
     unfolding APP_def PROTECT2_def
     using hn_refine_cons_pre[OF _ mmap_impl.refine, sepref_prep_comb_rule, of P A l li F fi Q B f A']

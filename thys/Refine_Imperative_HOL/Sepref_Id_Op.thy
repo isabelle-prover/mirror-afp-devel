@@ -62,9 +62,9 @@ text \<open>
   It has the effect to revert the protection from its argument, and then wrap
   it into a @{text "PR_CONST"}.
 \<close>
-definition [simp, autoref_tag_defs]: "PR_CONST x \<equiv> x" -- "Tag to protect constant"
-definition [simp, autoref_tag_defs]: "UNPROTECT x \<equiv> x" -- {* Gets 
-  converted to @{term PR_CONST}, after unprotecting its content*}
+definition [simp, autoref_tag_defs]: "PR_CONST x \<equiv> x" \<comment> \<open>Tag to protect constant\<close>
+definition [simp, autoref_tag_defs]: "UNPROTECT x \<equiv> x" \<comment> \<open>Gets 
+  converted to @{term PR_CONST}, after unprotecting its content\<close>
 
 
 subsection {* Operation Identification *}

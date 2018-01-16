@@ -260,16 +260,16 @@ assumes
 shows
   "v = w"
 proof- 
-  -- {* To be locked, @{term v} and @{term w} must each have received votes from a quorum. *}
+  \<comment> \<open>To be locked, @{term v} and @{term w} must each have received votes from a quorum.\<close>
   from assms(2-3) obtain Q1 Q2 
   where Q12: "Q1 \<in> Quorum" "Q2 \<in> Quorum" "quorum_for Q1 v (votes s r1)" "quorum_for Q2 w (votes s r2)"
     by(auto simp add: locked_in_def locked_in_vf_def quorum_for_def)
-  -- {* By the quorum intersection property, some process from @{term Q1} voted for @{term w}: *}
+  \<comment> \<open>By the quorum intersection property, some process from @{term Q1} voted for @{term w}:\<close>
   then obtain a where "a \<in> Q1" "votes s r2 a = Some w" 
     using qintersect[OF `Q1 \<in> Quorum` `Q2 \<in> Quorum`]
     by(auto simp add: quorum_for_def)
-  -- {* But from @{term Vinv2} we conclude that @{term a} could not have defected by voting
-        @{term w}, so @{term ?thesis}: *}
+  \<comment> \<open>But from @{term Vinv2} we conclude that @{term a} could not have defected by voting
+        @{term w}, so @{term ?thesis}:\<close>
   thus ?thesis using `s \<in> Vinv2` `quorum_for Q1 v (votes s r1)` `r1 < r2`
     by(fastforce simp add: Vinv2_def no_defection_def quorum_for_def')
 qed
@@ -306,7 +306,7 @@ lemma stable_decision:
   shows
     "decisions t p = Some v"
 proof-
-  -- {* First, we show that the both @{term s} and @{term t} respect the invariants. *}
+  \<comment> \<open>First, we show that the both @{term s} and @{term t} respect the invariants.\<close>
   have reach: "s \<in> reach v_TS" "t \<in> reach v_TS" using beh s t len
      apply(simp_all add: reach_equiv_beh_states)
      apply (metis len nth_mem) 
@@ -321,14 +321,14 @@ proof-
     hence dec_j: "decisions (tr ! (i - j)) p = Some v" 
       by simp
     thus "decisions t p = Some v" using Suc
-    -- {* As @{term "(-)"} is a total function on naturals, we perform a case distinction;
-          if @{term "i < j"}, the induction step is trivial. *}
+    \<comment> \<open>As @{term "(-)"} is a total function on naturals, we perform a case distinction;
+          if @{term "i < j"}, the induction step is trivial.\<close>
     proof(cases "i \<le> j") 
-      -- {* The non-trivial case. *}
+      \<comment> \<open>The non-trivial case.\<close>
       case False
       define t' where "t' = tr ! (i - j)"
-      -- {* Both @{term t} and @{term t'} are reachable, thus respect the invariants, and
-        they are related by the transition relation. *}
+      \<comment> \<open>Both @{term t} and @{term t'} are reachable, thus respect the invariants, and
+        they are related by the transition relation.\<close>
       hence "t' \<in> reach v_TS" "t \<in> reach v_TS" using beh len Suc
         by (metis beh_in_reach less_imp_diff_less nth_mem)+
       hence invs: "t' \<in> Vinv1" "t' \<in> Vinv3" "t \<in> Vinv2" "t \<in> Vinv3"
@@ -340,8 +340,8 @@ proof-
         by simp
       hence trans: "(t', t) \<in> trans v_TS" using beh len Suc 
         by(auto simp add: t'_def intro!: beh_consecutive_in_trans)
-      -- {* Thus @{term v} also remains locked in @{term t}, and @{term p} does not 
-        revoke, nor change its decision. *}
+      \<comment> \<open>Thus @{term v} also remains locked in @{term t}, and @{term p} does not 
+        revoke, nor change its decision.\<close>
       hence locked_v_t: "v \<in> locked t" using locked_v
         by(auto simp add: v_TS_defs v_round_def
           intro: locked_preserved[OF invs(1), THEN subsetD, OF _ _ locked_v])
@@ -371,14 +371,14 @@ lemma Voting_agreement:
     "decisions t q = Some w"
   shows "w = v"
 proof-
-  -- {* Again, we first prove that the invariants hold for @{term s}. *}
+  \<comment> \<open>Again, we first prove that the invariants hold for @{term s}.\<close>
   have reach: "s \<in> reach v_TS" using beh s t len
     apply(simp_all add: reach_equiv_beh_states)
     by (metis nth_mem)
   hence invs2: "s \<in> Vinv2" and invs3: "s \<in> Vinv3"
     by(blast dest: Vinv2_invariant[THEN subsetD] Vinv3_invariant[THEN subsetD])+
 
-  -- {* We now proceed to prove the thesis by induction. *}
+  \<comment> \<open>We now proceed to prove the thesis by induction.\<close>
   thus ?thesis using assms
   proof(induction j arbitrary: t)
     case 0
@@ -391,11 +391,11 @@ proof-
   next
     case (Suc j)
     thus ?thesis
-    -- {* Again, the totality of @{term "(-)"} makes the claim trivial if @{term "i < j"}. *}
+    \<comment> \<open>Again, the totality of @{term "(-)"} makes the claim trivial if @{term "i < j"}.\<close>
     proof(cases "i \<le> j")
       case False
-      -- {* In the non-trivial case, the proof follows from the decision stability theorem 
-        and the uniqueness of locked values. *}
+      \<comment> \<open>In the non-trivial case, the proof follows from the decision stability theorem 
+        and the uniqueness of locked values.\<close>
       have dec_t: "decisions t p = Some v" using Suc
         by(auto intro: stable_decision[OF beh len s ])
       have "t \<in> reach v_TS" using beh len Suc

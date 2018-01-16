@@ -237,7 +237,7 @@ where
   "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Val v # es,s\<rangle> [\<rightarrow>] \<langle>Val v # es',s'\<rangle>"
 
--- "Exception propagation"
+\<comment> \<open>Exception propagation\<close>
 
 | DynCastThrow: "P,E \<turnstile> \<langle>Cast C (Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 | StaticCastThrow: "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"

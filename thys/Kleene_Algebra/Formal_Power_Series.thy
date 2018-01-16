@@ -363,7 +363,7 @@ begin
   Esik and Kuich. *}
 
   declare rev_conj_cong[fundef_cong]
-    -- "required for the function package to prove termination of @{term star_fps_rep}"
+    \<comment> \<open>required for the function package to prove termination of @{term star_fps_rep}\<close>
 
   fun star_fps_rep where
     star_fps_rep_Nil: "star_fps_rep f [] = (f [])\<^sup>\<star>"
@@ -426,7 +426,7 @@ begin
     thus "h + f \<cdot> g \<le> g \<Longrightarrow> f\<^sup>\<star> \<cdot> h \<le> g"
       by (metis (no_types, lifting) distrib_left join.sup.bounded_iff less_eq_def)
     have "g \<cdot> f \<le> g \<longrightarrow> g \<cdot> f\<^sup>\<star> \<le> g"
-      -- "this property is dual to the previous one; the proof is slightly different"
+      \<comment> \<open>this property is dual to the previous one; the proof is slightly different\<close>
       proof
         assume "g \<cdot> f \<le> g"
         hence 1: "\<And>u v. g $ u \<cdot> f $ v \<le> g $ (u @ v)"

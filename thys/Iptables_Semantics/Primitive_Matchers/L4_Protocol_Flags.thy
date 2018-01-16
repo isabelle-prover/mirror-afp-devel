@@ -4,8 +4,8 @@ begin
 
 section\<open>Matching TCP Flags\<close>
   (*man iptables-extensions, [!] --tcp-flags mask comp*)
-  datatype ipt_tcp_flags = TCP_Flags "tcp_flag set" --"mask"
-                                     "tcp_flag set" --"comp"
+  datatype ipt_tcp_flags = TCP_Flags "tcp_flag set" \<comment> \<open>mask\<close>
+                                     "tcp_flag set" \<comment> \<open>comp\<close>
   
   (*--syn: Only match TCP packets with the SYN bit set and the ACK,RST and FIN bits cleared. [...] It is equivalent to --tcp-flags SYN,RST,ACK,FIN SYN.*)
   definition ipt_tcp_syn :: "ipt_tcp_flags" where

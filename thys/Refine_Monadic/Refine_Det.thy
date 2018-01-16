@@ -13,9 +13,9 @@ text {*
 (* TODO: Library/Quickcheck_Types.thy:flat_complete_lattice provides
   an isomorphic contruction. *)
 datatype 'a dres = 
-  dSUCCEEDi   -- "No result"
-| dFAILi      -- "Failure"
-| dRETURN 'a  -- "Regular result"
+  dSUCCEEDi   \<comment> \<open>No result\<close>
+| dFAILi      \<comment> \<open>Failure\<close>
+| dRETURN 'a  \<comment> \<open>Regular result\<close>
 
 instantiation dres :: (type) complete_lattice
 begin

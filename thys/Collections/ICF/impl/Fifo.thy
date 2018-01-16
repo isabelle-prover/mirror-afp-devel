@@ -49,24 +49,24 @@ text "This fifo implementation has no invariants, any pair of lists is a
 definition [simp, intro!]: "fifo_invar x = True"
 
 
-  -- "The empty fifo"
+  \<comment> \<open>The empty fifo\<close>
 definition fifo_empty :: "unit \<Rightarrow> 'a fifo" 
   where "fifo_empty == \<lambda>_::unit. ([],[])"
 
-  -- "True, iff the fifo is empty"
+  \<comment> \<open>True, iff the fifo is empty\<close>
 definition fifo_isEmpty :: "'a fifo \<Rightarrow> bool" where "fifo_isEmpty F == F=([],[])"
 
 definition fifo_size :: "'a fifo \<Rightarrow> nat" where 
   "fifo_size F \<equiv> length (fst F) + length (snd F)"
 
-  -- "Add an element to the fifo"
+  \<comment> \<open>Add an element to the fifo\<close>
 definition fifo_appendr :: "'a \<Rightarrow> 'a fifo \<Rightarrow> 'a fifo" 
   where "fifo_appendr a F == (a#fst F, snd F)"
 
 definition fifo_appendl :: "'a \<Rightarrow> 'a fifo \<Rightarrow> 'a fifo"
   where "fifo_appendl x F == case F of (e,d) \<Rightarrow> (e,x#d)"
 
--- "Get an element from the fifo"
+\<comment> \<open>Get an element from the fifo\<close>
 definition fifo_remover :: "'a fifo \<Rightarrow> ('a fifo \<times> 'a)" where 
   "fifo_remover F ==
     case fst F of

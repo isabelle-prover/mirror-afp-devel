@@ -28,8 +28,8 @@ lemma mru_vote_implies_safe:
     and is_Quorum: "Q \<in> Quorum"
   shows "safe s (v_state.next_round s) v" using mru_vote
 proof(clarsimp simp add: mru_guard_def mru_of_set_def option_Max_by_def)
-  -- {* The first case: some votes have been cast. We prove that the most recently used one is 
-    safe. *}
+  \<comment> \<open>The first case: some votes have been cast. We prove that the most recently used one is 
+    safe.\<close>
   fix r
   assume
     nempty: "vote_set (votes s) Q \<noteq> {}" 

@@ -489,12 +489,12 @@ subsubsection \<open>Computing taylor models for arbitrary univariate expression
 
 fun tmf_c :: "nat \<Rightarrow> float interval list \<Rightarrow> floatarith \<Rightarrow> nat \<Rightarrow> float interval option"
   where "tmf_c prec I f i = compute_bound_fa prec (Mult (deriv_rec f i) (Inverse (Num (fact i)))) I"
-    \<comment>\<open>The interval coefficients of the taylor polynomial,
+    \<comment> \<open>The interval coefficients of the taylor polynomial,
    i.e. the real coefficients approximated by a float interval.\<close>
 
 fun tmf_ivl_cs :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float list \<Rightarrow> floatarith \<Rightarrow> float interval list option"
   where "tmf_ivl_cs prec ord I a f = those (map (tmf_c prec a f) [0..<ord] @ [tmf_c prec I f ord])"
-    \<comment>\<open>Make a list of bounds on the n+1 coefficients, with the n+1-th coefficient bounding
+    \<comment> \<open>Make a list of bounds on the n+1 coefficients, with the n+1-th coefficient bounding
    the remainder term of the Taylor-Lagrange formula.\<close>
 
 fun tmf_polys :: "float interval list \<Rightarrow> float poly \<times> float interval poly"
@@ -512,7 +512,7 @@ fun tm_floatarith :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<
         e = round_interval prec (Ipoly (map2 (-) I a) pi) \<comment> \<open>TODO: use \<open>compute_bound_tm\<close> here?!\<close>
     in TaylorModel pf e
   ) (tmf_ivl_cs prec ord I a f)
-)" \<comment>\<open>Compute a taylor model from an arbitrary, univariate floatarith expression, if possible.
+)" \<comment> \<open>Compute a taylor model from an arbitrary, univariate floatarith expression, if possible.
    This is used to compute taylor models for elemental functions like sin, cos, exp, etc.\<close>
 
 term compute_bound_poly
@@ -786,7 +786,7 @@ subsection \<open>Operations on taylor models\<close>
 
 fun tm_norm_poly :: "taylor_model \<Rightarrow> taylor_model"
   where "tm_norm_poly (TaylorModel p e) = TaylorModel (polynate p) e"
-\<comment>\<open>Normalizes the taylor model by transforming its polynomial into horner form.\<close>
+\<comment> \<open>Normalizes the taylor model by transforming its polynomial into horner form.\<close>
 
 fun tm_lower_order tm_lower_order_of_normed :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_lower_order prec ord I a t = tm_lower_order_of_normed prec ord I a (tm_norm_poly t)"
@@ -794,7 +794,7 @@ fun tm_lower_order tm_lower_order_of_normed :: "nat \<Rightarrow> nat \<Rightarr
          let (l, r) = split_by_degree ord p
          in TaylorModel l (round_interval prec (e + compute_bound_poly prec r I a))
        )"
-\<comment>\<open>Reduces the degree of a taylor model's polynomial to n and keeps it range by increasing the error bound.\<close>
+\<comment> \<open>Reduces the degree of a taylor model's polynomial to n and keeps it range by increasing the error bound.\<close>
 
 fun tm_round_floats tm_round_floats_of_normed :: "nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_round_floats prec I a t = tm_round_floats_of_normed prec I a (tm_norm_poly t)"
@@ -802,12 +802,12 @@ fun tm_round_floats tm_round_floats_of_normed :: "nat \<Rightarrow> float interv
          let (l, r) = split_by_prec prec p
          in TaylorModel l (round_interval prec (e + compute_bound_poly prec r I a))
        )"
-\<comment>\<open>Rounding of taylor models. Rounds both the coefficients of the polynomial and the floats in the error bound.\<close>
+\<comment> \<open>Rounding of taylor models. Rounds both the coefficients of the polynomial and the floats in the error bound.\<close>
 
 fun tm_norm tm_norm' :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_norm prec ord I a t = tm_norm' prec ord I a (tm_norm_poly t)"
   | "tm_norm' prec ord I a t = tm_round_floats_of_normed prec I a (tm_lower_order_of_normed prec ord I a t)" 
-\<comment>\<open>Normalization of taylor models. Performs order lowering and rounding on tayor models,
+\<comment> \<open>Normalization of taylor models. Performs order lowering and rounding on tayor models,
    also converts the polynomial into horner form.\<close>
 
 fun tm_neg :: "taylor_model \<Rightarrow> taylor_model"
@@ -1060,7 +1060,7 @@ lemma tm_round_floats_of_normed_range:
   assumes dev: "develops_at_within e a I"
   assumes "num_params (tm_poly t) \<le> length I"
   shows "x \<in>\<^sub>i range_tm e (tm_round_floats_of_normed prec I a t)"
-    \<comment>\<open>TODO: this is a clone of @{thm tm_lower_order_of_normed_range} -> general sweeping method!\<close>
+    \<comment> \<open>TODO: this is a clone of @{thm tm_lower_order_of_normed_range} -> general sweeping method!\<close>
 proof-
   obtain p err where t_decomp: "t = TaylorModel p err"
     by (cases t) simp
@@ -1238,7 +1238,7 @@ lemma num_params_tm_mul_le:
   by (cases t1; cases t2)
      (auto simp: intro!: num_params_tm_norm' num_params_polymul[THEN order_trans])
 
-lemmas [simp del] = tm_pow.simps\<comment>\<open>TODO: make a systematic decision\<close>
+lemmas [simp del] = tm_pow.simps\<comment> \<open>TODO: make a systematic decision\<close>
 
 lemma
   shows tm_pow_range: "num_params (tm_poly t) \<le> length I \<Longrightarrow>
@@ -1552,8 +1552,8 @@ fun approx_tm :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Righ
          case (approx_tm prec ord I a l env, approx_tm prec ord I a r env)
          of (Some t1, Some t2) \<Rightarrow> Some (tm_max prec I a t1 t2)
           | _ \<Rightarrow> None)"
-  | "approx_tm prec ord I a (Powr l r) env = None" \<comment>\<open>TODO\<close>
-  | "approx_tm prec ord I a (Floor l) env = None" \<comment>\<open>TODO\<close>
+  | "approx_tm prec ord I a (Powr l r) env = None" \<comment> \<open>TODO\<close>
+  | "approx_tm prec ord I a (Floor l) env = None" \<comment> \<open>TODO\<close>
 
 lemma mid_in_real_interval: "mid i \<in>\<^sub>r i"
   using lower_le_upper[of i]
@@ -1999,7 +1999,7 @@ text \<open>TODO: compare parametrization of input vs. uncertainty for input...\
 
 definition "tm_of_ivl_par n ivl = TaylorModel (CN (C ((upper ivl + lower ivl)*Float 1 (-1))) n
   (C ((upper ivl - lower ivl)*Float 1 (-1)))) 0"
-  \<comment>\<open>track uncertainty in parameter \<open>n\<close>, which is to be interpreted over standardized domain \<open>[-1, 1]\<close>.\<close>
+  \<comment> \<open>track uncertainty in parameter \<open>n\<close>, which is to be interpreted over standardized domain \<open>[-1, 1]\<close>.\<close>
 
 value "tm_of_ivl_par 3 (Ivl (-1) 1)"
 

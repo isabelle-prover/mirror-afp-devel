@@ -18,7 +18,7 @@ text {*
   splits the list according to its annotations.
 *}
 locale al =
-  --"Annotated lists are abstracted to lists of pairs of elements and annotations."
+  \<comment> \<open>Annotated lists are abstracted to lists of pairs of elements and annotations.\<close>
   fixes \<alpha> :: "'s \<Rightarrow> ('e \<times> 'a::monoid_add) list"
   fixes invar :: "'s \<Rightarrow> bool"
   

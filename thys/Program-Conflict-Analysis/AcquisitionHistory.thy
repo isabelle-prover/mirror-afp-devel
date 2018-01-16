@@ -65,7 +65,7 @@ subsection "Ordering"
 text {* The element-wise subset-ordering on acquisition histories intuitively reflects the blocking potential: The bigger the acquisition history, the fewer acquisition histories are interleavable with it.*}
 text {* Note that the Isabelle standard library automatically lifts the subset ordering to functions, so we need no explicit definition here. *}
   
--- {* The ordering is compatible with interleavability, i.e.\ smaller acquisition histories are more likely to be interleavable. *}
+\<comment> \<open>The ordering is compatible with interleavability, i.e.\ smaller acquisition histories are more likely to be interleavable.\<close>
 lemma ah_leq_il: "\<lbrakk> h1 [*] h2; h1' \<le> h1; h2' \<le> h2 \<rbrakk> \<Longrightarrow> h1' [*] h2'"
   by (unfold ah_il_def le_fun_def [where 'b="'a set"]) blast+
 lemma ah_leq_il_left: "\<lbrakk> h1 [*] h2; h1' \<le> h1 \<rbrakk> \<Longrightarrow> h1' [*] h2" and 
@@ -78,7 +78,7 @@ primrec \<alpha>ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarr
   "\<alpha>ah [] m = {}"
 | "\<alpha>ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>ah w m)"
 
--- {* @{term \<alpha>ah} generates valid acquisition histories *}
+\<comment> \<open>@{term \<alpha>ah} generates valid acquisition histories\<close>
 lemma \<alpha>ah_ah: "\<alpha>ah w \<in> ah"
   apply (induct w)
   apply (unfold ah_def)
@@ -108,7 +108,7 @@ lemma \<alpha>ah_cons_cases[cases set, case_names hd tl]: "\<lbrakk>
 lemma mon_ah_subset: "mon_ah (\<alpha>ah w) \<subseteq> mon_pl w"
   by (induct w) (auto simp add: mon_ah_def)
 
--- {* Subwords generate smaller acquisition histories *}
+\<comment> \<open>Subwords generate smaller acquisition histories\<close>
 lemma \<alpha>ah_ileq: "w1\<preceq>w2 \<Longrightarrow> \<alpha>ah w1 \<le> \<alpha>ah w2" 
 proof (induct rule: less_eq_list_induct)
   case empty thus ?case by (unfold le_fun_def [where 'b="'a set"], simp)
@@ -142,36 +142,36 @@ qed
 text {* We can now prove the relation of monitor consistent interleavability and interleavability of the acquisition histories. *}
 lemma ah_interleavable1: 
   "w \<in> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<Longrightarrow> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
-  -- "The lemma is shown by induction on the structure of the monitor consistent interleaving operator"
+  \<comment> \<open>The lemma is shown by induction on the structure of the monitor consistent interleaving operator\<close>
 proof (induct w \<alpha> w1 w2 rule: cil_set_induct_fix\<alpha>) 
-  case empty show ?case by (simp add: ah_il_def) -- {* The base case is trivial by the definition of @{term "([*])"} *}
+  case empty show ?case by (simp add: ah_il_def) \<comment> \<open>The base case is trivial by the definition of @{term "([*])"}\<close>
 next
-  -- "Case: First step comes from the left word"
+  \<comment> \<open>Case: First step comes from the left word\<close>
   case (left e w' w1' w2) show ?case 
-  proof (rule ccontr) -- "We do a proof by contradiction"
-    -- "Assume there is a conflicting pair in the acquisition histories"
+  proof (rule ccontr) \<comment> \<open>We do a proof by contradiction\<close>
+    \<comment> \<open>Assume there is a conflicting pair in the acquisition histories\<close>
     assume "\<not> \<alpha>ah (map \<alpha> (e # w1')) [*] \<alpha>ah (map \<alpha> w2)" 
     then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>ah (map \<alpha> (e#w1')) m2" "m2 \<in> \<alpha>ah (map \<alpha> w2) m1" by (unfold ah_il_def, blast) 
-    -- "It comes either from the first step or not"
+    \<comment> \<open>It comes either from the first step or not\<close>
     from CPAIR(1) have "(m2\<in>fst (\<alpha> e) \<and> m1 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w1')) \<or> (m2\<notin>fst (\<alpha> e) \<and> m1 \<in> \<alpha>ah (map \<alpha> w1') m2)" (is "?CASE1 \<or> ?CASE2") 
       by (auto split: if_split_asm) 
     moreover {
-      -- "Case: One monitor of the conflicting pair is entered in the first step of the left path"
+      \<comment> \<open>Case: One monitor of the conflicting pair is entered in the first step of the left path\<close>
       assume ?CASE1 hence C: "m2\<in>fst (\<alpha> e)" .. 
-      -- "Because the paths are consistently interleavable, the monitors entered in the first step must not occur in the other path"
+      \<comment> \<open>Because the paths are consistently interleavable, the monitors entered in the first step must not occur in the other path\<close>
       from left(2) mon_ah_subset[of "map \<alpha> w2"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>ah (map \<alpha> w2)) = {}" by auto 
-      -- "But this is a contradiction to being a conflicting pair"
+      \<comment> \<open>But this is a contradiction to being a conflicting pair\<close>
       with C CPAIR(2) have False by (unfold mon_ah_def, blast) 
     } moreover {
-      -- "Case: The first monitor of the conflicting pair is entered after the first step of the left path"
+      \<comment> \<open>Case: The first monitor of the conflicting pair is entered after the first step of the left path\<close>
       assume ?CASE2 hence C: "m1 \<in> \<alpha>ah (map \<alpha> w1') m2" .. 
-      -- "But this is a contradiction to the induction hypothesis, that says that the acquisition histories of the tail of the left path and the 
-        right path are interleavable"
+      \<comment> \<open>But this is a contradiction to the induction hypothesis, that says that the acquisition histories of the tail of the left path and the 
+        right path are interleavable\<close>
       with left(3) CPAIR(2) have False by (unfold ah_il_def, blast) 
     } ultimately show False ..
   qed
 next
-  -- "Case: First step comes from the right word. This case is shown completely analogous"
+  \<comment> \<open>Case: First step comes from the right word. This case is shown completely analogous\<close>
   case (right e w' w2' w1) show ?case 
   proof (rule ccontr)
     assume "\<not> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> (e#w2'))" 
@@ -193,39 +193,39 @@ qed
 lemma ah_interleavable2: 
   assumes A: "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
   shows "w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<noteq> {}"
-  -- "This lemma is shown by induction on the sum of the word lengths"
+  \<comment> \<open>This lemma is shown by induction on the sum of the word lengths\<close>
 proof -
-  -- "To apply this induction in Isabelle, we have to rewrite the lemma a bit"
+  \<comment> \<open>To apply this induction in Isabelle, we have to rewrite the lemma a bit\<close>
   { fix n
     have "!!w1 w2. \<lbrakk>\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2); n=length w1 + length w2\<rbrakk> \<Longrightarrow> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<noteq> {}" 
     proof (induct n rule: nat_less_induct[case_names I])
-      -- "We first rule out the cases that one of the words is empty"
+      \<comment> \<open>We first rule out the cases that one of the words is empty\<close>
       case (I n w1 w2) show ?case proof (cases w1) 
-        -- "If the first word is empty, the lemma is trivial"
+        \<comment> \<open>If the first word is empty, the lemma is trivial\<close>
         case Nil with I.prems show ?thesis by simp 
       next
         case (Cons e1 w1') note CONS1=this show ?thesis proof (cases w2)
-          -- "If the second word is empty, the lemma is also trivial"
+          \<comment> \<open>If the second word is empty, the lemma is also trivial\<close>
           case Nil with I.prems show ?thesis by simp 
         next
-          -- "The interesting case is if both words are not empty"
+          \<comment> \<open>The interesting case is if both words are not empty\<close>
           case (Cons e2 w2') note CONS2=this 
-          -- {* In this case, we check whether the first step of one of the words can safely be executed without blocking any steps of the other word *}
+          \<comment> \<open>In this case, we check whether the first step of one of the words can safely be executed without blocking any steps of the other word\<close>
           show ?thesis proof (cases "fst (\<alpha> e1) \<inter> mon_pl (map \<alpha> w2) = {}")
-            case True -- "The first step of the first word can safely be executed"
-            -- "From the induction hypothesis, we get that there is a consistent interleaving of the rest of the first word and the second word"
+            case True \<comment> \<open>The first step of the first word can safely be executed\<close>
+            \<comment> \<open>From the induction hypothesis, we get that there is a consistent interleaving of the rest of the first word and the second word\<close>
             have "w1'\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<noteq> {}" proof -
               from I.prems(1) CONS1 ah_leq_il_left[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1') [*] \<alpha>ah (map \<alpha> w2)" by fast
               moreover from CONS1 I.prems(2) have "length w1'+length w2 < n" by simp
               ultimately show ?thesis using I.hyps by blast
             qed
-            -- "And because the first step of the first word can be safely executed, we can prepend it to that consistent interleaving"
+            \<comment> \<open>And because the first step of the first word can be safely executed, we can prepend it to that consistent interleaving\<close>
             with cil_cons1[OF _ True] CONS1 show ?thesis by blast
           next
             case False note C1=this
             show ?thesis proof (cases "fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> w1) = {}")
-              case True -- "The first step of the second word can safely be executed"
-              -- "This case is shown analogously to the latter one"
+              case True \<comment> \<open>The first step of the second word can safely be executed\<close>
+              \<comment> \<open>This case is shown analogously to the latter one\<close>
               have "w1\<otimes>\<^bsub>\<alpha>\<^esub>w2' \<noteq> {}" proof -
                 from I.prems(1) CONS2 ah_leq_il_right[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2')" by fast
                 moreover from CONS2 I.prems(2) have "length w1+length w2' < n" by simp
@@ -233,10 +233,10 @@ proof -
               qed
               with cil_cons2[OF _ True] CONS2 show ?thesis by blast
             next
-              case False note C2=this -- "Neither first step can safely be executed. This is exactly the situation from that we can extract a conflicting pair"
+              case False note C2=this \<comment> \<open>Neither first step can safely be executed. This is exactly the situation from that we can extract a conflicting pair\<close>
               from C1 C2 obtain m1 m2 where "m1\<in>fst (\<alpha> e1)" "m1\<in>mon_pl (map \<alpha> w2)" "m2\<in>fst (\<alpha> e2)" "m2\<in>mon_pl (map \<alpha> w1)" by blast
               with CONS1 CONS2 have "m2 \<in> \<alpha>ah (map \<alpha> w1) m1" "m1 \<in> \<alpha>ah (map \<alpha> w2) m2" by auto
-              -- "But by assumption, there are no conflicting pairs, thus we get a contradiction"
+              \<comment> \<open>But by assumption, there are no conflicting pairs, thus we get a contradiction\<close>
               with I.prems(1) have False by (unfold ah_il_def) blast 
               thus ?thesis ..
             qed

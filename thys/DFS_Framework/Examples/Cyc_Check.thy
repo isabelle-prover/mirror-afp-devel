@@ -76,8 +76,8 @@ begin
     apply (simp_all add: cycc_params_def)
     done
 
-  thm it_dfs_correct  -- \<open>Partial correctness\<close>
-  thm it_dfsT_correct -- \<open>Total correctness if set of reachable states is finite\<close> 
+  thm it_dfs_correct  \<comment> \<open>Partial correctness\<close>
+  thm it_dfsT_correct \<comment> \<open>Total correctness if set of reachable states is finite\<close> 
 end
 
 lemma cyccI: 
@@ -288,7 +288,7 @@ interpretation cycc_impl: simple_impl_defs G cycc_params_impl cycc_params
 
 text \<open>The above interpretation creates an iterative and a recursive implementation \<close>
 term cycc_impl.tailrec_impl term cycc_impl.rec_impl
-term cycc_impl.tailrec_implT -- \<open>Note, for total correctness we currently only support tail-recursive implementations.\<close>
+term cycc_impl.tailrec_implT \<comment> \<open>Note, for total correctness we currently only support tail-recursive implementations.\<close>
 
 text \<open>We use both to derive a tail-recursive and a recursive cyclicity checker:\<close>
 definition [DFS_code_unfold]: "cyc_checker_impl G \<equiv> do {

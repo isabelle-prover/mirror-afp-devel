@@ -1101,7 +1101,7 @@ shows "continuous_on C (\<lambda>c. f (g c) (h c))"
 using continuous_on_compose2[OF f continuous_on_Pair[OF g h]] subset
 by auto
 
-lemma continuous_on_compact_product_lemma:\<comment>\<open>TODO is this useful? it is just explicit uniform continuity!\<close>
+lemma continuous_on_compact_product_lemma:\<comment> \<open>TODO is this useful? it is just explicit uniform continuity!\<close>
   fixes A::"'a::metric_space set" and B::"'b::metric_space set"
   assumes "continuous_on (A \<times> X) (\<lambda>(a, x). f a x)"
   assumes "compact A" "compact X"
@@ -1120,7 +1120,7 @@ proof -
     by (rule exI[where x=d]) (auto intro!: d simp: dist_prod_def)
 qed
 
-lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>(has_derivative_on)\<close>?\<close>
+lemma has_derivative_in_compose2:\<comment> \<open>TODO: should there be sth like \<open>(has_derivative_on)\<close>?\<close>
   assumes "\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
   assumes "f ` s \<subseteq> t" "x \<in> s"
   assumes "(f has_derivative f') (at x within s)"
@@ -1204,8 +1204,8 @@ lemma has_vector_derivative_If:
   by (auto simp: assms)
 
 subsection \<open>Vector derivative on a set\<close>
-  \<comment>\<open>TODO: also for the other derivatives?!\<close>
-  \<comment>\<open>TODO: move to repository and rewrite assumptions of common lemmas\<close>
+  \<comment> \<open>TODO: also for the other derivatives?!\<close>
+  \<comment> \<open>TODO: move to repository and rewrite assumptions of common lemmas\<close>
 
 definition
   has_vderiv_on :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> bool"
@@ -1235,7 +1235,7 @@ lemma has_vderiv_on_open:
   shows "(f has_vderiv_on f') T \<longleftrightarrow> (\<forall>t \<in> T. (f has_vector_derivative f' t) (at t))"
   by (auto simp: has_vderiv_on_def at_within_open[OF _ \<open>open T\<close>])
 
-lemma has_vderiv_on_eq_rhs:\<comment>\<open>TODO: integrate intro \<open>derivative_eq_intros\<close>\<close>
+lemma has_vderiv_on_eq_rhs:\<comment> \<open>TODO: integrate intro \<open>derivative_eq_intros\<close>\<close>
   "(f has_vderiv_on g') T \<Longrightarrow> (\<And>x. x \<in> T \<Longrightarrow> g' x = f' x) \<Longrightarrow> (f has_vderiv_on f') T"
   by (auto simp: has_vderiv_on_def)
 
@@ -1616,7 +1616,7 @@ lemma
   subgoal using assms(2) by eventually_elim auto
   by (auto simp: assms)
 
-lemma has_derivative_partialsI:\<comment>\<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
+lemma has_derivative_partialsI:\<comment> \<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::real_normed_vector \<Rightarrow> 'c::real_normed_vector"
   assumes fx: "((\<lambda>x. f x y) has_derivative fx x y) (at x within X)"
   assumes fy: "\<And>x y. x \<in> X \<Longrightarrow> y \<in> Y \<Longrightarrow> ((\<lambda>y. f x y) has_derivative blinfun_apply (fy x y)) (at y within Y)"
@@ -2518,12 +2518,12 @@ lemma
 
 
 subsection \<open>interval integral\<close>
-  \<comment>\<open>TODO: move to repo ?!\<close>
-  \<comment>\<open>TODO: replace with Bochner Integral?!
+  \<comment> \<open>TODO: move to repo ?!\<close>
+  \<comment> \<open>TODO: replace with Bochner Integral?!
            But FTC for Bochner requires continuity and euclidean space!\<close>
 
 definition has_ivl_integral ::
-    "(real \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'b \<Rightarrow> real \<Rightarrow> real \<Rightarrow> bool"\<comment>\<open>TODO: generalize?\<close>
+    "(real \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'b \<Rightarrow> real \<Rightarrow> real \<Rightarrow> bool"\<comment> \<open>TODO: generalize?\<close>
   (infixr "has'_ivl'_integral" 46)
   where "(f has_ivl_integral y) a b \<longleftrightarrow> (if a \<le> b then (f has_integral y) {a .. b} else (f has_integral - y) {b .. a})"
 
@@ -3169,7 +3169,7 @@ lemma (in conditionally_complete_lattice) Sup_set_fold_sup:
   shows "Sup (set (x#xs)) = fold sup xs x"
   using local.Sup_fin.set_eq_fold local.cSup_eq_Sup_fin by auto
 
-lemma closure_contains_Sup:\<comment>\<open>TODO: reduce to @{thm closure_contains_Inf}, move!\<close>
+lemma closure_contains_Sup:\<comment> \<open>TODO: reduce to @{thm closure_contains_Inf}, move!\<close>
   fixes S :: "real set"
   assumes "S \<noteq> {}" "bdd_above S"
   shows "Sup S \<in> closure S"
@@ -3331,7 +3331,7 @@ lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_
 
 subsection \<open>Bounded Linear Functions\<close>
 
-lift_definition comp3::\<comment>\<open>TODO: name?\<close>
+lift_definition comp3::\<comment> \<open>TODO: name?\<close>
   "('c::real_normed_vector \<Rightarrow>\<^sub>L 'd::real_normed_vector) \<Rightarrow> ('b::real_normed_vector \<Rightarrow>\<^sub>L 'c) \<Rightarrow>\<^sub>L 'b \<Rightarrow>\<^sub>L 'd" is
   "\<lambda>(cd::('c \<Rightarrow>\<^sub>L 'd)) (bc::'b \<Rightarrow>\<^sub>L 'c). (cd o\<^sub>L bc)"
   by (rule bounded_bilinear.bounded_linear_right[OF bounded_bilinear_blinfun_compose])
@@ -3342,7 +3342,7 @@ lemma blinfun_apply_comp3[simp]: "blinfun_apply (comp3 a) b = (a o\<^sub>L b)"
 lemma bounded_linear_comp3[bounded_linear]: "bounded_linear comp3"
   by transfer (rule bounded_bilinear_blinfun_compose)
 
-lift_definition comp12::\<comment>\<open>TODO: name?\<close>
+lift_definition comp12::\<comment> \<open>TODO: name?\<close>
   "('a::real_normed_vector \<Rightarrow>\<^sub>L 'c::real_normed_vector) \<Rightarrow> ('b::real_normed_vector \<Rightarrow>\<^sub>L 'c) \<Rightarrow> ('a \<times> 'b) \<Rightarrow>\<^sub>L 'c"
   is "\<lambda>f g (a, b). f a + g b"
   by (auto intro!: bounded_linear_intros

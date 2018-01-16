@@ -122,7 +122,7 @@ proof -
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
         ultimately have "\<not> x+y > 0" by (auto simp add: zdvd_not_zless)
-        with x0 y0 have "x = y" by auto } -- "both are zero"
+        with x0 y0 have "x = y" by auto } \<comment> \<open>both are zero\<close>
       moreover
       { assume ass: "p dvd x-y"
         have "x = y"
@@ -159,7 +159,7 @@ proof -
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
         ultimately have "\<not> x+y > 0" by (auto simp add: zdvd_not_zless)
-        with x0 y0 have "x = y" by auto } -- "both are zero"
+        with x0 y0 have "x = y" by auto } \<comment> \<open>both are zero\<close>
       moreover
       { assume ass: "p dvd x-y"
         have "x = y"

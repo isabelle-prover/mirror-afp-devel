@@ -126,14 +126,14 @@ text {* In the following, we set up the algorithms for LTL to GBA conversion. *}
 
 definition is_ltl_to_gba_algo 
   :: "('a ltlc \<Rightarrow> (nat, 'a \<Rightarrow> bool, unit) igbav_impl_scheme) \<Rightarrow> bool"
-  -- "Predicate that must be satisfied by an LTL to GBA conversion"
+  \<comment> \<open>Predicate that must be satisfied by an LTL to GBA conversion\<close>
   where 
   "is_ltl_to_gba_algo algo \<equiv> (algo, ltl_to_gba_spec) 
     \<in> ltl_rel 
     \<rightarrow> \<langle>igbav_impl_rel_ext unit_rel nat_rel (\<langle>Id\<rangle>fun_set_rel)\<rangle>plain_nres_rel"
 
 definition gerth_ltl_to_gba 
-  -- "Conversion based on Gerth's Algorithm"
+  \<comment> \<open>Conversion based on Gerth's Algorithm\<close>
   where "gerth_ltl_to_gba \<phi> 
   \<equiv> create_name_igba (rewrite_iter_fast (ltlc_to_ltln \<phi>))"
 
@@ -197,14 +197,14 @@ lemma ltl_to_gba_code_refine:
 subsubsection {* Counterexample Search *}
 definition is_find_ce_algo 
   :: "(('a, unit)igbg_impl_scheme \<Rightarrow> 'a lasso option option) \<Rightarrow> bool" 
-  -- "Predicate that must be satisfied by counterexample search algorithm"
+  \<comment> \<open>Predicate that must be satisfied by counterexample search algorithm\<close>
   where
   "is_find_ce_algo algo \<equiv> (algo, find_ce_spec) 
     \<in> igbg_impl_rel_ext unit_rel Id 
   \<rightarrow> \<langle>\<langle>\<langle>\<langle>Id\<rangle>lasso_run_rel\<rangle>Relators.option_rel\<rangle>Relators.option_rel\<rangle>plain_nres_rel"
 
 definition gabow_find_ce_code 
-  -- "Emptiness check based on Gabow's SCC Algorithm"
+  \<comment> \<open>Emptiness check based on Gabow's SCC Algorithm\<close>
   where "gabow_find_ce_code
   \<equiv> map_option (Some o lasso_of_prpl) o Gabow_GBG_Code.find_lasso_tr"
 
@@ -242,7 +242,7 @@ qed
 
 definition ndfs_find_ce 
   :: "('q::hashable,_) igb_graph_rec_scheme \<Rightarrow> 'q lasso option option nres" 
-  -- "Emptiness check based on nested DFS"
+  \<comment> \<open>Emptiness check based on nested DFS\<close>
   where 
   "ndfs_find_ce G \<equiv> do {
     ASSERT (igb_graph G);
@@ -401,7 +401,7 @@ begin
     "map f (concat (map (\<lambda>xa. map (f' xa) (l1 xa)) l2)) 
       = List.maps (\<lambda>xa. map (f o f' xa) (l1 xa)) l2"
     "((\<lambda>(xd, xe). (xe, xd)) \<circ> Pair xa) = (\<lambda>x. (x,xa))"
-    -- "Very specific optimization used in the next refinement"
+    \<comment> \<open>Very specific optimization used in the next refinement\<close>
     apply -
     apply (induction l2) 
     apply (auto simp: List.maps_def) [2]
@@ -597,7 +597,7 @@ subsection {* Model Checker for Boolean Programs *}
 
 definition bpc_to_sa 
   :: "bprog \<times> BoolProgs.config \<Rightarrow> (BoolProgs.config,nat set) sa_rec" 
-  -- "Conversion of a Boolean program to a system automata."
+  \<comment> \<open>Conversion of a Boolean program to a system automata.\<close>
   where 
   "bpc_to_sa bpc \<equiv> let (bp,c0)=bpc in
   \<lparr>
@@ -703,7 +703,7 @@ subsection {* Model Checker for Promela Programs *}
 
 definition promela_to_sa 
   :: "PromelaDatastructures.program \<times> APs \<times> gState \<Rightarrow> (gState, nat set) sa_rec" 
-  -- "Conversion of a Promela model to a system automata."
+  \<comment> \<open>Conversion of a Promela model to a system automata.\<close>
   where "promela_to_sa promg \<equiv> let (prog,APs,g\<^sub>0)=promg in
   \<lparr>
     g_V = UNIV,

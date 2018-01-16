@@ -11,7 +11,7 @@ begin
 
 abbreviation SdlHPPB where "SdlHPPB \<equiv> Strong_dlHPP_Bisimulation"
 
---"define the 'reflexive part' of a relation (sets of elements which are related with themselves by the given relation)"
+\<comment> \<open>define the 'reflexive part' of a relation (sets of elements which are related with themselves by the given relation)\<close>
 definition Arefl :: "('a \<times> 'a) set \<Rightarrow> 'a set"
 where
 "Arefl R = {e. (e,e) \<in> R}"
@@ -20,7 +20,7 @@ lemma commonArefl_subset_commonDomain:
 "(Arefl R1 \<inter> Arefl R2) \<subseteq> (Domain R1 \<inter> Domain R2)"
   by (simp add: Arefl_def, auto)
 
---"define disjoint strong (d,lH,PP)-bisimulation up-to-R' for a relation R"
+\<comment> \<open>define disjoint strong (d,lH,PP)-bisimulation up-to-R' for a relation R\<close>
 definition disj_dlHPP_Bisimulation_Up_To_R' :: 
   "'d \<Rightarrow> nat set \<Rightarrow> 'com Bisimulation_type 
   \<Rightarrow> 'com Bisimulation_type \<Rightarrow> bool"
@@ -37,7 +37,7 @@ where
         (stepResultsinR p p' (R \<union> R')) \<and> (\<alpha>,\<alpha>') \<in> (R \<union> R') \<and> 
         (dhequality_alternative d PP (pp (V!i)) m2 m2')))"
 
---"lemma about the transitivity of the union of symmetric and transitive relations under certain circumstances"
+\<comment> \<open>lemma about the transitivity of the union of symmetric and transitive relations under certain circumstances\<close>
 lemma trans_RuR': 
   assumes transR: "trans R"
   assumes symR: "sym R"
@@ -129,7 +129,7 @@ next
   from symR' symR transR' transR eqlenR' eqlenR areflassump trans_RuR'
   show "trans (R \<union> R')" 
     by blast
-  --"condition about IDC and NDC and equal length already proven above by auto tactic!"
+  \<comment> \<open>condition about IDC and NDC and equal length already proven above by auto tactic!\<close>
 next
   fix V V' i m1 m1' m2 \<alpha> p
   assume inR': "(V,V') \<in> R'"

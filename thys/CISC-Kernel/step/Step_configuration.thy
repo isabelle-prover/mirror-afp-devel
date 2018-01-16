@@ -61,17 +61,17 @@ text {* The separation kernel partitions are considered to be the ``subjects" of
 typedecl partition_id_t
 typedecl thread_id_t
 
-typedecl page_t -- {* physical address of a memory page *}
-typedecl filep_t -- {* name of file provider *}
+typedecl page_t \<comment> \<open>physical address of a memory page\<close>
+typedecl filep_t \<comment> \<open>name of file provider\<close>
 
 datatype obj_id_t =
    PAGE page_t
  | FILEP filep_t 
 
 datatype mode_t =
-   READ -- {* The subject has right to read from the memory page, from the files served by a file provider. *}
- | WRITE -- {* The subject has right to write to the memory page, from the files served by a file provider. *}
- | PROVIDE -- {* The subject has right serve as the file provider. This mode is not used for memory pages or ports. *}
+   READ \<comment> \<open>The subject has right to read from the memory page, from the files served by a file provider.\<close>
+ | WRITE \<comment> \<open>The subject has right to write to the memory page, from the files served by a file provider.\<close>
+ | PROVIDE \<comment> \<open>The subject has right serve as the file provider. This mode is not used for memory pages or ports.\<close>
 
 subsubsection {* Configuration *}
 

@@ -22,10 +22,9 @@ lemma cls_catt [simp]:
   apply (case_tac c)
   apply (case_tac [!] f)
   apply simp_all
-   --{* solves all goals where @{text "CClassT c \<le> dtype f"} *}
+   \<comment> \<open>solves all goals where @{text "CClassT c \<le> dtype f"}\<close>
   apply (fastforce elim: subtype_wrong_elims simp add: subtype_defs)+
-   --{* solves all the rest where @{text "\<not> CClassT c \<le> dtype f"} can be derived
-     *}
+   \<comment> \<open>solves all the rest where @{text "\<not> CClassT c \<le> dtype f"} can be derived\<close>
   done
 
 lemma att_catt [simp]: 
@@ -33,10 +32,10 @@ lemma att_catt [simp]:
   apply (case_tac c)
   apply (case_tac [!] f)
   apply simp_all
-   --{* solves all goals where @{text "CClassT c \<le> dtype f"} *}
+   \<comment> \<open>solves all goals where @{text "CClassT c \<le> dtype f"}\<close>
   apply (fastforce elim: subtype_wrong_elims simp add: subtype_defs)+
-   --{* solves all the rest where @{text "\<not> CClassT c \<le> dtype f"} can be 
-        derived *}
+   \<comment> \<open>solves all the rest where @{text "\<not> CClassT c \<le> dtype f"} can be 
+        derived\<close>
   done
 
 text {* The following lemmas are just a demonstration of simplification. *}

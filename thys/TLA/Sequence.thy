@@ -750,7 +750,7 @@ qed
 lemma nextnat_le_seqsim: 
   assumes n: "n < nextnat s" shows "s \<approx> (s |\<^sub>s n)"
 proof (cases "emptyseq s")
-  case True   -- {* case impossible *}
+  case True   \<comment> \<open>case impossible\<close>
   with n show ?thesis by (simp add: nextnat_def)
 next
   case False

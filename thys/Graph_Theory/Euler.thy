@@ -496,7 +496,7 @@ proof -
     using `l \<notin> _` by (auto simp: image_def)
 
   let ?H = "add_arc ?e"
-    -- "We define a graph which has an closed euler trail"
+    \<comment> \<open>We define a graph which has an closed euler trail\<close>
 
   have [simp]: "verts ?H = verts G" using uv by simp
   have [intro]: "\<And>a. compatible (add_arc a) G" by (simp add: compatible_def)
@@ -533,8 +533,8 @@ proof -
   then have "?e \<in> set p" by (auto simp: pre_digraph.euler_trail_def)
   then obtain q r where p_decomp: "p = q @ [?e] @ r"
     by (auto simp: in_set_conv_decomp)
-    -- "We show now that removing the additional arc of @{term ?H}
-      from p yields an euler trail in G "
+    \<comment> \<open>We show now that removing the additional arc of @{term ?H}
+      from p yields an euler trail in G\<close>
 
   have "euler_trail u (r @ q) v"
   proof (unfold euler_trail_conv_connected[OF con], intro conjI)

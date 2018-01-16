@@ -123,7 +123,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: NumberWang_IPv4.div65536[simplified])
       (*The [simplified] is needed because Word_Lib adds some additional simp rules*)
       done
-      --\<open>When @{file "../Word_Lib/Word_Lemmas.thy"} is imported,
+      \<comment> \<open>When @{file "../Word_Lib/Word_Lemmas.thy"} is imported,
          some @{file "Word_More.thy"} and @{file "NumberWang_IPv4.thy"} lemmas need the
          [simplified] attribute because @{text Word_Lib} adds some simp rules.
          This theory should also work without @{file "../Word_Lib/Word_Lemmas.thy"}\<close>

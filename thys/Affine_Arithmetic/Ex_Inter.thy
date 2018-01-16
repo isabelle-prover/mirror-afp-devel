@@ -259,8 +259,8 @@ ML \<open>
 fun iter f 0 = f ()
 | iter f i = let val _ = f () in iter f (i - 1) end
 \<close>
-ML \<open>iter ri1 100\<close> \<comment>"0.7 s"
-ML \<open>iter ri2 100\<close> \<comment>"1.3 s"
-ML \<open>iter ri3 100\<close> \<comment>"1.3 s"
+ML \<open>iter ri1 100\<close> \<comment> \<open>0.7 s\<close>
+ML \<open>iter ri2 100\<close> \<comment> \<open>1.3 s\<close>
+ML \<open>iter ri3 100\<close> \<comment> \<open>1.3 s\<close>
 
 end

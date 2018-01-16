@@ -28,7 +28,7 @@ lemma tree0Eq: "(0,y) : tree subs gamma = (y = gamma)"
 lemma tree1Eq [rule_format]:
     "\<forall>Y. (Suc n,Y) \<in> tree subs gamma = (\<exists>sigma \<in> subs gamma . (n,Y) \<in> tree subs sigma)"
   by (induct n) (blast, force)
-    --"moving down a tree"
+    \<comment> \<open>moving down a tree\<close>
 
 definition
   incLevel :: "nat * 'a => nat * 'a" where
@@ -67,11 +67,11 @@ definition
 
 lemma terminalD: "terminal subs Gamma ==> x ~: subs Gamma"
   by(simp add: terminal_def)
-  -- "not a good dest rule"
+  \<comment> \<open>not a good dest rule\<close>
 
 lemma terminalI: "x \<in> subs Gamma ==> ~ terminal subs Gamma"
   by(auto simp add: terminal_def)
-  -- "not a good intro rule"
+  \<comment> \<open>not a good intro rule\<close>
 
 
 subsection "Inherited"
@@ -91,7 +91,7 @@ definition
         - hold on empty node set
      ******)
 
-  -- "FIXME tjr why does it have to be invariant under inserting nonterminal nodes?"
+  \<comment> \<open>FIXME tjr why does it have to be invariant under inserting nonterminal nodes?\<close>
 
 lemma inheritedUn[rule_format]:"inherited subs P --> P A --> P B --> P (A Un B)"
   by (auto simp add: inherited_def)
@@ -320,7 +320,7 @@ lemma finiteIncLevel: "finite (incLevel ` A) = finite A"
     apply (blast intro: subset_inj_on, assumption)
   apply(rule finite_imageI)
   by assumption
-  -- "FIXME often have injOn f A, finite f ` A, to show A finite"
+  \<comment> \<open>FIXME often have injOn f A, finite f ` A, to show A finite\<close>
 
 lemma finiteEmpty: "finite {}" by auto
 
@@ -449,7 +449,7 @@ lemma infBranchI: "[| (f 0 = Gamma); !n . f (Suc n) \<in> subs (f n) |] ==> infB
 
 subsection "Tree induction principles"
 
-  -- "we work hard to use nothing fancier that induction over naturals"
+  \<comment> \<open>we work hard to use nothing fancier that induction over naturals\<close>
 
 lemma boundedTreeInduction':
  "\<lbrakk> fans subs;
@@ -473,7 +473,7 @@ lemma boundedTreeInduction':
    apply assumption
   apply assumption
   done
-  -- "tjr tidied and introduced new lemmas"
+  \<comment> \<open>tjr tidied and introduced new lemmas\<close>
 
 lemma boundedTreeInduction:
    "\<lbrakk>fans subs;

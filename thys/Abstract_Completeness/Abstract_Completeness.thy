@@ -320,7 +320,7 @@ using e proof coinduct
   ultimately show ?case by (auto intro: eff_S elim: epath.cases)
 qed
 
-end -- {* context RuleSystem *}
+end \<comment> \<open>context RuleSystem\<close>
 
 
 (*<*) (* Rule-persistent rule system *) (*>*)
@@ -372,7 +372,7 @@ proof -
 qed
 
 
-end -- {* context PersistentRuleSystem *}
+end \<comment> \<open>context PersistentRuleSystem\<close>
 
 
 
@@ -382,7 +382,7 @@ section{* Code generation *}
 
 locale RuleSystem_Code =
 fixes eff' :: "'rule \<Rightarrow> 'state \<Rightarrow> 'state fset option"
-and rules :: "'rule stream" -- {* countably many rules *}
+and rules :: "'rule stream" \<comment> \<open>countably many rules\<close>
 begin
 
 definition "eff r s sl \<equiv> eff' r s = Some sl"

@@ -53,7 +53,7 @@ definition BIT_init :: "('a state,bool list * 'a list)alg_on_init" where
 lemma "~ deterministic_init BIT_init"
 unfolding deterministic_init_def BIT_init_def apply(auto)
 apply(intro exI[where x="[a]"]) 
-  -- "comment in a proof"
+  \<comment> \<open>comment in a proof\<close>
 by(auto simp: UNIV_bool set_pmf_bernoulli)
  
 definition BIT_step :: "('a state, bool list * 'a list, 'a, answer)alg_on_step" where

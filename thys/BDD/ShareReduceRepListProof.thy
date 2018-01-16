@@ -333,9 +333,9 @@ next
                          (repa(node := repa (high node))) no1))))"
     (is "?NodesUnmodif \<and> ?NodesModif")
   proof -
-    -- {* This proof was originally conducted without the
+    \<comment> \<open>This proof was originally conducted without the
           substitution @{term "repa (low node) = repa (high node)"} preformed.
-          So don't be confused if we show everythin for @{text "repa (low node)"}. *}
+          So don't be confused if we show everythin for @{text "repa (low node)"}.\<close>
     from rep_repa_nc
     have nodes_unmodif: ?NodesUnmodif
       by auto

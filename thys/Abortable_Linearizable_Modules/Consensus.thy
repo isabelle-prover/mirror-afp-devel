@@ -11,7 +11,7 @@ typedecl proc
 typedecl val
 
 locale Consensus
--- {* To avoid name clashes *}
+\<comment> \<open>To avoid name clashes\<close>
 begin
 
 fun \<delta>::"val option \<Rightarrow> (proc \<times> val) \<Rightarrow> val option" (infix "\<bullet>" 65) where

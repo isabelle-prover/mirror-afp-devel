@@ -23,10 +23,9 @@ notepad begin
     apply auto
     done
 
-  -- \<open>While the first goal could also have been solved with 
+  \<comment> \<open>While the first goal could also have been solved with 
     \<open>rule arg_cong[where f=card]\<close>, things would be much more 
-    verbose for the following goal. (Such goals actually occur in practice!)
-    \<close>  
+    verbose for the following goal. (Such goals actually occur in practice!)\<close>  
 
   fix f :: "nat set \<Rightarrow> nat set \<Rightarrow> bool"  
   have "\<And>a. f {x. x*2 + a + 3 < 10} {x. 3<x \<and> x<(7::nat)} = f {x. x*2 + a \<le>6} {x. 4\<le>x \<and> x\<le>(6::nat)}"

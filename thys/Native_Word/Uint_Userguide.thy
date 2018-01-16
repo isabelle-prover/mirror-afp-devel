@@ -165,7 +165,7 @@ datatype expr = Lit val | LT expr expr | IF expr expr expr
 abbreviation (input) word :: "32 word \<Rightarrow> expr" where "word i \<equiv> Lit (Word i)"
 abbreviation (input) bool :: "bool \<Rightarrow> expr" where "bool i \<equiv> Lit (Bool i)"
 
--- {* Denotational semantics of expressions, @{term None} denotes a type error *}
+\<comment> \<open>Denotational semantics of expressions, @{term None} denotes a type error\<close>
 fun eval :: "expr \<Rightarrow> val option" where
   "eval (Lit v) = Some v"
 | "eval (LT e\<^sub>1 e\<^sub>2) = 
@@ -176,7 +176,7 @@ fun eval :: "expr \<Rightarrow> val option" where
   (case eval e\<^sub>1 of Some (Bool b) \<Rightarrow> if b then eval e\<^sub>2 else eval e\<^sub>3
    | _ \<Rightarrow> None)"
 
--- {* Small-step semantics of expressions, it gets stuck upon type errors. *}
+\<comment> \<open>Small-step semantics of expressions, it gets stuck upon type errors.\<close>
 inductive step :: "expr \<Rightarrow> expr \<Rightarrow> bool" ("_ \<rightarrow> _" [50, 50] 60) where
   "e \<rightarrow> e' \<Longrightarrow> LT e e\<^sub>2 \<rightarrow> LT e' e\<^sub>2"
 | "e \<rightarrow> e' \<Longrightarrow> LT (word i) e \<rightarrow> LT (word i) e'"
@@ -185,7 +185,7 @@ inductive step :: "expr \<Rightarrow> expr \<Rightarrow> bool" ("_ \<rightarrow>
 | "IF (bool True) e\<^sub>1 e\<^sub>2 \<rightarrow> e\<^sub>1"
 | "IF (bool False) e\<^sub>1 e\<^sub>2 \<rightarrow> e\<^sub>2"
 
--- {* Compile the inductive definition with the predicate compiler *}
+\<comment> \<open>Compile the inductive definition with the predicate compiler\<close>
 code_pred (modes: i \<Rightarrow> o \<Rightarrow> bool as reduce, i \<Rightarrow> i \<Rightarrow> bool as step') step .
 
 subsection {* Change the datatype to use machine words *}

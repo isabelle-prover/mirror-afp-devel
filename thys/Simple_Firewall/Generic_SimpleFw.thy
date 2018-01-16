@@ -255,7 +255,7 @@ subsection\<open>Joining two firewalls, i.e. a packet is send through both seque
   
   
   theorem simple_fw_join2:
-    --\<open>translates a @{text "(match, action1, action2)"} tuple of the joined generalized
+    \<comment> \<open>translates a @{text "(match, action1, action2)"} tuple of the joined generalized
        firewall to a @{typ "'i::len simple_rule list"}. The two actions are translated such
        that you only get @{const Accept} if both actions are @{const Accept}\<close>
     defines "to_simple_rule_list \<equiv> map (apsnd (\<lambda>(a,b) \<Rightarrow> (case a of Accept \<Rightarrow> b

@@ -751,7 +751,7 @@ notation blinfun_apply (infixl "$" 999)
 end
 
 lemma bounded_linear_via_derivative:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector" \<comment>\<open>TODO: generalize?\<close>
+  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector" \<comment> \<open>TODO: generalize?\<close>
   assumes "\<And>i. ((\<lambda>x. blinfun_apply (f x) i) has_derivative (\<lambda>x. f' y x i)) (at y)"
   shows "bounded_linear (f' y x)"
 proof -

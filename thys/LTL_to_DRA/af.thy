@@ -400,7 +400,7 @@ lemma af\<^sub>G_implies_af_eval\<^sub>G:
 
 subsection \<open>Continuation\<close>
 
--- \<open>af fulfills the infinite continuation w' of a word after skipping some finite prefix w.
+\<comment> \<open>af fulfills the infinite continuation w' of a word after skipping some finite prefix w.
     Corresponds to Lemma 7 in arXiv: 1402.3388v2\<close>
 
 lemma af_ltl_continuation:

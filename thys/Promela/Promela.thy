@@ -797,7 +797,7 @@ where
                                             name (\<lambda>_. (name, Var VTChan 0)))"
 
 definition emptyProc :: "pState"
-  -- "The empty process."
+  \<comment> \<open>The empty process.\<close>
 where
   "emptyProc = \<lparr>pid = 0, vars = lm.empty (), pc = 0, channels = [], idx = 0 \<rparr>"
 
@@ -1152,7 +1152,7 @@ definition atomize :: "nat \<Rightarrow> nat \<Rightarrow> edge list \<Rightarro
                     else e\<lparr> atomic := InAtomic \<rparr>
       in e'#es) es []"
 
-fun skip -- "No-(edge)"
+fun skip \<comment> \<open>No-(edge)\<close>
 where 
   "skip (lbls, pri, pos, nxt, _) = 
   ([[\<lparr>cond = ECExpr (ExprConst 1), 
@@ -1297,7 +1297,7 @@ where
 
 subsubsection {* Setup *}
 definition endState :: "edge list" where
-  -- "An extra state added to each process marking its end."
+  \<comment> \<open>An extra state added to each process marking its end.\<close>
   "endState = [\<lparr> cond = ECFalse, effect = EEEnd, target = Index 0, prio = 0, 
                   atomic = NonAtomic\<rparr>]"
 
@@ -1902,7 +1902,7 @@ text {*
   (\ie the condition evaluates to true).
 *}
 type_synonym choices = "(edge * pState) list"
-  -- "A choice is an executable edge and the process it belongs to."
+  \<comment> \<open>A choice is an executable edge and the process it belongs to.\<close>
 
 definition getChoices :: "gState\<^sub>I \<Rightarrow> pState \<Rightarrow> edge list \<Rightarrow> choices" where
   "getChoices g p = foldl (\<lambda>E e. 
@@ -1965,7 +1965,7 @@ by (rule foldl_rule_aux_P [where I="\<lambda>\<sigma> _. length \<sigma> = min_p
 
 definition executable 
   :: "states iarray \<Rightarrow> gState\<^sub>I \<Rightarrow> choices nres"
-  -- "Find all executable edges"
+  \<comment> \<open>Find all executable edges\<close>
  where
   "executable ss g = (
       let procs = procs g in
@@ -2144,7 +2144,7 @@ lemmas gState_inv_I_simps =
   gState_inv_to\<^sub>I gState_inv_from\<^sub>I gState_inv_reset\<^sub>I
 
 definition removeProcs 
-  -- "Remove ended processes, if there is no running one with a higher pid."
+  \<comment> \<open>Remove ended processes, if there is no running one with a higher pid.\<close>
 where
   "removeProcs ps = foldr (\<lambda>p (dead,sd,ps,dcs). 
            if dead \<and> pc p = 0 then (True, True, ps, pState.channels p @ dcs)
@@ -2187,7 +2187,7 @@ using removeProcs_length'
 by (metis fst_conv snd_conv)
 
 definition cleanChans :: "integer list \<Rightarrow> channels \<Rightarrow> channels" 
-  -- "Mark channels of closed processes as invalid."
+  \<comment> \<open>Mark channels of closed processes as invalid.\<close>
 where
   "cleanChans dchans cs = snd (foldl (\<lambda>(i,cs) c. 
        if List.member dchans i then (i + 1, cs@[InvChannel])
@@ -2326,7 +2326,7 @@ concrete_definition applyEdge_impl for e p g uses applyEdge_refine
 
 definition nexts 
   :: "program \<Rightarrow> gState \<Rightarrow> gState ls nres"
-  -- "The successor function"
+  \<comment> \<open>The successor function\<close>
 where
   "nexts prog g = (
      let 
@@ -2502,7 +2502,7 @@ subsection {* Finiteness of the state space *}
 
 inductive_set reachable_states
   for P :: program
-  and g\<^sub>s :: gState -- "start state"
+  and g\<^sub>s :: gState \<comment> \<open>start state\<close>
 where
 "g\<^sub>s \<in> reachable_states P g\<^sub>s" |
 "g \<in> reachable_states P g\<^sub>s \<Longrightarrow> x \<in> ls.\<alpha> (nexts_code P g) 

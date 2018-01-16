@@ -257,7 +257,7 @@ lemma addr_loc_type_hext_mono:
   "\<lbrakk> P,h \<turnstile> a@al : T; h \<unlhd> h' \<rbrakk> \<Longrightarrow> P,h' \<turnstile> a@al : T"
 by(force elim!: addr_loc_type.cases intro: addr_loc_type.intros elim: typeof_addr_hext_mono dest: hext_arrD)
 
-lemma type_of_hext_type_of: -- "FIXME: What's this rule good for?"
+lemma type_of_hext_type_of: \<comment> \<open>FIXME: What's this rule good for?\<close>
   "\<lbrakk> typeof\<^bsub>h\<^esub> w = \<lfloor>T\<rfloor>; hext h h' \<rbrakk> \<Longrightarrow> typeof\<^bsub>h'\<^esub> w = \<lfloor>T\<rfloor>"
 by(rule hext_typeof_mono)
 

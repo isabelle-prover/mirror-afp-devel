@@ -3,7 +3,7 @@ theory Refine_Util
 imports Refine_Util_Bootstrap1 Mpat_Antiquot Mk_Term_Antiquot
 begin
 definition conv_tag where "conv_tag n x == x" 
-  -- {* Used internally for @{text "pat_conv"}-conversion *}
+  \<comment> \<open>Used internally for @{text "pat_conv"}-conversion\<close>
 
 lemma shift_lambda_left: "(f \<equiv> \<lambda>x. g x) \<Longrightarrow> (\<And>x. f x \<equiv> g x)" by simp
   

@@ -20,17 +20,17 @@ text {*
 locale WellOrderedStrategies = ParityGame +
   fixes S :: "'a set"
     and p :: Player
-    -- "The set of good strategies on a node @{term v}"
+    \<comment> \<open>The set of good strategies on a node @{term v}\<close>
     and good :: "'a \<Rightarrow> 'a Strategy set"
     and r :: "('a Strategy \<times> 'a Strategy) set"
   assumes S_V: "S \<subseteq> V"
-    -- "@{term r} is a wellorder on the set of all strategies which are good somewhere."
+    \<comment> \<open>@{term r} is a wellorder on the set of all strategies which are good somewhere.\<close>
     and r_wo: "well_order_on {\<sigma>. \<exists>v \<in> S. \<sigma> \<in> good v} r"
-    -- "Every node has a good strategy."
+    \<comment> \<open>Every node has a good strategy.\<close>
     and good_ex: "\<And>v. v \<in> S \<Longrightarrow> \<exists>\<sigma>. \<sigma> \<in> good v"
-    -- "good strategies are well-formed strategies."
+    \<comment> \<open>good strategies are well-formed strategies.\<close>
     and good_strategies: "\<And>v \<sigma>. \<sigma> \<in> good v \<Longrightarrow> strategy p \<sigma>"
-    -- "A good strategy on @{term v} is also good on possible successors of @{term v}."
+    \<comment> \<open>A good strategy on @{term v} is also good on possible successors of @{term v}.\<close>
     and strategies_continue: "\<And>v w \<sigma>. \<lbrakk> v \<in> S; v\<rightarrow>w; v \<in> VV p \<Longrightarrow> \<sigma> v = w; \<sigma> \<in> good v \<rbrakk> \<Longrightarrow> \<sigma> \<in> good w"
 begin
 
@@ -257,6 +257,6 @@ next
     using path_conforms_with_strategy_irrelevant_updates P'_def by blast
 qed
 
-end -- "WellOrderedStrategies"
+end \<comment> \<open>WellOrderedStrategies\<close>
 
 end

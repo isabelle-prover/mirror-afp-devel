@@ -110,7 +110,7 @@ text {* The precondition for the generic model. Note that @{term atomic_step_inv
 definition rprecondition :: "rstate_t \<Rightarrow> rdom_t \<Rightarrow> raction_t \<Rightarrow> bool" where
   "rprecondition s d a \<equiv> atomic_step_precondition (\<down>s) d a"
 abbreviation rinvariant
-where "rinvariant s \<equiv> True" --"The invariant is already in the state type."
+where "rinvariant s \<equiv> True" \<comment> \<open>The invariant is already in the state type.\<close>
 
 text {* Translate view-partitioning and interaction-allowed relations. *}
 

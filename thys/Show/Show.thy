@@ -22,7 +22,7 @@ begin
 type_synonym
   "shows" = "string \<Rightarrow> string"
 
--- \<open>show-functions with precedence\<close>
+\<comment> \<open>show-functions with precedence\<close>
 type_synonym
   'a showsp = "nat \<Rightarrow> 'a \<Rightarrow> shows"
 
@@ -147,7 +147,7 @@ definition "shows_nl = shows (CHR ''\<newline>'')"
 definition "shows_space = shows (CHR '' '')"
 definition "shows_paren s = shows (CHR ''('') o s o shows (CHR '')'')"
 definition "shows_quote s = shows (CHR 0x27) o s o shows (CHR 0x27)"
-abbreviation "apply_if b s \<equiv> (if b then s else id)" -- \<open>conditional function application\<close>
+abbreviation "apply_if b s \<equiv> (if b then s else id)" \<comment> \<open>conditional function application\<close>
 text \<open>Parenthesize only if precedence is greater than @{term "0::nat"}.\<close>
 definition "shows_pl (p::nat) = apply_if (p > 0) (shows (CHR ''(''))"
 definition "shows_pr (p::nat) = apply_if (p > 0) (shows (CHR '')''))"

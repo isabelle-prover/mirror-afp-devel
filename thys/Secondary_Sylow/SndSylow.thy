@@ -282,14 +282,14 @@ proof -
       assume Qfixed:"Q \<in> conjP.fixed_points"
       hence Qsize:"Q \<in> subgroups_of_size (p ^ a)" unfolding conjP.fixed_points_def by simp
       hence cardQ:"card Q = p ^ a" unfolding subgroups_of_size_def by simp
-      -- "The normalizer of @{term Q} in @{term G}"
-      -- "Let's first show some basic propertiers of @{text N}"
+      \<comment> \<open>The normalizer of @{term Q} in @{term G}\<close>
+      \<comment> \<open>Let's first show some basic propertiers of @{text N}\<close>
       define N where "N = conjG.stabilizer Q"
       define k where "k = (card N) div (p ^ a)"
       from N_def Qsize have NG:"subgroup N G" by (metis conjG.stabilizer_is_subgroup)
       then interpret groupN: group "G\<lparr>carrier := N\<rparr>" by (metis subgroup_imp_group)
       from Qsize N_def have QN:"subgroup Q (G\<lparr>carrier := N\<rparr>)" using stabilizer_supergrp_P by auto
-      -- "The following proposition is used to show that $P = Q$ later"
+      \<comment> \<open>The following proposition is used to show that $P = Q$ later\<close>
       from Qsize have NfixesQ:"\<forall>g\<in>N. conjugation_action (p ^ a) g Q = Q" unfolding N_def conjG.stabilizer_def by auto
       from Qfixed have PfixesQ:"\<forall>g\<in>P. conjugation_action (p ^ a) g Q = Q" unfolding conjP.fixed_points_def conjP.stabilizer_def by auto
       with PsubG have  "P \<subseteq> N" unfolding N_def conjG.stabilizer_def by auto
@@ -297,12 +297,12 @@ proof -
       with cardP have "p ^ a dvd order (G\<lparr>carrier := N\<rparr>)" using groupN.card_subgrp_dvd by force
       hence "p ^ a dvd card N" unfolding order_def by simp
       with NG have smaller_sylow:"snd_sylow (G\<lparr>carrier := N\<rparr>) p a k" unfolding k_def by (rule restrict_locale)
-      -- "Instantiate the @{term snd_sylow} Locale a second time for the normalizer of @{term Q}"
+      \<comment> \<open>Instantiate the @{term snd_sylow} Locale a second time for the normalizer of @{term Q}\<close>
       define NcalM where "NcalM = {s. s \<subseteq> carrier (G\<lparr>carrier := N\<rparr>) \<and> card s = p ^ a}"
       define NRelM where "NRelM = {(N1, N2). N1 \<in> NcalM \<and> N2 \<in> NcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := N\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)}"
       interpret Nsylow: snd_sylow "G\<lparr>carrier := N\<rparr>" p a k NcalM NRelM
         unfolding NcalM_def NRelM_def using smaller_sylow .
-      -- "@{term P} and @{term Q} are conjugate in @{term N}:"
+      \<comment> \<open>@{term P} and @{term Q} are conjugate in @{term N}:\<close>
       from cardP PN have PsizeN:"P \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from cardQ QN have QsizeN:"Q \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from QsizeN PsizeN obtain g where g:"g \<in> carrier (G\<lparr>carrier := N\<rparr>)" "P = g <#\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> (Q #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> inv\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)" by (rule Nsylow.sylow_conjugate)

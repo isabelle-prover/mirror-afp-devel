@@ -26,18 +26,18 @@ text {*
   of the generic HO model.
 *}
 
-typedecl Proc -- {* the set of processes *}
+typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
 instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
 text {* The following record models the local state of a process. *}
 
 record 'val pstate =
-  x :: "'val"              -- {* current value held by process *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  x :: "'val"              \<comment> \<open>current value held by process\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 text {*
   The @{text x} field of the initial state is unconstrained, but no
@@ -157,6 +157,6 @@ definition Ate_SHOMachine where
 abbreviation
   "Ate_M \<equiv> (Ate_SHOMachine::(Proc, 'val::linorder pstate, 'val) SHOMachine)"
 
-end   -- {* locale @{text "ate_parameters"} *}
+end   \<comment> \<open>locale @{text "ate_parameters"}\<close>
 
 end   (* theory AteDefs *)

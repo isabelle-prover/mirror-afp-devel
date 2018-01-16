@@ -30,11 +30,11 @@ locale Separation_Kernel = Kernel kstep output_f s0 current cswitch interrupt kp
   for kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t"
   and output_f :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'output_t"
   and s0 :: 'state_t
-  and current :: "'state_t => 'dom_t" -- "Returns the currently active domain"
-  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" -- "Switches the current domain"
-  and interrupt :: "time_t \<Rightarrow> bool" -- "Returns t iff an interrupt occurs in the given state at the given time"
-  and kprecondition :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> bool" -- "Returns t if an precondition holds that relates the current action to the state"
-  and realistic_execution :: "'action_t execution \<Rightarrow> bool" -- "In this locale, this function is completely unconstrained."
+  and current :: "'state_t => 'dom_t" \<comment> \<open>Returns the currently active domain\<close>
+  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" \<comment> \<open>Switches the current domain\<close>
+  and interrupt :: "time_t \<Rightarrow> bool" \<comment> \<open>Returns t iff an interrupt occurs in the given state at the given time\<close>
+  and kprecondition :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> bool" \<comment> \<open>Returns t if an precondition holds that relates the current action to the state\<close>
+  and realistic_execution :: "'action_t execution \<Rightarrow> bool" \<comment> \<open>In this locale, this function is completely unconstrained.\<close>
   and control :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t execution \<Rightarrow> (('action_t option) \<times> 'action_t execution \<times> 'state_t)"
   and kinvolved :: "'action_t \<Rightarrow> 'dom_t set"  
 +
@@ -276,13 +276,13 @@ proof-
       assume current_s_t: "current s = current t'"
       assume purged_a_a2: "purged_relation u execs execs2"
 
-      -- "The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
-         States ns and nt (for: next-s and next-t) are the states after one step."
-      -- "We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
+      \<comment> \<open>The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
+         States ns and nt (for: next-s and next-t) are the states after one step.\<close>
+      \<comment> \<open>We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
           Both are proven using the IH.
           To use the IH, we have to prove that the properties hold for the next step (in this case, a context switch).
           Statement current-ns-nt states that after one step states ns and nt have the same active domain.
-          Statement vpeq-ns-nt states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt)."
+          Statement vpeq-ns-nt states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt).\<close>
       from current_s_t cswitch_independent_of_state
         have current_ns_nt: "current (cswitch (Suc n) s) = current (cswitch (Suc n) t')" by blast
       from cswitch_consistency vpeq_s_t
@@ -315,13 +315,13 @@ proof-
       assume current_s_t: "current s = current t'"
       assume purged_a_a2: "purged_relation u execs execs2"
       
-      -- "The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
-         States ns and nt (for: next-s and next-t) are the states after one step."
-      -- "We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
+      \<comment> \<open>The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
+         States ns and nt (for: next-s and next-t) are the states after one step.\<close>
+      \<comment> \<open>We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
           Both are proven using the IH.
           To use the IH, we have to prove that the properties hold for the next step (in this case, nothing happens in s as the thread is empty).
           Statement current-ns-nt states that after one step states ns and nt have the same active domain.
-          Statement $vpeq\\_ns\\_nt$ states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt)."
+          Statement $vpeq\_ns\_nt$ states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt).\<close>
           
       from ifp_reflexive and vpeq_s_t have vpeq_s_t_u: "vpeq u s t'" by auto
       from thread_empty_s and purged_a_a2 and current_s_t have purged_a_na2: "\<not>ifp^** (current t') u \<longrightarrow> purged_relation u execs (next_execs t' execs2)"
@@ -330,10 +330,10 @@ proof-
         unfolding step_def
         by (cases "next_action t' execs2",auto)
 
-      -- "The proof is by case distinction. If the current thread is empty in state t as well (case t-empty), then nothing happens and the proof is trivial.
+      \<comment> \<open>The proof is by case distinction. If the current thread is empty in state t as well (case t-empty), then nothing happens and the proof is trivial.
           Otherwise (case t-not-empty), since the current thread has different executions in states s and t, we now show that it cannot influence u (statement not-ifp-curr-t).
           If in state t the precondition holds (case t-prec), locally respects shows that the states remain vpeq.
-          Otherwise, (case t-not-prec), everything holds vacuously."
+          Otherwise, (case t-not-prec), everything holds vacuously.\<close>
       have current_rs_rt: "current rs = current rt"
       proof (cases "thread_empty(execs2 (current t'))" rule :case_split[case_names t_empty t_not_empty])
       case t_empty
@@ -401,7 +401,7 @@ proof-
     assume not_interrupt: "\<not>interrupt (Suc n)"
     assume thread_not_empty_s: "\<not>thread_empty(execs (current s))"
     assume not_prec_s: "\<not> precondition (next_state s execs) (next_action s execs)"
-    -- "Whenever the precondition does not hold, the entire theorem flattens to True and everything holds vacuously."
+    \<comment> \<open>Whenever the precondition does not hold, the entire theorem flattens to True and everything holds vacuously.\<close>
     hence "run (Suc n) (Some s) execs = None" using not_interrupt thread_not_empty_s by simp
     thus ?case by(simp add:option.splits)
     next
@@ -427,15 +427,15 @@ proof-
       assume current_s_t: "current s = current t'"
       assume purged_a_a2: "purged_relation u execs execs2"
 
-      -- "The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
-         States ns and nt (for: next-s and next-t) are the states after one step."
-      -- "We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
+      \<comment> \<open>The following terminology is used: states rs and rt (for: run-s and run-t) are the states after a run.
+         States ns and nt (for: next-s and next-t) are the states after one step.\<close>
+      \<comment> \<open>We prove two properties: the states rs and rt have equal active domains (current-rs-rt) and are vpeq for all domains v that may influence u (vpeq-rs-rt).
           Both are proven using the IH.
           To use the IH, we have to prove that the properties hold for the next step (in this case, state s executes an action).
           Statement current-ns-nt states that after one step states ns and nt have the same active domain.
-          Statement vpeq-ns-nt states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt)."
+          Statement vpeq-ns-nt states that after one step states ns and nt are vpeq for all domains v that may influence u (vpeq-rs-rt).\<close>
           
-      -- "Some lemma's used in the remainder of this case."
+      \<comment> \<open>Some lemma's used in the remainder of this case.\<close>
       from ifp_reflexive and vpeq_s_t have vpeq_s_t_u: "vpeq u s t'" by auto
       from step_atomicity and current_s_t current_next_state
         have current_ns_nt: "current (step (next_state s execs) (next_action s execs)) = current (step (next_state t' execs2) (next_action t' execs2))"
@@ -468,9 +468,9 @@ proof-
       from purged_a_a2 have purged_na_a: "\<not>ifp^** (current s) u \<longrightarrow> purged_relation u (next_execs s execs) execs2"
          by(unfold next_execs_def,unfold purged_relation_def,auto)
 
-      -- "The proof is by case distinction. If the current domain can interact with u (case curr-ifp-u), then either in state t the precondition holds (case t-prec) or not.
+      \<comment> \<open>The proof is by case distinction. If the current domain can interact with u (case curr-ifp-u), then either in state t the precondition holds (case t-prec) or not.
           If it holds, then lemma vpeq-ns-nt-ifp-u applies. Otherwise, the proof is trivial as the theorem holds vacuously.
-          If the domain cannot interact with u, (case curr-not-ifp-u), then lemma vpeq-ns-nt-not-ifp-u applies."
+          If the domain cannot interact with u, (case curr-not-ifp-u), then lemma vpeq-ns-nt-not-ifp-u applies.\<close>
       have current_rs_rt: "current rs = current rt"
       proof (cases "ifp^** (current s) u" rule :case_split[case_names curr_ifp_u curr_not_ifp_u])
       case curr_ifp_u

@@ -76,7 +76,7 @@ fun common_primitive_match_to_simple_match :: "'i::len common_primitive match_ex
       (None, _) \<Rightarrow> None
     | (_, None) \<Rightarrow> None
     | (Some m1', Some m2') \<Rightarrow> simple_match_and m1' m2')" |
-  --"undefined cases, normalize before!"
+  \<comment> \<open>undefined cases, normalize before!\<close>
   "common_primitive_match_to_simple_match (Match (Src (IpAddr _))) = undefined" |
   "common_primitive_match_to_simple_match (Match (Src (IpAddrRange _ _))) = undefined" |
   "common_primitive_match_to_simple_match (Match (Dst (IpAddr _))) = undefined" |
@@ -342,12 +342,12 @@ theorem transform_simple_fw_upper:
   defines "preprocess rs \<equiv> upper_closure (optimize_matches abstract_for_simple_firewall (upper_closure (packet_assume_new rs)))"
   and "newpkt p \<equiv> match_tcp_flags ipt_tcp_syn (p_tcp_flags p) \<and> p_tag_ctstate p = CT_New"
   assumes simplers: "simple_ruleset (rs:: 'i::len common_primitive rule list)"
-  --"the preconditions for the simple firewall are fulfilled, definitely no runtime failure"
+  \<comment> \<open>the preconditions for the simple firewall are fulfilled, definitely no runtime failure\<close>
   shows "check_simple_fw_preconditions (preprocess rs)"
-  --"the set of new packets, which are accepted is an overapproximations"
+  \<comment> \<open>the set of new packets, which are accepted is an overapproximations\<close>
   and "{p. (common_matcher, in_doubt_allow),p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow>\<^sub>\<alpha> Decision FinalAllow \<and> newpkt p} \<subseteq>
        {p. simple_fw (to_simple_firewall (preprocess rs)) p = Decision FinalAllow \<and> newpkt p}"
-  --\<open>Fun fact: The theorem holds for a tagged packet. The simple firewall just ignores the tag. 
+  \<comment> \<open>Fun fact: The theorem holds for a tagged packet. The simple firewall just ignores the tag. 
      You may explicitly untag, if you wish to, but a @{typ "'i tagged_packet"} is just an extension of the
      @{typ "'i simple_packet"} used by the simple firewall\<close>
   unfolding check_simple_fw_preconditions_def preprocess_def
@@ -494,9 +494,9 @@ theorem transform_simple_fw_lower:
   defines "preprocess rs \<equiv> lower_closure (optimize_matches abstract_for_simple_firewall (lower_closure (packet_assume_new rs)))"
   and "newpkt p \<equiv> match_tcp_flags ipt_tcp_syn (p_tcp_flags p) \<and> p_tag_ctstate p = CT_New"
   assumes simplers: "simple_ruleset (rs:: 'i::len common_primitive rule list)"
-  --"the preconditions for the simple firewall are fulfilled, definitely no runtime failure"
+  \<comment> \<open>the preconditions for the simple firewall are fulfilled, definitely no runtime failure\<close>
   shows "check_simple_fw_preconditions (preprocess rs)"
-  --"the set of new packets, which are accepted is an underapproximation"
+  \<comment> \<open>the set of new packets, which are accepted is an underapproximation\<close>
   and "{p. simple_fw (to_simple_firewall (preprocess rs)) p = Decision FinalAllow \<and> newpkt p} \<subseteq>
        {p. (common_matcher, in_doubt_deny),p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow>\<^sub>\<alpha> Decision FinalAllow \<and> newpkt p}"
   unfolding check_simple_fw_preconditions_def preprocess_def
@@ -647,20 +647,20 @@ theorem to_simple_firewall_without_interfaces:
   defines "newpkt p \<equiv> match_tcp_flags ipt_tcp_syn (p_tcp_flags p) \<and> p_tag_ctstate p = CT_New"
   assumes simplers: "simple_ruleset (rs:: 'i::len common_primitive rule list)"
 
-      --"well-formed ipassmt"
+      \<comment> \<open>well-formed ipassmt\<close>
       and wf_ipassmt1: "ipassmt_sanity_nowildcards (map_of ipassmt)" and wf_ipassmt2: "distinct (map fst ipassmt)"
-      --"There are no spoofed packets (probably by kernel's reverse path filter or our checker).
-         This assumption implies that ipassmt lists ALL interfaces (!!)."
+      \<comment> \<open>There are no spoofed packets (probably by kernel's reverse path filter or our checker).
+         This assumption implies that ipassmt lists ALL interfaces (!!).\<close>
       and nospoofing: "\<forall>(p::('i::len, 'a) tagged_packet_scheme).
             \<exists>ips. (map_of ipassmt) (Iface (p_iiface p)) = Some ips \<and> p_src p \<in> ipcidr_union_set (set ips)"
-      --"If a routing table was passed, the output interface for any packet we consider is decided based on it."
+      \<comment> \<open>If a routing table was passed, the output interface for any packet we consider is decided based on it.\<close>
       and routing_decided: "\<And>rtbl (p::('i,'a) tagged_packet_scheme). rtblo = Some rtbl \<Longrightarrow> output_iface (routing_table_semantics rtbl (p_dst p)) = p_oiface p"
-      --"A passed routing table is wellformed"
+      \<comment> \<open>A passed routing table is wellformed\<close>
       and correct_routing: "\<And>rtbl. rtblo = Some rtbl \<Longrightarrow> correct_routing rtbl"
-      --"A passed routing table contains no interfaces with wildcard names"
+      \<comment> \<open>A passed routing table contains no interfaces with wildcard names\<close>
       and routing_no_wildcards: "\<And>rtbl. rtblo = Some rtbl \<Longrightarrow> ipassmt_sanity_nowildcards (map_of (routing_ipassmt rtbl))"
 
-  --"the set of new packets, which are accepted is an overapproximations"
+  \<comment> \<open>the set of new packets, which are accepted is an overapproximations\<close>
   shows "{p::('i,'a) tagged_packet_scheme. (common_matcher, in_doubt_allow),p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow>\<^sub>\<alpha> Decision FinalAllow \<and> newpkt p} \<subseteq>
          {p::('i,'a) tagged_packet_scheme. simple_fw (to_simple_firewall_without_interfaces ipassmt rtblo rs) p = Decision FinalAllow \<and> newpkt p}"
 

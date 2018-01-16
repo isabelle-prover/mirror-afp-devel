@@ -134,7 +134,7 @@ where
 | exec_1_d_ErrorI: "exec_d P \<sigma> = TypeError \<Longrightarrow> P \<turnstile> Normal \<sigma> -jvmd\<rightarrow>\<^sub>1 TypeError"
 | exec_1_d_NormalI: "exec_d P \<sigma> = Normal (Some \<sigma>') \<Longrightarrow> P \<turnstile> Normal \<sigma> -jvmd\<rightarrow>\<^sub>1 Normal \<sigma>'"
 
--- "reflexive transitive closure:"
+\<comment> \<open>reflexive transitive closure:\<close>
 definition exec_all_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
     ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60) where
   exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"

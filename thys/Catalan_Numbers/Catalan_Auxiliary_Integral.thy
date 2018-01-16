@@ -58,12 +58,12 @@ lemma catalan_aux_integral:
   "((\<lambda>x::real. sqrt ((4 - x) / x)) has_integral 2 * pi) {0..4}"
 proof -
   define F where "F \<equiv> \<lambda>x. sqrt (4/x - 1) * x - 2 * arctan ((sqrt (4/x - 1) * (x - 2)) / (x - 4))"
-    -- \<open>The nice part of the indefinite integral. The endpoints are removable singularities.\<close>
+    \<comment> \<open>The nice part of the indefinite integral. The endpoints are removable singularities.\<close>
     
   define G where "G \<equiv> \<lambda>x. if x = 4 then pi else if x = 0 then -pi else F x"
-    -- \<open>The actual indefinite integral including the endpoints.\<close>
+    \<comment> \<open>The actual indefinite integral including the endpoints.\<close>
 
-  -- \<open>We now prove that the indefinite integral indeed tends to @{term "pi"} resp. @{term "-pi"} 
+  \<comment> \<open>We now prove that the indefinite integral indeed tends to @{term "pi"} resp. @{term "-pi"} 
       at the edges of the integration interval.\<close>
   have "filterlim (\<lambda>x. (x - 2) / (x - 4) * sqrt (-1 + 4/x)) at_top (at_right 0)"
     by (rule filterlim_tendsto_pos_mult_at_top tendsto_intros filterlim_tendsto_add_at_top
@@ -88,7 +88,7 @@ proof -
   hence G_4: "(G \<longlongrightarrow> pi) (at_left 4)" unfolding G_def
     by (rule Lim_transform_eventually [rotated]) (auto intro!: eventually_at_leftI[of 1])
   
-  -- \<open>The derivative of @{term G} is indeed the integrand in the interior of 
+  \<comment> \<open>The derivative of @{term G} is indeed the integrand in the interior of 
       the integration interval.\<close>
   have deriv_G: "(G has_field_derivative sqrt ((4 - x) / x)) (at x)" if x: "x \<in> {0<..<4}" for x
   proof -
@@ -116,7 +116,7 @@ proof -
     thus ?thesis by (subst (asm) DERIV_cong_ev[OF refl eq refl]) (insert x, simp add: field_simps)
   qed
   
-  -- \<open>It is now obvious that @{term G} is continuous over the entire integration interval.\<close>
+  \<comment> \<open>It is now obvious that @{term G} is continuous over the entire integration interval.\<close>
   have cont_G: "continuous_on {0..4} G" unfolding continuous_on
   proof safe
     fix x :: real assume "x \<in> {0..4}"
@@ -145,7 +145,7 @@ proof -
     qed
   qed
   
-  -- \<open>Finally, we can apply the Fundamental Theorem of Calculus.\<close>
+  \<comment> \<open>Finally, we can apply the Fundamental Theorem of Calculus.\<close>
   have "((\<lambda>x. sqrt ((4 - x) / x)) has_integral G 4 - G 0) {0..4}"
     using cont_G deriv_G
     by (intro fundamental_theorem_of_calculus_interior)

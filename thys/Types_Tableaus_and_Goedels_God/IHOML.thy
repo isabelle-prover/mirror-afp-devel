@@ -54,9 +54,9 @@ if @{text "\<tau>"} is an extensional type, @{text "\<up>\<tau>"} is the corresp
 a set of (red) objects has the extensional type @{text "\<langle>\<zero>\<rangle>"}, whereas the concept `red' has intensional type @{text "\<up>\<langle>\<zero>\<rangle>"}.
 In what follows, terms having extensional (intensional) types will be called extensional (intensional) terms. \<close>
 
-  typedecl i                    --\<open> type for possible worlds  \<close>
-  type_synonym io = "(i\<Rightarrow>bool)" --\<open> formulas with world-dependent truth-value \<close>
-  typedecl e  ("\<zero>")             --\<open> individuals  \<close>             
+  typedecl i                    \<comment> \<open>type for possible worlds\<close>
+  type_synonym io = "(i\<Rightarrow>bool)" \<comment> \<open>formulas with world-dependent truth-value\<close>
+  typedecl e  ("\<zero>")             \<comment> \<open>individuals\<close>             
   
   text\<open>  Aliases for common unary predicate types:  \<close>
   type_synonym ie =     "(i\<Rightarrow>\<zero>)"             ("\<up>\<zero>")
@@ -114,7 +114,7 @@ subsubsection \<open>Possibilist Quantification\<close>
   abbreviation mexists   :: "('t\<Rightarrow>io)\<Rightarrow>io" ("\<^bold>\<exists>") 
     where "\<^bold>\<exists>\<Phi> \<equiv> \<lambda>w.\<exists>x. (\<Phi> x w)"
     
-  abbreviation mforallB  :: "('t\<Rightarrow>io)\<Rightarrow>io" (binder"\<^bold>\<forall>"[8]9) --\<open> Binder notation \<close>
+  abbreviation mforallB  :: "('t\<Rightarrow>io)\<Rightarrow>io" (binder"\<^bold>\<forall>"[8]9) \<comment> \<open>Binder notation\<close>
     where "\<^bold>\<forall>x. \<phi>(x) \<equiv> \<^bold>\<forall>\<phi>"  
   abbreviation mexistsB  :: "('t\<Rightarrow>io)\<Rightarrow>io" (binder"\<^bold>\<exists>"[8]9)
     where "\<^bold>\<exists>x. \<phi>(x) \<equiv> \<^bold>\<exists>\<phi>" 
@@ -132,14 +132,14 @@ which individuals \emph{actually} exist at a given world. This meta-logical conc
   abbreviation mexistsAct   :: "\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<^bold>\<exists>\<^sup>E") 
     where "\<^bold>\<exists>\<^sup>E\<Phi> \<equiv> \<lambda>w.\<exists>x. (existsAt x w) \<and> (\<Phi> x w)"
 
-  abbreviation mforallActB  :: "\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (binder"\<^bold>\<forall>\<^sup>E"[8]9) --\<open> binder notation \<close>
+  abbreviation mforallActB  :: "\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (binder"\<^bold>\<forall>\<^sup>E"[8]9) \<comment> \<open>binder notation\<close>
     where "\<^bold>\<forall>\<^sup>Ex. \<phi>(x) \<equiv> \<^bold>\<forall>\<^sup>E\<phi>"     
   abbreviation mexistsActB  :: "\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (binder"\<^bold>\<exists>\<^sup>E"[8]9)
     where "\<^bold>\<exists>\<^sup>Ex. \<phi>(x) \<equiv> \<^bold>\<exists>\<^sup>E\<phi>"
       
 subsubsection \<open>Modal Operators\<close>
   
-   consts aRel::"i\<Rightarrow>i\<Rightarrow>bool" (infixr "r" 70)  --\<open>  accessibility relation \emph{r}  \<close>
+   consts aRel::"i\<Rightarrow>i\<Rightarrow>bool" (infixr "r" 70)  \<comment> \<open>accessibility relation \emph{r}\<close>
   
   abbreviation mbox   :: "io\<Rightarrow>io" ("\<^bold>\<box>_"[52]53)
     where "\<^bold>\<box>\<phi> \<equiv> \<lambda>w.\<forall>v. (w r v)\<longrightarrow>(\<phi> v)"
@@ -193,11 +193,11 @@ abbreviation mextPredArg::"(('t\<Rightarrow>io)\<Rightarrow>io)\<Rightarrow>('t\
     
 subsubsection \<open>Equality\<close>
   
-  abbreviation meq    :: "'t\<Rightarrow>'t\<Rightarrow>io" (infix"\<^bold>\<approx>"60) --\<open> normal equality (for all types) \<close>
+  abbreviation meq    :: "'t\<Rightarrow>'t\<Rightarrow>io" (infix"\<^bold>\<approx>"60) \<comment> \<open>normal equality (for all types)\<close>
     where "x \<^bold>\<approx> y \<equiv> \<lambda>w. x = y"
-  abbreviation meqC   :: "\<up>\<langle>\<up>\<zero>,\<up>\<zero>\<rangle>" (infixr"\<^bold>\<approx>\<^sup>C"52) --\<open> eq. for individual concepts \<close>
+  abbreviation meqC   :: "\<up>\<langle>\<up>\<zero>,\<up>\<zero>\<rangle>" (infixr"\<^bold>\<approx>\<^sup>C"52) \<comment> \<open>eq. for individual concepts\<close>
     where "x \<^bold>\<approx>\<^sup>C y \<equiv> \<lambda>w. \<forall>v. (x v) = (y v)"
-  abbreviation meqL   :: "\<up>\<langle>\<zero>,\<zero>\<rangle>" (infixr"\<^bold>\<approx>\<^sup>L"52) --\<open> Leibniz eq. for individuals \<close>
+  abbreviation meqL   :: "\<up>\<langle>\<zero>,\<zero>\<rangle>" (infixr"\<^bold>\<approx>\<^sup>L"52) \<comment> \<open>Leibniz eq. for individuals\<close>
     where "x \<^bold>\<approx>\<^sup>L y \<equiv> \<^bold>\<forall>\<phi>. \<phi>(x)\<^bold>\<rightarrow>\<phi>(y)"
 
 subsubsection \<open>Meta-logical Predicates\<close>
@@ -213,22 +213,22 @@ text\<open>  The above definitions introduce modal logic \emph{K} with possibili
 as evidenced by the following tests: \<close>
 
  text\<open>  Verifying \emph{K} Principle and Necessitation:  \<close>
- lemma K: "\<lfloor>(\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>)) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)\<rfloor>" by simp    --\<open>  \emph{K} schema  \<close>
- lemma NEC: "\<lfloor>\<phi>\<rfloor> \<Longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" by simp    --\<open>  necessitation  \<close>
+ lemma K: "\<lfloor>(\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>)) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)\<rfloor>" by simp    \<comment> \<open>\emph{K} schema\<close>
+ lemma NEC: "\<lfloor>\<phi>\<rfloor> \<Longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" by simp    \<comment> \<open>necessitation\<close>
     
  text\<open>  Local consequence implies global consequence (we will use this lemma often): \<close>
  lemma localImpGlobalCons: "\<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor>" by simp
     
  text\<open>  But global consequence does not imply local consequence: \<close>
- lemma "\<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor>" nitpick oops --\<open>  countersatisfiable \<close>
+ lemma "\<lfloor>\<phi>\<rfloor> \<longrightarrow> \<lfloor>\<xi>\<rfloor> \<Longrightarrow> \<lfloor>\<phi> \<^bold>\<rightarrow> \<xi>\<rfloor>" nitpick oops \<comment> \<open>countersatisfiable\<close>
 
  text\<open>  Barcan and Converse Barcan Formulas are satisfied for standard (possibilist) quantifiers:  \<close>
  lemma "\<lfloor>(\<^bold>\<forall>x.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>x.(\<phi> x))\<rfloor>" by simp
  lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>x.(\<phi> x)) \<^bold>\<rightarrow> (\<^bold>\<forall>x.\<^bold>\<box>(\<phi> x))\<rfloor>" by simp
     
  text\<open>  (Converse) Barcan Formulas not satisfied for actualist quantifiers:  \<close>
- lemma "\<lfloor>(\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x))\<rfloor>" nitpick oops --\<open>  countersatisfiable \<close>
- lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x)) \<^bold>\<rightarrow> (\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x))\<rfloor>" nitpick oops --\<open>  countersatisfiable \<close>
+ lemma "\<lfloor>(\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x))\<rfloor>" nitpick oops \<comment> \<open>countersatisfiable\<close>
+ lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x)) \<^bold>\<rightarrow> (\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x))\<rfloor>" nitpick oops \<comment> \<open>countersatisfiable\<close>
     
 text\<open>  Above we have made use of (counter-)model finder \emph{Nitpick} @{cite "Nitpick"} for the first time.  
 For all the conjectured lemmas above, \emph{Nitpick} has found a countermodel, i.e. a model satisfying all 
@@ -239,11 +239,11 @@ the axioms which falsifies the given formula. This means, the formulas are not v
  lemma  "\<lfloor>\<phi>\<rfloor>\<^sup>s\<^sup>a\<^sup>t \<longleftrightarrow> \<not>\<lfloor>\<phi>\<rfloor>\<^sup>i\<^sup>n\<^sup>v " by simp
  
  text\<open>  Contingent truth does not allow for necessitation:  \<close>
- lemma "\<lfloor>\<^bold>\<diamond>\<phi>\<rfloor>  \<longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" nitpick oops            --\<open>  countersatisfiable \<close>
- lemma "\<lfloor>\<^bold>\<box>\<phi>\<rfloor>\<^sup>s\<^sup>a\<^sup>t \<longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" nitpick oops           --\<open>  countersatisfiable \<close>
+ lemma "\<lfloor>\<^bold>\<diamond>\<phi>\<rfloor>  \<longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" nitpick oops            \<comment> \<open>countersatisfiable\<close>
+ lemma "\<lfloor>\<^bold>\<box>\<phi>\<rfloor>\<^sup>s\<^sup>a\<^sup>t \<longrightarrow> \<lfloor>\<^bold>\<box>\<phi>\<rfloor>" nitpick oops           \<comment> \<open>countersatisfiable\<close>
 
  text\<open>  \emph{Modal collapse} is countersatisfiable:  \<close>
- lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>" nitpick oops                  --\<open>  countersatisfiable \<close>
+ lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>" nitpick oops                  \<comment> \<open>countersatisfiable\<close>
 text\<open> \pagebreak \<close>
 subsection \<open>Useful Definitions for Axiomatization of Further Logics\<close>
 
@@ -267,14 +267,14 @@ subsection \<open>Useful Definitions for Axiomatization of Further Logics\<close
   that  reflexivity, symmetry, seriality, transitivity and euclideanness imply
   axioms $M, B, D, IV, V$ respectively. \<close>
 
-  lemma "reflexive aRel  \<Longrightarrow>  \<lfloor>M\<rfloor>" by blast --\<open>  aka T  \<close>
+  lemma "reflexive aRel  \<Longrightarrow>  \<lfloor>M\<rfloor>" by blast \<comment> \<open>aka T\<close>
   lemma "symmetric aRel \<Longrightarrow> \<lfloor>B\<rfloor>" by blast
   lemma "serial aRel  \<Longrightarrow> \<lfloor>D\<rfloor>" by blast         
   lemma "transitive aRel  \<Longrightarrow> \<lfloor>IV\<rfloor>" by blast   
   lemma "euclidean aRel \<Longrightarrow> \<lfloor>V\<rfloor>" by blast         
-  lemma "preorder aRel \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>IV\<rfloor>" by blast --\<open>  S4: reflexive + transitive \<close>
-  lemma "equivalence aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast --\<open>  S5: preorder + symmetric  \<close>
-  lemma "reflexive aRel \<and> euclidean aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast --\<open>  S5  \<close>
+  lemma "preorder aRel \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>IV\<rfloor>" by blast \<comment> \<open>S4: reflexive + transitive\<close>
+  lemma "equivalence aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast \<comment> \<open>S5: preorder + symmetric\<close>
+  lemma "reflexive aRel \<and> euclidean aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast \<comment> \<open>S5\<close>
 
   text\<open>  Using these definitions, we can derive axioms for the most common modal logics (see also @{cite "C47"}). 
   Thereby we are free to use either the semantic constraints or the related \emph{Sahlqvist} axioms. Here we provide 

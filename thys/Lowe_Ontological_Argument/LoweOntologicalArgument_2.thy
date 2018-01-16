@@ -59,7 +59,7 @@ axiomatization where
   abstractness_essential: "\<lfloor>\<^bold>\<forall>x. Abstract x \<^bold>\<rightarrow> \<^bold>\<box>Abstract x\<rfloor>"
 
 theorem C10:  "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
     
 text\<open>\noindent{As Nitpick shows us, the former restriction is not enough to prove C10.
 We try postulating further restrictions on the accessibility relation \emph{R} which, taken together,
@@ -68,12 +68,12 @@ would make for a modal logic \emph{S5}, and our abstractness property would cons
 become a (globally) rigid predicate.}\<close>
     
 axiomatization where 
- T_axiom: "reflexive R" and --\<open> @{text "\<box>\<phi> \<rightarrow> \<phi>"} \<close>
- B_axiom: "symmetric R" and --\<open> @{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"} \<close>
- IV_axiom: "transitive R"   --\<open> @{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"} \<close>
+ T_axiom: "reflexive R" and \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<phi>"}\<close>
+ B_axiom: "symmetric R" and \<comment> \<open>@{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"}\<close>
+ IV_axiom: "transitive R"   \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"}\<close>
  
 theorem C10:  "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
 
 text\<open>\noindent{By examining the new countermodel found by Nitpick we notice that at some worlds there are  
 non-existent concrete beings. We want to disallow this possibility, so we make concreteness
@@ -85,11 +85,11 @@ text\<open>\noindent{We carry out the usual `sanity checks' to make sure the arg
 These checks are being carried out after postulating axioms for every iteration,
 so we won't mention them anymore.}}\<close>  
 lemma True
-  nitpick[satisfy, user_axioms] oops --\<open> Model found: axioms are consistent  \<close>
+  nitpick[satisfy, user_axioms] oops \<comment> \<open>Model found: axioms are consistent\<close>
 lemma "\<lfloor>\<^bold>\<forall>x. E! x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found: necessitism is not valid \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found: necessitism is not valid\<close>
 lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found: modal collapse is not valid \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found: modal collapse is not valid\<close>
 
 text\<open>\noindent{Since this time Nitpick was not able to find a countermodel for C10, we have enough confidence in
 the validity of the formula to ask Sledgehammer to search for a proof.}\<close>

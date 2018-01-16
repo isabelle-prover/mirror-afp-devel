@@ -10,10 +10,10 @@ begin
 subsection {* The IND-CPA game for symmetric encryption schemes *}
 
 locale ind_cpa = 
-  fixes key_gen :: "'key spmf" -- {*  probabilistic *}
-  and encrypt :: "'key \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  -- {*  probabilistic *}
-  and decrypt :: "'key \<Rightarrow> 'cipher \<Rightarrow> 'plain option" -- {*  deterministic, but not used *}
-  and valid_plain :: "'plain \<Rightarrow> bool" -- {* checks whether a plain text is valid, i.e., has the right format *}
+  fixes key_gen :: "'key spmf" \<comment> \<open>probabilistic\<close>
+  and encrypt :: "'key \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  \<comment> \<open>probabilistic\<close>
+  and decrypt :: "'key \<Rightarrow> 'cipher \<Rightarrow> 'plain option" \<comment> \<open>deterministic, but not used\<close>
+  and valid_plain :: "'plain \<Rightarrow> bool" \<comment> \<open>checks whether a plain text is valid, i.e., has the right format\<close>
 begin
 
 text {*

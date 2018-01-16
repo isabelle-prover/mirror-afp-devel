@@ -249,7 +249,7 @@ begin
     from `P \<approx>\<cdot> Q` and tauP obtain Q1 where tauQ: "Q \<Rightarrow> Q1" and P1Q1: "P1 \<approx>\<cdot> Q1"
       by (metis weakly_bisimilar_tau_simulation_step)
 
-    -- \<open>rename~@{term "\<langle>\<alpha>,P2\<rangle>"} to avoid~@{term Q1}, without touching~@{term Q}\<close>
+    \<comment> \<open>rename~@{term "\<langle>\<alpha>,P2\<rangle>"} to avoid~@{term Q1}, without touching~@{term Q}\<close>
     obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* Q1" and 2: "supp (\<langle>\<alpha>,P2\<rangle>, Q) \<sharp>* p"
       proof (rule at_set_avoiding2[of "bn \<alpha>" Q1 "(\<langle>\<alpha>,P2\<rangle>, Q)", THEN exE])
         show "finite (bn \<alpha>)" by (fact bn_finite)
@@ -318,7 +318,7 @@ begin
       proof (clarify)
         fix P Q R \<alpha> P'
         assume PR: "P \<approx>\<cdot> R" and RQ: "R \<approx>\<cdot> Q" and fresh: "bn \<alpha> \<sharp>* Q" and trans: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-        -- \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term R}, without touching~@{term Q}\<close>
+        \<comment> \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term R}, without touching~@{term Q}\<close>
         obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* R" and 2: "supp (\<langle>\<alpha>,P'\<rangle>, Q) \<sharp>* p"
           proof (rule at_set_avoiding2[of "bn \<alpha>" R "(\<langle>\<alpha>,P'\<rangle>, Q)", THEN exE])
             show "finite (bn \<alpha>)" by (fact bn_finite)

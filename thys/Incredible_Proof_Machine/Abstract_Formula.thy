@@ -17,21 +17,21 @@ of a substitution.
 \<close>
 
 locale Abstract_Formulas =
-  -- \<open>Variables can be renamed injectively\<close>
+  \<comment> \<open>Variables can be renamed injectively\<close>
   fixes freshenLC :: "nat \<Rightarrow> 'var \<Rightarrow> 'var"
-  -- \<open>A variable-changing function can be mapped over a formula\<close>
+  \<comment> \<open>A variable-changing function can be mapped over a formula\<close>
   fixes renameLCs :: "('var \<Rightarrow> 'var) \<Rightarrow> ('form \<Rightarrow> 'form)"
-  -- \<open>The set of variables occurring in a formula\<close>
+  \<comment> \<open>The set of variables occurring in a formula\<close>
   fixes lconsts :: "'form \<Rightarrow> 'var set"
-  -- \<open>A closed formula has no variables, and substitions do not affect it.\<close>
+  \<comment> \<open>A closed formula has no variables, and substitions do not affect it.\<close>
   fixes closed :: "'form \<Rightarrow> bool"
-  -- \<open>A substitution can be applied to a formula.\<close>
+  \<comment> \<open>A substitution can be applied to a formula.\<close>
   fixes subst :: "'subst \<Rightarrow> 'form \<Rightarrow> 'form"
-  -- \<open>The set of variables occurring (in the image) of a substitution.\<close>
+  \<comment> \<open>The set of variables occurring (in the image) of a substitution.\<close>
   fixes subst_lconsts :: "'subst \<Rightarrow> 'var set"
-  -- \<open>A variable-changing function can be mapped over a substitution\<close>
+  \<comment> \<open>A variable-changing function can be mapped over a substitution\<close>
   fixes subst_renameLCs :: "('var \<Rightarrow> 'var) \<Rightarrow> ('subst \<Rightarrow> 'subst)"
-  -- \<open>A most generic formula, can be substitutied to anything.\<close>
+  \<comment> \<open>A most generic formula, can be substitutied to anything.\<close>
   fixes anyP :: "'form"
 
   assumes freshenLC_eq_iff[simp]: "freshenLC a v = freshenLC a' v' \<longleftrightarrow> a = a' \<and> v = v'"

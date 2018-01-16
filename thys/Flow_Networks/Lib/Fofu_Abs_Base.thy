@@ -44,7 +44,7 @@ lemma trcl_conc_conv:
   by (auto dest!: trcl_unconcat intro: trcl_concat)
   
 lemmas trcl_conv = trcl_cons_conv trcl_conc_conv
-  -- \<open>Adding these to simpset will split all cons and append operations in paths\<close>
+  \<comment> \<open>Adding these to simpset will split all cons and append operations in paths\<close>
 
       
       

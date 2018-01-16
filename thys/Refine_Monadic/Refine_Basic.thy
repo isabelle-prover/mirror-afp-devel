@@ -865,8 +865,8 @@ lemma bind_rule_complete: "bind M f \<le> SPEC \<Phi> \<longleftrightarrow> M \<
   by (auto simp: pw_le_iff refine_pw_simps)
 lemma bind_rule[refine_vcg]: 
   "\<lbrakk> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>) \<rbrakk> \<Longrightarrow> bind M (\<lambda>x. f x) \<le> SPEC \<Phi>"
-  -- {* Note: @{text "\<eta>"}-expanded version helps Isabelle's unification to keep meaningful 
-      variable names from the program *}
+  \<comment> \<open>Note: @{text "\<eta>"}-expanded version helps Isabelle's unification to keep meaningful 
+      variable names from the program\<close>
   by (auto simp: bind_rule_complete)
 
 lemma ASSUME_rule[refine_vcg]: "\<lbrakk>\<Phi> \<Longrightarrow> \<Psi> ()\<rbrakk> \<Longrightarrow> ASSUME \<Phi> \<le> SPEC \<Psi>"
@@ -1126,7 +1126,7 @@ lemmas [refine] = ASSERT_refine_right
 
 
 definition lift_assn :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)"
-  -- \<open>Lift assertion over refinement relation\<close>
+  \<comment> \<open>Lift assertion over refinement relation\<close>
   where "lift_assn R \<Phi> s \<equiv> \<exists>s'. (s,s')\<in>R \<and> \<Phi> s'"
 lemma lift_assnI: "\<lbrakk>(s,s')\<in>R; \<Phi> s'\<rbrakk> \<Longrightarrow> lift_assn R \<Phi> s"
   unfolding lift_assn_def by auto
@@ -1656,14 +1656,14 @@ lemma bind_sim_select_rule:
   assumes "m\<bind>f' \<le> SPEC \<Psi>"
   assumes "\<And>x. \<lbrakk>nofail m; inres m x; f' x\<le>SPEC \<Psi>\<rbrakk> \<Longrightarrow> f x\<le>SPEC \<Phi>"
   shows "m\<bind>f \<le> SPEC \<Phi>"
-  -- \<open>Simultaneously select a result from assumption and verification goal.
+  \<comment> \<open>Simultaneously select a result from assumption and verification goal.
     Useful to work with assumptions that restrict the current program to 
     be verified.\<close>
   using assms 
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma assert_bind_spec_conv: "ASSERT \<Phi> \<then> m \<le> SPEC \<Psi> \<longleftrightarrow> (\<Phi> \<and> m \<le> SPEC \<Psi>)"  
-  -- \<open>Simplify a bind-assert verification condition. 
+  \<comment> \<open>Simplify a bind-assert verification condition. 
     Useful if this occurs in the assumptions, and considerably faster than 
     using pointwise reasoning, which may causes a blowup for many chained 
     assertions.\<close>
@@ -1767,7 +1767,7 @@ lemma use_spec_rule:
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma strengthen_SPEC: "m \<le> SPEC \<Phi> \<Longrightarrow> m \<le> SPEC(\<lambda>s. inres m s \<and> nofail m \<and> \<Phi> s)"
-  -- "Strengthen SPEC by adding trivial upper bound for result"
+  \<comment> \<open>Strengthen SPEC by adding trivial upper bound for result\<close>
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma weaken_SPEC:

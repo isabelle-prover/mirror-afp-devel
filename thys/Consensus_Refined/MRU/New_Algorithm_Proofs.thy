@@ -329,7 +329,7 @@ proof -
       \<and> (\<forall>p q. HOs (nr_steps*ph+i) p = HOs (nr_steps*ph) q)"
     by(auto simp add: New_Algo_HOMachine_def NA_commGlobal_def)
 
-  -- {* The tedious bit: obtain four consecutive rounds linked by send/next functions *}
+  \<comment> \<open>The tedious bit: obtain four consecutive rounds linked by send/next functions\<close>
   define r0 where "r0 = nr_steps * ph"
   define cfg0 where "cfg0 = rho r0"
   define r1 where "r1 = Suc r0"
@@ -358,7 +358,7 @@ proof -
     apply (simp add: mod_Suc)
     done
 
-  -- {* The proof: everybody hears the same messages (non-empty!) in r0... *}
+  \<comment> \<open>The proof: everybody hears the same messages (non-empty!) in r0...\<close>
 
   from HOs[THEN bspec, where x=0, simplified] send0
     have 
@@ -367,7 +367,7 @@ proof -
       apply(blast)+
     done
 
-  -- {* ...hence everybody sets @{term prop_vote} to the same value... *}    
+  \<comment> \<open>...hence everybody sets @{term prop_vote} to the same value...\<close>    
   hence same_prevote: 
     "\<forall>p. prop_vote (cfg1 p) \<noteq> None"
     "\<forall>p q. prop_vote (cfg1 p) = prop_vote (cfg1 q)" using three_step0
@@ -376,18 +376,18 @@ proof -
     apply(clarsimp simp add: next0_def all_conj_distrib Let_def)
     by (metis (full_types) dom_eq_empty_conv empty_iff majoritiesE')
 
-  -- {* ...which will become our decision value. *}
+  \<comment> \<open>...which will become our decision value.\<close>
   then obtain dec_v where dec_v: "\<forall>p. prop_vote (cfg1 p) = Some dec_v"
     by (metis option.collapse)
 
-  -- {* ...and since everybody hears from majority in r1... *}
+  \<comment> \<open>...and since everybody hears from majority in r1...\<close>
   from HOs[THEN bspec, where x="Suc 0", simplified] send1
   have "\<forall>p q. \<mu>1 p = \<mu>1 q" "\<forall>p. N div 2 < card (dom (\<mu>1 p))"
     apply(auto simp add: get_msgs_benign send1_def r1_def r0_def dom_def restrict_map_def intro!: ext)
      apply(blast)+
     done
 
-  -- {* and since everybody casts a pre-vote for @{term dec_v}, everybody will vote @{term dec_v} *} 
+  \<comment> \<open>and since everybody casts a pre-vote for @{term dec_v}, everybody will vote @{term dec_v}\<close> 
   have all_vote: "\<forall>p. mru_vote (cfg2 p) = Some (three_phase r2, dec_v)"
   proof
     fix p
@@ -403,7 +403,7 @@ proof -
       by(auto simp add: next1_def r2_def r1_def three_step_phase_Suc)
   qed
 
-  -- {* And finally, everybody will also decide @{term dec_v} *}
+  \<comment> \<open>And finally, everybody will also decide @{term dec_v}\<close>
   have all_decide: "\<forall>p. decide (cfg3 p) = Some dec_v"
   proof
     fix p

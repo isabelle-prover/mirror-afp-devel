@@ -9,7 +9,7 @@ theory Effect
 imports JVM_SemiType "../JVM/JVMExceptions"
 begin
 
--- FIXME
+\<comment> \<open>FIXME\<close>
 locale prog =
   fixes P :: "'a prog"
 

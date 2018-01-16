@@ -106,23 +106,23 @@ theorem (in start_context) exec_pres_type:
                    xcpt_eff_def norm_eff_def relevant_entries_def)
   apply (case_tac "is!pc")
 
-  subgoal -- Load
+  subgoal \<comment> \<open>Load\<close>
     apply(clarsimp split: option.splits)
     apply (frule listE_nth_in, assumption)
     apply(fastforce split: option.splits)
     done
 
-  subgoal -- Store
+  subgoal \<comment> \<open>Store\<close>
     apply clarsimp
     apply(erule disjE)
      apply clarsimp
     apply(fastforce split: option.splits)
     done
 
-  subgoal -- Push
+  subgoal \<comment> \<open>Push\<close>
     by(fastforce simp add: typeof_lit_is_type split: option.splits)
 
-  subgoal -- New
+  subgoal \<comment> \<open>New\<close>
     apply (clarsimp)
     apply (erule disjE)
      apply clarsimp
@@ -132,7 +132,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- NewArray
+  subgoal \<comment> \<open>NewArray\<close>
     apply clarsimp
     apply (erule disjE)
      apply clarsimp
@@ -142,7 +142,7 @@ theorem (in start_context) exec_pres_type:
     apply(force split: option.splits)
     done
 
-  subgoal -- ALoad
+  subgoal \<comment> \<open>ALoad\<close>
     apply(clarsimp split: if_split_asm)
      apply(rule conjI)
       apply(fastforce split: option.splits)
@@ -159,7 +159,7 @@ theorem (in start_context) exec_pres_type:
     apply arith
     done
 
-  subgoal -- AStore
+  subgoal \<comment> \<open>AStore\<close>
     apply(clarsimp split: if_split_asm)
      apply(rule conjI)
       apply(fastforce split: option.splits)
@@ -176,7 +176,7 @@ theorem (in start_context) exec_pres_type:
     apply arith
     done
 
-  subgoal -- ALength
+  subgoal \<comment> \<open>ALength\<close>
     apply(clarsimp split: if_split_asm)
      apply(rule conjI)
       apply(fastforce split: option.splits)
@@ -193,7 +193,7 @@ theorem (in start_context) exec_pres_type:
     apply arith
     done
 
-  subgoal -- Getfield
+  subgoal \<comment> \<open>Getfield\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce dest: sees_field_is_type)
@@ -203,7 +203,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- Putfield
+  subgoal \<comment> \<open>Putfield\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -213,7 +213,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- CAS
+  subgoal \<comment> \<open>CAS\<close>
     apply clarsimp
     apply(erule disjE)
      apply fastforce
@@ -223,7 +223,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- Checkcast
+  subgoal \<comment> \<open>Checkcast\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -233,7 +233,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- Instanceof
+  subgoal \<comment> \<open>Instanceof\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -261,10 +261,10 @@ theorem (in start_context) exec_pres_type:
     apply(clarsimp split: option.splits)
     done
   
-  subgoal -- Return
+  subgoal \<comment> \<open>Return\<close>
     by(fastforce split: option.splits)
 
-  subgoal -- Pop
+  subgoal \<comment> \<open>Pop\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -274,7 +274,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- Dup
+  subgoal \<comment> \<open>Dup\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -284,7 +284,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- Swap
+  subgoal \<comment> \<open>Swap\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -294,7 +294,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- BinOpInstr
+  subgoal \<comment> \<open>BinOpInstr\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce intro: WTrt_binop_is_type)
@@ -304,10 +304,10 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
   
-  subgoal -- Goto
+  subgoal \<comment> \<open>Goto\<close>
     by(fastforce split: option.splits)
 
-  subgoal -- IfFalse
+  subgoal \<comment> \<open>IfFalse\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -319,7 +319,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- ThrowExc
+  subgoal \<comment> \<open>ThrowExc\<close>
     apply(clarsimp)
     apply(rule conjI)
      apply(erule allE)+
@@ -328,7 +328,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- MEnter
+  subgoal \<comment> \<open>MEnter\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)
@@ -338,7 +338,7 @@ theorem (in start_context) exec_pres_type:
     apply fastforce
     done
 
-  subgoal -- MExit
+  subgoal \<comment> \<open>MExit\<close>
     apply(clarsimp)
     apply(erule disjE)
      apply(fastforce)

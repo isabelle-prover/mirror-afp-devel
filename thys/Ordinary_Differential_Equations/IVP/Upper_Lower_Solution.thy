@@ -7,7 +7,7 @@ text \<open>Following  Walter~\cite{walter} in section 9\<close>
 
 lemma IVT_min:
   fixes f :: "real \<Rightarrow> 'b :: {linorder_topology,real_normed_vector,ordered_real_vector}"
-  \<comment>\<open>generalize?\<close>
+  \<comment> \<open>generalize?\<close>
   assumes y: "f a \<le> y" "y \<le> f b" "a \<le> b"
   assumes *: "continuous_on {a .. b} f"
   notes [continuous_intros] = *[THEN continuous_on_subset]

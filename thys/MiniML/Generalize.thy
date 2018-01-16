@@ -9,7 +9,7 @@ theory Generalize
 imports Instance
 begin
 
--- "@{text gen}: binding (generalising) the variables which are not free in the context"
+\<comment> \<open>@{text gen}: binding (generalising) the variables which are not free in the context\<close>
 
 type_synonym ctxt = "type_scheme list"
     
@@ -17,7 +17,7 @@ primrec gen :: "[ctxt, typ] => type_scheme" where
   "gen A (TVar n) = (if (n:(free_tv A)) then (FVar n) else (BVar n))"
 | "gen A (t1 -> t2) = (gen A t1) =-> (gen A t2)"
 
--- "executable version of @{text gen}: implementation with @{text free_tv_ML}"
+\<comment> \<open>executable version of @{text gen}: implementation with @{text free_tv_ML}\<close>
 
 primrec gen_ML_aux :: "[nat list, typ] => type_scheme" where
   "gen_ML_aux A (TVar n) = (if (n: set A) then (FVar n) else (BVar n))"

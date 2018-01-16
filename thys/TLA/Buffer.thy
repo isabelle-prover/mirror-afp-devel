@@ -28,29 +28,29 @@ text {*
 
 definition BInit :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "BInit ic q oc \<equiv> TEMP $q = #[]
-                          \<and> $ic = $oc"   -- {* initial condition of buffer *}
+                          \<and> $ic = $oc"   \<comment> \<open>initial condition of buffer\<close>
 
 definition Enq :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "Enq ic q oc \<equiv> TEMP ic$ \<noteq> $ic
                         \<and> q$ = $q @ [ ic$ ]
-                        \<and> oc$ = $oc"     -- {* enqueue a new value *}
+                        \<and> oc$ = $oc"     \<comment> \<open>enqueue a new value\<close>
 
 definition Deq :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "Deq ic q oc \<equiv> TEMP # 0 < length<$q>
                         \<and> oc$ = hd<$q>
                         \<and> q$ = tl<$q>
-                        \<and> ic$ = $ic"     -- {* dequeue value at front *}
+                        \<and> ic$ = $ic"     \<comment> \<open>dequeue value at front\<close>
 
 definition Nxt :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "Nxt ic q oc \<equiv> TEMP (Enq ic q oc \<or> Deq ic q oc)"
 
--- {* internal specification with buffer visible *}
+\<comment> \<open>internal specification with buffer visible\<close>
 definition ISpec :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "ISpec ic q oc \<equiv> TEMP BInit ic q oc
                           \<and> \<box>[Nxt ic q oc]_(ic,q,oc)
                           \<and> WF(Deq ic q oc)_(ic,q,oc)"
 
--- {* external specification: buffer hidden *}
+\<comment> \<open>external specification: buffer hidden\<close>
 definition Spec :: "'a statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "Spec ic oc == TEMP (\<exists>\<exists> q. ISpec ic q oc)"
 
@@ -134,7 +134,7 @@ text {*
 lemma noreps_empty [simp]: "noreps []"
   by (auto simp: noreps_def)
 
-lemma noreps_singleton: "noreps [x]"  -- {* special case of following lemma *}
+lemma noreps_singleton: "noreps [x]"  \<comment> \<open>special case of following lemma\<close>
   by (auto simp: noreps_def)
 
 lemma noreps_cons [simp]:
@@ -291,11 +291,11 @@ theorem ISpec_BInv: "\<turnstile> ISpec ic q oc \<longrightarrow> \<box>(BInv ic
 subsection "Two FIFO buffers in a row implement a buffer"
 
 locale DBuffer =
-  fixes inp :: "'a statefun"       -- {* input channel for double FIFO *}
-    and mid :: "'a statefun"       -- {* channel linking the two buffers *}
-    and out :: "'a statefun"       -- {* output channel for double FIFO *}
-    and q1  :: "'a list statefun"  -- {* inner queue of first FIFO *}
-    and q2  :: "'a list statefun"  -- {* inner queue of second FIFO *}
+  fixes inp :: "'a statefun"       \<comment> \<open>input channel for double FIFO\<close>
+    and mid :: "'a statefun"       \<comment> \<open>channel linking the two buffers\<close>
+    and out :: "'a statefun"       \<comment> \<open>output channel for double FIFO\<close>
+    and q1  :: "'a list statefun"  \<comment> \<open>inner queue of first FIFO\<close>
+    and q2  :: "'a list statefun"  \<comment> \<open>inner queue of second FIFO\<close>
     and vars
   defines "vars \<equiv> LIFT (inp,mid,out,q1,q2)"
   assumes DB_base: "basevars vars"
@@ -552,11 +552,11 @@ begin
     "\<turnstile> \<box>[FullNxt]_vars \<and> WF(Deq mid q2 out)_vars \<and> \<box>WF(Deq inp q1 mid)_vars
        \<longrightarrow> WF(Deq inp qc out)_(inp,qc,out)"
   proof (rule WF2)
-    -- {* the helpful action is the @{text Deq} action of the second queue *}
+    \<comment> \<open>the helpful action is the @{text Deq} action of the second queue\<close>
     show "|~ \<langle>FullNxt \<and> Deq mid q2 out\<rangle>_vars \<longrightarrow> \<langle>Deq inp qc out\<rangle>_(inp,qc,out)"
       by (auto simp: db_defs tla_defs)
   next
-    -- {* the helpful condition is the second queue being non-empty *}
+    \<comment> \<open>the helpful condition is the second queue being non-empty\<close>
     show "|~ ($q2 \<noteq> #[]) \<and> \<circle>($q2 \<noteq> #[]) \<and> \<langle>FullNxt \<and> Deq mid q2 out\<rangle>_vars 
              \<longrightarrow> Deq mid q2 out"
       by (auto simp: tla_defs)
@@ -654,6 +654,6 @@ begin
   theorem DBSpec_impl_Spec: "\<turnstile> DBSpec \<longrightarrow> Spec inp out"
     by (rule lift_imp_trans[OF DBSpec_impl_FullSpec FullSpec_impl_Spec])
 
-end -- {* locale DBuffer *}
+end \<comment> \<open>locale DBuffer\<close>
 
 end

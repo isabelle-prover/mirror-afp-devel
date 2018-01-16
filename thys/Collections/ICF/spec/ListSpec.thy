@@ -10,9 +10,9 @@ begin
 
 subsection "Definition"
 locale list =
-  -- "Abstraction to HOL-lists"
+  \<comment> \<open>Abstraction to HOL-lists\<close>
   fixes \<alpha> :: "'s \<Rightarrow> 'x list"
-  -- "Invariant"
+  \<comment> \<open>Invariant\<close>
   fixes invar :: "'s \<Rightarrow> bool"
 
 locale list_no_invar = list +

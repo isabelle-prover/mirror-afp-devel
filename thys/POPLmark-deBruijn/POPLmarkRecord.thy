@@ -688,7 +688,7 @@ lemma wf_weaken:
   apply simp
   apply (drule_tac x="TVarB T \<Colon> \<Delta>" in meta_spec)
   apply simp
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply (rule wf_RcdT)
   apply simp
   apply (rule ballpI)
@@ -877,7 +877,7 @@ lemma wf_subtypeE:
   apply (rule wf_subtype [OF H, THEN conjunct2])
   done
 
-lemma subtype_refl: -- {* A.1 *}
+lemma subtype_refl: \<comment> \<open>A.1\<close>
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<forall>(l::name, T)\<in>set fTs. \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<longrightarrow> \<Gamma> \<turnstile> T <: T"
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile> snd fT <: snd fT"
@@ -965,7 +965,7 @@ next
   thus ?case by simp
 qed
 
-lemma subtype_weaken': -- {* A.2 *}
+lemma subtype_weaken': \<comment> \<open>A.2\<close>
   "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
   apply (induct \<Delta>)
   apply simp_all
@@ -979,7 +979,7 @@ lemma fieldT_size [simp]:
   "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (size_prod (\<lambda>x. 0) size) fs)"
   by (induct fs arbitrary: a T rule: list.induct) fastforce+
 
-lemma subtype_trans: -- {* A.3 *}
+lemma subtype_trans: \<comment> \<open>A.3\<close>
   "\<Gamma> \<turnstile> S <: Q \<Longrightarrow> \<Gamma> \<turnstile> Q <: T \<Longrightarrow> \<Gamma> \<turnstile> S <: T"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> M <: N \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> M <: N"
@@ -1129,7 +1129,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
   }
 qed
 
-lemma substT_subtype: -- {* A.10 *}
+lemma substT_subtype: \<comment> \<open>A.10\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> S <: T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow>
     \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
@@ -1392,7 +1392,7 @@ theorem wf_typeE2:
   apply assumption
   apply (erule wf_subtypeE)
   apply assumption
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply (erule wf_dec)
   apply (erule conjE)+
   apply (rule wf_RcdT)
@@ -1419,7 +1419,7 @@ lemmas typings_induct = typing_typings.inducts(2)
   [of _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names T_Nil T_Cons]
 
-lemma narrow_type: -- {* A.7 *}
+lemma narrow_type: \<comment> \<open>A.7\<close>
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow>
      \<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> t : T"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> ts [:] Ts \<Longrightarrow>
@@ -1452,7 +1452,7 @@ lemma narrow_type: -- {* A.7 *}
   apply simp
   apply (rule subtype_trans(2))
   apply assumption+
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply (rule T_Let)
   apply blast
   apply assumption
@@ -1485,7 +1485,7 @@ proof (rule subtype_refl)
   from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" by (rule wf_typeE2)
 qed
 
-lemma Abs_type: -- {* A.13(1) *}
+lemma Abs_type: \<comment> \<open>A.13(1)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : T"
   shows "\<Gamma> \<turnstile> T <: U \<rightarrow> U' \<Longrightarrow>
     (\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
@@ -1513,7 +1513,7 @@ lemma Abs_type':
   shows "P" using H subtype_refl' [OF H]
   by (rule Abs_type) (rule R)
 
-lemma TAbs_type: -- {* A.13(2) *}
+lemma TAbs_type: \<comment> \<open>A.13(2)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda><:S. s) : T"
   shows "\<Gamma> \<turnstile> T <: (\<forall><:U. U') \<Longrightarrow>
     (\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> TVarB U \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
@@ -1548,7 +1548,7 @@ In the proof of the preservation theorem, the following elimination rule
 for typing judgements on record types will be useful:
 *}
 
-lemma Rcd_type1: -- {* A.13(3) *}
+lemma Rcd_type1: \<comment> \<open>A.13(3)\<close>
   assumes H: "\<Gamma> \<turnstile> t : T"
   shows "t = Rcd fs \<Longrightarrow> \<Gamma> \<turnstile> T <: RcdT fTs \<Longrightarrow>
      \<forall>(l, U) \<in> set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U"
@@ -1700,7 +1700,7 @@ lemma type_weaken:
   apply simp
   apply (drule subtype_weaken)
   apply simp+
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply (drule_tac x="\<Delta> @ \<Delta>'" in meta_spec)
   apply (drule meta_mp)
   apply simp
@@ -1721,7 +1721,7 @@ lemma type_weaken:
   apply simp+
   done
 
-lemma type_weaken': -- {* A.5(6) *}
+lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp
@@ -1749,7 +1749,7 @@ lemma subst_ptyping:
   apply simp+
   done
 
-theorem subst_type: -- {* A.8 *}
+theorem subst_type: \<comment> \<open>A.8\<close>
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
      \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
@@ -1807,7 +1807,7 @@ theorem subst_type: -- {* A.8 *}
   apply simp
   apply (rule subst_subtype [simplified])
   apply assumption
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply simp
   apply (drule meta_spec)+
   apply (drule meta_mp, rule refl)+
@@ -1831,7 +1831,7 @@ theorem subst_type: -- {* A.8 *}
   apply simp+
   done
 
-theorem substT_type: -- {* A.11 *}
+theorem substT_type: \<comment> \<open>A.11\<close>
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
@@ -1885,7 +1885,7 @@ theorem substT_type: -- {* A.11 *}
   apply (rule substT_subtype)
   apply assumption
   apply assumption
-  -- {* records *}
+  \<comment> \<open>records\<close>
   apply (drule meta_spec)+
   apply (drule meta_mp, rule refl)+
   apply (drule_tac \<Gamma>="\<Delta>'[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>" in T_Let)
@@ -2043,7 +2043,7 @@ will only be used for @{term "\<Gamma>\<^sub>1 = []"} later, the statement must 
 a more general form in order for the induction to go through.
 *}
 
-theorem match_type: -- {* A.17 *}
+theorem match_type: \<comment> \<open>A.17\<close>
   "\<turnstile> p : T\<^sub>1 \<Rightarrow> \<Delta> \<Longrightarrow> \<Gamma>\<^sub>2 \<turnstile> t\<^sub>1 : T\<^sub>1 \<Longrightarrow>
      \<Gamma>\<^sub>1 @ \<Delta> @ \<Gamma>\<^sub>2 \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts \<Longrightarrow>
        \<down>\<^sub>e \<parallel>\<Delta>\<parallel> 0 \<Gamma>\<^sub>1 @ \<Gamma>\<^sub>2 \<turnstile> t\<^sub>2[\<parallel>\<Gamma>\<^sub>1\<parallel> \<mapsto>\<^sub>s ts] : \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> \<parallel>\<Gamma>\<^sub>1\<parallel> T\<^sub>2"
@@ -2100,7 +2100,7 @@ lemma evals_labels [simp]:
   shows "(fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs'\<langle>l\<rangle>\<^sub>? = \<bottom>)" using H
   by (induct rule: evals_induct) simp_all
 
-theorem preservation: -- {* A.20 *}
+theorem preservation: \<comment> \<open>A.20\<close>
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> t \<longmapsto> t' \<Longrightarrow> \<Gamma> \<turnstile> t' : T"
   "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> fs [\<longmapsto>] fs' \<Longrightarrow> \<Gamma> \<turnstile> fs' [:] fTs"
 proof (induct arbitrary: t' and fs' set: typing typings)
@@ -2246,7 +2246,7 @@ next
   qed
 qed
 
-lemma Fun_canonical: -- {* A.14(1) *}
+lemma Fun_canonical: \<comment> \<open>A.14(1)\<close>
   assumes ty: "[] \<turnstile> v : T\<^sub>1 \<rightarrow> T\<^sub>2"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda>:S. t)" using ty
 proof (induct "[]::env" v "T\<^sub>1 \<rightarrow> T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2 rule: typing_induct)
@@ -2276,7 +2276,7 @@ next
   show ?case by cases
 qed simp_all
 
-lemma TyAll_canonical: -- {* A.14(3) *}
+lemma TyAll_canonical: \<comment> \<open>A.14(3)\<close>
   assumes ty: "[] \<turnstile> v : (\<forall><:T\<^sub>1. T\<^sub>2)"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda><:S. t)" using ty
 proof (induct "[]::env" v "\<forall><:T\<^sub>1. T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2 rule: typing_induct)
@@ -2311,7 +2311,7 @@ Like in the case of the simple calculus,
 we also need a canonical values theorem for record types:
 *}
 
-lemma RcdT_canonical: -- {* A.14(2) *}
+lemma RcdT_canonical: \<comment> \<open>A.14(2)\<close>
   assumes ty: "[] \<turnstile> v : RcdT fTs"
   shows "v \<in> value \<Longrightarrow>
     \<exists>fs. v = Rcd fs \<and> (\<forall>(l, t) \<in> set fs. t \<in> value)" using ty
@@ -2416,7 +2416,7 @@ next
   with fs show ?case by iprover
 qed
 
-theorem progress: -- {* A.16 *}
+theorem progress: \<comment> \<open>A.16\<close>
   "[] \<turnstile> t : T \<Longrightarrow> t \<in> value \<or> (\<exists>t'. t \<longmapsto> t')"
   "[] \<turnstile> fs [:] fTs \<Longrightarrow> (\<forall>(l, t) \<in> set fs. t \<in> value) \<or> (\<exists>fs'. fs [\<longmapsto>] fs')"
 proof (induct "[]::env" t T and "[]::env" fs fTs set: typing typings)

@@ -13,7 +13,7 @@ abbreviation
   instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list" where
   "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
-fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where -- "single step execution"
+fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where \<comment> \<open>single step execution\<close>
   "exec (P, xp, h, []) = None"
 
 | "exec (P, None, h, (stk,loc,C,M,pc)#frs) =
@@ -26,7 +26,7 @@ fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where -- "single s
 
 | "exec (P, Some xa, h, frs) = None" 
 
--- "relational view"
+\<comment> \<open>relational view\<close>
 inductive_set
   exec_1 :: "jvm_prog \<Rightarrow> (jvm_state \<times> jvm_state) set"
   and exec_1' :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
@@ -36,7 +36,7 @@ where
   "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1 P"
 | exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>'"
 
--- "reflexive transitive closure:"
+\<comment> \<open>reflexive transitive closure:\<close>
 definition exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
     ("(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)" [61,61,61]60) where
 (* FIXME exec_all \<rightarrow> exec_star, also in Def.JVM *)

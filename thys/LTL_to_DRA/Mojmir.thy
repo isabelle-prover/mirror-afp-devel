@@ -13,7 +13,7 @@ subsection \<open>Definitions\<close>
 
 locale mojmir_def = semi_mojmir_def +
   fixes
-    --\<open>Final States\<close>
+    \<comment> \<open>Final States\<close>
     F :: "'b set"
 begin
 
@@ -73,7 +73,7 @@ end
 
 locale mojmir = semi_mojmir + mojmir_def +
   assumes
-    --\<open>All states reachable from final states are also final\<close>
+    \<comment> \<open>All states reachable from final states are also final\<close>
     wellformed_F: "\<And>q \<nu>. q \<in> F \<Longrightarrow> \<delta> q \<nu> \<in> F"
 begin
 
@@ -272,7 +272,7 @@ proof
 
   moreover
 
-  --\<open>token has still rank i at m'\<close>
+  \<comment> \<open>token has still rank i at m'\<close>
   have "m' \<ge> n"
     using rank_Some_time[OF `rank y m' = Some i`] `y > max n m` by force
   hence "rank x m' = Some i"
@@ -280,7 +280,7 @@ proof
 
   moreover
 
-  --\<open>but x and y are not in the same state\<close>
+  \<comment> \<open>but x and y are not in the same state\<close>
   have "m' \<ge> Suc m"
     using rank_Some_time[OF `rank y m' = Some i`] `y > max n m` by force
   hence "token_run x m' \<in> F"
@@ -317,14 +317,14 @@ proof -
 
   ultimately
 
-  --\<open>In the case @{term "i \<le> j"}, the token y has also to stabilise with @{term i} at @{term n}.\<close>
+  \<comment> \<open>In the case @{term "i \<le> j"}, the token y has also to stabilise with @{term i} at @{term n}.\<close>
   have "i \<le> j \<Longrightarrow> stable_rank y i"
     using stable by (blast intro: stable_rank_tower)
   thus "j < i"
     using stable_rank_succeed[OF inf `y \<in> succeed i` `q\<^sub>0 \<notin> F`] by linarith
 qed
 
--- \<open>Relation to Mojmir Acceptance\<close>
+\<comment> \<open>Relation to Mojmir Acceptance\<close>
 
 lemma mojmir_accept_token_set_def1:
   assumes "accept"
@@ -352,7 +352,7 @@ proof (rule+)
         then obtain i where "x \<in> succeed i"
           by blast
         moreover
-        -- \<open>Obtain upper bound for succeed ranks\<close>
+        \<comment> \<open>Obtain upper bound for succeed ranks\<close>
         have "\<And>u. u \<ge> max_rank \<Longrightarrow> succeed u = {}"
           unfolding succeed_def using rank_upper_bound by fastforce
         ultimately
@@ -373,7 +373,7 @@ proof (rule+)
   hence fin_succeed_ranks: "finite (\<Union>{succeed j | j. j < i})"
     by auto
 
-  -- \<open>@{term i} is bounded by @{term max_rank}\<close>
+  \<comment> \<open>@{term i} is bounded by @{term max_rank}\<close>
   {
     obtain x where "x \<in> succeed i"
       using `infinite (succeed i)` by fastforce
@@ -418,7 +418,7 @@ proof (rule+)
         using `token_run x (Suc n + m) \<notin> F` `token_run x (Suc(Suc n + m)) \<in> F`
         using token_is_not_in_sink by blast
 
-      -- \<open>Obtain rank used to enter final\<close>
+      \<comment> \<open>Obtain rank used to enter final\<close>
       obtain k' where "rank x (Suc n + m) = Some k'"
         using `\<not>sink (token_run x (Suc n + m))` `x \<le> Suc n + m` by fastforce
 
@@ -431,7 +431,7 @@ proof (rule+)
 
       moreover
 
-      -- \<open>Rank used to enter final states is strictly bounded by i\<close>
+      \<comment> \<open>Rank used to enter final states is strictly bounded by i\<close>
       have "k' < i"
         using `rank x (Suc n + m) = Some k'` rank_monotonic[OF `rank x n = Some k`] `k < i`
         unfolding add_Suc_shift by fastforce
@@ -499,7 +499,7 @@ proof (rule ccontr, cases "q\<^sub>0 \<notin> F")
     have inf: "infinite {x. \<not>token_succeeds x \<and> token_squats x}"
       unfolding mojmir_accept_alt_def X by blast
 
-    --\<open>Obtain j, where j is the rank used by infinitely many configuration stabilising and not succeeding\<close>
+    \<comment> \<open>Obtain j, where j is the rank used by infinitely many configuration stabilising and not succeeding\<close>
     have "{x. \<not>token_succeeds x \<and> token_squats x} = {x. \<exists>j < i. \<not>token_succeeds x \<and> token_squats x \<and> stable_rank x j}"
       using stable_rank_bounded `infinite (succeed i)` `q\<^sub>0 \<notin> F`
       unfolding stable_rank_equiv_token_squats by metis
@@ -511,13 +511,13 @@ proof (rule ccontr, cases "q\<^sub>0 \<notin> F")
       (is "infinite ?S")
       using inf by force
 
-    --\<open>Obtain such a token x\<close>
+    \<comment> \<open>Obtain such a token x\<close>
     then obtain x where "\<not>token_succeeds x" and "token_squats x" and "stable_rank x j"
       unfolding infinite_nat_iff_unbounded_le by blast
     then obtain n where "\<forall>m \<ge> n. rank x m = Some j"
       unfolding stable_rank_def MOST_nat_le by blast
 
-    --\<open>All configuration with same stable rank are bought at some n with rank smaller i\<close>
+    \<comment> \<open>All configuration with same stable rank are bought at some n with rank smaller i\<close>
     have "{(x, y) | y. y > n \<and> stable_rank y j} \<subseteq> merge i"
       (is "?lhs \<subseteq> ?rhs")
     proof
@@ -530,14 +530,14 @@ proof (rule ccontr, cases "q\<^sub>0 \<notin> F")
 
       moreover
 
-      --\<open>Obtain a time n'' where x and y have the same rank\<close>
+      \<comment> \<open>Obtain a time n'' where x and y have the same rank\<close>
       obtain n'' where "rank x n'' = Some j" and "rank y n'' = Some j"
         using `\<forall>n'\<ge>n. rank x n' = Some j` `stable_rank y j`
         unfolding stable_rank_def MOST_nat_le by (metis add.commute le_add2)
       hence "token_run x n'' = token_run y n''" and "y \<le> n''"
         using push_down_rank_tokens rank_Some_time[OF `rank y n'' = Some j`] by simp_all
 
-      --\<open>Obtain the time n' where x merges y and proof all necessary properties\<close>
+      \<comment> \<open>Obtain the time n' where x merges y and proof all necessary properties\<close>
       then obtain n' where "token_run x n' \<noteq> token_run y n' \<or> y = Suc n'"
         and "token_run x (Suc n') = token_run y (Suc n')" and "y \<le> Suc n'"
         using token_run_mergepoint[OF `x < y`] le_add_diff_inverse by metis
@@ -566,7 +566,7 @@ proof (rule ccontr, cases "q\<^sub>0 \<notin> F")
 
     moreover
 
-    --\<open>However, x merges infinitely many configuration\<close>
+    \<comment> \<open>However, x merges infinitely many configuration\<close>
     hence "infinite {(x, y) | y. y > n \<and> stable_rank y j}"
       (is "infinite ?S'")
     proof -
@@ -627,7 +627,7 @@ theorem mojmir_accept_iff_token_set_accept2:
 
 subsubsection \<open>Time-Based Definitions\<close>
 
---\<open>Proof Rules\<close>
+\<comment> \<open>Proof Rules\<close>
 
 lemma finite_monotonic_image:
   fixes A B :: "nat set"
@@ -744,7 +744,7 @@ proof (rule finite_monotonic_image_pairs)
     by blast
 qed
 
---\<open>Correspondence Between Token- and Time-Based Definitions\<close>
+\<comment> \<open>Correspondence Between Token- and Time-Based Definitions\<close>
 
 lemma fail_t_inclusion:
   assumes "x \<le> n"
@@ -856,7 +856,7 @@ proof (rule token_time_finite_rule)
       unfolding fail_def using token_fails_def fail_t_inclusion by blast+
   }
 
-  -- \<open>Uniqueness\<close>
+  \<comment> \<open>Uniqueness\<close>
   {
     fix x y z
     assume "?P x y" and "?P x z"
@@ -921,7 +921,7 @@ proof (rule token_time_finite_rule)
       by (metis (mono_tags, lifting) mem_Collect_eq)+
   }
 
-  -- \<open>Uniqueness\<close>
+  \<comment> \<open>Uniqueness\<close>
   {
     fix x y z
     assume "?P x y" and "?P x z"
@@ -1123,7 +1123,7 @@ proof (rule token_time_finite_pair_rule)
       using merge_t_inclusion `?P x y` by force+
   }
 
-  -- \<open>Uniqueness\<close>
+  \<comment> \<open>Uniqueness\<close>
   {
     fix x y z
     assume "?P x y" and "?P x z"
@@ -1289,7 +1289,7 @@ proof -
       have "\<not>(\<exists>j \<ge> i. rank x m = Some j)"
       proof (cases "token_squats x")
         case True
-          -- \<open>The token already stabilised\<close>
+          \<comment> \<open>The token already stabilised\<close>
           have "x < n\<^sub>1"
             using `\<not>token_succeeds x` n\<^sub>1_def by (metis not_le)
           then obtain k where "\<forall>m' \<ge> n. rank x m' = Some k"
@@ -1301,14 +1301,14 @@ proof -
           have "q\<^sub>0 \<notin> F"
             by (metis `\<And>m. token_run x m \<notin> F` initial_in_F_token_run)
           ultimately
-          -- \<open>Hence the rank is smaller than i\<close>
+          \<comment> \<open>Hence the rank is smaller than i\<close>
           have "k < i" and "rank x m = Some k"
             using stable_rank_bounded `infinite (succeed i)` `n \<le> m` by blast+
           thus ?thesis
             by simp
       next
         case False
-          -- \<open>Then token is already in a sink\<close>
+          \<comment> \<open>Then token is already in a sink\<close>
           have "sink (token_run x m)"
           proof (rule ccontr)
             assume "\<not>sink (token_run x m)"
@@ -1321,7 +1321,7 @@ proof -
             thus False
               by (metis Fail `\<And>m. token_run x m \<notin> F` `n \<le> m` `x \<le> m` le_trans)
           qed
-          -- \<open>Hence there is no rank\<close>
+          \<comment> \<open>Hence there is no rank\<close>
           thus ?thesis
             by simp
       qed
@@ -1334,7 +1334,7 @@ proof -
       by (cases "token_succeeds x") (blast, simp)
   }
   moreover
-  -- \<open>By definition of n all tokens @{term "\<And>x. x \<ge> n"} succeed\<close>
+  \<comment> \<open>By definition of n all tokens @{term "\<And>x. x \<ge> n"} succeed\<close>
   have "\<And>m x. m \<ge> n \<Longrightarrow> \<not>x \<le> m \<Longrightarrow> token_succeeds x"
     using n_def n\<^sub>1_def by force
   ultimately

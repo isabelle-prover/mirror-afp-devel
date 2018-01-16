@@ -62,7 +62,7 @@ datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
    and varRef = VarRef (*global*) bool 
                        (*name*) String.literal 
                        (*index*) "expr option"
-   and chanRef = ChanRef varRef -- "explicit type for channels"
+   and chanRef = ChanRef varRef \<comment> \<open>explicit type for channels\<close>
    and recvArg = RecvArgVar varRef
                | RecvArgEval expr
                | RecvArgConst integer
@@ -882,27 +882,27 @@ record program =
   proc_names :: "String.literal iarray"
   proc_data :: "(String.literal, nat) lm"
 
-record pState = -- "State of a process"
-  pid      :: nat             -- "Process identifier"
-  vars     :: var_dict        -- "Dictionary of variables"
-  pc       :: nat             -- "Program counter"
-  channels :: "integer list"  -- "List of channels created in the process. Used to close them on finalization."
-  idx :: nat                  -- "Offset into the arrays of @{type program}"
+record pState = \<comment> \<open>State of a process\<close>
+  pid      :: nat             \<comment> \<open>Process identifier\<close>
+  vars     :: var_dict        \<comment> \<open>Dictionary of variables\<close>
+  pc       :: nat             \<comment> \<open>Program counter\<close>
+  channels :: "integer list"  \<comment> \<open>List of channels created in the process. Used to close them on finalization.\<close>
+  idx :: nat                  \<comment> \<open>Offset into the arrays of @{type program}\<close>
 
 hide_const (open) idx
 
-record gState = -- "Global state"
-  vars      :: var_dict      -- "Global variables"
-  channels  :: channels      -- "Channels are by construction part of the global state, even when created in a process."
-  timeout   :: bool          -- "Set to True if no process can take a transition."
-  procs     :: "pState list" -- "List of all running processes. A process is removed from it, when there is no running one
-                                 with a higher index."
+record gState = \<comment> \<open>Global state\<close>
+  vars      :: var_dict      \<comment> \<open>Global variables\<close>
+  channels  :: channels      \<comment> \<open>Channels are by construction part of the global state, even when created in a process.\<close>
+  timeout   :: bool          \<comment> \<open>Set to True if no process can take a transition.\<close>
+  procs     :: "pState list" \<comment> \<open>List of all running processes. A process is removed from it, when there is no running one
+                                 with a higher index.\<close>
 
-record gState\<^sub>I = gState + -- "Additional internal infos"
+record gState\<^sub>I = gState + \<comment> \<open>Additional internal infos\<close>
   handshake :: nat
-  hsdata    :: "integer list " -- "Data transferred via a handshake."
-  exclusive :: nat     -- "Set to the PID of the process, which is in an exclusive (= atomic) state."
-  else      :: bool    -- "Set to True for each process, if it can not take a transition. Used before timeout."
+  hsdata    :: "integer list " \<comment> \<open>Data transferred via a handshake.\<close>
+  exclusive :: nat     \<comment> \<open>Set to the PID of the process, which is in an exclusive (= atomic) state.\<close>
+  else      :: bool    \<comment> \<open>Set to True for each process, if it can not take a transition. Used before timeout.\<close>
 
 subsection {* Printing *}
 

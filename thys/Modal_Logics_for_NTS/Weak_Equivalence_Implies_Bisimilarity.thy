@@ -104,7 +104,7 @@ begin
   proof -
     have "symp weakly_logically_equivalent"
       by (metis weakly_logically_equivalent_def sympI)
-    moreover  -- \<open>weak static implication\<close>
+    moreover  \<comment> \<open>weak static implication\<close>
     {
       fix P Q \<phi> assume "P \<equiv>\<cdot> Q" and "P \<turnstile> \<phi>"
       then have "\<exists>Q'. Q \<Rightarrow> Q' \<and> P \<equiv>\<cdot> Q' \<and> Q' \<turnstile> \<phi>"
@@ -216,7 +216,7 @@ begin
             by blast
         qed
     }
-    moreover  -- \<open>weak simulation\<close>
+    moreover  \<comment> \<open>weak simulation\<close>
     {
       fix P Q \<alpha> P' assume "P \<equiv>\<cdot> Q" and "bn \<alpha> \<sharp>* Q" and "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
       then have "\<exists>Q'. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q' \<and> P' \<equiv>\<cdot> Q'"

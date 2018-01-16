@@ -588,7 +588,7 @@ lemma pick_one_lt:
   defines m: "m \<equiv> (mean xs)" and neq: "noteq \<equiv> list_neq xs m"
   assumes asum: "noteq\<noteq>[]"
   shows "\<exists>e. e : set noteq \<and> e < m"
-proof (rule ccontr) -- "reductio ad absurdum"
+proof (rule ccontr) \<comment> \<open>reductio ad absurdum\<close>
   let ?m = "(mean xs)"
   let ?neq = "list_neq xs ?m"
   let ?eq = "list_eq xs ?m"
@@ -899,7 +899,7 @@ proof -
   from pos_xs pos_def xsne \<alpha>_mem \<beta>_mem \<alpha>_def \<beta>_def have
     \<alpha>_pos: "\<alpha> > 0" and \<beta>_pos: "\<beta> > 0" by auto
 
-  -- "remove these elements from xs, and insert two new elements"
+  \<comment> \<open>remove these elements from xs, and insert two new elements\<close>
   obtain left_over where lo: "left_over = (remove1 \<beta> (remove1 \<alpha> xs))" by simp
   obtain b where bdef: "m + b = \<alpha> + \<beta>"
     by (drule meta_spec [of _ "\<alpha> + \<beta> - m"], simp)
@@ -915,7 +915,7 @@ proof -
   ultimately have
     mem : "\<alpha> : set(remove1 \<beta> xs) \<and> \<beta> : set(remove1 \<alpha> xs) \<and>
           (remove1 \<alpha> xs) \<noteq> [] \<and> (remove1 \<beta> xs) \<noteq> []" by simp
-  -- "prove that new list is positive"
+  \<comment> \<open>prove that new list is positive\<close>
   from nl have nl_pos: "pos new_list"
   proof cases
     assume "left_over = []"
@@ -927,7 +927,7 @@ proof -
     with lone mem nl m_pos b_pos show ?thesis by simp
   qed
 
-  -- "now show that the new list has the same mean as the old list"
+  \<comment> \<open>now show that the new list has the same mean as the old list\<close>
   with mem nl lo bdef \<alpha>_mem \<beta>_mem
     have "\<Sum>:new_list = \<Sum>:xs"
       apply clarsimp
@@ -948,7 +948,7 @@ proof -
     done
   ultimately have eq_mean: "mean new_list = mean xs" by (rule list_mean_eq_iff)
 
-  -- "finally show that the new list has a greater gmean than the old list"
+  \<comment> \<open>finally show that the new list has a greater gmean than the old list\<close>
   have gt_gmean: "gmean new_list > gmean xs"
   proof -
     from bdef \<alpha>_gt \<beta>_lt have "abs (m - b) < abs (\<alpha> - \<beta>)" by arith
@@ -985,14 +985,14 @@ proof -
     show "gmean new_list > gmean xs" by simp
   qed
 
-  -- "auxiliary info"
+  \<comment> \<open>auxiliary info\<close>
   from \<beta>_lt have \<beta>_ne_m: "\<beta> \<noteq> m" by simp
   from mem have
     \<beta>_mem_rmv_\<alpha>: "\<beta> : set (remove1 \<alpha> xs)" and rmv_\<alpha>_ne: "(remove1 \<alpha> xs) \<noteq> []" by auto
 
   from \<alpha>_def have \<alpha>_ne_m: "\<alpha> \<noteq> m" by simp
 
-  -- "now show that new list is more homogeneous"
+  \<comment> \<open>now show that new list is more homogeneous\<close>
   have lt_het: "het new_list < het xs"
   proof cases
     assume bm: "b=m"
@@ -1054,7 +1054,7 @@ proof -
     finally show "het new_list < het xs" .
   qed
 
-      -- "thus thesis by existence of newlist"
+      \<comment> \<open>thus thesis by existence of newlist\<close>
   from \<gamma>_eq_def lt_het gt_gmean eq_mean leq nl_pos show ?thesis by auto
 qed
 

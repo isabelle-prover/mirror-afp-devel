@@ -36,7 +36,7 @@ begin
   definition one_set_def:
     "1 = {1}"
 
-  definition c_prod_def: -- "the complex product"
+  definition c_prod_def: \<comment> \<open>the complex product\<close>
     "A \<cdot> B = {u * v | u v. u \<in> A \<and> v \<in> B}"
 
   instance
@@ -635,7 +635,7 @@ numbers extended by minus infinity. The operation of addition is
 maximum, the operation of multiplication is addition, the additive
 unit is minus infinity and the multiplicative unit is zero. *}
 
-datatype mreal = mreal real | MInfty  -- "minus infinity"
+datatype mreal = mreal real | MInfty  \<comment> \<open>minus infinity\<close>
 
 fun mreal_max where
   "mreal_max (mreal x) (mreal y) = mreal (max x y)"
@@ -713,7 +713,7 @@ text {* The min-plus dioid is also known as {\em tropical
 semiring}. Here we need to add a positive infinity to the real
 numbers. The procedere follows that of max-plus semirings.  *}
 
-datatype preal = preal real | PInfty  -- "plus infinity"
+datatype preal = preal real | PInfty  \<comment> \<open>plus infinity\<close>
 
 fun preal_min where
   "preal_min (preal x) (preal y) = preal (min x y)"
@@ -784,7 +784,7 @@ text {* Variants of min-plus and max-plus semirings can easily be
 obtained. Here we formalise the min-plus semiring over the natural
 numbers as an example. *}
 
-datatype pnat = pnat nat | PInfty  -- "plus infinity"
+datatype pnat = pnat nat | PInfty  \<comment> \<open>plus infinity\<close>
 
 fun pnat_min where
   "pnat_min (pnat x) (pnat y) = pnat (min x y)"

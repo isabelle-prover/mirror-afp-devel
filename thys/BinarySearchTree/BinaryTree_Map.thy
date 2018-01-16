@@ -28,7 +28,7 @@ definition valid_tmap :: "'a tarray => bool" where
 declare valid_tmap_def [simp]
 
 definition mapOf :: "'a tarray => index => 'a option" where
-  -- {* the abstraction function from trees to maps *}
+  \<comment> \<open>the abstraction function from trees to maps\<close>
   "mapOf t i == 
    (case (tlookup fst i t) of
      None => None
@@ -53,7 +53,7 @@ next case (Some ia) note tsome = this
   have "mapOf t i = Some (snd ia)"
   by (insert mapOf_lookup2 [of i t "fst ia" "snd ia"], simp add: o1)
   from this have "mapOf t i ~= None" by simp
-  from this h show ?thesis by simp -- {* contradiction *}
+  from this h show ?thesis by simp \<comment> \<open>contradiction\<close>
 qed
 
 lemma assumes v: "valid_tmap t"
@@ -62,7 +62,7 @@ lemma assumes v: "valid_tmap t"
 proof (cases "tlookup fst i t")
 case None 
   from this mapOf_lookup1 have "mapOf t i = None" by auto
-  from this h show ?thesis by simp -- {* contradiction *}
+  from this h show ?thesis by simp \<comment> \<open>contradiction\<close>
 next case (Some ia) note tsome = this
   have tlookup_some_inst: "sortedTree fst t & (tlookup fst i t = Some ia) --> 
         ia : setOf t & fst ia = i" by (simp add: tlookup_some)
@@ -80,7 +80,7 @@ subsection {* Lemmas @{text mapset_none} and @{text mapset_some} establish
 lemma assumes v: "valid_tmap t"
       shows mapset_none: "(mapOf t i = None) = (ALL a. (i,a) ~: setOf t)"
 proof
-  -- {* ==> *}
+  \<comment> \<open>==>\<close>
   assume mapNone: "mapOf t i = None"
   from v mapNone mapOf_lookup3 have lnone: "tlookup fst i t = None" by auto
   show "ALL a. (i,a) ~: setOf t"
@@ -97,7 +97,7 @@ proof
       from this show False by simp
     qed
   qed
-  -- {* <== *}
+  \<comment> \<open><==\<close>
   next assume h: "ALL a. (i,a) ~: setOf t"
   show "mapOf t i = None"
   proof (cases "mapOf t i")
@@ -111,14 +111,14 @@ proof
      (i,a) : setOf t & fst (i,a) = i"
     by (insert tlookup_some [of fst t i "(i,a)"], assumption)   
     from v o1 this have "(i,a) : setOf t" by simp
-    from this h show ?thesis by auto -- {* contradiction *}
+    from this h show ?thesis by auto \<comment> \<open>contradiction\<close>
   qed
 qed
 
 lemma assumes v: "valid_tmap t"
       shows mapset_some: "(mapOf t i = Some a) = ((i,a) : setOf t)"
 proof
-  -- {* ==> *}
+  \<comment> \<open>==>\<close>
   assume mapsome: "mapOf t i = Some a"
   from v mapsome have o1: "tlookup fst i t = Some (i,a)" by (simp add: mapOf_lookup4)
   from tlookup_some have tlookup_some_inst:
@@ -126,7 +126,7 @@ proof
    (i,a) : setOf t & fst (i,a) = i"
   by (insert tlookup_some [of fst t i "(i,a)"], assumption)   
   from v o1 this show "(i,a) : setOf t" by simp
-  -- {* <== *}
+  \<comment> \<open><==\<close>
   next assume iain: "(i,a) : setOf t"
   from v iain tlookup_finds have "tlookup fst (fst (i,a)) t = Some (i,a)" by fastforce
   from this have "tlookup fst i t = Some (i,a)" by simp

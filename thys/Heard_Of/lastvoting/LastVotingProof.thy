@@ -470,7 +470,7 @@ proof -
         \<and> card {q . coord\<Phi> (rho r q) = p} > N div 2"
     (is "?P p r" is "_ \<longrightarrow> ?R r")
   proof (rule LV_induct'[OF run, where P="?P"])
-    -- {* the only interesting step is step 0 *}
+    \<comment> \<open>the only interesting step is step 0\<close>
     fix n
     assume nxt: "next0 n p (rho n p) (HOrcvdMsgs LV_M n p (HOs n p) (rho n))
                            (coords (Suc n) p) (rho (Suc n) p)"
@@ -501,7 +501,7 @@ proof -
       ultimately
       show "?R (Suc n)" by (auto simp: notStep3EqualCoord)
     qed
-  -- {* the remaining cases are all solved by expanding the definitions *}
+  \<comment> \<open>the remaining cases are all solved by expanding the definitions\<close>
   qed (auto simp: LV_CHOMachine_def LV_initState_def next1_def next2_def
                   next3_def notStep3EqualCoord[OF run])
   with cmt show ?thesis by (intro conds, auto)
@@ -533,7 +533,7 @@ proof -
          \<and> x (rho r p) = the (vote (rho r (?crd r)))"
     (is "?Q p r" is "_ \<longrightarrow> ?R r")
   proof (rule LV_induct'[OF run, where P="?Q"])
-    -- {* The assertion is trivially true initially because the timestamp is 0. *}
+    \<comment> \<open>The assertion is trivially true initially because the timestamp is 0.\<close>
     assume "CinitState LV_M p (rho 0 p) (coords 0 p)" thus "?Q p 0"
       by (auto simp: LV_CHOMachine_def LV_initState_def)
   next
@@ -631,7 +631,7 @@ proof -
         \<and> card (?qs r) > N div 2"
     (is "?Q p r"  is "_ \<longrightarrow> ?R p r")
   proof (rule LV_induct'[OF run, where P="?Q"])
-    -- {* the interesting case is step 2 *}
+    \<comment> \<open>the interesting case is step 2\<close>
     fix n
     assume stp: "step n = 2" and stp': "step (Suc n) = 3"
        and ih: "?Q p n" and ph: "phase (Suc n) = phase n"
@@ -666,7 +666,7 @@ proof -
       with stp' coord aRcvd show "?R p (Suc n)"
         by auto
     qed
-    -- {* the remaining steps are all solved trivially *}
+    \<comment> \<open>the remaining steps are all solved trivially\<close>
   qed (auto simp: LV_CHOMachine_def LV_initState_def
                   next0_def next1_def next3_def)
   with rdy show ?thesis by (blast intro: conds)
@@ -703,7 +703,7 @@ proof -
            \<and> ready (?cfg (?crd p))"
     (is "?Q p r")
     proof (rule LV_Suc'[OF run, where P="?Q"])
-    -- {* for step 3, we prove the thesis by expanding the relevant definitions *}
+    \<comment> \<open>for step 3, we prove the thesis by expanding the relevant definitions\<close>
     assume "next3 r p (?cfg p) (HOrcvdMsgs LV_M r p (HOs r p) ?cfg) 
                       (coords (Suc r) p) (?cfg' p)"
        and "step r = 3"
@@ -711,7 +711,7 @@ proof -
       by (auto simp: next3_def send3_def isVote_def LV_CHOMachine_def 
                      HOrcvdMsgs_def LV_sendMsg_def)
   next
-    -- {* the other steps don't change the decision *}
+    \<comment> \<open>the other steps don't change the decision\<close>
     assume "next0 r p (?cfg p) (HOrcvdMsgs LV_M r p (HOs r p) ?cfg)
                       (coords (Suc r) p) (?cfg' p)"
     with dec show ?thesis by (auto simp: next0_def)
@@ -730,12 +730,12 @@ proof -
   with run
   have "card {q . ?crd q = ?crd p \<and> timestamp (?cfg q) = Suc (phase r)} 
           > N div 2" by (rule readyE)
-  -- {* Hence there is at least one such process \ldots *}
+  \<comment> \<open>Hence there is at least one such process \ldots\<close>
   hence "card {q . ?crd q = ?crd p \<and> timestamp (?cfg q) = Suc (phase r)} \<noteq> 0"
     by arith  (** auto simplifies too much **)
   then obtain q where "?crd q = ?crd p" and "timestamp (?cfg q) = Suc (phase r)"
     by auto
-  -- {* \ldots\ and by a previous lemma the coordinator must have committed. *}
+  \<comment> \<open>\ldots\ and by a previous lemma the coordinator must have committed.\<close>
   with run have "commt (?cfg (?crd p))"
     by (auto elim: currentTimestampE)
   with 1 show ?thesis by (blast intro: conds)
@@ -786,7 +786,7 @@ proof -
         from run
         show "x (rho (Suc n) p) \<in> range (\<lambda>q. x (rho 0 q))" (is "?P p n")
         proof (rule LV_Suc'[where P="?P"])
-          -- {* only @{text step1} is of interest *}
+          \<comment> \<open>only @{text step1} is of interest\<close>
           assume stp: "step n = 1"
              and nxt: "next1 n p (rho n p)
                              (HOrcvdMsgs LV_M n p (HOs n p) (rho n))
@@ -811,7 +811,7 @@ proof -
             ultimately
             show ?thesis by (force simp add: image_def)
           qed
-          -- {* the other steps don't change @{text x} *}
+          \<comment> \<open>the other steps don't change @{text x}\<close>
         next
           assume "step n = 0"
           with run have "x (rho (Suc n) p) = x (rho n p)"
@@ -838,7 +838,7 @@ proof -
         from run
         have "vote (rho (Suc n) p) = Some v \<longrightarrow> v \<in> ?x0" (is "?P p n")
         proof (rule LV_Suc'[where P="?P"])
-          -- {* here only @{text step0} is of interest *}
+          \<comment> \<open>here only @{text step0} is of interest\<close>
           assume stp: "step n = 0"
              and nxt: "next0 n p (rho n p)
                              (HOrcvdMsgs LV_M n p (HOs n p) (rho n))
@@ -856,7 +856,7 @@ proof -
                              HOrcvdMsgs_def LV_sendMsg_def)
             with x show ?thesis by (auto simp: image_def)
           qed
-          -- {* the other cases don't change the vote *}
+          \<comment> \<open>the other cases don't change the vote\<close>
         next
           assume "step n = 1"
           with run have "vote (rho (Suc n) p) = vote (rho n p)"
@@ -1221,7 +1221,7 @@ lemma XOfTimestampBeyondDecision:
               x (rho (r+k) q) = the (decide (rho (Suc r) p))"
   (is "\<forall>q \<in> ?bynd k. _ = ?v" is "?P p k")
 proof (induct k)
-  -- {* base step *}
+  \<comment> \<open>base step\<close>
   show "?P p 0"
   proof (clarify)
     fix q
@@ -1246,14 +1246,14 @@ proof (induct k)
     with x v show "x (rho (r+0) q) = ?v" by simp
   qed
   next
-  -- {* induction step *}
+  \<comment> \<open>induction step\<close>
   fix k
   assume ih: "?P p k"
   show "?P p (Suc k)"
   proof (clarify)
     fix q
     assume q: "q \<in> ?bynd (Suc k)"
-    -- {* distinguish the kind of transition---only @{text step1} is interesting *}
+    \<comment> \<open>distinguish the kind of transition---only @{text step1} is interesting\<close>
     have "x (rho (Suc (r + k)) q) = ?v" (is "?X q (r+k)")
     proof (rule LV_Suc'[OF run, where P="?X"])
       assume stp: "step (r + k) = 1"
@@ -1289,7 +1289,7 @@ proof (induct k)
         with x ih show ?thesis by auto
       qed
     next
-      -- {* all other steps hold by induction hypothesis *}
+      \<comment> \<open>all other steps hold by induction hypothesis\<close>
       assume "step (r+k) = 0"
       with run have x: "x (rho (Suc (r+k)) q) = x (rho (r+k) q)"
         and ts: "timestamp (rho (Suc (r+k)) q) = timestamp (rho (r+k) q)"
@@ -1340,12 +1340,12 @@ proof -
   let ?qcrd = "coord\<Phi> (rho (r+k) q)"
   from run p have notNone: "decide (rho (Suc r) p) \<noteq> None"
     by (auto elim: decisionE)
-  -- {* process @{text q} decides on the vote of its coordinator *}
+  \<comment> \<open>process @{text q} decides on the vote of its coordinator\<close>
   from run q
   have dec: "decide (rho (Suc (r+k)) q) = Some (the (vote (rho (r+k) ?qcrd)))"
    and cmt: "commt (rho (r+k) ?qcrd)"
     by (auto elim: decisionE)
-  -- {* that vote is the @{text x} field of some process @{text "q'"} with a recent timestamp *}
+  \<comment> \<open>that vote is the @{text x} field of some process @{text "q'"} with a recent timestamp\<close>
   from run p have "card (?bynd 0) > N div 2"
     by (simp add: decisionThenMajorityBeyondTS)
   moreover
@@ -1359,11 +1359,11 @@ proof -
     where q'1: "q' \<in> ?bynd k"
       and q'2: "vote (rho (r+k) ?qcrd) = Some (x (rho (r+k) q'))"
     by (auto dest: commitThenVoteRecent)
-  -- {* the @{text x} field of process @{text "q'"} is the value @{text p} decided on *}
+  \<comment> \<open>the @{text x} field of process @{text "q'"} is the value @{text p} decided on\<close>
   from run p q'1
   have "x (rho (r+k) q') = the (decide (rho (Suc r) p))"
     by (auto dest: XOfTimestampBeyondDecision)
-  -- {* which proves the assertion *}
+  \<comment> \<open>which proves the assertion\<close>
   with dec q'2 notNone show ?thesis by auto
 qed
 
@@ -1614,7 +1614,7 @@ theorem lv_consensus:
       and commG: "CHOcommGlobal LV_M HOs coords"
   shows "consensus (x \<circ> (rho 0)) decide rho"
 proof -
-  -- {* the above statement of termination is stronger than what we need *}
+  \<comment> \<open>the above statement of termination is stronger than what we need\<close>
   from lv_termination[OF assms]
   obtain r where "\<forall>p. decide (rho r p) \<noteq> None" ..
   hence "\<forall>p. \<exists>r. decide (rho r p) \<noteq> None" by blast

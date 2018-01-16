@@ -168,9 +168,9 @@ definition flow where "flow t0 x0 = (\<lambda>t. if t \<in> existence_ivl t0 x0 
 end
 
 locale ll_on_open_it =
-  general?:\<comment>\<open>TODO: why is this qualification necessary? It seems only because of @{thm ll_on_open_it_axioms}\<close>
+  general?:\<comment> \<open>TODO: why is this qualification necessary? It seems only because of @{thm ll_on_open_it_axioms}\<close>
   ll_on_open + fixes t0::real
-  \<comment>\<open>if possible, all development should be done with \<open>t0\<close> as explicit parameter for initial time:
+  \<comment> \<open>if possible, all development should be done with \<open>t0\<close> as explicit parameter for initial time:
     then it can be instantiated with \<open>0\<close> for autonomous ODEs\<close>
 
 context ll_on_open begin

@@ -84,20 +84,20 @@ lemma loop_induct:
   fixes body::"'s prog"
   assumes hwp:  "healthy (wp body)"
       and hwlp: "nearly_healthy (wlp body)"
-      -- "The body must be healthy, both in strict and liberal semantics."
+      \<comment> \<open>The body must be healthy, both in strict and liberal semantics.\<close>
       and Limit:   "\<And>S. \<lbrakk> \<forall>x\<in>S. P (fst x) (snd x); \<forall>x\<in>S. feasible (fst x);
                           \<forall>x\<in>S. \<forall>Q. unitary Q \<longrightarrow> unitary (snd x Q) \<rbrakk> \<Longrightarrow>
                     P (Sup_trans (fst ` S)) (Inf_utrans (snd ` S))"
-      -- "The property holds at limit points."
+      \<comment> \<open>The property holds at limit points.\<close>
       and IH:   "\<And>t u. \<lbrakk> P t u; feasible t; \<And>Q. unitary Q \<Longrightarrow> unitary (u Q)  \<rbrakk> \<Longrightarrow>
                         P (wp  (body ;; Embed t \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip))
                           (wlp (body ;; Embed u \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip))"
-      -- "The inductive step.  The property is preserved by a single loop iteration."
+      \<comment> \<open>The inductive step.  The property is preserved by a single loop iteration.\<close>
       and P_equiv: "\<And>t t' u u'. \<lbrakk> P t u; equiv_trans t t'; equiv_utrans u u' \<rbrakk> \<Longrightarrow> P t' u'"
-      -- "The property must be preserved by equivalence"
+      \<comment> \<open>The property must be preserved by equivalence\<close>
   shows "P (wp (do G \<longrightarrow> body od)) (wlp (do G \<longrightarrow> body od))"
-  -- "The property can refer to both interpretations simultaneously.  The unifier will happily
-  apply the rule to just one or the other, however."
+  \<comment> \<open>The property can refer to both interpretations simultaneously.  The unifier will happily
+  apply the rule to just one or the other, however.\<close>
 proof(simp add:wp_eval)
   let "?X t" = "wp (body ;; Embed t \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)"
   let "?Y t" = "wlp (body ;; Embed t \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)"

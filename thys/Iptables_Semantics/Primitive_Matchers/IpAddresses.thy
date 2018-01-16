@@ -7,7 +7,7 @@ begin
 
 
 
---"Misc"
+\<comment> \<open>Misc\<close>
 (*we dont't have an empty ip space, but a space which only contains the 0 address. We will use the option type to denote the empty space in some functions.*)
 lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (0, 0, 0, 0)) 33 = {0}"
   by(simp add: ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def ipset_from_cidr_large_pfxlen)
@@ -37,13 +37,13 @@ subsection\<open>IPv4 Addresses in IPTables Notation (how we parse it)\<close>
     notes [[typedef_overloaded]]
   begin
     datatype 'i ipt_iprange =
-                          -- "Singleton IP Address"
+                          \<comment> \<open>Singleton IP Address\<close>
                           IpAddr "'i::len word"
   
-                          -- "CIDR notation: addr/xx"
+                          \<comment> \<open>CIDR notation: addr/xx\<close>
                           | IpAddrNetmask "'i word" nat
   
-                          -- "-m iprange --src-range a.b.c.d-e.f.g.h"
+                          \<comment> \<open>-m iprange --src-range a.b.c.d-e.f.g.h\<close>
                           | IpAddrRange  "'i word" "'i word"
                               (*the range is inclusive*)
   end  

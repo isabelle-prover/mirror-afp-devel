@@ -21,8 +21,8 @@ text {*
 type_synonym ('k,'v,'s) map_\<alpha> = "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
 type_synonym ('k,'v,'s) map_invar = "'s \<Rightarrow> bool"
 locale map = 
-  fixes \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"                 -- "Abstraction to map datatype"
-  fixes invar :: "'s \<Rightarrow> bool"                 -- "Invariant"
+  fixes \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"                 \<comment> \<open>Abstraction to map datatype\<close>
+  fixes invar :: "'s \<Rightarrow> bool"                 \<comment> \<open>Invariant\<close>
 
 locale map_no_invar = map +
   assumes invar[simp, intro!]: "\<And>s. invar s"
@@ -421,7 +421,7 @@ begin
 
 end
 
-  -- "Equivalent description of sel-map properties"
+  \<comment> \<open>Equivalent description of sel-map properties\<close>
 lemma map_sel_altI:
   assumes S1: 
     "!!s f r P. \<lbrakk> invar s; sel s f = Some r; 

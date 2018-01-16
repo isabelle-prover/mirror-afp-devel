@@ -12,7 +12,7 @@ imports
   Main "HOL-Library.Omega_Words_Fun"
 begin
 
--- \<open>This theory provides a formalisation of linear temporal logic. It provides three variants:
+\<comment> \<open>This theory provides a formalisation of linear temporal logic. It provides three variants:
     \begin{enumerate}
       \item LTL with syntactic sugar. This variant is the semantic reference and the included parser 
             generates ASTs of this datatype.
@@ -25,7 +25,7 @@ begin
 
 subsection \<open>LTL with Syntactic Sugar\<close>
 
--- \<open>In this section, we provide a formulation of LTL with explicit syntactic sugar deeply embedded. 
+\<comment> \<open>In this section, we provide a formulation of LTL with explicit syntactic sugar deeply embedded. 
     This formalization serves as a reference semantics.\<close>
 
 subsubsection \<open>Syntax\<close>
@@ -89,7 +89,7 @@ lemma ltl_Next_Neg_con[simp]:
   "\<xi> \<Turnstile>\<^sub>c X\<^sub>c (not\<^sub>c \<phi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>c not\<^sub>c X\<^sub>c \<phi>"
   by auto
 
---\<open>The connection between Until and Release\<close>
+\<comment> \<open>The connection between Until and Release\<close>
 
 lemma ltl_Release_Until_con:
  "\<xi> \<Turnstile>\<^sub>c \<phi> V\<^sub>c \<psi> \<longleftrightarrow> (\<not> \<xi> \<Turnstile>\<^sub>c (not\<^sub>c \<phi>) U\<^sub>c (not\<^sub>c \<psi>))"
@@ -518,7 +518,7 @@ lemma nested_release_semantics[simp]:
 
 subsection \<open>Propositional LTL\<close>
 
--- \<open>We define the syntax and semantics of propositional linear-time
+\<comment> \<open>We define the syntax and semantics of propositional linear-time
     temporal logic PLTL.
     PLTL formulas are built from atomic formulas, propositional connectives,
     and the temporal operators ``next'' and ``until''. The following data
@@ -534,7 +534,7 @@ datatype 'a pltl  =
   | Next_ltlp "'a pltl"              ("X\<^sub>p _" [88] 87)
   | Until_ltlp "'a pltl" "'a pltl"   ("_ U\<^sub>p _" [84,84] 83)
 
--- \<open>Further connectives of PLTL can be defined in terms of the existing syntax.\<close>
+\<comment> \<open>Further connectives of PLTL can be defined in terms of the existing syntax.\<close>
 
 definition Not_ltlp ("not\<^sub>p _" [85] 85) 
 where 

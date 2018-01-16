@@ -195,7 +195,7 @@ where
   "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
   P \<turnstile> \<langle>Val v # es,s\<rangle> [\<rightarrow>] \<langle>Val v # es',s'\<rangle>"
 
--- "Exception propagation"
+\<comment> \<open>Exception propagation\<close>
 
 | CastThrow: "P \<turnstile> \<langle>Cast C (throw e), s\<rangle> \<rightarrow> \<langle>throw e, s\<rangle>"
 | BinOpThrow1: "P \<turnstile> \<langle>(throw e) \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow> \<langle>throw e, s\<rangle>"

@@ -225,6 +225,6 @@ lemma removing_winning_region_induces_no_deadends:
   shows "\<exists>w \<in> V - winning_region p. v\<rightarrow>w"
   using assms winning_region_extends_VVp winning_region_extends_VVpstar by blast
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

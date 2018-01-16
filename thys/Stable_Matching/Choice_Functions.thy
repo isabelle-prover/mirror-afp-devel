@@ -1006,7 +1006,7 @@ lemma %invisible sarp_onI:
   shows "sarp_on A f"
 using assms unfolding sarp_on_def by blast
 
-lemma sarp_on_warp_on: \<comment>\<open> \citet[T.3 part]{Sen:1970} \<close>
+lemma sarp_on_warp_on: \<comment> \<open>\citet[T.3 part]{Sen:1970}\<close>
   assumes "sarp_on A f"
   shows "warp_on A f"
 using %invisible assms unfolding sarp_on_def warp_on_def rwp_on_def rsp_on_def by blast
@@ -1098,7 +1098,7 @@ proof %invisible (rule transI)
   ultimately show "(x, z) \<in> rwp_on A f" unfolding rwp_on_def by blast
 qed
 
-lemma wca_on_V_axiom_on_preorder_on: \<comment>\<open> \citet[T.1, T.3 part]{Sen:1970} \<close>
+lemma wca_on_V_axiom_on_preorder_on: \<comment> \<open>\citet[T.1, T.3 part]{Sen:1970}\<close>
   assumes "f_range_on A f"
   assumes "decisive_on A f"
   shows "wca_on A f \<longleftrightarrow> V_axiom_on A f \<and> preorder_on A (rwp_on A f) \<and> total_on A (rwp_on A f)"
@@ -1124,7 +1124,7 @@ qed
 (*>*)
 text\<open>\<close>
 
-lemma wca_on_rwp_on_rspR_on: \<comment>\<open> \citet[T.2]{Sen:1970} \<close>
+lemma wca_on_rwp_on_rspR_on: \<comment> \<open>\citet[T.2]{Sen:1970}\<close>
   assumes "wca_on A f"
   assumes "f_range_on A f"
   assumes "decisive_on A f"
@@ -1147,16 +1147,16 @@ qed
 (*>*)
 text\<open>\<close>
 
-lemma rwp_on_rspR_on_wca_on: \<comment>\<open> \citet[T.2]{Sen:1970} \<close>
+lemma rwp_on_rspR_on_wca_on: \<comment> \<open>\citet[T.2]{Sen:1970}\<close>
   assumes "rwp_on A f = rspR_on A f"
   shows "wca_on A f"
 using %invisible assms unfolding wca_on_def rsp_on_def rspR_on_def by blast
 
-lemma wca_on_warp_on: \<comment>\<open> \citet[T.3 part]{Sen:1970} \<close>
+lemma wca_on_warp_on: \<comment> \<open>\citet[T.3 part]{Sen:1970}\<close>
   shows "wca_on A f \<longleftrightarrow> warp_on A f"
 unfolding %invisible warp_on_def wca_on_def rsp_on_def rwp_on_def by blast
 
-lemma warp_on_sarp_on: \<comment>\<open> \citet[T.3 part]{Sen:1970} \<close>
+lemma warp_on_sarp_on: \<comment> \<open>\citet[T.3 part]{Sen:1970}\<close>
   assumes "warp_on A f"
   assumes "f_range_on A f"
   assumes "decisive_on A f"
@@ -1220,8 +1220,8 @@ unfolding mwc_sarp_def using assms by blast
 
 lemma iia_consistency_mwc_sarp:
   assumes "f_range f"
-  assumes "iia f" \<comment>\<open> @{const "substitutes"}\<close>
-  assumes "consistency f" \<comment>\<open>@{const "irc"}\<close>
+  assumes "iia f" \<comment> \<open>@{const "substitutes"}\<close>
+  assumes "consistency f" \<comment> \<open>@{const "irc"}\<close>
   shows "mwc_sarp f"
 proof(rule mwc_sarpI)
   fix Xs

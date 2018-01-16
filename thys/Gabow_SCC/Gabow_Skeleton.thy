@@ -24,13 +24,13 @@ text {*
   and include a timing for the whole algorithm.
 *}
 
-definition stat_newnode :: "unit => unit"   -- "Invoked if new node is visited"
+definition stat_newnode :: "unit => unit"   \<comment> \<open>Invoked if new node is visited\<close>
   where [code]: "stat_newnode \<equiv> \<lambda>_. ()"
 
-definition stat_start :: "unit => unit"     -- "Invoked once if algorithm starts"
+definition stat_start :: "unit => unit"     \<comment> \<open>Invoked once if algorithm starts\<close>
   where [code]: "stat_start \<equiv> \<lambda>_. ()"
 
-definition stat_stop :: "unit => unit"      -- "Invoked once if algorithm stops"
+definition stat_stop :: "unit => unit"      \<comment> \<open>Invoked once if algorithm stops\<close>
   where [code]: "stat_stop \<equiv> \<lambda>_. ()"
 
 lemma [autoref_rules]: 
@@ -57,7 +57,7 @@ text {*
 
 subsection {* Preliminaries *}
 definition path_seg :: "'a set list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a set"
-  -- "Set of nodes in a segment of the path"
+  \<comment> \<open>Set of nodes in a segment of the path\<close>
   where "path_seg p i j \<equiv> \<Union>{p!k|k. i\<le>k \<and> k<j}"
 
 lemma path_seg_simps[simp]: 
@@ -80,7 +80,7 @@ lemma path_seg_butlast:
   done
 
 definition idx_of :: "'a set list \<Rightarrow> 'a \<Rightarrow> nat"
-  -- "Index of path segment that contains a node"
+  \<comment> \<open>Index of path segment that contains a node\<close>
   where "idx_of p v \<equiv> THE i. i<length p \<and> v\<in>p!i"
 
 lemma idx_of_props:
@@ -122,28 +122,28 @@ type_synonym 'v abs_state = "'v set list \<times> 'v set \<times> ('v\<times>'v)
 context fr_graph
 begin
   definition touched :: "'v set list \<Rightarrow> 'v set \<Rightarrow> 'v set" 
-    -- "Touched: Nodes that are done or on path"
+    \<comment> \<open>Touched: Nodes that are done or on path\<close>
     where "touched p D \<equiv> D \<union> \<Union>set p"
 
   definition vE :: "'v set list \<Rightarrow> 'v set \<Rightarrow> ('v \<times> 'v) set \<Rightarrow> ('v \<times> 'v) set"
-    -- "Visited edges: No longer pending edges from touched nodes"
+    \<comment> \<open>Visited edges: No longer pending edges from touched nodes\<close>
     where "vE p D pE \<equiv> (E \<inter> (touched p D \<times> UNIV)) - pE"
 
-  lemma vE_ss_E: "vE p D pE \<subseteq> E" -- "Visited edges are edges"
+  lemma vE_ss_E: "vE p D pE \<subseteq> E" \<comment> \<open>Visited edges are edges\<close>
     unfolding vE_def by auto
 
 end
 
-locale outer_invar_loc -- "Invariant of the outer loop"
+locale outer_invar_loc \<comment> \<open>Invariant of the outer loop\<close>
   = fr_graph G for G :: "('v,'more) graph_rec_scheme" +
-  fixes it :: "'v set" -- {* Remaining nodes to iterate over *}
-  fixes D :: "'v set" -- {* Finished nodes *}
+  fixes it :: "'v set" \<comment> \<open>Remaining nodes to iterate over\<close>
+  fixes D :: "'v set" \<comment> \<open>Finished nodes\<close>
 
-  assumes it_initial: "it\<subseteq>V0"  -- "Only start nodes to iterate over"
+  assumes it_initial: "it\<subseteq>V0"  \<comment> \<open>Only start nodes to iterate over\<close>
 
-  assumes it_done: "V0 - it \<subseteq> D"  -- "Nodes already iterated over are visited"
-  assumes D_reachable: "D\<subseteq>E\<^sup>*``V0" -- "Done nodes are reachable"
-  assumes D_closed: "E``D \<subseteq> D" -- "Done is closed under transitions"
+  assumes it_done: "V0 - it \<subseteq> D"  \<comment> \<open>Nodes already iterated over are visited\<close>
+  assumes D_reachable: "D\<subseteq>E\<^sup>*``V0" \<comment> \<open>Done nodes are reachable\<close>
+  assumes D_closed: "E``D \<subseteq> D" \<comment> \<open>Done is closed under transitions\<close>
 begin
 
   lemma locale_this: "outer_invar_loc G it D" by unfold_locales
@@ -154,7 +154,7 @@ begin
     unfolding outer_invar_def apply simp by unfold_locales 
 end
 
-locale invar_loc -- "Invariant of the inner loop"
+locale invar_loc \<comment> \<open>Invariant of the inner loop\<close>
   = fr_graph G
   for G :: "('v, 'more) graph_rec_scheme" +
   fixes v0 :: "'v"
@@ -167,27 +167,27 @@ locale invar_loc -- "Invariant of the inner loop"
   assumes D_incr: "D0 \<subseteq> D"
 
   assumes pE_E_from_p: "pE \<subseteq> E \<inter> (\<Union>set p) \<times> UNIV" 
-    -- "Pending edges are edges from path"
+    \<comment> \<open>Pending edges are edges from path\<close>
   assumes E_from_p_touched: "E \<inter> (\<Union>set p \<times> UNIV) \<subseteq> pE \<union> UNIV \<times> touched p D" 
-    -- "Edges from path are pending or touched"
-  assumes D_reachable: "D\<subseteq>E\<^sup>*``V0" -- "Done nodes are reachable"
+    \<comment> \<open>Edges from path are pending or touched\<close>
+  assumes D_reachable: "D\<subseteq>E\<^sup>*``V0" \<comment> \<open>Done nodes are reachable\<close>
   assumes p_connected: "Suc i<length p \<Longrightarrow> p!i \<times> p!Suc i \<inter> (E-pE) \<noteq> {}"
-    -- "CNodes on path are connected by non-pending edges"
+    \<comment> \<open>CNodes on path are connected by non-pending edges\<close>
 
   assumes p_disjoint: "\<lbrakk>i<j; j<length p\<rbrakk> \<Longrightarrow> p!i \<inter> p!j = {}" 
-    -- "CNodes on path are disjoint"
+    \<comment> \<open>CNodes on path are disjoint\<close>
   assumes p_sc: "U\<in>set p \<Longrightarrow> U\<times>U \<subseteq> (vE p D pE \<inter> U\<times>U)\<^sup>*" 
-    -- "Nodes in CNodes are mutually reachable by visited edges"
+    \<comment> \<open>Nodes in CNodes are mutually reachable by visited edges\<close>
 
-  assumes root_v0: "p\<noteq>[] \<Longrightarrow> v0\<in>hd p" -- "Root CNode contains start node"
-  assumes p_empty_v0: "p=[] \<Longrightarrow> v0\<in>D" -- "Start node is done if path empty"
+  assumes root_v0: "p\<noteq>[] \<Longrightarrow> v0\<in>hd p" \<comment> \<open>Root CNode contains start node\<close>
+  assumes p_empty_v0: "p=[] \<Longrightarrow> v0\<in>D" \<comment> \<open>Start node is done if path empty\<close>
   
-  assumes D_closed: "E``D \<subseteq> D" -- "Done is closed under transitions"
+  assumes D_closed: "E``D \<subseteq> D" \<comment> \<open>Done is closed under transitions\<close>
   (*assumes D_vis: "E\<inter>D\<times>D \<subseteq> vE" -- "All edges from done nodes are visited"*)
 
   assumes vE_no_back: "\<lbrakk>i<j; j<length p\<rbrakk> \<Longrightarrow> vE p D pE \<inter> p!j \<times> p!i = {}" 
-  -- "Visited edges do not go back on path"
-  assumes p_not_D: "\<Union>set p \<inter> D = {}" -- "Path does not contain done nodes"
+  \<comment> \<open>Visited edges do not go back on path\<close>
+  assumes p_not_D: "\<Union>set p \<inter> D = {}" \<comment> \<open>Path does not contain done nodes\<close>
 begin
   abbreviation ltouched where "ltouched \<equiv> touched p D"
   abbreviation lvE where "lvE \<equiv> vE p D pE"
@@ -204,14 +204,14 @@ begin
     apply (rule finite_subset[OF _ finite_reachableE_V0])
     using v0_initial by auto
 
-  lemma D_vis: "E\<inter>D\<times>UNIV \<subseteq> lvE" -- "All edges from done nodes are visited"
+  lemma D_vis: "E\<inter>D\<times>UNIV \<subseteq> lvE" \<comment> \<open>All edges from done nodes are visited\<close>
     unfolding vE_def touched_def using pE_E_from_p p_not_D by blast 
 
   lemma vE_touched: "lvE \<subseteq> ltouched \<times> ltouched" 
-    -- "Visited edges only between touched nodes"
+    \<comment> \<open>Visited edges only between touched nodes\<close>
     using E_from_p_touched D_closed unfolding vE_def touched_def by blast
 
-  lemma lvE_ss_E: "lvE \<subseteq> E" -- "Visited edges are edges"
+  lemma lvE_ss_E: "lvE \<subseteq> E" \<comment> \<open>Visited edges are edges\<close>
     unfolding vE_def by auto
 
 
@@ -219,13 +219,13 @@ begin
   lemma D_touched: "D \<subseteq> ltouched" by (auto simp: touched_def)
 
   lemma pE_by_vE: "pE = (E \<inter> \<Union>set p \<times> UNIV) - lvE"
-    -- "Pending edges are edges from path not yet visited"
+    \<comment> \<open>Pending edges are edges from path not yet visited\<close>
     unfolding vE_def touched_def
     using pE_E_from_p
     by auto
 
   lemma pick_pending: "p\<noteq>[] \<Longrightarrow> pE \<inter> last p \<times> UNIV = (E-lvE) \<inter> last p \<times> UNIV"
-    -- "Pending edges from end of path are non-visited edges from end of path"
+    \<comment> \<open>Pending edges from end of path are non-visited edges from end of path\<close>
     apply (subst pE_by_vE)
     by auto
 
@@ -331,7 +331,7 @@ begin
 
 
   definition skeleton :: "'v set nres" 
-    -- "Abstract Skeleton Algorithm"
+    \<comment> \<open>Abstract Skeleton Algorithm\<close>
     where
     "skeleton \<equiv> do {
       let D = {};
@@ -463,7 +463,7 @@ begin
     assumes "i\<le>j" "j<length p"
     defines "seg \<equiv> path_seg p i (Suc j)"
     shows "(x,y)\<in>(lvE \<inter> seg\<times>seg)\<^sup>*"
-    -- "We can obtain a path between cnodes on path"
+    \<comment> \<open>We can obtain a path between cnodes on path\<close>
     using assms(3,1,2,4) unfolding seg_def
   proof (induction arbitrary: y rule: dec_induct)
     case base thus ?case by (auto intro!: cnode_connectedI)
@@ -502,7 +502,7 @@ begin
     finally show "(x,y)\<in>(lvE\<inter>?seg'\<times>?seg')\<^sup>*" .
   qed
 
-  lemma p_reachable: "\<Union>set p \<subseteq> E\<^sup>*``{v0}" -- "Nodes on path are reachable"
+  lemma p_reachable: "\<Union>set p \<subseteq> E\<^sup>*``{v0}" \<comment> \<open>Nodes on path are reachable\<close>
   proof 
     fix v
     assume A: "v\<in>\<Union>set p"
@@ -516,7 +516,7 @@ begin
     thus "v\<in>E\<^sup>*``{v0}" by auto
   qed
 
-  lemma touched_reachable: "ltouched \<subseteq> E\<^sup>*``V0" -- "Touched nodes are reachable"
+  lemma touched_reachable: "ltouched \<subseteq> E\<^sup>*``V0" \<comment> \<open>Touched nodes are reachable\<close>
     unfolding touched_def using p_reachable D_reachable by blast
 
   lemma vE_reachable: "lvE \<subseteq> E\<^sup>*``V0 \<times> E\<^sup>*``V0"
@@ -554,7 +554,7 @@ begin
     assumes [simp]: "p\<noteq>[]"
     assumes ND: "u\<in>last p" "v\<in>last p"
     shows "set q \<subseteq> last p"
-    -- "A path from the last Cnode to the last Cnode remains in the last Cnode"
+    \<comment> \<open>A path from the last Cnode to the last Cnode remains in the last Cnode\<close>
     (* TODO: This can be generalized in two directions: 
       either 1) The path end anywhere. Due to vE_touched we can infer 
         that it ends in last cnode  
@@ -595,7 +595,7 @@ begin
     assumes [simp]: "p\<noteq>[]"
     assumes ND: "set q \<inter> last p \<noteq> {}"
     shows "u\<in>last p" and "set q \<subseteq> last p"
-    -- "A loop that touches the last node is completely inside the last node"
+    \<comment> \<open>A loop that touches the last node is completely inside the last node\<close>
   proof -
     from ND obtain v where "v\<in>set q" "v\<in>last p" by auto
     then obtain q1 q2 where [simp]: "q=q1@v#q2" 
@@ -654,7 +654,7 @@ begin
     assumes NE: "p \<noteq> []"
     assumes NO': "pE \<inter> (last p \<times> UNIV) = {}"
     shows "E``(last p \<union> D) \<subseteq> (last p \<union> D)"
-    -- "On pop, the popped CNode and D are closed under transitions"
+    \<comment> \<open>On pop, the popped CNode and D are closed under transitions\<close>
   proof (intro subsetI, elim ImageE)
     from NO' have NO: "(E - lvE) \<inter> (last p \<times> UNIV) = {}"
       by (simp add: pick_pending[OF NE])
@@ -1158,8 +1158,8 @@ begin
 
 
   lemma fin_D_is_reachable: 
-    -- "When inner loop terminates, all nodes reachable from start node are
-      finished"
+    \<comment> \<open>When inner loop terminates, all nodes reachable from start node are
+      finished\<close>
     assumes INV: "invar v0 D0 ([], D, pE)"
     shows "D \<supseteq> E\<^sup>*``{v0}"
   proof -
@@ -1170,8 +1170,8 @@ begin
   qed
 
   lemma fin_reachable_path: 
-    -- "When inner loop terminates, nodes reachable from start node are
-      reachable over visited edges"
+    \<comment> \<open>When inner loop terminates, nodes reachable from start node are
+      reachable over visited edges\<close>
     assumes INV: "invar v0 D0 ([], D, pE)"
     assumes UR: "u\<in>E\<^sup>*``{v0}"
     shows "path (vE [] D pE) u q v \<longleftrightarrow> path E u q v"
@@ -1247,7 +1247,7 @@ subsubsection {* Termination *}
 context invar_loc 
 begin
   lemma unproc_finite[simp, intro!]: "finite (unproc_edges v0 p D pE)"
-    -- "The set of unprocessed edges is finite"
+    \<comment> \<open>The set of unprocessed edges is finite\<close>
   proof -
     have "unproc_edges v0 p D pE \<subseteq> E\<^sup>*``{v0} \<times> E\<^sup>*``{v0}"
       unfolding unproc_edges_def 
@@ -1258,8 +1258,8 @@ begin
   qed
 
   lemma unproc_decreasing: 
-    -- "As effect of selecting a pending edge, the set of unprocessed edges
-      decreases"
+    \<comment> \<open>As effect of selecting a pending edge, the set of unprocessed edges
+      decreases\<close>
     assumes [simp]: "p\<noteq>[]" and A: "(u,v)\<in>pE" "u\<in>last p"
     shows "unproc_edges v0 p D (pE-{(u,v)}) \<subset> unproc_edges v0 p D pE"
     using A unfolding unproc_edges_def
@@ -1385,7 +1385,7 @@ subsection "Consequences of Invariant when Finished"
 context fr_graph
 begin
   lemma fin_outer_D_is_reachable:
-    -- "When outer loop terminates, exactly the reachable nodes are finished"
+    \<comment> \<open>When outer loop terminates, exactly the reachable nodes are finished\<close>
     assumes INV: "outer_invar {} D"
     shows "D = E\<^sup>*``V0"
   proof -
@@ -1416,7 +1416,7 @@ text {*
 
 subsection {* Preliminaries *}
 primrec find_max_nat :: "nat \<Rightarrow> (nat\<Rightarrow>bool) \<Rightarrow> nat" 
-  -- "Find the maximum number below an upper bound for which a predicate holds"
+  \<comment> \<open>Find the maximum number below an upper bound for which a predicate holds\<close>
   where
   "find_max_nat 0 _ = 0"
 | "find_max_nat (Suc n) P = (if (P n) then n else find_max_nat n P)"
@@ -1477,23 +1477,23 @@ begin
   definition "I \<equiv> (\<lambda>(S,B,I,P). I) SBIP"
   definition "P \<equiv> (\<lambda>(S,B,I,P). P) SBIP"
 
-  definition seg_start :: "nat \<Rightarrow> nat" -- {* Start index of segment, inclusive *}
+  definition seg_start :: "nat \<Rightarrow> nat" \<comment> \<open>Start index of segment, inclusive\<close>
     where "seg_start i \<equiv> B!i" 
 
-  definition seg_end :: "nat \<Rightarrow> nat"  -- {* End index of segment, exclusive *}
+  definition seg_end :: "nat \<Rightarrow> nat"  \<comment> \<open>End index of segment, exclusive\<close>
     where "seg_end i \<equiv> if i+1 = length B then length S else B!(i+1)"
 
-  definition seg :: "nat \<Rightarrow> 'a set" -- {* Collapsed set at index *}
+  definition seg :: "nat \<Rightarrow> 'a set" \<comment> \<open>Collapsed set at index\<close>
     where "seg i \<equiv> {S!j | j. seg_start i \<le> j \<and> j < seg_end i }"
 
-  definition "p_\<alpha> \<equiv> map seg [0..<length B]" -- {* Collapsed path *}
+  definition "p_\<alpha> \<equiv> map seg [0..<length B]" \<comment> \<open>Collapsed path\<close>
 
-  definition "D_\<alpha> \<equiv> {v. I v = Some DONE}" -- {* Done nodes *}
+  definition "D_\<alpha> \<equiv> {v. I v = Some DONE}" \<comment> \<open>Done nodes\<close>
   
   definition "pE_\<alpha> \<equiv> { (u,v) . \<exists>j I. (j,I)\<in>set P \<and> u = S!j \<and> v\<in>I }" 
-    -- {* Pending edges *}
+    \<comment> \<open>Pending edges\<close>
 
-  definition "\<alpha> \<equiv> (p_\<alpha>,D_\<alpha>,pE_\<alpha>)" -- {* Abstract state *}
+  definition "\<alpha> \<equiv> (p_\<alpha>,D_\<alpha>,pE_\<alpha>)" \<comment> \<open>Abstract state\<close>
 
 end
 
@@ -1521,10 +1521,10 @@ context GS begin
   lemma pE_\<alpha>_indep[simp]: "GS.pE_\<alpha> (S,B',I',P) = pE_\<alpha>" 
     unfolding GS.pE_\<alpha>_def by auto
 
-  definition find_seg -- "Abs-path index for stack index"
+  definition find_seg \<comment> \<open>Abs-path index for stack index\<close>
     where "find_seg j \<equiv> Max {i. i<length B \<and> B!i\<le>j}"
 
-  definition S_idx_of -- "Stack index for node"
+  definition S_idx_of \<comment> \<open>Stack index for node\<close>
     where "S_idx_of v \<equiv> case I v of Some (STACK i) \<Rightarrow> i"
 
 end

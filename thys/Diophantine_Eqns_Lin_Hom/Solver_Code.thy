@@ -11,7 +11,7 @@ begin
 
 external_file "src/Main.hs"
 
-export_code solve checking Haskell -- \<open>test whether Haskell code generation works\<close>
+export_code solve checking Haskell \<comment> \<open>test whether Haskell code generation works\<close>
 
 ML \<open>
   val exists_ghc = getenv "ISABELLE_GHC" <> "";

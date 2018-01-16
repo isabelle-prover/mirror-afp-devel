@@ -28,10 +28,10 @@ proofs in the Subtype theory rely on it.
 
 datatype CTypeId = CounterImpl | UndoCounter 
                  | Object | Exception | ClassCastException | NullPointerException
-  -- {* The last line contains the classes that exist in every program by default. *}
+  \<comment> \<open>The last line contains the classes that exist in every program by default.\<close>
 datatype ITypeId = Counter
 datatype ATypeId = Dummy
-  -- {* we cannot have an empty type. *}
+  \<comment> \<open>we cannot have an empty type.\<close>
 
 text {* 
 Why do we need different datatypes for the different type identifiers?

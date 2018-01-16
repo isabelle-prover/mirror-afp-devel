@@ -16,12 +16,12 @@ text {*
   of the generic HO model.
 *}
 
-typedecl Proc -- {* the set of processes *}
+typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
 instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
 text {* 
   The algorithm is parameterized by $f$, which represents the number of
@@ -49,7 +49,7 @@ text {*
 
 definition "Label = {xs::Proc list. length xs \<le> Suc f \<and> distinct xs}"
 typedef Label = Label
-  by (auto simp: Label_def intro: exI[where x= "[]"])  -- {* the empty list is a label *}
+  by (auto simp: Label_def intro: exI[where x= "[]"])  \<comment> \<open>the empty list is a label\<close>
 
 text {* There is a finite number of different labels. *}
 

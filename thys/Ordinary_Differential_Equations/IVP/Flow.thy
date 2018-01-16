@@ -55,10 +55,10 @@ lemma integral_const_closed_segment:
   by (auto simp: closed_segment_real content_closed_segment_real)
 
 lemmas [integrable_on_simps] =
-  integrable_on_empty \<comment>\<open>empty\<close>
-  integrable_on_refl integrable_on_refl_ivl integrable_on_refl_closed_segment \<comment>\<open>singleton\<close>
-  integrable_const integrable_const_ivl integrable_const_ivl_closed_segment \<comment>\<open>constant\<close>
-  ident_integrable_on integrable_ident_ivl integrable_ident_cbox \<comment>\<open>identity\<close>
+  integrable_on_empty \<comment> \<open>empty\<close>
+  integrable_on_refl integrable_on_refl_ivl integrable_on_refl_closed_segment \<comment> \<open>singleton\<close>
+  integrable_const integrable_const_ivl integrable_const_ivl_closed_segment \<comment> \<open>constant\<close>
+  ident_integrable_on integrable_ident_ivl integrable_ident_cbox \<comment> \<open>identity\<close>
 
 lemmas [integrable_on_simps] =
   integrable_0
@@ -1533,7 +1533,7 @@ lemma flow_unique_on:
   using flow_unique[where phi=phi, OF assms(1,2) _ assms(4)] assms(3)
   by (auto simp: has_vderiv_on_open)
 
-end \<comment>\<open>@{thm local_lipschitz}\<close>
+end \<comment> \<open>@{thm local_lipschitz}\<close>
 
 locale two_ll_on_open =
   F: ll_on_open T1 F X + G: ll_on_open T2 G X
@@ -1775,8 +1775,8 @@ sublocale ll_on_open_it UNIV "\<lambda>_. f" X 0
        and "s - 0 = s"
        and "(\<lambda>x. x) ` S = S"
        and "s \<in> (+) t ` S \<longleftrightarrow> s - t \<in> (S::real set)"
-       and "P (s + t - s) = P (t::real)"\<comment>\<open>TODO: why does just the equation not work?\<close>
-       and "P (t + s - s) = P t"\<comment>\<open>TODO: why does just the equation not work?\<close>
+       and "P (s + t - s) = P (t::real)"\<comment> \<open>TODO: why does just the equation not work?\<close>
+       and "P (t + s - s) = P t"\<comment> \<open>TODO: why does just the equation not work?\<close>
 proof -
   interpret ll_on_open UNIV "\<lambda>_. f" X
     by unfold_locales (auto intro!: continuous_on_const auto_local_lipschitz)
@@ -1808,7 +1808,7 @@ proof -
     done
   show "(s \<in> (+) t ` S) = (s - t \<in> S)" by force
 qed
-\<comment>\<open> at this point, there should be no theorems about \<open>existence_ivl\<close>, only \<open>existence_ivl0\<close>.
+\<comment> \<open>at this point, there should be no theorems about \<open>existence_ivl\<close>, only \<open>existence_ivl0\<close>.
 Moreover, \<open>(+) _ ` _\<close> and \<open>_ + _ - _\<close> etc should have been removed\<close>
 
 lemma existence_ivl_zero: "x0 \<in> X \<Longrightarrow> 0 \<in> existence_ivl0 x0" by simp
@@ -1861,7 +1861,7 @@ next
     using dual_order.trans local.onorm_bound norm_ge_zero x by blast
 qed
 
-end \<comment>\<open>@{thm compact_domain}\<close>
+end \<comment> \<open>@{thm compact_domain}\<close>
 
 locale unique_on_compact_continuously_diff = self_mapping +
   compact_interval T +
@@ -1932,7 +1932,7 @@ proof (standard, rule local_lipschitzI)
       (auto intro!: exI[where x=onorm_bound] \<open>0 < v\<close> simp: Int_absorb2 uv)
 qed (auto intro!: continuous_intros)
 
-end \<comment>\<open>@{thm derivative_rhs}\<close>
+end \<comment> \<open>@{thm derivative_rhs}\<close>
 
 locale c1_on_open_euclidean = c1_on_open f f' X
   for f::"'a::euclidean_space \<Rightarrow> _" and f' X
@@ -2040,7 +2040,7 @@ lemma vector_Dflow_continuous_on_time: "x0 \<in> X \<Longrightarrow> continuous_
   by (auto simp:  )
 
 proposition proposition_17_6_weak:
-  \<comment>\<open>from "Differential Equations, Dynamical Systems, and an Introduction to Chaos",
+  \<comment> \<open>from "Differential Equations, Dynamical Systems, and an Introduction to Chaos",
     Hirsch/Smale/Devaney\<close>
 assumes "t \<in> existence_ivl0 x0"
 shows "(\<lambda>y. (Y (y - x0) t - flow0 x0 t - vector_Dflow (y - x0) t) /\<^sub>R norm (y - x0)) \<midarrow> x0 \<rightarrow> 0"
@@ -2135,7 +2135,7 @@ proof-
       obtain N
         where N_ge_SupS: "Sup { norm (f' (flow0 x0 s)) |s. s \<in> J } \<le> N" (is "Sup ?S \<le> N")
           and N_gr_0: "0 < N"
-        \<comment>\<open> We need N to be an upper bound of @{term ?S}, but also larger than zero. \<close>
+        \<comment> \<open>We need N to be an upper bound of @{term ?S}, but also larger than zero.\<close>
         by (meson le_cases less_le_trans linordered_field_no_ub)
       have N_ineq: "\<And>s. s \<in> J \<Longrightarrow> norm (f' (flow0 x0 s)) \<le> N"
         proof-
@@ -2211,7 +2211,7 @@ proof-
         by (simp add: interior_open[OF \<open>open G\<close>])
 
       define e1 where "e1 \<equiv> e' / (\<bar>t\<bar> * exp (K * \<bar>t\<bar>) * exp (N * \<bar>t\<bar>))"
-        \<comment> \<open> @{term e1} is the bounding term for the Taylor remainder. \<close>
+        \<comment> \<open>@{term e1} is the bounding term for the Taylor remainder.\<close>
       have "0 < \<bar>t\<bar>"
         using \<open>t \<noteq> 0\<close>
         by simp
@@ -2595,7 +2595,7 @@ end
 sublocale mvar: ll_on_open "existence_ivl0 x0" "\<lambda>t. blinfun_compose (vareq x0 t)" "UNIV::('a \<Rightarrow>\<^sub>L 'a) set" for x0
   by (rule total_derivative_ll_on_open)
 
-lemma mvar_existence_ivl_eq_existence_ivl[simp]:\<comment>\<open>TODO: unify with @{thm varexivl_eq_exivl}\<close>
+lemma mvar_existence_ivl_eq_existence_ivl[simp]:\<comment> \<open>TODO: unify with @{thm varexivl_eq_exivl}\<close>
   assumes "t \<in> existence_ivl0 x0"
   shows "mvar.existence_ivl x0 t = (\<lambda>_. existence_ivl0 x0)"
 proof (rule ext, rule mvar.existence_ivl_eq_domain)
@@ -2662,7 +2662,7 @@ lemma flowderiv_eq: "flowderiv x0 t (\<xi>\<^sub>1, \<xi>\<^sub>2) = (Dflow x0 t
   by (auto simp: flowderiv_def)
 
 lemma W_continuous_on: "continuous_on (Sigma X existence_ivl0) (\<lambda>(x0, t). Dflow x0 t)"
-  \<comment>\<open>TODO: somewhere here is hidden continuity wrt rhs of ODE, extract it!\<close>
+  \<comment> \<open>TODO: somewhere here is hidden continuity wrt rhs of ODE, extract it!\<close>
   unfolding continuous_on split_beta'
 proof (safe intro!: tendstoI)
   fix e'::real and t x assume x: "x \<in> X" and tx: "t \<in> existence_ivl0 x" and e': "e' > 0"
@@ -3136,6 +3136,6 @@ proof -
 qed
 
 
-end \<comment>\<open>@{thm c1_on_open_euclidean_anchor}\<close>
+end \<comment> \<open>@{thm c1_on_open_euclidean_anchor}\<close>
 
 end

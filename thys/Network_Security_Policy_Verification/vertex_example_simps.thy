@@ -2,7 +2,7 @@ theory vertex_example_simps
 imports "Lib/FiniteGraph" TopoS_Vertices
 begin
 (*<*)
---{*The follwoing lemmata are used in the @{text "\<exists>"}-style uniqueness proof*}
+\<comment> \<open>The follwoing lemmata are used in the @{text "\<exists>"}-style uniqueness proof\<close>
 lemma False_set: "{(e1, e2). False} = {}" by blast
 lemma succ_tran_empty: "(succ_tran \<lparr>nodes = V, edges = {}\<rparr> v) = {}"
   by(simp add: succ_tran_def)

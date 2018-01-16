@@ -540,7 +540,7 @@ lemma subtrees_leaf:
   shows "l' = l"
 using l' proof (rule subtrees_cases)
   fix c
-  assume "c \<in> children l"  -- {* impossible *}
+  assume "c \<in> children l"  \<comment> \<open>impossible\<close>
   with l show ?thesis by (simp add: children_def)
 qed
 

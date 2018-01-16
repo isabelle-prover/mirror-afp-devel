@@ -21,12 +21,12 @@ text {*
   of the generic CHO model.
 *}
 
-typedecl Proc -- {* the set of processes *}
+typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
 instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
 text {*
   The algorithm proceeds in \emph{phases} of $4$ rounds each (we call
@@ -53,13 +53,13 @@ text {*
 *}
 
 record 'val pstate =
-  x :: 'val                -- {* current value held by process *}
-  vote :: "'val option"    -- {* value the process voted for, if any *}
-  commt :: bool            -- {* did the process commit to the vote? *}
-  ready :: bool            -- {* for coordinators: did the round finish successfully? *}
-  timestamp :: nat         -- {* time stamp of current value *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
-  coord\<Phi> :: Proc           -- {* coordinator for current phase *}
+  x :: 'val                \<comment> \<open>current value held by process\<close>
+  vote :: "'val option"    \<comment> \<open>value the process voted for, if any\<close>
+  commt :: bool            \<comment> \<open>did the process commit to the vote?\<close>
+  ready :: bool            \<comment> \<open>for coordinators: did the round finish successfully?\<close>
+  timestamp :: nat         \<comment> \<open>time stamp of current value\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
+  coord\<Phi> :: Proc           \<comment> \<open>coordinator for current phase\<close>
 
 text {*
   Possible messages sent during the execution of the algorithm.
@@ -69,7 +69,7 @@ datatype 'val msg =
   ValStamp "'val" "nat"
 | Vote "'val"
 | Ack
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 text {*
   Characteristic predicates on messages.
@@ -112,7 +112,7 @@ text {*
   for each step and later combine them to define the overall next-state relation.
 *}
 
--- {* processes from which values and timestamps were received *}
+\<comment> \<open>processes from which values and timestamps were received\<close>
 definition valStampsRcvd where
   "valStampsRcvd (msgs :: Proc \<rightharpoonup> 'val msg) \<equiv>
    {q . \<exists>v ts. msgs q = Some (ValStamp v ts)}"
@@ -171,7 +171,7 @@ definition send2 where
   "send2 r p q st \<equiv>
    if timestamp st = Suc(phase r) \<and> q = coord\<Phi> st then Ack else Null"
 
--- {* processes from which an acknowledgement was received *}
+\<comment> \<open>processes from which an acknowledgement was received\<close>
 definition acksRcvd where
   "acksRcvd (msgs :: Proc \<rightharpoonup> 'val msg) \<equiv>
    { q . msgs q \<noteq> None \<and> isAck (the (msgs q)) }"

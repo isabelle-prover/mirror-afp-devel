@@ -231,7 +231,7 @@ proof-
         hence "\<exists>J\<subseteq>I. i \<notin> J \<and> card(J) \<ge> card(?Ui J x) \<and> finite(?U J)"
           by (metis DiffD2 J(1) fU `i \<in> J` insertI1 subset_insertI2 subset_insert_iff)
       } note lem = this
-      have "?M (?A x1) \<or> ?M (?A x2)" -- "Rado's Lemma"
+      have "?M (?A x1) \<or> ?M (?A x2)" \<comment> \<open>Rado's Lemma\<close>
       proof(rule ccontr)
         assume "\<not> (?M (?A x1) \<or> ?M (?A x2))"
         with lem obtain J1 J2 where

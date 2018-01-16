@@ -58,8 +58,8 @@ lemma markov_inequality:
   assumes "\<And>a. 0 \<le> X a" and "integrable M X" "0 < t"
   shows "prob {a \<in> space M. t \<le> X a} \<le> expectation X / t"
 proof -
-  --{* proof adapted from @{thm [source] edge_space.Markov_inequality}, but generalized to arbitrary
-       @{term prob_space}s *}
+  \<comment> \<open>proof adapted from @{thm [source] edge_space.Markov_inequality}, but generalized to arbitrary
+       @{term prob_space}s\<close>
   have "(\<integral>\<^sup>+ x. ennreal (X x) \<partial>M) = (\<integral>x. X x \<partial>M)"
     using assms by (intro nn_integral_eq_integral) auto
   thus ?thesis

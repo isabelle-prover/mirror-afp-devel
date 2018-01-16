@@ -217,11 +217,11 @@ begin
   proof -
     from iO have "sinvar (delete_edges G (set ff)) nP" by (metis is_offending_flows_def)
 
-    --{*@{term "sinvar"} holds if we delete @{term "ff"}.
-        With the following generalized statement, we show that it also holds if we delete @{term "minimalize_offending_overapprox ff []"}*}
+    \<comment> \<open>@{term "sinvar"} holds if we delete @{term "ff"}.
+        With the following generalized statement, we show that it also holds if we delete @{term "minimalize_offending_overapprox ff []"}\<close>
     { 
       fix keeps
-      --{* Generalized for arbitrary @{term keeps}*}
+      \<comment> \<open>Generalized for arbitrary @{term keeps}\<close>
         have "sinvar (delete_edges G (set ff \<union> set keeps)) nP \<Longrightarrow> 
           sinvar (delete_edges G (set (minimalize_offending_overapprox ff keeps G nP))) nP"
          apply(induction ff arbitrary: keeps)
@@ -231,7 +231,7 @@ begin
          apply(simp add:delete_edges_list_union)
          done
     } 
-    --{*@{term "keeps = []"}*}
+    \<comment> \<open>@{term "keeps = []"}\<close>
     note minimalize_offending_overapprox_maintains_evalmodel=this[of "[]"]
 
 
@@ -270,7 +270,7 @@ begin
         have delete_edges_list_union_insert: "\<And> f fs keep. delete_edges_list G (f#fs@keep) = delete_edges G ({f} \<union> set fs \<union> set keep)"
         by(simp add: graph_ops delete_edges_list_set)
 
-        let ?goal="?case" --"we show this by case distinction"
+        let ?goal="?case" \<comment> \<open>we show this by case distinction\<close>
         show ?case
         proof(cases "sinvar (delete_edges_list G (ff@keeps)) nP")
         case True 
@@ -279,7 +279,7 @@ begin
         next
         case False
           (*MONO=Cons.prems(1)"*)
-           { --"a lemma we only need once here"
+           { \<comment> \<open>a lemma we only need once here\<close>
               fix a ff keeps
               assume mono: "sinvar_mono" and ankeeps: "a \<notin> set keeps"
               and anff: "a \<notin> set ff" and aE: "a \<in> edges G"
@@ -716,7 +716,7 @@ subsection {* Monotonicity of offending flows *}
         and    a2: "E' \<subseteq> E"
         and    a4: "F' \<in> set_offending_flows \<lparr>nodes = V, edges = E'\<rparr> nP"
 
-        --{* Idea: @{text "F = F' \<union> minimize (E - E')"}*}
+        \<comment> \<open>Idea: @{text "F = F' \<union> minimize (E - E')"}\<close>
   
         have "\<And>f. wf_graph (delete_edges \<lparr>nodes = V, edges = E\<rparr> f)"
         using delete_edges_wf[OF a1] by fast
@@ -877,7 +877,7 @@ end
     value "\<Union> x\<in>Pow {1::int, 2, 3}. \<Union> y \<in> {{8::int}, {9}}. {x \<union> y}"
     
     (*similar to \<times>_def*)
-    --"combines powerset of A with B"
+    \<comment> \<open>combines powerset of A with B\<close>
     definition pow_combine :: "'x set \<Rightarrow> 'x set set \<Rightarrow> 'x set set" where 
       "pow_combine A B \<equiv> (\<Union> X \<in> Pow A. \<Union> Y \<in> B. {X \<union> Y}) \<union> Pow A"
 

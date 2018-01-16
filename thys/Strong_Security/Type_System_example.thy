@@ -6,8 +6,8 @@ theory Type_System_example
 imports Type_System Expr Domain_example 
 begin
 
---"When interpreting, we have to instantiate the type for domains." 
---"As an example, we take a type containing 'low' and 'high' as domains."
+\<comment> \<open>When interpreting, we have to instantiate the type for domains.\<close> 
+\<comment> \<open>As an example, we take a type containing 'low' and 'high' as domains.\<close>
 
 
 consts DA :: "('id,Dom) DomainAssignment"
@@ -25,7 +25,7 @@ abbreviation relatedbyUSdB' :: "(('id,'val) Expr, 'id) MWLfCom list
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> Strong_Security.USdB 
   (MWLf_semantics.MWLfSteps_det ExprEval BMap) DA d"
 
--- "Security typing rules for expressions - will be part of a side condition"
+\<comment> \<open>Security typing rules for expressions - will be part of a side condition\<close>
 inductive 
 ExprSecTyping :: "('id, 'val) Expr \<Rightarrow> Dom set \<Rightarrow> bool"
 ("\<turnstile>\<^bsub>\<E>\<^esub> _ : _")

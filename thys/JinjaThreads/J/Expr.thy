@@ -10,21 +10,21 @@ imports
 begin
 
 datatype (dead 'a, dead 'b, dead 'addr) exp
-  = new cname      -- "class instance creation"
-  | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
-  | Cast ty "('a,'b,'addr) exp"      -- "type cast"
-  | InstanceOf "('a,'b,'addr) exp" ty ("_ instanceof _" [99, 99] 90) -- "instance of"
-  | Val "'addr val"      -- "value"
-  | BinOp "('a,'b,'addr) exp" bop "('a,'b,'addr) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      -- "binary operation"
-  | Var 'a                                               -- "local variable (incl. parameter)"
-  | LAss 'a "('a,'b,'addr) exp"            ("_:=_" [90,90]90)                    -- "local assignment"
-  | AAcc "('a,'b,'addr) exp" "('a,'b,'addr) exp"            ("_\<lfloor>_\<rceil>" [99,0] 90)          -- "array cell read"
-  | AAss "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<lfloor>_\<rceil> := _" [10,99,90] 90)    -- "array cell assignment"
-  | ALen "('a,'b,'addr) exp"                 ("_\<bullet>length" [10] 90)          -- "array length"
-  | FAcc "('a,'b,'addr) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       -- "field access"
-  | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
-  | CompareAndSwap "('a,'b,'addr) exp" cname vname "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<bullet>compareAndSwap('(_\<bullet>_, _, _'))" [10,90,90,90,90] 90) -- "compare and swap"
-  | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
+  = new cname      \<comment> \<open>class instance creation\<close>
+  | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    \<comment> \<open>array instance creation: type, size in outermost dimension\<close>
+  | Cast ty "('a,'b,'addr) exp"      \<comment> \<open>type cast\<close>
+  | InstanceOf "('a,'b,'addr) exp" ty ("_ instanceof _" [99, 99] 90) \<comment> \<open>instance of\<close>
+  | Val "'addr val"      \<comment> \<open>value\<close>
+  | BinOp "('a,'b,'addr) exp" bop "('a,'b,'addr) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      \<comment> \<open>binary operation\<close>
+  | Var 'a                                               \<comment> \<open>local variable (incl. parameter)\<close>
+  | LAss 'a "('a,'b,'addr) exp"            ("_:=_" [90,90]90)                    \<comment> \<open>local assignment\<close>
+  | AAcc "('a,'b,'addr) exp" "('a,'b,'addr) exp"            ("_\<lfloor>_\<rceil>" [99,0] 90)          \<comment> \<open>array cell read\<close>
+  | AAss "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<lfloor>_\<rceil> := _" [10,99,90] 90)    \<comment> \<open>array cell assignment\<close>
+  | ALen "('a,'b,'addr) exp"                 ("_\<bullet>length" [10] 90)          \<comment> \<open>array length\<close>
+  | FAcc "('a,'b,'addr) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       \<comment> \<open>field access\<close>
+  | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
+  | CompareAndSwap "('a,'b,'addr) exp" cname vname "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<bullet>compareAndSwap('(_\<bullet>_, _, _'))" [10,90,90,90,90] 90) \<comment> \<open>compare and swap\<close>
+  | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            \<comment> \<open>method call\<close>
   | Block 'a ty "'addr val option" "('a,'b,'addr) exp"    ("'{_:_=_; _}")
   | Synchronized 'b "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
   | InSynchronized 'b 'addr "('a,'b,'addr) exp" ("insync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
@@ -35,11 +35,11 @@ datatype (dead 'a, dead 'b, dead 'addr) exp
   | TryCatch "('a,'b,'addr) exp" cname 'a "('a,'b,'addr) exp"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
 
 type_synonym
-  'addr expr = "(vname, unit, 'addr) exp"    -- "Jinja expression"
+  'addr expr = "(vname, unit, 'addr) exp"    \<comment> \<open>Jinja expression\<close>
 type_synonym
-  'addr J_mb = "vname list \<times> 'addr expr"    -- "Jinja method body: parameter names and expression"
+  'addr J_mb = "vname list \<times> 'addr expr"    \<comment> \<open>Jinja method body: parameter names and expression\<close>
 type_synonym
-  'addr J_prog = "'addr J_mb prog"          -- "Jinja program"
+  'addr J_prog = "'addr J_mb prog"          \<comment> \<open>Jinja program\<close>
 
 translations
   (type) "'addr expr" <= (type) "(String.literal, unit, 'addr) exp"

@@ -45,9 +45,9 @@ text {*
 *}
 lemma very_true: "True"
 proof -
-  -- "a very roundabout way"
+  \<comment> \<open>a very roundabout way\<close>
   fix P have "P \<longrightarrow> True" by blast
-  -- "to show @{term True}"
+  \<comment> \<open>to show @{term True}\<close>
   thus True by blast
 qed
 

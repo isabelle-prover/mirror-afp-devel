@@ -542,7 +542,7 @@ lemma numer_cf7_deriv:
 
 lemma numer_cf7_deriv_pos: "numer_cf7_deriv x \<ge> 0"
   unfolding numer_cf7_deriv_def
-  apply (rule order.strict_implies_order)  --{*FIXME should not be necessary*}
+  apply (rule order.strict_implies_order)  \<comment> \<open>FIXME should not be necessary\<close>
   by sturm
 
 lemma numer_cf7_mono: "y \<le> x \<Longrightarrow> numer_cf7 y \<le> numer_cf7 x"

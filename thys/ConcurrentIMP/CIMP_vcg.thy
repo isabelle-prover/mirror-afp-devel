@@ -86,7 +86,7 @@ where
                      hist s' = hist s
                    \<rbrakk> \<Longrightarrow> post s'
           \<rbrakk> \<Longrightarrow> pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> \<lbrace>l\<rbrace> WHILE b DO c OD \<lbrace>post\<rbrace>"
--- {* There are no proof obligations for the following commands. *}
+\<comment> \<open>There are no proof obligations for the following commands.\<close>
 | Response: "pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> \<lbrace>l\<rbrace> Response action \<lbrace>post\<rbrace>"
 | Seq: "pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> c1 ;; c2 \<lbrace>post\<rbrace>"
 | Loop: "pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> LOOP DO c OD \<lbrace>post\<rbrace>"

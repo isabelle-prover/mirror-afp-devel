@@ -20,13 +20,13 @@ section {* Definition of a sorted binary tree *}
 datatype tree = Tip | Nd tree nat tree
 
 primrec set_of :: "tree => nat set"
--- {* The set of nodes stored in a tree. *}
+\<comment> \<open>The set of nodes stored in a tree.\<close>
 where
   "set_of Tip = {}"
 | "set_of(Nd l x r) = set_of l Un set_of r  Un {x}"
 
 primrec sorted :: "tree => bool"
--- {* Tree is sorted *}
+\<comment> \<open>Tree is sorted\<close>
 where
   "sorted Tip = True"
 | "sorted(Nd l y r) =
@@ -53,7 +53,7 @@ section {* Insertion operation *}
 (*============================================================*)
 
 primrec binsert :: "nat => tree => tree"
--- {* Insert a node into sorted tree. *}
+\<comment> \<open>Insert a node into sorted tree.\<close>
 where
   "binsert x Tip = (Nd Tip x Tip)"
 | "binsert x (Nd t1 y t2) = (if x < y then
@@ -80,16 +80,16 @@ section {* Remove operation *}
 (*============================================================*)
 
 primrec
-  rm :: "tree => nat" -- {* find the rightmost element in the tree *}
+  rm :: "tree => nat" \<comment> \<open>find the rightmost element in the tree\<close>
 where
   "rm(Nd l x r) = (if r = Tip then x else rm r)"
 primrec
-  rem :: "tree => tree" -- {* find the tree without the rightmost element *}
+  rem :: "tree => tree" \<comment> \<open>find the tree without the rightmost element\<close>
 where
   "rem(Nd l x r) = (if r=Tip then l else Nd l x (rem r))"
 
 primrec
-  remove:: "nat => tree => tree" -- {* remove a node from sorted tree *}
+  remove:: "nat => tree => tree" \<comment> \<open>remove a node from sorted tree\<close>
 where
   "remove x Tip = Tip"
 | "remove x (Nd l y r) =
@@ -125,7 +125,7 @@ done
 theorem remove_sorted: "sorted t ==> sorted(remove x t)"
 by (induct t) (auto intro: less_trans rm_in_set_of sorted_rem)
 
-corollary remove_spec: -- {* summary specification of remove *}
+corollary remove_spec: \<comment> \<open>summary specification of remove\<close>
 "sorted t ==>
    sorted (remove x t) &
    set_of (remove x t) = set_of t - {x}"

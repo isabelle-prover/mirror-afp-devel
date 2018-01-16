@@ -43,7 +43,7 @@ definition test :: "nat \<Rightarrow> nat \<Rightarrow> nat set nres" where "tes
 }"
 
 lemma "y0>0 \<Longrightarrow> test x0 y0 \<le> SPEC (\<lambda>S. S={y0 .. y0 + x0 - 1})"
-  -- "Choosen pre-condition to get least trouble when proving"
+  \<comment> \<open>Choosen pre-condition to get least trouble when proving\<close>
   unfolding test_def
   apply (intro WHILE_rule[where I="\<lambda>(S,x,y). 
     x+y=x0+y0 \<and> x\<le>x0 \<and>

@@ -21,7 +21,7 @@ lemma cos_ge_1_arg:
   apply (intro derivative_eq_intros, auto)
   done
 
-lemmas sin_Taylor_0_upper_bound_pos = sin_le_arg --{*MetiTarski bound*}
+lemmas sin_Taylor_0_upper_bound_pos = sin_le_arg \<comment> \<open>MetiTarski bound\<close>
 
 lemma cos_Taylor_1_lower_bound:
   fixes x :: real

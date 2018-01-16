@@ -342,7 +342,7 @@ qed
 
 subsection {* Infinite Paths *}
 definition ipath :: "'q digraph \<Rightarrow> 'q word \<Rightarrow> bool"
-  -- "Predicate for an infinite path in a digraph"
+  \<comment> \<open>Predicate for an infinite path in a digraph\<close>
   where "ipath E r \<equiv> \<forall>i. (r i, r (Suc i))\<in>E"
 
 
@@ -511,7 +511,7 @@ text {* A common characterization is to define an equivalence relation
   equivalence classes: *}
 
 definition mconn :: "('a\<times>'a) set \<Rightarrow> ('a \<times> 'a) set"
-  -- "Mutually connected relation on nodes"
+  \<comment> \<open>Mutually connected relation on nodes\<close>
   where "mconn E = E\<^sup>* \<inter> (E\<inverse>)\<^sup>*"
 
 lemma mconn_pointwise:
@@ -543,8 +543,8 @@ lemma mconn_equiv: "equiv UNIV (mconn E)"
 
 
 lemma is_scc_mconn_eqclasses: "is_scc E U \<longleftrightarrow> U \<in> UNIV // mconn E"
-  -- "The strongly connected components are the equivalence classes of the 
-    mutually-connected relation on nodes"
+  \<comment> \<open>The strongly connected components are the equivalence classes of the 
+    mutually-connected relation on nodes\<close>
 proof
   assume A: "is_scc E U"
   then obtain x where "x\<in>U" unfolding is_scc_def by auto
@@ -632,7 +632,7 @@ lemma is_scc_pointwise:
     U\<noteq>{}
   \<and> (\<forall>u\<in>U. \<forall>v\<in>U. (u,v)\<in>(E\<inter>U\<times>U)\<^sup>*) 
   \<and> (\<forall>u\<in>U. \<forall>v. (v\<notin>U \<and> (u,v)\<in>E\<^sup>*) \<longrightarrow> (\<forall>u'\<in>U. (v,u')\<notin>E\<^sup>*))"
-  -- "Alternative, pointwise characterization"
+  \<comment> \<open>Alternative, pointwise characterization\<close>
   unfolding is_scc_alt_restrict_path
   by blast  
 

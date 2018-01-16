@@ -190,7 +190,7 @@ definition shows_segments_of_aform
     (polychain_of_segments (segments_of_aform (prod_of_aforms (xs ! a) (xs ! b)))))"
 abbreviation "show_segments_of_aform a b x c \<equiv> shows_segments_of_aform a b x c ''''"
 
-definition shows_box_of_aforms\<comment>\<open>box and some further information\<close>
+definition shows_box_of_aforms\<comment> \<open>box and some further information\<close>
 where "shows_box_of_aforms (XS::real aform list) = (let
     RS = map (Radius' 20) XS;
     l = map (Inf_aform' 20) XS;
@@ -210,7 +210,7 @@ definition "generators XS =
     in
       (map fst XS, rs))"
 
-definition shows_box_of_aforms_hr\<comment>\<open>human readable\<close>
+definition shows_box_of_aforms_hr\<comment> \<open>human readable\<close>
 where "shows_box_of_aforms_hr XS = (let
     RS = map (Radius' 20) XS;
     l = map (Inf_aform' 20) XS;
@@ -221,7 +221,7 @@ where "shows_box_of_aforms_hr XS = (let
     )"
 abbreviation "show_box_of_aforms_hr x \<equiv> shows_box_of_aforms_hr x ''''"
 
-definition shows_aforms_hr\<comment>\<open>human readable\<close>
+definition shows_aforms_hr\<comment> \<open>human readable\<close>
 where "shows_aforms_hr XS = shows (generators XS)"
 
 abbreviation "show_aform_hr x \<equiv> shows_aforms_hr x ''''"

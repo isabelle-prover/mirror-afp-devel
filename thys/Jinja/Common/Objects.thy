@@ -11,9 +11,9 @@ theory Objects imports TypeRel Value begin
 subsection{* Objects *}
 
 type_synonym
-  fields = "vname \<times> cname \<rightharpoonup> val"  -- "field name, defining class, value"
+  fields = "vname \<times> cname \<rightharpoonup> val"  \<comment> \<open>field name, defining class, value\<close>
 type_synonym
-  obj = "cname \<times> fields"    -- "class instance with class name and fields"
+  obj = "cname \<times> fields"    \<comment> \<open>class instance with class name and fields\<close>
 
 definition obj_ty  :: "obj \<Rightarrow> ty"
 where
@@ -23,7 +23,7 @@ definition init_fields :: "((vname \<times> cname) \<times> ty) list \<Rightarro
 where
   "init_fields  \<equiv>  map_of \<circ> map (\<lambda>(F,T). (F,default_val T))"
   
-  -- "a new, blank object with default values in all fields:"
+  \<comment> \<open>a new, blank object with default values in all fields:\<close>
 definition blank :: "'m prog \<Rightarrow> cname \<Rightarrow> obj"
 where
   "blank P C  \<equiv>  (C,init_fields (fields P C))" 

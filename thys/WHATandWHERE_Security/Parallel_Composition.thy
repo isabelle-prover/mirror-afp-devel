@@ -242,7 +242,7 @@ next
           "V = c#W \<and> V'=c'#W' \<and> W \<noteq> [] \<and> W' \<noteq> [] \<and>
           ([c],[c']) \<in> Rc \<and> (W,W') \<in> RV"
           by auto
-        -- "Case separation for i"
+        \<comment> \<open>Case separation for i\<close>
         from VV'assump SdlHPPRc have Case_i0:
           "i = 0 \<Longrightarrow> (NDC d (V!i) \<or>
             IDC d (V!i) (htchLoc (pp (V!i))))"
@@ -271,7 +271,7 @@ next
           "V = c#W \<and> V'=c'#W' \<and> W \<noteq> [] \<and> W' \<noteq> [] \<and>
           ([c],[c']) \<in> Rc \<and> (W,W') \<in> RV"
           by auto
-        -- "Case separation for i"
+        \<comment> \<open>Case separation for i\<close>
         from VV'assump SdlHPPRc strongdlHPPB_aux[of "d" "PP" 
           "Rc" "0" "[c]" "[c']"] step dhequal
         have Case_i0:

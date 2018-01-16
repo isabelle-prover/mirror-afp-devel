@@ -531,7 +531,7 @@ method_setup weaken_hnr_post = \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD' (S
 method extract_hnr_invalids = (
   rule hn_refine_preI,
   ((drule mod_starD hn_invalidI | elim conjE exE)+)?
-) -- \<open>Extract \<open>hn_invalid _ _ _ = true\<close> preconditions from \<open>hn_refine\<close> goal.\<close>
+) \<comment> \<open>Extract \<open>hn_invalid _ _ _ = true\<close> preconditions from \<open>hn_refine\<close> goal.\<close>
   
 
 

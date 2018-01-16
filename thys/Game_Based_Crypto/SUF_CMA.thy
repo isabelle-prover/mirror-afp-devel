@@ -12,7 +12,7 @@ subsection {* Strongly existentially unforgeable signature scheme *}
 locale sig_scheme =
   fixes key_gen :: "security \<Rightarrow> ('vkey \<times> 'sigkey) spmf"
   and sign :: "security \<Rightarrow> 'sigkey \<Rightarrow> 'message \<Rightarrow> 'signature spmf"
-  and verify :: "security \<Rightarrow> 'vkey \<Rightarrow> 'message \<Rightarrow> 'signature \<Rightarrow> bool" -- \<open>verification is deterministic\<close>
+  and verify :: "security \<Rightarrow> 'vkey \<Rightarrow> 'message \<Rightarrow> 'signature \<Rightarrow> bool" \<comment> \<open>verification is deterministic\<close>
   and valid_message :: "security \<Rightarrow> 'message \<Rightarrow> bool"
 
 locale suf_cma = sig_scheme +

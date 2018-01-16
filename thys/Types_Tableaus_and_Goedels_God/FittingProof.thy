@@ -37,33 +37,33 @@ abbreviation Entailment::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<langle>\<zer
 subsection \<open>Part I - God's Existence is Possible\<close>  
   
 axiomatization where
-  A1a:"\<lfloor>\<^bold>\<forall>X. \<P> (\<rightharpoondown>X) \<^bold>\<rightarrow> \<^bold>\<not>(\<P> X) \<rfloor>" and        --\<open>  axiom 11.3A  \<close>
-  A1b:"\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<P> (\<rightharpoondown>X)\<rfloor>" and         --\<open>  axiom 11.3B  \<close>
-  A2: "\<lfloor>\<^bold>\<forall>X Y. (\<P> X \<^bold>\<and> (X \<Rrightarrow> Y)) \<^bold>\<rightarrow> \<P> Y\<rfloor>" and  --\<open>  axiom 11.5  \<close>
-  T2: "\<lfloor>\<P> \<down>G\<rfloor>"                               --\<open>  proposition 11.16 (modified) \<close>
+  A1a:"\<lfloor>\<^bold>\<forall>X. \<P> (\<rightharpoondown>X) \<^bold>\<rightarrow> \<^bold>\<not>(\<P> X) \<rfloor>" and        \<comment> \<open>axiom 11.3A\<close>
+  A1b:"\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<P> (\<rightharpoondown>X)\<rfloor>" and         \<comment> \<open>axiom 11.3B\<close>
+  A2: "\<lfloor>\<^bold>\<forall>X Y. (\<P> X \<^bold>\<and> (X \<Rrightarrow> Y)) \<^bold>\<rightarrow> \<P> Y\<rfloor>" and  \<comment> \<open>axiom 11.5\<close>
+  T2: "\<lfloor>\<P> \<down>G\<rfloor>"                               \<comment> \<open>proposition 11.16 (modified)\<close>
         
-lemma True nitpick[satisfy] oops --\<open>  model found: axioms are consistent \<close>
+lemma True nitpick[satisfy] oops \<comment> \<open>model found: axioms are consistent\<close>
     
-lemma "\<lfloor>D\<rfloor>"  using A1a A1b A2 by blast --\<open>  axioms already imply \emph{D} axiom  \<close>
+lemma "\<lfloor>D\<rfloor>"  using A1a A1b A2 by blast \<comment> \<open>axioms already imply \emph{D} axiom\<close>
     
 lemma GodDefsAreEquivalent: "\<lfloor>\<^bold>\<forall>x. G x \<^bold>\<leftrightarrow> G* x\<rfloor>" using A1b by fastforce
 text\<open> \bigbreak \<close>  
 text\<open>  \emph{T1} (Positive properties are possibly instantiated) can be formalised in two different ways: \<close>    
 theorem T1a: "\<lfloor>\<^bold>\<forall>X::\<langle>\<zero>\<rangle>. \<P> X \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<exists>\<^sup>Ez. \<lparr>X z\<rparr>)\<rfloor>" 
-  using A1a A2 by blast --\<open>  this is the one used in the book \<close>
+  using A1a A2 by blast \<comment> \<open>this is the one used in the book\<close>
 theorem T1b: "\<lfloor>\<^bold>\<forall>X::\<up>\<langle>\<zero>\<rangle>. \<P> \<down>X \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<exists>\<^sup>Ez. X z)\<rfloor>" 
-  nitpick oops --\<open>  this one is also possible but not valid so we won't use it  \<close>
+  nitpick oops \<comment> \<open>this one is also possible but not valid so we won't use it\<close>
     
 text\<open>  Some interesting (non-)equivalences: \<close>
 lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E (Q::\<up>\<langle>\<zero>\<rangle>) \<^bold>\<leftrightarrow> \<^bold>\<box>(\<^bold>\<exists>\<^sup>E \<^bold>\<down>Q)\<rfloor>" by simp
 lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E (Q::\<up>\<langle>\<zero>\<rangle>) \<^bold>\<leftrightarrow> ((\<lambda>X. \<^bold>\<box>\<^bold>\<exists>\<^sup>E X) Q)\<rfloor>"  by simp
 lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E (Q::\<up>\<langle>\<zero>\<rangle>) \<^bold>\<leftrightarrow> ((\<lambda>X. \<^bold>\<box>\<^bold>\<exists>\<^sup>E \<^bold>\<down>X) Q)\<rfloor>" by simp
-lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E (Q::\<up>\<langle>\<zero>\<rangle>) \<^bold>\<leftrightarrow> ((\<lambda>X. \<^bold>\<box>\<^bold>\<exists>\<^sup>E X) \<^bold>\<down>Q)\<rfloor>" nitpick oops --\<open>  not equivalent!  \<close>
+lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E (Q::\<up>\<langle>\<zero>\<rangle>) \<^bold>\<leftrightarrow> ((\<lambda>X. \<^bold>\<box>\<^bold>\<exists>\<^sup>E X) \<^bold>\<down>Q)\<rfloor>" nitpick oops \<comment> \<open>not equivalent!\<close>
 
     
 text\<open>  \emph{T3} (God exists possibly) can be formalised in two different ways, using a \emph{de re} or a \emph{de dicto} reading. \<close>
 theorem T3_deRe: "\<lfloor>(\<lambda>X. \<^bold>\<diamond>\<^bold>\<exists>\<^sup>E X) \<^bold>\<down>G\<rfloor>" using T1a T2 by simp 
-theorem T3_deDicto: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" nitpick oops    --\<open>  countersatisfiable \<close>      
+theorem T3_deDicto: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" nitpick oops    \<comment> \<open>countersatisfiable\<close>      
 
 text\<open>  From the last two theorems, we think @{text "T3_deRe"} should be the version originally implied in the book,
  since @{text "T3_deDicto"} is not valid (\emph{T1b} were valid but it isn't) \<close>
@@ -74,10 +74,10 @@ subsection \<open>Part II - God's Existence is Necessary if Possible\<close>
   
 text\<open>  In this variant @{text "\<P>"} also designates rigidly, as shown in the last section. \<close>
 axiomatization where
-      A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      --\<open>  axiom 11.11  \<close>
+      A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      \<comment> \<open>axiom 11.11\<close>
 lemma A4b: "\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<not>(\<P> X)\<rfloor>" using A1a A1b A4a by blast
     
-lemma True nitpick[satisfy] oops --\<open>  model found: so far all axioms consistent \<close>
+lemma True nitpick[satisfy] oops \<comment> \<open>model found: so far all axioms consistent\<close>
 
 abbreviation essenceOf::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>") where
   "\<E> Y x \<equiv> \<lparr>Y x\<rparr> \<^bold>\<and> (\<^bold>\<forall>Z::\<langle>\<zero>\<rangle>. \<lparr>Z x\<rparr> \<^bold>\<rightarrow> Y \<Rrightarrow> Z)"
@@ -94,7 +94,7 @@ text\<open>  Informal Axiom 5 \<close>
 axiomatization where
  A5: "\<lfloor>\<P> \<down>NE\<rfloor>"
     
-lemma True nitpick[satisfy] oops --\<open>  model found: so far all axioms consistent \<close>
+lemma True nitpick[satisfy] oops \<comment> \<open>model found: so far all axioms consistent\<close>
 
 text\<open>  Reminder: We use @{text "\<down>G"} instead of @{text "G"} because it is more explicit. See (non-)equivalences above. \<close>
 lemma "\<lfloor>\<^bold>\<exists> G \<^bold>\<leftrightarrow> \<^bold>\<exists> \<^bold>\<down>G\<rfloor>" by simp       
@@ -153,11 +153,11 @@ subsection \<open>Conclusion (\emph{De Re} and \emph{De Dicto} Reading)\<close>
     
 text\<open>  Version I - Necessary Existence of God (\emph{de dicto}):  \<close>    
 lemma GodNecExists_v1: "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>"
-  using GodExImpliesNecEx_v1 T3_deRe by fastforce --\<open>  corollary 11.28 \<close>
+  using GodExImpliesNecEx_v1 T3_deRe by fastforce \<comment> \<open>corollary 11.28\<close>
 lemma God_starNecExists_v1: "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G*\<rfloor>"
   using GodNecExists_v1 GodDefsAreEquivalent by simp
 lemma "\<lfloor>\<^bold>\<box>(\<lambda>X. \<^bold>\<exists>\<^sup>E X) \<^bold>\<down>G*\<rfloor>"
-  using God_starNecExists_v1 by simp --\<open> \emph{de dicto} shown here explicitly \<close>
+  using God_starNecExists_v1 by simp \<comment> \<open>\emph{de dicto} shown here explicitly\<close>
     
 text\<open>  Version II - Necessary Existence of God (\emph{de re})  \<close>    
 lemma GodNecExists_v2: "\<lfloor>(\<lambda>X. \<^bold>\<box>\<^bold>\<exists>\<^sup>E X) \<^bold>\<down>G\<rfloor>"
@@ -170,13 +170,13 @@ text\<open>  Modal collapse is countersatisfiable even in \emph{S5}. Note that c
 for the domain of individuals are found by \emph{Nitpick} (the countermodel shown in the book has cardinality of two). \<close>
     
 lemma "\<lfloor>\<^bold>\<forall>\<Phi>.(\<Phi> \<^bold>\<rightarrow> (\<^bold>\<box> \<Phi>))\<rfloor>" 
-  nitpick[card 't=1, card i=2] oops --\<open>  countermodel found in \emph{K} \<close>
+  nitpick[card 't=1, card i=2] oops \<comment> \<open>countermodel found in \emph{K}\<close>
     
 axiomatization where
-   S5: "equivalence aRel" --\<open> assume \emph{S5} logic  \<close>
+   S5: "equivalence aRel" \<comment> \<open>assume \emph{S5} logic\<close>
    
 lemma "\<lfloor>\<^bold>\<forall>\<Phi>.(\<Phi> \<^bold>\<rightarrow> (\<^bold>\<box> \<Phi>))\<rfloor>" 
-  nitpick[card 't=1, card i=2] oops --\<open>  countermodel also found in \emph{S5} \<close>
+  nitpick[card 't=1, card i=2] oops \<comment> \<open>countermodel also found in \emph{S5}\<close>
 
 text\<open>  \pagebreak \<close>
 (*<*)

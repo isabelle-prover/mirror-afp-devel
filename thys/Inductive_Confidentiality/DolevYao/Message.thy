@@ -20,8 +20,8 @@ type_synonym
   key = nat
 
 consts
-  all_symmetric :: bool        --{*true if all keys are symmetric*}
-  invKey        :: "key=>key"  --{*inverse of a symmetric key*}
+  all_symmetric :: bool        \<comment> \<open>true if all keys are symmetric\<close>
+  invKey        :: "key=>key"  \<comment> \<open>inverse of a symmetric key\<close>
 
 specification (invKey)
   invKey [simp]: "invKey (invKey K) = K"
@@ -35,17 +35,17 @@ text{*The inverse of a symmetric key is itself; that of a public key
 definition symKeys :: "key set" where
   "symKeys == {K. invKey K = K}"
 
-datatype  --{*We allow any number of friendly agents*}
+datatype  \<comment> \<open>We allow any number of friendly agents\<close>
   agent = Server | Friend nat | Spy
 
 datatype
-     msg = Agent  agent     --{*Agent names*}
-         | Number nat       --{*Ordinary integers, timestamps, ...*}
-         | Nonce  nat       --{*Unguessable nonces*}
-         | Key    key       --{*Crypto keys*}
-         | Hash   msg       --{*Hashing*}
-         | MPair  msg msg   --{*Compound messages*}
-         | Crypt  key msg   --{*Encryption, public- or shared-key*}
+     msg = Agent  agent     \<comment> \<open>Agent names\<close>
+         | Number nat       \<comment> \<open>Ordinary integers, timestamps, ...\<close>
+         | Nonce  nat       \<comment> \<open>Unguessable nonces\<close>
+         | Key    key       \<comment> \<open>Crypto keys\<close>
+         | Hash   msg       \<comment> \<open>Hashing\<close>
+         | MPair  msg msg   \<comment> \<open>Compound messages\<close>
+         | Crypt  key msg   \<comment> \<open>Encryption, public- or shared-key\<close>
 
 
 text{*Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...*}
@@ -57,11 +57,11 @@ translations
 
 
 definition HPair :: "[msg,msg] => msg" ("(4Hash[_] /_)" [0, 1000]) where
-    --{*Message Y paired with a MAC computed with the help of X*}
+    \<comment> \<open>Message Y paired with a MAC computed with the help of X\<close>
     "Hash[X] Y == \<lbrace> Hash\<lbrace>X,Y\<rbrace>, Y\<rbrace>"
 
 definition keysFor :: "msg set => key set" where
-    --{*Keys useful to decrypt elements of a message set*}
+    \<comment> \<open>Keys useful to decrypt elements of a message set\<close>
   "keysFor H == invKey ` {K. \<exists>X. Crypt K X \<in> H}"
 
 

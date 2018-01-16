@@ -1158,7 +1158,7 @@ proof -
                 using Suc(1) n_lt_l by(simp)
         qed  
     }
-    -- "before the request to y, x is in front of y"
+    \<comment> \<open>before the request to y, x is in front of y\<close>
     then show "x < y in s_TS init h (xs@cs) (length (xs)+l)"
       by blast
 qed
@@ -1356,7 +1356,7 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
   moreover have "x : set (s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1))"
     unfolding ss using assms(4) by fastforce
 
-  -- "after the request to y, y is in front of x"
+  \<comment> \<open>after the request to y, y is in front of x\<close>
   ultimately have y_before_x_Suct3: "?y < x in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1)"
       using  y_before_x' ynx not_before_in by metis
 
@@ -1380,11 +1380,11 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
     apply(rule TS_mono)
       apply(fact)+
       using assms by simp
-  -- "so x and y swap positions when y is requested, that means that y was inserted infront of
+  \<comment> \<open>so x and y swap positions when y is requested, that means that y was inserted infront of
       some elment z (which cannot be x, has only been requested at most once since last request of y
-          but is in front of x)"
+          but is in front of x)\<close>
 
-  -- "first show that y must have been requested in as"
+  \<comment> \<open>first show that y must have been requested in as\<close>
   
   have "snd (TSdet init h (as @ [x] @ bs @ [x] @ cs) (length (as @ [x] @ bs @ [x]) + i)) =
           rev (take (length (as @ [x] @ bs @ [x]) + i) (as @ [x] @ bs @ [x] @ cs)) @ h"
@@ -1425,8 +1425,8 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
     then have "(index ?is (cs ! i) = length ?is) \<or> ?S = {}" by(simp)
     then have alters: "(index ?is' (cs ! i) = length ?is') \<or> ?S' = {}"
       apply(simp only: SS') by(simp only: isis')
-    -- "wenn (cs ! i) noch nie requested wurde, dann kann es gar nicht nach vorne gebracht werden!
-        also widerspruch mit @{text y_before_x'}" 
+    \<comment> \<open>wenn (cs ! i) noch nie requested wurde, dann kann es gar nicht nach vorne gebracht werden!
+        also widerspruch mit @{text y_before_x'}\<close> 
     have "?s_Suct3 = fst (config (rTS h) init ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)))"
       unfolding s_TS_def
       apply(simp only: length_append)
@@ -1571,7 +1571,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   with isminimal have state_dannach: "?s_Suct3 = step ?s ?y (index ?s ?y - index ?s z, [])" by presburger
     
 
-  -- "so y is moved in front of z, that means:" 
+  \<comment> \<open>so y is moved in front of z, that means:\<close> 
   have yinfrontofz: "?y < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1)"
     unfolding   assms(1) state_dannach apply(simp add: step_def del: config'.simps)
     apply(rule mtf2_q_passes)
@@ -1699,8 +1699,8 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     with aaaa have atmost1: "count_list bs z \<le> 1" and "count_list (take (Suc i) cs) z = 0" by force+
     have yeah: "z \<notin> set (take (Suc i) cs)" apply(rule count_notin2) by fact
  
-    -- "now we know that x is in front of z after 2nd request to x, and that z is not requested any more,
-        that means it stays behind x, which leads to a contradiction with @{text z_before_x}"
+    \<comment> \<open>now we know that x is in front of z after 2nd request to x, and that z is not requested any more,
+        that means it stays behind x, which leads to a contradiction with @{text z_before_x}\<close>
 
     have xin123: "x \<in> set (s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1)))"
       using i_in_cs assms(4) by(simp add: s_TS_set)
@@ -1747,10 +1747,10 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
    have zmustbebeforex: "cs!k < x in ?s"
             unfolding k_def era by (fact z_s)
  
-  -- "before the request to z, x is in front of z, analog zu oben, vllt generell machen?"
+  \<comment> \<open>before the request to z, x is in front of z, analog zu oben, vllt generell machen?\<close>
 
 
-   -- "element z does not occur between t1 and position k"
+   \<comment> \<open>element z does not occur between t1 and position k\<close>
    have  z_notinbs: "cs ! k \<notin> set bs"
    proof -
       from z_occurs_once_in_cs aaaa have "count_list bs z = 0" by auto

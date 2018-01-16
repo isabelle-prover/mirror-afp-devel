@@ -348,7 +348,7 @@ theorem (in Yoneda) Yoneda:
   shows "F\<^bsub>\<o>\<^esub> A \<cong> {u. u : Hom(A,_) \<Rightarrow> F in Func(AA,Set)}"
 unfolding equinumerous_def bij_betw_eq inj_on_def
 proof (intro exI conjI bexI ballI impI)
-  -- "Sandwich is injective"
+  \<comment> \<open>Sandwich is injective\<close>
   fix x and y
   assume 2: "x \<in> F\<^bsub>\<o>\<^esub> A" and 3: "y \<in> F\<^bsub>\<o>\<^esub> A"
   and 4: "\<sigma>(A,x) = \<sigma>(A,y)"
@@ -358,14 +358,14 @@ proof (intro exI conjI bexI ballI impI)
   show "x = y"
     by (simp add: 1 2 3)
 next
-  -- "Sandwich covers F A"
+  \<comment> \<open>Sandwich covers F A\<close>
   fix u
   assume "u \<in> {y. y : Hom(A,_) \<Rightarrow> F in Func (AA,Set)}"
   hence 2: "u : Hom(A,_) \<Rightarrow> F in Func (AA,Set)"
     by simp
   with 1 show "\<sigma>(A,\<sigma>\<^sup>\<leftarrow>(A,u)) = u"
     by (rule unsandwich_right_inverse)
-  -- "Sandwich is into F A" (* there is really similar reasoning elsewhere*)
+  \<comment> \<open>Sandwich is into F A\<close> (* there is really similar reasoning elsewhere*)
   from 1 and 2 
   have "u A \<in> hom Set (Hom A A) (F\<^bsub>\<o>\<^esub> A)"
     by (simp add: natural_transformation_def natural_transformation_axioms_def homf_def)

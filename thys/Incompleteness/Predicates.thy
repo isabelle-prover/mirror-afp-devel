@@ -671,20 +671,20 @@ proof -
       defer 1
       apply auto [2]
       apply (rule OrdIndH [where i=j and j=l]) using l
-      --{*nested induction*}
+      \<comment> \<open>nested induction\<close>
       apply (force simp add: fresh_Pair)
       apply simp
       apply (rule All_I Imp_I)+
       prefer 2  apply force
       apply (rule Disj_3I)
       apply (rule Equality_I)
-      --{*Now the opposite inclusion, @{term"Var j SUBS Var i"}*}
+      \<comment> \<open>Now the opposite inclusion, @{term"Var j SUBS Var i"}\<close>
       apply (rule Subset_I [where i=m])
       apply (rule All2_E [THEN rotate4]) using l m
       apply auto
       apply (blast intro: ContraProve [THEN rotate3] OrdP_Trans)
       apply (blast intro: ContraProve [THEN rotate3] Mem_cong [OF Hyp Refl, THEN Iff_MP2_same])
-      --{*Now the opposite inclusion, @{term"Var i SUBS Var j"}*}
+      \<comment> \<open>Now the opposite inclusion, @{term"Var i SUBS Var j"}\<close>
       apply (rule Subset_I [where i=m])
       apply (rule All2_E [THEN rotate6], auto) 
       apply (rule All_E [where x = "Var j"], auto) 
@@ -794,7 +794,7 @@ proof -
     apply (metis Assume Subset_trans OrdP_Mem_imp_Subset thin1)
     apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2 ContraProve)
     apply (metis ContraProve EQ_imp_SUBS rotate3)
-    --{*final case*}
+    \<comment> \<open>final case\<close>
     apply (rule All2_Eats_E [THEN rotate4], simp_all)
     apply (rule Ex_I [where x="Var j"], auto intro: Mem_Eats_I1)
     apply (rule All2_E [where x = "Var k", THEN rotate3], auto)

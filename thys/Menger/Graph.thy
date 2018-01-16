@@ -114,7 +114,7 @@ lemma finitely_many_paths: "finite all_paths" proof-
   thus ?thesis using finite_lists_length_le[OF finite_vertex_set] walk_in_V infinite_super by blast
 qed
 
-end -- "context Digraph"
+end \<comment> \<open>context Digraph\<close>
 
 text {* We introduce shorthand notation for a path connecting two vertices. *}
 
@@ -497,7 +497,7 @@ qed
 lemma remove_vertex_path_from_to_add: "v \<leadsto>xs\<leadsto>\<^bsub>remove_vertex x\<^esub> w \<Longrightarrow> v \<leadsto>xs\<leadsto> w"
   using path_from_to_def remove_vertex_walk_add by fastforce
 
-end -- "context Digraph"
+end \<comment> \<open>context Digraph\<close>
 
 subsection {* Two Distinguished Distinct Non-adjacent Vertices. *}
 

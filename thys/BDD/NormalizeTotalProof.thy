@@ -156,7 +156,7 @@ lemma (in Normalize_impl) Normalize_spec:
   apply   (clarify)
   apply   (simp (no_asm_use) only: simp_thms triv_forall_equality True_implies_equals) 
 proof -
-  -- {* End of while (invariant + false condition) to end of inner SPEC *}
+  \<comment> \<open>End of while (invariant + false condition) to end of inner SPEC\<close>
   fix var p rep mark vara lowa higha pa levellista repa marka nexta varb ll  
     nb pret prebdt  and low :: "ref \<Rightarrow> ref" and 
     high :: "ref \<Rightarrow> ref" and repb :: "ref \<Rightarrow> ref"
@@ -337,7 +337,7 @@ proof -
       by simp
   qed
 next
-  -- {* From postcondition inner SPEC to final postcondition *}
+  \<comment> \<open>From postcondition inner SPEC to final postcondition\<close>
   fix var low high p rep levellist marka "next" 
     nexta lowb highb pb levellista ll repa pret prebdt 
     and mark::"ref\<Rightarrow>bool" and postnormt postnormbdt
@@ -414,7 +414,7 @@ next
       by fastforce
   qed
 next
-  -- {* invariant to invariant *}
+  \<comment> \<open>invariant to invariant\<close>
   fix var low high p rep mark pret prebdt levellist ll "next" marka n repc 
     and repb :: "ref \<Rightarrow> ref"  
   assume ll: "Levellist levellist next ll"

@@ -58,8 +58,8 @@ carrots when she meets him again, the Hare directly discovers @{term
 \<close>
 
 record 'a state =
-  m :: nat  \<comment> \<open> \<open>\<mu>\<close> \<close>
-  l :: nat  \<comment> \<open> \<open>\<lambda>\<close> \<close>
+  m :: nat  \<comment> \<open>\<open>\<mu>\<close>\<close>
+  l :: nat  \<comment> \<open>\<open>\<lambda>\<close>\<close>
   carrots :: nat
   hare :: "'a"
   tortoise :: "'a"

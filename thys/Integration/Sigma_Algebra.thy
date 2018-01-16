@@ -85,7 +85,7 @@ text {*It is trivial to show the connection between our first
 
 
 theorem assumes sa: "sigma_algebra A"
-  -- "Named premises are introduced like this."
+  \<comment> \<open>Named premises are introduced like this.\<close>
 
   shows sigma_sigma_algebra: "sigma A = A"
 proof
@@ -94,7 +94,7 @@ proof
     simplify the goal. Here the following two subgoals emerge.*}
 
   show "A \<subseteq> sigma A"
-    -- {*The $\isacommand {show}$ command starts the proof of a subgoal.*}
+    \<comment> \<open>The $\isacommand {show}$ command starts the proof of a subgoal.\<close>
 
     by (auto simp add: sigma.basic)
 
@@ -110,7 +110,7 @@ proof
       invoked, delimiting a block as in a programming language.*}
 
     fix x
-    -- "A new named variable is introduced."
+    \<comment> \<open>A new named variable is introduced.\<close>
 
     assume "x \<in> sigma A"
 
@@ -164,7 +164,7 @@ text {*Using $\isacommand {primrec}$, primitive recursive functions over
 theorem assumes s: "sigma_algebra A" and a: "a \<in> A" and b: "b \<in> A"
   shows sigma_algebra_inter: "a \<inter> b \<in> A"
 proof -
-    -- {*This form of $\isacommand {proof}$ foregoes the application of a rule.*}
+    \<comment> \<open>This form of $\isacommand {proof}$ foregoes the application of a rule.\<close>
 
   have "a \<inter> b = (\<Inter>i::nat. trivial_series a b i)"
 
@@ -181,7 +181,7 @@ proof -
       fix i
       assume "x \<in> a \<inter> b"
       hence "x \<in> trivial_series a b i" by (cases i) auto
-        -- {*This is just an abbreviation for $\isacommand {"from this have"}$.*}
+        \<comment> \<open>This is just an abbreviation for $\isacommand {"from this have"}$.\<close>
     }
 
     txt {*Curly braces can be used to explicitly delimit

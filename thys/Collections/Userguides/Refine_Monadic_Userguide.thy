@@ -160,14 +160,14 @@ theorem sum_max_correct:
     for empty sets.
     *}
   using PRE unfolding sum_max_def
-  apply (intro WHILE_rule[where I="sum_max_invar V"] refine_vcg) -- "Invoke vcg"
+  apply (intro WHILE_rule[where I="sum_max_invar V"] refine_vcg) \<comment> \<open>Invoke vcg\<close>
   txt {* Note that we have explicitely instantiated 
     the rule for the while-loop with the invariant. If this is not done,
     the verification condition generator will stop at the WHILE-loop.
     *}
-  apply (auto intro: sum_max_invar_step) -- "Discharge step"
-  unfolding sum_max_invar_def -- "Unfold invariant definition"
-  apply (auto) -- "Discharge remaining goals"
+  apply (auto intro: sum_max_invar_step) \<comment> \<open>Discharge step\<close>
+  unfolding sum_max_invar_def \<comment> \<open>Unfold invariant definition\<close>
+  apply (auto) \<comment> \<open>Discharge remaining goals\<close>
   done
 
 text {*
@@ -205,7 +205,7 @@ theorem sum_max'_correct:
   assumes NE: "V\<noteq>{}" and FIN: "finite V"
   shows "sum_max' V \<le> SPEC (\<lambda>(s,m). s=\<Sum>V \<and> m=Max V)"
   using NE FIN unfolding sum_max'_def
-  apply (intro refine_vcg) -- "Invoke vcg"
+  apply (intro refine_vcg) \<comment> \<open>Invoke vcg\<close>
 
   txt {* This time, the verification condition generator uses the annotated
     invariant. Moreover, it leaves us with a variant. We have to specify a 
@@ -214,14 +214,14 @@ theorem sum_max'_correct:
     is initially finite. We use the relation @{const "finite_psubset"} and the
     @{const "inv_image"} combinator from the Isabelle/HOL standard library.*}
   apply (subgoal_tac "wf (inv_image finite_psubset fst)",
-    assumption) -- "Instantiate variant"
-  apply simp -- "Show variant well-founded"
+    assumption) \<comment> \<open>Instantiate variant\<close>
+  apply simp \<comment> \<open>Show variant well-founded\<close>
 
-  unfolding sum_max'_invar_def -- "Unfold definition of invariant"
-  apply (auto intro: sum_max_invar_step) -- "Discharge step"
+  unfolding sum_max'_invar_def \<comment> \<open>Unfold definition of invariant\<close>
+  apply (auto intro: sum_max_invar_step) \<comment> \<open>Discharge step\<close>
 
-  unfolding sum_max_invar_def -- "Unfold definition of invariant completely"
-  apply (auto intro: finite_subset) -- "Discharge remaining goals"
+  unfolding sum_max_invar_def \<comment> \<open>Unfold definition of invariant completely\<close>
+  apply (auto intro: finite_subset) \<comment> \<open>Discharge remaining goals\<close>
   done
 
 subsection {* Refinement *}
@@ -303,12 +303,12 @@ theorem sum_max_impl_refine:
     necessary lemmas to discharge refinement conditions for the collection
     framework. *}
   using assms unfolding sum_max_impl_def sum_max_def
-  apply (refine_rcg) -- "Decompose combinators, generate data refinement goals"
+  apply (refine_rcg) \<comment> \<open>Decompose combinators, generate data refinement goals\<close>
 
-  apply (refine_dref_type) -- "Type-based heuristics to instantiate data 
-    refinement goals"
+  apply (refine_dref_type) \<comment> \<open>Type-based heuristics to instantiate data 
+    refinement goals\<close>
   apply (auto simp add: 
-    ls.correct refine_hsimp refine_rel_defs) -- "Discharge proof obligations"
+    ls.correct refine_hsimp refine_rel_defs) \<comment> \<open>Discharge proof obligations\<close>
   done
 
 text {*
@@ -441,8 +441,7 @@ text {*
 schematic_goal sum_max''_code_aux: 
   "RETURN ?sum_max''_code \<le> sum_max'_impl V"
   unfolding sum_max'_impl_def
-  apply (refine_transfer the_resI) -- 
-   {*Using @{text "the_resI"} for internal monad and result extraction*}
+  apply (refine_transfer the_resI) \<comment> \<open>Using @{text "the_resI"} for internal monad and result extraction\<close>
   done
 
 concrete_definition sum_max''_code for V uses sum_max''_code_aux
@@ -480,10 +479,10 @@ theorem sum_max_it_correct:
   shows "sum_max_it V \<le> SPEC (\<lambda>(s,m). s=\<Sum>V \<and> m=Max V)"
   using PRE unfolding sum_max_it_def
   apply (intro FOREACH_rule[where I="\<lambda>it \<sigma>. sum_max_invar V (it,\<sigma>)"] refine_vcg)
-  apply (rule FIN) -- "Discharge finiteness of iterated set"
-  apply (auto intro: sum_max_invar_step) -- "Discharge step"
-  unfolding sum_max_invar_def -- "Unfold invariant definition"
-  apply (auto) -- "Discharge remaining goals"
+  apply (rule FIN) \<comment> \<open>Discharge finiteness of iterated set\<close>
+  apply (auto intro: sum_max_invar_step) \<comment> \<open>Discharge step\<close>
+  unfolding sum_max_invar_def \<comment> \<open>Unfold invariant definition\<close>
+  apply (auto) \<comment> \<open>Discharge remaining goals\<close>
   done
 
 definition sum_max_it_impl :: "nat ls \<Rightarrow> (nat\<times>nat) nres" where
@@ -500,9 +499,9 @@ lemma sum_max_it_impl_refine:
     rule. This is due to the very general iterator refinement rule, that may
     also change the set over that is iterated. *}
   using assms
-  apply refine_rcg -- {* This time, we don't need the 
+  apply refine_rcg \<comment> \<open>This time, we don't need the 
     @{text "refine_dref_type"} heuristics, as no schematic refinement 
-    relations are generated. *}
+    relations are generated.\<close>
   apply (auto simp: refine_hsimp refine_rel_defs)
   done
 

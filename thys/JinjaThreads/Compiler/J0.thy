@@ -226,9 +226,9 @@ where
 | "\<tau>move0 P h (e;;e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 | "\<tau>move0 P h (if (e) e' else e'') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 | "\<tau>move0 P h (while (e) e') = True"
-| -- {* @{term "Throw a"} is no @{text "\<tau>move0"} because there is no reduction for it.
+| \<comment> \<open>@{term "Throw a"} is no @{text "\<tau>move0"} because there is no reduction for it.
   If it were, most defining equations would be simpler. However, @{term "insync\<^bsub>V'\<^esub>(ad) (Throw ad)"}
-  must not be a @{text "\<tau>move0"}, but would be if @{term "Throw a"} was. *}
+  must not be a @{text "\<tau>move0"}, but would be if @{term "Throw a"} was.\<close>
   "\<tau>move0 P h (throw e) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> e = null"
 | "\<tau>move0 P h (try e catch(C V) e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 

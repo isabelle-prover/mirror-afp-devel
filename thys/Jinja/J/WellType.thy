@@ -92,7 +92,7 @@ WTBinOp:
   "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^sub>2 :: T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
 
--- "well-typed expression lists"
+\<comment> \<open>well-typed expression lists\<close>
 
 | WTNil:
   "P,E \<turnstile> [] [::] []"

@@ -57,7 +57,7 @@ export_code compute_SCC_tr checking SML
 section {* Correctness Theorem *}
 
 theorem compute_SCC_tr_correct:
-  -- "Correctness theorem for the constant we extracted to SML"
+  \<comment> \<open>Correctness theorem for the constant we extracted to SML\<close>
   fixes Re
   fixes G :: "('a::hashable,'more) graph_rec_scheme"
   assumes A: "(G_impl,G)\<in>\<langle>Re,Id\<rangle>g_impl_rel_ext"

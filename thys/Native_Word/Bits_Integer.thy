@@ -207,10 +207,10 @@ shiftrUnbounded x n
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Integer -> a;
 shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);*}
 
-  and -- {* @{theory Quickcheck_Narrowing} maps @{typ integer} to 
+  and \<comment> \<open>@{theory Quickcheck_Narrowing} maps @{typ integer} to 
             Haskell's Prelude.Int type instead of Integer. For compatibility
             with the Haskell target, we nevertheless provide bounded and 
-            unbounded functions. *}
+            unbounded functions.\<close>
   (Haskell_Quickcheck)
 {*import qualified Data.Bits;
 
@@ -828,7 +828,7 @@ proof -
     by(simp add: int_and_assoc int_not_def xor_pint_def)
 qed
 
-lemma and_pninteger:  -- {* justification for OCaml implementation of @{term andpnint} *}
+lemma and_pninteger:  \<comment> \<open>justification for OCaml implementation of @{term andpnint}\<close>
   "\<lbrakk> x \<ge> 0; y < 0; k \<ge> log2_integer x; k \<ge> log2_integer (- y) \<rbrakk> 
   \<Longrightarrow> and_pninteger x y = and_pinteger x (xor_pinteger (bin_mask_integer k) (- y - 1))"
 by transfer(rule and_pnint)
@@ -850,7 +850,7 @@ proof -
       (subst bbw_lcs(1), subst (3) int_and_comm, simp add: int_and_mask)
 qed
 
-lemma or_pinteger: -- {* justification for OCaml implementation of @{term or_pnint} *}
+lemma or_pinteger: \<comment> \<open>justification for OCaml implementation of @{term or_pnint}\<close>
   "\<lbrakk>  x \<ge> 0; y < 0; k \<ge> log2_integer x; k \<ge> log2_integer (- y) \<rbrakk>
   \<Longrightarrow> or_pninteger x y = - (and_pinteger (xor_pinteger (bin_mask_integer k) x) (- y - 1)) - 1"
 by(transfer)(rule or_pnint)

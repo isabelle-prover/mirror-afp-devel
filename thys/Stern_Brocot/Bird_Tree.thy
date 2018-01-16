@@ -109,11 +109,11 @@ proof -
   let ?R = "\<lambda>t. Node (1, 1) (Node (1, 2) (?rssr t) (?rsrs t)) (Node (2, 1) (?srsr t) (?srrs t))"
 
   have *: "stern_brocot_recurse = ?R stern_brocot_recurse"
-    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) -- \<open>Expand the tree twice\<close>
+    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) \<comment> \<open>Expand the tree twice\<close>
       (applicative_lifting, simp add: split_beta)+
   show "f = stern_brocot_recurse" when "f = ?R f" for f using that * by corec_unique
   show "odd_mirror bird = ?R (odd_mirror bird)"
-    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) -- \<open>Expand the tree twice\<close>
+    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) \<comment> \<open>Expand the tree twice\<close>
       (applicative_lifting; simp)+
 qed
 

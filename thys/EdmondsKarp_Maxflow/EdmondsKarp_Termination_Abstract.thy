@@ -135,7 +135,7 @@ proof -
 
       show ?case
       proof (cases "prod.swap`edges \<inter> set p2' = {}")
-        -- \<open>We proceed by a case distinction whether the suffix path contains swapped edges\<close>
+        \<comment> \<open>We proceed by a case distinction whether the suffix path contains swapped edges\<close>
         case True 
         with g'.transfer_path[OF _ P2', of c] \<open>g'.E \<subseteq> E \<union> prod.swap ` edges\<close>
         have "isPath u p2' t" by auto
@@ -146,7 +146,7 @@ proof -
         ultimately show ?thesis by auto
       next
         case False
-        -- \<open>Obtain first swapped edge on suffix path\<close>
+        \<comment> \<open>Obtain first swapped edge on suffix path\<close>
         obtain p21' e' p22' where [simp]: "p2'=p21'@e'#p22'" and 
            E_IN_EDGES: "e'\<in>prod.swap`edges" and 
           P1_NO_EDGES: "prod.swap`edges \<inter> set p21' = {}"
@@ -154,10 +154,10 @@ proof -
           using \<open>prod.swap ` edges \<inter> set p2' \<noteq> {}\<close> by fastforce+
         obtain u' v' where [simp]: "e'=(v',u')" by (cases e')      
   
-        -- \<open>Split the suffix path accordingly\<close>
+        \<comment> \<open>Split the suffix path accordingly\<close>
         from P2' have P21': "g'.isPath u p21' v'" and P22': "g'.isPath u' p22' t"
           by (auto simp: g'.isPath_append)
-        -- \<open>As we chose the first edge, the prefix of the suffix path is also a path in the original graph\<close>  
+        \<comment> \<open>As we chose the first edge, the prefix of the suffix path is also a path in the original graph\<close>  
         from 
           g'.transfer_path[OF _ P21', of c] 
           \<open>g'.E \<subseteq> E \<union> prod.swap ` edges\<close> 
@@ -181,7 +181,7 @@ proof -
 
   (* TODO: This step is analogous to what we do in the False-case of the induction.
     Can we somehow remove the redundancy? *)
-  -- \<open>Obtain first swapped edge on path\<close>
+  \<comment> \<open>Obtain first swapped edge on path\<close>
   obtain p1' e p2' where [simp]: "p'=p1'@e#p2'" and 
     E_IN_EDGES: "e\<in>prod.swap`edges" and 
     P1_NO_EDGES: "prod.swap`edges \<inter> set p1' = {}"
@@ -189,12 +189,12 @@ proof -
     using \<open>prod.swap ` edges \<inter> set p' \<noteq> {}\<close> by fastforce+
   obtain u v where [simp]: "e=(v,u)" by (cases e)      
 
-  -- \<open>Split the new path accordingly\<close>
+  \<comment> \<open>Split the new path accordingly\<close>
   from \<open>g'.isPath s p' t\<close> have 
     P1': "g'.isPath s p1' v" and 
     P2': "g'.isPath u p2' t"
     by (auto simp: g'.isPath_append)
-  -- \<open>As we chose the first edge, the prefix of the path is also a path in the original graph\<close>  
+  \<comment> \<open>As we chose the first edge, the prefix of the path is also a path in the original graph\<close>  
   from 
     g'.transfer_path[OF _ P1', of c] 
     \<open>g'.E \<subseteq> E \<union> prod.swap ` edges\<close> 
@@ -208,7 +208,7 @@ proof -
     by (auto simp: isShortestPath_min_dist_def)
 qed    
 
-end -- \<open>Graph\<close>
+end \<comment> \<open>Graph\<close>
 
 text \<open>We outsource the more specific lemmas to their own locale, 
   to prevent name space pollution\<close>
@@ -297,12 +297,12 @@ proof -
     assume SHORTER: "g'.min_dist s t < min_dist s t"
     assume CONN2: "g'.connected s t"
 
-    -- \<open>Obtain a shorter path in $g'$\<close>
+    \<comment> \<open>Obtain a shorter path in $g'$\<close>
     from g'.min_dist_is_dist[OF CONN2] obtain p' where
       P': "g'.isPath s p' t" and LENP': "length p' = g'.min_dist s t"
       by (auto simp: g'.dist_def)
 
-    { -- \<open>Case: It does not use @{term "prod.swap`edges"}. 
+    { \<comment> \<open>Case: It does not use @{term "prod.swap`edges"}. 
         Then it is also a path in $g$, which is shorter than 
         the shortest path in $g$, yielding a contradiction.\<close>
       assume "prod.swap`edges \<inter> set p' = {}"
@@ -310,9 +310,9 @@ proof -
         by (auto simp: dist_def)
       from LENP' SHORTER min_dist_minD[OF this] have False by auto 
     } moreover {
-      -- \<open>So assume the path uses the edge @{term "prod.swap e"}.\<close>
+      \<comment> \<open>So assume the path uses the edge @{term "prod.swap e"}.\<close>
       assume "prod.swap`edges \<inter> set p' \<noteq> {}"
-      -- \<open>Due to auxiliary lemma, those path must be longer\<close>
+      \<comment> \<open>Due to auxiliary lemma, those path must be longer\<close>
       from isShortestPath_flip_edges[OF _ _ SP SP_EDGES P' this] Ebounds
       have "length p' > length p" by auto
       with SHORTER LENP LENP' have False by auto
@@ -385,7 +385,7 @@ proof -
 
 qed
 
-end -- \<open>Analysis locale\<close> 
+end \<comment> \<open>Analysis locale\<close> 
 
 text \<open>As a first step to the analysis setup, we characterize
   the effect of augmentation on the residual graph
@@ -421,7 +421,7 @@ lemma augment_cf_split:
   using assms
   by (fastforce simp: Graph.augment_cf_def intro!: ext)
       
-end -- \<open>Graph\<close>
+end \<comment> \<open>Graph\<close>
 
 context NFlow begin
 
@@ -543,6 +543,6 @@ proof -
     done
 qed    
 
-end -- \<open>Network with flow\<close>
+end \<comment> \<open>Network with flow\<close>
 
 end

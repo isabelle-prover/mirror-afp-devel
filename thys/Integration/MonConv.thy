@@ -195,7 +195,7 @@ proof -
   from incseq_convergent[of c x] mon bound
   obtain l where "c \<longlonglongrightarrow> l" "\<forall>i. c i \<le> l"
     by (auto simp: incseq_Suc_iff)
-  moreover -- {*This is like $\isacommand{also}$ but lacks the transitivity step.*}
+  moreover \<comment> \<open>This is like $\isacommand{also}$ but lacks the transitivity step.\<close>
   with bound have "l \<le> x"
     by (intro LIMSEQ_le_const2) auto
   ultimately show ?thesis

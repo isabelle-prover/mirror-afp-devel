@@ -15,17 +15,17 @@ begin
 subsection{* Objects and Arrays *}
 
 type_synonym 
-  fields = "vname \<times> cname \<rightharpoonup> addr val"       -- "field name, defining class, value"
+  fields = "vname \<times> cname \<rightharpoonup> addr val"       \<comment> \<open>field name, defining class, value\<close>
 
 type_synonym
   cells = "addr val list"
 
 datatype heapobj
   = Obj cname fields
-    -- "class instance with class name and fields"
+    \<comment> \<open>class instance with class name and fields\<close>
 
   | Arr ty fields cells
-    -- "element type, fields (from object), and list of each cell's content"
+    \<comment> \<open>element type, fields (from object), and list of each cell's content\<close>
 
 lemma rec_heapobj [simp]: "rec_heapobj = case_heapobj"
 by(auto intro!: ext split: heapobj.split)
@@ -52,7 +52,7 @@ definition init_fields :: "('field_name \<times> (ty \<times> fmod)) list \<Righ
 where "init_fields \<equiv> map_of \<circ> map (\<lambda>(FD,(T, fm)). (FD,default_val T))"
 
 primrec
-  -- "a new, blank object with default values in all fields:"
+  \<comment> \<open>a new, blank object with default values in all fields:\<close>
   blank :: "'m prog \<Rightarrow> htype \<Rightarrow> heapobj"
 where
   "blank P (Class_type C)   = Obj C (init_fields (fields P C))"

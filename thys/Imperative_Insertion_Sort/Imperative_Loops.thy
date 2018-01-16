@@ -115,12 +115,12 @@ lemmas
 
 text \<open>A rule for proving total correctness of while loops.\<close>
 lemma wf_while_induct [consumes 1, case_names success_cond success_body base step]:
-  assumes "wf R" -- \<open>a well-founded relation on heaps proving termination of the loop\<close>
-    and success_p: "\<And>h. I h \<Longrightarrow> success p h" -- \<open>the loop-condition terminates\<close>
-    and success_f: "\<And>h. I h \<Longrightarrow> success p h \<Longrightarrow> cond p h \<Longrightarrow> success f h" -- \<open>the loop-body terminates\<close>
-    and "I h" -- \<open>the invariant holds before the loop is entered\<close>
+  assumes "wf R" \<comment> \<open>a well-founded relation on heaps proving termination of the loop\<close>
+    and success_p: "\<And>h. I h \<Longrightarrow> success p h" \<comment> \<open>the loop-condition terminates\<close>
+    and success_f: "\<And>h. I h \<Longrightarrow> success p h \<Longrightarrow> cond p h \<Longrightarrow> success f h" \<comment> \<open>the loop-body terminates\<close>
+    and "I h" \<comment> \<open>the invariant holds before the loop is entered\<close>
     and step: "\<And>h h' r. I h \<Longrightarrow> success p h \<Longrightarrow> cond p h \<Longrightarrow> effect f h h' r \<Longrightarrow> (h', h) \<in> R \<and> I h'"
-       -- \<open>the invariant is preserved by iterating the loop\<close>
+       \<comment> \<open>the invariant is preserved by iterating the loop\<close>
   shows "\<exists>h'. effect (while p f) h h' () \<and> I h'"
 using \<open>wf R\<close> and \<open>I h\<close>
 proof (induction h)

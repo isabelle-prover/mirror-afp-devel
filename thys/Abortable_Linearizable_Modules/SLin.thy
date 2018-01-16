@@ -7,7 +7,7 @@ imports IOA RDR
 begin
 
 datatype ('a,'b,'c,'d)SLin_action =
--- {* The nat component is the instance number *}
+\<comment> \<open>The nat component is the instance number\<close>
   Invoke nat 'b 'c
 | Response nat 'b 'd
 | Switch nat 'b 'c 'a
@@ -29,7 +29,7 @@ begin
 
 definition
   asig :: "nat \<Rightarrow> nat \<Rightarrow> ('a,'b,'c,'d)SLin_action signature" 
-  -- {* The first instance has number 0 *}
+  \<comment> \<open>The first instance has number 0\<close>
   where
   "asig i j \<equiv> \<lparr>
     inputs = {act . \<exists> p c iv i' .

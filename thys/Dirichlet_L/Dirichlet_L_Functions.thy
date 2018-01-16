@@ -557,7 +557,7 @@ proof (cases "Re u > 1")
     hence zero: "Dirichlet_L n \<chi> (1 - \<i> * a) = 0" by simp
     define \<chi>' where [simp]: "\<chi>' = inv_character \<chi>"
 
-    -- \<open>We define the function $Z(s)$, which is the product of all the Dirichlet $L$ functions,
+    \<comment> \<open>We define the function $Z(s)$, which is the product of all the Dirichlet $L$ functions,
         and its Dirichlet series. Then, similarly to the proof of the non-vanishing of the
         Riemann $\zeta$ function for $\mathfrak{R}(s) \geq 1$, we define
         $Q(s) = Z(s) Z(s + ia) Z(s - ia)$. Our objective is to show that the Dirichlet series
@@ -568,7 +568,7 @@ proof (cases "Re u > 1")
     define Q_fds where "Q_fds = Z_fds ^ 2 * fds_shift (\<i> * a) Z_fds * fds_shift (-\<i> * a) Z_fds"  
     let ?sings = "{1, 1 + \<i> * a, 1 - \<i> * a}"
   
-    -- \<open>Some preliminary auxiliary facts\<close>
+    \<comment> \<open>Some preliminary auxiliary facts\<close>
     define P where "P = (\<lambda>s. (\<Prod>x\<in>{p. prime p \<and> p dvd n}. 1 - 1 / of_nat x powr s :: complex))"
     have \<chi>\<^sub>0: "\<chi>\<^sub>0 \<in> dcharacters n" by (auto simp: principal.dcharacter_axioms dcharacters_def)
     have [continuous_intros]: "continuous_on A P" for A unfolding P_def
@@ -600,7 +600,7 @@ proof (cases "Re u > 1")
       finally show ?case by (simp add: mult_ac)
     qed
   
-    -- \<open>We again show that @{term Q} is locally bounded everywhere by showing that every
+    \<comment> \<open>We again show that @{term Q} is locally bounded everywhere by showing that every
         singularity is cancelled by some zero. Since now, @{term a} can be zero, we do a
         case distinction here to make things a bit easier.\<close>
     have Q_bigo_1: "Q \<in> O[at s](\<lambda>_. 1)" for s
@@ -724,13 +724,13 @@ proof (cases "Re u > 1")
       qed
     qed
   
-    -- \<open>Again, we can remove the singularities from @{term Q} and extend it to an entire function.\<close>
+    \<comment> \<open>Again, we can remove the singularities from @{term Q} and extend it to an entire function.\<close>
     have "\<exists>Q'. Q' holomorphic_on UNIV \<and> (\<forall>z\<in>UNIV - ?sings. Q' z = Q z)"
       using n by (intro removable_singularities Q_bigo_1)
                  (auto simp: Q_def Z_def dcharacters_def complex_eq_iff intro!: holomorphic_intros)
     then obtain Q' where Q': "Q' holomorphic_on UNIV" "\<And>z. z \<notin> ?sings \<Longrightarrow> Q' z = Q z" by blast
   
-    -- \<open>@{term Q'} constitutes an analytic continuation of the Dirichlet series of @{term Q}.\<close>
+    \<comment> \<open>@{term Q'} constitutes an analytic continuation of the Dirichlet series of @{term Q}.\<close>
     have eval_Q_fds: "eval_fds Q_fds s = Q' s" if "Re s > 1" for s
     proof -
       have [simp]: "dcharacter n \<chi>" if "\<chi> \<in> dcharacters n" for \<chi>
@@ -745,7 +745,7 @@ proof (cases "Re u > 1")
       finally show ?thesis .
     qed
   
-    -- \<open>Since the characters are completely multiplicative, the series for this logarithm can
+    \<comment> \<open>Since the characters are completely multiplicative, the series for this logarithm can
         be rewritten like this:\<close>
     define I where "I = (\<lambda>k. if [k = 1] (mod n) then totient n else 0 :: real)"
     have ln_Q_fds_eq:
@@ -783,7 +783,7 @@ proof (cases "Re u > 1")
         by (intro fds_eqI, subst sum_dcharacters) (simp_all add: I_def algebra_simps)
       finally show ?thesis .
     qed
-    -- \<open>The coefficients of that logarithm series are clearly nonnegative:\<close>
+    \<comment> \<open>The coefficients of that logarithm series are clearly nonnegative:\<close>
     have "nonneg_dirichlet_series (fds_ln 0 Q_fds)"
     proof
       show "fds_nth (fds_ln 0 Q_fds) k \<in> \<real>\<^sub>\<ge>\<^sub>0" for k
@@ -800,7 +800,7 @@ proof (cases "Re u > 1")
         finally show ?thesis .
       qed (cases k; auto simp: ln_Q_fds_eq)
     qed
-    -- \<open>Therefore @{term Q_fds} also has non-negative coefficients.\<close>
+    \<comment> \<open>Therefore @{term Q_fds} also has non-negative coefficients.\<close>
     hence nonneg: "nonneg_dirichlet_series Q_fds"
     proof (rule nonneg_dirichlet_series_lnD)
       have "(\<Prod>x\<in>dcharacters n. x (Suc 0)) = 1"
@@ -808,7 +808,7 @@ proof (cases "Re u > 1")
       thus "exp 0 = fds_nth Q_fds (Suc 0)" by (simp add: Q_fds_def Z_fds_def)
     qed
 
-    -- \<open>And by Pringsheim--Landau, we get that the Dirichlet series of @{term Q} converges
+    \<comment> \<open>And by Pringsheim--Landau, we get that the Dirichlet series of @{term Q} converges
         everywhere.\<close>
     have "abs_conv_abscissa Q_fds \<le> 1" unfolding Q_fds_def Z_fds_def fds_shift_prod
       by (intro abs_conv_abscissa_power_leI abs_conv_abscissa_mult_leI abs_conv_abscissa_prod_le)
@@ -818,7 +818,7 @@ proof (cases "Re u > 1")
         by (intro entire_continuation_imp_abs_conv_abscissa_MInfty[where g = Q' and c = 1])
            (auto simp: one_ereal_def)
   
-    -- \<open>Again, similarly to the proof for $\zeta$, we select a subseries of @{term Q}. This time
+    \<comment> \<open>Again, similarly to the proof for $\zeta$, we select a subseries of @{term Q}. This time
         we cannot simply pick powers of 2, since 2 might not be coprime to @{term n}, in which 
         case the subseries would simply be 1 everywhere, which is not helpful. However, it is
         clear that there \emph{is} always some prime $p$ that is coprime to @{term n}, so we
@@ -832,7 +832,7 @@ proof (cases "Re u > 1")
     also have "\<dots> = -\<infinity>" by (simp add: abscissa)
     finally have abscissa': "conv_abscissa R_fds = -\<infinity>" by simp
   
-    -- \<open>The following function $g(a,s)$ is the denominator in the Euler product expansion of 
+    \<comment> \<open>The following function $g(a,s)$ is the denominator in the Euler product expansion of 
         the subseries of $Z(s + ia)$. It is clear that it is entire and non-zero for 
         $\mathfrak{R}(s) > 0$ and all real $a$.\<close>
     define g :: "real \<Rightarrow> complex \<Rightarrow> complex"
@@ -853,7 +853,7 @@ proof (cases "Re u > 1")
     have [holomorphic_intros]: "g a holomorphic_on A" for a A unfolding g_def
       using p by (intro holomorphic_intros)
 
-    -- \<open>By taking Euler product expansions of every factor, we get
+    \<comment> \<open>By taking Euler product expansions of every factor, we get
           \[R(s) = \frac{1}{g(0,s)^2 g(a,s) g(-a,s)} = 
               (1 - 2^{-s})^{-2} (1 - 2^{-s+ia})^{-1} (1 - 2^{-s-ia})^{-1}\]
         for every $s$ with $\mathfrak{R}(s) > 1$, and by analytic continuation also for
@@ -888,7 +888,7 @@ proof (cases "Re u > 1")
                                                convex_halfspace_Re_gt holomorphic_intros)
     qed
   
-    -- \<open>We again have our contradiction: $R(s)$ is entire, but the right-hand side has a pole at 0
+    \<comment> \<open>We again have our contradiction: $R(s)$ is entire, but the right-hand side has a pole at 0
         since $g(0,0) = 0$.\<close>
     show False
     proof (rule not_tendsto_and_filterlim_at_infinity)

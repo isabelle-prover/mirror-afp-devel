@@ -54,20 +54,20 @@ record ('Q,'L) tree_automaton_rec =
   ta_initial :: "'Q set"
   ta_rules :: "('Q,'L) ta_rule set"
 
-  -- "Rule deconstruction"
+  \<comment> \<open>Rule deconstruction\<close>
 fun lhs where "lhs (q \<rightarrow> l qs) = q"
 fun rhsq where "rhsq (q \<rightarrow> l qs) = qs"
 fun rhsl where "rhsl (q \<rightarrow> l qs) = l"
-  -- "States in a rule"
+  \<comment> \<open>States in a rule\<close>
 fun rule_states where "rule_states (q \<rightarrow> l qs) = insert q (set qs)"
-  -- "States in a set of rules"
+  \<comment> \<open>States in a set of rules\<close>
 definition "\<delta>_states \<delta> == \<Union>(rule_states ` \<delta>)"
-  -- "States in a tree automaton"
+  \<comment> \<open>States in a tree automaton\<close>
 definition "ta_rstates TA = ta_initial TA \<union> \<delta>_states (ta_rules TA)"
-  -- "Symbols occurring in rules"
+  \<comment> \<open>Symbols occurring in rules\<close>
 definition "\<delta>_symbols \<delta> == rhsl`\<delta>"
 
-  -- "Nondeterministic, finite tree automaton (NFTA)"
+  \<comment> \<open>Nondeterministic, finite tree automaton (NFTA)\<close>
 locale tree_automaton = 
   fixes TA :: "('Q,'L) tree_automaton_rec"
   assumes finite_rules[simp, intro!]: "finite (ta_rules TA)"
@@ -94,7 +94,7 @@ where
    \<rbrakk> \<Longrightarrow> accs \<delta> (NODE f ts) q"
 
 
--- {* Characterization of @{const accs} using @{const list_all_zip} *}
+\<comment> \<open>Characterization of @{const accs} using @{const list_all_zip}\<close>
 inductive accs_laz :: "('Q,'L) ta_rule set \<Rightarrow> 'L tree \<Rightarrow> 'Q \<Rightarrow> bool"
 where
   "\<lbrakk>
@@ -223,7 +223,7 @@ end
 subsection "Other Classes of Tree Automata"
 
 subsubsection "Automata over Ranked Alphabets"
-  -- "All trees over ranked alphabet"
+  \<comment> \<open>All trees over ranked alphabet\<close>
 inductive_set ranked_trees :: "('L \<rightharpoonup> nat) \<Rightarrow> 'L tree set"
   for A where
   "\<lbrakk> \<forall>t\<in>set ts. t\<in>ranked_trees A; A f = Some (length ts) \<rbrakk> 
@@ -279,7 +279,7 @@ begin
   qed
 end
 
-  -- "Finite tree automata with ranked alphabet"
+  \<comment> \<open>Finite tree automata with ranked alphabet\<close>
 locale ranked_tree_automaton = 
   tree_automaton TA +
   finite_alphabet A
@@ -296,14 +296,14 @@ begin
     apply (auto intro: ranked)
     done
 
-    -- "Only well-ranked trees are accepted"
+    \<comment> \<open>Only well-ranked trees are accepted\<close>
   lemma accs_is_ranked: "accs \<delta> t q \<Longrightarrow> t\<in>ranked_trees A"
     apply (induct \<delta>\<equiv>\<delta> t q rule: accs.induct)
     apply (rule ranked_trees.intros)
     apply (auto simp add: set_conv_nth ranked)
     done
 
-    -- "The language consists of well-ranked trees"
+    \<comment> \<open>The language consists of well-ranked trees\<close>
   theorem lang_is_ranked: "ta_lang TA \<subseteq> ranked_trees A"
     using accs_is_ranked by (auto simp add: ta_lang_def)
 
@@ -311,7 +311,7 @@ end
 
 subsubsection "Deterministic Tree Automata"
 
-  -- "Deterministic, (bottom-up) finite tree automaton (DFTA)"
+  \<comment> \<open>Deterministic, (bottom-up) finite tree automaton (DFTA)\<close>
 locale det_tree_automaton = ranked_tree_automaton TA A
   for TA :: "('Q,'L) tree_automaton_rec" and A +
   assumes deterministic: "\<lbrakk> (q \<rightarrow> f qs)\<in>\<delta>; (q' \<rightarrow> f qs)\<in>\<delta> \<rbrakk> \<Longrightarrow> q=q'"
@@ -348,7 +348,7 @@ locale complete_tree_automaton = det_tree_automaton TA A
   "\<lbrakk> qs\<in>lists Q; A f = Some (length qs) \<rbrakk> \<Longrightarrow> \<exists>q. (q \<rightarrow> f qs)\<in>\<delta>"
 begin
 
-    -- "In a complete DFTA, all trees can be labeled by some state"
+    \<comment> \<open>In a complete DFTA, all trees can be labeled by some state\<close>
   theorem label_all: "t\<in>ranked_trees A \<Longrightarrow> \<exists>q\<in>Q. accs \<delta> t q"
   proof (induct rule: ranked_trees.induct[case_names constr])
     case (constr ts f)
@@ -591,13 +591,11 @@ definition "ta_union TA TA' ==
     ta_rules = ta_rules TA \<union> ta_rules TA' 
   \<rparr>"
 
--- {*
-  Given two disjoint sets of states, where no rule contains states from
+\<comment> \<open>Given two disjoint sets of states, where no rule contains states from
   both sets, then any accepted tree is also accepted when only using one of the 
   subsets of states and rules. 
   This lemma and its corollaries capture the basic idea of 
-  the union-algorithm.
-*}
+  the union-algorithm.\<close>
 lemma accs_exclusive_aux: 
   "\<lbrakk> accs \<delta>n n q; \<delta>n=\<delta>\<union>\<delta>'; \<delta>_states \<delta> \<inter> \<delta>_states \<delta>' = {}; q\<in>\<delta>_states \<delta> \<rbrakk> 
    \<Longrightarrow> accs \<delta> n q"
@@ -677,10 +675,8 @@ proof -
     done
 qed
 
-  -- {*
-    If the sets of states are disjoint, the language of the union-automaton
-    is the union of the languages of the original automata.
-    *}
+  \<comment> \<open>If the sets of states are disjoint, the language of the union-automaton
+    is the union of the languages of the original automata.\<close>
 theorem ta_union_correct:
   fixes TA TA'
   assumes TA: "tree_automaton TA"
@@ -795,7 +791,7 @@ definition ta_reduce
     \<lparr> ta_initial = ta_initial TA \<inter> P,
       ta_rules = reduce_rules (ta_rules TA) P \<rparr>"
 
--- {* Reducing a tree automaton preserves the tree automata invariants *}
+\<comment> \<open>Reducing a tree automaton preserves the tree automata invariants\<close>
 theorem ta_reduce_inv: assumes A: "tree_automaton TA" 
   shows "tree_automaton (ta_reduce TA P)"
 proof -
@@ -812,8 +808,8 @@ lemma reduce_\<delta>_states_rules[simp]:
   "(ta_rules (ta_reduce TA (\<delta>_states (ta_rules TA)))) = ta_rules TA"
   by (auto simp add: ta_reduce_def \<delta>_states_def reduce_rules_def)
 
--- {* Reducing a tree automaton to the states that occur in its rules does 
-      not change its language *}
+\<comment> \<open>Reducing a tree automaton to the states that occur in its rules does 
+      not change its language\<close>
 lemma ta_reduce_\<delta>_states: 
   "ta_lang (ta_reduce TA (\<delta>_states (ta_rules TA))) = ta_lang TA"
   apply (auto simp add: ta_lang_def)
@@ -833,21 +829,21 @@ text {*
   a rule $q \leftarrow f(\ldots q' \ldots)$.
 *}
 
-  -- "Forward successors"
+  \<comment> \<open>Forward successors\<close>
 inductive_set f_succ for \<delta> where
   "\<lbrakk>(q \<rightarrow> l qs)\<in>\<delta>; q'\<in>set qs\<rbrakk> \<Longrightarrow> (q,q') \<in> f_succ \<delta>"
 
-  -- "Alternative characterization of forward successors"
+  \<comment> \<open>Alternative characterization of forward successors\<close>
 lemma f_succ_alt: "f_succ \<delta> = {(q,q'). \<exists>l qs. (q \<rightarrow> l qs)\<in>\<delta> \<and> q'\<in>set qs}"
   by (auto intro: f_succ.intros elim!: f_succ.cases)
 
-  -- "Forward accessible states"
+  \<comment> \<open>Forward accessible states\<close>
 definition "f_accessible \<delta> Q0 == ((f_succ \<delta>)\<^sup>*) `` Q0"
 
-  -- "Alternative characterization of forward accessible states.
+  \<comment> \<open>Alternative characterization of forward accessible states.
       The initial states are forward accessible, and if there is a rule
       whose lhs-state is forward-accessible, all rhs-states of that rule
-      are forward-accessible, too."
+      are forward-accessible, too.\<close>
 inductive_set f_accessible_alt :: "('Q,'L) ta_rule set \<Rightarrow> 'Q set \<Rightarrow> 'Q set"
 for \<delta> Q0
 where
@@ -901,8 +897,8 @@ lemma (in tree_automaton) f_accessible_in_states:
 lemma f_accessible_refl_inter_simp[simp]: "Q \<inter> f_accessible r Q = Q"
   by (unfold f_accessible_alt) (auto intro: fa_refl)
 
-  -- {* A tree remains accepted by a state @{text q} if the rules are reduced to 
-        the states that are forward-accessible from @{text q} *}
+  \<comment> \<open>A tree remains accepted by a state @{text q} if the rules are reduced to 
+        the states that are forward-accessible from @{text q}\<close>
 lemma accs_reduce_f_acc: 
   "accs \<delta> t q \<Longrightarrow> accs (reduce_rules \<delta> (f_accessible \<delta> {q})) t q"
 proof (induct rule: accs.induct[case_names step])
@@ -927,11 +923,11 @@ proof (induct rule: accs.induct[case_names step])
   qed (simp_all add: step.hyps(2,3))
 qed
 
-  -- "Short-hand notation for forward-reducing a tree-automaton"
+  \<comment> \<open>Short-hand notation for forward-reducing a tree-automaton\<close>
 abbreviation "ta_fwd_reduce TA == 
   (ta_reduce TA (f_accessible (ta_rules TA) (ta_initial TA)))"
 
--- {* Forward-reducing a tree automaton does not change its language *}
+\<comment> \<open>Forward-reducing a tree automaton does not change its language\<close>
 theorem ta_reduce_f_acc[simp]: "ta_lang (ta_fwd_reduce TA) = ta_lang TA"
   apply (rule sym)
   apply (unfold ta_reduce_def ta_lang_def)
@@ -964,7 +960,7 @@ lemma b_accessibleI:
   "\<lbrakk>(q \<rightarrow> l qs)\<in>\<delta>; set qs \<subseteq> b_accessible \<delta>\<rbrakk> \<Longrightarrow> q\<in>b_accessible \<delta>"
   by (auto intro: b_accessible.intros)
 
--- {* States that accept a tree are backward accessible *}
+\<comment> \<open>States that accept a tree are backward accessible\<close>
 lemma accs_is_b_accessible: "accs \<delta> t q \<Longrightarrow> q\<in>b_accessible \<delta>"
   apply (induct rule: accs.induct)
   apply (rule b_accessible.intros)
@@ -985,7 +981,7 @@ lemma b_acc_finite[simp, intro!]: "finite \<delta> \<Longrightarrow> finite (b_a
   apply auto
   done
 
-  -- {* Backward accessible states accept at least one tree *}
+  \<comment> \<open>Backward accessible states accept at least one tree\<close>
 lemma b_accessible_is_accs: 
   "\<lbrakk> q\<in>b_accessible (ta_rules TA); 
      !!t. accs (ta_rules TA) t q \<Longrightarrow> P
@@ -1025,8 +1021,8 @@ proof (induct arbitrary: P rule: b_accessible.induct[case_names IH])
     done
 qed
 
-  -- "All trees remain accepted when reducing the rules to 
-      backward-accessible states"
+  \<comment> \<open>All trees remain accepted when reducing the rules to 
+      backward-accessible states\<close>
 lemma accs_reduce_b_acc: 
   "accs \<delta> t q \<Longrightarrow> accs (reduce_rules \<delta> (b_accessible \<delta>)) t q"
   apply (induct rule: accs.induct)
@@ -1043,10 +1039,10 @@ lemma accs_reduce_b_acc:
   apply auto
   done
 
-  -- "Shorthand notation for backward-reduction of a tree automaton"
+  \<comment> \<open>Shorthand notation for backward-reduction of a tree automaton\<close>
 abbreviation "ta_bwd_reduce TA == (ta_reduce TA (b_accessible (ta_rules TA)))"
 
--- {* Backwards-reducing a tree automaton does not change its language *}
+\<comment> \<open>Backwards-reducing a tree automaton does not change its language\<close>
 theorem ta_reduce_b_acc[simp]: "ta_lang (ta_bwd_reduce TA) = ta_lang TA"
   apply (rule sym)
   apply (unfold ta_reduce_def ta_lang_def)
@@ -1058,10 +1054,8 @@ theorem ta_reduce_b_acc[simp]: "ta_lang (ta_bwd_reduce TA) = ta_lang TA"
   apply (blast intro: accs_mono[OF _ reduce_rules_subset])
   .
 
-  -- {*
-    Emptiness check by backward reduction. The language of a tree automaton 
-    is empty, if and only if no initial state is backwards-accessible.
-    *}
+  \<comment> \<open>Emptiness check by backward reduction. The language of a tree automaton 
+    is empty, if and only if no initial state is backwards-accessible.\<close>
 theorem empty_if_no_b_accessible: 
   "ta_lang TA = {} \<longleftrightarrow> ta_initial TA \<inter> b_accessible (ta_rules TA) = {}"
   by (auto 
@@ -1074,11 +1068,11 @@ text {*
   of the languages of the two automata.
 *}
 
-  -- "Product rule"
+  \<comment> \<open>Product rule\<close>
 fun r_prod where
   "r_prod (q1 \<rightarrow> l1 qs1) (q2 \<rightarrow> l2 qs2) = ((q1,q2) \<rightarrow> l1 (zip qs1 qs2))"
 
-  -- "Product rules"
+  \<comment> \<open>Product rules\<close>
 definition "\<delta>_prod \<delta>1 \<delta>2 == {
   r_prod (q1 \<rightarrow> l qs1) (q2 \<rightarrow> l qs2) | q1 q2 l qs1 qs2.
     length qs1 = length qs2 \<and> 
@@ -1103,8 +1097,8 @@ lemma \<delta>_prodE:
    \<rbrakk> \<Longrightarrow> P"
   by (auto simp add: \<delta>_prod_def)
 
-  -- "With the product rules, only trees can be constructed that can also be 
-      constructed with the two original sets of rules"
+  \<comment> \<open>With the product rules, only trees can be constructed that can also be 
+      constructed with the two original sets of rules\<close>
 lemma \<delta>_prod_sound: 
   assumes A: "accs (\<delta>_prod \<delta>1 \<delta>2) t (q1,q2)" 
   shows "accs \<delta>1 t q1" "accs \<delta>2 t q2"
@@ -1118,8 +1112,8 @@ proof -
   } with A show "accs \<delta>1 t q1" "accs \<delta>2 t q2" by auto
 qed
 
-  -- "Any tree that can be constructed with both original sets of rules can also
-      be constructed with the product rules"
+  \<comment> \<open>Any tree that can be constructed with both original sets of rules can also
+      be constructed with the product rules\<close>
 lemma \<delta>_prod_precise: 
   "\<lbrakk> accs \<delta>1 t q1; accs \<delta>2 t q2 \<rbrakk> \<Longrightarrow> accs (\<delta>_prod \<delta>1 \<delta>2) t (q1,q2)"
 proof (induct arbitrary: \<delta>2 q2 rule: accs.induct[case_names step])
@@ -1194,7 +1188,7 @@ lemmas \<delta>_prod_insert =
   \<delta>_prod_Un(2)[where ?\<delta>2.0="{x}", simplified, folded \<delta>_prod_sng_alt]
   for x
 
-  -- "Product automaton"
+  \<comment> \<open>Product automaton\<close>
 definition "ta_prod TA1 TA2 == 
   \<lparr> ta_initial = ta_initial TA1 \<times> ta_initial TA2, 
     ta_rules = \<delta>_prod (ta_rules TA1) (ta_rules TA2) 
@@ -1241,8 +1235,8 @@ proof -
     done
 qed
 
-  -- "The language of the product automaton is the intersection of the languages
-      of the two original automata"
+  \<comment> \<open>The language of the product automaton is the intersection of the languages
+      of the two original automata\<close>
 theorem ta_prod_correct:
   assumes TA: "tree_automaton TA1" "tree_automaton TA2" 
   shows 
@@ -1282,11 +1276,11 @@ text {*
 
 context ranked_tree_automaton
 begin
-  -- "Left-hand side of subset rule for given symbol and rhs"
+  \<comment> \<open>Left-hand side of subset rule for given symbol and rhs\<close>
   definition "\<delta>ss_lhs f ss == 
     { q | q qs. (q \<rightarrow> f qs)\<in>\<delta> \<and> list_all_zip (\<in>) qs ss }"
 
-  -- "Subset construction"
+  \<comment> \<open>Subset construction\<close>
   inductive_set \<delta>ss :: "('Q set,'L) ta_rule set" where
     "\<lbrakk> A f = Some (length ss); 
        ss \<in> lists {s. s \<subseteq> ta_rstates TA}; 
@@ -1413,7 +1407,7 @@ begin
   qed
     
 
-  -- "Determinization"
+  \<comment> \<open>Determinization\<close>
   definition "detTA == \<lparr> ta_initial = { s. s\<subseteq>Q \<and> s\<inter>Qi \<noteq> {} }, 
                          ta_rules = \<delta>ss \<rparr>"
       
@@ -1461,13 +1455,13 @@ text {*
 
 context det_tree_automaton
 begin
-  -- "States of the complete automaton"
+  \<comment> \<open>States of the complete automaton\<close>
   definition "Qcomplete == insert None (Some`Q)"
 
   lemma Qcomplete_finite[simp, intro!]: "finite Qcomplete"
     by (auto simp add: Qcomplete_def)
 
-  -- "Rules of the complete automaton"
+  \<comment> \<open>Rules of the complete automaton\<close>
   definition \<delta>complete :: "('Q option, 'L) ta_rule set" where
     "\<delta>complete == (remap_rule Some ` \<delta>) 
                   \<union> { (None \<rightarrow> f qs) | f qs. 
@@ -1559,7 +1553,7 @@ begin
 
   theorem completeTA_lang: "ta_lang completeTA = ta_lang TA"
   proof (intro equalityI subsetI)
-    -- "This direction is done by a monotonicity argument"
+    \<comment> \<open>This direction is done by a monotonicity argument\<close>
     fix t
     assume "t\<in>ta_lang TA"
     then obtain qi where "qi\<in>Qi" "accs \<delta> t qi" by (auto simp add: ta_lang_def)
@@ -1622,8 +1616,8 @@ text {*
 context complete_tree_automaton
 begin
 
-    -- "Complement automaton, i.e. that accepts exactly the 
-        trees not accepted by this automaton"
+    \<comment> \<open>Complement automaton, i.e. that accepts exactly the 
+        trees not accepted by this automaton\<close>
   definition "complementTA == \<lparr>
     ta_initial = Q - Qi,
     ta_rules = \<delta> \<rparr>"
@@ -1658,7 +1652,7 @@ end
 subsection "Regular Tree Languages"
 subsubsection "Definitions"
 
-  -- {* Regular languages over alphabet @{text A} *}
+  \<comment> \<open>Regular languages over alphabet @{text A}\<close>
 definition regular_languages :: "('L \<rightharpoonup> nat) \<Rightarrow> 'L tree set set" 
   where "regular_languages A == 
     { ta_lang TA | (TA::(nat,'L) tree_automaton_rec). 
@@ -1680,11 +1674,11 @@ begin
   lemma (in ranked_tree_automaton) rtlI[simp]:
     shows "ta_lang TA \<in> regular_languages A"
   proof -
-    -- "Obtain injective mapping from the finite set of states to the 
-        natural numbers"
+    \<comment> \<open>Obtain injective mapping from the finite set of states to the 
+        natural numbers\<close>
     from finite_imp_inj_to_nat_seg[OF finite_states] obtain f :: "'Q \<Rightarrow> nat" 
       where INJMAP: "inj_on f (ta_rstates TA)" by blast
-    -- "Remap automaton. The language remains the same."
+    \<comment> \<open>Remap automaton. The language remains the same.\<close>
     from remap_lang[OF INJMAP] have LE: "ta_lang (ta_remap f TA) = ta_lang TA" .
     moreover have "ranked_tree_automaton (ta_remap f TA) A" ..
     ultimately show ?thesis by (auto simp add: regular_languages_def)
@@ -1735,12 +1729,12 @@ proof -
   
   interpret tac: complete_tree_automaton TAC A using CT .
 
-  -- "Obtain injective mapping from the finite set of states to the 
-      natural numbers"
+  \<comment> \<open>Obtain injective mapping from the finite set of states to the 
+      natural numbers\<close>
   from finite_imp_inj_to_nat_seg[OF tac.finite_states] 
   obtain f :: "nat set option \<Rightarrow> nat" where
     INJMAP: "inj_on f (ta_rstates TAC)" by blast
-  -- "Remap automaton. The language remains the same."
+  \<comment> \<open>Remap automaton. The language remains the same.\<close>
   from tac.remap_lang[OF INJMAP] have LE: "ta_lang (ta_remap f TAC) = L" 
     by simp
   have "complete_tree_automaton (ta_remap f TAC) A" 

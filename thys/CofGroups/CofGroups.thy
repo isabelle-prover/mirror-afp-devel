@@ -144,7 +144,7 @@ definition upOne :: "int \<Rightarrow> int"
 where
 "upOne n = n + 1"
 
-declare upOne_def [simp] -- "automated tools can use the definition"
+declare upOne_def [simp] \<comment> \<open>automated tools can use the definition\<close>
 
 text {* First we show that this function is a bijection.  This is done
 in the usual two parts; we show it is injective by showing from the
@@ -233,7 +233,7 @@ set. *}
 
 lemma Ex1_Normal_form_part1: "f \<in> Ex1 \<Longrightarrow> \<exists>k. \<forall> n. f(n) = n + k"
 proof (rule Ex1.induct [of "f"], blast) 
-    -- "blast takes care of the first goal which is formal noise"
+    \<comment> \<open>blast takes care of the first goal which is formal noise\<close>
   assume "f \<in> Ex1"
   have "\<forall>n. upOne n = n + 1" by simp
   with HOL.exI show "\<exists>k. \<forall>n. upOne n = n + k" by auto
@@ -373,7 +373,7 @@ theorem no_fixed_pt:
   and f_not_id: "f \<noteq> id"
   shows "Fix f = {}"
 proof -
-    -- "we start by proving an easy general fact"
+    \<comment> \<open>we start by proving an easy general fact\<close>
   have f_eq_then_id: "(\<forall>n. f(n) = n) \<Longrightarrow> f = id"
   proof -
     assume f_prop : "\<forall>n. f(n) = n"
@@ -453,7 +453,7 @@ next
     let ?ic = "inv (upOne \<circ> f)"
     let ?ci = "inv f \<circ> inv upOne"
     {
-      -- "first we get an expression for @{term ?ci}"
+      \<comment> \<open>first we get an expression for @{term ?ci}\<close>
       {
         from all_bij and f_Ex1 have "bij f" by auto
         with bij_is_inj have inj_f: "inj f" by auto
@@ -469,8 +469,8 @@ next
         hence "\<forall>n. ?ci n = n + (-1 - k)" by arith
       }
       moreover
-      -- "then we check that this implies @{term ?ci} is"
-      -- "a member of @{term Ex1}"
+      \<comment> \<open>then we check that this implies @{term ?ci} is\<close>
+      \<comment> \<open>a member of @{term Ex1}\<close>
       {
         from Ex1_Normal_form_part2[of "-1 - k"]
         have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto
@@ -616,7 +616,7 @@ definition CONJ :: "(int \<Rightarrow> int) \<Rightarrow> (nat \<Rightarrow> nat
 where
 "CONJ f = (inv ni_bij) \<circ> f \<circ> ni_bij"
 
-declare CONJ_def [simp] -- "automated tools can use the definition"
+declare CONJ_def [simp] \<comment> \<open>automated tools can use the definition\<close>
 
 text {* We quickly check that this function is of the right type, and
 then show three of its properties that are very useful in showing
@@ -671,8 +671,8 @@ proof -
   have "?left = 
     (inv ni_bij) \<circ> ((f \<circ> (ni_bij \<circ> (inv ni_bij))) \<circ> g) \<circ> ni_bij" 
     by auto
-      -- "a simple computation using only associativity"
-      -- "completes the proof"
+      \<comment> \<open>a simple computation using only associativity\<close>
+      \<comment> \<open>completes the proof\<close>
   thus "?left = ?right" by (auto simp add: o_assoc)
 qed
 

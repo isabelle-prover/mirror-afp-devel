@@ -201,7 +201,7 @@ qed
 
 lemma mult_monom: "monom x a * monom y b = monom (x + y) (a * b)"
 by transfer (simp add: PP_Poly_Mapping.mult_single)
-  -- \<open>FIXME: why does transfer need so much backtracking until it finds the right goal?\<close>
+  \<comment> \<open>FIXME: why does transfer need so much backtracking until it finds the right goal?\<close>
 
 instance mpoly :: (semiring_char_0) semiring_char_0
   by intro_classes (auto simp add: of_nat_monom inj_of_nat intro: inj_comp)

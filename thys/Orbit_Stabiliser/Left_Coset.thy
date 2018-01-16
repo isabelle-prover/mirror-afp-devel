@@ -10,7 +10,7 @@ definition
 
 definition
   LFactGroup :: "[('a,'b) monoid_scheme, 'a set] \<Rightarrow> ('a set) monoid" (infixl "LMod" 65)
-    --\<open>Actually defined for groups rather than monoids\<close>
+    \<comment> \<open>Actually defined for groups rather than monoids\<close>
    where "LFactGroup G H = \<lparr>carrier = lcosets\<^bsub>G\<^esub> H, mult = set_mult G, one = H\<rparr>"
 
 lemma (in group) lcos_self: "[| x \<in> carrier G; subgroup H G |] ==> x \<in> x <# H"

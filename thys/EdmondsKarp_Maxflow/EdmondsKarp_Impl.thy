@@ -140,7 +140,7 @@ begin
         apply refine_dref_type
         apply vc_solve
 
-        -- \<open>Solve some left-over verification conditions one by one\<close>
+        \<comment> \<open>Solve some left-over verification conditions one by one\<close>
         apply (drule NFlow.is_RGraph; 
             auto simp: cfi_rel_def br_def residualGraph_zero_flow flow_of_c; 
             fail)
@@ -523,14 +523,14 @@ begin
       and merely serve as marker constants for implementation.
       \<close>
     definition init_cf :: "'capacity graph nres" 
-      -- \<open>Initialization of residual graph from network\<close>
+      \<comment> \<open>Initialization of residual graph from network\<close>
       where "init_cf \<equiv> RETURN c"
     definition init_ps :: "(node \<Rightarrow> node list) \<Rightarrow> _" 
-      -- \<open>Initialization of adjacency map\<close>
+      \<comment> \<open>Initialization of adjacency map\<close>
       where "init_ps am \<equiv> ASSERT (is_adj_map am) \<then> RETURN am"
 
     definition compute_rflow :: "'capacity graph \<Rightarrow> 'capacity flow nres" 
-      -- \<open>Extraction of result flow from residual graph\<close>
+      \<comment> \<open>Extraction of result flow from residual graph\<close>
       where
       "compute_rflow cf \<equiv> ASSERT (RGraph c s t cf) \<then> RETURN (flow_of_cf cf)"
 

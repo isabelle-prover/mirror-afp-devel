@@ -24,8 +24,8 @@ type_synonym array_cells = "(nat, addr val) rbt"
 type_synonym array_fields = "(vname, addr val) lm"
 
 datatype heapobj
-  = Obj cname fields                    -- "class instance with class name and fields"
-  | Arr ty nat array_fields array_cells                 -- "element type, size, fields and cell contents"
+  = Obj cname fields                    \<comment> \<open>class instance with class name and fields\<close>
+  | Arr ty nat array_fields array_cells                 \<comment> \<open>element type, size, fields and cell contents\<close>
 
 lemma rec_heapobj [simp]: "rec_heapobj = case_heapobj"
 by(auto intro!: ext split: heapobj.split)
@@ -64,7 +64,7 @@ where
 definition init_cells :: "ty \<Rightarrow> nat \<Rightarrow> array_cells"
 where "init_cells T n = foldl (\<lambda>cells i. rm_update i (default_val T) cells) (rm_empty ()) [0..<n]"
 
-primrec -- "a new, blank object with default values in all fields:"
+primrec \<comment> \<open>a new, blank object with default values in all fields:\<close>
   blank :: "'m prog \<Rightarrow> htype \<Rightarrow> heapobj"
 where
   "blank P (Class_type C) = Obj C (init_fields (map (\<lambda>(FD, (T, fm)). (FD, T)) (TypeRel.fields P C)))"

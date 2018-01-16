@@ -171,7 +171,7 @@ definition hfst :: "hf \<Rightarrow> hf"
 definition hsnd :: "hf \<Rightarrow> hf"
   where "hsnd p \<equiv> THE y. \<exists>x. p = hpair x y"
 
-definition hsplit :: "[[hf, hf] \<Rightarrow> 'a, hf] \<Rightarrow> 'a::{}"  \<comment>\<open>for pattern-matching\<close>
+definition hsplit :: "[[hf, hf] \<Rightarrow> 'a, hf] \<Rightarrow> 'a::{}"  \<comment> \<open>for pattern-matching\<close>
   where "hsplit c \<equiv> \<lambda>p. c (hfst p) (hsnd p)"
 
 text \<open>Ordered Pairs, from ZF/ZF.thy\<close>
@@ -244,7 +244,7 @@ next
   case (hinsert a b) thus ?case by (metis hmem_hinsert)
 qed
 
-definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf" \<comment> "comprehension"
+definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf" \<comment> \<open>comprehension\<close>
   where "HCollect P A = (THE z. \<forall>u. u \<^bold>\<in> z = (P u \<and> u \<^bold>\<in> A))"
 
 syntax (ASCII)
@@ -698,10 +698,10 @@ lemma HPow_mono_strict_iff [simp]: "HPow x < HPow y \<longleftrightarrow> x < y"
 section \<open>Bounded Quantifiers\<close>
 
 definition HBall :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool" where
-  "HBall A P \<longleftrightarrow> (\<forall>x. x \<^bold>\<in> A \<longrightarrow> P x)"   \<comment> "bounded universal quantifiers"
+  "HBall A P \<longleftrightarrow> (\<forall>x. x \<^bold>\<in> A \<longrightarrow> P x)"   \<comment> \<open>bounded universal quantifiers\<close>
 
 definition HBex :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool" where
-  "HBex A P \<longleftrightarrow> (\<exists>x. x \<^bold>\<in> A \<and> P x)"   \<comment> "bounded existential quantifiers"
+  "HBex A P \<longleftrightarrow> (\<exists>x. x \<^bold>\<in> A \<and> P x)"   \<comment> \<open>bounded existential quantifiers\<close>
 
 syntax (ASCII)
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL _<:_./ _)" [0, 0, 10] 10)
@@ -821,7 +821,7 @@ definition hrelation :: "hf \<Rightarrow> bool"
   where "hrelation(r) = (\<forall>z. z \<^bold>\<in> r \<longrightarrow> is_hpair z)"
 
 definition hrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"
-  \<comment>\<open>Restrict the relation r to the domain A\<close>
+  \<comment> \<open>Restrict the relation r to the domain A\<close>
   where "hrestrict r A = \<lbrace>z \<^bold>\<in> r. \<exists>x \<^bold>\<in> A. \<exists>y. z = \<langle>x,y\<rangle>\<rbrace>"
 
 definition nonrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"

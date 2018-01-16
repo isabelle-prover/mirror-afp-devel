@@ -212,7 +212,7 @@ lemma f_non_negative: "0 \<le> f e"
 lemma sum_f_non_negative: "sum f X \<ge> 0" using capacity_const
   by (auto simp: sum_nonneg f_non_negative) 
     
-end -- \<open>Preflow\<close>   
+end \<comment> \<open>Preflow\<close>   
     
 context Flow
 begin
@@ -241,7 +241,7 @@ proof -
 qed    
     
     
-end -- \<open>Flow\<close>   
+end \<comment> \<open>Flow\<close>   
 
 text \<open>Introduce a flow via the conservation constraint\<close>  
 lemma (in Graph) intro_Flow:
@@ -272,7 +272,7 @@ lemma sum_incoming_alt_flow:
   apply (subst sum_incoming_alt)
   using assms capacity_const
   by auto
-end -- \<open>Finite Preflow\<close>   
+end \<comment> \<open>Finite Preflow\<close>   
 
 subsubsection \<open>Networks\<close>  
 context Network
@@ -309,7 +309,7 @@ lemma max_flow_val_unique:
   unfolding is_max_flow_val_def isMaxFlow_def 
   by (auto simp: antisym)
   
-end -- \<open>Network\<close>
+end \<comment> \<open>Network\<close>
 
 subsubsection \<open>Networks with Flow\<close>
 
@@ -360,7 +360,7 @@ lemma excess_s_non_pos: "excess f s \<le> 0"
   unfolding excess_def
   by (simp add: capacity_const sum_nonneg)  
     
-end -- \<open>Network with preflow\<close>
+end \<comment> \<open>Network with preflow\<close>
 
 context NFlow begin  
   sublocale Finite_Preflow by unfold_locales
@@ -372,4 +372,4 @@ context NFlow begin
       
 end  
   
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

@@ -9,7 +9,7 @@ theory DTS
   imports Main "HOL-Library.Omega_Words_Fun" "Auxiliary/Mapping2" KBPs.DFS
 begin
 
--- \<open>DTS are realised by functions\<close>
+\<comment> \<open>DTS are realised by functions\<close>
 
 type_synonym ('a, 'b) DTS = "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 type_synonym ('a, 'b) transition = "('a \<times> 'b \<times> 'a)"

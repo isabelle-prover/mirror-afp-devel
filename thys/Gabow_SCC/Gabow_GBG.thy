@@ -29,7 +29,7 @@ section {* Specification *}
 context igb_graph
 begin
   definition ce_correct 
-    -- "Specifies a correct counter-example"
+    \<comment> \<open>Specifies a correct counter-example\<close>
     where
     "ce_correct Vr Vl \<equiv> (\<exists>pr pl. 
         Vr \<subseteq> E\<^sup>*``V0 \<and> Vl \<subseteq> E\<^sup>*``V0 \<comment> \<open>Only reachable nodes are covered\<close>
@@ -59,7 +59,7 @@ text {* Extension of the outer invariant: *}
 context igb_fr_graph
 begin
   definition no_acc_over
-    -- "Specifies that there is no accepting cycle touching a set of nodes"
+    \<comment> \<open>Specifies that there is no accepting cycle touching a set of nodes\<close>
     where
     "no_acc_over D \<equiv> \<not>(\<exists>v\<in>D. \<exists>pl. pl\<noteq>[] \<and> path E v pl v \<and> 
     (\<forall>i<num_acc. \<exists>q\<in>set pl. i\<in>acc q))"
@@ -80,8 +80,8 @@ locale fgl_invar_loc =
   for G :: "('Q, 'more) igb_graph_rec_scheme"
   and v0 D0 and brk :: "('Q set \<times> 'Q set) option" and p D pE +
   assumes no_acc: "brk=None \<Longrightarrow> \<not>(\<exists>v pl. pl\<noteq>[] \<and> path lvE v pl v \<and> 
-    (\<forall>i<num_acc. \<exists>q\<in>set pl. i\<in>acc q))" -- "No accepting cycle over 
-      visited edges"
+    (\<forall>i<num_acc. \<exists>q\<in>set pl. i\<in>acc q))" \<comment> \<open>No accepting cycle over 
+      visited edges\<close>
   assumes acc: "brk=Some (Vr,Vl) \<Longrightarrow> ce_correct Vr Vl"
 begin
   lemma locale_this: "fgl_invar_loc G v0 D0 brk p D pE"
@@ -513,7 +513,7 @@ begin
       have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q"
       proof cases
         assume "set pl \<inter> last p' = {}" 
-          -- "Case: The loop is outside the last Cnode"
+          \<comment> \<open>Case: The loop is outside the last Cnode\<close>
         with path_restrict[OF P] `u\<in>last p'` `v\<in>last p'` have "path lvE w pl w"
           apply -
           apply (drule path_mono[of _ lvE, rotated])
@@ -522,7 +522,7 @@ begin
         with no_acc NT show ?thesis by auto
       next
         assume "set pl \<inter> last p' \<noteq> {}" 
-          -- "Case: The loop touches the last Cnode"
+          \<comment> \<open>Case: The loop touches the last Cnode\<close>
         txt {* Then, the loop must be completely inside the last CNode *}
         from inv'.loop_in_lastnode[folded vE'_def, OF P `p'\<noteq>[]` this] 
         have "w\<in>last p'" "set pl \<subseteq> last p'" .
@@ -571,7 +571,7 @@ begin
       assume P: "path (insert (u,v) lvE) w pl w" and [simp]: "pl\<noteq>[]"
       have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q" 
       proof cases
-        assume "v\<in>set pl" -- "Case: The newly pushed last cnode is on the loop"
+        assume "v\<in>set pl" \<comment> \<open>Case: The newly pushed last cnode is on the loop\<close>
         txt {* Then the loop is entirely on the last cnode*}
         with inv'.loop_in_lastnode[unfolded defs_fold, OF P]
         have [simp]: "w=v" and SPL: "set pl = {v}" by auto
@@ -585,18 +585,18 @@ begin
           done
         txt {* Both leads to a contradiction *}
         hence False proof
-          assume "u=v" -- {* This is impossible, as @{text "u"} was on the 
-            original path, but @{text "v"} was not*}
+          assume "u=v" \<comment> \<open>This is impossible, as @{text "u"} was on the 
+            original path, but @{text "v"} was not\<close>
           with UIL VNE show False by auto
         next
-          assume "(v,v)\<in>lvE" -- {* This is impossible, as all visited edges are
-            from touched nodes, but @{text "v"} was untouched *}
+          assume "(v,v)\<in>lvE" \<comment> \<open>This is impossible, as all visited edges are
+            from touched nodes, but @{text "v"} was untouched\<close>
           with vE_touched VNE show False unfolding touched_def by auto
         qed
         thus ?thesis ..
       next
         assume A: "v\<notin>set pl" 
-          -- "Case: The newly pushed last cnode is not on the loop"
+          \<comment> \<open>Case: The newly pushed last cnode is not on the loop\<close>
         txt {* Then, the path lays inside the old visited edges *}
         have "path lvE w pl w" 
         proof -
@@ -652,14 +652,14 @@ begin
       assume P: "path (insert (u,v) lvE) w pl w" and [simp]: "pl\<noteq>[]"
       from P have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q" 
       proof (cases rule: path_edge_rev_cases)
-        case no_use -- "Case: The loop does not use the new edge"
+        case no_use \<comment> \<open>Case: The loop does not use the new edge\<close>
         txt {* The proposition follows from the invariant for the old state *}
         with no_acc show ?thesis 
           apply simp
           using `pl\<noteq>[]` 
           by blast
       next
-        case (split p1 p2) -- "Case: The loop uses the new edge"
+        case (split p1 p2) \<comment> \<open>Case: The loop uses the new edge\<close>
         txt {* As done is closed under transitions, the nodes of the edge have
           already been visited *}
         from split(2) D_closed_vE_rtrancl 
@@ -1081,8 +1081,8 @@ subsection {* Refinement to Gabow's Data Structure *}
 
 subsubsection {* Preliminaries *}
 definition Un_set_drop_impl :: "nat \<Rightarrow> 'a set list \<Rightarrow> 'a set nres"
-  -- {* Executable version of @{text "\<Union>set (drop i A)"}, using indexing to
-  access @{text "A"} *}
+  \<comment> \<open>Executable version of @{text "\<Union>set (drop i A)"}, using indexing to
+  access @{text "A"}\<close>
   where "Un_set_drop_impl i A \<equiv> 
   do {
     (_,res) \<leftarrow> WHILET (\<lambda>(i,res). i < length A) (\<lambda>(i,res). do {
@@ -1823,7 +1823,7 @@ subsection {* Lassos in GBAs *}
 context igb_fr_graph begin
 
   definition reconstruct_reach :: "'Q set \<Rightarrow> 'Q set \<Rightarrow> ('Q list \<times> 'Q) nres"
-    -- "Reconstruct the reaching path of a lasso"
+    \<comment> \<open>Reconstruct the reaching path of a lasso\<close>
     where "reconstruct_reach Vr Vl \<equiv> do {
       res \<leftarrow> find_path (E\<inter>Vr\<times>UNIV) V0 (\<lambda>v. v\<in>Vl);
       ASSERT (res \<noteq> None);
@@ -1872,7 +1872,7 @@ context igb_fr_graph begin
     va \<in> Vl \<and> v \<in> Vl \<and> set p \<subseteq> Vl"
 
   definition reconstruct_lasso :: "'Q set \<Rightarrow> 'Q set \<Rightarrow> ('Q list \<times> 'Q list) nres"
-    -- "Reconstruct lasso"
+    \<comment> \<open>Reconstruct lasso\<close>
     where "reconstruct_lasso Vr Vl \<equiv> do {
     (pr,va) \<leftarrow> reconstruct_reach Vr Vl;
     

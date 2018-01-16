@@ -367,7 +367,7 @@ proof -
     \<and> (\<exists> msg'. execution.minimalEnabled [cfg] [] msg' 
        \<and> msg' \<in> set msgList'))"
     using NonUniformExecutionBase[OF assms] .
-  --"fStep ... a step leading to a fair execution." 
+  \<comment> \<open>fStep ... a step leading to a fair execution.\<close> 
   obtain fStepCfg fStepMsg where FStep: "\<forall> cfgList msgList . \<exists>cfgList' msgList' .
           fStepCfg cfgList msgList = cfgList' \<and>
           fStepMsg cfgList msgList = msgList' \<and>

@@ -305,14 +305,14 @@ next
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D} : T" by fact+
-  -- "The goal: ?case = @{prop ?case}"
-  -- "Now distinguish the two cases how wt can have arisen."
+  \<comment> \<open>The goal: ?case = @{prop ?case}\<close>
+  \<comment> \<open>Now distinguish the two cases how wt can have arisen.\<close>
   { fix C assume wte: "P,E,h \<turnstile> e : Class C"
              and has: "P \<turnstile> C has F:T in D"
     from IH[OF conf wte]
     obtain U where wte': "P,E,h' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       by auto
-    -- "Now distinguish what @{term U} can be."
+    \<comment> \<open>Now distinguish what @{term U} can be.\<close>
     { assume "U = NT" hence ?case using wte'
         by(blast intro:WTrtFAccNT widen_refl) }
     moreover
@@ -340,8 +340,8 @@ next
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D}:=e\<^sub>2 : T" by fact+
   from wt have void: "T = Void" by blast
-  -- "We distinguish if @{term e} has type @{term NT} or a Class type"
-  -- "Remember ?case = @{term ?case}"
+  \<comment> \<open>We distinguish if @{term e} has type @{term NT} or a Class type\<close>
+  \<comment> \<open>Remember ?case = @{term ?case}\<close>
   { assume "P,E,h \<turnstile> e : NT"
     hence "P,E,h' \<turnstile> e' : NT" using IH[OF conf] by fastforce
     moreover obtain T\<^sub>2 where "P,E,h \<turnstile> e\<^sub>2 : T\<^sub>2" using wt by auto
@@ -356,7 +356,7 @@ next
       using IH[OF conf wt\<^sub>1] by blast
     have wt\<^sub>2': "P,E,h' \<turnstile> e\<^sub>2 : T\<^sub>2"
       by(rule WTrt_hext_mono[OF wt\<^sub>2 red_hext_incr[OF red]])
-    -- "Is @{term U} the null type or a class type?"
+    \<comment> \<open>Is @{term U} the null type or a class type?\<close>
     { assume "U = NT" with wt\<^sub>1' wt\<^sub>2' void have ?case
         by(blast intro!:WTrtFAssNT) }
     moreover
@@ -406,8 +406,8 @@ next
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>M(es) : T" by fact+
-  -- "We distinguish if @{term e} has type @{term NT} or a Class type"
-  -- "Remember ?case = @{term ?case}"
+  \<comment> \<open>We distinguish if @{term e} has type @{term NT} or a Class type\<close>
+  \<comment> \<open>Remember ?case = @{term ?case}\<close>
   { assume "P,E,h \<turnstile> e:NT"
     hence "P,E,h' \<turnstile> e' : NT" using IH[OF conf] by fastforce
     moreover
@@ -422,7 +422,7 @@ next
       and wtes: "P,E,h \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
     obtain U where wte': "P,E,h' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       using IH[OF conf wte] by blast
-    -- "Is @{term U} the null type or a class type?"
+    \<comment> \<open>Is @{term U} the null type or a class type?\<close>
     { assume "U = NT"
       moreover have "P,E,h' \<turnstile> es [:] Us"
         by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])

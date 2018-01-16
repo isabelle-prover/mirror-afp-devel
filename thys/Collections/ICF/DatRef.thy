@@ -39,15 +39,15 @@ text {*
   states and an invariant.
   *}
 
-  -- "Encapsulates a while-algorithm and its invariant "
+  \<comment> \<open>Encapsulates a while-algorithm and its invariant\<close>
 record 'S while_algo =
-  -- "Termination condition"
+  \<comment> \<open>Termination condition\<close>
   wa_cond :: "'S set"
-  -- "Step relation (nondeterministic)"
+  \<comment> \<open>Step relation (nondeterministic)\<close>
   wa_step :: "('S \<times> 'S) set"
-  -- "Initial state (nondeterministic)"
+  \<comment> \<open>Initial state (nondeterministic)\<close>
   wa_initial :: "'S set"
-  -- "Invariant"
+  \<comment> \<open>Invariant\<close>
   wa_invar :: "'S set"
   
 text {*
@@ -55,16 +55,16 @@ text {*
   all reachable states and the accessible part of the step-relation is
   well-founded.
 *}
-  -- {* Conditions that must hold for a well-defined while-algorithm *}
+  \<comment> \<open>Conditions that must hold for a well-defined while-algorithm\<close>
 locale while_algo =
   fixes WA :: "'S while_algo"
 
-  -- "A step must preserve the invariant"
+  \<comment> \<open>A step must preserve the invariant\<close>
   assumes step_invar: 
     "\<lbrakk> s\<in>wa_invar WA; s\<in>wa_cond WA; (s,s')\<in>wa_step WA \<rbrakk> \<Longrightarrow> s'\<in>wa_invar WA"
-  -- "Initial states must satisfy the invariant"
+  \<comment> \<open>Initial states must satisfy the invariant\<close>
   assumes initial_invar: "wa_initial WA \<subseteq> wa_invar WA"
-  -- "The accessible part of the step relation must be well-founded"
+  \<comment> \<open>The accessible part of the step relation must be well-founded\<close>
   assumes step_wf: 
     "wf { (s',s). s\<in>wa_invar WA \<and> s\<in>wa_cond WA \<and> (s,s')\<in>wa_step WA }"
 
@@ -81,32 +81,31 @@ text {*
 *}
 
 locale wa_refine = 
-  -- "Concrete algorithm"
+  \<comment> \<open>Concrete algorithm\<close>
   fixes WAC :: "'C while_algo"
-  -- "Abstract algorithm"
+  \<comment> \<open>Abstract algorithm\<close>
   fixes WAA :: "'A while_algo"
 
-  -- "Abstraction function"
+  \<comment> \<open>Abstraction function\<close>
   fixes \<alpha> :: "'C \<Rightarrow> 'A"
 
-  -- "Condition implemented correctly: The concrete condition must be stronger 
+  \<comment> \<open>Condition implemented correctly: The concrete condition must be stronger 
       than the abstract one. Intuitively, this ensures that the concrete loop
-      will not run longer than the abstract one that it is simulated by."
+      will not run longer than the abstract one that it is simulated by.\<close>
   assumes cond_abs: "\<lbrakk> s\<in>wa_invar WAC; s\<in>wa_cond WAC \<rbrakk> \<Longrightarrow> \<alpha> s \<in> wa_cond WAA"
 
-  -- "Step implemented correctly: The abstract step relation must simulate the 
-      concrete step relation"
+  \<comment> \<open>Step implemented correctly: The abstract step relation must simulate the 
+      concrete step relation\<close>
   assumes step_abs: "\<lbrakk> s\<in>wa_invar WAC; s\<in>wa_cond WAC; (s,s')\<in>wa_step WAC \<rbrakk> 
                       \<Longrightarrow> (\<alpha> s, \<alpha> s')\<in>wa_step WAA"
-  -- "Initial states implemented correctly: The abstractions of the concrete
-      initial states must be abstract initial states."
+  \<comment> \<open>Initial states implemented correctly: The abstractions of the concrete
+      initial states must be abstract initial states.\<close>
   assumes initial_abs: "\<alpha> ` wa_initial WAC \<subseteq> wa_initial WAA"
-  -- {* Invariant implemented correctly: The concrete invariant must be stronger
+  \<comment> \<open>Invariant implemented correctly: The concrete invariant must be stronger
         then the abstract invariant.
         Note that, usually, the concrete invariant will be of the 
         form @{term "I_add \<inter> {s. \<alpha> s \<in> wa_invar WAA}"}, where @{term I_add} are
-        the additional invariants added by the concrete algorithm.
-     *}
+        the additional invariants added by the concrete algorithm.\<close>
   assumes invar_abs: "\<alpha> ` wa_invar WAC \<subseteq> wa_invar WAA"
 begin
 
@@ -118,8 +117,7 @@ begin
 
 end
 
--- {*
-  Given a concrete while-algorithm and a well-defined abstract 
+\<comment> \<open>Given a concrete while-algorithm and a well-defined abstract 
   while-algorithm, this lemma shows refinement and 
   well-definedness of the concrete while-algorithm.
 
@@ -132,8 +130,7 @@ end
   the abstract invariant. The concrete part makes some additional claims
   about a valid concrete state. Then, after having shown refinement, the 
   assumptions that the abstract part of the invariant is preserved, can
-  be discharged automatically.
-*}
+  be discharged automatically.\<close>
 lemma wa_refine_intro:
   fixes condc :: "'C set" and 
         stepc :: "('C\<times>'C) set" and 
@@ -143,25 +140,25 @@ lemma wa_refine_intro:
   fixes \<alpha> :: "'C \<Rightarrow> 'A"
   assumes "while_algo WAA"
 
-  -- "The concrete step preserves the concrete part of the invariant"
+  \<comment> \<open>The concrete step preserves the concrete part of the invariant\<close>
   assumes step_invarc: 
     "!!s s'. \<lbrakk> s\<in>invar_addc; s\<in>condc; \<alpha> s \<in> wa_invar WAA; (s,s')\<in>stepc \<rbrakk> 
               \<Longrightarrow> s'\<in>invar_addc"
-  -- "The concrete initial states satisfy the concrete part of the invariant"
+  \<comment> \<open>The concrete initial states satisfy the concrete part of the invariant\<close>
   assumes initial_invarc: "initialc \<subseteq> invar_addc"
 
-  -- "Condition implemented correctly"
+  \<comment> \<open>Condition implemented correctly\<close>
   assumes cond_abs: 
     "!!s. \<lbrakk> s\<in>invar_addc; \<alpha> s \<in> wa_invar WAA; s\<in>condc \<rbrakk> \<Longrightarrow> \<alpha> s \<in> wa_cond WAA"
-  -- "Step implemented correctly"
+  \<comment> \<open>Step implemented correctly\<close>
   assumes step_abs: 
     "!!s s'. \<lbrakk> s\<in>invar_addc; s\<in>condc; \<alpha> s \<in> wa_invar WAA; (s,s')\<in>stepc \<rbrakk> 
              \<Longrightarrow> (\<alpha> s, \<alpha> s')\<in>wa_step WAA"
-  -- "Initial states implemented correctly"
+  \<comment> \<open>Initial states implemented correctly\<close>
   assumes initial_abs: "\<alpha> ` initialc \<subseteq> wa_initial WAA"
 
-  -- "Concrete while-algorithm: The invariant is separated into a concrete and
-      an abstract part"
+  \<comment> \<open>Concrete while-algorithm: The invariant is separated into a concrete and
+      an abstract part\<close>
   defines "WAC == \<lparr> 
    wa_cond=condc, 
    wa_step=stepc, 
@@ -202,27 +199,26 @@ proof
     done
 qed
 
-  -- {* After refinement has been shown, this lemma transfers
+  \<comment> \<open>After refinement has been shown, this lemma transfers
         the well-definedness property up the refinement chain.
         Like in @{thm [source] wa_refine_intro}, some proof-obligations can
         be discharged by assuming refinement and well-definedness of the 
-        abstract algorithm.
-    *}
+        abstract algorithm.\<close>
 lemma (in wa_refine) wa_intro:
-  -- "Concrete part of the invariant"
+  \<comment> \<open>Concrete part of the invariant\<close>
   fixes addi :: "'C set"
-  -- "The abstract algorithm is well-defined"
+  \<comment> \<open>The abstract algorithm is well-defined\<close>
   assumes "while_algo WAA"
-  -- "The invariant can be split into concrete and abstract part"
+  \<comment> \<open>The invariant can be split into concrete and abstract part\<close>
   assumes icf: "wa_invar WAC = addi \<inter> {s. \<alpha> s \<in> wa_invar WAA}"
 
-  -- "The step-relation preserves the concrete part of the invariant"
+  \<comment> \<open>The step-relation preserves the concrete part of the invariant\<close>
   assumes step_addi: 
     "!!s s'. \<lbrakk> s\<in>addi; s\<in>wa_cond WAC; \<alpha> s \<in> wa_invar WAA; 
                (s,s')\<in>wa_step WAC 
              \<rbrakk> \<Longrightarrow> s'\<in>addi"
 
-  -- "The initial states satisfy the concrete part of the invariant"
+  \<comment> \<open>The initial states satisfy the concrete part of the invariant\<close>
   assumes initial_addi: "wa_initial WAC \<subseteq> addi"
 
   shows 
@@ -267,13 +263,13 @@ text {*
   concrete one.
 *}
 
--- "Precise refinement"
+\<comment> \<open>Precise refinement\<close>
 locale wa_precise_refine = wa_refine +
   constrains \<alpha> :: "'C \<Rightarrow> 'A"
   assumes cond_precise: 
     "\<forall>s. s\<in>wa_invar WAC \<and> \<alpha> s\<in>wa_cond WAA \<longrightarrow> s\<in>wa_cond WAC"
 begin
-  -- "Transfer correctness property"
+  \<comment> \<open>Transfer correctness property\<close>
   lemma transfer_correctness:
     assumes A: "\<forall>s. s\<in>wa_invar WAA \<and> s\<notin>wa_cond WAA \<longrightarrow> P s"
     shows "\<forall>sc. sc\<in>wa_invar WAC \<and> sc\<notin>wa_cond WAC \<longrightarrow> P (\<alpha> sc)"
@@ -337,32 +333,32 @@ text {*
 *}
 
 record 'S det_while_algo =
-  -- "Termination condition"
+  \<comment> \<open>Termination condition\<close>
   dwa_cond :: "'S \<Rightarrow> bool"
-  -- "Step function"
+  \<comment> \<open>Step function\<close>
   dwa_step :: "'S \<Rightarrow> 'S"
-  -- "Initial state"
+  \<comment> \<open>Initial state\<close>
   dwa_initial :: "'S"
-  -- "Invariant"
+  \<comment> \<open>Invariant\<close>
   dwa_invar :: "'S set"
   
-  -- "Maps the record for deterministic while-algo to the corresponding record for
-      the non-deterministic one"
+  \<comment> \<open>Maps the record for deterministic while-algo to the corresponding record for
+      the non-deterministic one\<close>
 definition "det_wa_wa DWA == \<lparr> 
   wa_cond={s. dwa_cond DWA s}, 
   wa_step={(s,dwa_step DWA s) | s. True}, 
   wa_initial={dwa_initial DWA},
   wa_invar = dwa_invar DWA\<rparr>"
 
-  -- "Conditions for a deterministic while-algorithm"
+  \<comment> \<open>Conditions for a deterministic while-algorithm\<close>
 locale det_while_algo = 
   fixes WA :: "'S det_while_algo"
-  -- "The step preserves the invariant"
+  \<comment> \<open>The step preserves the invariant\<close>
   assumes step_invar: 
     "\<lbrakk> s\<in>dwa_invar WA; dwa_cond WA s \<rbrakk> \<Longrightarrow> dwa_step WA s \<in> dwa_invar WA"
-  -- "The initial state satisfies the invariant"
+  \<comment> \<open>The initial state satisfies the invariant\<close>
   assumes initial_invar: "dwa_initial WA \<in> dwa_invar WA"
-  -- "The relation made up by the step-function is well-founded."
+  \<comment> \<open>The relation made up by the step-function is well-founded.\<close>
   assumes step_wf: 
     "wf { (dwa_step WA s,s) | s. s\<in>dwa_invar WA \<and> dwa_cond WA s }"
 
@@ -393,8 +389,8 @@ proof -
     
 qed
 
--- "A deterministic while-algorithm is well-defined, if and only if the 
-    corresponding non-deterministic while-algorithm is well-defined"
+\<comment> \<open>A deterministic while-algorithm is well-defined, if and only if the 
+    corresponding non-deterministic while-algorithm is well-defined\<close>
 theorem dwa_is_wa: 
   "while_algo (det_wa_wa DWA) \<longleftrightarrow> det_while_algo DWA"
   using det_while_algo_intro det_while_algo.is_while_algo by auto
@@ -403,7 +399,7 @@ theorem dwa_is_wa:
 definition (in det_while_algo) 
   "loop == (while (dwa_cond WA) (dwa_step WA) (dwa_initial WA))"
 
--- "Proof rule for deterministic while loops"
+\<comment> \<open>Proof rule for deterministic while loops\<close>
 lemma (in det_while_algo) while_proof:
   assumes inv_imp: "\<And>s. \<lbrakk>s\<in>dwa_invar WA; \<not> dwa_cond WA s\<rbrakk> \<Longrightarrow> Q s"
   shows "Q loop"
@@ -414,7 +410,7 @@ lemma (in det_while_algo) while_proof:
   apply (simp_all add: step_invar initial_invar step_wf inv_imp)
   done
 
-  -- "This version is useful when using transferred correctness lemmas"
+  \<comment> \<open>This version is useful when using transferred correctness lemmas\<close>
 lemma (in det_while_algo) while_proof':
   assumes inv_imp: 
     "\<forall>s. s\<in>wa_invar (det_wa_wa WA) \<and> s\<notin>wa_cond (det_wa_wa WA) \<longrightarrow> Q s"

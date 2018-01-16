@@ -57,7 +57,7 @@ locale index_loc =
   for m_ops :: "('i,'s,'m,'more1) map_ops_scheme"
   and s_ops :: "('x,'s,'more2) set_ops_scheme"
 begin
-  -- "Mapping indices to abstract indices"
+  \<comment> \<open>Mapping indices to abstract indices\<close>
   definition ci_\<alpha>' where
     "ci_\<alpha>' ci i == case m.\<alpha> ci i of None \<Rightarrow> None | Some s \<Rightarrow> Some (s.\<alpha> s)"
 

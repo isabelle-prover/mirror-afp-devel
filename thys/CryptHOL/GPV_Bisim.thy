@@ -559,7 +559,7 @@ proof -
     then show ?thesis by(auto simp add: spmf_rel_eq[symmetric] spmf_rel_map elim: rel_spmf_mono)
   qed
   have "?rhs' = ?rhs"
-    -- \<open>Actually, parallel fixpoint induction should be used here, but then we cannot use the
+    \<comment> \<open>Actually, parallel fixpoint induction should be used here, but then we cannot use the
       facts @{thm [source] track_Some} and @{thm [source] sample_Some} because fixpoint induction
       replaces @{const exec_gpv} with approximations. So we do two separate fixpoint inductions
       instead and jump from the approximation to the fixpoint when the state has been found.\<close>

@@ -44,7 +44,7 @@ Explanation_expl: "\<lfloor>\<^bold>\<forall>x y. y explains x \<^bold>\<leftrig
 
 text\<open>\noindent{These constraints are, however, not enough to ensure the argument's validity as confirmed by Nitpick.}\<close>
 theorem C10: "\<lfloor>\<^bold>\<exists>x. Godlike x\<rfloor>"
-  nitpick oops --\<open> Countermodel found \<close>
+  nitpick oops \<comment> \<open>Countermodel found\<close>
     
 text\<open>\noindent{After some iterations, we see that, by giving a more satisfactory explication of the concept
 of necesariness, we are also required to assume the essentiality of abstractness
@@ -66,7 +66,7 @@ by the real-time feedback provided by Isabelle's automated proving tools.}\<clos
 (*<*) 
 (* We carry out our `sanity checks' as usual.*)
 lemma True nitpick[satisfy, user_axioms] oops (* model found: axioms are consistent *)
-lemma "\<lfloor>\<^bold>\<forall>x. Necessary x\<rfloor>" nitpick[user_axioms] oops --\<open>  counter-model found: argument is not trivial \<close>
+lemma "\<lfloor>\<^bold>\<forall>x. Necessary x\<rfloor>" nitpick[user_axioms] oops \<comment> \<open>counter-model found: argument is not trivial\<close>
 lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>" nitpick[user_axioms] oops (* counter-model found: modal collapse is not valid *)
     
 end

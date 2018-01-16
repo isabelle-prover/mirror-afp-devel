@@ -28,7 +28,7 @@ lemma "has_disc_negated (\<lambda>x::nat. x = 0) True (MatchAnd (Match 0) (Match
 lemma "\<not> has_disc_negated (\<lambda>x::nat. x = 0) True (MatchAnd (Match 1) (MatchNot (Match 0)))" by eval
 lemma "has_disc_negated (\<lambda>x::nat. x = 0) True (MatchAnd (Match 0) (MatchNot (Match 0)))" by eval
 
--- "We want false on the right hand side, because this is how the algorithm should be started"
+\<comment> \<open>We want false on the right hand side, because this is how the algorithm should be started\<close>
 lemma has_disc_negated_MatchNot:
   "has_disc_negated disc True (MatchNot m) \<longleftrightarrow> has_disc_negated disc False m"
   "has_disc_negated disc True m \<longleftrightarrow> has_disc_negated disc False (MatchNot m)"
@@ -266,7 +266,7 @@ theorem primitive_extractor_correct: assumes
   and "\<not> has_disc_negated disc False m \<longleftrightarrow> getNeg as = []"
   and "has_disc disc m \<Longrightarrow> as \<noteq> []"
 proof -
-  --"better simplification rule"
+  \<comment> \<open>better simplification rule\<close>
   from assms have assm3': "(as, ms) = primitive_extractor (disc, sel) m" by simp
   with assms(1) assms(2) show "matches \<gamma> (alist_and (NegPos_map C as)) a p \<and> matches \<gamma> ms a p \<longleftrightarrow> matches \<gamma> m a p"
     proof(induction "(disc, sel)" m  arbitrary: as ms rule: primitive_extractor.induct)
@@ -537,7 +537,7 @@ subsection\<open>Normalizing and Optimizing Primitives\<close>
   assumes "normalized_nnf_match m"
       and "normalized_n_primitive (disc2, sel2) P m"
       and "wf_disc_sel (disc1, sel1) C"
-      and "\<forall>a. \<not> disc2 (C a)" --\<open>disc1 and disc2 match for different stuff. e.g. @{text Src_Ports} and @{text Dst_Ports}\<close>
+      and "\<forall>a. \<not> disc2 (C a)" \<comment> \<open>disc1 and disc2 match for different stuff. e.g. @{text Src_Ports} and @{text Dst_Ports}\<close>
     shows "\<forall>mn \<in> set (normalize_primitive_extract (disc1, sel1) C f m). normalized_n_primitive (disc2, sel2) P mn"
     proof
       fix mn
@@ -688,7 +688,7 @@ lemma normalize_match_preserves_nodisc:
   proof - 
     (*no idea why this statement is necessary*)
     have "\<not> has_disc disc m \<longrightarrow> (\<forall>m' \<in> set (normalize_match m). \<not> has_disc disc m')"
-    by(induction m rule: normalize_match.induct) (safe,auto) --"need safe, otherwise simplifier loops"
+    by(induction m rule: normalize_match.induct) (safe,auto) \<comment> \<open>need safe, otherwise simplifier loops\<close>
   thus "\<not> has_disc disc m \<Longrightarrow> m' \<in> set (normalize_match m) \<Longrightarrow> \<not> has_disc disc m'" by blast
 qed
 

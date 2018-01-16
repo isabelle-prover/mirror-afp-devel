@@ -105,12 +105,12 @@ or an error (@{const None})
 if the expression contains a variable not in the environment. *}
 
 definition mul_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<otimes>" 70)
--- {* Lifting of multiplication to @{typ "nat option"}. *}
+\<comment> \<open>Lifting of multiplication to @{typ "nat option"}.\<close>
 where "U\<^sub>1 \<otimes> U\<^sub>2 \<equiv>
   case (U\<^sub>1, U\<^sub>2) of (Some u\<^sub>1, Some u\<^sub>2) \<Rightarrow> Some (u\<^sub>1 * u\<^sub>2) | _ \<Rightarrow> None"
 
 definition add_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<oplus>" 65)
--- {* Lifting of addition to @{typ "nat option"}. *}
+\<comment> \<open>Lifting of addition to @{typ "nat option"}.\<close>
 where "U\<^sub>1 \<oplus> U\<^sub>2 \<equiv>
   case (U\<^sub>1, U\<^sub>2) of (Some u\<^sub>1, Some u\<^sub>2) \<Rightarrow> Some (u\<^sub>1 + u\<^sub>2) | _ \<Rightarrow> None"
 
@@ -363,8 +363,8 @@ where "spec\<^sub>3 p \<equiv>
 lemma step_3_correct:
   "spec\<^sub>3 p \<Longrightarrow> spec\<^sub>2 p"
 by (auto simp: spec\<^sub>3_def spec\<^sub>2_def)
--- {* No need to use @{text reduce_body_to_addends} explicitly, *}
--- {* as the default rules that @{text auto} uses to prove it apply here too. *}
+\<comment> \<open>No need to use @{text reduce_body_to_addends} explicitly,\<close>
+\<comment> \<open>as the default rules that @{text auto} uses to prove it apply here too.\<close>
 
 text {* This refinement step
 defines the top-level structure of the body,
@@ -461,8 +461,8 @@ where "spec\<^sub>5 p \<equiv>
 lemma step_5_correct:
   "spec\<^sub>5 p \<Longrightarrow> spec\<^sub>4 p"
 by (auto simp: spec\<^sub>5_def spec\<^sub>4_def)
--- {* No need to use @{text first_addend} explicitly, *}
--- {* as the default rules that @{text auto} uses to prove it apply here too. *}
+\<comment> \<open>No need to use @{text first_addend} explicitly,\<close>
+\<comment> \<open>as the default rules that @{text auto} uses to prove it apply here too.\<close>
 
 text {* This refinement step determines the first addend of the body,
 leaving only the second addend to be determined. *}
@@ -500,8 +500,8 @@ lemma second_addend: "
   wfe \<Gamma>\<^sub>x\<^sub>y e\<^sub>2 \<and>
   coste e\<^sub>2 = 2"
 by (auto simp: add_opt_def mul_opt_def)
--- {* No need to use @{text factorization} explicitly, *}
--- {* as the default rules that @{text auto} uses to prove it apply here too. *}
+\<comment> \<open>No need to use @{text factorization} explicitly,\<close>
+\<comment> \<open>as the default rules that @{text auto} uses to prove it apply here too.\<close>
 
 text {* Adding @{term "e\<^sub>2 = Double (Add (Var ''x'') (Var ''y''))"}
 as a conjunct to @{const spec\<^sub>5}

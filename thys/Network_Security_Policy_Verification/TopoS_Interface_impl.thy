@@ -23,7 +23,7 @@ section{*Executable Implementation with Lists*}
     and node_props_impl::"('v::vertex, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)"
     and eval_impl::"('v::vertex) list_graph \<Rightarrow> ('v, 'a) TopoS_Params \<Rightarrow> bool"
     assumes
-      spec: "SecurityInvariant sinvar_spec default_node_properties receiver_violation" --"specification is valid"
+      spec: "SecurityInvariant sinvar_spec default_node_properties receiver_violation" \<comment> \<open>specification is valid\<close>
     and
       sinvar_spec_impl: "wf_list_graph G \<Longrightarrow> 
         (sinvar_spec (list_graph_to_graph G) nP) = (sinvar_impl G nP)"
@@ -56,8 +56,8 @@ section{*Executable Implementation with Lists*}
 
    text{*The packed list implementation must comply with the formal definition. *}
    locale TopoS_modelLibrary =
-    fixes m :: "('v::vertex, 'a) TopoS_packed" -- "concrete model implementation"
-    and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" --"specification"
+    fixes m :: "('v::vertex, 'a) TopoS_packed" \<comment> \<open>concrete model implementation\<close>
+    and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" \<comment> \<open>specification\<close>
     assumes
        name_not_empty: "length (nm_name m) > 0"
      and

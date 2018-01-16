@@ -96,7 +96,7 @@ where
   "\<lbrakk> is_lub,P,E \<turnstile> o' :: T; is_refT T; T \<noteq> NT; is_lub,P,E \<turnstile> e :: T' \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> sync(o') e :: T'"
 
--- "Note that insync is not statically typable."
+\<comment> \<open>Note that insync is not statically typable.\<close>
 
 | WTSeq:
   "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1::T\<^sub>1;  is_lub,P,E \<turnstile> e\<^sub>2::T\<^sub>2 \<rbrakk>

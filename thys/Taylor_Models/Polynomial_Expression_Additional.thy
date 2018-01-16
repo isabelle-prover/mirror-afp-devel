@@ -266,7 +266,7 @@ fun split_by_degree :: "nat \<Rightarrow> 'a::zero poly \<Rightarrow> 'a poly * 
          let (cl, cr) = split_by_degree (Suc n) c;
              (pl, pr) = split_by_degree n p
          in (poly.CN cl v pl, poly.CN cr v pr))"
-    \<comment>\<open>This function is only intended for use on polynomials in normal form.
+    \<comment> \<open>This function is only intended for use on polynomials in normal form.
        Hence most cases never get executed.\<close>
   | "split_by_degree n p = (poly.C 0, p)"
 

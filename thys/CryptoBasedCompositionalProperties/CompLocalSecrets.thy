@@ -8,9 +8,9 @@ theory CompLocalSecrets
 imports Secrecy 
 begin
 
--- "Set of local secrets: the set of secrets which does not belong to"
--- "the set of private keys and unguessable values, but are transmitted"
--- "via local channels or belongs to the local secrets of its subcomponents"
+\<comment> \<open>Set of local secrets: the set of secrets which does not belong to\<close>
+\<comment> \<open>the set of private keys and unguessable values, but are transmitted\<close>
+\<comment> \<open>via local channels or belongs to the local secrets of its subcomponents\<close>
 axiomatization
   LocalSecrets :: "specID  \<Rightarrow> KS set"
 where

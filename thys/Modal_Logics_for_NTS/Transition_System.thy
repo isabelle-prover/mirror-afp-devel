@@ -151,7 +151,7 @@ begin
       proof (clarify)
         fix P R Q \<alpha> P'
         assume PR: "P \<sim>\<cdot> R" and RQ: "R \<sim>\<cdot> Q" and fresh: "bn \<alpha> \<sharp>* Q" and trans: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-        -- \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term R}, without touching~@{term Q}\<close>
+        \<comment> \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term R}, without touching~@{term Q}\<close>
         obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* R" and 2: "supp (\<langle>\<alpha>,P'\<rangle>, Q) \<sharp>* p"
           proof (rule at_set_avoiding2[of "bn \<alpha>" R "(\<langle>\<alpha>,P'\<rangle>, Q)", THEN exE])
             show "finite (bn \<alpha>)" by (fact bn_finite)

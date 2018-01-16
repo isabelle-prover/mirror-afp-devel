@@ -408,7 +408,7 @@ concrete_definition (in -) relabel_to_front_impl
   uses Network_Impl.relabel_to_front_impl.refine_raw is "(?f,_)\<in>_"
 lemmas [sepref_fr_rules] = relabel_to_front_impl.refine[OF Network_Impl_axioms]
   
-end -- \<open>Network Implementation Locale\<close> 
+end \<comment> \<open>Network Implementation Locale\<close> 
   
 export_code relabel_to_front_impl checking SML_imp
   

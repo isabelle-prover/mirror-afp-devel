@@ -17,7 +17,7 @@ setup {* fn thy =>
 
 
 export_code 
-  --"generic network security invariants"
+  \<comment> \<open>generic network security invariants\<close>
       SINVAR_LIB_BLPbasic
       SINVAR_LIB_Dependability
       SINVAR_LIB_DomainHierarchyNG
@@ -28,23 +28,23 @@ export_code
       SINVAR_LIB_NonInterference
       SINVAR_LIB_SubnetsInGW
       SINVAR_LIB_CommunicationPartners
-  --"accessors to the packed invariants"
+  \<comment> \<open>accessors to the packed invariants\<close>
       nm_eval
       nm_node_props
       nm_offending_flows
       nm_sinvar
       nm_default
       nm_receiver_violation nm_name
-  --"TopoS Params"
+  \<comment> \<open>TopoS Params\<close>
       node_properties
-  --"Finite Graph functions"
+  \<comment> \<open>Finite Graph functions\<close>
       FiniteListGraph.wf_list_graph
       FiniteListGraph.add_node 
       FiniteListGraph.delete_node
       FiniteListGraph.add_edge
       FiniteListGraph.delete_edge
       FiniteListGraph.delete_edges
-  --"Examples"
+  \<comment> \<open>Examples\<close>
   BLPexample1 BLPexample3 
   in Scala
   (*file "code/isabelle_generated.scala"*)

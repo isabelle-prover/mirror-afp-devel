@@ -106,17 +106,17 @@ between all types.
 
 abbreviation
   direct_subtype_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec>1 _" [71,71] 70)
-where -- {* direct subtype relation *}
+where \<comment> \<open>direct subtype relation\<close>
   "A \<prec>1 B == (A,B) \<in> direct_subtype"
 
 abbreviation
   widen_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<preceq> _" [71,71] 70)
-where -- {* reflexive transitive closure of direct subtype relation *}
+where \<comment> \<open>reflexive transitive closure of direct subtype relation\<close>
   "A \<preceq> B == (A,B) \<in> direct_subtype\<^sup>*"
 
 abbreviation
   widen_strict_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec> _" [71,71] 70)
-where -- {* transitive closure of direct subtype relation *}
+where \<comment> \<open>transitive closure of direct subtype relation\<close>
   "A \<prec> B == (A,B) \<in> direct_subtype\<^sup>+"
 
 
@@ -323,7 +323,7 @@ lemma Object_rootD:
   using p
   apply (cases c)
   apply (fastforce elim: subtype_wrong_elims simp add: subtype_defs) +
-  -- {* In this lemma, we only get contradictory cases except for Object itself. *}
+  \<comment> \<open>In this lemma, we only get contradictory cases except for Object itself.\<close>
 done
 
 text {* The type NullT has to be the leaf of each branch of the class

@@ -20,9 +20,9 @@ text {*
 *}
 
 record 'val pstate =
-  last_obs :: 'val                -- {* current value held by process *}
-  agreed_vote :: "'val option"    -- {* value the process voted for, if any *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  last_obs :: 'val                \<comment> \<open>current value held by process\<close>
+  agreed_vote :: "'val option"    \<comment> \<open>value the process voted for, if any\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 text {*
   Possible messages sent during the execution of the algorithm, and characteristic
@@ -32,7 +32,7 @@ text {*
 datatype 'val msg =
   Val 'val
 | ValVote 'val "'val option"
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 definition isValVote where "isValVote m \<equiv> \<exists>z v. m = ValVote z v"
 
@@ -59,7 +59,7 @@ text {*
   for each step and later combine them to define the overall next-state relation.
 *}
 
-definition msgRcvd where  -- {* processes from which some message was received *}
+definition msgRcvd where  \<comment> \<open>processes from which some message was received\<close>
   "msgRcvd (msgs:: process \<rightharpoonup> 'val msg) = {q . msgs q \<noteq> None}"
 
 definition smallestValRcvd where
@@ -92,7 +92,7 @@ definition send1 where
   "send1 r p q st \<equiv> ValVote (last_obs st) (agreed_vote st)"
 
 definition valVoteRcvd where
-  -- {* processes from which values and votes were received *}
+  \<comment> \<open>processes from which values and votes were received\<close>
   "valVoteRcvd (msgs :: process \<rightharpoonup> 'val msg) \<equiv> 
    {q . \<exists>z v. msgs q = Some (ValVote z v)}"
 
@@ -101,7 +101,7 @@ definition smallestValNoVoteRcvd where
    Min {v. \<exists>q. msgs q = Some (ValVote v None)}"
 
 definition someVoteRcvd where
-  -- {* set of processes from which some vote was received *}
+  \<comment> \<open>set of processes from which some vote was received\<close>
   "someVoteRcvd (msgs :: process \<rightharpoonup> 'val msg) \<equiv>
    { q . q \<in> msgRcvd msgs \<and> isValVote (the (msgs q)) \<and> getvote (the (msgs q)) \<noteq> None }"
 

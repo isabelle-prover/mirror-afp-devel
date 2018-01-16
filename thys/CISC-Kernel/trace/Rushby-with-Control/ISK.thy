@@ -49,17 +49,17 @@ locale Interruptible_Separation_Kernel = Separation_Kernel kstep output_f s0 cur
   for kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t"
   and output_f :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'output_t"
   and s0 :: 'state_t
-  and current :: "'state_t => 'dom_t" -- "Returns the currently active domain"
-  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" -- "Switches the current domain"
-  and interrupt :: "time_t \<Rightarrow> bool" -- "Returns t iff an interrupt occurs in the given state at the given time"
-  and kprecondition :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> bool" -- "Returns t if an precondition holds that relates the current action to the state"
-  and realistic_execution :: "'action_t execution \<Rightarrow> bool" -- "In this locale, this function is completely unconstrained."
+  and current :: "'state_t => 'dom_t" \<comment> \<open>Returns the currently active domain\<close>
+  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" \<comment> \<open>Switches the current domain\<close>
+  and interrupt :: "time_t \<Rightarrow> bool" \<comment> \<open>Returns t iff an interrupt occurs in the given state at the given time\<close>
+  and kprecondition :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> bool" \<comment> \<open>Returns t if an precondition holds that relates the current action to the state\<close>
+  and realistic_execution :: "'action_t execution \<Rightarrow> bool" \<comment> \<open>In this locale, this function is completely unconstrained.\<close>
   and control :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t execution \<Rightarrow> (('action_t option) \<times> 'action_t execution \<times> 'state_t)"
   and kinvolved :: "'action_t \<Rightarrow> 'dom_t set"
   and ifp :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool"
   and vpeq :: "'dom_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t \<Rightarrow> bool"
 +
-  fixes AS_set :: "('action_t list) set" -- "Returns a set of valid action sequences, i.e., the attack surface"
+  fixes AS_set :: "('action_t list) set" \<comment> \<open>Returns a set of valid action sequences, i.e., the attack surface\<close>
     and invariant :: "'state_t \<Rightarrow> bool"
     and AS_precondition :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool"
     and aborting :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool"
@@ -292,7 +292,7 @@ proof-
     assume not_interrupt: "\<not>interrupt (Suc n)"
     assume thread_not_empty: "\<not>thread_empty(execs (current s))"
     assume not_prec: "\<not> precondition (next_state s execs) (next_action s execs)"
-    -- "In locale ISK, the precondition can be proven to hold at all times. This case cannot happen, and we can prove False."
+    \<comment> \<open>In locale ISK, the precondition can be proven to hold at all times. This case cannot happen, and we can prove False.\<close>
     {
       assume equal_s_sa: "strict_equal (Some s) sa"
       assume realistic: "realistic_executions_ind execs"
@@ -337,8 +337,8 @@ proof-
       have equal_ns_nsa: "strict_equal (Some ?ns) ?ns" unfolding strict_equal_def by auto
       from inv_sa equal_s_sa have inv_s: "invariant s" unfolding strict_equal_def precondition_ind_def by auto
 
-      -- "Two things are proven inductive. First, the assumptions that the execution is realistic (statement realistic-na). This proof uses lemma next-execution-is-realistic-partial.
-          Secondly, the precondition: if the precondition holds for the current action, then it holds for the next action (statement invariant-na)."
+      \<comment> \<open>Two things are proven inductive. First, the assumptions that the execution is realistic (statement realistic-na). This proof uses lemma next-execution-is-realistic-partial.
+          Secondly, the precondition: if the precondition holds for the current action, then it holds for the next action (statement invariant-na).\<close>
       have realistic_na: "realistic_executions_ind ?na"
       proof-
         {
@@ -380,13 +380,13 @@ proof-
               have ?thesis
               proof (cases "?a")
               case (Some a)
-                -- "Assuming that the current domain executes some action a, and assuming that the action a' after that is not None (statement snd-action-not-none),
+                \<comment> \<open>Assuming that the current domain executes some action a, and assuming that the action a' after that is not None (statement snd-action-not-none),
                     we prove that the precondition is inductive, i.e., it will hold for a'.
-                    Two cases arise: either action a is delayed (case waiting) or not (case executing)."
+                    Two cases arise: either action a is delayed (case waiting) or not (case executing).\<close>
                 show ?thesis
                 proof(cases "?na d = execs (current s)" rule :case_split[case_names waiting executing])
-                case executing -- "The kernel is executing two consecutive actions a and a'. We show that [a,a'] is a subsequence in some action in AS-set.
-                                   The PO's ensure that the precondition is inductive." 
+                case executing \<comment> \<open>The kernel is executing two consecutive actions a and a'. We show that [a,a'] is a subsequence in some action in AS-set.
+                                   The PO's ensure that the precondition is inductive.\<close> 
                   from executing True Some control_spec[THEN spec,THEN spec,THEN spec,where x2=s and x1=d and x="execs d"]
                     have a_def: "a = hd (hd (execs (current s))) \<and> ?na d = (tl (hd (execs (current s))))#(tl (execs (current s)))"
                     unfolding next_action_def next_execs_def Let_def
@@ -431,7 +431,7 @@ proof-
                     unfolding step_def
                     by auto
                   next
-                  case waiting -- "The kernel is delaying action a. Thus the action after a, which is a', is equal to a."
+                  case waiting \<comment> \<open>The kernel is delaying action a. Thus the action after a, which is a', is equal to a.\<close>
                     from tl_hd_x_not_tl_x[where x="execs d"] True waiting control_spec[THEN spec,THEN spec,THEN spec,where x2=s and x1=d and x="execs d"] Some
                       have a_def: "?na d = execs (current s) \<and> next_state s execs = s \<and> waiting s d (the ?a)"
                       unfolding next_action_def next_execs_def next_state_def
@@ -454,9 +454,9 @@ proof-
                   qed
               next
               case None
-                -- "Assuming that the current domain does not execute an action, and assuming that the action a' after that is not None (statement snd-action-not-none),
+                \<comment> \<open>Assuming that the current domain does not execute an action, and assuming that the action a' after that is not None (statement snd-action-not-none),
                     we prove that the precondition is inductive, i.e., it will hold for a'.
-                    This holds, since the control mechanism will ensure that action a' is the start of a new action sequence in AS-set."              
+                    This holds, since the control mechanism will ensure that action a' is the start of a new action sequence in AS-set.\<close>              
                 from None True snd_action_not_none control_spec[THEN spec,THEN spec,THEN spec,where x2="?ns" and x1=d and x="?na d"]
                      control_spec[THEN spec,THEN spec,THEN spec,where x2=s and x1=d and x="execs d"]
                   have na_def: "the ?a' = hd (hd (tl (execs (current s)))) \<and> ?na d = tl (execs (current s))"

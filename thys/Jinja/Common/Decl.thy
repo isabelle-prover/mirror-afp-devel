@@ -9,15 +9,15 @@ section {* Class Declarations and Programs *}
 theory Decl imports Type begin
 
 type_synonym 
-  fdecl    = "vname \<times> ty"        -- "field declaration"
+  fdecl    = "vname \<times> ty"        \<comment> \<open>field declaration\<close>
 type_synonym
-  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- {* method = name, arg.\ types, return type, body *}
+  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     \<comment> \<open>method = name, arg.\ types, return type, body\<close>
 type_synonym
-  'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
+  'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       \<comment> \<open>class = superclass, fields, methods\<close>
 type_synonym
-  'm cdecl = "cname \<times> 'm class"  -- "class declaration"
+  'm cdecl = "cname \<times> 'm class"  \<comment> \<open>class declaration\<close>
 type_synonym
-  'm prog  = "'m cdecl list"     -- "program"
+  'm prog  = "'m cdecl list"     \<comment> \<open>program\<close>
 
 (*<*)
 translations

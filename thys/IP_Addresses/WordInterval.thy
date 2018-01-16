@@ -19,8 +19,8 @@ context
   notes [[typedef_overloaded]]
 begin
   datatype ('a::len0) wordinterval = WordInterval
-                                        "('a::len0) word" --"start (inclusive)"
-                                        "('a::len0) word" --"end (inclusive)"
+                                        "('a::len0) word" \<comment> \<open>start (inclusive)\<close>
+                                        "('a::len0) word" \<comment> \<open>end (inclusive)\<close>
                                   | RangeUnion "'a wordinterval" "'a wordinterval"
 end
 

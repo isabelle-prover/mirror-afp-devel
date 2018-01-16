@@ -9,7 +9,7 @@ theory LTL_Compat
   imports Main LTL.LTL "../LTL_FGXU"
 begin
 
---\<open>The following infrastructure translates the generic @{datatype ltln} datatype to special structure used in this project\<close>
+\<comment> \<open>The following infrastructure translates the generic @{datatype ltln} datatype to special structure used in this project\<close>
 
 fun ltln_to_ltl :: "'a ltln \<Rightarrow> 'a ltl"
 where

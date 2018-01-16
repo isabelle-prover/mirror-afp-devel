@@ -13,7 +13,7 @@ type_synonym advantage = "security \<Rightarrow> real"
 type_synonym ('\<sigma>, 'call, 'ret) oracle' = "'\<sigma> \<Rightarrow> 'call \<Rightarrow> ('ret \<times> '\<sigma>) spmf"
 type_synonym ('\<sigma>, 'call, 'ret) "oracle" = "security \<Rightarrow> ('\<sigma>, 'call, 'ret) oracle' \<times> '\<sigma>"
 
-print_translation -- \<open>pretty printing for @{typ "('\<sigma>, 'call, 'ret) oracle"}\<close> \<open>
+print_translation \<comment> \<open>pretty printing for @{typ "('\<sigma>, 'call, 'ret) oracle"}\<close> \<open>
   let
     fun tr' [Const (@{type_syntax nat}, _), 
       Const (@{type_syntax prod}, _) $ 

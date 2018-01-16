@@ -1769,8 +1769,8 @@ lemma ldrop_lappend:
   "ldrop n (lappend xs ys) =
   (if n < llength xs then lappend (ldrop n xs) ys
    else ldrop (n - llength xs) ys)"
-  -- {* cannot prove this directly using fixpoint induction,
-     because @{term "(-) :: enat \<Rightarrow> enat \<Rightarrow> enat"} is not a least fixpoint *}
+  \<comment> \<open>cannot prove this directly using fixpoint induction,
+     because @{term "(-) :: enat \<Rightarrow> enat \<Rightarrow> enat"} is not a least fixpoint\<close>
 by(cases n)(cases "llength xs", simp_all add: ldropn_lappend not_less ldrop_enat)
 
 lemma ltake_plus_conv_lappend:
@@ -2307,7 +2307,7 @@ lemma lprefix_llist_of [simp]: "llist_of xs \<sqsubseteq> llist_of ys \<longleft
 by(auto simp add: prefix_def lprefix_conv_lappend)(metis lfinite_lappend lfinite_llist_of list_of_lappend list_of_llist_of lappend_llist_of_llist_of)+
 
 lemma llimit_induct [case_names LNil LCons limit]:
-  -- {* The limit case is just an instance of admissibility *}
+  \<comment> \<open>The limit case is just an instance of admissibility\<close>
   assumes LNil: "P LNil"
   and LCons: "\<And>x xs. \<lbrakk> lfinite xs; P xs \<rbrakk> \<Longrightarrow> P (LCons x xs)"
   and limit: "(\<And>ys. lstrict_prefix ys xs \<Longrightarrow> P ys) \<Longrightarrow> P xs"
@@ -3235,10 +3235,8 @@ lemma llist_all2_ldropWhileI:
   assumes *: "llist_all2 P xs ys"
   and Q: "\<And>x y. P x y \<Longrightarrow> Q1 x \<longleftrightarrow> Q2 y"
   shows "llist_all2 P (ldropWhile Q1 xs) (ldropWhile Q2 ys)"
--- {*
-  cannot prove this with parallel induction over @{term xs} and @{term ys} 
-  because @{term "\<lambda>x. \<not> llist_all2 P (f x) (g x)"} is not admissible.
-*}
+\<comment> \<open>cannot prove this with parallel induction over @{term xs} and @{term ys} 
+  because @{term "\<lambda>x. \<not> llist_all2 P (f x) (g x)"} is not admissible.\<close>
 using * by(induction arbitrary: xs ys rule: ldropWhile_fixp_parallel_induct)(auto split: llist.split dest: Q)
 
 lemma llist_all2_same [simp]: "llist_all2 P xs xs \<longleftrightarrow> (\<forall>x\<in>lset xs. P x x)"
@@ -4079,7 +4077,7 @@ by(induct rule: lfinite.induct) simp_all
 lemma lset_lfilter [simp]: "lset (lfilter P xs) = {x \<in> lset xs. P x}"
 by induct(auto simp add: Collect_conj_eq)
 
-notepad begin -- {* show @{thm [source] lset_lfilter} by fixpoint induction *}
+notepad begin \<comment> \<open>show @{thm [source] lset_lfilter} by fixpoint induction\<close>
   note [simp del] = lset_lfilter
   fix P xs
   have "lset (lfilter P xs) = lset xs \<inter> {x. P x}" (is "?lhs = ?rhs")
@@ -4099,7 +4097,7 @@ end
 lemma lfilter_lfilter: "lfilter P (lfilter Q xs) = lfilter (\<lambda>x. P x \<and> Q x) xs"
 by(induction xs) simp_all
 
-notepad begin -- {* show @{thm [source] lfilter_lfilter} by fixpoint induction *}
+notepad begin \<comment> \<open>show @{thm [source] lfilter_lfilter} by fixpoint induction\<close>
   fix P Q xs
   have "\<forall>xs. lfilter P (lfilter Q xs) \<sqsubseteq> lfilter (\<lambda>x. P x \<and> Q x) xs"
     by(rule lfilter.fixp_induct)(auto split: llist.split)
@@ -4262,7 +4260,7 @@ notepad begin
   from * have "ldistinct (lfilter P xs) \<and> lset (lfilter P xs) \<subseteq> lset xs"
     by(induction arbitrary: xs rule: lfilter.fixp_induct)(simp_all split: llist.split, fastforce)
   from * have "ldistinct (lfilter P xs)"
-    -- {* only works because we use strong fixpoint induction *}
+    \<comment> \<open>only works because we use strong fixpoint induction\<close>
     by(induction arbitrary: xs rule: lfilter.fixp_induct)(simp_all split: llist.split, auto 4 4 dest: monotone_lset[THEN monotoneD] simp add: fun_ord_def)
 end
 

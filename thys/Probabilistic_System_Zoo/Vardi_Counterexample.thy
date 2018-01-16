@@ -94,7 +94,7 @@ next
   case (9 x) then show ?case
     unfolding subset_eq set2_var_def by (simp add: var0.set_bd(2)) 
 next
-  case 10 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
+  case 10 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
 next
   case 11 then show ?case
       unfolding rel_var.simps[abs_def] by (auto simp: fun_eq_iff)

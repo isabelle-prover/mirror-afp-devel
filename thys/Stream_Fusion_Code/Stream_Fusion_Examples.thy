@@ -9,26 +9,26 @@ lemma fixes rhs z
   defines "rhs \<equiv> nth_cons (flatten (\<lambda>s'. s') (upto_prod 17) (upto_prod z)) (2, None) 8"
   shows "nth (List.maps (\<lambda>x. upto x 17) (upto 2 z)) 8 = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp del: id_apply) -- {* fuses *}
+apply(simp del: id_apply) \<comment> \<open>fuses\<close>
 by(unfold rhs_def) rule
 
 lemma fixes rhs z
   defines "rhs \<equiv> nth_cons (flatten (\<lambda>s. (s, 1)) (fix_gen (\<lambda>x. upto_prod (id x))) (upto_prod z)) (2, None) 8"
   shows "nth (List.maps (\<lambda>x. upto 1 (id x)) (upto 2 z)) 8 = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp del: id_apply) -- {* fuses *}
+apply(simp del: id_apply) \<comment> \<open>fuses\<close>
 by(unfold rhs_def) rule
 
 lemma fixes rhs n
   defines "rhs \<equiv> List.maps (\<lambda>x. [Suc 0..<sum_list_cons (replicate_prod x) x]) [2..<n]"
   shows "(concat (map (\<lambda>x. [1..<sum_list (replicate x x)]) [2..<n])) = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp add: concat_map_maps) -- {* fuses partially *}
+apply(simp add: concat_map_maps) \<comment> \<open>fuses partially\<close>
 by(unfold rhs_def) rule
 
 subsection {* Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM} *}
 
-definition test_enum :: "nat \<Rightarrow> nat" -- {* @{const id} required to avoid eta contraction *}
+definition test_enum :: "nat \<Rightarrow> nat" \<comment> \<open>@{const id} required to avoid eta contraction\<close>
 where "test_enum n = foldl (+) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
 
 definition test_nested :: "nat \<Rightarrow> nat"
@@ -59,8 +59,7 @@ definition fuse_test :: integer
 where "fuse_test = 
   integer_of_int (lhd (lfilter (\<lambda>x. x < 1) (lappend (lmap (\<lambda>x. x + 1) (llist_of (map (\<lambda>x. if x = 0 then undefined else x) [-3..5]))) (repeat 3))))"
 
-ML_val {* val ~2 = @{code fuse_test} *} -- {*
-  If this test fails with exception Fail, then the stream fusion simproc failed. This test exploits
-  that stream fusion introduces laziness. *}
+ML_val {* val ~2 = @{code fuse_test} *} \<comment> \<open>If this test fails with exception Fail, then the stream fusion simproc failed. This test exploits
+  that stream fusion introduces laziness.\<close>
 
 end

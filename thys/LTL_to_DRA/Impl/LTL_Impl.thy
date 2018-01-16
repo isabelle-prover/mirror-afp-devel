@@ -62,7 +62,7 @@ lemma [code]:
   "(\<phi> \<longrightarrow>\<^sub>P \<psi>) = impl_test ifex_of_ltl \<phi> \<psi>"
   by (simp add: ltl_prop_implies_def reduced_bdt_checkers.impl_test[OF ifex_of_ltl_reduced_bdt_checker]; force)
 
--- \<open>Check Code Export\<close> 
+\<comment> \<open>Check Code Export\<close> 
 export_code "(\<equiv>\<^sub>P)" "(\<longrightarrow>\<^sub>P)" checking
 
 subsection \<open>Remove Constants\<close>

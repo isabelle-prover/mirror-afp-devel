@@ -127,8 +127,8 @@ text_raw \<open>}%EndSnippet\<close>
 
 text \<open> {} \<close>
 
-end -- \<open>Anonymous context\<close> 
-end -- \<open>Network\<close> 
+end \<comment> \<open>Anonymous context\<close> 
+end \<comment> \<open>Network\<close> 
 
 text \<open> {} \<close>
 text_raw \<open>\DefineSnippet{ford_fulkerson_correct}{\<close>       
@@ -148,4 +148,4 @@ proof -
   finally show ?thesis .
 qed  
 
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

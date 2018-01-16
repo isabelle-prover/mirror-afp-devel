@@ -311,7 +311,7 @@ proof -
     have "change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> (insert x X) g"
     proof
       show "\<langle>c, mds, mem\<rangle> \<leadsto> \<langle>c', mds', mem'\<rangle>" using insert by auto
-    next -- "We first show that property (2) is satisfied."
+    next \<comment> \<open>We first show that property (2) is satisfied.\<close>
       fix \<sigma> :: "'Var \<rightharpoonup> 'Val"
       let ?\<sigma>\<^sub>X = "\<sigma> |` X"
       assume "dom \<sigma> = insert x X"
@@ -360,14 +360,14 @@ proof -
             unfolding func_le_def
             by (auto, metis `dom (\<sigma> |\` X) = X` domI restrict_in)
         qed
-      next -- "This part proves that the domain of the family is unique"
+      next \<comment> \<open>This part proves that the domain of the family is unique\<close>
         {
         fix \<sigma>' :: "'Var \<rightharpoonup> 'Val"
         assume "dom \<sigma>' = insert x X"
         let ?\<sigma>'\<^sub>X = "\<sigma>' |` X"
         have "dom ?\<sigma>'\<^sub>X = X"
           by (metis `dom (\<sigma> |\` X) = X` `dom \<sigma> = insert x X` `dom \<sigma>' = insert x X` dom_restrict)
-        -- "We first show, that we are always in the same case of the no read assumption:"
+        \<comment> \<open>We first show, that we are always in the same case of the no read assumption:\<close>
         have same_case:
           "((\<forall> v. \<langle>c, mds, mem [\<mapsto> ?\<sigma>\<^sub>X] (x := v)\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> g\<^sub>X ?\<sigma>\<^sub>X] (x := v)\<rangle>) \<and>
             (\<forall> v. \<langle>c, mds, mem [\<mapsto> ?\<sigma>'\<^sub>X] (x := v)\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> g\<^sub>X ?\<sigma>'\<^sub>X] (x := v)\<rangle>))
@@ -376,7 +376,7 @@ proof -
             (\<forall> v. \<langle>c, mds, mem [\<mapsto> ?\<sigma>'\<^sub>X] (x := v)\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> g\<^sub>X ?\<sigma>'\<^sub>X]\<rangle>))"
           (is "(?N \<and> ?N') \<or> (?O \<and> ?O')")
         proof -
-          -- "By deriving a contradiction under the assumption that we are in different cases:"
+          \<comment> \<open>By deriving a contradiction under the assumption that we are in different cases:\<close>
           have not_different:
             "\<And> h h'. \<lbrakk> dom h = insert x X; dom h' = insert x X;
                         \<forall> v. \<langle>c, mds, mem [\<mapsto> h |` X] (x := v)\<rangle> \<leadsto>
@@ -385,7 +385,7 @@ proof -
                              \<langle>c', mds', mem' [\<mapsto> g\<^sub>X (h' |` X)]\<rangle> \<rbrakk>
                       \<Longrightarrow> False"
           proof -
-            -- "Introduce new names to avoid clashes with functions in the outer scope."
+            \<comment> \<open>Introduce new names to avoid clashes with functions in the outer scope.\<close>
             fix h h' :: "'Var \<rightharpoonup> 'Val"
             assume doms: "dom h = insert x X" "dom h' = insert x X"
             assume nowrite: "\<forall> v. \<langle>c, mds, mem [\<mapsto> h |` X] (x := v)\<rangle> \<leadsto>
@@ -932,8 +932,8 @@ proof -
     using a b noread_exists_change_respecting
     by (metis differing_lists_finite surjective_pairing)
 
-  -- "The following statements are universally quantified
-      since they are reused later:"
+  \<comment> \<open>The following statements are universally quantified
+      since they are reused later:\<close>
   with h_prop have
     "\<forall> \<sigma>. dom \<sigma> = ?X k \<longrightarrow>
       (cms\<^sub>2 ! k, ?mems\<^sub>2k [\<mapsto> h] [\<mapsto> \<sigma>]) \<leadsto> \<langle> c\<^sub>h, ?mds\<^sub>k', mem\<^sub>h [\<mapsto> g2 \<sigma>] \<rangle>"
@@ -992,7 +992,7 @@ proof -
               "\<And> \<sigma>. dom \<sigma> = ?X k \<Longrightarrow> dom_g2 = dom (g2 \<sigma>)"
     by (metis change_respecting.simps domh)
 
-  -- "This is the complicated part of the proof."
+  \<comment> \<open>This is the complicated part of the proof.\<close>
   obtain mems' where "makes_compatible (cms\<^sub>1', mem\<^sub>1') (cms\<^sub>2', mem\<^sub>2') mems'"
   proof
     define mems'_k
@@ -1002,7 +1002,7 @@ proof -
        else if (x \<notin> dom_g1) \<or> (x \<notin> dom_g2)
        then (mem\<^sub>1' x, mem\<^sub>2' x)
        else (?mems\<^sub>1k x, ?mems\<^sub>2k x))" for x
-    -- "This is used in two of the following cases, so we prove it beforehand:"
+    \<comment> \<open>This is used in two of the following cases, so we prove it beforehand:\<close>
     have x_unchanged: "\<And> x. \<lbrakk> x \<in> ?X k; x \<in> dom_g1; x \<in> dom_g2 \<rbrakk> \<Longrightarrow>
       mem\<^sub>1 x = mem\<^sub>1' x \<and> mem\<^sub>2 x = mem\<^sub>2' x"
     proof
@@ -1148,8 +1148,8 @@ proof -
       show "(cms\<^sub>1' ! i, (fst (mems' ! i)) [\<mapsto> \<sigma>]) \<approx> (cms\<^sub>2' ! i, (snd (mems' ! i)) [\<mapsto> \<sigma>])"
       proof (cases "i = k")
         assume [simp]: "i = k"
-        -- "We define another  function from this and reuse the universally quantified statements
-          from the first part of the proof."
+        \<comment> \<open>We define another  function from this and reuse the universally quantified statements
+          from the first part of the proof.\<close>
         define \<sigma>'
           where "\<sigma>' x =
               (if x \<in> ?X k
@@ -1308,7 +1308,7 @@ proof -
                 by (metis change_respecting.simps func_le_def)
               then have "\<sigma>' x = Some (?mems\<^sub>2'i x)"
               proof (cases "x \<in> dom_g1")
-                -- "This can't happen, so derive a contradiction."
+                \<comment> \<open>This can't happen, so derive a contradiction.\<close>
                 assume "x \<in> dom_g1"
 
                 have "x \<notin> ?X k"
@@ -1484,7 +1484,7 @@ proof -
 
         have \<Delta>_finite: "finite ?\<Delta>"
           by (metis (no_types) differing_finite finite_UnI)
-        -- "We first define the adaptation, then prove that it does the right thing."
+        \<comment> \<open>We first define the adaptation, then prove that it does the right thing.\<close>
         define A where "A x =
                      (if x \<in> ?\<Delta>
                       then if dma x = High
@@ -1656,7 +1656,7 @@ proof -
         next
           assume "mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x"
             "mem\<^sub>1' x \<noteq> mem\<^sub>2' x" and "dma x = Low"
-          -- "In this case, for example, the values of (mems' ! i) are not needed."
+          \<comment> \<open>In this case, for example, the values of (mems' ! i) are not needed.\<close>
           thus "x \<notin> ?X' i"
             by (metis Sec.simps(2) mem_eq)
         next

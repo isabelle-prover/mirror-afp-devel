@@ -742,7 +742,7 @@ proof (auto, goal_cases)
   then show "return_time p2 differentiable at x0 within S" by (auto intro!: differentiableI)
 qed
 
-lemma flowsto_poincare_trans:\<comment>\<open>TODO: the proof is close to @{thm poincare_mapsto_trans}\<close>
+lemma flowsto_poincare_trans:\<comment> \<open>TODO: the proof is close to @{thm poincare_mapsto_trans}\<close>
   assumes f: "flowsto            X0 T     CX P1"
   assumes "poincare_mapsto p2 P1 UNIV CY P2"
   assumes nn: "\<And>t. t \<in> T \<Longrightarrow> t \<ge> 0"

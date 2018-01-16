@@ -249,12 +249,11 @@ proof -
     for k b
     by (cases k; rule exec_gpv_oracle_bisim_bad[where X="(=)" and ?bad1.0=fst and ?bad2.0=fst and \<I> = "\<I>_full \<oplus>\<^sub>\<I> \<I>_full"])
        (auto intro: rel_spmf_reflI callee_invariant_extend_state_oracle_const' simp add: spmf_rel_map1 spmf_rel_map2 oracle_decrypt0'_simps oracle_decrypt1'_simps assms split: plus_oracle_split)
-    -- \<open>We cannot get rid of the losslessness assumption on @{term \<A>} in this step, because if it 
+    \<comment> \<open>We cannot get rid of the losslessness assumption on @{term \<A>} in this step, because if it 
       were not, then the bad event might still occur, but the adversary does not terminate in
       the case of @{term "?game1'"}. Thus, the reduction does not terminate either, but it cannot
       detect whether the bad event has happened. So the advantage in the UPF game could be lower than
-      the probability of the bad event, if the adversary is not lossless.
-    \<close>
+      the probability of the bad event, if the adversary is not lossless.\<close>
   have "\<bar>measure (measure_spmf (?game1' \<A>)) {(b, bad). b} - measure (measure_spmf (?game0' \<A>)) {(b, bad). b}\<bar> 
      \<le> measure (measure_spmf (?game1' \<A>)) {(b, bad). bad}"
     by (rule fundamental_lemma[where ?bad2.0=snd])(auto intro!: rel_spmf_bind_reflI rel_spmf_bindI[OF *] simp add: game01'_def)

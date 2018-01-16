@@ -18,14 +18,14 @@ text \<open>The state of the general DFS.
   inheritance support.
 \<close>
 record 'v state =
-  counter :: nat               -- \<open>Node counter (timer)\<close>
-  discovered :: "'v \<rightharpoonup> nat"    -- \<open>Discovered times of nodes\<close>
-  finished :: "'v \<rightharpoonup> nat"      -- \<open>Finished times of nodes\<close>
-  pending :: "('v \<times> 'v) set"  -- \<open>Edges to be processed next\<close>
-  stack :: "'v list"          -- \<open>Current DFS stack\<close>
-  tree_edges :: "'v rel"      -- \<open>Tree edges\<close>
-  back_edges :: "'v rel"      -- \<open>Back edges\<close>
-  cross_edges :: "'v rel"     -- \<open>Cross edges\<close>
+  counter :: nat               \<comment> \<open>Node counter (timer)\<close>
+  discovered :: "'v \<rightharpoonup> nat"    \<comment> \<open>Discovered times of nodes\<close>
+  finished :: "'v \<rightharpoonup> nat"      \<comment> \<open>Finished times of nodes\<close>
+  pending :: "('v \<times> 'v) set"  \<comment> \<open>Edges to be processed next\<close>
+  stack :: "'v list"          \<comment> \<open>Current DFS stack\<close>
+  tree_edges :: "'v rel"      \<comment> \<open>Tree edges\<close>
+  back_edges :: "'v rel"      \<comment> \<open>Back edges\<close>
+  cross_edges :: "'v rel"     \<comment> \<open>Cross edges\<close>
 
 abbreviation "NOOP s \<equiv> RETURN (state.more s)"
 
@@ -305,8 +305,8 @@ begin
 
   definition get_pending ::
     "('v, 'es) state_scheme \<Rightarrow> ('v \<times> 'v option \<times> ('v, 'es) state_scheme) nres" 
-    -- {* Get topmost stack node and a pending edge if any. The pending
-          edge is removed. *}
+    \<comment> \<open>Get topmost stack node and a pending edge if any. The pending
+          edge is removed.\<close>
   where "get_pending s \<equiv> do {
     let u = hd (stack s);
     let Vs = pending s `` {u};
@@ -371,7 +371,7 @@ locale param_DFS =
 begin
 
   definition is_invar :: "(('v, 'es) state_scheme \<Rightarrow> bool) \<Rightarrow> bool"
-    -- \<open>Predicate that states that @{term I} is an invariant.\<close>
+    \<comment> \<open>Predicate that states that @{term I} is an invariant.\<close>
     where "is_invar I \<equiv> is_rwof_invar init cond step I"
 
 end
@@ -388,7 +388,7 @@ locale DFS_invar =
 begin
 
   lemma make_invar_thm: "is_invar I \<Longrightarrow> I s"
-    -- \<open>Lemma to transfer an invariant into this locale\<close>
+    \<comment> \<open>Lemma to transfer an invariant into this locale\<close>
     using rwof_cons[OF _ rwof, folded is_invar_def] .
 
 end
@@ -409,13 +409,13 @@ begin
   
   lemma rwof_eq_DFS_invar[simp]: 
     "rwof init cond step = DFS_invar G param"
-    -- \<open>The DFS-invar locale is equivalent to the strongest invariant of the loop.\<close>
+    \<comment> \<open>The DFS-invar locale is equivalent to the strongest invariant of the loop.\<close>
     apply (auto intro: DFS_invar.rwof intro!: ext)
     by unfold_locales
 
   lemma DFS_invar_step: "\<lbrakk>nofail it_dfs; DFS_invar G param s; cond s\<rbrakk> 
     \<Longrightarrow> step s \<le> SPEC (DFS_invar G param)"
-    -- \<open>A step preserves the (best) invariant.\<close>
+    \<comment> \<open>A step preserves the (best) invariant.\<close>
     unfolding it_dfs_def rwof_eq_DFS_invar[symmetric]
     by (rule rwof_step)
 
@@ -459,7 +459,7 @@ begin
   text \<open>Next, we define a set of rules to establish an invariant.\<close>  
 
   lemma establish_invarI[case_names init new_root finish cross_edge back_edge discover]:
-    -- \<open>Establish a DFS invariant (explicit preconditions). \<close>
+    \<comment> \<open>Establish a DFS invariant (explicit preconditions).\<close>
     assumes init: "on_init param \<le>\<^sub>n SPEC (\<lambda>x. I (empty_state x))"
     assumes new_root: "\<And>s s' v0. 
       \<lbrakk>DFS_invar G param s; I s; cond s; \<not> is_break param s;
@@ -534,7 +534,7 @@ begin
   qed
 
   lemma establish_invarI'[case_names init new_root finish cross_edge back_edge discover]:
-    -- \<open>Establish a DFS invariant (symbolic preconditions). \<close>
+    \<comment> \<open>Establish a DFS invariant (symbolic preconditions).\<close>
     assumes init: "on_init param \<le>\<^sub>n SPEC (\<lambda>x. I (empty_state x))"
     assumes new_root: "\<And>s' v0. pre_on_new_root v0 s'
          \<Longrightarrow> on_new_root param v0 s' \<le>\<^sub>n 
@@ -566,7 +566,7 @@ begin
     done
   
   lemma establish_invarI_ND [case_names prereq init new_discover finish cross_edge back_edge]:
-    -- \<open>Establish a DFS invariant (new-root and discover cases are combined). \<close>
+    \<comment> \<open>Establish a DFS invariant (new-root and discover cases are combined).\<close>
     assumes prereq: "\<And>u v s. on_discover param u v s = on_new_root param v s"
     assumes init: "on_init param \<le>\<^sub>n SPEC (\<lambda>x. I (empty_state x))"
     assumes new_discover: "\<And>s s' v. 
@@ -618,7 +618,7 @@ begin
 
   (* Variant of establish_invarI, where cross_edge and back_edge are combined *)
   lemma establish_invarI_CB [case_names prereq init new_root finish cross_back_edge discover]:
-    -- \<open>Establish a DFS invariant (cross and back edge cases are combined). \<close>
+    \<comment> \<open>Establish a DFS invariant (cross and back edge cases are combined).\<close>
     assumes prereq: "\<And>u v s. on_back_edge param u v s = on_cross_edge param u v s"
     assumes init: "on_init param \<le>\<^sub>n SPEC (\<lambda>x. I (empty_state x))"
     assumes new_root: "\<And>s s' v0. 
@@ -670,7 +670,7 @@ begin
 
   (* Variant of establish_invarI, where cross_edge and back_edge, and discover and new_root are combined *)
   lemma establish_invarI_ND_CB [case_names prereq_ND prereq_CB init new_discover finish cross_back_edge]:
-    -- \<open>Establish a DFS invariant (new-root/discover and cross/back-edge cases are combined). \<close>
+    \<comment> \<open>Establish a DFS invariant (new-root/discover and cross/back-edge cases are combined).\<close>
     assumes prereq: 
         "\<And>u v s. on_discover param u v s = on_new_root param v s"
         "\<And>u v s. on_back_edge param u v s = on_cross_edge param u v s"
@@ -720,7 +720,7 @@ begin
 
 
   lemma is_invarI_full [case_names init new_root finish cross_edge back_edge discover]:
-    -- \<open>Establish a DFS invariant not taking into account the parameterization. \<close>
+    \<comment> \<open>Establish a DFS invariant not taking into account the parameterization.\<close>
     assumes init: "\<And>e. I (empty_state e)"
     assumes new_root: "\<And>s s' v0 e. 
        \<lbrakk>I s; cond s; DFS_invar G param s; DFS_invar G param s';
@@ -757,7 +757,7 @@ begin
   done
 
   lemma is_invarI [case_names init new_root finish visited discover]:
-    -- \<open>Establish a DFS invariant not taking into account the parameterization, cross/back-edges combined. \<close>
+    \<comment> \<open>Establish a DFS invariant not taking into account the parameterization, cross/back-edges combined.\<close>
     assumes init': "\<And>e. I (empty_state e)"
     and new_root': "\<And>s s' v0 e. 
        \<lbrakk>I s; cond s; DFS_invar G param s; DFS_invar G param s';

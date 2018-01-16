@@ -9,7 +9,7 @@ imports
   WellForm
 begin
 
-datatype bop =  -- "names of binary operations"
+datatype bop =  \<comment> \<open>names of binary operations\<close>
     Eq
   | NotEq
   | LessThan
@@ -30,7 +30,7 @@ datatype bop =  -- "names of binary operations"
 
 subsection{* The semantics of binary operators *}
 
-type_synonym 'addr binop_ret = "'addr val + 'addr" -- "a value or the address of an exception"
+type_synonym 'addr binop_ret = "'addr val + 'addr" \<comment> \<open>a value or the address of an exception\<close>
 
 fun binop_LessThan :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where

@@ -33,31 +33,31 @@ type_synonym 'capacity graph = "edge \<Rightarrow> 'capacity"
   
 locale Graph = fixes c :: "'capacity::linordered_idom graph"
 begin
-definition E :: "edge set" -- \<open>Edges of the graph\<close>
+definition E :: "edge set" \<comment> \<open>Edges of the graph\<close>
 where "E \<equiv> {(u, v). c (u, v) \<noteq> 0}"
 
-definition V :: "node set" -- \<open>Nodes of the graph. Exactly the nodes 
+definition V :: "node set" \<comment> \<open>Nodes of the graph. Exactly the nodes 
   that have adjacent edges.\<close>
 where "V \<equiv> {u. \<exists>v. (u, v) \<in> E \<or> (v, u) \<in> E}"
 
-definition incoming :: "node \<Rightarrow> edge set" -- \<open>Incoming edges into a node\<close>
+definition incoming :: "node \<Rightarrow> edge set" \<comment> \<open>Incoming edges into a node\<close>
 where "incoming v \<equiv> {(u, v) | u. (u, v) \<in> E}"
 
-definition outgoing :: "node \<Rightarrow> edge set" -- \<open>Outgoing edges from a node\<close>
+definition outgoing :: "node \<Rightarrow> edge set" \<comment> \<open>Outgoing edges from a node\<close>
 where "outgoing v \<equiv> {(v, u) | u. (v, u) \<in> E}"
   
-definition adjacent :: "node \<Rightarrow> edge set" -- \<open>Adjacent edges of a node\<close>
+definition adjacent :: "node \<Rightarrow> edge set" \<comment> \<open>Adjacent edges of a node\<close>
 where "adjacent v \<equiv> incoming v \<union> outgoing v"
 
-definition incoming' :: "node set \<Rightarrow> edge set" -- \<open>Incoming edges into 
+definition incoming' :: "node set \<Rightarrow> edge set" \<comment> \<open>Incoming edges into 
   a set of nodes\<close>
 where "incoming' k \<equiv> {(u, v) | u v. u \<notin> k \<and> v \<in> k \<and> (u, v) \<in> E}"
   
-definition outgoing' :: "node set \<Rightarrow> edge set" -- \<open>Outgoing edges from 
+definition outgoing' :: "node set \<Rightarrow> edge set" \<comment> \<open>Outgoing edges from 
   a set of nodes\<close>
 where "outgoing' k \<equiv> {(v, u) | u v. u \<notin> k \<and> v \<in> k \<and> (v, u) \<in> E}"
   
-definition adjacent' :: "node set \<Rightarrow> edge set" -- \<open>Edges adjacent to a 
+definition adjacent' :: "node set \<Rightarrow> edge set" \<comment> \<open>Edges adjacent to a 
   set of nodes\<close>
 where "adjacent' k \<equiv> incoming' k \<union> outgoing' k"
 
@@ -67,7 +67,7 @@ definition is_adj_map :: "(node \<Rightarrow> node list) \<Rightarrow> bool" whe
 definition "adjacent_nodes u \<equiv> E``{u} \<union> E\<inverse>``{u}"
   
   
-end -- \<open>Graph\<close>
+end \<comment> \<open>Graph\<close>
 
 subsubsection \<open>Finite Graphs\<close>
 locale Finite_Graph = Graph +
@@ -116,11 +116,11 @@ begin
     where "isSimplePath u p v \<equiv> isPath u p v \<and> distinct (pathVertices u p)"
 
   definition dist :: "node \<Rightarrow> nat \<Rightarrow> node \<Rightarrow> bool" 
-    -- \<open>There is a path of given length between the nodes\<close>
+    \<comment> \<open>There is a path of given length between the nodes\<close>
     where "dist v d v' \<equiv> \<exists>p. isPath v p v' \<and> length p = d"
 
   definition min_dist :: "node \<Rightarrow> node \<Rightarrow> nat"
-    -- \<open>Minimum distance between two connected nodes\<close>
+    \<comment> \<open>Minimum distance between two connected nodes\<close>
     where "min_dist v v' = (LEAST d. dist v d v')"
 
 end  
@@ -249,7 +249,7 @@ subsubsection \<open>Paths\<close>
 named_theorems split_path_simps \<open>Simplification lemmas to split paths\<close>
 
 lemma transfer_path:
-  -- \<open>Transfer path to another graph\<close>
+  \<comment> \<open>Transfer path to another graph\<close>
   assumes "set p\<inter>E \<subseteq> Graph.E c'"
   assumes "isPath u p v"
   shows "Graph.isPath c' u p v"
@@ -879,7 +879,7 @@ lemma min_dist_split:
     dist_trans min_distI_eq min_dist_minD)
   by (metis assms add_le_cancel_left dist_trans min_distI_eq min_dist_minD)
   
-lemma -- \<open>Manual proof\<close>
+lemma \<comment> \<open>Manual proof\<close>
   assumes D1: "dist u d1 w" and D2: "dist w d2 v" and MIN: "min_dist u v = d1+d2"
   shows "min_dist u w = d1" "min_dist w v = d2"
 proof -
@@ -991,7 +991,7 @@ lemma isShortestPath_level_edge:
     "min_dist u t = 1 + min_dist v t" (is ?G2) and
     "min_dist s t = min_dist s u + 1 + min_dist v t" (is ?G3) 
 proof -  
-  -- \<open>Split the original path at the edge\<close>
+  \<comment> \<open>Split the original path at the edge\<close>
   from EIP obtain p1 p2 where [simp]: "p=p1@(u,v)#p2"
     by (auto simp: in_set_conv_decomp)
   from \<open>isShortestPath s p t\<close> have 
@@ -1004,7 +1004,7 @@ proof -
     
   from DISTS show "connected s u" "connected u v" "connected v t" by auto
 
-  -- \<open>Express the minimum distances in terms of the split original path\<close>  
+  \<comment> \<open>Express the minimum distances in terms of the split original path\<close>  
   from MIN have MIN': "min_dist s t = length p1 + 1 + length p2" by auto
   
   from min_dist_split[OF dist_trans[OF DISTS(1,2)] DISTS(3) MIN'] have
@@ -1019,7 +1019,7 @@ proof -
   from MDSV MDUT MIN' show ?G1 ?G2 ?G3 by auto  
 qed  
 
-end -- \<open>Graph\<close>
+end \<comment> \<open>Graph\<close>
 
 context Finite_Graph begin
 
@@ -1040,6 +1040,6 @@ corollary min_dist_less_V:
   apply (frule isShortestPath_length_less_V[OF SV])
   unfolding isShortestPath_min_dist_def by auto
 
-end -- \<open>Finite_Graph\<close>
+end \<comment> \<open>Finite_Graph\<close>
 
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

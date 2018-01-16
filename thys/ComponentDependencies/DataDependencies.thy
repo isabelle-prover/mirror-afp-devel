@@ -11,87 +11,87 @@ theory DataDependencies
   imports DataDependenciesConcreteValues
 begin
 
---"component and its subcomponents should be defined on different abstraction levels"
+\<comment> \<open>component and its subcomponents should be defined on different abstraction levels\<close>
 definition
 correctCompositionDiffLevels :: "CSet \<Rightarrow> bool"
 where 
   "correctCompositionDiffLevels S \<equiv> 
    \<forall> C \<in>  subcomp S. \<forall> i. S \<in> AbstrLevel i \<longrightarrow> C \<notin> AbstrLevel i"
 
---"General system's property: for all abstraction levels and all components should hold"
---"component and its subcomponents should be defined on different abstraction levels"
+\<comment> \<open>General system's property: for all abstraction levels and all components should hold\<close>
+\<comment> \<open>component and its subcomponents should be defined on different abstraction levels\<close>
 definition
 correctCompositionDiffLevelsSYSTEM :: "bool"
 where 
   "correctCompositionDiffLevelsSYSTEM \<equiv> 
    (\<forall> S::CSet. (correctCompositionDiffLevels S))"
 
---"if a local variable belongs to one of the subcomponents, it also belongs to the composed component"
+\<comment> \<open>if a local variable belongs to one of the subcomponents, it also belongs to the composed component\<close>
 definition
 correctCompositionVAR ::  "CSet \<Rightarrow> bool"
 where
   "correctCompositionVAR S \<equiv> 
    \<forall> C \<in>  subcomp S. \<forall> v \<in> VAR C.  v \<in> VAR S"
 
---"General system's property: for all abstraction levels and all components should hold"
---"if a local variable belongs to one of the subcomponents, it also belongs to the composed component"
+\<comment> \<open>General system's property: for all abstraction levels and all components should hold\<close>
+\<comment> \<open>if a local variable belongs to one of the subcomponents, it also belongs to the composed component\<close>
 definition
 correctCompositionVARSYSTEM ::  "bool"
 where
   "correctCompositionVARSYSTEM \<equiv> 
    (\<forall> S::CSet. (correctCompositionVAR S))"
 
---"after correct decomposition of a component each of its local variable can belong only to one of its subcomponents"
+\<comment> \<open>after correct decomposition of a component each of its local variable can belong only to one of its subcomponents\<close>
 definition
 correctDeCompositionVAR ::  "CSet \<Rightarrow> bool"
 where
   "correctDeCompositionVAR S \<equiv> 
    \<forall> v \<in> VAR S.  \<forall> C1 \<in>  subcomp S. \<forall> C2 \<in>  subcomp S. v \<in> VAR C1 \<and> v \<in> VAR C2 \<longrightarrow> C1 = C2"
 
---"General system's property: for all abstraction levels and all components should hold"
---"after correct decomposition of a component each of its local variable can belong only to one of its subcomponents"
+\<comment> \<open>General system's property: for all abstraction levels and all components should hold\<close>
+\<comment> \<open>after correct decomposition of a component each of its local variable can belong only to one of its subcomponents\<close>
 definition
 correctDeCompositionVARSYSTEM ::  "bool"
 where
   "correctDeCompositionVARSYSTEM \<equiv> 
   (\<forall> S::CSet. (correctDeCompositionVAR S))"
 
---"if x is an output channel of a  component C on some anstraction level, 
-it cannot be an output of another component on the same level"
+\<comment> \<open>if x is an output channel of a  component C on some anstraction level, 
+it cannot be an output of another component on the same level\<close>
 definition
 correctCompositionOUT ::  "chanID \<Rightarrow> bool"
 where
   "correctCompositionOUT x \<equiv> 
    \<forall> C i. x \<in> OUT C \<and> C \<in> AbstrLevel i \<longrightarrow>  (\<forall> S \<in> AbstrLevel i. x \<notin> OUT S)"
 
---"General system's property: for all abstraction levels and all channels should hold"
+\<comment> \<open>General system's property: for all abstraction levels and all channels should hold\<close>
 definition
 correctCompositionOUTSYSTEM ::  "bool"
 where
   "correctCompositionOUTSYSTEM \<equiv> (\<forall> x. correctCompositionOUT x)"
 
---"if X is a subcomponent of a  component C on some anstraction level, 
-it cannot be a subcomponent of another component on the same level"
+\<comment> \<open>if X is a subcomponent of a  component C on some anstraction level, 
+it cannot be a subcomponent of another component on the same level\<close>
 definition
 correctCompositionSubcomp ::  "CSet \<Rightarrow> bool"
 where
   "correctCompositionSubcomp X \<equiv> 
    \<forall> C i. X \<in> subcomp C \<and> C \<in> AbstrLevel i \<longrightarrow>  (\<forall> S \<in> AbstrLevel i. (S \<noteq> C \<longrightarrow> X \<notin> subcomp S))"
 
---"General system's property: for all abstraction levels and all components should hold"
+\<comment> \<open>General system's property: for all abstraction levels and all components should hold\<close>
 definition
 correctCompositionSubcompSYSTEM ::  "bool"
 where
   "correctCompositionSubcompSYSTEM \<equiv> (\<forall> X. correctCompositionSubcomp X)"
 
---"If a component belongs is defined in the set CSet, 
-it should belong to at least one abstraction level"
+\<comment> \<open>If a component belongs is defined in the set CSet, 
+it should belong to at least one abstraction level\<close>
 definition
 allComponentsUsed ::  "bool"
 where
   "allComponentsUsed \<equiv>  \<forall> C. \<exists> i.  C \<in> AbstrLevel i"
 
---"if a component does not have any local variables, none of its subcomponents has any local variables"
+\<comment> \<open>if a component does not have any local variables, none of its subcomponents has any local variables\<close>
 lemma correctDeCompositionVARempty:
   assumes "correctCompositionVAR S" 
           and "VAR S = {}"
@@ -99,16 +99,16 @@ lemma correctDeCompositionVARempty:
 using assms by (metis all_not_in_conv correctCompositionVAR_def)
 
 
---"function OUTfrom maps channel ID to the set of input channels it depends from,"
---"directly (OUTfromCh) or via local variables (VARfrom)" 
---"an empty set means that the channel is either input of the system or"
---"its values are generated within some component independently"
+\<comment> \<open>function OUTfrom maps channel ID to the set of input channels it depends from,\<close>
+\<comment> \<open>directly (OUTfromCh) or via local variables (VARfrom)\<close> 
+\<comment> \<open>an empty set means that the channel is either input of the system or\<close>
+\<comment> \<open>its values are generated within some component independently\<close>
 definition OUTfrom ::  "chanID \<Rightarrow> chanID set"
 where
  "OUTfrom x \<equiv> (OUTfromCh x) \<union> {y. \<exists> v. v \<in> (OUTfromV x) \<and> y \<in> (VARfrom v)}"
  
---"if x depends from some input channel(s) directly, then exists"
---"a component which has them as input channels and x as an output channel"
+\<comment> \<open>if x depends from some input channel(s) directly, then exists\<close>
+\<comment> \<open>a component which has them as input channels and x as an output channel\<close>
 definition
   OUTfromChCorrect :: "chanID \<Rightarrow> bool"
 where
@@ -116,17 +116,17 @@ where
    (OUTfromCh x \<noteq> {} \<longrightarrow> 
       (\<exists> Z . (x \<in> (OUT Z) \<and> (\<forall> y \<in> (OUTfromCh x). y \<in> IN Z) )))"
 
---"General system's property: for channels in the system should hold:"
---"if x depends from some input channel(s) directly, then exists"
---"a component which has them as input channels and x as an output channel"
+\<comment> \<open>General system's property: for channels in the system should hold:\<close>
+\<comment> \<open>if x depends from some input channel(s) directly, then exists\<close>
+\<comment> \<open>a component which has them as input channels and x as an output channel\<close>
 definition
   OUTfromChCorrectSYSTEM :: "bool"
 where
   "OUTfromChCorrectSYSTEM \<equiv> (\<forall> x::chanID. (OUTfromChCorrect x))"
 
 
---"if x depends from some local variables, then exists a component"
---"to which these variables belong and which has  x as an output channel"
+\<comment> \<open>if x depends from some local variables, then exists a component\<close>
+\<comment> \<open>to which these variables belong and which has  x as an output channel\<close>
 definition
   OUTfromVCorrect1 :: "chanID \<Rightarrow> bool"
 where
@@ -134,36 +134,36 @@ where
    (OUTfromV x \<noteq> {} \<longrightarrow> 
       (\<exists> Z . (x \<in> (OUT Z) \<and> (\<forall> v \<in> (OUTfromV x). v \<in> VAR Z) )))"
 
---"General system's property: for channels in the system should hold the above property:"
+\<comment> \<open>General system's property: for channels in the system should hold the above property:\<close>
 definition
   OUTfromVCorrect1SYSTEM :: "bool"
 where
   "OUTfromVCorrect1SYSTEM \<equiv> (\<forall> x::chanID. (OUTfromVCorrect1 x))"
 
---"if x does not depend from any local variables, then it does not belong to any set VARfrom"
+\<comment> \<open>if x does not depend from any local variables, then it does not belong to any set VARfrom\<close>
 definition
   OUTfromVCorrect2 :: "chanID \<Rightarrow> bool"
 where
   "OUTfromVCorrect2 x \<equiv>
    (OUTfromV x = {} \<longrightarrow> (\<forall> v::varID. x \<notin> (VARto v)) )"
 
---"General system's property: for channels in the system should hold the above property:" 
+\<comment> \<open>General system's property: for channels in the system should hold the above property:\<close> 
 definition
   OUTfromVCorrect2SYSTEM :: "bool"
 where
   "OUTfromVCorrect2SYSTEM \<equiv>  (\<forall> x::chanID. (OUTfromVCorrect2 x))"
 
---"General system's property:"
---"definitions OUTfromV and VARto should give equivalent mappings"
+\<comment> \<open>General system's property:\<close>
+\<comment> \<open>definitions OUTfromV and VARto should give equivalent mappings\<close>
 definition
   OUTfromV_VARto :: "bool"
 where
   "OUTfromV_VARto \<equiv>
    (\<forall> x::chanID. \<forall> v::varID. (v \<in> OUTfromV x \<longleftrightarrow> x \<in> (VARto v)) )"
 
---"General system's property for abstraction levels 0 and 1"
---"if a variable v belongs to a component, then all the channels v"
---"depends from should be input channels of this component"
+\<comment> \<open>General system's property for abstraction levels 0 and 1\<close>
+\<comment> \<open>if a variable v belongs to a component, then all the channels v\<close>
+\<comment> \<open>depends from should be input channels of this component\<close>
 definition
   VARfromCorrectSYSTEM :: "bool"
 where
@@ -171,9 +171,9 @@ where
    (\<forall> v::varID. \<forall> Z\<in> ((AbstrLevel level0) \<union> (AbstrLevel level1)). 
      ( (v \<in> VAR Z) \<longrightarrow>  (\<forall> x \<in> VARfrom v. x \<in> IN Z) ))"
 
---"General system's property for abstraction levels 0 and 1"
---"if a variable v belongs to a component, then all the channels v"
---"provides value to should be input channels of this component"
+\<comment> \<open>General system's property for abstraction levels 0 and 1\<close>
+\<comment> \<open>if a variable v belongs to a component, then all the channels v\<close>
+\<comment> \<open>provides value to should be input channels of this component\<close>
 definition
   VARtoCorrectSYSTEM :: "bool"
 where
@@ -181,7 +181,7 @@ where
    (\<forall> v::varID. \<forall> Z \<in> ((AbstrLevel level0) \<union> (AbstrLevel level1)). 
      ( (v \<in> VAR Z) \<longrightarrow>   (\<forall> x \<in> VARto v. x \<in> OUT Z)))"
 
---"to detect local variables, unused for computation of any output" 
+\<comment> \<open>to detect local variables, unused for computation of any output\<close> 
 definition
   VARusefulSYSTEM :: "bool"
 where
@@ -197,9 +197,9 @@ lemma
 (*>*)
 subsection {* Direct and indirect data dependencies between components *}
 
---"The component C should be defined on the same abstraction"
---"level we are seaching for its direct or indirect sources,"
---"otherwise we get an empty set as result"
+\<comment> \<open>The component C should be defined on the same abstraction\<close>
+\<comment> \<open>level we are seaching for its direct or indirect sources,\<close>
+\<comment> \<open>otherwise we get an empty set as result\<close>
 definition
   DSources :: "AbstrLevelsID \<Rightarrow> CSet \<Rightarrow> CSet set"
 where
@@ -209,9 +209,9 @@ lemma DSourcesLevelX:
 "(DSources i X)  \<subseteq> (AbstrLevel i)" 
 by (simp add: DSources_def, auto)
 
---"The component C should be defined on the same abstraction level we are" 
---"seaching for its direct or indirect acceptors (coponents, for which C is a source),"
---"otherwise we get an empty set as result"
+\<comment> \<open>The component C should be defined on the same abstraction level we are\<close> 
+\<comment> \<open>seaching for its direct or indirect acceptors (coponents, for which C is a source),\<close>
+\<comment> \<open>otherwise we get an empty set as result\<close>
 definition
   DAcc :: "AbstrLevelsID \<Rightarrow> CSet \<Rightarrow> CSet set"
 where
@@ -239,7 +239,7 @@ and
 SourcesLoop:
 "(Sources i C) = (XS \<union> (Sources i S)) \<and> (Sources i S) = (ZS \<union> (Sources i C)) 
 \<longrightarrow> (Sources i C) = XS  \<union> ZS \<union> { C, S}" 
--- "if we have a loop in the dependencies we need to cut it for counting the sources"
+\<comment> \<open>if we have a loop in the dependencies we need to cut it for counting the sources\<close>
 
 axiomatization
   Acc :: "AbstrLevelsID \<Rightarrow> CSet \<Rightarrow> CSet set"
@@ -256,18 +256,18 @@ and
 AccLoop:
 "(Acc i C) = (XS \<union> (Acc i S)) \<and> (Acc i S) = (ZS \<union> (Acc i C)) 
 \<longrightarrow> (Acc i C) = XS  \<union> ZS \<union> { C, S}" 
--- "if we have a loop in the dependencies we need to cut it for counting the accessors"
+\<comment> \<open>if we have a loop in the dependencies we need to cut it for counting the accessors\<close>
 
 lemma Acc_SourcesNOT: "(X \<notin> Acc i C) = (C \<notin> Sources i X)"
 by (metis Acc_Sources)
 
---"component S is not a source for any component on the abstraction level i"
+\<comment> \<open>component S is not a source for any component on the abstraction level i\<close>
 definition
   isNotDSource :: "AbstrLevelsID \<Rightarrow> CSet \<Rightarrow> bool"
 where
  "isNotDSource i S \<equiv> (\<forall> x \<in> (OUT S). (\<forall> Z \<in> (AbstrLevel i). (x \<notin> (IN Z))))"
 
---"component S is not a source for a component Z on the abstraction level i"
+\<comment> \<open>component S is not a source for a component Z on the abstraction level i\<close>
 definition
   isNotDSourceX :: "AbstrLevelsID \<Rightarrow> CSet \<Rightarrow> CSet \<Rightarrow> bool"
 where
@@ -514,7 +514,7 @@ by (metis AccSigleLoop Acc_SourcesNOT empty_iff insert_iff)
 (*>*)
 subsection {* Components that are elementary wrt. data dependencies *}
 
---"two output channels of a component C are corelated, if they mutually depend on the same local variable(s)"
+\<comment> \<open>two output channels of a component C are corelated, if they mutually depend on the same local variable(s)\<close>
 definition
    outPairCorelated :: "CSet \<Rightarrow> chanID \<Rightarrow> chanID \<Rightarrow> bool"
 where
@@ -522,16 +522,16 @@ where
   (x \<in> OUT C) \<and>   (y \<in> OUT C) \<and> 
   (OUTfromV x) \<inter> (OUTfromV y) \<noteq> {}"
 
---"We call a set of output channels of a conponent correlated to it output channel x,"
---"if they mutually depend on the same local variable(s)"
+\<comment> \<open>We call a set of output channels of a conponent correlated to it output channel x,\<close>
+\<comment> \<open>if they mutually depend on the same local variable(s)\<close>
 definition
    outSetCorelated :: "chanID \<Rightarrow> chanID set"
 where
   "outSetCorelated x  \<equiv> 
   { y::chanID . \<exists> v::varID. (v \<in> (OUTfromV x) \<and> (y \<in> VARto v)) }"
 
---"Elementary component according to the data dependencies."
---"This constraint should hold for all components on the abstraction level 1"
+\<comment> \<open>Elementary component according to the data dependencies.\<close>
+\<comment> \<open>This constraint should hold for all components on the abstraction level 1\<close>
 definition
 elementaryCompDD :: "CSet \<Rightarrow> bool"
 where
@@ -539,14 +539,14 @@ where
   ((\<exists> x. (OUT C) = {x} ) \<or> 
    (\<forall> x \<in> (OUT C). \<forall> y \<in> (OUT C). ((outSetCorelated x) \<inter> (outSetCorelated y) \<noteq> {}) ))"
 
---"the set (outSetCorelated x) is empty if x does not depend from any variable"
+\<comment> \<open>the set (outSetCorelated x) is empty if x does not depend from any variable\<close>
 lemma outSetCorelatedEmpty1:
  assumes "OUTfromV x = {}"
  shows "outSetCorelated x = {}"
 using assms by (simp add: outSetCorelated_def)
 
---"if x depends from at least one variable and the predicates OUTfromV and VARto are defined correctly,"
---"the set (outSetCorelated x) contains x itself"
+\<comment> \<open>if x depends from at least one variable and the predicates OUTfromV and VARto are defined correctly,\<close>
+\<comment> \<open>the set (outSetCorelated x) contains x itself\<close>
 lemma outSetCorelatedNonemptyX:
  assumes "OUTfromV x  \<noteq> {}" and correct3:"OUTfromV_VARto"
  shows "x \<in> outSetCorelated x"
@@ -557,7 +557,7 @@ proof -
     by (simp add:  outSetCorelated_def OUTfromV_VARto_def)
 qed
 
---"if the set (outSetCorelated x) is empty, this means that x does not depend from any variable"
+\<comment> \<open>if the set (outSetCorelated x) is empty, this means that x does not depend from any variable\<close>
 lemma outSetCorelatedEmpty2:
  assumes "outSetCorelated x = {}"   and correct3:"OUTfromV_VARto"
  shows  "OUTfromV x = {}"
@@ -572,22 +572,22 @@ qed
 (*>*)
 subsection {* Set of components needed to check a specific property *}
 
---"set of components specified on abstreaction level i, which input channels belong to the set chSet"
+\<comment> \<open>set of components specified on abstreaction level i, which input channels belong to the set chSet\<close>
 definition
   inSetOfComponents :: "AbstrLevelsID \<Rightarrow> chanID set \<Rightarrow> CSet set"
 where
  "inSetOfComponents i chSet \<equiv>
   {X. (((IN X) \<inter> chSet \<noteq> {})  \<and> X \<in> (AbstrLevel i))}"
 
---"Set of components from the abstraction level i, which output channels belong to the set chSet"
+\<comment> \<open>Set of components from the abstraction level i, which output channels belong to the set chSet\<close>
 definition
   outSetOfComponents :: "AbstrLevelsID \<Rightarrow> chanID set \<Rightarrow> CSet set"
 where
  "outSetOfComponents i chSet \<equiv>
   {Y. (((OUT Y) \<inter> chSet \<noteq> {}) \<and> Y \<in> (AbstrLevel i))}"
 
---"Set of components from the abstraction level i,"
---"which have output channels from the set chSet or are sources for such components"
+\<comment> \<open>Set of components from the abstraction level i,\<close>
+\<comment> \<open>which have output channels from the set chSet or are sources for such components\<close>
 definition
   minSetOfComponents ::  "AbstrLevelsID \<Rightarrow> chanID set \<Rightarrow> CSet set"
 where
@@ -595,19 +595,19 @@ where
   (outSetOfComponents i chSet) \<union>
   (\<Union> S \<in> (outSetOfComponents i chSet). (Sources i S))"
 
---"Please note that a system output cannot beat the same time a local chanel."
+\<comment> \<open>Please note that a system output cannot beat the same time a local chanel.\<close>
 
---"channel x is a system input on an abstraction level i"
+\<comment> \<open>channel x is a system input on an abstraction level i\<close>
 definition systemIN ::"chanID \<Rightarrow> AbstrLevelsID \<Rightarrow> bool"
 where
   "systemIN x i \<equiv> (\<exists> C1 \<in> (AbstrLevel i). x \<in> (IN C1)) \<and> (\<forall> C2 \<in> (AbstrLevel i). x \<notin> (OUT C2))"
 
---"channel x is a system input on an abstraction level i"
+\<comment> \<open>channel x is a system input on an abstraction level i\<close>
 definition systemOUT ::"chanID \<Rightarrow> AbstrLevelsID \<Rightarrow> bool"
 where
   "systemOUT x i \<equiv> (\<forall> C1 \<in> (AbstrLevel i). x \<notin> (IN C1)) \<and> (\<exists> C2 \<in> (AbstrLevel i). x \<in> (OUT C2))"
 
---"channel x is a system local channel on an abstraction level i"
+\<comment> \<open>channel x is a system local channel on an abstraction level i\<close>
 definition systemLOC ::"chanID \<Rightarrow> AbstrLevelsID \<Rightarrow> bool"
 where
   "systemLOC x i \<equiv> (\<exists> C1 \<in> (AbstrLevel i). x \<in> (IN C1)) \<and> (\<exists> C2 \<in> (AbstrLevel i). x \<in> (OUT C2))"
@@ -656,19 +656,19 @@ where
  "allNeededINChannels i chSet \<equiv>
   (\<forall> Z \<in> (minSetOfComponents i chSet). \<exists> x \<in> (IN Z). ((systemIN x i) \<longrightarrow> (x \<in> chSet)))"
 
---"the set (outSetOfComponents i chSet) should be a subset of all components specified on the abstraction level i"
+\<comment> \<open>the set (outSetOfComponents i chSet) should be a subset of all components specified on the abstraction level i\<close>
 lemma outSetOfComponentsLimit:
 "outSetOfComponents i chSet \<subseteq> AbstrLevel i"
 by (metis (lifting) mem_Collect_eq outSetOfComponents_def subsetI)
 
---"the set (inSetOfComponents i chSet) should be a subset of all components specified on the abstraction level i"
+\<comment> \<open>the set (inSetOfComponents i chSet) should be a subset of all components specified on the abstraction level i\<close>
 lemma inSetOfComponentsLimit:
 "inSetOfComponents i chSet \<subseteq> AbstrLevel i"
 by (metis (lifting) inSetOfComponents_def mem_Collect_eq subsetI)
 
---"the set of components, which are sources for the components"
---"out of (inSetOfComponents i chSet), should be a subset of" 
---"all components specified on the abstraction level i"
+\<comment> \<open>the set of components, which are sources for the components\<close>
+\<comment> \<open>out of (inSetOfComponents i chSet), should be a subset of\<close> 
+\<comment> \<open>all components specified on the abstraction level i\<close>
 lemma SourcesLevelLimit:
 "(\<Union> S \<in> (outSetOfComponents i chSet). (Sources i S)) \<subseteq> AbstrLevel i"
 proof -
@@ -693,13 +693,13 @@ qed
 (*>*)
 subsection {* Additional properties: Remote Computation *}
 
---"The value of  $UplSizeHighLoad$ $x$ is True if its $UplSize$ measure is greather that a predifined value"
+\<comment> \<open>The value of  $UplSizeHighLoad$ $x$ is True if its $UplSize$ measure is greather that a predifined value\<close>
 definition UplSizeHighLoadCh ::  "chanID \<Rightarrow> bool"
 where
    "UplSizeHighLoadCh x \<equiv> (x \<in> UplSizeHighLoad)"
 
---"if the $Perf$ measure of at least one subcomponent is greather than a predifined value,"
---"the $Perf$ measure of this component is greather than $HighPerf$ too"
+\<comment> \<open>if the $Perf$ measure of at least one subcomponent is greather than a predifined value,\<close>
+\<comment> \<open>the $Perf$ measure of this component is greather than $HighPerf$ too\<close>
 axiomatization HighPerfComp ::  "CSet \<Rightarrow> bool"
 where
 HighPerfComDef:

@@ -46,7 +46,7 @@ qed
 
 end
 
-no_notation Stream.snth (infixl "!!" 100) -- {* we use @{text "!!"} for IArray *}
+no_notation Stream.snth (infixl "!!" 100) \<comment> \<open>we use @{text "!!"} for IArray\<close>
 
 subsection {* Computable representation *}
 

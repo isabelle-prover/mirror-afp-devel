@@ -5,12 +5,12 @@ begin
 
 text\<open>Left handed SC with NNF transformation:\<close>
 inductive LSC ("(_ \<Rightarrow>\<^sub>n)" [53]) where
--- "logic:"
+\<comment> \<open>logic:\<close>
 Ax: "\<^bold>\<not>(Atom k),Atom k,\<Gamma> \<Rightarrow>\<^sub>n" |
 BotL: "\<bottom>,\<Gamma> \<Rightarrow>\<^sub>n" |
 AndL: "F,G,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> F\<^bold>\<and>G,\<Gamma> \<Rightarrow>\<^sub>n" |               
 OrL: "F,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> G,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> F\<^bold>\<or>G,\<Gamma> \<Rightarrow>\<^sub>n" |
--- "nnf rules:"
+\<comment> \<open>nnf rules:\<close>
 NotOrNNF: "\<^bold>\<not>F,\<^bold>\<not>G,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> \<^bold>\<not>(F\<^bold>\<or>G),\<Gamma> \<Rightarrow>\<^sub>n" |
 NotAndNNF: "\<^bold>\<not>F,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> \<^bold>\<not>G,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> \<^bold>\<not>(F\<^bold>\<and>G),\<Gamma> \<Rightarrow>\<^sub>n" |
 ImpNNF: "\<^bold>\<not>F,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> G,\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> F\<^bold>\<rightarrow>G,\<Gamma> \<Rightarrow>\<^sub>n" |

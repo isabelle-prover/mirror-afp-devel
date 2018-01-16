@@ -313,9 +313,9 @@ lemma denot_terminates: assumes vp_e: "v' \<in> E e \<rho>'" and ge: "good_env \
   shows "\<exists> v. \<rho> \<turnstile> e \<Down> v \<and> v \<in> good v'"
   using vp_e ge 
 proof (induction arbitrary: v' \<rho> rule: E.induct)
-  case (1 n \<rho>) -- "ENat"
+  case (1 n \<rho>) \<comment> \<open>ENat\<close>
   then show ?case by auto
-next -- "EVar"
+next \<comment> \<open>EVar\<close>
   case (2 x \<rho> v' \<rho>')
   from 2 obtain v1 where lx_vpp: "lookup \<rho> x = Some v1" and vp_v1: "v' \<sqsubseteq> v1" by auto
   from lx_vpp 2(2) obtain v2 where lx: "lookup \<rho>' x = Some v2" and v2_v1: "v2 \<in> good v1"
@@ -323,7 +323,7 @@ next -- "EVar"
   from lx have x_v2: "\<rho>' \<turnstile> EVar x \<Down> v2" by auto
   from v2_v1 vp_v1 have v2_vp: "v2 \<in> good v'" using sub_good by blast
   from x_v2 v2_vp show ?case by blast
-next -- "ELam"
+next \<comment> \<open>ELam\<close>
   case (3 x e \<rho> v' \<rho>')
   have 1: "\<rho>' \<turnstile> ELam x e \<Down> BClos x e \<rho>'" by auto
   have 2: "BClos x e \<rho>' \<in> good v'"
@@ -341,7 +341,7 @@ next -- "ELam"
     from vp gt show ?thesis unfolding good_fun_def by simp         
   qed
   from 1 2 show ?case by blast
-next -- "EApp"
+next \<comment> \<open>EApp\<close>
   case (4 e1 e2 \<rho> v' \<rho>')
   from 4(3) show ?case
   proof
@@ -358,7 +358,7 @@ next -- "EApp"
     from w3_v3p vp_v3p have w3_vp: "w3 \<in> good v'" by (rule sub_good)
     from e1_w1 e2_w2 w1 e_w3 w3_vp show "\<exists>v. \<rho>' \<turnstile> EApp e1 e2 \<Down> v \<and> v \<in> good v'" by blast
   qed
-next -- "EPrim"
+next \<comment> \<open>EPrim\<close>
   case (5 f e1 e2 \<rho> v' \<rho>')
   from 5(3) show ?case
   proof
@@ -370,7 +370,7 @@ next -- "EPrim"
     from vp have 2: "BNat (f n1 n2) \<in> good v'" by auto
     from 1 2 show "\<exists>v. \<rho>' \<turnstile> EPrim f e1 e2 \<Down> v \<and> v \<in> good v'" by auto
   qed
-next -- "EIf"
+next \<comment> \<open>EIf\<close>
   case (6 e1 e2 e3 \<rho> v' \<rho>')
   from 6(4) show ?case
   proof

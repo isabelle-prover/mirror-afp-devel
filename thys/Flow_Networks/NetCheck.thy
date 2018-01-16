@@ -41,7 +41,7 @@ text \<open>
     unfolding ln_rel_def br_def by auto 
 
   definition ln_N :: "(node\<times>node\<times>_) list \<Rightarrow> nat" 
-    -- \<open>Maximum node number plus one. I.e. the size of an array to be indexed by nodes.\<close>
+    \<comment> \<open>Maximum node number plus one. I.e. the size of an array to be indexed by nodes.\<close>
     where "ln_N el \<equiv> Max ((fst`set el) \<union> ((fst o snd)`set el)) + 1"
 
   lemma ln_\<alpha>_imp_in_set: "\<lbrakk>ln_\<alpha> el (u,v)\<noteq>(0)\<rbrakk> \<Longrightarrow> (u,v,ln_\<alpha> el (u,v))\<in>set el"
@@ -70,7 +70,7 @@ text \<open>
     pn_t_node :: bool
 
   fun read :: "edge_list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> pre_network option" 
-    -- \<open>Read a pre-network from an edge list, and source/sink node numbers.\<close>
+    \<comment> \<open>Read a pre-network from an edge list, and source/sink node numbers.\<close>
   where
     "read [] _ _ = Some \<lparr>
       pn_c = (\<lambda> _. 0), 
@@ -1498,7 +1498,7 @@ subsection \<open>Executable Network Checker\<close>
 
   definition prepareNet :: "edge_list \<Rightarrow> node \<Rightarrow> node 
     \<Rightarrow> (capacity_impl graph \<times> (node\<Rightarrow>node list) \<times> nat) option"
-    -- \<open>Read an edge list and a source/sink node, and return a network graph,
+    \<comment> \<open>Read an edge list and a source/sink node, and return a network graph,
       an adjacency map, and the maximum node number plus one. 
       If the edge list or network is invalid, return \<open>NONE\<close>.\<close>
   where

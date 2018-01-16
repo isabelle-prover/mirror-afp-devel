@@ -54,15 +54,15 @@ begin
         *)
 
   record (overloaded) 'i simple_match =
-    iiface :: "iface" --"in-interface"
+    iiface :: "iface" \<comment> \<open>in-interface\<close>
       (*we cannot (and don't want to) express negated interfaces*)
       (*We could also drop interface wildcard support and try negated interfaces again \<dots>*)
-    oiface :: "iface" --"out-interface"
-    src :: "('i::len word \<times> nat) " --"source IP address"
-    dst :: "('i::len word \<times> nat) " --"destination"
+    oiface :: "iface" \<comment> \<open>out-interface\<close>
+    src :: "('i::len word \<times> nat) " \<comment> \<open>source IP address\<close>
+    dst :: "('i::len word \<times> nat) " \<comment> \<open>destination\<close>
     proto :: "protocol"
-    sports :: "(16 word \<times> 16 word)" --"source-port first:last"
-    dports :: "(16 word \<times> 16 word)" --"destination-port first:last"
+    sports :: "(16 word \<times> 16 word)" \<comment> \<open>source-port first:last\<close>
+    dports :: "(16 word \<times> 16 word)" \<comment> \<open>destination-port first:last\<close>
 
   
   context

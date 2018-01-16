@@ -13,9 +13,9 @@ theory Objects imports SubObj begin
 subsection{* Objects *}
 
 type_synonym
-  subo = "(path \<times> (vname \<rightharpoonup> val))"     -- "subobjects realized on the heap"
+  subo = "(path \<times> (vname \<rightharpoonup> val))"     \<comment> \<open>subobjects realized on the heap\<close>
 type_synonym
-  obj  = "cname \<times> subo set"            -- "mdc and subobject"
+  obj  = "cname \<times> subo set"            \<comment> \<open>mdc and subobject\<close>
 
 
 definition init_class_fieldmap :: "prog \<Rightarrow> cname \<Rightarrow> (vname \<rightharpoonup> val)" where
@@ -46,7 +46,7 @@ definition obj_ty :: "obj \<Rightarrow> ty" where
   "obj_ty obj  \<equiv>  Class (fst obj)"
 
 
- -- "a new, blank object with default values in all fields:"
+ \<comment> \<open>a new, blank object with default values in all fields:\<close>
 definition blank :: "prog \<Rightarrow> cname \<Rightarrow> obj" where
   "blank P C  \<equiv> (C, Collect (init_obj P C))"
 

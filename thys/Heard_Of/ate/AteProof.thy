@@ -874,6 +874,6 @@ proof (rule local_property_reduction[OF run weak_consensus_is_local])
     by (simp add: o_def)
 qed
 
-end   -- {* context @{text "ate_parameters"} *}
+end   \<comment> \<open>context @{text "ate_parameters"}\<close>
 
 end   (* theory AteProof *)

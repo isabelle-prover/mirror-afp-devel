@@ -7,14 +7,14 @@ begin
 consts coin :: "round \<Rightarrow> process \<Rightarrow> val"
 
 record 'val pstate =
-  x :: 'val                -- {* current value held by process *}
-  vote :: "'val option"    -- {* value the process voted for, if any *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  x :: 'val                \<comment> \<open>current value held by process\<close>
+  vote :: "'val option"    \<comment> \<open>value the process voted for, if any\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 datatype 'val msg =
   Val 'val
 | Vote "'val option"
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 definition isVote where "isVote m \<equiv> \<exists>v. m = Vote v"
 
@@ -29,7 +29,7 @@ fun getval where
 definition BenOr_initState where
   "BenOr_initState p st \<equiv> (vote st = None) \<and> (decide st = None)"
 
-definition msgRcvd where  -- {* processes from which some message was received *}
+definition msgRcvd where  \<comment> \<open>processes from which some message was received\<close>
   "msgRcvd (msgs:: process \<rightharpoonup> 'val msg) = {q . msgs q \<noteq> None}"
 
 definition send0 where
@@ -46,7 +46,7 @@ definition send1 where
   "send1 r p q st \<equiv> Vote (vote st)"
 
 definition someVoteRcvd where
-  -- {* set of processes from which some vote was received *}
+  \<comment> \<open>set of processes from which some vote was received\<close>
   "someVoteRcvd (msgs :: process \<rightharpoonup> 'val msg) \<equiv>
    { q . q \<in> msgRcvd msgs \<and> isVote (the (msgs q)) \<and> getvote (the (msgs q)) \<noteq> None }"
 

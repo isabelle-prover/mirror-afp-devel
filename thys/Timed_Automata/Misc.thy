@@ -131,7 +131,7 @@ qed
 
 lemma frac_idempotent: "frac (frac x) = frac x" by (simp add: frac_eq frac_lt_1)
 
-lemma frac_nat_add_id: "frac ((n :: nat) + (r :: real)) = frac r" -- "Found by sledgehammer"
+lemma frac_nat_add_id: "frac ((n :: nat) + (r :: real)) = frac r" \<comment> \<open>Found by sledgehammer\<close>
 proof -
   have "\<And>r. frac (r::real) < 1"
     by (meson frac_lt_1)

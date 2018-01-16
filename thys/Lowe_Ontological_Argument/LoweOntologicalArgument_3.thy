@@ -65,16 +65,16 @@ theorem C7: "\<lfloor>\<^bold>\<forall>\<^sup>Ax. (Necessary x \<^bold>\<and> Ab
     
 text\<open>\noindent{But the final conclusion C10 is still countersatisfiable, as shown by Nitpick:}\<close>
 theorem C10:  "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
 
 text\<open>\noindent{Next, we try assuming a stronger modal logic. We do this by postulating further axioms
 using the \emph{Sahlqvist correspondence} and asking Sledgehammer to find a proof.
 Sledgehammer is in fact able to find a proof for C10 which only relies on the modal axiom \emph{T}
 (@{text "\<box>\<phi> \<^bold>\<rightarrow> \<phi>"}).}\<close>    
 axiomatization where 
- T_axiom: "reflexive R" and --\<open> @{text "\<box>\<phi> \<rightarrow> \<phi>"} \<close>
- B_axiom: "symmetric R" and --\<open> @{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"} \<close>
- IV_axiom: "transitive R"   --\<open> @{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"} \<close>
+ T_axiom: "reflexive R" and \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<phi>"}\<close>
+ B_axiom: "symmetric R" and \<comment> \<open>@{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"}\<close>
+ IV_axiom: "transitive R"   \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"}\<close>
 
 theorem C10: "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>" using Contingent_def Existence_def
      P2 P3 P4 P5 dep_expl_inverse T_axiom by meson

@@ -101,7 +101,7 @@ proof -
 qed
 
 corollary rel_pmf_distr_mono: "rel_pmf R OO rel_pmf S \<le> rel_pmf (R OO S)"
--- \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF,
+\<comment> \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF,
   but this proof is much shorter and more elegant. See @{cite HoelzlLochbihlerTraytel2015ITP} for a
   comparison of formalisations.\<close>
 proof(intro le_funI le_boolI rel_pmf_measureI, elim relcomppE)

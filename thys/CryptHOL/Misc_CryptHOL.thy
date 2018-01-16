@@ -849,7 +849,7 @@ lemmas parallel_fixp_induct_strong_2_2 = parallel_fixp_induct_strong_uc[
   split_format (complete), unfolded prod.case]
   for P
 
-lemma fixp_induct_option': -- \<open>Stronger induction rule\<close>
+lemma fixp_induct_option': \<comment> \<open>Stronger induction rule\<close>
   fixes F :: "'c \<Rightarrow> 'c" and
     U :: "'c \<Rightarrow> 'b \<Rightarrow> 'a option" and
     C :: "('b \<Rightarrow> 'a option) \<Rightarrow> 'c" and
@@ -1377,7 +1377,7 @@ notepad begin
   have "rel_pmf P (bind_pmf x f) (bind_pmf y g)"
     by(simp add: P_def f_def[abs_def] g_def y_def bind_return_pmf' pmf.rel_eq)
   have "\<not> R x y" if "\<And>x y. R x y \<Longrightarrow> rel_pmf P (f x) (g y)" for R x y
-    -- \<open>Only the empty relation satisfies @{thm [source] rel_pmf_bindI}'s second premise.\<close>
+    \<comment> \<open>Only the empty relation satisfies @{thm [source] rel_pmf_bindI}'s second premise.\<close>
   proof
     assume "R x y"
     hence "rel_pmf P (f x) (g y)" by(rule that)

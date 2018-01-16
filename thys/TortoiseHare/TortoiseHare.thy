@@ -47,9 +47,9 @@ discover, and the current positions of the Tortoise and Hare.
 \<close>
 
 record 'a state =
-  nu :: nat \<comment> \<open> \<open>\<nu>\<close> \<close>
-  m :: nat  \<comment> \<open> \<open>\<mu>\<close> \<close>
-  l :: nat  \<comment> \<open> \<open>\<lambda>\<close> \<close>
+  nu :: nat \<comment> \<open>\<open>\<nu>\<close>\<close>
+  m :: nat  \<comment> \<open>\<open>\<mu>\<close>\<close>
+  l :: nat  \<comment> \<open>\<open>\<lambda>\<close>\<close>
   hare :: "'a"
   tortoise :: "'a"
 

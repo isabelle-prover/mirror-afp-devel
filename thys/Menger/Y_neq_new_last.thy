@@ -243,9 +243,9 @@ begin
 
   lemma contradiction': "False" using Q_weight_smaller DisjointPaths_Q' card_Q' Q_min
     using Suc_leI not_less_eq_eq by blast
-end -- "anonymous context"
+end \<comment> \<open>anonymous context\<close>
 
 corollary contradiction: "False" using Q_hit_exists contradiction' by blast
 
-end -- "locale @{locale ProofStepInduct_y_neq_new_last}"
+end \<comment> \<open>locale @{locale ProofStepInduct_y_neq_new_last}\<close>
 end

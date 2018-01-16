@@ -142,7 +142,7 @@ simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = {* fn _ => fn ctxt => fn
 
 subsection{*Semantics*}
 
-definition e0 :: "(name, hf) finfun"    --{*the null environment*}
+definition e0 :: "(name, hf) finfun"    \<comment> \<open>the null environment\<close>
   where "e0 \<equiv> finfun_const 0"
 
 nominal_function eval_tm :: "(name, hf) finfun \<Rightarrow> tm \<Rightarrow> hf"
@@ -290,7 +290,7 @@ abbreviation Imp :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IMP" 125)
 abbreviation All :: "name \<Rightarrow> fm \<Rightarrow> fm"
   where "All i A \<equiv> Neg (Ex i (Neg A))"
 
-abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm" --{*bounded universal quantifier, for Sigma formulas*}
+abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm" \<comment> \<open>bounded universal quantifier, for Sigma formulas\<close>
   where "All2 i t A \<equiv> All i ((Var i IN t) IMP A)"
 
 subsubsection{*Conjunction*}
@@ -389,7 +389,7 @@ abbreviation
 
 abbreviation
   "X1 \<equiv> Abs_name (Atom (Sort ''SyntaxN.name'' []) (Suc 0))"
-   --{*We prefer @{term "Suc 0"} because simplification will transform 1 to that form anyway.*}
+   \<comment> \<open>We prefer @{term "Suc 0"} because simplification will transform 1 to that form anyway.\<close>
 
 abbreviation
   "X2 \<equiv> Abs_name (Atom (Sort ''SyntaxN.name'' []) 2)"
@@ -403,14 +403,14 @@ abbreviation
 
 subsection{*The HF axioms*}
 
-definition HF1 :: fm where  --{*the axiom @{term"z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in> z)"}*}
+definition HF1 :: fm where  \<comment> \<open>the axiom @{term"z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in> z)"}\<close>
   "HF1 = (Var X0 EQ Zero) IFF (All X1 (Neg (Var X1 IN Var X0)))"
 
 lemma HF1_holds: "eval_fm e HF1"
   by (auto simp: HF1_def)
 
 
-definition HF2 :: fm where  --{*the axiom @{term"z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u=y)"}*}
+definition HF2 :: fm where  \<comment> \<open>the axiom @{term"z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u=y)"}\<close>
   "HF2 \<equiv> Var X0 EQ Eats (Var X1) (Var X2) IFF
           All X3 (Var X3 IN Var X0 IFF Var X3 IN Var X1 OR Var X3 EQ Var X2)"
 

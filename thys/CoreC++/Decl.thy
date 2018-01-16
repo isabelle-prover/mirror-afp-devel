@@ -11,17 +11,17 @@ theory Decl imports Expr begin
 
 
 type_synonym
-  fdecl    = "vname \<times> ty"                        -- "field declaration"
+  fdecl    = "vname \<times> ty"                        \<comment> \<open>field declaration\<close>
 type_synonym
-  "method" = "ty list \<times> ty \<times> (vname list \<times> expr)"    -- {* arg.\ types, return type, params, body *}
+  "method" = "ty list \<times> ty \<times> (vname list \<times> expr)"    \<comment> \<open>arg.\ types, return type, params, body\<close>
 type_synonym
-  mdecl = "mname \<times> method"                         -- "method declaration"
+  mdecl = "mname \<times> method"                         \<comment> \<open>method declaration\<close>
 type_synonym
-  "class" = "base list \<times> fdecl list \<times> mdecl list"  -- "class = superclasses, fields, methods"
+  "class" = "base list \<times> fdecl list \<times> mdecl list"  \<comment> \<open>class = superclasses, fields, methods\<close>
 type_synonym
-  cdecl = "cname \<times> class"                        -- "classa declaration"
+  cdecl = "cname \<times> class"                        \<comment> \<open>classa declaration\<close>
 type_synonym
-  prog  = "cdecl list"                           -- "program"
+  prog  = "cdecl list"                           \<comment> \<open>program\<close>
 
 
 translations

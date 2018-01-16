@@ -13,32 +13,32 @@ text {*
   various set implementations is tested.
 *}
 
-  -- "Simple linear congruence generator for (low-quality) random numbers"
+  \<comment> \<open>Simple linear congruence generator for (low-quality) random numbers\<close>
   definition "lcg_next s r = (s mod r, ((22695477::nat)*s + 1) mod 268435456)"
 
-  -- "Repeatedly apply function"
+  \<comment> \<open>Repeatedly apply function\<close>
   fun repeat where
     "repeat 0 f \<sigma> = \<sigma>" |
     "repeat (Suc n) f \<sigma> = repeat n f (f \<sigma>)"
 
   
-  -- "Insert random number in range [0..M[ to set"
+  \<comment> \<open>Insert random number in range [0..M[ to set\<close>
   definition "rnd_ins_step i M == (\<lambda>(t,s). let (x,s')=lcg_next s M; t'=i x t in (t',s'))"
 
-  -- "Insert N random numbers in range 0..M"
+  \<comment> \<open>Insert N random numbers in range 0..M\<close>
   definition "rnd_insert e i s N M == repeat 
     N (rnd_ins_step i M) (e,s)"
 
-  -- "Remove random number in range [0..M[ from set"
+  \<comment> \<open>Remove random number in range [0..M[ from set\<close>
   definition "rnd_remove_step r M == (\<lambda>(t,s). let (x,s')=lcg_next s M; t'=r x t in (t',s'))"
-  -- "Remove N random numbers in range 0..M from set"
+  \<comment> \<open>Remove N random numbers in range 0..M from set\<close>
   definition "rnd_remove r N M txs == 
     repeat N (rnd_remove_step r M) txs"
 
-  -- "Test random number in range [0..M[ for membership"
+  \<comment> \<open>Test random number in range [0..M[ for membership\<close>
   definition "rnd_memc_step m M t == (\<lambda>(c,s). let (x,s')=lcg_next s M; c'=if m x t then c+(1::nat) else c in (c',s'))"
 
-  -- "Count how many of N random numbers in range [0..M[ are in set"
+  \<comment> \<open>Count how many of N random numbers in range [0..M[ are in set\<close>
   definition "rnd_memc m N M txs ==
     let (t,s) = txs in
       repeat 
@@ -47,7 +47,7 @@ text {*
         (0::nat,s)
       "
 
-  -- {* Parameters: empty, member, insert, delete, iterate,  seed, N, M $\rightarrow$ count, size *}
+  \<comment> \<open>Parameters: empty, member, insert, delete, iterate,  seed, N, M $\rightarrow$ count, size\<close>
   definition 
     test_all :: "(unit \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> 's) 
       \<Rightarrow> ('s \<Rightarrow> (nat,nat) set_iterator) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat)"

@@ -144,7 +144,7 @@ lemma ex1_apartment_iso:
   assumes "A\<in>\<A>" "A'\<in>\<A>" "chamber C" "C\<in>A\<inter>A'"
   shows   "\<exists>!f. ChamberComplexIsomorphism A A' f \<and>
             fixespointwise f (\<Union>(A\<inter>A')) \<and> fixespointwise f (-\<Union>A)"
---{* The third clause in the conjunction is to facilitate uniqueness. *}
+\<comment> \<open>The third clause in the conjunction is to facilitate uniqueness.\<close>
 proof (rule ex_ex1I)
   from assms obtain f
     where f: "ChamberComplexIsomorphism A A' f" "fixespointwise f (\<Union>(A\<inter>A'))"

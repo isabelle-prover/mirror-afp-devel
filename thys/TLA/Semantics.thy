@@ -315,7 +315,7 @@ proof (clarsimp simp: action_def)
     assume "s |\<^sub>s Suc n \<approx> t |\<^sub>s m"
     hence "first (s |\<^sub>s Suc n) = first (t |\<^sub>s m)" by (simp add: sim_first)
     hence "s (Suc n) = t m" by (simp add: suffix_def first_def)
-    with g1' v show ?thesis by simp  -- {* by contradiction *}
+    with g1' v show ?thesis by simp  \<comment> \<open>by contradiction\<close>
   next
     assume a3: "s |\<^sub>s Suc n \<approx> t |\<^sub>s Suc m"
     hence "first (s |\<^sub>s Suc n) = first (t |\<^sub>s Suc m)" by (simp add: sim_first)
@@ -325,7 +325,7 @@ proof (clarsimp simp: action_def)
       assume "(t |\<^sub>s m) \<Turnstile> Unchanged v"
       hence "v (t (Suc m)) = v (t m)"
         by (simp add: unch_defs first_def second_def suffix_def)
-      with g1' a3' v show ?thesis by simp  -- {* again, by contradiction *}
+      with g1' a3' v show ?thesis by simp  \<comment> \<open>again, by contradiction\<close>
     next
       assume a4: "(t |\<^sub>s m) \<Turnstile> P"
       from a3 have "tail (s |\<^sub>s n) \<approx> tail (t |\<^sub>s m)" by (simp add: tail_def suffix_plus)

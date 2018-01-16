@@ -27,10 +27,10 @@ inductive semantics_stateful ::
    ('p \<times> final_decision) list \<Rightarrow> \<comment> \<open>packets which have been processed and their decision. ordered the same as the firewall processed them. oldest packet first\<close>
    '\<sigma> \<Rightarrow> \<comment> \<open>final state\<close>
    bool" for \<Gamma> and \<gamma>\<^sub>\<sigma> and state_update and \<sigma>\<^sub>0 where
-  --\<open>A list of packets @{term ps} waiting to be processed. Nothing has happened, start and final state are the same, the list of processed packets is empty.\<close>
+  \<comment> \<open>A list of packets @{term ps} waiting to be processed. Nothing has happened, start and final state are the same, the list of processed packets is empty.\<close>
   "semantics_stateful \<Gamma> \<gamma>\<^sub>\<sigma> state_update \<sigma>\<^sub>0 (built_in_chain, default_policy) ps [] \<sigma>\<^sub>0" |
 
-  --\<open>Processing one packet\<close>
+  \<comment> \<open>Processing one packet\<close>
   "semantics_stateful \<Gamma> \<gamma>\<^sub>\<sigma> state_update \<sigma>\<^sub>0 (built_in_chain, default_policy) (p#ps) ps_processed \<sigma>' \<Longrightarrow>
    \<Gamma>,(\<gamma>\<^sub>\<sigma> \<sigma>'),p\<turnstile> \<langle>[Rule MatchAny (Call built_in_chain), Rule MatchAny default_policy],Undecided\<rangle> \<Rightarrow> Decision X \<Longrightarrow>
     semantics_stateful \<Gamma> \<gamma>\<^sub>\<sigma> state_update \<sigma>\<^sub>0 (built_in_chain, default_policy) ps (ps_processed@[(p, X)]) (state_update \<sigma>' X p)"

@@ -263,7 +263,7 @@ proof -
   { assume t1: "t > 0"
     then obtain tn where tn: "tn = t - 1" by auto
     have "is_sum2sq_nat (?p*(1+ 0))" (is "?Q 0")
-      -- "So, $Q~n =$ there exist $x,y$ such that $x^2+y^2 =(p*(1+ int(n)))$"
+      \<comment> \<open>So, $Q~n =$ there exist $x,y$ such that $x^2+y^2 =(p*(1+ int(n)))$\<close>
     proof (rule ccontr)
       assume nQ1: "\<not> ?Q 0"
       have "(1 + tn) < ?p \<Longrightarrow> \<not> ?Q tn"

@@ -13,22 +13,22 @@ text {*
 text {*
   First, a locale is defined that defines all generic functions and all proof obligations (see Section 2.3 of ~\cite{Verbeek2013}).
 *}
-locale Controllable_Interruptible_Separation_Kernel = -- "CISK"
-fixes kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" -- "Executes one atomic kernel action"
-  and output_f :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'output_t" -- "Returns the observable behavior"
-  and s0 :: "'state_t" -- "The initial state"
-  and current :: "'state_t => 'dom_t" -- "Returns the currently active domain"
-  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" -- "Performs a context switch"
-  and interrupt :: "time_t \<Rightarrow> bool" -- "Returns t iff an interrupt occurs in the given state at the given time"
-  and kinvolved :: "'action_t \<Rightarrow> 'dom_t set" -- "Returns the set of domains that are involved in the given action"
-  and ifp :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool" -- "The security policy."
-  and vpeq :: "'dom_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t \<Rightarrow> bool" -- "View partitioning equivalence"
-  and AS_set :: "('action_t list) set" -- "Returns a set of valid action sequences, i.e., the attack surface"
-  and invariant :: "'state_t \<Rightarrow> bool" -- "Returns an inductive state-invariant"
-  and AS_precondition :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" -- "Returns the preconditions under which the given action can be executed."  
-  and aborting :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" -- "Returns true iff the action is aborted."
-  and waiting :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" -- "Returns true iff execution of the given action is delayed."
-  and set_error_code :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" -- "Sets an error code when actions are aborted."
+locale Controllable_Interruptible_Separation_Kernel = \<comment> \<open>CISK\<close>
+fixes kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" \<comment> \<open>Executes one atomic kernel action\<close>
+  and output_f :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'output_t" \<comment> \<open>Returns the observable behavior\<close>
+  and s0 :: "'state_t" \<comment> \<open>The initial state\<close>
+  and current :: "'state_t => 'dom_t" \<comment> \<open>Returns the currently active domain\<close>
+  and cswitch :: "time_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t" \<comment> \<open>Performs a context switch\<close>
+  and interrupt :: "time_t \<Rightarrow> bool" \<comment> \<open>Returns t iff an interrupt occurs in the given state at the given time\<close>
+  and kinvolved :: "'action_t \<Rightarrow> 'dom_t set" \<comment> \<open>Returns the set of domains that are involved in the given action\<close>
+  and ifp :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool" \<comment> \<open>The security policy.\<close>
+  and vpeq :: "'dom_t \<Rightarrow> 'state_t \<Rightarrow> 'state_t \<Rightarrow> bool" \<comment> \<open>View partitioning equivalence\<close>
+  and AS_set :: "('action_t list) set" \<comment> \<open>Returns a set of valid action sequences, i.e., the attack surface\<close>
+  and invariant :: "'state_t \<Rightarrow> bool" \<comment> \<open>Returns an inductive state-invariant\<close>
+  and AS_precondition :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" \<comment> \<open>Returns the preconditions under which the given action can be executed.\<close>  
+  and aborting :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" \<comment> \<open>Returns true iff the action is aborted.\<close>
+  and waiting :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t \<Rightarrow> bool" \<comment> \<open>Returns true iff execution of the given action is delayed.\<close>
+  and set_error_code :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" \<comment> \<open>Sets an error code when actions are aborted.\<close>
 assumes vpeq_transitive: " \<forall> a b c u. (vpeq u a b \<and> vpeq u b c) \<longrightarrow> vpeq u a c"
     and vpeq_symmetric: "\<forall> a b u. vpeq u a b \<longrightarrow> vpeq u b a"
     and vpeq_reflexive: "\<forall> a u. vpeq u a a"
@@ -73,15 +73,15 @@ text{*
   This behavior is implemented in function CISK\_control.
 *}
 function CISK_control :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t execution \<Rightarrow> ('action_t option \<times> 'action_t execution \<times> 'state_t)"
-where "CISK_control s d []                = (None,[],s)" -- "The thread is empty"
-    | "CISK_control s d ([]#[])           = (None,[],s)" -- "The current action sequence has been finished and the thread has no next action sequences to execute"
-    | "CISK_control s d ([]#(as'#execs')) = (None,as'#execs',s)" -- "The current action sequence has been finished. Skip to the next sequence"
+where "CISK_control s d []                = (None,[],s)" \<comment> \<open>The thread is empty\<close>
+    | "CISK_control s d ([]#[])           = (None,[],s)" \<comment> \<open>The current action sequence has been finished and the thread has no next action sequences to execute\<close>
+    | "CISK_control s d ([]#(as'#execs')) = (None,as'#execs',s)" \<comment> \<open>The current action sequence has been finished. Skip to the next sequence\<close>
     | "CISK_control s d ((a#as)#execs')   = (if aborting s d a then 
                                                   (None, execs',set_error_code s a)
                                                else if waiting s d a then
                                                   (Some a, (a#as)#execs',s)
                                                else
-                                                  (Some a, as#execs',s))" -- "Executing an action sequence"
+                                                  (Some a, as#execs',s))" \<comment> \<open>Executing an action sequence\<close>
 by pat_completeness auto
 termination by lexicographic_order
 

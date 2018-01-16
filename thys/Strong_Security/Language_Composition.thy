@@ -53,13 +53,13 @@ proof -
           proof -
             assume i0: "i = 0"
 
-              -- "get the two different sub-cases:"
+              \<comment> \<open>get the two different sub-cases:\<close>
             with R0def' S1step obtain c3 W where case_distinction: 
               "RS = [c2] \<and> \<langle>c1,m1\<rangle> \<rightarrow> \<langle>[],m2\<rangle>
               \<or> RS = (c3;c2)#W \<and> \<langle>c1,m1\<rangle> \<rightarrow> \<langle>c3#W,m2\<rangle>"
               by (simp, metis MWLfSteps_det_cases(3))
             moreover
-              -- "Case 1: first command terminates"
+              \<comment> \<open>Case 1: first command terminates\<close>
             {
               assume RSassump: "RS = [c2]"
               assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow> \<langle>[],m2\<rangle>" 
@@ -83,7 +83,7 @@ proof -
                 by (simp, rule_tac x="[c2']" in exI, auto)      
             }
             moreover
-              -- "Case 2: first command does not terminate"
+              \<comment> \<open>Case 2: first command does not terminate\<close>
             {
               assume RSassump: "RS = (c3;c2)#W"
               assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow> \<langle>c3#W,m2\<rangle>"
@@ -283,13 +283,13 @@ proof -
               [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> [c2] \<approx>\<^bsub>d\<^esub> [c2'] \<and> b \<equiv>\<^bsub>d\<^esub> b'"
               by (simp add: R1_def, force)
             moreover
-            -- "get the two different cases True and False from semantics:"
+            \<comment> \<open>get the two different cases True and False from semantics:\<close>
             from irange R1def' I1step have case_distinction:
               "RS = [c1] \<and> BMap (E b m1) = True \<or>
               RS = [c2] \<and> BMap (E b m1) = False"
               by (simp, metis MWLf_semantics.MWLfSteps_det_cases(4))
             moreover
-              -- "Case 1: b evaluates to True"
+              \<comment> \<open>Case 1: b evaluates to True\<close>
             {
               assume bevalT: "BMap (E b m1) = True"
               assume RSassump: "RS = [c1]"
@@ -312,7 +312,7 @@ proof -
                 by auto
             }
             moreover
-              -- "Case 2: b evaluates to False"
+              \<comment> \<open>Case 2: b evaluates to False\<close>
             {
               assume bevalF: "BMap (E b m1) = False"
               assume RSassump: "RS = [c2]"
@@ -353,7 +353,7 @@ proof -
               ([c1] \<approx>\<^bsub>d \<^esub>[c2] \<or> [c1'] \<approx>\<^bsub>d\<^esub> [c2'])"
               by (simp add: R2_def, force)
             moreover
-              -- "get the two different cases for the result from semantics:"
+              \<comment> \<open>get the two different cases for the result from semantics:\<close>
             from irange R2def' I1step have case_distinction_left:
               "(RS = [c1] \<or> RS = [c2]) \<and> m2 = m1"
               by (simp, metis MWLf_semantics.MWLfSteps_det_cases(4)) 
@@ -465,13 +465,13 @@ proof -
               \<and> m2 =\<^bsub>d\<^esub> m2'"
               proof -
                 assume i0: "i = 0"
-                  -- "get the two different sub-cases:"
+                  \<comment> \<open>get the two different sub-cases:\<close>
                 with R1def' W1step obtain c3 W where case_distinction: 
                   "RS = [while b do c2 od] \<and> \<langle>c1,m1\<rangle> \<rightarrow> \<langle>[],m2\<rangle>
                   \<or> RS = (c3;(while b do c2 od))#W \<and> \<langle>c1,m1\<rangle> \<rightarrow> \<langle>c3#W,m2\<rangle>"
                   by (simp, metis MWLfSteps_det_cases(3))
                 moreover
-                  -- "Case 1: first command terminates"
+                  \<comment> \<open>Case 1: first command terminates\<close>
                 {
                   assume RSassump: "RS = [while b do c2 od]"
                   assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow> \<langle>[],m2\<rangle>" 
@@ -502,7 +502,7 @@ proof -
                     by auto
                 }
                 moreover
-                  -- "Case 2: first command does not terminate"
+                  \<comment> \<open>Case 2: first command does not terminate\<close>
                 {
                   assume RSassump: "RS = (c3;(while b do c2 od))#W"
                   assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow> \<langle>c3#W,m2\<rangle>"
@@ -589,14 +589,14 @@ proof -
                 "W1 = [while b do c1 od] \<and> W2 = [while b' do c1' od] \<and>
                 [c1] \<approx>\<^bsub>d\<^esub> [c1'] \<and> b \<equiv>\<^bsub>d\<^esub> b'"
                 by (auto simp add: R2_def)
-                -- "get the two different cases:"
+                \<comment> \<open>get the two different cases:\<close>
               moreover
               from irange R2def' W1step have case_distinction:
                 "RS = [c1;(while b do c1 od)] \<and> BMap (E b m1) = True \<or>
                 RS = [] \<and> BMap (E b m1) = False"
                 by (simp,metis MWLf_semantics.MWLfSteps_det_cases(5))
               moreover
-                -- "Case 1: b evaluates to True"
+                \<comment> \<open>Case 1: b evaluates to True\<close>
               {
                 assume bevalT: "BMap (E b m1)"
                 assume RSassump: "RS = [c1;(while b do c1 od)]"
@@ -625,7 +625,7 @@ proof -
                   by auto
               }
               moreover
-                -- "Case 2: b evaluates to False"
+                \<comment> \<open>Case 2: b evaluates to False\<close>
               {
                 assume bevalF: "BMap (E b m1) = False"
                 assume RSassump: "RS = []"

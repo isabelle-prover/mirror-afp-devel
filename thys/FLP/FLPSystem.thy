@@ -625,7 +625,7 @@ proof-
       thus "msgs cJ m = msgs cJ1 m"
         using MsgCJ MsgCJ1 by auto
     qed
-  qed --"of AllOther"
+  qed \<comment> \<open>of AllOther\<close>
 
   with MsgsCJ' have InitMsgs: "((msgs cJ) -# (<pJ ,inM False>)) 
     = ((msgs cJ1) -# (<pJ, inM True>))"

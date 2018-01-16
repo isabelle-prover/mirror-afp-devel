@@ -9,12 +9,12 @@ theory Secrecy_types
 imports Main
 begin
 
--- "We assume disjoint sets: Data of data values,"
--- "Secrets of unguessable values, Keys - set of cryptographic  keys."  
--- "Based on these sets, we specify the sets EncType of encryptors that may be"
--- "used for encryption or decryption, and Expression of expression items."
--- "The specification (component) identifiers should be listed in the set specID,"
--- "the channel indentifiers should be listed in the set chanID." 
+\<comment> \<open>We assume disjoint sets: Data of data values,\<close>
+\<comment> \<open>Secrets of unguessable values, Keys - set of cryptographic  keys.\<close>  
+\<comment> \<open>Based on these sets, we specify the sets EncType of encryptors that may be\<close>
+\<comment> \<open>used for encryption or decryption, and Expression of expression items.\<close>
+\<comment> \<open>The specification (component) identifiers should be listed in the set specID,\<close>
+\<comment> \<open>the channel indentifiers should be listed in the set chanID.\<close> 
 
 datatype Keys = CKey | CKeyP | SKey | SKeyP | genKey 
 datatype Secrets = secretD | N | NA

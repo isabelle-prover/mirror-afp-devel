@@ -24,7 +24,7 @@ lemmas [derivative_intros] =
   DERIV_compose_FDERIV[OF DERIV_real_sqrt]
   DERIV_compose_FDERIV[OF floor_has_real_derivative]
 
-lemma has_derivative_powr[derivative_intros]:\<comment>\<open>TODO: generalize @{thm DERIV_powr}?\<close>
+lemma has_derivative_powr[derivative_intros]:\<comment> \<open>TODO: generalize @{thm DERIV_powr}?\<close>
   assumes g[derivative_intros]: "(g has_derivative g') (at x within X)"
     and f[derivative_intros]:"(f has_derivative f') (at x within X)"
   assumes pos: "0 < g x" and "x \<in> X"

@@ -421,9 +421,9 @@ text {* In case control conditions from if/while are high, the body of an
 theorem highBodies:
   assumes "\<Gamma>,High \<turnstile> c" and "\<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>"
   shows "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"
-  -- {* all intermediate states must be well formed, otherwise the proof does not 
+  \<comment> \<open>all intermediate states must be well formed, otherwise the proof does not 
   work for uninitialized variables. Thus it is propagated through the 
-  theorem conclusion *}
+  theorem conclusion\<close>
 using assms
 proof(induct c arbitrary:s1 s2 rule:com.induct)
   case Skip

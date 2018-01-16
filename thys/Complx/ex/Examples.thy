@@ -259,7 +259,7 @@ lemma Petersons_mutex_1:
   COEND
   \<lbrace>\<acute>pr1=0 \<and> \<not>\<acute>in1 \<and> \<acute>pr2=0 \<and> \<not>\<acute>in2\<rbrace>,\<lbrace>False\<rbrace>"
   apply oghoare
-\<comment>\<open>81 verification conditions.\<close>
+\<comment> \<open>81 verification conditions.\<close>
   apply (((auto)[1]) ; fail)+
  done
 

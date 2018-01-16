@@ -25,7 +25,7 @@ datatype varID = stA1 | stA2 | stA4 | stA6
 
 datatype AbstrLevelsID = level0 | level1 | level2 | level3
 
---"function IN maps component ID to the set of its input channels"
+\<comment> \<open>function IN maps component ID to the set of its input channels\<close>
 fun IN ::  "CSet \<Rightarrow> chanID set"
 where 
    "IN sA1 = { data1 }" 
@@ -73,7 +73,7 @@ where
 | "IN sS7opt = { data13 }" 
 | "IN sS11opt = { data16, data19 }" 
 
---"function OUT maps component ID to the set of its output channels"
+\<comment> \<open>function OUT maps component ID to the set of its output channels\<close>
 fun OUT ::  "CSet \<Rightarrow> chanID set"
 where 
    "OUT sA1 = { data2, data10 }" 
@@ -122,7 +122,7 @@ where
 | "OUT sS11opt = { data24 }"
 
 
---"function VAR maps component IDs to the set of its local variables"
+\<comment> \<open>function VAR maps component IDs to the set of its local variables\<close>
 fun VAR ::  "CSet \<Rightarrow> varID set"
 where 
    "VAR sA1 = { stA1 }" 
@@ -171,7 +171,7 @@ where
 | "VAR sS11opt = {}"
 
 
---"function subcomp maps component ID to the set of its subcomponents"
+\<comment> \<open>function subcomp maps component ID to the set of its subcomponents\<close>
 fun subcomp ::  "CSet \<Rightarrow> CSet set"
 where 
    "subcomp sA1 = { sA11, sA12 }" 
@@ -219,7 +219,7 @@ where
 | "subcomp sS7opt = { sA42, sA5 }"
 | "subcomp sS11opt = { sA72, sA82, sA93 }"
 
---"function AbstrLevel maps abstraction level ID to the corresponding set of components"
+\<comment> \<open>function AbstrLevel maps abstraction level ID to the corresponding set of components\<close>
 axiomatization
   AbstrLevel ::  "AbstrLevelsID \<Rightarrow> CSet set"
 where
@@ -237,7 +237,7 @@ and
 AbstrLevel3:
 "AbstrLevel level3 = {sS1opt, sS3, sS4opt, sS7opt, sS9, sS10, sS11opt, sS12, sS13 }"
 
---"function VARfrom maps variable ID to the set of input channels it depends from"
+\<comment> \<open>function VARfrom maps variable ID to the set of input channels it depends from\<close>
 fun VARfrom :: "varID \<Rightarrow> chanID set"
 where
    "VARfrom stA1 = {data1}"
@@ -245,7 +245,7 @@ where
 | "VARfrom stA4 = {data6, data7}" 
 | "VARfrom stA6 = {data14}" 
 
---"function VARto maps variable ID to the set of output channels depending from this variable"
+\<comment> \<open>function VARto maps variable ID to the set of output channels depending from this variable\<close>
 fun VARto :: "varID \<Rightarrow> chanID set"
 where
    "VARto stA1 = {data10}"
@@ -253,11 +253,11 @@ where
 | "VARto stA4 = {data3}" 
 | "VARto stA6 = {data15, data16}" 
 
---"function OUTfromCh maps channel ID to the set of input channels"
---"from which it depends derectly;"
---"an empty set means that the channel is either input of the system or"
---"its values are computed from local variables or are generated"
---"within some component independently"
+\<comment> \<open>function OUTfromCh maps channel ID to the set of input channels\<close>
+\<comment> \<open>from which it depends derectly;\<close>
+\<comment> \<open>an empty set means that the channel is either input of the system or\<close>
+\<comment> \<open>its values are computed from local variables or are generated\<close>
+\<comment> \<open>within some component independently\<close>
 fun OUTfromCh ::  "chanID \<Rightarrow> chanID set"
 where
    "OUTfromCh data1 = {}"
@@ -285,7 +285,7 @@ where
 | "OUTfromCh data23 = {data21}"
 | "OUTfromCh data24 = {data20}"
 
---"function OUTfromV maps channel ID to the set of local variables it depends from"
+\<comment> \<open>function OUTfromV maps channel ID to the set of local variables it depends from\<close>
 fun OUTfromV ::  "chanID \<Rightarrow> varID set" 
 where
    "OUTfromV data1 = {}"
@@ -313,13 +313,13 @@ where
 | "OUTfromV data23 = {}"
 | "OUTfromV data24 = {}"
 
--- "Set of channels channels which have  UplSize measure greather that the predifined value $HighLoad$"
+\<comment> \<open>Set of channels channels which have  UplSize measure greather that the predifined value $HighLoad$\<close>
 definition
    UplSizeHighLoad ::  "chanID set"
 where
   "UplSizeHighLoad \<equiv> {data1, data4, data5, data6, data7, data8, data18, data21}"
 
--- "Set of components from the abstraction level 1 for which the Perf measure is greather that the predifined value $HighPerf$"
+\<comment> \<open>Set of components from the abstraction level 1 for which the Perf measure is greather that the predifined value $HighPerf$\<close>
 definition
    HighPerfSet ::  "CSet set"
 where

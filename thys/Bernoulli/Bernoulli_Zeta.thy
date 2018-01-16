@@ -76,15 +76,15 @@ proof -
     by (intro ext sum.reindex_bij_witness[of _ "\<lambda>n. n - 1" Suc]) auto
   finally have zeta_limit: "(\<lambda>k. \<Sum>i\<in>{0<..k}. 1 / of_nat i ^ n) \<longlonglongrightarrow> zeta" .
 
-  -- \<open>This is the exponential generating function of the Bernoulli numbers.\<close>
+  \<comment> \<open>This is the exponential generating function of the Bernoulli numbers.\<close>
   define f where "f = (\<lambda>z::complex. if z = 0 then 1 else z / (exp z - 1))"
 
-  -- \<open>We will integrate over this function, since its residue at the origin
+  \<comment> \<open>We will integrate over this function, since its residue at the origin
       is the $n$-th coefficient of @{term f}. Note that it has singularities
       at all points $2ik\pi$ for $k\in\mathbb{Z}$.\<close>
   define g where "g = (\<lambda>z::complex. 1 / (z ^ n * (exp z - 1)))"
 
-  -- \<open>We integrate along a rectangle of width $2m$ and height $2(2m+1)\pi$
+  \<comment> \<open>We integrate along a rectangle of width $2m$ and height $2(2m+1)\pi$
       with its centre at the origin. The benefit of the rectangular path is that
       it is easier to bound the value of the exponential appearing in the integrand.
       The horizontal lines of the rectangle are always right in the middle between 
@@ -92,14 +92,14 @@ proof -
   define \<gamma> :: "nat \<Rightarrow> real \<Rightarrow> complex" 
     where "\<gamma> = (\<lambda>m. rectpath (-real m - real (2*m+1)*pi*\<i>) (real m + real (2*m+1)*pi*\<i>))"
 
-  -- \<open>This set is a convex open enclosing set the contains our path.\<close>
+  \<comment> \<open>This set is a convex open enclosing set the contains our path.\<close>
   define A where "A = (\<lambda>m::nat. box (-(real m+1) - (2*m+2)*pi*\<i>) (real m+1 + (2*m+2)*pi*\<i>))"
 
-  -- \<open>These are all the singularities in the enclosing inside the path
+  \<comment> \<open>These are all the singularities in the enclosing inside the path
       (and also inside @{term A}).\<close>
   define S where "S = (\<lambda>m::nat. (\<lambda>n. 2 * pi * of_int n * \<i>) ` {-m..m})"
 
-  -- \<open>Any singularity in @{term A} is of the form $2ki\pi$ where $|k| \leq m$.\<close>
+  \<comment> \<open>Any singularity in @{term A} is of the form $2ki\pi$ where $|k| \leq m$.\<close>
   have int_bound: "k \<in> {-int m..int m}" if "2 * pi * k * \<i> \<in> A m" for k m
   proof -
     from that have "(-real (Suc m)) * (2 * pi) < real_of_int k * (2 * pi) \<and> 
@@ -124,7 +124,7 @@ proof -
   have zeros': "z ^ n * (exp z - 1) \<noteq> 0" if "z \<in> A m - S m" for z m
     using zeros[of z] that by (auto simp: S_def)
 
-  -- \<open>The singularities all lie strictly inside the integration path.\<close>
+  \<comment> \<open>The singularities all lie strictly inside the integration path.\<close>
   have subset: "S m \<subseteq> box (-real m - real(2*m+1)*pi*\<i>) (real m + real(2*m+1)*pi*\<i>)" if "m > 0" for m
   proof (rule, goal_cases)
     case (1 z)
@@ -140,7 +140,7 @@ proof -
   from n and zeros' have holo: "g holomorphic_on A m - S m" for m
     unfolding g_def by (intro holomorphic_intros) auto
 
-  -- \<open>The integration path lies completely inside $A$ and does not cross
+  \<comment> \<open>The integration path lies completely inside $A$ and does not cross
       any singularities.\<close>
   have path_subset: "path_image (\<gamma> m) \<subseteq> A m - S m" if "m > 0" for m
   proof -
@@ -167,20 +167,20 @@ proof -
     ultimately show "path_image (\<gamma> m) \<subseteq> A m - S m" by blast
   qed
 
-  -- \<open>We now obtain a closed form for the Bernoulli numbers using the integral.\<close>
+  \<comment> \<open>We now obtain a closed form for the Bernoulli numbers using the integral.\<close>
   have eq: "(\<Sum>x\<in>{0<..m}. 1 / of_nat x ^ n) =
               contour_integral (\<gamma> m) g * (2 * pi * \<i>) ^ n / (4 * pi * \<i>) -
               complex_of_real (bernoulli n / fact n) * (2 * pi * \<i>) ^ n / 2" 
     if m: "m > 0" for m
   proof -
-    -- \<open>We relate the formal power series of the Bernoulli numbers to the
+    \<comment> \<open>We relate the formal power series of the Bernoulli numbers to the
         corresponding complex function.\<close>
     have "subdegree (fps_exp 1 - 1 :: complex fps) = 1"
       by (intro subdegreeI) auto
     hence expansion: "f has_fps_expansion bernoulli_fps" 
       unfolding f_def bernoulli_fps_def by (auto intro!: fps_expansion_intros)
 
-    -- \<open>We use the Residue Theorem to explicitly compute the integral.\<close>
+    \<comment> \<open>We use the Residue Theorem to explicitly compute the integral.\<close>
     have "contour_integral (\<gamma> m) g =
              2 * pi * \<i> * (\<Sum>z\<in>S m. winding_number (\<gamma> m) z * residue g z)"
     proof (rule Residue_theorem)
@@ -189,7 +189,7 @@ proof -
       thus "\<forall>z. z \<notin> A m \<longrightarrow> winding_number (\<gamma> m) z = 0" unfolding \<gamma>_def
         by (intro winding_number_rectpath_outside allI impI) auto
     qed (insert holo path_subset m, auto simp: \<gamma>_def A_def S_def intro: convex_connected)
-    -- \<open>Clearly, all the winding numbers are 1\<close>
+    \<comment> \<open>Clearly, all the winding numbers are 1\<close>
     also have "winding_number (\<gamma> m) z = 1" if "z \<in> S m" for z
       unfolding \<gamma>_def using subset[of m] that m by (subst winding_number_rectpath) blast+
     hence "(\<Sum>z\<in>S m. winding_number (\<gamma> m) z * residue g z) = (\<Sum>z\<in>S m. residue g z)"
@@ -201,7 +201,7 @@ proof -
     also have "(\<Sum>k\<in>\<dots>. residue g (2 * pi * of_int k * \<i>)) = 
                  residue g 0 + (\<Sum>k\<in>{-int m..m}-{0}. residue g (2 * pi * of_int k * \<i>))"
       by (subst sum.insert) auto
-    -- \<open>The residue at the origin is just the $n$-th coefficient of $f$.\<close>
+    \<comment> \<open>The residue at the origin is just the $n$-th coefficient of $f$.\<close>
     also have "residue g 0 = residue (\<lambda>z. f z / z ^ Suc n) 0" unfolding f_def g_def
       by (intro residue_cong eventually_mono[OF eventually_at_ball[of 1]]) auto
     also have "\<dots> = fps_nth bernoulli_fps n"
@@ -228,7 +228,7 @@ proof -
       by (simp add: field_simps)
   qed
 
-  -- \<open>The ugly part: We have to prove a bound on the integral by splitting
+  \<comment> \<open>The ugly part: We have to prove a bound on the integral by splitting
       it into four integrals over lines and bounding each part separately.\<close>
   have "eventually (\<lambda>m. norm (contour_integral (\<gamma> m) g) \<le> 
           ((4 + 12 * pi) + 6 * pi / m) / real m ^ (n - 1)) sequentially"
@@ -371,14 +371,14 @@ proof -
     finally show "cmod (contour_integral (\<gamma> m) g) \<le> \<dots>" by simp
   qed
 
-  -- \<open>It is clear that this bound goes to 0 since @{prop "n \<ge> 2"}.\<close>
+  \<comment> \<open>It is clear that this bound goes to 0 since @{prop "n \<ge> 2"}.\<close>
   moreover have "(\<lambda>m. (4 + 12 * pi + 6 * pi / real m) / real m ^ (n - 1)) \<longlonglongrightarrow> 0"
     by (rule real_tendsto_divide_at_top tendsto_add tendsto_const 
           filterlim_real_sequentially filterlim_pow_at_top | use n in simp)+
   ultimately have *: "(\<lambda>m. contour_integral (\<gamma> m) g) \<longlonglongrightarrow> 0"
     by (rule Lim_null_comparison)
 
-  -- \<open>Since the infinite sum over the residues can expressed using the
+  \<comment> \<open>Since the infinite sum over the residues can expressed using the
       zeta function, we have now related the Bernoulli numbers at even
       positive integers to the zeta function.\<close>
 

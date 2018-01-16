@@ -402,7 +402,7 @@ next
   ultimately show ?case by (simp add: set_insort_key)
 next
   case (Cons_bintree x xs) then
-  have -- "FIXME: ugly... and slow"
+  have \<comment> \<open>FIXME: ugly... and slow\<close>
     "distinct (bts_dfs val (x # xs))" and
     "distinct (bts_dfs val (r # xs))" and
     "distinct (bts_dfs val [r,x])" and

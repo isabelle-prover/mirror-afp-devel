@@ -33,7 +33,7 @@ definition q_dequeue :: "node list \<Rightarrow> (node \<times> node list) nres"
     return (hd Q, tl Q)
   }"
 
-end -- \<open>Network Implementation Locale\<close>  
+end \<comment> \<open>Network Implementation Locale\<close>  
   
 subsection \<open>Refinements to Basic Operations\<close>  
   
@@ -434,7 +434,7 @@ proof -
   finally show ?thesis by simp  
 qed    
   
-end -- \<open>Anonymous Context\<close>    
+end \<comment> \<open>Anonymous Context\<close>    
 
   
 subsubsection \<open>Computing the Initial Queue\<close>  
@@ -549,7 +549,7 @@ proof -
   finally show ?thesis .  
 qed      
   
-end --\<open>Network Impl. Locale\<close>
+end \<comment> \<open>Network Impl. Locale\<close>
 
 subsection \<open>Separating out the Initialization of the Adjacency Matrix\<close>  
 context Network_Impl
@@ -606,7 +606,7 @@ lemma fifo_push_relabel2_alt:
   
   
   
-end --\<open>Network Impl. Locale\<close>
+end \<comment> \<open>Network Impl. Locale\<close>
   
   
 subsection \<open>Refinement To Efficient Data Structures\<close>  
@@ -634,7 +634,7 @@ sepref_register q_init pp_init_xcf2'
 sepref_register fifo_push_relabel_run2 fifo_push_relabel_init2
 sepref_register fifo_push_relabel2
   
-end --\<open>Anonymous Context\<close> 
+end \<comment> \<open>Anonymous Context\<close> 
   
   
 subsubsection \<open>Queue by Two Stacks\<close>  
@@ -798,7 +798,7 @@ concrete_definition (in -) fifo_push_relabel_impl
 lemmas [sepref_fr_rules] = fifo_push_relabel_impl.refine[OF Network_Impl_axioms]
   
   
-end --\<open>Network Impl. Locale\<close>
+end \<comment> \<open>Network Impl. Locale\<close>
   
 export_code fifo_push_relabel_impl checking SML_imp 
   

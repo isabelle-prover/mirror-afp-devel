@@ -16,11 +16,11 @@ type_synonym volatile = bool
 record fmod =
   volatile :: volatile
 
-type_synonym fdecl    = "vname \<times> ty \<times> fmod"        -- "field declaration"
-type_synonym 'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
-type_synonym 'm mdecl' = "mname \<times> ty list \<times> ty \<times> 'm option"     -- "method = name, arg. types, return type, possible body"
-type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl' list"       -- "class = superclass, fields, methods"
-type_synonym 'm cdecl = "cname \<times> 'm class"  -- "class declaration"
+type_synonym fdecl    = "vname \<times> ty \<times> fmod"        \<comment> \<open>field declaration\<close>
+type_synonym 'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     \<comment> \<open>method = name, arg. types, return type, body\<close>
+type_synonym 'm mdecl' = "mname \<times> ty list \<times> ty \<times> 'm option"     \<comment> \<open>method = name, arg. types, return type, possible body\<close>
+type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl' list"       \<comment> \<open>class = superclass, fields, methods\<close>
+type_synonym 'm cdecl = "cname \<times> 'm class"  \<comment> \<open>class declaration\<close>
 
 datatype
   'm prog = Program "'m cdecl list" 

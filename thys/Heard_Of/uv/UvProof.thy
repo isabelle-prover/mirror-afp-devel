@@ -101,7 +101,7 @@ lemma x_vote_eq:
   shows "v = x (rho r p)"
 proof (cases r)
   case 0
-  with run vote show ?thesis  -- {* no vote in initial state *}
+  with run vote show ?thesis  \<comment> \<open>no vote in initial state\<close>
     by (auto simp: UV_HOMachine_def HORun_eq HOinitConfig_eq 
                    initState_def UV_initState_def)
 next
@@ -202,7 +202,7 @@ lemma vote_agreement:
   shows "v = w"
 proof (cases r)
   case 0
-  with run p show ?thesis  -- {* no votes in initial state *}
+  with run p show ?thesis  \<comment> \<open>no votes in initial state\<close>
     by (auto simp: UV_HOMachine_def HORun_eq HOinitConfig_eq
                    initState_def UV_initState_def)
 next

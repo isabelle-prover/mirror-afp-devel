@@ -54,11 +54,11 @@ lemma UNIV_nat: "\<nat> = (UNIV::nat set)"
 by (simp add: Nats_def)
 
 text {* Universal temporal operator: Always/Globally *}
-definition iAll :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Always"
+definition iAll :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Always\<close>
   where "iAll I P \<equiv> \<forall>t\<in>I. P t"
 
 text {* Existential temporal operator: Eventually/Finally *}
-definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Eventually"
+definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Eventually\<close>
   where "iEx I P \<equiv> \<exists>t\<in>I. P t"
 
 
@@ -70,11 +70,11 @@ translations
   "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
 
 text {* Future temporal operator: Next *}
-definition iNext :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Next"
+definition iNext :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Next\<close>
   where "iNext t0 I P \<equiv> P (inext t0 I)"
 
 text {* Past temporal operator: Last/Previous *}
-definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Last"
+definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Last\<close>
   where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
 syntax
@@ -91,16 +91,16 @@ text {* The following versions of Next and Last operator differ in the cases
   where no next/previous element exists or specified time point is not in interval:
   the weak versions return @{term True} and the strong versions return @{term False}. *}
 
-definition iNextWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Next"
+definition iNextWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Weak Next\<close>
   where "iNextWeak t0 I P  \<equiv> (\<box> t {inext t0 I} \<down>> t0. P t)"
 
-definition iNextStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Next"
+definition iNextStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Strong Next\<close>
   where "iNextStrong t0 I P \<equiv> (\<diamond> t {inext t0 I} \<down>> t0. P t)"
 
-definition iLastWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Last"
+definition iLastWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Weak Last\<close>
   where "iLastWeak t0 I P   \<equiv> (\<box> t {iprev t0 I} \<down>< t0. P t)"
 
-definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Last"
+definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Strong Last\<close>
   where "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
 syntax
@@ -125,11 +125,11 @@ by (simp add: iLast_def iIN_iprev)
 
 
 text {* Temporal Until operator *}
-definition iUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Until"
+definition iUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Until\<close>
   where "iUntil I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t')"
 
 text {* Temporal Since operator (past operator corresponding to Until) *}
-definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Since"
+definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Since\<close>
   where "iSince I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t')"
 
 syntax
@@ -141,10 +141,10 @@ translations
   "P. t \<U> t' I. Q" \<rightleftharpoons> "CONST iUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
   "P. t \<S> t' I. Q" \<rightleftharpoons> "CONST iSince I (\<lambda>t. P) (\<lambda>t'. Q)"
 
-definition iWeakUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Until/Wating-for/Unless"
+definition iWeakUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Weak Until/Wating-for/Unless\<close>
   where "iWeakUntil I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t'))"
 
-definition iWeakSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Since/Back-to"
+definition iWeakSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Weak Since/Back-to\<close>
   where "iWeakSince I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t'))"
 
 syntax
@@ -157,10 +157,10 @@ translations
   "P. t \<B> t' I. Q" \<rightleftharpoons> "CONST iWeakSince I (\<lambda>t. P) (\<lambda>t'. Q)"
 
 
-definition iRelease :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Release"
+definition iRelease :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Release\<close>
   where "iRelease I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<le> t). Q t'))"
 
-definition iTrigger :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Trigger"
+definition iTrigger :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Trigger\<close>
   where "iTrigger I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<ge> t). Q t'))"
 
 syntax

@@ -98,7 +98,7 @@ qed
 lemma lookup_ext_none: "\<lbrakk> lookup \<rho> y = None; x \<noteq> y \<rbrakk> \<Longrightarrow> lookup ((x,v)#\<rho>) y = None"
   by auto
 
--- "For reverse subst lemma, the variable case shows up over and over, so we prove it as a lemma"
+\<comment> \<open>For reverse subst lemma, the variable case shows up over and over, so we prove it as a lemma\<close>
 lemma rev_subst_var:
   assumes ev: "e = EVar y \<and> v = e'" and vv: "is_val v" and vp_E: "v' \<in> E e' \<rho>"
   shows "\<exists> \<rho>' v''. v'' \<in> E v [] \<and> v' \<in> E e \<rho>' \<and> \<rho>' \<approx> ((y,v'')#\<rho>)"
@@ -116,7 +116,7 @@ lemma reverse_subst_pres_denot:
   shows "\<exists> \<rho>' v''. v'' \<in> E v [] \<and> v' \<in> E e \<rho>' \<and> \<rho>' \<approx> ((y,v'')#\<rho>)"
   using vep vv ep 
 proof  (induction arbitrary: v' y v e rule: E.induct)
-  case (1 n \<rho>) -- "e' = ENat n"
+  case (1 n \<rho>) \<comment> \<open>e' = ENat n\<close>
   from 1(1) have vp: "v' = VNat n" by auto 
   from 1(3) have "e = ENat n \<or> (e = EVar y \<and> v = ENat n)" by (cases e, auto)
   then show ?case
@@ -131,7 +131,7 @@ proof  (induction arbitrary: v' y v e rule: E.induct)
     from ev 1(2) 1(1) rev_subst_var show ?thesis by blast
   qed
 next
-  case (2 x \<rho>) -- "e' = EVar x"
+  case (2 x \<rho>) \<comment> \<open>e' = EVar x\<close>
   from 2 have e: "e = EVar x" by (cases e, auto)
   from 2 e have xy: "x \<noteq> y" by force
   from 2(2) e_val is_val_def obtain v'' where vpp_E: "v'' \<in> E v []" by force
@@ -167,7 +167,7 @@ next
       \<or> (\<exists> e'. e = ELam x e' \<and> x \<noteq> y \<and> eb = subst y v e')" by (cases e) auto
   ultimately show ?case by blast 
 next
-  case (4 e1 e2 \<rho>) -- "e' = EApp e1 e2"
+  case (4 e1 e2 \<rho>) \<comment> \<open>e' = EApp e1 e2\<close>
   from 4(4) 4(5) obtain e1' e2' where 
     e: "e = EApp e1' e2'" and e1:"e1 = subst y v e1'" and e2: "e2 = subst y v e2'"
     apply (cases e) apply (rename_tac x) apply auto apply (case_tac "y = x") apply auto 
@@ -193,7 +193,7 @@ next
   have rr3: "((y,w3)#\<rho>) \<approx> ((y,w3)#\<rho>)" by (simp add: env_eq_def) 
   from w3_Ev vp_E2 rr3 e show ?case by blast
 next
-  case (5 f e1 e2 \<rho>) -- "e' = EPrim f e1 e2, very similar to case for EApp"
+  case (5 f e1 e2 \<rho>) \<comment> \<open>e' = EPrim f e1 e2, very similar to case for EApp\<close>
   from 5(4) 5(5) obtain e1' e2' where 
     e: "e = EPrim f e1' e2'" and e1:"e1 = subst y v e1'" and e2: "e2 = subst y v e2'"
     apply (cases e) apply auto apply (rename_tac x) apply (case_tac "y = x") apply auto 
@@ -218,7 +218,7 @@ next
   have rr3: "((y,w3)#\<rho>) \<approx> ((y,w3)#\<rho>)" by (simp add: env_eq_def) 
   from w3_Ev vp_E2 rr3 e show ?case by blast
 next
-  case (6 e1 e2 e3 \<rho>) -- "e' = EIf e1 e2 e3"
+  case (6 e1 e2 e3 \<rho>) \<comment> \<open>e' = EIf e1 e2 e3\<close>
   from 6(5) 6(6) obtain e1' e2' e3' where 
     e: "e = EIf e1' e2' e3'" and e1:"e1 = subst y v e1'" and e2: "e2 = subst y v e2'"
     and e3: "e3 = subst y v e3'" 

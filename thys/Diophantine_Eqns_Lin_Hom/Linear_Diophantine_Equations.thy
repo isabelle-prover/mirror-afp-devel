@@ -104,7 +104,7 @@ begin
 abbreviation "m \<equiv> length a"
 abbreviation "n \<equiv> length b"
 
--- \<open>The set of all solutions.\<close>
+\<comment> \<open>The set of all solutions.\<close>
 definition Solutions :: "(nat list \<times> nat list) set"
   where
     "Solutions = {(x, y). a \<bullet> x = b \<bullet> y \<and> length x = m \<and> length y = n}"
@@ -113,7 +113,7 @@ lemma in_Solutions_iff:
   "(x, y) \<in> Solutions \<longleftrightarrow> length x = m \<and> length y = n \<and> a \<bullet> x = b \<bullet> y"
   by (auto simp: Solutions_def)
 
--- \<open>The set of pointwise minimal solutions.\<close>
+\<comment> \<open>The set of pointwise minimal solutions.\<close>
 definition Minimal_Solutions :: "(nat list \<times> nat list) set"
   where
     "Minimal_Solutions = {(x, y) \<in> Solutions. nonzero x \<and>

@@ -8,7 +8,7 @@ experiment begin
 
 schematic_goal vdp_fas:
   "[X!1, X!1 * (1 - (X!0)\<^sup>2) - X!0] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 
 concrete_definition vdp_fas uses vdp_fas
@@ -67,7 +67,7 @@ lemma blinfun_of_list_id2: "blinfun_of_list [1, 0, 0, 1] = (id_blinfun::(real*re
 
 lemma norm_blinfun_of_list:
   "norm (blinfun_of_list xs::'a::executable_euclidean_space\<Rightarrow>\<^sub>L'a) \<le> (\<Sum>x\<leftarrow>xs. abs x)"
-  if "length xs = DIM('a)*DIM('a)"\<comment>\<open>should work for all lists\<close>
+  if "length xs = DIM('a)*DIM('a)"\<comment> \<open>should work for all lists\<close>
   unfolding blinfun_of_list_def
   apply (rule norm_blinfun_of_matrix[le])
   apply (auto simp: sum_Basis_sum_nth_Basis_list)

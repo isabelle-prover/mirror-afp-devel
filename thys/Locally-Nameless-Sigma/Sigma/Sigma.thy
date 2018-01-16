@@ -1972,7 +1972,7 @@ proof -
 qed
 
 declare if_not_P [simp] not_less_eq [simp]
-  -- {* don't add @{text "r_into_rtrancl[intro!]"} *}
+  \<comment> \<open>don't add @{text "r_into_rtrancl[intro!]"}\<close>
 
 lemma beta_preserves_FV[simp, rule_format]:
   fixes t t' x

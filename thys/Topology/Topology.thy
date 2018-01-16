@@ -1487,7 +1487,7 @@ proof-
       with B_filter b_in_B have "a\<inter>b \<in> B" by (intro filtersD3)
       with B_in_chain show ?thesis ..
     next
-      assume "B \<subseteq> A" --{* Symmetric case *}
+      assume "B \<subseteq> A" \<comment> \<open>Symmetric case\<close>
       with  b_in_B A_filter a_in_A A_in_chain
       show ?thesis by (blast intro: filtersD3)
     qed

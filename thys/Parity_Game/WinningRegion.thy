@@ -135,6 +135,6 @@ text {*
   We will prove @{text winning_region_extends_VVpstar} as soon as we have this.
 *}
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

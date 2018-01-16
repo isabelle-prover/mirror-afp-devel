@@ -18,7 +18,7 @@ syntax "_option_bind" :: "[pttrns,'a option,'b] => 'c" ("(_ := _;//_)" 0)
 translations "P := E; F" == "CONST option_bind E (%P. F)"
 
 
--- "constructor laws for @{text option_bind}"
+\<comment> \<open>constructor laws for @{text option_bind}\<close>
 lemma option_bind_Some: "option_bind (Some s) f = (f s)"
   by (simp add: option_bind_def)
 
@@ -27,7 +27,7 @@ lemma option_bind_None: "option_bind None f = None"
 
 declare option_bind_Some [simp] option_bind_None [simp]
 
--- "expansion of @{text option_bind}"
+\<comment> \<open>expansion of @{text option_bind}\<close>
 lemma split_option_bind: "P(option_bind res f) =  
           ((res = None --> P None) & (!s. res = Some s --> P(f s)))"
   unfolding option_bind_def

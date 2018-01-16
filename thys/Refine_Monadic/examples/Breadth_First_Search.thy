@@ -370,8 +370,8 @@ begin
     It allows one to write human-readable proofs in a theorem prover.
     *}
   lemma invar_final_fail: 
-    assumes C: "conn src dst" -- {* There is a path between 
-      @{text "src"} and @{text "dst"}. *}
+    assumes C: "conn src dst" \<comment> \<open>There is a path between 
+      @{text "src"} and @{text "dst"}.\<close>
     assumes INV: "bfs_invar' src dst (False, V, {}, {}, d)"
     shows False
   proof -

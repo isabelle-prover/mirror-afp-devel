@@ -75,7 +75,7 @@ where
   | "label_list (x # xs) = pure (#) \<diamondop> fresh \<diamondop> label_list xs"
 
 lemma label_append: "label_list (a @ b) = pure (@) \<diamondop> label_list a \<diamondop> label_list b"
-  -- \<open>The proof lifts the defining equations of @{const append} to the state monad.\<close>
+  \<comment> \<open>The proof lifts the defining equations of @{const append} to the state monad.\<close>
 proof (induction a)
   case Nil
   show ?case
@@ -217,7 +217,7 @@ proof -
   also have "\<dots> = pure (\<lambda>x f. f x) \<diamondop> recurse f r \<diamondop> (pure (\<lambda>x f. f x) \<diamondop> recurse f l \<diamondop> pure Node)"
     by(simp add: ap_state_rev_B B_inverse)
   also have "\<dots> = pure (\<lambda>r l. Node l r) \<diamondop> recurse f r \<diamondop> recurse f l"
-    -- \<open>This step expands to 13 steps in \cite{backwards}\<close>
+    \<comment> \<open>This step expands to 13 steps in \cite{backwards}\<close>
     by(applicative_nf) simp
   finally show ?thesis .
 qed
@@ -242,7 +242,7 @@ proof -
   have "B (B f) \<diamondop> B (B x) = B (B (pure (\<lambda>x f. f x) \<diamondop> f \<diamondop> (pure (\<lambda>x f. f x) \<diamondop> x \<diamondop> pure (\<lambda>x f. f x))))"
     (is "_ = B (B ?exp)")
     unfolding ap_state_rev_rev_B B_pure ap_state_rev_B ..
-  also have "?exp = f \<diamondop> x" -- \<open>This step takes 15 steps in \cite{backwards}.\<close>
+  also have "?exp = f \<diamondop> x" \<comment> \<open>This step takes 15 steps in \cite{backwards}.\<close>
     by(applicative_nf)(rule refl)
   finally show ?thesis .
 qed
@@ -272,7 +272,7 @@ qed
 lemma recurse_traverse:
   assumes "f \<bullet> g = pure"
   shows "recurse f \<bullet> traverse g = pure"
--- \<open>Gibbons and Bird impose this as an additional requirement on traversals, but they write
+\<comment> \<open>Gibbons and Bird impose this as an additional requirement on traversals, but they write
   that they have not found a way to derive this fact from other axioms. So we prove it directly.\<close>
 proof
   fix t

@@ -25,12 +25,12 @@ text\<open>  We are currently contemplating a follow-up analysis of the philosop
 subsubsection \<open>General Definitions\<close>
                
 abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") 
-  where "E! x  \<equiv> \<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w" --\<open> existence predicate in object language \<close>
+  where "E! x  \<equiv> \<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w" \<comment> \<open>existence predicate in object language\<close>
     
 lemma "E! x w \<longleftrightarrow> existsAt x w" 
-  by simp --\<open> safety check: @{text "E!"} correctly matches its meta-logical counterpart \<close>
+  by simp \<comment> \<open>safety check: @{text "E!"} correctly matches its meta-logical counterpart\<close>
 
-consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>") --\<open>  positiveness/perfection  \<close>
+consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>") \<comment> \<open>positiveness/perfection\<close>
   
 text\<open>  Definitions of God (later shown to be equivalent under axiom \emph{A1b}):  \<close>    
 abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G") where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> Y x)"
@@ -40,7 +40,7 @@ text\<open>  Definitions needed to formalise \emph{A3}:  \<close>
 abbreviation appliesToPositiveProps::"\<up>\<langle>\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" ("pos") where
   "pos Z \<equiv>  \<^bold>\<forall>X. Z X \<^bold>\<rightarrow> \<P> X"  
 abbreviation intersectionOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" ("intersec") where
-  "intersec X Z \<equiv>  \<^bold>\<box>(\<^bold>\<forall>x.(X x \<^bold>\<leftrightarrow> (\<^bold>\<forall>Y. (Z Y) \<^bold>\<rightarrow> (Y x))))" --\<open> quantifier is possibilist \<close>  
+  "intersec X Z \<equiv>  \<^bold>\<box>(\<^bold>\<forall>x.(X x \<^bold>\<leftrightarrow> (\<^bold>\<forall>Y. (Z Y) \<^bold>\<rightarrow> (Y x))))" \<comment> \<open>quantifier is possibilist\<close>  
 abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix "\<Rrightarrow>" 60) where
   "X \<Rrightarrow> Y \<equiv>  \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ez. X z \<^bold>\<rightarrow> Y z)"
 text\<open> \bigbreak \<close>
@@ -48,14 +48,14 @@ text\<open> \bigbreak \<close>
 subsubsection \<open>Axioms\<close>
     
 axiomatization where
-  A1a:"\<lfloor>\<^bold>\<forall>X. \<P> (\<^bold>\<rightharpoondown>X) \<^bold>\<rightarrow> \<^bold>\<not>(\<P> X) \<rfloor>" and      --\<open>  axiom 11.3A  \<close>
-  A1b:"\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<P> (\<^bold>\<rightharpoondown>X)\<rfloor>" and       --\<open>  axiom 11.3B  \<close>
-  A2: "\<lfloor>\<^bold>\<forall>X Y. (\<P> X \<^bold>\<and> (X \<Rrightarrow> Y)) \<^bold>\<rightarrow> \<P> Y\<rfloor>" and   --\<open>  axiom 11.5  \<close>
-  A3: "\<lfloor>\<^bold>\<forall>Z X. (pos Z \<^bold>\<and> intersec X Z) \<^bold>\<rightarrow> \<P> X\<rfloor>" --\<open>  axiom 11.10  \<close>
+  A1a:"\<lfloor>\<^bold>\<forall>X. \<P> (\<^bold>\<rightharpoondown>X) \<^bold>\<rightarrow> \<^bold>\<not>(\<P> X) \<rfloor>" and      \<comment> \<open>axiom 11.3A\<close>
+  A1b:"\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<P> (\<^bold>\<rightharpoondown>X)\<rfloor>" and       \<comment> \<open>axiom 11.3B\<close>
+  A2: "\<lfloor>\<^bold>\<forall>X Y. (\<P> X \<^bold>\<and> (X \<Rrightarrow> Y)) \<^bold>\<rightarrow> \<P> Y\<rfloor>" and   \<comment> \<open>axiom 11.5\<close>
+  A3: "\<lfloor>\<^bold>\<forall>Z X. (pos Z \<^bold>\<and> intersec X Z) \<^bold>\<rightarrow> \<P> X\<rfloor>" \<comment> \<open>axiom 11.10\<close>
 
-lemma True nitpick[satisfy] oops       --\<open>  model found: axioms are consistent \<close>
+lemma True nitpick[satisfy] oops       \<comment> \<open>model found: axioms are consistent\<close>
     
-lemma "\<lfloor>D\<rfloor>"  using A1a A1b A2 by blast --\<open>  axioms already imply \emph{D} axiom  \<close>
+lemma "\<lfloor>D\<rfloor>"  using A1a A1b A2 by blast \<comment> \<open>axioms already imply \emph{D} axiom\<close>
 lemma "\<lfloor>D\<rfloor>" using A1a A3 by metis
 
 subsubsection \<open>Theorems\<close>

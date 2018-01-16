@@ -23,7 +23,7 @@ definition l2wi_intersect :: "('a::len word \<times> 'a::len word) list \<Righta
 
 lemma l2wi_intersect: "wordinterval_to_set (l2wi_intersect l) = (\<Inter> (i,j) \<in> set l. {i .. j})"
   proof -
-  { fix U --\<open>@{const wordinterval_UNIV} generalized\<close>
+  { fix U \<comment> \<open>@{const wordinterval_UNIV} generalized\<close>
     have "wordinterval_to_set (foldl (\<lambda>acc (s, e). wordinterval_intersection (WordInterval s e) acc) U l) = (wordinterval_to_set U) \<inter> (\<Inter>(i, j)\<in>set l. {i..j})"
         apply(induction l arbitrary: U)
          apply(simp)

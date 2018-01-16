@@ -354,11 +354,11 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
     \<rparr>"
 
 
-  -- {* Abstract step *}
+  \<comment> \<open>Abstract step\<close>
   have abs_step: "(sa, sa') \<in> tso_round1 r dec_f o_f"  using next_r step_r R d_guard obs_guard
     by(auto simp add: tso_round1_def sa'_def ref_rel_def two_step_step)
 
-  -- {* Relation preserved *}
+  \<comment> \<open>Relation preserved\<close>
   have "\<forall>p. ((decide \<circ> cfg) ++ dec_f) p = decide (cfg' p)"
   proof
     fix p

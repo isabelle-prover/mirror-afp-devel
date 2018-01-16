@@ -28,7 +28,7 @@ text{*
 0 - unclassified
 1 - confidential
 *}
---"trusted: can access any security level, privacy-level 0: can reveal to anyone. I.e. can declassify"
+\<comment> \<open>trusted: can access any security level, privacy-level 0: can reveal to anyone. I.e. can declassify\<close>
 definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
           node_properties = [''DB'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,

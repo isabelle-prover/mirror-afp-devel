@@ -6,9 +6,9 @@ theory Expr
 imports Types
 begin
 
---"type parameters:"
---"'val: numbers, boolean constants.... "
---"'id: identifier names"
+\<comment> \<open>type parameters:\<close>
+\<comment> \<open>'val: numbers, boolean constants....\<close>
+\<comment> \<open>'id: identifier names\<close>
 
 type_synonym ('val) operation = "'val list \<Rightarrow> 'val"
 
@@ -18,7 +18,7 @@ Var "'id" |
 Op "'val operation" "(('id, 'val) Expr) list"
 
 
--- "defining a simple recursive evaluation function on this datatype"
+\<comment> \<open>defining a simple recursive evaluation function on this datatype\<close>
 primrec ExprEval :: "(('id, 'val) Expr, 'id, 'val) Evalfunction"
 and ExprEvalL :: "(('id, 'val) Expr) list \<Rightarrow> ('id, 'val) State \<Rightarrow> 'val list"
 where

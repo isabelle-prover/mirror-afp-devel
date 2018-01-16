@@ -117,7 +117,7 @@ proof -
     apply (rule Var_Eq_subst_Iff [THEN Sym_L, THEN Iff_MP_same])
     apply (rule rotate2)
     apply (rule Var_Eq_subst_Iff [THEN Sym_L, THEN Iff_MP_same], force)
-    --{*now the quantified case*}
+    \<comment> \<open>now the quantified case\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all
     apply (rule Disj_I2)
@@ -129,11 +129,11 @@ proof -
     apply (rule Ex_I [where x = "Var sn'"], simp)
     apply (simp_all add: SeqQuoteP.simps [of l s _ sl sl' m n sm sm' sn sn'])
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
-    --{*first SeqQuoteP subgoal*}
+    \<comment> \<open>first SeqQuoteP subgoal\<close>
     apply (rule All2_Subset [OF Hyp])
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP)+
     apply simp
-    --{*next SeqQuoteP subgoal*}
+    \<comment> \<open>next SeqQuoteP subgoal\<close>
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
     apply (rule All2_Subset [OF Hyp], blast)
     apply (auto intro!: SUCC_Subset_Ord LstSeqP_OrdP intro: Trans)
@@ -240,7 +240,7 @@ proof -
                      HPair (Var n) (HPair (Var sn) (Var sn')) IN
                      Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Eats t1 t2) (Q_Eats u1 u2))) AND
                      Var sl EQ Eats (Var sm) (Var sn) AND Var sl' EQ Q_Eats (Var sm') (Var sn'))))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Eats t1 t2"])
        using assms atoms apply simp
        apply (rule Ex_I [where x="Q_Eats u1 u2"], simp)
@@ -277,7 +277,7 @@ proof -
                        HPair (Var n) (HPair (Var sn) (Var sn')) IN
                        Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Eats t1 t2) (Q_Eats u1 u2))) AND
                        Var sl EQ Eats (Var sm) (Var sn) AND Var sl' EQ Q_Eats (Var sm') (Var sn')))))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule cut_same [where A="HaddP (SUCC k1) (SUCC k2) (SUCC (SUCC (Var k')))"])
      apply (blast intro: HaddP_SUCC1 [THEN cut1] HaddP_SUCC2 [THEN cut1])
      apply (rule All_I Imp_I)+
@@ -285,7 +285,7 @@ proof -
      using assms atoms atoms2 apply simp_all
      apply (rule AssumeH)
      apply (blast intro: OrdP_SUCC_I)
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: SeqQuoteP.simps [of l s1 _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -304,7 +304,7 @@ proof -
      apply (rule Ex_I [where x="Var sn'"], simp_all)
      apply (rule Conj_I, rule AssumeH)+
      apply (blast intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
-     --{*... the sequence buildup via s2*}
+     \<comment> \<open>... the sequence buildup via s2\<close>
      apply (simp add: SeqQuoteP.simps [of l s2 _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -400,24 +400,24 @@ proof -
         apply (rule All_I Imp_I)+
         using atoms
         apply (simp_all add: fresh_at_base fresh_finite_set_at_base)
-        --{*freshness finally proved!*}
+        \<comment> \<open>freshness finally proved!\<close>
         apply (rule cut_same)
         apply (rule cut1 [OF SeqQuoteP_lemma [of m "Var j" "Var j'" "Var s" "Var k" n sm sm' sn sn']], simp_all, blast)        
         apply (rule Imp_I Disj_EH Conj_EH)+
-        --{*case 1, Var j EQ Zero*}
+        \<comment> \<open>case 1, Var j EQ Zero\<close>
         apply (rule thin1)
         apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same], simp)
         apply (metis thin0 ConstP_Zero)
-        --{*case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}*}
+        \<comment> \<open>case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}\<close>
         apply (rule Imp_I Conj_EH Ex_EH)+
         apply simp_all
         apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same, THEN rotate2], simp)
         apply (rule ConstP_Eats [THEN cut2])
-        --{*Operand 1. IH for sm*}
+        \<comment> \<open>Operand 1. IH for sm\<close>
         apply (rule All2_E [where x="Var m", THEN rotate8], auto)
         apply (rule All_E [where x="Var sm"], simp)
         apply (rule All_E [where x="Var sm'"], auto)
-        --{*Operand 2. IH for sm*}
+        \<comment> \<open>Operand 2. IH for sm\<close>
         apply (rule All2_E [where x="Var n", THEN rotate8], auto)
         apply (rule All_E [where x="Var sn"], simp)
         apply (rule All_E [where x="Var sn'"], auto)
@@ -659,7 +659,7 @@ proof -
             by (rule F_def)
         qed
       have V_mem: "i \<in> V" "j \<in> V" "sm \<in> V" "sn \<in> V" 
-        by (auto simp: V_def)  --{*Part of (2) from page 32*}
+        by (auto simp: V_def)  \<comment> \<open>Part of (2) from page 32\<close>
       have Mem1: "{} \<turnstile> (Var i IN Var sm) IMP (Var i IN Eats (Var sm) (Var sn))"
         by (blast intro: Mem_Eats_I1)
       have Q_Mem1: "quote_all p V
@@ -709,14 +709,14 @@ proof -
         apply (blast intro: QuoteP_I)
         apply (rule rotate6)
         apply (rule Conj_I)
-        --{*@{term"Var i IN Var j IMP PfP (Q_Mem (Var i') (Var j'))"}*}
+        \<comment> \<open>@{term"Var i IN Var j IMP PfP (Q_Mem (Var i') (Var j'))"}\<close>
         apply (rule cut_same)
         apply (rule cut1 [OF SeqQuoteP_lemma [of m "Var j" "Var j'" "Var sj" "Var lj" n sm sm' sn sn']], simp_all, blast)
         apply (rule Imp_I Disj_EH Conj_EH)+
-        --{*case 1, @{term "Var j EQ Zero"}*}
+        \<comment> \<open>case 1, @{term "Var j EQ Zero"}\<close>
         apply (rule cut_same [where A = "Var i IN Zero"])
         apply (blast intro: Mem_cong [THEN Iff_MP_same], blast)
-        --{*case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}*}
+        \<comment> \<open>case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}\<close>
         apply (rule Imp_I Conj_EH Ex_EH)+
         apply simp_all
         apply (rule Var_Eq_subst_Iff [THEN rotate2, THEN Iff_MP_same], simp)
@@ -727,7 +727,7 @@ proof -
         apply (rule cut_same [where A = "Var i IN Eats (Var sm) (Var sn)"])
         apply (rule Mem_cong [OF Refl, THEN Iff_MP_same])
         apply (rule AssumeH Mem_Eats_E)+
-        --{*Eats case 1. IH for sm*}
+        \<comment> \<open>Eats case 1. IH for sm\<close>
         apply (rule cut_same [where A = "OrdP (Var m)"])
         apply (blast intro: Hyp Ord_IN_Ord SeqQuoteP_imp_OrdP [THEN cut1])
         apply (rule cut_same [OF exists_HaddP [where j=l and x="Var li" and y="Var m"]])
@@ -743,7 +743,7 @@ proof -
         apply (rule All_E [where x="Var sj"], simp)
         apply (rule All_E [where x="Var m"], simp)
         apply (force intro: MP_thin [OF Q_Mem1] simp add: V_def p_def)
-        --{*Eats case 2*}
+        \<comment> \<open>Eats case 2\<close>
         apply (rule rotate13)
         apply (rule cut_same [where A = "OrdP (Var n)"])
         apply (blast intro: Hyp Ord_IN_Ord SeqQuoteP_imp_OrdP [THEN cut1])
@@ -756,7 +756,7 @@ proof -
         apply (rule MP_same)
         apply (rule Q_Ext [THEN thin])
         apply (simp add: V_def p_def)
-        --{*@{term"PfP (Q_Subset (Var i') (Var sn'))"}*}
+        \<comment> \<open>@{term"PfP (Q_Subset (Var i') (Var sn'))"}\<close>
         apply (rule All2_E [where x="Var l", THEN rotate14], simp_all)
         apply (blast intro: Hyp HaddP_Mem_cancel_left [THEN Iff_MP2_same] SeqQuoteP_imp_OrdP [THEN cut1])
         apply (rule All_E [where x="Var i"], simp)
@@ -771,7 +771,7 @@ proof -
         apply (rule Conj_E)
         apply (rule thin1)
         apply (blast intro!: Imp_E EQ_imp_SUBS [THEN cut1])
-        --{*@{term"PfP (Q_Subset (Var sn') (Var i'))"}*}
+        \<comment> \<open>@{term"PfP (Q_Subset (Var sn') (Var i'))"}\<close>
         apply (rule All2_E [where x="Var l", THEN rotate14], simp_all)
         apply (blast intro: Hyp HaddP_Mem_cancel_left [THEN Iff_MP2_same] SeqQuoteP_imp_OrdP [THEN cut1])
         apply (rule All_E [where x="Var sn"], simp)
@@ -788,15 +788,15 @@ proof -
         apply (rule Conj_E)
         apply (rule thin1)
         apply (blast intro!: Imp_E EQ_imp_SUBS2 [THEN cut1])
-        --{*@{term"Var i SUBS Var j IMP PfP (Q_Subset (Var i') (Var j'))"}*}
+        \<comment> \<open>@{term"Var i SUBS Var j IMP PfP (Q_Subset (Var i') (Var j'))"}\<close>
         apply (rule cut_same)
         apply (rule cut1 [OF SeqQuoteP_lemma [of m "Var i" "Var i'" "Var si" "Var li" n sm sm' sn sn']], simp_all, blast)
         apply (rule Imp_I Disj_EH Conj_EH)+
-        --{*case 1, Var i EQ Zero*}
+        \<comment> \<open>case 1, Var i EQ Zero\<close>
         apply (rule cut_same [where A = "PfP (Q_Subset Zero (Var j'))"])
         apply (blast intro: Q_Subs1 [THEN cut1] SeqQuoteP_imp_QuoteP [THEN cut1])
         apply (force intro: Var_Eq_subst_Iff [THEN Iff_MP_same, THEN rotate3])
-        --{*case 2, @{term "Var i EQ Eats (Var sm) (Var sn)"}*}
+        \<comment> \<open>case 2, @{term "Var i EQ Eats (Var sm) (Var sn)"}\<close>
         apply (rule Conj_EH Ex_EH)+
         apply simp_all
         apply (rule cut_same [where A = "OrdP (Var lj)"])
@@ -809,16 +809,16 @@ proof -
         apply (rule cut_same [where A = "Eats (Var sm) (Var sn) SUBS Var j"])
         apply (rule Subset_cong [OF _ Refl, THEN Iff_MP_same])
         apply (rule AssumeH Mem_Eats_E)+
-        --{*Eats case split*}
+        \<comment> \<open>Eats case split\<close>
         apply (rule Eats_Subset_E)
         apply (rule rotate15)
         apply (rule MP_same [THEN MP_same])
         apply (rule Q_Subs2 [THEN thin])
         apply (simp add: V_def p_def)
-        --{*Eats case 1: @{term "PfP (Q_Subset (Var sm') (Var j'))"}*}
+        \<comment> \<open>Eats case 1: @{term "PfP (Q_Subset (Var sm') (Var j'))"}\<close>
         apply (rule cut_same [OF exists_HaddP [where j=l and x="Var m" and y="Var lj"]])
         apply (rule AssumeH Ex_EH Conj_EH | simp)+
-        --{*IH for sm*}
+        \<comment> \<open>IH for sm\<close>
         apply (rule All2_E [where x="Var l", THEN rotate15], simp_all)
         apply (blast intro: Hyp HaddP_Mem_cancel_right_Mem SeqQuoteP_imp_OrdP [THEN cut1])
         apply (rule All_E [where x="Var sm"], simp)
@@ -830,10 +830,10 @@ proof -
         apply (rule All_E [where x="Var sj"], simp)
         apply (rule All_E [where x="Var lj"], simp)
         apply (blast intro: thin1 Imp_E)
-        --{*Eats case 2: @{term "PfP (Q_Mem (Var sn') (Var j'))"}*}
+        \<comment> \<open>Eats case 2: @{term "PfP (Q_Mem (Var sn') (Var j'))"}\<close>
         apply (rule cut_same [OF exists_HaddP [where j=l and x="Var n" and y="Var lj"]])
         apply (rule AssumeH Ex_EH Conj_EH | simp)+
-        --{*IH for sn*}
+        \<comment> \<open>IH for sn\<close>
         apply (rule All2_E [where x="Var l", THEN rotate15], simp_all)
         apply (blast intro: Hyp HaddP_Mem_cancel_right_Mem SeqQuoteP_imp_OrdP [THEN cut1])
         apply (rule All_E [where x="Var sn"], simp)
@@ -1184,7 +1184,7 @@ proof -
         apply (rule cut_same)
         apply (rule cut1 [OF SeqQuoteP_lemma [of m "Var j" "Var j'" "Var s" "Var k" n sm sm' sn sn']], simp_all, blast)        
         apply (rule Imp_I Disj_EH Conj_EH)+
-        --{*case 1, Var j EQ Zero*}
+        \<comment> \<open>case 1, Var j EQ Zero\<close>
         apply (simp add: vquot_fm_def)
         apply (rule thin1)
         apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same], simp)
@@ -1192,19 +1192,19 @@ proof -
         apply (rule Q_All2_Zero [THEN thin])
         using assms
         apply (simp add: quote_all_def, blast)
-        --{*case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}*}
+        \<comment> \<open>case 2, @{term "Var j EQ Eats (Var sm) (Var sn)"}\<close>
         apply (rule Imp_I Conj_EH Ex_EH)+
         using atoms  apply (auto elim!: fresh_quote_all_mem)
         apply (rule cut_same [where A = "QuoteP (Var sm) (Var sm')"])
         apply (blast intro: QuoteP_I)
         apply (rule cut_same [where A = "QuoteP (Var sn) (Var sn')"])
         apply (blast intro: QuoteP_I)
-        --{*Eats case. IH for sm*}
+        \<comment> \<open>Eats case. IH for sm\<close>
         apply (rule All2_E [where x="Var m", THEN rotate12], simp_all, blast)
         apply (rule All_E [where x="Var sm"], simp)
         apply (rule All_E [where x="Var sm'"], simp)
         apply (rule Imp_E, blast)
-        --{*Setting up the subgoal*}
+        \<comment> \<open>Setting up the subgoal\<close>
         apply (rule cut_same [where A = "PfP (ssubst \<lfloor>All2 i (Eats (Var sm) (Var sn)) \<alpha>\<rfloor>V' V' F')"])
          defer 1
          apply (rule rotate6)
@@ -1218,9 +1218,9 @@ proof -
         apply (rule MP_same [THEN MP_same])
         apply (rule Q_All2_Eats [THEN thin])
         apply (force simp add: quote_all'_eq)
-        --{*Proving @{term "PfP (ssubst \<lfloor>All2 i (Var sm) \<alpha>\<rfloor>V' V' F')"}*}
+        \<comment> \<open>Proving @{term "PfP (ssubst \<lfloor>All2 i (Var sm) \<alpha>\<rfloor>V' V' F')"}\<close>
         apply (force intro!: Imp_E [THEN rotate3] simp add: vquot_fm_def substj j' ss_noprimes)
-        --{*Proving @{term "PfP (ssubst \<lfloor>\<alpha>(i::=Var sn)\<rfloor>V' V' F')"}*}
+        \<comment> \<open>Proving @{term "PfP (ssubst \<lfloor>\<alpha>(i::=Var sn)\<rfloor>V' V' F')"}\<close>
         apply (rule MP_same [OF subst_i_star [THEN thin]])
         apply (force simp add: quote_all'_eq, blast)
         done

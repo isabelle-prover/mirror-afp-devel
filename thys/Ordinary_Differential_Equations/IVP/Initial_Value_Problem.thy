@@ -146,7 +146,7 @@ proof
 qed
 
 
-subsection \<open>Lipschitz continuity\<close>\<comment>\<open>TODO: move to \<open>Analysis\<close>?!\<close>
+subsection \<open>Lipschitz continuity\<close>\<comment> \<open>TODO: move to \<open>Analysis\<close>?!\<close>
 text\<open>\label{sec:lipschitz}\<close>
 
 definition lipschitz
@@ -890,7 +890,7 @@ subsection \<open>unique solution with initial value\<close>
 definition
   usolves_ode_from :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> bool"
   ("((_) usolves'_ode (_) from (_))" [10, 10, 10] 10)
-  \<comment>\<open>TODO: no idea about mixfix and precedences, check this!\<close>
+  \<comment> \<open>TODO: no idea about mixfix and precedences, check this!\<close>
 where
   "(y usolves_ode f from t0) T X \<longleftrightarrow> (y solves_ode f) T X \<and> t0 \<in> T \<and> is_interval T \<and>
     (\<forall>z T'. t0 \<in> T' \<and> is_interval T' \<and> T' \<subseteq> T \<and> (z solves_ode f) T' X \<longrightarrow> z t0 = y t0 \<longrightarrow> (\<forall>t \<in> T'. z t = y t))"
@@ -952,7 +952,7 @@ lemma usolves_ode_singleton: "x t0 \<in> X \<Longrightarrow> (x usolves_ode f fr
 lemma usolves_ode_congI:
   assumes x: "(x usolves_ode f from t0) T X"
   assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
-  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment>\<open>TODO: weaken this assumption?!\<close>
+  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment> \<open>TODO: weaken this assumption?!\<close>
   assumes "t0 = s0"
   assumes "T = S"
   assumes "X = Y"
@@ -980,7 +980,7 @@ qed
 
 lemma usolves_ode_cong[cong]:
   assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
-  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment>\<open>TODO: weaken this assumption?!\<close>
+  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment> \<open>TODO: weaken this assumption?!\<close>
   assumes "t0 = s0"
   assumes "T = S"
   assumes "X = Y"
@@ -1854,7 +1854,7 @@ lemma closed_segment_closed_segment_subset:
 
 context unique_on_closed begin
 
-context\<comment>\<open>solution until t1\<close>
+context\<comment> \<open>solution until t1\<close>
   fixes t1::real
   assumes mem_t1: "t1 \<in> T"
 begin

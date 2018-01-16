@@ -21,10 +21,10 @@ text {*
 
 subsection "Generic Search Algorithm"
 
-  -- "The algorithm contains a set of discovered states and a workset"
+  \<comment> \<open>The algorithm contains a set of discovered states and a workset\<close>
 type_synonym '\<Sigma> sse_state = "'\<Sigma> set \<times> '\<Sigma> set"
 
-  -- "Loop body"
+  \<comment> \<open>Loop body\<close>
 inductive_set 
   sse_step :: "('\<Sigma>\<times>'\<Sigma>) set \<Rightarrow> ('\<Sigma> sse_state \<times> '\<Sigma> sse_state) set" 
   for R where
@@ -33,16 +33,16 @@ inductive_set
      W' = (W-{\<sigma>}) \<union> ((R``{\<sigma>}) - \<Sigma>)
    \<rbrakk> \<Longrightarrow> ((\<Sigma>,W),(\<Sigma>',W'))\<in>sse_step R"
   
-  -- "Loop condition"
+  \<comment> \<open>Loop condition\<close>
 definition sse_cond :: "'\<Sigma> sse_state set" where
   "sse_cond = {(\<Sigma>,W). W\<noteq>{}}"
 
-  -- "Initial state"
+  \<comment> \<open>Initial state\<close>
 definition sse_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> sse_state" where
   "sse_initial \<Sigma>i == (\<Sigma>i,\<Sigma>i)"
 
 
-  -- {*Invariants: 
+  \<comment> \<open>Invariants: 
   \begin{itemize}
     \item The workset contains only states that are already 
       discovered.
@@ -54,7 +54,7 @@ definition sse_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> sse_state" wher
           of the workset as a frontier between the sets of discovered 
           and undiscovered states.
 
-  \end{itemize}*}
+  \end{itemize}\<close>
 definition sse_invar :: "'\<Sigma> set \<Rightarrow> ('\<Sigma>\<times>'\<Sigma>) set \<Rightarrow> '\<Sigma> sse_state set" where
   "sse_invar \<Sigma>i R = {(\<Sigma>,W). 
     W\<subseteq>\<Sigma> \<and>
@@ -71,7 +71,7 @@ definition "sse_algo \<Sigma>i R ==
 definition "sse_term_rel \<Sigma>i R == 
   { (\<sigma>',\<sigma>). \<sigma>\<in>sse_invar \<Sigma>i R \<and> (\<sigma>,\<sigma>')\<in>sse_step R }"
 
-  -- "Termination: Either a new state is discovered, or the workset shrinks"
+  \<comment> \<open>Termination: Either a new state is discovered, or the workset shrinks\<close>
 theorem sse_term:
   assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>i)"
   shows "wf (sse_term_rel \<Sigma>i R)"
@@ -127,8 +127,8 @@ lemma sse_invar_initial: "(sse_initial \<Sigma>i) \<in> sse_invar \<Sigma>i R"
   by (unfold sse_invar_def sse_initial_def)
      (auto elim: rtrancl_last_touch)
 
-  -- "Correctness theorem: If the loop terminates, the discovered states are
-       exactly the reachable states"
+  \<comment> \<open>Correctness theorem: If the loop terminates, the discovered states are
+       exactly the reachable states\<close>
 theorem sse_invar_final: 
   "\<forall>S. S\<in>wa_invar (sse_algo \<Sigma>i R) \<and> S\<notin>wa_cond (sse_algo \<Sigma>i R) 
     \<longrightarrow> fst S = R\<^sup>*``\<Sigma>i"
@@ -137,7 +137,7 @@ theorem sse_invar_final:
 
 lemma sse_invar_step: "\<lbrakk>S\<in>sse_invar \<Sigma>i R; (S,S')\<in>sse_step R\<rbrakk> 
   \<Longrightarrow> S'\<in>sse_invar \<Sigma>i R"
-  -- "Split the goal by the invariant:"
+  \<comment> \<open>Split the goal by the invariant:\<close>
   apply (cases S, cases S')
   apply clarsimp
   apply (erule sse_step.cases)
@@ -145,20 +145,20 @@ lemma sse_invar_step: "\<lbrakk>S\<in>sse_invar \<Sigma>i R; (S,S')\<in>sse_step
   apply (subst sse_invar_def)
   apply (simp add: Let_def split_conv)
   apply (intro conjI)
-  -- "Solve the easy parts automatically"
+  \<comment> \<open>Solve the easy parts automatically\<close>
   apply (auto simp add: sse_invar_def) [3]
   apply (force simp add: sse_invar_def 
                dest: rtrancl_into_rtrancl) [1]
-  -- "Tackle the complex part (last part of the invariant) in Isar"
+  \<comment> \<open>Tackle the complex part (last part of the invariant) in Isar\<close>
 proof (intro ballI)
   fix \<sigma> W \<Sigma> \<sigma>'
   assume A: 
     "(\<Sigma>,W)\<in>sse_invar \<Sigma>i R"
     "\<sigma>\<in>W"
     "\<sigma>'\<in>R\<^sup>* `` \<Sigma>i - (\<Sigma> \<union> R `` {\<sigma>})"
-    -- "Using the invariant of the original state, we obtain
+    \<comment> \<open>Using the invariant of the original state, we obtain
         a state in the original workset and a path not touching
-        the originally discovered states"
+        the originally discovered states\<close>
   from A(3) have "\<sigma>' \<in> R\<^sup>* `` \<Sigma>i - \<Sigma>" by auto
   with A(1) obtain \<sigma>h where IP: 
     "\<sigma>h\<in>W" 
@@ -168,20 +168,20 @@ proof (intro ballI)
     "\<Sigma>\<subseteq>R\<^sup>* `` \<Sigma>i"
     by (unfold sse_invar_def) force
 
-  -- {* We now make a case distinction, whether the obtained path contains
-      states from @{term "post \<sigma>"} or not: *}
+  \<comment> \<open>We now make a case distinction, whether the obtained path contains
+      states from @{term "post \<sigma>"} or not:\<close>
   from IP(2) show "\<exists>\<sigma>h\<in>W - {\<sigma>} \<union> (R `` {\<sigma>} - \<Sigma>). 
                      (\<sigma>h, \<sigma>') \<in> (R - UNIV \<times> (\<Sigma> \<union> R `` {\<sigma>}))\<^sup>*"
   proof (cases rule: rtrancl_last_visit[where S="R `` {\<sigma>}"])
     case no_visit
-    -- {* In the case that the obtained path contains no states from 
-          @{term "post \<sigma>"}, we can take it. *}
+    \<comment> \<open>In the case that the obtained path contains no states from 
+          @{term "post \<sigma>"}, we can take it.\<close>
     hence G1: "(\<sigma>h,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
       by (simp add: set_diff_diff_left Sigma_Un_distrib2)
     moreover have "\<sigma>h \<noteq> \<sigma>" 
-      -- {* We may exclude the case that our obtained path started at 
+      \<comment> \<open>We may exclude the case that our obtained path started at 
             @{text \<sigma>}, as all successors of @{text \<sigma>} are 
-            in @{term "R `` {\<sigma>}"} *}
+            in @{term "R `` {\<sigma>}"}\<close>
     proof
       assume [simp]: "\<sigma>h=\<sigma>"
       from A SS have "\<sigma>\<noteq>\<sigma>'" by auto
@@ -191,8 +191,8 @@ proof (intro ballI)
     ultimately show ?thesis using IP(1) by auto
   next
     case (last_visit_point \<sigma>t)
-    -- {* If the obtained path contains a state from @{text "R `` {\<sigma>}"}, 
-          we simply pick the last one: *}
+    \<comment> \<open>If the obtained path contains a state from @{text "R `` {\<sigma>}"}, 
+          we simply pick the last one:\<close>
     hence "(\<sigma>t,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
       by (simp add: set_diff_diff_left Sigma_Un_distrib2)
     moreover from last_visit_point(2) have "\<sigma>t\<notin>\<Sigma>" 
@@ -201,7 +201,7 @@ proof (intro ballI)
   qed
 qed
 
--- "The sse-algorithm is a well-defined while-algorithm"
+\<comment> \<open>The sse-algorithm is a well-defined while-algorithm\<close>
 theorem sse_while_algo: "finite (R\<^sup>*``\<Sigma>i) \<Longrightarrow> while_algo (sse_algo \<Sigma>i R)"
   apply unfold_locales
   apply (auto simp add: sse_algo_def intro: sse_invar_step sse_invar_initial)
@@ -249,7 +249,7 @@ definition "dfs_algo \<Sigma>i R == \<lparr>
   wa_initial = dfs_initial \<Sigma>i, 
   wa_invar = dfs_invar \<Sigma>i R \<rparr>"
 
-  -- "The DFS-algorithm refines the state-space exploration algorithm"
+  \<comment> \<open>The DFS-algorithm refines the state-space exploration algorithm\<close>
 theorem dfs_pref_sse: 
   "wa_precise_refine (dfs_algo \<Sigma>i R) (sse_algo \<Sigma>i R) dfs_\<alpha>"
   apply (unfold_locales)
@@ -262,7 +262,7 @@ theorem dfs_pref_sse:
               elim: dfs_initial.cases)
   done
 
-  -- "The DFS-algorithm is a well-defined while-algorithm"
+  \<comment> \<open>The DFS-algorithm is a well-defined while-algorithm\<close>
 theorem dfs_while_algo:
   assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>i)"
   shows "while_algo (dfs_algo \<Sigma>i R)"
@@ -288,7 +288,7 @@ proof -
     done 
 qed
 
-  -- "The result of the DFS-algorithm is correct"
+  \<comment> \<open>The result of the DFS-algorithm is correct\<close>
 lemmas dfs_invar_final = 
   wa_precise_refine.transfer_correctness[OF dfs_pref_sse sse_invar_final]
 

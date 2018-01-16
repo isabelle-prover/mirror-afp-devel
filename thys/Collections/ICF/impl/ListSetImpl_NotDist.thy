@@ -42,7 +42,7 @@ definition lsnd_isEmpty :: "'a lsnd \<Rightarrow> bool" where "lsnd_isEmpty s ==
 definition lsnd_union :: "'a lsnd \<Rightarrow> 'a lsnd \<Rightarrow> 'a lsnd" 
   where "lsnd_union s1 s2 == revg s1 s2"
 definition lsnd_union_dj :: "'a lsnd \<Rightarrow> 'a lsnd \<Rightarrow> 'a lsnd" 
-  where "lsnd_union_dj s1 s2 == revg s1 s2" -- "Union of disjoint sets"
+  where "lsnd_union_dj s1 s2 == revg s1 s2" \<comment> \<open>Union of disjoint sets\<close>
 
 definition lsnd_to_list :: "'a lsnd \<Rightarrow> 'a list" where "lsnd_to_list == remdups"
 definition list_to_lsnd :: "'a list \<Rightarrow> 'a lsnd" where "list_to_lsnd == id"

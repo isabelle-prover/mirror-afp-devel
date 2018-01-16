@@ -120,7 +120,7 @@ locale AlgorithmForAgent =
     and tOps :: "('mt, 'rep \<times> 'obs, 'rep) MapOps"
 (*>*)
 
-  -- "..."
+  \<comment> \<open>...\<close>
 + fixes a :: "'a"
 
 subsubsection{* DFS operations *}

@@ -13,16 +13,16 @@ subsection \<open>Definitions\<close>
 
 locale semi_mojmir_def =
   fixes
-    --\<open>Alphapet\<close>
+    \<comment> \<open>Alphapet\<close>
     \<Sigma> :: "'a set"
   fixes
-    --\<open>Transition Function\<close>
+    \<comment> \<open>Transition Function\<close>
     \<delta> :: "('b, 'a) DTS"
   fixes
-    --\<open>Initial State\<close>
+    \<comment> \<open>Initial State\<close>
     q\<^sub>0 :: "'b"
   fixes
-    --\<open>$\omega$-Word\<close>
+    \<comment> \<open>$\omega$-Word\<close>
     w :: "'a word"
 begin
 
@@ -100,13 +100,13 @@ end
 
 locale semi_mojmir = semi_mojmir_def +
   assumes
-    --\<open>The alphabet is finite. Non-emptiness is derived from well-formed w\<close>
+    \<comment> \<open>The alphabet is finite. Non-emptiness is derived from well-formed w\<close>
     finite_\<Sigma>: "finite \<Sigma>"
   assumes
-    --\<open>The set of reachable states is finite\<close>
+    \<comment> \<open>The set of reachable states is finite\<close>
     finite_reach: "finite (reach \<Sigma> \<delta> q\<^sub>0)"
   assumes
-    --\<open>w only contains letters from the alphabet\<close>
+    \<comment> \<open>w only contains letters from the alphabet\<close>
     bounded_w: "range w \<subseteq> \<Sigma>"
 begin
 
@@ -116,7 +116,7 @@ lemma nonempty_\<Sigma>: "\<Sigma> \<noteq> {}"
 lemma bounded_w': "w i \<in> \<Sigma>"
   using bounded_w by blast
 
---\<open>Naming Scheme:
+\<comment> \<open>Naming Scheme:
 
 This theory uses the following naming scheme to consistently name variables.
 

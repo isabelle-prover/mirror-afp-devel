@@ -69,7 +69,7 @@ proof (induct t arbitrary: ks0)
    and invar_child: "\<And>k t. (k, t) \<in> set kvs \<Longrightarrow> invar_trie t"
   by (simp_all add: Ball_def distinct_map)
 
-  -- "root iterator"
+  \<comment> \<open>root iterator\<close>
   define it_vo :: "('key list \<times> 'val, '\<sigma>) set_iterator"
     where "it_vo =
       (case vo of None \<Rightarrow> set_iterator_emp 
@@ -80,7 +80,7 @@ proof (induct t arbitrary: ks0)
     by (simp split: option.split 
              add: set_iterator_emp_correct set_iterator_sng_correct)
 
-  -- "children iterator"
+  \<comment> \<open>children iterator\<close>
   define it_prod :: "(('key \<times> ('key, 'val) trie) \<times> 'key list \<times> 'val, '\<sigma>) set_iterator"
     where "it_prod = set_iterator_product (foldli kvs) (\<lambda>(k, y). iteratei_postfixed (k # ks0) y)"
 
@@ -120,7 +120,7 @@ proof (induct t arbitrary: ks0)
     done
   qed auto
 
-  -- "overall iterator"
+  \<comment> \<open>overall iterator\<close>
   have it_all_OK: "set_iterator 
       ((iteratei_postfixed ks0 (Trie vo kvs)):: ('key list \<times> 'val, '\<sigma>) set_iterator)
      (vo_S \<union> snd ` it_prod_S)"
@@ -133,7 +133,7 @@ proof (induct t arbitrary: ks0)
       by (simp split: option.split add: set_eq_iff image_iff)
   qed
 
-  -- "rewrite result set"
+  \<comment> \<open>rewrite result set\<close>
   have it_set_rewr: "((\<lambda>ksv. (rev (fst ksv) @ ks0, snd ksv)) `
       map_to_set (lookup_trie (Trie vo kvs))) = (vo_S \<union> snd ` it_prod_S)"
     (is "?ls = ?rs")
@@ -145,7 +145,7 @@ proof (induct t arbitrary: ks0)
     apply (metis append_Cons append_Nil append_assoc rev.simps)
   done
     
-  -- "done"
+  \<comment> \<open>done\<close>
   show ?case
     unfolding it_set_rewr using it_all_OK by fast
 qed

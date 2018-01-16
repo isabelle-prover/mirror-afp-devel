@@ -475,7 +475,7 @@ context begin interpretation timing_syntax .
                   using parenthesis_impl_tree_path[OF True] by metis
               qed
             next
-              case False -- \<open>\<open>v \<notin> dom (finished s)\<close>\<close>
+              case False \<comment> \<open>\<open>v \<notin> dom (finished s)\<close>\<close>
               with assms have st: "stack s \<noteq> []" "v = hd (stack s)" "pending s `` {v} = {}" by blast+
               
               have "z \<in> dom (finished s)"

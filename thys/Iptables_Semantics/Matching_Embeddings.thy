@@ -14,7 +14,7 @@ The problem are @{const MatchNot} expressions which evaluate to @{const TernaryU
 @{text TernaryUnknown} are semantically equal!\<close>
 lemma "\<exists>m \<beta> \<alpha> a. Matching_Ternary.matches (\<beta>, \<alpha>) m a p \<noteq> 
   Semantics.matches (\<lambda> atm p. case \<beta> atm p of TernaryTrue \<Rightarrow> True | TernaryFalse \<Rightarrow> False | TernaryUnknown \<Rightarrow> \<alpha> a p) m p"
-apply(rule_tac x="MatchNot (Match X)" in exI) --\<open>any @{term "X::'a"}\<close>
+apply(rule_tac x="MatchNot (Match X)" in exI) \<comment> \<open>any @{term "X::'a"}\<close>
 by (auto split: ternaryvalue.split ternaryvalue.split_asm simp add: matches_case_ternaryvalue_tuple)
 
 text\<open>the @{const the} in the next definition is always defined\<close>

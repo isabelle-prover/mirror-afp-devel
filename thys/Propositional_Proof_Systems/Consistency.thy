@@ -337,7 +337,7 @@ proof -
   with d(1,2) show ?thesis unfolding Hintikka_alt by fast
 qed
   
-theorem pcp_sat: -- "model existence theorem"
+theorem pcp_sat: \<comment> \<open>model existence theorem\<close>
   fixes S :: "'a :: countable formula set"
   assumes c: "pcp C"
   assumes el: "S \<in> C"

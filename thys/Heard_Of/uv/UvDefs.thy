@@ -21,12 +21,12 @@ text {*
   of the generic HO model.
 *}
 
-typedecl Proc -- {* the set of processes *}
+typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
 instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
 text {*
   The algorithm proceeds in \emph{phases} of $2$ rounds each (we call
@@ -46,9 +46,9 @@ text {*
 *}
 
 record 'val pstate =
-  x :: 'val                -- {* current value held by process *}
-  vote :: "'val option"    -- {* value the process voted for, if any *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  x :: 'val                \<comment> \<open>current value held by process\<close>
+  vote :: "'val option"    \<comment> \<open>value the process voted for, if any\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 text {*
   Possible messages sent during the execution of the algorithm, and characteristic
@@ -58,7 +58,7 @@ text {*
 datatype 'val msg =
   Val 'val
 | ValVote 'val "'val option"
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 definition isValVote where "isValVote m \<equiv> \<exists>z v. m = ValVote z v"
 
@@ -90,7 +90,7 @@ text {*
   for each step and later combine them to define the overall next-state relation.
 *}
 
-definition msgRcvd where  -- {* processes from which some message was received *}
+definition msgRcvd where  \<comment> \<open>processes from which some message was received\<close>
   "msgRcvd (msgs:: Proc \<rightharpoonup> 'val msg) = {q . msgs q \<noteq> None}"
 
 definition smallestValRcvd where
@@ -123,7 +123,7 @@ definition send1 where
   "send1 r p q st \<equiv> ValVote (x st) (vote st)"
 
 definition valVoteRcvd where
-  -- {* processes from which values and votes were received *}
+  \<comment> \<open>processes from which values and votes were received\<close>
   "valVoteRcvd (msgs :: Proc \<rightharpoonup> 'val msg) \<equiv> 
    {q . \<exists>z v. msgs q = Some (ValVote z v)}"
 
@@ -132,7 +132,7 @@ definition smallestValNoVoteRcvd where
    Min {v. \<exists>q. msgs q = Some (ValVote v None)}"
 
 definition someVoteRcvd where
-  -- {* set of processes from which some vote was received *}
+  \<comment> \<open>set of processes from which some vote was received\<close>
   "someVoteRcvd (msgs :: Proc \<rightharpoonup> 'val msg) \<equiv>
    { q . q \<in> msgRcvd msgs \<and> isValVote (the (msgs q)) \<and> getvote (the (msgs q)) \<noteq> None }"
 

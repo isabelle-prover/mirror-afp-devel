@@ -32,9 +32,9 @@ fun r_match :: "'a set list \<Rightarrow> 'a list \<Rightarrow> bool" where
   "r_match (A#AS) (a#as) \<longleftrightarrow> a\<in>A \<and> r_match AS as" |
   "r_match _ _ \<longleftrightarrow> False"
 
--- {* @{const r_match} accepts two lists, if they have the same length and 
+\<comment> \<open>@{const r_match} accepts two lists, if they have the same length and 
   the elements in the second list are contained in the respective 
-  elements of the first list: *}
+  elements of the first list:\<close>
 lemma r_match_alt: 
   "r_match L l \<longleftrightarrow> length L = length l \<and> (\<forall>i<length l. l!i \<in> L!i)"
   apply (induct L l rule: r_match.induct)
@@ -43,11 +43,11 @@ lemma r_match_alt:
   apply auto
   done
 
--- "Whether a rule matches the given state, label and list of sets of states"
+\<comment> \<open>Whether a rule matches the given state, label and list of sets of states\<close>
 fun r_matchc where
   "r_matchc q l Qs (qr \<rightarrow> lr qsr) \<longleftrightarrow> q=qr \<and> l=lr \<and> r_match Qs qsr"
 
--- {* recursive version of @{const accs}-predicate *}  
+\<comment> \<open>recursive version of @{const accs}-predicate\<close>  
 fun faccs :: "('Q,'L) ta_rule set \<Rightarrow> 'L tree \<Rightarrow> 'Q set" where
   "faccs \<delta> (NODE f ts) = (
     let Qs = map (faccs \<delta>) (ts) in
@@ -97,19 +97,15 @@ lemma faccs_alt: "faccs \<delta> t = {q. accs \<delta> t q}" by (auto intro: fac
 subsection {* Backward Reduction and Emptiness Check *}
 subsubsection "Auxiliary Definitions"
 
--- {*
-  Step function, that maps a set of states to those states 
-  that are reachable via one backward step.
-  *}
+\<comment> \<open>Step function, that maps a set of states to those states 
+  that are reachable via one backward step.\<close>
 inductive_set bacc_step :: "('Q,'L) ta_rule set \<Rightarrow> 'Q set \<Rightarrow> 'Q set" 
   for \<delta> Q 
   where
   "\<lbrakk> r\<in>\<delta>; set (rhsq r) \<subseteq> Q \<rbrakk> \<Longrightarrow> lhs r \<in> bacc_step \<delta> Q"
 
--- {*
-  If a set is closed under adding all states that are reachable from the set 
-  by one backward step, then this set contains all backward accessible states. 
-  *}
+\<comment> \<open>If a set is closed under adding all states that are reachable from the set 
+  by one backward step, then this set contains all backward accessible states.\<close>
 lemma b_accs_as_closed:
   assumes A: "bacc_step \<delta> Q \<subseteq> Q"  
   shows "b_accessible \<delta> \<subseteq> Q"
@@ -152,20 +148,19 @@ text {*
 
 text_raw {* \paragraph {@{text \<alpha>} - Level:} *}
 
-  -- "A state contains the set of discovered states and a workset"
+  \<comment> \<open>A state contains the set of discovered states and a workset\<close>
 type_synonym ('Q,'L) br_state = "'Q set \<times> 'Q set"
 
-  -- {* Set of states that are non-empty (accept a tree) after adding the 
-  state $q$ to the set of discovered states *}
+  \<comment> \<open>Set of states that are non-empty (accept a tree) after adding the 
+  state $q$ to the set of discovered states\<close>
 definition br_dsq 
   :: "('Q,'L) ta_rule set \<Rightarrow> 'Q \<Rightarrow> ('Q,'L) br_state \<Rightarrow> 'Q set" 
   where  
   "br_dsq \<delta> q == \<lambda>(Q,W). { lhs r | r. r\<in>\<delta> \<and> set (rhsq r) \<subseteq> (Q-(W-{q})) }"
 
-  -- {*
-  Description of a step: One state is removed from the workset, and all 
+  \<comment> \<open>Description of a step: One state is removed from the workset, and all 
   new states that become non-empty due to this state are added to, both, 
-  the workset and the set of discovered states *}
+  the workset and the set of discovered states\<close>
 inductive_set br_step 
   :: "('Q,'L) ta_rule set \<Rightarrow> (('Q,'L) br_state \<times> ('Q,'L) br_state) set" 
   for \<delta> where
@@ -175,25 +170,24 @@ inductive_set br_step
      W' = W - {q} \<union> (br_dsq \<delta> q (Q,W) - Q)
    \<rbrakk> \<Longrightarrow> ((Q,W),(Q',W'))\<in>br_step \<delta>"
 
-  -- "Termination condition for backwards reduction: The workset is empty"
+  \<comment> \<open>Termination condition for backwards reduction: The workset is empty\<close>
 definition br_cond :: "('Q,'L) br_state set" 
   where "br_cond == {(Q,W). W\<noteq>{}}"
 
-  -- "Termination condition for emptiness check: 
-      The workset is empty or a non-empty initial state has been discovered"
+  \<comment> \<open>Termination condition for emptiness check: 
+      The workset is empty or a non-empty initial state has been discovered\<close>
 definition bre_cond :: "'Q set \<Rightarrow> ('Q,'L) br_state set" 
   where "bre_cond Qi == {(Q,W). W\<noteq>{} \<and> (Qi\<inter>Q={})}"
 
-  -- "Set of all states that occur on the lhs of a constant-rule"
+  \<comment> \<open>Set of all states that occur on the lhs of a constant-rule\<close>
 definition br_iq :: "('Q,'L) ta_rule set \<Rightarrow> 'Q set" 
   where "br_iq \<delta> == { lhs r | r. r\<in>\<delta> \<and> rhsq r = [] }"
 
-  -- "Initial state for the iteration"
+  \<comment> \<open>Initial state for the iteration\<close>
 definition br_initial :: "('Q,'L) ta_rule set \<Rightarrow> ('Q,'L) br_state" 
   where "br_initial \<delta> == (br_iq \<delta>, br_iq \<delta>)"
 
-  -- {*
-  Invariant for the iteration: 
+  \<comment> \<open>Invariant for the iteration: 
     \begin{itemize}
       \item States on the workset have been discovered
       \item Only accessible states have been discovered
@@ -202,8 +196,7 @@ definition br_initial :: "('Q,'L) ta_rule set \<Rightarrow> ('Q,'L) br_state"
             (i.e. are in $Q-W$), then the lhs state of the 
             rule has also been discovered.
       \item The set of discovered states is finite
-    \end{itemize}
-  *}
+    \end{itemize}\<close>
 definition br_invar :: "('Q,'L) ta_rule set \<Rightarrow> ('Q,'L) br_state set" 
   where "br_invar \<delta> == {(Q,W). 
     W\<subseteq>Q \<and> 
@@ -226,7 +219,7 @@ definition "bre_algo Qi \<delta> == \<lparr>
 \<rparr>"
 
 
-  -- {* Termination: Either a new state is added, or the workset decreases. *}
+  \<comment> \<open>Termination: Either a new state is added, or the workset decreases.\<close>
 definition "br_termrel \<delta> == 
   ({(Q',Q). Q \<subset> Q' \<and> Q' \<subseteq> b_accessible \<delta>}) <*lex*> finite_psubset"
 
@@ -238,7 +231,7 @@ lemma br_termrel_wf[simp, intro!]: "finite \<delta> \<Longrightarrow> wf (br_ter
   apply (auto simp add: wf_bounded_supset)
   done
 
-  -- "Only accessible states are discovered"
+  \<comment> \<open>Only accessible states are discovered\<close>
 lemma br_dsq_ss:
   assumes A: "(Q,W)\<in>br_invar \<delta>" "W \<noteq> {}" "q\<in>W"
   shows "br_dsq \<delta> q (Q,W) \<subseteq> b_accessible \<delta>"
@@ -394,7 +387,7 @@ text {*
 *}
 type_synonym ('Q,'L) br'_state = "'Q set \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 
-  -- {* Abstraction to @{text \<alpha>}-level *}
+  \<comment> \<open>Abstraction to @{text \<alpha>}-level\<close>
 definition br'_\<alpha> :: "('Q,'L) br'_state \<Rightarrow> ('Q,'L) br_state" 
   where "br'_\<alpha> = (\<lambda>(Q,W,rcm). (Q,W))"
 
@@ -813,12 +806,12 @@ text {*
   discovered state.
 *}
 
--- "A map from states to trees has the witness-property, if it maps states to 
-    trees that are accepted with that state:"
+\<comment> \<open>A map from states to trees has the witness-property, if it maps states to 
+    trees that are accepted with that state:\<close>
 definition "witness_prop \<delta> m == \<forall>q t. m q = Some t \<longrightarrow> accs \<delta> t q"
 
--- "Construct a witness for the LHS of a rule, provided that the map contains 
-    witnesses for all states on the RHS:"
+\<comment> \<open>Construct a witness for the LHS of a rule, provided that the map contains 
+    witnesses for all states on the RHS:\<close>
 definition construct_witness 
   :: "('Q \<rightharpoonup> 'L tree) \<Rightarrow> ('Q,'L) ta_rule \<Rightarrow> 'L tree"
   where 
@@ -1288,7 +1281,7 @@ definition "frp_algo T1 T2 == \<lparr>
   wa_invar = frp_invar T1 T2
 \<rparr>"
 
-  -- "The algorithm refines the DFS-algorithm"
+  \<comment> \<open>The algorithm refines the DFS-algorithm\<close>
 theorem frp_pref_dfs: 
   "wa_precise_refine (frp_algo T1 T2) 
      (dfs_algo (ta_initial T1 \<times> ta_initial T2) 
@@ -1307,7 +1300,7 @@ interpretation frp_ref: wa_precise_refine "(frp_algo T1 T2)"
                              (f_succ (\<delta>_prod (ta_rules T1) (ta_rules T2))))"
                   "frp_\<alpha>" using frp_pref_dfs .
 
--- "The algorithm is a well-defined while-algorithm"
+\<comment> \<open>The algorithm is a well-defined while-algorithm\<close>
 theorem frp_while_algo:
   assumes TA: "tree_automaton T1" 
               "tree_automaton T2"
@@ -1351,8 +1344,8 @@ lemma f_succ_adv:
   by (case_tac r) (auto dest: rtrancl_into_rtrancl intro: f_succ.intros)
 *)
 
--- "If the algorithm terminates, the forward reduced product automaton 
-    can be constructed from the result"
+\<comment> \<open>If the algorithm terminates, the forward reduced product automaton 
+    can be constructed from the result\<close>
 theorem frp_inv_final:
   "\<forall>s. s\<in>wa_invar (frp_algo T1 T2) \<and> s\<notin>wa_cond (frp_algo T1 T2)
        \<longrightarrow> (case s of (Q,W,\<delta>d) \<Rightarrow> 

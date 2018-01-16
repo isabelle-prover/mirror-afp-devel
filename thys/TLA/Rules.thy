@@ -641,7 +641,7 @@ qed
 
 subsection "Theorems about the eventually operator"
 
--- {* rules to push negation inside modal operators, sometimes useful for rewriting *}
+\<comment> \<open>rules to push negation inside modal operators, sometimes useful for rewriting\<close>
 theorem dualization:
   "\<turnstile> \<not>\<box>F = \<diamond>\<not>F"
   "\<turnstile> \<not>\<diamond>F = \<box>\<not>F"

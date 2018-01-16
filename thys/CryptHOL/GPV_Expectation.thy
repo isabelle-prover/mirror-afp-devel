@@ -174,7 +174,7 @@ lemma nn_integral_mono2mono:
   by(rule monotoneI nn_integral_mono monotoneD[OF assms])+
 
 lemma nn_integral_mono_lfp [partial_function_mono]:
-  -- \<open>@{ML Partial_Function.mono_tac} does not like conditional assumptions (more precisely the case splitter)\<close>
+  \<comment> \<open>@{ML Partial_Function.mono_tac} does not like conditional assumptions (more precisely the case splitter)\<close>
   "(\<And>x. lfp.mono_body (\<lambda>f. F f x)) \<Longrightarrow> lfp.mono_body (\<lambda>f. nn_integral M (F f))"
   by(rule nn_integral_mono2mono)
 

@@ -48,7 +48,7 @@ definition lss_union_list :: "'a::{linorder} lss list \<Rightarrow> 'a lss"
 definition lss_inter :: "'a::{linorder} lss \<Rightarrow> 'a lss \<Rightarrow> 'a lss" 
   where "lss_inter == inter_sorted"
 definition lss_union_dj :: "'a::{linorder} lss \<Rightarrow> 'a lss \<Rightarrow> 'a lss" 
-  where "lss_union_dj == lss_union" -- "Union of disjoint sets"
+  where "lss_union_dj == lss_union" \<comment> \<open>Union of disjoint sets\<close>
 
 definition lss_image_filter 
   where "lss_image_filter f l = 

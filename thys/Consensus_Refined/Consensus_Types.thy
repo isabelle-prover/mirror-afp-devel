@@ -15,9 +15,9 @@ axiomatization where process_finite:
 instance process :: finite by (rule process_finite)
 
 abbreviation
-  "N \<equiv> card (UNIV::process set)"   -- {* number of processes *}
+  "N \<equiv> card (UNIV::process set)"   \<comment> \<open>number of processes\<close>
 
-typedecl val     -- {* Type of values to choose from *}
+typedecl val     \<comment> \<open>Type of values to choose from\<close>
 
 type_synonym round = nat
 

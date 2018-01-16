@@ -14,7 +14,7 @@ infinite) sets of trees into trees. To avoid paradoxes (note that there is no in
 powerset of trees into the set of trees), the cardinality of the argument set must be bounded.\<close>
 
 datatype ('idx,'pred,'act) Tree =
-    tConj "('idx,'pred,'act) Tree set['idx]"  -- \<open>potentially infinite sets of trees\<close>
+    tConj "('idx,'pred,'act) Tree set['idx]"  \<comment> \<open>potentially infinite sets of trees\<close>
   | tNot "('idx,'pred,'act) Tree"
   | tPred 'pred
   | tAct 'act "('idx,'pred,'act) Tree"
@@ -55,7 +55,7 @@ instantiation Tree :: (type, pt, pt) pt
 begin
 
   primrec permute_Tree :: "perm \<Rightarrow> (_,_,_) Tree \<Rightarrow> (_,_,_) Tree" where
-    "p \<bullet> (tConj tset) = tConj (map_bset (permute p) tset)"  -- \<open>neat trick to get around the fact that~@{term tset} is not of permutation type yet\<close>
+    "p \<bullet> (tConj tset) = tConj (map_bset (permute p) tset)"  \<comment> \<open>neat trick to get around the fact that~@{term tset} is not of permutation type yet\<close>
   | "p \<bullet> (tNot t) = tNot (p \<bullet> t)"
   | "p \<bullet> (tPred \<phi>) = tPred (p \<bullet> \<phi>)"
   | "p \<bullet> (tAct \<alpha> t) = tAct (p \<bullet> \<alpha>) (p \<bullet> t)"
@@ -232,15 +232,15 @@ text \<open>Here it comes \ldots\<close>
 
 function (sequential)
   alpha_Tree :: "('idx,'pred::pt,'act::bn) Tree \<Rightarrow> ('idx,'pred,'act) Tree \<Rightarrow> bool" (infix "=\<^sub>\<alpha>" 50) where
--- \<open>@{const alpha_Tree}\<close>
+\<comment> \<open>@{const alpha_Tree}\<close>
   alpha_tConj: "tConj tset1 =\<^sub>\<alpha> tConj tset2 \<longleftrightarrow> rel_bset alpha_Tree tset1 tset2"
 | alpha_tNot: "tNot t1 =\<^sub>\<alpha> tNot t2 \<longleftrightarrow> t1 =\<^sub>\<alpha> t2"
 | alpha_tPred: "tPred \<phi>1 =\<^sub>\<alpha> tPred \<phi>2 \<longleftrightarrow> \<phi>1 = \<phi>2"
--- \<open>the action may have binding names\<close>
+\<comment> \<open>the action may have binding names\<close>
 | alpha_tAct: "tAct \<alpha>1 t1 =\<^sub>\<alpha> tAct \<alpha>2 t2 \<longleftrightarrow>
     (\<exists>p. (bn \<alpha>1, t1) \<approx>set alpha_Tree (supp_rel alpha_Tree) p (bn \<alpha>2, t2) \<and> (bn \<alpha>1, \<alpha>1) \<approx>set ((=)) supp p (bn \<alpha>2, \<alpha>2))"
 | alpha_other: "_ =\<^sub>\<alpha> _ \<longleftrightarrow> False"
--- \<open>254 subgoals (!)\<close>
+\<comment> \<open>254 subgoals (!)\<close>
 by pat_completeness auto
 termination
 proof
@@ -880,7 +880,7 @@ qed
 lemma Pred\<^sub>\<alpha>_eq_iff [simp]: "Pred\<^sub>\<alpha> \<phi>1 = Pred\<^sub>\<alpha> \<phi>2 \<longleftrightarrow> \<phi>1 = \<phi>2"
 proof
   assume "Pred\<^sub>\<alpha> \<phi>1 = Pred\<^sub>\<alpha> \<phi>2"
-  then have "(tPred \<phi>1 :: ('d, 'b, 'e) Tree) =\<^sub>\<alpha> tPred \<phi>2"  -- \<open>note the unrelated type\<close>
+  then have "(tPred \<phi>1 :: ('d, 'b, 'e) Tree) =\<^sub>\<alpha> tPred \<phi>2"  \<comment> \<open>note the unrelated type\<close>
     by (metis Pred\<^sub>\<alpha>.abs_eq Tree\<^sub>\<alpha>.abs_eq_iff)
   then show "\<phi>1 = \<phi>2"
     using alpha_Tree.cases by auto
@@ -1378,7 +1378,7 @@ next
 next
   case (Act \<alpha> x) show ?case
   proof -
-    -- \<open>rename~@{term "bn (p \<bullet> \<alpha>)"} to avoid~@{term c}, without touching~@{term "Act (p \<bullet> \<alpha>) (p \<bullet> x)"}\<close>
+    \<comment> \<open>rename~@{term "bn (p \<bullet> \<alpha>)"} to avoid~@{term c}, without touching~@{term "Act (p \<bullet> \<alpha>) (p \<bullet> x)"}\<close>
     obtain q where 1: "(q \<bullet> bn (p \<bullet> \<alpha>)) \<sharp>* c" and 2: "supp (Act (p \<bullet> \<alpha>) (p \<bullet> x)) \<sharp>* q"
       proof (rule at_set_avoiding2[of "bn (p \<bullet> \<alpha>)" c "Act (p \<bullet> \<alpha>) (p \<bullet> x)", THEN exE])
         show "finite (bn (p \<bullet> \<alpha>))" by (fact bn_finite)

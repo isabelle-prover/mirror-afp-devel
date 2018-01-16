@@ -20,29 +20,29 @@ text {*
   algorithm fixing its operations as parameters.
 *}
   subsubsection "Straightforward version"
-  -- "Abstract algorithm"
+  \<comment> \<open>Abstract algorithm\<close>
   fun set_a where
     "set_a [] s = s" |
     "set_a (a#l) s = set_a l (insert a s)"
 
-  -- "Correctness of aa"
+  \<comment> \<open>Correctness of aa\<close>
   lemma set_a_correct: "set_a l s = set l \<union> s"
     by (induct l arbitrary: s) auto
 
-  -- "Generic algorithm"
+  \<comment> \<open>Generic algorithm\<close>
 
-  setup Locale_Code.open_block -- "Required to make definitions inside locales
-    executable"
+  setup Locale_Code.open_block \<comment> \<open>Required to make definitions inside locales
+    executable\<close>
   fun (in StdSetDefs) set_i where
     "set_i [] s = s" |
     "set_i (a#l) s = set_i l (ins a s)"
   setup Locale_Code.close_block
 
-  -- "Correct implementation of ca"
+  \<comment> \<open>Correct implementation of ca\<close>
   lemma (in StdSet) set_i_impl: "invar s \<Longrightarrow> invar (set_i l s) \<and> \<alpha> (set_i l s) = set_a l (\<alpha> s)"
     by (induct l arbitrary: s) (auto simp add: correct)
 
-  -- "Instantiation"
+  \<comment> \<open>Instantiation\<close>
   (* We need to declare a constant to make the code generator work *)
 
   definition "hs_seti == hs.set_i"
@@ -52,44 +52,44 @@ text {*
 
 export_code hs_seti in SML
 
-  -- "Code generation"
+  \<comment> \<open>Code generation\<close>
   ML {* @{code hs_seti} *} 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
   subsubsection "Tail-Recursive version"
-  -- "Abstract algorithm"
+  \<comment> \<open>Abstract algorithm\<close>
   fun set_a2 where
     "set_a2 [] = {}" |
     "set_a2 (a#l) = (insert a (set_a2 l))"
 
-  -- "Correctness of aa"
+  \<comment> \<open>Correctness of aa\<close>
   lemma set_a2_correct: "set_a2 l = set l"
     by (induct l) auto
 
-  -- "Generic algorithm"
+  \<comment> \<open>Generic algorithm\<close>
   setup Locale_Code.open_block
   fun (in StdSetDefs) set_i2 where
     "set_i2 [] = empty ()" |
     "set_i2 (a#l) = (ins a (set_i2 l))"
   setup Locale_Code.close_block
 
-  -- "Correct implementation of ca"
+  \<comment> \<open>Correct implementation of ca\<close>
   lemma (in StdSet) set_i2_impl: "invar s \<Longrightarrow> invar (set_i2 l) \<and> \<alpha> (set_i2 l) = set_a2 l"
     by (induct l) (auto simp add: correct)
 
-  -- "Instantiation"
+  \<comment> \<open>Instantiation\<close>
   definition "hs_seti2 == hs.set_i2"
   (*declare hsr.set_i2.simps[folded hs_seti2_def, code]*)
 
   lemmas hs_set_i2_impl = hs.set_i2_impl[folded hs_seti2_def]
 
-  -- "Code generation"
+  \<comment> \<open>Code generation\<close>
   ML {* @{code hs_seti2} *} 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
 subsubsection "With explicit operation parameters"
 
-  -- "Alternative for few operation parameters"
+  \<comment> \<open>Alternative for few operation parameters\<close>
   fun set_i' where
     "!!ins. set_i' ins [] s = s" |
     "!!ins. set_i' ins (a#l) s = set_i' ins l (ins a s)"
@@ -98,11 +98,11 @@ subsubsection "With explicit operation parameters"
     "invar s \<Longrightarrow> invar (set_i' ins l s) \<and> \<alpha> (set_i' ins l s) = set_a l (\<alpha> s)"
     by (induct l arbitrary: s) (auto simp add: correct)
 
-  -- "Instantiation"
+  \<comment> \<open>Instantiation\<close>
   definition "hs_seti' == set_i' hs.ins"
   lemmas hs_set_i'_impl = hs.set_i'_impl[folded hs_seti'_def]
 
-  -- "Code generation"
+  \<comment> \<open>Code generation\<close>
   ML {* @{code hs_seti'} *} 
   (*value "hs_seti' [1,2,3::nat] hs_empty"*)
 

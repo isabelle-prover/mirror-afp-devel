@@ -12,8 +12,8 @@ begin
 
 subsection {* Auxiliary predicates *}
 
--- "The predicate DisjointSchedules is true  for sheaf of channels of type Config, "
--- "if all bus configurations have disjoint scheduling tables. "
+\<comment> \<open>The predicate DisjointSchedules is true  for sheaf of channels of type Config,\<close>
+\<comment> \<open>if all bus configurations have disjoint scheduling tables.\<close>
 definition
   DisjointSchedules :: "nat \<Rightarrow> nConfig \<Rightarrow> bool" 
 where
@@ -22,8 +22,8 @@ where
   \<forall> i j. i < n \<and> j < n \<and> i \<noteq> j \<longrightarrow> 
   disjoint (schedule (nC i))  (schedule (nC j))" 
 
---"The predicate IdenticCycleLength is true  for sheaf of channels of type Config, " 
---"if all bus configurations have the equal length of the communication round. "
+\<comment> \<open>The predicate IdenticCycleLength is true  for sheaf of channels of type Config,\<close> 
+\<comment> \<open>if all bus configurations have the equal length of the communication round.\<close>
 definition
    IdenticCycleLength :: "nat \<Rightarrow> nConfig \<Rightarrow> bool"
 where
@@ -32,10 +32,10 @@ where
    \<forall> i j. i < n \<and> j < n \<longrightarrow> 
    cycleLength (nC i) = cycleLength (nC j)"
    
---"The predicate FrameTransmission defines the correct message transmission: "
---"if the time t is equal modulo the length of the cycle (Flexray communication round) "
---"to the element of the scheduler table of the node k, then this and only this node "
---"can send a data atn the $t$th time interval."
+\<comment> \<open>The predicate FrameTransmission defines the correct message transmission:\<close>
+\<comment> \<open>if the time t is equal modulo the length of the cycle (Flexray communication round)\<close>
+\<comment> \<open>to the element of the scheduler table of the node k, then this and only this node\<close>
+\<comment> \<open>can send a data atn the $t$th time interval.\<close>
 definition
    FrameTransmission :: 
      "nat \<Rightarrow> 'a nFrame \<Rightarrow> 'a nFrame \<Rightarrow> nNat \<Rightarrow> nConfig \<Rightarrow> bool"
@@ -51,7 +51,7 @@ where
        (\<forall> j. j < n \<and> j \<noteq> k \<longrightarrow> 
             ((nStore j) t) =  ((nReturn k) t)) ))" 
 
---"The   predicate Broadcast describes properties of FlexRay broadcast. "
+\<comment> \<open>The   predicate Broadcast describes properties of FlexRay broadcast.\<close>
 definition
    Broadcast :: 
      "nat \<Rightarrow> 'a nFrame \<Rightarrow> 'a Frame istream \<Rightarrow> bool"
@@ -63,8 +63,8 @@ where
       then (recv t) = ((nSend (SOME k. k < n \<and> ((nSend k) t) \<noteq> [])) t)
       else (recv t) = [] )"  
       
---"The predicate Receive defines the  relations on the streams  to represent" 
---"data receive by FlexRay controller."
+\<comment> \<open>The predicate Receive defines the  relations on the streams  to represent\<close> 
+\<comment> \<open>data receive by FlexRay controller.\<close>
 definition
   Receive :: 
   "'a Frame istream \<Rightarrow> 'a Frame istream \<Rightarrow> nat istream \<Rightarrow> bool"     
@@ -76,8 +76,8 @@ where
       then (store t) = (recv t)
       else (store t) = [])"
 
---"The predicate Send defines the  relations on the streams  to represent "
---"sending data  by FlexRay controller."
+\<comment> \<open>The predicate Send defines the  relations on the streams  to represent\<close>
+\<comment> \<open>sending data  by FlexRay controller.\<close>
 definition
   Send :: 
   "'a Frame istream \<Rightarrow> 'a Frame istream \<Rightarrow> nat istream \<Rightarrow> nat istream \<Rightarrow> bool"

@@ -211,10 +211,10 @@ qed
     
     
     
-end -- \<open>Network with preflow\<close>
+end \<comment> \<open>Network with preflow\<close>
   
   
-locale RPreGraph -- \<open>Locale that characterizes a residual graph of a network\<close>
+locale RPreGraph \<comment> \<open>Locale that characterizes a residual graph of a network\<close>
 = Network +
   fixes cf
   assumes EX_RPG: "\<exists>f. NPreflow c s t f \<and> cf = residualGraph c f"
@@ -300,7 +300,7 @@ lemma (in NPreflow)
   by (rule fo_rg_inv)
 
 
-locale RGraph -- \<open>Locale that characterizes a residual graph of a network\<close>
+locale RGraph \<comment> \<open>Locale that characterizes a residual graph of a network\<close>
 = Network +
   fixes cf
   assumes EX_RG: "\<exists>f. NFlow c s t f \<and> cf = residualGraph c f"
@@ -347,7 +347,7 @@ proof -
     by (auto intro!: sum.cong) 
 qed  
       
-end -- \<open>Network with Flow\<close>
+end \<comment> \<open>Network with Flow\<close>
 
 lemma (in RPreGraph) maxflow_imp_rgraph:
   assumes "isMaxFlow (flow_of_cf cf)"
@@ -365,4 +365,4 @@ proof -
     done  
 qed      
   
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

@@ -293,7 +293,7 @@ proof -
           next
           case False
             with nomatch seq_cons False r have r_nomatch: "\<And>rs. \<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow> Undecided \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile> \<langle>r # rs, Undecided\<rangle> \<Rightarrow> Undecided" by fast
-            note r_nomatch'=r_nomatch[simplified r \<open>a = Return\<close>] --"r unfolded"
+            note r_nomatch'=r_nomatch[simplified r \<open>a = Return\<close>] \<comment> \<open>r unfolded\<close>
             from False not_matches_add_matchNot_simp prems have "\<Gamma>,\<gamma>,p\<turnstile> \<langle>process_ret rs, Undecided\<rangle> \<Rightarrow> Undecided" by fast
             with Cons.IH have IH: "\<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow> Undecided \<or> (\<exists>rs\<^sub>1 rs\<^sub>2 m. rs = rs\<^sub>1 @ [Rule m Return] @ rs\<^sub>2 \<and> \<Gamma>,\<gamma>,p\<turnstile> \<langle>rs\<^sub>1, Undecided\<rangle> \<Rightarrow> Undecided \<and> matches \<gamma> m p)" .
             thus ?thesis

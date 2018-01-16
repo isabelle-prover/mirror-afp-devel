@@ -101,7 +101,7 @@ where
 | "max_vars (e\<bullet>compareAndSwap(D\<bullet>F, e', e'')) = max (max (max_vars e) (max_vars e')) (max_vars e'')"
 | "max_vars (e\<bullet>M(es)) = max (max_vars e) (max_varss es)"
 | "max_vars ({V:T=vo; e}) = max_vars e + 1"
--- "sync and insync will need an extra local variable when compiling to bytecode to store the object that is being synchronized on until its release"
+\<comment> \<open>sync and insync will need an extra local variable when compiling to bytecode to store the object that is being synchronized on until its release\<close>
 | "max_vars (sync\<^bsub>V\<^esub> (e') e) = max (max_vars e') (max_vars e + 1)"
 | "max_vars (insync\<^bsub>V\<^esub> (a) e) = max_vars e + 1"
 | "max_vars (e\<^sub>1;;e\<^sub>2) = max (max_vars e\<^sub>1) (max_vars e\<^sub>2)"
@@ -114,7 +114,7 @@ where
 | "max_varss [] = 0"
 | "max_varss (e#es) = max (max_vars e) (max_varss es)"
 
---"Indices in blocks increase by 1"
+\<comment> \<open>Indices in blocks increase by 1\<close>
 
 primrec \<B> :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
   and \<B>s :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"

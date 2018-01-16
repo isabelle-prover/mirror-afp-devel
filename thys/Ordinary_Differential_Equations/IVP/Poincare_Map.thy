@@ -23,7 +23,7 @@ proof -
 qed
 
 lemma
-  eventually_eventually_withinI:\<comment>\<open>aha...\<close>
+  eventually_eventually_withinI:\<comment> \<open>aha...\<close>
   assumes "\<forall>\<^sub>F x in at x within A. P x" "P x"
   shows "\<forall>\<^sub>F a in at x within S. \<forall>\<^sub>F x in at a within A. P x"
   using assms
@@ -53,7 +53,7 @@ lemma
 
 end
 
-context auto_ll_on_open\<comment>\<open>TODO: generalize to continuous systems\<close>
+context auto_ll_on_open\<comment> \<open>TODO: generalize to continuous systems\<close>
 begin
 
 definition returns_to ::"'a set \<Rightarrow> 'a \<Rightarrow> bool"
@@ -537,7 +537,7 @@ qed
 
 definition "invertibles_blinfun = {w. \<exists>wi. w o\<^sub>L wi = 1\<^sub>L \<and> wi o\<^sub>L w = 1\<^sub>L}"
 
-lemma blinfun_inverse_open:\<comment>\<open>8.3.2 in Dieudonne, TODO: add continuity and derivative\<close>
+lemma blinfun_inverse_open:\<comment> \<open>8.3.2 in Dieudonne, TODO: add continuity and derivative\<close>
   shows "open (invertibles_blinfun::
       ('a::{banach, perfect_space} \<Rightarrow>\<^sub>L 'b::banach) set)"
 proof (rule openI)
@@ -633,14 +633,14 @@ lemma blinfun_apply_Pair_minus1: "blinfun_apply f (a - b, 0) = blinfun_apply f (
   unfolding blinfun.bilinear_simps[symmetric] by simp
 
 lemma implicit_function_theorem:
-  fixes f::"'a::euclidean_space * 'b::euclidean_space \<Rightarrow> 'c::euclidean_space"\<comment>\<open>TODO: generalize?!\<close>
+  fixes f::"'a::euclidean_space * 'b::euclidean_space \<Rightarrow> 'c::euclidean_space"\<comment> \<open>TODO: generalize?!\<close>
   assumes [derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative blinfun_apply (f' x)) (at x)"
   assumes S: "(x, y) \<in> S" "open S"
   assumes "DIM('c) \<le> DIM('b)"
   assumes f'C: "isCont f' (x, y)"
   assumes "f (x, y) = 0"
   assumes T2: "T o\<^sub>L (f' (x, y) o\<^sub>L embed2_blinfun) = 1\<^sub>L"
-  assumes T1: "(f' (x, y) o\<^sub>L embed2_blinfun) o\<^sub>L T = 1\<^sub>L"\<comment>\<open>TODO: reduce?!\<close>
+  assumes T1: "(f' (x, y) o\<^sub>L embed2_blinfun) o\<^sub>L T = 1\<^sub>L"\<comment> \<open>TODO: reduce?!\<close>
   obtains u e r
   where "f (x, u x) = 0" "u x = y"
     "\<And>s. s \<in> cball x e \<Longrightarrow> f (s, u s) = 0"
@@ -730,7 +730,7 @@ proof -
     done
   obtain i::'a where "i \<in> Basis"
     using nonempty_Basis by blast
-  define undef where "undef \<equiv> (x, y) + r *\<^sub>R (i, 0)"\<comment>\<open>really??\<close>
+  define undef where "undef \<equiv> (x, y) + r *\<^sub>R (i, 0)"\<comment> \<open>really??\<close>
   have ud: "\<not> dist (x, y) undef < r"
     using \<open>r > 0\<close> \<open>i \<in> Basis\<close> by (auto simp: undef_def dist_norm)
   define G where "G \<equiv> the_inv_into (ball (x, y) r) H"
@@ -940,14 +940,14 @@ proof -
 qed
 
 lemma implicit_function_theorem_unique:
-  fixes f::"'a::euclidean_space * 'b::euclidean_space \<Rightarrow> 'c::euclidean_space"\<comment>\<open>TODO: generalize?!\<close>
+  fixes f::"'a::euclidean_space * 'b::euclidean_space \<Rightarrow> 'c::euclidean_space"\<comment> \<open>TODO: generalize?!\<close>
   assumes f'[derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative blinfun_apply (f' x)) (at x)"
   assumes S: "(x, y) \<in> S" "open S"
   assumes D: "DIM('c) \<le> DIM('b)"
   assumes f'C: "continuous_on S f'"
   assumes z: "f (x, y) = 0"
   assumes T2: "T o\<^sub>L (f' (x, y) o\<^sub>L embed2_blinfun) = 1\<^sub>L"
-  assumes T1: "(f' (x, y) o\<^sub>L embed2_blinfun) o\<^sub>L T = 1\<^sub>L"\<comment>\<open>TODO: reduce?!\<close>
+  assumes T1: "(f' (x, y) o\<^sub>L embed2_blinfun) o\<^sub>L T = 1\<^sub>L"\<comment> \<open>TODO: reduce?!\<close>
   obtains u e
   where "f (x, u x) = 0" "u x = y"
     "\<And>s. s \<in> cball x e \<Longrightarrow> f (s, u s) = 0"
@@ -1178,7 +1178,7 @@ qed
 
 lemma
   order_uniform_limitD1:
-  fixes l::"'a::topological_space\<Rightarrow>real"\<comment>\<open>TODO: generalize?!\<close>
+  fixes l::"'a::topological_space\<Rightarrow>real"\<comment> \<open>TODO: generalize?!\<close>
   assumes ul: "uniform_limit T f l (at x)"
   assumes cont: "continuous_on T l"
   assumes compact: "compact T"
@@ -1202,7 +1202,7 @@ qed auto
 
 lemma
   order_uniform_limitD2:
-  fixes l::"'a::topological_space\<Rightarrow>real"\<comment>\<open>TODO: generalize?!\<close>
+  fixes l::"'a::topological_space\<Rightarrow>real"\<comment> \<open>TODO: generalize?!\<close>
   assumes ul: "uniform_limit T f l (at x)"
   assumes cont: "continuous_on T l"
   assumes compact: "compact T"
@@ -1216,7 +1216,7 @@ proof -
 qed
 
 lemma continuous_on_avoid_cases:
-  fixes l::"'b::topological_space \<Rightarrow> 'a::linear_continuum_topology"\<comment>\<open>TODO: generalize!\<close>
+  fixes l::"'b::topological_space \<Rightarrow> 'a::linear_continuum_topology"\<comment> \<open>TODO: generalize!\<close>
   assumes cont: "continuous_on T l" and conn: "connected T"
   assumes avoid: "\<And>t. t \<in> T \<Longrightarrow> l t \<noteq> b"
   obtains "\<And>t. t \<in> T \<Longrightarrow> l t < b" | "\<And>t. t \<in> T \<Longrightarrow> l t > b"
@@ -1228,7 +1228,7 @@ lemma continuous_on_avoid_cases:
 
 lemma
   order_uniform_limit_ne:
-  fixes l::"'a::topological_space\<Rightarrow>real"\<comment>\<open>TODO: generalize?!\<close>
+  fixes l::"'a::topological_space\<Rightarrow>real"\<comment> \<open>TODO: generalize?!\<close>
   assumes ul: "uniform_limit T f l (at x)"
   assumes cont: "continuous_on T l"
   assumes compact: "compact T" and conn: "connected T"
@@ -1573,7 +1573,7 @@ proof -
     have "x \<in> X"
       using u(5) u(6) by force
     from ev_cball
-    have ev_X: "\<forall>\<^sub>F y in at x. y \<in> X"\<comment>\<open>eigentlich ist das \<open>open X\<close>\<close>
+    have ev_X: "\<forall>\<^sub>F y in at x. y \<in> X"\<comment> \<open>eigentlich ist das \<open>open X\<close>\<close>
       apply eventually_elim
       apply (rule)
       by (rule u)

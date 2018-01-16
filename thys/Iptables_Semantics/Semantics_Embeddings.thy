@@ -285,7 +285,7 @@ lemma LukassLemma: assumes agree: "matcher_agree_on_exact_matches \<gamma> \<bet
         and good: "good_ruleset rs"
       shows "(\<beta>,\<alpha>),p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t \<longleftrightarrow>  \<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow> t"
 proof -
-  { fix t --\<open>if we show it for arbitrary @{term t}, we can reuse this fact for the other direction.\<close>
+  { fix t \<comment> \<open>if we show it for arbitrary @{term t}, we can reuse this fact for the other direction.\<close>
     assume a: "(\<beta>,\<alpha>),p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t"
     from a good agree noUnknown have "\<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow> t"
       proof(induction rs s t rule: approximating_bigstep_induct)

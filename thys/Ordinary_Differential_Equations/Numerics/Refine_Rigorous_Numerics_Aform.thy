@@ -1020,7 +1020,7 @@ lemma fst_eucl_of_list_aform_map: "fst (eucl_of_list_aform (map (\<lambda>x. (fs
   by (auto simp: eucl_of_list_aform_def o_def)
 
 lemma
-  Affine_pdevs_of_list:\<comment>\<open>TODO: move!\<close>
+  Affine_pdevs_of_list:\<comment> \<open>TODO: move!\<close>
   "Affine (fst x, pdevs_of_list (map snd (list_of_pdevs (snd x)))) = Affine x"
   by (auto simp: Affine_def valuate_def aform_val_def
       elim: pdevs_val_of_list_of_pdevs2[where X = "snd x"]

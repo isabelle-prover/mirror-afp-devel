@@ -219,7 +219,7 @@ locale known_addrs_typing' =
   and wfx :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'md prog"
   +
-  assumes NewHeapElem_typed: -- {* Should this be moved to known\_addrs\_typing? *}
+  assumes NewHeapElem_typed: \<comment> \<open>Should this be moved to known\_addrs\_typing?\<close>
   "\<lbrakk> t \<turnstile> (x, h) -ta\<rightarrow> (x', h'); NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; typeof_addr ad \<noteq> None \<rbrakk>
   \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
 

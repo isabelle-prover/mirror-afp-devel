@@ -120,7 +120,7 @@ next
     apply force done
 qed
   
--- "Subsumption is admissible" 
+\<comment> \<open>Subsumption is admissible\<close> 
 proposition e_sub: "\<lbrakk> v \<in> E e \<rho>; v' \<sqsubseteq> v \<rbrakk> \<Longrightarrow> v' \<in> E e \<rho>"
   apply (subgoal_tac "FV e \<turnstile> \<rho> \<sqsubseteq> \<rho>") using change_env_le apply blast apply auto done
 

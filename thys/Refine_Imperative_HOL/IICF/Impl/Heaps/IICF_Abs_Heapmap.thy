@@ -911,7 +911,7 @@ begin
       assumes NE: "hm_valid hm (Suc 0)"
       shows "prio (the (heapmap_\<alpha> hm (hm_key_of hm (Suc 0)))) \<le> prio v'"
     proof -  
-      -- "Transform into the domain of heaps"
+      \<comment> \<open>Transform into the domain of heaps\<close>
       obtain pq m where [simp]: "hm=(pq,m)" by (cases hm)
 
       from NE have [simp]: "pq\<noteq>[]" by (auto simp: hm_valid_def hm_length_def)

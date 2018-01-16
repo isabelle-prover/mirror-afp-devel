@@ -109,9 +109,9 @@ text\<open>\noindent{We use Isabelle's Nitpick tool @{cite "Nitpick"} to verify 
 neither the Barcan formula nor its converse.}\<close>
     
 lemma "\<lfloor>(\<^bold>\<forall>\<^sup>Ax. \<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ax. \<phi> x)\<rfloor>"
-  nitpick oops --\<open> Countermodel found: formula not valid \<close>
+  nitpick oops \<comment> \<open>Countermodel found: formula not valid\<close>
 lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>\<^sup>Ax. \<phi> x) \<^bold>\<rightarrow> (\<^bold>\<forall>\<^sup>Ax. \<^bold>\<box>(\<phi> x))\<rfloor>"
-  nitpick oops --\<open> Countermodel found: formula not valid \<close>
+  nitpick oops \<comment> \<open>Countermodel found: formula not valid\<close>
     
 text\<open>\noindent{With actualist quantification in place we can:
 (i) formalize the concept of existence in the usual form (by using a restricted particular quantifier),
@@ -256,10 +256,10 @@ We check below, for instance, that our axioms are not too strong as to imply \em
 or \emph{modal collapse}. Since both would trivially validate the argument.}\<close>
     
 lemma "\<lfloor>\<^bold>\<forall>x. E! x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found: necessitism is not valid \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found: necessitism is not valid\<close>
     
 lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found: modal collapse is not valid \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found: modal collapse is not valid\<close>
     
 text\<open>\noindent{By using Isabelle's \emph{Sledgehammer} tool @{cite "Sledgehammer"}, we can verify the validity
 of the selected conclusions C1, C5 and C7, and even find the premises they rely upon.}\<close>
@@ -280,17 +280,17 @@ This exploits the well-known \emph{Sahlqvist correspondence} which links modal a
 on a model's accessibility relation.}\<close>
 
 axiomatization where
-  S5: "equivalence R" --\<open> @{text "\<box>\<phi>\<rightarrow>\<phi>, \<phi>\<rightarrow>\<box>\<diamond>\<phi> and \<box>\<phi>\<rightarrow>\<box>\<box>\<phi>"} \<close>
+  S5: "equivalence R" \<comment> \<open>@{text "\<box>\<phi>\<rightarrow>\<phi>, \<phi>\<rightarrow>\<box>\<diamond>\<phi> and \<box>\<phi>\<rightarrow>\<box>\<box>\<phi>"}\<close>
     
 text\<open>\noindent{(C8) \emph{The existence  of  necessary  abstract  beings  can  only  be  explained  by  concrete  beings.} }\<close>
 lemma C8: "\<lfloor>\<^bold>\<forall>\<^sup>Ax.(Necessary x \<^bold>\<and> Abstract x)\<^bold>\<rightarrow>(\<^bold>\<forall>\<^sup>Ay. y explains x\<^bold>\<rightarrow>Concrete y)\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
 text\<open>\noindent{(C9) \emph{The existence of necessary abstract beings is explained by one or more necessary concrete (Godlike) beings.} }\<close>
 lemma C9: "\<lfloor>\<^bold>\<forall>\<^sup>Ax.(Necessary x \<^bold>\<and> Abstract x)\<^bold>\<rightarrow>(\<^bold>\<exists>\<^sup>Ay. y explains x \<^bold>\<and> Godlike y)\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
 text\<open>\noindent{(C10) \emph{A necessary concrete (Godlike) being exists.} }\<close>
 theorem C10:  "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>"
-  nitpick[user_axioms] oops --\<open> Countermodel found \<close>
+  nitpick[user_axioms] oops \<comment> \<open>Countermodel found\<close>
 
 text\<open>\noindent{By employing the Isabelle proof assistant we prove non-valid a first formalization attempt of
 Lowe's modal ontological argument. This is, however, just the first of many iterations in our

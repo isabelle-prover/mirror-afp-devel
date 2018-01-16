@@ -702,13 +702,13 @@ apply (auto simp only: conjI del: equalityI)
 proof -
   show "group (G\<lparr>carrier := K\<rparr>)" using KG normal_imp_subgroup subgroup_imp_group by auto
 next
-  --  {* Show, that removing adjacent duplicates doesn't result in an empty list. *}
+  \<comment> \<open>Show, that removing adjacent duplicates doesn't result in an empty list.\<close>
   assume "remdups_adj (map ((\<inter>) K) \<GG>) = []"
   hence "map ((\<inter>) K) \<GG> = []" by (metis remdups_adj_Nil_iff)
   hence "\<GG> = []" by (metis Nil_is_map_conv)
   with notempty show False..
 next
-  -- {* Show, that the head of the reduced list is still the trivial group *}
+  \<comment> \<open>Show, that the head of the reduced list is still the trivial group\<close>
   have "\<GG> = {\<one>} # tl \<GG>" using notempty hd by (metis list.sel(1,3) neq_Nil_conv)
   hence "map ((\<inter>) K) \<GG> = map ((\<inter>) K) ({\<one>} # tl \<GG>)" by simp
   hence "remdups_adj (map ((\<inter>) K) \<GG>) = remdups_adj ((K \<inter> {\<one>}) # (map ((\<inter>) K) (tl \<GG>)))" by simp
@@ -717,8 +717,8 @@ next
   thus "hd (remdups_adj (map ((\<inter>) K) \<GG>)) = {\<one>\<^bsub>G\<lparr>carrier := K\<rparr>\<^esub>}" 
     using KG normal_imp_subgroup subgroup.one_closed by force
 next
-  -- {* Show that the last entry is really @{text "K \<inter> G"}. Since we don't have a lemma ready to talk about the
-    last entry of a reduced list, we reverse the list twice. *}
+  \<comment> \<open>Show that the last entry is really @{text "K \<inter> G"}. Since we don't have a lemma ready to talk about the
+    last entry of a reduced list, we reverse the list twice.\<close>
   have "rev \<GG> = (carrier G) # tl (rev \<GG>)" by (metis list.sel(1,3) last last_rev neq_Nil_conv notempty rev_is_Nil_conv rev_rev_ident)
   hence "rev (map ((\<inter>) K) \<GG>) = map ((\<inter>) K) ((carrier G) # tl (rev \<GG>))" by (metis rev_map)
   hence rev:"rev (map ((\<inter>) K) \<GG>) = (K \<inter> (carrier G)) # (map ((\<inter>) K) (tl (rev \<GG>)))" by simp
@@ -730,7 +730,7 @@ next
   also have "\<dots> = K" using KG normal_imp_subgroup subgroup_imp_subset by force
   finally show "last (remdups_adj (map ((\<inter>) K) \<GG>)) = carrier (G\<lparr>carrier := K\<rparr>)" by auto
 next
-  -- {* The induction step, using the second isomorphism theorem for groups. *}
+  \<comment> \<open>The induction step, using the second isomorphism theorem for groups.\<close>
   fix j
   assume j:"j + 1 < length (remdups_adj (map ((\<inter>) K) \<GG>))"
   have KGnotempty:"(map ((\<inter>) K) \<GG>) \<noteq> []" using notempty by (metis Nil_is_map_conv)

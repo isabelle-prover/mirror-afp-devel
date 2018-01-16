@@ -20,22 +20,22 @@ type_synonym cname = int
 text{* ML terms: *}
 
 datatype ml =
- -- "ML"
+ \<comment> \<open>ML\<close>
   C_ML cname ("C\<^sub>M\<^sub>L") (* ref to compiled code *)
 | V_ML ml_vname ("V\<^sub>M\<^sub>L")
 | A_ML ml "(ml list)" ("A\<^sub>M\<^sub>L")
 | Lam_ML ml ("Lam\<^sub>M\<^sub>L")
- -- "the universal datatype"
+ \<comment> \<open>the universal datatype\<close>
 | C\<^sub>U cname "(ml list)"
 | V\<^sub>U vname "(ml list)"
 | Clo ml "(ml list)" nat
- --{*ML function \emph{apply}*}
+ \<comment> \<open>ML function \emph{apply}\<close>
 | "apply" ml ml
 
 text{* Lambda-terms: *}
 
 datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
-            | "term" ml   -- {*ML function \texttt{term}*}
+            | "term" ml   \<comment> \<open>ML function \texttt{term}\<close>
 
 text {* The following locale captures type conventions for variables.
   It is not actually used, merely a formal comment. *}
@@ -570,11 +570,11 @@ inductive_set
   and red_tm :: "[tm, tm] => bool"  (infixl "\<rightarrow>" 50)
 where
   "s \<rightarrow> t \<equiv> (s, t) \<in> Red_tm"
- -- {*$\beta$-reduction*}
+ \<comment> \<open>$\beta$-reduction\<close>
 | "(\<Lambda> t) \<bullet> s \<rightarrow> t[s/0]"
- -- {*$\eta$-expansion*}
+ \<comment> \<open>$\eta$-expansion\<close>
 | "t \<rightarrow> \<Lambda> ((lift 0 t) \<bullet> (V 0))"
- -- "Rewriting"
+ \<comment> \<open>Rewriting\<close>
 | "(nm,ts,t) : R \<Longrightarrow> (C nm) \<bullet>\<bullet> (map (subst \<sigma>) ts) \<rightarrow> subst \<sigma> t"
 | "t \<rightarrow> t' \<Longrightarrow> \<Lambda> t \<rightarrow> \<Lambda> t'"
 | "s \<rightarrow> s' \<Longrightarrow> s \<bullet> t \<rightarrow> s' \<bullet> t"
@@ -682,23 +682,23 @@ where
   "s \<Rightarrow> t \<equiv> (s, t) \<in> Red_ml"
 | "ss \<Rightarrow> ts \<equiv> (ss, ts) \<in> Red_ml_list"
 | "s \<Rightarrow>* t \<equiv> (s, t) \<in> Red_ml^*"
- -- {* ML $\beta$-reduction *}
+ \<comment> \<open>ML $\beta$-reduction\<close>
 | "A\<^sub>M\<^sub>L (Lam\<^sub>M\<^sub>L u) [v] \<Rightarrow> u[v/0]"
- -- "Execution of a compiled rewrite rule"
+ \<comment> \<open>Execution of a compiled rewrite rule\<close>
 | "(nm,vs,v) : compR \<Longrightarrow> \<forall> i. closed\<^sub>M\<^sub>L 0 (\<sigma> i) \<Longrightarrow>
    A\<^sub>M\<^sub>L (C\<^sub>M\<^sub>L nm) (map (subst\<^sub>M\<^sub>L \<sigma>) vs) \<Rightarrow> subst\<^sub>M\<^sub>L \<sigma> v"
--- {* default rule: *}
+\<comment> \<open>default rule:\<close>
 | "\<forall>i. closed\<^sub>M\<^sub>L 0 (\<sigma> i)
    \<Longrightarrow> vs = map V\<^sub>M\<^sub>L [0..<arity nm] \<Longrightarrow> vs' = map (subst\<^sub>M\<^sub>L \<sigma>) vs
    \<Longrightarrow> no_match_compR nm vs'
    \<Longrightarrow> A\<^sub>M\<^sub>L (C\<^sub>M\<^sub>L nm) vs' \<Rightarrow> subst\<^sub>M\<^sub>L \<sigma> (C\<^sub>U nm vs)"
- -- {* Equations for function \texttt{apply}*}
+ \<comment> \<open>Equations for function \texttt{apply}\<close>
 | apply_Clo1: "apply (Clo f vs (Suc 0)) v \<Rightarrow> A\<^sub>M\<^sub>L f (v # vs)"
 | apply_Clo2: "n > 0 \<Longrightarrow>
  apply (Clo f vs (Suc n)) v \<Rightarrow> Clo f (v # vs) n"
 | apply_C: "apply (C\<^sub>U nm vs) v \<Rightarrow> C\<^sub>U nm (v # vs)"
 | apply_V: "apply (V\<^sub>U x vs) v \<Rightarrow> V\<^sub>U x (v # vs)"
- -- "Context rules"
+ \<comment> \<open>Context rules\<close>
 | ctxt_C: "vs \<Rightarrow> vs' \<Longrightarrow> C\<^sub>U nm vs \<Rightarrow> C\<^sub>U nm vs'"
 | ctxt_V: "vs \<Rightarrow> vs' \<Longrightarrow> V\<^sub>U x vs \<Rightarrow> V\<^sub>U x vs'"
 | ctxt_Clo1: "f \<Rightarrow> f'   \<Longrightarrow> Clo f vs n \<Rightarrow> Clo f' vs n"
@@ -717,11 +717,11 @@ inductive_set
 where
   "s \<Rightarrow> t \<equiv> (s, t) \<in> Red_term"
 | "s \<Rightarrow>* t \<equiv> (s, t) \<in> Red_term^*"
- --{* function \texttt{term} *}
+ \<comment> \<open>function \texttt{term}\<close>
 | term_C: "term (C\<^sub>U nm vs) \<Rightarrow> (C nm) \<bullet>\<bullet> (map term (rev vs))"
 | term_V: "term (V\<^sub>U x vs) \<Rightarrow> (V x) \<bullet>\<bullet> (map term (rev vs))"
 | term_Clo: "term(Clo vf vs n) \<Rightarrow> \<Lambda> (term (apply (lift 0 (Clo vf vs n)) (V\<^sub>U 0 [])))"
- -- "context rules"
+ \<comment> \<open>context rules\<close>
 | ctxt_Lam: "t \<Rightarrow> t' \<Longrightarrow> \<Lambda> t \<Rightarrow> \<Lambda> t'"
 | ctxt_At1: "s \<Rightarrow> s' \<Longrightarrow> s \<bullet> t \<Rightarrow> s' \<bullet> t"
 | ctxt_At2: "t \<Rightarrow> t' \<Longrightarrow> s \<bullet> t \<Rightarrow> s \<bullet> t'"

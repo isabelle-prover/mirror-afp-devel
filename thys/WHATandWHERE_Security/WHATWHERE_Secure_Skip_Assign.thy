@@ -14,7 +14,7 @@ abbreviation NextMem'
 where
 "\<lbrakk>c\<rbrakk>(m) \<equiv> NextMem c m"
 
--- "define when two expressions are indistinguishable with respect to a domain d"
+\<comment> \<open>define when two expressions are indistinguishable with respect to a domain d\<close>
 definition d_indistinguishable :: "'d::order \<Rightarrow> 'exp \<Rightarrow> 'exp \<Rightarrow> bool"
 where
 "d_indistinguishable d e1 e2 \<equiv> \<forall>m m'. ((m =\<^bsub>d\<^esub> m') 
@@ -25,18 +25,18 @@ abbreviation d_indistinguishable' :: "'exp \<Rightarrow> 'd::order \<Rightarrow>
 where
 "e1 \<equiv>\<^bsub>d\<^esub> e2 \<equiv> d_indistinguishable d e1 e2"
 
--- "symmetry of d-indistinguishable"
+\<comment> \<open>symmetry of d-indistinguishable\<close>
 lemma d_indistinguishable_sym:
 "e \<equiv>\<^bsub>d\<^esub> e' \<Longrightarrow> e' \<equiv>\<^bsub>d\<^esub> e"
 by (simp add: d_indistinguishable_def d_equal_def, metis)
 
---"transitivity of d-indistinguishable"
+\<comment> \<open>transitivity of d-indistinguishable\<close>
 lemma d_indistinguishable_trans:
 "\<lbrakk> e \<equiv>\<^bsub>d\<^esub> e'; e' \<equiv>\<^bsub>d\<^esub> e'' \<rbrakk> \<Longrightarrow> e \<equiv>\<^bsub>d\<^esub> e''"
 by (simp add: d_indistinguishable_def d_equal_def, metis)
 
 
---"predicate for dH-indistinguishable"
+\<comment> \<open>predicate for dH-indistinguishable\<close>
 definition dH_indistinguishable :: "'d \<Rightarrow> ('d, 'exp) Hatches 
   \<Rightarrow> 'exp \<Rightarrow> 'exp \<Rightarrow> bool"
 where
@@ -106,7 +106,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
 qed
  
 
---"auxiliary lemma for assign side condition (lemma 9 in original paper)"
+\<comment> \<open>auxiliary lemma for assign side condition (lemma 9 in original paper)\<close>
 lemma semAssignSC_aux: 
   assumes dhind: "e \<equiv>\<^bsub>DA x,(htchLoc \<iota>)\<^esub> e"
   shows "NDC d (x :=\<^bsub>\<iota>\<^esub> e) \<or> IDC d (x :=\<^bsub>\<iota>\<^esub> e) (htchLoc (pp (x:=\<^bsub>\<iota>\<^esub> e)))"

@@ -941,7 +941,7 @@ theorem (in linear_map) rank_nullity_main:
   shows "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"       
     "T ` (carrier V) = carrier W \<Longrightarrow> W.fin_dim"
 proof - 
-  -- "First interpret kerT, imT as vectorspaces"
+  \<comment> \<open>First interpret kerT, imT as vectorspaces\<close>
   have subs_ker: "subspace K kerT V" by (intro kerT_is_subspace)
   from subs_ker have vs_ker: "vectorspace K (V.vs kerT)" by (rule V.subspace_is_vs)
   from vs_ker interpret ker: vectorspace K "(V.vs kerT)" by auto
@@ -953,8 +953,8 @@ proof -
   have imInC: "imT\<subseteq>carrier W" by (unfold im_def, auto)
   (* obvious fact *)
   have zero_same[simp]: "\<zero>\<^bsub>V.vs kerT\<^esub> = \<zero>\<^bsub>V\<^esub>" apply (unfold ker_def) by auto
-  -- "Show ker T has a finite basis. This is not obvious. Show that any linearly independent set 
-has size at most that of V. There exists a maximal linearly independent set, which is the basis."
+  \<comment> \<open>Show ker T has a finite basis. This is not obvious. Show that any linearly independent set 
+has size at most that of V. There exists a maximal linearly independent set, which is the basis.\<close>
   have every_li_small: "\<And>A. (A \<subseteq> kerT)\<and> ker.lin_indpt A \<Longrightarrow> 
     finite A \<and> card A \<le> V.dim"
   proof - 
@@ -976,8 +976,8 @@ has size at most that of V. There exists a maximal linearly independent set, whi
     by blast
   hence finA: "finite A" and Ainker: "A\<subseteq>carrier (V.vs kerT)" and AinC: "A\<subseteq>carrier V"
     by (unfold maximal_def ker_def, auto)
-  --"We obtain the basis A of kerT. It is also linearly independent when considered in V rather
-than kerT"
+  \<comment> \<open>We obtain the basis A of kerT. It is also linearly independent when considered in V rather
+than kerT\<close>
   from A have Abasis: "ker.basis A" 
     by (intro ker.max_li_is_basis, auto) 
   from subs_ker Abasis have spanA: "V.module.span A = kerT"

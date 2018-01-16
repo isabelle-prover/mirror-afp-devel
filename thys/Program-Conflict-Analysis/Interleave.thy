@@ -323,7 +323,7 @@ lemmas ilt_interleave = ilt_interleave1 ilt_interleave2
 
 
 subsubsection "Exotic/specialized lemmas"
--- {* Recover structure of @{text w} wrt. to structure of @{text "w1"} *}
+\<comment> \<open>Recover structure of @{text w} wrt. to structure of @{text "w1"}\<close>
 lemma interleave_recover1[rule_format]: "ALL w1a w1b w2 . w\<in>(w1a@w1b)\<otimes>w2 \<longrightarrow> (EX wa wb w2a w2b . w=wa@wb & w2=w2a@w2b & wa\<in>w1a\<otimes>w2a & wb\<in>w1b\<otimes>w2b)" 
   (is "?P w" is "ALL w1a w1b w2 . ?PRE w w1a w1b w2 \<longrightarrow> ?CONS w w1a w1b w2")
 proof (induct w)
@@ -369,7 +369,7 @@ qed
 
 lemmas interleave_recover = interleave_recover1 interleave_recover2
 
--- "Split operands according to element of result"
+\<comment> \<open>Split operands according to element of result\<close>
 lemma interleave_unconc: "!! l2 w1 w2 . l1@l2 \<in> w1\<otimes>w2 \<Longrightarrow> \<exists> w11 w12 w21 w22 . w1=w11@w12 \<and> w2=w21@w22 \<and> l1\<in>w11\<otimes>w21 \<and> l2\<in>w12\<otimes>w22"
 proof (induct l1)
   case Nil hence "w1=[]@w1 & w2=[]@w2 & []\<in>[]\<otimes>[] & l2\<in>w1\<otimes>w2" by auto
@@ -391,7 +391,7 @@ next
   } ultimately show ?case by fast
 qed
 
--- {* Reverse direction of @{thm [source] "interleave_unconc"} *}
+\<comment> \<open>Reverse direction of @{thm [source] "interleave_unconc"}\<close>
 lemma interleave_reconc: "!!w11 w21 l2 w12 w22 . \<lbrakk>l1\<in>w11\<otimes>w21;l2\<in>w12\<otimes>w22\<rbrakk> \<Longrightarrow> l1@l2\<in>(w11@w12)\<otimes>(w21@w22)"
 proof (induct l1)
   case Nil thus ?case by (auto)

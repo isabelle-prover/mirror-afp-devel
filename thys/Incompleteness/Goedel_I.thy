@@ -163,7 +163,7 @@ proof -
     apply (auto simp: SeqWRP.simps [where s=s and l=l and sl=sl])
     apply (rule All2_SUCC_E' [where t=k, THEN rotate2], auto)
     apply (rule Ex_I [where x = "Var sl"], auto)
-    apply (blast intro: LstSeqP_SUCC) --{*showing @{term"SeqWRP s k (Var sl)"}*}
+    apply (blast intro: LstSeqP_SUCC) \<comment> \<open>showing @{term"SeqWRP s k (Var sl)"}\<close>
     apply (blast intro: ContraProve LstSeqP_EQ)
     done
 qed
@@ -186,13 +186,13 @@ proof -
     using i j j' atoms apply auto
     apply (rule rotate4)
     apply (rule OrdP_cases_E [where k=pi], simp_all)
-    --{*Zero case*}
+    \<comment> \<open>Zero case\<close>
     apply (rule SeqWRP_Zero_E [THEN rotate3])
     prefer 2 apply blast
     apply (rule SeqWRP_Zero_E [THEN rotate4])
     prefer 2 apply blast
     apply (blast intro: ContraProve [THEN rotate4] Sym Trans)
-    --{*SUCC case*}
+    \<comment> \<open>SUCC case\<close>
     apply (rule Ex_I [where x = "Var pi"], auto)
     apply (metis ContraProve EQ_imp_SUBS2 Mem_SUCC_I2 Refl Subset_D)
     apply (rule cut_same)
@@ -397,7 +397,7 @@ proof -
     apply (rule Disj_E [THEN rotate4])
     apply (rule Disj_I1) 
     apply (metis Assume AssumeH(3) Sym thin1  Iff_MP_same [OF Conj_cong [OF OrdP_cong WRP_cong] Assume])
-    --{*auto could be used but is VERY SLOW*}
+    \<comment> \<open>auto could be used but is VERY SLOW\<close>
     apply (rule Disj_I2) 
     apply (rule Ex_E Conj_EH)+
     apply simp_all
@@ -409,17 +409,17 @@ proof -
     apply (rule Ex_I [where x = "Var sn'"], simp)
     apply (simp add: SeqHRP.simps [of l _ _ sl sl' m n sm sm' sn sn'])
     apply (rule Conj_I, blast)+
-    --{*first SeqHRP subgoal*}
+    \<comment> \<open>first SeqHRP subgoal\<close>
     apply (rule Conj_I)+
     apply (blast intro: LstSeqP_Mem)
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*next SeqHRP subgoal*}
+    \<comment> \<open>next SeqHRP subgoal\<close>
     apply (rule Conj_I)+
     apply (blast intro: LstSeqP_Mem)
     apply (rule All2_Subset [OF Hyp], blast)
     apply (auto intro!: SUCC_Subset_Ord LstSeqP_OrdP)
-    --{*finally, the equality pair*}
+    \<comment> \<open>finally, the equality pair\<close>
     apply (blast intro: Trans)+
     done
 qed
@@ -448,19 +448,19 @@ proof -
     apply (rule cut_same)
     apply (rule cut1 [OF SeqHRP_lemma [of m2 "Var i" "Var j'" s' "Var k'" n2 sm2 sm2' sn2 sn2']], simp_all, blast)
     apply (rule Disj_EH Conj_EH)+
-    --{*case 1, both are ordinals*}
+    \<comment> \<open>case 1, both are ordinals\<close>
     apply (blast intro: cut3 [OF WRP_unique])
-    --{*case 2, @{term "OrdP (Var i)"} but also a pair*}
+    \<comment> \<open>case 2, @{term "OrdP (Var i)"} but also a pair\<close>
     apply (rule Conj_EH Ex_EH)+
     apply simp_all
     apply (rule cut_same [where A = "OrdP (HPair (Var sm) (Var sn))"])
     apply (blast intro: OrdP_cong [OF Hyp, THEN Iff_MP_same], blast)
-    --{*towards second two cases*}
+    \<comment> \<open>towards second two cases\<close>
     apply (rule Ex_E Disj_EH Conj_EH)+
-    --{*case 3, @{term "OrdP (Var i)"} but also a pair*}
+    \<comment> \<open>case 3, @{term "OrdP (Var i)"} but also a pair\<close>
     apply (rule cut_same [where A = "OrdP (HPair (Var sm2) (Var sn2))"])
     apply (blast intro: OrdP_cong [OF Hyp, THEN Iff_MP_same], blast)
-    --{*case 4, two pairs*}
+    \<comment> \<open>case 4, two pairs\<close>
     apply (rule Ex_E Disj_EH Conj_EH)+
     apply (rule All_E' [OF Hyp, where x="Var m"], blast)
     apply (rule All_E' [OF Hyp, where x="Var n"], blast, simp_all)

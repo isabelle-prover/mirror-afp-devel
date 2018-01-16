@@ -15,8 +15,8 @@ text {*
   orderings bottom values.
 *}
 lemma fp_compare:
-  -- {*At any point, fixed points wrt.\ different orderings are either equal, 
-    or both bottom.*}
+  \<comment> \<open>At any point, fixed points wrt.\ different orderings are either equal, 
+    or both bottom.\<close>
   assumes M1: "flatf_mono b1 B" and M2: "flatf_mono b2 B"
   shows "flatf_fp b1 B x = flatf_fp b2 B x 
     \<or> (flatf_fp b1 B x = b1 \<and> flatf_fp b2 B x = b2)"
@@ -37,7 +37,7 @@ lemma flat_ord_top[simp]: "flat_ord b b x" by (simp add: flat_ord_def)
 
 (* TODO: Move to Domain.*)
 lemma lfp_gfp_compare:
-  -- "Least and greatest fixed point are either equal, or bot and top"
+  \<comment> \<open>Least and greatest fixed point are either equal, or bot and top\<close>
   assumes MLE: "flatf_mono_le B" and MGE: "flatf_mono_ge B"
   shows "flatf_lfp B x = flatf_gfp B x 
     \<or> (flatf_lfp B x = bot \<and> flatf_gfp B x = top)"
@@ -341,8 +341,8 @@ qed
 *)
 
 lemma RECT_eq_REC: 
-  -- "Partial and total correct recursion are equal if total 
-    recursion does not fail."
+  \<comment> \<open>Partial and total correct recursion are equal if total 
+    recursion does not fail.\<close>
   assumes NT: "RECT body x \<noteq> top"
   shows "RECT body x = REC body x"
 proof (cases "trimono body")
@@ -364,8 +364,8 @@ next
 qed
 
 lemma RECT_eq_REC_tproof:
-  -- "Partial and total correct recursion are equal if we can provide a 
-    termination proof."
+  \<comment> \<open>Partial and total correct recursion are equal if we can provide a 
+    termination proof.\<close>
   fixes a :: 'a
   assumes M: "trimono body"
   assumes WF: "wf V"

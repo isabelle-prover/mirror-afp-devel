@@ -69,7 +69,7 @@ next
     apply simp
     done
 next
-  case 8 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
+  case 8 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
 next
   case 9 then show ?case
     by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)

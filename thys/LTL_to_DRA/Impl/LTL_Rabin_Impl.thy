@@ -18,7 +18,7 @@ locale ltl_to_rabin_base_code_def = ltl_to_rabin_base_def +
     M_fin\<^sub>C :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl, 'a ltl\<^sub>P list) mapping, 'a set) transition \<Rightarrow> bool"
 begin
 
--- \<open>Transition Function and Initial State\<close>
+\<comment> \<open>Transition Function and Initial State\<close>
 
 fun delta\<^sub>C
 where
@@ -28,7 +28,7 @@ fun initial\<^sub>C
 where
   "initial\<^sub>C \<phi> = (q\<^sub>0 \<phi>, Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG))"
 
--- \<open>Acceptance Condition\<close>
+\<comment> \<open>Acceptance Condition\<close>
 
 definition max_rank_of\<^sub>C
 where

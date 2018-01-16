@@ -1728,7 +1728,7 @@ text{* \label{TAO_PLM_Necessity} *}
     using KBasic_4 KBasic_5 by (metis equiv_def ded_thm_cor_3 "\<^bold>&E"(1))
   lemma "[(\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<psi>) \<^bold>\<rightarrow> \<^bold>\<box>(\<phi> \<^bold>\<equiv> \<psi>) in v]"
     nitpick[expect=genuine, user_axioms, card = 1, card i = 2]
-    oops --{* countermodel as desired *}
+    oops \<comment> \<open>countermodel as desired\<close>
   lemma KBasic_7[PLM]:
     "[(\<^bold>\<box>\<phi> \<^bold>& \<^bold>\<box>\<psi>) \<^bold>\<rightarrow> \<^bold>\<box>(\<phi> \<^bold>\<equiv> \<psi>) in v]"
     proof (rule CP)
@@ -2047,10 +2047,10 @@ begin
         and "[\<lparr>P,a\<rparr> \<^bold>= \<lparr>P,a\<rparr> in v]"
     shows "[\<lparr>P,a\<rparr> \<^bold>= (\<lparr>P,a\<rparr> \<^bold>& (\<lparr>Q,b\<rparr> \<^bold>\<or> (\<^bold>\<not>\<lparr>Q,b\<rparr>))) in v]"
       unfolding identity_defs apply (insert assms)
-      apply PLM_autosubst oops --{* no match as desired *}
+      apply PLM_autosubst oops \<comment> \<open>no match as desired\<close>
 
-  --{* @{text "dr_alphabetic_rules"} implicitly holds *}
-  --{* @{text "dr_alphabetic_thm"} implicitly holds *}
+  \<comment> \<open>@{text "dr_alphabetic_rules"} implicitly holds\<close>
+  \<comment> \<open>@{text "dr_alphabetic_thm"} implicitly holds\<close>
 
   lemma KBasic2_1[PLM]:
     "[\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>(\<^bold>\<not>(\<^bold>\<not>\<phi>)) in v]"

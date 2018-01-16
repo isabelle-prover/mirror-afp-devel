@@ -1463,7 +1463,7 @@ lemma oghoare_sound_Parallel_Normal_case[rule_format, OF _ refl refl]:
   apply(erule converse_rtranclp_induct2)
    apply (clarsimp simp: final_def)
   apply(erule step.cases, simp_all)
---\<open>Parallel\<close>
+\<comment> \<open>Parallel\<close>
     apply clarsimp
     apply (frule Normal_pre_star)
     apply (drule oghoare_Parallel)
@@ -1491,7 +1491,7 @@ lemma oghoare_sound_Parallel_Normal_case[rule_format, OF _ refl refl]:
       apply (simp)
      apply clarsimp
     apply(erule (1) step.Parallel)
---\<open>ParSkip\<close>
+\<comment> \<open>ParSkip\<close>
    apply (frule no_steps_final, simp add: final_def)
    apply clarsimp
    apply (drule oghoare_Parallel)
@@ -1513,7 +1513,7 @@ lemma oghoare_sound_Parallel_Normal_case[rule_format, OF _ refl refl]:
     apply fastforce
    apply (drule oghoare_Skip)
    apply fastforce
---\<open>ParThrow\<close>
+\<comment> \<open>ParThrow\<close>
   apply clarsimp
   apply (frule no_steps_final, simp add: final_def)
   apply clarsimp

@@ -637,7 +637,7 @@ qed
 subsubsection {* @{const dropWhile} *}
 
 fun dropWhile_raw :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, bool \<times> 's) raw_generator"
-  -- {* Boolean flag indicates whether we are still in dropping phase *}
+  \<comment> \<open>Boolean flag indicates whether we are still in dropping phase\<close>
 where
   "dropWhile_raw P g (True, s) = (case g s of
      Done \<Rightarrow> Done | Skip s' \<Rightarrow> Skip (True, s')
@@ -832,8 +832,8 @@ qed
 subsubsection{* @{const zip} *}
 
 fun zip_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('b, 'sh) raw_generator \<Rightarrow> ('a \<times> 'b, 'sg \<times> 'sh \<times> 'a option) raw_generator"
-  -- {* We search first the left list for the next element and cache it in the @{typ "'a option"}
-        part of the state once we found one *}
+  \<comment> \<open>We search first the left list for the next element and cache it in the @{typ "'a option"}
+        part of the state once we found one\<close>
 where
   "zip_raw g h (sg, sh, None) = (case g sg of
       Done \<Rightarrow> Done | Skip sg' \<Rightarrow> Skip (sg', sh, None) | Yield a sg' \<Rightarrow> Skip (sg', sh, Some a))"
@@ -895,7 +895,7 @@ qed
 subsubsection {* @{const tl} *}
 
 fun tl_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('a, bool \<times> 'sg) raw_generator"
-  -- {* The Boolean flag stores whether we have already skipped the first element *}
+  \<comment> \<open>The Boolean flag stores whether we have already skipped the first element\<close>
 where
   "tl_raw g (False, sg) = (case g sg of
       Done \<Rightarrow> Done | Skip sg' \<Rightarrow> Skip (False, sg') | Yield a sg' \<Rightarrow> Skip (True,sg'))"
@@ -938,7 +938,7 @@ qed
 subsubsection {* @{const butlast} *}
 
 fun butlast_raw :: "('a, 's) raw_generator \<Rightarrow> ('a, 'a option \<times> 's) raw_generator"
-  -- {* The @{typ "'a option"} caches the previous element we have seen *}
+  \<comment> \<open>The @{typ "'a option"} caches the previous element we have seen\<close>
 where
   "butlast_raw g (None,s) = (case g s of
      Done \<Rightarrow> Done | Skip s' \<Rightarrow> Skip (None, s') | Yield a s' \<Rightarrow> Skip (Some a, s'))"

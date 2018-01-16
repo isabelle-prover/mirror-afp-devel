@@ -10,7 +10,7 @@ theory List2
 begin
 
 subsection \<open>remdups\_fwd\<close>
--- \<open>Remove duplicates of a list in a forward moving direction\<close>
+\<comment> \<open>Remove duplicates of a list in a forward moving direction\<close>
 
 fun remdups_fwd_acc 
 where
@@ -262,7 +262,7 @@ lemma foldl_break_append:
 
 subsection \<open>Suffixes\<close>
 
--- \<open>Non empty suffixes of finite words - specialised!\<close>
+\<comment> \<open>Non empty suffixes of finite words - specialised!\<close>
 
 fun suffixes
 where

@@ -9,11 +9,11 @@ theory MiniML
 imports Generalize
 begin
 
--- "expressions"
+\<comment> \<open>expressions\<close>
 datatype
   expr = Var nat | Abs expr | App expr expr | LET expr expr
 
--- "type inference rules"
+\<comment> \<open>type inference rules\<close>
 inductive
   has_type :: "[ctxt, expr, typ] => bool"
                   ("((_) |-/ (_) :: (_))" [60,0,60] 60)
@@ -200,7 +200,7 @@ apply (erule has_type.induct)
 apply (slow elim: le_env_free_tv [THEN free_tv_subset_gen_le])
 done
 
--- "@{text has_type} is closed w.r.t. substitution"
+\<comment> \<open>@{text has_type} is closed w.r.t. substitution\<close>
 lemma has_type_cl_sub: "A |- e :: t ==> !S. $S A |- e :: $S t"
 apply (erule has_type.induct)
 (* case VarI *)

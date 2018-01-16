@@ -108,7 +108,7 @@ qed
 subsection \<open>Partial Deviations\<close>
 
 typedef (overloaded) 'a pdevs = "{x::nat \<Rightarrow> 'a::zero. finite {i. x i \<noteq> 0}}"
-  \<comment>\<open>TODO: unify with polynomials\<close>
+  \<comment> \<open>TODO: unify with polynomials\<close>
   morphisms pdevs_apply Abs_pdev
   by (auto intro!: exI[where x="\<lambda>x. 0"])
 

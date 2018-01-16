@@ -80,7 +80,7 @@ lemma borel_measurable_P[measurable]: "f \<in> borel_measurable P"
 
 lemma prob_space_P: "prob_space P"
 proof
-  show "emeasure P (space P) = 1" -- {* Sum of probabilities equals 1 *}
+  show "emeasure P (space P) = 1" \<comment> \<open>Sum of probabilities equals 1\<close>
     using finite_edges by (simp add: emeasure_eq full_sum one_ereal_def space_eq)
 qed
 
@@ -316,7 +316,7 @@ proof -
       using A B finite by (auto simp: cylinder_prob card_all_edges dest: finite_subset)
   }
   note prob_k_indep = this
-    -- "probability that a fixed set of k vertices is independent in a random graph"
+    \<comment> \<open>probability that a fixed set of k vertices is independent in a random graph\<close>
 
   have "{es \<in> space P. k \<in> card ` independent_sets (edge_ugraph es)}
     = (\<Union>vs \<in> ?k_sets. {es \<in> space P. vs \<in> independent_sets (edge_ugraph es)})" (is "?L = ?R")
@@ -450,11 +450,11 @@ lemma (in edge_space) mean_k_cycles:
 proof -
   let ?k_cycle = "\<lambda>es c k. c \<in> ucycles (edge_ugraph es) \<and> uwalk_length c = k"
   define C where "C k = {c. ?k_cycle S_edges c k}" for k
-    -- {* @{term "C k"} is the set of all possible cycles of size @{term k} in @{term "edge_ugraph S_edges"} *}
+    \<comment> \<open>@{term "C k"} is the set of all possible cycles of size @{term k} in @{term "edge_ugraph S_edges"}\<close>
   define XG  where "XG es = {c. ?k_cycle es c k}" for es
-    -- {* @{term "XG es"} is the set of cycles contained in a @{term "edge_ugraph es"} *}
+    \<comment> \<open>@{term "XG es"} is the set of cycles contained in a @{term "edge_ugraph es"}\<close>
   define XC where "XC c = {es \<in> space P. ?k_cycle es c k}" for c
-    -- {* "@{term "XC c"} is the set of graphs (edge sets) containing a cycle c" *}
+    \<comment> \<open>"@{term "XC c"} is the set of graphs (edge sets) containing a cycle c"\<close>
   then have XC_in_sets: "\<And>c. XC c \<in> sets P"
       and XC_cyl: "\<And>c. c \<in> C k \<Longrightarrow> XC c = cylinder S_edges (set (uwalk_edges c)) {}"
     by (auto simp: ucycles_def space_eq uwalks_def C_def cylinder_def sets_eq)
@@ -533,8 +533,8 @@ proof -
   let ?ug = edge_space.edge_ugraph
 
   define short_count where "short_count g = card (short_cycles g k)" for g
-    -- {* This random variable differs from the one used in the proof of theorem 11.2.2,
-          as we count the number of paths describing a circle, not the circles themselves *}
+    \<comment> \<open>This random variable differs from the one used in the proof of theorem 11.2.2,
+          as we count the number of paths describing a circle, not the circles themselves\<close>
 
   from k_def have "3 \<le> k" "l \<le> k" by auto
   from `3 \<le> k` have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: \<epsilon>_def field_simps)
@@ -696,7 +696,7 @@ proof -
   then obtain es where es_props: "es \<in> space ES.P"
       "short_count (?ug n es) < n/2" "\<alpha> (?ug n es) < 1/2 * n/k"
     by auto
-    -- "now we obtained a high colored graph (few independent nodes) with almost no short cycles"
+    \<comment> \<open>now we obtained a high colored graph (few independent nodes) with almost no short cycles\<close>
 
   define G where "G = ?ug n es"
   define H where "H = kill_short G k"

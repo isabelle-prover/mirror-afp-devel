@@ -19,7 +19,7 @@ predicate or an action formula. So to simplify the representation of formula tre
 effect operator is merged into the predicate or action it precedes.\<close>
 
 datatype ('idx,'pred,'act,'eff) Tree =
-    tConj "('idx,'pred,'act,'eff) Tree set['idx]"  -- \<open>potentially infinite sets of trees\<close>
+    tConj "('idx,'pred,'act,'eff) Tree set['idx]"  \<comment> \<open>potentially infinite sets of trees\<close>
   | tNot "('idx,'pred,'act,'eff) Tree"
   | tPred 'eff 'pred
   | tAct  'eff 'act "('idx,'pred,'act,'eff) Tree"
@@ -60,7 +60,7 @@ instantiation Tree :: (type, pt, pt, pt) pt
 begin
 
   primrec permute_Tree :: "perm \<Rightarrow> (_,_,_,_) Tree \<Rightarrow> (_,_,_,_) Tree" where
-    "p \<bullet> (tConj tset) = tConj (map_bset (permute p) tset)"  -- \<open>neat trick to get around the fact that~@{term tset} is not of permutation type yet\<close>
+    "p \<bullet> (tConj tset) = tConj (map_bset (permute p) tset)"  \<comment> \<open>neat trick to get around the fact that~@{term tset} is not of permutation type yet\<close>
   | "p \<bullet> (tNot t) = tNot (p \<bullet> t)"
   | "p \<bullet> (tPred f \<phi>) = tPred (p \<bullet> f) (p \<bullet> \<phi>)"
   | "p \<bullet> (tAct f \<alpha> t) = tAct (p \<bullet> f) (p \<bullet> \<alpha>) (p \<bullet> t)"
@@ -228,15 +228,15 @@ text \<open>Here it comes \ldots\<close>
 
 function (sequential)
   alpha_Tree :: "('idx,'pred::pt,'act::bn,'eff::fs) Tree \<Rightarrow> ('idx,'pred,'act,'eff) Tree \<Rightarrow> bool" (infix "=\<^sub>\<alpha>" 50) where
--- \<open>@{const alpha_Tree}\<close>
+\<comment> \<open>@{const alpha_Tree}\<close>
   alpha_tConj: "tConj tset1 =\<^sub>\<alpha> tConj tset2 \<longleftrightarrow> rel_bset alpha_Tree tset1 tset2"
 | alpha_tNot: "tNot t1 =\<^sub>\<alpha> tNot t2 \<longleftrightarrow> t1 =\<^sub>\<alpha> t2"
 | alpha_tPred: "tPred f1 \<phi>1 =\<^sub>\<alpha> tPred f2 \<phi>2 \<longleftrightarrow> f1 = f2 \<and> \<phi>1 = \<phi>2"
--- \<open>the action may have binding names\<close>
+\<comment> \<open>the action may have binding names\<close>
 | alpha_tAct: "tAct f1 \<alpha>1 t1 =\<^sub>\<alpha> tAct f2 \<alpha>2 t2 \<longleftrightarrow>
     f1 = f2 \<and> (\<exists>p. (bn \<alpha>1, t1) \<approx>set alpha_Tree (supp_rel alpha_Tree) p (bn \<alpha>2, t2) \<and> (bn \<alpha>1, \<alpha>1) \<approx>set ((=)) supp p (bn \<alpha>2, \<alpha>2))"
 | alpha_other: "_ =\<^sub>\<alpha> _ \<longleftrightarrow> False"
--- \<open>254 subgoals (!)\<close>
+\<comment> \<open>254 subgoals (!)\<close>
 by pat_completeness auto
 termination
 proof
@@ -909,7 +909,7 @@ qed
 lemma Pred\<^sub>\<alpha>_eq_iff [simp]: "Pred\<^sub>\<alpha> f1 \<phi>1 = Pred\<^sub>\<alpha> f2 \<phi>2 \<longleftrightarrow> f1 = f2 \<and> \<phi>1 = \<phi>2"
 proof
   assume "Pred\<^sub>\<alpha> f1 \<phi>1 = Pred\<^sub>\<alpha> f2 \<phi>2"
-  then have "(tPred f1 \<phi>1 :: ('e, 'b, 'f, 'd) Tree) =\<^sub>\<alpha> tPred f2 \<phi>2"  -- \<open>note the unrelated type\<close> (* WHY? *)
+  then have "(tPred f1 \<phi>1 :: ('e, 'b, 'f, 'd) Tree) =\<^sub>\<alpha> tPred f2 \<phi>2"  \<comment> \<open>note the unrelated type\<close> (* WHY? *)
     by (metis Pred\<^sub>\<alpha>.abs_eq Tree\<^sub>\<alpha>.abs_eq_iff)
   then show "f1 = f2 \<and> \<phi>1 = \<phi>2"
     using alpha_Tree.cases by auto

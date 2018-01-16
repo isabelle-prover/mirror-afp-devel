@@ -148,7 +148,7 @@ begin
        good: "good_ruleset (optimize_matches (abstract_primitive disc) rs)" by fast
 
       let ?\<gamma>="(\<beta>, in_doubt_allow) :: ('i::len common_primitive, ('i, 'a) tagged_packet_scheme) match_tac"
-        --\<open>type signature is needed, otherwise @{const in_doubt_allow} would be for arbitrary packet\<close>
+        \<comment> \<open>type signature is needed, otherwise @{const in_doubt_allow} would be for arbitrary packet\<close>
 
       have abstract_primitive_in_doubt_allow_help1:
         "approximating_bigstep_fun \<gamma> p (optimize_matches (abstract_primitive disc) rs) Undecided = Decision FinalAllow"
@@ -293,7 +293,7 @@ begin
         good: "good_ruleset (optimize_matches (abstract_primitive disc) rs)" by fast
 
       let ?\<gamma>="(\<beta>, in_doubt_deny) :: ('i::len common_primitive, ('i, 'a) tagged_packet_scheme) match_tac"
-        --\<open>type signature is needed, otherwise @{const in_doubt_allow} would be for arbitrary packet\<close>
+        \<comment> \<open>type signature is needed, otherwise @{const in_doubt_allow} would be for arbitrary packet\<close>
       
       have abstract_primitive_in_doubt_deny_help1:
         "approximating_bigstep_fun \<gamma> p (optimize_matches (abstract_primitive disc) rs) Undecided = Decision FinalDeny"

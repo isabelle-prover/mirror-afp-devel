@@ -443,7 +443,7 @@ lemma [autoref_op_pat_def]: "op_nos_on_stack_update f s
 
 end
 
-lemmas ssnos_unfolds -- \<open>To be unfolded before autoref when using @{term ssnos_impl_rel}\<close>
+lemmas ssnos_unfolds \<comment> \<open>To be unfolded before autoref when using @{term ssnos_impl_rel}\<close>
   = op_nos_on_stack_update_def[symmetric]
 
 lemma [autoref_rules, param]:
@@ -518,7 +518,7 @@ context simple_impl_defs begin
     unfolding choose_pending_def op_ns_stack_update_def
     by (auto split: option.split prod.split)
 
-  lemmas ssns_unfolds -- \<open>To be unfolded before autoref when using @{term ssns_impl_rel}.
+  lemmas ssns_unfolds \<comment> \<open>To be unfolded before autoref when using @{term ssns_impl_rel}.
     Attention: This lemma conflicts with the standard unfolding lemma in 
     @{text DFS_code_unfold}, so has to be placed first in an unfold-statement!\<close>
   = op_ns_on_stack_update_def[symmetric] op_ns_stack_update_def[symmetric]

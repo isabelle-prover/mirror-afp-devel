@@ -135,7 +135,7 @@ lemma wp_monty_switch_bruteforce:
   unfolding monty_def hide_prize_def make_guess_def reveal_def
             hide_behind_def guess_behind_def open_door_def
             switch_guess_def
-  -- "Note that this is getting slow"
+  \<comment> \<open>Note that this is getting slow\<close>
   by (simp add: wp_eval insert_Diff_if swap_upd o_def cong del: strong_INF_cong)
 
 subsection {* A Modular Approach *}
@@ -283,9 +283,9 @@ text {* Given componentwise specifications, we can glue them together
 with calculational reasoning to get our result. *}
 lemma wp_monty_switch_modular:
   "(\<lambda>s. 2/3) \<tturnstile> wp (monty True) \<guillemotleft>player_wins\<guillemotright>"
-proof(rule wp_validD)  -- "Work in probabilistic Hoare triples"
+proof(rule wp_validD)  \<comment> \<open>Work in probabilistic Hoare triples\<close>
   note wp_validI[OF wp_scale, OF wp_hide_prize, simplified]
-    -- "Here we apply scaling to match our pre-expectation"
+    \<comment> \<open>Here we apply scaling to match our pre-expectation\<close>
   also note wp_validI[OF wp_make_guess]
   also note wp_validI[OF wp_reveal]
   also note wp_validI[OF wp_switch_guess]

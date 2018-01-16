@@ -95,53 +95,53 @@ theorem (in start_context) exec_pres_type:
                    xcpt_eff_def norm_eff_def relevant_entries_def)
   apply (case_tac "is!pc")
 
-  -- Load
+  \<comment> \<open>Load\<close>
   apply clarsimp
   apply (frule listE_nth_in, assumption)
   apply fastforce
 
-  -- Store
+  \<comment> \<open>Store\<close>
   apply fastforce
 
-  -- Push
+  \<comment> \<open>Push\<close>
   apply (fastforce simp add: typeof_lit_is_type)
 
-  -- New
+  \<comment> \<open>New\<close>
   apply fastforce
 
-  -- Getfield
+  \<comment> \<open>Getfield\<close>
   apply (fastforce dest: sees_field_is_type)
 
-  -- Putfield
+  \<comment> \<open>Putfield\<close>
   apply fastforce
 
-  -- Checkcast
+  \<comment> \<open>Checkcast\<close>
   apply fastforce
 
   defer 
   
-  -- Return
+  \<comment> \<open>Return\<close>
   apply fastforce
 
-  -- Pop
+  \<comment> \<open>Pop\<close>
   apply fastforce
 
-  -- IAdd
+  \<comment> \<open>IAdd\<close>
   apply fastforce
   
-  -- Goto
+  \<comment> \<open>Goto\<close>
   apply fastforce
 
-  -- CmpEq
+  \<comment> \<open>CmpEq\<close>
   apply fastforce
 
-  -- IfFalse
+  \<comment> \<open>IfFalse\<close>
   apply fastforce
 
-  -- Throw
+  \<comment> \<open>Throw\<close>
   apply fastforce
 
-  -- Invoke
+  \<comment> \<open>Invoke\<close>
   apply (clarsimp split!: if_splits)
    apply fastforce
   apply (erule disjE)

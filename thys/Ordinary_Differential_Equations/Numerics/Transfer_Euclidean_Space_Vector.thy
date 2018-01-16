@@ -275,9 +275,9 @@ lemma c1_on_open_transfer[transfer_rule]:
 
 end
 
-type_synonym 'n vec1 = "(real, 'n) vec \<times> ((real, 'n) vec, 'n) vec" \<comment>\<open>vector with C1 information\<close>
+type_synonym 'n vec1 = "(real, 'n) vec \<times> ((real, 'n) vec, 'n) vec" \<comment> \<open>vector with C1 information\<close>
 type_synonym 'a c1_info = "'a \<times> ('a \<Rightarrow>\<^sub>L 'a)"
-type_synonym 'n eucl1 = "'n rvec c1_info" \<comment>\<open>abstract C1 information\<close>
+type_synonym 'n eucl1 = "'n rvec c1_info" \<comment> \<open>abstract C1 information\<close>
 
 subsection \<open>Casting function\<close>
 

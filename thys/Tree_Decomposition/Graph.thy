@@ -316,5 +316,5 @@ next
   qed
 qed
 
-end -- "locale Graph"
+end \<comment> \<open>locale Graph\<close>
 end

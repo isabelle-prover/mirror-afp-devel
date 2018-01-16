@@ -11,7 +11,7 @@ lemma closed_restrict_aux:
   assumes NR: "E\<^sup>*``U \<inter> S = {}"
   assumes SS: "U \<subseteq> F"
   shows "E\<^sup>*``U \<subseteq> F"
-  -- \<open>Auxiliary lemma to show that nodes reachable from a finished node must  
+  \<comment> \<open>Auxiliary lemma to show that nodes reachable from a finished node must  
       be finished if, additionally, no stack node is reachable\<close>
 proof clarify
   fix u v

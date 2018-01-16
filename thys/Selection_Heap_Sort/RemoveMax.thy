@@ -24,25 +24,25 @@ describes characteristics of both list and heap.
 
 locale Collection = 
   fixes empty :: "'b"
-  -- {* -- Represents empty element of the object (for example, for list it is $[]$) *}
+  \<comment> \<open>-- Represents empty element of the object (for example, for list it is $[]$)\<close>
   fixes is_empty :: "'b \<Rightarrow> bool"
-  -- {* -- Function that checks weather the object is empty or not *}
+  \<comment> \<open>-- Function that checks weather the object is empty or not\<close>
   fixes of_list :: "'a list \<Rightarrow> 'b"
-  -- {* -- Function transforms given list to desired object (for example, 
-    for heap sort, function {\em of\_list} transforms list to heap) *}
+  \<comment> \<open>-- Function transforms given list to desired object (for example, 
+    for heap sort, function {\em of\_list} transforms list to heap)\<close>
   fixes multiset :: "'b \<Rightarrow> 'a multiset" 
-  -- {* -- Function makes a multiset from the given object. A multiset is a collection without order. *}
+  \<comment> \<open>-- Function makes a multiset from the given object. A multiset is a collection without order.\<close>
   assumes is_empty_inj: "is_empty e \<Longrightarrow> e = empty" 
-  -- {* -- It must be assured that the empty element is {\em empty} *}
+  \<comment> \<open>-- It must be assured that the empty element is {\em empty}\<close>
   assumes is_empty_empty: "is_empty empty"
-  -- {* -- Must be satisfied that function {\em is\_empty} returns true for element {\em empty} *}
+  \<comment> \<open>-- Must be satisfied that function {\em is\_empty} returns true for element {\em empty}\<close>
   assumes multiset_empty: "multiset empty = {#}"
-  -- {* -- Multiset of an empty object is empty multiset.  *}
+  \<comment> \<open>-- Multiset of an empty object is empty multiset.\<close>
   assumes multiset_of_list: "multiset (of_list i) = mset i"
-  -- {* -- Multiset of an object gained by
+  \<comment> \<open>-- Multiset of an object gained by
   applying function {\em of\_list} must be the same as the multiset of
   the list. This, practically, means that function {\em of\_list} does
-  not delete or change elements of the starting list. *}
+  not delete or change elements of the starting list.\<close>
 begin
   lemma is_empty_as_list: "is_empty e \<Longrightarrow> multiset e = {#}"
     using is_empty_inj multiset_empty
@@ -77,30 +77,30 @@ locale RemoveMax = Collection empty is_empty of_list  multiset for
   of_list :: "'a::linorder list \<Rightarrow> 'b" and 
   multiset :: "'b \<Rightarrow> 'a::linorder multiset" + 
   fixes remove_max :: "'b \<Rightarrow> 'a \<times> 'b"
-  -- {*   --- Function that removes maximum element from the object of type $'b$. 
-      It returns maximum element and the object without that maximum element. *}
+  \<comment> \<open>--- Function that removes maximum element from the object of type $'b$. 
+      It returns maximum element and the object without that maximum element.\<close>
   fixes inv :: "'b \<Rightarrow> bool"
-  -- {* --- It checks weather the object is in required condition.
+  \<comment> \<open>--- It checks weather the object is in required condition.
       For example, if we expect to work with heap it checks weather the object 
-      is heap. This is called {\em invariant condition} *}
+      is heap. This is called {\em invariant condition}\<close>
   assumes of_list_inv: "inv (of_list x)"
-  -- {*   --- This condition assures that function {\em of\_list}
-      made a object with desired property. *}
+  \<comment> \<open>--- This condition assures that function {\em of\_list}
+      made a object with desired property.\<close>
   assumes remove_max_max: 
      "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> m = Max (set l)"
-  -- {* --- First parameter of the return value of the 
-      function {\em remove\_max} is the maximum element *}
+  \<comment> \<open>--- First parameter of the return value of the 
+      function {\em remove\_max} is the maximum element\<close>
   assumes remove_max_multiset: 
      "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
       add_mset m (multiset l') = multiset l"
-  -- {*  --- Condition for multiset, ensures that nothing new is added or nothing 
-      is lost after applying {\em remove\_max} function. *}
+  \<comment> \<open>--- Condition for multiset, ensures that nothing new is added or nothing 
+      is lost after applying {\em remove\_max} function.\<close>
   assumes remove_max_inv: 
      "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> inv l'"
-  -- {*  --- Ensures that invariant condition is true after removing maximum element. 
+  \<comment> \<open>--- Ensures that invariant condition is true after removing maximum element. 
       Invariant condition must be true in each step of sorting algorithm, for example
       if we are sorting using heap than in each iteration we must have heap and function
-      {\em remove\_max} must not change that. *}
+      {\em remove\_max} must not change that.\<close>
 begin
 
 lemma remove_max_multiset_size: 

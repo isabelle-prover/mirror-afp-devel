@@ -59,7 +59,7 @@ definition Top ("\<top>") where
 lemma top_atoms_simp[simp]: "atoms \<top> = {}" unfolding Top_def by simp
 
 primrec BigAnd :: "'a formula list \<Rightarrow> 'a formula" ("\<^bold>\<And>_") where
-"\<^bold>\<And>Nil = (\<^bold>\<not>\<bottom>)" -- "essentially, it doesn't matter what I use here. But since I want to use this in CNFs, implication is not a nice thing to have." |
+"\<^bold>\<And>Nil = (\<^bold>\<not>\<bottom>)" \<comment> \<open>essentially, it doesn't matter what I use here. But since I want to use this in CNFs, implication is not a nice thing to have.\<close> |
 "\<^bold>\<And>(F#Fs) = F \<^bold>\<and> \<^bold>\<And>Fs"
 
 lemma atoms_BigAnd[simp]: "atoms (\<^bold>\<And>Fs) = \<Union>(atoms ` set Fs)"
@@ -184,7 +184,7 @@ proof -
     have m: "F \<^bold>\<and> G \<in> (if size F + size G \<le> Suc m then {F \<^bold>\<and> G, F \<^bold>\<or> G, F \<^bold>\<rightarrow> G} else {})" using * by simp
     from IH * show ?case using af by(simp only: n all_formulas_of_size.simps Let_def, insert m) fast
   next
-    case (Or F G) case (Imp F G) -- analogous (*<*)
+    case (Or F G) case (Imp F G) \<comment> \<open>analogous\<close> (*<*)
   next
     case (Or F G)
     with Or have *: "size F + size G \<le> n" by simp

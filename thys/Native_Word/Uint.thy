@@ -44,7 +44,7 @@ abbreviation "dflt_size \<equiv> len_of (TYPE (dflt_size))"
 context includes integer.lifting begin
 lift_definition dflt_size_integer :: integer is "int dflt_size" .
 declare dflt_size_integer_def[code del]
-  -- "The code generator will substitute a machine-dependent value for this constant"
+  \<comment> \<open>The code generator will substitute a machine-dependent value for this constant\<close>
 
 lemma dflt_size_by_int[code]: "dflt_size = nat_of_integer dflt_size_integer"
 by transfer simp

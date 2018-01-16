@@ -11,7 +11,7 @@ subsection \<open>Relation Interface Binding\<close>
     where [simp]: "INTF_OF_REL R I \<equiv> True"
 
   lemma intf_of_relI: "INTF_OF_REL (R::(_\<times>'a) set) TYPE('a)" by simp
-  declare intf_of_relI[synth_rules] -- \<open>Declare as fallback rule\<close>
+  declare intf_of_relI[synth_rules] \<comment> \<open>Declare as fallback rule\<close>
 
   lemma [synth_rules]:
     "INTF_OF_REL unit_rel TYPE(unit)"
@@ -32,7 +32,7 @@ subsection \<open>Relation Interface Binding\<close>
 
 subsection \<open>Operations with Precondition\<close>
   definition mop :: "('a\<Rightarrow>bool) \<Rightarrow> ('a\<Rightarrow>'b nres) \<Rightarrow> 'a \<Rightarrow> 'b nres"
-    -- \<open>Package operation with precondition\<close>
+    \<comment> \<open>Package operation with precondition\<close>
     where [simp]: "mop P f \<equiv> \<lambda>x. ASSERT (P x) \<then> f x"
   
   lemma param_op_mop_iff:

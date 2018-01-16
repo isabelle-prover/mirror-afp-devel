@@ -1489,12 +1489,12 @@ lemma rref_and_index_Gauss_Jordan_upt_k:
   snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))"
   using assms
 proof (induct k)
-    -- "Two base cases, one for each show"
-    -- "The first one"
+    \<comment> \<open>Two base cases, one for each show\<close>
+    \<comment> \<open>The first one\<close>
   show "reduced_row_echelon_form_upt_k (Gauss_Jordan_upt_k A 0) (Suc 0)"
     unfolding Gauss_Jordan_upt_k_def apply auto
     using reduced_row_echelon_form_upt_k_Gauss_Jordan_column_k[OF rref_upt_0, of A] using is_zero_row_utp_0'[of A] by simp
-      --"The second base case"
+      \<comment> \<open>The second base case\<close>
   have rw_upt: "[0..<Suc 0] = [0]" by simp
   show "foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0] =
     (if \<forall>m. is_zero_row_upt_k m (Suc 0) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0])) then 0
@@ -1508,7 +1508,7 @@ proof (induct k)
     apply (metis Gauss_Jordan_in_ij_1 least_mod_type zero_neq_one)
     by (metis (lifting, mono_tags) Gauss_Jordan_in_ij_0 GreatestI_ex least_mod_type)
 next
-    -- "Now we begin with the proof of the induction step of the first show. We will make use the induction hypothesis of the second show"
+    \<comment> \<open>Now we begin with the proof of the induction step of the first show. We will make use the induction hypothesis of the second show\<close>
   fix k
   assume "(k < ncols A \<Longrightarrow> reduced_row_echelon_form_upt_k (Gauss_Jordan_upt_k A k) (Suc k))"
     and "(k < ncols A \<Longrightarrow>
@@ -1530,7 +1530,7 @@ next
   show "reduced_row_echelon_form_upt_k (Gauss_Jordan_upt_k A (Suc k)) (Suc (Suc k))"
     unfolding Gauss_Jordan_upt_k_def unfolding rw unfolding foldl_append unfolding foldl.simps unfolding rw2
     by (rule reduced_row_echelon_form_upt_k_Gauss_Jordan_column_k[OF hyp_rref])
-      -- "Making use of the same hypotheses of above proof, we begin with the proof of the induction step of the second show."
+      \<comment> \<open>Making use of the same hypotheses of above proof, we begin with the proof of the induction step of the second show.\<close>
   have fst_foldl: "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]) =
     fst (if \<forall>m. is_zero_row_upt_k m (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])) then 0
     else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,

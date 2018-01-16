@@ -840,7 +840,7 @@ where
 axiomatization
 where
   new_Addr'_code [code]: "new_Addr' h = lowest (Option.is_none \<circ> h) 0"
-    -- {* admissible: a tightening of the specification of @{const new_Addr'} *}
+    \<comment> \<open>admissible: a tightening of the specification of @{const new_Addr'}\<close>
 
 lemma eval'_cases
   [consumes 1,
@@ -1159,49 +1159,49 @@ definition
   progOverrider :: "cdecl list" where
   "progOverrider = [classBottom, classLeft, classRight, classRight2, classTop]"
 
-values [expected "{Val(Ref(0,[''Bottom'',''Left'']))}"] -- "dynCastSide"
+values [expected "{Val(Ref(0,[''Bottom'',''Left'']))}"] \<comment> \<open>dynCastSide\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right''] \<turnstile>
     \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Ref(0,[''Right'']))}"] -- "dynCastViaSh"
+values [expected "{Val(Ref(0,[''Right'']))}"] \<comment> \<open>dynCastViaSh\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right2''] \<turnstile> 
     \<langle>''V'' := new ''Right'' ;; Cast ''Right'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val (Intg 42)}"] -- "block"
+values [expected "{Val (Intg 42)}"] \<comment> \<open>block\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Integer] 
     \<turnstile> \<langle>''V'' := Val(Intg 42) ;; {''V'':Class ''Left''; ''V'' := new ''Bottom''} ;; Var ''V'',
       (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val (Intg 8)}"] -- "staticCall"
+values [expected "{Val (Intg 8)}"] \<comment> \<open>staticCall\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right'',''W''\<mapsto>Class ''Bottom''] 
     \<turnstile> \<langle>''V'' := new ''Bottom'' ;; ''W'' := new ''Bottom'' ;; 
        ((Cast ''Left'' (Var ''W''))\<bullet>''x''{[''Left'',''Top'']} := Val(Intg 3));;
        (Var ''W''\<bullet>(''Left''::)''f''([Var ''V'',Val(Intg 2)])),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val (Intg 12)}"] -- "call"
+values [expected "{Val (Intg 12)}"] \<comment> \<open>call\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] 
     \<turnstile> \<langle>''V'' := new ''Right'' ;; ''W'' := new ''Left'' ;; 
        (Var ''V''\<bullet>''f''([Var ''W'',Val(Intg 42)])) \<guillemotleft>Add\<guillemotright> (Var ''W''\<bullet>''f''([Var ''V'',Val(Intg 13)])),
        (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Intg 13)}"] -- "callOverrider"
+values [expected "{Val(Intg 13)}"] \<comment> \<open>callOverrider\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] 
     \<turnstile> \<langle>''V'' := new ''Bottom'';; (Var ''V'' \<bullet> ''x'' {[''Right2'',''Top'']} := Val(Intg 6));; 
        ''W'' := new ''Left'' ;; Var ''V''\<bullet>''f''([Var ''W'',Val(Intg 42)]),
        (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Ref(1,[''Left'',''Top'']))}"] -- "callClass"
+values [expected "{Val(Ref(1,[''Left'',''Top'']))}"] \<comment> \<open>callClass\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right2''] 
     \<turnstile> \<langle>''V'' := new ''Right'' ;; Var ''V''\<bullet>''g''([]),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Intg 42)}"] -- "fieldAss"
+values [expected "{Val(Intg 42)}"] \<comment> \<open>fieldAss\<close>
   "{fst (e', s') | e' s'. 
     progOverrider,[''V''\<mapsto>Class ''Right2''] 
     \<turnstile> \<langle>''V'' := new ''Right'' ;; 
@@ -1211,54 +1211,54 @@ values [expected "{Val(Intg 42)}"] -- "fieldAss"
 
 text {* typing rules *}
 
-values [expected "{Class ''Bottom''}"] -- "typeNew"
+values [expected "{Class ''Bottom''}"] \<comment> \<open>typeNew\<close>
   "{T. progOverrider,empty \<turnstile> new ''Bottom'' :: T}"
 
-values [expected "{Class ''Left''}"] -- "typeDynCast"
+values [expected "{Class ''Left''}"] \<comment> \<open>typeDynCast\<close>
   "{T. progOverrider,empty \<turnstile> Cast ''Left'' (new ''Bottom'') :: T}"
 
-values [expected "{Class ''Left''}"] -- "typeStaticCast"
+values [expected "{Class ''Left''}"] \<comment> \<open>typeStaticCast\<close>
   "{T. progOverrider,empty \<turnstile> \<lparr>''Left''\<rparr> (new ''Bottom'') :: T}"
 
-values [expected "{Integer}"] -- "typeVal"
+values [expected "{Integer}"] \<comment> \<open>typeVal\<close>
   "{T. [],empty \<turnstile> Val(Intg 17) :: T}"
 
-values [expected "{Integer}"] -- "typeVar"
+values [expected "{Integer}"] \<comment> \<open>typeVar\<close>
   "{T. [],[''V'' \<mapsto> Integer] \<turnstile> Var ''V'' :: T}"
 
-values [expected "{Boolean}"] -- "typeBinOp"
+values [expected "{Boolean}"] \<comment> \<open>typeBinOp\<close>
   "{T. [],empty \<turnstile> (Val(Intg 5)) \<guillemotleft>Eq\<guillemotright> (Val(Intg 6)) :: T}"
 
-values [expected "{Class ''Top''}"] -- "typeLAss"
+values [expected "{Class ''Top''}"] \<comment> \<open>typeLAss\<close>
   "{T. progOverrider,[''V'' \<mapsto> Class ''Top''] \<turnstile> ''V'' := (new ''Left'') :: T}"
 
-values [expected "{Integer}"] -- "typeFAcc"
+values [expected "{Integer}"] \<comment> \<open>typeFAcc\<close>
   "{T. progOverrider,empty \<turnstile> (new ''Right'')\<bullet>''x''{[''Right2'',''Top'']} :: T}"
 
-values [expected "{Integer}"] -- "typeFAss"
+values [expected "{Integer}"] \<comment> \<open>typeFAss\<close>
   "{T. progOverrider,empty \<turnstile> (new ''Right'')\<bullet>''x''{[''Right2'',''Top'']} :: T}"
 
-values [expected "{Integer}"] -- "typeStaticCall"
+values [expected "{Integer}"] \<comment> \<open>typeStaticCall\<close>
   "{T. progOverrider,[''V''\<mapsto>Class ''Left''] 
        \<turnstile> ''V'' := new ''Left'' ;; Var ''V''\<bullet>(''Left''::)''f''([new ''Top'', Val(Intg 13)]) :: T}"
 
-values [expected "{Class ''Top''}"] -- "typeCall"
+values [expected "{Class ''Top''}"] \<comment> \<open>typeCall\<close>
   "{T. progOverrider,[''V''\<mapsto>Class ''Right2''] 
        \<turnstile> ''V'' := new ''Right'' ;; Var ''V''\<bullet>''g''([]) :: T}"
 
-values [expected "{Class ''Top''}"] -- "typeBlock"
+values [expected "{Class ''Top''}"] \<comment> \<open>typeBlock\<close>
   "{T. progOverrider,empty \<turnstile> {''V'':Class ''Top''; ''V'' := new ''Left''} :: T}"
 
-values [expected "{Integer}"] -- "typeCond"
+values [expected "{Integer}"] \<comment> \<open>typeCond\<close>
   "{T. [],empty \<turnstile> if (true) Val(Intg 6) else Val(Intg 9) :: T}"
 
-values [expected "{Void}"] -- "typeWhile"
+values [expected "{Void}"] \<comment> \<open>typeWhile\<close>
   "{T. [],empty \<turnstile> while (false) Val(Intg 17) :: T}"
 
-values [expected "{Void}"] -- "typeThrow"
+values [expected "{Void}"] \<comment> \<open>typeThrow\<close>
   "{T. progOverrider,empty \<turnstile> throw (new ''Bottom'') :: T}"
 
-values [expected "{Integer}"] -- "typeBig"
+values [expected "{Integer}"] \<comment> \<open>typeBig\<close>
   "{T. progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] 
        \<turnstile> ''V'' := new ''Right'' ;; ''W'' := new ''Left'' ;; 
          (Var ''V''\<bullet>''f''([Var ''W'', Val(Intg 7)])) \<guillemotleft>Add\<guillemotright> (Var ''W''\<bullet>''f''([Var ''V'', Val(Intg 13)])) 
@@ -1295,49 +1295,49 @@ definition
   progDiamond :: "cdecl list" where
   "progDiamond = [classDiamondBottom, classDiamondLeft, classDiamondRight, classDiamondTopRep, classDiamondTopSh]"
 
-values [expected "{Val(Ref(0,[''Bottom'',''Left'']))}"] -- "cast1"
+values [expected "{Val(Ref(0,[''Bottom'',''Left'']))}"] \<comment> \<open>cast1\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''Left''] \<turnstile> \<langle>''V'' := new ''Bottom'',
                                                       (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Ref(0,[''TopSh'']))}"] -- "cast2"
+values [expected "{Val(Ref(0,[''TopSh'']))}"] \<comment> \<open>cast2\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''TopSh''] \<turnstile> \<langle>''V'' := new ''Bottom'',
                                                       (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{}"] -- "typeCast3 not typeable"
+values [expected "{}"] \<comment> \<open>typeCast3 not typeable\<close>
   "{T. progDiamond,[''V''\<mapsto>Class ''TopRep''] \<turnstile> ''V'' := new ''Bottom'' :: T}"
 
 values [expected "{
    Val(Ref(0,[''Bottom'', ''Left'', ''TopRep''])), 
    Val(Ref(0,[''Bottom'', ''Right'', ''TopRep'']))
-  }"] -- "cast3"
+  }"] \<comment> \<open>cast3\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''TopRep''] \<turnstile> \<langle>''V'' := new ''Bottom'', 
                                                       (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
-values [expected "{Val(Intg 17)}"] -- "fieldAss"
+values [expected "{Val(Intg 17)}"] \<comment> \<open>fieldAss\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''Bottom''] 
     \<turnstile> \<langle>''V'' := new ''Bottom'' ;; 
        ((Var ''V'')\<bullet>''x''{[''Bottom'']} := (Val(Intg 17))) ;; 
        ((Var ''V'')\<bullet>''x''{[''Bottom'']}),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
-values [expected "{Val Null}"] -- "dynCastNull"
+values [expected "{Val Null}"] \<comment> \<open>dynCastNull\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,empty \<turnstile> \<langle>Cast ''Right'' null,(empty,empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
-values [expected "{Val (Ref(0, [''Right'']))}"] -- "dynCastViaSh"
+values [expected "{Val (Ref(0, [''Right'']))}"] \<comment> \<open>dynCastViaSh\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''TopSh''] 
     \<turnstile> \<langle>''V'' := new ''Right'' ;; Cast ''Right'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
-values [expected "{Val Null}"] -- "dynCastFail"
+values [expected "{Val Null}"] \<comment> \<open>dynCastFail\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''TopRep''] 
     \<turnstile> \<langle>''V'' := new ''Right'' ;; Cast ''Bottom'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
-values [expected "{Val (Ref(0, [''Bottom'', ''Left'']))}"] -- "dynCastSide"
+values [expected "{Val (Ref(0, [''Bottom'', ''Left'']))}"] \<comment> \<open>dynCastSide\<close>
   "{fst (e', s') | e' s'. 
     progDiamond,[''V''\<mapsto>Class ''Right'']
     \<turnstile> \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
@@ -1367,7 +1367,7 @@ definition
   ProgFailing :: "cdecl list" where
   "ProgFailing = [classA,classB,classC,classD]"
 
-values [expected "{Val (Intg 42)}"] -- "callFailGplusplus"
+values [expected "{Val (Intg 42)}"] \<comment> \<open>callFailGplusplus\<close>
   "{fst (e', s') | e' s'. 
     ProgFailing,empty 
     \<turnstile> \<langle>{''V'':Class ''D''; ''V'' := new ''D'';; Var ''V''\<bullet>''f''([])},

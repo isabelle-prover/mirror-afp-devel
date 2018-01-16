@@ -21,7 +21,7 @@ where
   "preSuc [] = []"
 | "preSuc (a#list) = (case a of 0 => preSuc list | Suc n => n#(preSuc list))"
 
-primrec fv :: "form => var list" -- "shouldn't need to be more constructive than this"
+primrec fv :: "form => var list" \<comment> \<open>shouldn't need to be more constructive than this\<close>
 where
   "fv (PAtom p vs) = vs"
 | "fv (NAtom p vs) = vs"
@@ -31,7 +31,7 @@ where
 | "fv (FEx f) = preSuc (fv f)"
 
 definition
-  bump :: "(var => var) => (var => var)" -- "substitute a different var for 0" where
+  bump :: "(var => var) => (var => var)" \<comment> \<open>substitute a different var for 0\<close> where
   "bump phi y = (case y of 0 => 0 | Suc n => Suc (phi n))"
 
 primrec subst :: "(nat => nat) => form => form"
@@ -90,7 +90,7 @@ lemma maxvar: "\<forall>v \<in> set vs. v \<le> maxvar vs"
 definition
   newvar :: "var list => var" where
   "newvar vs = (if vs = [] then 0 else Suc (maxvar vs))"
-  -- "note that for newvar to be constructive, need an operation to get a different var from a given set"
+  \<comment> \<open>note that for newvar to be constructive, need an operation to get a different var from a given set\<close>
 
 lemma newvar: "newvar vs \<notin> (set vs)"
   using length_pos_if_in_set maxvar newvar_def by force
@@ -125,7 +125,7 @@ inductive_set
 where
   init: "(0,s) \<in> deriv s"
 | step: "(n,x) \<in> deriv s ==> y : set (subs x) ==> (Suc n,y) \<in> deriv s"
-  -- "the closure of the branch at isaxiom"
+  \<comment> \<open>the closure of the branch at isaxiom\<close>
 
 (*lemma step': "(n,x) \<in> deriv s ==> y : set (subs x) ==> ~ is_axiom (s_of_ns x) ==> (Suc n,y) \<in> deriv s"*)
 
@@ -189,7 +189,7 @@ lemma deriv_deriv_child(*derivSuc*)[rule_format]: "\<forall>x y. (Suc n,x) \<in>
   apply(induct n)
    apply(rule, rule) apply(rule) apply(frule_tac deriv_downwards) apply(simp)
    apply(simp) apply(rule step) apply(simp) apply(simp)
-  apply(blast dest!: deriv_downwards elim: deriv.cases) -- "blast needs some help with the reasoning, hence derivSucE"
+  apply(blast dest!: deriv_downwards elim: deriv.cases) \<comment> \<open>blast needs some help with the reasoning, hence derivSucE\<close>
   done
 
 (*
@@ -434,7 +434,7 @@ lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==
   apply(rule)
   apply(simp add: FEval_finst)
 
-  apply(drule_tac x=M in spec, drule_tac x=I in spec) -- "this is the goal"
+  apply(drule_tac x=M in spec, drule_tac x=I in spec) \<comment> \<open>this is the goal\<close>
 
   apply(drule_tac x="e(u:=m)" in spec) apply(erule impE) apply(simp add: is_env_def) apply(erule disjE)
    apply(rule disjI2)
@@ -455,10 +455,10 @@ lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==
   
   apply(force simp: sfv_cons)
   done
-    -- "phew, that really was a bit more difficult than expected"
-    -- "note that we can avoid maxscoping at the cost of instantiating the hyp twice- an additional time for M"
+    \<comment> \<open>phew, that really was a bit more difficult than expected\<close>
+    \<comment> \<open>note that we can avoid maxscoping at the cost of instantiating the hyp twice- an additional time for M\<close>
 
-    -- "different proof, instantiating quantifier twice, avoiding maxscoping"
+    \<comment> \<open>different proof, instantiating quantifier twice, avoiding maxscoping\<close>
 lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==> Svalid (FAll f#s)"
   apply(simp add: Svalid_def del: SEval.simps) 
   apply(rule allI) 
@@ -471,7 +471,7 @@ lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) =
   apply(frule_tac x="e" in spec) apply(erule impE) apply(simp add: is_env_def)
   apply(case_tac "SEval (M, I) e s") apply(simp)
   apply(simp)
-    -- "second instantiation"
+    \<comment> \<open>second instantiation\<close>
   apply(simp add: FEval_finst)
   apply(rule)
   apply(drule_tac x="e(u:=m)" in spec) apply(erule impE) apply(simp add: is_env_def) 
@@ -489,7 +489,7 @@ lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) =
   apply(subgoal_tac "nat \<in> set (fv (FAll f))") prefer 2 apply(simp)
   apply(force simp: sfv_cons)
   done
-    -- "not much better, probably slightly worse"
+    \<comment> \<open>not much better, probably slightly worse\<close>
 
 (*
 lemma sound_FAll: "u \<notin> sfv ((0,FAll f)#s) ==> SEval m e (map snd (s@[(0,finst u f)])) ==> SEval m e (map snd ((0,FAll f)#s))"
@@ -541,7 +541,7 @@ lemma max_exists: "finite (X::nat set) ==> X \<noteq> {} --> (\<exists>x. x \<in
   apply(rule) apply(simp add: max_def)
   apply(simp add: max_def) apply(force)
   done
-  -- "poor max lemmas in lib"
+  \<comment> \<open>poor max lemmas in lib\<close>
 
 lemma inj_finite_image_eq_finite: "inj_on f Z ==> finite (f ` Z) = finite Z"
   by (blast intro: finite_imageD) 
@@ -580,7 +580,7 @@ lemma index0: "init s ==> \<forall>u m A. (n, u) \<in> deriv s --> (m,A) \<in> (
   apply(induct_tac n)
   apply(rule,rule,rule,rule,rule,rule) apply(simp) apply(force simp add: init_def)
   apply(rule,rule,rule,rule,rule,rule) 
-  -- {*inversion on @{term "(Suc n, u) \<in> deriv s"}*}
+  \<comment> \<open>inversion on @{term "(Suc n, u) \<in> deriv s"}\<close>
   apply(drule_tac deriv_downwards) apply(elim exE conjE)
   apply(case_tac y) apply(simp)
   apply(case_tac a) apply(case_tac b)
@@ -594,35 +594,35 @@ lemma index0: "init s ==> \<forall>u m A. (n, u) \<in> deriv s --> (m,A) \<in> (
 
 lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==> \<forall>y u. (y,u) \<in> (deriv s) --> y \<le> m ==> \<forall>n t. h = m - n & (n,t) \<in> deriv s --> Svalid (s_of_ns t)"
   apply(induct_tac h)
-    -- "base case"
+    \<comment> \<open>base case\<close>
    apply(simp) apply(rule,rule,rule) apply(elim conjE)
    apply(subgoal_tac "n=m") prefer 2 apply(force)
    apply(simp)
    apply(simp add: Svalid_def) apply(rule,rule) apply(rename_tac gs g) apply(rule) apply(rule) apply(simp add: SEval_def2)
    apply(case_tac "is_axiom (s_of_ns t)")
-     -- "base case, is axiom"
+     \<comment> \<open>base case, is axiom\<close>
     apply(simp add: s_of_ns_def) apply(case_tac t) apply(simp) apply(simp)
     apply(erule disjE) 
-      -- "base case, is axiom, starts with PAtom"
+      \<comment> \<open>base case, is axiom, starts with PAtom\<close>
      apply(elim conjE exE)
      apply(subgoal_tac "FEval (gs,g) e (PAtom p vs) | FEval (gs,g) e (NAtom p vs)")
       apply(erule disjE) apply(force) apply(rule_tac x="NAtom p vs" in exI) apply(force)
      apply(simp add: Let_def) 
-      -- "base case, is axiom, starts with NAtom"
+      \<comment> \<open>base case, is axiom, starts with NAtom\<close>
     apply(elim conjE exE)
     apply(subgoal_tac "FEval (gs,g) e (PAtom p vs) | FEval (gs,g) e (NAtom p vs)")
       apply(erule disjE) apply(rule_tac x="PAtom p vs" in exI) apply(force) apply(force)
     apply(simp add: Let_def) 
     
-    -- "base case, not is axiom: if not a satax, then subs holds... but this can't be"
+    \<comment> \<open>base case, not is axiom: if not a satax, then subs holds... but this can't be\<close>
    apply(drule_tac deriv_upwards) apply(assumption) apply(elim conjE exE) apply(force) 
    
-     -- "step case, by case analysis"
+     \<comment> \<open>step case, by case analysis\<close>
 
   apply(intro allI impI) apply(elim exE conjE)
 
   apply(case_tac "is_axiom (s_of_ns t)")
-    -- "step case, is axiom"
+    \<comment> \<open>step case, is axiom\<close>
   apply(simp add: Svalid_def) apply(rule,rule) apply(rename_tac gs g) apply(rule) apply(rule) apply(simp add: SEval_def2)
     apply(simp add: s_of_ns_def) apply(case_tac t) apply(simp) apply(simp)
     apply(erule disjE) 
@@ -635,7 +635,7 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
       apply(erule disjE) apply(rule_tac x="PAtom p vs" in exI) apply(blast) apply(simp) apply(force)
     apply(simp add: Let_def) 
 
-     -- "we hit FAll/ FEx cases first"
+     \<comment> \<open>we hit FAll/ FEx cases first\<close>
   
   apply(case_tac "\<exists>(a::nat) f list. t = (a,FAll f)#list")
    apply(elim exE) apply(simp)
@@ -643,7 +643,7 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
     prefer 2 
     apply(rule_tac n=na and u=t and A="FAll f" in index0[rule_format])
     apply(assumption) apply(simp) apply(simp) apply(simp)
-   apply(frule_tac deriv.step) apply(simp add: Let_def)  -- "nice use of simp to instantiate"
+   apply(frule_tac deriv.step) apply(simp add: Let_def)  \<comment> \<open>nice use of simp to instantiate\<close>
    apply(drule_tac x="Suc na" in spec, drule_tac x="list @ [(0, finst f (newvar (sfv (s_of_ns t))))]" in spec) apply(erule impE, simp)
    apply(subgoal_tac "newvar (sfv (s_of_ns t)) \<notin> set (sfv (s_of_ns t))") 
     prefer 2 apply(rule newvar)
@@ -653,21 +653,21 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
   
   apply(case_tac "\<exists>a f list. t = (a,FEx f)#list")
    apply(elim exE)
-   apply(frule_tac deriv.step) apply(simp add: Let_def) -- "nice use of simp to instantiate"
+   apply(frule_tac deriv.step) apply(simp add: Let_def) \<comment> \<open>nice use of simp to instantiate\<close>
    apply(drule_tac x="Suc na" in spec, drule_tac x="list @ [(0, finst f a), (Suc a, FEx f)]" in spec) apply(erule impE, assumption)
    apply(drule_tac x="Suc na" in spec, drule_tac x="list @ [(0, finst f a), (Suc a, FEx f)]" in spec) apply(erule impE) apply(rule) apply(arith) apply(assumption)
    apply(subgoal_tac "Svalid (s_of_ns (list@[(0,finst f a), (Suc a, FEx f)]))")
     apply(simp add: s_of_ns_def)
     apply(frule_tac sound_FEx) apply(simp) apply(simp)
    
-  -- "now for other cases" 
-      -- "case empty list"
+  \<comment> \<open>now for other cases\<close> 
+      \<comment> \<open>case empty list\<close>
   apply(case_tac t) apply(simp)
    apply(frule_tac step) apply(simp) apply(simp) apply(drule_tac x="Suc na" in spec) back apply(drule_tac x="[]" in spec) apply(erule impE) apply(rule) apply(arith) apply(assumption) apply(assumption)
    
   apply(simp add: Svalid_def) apply(rule,rule) apply(rename_tac gs g) apply(rule) apply(rule) apply(simp add: SEval_def2)
-  -- "na t in deriv, so too is subs"
-   -- "if not a satax, then subs holds... "
+  \<comment> \<open>na t in deriv, so too is subs\<close>
+   \<comment> \<open>if not a satax, then subs holds...\<close>
   apply(case_tac a)
   apply(case_tac b)
        apply(simp del: FEval.simps) apply(frule_tac patom) apply(assumption)
@@ -675,7 +675,7 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
        apply(frule_tac x="Suc na" in spec, drule_tac x="list @ [(0, PAtom nat lista)]" in spec)
        apply(erule impE) apply(arith)
        apply(drule_tac x=gs in spec, drule_tac x=g in spec, drule_tac x=e in spec) apply(erule impE) apply(simp add: is_env_def)
-       apply(elim exE conjE) apply(rule_tac x=f in exI) apply(simp add: s_of_ns_def) -- "weirdly, simp succeeds, force and blast fail"
+       apply(elim exE conjE) apply(rule_tac x=f in exI) apply(simp add: s_of_ns_def) \<comment> \<open>weirdly, simp succeeds, force and blast fail\<close>
       apply(simp del: FEval.simps) apply(frule_tac natom) apply(assumption) 
       apply(rename_tac nat lista)
       apply(frule_tac x="Suc na" in spec, drule_tac x="list @ [(0, NAtom nat lista)]" in spec)
@@ -707,7 +707,7 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
       apply(simp) apply(rule_tac x="FDisj form1 form2" in exI) apply(simp)
      apply(simp) apply(rule_tac x="FDisj form1 form2" in exI) apply(simp)
     apply(rule_tac x="f" in exI) apply(simp)
-      -- "all case"
+      \<comment> \<open>all case\<close>
    apply(force)
   apply(force)
   done
@@ -854,7 +854,7 @@ lemma (in loc1) contains_propagates_fdisj: "infinite (deriv s) ==> contains f n 
   done
 
 lemma (in loc1) contains_propagates_fall: "infinite (deriv s) ==> contains f n (0, FAll g) 
-  ==> (\<exists>y. contains f (Suc(n+y)) (0,finst g (newvar (sfv (s_of_ns (snd (f (n+y))))))))" -- "may need constraint on fv"
+  ==> (\<exists>y. contains f (Suc(n+y)) (0,finst g (newvar (sfv (s_of_ns (snd (f (n+y))))))))" \<comment> \<open>may need constraint on fv\<close>
   apply(subgoal_tac "(\<exists>l. considers f (n+l) (0,FAll g))") defer apply(rule contains_considers) apply(assumption) apply(assumption)
   apply(erule exE)
   apply(rule_tac x="l" in exI)
@@ -879,9 +879,9 @@ lemma (in loc1) contains_propagates_fex: "infinite (deriv s) ==> contains f n (m
   apply(frule_tac is_path_f) apply(drule_tac x="n+l" in spec) apply(force)
   done
 
-  -- "also need that if contains one, then contained an original at beginning"
-  -- "existentials: show that for exists formulae, if Suc m is marker, then there must have been m"
-  -- "show this by showing that nodes are upwardly closed, i.e. if never contains (m,x), then never contains (Suc m, x), by induction on n"
+  \<comment> \<open>also need that if contains one, then contained an original at beginning\<close>
+  \<comment> \<open>existentials: show that for exists formulae, if Suc m is marker, then there must have been m\<close>
+  \<comment> \<open>show this by showing that nodes are upwardly closed, i.e. if never contains (m,x), then never contains (Suc m, x), by induction on n\<close>
 
 lemma (in loc1) FEx_downward: "infinite (deriv s) ==> init s ==> \<forall>m. (Suc m,FEx g) \<in> set (snd (f n)) --> (\<exists>n'. (m, FEx g) \<in> set (snd (f n')))"
   apply(frule_tac is_path_f)
@@ -927,7 +927,7 @@ lemma (in loc1) FEx_upward': "infinite (deriv s) ==> init s ==> \<forall>n. cont
   apply(drule_tac x="n'+m" in spec)
   apply(force simp add: contains_def considers_def Let_def)
   done
-  -- "FIXME contains and considers aren't buying us much"
+  \<comment> \<open>FIXME contains and considers aren't buying us much\<close>
 
 lemma (in loc1) FEx_upward: "infinite (deriv s) ==> init s ==> contains f n (m, FEx g) ==> (\<forall>m'. \<exists>n'. contains f n' (0, finst g m'))"
   apply(intro allI impI)
@@ -944,7 +944,7 @@ lemma (in loc1) FEx_upward: "infinite (deriv s) ==> init s ==> contains f n (m, 
 subsection "Models 2"
 
 axiomatization ntou :: "nat => U"
-where ntou: "inj ntou"  -- "assume universe set is infinite"
+where ntou: "inj ntou"  \<comment> \<open>assume universe set is infinite\<close>
 
 definition uton :: "U => nat" where "uton = inv ntou"
 
@@ -1020,7 +1020,7 @@ lemma (in loc2) model':
    apply(intro impI allI)
    apply(subgoal_tac "m=0") prefer 2 apply(simp) apply(simp del: FEval.simps)
    apply(frule_tac contains_propagates_fall) apply(assumption)
-   apply(erule exE) -- "all case"
+   apply(erule exE) \<comment> \<open>all case\<close>
    apply(rename_tac form m na y)
    apply(drule_tac x="size form" in spec) apply(erule impE, force) apply(drule_tac x="finst form (newvar (sfv (s_of_ns (snd (f (na + y))))))" in spec) apply(erule impE, force)
    apply(erule impE, force) apply(simp add: FEval_finst) apply(rule_tac x="ntou (newvar (sfv (s_of_ns (snd (f (na + y))))))" in bexI) apply(assumption) 
@@ -1048,7 +1048,7 @@ lemma (in loc2) model: "infinite (deriv s) ==> init s ==> (\<forall>A m n. conta
 
 subsection "Completeness"
 
-lemma (in loc2) completeness': "infinite (deriv s) ==> init s ==> \<forall>mA \<in> set s. ~ FEval mo ntou (snd mA)" -- "FIXME tidy deriv s so that s consists of formulae only?"
+lemma (in loc2) completeness': "infinite (deriv s) ==> init s ==> \<forall>mA \<in> set s. ~ FEval mo ntou (snd mA)" \<comment> \<open>FIXME tidy deriv s so that s consists of formulae only?\<close>
   apply(frule_tac model) apply(assumption)
   apply(rule)
   apply(case_tac mA)
@@ -1057,7 +1057,7 @@ lemma (in loc2) completeness': "infinite (deriv s) ==> init s ==> \<forall>mA \<
    apply(subgoal_tac "a=0") 
     prefer 2 apply(simp only: init_def, force)
   apply auto
-  done -- "FIXME very ugly"
+  done \<comment> \<open>FIXME very ugly\<close>
 
 thm loc2.completeness'[simplified loc2_def loc2_axioms_def loc1_def]
 
@@ -1082,7 +1082,7 @@ lemma completeness: "infinite (deriv (ns_of_s s)) ==> ~ Svalid s"
   apply(simp add: model_def)
   apply(simp add: is_env_def)
   done
--- "FIXME silly splitting of quantified pairs "
+\<comment> \<open>FIXME silly splitting of quantified pairs\<close>
 
 
 subsection "Sound and Complete"
@@ -1093,7 +1093,7 @@ lemma "Svalid s = finite (deriv (ns_of_s s))"
 
 subsection "Algorithm"
 
-primrec iter :: "('a => 'a) => 'a => nat => 'a" -- "fold for nats"
+primrec iter :: "('a => 'a) => 'a => nat => 'a" \<comment> \<open>fold for nats\<close>
 where
   "iter g a 0 = a"
 | "iter g a (Suc n) = g (iter g a n)"
@@ -1118,7 +1118,7 @@ lemma ex_iter': "(\<exists>n. R (iter g a n)) = (R a | (\<exists>n. R (iter g (g
   apply(simp add: iter)
   done
 
-    -- "version suitable for computation"
+    \<comment> \<open>version suitable for computation\<close>
 lemma ex_iter: "(\<exists>n. R (iter g a n)) = (if R a then True else (\<exists>n. R (iter g (g a) n)))"
   apply (rule trans) 
   apply (rule ex_iter') 
@@ -1201,7 +1201,7 @@ lemma prove': "prove' l = (if l = [] then True else prove' ((% x. flatten (map s
   apply(simp only: prove'_def)
   apply(rule ex_iter_fSucn) 
   done
-    -- "this is the main claim for efficiency- we have a tail recursive implementation via this lemma"
+    \<comment> \<open>this is the main claim for efficiency- we have a tail recursive implementation via this lemma\<close>
 
 definition prove :: "nseq => bool" where "prove s = prove' ([s])"
 
@@ -1211,10 +1211,10 @@ lemma finite_deriv_prove: "finite (deriv s) = prove s"
 
 subsection "Computation"
 
-  -- "a sample formula to prove"
+  \<comment> \<open>a sample formula to prove\<close>
 lemma "(\<exists>x. A x | B x) --> ( (\<exists>x. B x) | (\<exists>x. A x))" by blast
 
-  -- "convert to our form"
+  \<comment> \<open>convert to our form\<close>
 lemma "((\<exists>x. A x | B x) --> ( (\<exists>x. B x) | (\<exists>x. A x)))
   = ( (\<forall>x. ~ A x & ~ B x) | ( (\<exists>x. B x) | (\<exists>x. A x)))" by blast 
 
@@ -1223,7 +1223,7 @@ definition my_f :: "form" where
   (FAll (FConj (NAtom 0 [0]) (NAtom 1 [0])))
   (FDisj (FEx (PAtom 1 [0])) (FEx (PAtom 0 [0])))"
 
-  -- "we compute by rewriting"
+  \<comment> \<open>we compute by rewriting\<close>
 
 lemma membership_simps:
   "x \<in> set [] \<longleftrightarrow> False"

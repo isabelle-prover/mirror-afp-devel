@@ -143,8 +143,8 @@ images of regular expressions in the set of languages has also been
 adapted from there. *}
 
 fun lang :: "'a rexp \<Rightarrow> 'a lan" where
-  "lang Zero = 0"  -- "{}"
-| "lang One = 1"  -- "{[]}"
+  "lang Zero = 0"  \<comment> \<open>{}\<close>
+| "lang One = 1"  \<comment> \<open>{[]}\<close>
 | "lang (Atom a) = {[a]}"
 | "lang (Plus x y) = lang x + lang y"
 | "lang (Times x y) = lang x \<cdot> lang y"

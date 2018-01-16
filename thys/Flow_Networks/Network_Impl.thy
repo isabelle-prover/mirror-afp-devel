@@ -20,7 +20,7 @@ locale Network_Impl = Network c s t for c :: "capacity_impl graph" and s t +
   assumes V_ss: "V\<subseteq>{0..<N}"
 begin  
   lemma E_ss: "E \<subseteq> {0..<N}\<times>{0..<N}" using E_ss_VxV V_ss by auto
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
 
 subsection \<open>Basic Operations\<close>
   
@@ -75,7 +75,7 @@ begin
     finally show ?thesis unfolding am_is_in_V_def by refine_vcg auto
   qed    
   
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
   
 subsubsection \<open>Registration of Basic Operations to Sepref\<close>  
 
@@ -85,7 +85,7 @@ bundle Network_Impl_Sepref_Register begin
   lemmas [map_type_eqs] = 
     map_type_eqI[of "TYPE(capacity_impl flow)" "TYPE(capacity_impl i_mtx)"]
   
-end -- \<open>Bundle\<close>
+end \<comment> \<open>Bundle\<close>
  
   
 context Network_Impl
@@ -104,9 +104,9 @@ sepref_register cf_get cf_set cf_init
   
 sepref_register am_get am_is_in_V    
   
-end -- \<open>Anonymous Context\<close> 
+end \<comment> \<open>Anonymous Context\<close> 
 
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
   
 subsection \<open>Refinement To Efficient Data Structures\<close>  
 
@@ -238,7 +238,7 @@ lemma am_is_in_V_hnr[sepref_fr_rules]: "(uncurry am_is_in_V_impl, uncurry (am_is
   apply (sep_auto simp: refine_pw_simps split: list.split)
   done
   
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
   
 subsection \<open>Computing the Flow Value\<close>
 text \<open>We define an algorithm to compute the value of a flow from 
@@ -334,7 +334,7 @@ concrete_definition (in -) compute_flow_val_impl
 lemmas compute_flow_val_impl_hnr[sepref_fr_rules] 
     = compute_flow_val_impl.refine[OF Network_Impl_axioms]
     
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
     
 text \<open>We also export a correctness theorem on the separation logic level\<close>    
 
@@ -413,6 +413,6 @@ concrete_definition (in -) fifo_init_C_impl
   uses Network_Impl.fifo_init_C_impl.refine_raw is "(?f,_)\<in>_"
 lemmas [sepref_fr_rules] = fifo_init_C_impl.refine[OF Network_Impl_axioms]
   
-end -- \<open>Network Implementation Locale\<close>
+end \<comment> \<open>Network Implementation Locale\<close>
   
 end

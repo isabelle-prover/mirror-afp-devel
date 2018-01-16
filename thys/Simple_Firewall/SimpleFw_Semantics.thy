@@ -19,7 +19,7 @@ begin
       } thus ?thesis by blast
     qed
 
-  --"by the way, the words do not wrap around"
+  \<comment> \<open>by the way, the words do not wrap around\<close>
   lemma "{(253::8 word) .. 8} = {}" by simp 
 
   fun simple_match_port :: "(16 word \<times> 16 word) \<Rightarrow> 16 word \<Rightarrow> bool" where

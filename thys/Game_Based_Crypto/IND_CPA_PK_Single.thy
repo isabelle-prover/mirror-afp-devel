@@ -8,10 +8,10 @@ begin
 subsection {* The IND-CPA game (public key, single instance) *}
 
 locale ind_cpa = 
-  fixes key_gen :: "('pub_key \<times> 'priv_key) spmf" -- {*  probabilistic *}
-  and aencrypt :: "'pub_key \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  -- {*  probabilistic *}
-  and adecrypt :: "'priv_key \<Rightarrow> 'cipher \<Rightarrow> 'plain option" -- {*  deterministic, but not used *}
-  and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" -- {* checks whether a pair of plaintexts is valid, i.e., they both have the right format *}
+  fixes key_gen :: "('pub_key \<times> 'priv_key) spmf" \<comment> \<open>probabilistic\<close>
+  and aencrypt :: "'pub_key \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  \<comment> \<open>probabilistic\<close>
+  and adecrypt :: "'priv_key \<Rightarrow> 'cipher \<Rightarrow> 'plain option" \<comment> \<open>deterministic, but not used\<close>
+  and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a pair of plaintexts is valid, i.e., they both have the right format\<close>
 begin
 
 text {*

@@ -615,7 +615,7 @@ end
 
 subsubsection \<open>Most Specific Invariant\<close>
   
-definition msii -- "Most specific invariant for WHILE-loop"
+definition msii \<comment> \<open>Most specific invariant for WHILE-loop\<close>
   where "msii I m c f \<equiv> lfp (WHILEI_lfp_body I m c f)"
 
 lemma [simp, intro!]: "mono (WHILEI_lfp_body I m c f)"
@@ -1264,7 +1264,7 @@ text {* In this theory, we show that every non-failing total-correct
 
 
 definition rwof_rel 
-  -- "Transitions in a while-loop as relation"
+  \<comment> \<open>Transitions in a while-loop as relation\<close>
   where "rwof_rel init cond step 
     \<equiv> {(s,s'). rwof init cond step s \<and> cond s \<and> inres (step s) s'}"
 

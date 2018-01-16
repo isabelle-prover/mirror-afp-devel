@@ -27,18 +27,18 @@ text {*
   The following defines the monitors of nodes, stacks, configurations, step labels and paths (sequences of step labels)
 *}
 definition
-  -- "The monitors of a node are the monitors the procedure of the node synchronizes on"
+  \<comment> \<open>The monitors of a node are the monitors the procedure of the node synchronizes on\<close>
   "mon_n fg n == mon fg (proc_of fg n)"
 
 definition
-  -- "The monitors of a stack are the monitors of all its nodes"
+  \<comment> \<open>The monitors of a stack are the monitors of all its nodes\<close>
   "mon_s fg s == \<Union> { mon_n fg n | n . n \<in> set s }"
 
 definition
-  -- "The monitors of a configuration are the monitors of all its stacks"
+  \<comment> \<open>The monitors of a configuration are the monitors of all its stacks\<close>
   "mon_c fg c == \<Union> { mon_s fg s | s . s \<in># c }"
 
--- "The monitors of a step label are the monitors of procedures that are called by this step"
+\<comment> \<open>The monitors of a step label are the monitors of procedures that are called by this step\<close>
 definition mon_e :: "('b, 'c, 'd, 'a, 'e) flowgraph_rec_scheme \<Rightarrow> ('c, 'f) label \<Rightarrow> 'a set" where
   "mon_e fg e = (case e of (LCall p) \<Rightarrow> mon fg p | _ \<Rightarrow> {})"
 
@@ -49,7 +49,7 @@ lemma mon_e_simps [simp]:
   "mon_e fg (LSpawn p) = {}"
   by (simp_all add: mon_e_def)
 
--- "The monitors of a path are the monitors of all procedures that are called on the path"
+\<comment> \<open>The monitors of a path are the monitors of all procedures that are called on the path\<close>
 definition
   "mon_w fg w == \<Union> { mon_e fg e | e. e \<in> set w}"
 
@@ -173,7 +173,7 @@ qed
 
 subsection {* Configurations at control points *}
 
--- {* A stack is {\em at} @{term U} if its top node is from the set @{term U} *}
+\<comment> \<open>A stack is {\em at} @{term U} if its top node is from the set @{term U}\<close>
 primrec atU_s :: "'n set \<Rightarrow> 'n list \<Rightarrow> bool" where
   "atU_s U [] = False"
 | "atU_s U (u#r) = (u\<in>U)"
@@ -181,7 +181,7 @@ primrec atU_s :: "'n set \<Rightarrow> 'n list \<Rightarrow> bool" where
 lemma atU_s_decomp[simp]: "atU_s U (s@s') = (atU_s U s \<or> (s=[] \<and> atU_s U s'))"
   by (induct s) auto
 
--- {* A configuration is {\em at} @{term U} if it contains a stack that is at @{term U} *}
+\<comment> \<open>A configuration is {\em at} @{term U} if it contains a stack that is at @{term U}\<close>
 definition
   "atU U c == \<exists>s. s \<in># c \<and> atU_s U s"
 
@@ -218,7 +218,7 @@ lemma atU_add_mset[simp]: "atU U (add_mset c c2) = (atU_s U c \<or> atU U c2)"
 lemma atU_xchange_stack: "atU U (add_mset (u#r) c) \<Longrightarrow> atU U (add_mset (u#r') c)"
   by (simp)
 
--- {* A configuration is {\em simultaneously at} @{term U} and @{term V} if it contains a stack at @{term U} and another one at @{term V} *}
+\<comment> \<open>A configuration is {\em simultaneously at} @{term U} and @{term V} if it contains a stack at @{term U} and another one at @{term V}\<close>
 definition 
   "atUV U V c == \<exists>su sv. {#su#}+{#sv#} \<subseteq># c \<and> atU_s U su \<and> atU_s V sv"
 
@@ -270,19 +270,19 @@ inductive_set
                  ('n conf \<times> ('p,'ba) label \<times> 'n conf) set"
   for fg
 where
-  -- "A base edge transforms the top node of one stack and leaves the other stacks untouched."
+  \<comment> \<open>A base edge transforms the top node of one stack and leaves the other stacks untouched.\<close>
   refpoint_base: "\<lbrakk> (u,Base a,v)\<in>edges fg; valid fg ({#u#r#}+c) \<rbrakk> 
     \<Longrightarrow> (add_mset (u#r) c,LBase a,add_mset (v#r) c)\<in>refpoint fg" |
-  -- "A call edge transforms the top node of a stack and then pushes the entry node of the called procedure onto that stack. 
+  \<comment> \<open>A call edge transforms the top node of a stack and then pushes the entry node of the called procedure onto that stack. 
       It can only be executed if all monitors the called procedure synchronizes on are available. Reentrant monitors are modeled here by
-      checking availability of monitors just against the other stacks, not against the stack of the thread that executes the call. The other stacks are left untouched."
+      checking availability of monitors just against the other stacks, not against the stack of the thread that executes the call. The other stacks are left untouched.\<close>
   refpoint_call: "\<lbrakk> (u,Call p,v)\<in>edges fg; valid fg ({#u#r#}+c); 
                     mon fg p \<inter> mon_c fg c = {} \<rbrakk> 
     \<Longrightarrow> (add_mset (u#r) c,LCall p, add_mset (entry fg p#v#r) c)\<in>refpoint fg" |
-  -- "A return step pops a return node from a stack. There is no corresponding flowgraph edge for a return step. The other stacks are left untouched."
+  \<comment> \<open>A return step pops a return node from a stack. There is no corresponding flowgraph edge for a return step. The other stacks are left untouched.\<close>
   refpoint_ret: "\<lbrakk> valid fg ({#return fg p#r#}+c) \<rbrakk> 
     \<Longrightarrow> (add_mset (return fg p#r) c,LRet,(add_mset r c))\<in>refpoint fg" |
-  -- "A spawn edge transforms the top node of a stack and adds a new stack to the environment, with the entry node of the spawned procedure at the top and no stored return addresses. The other stacks are also left untouched."
+  \<comment> \<open>A spawn edge transforms the top node of a stack and adds a new stack to the environment, with the entry node of the spawned procedure at the top and no stored return addresses. The other stacks are also left untouched.\<close>
   refpoint_spawn: "\<lbrakk> (u,Spawn p,v)\<in>edges fg; valid fg (add_mset (u#r) c) \<rbrakk> 
     \<Longrightarrow> (add_mset (u#r) c,LSpawn p, add_mset (v#r) (add_mset [entry fg p] c))\<in>refpoint fg"
 
@@ -318,9 +318,9 @@ lemma trss_spawn': "\<lbrakk> (u,Spawn p,v)\<in>edges fg; s=u#r; e=LSpawn p; s'=
   by (simp add: trss_spawn)
 *)
 
--- {* The interleaving semantics is generated using the general techniques from Section~\ref{thy:ThreadTracking} *}
+\<comment> \<open>The interleaving semantics is generated using the general techniques from Section~\ref{thy:ThreadTracking}\<close>
 abbreviation tr where "tr fg == gtr (trss fg)"
--- "We also generate the loc/env-semantics"
+\<comment> \<open>We also generate the loc/env-semantics\<close>
 abbreviation trp where "trp fg == gtrp (trss fg)"
 
 
@@ -356,7 +356,7 @@ lemma (in flowgraph) trp_valid_preserve:
 
 subsubsection "Equivalence to reference point"
 text_raw {* \label{sec:Semantics: refpoint_eq} *}
--- {* The equivalence between the semantics that we derived using the techniques from Section~\ref{thy:ThreadTracking} and the semantic reference point is shown nearly automatically. *}
+\<comment> \<open>The equivalence between the semantics that we derived using the techniques from Section~\ref{thy:ThreadTracking} and the semantic reference point is shown nearly automatically.\<close>
 lemma refpoint_eq_s: "valid fg c \<Longrightarrow> ((c,e,c')\<in>refpoint fg) \<longleftrightarrow> ((c,e,c')\<in>tr fg)"
   apply rule
   apply (erule refpoint.cases)
@@ -537,11 +537,11 @@ lemma trss_find_return: "\<lbrakk>
     !!wa wb ch. \<lbrakk> w=wa@wb; ((s,c),wa,([],ch))\<in>trcl (trss fg); 
                   ((r,ch),wb,(r,c'))\<in>trcl (trss fg) \<rbrakk> \<Longrightarrow> P 
   \<rbrakk> \<Longrightarrow> P"
-  -- {* If @{term "s=[]"}, the proposition follows trivially *}
+  \<comment> \<open>If @{term "s=[]"}, the proposition follows trivially\<close>
   apply (cases "s=[]")
   apply fastforce
 proof -
-  -- {* For @{term "s\<noteq>[]"}, we use induction by @{term w} *}
+  \<comment> \<open>For @{term "s\<noteq>[]"}, we use induction by @{term w}\<close>
   have IM: "!!s c. \<lbrakk> ((s@r,c),w,(r,c'))\<in>trcl (trss fg); s\<noteq>[] \<rbrakk> \<Longrightarrow> \<exists>wa wb ch. w=wa@wb \<and> ((s,c),wa,([],ch))\<in>trcl (trss fg) \<and> ((r,ch),wb,(r,c'))\<in>trcl (trss fg)"
   proof (induct w)
     case Nil thus ?case by (auto)
@@ -664,11 +664,11 @@ next
     ultimately have ?case by auto
   }
   moreover have "(\<exists>u. rh=u#r') \<or> ?case"
-  proof (rule trss.cases[OF SPLIT2], simp_all, goal_cases) -- "Cases for base- and spawn edge are discharged automatically"
-      -- "Case: call-edge"
+  proof (rule trss.cases[OF SPLIT2], simp_all, goal_cases) \<comment> \<open>Cases for base- and spawn edge are discharged automatically\<close>
+      \<comment> \<open>Case: call-edge\<close>
     case (1 ca p r u vv) with SPLIT1 SPLIT2 show ?case by fastforce 
   next
-      -- "Case: return edge"
+      \<comment> \<open>Case: return edge\<close>
     case CC: (2 q r ca)
     hence [simp]: "rh=(return fg q)#v#r'" by simp
     with IHP(1)[of w "(return fg q)" "v#r'" ch, OF _ SPLIT1[simplified]] obtain rt ct wa wb where 
@@ -694,7 +694,7 @@ next
   ultimately show ?case by blast
 qed
 
--- {* This lemma is better suited for application in soundness proofs of constraint systems than @{thm [source] flowgraph.trss_find_call}*}
+\<comment> \<open>This lemma is better suited for application in soundness proofs of constraint systems than @{thm [source] flowgraph.trss_find_call}\<close>
 lemma (in flowgraph) trss_find_call': 
   assumes A: "(([sp],c),w,(return fg p#[u'],c')) \<in> trcl (trss fg)" 
   and EX: "!!uh ch wa wb. \<lbrakk>
@@ -730,7 +730,7 @@ next
   finally show ?case .
 qed
 
--- {* Specialized version of @{thm [source] flowgraph.trss_bot_proc_const}that comes in handy for precision proofs of constraint systems *}
+\<comment> \<open>Specialized version of @{thm [source] flowgraph.trss_bot_proc_const}that comes in handy for precision proofs of constraint systems\<close>
 lemma (in flowgraph) trss_er_path_proc_const: 
   "(([entry fg p],c),w,([return fg q],c'))\<in>trcl (trss fg) \<Longrightarrow> p=q"
   using trss_bot_proc_const[of "[]" "entry fg p" _ _ "[]" "return fg q", simplified] .

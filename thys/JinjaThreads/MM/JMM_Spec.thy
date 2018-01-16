@@ -227,10 +227,9 @@ where
   ThreadStart: "P \<turnstile> (t, NormalAction (ThreadStart t')) \<leadsto>sw (t', InitialThreadAction)"
 | ThreadFinish: "P \<turnstile> (t, ThreadFinishAction) \<leadsto>sw (t', NormalAction (ThreadJoin t))"
 | UnlockLock: "P \<turnstile> (t, NormalAction (SyncUnlock a)) \<leadsto>sw (t', NormalAction (SyncLock a))"
-| -- {* 
-       Only volatile writes synchronize with volatile reads. 
+| \<comment> \<open>Only volatile writes synchronize with volatile reads. 
        We could check volatility of @{term "al"} here, but this is checked by @{term "sactions"}
-       in @{text sync_with} anyway. *}
+       in @{text sync_with} anyway.\<close>
   Volatile: "P \<turnstile> (t, NormalAction (WriteMem a al v)) \<leadsto>sw (t', NormalAction (ReadMem a al v'))"
 | VolatileNew: "
     al \<in> addr_locs P hT
@@ -1089,15 +1088,15 @@ definition is_commit_sequence :: bool where
 definition justification_well_formed :: bool where
   "justification_well_formed \<longleftrightarrow> (\<forall>n. P \<turnstile> (justifying_exec (J n), justifying_ws (J n)) \<surd>)"
 
-definition committed_subset_actions :: bool where -- "JMM constraint 1"
+definition committed_subset_actions :: bool where \<comment> \<open>JMM constraint 1\<close>
   "committed_subset_actions \<longleftrightarrow> (\<forall>n. committed (J n) \<subseteq> actions (justifying_exec (J n)))"
 
-definition happens_before_committed :: bool where -- "JMM constraint 2"
+definition happens_before_committed :: bool where \<comment> \<open>JMM constraint 2\<close>
   "happens_before_committed \<longleftrightarrow> 
   (\<forall>n. happens_before P (justifying_exec (J n)) |` committed (J n) =
        inv_imageP (happens_before P E) (action_translation (J n)) |` committed (J n))"
 
-definition happens_before_committed_weak :: bool where -- "relaxed JMM constraint"
+definition happens_before_committed_weak :: bool where \<comment> \<open>relaxed JMM constraint\<close>
   "happens_before_committed_weak \<longleftrightarrow>
   (\<forall>n. \<forall>r \<in> read_actions (justifying_exec (J n)) \<inter> committed (J n).
        let r' = action_translation (J n) r;
@@ -1106,18 +1105,18 @@ definition happens_before_committed_weak :: bool where -- "relaxed JMM constrain
          (P,E \<turnstile> w' \<le>hb r' \<longleftrightarrow> P,justifying_exec (J n) \<turnstile> w \<le>hb r) \<and>
          \<not> P,justifying_exec (J n) \<turnstile> r \<le>hb w)"
 
-definition sync_order_committed :: bool where -- "JMM constraint 3"
+definition sync_order_committed :: bool where \<comment> \<open>JMM constraint 3\<close>
   "sync_order_committed \<longleftrightarrow>
   (\<forall>n. sync_order P (justifying_exec (J n)) |` committed (J n) =
        inv_imageP (sync_order P E) (action_translation (J n)) |` committed (J n))"
 
-definition value_written_committed :: bool where -- "JMM constraint 4"
+definition value_written_committed :: bool where \<comment> \<open>JMM constraint 4\<close>
   "value_written_committed \<longleftrightarrow>
   (\<forall>n. \<forall>w \<in> write_actions (justifying_exec (J n)) \<inter> committed (J n). 
        let w' = action_translation (J n) w
        in (\<forall>adal \<in> action_loc P E w'. value_written P (justifying_exec (J n)) w adal = value_written P E w' adal))"
 
-definition write_seen_committed :: bool where -- "JMM constraint 5"
+definition write_seen_committed :: bool where \<comment> \<open>JMM constraint 5\<close>
   "write_seen_committed \<longleftrightarrow>
   (\<forall>n. \<forall>r' \<in> read_actions (justifying_exec (J n)) \<inter> committed (J n).
        let r = action_translation (J n) r';

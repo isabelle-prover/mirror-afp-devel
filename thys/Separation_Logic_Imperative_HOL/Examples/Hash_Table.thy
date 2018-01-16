@@ -123,7 +123,7 @@ lemma ht_distinct_replicate[simp, intro!]: "ht_distinct (replicate n [])"
 lemma ht_size_replicate[simp, intro!]: "ht_size (replicate n []) 0"
   by (simp add: ht_size_def)
 
- -- "We can't create hash tables with a size of zero"
+ \<comment> \<open>We can't create hash tables with a size of zero\<close>
 lemma complete_ht_new_sz: "1 < n \<Longrightarrow> <emp> ht_new_sz n <is_hashtable (replicate n [])>"
   apply (unfold ht_new_sz_def)
   apply (simp del: replicate.simps)
@@ -849,7 +849,7 @@ lemma complete_ht_rehash:
   apply (sep_auto heap: complete_ht_copy simp: ls_rehash_def)
   done
 
-definition load_factor :: nat -- "in percent"
+definition load_factor :: nat \<comment> \<open>in percent\<close>
   where "load_factor = 75"
 
 definition ht_update

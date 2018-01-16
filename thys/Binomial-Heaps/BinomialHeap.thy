@@ -600,7 +600,7 @@ next
     from prems have "?bq = [] \<Longrightarrow> ?meld" by simp
     with ne have "?meld" by (cases "?bq = []")
     with prems show ?case by (simp add: rank_invar_hd_cons)
-  next -- analog
+  next \<comment> \<open>analog\<close>
     let ?t = "t1"
     let ?bq = "bq1"
     let ?meld = "rank t1 < rank (hd (meld bq1 (t2 # bq2)))"

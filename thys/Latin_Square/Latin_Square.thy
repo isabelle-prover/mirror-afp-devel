@@ -62,7 +62,7 @@ text {* This function removes one element of the 3-tupel and returns the other t
 definition without :: "latin_type \<Rightarrow> latin_entry \<Rightarrow> nat \<times> nat" where
 [simp]:"without t \<equiv> \<lambda>e. (e (next t), e (next (next t)))"
 
-value "without Row (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 2)" -- "returns (1,2)"
+value "without Row (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 2)" \<comment> \<open>returns (1,2)\<close>
 
 abbreviation "row_col \<equiv> without Num" text {*returns row and column of a latin\_entry as a pair.*}
 abbreviation "col_num \<equiv> without Row" text {*returns column and number of a latin\_entry as a pair.*}
@@ -80,12 +80,12 @@ definition partial_latin_square :: "latin_entry set \<Rightarrow> nat \<Rightarr
 value "partial_latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0),
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1)
-} 2" -- "True"
+} 2" \<comment> \<open>True\<close>
 
 value "partial_latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1),
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1)
-} 2" -- "False, because 1 appears twice in column 0"
+} 2" \<comment> \<open>False, because 1 appears twice in column 0\<close>
 
 text {* Looking at the orthogonal array a latin square is given iff any two rows of the
    orthogonal array contain each pair of two numbers at exactly once: *}
@@ -96,12 +96,12 @@ definition latin_square :: "latin_entry set \<Rightarrow> nat \<Rightarrow> bool
 value "latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1),  (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0),
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 0),  (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 1 | Num \<Rightarrow> 1)
-} 2" -- "True"
+} 2" \<comment> \<open>True\<close>
 
 value "latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1),  (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0),
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 0),  (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0)
-} 2" -- "False, because 0 appears twice in Col 1 and twice in Row 1"
+} 2" \<comment> \<open>False, because 0 appears twice in Col 1 and twice in Row 1\<close>
 
 text {* A latin rectangle is a partial latin square in which the first m rows are filled and the following
    rows are empty: *}
@@ -114,12 +114,12 @@ definition latin_rect :: "latin_entry set \<Rightarrow> nat \<Rightarrow> nat \<
 
 value "latin_rect {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1),  (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0)
-} 1 2" -- "True"
+} 1 2" \<comment> \<open>True\<close>
 
 value "latin_rect {
   (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1),  (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0),
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 0),  (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 1 | Num \<Rightarrow> 1)
-} 1 2" -- "False"
+} 1 2" \<comment> \<open>False\<close>
 
 text {* There is another equivalent description of latin rectangles, which is easier to prove: *}
 lemma latin_rect_iff:
@@ -362,7 +362,7 @@ theorem
   assumes "latin_rect s (n-m) n" "m\<le>n"
   shows "\<exists>s'. s\<subseteq>s' \<and> latin_square s' n"
 using assms
-proof (induction m arbitrary:s) -- "induction over the number of empty rows"
+proof (induction m arbitrary:s) \<comment> \<open>induction over the number of empty rows\<close>
   case 0
   then have "bij_betw row_col s ({0..<n} \<times> {0..<n})" using latin_rect_def by auto
   then have "card s = n*n" by (simp add:bij_betw_same_card)
@@ -370,10 +370,10 @@ proof (induction m arbitrary:s) -- "induction over the number of empty rows"
 next
   case (Suc m)
 
-  -- "We use the Hall theorem on the sets $A_j$ of numbers that do not occur in column $j$:"
+  \<comment> \<open>We use the Hall theorem on the sets $A_j$ of numbers that do not occur in column $j$:\<close>
   let ?not_in_column = "\<lambda>j. {0..<n} - {e Num |e. e\<in>s \<and> e Col = j}"
 
-  -- "Proof of the hall condition: "
+  \<comment> \<open>Proof of the hall condition:\<close>
   have "\<forall>J\<subseteq>{0..<n}. card J \<le> card (\<Union>j\<in>J. ?not_in_column j)"
   proof (rule allI; rule impI)
     fix J assume J_def:"J\<subseteq>{0..<n}"
@@ -402,16 +402,16 @@ next
     ultimately show "card J \<le> card (\<Union>j\<in>J. ?not_in_column j)" using union_limited_replicates[of J ?not_in_column "Suc m"] by auto
   qed
 
-  -- "The Hall theorem gives us a system of distinct representatives, which we can use to fill the next row:"
+  \<comment> \<open>The Hall theorem gives us a system of distinct representatives, which we can use to fill the next row:\<close>
   then obtain R where R_def:"\<forall>j\<in>{0..<n}. R j \<in> ?not_in_column j \<and> inj_on R {0..<n}" using marriage_HV[of "{0..<n}" "?not_in_column"] by blast
 
   define new_row where "new_row = (\<lambda>j. rec_latin_type (n - Suc m) j (R j)) ` {0..<n}"
   define s' where "s' = s \<union> new_row"
 
-  -- "s' is now a latin rect with one more row:"
+  \<comment> \<open>s' is now a latin rect with one more row:\<close>
   have "latin_rect s' (n-m) n"
   proof -
-    -- "We prove all four criteria specified in the lemma latinrectiff:"
+    \<comment> \<open>We prove all four criteria specified in the lemma latinrectiff:\<close>
     have "n-m \<le> n" by auto
     moreover have "partial_latin_square s' n"
     proof -
@@ -524,7 +524,7 @@ next
     ultimately show ?thesis using latin_rect_iff[of "n-m" n] by auto
   qed
 
-  -- "Finally we use the induction hypothesis:"
+  \<comment> \<open>Finally we use the induction hypothesis:\<close>
   then obtain s'' where "s' \<subseteq> s''" "latin_square s'' n" using Suc by auto
   then have "s \<subseteq> s''" using s'_def by auto
   then show "\<exists>s'. s \<subseteq> s' \<and> latin_square s' n" using `latin_square s'' n` by auto

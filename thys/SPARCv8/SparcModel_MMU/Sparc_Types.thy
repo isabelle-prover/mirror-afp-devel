@@ -65,11 +65,11 @@ text\<open>
    Aeroflex, June 20, 2012, p35.
 \<close>
 datatype MMU_register
- = CR    \<comment>  "Control Register"
- | CTP   \<comment>  "ConText Pointer register"
- | CNR   \<comment>  "Context Register"
- | FTSR   \<comment>  "Fault Status Register"
- | FAR   \<comment>  "Fault Address Register"
+ = CR    \<comment> \<open>Control Register\<close>
+ | CTP   \<comment> \<open>ConText Pointer register\<close>
+ | CNR   \<comment> \<open>Context Register\<close>
+ | FTSR   \<comment> \<open>Fault Status Register\<close>
+ | FAR   \<comment> \<open>Fault Address Register\<close>
 
 lemma MMU_register_induct: 
   "P CR \<Longrightarrow> P CTP \<Longrightarrow> P CNR \<Longrightarrow> P FTSR \<Longrightarrow> P FAR 
@@ -112,19 +112,19 @@ text \<open>
   architecture.
 \<close>
 datatype CPU_register = 
-   PSR   \<comment>   "Processor State Register"
- | WIM   \<comment>   "Window Invalid Mask"
- | TBR   \<comment>   "Trap Base Register"
- | Y     \<comment>   "Multiply/Divide Register"
- | PC    \<comment>   "Program Counter"
- | nPC   \<comment>   "next Program Counter"
- | DTQ   \<comment>   "Deferred-Trap Queue"
- | FSR   \<comment>   "Floating-Point State Register"
- | FQ    \<comment>   "Floating-Point Deferred-Trap Queue"
- | CSR   \<comment>   "Coprocessor State Register"
- | CQ    \<comment>   "Coprocessor Deferred-Trap Queue"
+   PSR   \<comment> \<open>Processor State Register\<close>
+ | WIM   \<comment> \<open>Window Invalid Mask\<close>
+ | TBR   \<comment> \<open>Trap Base Register\<close>
+ | Y     \<comment> \<open>Multiply/Divide Register\<close>
+ | PC    \<comment> \<open>Program Counter\<close>
+ | nPC   \<comment> \<open>next Program Counter\<close>
+ | DTQ   \<comment> \<open>Deferred-Trap Queue\<close>
+ | FSR   \<comment> \<open>Floating-Point State Register\<close>
+ | FQ    \<comment> \<open>Floating-Point Deferred-Trap Queue\<close>
+ | CSR   \<comment> \<open>Coprocessor State Register\<close>
+ | CQ    \<comment> \<open>Coprocessor Deferred-Trap Queue\<close>
  (*| CCR   --   "Cache Control Register"*)
- | ASR "word5"  \<comment>   "Ancillary State Register"
+ | ASR "word5"  \<comment> \<open>Ancillary State Register\<close>
 
 text \<open>The following two functions are dummies since we will not use 
         ASRs. Future formalisation may add more details to this.\<close>
@@ -346,9 +346,9 @@ in that user register.
 type_synonym ('a) user_context = "('a) window_size \<Rightarrow> window_context"
 
 datatype sys_reg = 
-         CCR    \<comment>  "Cache control register"
-        |ICCR   \<comment>  "Instruction cache configuration register"
-        |DCCR   \<comment>  "Data cache configuration register"
+         CCR    \<comment> \<open>Cache control register\<close>
+        |ICCR   \<comment> \<open>Instruction cache configuration register\<close>
+        |DCCR   \<comment> \<open>Data cache configuration register\<close>
 
 type_synonym sys_context = "sys_reg \<Rightarrow> reg_type"
 
@@ -587,148 +587,148 @@ The SPARC V8 architecture is composed of the following set of instructions:
 \<close>
 
 text \<open>The CALL instruction.\<close>
-datatype call_type = CALL \<comment> "Call and Link"
+datatype call_type = CALL \<comment> \<open>Call and Link\<close>
 
 text \<open>The SETHI instruction.\<close>
-datatype sethi_type = SETHI    \<comment>    "Set High 22 bits of r Register"
+datatype sethi_type = SETHI    \<comment> \<open>Set High 22 bits of r Register\<close>
 
 text \<open>The NOP instruction.\<close>
-datatype nop_type = NOP      \<comment>    "No Operation"
+datatype nop_type = NOP      \<comment> \<open>No Operation\<close>
 
 text \<open>The Branch on integer condition codes instructions.\<close> 
 datatype bicc_type = 
-  BE       \<comment>    "Branch on Equal"
- | BNE      \<comment>    "Branch on Not Equal"
- | BGU      \<comment>    "Branch on Greater Unsigned"
- | BLE      \<comment>    "Branch on Less or Equal"
- | BL       \<comment>    "Branch on Less"
- | BGE      \<comment>    "Branch on Greater or Equal"
- | BNEG     \<comment>    "Branch on Negative"
- | BG       \<comment>    "Branch on Greater"
- | BCS      \<comment>    "Branch on Carry Set (Less than, Unsigned)"
- | BLEU     \<comment>    "Branch on Less or Equal Unsigned"
- | BCC      \<comment>    "Branch on Carry Clear (Greater than or Equal, Unsigned)"
- | BA       \<comment>    "Branch Always"
- | BN       \<comment>    "Branch Never" \<comment> \<open>Added for unconditional branches\<close>
- | BPOS     \<comment>  "Branch on Positive"
- | BVC      \<comment>  "Branch on Overflow Clear"
- | BVS      \<comment>  "Branch on Overflow Set"
+  BE       \<comment> \<open>Branch on Equal\<close>
+ | BNE      \<comment> \<open>Branch on Not Equal\<close>
+ | BGU      \<comment> \<open>Branch on Greater Unsigned\<close>
+ | BLE      \<comment> \<open>Branch on Less or Equal\<close>
+ | BL       \<comment> \<open>Branch on Less\<close>
+ | BGE      \<comment> \<open>Branch on Greater or Equal\<close>
+ | BNEG     \<comment> \<open>Branch on Negative\<close>
+ | BG       \<comment> \<open>Branch on Greater\<close>
+ | BCS      \<comment> \<open>Branch on Carry Set (Less than, Unsigned)\<close>
+ | BLEU     \<comment> \<open>Branch on Less or Equal Unsigned\<close>
+ | BCC      \<comment> \<open>Branch on Carry Clear (Greater than or Equal, Unsigned)\<close>
+ | BA       \<comment> \<open>Branch Always\<close>
+ | BN       \<comment> \<open>Branch Never\<close> \<comment> \<open>Added for unconditional branches\<close>
+ | BPOS     \<comment> \<open>Branch on Positive\<close>
+ | BVC      \<comment> \<open>Branch on Overflow Clear\<close>
+ | BVS      \<comment> \<open>Branch on Overflow Set\<close>
 
 text \<open>Memory instructions. That is, load and store.\<close>
 datatype load_store_type =
-  LDSB     \<comment>    "Load Signed Byte"
- | LDUB     \<comment>    "Load Unsigned Byte"
- | LDUBA    \<comment>    "Load Unsigned Byte from Alternate space"
- | LDUH     \<comment>    "Load Unsigned Halfword"
- | LD       \<comment>    "Load Word"
- | LDA      \<comment>    "Load Word from Alternate space"
- | LDD      \<comment>    "Load Doubleword"
- | STB      \<comment>    "Store Byte"
- | STH      \<comment>    "Store Halfword"
- | ST       \<comment>    "Store Word"
- | STA      \<comment>    "Store Word into Alternate space"
- | STD      \<comment>    "Store Doubleword"
- | LDSBA    \<comment>  "Load Signed Byte from Alternate space"
- | LDSH     \<comment>  "Load Signed Halfword"
- | LDSHA    \<comment>  "Load Signed Halfword from Alternate space"
- | LDUHA    \<comment>  "Load Unsigned Halfword from Alternate space"
- | LDDA     \<comment>  "Load Doubleword from Alternate space"
- | STBA     \<comment>  "Store Byte into Alternate space"
- | STHA     \<comment>  "Store Halfword into Alternate space"
- | STDA     \<comment>  "Store Doubleword into Alternate space"
- | LDSTUB   \<comment>  "Atomic Load Store Unsigned Byte"
- | LDSTUBA  \<comment>  "Atomic Load Store Unsinged Byte in Alternate space"
- | SWAP     \<comment>  "Swap r Register with Mmemory"
- | SWAPA    \<comment>  "Swap r Register with Mmemory in Alternate space"
- | FLUSH    \<comment>    "Flush Instruction Memory"
- | STBAR    \<comment>  "Store Barrier"
+  LDSB     \<comment> \<open>Load Signed Byte\<close>
+ | LDUB     \<comment> \<open>Load Unsigned Byte\<close>
+ | LDUBA    \<comment> \<open>Load Unsigned Byte from Alternate space\<close>
+ | LDUH     \<comment> \<open>Load Unsigned Halfword\<close>
+ | LD       \<comment> \<open>Load Word\<close>
+ | LDA      \<comment> \<open>Load Word from Alternate space\<close>
+ | LDD      \<comment> \<open>Load Doubleword\<close>
+ | STB      \<comment> \<open>Store Byte\<close>
+ | STH      \<comment> \<open>Store Halfword\<close>
+ | ST       \<comment> \<open>Store Word\<close>
+ | STA      \<comment> \<open>Store Word into Alternate space\<close>
+ | STD      \<comment> \<open>Store Doubleword\<close>
+ | LDSBA    \<comment> \<open>Load Signed Byte from Alternate space\<close>
+ | LDSH     \<comment> \<open>Load Signed Halfword\<close>
+ | LDSHA    \<comment> \<open>Load Signed Halfword from Alternate space\<close>
+ | LDUHA    \<comment> \<open>Load Unsigned Halfword from Alternate space\<close>
+ | LDDA     \<comment> \<open>Load Doubleword from Alternate space\<close>
+ | STBA     \<comment> \<open>Store Byte into Alternate space\<close>
+ | STHA     \<comment> \<open>Store Halfword into Alternate space\<close>
+ | STDA     \<comment> \<open>Store Doubleword into Alternate space\<close>
+ | LDSTUB   \<comment> \<open>Atomic Load Store Unsigned Byte\<close>
+ | LDSTUBA  \<comment> \<open>Atomic Load Store Unsinged Byte in Alternate space\<close>
+ | SWAP     \<comment> \<open>Swap r Register with Mmemory\<close>
+ | SWAPA    \<comment> \<open>Swap r Register with Mmemory in Alternate space\<close>
+ | FLUSH    \<comment> \<open>Flush Instruction Memory\<close>
+ | STBAR    \<comment> \<open>Store Barrier\<close>
 
 text \<open>Arithmetic instructions.\<close>
 datatype arith_type =
-  ADD      \<comment>    "Add"
- | ADDcc    \<comment>    "Add and modify icc"
- | ADDX     \<comment>    "Add with Carry"
- | SUB      \<comment>    "Subtract"
- | SUBcc    \<comment>    "Subtract and modify icc"
- | SUBX     \<comment>    "Subtract with Carry"
- | UMUL     \<comment>    "Unsigned Integer Multiply"
- | SMUL     \<comment>    "Signed Integer Multiply"
- | SMULcc   \<comment>    "Signed Integer Multiply and modify icc"
- | UDIV     \<comment>    "Unsigned Integer Divide"
- | UDIVcc   \<comment>    "Unsigned Integer Divide and modify icc"
- | SDIV     \<comment>    "Signed Integer Divide" 
- | ADDXcc   \<comment>  "Add with Carry and modify icc"
- | TADDcc   \<comment>  "Tagged Add and modify icc"
- | TADDccTV \<comment>  "Tagged Add and modify icc and Trap on overflow"
- | SUBXcc   \<comment>  "Subtract with Carry and modify icc"
- | TSUBcc   \<comment>  "Tagged Subtract and modify icc"
- | TSUBccTV \<comment>  "Tagged Subtract and modify icc and Trap on overflow"
- | MULScc   \<comment>  "Multiply Step and modify icc"
- | UMULcc   \<comment>  "Unsigned Integer Multiply and modify icc"
- | SDIVcc   \<comment>  "Signed Integer Divide and modify icc"
+  ADD      \<comment> \<open>Add\<close>
+ | ADDcc    \<comment> \<open>Add and modify icc\<close>
+ | ADDX     \<comment> \<open>Add with Carry\<close>
+ | SUB      \<comment> \<open>Subtract\<close>
+ | SUBcc    \<comment> \<open>Subtract and modify icc\<close>
+ | SUBX     \<comment> \<open>Subtract with Carry\<close>
+ | UMUL     \<comment> \<open>Unsigned Integer Multiply\<close>
+ | SMUL     \<comment> \<open>Signed Integer Multiply\<close>
+ | SMULcc   \<comment> \<open>Signed Integer Multiply and modify icc\<close>
+ | UDIV     \<comment> \<open>Unsigned Integer Divide\<close>
+ | UDIVcc   \<comment> \<open>Unsigned Integer Divide and modify icc\<close>
+ | SDIV     \<comment> \<open>Signed Integer Divide\<close> 
+ | ADDXcc   \<comment> \<open>Add with Carry and modify icc\<close>
+ | TADDcc   \<comment> \<open>Tagged Add and modify icc\<close>
+ | TADDccTV \<comment> \<open>Tagged Add and modify icc and Trap on overflow\<close>
+ | SUBXcc   \<comment> \<open>Subtract with Carry and modify icc\<close>
+ | TSUBcc   \<comment> \<open>Tagged Subtract and modify icc\<close>
+ | TSUBccTV \<comment> \<open>Tagged Subtract and modify icc and Trap on overflow\<close>
+ | MULScc   \<comment> \<open>Multiply Step and modify icc\<close>
+ | UMULcc   \<comment> \<open>Unsigned Integer Multiply and modify icc\<close>
+ | SDIVcc   \<comment> \<open>Signed Integer Divide and modify icc\<close>
 
 text \<open>Logical instructions.\<close>
 datatype logic_type =
-  ANDs      \<comment>    "And"
- | ANDcc    \<comment>    "And and modify icc"
- | ANDN     \<comment>    "And Not"
- | ANDNcc   \<comment>    "And Not and modify icc"
- | ORs       \<comment>    "Inclusive-Or"
- | ORcc     \<comment>    "Inclusive-Or and modify icc"
- | ORN      \<comment>    "Inclusive Or Not"
- | XORs      \<comment>    "Exclusive-Or"
- | XNOR     \<comment>    "Exclusive-Nor"
- | ORNcc    \<comment>  "Inclusive-Or Not and modify icc"
- | XORcc    \<comment>  "Exclusive-Or and modify icc"
- | XNORcc   \<comment>  "Exclusive-Nor and modify icc"
+  ANDs      \<comment> \<open>And\<close>
+ | ANDcc    \<comment> \<open>And and modify icc\<close>
+ | ANDN     \<comment> \<open>And Not\<close>
+ | ANDNcc   \<comment> \<open>And Not and modify icc\<close>
+ | ORs       \<comment> \<open>Inclusive-Or\<close>
+ | ORcc     \<comment> \<open>Inclusive-Or and modify icc\<close>
+ | ORN      \<comment> \<open>Inclusive Or Not\<close>
+ | XORs      \<comment> \<open>Exclusive-Or\<close>
+ | XNOR     \<comment> \<open>Exclusive-Nor\<close>
+ | ORNcc    \<comment> \<open>Inclusive-Or Not and modify icc\<close>
+ | XORcc    \<comment> \<open>Exclusive-Or and modify icc\<close>
+ | XNORcc   \<comment> \<open>Exclusive-Nor and modify icc\<close>
  
 text \<open>Shift instructions.\<close>
 datatype shift_type =
-  SLL      \<comment>    "Shift Left Logical"
- | SRL      \<comment>    "Shift Right Logical"
- | SRA      \<comment>    "Shift Right Arithmetic" 
+  SLL      \<comment> \<open>Shift Left Logical\<close>
+ | SRL      \<comment> \<open>Shift Right Logical\<close>
+ | SRA      \<comment> \<open>Shift Right Arithmetic\<close> 
 
 text \<open>Other Control-transfer instructions.\<close>
 datatype ctrl_type = 
-  JMPL     \<comment>    "Jump and Link"
- | RETT     \<comment>    "Return from Trap"
- | SAVE     \<comment>    "Save caller's window"
- | RESTORE  \<comment>    "Restore caller's window" 
+  JMPL     \<comment> \<open>Jump and Link\<close>
+ | RETT     \<comment> \<open>Return from Trap\<close>
+ | SAVE     \<comment> \<open>Save caller's window\<close>
+ | RESTORE  \<comment> \<open>Restore caller's window\<close> 
 
 text \<open>Access state registers instructions.\<close>
 datatype sreg_type =
-  RDASR    \<comment>    "Read Ancillary State Register"
- | RDY      \<comment>    "Read Y Register"
- | RDPSR    \<comment>    "Read Processor State Register"
- | RDWIM    \<comment>    "Read Window Invalid Mask Register"
- | RDTBR    \<comment>    "Read Trap Base Regiser"
- | WRASR    \<comment>    "Write Ancillary State Register"
- | WRY      \<comment>    "Write Y Register"
- | WRPSR    \<comment>    "Write Processor State Register"
- | WRWIM    \<comment>    "Write Window Invalid Mask Register"
- | WRTBR    \<comment>    "Write Trap Base Register" 
+  RDASR    \<comment> \<open>Read Ancillary State Register\<close>
+ | RDY      \<comment> \<open>Read Y Register\<close>
+ | RDPSR    \<comment> \<open>Read Processor State Register\<close>
+ | RDWIM    \<comment> \<open>Read Window Invalid Mask Register\<close>
+ | RDTBR    \<comment> \<open>Read Trap Base Regiser\<close>
+ | WRASR    \<comment> \<open>Write Ancillary State Register\<close>
+ | WRY      \<comment> \<open>Write Y Register\<close>
+ | WRPSR    \<comment> \<open>Write Processor State Register\<close>
+ | WRWIM    \<comment> \<open>Write Window Invalid Mask Register\<close>
+ | WRTBR    \<comment> \<open>Write Trap Base Register\<close> 
 
 text \<open>Unimplemented instruction.\<close>
-datatype uimp_type = UNIMP    \<comment>  "Unimplemented" 
+datatype uimp_type = UNIMP    \<comment> \<open>Unimplemented\<close> 
 
 text \<open>Trap on integer condition code instructions.\<close>
 datatype ticc_type =
- TA       \<comment>  "Trap Always"
- | TN       \<comment>  "Trap Never"
- | TNE      \<comment>  "Trap on Not Equal"
- | TE       \<comment>  "Trap on Equal"
- | TG       \<comment>  "Trap on Greater"
- | TLE      \<comment>  "Trap on Less or Equal"
- | TGE      \<comment>  "Trap on Greater or Equal"
- | TL       \<comment>  "Trap on Less"
- | TGU      \<comment>  "Trap on Greater Unsigned"
- | TLEU     \<comment>  "Trap on Less or Equal Unsigned"
- | TCC      \<comment>  "Trap on Carry Clear (Greater than or Equal, Unsigned)"
- | TCS      \<comment>  "Trap on Carry Set (Less Than, Unsigned)"
- | TPOS     \<comment>  "Trap on Postive"
- | TNEG     \<comment>  "Trap on Negative"
- | TVC      \<comment>  "Trap on Overflow Clear"
- | TVS      \<comment>  "Trap on Overflow Set"
+ TA       \<comment> \<open>Trap Always\<close>
+ | TN       \<comment> \<open>Trap Never\<close>
+ | TNE      \<comment> \<open>Trap on Not Equal\<close>
+ | TE       \<comment> \<open>Trap on Equal\<close>
+ | TG       \<comment> \<open>Trap on Greater\<close>
+ | TLE      \<comment> \<open>Trap on Less or Equal\<close>
+ | TGE      \<comment> \<open>Trap on Greater or Equal\<close>
+ | TL       \<comment> \<open>Trap on Less\<close>
+ | TGU      \<comment> \<open>Trap on Greater Unsigned\<close>
+ | TLEU     \<comment> \<open>Trap on Less or Equal Unsigned\<close>
+ | TCC      \<comment> \<open>Trap on Carry Clear (Greater than or Equal, Unsigned)\<close>
+ | TCS      \<comment> \<open>Trap on Carry Set (Less Than, Unsigned)\<close>
+ | TPOS     \<comment> \<open>Trap on Postive\<close>
+ | TNEG     \<comment> \<open>Trap on Negative\<close>
+ | TVC      \<comment> \<open>Trap on Overflow Clear\<close>
+ | TVS      \<comment> \<open>Trap on Overflow Set\<close>
 
 datatype sparc_operation =
   call_type call_type

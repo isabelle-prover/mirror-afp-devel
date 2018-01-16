@@ -19,7 +19,7 @@ subsection {* Concrete schedulers *}
 subsection {* Round-robin schedulers *}
 
 type_synonym 'queue round_robin = "'queue \<times> nat"
-  -- "Waiting queue of threads and remaining number of steps of the first thread until it has to return resources"
+  \<comment> \<open>Waiting queue of threads and remaining number of steps of the first thread until it has to return resources\<close>
 
 primrec enqueue_new_thread :: "'t list \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> 't list"
 where 

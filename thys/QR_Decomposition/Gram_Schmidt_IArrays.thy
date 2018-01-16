@@ -116,8 +116,8 @@ qed
 lemma sum_component_iarray:
   assumes a: "\<forall>x\<in>S. i<IArray.length (f x)"
   and f: "finite S"
-  and S: "S\<noteq>{}" --"If S is empty, then the sum will return the empty 
-  iarray and it makes no sense to access the component i"
+  and S: "S\<noteq>{}" \<comment> \<open>If S is empty, then the sum will return the empty 
+  iarray and it makes no sense to access the component i\<close>
   shows "sum f S !! i = (\<Sum>x\<in>S. f x !! i)"
   using f a S
 proof (induct S, simp)

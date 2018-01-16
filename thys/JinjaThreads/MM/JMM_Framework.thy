@@ -11,7 +11,7 @@ imports
   "../Common/WellForm"
 begin
 
-lemma enat_plus_eq_enat_conv: -- {* Move to Extended\_Nat *}
+lemma enat_plus_eq_enat_conv: \<comment> \<open>Move to Extended\_Nat\<close>
   "enat m + n = enat k \<longleftrightarrow> k \<ge> m \<and> n = enat (k - m)"
 by(cases n) auto
 
@@ -1231,7 +1231,7 @@ locale known_addrs =
   and red_write_knows_addr:
   "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr ad'); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> ad' \<in> known_addrs t x \<or> ad' \<in> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-  -- "second possibility necessary for @{term heap_clone}"
+  \<comment> \<open>second possibility necessary for @{term heap_clone}\<close>
 begin
 
 notation mthr.redT_syntax1 ("_ -_\<triangleright>_\<rightarrow> _" [50,0,0,50] 80)

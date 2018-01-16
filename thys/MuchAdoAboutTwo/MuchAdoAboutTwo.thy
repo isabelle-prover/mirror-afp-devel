@@ -321,14 +321,14 @@ lemma Lemma_1:
       and A3: "\<And>x. x \<in> set zs \<Longrightarrow> x \<noteq> []"
   shows "map h (candidate f zs) = candidate g (map h zs)"
 proof -
-  -- "We define two functions, @{text \"fn :: 'a nel \<Rightarrow> 'a nel \<Rightarrow> 'a nel\"} and"
-  -- "@{text \"hn :: 'a nel \<Rightarrow> b\"}, which wrap @{text f} and @{text h} in the"
-  -- "setting of non-empty lists."
+  \<comment> \<open>We define two functions, @{text "fn :: 'a nel \<Rightarrow> 'a nel \<Rightarrow> 'a nel"} and\<close>
+  \<comment> \<open>@{text "hn :: 'a nel \<Rightarrow> b"}, which wrap @{text f} and @{text h} in the\<close>
+  \<comment> \<open>setting of non-empty lists.\<close>
   let ?fn = "\<lambda>x y. l2n (f (n2l x) (n2l y))"
   let ?hn = "h \<circ> n2l"
 
-  -- "Our new functions fulfill the preconditions of @{text candidate}'s"
-  -- "free theorem:"
+  \<comment> \<open>Our new functions fulfill the preconditions of @{text candidate}'s\<close>
+  \<comment> \<open>free theorem:\<close>
   have "\<And>(x::'a nel) (y::'a nel). ?hn (?fn x y) = g (?hn x) (?hn y)"
     proof -
       fix x y
@@ -355,8 +355,8 @@ proof -
   "map ?hn (candidate ?fn (map l2n zs)) = candidate g (map ?hn (map l2n zs))"
       by auto
 
-  -- "We use @{text candidate}'s free theorem again to show the following"
-  -- "property:"
+  \<comment> \<open>We use @{text candidate}'s free theorem again to show the following\<close>
+  \<comment> \<open>property:\<close>
   have n2l_candidate: 
     "\<And>zs. map n2l (candidate ?fn zs) = candidate f (map n2l zs)"
     proof -
@@ -374,8 +374,8 @@ proof -
       show "map n2l (candidate ?fn zs) = candidate f (map n2l zs)" by simp
     qed
 
-  -- "Now, with the previous preparations, we conclude the thesis by the"
-  -- "following rewriting:"
+  \<comment> \<open>Now, with the previous preparations, we conclude the thesis by the\<close>
+  \<comment> \<open>following rewriting:\<close>
   have 
   "map h (candidate f zs)
    = map h (candidate f (map (n2l \<circ> l2n) zs))"
@@ -745,8 +745,8 @@ lemma Lemma_3:
   shows "map (foldl1 f \<circ> map h) (candidate (@) (map wrap [0..<n+1])) 
          = candidate f (map h [0..<n+1])"
 proof - 
-  -- "The following three properties @{text P1}, @{text P2} and @{text P3}"
-  -- "are preconditions of Lemma 1."
+  \<comment> \<open>The following three properties @{text P1}, @{text P2} and @{text P3}\<close>
+  \<comment> \<open>are preconditions of Lemma 1.\<close>
   have P1: 
   "\<And>x y. \<lbrakk> x \<noteq> [] ; y \<noteq> [] \<rbrakk>
    \<Longrightarrow> foldl1 f (map h (x @ y)) = f (foldl1 f (map h x)) (foldl1 f (map h y))"
@@ -756,7 +756,7 @@ proof -
 
   have P3: "\<And>x. x \<in> set (map wrap [0..<n+1]) \<Longrightarrow> x \<noteq> []" by auto
 
-  -- "The proof for the thesis is now equal to the one of the original paper:"
+  \<comment> \<open>The proof for the thesis is now equal to the one of the original paper:\<close>
   from Lemma_1 [where h="foldl1 f \<circ> map h" and zs="map wrap [0..<n+1]"
        and f="(@)"] and P1 P2 P3
   have 
@@ -1728,15 +1728,15 @@ lemma non_empty_candidate_results:
       and "js \<in> set (candidate (@) (map wrap [0..<n + 1]))"
   shows   "js \<noteq> []"
 proof -
-  -- "We define a mapping of lists to values of @{text three} as explained"
-  -- "above, and a function which behaves like @{text @} on values of"
-  -- "@{text three}."
+  \<comment> \<open>We define a mapping of lists to values of @{text three} as explained\<close>
+  \<comment> \<open>above, and a function which behaves like @{text @} on values of\<close>
+  \<comment> \<open>@{text three}.\<close>
   let ?h = "\<lambda>xs. case xs of [] \<Rightarrow> Zero | (_#_) \<Rightarrow> One"
   let ?g = "\<lambda>x y. if (x = One \<or> y = One) then One else Zero"
   have g_assoc: "associative ?g" unfolding associative_def by auto
 
-  -- "Our defined functions fulfill the requirements of the free theorem of"
-  -- "@{text candidate}, that is:"
+  \<comment> \<open>Our defined functions fulfill the requirements of the free theorem of\<close>
+  \<comment> \<open>@{text candidate}, that is:\<close>
   have req_free_theorem: "\<And>xs ys. ?h (xs @ ys) = ?g (?h xs) (?h ys)"
     proof -
       fix xs ys
@@ -1744,9 +1744,9 @@ proof -
         by (cases xs, simp_all, cases ys, simp_all)
     qed
 
-  -- "Before applying the assumptions, we show that @{text candidate}'s"
-  -- "counterpart @{text scanl1}, applied to a non-empty list, returns only"
-  -- "a repetition of the value @{text One}."
+  \<comment> \<open>Before applying the assumptions, we show that @{text candidate}'s\<close>
+  \<comment> \<open>counterpart @{text scanl1}, applied to a non-empty list, returns only\<close>
+  \<comment> \<open>a repetition of the value @{text One}.\<close>
   have set_scanl1_is_One: 
     "set (scanl1 ?g (map ?h (map wrap [0..<n + 1]))) = {One}"
     proof -
@@ -1814,9 +1814,9 @@ proof -
       finally show ?thesis using List.set_replicate [where n="n + 1"] by simp
     qed
 
-  -- "Thus, with the assumptions and the free theorem of candidate, we show"
-  -- "that results of @{text candidate}, after applying @{text h}, can only"
-  -- "have the value @{text One}."
+  \<comment> \<open>Thus, with the assumptions and the free theorem of candidate, we show\<close>
+  \<comment> \<open>that results of @{text candidate}, after applying @{text h}, can only\<close>
+  \<comment> \<open>have the value @{text One}.\<close>
   have 
   "scanl1 ?g (map ?h (map wrap [0..<n + 1])) 
    = candidate ?g (map ?h (map wrap [0..<n + 1]))" 
@@ -1830,7 +1830,7 @@ proof -
        \<Longrightarrow> x = One" 
       using set_scanl1_is_One by auto
 
-  -- "Now, it is easy to conclude the thesis."
+  \<comment> \<open>Now, it is easy to conclude the thesis.\<close>
   from assms
   have "?h js \<in> ?h ` set (candidate (@) (map wrap [0..<n + 1]))" by auto
   with set_is_One have "?h js = One" by simp
@@ -1856,8 +1856,8 @@ lemma Proposition_1:
              \<lbrakk> associative f ; xs \<noteq> [] \<rbrakk>  \<Longrightarrow> candidate f xs = scanl1 f xs"
   shows "candidate (@) (map wrap [0..<n + 1]) = ups n"
 proof -
-  -- "This addition is necessary because we are using Isabelle's list datatype"
-  -- "which allows for empty lists."
+  \<comment> \<open>This addition is necessary because we are using Isabelle's list datatype\<close>
+  \<comment> \<open>which allows for empty lists.\<close>
   from assms and non_empty_candidate_results have non_empty_candidate: 
   "\<And>js. js \<in> set (candidate (@) (map wrap [0..<n + 1])) \<Longrightarrow> js \<noteq> []"
       by auto
@@ -1957,9 +1957,9 @@ lemma Proposition_2:
       and A3: "xs \<noteq> []"
   shows "candidate g xs = scanl1 g xs"
 proof -
-  -- "First, based on Lemma 2, we show that "
-  -- "@{term \"xs = map (nth xs) [0..<length xs]\"}"
-  -- "by the following facts P1 and P2."
+  \<comment> \<open>First, based on Lemma 2, we show that\<close>
+  \<comment> \<open>@{term "xs = map (nth xs) [0..<length xs]"}\<close>
+  \<comment> \<open>by the following facts P1 and P2.\<close>
 
   have P1: "length xs = length (map (nth xs) [0..<length xs])" 
     proof -
@@ -1988,7 +1988,7 @@ proof -
 
   from P1 P2 and Lemma_2 have "xs = map (nth xs) [0..<length xs]" by blast
   
-  -- "Thus, with some rewriting, we show the thesis."
+  \<comment> \<open>Thus, with some rewriting, we show the thesis.\<close>
   hence 
   "candidate g xs 
    = candidate g (map (nth xs) [0..<length xs])" by simp

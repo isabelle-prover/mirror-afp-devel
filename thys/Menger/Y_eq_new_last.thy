@@ -204,11 +204,11 @@ begin
   corollary with_optimal_paths_solves':
     shows "\<exists>paths. DisjointPaths G v0 v1 paths \<and> card paths = Suc sep_size"
     using optimal_paths z_eq_v1_solves z_neq_v1_solves by blast
-end -- "anonymous context"
+end \<comment> \<open>anonymous context\<close>
 
 corollary with_optimal_paths_solves:
   "\<exists>paths. DisjointPaths G v0 v1 paths \<and> card paths = Suc sep_size"
   using optimal_paths with_optimal_paths_solves' R_decomp_exists by blast
 
-end -- "locale @{locale ProofStepInduct_y_eq_new_last}"
+end \<comment> \<open>locale @{locale ProofStepInduct_y_eq_new_last}\<close>
 end

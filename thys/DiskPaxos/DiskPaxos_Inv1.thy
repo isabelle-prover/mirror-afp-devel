@@ -65,7 +65,7 @@ theorem HPhase1or2ReadThen_HInv1:
   and act: "HPhase1or2ReadThen s s' p d q"
   shows "HInv1 s'"
 proof -
-  -- {* we focus on the last conjunct of Inv1 *}
+  \<comment> \<open>we focus on the last conjunct of Inv1\<close>
   from act
   have "\<forall>p. allRdBlks s' p \<subseteq> allRdBlks s p \<union> {\<lparr>block = disk s d q, proc = q\<rparr>}"
     by(auto simp add: Phase1or2ReadThen_def allRdBlks_def
@@ -73,7 +73,7 @@ proof -
   with inv1
   have "\<forall>p. finite (allRdBlks s' p)"
     by(blast dest: allRdBlks_finite)
-  -- {*  the others conjuncts are trivial *}
+  \<comment> \<open>the others conjuncts are trivial\<close>
   with inv1 act
   show ?thesis
     by(auto simp add: Inv1_def Phase1or2ReadThen_def HNextPart_def) 
@@ -155,7 +155,7 @@ theorem HPhase0Read_HInv1:
   and     act: "HPhase0Read s s' p d"
   shows "HInv1 s'"
 proof -
- -- {* we focus on the last conjunct of Inv1 *}
+ \<comment> \<open>we focus on the last conjunct of Inv1\<close>
   from act
   have "\<forall>pp. allRdBlks s' pp \<subseteq> allRdBlks s pp \<union> {\<lparr>block = disk s d p, proc = p\<rparr>}"
     by(auto simp add: Phase0Read_def allRdBlks_def
@@ -163,7 +163,7 @@ proof -
   with inv1
   have "\<forall>p. finite (allRdBlks s' p)"
       by(blast dest: allRdBlks_finite)
-  -- {*  the others conjuncts are trivial *}
+  \<comment> \<open>the others conjuncts are trivial\<close>
   with inv1 act
   have "Inv1 s'"
     by(auto simp add: Inv1_def Phase0Read_def)

@@ -36,13 +36,13 @@ lemma mon_pl_set: "mon_pl w = \<Union>{ fst e \<union> snd e | e. e\<in>set w }"
 fun
   cil :: "'a list \<Rightarrow> ('a \<Rightarrow> ('m set \<times> 'm set)) \<Rightarrow> 'a list \<Rightarrow> 'a list set" 
     ("_ \<otimes>\<^bsub>_\<^esub> _" [64,64,64] 64) where
-  -- "Interleaving with the empty word results in the empty word"
+  \<comment> \<open>Interleaving with the empty word results in the empty word\<close>
   "[] \<otimes>\<^bsub>\<alpha> \<^esub> w = {w}" 
   | "w \<otimes>\<^bsub>\<alpha>\<^esub> [] = {w}"
-  -- "If both words are not empty, we can take the first step of one word, 
+  \<comment> \<open>If both words are not empty, we can take the first step of one word, 
   interleave the rest with the other word and then append
   the first step to all result set elements, provided it does not allocate 
-  a monitor that is used by the other word"
+  a monitor that is used by the other word\<close>
   | "e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2 = (
     if fst (\<alpha> e1) \<inter> mon_pl (map \<alpha> (e2#w2)) = {} then 
       e1\<cdot>(w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2) 
@@ -169,7 +169,7 @@ lemma cil_cons2: "\<lbrakk>w\<in>wa\<otimes>\<^bsub>\<alpha>\<^esub>wb; fst (\<a
 
 subsection "Properties of consistent interleaving"
 
--- {* Consistent interleaving is a restriction of interleaving *}
+\<comment> \<open>Consistent interleaving is a restriction of interleaving\<close>
 lemma cil_subset_il: "w\<otimes>\<^bsub>\<alpha>\<^esub>w' \<subseteq> w\<otimes>w'"
   apply (induct w \<alpha> w' rule: cil.induct)
   apply simp_all
@@ -180,22 +180,22 @@ lemma cil_subset_il: "w\<otimes>\<^bsub>\<alpha>\<^esub>w' \<subseteq> w\<otimes
 lemma cil_subset_il': "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> w\<in>w1\<otimes>w2" 
   using cil_subset_il by (auto)
 
--- {* Consistent interleaving preserves the set of letters of both operands *}
+\<comment> \<open>Consistent interleaving preserves the set of letters of both operands\<close>
 lemma cil_set: "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> set w = set w1 \<union> set w2"
   by (induct rule: cil_set_induct_fix\<alpha>) auto
 corollary cil_mon_pl: "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 
   \<Longrightarrow> mon_pl (map \<alpha> w) = mon_pl (map \<alpha> w1) \<union> mon_pl (map \<alpha> w2)" 
   by (subst mon_pl_unconc[symmetric]) (simp add: mon_pl_set cil_set, blast 20)
 
--- {* Consistent interleaving preserves the length of both operands *}
+\<comment> \<open>Consistent interleaving preserves the length of both operands\<close>
 lemma cil_length[rule_format]: "\<forall>w\<in>wa\<otimes>\<^bsub>\<alpha>\<^esub>wb. length w = length wa + length wb"
   by (induct rule: cil.induct) auto
 
--- {* Consistent interleaving contains all letters of each operand in the original order *}
+\<comment> \<open>Consistent interleaving contains all letters of each operand in the original order\<close>
 lemma cil_ileq: "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> w1\<preceq>w \<and> w2\<preceq>w"
   by (intro conjI cil_subset_il' ileq_interleave)
 
--- {* Consistent interleaving is commutative and associative*}
+\<comment> \<open>Consistent interleaving is commutative and associative\<close>
 lemma cil_commute: "w\<otimes>\<^bsub>\<alpha>\<^esub>w' = w'\<otimes>\<^bsub>\<alpha>\<^esub>w"
   by (induct rule: cil.induct) auto
 
@@ -238,7 +238,7 @@ proof -
 qed
 
 
--- {* Parts of the abstraction can be moved to the operands *}
+\<comment> \<open>Parts of the abstraction can be moved to the operands\<close>
 (* FIXME: ?? Something strange is going on with the simplification of \<alpha>\<circ>f and implicit \<eta>-contraction/expansion, hence this lengthy isar proof. Usually, this proof should be a just few lines apply-script !*)
 lemma cil_map: "w\<in>w1 \<otimes>\<^bsub>(\<alpha>\<circ>f)\<^esub> w2 \<Longrightarrow> map f w \<in> map f w1 \<otimes>\<^bsub>\<alpha>\<^esub> map f w2" 
 proof (induct rule: cil_set_induct_fix\<alpha>)

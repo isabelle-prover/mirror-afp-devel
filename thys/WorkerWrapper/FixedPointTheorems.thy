@@ -59,22 +59,22 @@ dates from the 1970s at the latest -- see \citet[p210]{Stoy:1977} and
 lemma rolling_rule_ltr: "fix\<cdot>(g oo f) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
 proof -
   have "g\<cdot>(fix\<cdot>(f oo g)) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    by (rule below_refl) -- {* reflexivity *}
+    by (rule below_refl) \<comment> \<open>reflexivity\<close>
   hence "g\<cdot>((f oo g)\<cdot>(fix\<cdot>(f oo g))) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    using fix_eq[where F="f oo g"] by simp -- {* computation *}
+    using fix_eq[where F="f oo g"] by simp \<comment> \<open>computation\<close>
   hence "(g oo f)\<cdot>(g\<cdot>(fix\<cdot>(f oo g))) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    by simp -- {* re-associate @{term "(oo)"} *}
+    by simp \<comment> \<open>re-associate @{term "(oo)"}\<close>
   thus "fix\<cdot>(g oo f) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    using fix_least_below by blast -- {* induction *}
+    using fix_least_below by blast \<comment> \<open>induction\<close>
 qed
 
 lemma rolling_rule_rtl: "g\<cdot>(fix\<cdot>(f oo g)) \<sqsubseteq> fix\<cdot>(g oo f)"
 proof -
   have "fix\<cdot>(f oo g) \<sqsubseteq> f\<cdot>(fix\<cdot>(g oo f))" by (rule rolling_rule_ltr)
   hence "g\<cdot>(fix\<cdot>(f oo g)) \<sqsubseteq> g\<cdot>(f\<cdot>(fix\<cdot>(g oo f)))"
-    by (rule monofun_cfun_arg) -- {* g is monotonic *}
+    by (rule monofun_cfun_arg) \<comment> \<open>g is monotonic\<close>
   thus "g\<cdot>(fix\<cdot>(f oo g)) \<sqsubseteq> fix\<cdot>(g oo f)"
-    using fix_eq[where F="g oo f"] by simp -- {* computation *}
+    using fix_eq[where F="g oo f"] by simp \<comment> \<open>computation\<close>
 qed
 
 lemma rolling_rule: "fix\<cdot>(g oo f) = g\<cdot>(fix\<cdot>(f oo g))"

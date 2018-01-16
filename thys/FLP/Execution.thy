@@ -383,7 +383,7 @@ next
   thus ?thesis by simp
 qed
 
-end --"end of locale Execution"
+end \<comment> \<open>end of locale Execution\<close>
 
 subsection {* Expanding executions to longer executions *}
 

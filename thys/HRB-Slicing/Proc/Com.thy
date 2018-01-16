@@ -6,12 +6,12 @@ theory Com imports "../StaticInter/BasicDefs" begin
 
 subsection {* Variables and Values *}
 
-type_synonym vname = string -- "names for variables"
-type_synonym pname = string -- "names for procedures"
+type_synonym vname = string \<comment> \<open>names for variables\<close>
+type_synonym pname = string \<comment> \<open>names for procedures\<close>
 
 datatype val
-  = Bool bool      -- "Boolean value"
-  | Intg int       -- "integer value" 
+  = Bool bool      \<comment> \<open>Boolean value\<close>
+  | Intg int       \<comment> \<open>integer value\<close> 
 
 abbreviation "true == Bool True"
 abbreviation "false == Bool False"
@@ -19,12 +19,12 @@ abbreviation "false == Bool False"
 
 subsection {* Expressions *}
 
-datatype bop = Eq | And | Less | Add | Sub     -- "names of binary operations"
+datatype bop = Eq | And | Less | Add | Sub     \<comment> \<open>names of binary operations\<close>
 
 datatype expr
-  = Val val                                          -- "value"
-  | Var vname                                        -- "local variable"
-  | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  -- "binary operation"
+  = Val val                                          \<comment> \<open>value\<close>
+  | Var vname                                        \<comment> \<open>local variable\<close>
+  | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  \<comment> \<open>binary operation\<close>
 
 
 fun binop :: "bop \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val option"
@@ -40,12 +40,12 @@ subsection {* Commands *}
 
 datatype cmd
   = Skip
-  | LAss vname expr        ("_:=_" [70,70] 70)  -- "local assignment"
+  | LAss vname expr        ("_:=_" [70,70] 70)  \<comment> \<open>local assignment\<close>
   | Seq cmd cmd            ("_;;/ _" [60,61] 60)
   | Cond expr cmd cmd      ("if '(_') _/ else _" [80,79,79] 70)
   | While expr cmd         ("while '(_') _" [80,79] 70)
   | Call pname "expr list" "vname list" 
-    --"Call needs procedure, actual parameters and variables for return values"
+    \<comment> \<open>Call needs procedure, actual parameters and variables for return values\<close>
 
 
 

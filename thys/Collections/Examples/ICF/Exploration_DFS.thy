@@ -15,16 +15,14 @@ text {*
 *}
 
 subsection "Definitions"
--- {*
-  The concrete algorithm uses a hashset (@{typ [source] "'q hs"}) and a worklist. 
-*}
+\<comment> \<open>The concrete algorithm uses a hashset (@{typ [source] "'q hs"}) and a worklist.\<close>
 type_synonym 'q hs_dfs_state = "'q hs \<times> 'q list"
 
--- {* The loop terminates on empty worklist *}
+\<comment> \<open>The loop terminates on empty worklist\<close>
 definition hs_dfs_cond :: "'q hs_dfs_state \<Rightarrow> bool" 
   where "hs_dfs_cond S == let (Q,W) = S in W\<noteq>[]"
 
--- {* Refinement of a DFS-step, using hashset operations *}
+\<comment> \<open>Refinement of a DFS-step, using hashset operations\<close>
 definition hs_dfs_step 
   :: "('q::hashable \<Rightarrow> 'q ls) \<Rightarrow> 'q hs_dfs_state \<Rightarrow> 'q hs_dfs_state"
   where "hs_dfs_step post S == let 
@@ -39,15 +37,15 @@ definition hs_dfs_step
       (Q, tl W)
   "
 
--- {* Convert post-function to relation *}
+\<comment> \<open>Convert post-function to relation\<close>
 definition hs_R :: "('q \<Rightarrow> 'q ls) \<Rightarrow> ('q\<times>'q) set"
   where "hs_R post == {(q,q'). q'\<in>ls.\<alpha> (post q)}"
 
--- {* Initial state: Set of initial states in discovered set and on worklist *}
+\<comment> \<open>Initial state: Set of initial states in discovered set and on worklist\<close>
 definition hs_dfs_initial :: "'q::hashable hs \<Rightarrow> 'q hs_dfs_state"
   where "hs_dfs_initial \<Sigma>i == (\<Sigma>i,hs.to_list \<Sigma>i)"
 
--- {* Abstraction mapping to abstract-DFS state *}
+\<comment> \<open>Abstraction mapping to abstract-DFS state\<close>
 definition hs_dfs_\<alpha> :: "'q::hashable hs_dfs_state \<Rightarrow> 'q dfs_state"
   where "hs_dfs_\<alpha> S == let (Q,W)=S in (hs.\<alpha> Q,W)"
 
@@ -55,13 +53,13 @@ definition hs_dfs_\<alpha> :: "'q::hashable hs_dfs_state \<Rightarrow> 'q dfs_st
 definition hs_dfs_invar_add :: "'q::hashable hs_dfs_state set" 
   where "hs_dfs_invar_add == { (Q,W). hs_invar Q }"*)
 
--- {* Combined concrete and abstract level invariant *}
+\<comment> \<open>Combined concrete and abstract level invariant\<close>
 definition hs_dfs_invar 
   :: "'q::hashable hs \<Rightarrow> ('q \<Rightarrow> 'q ls) \<Rightarrow> 'q hs_dfs_state set"
   where "hs_dfs_invar \<Sigma>i post ==
     { s. (hs_dfs_\<alpha> s) \<in> dfs_invar (hs.\<alpha> \<Sigma>i) (hs_R post) }"
 
--- "The deterministic while-algorithm"
+\<comment> \<open>The deterministic while-algorithm\<close>
 definition "hs_dfs_dwa \<Sigma>i post == \<lparr>
   dwa_cond = hs_dfs_cond,
   dwa_step = hs_dfs_step post,
@@ -70,9 +68,9 @@ definition "hs_dfs_dwa \<Sigma>i post == \<lparr>
 \<rparr>"
 
 
--- "Executable DFS-search. Given a set of initial states, and a successor 
+\<comment> \<open>Executable DFS-search. Given a set of initial states, and a successor 
       function, this function performs a DFS search to return the set of 
-      reachable states."
+      reachable states.\<close>
 definition "hs_dfs \<Sigma>i post 
   == fst (while hs_dfs_cond (hs_dfs_step post) (hs_dfs_initial \<Sigma>i))"
 
@@ -123,7 +121,7 @@ proof -
     done*)
 qed
 
--- "Prove refinement"
+\<comment> \<open>Prove refinement\<close>
 theorem hs_dfs_pref_dfs: 
   (*assumes [simp]: "hs_invar \<Sigma>i"
   assumes [simp]: "!!q. ls_invar (post q)"*)
@@ -145,7 +143,7 @@ theorem hs_dfs_pref_dfs:
   ) [3]
   done
 
-    -- "Show that concrete algorithm is a while-algo"
+    \<comment> \<open>Show that concrete algorithm is a while-algo\<close>
 theorem hs_dfs_while_algo: 
   assumes finite[simp]: "finite ((hs_R post)\<^sup>* `` hs.\<alpha> \<Sigma>i)"
   shows "while_algo (det_wa_wa (hs_dfs_dwa \<Sigma>i post))"
@@ -165,15 +163,15 @@ proof -
     done
 qed
     
--- "Show that concrete algo is a deterministic while-algo"
+\<comment> \<open>Show that concrete algo is a deterministic while-algo\<close>
 lemmas hs_dfs_det_while_algo = det_while_algo_intro[OF hs_dfs_while_algo]
 
-  -- "Transferred correctness theorem"
+  \<comment> \<open>Transferred correctness theorem\<close>
 lemmas hs_dfs_invar_final = 
   wa_precise_refine.transfer_correctness[OF
      hs_dfs_pref_dfs dfs_invar_final]
 
-  -- "The executable implementation is correct"
+  \<comment> \<open>The executable implementation is correct\<close>
 theorem hs_dfs_correct:
   assumes finite[simp]: "finite ((hs_R post)\<^sup>* `` hs.\<alpha> \<Sigma>i)"
   shows "hs.\<alpha> (hs_dfs \<Sigma>i post) = (hs_R post)\<^sup>*``hs.\<alpha> \<Sigma>i" (is ?T1)

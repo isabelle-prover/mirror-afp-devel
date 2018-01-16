@@ -46,22 +46,22 @@ corollary access_matrix_no_interfaces_and_bigstep_semantics:
   and   p :: "('i::len, 'pkt_ext) tagged_packet_scheme"
   assumes agree:"matcher_agree_on_exact_matches \<gamma> common_matcher"
   and     simple: "simple_ruleset rs"
-      --"To get the best results, we want to rewrite all interfaces, which needs some preconditions"
+      \<comment> \<open>To get the best results, we want to rewrite all interfaces, which needs some preconditions\<close>
       (*TODO: actually, we use iface_try_rewrite which should work without assumptions but may give bad (but sound) results*)
-      --"well-formed ipassmt"
+      \<comment> \<open>well-formed ipassmt\<close>
       and wf_ipassmt1: "ipassmt_sanity_nowildcards (map_of ipassmt)" and wf_ipassmt2: "distinct (map fst ipassmt)"
-      --"There are no spoofed packets (probably by kernel's reverse path filter or our checker).
-         This assumption implies that ipassmt lists ALL interfaces (!!)."
+      \<comment> \<open>There are no spoofed packets (probably by kernel's reverse path filter or our checker).
+         This assumption implies that ipassmt lists ALL interfaces (!!).\<close>
       and nospoofing: "\<forall>(p::('i::len, 'pkt_ext) tagged_packet_scheme).
             \<exists>ips. (map_of ipassmt) (Iface (p_iiface p)) = Some ips \<and> p_src p \<in> ipcidr_union_set (set ips)"
-      --"If a routing table was passed, the output interface for any packet we consider is decided based on it."
+      \<comment> \<open>If a routing table was passed, the output interface for any packet we consider is decided based on it.\<close>
       and routing_decided: "\<And>rtbl (p::('i,'pkt_ext) tagged_packet_scheme). rtblo = Some rtbl \<Longrightarrow> output_iface (routing_table_semantics rtbl (p_dst p)) = p_oiface p"
-      --"A passed routing table is wellformed"
+      \<comment> \<open>A passed routing table is wellformed\<close>
       and correct_routing: "\<And>rtbl. rtblo = Some rtbl \<Longrightarrow> correct_routing rtbl"
-      --"A passed routing table contains no interfaces with wildcard names"
+      \<comment> \<open>A passed routing table contains no interfaces with wildcard names\<close>
       and routing_no_wildcards: "\<And>rtbl. rtblo = Some rtbl \<Longrightarrow> ipassmt_sanity_nowildcards (map_of (routing_ipassmt rtbl))"
   and     new: "newpkt p"
-  --"building the matrix over ANY interfaces, not mentioned anywhere. That means, we don't care about interfaces!"
+  \<comment> \<open>building the matrix over ANY interfaces, not mentioned anywhere. That means, we don't care about interfaces!\<close>
   and     matrix: "(V,E) = access_matrix \<lparr>pc_iiface = anyI, pc_oiface = anyO, pc_proto = p_proto p, pc_sport = p_sport p, pc_dport = p_dport p\<rparr>
                             (to_simple_firewall_without_interfaces ipassmt rtblo rs)"
   and     accept: "\<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, Undecided\<rangle> \<Rightarrow> Decision FinalAllow"

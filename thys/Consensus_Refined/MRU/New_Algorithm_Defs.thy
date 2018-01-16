@@ -13,16 +13,16 @@ axiomatization where val_linorder:
 instance val :: linorder by (rule val_linorder)
 
 record pstate =
-  x :: val                -- {* current value held by process *}
+  x :: val                \<comment> \<open>current value held by process\<close>
   prop_vote :: "val option"
   mru_vote :: "(nat \<times> val) option"
-  decide :: "val option"  -- {* value the process has decided on, if any *}
+  decide :: "val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 datatype msg =
   MruVote "(nat \<times> val) option" "val"
 | PreVote "val"
 | Vote val
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 text {*
   Characteristic predicates on messages.

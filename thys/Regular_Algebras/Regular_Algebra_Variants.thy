@@ -40,7 +40,7 @@ lemma (in star_dioid)
   and "\<And>x. 1 + x\<^sup>\<star> \<cdot> x =  x\<^sup>\<star>"
   and "\<And>x y. 1 + x \<le> y \<and> y \<cdot> y \<le> y \<longrightarrow> x\<^sup>\<star> \<le> y"
   shows "\<And>x. x\<^sup>\<star> = (1 + x)\<^sup>\<star>"
-oops -- "need to reconsider this"
+oops \<comment> \<open>need to reconsider this\<close>
 
 lemma (in star_dioid) 
   assumes "\<And>x. 1 + x \<cdot> x\<^sup>\<star> =  x\<^sup>\<star>"

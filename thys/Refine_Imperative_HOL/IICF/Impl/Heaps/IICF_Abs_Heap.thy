@@ -625,7 +625,7 @@ text \<open>
       done
 
     definition sink_op_opt
-      -- \<open>Sink operation as presented in Sedgewick et al. Algs4 reference implementation\<close>
+      \<comment> \<open>Sink operation as presented in Sedgewick et al. Algs4 reference implementation\<close>
     where   
       "sink_op_opt h k \<equiv> RECT (\<lambda>D (h,k). do {
         ASSERT (k>0 \<and> k\<le>length h);
@@ -714,7 +714,7 @@ text \<open>
     *)  
 
     subsubsection \<open>Empty\<close>
-    abbreviation (input) empty :: "'a heap" -- \<open>The empty heap\<close>
+    abbreviation (input) empty :: "'a heap" \<comment> \<open>The empty heap\<close>
       where "empty \<equiv> []"
     definition empty_op :: "'a heap nres" 
       where "empty_op \<equiv> mop_list_empty"
@@ -723,7 +723,7 @@ text \<open>
       unfolding empty_op_def apply refine_vcg by auto
 
     subsubsection \<open>Emptiness check\<close>  
-    definition is_empty_op :: "'a heap \<Rightarrow> bool nres" -- \<open>Check for emptiness\<close>
+    definition is_empty_op :: "'a heap \<Rightarrow> bool nres" \<comment> \<open>Check for emptiness\<close>
       where "is_empty_op h \<equiv> do {ASSERT (heap_invar h); let l=length h; RETURN (l=0)}"
     lemma is_empty_op_correct[refine_vcg]: 
       "heap_invar h \<Longrightarrow> is_empty_op h \<le> SPEC (\<lambda>r. r\<longleftrightarrow>\<alpha> h = {#})"  
@@ -731,7 +731,7 @@ text \<open>
       apply refine_vcg by auto
 
     subsubsection \<open>Insert\<close>
-    definition insert_op :: "'a \<Rightarrow> 'a heap \<Rightarrow> 'a heap nres" -- \<open>Insert element\<close>
+    definition insert_op :: "'a \<Rightarrow> 'a heap \<Rightarrow> 'a heap nres" \<comment> \<open>Insert element\<close>
       where "insert_op v h \<equiv> do {
         ASSERT (heap_invar h);
         h \<leftarrow> append_op h v;

@@ -50,28 +50,28 @@ text {*
   Interface inference rules. 
   Caution: Some of these must be applied with custom unification!
 *}
-lemma ID_abs: -- "Tag abs first"
+lemma ID_abs: \<comment> \<open>Tag abs first\<close>
   "\<lbrakk> \<And>x. ID_OP x x I1 \<Longrightarrow> ID_OP (f x) (f' x) I2 \<rbrakk> 
   \<Longrightarrow> ID_OP (\<lambda>'x. f x) (\<lambda>'x. f' x) (I1\<rightarrow>\<^sub>iI2)"
   by simp
 
-lemma ID_app: -- "Tag app first"
+lemma ID_app: \<comment> \<open>Tag app first\<close>
   "\<lbrakk> INDEP I1; ID_OP x x' I1; ID_OP f f' (I1\<rightarrow>\<^sub>iI2) \<rbrakk> 
   \<Longrightarrow> ID_OP (f$x) (f'$x') I2" by simp
 
-lemma ID_const: -- "Only if c is constant or free variable"
+lemma ID_const: \<comment> \<open>Only if c is constant or free variable\<close>
   "\<lbrakk> c ::\<^sub>i I \<rbrakk> \<Longrightarrow> ID_OP c (OP c :::\<^sub>i I) I"
   by simp
 
 definition [simp]: "ID_TAG x \<equiv> x"
-lemma ID_const_any: -- "Only if no typing for constant exists"
+lemma ID_const_any: \<comment> \<open>Only if no typing for constant exists\<close>
   "ID_OP c (OP (ID_TAG c) :::\<^sub>i I) I" 
   by simp
 
 lemma ID_const_check_known: 
   "\<lbrakk> c ::\<^sub>i I' \<rbrakk> \<Longrightarrow> ID_OP c c I" by simp
 
-lemma ID_tagged_OP: -- "Try first"
+lemma ID_tagged_OP: \<comment> \<open>Try first\<close>
   "ID_OP (OP f :::\<^sub>i I) (OP f :::\<^sub>i I) I"
   by simp
 
@@ -82,7 +82,7 @@ lemma ID_tagged_OP_no_annot:
 
 lemmas ID_tagged = ID_tagged_OP ID_abs ID_app
 
-lemma ID_annotated: -- "Try second"
+lemma ID_annotated: \<comment> \<open>Try second\<close>
   "ID_OP t t' I \<Longrightarrow> ID_OP (t :::\<^sub>i I) t' I"
   "ID_OP t t' I \<Longrightarrow> ID_OP (ANNOT t A) (ANNOT t' A) I"
   by simp_all
@@ -537,7 +537,7 @@ definition REL_OF_INTF :: "interface \<Rightarrow> ('c\<times>'a) set \<Rightarr
   where [simp]: "REL_OF_INTF I R \<equiv> True"
 
 definition 
-  [simp]: "REL_OF_INTF_P I R \<equiv> True" -- "Version to resolve relator arguments"
+  [simp]: "REL_OF_INTF_P I R \<equiv> True" \<comment> \<open>Version to resolve relator arguments\<close>
 
 lemma CNV_ANNOT:
   "\<And>f f' a a'. \<lbrakk> CNV_ANNOT a a' Ra; CNV_ANNOT f f' (Ra\<rightarrow>Rr) \<rbrakk> 
@@ -554,11 +554,11 @@ lemma CNV_ANNOT:
 
 consts i_of_rel :: "'a \<Rightarrow> 'b"
 
-lemma ROI_P_app: -- "Only if interface is really application"
+lemma ROI_P_app: \<comment> \<open>Only if interface is really application\<close>
   "REL_OF_INTF_P I R \<Longrightarrow> REL_OF_INTF I R"
   by auto
 
-lemma ROI_app: -- "Only if interface is really application"
+lemma ROI_app: \<comment> \<open>Only if interface is really application\<close>
   "\<lbrakk> REL_OF_INTF I R; REL_OF_INTF_P J S \<rbrakk> \<Longrightarrow> REL_OF_INTF_P (\<langle>I\<rangle>\<^sub>iJ) (\<langle>R\<rangle>S)"
   by auto
 

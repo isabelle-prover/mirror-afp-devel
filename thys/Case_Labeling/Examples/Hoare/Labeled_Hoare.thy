@@ -20,7 +20,7 @@ context begin
     shows "C\<langle>IC,CT,IC: Valid p SKIP q\<rangle>"
     using assms unfolding LABEL_simps  by (rule SkipRule)
   
-  lemmas LAbortRule = LSkipRule  -- "dummy version"
+  lemmas LAbortRule = LSkipRule  \<comment> \<open>dummy version\<close>
   
   lemma LBasicRule:
     assumes "V\<langle>(''basic'', IC, []),CT: p \<subseteq> {s. f s \<in> q}\<rangle>"

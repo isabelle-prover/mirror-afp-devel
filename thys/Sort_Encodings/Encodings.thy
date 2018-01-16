@@ -92,35 +92,35 @@ and \<Phi> :: "('fsym, 'psym) prob" and infTp :: "'tp \<Rightarrow> bool"
 and tpD :: "'tp \<Rightarrow> bool" and tpFD :: "'tp \<Rightarrow> bool"
 and intT :: "'tp \<Rightarrow> univ \<Rightarrow> bool"
 and intF :: "'fsym \<Rightarrow> univ list \<Rightarrow> univ" and intP :: "'psym \<Rightarrow> univ list \<Rightarrow> bool"
--- {* The problem translation: *}
--- {* First the addition of tags (``TE'' stands for ``tag encoding''):  *}
+\<comment> \<open>The problem translation:\<close>
+\<comment> \<open>First the addition of tags (``TE'' stands for ``tag encoding''):\<close>
 defines "TE_wtFsym \<equiv> ProblemIkTpart.TE_wtFsym wtFsym resOf"
 and "TE_arOf \<equiv> ProblemIkTpart.TE_arOf arOf"
 and "TE_resOf \<equiv> ProblemIkTpart.TE_resOf resOf"
 defines "TE_\<Phi> \<equiv> ProblemIkTpart.tPB wtFsym arOf resOf \<Phi> tpD tpFD"
--- {* Then the deletion of types (``U'' stands for ``untyped''): *}
+\<comment> \<open>Then the deletion of types (``U'' stands for ``untyped''):\<close>
 and "U_arOf \<equiv> length \<circ> TE_arOf"
 and "U_parOf \<equiv> length \<circ> parOf"
 defines "U_\<Phi> \<equiv> TE_\<Phi>"
--- {* The forward model translation: *}
--- {* First, using monotonicity, we build an infinite model of @{text"\<Phi>"}
-  (``I'' stands for ``infinite''):  *}
+\<comment> \<open>The forward model translation:\<close>
+\<comment> \<open>First, using monotonicity, we build an infinite model of @{text"\<Phi>"}
+  (``I'' stands for ``infinite''):\<close>
 defines "intTI \<equiv> MonotProblem.intTI TE_wtFsym wtPsym TE_arOf TE_resOf parOf TE_\<Phi>"
 and "intFI \<equiv> MonotProblem.intFI TE_wtFsym wtPsym TE_arOf TE_resOf parOf TE_\<Phi>"
 and "intPI \<equiv> MonotProblem.intPI TE_wtFsym wtPsym TE_arOf TE_resOf parOf TE_\<Phi>"
--- {* Then, by isomorphic transfer of the lattter model, we build a model of @{text"\<Phi>"}
- that has all types interpeted as @{text "univ"} (``F'' stands for ``full"): *}
+\<comment> \<open>Then, by isomorphic transfer of the lattter model, we build a model of @{text"\<Phi>"}
+ that has all types interpeted as @{text "univ"} (``F'' stands for ``full"):\<close>
 defines "intFF \<equiv> InfModel.intFF TE_arOf TE_resOf intTI intFI"
 and "intPF \<equiv> InfModel.intPF parOf intTI intPI"
--- {* Then we build a model of @{text "U_\<Phi>"}: *}
+\<comment> \<open>Then we build a model of @{text "U_\<Phi>"}:\<close>
 defines "U_intT \<equiv> InfModel.intTF (any::'tp)"
 
--- {* Assumptions of the theorem: *}
+\<comment> \<open>Assumptions of the theorem:\<close>
 assumes
 P: "ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD"
 and M: "CM.Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP"
 
--- {* Conclusion of the theorem: *}
+\<comment> \<open>Conclusion of the theorem:\<close>
 shows "CU.Model TE_wtFsym wtPsym U_arOf U_parOf U_\<Phi> U_intT intFF intPF"
 
 unfolding U_arOf_def U_parOf_def U_\<Phi>_def
@@ -166,7 +166,7 @@ and tpD :: "'tp \<Rightarrow> bool" and tpFD :: "'tp \<Rightarrow> bool" and tpC
 and intT :: "'tp \<Rightarrow> univ \<Rightarrow> bool"
 and intF :: "'fsym \<Rightarrow> univ list \<Rightarrow> univ"
 and intP :: "'psym \<Rightarrow> univ list \<Rightarrow> bool"
--- {* The problem translation: *}
+\<comment> \<open>The problem translation:\<close>
 defines "GE_wtFsym \<equiv> ProblemIkTpartG.GE_wtFsym wtFsym resOf tpCD"
 and "GE_wtPsym \<equiv> ProblemIkTpartG.GE_wtPsym wtPsym tpD tpFD"
 and "GE_arOf \<equiv> ProblemIkTpartG.GE_arOf arOf"
@@ -179,7 +179,7 @@ and "U_parOf \<equiv> length \<circ> GE_parOf"
 
 defines "U_\<Phi> \<equiv> GE_\<Phi>"
 
--- {* The model forward translation: *}
+\<comment> \<open>The model forward translation:\<close>
 defines "intTI \<equiv> MonotProblem.intTI GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf GE_\<Phi>"
 and "intFI \<equiv> MonotProblem.intFI GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf GE_\<Phi>"
 and "intPI \<equiv> MonotProblem.intPI GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf GE_\<Phi>"
@@ -233,7 +233,7 @@ and D :: "univ \<Rightarrow> bool"
 and eintF :: "('fsym,'tp) T.efsym \<Rightarrow> univ list \<Rightarrow> univ"
 and eintP :: "'psym \<Rightarrow> univ list \<Rightarrow> bool"
 
--- {* The problem translation (the same as in the case of soundness): *}
+\<comment> \<open>The problem translation (the same as in the case of soundness):\<close>
 defines "TE_wtFsym \<equiv> ProblemIkTpart.TE_wtFsym wtFsym resOf"
 and "TE_arOf \<equiv> ProblemIkTpart.TE_arOf arOf"
 and "TE_resOf \<equiv> ProblemIkTpart.TE_resOf resOf"
@@ -242,7 +242,7 @@ and "U_arOf \<equiv> length \<circ> TE_arOf"
 and "U_parOf \<equiv> length \<circ> parOf"
 defines "U_\<Phi> \<equiv> TE_\<Phi>"
 
--- {* The backward model translation: *}
+\<comment> \<open>The backward model translation:\<close>
 defines "intT \<equiv> ProblemIkTpart_TEModel.intT tpD tpFD (\<lambda>\<sigma>::'tp. D) eintF"
 and "intF \<equiv> ProblemIkTpart_TEModel.intF arOf resOf tpD tpFD (\<lambda>\<sigma>::'tp. D) eintF"
 and "intP \<equiv> ProblemIkTpart_TEModel.intP parOf tpD tpFD (\<lambda>\<sigma>::'tp. D) eintF eintP"
@@ -283,7 +283,7 @@ and D :: "univ \<Rightarrow> bool"
 and eintF :: "('fsym,'tp) G.efsym \<Rightarrow> univ list \<Rightarrow> univ"
 and eintP :: "('psym,'tp) G.epsym \<Rightarrow> univ list \<Rightarrow> bool"
 
--- {* The problem translation (the same as in the case of soundness): *}
+\<comment> \<open>The problem translation (the same as in the case of soundness):\<close>
 defines "GE_wtFsym \<equiv> ProblemIkTpartG.GE_wtFsym wtFsym resOf tpCD"
 and "GE_wtPsym \<equiv> ProblemIkTpartG.GE_wtPsym wtPsym tpD tpFD"
 and "GE_arOf \<equiv> ProblemIkTpartG.GE_arOf arOf"
@@ -294,7 +294,7 @@ and "U_arOf \<equiv> length \<circ> GE_arOf"
 and "U_parOf \<equiv> length \<circ> GE_parOf"
 defines "U_\<Phi> \<equiv> GE_\<Phi>"
 
--- {* The backward model translation: *}
+\<comment> \<open>The backward model translation:\<close>
 defines "intT \<equiv> ProblemIkTpartG_GEModel.intT tpD tpFD (\<lambda>\<sigma>::'tp. D) eintP"
 and "intF \<equiv> ProblemIkTpartG_GEModel.intF eintF"
 and "intP \<equiv> ProblemIkTpartG_GEModel.intP eintP"

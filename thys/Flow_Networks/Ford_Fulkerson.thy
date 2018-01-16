@@ -100,7 +100,7 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-end -- \<open>Cut\<close>
+end \<comment> \<open>Cut\<close>
 
 subsection \<open>Ford-Fulkerson Theorem\<close>
 context NFlow begin
@@ -145,7 +145,7 @@ proof (intro exI conjI)
   interpret NFlowCut c s t f ?S by intro_locales
 
   have "\<forall>(u,v)\<in>outgoing' ?S. f (u,v) = c (u,v)"
-  proof (rule ballI, rule ccontr, clarify) -- \<open>Proof by contradiction\<close>
+  proof (rule ballI, rule ccontr, clarify) \<comment> \<open>Proof by contradiction\<close>
     fix u v
     assume "(u,v)\<in>outgoing' ?S" 
     hence "(u,v)\<in>E" "u\<in>?S" "v\<notin>?S"
@@ -163,7 +163,7 @@ proof (intro exI conjI)
     unfolding cap_def by auto
   moreover 
   have "\<forall>(u,v)\<in>incoming' ?S. f (u,v) = 0"  
-  proof (rule ballI, rule ccontr, clarify) -- \<open>Proof by contradiction\<close>
+  proof (rule ballI, rule ccontr, clarify) \<comment> \<open>Proof by contradiction\<close>
     fix u v
     assume "(u,v)\<in>incoming' ?S"
     hence "(u,v)\<in>E" "u\<notin>?S" "v\<in>?S" by (auto simp: incoming'_def)
@@ -248,7 +248,7 @@ text \<open>As an immediate consequence of the Ford-Fulkerson theorem, we get th
 corollary noAugPath_iff_maxFlow: "(\<nexists>p. isAugmentingPath p) \<longleftrightarrow> isMaxFlow f"
   using ford_fulkerson by blast
 
-end -- \<open>Network with flow\<close>
+end \<comment> \<open>Network with flow\<close>
 
 text \<open>The value of the maximum flow equals the capacity of the minimum cut\<close>
 corollary (in Network) maxFlow_minCut: "\<lbrakk>isMaxFlow f; isMinCut c s t k\<rbrakk> 
@@ -268,4 +268,4 @@ proof -
     unfolding isMinCut_def by auto
 qed    
 
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

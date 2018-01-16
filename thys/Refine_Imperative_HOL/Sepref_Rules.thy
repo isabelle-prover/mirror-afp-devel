@@ -341,13 +341,13 @@ begin
 
   subsubsection \<open>Composition\<close>
   definition hr_comp :: "('b \<Rightarrow> 'c \<Rightarrow> assn) \<Rightarrow> ('b \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'c \<Rightarrow> assn"
-    -- \<open>Compose refinement assertion with refinement relation\<close>
+    \<comment> \<open>Compose refinement assertion with refinement relation\<close>
     where "hr_comp R1 R2 a c \<equiv> \<exists>\<^sub>Ab. R1 b c * \<up>((b,a)\<in>R2)"
 
   definition hrp_comp 
     :: "('d \<Rightarrow> 'b \<Rightarrow> assn) \<times> ('d \<Rightarrow> 'c \<Rightarrow> assn)
         \<Rightarrow> ('d \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> assn) \<times> ('a \<Rightarrow> 'c \<Rightarrow> assn)"
-    -- \<open>Compose argument assertion-pair with refinement relation\<close>    
+    \<comment> \<open>Compose argument assertion-pair with refinement relation\<close>    
     where "hrp_comp RR' S \<equiv> (hr_comp (fst RR') S, hr_comp (snd RR') S) "
 
   lemma hr_compI: "(b,a)\<in>R2 \<Longrightarrow> R1 b c \<Longrightarrow>\<^sub>A hr_comp R1 R2 a c"  

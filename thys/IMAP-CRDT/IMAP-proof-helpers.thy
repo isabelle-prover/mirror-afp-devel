@@ -82,7 +82,7 @@ definition (in imap) added_files :: "('id \<times> ('id, 'b) operation) event li
     Deliver (i, Store e mo j) \<Rightarrow> if e = p then Some j else None |
     _ \<Rightarrow> None) es"
 
--- {* added files simplifier *}
+\<comment> \<open>added files simplifier\<close>
 
 lemma (in imap) [simp]:
   shows "added_files [] e = []"
@@ -125,7 +125,7 @@ lemma (in imap) added_files_Deliver_Store_same_collapse [simp]:
   by (auto simp: added_files_def map_filter_append map_filter_def)
 
 
--- {* added ids simplifier *}
+\<comment> \<open>added ids simplifier\<close>
 
 lemma (in imap) [simp]:
   shows "added_ids [] e = []"

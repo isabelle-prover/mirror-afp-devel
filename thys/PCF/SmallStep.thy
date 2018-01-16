@@ -43,7 +43,7 @@ where
 | "DBIsZero (DBNum 0) \<rightarrow>\<^sub>v DBtt"
 | "0 < n \<Longrightarrow> DBIsZero (DBNum n) \<rightarrow>\<^sub>v DBff"
 
-abbreviation \<comment>\<open> The transitive, reflexive closure of the reduction relation. \<close>
+abbreviation \<comment> \<open>The transitive, reflexive closure of the reduction relation.\<close>
   reduction_trc :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<rightarrow>\<^sub>v\<^sup>* _" [100, 100] 100)
 where
   "reduction_trc \<equiv> rtranclp reduction"

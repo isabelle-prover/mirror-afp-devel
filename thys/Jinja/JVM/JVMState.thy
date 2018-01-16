@@ -17,16 +17,16 @@ type_synonym
 
 type_synonym
   frame = "val list \<times> val list \<times> cname \<times> mname \<times> pc"
-  -- "operand stack" 
-  -- "registers (including this pointer, method parameters, and local variables)"
-  -- "name of class where current method is defined"
-  -- "parameter types"
-  -- "program counter within frame"
+  \<comment> \<open>operand stack\<close> 
+  \<comment> \<open>registers (including this pointer, method parameters, and local variables)\<close>
+  \<comment> \<open>name of class where current method is defined\<close>
+  \<comment> \<open>parameter types\<close>
+  \<comment> \<open>program counter within frame\<close>
 
 subsection {* Runtime State *}
 
 type_synonym
   jvm_state = "addr option \<times> heap \<times> frame list"  
-  -- "exception flag, heap, frames"
+  \<comment> \<open>exception flag, heap, frames\<close>
   
 end

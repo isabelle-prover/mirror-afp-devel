@@ -10,15 +10,15 @@ subsubsection {* Datatype Domain Hierarchy *}
 
   text{* A fully qualified domain name for an entity in a tree-like hierarchy *}
     datatype domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
-                               Leaf --"leaf of the tree, end of all domainNames"
+                               Leaf \<comment> \<open>leaf of the tree, end of all domainNames\<close>
     
     text {*Example: the CoffeeMachine of I8 *}
     value "''i8''--''CoffeeMachine''--Leaf"
 
   text{* A tree strucuture to represent the general hierarchy, i.e. possible domainNameDepts*}
     datatype domainTree = Department 
-        "string"  --"division"
-        "domainTree list"  --"sub divisions"
+        "string"  \<comment> \<open>division\<close>
+        "domainTree list"  \<comment> \<open>sub divisions\<close>
 
   text{*one step in tree to find matching department*}
     fun hierarchy_next :: "domainTree list \<Rightarrow> domainNameDept \<Rightarrow> domainTree option" where

@@ -94,7 +94,7 @@ where
   P,E \<turnstile> throw e :: Void"
 
 
--- "well-typed expression lists"
+\<comment> \<open>well-typed expression lists\<close>
 
 | WTNil:
   "P,E \<turnstile> [] [::] []"

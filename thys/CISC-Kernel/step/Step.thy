@@ -20,14 +20,14 @@ datatype ev_wait_stage_t = EV_PREP | EV_WAIT | EV_FINISH
 datatype ev_signal_stage_t = EV_SIGNAL_PREP | EV_SIGNAL_FINISH
 
 datatype int_point_t =
-   SK_IPC ipc_direction_t ipc_stage_t thread_id_t page_t -- {* The thread is executing a sending / receiving IPC. *}
- | SK_EV_WAIT ev_wait_stage_t ev_consume_t -- {* The thread is waiting for an event. *}
- | SK_EV_SIGNAL ev_signal_stage_t thread_id_t -- {* The thread is sending an event. *}
- | NONE -- {* The thread is not executing any system call. *}
+   SK_IPC ipc_direction_t ipc_stage_t thread_id_t page_t \<comment> \<open>The thread is executing a sending / receiving IPC.\<close>
+ | SK_EV_WAIT ev_wait_stage_t ev_consume_t \<comment> \<open>The thread is waiting for an event.\<close>
+ | SK_EV_SIGNAL ev_signal_stage_t thread_id_t \<comment> \<open>The thread is sending an event.\<close>
+ | NONE \<comment> \<open>The thread is not executing any system call.\<close>
 
 subsubsection {* System state *}
 
-typedecl obj_t -- {* value of an object *}
+typedecl obj_t \<comment> \<open>value of an object\<close>
 
 text {* Each thread belongs to a partition. The relation is fixed (in this instantiation of a separation kernel). *}
 
@@ -41,14 +41,14 @@ record thread_t =
   (* 
   id :: thread_id_t           -- {* thread identifier *}
   int_point :: int_point_t    -- {* interrupt point *}*)
-  ev_counter :: nat           -- {* event counter *}
+  ev_counter :: nat           \<comment> \<open>event counter\<close>
   
 record state_t =  
-  sp_impl_subj_subj :: sp_subj_subj_t    -- {* current subject-subject policy *}
-  sp_impl_subj_obj :: sp_subj_obj_t      -- {* current subject-object policy *}
-  current :: "thread_id_t"               -- {* current thread *}
-  obj :: "obj_id_t \<Rightarrow> obj_t"             -- {* values of all objects *}
-  thread :: "thread_id_t \<Rightarrow> thread_t"    -- {* internal state of threads  *}
+  sp_impl_subj_subj :: sp_subj_subj_t    \<comment> \<open>current subject-subject policy\<close>
+  sp_impl_subj_obj :: sp_subj_obj_t      \<comment> \<open>current subject-object policy\<close>
+  current :: "thread_id_t"               \<comment> \<open>current thread\<close>
+  obj :: "obj_id_t \<Rightarrow> obj_t"             \<comment> \<open>values of all objects\<close>
+  thread :: "thread_id_t \<Rightarrow> thread_t"    \<comment> \<open>internal state of threads\<close>
 
 text {* Later (Section~\ref{sect:step_invariants}), the system invariant @{term sp_subset} will be used to ensure that the dynamic policies (sp\_impl\_...)
 are a subset of the corresponding static policies (sp\_spec\_...). *}

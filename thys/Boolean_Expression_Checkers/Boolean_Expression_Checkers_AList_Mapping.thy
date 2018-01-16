@@ -9,7 +9,7 @@ begin
 
 section{* Tweaks for @{const AList_Mapping.Mapping} *}
                                                        
--- \<open>If mappings are implemented by @{const AList_Mapping.Mapping}, the functions @{const reduce} and @{const normif} 
+\<comment> \<open>If mappings are implemented by @{const AList_Mapping.Mapping}, the functions @{const reduce} and @{const normif} 
     search for x twice. The following code equations remove this redundant operation\<close>
 
 lemma AList_Mapping_update: 

@@ -30,7 +30,7 @@ where
 definition start :: "proc \<Rightarrow> state"
 where "start p  \<equiv> s0"
 
---"An example execution"
+\<comment> \<open>An example execution\<close>
 definition exec ::
   "(proc, val, state ) configuration list"
 where
@@ -45,16 +45,16 @@ subsection {* Interpretation as FLP Locale *}
 
 interpretation FLPSys: flpSystem trans sends start
 proof
-  -- "finiteProcs"
+  \<comment> \<open>finiteProcs\<close>
   show "finite (UNIV :: proc set)"
     unfolding ProcUniv by simp
 next
-  -- "minimalProcs"
+  \<comment> \<open>minimalProcs\<close>
   have "card (UNIV :: proc set) = 2"
     unfolding ProcUniv by simp
   thus "2 \<le> card (UNIV :: proc set)" by simp
 next
-  -- "finiteSends"
+  \<comment> \<open>finiteSends\<close>
   fix p s m
   have FinExplSends: "finite {<p0, v1>, <p1, v0>}" by auto
   have "{v. 0 < sends p s m v} \<subseteq> {<p0, v1>, <p1, v0>}"
@@ -67,27 +67,27 @@ next
   thus "finite {v. 0 < sends p s m v}"
     using FinExplSends finite_subset by blast
 next
-  -- "noInSends"
+  \<comment> \<open>noInSends\<close>
   fix p s m p2 v
   show "sends p s m <p2, inM v> = 0" by (induct s, auto)
 qed
 
 interpretation FLPExec: execution trans sends start exec "[]"
 proof
-  --"notEmpty"
+  \<comment> \<open>notEmpty\<close>
   show "1 \<le> length exec"
     by (simp add:exec_def)
 next
-  --"length"
+  \<comment> \<open>length\<close>
   show "length exec - 1 = length []"
     by (simp add:exec_def)
 next
-  --"base"
+  \<comment> \<open>base\<close>
   show "asynchronousSystem.initial start (hd exec)"
     unfolding asynchronousSystem.initial_def isReceiverOf_def
     by (auto simp add: start_def exec_def, metis proc.exhaust)
 next
-  --"step"
+  \<comment> \<open>step\<close>
   fix i cfg1 cfg2
   assume "i < length exec - 1"
   hence "False" by (simp add:exec_def)

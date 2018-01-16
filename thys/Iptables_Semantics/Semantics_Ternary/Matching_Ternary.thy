@@ -231,7 +231,7 @@ fun remove_unknowns_generic :: "('a, 'packet) match_tac \<Rightarrow> action \<R
       (remove_unknowns_generic (\<beta>, \<alpha>) a m1)
       (remove_unknowns_generic (\<beta>, \<alpha>) a m2)" |
 
-  --\<open>@{text "\<not> (a \<and> b) = \<not> b \<or> \<not> a"}   and   @{text "\<not> Unknown = Unknown"}\<close>
+  \<comment> \<open>@{text "\<not> (a \<and> b) = \<not> b \<or> \<not> a"}   and   @{text "\<not> Unknown = Unknown"}\<close>
   "remove_unknowns_generic (\<beta>, \<alpha>) a (MatchNot (MatchAnd m1 m2)) = 
     (if (remove_unknowns_generic (\<beta>, \<alpha>) a (MatchNot m1)) = MatchAny \<or>
         (remove_unknowns_generic (\<beta>, \<alpha>) a (MatchNot m2)) = MatchAny

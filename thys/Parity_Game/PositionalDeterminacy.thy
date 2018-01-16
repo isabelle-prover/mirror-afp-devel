@@ -611,6 +611,6 @@ next
     unfolding winning_region_def by auto
 qed
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

@@ -21,7 +21,7 @@ datatype
         | Notes agent       msg
        
 consts 
-  bad    :: "agent set"                         -- {* compromised agents *}
+  bad    :: "agent set"                         \<comment> \<open>compromised agents\<close>
 
 text{*Spy has access to his own key for spoof messages, but Server is secure*}
 specification (bad)
@@ -73,9 +73,9 @@ where
                         Says A B X => parts {X} \<union> used evs
                       | Gets A X   => used evs
                       | Notes A X  => parts {X} \<union> used evs)"
-    --{*The case for @{term Gets} seems anomalous, but @{term Gets} always
+    \<comment> \<open>The case for @{term Gets} seems anomalous, but @{term Gets} always
         follows @{term Says} in real protocols.  Seems difficult to change.
-        See @{text Gets_correct} in theory @{text "Guard/Extensions.thy"}. *}
+        See @{text Gets_correct} in theory @{text "Guard/Extensions.thy"}.\<close>
 
 lemma Notes_imp_used [rule_format]: "Notes A X \<in> set evs --> X \<in> used evs"
 apply (induct_tac evs)

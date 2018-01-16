@@ -21,15 +21,15 @@ afsFileSize :: "AFile => nat"
 *}
 
 typedecl
-  -- "unit of file content"
+  \<comment> \<open>unit of file content\<close>
   byte
 consts
-  -- "value used for padding"
+  \<comment> \<open>value used for padding\<close>
   fillByte :: byte
 
 axiomatization
-  blockSize :: nat  -- "in bytes" and
-  numBlocks :: nat  -- "total number of blocks in the file system"
+  blockSize :: nat  \<comment> \<open>in bytes\<close> and
+  numBlocks :: nat  \<comment> \<open>total number of blocks in the file system\<close>
 where
   nonZeroBlockSize: "blockSize > 0" and
   nonZeroNumBlocks: "numBlocks > 0"
@@ -37,23 +37,23 @@ where
 (* ------------------------------------------------------------ *)
 subsection {* Abstract File *}
 
-type_synonym AFile = "byte rArray" -- "abstract file is a resizable array of bytes"
+type_synonym AFile = "byte rArray" \<comment> \<open>abstract file is a resizable array of bytes\<close>
 
 definition makeAF :: AFile
- where  -- "initial file has size 0"
+ where  \<comment> \<open>initial file has size 0\<close>
   "makeAF == (0, % index. fillByte)"
 
 definition afSize :: "AFile => nat" where
-  -- "file size is the length of the resizable array"
+  \<comment> \<open>file size is the length of the resizable array\<close>
   "afSize afile == fst afile"
 
 definition afRead :: "AFile => nat \<rightharpoonup> byte" where
-  -- "reading from a file looks up the byte, reporting @{term None} if the index is out of file bounds"
+  \<comment> \<open>reading from a file looks up the byte, reporting @{term None} if the index is out of file bounds\<close>
   "afRead afile byteIndex == 
    if byteIndex < fst afile then Some ((snd afile) byteIndex) else None"
 
 definition afWrite :: "AFile => nat => byte \<rightharpoonup> AFile" where
-  -- "writing to a file updates the file content and extends the file if there is enough space"
+  \<comment> \<open>writing to a file updates the file content and extends the file if there is enough space\<close>
   "afWrite afile byteIndex value == 
    if byteIndex div blockSize < numBlocks then
      Some (raWrite afile byteIndex value fillByte)
@@ -62,15 +62,15 @@ definition afWrite :: "AFile => nat => byte \<rightharpoonup> AFile" where
 (* ------------------------------------------------------------ *)
 subsection {* Concrete File *}
 
-type_synonym Block = "byte cArray" -- "array of @{term blockSize} bytes"
+type_synonym Block = "byte cArray" \<comment> \<open>array of @{term blockSize} bytes\<close>
 
 record CFile =
-  fileSize      :: nat -- "in bytes"
-  nextFreeBlock :: nat -- "next block available for allocation"
-  data          :: "Block cArray" -- "array of up to @{term numBlocks} blocks"
+  fileSize      :: nat \<comment> \<open>in bytes\<close>
+  nextFreeBlock :: nat \<comment> \<open>next block available for allocation\<close>
+  data          :: "Block cArray" \<comment> \<open>array of up to @{term numBlocks} blocks\<close>
 
 definition makeCF :: CFile
- where  -- "initial file has no allocated blocks"
+ where  \<comment> \<open>initial file has no allocated blocks\<close>
   "makeCF ==
    (| fileSize      = 0,
       nextFreeBlock = 0,
@@ -82,8 +82,8 @@ definition cfSize :: "CFile => nat" where
 
 
 definition cfRead :: "CFile => nat \<rightharpoonup> byte" where
-  -- {* Looks up correct data block and reads its content,
-        if byteIndex is within bounds, else returns None. *}
+  \<comment> \<open>Looks up correct data block and reads its content,
+        if byteIndex is within bounds, else returns None.\<close>
   "cfRead cfile byteIndex ==
    if byteIndex < fileSize cfile then 
      (let i = byteIndex div blockSize in 
@@ -96,8 +96,8 @@ subsubsection {* Writing File *}
 text {* We first present some auxiliary operations. *}
 
 definition cfWriteNoExtend :: "CFile => nat => byte => CFile" where
-  -- {* Writing to a file when
-        @{term byteIndex} is within bounds. *}
+  \<comment> \<open>Writing to a file when
+        @{term byteIndex} is within bounds.\<close>
   "cfWriteNoExtend cfile byteIndex value ==
    let i = byteIndex div blockSize in
      let j = byteIndex mod blockSize in
@@ -106,9 +106,9 @@ definition cfWriteNoExtend :: "CFile => nat => byte => CFile" where
                  writeCArray (data cfile) i (writeCArray block j value) |)"
 
 definition cfExtendFile :: "CFile => nat => CFile" where
-  -- {* Writing to a file when
+  \<comment> \<open>Writing to a file when
         @{term byteIndex} is out of bounds.  Involves
-        allocating a new block. *}
+        allocating a new block.\<close>
   "cfExtendFile cfile byteIndex ==
      cfile(| fileSize := Suc byteIndex,
              nextFreeBlock := Suc (byteIndex div blockSize) |)"
@@ -116,8 +116,8 @@ definition cfExtendFile :: "CFile => nat => CFile" where
 text {* The main file write operation. *}
 
 definition cfWrite :: "CFile => nat => byte \<rightharpoonup> CFile" where
-  -- {* Writes the file at byte location byteIndex, automatically extending
-   the file to that byte location if byteIndex is not within bounds.  *}
+  \<comment> \<open>Writes the file at byte location byteIndex, automatically extending
+   the file to that byte location if byteIndex is not within bounds.\<close>
   "cfWrite cfile byteIndex value ==
      if byteIndex div blockSize < numBlocks then
        if byteIndex < fileSize cfile then
@@ -134,9 +134,9 @@ definition nextFreeBlockInvariant :: "CFile => bool" where
    (fileSize state + blockSize - 1) div blockSize = nextFreeBlock state"
 
 definition unallocatedBlocksInvariant :: "CFile => bool" where
-  -- {* This invariant of the implementation is needed to prove
+  \<comment> \<open>This invariant of the implementation is needed to prove
    writeExtendCorrect. It says that any unallocated block contains
-   fillByte's. *}
+   fillByte's.\<close>
   "unallocatedBlocksInvariant state ==
    ALL blockNum i . 
      ~ blockNum < nextFreeBlock state & blockNum < numBlocks & i < blockSize 

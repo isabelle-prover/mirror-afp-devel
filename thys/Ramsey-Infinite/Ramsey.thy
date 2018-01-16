@@ -43,11 +43,11 @@ lemma not_empty_least: "(Y::nat set) ~= {} ==> ? m. m : Y & (! m'. m' : Y --> m 
 
 subsection "Dependent Choice Variant"
 
-  -- "%%cut choice"
+  \<comment> \<open>%%cut choice\<close>
 primrec choice :: "('a => bool) => ('a => 'a => bool) => nat => 'a" where
   "choice P R 0 = (SOME x. P x)"
 | "choice P R (Suc n) = (let x = choice P R n in SOME y. P y & R x y)"
-  -- "%%tuc"
+  \<comment> \<open>%%tuc\<close>
 
 lemma dc: "
   (! x y z. R x y & R y z --> R x z) 

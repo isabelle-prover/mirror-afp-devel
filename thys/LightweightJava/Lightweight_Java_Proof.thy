@@ -1463,12 +1463,12 @@ apply(case_tac S)
 apply(clarsimp) apply(rename_tac s ss)
 apply(case_tac s)
 apply(erule_tac[1-7] wf_configE) apply(simp_all)
--- "block"
+\<comment> \<open>block\<close>
 apply(force intro: r_blockI[simplified])
--- "variable assignment"
+\<comment> \<open>variable assignment\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
 apply(frule type_to_val, simp) apply(clarify) apply(frule r_var_assignI) apply(force)
--- "field read"
+\<comment> \<open>field read\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
 apply(erule wf_varstateE)
 apply(drule_tac x = x in bspec, simp add: domI)
@@ -1478,7 +1478,7 @@ apply(erule wf_heapE) apply(drule_tac x = oid in bspec, simp add: domI) apply(cl
 apply(rename_tac x oid ty_x_s ty_x_d fields_oid fs)
 apply(frule no_field_hiding, simp+) apply(drule_tac x = f in bspec, simp) apply(clarsimp)
 apply(erule wf_objectE) apply(clarsimp, frule_tac H = H in r_field_readI, simp, force)+
--- "field write"
+\<comment> \<open>field write\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
 apply(erule wf_varstateE) apply(frule_tac x = x in bspec, simp add: domI)
 apply(erule wf_objectE) apply(clarsimp) apply(frule r_field_write_npeI) apply(force)
@@ -1487,7 +1487,7 @@ apply(drule_tac x = y in bspec, simp add: domI) apply(clarsimp)
 apply(erule sty_option.cases) apply(clarsimp split: option.splits)
 apply(erule wf_objectE) apply(clarsimp)
 apply(frule_tac H = H and y = y in r_field_writeI, simp, force)+
--- "conditional branch"
+\<comment> \<open>conditional branch\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp) apply(erule disjE)
 apply(frule type_to_val, simp, clarify) apply(case_tac "v = w")
 apply(frule_tac y = y in r_if_trueI, force+)
@@ -1495,7 +1495,7 @@ apply(frule_tac y = y in r_if_falseI, force+)
 apply(frule type_to_val, simp, clarify) apply(case_tac "v = w")
 apply(frule_tac y = y and v = w in r_if_trueI, force+)
 apply(frule_tac y = y and v = w in r_if_falseI, force+)
--- "object creation"
+\<comment> \<open>object creation\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp) apply(rename_tac cl ctx ty var)
 apply(erule sty_option.cases) apply(clarsimp) apply(rename_tac ty_cl ty_var)
 apply(simp add: is_sty_one_def split: option.splits) apply(rename_tac path)
@@ -1503,7 +1503,7 @@ apply(frule find_path_fields) apply(erule exE)
 apply(frule fresh_oid) apply(erule exE)
 apply(frule_tac H = H and L = L and var = var and s_list = ss and f_list = fs in r_newI[simplified])
 apply(clarsimp simp add: fields_f_def split: option.splits) apply(assumption) apply(simp) apply(force)
--- "method call"
+\<comment> \<open>method call\<close>
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
 apply(rename_tac ss y_ty_list x ty_x_s m ty_r_s var)
 apply(erule wf_varstateE) apply(frule_tac x = x in bspec, simp add: domI) apply(clarsimp)

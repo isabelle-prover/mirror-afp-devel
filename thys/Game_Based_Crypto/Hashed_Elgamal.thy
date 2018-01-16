@@ -267,7 +267,7 @@ proof -
         apply(rule rel_spmf_bind_reflI)
         apply(drule inv''.exec_gpv_invariant; clarsimp)
         apply(cases "s_h (\<^bold>g [^] (x * y))")
-        subgoal -- \<open>case @{const None}\<close>
+        subgoal \<comment> \<open>case @{const None}\<close>
           apply(clarsimp intro!: rel_spmf_bind_reflI)
           apply(rule rel_spmf_bindI)
            apply(rule exec_gpv_oracle_bisim_bad_full[OF _ _ bisim inv inv, where R="\<lambda>(x, s1) (y, s2). ?bad s1 = ?bad s2 \<and> (\<not> ?bad s2 \<longrightarrow> x = y)"]; clarsimp simp add: fun_upd_idem; fail)

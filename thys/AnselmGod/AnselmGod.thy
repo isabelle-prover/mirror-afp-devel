@@ -39,8 +39,8 @@ since the present King of France does not exist. *}
 text {* This problem can be avoided by introducing a null individual @{term "n"} to serve as the
 reference of non-denoting definite descriptions, as follows: *}
 
-typedecl i -- "the type of individuals"
-consts n:: "i" ("n") -- "the null individual"
+typedecl i \<comment> \<open>the type of individuals\<close>
+consts n:: "i" ("n") \<comment> \<open>the null individual\<close>
 
 text {* Then the universal and particular quantifiers can be restricted to
 individuals excluding the null-individual as follows, where the new free quantifiers
@@ -128,9 +128,9 @@ whereas the first two theorems depend only on the atomicity of identity. *}
 section {* Anselm's Argument *}
 
 text {* The argument proper employs the following non-logical vocabulary:  *}
-consts existence:: "i \<Rightarrow> bool" ("E") -- "exists in reality"
-consts greater_than:: "i\<Rightarrow>i\<Rightarrow>bool" ("G") -- "is greater than"
-consts conceivable:: "i\<Rightarrow>bool" ("C") -- "exists in the understanding"
+consts existence:: "i \<Rightarrow> bool" ("E") \<comment> \<open>exists in reality\<close>
+consts greater_than:: "i\<Rightarrow>i\<Rightarrow>bool" ("G") \<comment> \<open>is greater than\<close>
+consts conceivable:: "i\<Rightarrow>bool" ("C") \<comment> \<open>exists in the understanding\<close>
 text {* Note that @{term "E a"} is not intended by Oppenheimer and Zalta to be equivalent to
 @{term "\<^bold>\<exists> x. a = x"} since according to their reading of the argument, some things do not exist
 in reality @{cite "oppenheimer_logic_1991"}, p. 514. *}
@@ -169,14 +169,14 @@ text {* With this vocabulary in place, Anselm's ontological argument, as reconst
 Oppenheimer and Zalta, can be stated as follows: *}
 theorem 
   assumes premise_1:  "\<^bold>\<exists> x. \<Phi> x"
- -- "there exists in the understanding a being greater than which
-none can be conceived"
+ \<comment> \<open>there exists in the understanding a being greater than which
+none can be conceived\<close>
 and premise_2:  "\<not> E (\<^bold>\<tau> x. \<Phi> x) \<longrightarrow> (\<^bold>\<exists> y. G y (\<^bold>\<tau> x. \<Phi> x) \<and> C y)"
- -- "if the being greater than which none can be conceived does not exist in reality,
+ \<comment> \<open>if the being greater than which none can be conceived does not exist in reality,
 then  a being exists in the understanding which is greater than the being greater than
-which none can be conceived"
+which none can be conceived\<close>
 and connectivity: "\<^bold>\<forall> x. \<^bold>\<forall> y. G x y \<or> G y x \<or> x \<^bold>= y"
-shows "E g" -- "God exists."
+shows "E g" \<comment> \<open>God exists.\<close>
 
   text {* Isabelle can verify the argument in one line with the command @{text "using premise_1 premise_2 connectivity lemma_1 g_def description_theorem_1 by smt"}.
 But since proofs in Isabelle using @{text "smt"} are currently considered impermanent, I instead give Zalta

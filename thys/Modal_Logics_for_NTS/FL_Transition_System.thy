@@ -30,7 +30,7 @@ locale effect_nominal_ts = nominal_ts satisfies transition
   fixes effect_apply :: "'effect::fs \<Rightarrow> 'state \<Rightarrow> 'state" ("\<langle>_\<rangle>_" [0,101] 100)
     and L :: "('act,'effect) later"
   assumes effect_apply_eqvt: "eqvt effect_apply"  (* using [eqvt] here generates an error message *)
-      and L_eqvt: "eqvt L"  -- \<open>@{term L} is assumed to be equivariant.\<close>
+      and L_eqvt: "eqvt L"  \<comment> \<open>@{term L} is assumed to be equivariant.\<close>
                             (* using [eqvt] here generates an error message *)
 begin
 
@@ -188,7 +188,7 @@ begin
       proof (clarify)
         fix F P R Q f \<alpha> P'
         assume PR: "P \<sim>\<cdot>[F] R" and RQ: "R \<sim>\<cdot>[F] Q" and effect: "f \<in>\<^sub>f\<^sub>s F" and fresh: "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-        -- \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term "(\<langle>f\<rangle>R, F)"}, without touching~@{term "(\<langle>f\<rangle>Q, F, f)"}\<close>
+        \<comment> \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term "(\<langle>f\<rangle>R, F)"}, without touching~@{term "(\<langle>f\<rangle>Q, F, f)"}\<close>
         obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* (\<langle>f\<rangle>R, F, f)" and 2: "supp (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f)) \<sharp>* p"
           proof (rule at_set_avoiding2[of "bn \<alpha>" "(\<langle>f\<rangle>R, F, f)" "(\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f))", THEN exE])
             show "finite (bn \<alpha>)" by (fact bn_finite)

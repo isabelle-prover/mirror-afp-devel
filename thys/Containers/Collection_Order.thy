@@ -362,7 +362,7 @@ fun cproper_interval_set :: "'a set proper_interval" where
   [code]: "cproper_interval_set None None \<longleftrightarrow> True"
 | [code]: "cproper_interval_set None (Some B) \<longleftrightarrow> (B \<noteq> {})"
 | [code]: "cproper_interval_set (Some A) None \<longleftrightarrow> (A \<noteq> UNIV)"
-| cproper_interval_set_Some_Some [code del]: -- {* Refine for concrete implementations *}
+| cproper_interval_set_Some_Some [code del]: \<comment> \<open>Refine for concrete implementations\<close>
   "cproper_interval_set (Some A) (Some B) \<longleftrightarrow> finite (UNIV :: 'a set) \<and> (\<exists>C. cless A C \<and> cless C B)"
 instance
 proof

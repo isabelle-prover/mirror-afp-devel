@@ -855,7 +855,7 @@ lemma K_not_empty: "space (K x) \<noteq> {}"
 lemma lim_stream_not_empty: "space (K.lim_stream x) \<noteq> {}"
   by (simp add: K.space_lim_stream space_pair_measure split: prod.split)
 
-lemma lim_shift: -- \<open>Generalize to bijective function on @{const K.lim_stream} invariant on @{const K}\<close>
+lemma lim_shift: \<comment> \<open>Generalize to bijective function on @{const K.lim_stream} invariant on @{const K}\<close>
   "K.lim_stream (t + t', s) = distr (K.lim_stream (t, s)) T (smap (\<lambda>(t, s). (t + t', s)))"
   (is "_ = ?D t s")
 proof (coinduction arbitrary: t s rule: K.lim_stream_eq_coinduct)
@@ -1232,7 +1232,7 @@ proof -
     by (rule continuous_on_subset) simp
 qed
 
-lemma p_vector_derivative: -- \<open>Backward equation\<close>
+lemma p_vector_derivative: \<comment> \<open>Backward equation\<close>
   assumes "0 \<le> t"
   shows "(p s s' has_vector_derivative (LINT s''|count_space UNIV. R s s'' * p s'' s' t) - escape_rate s * p s s' t)
     (at t within {0..})"

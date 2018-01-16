@@ -60,7 +60,7 @@ subsection \<open>Example 6\<close>
 
 lemma
   "\<bar>integral {0 .. 8} (\<lambda>x::real. sin (x + exp x)) - 0.3474\<bar> \<le> 1 / 10^1"
-  by (rule abs_minus_leI) (tactic \<open>integral_bnds_tac 1 40 3 6 15 "" @{context} 1\<close>)\<comment>\<open>slow: 700s\<close>
+  by (rule abs_minus_leI) (tactic \<open>integral_bnds_tac 1 40 3 6 15 "" @{context} 1\<close>)\<comment> \<open>slow: 700s\<close>
 
 lemma
   "\<bar>integral {0 .. 8} (\<lambda>x::real. sin (x + exp x)) - 0.3474\<bar> \<le> 1 / 10^2"

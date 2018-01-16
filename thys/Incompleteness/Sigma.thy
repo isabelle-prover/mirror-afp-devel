@@ -493,7 +493,7 @@ proof (induct t rule: tm.induct)
   case Zero thus ?case
     by auto
 next
-  case (Var i) thus ?case  --{*again: vacuously!*}
+  case (Var i) thus ?case  \<comment> \<open>again: vacuously!\<close>
     by simp
 next
   case (Eats t u)

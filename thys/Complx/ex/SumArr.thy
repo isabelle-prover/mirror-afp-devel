@@ -27,17 +27,17 @@ parallel, each computing the sum of elements of one of the arrays,
 and then adding the result to a global variable gsum shared by all threads.
 *}
 record sumarr_state =
- --\<open>local variables of threads\<close>
+ \<comment> \<open>local variables of threads\<close>
   tarr :: "routine \<Rightarrow> word32 array"
   tid :: "routine \<Rightarrow> word32"
   ti :: "routine \<Rightarrow> word32"
   tsum :: "routine \<Rightarrow> word32"
- --\<open>global variables\<close>
+ \<comment> \<open>global variables\<close>
   glock :: nat
   gsum :: word32
   gdone :: word32
   garr :: "(word32 array) array"
- --\<open>ghost variables\<close>
+ \<comment> \<open>ghost variables\<close>
   ghost_lock :: "routine \<Rightarrow> bool"
 
 definition

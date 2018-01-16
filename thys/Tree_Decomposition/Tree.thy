@@ -17,7 +17,7 @@ lemma unique_connecting_path: "\<lbrakk> v \<in> V; w \<in> V \<rbrakk> \<Longri
   using connected no_cycles no_cycles_implies_unique_paths by blast
 
 text {* Let us define a function mapping pair of vertices to their unique connecting path. *}
-end -- "locale Tree"
+end \<comment> \<open>locale Tree\<close>
 definition unique_connecting_path :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a Walk"
   (infix "\<leadsto>\<index>" 71) where "unique_connecting_path G v w \<equiv> THE xs. v \<leadsto>xs\<leadsto>\<^bsub>G\<^esub> w"
 text {* We defined this outside the locale in order to be able to use the index in the shorthand
@@ -290,7 +290,7 @@ corollary left_tree_separates':
   shows "t \<in> set (u \<leadsto> u')"
   using assms left_tree_separates by (metis left_treeE set_rev undirected unique_connecting_path_rev)
 
-end -- "locale Tree"
+end \<comment> \<open>locale Tree\<close>
 
 subsection {* Rooted Trees *}
 
@@ -324,6 +324,6 @@ begin
           walk.Cons walk_2)
     thus ?thesis using unique_connecting_path_unique by fastforce
   qed
-end -- "locale RootedTree"
+end \<comment> \<open>locale RootedTree\<close>
 
 end

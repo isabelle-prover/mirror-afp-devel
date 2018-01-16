@@ -6,12 +6,12 @@ theory MWLs
 imports Strong_Security.Types
 begin
 
---"type parameters not instantiated:"
---"'exp: expressions (arithmetic, boolean...)"
---"'val: numbers, boolean constants.... "
---"'id: identifier names"
+\<comment> \<open>type parameters not instantiated:\<close>
+\<comment> \<open>'exp: expressions (arithmetic, boolean...)\<close>
+\<comment> \<open>'val: numbers, boolean constants....\<close>
+\<comment> \<open>'id: identifier names\<close>
 
---"SYNTAX"
+\<comment> \<open>SYNTAX\<close>
 
 datatype ('exp, 'id) MWLsCom
   = Skip "nat" ("skip\<^bsub>_\<^esub>" [50] 70)
@@ -32,7 +32,7 @@ datatype ('exp, 'id) MWLsCom
   | Spawn "nat" "(('exp, 'id) MWLsCom) list"
        ("spawn\<^bsub>_\<^esub> _" [50,70] 70)
 
---"function for obtaining the program point of some MWLsloc command"
+\<comment> \<open>function for obtaining the program point of some MWLsloc command\<close>
 primrec pp ::"('exp, 'id) MWLsCom \<Rightarrow> nat"
 where
 "pp (skip\<^bsub>\<iota>\<^esub>) = \<iota>" |
@@ -42,7 +42,7 @@ where
 "pp (while\<^bsub>\<iota>\<^esub> b do c od) = \<iota>" |
 "pp (spawn\<^bsub>\<iota>\<^esub> V) = \<iota>"
 
---"mutually recursive functions to collect program points of commands and thread pools"
+\<comment> \<open>mutually recursive functions to collect program points of commands and thread pools\<close>
 primrec PPc :: "('exp,'id) MWLsCom \<Rightarrow> nat list"
 and PPV :: "('exp,'id) MWLsCom list \<Rightarrow> nat list"
 where
@@ -56,12 +56,12 @@ where
 "PPV [] = []" |
 "PPV (c#V) = (PPc c) @ (PPV V)"
 
---"predicate indicating that a command only contains unique program points"
+\<comment> \<open>predicate indicating that a command only contains unique program points\<close>
 definition unique_PPc :: "('exp, 'id) MWLsCom \<Rightarrow> bool"
 where
 "unique_PPc c = distinct (PPc c)"
 
---"predicate indicating that a thread pool only contains unique program points"
+\<comment> \<open>predicate indicating that a thread pool only contains unique program points\<close>
 definition unique_PPV :: "('exp, 'id) MWLsCom list \<Rightarrow> bool"
 where
 "unique_PPV V = distinct (PPV V)"
@@ -94,14 +94,14 @@ lemma uniPPV_uniPPc: "unique_PPV V \<Longrightarrow> (\<forall>i < length V. uni
     auto simp add: unique_PPc_def,
     metis in_set_conv_nth length_Suc_conv set_ConsD)
 
---"SEMANTICS"
+\<comment> \<open>SEMANTICS\<close>
 
 locale MWLs_semantics =
 fixes E :: "('exp, 'id, 'val) Evalfunction"
 and BMap :: "'val \<Rightarrow> bool"
 begin
 
--- "steps semantics, set of deterministic steps from commands to program states"
+\<comment> \<open>steps semantics, set of deterministic steps from commands to program states\<close>
 inductive_set
 MWLsSteps_det ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TLSteps"
@@ -135,7 +135,7 @@ inductive_cases MWLsSteps_det_cases:
 "\<langle>while\<^bsub>\<iota>\<^esub> b do c od,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>"
 "\<langle>spawn\<^bsub>\<iota>\<^esub> V,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>"
 
--- "non-deterministic, possibilistic system step (added for intuition, not used in the proofs)"
+\<comment> \<open>non-deterministic, possibilistic system step (added for intuition, not used in the proofs)\<close>
 inductive_set
 MWLsSteps_ndet ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TPSteps"
@@ -150,7 +150,7 @@ stepthreadi2: "\<langle>ci,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle
   \<langle>cf @ [ci] @ ca,m\<rangle> \<Rightarrow> \<langle>cf @ [c'] @ \<alpha> @ ca,m\<rangle>"
 
 
---"lemma about existence and uniqueness of next memory of a step"
+\<comment> \<open>lemma about existence and uniqueness of next memory of a step\<close>
 lemma nextmem_exists_and_unique:
 "\<exists>m' p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>
   \<and> (\<forall>m''. (\<exists>p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m''\<rangle>) \<longrightarrow> m'' = m')"

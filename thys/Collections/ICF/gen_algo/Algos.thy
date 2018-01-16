@@ -41,13 +41,13 @@ begin
   lemma map_to_nat_correct:
     assumes INV[simp]: "s.invar s"
     shows 
-      -- "All elements have got a number"
+      \<comment> \<open>All elements have got a number\<close>
       "dom (m.\<alpha> (map_to_nat s)) = s.\<alpha> s" (is ?T1) and
-      -- "No two elements got the same number"
+      \<comment> \<open>No two elements got the same number\<close>
       [rule_format]: "inj_on (m.\<alpha> (map_to_nat s)) (s.\<alpha> s)" (is ?T2) and
-      -- "Numbering is inatseg"
+      \<comment> \<open>Numbering is inatseg\<close>
       [rule_format]: "inatseg (ran (m.\<alpha> (map_to_nat s)))" (is ?T3) and
-      -- "The result satisfies the map invariant"
+      \<comment> \<open>The result satisfies the map invariant\<close>
       "m.invar (map_to_nat s)" (is ?T4)
     proof -
       have i_aux: "!!m S S' k v. \<lbrakk>inj_on m S; S' = insert k S; v\<notin>ran m\<rbrakk> 

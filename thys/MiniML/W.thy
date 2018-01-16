@@ -11,7 +11,7 @@ begin
 
 type_synonym result_W = "(subst * typ * nat) option"
 
--- "type inference algorithm W"
+\<comment> \<open>type inference algorithm W\<close>
 primrec W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
@@ -41,7 +41,7 @@ inductive_cases has_type_casesE:
 "A |- LET e1 e2 ::t"
 
 
--- "the resulting type variable is always greater or equal than the given one"
+\<comment> \<open>the resulting type variable is always greater or equal than the given one\<close>
 lemma W_var_ge [rule_format (no_asm)]: 
   "!A n S t m. W e A n  = Some (S,t,m) --> n<=m"
 apply (induct_tac "e")
@@ -96,7 +96,7 @@ done
 
 declare new_tv_bound_typ_inst_sch [simp]
 
--- "resulting type variable is new"
+\<comment> \<open>resulting type variable is new\<close>
 lemma new_tv_W [rule_format (no_asm)]: 
   "!n A S t m. new_tv n A --> W e A n = Some (S,t,m) -->     
                new_tv m S & new_tv m t"
@@ -292,7 +292,7 @@ lemma weaken_not_elem_A_minus_B: "x ~: A | x : B ==> x ~: A - B"
 apply fast
 done
 
--- "correctness of W with respect to @{text has_type}"
+\<comment> \<open>correctness of W with respect to @{text has_type}\<close>
 lemma W_correct_lemma [rule_format (no_asm)]: "!A S t m n . new_tv n A --> Some (S,t,m) = W e A n --> $S A |- e :: t"
 apply (induct_tac "e")
 (* case Var n *)
@@ -408,7 +408,7 @@ apply (rule new_tv_le)
 apply (simp add: linorder_not_less)
 done
 
--- "Completeness of W w.r.t. @{text has_type}"
+\<comment> \<open>Completeness of W w.r.t. @{text has_type}\<close>
 lemma W_complete_lemma [rule_format (no_asm)]: 
   "ALL S' A t' n. $S' A |- e :: t' --> new_tv n A -->      
                (EX S t. (EX m. W e A n = Some (S,t,m)) &   

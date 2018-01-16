@@ -26,7 +26,7 @@ text \<open>Conversion between the two LTL formalizations\<close>
 lemma PLTL_next_free_cnv[simp]: "PLTL.next_free (ltlc_to_pltl \<phi>) \<longleftrightarrow> ltlc_next_free \<phi>"
   by (induction \<phi>) auto
 
--- \<open>A next free formula cannot distinguish between stutter-equivalent runs.\<close>
+\<comment> \<open>A next free formula cannot distinguish between stutter-equivalent runs.\<close>
 theorem next_free_stutter_invariant: 
   assumes next_free: "ltlc_next_free \<phi>"
   assumes eq: "r \<approx> r'"

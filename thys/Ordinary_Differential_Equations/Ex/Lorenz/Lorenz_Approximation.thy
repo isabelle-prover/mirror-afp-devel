@@ -2034,7 +2034,7 @@ lemma check_line_nres_c0_correct:
         apply (auto simp: scaleR2_def image_def vimage_def)
         apply (auto simp: subset_iff)
         apply fastforce
-        done\<comment>\<open>slow\<close>
+        done\<comment> \<open>slow\<close>
       done
   qed
   subgoal for a b c d e f
@@ -2045,7 +2045,7 @@ lemma check_line_nres_c0_correct:
     apply (auto simp: scaleR2_def image_def vimage_def)
     apply (auto simp: subset_iff)
     apply fastforce
-    done\<comment>\<open>slow\<close>
+    done\<comment> \<open>slow\<close>
   done
 
 lemma cone_conefield[intro, simp]: "cone (conefield a b)"
@@ -2426,7 +2426,7 @@ lemma [continuous_intros]: "isCont (lorenz_S::_\<Rightarrow>R3) x"
   "continuous_on (G::R3 set) lorenz_S"
   by (auto simp:lorenz_S_def[abs_def] split_beta' continuous_intros)
 
-lemma filtermap_lorenz_S_le: "filtermap lorenz_S (at x within lorenz_S ` P) \<le>(at (lorenz_S x::R3) within P)"\<comment>\<open>TODO: generalize!\<close>
+lemma filtermap_lorenz_S_le: "filtermap lorenz_S (at x within lorenz_S ` P) \<le>(at (lorenz_S x::R3) within P)"\<comment> \<open>TODO: generalize!\<close>
   unfolding at_within_def
   apply (auto simp: intro!: antisym filtermap_inf[le] filtermap_inf[ge])
     apply (rule inf.coboundedI1)
@@ -2845,7 +2845,7 @@ fun alternating where "alternating [] xs = xs"
   | "alternating (x#xs) (y#ys) = x#y#alternating xs ys"
 
 definition "ordered_lines = alternating (rev [0..<222]) ([222..<400])"
-  \<comment>\<open>the hard ones ``first'', potentially useless due to nondeterministic \<open>Parallel.map\<close>\<close>
+  \<comment> \<open>the hard ones ``first'', potentially useless due to nondeterministic \<open>Parallel.map\<close>\<close>
 
 definition "parallel_check filenameo m n c1 ns =
   Parallel.forall (\<lambda>i.

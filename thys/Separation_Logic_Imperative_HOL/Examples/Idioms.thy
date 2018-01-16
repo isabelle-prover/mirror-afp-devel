@@ -64,7 +64,7 @@ text_raw{*\label{thy:ex:idioms}*}
       apply (sep_auto 
         heap: complete_ht_new_sz complete_ht_copy
         simp: ls_rehash_def LEN
-      ) -- "Here we add a heap-rule, and some simp-rules"
+      ) \<comment> \<open>Here we add a heap-rule, and some simp-rules\<close>
       done
   qed
 
@@ -83,7 +83,7 @@ text_raw{*\label{thy:ex:idioms}*}
       contained in the @{text sep_heap_rules} collection. The
       @{text "fi_rule"}-lemma prepares frame inference for them *}
     apply (rule sep_heap_rules[THEN fi_rule])
-    apply frame_inference -- "This method does the frame-inference"
+    apply frame_inference \<comment> \<open>This method does the frame-inference\<close>
     
     txt {* The consequence rule comes in three versions, 
       @{text "const_rule"}, @{text "cons_pre_rule"}, 
@@ -128,7 +128,7 @@ text_raw{*\label{thy:ex:idioms}*}
       a wrong instantiation, and is not able to infer the frame.
       So we have to pre-instantiate the rule, as done below. *}
     apply (rule_tac s1=pp in ent_frame_fwd[OF lseg_append])
-    apply frame_inference -- "Now frame-inference is able to infer the frame"
+    apply frame_inference \<comment> \<open>Now frame-inference is able to infer the frame\<close>
 
     txt {* Now we are left with a trivial entailment, modulo commutativity of
       star. This can be handled by the entailment solver: *}
@@ -230,11 +230,11 @@ text_raw{*\label{thy:ex:idioms}*}
     apply (intro allI)
   proof (induct l arbitrary: p F1 F2)
     case Nil thus ?case 
-      apply simp -- "A precision solver for references and arrays is included
+      apply simp \<comment> \<open>A precision solver for references and arrays is included
         in the standard simplifier setup. Building a general precision solver
-        remains future work."
-      by metis -- "Unfortunately, the simplifier cannot cope with arbitrarily  
-        directed equations, so we have to use some more powerful tool"
+        remains future work.\<close>
+      by metis \<comment> \<open>Unfortunately, the simplifier cannot cope with arbitrarily  
+        directed equations, so we have to use some more powerful tool\<close>
   next
     case (Cons x l)
     show ?case

@@ -25,9 +25,9 @@ notation insert ("set'_ins")
 type_synonym ('x,'s) set_\<alpha> = "'s \<Rightarrow> 'x set"
 type_synonym ('x,'s) set_invar = "'s \<Rightarrow> bool"
 locale set =
-  -- "Abstraction to set"
+  \<comment> \<open>Abstraction to set\<close>
   fixes \<alpha> :: "'s \<Rightarrow> 'x set"
-  -- "Invariant"
+  \<comment> \<open>Invariant\<close>
   fixes invar :: "'s \<Rightarrow> bool"
 
 locale set_no_invar = set +
@@ -400,7 +400,7 @@ locale set_image_filter = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
     "invar1 s \<Longrightarrow> \<alpha>2 (image_filter f s) = { b . \<exists>a\<in>\<alpha>1 s. f a = Some b }"
     "invar1 s \<Longrightarrow> invar2 (image_filter f s)"
 begin
-  -- "This special form will be checked first by the simplifier: "
+  \<comment> \<open>This special form will be checked first by the simplifier:\<close>
   lemma image_filter_correct_aux2: 
     "invar1 s \<Longrightarrow> 
     \<alpha>2 (image_filter (\<lambda>x. if P x then (Some (f x)) else None) s) 
@@ -540,7 +540,7 @@ begin
     done
 end
 
--- "Selection of element (without mapping)"
+\<comment> \<open>Selection of element (without mapping)\<close>
 locale set_sel' = set +
   constrains \<alpha> :: "'s \<Rightarrow> 'x set"
   fixes sel' :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option"
@@ -1038,7 +1038,7 @@ subsection "Record Based Interface"
     set_op_equal :: "'s \<Rightarrow> 's \<Rightarrow> bool"
     set_op_disjoint :: "'s \<Rightarrow> 's \<Rightarrow> bool"
     set_op_disjoint_witness :: "'s \<Rightarrow> 's \<Rightarrow> 'x option"
-    set_op_sel :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option" -- "Version without mapping"
+    set_op_sel :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option" \<comment> \<open>Version without mapping\<close>
     set_op_to_list :: "'s \<Rightarrow> 'x list"
     set_op_from_list :: "'x list \<Rightarrow> 's"
 

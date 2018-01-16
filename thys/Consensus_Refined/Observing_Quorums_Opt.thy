@@ -79,7 +79,7 @@ proof(clarsimp simp add: PO_rhoare_defs)
     and step: "(sc, sc') \<in> olv_round r S v D Ob"
     and R: "(sa, sc) \<in> olv_ref_rel"
 
-  -- {* Abstract guard. *}
+  \<comment> \<open>Abstract guard.\<close>
   have "S \<noteq> {} \<longrightarrow> obs_safe (v_state.next_round sa) sa v"
   proof(rule impI, rule ccontr)
     assume S_nonempty: "S \<noteq> {}" and no_Q: "\<not> obs_safe (v_state.next_round sa) sa v"
@@ -118,7 +118,7 @@ proof(clarsimp simp add: PO_rhoare_defs)
       by(fastforce simp add: vote_set_def obs_safe_def)
   qed
 
-  -- {* Action refinement. *}
+  \<comment> \<open>Action refinement.\<close>
   moreover have 
     "(map_option snd \<circ> process_mru (obsv_state.obs sa)) ++ const_map v Ob =
       map_option snd \<circ> process_mru ((obsv_state.obs sa)(v_state.next_round sa := const_map v Ob))"

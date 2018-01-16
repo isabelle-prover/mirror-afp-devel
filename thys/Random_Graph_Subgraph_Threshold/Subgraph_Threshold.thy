@@ -29,8 +29,8 @@ proof
     unfolding ugraph_property_def using subgraph_isomorphic_closed by blast
 next
 
-  --{* To prove the 0-statement, we introduce the subgraph with the maximum density as $H_0$. Note
-       that $\rho(H_0) = \rho'(H)$. *}
+  \<comment> \<open>To prove the 0-statement, we introduce the subgraph with the maximum density as $H_0$. Note
+       that $\rho(H_0) = \rho'(H)$.\<close>
 
   fix p :: "nat \<Rightarrow> real"
 
@@ -46,10 +46,10 @@ next
   hence p: "valid_prob_fun p"
     by (fact nonzero_fun_is_valid_fun)
 
-  --{* Firstly, we follow from the assumption that @{term p} is asympotically less than the
+  \<comment> \<open>Firstly, we follow from the assumption that @{term p} is asympotically less than the
        threshold function that the product
        \[ p(n)^{|E(H_0)|} \cdot n^{|V(H_0)|} \]
-       tends to $0$. *}
+       tends to $0$.\<close>
 
   assume "p \<lless> subgraph_threshold H"
   moreover
@@ -83,17 +83,17 @@ next
 
     let ?graph_of = "ES.edge_ugraph"
 
-    --{* After fixing an @{term n}, we define a family of random variables $X$ indexed by a set of
+    \<comment> \<open>After fixing an @{term n}, we define a family of random variables $X$ indexed by a set of
          vertices $v$ and a set of edges $e$. Each $X$ is an indicator for the event that $(v, e)$
          is isomorphic to $H_0$ and a subgraph of a random graph. The sum of all these variables
-         is denoted by $Y$ and counts the total number of copies of $H_0$ in a random graph. *}
+         is denoted by $Y$ and counts the total number of copies of $H_0$ in a random graph.\<close>
 
     let ?X = "\<lambda>H\<^sub>0'. rind {es \<in> space ES.P. subgraph H\<^sub>0' (?graph_of es) \<and> H\<^sub>0 \<simeq> H\<^sub>0'}"
     let ?I = "{(v, e). v \<subseteq> {1..n} \<and> card v = ?v \<and> e \<subseteq> all_edges v \<and> card e = ?e}"
     let ?Y = "\<lambda>es. \<Sum>H\<^sub>0' \<in> ?I. ?X H\<^sub>0' es"
 
-    --{* Now we prove an upper bound for the probability that a random graph contains a copy of
-         @{term H}. Observe that in that case, $Y$ takes a value greater or equal than $1$. *}
+    \<comment> \<open>Now we prove an upper bound for the probability that a random graph contains a copy of
+         @{term H}. Observe that in that case, $Y$ takes a value greater or equal than $1$.\<close>
 
     have "prob_in_class p {G. H \<sqsubseteq> G} n = probGn p n (\<lambda>es. H \<sqsubseteq> ?graph_of es)"
       by simp
@@ -103,7 +103,7 @@ next
         assume es: "es \<in> space (MGn p n)"
 
         assume "H \<sqsubseteq> ?graph_of es"
-        hence "H\<^sub>0 \<sqsubseteq> ?graph_of es" --{* since @{term H\<^sub>0} is a subgraph of @{term H} *}
+        hence "H\<^sub>0 \<sqsubseteq> ?graph_of es" \<comment> \<open>since @{term H\<^sub>0} is a subgraph of @{term H}\<close>
           using H\<^sub>0 by (fast intro: subgraph_isomorphic_pre_subgraph_closed)
         then obtain H\<^sub>0' where H\<^sub>0': "subgraph H\<^sub>0' (?graph_of es)" "H\<^sub>0 \<simeq> H\<^sub>0'"
           unfolding subgraph_isomorphic_def
@@ -111,11 +111,11 @@ next
 
         show "1 \<le> ?Y es"
           proof (rule sum_lower_or_eq)
-            --{* The only relevant step here is to provide the specific instance of $(v, e)$ such
+            \<comment> \<open>The only relevant step here is to provide the specific instance of $(v, e)$ such
                  that $X_{(v, e)}$ takes a value greater or equal than $1$. This is trivial, as we
                  already obtained that one above (i.e. @{term H\<^sub>0'}). The remainder of the proof is
-                 just bookkeeping.*}
-            show "1 \<le> ?X H\<^sub>0' es" --{* by definition of $X$ *}
+                 just bookkeeping.\<close>
+            show "1 \<le> ?X H\<^sub>0' es" \<comment> \<open>by definition of $X$\<close>
               using H\<^sub>0' es by simp
           next
             have "uverts H\<^sub>0' \<subseteq> {1..n}" "uedges H\<^sub>0' \<subseteq> es"
@@ -136,8 +136,8 @@ next
         qed simp
       qed simp
 
-    --{* Applying Markov's inequality leaves us with estimating the expectation of $Y$, which is
-         the sum of the individual $X$. *}
+    \<comment> \<open>Applying Markov's inequality leaves us with estimating the expectation of $Y$, which is
+         the sum of the individual $X$.\<close>
     also have "\<dots> \<le> ES.expectation ?Y / 1"
       by (rule prob_space.markov_inequality) (auto simp: ES.prob_space_P sum_nonneg)
     also have "\<dots> = ES.expectation ?Y"
@@ -145,10 +145,10 @@ next
     also have "\<dots> = (\<Sum>H\<^sub>0' \<in> ?I. ES.expectation (?X H\<^sub>0'))"
       by (rule Bochner_Integration.integral_sum(1)) simp
 
-    --{* Each expectation is bound by $p(n)^{|E(H_0)|}$. For the proof, we ignore the fact that the
+    \<comment> \<open>Each expectation is bound by $p(n)^{|E(H_0)|}$. For the proof, we ignore the fact that the
          corresponding graph has to be isomorphic to @{term H\<^sub>0}, which only increases the
          probability and thus the expectation. This only leaves us to compute the probability that
-         all edges are present, which is given by @{thm [source] edge_space.cylinder_prob}. *}
+         all edges are present, which is given by @{thm [source] edge_space.cylinder_prob}.\<close>
     also have "\<dots> \<le> (\<Sum>H\<^sub>0' \<in> ?I. p n ^ ?e)"
       proof (rule sum_mono)
         fix H\<^sub>0'
@@ -174,13 +174,13 @@ next
           .
       qed
 
-    --{* Since we have a sum of constant summands, we can rewrite it as a product. *}
+    \<comment> \<open>Since we have a sum of constant summands, we can rewrite it as a product.\<close>
     also have "\<dots> = card ?I * p n ^ ?e"
       by (rule sum_constant)
 
-    --{* We have to count the number of possible pairs $(v, e)$. From the definition of the index
+    \<comment> \<open>We have to count the number of possible pairs $(v, e)$. From the definition of the index
          set, note that we first choose $|V(H_0)|$ elements out of a set of @{term n} vertices and
-         then $|E(H_0)|$ elements out of all possible edges over these vertices. *}
+         then $|E(H_0)|$ elements out of all possible edges over these vertices.\<close>
     also have "\<dots> = ((n choose ?v) * ((?v choose 2) choose ?e)) * p n ^ ?e"
       proof (rule arg_cong[where x = "card ?I"])
         have "card ?I = (\<Sum>v | v \<subseteq> {1..n} \<and> card v = ?v. card (all_edges v) choose ?e)"
@@ -205,7 +205,7 @@ next
     also have "\<dots> = (n choose ?v) * (((?v choose 2) choose ?e) * p n ^ ?e)"
       by simp
 
-    --{* Here, we use $n^k$ as an upper bound for $\binom n k$. *}
+    \<comment> \<open>Here, we use $n^k$ as an upper bound for $\binom n k$.\<close>
     also have "\<dots> \<le> (n ^ ?v) * (((?v choose 2) choose ?e) * p n ^ ?e)" (is "_ \<le> _ * ?r")
       proof (rule mult_right_mono)
         have "n choose ?v \<le> n ^ ?v"
@@ -224,31 +224,31 @@ next
       .
   }
 
-  --{* The final upper bound is a multiple of the expression which we have proven to tend to $0$
-       in the beginning. *}
+  \<comment> \<open>The final upper bound is a multiple of the expression which we have proven to tend to $0$
+       in the beginning.\<close>
   thus "prob_in_class p {G. H \<sqsubseteq> G} \<longlonglongrightarrow> 0"
     by (rule LIMSEQ_le_zero[OF tendsto_mult_right_zero[OF limit] eventually_sequentiallyI[OF measure_nonneg] eventually_sequentiallyI])
 next
   fix p :: "nat \<Rightarrow> real"
   assume p_threshold: "subgraph_threshold H \<lless> p"
 
-  --{* To prove the 1-statement, we obtain a fixed selector @{term f} as defined in section
-       \ref{sec:selector}. *}
+  \<comment> \<open>To prove the 1-statement, we obtain a fixed selector @{term f} as defined in section
+       \ref{sec:selector}.\<close>
   from assms obtain f where f: "is_fixed_selector H f"
     using ex_fixed_selector by blast
 
   let ?v = "card (uverts H)"
   let ?e = "card (uedges H)"
 
-  --{* We observe that several terms involving $|V(H)|$ are positive. *}
+  \<comment> \<open>We observe that several terms involving $|V(H)|$ are positive.\<close>
   have v_e_nz: "0 < real ?v" "0 < real ?e"
     using nonempty finite unfolding nonempty_graph_def finite_graph_def by auto
   hence "0 < real ?v ^ ?v" by simp
   hence vpowv_inv_gr_z: "0 < 1 / ?v ^ ?v" by simp
 
-  --{* For a given $n$, let $A$ be a family of events indexed by a set $S$. Each $A$ contains the
+  \<comment> \<open>For a given $n$, let $A$ be a family of events indexed by a set $S$. Each $A$ contains the
        graphs whose induced subgraphs over $S$ contain the selected copy of @{term H} by @{term f}
-       over $S$. *}
+       over $S$.\<close>
   let ?A = "\<lambda>n. \<lambda>S. {es \<in> space (edge_space.P n (p n)). subgraph (f S) (induced_subgraph S (edge_space.edge_ugraph n es))}"
   let ?I = "\<lambda>n. {S. S \<subseteq> {1..n} \<and> card S = ?v}"
 
@@ -257,9 +257,9 @@ next
     by (fact nonzero_fun_is_valid_fun)
   {
     fix n
-    --{* At this point, we can assume almost anything about @{term n}: We only have to show that
+    \<comment> \<open>At this point, we can assume almost anything about @{term n}: We only have to show that
          a function converges, hence the necessary properties are allowed to be violated for small
-         values of @{term n}. *}
+         values of @{term n}.\<close>
     assume n_2v: "2 * ?v \<le> n"
     hence n: "?v \<le> n"
       by simp
@@ -273,7 +273,7 @@ next
     let ?A = "?A n"
     let ?I = "?I n"
 
-    --{* A nice potpourri with some technical facts about @{text S}. *}
+    \<comment> \<open>A nice potpourri with some technical facts about @{text S}.\<close>
     {
       fix S
       assume "S \<in> ?I"
@@ -289,12 +289,12 @@ next
     }
     note I = this
 
-    --{* In the following two blocks, we prove the probabilities of the events $A$ and the
+    \<comment> \<open>In the following two blocks, we prove the probabilities of the events $A$ and the
          probability of the intersection of two events $A$. For both cases, we employ the auxiliary
          lemma @{thm [source] edge_space.induced_subgraph_prob} which is not very interesting.
          For the latter however, the tricky part is to argue that such an intersection is equivalent
          to the \emph{union} of the desired copies of @{term H} to be contained in the \emph{union}
-         of the induced subgraphs. *}
+         of the induced subgraphs.\<close>
     {
       fix S
       assume S: "S \<in> ?I"
@@ -308,9 +308,9 @@ next
       fix S T
       assume "S \<in> ?I" note S = I[OF this]
       assume "T \<in> ?I" note T = I[OF this]
-      --{* Note that we do not restrict @{term S} and @{term T} to be disjoint, since we need the
+      \<comment> \<open>Note that we do not restrict @{term S} and @{term T} to be disjoint, since we need the
            general case later to determine when two events are independent. Additionally, it would
-           be unneeded at this point. *}
+           be unneeded at this point.\<close>
 
       have "prob (?A S \<inter> ?A T) = prob {es \<in> space P. subgraph (S \<union> T, uedges (f S) \<union> uedges (f T)) (induced_subgraph (S \<union> T) (edge_ugraph es))}" (is "_ = prob ?M")
         proof (rule arg_cong[where f = prob])
@@ -337,8 +337,8 @@ next
     }
     note prob_A_intersect = this
 
-    --{* Another technical detail is that our family of events $A$ are a valid instantiation for
-         the ``$\Delta$ lemmas'' from section \ref{sec:delta}. *}
+    \<comment> \<open>Another technical detail is that our family of events $A$ are a valid instantiation for
+         the ``$\Delta$ lemmas'' from section \ref{sec:delta}.\<close>
     have is_psi: "prob_space_with_indicators P ?I ?A"
       proof
         show "finite ?I"
@@ -359,10 +359,10 @@ next
     then interpret prob_space_with_indicators "P" ?I ?A
       .
 
-    --{* We proceed by reducing the claim of the 1-statement that the probability tends to $1$ to
+    \<comment> \<open>We proceed by reducing the claim of the 1-statement that the probability tends to $1$ to
          showing that the expectation that the sum of all indicators of the respective events $A$
          tends to $0$. (The actual reduction is done at the end of the proof, we merely collect
-         the facts here.) *}
+         the facts here.)\<close>
     have compl_prob: "1 - prob {es \<in> space P. \<not> H \<sqsubseteq> edge_ugraph es} = prob_in_class p {G. H \<sqsubseteq> G} n"
       by (subst prob_compl[symmetric]) (auto simp: space_eq sets_eq intro: arg_cong[where f = prob])
 
@@ -387,13 +387,13 @@ next
           unfolding Y_def by simp
       qed simp
 
-    --{* By applying the $\Delta$ lemma, we obtain our central inequality. The rest of the proof
-         gives bounds for @{text \<mu>}, @{text \<Delta>\<^sub>d} and quotients which occur on the right hand side. *}
+    \<comment> \<open>By applying the $\Delta$ lemma, we obtain our central inequality. The rest of the proof
+         gives bounds for @{text \<mu>}, @{text \<Delta>\<^sub>d} and quotients which occur on the right hand side.\<close>
     hence compl_upper: "?compl \<le> 1 / \<mu> + \<Delta>\<^sub>d / \<mu>^2"
       by (rule order_trans) (fact prob_\<mu>_\<Delta>\<^sub>d)
 
-    --{* Lower bound for the expectation. We use $\left(\frac n k\right)^k$ as lower bound for
-         $\binom n k$. *}
+    \<comment> \<open>Lower bound for the expectation. We use $\left(\frac n k\right)^k$ as lower bound for
+         $\binom n k$.\<close>
     have "1 / ?v ^ ?v * (real n ^ ?v * p n ^ ?e) = (n / ?v) ^ ?v * p n ^ ?e"
       by (simp add: power_divide)
     also have "\<dots> \<le> (n choose ?v) * p n ^ ?e"
@@ -412,7 +412,7 @@ next
     finally have ex_lower: "1 / (?v ^ ?v) * (real n ^ ?v * p n ^ ?e) \<le> \<mu>"
       .
 
-    --{* Upper bound for the inverse expectation. Follows trivially from above. *}
+    \<comment> \<open>Upper bound for the inverse expectation. Follows trivially from above.\<close>
     have ex_lower_pos: "0 < 1 / ?v ^ ?v * (real n ^ ?v * p n ^ ?e)"
       proof (rule mult_pos_pos[OF vpowv_inv_gr_z mult_pos_pos])
         have "0 < real n"
@@ -428,14 +428,14 @@ next
     hence inv_ex_upper: "1 / \<mu> \<le> ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))"
       by simp
 
-    --{* Recall the definition of @{text "\<Delta>\<^sub>d"}:
+    \<comment> \<open>Recall the definition of @{text "\<Delta>\<^sub>d"}:
          \[ \Delta_d = \sum\limits_{\substack{S \in I,\, T \in I\\S \neq T\\A_S,\, A_T \text{ not independent}}} \Pr[A_S \cap A_T] \]
          We are going to prove an upper bound for that sum, so we can safely augment the index set
          by replacing it with a neccessary condition.
 
          The idea is that if the two sets $S$ and $T$ are not independent, their intersection is not
          empty. We prove that by contraposition, i.e. if the intersection is empty, then they are
-         independent. This in turn can be shown using some basic properties of @{term f}. *}
+         independent. This in turn can be shown using some basic properties of @{term f}.\<close>
     {
       fix S T
       assume "S \<in> ?I" "T \<in> ?I"
@@ -472,18 +472,18 @@ next
     }
     note indep = this
 
-    --{* Now we prove an upper bound for @{text "\<Delta>\<^sub>d"}. *}
+    \<comment> \<open>Now we prove an upper bound for @{text "\<Delta>\<^sub>d"}.\<close>
     have "\<Delta>\<^sub>d = (\<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> ineq_dep S T. prob (?A S \<inter> ?A T))"
       unfolding \<Delta>\<^sub>d_def ..
 
-    --{* Augmenting the index set as described above. *}
+    \<comment> \<open>Augmenting the index set as described above.\<close>
     also have "\<dots> \<le> (\<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> S \<inter> T \<noteq> {}. prob (?A S \<inter> ?A T))"
       by (rule sum_mono[OF sum_mono2]) (auto simp: indep measure_nonneg)
 
-    --{* So far, we are adding the intersection probabilities over pairs of sets which have a
+    \<comment> \<open>So far, we are adding the intersection probabilities over pairs of sets which have a
          nonempty intersection. Since we know that these intersections have at least one element
          (as they are nonempty) and at most $|V(H)|$ elements (by definition of $I$). In this step,
-         we will partition this sum by cardinality of the intersections. *}
+         we will partition this sum by cardinality of the intersections.\<close>
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>T \<in> (\<Union>k \<in> {1..?v}. {T \<in> ?I. card (S \<inter> T) = k}). prob (?A S \<inter> ?A T))"
       proof (rule sum.cong, rule refl, rule sum.cong)
         fix S
@@ -499,8 +499,8 @@ next
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
       by (rule sum.swap)
 
-    --{* In this step, we compute an upper bound for the intersection probability and argue that
-         it only depends on the cardinality of the intersection. *}
+    \<comment> \<open>In this step, we compute an upper bound for the intersection probability and argue that
+         it only depends on the cardinality of the intersection.\<close>
     also have "\<dots> \<le> (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. p n powr (2 * ?e - max_density H * k))"
       proof (rule sum_mono)+
         fix k
@@ -514,12 +514,12 @@ next
 
         let ?cST = "card (uedges (f S) \<inter> uedges (f T))"
 
-        --{* We already know the intersection probability. *}
+        \<comment> \<open>We already know the intersection probability.\<close>
         have "prob (?A S \<inter> ?A T) = p n ^ card (uedges (f S) \<union> uedges (f T))"
           using `S \<in> ?I` `T \<in> ?I` by (fact prob_A_intersect)
 
-        --{* Now, we consider the number of edges shared by the copies of @{term H} over @{term S}
-             and @{term T}. *}
+        \<comment> \<open>Now, we consider the number of edges shared by the copies of @{term H} over @{term S}
+             and @{term T}.\<close>
         also have "\<dots> = p n ^ (card (uedges (f S)) + card (uedges (f T)) - ?cST)"
           using S T unfolding finite_graph_def by (simp add: card_union)
         also have "\<dots> = p n ^ (?e + ?e - ?cST)"
@@ -531,9 +531,9 @@ next
         also have "\<dots> = p n powr (real (2 * ?e) - real ?cST)"
           using isomorphic_cards[OF S(4)] S(6) by (metis of_nat_diff card_mono finite_graph_def inf_le1 mult_le_mono mult_numeral_1 numeral_One one_le_numeral)
 
-        --{* Since the intersection graph is also an isomorphic subgraph of @{term H}, we know that
+        \<comment> \<open>Since the intersection graph is also an isomorphic subgraph of @{term H}, we know that
              its density has to be less than or equal to the maximum density of @{term H}. The proof
-             is quite technical. *}
+             is quite technical.\<close>
         also have "\<dots> \<le> p n powr (2 * ?e - max_density H * k)"
           proof (rule powr_mono3)
             have "?cST = density (S \<inter> T, uedges (f S) \<inter> uedges (f T)) * k"
@@ -574,14 +574,14 @@ next
           .
       qed
 
-    --{* Further rewriting the index sets. *}
+    \<comment> \<open>Further rewriting the index sets.\<close>
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>(S, T) \<in> (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}). p n powr (2 * ?e - max_density H * k))"
       by (rule sum.cong, rule refl, rule sum.Sigma) auto
     also have "\<dots> = (\<Sum>k = 1..?v. card (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}) * p n powr (2 * ?e - max_density H * k))"
       by (rule sum.cong) auto
 
-    --{* Here, we compute the cardinality of the index sets and use the same upper bounds for
-         the binomial coefficients as for the 0-statement. *}
+    \<comment> \<open>Here, we compute the cardinality of the index sets and use the same upper bounds for
+         the binomial coefficients as for the 0-statement.\<close>
     also have "\<dots> \<le> (\<Sum>k = 1..?v. ?v ^ k * (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)))"
       proof (rule sum_mono)
         fix k
@@ -621,13 +621,13 @@ next
     finally have delta_upper: "\<Delta>\<^sub>d \<le> (\<Sum>k = 1..?v. ?v ^ k * (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)))"
       .
 
-    --{* At this point, we have established all neccessary bounds. *}
+    \<comment> \<open>At this point, we have established all neccessary bounds.\<close>
     note is_es is_psi compl_prob compl_upper ex_lower ex_lower_pos inv_ex_upper delta_upper
   }
   note facts = this
 
-  --{* Recall our central inequality. We now prove that both summands tend to $0$. This is mainly
-       an exercise in bookkeeping and real arithmetics as no intelligent ideas are involved. *}
+  \<comment> \<open>Recall our central inequality. We now prove that both summands tend to $0$. This is mainly
+       an exercise in bookkeeping and real arithmetics as no intelligent ideas are involved.\<close>
   have "(\<lambda>n. 1 / prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n)) \<longlonglongrightarrow> 0"
     proof (rule LIMSEQ_le_zero)
       have "(\<lambda>n. 1 / (real n ^ ?v * p n ^ ?e)) \<longlonglongrightarrow> 0"
@@ -681,8 +681,8 @@ next
       let ?num = "\<lambda>n k. ?v ^ k * (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k))"
       let ?den = "\<lambda>n. ((1 / ?v ^ ?v) * (real n ^ ?v * p n ^ ?e))^2"
 
-      --{* We have to show that a sum is asymptotically smaller than a constant term. We do that by
-           showing that each summand is asymptotically smaller than the term. *}
+      \<comment> \<open>We have to show that a sum is asymptotically smaller than a constant term. We do that by
+           showing that each summand is asymptotically smaller than the term.\<close>
       {
         fix k
         assume k: "k \<in> {1..?v}"
@@ -766,7 +766,7 @@ next
     ) \<longlonglongrightarrow> 0"
     by (subst add_0_left[where a = 0, symmetric]) (rule tendsto_add)
 
-  --{* By now, we can actually perform the reduction mentioned above. *}
+  \<comment> \<open>By now, we can actually perform the reduction mentioned above.\<close>
   hence "(\<lambda>n. probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)) \<longlonglongrightarrow> 0"
     proof (rule LIMSEQ_le_zero)
       show "\<forall>\<^sup>\<infinity>n. 0 \<le> probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)"

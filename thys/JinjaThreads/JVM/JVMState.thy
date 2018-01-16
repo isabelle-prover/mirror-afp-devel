@@ -18,11 +18,11 @@ type_synonym
 
 type_synonym
   'addr frame = "'addr val list \<times> 'addr val list \<times> cname \<times> mname \<times> pc"
-  -- "operand stack" 
-  -- "registers (including this pointer, method parameters, and local variables)"
-  -- "name of class where current method is defined"
-  -- "parameter types"
-  -- "program counter within frame"
+  \<comment> \<open>operand stack\<close> 
+  \<comment> \<open>registers (including this pointer, method parameters, and local variables)\<close>
+  \<comment> \<open>name of class where current method is defined\<close>
+  \<comment> \<open>parameter types\<close>
+  \<comment> \<open>program counter within frame\<close>
 
 (* pretty printing for frame type *)
 print_translation {*
@@ -46,11 +46,11 @@ typ "'addr frame"
 subsection {* Runtime State *}
 type_synonym
   ('addr, 'heap) jvm_state = "'addr option \<times> 'heap \<times> 'addr frame list"  
-  -- "exception flag, heap, frames"
+  \<comment> \<open>exception flag, heap, frames\<close>
 
 type_synonym
   'addr jvm_thread_state = "'addr option \<times> 'addr frame list"
-  -- "exception flag, frames, thread lock state"
+  \<comment> \<open>exception flag, frames, thread lock state\<close>
 
 type_synonym
   ('addr, 'thread_id, 'heap) jvm_thread_action = "('addr, 'thread_id, 'addr jvm_thread_state,'heap) Jinja_thread_action"

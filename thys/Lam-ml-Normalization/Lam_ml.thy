@@ -370,7 +370,7 @@ lemma r10'[intro!]:
   assumes xf: "x \<sharp> y"   "x \<sharp> u"
   shows "(s to x in t) to y in u \<mapsto> s to x in (t to y in u)"
 proof -
-  obtain y'::name -- "suitably fresh"
+  obtain y'::name \<comment> \<open>suitably fresh\<close>
     where y: "y' \<sharp> s"   "y' \<sharp> x"   "y' \<sharp> t"   "y' \<sharp> u" 
     using ex_fresh[of "(s,x,t,u,[(x, x')] \<bullet> t)"] 
     by (auto simp add: fresh_prod)
@@ -544,7 +544,7 @@ function
 where
   "t \<star> Id = t" |
   "x \<sharp> (K,t) \<Longrightarrow> t \<star> ([x]s\<ggreater>K) = (t to x in s) \<star> K"
-proof -    -- "pattern completeness"
+proof -    \<comment> \<open>pattern completeness\<close>
   fix P :: bool and arg::"trm \<times> stack"
   assume id: "\<And>t. arg = (t, stack.Id) \<Longrightarrow> P"
     and st: "\<And>x K t s. \<lbrakk>x \<sharp> (K, t); arg = (t, [x]s\<ggreater>K)\<rbrakk> \<Longrightarrow> P"
@@ -555,16 +555,16 @@ proof -    -- "pattern completeness"
     hence P by (metis st[where t="fst arg"] surjective_pairing) }
   ultimately show P using stack_exhaust[of   "snd arg"   "fst arg"] by auto
 next
-    -- "right uniqueness "
-    -- "only the case of the second equation matching both args needs to be
-shown."
+    \<comment> \<open>right uniqueness\<close>
+    \<comment> \<open>only the case of the second equation matching both args needs to be
+shown.\<close>
   fix t t' :: trm and x x' :: name and s s' :: trm and K K' :: stack
-  let ?g = dismantle_sumC -- "graph of dismantle"
+  let ?g = dismantle_sumC \<comment> \<open>graph of dismantle\<close>
   assume "x \<sharp> (K, t)"   "x' \<sharp> (K', t')" 
     and  "(t, [x]s\<ggreater>K) = (t', [x']s'\<ggreater>K')"
   thus "?g (t to x in s, K) = ?g (t' to x' in s', K')" 
     by (auto intro!: arg_cong[where f="?g"] simp add: stack.inject)
-qed (simp_all add: stack.inject) -- "all other cases are trivial"
+qed (simp_all add: stack.inject) \<comment> \<open>all other cases are trivial\<close>
 
 termination dismantle
 by(relation "measure (\<lambda>(t,K). |K| )")(auto)
@@ -889,7 +889,7 @@ principle for the reduction relation. For this we need that $y$ is fresh for
     proof (cases rule:reduction.strong_cases
         [ where x="y"and xa="y" and xb="y" and xc="y" and xd="y" 
           and xe="y" and xf="y" and xg="z" and y="y"])
-      case (r6 s t' u) -- "if $t$ makes a step we use assumption T"
+      case (r6 s t' u) \<comment> \<open>if $t$ makes a step we use assumption T\<close>
       with y have m: "t \<mapsto> t'"   "r' = t' to y in n" by auto
       thus "P" using T[of t'] r by auto
     next
@@ -907,12 +907,12 @@ principle for the reduction relation. For this we need that $y$ is fresh for
       moreover have "r = t \<star> [y]n'\<ggreater>L" using r r' by simp
       ultimately show "P" by (rule K)
     next 
-      case (r8 s _) -- "the case of a $\\beta$-reduction is exactly B"
+      case (r8 s _) \<comment> \<open>the case of a $\beta$-reduction is exactly B\<close>
       with y have "t = [s]"   "r' = n[y::=s]" by(auto simp add: alpha) 
       thus "P" using B[of "s" "y" "n" "L"] r by auto 
     next 
-      case (r9 _) -- "The case of an $\\eta$-reduction is a stack
-reduction as well."
+      case (r9 _) \<comment> \<open>The case of an $\eta$-reduction is a stack
+reduction as well.\<close>
       with y have n: "n = [Var y]" and r': "r' = t" 
         by(auto simp add: alpha)
       { fix u have "u to y in n \<mapsto> u" unfolding n ..
@@ -922,13 +922,13 @@ reduction as well."
       moreover have "r = t \<star> L" using r r' by simp
       ultimately show "P" by (rule K)
     next
-      case (r10 u _ v) -- "The assoc case holds by A."
+      case (r10 u _ v) \<comment> \<open>The assoc case holds by A.\<close>
       with y z have 
         "t = (u to z in v)" 
         "r' = u to z in (v to y in n)" 
         "z \<sharp> (y,n)" by (auto simp add: fresh_prod alpha)
       thus "P" using A[of z y n] r by auto
-    qed (insert y, auto)  -- "No other reductions are possible."
+    qed (insert y, auto)  \<comment> \<open>No other reductions are possible.\<close>
   next 
     txt {* Next we have to solve the case where a reduction occurs deep within
 $L$. We get a reduction of the stack $k$ by moving the first stack frame
@@ -942,9 +942,9 @@ $L$. We get a reduction of the stack $k$ by moving the first stack frame
     moreover from r have "r = t \<star> [y]n\<ggreater>L'" by simp
     ultimately show "P" by (rule K) 
   next
-    case (5 x z n' s v K) -- "The ``assoc'' case is again a stack reduction "
+    case (5 x z n' s v K) \<comment> \<open>The ``assoc'' case is again a stack reduction\<close>
     have xf: "x \<sharp> z"   "x \<sharp> n'" 
-      -- "We get the following equalities"
+      \<comment> \<open>We get the following equalities\<close>
     and red: "t to y in n = s to x in v"
              "L = [z]n'\<ggreater>K"
              "r = (s to x in v to z in n') \<star> K" by fact+
@@ -1046,7 +1046,7 @@ next
   }
 next
   case (T \<sigma>)
-  { case 1 -- {* follows from the fact that @{term "Id \<in> SRED \<sigma>"} *}
+  { case 1 \<comment> \<open>follows from the fact that @{term "Id \<in> SRED \<sigma>"}\<close>
     have ih_CR1_\<sigma>: "CR1 \<sigma>" by fact
     { fix t assume t_red: "t \<in> RED (T \<sigma>)"
       { fix s assume "s \<in> RED \<sigma>" 
@@ -1057,7 +1057,7 @@ next
       with t_red have "SN (t)" by (auto simp del: SRED.simps)
     } thus "CR1 (T \<sigma>)" unfolding CR1_def by blast
   next
-    case 2 -- {* follows since \isa{SN} is preserved under redcution *}
+    case 2 \<comment> \<open>follows since \isa{SN} is preserved under redcution\<close>
     { fix t t'::trm  assume t_red: "t \<in> RED (T \<sigma>)" and t_t': "t \<mapsto> t'" 
       { fix k assume k: "k \<in> SRED \<sigma>"
         with t_red have "SN(t \<star> k)" by simp
@@ -1531,8 +1531,8 @@ proof -
                \<Longrightarrow> SN (([p] to x in m) \<star> k)"
       using x
     proof (induct p q rule:triple_induct[where k="k"]) 
-      case (1 p q k) -- "We obtain an induction hypothesis for $p$, $q$, and
-$k$."
+      case (1 p q k) \<comment> \<open>We obtain an induction hypothesis for $p$, $q$, and
+$k$.\<close>
       have ih_p: 
         "\<And> p' m . \<lbrakk>p \<mapsto> p'; q = m \<star> k; SN (m[x::=p'] \<star> k); x \<sharp> p'; x \<sharp> k\<rbrakk>
             \<Longrightarrow> SN (([p'] to x in m) \<star> k)" by fact
@@ -1569,7 +1569,7 @@ This allows the use of the strong inversion rule for the reduction relation.*}
           from z have zl: "z \<sharp> ([p] to x in m)"   "x \<noteq> z" 
             by (auto simp add: abs_fresh fresh_prod fresh_atm)
           with r' have zr: "z \<sharp> r'"  by (blast intro:reduction_fresh)
-          -- {* handle all reductions of @{term "[p] to x in m"} *}
+          \<comment> \<open>handle all reductions of @{term "[p] to x in m"}\<close>
           from r' show "SN r" proof (cases rule:reduction.strong_cases
               [where x="x" and xa="x" and xb="x" and xc="x" and xd="x" 
                 and xe="x" and xf="x"and xg="x" and y="z"])
@@ -1594,27 +1594,26 @@ reasioning about the reflexive transitive closure of the reduction relation. *}
               using xl xr by (auto simp add: alpha)
             hence rr: "r' = [p] to x in m'" by simp
             from q `m \<mapsto> m'` have  "q \<mapsto> m' \<star> k" by(simp add: dismantle_red)
-            moreover have "m' \<star> k = m' \<star> k" .. -- "a triviality"
+            moreover have "m' \<star> k = m' \<star> k" .. \<comment> \<open>a triviality\<close>
             moreover { from `m \<mapsto> m'` have "(m[x::=p]) \<star> k \<mapsto> (m'[x::=p]) \<star> k"
                 by (simp add: dismantle_red reduction_subst)
               with sn have "SN(m'[x::=p] \<star> k)" .. }
             ultimately show "SN r" using xp xk unfolding r rr by (rule ih_q)
           next  
               
-            case (r8 s t) -- {* the $\beta$-case is handled by assumption *}
+            case (r8 s t) \<comment> \<open>the $\beta$-case is handled by assumption\<close>
             hence "r' = m[x::=p]" using xl xr by(auto simp add: alpha)
             thus "SN r" unfolding r using sn by simp
           next 
 
-            case (r9 s) -- {* the $\eta$-case is handled by assumption as well
-*} 
+            case (r9 s) \<comment> \<open>the $\eta$-case is handled by assumption as well\<close> 
             hence "m = [Var x]" and "r' = [p]" using xl xr 
               by(auto simp add: alpha)
             hence "r' = m[x::=p]" by simp
             thus "SN r" unfolding r using sn by simp
           qed (simp_all only: xr xl zl zr abs_fresh , auto)
-          -- {* There are no other possible reductions of @{term "[p] to x in
-m"}. *}
+          \<comment> \<open>There are no other possible reductions of @{term "[p] to x in
+m"}.\<close>
         next
 
           case (6 k') 
@@ -1706,7 +1705,7 @@ theorem fundamental_theorem:
   shows "\<theta><t> \<in> RED \<tau>"
 using a b
 proof(nominal_induct  avoiding: \<theta> rule: typing.strong_induct)
-  case (t3 a \<Gamma> \<sigma> t \<tau> \<theta>) -- "lambda case" 
+  case (t3 a \<Gamma> \<sigma> t \<tau> \<theta>) \<comment> \<open>lambda case\<close> 
   {%invisible 
   have ih: "\<And>\<theta>. \<theta> closes ((a,\<sigma>)#\<Gamma>) \<Longrightarrow> \<theta><t> \<in> RED \<tau>" by fact
   have \<theta>_cond: "\<theta> closes \<Gamma>" by fact
@@ -1718,7 +1717,7 @@ proof(nominal_induct  avoiding: \<theta> rule: typing.strong_induct)
   then have "\<Lambda> a . (\<theta><t>) \<in> RED (\<sigma> \<rightarrow> \<tau>)" by (simp only: abs_RED)
   then show "\<theta><(\<Lambda> a . t)> \<in> RED (\<sigma> \<rightarrow> \<tau>)" using fresh by simp }
 next
-  case (t5 x \<Gamma> s \<sigma> t \<tau> \<theta>) -- "to case"
+  case (t5 x \<Gamma> s \<sigma> t \<tau> \<theta>) \<comment> \<open>to case\<close>
   have ihs : "\<And> \<theta> . \<theta> closes \<Gamma> \<Longrightarrow> \<theta><s> \<in> RED (T \<sigma>)" by fact
   have iht : "\<And> \<theta> . \<theta> closes ((x, \<sigma>) # \<Gamma>) \<Longrightarrow> \<theta><t> \<in> RED (T \<tau>)" by fact
   have \<theta>_cond: "\<theta> closes \<Gamma>" by fact
@@ -1731,7 +1730,7 @@ next
       using fresh by (simp add: psubst_subst) }
   ultimately have "(\<theta><s>) to x in (\<theta><t>) \<in> RED (T \<tau>)" by (simp only: to_RED)
   thus "\<theta><s to x in t> \<in> RED (T \<tau>)" using fresh by simp
-qed auto -- "all other cases are trivial"
+qed auto \<comment> \<open>all other cases are trivial\<close>
 
 text {* The final result then follows using the identity substitution, which is
 $\Gamma$-closing since all variables are reducible at any type. *}

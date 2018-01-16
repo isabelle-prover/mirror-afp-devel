@@ -68,7 +68,7 @@ by(rule ext)+(simp add: idx_iteratei_def idx_iteratei_aux_nth_conv_foldli_drop)
 
 subsection {* Type definition and primitive operations *}
 
-definition load_factor :: nat -- "in percent"
+definition load_factor :: nat \<comment> \<open>in percent\<close>
   where "load_factor = 75"
 
 text {*

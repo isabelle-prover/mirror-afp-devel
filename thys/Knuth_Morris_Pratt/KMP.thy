@@ -292,7 +292,7 @@ proof
 qed
 
 corollary "intrinsic_border ''aabaabaa'' = ''aabaa''"
-proof - \<comment>\<open>We later obtain a fast algorithm for that.\<close>
+proof - \<comment> \<open>We later obtain a fast algorithm for that.\<close>
   have exhaust: "strict_border b ''aabaabaa'' \<longleftrightarrow> b \<in> {'''', ''a'', ''aa'', ''aabaa''}" for b
     using strict_border_example by auto
   then have
@@ -313,7 +313,7 @@ subsection\<open>Main routine\<close>
 text\<open>The following is Seidl's "border"-table@{cite GAD} (values shifted by 1 so we don't need @{typ int}),
 or equivalently, "f" from Knuth's, Morris' and Pratt's paper@{cite KMP77} (with indexes starting at 0).\<close>
 fun \<ff> :: "'a list \<Rightarrow> nat \<Rightarrow> nat" where
-  "\<ff> s 0 = 0" \<comment>\<open>This increments the compare position while @{prop \<open>j=(0::nat)\<close>}\<close> |
+  "\<ff> s 0 = 0" \<comment> \<open>This increments the compare position while @{prop \<open>j=(0::nat)\<close>}\<close> |
   "\<ff> s j = length (intrinsic_border (take j s)) + 1"
 text\<open>Note that we use their "next" only implicitly.\<close>
 
@@ -412,21 +412,21 @@ theorem shift_safe:
 proof (standard, standard)
   fix ii
   assume "ii < i'"
-  then consider \<comment>\<open>The position falls into one of three categories:\<close>
+  then consider \<comment> \<open>The position falls into one of three categories:\<close>
     (old) "ii < i" |
     (current) "ii = i" |
     (skipped) "ii > i"
     by linarith
   then show "\<not>sublist_at s t ii"
   proof cases
-    case old --\<open>Old position, use invariant.\<close>
+    case old \<comment> \<open>Old position, use invariant.\<close>
     with \<open>\<forall>ii<i. \<not>sublist_at s t ii\<close> show ?thesis by simp
   next
-    case current --\<open>The mismatch occurred while testing this alignment.\<close>
+    case current \<comment> \<open>The mismatch occurred while testing this alignment.\<close>
     with \<open>t!(i+j) \<noteq> s!j\<close> show ?thesis
       using sublist_all_positions[of s t i] by auto
   next
-    case skipped --\<open>The skipped positions.\<close>
+    case skipped \<comment> \<open>The skipped positions.\<close>
     then have "0<j"
       using \<open>ii < i'\<close> assignment by linarith
     then have less_j[simp]: "j + i - ii < j" and le_s: "j + i - ii \<le> length s"
@@ -655,9 +655,9 @@ proof (rule ccontr)
   then have i_less_j: "i < j"
     using assms(5) border_length_r_less nz_le_conv_less by auto
   from \<open>\<not>\<ff> s j \<le> \<ff> s (i-1) + 1\<close> greater_checked consider
-    (tested) "\<ff> s j = i + 1" --\<open>This contradicts @{thm mismatch}\<close> |
+    (tested) "\<ff> s j = i + 1" \<comment> \<open>This contradicts @{thm mismatch}\<close> |
     (skipped) "\<ff> s (i-1) + 1 < \<ff> s j" "\<ff> s j \<le> i"
-      --\<open>This contradicts @{thm \<ff>_is_max[of "i-1" s]}\<close>
+      \<comment> \<open>This contradicts @{thm \<ff>_is_max[of "i-1" s]}\<close>
     by linarith
   then show False
   proof cases
@@ -671,9 +671,9 @@ proof (rule ccontr)
   next
     case skipped
     let ?border = "take (i-1) s"
-      \<comment>\<open>This border of @{term \<open>take (j-1) s\<close>} could not be extended to a border of @{term \<open>take j s\<close>} due to the mismatch.\<close>
+      \<comment> \<open>This border of @{term \<open>take (j-1) s\<close>} could not be extended to a border of @{term \<open>take j s\<close>} due to the mismatch.\<close>
     let ?impossible = "take (\<ff> s j - 2) s"
-      \<comment>\<open>A strict border longer than @{term \<open>intrinsic_border ?border\<close>}, a contradiction.\<close>
+      \<comment> \<open>A strict border longer than @{term \<open>intrinsic_border ?border\<close>}, a contradiction.\<close>
     have "length (take j s) = j"
       by simp
     have "\<ff> s j - 2 < i - 1"
@@ -742,7 +742,7 @@ lemma compute_\<ff>s_correct: "compute_\<ff>s s \<le> compute_\<ff>s_SPEC s"
   unfolding compute_\<ff>s_SPEC_def compute_\<ff>s_def I_out_cb_def I_in_cb_def
   apply (simp, refine_vcg
     WHILEIT_rule[where R="measure (\<lambda>(\<ff>s,i,j). length s + 1 - j)"]
-    WHILEIT_rule[where R="measure id"] \<comment>\<open>@{term \<open>i::nat\<close>} decreases with every iteration.\<close>
+    WHILEIT_rule[where R="measure id"] \<comment> \<open>@{term \<open>i::nat\<close>} decreases with every iteration.\<close>
     )
                       apply (vc_solve, fold One_nat_def)
   subgoal for b j by (rule strict_border_take_\<ff>, auto)
@@ -885,7 +885,7 @@ lemma kmp_inner_in_bound:
   
 sepref_definition kmp_impl is "uncurry kmp3" :: "(arl_assn id_assn)\<^sup>k *\<^sub>a (arl_assn id_assn)\<^sup>k \<rightarrow>\<^sub>a option_assn nat_assn"
   unfolding kmp3_def kmp2_def
-  apply (simp only: max_0L) \<comment>\<open>Avoid the unneeded @{const max}\<close>
+  apply (simp only: max_0L) \<comment> \<open>Avoid the unneeded @{const max}\<close>
   apply (rewrite in "WHILEIT (I_in_na _ _ _) \<hole>" conj_commute)
   apply (rewrite in "WHILEIT (I_in_na _ _ _) \<hole>" short_circuit_conv)
   supply kmp_inner_in_bound[dest]

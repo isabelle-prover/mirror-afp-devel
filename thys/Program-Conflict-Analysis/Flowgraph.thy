@@ -28,12 +28,12 @@ datatype ('p,'ba) edgeAnnot = Base 'ba | Call 'p | Spawn 'p
 type_synonym ('n,'p,'ba) edge = "('n \<times> ('p,'ba) edgeAnnot \<times> 'n)"
 
 record ('n,'p,'ba,'m) flowgraph_rec =
-  edges :: "('n,'p,'ba) edge set" -- "Set of annotated edges"
-  main :: "'p" -- "Main procedure"
-  entry :: "'p \<Rightarrow> 'n" -- "Maps a procedure to its entry point"
-  return :: "'p \<Rightarrow> 'n" -- "Maps a procedure to its return point"
-  mon :: "'p \<Rightarrow> 'm set" -- "Maps procedures to the set of monitors they allocate"
-  proc_of :: "'n \<Rightarrow> 'p" -- "Maps a node to the procedure it is contained in"
+  edges :: "('n,'p,'ba) edge set" \<comment> \<open>Set of annotated edges\<close>
+  main :: "'p" \<comment> \<open>Main procedure\<close>
+  entry :: "'p \<Rightarrow> 'n" \<comment> \<open>Maps a procedure to its entry point\<close>
+  return :: "'p \<Rightarrow> 'n" \<comment> \<open>Maps a procedure to its return point\<close>
+  mon :: "'p \<Rightarrow> 'm set" \<comment> \<open>Maps procedures to the set of monitors they allocate\<close>
+  proc_of :: "'n \<Rightarrow> 'p" \<comment> \<open>Maps a node to the procedure it is contained in\<close>
 
 definition 
   "initialproc fg p == p=main fg \<or> (\<exists>u v. (u,Spawn p,v)\<in>edges fg)"
@@ -45,13 +45,13 @@ locale flowgraph =
   fixes fg :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme" (structure)
   (* Type annotation unnecessary, but perhaps makes it more readable
      for the unaware reader ;) *)
-  -- "Edges are inside procedures only"
+  \<comment> \<open>Edges are inside procedures only\<close>
   assumes edges_part: "(u,a,v)\<in>edges fg \<Longrightarrow> proc_of fg u = proc_of fg v" 
-  -- "The entry point of a procedure must be in that procedure"
+  \<comment> \<open>The entry point of a procedure must be in that procedure\<close>
   assumes entry_valid[simp]: "proc_of fg (entry fg p) = p" 
-  -- "The return point of a procedure must be in that procedure"
+  \<comment> \<open>The return point of a procedure must be in that procedure\<close>
   assumes return_valid[simp]: "proc_of fg (return fg p) = p" 
-  -- "Initial procedures do not synchronize on any monitors"
+  \<comment> \<open>Initial procedures do not synchronize on any monitors\<close>
   assumes initial_no_mon[simp]: "initialproc fg p \<Longrightarrow> mon fg p = {}" 
 
 subsection "Basic properties"
@@ -97,9 +97,9 @@ definition
 
 text {* The following syntactic restrictions guarantee that each thread's execution starts with a non-returning call. See Section~\ref{sec:Normalization:eflowgraph} for a proof of this. *}
 locale eflowgraph = flowgraph +
-  -- "Initial procedure's entry node isn't equal to its return node"
+  \<comment> \<open>Initial procedure's entry node isn't equal to its return node\<close>
   assumes initial_no_ret: "initialproc fg p \<Longrightarrow> entry fg p \<noteq> return fg p" 
-  -- "The only outgoing edges of initial procedures' entry nodes are call edges to procedures with isolated return node"
+  \<comment> \<open>The only outgoing edges of initial procedures' entry nodes are call edges to procedures with isolated return node\<close>
   assumes initial_call_no_ret: "\<lbrakk>initialproc fg p; (entry fg p,l,v)\<in>edges fg\<rbrakk> 
     \<Longrightarrow> \<exists>p'. l=Call p' \<and> isolated_ret fg p'" 
 

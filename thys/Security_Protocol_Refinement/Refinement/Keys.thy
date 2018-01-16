@@ -139,10 +139,10 @@ subsection\<open>Symmetric Keys\<close>
 
 text \<open>The following was stated as an axiom in Paulson's theory.\<close>
 
-lemma sym_sesK: "sesK f \<in> symKeys"   \<comment>\<open>All session keys are symmetric\<close>
+lemma sym_sesK: "sesK f \<in> symKeys"   \<comment> \<open>All session keys are symmetric\<close>
 by (simp add: symKeys_def)
 
-lemma sym_shrK: "shrK X \<in> symKeys"   \<comment>\<open>All shared keys are symmetric\<close>
+lemma sym_shrK: "shrK X \<in> symKeys"   \<comment> \<open>All shared keys are symmetric\<close>
 by (simp add: symKeys_def)
 
 

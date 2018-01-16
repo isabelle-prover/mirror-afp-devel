@@ -76,7 +76,7 @@ locale Heap =  Collection empty is_empty of_list  multiset for
   of_list :: "'a::linorder list \<Rightarrow> 'b" and 
   multiset :: "'b \<Rightarrow> 'a::linorder multiset" + 
   fixes as_tree :: "'b \<Rightarrow> 'a::linorder Tree"
-  -- {* This function is not very important, but it is needed in order to avoide problems with types and to detect that observed object is a tree.*}
+  \<comment> \<open>This function is not very important, but it is needed in order to avoide problems with types and to detect that observed object is a tree.\<close>
   fixes remove_max :: "'b \<Rightarrow> 'a \<times> 'b"
   assumes multiset: "multiset l = Heap.multiset (as_tree l)"
   assumes is_heap_of_list: "is_heap (as_tree (of_list i))"

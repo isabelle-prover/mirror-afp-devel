@@ -124,7 +124,7 @@ proof goal_cases
   finally show ?case by auto
 qed
 
-lemma vangle_eq_arctan_minus:\<comment>\<open>TODO: generalize?!\<close>
+lemma vangle_eq_arctan_minus:\<comment> \<open>TODO: generalize?!\<close>
   assumes ij: "i \<in> Basis" "j \<in> Basis" and ij_neq: "i \<noteq> j"
   assumes xy1: "\<bar>y1\<bar> < x1"
   assumes xy2: "\<bar>y2\<bar> < x2"
@@ -295,7 +295,7 @@ lemma vangle_eq_zeroD: "vangle u v = 0 \<Longrightarrow> (\<exists>k. v = k *\<^
     apply (metis norm_cauchy_schwarz)
   by (metis Cauchy_Schwarz_eq2_iff abs_of_pos inner_commute mult.commute mult_sign_intros(5) zero_less_norm_iff)
 
-lemma less_one_multI:\<comment>\<open>TODO: also in AA!\<close>
+lemma less_one_multI:\<comment> \<open>TODO: also in AA!\<close>
   fixes e x::real
   shows "e \<le> 1 \<Longrightarrow> 0 < x \<Longrightarrow> x < 1 \<Longrightarrow> e * x < 1"
   by (metis (erased, hide_lams) less_eq_real_def monoid_mult_class.mult.left_neutral

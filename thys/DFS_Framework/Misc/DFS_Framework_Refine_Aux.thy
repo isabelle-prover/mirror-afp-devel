@@ -4,9 +4,9 @@ begin
 
 
 definition GHOST :: "'a \<Rightarrow> 'a" 
-  -- \<open>Ghost tag to mark ghost variables in let-expressions\<close>
+  \<comment> \<open>Ghost tag to mark ghost variables in let-expressions\<close>
   where [simp]: "GHOST \<equiv> \<lambda>x. x"
-lemma GHOST_elim_Let: -- \<open>Unfold rule to inline GHOST-Lets\<close>
+lemma GHOST_elim_Let: \<comment> \<open>Unfold rule to inline GHOST-Lets\<close>
   shows "(let x=GHOST m in f x) = f m" by simp
 
 

@@ -19,7 +19,7 @@ lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
   by auto
 
  
--- "The preliminaries: mostly, sinvar is monotonic"
+\<comment> \<open>The preliminaries: mostly, sinvar is monotonic\<close>
 interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
   apply unfold_locales
@@ -33,7 +33,7 @@ where sinvar = sinvar
 done
 
 
--- "With generic target focus"
+\<comment> \<open>With generic target focus\<close>
 interpretation Example_NetModel: SecurityInvariant
 where default_node_properties = default_node_properties
 and sinvar = sinvar
@@ -41,7 +41,7 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
   unfolding default_node_properties_def
   apply unfold_locales
 
-   -- "Secure bydefault"
+   \<comment> \<open>Secure bydefault\<close>
    apply(simp)
    apply (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
        SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
@@ -50,14 +50,14 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
    apply (simp split: prod.split_asm prod.split)
    apply blast
 
- -- "Uniqueness"
+ \<comment> \<open>Uniqueness\<close>
  apply(simp add:default_node_properties_def)
  apply (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
      SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
      SecurityInvariant_withOffendingFlows.is_offending_flows_def)
  apply (simp add: graph_ops)
  apply (simp split: prod.split_asm prod.split)
- -- "proof by counter example: assume False is not the unique default parameter"
+ \<comment> \<open>proof by counter example: assume False is not the unique default parameter\<close>
  apply(rule_tac x="\<lparr> nodes={vertex_1}, edges = {(vertex_1,vertex_1)} \<rparr>" in exI, simp)
  apply(rule conjI)
   apply(simp add: wf_graph_def; fail)

@@ -178,7 +178,7 @@ inductive normalized :: "('a, 'b) binqueue \<Rightarrow> bool" where
 | normalized_append: "xs \<noteq> [] \<Longrightarrow> normalized xs \<Longrightarrow> normalized (ys @ xs)"
 
 lemma normalized_last_not_None:
-  -- "\\ sometimes the inductive definition might work better"
+  \<comment> \<open>\ sometimes the inductive definition might work better\<close>
   "normalized xs \<longleftrightarrow> xs = [] \<or> last xs \<noteq> None"
 proof
   assume "normalized xs"

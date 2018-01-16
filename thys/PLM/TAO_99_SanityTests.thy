@@ -28,7 +28,7 @@ text{* \label{TAO_SanityTests_Intensionality} *}
     nitpick[expect = genuine, user_axioms=true, card i = 2,
             card j = 2, card \<omega> = 1, card \<sigma> = 1,
             sat_solver = MiniSat_JNI, verbose, show_all]
-    oops --{* Countermodel by Nitpick *}
+    oops \<comment> \<open>Countermodel by Nitpick\<close>
   lemma "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"
     unfolding identity_\<Pi>\<^sub>1_def
     apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
@@ -36,7 +36,7 @@ text{* \label{TAO_SanityTests_Intensionality} *}
             sat_solver = MiniSat_JNI, card i = 2,
             card j = 2, card \<sigma> = 1, card \<omega> = 1,
             card \<upsilon> = 2, verbose, show_all]
-    oops --{* Countermodel by Nitpick *}
+    oops \<comment> \<open>Countermodel by Nitpick\<close>
 
 subsection{* Concreteness coindices with Object Domains *}
 text{* \label{TAO_SanityTests_Concreteness} *}

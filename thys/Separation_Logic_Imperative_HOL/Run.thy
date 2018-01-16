@@ -33,7 +33,7 @@ primrec is_exn where
 primrec the_state where
   "the_state (Some h) = h" 
 
--- "The exception-aware, relational semantics"
+\<comment> \<open>The exception-aware, relational semantics\<close>
 
 inductive run :: "'a Heap \<Rightarrow> state \<Rightarrow> state \<Rightarrow> 'a \<Rightarrow> bool" where
   push_exn: "is_exn \<sigma> \<Longrightarrow> run c \<sigma> \<sigma> r " |

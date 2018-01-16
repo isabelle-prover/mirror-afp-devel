@@ -82,7 +82,7 @@ text {*
 subsection {* Definition and elementary properties *}
 
 definition stutter_sampler where
-  -- {* f is a stuttering sampling function for @{text "\<sigma>"} *}
+  \<comment> \<open>f is a stuttering sampling function for @{text "\<sigma>"}\<close>
   "stutter_sampler (f::nat \<Rightarrow> nat) \<sigma> \<equiv>
      f 0 = 0
    \<and> strict_mono f
@@ -264,7 +264,7 @@ proof -
     proof (cases "\<forall>k > ?prev. \<sigma> k = \<sigma> ?prev")
       case True
       hence "?next = Suc ?prev" by (simp add: Let_def)
-      with lo hi show ?thesis by simp  -- {* no room for intermediate index *}
+      with lo hi show ?thesis by simp  \<comment> \<open>no room for intermediate index\<close>
     next
       case False
       hence "?next = (LEAST k. ?prev < k \<and> \<sigma> k \<noteq> \<sigma> ?prev)"

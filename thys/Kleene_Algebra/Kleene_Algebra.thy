@@ -68,7 +68,7 @@ lemma "x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 text {* Next we show that starred elements are transitive. *}
 
 lemma star_trans_eq [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym) -- "this splits an equation into two inequalities"
+proof (rule antisym) \<comment> \<open>this splits an equation into two inequalities\<close>
   have "x\<^sup>\<star> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
     by auto
   thus "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"

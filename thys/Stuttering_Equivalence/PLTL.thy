@@ -199,7 +199,7 @@ next
   with ih show "stutter_invariant (implies \<phi> \<psi>)" by auto
 next
   fix \<phi> :: "'a pltl"
-  assume "next_free (next \<phi>)"  -- {* hence contradiction *}
+  assume "next_free (next \<phi>)"  \<comment> \<open>hence contradiction\<close>
   thus "stutter_invariant (next \<phi>)" by simp
 next
   fix \<phi> \<psi> :: "'a pltl"

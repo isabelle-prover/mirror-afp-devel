@@ -8,10 +8,10 @@ theory IND_CCA2 imports
 begin
 
 locale pk_enc = 
-  fixes key_gen :: "security \<Rightarrow> ('ekey \<times> 'dkey) spmf" -- {*  probabilistic *}
-  and encrypt :: "security \<Rightarrow> 'ekey \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  -- {*  probabilistic *}
-  and decrypt :: "security \<Rightarrow> 'dkey \<Rightarrow> 'cipher \<Rightarrow> 'plain option" -- {*  deterministic, but not used *}
-  and valid_plain :: "security \<Rightarrow> 'plain \<Rightarrow> bool" -- {* checks whether a plain text is valid, i.e., has the right format *}
+  fixes key_gen :: "security \<Rightarrow> ('ekey \<times> 'dkey) spmf" \<comment> \<open>probabilistic\<close>
+  and encrypt :: "security \<Rightarrow> 'ekey \<Rightarrow> 'plain \<Rightarrow> 'cipher spmf"  \<comment> \<open>probabilistic\<close>
+  and decrypt :: "security \<Rightarrow> 'dkey \<Rightarrow> 'cipher \<Rightarrow> 'plain option" \<comment> \<open>deterministic, but not used\<close>
+  and valid_plain :: "security \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a plain text is valid, i.e., has the right format\<close>
 
 subsection {* The IND-CCA2 game for public-key encryption *}
 

@@ -21,7 +21,7 @@ definition resCap :: "path \<Rightarrow> 'capacity"
 where "resCap p \<equiv> Min {cf e | e. e \<in> set p}"
 
 lemma resCap_alt: "resCap p = Min (cf`set p)"  
-  -- \<open>Useful characterization for finiteness arguments\<close>
+  \<comment> \<open>Useful characterization for finiteness arguments\<close>
   unfolding resCap_def apply (rule arg_cong[where f=Min]) by auto
 
 text \<open>An augmenting path induces an \emph{augmenting flow}, which pushes as 
@@ -156,5 +156,5 @@ proof -
     by (auto simp: sum_augmenting_alt)
 qed    
 
-end -- \<open>Network with flow\<close>
-end -- \<open>Theory\<close>
+end \<comment> \<open>Network with flow\<close>
+end \<comment> \<open>Theory\<close>

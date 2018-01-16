@@ -45,7 +45,7 @@ begin
   lemma finite_V0: "finite reachable \<Longrightarrow> finite V0" by (auto intro: finite_subset)
 
   definition is_run
-    -- "Infinite run, i.e., a rooted infinite path"
+    \<comment> \<open>Infinite run, i.e., a rooted infinite path\<close>
     where "is_run r \<equiv> r 0 \<in> V0 \<and> ipath E r"
 
   lemma run_ipath: "is_run r \<Longrightarrow> ipath E r" unfolding is_run_def by auto

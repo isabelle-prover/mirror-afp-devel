@@ -10,24 +10,24 @@ section {* CoreC++ types *}
 theory Type imports Auxiliary begin
 
 
-type_synonym cname = string -- "class names"
-type_synonym mname = string -- "method name"
-type_synonym vname = string -- "names for local/field variables"
+type_synonym cname = string \<comment> \<open>class names\<close>
+type_synonym mname = string \<comment> \<open>method name\<close>
+type_synonym vname = string \<comment> \<open>names for local/field variables\<close>
  
 definition this :: vname where
   "this \<equiv> ''this''"
 
--- "types"
+\<comment> \<open>types\<close>
 datatype ty
-  = Void          -- "type of statements"
+  = Void          \<comment> \<open>type of statements\<close>
   | Boolean
   | Integer
-  | NT            -- "null type"
-  | Class cname   -- "class type"
+  | NT            \<comment> \<open>null type\<close>
+  | Class cname   \<comment> \<open>class type\<close>
 
-datatype base  -- "superclass"
-  = Repeats cname  -- "repeated (nonvirtual) inheritance"
-  | Shares cname   -- "shared (virtual) inheritance"
+datatype base  \<comment> \<open>superclass\<close>
+  = Repeats cname  \<comment> \<open>repeated (nonvirtual) inheritance\<close>
+  | Shares cname   \<comment> \<open>shared (virtual) inheritance\<close>
 
 primrec getbase :: "base \<Rightarrow> cname" where
   "getbase (Repeats C) = C"

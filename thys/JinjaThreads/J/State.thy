@@ -13,9 +13,9 @@ begin
 
 
 type_synonym
-  'addr locals = "vname \<rightharpoonup> 'addr val"      -- "local vars, incl. params and ``this''"
+  'addr locals = "vname \<rightharpoonup> 'addr val"      \<comment> \<open>local vars, incl. params and ``this''\<close>
 type_synonym
-  ('addr, 'heap) Jstate = "'heap \<times> 'addr locals"     -- "the heap and the local vars"
+  ('addr, 'heap) Jstate = "'heap \<times> 'addr locals"     \<comment> \<open>the heap and the local vars\<close>
 
 definition hp :: "'heap \<times> 'x \<Rightarrow> 'heap" where "hp \<equiv> fst"
 

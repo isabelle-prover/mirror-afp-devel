@@ -49,7 +49,7 @@ P5: "\<lfloor>\<^bold>\<not>(\<^bold>\<exists>x. \<^bold>\<exists>y. Contingent 
 text\<open>\noindent{Without postulating any additional axioms, C10 ("A \emph{necessarily} concrete being exists")
 can be falsified by Nitpick.}\<close>
 theorem C10: "\<lfloor>\<^bold>\<exists>x. Godlike x\<rfloor>"
-  nitpick oops --\<open> Countermodel found \<close>
+  nitpick oops \<comment> \<open>Countermodel found\<close>
     
 text\<open>\noindent{An explication of the concepts of necessariness, contingency and explanation is provided below 
 by axiomatizing their interrelation to other concepts.
@@ -62,16 +62,16 @@ axiomatization where
 
 text\<open>\noindent{Without any further constraints, C10 becomes falsified by Nitpick.}\<close>
 theorem C10: "\<lfloor>\<^bold>\<exists>x. Godlike x\<rfloor>"
-  nitpick oops --\<open> Countermodel found \<close>
+  nitpick oops \<comment> \<open>Countermodel found\<close>
     
 text\<open>\noindent{We postulate further modal axioms (using the \emph{Sahlqvist correspondence})
 and ask Isabelle's \emph{Sledgehammer} for a proof. Sledgehammer is able to
 find a proof for C10 which only relies on the modal axiom T (@{text "\<box>\<phi> \<^bold>\<rightarrow> \<phi>"}).}\<close>
   
 axiomatization where 
- T_axiom: "reflexive R" and --\<open> @{text "\<box>\<phi> \<rightarrow> \<phi>"} \<close>
- B_axiom: "symmetric R" and --\<open> @{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"} \<close>
- IV_axiom: "transitive R"   --\<open> @{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"} \<close>
+ T_axiom: "reflexive R" and \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<phi>"}\<close>
+ B_axiom: "symmetric R" and \<comment> \<open>@{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"}\<close>
+ IV_axiom: "transitive R"   \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>"}\<close>
  
 theorem C10: "\<lfloor>\<^bold>\<exists>x. Godlike x\<rfloor>" using Contingent_expl Explanation_expl
     Necessary_expl P2 P3 P4 P5 T_axiom by metis

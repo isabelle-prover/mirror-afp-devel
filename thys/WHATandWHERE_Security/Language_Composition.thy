@@ -177,14 +177,14 @@ proof (simp add: WHATWHERE_Secure_def, auto)
        have eqpp: "pp (c1;c2) = pp c1"
          by simp
 
-        --"get the two different cases:"
+        \<comment> \<open>get the two different cases:\<close>
         from R0pair step i0 obtain c3 where case_distinction:
           "(p = Some c2 \<and> \<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m2\<rangle>)
           \<or> (p = Some (c3;c2) \<and> \<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c3,m2\<rangle>)"
           by (simp, insert MWLsSteps_det.simps[of "c1;c2" "m1"],
             auto)
         moreover
-        --"Case 1: first command terminates"
+        \<comment> \<open>Case 1: first command terminates\<close>
         {
           assume passump: "p = Some c2"
           assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m2\<rangle>"
@@ -215,7 +215,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
           by (simp add: stepResultsinR_def, auto)
         }
         moreover
-        --"Case 2: first command does not terminate"
+        \<comment> \<open>Case 2: first command does not terminate\<close>
         {
           assume passump: "p = Some (c3;c2)"
           assume StepAssump: "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c3,m2\<rangle>"
@@ -277,7 +277,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
   from uniPPspawn have pp_difference: "\<iota> \<notin> set (PPV V)"
     by (simp add: unique_PPc_def)
   
-  --"Step 1"
+  \<comment> \<open>Step 1\<close>
   from WWs_threads obtain R' where R'assump:
     "SdlHPPB d PP R' \<and> (V,V) \<in> R'"
     by (simp add: WHATWHERE_Secure_def, auto)
@@ -289,7 +289,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
   have SdlHPPR: "SdlHPPB d PP R"
     by force
 
-  -- "Step 2"
+  \<comment> \<open>Step 2\<close>
   define R0 where "R0 = {(sp1,sp2). \<exists>\<iota>' \<iota>'' V' V''. 
     sp1 = [spawn\<^bsub>\<iota>'\<^esub> V'] \<and> sp2 = [spawn\<^bsub>\<iota>''\<^esub> V'']
     \<and> \<iota>' \<notin> set (PPV V) \<and> \<iota>'' \<notin> set (PPV V) \<and> (V',V'') \<in> R}"
@@ -298,7 +298,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "([spawn\<^bsub>\<iota>\<^esub> V],[spawn\<^bsub>\<iota>\<^esub> V]) \<in> R0"
     by auto
     
-  --"Step 3"
+  \<comment> \<open>Step 3\<close>
   from R0_def R_def R'assump have "Domain R0 \<inter> Domain R = {}"
     by auto
 
@@ -306,7 +306,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
   have Areflassump: "Arefl R0 \<inter> Arefl R \<subseteq> {[]}"
     by force
   
-  --"Step 4"
+  \<comment> \<open>Step 4\<close>
   have disjuptoR0:
     "disj_dlHPP_Bisimulation_Up_To_R' d PP R R0"
     proof (simp add: disj_dlHPP_Bisimulation_Up_To_R'_def, auto)
@@ -399,7 +399,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
         by (simp add: stepResultsinR_def 
           dhequality_alternative_def, auto)       
     qed
-  --"Step 5"
+  \<comment> \<open>Step 5\<close>
   with Areflassump Up_To_Technique
   have "SdlHPPB d PP (R0 \<union> R)"
     by auto
@@ -594,7 +594,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
         \<or> (p = Some c2' \<and> BMap (E b' m1) = False)"
         by (simp, metis MWLsSteps_det_cases(4))
       moreover
-      --"Case 1: b evaluates to True"
+      \<comment> \<open>Case 1: b evaluates to True\<close>
       {
         assume passump: "p = Some c1'"
         assume eval: "BMap (E b' m1) = True"
@@ -618,7 +618,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
             auto)
       }
       moreover
-      --"Case 2: b evaluates to False"
+      \<comment> \<open>Case 2: b evaluates to False\<close>
       {
         assume passump: "p = Some c2'"
         assume eval: "BMap (E b' m1) = False"
@@ -674,7 +674,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
     "SdlHPPB d PP R' \<and> ([c],[c]) \<in> R'"
     by (simp add: WHATWHERE_Secure_def, auto)
 
-  --"add the empty pair because it is needed later in the proof"
+  \<comment> \<open>add the empty pair because it is needed later in the proof\<close>
   define R where "R = {(V,V'). (V,V') \<in> R' \<and> set (PPV V) \<subseteq> set (PPc c) \<and>
     set (PPV V') \<subseteq> set (PPc c)} \<union> {([],[])}"
   
@@ -725,7 +725,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
   have Areflassump: "Arefl R0 \<inter> Arefl R \<subseteq> {[]}"
     by force
 
-  --"show some facts about R1 and R2 needed later in the proof at several positions"
+  \<comment> \<open>show some facts about R1 and R2 needed later in the proof at several positions\<close>
   from SdlHPPR have symR: "sym R"
     by (simp add: Strong_dlHPP_Bisimulation_def)
   from symR R1_def d_indistinguishable_sym have symR1: "sym R1"
@@ -848,7 +848,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
         "NDC d c1 \<or> IDC d c1 (htchLoc (pp c1))"
         by auto
 
-      -- "first alternative for V and V'"
+      \<comment> \<open>first alternative for V and V'\<close>
       have case1: "NDC d (c1;(while\<^bsub>\<iota>\<^esub> b do c2 od)) \<or>
         IDC d (c1;(while\<^bsub>\<iota>\<^esub> b do c2 od))
         (htchLoc (pp (c1;(while\<^bsub>\<iota>\<^esub> b do c2 od))))"
@@ -891,7 +891,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
             by (simp add: IDC_def NDC_def)
         qed
 
-      -- "second alternative for V V'"
+      \<comment> \<open>second alternative for V V'\<close>
       have case2: "NDC d (while\<^bsub>\<iota>\<^esub> b do c1 od)"
         proof -
           {
@@ -932,7 +932,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
         \<and> b \<equiv>\<^bsub>d\<^esub> b'"
         by force
 
-      -- "Case 1: V and V' are sequential commands"
+      \<comment> \<open>Case 1: V and V' are sequential commands\<close>
       have case1: "\<lbrakk> V = [c1;(while\<^bsub>\<iota>\<^esub> b do c2 od)]; 
         V' = [c1';(while\<^bsub>\<iota>'\<^esub> b' do c2' od)] \<rbrakk>
         \<Longrightarrow> \<exists>p' \<alpha>' m2'. \<langle>V'!i,m1'\<rangle> \<rightarrow>\<lhd>\<alpha>'\<rhd> \<langle>p',m2'\<rangle> \<and>
@@ -952,7 +952,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
             \<and> \<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c3,m2\<rangle>)"
             by (simp, metis MWLsSteps_det_cases(3))
           moreover
-          -- "Case 1a: first command terminates"
+          \<comment> \<open>Case 1a: first command terminates\<close>
           {
             assume passump: "p = Some (while\<^bsub>\<iota>\<^esub> b do c2 od)"
             assume stepassump: "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m2\<rangle>"
@@ -983,7 +983,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
               by (simp add: stepResultsinR_def, auto)
           }
           moreover
-          -- "Case 1b: first command does not terminate"
+          \<comment> \<open>Case 1b: first command does not terminate\<close>
           {
             assume passump: "p = Some (c3;(while\<^bsub>\<iota>\<^esub> b do c2 od))"
             assume stepassump: "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c3,m2\<rangle>"
@@ -1020,7 +1020,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
             by auto
         qed
           
-      -- "Case 2: V and V' are while commands"
+      \<comment> \<open>Case 2: V and V' are while commands\<close>
       have case2: "\<lbrakk> V = [while\<^bsub>\<iota>\<^esub> b do c1 od]; V' = [while\<^bsub>\<iota>'\<^esub> b' do c1' od] \<rbrakk>
         \<Longrightarrow> \<exists>p' \<alpha>' m2'. \<langle>V'!i,m1'\<rangle> \<rightarrow>\<lhd>\<alpha>'\<rhd> \<langle>p',m2'\<rangle> \<and>
         stepResultsinR p p' (R0 \<union> R) \<and> ((\<alpha>,\<alpha>') \<in> R0 \<or> (\<alpha>,\<alpha>') \<in> R) \<and>
@@ -1034,7 +1034,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
             \<or> p = (Some (c1;while\<^bsub>\<iota>\<^esub> b do c1 od)) \<and> BMap (E b m1) = True"
             by (simp, metis MWLsSteps_det_cases(5) option.simps(2))
           moreover
-          --"Case 2a: b evaluates to False"
+          \<comment> \<open>Case 2a: b evaluates to False\<close>
           {
             assume passump: "p = None"
             assume eval: "BMap (E b m1) = False"
@@ -1056,7 +1056,7 @@ proof (simp add: WHATWHERE_Secure_def, auto)
                 auto)
           }
           moreover
-          -- "Case 2b: b evaluates to True"
+          \<comment> \<open>Case 2b: b evaluates to True\<close>
           {
             assume passump: "p = (Some (c1;while\<^bsub>\<iota>\<^esub> b do c1 od))"
             assume eval: "BMap (E b m1) = True"

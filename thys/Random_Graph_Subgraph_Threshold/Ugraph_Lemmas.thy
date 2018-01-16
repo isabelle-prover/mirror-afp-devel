@@ -515,13 +515,13 @@ lemma isomorphic_max_density:
   assumes "G\<^sub>1 \<simeq> G\<^sub>2" and "nonempty_graph G\<^sub>1" and "nonempty_graph G\<^sub>2" and "finite_graph G\<^sub>1" and "finite_graph G\<^sub>2"
   shows "max_density G\<^sub>1 = max_density G\<^sub>2"
 proof -
-  --{* The proof strategy is not completely straightforward. We first show that if two graphs are
+  \<comment> \<open>The proof strategy is not completely straightforward. We first show that if two graphs are
        isomorphic, the maximum density of one graph is less or equal than the maximum density of
        the other graph. The reason is that this proof is quite long and the desired result directly
        follows from the symmetry of the isomorphism relation.\footnote{Some famous mathematician
        once said that if you prove that $a \le b$ and $b \le a$, you know \emph{that} these
        numbers are equal, but not \emph{why}. Since many proofs in this work are mostly opaque to
-       me, I can live with that.} *}
+       me, I can live with that.}\<close>
   {
     fix A B
     assume A: "nonempty_graph A" "finite_graph A"
@@ -531,8 +531,8 @@ proof -
       unfolding isomorphism_def by blast
     have wellformed: "uwellformed A"
       using iso unfolding isomorphism_def by simp
-    --{* We observe that the set of densities of the subgraphs does not change if we map the
-         subgraphs first. *}
+    \<comment> \<open>We observe that the set of densities of the subgraphs does not change if we map the
+         subgraphs first.\<close>
     have "density ` nonempty_subgraphs A = density ` (map_ugraph f ` nonempty_subgraphs A)"
       proof (rule image_comp_cong)
         fix G
@@ -547,11 +547,11 @@ proof -
         thus "density G = density (map_ugraph f G)"
           by (fact isomorphic_density)
       qed
-    --{* Additionally, we show that the operations @{term nonempty_subgraphs} and @{term map_ugraph}
+    \<comment> \<open>Additionally, we show that the operations @{term nonempty_subgraphs} and @{term map_ugraph}
          can be swapped without changing the densities. This is an obvious result, because
          @{term map_ugraph} does not change the structure of a graph. Still, the proof is a bit
          hairy, which is why we only show inclusion in one direction and use symmetry of isomorphism
-         later. *}
+         later.\<close>
     also have "\<dots> \<subseteq> density ` nonempty_subgraphs (map_ugraph f A)"
       proof (rule image_mono, rule subsetI)
         fix G''
@@ -617,11 +617,11 @@ lemma ex_fixed_selector:
   assumes "uwellformed H" and "finite_graph H"
   obtains f where "is_fixed_selector H f"
 proof
-  --{* I guess this is the only place in the whole work where we make use of a nifty little HOL
+  \<comment> \<open>I guess this is the only place in the whole work where we make use of a nifty little HOL
        feature called \emph{SOME}, which is basically Hilbert's choice operator. The reason is that
        any bijection between the the vertex set of @{term H} and the input set gives rise to a
        fixed selector function. In the lecture notes, a specific bijection was defined, but this
-       is shorter and more elegant. *}
+       is shorter and more elegant.\<close>
   let ?bij = "\<lambda>V. SOME g. bij_betw g (uverts H) V"
   let ?f = "\<lambda>V. map_ugraph (?bij V) H"
   {

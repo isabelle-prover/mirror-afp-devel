@@ -89,7 +89,7 @@ begin
 
       {
         let ?F'="{(e1,e2) \<in> (edges G). \<not>P (nP e1) (nP e2)}"
-        -- {* select @{term "?F'"} as the list of all edges which violate @{term "P"} *}
+        \<comment> \<open>select @{term "?F'"} as the list of all edges which violate @{term "P"}\<close>
 
         from enf have ENF_notevalmodel_offending_imp_ex_offending_min:
             "\<And>F. is_offending_flows F G nP \<Longrightarrow> F \<subseteq> edges G \<Longrightarrow>

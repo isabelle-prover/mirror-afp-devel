@@ -21,8 +21,8 @@ text {* The election of the basics types was based on
 the real time and the clock readings are reals. *}
 
 type_synonym process = nat  
-type_synonym time = real      -- "real time"
-type_synonym Clocktime = real -- "time of the clock readings (clock time)"
+type_synonym time = real      \<comment> \<open>real time\<close>
+type_synonym Clocktime = real \<comment> \<open>time of the clock readings (clock time)\<close>
 
 subsubsection {* Some constants *}
 
@@ -33,8 +33,8 @@ this axiom. If not, the algorithm cannot obtain the maximum and
 minimum value, because it will have discarded all the values. *}
 
 axiomatization
-  np  :: nat  -- "Number of processes" and
-  khl :: nat  -- "Number of lowest and highest values" where
+  np  :: nat  \<comment> \<open>Number of processes\<close> and
+  khl :: nat  \<comment> \<open>Number of lowest and highest values\<close> where
   constants_ax: "2 * khl < np"
 
 text {* We define also the set of process that the algorithm
@@ -863,8 +863,8 @@ proof-
     by (unfold cfnl_def) simp
   moreover
   have "\<bar>?maxf + ?minf  +  - ?maxg + - ?ming\<bar> <= y + 2 * x"
-    -- {* The rest of the property can be proved by CVC-lite
-           (see appendix \ref{sec:bound_prec_enh}) *}
+    \<comment> \<open>The rest of the property can be proved by CVC-lite
+           (see appendix \ref{sec:bound_prec_enh})\<close>
   proof ( cases "0 <= ?maxf + ?minf  +  - ?maxg + - ?ming")
     case True
     hence

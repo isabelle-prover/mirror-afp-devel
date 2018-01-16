@@ -102,7 +102,7 @@ proof -
   assume s: "\<Turnstile> \<Gamma> \<Rightarrow> \<Delta>"
   obtain \<Gamma>' \<Delta>' where p: "\<Gamma> = mset \<Gamma>'" "\<Delta> = mset \<Delta>'" by (metis ex_mset)
   have "mset \<Gamma>' \<Rightarrow> mset \<Delta>'"
-  proof cases -- "just to show that we didn't need to show the lemma above by contraposition. It's just quicker to do so."
+  proof cases \<comment> \<open>just to show that we didn't need to show the lemma above by contraposition. It's just quicker to do so.\<close>
     assume "sc \<Gamma>' [] \<Delta>' [] = {}"
     from sc_sim[OF this] show "mset \<Gamma>' \<Rightarrow> mset \<Delta>'" by auto
   next

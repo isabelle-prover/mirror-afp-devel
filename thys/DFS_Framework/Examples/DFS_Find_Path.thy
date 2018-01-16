@@ -186,7 +186,7 @@ definition "find_path0_pred G P \<equiv> \<lambda>r. case r of
 
 definition find_path0_spec
   :: "('v, _) graph_rec_scheme \<Rightarrow> ('v \<Rightarrow> bool) \<Rightarrow> 'v fp_result nres"
-  -- \<open>Searches a path from the root nodes to some target node that satisfies a 
+  \<comment> \<open>Searches a path from the root nodes to some target node that satisfies a 
       given predicate. If such a path is found, the path and the target node
       are returned\<close>
 where
@@ -220,7 +220,7 @@ text \<open> Extended interface, propagating set of already searched nodes (rest
 (* Invariant for restriction: The restriction is closed under E 
   and contains no P-nodes *)
 definition restr_invar 
-  -- \<open>Invariant for a node restriction, i.e., a transition closed set of nodes 
+  \<comment> \<open>Invariant for a node restriction, i.e., a transition closed set of nodes 
     known to not contain a target node that satisfies a predicate.\<close>
   where
   "restr_invar E R P \<equiv> E `` R \<subseteq> R \<and> R \<inter> Collect P = {}"
@@ -238,7 +238,7 @@ definition "find_path0_restr_pred G P R \<equiv> \<lambda>r.
     | Inr (vs,v) \<Rightarrow> P v \<and> (\<exists> v0 \<in> g_V0 G - R. path (rel_restrict (g_E G) R) v0 vs v)"
 
 definition find_path0_restr_spec 
-  -- \<open>Find a path to a target node that satisfies a predicate, not considering
+  \<comment> \<open>Find a path to a target node that satisfies a predicate, not considering
       nodes from the given node restriction. If no path is found, an extended
       restriction is returned, that contains the start nodes\<close>
   where "find_path0_restr_spec G P R \<equiv> do {
@@ -339,7 +339,7 @@ definition "find_path1_restr_pred G P R \<equiv> \<lambda>r.
       | Inr (vs,v) \<Rightarrow> P v \<and> vs \<noteq> [] \<and> (\<exists> v0 \<in> g_V0 G. path (g_E G \<inter> UNIV \<times> -R) v0 vs v)"
 
 definition find_path1_restr_spec 
-  -- \<open>Find a path of length at least one to a target node that satisfies P.
+  \<comment> \<open>Find a path of length at least one to a target node that satisfies P.
     Takes an initial node restriction, and returns an extended node restriction.\<close>
   where "find_path1_restr_spec G P R \<equiv> do {
     ASSERT (fb_graph G \<and> restr_invar (g_E G) R P);
@@ -447,7 +447,7 @@ definition "find_path1_pred G P \<equiv> \<lambda>r.
         None \<Rightarrow> (g_E G)\<^sup>+ `` g_V0 G \<inter> Collect P = {}
       | Some (vs, v) \<Rightarrow> P v \<and> vs \<noteq> [] \<and> (\<exists> v0 \<in> g_V0 G. path (g_E G) v0 vs v)"
 definition find_path1_spec 
-  -- \<open>Find a path of length at least one to a target node that satisfies 
+  \<comment> \<open>Find a path of length at least one to a target node that satisfies 
       a given predicate.\<close>
   where "find_path1_spec G P \<equiv> do {
     ASSERT (fb_graph G);

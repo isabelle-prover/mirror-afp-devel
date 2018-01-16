@@ -17,7 +17,7 @@ lemma strategy_attracts_extends_VVp:
 proof-
   from v0(1,2) obtain w where "v0\<rightarrow>w" "w \<in> S" using directly_attracted_def by blast
   from `w \<in> S` \<sigma>(2) have "strategy_attracts_via p \<sigma> w S W" unfolding strategy_attracts_def by blast
-  let ?\<sigma> = "\<sigma>(v0 := w)" -- "Extend @{term \<sigma>} to the new node."
+  let ?\<sigma> = "\<sigma>(v0 := w)" \<comment> \<open>Extend @{term \<sigma>} to the new node.\<close>
   have "strategy p ?\<sigma>" using \<sigma>(1) `v0\<rightarrow>w` valid_strategy_updates by blast
   moreover have "strategy_attracts_via p ?\<sigma> v0 (insert v0 S) W" proof
     fix P
@@ -105,6 +105,6 @@ proof-
   ultimately show ?thesis using merge_attractor_strategies `W \<subseteq> V` by blast
 qed
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

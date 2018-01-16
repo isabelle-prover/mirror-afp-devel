@@ -26,7 +26,7 @@ and semWhileSC: "WhileSideCondition e \<Longrightarrow> \<forall>d. e \<equiv>\<
 and semIfSC: "IfSideCondition e c1 c2 \<Longrightarrow> \<forall>d. e \<equiv>\<^bsub>d\<^esub> e"
 begin
 
--- "Security typing rules for the language commands"
+\<comment> \<open>Security typing rules for the language commands\<close>
 inductive
 ComSecTyping :: "('exp, 'id) MWLsCom \<Rightarrow> bool"
   ("\<turnstile>\<^bsub>\<C>\<^esub> _")
@@ -50,7 +50,7 @@ definition auxiliary_predicate
 where
 "auxiliary_predicate V \<equiv> unique_PPV V \<longrightarrow> WHATWHERE_Secure V" 
 
---"soundness proof of abstract type system"
+\<comment> \<open>soundness proof of abstract type system\<close>
 theorem ComSecTyping_single_is_sound:
 "\<lbrakk> \<turnstile>\<^bsub>\<C>\<^esub> c; unique_PPc c \<rbrakk>
   \<Longrightarrow> WHATWHERE_Secure [c]"

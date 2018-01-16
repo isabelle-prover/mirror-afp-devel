@@ -8,7 +8,7 @@ section {* Program State *}
 theory State imports Exceptions begin
 
 type_synonym
-  locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
+  locals = "vname \<rightharpoonup> val"      \<comment> \<open>local vars, incl. params and ``this''\<close>
 type_synonym
   state  = "heap \<times> locals"
 

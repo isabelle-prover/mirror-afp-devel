@@ -4,7 +4,7 @@ imports
   "../ODE_Numerics"
 begin
 
-lemma field_differentiable_bound:\<comment>\<open>TODO: generalize @{thm field_differentiable_bound}\<close>
+lemma field_differentiable_bound:\<comment> \<open>TODO: generalize @{thm field_differentiable_bound}\<close>
   fixes s :: "'a::real_normed_field set"
   assumes cvs: "convex s"
       and df:  "\<And>z. z \<in> s \<Longrightarrow> (f has_field_derivative f' z) (at z within s)"
@@ -18,7 +18,7 @@ lemma field_differentiable_bound:\<comment>\<open>TODO: generalize @{thm field_d
   apply fact
   done
 
-lemma field_taylor:\<comment>\<open>TODO: generalize @{thm complex_taylor}\<close>
+lemma field_taylor:\<comment> \<open>TODO: generalize @{thm complex_taylor}\<close>
   assumes s: "convex s"
       and f: "\<And>i x. x \<in> s \<Longrightarrow> i \<le> n \<Longrightarrow> (f i has_field_derivative f (Suc i) x) (at x within s)"
       and B: "\<And>x. x \<in> s \<Longrightarrow> norm (f (Suc n) x) \<le> B"
@@ -112,7 +112,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma Taylor_exp:\<comment>\<open>TODO: generalize @{thm Taylor_exp}\<close>
+lemma Taylor_exp:\<comment> \<open>TODO: generalize @{thm Taylor_exp}\<close>
   fixes z::"'a::{banach,real_normed_field}"
   shows "norm (exp z - (\<Sum>i\<le>n. z ^ i / fact i)) \<le> exp (norm z) * (norm z * norm z ^ n) / fact n"
 proof (rule field_taylor[of _ n "\<lambda>k. exp" "exp (norm z)" 0 z, simplified])

@@ -442,14 +442,14 @@ next
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D} : T" 
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
-  -- "Now distinguish the two cases how wt can have arisen."
+  \<comment> \<open>Now distinguish the two cases how wt can have arisen.\<close>
   { fix T' C fm
     assume wte: "P,E,hp s \<turnstile> e : T'"
       and icto: "class_type_of' T' = \<lfloor>C\<rfloor>"
       and has: "P \<turnstile> C has F:T (fm) in D"
     from IH[OF conf wte tconf]
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'" by auto
-    -- "Now distinguish what @{term U} can be."
+    \<comment> \<open>Now distinguish what @{term U} can be.\<close>
     with UsubC have ?case
     proof(cases "U = NT")
       case True
@@ -481,7 +481,7 @@ next
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D}:=e\<^sub>2 : T"
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
   from wt have void: "T = Void" by blast
-  -- "We distinguish if @{term e} has type @{term NT} or a Class type"
+  \<comment> \<open>We distinguish if @{term e} has type @{term NT} or a Class type\<close>
   { assume "P,E,hp s \<turnstile> e : NT"
     hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastforce
     moreover obtain T\<^sub>2 where "P,E,hp s \<turnstile> e\<^sub>2 : T\<^sub>2" using wt by auto
@@ -497,7 +497,7 @@ next
       using IH[OF conf wt\<^sub>1 tconf] by blast
     have wt\<^sub>2': "P,E,hp s' \<turnstile> e\<^sub>2 : T\<^sub>2"
       by(rule WTrt_hext_mono[OF wt\<^sub>2 red_hext_incr[OF red]])
-    -- "Is @{term U} the null type or a class type?"
+    \<comment> \<open>Is @{term U} the null type or a class type?\<close>
     have ?case
     proof(cases "U = NT")
       case True
@@ -628,7 +628,7 @@ next
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>M(es) : T"
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
-  -- "We distinguish if @{term e} has type @{term NT} or a Class type"
+  \<comment> \<open>We distinguish if @{term e} has type @{term NT} or a Class type\<close>
   from wt show ?case
   proof(rule WTrt_elim_cases)
     fix T' C Ts meth D Us

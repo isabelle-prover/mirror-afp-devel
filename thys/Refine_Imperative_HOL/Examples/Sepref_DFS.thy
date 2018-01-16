@@ -224,14 +224,14 @@ text \<open>We set up a schematic proof goal,
 
 sepref_definition dfs_impl is 
   "uncurry2 dfs" :: "(adjg_assn nat_assn)\<^sup>k*\<^sub>anat_assn\<^sup>k*\<^sub>a(pure (nat_rel \<rightarrow> bool_rel))\<^sup>k \<rightarrow>\<^sub>a prod_assn (ias.assn nat_assn) bool_assn"
-  unfolding dfs_def[abs_def] -- \<open>Unfold definition of DFS\<close>
+  unfolding dfs_def[abs_def] \<comment> \<open>Unfold definition of DFS\<close>
   using [[goals_limit = 1]]
-  apply (rewrite in "RECT _ (\<hole>,_)" ias.fold_custom_empty) -- \<open>Select impls\<close>
+  apply (rewrite in "RECT _ (\<hole>,_)" ias.fold_custom_empty) \<comment> \<open>Select impls\<close>
   apply (rewrite in "if \<hole> then RETURN (_,True) else _" fold_pho_apply)
-  apply sepref -- \<open>Invoke sepref-tool\<close>
+  apply sepref \<comment> \<open>Invoke sepref-tool\<close>
   done
 export_code dfs_impl checking SML_imp
-  -- \<open>Generate SML code with Imperative/HOL\<close>
+  \<comment> \<open>Generate SML code with Imperative/HOL\<close>
 
 export_code dfs_impl in Haskell module_name DFS
 

@@ -83,7 +83,7 @@ subsubsection {* Lists *}
 lemma map_id: "map id = id"      (* already in simpset *)
 by (simp)
 
--- {* Do NOT add the following equation to the simpset! (looping) *}
+\<comment> \<open>Do NOT add the following equation to the simpset! (looping)\<close>
 lemma map_comp: "map (g o f) = map g o map f"  
 by (simp)
 

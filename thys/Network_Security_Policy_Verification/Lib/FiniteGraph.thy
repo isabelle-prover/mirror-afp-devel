@@ -26,7 +26,7 @@ subsection{*Definitions*}
   text {* In a well-formed graph, edges only go from nodes to nodes. *}
   locale wf_graph = 
     fixes G :: "'v graph"
-    -- "Edges only reference to existing nodes"
+    \<comment> \<open>Edges only reference to existing nodes\<close>
     assumes E_wf: "fst ` (edges G) \<subseteq> (nodes G)"
                      "snd ` (edges G) \<subseteq> (nodes G)"
     and finiteE: "finite (edges G)" (*implied by finiteV*)
@@ -96,7 +96,7 @@ text {* Extended graph operations *}
   definition succ_tran :: "'v graph \<Rightarrow> 'v \<Rightarrow> 'v set" where
     "succ_tran G v = {e2. (v,e2) \<in> (edges G)\<^sup>+}"
 
-  --"succ_tran is always finite"
+  \<comment> \<open>succ_tran is always finite\<close>
   lemma succ_tran_finite: "wf_graph G \<Longrightarrow> finite (succ_tran G v)"
   proof -
     assume "wf_graph G"
@@ -155,34 +155,34 @@ section {*Graph Lemmas*}
 
   lemma graph_eq_intro: "(nodes (G::'a graph) = nodes G') \<Longrightarrow> (edges G = edges G') \<Longrightarrow> G = G'" by simp
 
-  -- "finite"
+  \<comment> \<open>finite\<close>
   lemma wf_graph_finite_filterE: "wf_graph G \<Longrightarrow> finite {(e1, e2). (e1, e2) \<in> edges G \<and> P e1 e2}"
   by(simp add: wf_graph.finiteE split_def)
   lemma wf_graph_finite_filterV: "wf_graph G \<Longrightarrow> finite {n. n \<in> nodes G \<and> P n}"
   by(simp add: wf_graph.finiteV)
 
-  -- "empty"
+  \<comment> \<open>empty\<close>
   lemma empty_wf[simp]: "wf_graph empty"
     unfolding empty_def by unfold_locales auto
   lemma nodes_empty[simp]: "nodes empty = {}" unfolding empty_def by simp
   lemma edges_empty[simp]: "edges empty = {}" unfolding empty_def by simp
 
-  -- "add node"
+  \<comment> \<open>add node\<close>
   lemma add_node_wf[simp]: "wf_graph g \<Longrightarrow> wf_graph (add_node v g)"
     unfolding add_node_def wf_graph_def by (auto)
 
   lemma delete_node_wf[simp]: "wf_graph G \<Longrightarrow> wf_graph (delete_node v G)"
     by(auto simp add: delete_node_def wf_graph_def wf_graph_finite_filterE)
 
-  -- "add edgde"
+  \<comment> \<open>add edgde\<close>
   lemma add_edge_wf[simp]: "wf_graph G \<Longrightarrow> wf_graph (add_edge v v' G)"
     by(auto simp add: add_edge_def add_node_def wf_graph_def)
 
-  -- "delete edge"
+  \<comment> \<open>delete edge\<close>
   lemma delete_edge_wf[simp]: "wf_graph G \<Longrightarrow> wf_graph (delete_edge v v' G)"
     by(auto simp add: delete_edge_def add_node_def wf_graph_def split_def)
  
-  -- "delte edges"
+  \<comment> \<open>delte edges\<close>
   lemma delete_edges_list_wf[simp]: "wf_graph G \<Longrightarrow> wf_graph (delete_edges_list G E)"
     by(induction E arbitrary: G, simp, force)
   lemma delete_edges_wf[simp]: "wf_graph G \<Longrightarrow> wf_graph (delete_edges G E)"
@@ -209,7 +209,7 @@ section {*Graph Lemmas*}
   lemma delete_edges_edges_empty: "(delete_edges G (edges G)) = G\<lparr>edges := {}\<rparr>"
     by(simp add: delete_edges_simp2)
 
- --"add delete"
+ \<comment> \<open>add delete\<close>
   lemma add_delete_edge: "wf_graph (G::'a graph) \<Longrightarrow> (a,b) \<in> edges G \<Longrightarrow> add_edge a b (delete_edge a b G) = G"
    apply(simp add: delete_edge_def add_edge_def wf_graph_def)
    apply(intro graph_eq_intro)
@@ -220,13 +220,13 @@ section {*Graph Lemmas*}
     by(auto simp add: delete_edges_simp2 add_edge_def wf_graph_def)
 
 
- --"fully_connected"
+ \<comment> \<open>fully_connected\<close>
   lemma fully_connected_simp: "fully_connected \<lparr>nodes = N, edges = ignore \<rparr>\<equiv> \<lparr>nodes = N, edges = N \<times> N \<rparr>"
     by(simp add: fully_connected_def)
   lemma fully_connected_wf: "wf_graph G \<Longrightarrow> wf_graph (fully_connected G)"
     by(simp add: fully_connected_def wf_graph_def)
 
- --"succ_tran"
+ \<comment> \<open>succ_tran\<close>
  lemma succ_tran_mono: 
   "wf_graph \<lparr>nodes=N, edges=E\<rparr> \<Longrightarrow> E' \<subseteq> E \<Longrightarrow> succ_tran \<lparr>nodes=N, edges=E'\<rparr> v \<subseteq> succ_tran \<lparr>nodes=N, edges=E\<rparr> v"
    apply(drule wf_graph.finiteE)
@@ -236,7 +236,7 @@ section {*Graph Lemmas*}
    apply(metis (lifting, full_types) Collect_mono trancl_mono)
   done
 
-  --"num_reachable"
+  \<comment> \<open>num_reachable\<close>
   lemma num_reachable_mono:
   "wf_graph \<lparr>nodes=N, edges=E\<rparr> \<Longrightarrow> E' \<subseteq> E \<Longrightarrow> num_reachable \<lparr>nodes=N, edges=E'\<rparr> v \<le> num_reachable \<lparr>nodes=N, edges=E\<rparr> v"
    apply(simp add: num_reachable_def)
@@ -245,7 +245,7 @@ section {*Graph Lemmas*}
    apply(simp add: card_mono)
   done
 
-  --"num_reachable_norefl"
+  \<comment> \<open>num_reachable_norefl\<close>
   lemma num_reachable_norefl_mono:
   "wf_graph \<lparr>nodes=N, edges=E\<rparr> \<Longrightarrow> E' \<subseteq> E \<Longrightarrow> num_reachable_norefl \<lparr>nodes=N, edges=E'\<rparr> v \<le> num_reachable_norefl \<lparr>nodes=N, edges=E\<rparr> v"
    apply(simp add: num_reachable_norefl_def)
@@ -253,7 +253,7 @@ section {*Graph Lemmas*}
    apply(frule_tac v="v" in succ_tran_finite)
    using card_mono by (metis Diff_mono finite_Diff subset_refl)
 
-  --"backflows"
+  \<comment> \<open>backflows\<close>
   lemma backflows_wf: 
     "wf_graph \<lparr>nodes=N, edges=E\<rparr> \<Longrightarrow> wf_graph \<lparr>nodes=N, edges=backflows E\<rparr>"
     using [[simproc add: finite_Collect]] by(auto simp add: wf_graph_def backflows_def)
@@ -280,7 +280,7 @@ section {*Graph Lemmas*}
 lemmas graph_ops=add_node_def delete_node_def add_edge_def delete_edge_def delete_edges_simp2
 
 
-  --"wf_graph"
+  \<comment> \<open>wf_graph\<close>
   lemma wf_graph_remove_edges: "wf_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow> wf_graph \<lparr> nodes = V, edges=E - X\<rparr>"
     by (metis delete_edges_simp2 delete_edges_wf select_convs(1) select_convs(2))
 

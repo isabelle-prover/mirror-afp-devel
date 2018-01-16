@@ -63,7 +63,7 @@ lemma edka_partial_refine[refine]: "edka_partial \<le> \<Down>Id fofu"
   done
 
 
-end -- \<open>Network\<close>
+end \<comment> \<open>Network\<close>
 
 subsubsection \<open>Total Correctness\<close>
 context Network begin
@@ -240,5 +240,5 @@ proof -
 qed  
 
 
-end -- \<open>Network\<close>
-end -- \<open>Theory\<close>
+end \<comment> \<open>Network\<close>
+end \<comment> \<open>Theory\<close>

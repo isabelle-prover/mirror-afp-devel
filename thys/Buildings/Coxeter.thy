@@ -685,9 +685,9 @@ begin
 
 lemmas flip_altsublist_chain_sum_list =
   flip_altsublist_chain_funcong_Cons_snoc[OF flip_altsublist_adjacent_sum_list_ball]
--- {* This lemma represents one direction in the word problem: if a word in generators can be
+\<comment> \<open>This lemma represents one direction in the word problem: if a word in generators can be
 transformed into another by a sequence of manipulations, each of which consists of replacing a
-half-relator subword by its reversal, then the two words sum to the same element of @{term W}. *}
+half-relator subword by its reversal, then the two words sum to the same element of @{term W}.\<close>
 
 lemma reduced_word_problem_eq_hd_step:
   assumes step: "\<And>y ss ts. \<lbrakk>
@@ -734,7 +734,7 @@ text {*
 context PreCoxeterSystem
 begin
 
-abbreviation "\<H> \<equiv> (\<Union>w\<in>W. lconjby w ` S)" -- {* the set of reflections *}
+abbreviation "\<H> \<equiv> (\<Union>w\<in>W. lconjby w ` S)" \<comment> \<open>the set of reflections\<close>
 
 abbreviation "lift_signed_lconjperm \<equiv> freeword_funlift signed_lconjpermutation"
 

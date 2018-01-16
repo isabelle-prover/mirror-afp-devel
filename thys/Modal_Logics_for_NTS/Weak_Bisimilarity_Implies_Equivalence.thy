@@ -11,7 +11,7 @@ begin
   lemma weak_bisimilarity_implies_weak_equivalence_Act:
     assumes "\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
     and "P \<approx>\<cdot> Q"
-    -- \<open>not needed: and @{prop "weak_formula x"}\<close>
+    \<comment> \<open>not needed: and @{prop "weak_formula x"}\<close>
     and "P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x"
     shows "Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x"
   proof -
@@ -42,7 +42,7 @@ begin
   lemma weak_bisimilarity_implies_weak_equivalence_Pred:
     assumes "\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
     and "P \<approx>\<cdot> Q"
-    -- \<open>not needed: and @{prop "weak_formula x"}\<close>
+    \<comment> \<open>not needed: and @{prop "weak_formula x"}\<close>
     and "P \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton x)))"
     shows "Q \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton x)))"
   proof -

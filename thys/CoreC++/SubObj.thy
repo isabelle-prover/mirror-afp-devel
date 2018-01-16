@@ -31,7 +31,7 @@ by(simp add:ldc_def)
 
 subsection {* Subobjects according to Rossie-Friedman *}
 
-fun is_subobj :: "prog \<Rightarrow> subobj \<Rightarrow> bool" -- "legal subobject to class hierarchie" where
+fun is_subobj :: "prog \<Rightarrow> subobj \<Rightarrow> bool" \<comment> \<open>legal subobject to class hierarchie\<close> where
   "is_subobj P (C, []) \<longleftrightarrow> False"
 | "is_subobj P (C, [D]) \<longleftrightarrow> (is_class P C \<and> C = D) 
                                 \<or> (\<exists> X. P \<turnstile> C \<preceq>\<^sup>* X \<and> P \<turnstile> X \<prec>\<^sub>S D)"
@@ -702,7 +702,7 @@ definition MethodDefs :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightar
    {(Cs,mthd). Subobjs P C Cs \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
                                     \<and> map_of ms M = Some mthd)}"
 
-  -- "needed for well formed criterion"
+  \<comment> \<open>needed for well formed criterion\<close>
 definition HasMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
     ("_ \<turnstile> _ has _ = _ via _" [51,0,0,0,51] 50) where
   "P \<turnstile> C has M = mthd via Cs \<equiv> (Cs,mthd) \<in> MethodDefs P C M"

@@ -411,12 +411,12 @@ proof -
   proof (auto simp: fg_next_config_def)
     fix q
     assume "fg_send_msg A p' q ?cfg ?cfg'"
-      -- "impossible because round changes"
+      \<comment> \<open>impossible because round changes\<close>
     with 0 1 show ?thesis by (auto simp: fg_send_msg_def)
   next
     fix q
     assume "fg_rcv_msg p' q ?HO ?SHO ?cfg ?cfg'"
-      -- "impossible because round changes"
+      \<comment> \<open>impossible because round changes\<close>
     with 0 1 show ?thesis by (auto simp: fg_rcv_msg_def)
   next
     assume "fg_local A p' ?HO ?crd ?cfg ?cfg'"
@@ -438,7 +438,7 @@ lemma fg_invariant1:
       and m: "(p,r,q,m) \<in> network (rho n)" (is "?msg n")
   shows "m = sendMsg A r p q (state (rho (fg_start_round rho p r)) p)"
 using m proof (induct n)
-  -- {* the base case is trivial because the network is empty *}
+  \<comment> \<open>the base case is trivial because the network is empty\<close>
   assume "?msg 0" with rho show "?thesis"
     by (auto simp: fg_run_def fg_init_config_def)
 next
@@ -499,13 +499,13 @@ lemma fg_invariant2a:
   shows "p \<in> HOs (round (rho n) q) q"
   (is "p \<in> HOs (?rd n) q" is "?P n")
 using m proof (induct n)
-  -- {* The base case is trivial because @{text q} has not received any message initially *}
+  \<comment> \<open>The base case is trivial because @{text q} has not received any message initially\<close>
   assume "?rcvd 0" with rho show "?P 0"
     by (auto simp: fg_run_def fg_init_config_def)
 next
   fix n
   assume rcvd: "?rcvd (Suc n)" and ih: "?rcvd n \<Longrightarrow> ?P n"
-  -- {* For the inductive step we distinguish the possible transitions *}
+  \<comment> \<open>For the inductive step we distinguish the possible transitions\<close>
   from rho obtain p' where
     "fg_next_config A p' (HOs (round (rho n) p') p') 
                          (SHOs (round (rho n) p') p')
@@ -539,7 +539,7 @@ next
   next
     assume "fg_local A p' ?HO ?crd ?cfg ?cfg'"
     with rcvd have "?rcvd n" and "?rd (Suc n) = ?rd n"
-      -- {* in fact, @{text "p' = q"} is impossible because the @{text rcvd} field of @{text p'} is cleared *}
+      \<comment> \<open>in fact, @{text "p' = q"} is impossible because the @{text rcvd} field of @{text p'} is cleared\<close>
       by (auto simp: fg_local_def)
     with ih show "?P (Suc n)" by simp
   qed
@@ -553,14 +553,14 @@ lemma fg_invariant2b:
                      (state (rho (fg_start_round rho p (?rd n))) p)"
         (is "?P n")
 using m sho proof (induct n)
-  -- {* The base case is trivial because @{text q} has not received any message initially *}
+  \<comment> \<open>The base case is trivial because @{text q} has not received any message initially\<close>
   assume "?rcvd 0" with rho show "?P 0"
     by (auto simp: fg_run_def fg_init_config_def)
 next
   fix n
   assume rcvd: "?rcvd (Suc n)" and p: "p \<in> SHOs (?rd (Suc n)) q"
      and ih: "?rcvd n \<Longrightarrow> p \<in> SHOs (?rd n) q \<Longrightarrow> ?P n"
-  -- {* For the inductive step we again distinguish the possible transitions *}
+  \<comment> \<open>For the inductive step we again distinguish the possible transitions\<close>
   from rho obtain p' where
     "fg_next_config A p' (HOs (round (rho n) p') p')
                          (SHOs (round (rho n) p') p')
@@ -600,7 +600,7 @@ next
   next
     assume "fg_local A p' ?HO ?crd ?cfg ?cfg'"
     with rcvd have "?rcvd n" and "?rd (Suc n) = ?rd n"
-      -- {* in fact, @{text "p' = q"} is impossible because the @{text rcvd} field of @{text p'} is cleared *}
+      \<comment> \<open>in fact, @{text "p' = q"} is impossible because the @{text rcvd} field of @{text p'} is cleared\<close>
       by (auto simp: fg_local_def)
     with p ih show "?P (Suc n)" by simp
   qed

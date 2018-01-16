@@ -52,10 +52,10 @@ is indistinguishable from observing some other trace @{term \<tau>\<^sub>3}
 that has the same high inputs as an arbitrary trace @{term \<tau>\<^sub>1}. *}
 
 locale generalized_non_interference =
-  fixes low_in :: "'\<tau> \<Rightarrow> 'i" -- {* low inputs *}
-  fixes low_out :: "'\<tau> \<Rightarrow> 'o" -- {* low outputs *}
-  fixes high_in :: "'\<tau> \<Rightarrow> 'i" -- {* high inputs *}
-  fixes high_out :: "'\<tau> \<Rightarrow> 'o" -- {* high outputs *}
+  fixes low_in :: "'\<tau> \<Rightarrow> 'i" \<comment> \<open>low inputs\<close>
+  fixes low_out :: "'\<tau> \<Rightarrow> 'o" \<comment> \<open>low outputs\<close>
+  fixes high_in :: "'\<tau> \<Rightarrow> 'i" \<comment> \<open>high inputs\<close>
+  fixes high_out :: "'\<tau> \<Rightarrow> 'o" \<comment> \<open>high outputs\<close>
 
 definition (in generalized_non_interference) GNI :: "'\<tau> set \<Rightarrow> bool"
 where "GNI \<T> \<equiv>
@@ -209,7 +209,7 @@ or an error (@{const None})
 if the expression contains a variable not in the state. *}
 
 definition add_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<oplus>" 65)
--- {* Lifting of addition to @{typ "nat option"}. *}
+\<comment> \<open>Lifting of addition to @{typ "nat option"}.\<close>
 where "U\<^sub>1 \<oplus> U\<^sub>2 \<equiv>
   case (U\<^sub>1, U\<^sub>2) of (Some u\<^sub>1, Some u\<^sub>2) \<Rightarrow> Some (u\<^sub>1 + u\<^sub>2) | _ \<Rightarrow> None"
 
@@ -593,12 +593,12 @@ lemma spec\<^sub>0_GNI:
   "spec\<^sub>0 p \<Longrightarrow> GNI (traces p)"
 proof (auto simp: Target.GNI_def)
   assume Spec: "spec\<^sub>0 p"
-  -- {* Consider a trace @{text \<tau>\<^sub>1} and its high input: *}
+  \<comment> \<open>Consider a trace @{text \<tau>\<^sub>1} and its high input:\<close>
   fix \<tau>\<^sub>1::trace
   define highIn where "highIn = high_in \<tau>\<^sub>1"
-  -- {* Consider a trace @{text \<tau>\<^sub>2},
+  \<comment> \<open>Consider a trace @{text \<tau>\<^sub>2},
         its low input and output,
-        and its states: *}
+        and its states:\<close>
   fix \<tau>\<^sub>2::trace
   define lowIn lowOut \<sigma>\<^sub>2 \<sigma>\<^sub>2'
     where "lowIn = low_in \<tau>\<^sub>2"
@@ -609,7 +609,7 @@ proof (auto simp: Target.GNI_def)
   hence Exec2: "body p \<rhd> \<sigma>\<^sub>2 \<leadsto> Some \<sigma>\<^sub>2'"
   and State2: "\<sigma>\<^sub>2 \<in> states p"
   by (auto simp: \<sigma>\<^sub>2_def \<sigma>\<^sub>2'_def elim: traces.cases)
-  -- {* Construct the initial state of the witness trace @{text \<tau>\<^sub>3}: *}
+  \<comment> \<open>Construct the initial state of the witness trace @{text \<tau>\<^sub>3}:\<close>
   define \<sigma>\<^sub>3 where "\<sigma>\<^sub>3 = \<sigma>\<^sub>2 (''highIn'' \<mapsto> highIn)"
   hence LowIn3: "the (\<sigma>\<^sub>3 ''lowIn'') = lowIn"
   and HighIn3: "the (\<sigma>\<^sub>3 ''highIn'') = highIn"
@@ -617,8 +617,8 @@ proof (auto simp: Target.GNI_def)
   from Spec State2
   have State3: "\<sigma>\<^sub>3 \<in> states p"
   by (auto simp: \<sigma>\<^sub>3_def states_def match_def spec\<^sub>0_def io_vars_def)
-  -- {* Construct the final state of @{text \<tau>\<^sub>3}, and @{text \<tau>\<^sub>3},
-        by cases on @{term lowIn}: *}
+  \<comment> \<open>Construct the final state of @{text \<tau>\<^sub>3}, and @{text \<tau>\<^sub>3},
+        by cases on @{term lowIn}:\<close>
   show
     "\<exists>\<tau>\<^sub>3 \<in> traces p.
       high_in \<tau>\<^sub>3 = high_in \<tau>\<^sub>1 \<and>
@@ -626,13 +626,13 @@ proof (auto simp: Target.GNI_def)
       low_out \<tau>\<^sub>3 = low_out \<tau>\<^sub>2"
   proof (cases lowIn)
     case 0
-    -- {* Use as final state the one required by @{term low_proc_0}: *}
+    \<comment> \<open>Use as final state the one required by @{term low_proc_0}:\<close>
     with Spec State3 LowIn3
     obtain \<sigma>\<^sub>3'
     where Exec3: "body p \<rhd> \<sigma>\<^sub>3 \<leadsto> Some \<sigma>\<^sub>3'"
     and LowOut3: "the (\<sigma>\<^sub>3' ''lowOut'') = lowOut"
     by (auto simp: spec\<^sub>0_def low_proc_0_def)
-    -- {* Construct @{text \<tau>\<^sub>3} from its initial and final states: *}
+    \<comment> \<open>Construct @{text \<tau>\<^sub>3} from its initial and final states:\<close>
     define \<tau>\<^sub>3 where "\<tau>\<^sub>3 = \<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
     with Exec3 State3
     have Trace3: "\<tau>\<^sub>3 \<in> traces p"
@@ -652,13 +652,13 @@ proof (auto simp: Target.GNI_def)
     case Suc
     hence Not0: "lowIn \<noteq> 0"
     by auto
-    -- {* Derive @{term \<tau>\<^sub>2}'s low output from @{term low_proc_non0}: *}
+    \<comment> \<open>Derive @{term \<tau>\<^sub>2}'s low output from @{term low_proc_non0}:\<close>
     with Exec2 State2 Spec
     have LowOut2: "lowOut = lowIn + 1"
     by (auto simp:
       spec\<^sub>0_def low_proc_non0_def \<sigma>\<^sub>2_def \<sigma>\<^sub>2'_def
       low_in_def low_out_def lowIn_def lowOut_def)
-    -- {* Use any final state for @{text \<tau>\<^sub>3}: *}
+    \<comment> \<open>Use any final state for @{text \<tau>\<^sub>3}:\<close>
     from Spec
     have "wfp p"
     by (auto simp: spec\<^sub>0_def)
@@ -666,11 +666,11 @@ proof (auto simp: Target.GNI_def)
     obtain \<sigma>\<^sub>3'
     where Exec3: "body p \<rhd> \<sigma>\<^sub>3 \<leadsto> Some \<sigma>\<^sub>3'"
     by (metis exec_always exec_wfp_no_error not_Some_eq)
-    -- {* Derive @{text \<tau>\<^sub>3}'s low output from @{term low_proc_non0}: *}
+    \<comment> \<open>Derive @{text \<tau>\<^sub>3}'s low output from @{term low_proc_non0}:\<close>
     with State3 Spec Not0
     have LowOut3: "the (\<sigma>\<^sub>3' ''lowOut'') = lowIn + 1"
     by (auto simp: spec\<^sub>0_def low_proc_non0_def LowIn3)
-    -- {* Construct @{text \<tau>\<^sub>3} from its initial and final states: *}
+    \<comment> \<open>Construct @{text \<tau>\<^sub>3} from its initial and final states:\<close>
     define \<tau>\<^sub>3 where "\<tau>\<^sub>3 = \<lparr>initial = \<sigma>\<^sub>3, final = \<sigma>\<^sub>3'\<rparr>"
     with Exec3 State3
     have Trace3: "\<tau>\<^sub>3 \<in> traces p"
@@ -719,7 +719,7 @@ in a certain order. *}
 
 abbreviation vars\<^sub>0 :: "name list"
 where "vars\<^sub>0 \<equiv> [''lowIn'', ''lowOut'', ''highIn'', ''highOut'']"
--- {* The order of the variables in the list is arbitrary. *}
+\<comment> \<open>The order of the variables in the list is arbitrary.\<close>
 
 lemma vars\<^sub>0_correct:
   "vars p = vars\<^sub>0 \<Longrightarrow> io_vars p"
@@ -808,7 +808,7 @@ one to compute the low output and one to compute the high output. *}
 
 definition body_split :: "prog \<Rightarrow> stmt \<Rightarrow> stmt \<Rightarrow> bool"
 where "body_split p s\<^sub>L s\<^sub>H \<equiv> body p = Seq s\<^sub>L s\<^sub>H"
--- {* The order of the two statements in the body is arbitrary. *}
+\<comment> \<open>The order of the two statements in the body is arbitrary.\<close>
 
 text {* The splitting reduces the well-formedness of the body
 to the well-formedness of the two statements. *}
@@ -875,7 +875,7 @@ lemma proc\<^sub>2_correct:
   assumes HighSame: "high_proc_no_low_output_change s\<^sub>H"
   shows "low_proc_non0\<^sub>1 p \<and> low_proc_0\<^sub>1 p \<and> high_proc\<^sub>1 p"
 proof (auto, goal_cases)
-  -- {* Processing of non-0 low input: *}
+  \<comment> \<open>Processing of non-0 low input:\<close>
   case 1
   show ?case
   proof (auto simp: low_proc_non0\<^sub>1_def)
@@ -897,7 +897,7 @@ proof (auto, goal_cases)
     by (metis Suc_eq_plus1 gr_implies_not0)
   qed
 next
-  -- {* Processing of 0 low input: *}
+  \<comment> \<open>Processing of 0 low input:\<close>
   case 2
   show ?case
   proof (auto simp: low_proc_0\<^sub>1_def)
@@ -924,7 +924,7 @@ next
     by (auto simp add: body_split_def dest: ExecSeqOK)
   qed
 next
-  -- {* Processing of high input: *}
+  \<comment> \<open>Processing of high input:\<close>
   case 3
   show ?case
   proof (auto simp: high_proc\<^sub>1_def)

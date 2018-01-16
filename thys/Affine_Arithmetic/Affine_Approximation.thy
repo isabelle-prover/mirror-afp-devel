@@ -10,7 +10,7 @@ imports
 begin
 text \<open>\label{sec:approxaffine}\<close>
 
-lemma convex_on_imp_above_tangent:\<comment>\<open>TODO: generalizes @{thm convex_on_imp_above_tangent}\<close>
+lemma convex_on_imp_above_tangent:\<comment> \<open>TODO: generalizes @{thm convex_on_imp_above_tangent}\<close>
   assumes convex: "convex_on A f" and connected: "connected A"
   assumes c: "c \<in> A" and x : "x \<in> A"
   assumes deriv: "(f has_field_derivative f') (at c within A)"
@@ -778,7 +778,7 @@ lemma aform_val_mult_exact:
    using that
   by (auto simp: pdevs_val_sum_less_degree[where d=d] aform_val_def algebra_simps)
 
-lemma sum_times_bound:\<comment>\<open>TODO: this gives better bounds for the remainder of multiplication\<close>
+lemma sum_times_bound:\<comment> \<open>TODO: this gives better bounds for the remainder of multiplication\<close>
   "(\<Sum>i<d. e i * f i::real) * (\<Sum>i<d. e i * g i) =
    (\<Sum>i<d. (e i)\<^sup>2 * (f i * g i)) +
    (\<Sum>(i, j) | i < j \<and> j < d. (e i * e j) * (f j * g i + f i * g j))" for d::nat
@@ -1861,7 +1861,7 @@ definition affine_unop :: "nat \<Rightarrow> real \<Rightarrow> real \<Rightarro
     (y, ye) = trunc_bound_eucl p (ax + b);
     (ys, yse) = trunc_bound_pdevs p (scaleR_pdevs a xs)
     in ((y, ys), sum_list' p [truncate_up p (\<bar>a\<bar> * xe), axe, ye, yse, d]))"
-  \<comment>\<open>TODO: also do binop\<close>
+  \<comment> \<open>TODO: also do binop\<close>
 
 lemma aform_err_leI:
   "y \<in> aform_err e (c, d)"

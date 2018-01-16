@@ -1810,7 +1810,7 @@ proof (auto dest!: not_ephemeralD_pos_period intro: C)
   assume "0 < period C"
   then show "not_ephemeral C"
     apply (auto simp: not_ephemeral_def C)
-oops -- {* should be easy to finish *}
+oops \<comment> \<open>should be easy to finish\<close>
 
 
 lemma eventually_periodic:

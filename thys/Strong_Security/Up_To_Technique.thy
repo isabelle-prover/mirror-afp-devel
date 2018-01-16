@@ -9,7 +9,7 @@ begin
 context Strong_Security
 begin
 
--- "define d-bisimulation 'up to' union of strong d-Bisimulations"
+\<comment> \<open>define d-bisimulation 'up to' union of strong d-Bisimulations\<close>
 definition d_Bisimulation_Up_To_USdB :: 
 "'d \<Rightarrow> 'com Bisimulation_type \<Rightarrow> bool"
 where
@@ -44,7 +44,7 @@ proof -
   have "S \<subseteq> (\<approx>\<^bsub>d\<^esub>)"
   proof (simp add: USdB_def, auto, rule_tac x="S" in exI, auto,
       simp add: Strong_d_Bisimulation_def, auto)
-      -- "show symmetry"
+      \<comment> \<open>show symmetry\<close>
     show symS: "sym S" 
     proof -
       from upToR
@@ -59,12 +59,12 @@ proof -
   next 
     fix V V'
     assume inS: "(V,V') \<in> S" 
-      -- "show equal length (by definition)"
+      \<comment> \<open>show equal length (by definition)\<close>
     from inS S_def upToR RuUSdBeqlen
     show eqlen: "length V = length V'"             
       by simp
   next
-      -- "show general bisimulation property"
+      \<comment> \<open>show general bisimulation property\<close>
     fix V V' W m1 m1' m2 i
     assume inS: "(V,V') \<in> S" 
     assume irange: "i < length V"

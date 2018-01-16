@@ -378,7 +378,7 @@ proof -
 qed
 
 lemma prod_cancel_nat:
-  --"Contributed by Manuel Eberl"
+  \<comment> \<open>Contributed by Manuel Eberl\<close>
   fixes f::"'a \<Rightarrow> nat"
   assumes "B \<subseteq> A" and "finite A" and "\<forall>x\<in>B. f x \<noteq> 0"
   shows "prod f A / prod f B = prod f (A - B)" (is "?A / ?B = ?C")
@@ -389,14 +389,14 @@ proof-
 qed
 
 lemma prod_id_cancel_nat:
-  --"Contributed by Manuel Eberl"
+  \<comment> \<open>Contributed by Manuel Eberl\<close>
   fixes A::"nat set"
   assumes "B \<subseteq> A" and "finite A" and "0 \<notin> B"
   shows "\<Prod>A / \<Prod>B = \<Prod>(A-B)"
   using assms(1-2) by (rule prod_cancel_nat) (metis assms(3))
 
 lemma (in prob_space) integrable_squareD:
-  --"Contributed by Johannes Hölzl"
+  \<comment> \<open>Contributed by Johannes Hölzl\<close>
   fixes X :: "_ \<Rightarrow> real"
   assumes "integrable M (\<lambda>x. (X x)^2)" "X \<in> borel_measurable M"
   shows "integrable M X"

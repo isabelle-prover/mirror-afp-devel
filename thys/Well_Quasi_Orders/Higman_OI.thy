@@ -60,7 +60,7 @@ proof
   then have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> by (intro lexmin_SEQ_mem)
   note * = \<open>C \<subseteq> SEQ A\<close> \<open>C \<noteq> {}\<close>
   note lex = LEX_imp_less [folded irreflp_on_def, OF po [THEN po_on_imp_irreflp_on]]
-  -- \<open>\<open>lexmin C\<close> is a lower bound\<close>
+  \<comment> \<open>\<open>lexmin C\<close> is a lower bound\<close>
   show "lb (LEX P) C (lexmin C)"
   proof
     fix f assume "f \<in> C"
@@ -85,7 +85,7 @@ proof
     qed simp
   qed
 
-  -- \<open>\<open>lexmin C\<close> is greater than or equal to any other lower bound\<close>
+  \<comment> \<open>\<open>lexmin C\<close> is greater than or equal to any other lower bound\<close>
   fix f assume lb: "lb (LEX P) C f"
   then show "LEXEQ P f (lexmin C)"
   proof (cases "f = lexmin C")

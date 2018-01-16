@@ -322,7 +322,7 @@ next
   then obtain ps c where "r = (ps,c)" and "ps \<noteq> []" by (cases r) auto
   with step(3) have aa: "\<forall> p \<in> set ps. \<exists> n. (p,n) \<in> derivable R" by auto
   then have "\<exists> m. \<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R"
-  proof (induct ps) -- "induction on the list"
+  proof (induct ps) \<comment> \<open>induction on the list\<close>
     case Nil
     then show ?case by auto
   next
@@ -337,7 +337,7 @@ next
 (*<*)
       apply (auto simp add:Ball_def)
       apply (rule_tac x=m' in exI) apply simp
-      apply (drule_tac x=x in spec) apply auto(*>*) by (*<*)(rule_tac x=n in exI)(*>*) auto -- "max returns the maximum of two integers"
+      apply (drule_tac x=x in spec) apply auto(*>*) by (*<*)(rule_tac x=n in exI)(*>*) auto \<comment> \<open>max returns the maximum of two integers\<close>
     then show ?case by blast
   qed
   then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
@@ -661,20 +661,20 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                         (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')"
        by auto
  show ?case
- proof (cases n)   -- "Case analysis on $n$"
+ proof (cases n)   \<comment> \<open>Case analysis on $n$\<close>
      case 0
  (*<*)    then have "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs,0) \<in> derivable R*" using a' by simp
      then have "([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs) \<in> R*" by (cases) (auto)
      then have "\<exists> r S. extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs) \<and> (r \<in> Ax \<or> r \<in> R')"
           using rules and ruleSet[where R'=R' and R=R and Ps="[]" and C="\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs"] by auto(*>*)
      then obtain r S where "extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)" 
-                   and "r \<in> Ax \<or> r \<in> R'" by auto  -- "At height 0, the premisses are empty"
+                   and "r \<in> Ax \<or> r \<in> R'" by auto  \<comment> \<open>At height 0, the premisses are empty\<close>
       moreover
       {assume "r \<in> Ax"
        then obtain i where "([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = r \<or> 
                              r = ([], \<LM> ff \<RM> \<Rightarrow>* \<Empt>)" 
             using characteriseAx[where r=r] by auto
-          moreover -- "Case split on the kind of axiom used"
+          moreover \<comment> \<open>Case split on the kind of axiom used\<close>
           {assume "r = ([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>)"
  (*<*)         with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`
                 have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)"
@@ -697,7 +697,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
           ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" by blast
       }
       moreover
-      {assume "r \<in> R'" -- "This leads to a contradiction"
+      {assume "r \<in> R'" \<comment> \<open>This leads to a contradiction\<close>
  (*<*)      then have "r \<in> upRules" using rules by auto
        then have "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)"
             proof-
@@ -710,7 +710,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
       then obtain Ps C where "Ps \<noteq> []" and "r = (Ps,C)" by auto
        moreover (*<*) from `extendRule S r = ([], \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` have "\<exists> S. r = ([],S)"
             using extendRule_def[where forms=S and R=r] by (cases r) (auto)
-       then(*>*) obtain S where "r = ([],S)" by blast   -- "Contradiction"
+       then(*>*) obtain S where "r = ([],S)" by blast   \<comment> \<open>Contradiction\<close>
        ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules by simp
        }
        ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)using `n=0` (*>*) by blast
@@ -728,7 +728,7 @@ and every premiss is derivable at a height lower than $n'$: *}
   then obtain r S where "r \<in> Ax \<or> r \<in> R'"  
                   and "extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)" by auto
   moreover
-     {assume "r \<in> Ax"   -- "Gives a contradiction"
+     {assume "r \<in> Ax"   \<comment> \<open>Gives a contradiction\<close>
       then have "fst r = []" apply (cases r) by (rule Ax.cases) auto
       moreover obtain x y where "r = (x,y)" by (cases r)
       then have "x \<noteq> []" using `Ps \<noteq> []`
@@ -744,7 +744,7 @@ and every premiss is derivable at a height lower than $n'$: *}
   (*<*)       then have "r \<in> upRules" using rules and `r \<in> R'` by auto (*>*)
       have "(rightPrincipal r (Compound F Fs)) \<or> 
                 \<not>(rightPrincipal r (Compound F Fs))" 
-      by blast  -- "The formula is principal, or not"
+      by blast  \<comment> \<open>The formula is principal, or not\<close>
     (*<*)  moreover (*>*)
 txt{* \noindent If the formula is principal, then $\Gamma' \Rightarrow \Delta'$ is amongst the premisses of $r$: *}
   {assume "rightPrincipal r (Compound F Fs)"
@@ -768,7 +768,7 @@ at the lower height of the premisses: *}
   {assume "\<not> rightPrincipal r (Compound F Fs)"
    obtain \<Phi> \<Psi> where "S = (\<Phi> \<Rightarrow>* \<Psi>)" by (cases S) (auto)   
    then obtain G H where "c = (G \<Rightarrow>* H)" by (cases c) (auto)  
-   then have "\<LM> Compound F Fs \<RM> \<noteq> H"   -- "Proof omitted"
+   then have "\<LM> Compound F Fs \<RM> \<noteq> H"   \<comment> \<open>Proof omitted\<close>
  (*<*)                 proof-
                   from `r = (ps,c)` and `r \<in> upRules`
                      obtain T Ts where  "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
@@ -795,7 +795,7 @@ at the lower height of the premisses: *}
    
    have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)"(*<*)
             using succ_upRule[where Ps=ps and \<Phi>=G and \<Psi>=H](*>*) by auto
-   ultimately have "Compound F Fs \<in># \<Psi>"   -- "Proof omitted"
+   ultimately have "Compound F Fs \<in># \<Psi>"   \<comment> \<open>Proof omitted\<close>
  (*<*)                proof-
                  have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
                  moreover
@@ -821,7 +821,7 @@ at the lower height of the premisses: *}
                  using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` 
                  and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
             then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
-  then (*>*) have "\<forall> p \<in> set Ps. (Compound F Fs \<in># succ p)"  -- {*Appears in every premiss*}
+  then (*>*) have "\<forall> p \<in> set Ps. (Compound F Fs \<in># succ p)"  \<comment> \<open>Appears in every premiss\<close>
                  (*<*)     using `Compound F Fs \<in># \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) (*>*)
          by (*<*)(drule_tac x=x in spec)(*>*) (auto(*<*) simp add:extend_def(*>*))
   (*<*)          then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)" using characteriseSeq

@@ -6,14 +6,14 @@ theory Type_System_example
 imports Type_System Strong_Security.Expr Strong_Security.Domain_example
 begin
 
---"When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains."
+\<comment> \<open>When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains.\<close>
 
 consts DA :: "('id,Dom) DomainAssignment"
 consts BMap :: "'val \<Rightarrow> bool"
 consts lH :: "(Dom,('id,'val) Expr) lHatches"
 
---"redefine all the abbreviations necessary for auxiliary lemmas with the 
-  correct parameter instantiation"
+\<comment> \<open>redefine all the abbreviations necessary for auxiliary lemmas with the 
+  correct parameter instantiation\<close>
 
 abbreviation MWLsStepsdet' :: 
   "(('id,'val) Expr, 'id, 'val, (('id,'val) Expr,'id) MWLsCom) TLSteps_curry"
@@ -54,7 +54,7 @@ where
 "htchLoc \<iota> \<equiv> WHATWHERE.htchLoc lH \<iota>"
 
 
--- "Security typing rules for expressions"
+\<comment> \<open>Security typing rules for expressions\<close>
 inductive 
 ExprSecTyping :: "(Dom, ('id,'val) Expr) Hatches
   \<Rightarrow> ('id, 'val) Expr \<Rightarrow> Dom \<Rightarrow> bool"
@@ -67,8 +67,8 @@ Hatch: "(d,e) \<in> H \<Longrightarrow> H \<turnstile>\<^bsub>\<E>\<^esub> e : d
 Ops: "\<lbrakk> \<forall>i < length arglist. H \<turnstile>\<^bsub>\<E>\<^esub> (arglist!i) : (dl!i) \<and> (dl!i) \<le> d \<rbrakk>
   \<Longrightarrow> H \<turnstile>\<^bsub>\<E>\<^esub> (Op f arglist) : d"
 
---"function substituting a certain expression with another expression 
-  in expressions"
+\<comment> \<open>function substituting a certain expression with another expression 
+  in expressions\<close>
 primrec Subst :: "('id, 'val) Expr \<Rightarrow> ('id, 'val) Expr 
   \<Rightarrow> ('id, 'val) Expr \<Rightarrow> ('id, 'val) Expr"
 ("_<_\\_>")
@@ -104,7 +104,7 @@ where
 "synIfSC e c1 c2 \<equiv> \<exists>d. ({} \<turnstile>\<^bsub>\<E>\<^esub> e : d \<and> (\<forall>d'. d \<le> d'))"
 
 
---"auxiliary lemma for locale interpretation (theorem 7 in original paper)"
+\<comment> \<open>auxiliary lemma for locale interpretation (theorem 7 in original paper)\<close>
 lemma ExprTypable_with_smallerd_implies_dH_indistinguishable:
   "\<lbrakk> H \<turnstile>\<^bsub>\<E>\<^esub> e : d'; d' \<le> d \<rbrakk> \<Longrightarrow> e \<equiv>\<^bsub>d,H\<^esub> e"
 proof (induct rule: ExprSecTyping.induct, 
@@ -137,7 +137,7 @@ proof (induct rule: ExprSecTyping.induct,
 
 qed
 
---"auxiliary lemma about substitutions in expressions and in memories"
+\<comment> \<open>auxiliary lemma about substitutions in expressions and in memories\<close>
 lemma substexp_substmem:
 "ExprEval e'<Var x\\e> m = ExprEval e' (m(x := ExprEval e m))
   \<and> ExprEvalL (SubstL elist (Var x) e) m
@@ -145,7 +145,7 @@ lemma substexp_substmem:
 by (induct_tac e' and elist rule: ExprEval.induct ExprEvalL.induct, simp_all)
 
 
---"another auxiliary lemma for locale interpretation (lemma 8 in original paper)"
+\<comment> \<open>another auxiliary lemma for locale interpretation (lemma 8 in original paper)\<close>
 lemma SubstClosure_implications:
 "\<lbrakk> SubstClosure x e; m \<sim>\<^bsub>d,(htchLoc \<iota>')\<^esub> m'; 
   \<lbrakk>x :=\<^bsub>\<iota>\<^esub> e\<rbrakk>(m) =\<^bsub>d\<^esub> \<lbrakk>x :=\<^bsub>\<iota>\<^esub> e\<rbrakk>(m') \<rbrakk>
@@ -205,7 +205,7 @@ proof -
     by (simp add: WHATWHERE.dH_equal_def)
 qed
 
---"interpretation of the abstract type system using the above definitions for the side conditions"
+\<comment> \<open>interpretation of the abstract type system using the above definitions for the side conditions\<close>
 interpretation Type_System_example: Type_System ExprEval BMap DA lH
   synAssignSC synWhileSC synIfSC
 by (unfold_locales, auto,

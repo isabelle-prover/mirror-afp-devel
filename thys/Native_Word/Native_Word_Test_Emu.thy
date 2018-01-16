@@ -20,7 +20,7 @@ definition test_uint16_emulation :: bool where
   "test_uint16_emulation \<longleftrightarrow> (0xFFFFF - 0x1000 = (0xEFFF :: uint16))"
 
 export_code test_uint16_emulation checking SML OCaml?
-  -- {* test the other target languages as well *} Haskell? Scala
+  \<comment> \<open>test the other target languages as well\<close> Haskell? Scala
 
 notepad begin
 have test_uint16 by eval
@@ -50,6 +50,6 @@ definition test_uint8_emulation :: bool where
   "test_uint8_emulation \<longleftrightarrow> (0xFFF - 0x10 = (0xEF :: uint8))"
 
 export_code test_uint8_emulation checking OCaml?
-  -- {* test the other target languages as well *} SML Haskell? Scala
+  \<comment> \<open>test the other target languages as well\<close> SML Haskell? Scala
 
 end

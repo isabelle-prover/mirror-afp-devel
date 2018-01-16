@@ -717,7 +717,7 @@ text {*
   The transfer package does a good job here.
 *}
 
-setup_lifting type_definition_trie -- {* also sets up code generation *}
+setup_lifting type_definition_trie \<comment> \<open>also sets up code generation\<close>
 
 lift_definition empty :: "('k :: cbl, 'v) trie" 
   is trie_empty
@@ -799,8 +799,8 @@ context fixes t :: "('k :: cbl, 'v) trie" begin
 
 lemma lookup_Trie_Mapping [code]:
   "Mapping.lookup (Trie_Mapping t) = lookup t"
-  -- {* Lookup does not need the check on @{term cbl},
-        because we have defined the pseudo-constructor @{term Trie_Mapping} in terms of @{term "lookup"} *}
+  \<comment> \<open>Lookup does not need the check on @{term cbl},
+        because we have defined the pseudo-constructor @{term Trie_Mapping} in terms of @{term "lookup"}\<close>
 by simp(transfer, simp)
 
 lemma update_Trie_Mapping [code]:

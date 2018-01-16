@@ -67,8 +67,8 @@ proof -
     apply (rule Var_Eq_subst_Iff [THEN Sym_L, THEN Iff_MP_same])
     apply (rule Sym_L [THEN rotate2])
     apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same], force)
-    --{*now the quantified case*}
-    --{*auto could be used but is VERY SLOW*}
+    \<comment> \<open>now the quantified case\<close>
+    \<comment> \<open>auto could be used but is VERY SLOW\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all
     apply (rule Disj_I2)
@@ -80,14 +80,14 @@ proof -
     apply (rule Ex_I [where x = "Var sn'"], simp)
     apply (simp_all add: SeqStTermP.simps [of l s _ v i sl sl' m n sm sm' sn sn'])
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
-    --{*first SeqStTermP subgoal*}
+    \<comment> \<open>first SeqStTermP subgoal\<close>
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*next SeqStTermP subgoal*}
+    \<comment> \<open>next SeqStTermP subgoal\<close>
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*finally, the equality pair*}
+    \<comment> \<open>finally, the equality pair\<close>
     apply (blast intro: Trans)
     done
 qed
@@ -120,42 +120,42 @@ proof -
     apply (rule cut_same)
     apply (rule cut1 [OF SeqStTermP_lemma [of m2 v a "Var i" "Var j'" s' "Var k'" n2 sm2 sm2' sn2 sn2']], simp_all, blast)
     apply (rule Disj_EH Conj_EH)+
-    --{*case 1, both sides equal "v"*}
+    \<comment> \<open>case 1, both sides equal "v"\<close>
     apply (blast intro: Trans Sym)
-    --{*case 2, @{term "Var i EQ v"} and also @{term "IndP (Var i) OR Var i NEQ v"}*}
+    \<comment> \<open>case 2, @{term "Var i EQ v"} and also @{term "IndP (Var i) OR Var i NEQ v"}\<close>
     apply (rule Conj_EH Disj_EH)+
     apply (blast intro: IndP_cong [THEN Iff_MP_same] not_IndP_VarP [THEN cut2])
     apply (metis Assume OrdNotEqP_E)
-    --{*case 3, both a variable and a pair*}
+    \<comment> \<open>case 3, both a variable and a pair\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all
     apply (rule cut_same [where A = "VarP (Q_Eats (Var sm) (Var sn))"])
     apply (blast intro: Trans Sym VarP_cong [where x=v, THEN Iff_MP_same] Hyp, blast)
-    --{*towards remaining cases*}
+    \<comment> \<open>towards remaining cases\<close>
     apply (rule Disj_EH Ex_EH)+
-    --{*case 4, @{term "Var i EQ v"} and also @{term "IndP (Var i) OR Var i NEQ v"}*}
+    \<comment> \<open>case 4, @{term "Var i EQ v"} and also @{term "IndP (Var i) OR Var i NEQ v"}\<close>
     apply (blast intro: IndP_cong [THEN Iff_MP_same] not_IndP_VarP [THEN cut2] OrdNotEqP_E)
-    --{*case 5, @{term "Var i EQ v"} for both*}
+    \<comment> \<open>case 5, @{term "Var i EQ v"} for both\<close>
     apply (blast intro: Trans Sym)
-    --{*case 6, both an atom and a pair*}
+    \<comment> \<open>case 6, both an atom and a pair\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all 
     apply (rule atom_HPairE)
     apply (simp add: HTuple.simps)
     apply (blast intro: Trans)
-    --{*towards remaining cases*}
+    \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH Ex_EH)+
     apply simp_all
-    --{*case 7, both an atom and a pair*}
+    \<comment> \<open>case 7, both an atom and a pair\<close>
     apply (rule cut_same [where A = "VarP (Q_Eats (Var sm2) (Var sn2))"])
     apply (blast intro: Trans Sym VarP_cong [where x=v, THEN Iff_MP_same] Hyp, blast)
-    --{*case 8, both an atom and a pair*}
+    \<comment> \<open>case 8, both an atom and a pair\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all
     apply (rule atom_HPairE)
     apply (simp add: HTuple.simps)
     apply (blast intro: Trans)
-    --{*case 9, two Eats terms*}
+    \<comment> \<open>case 9, two Eats terms\<close>
     apply (rule Ex_EH Disj_EH Conj_EH)+
     apply simp_all
     apply (rule All_E' [OF Hyp, where x="Var m"], blast)
@@ -287,7 +287,7 @@ proof -
     apply clarify
     apply (rule Disj_EH)
     apply (blast intro: Disj_I1 SubstAtomicP_cong [THEN Iff_MP2_same])
-    --{*now the quantified cases*}
+    \<comment> \<open>now the quantified cases\<close>
     apply (rule Ex_EH Conj_EH)+
     apply simp_all
     apply (rule Disj_I2)
@@ -299,14 +299,14 @@ proof -
     apply (rule Ex_I [where x = "Var sn'"], simp)
     apply (simp_all add: SeqSubstFormP.simps [of l s _ v u sl sl' m n sm sm' sn sn'])
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
-    --{*first SeqSubstFormP subgoal*}
+    \<comment> \<open>first SeqSubstFormP subgoal\<close>
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*next SeqSubstFormP subgoal*}
+    \<comment> \<open>next SeqSubstFormP subgoal\<close>
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*finally, the equality pairs*}
+    \<comment> \<open>finally, the equality pairs\<close>
     apply (rule anti_deduction [THEN thin1])
     apply (rule Sym_L [THEN rotate4])
     apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same])
@@ -362,9 +362,9 @@ proof -
     apply (rule cut_same)
     apply (rule cut1 [OF SeqSubstFormP_lemma [of m2 v a "Var i" "Var j'" s' "Var k'" n2 sm2 sm2' sn2 sn2']], simp_all, blast)
     apply (rule Disj_EH Conj_EH)+
-    --{*case 1, both sides are atomic*}
+    \<comment> \<open>case 1, both sides are atomic\<close>
     apply (blast intro: cut2 [OF SubstAtomicP_unique])
-    --{*case 2, atomic and also not*}
+    \<comment> \<open>case 2, atomic and also not\<close>
     apply (rule Ex_EH Conj_EH Disj_EH)+
     apply simp_all
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Disj_SubstAtomicP_Fls])
@@ -372,7 +372,7 @@ proof -
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Neg_SubstAtomicP_Fls])
     apply (rule Conj_EH)+
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Ex_SubstAtomicP_Fls])
-    --{*towards remaining cases*}
+    \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH Ex_EH)+
     apply simp_all
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Disj_SubstAtomicP_Fls])
@@ -380,10 +380,10 @@ proof -
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Neg_SubstAtomicP_Fls])
     apply (rule Conj_EH)+
     apply (metis Assume AssumeH(7) Disj_I1 Neg_I anti_deduction cut2 [OF Ex_SubstAtomicP_Fls])
-    --{*towards remaining cases*}
+    \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH Ex_EH)+
     apply simp_all
-    --{*case two Disj terms*}
+    \<comment> \<open>case two Disj terms\<close>
     apply (rule All_E' [OF Hyp, where x="Var m"], blast)
     apply (rule All_E' [OF Hyp, where x="Var n"], blast, simp)
     apply (rule Disj_EH, blast intro: thin1 ContraProve)+
@@ -401,20 +401,20 @@ proof -
     apply (rule thin1)
     apply (rule Disj_EH [OF ContraProve], blast intro: thin1 SeqSubstFormP_eq)+
     apply (blast intro: HPair_cong Trans [OF Hyp Sym])
-    --{*towards remaining cases*}
+    \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH)+
-    --{*Negation = Disjunction?*}
+    \<comment> \<open>Negation = Disjunction?\<close>
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
-   --{*Existential = Disjunction?*}
+   \<comment> \<open>Existential = Disjunction?\<close>
     apply (rule Conj_EH)
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
-     --{*towards remaining cases*}
+     \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH Ex_EH)+
     apply simp_all
-    --{*Disjunction = Negation?*}
+    \<comment> \<open>Disjunction = Negation?\<close>
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
     apply (rule Conj_EH Disj_EH)+
-    --{*case two Neg terms*}
+    \<comment> \<open>case two Neg terms\<close>
     apply (rule Eq_Trans_E [OF Hyp], blast, clarify)
     apply (rule thin1)
     apply (rule All_E' [OF Hyp, where x="Var m"], blast, simp)
@@ -425,18 +425,18 @@ proof -
     apply (rule All_E [where x="Var m2"], simp)
     apply (rule Disj_EH [OF ContraProve], blast intro: SeqSubstFormP_eq Sym_L)+
     apply (blast intro: HPair_cong Sym Trans [OF Hyp])
-    --{*Existential = Negation?*}
+    \<comment> \<open>Existential = Negation?\<close>
     apply (rule Conj_EH)+
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
-     --{*towards remaining cases*}
+     \<comment> \<open>towards remaining cases\<close>
     apply (rule Conj_EH Disj_EH Ex_EH)+
     apply simp_all
-    --{*Disjunction = Existential*}
+    \<comment> \<open>Disjunction = Existential\<close>
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
     apply (rule Conj_EH Disj_EH Ex_EH)+
-    --{*Negation = Existential*}
+    \<comment> \<open>Negation = Existential\<close>
     apply (rule Eq_Trans_E [OF Hyp], blast, force simp add: HTS)
-   --{*case two Ex terms*}
+   \<comment> \<open>case two Ex terms\<close>
     apply (rule Conj_EH)+
     apply (rule Eq_Trans_E [OF Hyp], blast, clarify)
     apply (rule thin1)

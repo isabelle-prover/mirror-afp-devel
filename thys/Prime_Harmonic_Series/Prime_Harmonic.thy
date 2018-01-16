@@ -86,17 +86,17 @@ theorem prime_harmonic_lower:
   assumes n: "n \<ge> 2"
   shows "(\<Sum>p\<leftarrow>primes_upto n. 1 / real p) \<ge> ln (harm n) - ln (5/3)"
 proof -
-  -- \<open>the set of primes that we will allow in the squarefree part\<close>
+  \<comment> \<open>the set of primes that we will allow in the squarefree part\<close>
   define P where "P n = set (primes_upto n)" for n
   {
     fix n :: nat
     have "finite (P n)" by (simp add: P_def)
   } note [simp] = this
 
-  -- \<open>The function that combines the squarefree part and the square part\<close>
+  \<comment> \<open>The function that combines the squarefree part and the square part\<close>
   define f where "f = (\<lambda>(R, s :: nat). \<Prod>R * s^2)"
 
-  -- \<open>@{term f} is injective if the squarefree part contains only primes
+  \<comment> \<open>@{term f} is injective if the squarefree part contains only primes
       and the square part is positive.\<close>
   have inj: "inj_on f (Pow (P n)\<times>{1..n})"
   proof (rule inj_onI, clarify, rule conjI)
@@ -108,7 +108,7 @@ proof -
           insert A fin, auto simp: f_def P_def set_primes_upto)[])+
   qed
 
-  -- \<open>@{term f} hits every number between @{term "1::nat"} and @{term "n"}. It also hits a lot
+  \<comment> \<open>@{term f} hits every number between @{term "1::nat"} and @{term "n"}. It also hits a lot
       of other numbers, but we do not care about those, since we only need a lower bound.\<close>
   have surj: "{1..n} \<subseteq> f ` (Pow (P n)\<times>{1..n})"
   proof
@@ -121,7 +121,7 @@ proof -
     ultimately show "x \<in> f ` (Pow (P n)\<times>{1..n})" by simp
   qed
 
-  -- \<open>We now show the main result by rearranging the sum over all primes to a product over all
+  \<comment> \<open>We now show the main result by rearranging the sum over all primes to a product over all
       all squarefree parts times a sum over all square parts, and then applying some simple-minded
       approximation\<close>
   have "harm n = (\<Sum>n=1..n. 1 / real n)" by (simp add: harm_def field_simps)

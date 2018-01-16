@@ -33,11 +33,11 @@ by(auto simp add: all_final_except_def)
 
 inductive must_wait :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l + 't + 't) \<Rightarrow> 't set \<Rightarrow> bool"
   for s :: "('l,'t,'x,'m,'w) state" and t :: "'t" where
-  -- "Lock l"
+  \<comment> \<open>Lock l\<close>
   "\<lbrakk> has_lock (locks s $ l) t'; t' \<noteq> t; t' \<in> Ts \<rbrakk> \<Longrightarrow> must_wait s t (Inl l) Ts"
-| -- "Join t'"
+| \<comment> \<open>Join t'\<close>
   "\<lbrakk> not_final_thread s t'; t' \<in> Ts \<rbrakk> \<Longrightarrow> must_wait s t (Inr (Inl t')) Ts"
-| -- "IsInterrupted t' True"
+| \<comment> \<open>IsInterrupted t' True\<close>
   "\<lbrakk> all_final_except s Ts; t' \<notin> interrupts s \<rbrakk> \<Longrightarrow> must_wait s t (Inr (Inr t')) Ts"
 
 declare must_wait.cases [elim]

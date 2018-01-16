@@ -14,10 +14,10 @@ text {* A storage location can be a field of an object, a static field,
  the length of an array, or the contents of an array.  
 *}
 
-datatype Location = objLoc    CAttId ObjectId     --{* field in object *} 
-                  | staticLoc AttId               --{* static field in concrete class *}
-                  | arrLenLoc Arraytype ObjectId   --{* length of an array *}
-                  | arrLoc    Arraytype ObjectId nat --{* contents of an array *}
+datatype Location = objLoc    CAttId ObjectId     \<comment> \<open>field in object\<close> 
+                  | staticLoc AttId               \<comment> \<open>static field in concrete class\<close>
+                  | arrLenLoc Arraytype ObjectId   \<comment> \<open>length of an array\<close>
+                  | arrLoc    Arraytype ObjectId nat \<comment> \<open>contents of an array\<close>
 
 text {* We only directly support one-dimensional arrays. Multidimensional
 arrays can be simulated by arrays of references to arrays.

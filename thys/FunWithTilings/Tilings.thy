@@ -120,7 +120,7 @@ apply (induct set: tiling)
  apply (drule_tac [2] domino_singletons)
  apply (auto)
 apply (subgoal_tac "\<forall>p C. C \<inter> a = {p} --> p \<notin> t")
-  -- {* this lemma tells us that both ``inserts'' are non-trivial *}
+  \<comment> \<open>this lemma tells us that both ``inserts'' are non-trivial\<close>
  apply (simp (no_asm_simp))
 apply blast
 done

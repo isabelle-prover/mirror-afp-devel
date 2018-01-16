@@ -433,7 +433,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
   lemmas [intf_of_assn] = intf_of_assnI[where R="hm_rel K V" and 'a="('kk,'vv) i_map" for K V]
 
   lemma hm_rel_id_conv: "hm_rel id_assn id_assn = hm_rel_np"
-    -- \<open>Used for generic algorithms: Unfold with this, then let decl-impl compose with \<open>map_rel\<close> again.\<close>
+    \<comment> \<open>Used for generic algorithms: Unfold with this, then let decl-impl compose with \<open>map_rel\<close> again.\<close>
     unfolding hm_rel_def by simp
 
 
@@ -521,7 +521,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
   sepref_decl_impl (ismop) hm_pop_min: hm_pop_min_op_impl.refine[FCOMP hm_pop_min_op_aref] .
   sepref_decl_impl (ismop) hm_peek_min: hm_peek_min_op_impl.refine[FCOMP hm_peek_min_op_aref] .
 
-  -- \<open>Realized as generic algorithm. Note that we use @{term id_assn} for the elements.\<close>
+  \<comment> \<open>Realized as generic algorithm. Note that we use @{term id_assn} for the elements.\<close>
   sepref_definition hm_upd_op_impl is "uncurry2 (RETURN ooo op_map_update)" :: "[\<lambda>((k,_),_). k<maxsize]\<^sub>a id_assn\<^sup>k *\<^sub>a id_assn\<^sup>k *\<^sub>a (hm_rel id_assn id_assn)\<^sup>d \<rightarrow> hm_rel id_assn id_assn"
     unfolding op_pm_set_gen_impl by sepref
 

@@ -102,8 +102,8 @@ syntax "iter_hcomp_syntax" ::
       ("(\<Otimes>_|\<in>|_. _)" [0,0,10] 10)
 translations "\<Otimes>x|\<in>|M. e" == "CONST iter_hcomp M (\<lambda>x. e)"
 
-term "\<Otimes>P|\<in>|Ps. f P" -- "this is eta-expanded, so prints in expanded form"
-term "\<Otimes>P|\<in>|Ps. f" -- "this isn't eta-expanded, so prints as written"
+term "\<Otimes>P|\<in>|Ps. f P" \<comment> \<open>this is eta-expanded, so prints in expanded form\<close>
+term "\<Otimes>P|\<in>|Ps. f" \<comment> \<open>this isn't eta-expanded, so prints as written\<close>
 
 lemma iter_hcomp_cong:
   assumes "\<forall>v \<in> fset vs. \<phi> v = \<phi>' v"

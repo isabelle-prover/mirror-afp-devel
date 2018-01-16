@@ -282,7 +282,7 @@ proof -
     done    
 qed
     
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
   
 subsection \<open>Main Algorithm\<close>
   
@@ -336,6 +336,6 @@ theorem fifo_push_relabel_correct:
   qed
   done
   
-end -- \<open>Network\<close> 
+end \<comment> \<open>Network\<close> 
     
 end

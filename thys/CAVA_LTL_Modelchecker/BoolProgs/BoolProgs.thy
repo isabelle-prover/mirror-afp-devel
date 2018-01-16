@@ -161,7 +161,7 @@ subsection {* Finiteness of reachable configurations *}
 
 inductive_set reachable_configs
   for bp :: bprog
-  and c\<^sub>s :: config -- "start configuration"
+  and c\<^sub>s :: config \<comment> \<open>start configuration\<close>
 where
 "c\<^sub>s \<in> reachable_configs bp c\<^sub>s" |
 "c \<in> reachable_configs bp c\<^sub>s \<Longrightarrow> x \<in> set (nexts bp c) \<Longrightarrow> x \<in> reachable_configs bp c\<^sub>s"

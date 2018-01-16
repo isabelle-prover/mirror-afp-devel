@@ -204,7 +204,7 @@ definition propValid :: "APs \<Rightarrow> gState \<Rightarrow> nat \<Rightarrow
   "propValid APs g i \<longleftrightarrow> i < IArray.length APs \<and> exprArith g emptyProc (APs!!i) \<noteq> 0"
 
 definition promela_E :: "program \<Rightarrow> (gState \<times> gState) set"
-  -- "Transition relation of a promela program"
+  \<comment> \<open>Transition relation of a promela program\<close>
 where
   "promela_E prog \<equiv> {(g,g'). g' \<in> ls.\<alpha> (nexts_code prog g)}"
 
@@ -212,7 +212,7 @@ definition promela_E_ltl :: "program \<times> APs \<Rightarrow> (gState \<times>
   "promela_E_ltl = promela_E \<circ> fst"
 
 definition promela_is_run' :: "program \<times> gState \<Rightarrow> gState word \<Rightarrow> bool"
-  -- "Predicate defining runs of promela programs"
+  \<comment> \<open>Predicate defining runs of promela programs\<close>
 where
   "promela_is_run' progg r \<equiv> 
       let (prog,g\<^sub>0)=progg in 

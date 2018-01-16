@@ -146,7 +146,7 @@ text {*
 definition hitting_paths where
   "hitting_paths \<equiv> \<lambda>x. x \<noteq> v0 \<and> ((\<exists>xs \<in> paths. x \<in> set xs) \<or> x = v1)"
 
-end -- "DisjointPaths"
+end \<comment> \<open>DisjointPaths\<close>
 
 
 section {* One More Path *}
@@ -343,6 +343,6 @@ next
   qed
 qed
 
-end -- "locale @{locale DisjointPathsPlusOne}"
+end \<comment> \<open>locale @{locale DisjointPathsPlusOne}\<close>
 
 end

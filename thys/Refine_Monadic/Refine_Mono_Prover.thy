@@ -13,7 +13,7 @@ begin
     "Refinement framework: Monotonicity prover"
 
   locale mono_setup_loc = 
-    -- {* Locale to set up monotonicity prover for given ordering operator *}
+    \<comment> \<open>Locale to set up monotonicity prover for given ordering operator\<close>
     fixes le :: "'a \<Rightarrow> 'a \<Rightarrow> bool" 
     assumes refl: "le x x"
   begin

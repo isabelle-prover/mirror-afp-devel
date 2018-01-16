@@ -6,23 +6,23 @@ theory Com imports Main begin
 
 subsection {* Variables and Values *}
 
-type_synonym vname = string -- "names for variables"
+type_synonym vname = string \<comment> \<open>names for variables\<close>
 
 datatype val
-  = Bool bool      -- "Boolean value"
-  | Intg int       -- "integer value" 
+  = Bool bool      \<comment> \<open>Boolean value\<close>
+  | Intg int       \<comment> \<open>integer value\<close> 
 
 abbreviation "true == Bool True"
 abbreviation "false == Bool False"
 
 subsection {* Expressions and Commands*}
 
-datatype bop = Eq | And | Less | Add | Sub     -- "names of binary operations"
+datatype bop = Eq | And | Less | Add | Sub     \<comment> \<open>names of binary operations\<close>
 
 datatype expr
-  = Val val                                          -- "value"
-  | Var vname                                        -- "local variable"
-  | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  -- "binary operation"
+  = Val val                                          \<comment> \<open>value\<close>
+  | Var vname                                        \<comment> \<open>local variable\<close>
+  | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  \<comment> \<open>binary operation\<close>
 
 
 fun binop :: "bop \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val option"
@@ -36,7 +36,7 @@ where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^su
 
 datatype cmd
   = Skip
-  | LAss vname expr        ("_:=_" [70,70] 70)  -- "local assignment"
+  | LAss vname expr        ("_:=_" [70,70] 70)  \<comment> \<open>local assignment\<close>
   | Seq cmd cmd            ("_;;/ _" [61,60] 60)
   | Cond expr cmd cmd      ("if '(_') _/ else _" [80,79,79] 70)
   | While expr cmd         ("while '(_') _" [80,79] 70)

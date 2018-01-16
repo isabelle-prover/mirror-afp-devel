@@ -9,7 +9,7 @@ experiment begin
 
 schematic_goal e1_fas:
   "[1, (X!1)\<^sup>2 - X!0] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 
 concrete_definition e1_fas uses e1_fas
@@ -87,7 +87,7 @@ experiment begin
 
 schematic_goal vdp_fas:
   "[X!1, X!1 * (1 - (X!0)\<^sup>2) - X!0] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 
 concrete_definition vdp_fas uses vdp_fas
@@ -231,7 +231,7 @@ text \<open>encoding a constant parameter and higher derivatives in the ode...\<
 
 schematic_goal bessel_fas:
   "[0, -1, -(X!3), (((X!1)\<^sup>2 - (X!0)\<^sup>2) * X!2 + (X!1) * (X!3)) / (X!1)\<^sup>2] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 concrete_definition bessel_fas uses bessel_fas
 
@@ -268,7 +268,7 @@ experiment begin
 
 schematic_goal oil_fas:
   "[X!1, (X!1)\<^sup>2 - 3 / (0.001 + (X!0)\<^sup>2)] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 
 concrete_definition oil_fas uses oil_fas
@@ -306,7 +306,7 @@ experiment begin
 
 schematic_goal e3_fas:
   "[1, (X!1)\<^sup>2 + (X!0)\<^sup>2] = interpret_floatariths ?fas X"
-  unfolding power2_eq_square\<comment>\<open>TODO: proper affine implementation of power\<close>
+  unfolding power2_eq_square\<comment> \<open>TODO: proper affine implementation of power\<close>
   by (reify_floatariths)
 concrete_definition e3_fas uses e3_fas
 

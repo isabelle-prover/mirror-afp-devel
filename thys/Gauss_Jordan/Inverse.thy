@@ -93,7 +93,7 @@ show "id_upt_k (Gauss_Jordan A) (Suc k)"
 proof (unfold id_upt_k_def, auto)
 fix j::'n
 assume j_less_suc: "to_nat j < Suc k"
---"First of all we prove a property which will be useful later"
+\<comment> \<open>First of all we prove a property which will be useful later\<close>
 have greatest_prop: "j \<noteq> 0 \<Longrightarrow> to_nat j = k \<Longrightarrow> (GREATEST m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1"
 proof (rule Greatest_equality)
 assume j_not_zero: "j \<noteq> 0" and j_eq_k: "to_nat j = k"
@@ -137,7 +137,7 @@ assume j_not_zero: "j \<noteq> 0" and j_eq_k: "to_nat j = k"
 
 show Gauss_jj_1: "Gauss_Jordan A $ j $ j = 1"
 proof (cases "j=0")
---"In case that j be zero, the result is trivial"
+\<comment> \<open>In case that j be zero, the result is trivial\<close>
 case True show ?thesis
   proof (unfold True, rule rref_first_element)
      show "reduced_row_echelon_form (Gauss_Jordan A)" by (rule rref_Gauss_Jordan)
@@ -147,7 +147,7 @@ next
 case False note j_not_zero = False
 show ?thesis
 proof (cases "to_nat j < k")
-  case True thus ?thesis using id_k unfolding id_upt_k_def by presburger  --"Easy due to the inductive hypothesis"
+  case True thus ?thesis using id_k unfolding id_upt_k_def by presburger  \<comment> \<open>Easy due to the inductive hypothesis\<close>
   next
   case False
   hence j_eq_k: "to_nat j = k" using j_less_suc by auto
@@ -165,19 +165,19 @@ proof (cases "to_nat j < k")
                      show "Gauss_Jordan A $ j $ j \<noteq> 0" using gauss_jj_not_0 .
                      show "\<And>y. Gauss_Jordan A $ j $ y \<noteq> 0 \<Longrightarrow> j \<le> y" by (metis le_less_linear is_zero_row_upt_k_def j_eq_k to_nat_mono zero_j_k)
                   qed
-                hence "Gauss_Jordan A $ j $ (LEAST n. Gauss_Jordan A $ j $ n \<noteq> 0) \<noteq> 1" using gauss_jj_not_1 by auto --"Contradiction with the second condition of rref"
+                hence "Gauss_Jordan A $ j $ (LEAST n. Gauss_Jordan A $ j $ n \<noteq> 0) \<noteq> 1" using gauss_jj_not_1 by auto \<comment> \<open>Contradiction with the second condition of rref\<close>
                 thus False by (metis gauss_jj_not_0 is_zero_row_upt_k_def j_eq_k lessI rref_suc_k rref_upt_condition2)             
                 next
                   case True
                   note gauss_jj_0 = True
                   have zero_j_suc_k: "is_zero_row_upt_k j (Suc k) (Gauss_Jordan A)" 
                     by (rule is_zero_row_upt_k_suc[OF zero_j_k], metis gauss_jj_0 j_eq_k to_nat_from_nat)                  
-                    have "\<not> (\<exists>B. B ** (Gauss_Jordan A) = mat 1)" --"This will be a contradiction"
+                    have "\<not> (\<exists>B. B ** (Gauss_Jordan A) = mat 1)" \<comment> \<open>This will be a contradiction\<close>
                     proof (unfold matrix_left_invertible_independent_columns, simp, 
                         rule exI[of _ "\<lambda>i. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0)"], rule conjI)
                       show "(\<Sum>i\<in>UNIV. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0) *s column i (Gauss_Jordan A)) = 0"                        
                         proof (unfold vec_eq_iff sum_component, auto)
-                          --"We write the column j in a linear combination of the previous ones, which is a contradiction (the matrix wouldn't be invertible)"
+                          \<comment> \<open>We write the column j in a linear combination of the previous ones, which is a contradiction (the matrix wouldn't be invertible)\<close>
                             let ?f="\<lambda>i. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0)"
                             fix i
                             let ?g="(\<lambda>x. ?f x * column x (Gauss_Jordan A) $ i)"
@@ -194,7 +194,7 @@ proof (cases "to_nat j < k")
                                 fix a
                                 assume a_not_j: "a \<noteq> j" and a_not_i: "a \<noteq> i" and a_less_j: "a < j" and column_a_not_zero: "column a (Gauss_Jordan A) $ i \<noteq> 0"
                                 have "Gauss_Jordan A $ i $ a = 0" using id_k unfolding id_upt_k_def using a_less_j j_eq_k using i_less_j a_not_i to_nat_mono by blast
-                                thus "column j (Gauss_Jordan A) $ a = 0" using column_a_not_zero unfolding column_def by simp --"Contradiction"
+                                thus "column j (Gauss_Jordan A) $ a = 0" using column_a_not_zero unfolding column_def by simp \<comment> \<open>Contradiction\<close>
                                 qed
                               have "sum ?g UNIV = ?g i + sum ?g (UNIV - {i})" by (rule sum.remove, simp_all)
                               also have "... = ?g i + ?g j + sum ?g (UNIV - {i} - {j})" unfolding sum_rw by auto
@@ -230,9 +230,9 @@ proof (cases "to_nat j < k")
                    qed
                     fix i::'n
                     assume i_less_suc: "to_nat i < Suc k" and i_not_j: "i \<noteq> j"
-                    show "Gauss_Jordan A $ i $ j = 0" --"This result is proved making use of the 4th condition of rref"
+                    show "Gauss_Jordan A $ i $ j = 0" \<comment> \<open>This result is proved making use of the 4th condition of rref\<close>
                       proof (cases "to_nat i < k \<and> to_nat j < k")
-                        case True thus ?thesis using id_k i_not_j unfolding id_upt_k_def by blast --"Easy due to the inductive hypothesis"
+                        case True thus ?thesis using id_k i_not_j unfolding id_upt_k_def by blast \<comment> \<open>Easy due to the inductive hypothesis\<close>
                         next
                         case False note i_or_j_ge_k = False
                         show ?thesis

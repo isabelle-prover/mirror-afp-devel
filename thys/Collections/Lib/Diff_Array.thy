@@ -24,11 +24,11 @@ where "array_set (Array A) n a = Array (A[n := a])"
 definition array_of_list :: "'a list \<Rightarrow> 'a array"
 where "array_of_list = Array"
 
-  -- "Grows array by @{text inc} elements initialized to value @{text x}."
+  \<comment> \<open>Grows array by @{text inc} elements initialized to value @{text x}.\<close>
 primrec array_grow :: "'a array \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a array"
   where "array_grow (Array A) inc x = Array (A @ replicate inc x)"
 
-  -- {*Shrinks array to new size @{text sz}. Undefined if @{text "sz > array_length"}*}
+  \<comment> \<open>Shrinks array to new size @{text sz}. Undefined if @{text "sz > array_length"}\<close>
 primrec array_shrink :: "'a array \<Rightarrow> nat \<Rightarrow> 'a array"
   where "array_shrink (Array A) sz = (
   if (sz > length A) then

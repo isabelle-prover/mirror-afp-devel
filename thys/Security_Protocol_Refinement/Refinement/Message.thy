@@ -26,13 +26,13 @@ lemma Un_idem_collapse [simp]: "A \<union> (B \<union> A) = B \<union> A"
 by blast
 
 datatype
-     msg = Agent  agent     \<comment>\<open>Agent names\<close>
-         | Number nat       \<comment>\<open>Ordinary integers, timestamps, ...\<close>
-         | Nonce  nonce     \<comment>\<open>Unguessable nonces\<close>
-         | Key    key       \<comment>\<open>Crypto keys\<close>
-         | Hash   msg       \<comment>\<open>Hashing\<close>
-         | MPair  msg msg   \<comment>\<open>Compound messages\<close>
-         | Crypt  key msg   \<comment>\<open>Encryption, public- or shared-key\<close>
+     msg = Agent  agent     \<comment> \<open>Agent names\<close>
+         | Number nat       \<comment> \<open>Ordinary integers, timestamps, ...\<close>
+         | Nonce  nonce     \<comment> \<open>Unguessable nonces\<close>
+         | Key    key       \<comment> \<open>Crypto keys\<close>
+         | Hash   msg       \<comment> \<open>Hashing\<close>
+         | MPair  msg msg   \<comment> \<open>Compound messages\<close>
+         | Crypt  key msg   \<comment> \<open>Encryption, public- or shared-key\<close>
 
 
 text\<open>Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...\<close>
@@ -47,13 +47,13 @@ translations
 definition
   HPair :: "[msg,msg] \<Rightarrow> msg"                       ("(4Hash[_] /_)" [0, 1000])
 where
-  \<comment>\<open>Message Y paired with a MAC computed with the help of X\<close>
+  \<comment> \<open>Message Y paired with a MAC computed with the help of X\<close>
   "Hash[X] Y \<equiv> \<lbrace>Hash\<lbrace>X,Y\<rbrace>, Y\<rbrace>"
 
 definition
   keysFor :: "msg set \<Rightarrow> key set"
 where
-    \<comment>\<open>Keys useful to decrypt elements of a message set\<close>
+    \<comment> \<open>Keys useful to decrypt elements of a message set\<close>
   "keysFor H \<equiv> invKey ` {K. \<exists>X. Crypt K X \<in> H}"
 
 

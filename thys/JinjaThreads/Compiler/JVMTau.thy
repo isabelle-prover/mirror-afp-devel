@@ -166,13 +166,13 @@ where
   "\<tau>move2 P h stk c pc xcp \<Longrightarrow> \<tau>move2 P h stk (while (c) e) pc xcp"
 | \<tau>move2While2:
   "\<tau>move2 P h stk e pc xcp \<Longrightarrow> \<tau>move2 P h stk (while (c) e) (Suc (length (compE2 c) + pc)) xcp"
-| \<tau>move2While3: -- "Jump back to condition"
+| \<tau>move2While3: \<comment> \<open>Jump back to condition\<close>
   "\<tau>move2 P h stk (while (c) e) (Suc (Suc (length (compE2 c) + length (compE2 e)))) None"
-| \<tau>move2While4: -- "last instruction: Push Unit"
+| \<tau>move2While4: \<comment> \<open>last instruction: Push Unit\<close>
   "\<tau>move2 P h stk (while (c) e) (Suc (Suc (Suc (length (compE2 c) + length (compE2 e))))) None"
-| \<tau>move2While5: -- "IfFalse instruction"
+| \<tau>move2While5: \<comment> \<open>IfFalse instruction\<close>
   "\<tau>move2 P h stk (while (c) e) (length (compE2 c)) None"
-| \<tau>move2While6: -- "Pop instruction"
+| \<tau>move2While6: \<comment> \<open>Pop instruction\<close>
   "\<tau>move2 P h stk (while (c) e) (Suc (length (compE2 c) + length (compE2 e))) None"
 
 | \<tau>move2Throw1:
@@ -439,7 +439,7 @@ apply(clarsimp)
 apply(cases xcp)
  apply(rename_tac stk loc C M pc FRS M' Ts T meth mxs mxl ins xt)
  apply(case_tac "ins ! pc")
- prefer 19 -- BinOpInstr
+ prefer 19 \<comment> \<open>BinOpInstr\<close>
  apply(rename_tac bop)
  apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
  apply(auto simp add: split_beta \<tau>external_def split: if_split_asm)

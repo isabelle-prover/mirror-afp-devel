@@ -33,11 +33,11 @@ inductive cdep_edge :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rig
   and DynPDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
-      -- "Syntax"
+      \<comment> \<open>Syntax\<close>
   "n -as\<rightarrow>\<^sub>c\<^sub>d n' == DynPDG_edge n None as n'"
   | "n -{V}as\<rightarrow>\<^sub>d\<^sub>d n' == DynPDG_edge n (Some V) as n'"
 
-      -- "Rules"
+      \<comment> \<open>Rules\<close>
   | DynPDG_cdep_edge:
   "n controls n' via as \<Longrightarrow> n -as\<rightarrow>\<^sub>c\<^sub>d n'"
 

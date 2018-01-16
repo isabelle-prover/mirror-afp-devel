@@ -207,7 +207,7 @@ lemma SATAxiomProofTree[rule_format]: "SATAxiom (sequent gamma) --> proofTree (t
 lemma SATAxiomEq: "(proofTree (tree subs gamma) & terminal subs gamma) = SATAxiom (sequent gamma)"
   apply(blast intro: SATAxiomProofTree proofTreeTerminal tree.tree0  SATAxiomTerminal)
   done
-    -- "FIXME tjr blast sensitive to obj imp vs meta imp for pTT"
+    \<comment> \<open>FIXME tjr blast sensitive to obj imp vs meta imp for pTT\<close>
 
 
 subsection "SATAxioms are deductions: - needed"
@@ -235,7 +235,7 @@ lemma subsJustified':
     apply(rule DisjI) apply assumption apply(rule rulesInPCs)+
    apply clarify apply(simp add: ss)
    apply(rule AllI) apply assumption apply(rule finiteFreshVar) apply(rule finite_freeVarsFL) apply (rule rulesInPCs, clarify) apply(simp add: ss)
-  apply(rule ContrI) -- "!"
+  apply(rule ContrI) \<comment> \<open>!\<close>
   apply(rule_tac w = "X n" in ExI) apply(rule inDed_mono) apply assumption apply force apply(rule rulesInPCs)+
   done
 
@@ -281,7 +281,7 @@ subsection "path: nforms = [] implies"
 
 lemma nformsNoContains: "[| branch subs gamma f; !n . ~proofTree (tree subs (f n)); nforms (f n) = []  |] ==> ~ contains f iA n"
   apply(simp add: contains_def2) done
-    -- "FIXME tjr assumptions not required"
+    \<comment> \<open>FIXME tjr assumptions not required\<close>
 
 lemma nformsTerminal: "nforms (f n) = [] ==> terminal subs (f n)"
   apply(simp add: subs_def Let_def terminal_def nforms_def split_beta)
@@ -379,7 +379,7 @@ lemma terminationRule [rule_format]:
   (is "_ \<Longrightarrow> ?P m") 
   apply (rule r''[of msrFn "?P" m], blast)
   done
-    -- "FIXME ugly"
+    \<comment> \<open>FIXME ugly\<close>
 
 
 subsection "costBarrier: lemmas"
@@ -419,22 +419,22 @@ lemma costBarrierDecreases':
   shows "~SATAxiom (sequent 
 (a, (num,fm) # list)) --> iA ~= (num, fm) --> \<not> proofTree (tree subs (a, (num, fm) # list)) --> fSucn : subs (a, (num, fm) # list) --> iA \<in> set list --> costBarrier iA (fSucn) < costBarrier iA (a, (num, fm) # list)"
   apply(rule_tac A=fm in formula_signs_cases)
-    -- "atoms"
+    \<comment> \<open>atoms\<close>
        apply(simp add: ss)
       apply(simp add: ss)
-        -- "conj"
+        \<comment> \<open>conj\<close>
      apply clarify
      apply(simp add: ss)
      apply(erule disjE)
       apply(simp add: ss exp2)
      apply(simp add: ss exp2)
-    -- "disj"
+    \<comment> \<open>disj\<close>
     apply clarify
     apply(simp add: ss exp1 exp1')
-    -- "all"
+    \<comment> \<open>all\<close>
    apply clarify
    apply(simp add: ss size_instance)
-  -- "ex"
+  \<comment> \<open>ex\<close>
   apply clarify
   apply(simp add: ss size_instance)
   done
@@ -458,7 +458,7 @@ lemma costBarrierDecreases:
    apply(blast dest: SATAxiomTerminal)
   apply(blast dest: containsNotTerminal)
   done
-  -- "FIXME boring splitting etc."
+  \<comment> \<open>FIXME boring splitting etc.\<close>
 
 
 subsection "path: EV contains implies EV considers"
@@ -705,7 +705,7 @@ lemma notTerminalSucNotTerminal: "\<lbrakk> \<not> terminal subs (f (Suc n)); br
   apply(erule contrapos_nn)
   apply(rule_tac branchTerminalPropagates[of _ _ _ _ 1, simplified])
   apply(assumption+) done
-    -- "FIXME move to Tree?"
+    \<comment> \<open>FIXME move to Tree?\<close>
 
 lemma evContainsExSuc_containsEx:
   "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
@@ -733,12 +733,12 @@ lemma evContainsExSuc_containsEx:
   apply(case_tac "nforms (f n)") apply simp apply(case_tac a, force)
   apply(erule exE)+
   apply(unfold considers_def) apply(simp add: nforms_def)
-  -- "shift A into succedent"
+  \<comment> \<open>shift A into succedent\<close>
   apply(rule_tac P="snd (f n) = (ia, A) # nAs" in rev_mp) apply assumption apply(thin_tac "snd (f n) = (ia, A) # nAs")
   apply(rule_tac A=A in formula_signs_cases)
   apply(auto simp add: subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def contains_def2 Let_def)
   done
-    -- "phew, bit precarious, but not too much going on besides unfolding defns. and computing a bit. Need to set simps up"
+    \<comment> \<open>phew, bit precarious, but not too much going on besides unfolding defns. and computing a bit. Need to set simps up\<close>
 
 
 subsection "EV contains: contain any (i,FEx y) means contain all (i,FEx y)"
@@ -854,16 +854,16 @@ lemma path_evalF':
   |] ==> (? i . EV (contains f (i,A))) \<longrightarrow> ~(evalF (counterModel f) counterAssign A)"
   apply (rule_tac strong_formula_induct, rule) 
   apply(rule formula_signs_cases)
-       -- "atom"
+       \<comment> \<open>atom\<close>
        apply(simp add: ss del: map_map)
       apply(rule, rule)
       apply(simp add: ss del: map_map)
       apply(force dest: notEvContainsBothAtoms)
-     -- "conj"
+     \<comment> \<open>conj\<close>
      apply(force dest: evContainsConj)
-     -- "disj"
+     \<comment> \<open>disj\<close>
     apply(force dest: evContainsDisj)
-   -- "all"
+   \<comment> \<open>all\<close>
    apply(rule, rule)
    apply(erule exE)
    apply(drule_tac evContainsAll) apply assumption apply assumption
@@ -873,7 +873,7 @@ lemma path_evalF':
    apply simp
    apply(simp add: ss1)
    apply(rule_tac x="counterAssign v" in bexI) apply simp apply(simp add: inCounterM) 
-  -- "ex"
+  \<comment> \<open>ex\<close>
   apply(rule, rule)
   apply(erule exE)
   apply(drule_tac evContainsExval) apply assumption apply assumption

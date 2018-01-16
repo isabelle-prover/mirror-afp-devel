@@ -13,9 +13,9 @@ imports
   "../Basic/Auxiliary"
 begin
 
-type_synonym cname = String.literal -- "class names"
-type_synonym mname = String.literal -- "method name"
-type_synonym vname = String.literal -- "names for local/field variables"
+type_synonym cname = String.literal \<comment> \<open>class names\<close>
+type_synonym mname = String.literal \<comment> \<open>method name\<close>
+type_synonym vname = String.literal \<comment> \<open>names for local/field variables\<close>
 
 definition Object :: cname
 where "Object \<equiv> STR ''java/lang/Object''"
@@ -117,14 +117,14 @@ by(simp_all add: identifier_name_defs)
 
 lemmas synth_method_names_neq [simp] = synth_method_names_neq_aux synth_method_names_neq_aux[symmetric]
 
--- "types"
+\<comment> \<open>types\<close>
 datatype ty
-  = Void          -- "type of statements"
+  = Void          \<comment> \<open>type of statements\<close>
   | Boolean
   | Integer
-  | NT            -- "null type"
-  | Class cname   -- "class type"
-  | Array ty      ("_\<lfloor>\<rceil>" 95) -- "array type"
+  | NT            \<comment> \<open>null type\<close>
+  | Class cname   \<comment> \<open>class type\<close>
+  | Array ty      ("_\<lfloor>\<rceil>" 95) \<comment> \<open>array type\<close>
 
 context
   notes [[inductive_internals]]

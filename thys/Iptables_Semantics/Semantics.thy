@@ -1056,11 +1056,11 @@ begin
       next
       case (Call chain_name)
         thm wf_induct_rule[where r="(calls_chain \<Gamma>)" and P="\<lambda>x. \<exists>t. \<Gamma>,\<gamma>,p\<turnstile> \<langle>[Rule m (Call x)], Undecided\<rangle> \<Rightarrow> t"]
-        --\<open>Only the assumptions we will need\<close>
+        \<comment> \<open>Only the assumptions we will need\<close>
         from assms have "wf (called_by_chain \<Gamma>)"
             "\<forall>rsg\<in>ran \<Gamma>. wf_chain \<Gamma> rsg"
             "\<forall>rsg\<in>ran \<Gamma>. \<forall>r\<in>set rsg. (\<forall>chain. get_action r \<noteq> Goto chain) \<and> get_action r \<noteq> Unknown" by auto
-        --\<open>strengthening the IH to do a well-founded induction\<close>
+        \<comment> \<open>strengthening the IH to do a well-founded induction\<close>
         hence "matches \<gamma> m p \<Longrightarrow> wf_chain \<Gamma> [Rule m (Call chain_name)] \<Longrightarrow> (\<exists>t. \<Gamma>,\<gamma>,p\<turnstile> \<langle>[Rule m (Call chain_name)], Undecided\<rangle> \<Rightarrow> t)"
         proof(induction arbitrary: m rule: wf_induct_rule[where r="called_by_chain \<Gamma>"])
         case (less chain_name_neu)

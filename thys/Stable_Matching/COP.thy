@@ -835,7 +835,7 @@ qed
 
 theorem unilateral_substitutes_on_doctor_separable_on_bilateral_substitutes_on:
   assumes "irc_on A f"
-  assumes "\<forall>B\<subseteq>A. allocation (f B)" \<comment>\<open> A rephrasing of @{thm [source] "Ch_singular"}. \<close>
+  assumes "\<forall>B\<subseteq>A. allocation (f B)" \<comment> \<open>A rephrasing of @{thm [source] "Ch_singular"}.\<close>
   assumes "f_range_on A f"
   shows "unilateral_substitutes_on A f \<longleftrightarrow> bilateral_substitutes_on A f \<and> doctor_separable_on A f"
 using %invisible assms

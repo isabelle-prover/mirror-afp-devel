@@ -11,25 +11,25 @@ theory Expr imports Value begin
 subsection {* The expressions *}
 
 
-datatype bop = Eq | Add     -- "names of binary operations"
+datatype bop = Eq | Add     \<comment> \<open>names of binary operations\<close>
 
 datatype expr
-  = new cname            -- "class instance creation"
-  | Cast cname expr      -- "dynamic type cast"
-  | StatCast cname expr  -- "static type cast"        
+  = new cname            \<comment> \<open>class instance creation\<close>
+  | Cast cname expr      \<comment> \<open>dynamic type cast\<close>
+  | StatCast cname expr  \<comment> \<open>static type cast\<close>        
                                  ("\<lparr>_\<rparr>_" [80,81] 80)
-  | Val val              -- "value"
+  | Val val              \<comment> \<open>value\<close>
   | BinOp expr bop expr          ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)     
-     -- "binary operation"
-  | Var vname            -- "local variable"
+     \<comment> \<open>binary operation\<close>
+  | Var vname            \<comment> \<open>local variable\<close>
   | LAss vname expr              ("_:=_" [70,70] 70)            
-     -- "local assignment"
+     \<comment> \<open>local assignment\<close>
   | FAcc expr vname path         ("_\<bullet>_{_}" [10,90,99] 90)      
-     -- "field access"
+     \<comment> \<open>field access\<close>
   | FAss expr vname path expr    ("_\<bullet>_{_} := _" [10,70,99,70] 70)      
-     -- "field assignment"
+     \<comment> \<open>field assignment\<close>
   | Call expr "cname option" mname "expr list"
-     -- "method call"
+     \<comment> \<open>method call\<close>
   | Block vname ty expr          ("'{_:_; _}")
   | Seq expr expr                ("_;;/ _" [61,60] 60)
   | Cond expr expr expr          ("if '(_') _/ else _" [80,79,79] 70)

@@ -15,8 +15,8 @@ section {* Security Invariants *}
   *}
 
   (*TODO: make datatype!*)
-  -- {*@{typ "'v"} is the type of the nodes in the graph (hosts in the network). 
-     @{typ "'a"} is the type of the host attributes.*}
+  \<comment> \<open>@{typ "'v"} is the type of the nodes in the graph (hosts in the network). 
+     @{typ "'a"} is the type of the host attributes.\<close>
   record ('v::vertex, 'a) TopoS_Params =
     node_properties :: "'v::vertex \<Rightarrow> 'a option"
 
@@ -36,18 +36,18 @@ text {* A Security Invariant where the offending flows (flows that invalidate th
 No assumptions are necessary for this step.
 *}  
   locale SecurityInvariant_withOffendingFlows = 
-    fixes sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" --{* policy @{text "\<Rightarrow>"} host attribute mapping @{text "\<Rightarrow>"} bool*}
+    fixes sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" \<comment> \<open>policy @{text "\<Rightarrow>"} host attribute mapping @{text "\<Rightarrow>"} bool\<close>
    begin
-    -- "Offending Flows definitions:"
+    \<comment> \<open>Offending Flows definitions:\<close>
     definition is_offending_flows::"('v \<times> 'v) set \<Rightarrow> 'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool" where
       "is_offending_flows f G nP \<equiv> \<not> sinvar G nP \<and> sinvar (delete_edges G f) nP"
     
-    -- "Above definition is not minimal: "
+    \<comment> \<open>Above definition is not minimal:\<close>
     definition is_offending_flows_min_set::"('v \<times> 'v) set \<Rightarrow> 'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool" where
       "is_offending_flows_min_set f G nP \<equiv> is_offending_flows f G nP \<and> 
         (\<forall> (e1, e2) \<in> f. \<not> sinvar (add_edge e1 e2 (delete_edges G f)) nP)"
 
-    -- "The set of all offending flows."
+    \<comment> \<open>The set of all offending flows.\<close>
     definition set_offending_flows::"'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> ('v \<times> 'v) set set" where
       "set_offending_flows G  nP = {F. F \<subseteq> (edges G) \<and> is_offending_flows_min_set F G nP}"
   
@@ -174,11 +174,11 @@ The newly introduced Boolean @{text "receiver_violation"} tells whether a securi
 The details can be looked up in \cite{diekmann2014forte}. 
 *}
 
-  -- {* Some notes about the notation:
+  \<comment> \<open>Some notes about the notation:
           @{term "fst ` F"} means to apply the function @{const "fst"} to the set @{term "F"} element-wise.
           Example: If @{term "F"} is a set of directed edges, 
           @{term "F \<subseteq> edges G"}, then @{term "fst ` F"}
-          is the set of senders and @{term "snd ` f"} the set of receivers.*}
+          is the set of senders and @{term "snd ` f"} the set of receivers.\<close>
 
   locale SecurityInvariant = SecurityInvariant_preliminaries sinvar
     for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
@@ -186,8 +186,8 @@ The details can be looked up in \cite{diekmann2014forte}.
     fixes default_node_properties :: "'a" ("\<bottom>") 
     and receiver_violation :: "bool"
     assumes 
-      -- "default value can never fix a security violation."
-      -- {*Idea: Assume there is a violation, then there is some offending flow. 
+      \<comment> \<open>default value can never fix a security violation.\<close>
+      \<comment> \<open>Idea: Assume there is a violation, then there is some offending flow. 
         @{text receiver_violation} defines whether the violation happens at the sender's or the receiver's side. 
         We call the place of the violation the \emph{offending host}. 
         We replace the host attribute of the offending host with the default attribute. 
@@ -195,7 +195,7 @@ The details can be looked up in \cite{diekmann2014forte}.
         I.e.\ this reconfiguration does not remove information, thus preserves all security critical information.
         Thought experiment preliminaries: Can a default configuration ever solve an existing security violation? NO!
         Thought experiment 1: admin forgot to configure host, hence it is handled by default configuration value ...
-        Thought experiment 2: new node (attacker) is added to the network. What is its default configuration value ...*}
+        Thought experiment 2: new node (attacker) is added to the network. What is its default configuration value ...\<close>
       default_secure:
       "\<lbrakk> wf_graph G; \<not> sinvar G nP; F \<in> set_offending_flows G nP \<rbrakk> \<Longrightarrow>
         (\<not> receiver_violation \<longrightarrow> i \<in> fst ` F \<longrightarrow> \<not> sinvar G (nP(i := \<bottom>))) \<and>
@@ -208,7 +208,7 @@ The details can be looked up in \cite{diekmann2014forte}.
          (\<not> receiver_violation \<longrightarrow> i \<in> fst ` F \<and> sinvar G (nP(i := otherbot))) \<and>
          (receiver_violation \<longrightarrow> i \<in> snd ` F \<and> sinvar G (nP(i := otherbot))) "
    begin
-    -- "Removes option type, replaces with default host attribute"
+    \<comment> \<open>Removes option type, replaces with default host attribute\<close>
     fun node_props :: "('v, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" where
     "node_props P = (\<lambda> i. (case (node_properties P) i of Some property \<Rightarrow> property | None \<Rightarrow> \<bottom>))"
 
@@ -273,8 +273,8 @@ subsection {*Information Flow Security Strategy (IFS)*}
         "\<lbrakk> wf_graph G; f \<in> set_offending_flows G nP \<rbrakk> \<Longrightarrow>
           \<forall>i \<in> snd` f. \<not> sinvar G (nP(i := \<bottom>))"
       and
-      --{* If some otherbot fulfills @{text default_secure}, it must be @{term "\<bottom>"} 
-             Hence, @{term "\<bottom>"} is uniquely defined *}
+      \<comment> \<open>If some otherbot fulfills @{text default_secure}, it must be @{term "\<bottom>"} 
+             Hence, @{term "\<bottom>"} is uniquely defined\<close>
       default_unique_IFS:
       "(\<forall>G f nP i. wf_graph G \<and> f \<in> set_offending_flows G nP \<and> i \<in> snd` f 
                 \<longrightarrow> \<not> sinvar G (nP(i := otherbot))) \<Longrightarrow> otherbot = \<bottom>"

@@ -272,7 +272,7 @@ theorem transform_optimize_dnf_strict_structure:
       apply(simp add: normalize_rules_dnf_append optimize_matches_append)
       done
 
-    --"if the individual optimization functions preserve a property, then the whole thing does"
+    \<comment> \<open>if the individual optimization functions preserve a property, then the whole thing does\<close>
     { fix P :: "'a::len common_primitive match_expr \<Rightarrow> bool"
       assume p1: "\<forall>m. P m \<longrightarrow> P (optimize_primitive_univ m)"
       assume p2: "\<forall>m. P m \<longrightarrow> P (opt_MatchAny_match_expr m)"
@@ -609,10 +609,10 @@ definition transform_normalize_primitives :: "'i::len common_primitive rule list
 (*We write (\<forall>a. \<not> disc (Src_Ports a)) to say that, basically, disc is not the function is_Src_Ports.
   But hey, equality on functions, ....*)
 theorem transform_normalize_primitives:
-  -- "all discriminators which will not be normalized remain unchanged"
+  \<comment> \<open>all discriminators which will not be normalized remain unchanged\<close>
   defines "unchanged disc \<equiv> (\<forall>a. \<not> disc (Src_Ports a)) \<and> (\<forall>a. \<not> disc (Dst_Ports a)) \<and>
                              (\<forall>a. \<not> disc (Src a)) \<and> (\<forall>a. \<not> disc (Dst a))"
-      -- \<open>also holds for these discriminators, but not for @{const Prot}, which might be changed\<close>
+      \<comment> \<open>also holds for these discriminators, but not for @{const Prot}, which might be changed\<close>
       and "changeddisc disc \<equiv> ((\<forall>a. \<not> disc (IIface a)) \<or> disc = is_Iiface) \<and>
                                ((\<forall>a. \<not> disc (OIface a)) \<or> disc = is_Oiface)"
                                (*port normalization may introduce new matches on protocols*)
@@ -632,7 +632,7 @@ theorem transform_normalize_primitives:
     and "unchanged disc2 \<Longrightarrow> (\<forall>a. \<not> disc2 (IIface a)) \<Longrightarrow> (\<forall>a. \<not> disc2 (OIface a)) \<Longrightarrow> (\<forall>a. \<not> disc2 (Prot a)) \<Longrightarrow>
          \<forall> r \<in> set rs. normalized_n_primitive (disc2, sel2) f (get_match r) \<Longrightarrow>
             \<forall> r \<in> set (transform_normalize_primitives rs). normalized_n_primitive (disc2, sel2) f (get_match r)"
-    --\<open>For disc3, we do not allow ports and ips, because these are changed.
+    \<comment> \<open>For disc3, we do not allow ports and ips, because these are changed.
        Here is the complicated part:
        (It is only complicated if, basically disc3 is @{const is_Prot})
        In addition, either it must not be protocol or (complicated case) 
@@ -919,7 +919,7 @@ theorem transform_normalize_primitives:
        unfolding transform_normalize_primitives_def by simp
    qed
 
-   --"Pushing through properties through the ip normalizer"
+   \<comment> \<open>Pushing through properties through the ip normalizer\<close>
    { fix m and m' and disc::"('i::len common_primitive \<Rightarrow> bool)"
          and sel::"('i::len common_primitive \<Rightarrow> 'x)" and C'::" ('x \<Rightarrow> 'i::len common_primitive)"
          and f'::"('x negation_type list \<Rightarrow> 'x list)"
@@ -953,7 +953,7 @@ theorem transform_normalize_primitives:
      (\<forall>m'\<in>set (normalize_primitive_extract (disc, sel) C' f' m). normalized_nnf_match m' \<and> \<not> has_disc disc1 m')"
    by blast
 
-   --"Pushing through properties through the ports normalizer"
+   \<comment> \<open>Pushing through properties through the ports normalizer\<close>
    from normalize_src_ports_preserves_normalized_not_has_disc normalize_src_ports_nnf have x_src_ports:
     "\<forall>a. \<not> disc (Src_Ports a) \<Longrightarrow>  \<forall>a. \<not> disc (Prot a) \<Longrightarrow>  
        m' \<in> set (normalize_src_ports m) \<Longrightarrow>
@@ -1050,7 +1050,7 @@ theorem transform_normalize_primitives:
    for disc :: "'i common_primitive \<Rightarrow> bool" and sel and C' :: "'c \<Rightarrow> 'i common_primitive" and f' and disc3
    by blast
 
-   --"Pushing through properties through the ports normalizer"
+   \<comment> \<open>Pushing through properties through the ports normalizer\<close>
    from normalize_src_ports_preserves_normalized_not_has_disc_negated normalize_src_ports_nnf have x_src_ports:
     "\<forall>a. \<not> disc (Src_Ports a) \<Longrightarrow> (\<forall>a. \<not> disc (Prot a)) \<or> \<not> has_disc_negated is_Src_Ports False m \<Longrightarrow>  
        m' \<in> set (normalize_src_ports m) \<Longrightarrow>
@@ -1187,7 +1187,7 @@ theorem transform_normalize_primitives:
        apply(intro allI impI conjI ballI)
           apply(simp add: rewrite_MultiportPorts_normalized_nnf_match; fail)
          apply(rule rewrite_MultiportPorts_preserves_normalized_not_has_disc_negated, simp_all)
-         --\<open>Here we need @{term "\<not> has_disc is_MultiportPorts m"}\<close>
+         \<comment> \<open>Here we need @{term "\<not> has_disc is_MultiportPorts m"}\<close>
          using rewrite_MultiportPorts_unchanged_if_not_has_disc by fastforce+
       subgoal (*yeah, just need to consider the other cases*)
       apply(clarify)
@@ -1264,7 +1264,7 @@ theorem iiface_rewrite:
     show simplers_t: "simple_ruleset (optimize_matches (iiface_rewrite ipassmt) rs)"
       by(simp add: simplers optimize_matches_simple_ruleset)
 
-    --"packet must come from a defined interface!"
+    \<comment> \<open>packet must come from a defined interface!\<close>
     from nospoofing have "Iface (p_iiface p) \<in> dom ipassmt" by blast
 
     have my_arg_cong: "\<And>P Q. P s = Q s \<Longrightarrow> (P s = t) \<longleftrightarrow> (Q s = t)" by simp
@@ -1316,10 +1316,10 @@ definition lower_closure :: "'i::len common_primitive rule list \<Rightarrow> 'i
 text\<open>putting it all together\<close>
 lemma transform_upper_closure:
   assumes simplers: "simple_ruleset rs"
-  -- "semantics are preserved"
+  \<comment> \<open>semantics are preserved\<close>
   shows "(common_matcher, in_doubt_allow),p\<turnstile> \<langle>upper_closure rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t \<longleftrightarrow> (common_matcher, in_doubt_allow),p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t"
   and "simple_ruleset (upper_closure rs)"
-  -- "simple, normalized rules without unknowns"
+  \<comment> \<open>simple, normalized rules without unknowns\<close>
   and "\<forall> r \<in> set (upper_closure rs). normalized_nnf_match (get_match r) \<and>
                                      normalized_src_ports (get_match r) \<and>
                                      normalized_dst_ports (get_match r) \<and>
@@ -1327,7 +1327,7 @@ lemma transform_upper_closure:
                                      normalized_dst_ips (get_match r) \<and>
                                      \<not> has_disc is_MultiportPorts (get_match r) \<and>
                                      \<not> has_disc is_Extra (get_match r)"
-  -- "no new primitives are introduced"
+  \<comment> \<open>no new primitives are introduced\<close>
   and "\<forall>a. \<not> disc (Src_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Dst_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Src a) \<Longrightarrow> \<forall>a. \<not> disc (Dst a) \<Longrightarrow>
        \<forall>a. \<not> disc (IIface a) \<or> disc = is_Iiface \<Longrightarrow> \<forall>a. \<not> disc (OIface a) \<or> disc = is_Oiface \<Longrightarrow>
        \<forall>a. \<not> disc (Prot a) \<Longrightarrow>
@@ -1518,10 +1518,10 @@ lemma transform_upper_closure:
 (*copy&paste from transform_upper_closure*)
 lemma transform_lower_closure:
   assumes simplers: "simple_ruleset rs"
-  -- "semantics are preserved"
+  \<comment> \<open>semantics are preserved\<close>
   shows "(common_matcher, in_doubt_deny),p\<turnstile> \<langle>lower_closure rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t \<longleftrightarrow> (common_matcher, in_doubt_deny),p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t"
   and "simple_ruleset (lower_closure rs)"
-  -- "simple, normalized rules without unknowns"
+  \<comment> \<open>simple, normalized rules without unknowns\<close>
   and "\<forall> r \<in> set (lower_closure rs). normalized_nnf_match (get_match r) \<and>
                                      normalized_src_ports (get_match r) \<and>
                                      normalized_dst_ports (get_match r) \<and>
@@ -1529,7 +1529,7 @@ lemma transform_lower_closure:
                                      normalized_dst_ips (get_match r) \<and>
                                      \<not> has_disc is_MultiportPorts (get_match r) \<and>
                                      \<not> has_disc is_Extra (get_match r)"
-  -- "no new primitives are introduced"
+  \<comment> \<open>no new primitives are introduced\<close>
   and "\<forall>a. \<not> disc (Src_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Dst_Ports a) \<Longrightarrow> \<forall>a. \<not> disc (Src a) \<Longrightarrow> \<forall>a. \<not> disc (Dst a) \<Longrightarrow>
        \<forall>a. \<not> disc (IIface a) \<or> disc = is_Iiface \<Longrightarrow> \<forall>a. \<not> disc (OIface a) \<or> disc = is_Oiface \<Longrightarrow>
        \<forall>a. \<not> disc (Prot a) \<Longrightarrow>

@@ -1066,7 +1066,7 @@ proof -
   have code: "?P,C,M,0 \<rhd> compE\<^sub>2 body" using beforeM[OF "method"] by auto
   have xtab: "?P,C,M \<rhd> compxE\<^sub>2 body 0 (size[])/{..<size(compE\<^sub>2 body)},size[]"
     using beforexM[OF "method"] by auto
-  -- "Distinguish if e' is a value or an exception"
+  \<comment> \<open>Distinguish if e' is a value or an exception\<close>
   { fix v assume [simp]: "e' = Val v"
     have "?P \<turnstile> ?\<sigma>\<^sub>0 -jvm\<rightarrow> (None,h',[([v],ls',C,M,size(compE\<^sub>2 body))])"
       using Jcc[OF eval code xtab] by auto

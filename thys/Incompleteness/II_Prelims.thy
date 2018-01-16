@@ -294,11 +294,11 @@ proof -
     by (metis obtain_fresh) 
   hence "{ HFun_Sigma r, NotInDom d r, OrdP d } \<turnstile> HFun_Sigma (Eats r (HPair d d'))"
     apply (auto simp: HFun_Sigma.simps [of z _ z' x y x' y'])
-      --{*case 1*}
+      \<comment> \<open>case 1\<close>
        apply (rule Ex_I [where x = "Var z"], simp)
        apply (rule Neg_Imp_I, blast)
       apply (rule All_E [where x = "Var z'"], auto)
-      --{*case 2*}
+      \<comment> \<open>case 2\<close>
       apply (rule Ex_I [where x = "Var z"], simp)
       apply (rule Neg_Imp_I, blast)
       apply (rule All_E [where x = "Var z"], simp)
@@ -310,7 +310,7 @@ proof -
       apply (rule Ex_I [where x = d], simp)
       apply (rule Ex_I [where x = d'], auto)
       apply (blast intro: Disj_I1 OrdNotEqP_I NotInDom_Contra Mem_cong [THEN Iff_MP_same])
-    --{*case 3*}
+    \<comment> \<open>case 3\<close>
     apply (rule Ex_I [where x = "Var z'"])
     apply (subst subst_fm_Ex_with_renaming [where i'=z''] | subst subst_fm.simps)+
     apply (auto simp add: flip_fresh_fresh)
@@ -324,7 +324,7 @@ proof -
     apply (rule Ex_I [where x = "Var x"], simp)
     apply (rule Ex_I [where x = "Var y"], auto)
     apply (blast intro: Disj_I1 Sym_L OrdNotEqP_I NotInDom_Contra Mem_cong [THEN Iff_MP_same])
-    --{*case 4*}
+    \<comment> \<open>case 4\<close>
     apply (rule rotate2 [OF Swap])
     apply (rule Ex_I [where x = d], auto)
     apply (rule Ex_I [where x = d'], auto)
@@ -508,7 +508,7 @@ proof -
     apply (auto simp: SeqHaddP.simps [where s=s and l=l and sl=sl])
     apply (rule All2_SUCC_E' [where t=k, THEN rotate2], auto)
     apply (auto intro!: Ex_I [where x="Var sl"])
-    apply (blast intro: LstSeqP_SUCC) --{*showing @{term"SeqHaddP s j k (Var sl)"}*}
+    apply (blast intro: LstSeqP_SUCC) \<comment> \<open>showing @{term"SeqHaddP s j k (Var sl)"}\<close>
     apply (blast intro: LstSeqP_EQ)
     done
 qed
@@ -531,7 +531,7 @@ proof -
     apply (rule OrdInd2H)
     using ij atoms apply auto 
     apply (metis SeqHaddP_Zero_E [THEN cut1] Assume AssumeH(2) Sym Trans)
-    --{*SUCC case*}
+    \<comment> \<open>SUCC case\<close>
     apply (rule cut_same [OF SeqHaddP_SUCC [where y' = ji and s=s]], auto)
     apply (rule cut_same [OF SeqHaddP_SUCC [where y' = ji' and s=s']], auto)
     apply (rule Ex_I [where x = "Var ji"], auto)
@@ -1415,7 +1415,7 @@ qed (*>*)
 
 section {*LstSeqP and SeqAppendP*}
 
-lemma HDomain_Incl_SeqAppendP:  --{*The And eliminates the need to prove @{text cut5}*}
+lemma HDomain_Incl_SeqAppendP:  \<comment> \<open>The And eliminates the need to prove @{text cut5}\<close>
   "{SeqAppendP f1 k1 f2 k2 g, HDomain_Incl f1 k1 AND HDomain_Incl f2 k2, 
     HaddP k1 k2 k, OrdP k1} \<turnstile> HDomain_Incl g k" (*<*)
 proof -
@@ -1426,7 +1426,7 @@ proof -
   thus ?thesis
     apply (auto simp: HDomain_Incl.simps [of x _ _ y z])
     apply (rule HaddP_Mem_cases [where i=i, THEN rotate2], auto)
-    --{*case 1*}
+    \<comment> \<open>case 1\<close>
     apply (rule All_E' [where x = "Var x"], blast, auto)
     apply (rule ContraProve [THEN rotate4])
     apply (rule Ex_I [where x = "Var y"], auto)
@@ -1434,7 +1434,7 @@ proof -
     apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same, THEN rotate2], simp)
     apply (rule SeqAppendP_Mem1 [THEN cut3], auto)
     apply (rule Mem_cong [OF Assume Refl, THEN Iff_MP_same], auto)
-    --{*case 2*}
+    \<comment> \<open>case 2\<close>
     apply (rule Ex_I [where x = "Var i"], auto)
     apply (rule ContraProve [THEN rotate5])
     apply (rule Ex_I [where x = "Var y"], simp)
@@ -1469,7 +1469,7 @@ proof -
     apply (rule AssumeH)+
     apply (rule thin1 [where A="UnionP (Var g1) (Var g2) g", THEN rotate6])
     apply (rule Disj_E)
-    --{*case 1/1*}
+    \<comment> \<open>case 1/1\<close>
     apply (rule thin1 [where A="ShiftP f2 k2 k1 (Var g2)", THEN rotate5])
     apply (rule RestrictedP_Mem_D [where a = "Var z"])
     apply (rule AssumeH)+
@@ -1486,7 +1486,7 @@ proof -
     apply (rule Ex_I [where x="Var y'"], simp)
     apply (rule Conj_I, blast)+
     apply blast
-    --{*case 1/2*}
+    \<comment> \<open>case 1/2\<close>
     apply (rule RestrictedP_Mem_D [where a = "Var z"])
     apply (rule AssumeH)+
     apply (rule thin1 [where A="Var z IN g", THEN rotate5])
@@ -1509,12 +1509,12 @@ proof -
     apply (rule AssumeH)+
     apply (blast intro: Mem_cong [OF _ Refl, THEN Iff_MP_same])
     apply (blast intro: Hyp Mem_cong [OF _ Refl, THEN Iff_MP_same] HaddP_Mem_contra)
-    --{*END of case 1/2*}
+    \<comment> \<open>END of case 1/2\<close>
     apply (rule cut_same [OF UnionP_Mem [where a = "Var z'", THEN cut2]])
     apply (rule AssumeH)+
     apply (rule thin1 [where A="UnionP (Var g1) (Var g2) g", THEN rotate6])
     apply (rule Disj_E)
-    --{*case 2/1*}
+    \<comment> \<open>case 2/1\<close>
     apply (rule RestrictedP_Mem_D [where a = "Var z'"])
     apply (rule AssumeH)+
     apply (rule thin1 [where A="Var z IN g", THEN rotate5])
@@ -1537,7 +1537,7 @@ proof -
     apply (rule AssumeH)+
     apply (blast intro: Mem_cong [OF _ Refl, THEN Iff_MP_same])
     apply (blast intro: Mem_cong [OF _ Refl, THEN Iff_MP2_same] HaddP_Mem_contra Hyp)
-    --{*case 2/2*}
+    \<comment> \<open>case 2/2\<close>
     apply (rule cut_same [OF ShiftP_Mem_D [where x=x and x'=x' and y=y and a = "Var z"]])
     apply (rule AssumeH Ex_EH Conj_EH)+
     apply simp_all
@@ -1796,7 +1796,7 @@ proof -
                   HPair (Var m) (HPair (Var sm) (Var sm')) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Eats t1 t2) (Q_Eats u1 u2))) AND
                   HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Eats t1 t2) (Q_Eats u1 u2))) AND
                   Var sl EQ Q_Eats (Var sm) (Var sn) AND Var sl' EQ Q_Eats (Var sm') (Var sn'))))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Q_Eats t1 t2"])
        using sk atoms apply simp
        apply (rule Ex_I [where x="Q_Eats u1 u2"], simp)
@@ -1827,7 +1827,7 @@ proof -
                         HPair (Var m) (HPair (Var sm) (Var sm')) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Eats t1 t2) (Q_Eats u1 u2))) AND
                         HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Eats t1 t2) (Q_Eats u1 u2))) AND
                         Var sl EQ Q_Eats (Var sm) (Var sn) AND Var sl' EQ Q_Eats (Var sm') (Var sn')))))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule cut_same [where A="HaddP (SUCC k1) (SUCC k2) (SUCC (SUCC (Var k')))"])
      apply (blast intro: HaddP_SUCC1 [THEN cut1] HaddP_SUCC2 [THEN cut1])
      apply (rule All_I Imp_I)+
@@ -1835,7 +1835,7 @@ proof -
      using sk atoms atoms2 apply simp_all
      apply (rule AssumeH)
      apply (blast intro: OrdP_SUCC_I LstSeqP_OrdP)
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: SeqStTermP.simps [of l s1 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -1853,7 +1853,7 @@ proof -
      apply (rule Ex_I [where x="Var sn'"], simp_all)
      apply (rule Conj_I, rule AssumeH)+
      apply (blast del: Disj_EH intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
-     --{*... the sequence buildup via s2*}
+     \<comment> \<open>... the sequence buildup via s2\<close>
      apply (simp add: SeqStTermP.simps [of l s2 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -1922,7 +1922,7 @@ proof -
     apply (metis Assume AssumeH(4) LstSeqP_EQ)
     apply (rule Disj_EH)
     apply (blast intro: Disj_I1 Sym Trans)
-    --{*now the quantified case*}
+    \<comment> \<open>now the quantified case\<close>
     apply (auto intro!: Disj_I2)
     apply (rule Ex_I [where x = "Var m"], simp)
     apply (rule Ex_I [where x = "Var n"], simp)
@@ -1930,14 +1930,14 @@ proof -
     apply (rule Ex_I [where x = "Var sn"], simp)
     apply (simp_all add: SeqCTermP.simps [of l s _ sl m n sm sn])
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
-    --{*first SeqCTermP subgoal*}
+    \<comment> \<open>first SeqCTermP subgoal\<close>
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*next SeqCTermP subgoal*}
+    \<comment> \<open>next SeqCTermP subgoal\<close>
     apply ((rule Conj_I)+, blast intro: LstSeqP_Mem)+
     apply (rule All2_Subset [OF Hyp], blast)
     apply (blast intro!: SUCC_Subset_Ord LstSeqP_OrdP, blast, simp)
-    --{*finally, the equality pair*}
+    \<comment> \<open>finally, the equality pair\<close>
     apply (blast intro: Trans)
     done
 qed (*>*)
@@ -1961,16 +1961,16 @@ proof -
         apply (rule Swap)
         apply (rule cut_same)
         apply (rule cut1 [OF SeqConstP_lemma [of m s "Var k" "Var j" n sm sn]], auto)
-        --{*case 1, @{term Zero}*}
+        \<comment> \<open>case 1, @{term Zero}\<close>
         apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same])
         apply (auto intro: SubstTermP_Zero [THEN cut1])
-        --{*case 2, @{term Q_Eats}*}
+        \<comment> \<open>case 2, @{term Q_Eats}\<close>
         apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same, THEN rotate2], simp)
         apply (rule SubstTermP_Eats [THEN cut2])
-        --{*First argument*}
+        \<comment> \<open>First argument\<close>
         apply (rule All2_E' [OF Hyp, where x="Var m"], blast+, simp_all)
         apply (force intro: All_E [where x="Var sm"])
-        --{*Second argument*}
+        \<comment> \<open>Second argument\<close>
         apply (rule All2_E' [OF Hyp, where x="Var n"], blast+, simp_all)
         apply (rule All_E [where x="Var sn"], auto)
         done
@@ -2155,7 +2155,7 @@ proof -
                         HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC k1) (HPair (Q_Neg x) (Q_Neg x'))) AND
                         (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                           Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm')))))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Q_Neg x"])
        using assms atoms apply simp
        apply (rule Ex_I [where x="Q_Neg x'"], simp)
@@ -2185,10 +2185,10 @@ proof -
                                   HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC k1) (HPair (Q_Neg x) (Q_Neg x'))) AND
                                   (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                             Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm'))))))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule All_I Imp_I)+
      using assms atoms apply simp_all
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: SeqSubstFormP.simps [of l s1 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2], auto del: Disj_EH)
@@ -2275,7 +2275,7 @@ proof -
                        Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Disj x y) (Q_Disj x' y'))) AND
                        (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                           Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm')))))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Q_Disj x y"])
        using assms atoms apply simp
        apply (rule Ex_I [where x="Q_Disj x' y'"], simp)
@@ -2311,7 +2311,7 @@ proof -
                        Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (HPair (Q_Disj x y) (Q_Disj x' y'))) AND
                        (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                             Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm'))))))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule cut_same [where A="HaddP (SUCC k1) (SUCC k2) (SUCC (SUCC (Var k')))"])
      apply (blast intro: HaddP_SUCC1 [THEN cut1] HaddP_SUCC2 [THEN cut1])
      apply (rule All_I Imp_I)+
@@ -2319,7 +2319,7 @@ proof -
      using assms atoms atoms2 apply simp_all
      apply (rule AssumeH)
      apply (blast intro: OrdP_SUCC_I LstSeqP_OrdP)
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: SeqSubstFormP.simps [of l s1 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -2339,7 +2339,7 @@ proof -
      apply (rule Conj_I)
      apply (blast intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
      apply (blast intro: Disj_I1 Disj_I2 OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
-     --{*... the sequence buildup via s2*}
+     \<comment> \<open>... the sequence buildup via s2\<close>
      apply (simp add: SeqSubstFormP.simps [of l s2 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -2430,7 +2430,7 @@ proof -
                         HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC k1) (HPair (Q_Ex x) (Q_Ex x'))) AND
                         (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                           Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm')))))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Q_Ex x"])
        using assms atoms apply simp
        apply (rule Ex_I [where x="Q_Ex x'"], simp)
@@ -2461,9 +2461,9 @@ proof -
                                   HPair (Var n) (HPair (Var sn) (Var sn')) IN Eats (Var s) (HPair (SUCC k1) (HPair (Q_Ex x) (Q_Ex x'))) AND
                                   (Var sl EQ Q_Disj (Var sm) (Var sn) AND Var sl' EQ Q_Disj (Var sm') (Var sn') OR
                             Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm') OR Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm'))))))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      using assms atoms 
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (auto simp add: SeqSubstFormP.simps [of l s1 _ _ _ sl sl' m n sm sm' sn sn'])
      apply (rule Swap)
      apply (rule All2_E, auto del: Disj_EH)
@@ -2544,7 +2544,7 @@ proof -
                        HPair (Var m) (Var sm) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (Q_Eats t1 t2)) AND
                        HPair (Var n) (Var sn) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (Q_Eats t1 t2)) AND
                        Var sl EQ Q_Eats (Var sm) (Var sn)))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="Q_Eats t1 t2"])
        using assms atoms apply simp
        apply (rule Conj_I, metis Mem_Eats_I2 Refl)
@@ -2569,7 +2569,7 @@ proof -
                            HPair (Var m) (Var sm) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (Q_Eats t1 t2)) AND
                            HPair (Var n) (Var sn) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) (Q_Eats t1 t2)) AND
                            Var sl EQ Q_Eats (Var sm) (Var sn))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule cut_same [where A="HaddP (SUCC k1) (SUCC k2) (SUCC (SUCC (Var k')))"])
      apply (blast intro: HaddP_SUCC1 [THEN cut1] HaddP_SUCC2 [THEN cut1])
      apply (rule All_I Imp_I)+
@@ -2577,7 +2577,7 @@ proof -
      using assms atoms apply simp_all
      apply (rule AssumeH)
      apply (blast intro: OrdP_SUCC_I LstSeqP_OrdP)
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: SeqCTermP.simps [of l s1 _ sl m n sm sn])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2], auto del: Disj_EH)
@@ -2593,7 +2593,7 @@ proof -
      apply (rule Ex_I [where x="Var sn"], simp)
      apply (rule Conj_I, rule AssumeH)+
      apply (blast del: Disj_EH intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
-     --{*... the sequence buildup via s2*}
+     \<comment> \<open>... the sequence buildup via s2\<close>
      apply (simp add: SeqCTermP.simps [of l s2 _ sl m n sm sn])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2], auto del: Disj_EH)
@@ -2680,7 +2680,7 @@ proof -
                        HPair (Var m) (Var sm) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) \<beta>) AND
                        HPair (Var l) (Var sl) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) \<beta>) AND
                        (ModPonP (Var sm) (Var sl) (Var sn) OR ExistsP (Var sm) (Var sn) OR SubstP (Var sm) (Var sn))))))))"
-       --{*verifying the final values*}
+       \<comment> \<open>verifying the final values\<close>
        apply (rule Ex_I [where x="\<beta>"])
        using assms atoms apply simp
        apply (rule Conj_I, metis Mem_Eats_I2 Refl)
@@ -2707,7 +2707,7 @@ proof -
                        HPair (Var m) (Var sm) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) \<beta>) AND
                        HPair (Var l) (Var sl) IN Eats (Var s) (HPair (SUCC (SUCC (Var k'))) \<beta>) AND
                        (ModPonP (Var sm) (Var sl) (Var sn) OR ExistsP (Var sm) (Var sn) OR SubstP (Var sm) (Var sn)))))))))"
-     --{*verifying the sequence buildup*}
+     \<comment> \<open>verifying the sequence buildup\<close>
      apply (rule cut_same [where A="HaddP (SUCC k1) (SUCC k2) (SUCC (SUCC (Var k')))"])
      apply (blast intro: HaddP_SUCC1 [THEN cut1] HaddP_SUCC2 [THEN cut1])
      apply (rule All_I Imp_I)+
@@ -2715,7 +2715,7 @@ proof -
      using assms atoms apply simp_all
      apply (rule AssumeH)
      apply (blast intro: OrdP_SUCC_I LstSeqP_OrdP)
-     --{*... the sequence buildup via s1*}
+     \<comment> \<open>... the sequence buildup via s1\<close>
      apply (simp add: PrfP.simps [of l s1 sl m n sm sn])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])
@@ -2731,7 +2731,7 @@ proof -
      apply (rule Ex_I [where x="Var sl"], simp_all)
      apply (rule Conj_I, rule AssumeH)+
      apply (blast del: Disj_EH intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
-     --{*... the sequence buildup via s2*}
+     \<comment> \<open>... the sequence buildup via s2\<close>
      apply (simp add: PrfP.simps [of l s2 sl m n sm sn])
      apply (rule AssumeH Ex_EH Conj_EH)+
      apply (rule All2_E [THEN rotate2])

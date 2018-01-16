@@ -17,13 +17,13 @@ no_notation floor ("\<lfloor>_\<rfloor>")
 type_synonym word32 = "32 word"
 
 datatype 'addr val
-  = Unit          -- "dummy result value of void expressions"
-  | Null          -- "null reference"
-  | Bool bool     -- "Boolean value"
-  | Intg word32   -- "integer value" 
-  | Addr 'addr    -- "addresses of objects, arrays and threads in the heap"
+  = Unit          \<comment> \<open>dummy result value of void expressions\<close>
+  | Null          \<comment> \<open>null reference\<close>
+  | Bool bool     \<comment> \<open>Boolean value\<close>
+  | Intg word32   \<comment> \<open>integer value\<close> 
+  | Addr 'addr    \<comment> \<open>addresses of objects, arrays and threads in the heap\<close>
 
-primrec default_val :: "ty \<Rightarrow> 'addr val"   -- "default value for all types"
+primrec default_val :: "ty \<Rightarrow> 'addr val"   \<comment> \<open>default value for all types\<close>
 where
   "default_val Void      = Unit"
 | "default_val Boolean   = Bool False"

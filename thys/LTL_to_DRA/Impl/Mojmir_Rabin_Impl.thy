@@ -9,7 +9,7 @@ theory Mojmir_Rabin_Impl
   imports Main "../Mojmir_Rabin"
 begin
 
---\<open>Ranking functions are stored as lists sorted ascending by the state rank\<close>
+\<comment> \<open>Ranking functions are stored as lists sorted ascending by the state rank\<close>
 
 fun init :: "'a \<Rightarrow> 'a list"
 where
@@ -19,13 +19,13 @@ fun nxt :: "'b set \<Rightarrow> ('a, 'b) DTS \<Rightarrow> 'a \<Rightarrow> ('a
 where
   "nxt \<Sigma> \<delta> q\<^sub>0 = (\<lambda>qs \<nu>. remdups_fwd ((filter (\<lambda>q. \<not>semi_mojmir_def.sink \<Sigma> \<delta> q\<^sub>0 q) (map (\<lambda>q. \<delta> q \<nu>) qs)) @ [q\<^sub>0]))" 
 
---\<open>Recompute the rank from the list\<close>
+\<comment> \<open>Recompute the rank from the list\<close>
 
 fun rk :: "'a list \<Rightarrow> 'a \<Rightarrow> nat option"
 where
   "rk qs q = (let i = index qs q in if i \<noteq> length qs then Some i else None)"
 
---\<open>Instead of computing the whole sets for fail, merge, and succeed, we define filters (a.k.a. characteristic functions)\<close> 
+\<comment> \<open>Instead of computing the whole sets for fail, merge, and succeed, we define filters (a.k.a. characteristic functions)\<close> 
 
 fun fail_filt :: "'b set \<Rightarrow> ('a, 'b) DTS \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a list, 'b) transition \<Rightarrow> bool"
 where
@@ -553,10 +553,10 @@ where
 
 subsection \<open>Code Generation\<close>
 
--- \<open>Setup missing equations for code generator\<close>
+\<comment> \<open>Setup missing equations for code generator\<close>
 declare semi_mojmir_def.sink_def [code]
 
--- \<open>Drop computation of length by different code equation\<close>
+\<comment> \<open>Drop computation of length by different code equation\<close>
 fun index_option ::  "nat \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> nat option"
 where
   "index_option n [] y = None"
@@ -582,7 +582,7 @@ proof -
   qed simp
 qed
 
--- \<open>Check Code Export\<close> 
+\<comment> \<open>Check Code Export\<close> 
 export_code init nxt fail_filt succeed_filt merge_filt mojmir_to_rabin_exec checking
 
 lemma (in mojmir) max_rank_card:

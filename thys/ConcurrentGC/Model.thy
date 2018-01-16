@@ -140,29 +140,29 @@ operations.
 *}
 
 record ('field, 'mut, 'ref) local_state =
-  -- "System-specific fields"
+  \<comment> \<open>System-specific fields\<close>
   heap :: "'ref \<Rightarrow> ('field, 'ref) object option"
-  -- "TSO memory state"
+  \<comment> \<open>TSO memory state\<close>
   mem_write_buffers :: "'mut process_name \<Rightarrow> ('field, 'ref) mem_write_action list"
   mem_lock :: "'mut process_name option"
-  -- "The state of the handshakes"
+  \<comment> \<open>The state of the handshakes\<close>
   handshake_type :: "handshake_type"
   handshake_pending :: "'mut \<Rightarrow> bool"
-  -- "Ghost state"
+  \<comment> \<open>Ghost state\<close>
   ghost_handshake_in_sync :: "'mut \<Rightarrow> bool"
   ghost_handshake_phase :: "handshake_phase"
 
-  -- "Mutator-specific temporaries"
+  \<comment> \<open>Mutator-specific temporaries\<close>
   new_ref :: "'ref option"
   roots :: "'ref set"
   ghost_honorary_root :: "'ref set"
 
-  -- "Garbage collector-specific temporaries"
+  \<comment> \<open>Garbage collector-specific temporaries\<close>
   field_set :: "'field set"
   mut :: "'mut"
   muts :: "'mut set"
 
-  -- "Local variables used by multiple processes"
+  \<comment> \<open>Local variables used by multiple processes\<close>
   fA :: "gc_mark"
   fM :: "gc_mark"
   cas_mark :: "gc_mark option"
@@ -173,7 +173,7 @@ record ('field, 'mut, 'ref) local_state =
   ref :: "'ref option"
   refs :: "'ref set"
   W :: "'ref set"
-  -- "Ghost state"
+  \<comment> \<open>Ghost state\<close>
   ghost_honorary_grey :: "'ref set"
 
 text{*

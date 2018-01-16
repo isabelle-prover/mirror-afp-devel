@@ -278,7 +278,7 @@ context param_DFS begin context begin interpretation timing_syntax .
         
         have "\<delta> s y < \<phi> s' x \<and> y \<in> dom (finished s) \<and> \<phi> s y < \<phi> s' x"
         proof (cases "y \<in> set (stack s)")
-          -- \<open>y on stack is not possible: According to @{thm [display] \<delta>} it is discovered after @{text "x (= hd (stack s))"}\<close>
+          \<comment> \<open>y on stack is not possible: According to @{thm [display] \<delta>} it is discovered after @{text "x (= hd (stack s))"}\<close>
           case True with y_not_hd have "y \<in> set (tl (stack s))" 
             by (cases "stack s") simp_all
           with tl_lt_stack_hd_discover[OF NE] \<delta> x_is_hd have "\<delta> s y < \<delta> s x" 
@@ -286,7 +286,7 @@ context param_DFS begin context begin interpretation timing_syntax .
           with \<delta> have False by simp
           thus ?thesis ..
         next
-          case False -- \<open>y must be a successor of @{text "x (= (hd (stack s)))"}\<close>
+          case False \<comment> \<open>y must be a successor of @{text "x (= (hd (stack s)))"}\<close>
           from dom have "y \<in> dom (discovered s)" by simp
           with False discovered_not_stack_imp_finished  have *: 
             "y \<in> dom (finished s)" 
@@ -720,7 +720,7 @@ context param_DFS begin
     note TDI = `tree_discovered_inv s`[unfolded tree_discovered_inv_def]
 
     have "tree_edges s' = {} \<longrightarrow> dom (discovered s') \<subseteq> V0 \<and> (stack s' = [] \<or> (\<exists>v0\<in>V0. stack s' = [v0]))"
-      by simp -- \<open>@{text "tree_edges s' \<noteq> {}"}\<close>
+      by simp \<comment> \<open>@{text "tree_edges s' \<noteq> {}"}\<close>
 
     moreover {
       fix x

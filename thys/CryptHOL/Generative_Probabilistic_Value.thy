@@ -23,7 +23,7 @@ declare gpv.rel_eq [relator_eq]
 text {* Reactive values are like generative, except that they take an input first. *}
 
 type_synonym ('a, 'out, 'in) rpv = "'in \<Rightarrow> ('a, 'out, 'in) gpv"
-print_translation -- \<open>pretty printing for @{typ "('a, 'out, 'in) rpv"}\<close> \<open>
+print_translation \<comment> \<open>pretty printing for @{typ "('a, 'out, 'in) rpv"}\<close> \<open>
   let
     fun tr' [in1, Const (@{type_syntax gpv}, _) $ a $ out $ in2] =
       if in1 = in2 then Syntax.const @{type_syntax rpv} $ a $ out $ in1
@@ -1944,7 +1944,7 @@ lemma interaction_bounded_by_case_prod [interaction_bound]:
   \<Longrightarrow> interaction_bounded_by consider (case_prod f x) (case_prod n x)"
 by(simp split: prod.split)
 
-lemma interaction_bounded_by_let [interaction_bound]: -- \<open>This rule unfolds let's\<close>
+lemma interaction_bounded_by_let [interaction_bound]: \<comment> \<open>This rule unfolds let's\<close>
   "interaction_bounded_by consider (f t) m \<Longrightarrow> interaction_bounded_by consider (Let t f) m"
 by(simp add: Let_def)
 
@@ -2421,7 +2421,7 @@ context
   and co' :: bool
   defines "F \<equiv> \<lambda>gen_lossless_gpv gpv. \<exists>pa. gpv = GPV pa \<and> 
      lossless_spmf pa \<and> (\<forall>out c input. IO out c \<in> set_spmf pa \<longrightarrow> input \<in> responses_\<I> \<I> out \<longrightarrow> gen_lossless_gpv (c input))"
-  and "co' \<equiv> co" -- \<open>We use a copy of @{term co} such that we can do case distinctions on @{term co'} without
+  and "co' \<equiv> co" \<comment> \<open>We use a copy of @{term co} such that we can do case distinctions on @{term co'} without
     the simplifier rewriting the @{term co} in the local abbreviations for the constants.\<close>
 begin
 
@@ -2973,7 +2973,7 @@ apply(erule step)
 apply(auto elim: WT_gpvD dest: WT_sub_gpvsD)
 done
 
-lemma try_gpv_gen_lossless: -- \<open>TODO: generalise to arbitrary typings ?\<close>
+lemma try_gpv_gen_lossless: \<comment> \<open>TODO: generalise to arbitrary typings ?\<close>
   "gen_lossless_gpv b \<I>_full gpv \<Longrightarrow> (TRY gpv ELSE gpv') = gpv"
 proof(coinduction arbitrary: gpv)
   case (Eq_gpv gpv)
@@ -2983,11 +2983,11 @@ proof(coinduction arbitrary: gpv)
     by(subst eq)(auto simp add: spmf_rel_map generat.rel_map[abs_def] intro!: rel_spmf_try_spmf rel_spmf_reflI rel_generat_reflI elim!: generat.set_cases gen_lossless_gpv_continuationD[OF Eq_gpv] simp add: Eq_gpv[THEN gen_lossless_gpv_lossless_spmfD])
 qed
 
--- \<open>We instantiate the parameter @{term b} such that it can be used as a conditional simp rule.\<close>
+\<comment> \<open>We instantiate the parameter @{term b} such that it can be used as a conditional simp rule.\<close>
 lemmas try_gpv_lossless [simp] = try_gpv_gen_lossless[where b=False]
   and try_gpv_colossless [simp] = try_gpv_gen_lossless[where b=True]
 
-lemma try_gpv_bind_gen_lossless: -- \<open>TODO: generalise to arbitrary typings?\<close>
+lemma try_gpv_bind_gen_lossless: \<comment> \<open>TODO: generalise to arbitrary typings?\<close>
   "gen_lossless_gpv b \<I>_full gpv \<Longrightarrow> TRY bind_gpv gpv f ELSE gpv' = bind_gpv gpv (\<lambda>x. TRY f x ELSE gpv')"
 proof(coinduction arbitrary: gpv rule: gpv.coinduct_strong)
   case (Eq_gpv gpv)
@@ -2997,7 +2997,7 @@ proof(coinduction arbitrary: gpv rule: gpv.coinduct_strong)
     by(auto 4 3 simp del: bind_gpv_sel' simp add: bind_gpv.sel try_spmf_bind_spmf_lossless split: generat.split intro!: rel_spmf_bind_reflI rel_spmf_try_spmf)
 qed
 
--- \<open>We instantiate the parameter @{term b} such that it can be used as a conditional simp rule.\<close>
+\<comment> \<open>We instantiate the parameter @{term b} such that it can be used as a conditional simp rule.\<close>
 lemmas try_gpv_bind_lossless = try_gpv_bind_gen_lossless[where b=False]
   and try_gpv_bind_colossless = try_gpv_bind_gen_lossless[where b=True]
 
@@ -3473,11 +3473,10 @@ proof(rule spmf.leq_antisym)
   define inline1_1 :: "('s1 \<Rightarrow> 'c1 \<Rightarrow> ('r1 \<times> 's1, 'c, 'r) gpv) \<Rightarrow> ('r2 \<times> 's2, 'c1, 'r1) gpv \<Rightarrow> 's1 \<Rightarrow> _"
     where "inline1_1 = inline1"
   have "ord_spmf (=) ?lhs ?rhs"
-    -- \<open> We need in the inductive step that the approximation behaves well with @{const bind_gpv}
+    \<comment> \<open>We need in the inductive step that the approximation behaves well with @{const bind_gpv}
          because of @{thm [source] inline_aux_Inr}. So we have to thread it through the induction
          and do one half of the proof from @{thm [source] inline1_bind_gpv} again. We cannot inline
-         @{thm [source] inline1_bind_gpv} in this proof here because the types are too specific.
-       \<close>
+         @{thm [source] inline1_bind_gpv} in this proof here because the types are too specific.\<close>
     and "ord_spmf (=) (inline1 callee1 (gpv' \<bind> f) s1') 
       (do {
       res \<leftarrow> inline1_1 callee1 gpv' s1';
@@ -4219,7 +4218,7 @@ lemma exec_gpv_bind_option [simp]:
 by(cases x) simp_all
 
 lemma pred_spmf_exec_gpv:
-  -- \<open>We don't get an equivalence here because states are threaded through in @{const exec_gpv}.\<close>
+  \<comment> \<open>We don't get an equivalence here because states are threaded through in @{const exec_gpv}.\<close>
   "\<lbrakk> pred_gpv A C gpv; pred_fun S (pred_fun C (pred_spmf (pred_prod (\<lambda>_. True) S))) callee; S s \<rbrakk>
   \<Longrightarrow> pred_spmf (pred_prod A S) (exec_gpv callee gpv s)"
 using exec_gpv_parametric[of "eq_onp S" "eq_onp C" "eq_onp A", folded eq_onp_True]

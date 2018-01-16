@@ -14,7 +14,7 @@ begin
 
 subsection {* Type definition and primitive operations *}
 
-definition load_factor :: nat -- "in percent"
+definition load_factor :: nat \<comment> \<open>in percent\<close>
   where "load_factor = 75"
 
 datatype ('key, 'val) hashmap =

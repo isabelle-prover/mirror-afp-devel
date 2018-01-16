@@ -47,7 +47,7 @@ definition "varvec_fas' D C = ((map Var [0..<D]) @
 definition "varvec_fas D C = ((map Var [0..<D]) @
       concat (map (\<lambda>i. (map (\<lambda>j. (Num (C i)) + Var (D + D * D) * Var (D + D * i + j)) [0..<D])) [0..<D]))"
 
-lemma \<comment>\<open>for illustration\<close>
+lemma \<comment> \<open>for illustration\<close>
   assumes[simp]: "D=3" "rf = real_of_float"
   shows "interpret_floatariths (varvec_fas D (\<lambda>i. [a, b, c] ! i))
   [a, b, c, d11, d12, d13,
@@ -191,7 +191,7 @@ proof -
     done
 qed
 
-context ll_on_open_it\<comment>\<open>TODO: do this more generically for @{const ll_on_open_it}\<close>
+context ll_on_open_it\<comment> \<open>TODO: do this more generically for @{const ll_on_open_it}\<close>
 begin
 
 context fixes S Y g assumes cong: "X = Y" "T = S" "\<And>x t. x \<in> Y \<Longrightarrow> t \<in> S \<Longrightarrow> f t x = g t x"
@@ -1687,7 +1687,7 @@ theorem solves_one_step_ivl:
   assumes T: "T \<subseteq> {t1 .. t2}"
   assumes X: "X \<subseteq> {eucl_of_list lx .. eucl_of_list ux}" "length lx = DIM('a)" "length ux = DIM('a)"
   assumes S: "{eucl_of_list ls::'a .. eucl_of_list us} \<subseteq> S"
-  assumes lens: "length ls = DIM('a)" "length us = DIM('a)" \<comment>\<open>TODO: this could be verified\<close>
+  assumes lens: "length ls = DIM('a)" "length us = DIM('a)" \<comment> \<open>TODO: this could be verified\<close>
   assumes [simp]: "length ode_fas = DIM('a)"
   assumes r: "solves_one_step_until_time_aform optns ode_fas safe_form ((1,1), aforms_of_ivls lx ux, None) t1 t2 (ls, us) None"
   shows "t \<in> T \<longrightarrow> x0 \<in> X \<longrightarrow> t \<in> existence_ivl0 x0 \<and> flow0 x0 t \<in> S"
@@ -1719,7 +1719,7 @@ theorem solves_one_step_ivl':
   assumes DS: "list_interval lds uds \<subseteq> list_interval ld ud"
     and lends: "length lds = DIM('a)*DIM('a)" "length uds = DIM('a)*DIM('a)"
   assumes S: "{eucl_of_list ls::'a .. eucl_of_list us} \<subseteq> S"
-  assumes lens0: "length ls = DIM('a)" "length us = DIM('a)" \<comment>\<open>TODO: this could be verified\<close>
+  assumes lens0: "length ls = DIM('a)" "length us = DIM('a)" \<comment> \<open>TODO: this could be verified\<close>
     "length dx0s = DIM('a)*DIM('a)"
   assumes [simp]: "length ode_fas = DIM('a)"
   assumes r: "solves_one_step_until_time_aform optns ode_fas safe_form
@@ -1878,7 +1878,7 @@ proof -
   qed
   from solves_autonomous_odeI[OF this]
   have "((\<lambda>t. snd (flow0 (a, 0) t)) solves_ode (\<lambda>b c. f (a + b))) (existence_ivl0 (a, 0)) UNIV"
-    by simp \<comment>\<open>TODO: do non-autonomous -- autonomous conversion automatically!\<close>
+    by simp \<comment> \<open>TODO: do non-autonomous -- autonomous conversion automatically!\<close>
   then have "((\<lambda>t. snd (flow0 (a, 0) t)) solves_ode (\<lambda>b c. f (a + b))) {0 .. b - a} UNIV"
     apply (rule solves_ode_on_subset)
     using exivl
@@ -2792,7 +2792,7 @@ lemma isFDERIV_compute: "isFDERIV D vs fas xs \<longleftrightarrow>
 
 
 theorem (in ode_interpretation) solves_poincare_map_aform'_derivI'[solves_one_step_ivl_thms]:
-\<comment>\<open>TODO: replace @{thm solves_poincare_map_aform'_derivI}\<close>
+\<comment> \<open>TODO: replace @{thm solves_poincare_map_aform'_derivI}\<close>
   assumes "TAG_optns optns"
   assumes "TAG_reach_optns roi"
   assumes "TAG_sctn mirrored"

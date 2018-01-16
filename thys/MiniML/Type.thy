@@ -10,31 +10,31 @@ theory Type
 imports Maybe
 begin
 
--- "type expressions"
+\<comment> \<open>type expressions\<close>
 datatype "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
 
--- "type schemata"
+\<comment> \<open>type schemata\<close>
 datatype type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr "=->" 70)
 
--- "embedding types into type schemata"
+\<comment> \<open>embedding types into type schemata\<close>
 primrec mk_scheme :: "typ => type_scheme" where
   "mk_scheme (TVar n) = (FVar n)"
 | "mk_scheme (t1 -> t2) = ((mk_scheme t1) =-> (mk_scheme t2))"
 
--- "type variable substitution"
+\<comment> \<open>type variable substitution\<close>
 type_synonym subst = "nat => typ"
 
 class type_struct =
   fixes free_tv :: "'a => nat set"
-    -- {* @{text "free_tv s"}: the type variables occurring freely in the type structure s *}
+    \<comment> \<open>@{text "free_tv s"}: the type variables occurring freely in the type structure s\<close>
   fixes free_tv_ML :: "'a => nat list"
-    -- {* executable version of @{text free_tv}: Implementation with lists *}
+    \<comment> \<open>executable version of @{text free_tv}: Implementation with lists\<close>
   fixes bound_tv :: "'a => nat set"
-    -- {* @{text "bound_tv s"}: the type variables occurring bound in the type structure s *}
+    \<comment> \<open>@{text "bound_tv s"}: the type variables occurring bound in the type structure s\<close>
   fixes min_new_bound_tv :: "'a => nat"
-    -- "minimal new free / bound variable"
+    \<comment> \<open>minimal new free / bound variable\<close>
   fixes app_subst :: "subst => 'a => 'a" ("$")
-    -- "extension of substitution to type structures"
+    \<comment> \<open>extension of substitution to type structures\<close>
 
 instantiation "typ" :: type_struct
 begin
@@ -113,17 +113,17 @@ definition
   new_tv :: "[nat,'a::type_struct] => bool" where
   "new_tv n ts = (! m. m:(free_tv ts) --> m<n)"
 
--- "identity"
+\<comment> \<open>identity\<close>
 definition
   id_subst :: subst where
   "id_subst = (%n. TVar n)"
 
--- "domain of a substitution"
+\<comment> \<open>domain of a substitution\<close>
 definition
   dom :: "subst => nat set" where
   "dom S = {n. S n ~= TVar n}" 
 
--- "codomain of a substitution: the introduced variables"
+\<comment> \<open>codomain of a substitution: the introduced variables\<close>
 definition
   cod :: "subst => nat set" where
   "cod S = (UN m:dom S. (free_tv (S m)))"
@@ -168,7 +168,7 @@ lemma free_tv_subst:
   "free_tv S = (dom S) Un (cod S)"
   by (simp add: free_tv_fun_def of_nat_nat_def typ_of_typ_def )
 
--- "unification algorithm mgu"
+\<comment> \<open>unification algorithm mgu\<close>
 axiomatization mgu :: "typ \<Rightarrow> typ \<Rightarrow> subst option" where
   mgu_eq:   "mgu t1 t2 = Some U ==> $U t1 = $U t2"
   and mgu_mg:   "[| (mgu t1 t2) = Some U; $S t1 = $S t2 |] ==> ? R. S = $R o U"
@@ -211,7 +211,7 @@ done
 declare subst_mk_scheme [simp]
 
 
--- "constructor laws for @{text app_subst}"
+\<comment> \<open>constructor laws for @{text app_subst}\<close>
 
 lemma app_subst_Nil: 
   "$ S [] = []"
@@ -229,7 +229,7 @@ done
 declare app_subst_Nil [simp] app_subst_Cons [simp]
 
 
--- {* constructor laws for @{text new_tv} *}
+\<comment> \<open>constructor laws for @{text new_tv}\<close>
 
 lemma new_tv_TVar: 
   "new_tv n (TVar m) = (m<n)"
@@ -297,7 +297,7 @@ lemma new_if_subst_type_scheme_list [simp]: "new_tv n (A::type_scheme list) \<Lo
   by (induct A) simp_all
 
 
--- "constructor laws for @{text dom} and @{text cod}"
+\<comment> \<open>constructor laws for @{text dom} and @{text cod}\<close>
 
 lemma dom_id_subst [simp]: "dom id_subst = {}"
   unfolding dom_def id_subst_def empty_def by simp
@@ -489,7 +489,7 @@ lemma free_tv_ML_scheme_list:
   by (induct_tac A) (simp_all add: free_tv_ML_scheme)
 
 
--- "lemmata for @{text bound_tv}"
+\<comment> \<open>lemmata for @{text bound_tv}\<close>
 
 lemma bound_tv_mk_scheme [simp]: "bound_tv (mk_scheme t) = {}"
   by (induct t) simp_all
@@ -505,7 +505,7 @@ lemma bound_tv_subst_scheme_list [simp]:
   by (induct A) simp_all
 
 
--- "lemmata for @{text new_tv}"
+\<comment> \<open>lemmata for @{text new_tv}\<close>
 
 lemma new_tv_subst: 
   "new_tv n S = ((!m. n <= m --> (S m = TVar m)) &  
@@ -530,7 +530,7 @@ done
 lemma new_tv_list: "new_tv n x = (!y:set x. new_tv n y)"
   by (induct x) simp_all
 
--- "substitution affects only variables occurring freely"
+\<comment> \<open>substitution affects only variables occurring freely\<close>
 lemma subst_te_new_tv [simp]:
     "new_tv n (t::typ) --> $(%x. if x=n then t' else S x) t = $S t"
   by (induct t) simp_all
@@ -544,7 +544,7 @@ lemma subst_tel_new_scheme_list [simp]:
   by (induct A) simp_all
 
 
--- "all greater variables are also new"
+\<comment> \<open>all greater variables are also new\<close>
 lemma new_tv_le: 
   "n<=m ==> new_tv n t ==> new_tv m t"
 apply (unfold new_tv_def)
@@ -566,7 +566,7 @@ lemma new_scheme_list_le: "n<=m ==> new_tv n (A::type_scheme list) ==> new_tv m 
 lemma new_tv_subst_le: "n<=m ==> new_tv n (S::subst) ==> new_tv m S"
   by (simp add: new_tv_le)
 
--- "@{text new_tv} property remains if a substitution is applied"
+\<comment> \<open>@{text new_tv} property remains if a substitution is applied\<close>
 lemma new_tv_subst_var: 
   "[| n<m; new_tv m (S::subst) |] ==> new_tv m (S n)"
   by (simp add: new_tv_subst)
@@ -619,7 +619,7 @@ apply (simp (no_asm))
 done
 
 
--- "composition of substitutions preserves @{text new_tv} proposition"
+\<comment> \<open>composition of substitutions preserves @{text new_tv} proposition\<close>
 lemma new_tv_subst_comp_1 [simp]: 
   "[| new_tv n (S::subst); new_tv n R |] ==> new_tv n (($ R) o S)"
   by (simp add: new_tv_subst)
@@ -628,7 +628,7 @@ lemma new_tv_subst_comp_2 [simp]:
   "[| new_tv n (S::subst); new_tv n R |] ==> new_tv n (%v.$ R (S v))"
   by (simp add: new_tv_subst)
 
--- "new type variables do not occur freely in a type structure"
+\<comment> \<open>new type variables do not occur freely in a type structure\<close>
 lemma new_tv_not_free_tv [simp]:
     "new_tv n A ==> n~:(free_tv A)"
   by (auto simp add: new_tv_def)
@@ -710,7 +710,7 @@ apply (simp (no_asm) add: less_max_iff_disj)
 apply blast
 done
 
--- "mgu does not introduce new type variables"
+\<comment> \<open>mgu does not introduce new type variables\<close>
 lemma mgu_new: 
       "[|mgu t1 t2 = Some u; new_tv n t1; new_tv n t2|] ==> new_tv n u"
 apply (unfold new_tv_def)
@@ -734,7 +734,7 @@ lemma subst_TVar_scheme_list [simp]:
   shows "$ TVar A = A"
   by (induct A) (simp_all add: app_subst_list)
 
--- "application of @{text id_subst} does not change type expression"
+\<comment> \<open>application of @{text id_subst} does not change type expression\<close>
 lemma app_subst_id_te [simp]: "$ id_subst = (%t::typ. t)"
 apply (unfold id_subst_def)
 apply (rule ext)
@@ -750,7 +750,7 @@ apply (induct_tac "sch")
 apply simp_all
 done
 
--- "application of @{text id_subst} does not change list of type expressions"
+\<comment> \<open>application of @{text id_subst} does not change list of type expressions\<close>
 lemma app_subst_id_tel [simp]: 
   "$ id_subst = (%A::type_scheme list. A)"
 apply (unfold app_subst_list)
@@ -769,7 +769,7 @@ lemma id_subst_A [simp]:
   shows "$ id_subst A = A"
   by (induct A) simp_all
 
--- "composition of substitutions"
+\<comment> \<open>composition of substitutions\<close>
 lemma o_id_subst [simp]: "$S o id_subst = S"
   unfolding id_subst_def o_def by simp
 

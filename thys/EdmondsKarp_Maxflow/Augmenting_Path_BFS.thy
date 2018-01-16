@@ -704,7 +704,7 @@ subsection \<open>Imperative Implementation\<close>
         itypeI[Pure.of s "TYPE(nat)"]
         itypeI[Pure.of t "TYPE(nat)"]
         itypeI[Pure.of c "TYPE('ig)"]
-        -- \<open>Declare parameters to operation identification\<close>
+        \<comment> \<open>Declare parameters to operation identification\<close>
       shows "hn_refine (
         hn_ctxt (isG) c ci 
       * hn_val nat_rel s si 
@@ -721,7 +721,7 @@ subsection \<open>Imperative Implementation\<close>
       done
     
     concrete_definition (in -) bfs_impl uses Impl_Succ.bfs_impl
-      -- \<open>Extract generated implementation into constant\<close>
+      \<comment> \<open>Extract generated implementation into constant\<close>
     prepare_code_thms (in -) bfs_impl_def
    
     lemmas bfs_impl_fr_rule = bfs_impl.refine[OF this_loc,to_hfref]  

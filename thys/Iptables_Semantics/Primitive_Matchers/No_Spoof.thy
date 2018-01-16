@@ -435,7 +435,7 @@ begin
       proof(safe)
         fix p :: "('i::len,'pkt_ext) tagged_packet_scheme"
         assume a2: "approximating_bigstep_fun (common_matcher, in_doubt_allow) (p\<lparr>p_iiface := iface_sel iface\<rparr>) rs Undecided = Decision FinalAllow"
-        --\<open>In @{text setbydecision_fix_p}the @{text \<exists>} quantifier is gone and we consider this set for @{term p}.\<close>
+        \<comment> \<open>In @{text setbydecision_fix_p}the @{text \<exists>} quantifier is gone and we consider this set for @{term p}.\<close>
         let ?setbydecision_fix_p="{ip. approximating_bigstep_fun (common_matcher, in_doubt_allow) 
           (p\<lparr>p_iiface := iface_sel iface, p_src := ip\<rparr>) rs Undecided = Decision FinalAllow}"
         from a1 a2 have 1: "?setbydecision_fix_p \<subseteq> ipcidr_union_set (set (the (ipassmt iface)))" by(simp add: nospoof_def setbydecision_def) blast

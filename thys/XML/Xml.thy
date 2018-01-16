@@ -12,12 +12,12 @@ imports
 begin
 
 datatype xml =
-  -- {* node-name, attributes, child-nodes *}
+  \<comment> \<open>node-name, attributes, child-nodes\<close>
   XML string "(string \<times> string) list" "xml list" |
   XML_text string
 
 datatype xmldoc =
-  -- {* header, body *}
+  \<comment> \<open>header, body\<close>
   XMLDOC "string list" (root_node: xml)
 
 fun tag :: "xml \<Rightarrow> string" where

@@ -1117,7 +1117,7 @@ proof (cases "Re s > 1")
     hence zero: "zeta (1 - \<i> * a) = 0" by simp
     with zeta_cnj[of "1 - \<i> * a"] have zero': "zeta (1 + \<i> * a) = 0" by simp
 
-    -- \<open>We define the function $Q(s) = \zeta(s)^2\zeta(s+ia)\zeta(s-ia)$ and its Dirichlet series.
+    \<comment> \<open>We define the function $Q(s) = \zeta(s)^2\zeta(s+ia)\zeta(s-ia)$ and its Dirichlet series.
         The objective will be to show that this function is entire and its Dirichlet series
         converges everywhere. Of course, $Q(s)$ has singularities at $1$ and $1\pm ia$, so we 
         need to show they can be removed.\<close>
@@ -1126,7 +1126,7 @@ proof (cases "Re s > 1")
         and "Q_fds = fds_zeta ^ 2 * fds_shift (\<i> * a) fds_zeta * fds_shift (-\<i> * a) fds_zeta"  
     let ?sings = "{1, 1 + \<i> * a, 1 - \<i> * a}"
  
-    -- \<open>We show that @{term Q} is locally bounded everywhere. This is the case because the
+    \<comment> \<open>We show that @{term Q} is locally bounded everywhere. This is the case because the
         poles of $\zeta(s)$ cancel with the zeros of $\zeta(s\pm ia)$ and vice versa.
         This boundedness is then enough to show that @{term Q} has only removable singularities.\<close>
     have Q_bigo_1: "Q \<in> O[at s](\<lambda>_. 1)" for s
@@ -1134,7 +1134,7 @@ proof (cases "Re s > 1")
       have Q_eq: "Q = (\<lambda>s. (zeta s * zeta (s + \<i> * a)) * (zeta s * zeta (s - \<i> * a)))"
         by (simp add: Q_def power2_eq_square mult_ac)
 
-      -- \<open>The singularity of $\zeta(s)$ at 1 gets cancelled by the zero of $\zeta(s-ia)$:\<close>
+      \<comment> \<open>The singularity of $\zeta(s)$ at 1 gets cancelled by the zero of $\zeta(s-ia)$:\<close>
       have bigo1: "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[at 1](\<lambda>_. 1)"
         if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
       proof -
@@ -1149,12 +1149,12 @@ proof (cases "Re s > 1")
         finally show ?thesis .
       qed
 
-      -- \<open>The analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
+      \<comment> \<open>The analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
       have bigo1': "(\<lambda>s. zeta s * zeta (s + \<i> * a)) \<in> O[at 1](\<lambda>_. 1)"
         if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
         using bigo1[of  "-a"] that zeta_cnj[of "1 - \<i> * a"] by simp
 
-      -- \<open>The singularity of $\zeta(s-ia)$ gets cancelled by the zero of $\zeta(s)$:\<close>
+      \<comment> \<open>The singularity of $\zeta(s-ia)$ gets cancelled by the zero of $\zeta(s)$:\<close>
       have bigo2: "(\<lambda>s. zeta s * zeta (s - \<i> * a)) \<in> O[at (1 + \<i> * a)](\<lambda>_. 1)"
         if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
       proof -
@@ -1165,12 +1165,12 @@ proof (cases "Re s > 1")
         finally show ?thesis .
       qed
 
-      -- \<open>Again, the analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
+      \<comment> \<open>Again, the analogous result for $\zeta(s) \zeta(s+ia)$:\<close>
       have bigo2': "(\<lambda>s. zeta s * zeta (s + \<i> * a)) \<in> O[at (1 - \<i> * a)](\<lambda>_. 1)"
         if "zeta (1 - \<i> * a) = 0" "a \<noteq> 0" for a :: real
         using bigo2[of "-a"] that zeta_cnj[of "1 - \<i> * a"] by simp
 
-      -- \<open>Now the final case distinction to show $Q(s)\in O(1)$ for all $s\in\mathbb{C}$:\<close>
+      \<comment> \<open>Now the final case distinction to show $Q(s)\in O(1)$ for all $s\in\mathbb{C}$:\<close>
       consider "s = 1" | "s = 1 + \<i> * a" | "s = 1 - \<i> * a" | "s \<notin> ?sings" by blast
       thus ?thesis
       proof cases
@@ -1192,13 +1192,13 @@ proof (cases "Re s > 1")
       qed (auto intro!: continuous_imp_bigo_1 continuous_intros simp: Q_def complex_eq_iff)
     qed
   
-    -- \<open>Thus, we can remove the singularities from @{term Q} and extend it to an entire function.\<close>
+    \<comment> \<open>Thus, we can remove the singularities from @{term Q} and extend it to an entire function.\<close>
     have "\<exists>Q'. Q' holomorphic_on UNIV \<and> (\<forall>z\<in>UNIV - ?sings. Q' z = Q z)"
       by (intro removable_singularities Q_bigo_1)
          (auto simp: Q_def complex_eq_iff intro!: holomorphic_intros)
     then obtain Q' where Q': "Q' holomorphic_on UNIV" "\<And>z. z \<notin> ?sings \<Longrightarrow> Q' z = Q z" by blast
 
-    -- \<open>@{term Q'} constitutes an analytic continuation of the Dirichlet series of @{term Q}.\<close>
+    \<comment> \<open>@{term Q'} constitutes an analytic continuation of the Dirichlet series of @{term Q}.\<close>
     have eval_Q_fds: "eval_fds Q_fds s = Q' s" if "Re s > 1" for s
     proof -
       have "eval_fds Q_fds s = Q s" using that
@@ -1208,7 +1208,7 @@ proof (cases "Re s > 1")
       finally show ?thesis .
     qed
   
-    -- \<open>Since $\zeta(s)$ and $\zeta(s\pm ia)$ are completely multiplicative Dirichlet series,
+    \<comment> \<open>Since $\zeta(s)$ and $\zeta(s\pm ia)$ are completely multiplicative Dirichlet series,
         the logarithm of their product can be rewritten into the following nice form:\<close>
     have ln_Q_fds_eq: 
       "fds_ln 0 Q_fds = fds (\<lambda>k. of_real (2 * mangoldt k / ln k * (1 + cos (a * ln k))))"
@@ -1239,7 +1239,7 @@ proof (cases "Re s > 1")
       qed
       finally show ?thesis .
     qed
-    -- \<open>It is then obvious that this logarithm series has non-negative real coefficients.\<close>
+    \<comment> \<open>It is then obvious that this logarithm series has non-negative real coefficients.\<close>
     also have "nonneg_dirichlet_series \<dots>"
     proof (standard, goal_cases)
       case (1 n)
@@ -1249,11 +1249,11 @@ proof (cases "Re s > 1")
            (auto simp: complex_nonneg_Reals_iff fds_nth_fds' mangoldt_nonneg
                  intro!: divide_nonneg_nonneg mult_nonneg_nonneg)
     qed
-    -- \<open>Therefore, the original series also has non-negative real coefficients.\<close>
+    \<comment> \<open>Therefore, the original series also has non-negative real coefficients.\<close>
     finally have nonneg: "nonneg_dirichlet_series Q_fds"
       by (rule nonneg_dirichlet_series_lnD) (auto simp: Q_fds_def)
   
-    -- \<open>By the Pringsheim--Landau theorem, a Dirichlet series with non-negative coefficnets that 
+    \<comment> \<open>By the Pringsheim--Landau theorem, a Dirichlet series with non-negative coefficnets that 
         can be analytically continued to the entire complex plane must converge everywhere, i.\,e.\ 
         its abscissa of (absolute) convergence is $-\infty$:\<close>
     have abscissa_Q_fds: "abs_conv_abscissa Q_fds \<le> 1"
@@ -1263,7 +1263,7 @@ proof (cases "Re s > 1")
         by (intro entire_continuation_imp_abs_conv_abscissa_MInfty[where c = 1 and g = Q'])
            (auto simp: one_ereal_def)
   
-    -- \<open>This now leads to a contradiction in a very obvious way. If @{term Q_fds} is
+    \<comment> \<open>This now leads to a contradiction in a very obvious way. If @{term Q_fds} is
         absolutely convergent, then the subseries corresponding to powers of 2 (\i.e.
         we delete all summands $a_n / n ^ s$ where $n$ is not a power of 2 from the sum) is
         also absolutely convergent. We denote this series with $R$.\<close>
@@ -1274,7 +1274,7 @@ proof (cases "Re s > 1")
     also have "\<dots> = -\<infinity>" by (simp add: abscissa)
     finally have abscissa': "conv_abscissa R_fds = -\<infinity>" by simp
   
-    -- \<open>Since $\zeta(s)$ and $\zeta(s \pm ia)$ have an Euler product expansion for 
+    \<comment> \<open>Since $\zeta(s)$ and $\zeta(s \pm ia)$ have an Euler product expansion for 
         $\mathfrak{R}(s) > 1$, we have
           \[R(s) = (1 - 2^{-s})^-2 (1 - 2^{-s+ia})^{-1} (1 - 2^{-s-ia})^{-1}\]
         there, and since $R$ converges everywhere and the right-hand side is holomorphic for
@@ -1299,7 +1299,7 @@ proof (cases "Re s > 1")
                                                convex_halfspace_Re_gt holomorphic_intros)
     qed
   
-    -- \<open>We now clearly have a contradiction: $R(s)$, being entire, is continuous everywhere,
+    \<comment> \<open>We now clearly have a contradiction: $R(s)$, being entire, is continuous everywhere,
         while the function on the right-hand side clearly has a pole at $0$.\<close>
     show False
     proof (rule not_tendsto_and_filterlim_at_infinity)
@@ -1740,11 +1740,11 @@ text \<open>
 \<close>
 lemma primes_infinite_analytic: "infinite {p :: nat. prime p}"
 proof
-  -- \<open>Suppose the set of primes were finite.\<close>
+  \<comment> \<open>Suppose the set of primes were finite.\<close>
   define P :: "nat set" where "P = {p. prime p}"
   assume fin: "finite P"
 
-  -- \<open>Then the Euler product form of the $\zeta$ function ranges over a finite set,
+  \<comment> \<open>Then the Euler product form of the $\zeta$ function ranges over a finite set,
       and since each factor is holomorphic in the positive real half-space, 
       the product is, too.\<close>
   define zeta' :: "complex \<Rightarrow> complex" 
@@ -1764,7 +1764,7 @@ proof
     thus ?thesis by (auto simp: zeta'_def P_def intro!: holomorphic_intros)
   qed
 
-  -- \<open>Since the Euler product expansion of $\zeta(s)$ is valid for all $s$ with
+  \<comment> \<open>Since the Euler product expansion of $\zeta(s)$ is valid for all $s$ with
       real value at least 1, and both $\zeta(s)$ and the Euler product must 
       be equal in the positive real half-space punctured at 1 by analytic
       continuation.\<close>
@@ -1788,7 +1788,7 @@ proof
   qed (auto intro!: exI[of _ 2] open_halfspace_Re_gt connected_open_delete convex_halfspace_Re_gt 
          holomorphic_intros holo that intro: convex_connected)
 
-  -- \<open>However, since the Euler product is holomorphic on the entire positive real
+  \<comment> \<open>However, since the Euler product is holomorphic on the entire positive real
       half-space, it cannot have a pole at 1, while $\zeta(s)$ does have a pole
       at 1. Since they are equal in the punctured neighbourhood of 1, this is
       a contradiction.\<close>

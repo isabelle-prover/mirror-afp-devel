@@ -174,23 +174,23 @@ proposition blichfeldt:
   assumes "emeasure lebesgue S > 1"
   obtains x y where "x \<noteq> y" and "x \<in> S" and "y \<in> S" and "\<And>i. (x - y) $ i \<in> \<int>"
 proof -
-  -- \<open>We define for each lattice point in $\mathbb{Z}^n$ the corresponding cell in $\mathbb{R}^n$.\<close>
+  \<comment> \<open>We define for each lattice point in $\mathbb{Z}^n$ the corresponding cell in $\mathbb{R}^n$.\<close>
   define R :: "int ^ 'n \<Rightarrow> (real ^ 'n) set"
     where "R = (\<lambda>a. cbox (of_int_vec a) (of_int_vec (a + 1)))"
 
-  -- \<open>For each lattice point, we can intersect the cell it defines with our set @{term S}
+  \<comment> \<open>For each lattice point, we can intersect the cell it defines with our set @{term S}
       to obtain a partitioning of @{term S}.\<close>
   define T :: "int ^ 'n \<Rightarrow> (real ^ 'n) set"
     where "T = (\<lambda>a. S \<inter> R a)"
 
-  -- \<open>We can then translate each such partition into the cell at the origin, i.\,e. the
+  \<comment> \<open>We can then translate each such partition into the cell at the origin, i.\,e. the
       unit box @{term "R 0"}.\<close>
   define T' :: "int ^ 'n \<Rightarrow> (real ^ 'n) set"
     where "T' = (\<lambda>a. (\<lambda>x. x - of_int_vec a) ` T a)"
   have T'_altdef: "T' a = (\<lambda>x. x + of_int_vec a) -` T a" for a
     unfolding T'_def by force
 
-  -- \<open>We need to show measurability of all the defined sets.\<close>
+  \<comment> \<open>We need to show measurability of all the defined sets.\<close>
   have [measurable, simp]: "R a \<in> sets lebesgue" for a
     unfolding R_def by simp
   have [measurable, simp]: "T a \<in> sets lebesgue" for a
@@ -202,7 +202,7 @@ proof -
     have [measurable, simp]: "T' a \<in> sets lebesgue" for a
       unfolding T'_altdef by simp
 
-  -- \<open>Obviously, the original set @{term S} is the union of all the lattice
+  \<comment> \<open>Obviously, the original set @{term S} is the union of all the lattice
       point cell partitions.\<close>
   have S_decompose: "S = (\<Union>a. T a)" unfolding T_def
   proof safe
@@ -214,7 +214,7 @@ proof -
     with x show "x \<in> (\<Union>a. S \<inter> R a)" by auto
   qed
 
-  -- \<open>Translating the partitioned subsets does not change their volume.\<close>
+  \<comment> \<open>Translating the partitioned subsets does not change their volume.\<close>
   have emeasure_T': "emeasure lebesgue (T' a) = emeasure lebesgue (T a)" for a
   proof -
     have "T' a = (\<lambda>x. 1 *\<^sub>R x + (- of_int_vec a)) ` T a"
@@ -225,12 +225,12 @@ proof -
       by simp
   qed
 
-  -- \<open>Each translated partition of @{term S} is a subset of the unit cell at the origin.\<close>
+  \<comment> \<open>Each translated partition of @{term S} is a subset of the unit cell at the origin.\<close>
   have T'_subset: "T' a \<subseteq> cbox 0 1" for a
     unfolding T'_def T_def R_def
     by (auto simp: algebra_simps cbox_interval of_int_vec_def less_eq_vec_def)
 
-  -- \<open>It is clear that the intersection of two different lattice point cells is a null set.\<close>
+  \<comment> \<open>It is clear that the intersection of two different lattice point cells is a null set.\<close>
   have R_Int: "R a \<inter> R b \<in> null_sets lebesgue" if "a \<noteq> b" for a b
   proof -
     from that obtain i where i: "a $ i \<noteq> b $ i"
@@ -250,7 +250,7 @@ proof -
       by (auto simp: null_sets_def R_def)
   qed
 
-  -- \<open>Therefore, the intersection of two lattice point cell partitionings of @{term S} is
+  \<comment> \<open>Therefore, the intersection of two lattice point cell partitionings of @{term S} is
       also a null set.\<close>
   have T_Int: "T a \<inter> T b \<in> null_sets lebesgue" if "a \<noteq> b" for a b
   proof -
@@ -263,7 +263,7 @@ proof -
   have emeasure_T_Int: "emeasure lebesgue (T a \<inter> T b) = 0" if "a \<noteq> b" for a b
     using T_Int[OF that] unfolding null_sets_def by blast
 
-  -- \<open>The set of lattice points $\mathbb{Z}^n$ is countably infinite, so there exists
+  \<comment> \<open>The set of lattice points $\mathbb{Z}^n$ is countably infinite, so there exists
       a bijection $f: \mathbb{N} \to \mathbb{Z}^n$. We need this for summing over all
       lattice points.\<close>
   define f :: "nat \<Rightarrow> int ^ 'n" where "f = from_nat_into UNIV"
@@ -272,14 +272,14 @@ proof -
   from bij_betw_from_nat_into [OF this] have f: "bij f"
     by (simp add: f_def)
 
-  -- \<open>Suppose all the translated cell partitions @{term T'} are disjoint.\<close>
+  \<comment> \<open>Suppose all the translated cell partitions @{term T'} are disjoint.\<close>
   {
     assume disjoint: "\<And>a b. a \<noteq> b \<Longrightarrow> T' a \<inter> T' b = {}"
-    -- \<open>We know by assumption that the volume of @{term S} is greater than 1.\<close>
+    \<comment> \<open>We know by assumption that the volume of @{term S} is greater than 1.\<close>
     have "1 < emeasure lebesgue S" by fact
     also have "emeasure lebesgue S = emeasure lebesgue (\<Union>n. T' (f n))"
     proof -
-      -- \<open>The sum of the volumes of all the @{term T'} is precisely the volume
+      \<comment> \<open>The sum of the volumes of all the @{term T'} is precisely the volume
           of their union, which is @{term "S"}.\<close>
       have "S = (\<Union>a. T a)" by (rule S_decompose)
       also have "\<dots> = (\<Union>n. T (f n))"
@@ -295,17 +295,17 @@ proof -
       ultimately show ?thesis
         by (auto simp: sums_iff)
     qed
-    -- \<open>On the other hand, all the translated partitions lie in the unit cell
+    \<comment> \<open>On the other hand, all the translated partitions lie in the unit cell
         @{term "cbox (0 :: real ^ 'n) 1"}, so their combined volume cannot be
         greater than 1.\<close>
     also have "emeasure lebesgue (\<Union>n. T' (f n)) \<le> emeasure lebesgue (cbox 0 (1 :: real ^ 'n))"
       using T'_subset by (intro emeasure_mono) auto
     also have "\<dots> = 1"
       by (simp add: emeasure_lborel_cbox_cart_eq)
-    -- \<open>This leads to a contradiction.\<close>
+    \<comment> \<open>This leads to a contradiction.\<close>
     finally have False by simp
   }
-  -- \<open>Therefore, there exists a point that lies in two different translated partitions,
+  \<comment> \<open>Therefore, there exists a point that lies in two different translated partitions,
       which obviously corresponds two two points in the non-translated partitions
       whose difference is the difference between two lattice points and therefore
       has integer components.\<close>
@@ -331,7 +331,7 @@ theorem minkowski:
   assumes measure_B: "emeasure lebesgue B > 2 ^ CARD('n)"
   obtains x where "x \<in> B" and "x \<noteq> 0" and "\<And>i. x $ i \<in> \<int>"
 proof -
-  -- \<open>We scale @{term B} with $\frac{1}{2}$.\<close>
+  \<comment> \<open>We scale @{term B} with $\frac{1}{2}$.\<close>
   define B' where "B' = (\<lambda>x. 2 *\<^sub>R x) -` B"
   have meas_B' [measurable]: "B' \<in> sets lebesgue"
     using measurable_sets[OF lebesgue_measurable_scaling[of 2] meas_B]
@@ -339,7 +339,7 @@ proof -
   have B'_altdef: "B' = (\<lambda>x. (1/2) *\<^sub>R x) ` B"
     unfolding B'_def by force
 
-  -- \<open>The volume of the scaled set is $2^n$ times smaller than the original set, and
+  \<comment> \<open>The volume of the scaled set is $2^n$ times smaller than the original set, and
       therefore still has a volume greater than 1.\<close>
   have "1 < ennreal ((1 / 2) ^ CARD('n)) * emeasure lebesgue B"
   proof (cases "emeasure lebesgue B")
@@ -357,17 +357,17 @@ proof -
     unfolding B'_altdef using emeasure_lebesgue_affine[of "1/2" 0 B] by simp
   finally have *: "emeasure lebesgue B' > 1" .
 
-  -- \<open>We apply Blichfeldt's theorem to get two points whose difference vector has
+  \<comment> \<open>We apply Blichfeldt's theorem to get two points whose difference vector has
       integer coefficients. It only remains to show that that difference vector is
       itself a point in the original set.\<close>
   obtain x y
     where xy: "x \<noteq> y" "x \<in> B'" "y \<in> B'" "\<And>i. (x - y) $ i \<in> \<int>"
     by (erule blichfeldt [OF meas_B' *])
   hence "2 *\<^sub>R x \<in> B" "2 *\<^sub>R y \<in> B" by (auto simp: B'_def)
-  -- \<open>Exploiting the symmetric of @{term B}, the reflection of @{term "2 *\<^sub>R y"} is
+  \<comment> \<open>Exploiting the symmetric of @{term B}, the reflection of @{term "2 *\<^sub>R y"} is
       also in @{term B}.\<close>
   moreover from this and symmetric have "-(2 *\<^sub>R y) \<in> B" by blast
-  -- \<open>Since @{term B} is convex, the mid-point between @{term "2 *\<^sub>R x"} and @{term "-2 *\<^sub>R y"}
+  \<comment> \<open>Since @{term B} is convex, the mid-point between @{term "2 *\<^sub>R x"} and @{term "-2 *\<^sub>R y"}
       is also in @{term B}, and that point is simply @{term "x - y"} as desired.\<close>
   ultimately have "(1 / 2) *\<^sub>R 2 *\<^sub>R x + (1 / 2) *\<^sub>R (- 2 *\<^sub>R y) \<in> B"
     using \<open>convex B\<close> by (intro convexD) auto
@@ -387,7 +387,7 @@ theorem minkowski_compact:
   assumes measure_B: "emeasure lebesgue B \<ge> 2 ^ CARD('n)"
   obtains x where "x \<in> B" and "x \<noteq> 0" and "\<And>i. x $ i \<in> \<int>"
 proof (cases "emeasure lebesgue B = 2 ^ CARD('n)")
-  -- \<open>If the volume is greater than 1, we can just apply the theorem from before.\<close>
+  \<comment> \<open>If the volume is greater than 1, we can just apply the theorem from before.\<close>
   case False
   with measure_B have less: "emeasure lebesgue B > 2 ^ CARD('n)"
     by simp
@@ -397,7 +397,7 @@ proof (cases "emeasure lebesgue B = 2 ^ CARD('n)")
     show ?thesis by blast
 next
   case True
-  -- \<open>If the volume is precisely one, we look at what happens when @{term B} is
+  \<comment> \<open>If the volume is precisely one, we look at what happens when @{term B} is
       scaled with a factor of $1 + \varepsilon$.\<close>
   define B' where "B' = (\<lambda>\<epsilon>. ( *\<^sub>R) (1 + \<epsilon>) ` B)"
   from \<open>compact B\<close> have compact': "compact (B' \<epsilon>)" for \<epsilon>
@@ -405,7 +405,7 @@ next
   have B'_altdef: "B' \<epsilon> = ( *\<^sub>R) (inverse (1 + \<epsilon>)) -` B" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
     using \<epsilon> unfolding B'_def by force
 
-  -- \<open>Since the scaled sets are convex, they are stable under scaling.\<close>
+  \<comment> \<open>Since the scaled sets are convex, they are stable under scaling.\<close>
   have B_scale: "a *\<^sub>R x \<in> B" if "x \<in> B" "a \<in> {0..1}" for a x
   proof -
     have "((a + 1) / 2) *\<^sub>R x + (1 - ((a + 1) / 2)) *\<^sub>R (-x) \<in> B"
@@ -418,7 +418,7 @@ next
     finally show "\<dots> \<in> B" .
   qed
 
-  -- \<open>This means that @{term B'} is monotonic.\<close>
+  \<comment> \<open>This means that @{term B'} is monotonic.\<close>
   have B'_subset: "B' a \<subseteq> B' b" if "0 \<le> a" "a \<le> b" for a b
   proof
     fix x assume "x \<in> B' a"
@@ -430,13 +430,13 @@ next
       using that by (force simp: B'_def)
   qed
 
-  -- \<open>We obtain some upper bound on the norm of @{term B}.\<close>
+  \<comment> \<open>We obtain some upper bound on the norm of @{term B}.\<close>
   from \<open>compact B\<close> have "bounded B"
     by (rule compact_imp_bounded)
   then obtain C where C: "norm x \<le> C" if "x \<in> B" for x
     unfolding bounded_iff by blast
 
-  -- \<open>We can then bound the distance of any point in a scaled set to the original set.\<close>
+  \<comment> \<open>We can then bound the distance of any point in a scaled set to the original set.\<close>
   have setdist_le: "setdist {x} B \<le> \<epsilon> * C" if "x \<in> B' \<epsilon>" and "\<epsilon> \<ge> 0" for x \<epsilon>
   proof -
     from that obtain y where y: "y \<in> B" and [simp]: "x = (1 + \<epsilon>) *\<^sub>R y"
@@ -451,7 +451,7 @@ next
       using that by (simp add: mult_left_mono)
   qed
 
-  -- \<open>By applying the standard Minkowski theorem to the a scaled set, we can see that
+  \<comment> \<open>By applying the standard Minkowski theorem to the a scaled set, we can see that
       any scaled set contains a non-zero point with integer coordinates.\<close>
   have "\<exists>v. v \<in> B' \<epsilon> - {0} \<and> (\<forall>i. v $ i \<in> \<int>)" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
   proof -
@@ -478,14 +478,14 @@ next
   qed
   hence "\<forall>n. \<exists>v. v \<in> B' (1/Suc n) - {0} \<and> (\<forall>i. v $ i \<in> \<int>)"
     by auto
-  -- \<open>In particular, this means we can choose some sequence tending to zero
+  \<comment> \<open>In particular, this means we can choose some sequence tending to zero
       -- say $\frac{1}{n+1}$ -- and always find a lattice point in the scaled set.\<close>
   hence "\<exists>v. \<forall>n. v n \<in> B' (1/Suc n) - {0} \<and> (\<forall>i. v n $ i \<in> \<int>)"
     by (subst (asm) choice_iff)
   then obtain v where v: "v n \<in> B' (1/Suc n) - {0}" "v n $ i \<in> \<int>" for i n
     by blast
 
-  -- \<open>By the Bolzano--Weierstraß theorem, there exists a convergent subsequence of @{term v}.\<close>
+  \<comment> \<open>By the Bolzano--Weierstraß theorem, there exists a convergent subsequence of @{term v}.\<close>
   have "\<exists>h l. strict_mono (h::nat\<Rightarrow>nat) \<and> (v \<circ> h) \<longlonglongrightarrow> l"
   proof (rule compactD)
     show "compact (B' 1)" by (rule compact')
@@ -495,7 +495,7 @@ next
   then obtain h l where h: "strict_mono h" and l: "(v \<circ> h) \<longlonglongrightarrow> l"
     by blast
 
-  -- \<open>Since the convergent subsequence tends to @{term l}, the distance of the
+  \<comment> \<open>Since the convergent subsequence tends to @{term l}, the distance of the
       sequence elements to @{term B} tends to the distance of @{term l} and @{term B}.
       Furthermore, the distance of the sequence elements is bounded by $(1+\varepsilon)C$,
       which tends to 0, so the distance of @{term l} to @{term B} must be 0.\<close>
@@ -516,7 +516,7 @@ next
   with assms and \<open>compact B\<close> have "l \<in> B"
     by (subst (asm) setdist_eq_0_closed) (auto intro: compact_imp_closed)
 
-  -- \<open>It is also easy to see that, since the lattice is a closed set and all sequence
+  \<comment> \<open>It is also easy to see that, since the lattice is a closed set and all sequence
       elements lie on it, the limit @{term l} also lies on it.\<close>
   moreover have "l \<in> {l. \<forall>i. l $ i \<in> \<int>} - {0}"
     using v by (intro closed_sequentially[OF closed_lattice _ l]) auto

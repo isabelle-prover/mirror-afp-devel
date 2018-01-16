@@ -226,7 +226,7 @@ text "Append a node at the left end"
 fun nlcons :: "('e,'a::monoid_add) Node \<Rightarrow> ('e,'a) FingerTreeStruc 
     \<Rightarrow> ('e,'a) FingerTreeStruc"  
 where
--- {* Recursively we append a node, if the digit is full we push down a node3 *}
+\<comment> \<open>Recursively we append a node, if the digit is full we push down a node3\<close>
   "nlcons a Empty = Single a" |
   "nlcons a (Single b) = deep (One a) Empty (One b)" |
   "nlcons a (Deep _ (One b) m sf) = deep (Two a b) m sf" |
@@ -238,7 +238,7 @@ where
 text "Append a node at the right end"
 fun nrcons :: "('e,'a::monoid_add) FingerTreeStruc 
     \<Rightarrow> ('e,'a) Node \<Rightarrow> ('e,'a) FingerTreeStruc"  where
-  -- {* Recursively we append a node, if the digit is full we push down a node3 *}
+  \<comment> \<open>Recursively we append a node, if the digit is full we push down a node3\<close>
   "nrcons Empty a = Single a" |
   "nrcons (Single b) a = deep (One b) Empty (One a)" |
   "nrcons (Deep _ pr m (One b)) a = deep pr m (Two  b a)"|
@@ -745,8 +745,8 @@ definition isEmpty :: "('e,'a) FingerTreeStruc \<Rightarrow> bool" where
   [code del]: "isEmpty t = (t = Empty)"
 lemma isEmpty_correct: "isEmpty t \<longleftrightarrow> toList t = []"
   unfolding isEmpty_def by (simp add: toList_empty)
--- {*Avoid comparison with @{text "(=)"}, and thus unnecessary equality-class
-    parameter on element types in generated code*}
+\<comment> \<open>Avoid comparison with @{text "(=)"}, and thus unnecessary equality-class
+    parameter on element types in generated code\<close>
 lemma [code]: "isEmpty t = (case t of Empty \<Rightarrow> True | _ \<Rightarrow> False)"
   apply (cases t)
   apply (auto simp add: isEmpty_def)
@@ -1093,7 +1093,7 @@ definition nlistToTree :: "('e,'a::monoid_add) Node list
 fun nsplitTree :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('e,'a) FingerTreeStruc 
     \<Rightarrow> ('e,'a) SplitTree" where
   "nsplitTree p i Empty = (Empty, Tip undefined undefined, Empty)" 
-      -- "Making the function total" |
+      \<comment> \<open>Making the function total\<close> |
   "nsplitTree p i (Single ea) = (Empty,ea,Empty)" |
   "nsplitTree p i (Deep _ pr m sf) = 
      (let 
@@ -2214,7 +2214,7 @@ begin
       empty 
     else 
       Abs_FingerTree (FingerTreeStruc.tail (Rep_FingerTree t))"
-    -- "Make function total, to allow abstraction"
+    \<comment> \<open>Make function total, to allow abstraction\<close>
   lemma [code abstract]: "Rep_FingerTree (tail t) = 
     (if (FingerTreeStruc.isEmpty (Rep_FingerTree t)) then Empty 
      else FingerTreeStruc.tail (Rep_FingerTree t))"

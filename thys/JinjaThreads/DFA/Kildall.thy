@@ -423,10 +423,10 @@ proof -
    r = "{(ss',ss) . ss \<in> list n A \<and> ss' \<in> list n A \<and> ss [\<sqsubset>\<^sub>r] ss'} <*lex*> s_finite_psubset"
          in while_rule)
 
-  -- "Invariant holds initially:"
+  \<comment> \<open>Invariant holds initially:\<close>
   apply (simp add:stables_def)
 
-  -- "Invariant is preserved:"
+  \<comment> \<open>Invariant is preserved:\<close>
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "s_choose w \<in> s_\<alpha> w")
@@ -479,16 +479,16 @@ proof -
   apply (blast dest!: boundedD)
 
 
-  -- "Postcondition holds upon termination:"
+  \<comment> \<open>Postcondition holds upon termination:\<close>
   apply(clarsimp simp add: stables_def split_paired_all)
 
-  -- "Well-foundedness of the termination relation:"
+  \<comment> \<open>Well-foundedness of the termination relation:\<close>
   apply (rule wf_lex_prod)
    apply (insert orderI [THEN acc_le_listI])
    apply (simp only: acc_def lesssub_def)
   apply (rule wf_s_finite_psubset) 
 
-  -- "Loop decreases along termination relation:"
+  \<comment> \<open>Loop decreases along termination relation:\<close>
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "s_choose w \<in> s_\<alpha> w")

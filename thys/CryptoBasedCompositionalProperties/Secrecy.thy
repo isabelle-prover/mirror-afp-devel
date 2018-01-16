@@ -9,17 +9,17 @@ theory Secrecy
 imports Secrecy_types inout ListExtras
 begin
 
--- "Encryption, decryption, signature creation and signature verification functions"
--- "For these functions we define only their signatures and general axioms,"
--- "because in order to reason effectively, we view them as abstract functions and"
--- "abstract from their implementation details" 
+\<comment> \<open>Encryption, decryption, signature creation and signature verification functions\<close>
+\<comment> \<open>For these functions we define only their signatures and general axioms,\<close>
+\<comment> \<open>because in order to reason effectively, we view them as abstract functions and\<close>
+\<comment> \<open>abstract from their implementation details\<close> 
 consts 
   Enc  :: "Keys \<Rightarrow> Expression list \<Rightarrow> Expression list"
   Decr :: "Keys \<Rightarrow> Expression list \<Rightarrow> Expression list"
   Sign :: "Keys \<Rightarrow> Expression list \<Rightarrow> Expression list"
   Ext   :: "Keys \<Rightarrow> Expression list \<Rightarrow> Expression list"
 
--- "Axioms on relations between encription and decription keys"
+\<comment> \<open>Axioms on relations between encription and decription keys\<close>
 axiomatization
    EncrDecrKeys :: "Keys  \<Rightarrow> Keys \<Rightarrow> bool"
 where
@@ -28,14 +28,14 @@ ExtSign:
 DecrEnc:
  "EncrDecrKeys K1 K2 \<longrightarrow> (Decr K2 (Enc K1 E)) = E"
 
--- "Set of private keys of a component"
+\<comment> \<open>Set of private keys of a component\<close>
 consts
  specKeys :: "specID \<Rightarrow> Keys set"
--- "Set of unguessable values used by a component"
+\<comment> \<open>Set of unguessable values used by a component\<close>
 consts 
  specSecrets :: "specID \<Rightarrow> Secrets set"
 
--- "Join set of private keys and unguessable values used by a component"
+\<comment> \<open>Join set of private keys and unguessable values used by a component\<close>
 definition
   specKeysSecrets :: "specID \<Rightarrow> KS set"
 where
@@ -43,8 +43,8 @@ where
   {y .  \<exists> x. y = (kKS x)  \<and> (x \<in> (specKeys C))} \<union>
   {z .  \<exists> s. z = (sKS s)  \<and> (s \<in> (specSecrets C))}"
 
--- "Predicate defining that a list of expression items does not contain"
--- "any private key  or unguessable value used by a component"
+\<comment> \<open>Predicate defining that a list of expression items does not contain\<close>
+\<comment> \<open>any private key  or unguessable value used by a component\<close>
 definition
   notSpecKeysSecretsExpr :: "specID \<Rightarrow>  Expression list \<Rightarrow> bool"
 where
@@ -52,8 +52,8 @@ where
      (\<forall> x. (kE x) mem e \<longrightarrow> (kKS x) \<notin> specKeysSecrets P) \<and>
      (\<forall> y. (sE y) mem e \<longrightarrow> (sKS y) \<notin> specKeysSecrets P)"
 
--- "If a component is a composite one, the set of its private keys" 
--- "is a union of the subcomponents' sets of the private keys"
+\<comment> \<open>If a component is a composite one, the set of its private keys\<close> 
+\<comment> \<open>is a union of the subcomponents' sets of the private keys\<close>
 definition
   correctCompositionKeys ::  "specID \<Rightarrow> bool"
 where
@@ -61,8 +61,8 @@ where
     subcomponents x \<noteq> {} \<longrightarrow> 
     specKeys x =  \<Union> (specKeys ` (subcomponents x))" 
 
--- "If a component is a composite one, the set of its unguessable values" 
--- "is a union of the subcomponents' sets of the unguessable values"
+\<comment> \<open>If a component is a composite one, the set of its unguessable values\<close> 
+\<comment> \<open>is a union of the subcomponents' sets of the unguessable values\<close>
 definition
   correctCompositionSecrets ::  "specID \<Rightarrow> bool"
 where
@@ -70,8 +70,8 @@ where
     subcomponents x \<noteq> {} \<longrightarrow> 
     specSecrets x =  \<Union> (specSecrets ` (subcomponents x))" 
 
--- "If a component is a composite one, the set of its private keys and" 
--- "unguessable values is a union of the corresponding sets of its subcomponents"
+\<comment> \<open>If a component is a composite one, the set of its private keys and\<close> 
+\<comment> \<open>unguessable values is a union of the corresponding sets of its subcomponents\<close>
 definition
   correctCompositionKS ::  "specID \<Rightarrow> bool"
 where
@@ -79,8 +79,8 @@ where
     subcomponents x \<noteq> {} \<longrightarrow> 
     specKeysSecrets x =  \<Union> (specKeysSecrets ` (subcomponents x))" 
 
--- "Predicate defining set of correctness properties of the component's"
--- "interface  and relations on its private keys and unguessable values"
+\<comment> \<open>Predicate defining set of correctness properties of the component's\<close>
+\<comment> \<open>interface  and relations on its private keys and unguessable values\<close>
 definition
   correctComponentSecrecy  ::  "specID \<Rightarrow> bool"
 where 
@@ -93,53 +93,53 @@ where
     correctCompositionOut x \<and> 
     correctInOutLoc x"
 
--- "Predicate exprChannel I E defines whether the expression item E can be sent via the channel I"    
+\<comment> \<open>Predicate exprChannel I E defines whether the expression item E can be sent via the channel I\<close>    
 consts
  exprChannel :: "chanID \<Rightarrow> Expression \<Rightarrow> bool"
 
--- "Predicate eoutM sP M E defines whether the component sP may eventually"
--- "output an expression E if there exists a time interval t of" 
--- "an output channel which contains this expression E"
+\<comment> \<open>Predicate eoutM sP M E defines whether the component sP may eventually\<close>
+\<comment> \<open>output an expression E if there exists a time interval t of\<close> 
+\<comment> \<open>an output channel which contains this expression E\<close>
 definition
   eout :: "specID  \<Rightarrow> Expression \<Rightarrow> bool"
 where
  "eout sP E \<equiv> 
   \<exists> (ch :: chanID). ((ch \<in> (out sP)) \<and> (exprChannel ch E))"
 
--- "Predicate eout sP E defines whether the component sP may eventually"
--- "output an expression E via subset of channels M,"
--- "which is a subset of output channels of sP,"
--- "and if there exists a time interval t of" 
--- "an output channel which contains this expression E"
+\<comment> \<open>Predicate eout sP E defines whether the component sP may eventually\<close>
+\<comment> \<open>output an expression E via subset of channels M,\<close>
+\<comment> \<open>which is a subset of output channels of sP,\<close>
+\<comment> \<open>and if there exists a time interval t of\<close> 
+\<comment> \<open>an output channel which contains this expression E\<close>
 definition
   eoutM :: "specID  \<Rightarrow> chanID set \<Rightarrow> Expression \<Rightarrow> bool"
 where
  "eoutM sP M E \<equiv> 
   \<exists> (ch :: chanID). ((ch \<in> (out sP)) \<and> (ch \<in> M) \<and> (exprChannel ch E))"
 
--- "Predicate ineM sP M E defines whether a component sP may eventually"
--- "get an expression E  if there exists a time interval t of" 
--- "an input stream  which contains this expression E"
+\<comment> \<open>Predicate ineM sP M E defines whether a component sP may eventually\<close>
+\<comment> \<open>get an expression E  if there exists a time interval t of\<close> 
+\<comment> \<open>an input stream  which contains this expression E\<close>
 definition
   ine :: "specID  \<Rightarrow> Expression \<Rightarrow> bool"
 where
  "ine sP E \<equiv> 
   \<exists> (ch :: chanID). ((ch \<in> (ins sP)) \<and> (exprChannel ch E))"
 
--- "Predicate ine sP E defines whether a component sP may eventually"
--- "get an expression E via subset of channels M,"
--- "which is a subset of input channels of sP,"
--- "and if there exists a time interval t of" 
--- "an input stream  which contains this expression E"
+\<comment> \<open>Predicate ine sP E defines whether a component sP may eventually\<close>
+\<comment> \<open>get an expression E via subset of channels M,\<close>
+\<comment> \<open>which is a subset of input channels of sP,\<close>
+\<comment> \<open>and if there exists a time interval t of\<close> 
+\<comment> \<open>an input stream  which contains this expression E\<close>
 definition
   ineM :: "specID  \<Rightarrow> chanID set \<Rightarrow> Expression \<Rightarrow> bool"
 where
  "ineM sP M E \<equiv> 
   \<exists> (ch :: chanID). ((ch \<in> (ins sP)) \<and> (ch \<in> M) \<and> (exprChannel ch E))"
 
--- "This predicate defines whether an input channel ch of a component sP "
--- "is the only one input channel of this component "
--- "via which it may eventually output an expression E"
+\<comment> \<open>This predicate defines whether an input channel ch of a component sP\<close>
+\<comment> \<open>is the only one input channel of this component\<close>
+\<comment> \<open>via which it may eventually output an expression E\<close>
 definition
   out_exprChannelSingle :: "specID  \<Rightarrow> chanID \<Rightarrow> Expression \<Rightarrow> bool"
 where
@@ -148,9 +148,9 @@ where
   (exprChannel ch E)  \<and>
   (\<forall> (x :: chanID) (t :: nat). ((x \<in> (out sP)) \<and> (x \<noteq> ch) \<longrightarrow> \<not> exprChannel x E))"
 
--- "This predicate  yields true if only the channels from the set chSet,"
--- "which is a subset of input channels of the  component sP,"
--- "may eventually output an expression E"
+\<comment> \<open>This predicate  yields true if only the channels from the set chSet,\<close>
+\<comment> \<open>which is a subset of input channels of the  component sP,\<close>
+\<comment> \<open>may eventually output an expression E\<close>
 definition
  out_exprChannelSet :: "specID  \<Rightarrow> chanID set \<Rightarrow> Expression \<Rightarrow> bool"
 where
@@ -159,9 +159,9 @@ where
    \<and>
    (\<forall> (x :: chanID). ((x \<notin> chSet) \<and> (x \<in> (out sP)) \<longrightarrow> \<not> exprChannel x E)))"
 
--- "This redicate defines whether"
--- "an input channel ch of a component sP is the only one input channel"
--- "of this component via which it may eventually get an expression E"
+\<comment> \<open>This redicate defines whether\<close>
+\<comment> \<open>an input channel ch of a component sP is the only one input channel\<close>
+\<comment> \<open>of this component via which it may eventually get an expression E\<close>
 definition
  ine_exprChannelSingle :: "specID  \<Rightarrow> chanID \<Rightarrow> Expression \<Rightarrow> bool"
 where
@@ -170,9 +170,9 @@ where
   (exprChannel ch E)  \<and>
   (\<forall> (x :: chanID) (t :: nat). (( x \<in> (ins sP)) \<and> (x \<noteq> ch) \<longrightarrow> \<not> exprChannel x E))"
 
--- "This predicate yields true if the component sP may eventually"
--- "get an expression E only via the channels from the set chSet,"
--- "which is a subset of input channels of sP"
+\<comment> \<open>This predicate yields true if the component sP may eventually\<close>
+\<comment> \<open>get an expression E only via the channels from the set chSet,\<close>
+\<comment> \<open>which is a subset of input channels of sP\<close>
 definition
  ine_exprChannelSet :: "specID  \<Rightarrow> chanID set \<Rightarrow> Expression \<Rightarrow> bool"
 where
@@ -181,25 +181,25 @@ where
    \<and>
    (\<forall> (x :: chanID). ((x \<notin> chSet) \<and> ( x \<in> (ins sP)) \<longrightarrow> \<not> exprChannel x E)))"
 
--- "If a list of expression items does not contain any private key"
--- "or unguessable value of a component P, then the first element" 
--- "of the list is neither a private key nor unguessable value of P"
+\<comment> \<open>If a list of expression items does not contain any private key\<close>
+\<comment> \<open>or unguessable value of a component P, then the first element\<close> 
+\<comment> \<open>of the list is neither a private key nor unguessable value of P\<close>
 lemma notSpecKeysSecretsExpr_L1:
 assumes "notSpecKeysSecretsExpr P (a # l)"
 shows    "notSpecKeysSecretsExpr P [a]"
 using assms by (simp add: notSpecKeysSecretsExpr_def)
 
--- "If a list of expression items does not contain any private key"
--- "or unguessable value of a component P, then this list without its first" 
--- "element does not contain them too"
+\<comment> \<open>If a list of expression items does not contain any private key\<close>
+\<comment> \<open>or unguessable value of a component P, then this list without its first\<close> 
+\<comment> \<open>element does not contain them too\<close>
 lemma notSpecKeysSecretsExpr_L2:
 assumes "notSpecKeysSecretsExpr P (a # l)"
 shows    "notSpecKeysSecretsExpr P l" 
 using assms by (simp add: notSpecKeysSecretsExpr_def)
 
--- "If a channel belongs to the set of input channels of a component P"
--- "and does not belong to the set of local channels of the compositon of P and Q" 
--- "then it belongs to the set of input channels of this composition"
+\<comment> \<open>If a channel belongs to the set of input channels of a component P\<close>
+\<comment> \<open>and does not belong to the set of local channels of the compositon of P and Q\<close> 
+\<comment> \<open>then it belongs to the set of input channels of this composition\<close>
 lemma correctCompositionIn_L1:
 assumes "subcomponents PQ = {P,Q}" 
        and "correctCompositionIn PQ" 
@@ -208,8 +208,8 @@ assumes "subcomponents PQ = {P,Q}"
 shows    "ch \<in> ins PQ"
 using assms by (simp add: correctCompositionIn_def)
 
--- "If a channel belongs to the set of input channels of the compositon of P and Q"
--- "then it belongs to the set of input channels either of P or of Q"
+\<comment> \<open>If a channel belongs to the set of input channels of the compositon of P and Q\<close>
+\<comment> \<open>then it belongs to the set of input channels either of P or of Q\<close>
 lemma correctCompositionIn_L2:
 assumes "subcomponents PQ = {P,Q}"
        and "correctCompositionIn PQ" 

@@ -282,7 +282,7 @@ locale monad_prob = monad return bind + monad_prob_base return bind sample
   and sample_return_pmf: "\<And>x f. sample (return_pmf x) f = f x"
   and sample_bind_pmf: "\<And>p f g. sample (bind_pmf p f) g = sample p (\<lambda>x. sample (f x) g)"
   and sample_commute: "\<And>p q f. sample p (\<lambda>x. sample q (f x)) = sample q (\<lambda>y. sample p (\<lambda>x. f x y))"
-  -- \<open>We'd like to state that we can combine independent samples rather than just commute them, but that's not possible with a monomorphic sampling operation\<close>
+  \<comment> \<open>We'd like to state that we can combine independent samples rather than just commute them, but that's not possible with a monomorphic sampling operation\<close>
   and bind_sample1: "\<And>p f g. bind (sample p f) g = sample p (\<lambda>x. bind (f x) g)"
   and bind_sample2: "\<And>m f p. bind m (\<lambda>y. sample p (f y)) = sample p (\<lambda>x. bind m (\<lambda>y. f y x))"
   and sample_cong: "\<And>p f g. (\<And>x. x \<in> set_pmf p \<Longrightarrow> f x = g x) \<Longrightarrow> sample p f = sample p g"
@@ -328,7 +328,7 @@ locale monad_alt = monad return bind + monad_alt_base return bind alt
   for return :: "('a, 'm) return"
   and bind :: "('a, 'm) bind"
   and alt :: "'m alt"
-  + -- \<open>Laws taken from Gibbons, Hinze: Just do it\<close>
+  + \<comment> \<open>Laws taken from Gibbons, Hinze: Just do it\<close>
   assumes alt_assoc: "alt (alt m1 m2) m3 = alt m1 (alt m2 m3)"
   and bind_alt1: "bind (alt m m') f = alt (bind m f) (bind m' f)"
 
@@ -767,7 +767,7 @@ proof
 qed
 
 lemma monad_state_nondetT [locale_witness]:
-  -- \<open>It's not really sensible to assume a commutative state monad, but let's prove it anyway ...\<close>
+  \<comment> \<open>It's not really sensible to assume a commutative state monad, but let's prove it anyway ...\<close>
   fixes get put
   assumes "monad_state return bind get put"
   shows "monad_state return_nondet bind_nondet (get_nondet get) (put_nondet put)"
@@ -2523,7 +2523,7 @@ lemma run_put_cont [simp]: "run_cont (put_cont s m) k = put s (run_cont m k)"
 by(simp add: put_cont_def)
 
 lemma monad_state_contT [locale_witness]:
-  assumes "monad_state return' bind' get put" -- \<open>We don't need the plain monad operations for lifting.\<close>
+  assumes "monad_state return' bind' get put" \<comment> \<open>We don't need the plain monad operations for lifting.\<close>
   shows "monad_state return_cont bind_cont get_cont (put_cont :: ('s, ('a, 'm) contT) put)"
   (is "monad_state ?return ?bind ?get ?put")
 proof -
@@ -2685,7 +2685,7 @@ lemma cr_spmf_prob_optionTD: "cr_spmf_prob_optionT A p q \<Longrightarrow> rel_s
 by(simp add: cr_spmf_prob_optionT_def)
 
 lemma cr_spmf_prob_optionT_return_transfer:
-   -- \<open>Cannot be used as a transfer rule in @{method transfer_prover} because @{term return_spmf} is not a constant.\<close>
+   \<comment> \<open>Cannot be used as a transfer rule in @{method transfer_prover} because @{term return_spmf} is not a constant.\<close>
   "(A ===> cr_spmf_prob_optionT A) (return_option return_pmf) return_spmf"
 by(simp add: rel_fun_def cr_spmf_prob_optionTI)
 

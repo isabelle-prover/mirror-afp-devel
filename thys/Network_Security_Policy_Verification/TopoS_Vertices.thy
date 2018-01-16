@@ -24,7 +24,7 @@ TL;DR: We define @{typ "'a"} @{text vertex}, which is as good as @{typ "'a"}.
 *}
 
 
--- {*We need at least some vertices available for a graph ...*}
+\<comment> \<open>We need at least some vertices available for a graph ...\<close>
 class vertex =
   fixes vertex_1 :: "'a"
   fixes vertex_2 :: "'a"
@@ -78,7 +78,7 @@ begin
 instance proof qed(simp add: vertex_1_list_def vertex_2_list_def vertex_3_list_def)
 end
 
---"for the ML graphviz visualizer"
+\<comment> \<open>for the ML graphviz visualizer\<close>
 ML {*
 fun tune_string_vertex_format (t: term) (s: string) : string = 
     if fastype_of t = @{typ string} then

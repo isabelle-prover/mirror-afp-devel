@@ -334,7 +334,7 @@ lemma lfp_induct':
   by simp_all
 
 lemma lfp_gen_induct:
-  -- "Induction lemma for generalized lfps"
+  \<comment> \<open>Induction lemma for generalized lfps\<close>
   assumes M: "mono f"
   notes MONO'[refine_mono] = monoD[OF M]
   assumes I0: "m0 \<le> P"
@@ -466,8 +466,8 @@ lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) 
 
 lemma strictD[dest]: "strict f \<Longrightarrow> f bot = bot" 
   unfolding strict_def by auto
--- "We only add this lemma to the simpset for functions on the same type. 
-    Otherwise, the simplifier tries it much too often."
+\<comment> \<open>We only add this lemma to the simpset for functions on the same type. 
+    Otherwise, the simplifier tries it much too often.\<close>
 lemma strictD_simp[simp]: "strict f \<Longrightarrow> f (bot::'a::bot) = (bot::'a)" 
   unfolding strict_def by auto
 

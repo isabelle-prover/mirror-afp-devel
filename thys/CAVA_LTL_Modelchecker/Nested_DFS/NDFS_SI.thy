@@ -348,13 +348,13 @@ definition red_dfs where
 
 
 datatype 'v blue_witness = 
-  NO_CYC                    -- {* No cycle detected *}
-| REACH "'v" "'v list"      -- {* Path from current start node to node on 
-  stack, path contains accepting node. *}
+  NO_CYC                    \<comment> \<open>No cycle detected\<close>
+| REACH "'v" "'v list"      \<comment> \<open>Path from current start node to node on 
+  stack, path contains accepting node.\<close>
 (* REACH u p: u is on stack, p is non-empty path from u0 to u, a node 
   in u or p is accepting *)
-| CIRC "'v list" "'v list"  -- {* @{text "CIRI pr pl"}: Lasso found from 
-  current start node. *}
+| CIRC "'v list" "'v list"  \<comment> \<open>@{text "CIRI pr pl"}: Lasso found from 
+  current start node.\<close>
 
 text {* Prepend node to witness *}
 primrec prep_wit_blue :: "'v \<Rightarrow> 'v blue_witness \<Rightarrow> 'v blue_witness" where

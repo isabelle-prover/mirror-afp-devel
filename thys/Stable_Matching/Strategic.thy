@@ -740,7 +740,7 @@ next
   from insert interpret Pdds': ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh ?Pd_shuffle_to_top Ch
     using %invisible Pd_shuffle_to_top_linear[OF \<open>allocation Y\<close>] Pd_shuffle_to_top_range Ch_range Ch_singular Ch_unilateral_substitutes Ch_irc Ch_lad
     by unfold_locales (simp_all add: Pd_shuffle_to_top_simps(1)[symmetric])
-  \<comment>\<open> \citet[Lemma~1, for a single doctor]{HatfieldKojima:2010} \<close>
+  \<comment> \<open>\citet[Lemma~1, for a single doctor]{HatfieldKojima:2010}\<close>
   have XXX: "?Z = CH (Pdds'.fp_cop_F ds)"
   proof(rule Pdds'.doctor_optimal_match_unique[OF Pdds'.doctor_optimal_matchI Pdds'.fp_cop_F_doctor_optimal_match])
     show "Pdds'.stable_on ds ?Z"

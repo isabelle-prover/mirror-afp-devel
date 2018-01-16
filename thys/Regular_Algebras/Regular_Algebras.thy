@@ -98,11 +98,11 @@ qed
 text{* Nitpick finds counterexamples to the following claims. *}
 
 lemma (in conway_dioid) "1\<^sup>\<star> = 1"
-  nitpick [expect=genuine] -- "3-element counterexample"
+  nitpick [expect=genuine] \<comment> \<open>3-element counterexample\<close>
 oops
 
 lemma (in conway_dioid) "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
-  nitpick [expect=genuine] -- "3-element counterexample"
+  nitpick [expect=genuine] \<comment> \<open>3-element counterexample\<close>
 oops
 
 context C_algebra

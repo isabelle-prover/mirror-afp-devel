@@ -109,7 +109,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       case(Cons e Es)
         from Cons.prems(3) Cons.prems(2) have "fst ` set accu \<subseteq> V" and "snd ` set accu \<subseteq> V"
           by(auto simp add: wf_graph_def)
-        --"@{const wf_graph} for some complicated structures"
+        \<comment> \<open>@{const wf_graph} for some complicated structures\<close>
         from Cons.prems(2) this Cons.prems(4)  have "\<And>ea. ea\<in>E \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = insert e (insert ea (set accu)) \<rparr>"
           by(auto simp add: wf_graph_def)
         from backflows_wf[OF this] wf_graph_union_edges[OF Cons.prems(2)]
@@ -177,7 +177,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     apply(drule(1) filter_IFS_no_violations_accu_maximal_induction[where accu="[]" and edgesList="edgesList"])
        by(simp_all)
 
-    --"It is not only maximal for single flows but all non-empty subsets"
+    \<comment> \<open>It is not only maximal for single flows but all non-empty subsets\<close>
     corollary filter_IFS_no_violations_maximal_allsubsets: 
     assumes a1: "valid_reqs (get_IFS M)"
     and     a2: "wf_graph G"
@@ -240,7 +240,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       qed
     qed
     
-    --"soundness and completeness"
+    \<comment> \<open>soundness and completeness\<close>
     thm filter_IFS_no_violations_correct filter_IFS_no_violations_maximal
 
 
@@ -355,7 +355,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
    case Nil from Nil(5)[simplified] Nil(6) show ?case by(simp)
    next
    case (Cons a Es)
-     --"case distinction"
+     \<comment> \<open>case distinction\<close>
      let ?caseDistinction="a \<notin> backflows (E) \<and>  (\<forall>F\<in>get_offending_flows (get_ACS M)
                  (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu)\<rparr>).
                     F \<subseteq> backflows (set (a # accu)))"
@@ -829,7 +829,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       from edgesList have edgesUnsimp: "edges G \<union> (?filterACS \<inter> ?filterIFS) = edges G"
         using filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input by blast
 
-      --"We set up a ?REM that we use in the @{thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq} lemma"
+      \<comment> \<open>We set up a ?REM that we use in the @{thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq} lemma\<close>
       let ?REM = "(backflows (?filterACS) - backflows (?filterIFS)) - edges G"
 
       have REM_gives_desired_upper_bound: "(backflows (?filterACS) - edges G) - ?REM = backflows (?filterACS \<inter> ?filterIFS) - edges G"

@@ -3,10 +3,10 @@ theory Term_Synth
 imports Sepref_Misc
 begin
   definition SYNTH_TERM :: "'a::{} \<Rightarrow> 'b::{} \<Rightarrow> bool"
-    -- \<open>Indicate synthesis of @{term y} from @{term x}.\<close>
+    \<comment> \<open>Indicate synthesis of @{term y} from @{term x}.\<close>
     where [simp]: "SYNTH_TERM x y \<equiv> True"
   consts SDUMMY :: "'a :: {}"
-    -- \<open>After synthesis has been completed, these are replaced by fresh schematic variable\<close>
+    \<comment> \<open>After synthesis has been completed, these are replaced by fresh schematic variable\<close>
 
   named_theorems_rev synth_rules \<open>Term synthesis rules\<close>
 

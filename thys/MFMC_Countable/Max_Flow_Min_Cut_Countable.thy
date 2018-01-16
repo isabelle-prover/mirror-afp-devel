@@ -48,10 +48,9 @@ where "path G \<equiv> rtrancl_path (edge G)"
 
 inductive cycle :: "('v, 'more) graph_scheme \<Rightarrow> 'v path \<Rightarrow> bool"
   for G
-where -- \<open>Cycles must not pass through the same node multiple times. Otherwise, the cycle might
+where \<comment> \<open>Cycles must not pass through the same node multiple times. Otherwise, the cycle might
   enter a node via two different edges and leave it via just one edge. Thus, the clean-up lemma
-  would not hold any more.
-\<close>
+  would not hold any more.\<close>
   cycle: "\<lbrakk> path G v p v; p \<noteq> []; distinct p \<rbrakk> \<Longrightarrow> cycle G p"
 
 inductive_simps cycle_Nil [simp]: "cycle G Nil"
@@ -1375,7 +1374,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma flow_cleanup: -- \<open>Lemma 5.4\<close>
+lemma flow_cleanup: \<comment> \<open>Lemma 5.4\<close>
   "\<exists>h \<le> g. flow \<Delta> h \<and> value_flow \<Delta> h = value_flow \<Delta> g \<and> (\<forall>x. d_IN h x \<le> value_flow \<Delta> h)"
 by(intro exI[where x=h] conjI strip le_funI d_IN_h_le_value flow_h value_h h_le_g)
 
@@ -1804,7 +1803,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma flow_residual_add: -- \<open>Lemma 5.3\<close>
+lemma flow_residual_add: \<comment> \<open>Lemma 5.3\<close>
   assumes wf: "wf_residual_network"
   and f: "flow \<Delta> f"
   and g: "flow (residual_network f) g"
@@ -2401,7 +2400,7 @@ proof -
   } ultimately show ?thesis by blast
 qed
 
-theorem ex_max_flow'': -- \<open>eliminate assumption of no antiparallel edges using locale @{const wf_residual_network}\<close>
+theorem ex_max_flow'': \<comment> \<open>eliminate assumption of no antiparallel edges using locale @{const wf_residual_network}\<close>
   assumes source_out: "\<And>y. edge \<Delta> (source \<Delta>) y \<longleftrightarrow> y = x"
   and nontrivial: "\<^bold>E \<noteq> {}"
   and real: "\<alpha> = ennreal \<alpha>'" and nn[simp]: "0 \<le> \<alpha>'"
@@ -2450,7 +2449,7 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-context begin -- \<open>We eliminate the assumption of only one edge leaving the source by introducing a new source vertex.\<close>
+context begin \<comment> \<open>We eliminate the assumption of only one edge leaving the source by introducing a new source vertex.\<close>
 private datatype (plugins del: transfer size) 'v' node = SOURCE | Inner (inner: 'v')
 
 private lemma not_Inner_conv: "x \<notin> range Inner \<longleftrightarrow> x = SOURCE"
@@ -2891,7 +2890,7 @@ inductive_set SAT :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarr
 where
   A: "x \<in> A \<Gamma> \<Longrightarrow> x \<in> SAT \<Gamma> f"
 | IN: "d_IN f x \<ge> weight \<Gamma> x \<Longrightarrow> x \<in> SAT \<Gamma> f"
-  -- \<open>We use @{text "\<ge> weight"} such that @{text SAT} is monotone w.r.t. increasing currents\<close>
+  \<comment> \<open>We use @{text "\<ge> weight"} such that @{text SAT} is monotone w.r.t. increasing currents\<close>
 
 lemma SAT_0 [simp]: "SAT \<Gamma> zero_current = A \<Gamma> \<union> {x. weight \<Gamma> x \<le> 0}"
 by(auto simp add: SAT.simps)
@@ -2952,7 +2951,7 @@ lemma separating_weakening:
 by(rule separating; drule (3) separatingD; blast)
 
 definition essential :: "('v, 'more) graph_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set \<Rightarrow> 'v \<Rightarrow> bool"
-where -- \<open>Should we allow only simple paths here?\<close>
+where \<comment> \<open>Should we allow only simple paths here?\<close>
   "\<And>B. essential G B S x \<longleftrightarrow> (\<exists>p. \<exists>y\<in>B. path G x p y \<and> (x \<noteq> y \<longrightarrow> (\<forall>z\<in>set p. z = x \<or> z \<notin> S)))"
 
 abbreviation essential_web :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" ("\<E>\<index>")
@@ -2989,7 +2988,7 @@ using assms by(auto elim: essentialE)
 lemma essential_mono: "\<And>B. \<lbrakk> essential G B S x; S' \<subseteq> S \<rbrakk> \<Longrightarrow> essential G B S' x"
 by(auto simp add: essential_def)
 
-lemma separating_essential: -- \<open>Lem. 3.4 (cf. Lem. 2.14 in [5])\<close>
+lemma separating_essential: \<comment> \<open>Lem. 3.4 (cf. Lem. 2.14 in [5])\<close>
   fixes G A B S
   assumes "separating_gen G A B S"
   shows "separating_gen G A B {x\<in>S. essential G B S x}" (is "separating_gen _ _ _ ?E")
@@ -3331,7 +3330,7 @@ next
   then show "Sup Y e = 0" using Y by(simp)
 qed
 
-lemma wave_lub: -- \<open>Lemma 4.3\<close>
+lemma wave_lub: \<comment> \<open>Lemma 4.3\<close>
   fixes \<Gamma> (structure)
   assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
@@ -3401,7 +3400,7 @@ proof
   thus "d_OUT (Sup Y) x = 0" using chain Y by(simp add: d_OUT_Sup)
 qed
 
-lemma ex_maximal_wave: -- \<open>Corollary 4.4\<close>
+lemma ex_maximal_wave: \<comment> \<open>Corollary 4.4\<close>
   fixes \<Gamma> (structure)
   assumes countable: "countable \<^bold>E"
   shows "\<exists>f. current \<Gamma> f \<and> wave \<Gamma> f \<and> (\<forall>w. current \<Gamma> w \<and> wave \<Gamma> w \<and> f \<le> w \<longrightarrow> f = w)"
@@ -3601,7 +3600,7 @@ by(intro ext iffI; rule separating_gen.intros; drule separatingD; simp)
 qualified lemma roofed_eq: "\<And>B. roofed_gen \<Gamma> B S = roofed_gen \<Gamma>' B S"
 by(simp add: roofed_def)
 
-lemma wave_eq_web: -- \<open>Observation 4.6\<close>
+lemma wave_eq_web: \<comment> \<open>Observation 4.6\<close>
   "wave \<Gamma> f \<longleftrightarrow> wave \<Gamma>' f"
 by(simp add: wave.simps separating_eq TER_eq roofed_eq)
 
@@ -3664,7 +3663,7 @@ by(auto elim: orthogonal_current.cases)
 
 inductive linkage :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> bool"
   for \<Gamma> f
-where -- \<open>Omit the condition @{const web_flow}\<close>
+where \<comment> \<open>Omit the condition @{const web_flow}\<close>
   linkage: "(\<And>x. x \<in> A \<Gamma> \<Longrightarrow> d_OUT f x = weight \<Gamma> x) \<Longrightarrow> linkage \<Gamma> f"
 
 lemma linkageD: "\<lbrakk> linkage \<Gamma> f; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> d_OUT f x = weight \<Gamma> x"
@@ -3684,7 +3683,7 @@ inductive trimming :: "'v current \<Rightarrow> bool"
   for g
 where
   trimming:
-  -- \<open>omits the condition that @{term f} is a wave\<close>
+  \<comment> \<open>omits the condition that @{term f} is a wave\<close>
   "\<lbrakk> current \<Gamma> g; wave \<Gamma> g; g \<le> f; \<And>x. \<lbrakk> x \<in> RF\<^sup>\<circ> (TER f); x \<notin> A \<Gamma> \<rbrakk> \<Longrightarrow> KIR g x; \<E> (TER g) - A \<Gamma> = \<E> (TER f) - A \<Gamma> \<rbrakk>
   \<Longrightarrow> trimming g"
 
@@ -3696,7 +3695,7 @@ lemma assumes "trimming g"
   and trimmingD_\<E>: "\<E> (TER g) - A \<Gamma> = \<E> (TER f) - A \<Gamma>"
 using assms by(blast elim: trimming.cases dest: le_funD)+
 
-lemma ex_trimming: -- \<open>Lemma 4.8\<close>
+lemma ex_trimming: \<comment> \<open>Lemma 4.8\<close>
   assumes f: "current \<Gamma> f"
   and w: "wave \<Gamma> f"
   and countable: "countable \<^bold>E"
@@ -3971,7 +3970,7 @@ qed
 subsection \<open>Composition of waves via quotients\<close>
 
 definition quotient_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme"
-where -- \<open>Modifications to original Definition 4.9: No incoming edges to nodes in @{const A},
+where \<comment> \<open>Modifications to original Definition 4.9: No incoming edges to nodes in @{const A},
   @{term "B \<Gamma> - A \<Gamma>"} is not part of @{const A} such that @{const A} contains only vertices
   is disjoint from @{const B}. The weight of vertices in @{const B} saturated by @{term f} is
   therefore set to @{term "0 :: ennreal"}.\<close>
@@ -4890,7 +4889,7 @@ end
 
 subsection \<open>Subtraction of a wave\<close>
 
-definition minus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme" (infixl "\<ominus>" 65) -- \<open>Definition 6.6\<close>
+definition minus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme" (infixl "\<ominus>" 65) \<comment> \<open>Definition 6.6\<close>
 where "\<Gamma> \<ominus> f = \<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x + d_OUT f x - d_IN f x\<rparr>"
 
 lemma minus_web_sel [simp]:
@@ -5010,7 +5009,7 @@ proof(cases "y \<in> B \<Gamma>")
   finally show ?thesis by simp
 qed(simp add: u_outside)
 
-lemma hindered_reduce: -- \<open>Lemma 6.7\<close>
+lemma hindered_reduce: \<comment> \<open>Lemma 6.7\<close>
   assumes u: "u \<le> weight \<Gamma>"
   assumes hindered_by: "hindered_by (\<Gamma>\<lparr>weight := weight \<Gamma> - u\<rparr>) \<epsilon>" (is "hindered_by ?\<Gamma> _")
   shows "hindered \<Gamma>"
@@ -5664,7 +5663,7 @@ proof -
       using flowD_capacity[OF j, of "(Some a, Some y)"] a(1) disjoint
       by(auto split: if_split_asm dest: bipartite_E)
     then have "d_OUT f a \<le> d_OUT g a" unfolding d_OUT_def
-      -- \<open>This step requires that @{term j} does not decrease the outflow of @{term a}. That's
+      \<comment> \<open>This step requires that @{term j} does not decrease the outflow of @{term a}. That's
           why we set the capacity of the outgoing edges from @{term "Some a"} in @{term \<Psi>} to @{term "0 :: ennreal"}\<close>
       by(intro nn_integral_mono)(auto simp add: g_simps currentD_outside[OF f] intro: )
     then have "a \<in> SINK f" using OUT_g_a * by(simp add: SINK.simps)
@@ -5703,7 +5702,7 @@ qed
 
 end
 
-corollary hindered_reduce_current: -- \<open>Corollary 6.8\<close>
+corollary hindered_reduce_current: \<comment> \<open>Corollary 6.8\<close>
   fixes \<epsilon> g
   defines "\<epsilon> \<equiv> \<Sum>\<^sup>+ x\<in>B \<Gamma>. d_IN g x - d_OUT g x"
   assumes g: "current \<Gamma> g"
@@ -6365,7 +6364,7 @@ lemma countable_bipartite_web_reduce_weight:
 using bipartite_V A_vertex bipartite_E disjoint assms
 by unfold_locales (auto 4 3 simp add: weight_outside )
 
-lemma unhinder: -- "Lemma 6.9"
+lemma unhinder: \<comment> \<open>Lemma 6.9\<close>
   assumes loose: "loose \<Gamma>"
   and b: "b \<in> B \<Gamma>"
   and wb: "weight \<Gamma> b > 0"
@@ -7188,7 +7187,7 @@ proof(cases "x = x'")
   finally show ?thesis .
 qed(simp add: d_OUT_def)
 
-lemma unhindered_saturate1: -- "Lemma 6.10"
+lemma unhindered_saturate1: \<comment> \<open>Lemma 6.10\<close>
   assumes unhindered: "\<not> hindered \<Gamma>"
   and a: "a \<in> A \<Gamma>"
   shows "\<exists>f. current \<Gamma> f \<and> d_OUT f a = weight \<Gamma> a \<and> \<not> hindered (\<Gamma> \<ominus> f)"
@@ -7396,7 +7395,7 @@ proof -
       unfolding f_def F_simps plus_current_def
       by(rule d_OUT_add SM1 current)+
 
-    show "\<not> hindered (\<Gamma> \<ominus> f)" (is "\<not> hindered ?\<Omega>") -- \<open>Assertion 6.11\<close>
+    show "\<not> hindered (\<Gamma> \<ominus> f)" (is "\<not> hindered ?\<Omega>") \<comment> \<open>Assertion 6.11\<close>
     proof
       assume hindered: "hindered ?\<Omega>"
       then obtain g where g: "current ?\<Omega> g" and g_w: "wave ?\<Omega> g" and hindrance: "hindrance ?\<Omega> g" by cases
@@ -8161,7 +8160,7 @@ next
   define tailmarked where "tailmarked = (\<lambda>(x, y :: 'v). outmarked x)"
   define headmarked where "headmarked = (\<lambda>(x :: 'v, y). inmarked y)"
 
-  have marked_E: "tailmarked e \<or> headmarked e" if "e \<in> \<^bold>E" for e -- \<open>Lemma 1b\<close>
+  have marked_E: "tailmarked e \<or> headmarked e" if "e \<in> \<^bold>E" for e \<comment> \<open>Lemma 1b\<close>
   proof(cases e)
     case (Pair x y)
     with that have "path ?\<Gamma> (Inl x) [Inr y] (Inr y)" by(auto intro!: rtrancl_path.intros)
@@ -8169,7 +8168,7 @@ next
       by(fastforce simp add: vertex_def inmarked_def outmarked_def tailmarked_def headmarked_def)
   qed
 
-  have "\<exists>z\<in>set (x # p). ?double z" -- \<open>Lemma 2\<close>
+  have "\<exists>z\<in>set (x # p). ?double z" \<comment> \<open>Lemma 2\<close>
   proof -
     have "inmarked ((x # p) ! (i + 1)) \<or> outmarked ((x # p) ! i)" if "i < length p" for i
       using rtrancl_path_nth[OF p that] marked_E[of "((x # p) ! i, p ! i)"] that
@@ -8251,7 +8250,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma current_current_of_bipartite: -- \<open>Lemma 6.3\<close>
+lemma current_current_of_bipartite: \<comment> \<open>Lemma 6.3\<close>
   assumes f: "current (bipartite_web_of \<Gamma>) f" (is "current ?\<Gamma> _")
   and w: "wave (bipartite_web_of \<Gamma>) f"
   shows "current \<Gamma> (current_of_bipartite f)" (is "current _ ?f")
@@ -8308,7 +8307,7 @@ next
   show "?f e = 0" if "e \<notin> \<^bold>E" for e using that by(cases e)(auto)
 qed
 
-lemma TER_current_of_bipartite: -- \<open>Lemma 6.3\<close>
+lemma TER_current_of_bipartite: \<comment> \<open>Lemma 6.3\<close>
   assumes f: "current (bipartite_web_of \<Gamma>) f" (is "current ?\<Gamma> _")
   and w: "wave (bipartite_web_of \<Gamma>) f"
   shows "TER (current_of_bipartite f) = separating_of_bipartite (TER\<^bsub>bipartite_web_of \<Gamma>\<^esub> f)"
@@ -8378,7 +8377,7 @@ proof(rule set_eqI)
   qed
 qed
 
-lemma wave_current_of_bipartite: -- \<open>Lemma 6.3\<close>
+lemma wave_current_of_bipartite: \<comment> \<open>Lemma 6.3\<close>
   assumes f: "current (bipartite_web_of \<Gamma>) f" (is "current ?\<Gamma> _")
   and w: "wave (bipartite_web_of \<Gamma>) f"
   shows "wave \<Gamma> (current_of_bipartite f)" (is "wave _ ?f")
@@ -8903,7 +8902,7 @@ qed
 
 context countable_web begin
 
-theorem loose_linkable: -- \<open>Theorem 6.2\<close>
+theorem loose_linkable: \<comment> \<open>Theorem 6.2\<close>
   assumes "loose \<Gamma>"
   shows "linkable \<Gamma>"
 proof -
@@ -8914,7 +8913,7 @@ proof -
   then show ?thesis by(rule linkable_bipartite_web_ofD) simp
 qed
 
-lemma ex_orthogonal_current: -- \<open>Lemma 4.15\<close>
+lemma ex_orthogonal_current: \<comment> \<open>Lemma 4.15\<close>
   "\<exists>f S. web_flow \<Gamma> f \<and> separating \<Gamma> S \<and> orthogonal_current \<Gamma> f S"
 proof -
   from ex_maximal_wave[OF countable]
@@ -9177,7 +9176,7 @@ qed
 lemma orthogonal_flow_of_current:
   assumes source_sink: "source \<Delta> \<noteq> sink \<Delta>"
   and sink_out: "\<And>x. \<not> edge \<Delta> (sink \<Delta>) x"
-  and no_direct_edge: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)" -- \<open>Otherwise, @{const A} and @{const B} of the web would not be disjoint.\<close>
+  and no_direct_edge: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)" \<comment> \<open>Otherwise, @{const A} and @{const B} of the web would not be disjoint.\<close>
   shows "orthogonal \<Delta> (flow_of_current \<Delta> f) (cut_of_sep S)" (is "orthogonal _ ?f ?S")
 proof
   fix x y

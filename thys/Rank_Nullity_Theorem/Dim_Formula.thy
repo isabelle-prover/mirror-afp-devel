@@ -84,15 +84,15 @@ lemma inj_on_extended:
   and disj_set: "B \<inter> W = {}"
   and span_B: "{x. f x = 0} \<subseteq> span B"
   shows "inj_on f W"
-  -- "The proof is carried out by reductio ad absurdum"
+  \<comment> \<open>The proof is carried out by reductio ad absurdum\<close>
 proof (unfold inj_on_def, rule+, rule ccontr)
   interpret lf: linear scaleB scaleC f using lf by simp
-  -- "Some previous consequences of the premises that are used later:"
+  \<comment> \<open>Some previous consequences of the premises that are used later:\<close>
   have fin_B: "finite B" using finite_subset [OF _ f] C_eq by simp  
   have ind_B: "independent B" and ind_W: "independent W" 
     using independent_mono[OF ind_C] C_eq by simp_all
-  -- "The proof starts here; we assume that there exist two different elements "
-  -- "with the same image:"
+  \<comment> \<open>The proof starts here; we assume that there exist two different elements\<close>
+  \<comment> \<open>with the same image:\<close>
   fix x::'b and y::'b
   assume x: "x \<in> W" and y: "y \<in> W" and f_eq: "f x = f y" and x_not_y: "x \<noteq> y"
   have fin_yB: "finite (insert y B)" using fin_B by simp
@@ -101,8 +101,8 @@ proof (unfold inj_on_def, rule+, rule ccontr)
   hence "\<exists>g. (\<Sum>v\<in>B. scale (g v) v) = (x - y)" using span_B 
     unfolding span_finite [OF fin_B] by auto
   then obtain g where sum: "(\<Sum>v\<in>B. scale (g v) v) = (x - y)" by blast
-  -- "We define one of the elements as a linear combination of the second 
-      element and the ones in $B$"
+  \<comment> \<open>We define one of the elements as a linear combination of the second 
+      element and the ones in $B$\<close>
   define h :: "'b \<Rightarrow> 'a" where "h a = (if a = y then 1 else g a)" for a
   have "x = y + (\<Sum>v\<in>B. scale (g v) v)" using sum by auto
   also have "... = scale (h y) y  + (\<Sum>v\<in>B. scale (g v) v)" unfolding h_def by simp
@@ -114,15 +114,15 @@ proof (unfold inj_on_def, rule+, rule ccontr)
        (metis (lifting) IntI disj_set empty_iff y)
   finally have x_in_span_yB: "x \<in> span (insert y B)"
     unfolding span_finite[OF fin_yB] by auto
-  -- "We have that a subset of elements of $C$ is linearly dependent"
+  \<comment> \<open>We have that a subset of elements of $C$ is linearly dependent\<close>
   have dep: "dependent (insert x (insert y B))" 
     by (unfold dependent_def, rule bexI [of _ x])
        (metis Diff_insert_absorb Int_iff disj_set empty_iff insert_iff 
          x x_in_span_yB x_not_y, simp)
-  -- "Therefore, the set $C$ is also dependent:"
+  \<comment> \<open>Therefore, the set $C$ is also dependent:\<close>
   hence "dependent C" using C_eq x y
     by (metis Un_commute Un_upper2 dependent_mono insert_absorb insert_subset)
-  -- "This yields the contradiction, since $C$ is independent:"
+  \<comment> \<open>This yields the contradiction, since $C$ is independent:\<close>
   thus False using ind_C by contradiction
 qed
 end
@@ -146,42 +146,42 @@ theorem rank_nullity_theorem:
   shows "B.dimension = B.dim {x. f x = 0} + C.dim (range f)"
 proof -
   have l: "linear scaleB scaleC f" by unfold_locales
-  -- "For convenience we define abbreviations for the universe set, $V$, 
-    and the kernel of $f$"
+  \<comment> \<open>For convenience we define abbreviations for the universe set, $V$, 
+    and the kernel of $f$\<close>
   define V :: "'b set" where "V = UNIV"
   define ker_f where "ker_f = {x. f x = 0}"
-  -- "The kernel is a proper subspace:"
+  \<comment> \<open>The kernel is a proper subspace:\<close>
   have sub_ker: "B.subspace {x. f x = 0}" using B.subspace_kernel[OF l] .
-  -- "The kernel has its proper basis, $B$:"
+  \<comment> \<open>The kernel has its proper basis, $B$:\<close>
   obtain B where B_in_ker: "B \<subseteq> {x. f x = 0}" 
     and independent_B: "B.independent B"
     and ker_in_span:"{x. f x = 0} \<subseteq> B.span B"
     and card_B: "card B = B.dim {x. f x = 0}" using B.basis_exists by blast
-  -- "The space $V$ has a (finite dimensional) basis, $C$:"
+  \<comment> \<open>The space $V$ has a (finite dimensional) basis, $C$:\<close>
   obtain C where B_in_C: "B \<subseteq> C" and C_in_V: "C \<subseteq> V" 
     and independent_C: "B.independent C"
     and span_C: "V = B.span C"
     using B.maximal_independent_subset_extend [OF _ independent_B, of V]
     unfolding V_def by auto
-  -- "The basis of $V$, $C$, can be decomposed in the disjoint union of the 
-      basis of the kernel, $B$, and its complementary set, $C - B$"
+  \<comment> \<open>The basis of $V$, $C$, can be decomposed in the disjoint union of the 
+      basis of the kernel, $B$, and its complementary set, $C - B$\<close>
   have C_eq: "C = B \<union> (C - B)" by (rule Diff_partition [OF B_in_C, symmetric])
   have eq_fC: "f ` C = f ` B \<union> f ` (C - B)" 
     by (subst C_eq, unfold image_Un, simp) 
-  -- "The basis $C$, and its image, are finite, since $V$ is finite-dimensional"
+  \<comment> \<open>The basis $C$, and its image, are finite, since $V$ is finite-dimensional\<close>
   have finite_C: "finite C"
     using B.independent_bound_general [OF independent_C] by fast
   have finite_fC: "finite (f ` C)" by (rule finite_imageI [OF finite_C])
-  -- "The basis $B$ of the kernel of $f$, and its image, are also finite"
+  \<comment> \<open>The basis $B$ of the kernel of $f$, and its image, are also finite\<close>
   have finite_B: "finite B" by (rule rev_finite_subset [OF finite_C B_in_C])
   have finite_fB: "finite (f ` B)" by (rule finite_imageI[OF finite_B])
-  -- "The set $C - B$ is also finite"
+  \<comment> \<open>The set $C - B$ is also finite\<close>
   have finite_CB: "finite (C - B)" by (rule finite_Diff [OF finite_C, of B])
   have dim_ker_le_dim_V:"B.dim (ker_f) \<le> B.dim V" 
     using B.dim_subset [of ker_f V] unfolding V_def by simp
-  -- "Here it starts the proof of the theorem: the sets $B$ and 
+  \<comment> \<open>Here it starts the proof of the theorem: the sets $B$ and 
       $C - B$ must be proven to be bases, respectively, of the kernel 
-      of $f$ and its range"
+      of $f$ and its range\<close>
   show ?thesis
   proof -
     have "B.dimension = B.dim V" unfolding V_def dim_UNIV dimension_def
@@ -193,8 +193,8 @@ proof -
     also have "... = card B + card (C-B)" 
       by (rule card_Un_disjoint[OF finite_B finite_CB], fast)
     also have "... = B.dim ker_f + card (C-B)" unfolding ker_f_def card_B ..
-    -- "Now it has to be proved that the elements of $C - B$ are a basis of 
-      the range of $f$"
+    \<comment> \<open>Now it has to be proved that the elements of $C - B$ are a basis of 
+      the range of $f$\<close>
     also have "... = B.dim ker_f + C.dim (range f)"
     proof (unfold add_left_cancel)
       define W where "W = C - B"
@@ -206,11 +206,11 @@ proof -
       also have "... = C.dim (range f)"
       unfolding C.dim_def
       proof (rule someI2)    
-        -- "1. The image set of $W$ generates the range of $f$:"
+        \<comment> \<open>1. The image set of $W$ generates the range of $f$:\<close>
         have range_in_span_fW: "range f \<subseteq> C.span (f ` W)"
         proof (unfold l.C.span_finite [OF finite_fW], auto)
-          -- "Given any element $v$ in $V$, its image can be expressed as a 
-            linear combination of elements of the image by $f$ of $C$:"
+          \<comment> \<open>Given any element $v$ in $V$, its image can be expressed as a 
+            linear combination of elements of the image by $f$ of $C$:\<close>
           fix v :: 'b
           have fV_span: "f ` V \<subseteq> C.span  (f ` C)" 
             using B.spans_image [OF l] span_C by simp
@@ -218,9 +218,9 @@ proof -
             using fV_span unfolding V_def
             using l.C.span_finite[OF finite_fC] by auto
           then obtain g where fv: "f v = (\<Sum>x\<in>f ` C. scaleC (g x) x)" by metis
-            -- "We recall that $C$ is equal to $B$ union $(C - B)$, and $B$ 
+            \<comment> \<open>We recall that $C$ is equal to $B$ union $(C - B)$, and $B$ 
             is the basis of the kernel; thus, the image of the elements of 
-            $B$ will be equal to zero:"
+            $B$ will be equal to zero:\<close>
           have zero_fB: "(\<Sum>x\<in>f ` B. scaleC (g x) x) = 0"
             using B_in_ker by (auto intro!: sum.neutral)
           have zero_inter: "(\<Sum>x\<in>(f ` B \<inter> f ` W). scaleC (g x) x) = 0"
@@ -234,16 +234,16 @@ proof -
             using sum_Un [OF finite_fB finite_fW] by simp
           also have "... = (\<Sum>x\<in>f ` W. scaleC (g x) x)" 
             unfolding zero_fB zero_inter by simp
-            -- "We have proved that the image set of $W$ is a generating set 
-              of the range of $f$"
+            \<comment> \<open>We have proved that the image set of $W$ is a generating set 
+              of the range of $f$\<close>
           finally show "\<exists>s. (\<Sum>x\<in>f ` W. scaleC (s x) x) = f v" by auto
        qed
-       -- "2. The image set of $W$ is linearly independent:"
+       \<comment> \<open>2. The image set of $W$ is linearly independent:\<close>
        have independent_fW: "l.C.independent (f ` W)"
        proof (rule l.C.independent_if_scalars_zero [OF finite_fW], rule+)
-        -- "Every linear combination (given by $g x$) of the elements of 
+        \<comment> \<open>Every linear combination (given by $g x$) of the elements of 
            the image set of $W$ equal to zero, requires every coefficient to 
-           be zero:"
+           be zero:\<close>
         fix g :: "'c => 'a" and w :: 'c
         assume sum: "(\<Sum>x\<in>f ` W. scaleC (g x) x) = 0" and w: "w \<in> f ` W"
         have "0 = (\<Sum>x\<in>f ` W. scaleC (g x) x)" using sum by simp
@@ -283,14 +283,14 @@ proof -
         also have "... = 0" using coef_zero y_in_W unfolding W_def by simp
         finally show "g w = 0" by simp
        qed
-      -- "The image set of $W$ is independent and its span contains the range 
-           of $f$, so it is a basis of the range:" 
+      \<comment> \<open>The image set of $W$ is independent and its span contains the range 
+           of $f$, so it is a basis of the range:\<close> 
       show " \<exists>B\<subseteq>range f. \<not> vector_space.dependent scaleC B 
         \<and> range f \<subseteq> vector_space.span scaleC B \<and> card B = card (f ` W)"
         by (rule exI [of _"(f ` W)"], 
              simp add: range_in_span_fW independent_fW image_mono)
-     -- "Now, it has to be proved that any other basis of the subspace 
-          range of $f$ has equal cardinality:"
+     \<comment> \<open>Now, it has to be proved that any other basis of the subspace 
+          range of $f$ has equal cardinality:\<close>
      show "\<And>n::nat. \<exists>B\<subseteq>range f. l.C.independent B \<and> range f \<subseteq> l.C.span B \<and> card B = n 
       \<Longrightarrow> card (f ` W) = n"
      proof (clarify)

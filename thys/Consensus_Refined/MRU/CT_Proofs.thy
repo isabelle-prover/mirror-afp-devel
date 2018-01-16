@@ -291,7 +291,7 @@ proof -
          \<and> (\<forall>p. card (HOs (nr_steps*ph+2) p) > N div 2)"
     by(auto simp add: CT_CHOMachine_def CT_commGlobal_def CT_commPerRd_def three_step_def)
 
-  -- {* The tedious bit: obtain three consecutive rounds linked by send/next functions *}
+  \<comment> \<open>The tedious bit: obtain three consecutive rounds linked by send/next functions\<close>
   define r0 where "r0 = nr_steps * ph"
   define cfg0 where "cfg0 = rho r0"
   define r1 where "r1 = Suc r0"
@@ -320,7 +320,7 @@ proof -
     apply (simp add: mod_Suc)
     done
     
-  -- {* The proof: the coordinator hears enough messages in r0 and thus selects a value. *}
+  \<comment> \<open>The proof: the coordinator hears enough messages in r0 and thus selects a value.\<close>
 
   obtain dec_v where dec_v: "commt (cfg1 c) = dec_v"
     by simp
@@ -332,13 +332,13 @@ proof -
     "coord r2 = coord r0"
     by(auto simp add: three_step_phase_Suc r2_def r1_def r0_def intro!: coord_phase)
 
-  -- {* All processes hear from the coordinator, and thus set their vote to @{term dec_v}. *}  
+  \<comment> \<open>All processes hear from the coordinator, and thus set their vote to @{term dec_v}.\<close>  
   hence all_vote: "\<forall>p. mru_vote (cfg2 p) = Some (three_phase r2, dec_v)"
     using HOs three_step1 send1 step_r0 dec_v
     by(auto simp add: next1_def Let_def get_msgs_benign send1_def restrict_map_def isVote_def
       r2_def r1_def r0_def[symmetric] same_coord[simplified r2_def r1_def] three_step_phase_Suc)
 
-  -- {* And finally, everybody will also decide @{term dec_v}. *}
+  \<comment> \<open>And finally, everybody will also decide @{term dec_v}.\<close>
   have all_decide: "\<forall>p. decide (cfg3 p) = Some dec_v"
   proof
     fix p

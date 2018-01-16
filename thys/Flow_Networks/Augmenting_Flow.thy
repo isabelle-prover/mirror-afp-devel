@@ -37,7 +37,7 @@ text \<open>We show that, if we augment the flow with a valid flow of
   the residual graph, the augmented flow is a valid flow again, i.e. 
   it satisfies the capacity and conservation constraints:\<close>
 context 
-  -- \<open>Let the \emph{residual flow} @{term f'} be a flow in the residual graph\<close>
+  \<comment> \<open>Let the \emph{residual flow} @{term f'} be a flow in the residual graph\<close>
   fixes f' :: "'capacity flow"
   assumes f'_flow: "Flow cf s t f'"
 begin  
@@ -203,7 +203,7 @@ text \<open>Note that we tried to follow the proof presented by Cormen et al.~\c
   Thus, we moved this argument to an auxiliary lemma. \<close>
 
 
-end -- \<open>@{term u} is node\<close>
+end \<comment> \<open>@{term u} is node\<close>
 
 text \<open>As main result, we get that the augmented flow is again a valid flow.\<close>
 corollary augment_flow_presv: "Flow c s t (f\<up>f')"
@@ -246,7 +246,7 @@ proof -
   have "f''.val = (\<Sum>u\<in>V. augment f' (s, u) - augment f' (u, s))" 
     unfolding f''.val_def by simp
   also have "\<dots> = (\<Sum>u\<in>V. f (s, u) - f (u, s) + (f' (s, u) - f' (u, s)))"
-    -- \<open>Note that this is the crucial step of the proof, which Cormen et al. leave as an exercise.\<close>
+    \<comment> \<open>Note that this is the crucial step of the proof, which Cormen et al. leave as an exercise.\<close>
     by (rule sum.cong) (auto simp: augment_def no_parallel_edge aux1)
   also have "\<dots> = val + Flow.val cf s f'"  
     unfolding val_def f'.val_def by simp
@@ -284,7 +284,7 @@ proof -
 qed
 
 
-end -- \<open>Augmenting flow\<close>
-end -- \<open>Network flow\<close>
+end \<comment> \<open>Augmenting flow\<close>
+end \<comment> \<open>Network flow\<close>
 
-end -- \<open>Theory\<close>
+end \<comment> \<open>Theory\<close>

@@ -84,7 +84,7 @@ definition cnt_decr :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 
     return (cnt ( lv := cnt lv - 1 ))
   }"
     
-end -- \<open>Network Implementation Locale\<close>  
+end \<comment> \<open>Network Implementation Locale\<close>  
 
   
 subsection \<open>Refinements to Basic Operations\<close>  
@@ -723,7 +723,7 @@ sepref_register push2 relabel2 clc_relabel2 gap_relabel2
   
 sepref_register pp_init_xcf2  
   
-end --\<open>Anonymous Context\<close> 
+end \<comment> \<open>Anonymous Context\<close> 
   
   
 subsubsection \<open>Excess by Array\<close>  
@@ -951,7 +951,7 @@ concrete_definition (in -) pp_init_xcf2_impl
 lemmas [sepref_fr_rules] = pp_init_xcf2_impl.refine[OF Network_Impl_axioms]
   
   
-end -- \<open>Network Implementation Locale\<close>  
+end \<comment> \<open>Network Implementation Locale\<close>  
   
   
   

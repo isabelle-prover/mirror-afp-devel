@@ -23,9 +23,9 @@ abbreviation "DFLT_PRIO_TAG \<equiv> PRIO_TAG 0 0"
 
 text {* Some standard tags *}
 abbreviation "PRIO_TAG_OPTIMIZATION \<equiv> MINOR_PRIO_TAG 10"
-  -- "Optimized version of an algorithm, with additional side-conditions"
+  \<comment> \<open>Optimized version of an algorithm, with additional side-conditions\<close>
 abbreviation "PRIO_TAG_GEN_ALGO \<equiv> MINOR_PRIO_TAG (- 10)"
-  -- "Generic algorithm, considered to be less efficient than default algorithm"
+  \<comment> \<open>Generic algorithm, considered to be less efficient than default algorithm\<close>
 
 
 subsection {* Solving Relator Constraints *}

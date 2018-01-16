@@ -287,7 +287,7 @@ qed
 subsection {* Characteristic functions *}
 
 definition
-  chf :: "nat set \<Rightarrow> (nat \<Rightarrow> nat)" -- "Characteristic function" where
+  chf :: "nat set \<Rightarrow> (nat \<Rightarrow> nat)" \<comment> \<open>Characteristic function\<close> where
   "chf = (\<lambda> A x. if x \<in> A then 0 else 1 )"
 
 definition

@@ -126,7 +126,7 @@ fun from_man_exp_float m e =
   else Real.posInf
 end
 \<close>
-\<comment>\<open>compare with the definitions of @{term to_man_exp_float} and @{term from_man_exp_float}
+\<comment> \<open>compare with the definitions of @{term to_man_exp_float} and @{term from_man_exp_float}
   using @{thm valid_man_exp_float_format}\<close>
 code_printing
   constant "to_man_exp_float :: float \<Rightarrow> integer * integer" \<rightharpoonup> (SML) "IEEE'_Mantissa'_Exponent.to'_man'_exp'_float" |

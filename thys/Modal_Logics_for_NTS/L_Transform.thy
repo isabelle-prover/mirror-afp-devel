@@ -154,7 +154,7 @@ context effect_nominal_ts
 begin
 
   fun L_transition :: "('state,'effect) L_state \<Rightarrow> (('act,'effect) L_action, ('state,'effect) L_state) residual \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>L" 70) where
-    "AC (f,F,P) \<rightarrow>\<^sub>L \<alpha>P' \<longleftrightarrow> (\<exists>\<alpha> P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> \<alpha>P' = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle> \<and> bn \<alpha> \<sharp>* (F,f))" -- \<open>note the freshness condition\<close>
+    "AC (f,F,P) \<rightarrow>\<^sub>L \<alpha>P' \<longleftrightarrow> (\<exists>\<alpha> P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> \<alpha>P' = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle> \<and> bn \<alpha> \<sharp>* (F,f))" \<comment> \<open>note the freshness condition\<close>
   | "EF (F,P) \<rightarrow>\<^sub>L \<alpha>P' \<longleftrightarrow> (\<exists>f. f \<in>\<^sub>f\<^sub>s F \<and> \<alpha>P' = \<langle>Eff f, AC (f, F, \<langle>f\<rangle>P)\<rangle>)"
 
   lemma L_transition_eqvt: assumes "P\<^sub>L \<rightarrow>\<^sub>L \<alpha>\<^sub>LP\<^sub>L'" shows "(p \<bullet> P\<^sub>L) \<rightarrow>\<^sub>L (p \<bullet> \<alpha>\<^sub>LP\<^sub>L')"
@@ -201,7 +201,7 @@ begin
   using assms proof -
     from `AC (f,F,P) \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle>` obtain \<alpha> P' where transition: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>" and alpha: "\<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle> = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle>" and fresh: "bn \<alpha> \<sharp>* (F,f)"
       by (metis L_transition.simps(1))
-    let ?Act = "Act \<alpha> :: ('act,'effect) L_action" -- \<open>the type annotation prevents a type that is too polymorphic and doesn't fix~@{typ 'effect}\<close>
+    let ?Act = "Act \<alpha> :: ('act,'effect) L_action" \<comment> \<open>the type annotation prevents a type that is too polymorphic and doesn't fix~@{typ 'effect}\<close>
     have "finite (bn \<alpha>)"
       by (fact bn_finite)
     moreover note `finite (supp X)`
@@ -514,7 +514,7 @@ begin
     next
       assume *: "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
 
-      -- \<open>rename~@{term "bn \<alpha>"} to avoid~@{term "(F, f, P)"}, without touching~@{term F} or~@{term "FL_Formula.Act f \<alpha> x"}\<close>
+      \<comment> \<open>rename~@{term "bn \<alpha>"} to avoid~@{term "(F, f, P)"}, without touching~@{term F} or~@{term "FL_Formula.Act f \<alpha> x"}\<close>
       obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* (F, f, P)" and 2: "supp (F, FL_Formula.Act f \<alpha> x) \<sharp>* p"
       proof (rule at_set_avoiding2[of "bn \<alpha>" "(F, f, P)" "(F, FL_Formula.Act f \<alpha> x)", THEN exE])
         show "finite (bn \<alpha>)" by (fact bn_finite)

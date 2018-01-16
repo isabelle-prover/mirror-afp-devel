@@ -50,7 +50,7 @@ lemma mods_with_nats:
   by (metis add_diff_cancel_left' assms left_diff_distrib'
       less_imp_le mod_mult_self1_is_0 mult_le_mono1 nat_mod_eq_lemma)
 
--- \<open>The 0-vector of length \<open>n\<close>.\<close>
+\<comment> \<open>The 0-vector of length \<open>n\<close>.\<close>
 abbreviation zeroes :: "nat \<Rightarrow> nat list"
   where
     "zeroes n \<equiv> replicate n 0"

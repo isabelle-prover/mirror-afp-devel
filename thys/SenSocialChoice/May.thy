@@ -386,13 +386,13 @@ lemma anonymous_neutral_indifference:
       and tallyP: "card { i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y } = card { i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> x }"
   shows "x \<^bsub>(scf P)\<^esub>\<approx> y"
 proof -
-    -- {* Neutrality insists the results for @{term "P"} are symmetrical to those for @{term "swapAltsP P"}. *}
+    \<comment> \<open>Neutrality insists the results for @{term "P"} are symmetrical to those for @{term "swapAltsP P"}.\<close>
   from xyA
   have symPP': "(x \<^bsub>(scf P)\<^esub>\<preceq> y \<longleftrightarrow> y \<^bsub>(scf (swapAltsP P x y))\<^esub>\<preceq> x)
               \<and> (y \<^bsub>(scf P)\<^esub>\<preceq> x \<longleftrightarrow> x \<^bsub>(scf (swapAltsP P x y))\<^esub>\<preceq> y)"
     by - (rule neutralD[OF neutral profileP profile_swapAltsP[OF profileP]],
           simp_all, (rule swapAltsP_ab)+)
-      -- {* Anonymity and neutrality insist the results for @{term "P"} are identical to those for @{term "swapAltsP P"}. *}
+      \<comment> \<open>Anonymity and neutrality insist the results for @{term "P"} are identical to those for @{term "swapAltsP P"}.\<close>
   from xyA tallyP have "card {i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y} = card { i \<in> Is. x \<^bsub>(swapAltsP P x y i)\<^esub>\<prec> y }"
                    and "card {i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> x} = card { i \<in> Is. y \<^bsub>(swapAltsP P x y i)\<^esub>\<prec> x }"
     unfolding swapAltsP_def swapAlts_def strict_pref_def by simp_all
@@ -422,7 +422,7 @@ proof -
       and C: "C \<noteq> {}" "C \<subseteq> Is"
       and CxPy: "C \<subseteq> { i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y }"
     by - (drule card_greater[OF finiteIs], auto)
-      -- {* Add $(b, a)$ and close under transitivity. *}
+      \<comment> \<open>Add $(b, a)$ and close under transitivity.\<close>
   let ?P' = "\<lambda>i. if i \<in> C
                    then P i \<union> { (y, x) }
                             \<union> { (y, u) |u. x \<^bsub>(P i)\<^esub>\<preceq> u }

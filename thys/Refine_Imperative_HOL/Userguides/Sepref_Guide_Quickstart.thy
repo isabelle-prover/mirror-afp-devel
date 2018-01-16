@@ -218,12 +218,12 @@ begin
     it's abstract version and its implementation to the Sepref tool. 
     \<close>
   sepref_register min_of_list
-    -- \<open>This command registers the abstract version, and generates 
+    \<comment> \<open>This command registers the abstract version, and generates 
         an @{emph \<open>interface type\<close>} for it. We will explain interface types later,  
         and only note that, by default, the interface type corresponds to the operation's
         HOL type.\<close>
   declare min_of_list3_correct[sepref_fr_rules]  
-    -- \<open>This declares the implementation to Sepref\<close>
+    \<comment> \<open>This declares the implementation to Sepref\<close>
 
   text \<open>Now we can define the abstract version of our example algorithm.
     We compute the minimum value of pseudo-random lists of a given length
@@ -407,17 +407,17 @@ text \<open>We try to synthesize the implementation. Note that @{command sepref_
 sepref_thm in_sorted_list2 is "uncurry in_sorted_list1'" :: "nat_assn\<^sup>k *\<^sub>a (array_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
   unfolding in_sorted_list1'_def[abs_def]
   (* apply sepref  Fails *)
-  -- \<open>If @{method sepref} fails, you can use @{method sepref_dbg_keep} to get some more information.\<close>
+  \<comment> \<open>If @{method sepref} fails, you can use @{method sepref_dbg_keep} to get some more information.\<close>
   apply sepref_dbg_keep
-  -- \<open>This prints a trace of the different phases of sepref, and stops when the first phase fails.
+  \<comment> \<open>This prints a trace of the different phases of sepref, and stops when the first phase fails.
     It then returns the internal proof state of the tool, which can be inspected further.
     
     Here, the translation phase fails. The translation phase translates the control structures and operations of
     the abstract program to their concrete counterparts. To inspect the actual problem, we let translation run 
-    until the operation where it fails: \<close>
-  supply [[goals_limit=1]] -- \<open>There will be many subgoals during translation, and printing them takes very long with Isabelle :(\<close>
+    until the operation where it fails:\<close>
+  supply [[goals_limit=1]] \<comment> \<open>There will be many subgoals during translation, and printing them takes very long with Isabelle :(\<close>
   apply sepref_dbg_trans_keep
-  -- \<open>Things get stuck at a goal with predicate @{const hn_refine}. This is the internal refinement predicate,
+  \<comment> \<open>Things get stuck at a goal with predicate @{const hn_refine}. This is the internal refinement predicate,
     @{term "hn_refine \<Gamma> c \<Gamma>' R a"} means, that, for operands whose refinement is described by @{term \<Gamma>},
     the concrete program @{term c} refines the abstract program @{term a}, such that, afterwards, the operands
     are described by @{term \<Gamma>'}, and the results are refined by @{term R}.
@@ -427,12 +427,11 @@ sepref_thm in_sorted_list2 is "uncurry in_sorted_list1'" :: "nat_assn\<^sup>k *\
     application, which is used to tame Isabelle's higher-order unification algorithms. You may use 
     \<open>unfolding APP_def\<close>, or even \<open>simp\<close> to get a clearer picture of the failed goal.
 
-    If a translation step fails, it may be helpful to execute as much of the translation step as possible:
-    \<close>
+    If a translation step fails, it may be helpful to execute as much of the translation step as possible:\<close>
   apply sepref_dbg_trans_step_keep
-  -- \<open>The translation step gets stuck at proving @{term "pre_list_get (b, xf)"}, which is the 
+  \<comment> \<open>The translation step gets stuck at proving @{term "pre_list_get (b, xf)"}, which is the 
     precondition for list indexing.\<close>
-  apply (sepref_dbg_side_keep) -- \<open>If you think the side-condition should be provable, this command 
+  apply (sepref_dbg_side_keep) \<comment> \<open>If you think the side-condition should be provable, this command 
     returns the left-over subgoals after some preprocessing and applying auto\<close>
   (* apply sepref_dbg_side_unfold (* Preprocessing only*) *)
   oops  
@@ -447,18 +446,18 @@ text \<open>
 \<close>
 
 sepref_thm min_of_list3' is min_of_list2 :: "(array_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a nat_assn"
-  -- \<open>The \<open>sepref_thm\<close> or \<open>sepref_definition\<close> command assembles a schematic 
+  \<comment> \<open>The \<open>sepref_thm\<close> or \<open>sepref_definition\<close> command assembles a schematic 
     goal statement.\<close>
   unfolding min_of_list2_def[abs_def] 
-  -- \<open>The preprocessing phase converts the goal into 
+  \<comment> \<open>The preprocessing phase converts the goal into 
     the @{const "hn_refine"}-form. Moreover, it adds interface type 
     annotations for the parameters. (for now, the interface type is just the HOL 
     type of the parameter, in our case, @{typ "nat list"})\<close>
   apply sepref_dbg_preproc
-  -- \<open>The next phase applies a consequence rule for the postcondition and
+  \<comment> \<open>The next phase applies a consequence rule for the postcondition and
     result. This is mainly for technical reasons.\<close>
   apply sepref_dbg_cons_init
-  -- \<open>The next phase tries to identify the abstract operations, and inserts
+  \<comment> \<open>The next phase tries to identify the abstract operations, and inserts
     tag-constants for function application and abstraction. These tags are for 
     technical reasons, working around Isabelle/HOL's unifier idiosyncrasies.
 
@@ -469,21 +468,19 @@ sepref_thm min_of_list3' is min_of_list2 :: "(array_assn nat_assn)\<^sup>k \<rig
     @{term [source] "insert x {}"}. In our case, the operation identification 
     phase rewrites the assertion operations followed by a bind to a single 
     operation @{const op_ASSERT_bind}, and renames some operations to more 
-    canonical names.
-    \<close>
+    canonical names.\<close>
   apply sepref_dbg_id
-  -- \<open>Now that it is clear which operations to execute, we have to specify an 
+  \<comment> \<open>Now that it is clear which operations to execute, we have to specify an 
     execution order. Note that HOL has no notion of execution at all. However,
     if we want to translate to operations that depend on a heap, we need a notion 
     of execution order. We use the \<open>nres\<close>-monad's bind operation as sequencing operator,
-    and flatten all nested operations, using left-to-right evaluation order. 
-    \<close>
+    and flatten all nested operations, using left-to-right evaluation order.\<close>
   apply sepref_dbg_monadify
-  -- \<open>The next step just prepares the optimization phase,
+  \<comment> \<open>The next step just prepares the optimization phase,
     which will be executed on the translated program. It just applies the rule   
     @{thm TRANS_init}.\<close>
   apply sepref_dbg_opt_init
-  -- \<open>The translation phase does the main job of translating the abstract program
+  \<comment> \<open>The translation phase does the main job of translating the abstract program
     to the concrete one. It has rules how to translate abstract operations to
     concrete ones. For technical reasons, it differentiates between 
     operations, which have only first-order arguments (e.g., @{const length})   
@@ -491,18 +488,16 @@ sepref_thm min_of_list3' is min_of_list2 :: "(array_assn nat_assn)\<^sup>k \<rig
 
     The basic idea of translation is to repeatedly apply the translation rule for the
     topmost combinator/operator, and thus recursively translate the whole program.
-    The rules may produce various types of side-conditions, which are resolved by the tool.
-    \<close>
+    The rules may produce various types of side-conditions, which are resolved by the tool.\<close>
   apply sepref_dbg_trans
-  -- \<open>The next phase applies some simplification rules to optimize the translated program.
+  \<comment> \<open>The next phase applies some simplification rules to optimize the translated program.
     It essentially simplifies first with the rules @{thm [source] sepref_opt_simps}, and
-    then with @{thm [source] sepref_opt_simps2}.
-    \<close>
+    then with @{thm [source] sepref_opt_simps2}.\<close>
   apply sepref_dbg_opt
-  -- \<open>The next two phases resolve the consequence rules introduced by the \<open>cons_init\<close> phase.\<close>
+  \<comment> \<open>The next two phases resolve the consequence rules introduced by the \<open>cons_init\<close> phase.\<close>
   apply sepref_dbg_cons_solve
   apply sepref_dbg_cons_solve
-  -- \<open>The translation phase and the consequence rule solvers may postpone some
+  \<comment> \<open>The translation phase and the consequence rule solvers may postpone some
     side conditions on yet-unknown refinement assertions. These are solved in the 
     last phase.\<close>
   apply sepref_dbg_constraints
@@ -542,28 +537,27 @@ sepref_thm test is "\<lambda>l. RETURN (l!1 + 2)" :: "(array_assn nat_assn)\<^su
     a trace of the phases, such that you can easily see which phase failed.
     \<close>
   apply sepref_dbg_keep
-  -- \<open>In the trace, we see that the translation phase failed. We are presented
+  \<comment> \<open>In the trace, we see that the translation phase failed. We are presented
     the tool's internal goal state just before translation. If a phase fails,
     the usual procedure is to start the phase in debug mode, and see how far it gets.
     The debug mode of the translation phase stops at the first operation or combinator
     it cannot translate. Note, it is a good idea to limit the visible goals, as printing 
-    goals in Isabelle can be very, very slow :(
-    \<close>
+    goals in Isabelle can be very, very slow :(\<close>
   supply [[goals_limit = 1]]
   apply sepref_dbg_trans_keep
-  -- \<open>Here, we see that translation gets stuck at \<open>op_list_get\<close>. This may have 
+  \<comment> \<open>Here, we see that translation gets stuck at \<open>op_list_get\<close>. This may have 
     two reasons: Either there is no rule for this operation, or a side condition 
     cannot be resolved. We apply a single translation step in debug mode, i.e., 
     the translation step is applied as far as possible, leaving unsolved side conditions:\<close>
   apply sepref_dbg_trans_step_keep
-  -- \<open>This method reports that the "Apply rule" phase produced a wrong number of subgoals.
+  \<comment> \<open>This method reports that the "Apply rule" phase produced a wrong number of subgoals.
     This phase is expected to solve the goal, but left some unsolved side condition, which we
     are presented in the goal state. We can either guess  
     what @{term pre_list_get} means and why it cannot be solved, or try to partially
     solve the side condition:\<close>
   apply sepref_dbg_side_keep
-  -- \<open>From the remaining subgoal, one can guess that there might be a problem 
-    with too short lists, where index \<open>1\<close> does not exist. \<close>
+  \<comment> \<open>From the remaining subgoal, one can guess that there might be a problem 
+    with too short lists, where index \<open>1\<close> does not exist.\<close>
   (** You may use the following methods instead of sepref_dbg_side_keep to have 
     more control on how far the side-condition is solved. By default, you will see
     the result of auto after unfolding the internal tags.
@@ -579,9 +573,9 @@ sepref_thm test is "\<lambda>l. RETURN (Min (set l))" :: "(array_assn nat_assn)\
   supply [[goals_limit = 1]]
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
-  -- \<open>Translation stops at the \<open>set\<close> operation\<close>
+  \<comment> \<open>Translation stops at the \<open>set\<close> operation\<close>
   apply sepref_dbg_trans_step_keep
-  -- \<open>This tactic reports that the "Apply rule" phase failed, which means that 
+  \<comment> \<open>This tactic reports that the "Apply rule" phase failed, which means that 
     there is no applicable rule for the \<open>set\<close> operation on arrays.\<close>
   oops  
   
@@ -628,10 +622,9 @@ sepref_definition nat_seg_map2 is nat_seg_map1 :: "(hs.assn id_assn)\<^sup>k \<r
   unfolding nat_seg_map1_def[abs_def]
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
-  -- \<open>We got stuck at \<open>op_map_empty\<close>. This is because Sepref is very conservative 
+  \<comment> \<open>We got stuck at \<open>op_map_empty\<close>. This is because Sepref is very conservative 
     when it comes to guessing implementations. Actually, no constructor operation 
-    will be assigned a default operation, with some obvious exceptions for numbers and Booleans.
-    \<close>
+    will be assigned a default operation, with some obvious exceptions for numbers and Booleans.\<close>
   oops
 
 text \<open>
@@ -641,7 +634,7 @@ text \<open>
 \<close>
 sepref_definition nat_seg_map2 is nat_seg_map1 :: "(hs.assn id_assn)\<^sup>k \<rightarrow>\<^sub>a hm.assn id_assn nat_assn"
   unfolding nat_seg_map1_def[abs_def]
-  -- \<open>We can use the @{method rewrite} method for position-precise rewriting:\<close>
+  \<comment> \<open>We can use the @{method rewrite} method for position-precise rewriting:\<close>
   apply (rewrite in "FOREACHi _ _ _ \<hole>" "hm.fold_custom_empty")
   by sepref
 
@@ -685,7 +678,7 @@ sepref_thm incr_list2 is "RETURN o incr_list1" :: "(array_assn nat_assn)\<^sup>d
   apply sepref_dbg_trans_keep
   apply sepref_dbg_trans_step_keep
   apply sepref_dbg_side_keep
-  -- \<open>We get stuck at the precondition of @{const op_list_get}.
+  \<comment> \<open>We get stuck at the precondition of @{const op_list_get}.
     Indeed, we cannot prove the generated precondition, as the translation process
     dropped any information from which we could conclude that the index is in range.\<close>
   oops
@@ -722,7 +715,7 @@ proof (intro nres_relI fun_relI; simp)
   fix l :: "'a list"
   show "incr_list2 l \<le> RETURN (incr_list l)"
     unfolding incr_list2_def incr_list_def
-    -- \<open>@{const nfoldli} comes with an invariant proof rule. In order to use it, we have to specify
+    \<comment> \<open>@{const nfoldli} comes with an invariant proof rule. In order to use it, we have to specify
       the invariant manually:\<close>
     apply (refine_vcg nfoldli_rule[where I="\<lambda>l1 l2 s. s = map (((+))1) (take (length l1) l) @ drop (length l1) l"])
     apply (vc_solve 
@@ -751,8 +744,8 @@ sepref_thm swap_nonlinear is "uncurry2 (\<lambda>l i j. do {
 })" :: "(array_assn id_assn)\<^sup>d *\<^sub>a nat_assn\<^sup>k *\<^sub>a nat_assn\<^sup>k \<rightarrow>\<^sub>a array_assn id_assn"
   supply [[goals_limit = 1]]
   apply sepref_dbg_keep
-  apply sepref_dbg_trans_keep -- \<open>(1) We get stuck at an @{const op_list_get} operation\<close>
-  apply sepref_dbg_trans_step_keep -- \<open>(2) Further inspection reveals that the "recover pure" 
+  apply sepref_dbg_trans_keep \<comment> \<open>(1) We get stuck at an @{const op_list_get} operation\<close>
+  apply sepref_dbg_trans_step_keep \<comment> \<open>(2) Further inspection reveals that the "recover pure" 
     phase fails, and we are left with a subgoal of the form 
     @{term "CONSTRAINT is_pure (array_assn id_assn)"}. Constraint side conditions are 
     deferrable side conditions: They are produced as side-conditions, and if they cannot 
@@ -768,8 +761,7 @@ sepref_thm swap_nonlinear is "uncurry2 (\<lambda>l i j. do {
 
     Note: There are scenarios where a constraint gets deferred @{emph \<open>before\<close>} it becomes definitely unsolvable.
       In these cases, you only see the problem after the translation phase, and it may be somewhat tricky to figure
-      out the reason.
-  \<close> (* TODO: Check for unsolvable constraints after each translation step, and refuse refinements that render
+      out the reason.\<close> (* TODO: Check for unsolvable constraints after each translation step, and refuse refinements that render
       any constraints unsolvable. Make this debuggable, e.g. by injecting those constraints as additional side 
       conditions! *)
   oops
@@ -790,8 +782,8 @@ sepref_thm swap_with_tmp is "uncurry2 (\<lambda>l i j. do {
   let tmp = l!i;
   RETURN (l[i:=l!j, j:=tmp])
 })" :: "(array_assn id_assn)\<^sup>k *\<^sub>a nat_assn\<^sup>k *\<^sub>a nat_assn\<^sup>k \<rightarrow>\<^sub>a array_assn id_assn"
-  apply sepref_dbg_keep -- \<open>We get stuck at a frame, which would require restoring an invalidated array\<close>
-  apply sepref_dbg_cons_solve_keep -- \<open>Which would only work if arrays were pure\<close>
+  apply sepref_dbg_keep \<comment> \<open>We get stuck at a frame, which would require restoring an invalidated array\<close>
+  apply sepref_dbg_cons_solve_keep \<comment> \<open>Which would only work if arrays were pure\<close>
   oops
   
 text \<open>If copying is really required, you have to insert it manually. 
@@ -800,7 +792,7 @@ text \<open>If copying is really required, you have to insert it manually.
 \<close>
 sepref_thm incr_list3_preserve is "incr_list2" :: "(array_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a array_assn nat_assn"
   unfolding incr_list2_def[abs_def]
-  -- \<open>We explicitly insert a copy-operation on the list, before it is passed to the fold operation\<close>
+  \<comment> \<open>We explicitly insert a copy-operation on the list, before it is passed to the fold operation\<close>
   apply (rewrite in "nfoldli _ _ _ \<hole>" op_list_copy_def[symmetric])
   by sepref
 
@@ -855,14 +847,13 @@ sepref_thm set_of_arrays_ex is "uncurry0 (RETURN (op_list_append [] op_array_emp
   apply sepref_dbg_trans_step_keep
   supply [[goals_limit = 1, unify_trace_failure]]
   (*apply (rule arl_append_hnr[to_hnr])*)
-  -- \<open>Many IICF data structures, in particular the array based ones, requires the element types
+  \<comment> \<open>Many IICF data structures, in particular the array based ones, requires the element types
     to be of @{class default}. If this is not the case, Sepref will simply find no refinement for
     the operations. Be aware that type-class related mistakes are hard to debug in Isabelle/HOL,
     above we sketched how to apply the refinement rule that is supposed to match with unifier 
     tracing switched on. The @{attribute to_hnr} attribute is required to convert the rule from 
     the relational form to the internal @{const hn_refine} form. Note that some rules are already 
-    in @{const hn_refine} form, and need not be converted, e.g., @{thm hn_Pair}.
-    \<close>
+    in @{const hn_refine} form, and need not be converted, e.g., @{thm hn_Pair}.\<close>
   oops
 
 text \<open>So lets choose a circular singly linked list (csll), which does not require its elements to be of default type class\<close>
@@ -871,7 +862,7 @@ sepref_thm set_of_arrays_ex is "uncurry0 (RETURN (op_list_append [] op_array_emp
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
   apply sepref_dbg_trans_step_keep
-  -- \<open>We end up with an unprovable purity-constraint: As many IICF types, csll 
+  \<comment> \<open>We end up with an unprovable purity-constraint: As many IICF types, csll 
     only supports pure member types. We expect this restriction to be lifted in 
     some future version.\<close>
   oops
@@ -911,9 +902,9 @@ sepref_register remdup
 text \<open>The straightforward version with dynamic data-structures is: \<close>
 sepref_definition remdup1 is "remdup" :: "(list_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a arl_assn nat_assn"
   unfolding remdup_def[abs_def]
-  -- \<open>Lets use a bit-vector for the set\<close>
+  \<comment> \<open>Lets use a bit-vector for the set\<close>
   apply (rewrite in "nfoldli _ _ _ \<hole>" ias.fold_custom_empty)
-  -- \<open>And an array-list for the list\<close>
+  \<comment> \<open>And an array-list for the list\<close>
   apply (rewrite in "nfoldli _ _ _ \<hole>" arl.fold_custom_empty)
   by sepref
 
@@ -929,7 +920,7 @@ context fixes N :: nat begin
 
 sepref_definition remdup1_initsz is "remdup" :: "(list_assn nat_assn)\<^sup>k \<rightarrow>\<^sub>a arl_assn nat_assn"
   unfolding remdup_def[abs_def]
-  -- \<open>Many of the dynamic array-based data structures in the IICF can be 
+  \<comment> \<open>Many of the dynamic array-based data structures in the IICF can be 
     pre-initialized to a certain size. THis initialization is only a hint, 
     and has no abstract consequences. The list data structure will still be 
     resized if it grows larger than the initialization size.\<close>
@@ -959,7 +950,7 @@ text \<open>We use a locale to hide local declarations. Note: This locale will n
 \<close>
 locale my_remdup_impl_loc = 
   fixes N :: nat 
-  assumes "N>0" -- \<open>This assumption is not necessary, but used to illustrate the 
+  assumes "N>0" \<comment> \<open>This assumption is not necessary, but used to illustrate the 
     general case, where the locale may have such assumptions\<close>
 begin
   text \<open>For locale hierarchies, the following seems not to be available directly in Isabelle,
@@ -990,7 +981,7 @@ begin
     apply sepref_dbg_keep
     apply sepref_dbg_trans_keep
     apply sepref_dbg_trans_step_keep
-    -- \<open>In order to append to the array list, we have to show that the size is not yet exceeded.
+    \<comment> \<open>In order to append to the array list, we have to show that the size is not yet exceeded.
       This may require to add some assertions on the abstract level. We already have added
       some assertions in the definition of @{const remdup}.\<close>
     oops
@@ -1005,7 +996,7 @@ begin
     apply sepref_dbg_trans_keep
     apply sepref_dbg_trans_step_keep
     apply sepref_dbg_side_keep
-    -- \<open>We can start from this subgoal to find missing lemmas\<close>
+    \<comment> \<open>We can start from this subgoal to find missing lemmas\<close>
     oops
 
   text \<open>We can prove the remaining subgoal, e.g., by @{method auto} with the following
@@ -1108,7 +1099,7 @@ sepref_register bremdup
 
 locale my_bremdup_impl_loc = 
   fixes N :: nat 
-  assumes "N>0" -- \<open>This assumption is not necessary, but used to illustrate the 
+  assumes "N>0" \<comment> \<open>This assumption is not necessary, but used to illustrate the 
     general case, where the locale may have such assumptions\<close>
 begin
   lemma my_bremdup_impl_loc_this: "my_bremdup_impl_loc N" by unfold_locales
@@ -1164,7 +1155,7 @@ lemma test_bremdup1_refine: "(test_bremdup1, my_bremdup_impl_loc.test_remdup) \<
 export_code test_bremdup1 checking SML
 
 text \<open>We can also register the abstract constant and the refinement, to use it in further refinements\<close>
-sepref_register test_bremdup: my_bremdup_impl_loc.test_remdup -- \<open>Specifying a base-name for 
+sepref_register test_bremdup: my_bremdup_impl_loc.test_remdup \<comment> \<open>Specifying a base-name for 
     the theorems here, as default name clashes with existing names.\<close>
 lemmas [sepref_fr_rules] = test_bremdup1_refine
 
@@ -1180,9 +1171,9 @@ sepref_definition copy_list_to_array is "\<lambda>l. do {
   apply sepref_dbg_trans_step_keep
   supply [[unify_trace_failure, goals_limit=1]]
   (*apply (rule arl_sz.custom_hnr[to_hnr])*)
-  -- \<open>The problem manifests itself in trying to carry an abstract variable 
+  \<comment> \<open>The problem manifests itself in trying to carry an abstract variable 
     (the argument to \<open>op_arl_empty_sz\<close>) to the concrete program (the second argument of \<open>hn_refine\<close>).
-    However, the concrete program can only depend on the concrete variables, so unification fails. \<close>
+    However, the concrete program can only depend on the concrete variables, so unification fails.\<close>
   oops
 
 
@@ -1212,11 +1203,10 @@ text \<open>We refine this function to a heap-function,
 context 
   fixes dummy :: "'a::{numeral,times,mult_zero}"
   notes [[sepref_register_adhoc "PR_CONST (2::'a)"]]
-    -- \<open>Note: The setup for numerals, like \<open>2\<close>, is a bit subtle in that
+    \<comment> \<open>Note: The setup for numerals, like \<open>2\<close>, is a bit subtle in that
       numerals are always treated as constants, but have to be registered
       for any type they shall be used with. By default, they are only 
-      registered for @{typ int} and @{typ nat}. 
-      \<close>
+      registered for @{typ int} and @{typ nat}.\<close>
   notes [sepref_import_param] = IdI[of "PR_CONST (2::'a)"]
   notes [sepref_import_param] = IdI[of "( * )::'a\<Rightarrow>_", folded fun_rel_id_simp]
 begin
@@ -1252,7 +1242,7 @@ interpretation pw_add: amtx_pointwise_binop_impl N M "(((+))::(_::monoid_add) \<
   for N M
   apply standard
   apply simp
-  apply (sepref_to_hoare) apply sep_auto -- \<open>Alternative to 
+  apply (sepref_to_hoare) apply sep_auto \<comment> \<open>Alternative to 
     synthesize concrete operation, for simple ad-hoc refinements\<close>
   done
 abbreviation "mtx_add \<equiv> mtx_pointwise_binop ((+))"
@@ -1268,9 +1258,9 @@ sepref_thm mtx_dup_alt_test is "(\<lambda>m. RETURN (mtx_add m m))"
   :: "(amtx_assn N M int_assn)\<^sup>d \<rightarrow>\<^sub>a amtx_assn N M int_assn"
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
-  -- \<open>We get stuck at a @{const COPY} goal, indicating that a matrix has to be copied.\<close>
+  \<comment> \<open>We get stuck at a @{const COPY} goal, indicating that a matrix has to be copied.\<close>
   apply sepref_dbg_trans_step_keep
-  -- \<open>Which only works for pure refinements\<close>
+  \<comment> \<open>Which only works for pure refinements\<close>
   oops
 
 text \<open>Of course, you can always copy the matrix manually:\<close>
@@ -1291,7 +1281,7 @@ interpretation pw_lt: amtx_pointwise_cmpop_impl N M "((\<le>)::(_::order) \<Righ
 abbreviation "mtx_lt \<equiv> mtx_pointwise_cmpop (\<le>) (\<noteq>)"
 
 sepref_thm test_mtx_cmp is "(\<lambda>m. do { RETURN (mtx_lt (op_amtx_dfltNxM N M 0) m) })" :: "(amtx_assn N M int_assn)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
-  by sepref -- \<open>Note: Better fold over single matrix (currently no locale for that), instead of creating a new matrix.\<close>
+  by sepref \<comment> \<open>Note: Better fold over single matrix (currently no locale for that), instead of creating a new matrix.\<close>
 
 text \<open>In a final example, we store some coordinates in a set, and then
   use the stored coordinates to access the matrix again. This illustrates how 
@@ -1320,9 +1310,9 @@ begin
     apply (rewrite "hs.fold_custom_empty")
     apply sepref_dbg_keep
     apply sepref_dbg_trans_keep
-    -- \<open>We run into the problem that the Sepref tool uses \<open>nat_assn\<close> to refine natural
+    \<comment> \<open>We run into the problem that the Sepref tool uses \<open>nat_assn\<close> to refine natural
       numbers, and only later tries to convert it to \<open>nbn_assn\<close>. However, at this point, the
-      information is already lost. \<close>
+      information is already lost.\<close>
     oops
 
   text \<open>We can use a feature of Sepref, to annotate the desired assertion directly 
@@ -1333,7 +1323,7 @@ begin
     unfolding co_set_gen_def PR_CONST_def
     apply (rewrite "hs.fold_custom_empty")
     apply (rewrite in "insert \<hole> _" annotate_assn[where A=co_assn])
-      -- \<open>Annotate the pair as coordinate before insertion\<close>
+      \<comment> \<open>Annotate the pair as coordinate before insertion\<close>
     by sepref
   lemmas [sepref_fr_rules] = co_set_gen1.refine
 
@@ -1372,12 +1362,12 @@ sepref_thm test_sc_eval is "RETURN o (\<lambda>l. length l > 0 \<and> hd l)" :: 
   apply sepref_dbg_keep
   apply sepref_dbg_trans_keep
   apply sepref_dbg_trans_step_keep
-  -- \<open>Got stuck, as the operands of \<open>\<and>\<close> are evaluated before applying the operator, i.e.,
+  \<comment> \<open>Got stuck, as the operands of \<open>\<and>\<close> are evaluated before applying the operator, i.e.,
     \<open>hd\<close> is also applied to empty lists\<close>
   oops
 
 sepref_thm test_sc_eval is "RETURN o (\<lambda>l. length l > 0 \<and> hd l)" :: "(list_assn bool_assn)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
-  unfolding short_circuit_conv -- \<open>Enables short-circuit evaluation 
+  unfolding short_circuit_conv \<comment> \<open>Enables short-circuit evaluation 
     by rewriting \<open>\<and>\<close>, \<open>\<or>\<close>, and \<open>\<longrightarrow>\<close> to \<open>if\<close>-expressions\<close>
   by sepref
 

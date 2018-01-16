@@ -173,9 +173,9 @@ text {*
 *}
 
 lemma FOREACHoci_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -390,9 +390,9 @@ lemma FOREACHoci_weaken_order:
 subsubsection {* Rules for Derived Constructs *}
 
 lemma FOREACHoi_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -467,9 +467,9 @@ lemma FOREACHoi_refine_rcg[refine]:
   using assms by simp_all
 
 lemma FOREACHci_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -604,9 +604,9 @@ lemma FOREACH_rule:
 
 
 lemma FOREACHc_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -688,9 +688,9 @@ lemma FOREACHc_refine_rcg[refine]:
   using assms by auto
 
 lemma FOREACHi_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -765,9 +765,9 @@ lemma FOREACHi_refine_rcg[refine]:
   done
 
 lemma FOREACH_refine_genR:
-  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" -- "Abstraction mapping of elements"
-  fixes S :: "'S set" -- "Concrete set"
-  fixes S' :: "'Sa set" -- "Abstract set"
+  fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
+  fixes S :: "'S set" \<comment> \<open>Concrete set\<close>
+  fixes S' :: "'Sa set" \<comment> \<open>Abstract set\<close>
   fixes \<sigma>0 :: "'\<sigma>"
   fixes \<sigma>0' :: "'\<sigma>a"
   fixes R :: "(('S set \<times> '\<sigma>) \<times> ('Sa set \<times> '\<sigma>a)) set"
@@ -1802,7 +1802,7 @@ lemma bij_set_rel_for_inj:
   defines "\<alpha> \<equiv> fun_of_rel R" 
   assumes "bijective R" "(s,s')\<in>\<langle>R\<rangle>set_rel"  
   shows "inj_on \<alpha> s" "s' = \<alpha>`s"
-  -- \<open>To be used when generating refinement conditions for foreach-loops\<close>
+  \<comment> \<open>To be used when generating refinement conditions for foreach-loops\<close>
   using assms
   unfolding bijective_def set_rel_def \<alpha>_def fun_of_rel_def[abs_def]
   apply (auto intro!: inj_onI ImageI simp: image_def)

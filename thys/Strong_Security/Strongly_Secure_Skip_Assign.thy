@@ -22,7 +22,7 @@ abbreviation relatedbyUSdB :: "('exp,'id) MWLfCom list \<Rightarrow> 'd
   \<Rightarrow> ('exp,'id) MWLfCom list \<Rightarrow> bool" (infixr "\<approx>\<^bsub>_\<^esub>" 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> USdB d"
 
--- "define when two expressions are indistinguishable with respect to a domain d"
+\<comment> \<open>define when two expressions are indistinguishable with respect to a domain d\<close>
 definition d_indistinguishable :: "'d::order \<Rightarrow> 'exp \<Rightarrow> 'exp \<Rightarrow> bool"
 where
 "d_indistinguishable d e1 e2 \<equiv> 
@@ -33,12 +33,12 @@ abbreviation d_indistinguishable' :: "'exp \<Rightarrow> 'd::order \<Rightarrow>
 where
 "e1 \<equiv>\<^bsub>d\<^esub> e2 \<equiv> d_indistinguishable d e1 e2"
 
--- "symmetry of d-indistinguishable"
+\<comment> \<open>symmetry of d-indistinguishable\<close>
 lemma d_indistinguishable_sym:
 "e \<equiv>\<^bsub>d\<^esub> e' \<Longrightarrow> e' \<equiv>\<^bsub>d\<^esub> e"
 by (simp add: d_indistinguishable_def d_equal_def, metis)
 
---"transitivity of d-indistinguishable"
+\<comment> \<open>transitivity of d-indistinguishable\<close>
 lemma d_indistinguishable_trans:
 "\<lbrakk> e \<equiv>\<^bsub>d\<^esub> e'; e' \<equiv>\<^bsub>d\<^esub> e'' \<rbrakk> \<Longrightarrow> e \<equiv>\<^bsub>d\<^esub> e''"
 by (simp add: d_indistinguishable_def d_equal_def, metis)

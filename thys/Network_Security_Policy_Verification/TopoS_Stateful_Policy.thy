@@ -34,9 +34,9 @@ term all_security_requirements_fulfilled
 
 text{* @{term "G = (V, E\<^sub>f\<^sub>i\<^sub>x, E\<^sub>s\<^sub>t\<^sub>a\<^sub>t\<^sub>e)"} *}
 record 'v stateful_policy =
-    hosts :: "'v set" --"nodes, vertices"
-    flows_fix :: "('v \<times>'v) set" --"edges in high-level policy"
-    flows_state :: "('v \<times>'v) set" --"edges that can have stateful flows, i.e. backflows"
+    hosts :: "'v set" \<comment> \<open>nodes, vertices\<close>
+    flows_fix :: "('v \<times>'v) set" \<comment> \<open>edges in high-level policy\<close>
+    flows_state :: "('v \<times>'v) set" \<comment> \<open>edges that can have stateful flows, i.e. backflows\<close>
 
 text{* All the possible ways packets can travel in a @{typ "'v stateful_policy"}.
         They can either choose the fixed links;
@@ -114,7 +114,7 @@ text{*Minimizing stateful flows such that only newly added backflows remain*}
   lemma filternew_subseteq_flows_state: "filternew_flows_state \<T> \<subseteq> flows_state \<T>"
     by(auto simp add: filternew_flows_state_def)
 
-  --"alternative definitions, all are equal"
+  \<comment> \<open>alternative definitions, all are equal\<close>
   lemma filternew_flows_state_alt: "filternew_flows_state \<T>  = flows_state \<T> - (backflows (flows_fix \<T>))"
     apply(simp add: backflows_def filternew_flows_state_def)
     apply(rule)
@@ -181,33 +181,33 @@ locale stateful_policy_compliance =
   fixes G :: "'v graph"
   fixes M :: "('v) SecurityInvariant_configured list"
   assumes
-    -- "the graph must be syntactically valid"
+    \<comment> \<open>the graph must be syntactically valid\<close>
     wfG: "wf_graph G"
     and
-    -- "security requirements must be valid"
+    \<comment> \<open>security requirements must be valid\<close>
     validReqs: "valid_reqs M"
     and
-    -- "the high-level policy must be valid"
+    \<comment> \<open>the high-level policy must be valid\<close>
     high_level_policy_valid: "all_security_requirements_fulfilled M G"
     and
-    -- "the stateful policy must be syntactically valid"
+    \<comment> \<open>the stateful policy must be syntactically valid\<close>
     stateful_policy_wf:
     "wf_stateful_policy \<T>"
     and
-    -- "the stateful policy must talk about the same nodes as the high-level policy"
+    \<comment> \<open>the stateful policy must talk about the same nodes as the high-level policy\<close>
     hosts_nodes:
     "hosts \<T> = nodes G"
     and
-    -- "only flows that are allowed in the high-level policy are allowed in the stateful policy"
+    \<comment> \<open>only flows that are allowed in the high-level policy are allowed in the stateful policy\<close>
     flows_edges:
     "flows_fix \<T> \<subseteq> edges G"
     and
-    -- "the low level policy must comply with the high-level policy"
-      -- "all information flow strategy requirements must be fulfilled, i.e. no leaks!"
+    \<comment> \<open>the low level policy must comply with the high-level policy\<close>
+      \<comment> \<open>all information flow strategy requirements must be fulfilled, i.e. no leaks!\<close>
       compliant_stateful_IFS: 
         "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<T>)"
       and
-      -- "No Access Control side effects must occur"
+      \<comment> \<open>No Access Control side effects must occur\<close>
       compliant_stateful_ACS: 
         "\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ). F \<subseteq> backflows (filternew_flows_state \<T>)"
         
@@ -234,8 +234,8 @@ locale stateful_policy_compliance =
         \<Union>(c_offending_flows m \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> filternew_flows_state \<T> \<union> backflows (filternew_flows_state \<T>)\<rparr>) \<subseteq> backflows (filternew_flows_state \<T>)"
         by(simp add: stateful_policy_to_network_graph_def all_flows_def get_offending_flows_def, blast)
     
-      --{*idea: use @{thm compliant_stateful_ACS} with the @{thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq} 
-        lemma and substract @{term "backflows (filternew_flows_state \<T>) - E"}, on the right hand side @{term E} remains, as Graph's edges @{term "flows_fix \<T>  \<union> E"} remains*}
+      \<comment> \<open>idea: use @{thm compliant_stateful_ACS} with the @{thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq} 
+        lemma and substract @{term "backflows (filternew_flows_state \<T>) - E"}, on the right hand side @{term E} remains, as Graph's edges @{term "flows_fix \<T>  \<union> E"} remains\<close>
 
       from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq[where X="backflows (filternew_flows_state \<T>)", OF _ wfGfilternew this]
         `valid_reqs (get_ACS M)`
@@ -310,9 +310,9 @@ locale stateful_policy_compliance =
     
           from this obtain E1 E2 where E1_prop: "E1 \<subseteq> backflows (filternew_flows_state \<T>)" and E2_prop: "E2 \<subseteq> (backflows (flows_state \<T>) - backflows (filternew_flows_state \<T>))" and "E = E1 \<union> E2" and "E1 \<inter> E2 = {}" by blast
     
-          --{*the stateful flows are @{text "\<subseteq>"} fix flows. If substracting the new stateful flows, onyly the existing fix flows remain*}
+          \<comment> \<open>the stateful flows are @{text "\<subseteq>"} fix flows. If substracting the new stateful flows, onyly the existing fix flows remain\<close>
           from E2_prop filternew_flows_state_alt have "E2 \<subseteq> flows_fix \<T>" by (metis (hide_lams, no_types) Diff_subset_conv Un_Diff_cancel2 backflows_minus_backflows inf_sup_ord(3) order.trans)
-          --"hence, E2 disappears"
+          \<comment> \<open>hence, E2 disappears\<close>
           from Set.Un_absorb1[OF this] have E2_absorb: "flows_fix \<T> \<union> E2 = flows_fix \<T>" by blast
     
           from `E = E1 \<union> E2` have E2E1eq: "E2 \<union> E1 = E" by blast
@@ -356,7 +356,7 @@ locale stateful_policy_compliance =
       proof -
         from validReqs have valid_ReqsIFS: "valid_reqs (get_IFS M)" by(simp add: get_IFS_def valid_reqs_def)
     
-        --"show that it holds for IFS, by monotonicity as it holds for more in IFS"
+        \<comment> \<open>show that it holds for IFS, by monotonicity as it holds for more in IFS\<close>
         from all_security_requirements_fulfilled_mono[OF valid_ReqsIFS _ valid_stateful_policy compliant_stateful_IFS[unfolded stateful_policy_to_network_graph_def]] have
           goalIFS: "all_security_requirements_fulfilled (get_IFS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T>  \<rparr>" by(simp add: all_flows_def)
 
@@ -364,7 +364,7 @@ locale stateful_policy_compliance =
         from this compliant_stateful_ACS_static_valid have goalACS:
           "all_security_requirements_fulfilled (get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T>  \<rparr>" by simp
           
-        --"ACS and IFS together form M, we know it holds for ACS"
+        \<comment> \<open>ACS and IFS together form M, we know it holds for ACS\<close>
         from goalACS goalIFS show ?thesis 
           apply(simp add: all_security_requirements_fulfilled_def get_IFS_def get_ACS_def)
           by fastforce

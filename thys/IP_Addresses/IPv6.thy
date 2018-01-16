@@ -84,7 +84,7 @@ subsection\<open>Syntax of IPv6 Adresses\<close>
 \<close>
   (*datatype may take some minutes to load*)
   datatype ipv6addr_syntax_compressed =
-  --\<open>using @{typ unit} for the omission @{text "::"}. 
+  \<comment> \<open>using @{typ unit} for the omission @{text "::"}. 
 
      Naming convention of the datatype: 
       The first number is the position where the omission occurs.
@@ -854,7 +854,7 @@ begin
   by force
   done
 
-  --\<open>Idea for the following proof:\<close>
+  \<comment> \<open>Idea for the following proof:\<close>
   private lemma "ipv6_preferred_to_compressed (IPv6AddrPreferred a b c d e f g h) = None#xs \<Longrightarrow>
       xs = map Some (dropWhile (\<lambda>x. x=0) [a,b,c,d,e,f,g,h])"
     apply(case_tac "a=0",case_tac [!] "b=0",case_tac [!] "c=0",case_tac [!] "d=0",

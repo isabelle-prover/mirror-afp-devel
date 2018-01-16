@@ -15,10 +15,10 @@ text {*
 *}
 
 record 'val pstate =
-  x :: 'val                -- {* current value held by process *}
+  x :: 'val                \<comment> \<open>current value held by process\<close>
   mru_vote :: "(nat \<times> 'val) option"
-  commt :: "'val option"   -- {* for coordinators: the value processes are asked to commit to *}
-  decide :: "'val option"  -- {* value the process has decided on, if any *}
+  commt :: "'val option"   \<comment> \<open>for coordinators: the value processes are asked to commit to\<close>
+  decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
 text {* The algorithm relies on a coordinator for each phase of the algorithm.
   A phase lasts three rounds. The HO model formalization already provides the 
@@ -40,7 +40,7 @@ datatype 'val msg =
   ValStamp "'val" "nat"
 | NeverVoted
 | Vote "'val"
-| Null  -- {* dummy message in case nothing needs to be sent *}
+| Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
 text {*
   Characteristic predicates on messages.
@@ -128,7 +128,7 @@ definition send2 where
     | _ \<Rightarrow> Null
   )"
 
--- {* processes from which a vote was received *}
+\<comment> \<open>processes from which a vote was received\<close>
 definition votes_rcvd where
   "votes_rcvd (msgs :: process \<rightharpoonup> 'val msg) \<equiv>
    { (q, v) . msgs q = Some (Vote v) }"

@@ -60,7 +60,7 @@ definition
 
 lemma mapRuleI: "[| A = map f a; B = (map f) ` b |] ==> (A,B) = mapRule f (a,b)"
   by(simp add: mapRule_def)
-    -- "FIXME tjr would like symmetric"
+    \<comment> \<open>FIXME tjr would like symmetric\<close>
 
 
 subsection "Deductions"
@@ -224,8 +224,8 @@ lemma DisjI2: "!!A. [| (A0#Gamma) : deductions(A); Disjs <= A; Weaks <= A; Perms
   apply(rule WeakI)
   .
 
-    -- "FIXME the following 4 lemmas could all be proved for the standard rule sets using monotonicity as below"
-    -- "we keep proofs as in original, but they are slightly ugly, and do not state what is intuitively happening"
+    \<comment> \<open>FIXME the following 4 lemmas could all be proved for the standard rule sets using monotonicity as below\<close>
+    \<comment> \<open>we keep proofs as in original, but they are slightly ugly, and do not state what is intuitively happening\<close>
 lemma perm_tmp4: "Perms \<subseteq> R \<Longrightarrow> A @ (a # list) @ (a # list) : deductions R \<Longrightarrow> (a # a # A) @ list @ list : deductions R"
   apply (rule PermI, auto)
   apply(simp add: perm_count_conv count_append) done
@@ -242,7 +242,7 @@ lemma weaken_append[rule_format]: "Contrs <= R ==> Perms <= R ==> !A. A @ Gamma 
   apply(rule PermI) apply assumption 
   apply(simp add: perm_count_conv count_append) 
   by assumption
-  -- "FIXME horrible"
+  \<comment> \<open>FIXME horrible\<close>
 
 lemma ListWeakI: "Perms <= R ==> Contrs <= R ==> x # Gamma @ Gamma : deductions(R) ==> x # Gamma : deductions(R)"
   by(rule weaken_append[of R "[x]" Gamma, simplified])
@@ -278,8 +278,8 @@ lemma rulesInPCs: "Axioms <= PC" "Axioms <= CutFreePC"
 
 subsection "Monotonicity for CutFreePC deductions"
 
-  -- "these lemmas can be used to replace complicated permutation reasoning above"
-  -- "essentially if x is a deduction, and set x subset set y, then y is a deduction"
+  \<comment> \<open>these lemmas can be used to replace complicated permutation reasoning above\<close>
+  \<comment> \<open>essentially if x is a deduction, and set x subset set y, then y is a deduction\<close>
 
 definition
   inDed :: "formula list => bool" where

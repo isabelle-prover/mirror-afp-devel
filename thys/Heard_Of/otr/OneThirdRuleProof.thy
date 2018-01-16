@@ -209,7 +209,7 @@ proof -
         (is "OTR_nextState _ _ ?st ?msgs ?st'")
     by (simp add: HORun_eq HOnextConfig_eq OTR_HOMachine_def nextState_def)
   let ?HOVothers = "\<Union> { HOV ?msgs w | w . w \<noteq> v}"
-  -- {* processes from which @{text p} received values different from @{text v} *}
+  \<comment> \<open>processes from which @{text p} received values different from @{text v}\<close>
 
   have w: "card ?HOVothers \<le> N div 3"
   proof -
@@ -309,12 +309,12 @@ lemma A4:
   shows "\<forall>k. (2*N) div 3 < card { q . x (rho (n+k) q) = v }"
         (is "\<forall>k. ?twothird (n+k)")
 using dec proof (induct n)
-  -- {* The base case is trivial since no process has decided *}
+  \<comment> \<open>The base case is trivial since no process has decided\<close>
   assume "?dec 0" with run show "\<forall>k. ?twothird (0+k)"
     by (simp add: HORun_eq HOinitConfig_eq OTR_HOMachine_def 
                   initState_def OTR_initState_def)
 next
-  -- {* For the inductive step, we assume that process @{text p} has decided on @{text v}. *}
+  \<comment> \<open>For the inductive step, we assume that process @{text p} has decided on @{text v}.\<close>
   fix m
   assume ih: "?dec m \<Longrightarrow> \<forall>k. ?twothird (m+k)" and m: "?dec (Suc m)"
   show "\<forall>k. ?twothird ((Suc m) + k)"

@@ -384,7 +384,7 @@ where
   \<Longrightarrow> P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 
 
-| bisim1InSync: -- {* This rule only exists such that @{text "P,e,h \<turnstile> (e, xs) \<leftrightarrow> ([], xs, 0, None)"} holds for all @{text "e"} *} 
+| bisim1InSync: \<comment> \<open>This rule only exists such that @{text "P,e,h \<turnstile> (e, xs) \<leftrightarrow> ([], xs, 0, None)"} holds for all @{text "e"}\<close> 
   "P, insync\<^bsub>V\<^esub> (a) e, h \<turnstile> (insync\<^bsub>V\<^esub> (a) e, xs) \<leftrightarrow> ([], xs, 0, None)"
 
 

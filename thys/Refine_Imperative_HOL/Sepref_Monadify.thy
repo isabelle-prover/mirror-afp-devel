@@ -21,15 +21,15 @@ text {*
 *}
 
 
-definition SP -- \<open>Tag to protect content from further application of arity 
+definition SP \<comment> \<open>Tag to protect content from further application of arity 
   and combinator equations\<close>
   where [simp]: "SP x \<equiv> x"
 lemma SP_cong[cong]: "SP x \<equiv> SP x" by simp
 lemma PR_CONST_cong[cong]: "PR_CONST x \<equiv> PR_CONST x" by simp
 
-definition RCALL -- \<open>Tag that marks recursive call\<close>
+definition RCALL \<comment> \<open>Tag that marks recursive call\<close>
   where [simp]: "RCALL D \<equiv> D"
-definition EVAL -- \<open>Tag that marks evaluation of plain expression for monadify phase\<close>
+definition EVAL \<comment> \<open>Tag that marks evaluation of plain expression for monadify phase\<close>
   where [simp]: "EVAL x \<equiv> RETURN x"
 
 text {*
@@ -50,7 +50,7 @@ lemma monadify_simps:
   by simp_all
 
 definition [simp]: "PASS \<equiv> RETURN"
-  -- "Pass on value, invalidating old one"
+  \<comment> \<open>Pass on value, invalidating old one\<close>
 
 lemma remove_pass_simps:
   "Refine_Basic.bind$(PASS$x)$(\<lambda>\<^sub>2x. f x) \<equiv> f x" 
@@ -59,7 +59,7 @@ lemma remove_pass_simps:
 
 
 definition COPY :: "'a \<Rightarrow> 'a" 
-  -- \<open>Marks required copying of parameter\<close>
+  \<comment> \<open>Marks required copying of parameter\<close>
   where [simp]: "COPY x \<equiv> x"
 lemma RET_COPY_PASS_eq: "RETURN$(COPY$p) = PASS$p" by simp
 

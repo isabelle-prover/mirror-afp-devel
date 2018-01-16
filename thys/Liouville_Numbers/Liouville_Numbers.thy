@@ -106,7 +106,7 @@ proof -
   from \<open>algebraic x\<close> guess p by (elim algebraicE) note p = this
   define n where "n = degree p"
 
-  -- \<open>The derivative of @{term p} is bounded within @{term "{x-1..x+1}"}.\<close>
+  \<comment> \<open>The derivative of @{term p} is bounded within @{term "{x-1..x+1}"}.\<close>
   let ?f = "\<lambda>t. \<bar>poly (pderiv p) t\<bar>"
   define M where "M = (SUP t:{x-1..x+1}. ?f t)"
   define roots where "roots = {x. poly p x = 0} - {x}"
@@ -114,10 +114,10 @@ proof -
   define A_set where "A_set = {1, 1/M} \<union> {abs (x' - x) |x'. x' \<in> roots}"
   define A' where "A' = Min A_set"
   define A  where "A = A' / 2"
-  -- \<open>We define @{term A} to be a positive real number that is less than @{term 1}, 
+  \<comment> \<open>We define @{term A} to be a positive real number that is less than @{term 1}, 
       @{term "1/M"} and any distance from @{term x} to another root of @{term p}.\<close>
 
-  -- \<open>Properties of @{term M}, our upper bound for the derivative of @{term p}:\<close>
+  \<comment> \<open>Properties of @{term M}, our upper bound for the derivative of @{term p}:\<close>
   have "\<exists>s\<in>{x-1..x+1}. \<forall>y\<in>{x-1..x+1}. ?f s \<ge> ?f y"
     by (intro continuous_attains_sup) (auto intro!: continuous_intros)
   hence bdd: "bdd_above (?f ` {x-1..x+1})" by auto
@@ -142,7 +142,7 @@ proof -
   qed
 
 
-  -- \<open>Properties of @{term A}:\<close>
+  \<comment> \<open>Properties of @{term A}:\<close>
   from p poly_roots_finite[of p] have "finite A_set" 
     unfolding A_set_def roots_def by simp
   have "x \<notin> roots" unfolding roots_def by auto
@@ -158,7 +158,7 @@ proof -
     by fastforce+
 
 
-  -- \<open>Finally: no rational number can approximate @{term x} ``well enough''.\<close>
+  \<comment> \<open>Finally: no rational number can approximate @{term x} ``well enough''.\<close>
   have "\<forall>(a::int) (b :: int). b > 0 \<longrightarrow> \<bar>x - of_int a / of_int b\<bar> > A / of_int b ^ n"
   proof (intro allI impI, rule ccontr)
     fix a b :: int

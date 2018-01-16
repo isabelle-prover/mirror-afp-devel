@@ -19,7 +19,7 @@ locale primitive_matcher_generic =
         and Prot: "\<forall> p proto. \<beta> (Prot proto) p = bool_to_ternary (match_proto proto (p_proto p))"
    and Src_Ports: "\<forall> p proto ps. \<beta> (Src_Ports (L4Ports proto ps)) p = bool_to_ternary (proto = p_proto p \<and> p_sport p \<in> ports_to_set ps)"
    and Dst_Ports: "\<forall> p proto ps. \<beta> (Dst_Ports (L4Ports proto ps)) p = bool_to_ternary (proto = p_proto p \<and> p_dport p \<in> ports_to_set ps)"
-   -- "-m multiport --ports matches source or destination port"
+   \<comment> \<open>-m multiport --ports matches source or destination port\<close>
    and MultiportsPorts: "\<forall> p proto ps. \<beta> (MultiportPorts (L4Ports proto ps)) p = bool_to_ternary (proto = p_proto p \<and> (p_sport p \<in> ports_to_set ps \<or> p_dport p \<in> ports_to_set ps))"
     and L4_Flags: "\<forall> p flags. \<beta> (L4_Flags flags) p = bool_to_ternary (match_tcp_flags flags (p_tcp_flags p))"
     and CT_State: "\<forall> p S. \<beta> (CT_State S) p = bool_to_ternary (match_ctstate S (p_tag_ctstate p))"
@@ -105,7 +105,7 @@ begin
   lemma Extra_single:
     "matches (\<beta>, \<alpha>) (Match (Extra str)) a p \<longleftrightarrow> \<alpha> a p"
      by(simp add: Extra match_raw_ternary)
-  lemma Extra_single_not:  --\<open>ternary logic, @{text "\<not> unknown = unknown"}\<close>
+  lemma Extra_single_not:  \<comment> \<open>ternary logic, @{text "\<not> unknown = unknown"}\<close>
     "matches (\<beta>, \<alpha>) (MatchNot (Match (Extra str))) a p \<longleftrightarrow> \<alpha> a p"
      by(simp add: Extra matches_case_ternaryvalue_tuple)
 end

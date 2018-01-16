@@ -4,7 +4,7 @@ theory PermutationLemmas
 imports "HOL-Library.Permutation" "HOL-Library.Multiset"
 begin
 
-  -- "following function is very close to that in multisets- now we can make the connection that x <~~> y iff the multiset of x is the same as that of y"
+  \<comment> \<open>following function is very close to that in multisets- now we can make the connection that x <~~> y iff the multiset of x is the same as that of y\<close>
 
 subsection "perm, count equivalence"
 
@@ -136,7 +136,7 @@ lemma perm_weak_filter: assumes perm: "! xs ys. xs <~~> ys --> (P xs = P ys)"
   using perm_weak_filter'[OF perm weak, rule_format, of "[]", simplified]
   by blast
 
-  -- "right, now in a position to prove that in presence of perm, contr and weak, set x leq set y and x : ded implies y : ded"
+  \<comment> \<open>right, now in a position to prove that in presence of perm, contr and weak, set x leq set y and x : ded implies y : ded\<close>
 
 lemma perm_weak_contr_mono: 
   assumes perm: "! xs ys. xs <~~> ys --> (P xs = P ys)"

@@ -447,14 +447,14 @@ lemma size_less_than_median_of_medians_strong:
   shows   "size {#y \<in># mset xs. y < x#} \<le> m * (d div 2) + m div 2 * ((d + 1) div 2)"
 proof -
   define n where [simp]: "n = length xs"
-  -- \<open>The medians of the sublists\<close>
+  \<comment> \<open>The medians of the sublists\<close>
   define M where "M = mset (map med (chop d xs))"
   define YS where "YS = mset (chop d xs)"
-  -- \<open>The sublists with a smaller median than the median-of-medians @{term x} and the rest.\<close>
+  \<comment> \<open>The sublists with a smaller median than the median-of-medians @{term x} and the rest.\<close>
   define YS1 where "YS1 = filter_mset (\<lambda>ys. med ys < x) (mset (chop d xs))"
   define YS2 where "YS2 = filter_mset (\<lambda>ys. \<not>(med ys < x)) (mset (chop d xs))"
 
-  -- \<open>At most roughly half of the lists have a median that is smaller than @{term M}\<close>
+  \<comment> \<open>At most roughly half of the lists have a median that is smaller than @{term M}\<close>
   have "size YS1 = size (image_mset med YS1)" by simp
   also have "image_mset med YS1 = {#y \<in># mset (map med (chop d xs)). y < x#}"
     unfolding YS1_def by (subst filter_mset_image_mset [symmetric]) simp_all
@@ -468,7 +468,7 @@ proof -
     by (rule multiset_partition)
   finally have m_eq: "m = size YS1 + size YS2" by simp
 
-  -- \<open>We estimate the number of elements less than @{term x} by grouping them into elements
+  \<comment> \<open>We estimate the number of elements less than @{term x} by grouping them into elements
       coming from @{term YS1} and elements coming from @{term YS2}. In the first case, we 
       just note that no more than @{term d} elements can come from each sublist, whereas in
       the second case, we make the analysis more precise and note that only elements that are
@@ -489,7 +489,7 @@ proof -
   finally have "{# y \<in># mset xs. y < x #} \<subseteq># \<dots>" .
   hence "size {# y \<in># mset xs. y < x #} \<le> size \<dots>" by (rule size_mset_mono)
 
-  -- \<open>We do some further straightforward estimations and arrive at our goal.\<close>
+  \<comment> \<open>We do some further straightforward estimations and arrive at our goal.\<close>
   also have "\<dots> = (\<Sum>ys\<in>#YS1. length ys) + (\<Sum>x\<in>#YS2. size {#y \<in># mset x. y < med x#})"
     by (simp add: size_mset_sum_mset_distrib multiset.map_comp o_def)
   also have "(\<Sum>ys\<in>#YS1. length ys) \<le> (\<Sum>ys\<in>#YS1. d)"

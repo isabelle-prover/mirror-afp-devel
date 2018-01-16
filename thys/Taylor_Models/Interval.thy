@@ -413,7 +413,7 @@ qed
 
 lemma times_in_intervalE:
   fixes xy :: "'a :: {linordered_semiring, real_normed_algebra, linear_continuum_topology}"
-    \<comment>\<open>TODO: linear continuum topology is pretty strong\<close>
+    \<comment> \<open>TODO: linear continuum topology is pretty strong\<close>
   assumes "xy \<in>\<^sub>i X * Y"
   obtains x y where "xy = x * y" "x \<in>\<^sub>i X" "y \<in>\<^sub>i Y"
 proof -

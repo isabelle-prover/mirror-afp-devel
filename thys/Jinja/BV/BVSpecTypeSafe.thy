@@ -55,17 +55,17 @@ lemma uncaught_xcpt_correct:
   (is "\<And>f. ?correct (None, h, f#frs) \<Longrightarrow> ?correct (?find frs)")
 (*<*)
 proof (induct frs) 
-  -- "the base
- case is trivial as it should be"
+  \<comment> \<open>the base
+ case is trivial as it should be\<close>
   show "?correct (?find [])" by (simp add: correct_state_def)
 next
-  -- "we will need both forms @{text wf_jvm_prog} and @{text wf_prog} later"
+  \<comment> \<open>we will need both forms @{text wf_jvm_prog} and @{text wf_prog} later\<close>
   from wt obtain mb where wf: "wf_prog mb P" by (simp add: wf_jvm_prog_phi_def)
 
-  -- "the assumption for the cons case:"
+  \<comment> \<open>the assumption for the cons case:\<close>
   fix f f' frs' assume cr: "?correct (None, h, f#f'#frs')" 
 
-  -- "the induction hypothesis:"
+  \<comment> \<open>the induction hypothesis:\<close>
   assume IH: "\<And>f. ?correct (None, h, f#frs') \<Longrightarrow> ?correct (?find frs')" 
 
   from cr have cr': "?correct (None, h, f'#frs')"

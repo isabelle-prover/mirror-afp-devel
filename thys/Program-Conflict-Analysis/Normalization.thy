@@ -19,7 +19,7 @@ text {*
   It makes the formalization smoother, if we assume that every thread's execution begins with a non-returning call. For this purpose, we defined syntactic restrictions on flowgraphs already 
   (cf. Section~\ref{sec:Flowgraph:extra_asm}). We now show that these restrictions have the desired semantic effect. *}  
 
--- {* Procedures with isolated return nodes will never return *}
+\<comment> \<open>Procedures with isolated return nodes will never return\<close>
 lemma (in eflowgraph) iso_ret_no_ret: "!!u c. \<lbrakk> 
     isolated_ret fg p; 
     proc_of fg u = p; 
@@ -47,13 +47,13 @@ next
   qed
 qed
 
--- {* The first step of an initial procedure is a call *}  
+\<comment> \<open>The first step of an initial procedure is a call\<close>  
 lemma (in eflowgraph) initial_starts_with_call: "
   \<lbrakk> (([entry fg p],c),e,(s',c'))\<in>trss fg; initialproc fg p \<rbrakk> 
     \<Longrightarrow> \<exists>p'. e=LCall p' \<and> isolated_ret fg p'"
   by (auto elim!: trss.cases dest: initial_call_no_ret initial_no_ret entry_return_same_proc)
 
--- {* There are no same-level paths starting from the entry node of an initial procedure *}
+\<comment> \<open>There are no same-level paths starting from the entry node of an initial procedure\<close>
 lemma (in eflowgraph) no_sl_from_initial: 
   assumes A: "w\<noteq>[]" "initialproc fg p" 
              "(([entry fg p],c),w,([v],c'))\<in>trcl (trss fg)" 
@@ -68,7 +68,7 @@ proof -
   from iso_ret_no_ret[OF CE(2) _ _ this] CE(2)[unfolded isolated_ret_def] show ?thesis by simp
 qed
   
--- {* There are no same-level or returning paths starting from the entry node of an initial procedure *}
+\<comment> \<open>There are no same-level or returning paths starting from the entry node of an initial procedure\<close>
 lemma (in eflowgraph) no_retsl_from_initial: 
   assumes A: "w\<noteq>[]" 
              "initialproc fg p" 
@@ -110,7 +110,7 @@ inductive_set
              (('n list \<times> 'n conf) \<times> ('p,'ba) label list \<times> ('n list \<times> 'n conf)) set"
   for fg
   where
-  -- {* A macrostep transforms one thread by first calling a procedure and then doing a same-level path *}
+  \<comment> \<open>A macrostep transforms one thread by first calling a procedure and then doing a same-level path\<close>
   ntrs_step: "\<lbrakk>((u#r,ce),LCall p, (entry fg p # u' # r,ce))\<in>trss fg; 
                (([entry fg p],ce),w,([v],ce'))\<in>trcl (trss fg)\<rbrakk> \<Longrightarrow> 
              ((u#r,ce),LCall p#w,(v#u'#r,ce'))\<in>ntrs fg"
@@ -190,71 +190,71 @@ lemma (in eflowgraph) ntr_sl_move_left: "!!ce u r w r' ce'.
   \<rbrakk> \<Longrightarrow> \<exists>ww'. ({#[entry fg p]#}, ww',{# r'@r #}+ce')\<in>trcl (ntr fg)"
 proof (induct ww rule: rev_induct)
   case Nil note CC=this hence "u=entry fg p" by auto
-  -- "If the normalized path is empty, we get a contradiction, because there is no same-level path from the initial configuration of a thread"
+  \<comment> \<open>If the normalized path is empty, we get a contradiction, because there is no same-level path from the initial configuration of a thread\<close>
   with CC(2) no_retsl_from_initial[OF CC(5,3) _ CC(4)] have False by blast
   thus ?case ..
 next
   case (snoc ee ww) note IHP=this 
-  -- "In the induction step, we extract the last macrostep"
+  \<comment> \<open>In the induction step, we extract the last macrostep\<close>
   then obtain ch where SPLIT: "({#[entry fg p]#},ww,ch)\<in>trcl (ntr fg)" "(ch,ee,{# u#r #}+ce)\<in>ntr fg" by (fast dest: trcl_rev_uncons) 
-  -- "The last macrostep first executes a call and then a same-level path"
+  \<comment> \<open>The last macrostep first executes a call and then a same-level path\<close>
   from SPLIT(2) obtain q wws uh rh ceh uh' vt cet where 
     STEPFMT: "ee=LCall q#wws" "ch=add_mset (uh#rh) ceh" "add_mset (u#r) ce = add_mset (vt#uh'#rh) cet" "((uh#rh,ceh),LCall q,(entry fg q#uh'#rh,ceh))\<in>trss fg" "(([entry fg q],ceh),wws,([vt],cet))\<in>trcl (trss fg)"
     by (auto elim!: gtrE ntrs.cases[simplified])
-  -- "Make a case distinction whether the last step was executed on the same thread as the sl/ret-path or not"
+  \<comment> \<open>Make a case distinction whether the last step was executed on the same thread as the sl/ret-path or not\<close>
   from STEPFMT(3) show ?case proof (cases rule: mset_single_cases') 
-    -- "If the sl/ret path was executed on the same thread as the last macrostep"
+    \<comment> \<open>If the sl/ret path was executed on the same thread as the last macrostep\<close>
     case loc note CASE=this hence C': "u=vt" "r=uh'#rh" "ce=cet" by auto
-    -- "we append it to the last macrostep."
+    \<comment> \<open>we append it to the last macrostep.\<close>
     with STEPFMT(5) IHP(3) have NEWPATH: "(([entry fg q],ceh),wws@w,(r',ce'))\<in>trcl (trss fg)" by (simp add: trcl_concat)
-    -- "We then distinguish whether we appended a same-level or a returning path"
+    \<comment> \<open>We then distinguish whether we appended a same-level or a returning path\<close>
     show ?thesis proof (cases r')
-      -- "If we appended a same-level path"
-      case (Cons v') -- "Same-level path" with IHP(5) have CC: "r'=[v']" by auto
-      -- "The macrostep still ends with a same-level path"
+      \<comment> \<open>If we appended a same-level path\<close>
+      case (Cons v') \<comment> \<open>Same-level path\<close> with IHP(5) have CC: "r'=[v']" by auto
+      \<comment> \<open>The macrostep still ends with a same-level path\<close>
       with NEWPATH have "(([entry fg q],ceh),wws@w,([v'],ce'))\<in>trcl (trss fg)" by simp
-      -- "and thus remains a valid macrostep"
+      \<comment> \<open>and thus remains a valid macrostep\<close>
       from gtrI_s[OF ntrs_step[OF STEPFMT(4), simplified, OF this]] have "(add_mset (uh # rh) ceh, LCall q # wws@w, add_mset (v' # uh' # rh) ce') \<in> ntr fg" .
-      -- "that we can append to the prefix of the normalized path to get our proposition"
+      \<comment> \<open>that we can append to the prefix of the normalized path to get our proposition\<close>
       with STEPFMT(2) SPLIT(1) CC C'(2) have "({#[entry fg p]#},ww@[LCall q#wws@w],{# r'@r #} + ce')\<in>trcl (ntr fg)" by (auto simp add: trcl_rev_cons)
       thus ?thesis by blast
     next
-      -- "If we appended a returning path"
+      \<comment> \<open>If we appended a returning path\<close>
       case Nil note CC=this
-      -- "The macrostep now ends with a returning path, and thus gets a same-level path"
+      \<comment> \<open>The macrostep now ends with a returning path, and thus gets a same-level path\<close>
       have NEWSL: "(([uh], ceh), LCall q # wws @ w, [uh'], ce') \<in> trcl (trss fg)" proof -
         from STEPFMT(4) have "(([uh],ceh),LCall q,(entry fg q#[uh'],ceh))\<in>trss fg" by (auto elim!: trss.cases intro: trss.intros)
         also from trss_stack_comp[OF NEWPATH] CC have "((entry fg q#[uh'],ceh),wws@w,([uh'],ce'))\<in>trcl (trss fg)" by auto
         finally show ?thesis .
       qed
-      -- "Hence we can apply the induction hypothesis and get the proposition"
+      \<comment> \<open>Hence we can apply the induction hypothesis and get the proposition\<close>
       from IHP(1)[OF _ NEWSL] SPLIT STEPFMT(2) IHP(4) CC C'(2) show ?thesis by auto 
     qed
   next
-    -- "If the sl/ret path was executed on a different thread than the last macrostep"
+    \<comment> \<open>If the sl/ret path was executed on a different thread than the last macrostep\<close>
     case (env cc) note CASE=this
-    -- "we first look at the context after the last macrostep. It consists of the threads that already have been there and the threads that have been spawned by the last macrostep"
+    \<comment> \<open>we first look at the context after the last macrostep. It consists of the threads that already have been there and the threads that have been spawned by the last macrostep\<close>
     from STEPFMT(5) obtain cspt where CETFMT: "cet=cspt+ceh" "!!s. s \<in># cspt \<Longrightarrow> \<exists>p. s=[entry fg p] \<and> initialproc fg p" 
       by (unfold initialproc_def) (erule trss_c_cases, blast)
-    -- "The spawned threads do not hold any monitors yet"
+    \<comment> \<open>The spawned threads do not hold any monitors yet\<close>
     hence CSPT_NO_MON: "mon_c fg cspt = {}" by (simp add: c_of_initial_no_mon)
-    -- "We now distinguish whether the sl/ret path is executed on a thread that was just spawned or on a thread that was already there"
+    \<comment> \<open>We now distinguish whether the sl/ret path is executed on a thread that was just spawned or on a thread that was already there\<close>
     from CASE(1) CETFMT(1) have "u#r \<in># cspt+ceh" by auto 
     thus ?thesis proof (cases rule: mset_un_cases[cases set]) 
-      -- "The sl/ret path cannot have been executed on a freshly spawned thread due to the restrictions we made on the flowgraph"
-      case left -- "Thread was spawned" with CETFMT obtain q where "u=entry fg q" "r=[]" "initialproc fg q" by auto
+      \<comment> \<open>The sl/ret path cannot have been executed on a freshly spawned thread due to the restrictions we made on the flowgraph\<close>
+      case left \<comment> \<open>Thread was spawned\<close> with CETFMT obtain q where "u=entry fg q" "r=[]" "initialproc fg q" by auto
       with IHP(3,5,6) no_retsl_from_initial have False by blast 
       thus ?thesis ..
     next
-      -- "Hence let's assume the sl/ret path is executed on a thread that was already there before the last macrostep"
+      \<comment> \<open>Hence let's assume the sl/ret path is executed on a thread that was already there before the last macrostep\<close>
       case right note CC=this 
-      -- "We can write the configuration before the last macrostep in a way that one sees the thread that executed the sl/ret path"
+      \<comment> \<open>We can write the configuration before the last macrostep in a way that one sees the thread that executed the sl/ret path\<close>
       hence CEHFMT: "ceh={# u#r #}+(ceh-{# u#r #})" by auto
       have CHFMT: "ch = {# u#r #} + ({# uh#rh #}+(ceh-{# u#r #}))" proof -
         from CEHFMT STEPFMT(2) have "ch = {# uh#rh #} + ({# u#r #}+(ceh-{# u#r #}))" by simp
         thus ?thesis by (auto simp add: union_ac)
       qed
-      -- "There are not more monitors than after the last macrostep"
+      \<comment> \<open>There are not more monitors than after the last macrostep\<close>
       have MON_CE: "mon_c fg ({# uh#rh #}+(ceh-{# u#r #})) \<subseteq> mon_c fg ce" proof -
         have "mon_n fg uh \<subseteq> mon_n fg uh'" using STEPFMT(4) by (auto elim!: trss.cases dest: mon_n_same_proc edges_part)
         moreover have "mon_c fg (ceh-{#u#r#}) \<subseteq> mon_c fg cc" proof -
@@ -264,22 +264,22 @@ next
         qed
         ultimately show ?thesis using CASE(2) by (auto simp add: mon_c_unconc)
       qed
-      -- "The same-level path preserves the threads in its environment and the threads that it creates hold no monitors"
+      \<comment> \<open>The same-level path preserves the threads in its environment and the threads that it creates hold no monitors\<close>
       from IHP(3) obtain csp' where CE'FMT: "ce'=csp'+ce" "mon_c fg csp' = {}" by (-) (erule trss_c_cases, blast intro!: c_of_initial_no_mon)
-      -- "We can execute the sl/ret-path also from the configuration before the last step"
+      \<comment> \<open>We can execute the sl/ret-path also from the configuration before the last step\<close>
       from trss_xchange_context[OF _ MON_CE] IHP(3) CE'FMT have NSL: "(([u], {#uh # rh#} + (ceh - {#u # r#})), w, r', csp' + ({#uh # rh#} + (ceh - {#u # r#}))) \<in> trcl (trss fg)" by auto 
-      -- "And with the induction hypothesis we get a normalized path"
+      \<comment> \<open>And with the induction hypothesis we get a normalized path\<close>
       from IHP(1)[OF _ NSL IHP(4,5,6)] SPLIT(1) CHFMT obtain ww' where NNPATH: "({#[entry fg p]#}, ww', {#r' @ r#} + (csp' + ({#uh # rh#} + (ceh - {#u # r#})))) \<in> trcl (ntr fg)" by blast
-      -- "We now show that the last macrostep can also be executed from the new configuration, after the sl/ret path has been executed (on another thread)"
+      \<comment> \<open>We now show that the last macrostep can also be executed from the new configuration, after the sl/ret path has been executed (on another thread)\<close>
       have "({#r' @ r#} + (csp' + ({#uh # rh#} + (ceh - {#u # r#}))), ee, {#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#}))))) \<in> ntr fg"
       proof -
-        -- "This is because the sl/ret path has not allocated any monitors"
+        \<comment> \<open>This is because the sl/ret path has not allocated any monitors\<close>
         have MON_CEH: "mon_c fg ({#r' @ r#} + (csp' + (ceh - {#u # r#}))) \<subseteq> mon_c fg ceh" proof -
           from IHP(3,5) trss_bot_proc_const[of "[]" u ce w "[]" _ ce'] mon_n_same_proc have "mon_s fg r' \<subseteq> mon_n fg u" by (cases r') (simp, force)
-          moreover from CEHFMT have "mon_c fg ceh = mon_c fg ({#u # r#} + (ceh - {#u # r#}))" by simp -- {* Need to state this explicitly because of recursive simp rule @{thm CEHFMT} *}
+          moreover from CEHFMT have "mon_c fg ceh = mon_c fg ({#u # r#} + (ceh - {#u # r#}))" by simp \<comment> \<open>Need to state this explicitly because of recursive simp rule @{thm CEHFMT}\<close>
           ultimately show ?thesis using CE'FMT(2) by (auto simp add: mon_c_unconc mon_s_unconc)
         qed
-        -- "And we can reassemble the macrostep within the new context"
+        \<comment> \<open>And we can reassemble the macrostep within the new context\<close>
         note trss_xchange_context_s[OF _ MON_CEH, where csp="{#}", simplified, OF STEPFMT(4)]
         moreover from trss_xchange_context[OF _ MON_CEH, of "[entry fg q]" wws "[vt]" cspt] STEPFMT(5) CETFMT(1) have 
           "(([entry fg q], {#r' @ r#} + (csp' + (ceh - {#u # r#}))), wws, [vt], cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#})))) \<in> trcl (trss fg)" by blast
@@ -287,9 +287,9 @@ next
         ultimately have "((uh#rh,({#r' @ r#} + (csp' + (ceh - {#u # r#})))),ee,(vt#uh'#rh,cspt+({#r' @ r#} + (csp' + (ceh - {#u # r#})))))\<in>ntrs fg" by (auto intro: ntrs.intros)
         from gtrI_s[OF this] show ?thesis by (simp add: add_mset_commute)
       qed
-      -- "Finally we append the last macrostep to the normalized paths we obtained by the induction hypothesis"
+      \<comment> \<open>Finally we append the last macrostep to the normalized paths we obtained by the induction hypothesis\<close>
       from trcl_rev_cons[OF NNPATH this] have "({#[entry fg p]#}, ww' @ [ee], {#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#}))))) \<in> trcl (ntr fg)" .
-      -- "And show that we got the right configuration"
+      \<comment> \<open>And show that we got the right configuration\<close>
       moreover from CC CETFMT CASE(3)[symmetric] CASE(2) CE'FMT(1) have "{#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#})))) = {# r'@r #}+ce'" by (simp add: union_ac)
       ultimately show ?thesis by auto
     qed
@@ -307,32 +307,32 @@ lemma (in eflowgraph) normalize: "\<lbrakk>
     cstart={# [entry fg p] #}; 
     initialproc fg p \<rbrakk> 
   \<Longrightarrow> \<exists>w'. ({# [entry fg p] #},w',c')\<in>trcl (ntr fg)"
--- "The lemma is shown by induction on the reaching path"
+\<comment> \<open>The lemma is shown by induction on the reaching path\<close>
 proof (induct rule: trcl_rev_induct) 
-  -- "The empty case is trivial, as the empty path is also a valid normalized path"
+  \<comment> \<open>The empty case is trivial, as the empty path is also a valid normalized path\<close>
   case empty thus ?case by (auto intro: exI[of _ "[]"] ) 
 next
   case (snoc cstart w c e c') note IHP=this
-  -- "In the inductive case, we can assume that we have an already normalized path and need to append a last step"
+  \<comment> \<open>In the inductive case, we can assume that we have an already normalized path and need to append a last step\<close>
   then obtain w' where IHP': "({# [entry fg p] #},w',c)\<in>trcl (ntr fg)" "(c,e,c')\<in>tr fg" by blast
-  -- "We make explicit the thread on that this last step was executed"
+  \<comment> \<open>We make explicit the thread on that this last step was executed\<close>
   from gtr_find_thread[OF IHP'(2)] obtain s ce s' ce' where TSTEP: "c = add_mset s ce" "c' = add_mset s' ce'" "((s, ce), e, (s', ce')) \<in> trss fg" by blast 
-  -- "The proof is done by a case distinction whether the last step was a call or not"
+  \<comment> \<open>The proof is done by a case distinction whether the last step was a call or not\<close>
   {
-    -- "Last step was a procedure call"
+    \<comment> \<open>Last step was a procedure call\<close>
     fix q
     assume CASE: "e=LCall q" 
-    -- "As it is the last step, the procedure call will not return and thus is a valid macrostep"
+    \<comment> \<open>As it is the last step, the procedure call will not return and thus is a valid macrostep\<close>
     have "(c,LCall q # [], c')\<in>ntr fg" using TSTEP CASE by (auto elim!: trss.cases intro!: ntrs.intros gtrI_s trss.intros)
-    -- "That can be appended to the initial normalized path"
+    \<comment> \<open>That can be appended to the initial normalized path\<close>
     from trcl_rev_cons[OF IHP'(1) this] have ?case by blast 
   } moreover {
-    -- "Last step was no procedure call"
+    \<comment> \<open>Last step was no procedure call\<close>
     fix q a
     assume CASE: "e=LBase a \<or> e=LSpawn q \<or> e=LRet" 
-    -- "Then it is a same-level or returning path"
+    \<comment> \<open>Then it is a same-level or returning path\<close>
     with TSTEP(3) obtain u r r' where SLR: "s=u#r" "s'=r'@r" "length r'\<le>1" "(([u],ce),[e],(r',ce'))\<in>trcl (trss fg)" by (force elim!: trss.cases intro!: trss.intros) 
-     -- {* That can be appended to the normalized path using the @{thm ntr_sl_move_left} - lemma *}
+     \<comment> \<open>That can be appended to the normalized path using the @{thm ntr_sl_move_left} - lemma\<close>
     from ntr_sl_move_left[OF _ SLR(4) IHP(5) SLR(3)] IHP'(1) TSTEP(1) SLR(1) obtain ww' where "({#[entry fg p]#}, ww', {#r' @ r#} + ce') \<in> trcl (ntr fg)" by auto
     with SLR(2) TSTEP(2) have ?case by auto
   } ultimately show ?case by (cases e, auto)
@@ -470,7 +470,7 @@ lemma mon_loc_map_env[simp]: "mon_loc fg (map ENV w) = {}"
 lemma mon_env_map_loc[simp]: "mon_env fg (map LOC w) = {}"
   by (induct w) auto
 
--- "As monitors are syntactically bound to procedures, and each macrostep starts with a non-returning call, the set of monitors allocated during the execution of a normalized path is monotonically increasing"
+\<comment> \<open>As monitors are syntactically bound to procedures, and each macrostep starts with a non-returning call, the set of monitors allocated during the execution of a normalized path is monotonically increasing\<close>
 lemma (in flowgraph) ntrs_mon_increasing_s: "((s,c),e,(s',c'))\<in>ntrs fg 
   \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s' \<and> mon_c fg c = mon_c fg c'"
   apply (erule ntrs.cases)
@@ -791,14 +791,14 @@ lemma \<alpha>n_simps[simp]:
   "\<alpha>n fg (e#w) = (mon_e fg e, mon_w fg w)"
   by (unfold \<alpha>n_def, auto)
 
--- "We also need an abstraction function for normalized loc/env-paths"
+\<comment> \<open>We also need an abstraction function for normalized loc/env-paths\<close>
 definition 
   "\<alpha>nl fg e == \<alpha>n fg (le_rem_s e)"
 
 lemma \<alpha>nl_def': "\<alpha>nl fg == \<alpha>n fg \<circ> le_rem_s"
   by (rule eq_reflection[OF ext]) (auto simp add: \<alpha>nl_def)
 
--- {* These are some ad-hoc simplifications, with the aim at converting @{term "\<alpha>nl"} back to @{term "\<alpha>n"} *}
+\<comment> \<open>These are some ad-hoc simplifications, with the aim at converting @{term "\<alpha>nl"} back to @{term "\<alpha>n"}\<close>
 lemma \<alpha>nl_simps[simp]: 
   "\<alpha>nl fg (ENV x) = \<alpha>n fg x" 
   "\<alpha>nl fg (LOC x) = \<alpha>n fg x"
@@ -888,30 +888,30 @@ lemma (in flowgraph) ntr_split:
   mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {} \<and> 
   mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {} \<and> 
   (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg)"
-proof (induct w) -- {* The proof is done by induction on the path *}
-   -- "If the path is empty, the lemma is trivial"
+proof (induct w) \<comment> \<open>The proof is done by induction on the path\<close>
+   \<comment> \<open>If the path is empty, the lemma is trivial\<close>
   case Nil thus ?case by - (rule exI[of _ "ca"], rule exI[of _ "cb"], intro exI[of _ "[]"], auto simp add: valid_unconc)
 next
   case (Cons e w) note IHP=this
-   -- "We split a non-empty paths after the first (macro) step"
+   \<comment> \<open>We split a non-empty paths after the first (macro) step\<close>
   then obtain ch where SPLIT: "(ca+cb,e,ch)\<in>ntr fg" "(ch,w,c')\<in>trcl (ntr fg)" by (fast dest: trcl_uncons)
-  -- "Pick the stack that made the first step"
+  \<comment> \<open>Pick the stack that made the first step\<close>
   from gtrE[OF SPLIT(1)] obtain s ce sh ceh where NTRS: "ca+cb=add_mset s ce" "ch=add_mset sh ceh" "((s,ce),e,(sh,ceh))\<in>ntrs fg" . 
-  -- "And separate the threads that where spawned during the first step from the ones that where already there"
+  \<comment> \<open>And separate the threads that where spawned during the first step from the ones that where already there\<close>
   then obtain csp where CEHFMT: "ceh=csp+ce" "mon_c fg csp={}" by (auto elim!: ntrs_c_cases_s intro!: c_of_initial_no_mon) 
 
-  -- "Needed later: The first macrostep uses no monitors already owned by threads that where already there"
+  \<comment> \<open>Needed later: The first macrostep uses no monitors already owned by threads that where already there\<close>
   from ntrs_mon_e_no_ctx[OF NTRS(3)] have MONED: "mon_w fg e \<inter> mon_c fg ce = {}" by (auto simp add: mon_c_unconc) 
-  -- "Needed later: The intermediate configuration is valid"
+  \<comment> \<open>Needed later: The intermediate configuration is valid\<close>
   from ntr_valid_preserve_s[OF SPLIT(1) IHP(3)] have CHVALID: "valid fg ch" . 
 
-  -- "We make a case distinction whether the thread that made the first step was in the left or right part of the initial configuration"
+  \<comment> \<open>We make a case distinction whether the thread that made the first step was in the left or right part of the initial configuration\<close>
   from NTRS(1)[symmetric] show ?case proof (cases rule: mset_unplusm_dist_cases) 
-    -- "The first step was on a thread in the left part of the initial configuration"
+    \<comment> \<open>The first step was on a thread in the left part of the initial configuration\<close>
     case left note CASE=this 
-    -- "We can write the intermediate configuration so that it is suited for the induction hypothesis"
+    \<comment> \<open>We can write the intermediate configuration so that it is suited for the induction hypothesis\<close>
     with CEHFMT NTRS have CHFMT: "ch=({#sh#}+csp+(ca-{#s#}))+cb" by (simp add: union_ac) 
-    -- " and by the induction hypothesis, we split the path from the intermediate configuration"
+    \<comment> \<open>and by the induction hypothesis, we split the path from the intermediate configuration\<close>
     with IHP(1) SPLIT(2) CHVALID obtain ca' cb' wa wb where IHAPP: 
       "c'=ca'+cb'" 
       "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" 
@@ -921,7 +921,7 @@ next
       "(cb,wb,cb')\<in>trcl (ntr fg)" 
       by blast 
     moreover
-    -- "It remains to show that we can execute the first step with the right part of the configuration removed"
+    \<comment> \<open>It remains to show that we can execute the first step with the right part of the configuration removed\<close>
     have FIRSTSTEP: "(ca,e,{#sh#}+csp+(ca-{#s#}))\<in>ntr fg" 
     proof -
       from CASE(2) have "mon_c fg (ca-{#s#}) \<subseteq> mon_c fg ce" by (auto simp add: mon_c_unconc)
@@ -930,7 +930,7 @@ next
     qed
     with IHAPP(5) have "(ca,e#wa,ca')\<in>trcl (ntr fg)" by simp
     moreover
-    -- "and that we can prepend the first step to the interleaving"
+    \<comment> \<open>and that we can prepend the first step to the interleaving\<close>
     have "e#w \<in> e#wa \<otimes>\<^bsub>\<alpha>n fg\<^esub> wb" 
     proof -
       from ntrs_called_mon[OF NTRS(3)] have "fst (\<alpha>n fg e) \<subseteq> mon_s fg sh" .
@@ -938,7 +938,7 @@ next
       from cil_\<alpha>n_cons1[OF IHAPP(2) this] show ?thesis .
     qed
     moreover
-    -- "and that the monitors of the initial context does not interfere"
+    \<comment> \<open>and that the monitors of the initial context does not interfere\<close>
     have "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {}" "mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg (e#wa)) = {}" 
     proof -
       from ntr_mon_increasing_s[OF FIRSTSTEP] IHAPP(3) show "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {}" by auto
@@ -947,7 +947,7 @@ next
     qed
     ultimately show ?thesis by blast
   next
-    -- "The other case, that is if the first step was made on a thread in the right part of the configuration, is shown completely analogously"
+    \<comment> \<open>The other case, that is if the first step was made on a thread in the right part of the configuration, is shown completely analogously\<close>
     case right note CASE=this 
     with CEHFMT NTRS have CHFMT: "ch=ca+({#sh#}+csp+(cb-{#s#}))" by (simp add: union_ac)
     with IHP(1) SPLIT(2) CHVALID obtain ca' cb' wa wb where IHAPP: "c'=ca'+cb'" "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" "mon_c fg ca \<inter> (mon_c fg ({#sh#}+csp+(cb-{#s#})) \<union> mon_ww fg wb)={}" 
@@ -1029,7 +1029,7 @@ next
     from union_left_cancel[of "{#s#}" ceh "csp+ce"] HFMT(1) have CEHFMT: "ceh=csp+ce" by (auto simp add: union_ac)
     from HFMT(2) have CHNOMON: "mon_c fg csp = {}" by (blast intro!: c_of_initial_no_mon)
     from CASE(2)[symmetric] show ?thesis proof (cases rule: mset_unplusm_dist_cases)
-      -- {* Made an env-step in @{term c1}, this is considered the ,,left'' part. Apply induction hypothesis with original(!) local thread and the spawned threads on the left side *}
+      \<comment> \<open>Made an env-step in @{term c1}, this is considered the ,,left'' part. Apply induction hypothesis with original(!) local thread and the spawned threads on the left side\<close>
       case left 
       with HFMT(1) CASE(4) CEHFMT have CHFMT': "ch=(csp+{#ssh#}+(c1-{#ss#})) + c2" by (simp add: union_ac)
       have VALID: "valid fg ({#s#} + (csp+{#ssh#}+(c1-{#ss#})) + c2)" proof -
@@ -1061,7 +1061,7 @@ next
       moreover note IHAPP(2,4)
       ultimately show ?thesis by blast
     next
-      -- {* Made an env-step in @{term c2}. This is considered the right part. Induction hypothesis is applied with original local thread and the spawned threads on the right side *} 
+      \<comment> \<open>Made an env-step in @{term c2}. This is considered the right part. Induction hypothesis is applied with original local thread and the spawned threads on the right side\<close> 
       case right 
       with HFMT(1) CASE(4) CEHFMT have CHFMT': "ch=c1 + (csp+{#ssh#}+(c2-{#ss#}))" by (simp add: union_ac)
       have VALID: "valid fg ({#s#} + c1 + ((csp+{#ssh#}+(c2-{#ss#}))))" proof -
@@ -1096,7 +1096,7 @@ next
   qed
 qed
 
--- {* Just a check that @{thm [source] "flowgraph.ntrp_split"} is really a generalization of @{thm [source] "flowgraph.ntr_split"}: *}
+\<comment> \<open>Just a check that @{thm [source] "flowgraph.ntrp_split"} is really a generalization of @{thm [source] "flowgraph.ntr_split"}:\<close>
 lemma (in flowgraph) ntr_split': 
   assumes A: "(ca+cb,w,c')\<in>trcl (ntr fg)" 
   and VALID: "valid fg (ca+cb)" 
@@ -1119,15 +1119,15 @@ lemma (in flowgraph) ntr_unsplit:
   "mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa)={}"
   shows "(ca+cb,w,ca'+cb')\<in>trcl (ntr fg)"
 proof -
-  -- "We have to generalize and rewrite the goal, in order to apply Isabelle's induction method"
+  \<comment> \<open>We have to generalize and rewrite the goal, in order to apply Isabelle's induction method\<close>
   from A have "\<forall>ca cb. (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg) \<and> mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb)={} \<and> mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa)={} \<longrightarrow> 
     (ca+cb,w,ca'+cb')\<in>trcl (ntr fg)"
-  -- "We prove the generalized goal by induction over the structure of consistent interleaving"
+  \<comment> \<open>We prove the generalized goal by induction over the structure of consistent interleaving\<close>
   proof (induct rule: cil_set_induct_fix\<alpha>) 
-    -- "If both words are empty, the proposition is trivial"
+    \<comment> \<open>If both words are empty, the proposition is trivial\<close>
     case empty thus ?case by simp 
   next
-    -- "The first macrostep of the combined path was taken from the left operand of the interleaving"
+    \<comment> \<open>The first macrostep of the combined path was taken from the left operand of the interleaving\<close>
     case (left e w' w1' w2) thus ?case
     proof (intro allI impI, goal_cases) 
       case (1 ca cb)
@@ -1141,12 +1141,12 @@ proof -
         "(ca, e # w1', ca') \<in> trcl (ntr fg)" "(cb, w2, cb') \<in> trcl (ntr fg)"
         "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}"
         "mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg (e # w1')) = {}" by blast+
-      -- "Split the left path after the first step"
+      \<comment> \<open>Split the left path after the first step\<close>
       then obtain cah where SPLIT: "(ca,e,cah)\<in>ntr fg" "(cah,w1',ca')\<in>trcl (ntr fg)" by (fast dest: trcl_uncons)
-      -- "and combine the first step of the left path with the initial right context"
+      \<comment> \<open>and combine the first step of the left path with the initial right context\<close>
       from ntr_add_context_s[OF SPLIT(1), where cn=cb] I(7) have "(ca + cb, e, cah + cb) \<in> ntr fg" by auto 
       also
-      -- "The rest of the path is combined by using the induction hypothesis"
+      \<comment> \<open>The rest of the path is combined by using the induction hypothesis\<close>
       have "(cah + cb, w', ca' + cb') \<in> trcl (ntr fg)" proof - 
         from I(2,6,7) ntr_mon_s[OF SPLIT(1)] have MON_CAH: "mon_c fg cah \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}" by (cases e) (auto simp add: cil_\<alpha>n_cons_helper) 
         with I(7) have MON_CB: "mon_c fg cb \<inter> (mon_c fg cah \<union> mon_ww fg w1') = {}" by auto
@@ -1155,7 +1155,7 @@ proof -
       finally show ?case .
     qed
   next
-    -- "The first macrostep of the combined path was taken from the right path -- this case is done completely analogous"
+    \<comment> \<open>The first macrostep of the combined path was taken from the right path -- this case is done completely analogous\<close>
     case (right e w' w2' w1) thus ?case
     proof (intro allI impI, goal_cases) 
       case (1 ca cb)
@@ -1278,7 +1278,7 @@ theorem (in flowgraph) ntr_interleave: "valid fg (ca+cb) \<Longrightarrow>
     (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg))"
 by (blast intro!: ntr_split ntr_unsplit)
 
--- {* Here is the corresponding version for executions with an explicit local thread *}
+\<comment> \<open>Here is the corresponding version for executions with an explicit local thread\<close>
 theorem (in flowgraph) ntrp_interleave: 
   "valid fg ({#s#}+c1+c2) \<Longrightarrow> 
   ((s,c1+c2),w,(s',c'))\<in>trcl (ntrp fg) \<longleftrightarrow> 
@@ -1317,15 +1317,15 @@ lemma (in flowgraph) ntr_reverse_split: "!!w s' ce'. \<lbrakk>
     mon_c fg ce \<inter> (mon_s fg s \<union> mon_ww fg w1) = {} \<and> 
     ({#s#},w1,{#s'#}+ce1')\<in>trcl (ntr fg) \<and> 
     (ce,w2,ce2')\<in>trcl (ntr fg)" 
--- "The proof works by induction on the initial configuration. Note that configurations consist of finitely many threads only"
--- "FIXME: An induction over the size (rather then over the adding of some fixed element) may lead to a smoother proof here"
+\<comment> \<open>The proof works by induction on the initial configuration. Note that configurations consist of finitely many threads only\<close>
+\<comment> \<open>FIXME: An induction over the size (rather then over the adding of some fixed element) may lead to a smoother proof here\<close>
 proof (induct c rule: multiset_induct') 
-  -- "If the initial configuration is empty, we immediately get a contradiction"
+  \<comment> \<open>If the initial configuration is empty, we immediately get a contradiction\<close>
   case empty hence False by auto thus ?case .. 
 next
-  -- {* The initial configuration has the form @{text "{#s#}+ce"}.*}
+  \<comment> \<open>The initial configuration has the form @{text "{#s#}+ce"}.\<close>
   case (add ce s)
-  -- "We split the path by this initial configuration"
+  \<comment> \<open>We split the path by this initial configuration\<close>
   from ntr_split[OF add.prems(1,2)] obtain ce1' ce2' w1 w2 where 
     SPLIT: "add_mset s' ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" 
     "mon_c fg ce \<inter> (mon_s fg s\<union>mon_ww fg w1) = {}" 
@@ -1333,15 +1333,15 @@ next
     "({#s#},w1,ce1')\<in>trcl (ntr fg)" 
     "(ce,w2,ce2')\<in>trcl (ntr fg)" 
     by auto 
-  -- {* And then check whether splitting off @{term s} was the right choice *}
+  \<comment> \<open>And then check whether splitting off @{term s} was the right choice\<close>
   from SPLIT(1) show ?case proof (cases rule: mset_unplusm_dist_cases) 
-    -- {* Our choice was correct, @{term s'} is generated by some descendant of @{term s}"*}
+    \<comment> \<open>Our choice was correct, @{term s'} is generated by some descendant of @{term s}"\<close>
     case left 
     with SPLIT show ?thesis by fastforce 
   next
-    -- {* Our choice was not correct, @{term s'} is generated by some descendant of @{term ce} *}
+    \<comment> \<open>Our choice was not correct, @{term s'} is generated by some descendant of @{term ce}\<close>
     case right with SPLIT(6) have C: "(ce,w2,{#s'#}+(ce2'-{#s'#}))\<in>trcl (ntr fg)" by auto 
-    -- {* In this case we apply the induction hypothesis to the path from @{term ce}*}
+    \<comment> \<open>In this case we apply the induction hypothesis to the path from @{term ce}\<close>
     from add.prems(2) have VALID: "valid fg ce" "mon_s fg s \<inter> mon_c fg ce = {}" by (simp_all add: valid_unconc)
     from add.hyps[OF C VALID(1)] obtain st cet w21 w22 ce21' ce22' where 
       IHAPP: 
@@ -1353,7 +1353,7 @@ next
       "({#st#},w21,{#s'#}+ce21')\<in>trcl (ntr fg)" 
       "(cet,w22,ce22')\<in>trcl (ntr fg)" by blast 
     
-    -- {* And finally we add the path from @{term s} again. This requires some monitor sorting and the associativity of the consistent interleaving operator. *}
+    \<comment> \<open>And finally we add the path from @{term s} again. This requires some monitor sorting and the associativity of the consistent interleaving operator.\<close>
     from cil_assoc2 [of w w1 _ w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" by (auto simp add: cil_commute)
     from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have COMBINE: "(add_mset s cet, wl, ce1' + ce22') \<in> trcl (ntr fg)" using ntr_unsplit[OF CASSOC(2) SPLIT(5) IHAPP(7)] by (auto simp add: mon_c_unconc mon_ww_cil Int_Un_distrib2) 
     moreover from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have "mon_s fg st \<inter> (mon_c fg ({#s#}+cet) \<union> mon_ww fg wl) = {}" "mon_c fg ({#s#}+cet) \<inter> (mon_s fg st \<union> mon_ww fg w21) = {}" by (auto simp add: mon_c_unconc mon_ww_cil)

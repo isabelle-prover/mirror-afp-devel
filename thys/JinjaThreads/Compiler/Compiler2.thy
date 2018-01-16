@@ -29,7 +29,7 @@ where
 | "compE2 ({i:T=vo; e}) = (case vo of None \<Rightarrow> [] | \<lfloor>v\<rfloor> \<Rightarrow> [Push v, Store i]) @ compE2 e"
 | "compE2 (sync\<^bsub>V\<^esub> (o') e) = compE2 o' @ [Dup, Store V, MEnter] @
                            compE2 e @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]"
-| "compE2 (insync\<^bsub>V\<^esub> (a) e) = [Goto 1]" -- "Define insync sensibly"
+| "compE2 (insync\<^bsub>V\<^esub> (a) e) = [Goto 1]" \<comment> \<open>Define insync sensibly\<close>
 | "compE2 (e1;;e2) = compE2 e1 @ [Pop] @ compE2 e2"
 | "compE2 (if (e) e\<^sub>1 else e\<^sub>2) =
           (let cnd   = compE2 e;

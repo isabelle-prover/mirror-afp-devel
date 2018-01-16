@@ -14,8 +14,8 @@ begin
 
 subsection {* Correct composition of components *}
 
---"the lemmas  AbstrLevels X Y with corresponding proofs can be composend"
---"and proven automatically, their proofs are identical"
+\<comment> \<open>the lemmas  AbstrLevels X Y with corresponding proofs can be composend\<close>
+\<comment> \<open>and proven automatically, their proofs are identical\<close>
 lemma AbstrLevels_A1_A11:
   assumes "sA1 \<in> AbstrLevel i"
   shows "sA11 \<notin> AbstrLevel i"
@@ -441,8 +441,8 @@ lemma correctCompositionDiffLevelsA4: "correctCompositionDiffLevels sA4"
 (*<*)by (simp add: correctCompositionDiffLevels_def AbstrLevels_A4_A41 AbstrLevels_A4_A42)(*>*)
 
 
---"lemmas  correctCompositionDiffLevelsX and corresponding proofs"
---"are identical for all elementary components, they can be constructed automatically" 
+\<comment> \<open>lemmas  correctCompositionDiffLevelsX and corresponding proofs\<close>
+\<comment> \<open>are identical for all elementary components, they can be constructed automatically\<close> 
 lemma correctCompositionDiffLevelsA5: "correctCompositionDiffLevels sA5"
 (*<*)by (simp add: correctCompositionDiffLevels_def) (*>*)
 
@@ -850,7 +850,7 @@ by (simp add: VARusefulSYSTEM_def, auto, case_tac v, auto)
 
 subsection {* Elementary components *}
 
---"On the abstraction level 0 only the components sA5 and sA6 are elementary"
+\<comment> \<open>On the abstraction level 0 only the components sA5 and sA6 are elementary\<close>
 
 lemma NOT_elementaryCompDD_sA1:  "\<not> elementaryCompDD sA1" 
 proof -
@@ -915,7 +915,7 @@ proof -
   thus ?thesis by  (simp add: elementaryCompDD_def)  
 qed
 
---"On the abstraction level 1 all components are elementary"
+\<comment> \<open>On the abstraction level 1 all components are elementary\<close>
 
 lemma elementaryCompDD_sA11:  "elementaryCompDD sA11" 
 by  (simp add: elementaryCompDD_def)
@@ -977,7 +977,7 @@ by  (simp add: elementaryCompDD_def)
 
 subsection {* Source components *}
 
---"Abstraction level 0"
+\<comment> \<open>Abstraction level 0\<close>
 
 lemma A5_NotDSource_level0: "isNotDSource level0 sA5"
 by (simp add: isNotDSource_def, auto,  case_tac "Z", auto)
@@ -1169,7 +1169,7 @@ proof -
 qed
  
 
---"Abstraction level 1"
+\<comment> \<open>Abstraction level 1\<close>
 
 lemma A12_NotSource_level1: "isNotDSource level1 sA12"
 by (simp add: isNotDSource_def, auto,  case_tac "Z", auto)
@@ -1559,7 +1559,7 @@ lemma SourcesA93_L1: "Sources level1 sA93 = {sA6, sA72, sA82}"
 by (metis DSourcesA93_L1 SourcesA82_L1 Sources_singleDSource Un_insert_right insert_is_Un)   
 
 
---"Abstraction level 2"
+\<comment> \<open>Abstraction level 2\<close>
 
 lemma SourcesS1_L2: "Sources level2 sS1 = {}"
 proof -

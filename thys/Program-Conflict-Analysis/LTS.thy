@@ -99,7 +99,7 @@ lemma trcl_cons2: "\<lbrakk> (c,e,ch)\<in>T; (ch,f,c')\<in>T \<rbrakk> \<Longrig
   by auto
 
 subsubsection "Transitivity reasoning setup"
-declare trcl_cons2[trans]    -- {* It's important that this is declared before @{thm [source] trcl_concat}, because we want @{thm [source] trcl_concat} to be tried first by the transitivity reasoner *}
+declare trcl_cons2[trans]    \<comment> \<open>It's important that this is declared before @{thm [source] trcl_concat}, because we want @{thm [source] trcl_concat} to be tried first by the transitivity reasoner\<close>
 declare cons[trans]
 declare trcl_concat[trans]
 declare trcl_rev_cons[trans]

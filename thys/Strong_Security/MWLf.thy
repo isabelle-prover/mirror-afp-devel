@@ -6,9 +6,9 @@ theory MWLf
 imports Types
 begin
 
---"SYNTAX"
+\<comment> \<open>SYNTAX\<close>
 
--- "Commands for the multi-threaded while language with fork (to instantiate 'com)"
+\<comment> \<open>Commands for the multi-threaded while language with fork (to instantiate 'com)\<close>
 datatype ('exp, 'id) MWLfCom 
   = Skip ("skip")
   | Assign "'id" "'exp" 
@@ -26,14 +26,14 @@ datatype ('exp, 'id) MWLfCom
   | Fork "('exp, 'id) MWLfCom" "(('exp, 'id) MWLfCom) list"
        ("fork _ _" [70,70] 70)
 
---"SEMANTICS"
+\<comment> \<open>SEMANTICS\<close>
 
 locale MWLf_semantics =
 fixes E :: "('exp, 'id, 'val) Evalfunction"
 and BMap :: "'val \<Rightarrow> bool"
 begin
 
--- "steps semantics, set of deterministic steps from single threads to either single threads or thread pools"
+\<comment> \<open>steps semantics, set of deterministic steps from single threads to either single threads or thread pools\<close>
 inductive_set 
 MWLfSteps_det :: "('exp, 'id, 'val, ('exp, 'id) MWLfCom) TSteps"
 and MWLfSteps_det' :: "('exp, 'id, 'val, ('exp, 'id) MWLfCom) TSteps_curry"
@@ -62,7 +62,7 @@ inductive_cases MWLfSteps_det_cases:
 "\<langle>while b do c od,m\<rangle> \<rightarrow> \<langle>W,m'\<rangle>"
 "\<langle>fork c V,m\<rangle> \<rightarrow> \<langle>W,m'\<rangle>"
 
--- "non-deterministic, possibilistic system step (added for intuition, not used in the proofs)"
+\<comment> \<open>non-deterministic, possibilistic system step (added for intuition, not used in the proofs)\<close>
 inductive_set
 MWLfSteps_ndet :: "('exp, 'id, 'val, ('exp,'id) MWLfCom) TPSteps"
 and MWLfSteps_ndet' :: "('exp, 'id, 'val, ('exp,'id) MWLfCom) TPSteps_curry"

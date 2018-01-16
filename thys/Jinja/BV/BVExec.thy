@@ -207,7 +207,7 @@ proof
   let ?\<Phi> = "\<lambda>C M. let (C,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)) = method P C M in 
               SOME \<tau>s. wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
 
-  -- "soundness"
+  \<comment> \<open>soundness\<close>
   assume wt: "wf_jvm_prog\<^sub>k P"
   hence "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P"
     apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)    
@@ -218,7 +218,7 @@ proof
     done
   thus "wf_jvm_prog P" by (unfold wf_jvm_prog_def) fast
 next
-  -- "completeness"
+  \<comment> \<open>completeness\<close>
   assume wt: "wf_jvm_prog P"
   thus "wf_jvm_prog\<^sub>k P"
     apply (unfold wf_jvm_prog_def wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)

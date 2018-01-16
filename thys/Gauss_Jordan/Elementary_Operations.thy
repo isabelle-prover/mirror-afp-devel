@@ -466,7 +466,7 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
       case False
       show ?thesis by (rule sum.neutral, auto simp add: False s_not_b a_noteq_b)
     next         
-      case True --"This case is different from the other cases"                  
+      case True \<comment> \<open>This case is different from the other cases\<close>                  
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
       have sum_a: "sum ?f {a} = -q"  unfolding True using s_not_b using a_noteq_b by auto
       have sum_b: "sum ?f {b} = q" unfolding True using s_not_b using a_noteq_b by auto
@@ -539,7 +539,7 @@ next
       case False
       show ?thesis by (rule sum.neutral, auto simp add: False s_not_b a_noteq_b)
     next         
-      case True --"This case is different from the other cases"                  
+      case True \<comment> \<open>This case is different from the other cases\<close>                  
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
       have sum_a: "sum ?f {a} = q"  unfolding True using s_not_b using a_noteq_b by auto
       have sum_b: "sum ?f {b} = -q" unfolding True using s_not_b using a_noteq_b by auto
@@ -849,7 +849,7 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
       case False
       show ?thesis by (rule sum.neutral, auto simp add: False b_not_j)
     next
-      case True --"This case is different from the other cases"
+      case True \<comment> \<open>This case is different from the other cases\<close>
       let ?f="\<lambda>k. (if k = a then 0 + 1 * q else if b = k then 1 else 0) *
         (if j = a then (if k = a then 1 else 0) + (if k = b then 1 else 0) * - q else if k = j then 1 else 0)"
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
@@ -920,7 +920,7 @@ next
       case False
       show ?thesis by (rule sum.neutral, auto simp add: False b_not_j)
     next
-      case True --"This case is different from the other cases"
+      case True \<comment> \<open>This case is different from the other cases\<close>
       let ?f="\<lambda>k. (if k = a then (0::'a) + (1::'a) * - q else if b = k then 1::'a else (0::'a)) *
         (if j = a then (if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * q else if k = j then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto

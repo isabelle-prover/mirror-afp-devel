@@ -137,6 +137,6 @@ proof
   thus "winning_path p P" using winning_path_LCons by (metis P_LCons Ptl_not_null)
 qed
 
-end -- "context ParityGame"
+end \<comment> \<open>context ParityGame\<close>
 
 end

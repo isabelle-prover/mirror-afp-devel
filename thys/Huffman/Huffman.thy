@@ -1264,12 +1264,12 @@ lemma weight_swapLeaves:
    else
      weight (swapLeaves t w\<^sub>a a w\<^sub>b b) = weight t"
 proof (induct t a rule: tree_induct_consistent)
-  -- {* {\sc Base case:}\enspace $t = @{term "Leaf w b"}$ *}
+  \<comment> \<open>{\sc Base case:}\enspace $t = @{term "Leaf w b"}$\<close>
   case base thus ?case by clarsimp
 next
-  -- {* {\sc Induction step:}\enspace $t = @{term "InnerNode w t\<^sub>1 t\<^sub>2"}$ *}
-  -- {* {\sc Subcase 1:}\enspace $a$ belongs to @{term t\<^sub>1} but not to
-        @{term t\<^sub>2} *}
+  \<comment> \<open>{\sc Induction step:}\enspace $t = @{term "InnerNode w t\<^sub>1 t\<^sub>2"}$\<close>
+  \<comment> \<open>{\sc Subcase 1:}\enspace $a$ belongs to @{term t\<^sub>1} but not to
+        @{term t\<^sub>2}\<close>
   case (step\<^sub>1 w t\<^sub>1 t\<^sub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^sub>1"
@@ -1279,8 +1279,8 @@ next
     assume "b \<notin> alphabet t\<^sub>1" thus ?case using step\<^sub>1 by auto
   qed
 next
-  -- {* {\sc Subcase 2:}\enspace $a$ belongs to @{term t\<^sub>2} but not to
-        @{term t\<^sub>1} *}
+  \<comment> \<open>{\sc Subcase 2:}\enspace $a$ belongs to @{term t\<^sub>2} but not to
+        @{term t\<^sub>1}\<close>
   case (step\<^sub>2 w t\<^sub>1 t\<^sub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^sub>1"
@@ -1290,8 +1290,8 @@ next
     assume "b \<notin> alphabet t\<^sub>1" thus ?case using step\<^sub>2 by auto
   qed
 next
-  -- {* {\sc Subcase 3:}\enspace $a$ belongs to neither @{term t\<^sub>1} nor
-        @{term t\<^sub>2} *}
+  \<comment> \<open>{\sc Subcase 3:}\enspace $a$ belongs to neither @{term t\<^sub>1} nor
+        @{term t\<^sub>2}\<close>
   case (step\<^sub>3 w t\<^sub>1 t\<^sub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^sub>1"
@@ -2203,13 +2203,13 @@ lemma splitLeaf_huffman_commute:
 "\<lbrakk>consistent\<^sub>F ts; ts \<noteq> []; a \<in> alphabet\<^sub>F ts; freq\<^sub>F ts a = w\<^sub>a + w\<^sub>b\<rbrakk> \<Longrightarrow>
  splitLeaf (huffman ts) w\<^sub>a a w\<^sub>b b = huffman (splitLeaf\<^sub>F ts w\<^sub>a a w\<^sub>b b)"
 proof (induct ts rule: huffman.induct)
-  -- {* {\sc Base case 1:}\enskip $@{term ts} = []$ *}
+  \<comment> \<open>{\sc Base case 1:}\enskip $@{term ts} = []$\<close>
   case 3 thus ?case by simp
 next
-  -- {* {\sc Base case 2:}\enskip $@{term ts} = @{term "[t]"}$ *}
+  \<comment> \<open>{\sc Base case 2:}\enskip $@{term ts} = @{term "[t]"}$\<close>
   case (1 t) thus ?case by simp
 next
-  -- {* {\sc Induction step:}\enskip $@{term ts} = @{term "t\<^sub>1 # t\<^sub>2 # ts"}$ *}
+  \<comment> \<open>{\sc Induction step:}\enskip $@{term ts} = @{term "t\<^sub>1 # t\<^sub>2 # ts"}$\<close>
   case (2 t\<^sub>1 t\<^sub>2 ts)
   note hyps = 2
   show ?case
@@ -2283,7 +2283,7 @@ is optimum, which follows from the induction hypothesis.\strut
 *}
 
 proof (induct ts rule: length_induct)
-  -- {* \sc Complete induction step *}
+  \<comment> \<open>\sc Complete induction step\<close>
   case (1 ts)
   note hyps = 1
   show ?case

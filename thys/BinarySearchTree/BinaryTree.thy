@@ -22,26 +22,26 @@ datatype 'a Tree = Tip | T "'a Tree" 'a "'a Tree"
 
 primrec
   setOf :: "'a Tree => 'a set" 
-  -- {* set abstraction of a tree *} 
+  \<comment> \<open>set abstraction of a tree\<close> 
 where
   "setOf Tip = {}"
 | "setOf (T t1 x t2) = (setOf t1) Un (setOf t2) Un {x}"
 
 type_synonym
-  -- {* we require index to have an irreflexive total order < *}
-  -- {* apart from that, we do not rely on index being int *}
+  \<comment> \<open>we require index to have an irreflexive total order <\<close>
+  \<comment> \<open>apart from that, we do not rely on index being int\<close>
   index = int 
 
-type_synonym -- {* hash function type *}
+type_synonym \<comment> \<open>hash function type\<close>
   'a hash = "'a => index"
 
 definition eqs :: "'a hash => 'a => 'a set" where
-  -- {* equivalence class of elements with the same hash code *}
+  \<comment> \<open>equivalence class of elements with the same hash code\<close>
   "eqs h x == {y. h y = h x}"
 
 primrec
   sortedTree :: "'a hash => 'a Tree => bool"
-  -- {* check if a tree is sorted *}
+  \<comment> \<open>check if a tree is sorted\<close>
 where
   "sortedTree h Tip = True"
 | "sortedTree h (T t1 x t2) = 
@@ -75,21 +75,21 @@ by (induct t, auto)
 lemma tlookup_some:
      "sortedTree h t & (tlookup h k t = Some x) --> x:setOf t & h x = k"
 apply (induct t)
-  --{*Just auto will do it, but very slowly*}
+  \<comment> \<open>Just auto will do it, but very slowly\<close>
 apply (simp)
 apply (clarify, auto)
 apply (simp_all split: if_split_asm) 
 done
 
 definition sorted_distinct_pred :: "'a hash => 'a => 'a => 'a Tree => bool" where
-  -- {* No two elements have the same hash code *}
+  \<comment> \<open>No two elements have the same hash code\<close>
   "sorted_distinct_pred h a b t == sortedTree h t & 
       a:setOf t & b:setOf t & h a = h b --> 
       a = b"
 
 declare sorted_distinct_pred_def [simp]
 
--- {* for case analysis on three cases *}
+\<comment> \<open>for case analysis on three cases\<close>
 lemma cases3: "[| C1 ==> G; C2 ==> G; C3 ==> G;
                   C1 | C2 | C3 |] ==> G"
 by auto
@@ -111,14 +111,14 @@ proof (induct t)
     from s have s1: "sortedTree h t1" by auto
     from s have s2: "sortedTree h t2" by auto
     show "a = b"
-    -- {* We consider 9 cases for the position of a and b are in the tree *}
+    \<comment> \<open>We consider 9 cases for the position of a and b are in the tree\<close>
     proof -
-    -- {* three cases for a *}
+    \<comment> \<open>three cases for a\<close>
     from adef have "a : setOf t1 | a = x | a : setOf t2" by auto
     moreover { assume adef1: "a : setOf t1"
       have ?thesis
       proof - 
-      -- {* three cases for b *}
+      \<comment> \<open>three cases for b\<close>
       from bdef have "b : setOf t1 | b = x | b : setOf t2" by auto
       moreover { assume bdef1: "b : setOf t1"
         from s1 adef1 bdef1 hahb h1 have ?thesis by simp }
@@ -129,41 +129,41 @@ proof (induct t)
         from adef1 s have o1: "h a < h x" by auto
         from bdef1 s have o2: "h x < h b" by auto
         from o1 o2 have "h a < h b" by simp
-        from this hahb have ?thesis by simp } -- {* case impossible *}
+        from this hahb have ?thesis by simp } \<comment> \<open>case impossible\<close>
       ultimately show ?thesis by blast
       qed 
     } 
     moreover { assume adef1: "a = x"
       have ?thesis 
       proof -
-      -- {* three cases for b *}
+      \<comment> \<open>three cases for b\<close>
       from bdef have "b : setOf t1 | b = x | b : setOf t2" by auto
       moreover { assume bdef1: "b : setOf t1"
         from this s have "h b < h x" by auto
         from this adef1 have "h b < h a" by auto
-        from hahb this have ?thesis by simp } -- {* case impossible *}
+        from hahb this have ?thesis by simp } \<comment> \<open>case impossible\<close>
       moreover { assume bdef1: "b = x"
         from adef1 bdef1 have ?thesis by simp }
       moreover { assume bdef1: "b : setOf t2"
         from this s have "h x < h b" by auto
         from this adef1 have "h a < h b" by simp
-        from hahb this have ?thesis by simp } -- {* case impossible *}
+        from hahb this have ?thesis by simp } \<comment> \<open>case impossible\<close>
       ultimately show ?thesis by blast
       qed
     }
     moreover { assume adef1: "a : setOf t2"
       have ?thesis
       proof -
-      -- {* three cases for b *}
+      \<comment> \<open>three cases for b\<close>
       from bdef have "b : setOf t1 | b = x | b : setOf t2" by auto
       moreover { assume bdef1: "b : setOf t1"
         from bdef1 s have o1: "h b < h x" by auto
         from adef1 s have o2: "h x < h a" by auto
         from o1 o2 have "h b < h a" by simp
-        from this hahb have ?thesis by simp } -- {* case impossible *}
+        from this hahb have ?thesis by simp } \<comment> \<open>case impossible\<close>
       moreover { assume bdef1: "b = x"
         from adef1 bdef1 s have "h b < h a" by auto
-        from this hahb have ?thesis by simp } -- {* case impossible *}
+        from this hahb have ?thesis by simp } \<comment> \<open>case impossible\<close>
       moreover { assume bdef1: "b : setOf t2"
         from s2 adef1 bdef1 hahb h2 have ?thesis by simp }
       ultimately show ?thesis by blast
@@ -174,7 +174,7 @@ proof (induct t)
   qed
 qed
 
-lemma tlookup_finds: -- {* if a node is in the tree, lookup finds it *}
+lemma tlookup_finds: \<comment> \<open>if a node is in the tree, lookup finds it\<close>
 "sortedTree h t & y:setOf t --> 
  tlookup h (h y) t = Some y"
 proof safe
@@ -273,9 +273,9 @@ lemma binsert_set: "sortedTree h t -->
                     setOf (binsert h e t) = (setOf t) - (eqs h e) Un {e}" 
       (is "?P t")
 proof (induct t)
-  -- {* base case *}
+  \<comment> \<open>base case\<close>
   show "?P Tip" by (simp add: eqs_def)
-  -- {* inductition step *}
+  \<comment> \<open>inductition step\<close>
   fix t1 :: "'a Tree" assume h1: "?P t1"
   fix t2 :: "'a Tree" assume h2: "?P t2"
   fix x :: 'a
@@ -400,21 +400,21 @@ text {* These proofs are influenced by those in @{text BinaryTree_Tactic} *}
 
 primrec
   rm :: "'a hash => 'a Tree => 'a"
-  -- {* rightmost element of a tree *}
+  \<comment> \<open>rightmost element of a tree\<close>
 where
 "rm h (T t1 x t2) =
   (if t2=Tip then x else rm h t2)"
 
 primrec
   wrm :: "'a hash => 'a Tree => 'a Tree"
-  -- {* tree without the rightmost element *}
+  \<comment> \<open>tree without the rightmost element\<close>
 where
 "wrm h (T t1 x t2) =
   (if t2=Tip then t1 else (T t1 x (wrm h t2)))"
 
 primrec
   wrmrm :: "'a hash => 'a Tree => 'a Tree * 'a"
-  -- {* computing rightmost and removal in one pass *}
+  \<comment> \<open>computing rightmost and removal in one pass\<close>
 where
 "wrmrm h (T t1 x t2) =
   (if t2=Tip then (t1,x)
@@ -423,7 +423,7 @@ where
 
 primrec
   remove :: "'a hash => 'a => 'a Tree => 'a Tree"
-   -- {* removal of an element from the tree *}
+   \<comment> \<open>removal of an element from the tree\<close>
 where
   "remove h e Tip = Tip"
 | "remove h e (T t1 x t2) = 

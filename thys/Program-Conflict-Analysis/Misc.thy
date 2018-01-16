@@ -531,7 +531,7 @@ subsubsection {* Miscellaneous *}
   text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
   lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2" 
   proof -
-    { -- "The proof is done by induction over the sum of the lengths of the lists"
+    { \<comment> \<open>The proof is done by induction over the sum of the lengths of the lists\<close>
       fix n
       have "!!w1 w2. \<lbrakk>length w1 + length w2 = n; P [] []; !!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2; !!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2') \<rbrakk> \<Longrightarrow> P w1 w2 " 
         apply (induct n)

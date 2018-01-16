@@ -13,70 +13,70 @@ begin
 
 subsection {* Definition of the FOCUS stream types *}
 
--- "Finite timed FOCUS stream"
+\<comment> \<open>Finite timed FOCUS stream\<close>
 type_synonym 'a fstream = "'a list list"
 
--- "Infinite timed FOCUS stream"
+\<comment> \<open>Infinite timed FOCUS stream\<close>
 type_synonym 'a istream = "nat \<Rightarrow> 'a list"
 
--- "Infinite untimed FOCUS stream"
+\<comment> \<open>Infinite untimed FOCUS stream\<close>
 type_synonym 'a iustream = "nat \<Rightarrow> 'a"
 
--- "FOCUS stream (general)"
+\<comment> \<open>FOCUS stream (general)\<close>
 datatype 'a stream = 
-          FinT "'a fstream" -- "finite timed streams"
-        | FinU "'a list" -- "finite untimed streams"
-        | InfT "'a istream" -- "infinite timed streams"
-        | InfU "'a iustream" -- "infinite untimed streams"
+          FinT "'a fstream" \<comment> \<open>finite timed streams\<close>
+        | FinU "'a list" \<comment> \<open>finite untimed streams\<close>
+        | InfT "'a istream" \<comment> \<open>infinite timed streams\<close>
+        | InfU "'a iustream" \<comment> \<open>infinite untimed streams\<close>
 
 
 subsection {* Definitions of operators *}
   
--- "domain of an infinite untimed stream"
+\<comment> \<open>domain of an infinite untimed stream\<close>
 definition
    infU_dom :: "natInf set"
  where
   "infU_dom \<equiv> {x. \<exists> i. x = (Fin i)} \<union> {\<infinity>}"
   
--- "domain of a finite untimed stream (using natural numbers enriched by Infinity)"
+\<comment> \<open>domain of a finite untimed stream (using natural numbers enriched by Infinity)\<close>
 definition
    finU_dom_natInf :: "'a list \<Rightarrow> natInf set"
    where
   "finU_dom_natInf s \<equiv> {x. \<exists> i. x = (Fin i) \<and> i < (length s)}"
 
--- "domain of a finite untimed stream"
+\<comment> \<open>domain of a finite untimed stream\<close>
 primrec
 finU_dom :: "'a list \<Rightarrow> nat set"
 where
   "finU_dom [] = {}" |
   "finU_dom (x#xs) = {length xs} \<union> (finU_dom xs)"
 
--- "range of a finite timed stream"
+\<comment> \<open>range of a finite timed stream\<close>
 primrec
   finT_range :: "'a fstream \<Rightarrow> 'a set"
 where  
   "finT_range [] = {}" |
   "finT_range (x#xs) = (set x) \<union> finT_range xs"
 
--- "range of a finite untimed stream"
+\<comment> \<open>range of a finite untimed stream\<close>
 definition
    finU_range :: "'a list \<Rightarrow> 'a set"
 where
   "finU_range x \<equiv> set x"
 
--- "range of an infinite timed stream"
+\<comment> \<open>range of an infinite timed stream\<close>
 definition
    infT_range :: "'a istream \<Rightarrow> 'a set"
 where
   "infT_range s \<equiv> {y. \<exists> i::nat. y mem (s i)}"
 
--- "range of a finite untimed stream"
+\<comment> \<open>range of a finite untimed stream\<close>
 definition
    infU_range :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set"
 where
   "infU_range s \<equiv> { y. \<exists> i::nat. y = (s i) }"
 
--- "range of a (general) stream"
+\<comment> \<open>range of a (general) stream\<close>
 definition
    stream_range :: "'a stream \<Rightarrow> 'a set"
 where
@@ -86,30 +86,30 @@ where
      | InfT x \<Rightarrow> infT_range x  
      | InfU x \<Rightarrow> infU_range x" 
 
--- "finite timed stream that consists of n empty time intervals" 
+\<comment> \<open>finite timed stream that consists of n empty time intervals\<close> 
 primrec
    nticks :: "nat \<Rightarrow> 'a fstream"
 where
   "nticks 0 = []" |
   "nticks (Suc i) = [] # (nticks i)"
 
--- "removing the first element from an infinite stream"
--- "in the case of an untimed stream: removing the first data element"  
--- "in the case of a timed stream: removing the first time interval" 
+\<comment> \<open>removing the first element from an infinite stream\<close>
+\<comment> \<open>in the case of an untimed stream: removing the first data element\<close>  
+\<comment> \<open>in the case of a timed stream: removing the first time interval\<close> 
 definition
    inf_tl :: "(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a)"
 where
   "inf_tl s \<equiv> (\<lambda> i. s (Suc i))"
 
--- "removing i first elements from an infinite stream s"  
--- "in the case of an untimed stream: removing i first data elements"  
--- "in the case of a timed stream: removing i first time intervals" 
+\<comment> \<open>removing i first elements from an infinite stream s\<close>  
+\<comment> \<open>in the case of an untimed stream: removing i first data elements\<close>  
+\<comment> \<open>in the case of a timed stream: removing i first time intervals\<close> 
 definition
    inf_drop :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a)"
 where
   "inf_drop i s \<equiv>  \<lambda> j. s (i+j)"  
 
--- "finding the first nonempty time interval in a finite timed stream"
+\<comment> \<open>finding the first nonempty time interval in a finite timed stream\<close>
 primrec
  fin_find1nonemp :: "'a fstream \<Rightarrow> 'a list"
 where 
@@ -119,7 +119,7 @@ where
       then fin_find1nonemp xs
       else x )"
 
--- "finding the first nonempty time interval in an infinite timed stream"
+\<comment> \<open>finding the first nonempty time interval in an infinite timed stream\<close>
 definition 
   inf_find1nonemp :: "'a istream \<Rightarrow> 'a list"
 where
@@ -129,7 +129,7 @@ where
     then s (LEAST i. s i \<noteq> [])
     else [] )"
 
--- "finding the index of the first nonempty time interval in a finite timed stream"
+\<comment> \<open>finding the index of the first nonempty time interval in a finite timed stream\<close>
 primrec
  fin_find1nonemp_index :: "'a fstream \<Rightarrow> nat"
 where
@@ -139,7 +139,7 @@ where
       then Suc (fin_find1nonemp_index xs)
       else 0 )"
 
--- "finding the index of the first nonempty time interval in an infinite timed stream"
+\<comment> \<open>finding the index of the first nonempty time interval in an infinite timed stream\<close>
 definition
   inf_find1nonemp_index :: "'a istream \<Rightarrow> nat"
 where
@@ -149,14 +149,14 @@ where
     then (LEAST i. s i \<noteq> [])
     else 0 )"
 
--- "length of a finite timed stream: number of data elements in this stream"  
+\<comment> \<open>length of a finite timed stream: number of data elements in this stream\<close>  
 primrec
   fin_length :: "'a fstream \<Rightarrow> nat"
 where
   "fin_length [] = 0" |
   "fin_length (x#xs) = (length x) + (fin_length xs)"
 
--- "length of a (general) stream"
+\<comment> \<open>length of a (general) stream\<close>
 definition
    stream_length :: "'a stream \<Rightarrow> natInf"
 where
@@ -167,7 +167,7 @@ where
               | (InfT x) \<Rightarrow> \<infinity> 
               | (InfU x) \<Rightarrow> \<infinity>"
 
--- "removing the first k elements from a finite (nonempty) timed stream"
+\<comment> \<open>removing the first k elements from a finite (nonempty) timed stream\<close>
 axiomatization
   fin_nth :: "'a fstream \<Rightarrow> nat \<Rightarrow> 'a"
 where 
@@ -179,7 +179,7 @@ where
                then nth hds k
                else fin_nth tls (k - length hds) ))"
 
--- "removing i first data elements from an infinite timed stream s"   
+\<comment> \<open>removing i first data elements from an infinite timed stream s\<close>   
 primrec
   inf_nth :: "'a istream \<Rightarrow> nat \<Rightarrow> 'a"
 where 
@@ -192,7 +192,7 @@ where
                      (LEAST i. (s i) \<noteq> []) s)) k )
                else inf_nth (inf_tl s) k ))"
 
--- "removing the first k data elements from a (general) stream"
+\<comment> \<open>removing the first k data elements from a (general) stream\<close>
 definition
     stream_nth :: "'a stream \<Rightarrow> nat \<Rightarrow> 'a"
 where
@@ -202,14 +202,14 @@ where
                  | (InfT x) \<Rightarrow> inf_nth x k 
                  | (InfU x) \<Rightarrow> x k"
 
--- "prefix of an infinite stream"
+\<comment> \<open>prefix of an infinite stream\<close>
 primrec 
   inf_prefix :: "'a list \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> bool"
 where   
   "inf_prefix [] s k = True" |
   "inf_prefix (x#xs) s k = ( (x = (s k)) \<and> (inf_prefix xs s (Suc k)) )"
 
--- "prefix of a finite stream"
+\<comment> \<open>prefix of a finite stream\<close>
 primrec 
   fin_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where   
@@ -219,7 +219,7 @@ where
       then False
       else (x = (hd s)) \<and> (fin_prefix xs s) )"
 
--- "prefix of a (general) stream"
+\<comment> \<open>prefix of a (general) stream\<close>
 definition
    stream_prefix :: "'a stream \<Rightarrow> 'a stream \<Rightarrow> bool"
 where
@@ -246,7 +246,7 @@ where
                  | (InfT y) \<Rightarrow> False
                  | (InfU y) \<Rightarrow> (\<forall> i. x i = y i) )  )"
 
--- "truncating a finite stream after the n-th element"
+\<comment> \<open>truncating a finite stream after the n-th element\<close>
 primrec  
 fin_truncate :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"
 where 
@@ -255,8 +255,8 @@ where
       (case i of 0 \<Rightarrow> [] 
          | (Suc n) \<Rightarrow> x # (fin_truncate xs n))"
 
--- "truncating a finite stream after the n-th element"
--- "n is of type of natural numbers enriched by Infinity"
+\<comment> \<open>truncating a finite stream after the n-th element\<close>
+\<comment> \<open>n is of type of natural numbers enriched by Infinity\<close>
 definition
   fin_truncate_plus :: "'a list \<Rightarrow> natInf \<Rightarrow> 'a list"
  where
@@ -265,15 +265,15 @@ definition
   case n of (Fin i) \<Rightarrow> fin_truncate s i
            |  \<infinity>     \<Rightarrow> s "
 
--- "truncating an infinite stream after the n-th element"
+\<comment> \<open>truncating an infinite stream after the n-th element\<close>
 primrec
   inf_truncate :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a list"
 where   
    "inf_truncate s 0 = [ s 0 ]" |
    "inf_truncate s (Suc k) = (inf_truncate s k) @ [s (Suc k)]"
 
--- "truncating an infinite stream after the n-th element"
--- "n is of type of natural numbers enriched by Infinity"
+\<comment> \<open>truncating an infinite stream after the n-th element\<close>
+\<comment> \<open>n is of type of natural numbers enriched by Infinity\<close>
 definition
   inf_truncate_plus :: "'a istream \<Rightarrow> natInf \<Rightarrow> 'a stream" 
  where
@@ -282,7 +282,7 @@ definition
   case n of (Fin i) \<Rightarrow> FinT (inf_truncate s i)
            | \<infinity>     \<Rightarrow> InfT s"
 
--- "concatanation of a finite and an infinite stream"
+\<comment> \<open>concatanation of a finite and an infinite stream\<close>
 definition
     fin_inf_append :: 
         "'a list \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a)"
@@ -292,33 +292,33 @@ where
          then (nth us i)
          else s (i - (length us)) ))" 
  
--- "insuring that the infinite timed stream is time-synchronous"
+\<comment> \<open>insuring that the infinite timed stream is time-synchronous\<close>
 definition
    ts :: "'a istream \<Rightarrow> bool"
 where
 "ts s \<equiv>  \<forall> i. (length (s i) = 1)"
 
--- "insuring that each time interval of an infinite timed stream contains at most n data elements"
+\<comment> \<open>insuring that each time interval of an infinite timed stream contains at most n data elements\<close>
 definition
   msg :: "nat \<Rightarrow> 'a istream \<Rightarrow> bool"
 where
  "msg n s \<equiv>  \<forall> t. length (s t) \<le> n"
 
--- "insuring that each time interval of a finite timed stream contains at most n data elements"
+\<comment> \<open>insuring that each time interval of a finite timed stream contains at most n data elements\<close>
 primrec
   fin_msg :: "nat \<Rightarrow> 'a list list \<Rightarrow> bool"
 where   
  "fin_msg n [] = True" |
  "fin_msg n (x#xs) = (((length x) \<le> n) \<and> (fin_msg n xs))" 
 
--- "making a finite timed stream to a finite untimed stream"
+\<comment> \<open>making a finite timed stream to a finite untimed stream\<close>
 definition
    fin_make_untimed :: "'a fstream  \<Rightarrow> 'a list"
 where
   "fin_make_untimed x \<equiv>  concat x"
 
--- "making an infinite timed stream to an infinite untimed stream"
--- "(auxiliary function)"
+\<comment> \<open>making an infinite timed stream to an infinite untimed stream\<close>
+\<comment> \<open>(auxiliary function)\<close>
 primrec
   inf_make_untimed1 :: "'a istream \<Rightarrow> nat \<Rightarrow> 'a "
 where 
@@ -334,8 +334,8 @@ inf_make_untimed1_Suc:
                            s)) k )
              else inf_make_untimed1 (inf_tl s) k ))"
              
--- "making an infinite timed stream to an infinite untimed stream"
--- "(main function)"
+\<comment> \<open>making an infinite timed stream to an infinite untimed stream\<close>
+\<comment> \<open>(main function)\<close>
 definition
    inf_make_untimed :: "'a istream \<Rightarrow> (nat \<Rightarrow> 'a) "
 where
@@ -343,7 +343,7 @@ where
    \<equiv> 
    \<lambda> i. inf_make_untimed1 s i"
 
--- "making a (general) stream untimed"
+\<comment> \<open>making a (general) stream untimed\<close>
 definition
     make_untimed :: "'a stream  \<Rightarrow> 'a stream"
 where
@@ -358,8 +358,8 @@ where
               | (InfU x) \<Rightarrow> InfU x"
 
 
--- "finding the index of the time interval that contains the k-th data element"
--- "defined over a finite timed stream"
+\<comment> \<open>finding the index of the time interval that contains the k-th data element\<close>
+\<comment> \<open>defined over a finite timed stream\<close>
 primrec
   fin_tm :: "'a fstream \<Rightarrow> nat \<Rightarrow> nat"
 where
@@ -371,7 +371,7 @@ where
            then (Suc 0)
            else Suc(fin_tm xs (k - length x))))"
 
--- "auxiliary lemma for the definition of the truncate operator"
+\<comment> \<open>auxiliary lemma for the definition of the truncate operator\<close>
 lemma inf_tm_hint1:
   assumes "i2 = Suc i - length a"
       and "\<not> Suc i \<le> length a" 
@@ -381,31 +381,31 @@ using assms
 by auto
 
 
--- "filtering a finite timed stream"
+\<comment> \<open>filtering a finite timed stream\<close>
 definition
    finT_filter :: "'a set => 'a fstream => 'a fstream"   
 where 
   "finT_filter m s \<equiv>  map (\<lambda> s. filter (\<lambda> y. y \<in> m) s) s"
 
--- "filtering an infinite timed stream"
+\<comment> \<open>filtering an infinite timed stream\<close>
 definition
    infT_filter :: "'a set => 'a istream => 'a istream"  
 where
   "infT_filter m s \<equiv>  (\<lambda>i.( filter (\<lambda> x. x \<in> m) (s i)))"
 
--- "removing duplications from a finite timed stream"
+\<comment> \<open>removing duplications from a finite timed stream\<close>
 definition
    finT_remdups :: "'a fstream => 'a fstream"
 where  
   "finT_remdups s \<equiv>  map (\<lambda> s. remdups s) s"
 
--- "removing duplications from an infinite timed stream"
+\<comment> \<open>removing duplications from an infinite timed stream\<close>
 definition
    infT_remdups :: "'a istream => 'a istream"  
 where
   "infT_remdups s \<equiv>  (\<lambda>i.( remdups (s i)))"
 
--- "removing duplications from a time interval of a stream"
+\<comment> \<open>removing duplications from a time interval of a stream\<close>
 primrec
    fst_remdups :: "'a list \<Rightarrow> 'a list"
 where
@@ -417,7 +417,7 @@ where
            then fst_remdups xs
            else (x#xs)))"
 
--- "time interval operator"
+\<comment> \<open>time interval operator\<close>
 definition
   ti :: "'a fstream \<Rightarrow> nat \<Rightarrow> 'a list"
 where
@@ -426,14 +426,14 @@ where
      then []
      else (nth s i))"
 
--- "insuring that a sheaf of channels is correctly defined"
+\<comment> \<open>insuring that a sheaf of channels is correctly defined\<close>
 definition
    CorrectSheaf :: "nat \<Rightarrow> bool"
 where
   "CorrectSheaf n \<equiv> 0 < n"
  
--- "insuring that all channels in a sheaf are disjunct"
--- "indices in the sheaf are represented using an extra specified set"
+\<comment> \<open>insuring that all channels in a sheaf are disjunct\<close>
+\<comment> \<open>indices in the sheaf are represented using an extra specified set\<close>
 definition
    inf_disjS :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a istream) \<Rightarrow> bool"
 where
@@ -442,8 +442,8 @@ where
    \<forall> (t::nat) i j. (i:IdSet) \<and> (j:IdSet) \<and>  
    ((nS i) t) \<noteq> []  \<longrightarrow> ((nS j) t) = []"  
 
--- "insuring that all channels in a sheaf are disjunct"
--- "indices in the sheaf are represented using natural numbers"
+\<comment> \<open>insuring that all channels in a sheaf are disjunct\<close>
+\<comment> \<open>indices in the sheaf are represented using natural numbers\<close>
 definition              
    inf_disj :: "nat \<Rightarrow> (nat \<Rightarrow> 'a istream) \<Rightarrow> bool"
 where
@@ -453,8 +453,8 @@ where
    i < n  \<and>  j < n \<and> i \<noteq> j \<and> ((nS i) t) \<noteq> []  \<longrightarrow> 
    ((nS j) t) = []"  
 
--- "taking the prefix of n data elements from a finite timed stream"
--- "(defined over natural numbers)"
+\<comment> \<open>taking the prefix of n data elements from a finite timed stream\<close>
+\<comment> \<open>(defined over natural numbers)\<close>
 fun fin_get_prefix  :: "('a fstream \<times> nat) \<Rightarrow> 'a fstream"
 where
   "fin_get_prefix([], n) = []" |
@@ -463,8 +463,8 @@ where
        then x # fin_get_prefix(xs, (i - (length x)))
        else [take i x] ) "
 
--- "taking the prefix of n data elements from a finite timed stream"
--- "(defined over natural numbers enriched by Infinity)"
+\<comment> \<open>taking the prefix of n data elements from a finite timed stream\<close>
+\<comment> \<open>(defined over natural numbers enriched by Infinity)\<close>
 definition
   fin_get_prefix_plus :: "'a fstream \<Rightarrow> natInf \<Rightarrow> 'a fstream"
 where
@@ -473,7 +473,7 @@ where
   case n of (Fin i) \<Rightarrow> fin_get_prefix(s, i)
            | \<infinity>      \<Rightarrow> s "
 
--- "auxiliary lemmas "
+\<comment> \<open>auxiliary lemmas\<close>
 lemma length_inf_drop_hint1: 
   assumes "s k \<noteq> []"
   shows    "length (inf_drop k s 0) \<noteq> 0"
@@ -485,8 +485,8 @@ lemma length_inf_drop_hint2:
   \<longrightarrow> Suc i - length (inf_drop 0 s 0) < Suc i)"
   by (simp add: inf_drop_def list_length_hint1)
 
--- "taking the prefix of n data elements from an infinite timed stream"
--- "(defined over natural numbers)"
+\<comment> \<open>taking the prefix of n data elements from an infinite timed stream\<close>
+\<comment> \<open>(defined over natural numbers)\<close>
 fun infT_get_prefix  :: "('a istream \<times> nat) \<Rightarrow> 'a fstream"
 where   
   "infT_get_prefix(s, 0) = []"
@@ -511,8 +511,8 @@ where
          )
      )"
 
--- "taking the prefix of n data elements from an infinite untimed stream"
--- "(defined over natural numbers)"
+\<comment> \<open>taking the prefix of n data elements from an infinite untimed stream\<close>
+\<comment> \<open>(defined over natural numbers)\<close>
 primrec
   infU_get_prefix  :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a list"
 where
@@ -520,8 +520,8 @@ where
   "infU_get_prefix s (Suc i) 
          = (infU_get_prefix s i) @ [s i]"
 
--- "taking the prefix of n data elements from an infinite timed stream"
--- "(defined over natural numbers enriched by Infinity)"
+\<comment> \<open>taking the prefix of n data elements from an infinite timed stream\<close>
+\<comment> \<open>(defined over natural numbers enriched by Infinity)\<close>
 definition
   infT_get_prefix_plus :: "'a istream \<Rightarrow> natInf \<Rightarrow> 'a stream"
 where
@@ -530,8 +530,8 @@ where
   case n of (Fin i) \<Rightarrow> FinT (infT_get_prefix(s, i)) 
            | \<infinity>     \<Rightarrow> InfT s"
 
--- "taking the prefix of n data elements from an infinite untimed stream"
--- "(defined over natural numbers enriched by Infinity)"
+\<comment> \<open>taking the prefix of n data elements from an infinite untimed stream\<close>
+\<comment> \<open>(defined over natural numbers enriched by Infinity)\<close>
 definition
   infU_get_prefix_plus :: "(nat \<Rightarrow> 'a) \<Rightarrow> natInf \<Rightarrow> 'a stream"
 where
@@ -540,8 +540,8 @@ where
   case n of (Fin i) \<Rightarrow> FinU (infU_get_prefix s i) 
            | \<infinity>     \<Rightarrow> InfU s"
 
--- "taking the prefix of n data elements from an infinite stream"
--- "(defined over natural numbers enriched by Infinity)"
+\<comment> \<open>taking the prefix of n data elements from an infinite stream\<close>
+\<comment> \<open>(defined over natural numbers enriched by Infinity)\<close>
 definition
   take_plus :: "natInf \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
@@ -550,8 +550,8 @@ where
   case n of (Fin i) \<Rightarrow> (take i s) 
            | \<infinity>      \<Rightarrow> s"
 
--- "taking the prefix of n data elements from a (general) stream"
--- "(defined over natural numbers enriched by Infinity)"
+\<comment> \<open>taking the prefix of n data elements from a (general) stream\<close>
+\<comment> \<open>(defined over natural numbers enriched by Infinity)\<close>
 definition 
    get_prefix :: "'a stream \<Rightarrow> natInf \<Rightarrow> 'a stream"
 where
@@ -561,7 +561,7 @@ where
                  | (InfT x) \<Rightarrow> infT_get_prefix_plus x k
                  | (InfU x) \<Rightarrow> infU_get_prefix_plus x k"
 
--- "merging time intervals of two finite timed streams"
+\<comment> \<open>merging time intervals of two finite timed streams\<close>
 primrec
    fin_merge_ti :: "'a fstream \<Rightarrow> 'a fstream \<Rightarrow> 'a fstream"
 where
@@ -570,7 +570,7 @@ where
     ( case y of [] \<Rightarrow> (x#xs)
          | (z#zs) \<Rightarrow> (x@z) # (fin_merge_ti xs zs))"
 
--- "merging time intervals of two infinite timed streams"
+\<comment> \<open>merging time intervals of two infinite timed streams\<close>
 definition
  inf_merge_ti :: "'a istream \<Rightarrow> 'a istream \<Rightarrow> 'a istream"
 where
@@ -578,7 +578,7 @@ where
   \<equiv> 
   \<lambda> i. (x i)@(y i)"
 
--- "the last time interval of a finite timed stream"
+\<comment> \<open>the last time interval of a finite timed stream\<close>
 primrec
   fin_last_ti :: "('a list) list \<Rightarrow> nat \<Rightarrow> 'a list"
 where   
@@ -588,8 +588,8 @@ where
        then s!(Suc i) 
        else fin_last_ti s i)"
 
--- "the last nonempty time interval of a finite timed stream"
--- "(can be applied to the streams which time intervals are empty from some moment)"
+\<comment> \<open>the last nonempty time interval of a finite timed stream\<close>
+\<comment> \<open>(can be applied to the streams which time intervals are empty from some moment)\<close>
 primrec
   inf_last_ti :: "'a istream \<Rightarrow> nat \<Rightarrow> 'a list"
 where  

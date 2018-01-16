@@ -900,7 +900,7 @@ lemma seq_nhop_quality_increases':
                  and \<open>nsqn (rt (\<sigma> sip)) oip = osn \<longrightarrow> the (dhops (rt (\<sigma> sip)) oip) \<le> hops\<close>
                 show ?thesis by auto
               next
-                -- "alternative to using @{text sip_not_ip}"
+                \<comment> \<open>alternative to using @{text sip_not_ip}\<close>
                 assume [simp]: "sip = i"
                 have "?rt1 = rt (\<sigma> i)"
                 proof (rule update_cases_kD, simp_all)

@@ -20,30 +20,30 @@ lemma [code_unfold]:
 datatype ExtendedBool = TRUE | FALSE | UNDEF
 
 record State = 
-  -- {* Satisfiability flag: UNDEF, TRUE or FALSE *}
+  \<comment> \<open>Satisfiability flag: UNDEF, TRUE or FALSE\<close>
 "getSATFlag" :: ExtendedBool
-  -- {* Formula *} 
+  \<comment> \<open>Formula\<close> 
 "getF"       :: Formula      
-  -- {* Assertion Trail *}
+  \<comment> \<open>Assertion Trail\<close>
 "getM"       :: LiteralTrail 
-  -- {* Conflict flag *}
-"getConflictFlag"   :: bool   -- {* raised iff M falsifies F *}
-  -- {* Conflict clause index *} 
-"getConflictClause" :: nat    -- {* corresponding clause from F is false in M *}
-  -- {* Unit propagation queue *}
+  \<comment> \<open>Conflict flag\<close>
+"getConflictFlag"   :: bool   \<comment> \<open>raised iff M falsifies F\<close>
+  \<comment> \<open>Conflict clause index\<close> 
+"getConflictClause" :: nat    \<comment> \<open>corresponding clause from F is false in M\<close>
+  \<comment> \<open>Unit propagation queue\<close>
 "getQ" :: "Literal list"      
-  -- {* Unit propagation graph *}
-"getReason" :: "Literal \<Rightarrow> nat option" -- {* index of a clause that is a reason for propagation of a literal *}
-  -- {* Two-watch literal scheme *}
-  -- {* clause indices instead of clauses are used *}
-"getWatch1" :: "nat \<Rightarrow> Literal option"  -- {* First watch of a clause *}
-"getWatch2" :: "nat \<Rightarrow> Literal option"  -- {* Second watch of a clause *}
-"getWatchList" :: "Literal \<Rightarrow> nat list" -- {* Watch list of a given literal *}
-  -- {* Conflict analysis data structures *}
-"getC"   :: Clause             -- {* Conflict analysis clause - always false in M *}
-"getCl"  :: Literal            -- {* Last asserted literal in (opposite getC) *}
-"getCll" :: Literal            -- {* Second last asserted literal in (opposite getC) *}
-"getCn"  :: nat                -- {* Number of literals of (opposite getC) on the (currentLevel M) *}
+  \<comment> \<open>Unit propagation graph\<close>
+"getReason" :: "Literal \<Rightarrow> nat option" \<comment> \<open>index of a clause that is a reason for propagation of a literal\<close>
+  \<comment> \<open>Two-watch literal scheme\<close>
+  \<comment> \<open>clause indices instead of clauses are used\<close>
+"getWatch1" :: "nat \<Rightarrow> Literal option"  \<comment> \<open>First watch of a clause\<close>
+"getWatch2" :: "nat \<Rightarrow> Literal option"  \<comment> \<open>Second watch of a clause\<close>
+"getWatchList" :: "Literal \<Rightarrow> nat list" \<comment> \<open>Watch list of a given literal\<close>
+  \<comment> \<open>Conflict analysis data structures\<close>
+"getC"   :: Clause             \<comment> \<open>Conflict analysis clause - always false in M\<close>
+"getCl"  :: Literal            \<comment> \<open>Last asserted literal in (opposite getC)\<close>
+"getCll" :: Literal            \<comment> \<open>Second last asserted literal in (opposite getC)\<close>
+"getCn"  :: nat                \<comment> \<open>Number of literals of (opposite getC) on the (currentLevel M)\<close>
 
 definition
 setWatch1 :: "nat \<Rightarrow> Literal \<Rightarrow> State \<Rightarrow> State"

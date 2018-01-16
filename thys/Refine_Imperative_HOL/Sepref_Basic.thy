@@ -23,12 +23,12 @@ text \<open>We tag every refinement assertion with the tag @{text hn_ctxt}, to
   avoid higher-order unification problems when the refinement assertion 
   is schematic.\<close>
 definition hn_ctxt :: "('a\<Rightarrow>'c\<Rightarrow>assn) \<Rightarrow> 'a \<Rightarrow> 'c \<Rightarrow> assn" 
-  -- {* Tag for refinement assertion *}
+  \<comment> \<open>Tag for refinement assertion\<close>
   where
   "hn_ctxt P a c \<equiv> P a c"
 
 definition pure :: "('b \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> assn"
-  -- {* Pure binding, not involving the heap *}
+  \<comment> \<open>Pure binding, not involving the heap\<close>
   where "pure R \<equiv> (\<lambda>a c. \<up>((c,a)\<in>R))"
 
 lemma pure_app_eq: "pure R a c = \<up>((c,a)\<in>R)" by (auto simp: pure_def)
@@ -334,7 +334,7 @@ lemma hn_refine_guessI:
   assumes "hn_refine P f P' R f'"
   assumes "f=f_conc"
   shows "hn_refine P f_conc P' R f'"
-  -- \<open>To prove a refinement, first synthesize one, and then prove equality\<close>
+  \<comment> \<open>To prove a refinement, first synthesize one, and then prove equality\<close>
   using assms by simp
 
 
@@ -380,7 +380,7 @@ subsubsection \<open>Return\<close>
 
 lemma hnr_RETURN_pass:
   "hn_refine (hn_ctxt R x p) (return p) (hn_invalid R x p) R (RETURN x)"
-  -- \<open>Pass on a value from the heap as return value\<close>
+  \<comment> \<open>Pass on a value from the heap as return value\<close>
   apply rule 
   apply (sep_auto simp: hn_ctxt_def eintros: invalidate_clone')
   done
@@ -388,7 +388,7 @@ lemma hnr_RETURN_pass:
 lemma hnr_RETURN_pure:
   assumes "(c,a)\<in>R"
   shows "hn_refine emp (return c) emp (pure R) (RETURN a)"
-  -- \<open>Return pure value\<close>
+  \<comment> \<open>Return pure value\<close>
   unfolding hn_refine_def using assms
   by (sep_auto simp: pure_def)
   

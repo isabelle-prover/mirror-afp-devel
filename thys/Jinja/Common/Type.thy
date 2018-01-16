@@ -8,9 +8,9 @@ section {* Jinja types *}
 
 theory Type imports Auxiliary begin
 
-type_synonym cname = string -- "class names"
-type_synonym mname = string -- "method name"
-type_synonym vname = string -- "names for local/field variables"
+type_synonym cname = string \<comment> \<open>class names\<close>
+type_synonym mname = string \<comment> \<open>method name\<close>
+type_synonym vname = string \<comment> \<open>names for local/field variables\<close>
 
 definition Object :: cname
 where
@@ -20,13 +20,13 @@ definition this :: vname
 where
   "this \<equiv> ''this''"
 
--- "types"
+\<comment> \<open>types\<close>
 datatype ty
-  = Void          -- "type of statements"
+  = Void          \<comment> \<open>type of statements\<close>
   | Boolean
   | Integer
-  | NT            -- "null type"
-  | Class cname   -- "class type"
+  | NT            \<comment> \<open>null type\<close>
+  | Class cname   \<comment> \<open>class type\<close>
 
 definition is_refT :: "ty \<Rightarrow> bool"
 where

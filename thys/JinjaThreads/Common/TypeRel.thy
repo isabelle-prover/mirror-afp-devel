@@ -526,7 +526,7 @@ subsection {* Code generation *}
 text {* New introduction rules for subcls1 *}
 
 code_pred
-  -- {* Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode *}
+  \<comment> \<open>Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode\<close>
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) 
   subcls1
 .
