@@ -89,10 +89,10 @@ abstract =
 
 [Game_Based_Crypto]
 title = Game-based cryptography in HOL
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, S. Reza Sefidgar <>, Bhargav Bhatt <mailto:bhargav.bhatt@inf.ethz.ch>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, S. Reza Sefidgar <>, Bhargav Bhatt <mailto:bhargav.bhatt@inf.ethz.ch>
 topic = Computer Science/Security
 date = 2017-05-05
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 abstract =
   <p>In this AFP entry, we show how to specify game-based cryptographic
   security notions and formally prove secure several cryptographic
@@ -113,10 +113,10 @@ abstract =
 
 [CryptHOL]
 title = CryptHOL
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 topic = Computer Science/Security, Computer Science/Functional Programming, Mathematics/Probability Theory
 date = 2017-05-05
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 abstract =
   <p>CryptHOL provides a framework for formalising cryptographic arguments
   in Isabelle/HOL. It shallowly embeds a probabilistic functional
@@ -137,10 +137,10 @@ abstract =
 
 [Probabilistic_While]
 title = Probabilistic while loop
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 topic = Computer Science/Functional Programming, Mathematics/Probability Theory, Computer Science/Algorithms
 date = 2017-05-05
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 abstract =
   This AFP entry defines a probabilistic while operator based on
   sub-probability mass functions and formalises zero-one laws and variant
@@ -151,10 +151,10 @@ abstract =
 
 [Monad_Normalisation]
 title = Monad normalisation
-author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
 topic = Tools, Computer Science/Functional Programming, Logic/Rewriting
 date = 2017-05-05
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 abstract =
   The usual monad laws can directly be used as rewrite rules for Isabelle’s
   simplifier to normalise monadic HOL terms and decide equivalences.
@@ -167,10 +167,10 @@ abstract =
 
 [Monomorphic_Monad]
 title = Effect polymorphism in higher-order logic
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 topic = Computer Science/Functional Programming
 date = 2017-05-05
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 abstract =
   The notion of a monad cannot be expressed within higher-order logic
   (HOL) due to type system restrictions. We show that if a monad is used
@@ -604,7 +604,7 @@ abstract =
 	lifting operation for relations on discrete probability distributions,
 	which leads to a concise proof of its distributivity over relation
 	composition.
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 extra-history =
 	Change history:
 	[2017-09-06]:
@@ -2363,7 +2363,7 @@ extra-history =
 	provide generators for canonical type class instantiations
 	(revision 159f4401f4a8 by René Thiemann)<br>
 	[2014-07-08]: add support for going from partial functions to mappings (revision 7a6fc957e8ed)
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [FileRefinement]
 title = File Refinement
@@ -2550,7 +2550,7 @@ extra-history =
 	ccpo topology on coinductive lists contributed by Johannes Hölzl;
 	added examples
 	(revision 23cd8156bd42)<br>
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [Stream-Fusion]
 title = Stream Fusion
@@ -2660,7 +2660,7 @@ extra-history =
         [2017-10-20]:
         add an atomic compare-and-swap operation for volatile fields
         (revision a6189b1d6b30)<br>
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
@@ -4262,7 +4262,7 @@ extra-history =
 	(revision 5d7a1c9ae047)<br>
         [2017-09-02]:
         added 64-bit words (revision c89f86244e3c)<br>
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [XML]
 title = XML
@@ -4814,7 +4814,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexand
 date = 2014-10-10
 topic = Computer Science/Functional Programming
 abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.html">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [Case_Labeling]
 title = Generating Cases from Labeled Subgoals
@@ -4984,7 +4984,7 @@ notify = bentkamp@gmail.com
 
 [Applicative_Lifting]
 title = Applicative Lifting
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, Joshua Schneider <>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Joshua Schneider <>
 date = 2015-12-22
 topic = Computer Science/Functional Programming
 abstract = Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
@@ -5003,7 +5003,7 @@ extra-history =
 	support arbitrary lifted relations using relators;
 	improved compatibility with locale interpretation
 	(revision ec336f354f37)<br>
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [Stern_Brocot]
 title = The Stern-Brocot Tree
@@ -5014,7 +5014,7 @@ abstract = The Stern-Brocot tree contains all rational numbers exactly once and 
 	</p><p>
 	The reasoning stays at an abstract level by appealing to the uniqueness of solutions of guarded recursive equations and lifting algebraic laws point-wise to trees and streams using applicative functors.
 	</p>
-notify = andreas.lochbihler@inf.ethz.ch
+notify = mail@andreas-lochbihler.de
 
 [Algebraic_Numbers]
 title = Algebraic Numbers in Isabelle/HOL
