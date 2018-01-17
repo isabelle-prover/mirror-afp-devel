@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Ergodic Theory - Archive of Formal Proofs
+<title>Gromov Hyperbolicity - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">E</font>rgodic
+  <h1>          <font class="first">G</font>romov
   
-          <font class="first">T</font>heory
+          <font class="first">H</font>yperbolicity
   
 </h1>
   <p>&nbsp;</p>
@@ -72,7 +72,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Ergodic Theory</td>
+  <td class="data" width="80%">Gromov Hyperbolicity</td>
 </tr>
 
 <tr>
@@ -88,25 +88,43 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2015-12-01</td>
+  <td class="data">2018-01-16</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.</td>
+  <td class="abstract">
+A geodesic metric space is Gromov hyperbolic if all its geodesic
+triangles are thin, i.e., every side is contained in a fixed
+thickening of the two other sides. While this definition looks
+innocuous, it has proved extremely important and versatile in modern
+geometry since its introduction by Gromov.  We formalize the basic
+classical properties of Gromov hyperbolic spaces, notably the Morse
+lemma asserting that quasigeodesics are close to geodesics, the
+invariance of hyperbolicity under quasi-isometries, we define and
+study the Gromov boundary and its associated distance, and prove that
+a quasi-isometry between Gromov hyperbolic spaces extends to a
+homeomorphism of the boundaries. We also prove a less classical
+theorem, by Bonk and Schramm, asserting that a Gromov hyperbolic space
+embeds isometrically in a geodesic Gromov-hyperbolic space. As the
+original proof uses a transfinite sequence of Cauchy completions, this
+is an interesting formalization exercise.  Along the way, we introduce
+basic material on isometries, quasi-isometries, Lipschitz maps,
+geodesic spaces, the Hausdorff distance, the Cauchy completion of a
+metric space, and the exponential on extended real numbers.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Ergodic_Theory-AFP,
+        <pre>@article{Gromov_Hyperbolicity-AFP,
   author  = {Sebastien Gouezel},
-  title   = {Ergodic Theory},
+  title   = {Gromov Hyperbolicity},
   journal = {Archive of Formal Proofs},
-  month   = dec,
-  year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Ergodic_Theory.html},
+  month   = jan,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Gromov_Hyperbolicity.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -118,9 +136,7 @@
 
     
                     
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Lp.html">Lp</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -132,34 +148,23 @@
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Ergodic_Theory/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Ergodic_Theory/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Gromov_Hyperbolicity/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Gromov_Hyperbolicity/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Ergodic_Theory/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Gromov_Hyperbolicity/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Ergodic_Theory-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Gromov_Hyperbolicity-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Ergodic_Theory-2016-12-17.tar.gz">
-            afp-Ergodic_Theory-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-Ergodic_Theory-2016-02-22.tar.gz">
-            afp-Ergodic_Theory-2016-02-22.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
