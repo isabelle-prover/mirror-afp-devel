@@ -1,0 +1,17 @@
+chapter AFP
+
+session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
+  options [timeout = 600]
+  sessions
+    "HOL-Cardinals"
+  theories
+    Library_Complements
+    Eexp_Eln
+    Metric_Completion
+    Hausdorff_Distance
+    Isometries
+    Gromov_Hyperbolicity
+    Bonk_Schramm_Extension
+    Gromov_Boundary
+  document_files
+    "root.tex"
