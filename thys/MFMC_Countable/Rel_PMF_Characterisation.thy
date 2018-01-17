@@ -115,4 +115,35 @@ proof(intro le_funI le_boolI rel_pmf_measureI, elim relcomppE)
   finally show "measure (measure_pmf p) A \<le> measure (measure_pmf r) \<dots>" .
 qed
 
+subsection \<open>Code generation for @{const rel_pmf}\<close>
+
+proposition rel_pmf_measureI':
+  fixes p :: "'a pmf" and q :: "'b pmf"
+  assumes le: "\<And>A. A \<subseteq> set_pmf p \<Longrightarrow> measure_pmf.prob p A \<le> measure_pmf.prob q {y \<in> set_pmf q. \<exists>x\<in>A. R x y}"
+  shows "rel_pmf R p q"
+proof(rule rel_pmf_measureI)
+  fix A
+  let ?A = "A \<inter> set_pmf p"
+  have "measure_pmf.prob p A = measure_pmf.prob p ?A" by(simp add: measure_Int_set_pmf)
+  also have "\<dots> \<le> measure_pmf.prob q {y \<in> set_pmf q. \<exists>x\<in>?A. R x y}" by(rule le) simp
+  also have "\<dots> \<le> measure_pmf.prob q {y. \<exists>x\<in>A. R x y}"
+    by(rule measure_pmf.finite_measure_mono) auto
+  finally show "measure_pmf.prob p A \<le> \<dots>" .
+qed
+
+lemma rel_pmf_code [code]:
+  "rel_pmf R p q \<longleftrightarrow>
+   (let B = set_pmf q in
+    \<forall>A\<in>Pow (set_pmf p). measure_pmf.prob p A \<le> measure_pmf.prob q (snd ` Set.filter (case_prod R) (A \<times> B)))"
+  unfolding Let_def
+proof(intro iffI strip)
+  have eq: "snd ` Set.filter (case_prod R) (A \<times> set_pmf q) = {y. \<exists>x\<in>A. R x y} \<inter> set_pmf q" for A
+    by(auto intro: rev_image_eqI simp add: Set.filter_def)
+  show "measure_pmf.prob p A \<le> measure_pmf.prob q (snd ` Set.filter (case_prod R) (A \<times> set_pmf q))"
+    if "rel_pmf R p q" and "A \<in> Pow (set_pmf p)" for A
+    using that by(auto dest: rel_pmf_measureD simp add: eq measure_Int_set_pmf)
+  show "rel_pmf R p q" if "\<forall>A\<in>Pow (set_pmf p). measure_pmf.prob p A \<le> measure_pmf.prob q (snd ` Set.filter (case_prod R) (A \<times> set_pmf q))"
+    using that by(intro rel_pmf_measureI')(auto intro: ord_le_eq_trans arg_cong2[where f=measure] simp add: eq)
+qed
+
 end
