@@ -935,10 +935,6 @@ proof -
     unfolding * by auto
 qed
 
-lemma e2ennreal_ereal [simp]:
-  "e2ennreal (ereal x) = ennreal x"
-by (metis e2ennreal_def enn2ereal_inverse ennreal.rep_eq sup_ereal_def)
-
 lemma ereal_leq_imp_neg_leq [mono_intros]:
   fixes x y::ereal
   assumes "x \<le> y"
@@ -950,11 +946,6 @@ lemma ereal_le_imp_neg_le [mono_intros]:
   assumes "x < y"
   shows "-y < -x"
   using assms by auto
-
-text \<open>The following lemma should definitely be simp rules.\<close>
-
-declare e2ennreal_infty [simp]
-declare enn2ereal_top [simp]
 
 text \<open>Monotonicity of basic inclusions.\<close>
 
@@ -1110,43 +1101,6 @@ lemma ereal_minus_real_tendsto_MInf [tendsto_intros]:
   "(\<lambda>x. ereal (- real x)) \<longlonglongrightarrow> - \<infinity>"
 by (subst uminus_ereal.simps(1)[symmetric], intro tendsto_intros)
 
-
-
-subsection \<open>Miscellaneous\<close>
-
-subsubsection\<open>Simp rules for min and max\<close>
-
-lemma min_top_x [simp]:
-  "min top x = (x::'a::order_top)"
-unfolding min_def by (simp add: top.extremum_unique)
-
-lemma min_x_top [simp]:
-  "min x top = (x::'a::order_top)"
-unfolding min_def by (simp add: top.extremum_unique)
-
-lemma min_x_PInf [simp]:
-  "min x (\<infinity>::ereal) = x"
-by (metis min_x_top top_ereal_def)
-
-lemma min_PInf_x [simp]:
-  "min (\<infinity>::ereal) x = x"
-by (metis min_top_x top_ereal_def)
-
-lemma max_bot_x [simp]:
-  "max bot x = (x::'a::order_bot)"
-unfolding max_def by simp
-
-lemma max_x_bot [simp]:
-  "max x bot = (x::'a::order_bot)"
-unfolding max_def by (simp add: bot.extremum_unique)
-
-lemma max_x_MInf [simp]:
-  "max x (-\<infinity>::ereal) = x"
-by (metis max_x_bot bot_ereal_def)
-
-lemma max_MInf_x [simp]:
-  "max (-\<infinity>::ereal) x = x"
-by (metis max_bot_x bot_ereal_def)
 
 subsubsection \<open>Monotonous maps\<close>
 
