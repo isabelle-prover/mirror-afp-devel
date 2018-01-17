@@ -1334,9 +1334,7 @@ proof-
   hence "convex_on UNIV g" apply (subst infinite_convex_domain_iff)
     using assms unfolding domain_def by auto
   moreover have "(%x. if x:S then (f x) else \<infinity>) = (%x. max (f x) (g x))"
-    apply (subst fun_eq_iff) unfolding g_def apply auto
-    apply (metis ereal_less_eq(2) max.absorb1)
-    by (metis ereal_less_eq(1) max.absorb2)
+    apply (subst fun_eq_iff) unfolding g_def by auto
   ultimately show ?thesis using convex_ereal_max assms by auto
 qed
 
