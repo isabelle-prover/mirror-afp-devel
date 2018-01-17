@@ -108,7 +108,7 @@ def validate(entry, attributes):
                 else:
                     sane_attributes[key] = [process(s.strip()) for s in value.split(',')]
     if missing_keys:
-        warn(u"In entry {0}: missing key(s) {1!s}".format(entry, missing_keys))
+        error(u"In entry {0}: missing key(s) {1!s}".format(entry, missing_keys), abort = True)
 
     extraneous_keys = set(attributes.keys()) - processed_keys
     if extraneous_keys:
