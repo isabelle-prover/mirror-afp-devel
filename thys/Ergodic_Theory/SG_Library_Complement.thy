@@ -550,11 +550,8 @@ lemma e2ennreal_Liminf:
   by (rule Liminf_compose_continuous_mono[symmetric])
      (auto simp: mono_def e2ennreal_mono continuous_on_e2ennreal)
 
-lemma e2ennreal_ereal: "e2ennreal (ereal x) = ennreal x"
-  unfolding ennreal.abs_eq by (cases "0 \<le> x") (auto simp add: e2ennreal_neg max.absorb2)
-
 lemma e2ennreal_eq_infty[simp]: "0 \<le> x \<Longrightarrow> e2ennreal x = top \<longleftrightarrow> x = \<infinity>"
-  by (cases x) (auto simp: e2ennreal_infty e2ennreal_ereal)
+  by (cases x) (auto simp: e2ennreal_infty)
 
 lemma ennreal_Inf_cmult:
   assumes "c>(0::real)"
