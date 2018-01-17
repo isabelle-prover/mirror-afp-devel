@@ -6519,6 +6519,7 @@ abstract =
 title = Gromov Hyperbolicity
 author = Sebastien Gouezel<>
 topic = Mathematics/Geometry
+date = 2018-01-16
 notify = sebastien.gouezel@univ-rennes1.fr
 abstract = 
   A geodesic metric space is Gromov hyperbolic if all its geodesic
