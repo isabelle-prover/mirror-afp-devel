@@ -90,11 +90,6 @@ text \<open>\verb+ln_bound+ is formulated with the assumption that $x \geq 1$, w
 lemma ln_bound' [mono_intros]: "0 < x \<Longrightarrow> ln x \<le> x" for x :: real
   using ln_le_minus_one by force
 
-text \<open>\verb+tendsto_intros+ has been forgotten in the library in the next lemmas.\<close>
-
-declare tendsto_min [tendsto_intros]
-declare tendsto_max [tendsto_intros]
-
 
 subsection \<open>More topology\<close>
 
