@@ -11,7 +11,7 @@ section \<open>Gouezel-Karlsson\<close>
 
 text \<open>This section is devoted to the proof of the main ergodic result of
 the article "Subadditive and multiplicative ergodic theorems" by Gouezel and
-Karlsson (denoted [GK] below). It is a version of Kingman
+Karlsson~\cite{gouezel_karlsson}. It is a version of Kingman
 theorem ensuring that, for subadditive cocycles, there are almost surely
 many times $n$ where the cocycle is nearly additive at \emph{all} times
 between $0$ and $n$.
@@ -90,7 +90,7 @@ lemma int_u [measurable]:
   "integrable M (u n)"
 using subu unfolding subcocycle_def by auto
 
-text \<open>Next lemma is Lemma 2.1 in [GK]\<close>
+text \<open>Next lemma is Lemma 2.1 in~\cite{gouezel_karlsson}.\<close>
 
 lemma upper_density_all_times:
   assumes "d > (0::real)"
@@ -242,7 +242,7 @@ proof -
   then show ?thesis unfolding V_def using \<open>c>0\<close> by auto
 qed
 
-text \<open>Next lemma is Lemma 2.2 in [GK]\<close>
+text \<open>Next lemma is Lemma 2.2 in~\cite{gouezel_karlsson}.\<close>
 
 lemma upper_density_large_k:
   assumes "d > (0::real)" "d \<le> 1"
@@ -781,7 +781,7 @@ proof -
 qed
 
 text \<open>The two previous lemmas are put together in the following lemma,
-corresponding to Lemma 2.3 in [GK]\<close>
+corresponding to Lemma 2.3 in~\cite{gouezel_karlsson}.\<close>
 
 lemma upper_density_delta:
   fixes d::real

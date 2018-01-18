@@ -218,14 +218,14 @@ section \<open>Construction of the Bonk Schramm extension\<close>
 text \<open>We want to show that any metric space is isometrically embedded in a
 metric space which is geodesic (i.e., there is an embedded geodesic between any
 two points) and complete. There are many such constructions, but a very interesting one
-has been given by Bonk and Schramm, together with an additional property of the
+has been given by Bonk and Schramm in~\cite{bonk_schramm}, together with an additional property of the
 completion: if the space is delta-hyperbolic (in the sense of Gromov), then its
 completion also is, with the same constant delta. It follows in particular that a $0$-hyperbolic
 space embeds in a $0$-hyperbolic geodesic space, i.e., a metric tree (there is an easier
 direct construction in this case).
 
-Another embedding of a metric space in a geodesic one is constructed by Mineyev (Geometry and
-Topology 2005), it is more canonical in a sense (isometries of the original space extend
+Another embedding of a metric space in a geodesic one is constructed by Mineyev~\cite{mineyev},
+it is more canonical in a sense (isometries of the original space extend
 to the new space), but it is not clear if it preserves hyperbolicity.
 
 The argument of Bonk and Schramm goes as follows:
@@ -1507,14 +1507,14 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
   assumes "quasi_isometry_on lambda C {A..B} c"
           "quasi_isometry_on lambda C {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 936 * lambda * lambda * (C + lambda + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 324 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto
   have "hausdorff_distance (c`{A..B}) (d`{A..B}) = hausdorff_distance ((to_Bonk_Schramm_extension o c)`{A..B}) ((to_Bonk_Schramm_extension o d)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
-  also have "... \<le> 936 * (lambda*1) * (lambda*1) * ((C*1+0) + (lambda*1) + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
+  also have "... \<le> 324 * (lambda*1)^2 * ((C*1+0) + (lambda*1) + deltaG(TYPE('a))^2)"
     apply (intro BS.Morse_Gromov_theorem2 quasi_isometry_on_compose[where Y = UNIV])
     using assms isometry_quasi_isometry_on to_Bonk_Schramm_extension_isometry by auto
   finally show ?thesis by simp

@@ -288,7 +288,7 @@ text \<open>We deduce that if a function is Lipschitz on finitely many closed se
 it is Lipschitz on any interval contained in their union. The difficulty in the proof is to show
 that any point $z$ in this interval (except the maximum) has a point arbitrarily close to it on its
 right which is contained in a common initial closed set. Otherwise, we show that there is a small
-interval $(z, T)$ which does not intersect any of the intial closed sets, a contradiction.\<close>
+interval $(z, T)$ which does not intersect any of the initial closed sets, a contradiction.\<close>
 
 proposition lipschitz_on_closed_Union:
   assumes "\<And>i. i \<in> I \<Longrightarrow> lipschitz_on M (U i) f"
@@ -2434,7 +2434,7 @@ embedding need not be continuous, a quasi-geodesic does not have to be compact, 
 can be a problem. However, in a geodesic space, it is always possible to deform a quasi-geodesic
 into a continuous one (at the price of worsening the quasi-isometry constants). This is the content
 of the proposition \verb+quasi_geodesic_made_lipschitz+ below, which is a variation around Lemma
-III.H.1.11 in Bridson-Haefliger. The version we give, due to Shchur (2013) is more precise regarding
+III.H.1.11 in~\cite{bridson_haefliger}. The version we give, due to Shchur~\cite{shchur} is more precise regarding
 the constants, especially since $C$ and $\lambda$ are kept independent, at the price of a slightly
 more complicated proof. The strategy is to take a suitable discretization of the quasi-geodesic, and
 then join the points of the discretization by geodesic segments. We start with the discretization in
@@ -2461,7 +2461,7 @@ that is away from the two, to increase strictly our maximal set and reach a cont
 the quasi-geodesic is not continuous, this intermediate point has to be constructed carefully.
 \end{itemize}
 
-This construction is taken from an article by Vladimir Shchur (2013), but we have to provide
+This construction is taken from an article by Vladimir Shchur~\cite{shchur}, but we have to provide
 the details on the two delicate points above as they are not treated in this article.\<close>
 
 lemma quasi_geodesic_good_partition:
@@ -2716,7 +2716,6 @@ proof -
     apply (rule exI[of _ A], auto simp add: A A_separated dist_next)
     using no_gap less_imp_le by (metis Diff_iff atLeastAtMost_iff metric_space_class.dist_commute singletonD)
 qed
-
 
 text \<open>We can now use the above discretization to construct a better version of the original
 quasi-geodesic, using geodesic interpolation between the points of the discretization.
