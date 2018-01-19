@@ -891,11 +891,6 @@ lemma tendsto_enn2erealI [tendsto_intros]:
   shows "((\<lambda>i. enn2ereal(f i)) \<longlongrightarrow> enn2ereal l) F"
 using tendsto_enn2ereal_iff assms by auto
 
-lemma enn2ereal_e2ennreal:
-  assumes "x \<ge> 0"
-  shows "enn2ereal (e2ennreal x) = x"
-by (metis assms e2ennreal_enn2ereal ereal_ennreal_cases not_le)
-
 lemma tendsto_e2ennrealI [tendsto_intros]:
   assumes "(f \<longlongrightarrow> l) F"
   shows "((\<lambda>i. e2ennreal(f i)) \<longlongrightarrow> e2ennreal l) F"
