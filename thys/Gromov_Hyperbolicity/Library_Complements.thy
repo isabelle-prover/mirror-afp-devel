@@ -1192,35 +1192,13 @@ qed
 
 subsubsection \<open>Bounding the cardinality of a finite set\<close>
 
-text \<open>Sometimes, to prove that a set is finite, it is convenient to work with finite subsets
-and to show that their cardinalities are uniformly bounded. This possibility is formalized in
-the next criterion.\<close>
-
-lemma finite_finite_subset_caract:
-  assumes "\<And>G. G \<subseteq> F \<Longrightarrow> finite G \<Longrightarrow> card G \<le> C"
-  shows "finite F \<and> card F \<le> C"
-proof (cases "infinite F")
-  case True
-  obtain n::nat where n: "n > max C 0" by auto
-  obtain G where G: "G \<subseteq> F" "card G = n"
-    using infinite_arbitrarily_large[OF True] by auto
-  then have "finite G" using \<open>n > max C 0\<close>
-    using card_infinite gr_implies_not0 by blast
-  then have False using assms G n not_less by auto
-  then show ?thesis by simp
-next
-  case False
-  then have "finite F" by simp
-  then show ?thesis using assms[of F] by auto
-qed
-
-text \<open>A variation of the above, with real bounds.\<close>
+text \<open>A variation with real bounds.\<close>
 
 lemma finite_finite_subset_caract':
   fixes C::real
   assumes "\<And>G. G \<subseteq> F \<Longrightarrow> finite G \<Longrightarrow> card G \<le> C"
   shows "finite F \<and> card F \<le> C"
-by (meson assms finite_finite_subset_caract le_nat_floor order_refl)
+by (meson assms finite_if_finite_subsets_card_bdd le_nat_floor order_refl)
 
 text \<open>To show that a set has cardinality at most one, it suffices to show that any two of its
 elements coincide.\<close>
