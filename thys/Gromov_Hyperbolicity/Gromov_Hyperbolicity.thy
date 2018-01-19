@@ -785,7 +785,7 @@ proposition (in Gromov_hyperbolic_space_geodesic) lipschitz_path_close_to_geodes
   assumes "lipschitz_on M {A..B} c"
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
-  shows "infdist x (c`{A..B}) \<le> 6 * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
+  shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
 proof -
   have "M \<ge> 0" by (rule lipschitz_onD(2)[OF assms(1)])
   have Main: "a \<in> {A..B} \<Longrightarrow> b \<in> {A..B} \<Longrightarrow> a \<le> b \<Longrightarrow> b-a \<le> 2^(n+1) \<Longrightarrow> geodesic_segment_between H (c a) (c b)
@@ -870,7 +870,7 @@ proof -
     have "infdist x (c`{A..B}) \<le> 4 * deltaG(TYPE('a)) * real 0 + M"
       apply (rule Main[OF _ _ _ _ \<open>geodesic_segment_between G (c A) (c B)\<close> \<open>x \<in> G\<close>])
       using 2 by auto
-    also have "... \<le> 6 * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
+    also have "... \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
       using delta_nonneg by auto
     finally show ?thesis by auto
   next
@@ -882,15 +882,13 @@ proof -
     then have *: "B-A \<le> 2^(n+1)"
       by (meson le_log_of_power linear not_less one_less_numeral_iff semiring_norm(76))
     have "n \<le> ln (B-A) * (1/ln 2)" using n unfolding log_def by auto
-    also have "... \<le> ln(B-A) * (3/2)"
-      apply (intro mult_mono) using ln2_ge_two_thirds 3 by (auto simp add: divide_simps)
-    finally have "n \<le> (3/2) * max 0 (ln (B-A))"
-      using 3 by auto
+    then have "n \<le> (1/ln 2) * max 0 (ln (B-A))"
+      using 3 by (auto simp add: algebra_simps divide_simps)
     have "infdist x (c`{A..B}) \<le> 4 * deltaG(TYPE('a)) * n + M"
       apply (rule Main[OF _ _ _ _ \<open>geodesic_segment_between G (c A) (c B)\<close> \<open>x \<in> G\<close>])
       using * 3 by auto
-    also have "... \<le> 4 * deltaG(TYPE('a)) * ((3/2) * max 0 (ln (B-A))) + M"
-      apply (intro mono_intros) using \<open>n \<le> (3/2) * max 0 (ln (B-A))\<close> delta_nonneg by auto
+    also have "... \<le> 4 * deltaG(TYPE('a)) * ((1/ln 2) * max 0 (ln (B-A))) + M"
+      apply (intro mono_intros) using \<open>n \<le> (1/ln 2) * max 0 (ln (B-A))\<close> delta_nonneg by auto
     finally show ?thesis by auto
   qed
 qed
@@ -904,7 +902,7 @@ proposition (in Gromov_hyperbolic_space_geodesic) lipschitz_path_close_to_geodes
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
           "a > 0"
-  shows "infdist x (c`{A..B}) \<le> 6 * deltaG(TYPE('a)) * max 0 (ln (a * (B-A))) + M/a"
+  shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a * (B-A))) + M/a"
 proof -
   define d where "d = c o (\<lambda>t. (1/a) * t)"
   have *: "lipschitz_on (M * ((1/a)* 1)) {a * A..a * B} d"
@@ -913,7 +911,7 @@ proof -
     unfolding d_def image_comp[symmetric]
     apply (rule arg_cong[where ?f = "image c"]) using \<open>a > 0\<close> by auto
   then have "infdist x (c`{A..B}) = infdist x (d`{a * A..a * B})" by auto
-  also have "... \<le> 6 * deltaG(TYPE('a)) * max 0 (ln ((a * B)- (a * A))) + M/a"
+  also have "... \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln ((a * B)- (a * A))) + M/a"
     apply (rule lipschitz_path_close_to_geodesic[OF _ _ \<open>x \<in> G\<close>])
     using * assms unfolding d_def by auto
   finally show ?thesis by (auto simp add: algebra_simps)
@@ -935,30 +933,26 @@ linear in $\delta$, but requires a more complicated proof.
 
 We follow the proof in~\cite{bridson_haefliger}.\<close>
 
-text \<open>The next lemma is good enough for our purposes. -- the true value is $26.9668...$\<close>
-lemma ln_180_squared:
-  "ln 180 * ln 180 \<le> (27::real)"
+text \<open>The next lemma is good enough for our purposes. -- the true value is $6.57$\<close>
+lemma ln_720_bound:
+  "ln (720::real) \<le> 20/3"
 proof -
   text \<open>We go close enough to $1$ by taking the power $1/10$, and then use a series approximation.
   In this proof, the rational approximations to real numbers have been chosen using continued
   fractions expansion, to keep denominators small.\<close>
-  have "ln(180::real) \<le> ln((79/47)^10)"
+  have "ln(720::real) \<le> ln((56/29)^10)"
     apply (intro mono_intros) by (auto simp add: eval_nat_numeral)
-  also have "... = real 10 * ln (79/47)"
+  also have "... = real 10 * ln (56/29)"
     by (rule ln_realpow, auto)
-  also have "... \<le> real 10 * (121/233)"
-    using ln_approx_bounds[of "79/47" 2] by (simp add: eval_nat_numeral)
-  also have "... = 1210/233"
-    by simp
-  finally have "ln (180::real) * ln 180 \<le> (1210/233) * (1210/233)"
-    by (intro mult_mono, auto)
-  then show ?thesis by auto
+  also have "... \<le> real 10 * (2/3)"
+    using ln_approx_bounds[of "56/29" 2] by (simp add: eval_nat_numeral)
+  finally show ?thesis by simp
 qed
 
 theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem:
   fixes c::"real \<Rightarrow> 'a"
   assumes "quasi_isometry_on lambda C {A..B} c"
-  shows "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  shows "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof -
   have C: "C \<ge> 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms] by auto
   consider "B-A < 0" | "B-A \<ge> 0 \<and> dist (c A) (c B) \<le> 2 * C" | "B-A \<ge> 0 \<and> dist (c A) (c B) > 2 * C" by linarith
@@ -977,7 +971,7 @@ proof -
     then have *: "B - A \<le> 3 * lambda * C" using 2 unfolding dist_real_def by auto
     show ?thesis
     proof (rule hausdorff_distanceI2)
-      show "0 \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)" using delta_nonneg C by auto
+      show "0 \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)" using delta_nonneg C by auto
       fix x assume "x \<in> c`{A..B}"
       then obtain t where t: "x = c t" "t \<in> {A..B}" by auto
       have "dist x (c A) \<le> lambda * dist t A + C"
@@ -988,11 +982,11 @@ proof -
         apply (intro mono_intros) using C by auto
       also have "... = 4 * lambda * lambda * (C + 0 + 0^2)"
         by auto
-      also have "... \<le> 162 * lambda * lambda * (C + lambda + deltaG(TYPE('a))^2)"
+      also have "... \<le> 81 * lambda * lambda * (C + lambda + deltaG(TYPE('a))^2)"
         apply (intro mono_intros) using C delta_nonneg by auto
-      finally have *: "dist x (c A) \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+      finally have *: "dist x (c A) \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
         unfolding power2_eq_square by simp
-      show "\<exists>y\<in>{c A--c B}. dist x y \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+      show "\<exists>y\<in>{c A--c B}. dist x y \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
         apply (rule bexI[of _ "c A"]) using * by auto
     next
       fix x assume "x \<in> {c A-- c B}"
@@ -1001,11 +995,11 @@ proof -
       also have "... \<le> 2 * C"
         using 2 by auto
       also have "... \<le> 2 * 1 * 1 * (C + lambda + 0)" using 2 C unfolding dist_real_def by auto
-      also have "... \<le> 162 * lambda * lambda * (C + lambda + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
+      also have "... \<le> 81 * lambda * lambda * (C + lambda + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
         apply (intro mono_intros) using C delta_nonneg by auto
-      finally have *: "dist x (c A) \<le> 162 * lambda * lambda * (C + lambda + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
+      finally have *: "dist x (c A) \<le> 81 * lambda * lambda * (C + lambda + deltaG(TYPE('a)) * deltaG(TYPE('a)))"
         by simp
-      show "\<exists>y\<in>c`{A..B}. dist x y \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+      show "\<exists>y\<in>c`{A..B}. dist x y \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
         apply (rule bexI[of _ "c A"]) unfolding power2_eq_square using * 2 by auto
     qed
   next
@@ -1041,10 +1035,10 @@ proof -
       by auto
     define D where "D = infdist x (d`{A..B})"
     have "D \<ge> 0" unfolding D_def by (rule infdist_nonneg)
-    have D_bound: "D \<le> 54 * lambda + 4 * C + 54 * deltaG(TYPE('a))^2"
+    have D_bound: "D \<le> 27 * lambda + 14 * C + 27 * deltaG(TYPE('a))^2"
     proof (cases "D \<le> 1")
       case True
-      have "1 * 1 + 4 * 0 + 54 * 0 \<le> 54 * lambda + 4 * C + 54 * deltaG(TYPE('a))^2"
+      have "1 * 1 + 1 * 0 + 0 * 0 \<le> 27 * lambda + 14 * C + 27 * deltaG(TYPE('a))^2"
         apply (intro mono_intros) using C delta_nonneg by auto
       then show ?thesis using True by auto
     next
@@ -1200,7 +1194,7 @@ proof -
         by (auto simp add: metric_space_class.dist_commute intro: add_mono)
       also have "... \<le> 8 * D * lambda + 10*C*lambda"
         using C \<open>D \<ge> 0\<close> by (auto intro: mono_intros)
-      finally have L_bound: "L \<le> lambda * (8 * D + 10*C)"
+      finally have L_bound: "L \<le> lambda * (8 * D + 10 * C)"
         by (auto simp add: algebra_simps)
 
       have "1 * (1 * 1 + 0) \<le> lambda * (8 * D + 10 * C)"
@@ -1267,11 +1261,18 @@ proof -
       but this distance is also bounded by the log of its length, i.e., essentially $\log D$. To
       have an efficient estimate, we use a rescaled version, to get rid of one term on the right
       hand side.\<close>
-      define a where "a = 18 * lambda/D"
+      have "1 * 1 * 1 * (1 + 0/1) \<le> 720 * lambda * lambda * (1+C/D)"
+        apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>D \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
+      then have "ln (720 * lambda * lambda * (1+C/D)) \<ge> 0"
+        apply (subst ln_ge_zero_iff) by auto
+      have "32 / (7 * ln 2) \<le> (12 * 27/(49::real))"
+        apply (auto simp add: divide_simps) using ln_approx_bounds[of 2 2]  by (simp add: eval_nat_numeral)
+      define a where "a = 72 * lambda/D"
       have "a > 0" unfolding a_def using \<open>D \<ge> 1\<close> \<open>lambda \<ge> 1\<close> by auto
+
       have "D \<le> infdist x (excursion`{0..L})"
         unfolding infdist_def apply auto apply (rule cInf_greatest) using * by auto
-      also have "... \<le> 6 * deltaG(TYPE('a)) * max 0 (ln (a * (L-0))) + (9 * lambda) / a"
+      also have "... \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a * (L-0))) + (9 * lambda) / a"
       proof (rule lipschitz_path_close_to_geodesic'[of _ _ _ _ "geodesic_subsegment {c A--c B} (c A) tm tM"])
         show "lipschitz_on (9 * lambda) {0..L} excursion" by fact
         have *: "geodesic_subsegment {c A--c B} (c A) tm tM = geodesic_segment_param {c A--c B} (c A) ` {tm..tM} "
@@ -1283,53 +1284,58 @@ proof -
           unfolding E0 EL xm_def xM_def apply (rule geodesic_subsegment[of _ _ "c B"])
           using \<open>tm \<in> {0..dist (c A) (c B)}\<close> \<open>tM \<in> {0..dist (c A) (c B)}\<close> \<open>tm \<le> tM\<close> by auto
       qed (fact)
-      also have "... =  6 * deltaG(TYPE('a)) * max 0 (ln (a *L)) + D/2"
+      also have "... =  (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a *L)) + D/8"
         unfolding a_def using \<open>D \<ge> 1\<close> \<open>lambda \<ge> 1\<close> by (simp add: algebra_simps)
-      finally have "D/12 \<le> deltaG(TYPE('a)) * max 0 (ln (a * L))"
-        by auto
-      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((18 * lambda/D) * (lambda * (8 * D + 10 * C))))"
+      finally have "(7 * ln 2 / 32) * D \<le> deltaG(TYPE('a)) * max 0 (ln (a * L))"
+        by (auto simp add: algebra_simps divide_simps)
+      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((72 * lambda/D) * (lambda * (8 * D + 10 * C))))"
         unfolding a_def apply (intro mono_intros)
         using L_bound \<open>L > 0\<close> \<open>lambda \<ge> 1\<close> \<open>D \<ge> 1\<close> by auto
-      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((18 * lambda/D) * (lambda * (10 * D + 10 * C))))"
+      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((72 * lambda/D) * (lambda * (10 * D + 10 * C))))"
         apply (intro mono_intros)
         using L_bound \<open>L > 0\<close> \<open>lambda \<ge> 1\<close> \<open>D \<ge> 1\<close> by auto
-      also have "... = deltaG(TYPE('a)) * max 0 (ln (180 * lambda * lambda * (1+C/D)))"
+      also have "... = deltaG(TYPE('a)) * max 0 (ln (720 * lambda * lambda * (1+C/D)))"
         using \<open>D \<ge> 1\<close> by (auto simp add: algebra_simps)
-      also have "... = deltaG(TYPE('a)) * ln (180 * lambda * lambda * (1+C/D))"
-        using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> \<open>D \<ge> 1\<close> calculation by linarith
-      also have "... \<le> deltaG(TYPE('a)) * ln (180 * lambda * lambda * (1+C/1))"
+      also have "... = deltaG(TYPE('a)) * ln (720 * lambda * lambda * (1+C/D))"
+        using \<open>ln (720 * lambda * lambda * (1+C/D)) \<ge> 0\<close> by auto
+      also have "... \<le> deltaG(TYPE('a)) * ln (720 * lambda * lambda * (1+C/1))"
         apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> \<open>D \<ge> 1\<close>
         by (auto simp add: divide_simps mult_ge1_mono(1))
-      also have "... = deltaG(TYPE('a)) * (ln 180 + 2 * ln lambda + ln (1+C))"
+      text \<open>We have obtained a bound on $D$, of the form $D \leq M \delta \ln(M \lambda^2(1+C))$.
+      This is a nice bound, but we tweak it a little bit to obtain something more manageable,
+      without the logarithm.\<close>
+      also have "... = deltaG(TYPE('a)) * (ln 720 + 2 * ln lambda + ln (1+C))"
         apply (subst ln2mult) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> apply simp
         apply (subst ln_mult[symmetric]) apply simp using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> apply simp
         apply (subst ln_mult[symmetric]) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
-      also have "... = (3 * deltaG(TYPE('a))) * (1/3 * (ln 180 + 2 * ln lambda + ln (1+C)))"
+      also have "... = (deltaG(TYPE('a)) * 1) * ln 720 + 2 * (deltaG(TYPE('a)) * ln lambda) + (deltaG(TYPE('a)) * ln (1+C))"
+        by (auto simp add: algebra_simps)
+      text \<open>For each term, of the form $\delta \ln c$, we bound it by $(\delta^2 + (\ln c)^2)/2$, and
+      then bound $(\ln c)^2$ by $2c-2$. In fact, to get coefficients of the same order of
+      magnitude on $\delta^2$ and $\lambda$, we tweak a little bit the inequality for the last two
+      terms, using rather $uv \leq (u^2/2 + 2v^2)/2$. We also bound $\ln(720)$ by a good
+      approximation $20/3$.\<close>
+      also have "... \<le> (deltaG(TYPE('a))^2/2 + 1^2/2) * (20/3)
+           + 2 * ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln lambda)^2 / 2) + ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln (1+C))^2 / 2)"
+        by (intro mono_intros ln_720_bound, auto)
+      also have "... = (49/12) * deltaG(TYPE('a))^2 + 10/3 + 2 * (ln lambda)^2 + (ln (1+C))^2"
+        by (auto simp add: algebra_simps)
+      also have "... \<le> (49/12) * deltaG(TYPE('a))^2 + 10/3 + 2 * (2 * lambda - 2) + (2 * (1+C) - 2)"
+        apply (intro mono_intros)  using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+      also have "... \<le> 49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C"
         by auto
-      also have "... \<le> ((3 * deltaG(TYPE('a)))^2  + (1/3 * (ln 180 + 2 * ln lambda + ln (1+C)))^2)/2"
-        by (intro mono_intros)
-      also have "... = (9/2) * deltaG(TYPE('a))^2 + (1/18) * (ln 180 + 2 * ln lambda + ln (1+C))^2"
-        unfolding power2_eq_square by auto
-      also have "... \<le> (9/2) * deltaG(TYPE('a))^2 + (1/18) * (3 * ((ln 180)^2 +  (2 * ln (lambda))^2 + (ln (1+C))^2))"
-        by (intro u_plus_v_plus_w_squared_mono mono_intros, auto)
-      also have "... = (9/2) * deltaG(TYPE('a)) ^2 + (3/18) * (ln 180 * ln 180 + 4 * (ln lambda)^2 + (ln (1+C))^2)"
-        unfolding power2_eq_square by auto
-      also have "... \<le> (9/2) * deltaG(TYPE('a))^2 + (3/18) * (27 + 4 * (2 * lambda - 2) + (2 * (1+C) - 2))"
-        apply (intro ln_180_squared mono_intros) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
-      also have "... = (9/2) * deltaG(TYPE('a))^2 + (3/18) * (19 * 1 + 8 * lambda + 2 * C)"
-        by auto
-      also have "... \<le> (9/2) * deltaG(TYPE('a))^2 + (3/18) * (19 * lambda + 8 * lambda + 2 * C)"
-        apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
-      also have "... = (9/2) * lambda + (1/3) * C + (9/2) * deltaG(TYPE('a))^2"
-        by auto
-      finally have "D \<le> 54 * lambda + 4 * C + 54 * deltaG(TYPE('a))^2"
-        by auto
-      then show ?thesis by simp
+      finally have "D \<le> (32/ (7 * ln 2)) * (49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C)"
+        by (auto simp add: divide_simps)
+      also have "... \<le> (12 * 27/49) * (49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C)"
+        apply (intro mono_intros, fact) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
+      also have "... \<le> 27 * deltaG(TYPE('a))^2 + 27 * lambda + 14 * C"
+        using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
+      finally show ?thesis by simp
     qed
-    define D0 where "D0 = 54 * lambda + 4 * C + 54 * deltaG(TYPE('a))^2"
+    define D0 where "D0 = 27 * lambda + 14 * C + 27 * deltaG(TYPE('a))^2"
     have first_step: "infdist y (d`{A..B}) \<le> D0" if "y \<in> {c A--c B}" for y
       using x(2)[OF that] D_bound unfolding D0_def D_def by auto
-    have "1 * 1 + 4 * 0 + 54 * 0 \<le> D0"
+    have "1 * 1 + 4 * 0 + 27 * 0 \<le> D0"
       unfolding D0_def  apply (intro mono_intros) using C delta_nonneg by auto
     then have "D0 > 0" by simp
     text \<open>This is the end of the first step, i.e., showing that $[c(A), c(B)]$ is included in
@@ -1349,9 +1355,9 @@ proof -
     gives a bound on the distance between $y_m$ and $y_M$, and therefore a bound between $y$ and the
     geodesic, as desired.\<close>
 
-    define D1 where "D1 = lambda * lambda * ( 162 * lambda + 32 * C + 162 * deltaG(TYPE('a))^2)"
-    have "1 * 1 * (54 * lambda + 4 * C + 54 * deltaG(TYPE('a))^2)
-            \<le> lambda * lambda * (162 * lambda + 32 * C + 162 * deltaG(TYPE('a))^2)"
+    define D1 where "D1 = lambda * lambda * (81 * lambda + 62 * C + 81 * deltaG(TYPE('a))^2)"
+    have "1 * 1 * (27 * lambda + 14 * C + 27 * deltaG(TYPE('a))^2)
+            \<le> lambda * lambda * (81 * lambda + 62 * C + 81 * deltaG(TYPE('a))^2)"
       apply (intro mono_intros) using C by auto
     then have "D0 \<le> D1" unfolding D0_def D1_def by auto
     have second_step: "infdist y {c A--c B} \<le> D1" if "y \<in> d`{A..B}" for y
@@ -1485,7 +1491,7 @@ proof -
         apply (intro mono_intros) using C * \<open>D0 > 0\<close> by auto
       also have "... = lambda * lambda * (20 * C + 3 * D0)"
         by (auto simp add: algebra_simps)
-      also have "... = lambda * lambda * (32 * C + 162 * lambda + 162 * deltaG(TYPE('a))^2)"
+      also have "... = lambda * lambda * (62 * C + 81 * lambda + 81 * deltaG(TYPE('a))^2)"
         unfolding D0_def by auto
       finally have "dist y w \<le> D1" unfolding D1_def \<open>y = d ty\<close> by (auto simp add: algebra_simps)
       then show "infdist y {c A--c B} \<le> D1" using infdist_le[OF \<open>w \<in> {c A--c B}\<close>, of y] by auto
@@ -1514,12 +1520,12 @@ proof -
       using \<open>A \<in> {A..B}\<close> apply blast
       by (rule quasi_isometry_on_bounded[OF d(5)], auto)
     also have "... \<le> D1 + 5*C" using a b by auto
-    also have "... = lambda * lambda * (162 * lambda + 32 * C + 162 * deltaG(TYPE('a))^2) + 1 * 1 * (5 * C)"
+    also have "... = lambda * lambda * (81 * lambda + 62 * C + 81 * deltaG(TYPE('a))^2) + 1 * 1 * (5 * C)"
       unfolding D1_def by auto
-    also have "... \<le> lambda * lambda * (162 * lambda + 32 * C + 162 * deltaG(TYPE('a))^2)
-                      + lambda * lambda * (130 * C)"
+    also have "... \<le> lambda * lambda * (81 * lambda + 62 * C + 81 * deltaG(TYPE('a))^2)
+                      + lambda * lambda * (19 * C)"
       apply (intro mono_intros) using C delta_nonneg by auto
-    also have "... = 162 * lambda^2 * (lambda + C + deltaG(TYPE('a))^2)"
+    also have "... = 81 * lambda^2 * (lambda + C + deltaG(TYPE('a))^2)"
       by (auto simp add: algebra_simps power2_eq_square)
     finally show ?thesis by (auto simp add: algebra_simps)
   qed
@@ -1530,16 +1536,16 @@ theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem2:
   assumes "quasi_isometry_on lambda C {A..B} c"
           "quasi_isometry_on lambda C {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 324 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof (cases "A \<le> B")
   case False
   then have "hausdorff_distance (c`{A..B}) (d`{A..B}) = 0" by auto
   then show ?thesis using quasi_isometry_onD[OF assms(1)] delta_nonneg by auto
 next
   case True
-  have "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  have "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
     by (rule Morse_Gromov_theorem[OF assms(1)])
-  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le>  162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le>  81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
     unfolding \<open>c A = d A\<close> \<open>c B = d B\<close> apply (subst hausdorff_distance_sym)
     by (rule Morse_Gromov_theorem[OF assms(2)])
   moreover have "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> hausdorff_distance (c`{A..B}) {c A--c B} + hausdorff_distance {c A--c B} (d`{A..B})"
@@ -1557,12 +1563,12 @@ lemma geodesic_quasi_isometric_image:
   fixes f::"'a::metric_space \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
   assumes "quasi_isometry_on lambda C UNIV f"
           "geodesic_segment_between G x y"
-  shows "hausdorff_distance (f`G) {f x--f y} \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
+  shows "hausdorff_distance (f`G) {f x--f y} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
 proof -
   define c where "c = f o (geodesic_segment_param G x)"
   have *: "quasi_isometry_on (1 * lambda) (0 * lambda + C) {0..dist x y} c"
     unfolding c_def by (rule quasi_isometry_on_compose[where Y = UNIV], auto intro!: isometry_quasi_isometry_on simp add: assms)
-  have "hausdorff_distance (c`{0..dist x y}) {c 0--c (dist x y)} \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
+  have "hausdorff_distance (c`{0..dist x y}) {c 0--c (dist x y)} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
     apply (rule Morse_Gromov_theorem) using * by auto
   moreover have "c`{0..dist x y} = f`G"
     unfolding c_def image_comp[symmetric] using assms(2) by auto
@@ -1583,7 +1589,7 @@ distances by a bounded amount.\<close>
 lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::geodesic_space"
   assumes "quasi_isometry_between lambda C UNIV UNIV f"
-  shows "Gromov_hyperbolic_subset (3900 * lambda^4 * (lambda + C + deltaG(TYPE('a))^2)) (UNIV::('b set))"
+  shows "Gromov_hyperbolic_subset (1956 * lambda^4 * (lambda + C + deltaG(TYPE('a))^2)) (UNIV::('b set))"
 proof -
   have C: "lambda \<ge> 1" "C \<ge> 0"
     using quasi_isometry_onD[OF quasi_isometry_betweenD(1)[OF assms]] by auto
@@ -1595,11 +1601,11 @@ proof -
   text \<open>The Morse lemma gives a control bounded by $K$ below. Following the proof, we deduce
   a bound on the thinness of triangles by an ugly constant $L$. We bound it by a more tractable
   (albeit still ugly) constant $M$.\<close>
-  define K where "K = 162 * lambda^2 * ((3 * C * lambda) + lambda + deltaG(TYPE('a))^2)"
+  define K where "K = 81 * lambda^2 * ((3 * C * lambda) + lambda + deltaG(TYPE('a))^2)"
   have HD: "hausdorff_distance (g`G) {g a--g b} \<le> K" if "geodesic_segment_between G a b" for G a b
     unfolding K_def by (rule geodesic_quasi_isometric_image[OF g2 that])
   define L where "L = lambda * (4 * deltaG(TYPE('a)) + 2 * K) + 3 * C * lambda * lambda"
-  define M where "M = 975 * lambda^4 * (lambda + C + deltaG(TYPE('a))^2)"
+  define M where "M = 489 * lambda^4 * (lambda + C + deltaG(TYPE('a))^2)"
   have "4 * x \<le> 4 * lambda + 4 * x * x" if "x \<ge> 0" for x
   proof (cases "x \<ge> 1")
     case True
@@ -1616,17 +1622,17 @@ proof -
   then have "L \<le> lambda * (4 * lambda + 4 * deltaG(TYPE('a)) * deltaG(TYPE('a)) + 2 * K) + 3 * C * lambda * lambda"
     unfolding L_def using C by auto
   also have "... = lambda * (4 * lambda * 1 * 1 * 1 + 4 * deltaG(TYPE('a)) * deltaG(TYPE('a)) * 1 * 1 * 1
-                              + 324 * lambda * lambda * ((3 * C * lambda) + lambda * 1 + deltaG(TYPE('a))^2 * 1))
+                              + 162 * lambda * lambda * ((3 * C * lambda) + lambda * 1 + deltaG(TYPE('a))^2 * 1))
                     + 3 * C * lambda * lambda * 1 * 1"
     unfolding K_def power2_eq_square by auto
   also have "... \<le> lambda * (4 * lambda * lambda * lambda * lambda
                               + 4 * deltaG(TYPE('a)) * deltaG(TYPE('a)) * lambda * lambda * lambda
-                              + 324 * lambda * lambda * ((3 * C * lambda) + lambda * lambda + deltaG(TYPE('a))^2 * lambda))
+                              + 162 * lambda * lambda * ((3 * C * lambda) + lambda * lambda + deltaG(TYPE('a))^2 * lambda))
                     + 3 * C * lambda * lambda * lambda * lambda"
     apply (intro mono_intros) using C by auto
-  also have "... = lambda * lambda * lambda * lambda * (328 * lambda + 975 * C + 328 * deltaG(TYPE('a))^2)"
+  also have "... = lambda * lambda * lambda * lambda * (166 * lambda + 489 * C + 166 * deltaG(TYPE('a))^2)"
     by (auto simp add: algebra_simps power2_eq_square)
-  also have "... \<le> lambda * lambda * lambda * lambda * (975 * lambda + 975 * C + 975 * deltaG(TYPE('a))^2)"
+  also have "... \<le> lambda * lambda * lambda * lambda * (489 * lambda + 489 * C + 489 * deltaG(TYPE('a))^2)"
     apply (intro mono_intros) using C by auto
   also have "... = M" unfolding M_def by (auto simp add: algebra_simps power4_eq_xxxx)
   finally have "L \<le> M" by simp

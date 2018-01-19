@@ -77,42 +77,23 @@ using assms mult_le_cancel_left1 mult_le_cancel_right1 by force+
 
 text \<open>A few convexity inequalities we will need later on.\<close>
 
-lemma uv_le_uu_vv [mono_intros]:
-  "u * v \<le> (u * u + v * v)/2" for u v::real
+lemma xy_le_uxx_vyy [mono_intros]:
+  assumes "u > 0" "u * v = (1::real)"
+  shows "x * y \<le> u * x^2/2 + v * y^2/2"
 proof -
-  have "(u-v) * (u-v) \<ge> 0" by auto
-  then show ?thesis by (auto simp add: algebra_simps)
+  have "v > 0" using assms
+    by (metis (full_types) dual_order.strict_implies_order le_less_linear mult_nonneg_nonpos not_one_le_zero)
+  then have *: "sqrt u * sqrt v = 1"
+    using assms by (metis real_sqrt_mult_distrib2 real_sqrt_one)
+  have "(sqrt u * x - sqrt v * y)^2 \<ge> 0" by auto
+  then have "u * x^2 + v * y^2 - 2 * 1 * x * y \<ge> 0"
+    unfolding power2_eq_square *[symmetric] using \<open>u>0\<close> \<open>v > 0\<close> by (auto simp add: algebra_simps)
+  then show ?thesis by (auto simp add: algebra_simps divide_simps)
 qed
 
-lemma uv_le_uu_vv' [mono_intros]:
-  "u * v \<le> (u^2 + v^2)/2" for u v::real
-using uv_le_uu_vv by (simp add: power2_eq_square)
-
-lemma convex_on_mean_ineq3:
-  fixes f::"real \<Rightarrow> real"
-  assumes "convex_on A f" "x \<in> A" "y \<in> A" "z \<in> A" "convex A"
-  shows "f ((x+y+z)/3) \<le> (f x + f y + f z) / 3"
-proof -
-  have "(1/2) *\<^sub>R y + (1/2) *\<^sub>R z \<in> A" apply (rule convexD) using assms by auto
-  then have "(y+z)/2 \<in> A" by (auto simp add: algebra_simps divide_simps)
-  have "f ((x+y+z)/3) = f ((1-2/3) *\<^sub>R x + (2/3) *\<^sub>R (y+z)/2)"
-    apply (rule arg_cong[of _ _ f]) by (auto simp add: algebra_simps divide_simps)
-  also have "... \<le> (1-2/3) * f x + (2/3) * f ((y+z)/2)"
-    using \<open>x \<in> A\<close> convex_onD[OF assms(1), of "2/3" x "(y+z)/2"] \<open>(y+z)/2 \<in> A\<close> by auto
-  also have "... \<le> (1-2/3) * f x + (2/3) * ((f y + f z)/2)"
-    using convex_onD[OF assms(1), of "1/2" y z] assms by (auto simp add: algebra_simps divide_simps)
-  finally show ?thesis by (auto simp add: algebra_simps divide_simps)
-qed
-
-lemma u_plus_v_plus_w_squared_mono [mono_intros]:
-  "(u + v + w)^2 \<le> 3 * (u^2 + v^2 + w^2)" for u v w::real
-proof -
-  have A: "DERIV (\<lambda>x. x * x) x :> 2 * x" for x::real
-    by (auto intro!: derivative_eq_intros)
-  have *: "convex_on UNIV (\<lambda>t::real. t * t)"
-    by (rule convex_on_realI[OF _ A], auto)
-  show ?thesis using convex_on_mean_ineq3[OF *, of u v w] unfolding power2_eq_square by auto
-qed
+lemma xy_le_xx_yy [mono_intros]:
+  "x * y \<le> x^2/2 + y^2/2" for x y::real
+using xy_le_uxx_vyy[of 1 1] by auto
 
 lemma ln_squared_bound [mono_intros]:
   "(ln x)^2 \<le> 2 * x - 2" if "x \<ge> 1" for x::real

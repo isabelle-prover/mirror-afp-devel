@@ -2470,11 +2470,11 @@ continuous extension to the Gromov boundary, which is a homeomorphism.\<close>
 lemma Gromov_product_at_quasi_isometry:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
   assumes "quasi_isometry lambda C f"
-  shows "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-        "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+  shows "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+        "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
 proof -
   have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-  define D where "D = 162 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
+  define D where "D = 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
   have Dxy: "hausdorff_distance (f`{x--y}) {f x--f y} \<le> D"
     unfolding D_def apply (rule geodesic_quasi_isometric_image[OF assms(1)]) by auto
   have Dyz: "hausdorff_distance (f`{y--z}) {f y--f z} \<le> D"
@@ -2539,20 +2539,20 @@ proof -
   then have **: "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + C + 2 * E"
     unfolding w(4) using \<open>E \<ge> 0\<close> by auto
 
-  have "C + 2 * E = 1 * 1 * C + 2 * ((lambda * 1 * 4 * deltaG(TYPE('a)) + 1 * 1 * C) + 162 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
+  have "C + 2 * E = 1 * 1 * C + 2 * ((lambda * 1 * 4 * deltaG(TYPE('a)) + 1 * 1 * C) + 81 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
     unfolding E_def D_def power2_eq_square by auto
-  also have "... \<le> lambda * lambda * C + 2 * ((lambda * lambda * 4 * deltaG(TYPE('a)) + lambda * lambda * C) + 162 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
+  also have "... \<le> lambda * lambda * C + 2 * ((lambda * lambda * 4 * deltaG(TYPE('a)) + lambda * lambda * C) + 81 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
     apply (intro mono_intros \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close>) using \<open>lambda \<ge> 1\<close> by auto
-  also have "... = lambda * lambda * (327 * C + 324 * lambda + 324 * deltaG(TYPE('b))^2 + 8 * deltaG(TYPE('a)))"
+  also have "... = lambda * lambda * (165 * C + 162 * lambda + 162 * deltaG(TYPE('b))^2 + 8 * deltaG(TYPE('a)))"
     by (simp add: algebra_simps)
-  also have "... \<le> lambda * lambda * (327 * C + 327 * lambda + 327 * deltaG(TYPE('b))^2 + 327 * deltaG(TYPE('a)))"
+  also have "... \<le> lambda * lambda * (165 * C + 165 * lambda + 165 * deltaG(TYPE('b))^2 + 165 * deltaG(TYPE('a)))"
     apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> by auto
-  finally have I: "C + 2 * E \<le> 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+  finally have I: "C + 2 * E \<le> 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
     by (auto simp add: algebra_simps power2_eq_square)
 
-  show "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+  show "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
     using * I by auto
-  show "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+  show "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
     using ** I by auto
 qed
 
@@ -2565,7 +2565,7 @@ proof
   show "Gromov_converging_at_boundary (\<lambda>n. f (u n))"
   proof (rule Gromov_converging_at_boundaryI[of "f (basepoint)"])
     have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+    define D where "D = 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
     fix M::real
     obtain M2::real where M2: "M = M2/lambda - D"
       using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
@@ -2587,7 +2587,7 @@ next
   show "Gromov_converging_at_boundary u"
   proof (rule Gromov_converging_at_boundaryI[of "basepoint"])
     have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 327 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
+    define D where "D = 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
     fix M::real
     define M2 where "M2 = lambda * M + D"
     have M2: "M = (M2 - D)/lambda" unfolding M2_def using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)

@@ -1484,7 +1484,7 @@ proposition (in Gromov_hyperbolic_space) lipschitz_path_close_to_geodesic':
   assumes "lipschitz_on M {A..B} c"
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
-  shows "infdist x (c`{A..B}) \<le> 6 * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
+  shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto
@@ -1492,7 +1492,7 @@ proof -
   have "infdist x (c`{A..B}) = infdist (to_Bonk_Schramm_extension x) ((to_Bonk_Schramm_extension o c)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_infdist[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
-  also have "... \<le> 6 * deltaG(TYPE(('a))) * max 0 (ln (B-A)) + (1*M)"
+  also have "... \<le> (4/ln 2) * deltaG(TYPE(('a))) * max 0 (ln (B-A)) + (1*M)"
     apply (rule BS.lipschitz_path_close_to_geodesic[of _ _ _ _ "to_Bonk_Schramm_extension`G"])
     apply (rule lipschitz_on_compose)
     using assms apply simp
@@ -1507,14 +1507,14 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
   assumes "quasi_isometry_on lambda C {A..B} c"
           "quasi_isometry_on lambda C {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 324 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto
   have "hausdorff_distance (c`{A..B}) (d`{A..B}) = hausdorff_distance ((to_Bonk_Schramm_extension o c)`{A..B}) ((to_Bonk_Schramm_extension o d)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
-  also have "... \<le> 324 * (lambda*1)^2 * ((C*1+0) + (lambda*1) + deltaG(TYPE('a))^2)"
+  also have "... \<le> 162 * (lambda*1)^2 * ((C*1+0) + (lambda*1) + deltaG(TYPE('a))^2)"
     apply (intro BS.Morse_Gromov_theorem2 quasi_isometry_on_compose[where Y = UNIV])
     using assms isometry_quasi_isometry_on to_Bonk_Schramm_extension_isometry by auto
   finally show ?thesis by simp
