@@ -27,7 +27,7 @@ proof -
   have "\<exists>c\<in>C. \<forall>d\<in>C. dist x c \<le> dist x d"
     by (rule continuous_attains_inf[OF assms], intro continuous_intros)
   then show ?thesis unfolding infdist_def using \<open>C \<noteq> {}\<close>
-    by (metis antisym bdd_below_infdist cINF_lower le_cINF_iff)
+    by (metis antisym bdd_below_image_dist cINF_lower le_cINF_iff)
 qed
 
 lemma infdist_almost_attained:

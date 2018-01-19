@@ -1216,16 +1216,6 @@ next
   then show ?thesis by auto
 qed
 
-
-text \<open>A finite union of sets which are bounded below is still bounded below. This follows readily
-from the case of two sets by induction.\<close>
-
-lemma (in lattice) bdd_below_UN:
-  assumes "finite I"
-          "\<And>i. i \<in> I \<Longrightarrow> bdd_below (A i)"
-  shows "bdd_below (\<Union>i\<in>I. A i)"
-using assms by (induction I, auto)
-
 text \<open>Bounded sets of integers are finite.\<close>
 
 lemma finite_real_int_interval [simp]:

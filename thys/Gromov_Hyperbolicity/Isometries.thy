@@ -312,7 +312,7 @@ proof (rule locally_lipschitz_imp_lipschitz[OF _ _ \<open>M \<ge> 0\<close>])
   define A where "A = (\<Union>i\<in> I \<inter> {i. U i \<inter> {z<..T} \<noteq> {}}. U i \<inter> {z..T})"
   have a: "closed A"
     unfolding A_def apply (rule closed_UN) using \<open>finite I\<close> \<open>\<And>i. i \<in> I \<Longrightarrow> closed (U i)\<close> by auto
-  have b: "bdd_below A" unfolding A_def apply (rule bdd_below_UN) using \<open>finite I\<close> by auto
+  have b: "bdd_below A" unfolding A_def using \<open>finite I\<close> by auto
   have "\<exists>i \<in> I. T \<in> U i" using \<open>{u..v} \<subseteq> (\<Union>i\<in>I. U i)\<close> T by auto
   then have c: "T \<in> A" unfolding A_def using T by (auto, fastforce)
   have "Inf A \<ge> z"
