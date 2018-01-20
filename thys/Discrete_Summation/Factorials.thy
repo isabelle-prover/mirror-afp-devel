@@ -23,29 +23,11 @@ lemma ffact_Suc:
     for a :: "'a :: comm_ring_1"
   by (simp add: ffact_def pochhammer_prod prod.atLeast0_lessThan_Suc algebra_simps)
 
+(* TODO: what's the right class here? *)
 lemma ffact_Suc_rev:
-  "ffact (Suc n) a = (a - of_nat n) * ffact n a"
-    for a :: "'a :: comm_ring_1"
-proof (induct n arbitrary: a)
-  case 0
-  then show ?case
-    by (simp add: ffact_Suc)
-next
-  case (Suc n a)
-  moreover have "- 2 + a = (a - 1) - 1"
-    by simp
-  ultimately have hyp:
-    "ffact (Suc n) (a - 1) = (a - 1 - of_nat n) * ffact n (a - 1)"
-    by (simp only:)
-  have "ffact (Suc (Suc n)) a = a * ffact (Suc n) (a - 1)"
-    by (simp add: ffact_Suc)
-  also have "\<dots> = a * (ffact n (a - 1) * (a - of_nat (n + 1)))"
-    by (simp only: hyp) (simp add: algebra_simps)
-  also have "\<dots> = ffact (Suc n) a * (a - of_nat (Suc n))"
-    by (simp add: algebra_simps ffact_Suc)
-  finally have "ffact (Suc (Suc n)) a = ffact (Suc n) a * (a - of_nat (Suc n))" .
-  then show ?case by (simp add: mult.commute)
-qed
+  "ffact (Suc n) m = (m - of_nat n) * ffact n m"
+    for m :: "'a :: {comm_semiring_1_cancel, ab_group_add}"
+unfolding ffact_def pochhammer_rec by (simp add: diff_add_eq)
 
 lemma ffact_nat_triv:
   "ffact n m = 0" if "m < n"
@@ -66,6 +48,18 @@ next
     by (simp add: ffact_nat_triv)
 qed
 
+lemma ffact_Suc_rev_nat:
+  "ffact (Suc n) m = (m - n) * ffact n m"
+proof (cases "n \<le> m")
+  case True
+  then show ?thesis
+    by (simp add: ffact_def pochhammer_rec Suc_diff_le)
+next
+  case False
+  then have "m < n" by simp
+  then show ?thesis by (simp add: ffact_nat_triv)
+qed
+
 lemma fact_div_fact_ffact:
   "fact n div fact m = ffact (n - m) n" if "m \<le> n"
 proof -
@@ -76,6 +70,10 @@ proof -
   ultimately show ?thesis
     by simp
 qed
+
+lemma fact_div_fact_ffact_nat:
+  "fact n div fact (n - k) = ffact k n" if "k \<le> n"
+using that by (simp add: fact_div_fact_ffact)
 
 lemma ffact_fact:
   "ffact n (of_nat n) = (of_nat (fact n) :: 'a :: comm_ring_1)"
@@ -94,6 +92,109 @@ proof -
     using ffact_Suc_rev [of n] by auto
   also have "\<dots> = a * ffact n a" using ffact_add_diff_assoc by (simp add: algebra_simps)
   finally show ?thesis by simp
+qed
+
+(* TODO: what's the right class here? *)
+lemma prod_ffact:
+  fixes m :: "'a :: {ord, ring_1, comm_monoid_mult, comm_semiring_1_cancel}"
+  shows "(\<Prod>i = 0..<n. m - of_nat i) = ffact n m"
+proof -
+  have "inj_on (\<lambda>j. j - 1) {1..n}" by (simp add: inj_on_diff_nat)
+  moreover have "{0..<n} = (\<lambda>j. j - 1) ` {1..n}"
+  proof -
+    have "i \<in> (\<lambda>j. j - 1) ` {1..n}" if "i \<in> {0..<n}" for i
+      using that by (auto intro: image_eqI[where x="i + 1"])
+    from this show ?thesis by auto
+  qed
+  moreover have "m - of_nat (i - 1) = m + 1 - of_nat n + of_nat (n - i)" if "i \<in> {1..n}" for i
+    using that by (simp add: of_nat_diff)
+  ultimately have "(\<Prod>i = 0..<n. m - of_nat i) = (\<Prod>i = 1..n. m + 1 - of_nat n + of_nat (n - i))"
+    by (rule prod.reindex_cong)
+  from this show ?thesis
+    unfolding ffact_def by (simp only: pochhammer_prod_rev)
+qed
+
+lemma prod_ffact_nat:
+  fixes m :: nat
+  shows "(\<Prod>i = 0..<n. m - i) = ffact n m"
+proof cases
+  assume "n \<le> m"
+  have "inj_on (\<lambda>j. j - 1) {1..n}" by (simp add: inj_on_diff_nat)
+  moreover have "{0..<n} = (\<lambda>j. j - 1) ` {1..n}"
+  proof -
+    have "i \<in> (\<lambda>j. j - 1) ` {1..n}" if "i \<in> {0..<n}" for i
+      using that by (auto intro: image_eqI[where x="i + 1"])
+    from this show ?thesis by auto
+  qed
+  ultimately have "(\<Prod>i = 0..<n. m - i) = (\<Prod>i = 1..n. (m + 1) - i)"
+    by (auto intro: prod.reindex_cong[where l="\<lambda>i. i - 1"])
+  from this \<open>n \<le> m\<close> show ?thesis
+    unfolding ffact_def by (simp add: pochhammer_prod_rev)
+next
+  assume "\<not> n \<le> m"
+  from this show ?thesis by (auto simp add: ffact_nat_triv)
+qed
+
+(* TODO: what's the right class here? *)
+lemma prod_rev_ffact:
+  fixes m :: "'a :: {ord, ring_1, comm_monoid_mult, comm_semiring_1_cancel}"
+  shows "(\<Prod>i = 1..n. m - of_nat n + of_nat i) = ffact n m"
+proof -
+  have "inj_on (\<lambda>i. i + 1) {0..<n}" by simp
+  moreover have "{1..n} = (\<lambda>i. i + 1) ` {0..<n}" by auto
+  moreover have "m - of_nat n + of_nat (i + 1) = m + 1 - of_nat n + of_nat i" for i by simp
+  ultimately have "(\<Prod>i = 1..n. m - of_nat n + of_nat i) = (\<Prod>i = 0..<n. m + 1 - of_nat n + of_nat i)"
+    by (rule prod.reindex_cong[where l="\<lambda>i. i + 1"])
+  from this show ?thesis
+    unfolding ffact_def by (simp only: pochhammer_prod)
+qed
+
+lemma prod_rev_ffact_nat:
+  fixes m :: nat
+  assumes "n \<le> m"
+  shows "(\<Prod>i = 1..n. m - n + i) = ffact n m"
+proof -
+  have "inj_on (\<lambda>i. i + 1) {0..<n}" by simp
+  moreover have "{1..n} = (\<lambda>i. i + 1) ` {0..<n}" by auto
+  moreover have "m - n + (i + 1) = m + 1 - n + i" for i
+    using  \<open>n \<le> m\<close> by auto
+  ultimately have "(\<Prod>i = 1..n. m - n + i) = (\<Prod>i = 0..<n. m + 1 - n + i)"
+    by (rule prod.reindex_cong)
+ from this show ?thesis
+   unfolding ffact_def by (simp only: pochhammer_prod of_nat_id)
+qed
+
+lemma prod_rev_ffact_nat':
+  fixes m :: nat
+  assumes "n \<le> m"
+  shows "\<Prod>{m - n + 1..m} = ffact n m"
+proof -
+  have "inj_on (\<lambda>i. m - n + i) {1::nat..n}" by (auto intro: inj_onI)
+  moreover have "{m - n + 1..m} = (\<lambda>i. m - n + i) ` {1::nat..n}"
+  proof -
+    have "i \<in> (\<lambda>i. m + i - n) ` {Suc 0..n}" if "i \<in> {m - n + 1..m}" for i
+      using that \<open>n \<le> m\<close> by (auto intro!: image_eqI[where x="i - (m - n)"])
+    with \<open>n \<le> m\<close> show ?thesis by auto
+  qed
+  moreover have "m - n + i = m - n + i" for i ..
+  ultimately have "\<Prod>{m - n + (1::nat)..m} = (\<Prod>i = 1..n. m - n + i)"
+    by (rule prod.reindex_cong)
+  from this show ?thesis
+    using \<open>n \<le> m\<close> by (simp only: prod_rev_ffact_nat)
+qed
+
+lemma ffact_eq_fact_mult_binomial:
+  "ffact k n = fact k * (n choose k)"
+proof cases
+  assume "k \<le> n"
+  have "ffact k n = fact n div fact (n - k)"
+    using \<open>k \<le> n\<close> by (simp add: fact_div_fact_ffact_nat)
+  also have "\<dots> = fact k * (n choose k)"
+    using \<open>k \<le> n\<close> by (simp add: binomial_fact_lemma[symmetric])
+  finally show ?thesis .
+next
+  assume "\<not> k \<le> n"
+  from this ffact_nat_triv show ?thesis by force
 qed
 
 lemma of_nat_ffact:

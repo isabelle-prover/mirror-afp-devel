@@ -33,7 +33,7 @@ next
     by (simp add: \<Delta>_def)
   also have "\<dots> = of_int (k + 1) * ffact m (of_int k)
     - (ffact m (of_int k) * (of_int k - of_nat m))"
-    using ffact_Suc_rev [of m "of_int k"]
+    using ffact_Suc_rev [of m "(of_int k :: 'a :: comm_ring_1)"]
     by (simp add: ac_simps ffact_Suc)
   also have "\<dots> = (of_int k + 1 - of_int k + of_nat m) * ffact m (of_int k)"
     by (simp add: algebra_simps)

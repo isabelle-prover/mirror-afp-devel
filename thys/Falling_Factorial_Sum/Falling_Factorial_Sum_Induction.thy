@@ -7,28 +7,6 @@ imports
   Discrete_Summation.Factorials
 begin
 
-subsection \<open>Preliminaries: Addition to Factorials Theory\<close>
-
-(* TODO: what's the right class here? *)
-lemma ffact_Suc_rev:
-  fixes m :: "'a :: {comm_semiring_1_cancel, ab_group_add}"
-  shows "ffact (Suc n) m = (m - of_nat n) * ffact n m"
-unfolding ffact_def pochhammer_rec by (simp add: diff_add_eq)
-
-lemma ffact_Suc_rev_nat:
-  "ffact (Suc n) m = (m - n) * ffact n m"
-proof (cases "n \<le> m")
-  case True
-  then show ?thesis
-    by (simp add: ffact_def pochhammer_rec Suc_diff_le)
-next
-  case False
-  then have "m < n" by simp
-  then show ?thesis by (simp add: ffact_nat_triv)
-qed
-
-subsection \<open>Main Proof\<close>
-
 text \<open>Note the potentially special copyright license condition of the following proof.\<close>
 
 lemma ffact_add_nat:
