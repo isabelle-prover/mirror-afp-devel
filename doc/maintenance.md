@@ -80,6 +80,3 @@ editing the file `afp-devel/thys/x/config`:
 -   To switch off: remove your email address from `NOTIFY` and hg
     commit + push the file.
 
-You can also choose to receive email when the status of any entry in AFP
-changes. This is controlled by `MAIN-NOTIFY` in
-`afp-devel/admin/main-config`.
