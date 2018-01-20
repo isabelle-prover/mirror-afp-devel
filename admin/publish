@@ -9,9 +9,9 @@
 
 ## settings
 
-VERSION=2017
+source "$(dirname "$0")/common"
+
 AFP_VERSION=afp-$VERSION
-ISABELLE_VERSION=Isabelle$VERSION
 
 DEST=afpweb@isa-afp.org:
 FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
@@ -28,12 +28,9 @@ FILES=$LN@$FILES
 EXPORT_PRE=afp
 HG=hg
 DATE=`date '+%Y-%m-%d'`
-THYS=thys
 
 TAR=tar
 
-PRG="$(basename "$0")"
-DIR="$(dirname "$0")"
 
 ## functions
 
@@ -45,10 +42,12 @@ function usage()
   echo "  Checks out web site and archive entries and publishes them on the isa-afp.org web site"
   echo
   echo "Options:"
+  echo "  -r                  use specified Isabelle version"
   echo "  -f                  do not ask before publishing"
   echo "  -t <isabelle> <tag> use specified path to isabelle tool script"
   echo
   echo "Examples:"
+  echo "  $PRG -r 2009 Example-Submission"
   echo "  $PRG -t /usr/proj/Isabelle2009/bin/isabelle Isabelle2009 Example-Submission"
   echo
   echo "  $PRG Example-Submission"
@@ -73,38 +72,27 @@ function check_isabelle_tool()
 
 [ "$#" -lt "1" -o "$1" = "-?" ] && usage
 
-ISABELLE_TOOL=isabelle
-USE_RELEASE=1
-TAG="Isabelle$VERSION"
 INTERACTIVE="yes"
 
-while getopts "ft:r" OPT
+while getopts "ft:r:" OPT
 do
     case "$OPT" in
+      r)
+        VERSION="$OPTARG"
+        ;;
       f)
         INTERACTIVE="no"
-        shift
         ;;
       t)
-        USE_RELEASE=0
         ISABELLE_TOOL="$OPTARG"
-        shift $(($OPTIND - 1))
-        TAG="$1"
+        ISABELLE_VERSION="$1"
         shift
-        check_isabelle_tool
         ;;
     esac
 done
+shift $(($OPTIND - 1))
 
-if [ "$USE_RELEASE" == "1" ]; then
-    if [[ $OSTYPE == darwin* ]]; then
-	  ISABELLE_TOOL="$ISABELLE_RELEASES/${TAG}.app/Isabelle/bin/isabelle"
-    fi
-    if [ ! -x "$ISABELLE_TOOL" ]; then
-      ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
-    fi
-    check_isabelle_tool
-fi
+set_isabelle_tool
 
 
 EXPORT=$EXPORT_PRE-$DATE
@@ -113,8 +101,8 @@ EXPORT=$EXPORT_PRE-$DATE
 
 WD="$(pwd)"
 cd "$DIR"
-ROOT="$(hg root)" || fail "could not obtain repos root"
-cd "$ROOT" || fail "could not cd to repos root"
+ROOT="$(hg root)" || fail "could not obtain repo root"
+cd "$ROOT" || fail "could not cd to repo root"
 
 echo "Checking sync with $SRC"
 $HG outgoing $SRC && fail "Push changes to bitbucket first."
@@ -133,10 +121,10 @@ if [ "$1" != "-" ]; then
     BROWSER_INFO=`$ISABELLE_TOOL getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
     [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
-    HTML_THYS=web/browser_info/$TAG
+    HTML_THYS=web/browser_info/$ISABELLE_VERSION
     TARS=web/release
     mkdir -p $HTML_THYS
-    ln -s $TAG web/browser_info/current
+    ln -s $ISABELLE_VERSION web/browser_info/current
     ln -s ../front.css web/entries/front.css
     mkdir -p $TARS
 

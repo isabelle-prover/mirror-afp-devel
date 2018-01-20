@@ -2,7 +2,7 @@ How the Archive Works
 ---------------------
 
 Submission is by email to afp-submit@in.tum.de which is distributed to the
-archive committee (currently GK, TN and LCP). One member will assume
+archive committee (currently GK, TN, LCP, and RT). One member will assume
 responsibility. This includes refereeing the submission, communicating
 with the authors, and installing it in the archive. Once it has been
 installed, it will be announced on isabelle-users.
@@ -40,14 +40,14 @@ the main page).
 
 **Roles:**
 
--   PC / archive admins (TN, GK, LCP, more)
-    -   responsibility:refereeing and initial setup of submissions,
+-   PC / archive admins (TN, GK, LCP, RT, more)
+    -   responsibility: refereeing and initial setup of submissions,
         releases
-    -   access:everything
+    -   access: everything
 -   submitters (everybody)
     -   responsibility: new submissions, become maintainer if accepted
     -   access: email only
--   maintainters (former submitters, Isabelle team)
+-   maintainers (former submitters, Isabelle team)
     -   responsibility: keep development branch up to date with Isabelle
     -   access: repository read/write
 -   user (everybody)

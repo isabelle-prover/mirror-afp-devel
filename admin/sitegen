@@ -7,57 +7,30 @@ VENV_VERSION="15.1.0"
 URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-$VENV_VERSION.tar.gz"
 ### </CONFIGURATION> ###
 
-
 set -e
 
-err() {
-  echo "### $1"
-  exit 1
-}
+source "$(dirname "$0")/common"
+cd $AFP_ROOT
 
-ROOT="$(hg root)"
-cd "$ROOT"
-
-echo "Checking presence of Isabelle ..."
-
-if [ ! -x "$ISABELLE_TOOL" ]; then
-  echo "Isabelle not present at '$ISABELLE_TOOL', trying to use '$ISABELLE_RELEASES'"
-  if [ ! -d "$ISABELLE_RELEASES" ]; then
-    err "No Isabelle releases found"
-  else
-    if [ -z "$ISABELLE_VERSION" ]; then
-      echo "Trying to detect Isabelle version ..."
-      if [[ "$(basename "$(hg config paths.default)")" =~ ^afp-(.+)$ ]]; then
-        ISABELLE_VERSION="${BASH_REMATCH[1]}"
-        echo "Detected '$ISABELLE_VERSION'"
-      else
-        err "Unable to detect Isabelle version"
-      fi
-    fi
-
-    ISABELLE_VERSION="Isabelle$ISABELLE_VERSION"
-
-    case "$(uname -s)" in
-      Darwin)
-        ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_VERSION.app/Isabelle/bin/isabelle"
+while getopts "t:r:" OPT
+do
+    case "$OPT" in
+      r)
+        VERSION="$OPTARG"
         ;;
-      *)
-        ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_VERSION/bin/isabelle"
+      t)
+        ISABELLE_TOOL="$OPTARG"
         ;;
     esac
+done
+shift $((OPTIND-1))
 
-    if [ ! -x "$ISABELLE_TOOL" ]; then
-      err "Isabelle version is not present in '$ISABELLE_RELEASES'"
-    else
-      echo "Using '$ISABELLE_TOOL'"
-    fi
-  fi
-fi
+set_isabelle_tool
 
 echo "Obtaining dependency information ..."
 
 DEPENDENCIES_FILE="$(mktemp /tmp/afp.XXX)"
-"$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || err "Could not obtain dependency information"
+"$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || fail "Could not obtain dependency information"
 
 echo "Checking presence of Python ..."
 
@@ -87,14 +60,14 @@ case "$(uname -s)" in
 esac
 
 if [ ! -f "$PYTHON" ]; then
-  err "No suitable Python found"
+  fail "No suitable Python found"
 else
   echo "Found Python at '$PYTHON'"
 fi
 
 echo "Checking presence of bootstrapping ..."
 
-BOOTSTRAP_DIR="$ROOT/admin/py-bootstrap"
+BOOTSTRAP_DIR="$AFP_ROOT/admin/py-bootstrap"
 export PYTHONPATH="$BOOTSTRAP_DIR/lib/python"
 
 if [ ! -d "$BOOTSTRAP_DIR" ]; then
@@ -111,7 +84,7 @@ fi
 
 echo "Bootstrapped."
 
-VENV_DIR="$ROOT/admin/venv"
+VENV_DIR="$AFP_ROOT/admin/venv"
 
 if [ ! -d "$VENV_DIR" ]; then
   echo "Creating venv ..."
@@ -125,7 +98,7 @@ PYTHON="$VENV_DIR/bin/python"
 PIP="$VENV_DIR/bin/pip"
 
 echo "Installing dependencies ..."
-"$PIP" install -q -r "$ROOT/admin/sitegen-req.txt"
+"$PIP" install -q -r "$AFP_ROOT/admin/sitegen-req.txt"
 
 echo "Running sitegen ..."
 "$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
