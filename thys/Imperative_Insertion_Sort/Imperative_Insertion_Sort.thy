@@ -263,7 +263,7 @@ next
         using sorted_take_nth [OF _ \<open>i' < length (Array.get h\<^sub>2 a)\<close>, of key]
         by (simp add: sorted_append)
       then show ?thesis
-        using shiftr by (auto simp: take_Suc_j sorted_append) (metis less_imp_le sorted.Cons)
+        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le sorted_Cons)
     qed
   qed
   ultimately
@@ -440,7 +440,7 @@ next
         using sorted_take_nth [OF _ \<open>i' < length (Array.get h\<^sub>2 a)\<close>, of key]
         by (simp add: sorted_append)
       then show ?thesis
-        using shiftr by (auto simp: take_Suc_j sorted_append) (metis less_imp_le sorted.Cons)
+        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le sorted_Cons)
     qed
   qed
   ultimately

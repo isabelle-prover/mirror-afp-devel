@@ -101,7 +101,7 @@ end (* context linorder *)
 section {* The @{term "odlist"} type *}
 
 typedef (overloaded) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
-  morphisms toList odlist_Abs by auto
+  morphisms toList odlist_Abs by (auto iff: sorted.simps(1))
 
 lemma distinct_toList[simp]: "distinct (toList xs)"
   using toList by auto
