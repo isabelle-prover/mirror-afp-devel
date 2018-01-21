@@ -11,8 +11,8 @@ imports
 begin
 
 setup {*
-  Document_Antiquotation.setup @{binding haskell} (Scan.lift Args.name)
-    (fn _ => fn s => "\\" ^ "<" ^ s ^ "\\>")
+  Thy_Output.antiquotation_raw \<^binding>\<open>haskell\<close> (Scan.lift Args.name)
+    (fn _ => fn s => Latex.string ("\\" ^ "<" ^ s ^ "\\>"))
 *}
 
 (* LaTeXsugar fights with HOLCF syntax: at least cdot *)
