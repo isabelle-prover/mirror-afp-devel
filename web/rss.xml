@@ -155,6 +155,24 @@ coprime, there are infinitely many primes &lt;em&gt;p&lt;/em&gt; with
 &lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Operations on Bounded Natural Functors</title>
+              <link>https://www.isa-afp.org/entries/BNF_Operations.html</link>
+       <guid>https://www.isa-afp.org/entries/BNF_Operations.html</guid>
+       <dc:creator> Jasmin Christian Blanchette, Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>19 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the closure property of bounded natural functors
+(BNFs) under seven operations. These operations and the corresponding
+proofs constitute the core of Isabelle&#39;s (co)datatype package. To
+be close to the implemented tactics, the proofs are deliberately
+formulated as detailed apply scripts. The (co)datatypes together with
+(co)induction principles and (co)recursors are byproducts of the
+fixpoint operations LFP and GFP. Composition of BNFs is subdivided
+into four simpler operations: Compose, Kill, Lift, and Permute. The
+N2M operation provides mutual (co)induction principles and
+(co)recursors for nested (co)datatypes.</description>
+    </item>
+    <item>
        <title>The string search algorithm by Knuth, Morris and Pratt</title>
               <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
        <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
@@ -588,33 +606,6 @@ finite as well as infinite behavior traces, they are formalized in
 terms of coinductive lists. Thus, our theory is based on
 Lochbihler&#39;s formalization of coinductive lists. The theory may
 be applied to verify properties for dynamic architectures.</description>
-    </item>
-    <item>
-       <title>Declarative Semantics for Functional Languages</title>
-              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</link>
-       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</guid>
-       <dc:creator> Jeremy Siek       </dc:creator>
-       <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a semantics for an applied call-by-value lambda-calculus
-that is compositional, extensional, and elementary. We present four
-different views of the semantics: 1) as a relational (big-step)
-semantics that is not operational but instead declarative, 2) as a
-denotational semantics that does not use domain theory, 3) as a
-non-deterministic interpreter, and 4) as a variant of the intersection
-type systems of the Torino group.  We prove that the semantics is
-correct by showing that it is sound and complete with respect to
-operational semantics on programs and that is sound with respect to
-contextual equivalence. We have not yet investigated whether it is
-fully abstract. We demonstrate that this approach to semantics is
-useful with three case studies. First, we use the semantics to prove
-correctness of a compiler optimization that inlines function
-application. Second, we adapt the semantics to the polymorphic
-lambda-calculus extended with general recursion and prove semantic
-type soundness.  Third, we adapt the semantics to the call-by-value
-lambda-calculus with mutable references.
-&lt;br&gt;
-The paper that accompanies these Isabelle theories is &lt;a href=&#34;https://arxiv.org/abs/1707.03762&#34;&gt;available on arXiv&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

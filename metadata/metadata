@@ -6541,3 +6541,20 @@ abstract =
   geodesic spaces, the Hausdorff distance, the Cauchy completion of a
   metric space, and the exponential on extended real numbers.
 
+[BNF_Operations]
+title = Operations on Bounded Natural Functors
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+topic = Tools
+date = 2017-12-19
+notify = jasmin.blanchette@gmail.com,uuomul@yahoo.com,traytel@inf.ethz.ch
+abstract = 
+  This entry formalizes the closure property of bounded natural functors
+  (BNFs) under seven operations. These operations and the corresponding
+  proofs constitute the core of Isabelle's (co)datatype package. To
+  be close to the implemented tactics, the proofs are deliberately
+  formulated as detailed apply scripts. The (co)datatypes together with
+  (co)induction principles and (co)recursors are byproducts of the
+  fixpoint operations LFP and GFP. Composition of BNFs is subdivided
+  into four simpler operations: Compose, Kill, Lift, and Permute. The
+  N2M operation provides mutual (co)induction principles and
+  (co)recursors for nested (co)datatypes.
