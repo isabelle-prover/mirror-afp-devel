@@ -127,8 +127,8 @@ next
   thus ?case by auto
 next
   case (1 a as b bs)
-  from 1(3) have sas: "sorted as" and a: "\<And> a'. a' \<in> set as \<Longrightarrow> a \<le> a'" unfolding linorder_class.sorted.simps[of "a # as"] by auto
-  from 1(4) have sbs: "sorted bs" and b: "\<And> b'. b' \<in> set bs \<Longrightarrow> b \<le> b'" unfolding linorder_class.sorted.simps[of "b # bs"] by auto
+  from 1(3) have sas: "sorted as" and a: "\<And> a'. a' \<in> set as \<Longrightarrow> a \<le> a'" by (auto simp: sorted_Cons)
+  from 1(4) have sbs: "sorted bs" and b: "\<And> b'. b' \<in> set bs \<Longrightarrow> b \<le> b'" by (auto simp: sorted_Cons)
   show ?case
   proof (cases "a = b")
     case True

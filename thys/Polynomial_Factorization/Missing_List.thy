@@ -54,29 +54,7 @@ lemma find_map_filter_None: "find_map_filter f p as = None \<Longrightarrow> \<f
   by (induct f p as rule: find_map_filter.induct, auto simp: Let_def split: if_splits)
 
 lemma remdups_adj_sorted_distinct[simp]: "sorted xs \<Longrightarrow> distinct (remdups_adj xs)"
-proof (induct xs rule: sorted.induct)
-  case (Cons xs x) note oCons = this
-  show ?case 
-  proof (cases xs)
-    case (Cons y ys)
-    with oCons have "x \<le> y" by auto
-    show ?thesis
-    proof (cases "x = y")
-      case True
-      with oCons Cons show ?thesis by auto
-    next
-      case False
-      with `x \<le> y` have "x < y" by auto      
-      with oCons Cons have id: "remdups_adj (x # xs) = x # remdups_adj xs" by auto
-      {
-        assume "x \<in> set xs" 
-        with `sorted xs` have "y \<le> x" unfolding Cons by (cases, auto)
-        with `x < y` have False by auto
-      }
-      thus ?thesis using oCons(3) unfolding id by auto
-    qed
-  qed simp
-qed simp
+by (induct xs rule: sorted.induct) (auto simp add: sorted_Cons)
 
 lemma subseqs_length_simple:
   assumes "b \<in> set (subseqs xs)" shows "length b \<le> length xs"
@@ -741,7 +719,7 @@ proof (induct xs ys rule: subtract_list_sorted.induct)
   case (1 x xs y ys)
   have xxs: "sorted (x # xs)" by fact 
   have yys: "sorted (y # ys)" by fact
-  have xs: "sorted xs" using xxs by (cases, auto)
+  have xs: "sorted xs" using xxs by (simp add: sorted_Cons)
   show ?case
   proof (cases "x = y")
     case True

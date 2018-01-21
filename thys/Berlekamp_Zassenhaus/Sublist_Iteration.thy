@@ -54,25 +54,15 @@ lemma Cons_mem_set_subseqs_Cons:
 lemma sorted_subseqs_sorted:
   "sorted xs \<Longrightarrow> ys \<in> set (subseqs xs) \<Longrightarrow> sorted ys"
 proof(induct xs arbitrary: ys rule: sorted.induct)
-  case Nil then show ?case by auto
+  case 1 thus ?case by simp
 next
-  case IH: (Cons xs x)
-  from `ys \<in> set (subseqs (x # xs))`
-  show ?case
-  proof(induct ys)
-    case Nil then show ?case by auto
-  next
-    case IH2: (Cons y ys)
-    from this(2)[unfolded subseqs_Cons]
-    consider "y = x" "ys \<in> set (subseqs xs)" | "y # ys \<in> set (subseqs xs)" by auto
-    then show ?case
-    proof(cases)
-      case 1 with IH(1) show ?thesis by (auto simp: sorted_Cons intro: IH2 dest:subseqs_subset)
-    next
-      case 2 then show ?thesis by (intro IH)
-    qed
-  qed
+  case 2 thus ?case by auto
+next
+  case 3
+  thus ?case
+    apply (auto) by (meson order.trans image_eqI sorted_Cons)
 qed
+
 
 lemma subseqs_of_subseq: "ys \<in> set (subseqs xs) \<Longrightarrow> set (subseqs ys) \<subseteq> set (subseqs xs)"
 proof(induct xs arbitrary: ys)
@@ -115,7 +105,7 @@ qed
 
 lemma Cons_mem_set_subseqs_sorted:
   "sorted xs \<Longrightarrow> y#ys \<in> set (subseqs xs) \<Longrightarrow> y#ys \<in> set (subseqs (filter (\<lambda>x. y \<le> x) xs))"
-  by (induct xs rule: sorted.induct, auto simp: Let_def)
+by (induct xs) (auto simp: sorted_Cons Let_def)
 
 lemma subseqs_map[simp]: "subseqs (map f xs) = map (map f) (subseqs xs)" by (induct xs, auto)
 

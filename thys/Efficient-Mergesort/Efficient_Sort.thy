@@ -100,8 +100,8 @@ lemma (in linorder) linked_le_sorted_conv[simp]:
   "linked (\<le>) xs = sorted xs"
 proof
   assume "sorted xs" thus "linked (\<le>) xs"
-  proof (induct xs rule: sorted.induct)
-    case (Cons xs x) thus ?case by (cases xs) simp_all
+  proof (induct xs)
+    case (Cons x xs) thus ?case by (cases xs) simp_all
   qed simp
 qed (induct xs rule: linked.induct, simp_all)
 

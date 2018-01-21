@@ -318,8 +318,8 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
     have res: "res = (if i' dvd n then n \<le> i' else if i' * i' \<le> n then prime_nat_main n jj iis else True)" 
       by simp
     from 1(11) Cons have iis: "set iis \<subseteq> {i..<jj}" and i': "i \<le> i'" "i' < jj" "Suc i' \<le> jj" by auto
-    from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" unfolding Cons by (cases, auto)
-    from sort_dist(1) have "set iis \<subseteq> {i'..}" unfolding Cons by (cases, auto)
+    from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" by(auto simp: Cons sorted_Cons)
+    from sort_dist(1) have "set iis \<subseteq> {i'..}" by(auto simp: Cons sorted_Cons)
     with iis have "set iis \<subseteq> {i'..<jj}" by force
     with `i' \<notin> set iis`  have iis: "set iis \<subseteq> {Suc i'..<jj}"
       by (auto, case_tac "x = i'", auto)
@@ -336,7 +336,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
         have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
-        with `sorted is` have "i' \<le> p" unfolding Cons by (cases, auto)
+        with `sorted is` have "i' \<le> p" by(auto simp: Cons sorted_Cons)
         with pj j(2) show False by arith
       qed
     } note dvd = this
@@ -452,8 +452,8 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
        else if i' * i' \<le> n then prime_factorization_nat_main n jj iis ps else n # ps)" 
       by simp
     from 1(11) i Cons have iis: "set iis \<subseteq> {i..<jj}" and i': "i \<le> i'" "i' < jj" "Suc i' \<le> jj" "i' > 1" by auto
-    from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" unfolding Cons by (cases, auto)
-    from sort_dist(1) have "set iis \<subseteq> {i'..}" unfolding Cons by (cases, auto)
+    from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" by(auto simp: Cons sorted_Cons)
+    from sort_dist(1) have "set iis \<subseteq> {i'..}" by(auto simp: Cons sorted_Cons)
     with iis have "set iis \<subseteq> {i'..<jj}" by force
     with `i' \<notin> set iis`  have iis: "set iis \<subseteq> {Suc i'..<jj}"
       by (auto, case_tac "x = i'", auto)
@@ -470,7 +470,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
         have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
-        with `sorted is` have "i' \<le> p" unfolding Cons by (cases, auto)
+        with `sorted is` have "i' \<le> p" by (auto simp: Cons sorted_Cons)
         with pj j(2) show False by arith
       qed
     } note dvd = this
@@ -796,6 +796,5 @@ lemma divisors_fun_int: "divisors_fun divisors_int"
 
 lemma divisors_pos_fun_int: "divisors_pos_fun divisors_int_pos"
   unfolding divisors_pos_fun_def using divisors_int_pos by auto
-
 
 end

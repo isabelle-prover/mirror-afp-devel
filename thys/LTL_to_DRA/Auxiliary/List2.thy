@@ -170,7 +170,9 @@ lemma remdups_fwd_split_exact_iff:
 
 lemma sorted_pre:
   "(\<And>x y xs ys. zs = xs @ [x, y] @ ys \<Longrightarrow> x \<le> y) \<Longrightarrow> sorted zs"
-  by (induction zs) (simp, metis append_Cons append_Nil sorted.cases sorted_many_eq sorted_single)
+apply (induction zs)
+ apply simp
+by (metis append_Nil append_Cons list.exhaust sorted.simps(2,3))
 
 lemma sorted_list:
   assumes "x \<in> set xs" and "y \<in> set xs"

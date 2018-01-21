@@ -1603,60 +1603,60 @@ proof -
   } thus ?thesis by simp
 qed
 
+
 subsubsection {* Sorting *}
-  lemma sorted_in_between:
-    assumes A: "0\<le>i" "i<j" "j<length l"
-    assumes S: "sorted l"
-    assumes E: "l!i \<le> x" "x<l!j"
-    obtains k where "i\<le>k" and "k<j" and "l!k\<le>x" and "x<l!(k+1)"
-  proof -
-    from A E have "\<exists>k. i\<le>k \<and> k<j \<and> l!k\<le>x \<and> x<l!(k+1)"
-    proof (induct "j-i" arbitrary: i j)
-      case (Suc d)
-      show ?case proof (cases "l!(i+1) \<le> x")
+
+lemma sorted_in_between:
+  assumes A: "0\<le>i" "i<j" "j<length l"
+  assumes S: "sorted l"
+  assumes E: "l!i \<le> x" "x<l!j"
+  obtains k where "i\<le>k" and "k<j" and "l!k\<le>x" and "x<l!(k+1)"
+proof -
+  from A E have "\<exists>k. i\<le>k \<and> k<j \<and> l!k\<le>x \<and> x<l!(k+1)"
+  proof (induct "j-i" arbitrary: i j)
+    case (Suc d)
+    show ?case proof (cases "l!(i+1) \<le> x")
+      case True
+      from True Suc.hyps have "d = j - (i + 1)" by simp
+      moreover from True have "i+1 < j"
+        by (metis Suc.prems Suc_eq_plus1 Suc_lessI not_less)
+      moreover from True have "0\<le>i+1" by simp
+      ultimately obtain k where
+        "i+1\<le>k" "k<j" "l!k \<le> x" "x<l!(k+1)"
+        using Suc.hyps(1)[of j "i+1"] Suc.prems True
+        by auto
+      thus ?thesis by (auto dest: Suc_leD)
+    next
+      case False
+      show ?thesis proof (cases "x<(l!(j - 1))")
         case True
         from True Suc.hyps have "d = j - (i + 1)" by simp
-        moreover from True have "i+1 < j"
-          by (metis Suc.prems Suc_eq_plus1 Suc_lessI not_less)
-        moreover from True have "0\<le>i+1" by simp
+        moreover from True Suc.prems have "i < j - 1"
+          by (metis Suc_eq_plus1 Suc_lessI diff_Suc_1 less_diff_conv not_le)
+        moreover from True Suc.prems have "j - 1 < length l" by simp
         ultimately obtain k where
-          "i+1\<le>k" "k<j" "l!k \<le> x" "x<l!(k+1)"
-          using Suc.hyps(1)[of j "i+1"] Suc.prems True
+          "i\<le>k" "k<j - 1" "l!k \<le> x" "x<l!(k+1)"
+          using Suc.hyps(1)[of "j - 1" i] Suc.prems True
           by auto
         thus ?thesis by (auto dest: Suc_leD)
       next
-        case False
-        show ?thesis proof (cases "x<(l!(j - 1))")
-          case True
-          from True Suc.hyps have "d = j - (i + 1)" by simp
-          moreover from True Suc.prems have "i < j - 1"
-            by (metis Suc_eq_plus1 Suc_lessI diff_Suc_1 less_diff_conv not_le)
-          moreover from True Suc.prems have "j - 1 < length l" by simp
-          ultimately obtain k where
-            "i\<le>k" "k<j - 1" "l!k \<le> x" "x<l!(k+1)"
-            using Suc.hyps(1)[of "j - 1" i] Suc.prems True
-            by auto
-          thus ?thesis by (auto dest: Suc_leD)
-        next
-          case False thus ?thesis using Suc
-            apply clarsimp
-            by (metis Suc_leI add_0_iff add_diff_inverse diff_Suc_1 le_add2 lessI
+        case False thus ?thesis using Suc
+          apply clarsimp
+          by (metis Suc_leI add_0_iff add_diff_inverse diff_Suc_1 le_add2 lessI
               not0_implies_Suc not_less)
-        qed
       qed
-    qed simp
-    thus ?thesis by (blast intro: that)
-  qed
-
-
+    qed
+  qed simp
+  thus ?thesis by (blast intro: that)
+qed
 
 lemma sorted_hd_last:
   "\<lbrakk>sorted l; l\<noteq>[]\<rbrakk> \<Longrightarrow> hd l \<le> last l"
-  by (metis List.last_in_set eq_iff list.sel(1) last.simps sorted.cases)
+by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted_Cons)
 
 lemma (in linorder) sorted_hd_min:
   "\<lbrakk>xs \<noteq> []; sorted xs\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. hd xs \<le> x"
-  by (induct xs, auto simp add: sorted_Cons)
+by (induct xs, auto simp add: sorted_Cons)
 
 lemma sorted_append_bigger:
   "\<lbrakk>sorted xs; \<forall>x \<in> set xs. x \<le> y\<rbrakk> \<Longrightarrow> sorted (xs @ [y])"
