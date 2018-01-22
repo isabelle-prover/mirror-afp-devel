@@ -125,10 +125,10 @@ next
     apply (auto intro!: nth_equalityI)
     using xss_ne
     apply (auto simp: nth_Cons nth_append o_def split: nat.splits)
-    apply (meson hd_conv_nth sum_list_cong)
-    apply (meson hd_conv_nth sum_list_cong)
-    apply (meson Misc.nth_tl sum_list_cong)
-    by (metis (no_types, lifting) Misc.nth_tl Suc_leI le_neq_implies_less sum_list_cong)
+    apply (meson hd_conv_nth arg_cong[OF map_cong, where f = sum_list])
+    apply (meson hd_conv_nth arg_cong[OF map_cong, where f = sum_list])
+    apply (meson Misc.nth_tl arg_cong[OF map_cong, where f = sum_list])
+    by (metis (no_types, lifting) Misc.nth_tl Suc_leI le_neq_implies_less map_cong)
 qed
 
 lemma inner_sum_list_left: "sum_list xs \<bullet> b = (\<Sum>x\<leftarrow>xs. x \<bullet> b)"
