@@ -363,6 +363,7 @@ lemma Solutions_snd_not_0:
   shows "nonzero y"
   using assms by (metis nonzero_Solutions_iff)
 
+end
 
 subsection \<open>Pointwise Restricting Solutions\<close>
 
@@ -538,6 +539,9 @@ proof -
     using assms by (auto simp: sum_list_us_eq)
   ultimately show ?thesis by (intro le_sum_list_less) (auto simp: less_eq_def)
 qed
+
+context hlde
+begin
 
 lemma max_coeff_bound_right:
   assumes "(xs, ys) \<in> Minimal_Solutions"
@@ -885,7 +889,7 @@ lemma non_special_solution_non_minimal:
 proof
   assume min: "(x, y) \<in> Minimal_Solutions"
   moreover have "sij i j \<in> Solutions"
-    using Special_Solutions_def hlde.Special_Solutions_in_Solutions hlde_axioms ij by blast
+    using ij by (intro Special_Solutions_in_Solutions) (auto simp: Special_Solutions_def)
   moreover have "(case sij i j of (u, v) \<Rightarrow> u @ v) <\<^sub>v x @ y"
     using assms and min
     apply (cases "sij i j")
