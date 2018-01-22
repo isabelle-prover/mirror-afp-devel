@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Jan 2018 00:00:00 +0000</pubDate>
+    <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</title>
+              <link>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
+       <guid>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
+       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel, Uwe Waldmann       </dc:creator>
+       <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
+&lt;em&gt;Handbook of Automated Reasoning&lt;/em&gt;. This includes
+soundness and completeness of unordered and ordered variants of ground
+resolution with and without literal selection, the standard redundancy
+criterion, a general framework for refutational theorem proving, and
+soundness and completeness of an abstract first-order prover.</description>
+    </item>
     <item>
        <title>Gromov Hyperbolicity</title>
               <link>https://www.isa-afp.org/entries/Gromov_Hyperbolicity.html</link>
@@ -576,36 +591,6 @@ then simply transforms the terms algebraically to yield the
 conjectured relation. The formalization in Isabelle can closely follow
 the informal proofs described in the Wikipedia articles of those two
 theorems.</description>
-    </item>
-    <item>
-       <title>Dynamic Architectures</title>
-              <link>https://www.isa-afp.org/entries/DynamicArchitectures.html</link>
-       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.html</guid>
-       <dc:creator> Diego Marmsoler       </dc:creator>
-       <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-The architecture of a system describes the system&#39;s overall
-organization into components and connections between those components.
-With the emergence of mobile computing, dynamic architectures have
-become increasingly important. In such architectures, components may
-appear or disappear, and connections may change over time. In the
-following we mechanize a theory of dynamic architectures and verify
-the soundness of a corresponding calculus. Therefore, we first
-formalize the notion of configuration traces as a model for dynamic
-architectures. Then, the behavior of single components is formalized
-in terms of behavior traces and an operator is introduced and studied
-to extract the behavior of a single component out of a given
-configuration trace. Then, behavior trace assertions are introduced as
-a temporal specification technique to specify behavior of components.
-Reasoning about component behavior in a dynamic context is formalized
-in terms of a calculus for dynamic architectures. Finally, the
-soundness of the calculus is verified by introducing an alternative
-interpretation for behavior trace assertions over configuration traces
-and proving the rules of the calculus. Since projection may lead to
-finite as well as infinite behavior traces, they are formalized in
-terms of coinductive lists. Thus, our theory is based on
-Lochbihler&#39;s formalization of coinductive lists. The theory may
-be applied to verify properties for dynamic architectures.</description>
     </item>
   </channel>
 </rss>

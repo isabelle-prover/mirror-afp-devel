@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>First-Order Logic According to Harrison - Archive of Formal Proofs
+<title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,21 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>irst-Order
+  <h1>          <font class="first">F</font>ormalization
   
-          <font class="first">L</font>ogic
+          of
   
-          <font class="first">A</font>ccording
+          <font class="first">B</font>achmair
   
-          to
+          and
   
-          <font class="first">H</font>arrison
+          <font class="first">G</font>anzinger's
+  
+          <font class="first">O</font>rdered
+  
+          <font class="first">R</font>esolution
+  
+          <font class="first">P</font>rover
   
 </h1>
   <p>&nbsp;</p>
@@ -78,7 +84,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">First-Order Logic According to Harrison</td>
+  <td class="data" width="80%">Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</td>
 </tr>
 
 <tr>
@@ -86,9 +92,10 @@
           Authors:
       </td>
   <td class="data">
-                      <a href="https://people.compute.dtu.dk/aleje/">Alexander Birch Jensen</a>,
-                Anders Schlichtkrull (andschl /at/ dtu /dot/ dk) and
-          <a href="https://people.compute.dtu.dk/jovi/">Jørgen Villadsen</a>
+                      Anders Schlichtkrull (andschl /at/ dtu /dot/ dk),
+                  Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com),
+                Dmitriy Traytel (traytel /at/ inf /dot/ ethz /dot/ ch) and
+          Uwe Waldmann (uwe /at/ mpi-inf /dot/ mpg /dot/ de)
       </td>
 </tr>
 
@@ -96,31 +103,32 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-01-01</td>
+  <td class="data">2018-01-18</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We present a certified declarative first-order prover with equality
-based on John Harrison's Handbook of Practical Logic and
-Automated Reasoning, Cambridge University Press, 2009. ML code
-reflection is used such that the entire prover can be executed within
-Isabelle as a very simple interactive proof assistant. As examples we
-consider Pelletier's problems 1-46.</td>
+This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+Ganzinger's "Resolution Theorem Proving" chapter in the
+<em>Handbook of Automated Reasoning</em>. This includes
+soundness and completeness of unordered and ordered variants of ground
+resolution with and without literal selection, the standard redundancy
+criterion, a general framework for refutational theorem proving, and
+soundness and completeness of an abstract first-order prover.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{FOL_Harrison-AFP,
-  author  = {Alexander Birch Jensen and Anders Schlichtkrull and Jørgen Villadsen},
-  title   = {First-Order Logic According to Harrison},
+        <pre>@article{Ordered_Resolution_Prover-AFP,
+  author  = {Anders Schlichtkrull and Jasmin Christian Blanchette and Dmitriy Traytel and Uwe Waldmann},
+  title   = {Formalization of Bachmair and Ganzinger's Ordered Resolution Prover},
   journal = {Archive of Formal Proofs},
   month   = jan,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/FOL_Harrison.html},
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Ordered_Resolution_Prover.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -131,7 +139,9 @@ consider Pelletier's problems 1-46.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Coinductive.html">Coinductive</a>, <a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>      </td></tr>
+          
                     
 
         
@@ -144,29 +154,23 @@ consider Pelletier's problems 1-46.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/FOL_Harrison/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/FOL_Harrison/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/FOL_Harrison/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-FOL_Harrison-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Ordered_Resolution_Prover-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-FOL_Harrison-2017-01-04.tar.gz">
-            afp-FOL_Harrison-2017-01-04.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
