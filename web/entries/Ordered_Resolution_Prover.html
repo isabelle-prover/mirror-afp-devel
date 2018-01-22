@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms - Archive of Formal Proofs
+<title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -65,19 +65,17 @@
   
           of
   
-          <font class="first">R</font>ecursive
+          <font class="first">B</font>achmair
   
-          <font class="first">P</font>ath
+          and
   
-          <font class="first">O</font>rders
+          <font class="first">G</font>anzinger's
   
-          for
+          <font class="first">O</font>rdered
   
-          <font class="first">L</font>ambda-Free
+          <font class="first">R</font>esolution
   
-          <font class="first">H</font>igher-Order
-  
-          <font class="first">T</font>erms
+          <font class="first">P</font>rover
   
 </h1>
   <p>&nbsp;</p>
@@ -86,7 +84,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</td>
+  <td class="data" width="80%">Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</td>
 </tr>
 
 <tr>
@@ -94,9 +92,10 @@
           Authors:
       </td>
   <td class="data">
-                      Jasmin Christian Blanchette (j /dot/ c /dot/ blanchette /at/ vu /dot/ nl),
-                Uwe Waldmann (waldmann /at/ mpi-inf /dot/ mpg /dot/ de) and
-          Daniel Wand (dwand /at/ mpi-inf /dot/ mpg /dot/ de)
+                      Anders Schlichtkrull (andschl /at/ dtu /dot/ dk),
+                  Jasmin Christian Blanchette (j /dot/ c /dot/ blanchette /at/ vu /dot/ nl),
+                Dmitriy Traytel (traytel /at/ inf /dot/ ethz /dot/ ch) and
+          and Uwe Waldmann (uwe /at/ mpi-inf /dot/ mpg /dot/ de)
       </td>
 </tr>
 
@@ -104,25 +103,32 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-09-23</td>
+  <td class="data">2018-01-18</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.</td>
+  <td class="abstract">
+This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+Ganzinger's "Resolution Theorem Proving" chapter in the
+<em>Handbook of Automated Reasoning</em>. This includes
+soundness and completeness of unordered and ordered variants of ground
+resolution with and without literal selection, the standard redundancy
+criterion, a general framework for refutational theorem proving, and
+soundness and completeness of an abstract first-order prover.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Lambda_Free_RPOs-AFP,
-  author  = {Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
-  title   = {Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms},
+        <pre>@article{Ordered_Resolution_Prover-AFP,
+  author  = {Anders Schlichtkrull and Jasmin Christian Blanchette and Dmitriy Traytel and and Uwe Waldmann},
+  title   = {Formalization of Bachmair and Ganzinger's Ordered Resolution Prover},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Lambda_Free_RPOs.html},
+  month   = jan,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Ordered_Resolution_Prover.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -133,10 +139,10 @@
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Lambda_Free_KBOs.html">Lambda_Free_KBOs</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Coinductive.html">Coinductive</a>, <a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -148,29 +154,23 @@
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Ordered_Resolution_Prover/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Lambda_Free_RPOs-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Ordered_Resolution_Prover-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Lambda_Free_RPOs-2016-12-17.tar.gz">
-            afp-Lambda_Free_RPOs-2016-12-17.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

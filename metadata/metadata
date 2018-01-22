@@ -6481,3 +6481,19 @@ abstract =
   explicitly with respect to the outwards-pointing normal vector.
   Instead we appeal to a homological argument about equivalences between
   paths.
+  
+[Ordered_Resolution_Prover]
+title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
+author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, and Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
+topic = Logic
+date = 2018-01-18
+notify = andschl@dtu.dk, j.c.blanchette@vu.nl
+abstract = 
+  This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+  Ganzinger's "Resolution Theorem Proving" chapter in the
+  <em>Handbook of Automated Reasoning</em>. This includes
+  soundness and completeness of unordered and ordered variants of ground
+  resolution with and without literal selection, the standard redundancy
+  criterion, a general framework for refutational theorem proving, and
+  soundness and completeness of an abstract first-order prover.
+

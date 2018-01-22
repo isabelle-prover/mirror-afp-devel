@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>11 Jan 2018 00:00:00 +0000</pubDate>
+    <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</title>
+              <link>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
+       <guid>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
+       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel, and Uwe Waldmann       </dc:creator>
+       <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
+&lt;em&gt;Handbook of Automated Reasoning&lt;/em&gt;. This includes
+soundness and completeness of unordered and ordered variants of ground
+resolution with and without literal selection, the standard redundancy
+criterion, a general framework for refutational theorem proving, and
+soundness and completeness of an abstract first-order prover.</description>
+    </item>
     <item>
        <title>An Isabelle/HOL formalisation of Green's Theorem</title>
               <link>https://www.isa-afp.org/entries/Green.html</link>
@@ -583,27 +598,6 @@ self-referential implementation commonly used to showcase
 Haskell&#39;s laziness; prove correctness of GHC&#39;s
 &#34;fold/build&#34; rule and related rewrite rules; and certify a
 number of hints suggested by HLint.</description>
-    </item>
-    <item>
-       <title>Minkowski's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/Minkowskis_Theorem.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Minkowski&#39;s theorem relates a subset of
-&amp;#8477;&lt;sup&gt;n&lt;/sup&gt;, the Lebesgue measure, and the
-integer lattice &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;: It states that
-any convex subset of &amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with volume
-greater than 2&lt;sup&gt;n&lt;/sup&gt; contains at least one lattice
-point from &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;\{0}, i.&amp;thinsp;e. a
-non-zero point with integer coefficients.&lt;/p&gt;  &lt;p&gt;A
-related theorem which directly implies this is Blichfeldt&#39;s
-theorem, which states that any subset of
-&amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with a volume greater than 1
-contains two different points whose difference vector has integer
-components.&lt;/p&gt;  &lt;p&gt;The entry contains a proof of both
-theorems.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
