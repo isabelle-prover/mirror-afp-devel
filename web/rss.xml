@@ -14,7 +14,7 @@
        <title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</title>
               <link>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
        <guid>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
-       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel, and Uwe Waldmann       </dc:creator>
+       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel, Uwe Waldmann       </dc:creator>
        <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
        <description>
 This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
