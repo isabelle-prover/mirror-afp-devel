@@ -5,7 +5,6 @@ section \<open>Type-Class-Multivariate Polynomials\<close>
 theory Abstract_Poly
   imports
     Power_Products
-    "HOL-Library.Function_Algebras"
 begin
 
 text \<open>This theory views \<open>'a \<Rightarrow>\<^sub>0 'b\<close> as multivariate polynomials, where type class constraints on
@@ -20,15 +19,6 @@ lemma coeff_monom:
   by (auto simp: coeff_monom)
 
 abbreviation "monomial \<equiv> (\<lambda>c t. PP_Poly_Mapping.single t c)"
-
-instantiation poly_mapping :: (type, "{equal, zero}") equal
-begin
-definition equal_poly_mapping::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
-  "equal_poly_mapping p q \<equiv> (\<forall>t. lookup p t = lookup q t)"
-
-instance by standard (auto simp: equal_poly_mapping_def poly_mapping_eq_iff)
-
-end
 
 subsection \<open>Multiplication by Monomials (in type class)\<close>
 

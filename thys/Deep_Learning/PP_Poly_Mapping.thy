@@ -252,6 +252,9 @@ lemma poly_mapping_eqI:
   shows "f = g"
   using assms unfolding poly_mapping.lookup_inject [symmetric] by auto
 
+lemma poly_mapping_eq_iff: "a = b \<longleftrightarrow> lookup a = lookup b"
+  unfolding fun_eq_iff using poly_mapping_eqI by blast
+
 text \<open>
   We model the universe of functions being \qt{almost everywhere zero}
   by means of a separate type @{typ "('a, 'b) poly_mapping"}.
@@ -277,6 +280,7 @@ text \<open>
 \<close>
 
 setup_lifting type_definition_poly_mapping
+code_datatype Abs_poly_mapping\<comment>\<open>FIXME? workaround for preventing \<open>code_abstype\<close> setup\<close>
 
 text \<open>
   @{typ "'a \<Rightarrow>\<^sub>0 'b"} serves distinctive purposes:
@@ -1000,6 +1004,9 @@ qed
 lemma in_keys_lookup_in_range [simp]:
   "k \<in> keys f \<Longrightarrow> lookup f k \<in> range f"
   by transfer simp
+
+lemma in_keys_iff: "x \<in> (keys s) = (lookup s x \<noteq> 0)"
+  by (transfer, simp)
 
 lemma keys_zero [simp]:
   "keys 0 = {}"

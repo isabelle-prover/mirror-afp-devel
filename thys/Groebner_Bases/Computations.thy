@@ -44,8 +44,7 @@ global_interpretation opp_lex: od_powerprod lex_pm lex_pm_strict
 
 subsubsection \<open>Computations\<close>
 
-hide_const (open) PP
-abbreviation PP :: "('a \<times> nat) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 nat" where "PP \<equiv> Poly_Lists.PP"
+abbreviation PP :: "('a \<times> nat) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 nat" where "PP \<equiv> PM"
 
 lemma
   "lp_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, 2), (Y, 1)]"

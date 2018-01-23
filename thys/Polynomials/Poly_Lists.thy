@@ -3,535 +3,84 @@
 section \<open>Executable Representation of Polynomial Mappings as Association Lists\<close>
 
 theory Poly_Lists
-imports Abstract_Poly "HOL-Library.AList"
+  imports
+    Abstract_Poly
+    Poly_Mapping_Finite_Map
 begin
 
-text \<open>In this theory, power-products of type @{typ "('a, nat) poly_mapping"} and multivariate polynomials of type
-  @{typ "('a, 'b) poly_mapping"} are represented as association lists. Code equations are proved in order
-  to actually perform computations (addition, multiplication, etc.).\<close>
+text \<open>In this theory, (type class) multivariate polynomials of type
+  @{typ "('a, 'b) poly_mapping"} are represented as association lists.\<close>
 
 text \<open>In principle, one could also build upon theory \<open>Polynomials\<close>, although there the representations of
   power-products and polynomials additionally have to satisfy certain invariants, which we do not
   require here.\<close>
 
-subsection \<open>Utilities\<close>
+lemma fmlookup_default_fmmap:
+  "fmlookup_default d (fmmap f M) x = (if x \<in> fmdom' M then f (fmlookup_default d M x) else d)"
+  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
 
-hide_const (open) lookup
-
-definition "lookup = (\<lambda>xs i. case map_of xs i of Some i \<Rightarrow> i | None \<Rightarrow> 0)"
-definition normalize::"('a * 'b::zero) list \<Rightarrow> ('a * 'b) list" where
-  "normalize xs \<equiv> filter (\<lambda>(k, v). v \<noteq> 0) (AList.clearjunk xs)"
-  
-lemma not_list_ex:
-  "(\<not> list_ex P xs) = (list_all (\<lambda>x. \<not> P x) xs)"
-unfolding list_ex_iff list_all_iff by simp
-
-lemma foldl_assoc:
-  assumes "\<And>x y z. f (f x y) z = f x (f y z)"
-  shows "foldl f (f a b) xs = f a (foldl f b xs)"
-proof (induct xs arbitrary: a b)
-  fix a b
-  show "foldl f (f a b) [] = f a (foldl f b [])" by simp
-next
-  fix a b x xs
-  assume "\<And>a b. foldl f (f a b) xs = f a (foldl f b xs)"
-  from assms[of a b x] this[of a "f b x"]
-    show "foldl f (f a b) (x # xs) = f a (foldl f b (x # xs))" unfolding foldl_Cons by simp
-qed
-
-lemma map_of_filter_NoneI:
-  assumes "map_of xs k = None"
-  shows "map_of (filter (\<lambda>(k, v). P k v) xs) k = None"
-proof (cases "map_of (filter (\<lambda>(k, v). P k v) xs) k")
-  case None
-  thus ?thesis .
-next
-  case Some
-  fix v
-  assume "map_of [(k, v)\<leftarrow>xs . P k v] k = Some v"
-  from map_of_SomeD[OF this] have "(k, v) \<in> set xs" by simp
-  from weak_map_of_SomeI[OF this] obtain v0 where "map_of xs k = Some v0" ..
-  from this assms show ?thesis by simp
-qed
-
-lemma clearjunk_distinct:
-  shows "distinct (AList.clearjunk xs)"
-  using distinct_clearjunk[of xs] distinct_map[of fst] by blast
-
-lemma finite_lookup:
-  "finite {x. lookup xs x \<noteq> 0}"
-proof -
-  fix xs::"('a * 'b::zero) list"
-  have a: "finite (fst ` set xs)" by simp
-  have "{t. lookup xs t \<noteq> 0} \<subseteq> fst ` set xs"
-  proof
-    fix x
-    assume "x \<in> {t. lookup xs t \<noteq> 0}"
-    hence "lookup xs x \<noteq> 0" by simp
-    from this obtain c where c: "map_of xs x = Some c" unfolding lookup_def by fastforce
-    show "x \<in> fst ` set xs"
-    proof
-      show "x = fst (x, c)" by simp
-    next
-      from map_of_SomeD[OF c] show "(x, c) \<in> set xs" .
-    qed
-  qed
-  from finite_subset[OF this a] show "finite {t. lookup xs t \<noteq> 0}" .
-qed
-
-lemma map_lookup_map_fst:
-  assumes "distinct (map fst xs)"
-  shows "map (lookup xs) (map fst xs) = map snd xs"
-using assms
-proof (induct xs, simp)
-  fix x and xs::"('a * 'b) list"
-  assume IH: "distinct (map fst xs) \<Longrightarrow> map (lookup xs) (map fst xs) = map snd xs"
-    and dist_Cons: "distinct (map fst (x # xs))"
-  from dist_Cons have dist: "distinct (map fst xs)" by simp
-
-  obtain k1 v1 where x: "x = (k1, v1)" by fastforce
-  from x dist_Cons have k1: "k1 \<notin> set (map fst xs)" by simp
-
-  from x have eq1: "lookup (x # xs) (fst x) = snd x" unfolding lookup_def by simp
-
-  have eq2: "map (lookup (x # xs)) (map fst xs) = map (lookup xs) (map fst xs)"
-  proof (rule map_cong, simp, simp only: x)
-    fix k
-    assume "k \<in> set (map fst xs)"
-    from this k1 have "k \<noteq> k1" by auto
-    thus "lookup ((k1, v1) # xs) k = lookup xs k" unfolding lookup_def map_of_Cons_code by simp
-  qed
-
-  from eq1 eq2 IH[OF dist] show "map (lookup (x # xs)) (map fst (x # xs)) = map snd (x # xs)"
-    by simp
-qed
-
-lemma list_all_merge_comm:
-  assumes "list_all (\<lambda>(k, v). P (lookup xs k) (lookup ys k)) (AList.merge xs ys)"
-  shows "list_all (\<lambda>(k, v). P (lookup xs k) (lookup ys k)) (AList.merge ys xs)"
-unfolding list_all_def
-proof (rule, rule)
-  fix x k v
-  assume "x \<in> set (AList.merge ys xs)" and "x = (k, v)"
-  have "k \<in> fst ` set (AList.merge ys xs)"
-  proof
-    from \<open>x = (k, v)\<close> show "k = fst x" by simp
-  qed (fact)
-  hence "k \<in> fst ` set (AList.merge xs ys)"
-    by (simp add: dom_merge Un_commute[of "fst ` set xs" "fst ` set ys"])
-  from this obtain v' where a: "(k, v') \<in> set (AList.merge xs ys)" by auto
-  from assms have "\<forall>(k, v)\<in>set (AList.merge xs ys). P (lookup xs k) (lookup ys k)"
-    unfolding list_all_def .
-  from this a show "P (lookup xs k) (lookup ys k)" by auto
-qed
-
-lemma distinct_normalize:
-  assumes "distinct (map fst xs)"
-  shows "normalize xs = filter (\<lambda>(k, v). v \<noteq> 0) xs"
-by (simp add: normalize_def distinct_clearjunk_id[OF assms])
-
-lemma normalize_distinct:
-  shows "distinct (map fst (normalize xs))"
-unfolding normalize_def
-proof (simp add: distinct_map distinct_filter[OF clearjunk_distinct] inj_on_def, (intro allI, intro impI)+)
-  fix a b c
-  assume "(a, b) \<in> set (AList.clearjunk xs) \<and> b \<noteq> 0"
-  hence b: "(a, b) \<in> set (AList.clearjunk xs)" ..
-  assume "(a, c) \<in> set (AList.clearjunk xs) \<and> c \<noteq> 0"
-  hence c: "(a, c) \<in> set (AList.clearjunk xs)" ..
-  from map_of_is_SomeI[OF distinct_clearjunk[of xs] b] map_of_is_SomeI[OF distinct_clearjunk[of xs] c]
-    show "b = c" by simp
-qed
-
-lemma lookup_normalize:
-  shows "lookup xs s = lookup (normalize xs) s"
-unfolding normalize_def lookup_def
-proof (split option.split, intro conjI, intro impI)
-  assume none: "map_of [(k, v)\<leftarrow>AList.clearjunk xs . v \<noteq> 0] s = None"
-  show "(case map_of xs s of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = 0"
-  proof (split option.split, intro conjI, simp, intro allI, intro impI, rule ccontr)
-    fix c
-    assume a: "map_of xs s = Some c" and "c \<noteq> 0"
-    from a map_of_clearjunk[of xs] have "map_of (AList.clearjunk xs) s = Some c" by simp
-    from none map_of_filter_in[OF this, of "\<lambda>x y. y \<noteq> 0", OF \<open>c \<noteq> 0\<close>] show False by simp
-  qed
-next
-  show "\<forall>x2. map_of [(k, v)\<leftarrow>AList.clearjunk xs . v \<noteq> 0] s = Some x2 \<longrightarrow>
-          (case map_of xs s of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = x2"
-  proof (intro allI, intro impI)
-    fix c
-    assume "map_of [(k, v)\<leftarrow>AList.clearjunk xs . v \<noteq> 0] s = Some c"
-    from map_of_SomeD[OF this] have c: "(s, c) \<in> set (AList.clearjunk xs)" by simp
-    from map_of_is_SomeI[OF distinct_clearjunk[of xs] this] map_of_clearjunk[of xs]
-      show "(case map_of xs s of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = c" by simp
-  qed
-qed
-
-lemma normalize_nonzero:
-  assumes "(t, c) \<in> set (normalize xs)"
-  shows "c \<noteq> 0"
-using assms unfolding normalize_def by simp
-
-lemma normalize_map_of_SomeI:
-  assumes "(t, c) \<in> set (normalize xs)"
-  shows "map_of xs t = Some c"
-proof -
-  from map_of_is_SomeI[OF normalize_distinct assms] lookup_normalize[of xs t]
-    have a: "(case map_of xs t of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = c" unfolding lookup_def by simp
-  show ?thesis
-  proof (cases "map_of xs t")
-    case None
-    thus ?thesis using a normalize_nonzero[OF assms] by simp
-  next
-    case Some
-    fix b
-    assume "map_of xs t = Some b"
-    thus ?thesis using a by simp
-  qed
-qed
-
-lemma normalize_map_of_SomeD:
-  assumes a1: "map_of xs t = Some c" and "c \<noteq> 0"
-  shows "(t, c) \<in> set (normalize xs)"
-proof -
-  from lookup_normalize[of xs t] a1
-    have a: "c = (case map_of (normalize xs) t of None \<Rightarrow> 0 | Some i \<Rightarrow> i)"
-    unfolding lookup_def by simp
-  show ?thesis
-  proof (cases "map_of (normalize xs) t")
-    case None
-    thus ?thesis using a \<open>c \<noteq> 0\<close> by simp
-  next
-    case Some
-    fix b
-    assume b: "map_of (normalize xs) t = Some b"
-    from this a map_of_SomeD[OF this] show ?thesis by simp
-  qed
-qed
-
-lemma in_fst_set_mapI:
-  assumes "k \<in> fst ` set xs"
-  shows "f1 k \<in> fst ` set (map (\<lambda>(k, v). (f1 k, f2 v)) xs)"
-proof -
-  from assms obtain v where v: "(k, v) \<in> set xs" by auto
-  show ?thesis
-  proof
-    show "f1 k = fst (f1 k, f2 v)" by simp
-  next
-    from v show "(f1 k, f2 v) \<in> set (map (\<lambda>(k, v). (f1 k, f2 v)) xs)" by auto
-  qed
-qed
-
-lemma in_set_mapD:
-  assumes "map_of (map (\<lambda>(k, v). (f1 k, f2 v)) xs) k = Some v"
-  shows "\<exists>k' v'. k = f1 k' \<and> v = f2 v' \<and> map_of xs k' = Some v'"
-using assms
-proof (induct xs, simp)
-  fix a xs
-  assume IH: "map_of (map (\<lambda>(k, v). (f1 k, f2 v)) xs) k = Some v \<Longrightarrow>
-                \<exists>k' v'. k = f1 k' \<and> v = f2 v' \<and> map_of xs k' = Some v'"
-    and a0: "map_of (map (\<lambda>(k, v). (f1 k, f2 v)) (a # xs)) k = Some v"
-  from prod.exhaust_sel obtain x1 x2 where "a = (x1, x2)" by blast
-  with a0 have a: "(if k = f1 x1 then Some (f2 x2) else map_of (map (\<lambda>(k, v). (f1 k, f2 v)) xs) k) = Some v"
-    by simp
-  thus "\<exists>k' v'. k = f1 k' \<and> v = f2 v' \<and> map_of (a # xs) k' = Some v'" unfolding \<open>a = (x1, x2)\<close>
-  proof (split if_splits)
-    assume k: "k = f1 x1" and "Some (f2 x2) = Some v"
-    hence v: "v = f2 x2" by simp
-    show "\<exists>k' v'. k = f1 k' \<and> v = f2 v' \<and> map_of ((x1, x2) # xs) k' = Some v'"
-      by (rule exI[of _ x1], simp, intro conjI, fact+)
-  next
-    assume "k \<noteq> f1 x1" and b: "map_of (map (\<lambda>(k, v). (f1 k, f2 v)) xs) k = Some v"
-    from IH[OF b] obtain k' where k': "k = f1 k'" and exv': "\<exists>v'. v = f2 v' \<and> map_of xs k' = Some v'"
-      by auto
-    from exv' obtain v' where v': "v = f2 v'" and m: "map_of xs k' = Some v'" by auto
-    from \<open>k \<noteq> f1 x1\<close> k' have "k' \<noteq> x1" by auto
-    show "\<exists>k' v'. k = f1 k' \<and> v = f2 v' \<and> map_of ((x1, x2) # xs) k' = Some v'"
-    proof (rule exI[of _ k'], simp add: \<open>k' \<noteq> x1\<close>, intro conjI)
-      show "\<exists>v'. v = f2 v' \<and> map_of xs k' = Some v'" by (rule exI[of _ v'], intro conjI, fact+)
-    qed (fact)
-  qed
-qed
-
-lemma lookup_0_merge:
-  assumes "\<forall>e. (x, e) \<notin> set (AList.merge xs ys)"
-  shows "lookup xs x = 0 \<and> lookup ys x = 0"
-proof -
-  from assms have "x \<notin> fst `set (AList.merge xs ys)" by auto
-  from this dom_merge[of xs ys] have tx: "x \<notin> fst `set xs" and ty: "x \<notin> fst `set ys" by simp_all
-  from tx map_of_eq_None_iff[of xs x] have "lookup xs x = 0" unfolding lookup_def by simp
-  also from ty map_of_eq_None_iff[of ys x] have "lookup ys x = 0" unfolding lookup_def by simp
-  ultimately show ?thesis by simp
-qed
-
-subsection \<open>Implementation of Power-Products as Association Lists\<close>
-
-lift_definition PP::"('a \<times> 'b::zero) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b" is Poly_Lists.lookup by (rule finite_lookup)
-
-code_datatype PP
-
-lemma PP_normalize_cong:
-  "PP (normalize xs) = PP xs"
-proof (transfer, rule)
-  fix xs::"('a * 'b) list" and x
-  from lookup_normalize[of xs x] show "lookup (normalize xs) x = lookup xs x" by simp
-qed
-
-lemma PP_all_2:
-  assumes "P 0 0"
-  shows "(\<forall>x. P (PP_Poly_Mapping.lookup (PP xs) x) (PP_Poly_Mapping.lookup (PP ys) x)) =
-    list_all (\<lambda>(k, v). P (lookup xs k) (lookup ys k)) (AList.merge xs ys)"
-using assms unfolding list_all_def
-proof transfer
-  fix xs ys::"('b * 'a) list" and P::"'a \<Rightarrow> 'a \<Rightarrow> bool"
-  assume "P 0 0"
-  show "(\<forall>x. P (lookup xs x) (lookup ys x)) =
-       (\<forall>(k, v)\<in>set (AList.merge xs ys). P (lookup xs k) (lookup ys k))"
-  proof (intro iffI, clarsimp split: option.split)
-    assume a1: "\<forall>(k, v)\<in>set (AList.merge xs ys). P (lookup xs k) (lookup ys k)"
-    show "\<forall>x. P (lookup xs x) (lookup ys x)"
-    proof (intro allI)
-      fix x
-      show "P (lookup xs x) (lookup ys x)"
-      proof (cases "\<exists>e. (x, e) \<in> set (AList.merge xs ys)")
-        case True
-        from this obtain e where "(x, e) \<in> set (AList.merge xs ys)" ..
-        from this a1 show ?thesis by auto
-      next
-        case False
-        hence b: "\<forall>e. (x, e) \<notin> set (AList.merge xs ys)" by simp
-        from lookup_0_merge[OF this] have "lookup xs x = 0" and "lookup ys x = 0" by simp_all
-        with \<open>P 0 0\<close> show ?thesis by simp
-      qed
-    qed
-  qed
-qed
-
-lemma compute_keys_pp[code]:
-  "keys (PP (xs::('a * 'b::zero) list)) = set (map fst (normalize xs))"
-proof (transfer, clarsimp simp: lookup_def split: option.split)
-  fix xs::"('a * 'b) list"
-  show "{k. (\<exists>y. map_of xs k = Some y) \<and> (\<forall>x2. map_of xs k = Some x2 \<longrightarrow> x2 \<noteq> 0)} =
-          fst ` set (Poly_Lists.normalize xs)"
-  proof
-    show "{x. (\<exists>y. map_of xs x = Some y) \<and> (\<forall>x2. map_of xs x = Some x2 \<longrightarrow> x2 \<noteq> 0)} \<subseteq>
-          fst ` set (normalize xs)"
-    proof
-      fix x
-      assume "x \<in> {t. (\<exists>y. map_of xs t = Some y) \<and> (\<forall>x2. map_of xs t = Some x2 \<longrightarrow> x2 \<noteq> 0)}"
-      hence ex: "\<exists>y. map_of xs x = Some y" and all: "\<forall>x2. map_of xs x = Some x2 \<longrightarrow> x2 \<noteq> 0" by auto
-      from ex obtain c where c: "map_of xs x = Some c" ..
-      from all this have "c \<noteq> 0" by simp
-      from normalize_map_of_SomeD[OF c this] show "x \<in> fst ` set (normalize xs)"
-        by (simp add: Domain.intros fst_eq_Domain)
-    qed
-  next
-    show "fst ` set (normalize xs) \<subseteq>
-          {x. (\<exists>y. map_of xs x = Some y) \<and> (\<forall>x2. map_of xs x = Some x2 \<longrightarrow> x2 \<noteq> 0)}"
-    proof
-      fix x
-      assume "x \<in> fst ` set (normalize xs)"
-      from this obtain c where a: "(x, c) \<in> set (normalize xs)" by auto
-      show "x \<in> {t. (\<exists>y. map_of xs t = Some y) \<and> (\<forall>x2. map_of xs t = Some x2 \<longrightarrow> x2 \<noteq> 0)}"
-      proof (rule, intro conjI)
-        show "\<exists>y. map_of xs x = Some y" by (rule exI[of _ c], rule normalize_map_of_SomeI, fact)
-      next
-        show "\<forall>c2. map_of xs x = Some c2 \<longrightarrow> c2 \<noteq> 0"
-        proof (intro allI, intro impI)
-          fix c2
-          assume "map_of xs x = Some c2"
-          with normalize_map_of_SomeI[OF a] normalize_nonzero[OF a] show "c2 \<noteq> 0" by simp
-        qed
-      qed
-    qed
-  qed
-qed
-
-lemma compute_zero_pp[code]: "0 = PP []"
-  by transfer (simp add: lookup_def)
-
-lemma compute_plus_pp[code]:
-  "PP xs + PP ys = PP (map_ran (\<lambda>k v. lookup xs k + lookup ys k) (AList.merge xs ys))"
-  by transfer (auto simp: lookup_def map_ran_conv split: option.split)
+lemma fmlookup_default_fmmap_keys: "fmlookup_default d (fmmap_keys f M) x =
+  (if x \<in> fmdom' M then f x (fmlookup_default d M x) else d)"
+  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
 
 lemma compute_lcs_pp[code]:
-  "lcs (PP xs) (PP ys) =
-  PP (map_ran (\<lambda>k v. Orderings.max (lookup xs k) (lookup ys k)) (AList.merge xs ys))"
-  by transfer (auto simp: lookup_def map_ran_conv split: option.split)
-
-lemma compute_lookup_pp[code]:
-  "PP_Poly_Mapping.lookup (PP xs) x = lookup xs x"
-  by (transfer, simp)
+  "lcs (Pm_fmap xs) (Pm_fmap ys) =
+  Pm_fmap (fmmap_keys (\<lambda>k v. Orderings.max (lookup0 xs k) (lookup0 ys k)) (xs ++\<^sub>f ys))"
+  by (rule poly_mapping_eqI)
+    (auto simp add: fmlookup_default_fmmap_keys fmlookup_dom_iff fmdom'_notI
+      lcs_poly_mapping.rep_eq fmdom'_notD)
 
 lemma compute_deg_pp[code]:
-  "deg_pm (PP xs) = sum_list (map snd (AList.clearjunk xs))"
+  "deg_pm (Pm_fmap xs) = sum (the o fmlookup xs) (fmdom' xs)"
 proof -
-  from map_lookup_map_fst[OF distinct_clearjunk, of xs] map_of_clearjunk[of xs]
-    have eq: "map (PP_Poly_Mapping.lookup (PP xs)) (map fst (AList.clearjunk xs)) = map snd (AList.clearjunk xs)"
-      unfolding compute_lookup_pp lookup_def by simp
-    
-  have "(keys (PP xs)) \<subseteq> (set (map fst (AList.clearjunk xs)))"
-  proof (transfer, rule)
-    fix xs::"('b * 'a) list" and x
-    assume "x \<in> {x. lookup xs x \<noteq> 0}"
-    hence "lookup xs x \<noteq> 0" by simp
-    thus "x \<in> set (map fst (AList.clearjunk xs))"
-      by (metis Poly_Lists.normalize_def compute_lookup_pp compute_keys_pp image_set in_keys_iff
-          map_of_eq_None_iff map_of_filter_NoneI)
-  qed
-
-  from deg_pm_superset[OF this]
-    have "deg_pm (PP xs) = sum (PP_Poly_Mapping.lookup (PP xs)) (set (map fst (AList.clearjunk xs)))" by simp
-  moreover have "\<dots> = sum_list (map (PP_Poly_Mapping.lookup (PP xs)) (map fst (AList.clearjunk xs)))"
-    using distinct_clearjunk sum.distinct_set_conv_list by blast
-  moreover have "\<dots> = sum_list (map snd (AList.clearjunk xs))" using eq by presburger
-  ultimately show ?thesis by (simp only:)
+  have "deg_pm (Pm_fmap xs) = sum (lookup (Pm_fmap xs)) (keys (Pm_fmap xs))"
+    by (rule deg_pm_superset) auto
+  also have "\<dots> = sum (the o fmlookup xs) (fmdom' xs)"
+    by (rule sum.mono_neutral_cong_left)
+      (auto simp: fmlookup_dom'_iff fmdom'I in_keys_iff fmlookup_default_def fmdom'.rep_eq
+        split: option.splits)
+  finally show ?thesis .
 qed
 
 definition adds_pp_add_linorder::"('b \<Rightarrow>\<^sub>0 'a::add_linorder) \<Rightarrow> _ \<Rightarrow> bool"
   where [code_abbrev]: "adds_pp_add_linorder = (adds)"
 
 lemma compute_adds_pp[code]:
-  "adds_pp_add_linorder (PP xs) (PP ys) =
-    (list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys))"
-  for xs ys::"('a \<times> 'b::add_linorder_min) list"
+  "adds_pp_add_linorder (Pm_fmap xs) (Pm_fmap ys) =
+    (fmpred (\<lambda>k v. lookup0 xs k \<le> lookup0 ys k) (xs ++\<^sub>f ys))"
+  for xs ys::"('a, 'b::add_linorder_min) fmap"
   unfolding adds_pp_add_linorder_def
   unfolding adds_poly_mapping
-proof (transfer, simp only: le_fun_def)
-  fix xs ys::"('a * 'b) list"
-  show "(\<forall>x. lookup xs x \<le> lookup ys x) = list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)"
-  proof
-    assume a1: "\<forall>x. lookup xs x \<le> lookup ys x"
-    show "list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)" unfolding list_all_def
-    proof (rule, rule)
-      fix x k v
-      from a1 show "lookup xs k \<le> lookup ys k" ..
-    qed
-  next
-    assume "list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)"
-    hence a2: "\<forall>(k, v)\<in>(set (AList.merge xs ys)). lookup xs k \<le> lookup ys k"
-      unfolding list_all_def by simp
-    show "\<forall>x. lookup xs x \<le> lookup ys x"
-    proof
-      fix x
-      show "lookup xs x \<le> lookup ys x"
-      proof (cases "x \<in> fst ` (set (AList.merge xs ys))")
-        case True
-        from this obtain v where "(x, v) \<in> set (AList.merge xs ys)" by auto
-        from a2[rule_format, OF this] show ?thesis by simp
-      next
-        case False
-        from False dom_merge[of xs ys] have "x \<notin> fst`set xs" by simp
-        hence "map_of xs x = None" by (simp add: map_of_eq_None_iff) 
-        hence lxs: "lookup xs x = 0" unfolding lookup_def by simp
-        from False dom_merge[of xs ys] have "x \<notin> fst`set ys" by simp
-        hence "map_of ys x = None" by (simp add: map_of_eq_None_iff) 
-        hence lys: "lookup ys x = 0" unfolding lookup_def by simp
-        from lxs lys show ?thesis by simp
-      qed
-    qed
-  qed
-qed
-
-lemma compute_minus_pp[code]:
-  "PP xs - PP ys = PP (map_ran (\<lambda>k v. lookup xs k - lookup ys k) (AList.merge xs ys))"
-  by (intro poly_mapping_eqI) (auto simp add: lookup_minus compute_lookup_pp lookup_def
-      map_ran_conv split: option.split)
-
-lemma compute_uminus_pp[code]:
-  "- PP ys = PP (map_ran (\<lambda>k v. - lookup ys k) ys)"
-  by (intro poly_mapping_eqI) (auto simp add: lookup_minus compute_lookup_pp lookup_def
-      map_ran_conv split: option.split)
-
-lemma compute_equal_pp[code]:
-  "(equal_class.equal (PP xs) (PP (ys::('a * 'b::{zero,equal}) list))) =
-    list_all (\<lambda>(k, v). lookup xs k = lookup ys k) (AList.merge xs ys)"
-  unfolding equal_poly_mapping_def by (simp only: PP_all_2)
+  using fmdom_notI
+  by (force simp: fmlookup_dom_iff le_fun_def
+      split: option.splits if_splits)
 
 
 text\<open>Computing @{term lex} as below is certainly not the most efficient way, but it works.\<close>
 
+lemma lex_pm_iff: "lex_pm s t = (\<forall>x. lookup s x \<le> lookup t x \<or> (\<exists>y<x. lookup s y \<noteq> lookup t y))"
+  by (simp only: lex_pm.rep_eq lex_fun_def poly_mapping_eq_iff)
+
 lemma compute_lex_pp[code]:
-  "(lex_pm (PP xs) (PP (ys::('a::wellorder * 'b::ordered_comm_monoid_add) list))) =
-    (let zs = AList.merge xs ys in
-      list_all (\<lambda>(x, v). lookup xs x \<le> lookup ys x \<or> list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y) zs) zs
+  "(lex_pm (Pm_fmap xs) (Pm_fmap (ys::('a::wellorder, 'b::ordered_comm_monoid_add) fmap))) =
+    (let zs = xs ++\<^sub>f ys in
+      fmpred (\<lambda>x v.
+        lookup0 xs x \<le> lookup0 ys x \<or>
+        \<not> fmpred (\<lambda>y w. y \<ge> x \<or> lookup0 xs y = lookup0 ys y) zs) zs
     )"
-unfolding Let_def proof (transfer, simp only: lex_fun_def)
-  fix xs ys::"('a * 'b) list"
-  show "(\<forall>x. lookup xs x \<le> lookup ys x \<or>
-            (\<exists>y<x. lookup xs y \<noteq> lookup ys y)) =
-       list_all
-        (\<lambda>(x, v).
-            lookup xs x \<le> lookup ys x \<or>
-            list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y)
-             (AList.merge xs ys))
-        (AList.merge xs ys)" (is "?L = ?R")
-  proof (intro iffI)
-    assume ?L
-    thus ?R unfolding list_all_iff
-    proof (intro ballI, clarsimp)
-      fix x e
-      assume x_in: "(x, e) \<in> set (AList.merge xs ys)"
-      assume "\<forall>x. lookup xs x \<le> lookup ys x \<or> (\<exists>y<x. lookup xs y \<noteq> lookup ys y)"
-      hence a: "lookup xs x \<le> lookup ys x \<or> (\<exists>y<x. lookup xs y \<noteq> lookup ys y)" by simp
-      assume "\<not> list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y) (AList.merge xs ys)"
-      hence b: "\<forall>(y, w)\<in>(set (AList.merge xs ys)). \<not> (y < x \<and> lookup xs y \<noteq> lookup ys y)"
-        unfolding list_ex_iff by auto
-      from a show "lookup xs x \<le> lookup ys x"
-      proof (rule disjE, simp)
-        assume "\<exists>y<x. lookup xs y \<noteq> lookup ys y"
-        from this obtain y where y: "y < x \<and> lookup xs y \<noteq> lookup ys y" ..
-        show ?thesis
-        proof (cases "\<exists>f. (y, f) \<in> set (AList.merge xs ys)")
-          case True
-          from this obtain f where "(y, f) \<in> set (AList.merge xs ys)" ..
-          with b have "\<not> (y < x \<and> lookup xs y \<noteq> lookup ys y)" by auto
-          with y show ?thesis by simp
-        next
-          case False
-          hence "\<forall>f. (y, f) \<notin> set (AList.merge xs ys)" by simp
-          from lookup_0_merge[OF this] y show ?thesis by simp
-        qed
-      qed
-    qed
-  next
-    assume ?R
-    show ?L
-    proof (intro allI)
-      fix x
-      show "lookup xs x \<le> lookup ys x \<or> (\<exists>y<x. lookup xs y \<noteq> lookup ys y)"
-      proof (cases "\<exists>e. (x, e) \<in> set (AList.merge xs ys)")
-        case True
-        from this obtain e where "(x, e) \<in> set (AList.merge xs ys)" ..
-        from this \<open>?R\<close> have "lookup xs x \<le> lookup ys x \<or>
-          list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y) (AList.merge xs ys)"
-          unfolding list_all_iff by auto
-        thus ?thesis
-        proof
-          assume "lookup xs x \<le> lookup ys x"
-          thus ?thesis by simp
-        next
-          assume "list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y) (AList.merge xs ys)"
-          from this obtain y where "y < x" and "lookup xs y \<noteq> lookup ys y"
-            unfolding list_ex_iff by auto
-          thus ?thesis by blast
-        qed
-      next
-        case False
-        hence b: "\<forall>e. (x, e) \<notin> set (AList.merge xs ys)" by simp
-        from lookup_0_merge[OF this] have "lookup xs x = 0" and "lookup ys x = 0" by simp_all
-        thus ?thesis by simp
-      qed
-    qed
-  qed
-qed
+  unfolding Let_def lex_pm_iff fmpred_iff Pm_fmap.rep_eq fmlookup_add fmlookup_dom_iff
+  apply (intro iffI)
+   apply (metis fmdom'_notD fmlookup_default_if(2) fmlookup_dom'_iff leD)
+  apply (metis eq_iff not_le fmdom'_notD fmlookup_default_if(2) fmlookup_dom'_iff)
+  done
 
 lemma compute_dord_pp[code]:
-  "(dord_pm ord (PP xs) (PP (ys::('a::wellorder * 'b::ordered_comm_monoid_add) list))) =
-    (let dx = deg_pm (PP xs) in let dy = deg_pm (PP ys) in
-      dx < dy \<or> (dx = dy \<and> ord (PP xs) (PP ys))
+  "(dord_pm ord (Pm_fmap xs) (Pm_fmap (ys::('a::wellorder , 'b::ordered_comm_monoid_add) fmap))) =
+    (let dx = deg_pm (Pm_fmap xs) in let dy = deg_pm (Pm_fmap ys) in
+      dx < dy \<or> (dx = dy \<and> ord (Pm_fmap xs) (Pm_fmap ys))
     )"
-  by (simp add: dord_pm.rep_eq dord_fun_def deg_pm.rep_eq lookup_inverse)
+  by (auto simp: Let_def deg_pm.rep_eq dord_fun_def dord_pm.rep_eq)
+    (simp_all add: Pm_fmap.abs_eq)
 
 subsubsection \<open>Trivariate Power-Products\<close>
 
@@ -637,224 +186,230 @@ end
 
 subsubsection \<open>Computations\<close>
 
+definition "PM xs = Pm_fmap (fmap_of_list xs)" \<comment>\<open>sparse representation\<close>
+definition "PM' xs = Pm_fmap (fmap_of_list (zip [0..<length xs] xs))" \<comment>\<open>dense representation\<close>
+
 lemma
-  "PP [(X, 2::nat), (Z, 7)] + PP [(Y, 3), (Z, 2)] = PP [(X, 2), (Z, 9), (Y, 3)]"
+  "PM [(X, 2::nat), (Z, 7)] + PM [(Y, 3), (Z, 2)] = PM [(X, 2), (Z, 9), (Y, 3)]"
+  "PM' [2, 0, 7::nat] + PM' [0, 3, 2] = PM' [2, 3, 9]"
+  by eval+
+
+lemma
+  "PM [(X, 2::nat), (Z, 7)] - PM [(X, 2), (Z, 2)] = PM [(Z, 5)]"
   by eval
 
 lemma
-  "PP [(X, 2::nat), (Z, 7)] - PP [(X, 2), (Z, 2)] = PP [(Z, 5)]"
+  "lcs (PM [(X, 2::nat), (Y, 1), (Z, 7)]) (PM [(Y, 3), (Z, 2)]) = PM [(X, 2), (Y, 3), (Z, 7)]"
   by eval
 
 lemma
-  "lcs (PP [(X, 2::nat), (Y, 1), (Z, 7)]) (PP [(Y, 3), (Z, 2)]) = PP [(X, 2), (Y, 3), (Z, 7)]"
+  "(PM [(X, 2::nat), (Z, 1)]) adds (PM [(X, 3), (Y, 2), (Z, 1)])"
   by eval
 
 lemma
-  "(PP [(X, 2::nat), (Z, 1)]) adds (PP [(X, 3), (Y, 2), (Z, 1)])"
+  "lookup (PM [(X, 2::nat), (Z, 3)]) X = 2"
   by eval
 
 lemma
-  "PP_Poly_Mapping.lookup (PP [(X, 2::nat), (Z, 3)]) X = 2"
+  "deg_pm (PM [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
   by eval
 
 lemma
-  "deg_pm (PP [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
-  by eval
-
-lemma
-  "lex_pm (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)])"
+  "lex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)])"
 by eval
 
 lemma
-  "(PP [(X, 2::nat), (Y, 1), (Z, 3)]) \<le> (PP [(X, 4)])"
+  "(PM [(X, 2::nat), (Y, 1), (Z, 3)]) \<le> (PM [(X, 4)])"
   by eval
 
 lemma
-  "\<not> (dlex_pm (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)]))"
+  "\<not> (dlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)]))"
   by eval
 
 text\<open>It is possible to index the indeterminates by natural numbers:\<close>
 
 lemma
-  "PP [(0, 2::nat), (2, 7)] + PP [(1, 3), (2, 2)] = PP [(0, 2), (2, 9), (1::nat, 3)]"
+  "PM [(0, 2::nat), (2, 7)] + PM [(1, 3), (2, 2)] = PM [(0, 2), (2, 9), (1::nat, 3)]"
   by eval
 
 lemma
-  "PP [(0, 2), (2, 7)] - PP [(0, 2), (2, 2)] = PP [(2::nat, 5::nat)]"
+  "PM [(0, 2), (2, 7)] - PM [(0, 2), (2, 2)] = PM [(2::nat, 5::nat)]"
   by eval
 
 lemma
-  "lcs (PP [(0, 2), (1, 1), (2, 7)]) (PP [(1, 3), (2, 2)]) = PP [(0, 2), (1, 3), (2::nat, 7::nat)]"
+  "lcs (PM [(0, 2), (1, 1), (2, 7)]) (PM [(1, 3), (2, 2)]) = PM [(0, 2), (1, 3), (2::nat, 7::nat)]"
   by eval
 
 lemma
-  "(PP [(0, 2), (2, 1)]) adds (PP [(0, 3), (1, 2), (2::nat, 1::nat)])"
+  "(PM [(0, 2), (2, 1)]) adds (PM [(0, 3), (1, 2), (2::nat, 1::nat)])"
   by eval
 
 lemma
-  "PP_Poly_Mapping.lookup (PP [(0, 2::nat), (2, 3)]) (0::nat) = 2"
+  "lookup (PM [(0, 2::nat), (2, 3)]) (0::nat) = 2"
 by eval
 
 lemma
-  "deg_pm (PP [(0, 2), (1, 1), (2, 3), (0::nat, 1::nat)]) = 6"
+  "deg_pm (PM [(0, 2), (1, 1), (2, 3), (0::nat, 1::nat)]) = 6"
 by eval
 
 lemma
-  "lex_pm (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)])"
+  "lex_pm (PM [(0, 2), (1, 1), (2, 3)]) (PM [(0::nat, 4::nat)])"
 by eval
 
 lemma
-  "\<not> (dlex_pm (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)]))"
+  "\<not> (dlex_pm (PM [(0, 2), (1, 1), (2, 3)]) (PM [(0::nat, 4::nat)]))"
 by eval
 
 subsection \<open>Implementation of Multivariate Polynomials as Association Lists\<close>
 
 subsubsection \<open>Unordered Power-Products\<close>
 
-abbreviation "MP \<equiv> PP"
+context includes fmap.lifting begin
+lift_definition shift_keys::"'a::comm_powerprod \<Rightarrow> ('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap"
+  is "\<lambda>t m x. if t adds x then m (x - t) else None"
+proof -
+  fix a and f::"'a \<Rightarrow> 'b option"
+  assume "finite (dom f)"
+  have "dom (\<lambda>x. if a adds x then f (x - a) else None) \<subseteq> (+) a ` dom f"
+    by (auto simp: adds_def domI split: if_splits)
+  also have "finite \<dots>"
+    using \<open>finite (dom f)\<close> by simp
+  finally (finite_subset) show "finite (dom (\<lambda>x. if a adds x then f (x - a) else None))" .
+qed
+
+definition "shift_map_keys t f m = fmmap f (shift_keys t m)"
+
+lemma compute_shift_map_keys[code]:
+  "shift_map_keys t f (fmap_of_list xs) = fmap_of_list (map (\<lambda>(k, v). (t + k, f v)) xs)"
+  unfolding shift_map_keys_def
+  apply transfer
+  subgoal for f t xs
+  proof -
+    show ?thesis
+      apply (rule ext)
+      subgoal for x
+        apply (cases "t adds x")
+        subgoal by (induction xs) (auto simp: adds_def )
+        subgoal by (induction xs) (auto simp: adds_def )
+        done
+      done
+  qed
+  done
+
+end
+
+lemmas [simp] = compute_zero_pp[symmetric]
 
 lemma compute_monom_mult_poly_mapping[code]:
-  "monom_mult c t (MP xs) = (if c = 0 then 0 else MP (map (\<lambda>(k, v). (t + k, c * v)) xs))"
+  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t ((*) c) xs)"
 proof (cases "c = 0")
   case True
-  hence "monom_mult c t (MP xs) = 0" using monom_mult_left0 by simp
-  thus ?thesis using True by simp
+  hence "monom_mult c t (Pm_fmap xs) = 0" using monom_mult_left0 by simp
+  thus ?thesis using True
+    by simp
 next
   case False
   thus ?thesis
-  proof (simp, transfer)
-    fix c::'b and t::"'a" and xs::"('a * 'b) list"
-    show "(\<lambda>s. if t adds s then c * lookup xs (s - t) else 0) =
-            lookup (map (\<lambda>(k, v). (t + k, c * v)) xs)"
-    proof
-      fix s::"'a"
-      show "(if t adds s then c * lookup xs (s - t) else 0) =
-              lookup (map (\<lambda>(k, v). (t + k, c * v)) xs) s"
-      proof (simp add: if_splits(1), intro conjI, intro impI)
-        assume "t adds s"
-        from this obtain k where k: "s = t + k" unfolding dvd_def ..
-        hence div: "s - t = k" by (simp add: ac_simps)
-        show "c * lookup xs (s - t) = lookup (map (\<lambda>(k, v). (t + k, c * v)) xs) s"
-          unfolding lookup_def div
-        proof (split option.split, intro conjI, intro impI)
-          assume "map_of (map (\<lambda>(k, v). (t + k, c * v)) xs) s = None"
-          hence "s \<notin> fst ` set (map (\<lambda>(k, v). (t + k, c * v)) xs)" by (simp add: map_of_eq_None_iff)
-          with k in_fst_set_mapI[of k xs "\<lambda>k. t + k" "\<lambda>v. c * v"] have "k \<notin> fst ` set xs" by auto
-          hence "map_of xs k = None" by (simp add: map_of_eq_None_iff)
-          thus "c * (case map_of xs k of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = 0" by simp
-        next
-          show "\<forall>x2. map_of (map (\<lambda>(k, v). (t + k, c * v)) xs) s = Some x2 \<longrightarrow>
-                  c * (case map_of xs k of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = x2"
-          proof (intro allI, intro impI)
-            fix b
-            assume "map_of (map (\<lambda>(k, v). (t + k, c * v)) xs) s = Some b"
-            from in_set_mapD[OF this] obtain k' and v' where
-              k': "s = t + k'" and v': "b = c * v'" and m: "map_of xs k' = Some v'" by auto
-            from k k' have "k' = k" by (simp add: ac_simps)
-            from this m v' show "c * (case map_of xs k of None \<Rightarrow> 0 | Some i \<Rightarrow> i) = b" by simp
-          qed
-        qed
-      next
-        show "\<not> t adds s \<longrightarrow> lookup (map (\<lambda>(k, v). (t + k, c * v)) xs) s = 0"
-        proof
-          assume ndvd: "\<not> t adds s"
-          show "lookup (map (\<lambda>(k, v). (t + k, c * v)) xs) s = 0" unfolding lookup_def
-          proof (split option.split, simp, intro allI, intro impI)
-            fix b
-            assume "map_of (map (\<lambda>(k, v). (t + k, c * v)) xs) s = Some b"
-            from in_set_mapD[OF this] obtain k' where "s = t + k'" by auto
-            from this ndvd show "b = 0" by simp
-          qed
-        qed
-      qed
-    qed
-  qed
+    by (auto simp: simp: fmlookup_default_def shift_map_keys_def monom_mult.rep_eq
+        adds_def group_eq_aux shift_keys.rep_eq
+        intro!: poly_mapping_eqI split: option.splits)
 qed
 
 lemma compute_monomial[code]:
-  "monomial c t = (if c = 0 then 0 else MP [(t, c)])"
-  by transfer (auto simp: when_def lookup_def)
+  "monomial c t = (if c = 0 then 0 else PM [(t, c)])"
+  by (auto intro!: poly_mapping_eqI simp: PM_def fmlookup_default_def lookup_single)
 
 lemma compute_mult_poly_mapping[code]:
-  "MP xs * q = (case xs of ((t, c) # ys) \<Rightarrow> (monom_mult c t q + except (MP ys) {t} * q) | _ \<Rightarrow> MP [])"
-proof (split list.splits, simp, intro conjI impI allI)
-  show "MP [] * q = MP []" by (metis compute_zero_pp mult_not_zero)
-next
-  fix t c and ys::"('a * 'b) list"
-  have "MP ((t, c) # ys) = MP [(t, c)] + except (MP ys) {t}" by (transfer, auto simp add: lookup_def)
-  also have "MP [(t, c)] = monomial c t" by transfer (auto simp: when_def lookup_def)
-  finally show "MP ((t, c) # ys) * q = monom_mult c t q + (except (MP ys) {t}) * q"
-    by (simp add: algebra_simps times_monomial_left)
+  "Pm_fmap (fmap_of_list xs) * q = (case xs of ((t, c) # ys) \<Rightarrow>
+    (monom_mult c t q + except (Pm_fmap (fmap_of_list ys)) {t} * q) | _ \<Rightarrow>
+    Pm_fmap fmempty)"
+proof (split list.splits, simp, intro conjI impI allI, goal_cases)
+  case (1 t c ys)
+  have "Pm_fmap (fmupd t c (fmap_of_list ys)) = PM [(t, c)] + except (PM ys) {t}"
+    by (auto simp: PM_def fmlookup_default_def lookup_add lookup_except
+        split: option.splits intro!: poly_mapping_eqI)
+  also have "PM [(t, c)] = monomial c t"
+    by (auto simp: PM_def lookup_single fmlookup_default_def intro!: poly_mapping_eqI)
+  finally show ?case
+    by (simp add: algebra_simps times_monomial_left PM_def)
 qed
 
 lemma compute_except_poly_mapping[code]:
-  "except (MP xs) S = MP (filter (\<lambda>(k, v). k \<notin> S) xs)"
-proof (transfer, rule)
-  fix xs::"('a * 'b) list" and S t
-  {
-    fix c1 c2
-    assume *: "map_of [(k, v)\<leftarrow>xs . k \<notin> S] t = Some c1"
-    assume "t \<in> S"
-    with map_of_SomeD[OF *] have False by simp
-  }
-  thus "(if t \<in> S then 0 else lookup xs t) = lookup [(k, v)\<leftarrow>xs . k \<notin> S] t"
-    by (auto simp add: lookup_def map_of_filter_NoneI map_of_filter_in split: option.split)
-qed
+  "except (Pm_fmap xs) S = Pm_fmap (fmfilter (\<lambda>k. k \<notin> S) xs)"
+  by (auto simp: fmlookup_default_def lookup_except split: option.splits intro!: poly_mapping_eqI)
+
 
 subsubsection \<open>Computations\<close>
 
+abbreviation "MP \<equiv> PM"
+abbreviation "MP' \<equiv> PM'"
+
+
 lemma
-  "keys (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(Y, 3), (Z, 2)], 2), (PP [(X, 1), (Y, 1)], 0)]) =
-    {PP [(X, 2), (Z, 3)], PP [(Y, 3), (Z, 2)]}"
+  "keys (MP [(PM [(X, 2::nat), (Z, 3)], 1::rat), (PM [(Y, 3), (Z, 2)], 2), (PM [(X, 1), (Y, 1)], 0)]) =
+    {PM [(X, 2), (Z, 3)], PM [(Y, 3), (Z, 2)]}"
   by eval
 
 lemma
-  "- MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] =
-    MP [(PP [(X, 2), (Z, 7)], - 1), (PP [(Y, 3), (Z, 2)], - 2)]"
+  "- MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] =
+    MP [(PM [(X, 2), (Z, 7)], - 1), (PM [(Y, 3), (Z, 2)], - 2)]"
 by eval
 
 lemma
-  "MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] + MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)] =
-    MP [(PP [(X, 2), (Z, 7)], 1), (PP [(X, 2), (Z, 4)], 1)]"
+  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] + MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
+    MP [(PM [(X, 2), (Z, 7)], 1), (PM [(X, 2), (Z, 4)], 1)]"
 by eval
 
 lemma
-  "MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] - MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)] =
-    MP [(PP [(X, 2), (Z, 7)], 1), (PP [(Y, 3), (Z, 2)], 4), (PP [(X, 2), (Z, 4)], - 1)]"
+  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] - MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
+    MP [(PM [(X, 2), (Z, 7)], 1), (PM [(Y, 3), (Z, 2)], 4), (PM [(X, 2), (Z, 4)], - 1)]"
 by eval
 
 lemma
-  "PP_Poly_Mapping.lookup (MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2), (PP [], 2)]) (PP [(X, 2), (Z, 7)]) = 1"
+  "lookup (MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2), (PM [], 2)]) (PM [(X, 2), (Z, 7)]) = 1"
 by eval
 
 lemma
-  "MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] \<noteq> MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]"
+  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] \<noteq> MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)]"
 by eval
 
 lemma
-  "MP [(PP [(X, 2::nat), (Z, 7)], 0::rat), (PP [(Y, 3), (Z, 2)], 0)] = 0"
+  "MP [(PM [(X, 2::nat), (Z, 7)], 0::rat), (PM [(Y, 3), (Z, 2)], 0)] = 0"
 by eval
 
 lemma
-  "monom_mult (3::rat) (PP [(Y, 2::nat)]) (MP [(PP [(X, 2), (Z, 1)], 1), (PP [(Y, 3), (Z, 2)], 2)]) =
-    MP [(PP [(Y, 2), (Z, 1), (X, 2)], 3), (PP [(Y, 5), (Z, 2)], 6)]"
+  "monom_mult (3::rat) (PM [(Y, 2::nat)]) (MP [(PM [(X, 2), (Z, 1)], 1), (PM [(Y, 3), (Z, 2)], 2)]) =
+    MP [(PM [(Y, 2), (Z, 1), (X, 2)], 3), (PM [(Y, 5), (Z, 2)], 6)]"
 by eval
 
 lemma
-  "monomial (-4::rat) (PP [(X, 2::nat)]) = MP [(PP [(X, 2)], - 4)]"
+  "monomial (-4::rat) (PM [(X, 2::nat)]) = MP [(PM [(X, 2)], - 4)]"
 by eval
 
 lemma
-  "monomial (0::rat) (PP [(X, 2::nat)]) = 0"
+  "monomial (0::rat) (PM [(X, 2::nat)]) = 0"
 by eval
 
 lemma
-  "MP [(PP [(X, 2::nat), (Z, 1)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] *
-      MP [(PP [(X, 2), (Z, 3)], 1), (PP [(Y, 3), (Z, 2)], -2)] =
-    MP [(PP [(X, 4), (Z, 4)], 1), (PP [(X, 2), (Z, 3), (Y, 3)], - 2), (PP [(Y, 6), (Z, 4)], - 4), (PP [(Y, 3), (Z, 5), (X, 2)], 2)]"
+  "MP [(PM [(X, 2::nat), (Z, 1)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] *
+      MP [(PM [(X, 2), (Z, 3)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
+    MP [(PM [(X, 4), (Z, 4)], 1), (PM [(X, 2), (Z, 3), (Y, 3)], - 2), (PM [(Y, 6), (Z, 4)], - 4), (PM [(Y, 3), (Z, 5), (X, 2)], 2)]"
   by eval
 
 subsubsection \<open>Ordered Power-Products\<close>
+
+lemma foldl_assoc:
+  assumes "\<And>x y z. f (f x y) z = f x (f y z)"
+  shows "foldl f (f a b) xs = f a (foldl f b xs)"
+proof (induct xs arbitrary: a b)
+  fix a b
+  show "foldl f (f a b) [] = f a (foldl f b [])" by simp
+next
+  fix a b x xs
+  assume "\<And>a b. foldl f (f a b) xs = f a (foldl f b xs)"
+  from assms[of a b x] this[of a "f b x"]
+    show "foldl f (f a b) (x # xs) = f a (foldl f b (x # xs))" unfolding foldl_Cons by simp
+qed
 
 context ordered_powerprod
 begin
@@ -948,34 +503,36 @@ proof -
   thus ?thesis by simp
 qed
 
+lemma in_set_clearjunk_iff_map_of_eq_Some:
+  "(a, b) \<in> set (AList.clearjunk xs) \<longleftrightarrow> map_of xs a = Some b"
+  by (metis Some_eq_map_of_iff distinct_clearjunk map_of_clearjunk)
+
+lemma Pm_fmap_of_list_eq_zero_iff:
+  "Pm_fmap (fmap_of_list xs) = 0 \<longleftrightarrow> [(k, v)\<leftarrow>AList.clearjunk xs . v \<noteq> 0] = []"
+  by (auto simp: poly_mapping_eq_iff fmlookup_default_def fun_eq_iff 
+    in_set_clearjunk_iff_map_of_eq_Some filter_empty_conv fmlookup_of_list split: option.splits)
+
+lemma fmdom'_clearjunk0: "fmdom' (clearjunk0 xs) = fmdom' xs - {x. fmlookup xs x = Some 0}"
+  by (metis (no_types, lifting) clearjunk0_def fmdom'_drop_set fmfilter_alt_defs(2) fmfilter_cong' mem_Collect_eq)
+
 lemma compute_lp_poly_mapping[code]:
-  "lp (MP xs) = list_max (map fst (normalize xs))"
-unfolding lp_def compute_keys_pp
-proof (split if_splits, intro conjI, intro impI)
-  assume "MP xs = 0"
-  from this have "keys (MP xs) = {}" by simp
-  hence "map fst (normalize xs) = []" unfolding compute_keys_pp by simp
-  thus "0 = list_max (map fst (normalize xs))" using list_max_empty by simp
-next
-  show "MP xs \<noteq> 0 \<longrightarrow>
-    ordered_powerprod_lin.Max (set (map fst (normalize xs))) = list_max (map fst (normalize xs))"
-  proof (intro impI)
-    assume "MP xs \<noteq> 0"
-    from this have "keys (MP xs) \<noteq> {}" by simp
-    hence "map fst (normalize xs) \<noteq> []" unfolding compute_keys_pp by simp
-    from list_max_nonempty[OF this]
-      show "ordered_powerprod_lin.Max (set (map fst (normalize xs))) =
-            list_max (map fst (normalize xs))" by simp
-  qed
+  "lp (Pm_fmap (fmap_of_list xs)) = list_max (map fst [(k, v) \<leftarrow> AList.clearjunk xs. v \<noteq> 0])"
+proof -
+  have "keys (Pm_fmap (fmap_of_list xs)) = fst ` {x \<in> set (AList.clearjunk xs). case x of (k, v) \<Rightarrow> v \<noteq> 0}"
+    by (auto simp: compute_keys_pp fmdom'_clearjunk0 fmap_of_list.rep_eq
+        in_set_clearjunk_iff_map_of_eq_Some fmdom'I image_iff fmlookup_dom'_iff)
+  then show ?thesis
+    unfolding lp_def
+    by (auto simp: Pm_fmap_of_list_eq_zero_iff list_max_empty list_max_nonempty)
 qed
 
 lemma compute_higher_poly_mapping[code]:
-  "higher (MP xs) t = MP (filter (\<lambda>(k, v). t \<prec> k) xs)"
+  "higher (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. t \<prec> k) xs)"
   unfolding higher_def compute_except_poly_mapping
   by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
 
 lemma compute_lower_poly_mapping[code]:
-  "lower (MP xs) t = MP (filter (\<lambda>(k, v). k \<prec> t) xs)"
+  "lower (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. k \<prec> t) xs)"
   unfolding lower_def compute_except_poly_mapping
   by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
 

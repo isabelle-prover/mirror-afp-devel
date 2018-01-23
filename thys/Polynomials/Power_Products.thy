@@ -4,8 +4,8 @@ section \<open>Abstract Power-Products\<close>
 
 theory Power_Products
   imports Complex_Main
-  "Deep_Learning.PP_More_MPoly"
   "HOL-Library.Function_Algebras"
+  "Deep_Learning.PP_More_MPoly"
 begin
 
 text \<open>This theory formalizes the concept of "power-products". A power-product can be thought of as
@@ -1558,9 +1558,6 @@ end
 
 subsection \<open>Type @{type poly_mapping}\<close>
 
-lemma in_keys_iff: "x \<in> (keys s) = (lookup s x \<noteq> 0)"
-  by (transfer, simp)
-
 lemma poly_mapping_eq_zeroI:
   assumes "\<And>x. x \<in> keys s \<Longrightarrow> lookup s x = 0"
   shows "s = (0::('a, 'b::zero) poly_mapping)"
@@ -1575,9 +1572,6 @@ proof (rule poly_mapping_eqI, simp)
     then show ?thesis by simp
   qed
 qed
-
-lemma poly_mapping_eq_iff: "a = b \<longleftrightarrow> lookup a = lookup b"
-  unfolding fun_eq_iff using poly_mapping_eqI by blast
 
 lemma lookup_zero_fun: "lookup 0 = 0"
   by (simp only: zero_poly_mapping.rep_eq zero_fun_def)
