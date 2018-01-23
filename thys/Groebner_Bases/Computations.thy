@@ -16,7 +16,7 @@ subsection \<open>Lexicographic Order\<close>
 
 definition "lex_pm_strict s t \<longleftrightarrow> lex_pm s t \<and> \<not> lex_pm t s"
 
-global_interpretation opp_lex: od_powerprod lex_pm lex_pm_strict
+global_interpretation opp_lex: gd_powerprod lex_pm lex_pm_strict
   defines lp_lex = opp_lex.lp
   and max_lex = opp_lex.ordered_powerprod_lin.max
   and list_max_lex = opp_lex.list_max
@@ -32,7 +32,15 @@ global_interpretation opp_lex: od_powerprod lex_pm lex_pm_strict
   and trd_lex = opp_lex.trd
   and spoly_lex = opp_lex.spoly
   and trdsp_lex = opp_lex.trdsp
+  and add_pairs_naive_lex = opp_lex.add_pairs_naive
+  and add_pairs_sorted_lex = opp_lex.add_pairs_sorted
+  and pairs_lex = opp_lex.pairs
+  and product_crit_lex = opp_lex.product_crit
+  and chain_crit_lex = opp_lex.chain_crit
+  and comb_crit_lex = opp_lex.comb_crit
+  and pc_crit_lex = opp_lex.pc_crit
   and gbaux_lex = opp_lex.gbaux
+  and gb_param_lex = opp_lex.gb_param
   and gb_lex = opp_lex.gb
   apply standard
   subgoal by (simp add: lex_pm_strict_def)
@@ -44,13 +52,16 @@ global_interpretation opp_lex: od_powerprod lex_pm lex_pm_strict
   subgoal by (erule lex_pm_plus_monotone)
   done
 
+lemmas gbaux_lex_naive_2 [code] = opp_lex.gbaux_simp_2[OF opp_lex.add_pairs_set_add_pairs_naive]
+lemmas gbaux_lex_sorted_2 [code] = opp_lex.gbaux_simp_2[OF opp_lex.add_pairs_set_add_pairs_sorted]
+
 subsubsection \<open>Computations\<close>
 
 abbreviation PP :: "('a \<times> nat) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 nat" where "PP \<equiv> PM"
 
 lemma
   "lp_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, 2), (Y, 1)]"
-by eval
+  by eval
 
 lemma
   "lc_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = 3"
@@ -59,53 +70,53 @@ lemma
 lemma
   "tail_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) =
     MP [(PP [(X, 2), (Z, 3)], 1::rat)]"
-by eval
+  by eval
 
 lemma
   "higher_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) (PP [(X, 2)]) =
     MP [(PP [(X, 2), (Z, 3)], 1), (PP [(X,2), (Y,1)], 3)]"
-by eval
+  by eval
 
 lemma
   "ord_strict_lex
     (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
     (MP [(PP [(X, 2), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)])"
-by eval
+  by eval
 
 lemma
   "rd_mult_lex
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
       (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
     (- 2, PP [(Y, 1), (Z, 1)])"
-by eval
+  by eval
 
 lemma
   "rd_lex
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
       (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
-by eval
+  by eval
 
 lemma
   "rd_list_lex
       [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]]
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
-by eval
+  by eval
 
 lemma
   "trd_lex
       [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Y, 1), (Z, 3)], 2)]]
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 6)], - 8)]"
-by eval
+  by eval
 
 lemma
   "spoly_lex
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
       (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
     MP [(PP [(Z, 2), (Y, 5)], - 2), (PP [(X, 2), (Z, 6)], - 2)]"
-by eval
+  by eval
 
 lemma
   "trdsp_lex
@@ -113,15 +124,21 @@ lemma
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
       (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
     0"
-by eval
+  by eval
 
 lemma
-  "up [] [MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]] (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    [(MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)], MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)])]"
-by eval
+  "add_pairs_sorted_lex [] [MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]] (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
+    [(MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)], MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)])]"
+  by eval
+
+value (code) "gb_lex
+    [
+     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
+     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]
+    ]"
 
 lemma
-  "gb_lex
+  "gb_param_lex add_pairs_naive_lex (\<lambda>_ _ _ _. False)
     [
      MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
      MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]
@@ -130,7 +147,7 @@ lemma
     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)],
     MP [(PP [(Y,2), (Z, 1)], 1), (PP [(Z, 3)], 2)]
    ]"
-by eval
+  by eval
 
 lemma
   "gb_lex
@@ -143,7 +160,7 @@ lemma
      MP [(PP [(Y, 3)], - 1), (PP [(X, 2), (Z, 1)], 1)],
      MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
-by eval
+  by eval
 
 lemma
   "gb_lex
@@ -155,13 +172,13 @@ lemma
      MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)],
      MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
     ]"
-by eval
+  by eval
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
 definition "dlex_pm_strict s t \<longleftrightarrow> dlex_pm s t \<and> \<not> dlex_pm t s"
 
-global_interpretation opp_dlex: od_powerprod dlex_pm dlex_pm_strict
+global_interpretation opp_dlex: gd_powerprod dlex_pm dlex_pm_strict
   defines lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
   and list_max_dlex = opp_dlex.list_max

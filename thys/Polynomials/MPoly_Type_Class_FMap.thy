@@ -82,109 +82,13 @@ lemma compute_dord_pp[code]:
   by (auto simp: Let_def deg_pm.rep_eq dord_fun_def dord_pm.rep_eq)
     (simp_all add: Pm_fmap.abs_eq)
 
-subsubsection \<open>Trivariate Power-Products\<close>
-
-datatype var3 = X | Y | Z
-
-lemma UNIV_var3: "UNIV = {X, Y, Z}"
-proof (rule set_eqI)
-  fix x::var3
-  show "(x \<in> UNIV) = (x \<in> {X, Y, Z})" by (rule, cases x, simp_all)
-qed
-
-(*
-instantiation var3 :: enum
-begin
-definition enum_var3::"var3 list" where "enum_var3 \<equiv> [X, Y, Z]"
-definition enum_all_var3::"(var3 \<Rightarrow> bool) \<Rightarrow> bool" where "enum_all_var3 p \<equiv> p X \<and> p Y \<and> p Z"
-definition enum_ex_var3::"(var3 \<Rightarrow> bool) \<Rightarrow> bool" where "enum_ex_var3 p \<equiv> p X \<or> p Y \<or> p Z"
-
-instance proof (standard, simp_all add: enum_var3_def enum_all_var3_def enum_ex_var3_def, rule UNIV_var3)
-  fix P
-  show "(P X \<and> P Y \<and> P Z) = All P" by (metis var3.exhaust)
-next
-  fix P
-  show "(P X \<or> P Y \<or> P Z) = Ex P" by (metis var3.exhaust)
-qed
-end
-*)
-
-instantiation var3 :: finite_linorder
-begin
-fun less_eq_var3::"var3 \<Rightarrow> var3 \<Rightarrow> bool" where
-  "less_eq_var3 X X = True"|
-  "less_eq_var3 X Y = True"|
-  "less_eq_var3 X Z = True"|
-  "less_eq_var3 Y X = False"|
-  "less_eq_var3 Y Y = True"|
-  "less_eq_var3 Y Z = True"|
-  "less_eq_var3 Z X = False"|
-  "less_eq_var3 Z Y = False"|
-  "less_eq_var3 Z Z = True"
-
-definition less_var3::"var3 \<Rightarrow> var3 \<Rightarrow> bool" where "less_var3 a b \<equiv> a \<le> b \<and> \<not> b \<le> a"
-
-lemma Z_less_eq:
-  shows "Z \<le> x \<longleftrightarrow> (x = Z)"
-by (cases x, simp_all)
-
-lemma Y_less_eq:
-  shows "Y \<le> x \<longleftrightarrow> (x \<noteq> X)"
-by (cases x, simp_all)
-
-lemma X_less_eq:
-  shows "X \<le> x"
-by (cases x, simp_all)
-
-lemma less_eq_Z:
-  shows "x \<le> Z"
-by (cases x, simp_all)
-
-lemma less_eq_Y:
-  shows "x \<le> Y \<longleftrightarrow> (x \<noteq> Z)"
-by (cases x, simp_all)
-
-lemma less_eq_X:
-  shows "x \<le> X \<longleftrightarrow> (x = X)"
-by (cases x, simp_all)
-
-lemma less_eq_var3_alt:
-  shows "x \<le> y \<longleftrightarrow> ((x = Z \<and> y = Z) \<or> (x = Y \<and> y \<noteq> X) \<or> x = X)"
-using X_less_eq Y_less_eq Z_less_eq
-by (cases x, simp_all)
-
-instance proof
-  fix a b::var3
-  show "a < b \<longleftrightarrow> (a \<le> b \<and> \<not> b \<le> a)" unfolding less_var3_def ..
-next
-  fix a::var3
-  show "a \<le> a" by (cases a, simp_all)
-next
-  fix a b c::var3
-  assume "a \<le> b" and "b \<le> c"
-  thus "a \<le> c" using less_eq_var3_alt[of a b] less_eq_var3_alt[of b c] less_eq_var3_alt[of a c] by auto
-next
-  fix a b::var3
-  assume "a \<le> b" and "b \<le> a"
-  thus "a = b" using less_eq_var3_alt[of a b] less_eq_var3_alt[of b a] by auto
-next
-  fix a b::var3
-  show "a \<le> b \<or> b \<le> a" using X_less_eq[of b] Y_less_eq[of b] less_eq_Z[of b] by (cases a, simp_all)
-qed (simp add: UNIV_var3)
-
-end
-
-instantiation var3 :: enum begin
-definition "enum_var3 = [X, Y, Z]"
-definition "enum_all_var3 P \<longleftrightarrow> P X \<and> P Y \<and> P Z"
-definition "enum_ex_var3 P \<longleftrightarrow> P X \<or> P Y \<or> P Z"
-instance apply standard
-     apply (auto simp: enum_var3_def enum_all_var3_def enum_ex_var3_def)
-    apply (metis var3.exhaust)+
-  done
-end
-
 subsubsection \<open>Computations\<close>
+
+text \<open>Indeterminates are most conveniently represented by natural numbers:\<close>
+
+abbreviation "X \<equiv> 0::nat"
+abbreviation "Y \<equiv> 1::nat"
+abbreviation "Z \<equiv> 2::nat"
 
 definition "PM xs = Pm_fmap (fmap_of_list xs)" \<comment>\<open>sparse representation\<close>
 definition "PM' xs = Pm_fmap (fmap_of_list (zip [0..<length xs] xs))" \<comment>\<open>dense representation\<close>
@@ -219,46 +123,20 @@ lemma
 by eval
 
 lemma
-  "(PM [(X, 2::nat), (Y, 1), (Z, 3)]) \<le> (PM [(X, 4)])"
+  "lex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)])"
   by eval
 
 lemma
   "\<not> (dlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)]))"
   by eval
 
-text\<open>It is possible to index the indeterminates by natural numbers:\<close>
-
 lemma
-  "PM [(0, 2::nat), (2, 7)] + PM [(1, 3), (2, 2)] = PM [(0, 2), (2, 9), (1::nat, 3)]"
+  "dlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 2)]) (PM [(X, 5)])"
   by eval
 
 lemma
-  "PM [(0, 2), (2, 7)] - PM [(0, 2), (2, 2)] = PM [(2::nat, 5::nat)]"
+  "\<not> (drlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 2)]) (PM [(X, 5)]))"
   by eval
-
-lemma
-  "lcs (PM [(0, 2), (1, 1), (2, 7)]) (PM [(1, 3), (2, 2)]) = PM [(0, 2), (1, 3), (2::nat, 7::nat)]"
-  by eval
-
-lemma
-  "(PM [(0, 2), (2, 1)]) adds (PM [(0, 3), (1, 2), (2::nat, 1::nat)])"
-  by eval
-
-lemma
-  "lookup (PM [(0, 2::nat), (2, 3)]) (0::nat) = 2"
-by eval
-
-lemma
-  "deg_pm (PM [(0, 2), (1, 1), (2, 3), (0::nat, 1::nat)]) = 6"
-by eval
-
-lemma
-  "lex_pm (PM [(0, 2), (1, 1), (2, 3)]) (PM [(0::nat, 4::nat)])"
-by eval
-
-lemma
-  "\<not> (dlex_pm (PM [(0, 2), (1, 1), (2, 3)]) (PM [(0::nat, 4::nat)]))"
-by eval
 
 subsection \<open>Implementation of Multivariate Polynomials as Association Lists\<close>
 
@@ -542,4 +420,3 @@ lifting_update poly_mapping.lifting
 lifting_forget poly_mapping.lifting
 
 end (* theory *)
-

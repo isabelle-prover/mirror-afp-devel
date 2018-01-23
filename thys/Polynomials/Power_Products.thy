@@ -263,6 +263,9 @@ lemma lcs_unique:
   shows "l = lcs s t"
   by (rule adds_antisym, rule *, fact adds_lcs, fact adds_lcs_2, rule lcs_adds, fact+)
 
+lemma lcs_zero: "lcs 0 t = t"
+  by (rule lcs_unique[symmetric], fact zero_adds, fact adds_refl)
+
 lemma lcs_plus_left: "lcs (u + s) (u + t) = u + lcs s t" 
 proof (rule lcs_unique[symmetric], simp_all only: adds_canc_2, fact adds_lcs, fact adds_lcs_2,
     simp add: add.commute[of u] plus_adds)
@@ -323,10 +326,143 @@ qed
 
 end
 
-text \<open>Instances of class \<open>dickson_powerprod\<close> are types of commutative power-products satisfying the
-  Dickson property.\<close>
+subsection \<open>Dickson Classes\<close>
+
+definition dickson_grading :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> nat) \<Rightarrow> bool"
+  where "dickson_grading p d \<longleftrightarrow>
+          ((\<forall>s t. d (p s t) = max (d s) (d t)) \<and>
+           (\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow> (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = p (seq i) k))))"
+
+lemma dickson_gradingI:
+  assumes "\<And>s t. d (s + t) = max (d s) (d (t::'a::plus))"
+  assumes "\<And>seq::nat \<Rightarrow> 'a. (\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)"
+  shows "dickson_grading (+) d"
+  unfolding dickson_grading_def
+proof (intro conjI allI, fact assms(1), rule)
+  fix seq :: "nat \<Rightarrow> 'a"
+  assume "\<forall>i. d (seq i) \<le> d (seq 0)"
+  hence "\<And>i. d (seq i) \<le> d (seq 0)" ..
+  hence "\<exists>i j. i < j \<and> seq i adds seq j" by (rule assms(2))
+  thus "\<exists>i j. i < j \<and> (\<exists>k. seq j = seq i + k)" by (simp only: adds_def)
+qed
+
+lemma dickson_gradingD1:
+  assumes "dickson_grading p d"
+  shows "d (p s t) = max (d s) (d t)"
+  using assms by (auto simp add: dickson_grading_def)
+
+lemma dickson_gradingE1:
+  assumes "dickson_grading (+) d" and "\<And>i. d (seq i) \<le> d ((seq::nat \<Rightarrow> 'a::plus) 0)"
+  obtains i j where "i < j" and "seq i adds seq j"
+proof -
+  from assms(1) have "\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow>
+                                            (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k))"
+    unfolding dickson_grading_def ..
+  hence rl: "(\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k))"
+    by auto
+  from assms(2) have "\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k)" by (rule rl)
+  then obtain i j where "i < j" and "seq i adds seq j" unfolding adds_def by auto
+  thus ?thesis ..
+qed
+
+lemma dickson_gradingE2:
+  assumes "dickson_grading (+) d" and "\<And>i::nat. d ((seq::nat \<Rightarrow> 'a::plus) i) \<le> k"
+  obtains i j where "i < j" and "seq i adds seq j"
+proof -
+  let ?R = "range (d \<circ> seq)"
+  let ?m = "Max ?R"
+  have "?R \<subseteq> {0..<(Suc k)}"
+  proof
+    fix x
+    assume "x \<in> ?R"
+    then obtain i where "x = (d \<circ> seq) i" ..
+    with assms(2)[of i] show "x \<in> {0..<(Suc k)}" by simp
+  qed
+  hence "finite ?R" by (rule subset_eq_atLeast0_lessThan_finite)
+  moreover have "?R \<noteq> {}" by simp
+  ultimately have "?m \<in> ?R" by (rule Max_in)
+  then obtain i0 where "?m = (d \<circ> seq) i0" ..
+  hence "?m = d (seq i0)" by simp
+
+  let ?s = "\<lambda>i. seq (i + i0)"
+  from assms(1) obtain i j where "i < j" and "?s i adds ?s j"
+  proof (rule dickson_gradingE1)
+    fix i
+    show "d (?s i) \<le> d (?s 0)"
+      by (simp add: \<open>?m = d (seq i0)\<close>[symmetric] \<open>finite (range (d \<circ> seq))\<close>)
+  qed
+  show ?thesis
+  proof
+    from \<open>i < j\<close> show "i + i0 < j + i0" by simp
+  qed fact
+qed
+
+lemma dickson_grading_adds_imp_le:
+  assumes "dickson_grading (+) d" and "s adds t"
+  shows "d s \<le> d t"
+proof -
+  from assms(2) obtain u where "t = s + u" ..
+  hence "d t = max (d s) (d u)" by (simp only: dickson_gradingD1[OF assms(1)])
+  thus ?thesis by simp
+qed
+
+lemma dickson_grading_minus:
+  assumes "dickson_grading (+) d" and "s adds (t::'a::cancel_ab_semigroup_add)"
+  shows "d (t - s) \<le> d t"
+proof -
+  from assms(2) obtain u where "t = s + u" ..
+  hence "t - s = u" by simp
+  from assms(1) have "d t = ord_class.max (d s) (d u)" unfolding \<open>t = s + u\<close> by (rule dickson_gradingD1)
+  thus ?thesis by (simp add: \<open>t - s = u\<close>)
+qed
+
+lemma dickson_grading_lcs:
+  assumes "dickson_grading (+) d"
+  shows "d (lcs s t) \<le> max (d s) (d t)"
+proof -
+  from assms have "d (lcs s t) \<le> d (s + t)" by (rule dickson_grading_adds_imp_le, intro lcs_adds_plus)
+  thus ?thesis by (simp only: dickson_gradingD1[OF assms])
+qed
+
+lemma dickson_grading_lcs_minus:
+  assumes "dickson_grading (+) d"
+  shows "d (lcs s t - s) \<le> max (d s) (d t)"
+proof -
+  from assms have "d (lcs s t - s) \<le> d (lcs s t)" by (rule dickson_grading_minus, intro adds_lcs)
+  also from assms have "... \<le> max (d s) (d t)" by (rule dickson_grading_lcs)
+  finally show ?thesis .
+qed
+
+class graded_dickson_powerprod = ulcs_powerprod +
+  assumes ex_dgrad: "\<exists>d::'a \<Rightarrow> nat. dickson_grading (+) d"
+begin
+
+definition dgrad_dummy where "dgrad_dummy = (SOME d. dickson_grading (+) d)"
+
+lemma dickson_grading_dgrad_dummy: "dickson_grading (+) dgrad_dummy"
+  unfolding dgrad_dummy_def using ex_dgrad by (rule someI_ex)
+
+end (* graded_dickson_powerprod *)
+
 class dickson_powerprod = ulcs_powerprod +
   assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i adds seq j)"
+begin
+
+lemma dickson_grading_zero: "dickson_grading (plus::'a \<Rightarrow> 'a \<Rightarrow> 'a) (\<lambda>_. 0)"
+  by (simp add: dickson_grading_def adds_def[symmetric], rule, fact dickson)
+
+subclass graded_dickson_powerprod by (standard, rule, fact dickson_grading_zero)
+
+end (* dickson_powerprod *)
+
+text \<open>Class @{class graded_dickson_powerprod} is a slightly artificial construction. It is needed,
+  because type @{typ "nat \<Rightarrow>\<^sub>0 nat"} does not satisfy the usual conditions of a "Dickson domain" (as
+  formulated in class @{class dickson_powerprod}), but we still want to use that type as the type of
+  power-products in the computation of Gr\"obner bases. So, we exploit the fact that in a finite
+  set of polynomials (which is the input of Buchberger's algorithm) there is always some "highest"
+  indeterminate that occurs with non-zero exponent, and no "higher" indeterminates are generated
+  during the execution of the algorithm. This allows us to prove that the algorithm terminates, even
+  though there are in principle infinitely many indeterminates.\<close>
 
 subsection \<open>Additive Linear Orderings\<close>
   
@@ -476,12 +612,36 @@ end
 subsection \<open>Ordered Power-Products\<close>
 
 lemma wfP_chain:
-  fixes r::"'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes "\<not>(\<exists>f. \<forall>i. r (f (Suc i)) (f i))"
   shows "wfP r"
 proof -
   from assms wf_iff_no_infinite_down_chain[of "{(x, y). r x y}"] have "wf {(x, y). r x y}" by auto
   thus "wfP r" unfolding wfP_def .
+qed
+
+lemma transp_sequence:
+  assumes "transp r" and "\<And>i. r (seq (Suc i)) (seq i)" and "i < j"
+  shows "r (seq j) (seq i)"
+proof -
+  have "\<And>k. r (seq (i + Suc k)) (seq i)"
+  proof -
+    fix k::nat
+    show "r (seq (i + Suc k)) (seq i)"
+    proof (induct k)
+      case 0
+      from assms(2) have "r (seq (Suc i)) (seq i)" .
+      thus ?case by simp
+    next
+      case (Suc k)
+      note assms(1)
+      moreover from assms(2) have "r (seq (Suc (Suc i + k))) (seq (Suc (i + k)))" by simp
+      moreover have "r (seq (Suc (i + k))) (seq i)" using Suc.hyps by simp
+      ultimately have "r (seq (Suc (Suc i + k))) (seq i)" by (rule transpD)
+      thus ?case by simp
+    qed
+  qed
+  hence "r (seq (i + Suc(j - i - 1))) (seq i)" .
+  thus "r (seq j) (seq i)" using \<open>i < j\<close> by simp
 qed
 
 locale ordered_powerprod =
@@ -548,12 +708,109 @@ lemma plus_monotone_strict_left:
 
 end
 
-text \<open>Instances of \<open>od_powerprod\<close> must satisfy the Dickson property.\<close>
+locale gd_powerprod =
+  ordered_powerprod ord ord_strict
+  for ord::"'a \<Rightarrow> 'a::graded_dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
+  and ord_strict (infixl "\<prec>" 50)
+begin
+
+definition dickson_le :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+  where "dickson_le d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<preceq> t)"
+
+definition dickson_less :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+  where "dickson_less d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<prec> t)"
+
+lemma dickson_leI:
+  assumes "d s \<le> m" and "d t \<le> m" and "s \<preceq> t"
+  shows "dickson_le d m s t"
+  using assms by (simp add: dickson_le_def)
+
+lemma dickson_leD1:
+  assumes "dickson_le d m s t"
+  shows "d s \<le> m"
+  using assms by (simp add: dickson_le_def)
+
+lemma dickson_leD2:
+  assumes "dickson_le d m s t"
+  shows "d t \<le> m"
+  using assms by (simp add: dickson_le_def)
+
+lemma dickson_leD3:
+  assumes "dickson_le d m s t"
+  shows "s \<preceq> t"
+  using assms by (simp add: dickson_le_def)
+
+lemma dickson_le_trans:
+  assumes "dickson_le d m s t" and "dickson_le d m t u"
+  shows "dickson_le d m s u"
+  using assms by (auto simp add: dickson_le_def)
+
+lemma dickson_lessI:
+  assumes "d s \<le> m" and "d t \<le> m" and "s \<prec> t"
+  shows "dickson_less d m s t"
+  using assms by (simp add: dickson_less_def)
+
+lemma dickson_lessD1:
+  assumes "dickson_less d m s t"
+  shows "d s \<le> m"
+  using assms by (simp add: dickson_less_def)
+
+lemma dickson_lessD2:
+  assumes "dickson_less d m s t"
+  shows "d t \<le> m"
+  using assms by (simp add: dickson_less_def)
+
+lemma dickson_lessD3:
+  assumes "dickson_less d m s t"
+  shows "s \<prec> t"
+  using assms by (simp add: dickson_less_def)
+
+lemma dickson_less_irrefl: "\<not> dickson_less d m t t"
+  by (simp add: dickson_less_def)
+
+lemma dickson_less_trans:
+  assumes "dickson_less d m s t" and "dickson_less d m t u"
+  shows "dickson_less d m s u"
+  using assms by (auto simp add: dickson_less_def)
+
+lemma transp_dickson_less: "transp (dickson_less d m)"
+  by (rule transpI, fact dickson_less_trans)
+
+lemma wf_dickson_less:
+  assumes "dickson_grading (+) d"
+  shows "wfP (dickson_less d m)"
+proof (rule wfP_chain)
+  show "\<not> (\<exists>seq. \<forall>i. dickson_less d m (seq (Suc i)) (seq i))"
+  proof
+    assume "\<exists>seq. \<forall>i. dickson_less d m (seq (Suc i)) (seq i)"
+    then obtain seq::"nat \<Rightarrow> 'a" where "\<forall>i. dickson_less d m (seq (Suc i)) (seq i)" ..
+    hence *: "\<And>i. dickson_less d m (seq (Suc i)) (seq i)" ..
+    with transp_dickson_less have seq_decr: "\<And>i j. i < j \<Longrightarrow> dickson_less d m (seq j) (seq i)"
+      by (rule transp_sequence)
+
+    from assms obtain i j where "i < j" and i_adds_j: "seq i adds seq j"
+    proof (rule dickson_gradingE2)
+      fix i
+      from * show "d (seq i) \<le> m" by (rule dickson_lessD2)
+    qed
+    from \<open>i < j\<close> have "dickson_less d m (seq j) (seq i)" by (rule seq_decr)
+    hence "seq j \<prec> seq i" by (rule dickson_lessD3)
+    moreover from i_adds_j have "seq i \<preceq> seq j" by (rule ord_adds)
+    ultimately show False by simp
+  qed
+qed
+
+end
+
+text \<open>"gd_powerprod" stands for @{emph \<open>graded ordered Dickson power-products\<close>}.\<close>
+
 locale od_powerprod =
   ordered_powerprod ord ord_strict
   for ord::"'a \<Rightarrow> 'a::dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
   and ord_strict (infixl "\<prec>" 50)
 begin
+
+sublocale gd_powerprod by standard
 
 lemma wf_ord_strict:
   shows "wfP (\<prec>)"
@@ -561,34 +818,14 @@ proof (rule wfP_chain)
   show "\<not> (\<exists>seq. \<forall>i. seq (Suc i) \<prec> seq i)"
   proof
     assume "\<exists>seq. \<forall>i. seq (Suc i) \<prec> seq i"
-    then obtain seq::"nat \<Rightarrow> 'a" where seq: "\<forall>i. seq (Suc i) \<prec> seq i" ..
+    then obtain seq::"nat \<Rightarrow> 'a" where "\<forall>i. seq (Suc i) \<prec> seq i" ..
+    hence "\<And>i. seq (Suc i) \<prec> seq i" ..
+    with ordered_powerprod_lin.transp_less have seq_decr: "\<And>i j. i < j \<Longrightarrow> (seq j) \<prec> (seq i)"
+      by (rule transp_sequence)
 
-    (*The following holds for transitive relations in general!*)
-    have seq_decr: "\<forall>i j. i < j \<longrightarrow> seq j \<prec> seq i"
-    proof (rule, rule, rule)
-      fix i j::nat
-      assume "i < j"
-      have "\<forall>k. seq (i + Suc k) \<prec> seq i"
-      proof
-        fix k::nat
-        show "seq (i + Suc k) \<prec> seq i"
-        proof (induct k)
-          case 0
-          from seq have "seq (Suc i) \<prec> seq i" ..
-          thus ?case by simp
-        next
-          case (Suc k)
-          from seq have "seq (Suc (Suc i + k)) \<prec> seq (Suc (i + k))" by simp
-          also have "\<dots> \<prec> seq i" using Suc.hyps by simp
-          finally show ?case by simp
-        qed
-      qed
-      hence "seq (i + Suc(j - i - 1)) \<prec> seq i" ..
-      thus "seq j \<prec> seq i" using \<open>i < j\<close> by simp
-    qed
     from dickson[of seq] obtain i j::nat where "i < j \<and> seq i adds seq j" by auto
     hence "i < j" and i_adds_j: "seq i adds seq j" by auto
-    from seq_decr[rule_format, OF \<open>i < j\<close>] have "seq j \<preceq> seq i \<and> seq j \<noteq> seq i" by auto
+    from seq_decr[OF \<open>i < j\<close>] have "seq j \<preceq> seq i \<and> seq j \<noteq> seq i" by auto
     hence "seq j \<preceq> seq i" and "seq j \<noteq> seq i" by simp_all
     from \<open>seq j \<noteq> seq i\<close> \<open>seq j \<preceq> seq i\<close> ord_adds[OF i_adds_j]
          ordered_powerprod_lin.eq_iff[of "seq j" "seq i"]
@@ -597,6 +834,8 @@ proof (rule wfP_chain)
 qed
 
 end
+
+text \<open>"od_powerprod" stands for @{emph \<open>ordered Dickson power-products\<close>}.\<close>
 
 subsection \<open>Functions as Power-Products\<close>
 
@@ -1485,10 +1724,10 @@ qed
 
 end (* linorder *)
 
-subsubsection \<open>Degree-Lexicographic Term Order\<close>
-
 context wellorder
 begin
+
+subsubsection \<open>Degree-Lexicographic Term Order\<close>
 
 definition dlex_fun::"('a \<Rightarrow> 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
   where "dlex_fun \<equiv> dord_fun lex_fun"
@@ -1527,6 +1766,53 @@ lemma dlex_fun_plus_monotone:
   using lex_fun_plus_monotone[of s t u] assms unfolding dlex_fun_def
   by (rule dord_fun_plus_monotone)
 
+subsubsection \<open>Degree-Reverse-Lexicographic Term Order\<close>
+
+abbreviation rlex_fun::"('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b::order) \<Rightarrow> bool" where
+  "rlex_fun s t \<equiv> lex_fun t s"
+
+text \<open>Note that @{const rlex_fun} is not precisely the reverse-lexicographic order relation on
+  power-products. Normally, the @{emph \<open>last\<close>} (i.\,e. highest) indeterminate whose exponent differs
+  in the two power-products to be compared is taken, but since we do not require the domain to be finite,
+  there might not be such a last indeterminate. Therefore, we simply take the converse of
+  @{const lex_fun}.\<close>
+
+definition drlex_fun::"('a \<Rightarrow> 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
+  where "drlex_fun \<equiv> dord_fun rlex_fun"
+
+lemma drlex_fun_refl:
+  shows "drlex_fun s s"
+  unfolding drlex_fun_def by (rule dord_fun_refl, fact lex_fun_refl)
+
+lemma drlex_fun_antisym:
+  assumes "drlex_fun s t" and "drlex_fun t s"
+  shows "s = t"
+  by (rule dord_fun_antisym, erule lex_fun_antisym, assumption,
+      simp_all only: drlex_fun_def[symmetric], fact+)
+
+lemma drlex_fun_trans:
+  assumes "drlex_fun s t" and "drlex_fun t u"
+  shows "drlex_fun s u"
+  by (simp only: drlex_fun_def, rule dord_fun_trans, erule lex_fun_trans, assumption,
+      simp_all only: drlex_fun_def[symmetric], fact+)
+
+lemma drlex_fun_lin: "drlex_fun s t \<or> drlex_fun t s"
+  for s t::"('a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder})"
+unfolding drlex_fun_def by (rule dord_fun_lin, rule lex_fun_lin)
+
+lemma drlex_fun_zero_min:
+  fixes s t::"('a \<Rightarrow> 'b::add_linorder_min)"
+  assumes "finite (supp_fun s)"
+  shows "drlex_fun 0 s"
+  unfolding drlex_fun_def by (rule dord_fun_zero_min, rule lex_fun_refl, fact)
+
+lemma drlex_fun_plus_monotone:
+  fixes s t u::"'a \<Rightarrow> 'b::{ordered_cancel_comm_monoid_add, ordered_ab_semigroup_add_imp_le}"
+  assumes "finite (supp_fun s)" and "finite (supp_fun t)" and "finite (supp_fun u)" and "drlex_fun s t"
+  shows "drlex_fun (s + u) (t + u)"
+  using lex_fun_plus_monotone[of t s u] assms unfolding drlex_fun_def
+  by (rule dord_fun_plus_monotone)
+
 end (* wellorder *)
 
 text\<open>Every finite linear ordering is also a well-ordering. This fact is particularly useful when
@@ -1559,17 +1845,40 @@ end
 subsection \<open>Type @{type poly_mapping}\<close>
 
 lemma poly_mapping_eq_zeroI:
-  assumes "\<And>x. x \<in> keys s \<Longrightarrow> lookup s x = 0"
+  assumes "keys s = {}"
   shows "s = (0::('a, 'b::zero) poly_mapping)"
 proof (rule poly_mapping_eqI, simp)
   fix x
-  show "lookup s x = 0"
-  proof (cases "x \<in> keys s")
-    case True
-    then show ?thesis by (rule assms)
+  from assms show "lookup s x = 0" by auto
+qed
+
+lemma keys_plus_ninv_comm_monoid_add: "keys (s + t) = keys s \<union> keys (t::'a \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add)"
+proof (rule, fact keys_add_subset, rule)
+  fix x
+  assume "x \<in> keys s \<union> keys t"
+  thus "x \<in> keys (s + t)"
+  proof
+    assume "x \<in> keys s"
+    hence "lookup s x \<noteq> 0" by simp
+    have "lookup (s + t) x \<noteq> 0"
+    proof
+      assume "lookup (s + t) x = 0"
+      hence "lookup s x + lookup t x = 0" by (simp only: lookup_add)
+      hence "lookup s x = 0" by (rule plus_eq_zero)
+      with \<open>lookup s x \<noteq> 0\<close> show False ..
+    qed
+    thus ?thesis by simp
   next
-    case False
-    then show ?thesis by simp
+    assume "x \<in> keys t"
+    hence "lookup t x \<noteq> 0" by simp
+    have "lookup (s + t) x \<noteq> 0"
+    proof
+      assume "lookup (s + t) x = 0"
+      hence "lookup t x + lookup s x = 0" by (simp only: lookup_add ac_simps)
+      hence "lookup t x = 0" by (rule plus_eq_zero)
+      with \<open>lookup t x \<noteq> 0\<close> show False ..
+    qed
+    thus ?thesis by simp
   qed
 qed
 
@@ -1709,6 +2018,48 @@ lemma adds_insert_keys:
 
 subsubsection \<open>Dickson's lemma for power-products in finitely many indeterminates\<close>
 
+class countable =
+  assumes ex_elem_index: "\<exists>f::'a \<Rightarrow> nat. inj f"
+begin
+
+definition elem_index :: "'a \<Rightarrow> nat" where "elem_index = (SOME f. inj f)"
+
+lemma inj_elem_index: "inj elem_index"
+  unfolding elem_index_def using ex_elem_index by (rule someI_ex)
+
+lemma elem_index_inj:
+  assumes "elem_index x = elem_index y"
+  shows "x = y"
+  using inj_elem_index assms by (rule injD)
+
+lemma finite_nat_seg: "finite {x. elem_index x < n}"
+proof (rule finite_imageD)
+  have "elem_index ` {x. elem_index x < n} \<subseteq> {0..<n}" by auto
+  moreover have "finite ..." ..
+  ultimately show "finite (elem_index ` {x. elem_index x < n})" by (rule finite_subset)
+next
+  from inj_elem_index show "inj_on elem_index {x. elem_index x < n}" using inj_on_subset by blast
+qed
+
+end (* countable *)
+
+context finite
+begin
+
+subclass countable
+proof
+  from finite_UNIV have "\<exists>f::'a \<Rightarrow> nat. \<exists>n. range f = {i. i < n} \<and> inj f"
+    by (rule finite_imp_inj_to_nat_seg)
+  thus "\<exists>f::'a \<Rightarrow> nat. inj f" by blast
+qed
+
+end (* finite *)
+
+instance nat :: countable
+proof (standard, rule)
+  show "inj id" by simp
+qed
+
 lemma poly_mapping_incr_subsequence:
   fixes V::"'a set"
     and f::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b::add_wellorder"
@@ -1734,6 +2085,53 @@ proof -
     show "?i < ?j \<and> seq ?i adds seq ?j" using m_subseq m_div by (simp add: strict_mono_def)
   qed
 qed
+
+definition varnum :: "('a::countable \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> nat"
+  where "varnum t = (if keys t = {} then 0 else Suc (Max (elem_index ` keys t)))"
+
+lemma elem_index_less_varnum:
+  assumes "x \<in> keys t"
+  shows "elem_index x < varnum t"
+proof -
+  from assms have "keys t \<noteq> {}" by auto
+  hence eq: "varnum t = Suc (Max (elem_index ` keys t))" by (simp add: varnum_def)
+  thus ?thesis by (simp add: less_Suc_eq_le assms)
+qed
+
+lemma varnum_zero [simp]: "varnum 0 = 0"
+  by (simp add: varnum_def)
+
+lemma varnum_eq_zero_iff: "varnum t = 0 \<longleftrightarrow> t = 0"
+proof
+  assume "varnum t = 0"
+  hence "keys t = {}" by (simp add: varnum_def split: if_splits)
+  thus "t = 0" by (rule poly_mapping_eq_zeroI)
+qed simp
+
+lemma varnum_plus:
+  "varnum (s + t) = max (varnum s) (varnum (t::'a::countable \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add))"
+  by (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un, intro impI, rule Max_Un, auto)
+
+lemma dickson_grading_varnum:
+  "dickson_grading (+) (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
+proof (rule dickson_gradingI, fact varnum_plus)
+  fix seq :: "nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
+  assume *: "\<And>i. varnum (seq i) \<le> varnum (seq 0)"
+  let ?V = "{x. elem_index x < varnum (seq 0)}"
+  have "finite ?V" by (fact finite_nat_seg)
+  moreover have "\<And>k. sub_keys ?V (seq k)"
+  proof (simp only: sub_keys_def, rule, simp)
+    fix i x
+    assume "x \<in> keys (seq i)"
+    hence "elem_index x < varnum (seq i)" by (rule elem_index_less_varnum)
+    also have "... \<le> varnum (seq 0)" by (fact *)
+    finally show "elem_index x < varnum (seq 0)" .
+  qed
+  ultimately show "\<exists>i j. i < j \<and> seq i adds seq j" by (rule Dickson_poly_mapping)
+qed
+
+instance poly_mapping :: (countable, add_wellorder) graded_dickson_powerprod
+  by (standard, rule, fact dickson_grading_varnum)
 
 instance poly_mapping :: (finite, add_wellorder) dickson_powerprod
 proof
@@ -1876,7 +2274,8 @@ subsubsection \<open>Degree-Lexicographic Term Order\<close>
 context wellorder
 begin
 
-definition dlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" where "dlex_pm \<equiv> dord_pm lex_pm"
+definition dlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+  where "dlex_pm \<equiv> dord_pm lex_pm"
 
 lemma dlex_pm_iff: "dlex_pm s t \<longleftrightarrow> dlex_fun (lookup s) (lookup t)"
   by (simp add: dlex_pm_def dlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
@@ -1908,6 +2307,46 @@ lemma dlex_pm_plus_monotone:
   shows "dlex_pm (s + u) (t + u)"
   using assms
   by (simp only: dlex_pm_iff lookup_plus_fun, intro dlex_fun_plus_monotone,
+      simp_all add: keys_eq_supp[symmetric])
+
+subsubsection \<open>Degree-Reverse-Lexicographic Term Order\<close>
+
+abbreviation rlex_pm::"('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{zero,order}) \<Rightarrow> bool" where
+  "rlex_pm s t \<equiv> lex_pm t s"
+
+definition drlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+  where "drlex_pm \<equiv> dord_pm rlex_pm"
+
+lemma drlex_pm_iff: "drlex_pm s t \<longleftrightarrow> drlex_fun (lookup s) (lookup t)"
+  by (simp add: drlex_pm_def drlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
+
+lemma drlex_pm_refl: "drlex_pm s s"
+  by (simp only: drlex_pm_iff, fact drlex_fun_refl)
+
+lemma drlex_pm_antisym:
+  assumes "drlex_pm s t" and "drlex_pm t s"
+  shows "s = t"
+  using assms by (simp only: drlex_pm_iff poly_mapping_eq_iff, elim drlex_fun_antisym)
+
+lemma drlex_pm_trans:
+  assumes "drlex_pm s t" and "drlex_pm t u"
+  shows "drlex_pm s u"
+  using assms by (simp only: drlex_pm_iff, elim drlex_fun_trans[of "lookup s" "lookup t"])
+
+lemma drlex_pm_lin: "drlex_pm s t \<or> drlex_pm t s"
+  for s t::"('a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder})"
+  by (simp only: drlex_pm_iff, fact drlex_fun_lin)
+
+lemma drlex_pm_zero_min: "drlex_pm 0 s"
+  for s t::"('a \<Rightarrow>\<^sub>0 'b::add_linorder_min)"
+  by (simp only: drlex_pm_iff lookup_zero_fun, rule drlex_fun_zero_min, simp add: keys_eq_supp[symmetric])
+
+lemma drlex_pm_plus_monotone:
+  fixes s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}"
+  assumes "drlex_pm s t"
+  shows "drlex_pm (s + u) (t + u)"
+  using assms
+  by (simp only: drlex_pm_iff lookup_plus_fun, intro drlex_fun_plus_monotone,
       simp_all add: keys_eq_supp[symmetric])
 
 end (* wellorder *)

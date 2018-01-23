@@ -630,7 +630,7 @@ proof
         apply (subst Sum_any_right_distrib)
         apply (rule fin2)
         apply (subst Sum_any_right_distrib)
-        apply (rule fin1)
+         apply (rule fin1)
         apply (subst Sum_any.swap [of ?AB])
         apply (fact \<open>finite ?AB\<close>)
         apply (auto simp add: mult_when ac_simps)
@@ -1613,10 +1613,10 @@ lemma mapp_cong [fundef_cong]:
 
 lemma lookup_mapp:
   "lookup (mapp f p) k = (f k (lookup p k) when k \<in> keys p)"
-unfolding when_def by transfer simp
+  unfolding when_def by transfer simp
 
 lemma keys_mapp_subset: "keys (mapp f p) \<subseteq> keys p"
-by transfer auto
+  by transfer auto
 
 hide_const (open) lookup single update keys range map map_key degree nth the_value items foldr mapp
 

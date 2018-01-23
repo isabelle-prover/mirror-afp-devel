@@ -20,6 +20,15 @@ lemma coeff_monom:
 
 abbreviation "monomial \<equiv> (\<lambda>c t. Poly_Mapping.single t c)"
 
+lemma keys_of_monomial:
+  assumes "c \<noteq> 0"
+  shows "keys (monomial c t) = {t}"
+  using assms by simp
+
+lemma monomial_uminus:
+  shows "- monomial c s = monomial (-c) s"
+  by (transfer, rule ext, simp add: Poly_Mapping.when_def)
+
 subsection \<open>Multiplication by Monomials (in type class)\<close>
 
 context comm_powerprod
@@ -288,6 +297,98 @@ next
   with monom_mult_right_right0[of p t] monom_mult_right_left0[of c t] show "monom_mult_right p c t = 0" by auto
 qed
 
+subsection \<open>@{const keys}\<close>
+
+lemma in_keys_plusI1:
+  assumes "t \<in> keys p" and "t \<notin> keys q"
+  shows "t \<in> keys (p + q)"
+  using assms unfolding in_keys_iff lookup_add by simp
+
+lemma in_keys_plusI2:
+  assumes "t \<in> keys q" and "t \<notin> keys p"
+  shows "t \<in> keys (p + q)"
+  using assms unfolding in_keys_iff lookup_add by simp
+
+lemma keys_plus_eqI:
+  assumes "keys p \<inter> keys q = {}"
+  shows "keys (p + q) = (keys p \<union> keys q)"
+proof (rule, rule keys_add_subset, rule)
+  fix t
+  assume "t \<in> keys p \<union> keys q"
+  thus "t \<in> keys (p + q)"
+  proof
+    assume "t \<in> keys p"
+    moreover from assms this have "t \<notin> keys q" by auto
+    ultimately show ?thesis by (rule in_keys_plusI1)
+  next
+    assume "t \<in> keys q"
+    moreover from assms this have "t \<notin> keys p" by auto
+    ultimately show ?thesis by (rule in_keys_plusI2)
+  qed
+qed
+  
+lemma keys_uminus: "keys (-p) = keys p"
+  by (transfer, auto)
+
+lemma keys_minus: "keys (p - q) \<subseteq> (keys p \<union> keys q)"
+  by (transfer, auto)
+    
+lemma keys_monom_multI:
+  assumes "s \<in> keys p" and "c \<noteq> (0::'b::semiring_no_zero_divisors)"
+  shows "t + s \<in> keys (monom_mult c t p)"
+  using assms unfolding in_keys_iff lookup_monom_mult by simp
+    
+lemma keys_monom_multE:
+  assumes "s \<in> keys (monom_mult c t p)"
+  obtains x where "x \<in> keys p" and "s = t + x"
+proof -
+  from assms have "t adds s \<and> lookup p (s - t) \<noteq> 0" by (transfer, auto split: if_splits)
+  hence a: "t adds s" and b: "lookup p (s - t) \<noteq> 0" by simp_all
+  from a obtain x where s: "s = t + x" by (rule addsE)
+  have "s - t = x" unfolding s by simp
+  with b have "lookup p x \<noteq> 0" by simp
+  show ?thesis
+  proof
+    from \<open>lookup p x \<noteq> 0\<close> show "x \<in> keys p" unfolding in_keys_iff .
+  qed fact
+qed
+
+lemma keys_monom_mult_subset: "keys (monom_mult c t p) \<subseteq> ((+) t) ` (keys p)"
+proof
+  fix s
+  assume "s \<in> keys (monom_mult c t p)"
+  then obtain x where "x \<in> keys p" and "s = t + x" by (rule keys_monom_multE)
+  thus "s \<in> ((+) t) ` (keys p)" unfolding image_iff ..
+qed
+
+lemma keys_monom_mult:
+  assumes "c \<noteq> (0::'b::semiring_no_zero_divisors)"
+  shows "keys (monom_mult c t p) = ((+) t) ` (keys p)"
+proof (rule, fact keys_monom_mult_subset, rule)
+  fix s
+  assume "s \<in> (+) t ` keys p"
+  hence "\<exists>x\<in>keys p. s = t + x" unfolding image_iff .
+  then obtain x where "x \<in> keys p" and s: "s = t + x" ..
+  from \<open>x \<in> keys p\<close> assms show "s \<in> keys (monom_mult c t p)" unfolding s by (rule keys_monom_multI)
+qed
+
+lemma poly_mapping_keys_eqI:
+  assumes a1: "keys p = keys q" and a2: "\<And>t. t \<in> keys p \<Longrightarrow> lookup p t = lookup q t"
+  shows "p = q"
+proof (rule poly_mapping_eqI)
+  fix t
+  show "lookup p t = lookup q t"
+  proof (cases "t \<in> keys p")
+    case True
+    thus ?thesis by (rule a2)
+  next
+    case False
+    moreover from this have "t \<notin> keys q" unfolding a1 .
+    ultimately have "lookup p t = 0" and "lookup q t = 0" unfolding in_keys_iff by simp_all
+    thus ?thesis by simp
+  qed
+qed
+
 end (* comm_powerprod *)
 
 subsection \<open>except\<close>
@@ -489,6 +590,9 @@ lemma monomial_0D:
   using assms
   by transfer (auto simp: fun_eq_iff when_def; meson)
 
+corollary monomial_0_iff: "monomial c t = 0 \<longleftrightarrow> c = 0"
+  by (rule, erule monomial_0D, erule monomial_0I)
+
 lemma times_monomial_left: "(monomial c t) * p = monom_mult c t p"
 proof (induct p rule: poly_mapping_except_induct, simp add: monom_mult_right0)
   fix p::"('a, 'b) poly_mapping" and s
@@ -560,7 +664,7 @@ text \<open>We now introduce ideal-like sets of polynomials, i.e. sets that are 
   former case, @{term C} is taken to be the universe, in the latter case it is taken to be the set
   of all monomials with power-product @{term 0}.\<close>
 
-inductive_set ideal_like::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
+inductive_set ideal_like::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) set"
 for C::"('a, 'b) poly_mapping set" and B::"('a, 'b) poly_mapping set" where
   ideal_like_0: "0 \<in> (ideal_like C B)"|
   ideal_like_plus: "a \<in> (ideal_like C B) \<Longrightarrow> b \<in> B \<Longrightarrow> q \<in> C \<Longrightarrow> a + q * b \<in> (ideal_like C B)"
@@ -914,6 +1018,30 @@ next
   thus ?thesis by (simp add: ideal_like_0)
 qed
 
+lemma ideal_like_subset_ideal_likeI:
+  assumes "\<And>r q. r \<in> C \<Longrightarrow> q \<in> C \<Longrightarrow> r * q \<in> C"
+  assumes "A \<subseteq> ideal_like C B"
+  shows "ideal_like C A \<subseteq> ideal_like C B"
+proof
+  fix p
+  assume "p \<in> ideal_like C A"
+  thus "p \<in> ideal_like C B"
+  proof (induct p)
+    case base: ideal_like_0
+    show ?case by (fact ideal_like_0)
+  next
+    case step: (ideal_like_plus a b q)
+    from step(3) assms(2) have "b \<in> ideal_like C B" ..
+    with _ have "q * b \<in> ideal_like C B"
+    proof (rule ideal_like_closed_times)
+      fix r
+      assume "r \<in> C"
+      with step(4) show "q * r \<in> C" by (rule assms(1))
+    qed
+    with step(2) show ?case by (rule ideal_like_closed_plus)
+  qed
+qed
+
 subsubsection \<open>Polynomial Ideals\<close>
 
 definition pideal::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
@@ -1055,6 +1183,26 @@ next
     thus ?case by (simp only: plus_except[of q0 t, symmetric])
   qed
 qed
+
+lemma pideal_subset_pidealI:
+  assumes "A \<subseteq> pideal B"
+  shows "pideal A \<subseteq> pideal B"
+  using _ assms unfolding pideal_def by (rule ideal_like_subset_ideal_likeI, intro UNIV_I)
+
+lemma pideal_eq_UNIV_iff_contains_one:
+  "pideal F = UNIV \<longleftrightarrow> (1::'a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1) \<in> pideal F"
+proof
+  assume *: "1 \<in> pideal F"
+  show "pideal F = UNIV"
+  proof
+    show "UNIV \<subseteq> pideal F"
+    proof
+      fix p
+      from * have "p * 1 \<in> pideal F" by (rule pideal_closed_times)
+      thus "p \<in> pideal F" by simp
+    qed
+  qed simp
+qed simp
 
 subsubsection \<open>Linear Hulls of Sets of Polynomials\<close>
 
@@ -1216,6 +1364,11 @@ next
   qed
 qed
 
+lemma phull_subset_phullI:
+  assumes "A \<subseteq> phull B"
+  shows "phull A \<subseteq> phull B"
+  using _ assms unfolding phull_def by (rule ideal_like_subset_ideal_likeI, auto simp add: mult_single)
+
 subsection \<open>Polynomials in Ordered Power-products\<close>
 
 context ordered_powerprod
@@ -1338,7 +1491,7 @@ lemma keys_lower: "keys (lower p t) = {s\<in>(keys p). s \<prec> t}"
 lemma lower_lower: "lower (lower p s) t = lower p (ordered_powerprod_lin.min s t)"
   by (rule poly_mapping_eqI, simp add: lookup_lower)
 
-subsubsection \<open>@{term lp} and @{term lc}\<close>
+subsubsection \<open>Leading Power-Product and Leading Coefficient: @{term lp} and @{term lc}\<close>
 
 lemma lp_alt:
   assumes "p \<noteq> 0"
@@ -1483,6 +1636,479 @@ lemma lookup_mult_0:
   by (metis assms aux lp_gr lp_mult monom_mult_left0 monom_mult_right0
       ordered_powerprod_lin.order.strict_implies_not_eq)
 
+lemma lp_le:
+  assumes a: "\<And>s. t \<prec> s \<Longrightarrow> lookup p s = 0"
+  shows "lp p \<preceq> t"
+proof (cases "p = 0")
+  case True
+  thus ?thesis using zero_min[of t] by (simp add: lp_def)
+next
+  case False
+  hence "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  have "\<forall>s\<in>keys p. s \<preceq> t"
+  proof
+    fix s::"'a"
+    assume "s \<in> keys p"
+    hence "lookup p s \<noteq> 0" unfolding keys_def by simp
+    hence "\<not> t \<prec> s" using a[of s] by auto
+    thus "s \<preceq> t" by simp
+  qed
+  with lp_alt[OF \<open>p \<noteq> 0\<close>] ordered_powerprod_lin.Max_le_iff[OF finite_keys[of p] \<open>keys p \<noteq> {}\<close>]
+    show ?thesis by simp
+qed
+   
+lemma lp_le_iff: "lp p \<preceq> t \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = 0)" (is "?L \<longleftrightarrow> ?R")
+proof
+  assume ?L
+  show ?R
+  proof (intro allI impI)
+    fix s
+    note \<open>lp p \<preceq> t\<close>
+    also assume "t \<prec> s"
+    finally have "lp p \<prec> s" .
+    hence "\<not> s \<preceq> lp p" by simp
+    with lp_max[of p s] show "lookup p s = 0" by blast
+  qed
+next
+  assume ?R
+  thus ?L using lp_le by auto
+qed
+
+lemma lp_plus_eqI:
+  assumes "lp p \<prec> lp q"
+  shows "lp (p + q) = lp q"
+proof (cases "q = 0")
+  case True
+  with assms have "lp p \<prec> 0" by (simp add: lp_def)
+  with zero_min[of "lp p"] show ?thesis by simp
+next
+  case False
+  show ?thesis
+  proof (intro lp_eqI)
+    from lp_gr[of p "lp q" "lp p"] \<open>lp p \<prec> lp q\<close> have "lookup p (lp q) = 0" by blast
+    with lookup_add[of p q "lp q"] lc_not_0[OF False] show "lookup (p + q) (lp q) \<noteq> 0"
+      unfolding lc_def by simp
+  next
+    fix s
+    assume "lookup (p + q) s \<noteq> 0"
+    show "s \<preceq> lp q"
+    proof (rule ccontr)
+      assume "\<not> s \<preceq> lp q"
+      hence qs: "lp q \<prec> s" by simp
+      hence "lp p \<prec> s" using \<open>lp p \<prec> lp q\<close> by simp
+      with lp_gr[of p s "lp p"] have "lookup p s = 0" by blast
+      also from qs lp_gr[of q s "lp q"] have "lookup q s = 0" by blast
+      ultimately show False using \<open>lookup (p + q) s \<noteq> 0\<close> lookup_add[of p q s] by auto
+    qed
+  qed
+qed
+
+lemma lp_plus_eqI_2:
+  assumes "lp q \<prec> lp p"
+  shows "lp (p + q) = lp p"
+proof (cases "p = 0")
+  case True
+  with assms have "lp q \<prec> 0" by (simp add: lp_def)
+  with zero_min[of "lp q"] show ?thesis by simp
+next
+  case False
+  show ?thesis
+  proof (intro lp_eqI)
+    from lp_gr[of q "lp p" "lp q"] \<open>lp q \<prec> lp p\<close> have "lookup q (lp p) = 0" by blast
+    with lookup_add[of p q "lp p"] lc_not_0[OF False] show "lookup (p + q) (lp p) \<noteq> 0"
+      unfolding lc_def by simp
+  next
+    fix s
+    assume "lookup (p + q) s \<noteq> 0"
+    show "s \<preceq> lp p"
+    proof (rule ccontr)
+      assume "\<not> s \<preceq> lp p"
+      hence ps: "lp p \<prec> s" by simp
+      hence "lp q \<prec> s" using \<open>lp q \<prec> lp p\<close> by simp
+      with lp_gr[of q s "lp q"] have "lookup q s = 0" by blast
+      also from ps lp_gr[of p s "lp p"] have "lookup p s = 0" by blast
+      ultimately show False using \<open>lookup (p + q) s \<noteq> 0\<close> lookup_add[of p q s] by auto
+    qed
+  qed
+qed
+    
+lemma lp_plus_lessE:
+  assumes "lp p \<prec> lp (p + (q::('a, 'b::monoid_add) poly_mapping))"
+  shows "lp p \<prec> lp q"
+proof (rule ccontr)
+  assume "\<not> lp p \<prec> lp q"
+  hence "lp p = lp q \<or> lp q \<prec> lp p" by auto
+  thus False
+  proof
+    assume lp_eq: "lp p = lp q"
+    have "lp (p + q) \<preceq> lp p"
+    proof (rule lp_le)
+      fix s
+      assume "lp p \<prec> s"
+      with lp_gr[of p s "lp p"] have "lookup p s = 0" by blast
+      from \<open>lp p \<prec> s\<close> have "lp q \<prec> s" using lp_eq by simp
+      with lp_gr[of q s "lp q"] have "lookup q s = 0" by blast
+      with \<open>lookup p s = 0\<close> show "lookup (p + q) s = 0" using lookup_add[of p q s] by simp
+    qed
+    with assms show False by simp
+  next
+    assume "lp q \<prec> lp p"
+    from lp_plus_eqI_2[OF this] assms show False by simp
+  qed
+qed
+  
+lemma lp_plus_lessI:
+  fixes p q :: "('a, 'b::ring) poly_mapping"
+  assumes "p + q \<noteq> 0" and lp_eq: "lp q = lp p" and lc_eq: "lc q = - lc p"
+  shows "lp (p + q) \<prec> lp p"
+proof (rule ccontr)
+  assume "\<not> lp (p + q) \<prec> lp p"
+  hence "lp (p + q) = lp p \<or> lp p \<prec> lp (p + q)" by auto
+  thus False
+  proof
+    assume "lp (p + q) = lp p"
+    have "lookup (p + q) (lp p) = (lookup p (lp p)) + (lookup q (lp q))" unfolding lp_eq lookup_add ..
+    also have "... = lc p + lc q" unfolding lc_def ..
+    also have "... = 0" unfolding lc_eq by simp
+    finally have "lookup (p + q) (lp p) = 0" .
+    hence "lp (p + q) \<noteq> lp p" using lc_not_0[OF \<open>p + q \<noteq> 0\<close>] unfolding lc_def by auto
+    with \<open>lp (p + q) = lp p\<close> show False by simp
+  next
+    assume "lp p \<prec> lp (p + q)"
+    have "lp p \<prec> lp q" by (rule lp_plus_lessE, fact+)
+    hence "lp p \<noteq> lp q" by simp
+    with lp_eq show False by simp
+  qed
+qed
+
+lemma lp_plus_distinct_eq_max:
+  assumes "lp p \<noteq> lp q"
+  shows "lp (p + q) = ordered_powerprod_lin.max (lp p) (lp q)"
+proof (rule ordered_powerprod_lin.linorder_cases)
+  assume a: "lp p \<prec> lp q"
+  hence "lp (p + q) = lp q" by (rule lp_plus_eqI)
+  also from a have "... = ordered_powerprod_lin.max (lp p) (lp q)"
+    by (simp add: ordered_powerprod_lin.max.absorb2)
+  finally show ?thesis .
+next
+  assume a: "lp q \<prec> lp p"
+  hence "lp (p + q) = lp p" by (rule lp_plus_eqI_2)
+  also from a have "... = ordered_powerprod_lin.max (lp p) (lp q)"
+    by (simp add: ordered_powerprod_lin.max.absorb1)
+  finally show ?thesis .
+next
+  assume "lp p = lp q"
+  with assms show ?thesis ..
+qed
+
+lemma lp_plus_le_max: "lp (p + q) \<preceq> ordered_powerprod_lin.max (lp p) (lp q)"
+proof (cases "lp p = lp q")
+  case True
+  show ?thesis
+  proof (rule lp_le)
+    fix s
+    assume "ordered_powerprod_lin.max (lp p) (lp q) \<prec> s"
+    hence "lp p \<prec> s" and "lp q \<prec> s" by simp_all
+    hence "lookup p s = 0" and "lookup q s = 0" using lp_max ordered_powerprod_lin.leD by blast+
+    thus "lookup (p + q) s = 0" by (simp add: lookup_add)
+  qed
+next
+  case False
+  hence "lp (p + q) = ordered_powerprod_lin.max (lp p) (lp q)" by (rule lp_plus_distinct_eq_max)
+  thus ?thesis by simp
+qed
+    
+lemma lp_max_keys:
+  assumes "t \<in> keys p"
+  shows "t \<preceq> lp p"
+proof (rule lp_max)
+  from assms show "lookup p t \<noteq> 0" by simp
+qed
+
+lemma lp_eqI_keys:
+  assumes "t \<in> keys p" and a2: "\<And>s. s \<in> keys p \<Longrightarrow> s \<preceq> t"
+  shows "lp p = t"
+  by (rule lp_eqI, simp_all only: in_keys_iff[symmetric], fact+)
+    
+lemma lp_gr_keys:
+  assumes "s \<in> keys p" and "t \<prec> s"
+  shows "t \<prec> lp p"
+proof (rule lp_gr)
+  from assms(1) show "lookup p s \<noteq> 0" by simp
+qed fact
+
+lemma lp_uminus: "lp (-p) = lp p"
+  by (simp add: lp_def keys_uminus)
+
+lemma lc_uminus: "lc (-p) = - lc p"
+  by (simp add: lc_def lp_uminus)
+
+subsubsection \<open>Trailing Power-Product and Trailing Coefficient: @{term tp} and @{term tc}\<close>
+
+definition tp::"('a, 'b::zero) poly_mapping \<Rightarrow> 'a" where
+  "tp p \<equiv> (if p = 0 then 0 else ordered_powerprod_lin.Min (keys p))"
+
+definition tc::"('a, 'b::zero) poly_mapping \<Rightarrow> 'b" where
+  "tc p \<equiv> lookup p (tp p)"
+  
+lemma tp_alt:
+  assumes "p \<noteq> 0"
+  shows "tp p = ordered_powerprod_lin.Min (keys p)"
+using assms unfolding tp_def by simp
+
+lemma tp_min_keys:
+  assumes "t \<in> keys p"
+  shows "tp p \<preceq> t"
+proof -
+  from assms have "keys p \<noteq> {}" by auto
+  hence "p \<noteq> 0" by simp
+  from tp_alt[OF this] ordered_powerprod_lin.Min_le[OF finite_keys assms] show ?thesis by simp
+qed
+
+lemma tp_min:
+  assumes "lookup p t \<noteq> 0"
+  shows "tp p \<preceq> t"
+proof -
+  from assms have t_in: "t \<in> keys p" unfolding keys_def by simp
+  thus ?thesis by (rule tp_min_keys)
+qed
+  
+lemma tp_in_keys:
+  assumes "p \<noteq> 0"
+  shows "tp p \<in> keys p"
+  unfolding tp_alt[OF assms]
+  by (rule ordered_powerprod_lin.Min_in, fact finite_keys, simp add: assms)
+
+lemma tp_eqI:
+  assumes a1: "t \<in> keys p" and a2: "\<And>s. s \<in> keys p \<Longrightarrow> t \<preceq> s"
+  shows "tp p = t"
+proof -
+  from a1 have "keys p \<noteq> {}" by auto
+  hence "p \<noteq> 0" by simp
+  from a1 have "tp p \<preceq> t" by (rule tp_min_keys)
+  moreover have "t \<preceq> tp p" by (rule a2, rule tp_in_keys, fact \<open>p \<noteq> 0\<close>)
+  ultimately show ?thesis by simp
+qed
+
+lemma tp_gr:
+  assumes a: "\<And>s. s \<in> keys p \<Longrightarrow> t \<prec> s" and "p \<noteq> 0"
+  shows "t \<prec> tp p"
+proof -
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  show ?thesis by (rule a, rule tp_in_keys, fact \<open>p \<noteq> 0\<close>)
+qed
+
+lemma tp_less:
+  assumes "s \<in> keys p" and "s \<prec> t"
+  shows "tp p \<prec> t"
+proof -
+  from \<open>s \<in> keys p\<close> have "tp p \<preceq> s" by (rule tp_min_keys)
+  also have "... \<prec> t" by fact
+  finally show "tp p \<prec> t" .
+qed
+  
+lemma tp_ge:
+  assumes a: "\<And>s. s \<prec> t \<Longrightarrow> lookup p s = 0" and "p \<noteq> 0"
+  shows "t \<preceq> tp p"
+proof -
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  have "\<forall>s\<in>keys p. t \<preceq> s"
+  proof
+    fix s::"'a"
+    assume "s \<in> keys p"
+    hence "lookup p s \<noteq> 0" unfolding keys_def by simp
+    hence "\<not> s \<prec> t" using a[of s] by auto
+    thus "t \<preceq> s" by simp
+  qed
+  with tp_alt[OF \<open>p \<noteq> 0\<close>] ordered_powerprod_lin.Min_ge_iff[OF finite_keys[of p] \<open>keys p \<noteq> {}\<close>]
+    show ?thesis by simp
+qed
+  
+lemma tp_ge_keys:
+  assumes a: "\<And>s. s \<in> keys p \<Longrightarrow> t \<preceq> s" and "p \<noteq> 0"
+  shows "t \<preceq> tp p"
+  by (rule a, rule tp_in_keys, fact)
+    
+lemma tp_ge_iff: "t \<preceq> tp p \<longleftrightarrow> ((p \<noteq> 0 \<or> t = 0) \<and> (\<forall>s. s \<prec> t \<longrightarrow> lookup p s = 0))" (is "?L \<longleftrightarrow> (?A \<and> ?B)")
+proof
+  assume ?L
+  show "?A \<and> ?B"
+  proof (intro conjI allI impI)
+    show "p \<noteq> 0 \<or> t = 0"
+    proof (cases "p = 0")
+      case True
+      show ?thesis
+      proof (rule disjI2)
+        from \<open>?L\<close> True have "t \<preceq> 0" by (simp add: tp_def)
+        with zero_min[of t] show "t = 0" by simp
+      qed
+    next
+      case False
+      thus ?thesis ..
+    qed
+  next
+    fix s
+    assume "s \<prec> t"
+    also note \<open>t \<preceq> tp p\<close>
+    finally have "s \<prec> tp p" .
+    hence "\<not> tp p \<preceq> s" by simp
+    with tp_min[of p s] show "lookup p s = 0" by blast
+  qed
+next
+  assume "?A \<and> ?B"
+  hence ?A and ?B by simp_all
+  show ?L
+  proof (cases "p = 0")
+    case True
+    with \<open>?A\<close> have "t = 0" by simp
+    with True show ?thesis by (simp add: tp_def)
+  next
+    case False
+    from \<open>?B\<close> show ?thesis using tp_ge[OF _ False] by auto
+  qed
+qed
+
+lemma tc_not_0:
+  assumes "p \<noteq> 0"
+  shows "tc p \<noteq> 0"
+  unfolding tc_def in_keys_iff[symmetric] using assms by (rule tp_in_keys)
+
+lemma tp_monomial:
+  assumes "c \<noteq> 0"
+  shows "tp (monomial c t) = t"
+proof (rule tp_eqI)
+  from keys_of_monomial[OF assms, of t] show "t \<in> keys (monomial c t)" by simp
+next
+  fix s
+  assume "s \<in> keys (monomial c t)"
+  with keys_of_monomial[OF assms, of t] have "s = t" by simp
+  thus "t \<preceq> s" by simp
+qed
+
+lemma tc_monomial:
+  assumes "c \<noteq> 0"
+  shows "tc (monomial c t) = c"
+  unfolding tc_def tp_monomial[OF assms] by (simp add: lookup_single)
+
+lemma tp_monom_mult:
+  fixes c::"'b::semiring_no_zero_divisors"
+  assumes "c \<noteq> 0" and "p \<noteq> 0"
+  shows "tp (monom_mult c t p) = t + tp p"
+proof (intro tp_eqI, rule keys_monom_multI, rule tp_in_keys, fact, fact)
+  fix s
+  assume "s \<in> keys (monom_mult c t p)"
+  then obtain x where "x \<in> keys p" and s: "s = t + x" by (rule keys_monom_multE)
+  show "t + tp p \<preceq> s" unfolding s add.commute[of t] by (rule plus_monotone, rule tp_min_keys, fact)
+qed
+
+lemma tc_monom_mult:
+  fixes c::"'b::semiring_no_zero_divisors"
+  assumes "c \<noteq> 0" and "p \<noteq> 0"
+  shows "tc (monom_mult c t p) = c * tc p"
+  unfolding tc_def tp_monom_mult[OF assms] lookup_monom_mult ..
+  
+lemma tp_plus_eqI:
+  fixes p q
+  assumes "p \<noteq> 0" and "tp p \<prec> tp q"
+  shows "tp (p + q) = tp p"
+proof (intro tp_eqI)
+  from tp_less[of "tp p" q "tp q"] \<open>tp p \<prec> tp q\<close> have "tp p \<notin> keys q" by blast
+  with lookup_add[of p q "tp p"] tc_not_0[OF \<open>p \<noteq> 0\<close>] show "tp p \<in> keys (p + q)"
+    unfolding in_keys_iff tc_def by simp
+next
+  fix s
+  assume "s \<in> keys (p + q)"
+  show "tp p \<preceq> s"
+  proof (rule ccontr)
+    assume "\<not> tp p \<preceq> s"
+    hence sp: "s \<prec> tp p" by simp
+    hence "s \<prec> tp q" using \<open>tp p \<prec> tp q\<close> by simp
+    with tp_less[of s q "tp q"] have "s \<notin> keys q" by blast
+    moreover from sp tp_less[of s p "tp p"] have "s \<notin> keys p" by blast
+    ultimately show False using \<open>s \<in> keys (p + q)\<close> keys_add_subset[of p q] by auto
+  qed
+qed
+    
+lemma tp_plus_lessE:
+  fixes p q
+  assumes "p + q \<noteq> 0" and tp: "tp (p + q) \<prec> tp p"
+  shows "tp q \<prec> tp p"
+proof (cases "p = 0")
+  case True
+  with tp show ?thesis by simp
+next
+  case False
+  show ?thesis
+  proof (rule ccontr)
+    assume "\<not> tp q \<prec> tp p"
+    hence "tp p = tp q \<or> tp p \<prec> tp q" by auto
+    thus False
+    proof
+      assume tp_eq: "tp p = tp q"
+      have "tp p \<preceq> tp (p + q)"
+      proof (rule tp_ge_keys)
+        fix s
+        assume "s \<in> keys (p + q)"
+        hence "s \<in> keys p \<union> keys q"
+        proof
+          show "keys (p + q) \<subseteq> keys p \<union> keys q" by (fact keys_add_subset)
+        qed
+        thus "tp p \<preceq> s"
+        proof
+          assume "s \<in> keys p"
+          thus ?thesis by (rule tp_min_keys)
+        next
+          assume "s \<in> keys q"
+          thus ?thesis unfolding tp_eq by (rule tp_min_keys)
+        qed
+      qed (fact \<open>p + q \<noteq> 0\<close>)
+      with tp show False by simp
+    next
+      assume "tp p \<prec> tp q"
+      from tp_plus_eqI[OF False this] tp show False by (simp add: ac_simps)
+    qed
+  qed
+qed
+  
+lemma tp_plus_lessI:
+  fixes p q :: "('a, 'b::ring) poly_mapping"
+  assumes "p + q \<noteq> 0" and tp_eq: "tp q = tp p" and tc_eq: "tc q = - tc p"
+  shows "tp p \<prec> tp (p + q)"
+proof (rule ccontr)
+  assume "\<not> tp p \<prec> tp (p + q)"
+  hence "tp p = tp (p + q) \<or> tp (p + q) \<prec> tp p" by auto
+  thus False
+  proof
+    assume "tp p = tp (p + q)"
+    have "lookup (p + q) (tp p) = (lookup p (tp p)) + (lookup q (tp q))" unfolding tp_eq lookup_add ..
+    also have "... = tc p + tc q" unfolding tc_def ..
+    also have "... = 0" unfolding tc_eq by simp
+    finally have "lookup (p + q) (tp p) = 0" .
+    hence "tp (p + q) \<noteq> tp p" using tc_not_0[OF \<open>p + q \<noteq> 0\<close>] unfolding tc_def by auto
+    with \<open>tp p = tp (p + q)\<close> show False by simp
+  next
+    assume "tp (p + q) \<prec> tp p"
+    have "tp q \<prec> tp p" by (rule tp_plus_lessE, fact+)
+    hence "tp q \<noteq> tp p" by simp
+    with tp_eq show False by simp
+  qed
+qed
+
+lemma tp_uminus: "tp (-p) = tp p"
+  by (simp add: tp_def keys_uminus)
+
+lemma tc_uminus: "tc (-p) = - tc p"
+  by (simp add: tc_def tp_uminus)
+
+lemma lp_ge_tp: "tp p \<preceq> lp p"
+proof (cases "p = 0")
+  case True
+  show ?thesis unfolding True lp_def tp_def by simp
+next
+  case False
+  show ?thesis by (rule lp_max_keys, rule tp_in_keys, fact False)
+qed
+
 subsubsection \<open>@{term tail}\<close>
 
 lemma lookup_tail: "lookup (tail p) t = (if t \<prec> lp p then lookup p t else 0)"
@@ -1555,6 +2181,14 @@ qed
 lemma tail_alt: "tail p = except p {lp p}"
   by (rule poly_mapping_eqI, simp add: lookup_tail_2 lookup_except)
 
+corollary tail_alt_2: "tail p = p - monomial (lc p) (lp p)"
+proof -
+  have "p = monomial (lc p) (lp p) + tail p" by (fact leading_monomial_tail)
+  also have "... = tail p + monomial (lc p) (lp p)" by (simp only: add.commute)
+  finally have "p - monomial (lc p) (lp p) = (tail p + monomial (lc p) (lp p)) - monomial (lc p) (lp p)" by simp
+  thus ?thesis by simp
+qed
+
 lemma tail_zero[simp]: "tail 0 = 0"
   by (simp only: tail_alt except_zero)
 
@@ -1584,14 +2218,14 @@ lemma times_tail_rec_right: "p * q = monom_mult_right p (lc q) (lp q) + p * (tai
 
 subsubsection \<open>Order Relation on Polynomials\<close>
 
-definition ord_strict_p::"('a, 'b::zero) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" (infixl "\<prec>p" 50) where
-  "ord_strict_p p q \<equiv> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s))"
+definition ord_strict_p::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl "\<prec>p" 50) where
+  "p \<prec>p q \<longleftrightarrow> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s))"
 
-definition ord_p::"('a, 'b::zero) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" (infixl "\<preceq>p" 50) where
+definition ord_p::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl "\<preceq>p" 50) where
   "ord_p p q \<equiv> (p \<prec>p q \<or> p = q)"
 
 lemma ord_strict_higher: "p \<prec>p q \<longleftrightarrow> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> higher p t = higher q t)"
-unfolding ord_strict_p_def higher_eq_iff ..
+  unfolding ord_strict_p_def higher_eq_iff ..
 
 lemma ord_strict_p_asymmetric:
   assumes "p \<prec>p q"
@@ -1757,44 +2391,53 @@ next
 qed
 
 lemma lp_ord_p:
-  assumes "q \<noteq> 0" and "lp p \<prec> lp q"
+  assumes "lp p \<prec> lp q"
   shows "p \<prec>p q"
-unfolding ord_strict_p_def
-proof (intro exI, intro conjI)
-  show "lookup p (lp q) = 0"
-  proof (rule ccontr)
-    assume "lookup p (lp q) \<noteq> 0"
-    from lp_max[OF this] \<open>lp p \<prec> lp q\<close> show False by simp
+proof -
+  have "q \<noteq> 0"
+  proof
+    assume "q = 0"
+    with assms have "lp p \<prec> 0" by (simp add: lp_def)
+    with zero_min[of "lp p"] show False by simp
   qed
-next
-  from lc_not_0[OF \<open>q \<noteq> 0\<close>] show "lookup q (lp q) \<noteq> 0" unfolding lc_def .
-next
-  show "\<forall>s. lp q \<prec> s \<longrightarrow> lookup p s = lookup q s"
-  proof (intro allI, intro impI)
-    fix s
-    assume "lp q \<prec> s"
-    hence "lp p \<prec> s" using \<open>lp p \<prec> lp q\<close> by simp
-    have c1: "lookup q s = 0"
+  show ?thesis
+  unfolding ord_strict_p_def
+  proof (intro exI, intro conjI)
+    show "lookup p (lp q) = 0"
     proof (rule ccontr)
-      assume "lookup q s \<noteq> 0"
-      from lp_max[OF this] \<open>lp q \<prec> s\<close> show False by simp
+      assume "lookup p (lp q) \<noteq> 0"
+      from lp_max[OF this] \<open>lp p \<prec> lp q\<close> show False by simp
     qed
-    have c2: "lookup p s = 0"
-    proof (rule ccontr)
-      assume "lookup p s \<noteq> 0"
-      from lp_max[OF this] \<open>lp p \<prec> s\<close> show False by simp
+  next
+    from lc_not_0[OF \<open>q \<noteq> 0\<close>] show "lookup q (lp q) \<noteq> 0" unfolding lc_def .
+  next
+    show "\<forall>s. lp q \<prec> s \<longrightarrow> lookup p s = lookup q s"
+    proof (intro allI, intro impI)
+      fix s
+      assume "lp q \<prec> s"
+      hence "lp p \<prec> s" using \<open>lp p \<prec> lp q\<close> by simp
+      have c1: "lookup q s = 0"
+      proof (rule ccontr)
+        assume "lookup q s \<noteq> 0"
+        from lp_max[OF this] \<open>lp q \<prec> s\<close> show False by simp
+      qed
+      have c2: "lookup p s = 0"
+      proof (rule ccontr)
+        assume "lookup p s \<noteq> 0"
+        from lp_max[OF this] \<open>lp p \<prec> s\<close> show False by simp
+      qed
+      from c1 c2 show "lookup p s = lookup q s" by simp
     qed
-    from c1 c2 show "lookup p s = lookup q s" by simp
   qed
 qed
 
 lemma ord_p_lp:
-  assumes "p \<preceq>p q" and "p \<noteq> 0"
+  assumes "p \<preceq>p q"
   shows "lp p \<preceq> lp q"
 proof (rule ccontr)
   assume "\<not> lp p \<preceq> lp q"
   hence "lp q \<prec> lp p" by simp
-  from lp_ord_p[OF \<open>p \<noteq> 0\<close> this] \<open>p \<preceq>p q\<close> show False by simp
+  from lp_ord_p[OF this] \<open>p \<preceq>p q\<close> show False by simp
 qed
 
 lemma ord_p_tail:
@@ -1854,7 +2497,7 @@ proof (cases "tail p = 0")
   from this ord_p_0_min[of p] \<open>p \<noteq> 0\<close> show ?thesis by simp
 next
   case False
-  from lp_ord_p[OF \<open>p \<noteq> 0\<close> lp_tail[OF False]] show ?thesis .
+  from lp_ord_p[OF lp_tail[OF False]] show ?thesis .
 qed
 
 lemma higher_lookup_equal_0:
@@ -1978,7 +2621,7 @@ proof
     proof (intro disjCI)
       assume "p \<noteq> 0" and nl: "\<not> lp p \<prec> lp q"
       from \<open>?L\<close> have "p \<preceq>p q" by simp
-      from ord_p_lp[OF this \<open>p \<noteq> 0\<close>] nl have "lp p = lp q" by simp
+      from ord_p_lp[OF this] nl have "lp p = lp q" by simp
       show "lp p = lp q \<and> lc p = lc q \<and> tail p \<prec>p tail q"
         by (intro conjI, fact, rule ord_strict_p_recE2, fact+, rule ord_p_tail, fact+)
     qed
@@ -2011,12 +2654,94 @@ next
     thus ?thesis
     proof
       assume "lp p \<prec> lp q"
-      from lp_ord_p[OF \<open>q \<noteq> 0\<close> this] show ?thesis .
+      from lp_ord_p[OF this] show ?thesis .
     next
       assume "lp p = lp q \<and> lc p = lc q \<and> tail p \<prec>p tail q"
       hence "lp p = lp q" and "lc p = lc q" and "tail p \<prec>p tail q" by simp_all
       thus ?thesis by (rule ord_strict_p_recI)
     qed
+  qed
+qed
+
+lemma ord_strict_p_monomial_iff: "p \<prec>p monomial c t \<longleftrightarrow> (c \<noteq> 0 \<and> (p = 0 \<or> lp p \<prec> t))"
+proof -
+  from ord_p_0_min[of "tail p"] have *: "\<not> tail p \<prec>p 0" by auto
+  show ?thesis
+    by (simp add: ord_strict_p_rec[of p] Let_def tail_def[symmetric] lc_def[symmetric]
+        monomial_0_iff tail_monomial *, simp add: lp_monomial cong: conj_cong)
+qed
+
+corollary ord_strict_p_monomial_plus:
+  assumes "p \<prec>p monomial c t" and "q \<prec>p monomial c t"
+  shows "p + q \<prec>p monomial c t"
+proof -
+  from assms(1) have "c \<noteq> 0" and "p = 0 \<or> lp p \<prec> t" by (simp_all add: ord_strict_p_monomial_iff)
+  from this(2) show ?thesis
+  proof
+    assume "p = 0"
+    with assms(2) show ?thesis by simp
+  next
+    assume "lp p \<prec> t"
+    from assms(2) have "q = 0 \<or> lp q \<prec> t" by (simp add: ord_strict_p_monomial_iff)
+    thus ?thesis
+    proof
+      assume "q = 0"
+      with assms(1) show ?thesis by simp
+    next
+      assume "lp q \<prec> t"
+      with \<open>lp p \<prec> t\<close> have "lp (p + q) \<prec> t"
+        using lp_plus_le_max ordered_powerprod_lin.dual_order.strict_trans2 ordered_powerprod_lin.max_less_iff_conj
+        by blast 
+      with \<open>c \<noteq> 0\<close> show ?thesis by (simp add: ord_strict_p_monomial_iff)
+    qed
+  qed
+qed
+
+lemma ord_strict_p_monom_mult:
+  assumes "p \<prec>p q" and "c \<noteq> (0::'b::semiring_no_zero_divisors)"
+  shows "monom_mult c s p \<prec>p monom_mult c s q"
+proof -
+  from assms(1) obtain t where 1: "lookup p t = 0" and 2: "lookup q t \<noteq> 0"
+    and 3: "\<And>s. t \<prec> s \<Longrightarrow> lookup p s = lookup q s" unfolding ord_strict_p_def by auto
+  show ?thesis unfolding ord_strict_p_def
+  proof (intro exI conjI allI impI)
+    from 1 show "lookup (monom_mult c s p) (s + t) = 0" by (simp add: lookup_monom_mult)
+  next
+    from 2 assms(2) show "lookup (monom_mult c s q) (s + t) \<noteq> 0" by (simp add: lookup_monom_mult)
+  next
+    fix u
+    assume "s + t \<prec> u"
+    show "lookup (monom_mult c s p) u = lookup (monom_mult c s q) u"
+    proof (cases "s adds u")
+      case True
+      then obtain v where u: "u = s + v" ..
+      from \<open>s + t \<prec> u\<close> have "t \<prec> v" unfolding u by (rule ord_strict_canc_left)
+      hence "lookup p v = lookup q v" by (rule 3)
+      thus ?thesis by (simp add: u lookup_monom_mult)
+    next
+      case False
+      thus ?thesis by (simp add: monom_mult.rep_eq)
+    qed
+  qed
+qed
+
+lemma ord_strict_p_plus:
+  assumes "p \<prec>p q" and "keys r \<inter> keys q = {}"
+  shows "p + r \<prec>p q + r"
+proof -
+  from assms(1) obtain t where 1: "lookup p t = 0" and 2: "lookup q t \<noteq> 0"
+    and 3: "\<And>s. t \<prec> s \<Longrightarrow> lookup p s = lookup q s" unfolding ord_strict_p_def by auto
+  from 2 assms(2) have eq: "lookup r t = 0" by auto
+  show ?thesis unfolding ord_strict_p_def
+  proof (intro exI conjI allI impI, simp_all add: lookup_add)
+    from 1 show "lookup p t + lookup r t = 0" by (simp add: eq)
+  next
+    from 2 show "lookup q t + lookup r t \<noteq> 0" by (simp add: eq)
+  next
+    fix s
+    assume "t \<prec> s"
+    hence "lookup p s = lookup q s" by (rule 3)
+    thus "lookup p s + lookup r s = lookup q s + lookup r s" by simp
   qed
 qed
 
@@ -2046,30 +2771,264 @@ qed
 
 end (* ordered_powerprod *)
 
-context od_powerprod
+subsubsection \<open>@{term dgrad_p}\<close>
+
+context gd_powerprod
 begin
 
-(*The following two lemmas prove that \<prec>p is well-founded.
-Although the first proof uses induction on power-products whereas the second one does not,
-the two proofs share a lot of common structure. Maybe this can be exploited to make things
-shorter ...?*)
-lemma ord_p_wf_aux:
-  assumes "x \<in> Q" and a2: "\<forall>y\<in>Q. y = 0 \<or> lp y \<prec> s"
-  shows "\<exists>p\<in>Q. (\<forall>q\<in>Q. \<not> q \<prec>p p)"
-using assms
-proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_ord_strict])
+definition dgrad_p :: "('a \<Rightarrow> nat) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> nat"
+  where "dgrad_p d p = (if keys p = {} then 0 else Max (d ` keys p))"
+
+definition dgrad_p_set :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) set"
+  where "dgrad_p_set d m = {p. \<forall>t\<in>keys p. d t \<le> m}"
+
+lemma dgrad_p_zero [simp]: "dgrad_p d 0 = 0"
+  by (simp add: dgrad_p_def)
+
+lemma dgrad_p_geI:
+  assumes "t \<in> keys p"
+  shows "d t \<le> dgrad_p d p"
+  using assms by (auto simp add: dgrad_p_def)
+
+lemma dgrad_p_geI_lp:
+  assumes "p \<noteq> 0"
+  shows "d (lp p) \<le> dgrad_p d p"
+  by (rule dgrad_p_geI, rule lp_in_keys, fact)
+
+lemma dgrad_p_leI:
+  assumes "\<And>t. t \<in> keys p \<Longrightarrow> d t \<le> m"
+  shows "dgrad_p d p \<le> m"
+  using assms by (auto simp add: dgrad_p_def)
+
+lemma in_dgrad_p_set_iff: "p \<in> dgrad_p_set d m \<longleftrightarrow> (\<forall>t\<in>keys p. d t \<le> m)"
+  by (simp add: dgrad_p_set_def)
+
+lemma dgrad_p_set_alt: "dgrad_p_set d m = {p. dgrad_p d p \<le> m}"
+  by (auto simp add: dgrad_p_set_def dgrad_p_def)
+
+lemma dgrad_p_set_dgrad_p: "p \<in> dgrad_p_set d (dgrad_p d p)"
+  by (simp add: dgrad_p_set_alt)
+
+lemma dgrad_p_setI [intro]:
+  assumes "\<And>t. t \<in> keys p \<Longrightarrow> d t \<le> m"
+  shows "p \<in> dgrad_p_set d m"
+  using assms by (auto simp: in_dgrad_p_set_iff)
+
+lemma dgrad_p_setD:
+  assumes "p \<in> dgrad_p_set d m" and "t \<in> keys p"
+  shows "d t \<le> m"
+  using assms by (simp only: in_dgrad_p_set_iff)
+
+lemma zero_in_dgrad_p_set: "0 \<in> dgrad_p_set d m"
+  by (rule, simp)
+
+lemma dgrad_p_set_zero [simp]: "dgrad_p_set (\<lambda>_. 0) m = UNIV"
+  by auto
+
+lemma subset_dgrad_p_set_zero: "F \<subseteq> dgrad_p_set (\<lambda>_. 0) m"
+  by simp
+
+lemma dgrad_p_set_subset:
+  assumes "m \<le> n"
+  shows "dgrad_p_set d m \<subseteq> dgrad_p_set d n"
+  using assms by (auto simp: dgrad_p_set_def)
+
+lemma dgrad_p_setD_lp:
+  assumes "p \<in> dgrad_p_set d m" and "p \<noteq> 0"
+  shows "d (lp p) \<le> m"
+  by (rule dgrad_p_setD, fact, rule lp_in_keys, fact)
+
+lemma dgrad_p_set_exhaust_expl:
+  assumes "finite F"
+  shows "F \<subseteq> dgrad_p_set d (Max ((dgrad_p d) ` F))"
+proof
+  fix f
+  assume "f \<in> F"
+  hence "dgrad_p d f \<in> (dgrad_p d) ` F" by simp
+  with _ have "dgrad_p d f \<le> Max ((dgrad_p d) ` F)"
+  proof (rule Max_ge)
+    from assms show "finite ((dgrad_p d) ` F)" by auto
+  qed
+  hence "dgrad_p_set d (dgrad_p d f) \<subseteq> dgrad_p_set d (Max ((dgrad_p d) ` F))" by (rule dgrad_p_set_subset)
+  moreover have "f \<in> dgrad_p_set d (dgrad_p d f)" by (fact dgrad_p_set_dgrad_p)
+  ultimately show "f \<in> dgrad_p_set d (Max ((dgrad_p d) ` F))" ..
+qed
+
+lemma dgrad_p_set_exhaust:
+  assumes "finite F"
+  obtains m where "F \<subseteq> dgrad_p_set d m"
+proof
+  from assms show "F \<subseteq> dgrad_p_set d (Max ((dgrad_p d) ` F))" by (rule dgrad_p_set_exhaust_expl)
+qed
+
+lemma dgrad_p_except: "dgrad_p d (except p S) \<le> dgrad_p d p"
+  by (rule dgrad_p_leI, rule dgrad_p_geI, simp add: keys_except)
+
+lemma dgrad_p_tail: "dgrad_p d (tail p) \<le> dgrad_p d p"
+  by (rule dgrad_p_leI, rule dgrad_p_geI, simp add: keys_tail)
+
+lemma dgrad_p_plus: "dgrad_p d (p + q) \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)"
+proof (rule dgrad_p_leI)
+  fix t
+  assume "t \<in> keys (p + q)"
+  with keys_add_subset have "t \<in> keys p \<union> keys q" ..
+  thus "d t \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)"
+  proof
+    assume "t \<in> keys p"
+    hence "d t \<le> dgrad_p d p" by (rule dgrad_p_geI)
+    thus ?thesis by simp
+  next
+    assume "t \<in> keys q"
+    hence "d t \<le> dgrad_p d q" by (rule dgrad_p_geI)
+    thus ?thesis by simp
+  qed
+qed
+
+lemma dgrad_p_uminus [simp]: "dgrad_p d (-p) = dgrad_p d p"
+  by (simp add: dgrad_p_def keys_uminus)
+
+lemma dgrad_p_minus:  "dgrad_p d (p - q) \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)"
+proof (rule dgrad_p_leI)
+  fix t
+  assume "t \<in> keys (p - q)"
+  with keys_minus have "t \<in> keys p \<union> keys q" ..
+  thus "d t \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)"
+  proof
+    assume "t \<in> keys p"
+    hence "d t \<le> dgrad_p d p" by (rule dgrad_p_geI)
+    thus ?thesis by simp
+  next
+    assume "t \<in> keys q"
+    hence "d t \<le> dgrad_p d q" by (rule dgrad_p_geI)
+    thus ?thesis by simp
+  qed
+qed
+
+lemma dgrad_p_monom_mult:
+  assumes "dickson_grading (+) d"
+  shows "dgrad_p d (monom_mult c t p) \<le> ord_class.max (d t) (dgrad_p d p)"
+proof (rule dgrad_p_leI)
+  fix s
+  assume "s \<in> keys (monom_mult c t p)"
+  with keys_monom_mult_subset have "s \<in> ((+) t) ` keys p" ..
+  then obtain u where "u \<in> keys p" and "s = t + u" ..
+  from this(1) have "d u \<le> dgrad_p d p" by (rule dgrad_p_geI)
+  moreover have "d s = ord_class.max (d t) (d u)"
+    by (simp only: \<open>s = t + u\<close> dickson_gradingD1[OF assms(1)])
+  ultimately show "d s \<le> ord_class.max (d t) (dgrad_p d p)" by simp
+qed
+
+lemma dgrad_p_set_closed_plus:
+  assumes "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  shows "p + q \<in> dgrad_p_set d m"
+proof -
+  have "dgrad_p d (p + q) \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)" by (fact dgrad_p_plus)
+  also from assms have "... \<le> m" by (simp add: dgrad_p_set_alt)
+  finally show ?thesis by (simp add: dgrad_p_set_alt)
+qed
+
+lemma dgrad_p_set_closed_uminus:
+  assumes "p \<in> dgrad_p_set d m"
+  shows "-p \<in> dgrad_p_set d m"
+  using assms by (simp add: dgrad_p_set_alt)
+
+lemma dgrad_p_set_closed_minus:
+  assumes "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  shows "p - q \<in> dgrad_p_set d m"
+proof -
+  have "dgrad_p d (p - q) \<le> ord_class.max (dgrad_p d p) (dgrad_p d q)" by (fact dgrad_p_minus)
+  also from assms have "... \<le> m" by (simp add: dgrad_p_set_alt)
+  finally show ?thesis by (simp add: dgrad_p_set_alt)
+qed
+
+lemma dgrad_p_set_closed_monom_mult:
+  assumes "dickson_grading (+) d" and "d t \<le> m" and "p \<in> dgrad_p_set d m"
+  shows "monom_mult c t p \<in> dgrad_p_set d m"
+proof -
+  from assms(1) have "dgrad_p d (monom_mult c t p) \<le> ord_class.max (d t) (dgrad_p d p)"
+    by (rule dgrad_p_monom_mult)
+  also from assms have "... \<le> m" by (simp add: dgrad_p_set_alt)
+  finally show ?thesis by (simp add: dgrad_p_set_alt)
+qed
+
+lemma dgrad_p_set_closed_except:
+  assumes "p \<in> dgrad_p_set d m"
+  shows "except p S \<in> dgrad_p_set d m"
+  by (rule dgrad_p_setI, rule dgrad_p_setD, rule assms, simp add: keys_except)
+
+lemma dgrad_p_set_closed_tail:
+  assumes "p \<in> dgrad_p_set d m"
+  shows "tail p \<in> dgrad_p_set d m"
+  unfolding tail_def lower_def using assms by (rule dgrad_p_set_closed_except)
+
+subsubsection \<open>Well-foundedness\<close>
+
+definition dickson_less_p :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+  where "dickson_less_p d m p q \<longleftrightarrow> ({p, q} \<subseteq> dgrad_p_set d m \<and> p \<prec>p q)"
+
+lemma dickson_less_pI:
+  assumes "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m" and "p \<prec>p q"
+  shows "dickson_less_p d m p q"
+  using assms by (simp add: dickson_less_p_def)
+
+lemma dickson_less_pD1:
+  assumes "dickson_less_p d m p q"
+  shows "p \<in> dgrad_p_set d m"
+  using assms by (simp add: dickson_less_p_def)
+
+lemma dickson_less_pD2:
+  assumes "dickson_less_p d m p q"
+  shows "q \<in> dgrad_p_set d m"
+  using assms by (simp add: dickson_less_p_def)
+
+lemma dickson_less_pD3:
+  assumes "dickson_less_p d m p q"
+  shows "p \<prec>p q"
+  using assms by (simp add: dickson_less_p_def)
+
+lemma dickson_less_p_irrefl: "\<not> dickson_less_p d m p p"
+  by (simp add: dickson_less_p_def)
+
+lemma dickson_less_p_trans:
+  assumes "dickson_less_p d m p q" and "dickson_less_p d m q r"
+  shows "dickson_less_p d m p r"
+  using assms by (auto simp add: dickson_less_p_def)
+
+lemma dickson_less_p_mono:
+  assumes "dickson_less_p d m p q" and "m \<le> n"
+  shows "dickson_less_p d n p q"
+proof -
+  from assms(2) have "dgrad_p_set d m \<subseteq> dgrad_p_set d n" by (rule dgrad_p_set_subset)
+  moreover from assms(1) have "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m" and "p \<prec>p q"
+    by (rule dickson_less_pD1, rule dickson_less_pD2, rule dickson_less_pD3)
+  ultimately have "p \<in> dgrad_p_set d n" and "q \<in> dgrad_p_set d n" by auto
+  from this \<open>p \<prec>p q\<close> show ?thesis by (rule dickson_less_pI)
+qed
+
+lemma dickson_less_p_zero: "dickson_less_p (\<lambda>_. 0) m = (\<prec>p)"
+  by (rule, rule, simp add: dickson_less_p_def)
+
+lemma dickson_less_p_wf_aux:
+  assumes "dickson_grading (+) d"
+  assumes "x \<in> Q" and "\<forall>y\<in>Q. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less d m (lp y) s)"
+  shows "\<exists>p\<in>Q. (\<forall>q\<in>Q. \<not> dickson_less_p d m q p)"
+  using assms(2) assms(3)
+proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_dickson_less, OF assms(1)])
   fix s::"'a" and x::"('a, 'b) poly_mapping" and Q::"('a, 'b) poly_mapping set"
-  assume hyp: "\<forall>s0. s0 \<prec> s \<longrightarrow> (\<forall>x0 Q0::('a, 'b) poly_mapping set. x0 \<in> Q0 \<longrightarrow>
-                                  (\<forall>y\<in>Q0. y = 0 \<or> lp y \<prec> s0) \<longrightarrow> (\<exists>p\<in>Q0. \<forall>q\<in>Q0. \<not> q \<prec>p p))"
+  assume hyp: "\<forall>s0. dickson_less d m s0 s \<longrightarrow> (\<forall>x0 Q0::('a, 'b) poly_mapping set. x0 \<in> Q0 \<longrightarrow>
+                            (\<forall>y\<in>Q0. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less d m (lp y) s0)) \<longrightarrow>
+                            (\<exists>p\<in>Q0. \<forall>q\<in>Q0. \<not> dickson_less_p d m q p))"
   assume "x \<in> Q"
-  assume bounded: "\<forall>y\<in>Q. y = 0 \<or> lp y \<prec> s"
-  show "\<exists>p\<in>Q. \<forall>q\<in>Q. \<not> q \<prec>p p"
+  assume "\<forall>y\<in>Q. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less d m (lp y) s)"
+  hence bounded: "\<And>y. y \<in> Q \<Longrightarrow> y \<noteq> 0 \<Longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less d m (lp y) s)" by auto
+  show "\<exists>p\<in>Q. \<forall>q\<in>Q. \<not> dickson_less_p d m q p"
   proof (cases "0 \<in> Q")
     case True
     show ?thesis
     proof (rule, rule, rule)
       fix q::"('a, 'b) poly_mapping"
-      assume "q \<prec>p 0"
+      assume "dickson_less_p d m q 0"
+      hence "q \<prec>p 0" by (rule dickson_less_pD3)
       thus False using ord_p_0_min[of q] by simp
     next
       from True show "0 \<in> Q" .
@@ -2078,71 +3037,97 @@ proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_ord_strict])
     case False
     define Q1 where "Q1 = {lp p | p. p \<in> Q}"
     from \<open>x \<in> Q\<close> have "lp x \<in> Q1" unfolding Q1_def by auto
-    from wf_ord_strict have "wf {(x, y). x \<prec> y}" unfolding wfP_def .
-    from wfE_min[OF this \<open>lp x \<in> Q1\<close>] obtain t where
-      "t \<in> Q1" and t_min_1: "\<And>y. (y, t) \<in> {(x, y). x \<prec> y} \<Longrightarrow> y \<notin> Q1" by auto
-    have t_min: "\<And>q. q \<in> Q \<Longrightarrow> t \<preceq> lp q"
+    with wf_dickson_less[OF assms(1)] obtain t
+      where "t \<in> Q1" and t_min_1: "\<And>q. dickson_less d m q t \<Longrightarrow> q \<notin> Q1"
+      by (rule wfE_min[to_pred], auto)
+    have t_min: "\<And>q. q \<in> Q \<Longrightarrow> \<not> dickson_less d m (lp q) t"
     proof -
       fix q::"('a, 'b) poly_mapping"
       assume "q \<in> Q"
       hence "lp q \<in> Q1" unfolding Q1_def by auto
-      hence "(lp q, t) \<notin> {(x, y). x \<prec> y}" using t_min_1 by auto
-      hence "\<not> lp q \<prec> t" by simp
-      thus "t \<preceq> lp q" by simp
+      thus "\<not> dickson_less d m (lp q) t" using t_min_1 by auto
     qed
     from \<open>t \<in> Q1\<close> obtain p where "lp p = t" and "p \<in> Q" unfolding Q1_def by auto
     hence "p \<noteq> 0" using False by auto
-    hence "lp p \<prec> s" using bounded[rule_format, OF \<open>p \<in> Q\<close>] by auto
+    with \<open>p \<in> Q\<close> have "p \<in> dgrad_p_set d m \<and> dickson_less d m (lp p) s" by (rule bounded)
+    hence "p \<in> dgrad_p_set d m" and "dickson_less d m (lp p) s" by simp_all
+    moreover from this(1) \<open>p \<noteq> 0\<close> have "d (lp p) \<le> m" by (rule dgrad_p_setD_lp)
+    ultimately have "d t \<le> m" by (simp add: \<open>lp p = t\<close>)
     define Q2 where "Q2 = {tail p | p. p \<in> Q \<and> lp p = t}"
     from \<open>p \<in> Q\<close> \<open>lp p = t\<close> have "tail p \<in> Q2" unfolding Q2_def by auto
-    have "\<And>q. q \<in> Q2 \<Longrightarrow> q = 0 \<or> lp q \<prec> lp p"
-    proof -
+    have "\<forall>q\<in>Q2. q \<noteq> 0 \<longrightarrow> (q \<in> dgrad_p_set d m \<and> dickson_less d m (lp q) (lp p))"
+    proof (intro ballI impI)
       fix q::"('a, 'b) poly_mapping"
       assume "q \<in> Q2"
-      then obtain q0 where "q = tail q0" and "lp q0 = lp p" using \<open>lp p = t\<close> unfolding Q2_def by auto
-      have "q \<noteq> 0 \<Longrightarrow> lp q \<prec> lp p"
-      proof -
-        assume "q \<noteq> 0"
-        hence "tail q0 \<noteq> 0" using \<open>q = tail q0\<close> by simp
-        from lp_tail[OF this] \<open>q = tail q0\<close> \<open>lp q0 = lp p\<close> show "lp q \<prec> lp p" by simp
-      qed
-      thus "q = 0 \<or> lp q \<prec> lp p" by auto
-    qed
-    from hyp[rule_format, OF \<open>lp p \<prec> s\<close> \<open>tail p \<in> Q2\<close> this] obtain q where
-      "q \<in> Q2" and q_min: "\<forall>r\<in>Q2. \<not> r \<prec>p q" ..
-    from \<open>q \<in> Q2\<close> obtain m where "q = tail m" and "m \<in> Q" and "lp m = t" unfolding Q2_def by auto
-    from q_min \<open>q = tail m\<close> have m_tail_min: "\<And>r. r \<in> Q2 \<Longrightarrow> \<not> r \<prec>p tail m" by simp
-    show ?thesis
-    proof
-      from \<open>m \<in> Q\<close> show "m \<in> Q" .
-    next
-      show "\<forall>r\<in>Q. \<not> r \<prec>p m"
+      then obtain q0 where q: "q = tail q0" and "lp q0 = lp p" and "q0 \<in> Q"
+        using \<open>lp p = t\<close> by (auto simp add: Q2_def)
+      assume "q \<noteq> 0"
+      hence "tail q0 \<noteq> 0" using \<open>q = tail q0\<close> by simp
+      hence "q0 \<noteq> 0" by auto
+      with \<open>q0 \<in> Q\<close> have "q0 \<in> dgrad_p_set d m \<and> dickson_less d m (lp q0) s" by (rule bounded)
+      hence "q0 \<in> dgrad_p_set d m" and "dickson_less d m (lp q0) s" by simp_all
+      from this(1) have "q \<in> dgrad_p_set d m" unfolding q by (rule dgrad_p_set_closed_tail)
+      show "q \<in> dgrad_p_set d m \<and> dickson_less d m (lp q) (lp p)"
       proof
-        fix r::"('a, 'b) poly_mapping"
-        assume "r \<in> Q"
-        hence "r \<noteq> 0" using False by auto
-        show "\<not> r \<prec>p m"
-        proof
-          assume "r \<prec>p m"
-          hence "r \<preceq>p m" by simp
-          from t_min[OF \<open>r \<in> Q\<close>] ord_p_lp[OF \<open>r \<preceq>p m\<close> \<open>r \<noteq> 0\<close>] \<open>lp m = t\<close> have "lp r = t" by simp
-          hence "lp r = lp m" using \<open>lp m = t\<close> by simp
-          from \<open>r \<in> Q\<close> \<open>lp r = t\<close> have "tail r \<in> Q2" unfolding Q2_def by auto
-          from ord_p_tail[OF \<open>r \<noteq> 0\<close> \<open>lp r = lp m\<close> \<open>r \<prec>p m\<close>] m_tail_min[OF \<open>tail r \<in> Q2\<close>]
-            show False by simp
+        show "dickson_less d m (lp q) (lp p)"
+        proof (rule dickson_lessI)
+          from \<open>q \<in> dgrad_p_set d m\<close> \<open>q \<noteq> 0\<close> show "d (lp q) \<le> m" by (rule dgrad_p_setD_lp)
+        next
+          from \<open>dickson_less d m (lp p) s\<close> show "d (lp p) \<le> m" by (rule dickson_lessD1)
+        next
+          from lp_tail[OF \<open>tail q0 \<noteq> 0\<close>] \<open>q = tail q0\<close> \<open>lp q0 = lp p\<close> show "lp q \<prec> lp p" by simp
         qed
+      qed fact
+    qed
+    with hyp \<open>dickson_less d m (lp p) s\<close> \<open>tail p \<in> Q2\<close> have "\<exists>p\<in>Q2. \<forall>q\<in>Q2. \<not> dickson_less_p d m q p"
+      by blast
+    then obtain q where "q \<in> Q2" and q_min: "\<forall>r\<in>Q2. \<not> dickson_less_p d m r q" ..
+    from \<open>q \<in> Q2\<close> obtain q0 where "q = tail q0" and "q0 \<in> Q" and "lp q0 = t" unfolding Q2_def by auto
+    from q_min \<open>q = tail q0\<close> have q0_tail_min: "\<And>r. r \<in> Q2 \<Longrightarrow> \<not> dickson_less_p d m r (tail q0)" by simp
+    from \<open>q0 \<in> Q\<close> show ?thesis
+    proof
+      show "\<forall>r\<in>Q. \<not> dickson_less_p d m r q0"
+      proof (intro ballI notI)
+        fix r::"('a, 'b) poly_mapping"
+        assume "dickson_less_p d m r q0"
+        hence "r \<in> dgrad_p_set d m" and "q0 \<in> dgrad_p_set d m" and "r \<prec>p q0"
+          by (rule dickson_less_pD1, rule dickson_less_pD2, rule dickson_less_pD3)
+        from this(3) have "lp r \<preceq> lp q0" by (simp add: ord_p_lp)
+        with \<open>lp q0 = t\<close> have "lp r \<preceq> t" by simp
+        assume "r \<in> Q"
+        hence "\<not> dickson_less d m (lp r) t" by (rule t_min)
+        from False \<open>r \<in> Q\<close> have "r \<noteq> 0" using False by blast
+        with \<open>r \<in> dgrad_p_set d m\<close> have "d (lp r) \<le> m" by (rule dgrad_p_setD_lp)
+        have "\<not> lp r \<prec> t"
+        proof
+          assume "lp r \<prec> t"
+          with \<open>d (lp r) \<le> m\<close> \<open>d t \<le> m\<close> have "dickson_less d m (lp r) t" by (rule dickson_lessI)
+          with \<open>\<not> dickson_less d m (lp r) t\<close> show False ..
+        qed
+        with \<open>lp r \<preceq> t\<close> have "lp r = t" by simp
+        with \<open>r \<in> Q\<close> have "tail r \<in> Q2" by (auto simp add: Q2_def)
+        have "dickson_less_p d m (tail r) (tail q0)"
+        proof (rule dickson_less_pI)
+          show "tail r \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_tail, fact)
+        next
+          show "tail q0 \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_tail, fact)
+        next
+          have "lp r = lp q0" by (simp only: \<open>lp r = t\<close> \<open>lp q0 = t\<close>)
+          from \<open>r \<noteq> 0\<close> this \<open>r \<prec>p q0\<close> show "tail r \<prec>p tail q0" by (rule ord_p_tail)
+        qed
+        with q0_tail_min[OF \<open>tail r \<in> Q2\<close>] show False ..
       qed
     qed
   qed
 qed
 
-theorem ord_p_wf:
-  shows "wfP (\<prec>p)"
-unfolding wfP_def
-proof (intro wfI_min)
+theorem dickson_less_p_wf:
+  assumes "dickson_grading (+) d"
+  shows "wfP (dickson_less_p d m)"
+proof (rule wfI_min[to_pred])
   fix Q::"('a, 'b) poly_mapping set" and x::"('a, 'b) poly_mapping"
   assume "x \<in> Q"
-  show "\<exists>z\<in>Q. \<forall>y. (y, z) \<in> {(x, y). x \<prec>p y} \<longrightarrow> y \<notin> Q"
+  show "\<exists>z\<in>Q. \<forall>y. dickson_less_p d m y z \<longrightarrow> y \<notin> Q"
   proof (cases "0 \<in> Q")
     case True
     show ?thesis
@@ -2150,70 +3135,136 @@ proof (intro wfI_min)
       from True show "0 \<in> Q" .
     next
       fix q::"('a, 'b) poly_mapping"
-      assume "(q, 0) \<in> {(x, y). x \<prec>p y}"
+      assume "dickson_less_p d m q 0"
+      hence "q \<prec>p 0" by (rule dickson_less_pD3)
       thus "q \<notin> Q" using ord_p_0_min[of q] by simp
     qed
   next
     case False
-    define Q1 where "Q1 = {lp p | p. p \<in> Q}"
-    from \<open>x \<in> Q\<close> have "lp x \<in> Q1" unfolding Q1_def by auto
-    from wf_ord_strict have "wf {(x, y). x \<prec> y}" unfolding wfP_def .
-    from wfE_min[OF this \<open>lp x \<in> Q1\<close>] obtain t where
-      "t \<in> Q1" and t_min_1: "\<And>y. (y, t) \<in> {(x, y). x \<prec> y} \<Longrightarrow> y \<notin> Q1" by auto
-    have t_min: "\<And>q. q \<in> Q \<Longrightarrow> t \<preceq> lp q"
-    proof -
-      fix q::"('a, 'b) poly_mapping"
-      assume "q \<in> Q"
-      hence "lp q \<in> Q1" unfolding Q1_def by auto
-      hence "(lp q, t) \<notin> {(x, y). x \<prec> y}" using t_min_1 by auto
-      hence "\<not> lp q \<prec> t" by simp
-      thus "t \<preceq> lp q" by simp
-    qed
-    define Q2 where "Q2 = {tail p | p. p \<in> Q \<and> lp p = t}"
-    from \<open>t \<in> Q1\<close> obtain p where "lp p = t" and "p \<in> Q" unfolding Q1_def by auto
-    hence "tail p \<in> Q2" unfolding Q2_def by auto
-    have "\<forall>y\<in>Q2. y = 0 \<or> lp y \<prec> t"
-    proof
-      fix y::"('a, 'b) poly_mapping"
-      assume "y \<in> Q2"
-      from \<open>y \<in> Q2\<close> obtain z where "y = tail z" and "lp z = t" unfolding Q2_def by auto
-      have "y \<noteq> 0 \<Longrightarrow> lp y \<prec> t"
-      proof -
-        assume "y \<noteq> 0"
-        hence "tail z \<noteq> 0" using \<open>y = tail z\<close> by simp
-        from lp_tail[OF this] \<open>y = tail z\<close> \<open>lp z = t\<close> show "lp y \<prec> t" by simp
-      qed
-      thus "y = 0 \<or> lp y \<prec> t" by auto
-    qed
-    from ord_p_wf_aux[OF \<open>tail p \<in> Q2\<close> this] obtain r where "r \<in> Q2" and r_min: "\<forall>q\<in>Q2. \<not> q \<prec>p r"
-      by auto
-    then obtain m where "m \<in> Q" and "lp m = t" and m_min: "\<And>q. q \<in> Q2 \<Longrightarrow> \<not> q \<prec>p tail m"
-      unfolding Q2_def by auto
-    show "\<exists>m\<in>Q. \<forall>q. (q, m) \<in> {(x, y). x \<prec>p y} \<longrightarrow> q \<notin> Q"
-    proof
-      from \<open>m \<in> Q\<close> show "m \<in> Q" .
-    next
-      show "\<forall>q. (q, m) \<in> {(x, y). x \<prec>p y} \<longrightarrow> q \<notin> Q"
-      proof (rule, rule)
-        fix q::"('a, 'b) poly_mapping"
-        assume "(q, m) \<in> {(x, y). x\<prec>p y}"
-        hence "q \<prec>p m" by simp
-        hence "q \<preceq>p m" by simp
-        show "q \<notin> Q"
+    show ?thesis
+    proof (cases "Q \<subseteq> dgrad_p_set d m")
+      case True
+      show ?thesis
+      proof (cases "\<forall>u::'a. u = 0")
+        case True
+        hence eq: "\<And>u v::'a. u = v" by (metis(full_types))
+        have tail: "\<And>p::('a, 'b) poly_mapping. tail p = 0"
+        proof (rule ccontr)
+          fix p::"('a, 'b) poly_mapping"
+          assume "tail p \<noteq> 0"
+          hence "lp (tail p) \<prec> lp p" by (rule lp_tail)
+          also have "... = lp (tail p)" by (rule eq)
+          finally show False ..
+        qed
+        from \<open>x \<in> Q\<close> show ?thesis
         proof
-          assume "q \<in> Q"
-          hence "q \<noteq> 0" using False by auto
-          from ord_p_lp[OF \<open>q \<preceq>p m\<close> this] t_min[OF \<open>q \<in> Q\<close>] \<open>lp m = t\<close> have "lp q = lp m" by simp
-          hence "lp q = t" using \<open>lp m = t\<close> by simp
-          hence "tail q \<in> Q2" using \<open>q \<in> Q\<close> unfolding Q2_def by auto
-          from ord_p_tail[OF \<open>q \<noteq> 0\<close> \<open>lp q = lp m\<close> \<open>q \<prec>p m\<close>] m_min[OF \<open>tail q \<in> Q2\<close>]
-            show False by simp
+          show "\<forall>y. dickson_less_p d m y x \<longrightarrow> y \<notin> Q"
+          proof (intro allI impI notI)
+            fix y
+            assume "y \<in> Q"
+            with \<open>0 \<notin> Q\<close> have "y \<noteq> 0" by blast
+            assume "dickson_less_p d m y x"
+            hence "y \<prec>p x" by (rule dickson_less_pD3)
+            with \<open>y \<noteq> 0\<close> eq have "tail y \<prec>p tail x" by (rule ord_p_tail)
+            thus False by (simp add: tail)
+          qed
+        qed
+      next
+        case False
+        hence "\<exists>u::'a. u \<noteq> 0" by simp
+        then obtain u::'a where "u \<noteq> 0" ..
+        hence "0 \<prec> u" using zero_min[of u] by simp
+        define s where "s = lp x + u"
+        define n where "n = ord_class.max m (d s)"
+        have "m \<le> n" and "d s \<le> n" by (simp_all add: n_def)
+        define Q1 where "Q1 = {q\<in>Q. lp q \<prec> s}"
+        from assms have "\<exists>z\<in>Q1. \<forall>q\<in>Q1. \<not> dickson_less_p d n q z"
+        proof (rule dickson_less_p_wf_aux)
+          show "x \<in> Q1"
+          proof (simp add: Q1_def, rule, fact)
+            from \<open>0 \<prec> u\<close> have "lp x + 0 \<prec> lp x + u" by (rule plus_monotone_strict_left)
+            thus "lp x \<prec> s" by (simp add: s_def)
+          qed
+        next
+          show "\<forall>y\<in>Q1. y \<noteq> 0 \<longrightarrow> y \<in> dgrad_p_set d n \<and> dickson_less d n (lp y) s"
+          proof (intro ballI impI)
+            fix y::"('a, 'b) poly_mapping"
+            assume "y \<noteq> 0"
+            assume "y \<in> Q1"
+            hence "y \<in> Q" and "lp y \<prec> s" by (simp_all add: Q1_def)
+            from \<open>Q \<subseteq> dgrad_p_set d m\<close> this(1) have "y \<in> dgrad_p_set d m" ..
+            from dgrad_p_set_subset[OF \<open>m \<le> n\<close>] this have "y \<in> dgrad_p_set d n" ..
+            show "y \<in> dgrad_p_set d n \<and> dickson_less d n (lp y) s"
+              by (rule, fact, rule dickson_lessI, rule le_trans, rule dgrad_p_setD_lp, fact, fact,
+                  rule, fact+)
+          qed
+        qed
+        then obtain z where "z \<in> Q1" and z_min: "\<And>q. q \<in> Q1 \<Longrightarrow> \<not> dickson_less_p d n q z" by auto
+        from this(1) have "z \<in> Q" and "lp z \<prec> s" by (simp_all add: Q1_def)
+        from this(1) show ?thesis
+        proof
+          show "\<forall>y. dickson_less_p d m y z \<longrightarrow> y \<notin> Q"
+          proof (intro allI impI notI)
+            fix y
+            assume "dickson_less_p d m y z"
+            hence "y \<prec>p z" and "dickson_less_p d n y z"
+              by (rule dickson_less_pD3, rule dickson_less_p_mono, intro \<open>m \<le> n\<close>)
+            from this(1) have "lp y \<preceq> lp z" by (simp add: ord_p_lp)
+            from this \<open>lp z \<prec> s\<close> have "lp y \<prec> s" by simp
+            moreover assume "y \<in> Q"
+            ultimately have "y \<in> Q1" by (simp add: Q1_def)
+            hence "\<not> dickson_less_p d n y z" by (rule z_min)
+            from this \<open>dickson_less_p d n y z\<close> show False ..
+          qed
+        qed
+      qed
+    next
+      case False
+      then obtain q where "q \<in> Q" and "q \<notin> dgrad_p_set d m" by blast
+      from this(1) show ?thesis
+      proof
+        show "\<forall>y. dickson_less_p d m y q \<longrightarrow> y \<notin> Q"
+        proof (intro allI impI)
+          fix y
+          assume "dickson_less_p d m y q"
+          hence "q \<in> dgrad_p_set d m" by (rule dickson_less_pD2)
+          with \<open>q \<notin> dgrad_p_set d m\<close> show "y \<notin> Q" ..
         qed
       qed
     qed
   qed
 qed
 
-end (* od_powerprod *)
+corollary ord_p_minimum_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
+  obtains q where "q \<in> Q" and "\<And>y. y \<prec>p q \<Longrightarrow> y \<notin> Q"
+proof -
+  from assms(1) have "wfP (dickson_less_p d m)" by (rule dickson_less_p_wf)
+  from this assms(2) obtain q where "q \<in> Q" and *: "\<And>y. dickson_less_p d m y q \<Longrightarrow> y \<notin> Q"
+    by (rule wfE_min[to_pred], auto)
+  from assms(3) \<open>q \<in> Q\<close> have "q \<in> dgrad_p_set d m" ..
+  from \<open>q \<in> Q\<close> show ?thesis
+  proof
+    fix y
+    assume "y \<prec>p q"
+    show "y \<notin> Q"
+    proof
+      assume "y \<in> Q"
+      with assms(3) have "y \<in> dgrad_p_set d m" ..
+      from this \<open>q \<in> dgrad_p_set d m\<close> \<open>y \<prec>p q\<close> have "dickson_less_p d m y q"
+        by (rule dickson_less_pI)
+      hence "y \<notin> Q" by (rule *)
+      from this \<open>y \<in> Q\<close> show False ..
+    qed
+  qed
+qed
+
+end (* gd_powerprod *)
+
+lemma (in od_powerprod) ord_p_wf: "wfP (\<prec>p)"
+proof -
+  from dickson_grading_zero have "wfP (dickson_less_p (\<lambda>_. 0) 0)" by (rule dickson_less_p_wf)
+  thus ?thesis by (simp only: dickson_less_p_zero)
+qed
 
 end (* theory *)
