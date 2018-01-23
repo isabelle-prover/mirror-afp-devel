@@ -4,8 +4,8 @@ section \<open>Proving Falling Factorial of a Sum with Combinatorics\<close>
 
 theory Falling_Factorial_Sum_Combinatorics
 imports
-  "Discrete_Summation.Factorials"
-  "Injectivity_Solver3"
+  Discrete_Summation.Factorials
+  Bell_Numbers_Spivey.Injectivity_Solver
 begin
 
 subsection \<open>Preliminaries\<close>

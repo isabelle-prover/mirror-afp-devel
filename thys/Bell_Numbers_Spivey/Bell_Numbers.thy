@@ -7,9 +7,9 @@ imports
   "HOL-Library.FuncSet"
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Stirling"
+  Injectivity_Solver
   Card_Number_Partitions.Additions_to_Main
   Set_Partition
-  "HOL-Eisbach.Eisbach"
 begin
 
 subsection {* Preliminaries *}
@@ -75,74 +75,6 @@ next
     from this \<open>X \<in> P\<close> show "X' \<in> P" by auto
   qed
 qed
-
-subsubsection {* Disjointness under Function Application *}
-
-lemma disjoint_family_onI:
-  assumes "\<And>i j. i \<in> I \<and> j \<in> I \<Longrightarrow> i \<noteq> j \<Longrightarrow> (A i) \<inter> (A j) = {}"
-  shows "disjoint_family_on A I"
-using assms unfolding disjoint_family_on_def by auto
-
-lemma disjoint_singleton: "\<And>s t X Y. s \<noteq> t \<Longrightarrow> (X = Y \<Longrightarrow> s = t) \<Longrightarrow> {X} \<inter> {Y} = {}"
-by auto
-
-lemma disjoint_bind: "\<And>S T f g. (\<And>s t. S s \<and> T t \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> ({s. S s} \<bind> f) \<inter> ({t. T t} \<bind> g) = {}"
-by fastforce
-
-lemma disjoint_bind': "\<And>S T f g. (\<And>s t. s \<in> S \<and> t \<in> T \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> (S \<bind> f) \<inter> (T \<bind> g) = {}"
-by fastforce
-
-lemma injectivity_solver_CollectE:
-  assumes "a \<in> {x. P x} \<and> a' \<in> {x. P' x}"
-  assumes "(P a \<and> P' a') \<Longrightarrow> W"
-  shows "W"
-using assms by auto
-
-lemma injectivity_solver_prep_assms:
-  assumes "x \<in> {x. P x}"
-  shows "P x \<and> P x"
-using assms by simp
-
-method injectivity_solver uses rule =
-  insert method_facts,
-  use nothing in \<open>
-    ((drule injectivity_solver_prep_assms)+)?;
-    rule disjoint_family_onI;
-    (rule disjoint_bind | rule disjoint_bind')+; erule disjoint_singleton;
-    (elim injectivity_solver_CollectE)?;
-    rule rule;
-    assumption+
-  \<close>
-
-subsubsection {* Cardinality Theorems for Set.bind *}
-
-lemma finite_bind:
-  assumes "finite S"
-  assumes "\<forall>x \<in> S. finite (f x)"
-  shows "finite (S \<bind> f)"
-using assms by (simp add: bind_UNION)
-
-lemma card_bind:
-  assumes "finite S"
-  assumes "\<forall>X \<in> S. finite (f X)"
-  assumes "disjoint_family_on f S"
-  shows "card (S \<bind> f) = (\<Sum>x\<in>S. card (f x))"
-proof -
-  have "card (S \<bind> f) = card (\<Union>(f ` S))"
-    by (simp add: bind_UNION)
-  also have "card (\<Union>(f ` S)) = (\<Sum>x\<in>S. card (f x))"
-    using assms unfolding disjoint_family_on_def
-    by (subst card_Union_image) simp+
-  finally show ?thesis .
-qed
-
-lemma card_bind_constant:
-  assumes "finite S"
-  assumes "\<forall>X \<in> S. finite (f X)"
-  assumes "disjoint_family_on f S"
-  assumes "\<And>x. x \<in> S \<Longrightarrow> card (f x) = k"
-  shows "card (S \<bind> f) = card S * k"
-using assms by (simp add: card_bind)
 
 subsection {* Definition of Bell Numbers *}
 
@@ -391,8 +323,8 @@ lemma injectivity:
   assumes B': "(B' \<subseteq> B \<and> card B' = k) \<and> (B'' \<subseteq> B \<and> card B'' = k')"
   assumes Q: "partition_on B' Q \<and> partition_on B'' Q'"
   assumes f: "f \<in> B - B' \<rightarrow>\<^sub>E P \<and> g \<in> B - B'' \<rightarrow>\<^sub>E P'"
-  assumes P': "P'' \<in> {(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P} \<and>
-    P''' \<in> {(\<lambda>X. X \<union> {x \<in> B - B''. g x = X}) ` P'}"
+  assumes P': "P'' = (\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P \<and>
+    P''' = (\<lambda>X. X \<union> {x \<in> B - B''. g x = X}) ` P'"
   assumes eq_result: "P'' \<union> Q = P''' \<union> Q'"
   shows "f = g" and "Q = Q'" and "B' = B''"
     and "P = P'" and "j = j'" and "k = k'"
