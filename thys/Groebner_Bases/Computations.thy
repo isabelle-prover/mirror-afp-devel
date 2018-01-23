@@ -4,7 +4,7 @@ section \<open>Computing Gr\"obner Bases\<close>
 
 theory Computations
   imports
-    Groebner_Bases
+    Buchberger_Algorithm
     Polynomials.MPoly_Type_Class_FMap
 begin
 
@@ -13,8 +13,6 @@ text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexic
   @{theory "MPoly_Type_Class_FMap"}.\<close>
 
 subsection \<open>Lexicographic Order\<close>
-
-definition "lex_pm_strict s t \<longleftrightarrow> lex_pm s t \<and> \<not> lex_pm t s"
 
 global_interpretation opp_lex: gd_powerprod lex_pm lex_pm_strict
   defines lp_lex = opp_lex.lp
@@ -39,8 +37,7 @@ global_interpretation opp_lex: gd_powerprod lex_pm lex_pm_strict
   and chain_crit_lex = opp_lex.chain_crit
   and comb_crit_lex = opp_lex.comb_crit
   and pc_crit_lex = opp_lex.pc_crit
-  and gbaux_lex = opp_lex.gbaux
-  and gb_param_lex = opp_lex.gb_param
+  and gb_aux_lex = opp_lex.gb_aux
   and gb_lex = opp_lex.gb
   apply standard
   subgoal by (simp add: lex_pm_strict_def)
@@ -51,9 +48,6 @@ global_interpretation opp_lex: gd_powerprod lex_pm lex_pm_strict
   subgoal by (rule lex_pm_zero_min)
   subgoal by (erule lex_pm_plus_monotone)
   done
-
-lemmas gbaux_lex_naive_2 [code] = opp_lex.gbaux_simp_2[OF opp_lex.add_pairs_set_add_pairs_naive]
-lemmas gbaux_lex_sorted_2 [code] = opp_lex.gbaux_simp_2[OF opp_lex.add_pairs_set_add_pairs_sorted]
 
 subsubsection \<open>Computations\<close>
 
@@ -131,22 +125,16 @@ lemma
     [(MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)], MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)])]"
   by eval
 
-value (code) "gb_lex
-    [
-     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]
-    ]"
-
 lemma
-  "gb_param_lex add_pairs_naive_lex (\<lambda>_ _ _ _. False)
+  "gb_lex
     [
      MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
      MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]
     ] =
     [
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)],
-    MP [(PP [(Y,2), (Z, 1)], 1), (PP [(Z, 3)], 2)]
-   ]"
+      MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
+      MP [(PP [(Y, Z), (Z, Y)], 1), (PP [(Z, 3)], 2)]
+    ]"
   by eval
 
 lemma
@@ -156,9 +144,10 @@ lemma
      MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)]
     ] =
     [
-     MP [(PP [(X, 2)], - 1), (PP [(Y, 5)], 1)],
-     MP [(PP [(Y, 3)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+      MP [(PP [(Y, 5)], - 1), (PP [(X, 2)], 1)],
+      MP [(PP [(Y, 3)], - 1), (PP [(X, 2), (Z, 1)], 1)],
+      MP [(PP ([(X, 2), (Z, 2)]), 1), (PP ([(Y, 1)]), - 1)],
+      MP [(PP ([(Y, 2), (Z, 1)]), 1), (PP [], - 1)]
     ]"
   by eval
 
@@ -176,8 +165,6 @@ lemma
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
-definition "dlex_pm_strict s t \<longleftrightarrow> dlex_pm s t \<and> \<not> dlex_pm t s"
-
 global_interpretation opp_dlex: gd_powerprod dlex_pm dlex_pm_strict
   defines lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
@@ -194,7 +181,14 @@ global_interpretation opp_dlex: gd_powerprod dlex_pm dlex_pm_strict
   and trd_dlex = opp_dlex.trd
   and spoly_dlex = opp_dlex.spoly
   and trdsp_dlex = opp_dlex.trdsp
-  and gbaux_dlex = opp_dlex.gbaux
+  and add_pairs_naive_dlex = opp_dlex.add_pairs_naive
+  and add_pairs_sorted_dlex = opp_dlex.add_pairs_sorted
+  and pairs_dlex = opp_dlex.pairs
+  and product_crit_dlex = opp_dlex.product_crit
+  and chain_crit_dlex = opp_dlex.chain_crit
+  and comb_crit_dlex = opp_dlex.comb_crit
+  and pc_crit_dlex = opp_dlex.pc_crit
+  and gb_aux_dlex = opp_dlex.gb_aux
   and gb_dlex = opp_dlex.gb
   apply standard
   subgoal by (simp add: dlex_pm_strict_def)
@@ -272,7 +266,7 @@ lemma
       (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
       (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
     0"
-by eval
+  by eval
 
 lemma
   "gb_dlex
@@ -284,7 +278,7 @@ lemma
      MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)],
      MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)]
     ]"
-by eval
+  by eval
 
 lemma
   "gb_dlex
@@ -293,11 +287,12 @@ lemma
      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
     ] =
     [
-     MP [(PP [(X, 2)], - 1), (PP [(Y, 4), (X, 1)], 1)],
+     MP [(PP [(X, 1), (Y, 4)], - 1), (PP [(X, 2)], 1)],
      MP [(PP [(X, 1), (Y, 2)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], - 1)],
+     MP [(PP [(Y, 2), (Z, 1)], 1), (PP [], - 1)]
     ]"
-by eval
+  by eval
 
 text \<open>The following Gr\"obner basis differs from the one obtained w.r.t. the purely lexicographic
   term-order.\<close>
@@ -306,14 +301,15 @@ lemma
   "gb_dlex
     [
      (MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
+     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)])
     ] =
     [
-     MP [(PP [(X, 5)], - 1), (PP [(X, 1), (Z, 3)], 1)],
+     MP [(PP [(X, 1), (Z, 3)], - 1), (PP [(X, 5)], 1)],
      MP [(PP [(X, 3), (Y, 1)], - 1), (PP [(X, 1), (Z, 1)], 1)],
-     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)],
+     MP [(PP [(Y, Z), (Z, 1)], 1), (0, - 1)]
     ]"
-by eval
+  by eval
 
 lemma
   "gb_dlex
@@ -327,7 +323,7 @@ lemma
      (MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)]),
      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
     ]"
-by eval
+  by eval
 
 hide_const (open) MPoly_Type_Class_FMap.X MPoly_Type_Class_FMap.Y MPoly_Type_Class_FMap.Z
 

@@ -197,6 +197,9 @@ lemma compute_monomial[code]:
   "monomial c t = (if c = 0 then 0 else PM [(t, c)])"
   by (auto intro!: poly_mapping_eqI simp: PM_def fmlookup_default_def lookup_single)
 
+lemma compute_one_poly_mapping [code]: "1 = PM [(0, 1)]"
+  by (metis compute_monomial single_one zero_neq_one)
+
 lemma compute_mult_poly_mapping[code]:
   "Pm_fmap (fmap_of_list xs) * q = (case xs of ((t, c) # ys) \<Rightarrow>
     (monom_mult c t q + except (Pm_fmap (fmap_of_list ys)) {t} * q) | _ \<Rightarrow>

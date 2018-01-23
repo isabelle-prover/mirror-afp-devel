@@ -5,6 +5,7 @@ section \<open>Abstract Power-Products\<close>
 theory Power_Products
   imports Complex_Main
   "HOL-Library.Function_Algebras"
+  "HOL-Library.Countable"
   "More_MPoly_Type"
 begin
 
@@ -22,6 +23,79 @@ For example, $x^2y$ would be represented as a function \<open>p = (X \<mapsto> 2
 function \<open>q = (X \<mapsto> 1, Z \<mapsto> 1)\<close>. With the (pointwise) instantiation of addition of @{typ "'a \<Rightarrow>\<^sub>0 'b"},
 we will write \<open>p + q = (X \<mapsto> 3, Y \<mapsto> 1, Z \<mapsto> 1)\<close> for the product $x^2y \cdot xz = x^3yz$
 \<close>
+
+subsection \<open>Constant @{term Keys}\<close>
+
+definition Keys :: "('a \<Rightarrow>\<^sub>0 'b::zero) set \<Rightarrow> 'a set"
+  where "Keys F = \<Union>(keys ` F)"
+
+lemma in_Keys: "s \<in> Keys F \<longleftrightarrow> (\<exists>f\<in>F. s \<in> keys f)"
+  unfolding Keys_def by simp
+
+lemma in_KeysI:
+  assumes "s \<in> keys f" and "f \<in> F"
+  shows "s \<in> Keys F"
+  unfolding in_Keys using assms ..
+
+lemma in_KeysE:
+  assumes "s \<in> Keys F"
+  obtains f where "s \<in> keys f" and "f \<in> F"
+  using assms unfolding in_Keys ..
+
+lemma Keys_mono:
+  assumes "A \<subseteq> B"
+  shows "Keys A \<subseteq> Keys B"
+  using assms by (auto simp add: Keys_def)
+
+lemma Keys_insert: "Keys (insert a A) = keys a \<union> Keys A"
+  by (simp add: Keys_def)
+
+lemma Keys_Un: "Keys (A \<union> B) = Keys A \<union> Keys B"
+  by (simp add: Keys_def)
+
+lemma finite_Keys:
+  assumes "finite A"
+  shows "finite (Keys A)"
+  unfolding Keys_def by (rule, fact assms, rule finite_keys)
+
+lemma Keys_not_empty:
+  assumes "a \<in> A" and "a \<noteq> 0"
+  shows "Keys A \<noteq> {}"
+proof
+  assume "Keys A = {}"
+  from \<open>a \<noteq> 0\<close> have "keys a \<noteq> {}" using aux by fastforce
+  then obtain s where "s \<in> keys a" by blast
+  from this assms(1) have "s \<in> Keys A" by (rule in_KeysI)
+  with \<open>Keys A = {}\<close> show False by simp
+qed
+
+lemma Keys_empty [simp]: "Keys {} = {}"
+  by (simp add: Keys_def)
+
+lemma Keys_zero [simp]: "Keys {0} = {}"
+  by (simp add: Keys_def)
+
+lemma keys_subset_Keys:
+  assumes "f \<in> F"
+  shows "keys f \<subseteq> Keys F"
+  using in_KeysI[OF _ assms] by auto
+
+lemma Keys_minus: "Keys (A - B) \<subseteq> Keys A"
+  by (auto simp add: Keys_def)
+
+lemma Keys_minus_zero: "Keys (A - {0}) = Keys A"
+proof (cases "0 \<in> A")
+  case True
+  hence "(A - {0}) \<union> {0} = A" by auto
+  hence "Keys A = Keys ((A - {0}) \<union> {0})" by simp
+  also have "... = Keys (A - {0}) \<union> Keys {0::('a \<Rightarrow>\<^sub>0 'b)}" by (fact Keys_Un)
+  also have "... = Keys (A - {0})" by simp
+  finally show ?thesis by simp
+next
+  case False
+  hence "A - {0} = A" by simp
+  thus ?thesis by simp
+qed
 
 subsection \<open>'Divisibility' on Additive Structures\<close>
 
@@ -652,6 +726,9 @@ locale ordered_powerprod =
   assumes plus_monotone: "s \<preceq> t \<Longrightarrow> s + u \<preceq> t + u"
 begin
 
+abbreviation ord_conv (infixl "\<succeq>" 50) where "ord_conv \<equiv> (\<preceq>)\<inverse>\<inverse>"
+abbreviation ord_strict_conv (infixl "\<succ>" 50) where "ord_strict_conv \<equiv> (\<prec>)\<inverse>\<inverse>"
+
 lemma ord_canc:
   assumes "s + u \<preceq> t + u"
   shows "s \<preceq> t"
@@ -714,11 +791,230 @@ locale gd_powerprod =
   and ord_strict (infixl "\<prec>" 50)
 begin
 
+definition dgrad_set :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a set"
+  where "dgrad_set d m = {t. d t \<le> m}"
+
+definition dgrad_set_le :: "('a \<Rightarrow> nat) \<Rightarrow> ('a set) \<Rightarrow> ('a set) \<Rightarrow> bool"
+  where "dgrad_set_le d S T \<longleftrightarrow> (\<forall>s\<in>S. \<exists>t\<in>T. d s \<le> d t)"
+
 definition dickson_le :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "dickson_le d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<preceq> t)"
 
 definition dickson_less :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "dickson_less d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<prec> t)"
+
+lemma dgrad_set_leI:
+  assumes "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. d s \<le> d t"
+  shows "dgrad_set_le d S T"
+  using assms by (auto simp: dgrad_set_le_def)
+
+lemma dgrad_set_leE:
+  assumes "dgrad_set_le d S T" and "s \<in> S"
+  obtains t where "t \<in> T" and "d s \<le> d t"
+  using assms by (auto simp: dgrad_set_le_def)
+
+lemma dgrad_set_exhaust_expl:
+  assumes "finite F"
+  shows "F \<subseteq> dgrad_set d (Max (d ` F))"
+proof
+  fix f
+  assume "f \<in> F"
+  hence "d f \<in> d ` F" by simp
+  with _ have "d f \<le> Max (d ` F)"
+  proof (rule Max_ge)
+    from assms show "finite (d ` F)" by auto
+  qed
+  hence "dgrad_set d (d f) \<subseteq> dgrad_set d (Max (d ` F))" by (auto simp: dgrad_set_def)
+  moreover have "f \<in> dgrad_set d (d f)" by (simp add: dgrad_set_def)
+  ultimately show "f \<in> dgrad_set d (Max (d ` F))" ..
+qed
+
+lemma dgrad_set_exhaust:
+  assumes "finite F"
+  obtains m where "F \<subseteq> dgrad_set d m"
+proof
+  from assms show "F \<subseteq> dgrad_set d (Max (d ` F))" by (rule dgrad_set_exhaust_expl)
+qed
+
+lemma dgrad_set_le_trans [trans]:
+  assumes "dgrad_set_le d S T" and "dgrad_set_le d T U"
+  shows "dgrad_set_le d S U"
+  unfolding dgrad_set_le_def
+proof
+  fix s
+  assume "s \<in> S"
+  with assms(1) obtain t where "t \<in> T" and 1: "d s \<le> d t" by (auto simp add: dgrad_set_le_def)
+  from assms(2) this(1) obtain u where "u \<in> U" and 2: "d t \<le> d u" by (auto simp add: dgrad_set_le_def)
+  from this(1) show "\<exists>u\<in>U. d s \<le> d u"
+  proof
+    from 1 2 show "d s \<le> d u" by (rule le_trans)
+  qed
+qed
+
+lemma dgrad_set_le_Un: "dgrad_set_le d (S \<union> T) U \<longleftrightarrow> (dgrad_set_le d S U \<and> dgrad_set_le d T U)"
+  by (auto simp add: dgrad_set_le_def)
+
+lemma dgrad_set_le_subset:
+  assumes "S \<subseteq> T"
+  shows "dgrad_set_le d S T"
+  unfolding dgrad_set_le_def using assms by blast
+
+lemma dgrad_set_le_refl: "dgrad_set_le d S S"
+  by (rule dgrad_set_le_subset, fact subset_refl)
+
+lemma dgrad_set_le_dgrad_set:
+  assumes "dgrad_set_le d F G" and "G \<subseteq> dgrad_set d m"
+  shows "F \<subseteq> dgrad_set d m"
+proof
+  fix f
+  assume "f \<in> F"
+  with assms(1) obtain g where "g \<in> G" and *: "d f \<le> d g" by (auto simp add: dgrad_set_le_def)
+  from assms(2) this(1) have "g \<in> dgrad_set d m" ..
+  hence "d g \<le> m" by (simp add: dgrad_set_def)
+  with * have "d f \<le> m" by (rule le_trans)
+  thus "f \<in> dgrad_set d m" by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_dgrad: "p \<in> dgrad_set d (d p)"
+  by (simp add: dgrad_set_def)
+
+lemma dgrad_setI [intro]:
+  assumes "d t \<le> m"
+  shows "t \<in> dgrad_set d m"
+  using assms by (auto simp: dgrad_set_def)
+
+lemma dgrad_setD:
+  assumes "t \<in> dgrad_set d m"
+  shows "d t \<le> m"
+  using assms by (simp add: dgrad_set_def)
+
+lemma dgrad_set_zero [simp]: "dgrad_set (\<lambda>_. 0) m = UNIV"
+  by auto
+
+lemma subset_dgrad_set_zero: "F \<subseteq> dgrad_set (\<lambda>_. 0) m"
+  by simp
+
+lemma dgrad_set_subset:
+  assumes "m \<le> n"
+  shows "dgrad_set d m \<subseteq> dgrad_set d n"
+  using assms by (auto simp: dgrad_set_def)
+
+lemma dgrad_set_closed_plus:
+  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  shows "s + t \<in> dgrad_set d m"
+proof -
+  from assms(1) have "d (s + t) = ord_class.max (d s) (d t)" by (rule dickson_gradingD1)
+  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_closed_minus:
+  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t adds s"
+  shows "s - t \<in> dgrad_set d m"
+proof -
+  from assms(1, 3) have "d (s - t) \<le> d s" by (rule dickson_grading_minus)
+  also from assms(2) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_closed_lcs:
+  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  shows "lcs s t \<in> dgrad_set d m"
+proof -
+  from assms(1) have "d (lcs s t) \<le> ord_class.max (d s) (d t)" by (rule dickson_grading_lcs)
+  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma ex_finite_adds:
+  assumes "dickson_grading (+) d" and "S \<subseteq> dgrad_set d m"
+  obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
+proof -
+  define crit where "crit = (\<lambda>U s. s \<in> S \<and> (\<forall>u\<in>U. \<not> u adds s))"
+  have critD: "crit U s \<Longrightarrow> s \<notin> U" for U s
+  proof
+    assume "crit U s" and "s \<in> U"
+    from this(1) have "\<forall>u\<in>U. \<not> u adds s" unfolding crit_def ..
+    from this \<open>s \<in> U\<close> have "\<not> s adds s" ..
+    from this adds_refl show False ..
+  qed
+  define "fun"
+    where "fun = (\<lambda>U. (if (\<exists>s. crit U s) then
+                        insert (SOME s. crit U s) U
+                      else
+                        U
+                      ))"
+  define seq where "seq = rec_nat {} (\<lambda>_. fun)"
+  have seq_Suc: "seq (Suc i) = fun (seq i)" for i by (simp add: seq_def)
+  
+  have seq_incr_Suc: "seq i \<subseteq> seq (Suc i)" for i by (auto simp add: seq_Suc fun_def)
+  have seq_incr: "i \<le> j \<Longrightarrow> seq i \<subseteq> seq j" for i j
+  proof -
+    assume "i \<le> j"
+    hence "i = j \<or> i < j" by auto
+    thus "seq i \<subseteq> seq j"
+    proof
+      assume "i = j"
+      thus ?thesis by simp
+    next
+      assume "i < j"
+      with _ seq_incr_Suc show ?thesis by (rule transp_sequence, simp add: transp_def)
+    qed
+  qed
+  have sub: "seq i \<subseteq> S" for i
+  proof (induct i, simp add: seq_def, simp add: seq_Suc fun_def, rule)
+    fix i
+    assume "Ex (crit (seq i))"
+    hence "crit (seq i) (Eps (crit (seq i)))" by (rule someI_ex)
+    thus "Eps (crit (seq i)) \<in> S" by (simp add: crit_def)
+  qed
+  have "\<exists>i. seq (Suc i) = seq i"
+  proof (rule ccontr, simp)
+    assume "\<forall>i. seq (Suc i) \<noteq> seq i"
+    with seq_incr_Suc have "seq i \<subset> seq (Suc i)" for i by blast
+    define seq1 where "seq1 = (\<lambda>n. (SOME s. s \<in> seq (Suc n) \<and> s \<notin> seq n))"
+    have seq1: "seq1 n \<in> seq (Suc n) \<and> seq1 n \<notin> seq n" for n unfolding seq1_def
+    proof (rule someI_ex)
+      from \<open>seq n \<subset> seq (Suc n)\<close> show "\<exists>x. x \<in> seq (Suc n) \<and> x \<notin> seq n" by blast
+    qed
+    from assms(1) obtain a b where "a < b" and "seq1 a adds seq1 b"
+    proof (rule dickson_gradingE2)
+      fix i
+      from seq1 have "seq1 i \<in> seq (Suc i)" ..
+      also have "... \<subseteq> S" by (rule sub)
+      also from assms(2) have "... \<subseteq> dgrad_set d m" .
+      finally show "d (seq1 i) \<le> m" by (simp add: dgrad_set_def)
+    qed
+    from \<open>a < b\<close> have "Suc a \<le> b" by simp
+    from seq1 have "seq1 a \<in> seq (Suc a)" ..
+    also from \<open>Suc a \<le> b\<close> have "... \<subseteq> seq b" by (rule seq_incr)
+    finally have "seq1 a \<in> seq b" .
+    from seq1 have "seq1 b \<in> seq (Suc b)" and "seq1 b \<notin> seq b" by blast+
+    hence "crit (seq b) (seq1 b)" by (simp add: seq_Suc fun_def someI split: if_splits)
+    hence "\<forall>u\<in>seq b. \<not> u adds (seq1 b)" by (simp add: crit_def)
+    from this \<open>seq1 a \<in> seq b\<close> have "\<not> (seq1 a) adds (seq1 b)" ..
+    from this \<open>(seq1 a) adds (seq1 b)\<close> show False ..
+  qed
+  then obtain i where "seq (Suc i) = seq i" ..
+  show ?thesis
+  proof
+    show "finite (seq i)" by (induct i, simp_all add: seq_def fun_def)
+  next
+    fix s
+    assume "s \<in> S"
+    let ?s = "Eps (crit (seq i))"
+    show "\<exists>t\<in>seq i. t adds s"
+    proof (rule ccontr, simp)
+      assume "\<forall>t\<in>seq i. \<not> t adds s"
+      with \<open>s \<in> S\<close> have "crit (seq i) s" by (simp only: crit_def)
+      hence "crit (seq i) ?s" and eq: "seq (Suc i) = insert ?s (seq i)"
+        by (auto simp add: seq_Suc fun_def intro: someI)
+      from this(1) have "?s \<notin> seq i" by (rule critD)
+      hence "seq (Suc i) \<noteq> seq i" unfolding eq by blast
+      from this \<open>seq (Suc i) = seq i\<close> show False ..
+    qed
+  qed (fact sub)
+qed
 
 lemma dickson_leI:
   assumes "d s \<le> m" and "d t \<le> m" and "s \<preceq> t"
@@ -1199,6 +1495,8 @@ qed
 
 definition lex_fun::"('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b::order) \<Rightarrow> bool" where
   "lex_fun s t \<equiv> (\<forall>x. s x \<le> t x \<or> (\<exists>y<x. s y \<noteq> t y))"
+
+definition "lex_fun_strict s t \<longleftrightarrow> lex_fun s t \<and> \<not> lex_fun t s"
 
 text \<open>Attention! @{term lex_fun} reverses the order of the indeterminates: if @{term x} is smaller than
   @{term y} w.r.t. the order on @{typ 'a}, then the @{emph \<open>power-product\<close>} @{term x} is
@@ -1732,6 +2030,8 @@ subsubsection \<open>Degree-Lexicographic Term Order\<close>
 definition dlex_fun::"('a \<Rightarrow> 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
   where "dlex_fun \<equiv> dord_fun lex_fun"
 
+definition "dlex_fun_strict s t \<longleftrightarrow> dlex_fun s t \<and> \<not> dlex_fun t s"
+
 lemma dlex_fun_refl:
   shows "dlex_fun s s"
 unfolding dlex_fun_def by (rule dord_fun_refl, rule lex_fun_refl)
@@ -1779,6 +2079,8 @@ text \<open>Note that @{const rlex_fun} is not precisely the reverse-lexicograph
 
 definition drlex_fun::"('a \<Rightarrow> 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
   where "drlex_fun \<equiv> dord_fun rlex_fun"
+
+definition "drlex_fun_strict s t \<longleftrightarrow> drlex_fun s t \<and> \<not> drlex_fun t s"
 
 lemma drlex_fun_refl:
   shows "drlex_fun s s"
@@ -1968,8 +2270,12 @@ lemma adds_poly_mapping: "s adds t \<longleftrightarrow> lookup s \<le> lookup t
   for s t::"'a \<Rightarrow>\<^sub>0 'b::add_linorder_min"
   by (simp only: poly_mapping_adds_iff adds_fun)
 
-lemma lookup_gcs_fun: "lookup (gcs s (t::'a \<Rightarrow>\<^sub>0 ('b::add_linorder_group))) = gcs (lookup s) (lookup t)"
-  by (simp only: gcs_def lookup_minus_fun lookup_plus_fun lookup_lcs_fun)
+lemma lookup_gcs_fun: "lookup (gcs s (t::'a \<Rightarrow>\<^sub>0 ('b::add_linorder))) = gcs (lookup s) (lookup t)"
+proof
+  fix x
+  show "lookup (gcs s t) x = gcs (lookup s) (lookup t) x"
+    by (simp add: gcs_def lookup_minus lookup_add lookup_lcs_fun)
+qed
 
 subsubsection \<open>@{typ "('a, 'b) poly_mapping"} belongs to class @{class ulcs_powerprod}\<close>
 
@@ -2018,14 +2324,13 @@ lemma adds_insert_keys:
 
 subsubsection \<open>Dickson's lemma for power-products in finitely many indeterminates\<close>
 
-class countable =
-  assumes ex_elem_index: "\<exists>f::'a \<Rightarrow> nat. inj f"
+context countable
 begin
 
 definition elem_index :: "'a \<Rightarrow> nat" where "elem_index = (SOME f. inj f)"
 
 lemma inj_elem_index: "inj elem_index"
-  unfolding elem_index_def using ex_elem_index by (rule someI_ex)
+  unfolding elem_index_def using ex_inj by (rule someI_ex)
 
 lemma elem_index_inj:
   assumes "elem_index x = elem_index y"
@@ -2042,23 +2347,6 @@ next
 qed
 
 end (* countable *)
-
-context finite
-begin
-
-subclass countable
-proof
-  from finite_UNIV have "\<exists>f::'a \<Rightarrow> nat. \<exists>n. range f = {i. i < n} \<and> inj f"
-    by (rule finite_imp_inj_to_nat_seg)
-  thus "\<exists>f::'a \<Rightarrow> nat. inj f" by blast
-qed
-
-end (* finite *)
-
-instance nat :: countable
-proof (standard, rule)
-  show "inj id" by simp
-qed
 
 lemma poly_mapping_incr_subsequence:
   fixes V::"'a set"
@@ -2152,6 +2440,8 @@ lemma neq_poly_mapping_alt:
   using assms unfolding poly_mapping_eq_iff by (rule neq_fun_alt, auto)
 
 lift_definition lex_pm::"('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{zero,order}) \<Rightarrow> bool" is lex_fun .
+
+definition "lex_pm_strict s t \<longleftrightarrow> lex_pm s t \<and> \<not> lex_pm t s"
 
 lemma lex_pm_alt: "lex_pm s t = (s = t \<or> (\<exists>x. lookup s x < lookup t x \<and> (\<forall>y<x. lookup s y = lookup t y)))"
   by (simp only: lex_pm.rep_eq lex_fun_alt poly_mapping_eq_iff)
@@ -2277,6 +2567,8 @@ begin
 definition dlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
   where "dlex_pm \<equiv> dord_pm lex_pm"
 
+definition "dlex_pm_strict s t \<longleftrightarrow> dlex_pm s t \<and> \<not> dlex_pm t s"
+
 lemma dlex_pm_iff: "dlex_pm s t \<longleftrightarrow> dlex_fun (lookup s) (lookup t)"
   by (simp add: dlex_pm_def dlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
 
@@ -2316,6 +2608,8 @@ abbreviation rlex_pm::"('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightar
 
 definition drlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
   where "drlex_pm \<equiv> dord_pm rlex_pm"
+
+definition "drlex_pm_strict s t \<longleftrightarrow> drlex_pm s t \<and> \<not> drlex_pm t s"
 
 lemma drlex_pm_iff: "drlex_pm s t \<longleftrightarrow> drlex_fun (lookup s) (lookup t)"
   by (simp add: drlex_pm_def drlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
