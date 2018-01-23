@@ -189,7 +189,7 @@ proof -
   also have "\<dots> = (\<Sum>(c',n')\<leftarrow>fctrs. if c = c' then Suc n' else 0)"
     by (intro arg_cong[OF map_cong]) (auto simp add: order_power_n_n order_0I simp del: power_Suc)
   also have "\<dots> = (\<Sum>x\<leftarrow>fctrs. if x = (c, n) then Suc (snd x) else 0)"
-    using distinct assms by (intro sum_list_cong) (force simp: distinct_map inj_on_def)+
+    using distinct assms by (intro arg_cong[OF map_cong]) (force simp: distinct_map inj_on_def)+
   also from distinct have "\<dots> = (\<Sum>x\<in>set fctrs. if x = (c, n) then Suc (snd x) else 0)"
     by (intro sum_list_distinct_conv_sum_set) (simp_all add: distinct_map)
   also from assms have "\<dots> = Suc n" by simp
