@@ -3,12 +3,14 @@
 section \<open>Computing Gr\"obner Bases\<close>
 
 theory Computations
-imports Groebner_Bases Polynomials.Poly_Lists "HOL-Library.AList"
+  imports
+    Groebner_Bases
+    Polynomials.MPoly_Type_Class_FMap
 begin
 
 text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexicographic and the
   degree-lexicographic term order, making use of the implementation of multivariate polynomials in
-  @{theory "Poly_Lists"}.\<close>
+  @{theory "MPoly_Type_Class_FMap"}.\<close>
 
 subsection \<open>Lexicographic Order\<close>
 
@@ -310,6 +312,6 @@ lemma
     ]"
 by eval
 
-hide_const (open) Poly_Lists.X Poly_Lists.Y Poly_Lists.Z
+hide_const (open) MPoly_Type_Class_FMap.X MPoly_Type_Class_FMap.Y MPoly_Type_Class_FMap.Z
 
 end (* theory *)

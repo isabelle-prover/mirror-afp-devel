@@ -2,7 +2,7 @@
 
 section \<open>Type-Class-Multivariate Polynomials\<close>
 
-theory Abstract_Poly
+theory MPoly_Type_Class
   imports
     Power_Products
 begin
@@ -18,7 +18,7 @@ lemma coeff_monom:
   "coeff (monom s c) t = (if t = s then c else 0)"
   by (auto simp: coeff_monom)
 
-abbreviation "monomial \<equiv> (\<lambda>c t. PP_Poly_Mapping.single t c)"
+abbreviation "monomial \<equiv> (\<lambda>c t. Poly_Mapping.single t c)"
 
 subsection \<open>Multiplication by Monomials (in type class)\<close>
 
@@ -457,7 +457,7 @@ next
   define c where "c = lookup p t"
   define q where "q = except p {t}"
   have *: "p = monomial c t + q"
-    by (rule poly_mapping_eqI, simp add: lookup_add lookup_single PP_Poly_Mapping.when_def, intro conjI impI,
+    by (rule poly_mapping_eqI, simp add: lookup_add lookup_single Poly_Mapping.when_def, intro conjI impI,
         simp add: q_def lookup_except c_def, simp add: q_def lookup_except_eq_idI)
   show ?case
   proof (simp only: *, rule assms(2))
@@ -1231,7 +1231,7 @@ definition lp::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a" where
   "lp p \<equiv> (if p = 0 then 0 else ordered_powerprod_lin.Max (keys p))"
 
 definition lc::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'b" where
-  "lc p \<equiv> PP_Poly_Mapping.lookup p (lp p)"
+  "lc p \<equiv> Poly_Mapping.lookup p (lp p)"
 
 definition tail::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" where
   "tail p \<equiv> lower p (lp p)"

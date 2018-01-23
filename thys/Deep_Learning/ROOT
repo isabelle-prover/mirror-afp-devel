@@ -41,6 +41,8 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
 
 session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
   options [timeout = 600]
+  sessions
+    Polynomials
   theories
     DL_Fundamental_Theorem_Network_Capacity
   document_files

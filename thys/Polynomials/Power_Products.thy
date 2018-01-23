@@ -5,7 +5,7 @@ section \<open>Abstract Power-Products\<close>
 theory Power_Products
   imports Complex_Main
   "HOL-Library.Function_Algebras"
-  "Deep_Learning.PP_More_MPoly"
+  "More_MPoly_Type"
 begin
 
 text \<open>This theory formalizes the concept of "power-products". A power-product can be thought of as

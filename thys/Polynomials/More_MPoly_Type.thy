@@ -1,12 +1,12 @@
 (* Author: Alexander Bentkamp, Universität des Saarlandes
 *)
 
-theory PP_More_MPoly
-imports PP_MPoly
+theory More_MPoly_Type
+imports MPoly_Type
 begin
 
-abbreviation "lookup == PP_Poly_Mapping.lookup"
-abbreviation "keys == PP_Poly_Mapping.keys"
+abbreviation "lookup == Poly_Mapping.lookup"
+abbreviation "keys == Poly_Mapping.keys"
 
 section "MPpoly Mapping extenion"
 
@@ -38,25 +38,25 @@ next
 qed
 
 
-lemma remove_key_sum: "remove_key k f + PP_Poly_Mapping.single k (lookup f k) = f"
+lemma remove_key_sum: "remove_key k f + Poly_Mapping.single k (lookup f k) = f"
 proof -
   {
   fix k'
   have rem:"(lookup f k' when k' \<noteq> k) = lookup (remove_key k f) k'"
     using when_def by (simp add: remove_key_lookup)
-  have sin:"(lookup f k when k'=k) =  lookup (PP_Poly_Mapping.single k (lookup f k)) k'"
+  have sin:"(lookup f k when k'=k) =  lookup (Poly_Mapping.single k (lookup f k)) k'"
     by (simp add: lookup_single_not_eq when_def)
   have "lookup f k' = (lookup f k' when k' \<noteq> k) + ((lookup f k) when k'=k)"
     unfolding when_def by fastforce
-  with rem sin have "lookup f k' = lookup ((remove_key k f) + PP_Poly_Mapping.single k (lookup f k)) k'"
+  with rem sin have "lookup f k' = lookup ((remove_key k f) + Poly_Mapping.single k (lookup f k)) k'"
     using lookup_add by metis
   }
   then show ?thesis by (metis poly_mapping_eqI)
 qed
 
-lemma remove_key_single[simp]: "remove_key v (PP_Poly_Mapping.single v n) = 0"
+lemma remove_key_single[simp]: "remove_key v (Poly_Mapping.single v n) = 0"
 proof -
- have 0:"\<And>k. (lookup (PP_Poly_Mapping.single v n) k when k \<noteq> v) = 0" by (simp add: lookup_single_not_eq when_def)
+ have 0:"\<And>k. (lookup (Poly_Mapping.single v n) k when k \<noteq> v) = 0" by (simp add: lookup_single_not_eq when_def)
  show ?thesis unfolding remove_key_def 0 by (simp add: zero_poly_mapping_def)
 qed
 
@@ -65,15 +65,15 @@ lemma remove_key_add: "remove_key v m + remove_key v m' = remove_key v (m + m')"
 
 lemma poly_mapping_induct [case_names single sum]:
 fixes P::"('a, 'b::monoid_add) poly_mapping \<Rightarrow> bool"
-assumes single:"\<And>k v. P (PP_Poly_Mapping.single k v)"
-and sum:"(\<And>f g k v. P f \<Longrightarrow> P g \<Longrightarrow> g = (PP_Poly_Mapping.single k v) \<Longrightarrow> k \<notin> keys f \<Longrightarrow> P (f+g))"
+assumes single:"\<And>k v. P (Poly_Mapping.single k v)"
+and sum:"(\<And>f g k v. P f \<Longrightarrow> P g \<Longrightarrow> g = (Poly_Mapping.single k v) \<Longrightarrow> k \<notin> keys f \<Longrightarrow> P (f+g))"
 shows "P f" using finite_keys[of f]
 proof (induction "keys f" arbitrary: f rule: finite_induct)
   case (empty)
   then show ?case using single[of _ 0] by (metis (full_types) aux empty_iff not_in_keys_iff_lookup_eq_zero single_zero)
 next
   case (insert k K f)
-  obtain f1 f2 where f12_def: "f1 = remove_key k f" "f2 = PP_Poly_Mapping.single k (lookup f k)" by blast
+  obtain f1 f2 where f12_def: "f1 = remove_key k f" "f2 = Poly_Mapping.single k (lookup f k)" by blast
   have "P f1"
   proof -
     have "Suc (card (keys f1)) = card (keys f)"
@@ -89,13 +89,13 @@ qed
 
 lemma map_lookup:
 assumes "g 0 = 0"
-shows "lookup (PP_Poly_Mapping.map g f) x = g ((lookup f) x)"
+shows "lookup (Poly_Mapping.map g f) x = g ((lookup f) x)"
 proof -
   have "(g (lookup f x) when lookup f x \<noteq> 0) = g (lookup f x)"
     by (metis (mono_tags, lifting) assms when_def)
   then have "(g (lookup f x) when x \<in> keys f) = g (lookup f x)"
     using lookup_not_eq_zero_eq_in_keys by simp
-  then show ?thesis unfolding PP_Poly_Mapping.map_def map_fun_def
+  then show ?thesis unfolding Poly_Mapping.map_def map_fun_def
     by (simp add:lookup_Abs_poly_mapping)
 qed
 
@@ -133,9 +133,9 @@ definition vars::"'a::zero mpoly \<Rightarrow> nat set" where
 
 lemma vars_finite: "finite (vars p)" unfolding vars_def by auto
 
-lemma vars_monom_single: "vars (monom (PP_Poly_Mapping.single v k) a) \<subseteq> {v}"
+lemma vars_monom_single: "vars (monom (Poly_Mapping.single v k) a) \<subseteq> {v}"
 proof
-  fix w assume "w \<in> vars (monom (PP_Poly_Mapping.single v k) a)"
+  fix w assume "w \<in> vars (monom (Poly_Mapping.single v k) a)"
   then have "w = v" using vars_def by (metis UN_E lookup_eq_zero_in_keys_contradict lookup_single_not_eq monom.rep_eq)
   then show "w \<in> {v}" by auto
 qed
@@ -157,11 +157,11 @@ lemma vars_monom_subset:
 shows "vars (monom m a) \<subseteq> keys m"
   by (cases "a=0"; simp add: vars_def vars_monom_keys)
 
-lemma vars_monom_single_cases: "vars (monom (PP_Poly_Mapping.single v k) a) = (if k=0 \<or> a=0 then {} else {v})"
+lemma vars_monom_single_cases: "vars (monom (Poly_Mapping.single v k) a) = (if k=0 \<or> a=0 then {} else {v})"
 proof(cases "k=0")
   assume "k=0"
-  then have "(PP_Poly_Mapping.single v k) = 0" by simp
-  then have "vars (monom (PP_Poly_Mapping.single v k) a) = {}"
+  then have "(Poly_Mapping.single v k) = 0" by simp
+  then have "vars (monom (Poly_Mapping.single v k) a) = {}"
     by (metis (mono_tags, lifting) single_zero singleton_inject subset_singletonD vars_monom_single zero_neq_one)
   then show ?thesis using `k=0` by auto
 next
@@ -169,11 +169,11 @@ next
   then show ?thesis
   proof (cases "a=0")
     assume "a=0"
-    then have "monom (PP_Poly_Mapping.single v k) a = 0" by (metis monom.abs_eq monom_zero single_zero)
+    then have "monom (Poly_Mapping.single v k) a = 0" by (metis monom.abs_eq monom_zero single_zero)
     then show ?thesis by (metis (mono_tags, hide_lams) `k \<noteq> 0` `a=0` monom.abs_eq single_zero singleton_inject subset_singletonD vars_monom_single)
   next
     assume "a\<noteq>0"
-    then have "v \<in> vars (monom (PP_Poly_Mapping.single v k) a)" by (simp add: `k \<noteq> 0` vars_def)
+    then have "v \<in> vars (monom (Poly_Mapping.single v k) a)" by (simp add: `k \<noteq> 0` vars_def)
     then show ?thesis using `a\<noteq>0` `k \<noteq> 0` vars_monom_single by fastforce
   qed
 qed
@@ -236,7 +236,7 @@ lemma coeff_add: "coeff p m + coeff q m = coeff (p+q) m"
 lemma coeff_eq: "coeff p = coeff q \<longleftrightarrow> p=q" by (simp add: coeff_def lookup_inject mapping_of_inject)
 
 lemma coeff_monom_mult: "coeff ((monom m' a)  * q) (m' + m)  = a * coeff q m"
-  unfolding coeff_def PP_MPoly.times_mpoly.rep_eq lookup_mult mapping_of_monom lookup_single when_mult
+  unfolding coeff_def times_mpoly.rep_eq lookup_mult mapping_of_monom lookup_single when_mult
   Sum_any_when_equal' Groups.cancel_semigroup_add_class.add_left_cancel by metis
 
 lemma one_term_is_monomial:
@@ -301,34 +301,34 @@ shows "P p" using assms
   using poly_mapping_induct[of "\<lambda>p :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a. P (MPoly p)"] MPoly_induct monom.abs_eq plus_mpoly.abs_eq
   by (metis (no_types) MPoly_inverse UNIV_I)
 
-lemma monom_pow:"monom (PP_Poly_Mapping.single v n0) a ^ n = monom (PP_Poly_Mapping.single v (n0*n)) (a ^ n)"
+lemma monom_pow:"monom (Poly_Mapping.single v n0) a ^ n = monom (Poly_Mapping.single v (n0*n)) (a ^ n)"
 apply (induction n)
 apply auto
 by (metis (no_types, lifting) mult_monom single_add)
 
-lemma insertion_fun_single: "insertion_fun f (\<lambda>m. (a when (PP_Poly_Mapping.single (v::nat) (n::nat)) = m)) = a * f v ^ n" (is "?i = _")
+lemma insertion_fun_single: "insertion_fun f (\<lambda>m. (a when (Poly_Mapping.single (v::nat) (n::nat)) = m)) = a * f v ^ n" (is "?i = _")
 proof -
   have setsum_single:"\<And> a f. (\<Sum>m\<in>{a}. f m) = f a"
    by (metis add.right_neutral empty_Diff finite.emptyI sum.empty sum.insert_remove)
 
-  have 1:"?i = (\<Sum>m. (a when PP_Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v))"
+  have 1:"?i = (\<Sum>m. (a when Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v))"
     unfolding insertion_fun_def by metis
-  have "\<forall>m. m \<noteq> PP_Poly_Mapping.single v n \<longrightarrow> (a when PP_Poly_Mapping.single v n = m) = 0" by simp
+  have "\<forall>m. m \<noteq> Poly_Mapping.single v n \<longrightarrow> (a when Poly_Mapping.single v n = m) = 0" by simp
 
-  have "(\<Sum>m\<in>{PP_Poly_Mapping.single v n}. (a when PP_Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v)) = ?i"
+  have "(\<Sum>m\<in>{Poly_Mapping.single v n}. (a when Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v)) = ?i"
     unfolding 1 when_mult unfolding when_def by auto
-  then have 2:"?i = a * (\<Prod>va. f va ^ lookup (PP_Poly_Mapping.single v n) va)"
-    unfolding setsum_single[of "\<lambda>m. (a when PP_Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v)" "PP_Poly_Mapping.single k v"]
+  then have 2:"?i = a * (\<Prod>va. f va ^ lookup (Poly_Mapping.single v n) va)"
+    unfolding setsum_single[of "\<lambda>m. (a when Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v)" "Poly_Mapping.single k v"]
     by auto
-  have "\<forall>v0. v0\<noteq>v \<longrightarrow> lookup (PP_Poly_Mapping.single v n) v0 = 0" by (simp add: lookup_single_not_eq)
-  then have "\<forall>va. va\<noteq>v \<longrightarrow> f va ^ lookup (PP_Poly_Mapping.single v n) va = 1"  by simp
-  then have "a * (\<Prod>va\<in>{v}. f va ^ lookup (PP_Poly_Mapping.single v n) va) = ?i" unfolding 2
-    using Prod_any.expand_superset[of "{v}" "\<lambda>va. f va ^ lookup (PP_Poly_Mapping.single v n) va", simplified]
+  have "\<forall>v0. v0\<noteq>v \<longrightarrow> lookup (Poly_Mapping.single v n) v0 = 0" by (simp add: lookup_single_not_eq)
+  then have "\<forall>va. va\<noteq>v \<longrightarrow> f va ^ lookup (Poly_Mapping.single v n) va = 1"  by simp
+  then have "a * (\<Prod>va\<in>{v}. f va ^ lookup (Poly_Mapping.single v n) va) = ?i" unfolding 2
+    using Prod_any.expand_superset[of "{v}" "\<lambda>va. f va ^ lookup (Poly_Mapping.single v n) va", simplified]
     by fastforce
   then show ?thesis by simp
 qed
 
-lemma insertion_single[simp]: "insertion f (monom (PP_Poly_Mapping.single (v::nat) (n::nat)) a) = a * f v ^ n"
+lemma insertion_single[simp]: "insertion f (monom (Poly_Mapping.single (v::nat) (n::nat)) a) = a * f v ^ n"
   using insertion_fun_single  Sum_any.strong_cong insertion.rep_eq insertion_aux.rep_eq insertion_fun_def
   mapping_of_monom single.rep_eq by (metis (no_types, lifting))
 
@@ -371,7 +371,7 @@ qed
 section "Nested MPoly"
 
 definition reduce_nested_mpoly::"'a::comm_ring_1 mpoly mpoly \<Rightarrow> 'a mpoly" where
-  "reduce_nested_mpoly pp = insertion (\<lambda>v. monom (PP_Poly_Mapping.single v 1) 1) pp"
+  "reduce_nested_mpoly pp = insertion (\<lambda>v. monom (Poly_Mapping.single v 1) 1) pp"
 
 lemma reduce_nested_mpoly_sum:
 fixes p1::"'a::comm_ring_1 mpoly mpoly"
@@ -410,25 +410,25 @@ next
 qed
 
 definition extract_var::"'a::comm_ring_1 mpoly \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 mpoly mpoly" where
-"extract_var p v = (\<Sum>m. monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+"extract_var p v = (\<Sum>m. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
 
 lemma extract_var_finite_set:
 assumes "{m'. coeff p m' \<noteq> 0} \<subseteq> S"
 assumes "finite S"
-shows "extract_var p v = (\<Sum>m\<in>S. monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+shows "extract_var p v = (\<Sum>m\<in>S. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
 proof-
   {
     fix m' assume "coeff p m' = 0"
-    then have "monom (remove_key v m') (monom (PP_Poly_Mapping.single v (lookup m' v)) (coeff p m')) = 0"
+    then have "monom (remove_key v m') (monom (Poly_Mapping.single v (lookup m' v)) (coeff p m')) = 0"
       using monom.abs_eq monom_zero single_zero by metis
   }
-  then have 0:"{a. monom (remove_key v a) (monom (PP_Poly_Mapping.single v (lookup a v)) (coeff p a)) \<noteq> 0} \<subseteq> S"
+  then have 0:"{a. monom (remove_key v a) (monom (Poly_Mapping.single v (lookup a v)) (coeff p a)) \<noteq> 0} \<subseteq> S"
     using `{m'. coeff p m' \<noteq> 0} \<subseteq> S` by fastforce
   then show ?thesis
     unfolding extract_var_def using Sum_any.expand_superset [OF `finite S` 0] by metis
 qed
 
-lemma extract_var_non_zero_coeff: "extract_var p v = (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+lemma extract_var_non_zero_coeff: "extract_var p v = (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
   using extract_var_finite_set  coeff_def finite_lookup order_refl by (metis (no_types, lifting) Collect_cong sum.cong)
 
 lemma extract_var_sum: "extract_var (p+p') v = extract_var p v + extract_var p' v"
@@ -449,7 +449,7 @@ qed
 
 
 lemma extract_var_monom:
-shows "extract_var (monom m a) v = monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) a)"
+shows "extract_var (monom m a) v = monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) a)"
 proof (cases "a = 0")
   assume "a \<noteq> 0"
   have 0:"{m'. coeff (monom m a) m' \<noteq> 0} = {m}"
@@ -471,12 +471,12 @@ lemma extract_var_monom_mult:
 shows "extract_var (monom (m+m') (a*b)) v = extract_var (monom m a) v * extract_var (monom m' b) v"
 unfolding extract_var_monom remove_key_add lookup_add single_add mult_monom by auto
 
-lemma extract_var_single: "extract_var (monom (PP_Poly_Mapping.single v n) a) v = monom 0 (monom (PP_Poly_Mapping.single v n) a)"
+lemma extract_var_single: "extract_var (monom (Poly_Mapping.single v n) a) v = monom 0 (monom (Poly_Mapping.single v n) a)"
 unfolding extract_var_monom by simp
 
 lemma extract_var_single':
 assumes "v \<noteq> v'"
-shows "extract_var (monom (PP_Poly_Mapping.single v n) a) v' = monom (PP_Poly_Mapping.single v n) (monom 0 a)"
+shows "extract_var (monom (Poly_Mapping.single v n) a) v' = monom (Poly_Mapping.single v n) (monom 0 a)"
 unfolding extract_var_monom using assms by (metis add.right_neutral lookup_single_not_eq remove_key_sum single_zero)
 
 lemma reduce_nested_mpoly_extract_var:
@@ -513,23 +513,23 @@ lemma vars_extract_var_subset: "vars (extract_var p v) \<subseteq> vars p"
 proof
   have "finite {m'. coeff p m' \<noteq> 0}" by (simp add: coeff_def)
   fix x assume "x \<in> vars (extract_var p v)"
-  then have "x \<in> vars (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+  then have "x \<in> vars (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
     unfolding extract_var_non_zero_coeff by metis
-  then have "x \<in> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m))))"
+  then have "x \<in> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m))))"
     using vars_setsum[OF `finite {m'. coeff p m' \<noteq> 0}`] by auto
-  then obtain m where "m\<in>{m'. coeff p m' \<noteq> 0}" "x \<in> vars (monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+  then obtain m where "m\<in>{m'. coeff p m' \<noteq> 0}" "x \<in> vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
     by blast
   show "x \<in> vars p" by (metis (mono_tags, lifting) DiffD1 UN_I \<open>m \<in> {m'. coeff p m' \<noteq> 0}\<close>
-    \<open>x \<in> vars (monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))\<close>
+    \<open>x \<in> vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))\<close>
     coeff_keys mem_Collect_eq remove_key_keys subsetCE vars_def vars_monom_subset)
 qed
 
 lemma v_not_in_vars_extract_var: "v \<notin> vars (extract_var p v)"
 proof -
   have "finite {m'. coeff p m' \<noteq> 0}" by (simp add: coeff_def)
-  have "\<And>m. m\<in>{m'. coeff p m' \<noteq> 0} \<Longrightarrow> v \<notin> vars (monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
+  have "\<And>m. m\<in>{m'. coeff p m' \<noteq> 0} \<Longrightarrow> v \<notin> vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
     by (metis Diff_iff remove_key_keys singletonI subsetCE vars_monom_subset)
-  then have "v \<notin> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m))))"
+  then have "v \<notin> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m))))"
     by simp
   then show ?thesis
    unfolding extract_var_non_zero_coeff using vars_setsum[OF `finite {m'. coeff p m' \<noteq> 0}`] by blast
@@ -576,8 +576,8 @@ proof -
        "finite {m. f (lookup (mapping_of p2) m) \<noteq> 0}"
     unfolding coeff_def[symmetric] by (metis (mono_tags, lifting) Collect_mono assms(1) coeff_def finite_lookup finite_subset)+
   then show ?thesis
-    unfolding replace_coeff_def PP_MPoly.plus_mpoly.rep_eq unfolding PP_Poly_Mapping.plus_poly_mapping.rep_eq
-    unfolding assms(2) PP_MPoly.plus_mpoly.abs_eq using PP_Poly_Mapping.plus_poly_mapping.abs_eq[unfolded eq_onp_def] by fastforce
+    unfolding replace_coeff_def plus_mpoly.rep_eq unfolding Poly_Mapping.plus_poly_mapping.rep_eq
+    unfolding assms(2) plus_mpoly.abs_eq using Poly_Mapping.plus_poly_mapping.abs_eq[unfolded eq_onp_def] by fastforce
 qed
 
 lemma insertion_replace_coeff:

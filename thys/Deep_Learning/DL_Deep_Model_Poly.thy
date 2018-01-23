@@ -3,7 +3,7 @@
 section \<open>Polynomials representing the Deep Network Model\<close>
 
 theory DL_Deep_Model_Poly
-imports DL_Deep_Model PP_More_MPoly Jordan_Normal_Form.Determinant
+imports DL_Deep_Model Polynomials.More_MPoly_Type Jordan_Normal_Form.Determinant
 begin
 
 definition "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"
@@ -68,7 +68,7 @@ lemma polyfun_single:
 assumes "i\<in>N"
 shows "polyfun N (\<lambda>x. x i)"
 proof -
-  have "\<forall>f. insertion f (monom (PP_Poly_Mapping.single i 1) 1) = f i" using insertion_single by simp
+  have "\<forall>f. insertion f (monom (Poly_Mapping.single i 1) 1) = f i" using insertion_single by simp
   then show ?thesis unfolding polyfun_def
     using vars_monom_single[of i 1 1] One_nat_def assms singletonD subset_eq
     by blast

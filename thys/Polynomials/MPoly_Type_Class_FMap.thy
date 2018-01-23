@@ -2,9 +2,9 @@
 
 section \<open>Executable Representation of Polynomial Mappings as Association Lists\<close>
 
-theory Poly_Lists
+theory MPoly_Type_Class_FMap
   imports
-    Abstract_Poly
+    MPoly_Type_Class
     Poly_Mapping_Finite_Map
 begin
 
@@ -301,7 +301,7 @@ end
 lemmas [simp] = compute_zero_pp[symmetric]
 
 lemma compute_monom_mult_poly_mapping[code]:
-  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t ((*) c) xs)"
+  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t (( * ) c) xs)"
 proof (cases "c = 0")
   case True
   hence "monom_mult c t (Pm_fmap xs) = 0" using monom_mult_left0 by simp

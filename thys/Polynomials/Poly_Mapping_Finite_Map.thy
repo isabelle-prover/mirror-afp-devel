@@ -1,6 +1,6 @@
 theory Poly_Mapping_Finite_Map
   imports
-    "Deep_Learning.PP_More_MPoly"
+    "More_MPoly_Type"
     "HOL-Library.Finite_Map"
 begin
 
@@ -115,7 +115,7 @@ lemma compute_equal_pp[code]:
   unfolding equal_poly_mapping_def by (simp only: PM_all_2)
 
 lemma compute_map_pp[code]:
-  "PP_Poly_Mapping.map f (Pm_fmap xs) = Pm_fmap (fmmap (\<lambda>x. f x when x \<noteq> 0) xs)"
+  "Poly_Mapping.map f (Pm_fmap xs) = Pm_fmap (fmmap (\<lambda>x. f x when x \<noteq> 0) xs)"
   by (auto intro!: poly_mapping_eqI
       simp: fmlookup_default_def map.rep_eq
       split: option.splits)
@@ -124,7 +124,7 @@ lemma fmran'_fmfilter_eq: "fmran' (fmfilter p fm) = {y | y. \<exists>x \<in> fmd
   by (force simp: fmlookup_ran'_iff fmdom'I split: if_splits)
 
 lemma compute_range_pp[code]:
-  "PP_Poly_Mapping.range (Pm_fmap xs) = fmran' (clearjunk0 xs)"
+  "Poly_Mapping.range (Pm_fmap xs) = fmran' (clearjunk0 xs)"
   by (force simp: range.rep_eq clearjunk0_def fmran'_fmfilter_eq fmdom'I
       fmlookup_default_def split: option.splits)
 

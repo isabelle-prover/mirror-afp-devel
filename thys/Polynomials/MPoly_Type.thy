@@ -4,8 +4,8 @@
 
 section \<open>An abstract type for multivariate polynomials\<close>
 
-theory PP_MPoly
-imports PP_Poly_Mapping
+theory MPoly_Type
+imports Poly_Mapping
 begin
 
 subsection \<open>Abstract type definition\<close>
@@ -78,7 +78,7 @@ subsection \<open>Multiplication by a coefficient\<close>
 (* ?do we need inc_power on abstract polynomials? *)
 
 lift_definition smult :: "'a::{times,zero} \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly"
-  is "\<lambda>a. PP_Poly_Mapping.map (Groups.times a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _" .
+  is "\<lambda>a. Poly_Mapping.map (Groups.times a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _" .
 
 (* left lemmas in subsection \<open>Pseudo-division of polynomials\<close>,
    because I couldn't disentangle them and the notion of monomials. *)
@@ -152,10 +152,10 @@ text \<open>
 \<close>
 
 lift_definition monom :: "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a::zero \<Rightarrow> 'a mpoly"
-  is "PP_Poly_Mapping.single :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> _" .
-    
+  is "Poly_Mapping.single :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> _" .
+
 lemma mapping_of_monom [simp]:
-  "mapping_of (monom m a) = PP_Poly_Mapping.single m a"
+  "mapping_of (monom m a) = Poly_Mapping.single m a"
   by(fact monom.rep_eq)
 
 lemma monom_zero [simp]:
@@ -194,14 +194,13 @@ lemma inj_monom [iff]:
   "inj (monom m)"
 proof (rule injI, transfer)
   fix a b :: 'a and m :: "nat \<Rightarrow>\<^sub>0 nat"
-  assume "PP_Poly_Mapping.single m a = PP_Poly_Mapping.single m b"
-  with injD [of "PP_Poly_Mapping.single m" a b]
+  assume "Poly_Mapping.single m a = Poly_Mapping.single m b"
+  with injD [of "Poly_Mapping.single m" a b]
   show "a = b" by simp
 qed
 
 lemma mult_monom: "monom x a * monom y b = monom (x + y) (a * b)"
-by transfer (simp add: PP_Poly_Mapping.mult_single)
-  \<comment> \<open>FIXME: why does transfer need so much backtracking until it finds the right goal?\<close>
+  by transfer' (simp add: Poly_Mapping.mult_single)
 
 instance mpoly :: (semiring_char_0) semiring_char_0
   by intro_classes (auto simp add: of_nat_monom inj_of_nat intro: inj_comp)
@@ -234,7 +233,7 @@ subsection \<open>Monom coefficient lookup\<close>
 
 definition coeff :: "'a::zero mpoly \<Rightarrow> (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a"
 where
-  "coeff p = PP_Poly_Mapping.lookup (mapping_of p)"
+  "coeff p = Poly_Mapping.lookup (mapping_of p)"
 
 
 subsection \<open>Insertion morphism\<close>
@@ -245,7 +244,7 @@ where
 
 definition insertion_fun :: "(nat \<Rightarrow> 'a) \<Rightarrow> ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a) \<Rightarrow> 'a::comm_semiring_1"
 where
-  "insertion_fun f p = (\<Sum>m. p m * (\<Prod>v. f v ^ PP_Poly_Mapping.lookup m v))"
+  "insertion_fun f p = (\<Sum>m. p m * (\<Prod>v. f v ^ Poly_Mapping.lookup m v))"
 
 text \<open>N.b. have been unable to relate this to @{const insertion_fun_natural} using lifting!\<close>
 
@@ -256,14 +255,14 @@ lift_definition insertion :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a mpoly \<Ri
   is "insertion_aux" .
 
 lemma aux:
-  "PP_Poly_Mapping.lookup f = (\<lambda>_. 0) \<longleftrightarrow> f = 0"
+  "Poly_Mapping.lookup f = (\<lambda>_. 0) \<longleftrightarrow> f = 0"
   apply transfer apply simp done
 
 lemma insertion_trivial [simp]:
   "insertion (\<lambda>_. 0) p = coeff p 0"
 proof -
   { fix f :: "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a"
-    have "insertion_aux (\<lambda>_. 0) f = PP_Poly_Mapping.lookup f 0"
+    have "insertion_aux (\<lambda>_. 0) f = Poly_Mapping.lookup f 0"
       apply (simp add: insertion_aux_def insertion_fun_def power_Sum_any [symmetric])
       apply (simp add: zero_power_eq mult_when aux)
       done
@@ -277,9 +276,9 @@ lemma insertion_zero [simp]:
 
 lemma insertion_fun_add:
   fixes f p q
-  shows "insertion_fun f (PP_Poly_Mapping.lookup (p + q)) =
-    insertion_fun f (PP_Poly_Mapping.lookup p) +
-      insertion_fun f (PP_Poly_Mapping.lookup q)"
+  shows "insertion_fun f (Poly_Mapping.lookup (p + q)) =
+    insertion_fun f (Poly_Mapping.lookup p) +
+      insertion_fun f (Poly_Mapping.lookup q)"
   unfolding insertion_fun_def
   apply (subst Sum_any.distrib [symmetric])
   apply (simp_all add: plus_poly_mapping.rep_eq algebra_simps)
@@ -299,32 +298,32 @@ lemma insertion_one [simp]:
 
 lemma insertion_fun_mult:
   fixes f p q
-  shows "insertion_fun f (PP_Poly_Mapping.lookup (p * q)) =
-    insertion_fun f (PP_Poly_Mapping.lookup p) *
-      insertion_fun f (PP_Poly_Mapping.lookup q)"
+  shows "insertion_fun f (Poly_Mapping.lookup (p * q)) =
+    insertion_fun f (Poly_Mapping.lookup p) *
+      insertion_fun f (Poly_Mapping.lookup q)"
 proof -
   { fix m :: "nat \<Rightarrow>\<^sub>0 nat"
-    have "finite {v. PP_Poly_Mapping.lookup m v \<noteq> 0}"
+    have "finite {v. Poly_Mapping.lookup m v \<noteq> 0}"
       by simp
-    then have "finite {v. f v ^ PP_Poly_Mapping.lookup m v \<noteq> 1}"
+    then have "finite {v. f v ^ Poly_Mapping.lookup m v \<noteq> 1}"
       by (rule rev_finite_subset) (auto intro: ccontr)
   }
-  moreover define g where "g m = (\<Prod>v. f v ^ PP_Poly_Mapping.lookup m v)" for m
+  moreover define g where "g m = (\<Prod>v. f v ^ Poly_Mapping.lookup m v)" for m
   ultimately have *: "\<And>a b. g (a + b) = g a * g b"
     by (simp add: plus_poly_mapping.rep_eq power_add Prod_any.distrib)
   have bij: "bij (\<lambda>(l, n, m). (m, l, n))"
     by (auto intro!: bijI injI simp add: image_def)
-  let ?P = "{l. PP_Poly_Mapping.lookup p l \<noteq> 0}"
-  let ?Q = "{n. PP_Poly_Mapping.lookup q n \<noteq> 0}"
-  let ?PQ = "{l + n | l n. l \<in> PP_Poly_Mapping.keys p \<and> n \<in> PP_Poly_Mapping.keys q}"
-  have "finite {l + n | l n. PP_Poly_Mapping.lookup p l \<noteq> 0 \<and> PP_Poly_Mapping.lookup q n \<noteq> 0}"
+  let ?P = "{l. Poly_Mapping.lookup p l \<noteq> 0}"
+  let ?Q = "{n. Poly_Mapping.lookup q n \<noteq> 0}"
+  let ?PQ = "{l + n | l n. l \<in> Poly_Mapping.keys p \<and> n \<in> Poly_Mapping.keys q}"
+  have "finite {l + n | l n. Poly_Mapping.lookup p l \<noteq> 0 \<and> Poly_Mapping.lookup q n \<noteq> 0}"
     by (rule finite_not_eq_zero_sumI) simp_all
   then have fin_PQ: "finite ?PQ"
     by simp
-  have "(\<Sum>m. PP_Poly_Mapping.lookup (p * q) m * g m) =
-    (\<Sum>m. (\<Sum>l. PP_Poly_Mapping.lookup p l * (\<Sum>n. PP_Poly_Mapping.lookup q n when m = l + n)) * g m)"
+  have "(\<Sum>m. Poly_Mapping.lookup (p * q) m * g m) =
+    (\<Sum>m. (\<Sum>l. Poly_Mapping.lookup p l * (\<Sum>n. Poly_Mapping.lookup q n when m = l + n)) * g m)"
     by (simp add: times_poly_mapping.rep_eq prod_fun_def)
-  also have "\<dots> = (\<Sum>m. (\<Sum>l. (\<Sum>n. g m * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n) when m = l + n)))"
+  also have "\<dots> = (\<Sum>m. (\<Sum>l. (\<Sum>n. g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)))"
     apply (subst Sum_any_left_distrib)
     apply (auto intro: finite_mult_not_eq_zero_rightI)
     apply (subst Sum_any_right_distrib)
@@ -333,33 +332,33 @@ proof -
     apply (auto intro: finite_mult_not_eq_zero_leftI)
     apply (simp add: ac_simps mult_when)
     done
-  also have "\<dots> = (\<Sum>m. (\<Sum>(l, n). g m * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n) when m = l + n))"
+  also have "\<dots> = (\<Sum>m. (\<Sum>(l, n). g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n))"
     apply (subst (2) Sum_any.cartesian_product [of "?P \<times> ?Q"])
     apply (auto dest!: mult_not_zero)
     done
-  also have "\<dots> = (\<Sum>(m, l, n). g m * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n) when m = l + n)"
+  also have "\<dots> = (\<Sum>(m, l, n). g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     apply (subst Sum_any.cartesian_product [of "?PQ \<times> (?P \<times> ?Q)"])
     apply (auto dest!: mult_not_zero simp add: fin_PQ)
     apply auto
     done
-  also have "\<dots> = (\<Sum>(l, n, m). g m * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n) when m = l + n)"
+  also have "\<dots> = (\<Sum>(l, n, m). g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     using bij by (rule Sum_any.reindex_cong [of "\<lambda>(l, n, m). (m, l, n)"]) (simp add: fun_eq_iff)
-  also have "\<dots> = (\<Sum>(l, n). \<Sum>m. g m * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n) when m = l + n)"
+  also have "\<dots> = (\<Sum>(l, n). \<Sum>m. g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     apply (subst Sum_any.cartesian_product2 [of "(?P \<times> ?Q) \<times> ?PQ"])
     apply (auto dest!: mult_not_zero simp add: fin_PQ )
     apply auto
     done
-  also have "\<dots> = (\<Sum>(l, n). (g l * g n) * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n))"
+  also have "\<dots> = (\<Sum>(l, n). (g l * g n) * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n))"
     by (simp add: *)
-  also have "\<dots> = (\<Sum>l. \<Sum>n. (g l * g n) * (PP_Poly_Mapping.lookup p l * PP_Poly_Mapping.lookup q n))"
+  also have "\<dots> = (\<Sum>l. \<Sum>n. (g l * g n) * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n))"
     apply (subst Sum_any.cartesian_product [of "?P \<times> ?Q"])
     apply (auto dest!: mult_not_zero)
     done
-  also have "\<dots> = (\<Sum>l. \<Sum>n. (PP_Poly_Mapping.lookup p l * g l) * (PP_Poly_Mapping.lookup q n * g n))"
+  also have "\<dots> = (\<Sum>l. \<Sum>n. (Poly_Mapping.lookup p l * g l) * (Poly_Mapping.lookup q n * g n))"
     by (simp add: ac_simps)
   also have "\<dots> =
-    (\<Sum>m. PP_Poly_Mapping.lookup p m * g m) *
-    (\<Sum>m. PP_Poly_Mapping.lookup q m * g m)"
+    (\<Sum>m. Poly_Mapping.lookup p m * g m) *
+    (\<Sum>m. Poly_Mapping.lookup q m * g m)"
     by (rule Sum_any_product [symmetric]) (auto intro: finite_mult_not_eq_zero_rightI)
   finally show ?thesis by (simp add: insertion_fun_def g_def)
 qed
@@ -372,11 +371,11 @@ lemma insertion_mult:
 subsection \<open>Degree\<close>
 
 lift_definition degree :: "'a::zero mpoly \<Rightarrow> nat \<Rightarrow> nat"
-is "\<lambda>p v. Max (insert 0 ((\<lambda>m. PP_Poly_Mapping.lookup m v) ` PP_Poly_Mapping.keys p))" .
+is "\<lambda>p v. Max (insert 0 ((\<lambda>m. Poly_Mapping.lookup m v) ` Poly_Mapping.keys p))" .
 
 
 lift_definition total_degree :: "'a::zero mpoly \<Rightarrow> nat"
-is "\<lambda>p. Max (insert 0 ((\<lambda>m. sum (PP_Poly_Mapping.lookup m) (PP_Poly_Mapping.keys m)) ` PP_Poly_Mapping.keys p))" .
+is "\<lambda>p. Max (insert 0 ((\<lambda>m. sum (Poly_Mapping.lookup m) (Poly_Mapping.keys m)) ` Poly_Mapping.keys p))" .
 
 lemma degree_zero [simp]:
   "degree 0 v = 0"
@@ -416,7 +415,7 @@ lemma mult_smult_left: "smult s p * q = smult s (p * q)"
 by(simp add: smult_conv_mult mult.assoc)
 
 lift_definition sdiv :: "'a::euclidean_ring \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly"
-  is "\<lambda>a. PP_Poly_Mapping.map (\<lambda>b. b div a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _"
+  is "\<lambda>a. Poly_Mapping.map (\<lambda>b. b div a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _"
 .
 text \<open>
   \qt{Polynomial division} is only possible on univariate polynomials @{text "K[x]"}
@@ -486,7 +485,7 @@ lemma mod_poly_code:
 subsection \<open>Primitive poly, etc\<close>
 
 lift_definition coeffs :: "'a :: zero mpoly \<Rightarrow> 'a set"
-is "PP_Poly_Mapping.range :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _" .
+is "Poly_Mapping.range :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _" .
 
 lemma finite_coeffs [simp]: "finite (coeffs p)"
 by transfer simp

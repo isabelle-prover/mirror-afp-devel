@@ -4,11 +4,11 @@
 
 section \<open>Polynomial mapping: combination of almost everywhere zero functions with an algebraic view\<close>
 
-theory PP_Poly_Mapping
+theory Poly_Mapping
 imports
   "HOL-Library.Groups_Big_Fun"
   "HOL-Library.Fun_Lexorder"
-  PP_More_List2
+  More_List2
 begin
 
 subsection \<open>Preliminary: auxiliary operations for \qt{almost everywhere zero}\<close>
@@ -991,7 +991,7 @@ lemma lookup_eq_zero_in_keys_contradict [dest]:
   "lookup f k = 0 \<Longrightarrow> \<not> k \<in> keys f"
   by simp
 
-lemma finite_range [simp]: "finite (PP_Poly_Mapping.range p)"
+lemma finite_range [simp]: "finite (Poly_Mapping.range p)"
 proof transfer
   fix f :: "'b \<Rightarrow> 'a"
   assume *: "finite {x. f x \<noteq> 0}"
@@ -1045,25 +1045,25 @@ lemma keys_mult:
 
 lemma setsum_keys_plus_distrib:
   assumes hom_0: "\<And>k. f k 0 = 0"
-  and hom_plus: "\<And>k. k \<in> PP_Poly_Mapping.keys p \<union> PP_Poly_Mapping.keys q \<Longrightarrow> f k (PP_Poly_Mapping.lookup p k + PP_Poly_Mapping.lookup q k) = f k (PP_Poly_Mapping.lookup p k) + f k (PP_Poly_Mapping.lookup q k)"
+  and hom_plus: "\<And>k. k \<in> Poly_Mapping.keys p \<union> Poly_Mapping.keys q \<Longrightarrow> f k (Poly_Mapping.lookup p k + Poly_Mapping.lookup q k) = f k (Poly_Mapping.lookup p k) + f k (Poly_Mapping.lookup q k)"
   shows
-  "(\<Sum>k\<in>PP_Poly_Mapping.keys (p + q). f k (PP_Poly_Mapping.lookup (p + q) k)) =
-   (\<Sum>k\<in>PP_Poly_Mapping.keys p. f k (PP_Poly_Mapping.lookup p k)) +
-   (\<Sum>k\<in>PP_Poly_Mapping.keys q. f k (PP_Poly_Mapping.lookup q k))"
+  "(\<Sum>k\<in>Poly_Mapping.keys (p + q). f k (Poly_Mapping.lookup (p + q) k)) =
+   (\<Sum>k\<in>Poly_Mapping.keys p. f k (Poly_Mapping.lookup p k)) +
+   (\<Sum>k\<in>Poly_Mapping.keys q. f k (Poly_Mapping.lookup q k))"
   (is "?lhs = ?p + ?q")
 proof -
-  let ?A = "PP_Poly_Mapping.keys p \<union> PP_Poly_Mapping.keys q"
-  have "?lhs = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k + PP_Poly_Mapping.lookup q k))"
+  let ?A = "Poly_Mapping.keys p \<union> Poly_Mapping.keys q"
+  have "?lhs = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k + Poly_Mapping.lookup q k))"
     apply(rule sum.mono_neutral_cong_left)
-       apply(simp_all add: PP_Poly_Mapping.keys_add_subset)
+       apply(simp_all add: Poly_Mapping.keys_add_subset)
      apply(transfer fixing: f)
      apply(auto simp add: hom_0)[1]
     apply(transfer fixing: f)
     apply(auto simp add: hom_0)[1]
     done
-  also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k) + f k (PP_Poly_Mapping.lookup q k))"
+  also have "\<dots> = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k) + f k (Poly_Mapping.lookup q k))"
     by(rule sum.cong)(simp_all add: hom_plus)
-  also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k)) + (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup q k))"
+  also have "\<dots> = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k)) + (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup q k))"
     (is "_ = ?p' + ?q'")
     by(simp add: sum.distrib)
   also have "?p' = ?p"
@@ -1142,7 +1142,7 @@ lemma beyond_degree_lookup_zero:
   unfolding degree_def by transfer auto
 
 lemma degree_add:
-  "degree (f + g) \<le> max (degree f) (PP_Poly_Mapping.degree g)"
+  "degree (f + g) \<le> max (degree f) (Poly_Mapping.degree g)"
 unfolding degree_def proof transfer
   fix f g :: "nat \<Rightarrow> 'a"
   assume f: "finite {x. f x \<noteq> 0}"

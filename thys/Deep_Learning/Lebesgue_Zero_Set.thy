@@ -3,7 +3,10 @@
 section \<open>Lebesgue Measure of Polynomial Zero Sets\<close>
 
 theory Lebesgue_Zero_Set
-imports PP_MPoly PP_More_MPoly Lebesgue_Functional PP_Univariate
+  imports
+    Polynomials.More_MPoly_Type
+    Lebesgue_Functional
+    Polynomials.MPoly_Type_Univariate
 begin
 
 lemma measurable_insertion [measurable]:
@@ -14,11 +17,11 @@ using assms proof (induction p rule:mpoly_induct)
   then show ?case
   proof (cases "a = 0")
     case True
-    show ?thesis unfolding insertion_single `a = 0` PP_MPoly.monom.abs_eq single_zero
+    show ?thesis unfolding insertion_single `a = 0` MPoly_Type.monom.abs_eq single_zero
       zero_mpoly.abs_eq[symmetric] insertion_zero by measurable
   next
     case False
-    have "PP_Poly_Mapping.keys m \<subseteq> {..<n}" using monom by (simp add: False vars_monom_keys)
+    have "Poly_Mapping.keys m \<subseteq> {..<n}" using monom by (simp add: False vars_monom_keys)
     then show ?thesis using `a\<noteq>0`
     proof (induction m arbitrary:a rule:poly_mapping_induct)
       case (single x i a)
@@ -33,10 +36,10 @@ using assms proof (induction p rule:mpoly_induct)
       qed
     next
       case (sum m1 m2 x i)
-      then have "PP_Poly_Mapping.keys m1 \<inter> PP_Poly_Mapping.keys m2 = {}" by simp
-      then have "PP_Poly_Mapping.keys m1 \<union> PP_Poly_Mapping.keys m2 = PP_Poly_Mapping.keys (m1 + m2)" using keys_add by metis
-      then have 1:"PP_Poly_Mapping.keys m1 \<subseteq> {..<n}" and 2:"PP_Poly_Mapping.keys m2 \<subseteq> {..<n}" using sum.prems by auto
-      show ?case unfolding PP_MPoly.mult_monom[of m1 a m2 1,simplified,symmetric]
+      then have "Poly_Mapping.keys m1 \<inter> Poly_Mapping.keys m2 = {}" by simp
+      then have "Poly_Mapping.keys m1 \<union> Poly_Mapping.keys m2 = Poly_Mapping.keys (m1 + m2)" using keys_add by metis
+      then have 1:"Poly_Mapping.keys m1 \<subseteq> {..<n}" and 2:"Poly_Mapping.keys m2 \<subseteq> {..<n}" using sum.prems by auto
+      show ?case unfolding MPoly_Type.mult_monom[of m1 a m2 1,simplified,symmetric]
         insertion_mult using sum.IH(1)[OF 1 `a\<noteq>0`] sum.IH(2)[OF 2, of 1, simplified] by measurable
     qed
   qed
@@ -57,19 +60,19 @@ assumes "p \<noteq> 0" "vars p \<subseteq> {..<n}"
 shows "{f\<in>space (lborel_f n). insertion f p = 0} \<in> null_sets (lborel_f n)"
 using assms proof (induction n arbitrary:p)
   case 0
-  then have "vars p = {}" by simp then have "\<And>f. insertion f p = PP_MPoly.coeff p 0"
+  then have "vars p = {}" by simp then have "\<And>f. insertion f p = MPoly_Type.coeff p 0"
       unfolding insertion_trivial[symmetric] using insertion_irrelevant_vars by blast
-  have "\<And>m. m\<noteq>0 \<Longrightarrow> PP_MPoly.coeff p m = 0"
+  have "\<And>m. m\<noteq>0 \<Longrightarrow> MPoly_Type.coeff p m = 0"
   proof (rule ccontr)
-    fix m::"nat \<Rightarrow>\<^sub>0 nat" assume "m\<noteq>0" "PP_MPoly.coeff p m \<noteq> 0"
-    then obtain v where "PP_Poly_Mapping.lookup m v \<noteq> 0" using aux by auto
-    then have "v\<in>vars p" unfolding PP_More_MPoly.vars_def using `PP_MPoly.coeff p m \<noteq> 0`
+    fix m::"nat \<Rightarrow>\<^sub>0 nat" assume "m\<noteq>0" "MPoly_Type.coeff p m \<noteq> 0"
+    then obtain v where "Poly_Mapping.lookup m v \<noteq> 0" using aux by auto
+    then have "v\<in>vars p" unfolding More_MPoly_Type.vars_def using `MPoly_Type.coeff p m \<noteq> 0`
       by (meson UN_I coeff_keys lookup_not_eq_zero_eq_in_keys)
     then show False using `vars p = {}` by auto
   qed
-  then have "PP_MPoly.coeff p 0 \<noteq> 0" using `p \<noteq> 0`
+  then have "MPoly_Type.coeff p 0 \<noteq> 0" using `p \<noteq> 0`
     by (metis coeff_all_0)
-  then have "{f. insertion f p = 0} = {}" using `\<And>f. insertion f p = PP_MPoly.coeff p 0` by auto
+  then have "{f. insertion f p = 0} = {}" using `\<And>f. insertion f p = MPoly_Type.coeff p 0` by auto
   then show ?case by auto
 next
   case (Suc n p)
@@ -77,7 +80,7 @@ next
 text \<open>Show that N is finite:\<close>
   then have "extract_var p n \<noteq> 0" using reduce_nested_mpoly_0
     by (metis reduce_nested_mpoly_extract_var)
-  let ?q = "\<lambda>j. PP_MPoly.coeff (extract_var p n) j"
+  let ?q = "\<lambda>j. MPoly_Type.coeff (extract_var p n) j"
   obtain j where "?q j \<noteq> 0" using `extract_var p n \<noteq> 0`
     by (metis coeff_all_0)
   then have "finite {x. insertion (\<lambda>_. x) (?q j) = 0}"
@@ -92,13 +95,13 @@ text \<open>Show that N is finite:\<close>
   proof
     fix x assume "x\<in>N"
     then have "p_fix1 x = 0" using N_def by auto
-    then have "\<And>m. PP_MPoly.coeff (p_fix1 x) m = 0" by (metis PP_More_MPoly.coeff_monom monom_zero when_def)
+    then have "\<And>m. MPoly_Type.coeff (p_fix1 x) m = 0" by (metis More_MPoly_Type.coeff_monom monom_zero when_def)
     have "\<And>j. insertion (\<lambda>_. x) (?q j) = 0"
-      using `\<And>m. PP_MPoly.coeff (p_fix1 x) m = 0`[unfolded p_fix1_def coeff_replace_coeff[of "insertion (\<lambda>_. x)", OF insertion_zero]]
+      using `\<And>m. MPoly_Type.coeff (p_fix1 x) m = 0`[unfolded p_fix1_def coeff_replace_coeff[of "insertion (\<lambda>_. x)", OF insertion_zero]]
       by metis
-    then show "x \<in> {x. \<forall>j. insertion (\<lambda>_. x) (PP_MPoly.coeff (extract_var p n) j) = 0}" by blast
+    then show "x \<in> {x. \<forall>j. insertion (\<lambda>_. x) (MPoly_Type.coeff (extract_var p n) j) = 0}" by blast
   qed
-  then have "finite N" by (simp add: \<open>finite {x. \<forall>j. insertion (\<lambda>_. x) (PP_MPoly.coeff (extract_var p n) j) = 0}\<close> finite_subset)
+  then have "finite N" by (simp add: \<open>finite {x. \<forall>j. insertion (\<lambda>_. x) (MPoly_Type.coeff (extract_var p n) j) = 0}\<close> finite_subset)
 
 
 text \<open>Use the IH:\<close>

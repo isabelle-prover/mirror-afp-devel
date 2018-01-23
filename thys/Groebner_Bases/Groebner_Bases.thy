@@ -3,7 +3,7 @@
 section \<open>Gr\"obner Bases\<close>
 
 theory Groebner_Bases
-imports Polynomials.Abstract_Poly Confluence
+imports Polynomials.MPoly_Type_Class Confluence
 begin
 
 text \<open>This theory provides the main results about Gr\"obner bases of multivariate polynomials.
@@ -304,7 +304,7 @@ proof -
   hence c: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" using lookup_tail[of p] by simp
   show ?thesis
   proof (intro red_setI[OF \<open>f \<in> F\<close>])
-    show "red_single p (q + PP_Poly_Mapping.single (lp p) (lc p)) f t" unfolding red_single_def
+    show "red_single p (q + Poly_Mapping.single (lp p) (lc p)) f t" unfolding red_single_def
     proof (intro conjI, fact)
       from ct c show "lookup p (t + lp f) \<noteq> 0" by simp
     next
