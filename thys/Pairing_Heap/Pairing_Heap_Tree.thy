@@ -78,7 +78,7 @@ lemma pass\<^sub>1_struct: "\<exists>la a ra. pass\<^sub>1 (Node lx x rx) = Node
   by (cases rx) simp_all
 
 lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la a Leaf" 
-  by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
+by(induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
   (simp, metis pass\<^sub>2.simps(2) link_struct)
 
 lemma is_root_merge:

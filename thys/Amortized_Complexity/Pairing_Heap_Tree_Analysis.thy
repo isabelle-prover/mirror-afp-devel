@@ -105,8 +105,8 @@ proof -
 qed
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (size hs)"
-proof (induction hs rule: pass\<^sub>2.induct)
-  case (2 lx x rx)
+proof (induction hs)
+  case (Node lx x rx)
   thus ?case 
   proof (cases rx)
     case *: (Node ly y ry)
@@ -117,7 +117,7 @@ proof (induction hs rule: pass\<^sub>2.induct)
     hence "\<Phi> (pass\<^sub>2 ?h) - \<Phi> ?h  
       \<le> log 2 (size ?h) - log 2  \<dots> + \<Phi> (pass\<^sub>2 rx) - \<Phi> rx"
       using * ** by (simp add: algebra_simps) 
-    thus ?thesis using "2.IH" * by simp
+    thus ?thesis using Node.IH * by simp
   qed simp
 qed simp
 
