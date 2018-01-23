@@ -12,9 +12,9 @@ text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexic
 
 subsection \<open>Lexicographic Order\<close>
 
-definition "lex_strict s t \<longleftrightarrow> lex s t \<and> \<not> lex t s"
+definition "lex_pm_strict s t \<longleftrightarrow> lex_pm s t \<and> \<not> lex_pm t s"
 
-global_interpretation opp_lex: od_powerprod lex lex_strict
+global_interpretation opp_lex: od_powerprod lex_pm lex_pm_strict
   defines lp_lex = opp_lex.lp
   and max_lex = opp_lex.ordered_powerprod_lin.max
   and list_max_lex = opp_lex.list_max
@@ -33,13 +33,13 @@ global_interpretation opp_lex: od_powerprod lex lex_strict
   and gbaux_lex = opp_lex.gbaux
   and gb_lex = opp_lex.gb
   apply standard
-  subgoal by (simp add: lex_strict_def)
-  subgoal by (rule lex_refl)
-  subgoal by (erule lex_trans, simp)
-  subgoal by (erule lex_antisym, simp)
-  subgoal by (rule lex_lin)
-  subgoal by (rule lex_zero_min)
-  subgoal by (erule lex_plus_monotone)
+  subgoal by (simp add: lex_pm_strict_def)
+  subgoal by (rule lex_pm_refl)
+  subgoal by (erule lex_pm_trans, simp)
+  subgoal by (erule lex_pm_antisym, simp)
+  subgoal by (rule lex_pm_lin)
+  subgoal by (rule lex_pm_zero_min)
+  subgoal by (erule lex_pm_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
@@ -158,9 +158,9 @@ by eval
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
-definition "dlex_strict s t \<longleftrightarrow> dlex s t \<and> \<not> dlex t s"
+definition "dlex_pm_strict s t \<longleftrightarrow> dlex_pm s t \<and> \<not> dlex_pm t s"
 
-global_interpretation opp_dlex: od_powerprod dlex dlex_strict
+global_interpretation opp_dlex: od_powerprod dlex_pm dlex_pm_strict
   defines lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
   and list_max_dlex = opp_dlex.list_max
@@ -179,13 +179,13 @@ global_interpretation opp_dlex: od_powerprod dlex dlex_strict
   and gbaux_dlex = opp_dlex.gbaux
   and gb_dlex = opp_dlex.gb
   apply standard
-  subgoal by (simp add: dlex_strict_def)
-  subgoal by (rule dlex_refl)
-  subgoal by (erule dlex_trans, simp)
-  subgoal by (erule dlex_antisym, simp)
-  subgoal by (rule dlex_lin)
-  subgoal by (rule dlex_zero_min)
-  subgoal by (erule dlex_plus_monotone)
+  subgoal by (simp add: dlex_pm_strict_def)
+  subgoal by (rule dlex_pm_refl)
+  subgoal by (erule dlex_pm_trans, simp)
+  subgoal by (erule dlex_pm_antisym, simp)
+  subgoal by (rule dlex_pm_lin)
+  subgoal by (rule dlex_pm_zero_min)
+  subgoal by (erule dlex_pm_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
@@ -310,5 +310,7 @@ lemma
      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
     ]"
 by eval
+
+hide_const (open) Poly_Lists.X Poly_Lists.Y Poly_Lists.Z
 
 end (* theory *)

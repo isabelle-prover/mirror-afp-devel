@@ -364,7 +364,7 @@ lemma compute_lookup_pp[code]:
   by (transfer, simp)
 
 lemma compute_deg_pp[code]:
-  "deg (PP xs) = sum_list (map snd (AList.clearjunk xs))"
+  "deg_pm (PP xs) = sum_list (map snd (AList.clearjunk xs))"
 proof -
   from map_lookup_map_fst[OF distinct_clearjunk, of xs] map_of_clearjunk[of xs]
     have eq: "map (PP_Poly_Mapping.lookup (PP xs)) (map fst (AList.clearjunk xs)) = map snd (AList.clearjunk xs)"
@@ -380,24 +380,24 @@ proof -
           map_of_eq_None_iff map_of_filter_NoneI)
   qed
 
-  from deg_superset[OF this]
-    have "deg (PP xs) = sum (PP_Poly_Mapping.lookup (PP xs)) (set (map fst (AList.clearjunk xs)))" by simp
+  from deg_pm_superset[OF this]
+    have "deg_pm (PP xs) = sum (PP_Poly_Mapping.lookup (PP xs)) (set (map fst (AList.clearjunk xs)))" by simp
   moreover have "\<dots> = sum_list (map (PP_Poly_Mapping.lookup (PP xs)) (map fst (AList.clearjunk xs)))"
     using distinct_clearjunk sum.distinct_set_conv_list by blast
   moreover have "\<dots> = sum_list (map snd (AList.clearjunk xs))" using eq by presburger
   ultimately show ?thesis by (simp only:)
 qed
 
-definition adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le::"('b \<Rightarrow>\<^sub>0 'a::{canonically_ordered_monoid_add,ordered_ab_semigroup_monoid_add_imp_le}) \<Rightarrow> _ \<Rightarrow> bool"
-  where [code_abbrev]: "adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le = (adds)"
+definition adds_pp_add_linorder::"('b \<Rightarrow>\<^sub>0 'a::add_linorder) \<Rightarrow> _ \<Rightarrow> bool"
+  where [code_abbrev]: "adds_pp_add_linorder = (adds)"
 
 lemma compute_adds_pp[code]:
-  "adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le (PP xs) (PP ys) =
+  "adds_pp_add_linorder (PP xs) (PP ys) =
     (list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys))"
-  for xs ys::"('a \<times> 'b::{canonically_ordered_monoid_add,ordered_ab_semigroup_monoid_add_imp_le}) list"
-  unfolding adds_pp_canonically_ordered_monoid_add_ordered_ab_semigroup_monoid_add_imp_le_def
-  unfolding adds_pp
-proof transfer
+  for xs ys::"('a \<times> 'b::add_linorder_min) list"
+  unfolding adds_pp_add_linorder_def
+  unfolding adds_poly_mapping
+proof (transfer, simp only: le_fun_def)
   fix xs ys::"('a * 'b) list"
   show "(\<forall>x. lookup xs x \<le> lookup ys x) = list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)"
   proof
@@ -452,11 +452,11 @@ lemma compute_equal_pp[code]:
 text\<open>Computing @{term lex} as below is certainly not the most efficient way, but it works.\<close>
 
 lemma compute_lex_pp[code]:
-  "(lex (PP xs) (PP (ys::('a::wellorder * 'b::ordered_comm_monoid_add) list))) =
+  "(lex_pm (PP xs) (PP (ys::('a::wellorder * 'b::ordered_comm_monoid_add) list))) =
     (let zs = AList.merge xs ys in
       list_all (\<lambda>(x, v). lookup xs x \<le> lookup ys x \<or> list_ex (\<lambda>(y, w). y < x \<and> lookup xs y \<noteq> lookup ys y) zs) zs
     )"
-unfolding lex_def Let_def proof transfer
+unfolding Let_def proof (transfer, simp only: lex_fun_def)
   fix xs ys::"('a * 'b) list"
   show "(\<forall>x. lookup xs x \<le> lookup ys x \<or>
             (\<exists>y<x. lookup xs y \<noteq> lookup ys y)) =
@@ -525,6 +525,13 @@ unfolding lex_def Let_def proof transfer
     qed
   qed
 qed
+
+lemma compute_dord_pp[code]:
+  "(dord_pm ord (PP xs) (PP (ys::('a::wellorder * 'b::ordered_comm_monoid_add) list))) =
+    (let dx = deg_pm (PP xs) in let dy = deg_pm (PP ys) in
+      dx < dy \<or> (dx = dy \<and> ord (PP xs) (PP ys))
+    )"
+  by (simp add: dord_pm.rep_eq dord_fun_def deg_pm.rep_eq lookup_inverse)
 
 subsubsection \<open>Trivariate Power-Products\<close>
 
@@ -651,11 +658,11 @@ lemma
   by eval
 
 lemma
-  "deg (PP [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
+  "deg_pm (PP [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
   by eval
 
 lemma
-  "lex (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)])"
+  "lex_pm (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)])"
 by eval
 
 lemma
@@ -663,7 +670,7 @@ lemma
   by eval
 
 lemma
-  "\<not> (dlex (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)]))"
+  "\<not> (dlex_pm (PP [(X, 2::nat), (Y, 1), (Z, 3)]) (PP [(X, 4)]))"
   by eval
 
 text\<open>It is possible to index the indeterminates by natural numbers:\<close>
@@ -689,15 +696,15 @@ lemma
 by eval
 
 lemma
-  "deg (PP [(0, 2), (1, 1), (2, 3), (0::nat, 1::nat)]) = 6"
+  "deg_pm (PP [(0, 2), (1, 1), (2, 3), (0::nat, 1::nat)]) = 6"
 by eval
 
 lemma
-  "lex (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)])"
+  "lex_pm (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)])"
 by eval
 
 lemma
-  "\<not> (dlex (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)]))"
+  "\<not> (dlex_pm (PP [(0, 2), (1, 1), (2, 3)]) (PP [(0::nat, 4::nat)]))"
 by eval
 
 subsection \<open>Implementation of Multivariate Polynomials as Association Lists\<close>
@@ -706,7 +713,7 @@ subsubsection \<open>Unordered Power-Products\<close>
 
 abbreviation "MP \<equiv> PP"
 
-lemma compute_monom_mult_mpoly[code]:
+lemma compute_monom_mult_poly_mapping[code]:
   "monom_mult c t (MP xs) = (if c = 0 then 0 else MP (map (\<lambda>(k, v). (t + k, c * v)) xs))"
 proof (cases "c = 0")
   case True
@@ -764,20 +771,33 @@ next
   qed
 qed
 
-lemma compute_single_mpoly[code]:
-  "PP_Poly_Mapping.single t c = (if c = 0 then 0 else MP [(t, c)])"
-  by transfer (auto simp: when_def lookup_def intro!: ext)
+lemma compute_monomial[code]:
+  "monomial c t = (if c = 0 then 0 else MP [(t, c)])"
+  by transfer (auto simp: when_def lookup_def)
 
-lemma compute_except_mpoly[code]:
-  "except (MP xs) t = MP (filter (\<lambda>(k, v). k \<noteq> t) xs)"
+lemma compute_mult_poly_mapping[code]:
+  "MP xs * q = (case xs of ((t, c) # ys) \<Rightarrow> (monom_mult c t q + except (MP ys) {t} * q) | _ \<Rightarrow> MP [])"
+proof (split list.splits, simp, intro conjI impI allI)
+  show "MP [] * q = MP []" by (metis compute_zero_pp mult_not_zero)
+next
+  fix t c and ys::"('a * 'b) list"
+  have "MP ((t, c) # ys) = MP [(t, c)] + except (MP ys) {t}" by (transfer, auto simp add: lookup_def)
+  also have "MP [(t, c)] = monomial c t" by transfer (auto simp: when_def lookup_def)
+  finally show "MP ((t, c) # ys) * q = monom_mult c t q + (except (MP ys) {t}) * q"
+    by (simp add: algebra_simps times_monomial_left)
+qed
+
+lemma compute_except_poly_mapping[code]:
+  "except (MP xs) S = MP (filter (\<lambda>(k, v). k \<notin> S) xs)"
 proof (transfer, rule)
-  fix xs::"('a * 'b) list" and t s
+  fix xs::"('a * 'b) list" and S t
   {
     fix c1 c2
-    assume "map_of [(k, v)\<leftarrow>xs . k \<noteq> t] t = Some c1"
-    from map_of_SomeD[OF this] have False by simp
+    assume *: "map_of [(k, v)\<leftarrow>xs . k \<notin> S] t = Some c1"
+    assume "t \<in> S"
+    with map_of_SomeD[OF *] have False by simp
   }
-  thus "(if s = t then 0 else lookup xs s) = lookup [(k, v)\<leftarrow>xs . k \<noteq> t] s"
+  thus "(if t \<in> S then 0 else lookup xs t) = lookup [(k, v)\<leftarrow>xs . k \<notin> S] t"
     by (auto simp add: lookup_def map_of_filter_NoneI map_of_filter_in split: option.split)
 qed
 
@@ -821,25 +841,15 @@ lemma
 by eval
 
 lemma
-  "PP_Poly_Mapping.single  (PP [(X, 2::nat)]) (-4::rat) = MP [(PP [(X, 2)], - 4)]"
+  "monomial (-4::rat) (PP [(X, 2::nat)]) = MP [(PP [(X, 2)], - 4)]"
 by eval
 
 lemma
-  "PP_Poly_Mapping.single (PP [(X, 2::nat)])  (0::rat) = 0"
+  "monomial (0::rat) (PP [(X, 2::nat)]) = 0"
 by eval
 
 lemma
-  "some_term (MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3::nat), (Z, 2)], 2), (0, 2)]) =
-    PP [(X, 2::nat), (Z, 7)]"
-  by eval
-
-lemma
-  "rest_mpoly (MP [(PP [(X, 2::nat), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2), (0, 2)]) =
-    MP [(PP [(Y, 3), (Z, 2)], 2), (0, 2)]"
-  by eval
-
-lemma
-  "MP [(PP [(X, 2::nat), (Z, 1)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] *pm
+  "MP [(PP [(X, 2::nat), (Z, 1)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)] *
       MP [(PP [(X, 2), (Z, 3)], 1), (PP [(Y, 3), (Z, 2)], -2)] =
     MP [(PP [(X, 4), (Z, 4)], 1), (PP [(X, 2), (Z, 3), (Y, 3)], - 2), (PP [(Y, 6), (Z, 4)], - 4), (PP [(Y, 3), (Z, 5), (X, 2)], 2)]"
   by eval
@@ -880,7 +890,7 @@ proof (induct xs, simp)
   proof (cases "xs = []")
     case True
     hence "list_max (x # xs) = ordered_powerprod_lin.max 0 x" unfolding list_max_def by simp
-    also have "\<dots> = x" unfolding ordered_powerprod_lin.max_def by (simp add: one_min)
+    also have "\<dots> = x" unfolding ordered_powerprod_lin.max_def by (simp add: zero_min)
     finally show ?thesis by simp
   next
     assume "xs \<noteq> []"
@@ -938,7 +948,7 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma compute_lp_mpoly[code]:
+lemma compute_lp_poly_mapping[code]:
   "lp (MP xs) = list_max (map fst (normalize xs))"
 unfolding lp_def compute_keys_pp
 proof (split if_splits, intro conjI, intro impI)
@@ -959,35 +969,20 @@ next
   qed
 qed
 
-lemma compute_higher_mpoly[code]:
+lemma compute_higher_poly_mapping[code]:
   "higher (MP xs) t = MP (filter (\<lambda>(k, v). t \<prec> k) xs)"
-proof (transfer, rule)
-  fix xs::"('a * 'b) list" and t s
-  {
-    fix c1 c2
-    assume a: "map_of [(k, v)\<leftarrow>xs . t \<prec> k] s = Some c2" and "\<not> t \<prec> s"
-    from map_of_SomeD[OF a] \<open>\<not> t \<prec> s\<close> have False by simp
-  }
-  thus "(if t \<prec> s then lookup xs s else 0) = lookup [(k, v)\<leftarrow>xs . t \<prec> k] s"
-    by (auto simp add: lookup_def map_of_filter_in map_of_filter_NoneI split: option.split)
-qed
+  unfolding higher_def compute_except_poly_mapping
+  by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
 
-lemma compute_lower_mpoly[code]:
+lemma compute_lower_poly_mapping[code]:
   "lower (MP xs) t = MP (filter (\<lambda>(k, v). k \<prec> t) xs)"
-proof (transfer, rule)
-  fix xs::"('a * 'b) list" and t s
-  {
-    fix c1 c2
-    assume a: "map_of [(k, v)\<leftarrow>xs . k \<prec> t] s = Some c2" and "\<not> s \<prec> t"
-    from map_of_SomeD[OF a] \<open>\<not> s \<prec> t\<close> have False by simp
-  }
-  thus "(if s \<prec> t then lookup xs s else 0) = lookup [(k, v)\<leftarrow>xs . k \<prec> t] s"
-    by (auto simp add: lookup_def map_of_filter_in map_of_filter_NoneI split: option.split)
-qed
+  unfolding lower_def compute_except_poly_mapping
+  by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
 
 end (* ordered_powerprod *)
 
-lifting_update mpoly.lifting
-lifting_forget mpoly.lifting
+lifting_update poly_mapping.lifting
+lifting_forget poly_mapping.lifting
 
 end (* theory *)
+

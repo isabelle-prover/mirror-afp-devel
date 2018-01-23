@@ -19,6 +19,8 @@ lemma coeff_monom:
   "coeff (monom s c) t = (if t = s then c else 0)"
   by (auto simp: coeff_monom)
 
+abbreviation "monomial \<equiv> (\<lambda>c t. PP_Poly_Mapping.single t c)"
+
 instantiation poly_mapping :: (type, "{equal, zero}") equal
 begin
 definition equal_poly_mapping::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
@@ -28,7 +30,7 @@ instance by standard (auto simp: equal_poly_mapping_def poly_mapping_eq_iff)
 
 end
 
-subsubsection \<open>Multiplication by Monomials (in type class)\<close>
+subsection \<open>Multiplication by Monomials (in type class)\<close>
 
 context comm_powerprod
 begin
@@ -84,12 +86,12 @@ proof -
   show "finite {s. (if t adds s then p (s - t) * c else 0) \<noteq> 0}" .
 qed
 
-lemma monom_mult_lookup:
+lemma lookup_monom_mult:
   fixes c::"'b::semiring_0" and t s::"'a" and p::"('a, 'b) poly_mapping"
   shows "lookup (monom_mult c t p) (t + s) = c * lookup p s"
   by (simp add: monom_mult.rep_eq)
 
-lemma monom_mult_right_coeff:
+lemma lookup_monom_mult_right:
   fixes c::"'b::semiring_0" and t s::"'a" and p::"('a, 'b) poly_mapping"
   shows "lookup (monom_mult_right p c t) (s + t) = lookup p s * c"
   by transfer simp
@@ -212,9 +214,9 @@ lemma monom_mult_right_right1:
   shows "(monom_mult_right p 1 0) = p"
   by (transfer, auto)
 
-lemma monom_mult_monom:
+lemma monom_mult_monomial:
   fixes c d::"'b::semiring_0" and s t::"'a"
-  shows "monom_mult c s (PP_Poly_Mapping.single t d) = PP_Poly_Mapping.single (s + t) (c * d)"
+  shows "monom_mult c s (monomial d t) = monomial (c * d) (s + t)"
 proof (transfer)
   fix c::'b and s::'a and t d sa
   have "\<forall>k. l \<noteq> s + k \<Longrightarrow> (c * d when s + t = l) = 0" for l
@@ -223,9 +225,9 @@ proof (transfer)
     by (force simp: when_def adds_def mult_when)
 qed
 
-lemma monom_mult_right_monom:
+lemma monom_mult_right_monomial:
   fixes c d::"'b::semiring_0" and s t::"'a"
-  shows "monom_mult_right (PP_Poly_Mapping.single s c) d t = PP_Poly_Mapping.single  (s + t) (c * d)"
+  shows "monom_mult_right (monomial c s) d t = monomial (c * d) (s + t)"
 proof (transfer)
   fix s::'a and c::'b and d t
   have "(c * d when s = k) = (c * d when s + t = t + k)" for k
@@ -237,285 +239,152 @@ proof (transfer)
     by (auto simp: when_def adds_def when_mult mult_when intro!: ext)
 qed
 
-lemma monom_mult_left_monom_monom_mult_right:
+lemma monom_mult_left_monomial_monom_mult_right:
   fixes c d::"'b::semiring_0" and s t::"'a"
-  shows "monom_mult c s (PP_Poly_Mapping.single t d) = monom_mult_right (PP_Poly_Mapping.single s c) d t"
-  using monom_mult_monom[of c s] monom_mult_right_monom[of s c] by simp
+  shows "monom_mult c s (monomial d t) = monom_mult_right (monomial c s) d t"
+  using monom_mult_monomial[of c s] monom_mult_right_monomial[of s c] by simp
 
 lemma monom_mult_left_monom_mult_right:
   fixes c::"'b::comm_semiring_0" and t::"'a" and p::"('a, 'b) poly_mapping"
   shows "monom_mult c t p = monom_mult_right p c t"
   by (transfer) (auto simp: ac_simps)
 
-lemma monom_mult_left_monom:
+lemma monom_mult_left_monomial:
   fixes c d::"'b::comm_semiring_0" and s t::"'a"
-  shows "monom_mult c s (PP_Poly_Mapping.single t d) = monom_mult d t (PP_Poly_Mapping.single s c)"
-  using monom_mult_left_monom_mult_right[of d t] monom_mult_left_monom_monom_mult_right by simp
+  shows "monom_mult c s (monomial d t) = monom_mult d t (monomial c s)"
+  using monom_mult_left_monom_mult_right[of d t] monom_mult_left_monomial_monom_mult_right by simp
 
-lemma monom_mult_right_monom':
+lemma monom_mult_right_monomial':
   fixes c d::"'b::comm_semiring_0" and s t::"'a"
-  shows "monom_mult_right (PP_Poly_Mapping.single s c) d t = monom_mult_right (PP_Poly_Mapping.single t d) c s"
-  using monom_mult_left_monom_mult_right[of d t] monom_mult_left_monom_monom_mult_right[of d t]
+  shows "monom_mult_right (monomial c s) d t = monom_mult_right (monomial d t) c s"
+  using monom_mult_left_monom_mult_right[of d t] monom_mult_left_monomial_monom_mult_right[of d t]
   by simp
 
-
-subsubsection \<open>Polynomial Ideals\<close>
-
-text \<open>We now introduce polynomial ideals. Actually, we only consider left-ideals here (i.\,e.
-  cofactors may only be multiplied from the left).\<close>
-
-text \<open>According to the definition of @{term pideal}, @{term pideal} must be closed only under
-  multiplication by monomials. After introducing general multiplication @{term pideal} is shown to
-  be closed under multiplication by arbitrary polynomials as well (in lemma
-  @{text pideal_closed_times}), making it really an ideal.\<close>
-
-inductive_set pideal::"('a, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
-for bs::"('a, 'b) poly_mapping set" where
-  pideal_0: "0 \<in> (pideal bs)"|
-  pideal_plus: "a \<in> (pideal bs) \<Longrightarrow> b \<in> bs \<Longrightarrow> a + monom_mult c t b \<in> (pideal bs)"
-
-lemma monom_mult_in_pideal:
-  fixes bs::"('a, 'b::semiring_0) poly_mapping set"
-  assumes "b \<in> bs"
-  shows "monom_mult c t b \<in> pideal bs"
-proof -
-  have "0 + monom_mult c t b \<in> pideal bs" by (rule pideal_plus, rule pideal_0, fact)
-  thus ?thesis by simp
-qed
-
-lemma generator_subset_pideal:
-  fixes bs::"('a, 'b::semiring_1) poly_mapping set"
-  shows "bs \<subseteq> pideal bs"
+lemma monom_mult_0_iff:
+  fixes c::"'b::semiring_no_zero_divisors" and t p
+  shows "(monom_mult c t p = 0) \<longleftrightarrow> (c = 0 \<or> p = 0)"
 proof
-  fix b
-  assume b_in: "b \<in> bs"
-  from monom_mult_left1[of b] monom_mult_in_pideal[OF b_in, of 1 0] show "b \<in> pideal bs"
-    by simp
-qed
-
-lemma pideal_closed_plus:
-  fixes bs::"('a, 'b::semiring_0) poly_mapping set"
-  assumes p_in: "p \<in> pideal bs" and q_in: "q \<in> pideal bs"
-  shows "p + q \<in> pideal bs"
-using p_in
-proof (induct p)
-  from q_in show "0 + q \<in> pideal bs" by simp
-next
-  fix a b c t
-  assume a_in: "a \<in> pideal bs" and IH: "a + q \<in> pideal bs" and b_in: "b \<in> bs"
-  have "(a + q) + monom_mult c t b \<in> pideal bs" by (rule pideal_plus, fact+)
-  thus "(a + monom_mult c t b) + q \<in> pideal bs"
-    by (metis ab_semigroup_add_class.add.commute semigroup_add_class.add.assoc)
-qed
-
-lemma pideal_closed_uminus:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes p_in: "p \<in> pideal bs"
-  shows "-p \<in> pideal bs"
-using p_in
-proof (induct p)
-  show "-0 \<in> pideal bs" by (simp, rule pideal_0)
-next
-  fix a b c t
-  assume IH: "-a \<in> pideal bs" and b_in: "b \<in> bs"
-  have eq: "- (a + monom_mult c t b) = (-a) + (- (monom_mult c t b))" by simp
-  from monom_mult_in_pideal[OF b_in, of "-c" t] monom_mult_uminus_left[of c t b]
-    have "- (monom_mult c t b) \<in> pideal bs" by simp
-  thus "- (a + monom_mult c t b) \<in> pideal bs" unfolding eq by (rule pideal_closed_plus[OF IH])
-qed
-
-lemma pideal_closed_minus:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes "p \<in> pideal bs" and "q \<in> pideal bs"
-  shows "p - q \<in> pideal bs"
-  using assms pideal_closed_plus pideal_closed_uminus by fastforce
-
-lemma pideal_closed_monom_mult:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes "p \<in> pideal bs"
-  shows "monom_mult c t p \<in> pideal bs"
-using assms
-proof (induct p)
-  show "monom_mult c t 0 \<in> pideal bs" unfolding monom_mult_right0[of c t] by (rule pideal_0)
-next
-  fix a b d s
-  assume "a \<in> pideal bs" and "monom_mult c t a \<in> pideal bs" and "b \<in> bs"
-  show "monom_mult c t (a + monom_mult d s b) \<in> pideal bs"
-    unfolding monom_mult_dist_right[of c t a "monom_mult d s b"]
-  proof (rule pideal_closed_plus, fact)
-    from monom_mult_assoc[of c t d s b] monom_mult_in_pideal[OF \<open>b \<in> bs\<close>]
-      show "monom_mult c t (monom_mult d s b) \<in> pideal bs" by simp
+  assume eq: "monom_mult c t p = 0"
+  show "c = 0 \<or> p = 0"
+  proof (rule ccontr, simp)
+    assume "c \<noteq> 0 \<and> p \<noteq> 0"
+    hence "c \<noteq> 0" and "p \<noteq> 0" by simp_all
+    from lookup_zero poly_mapping_eq_iff[of p 0] \<open>p \<noteq> 0\<close> obtain s where "lookup p s \<noteq> 0" by fastforce
+    from eq lookup_zero have "lookup (monom_mult c t p) (t + s) = 0" by simp
+    hence "c * lookup p s = 0" by (simp only: lookup_monom_mult)
+    with \<open>c \<noteq> 0\<close> \<open>lookup p s \<noteq> 0\<close> show False by auto
   qed
-qed
-
-lemma pideal_in_insertI:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes "p \<in> pideal bs"
-  shows "p \<in> pideal (insert q bs)"
-using assms
-proof (induct p)
-  show "0 \<in> pideal (insert q bs)" ..
 next
-  fix a b c t
-  assume "a \<in> pideal (insert q bs)" and b_in: "b \<in> bs"
-  show "a + monom_mult c t b \<in> pideal (insert q bs)" proof (rule, fact)
-    from b_in show "b \<in> insert q bs" by simp
-  qed
+  assume "c = 0 \<or> p = 0"
+  with monom_mult_left0[of t p] monom_mult_right0[of c t] show "monom_mult c t p = 0" by auto
 qed
 
-lemma pideal_in_insertD:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes p_in: "p \<in> pideal (insert q bs)" and q_in: "q \<in> pideal bs"
-  shows "p \<in> pideal bs"
-using p_in
-proof (induct p)
-  show "0 \<in> pideal bs" ..
+lemma monom_mult_right_0_iff:
+  fixes c::"'b::semiring_no_zero_divisors" and t p
+  shows "(monom_mult_right p c t = 0) \<longleftrightarrow> (c = 0 \<or> p = 0)"
+proof
+  assume eq: "monom_mult_right p c t = 0"
+  show "c = 0 \<or> p = 0"
+  proof (rule ccontr, simp)
+    assume "c \<noteq> 0 \<and> p \<noteq> 0"
+    hence "c \<noteq> 0" and "p \<noteq> 0" by simp_all
+    from lookup_zero poly_mapping_eq_iff[of p 0] \<open>p \<noteq> 0\<close> obtain s where "lookup p s \<noteq> 0" by fastforce
+    from eq lookup_zero have "lookup (monom_mult_right p c t) (s + t) = 0" by simp
+    hence "lookup p s * c = 0" by (simp only: lookup_monom_mult_right)
+    with \<open>c \<noteq> 0\<close> \<open>lookup p s \<noteq> 0\<close> show False by auto
+  qed
 next
-  fix a b c t
-  assume a_in: "a \<in> pideal bs" and b_in: "b \<in> insert q bs"
-  from b_in have "b = q \<or> b \<in> bs" by simp
-  thus "a + monom_mult c t b \<in> pideal bs"
-  proof
-    assume eq: "b = q"
-    show ?thesis unfolding eq by (rule pideal_closed_plus, fact, rule pideal_closed_monom_mult, fact)
-  next
-    assume "b \<in> bs"
-    show ?thesis by (rule, fact+)
-  qed
+  assume "c = 0 \<or> p = 0"
+  with monom_mult_right_right0[of p t] monom_mult_right_left0[of c t] show "monom_mult_right p c t = 0" by auto
 qed
 
-lemma pideal_insert:
-  fixes bs::"('a, 'b::ring) poly_mapping set"
-  assumes "q \<in> pideal bs"
-  shows "pideal (insert q bs) = pideal bs"
-proof (rule, rule)
-  fix p
-  assume "p \<in> pideal (insert q bs)"
-  from pideal_in_insertD[OF this assms] show "p \<in> pideal bs" .
-next
-  show "pideal bs \<subseteq> pideal (insert q bs)"
-  proof
-    fix p
-    assume "p \<in> pideal bs"
-    from pideal_in_insertI[OF this] show "p \<in> pideal (insert q bs)" .
-  qed
-qed
+end (* comm_powerprod *)
 
-end
-
-subsection \<open>Multiplication\<close>
+subsection \<open>except\<close>
 
 lift_definition except::
-  "('a, 'b::zero)poly_mapping \<Rightarrow> 'a \<Rightarrow> ('a, 'b::zero) poly_mapping" is
-  "\<lambda>p s t. if t = (s::'a) then (0::'b) else p t"
+  "('a, 'b::zero) poly_mapping \<Rightarrow> 'a set \<Rightarrow> ('a, 'b::zero) poly_mapping" is
+  "\<lambda>p S t. if t \<in> S then (0::'b) else p t"
 proof -
-  fix p::"'a \<Rightarrow> 'b" and s::'a
+  fix p::"'a \<Rightarrow> 'b" and S::"'a set"
   assume "finite {t. p t \<noteq> 0}"
-  show "finite {t. (if t = s then 0 else p t) \<noteq> 0}"
+  show "finite {t. (if t \<in> S then 0 else p t) \<noteq> 0}"
   proof (rule finite_subset[of _ "{t. p t \<noteq> 0}"], rule)
     fix u
-    assume "u \<in> {t. (if t = s then 0 else p t) \<noteq> 0}"
-    hence "(if u = s then 0 else p u) \<noteq> 0" by simp
+    assume "u \<in> {t. (if t \<in> S then 0 else p t) \<noteq> 0}"
+    hence "(if u \<in> S then 0 else p u) \<noteq> 0" by simp
     hence "p u \<noteq> 0" by meson
     thus "u \<in> {t. p t \<noteq> 0}" by simp
   qed (fact)
 qed
 
-lemma lookup_except: "lookup (except p s) m = (if m = s then 0 else lookup p m)"
-  by (auto simp: except.rep_eq except.rep_eq)
+lemma lookup_except: "lookup (except p S) t = (if t \<in> S then 0 else lookup p t)"
+  by (auto simp: except.rep_eq)
 
-lemma lookup_except1: "lookup (except p t) t = 0"
+lemma lookup_except_when: "lookup (except p S) t = (lookup p t when t \<notin> S)"
+  by (auto simp: when_def lookup_except)
+
+lemma lookup_except_singleton: "lookup (except p {t}) t = 0"
   by (simp add: lookup_except)
 
-lemma lookup_except2:
-  assumes "s \<noteq> t"
-  shows "lookup (except p t) s = lookup p s"
+lemma except_zero[simp]: "except 0 S = 0"
+  by (transfer, auto)
+
+lemma lookup_except_eq_idI:
+  assumes "t \<notin> S"
+  shows "lookup (except p S) t = lookup p t"
   using assms by (simp add: lookup_except)
 
-text \<open>@{term "some_term p"} shall only return @{emph \<open>some\<close>} term appearing in @{term p} with
-  non-zero lookupicient (not necessarily the biggest one w.r.t. a certain ordering). However, if we
-  use something like @{term "SOME t. t \<in> keys p"} instead, multiplication cannot be made executable.\<close>
+lemma lookup_except_eq_zeroI:
+  assumes "t \<in> S"
+  shows "lookup (except p S) t = 0"
+  using assms by (simp add: lookup_except)
 
-definition some_term::"('a::{comm_powerprod,linorder}, 'b::zero) poly_mapping \<Rightarrow> 'a"
-  where "some_term p \<equiv> (if p = 0 then 0 else Max (keys p))"
-definition rest_mpoly::"('a::{comm_powerprod,linorder}, 'b::zero) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping"
-  where "rest_mpoly p \<equiv> except p (some_term p)"
+lemma except_empty[simp]: "except p {} = p"
+  by (transfer, auto)
+
+lemma except_eq_zeroI:
+  assumes "keys p \<subseteq> S"
+  shows "except p S = 0"
+proof (rule poly_mapping_eqI, simp)
+  fix t
+  show "lookup (except p S) t = 0"
+  proof (cases "t \<in> S")
+    case True
+    thus ?thesis by (rule lookup_except_eq_zeroI)
+  next
+    case False
+    hence "lookup (except p S) t = lookup p t" by (rule lookup_except_eq_idI)
+    also have "... = 0" using False assms by auto
+    finally show ?thesis .
+  qed
+qed
+
+lemma except_eq_zeroE:
+  assumes "except p S = 0"
+  shows "keys p \<subseteq> S"
+proof
+  fix t
+  assume "t \<in> keys p"
+  hence "lookup p t \<noteq> 0" by simp
+  moreover from assms have "lookup (except p S) t = 0" by simp
+  ultimately show "t \<in> S" unfolding lookup_except by presburger
+qed                                                                    
+
+lemma except_eq_zero_iff: "except p S = 0 \<longleftrightarrow> keys p \<subseteq> S"
+  by (rule, elim except_eq_zeroE, elim except_eq_zeroI)
+
+lemma except_keys[simp]: "except p (keys p) = 0"
+  by (rule except_eq_zeroI, rule subset_refl)
+
+lemma plus_except: "p = monomial (lookup p t) t + except p {t}"
+  by (rule poly_mapping_eqI, simp add: lookup_add lookup_single lookup_except when_def split: if_split)
+
+lemma keys_except: "keys (except p S) = keys p - S"
+  by (transfer, auto)
 
 lemma keys_eq_empty_iff[simp]: "keys p = {} \<longleftrightarrow> p = 0"
   by (metis keys_zero lookup_zero not_in_keys_iff_lookup_eq_zero poly_mapping_eqI)
-
-lemma some_term_nonzero:
-  assumes "p \<noteq> 0"
-  shows "some_term p \<in> keys p"
-proof -
-  from assms have "keys p \<noteq> {}" using assms by auto
-  from Max_in[OF finite_keys[of p] this] assms show ?thesis unfolding some_term_def by simp
-qed
-
-lemma lookup_some_term:
-  assumes "p \<noteq> 0"
-  shows "lookup p (some_term p) \<noteq> 0"
-  by (simp add: assms some_term_nonzero)
-
-lemma lookup_rest_some_term:
-  "lookup (rest_mpoly p) (some_term p) = 0"
-  by (simp add: lookup_except1 rest_mpoly_def)
-
-lemma lookup_rest:
-  assumes "t \<noteq> some_term p"
-  shows "lookup (rest_mpoly p) t = lookup p t"
-  by (simp add: assms lookup_except2 rest_mpoly_def)
-
-lemma rest_zero: "rest_mpoly 0 = 0"
-  by (metis lookup_except lookup_some_term rest_mpoly_def zero_poly_mapping.rep_eq)
-
-lemma keys_rest:
-  shows "keys (rest_mpoly p) = (keys p) - {some_term p}"
-proof
-  show "keys (rest_mpoly p) \<subseteq> keys p - {some_term p}"
-  proof (rule)
-    fix x
-    assume "x \<in> keys (rest_mpoly p)"
-    from this have cr: "lookup (rest_mpoly p) x \<noteq> 0"
-      by auto
-    from this lookup_rest_some_term have "x \<noteq> some_term p" using cr by force
-    from cr lookup_rest[OF this] have "lookup p x \<noteq> 0" by simp
-    show "x \<in> keys p - {some_term p}"
-    proof
-      from \<open>lookup p x \<noteq> 0\<close> show "x \<in> keys p" by simp
-    next
-      from \<open>x \<noteq> some_term p\<close> show "x \<notin> {some_term p}" by simp
-    qed
-  qed
-next
-  show "keys p - {some_term p} \<subseteq> keys (rest_mpoly p)"
-  proof (rule)
-    fix x
-    assume "x \<in> keys p - {some_term p}"
-    hence x1: "x \<in> keys p" and x2: "x \<notin> {some_term p}" by simp_all
-    from x1 have cp: "lookup p x \<noteq> 0" by simp
-    moreover from x2 have "x \<noteq> some_term p" by simp
-    from lookup_rest[OF this] cp show "x \<in> keys (rest_mpoly p)"
-      apply (auto)
-      using in_keys_iff by fastforce
-  qed
-qed
-
-lemma keys_rest_insert:
-  assumes "p \<noteq> 0"
-  shows "keys p = insert (some_term p) (keys (rest_mpoly p))"
-by (simp add: keys_rest insert_absorb[OF some_term_nonzero[OF assms]])
-
-lemma keys_rest_subset:
-  assumes "p \<noteq> 0"
-  shows "keys (rest_mpoly p) \<subset> keys p"
-proof (simp only: keys_rest, rule, rule Diff_subset, rule)
-  assume "keys p - {some_term p} = keys p"
-  hence "keys p \<subseteq> keys p - {some_term p}" by simp
-  hence "\<And>t. t \<in> keys p \<Longrightarrow> t \<in> (keys p - {some_term p})" by auto
-  from this[OF some_term_nonzero[OF assms]] have "some_term p \<notin> {some_term p}" by simp
-  thus False by simp
-qed
 
 lemma keys_subset_wf:
   "wfP (\<lambda>p q::('a, 'b::zero) poly_mapping. keys p \<subset> keys q)"
@@ -534,434 +403,952 @@ proof (intro wfI_min)
     let ?y0 = "card (keys y)"
     assume "(y, z) \<in> {(p, q). keys p \<subset> keys q}"
     hence "keys y \<subset> keys z" by simp
-    hence "?y0 < z0" unfolding z0_def by (simp add: finite_keys psubset_card_mono) 
+    hence "?y0 < z0" unfolding z0_def by (simp add: psubset_card_mono) 
     hence "(?y0, z0) \<in> {(x, y). x < y}" by simp
     from z0_min[OF this] show "y \<notin> Q" by auto
   qed (fact)
 qed
 
-lemma mpoly_keys_induct:
-  assumes base: "P 0" and ind: "\<And>p. p \<noteq> 0 \<Longrightarrow> P (rest_mpoly p) \<Longrightarrow> P p"
+lemma poly_mapping_except_induct:
+  assumes base: "P 0" and ind: "\<And>p t. p \<noteq> 0 \<Longrightarrow> t \<in> keys p \<Longrightarrow> P (except p {t}) \<Longrightarrow> P p"
   shows "P p"
 proof (induct rule: wfP_induct[OF keys_subset_wf])
   fix p::"('a, 'b) poly_mapping"
-  assume IH: "\<forall>q. keys q \<subset> keys p \<longrightarrow> P q"
+  assume "\<forall>q. keys q \<subset> keys p \<longrightarrow> P q"
+  hence IH: "\<And>q. keys q \<subset> keys p \<Longrightarrow> P q" by simp
   show "P p"
   proof (cases "p = 0")
     case True
     thus ?thesis using base by simp
   next
     case False
+    hence "keys p \<noteq> {}" by simp
+    then obtain t where "t \<in> keys p" by blast
     show ?thesis
-    proof (rule ind, fact)
-      from IH[rule_format, OF keys_rest_subset[OF False]] show "P (rest_mpoly p)" .
+    proof (rule ind, fact, fact, rule IH, simp only: keys_except, rule, rule Diff_subset, rule)
+      assume "keys p - {t} = keys p"
+      hence "t \<notin> keys p" by blast
+      from this \<open>t \<in> keys p\<close> show False ..
     qed
   qed
 qed
 
-lemma some_term_monom:
-  assumes "c \<noteq> (0::'b::zero)"
-  shows "some_term (PP_Poly_Mapping.single t c) = t"
-  by (metis assms lookup_single_eq lookup_single_not_eq lookup_some_term)
-
-lemma lookup_some_term_monom:
-  assumes "c \<noteq> (0::'b::zero)"
-  shows "lookup (PP_Poly_Mapping.single t c) (some_term (PP_Poly_Mapping.single t c)) = c"
-  by (simp add: assms some_term_monom)
-
-lemma rest_monom:
-  "rest_mpoly (PP_Poly_Mapping.single t c) = (0::('a::{linorder,comm_powerprod}, 'b::zero) poly_mapping)"
-  by (metis (no_types, hide_lams) lookup_except1 lookup_rest lookup_single_not_eq lookup_some_term rest_mpoly_def)
-
-lemma some_monomial_rest:
-  fixes p::"('a::{comm_powerprod,linorder}, 'b::comm_monoid_add) poly_mapping"
-  assumes "p \<noteq> 0"
-  shows "p = PP_Poly_Mapping.single (some_term p) (lookup p (some_term p)) + rest_mpoly p"
-  by (auto simp: lookup_add lookup_single when_def lookup_rest_some_term lookup_rest
-      intro!: poly_mapping_eqI)
-
-function times_poly_mapping_class::"('a::{linorder,comm_powerprod}, 'b::semiring_0) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping"
-  (infixl "*pm" 70)
-  where
-  "times_poly_mapping_class p q =
-    (if p = 0 then
-      0
-    else
-      monom_mult (lookup p (some_term p)) (some_term p) q + times_poly_mapping_class (rest_mpoly p) q
-    )"
-by auto
-termination proof -
-  let ?r = "{(x, y::('a, 'b) poly_mapping). keys x \<subset> keys y} <*lex*> {}"
-  show ?thesis
-  proof
-    show "wf ?r"
-    proof
-      from keys_subset_wf show "wf {(x, y::('a, 'b) poly_mapping). keys x \<subset> keys y}" unfolding wfP_def .
-    qed (simp)
-  next
-    fix p q::"('a, 'b) poly_mapping"
-    assume "p \<noteq> 0"
-    from keys_rest_subset[OF this] show "((rest_mpoly p, q), (p, q)) \<in> ?r" by simp
+lemma poly_mapping_except_induct':
+  assumes "\<And>p. (\<And>t. t \<in> keys p \<Longrightarrow> P (except p {t})) \<Longrightarrow> P p"
+  shows "P p"
+proof (induct "card (keys p)" arbitrary: p)
+  case 0
+  with finite_keys[of p] have "keys p = {}" by simp
+  show ?case by (rule assms, simp add: \<open>keys p = {}\<close>)
+next
+  case step: (Suc n)
+  show ?case
+  proof (rule assms)
+    fix t
+    assume "t \<in> keys p"
+    show "P (except p {t})"
+    proof (rule step(1), simp add: keys_except)
+      from step(2) \<open>t \<in> keys p\<close> finite_keys[of p] show "n = card (keys p - {t})" by simp
+    qed
   qed
 qed
 
-text \<open>@{const times_poly_mapping_class} was used in Maletzky's original formalization,
-  but it is equivalent to the definition of @{term "( * )"} on poly mapping, see below...\<close>
-
-lemma times_mpoly_induct:
-  assumes base: "P 0 q 0"
-  assumes ind: "\<And>p. p \<noteq> 0 \<Longrightarrow> P (rest_mpoly p) q (times_poly_mapping_class (rest_mpoly p) q) \<Longrightarrow>
-                  P p q (monom_mult (lookup p (some_term p)) (some_term p) q + times_poly_mapping_class (rest_mpoly p) q)"
-  shows "P p q (times_poly_mapping_class p q)"
-proof (rule times_poly_mapping_class.induct[of "\<lambda>x _. P x q (times_poly_mapping_class x q)"])
-  fix p qa
-  assume IH: "p \<noteq> 0 \<Longrightarrow> P (rest_mpoly p) q (times_poly_mapping_class (rest_mpoly p) q)"
-  show "P p q (times_poly_mapping_class p q)"
-  proof (cases "p = 0")
-    case True
-    from True base show ?thesis by simp
+lemma poly_mapping_plus_induct:
+  assumes "P 0" and "\<And>p c t. c \<noteq> 0 \<Longrightarrow> t \<notin> keys p \<Longrightarrow> P p \<Longrightarrow> P (monomial c t + p)"
+  shows "P p"
+proof (induct "card (keys p)" arbitrary: p)
+  case 0
+  with finite_keys[of p] have "keys p = {}" by simp
+  hence "p = 0" by simp
+  with assms(1) show ?case by simp
+next
+  case step: (Suc n)
+  from step(2) obtain t where t: "t \<in> keys p" by (metis card_eq_SucD insert_iff)
+  define c where "c = lookup p t"
+  define q where "q = except p {t}"
+  have *: "p = monomial c t + q"
+    by (rule poly_mapping_eqI, simp add: lookup_add lookup_single PP_Poly_Mapping.when_def, intro conjI impI,
+        simp add: q_def lookup_except c_def, simp add: q_def lookup_except_eq_idI)
+  show ?case
+  proof (simp only: *, rule assms(2))
+    from t show "c \<noteq> 0" by (simp add: c_def)
   next
-    case False
-    have "P p q (monom_mult (lookup p (some_term p)) (some_term p) q + times_poly_mapping_class (rest_mpoly p) q)"
-      by (rule ind, fact, rule IH, fact)
-    thus ?thesis using False
-      by simp
+    show "t \<notin> keys q" by (simp add: q_def keys_except)
+  next
+    show "P q"
+    proof (rule step(1))
+      from step(2) \<open>t \<in> keys p\<close> show "n = card (keys q)" unfolding q_def keys_except
+        by (metis Suc_inject card.remove finite_keys)
+    qed
   qed
 qed
 
-lemma times_mpoly_left0: "times_poly_mapping_class 0 p = 0"
-  by simp
+subsection \<open>Multiplication\<close>
 
-lemma times_mpoly_right0:
-  shows "times_poly_mapping_class p 0 = 0"
-proof (induct rule: times_mpoly_induct)
-  fix p::"'a \<Rightarrow>\<^sub>0 'b"
-  assume "times_poly_mapping_class (rest_mpoly p) 0 = 0"
-  thus "monom_mult (lookup p (some_term p)) (some_term p) 0 + rest_mpoly p *pm 0 = 0"
-    using monom_mult_right0 by simp
-qed (simp)
-
-lemma monom_0I:
+lemma monomial_0I:
   fixes c::"'b::zero" and t::"'a"
   assumes "c = 0"
-  shows "PP_Poly_Mapping.single t c = 0"
+  shows "monomial c t = 0"
   using assms
   by transfer (auto)
 
-lemma monom_0D:
+lemma monomial_0D:
   fixes c::"'b::zero" and t::"'a"
-  assumes "PP_Poly_Mapping.single t c = 0"
+  assumes "monomial c t = 0"
   shows "c = 0"
   using assms
   by transfer (auto simp: fun_eq_iff when_def; meson)
 
-lemma times_mpoly_left_monom:
-  shows "(PP_Poly_Mapping.single c t) *pm p = monom_mult t c p"
-proof (cases "t = 0")
+lemma times_monomial_left: "(monomial c t) * p = monom_mult c t p"
+proof (induct p rule: poly_mapping_except_induct, simp add: monom_mult_right0)
+  fix p::"('a, 'b) poly_mapping" and s
+  assume "p \<noteq> 0" and "s \<in> keys p" and IH: "monomial c t * except p {s} = monom_mult c t (except p {s})"
+  from plus_except[of p s] have "monomial c t * p = monomial c t * (monomial (lookup p s) s + except p {s})"
+    by simp
+  also have "... = monomial c t * monomial (lookup p s) s + monomial c t * except p {s}"
+    by (simp add: algebra_simps)
+  also have "... = monom_mult c t (monomial (lookup p s) s) + monom_mult c t (except p {s})"
+    by (simp only: mult_single monom_mult_monomial IH)
+  also have "... = monom_mult c t (monomial (lookup p s) s + except p {s})"
+    by (simp only: monom_mult_dist_right)
+  finally show "monomial c t * p = monom_mult c t p" by (simp only: plus_except[symmetric])
+qed
+
+lemma times_monomial_right: "p * (monomial c t) = monom_mult_right p c t"
+proof (induct p rule: poly_mapping_except_induct, simp add: monom_mult_right_left0)
+  fix p::"('a, 'b) poly_mapping" and s
+  assume "p \<noteq> 0" and "s \<in> keys p" and IH: "except p {s} * monomial c t = monom_mult_right (except p {s}) c t"
+  from plus_except[of p s] have "p * monomial c t = (monomial (lookup p s) s + except p {s}) * monomial c t"
+    by simp
+  also have "... = monomial (lookup p s) s * monomial c t + except p {s} * monomial c t"
+    by (simp add: algebra_simps)
+  also have "... = monom_mult_right (monomial (lookup p s) s) c t + monom_mult_right (except p {s}) c t"
+    by (simp only: mult_single monom_mult_right_monomial IH)
+  also have "... = monom_mult_right (monomial (lookup p s) s + except p {s}) c t"
+    by (simp only: monom_mult_right_dist_left)
+  finally show "p * monomial c t = monom_mult_right p c t" by (simp only: plus_except[symmetric])
+qed
+
+lemma times_rec_left:
+  "p * q = monom_mult (lookup p t) t q + (except p {t}) * q"
+proof -
+  from plus_except[of p t] have "p * q = (monomial (lookup p t) t + except p {t}) * q" by simp
+  also have "... = monomial (lookup p t) t * q + except p {t} * q" by (simp only: algebra_simps)
+  finally show ?thesis by (simp only: times_monomial_left)
+qed
+
+lemma times_rec_right:
+  "p * q = monom_mult_right p (lookup q t) t + p * except q {t}"
+proof -
+  from plus_except[of q t] have "p * q = p * (monomial (lookup q t) t + except q {t})" by simp
+  also have "... = p * monomial (lookup q t) t + p * except q {t}" by (simp only: algebra_simps)
+  finally show ?thesis by (simp only: times_monomial_right)
+qed
+
+lemma in_keys_timesE:
+  assumes "t \<in> keys (p * q)"
+  obtains u v where "u \<in> keys p" and "v \<in> keys q" and "t = u + v"
+proof -
+  from assms have "lookup (p * q) t \<noteq> 0" by simp
+  hence "(\<Sum>u. lookup p u * (\<Sum>v. lookup q v when t = u + v)) \<noteq> 0"
+    by (simp add: lookup_mult)
+  then obtain u where "lookup p u * (\<Sum>v. lookup q v when t = u + v) \<noteq> 0"
+    using Sum_any.not_neutral_obtains_not_neutral by blast
+  from mult_not_zero[OF this] have "lookup p u \<noteq> 0" and "(\<Sum>v. lookup q v when t = u + v) \<noteq> 0" by simp_all
+  from this(2) obtain v where "(lookup q v when t = u + v) \<noteq> 0"
+    using Sum_any.not_neutral_obtains_not_neutral by blast
+  hence "v \<in> keys q" and "u + v = t" by simp_all
+  moreover from \<open>lookup p u \<noteq> 0\<close> have "u \<in> keys p" by simp
+  ultimately show ?thesis using that by blast
+qed
+
+subsection \<open>Ideal-like Sets of Polynomials\<close>
+
+text \<open>We now introduce ideal-like sets of polynomials, i.e. sets that are closed under addition and
+  under multiplication by polynomials from a certain set @{term C} @{emph \<open>from the left\<close>}.
+  We later define "real" ideals as well as linear hulls in terms of these ideal-like sets; in the
+  former case, @{term C} is taken to be the universe, in the latter case it is taken to be the set
+  of all monomials with power-product @{term 0}.\<close>
+
+inductive_set ideal_like::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
+for C::"('a, 'b) poly_mapping set" and B::"('a, 'b) poly_mapping set" where
+  ideal_like_0: "0 \<in> (ideal_like C B)"|
+  ideal_like_plus: "a \<in> (ideal_like C B) \<Longrightarrow> b \<in> B \<Longrightarrow> q \<in> C \<Longrightarrow> a + q * b \<in> (ideal_like C B)"
+
+lemma times_in_ideal_like:
+  assumes "q \<in> C" and "b \<in> B"
+  shows "q * b \<in> ideal_like C B"
+proof -
+  have "0 + q * b \<in> ideal_like C B" by (rule ideal_like_plus, rule ideal_like_0, fact+)
+  thus ?thesis by (simp add: times_monomial_left)
+qed
+
+lemma monom_mult_in_ideal_like:
+  assumes "monomial c t \<in> C" and "b \<in> B"
+  shows "monom_mult c t b \<in> ideal_like C B"
+  unfolding times_monomial_left[symmetric] using assms by (rule times_in_ideal_like)
+
+lemma generator_subset_ideal_like:
+  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
+  assumes "1 \<in> C"
+  shows "B \<subseteq> ideal_like C B"
+proof
+  fix b
+  assume b_in: "b \<in> B"
+  have "0 + 1 * b \<in> ideal_like C B" by (rule ideal_like_plus, fact ideal_like_0, fact+)
+  thus "b \<in> ideal_like C B" by simp
+qed
+
+lemma ideal_like_closed_plus:
+  assumes p_in: "p \<in> ideal_like C B" and r_in: "r \<in> ideal_like C B"
+  shows "p + r \<in> ideal_like C B"
+  using p_in
+proof (induct p)
+  case ideal_like_0
+  from r_in show "0 + r \<in> ideal_like C B" by simp
+next
+  case step: (ideal_like_plus a b q)
+  have "(a + r) + q * b \<in> ideal_like C B" by (rule ideal_like_plus, fact+)
+  thus "(a + q * b) + r \<in> ideal_like C B"
+    by (metis ab_semigroup_add_class.add.commute semigroup_add_class.add.assoc)
+qed
+
+lemma ideal_like_closed_uminus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes "\<And>q. q \<in> C \<Longrightarrow> -q \<in> C"
+  assumes p_in: "p \<in> ideal_like C B"
+  shows "-p \<in> ideal_like C B"
+  using p_in
+proof (induct p)
+  case ideal_like_0
+  show "-0 \<in> ideal_like C B" by (simp, rule ideal_like_0)
+next
+  case step: (ideal_like_plus a b q)
+  have eq: "- (a + q * b) = (-a) + ((-q) * b)" by simp
+  from step(4) have "-q \<in> C" by (rule assms(1))
+  have "0 + (-q) * b \<in> ideal_like C B" by (rule ideal_like_plus, fact ideal_like_0, fact+)
+  hence "(-q) * b \<in> ideal_like C B" by simp
+  with step(2) show "- (a + q * b) \<in> ideal_like C B" unfolding eq
+    by (rule ideal_like_closed_plus)
+qed
+
+lemma ideal_like_closed_minus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes "\<And>q. q \<in> C \<Longrightarrow> -q \<in> C"
+  assumes "p \<in> ideal_like C B" and "r \<in> ideal_like C B"
+  shows "p - r \<in> ideal_like C B"
+  using assms(2) assms(3) ideal_like_closed_plus ideal_like_closed_uminus[OF assms(1)] by fastforce
+
+lemma ideal_like_closed_times:
+  assumes "\<And>q. q \<in> C \<Longrightarrow> r * q \<in> C"
+  assumes "p \<in> ideal_like C B"
+  shows "r * p \<in> ideal_like C B"
+  using assms(2)
+proof (induct p)
+  case ideal_like_0
+  show "r * 0 \<in> ideal_like C B" by (simp, rule ideal_like_0)
+next
+  case step: (ideal_like_plus a b q)
+  have *: "r * (a + q * b) = r * a + (r * q) * b" by (simp add: algebra_simps)
+  show "r * (a + q * b) \<in> ideal_like C B" unfolding *
+    by (rule ideal_like_plus, fact, fact, rule assms(1), fact)
+qed
+
+lemma ideal_like_closed_monom_mult:
+  assumes "\<And>q. q \<in> C \<Longrightarrow> monom_mult c t q \<in> C"
+  assumes "p \<in> ideal_like C B"
+  shows "monom_mult c t p \<in> ideal_like C B"
+  unfolding times_monomial_left[symmetric] using _ assms(2)
+proof (rule ideal_like_closed_times)
+  fix q
+  assume "q \<in> C"
+  thus "monomial c t * q \<in> C" unfolding times_monomial_left by (rule assms(1))
+qed
+
+lemma ideal_like_mono_1:
+  assumes "C1 \<subseteq> C2"
+  shows "ideal_like C1 B \<subseteq> ideal_like C2 B"
+proof
+  fix p
+  assume "p \<in> ideal_like C1 B"
+  thus "p \<in> ideal_like C2 B"
+  proof (induct p rule: ideal_like.induct)
+    case ideal_like_0
+    show ?case ..
+  next
+    case step: (ideal_like_plus a b q)
+    show ?case by (rule ideal_like_plus, fact, fact, rule, fact+)
+  qed
+qed
+
+lemma ideal_like_mono_2:
+  assumes "A \<subseteq> B"
+  shows "ideal_like C A \<subseteq> ideal_like C B"
+proof
+  fix p
+  assume "p \<in> ideal_like C A"
+  thus "p \<in> ideal_like C B"
+  proof (induct p rule: ideal_like.induct)
+    case ideal_like_0
+    show ?case ..
+  next
+    case step: (ideal_like_plus a b q)
+    show ?case by (rule ideal_like_plus, fact, rule, fact+)
+  qed
+qed
+
+lemma in_ideal_like_insertI:
+  assumes "p \<in> ideal_like C B"
+  shows "p \<in> ideal_like C (insert r B)"
+  using assms
+proof (induct p)
+  case ideal_like_0
+  show "0 \<in> ideal_like C (insert r B)" ..
+next
+  case step: (ideal_like_plus a b q)
+  show "a + q * b \<in> ideal_like C (insert r B)"
+  proof (rule, fact)
+    from step(3) show "b \<in> insert r B" by simp
+  qed fact
+qed
+
+lemma in_ideal_like_insertD:
+  assumes "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
+  assumes p_in: "p \<in> ideal_like C (insert r B)" and r_in: "r \<in> ideal_like C B"
+  shows "p \<in> ideal_like C B"
+  using p_in
+proof (induct p)
+  case ideal_like_0
+  show "0 \<in> ideal_like C B" ..
+next
+  case step: (ideal_like_plus a b q)
+  from step(3) have "b = r \<or> b \<in> B" by simp
+  thus "a + q * b \<in> ideal_like C B"
+  proof
+    assume eq: "b = r"
+    show ?thesis unfolding eq
+      by (rule ideal_like_closed_plus, fact, rule ideal_like_closed_times, rule assms(1), rule step(4),
+          assumption, fact)
+  next
+    assume "b \<in> B"
+    show ?thesis by (rule, fact+)
+  qed
+qed
+
+lemma ideal_like_insert:
+  assumes "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
+  assumes "r \<in> ideal_like C B"
+  shows "ideal_like C (insert r B) = ideal_like C B"
+proof (rule, rule)
+  fix p
+  assume "p \<in> ideal_like C (insert r B)"
+  from assms(1) this assms(2) show "p \<in> ideal_like C B" by (rule in_ideal_like_insertD)
+next
+  show "ideal_like C B \<subseteq> ideal_like C (insert r B)"
+  proof
+    fix p
+    assume "p \<in> ideal_like C B"
+    thus "p \<in> ideal_like C (insert r B)" by (rule in_ideal_like_insertI)
+  qed
+qed
+
+lemma ideal_like_insert_zero: "ideal_like C (insert 0 B) = ideal_like C B"
+proof (rule, rule)
+  fix p
+  assume "p \<in> ideal_like C (insert 0 B)"
+  thus "p \<in> ideal_like C B"
+  proof (induct p)
+    case ideal_like_0
+    show "0 \<in> ideal_like C B" ..
+  next
+    case step: (ideal_like_plus a b q)
+    from step(3) have "b = 0 \<or> b \<in> B" by simp
+    thus "a + q * b \<in> ideal_like C B"
+    proof
+      assume "b = 0"
+      thus ?thesis using step(2) by simp
+    next
+      assume "b \<in> B"
+      show ?thesis by (rule, fact+)
+    qed
+  qed
+next
+  show "ideal_like C B \<subseteq> ideal_like C (insert 0 B)" by (rule ideal_like_mono_2, auto)
+qed
+
+lemma ideal_like_minus_singleton_zero: "ideal_like C (B - {0}) = ideal_like C B"
+  by (metis ideal_like_insert_zero insert_Diff_single)
+
+lemma ideal_like_empty_1: "ideal_like {} B = {0}"
+proof (rule, rule)
+  fix p::"('a, 'b) poly_mapping"
+  assume "p \<in> ideal_like {} B"
+  thus "p \<in> {0}" by (induct p, simp_all)
+next
+  show "{0} \<subseteq> ideal_like {} B" by (rule, simp add: ideal_like_0)
+qed
+
+lemma ideal_like_empty_2: "ideal_like C {} = {0}"
+proof (rule, rule)
+  fix p::"('a, 'b) poly_mapping"
+  assume "p \<in> ideal_like C {}"
+  thus "p \<in> {0}" by (induct p, simp_all)
+next
+  show "{0} \<subseteq> ideal_like C {}" by (rule, simp add: ideal_like_0)
+qed
+  
+lemma generator_in_ideal_like:
+  assumes "1 \<in> C" and "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
+  shows "f \<in> ideal_like C B"
+  by (rule, fact assms(2), rule generator_subset_ideal_like, fact)
+
+lemma ideal_like_insert_subset:
+  assumes "1 \<in> C" and "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
+  assumes "ideal_like C A \<subseteq> ideal_like C B" and "r \<in> ideal_like C (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
+  shows "ideal_like C (insert r A) \<subseteq> ideal_like C B"
+proof
+  fix p
+  assume "p \<in> ideal_like C (insert r A)"
+  thus "p \<in> ideal_like C B"
+  proof (induct p rule: ideal_like.induct)
+    case ideal_like_0
+    show ?case ..
+  next
+    case step: (ideal_like_plus a b q)
+    show ?case
+    proof (rule ideal_like_closed_plus)
+      show "q * b \<in> ideal_like C B"
+      proof (rule ideal_like_closed_times, rule assms(2), rule step(4), assumption)
+        from \<open>b \<in> insert r A\<close> show "b \<in> ideal_like C B"
+        proof
+          assume "b = r"
+          thus "b \<in> ideal_like C B" using \<open>r \<in> ideal_like C B\<close> by simp
+        next
+          assume "b \<in> A"
+          hence "b \<in> ideal_like C A" using generator_subset_ideal_like[OF assms(1), of A] ..
+          thus "b \<in> ideal_like C B" using \<open>ideal_like C A \<subseteq> ideal_like C B\<close> ..
+        qed
+      qed
+    qed fact
+  qed
+qed
+
+lemma in_ideal_like_finite_subset:
+  assumes "p \<in> (ideal_like C B)"
+  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> (ideal_like C A)"
+  using assms
+proof (induct p arbitrary: thesis)
+  case ideal_like_0
+  show ?case
+  proof (rule ideal_like_0(1))
+    show "finite {}" ..
+  next
+    show "{} \<subseteq> B" ..
+  qed (simp add: ideal_like_empty_2)
+next
+  case step: (ideal_like_plus p b q)
+  obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> (ideal_like C A)" by (rule step(2))
+  let ?A = "insert b A"
+  show ?case
+  proof (rule step(5))
+    from 1 show "finite ?A" ..
+  next
+    from step(3) 2 show "insert b A \<subseteq> B" by simp
+  next
+    show "p + q * b \<in> ideal_like C (insert b A)"
+      by (rule ideal_like_plus, rule, fact 3, rule ideal_like_mono_2, auto intro: step(4))
+  qed
+qed
+
+lemma in_ideal_like_finiteE:
+  assumes "0 \<in> C" and C_closed: "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 + q2 \<in> C"
+  assumes fin: "finite B" and p_in: "p \<in> (ideal_like C B)"
+  obtains q where "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>B. (q b) * b)"
+  using p_in
+proof (induct p arbitrary: thesis)
+  case base: ideal_like_0
+  let ?q = "\<lambda>_. (0::('a, 'b) poly_mapping)"
+  show ?case
+  proof (rule base(1))
+    fix x
+    from assms(1) show "?q x \<in> C" .
+  next
+    show "0 = (\<Sum>b\<in>B. ?q b * b)" by simp
+  qed
+next
+  case step: (ideal_like_plus p b r)
+  obtain q where *: "\<And>x. q x \<in> C" and **: "p = (\<Sum>b\<in>B. (q b) * b)" by (rule step(2), auto)
+  let ?q = "q(b := (q b + r))"
+  show ?case
+  proof (rule step(5))
+    have "p = q b * b + (\<Sum>b\<in>B - {b}. q b * b)"
+      by (simp only: **, simp add: comm_monoid_add_class.sum.remove[OF assms(3) step(3)])
+    thus "p + r * b = (\<Sum>b\<in>B. ?q b * b)"
+      by (simp add: comm_monoid_add_class.sum.remove[OF assms(3) step(3)]
+          algebra_simps times_monomial_left)
+  next
+    fix x
+    show "?q x \<in> C" by (simp, intro conjI impI, rule C_closed, rule *, rule step(4), rule *)
+  qed
+qed
+
+lemma in_ideal_likeE:
+  assumes "0 \<in> C" and C_closed: "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 + q2 \<in> C"
+  assumes "p \<in> (ideal_like C B)"
+  obtains A q where "finite A" and "A \<subseteq> B" and "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>A. (q b) * b)"
+proof -
+  from assms(3) obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> ideal_like C A"
+    by (rule in_ideal_like_finite_subset)
+  from assms(1) assms(2) 1 3 obtain q where "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>A. (q b) * b)"
+    by (rule in_ideal_like_finiteE, auto)
+  with 1 2 show ?thesis ..
+qed
+
+lemma sum_in_ideal_likeI:
+  assumes "\<And>b. b \<in> B \<Longrightarrow> q b \<in> C"
+  shows "(\<Sum>b\<in>B. q b * b) \<in> ideal_like C B"
+proof (cases "finite B")
   case True
-  show ?thesis unfolding True
-    by (simp add: monom_mult_left0)
+  from this assms show ?thesis
+  proof (induct B, simp add: ideal_like_0)
+    case ind: (insert b B)
+    have "(\<Sum>b\<in>B. q b * b) \<in> ideal_like C (insert b B)"
+      by (rule, rule ind(3), rule ind(4), simp, rule ideal_like_mono_2, auto)
+    moreover have "b \<in> insert b B" by simp
+    moreover have "q b \<in> C" by (rule ind(4), simp)
+    ultimately have "(\<Sum>b\<in>B. q b * b) + q b * b \<in> ideal_like C (insert b B)" by (rule ideal_like_plus)
+    thus ?case unfolding sum.insert[OF ind(1) ind(2)] by (simp add: ac_simps)
+  qed
 next
   case False
-  have "PP_Poly_Mapping.single c t \<noteq> 0"
+  thus ?thesis by (simp add: ideal_like_0)
+qed
+
+subsubsection \<open>Polynomial Ideals\<close>
+
+definition pideal::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
+  where "pideal = ideal_like UNIV"
+
+lemma zero_in_pideal: "0 \<in> pideal B"
+  unfolding pideal_def by (rule ideal_like_0)
+
+lemma times_in_pideal:
+  assumes "b \<in> B"
+  shows "q * b \<in> pideal B"
+  unfolding pideal_def by (rule times_in_ideal_like, rule, fact)
+
+lemma monom_mult_in_pideal:
+  assumes "b \<in> B"
+  shows "monom_mult c t b \<in> pideal B"
+  unfolding pideal_def by (rule monom_mult_in_ideal_like, rule, fact)
+
+lemma generator_subset_pideal:
+  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
+  shows "B \<subseteq> pideal B"
+  unfolding pideal_def by (rule generator_subset_ideal_like, rule)
+
+lemma pideal_closed_plus:
+  assumes "p \<in> pideal B" and "q \<in> pideal B"
+  shows "p + q \<in> pideal B"
+  using assms unfolding pideal_def by (rule ideal_like_closed_plus)
+
+lemma pideal_closed_uminus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes p_in: "p \<in> pideal B"
+  shows "-p \<in> pideal B"
+  using _ assms unfolding pideal_def by (rule ideal_like_closed_uminus, intro UNIV_I)
+
+lemma pideal_closed_minus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes "p \<in> pideal B" and "q \<in> pideal B"
+  shows "p - q \<in> pideal B"
+  using assms pideal_closed_plus pideal_closed_uminus by fastforce
+
+lemma pideal_closed_times:
+  assumes "p \<in> pideal B"
+  shows "q * p \<in> pideal B"
+  using _ assms unfolding pideal_def by (rule ideal_like_closed_times, intro UNIV_I)
+
+lemma pideal_closed_monom_mult:
+  assumes "p \<in> pideal B"
+  shows "monom_mult c t p \<in> pideal B"
+  using _ assms unfolding pideal_def by (rule ideal_like_closed_monom_mult, intro UNIV_I)
+
+lemma in_pideal_insertI:
+  assumes "p \<in> pideal B"
+  shows "p \<in> pideal (insert q B)"
+  using assms unfolding pideal_def by (rule in_ideal_like_insertI)
+
+lemma in_pideal_insertD:
+  assumes "p \<in> pideal (insert q B)" and "q \<in> pideal B"
+  shows "p \<in> pideal B"
+  using _ assms unfolding pideal_def by (rule in_ideal_like_insertD, intro UNIV_I)
+
+lemma pideal_insert:
+  assumes "q \<in> pideal B"
+  shows "pideal (insert q B) = pideal B"
+  using _ assms unfolding pideal_def by (rule ideal_like_insert, intro UNIV_I)
+
+lemma pideal_empty: "pideal {} = {0}"
+  unfolding pideal_def by (fact ideal_like_empty_2)
+
+lemma pideal_insert_zero: "pideal (insert 0 B) = pideal B"
+  unfolding pideal_def by (fact ideal_like_insert_zero)
+
+lemma pideal_minus_singleton_zero: "pideal (B - {0}) = pideal B"
+  unfolding pideal_def by (fact ideal_like_minus_singleton_zero)
+  
+lemma generator_in_pideal:
+  assumes "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
+  shows "f \<in> pideal B"
+  by (rule, fact assms, rule generator_subset_pideal)
+
+lemma pideal_mono:
+  assumes "A \<subseteq> B"
+  shows "pideal A \<subseteq> pideal B"
+  unfolding pideal_def using assms by (rule ideal_like_mono_2)
+
+lemma pideal_insert_subset:
+  assumes "pideal A \<subseteq> pideal B" and "q \<in> pideal (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
+  shows "pideal (insert q A) \<subseteq> pideal B"
+  using _ _ assms unfolding pideal_def by (rule ideal_like_insert_subset, intro UNIV_I, intro UNIV_I)
+
+lemma in_pideal_finite_subset:
+  assumes "p \<in> (pideal B)"
+  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> (pideal A)"
+  using assms unfolding pideal_def by (rule in_ideal_like_finite_subset)
+
+lemma in_pideal_finiteE:
+  assumes "finite B" and "p \<in> (pideal B)"
+  obtains q where "p = (\<Sum>b\<in>B. (q b) * b)"
+  using _ _ assms unfolding pideal_def by (rule in_ideal_like_finiteE, intro UNIV_I, intro UNIV_I)
+
+lemma in_pidealE:
+  assumes "p \<in> (pideal B)"
+  obtains A q where "finite A" and "A \<subseteq> B" and "p = (\<Sum>b\<in>A. (q b) * b)"
+proof -
+  from assms obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> pideal A"
+    by (rule in_pideal_finite_subset)
+  from 1 3 obtain q where "p = (\<Sum>b\<in>A. (q b) * b)" by (rule in_pideal_finiteE)
+  with 1 2 show ?thesis ..
+qed
+
+lemma sum_in_pidealI: "(\<Sum>b\<in>B. q b * b) \<in> pideal B"
+  unfolding pideal_def by (rule sum_in_ideal_likeI, intro UNIV_I)
+
+lemma pideal_induct [consumes 1, case_names pideal_0 pideal_plus]:
+  assumes "p \<in> pideal B" and "P 0" and "\<And>a p c t. a \<in> pideal B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c t p)"
+  shows "P p"
+  using assms(1) unfolding pideal_def
+proof (induct p)
+  case ideal_like_0
+  from assms(2) show ?case .
+next
+  case ind: (ideal_like_plus a b q)
+  from this(1) this(2) show ?case
+  proof (induct q arbitrary: a rule: poly_mapping_except_induct)
+    case 1
+    thus ?case by simp
+  next
+    case step: (2 q0 t)
+    from this(4) have "a \<in> pideal B" by (simp only: pideal_def)
+    from this step(5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t * b)" unfolding times_monomial_left
+    proof (rule assms(3))
+      from step(2) show "lookup q0 t \<noteq> 0" by simp
+    qed
+    with _ have "P ((a + monomial (lookup q0 t) t * b) + except q0 {t} * b)"
+    proof (rule step(3))
+      from step(4) \<open>b \<in> B\<close> show "a + monomial (lookup q0 t) t * b \<in> ideal_like UNIV B"
+        by (rule ideal_like_plus, intro UNIV_I)
+    qed
+    hence "P (a + (monomial (lookup q0 t) t + except q0 {t}) * b)" by (simp add: algebra_simps)
+    thus ?case by (simp only: plus_except[of q0 t, symmetric])
+  qed
+qed
+
+subsubsection \<open>Linear Hulls of Sets of Polynomials\<close>
+
+definition phull::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
+  where "phull = ideal_like {monomial c 0 | c. True}"
+
+lemma zero_in_phull: "0 \<in> phull B"
+  unfolding phull_def by (rule ideal_like_0)
+
+lemma times_in_phull:
+  assumes "b \<in> B"
+  shows "monomial c 0 * b \<in> phull B"
+  unfolding phull_def by (rule times_in_ideal_like, auto intro: assms)
+
+lemma monom_mult_in_phull:
+  assumes "b \<in> B"
+  shows "monom_mult c 0 b \<in> phull B"
+  unfolding phull_def by (rule monom_mult_in_ideal_like, auto intro: assms)
+
+lemma generator_subset_phull:
+  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
+  shows "B \<subseteq> phull B"
+  unfolding phull_def
+proof (rule generator_subset_ideal_like, simp, rule)
+  show "monomial 1 0 = 1" by simp
+qed
+
+lemma phull_closed_plus:
+  assumes "p \<in> phull B" and "q \<in> phull B"
+  shows "p + q \<in> phull B"
+  using assms unfolding phull_def by (rule ideal_like_closed_plus)
+
+lemma phull_closed_uminus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes p_in: "p \<in> phull B"
+  shows "-p \<in> phull B"
+  using _ assms unfolding phull_def
+  by (rule ideal_like_closed_uminus, auto simp add: single_uminus[symmetric])
+
+lemma phull_closed_minus:
+  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
+  assumes "p \<in> phull B" and "q \<in> phull B"
+  shows "p - q \<in> phull B"
+  using assms phull_closed_plus phull_closed_uminus by fastforce
+
+lemma phull_closed_times:
+  assumes "p \<in> phull B"
+  shows "monomial c 0 * p \<in> phull B"
+  using _ assms unfolding phull_def by (rule ideal_like_closed_times, auto simp add: mult_single)
+
+lemma phull_closed_monom_mult:
+  assumes "p \<in> phull B"
+  shows "monom_mult c 0 p \<in> phull B"
+  using _ assms unfolding phull_def by (rule ideal_like_closed_monom_mult, auto simp add: monom_mult_monomial)
+
+lemma in_phull_insertI:
+  assumes "p \<in> phull B"
+  shows "p \<in> phull (insert q B)"
+  using assms unfolding phull_def by (rule in_ideal_like_insertI)
+
+lemma in_phull_insertD:
+  assumes "p \<in> phull (insert q B)" and "q \<in> phull B"
+  shows "p \<in> phull B"
+  using _ assms unfolding phull_def by (rule in_ideal_like_insertD, auto simp add: mult_single)
+
+lemma phull_insert:
+  assumes "q \<in> phull B"
+  shows "phull (insert q B) = phull B"
+  using _ assms unfolding phull_def by (rule ideal_like_insert, auto simp add: mult_single)
+
+lemma phull_empty: "phull {} = {0}"
+  unfolding phull_def by (fact ideal_like_empty_2)
+
+lemma phull_insert_zero: "phull (insert 0 B) = phull B"
+  unfolding phull_def by (fact ideal_like_insert_zero)
+
+lemma phull_minus_singleton_zero: "phull (B - {0}) = phull B"
+  unfolding phull_def by (fact ideal_like_minus_singleton_zero)
+  
+lemma generator_in_phull:
+  assumes "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
+  shows "f \<in> phull B"
+  by (rule, fact assms, rule generator_subset_phull)
+
+lemma phull_mono:
+  assumes "A \<subseteq> B"
+  shows "phull A \<subseteq> phull B"
+  unfolding phull_def using assms by (rule ideal_like_mono_2)
+
+lemma phull_subset_pideal: "phull B \<subseteq> pideal B"
+  unfolding phull_def pideal_def by (rule ideal_like_mono_1, simp)
+
+lemma phull_insert_subset:
+  assumes "phull A \<subseteq> phull B" and "q \<in> phull (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
+  shows "phull (insert q A) \<subseteq> phull B"
+  using _ _ assms unfolding phull_def
+proof (rule ideal_like_insert_subset, simp, intro exI)
+  show "monomial 1 0 = 1" by simp
+qed (auto simp add: mult_single)
+
+lemma in_phull_finite_subset:
+  assumes "p \<in> phull B"
+  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> phull A"
+  using assms unfolding phull_def by (rule in_ideal_like_finite_subset)
+
+lemma in_phull_finiteE:
+  assumes "finite B" and "p \<in> phull B"
+  obtains c where "p = (\<Sum>b\<in>B. monom_mult (c b) 0 b)"
+proof -
+  from _ _ assms obtain q where *: "\<And>x. q x \<in> {monomial c 0 | c. True}" and **: "p = (\<Sum>b\<in>B. q b * b)"
+    unfolding phull_def
+  proof (rule in_ideal_like_finiteE, simp, intro exI)
+    show "monomial 0 0 = 0" by simp
+  next
+    fix q1 q2::"('a, 'b) poly_mapping"
+    assume "q1 \<in> {monomial c 0 |c. True}" and "q2 \<in> {monomial c 0 |c. True}"
+    thus "q1 + q2 \<in> {monomial c 0 |c. True}" by (auto, metis single_add)
+  qed auto
+  from * have "\<forall>x. \<exists>c. q x = monomial c 0" by simp
+  hence "\<exists>c. \<forall>x. q x = monomial (c x) 0" by (rule choice)
+  then obtain c where ***: "\<And>x. q x = monomial (c x) 0" by auto
+  show ?thesis
   proof
-    assume "PP_Poly_Mapping.single c t = 0"
-    from False monom_0D[OF this] show False ..
-  qed
-  from this some_term_monom[OF False, of c] lookup_some_term_monom[OF False, of c] rest_monom[of c t]
-  show ?thesis by simp
-qed
-
-lemma times_mpoly_right_monom:
-  shows "p *pm (PP_Poly_Mapping.single t c) = monom_mult_right p c t"
-proof (induct rule: times_mpoly_induct[of _ "PP_Poly_Mapping.single t c" p])
-  from monom_mult_right_left0 show "0 = monom_mult_right 0 c t" by simp
-next
-  fix p
-  assume "p \<noteq> 0" and IH: "rest_mpoly p *pm PP_Poly_Mapping.single t c = monom_mult_right (rest_mpoly p) c t"
-  from IH some_monomial_rest[OF \<open>p \<noteq> 0\<close>]
-       monom_mult_left_monom_monom_mult_right[of "lookup p (some_term p)" "some_term p" t c]
-       monom_mult_right_dist_left[of "PP_Poly_Mapping.single (some_term p)  (lookup p (some_term p))" "rest_mpoly p" c t]
-  show "monom_mult (lookup p (some_term p)) (some_term p) (PP_Poly_Mapping.single t c) +
-         rest_mpoly p *pm PP_Poly_Mapping.single t c =
-         monom_mult_right p c t" by simp
-qed
-
-lemma times_mpoly_dist_left:
-  fixes p q r::"('a::{linorder,comm_powerprod}, 'b::semiring_0) poly_mapping"
-  shows "p *pm (q + r) = p *pm q + p *pm r"
-proof (rule times_mpoly_induct[of "\<lambda>x _ _. x *pm (q + r) = x *pm q + x *pm r"])
-  from times_mpoly_left0 show "0 *pm (q + r) = 0 *pm q + 0 *pm r" by simp
-next
-  fix p
-  assume "p \<noteq> 0" and IH: "rest_mpoly p *pm (q + r) = rest_mpoly p *pm q + rest_mpoly p *pm r"
-  let ?c = "lookup p (some_term p)"
-  let ?t = "some_term p"
-  from \<open>p \<noteq> 0\<close> have "p *pm (q + r) = (monom_mult ?c ?t (q + r)) + (rest_mpoly p) *pm (q + r)" by simp
-  also have "\<dots> = (monom_mult ?c ?t q) + (monom_mult ?c ?t r) + (rest_mpoly p) *pm (q + r)"
-    using monom_mult_dist_right[of ?c ?t q r] by simp
-  also have "\<dots> = ((monom_mult ?c ?t q) + (monom_mult ?c ?t r)) + ((rest_mpoly p) *pm q + (rest_mpoly p) *pm r)"
-    using IH by (simp)
-  also have "\<dots> = ((monom_mult ?c ?t q) + (rest_mpoly p) *pm q) + ((monom_mult ?c ?t r) + (rest_mpoly p) *pm r)"
-    by (simp only: ac_simps)
-  also have "\<dots> = p *pm q + p *pm r" using \<open>p \<noteq> 0\<close> times_poly_mapping_class.simps[of p] by simp
-  finally show "p *pm (q + r) = p *pm q + p *pm r" .
-qed
-
-lemma times_mpoly_dist_right:
-  fixes p q r::"('a::{linorder,comm_powerprod}, 'b::semiring_0) poly_mapping"
-  shows "(p + q) *pm r = p *pm r + q *pm r"
-proof (induct rule: times_mpoly_induct[of _ "p + q" r])
-  show "(p + q) *pm 0 = p *pm 0 + q *pm 0"
-    unfolding times_mpoly_right0 by simp
-next
-  fix r
-  assume "r \<noteq> 0" and IH: "(p + q) *pm (rest_mpoly r) = p *pm rest_mpoly r + q *pm rest_mpoly r"
-  let ?c = "lookup r (some_term r)"
-  let ?t = "some_term r"
-  let ?r = "rest_mpoly r"
-  from some_monomial_rest[OF \<open>r \<noteq> 0\<close>] have "(p + q) *pm r = (p + q) *pm (PP_Poly_Mapping.single ?t ?c + ?r)" by simp
-  also have "\<dots> = (p + q) *pm (PP_Poly_Mapping.single ?t ?c) + (p + q) *pm ?r"
-    unfolding times_mpoly_dist_left by simp
-  also have "\<dots> = (p + q) *pm (PP_Poly_Mapping.single ?t ?c) + (p *pm ?r + q *pm ?r)"
-    unfolding IH ..
-  also have "\<dots> = monom_mult_right (p + q) ?c ?t + (p *pm ?r + q *pm ?r)"
-    unfolding times_mpoly_right_monom ..
-  also have "\<dots> = (monom_mult_right p ?c ?t + monom_mult_right q ?c ?t) + (p *pm ?r + q *pm ?r)"
-    by (simp only: monom_mult_right_dist_left)
-  also have "\<dots> = (p *pm (PP_Poly_Mapping.single ?t ?c) + q *pm (PP_Poly_Mapping.single ?t ?c)) + (p *pm ?r + q *pm ?r)"
-    unfolding times_mpoly_right_monom ..
-  also have "\<dots> = (p *pm (PP_Poly_Mapping.single ?t ?c) + p *pm ?r) + (q *pm (PP_Poly_Mapping.single ?t ?c) + q *pm ?r)"
-    by (simp only: ac_simps)
-  also have "\<dots> = (p *pm (PP_Poly_Mapping.single ?t ?c + ?r)) + (q *pm (PP_Poly_Mapping.single ?t ?c + ?r))"
-    unfolding times_mpoly_dist_left ..
-  also have "\<dots> = p *pm r + q *pm r" using some_monomial_rest[OF \<open>r \<noteq> 0\<close>] by simp
-  finally show "(p + q) *pm r = p *pm r + q *pm r" .
-qed
-
-lemma times_mpoly_assoc_monom_mult:
-  fixes c::"'b::semiring_0" and t::"'a::{linorder,comm_powerprod}" and p q::"('a, 'b) poly_mapping"
-  shows "(monom_mult c t p) *pm q = monom_mult c t (p *pm q)"
-proof (induct rule: times_mpoly_induct[of "\<lambda>x y _. (monom_mult c t x) *pm y = monom_mult c t (x *pm y)"])
-  from times_mpoly_left0 monom_mult_right0[of c t] show "monom_mult c t 0 *pm q = monom_mult c t (0 *pm q)"
-    by simp
-next
-  fix p::"('a, 'b) poly_mapping"
-  let ?c = "lookup p (some_term p)"
-  let ?t = "some_term p"
-  let ?r = "rest_mpoly p"
-  assume "p \<noteq> 0" and IH: "monom_mult c t ?r *pm q = monom_mult c t (?r *pm q)"
-  
-  have "monom_mult c t p = monom_mult c t ((PP_Poly_Mapping.single ?t ?c) + ?r)"
-    using some_monomial_rest[OF \<open>p \<noteq> 0\<close>] by simp
-  also have "\<dots> = monom_mult c t (PP_Poly_Mapping.single ?t ?c) + monom_mult c t ?r"
-    using monom_mult_dist_right[of c t] by simp
-  finally have eq: "monom_mult c t p = monom_mult c t (PP_Poly_Mapping.single ?t ?c) + monom_mult c t ?r" .
-  
-  have "monom_mult c t p *pm q = (monom_mult c t (PP_Poly_Mapping.single ?t ?c) + monom_mult c t ?r) *pm q"
-    by (simp only: eq)
-  also have "\<dots> = (monom_mult c t (PP_Poly_Mapping.single ?t ?c)) *pm q + (monom_mult c t ?r) *pm q"
-    by (simp only: times_mpoly_dist_right)
-  also have "\<dots> = (monom_mult c t (PP_Poly_Mapping.single ?t ?c)) *pm q + monom_mult c t (?r *pm q)"
-    by (simp only: IH)
-  also have "\<dots> = (PP_Poly_Mapping.single (t + ?t) (c * ?c)) *pm q + monom_mult c t (?r *pm q)"
-    by (simp only: monom_mult_monom)
-  also have "\<dots> = monom_mult (c * ?c) (t + ?t) q + monom_mult c t (?r *pm q)"
-    by (simp only: times_mpoly_left_monom)
-  also have "\<dots> = monom_mult c t (monom_mult ?c ?t q) + monom_mult c t (?r *pm q)"
-    by (simp only: monom_mult_assoc)
-  also have "\<dots> = monom_mult c t ((monom_mult ?c ?t q) + ?r *pm q)"
-    by (simp only: monom_mult_dist_right)
-  also have "\<dots> = monom_mult c t ((PP_Poly_Mapping.single ?t ?c) *pm q + ?r *pm q)"
-    by (simp only: times_mpoly_left_monom)
-  also have "\<dots> = monom_mult c t (((PP_Poly_Mapping.single ?t ?c) + ?r) *pm q)"
-    by (simp only: times_mpoly_dist_right)
-  also have "\<dots> = monom_mult c t (p *pm q)"
-    using some_monomial_rest[OF \<open>p \<noteq> 0\<close>] by simp
-  finally show "monom_mult c t p *pm q = monom_mult c t (p *pm q)" .
-qed
-
-lemma times_mpoly_assoc:
-  fixes p q r::"('a::{linorder,comm_powerprod}, 'b::semiring_0) poly_mapping"
-  shows "(p *pm q) *pm r = p *pm (q *pm r)"
-proof (induct rule: times_mpoly_induct)
-  from times_mpoly_left0 show "(0 *pm q) *pm r = 0" by simp
-next
-  fix p::"('a, 'b) poly_mapping"
-  let ?c = "lookup p (some_term p)"
-  let ?t = "some_term p"
-  let ?r = "rest_mpoly p"
-  assume "p \<noteq> 0" and IH: "(?r *pm q) *pm r = ?r *pm (q *pm r)"
-  from \<open>p \<noteq> 0\<close> have "(p *pm q) *pm r = (monom_mult ?c ?t q + ?r *pm q) *pm r" by simp
-  also have "\<dots> = ((monom_mult ?c ?t q) *pm r) + (?r *pm q) *pm r"
-    unfolding times_mpoly_dist_right ..
-  also have "\<dots> = ((monom_mult ?c ?t q) *pm r) + ?r *pm (q *pm r)"
-    unfolding IH ..
-  also have "\<dots> = monom_mult ?c ?t (q *pm r) + ?r *pm (q *pm r)"
-    unfolding times_mpoly_assoc_monom_mult ..
-  finally show "(p *pm q) *pm r = monom_mult ?c ?t (q *pm r) + ?r *pm (q *pm r)" .
-qed
-
-lemma monom_mult_add_distrib: "monom_mult a x q + b * q = (PP_Poly_Mapping.single x a + b) * q"
-  for p q::"('a::{linorder,comm_powerprod}, 'b::semiring_0) poly_mapping"
-proof (induction q rule: poly_mapping_induct)
-  case (single k v)
-  then show ?case by (metis distrib_right monom_mult_monom mult_single)
-next
-  case (sum f g k v)
-  then show ?case
-  proof -
-    have "b * (f + g) = b * f + b * PP_Poly_Mapping.single k v"
-      by (metis distrib_left sum.hyps(1))
-    then have f1: "monom_mult a x (f + g) + b * (f + g) =
-        b * f + b * PP_Poly_Mapping.single k v + (monom_mult a x f + monom_mult a x g)"
-      by (metis add.commute monom_mult_dist_right)
-    have "b * f + b * PP_Poly_Mapping.single k v + monom_mult a x g =
-        b * f + (PP_Poly_Mapping.single x a + b) * g"
-      by (metis add.commute add.left_commute sum.IH(2) sum.hyps(1))
-    then have "b * f + b * PP_Poly_Mapping.single k v + monom_mult a x g =
-        (PP_Poly_Mapping.single x a + b) * g + b * f"
-      by (metis add.commute)
-    then have "monom_mult a x (f + g) + b * (f + g) =
-        monom_mult a x f + ((PP_Poly_Mapping.single x a + b) * g + b * f)"
-      by (metis add.left_commute f1)
-    then have "monom_mult a x (f + g) + b * (f + g) =
-        (PP_Poly_Mapping.single x a + b) * g + (PP_Poly_Mapping.single x a + b) * f"
-      by (metis ab_semigroup_add_class.add_ac(1) add.commute sum.IH(1))
-    then show ?thesis
-      by (metis add.commute distrib_left)
+    show "p = (\<Sum>b\<in>B. monom_mult (c b) 0 b)" by (simp only: ** *** times_monomial_left)
   qed
 qed
 
-lemma times_poly_mapping_eq_times[simp]: "p *pm q = p * q"
-  by (induction p q rule: times_mpoly_induct)
-    (auto split: if_splits simp: monom_mult_add_distrib some_monomial_rest[symmetric]
-      simp del: times_poly_mapping_class.simps)
+lemma in_phullE:
+  assumes "p \<in> phull B"
+  obtains A c where "finite A" and "A \<subseteq> B" and "p = (\<Sum>b\<in>A. monom_mult (c b) 0 b)"
+proof -
+  from assms obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> phull A"
+    by (rule in_phull_finite_subset)
+  from 1 3 obtain c where "p = (\<Sum>b\<in>A. monom_mult (c b) 0 b)" by (rule in_phull_finiteE)
+  with 1 2 show ?thesis ..
+qed
 
-text \<open>the lifted version is times on type mpoly...\<close>
+lemma sum_in_phullI: "(\<Sum>b\<in>B. monom_mult (c b) 0 b) \<in> phull B"
+  unfolding phull_def times_monomial_left[symmetric] by (rule sum_in_ideal_likeI, auto)
 
-lift_definition times_mpoly_class::"('b::semiring_0) mpoly \<Rightarrow> ('b) mpoly \<Rightarrow> ('b) mpoly"
-  (infixl "*mp" 70)
-  is "(( *pm))::((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b) \<Rightarrow> _ \<Rightarrow> _" .
-
-lemma times_mpoly_class_eq_times[simp]: "p *mp q = p * q" for p q::"('b::semiring_0) mpoly"
-  apply transfer
-  subgoal for p q
-    by (induction p q rule: times_mpoly_induct)
-      (auto split: if_splits simp: monom_mult_add_distrib some_monomial_rest[symmetric]
-        simp del: times_poly_mapping_class.simps)
-  done
-
+lemma phull_induct [consumes 1, case_names phull_0 phull_plus]:
+  assumes "p \<in> phull B" and "P 0" and "\<And>a p c. a \<in> phull B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c 0 p)"
+  shows "P p"
+  using assms(1) unfolding phull_def
+proof (induct p)
+  case ideal_like_0
+  from assms(2) show ?case .
+next
+  case ind: (ideal_like_plus a b q)
+  from this(1) have "a \<in> phull B" by (simp only: phull_def)
+  from ind(4) obtain c where q: "q = monomial c 0" by auto
+  show ?case
+  proof (cases "c = 0")
+    case True
+    from ind(2) show ?thesis unfolding q True by simp
+  next
+    case False
+    from \<open>a \<in> phull B\<close> ind(2) ind(3) False show ?thesis unfolding q times_monomial_left by (rule assms(3))
+  qed
+qed
 
 subsection \<open>Polynomials in Ordered Power-products\<close>
 
 context ordered_powerprod
 begin
 
-subsubsection \<open>Leading Power-Product, Leading Coefficient, and Tail\<close>
+definition higher::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" where
+  "higher p t = except p {s. s \<preceq> t}"
 
-lift_definition higher::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" is
-  "(\<lambda>p t. (\<lambda>s. (if t \<prec> s then p s else 0)))"
-proof -
-  fix p::"'a \<Rightarrow> 'b" and t::"'a"
-  assume fin: "finite {t. p t \<noteq> 0}"
-  have "{s. (if t \<prec> s then p s else 0) \<noteq> 0} \<subseteq> {t. p t \<noteq> 0}"
-  proof
-    fix s::"'a"
-    assume "s \<in> {x. (if t \<prec> x then p x else 0) \<noteq> 0}"
-    hence "(if t \<prec> s then p s else 0) \<noteq> 0" by simp
-    hence "p s \<noteq> 0" by (simp split: if_split_asm)
-    thus "s \<in> {t. p t \<noteq> 0}" by simp
-  qed
-  from finite_subset[OF this fin] show "finite {s. (if t \<prec> s then p s else 0) \<noteq> 0}" .
-qed
-
-lift_definition lower::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" is
-  "(\<lambda>p t. (\<lambda>s. (if s \<prec> t then p s else 0)))"
-proof -
-  fix p::"'a \<Rightarrow> 'b" and t::"'a"
-  assume fin: "finite {t. p t \<noteq> 0}"
-  have "{s. (if s \<prec> t then p s else 0) \<noteq> 0} \<subseteq> {t. p t \<noteq> 0}"
-  proof
-    fix s::"'a"
-    assume "s \<in> {x. (if x \<prec> t then p x else 0) \<noteq> 0}"
-    hence "(if s \<prec> t then p s else 0) \<noteq> 0" by simp
-    hence "p s \<noteq> 0" by (simp split: if_split_asm)
-    thus "s \<in> {t. p t \<noteq> 0}" by simp
-  qed
-  from finite_subset[OF this fin] show "finite {s. (if s \<prec> t then p s else 0) \<noteq> 0}" .
-qed
+definition lower::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" where
+  "lower p t = except p {s. t \<preceq> s}"
 
 definition lp::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a" where
   "lp p \<equiv> (if p = 0 then 0 else ordered_powerprod_lin.Max (keys p))"
+
 definition lc::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'b" where
   "lc p \<equiv> PP_Poly_Mapping.lookup p (lp p)"
+
 definition tail::"('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" where
   "tail p \<equiv> lower p (lp p)"
 
-lemma higher_plus:
-  fixes p q::"('a, 'b::ring) poly_mapping"
-  shows "higher (p + q) t = higher p t + higher q t"
-proof transfer
-  fix p q::"'a \<Rightarrow> 'b" and t::"'a"
-  show "(\<lambda>s. if t \<prec> s then p s + q s else 0) =
-        (\<lambda>s. (if t \<prec> s then p s else 0) + (if t \<prec> s then q s else 0))" by (rule, simp)
-qed
+subsubsection \<open>@{term higher} and @{term lower}\<close>
 
-lemma higher_uminus:
-  fixes p::"('a, 'b::ring) poly_mapping"
-  shows "higher (-p) t = -(higher p t)"
-  by transfer auto
+lemma lookup_higher: "lookup (higher p s) t = (if s \<prec> t then lookup p t else 0)"
+  by (auto simp add: higher_def lookup_except)
 
-lemma higher_minus:
-  fixes p q::"('a, 'b::ring) poly_mapping"
-  shows "higher (p - q) t = higher p t - higher q t"
-  by (auto intro!: poly_mapping_eqI simp: lookup_minus higher.rep_eq)
+lemma lookup_higher_when: "lookup (higher p s) t = (lookup p t when s \<prec> t)"
+  by (auto simp add: lookup_higher when_def)
 
-lemma higher_0:
-  shows "higher 0 t = 0"
-proof transfer
-  fix t::"'a"
-  show "(\<lambda>s. if t \<prec> s then 0 else 0) = (\<lambda>_. 0)" by simp
-qed
+lemma higher_plus: "higher (p + q) t = higher p t + higher q t"
+  by (rule poly_mapping_eqI, simp add: lookup_add lookup_higher)
 
-lemma higher_equal:
-  shows "higher p t = higher q t \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s)"
-proof transfer
-  fix p q::"'a \<Rightarrow> 'b" and t::"'a"
-  show "((\<lambda>s. if t \<prec> s then p s else 0) = (\<lambda>s. if t \<prec> s then q s else 0)) = (\<forall>s. t \<prec> s \<longrightarrow> p s = q s)"
-  proof
-    assume "(\<lambda>s. if t \<prec> s then p s else 0) = (\<lambda>s. if t \<prec> s then q s else 0)" (is "?L = ?R")
-    show "\<forall>s. t \<prec> s \<longrightarrow> p s = q s"
-    proof (intro allI, intro impI)
-      fix s
-      assume "t \<prec> s"
-      from \<open>?L = ?R\<close> have "(if t \<prec> s then p s else 0) = (if t \<prec> s then q s else 0)" by meson
-      thus "p s = q s" using \<open>t \<prec> s\<close> by simp
-    qed
-  next
-    assume a: "\<forall>s. t \<prec> s \<longrightarrow> p s = q s"
-    show "(\<lambda>s. if t \<prec> s then p s else 0) = (\<lambda>s. if t \<prec> s then q s else 0)"
-    proof
-      fix s
-      from a have b: "t \<prec> s \<longrightarrow> p s = q s" ..
-      show "(if t \<prec> s then p s else 0) = (if t \<prec> s then q s else 0)"
-      proof (simp split: if_splits(1), intro impI)
-        assume "t \<prec> s"
-        thus "p s = q s" using b by simp
-      qed
-    qed
+lemma higher_uminus: "higher (-p) t = -(higher p t)"
+  by (rule poly_mapping_eqI, simp add: lookup_higher)
+
+lemma higher_minus: "higher (p - q) t = higher p t - higher q t"
+  by (auto intro!: poly_mapping_eqI simp: lookup_minus lookup_higher)
+
+lemma higher_zero[simp]: "higher 0 t = 0"
+  by (rule poly_mapping_eqI, simp add: lookup_higher)
+
+lemma higher_eq_iff: "higher p t = higher q t \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s)" (is "?L \<longleftrightarrow> ?R")
+proof
+  assume ?L
+  show ?R
+  proof (intro allI impI)
+    fix s
+    assume "t \<prec> s"
+    moreover from \<open>?L\<close> have "lookup (higher p t) s = lookup (higher q t) s" by simp
+    ultimately show "lookup p s = lookup q s" by (simp add: lookup_higher)
+  qed
+next
+  assume ?R
+  show ?L
+  proof (rule poly_mapping_eqI, simp add: lookup_higher, rule)
+    fix s
+    assume "t \<prec> s"
+    with \<open>?R\<close> show "lookup p s = lookup q s" by simp
   qed
 qed
 
-lemma higher_equal_0:
-  shows "higher p t = 0 \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = 0)"
+lemma higher_eq_zero_iff: "higher p t = 0 \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = 0)"
 proof -
-  from higher_equal[of p t 0] higher_0[of t, symmetric]
-  have "higher p t = 0 \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup 0 s)" by auto
-  moreover have "\<dots> \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = 0)" using lookup_zero by auto
-  ultimately show ?thesis by simp
+  have "higher p t = higher 0 t \<longleftrightarrow> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup 0 s)" by (rule higher_eq_iff)
+  thus ?thesis by simp
 qed
+
+lemma keys_higher: "keys (higher p t) = {s\<in>(keys p). t \<prec> s}"
+  by (rule set_eqI, simp only: in_keys_iff, simp add: lookup_higher)
+
+lemma higher_higher: "higher (higher p s) t = higher p (ordered_powerprod_lin.max s t)"
+  by (rule poly_mapping_eqI, simp add: lookup_higher)
+
+lemma lookup_lower: "lookup (lower p s) t = (if t \<prec> s then lookup p t else 0)"
+  by (auto simp add: lower_def lookup_except)
+
+lemma lookup_lower_when: "lookup (lower p s) t = (lookup p t when t \<prec> s)"
+  by (auto simp add: lookup_lower when_def)
+
+lemma lower_plus: "lower (p + q) t = lower p t + lower q t"
+  by (rule poly_mapping_eqI, simp add: lookup_add lookup_lower)
+
+lemma lower_uminus: "lower (-p) t = -(lower p t)"
+  by (rule poly_mapping_eqI, simp add: lookup_lower)
+
+lemma lower_minus:  "lower (p - (q::('a, 'b::ab_group_add) poly_mapping)) t = lower p t - lower q t"
+   by (auto intro!: poly_mapping_eqI simp: lookup_minus lookup_lower)
+
+lemma lower_zero[simp]: "lower 0 t = 0"
+  by (rule poly_mapping_eqI, simp add: lookup_lower)
+
+lemma lower_eq_iff: "lower p t = lower q t \<longleftrightarrow> (\<forall>s. s \<prec> t \<longrightarrow> lookup p s = lookup q s)" (is "?L \<longleftrightarrow> ?R")
+proof
+  assume ?L
+  show ?R
+  proof (intro allI impI)
+    fix s
+    assume "s \<prec> t"
+    moreover from \<open>?L\<close> have "lookup (lower p t) s = lookup (lower q t) s" by simp
+    ultimately show "lookup p s = lookup q s" by (simp add: lookup_lower)
+  qed
+next
+  assume ?R
+  show ?L
+  proof (rule poly_mapping_eqI, simp add: lookup_lower, rule)
+    fix s
+    assume "s \<prec> t"
+    with \<open>?R\<close> show "lookup p s = lookup q s" by simp
+  qed
+qed
+
+lemma lower_eq_zero_iff: "lower p t = 0 \<longleftrightarrow> (\<forall>s. s \<prec> t \<longrightarrow> lookup p s = 0)"
+proof -
+  have "lower p t = lower 0 t \<longleftrightarrow> (\<forall>s. s \<prec> t \<longrightarrow> lookup p s = lookup 0 s)" by (rule lower_eq_iff)
+  thus ?thesis by simp
+qed
+
+lemma keys_lower: "keys (lower p t) = {s\<in>(keys p). s \<prec> t}"
+  by (rule set_eqI, simp only: in_keys_iff, simp add: lookup_lower)
+
+lemma lower_lower: "lower (lower p s) t = lower p (ordered_powerprod_lin.min s t)"
+  by (rule poly_mapping_eqI, simp add: lookup_lower)
+
+subsubsection \<open>@{term lp} and @{term lc}\<close>
 
 lemma lp_alt:
   assumes "p \<noteq> 0"
@@ -1038,122 +1425,20 @@ proof -
     show ?thesis unfolding lc_def by simp
 qed
 
-lemma lookup_tail:
+lemma lp_in_keys:
   assumes "p \<noteq> 0"
-  shows "lookup (tail p) t = (if t \<prec> lp p then lookup p t else 0)"
-  by (simp add: lower.rep_eq tail_def)
+  shows "lp p \<in> (keys p)"
+  by (metis assms in_keys_iff lc_def lc_not_0)
 
-lemma lookup_tail_2:
-  assumes "p \<noteq> 0"
-  shows "lookup (tail p) t = (if t = lp p then 0 else lookup p t)"
-proof (rule ordered_powerprod_lin.linorder_cases[of t "lp p"])
-  assume "t \<prec> lp p"
-  hence "t \<noteq> lp p" by simp
-  from this \<open>t \<prec> lp p\<close> lookup_tail[OF assms, of t] show ?thesis by simp
-next
-  assume "t = lp p"
-  hence "\<not> t \<prec> lp p" by simp
-  from \<open>t = lp p\<close> this lookup_tail[OF assms, of t] show ?thesis by simp
-next
-  assume "lp p \<prec> t"
-  hence "\<not> t \<preceq> lp p" by simp
-  hence cp: "lookup p t = 0"
-    using lp_max by blast
-  from \<open>\<not> t \<preceq> lp p\<close> have "\<not> t = lp p" and "\<not> t \<prec> lp p" by simp_all
-  thus ?thesis using cp lookup_tail[OF assms, of t] by simp
-qed
-
-lemma leading_monomial_tail:
-  fixes p::"('a, 'b::comm_monoid_add) poly_mapping"
-  assumes "p \<noteq> 0"
-  shows "p = PP_Poly_Mapping.single (lp p) (lc p) + tail p"
-proof (rule poly_mapping_eqI)
-  fix t
-  have "lookup p t = lookup (PP_Poly_Mapping.single (lp p) (lc p)) t + lookup (tail p) t"
-  proof (cases "t \<preceq> lp p")
-    case True
-    show ?thesis
-    proof (cases "t = lp p")
-      assume "t = lp p"
-      hence "\<not> t \<prec> lp p" by simp
-      hence c3: "lookup (tail p) t = 0" unfolding lookup_tail[OF assms, of t] by simp
-      from \<open>t = lp p\<close> have c2: "lookup (PP_Poly_Mapping.single (lp p) (lc p)) t = lc p" unfolding coeff_monom by simp
-      from \<open>t = lp p\<close> have c1: "lookup p t = lc p" unfolding lc_def by simp
-      from c1 c2 c3 show ?thesis by simp
-    next
-      assume "t \<noteq> lp p"
-      from this True have "t \<prec> lp p" by simp
-      hence c2: "lookup (tail p) t = lookup p t" unfolding lookup_tail[OF assms, of t] by simp
-      from \<open>t \<noteq> lp p\<close> have c1: "lookup (PP_Poly_Mapping.single (lp p) (lc p)) t = 0"
-        unfolding lookup_single by simp
-      from c1 c2 show ?thesis by simp
-    qed
-  next
-    case False
-    hence "lp p \<prec> t" by simp
-    hence "lp p \<noteq> t" by simp
-    from False have "\<not> t \<prec> lp p" by simp
-    have c1: "lookup p t = 0"
-    proof (rule ccontr)
-      assume "lookup p t \<noteq> 0"
-      from lp_max[OF this] False show False by simp
-    qed
-    from \<open>lp p \<noteq> t\<close> have c2: "lookup (PP_Poly_Mapping.single (lp p) (lc p)) t = 0"
-      unfolding lookup_single by simp
-    from \<open>\<not> t \<prec> lp p\<close> lookup_tail[OF assms, of t] have c3: "lookup (tail p) t = 0" by simp
-    from c1 c2 c3 show ?thesis by simp
-  qed
-  thus "lookup p t = lookup (PP_Poly_Mapping.single (lp p) (lc p) + tail p) t"
-    unfolding lookup_add by simp
-qed
-
-lemma tail_0:
-  shows "tail 0 = 0"
-unfolding tail_def lp_def
-by (transfer, simp)
-
-lemma lp_tail:
-  assumes "tail p \<noteq> 0"
-  shows "lp (tail p) \<prec> lp p"
-proof -
-  have "p \<noteq> 0"
-  proof
-    assume "p = 0"
-    thus False using assms tail_0 by auto
-  qed
-  show ?thesis
-  proof (intro lp_less)
-    from assms show "tail p \<noteq> 0" .
-  next
-    fix s::"'a"
-    assume "lp p \<preceq> s"
-    hence "\<not> s \<prec> lp p" by simp
-    thus "lookup (tail p) s = 0" unfolding lookup_tail[OF \<open>p \<noteq> 0\<close>, of s] by simp
-  qed
-qed
-
-lemma lp_monom:
+lemma lp_monomial:
   assumes "c \<noteq> 0"
-  shows "lp (PP_Poly_Mapping.single t c) = t"
+  shows "lp (monomial c t) = t"
   by (metis assms lookup_single_eq lookup_single_not_eq lp_eqI ordered_powerprod_lin.eq_iff)
 
-lemma lc_monom:
+lemma lc_monomial:
   assumes "c \<noteq> 0"
-  shows "lc (PP_Poly_Mapping.single t c) = c"
-unfolding lc_def lp_monom[OF assms] by (simp add: coeff_monom)
-
-lemma tail_monom:
-  shows "tail (PP_Poly_Mapping.single t c) = 0"
-  by (metis (no_types, lifting) lookup_tail_2 lookup_single_not_eq lp_less lp_monom
-      ordered_powerprod_lin.dual_order.strict_implies_not_eq single_zero tail_0)
-
-lemma coeff_higher:
-  shows "lookup (higher p s) t = (if s \<prec> t then lookup p t else 0)"
-using lp_max[of p] lc_not_0[of p] unfolding lp_def lc_def
-proof transfer
-  fix p::"'a \<Rightarrow> 'b" and t s::"'a"
-  show "(if s \<prec> t then p t else 0) = (if s \<prec> t then p t else 0)" by simp
-qed
+  shows "lc (monomial c t) = c"
+  unfolding lc_def lp_monomial[OF assms] by simp
 
 lemma lp_mult:
   fixes c::"'b::semiring_no_zero_divisors"
@@ -1199,26 +1484,124 @@ lemma lc_mult:
   fixes c::"'b::semiring_no_zero_divisors"
   assumes "c \<noteq> 0" and "p \<noteq> 0"
   shows "lc (monom_mult c t p) = c * lc p"
-  by (simp add: assms(1) assms(2) lc_def lp_mult monom_mult_lookup)
+  by (simp add: assms(1) assms(2) lc_def lp_mult lookup_monom_mult)
 
-lemma coeff_mult_0:
+lemma lookup_mult_0:
   fixes c::"'b::semiring_no_zero_divisors"
   assumes "s + lp p \<prec> t"
   shows "lookup (monom_mult c s p) t = 0"
   by (metis assms aux lp_gr lp_mult monom_mult_left0 monom_mult_right0
       ordered_powerprod_lin.order.strict_implies_not_eq)
 
+subsubsection \<open>@{term tail}\<close>
+
+lemma lookup_tail: "lookup (tail p) t = (if t \<prec> lp p then lookup p t else 0)"
+  by (simp add: lookup_lower tail_def)
+
+lemma lookup_tail_when: "lookup (tail p) t = (lookup p t when t \<prec> lp p)"
+  by (simp add: lookup_lower_when tail_def)
+
+lemma lookup_tail_2: "lookup (tail p) t = (if t = lp p then 0 else lookup p t)"
+proof (rule ordered_powerprod_lin.linorder_cases[of t "lp p"])
+  assume "t \<prec> lp p"
+  hence "t \<noteq> lp p" by simp
+  from this \<open>t \<prec> lp p\<close> lookup_tail[of p t] show ?thesis by simp
+next
+  assume "t = lp p"
+  hence "\<not> t \<prec> lp p" by simp
+  from \<open>t = lp p\<close> this lookup_tail[of p t] show ?thesis by simp
+next
+  assume "lp p \<prec> t"
+  hence "\<not> t \<preceq> lp p" by simp
+  hence cp: "lookup p t = 0"
+    using lp_max by blast
+  from \<open>\<not> t \<preceq> lp p\<close> have "\<not> t = lp p" and "\<not> t \<prec> lp p" by simp_all
+  thus ?thesis using cp lookup_tail[of p t] by simp
+qed
+
+lemma leading_monomial_tail:
+  "p = monomial (lc p) (lp p) + tail p"
+  for p::"('a, 'b::comm_monoid_add) poly_mapping"
+proof (rule poly_mapping_eqI)
+  fix t
+  have "lookup p t = lookup (monomial (lc p) (lp p)) t + lookup (tail p) t"
+  proof (cases "t \<preceq> lp p")
+    case True
+    show ?thesis
+    proof (cases "t = lp p")
+      assume "t = lp p"
+      hence "\<not> t \<prec> lp p" by simp
+      hence c3: "lookup (tail p) t = 0" unfolding lookup_tail[of p t] by simp
+      from \<open>t = lp p\<close> have c2: "lookup (monomial (lc p) (lp p)) t = lc p" by simp
+      from \<open>t = lp p\<close> have c1: "lookup p t = lc p" unfolding lc_def by simp
+      from c1 c2 c3 show ?thesis by simp
+    next
+      assume "t \<noteq> lp p"
+      from this True have "t \<prec> lp p" by simp
+      hence c2: "lookup (tail p) t = lookup p t" unfolding lookup_tail[of p t] by simp
+      from \<open>t \<noteq> lp p\<close> have c1: "lookup (monomial (lc p) (lp p)) t = 0"
+        unfolding lookup_single by simp
+      from c1 c2 show ?thesis by simp
+    qed
+  next
+    case False
+    hence "lp p \<prec> t" by simp
+    hence "lp p \<noteq> t" by simp
+    from False have "\<not> t \<prec> lp p" by simp
+    have c1: "lookup p t = 0"
+    proof (rule ccontr)
+      assume "lookup p t \<noteq> 0"
+      from lp_max[OF this] False show False by simp
+    qed
+    from \<open>lp p \<noteq> t\<close> have c2: "lookup (monomial (lc p) (lp p)) t = 0"
+      unfolding lookup_single by simp
+    from \<open>\<not> t \<prec> lp p\<close> lookup_tail[of p t] have c3: "lookup (tail p) t = 0" by simp
+    from c1 c2 c3 show ?thesis by simp
+  qed
+  thus "lookup p t = lookup (monomial (lc p) (lp p) + tail p) t"
+    unfolding lookup_add by simp
+qed
+
+lemma tail_alt: "tail p = except p {lp p}"
+  by (rule poly_mapping_eqI, simp add: lookup_tail_2 lookup_except)
+
+lemma tail_zero[simp]: "tail 0 = 0"
+  by (simp only: tail_alt except_zero)
+
+lemma lp_tail:
+  assumes "tail p \<noteq> 0"
+  shows "lp (tail p) \<prec> lp p"
+proof (intro lp_less)
+  fix s::"'a"
+  assume "lp p \<preceq> s"
+  hence "\<not> s \<prec> lp p" by simp
+  thus "lookup (tail p) s = 0" unfolding lookup_tail[of p s] by simp
+qed fact
+
+lemma keys_tail: "keys (tail p) = keys p - {lp p}"
+  by (simp add: tail_alt keys_except)
+
+lemma tail_monomial: "tail (monomial c t) = 0"
+  by (metis (no_types, lifting) lookup_tail_2 lookup_single_not_eq lp_less lp_monomial
+      ordered_powerprod_lin.dual_order.strict_implies_not_eq single_zero tail_zero)
+
+lemma times_tail_rec_left: "p * q = monom_mult (lc p) (lp p) q + (tail p) * q"
+  unfolding tail_alt lc_def by (rule times_rec_left)
+
+lemma times_tail_rec_right: "p * q = monom_mult_right p (lc q) (lp q) + p * (tail q)"
+  unfolding tail_alt lc_def by (rule times_rec_right)
+
 
 subsubsection \<open>Order Relation on Polynomials\<close>
 
 definition ord_strict_p::"('a, 'b::zero) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" (infixl "\<prec>p" 50) where
   "ord_strict_p p q \<equiv> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> (\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s))"
+
 definition ord_p::"('a, 'b::zero) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" (infixl "\<preceq>p" 50) where
   "ord_p p q \<equiv> (p \<prec>p q \<or> p = q)"
 
-lemma ord_strict_higher:
-  shows "p \<prec>p q \<longleftrightarrow> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> higher p t = higher q t)"
-unfolding ord_strict_p_def higher_equal ..
+lemma ord_strict_higher: "p \<prec>p q \<longleftrightarrow> (\<exists>t. lookup p t = 0 \<and> lookup q t \<noteq> 0 \<and> higher p t = higher q t)"
+unfolding ord_strict_p_def higher_eq_iff ..
 
 lemma ord_strict_p_asymmetric:
   assumes "p \<prec>p q"
@@ -1254,8 +1637,7 @@ proof
   qed
 qed
 
-lemma ord_strict_p_irreflexive:
-  shows "\<not> p \<prec>p p"
+lemma ord_strict_p_irreflexive: "\<not> p \<prec>p p"
 unfolding ord_strict_p_def
 proof (intro notI, erule exE)
   fix t::"'a"
@@ -1349,8 +1731,7 @@ next
   from ord_strict_p_transitive[OF this] show "a \<prec>p c" .
 qed
 
-lemma ord_p_0_min:
-  shows "0 \<preceq>p p"
+lemma ord_p_0_min: "0 \<preceq>p p"
 unfolding ord_p_def ord_strict_p_def
 proof (cases "p = 0")
   case True
@@ -1445,7 +1826,7 @@ proof -
     assume "t = lp p"
     thus ?thesis using lc_not_0[OF \<open>p \<noteq> 0\<close>] \<open>lookup p t = 0\<close> unfolding lc_def by auto
   qed
-  have pt: "lookup (tail p) t = lookup p t" using lookup_tail[OF \<open>p \<noteq> 0\<close>, of t] \<open>t \<prec> lp p\<close> by simp
+  have pt: "lookup (tail p) t = lookup p t" using lookup_tail[of p t] \<open>t \<prec> lp p\<close> by simp
   have "q \<noteq> 0"
   proof
     assume "q = 0"
@@ -1454,7 +1835,7 @@ proof -
     thus False using ord_p_0_min[of p] by simp
   qed
   have qt: "lookup (tail q) t = lookup q t"
-    using lookup_tail[OF \<open>q \<noteq> 0\<close>, of t] \<open>t \<prec> lp p\<close> \<open>lp p = lp q\<close> by simp
+    using lookup_tail[of q t] \<open>t \<prec> lp p\<close> \<open>lp p = lp q\<close> by simp
   show "\<exists>t. lookup (tail p) t = 0 \<and> lookup (tail q) t \<noteq> 0 \<and>
         (\<forall>s. t \<prec> s \<longrightarrow> lookup (tail p) s = lookup (tail q) s)"
   proof (rule, rule)
@@ -1468,7 +1849,7 @@ proof -
       proof (rule, rule)
         fix s::"'a"
         assume "t \<prec> s"
-        from a[rule_format, OF \<open>t \<prec> s\<close>] lookup_tail[OF \<open>p \<noteq> 0\<close>, of s] lookup_tail[OF \<open>q \<noteq> 0\<close>, of s]
+        from a[rule_format, OF \<open>t \<prec> s\<close>] lookup_tail[of p s] lookup_tail[of q s]
           \<open>lp p = lp q\<close> show "lookup (tail p) s = lookup (tail q) s" by simp
       qed
     qed
@@ -1498,7 +1879,7 @@ proof
     assume "lookup q s = 0 \<and> lookup p s \<noteq> 0 \<and> (\<forall>u. s \<prec> u \<longrightarrow> lookup q u = lookup p u)"
     hence qs: "lookup q s = 0" and ps: "lookup p s \<noteq> 0" and u: "\<forall>u. s \<prec> u \<longrightarrow> lookup q u = lookup p u"
       by auto
-    from hp have pu: "\<forall>u. t \<prec> u \<longrightarrow> lookup p u = 0" by (simp only: higher_equal_0)
+    from hp have pu: "\<forall>u. t \<prec> u \<longrightarrow> lookup p u = 0" by (simp only: higher_eq_zero_iff)
     from pu[rule_format, of s] ps have "\<not> t \<prec> s" by auto
     hence "s \<preceq> t" by simp
     hence "s \<prec> t \<or> s = t" by auto
@@ -1518,7 +1899,7 @@ proof
         from this st have "s \<prec> u" by simp
         from u[rule_format, OF this] pu[rule_format, OF \<open>t \<prec> u\<close>] show "lookup q u = 0" by simp
       qed
-      thus "higher q t = 0" by (simp only: higher_equal_0)
+      thus "higher q t = 0" by (simp only: higher_eq_zero_iff)
     qed
   qed
 next
@@ -1527,7 +1908,7 @@ next
 qed
 
 lemma ord_strict_p_recI:
-  assumes "q \<noteq> 0" and "p \<noteq> 0" and "lp p = lp q" and "lc p = lc q" and tail: "tail p \<prec>p tail q"
+  assumes "lp p = lp q" and "lc p = lc q" and tail: "tail p \<prec>p tail q"
   shows "p \<prec>p q"
 proof -
   from tail obtain t where pt: "lookup (tail p) t = 0"
@@ -1539,9 +1920,9 @@ proof -
   hence "t \<prec> lp p" using \<open>lp p = lp q\<close> by simp
   show ?thesis unfolding ord_strict_p_def
   proof (rule exI[of _ t], intro conjI)
-    from lookup_tail[OF \<open>p \<noteq> 0\<close>, of t] \<open>t \<prec> lp p\<close> pt show "lookup p t = 0" by simp
+    from lookup_tail[of p t] \<open>t \<prec> lp p\<close> pt show "lookup p t = 0" by simp
   next
-    from lookup_tail[OF \<open>q \<noteq> 0\<close>, of t] \<open>t \<prec> lp q\<close> qt show "lookup q t \<noteq> 0" by simp
+    from lookup_tail[of q t] \<open>t \<prec> lp q\<close> qt show "lookup q t \<noteq> 0" by simp
   next
     show "\<forall>s. t \<prec> s \<longrightarrow> lookup p s = lookup q s"
     proof (intro allI, intro impI)
@@ -1554,7 +1935,7 @@ proof -
         from True \<open>lc p = lc q\<close> \<open>lp p = lp q\<close> show ?thesis unfolding lc_def by simp
       next
         case False
-        from False s lookup_tail_2[OF \<open>p \<noteq> 0\<close>, of s] lookup_tail_2[OF \<open>q \<noteq> 0\<close>, of s] \<open>lp p = lp q\<close>
+        from False s lookup_tail_2[of p s] lookup_tail_2[of q s] \<open>lp p = lp q\<close>
           show ?thesis by simp
       qed
     qed
@@ -1644,7 +2025,31 @@ next
     next
       assume "lp p = lp q \<and> lc p = lc q \<and> tail p \<prec>p tail q"
       hence "lp p = lp q" and "lc p = lc q" and "tail p \<prec>p tail q" by simp_all
-      from ord_strict_p_recI[OF \<open>q \<noteq> 0\<close> \<open>p \<noteq> 0\<close> this] show ?thesis .
+      thus ?thesis by (rule ord_strict_p_recI)
+    qed
+  qed
+qed
+
+lemma poly_mapping_tail_induct [case_names 0 tail]:
+  assumes "P 0" and "\<And>p. p \<noteq> 0 \<Longrightarrow> P (tail p) \<Longrightarrow> P p"
+  shows "P p"
+proof (induct "card (keys p)" arbitrary: p)
+  case 0
+  with finite_keys[of p] have "keys p = {}" by simp
+  hence "p = 0" by simp
+  from \<open>P 0\<close> show ?case unfolding \<open>p = 0\<close> .
+next
+  case ind: (Suc n)
+  from ind(2) have "keys p \<noteq> {}" by auto
+  hence "p \<noteq> 0" by simp
+  thus ?case
+  proof (rule assms(2))
+    show "P (tail p)"
+    proof (rule ind(1))
+      from \<open>p \<noteq> 0\<close> have "lp p \<in> keys p" by (rule lp_in_keys)
+      hence "card (keys (tail p)) = card (keys p) - 1" by (simp add: keys_tail)
+      also have "... = n" unfolding ind(2)[symmetric] by simp
+      finally show "n = card (keys (tail p))" by simp
     qed
   qed
 qed
@@ -1815,25 +2220,6 @@ proof (intro wfI_min)
             show False by simp
         qed
       qed
-    qed
-  qed
-qed
-
-lemma mpoly_induct:
-  assumes base: "P 0" and ind: "\<And>p. p \<noteq> 0 \<Longrightarrow> P (tail p) \<Longrightarrow> P p"
-  shows "P p"
-proof (induct rule: wfP_induct[OF ord_p_wf])
-  fix p
-  assume IH: "\<forall>q. q \<prec>p p \<longrightarrow> P q"
-  show "P p"
-  proof (cases "p = 0")
-    case True
-    thus ?thesis using base by simp
-  next
-    case False
-    show ?thesis
-    proof (rule ind, fact)
-      from IH[rule_format, OF tail_ord_p[OF False]] show "P (tail p)" .
     qed
   qed
 qed

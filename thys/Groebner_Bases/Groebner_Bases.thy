@@ -12,14 +12,16 @@ text \<open>This theory provides the main results about Gr\"obner bases of multi
 
 subsection \<open>Reducibility\<close>
 
-context od_powerprod
+context ordered_powerprod
 begin
 
 definition red_single::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> 'a \<Rightarrow> bool" where
   "red_single p q f t \<equiv> (f \<noteq> 0 \<and> lookup p (t + lp f) \<noteq> 0 \<and>
                           q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f)"
+
 definition red::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
   "red F p q \<equiv> (\<exists>f\<in>F. \<exists>t. red_single p q f t)"
+
 definition is_red::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
   "is_red F a \<equiv> \<not> relation.is_final (red F) a"
 
@@ -43,6 +45,12 @@ proof -
   from t obtain t where "red_single p q f t" ..
   from \<open>f \<in> F\<close> this show "?thesis" ..
 qed
+
+lemma red_empty: "\<not> red {} p q"
+  by (rule, elim red_setE, simp)
+
+lemma red_singleton_zero: "\<not> red {0} p q"
+  by (rule, elim red_setE, simp add: red_single_def)
 
 lemma red_union:
   fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
@@ -94,6 +102,12 @@ proof -
   show ?thesis unfolding \<open>F = G \<union> H\<close> by (rule red_unionI1, fact)
 qed
 
+lemma red_union_singleton_zero: "red (F \<union> {0}) = red F"
+  by (intro ext, simp only: red_union red_singleton_zero, simp)
+
+lemma red_minus_singleton_zero: "red (F - {0}) = red F"
+  by (metis Un_Diff_cancel2 red_union_singleton_zero)
+
 lemma red_rtrancl_subset:
   fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
   assumes major: "(red G)\<^sup>*\<^sup>* p q" and "G \<subseteq> F"
@@ -139,7 +153,7 @@ proof
   hence "lookup p (t + lp f) \<noteq> 0" and q_def: "q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
     by auto
   from lookup_minus[of p "monom_mult (lookup p (t + lp f) / lc f) t f" "t + lp f"]
-       monom_mult_lookup[of "lookup p (t + lp f) / lc f" t f "lp f"]
+       lookup_monom_mult[of "lookup p (t + lp f) / lc f" t f "lp f"]
        lc_not_0[OF \<open>f \<noteq> 0\<close>]
     show ?thesis unfolding q_def lc_def by simp
 qed
@@ -148,7 +162,7 @@ lemma red_single_higher:
   fixes p q f::"('a, 'b::field) poly_mapping" and t
   assumes "red_single p q f t"
   shows "higher q (t + lp f) = higher p (t + lp f)"
-using assms unfolding higher_equal red_single_def
+using assms unfolding higher_eq_iff red_single_def
 proof (intro allI, intro impI)
   fix s
   assume a: "t + lp f \<prec> s"
@@ -278,30 +292,28 @@ proof (intro red_setI[OF \<open>f \<in> F\<close>])
   qed
 qed
 
-abbreviation "single \<equiv> (\<lambda>a b. PP_Poly_Mapping.single b a)"
-
 lemma red_indI2:
   assumes "p \<noteq> 0" and r: "red F (tail p) q"
-  shows "red F p (q + PP_Poly_Mapping.single (lp p) (lc p))"
+  shows "red F p (q + monomial (lc p) (lp p))"
 proof -
   from red_setE[OF r] obtain f t where "f \<in> F" and rs: "red_single (tail p) q f t" by auto
   from rs have "f \<noteq> 0" and ct: "lookup (tail p) (t + lp f) \<noteq> 0"
     and q: "q = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
     unfolding red_single_def by simp_all
-  from ct lookup_tail[OF \<open>p \<noteq> 0\<close>, of "t + lp f"] have "t + lp f \<prec> lp p" by (auto split: if_splits)
-  hence c: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" using lookup_tail[OF \<open>p \<noteq> 0\<close>] by simp
+  from ct lookup_tail[of p "t + lp f"] have "t + lp f \<prec> lp p" by (auto split: if_splits)
+  hence c: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" using lookup_tail[of p] by simp
   show ?thesis
   proof (intro red_setI[OF \<open>f \<in> F\<close>])
     show "red_single p (q + PP_Poly_Mapping.single (lp p) (lc p)) f t" unfolding red_single_def
     proof (intro conjI, fact)
       from ct c show "lookup p (t + lp f) \<noteq> 0" by simp
     next
-      from q have "q + single (lc p) (lp p) =
-                  (single (lc p) (lp p) + tail p) - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+      from q have "q + monomial (lc p) (lp p) =
+                  (monomial (lc p) (lp p) + tail p) - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
         by simp
       also have "\<dots> = p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
-        using leading_monomial_tail[OF \<open>p \<noteq> 0\<close>] by auto
-      finally show "q + single (lc p) (lp p) = p - monom_mult (lookup p (t + lp f) / lc f) t f"
+        using leading_monomial_tail[of p] by auto
+      finally show "q + monomial (lc p) (lp p) = p - monom_mult (lookup p (t + lp f) / lc f) t f"
         by (simp only: c)
     qed
   qed
@@ -311,7 +323,7 @@ lemma red_indE:
   assumes "red F p q"
   shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p \<and>
             (q = p - monom_mult (lc p / lc f) (lp p - lp f) f)) \<or>
-            red F (tail p) (q - single (lc p) (lp p))"
+            red F (tail p) (q - monomial (lc p) (lp p))"
 proof -
   from red_nonzero[OF assms] have "p \<noteq> 0" .
   from red_setE[OF assms] obtain f t where "f \<in> F" and rs: "red_single p q f t" by auto
@@ -331,40 +343,27 @@ proof -
     qed (fact)
   next
     case False
-    from this lookup_tail_2[OF \<open>p \<noteq> 0\<close>, of "t + lp f"]
+    from this lookup_tail_2[of p "t + lp f"]
       have ct: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" by simp
     show ?thesis
     proof (intro disjI2, intro red_setI[of f], fact)
-      show "red_single (tail p) (q - single (lc p) (lp p)) f t" unfolding red_single_def
+      show "red_single (tail p) (q - monomial (lc p) (lp p)) f t" unfolding red_single_def
       proof (intro conjI, fact)
         from cn0 ct show "lookup (tail p) (t + lp f) \<noteq> 0" by simp
       next
-        from leading_monomial_tail[OF \<open>p \<noteq> 0\<close>]
-          have "p - single (lc p) (lp p) = (single (lc p) (lp p) + tail p) - single (lc p) (lp p)"
+        from leading_monomial_tail[of p]
+          have "p - monomial (lc p) (lp p) = (monomial (lc p) (lp p) + tail p) - monomial (lc p) (lp p)"
           by simp
         also have "\<dots> = tail p" by simp
-        finally have eq: "p - single (lc p) (lp p) = tail p" .
-        from q have "q - single (lc p) (lp p) =
-                    (p - single (lc p) (lp p)) - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
+        finally have eq: "p - monomial (lc p) (lp p) = tail p" .
+        from q have "q - monomial (lc p) (lp p) =
+                    (p - monomial (lc p) (lp p)) - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
         also from eq have "\<dots> = tail p - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-        finally show "q - single (lc p) (lp p) = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+        finally show "q - monomial (lc p) (lp p) = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
           using ct by simp
       qed
     qed
   qed
-qed
-
-text \<open>In @{term "red F p q"}, @{term p} is greater than @{term q}, so the converse of
-  @{term "red F"} is well-founded.\<close>
-
-lemma red_wf:
-  fixes F::"('a, 'b::field) poly_mapping set"
-  shows "wfP (red F)\<inverse>\<inverse>"
-proof (intro wfP_subset[OF ord_p_wf], rule)
-  fix p q::"('a, 'b) poly_mapping"
-  assume "(red F)\<inverse>\<inverse> q p"
-  hence "red F p q" by (rule conversepD)
-  from red_ord[OF this] show "q \<prec>p p" .
 qed
 
 lemma is_redI:
@@ -478,7 +477,7 @@ proof -
     from this obtain f where "f \<in> F" and "f \<noteq> 0" and "lp f adds lp p" by auto
     show ?thesis by (intro disjI1, rule bexI[of _ f], intro conjI, fact+)
   next
-    assume "red F (tail p) (q - single (lc p) (lp p))"
+    assume "red F (tail p) (q - monomial (lc p) (lp p))"
     show ?thesis by (intro disjI2, intro is_redI, fact)
   qed
 qed
@@ -506,7 +505,7 @@ proof -
   have g2: "lookup (monom_mult c s p) ((s + t) + lp f) \<noteq> 0"
   proof
     assume "lookup (monom_mult c s p) ((s + t) + lp f) = 0"
-    hence "c * lookup p (t + lp f) = 0" using assoc monom_mult_lookup[of c s p "t + lp f"] by simp
+    hence "c * lookup p (t + lp f) = 0" using assoc lookup_monom_mult[of c s p "t + lp f"] by simp
     thus False using \<open>c \<noteq> 0\<close> \<open>lookup p (t + lp f) \<noteq> 0\<close> by simp
   qed
   have g3: "monom_mult c s q =
@@ -516,7 +515,7 @@ proof -
       have "monom_mult c s q =
             monom_mult c s p - monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f)" by simp
     also from monom_mult_assoc[of c s "lookup p (t + lp f) / lc f" t f] assoc
-      monom_mult_lookup[of c s p "t + lp f"]
+      lookup_monom_mult[of c s p "t + lp f"]
       have "monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f) =
             monom_mult ((lookup (monom_mult c s p) ((s + t) + lp f)) / lc f) (s + t) f" by simp
     finally show ?thesis .
@@ -699,7 +698,7 @@ proof -
     unfolding red_single_def by auto
   from \<open>t1 + lp f1 \<prec> t2 + lp f2\<close>
   have "lookup (monom_mult (lookup p (t1 + lp f1) / lc f1) t1 f1) (t2 + lp f2) = 0"
-    by (metis coeff_mult_0)
+    by (metis lookup_mult_0)
   from lookup_minus[of p _ "t2 + lp f2"] this have c: "lookup q1 (t2 + lp f2) = lookup p (t2 + lp f2)"
     unfolding q1_def by simp
   define q3 where "q3 \<equiv> q1 - monom_mult ((lookup q1 (t2 + lp f2)) / lc f2) t2 f2"
@@ -754,7 +753,7 @@ lemma srtc_in_pideal:
 using assms unfolding relation.srtc_def
 proof (induct rule: rtranclp.induct)
   fix p
-  from pideal_0[of F] show "p - p \<in> pideal F" by simp
+  from zero_in_pideal[of F] show "p - p \<in> pideal F" by simp
 next
   fix p r q
   assume pr_in: "p - r \<in> pideal F" and red: "red F r q \<or> red F q r"
@@ -782,8 +781,8 @@ qed
 lemma in_pideal_srtc:
   assumes "p \<in> pideal F"
   shows "relation.srtc (red F) p 0"
-using assms
-proof (induct p)
+  using assms
+proof (induct p rule: pideal_induct)
   show "relation.srtc (red F) 0 0" unfolding relation.srtc_def ..
 next
   fix a f c t
@@ -805,7 +804,7 @@ next
       from lc_not_0[OF this] have "lc f \<noteq> 0" .
       have "red F (monom_mult c t f) 0"
       proof (intro red_setI[OF \<open>f \<in> F\<close>])
-        from monom_mult_lookup[of c t f "lp f"]
+        from lookup_monom_mult[of c t f "lp f"]
           have eq: "lookup (monom_mult c t f) (t + lp f) = c * lc f" unfolding lc_def .
         show "red_single (monom_mult c t f) 0 f t" unfolding red_single_def eq
         proof (intro conjI, fact)
@@ -826,40 +825,6 @@ next
     qed
   qed
 qed
-
-lemma is_relation_order:
-  fixes F::"('a, 'b::field) poly_mapping set"
-  shows "Confluence.relation_order (red F) (\<preceq>p) (\<prec>p)"
-proof
-  show "red F \<le> (\<prec>p)\<inverse>\<inverse>"
-  proof
-    fix x y
-    assume "red F x y"
-    show "(\<prec>p)\<inverse>\<inverse> x y"
-    proof
-      from red_ord[OF \<open>red F x y\<close>] show "y \<prec>p x" .
-    qed
-  qed
-next
-  from ord_p_wf show "wfP (\<prec>p)" .
-qed
-
-subsection \<open>Gr\"obner Bases and Buchberger's Theorem\<close>
-
-definition is_Groebner_basis::"('a, 'b::field) poly_mapping set \<Rightarrow> bool"
-  where "is_Groebner_basis F \<equiv> relation.is_ChurchRosser (red F)"
-
-definition spoly::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b::field) poly_mapping" where
-  "spoly p q \<equiv> (monom_mult (1 / lc p) ((lcs (lp p) (lp q)) - (lp p)) p) -
-                (monom_mult (1 / lc q) ((lcs (lp p) (lp q)) - (lp q)) q)"
-
-lemma spoly_same:
-  shows "spoly p p = 0"
-unfolding spoly_def by simp
-
-lemma spoly_exchange:
-  shows "spoly p q = - spoly q p"
-unfolding spoly_def by (simp add: lcs_comm)
 
 lemma red_rtrancl_mult:
   fixes p q::"('a, 'b::field) poly_mapping" and c::'b and t
@@ -915,6 +880,63 @@ proof -
   thus ?thesis by simp
 qed
 
+end (* ordered_powerprod *)
+
+context od_powerprod
+begin
+
+text \<open>In @{term "red F p q"}, @{term p} is greater than @{term q}, so the converse of
+  @{term "red F"} is well-founded.\<close>
+
+lemma red_wf:
+  fixes F::"('a, 'b::field) poly_mapping set"
+  shows "wfP (red F)\<inverse>\<inverse>"
+proof (intro wfP_subset[OF ord_p_wf], rule)
+  fix p q::"('a, 'b) poly_mapping"
+  assume "(red F)\<inverse>\<inverse> q p"
+  hence "red F p q" by (rule conversepD)
+  from red_ord[OF this] show "q \<prec>p p" .
+qed
+
+lemma is_relation_order:
+  fixes F::"('a, 'b::field) poly_mapping set"
+  shows "Confluence.relation_order (red F) (\<preceq>p) (\<prec>p)"
+proof
+  show "red F \<le> (\<prec>p)\<inverse>\<inverse>"
+  proof
+    fix x y
+    assume "red F x y"
+    show "(\<prec>p)\<inverse>\<inverse> x y"
+    proof
+      from red_ord[OF \<open>red F x y\<close>] show "y \<prec>p x" .
+    qed
+  qed
+next
+  from ord_p_wf show "wfP (\<prec>p)" .
+qed
+
+end (* od_powerprod *)
+
+subsection \<open>Gr\"obner Bases and Buchberger's Theorem\<close>
+
+definition (in ordered_powerprod) is_Groebner_basis::"('a, 'b::field) poly_mapping set \<Rightarrow> bool"
+  where "is_Groebner_basis F \<equiv> relation.is_ChurchRosser (red F)"
+
+context od_powerprod
+begin
+
+definition spoly::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b::field) poly_mapping" where
+  "spoly p q \<equiv> (monom_mult (1 / lc p) ((lcs (lp p) (lp q)) - (lp p)) p) -
+                (monom_mult (1 / lc q) ((lcs (lp p) (lp q)) - (lp q)) q)"
+
+lemma spoly_same:
+  shows "spoly p p = 0"
+unfolding spoly_def by simp
+
+lemma spoly_exchange:
+  shows "spoly p q = - spoly q p"
+unfolding spoly_def by (simp add: lcs_comm)
+
 text \<open>The following is the key result in the theory of Gr\"obner bases. Its proof is modelled after
   the one given in @{cite Buchberger1998a}.\<close>
 
@@ -956,7 +978,7 @@ proof -
       have "lp f1 adds (t1 + lp f1)" unfolding t_def by simp
       hence "lp f1 adds t" using True unfolding t_def by simp
       have "lp f2 adds t" unfolding t_def by simp
-      from lcs_min[OF \<open>lp f1 adds t\<close> \<open>lp f2 adds t\<close>] have "l adds t" unfolding l_def .
+      from lcs_adds[OF \<open>lp f1 adds t\<close> \<open>lp f2 adds t\<close>] have "l adds t" unfolding l_def .
       from True
       have "t - (lp f1) = t1" unfolding t_def
         by (metis add_implies_diff)
@@ -1040,7 +1062,7 @@ end (* od_powerprod *)
 
 subsection \<open>Algorithms\<close>
 
-subsubsection \<open>Functions @{term up} and @{term pairs}\<close>
+subsubsection \<open>Auxiliary functions @{term up} and @{term pairs}\<close>
 
 definition up::"(('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list \<Rightarrow> ('a, 'b) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow>
                 (('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list"
@@ -1183,7 +1205,7 @@ qed
 
 subsubsection \<open>Function @{term rd}\<close>
 
-context od_powerprod
+context ordered_powerprod
 begin
 
 function rd_mult::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('b * 'a)" where
@@ -1197,20 +1219,22 @@ function rd_mult::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapp
         rd_mult (tail p) f
       )
     )"
-by auto
+  by auto
 termination proof -
-  let ?R = "{(x, y). x \<prec>p y} <*lex*> {}"
+  let ?R = "{(x, y::('a, 'b) poly_mapping). keys x \<subset> keys y} <*lex*> {}"
   show ?thesis
   proof
     show "wf ?R"
     proof
-      from ord_p_wf show "wf {(x, y). x \<prec>p y}" unfolding wfP_def .
-    qed (simp)
+      from keys_subset_wf show "wf {(x, y). keys x \<subset> keys y}" by (simp only: wfP_def)
+    qed simp
   next
     fix p f::"('a, 'b) poly_mapping"
     assume "\<not> (p = 0 \<or> f = 0)"
     hence "p \<noteq> 0" by simp
-    from tail_ord_p[OF this] show "((tail p, f), p, f) \<in> ?R" by simp
+    hence "lp p \<in> keys p" by (rule lp_in_keys)
+    hence "keys (tail p) \<subset> keys p" unfolding keys_tail by auto
+    thus "((tail p, f), p, f) \<in> ?R" by simp
   qed
 qed
 
@@ -1263,19 +1287,18 @@ unfolding rd_def by (simp add: rd_mult_adds[OF assms] Let_def del: rd_mult.simps
 
 lemma rd_nadds:
   assumes "p \<noteq> 0" and "f \<noteq> 0" and "\<not> lp f adds lp p"
-  shows "rd p f = (single (lc p) (lp p)) + (rd (tail p) f)"
-unfolding rd_def
-by (simp add: rd_mult_nadds[OF assms] Let_def del: rd_mult.simps, rule leading_monomial_tail, fact)
+  shows "rd p f = (monomial (lc p) (lp p)) + (rd (tail p) f)"
+  by (simp add: rd_def rd_mult_nadds[OF assms] Let_def del: rd_mult.simps, rule leading_monomial_tail)
 
 lemma rd_red_set:
   assumes "is_red {f} p"
   shows "red {f} p (rd p f)"
 using assms
-proof (induct p rule: mpoly_induct)
-  assume "is_red {f} 0"
+proof (induct p rule: poly_mapping_tail_induct)
+  case 0
   from this irred_0[of "{f}"] show "red {f} 0 (rd 0 f)" by simp
 next
-  fix p
+  case (tail p)
   assume "p \<noteq> 0" and IH: "is_red {f} (tail p) \<Longrightarrow> red {f} (tail p) (rd (tail p) f)"
     and red: "is_red {f} p"
   show "red {f} p (rd p f)"
@@ -1301,7 +1324,7 @@ lemma rd_irred_set:
   assumes "\<not> is_red {f} p"
   shows "rd p f = p"
 using assms
-proof (induct p rule: mpoly_induct, simp only: rd_left0)
+proof (induct p rule: poly_mapping_tail_induct, simp only: rd_left0)
   fix p
   assume "p \<noteq> 0" and IH: "\<not> is_red {f} (tail p) \<Longrightarrow> rd (tail p) f = tail p"
     and irred: "\<not> is_red {f} p"
@@ -1315,7 +1338,7 @@ proof (induct p rule: mpoly_induct, simp only: rd_left0)
     case False
     hence nadds: "\<not> (lp f adds lp p)" using dis by simp
     from irred is_red_indI2[OF \<open>p \<noteq> 0\<close>, of "{f}"] have "\<not> is_red {f} (tail p)" by auto
-    from IH[OF this] rd_nadds[OF \<open>p \<noteq> 0\<close> False nadds] leading_monomial_tail[OF \<open>p \<noteq> 0\<close>]
+    from IH[OF this] rd_nadds[OF \<open>p \<noteq> 0\<close> False nadds] leading_monomial_tail[of p]
       show ?thesis by simp
   qed
 qed
@@ -1512,7 +1535,7 @@ lemma rd_list_in_pideal_ind:
   shows "p - (rd_list fs p) \<in> pideal bs"
 using assms
 proof (induct fs)
-  from pideal_0 show "p - rd_list [] p \<in> pideal bs" by simp
+  from zero_in_pideal show "p - rd_list [] p \<in> pideal bs" by simp
 next
   fix a fs
   assume IH: "set fs \<subseteq> bs \<Longrightarrow> p - rd_list fs p \<in> pideal bs" and a: "set (a # fs) \<subseteq> bs"
@@ -1537,7 +1560,12 @@ qed
 
 lemma rd_list_in_pideal:
   shows "p - (rd_list fs p) \<in> pideal (set fs)"
-by (rule rd_list_in_pideal_ind, simp)
+  by (rule rd_list_in_pideal_ind, simp)
+
+end (* ordered_powerprod *)
+
+context od_powerprod
+begin
 
 function trd::"('a, 'b::field) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping" where
   "trd fs p = (let q = rd_list fs p in (if q = p then p else trd fs q))"
@@ -1616,7 +1644,7 @@ lemma trd_in_pideal:
   shows "(p - (trd fs p)) \<in> pideal (set fs)"
 proof (induct p rule: trd_induct)
   fix fs and p::"('a, 'b) poly_mapping"
-  from pideal_0 show "p - p \<in> pideal (set fs)" by simp
+  from zero_in_pideal show "p - p \<in> pideal (set fs)" by simp
 next
   fix fs and p::"('a, 'b) poly_mapping"
   assume IH: "(rd_list fs p - trd fs (rd_list fs p)) \<in> pideal (set fs)"
