@@ -343,7 +343,7 @@ lemma index_Basis_list_prod[simp]:
   fixes a::"'a::executable_euclidean_space" and b::"'b::executable_euclidean_space"
   shows "a \<in> Basis \<Longrightarrow> index Basis_list (a, 0::'b) = index Basis_list a"
     "b \<in> Basis \<Longrightarrow> index Basis_list (0::'a, b) = DIM('a) + index Basis_list b"
-  by (auto simp: Basis_list_prod_def index_append 
+  by (auto simp: Basis_list_prod_def index_append
       in_set_zip zip_replicate index_map_inj dest: spec[where x="index Basis_list a"])
 
 lemma eucl_of_list_eq_takeI:
@@ -613,7 +613,7 @@ proof -
   have "(\<Sum>(x, y)\<leftarrow>zip xs bs. f x y) = (\<Sum>(y, x)\<leftarrow>zip bs xs. f x y)"
     by (subst zip_commute) (auto simp: o_def split_beta')
   also have "\<dots> = (\<Sum>(x, y)\<leftarrow>zip bs (map (the o map_of (zip bs xs)) bs). f y x)"
-  proof (rule sum_list_cong)
+  proof (rule arg_cong, rule map_cong)
     have "xs = (map (the \<circ> map_of (zip bs xs)) bs)"
       using assms
       by (auto intro!: nth_equalityI simp: map_nth map_of_zip_nth)
@@ -1085,4 +1085,3 @@ lemma sum_index_enum_eq:
     (force intro!: inj_onI simp: distinct_nth_eq_iff index_nth_id)+
 
 end
-
