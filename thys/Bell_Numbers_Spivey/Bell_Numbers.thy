@@ -1,6 +1,6 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Bell Numbers and Spivey's Generalized Recurrence *}
+section \<open>Bell Numbers and Spivey's Generalized Recurrence\<close>
 
 theory Bell_Numbers
 imports
@@ -12,9 +12,9 @@ imports
   Set_Partition
 begin
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-subsubsection {* Additions to FuncSet *}
+subsubsection \<open>Additions to FuncSet\<close>
 
 (* this is clearly to be added to FuncSet *)
 lemma extensional_funcset_ext:
@@ -23,7 +23,7 @@ lemma extensional_funcset_ext:
   shows "f = g"
 using assms by (metis PiE_iff extensionalityI)
 
-subsubsection {* Additions for Injectivity Proofs *}
+subsubsection \<open>Additions for Injectivity Proofs\<close>
 
 lemma inj_on_impl_inj_on_image:
   assumes "inj_on f A"
@@ -76,13 +76,11 @@ next
   qed
 qed
 
-subsection {* Definition of Bell Numbers *}
+subsection \<open>Definition of Bell Numbers\<close>
 
 definition Bell :: "nat \<Rightarrow> nat"
 where
   "Bell n = card {P. partition_on {0..<n} P}"
-
-text {* Show that definition holds for any set A with cardinality n *}
 
 lemma Bell_altdef:
   assumes "finite A"
@@ -112,7 +110,7 @@ lemma Bell_0:
   "Bell 0 = 1"
 by (auto simp add: Bell_def partition_on_empty)
 
-subsection {* Construction of the Partitions *}
+subsection \<open>Construction of the Partitions\<close>
 
 definition construct_partition_on :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set set"
 where
@@ -315,7 +313,7 @@ next
     by (auto simp del: atLeastAtMost_iff) blast
 qed
 
-subsection {* Injectivity of the Set Construction *}
+subsection \<open>Injectivity of the Set Construction\<close>
 
 lemma injectivity:
   assumes "B \<inter> C = {}"
@@ -369,7 +367,7 @@ proof -
   from B' \<open>B' = B''\<close> show "k = k'" by simp
 qed
 
-subsection {* The Generalized Bell Recurrence Relation *}
+subsection \<open>The Generalized Bell Recurrence Relation\<close>
 
 theorem Bell_eq:
   "Bell (n + m) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
@@ -519,7 +517,7 @@ proof -
   from step1 step2 step3 show ?thesis by auto
 qed
 
-subsection {* Corollaries of the Generalized Bell Recurrence *}
+subsection \<open>Corollaries of the Generalized Bell Recurrence\<close>
 
 corollary Bell_Stirling_eq:
   "Bell m = (\<Sum>j\<le>m. Stirling m j)"

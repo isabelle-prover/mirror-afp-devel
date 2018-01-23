@@ -1,6 +1,6 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Set Partitions *}
+section \<open>Set Partitions\<close>
 
 theory Set_Partition
 imports
@@ -8,7 +8,7 @@ imports
   Card_Partitions.Card_Partitions
 begin
 
-subsection {* Useful Additions to Main Theories *}
+subsection \<open>Useful Additions to Main Theories\<close>
 
 lemma set_eqI':
   assumes "\<And>x. x \<in> A \<Longrightarrow> x \<in> B"
@@ -20,9 +20,9 @@ lemma comp_image:
   "((`) f \<circ> (`) g) = (`) (f o g)"
 by rule auto
 
-subsection {* Introduction and Elimination Rules *}
+subsection \<open>Introduction and Elimination Rules\<close>
 
-text {* The definition of @{const partition_on} is in @{theory Disjoint_Sets}. *}
+text \<open>The definition of @{const partition_on} is in @{theory Disjoint_Sets}.\<close>
 
 (* TODO: move the following theorems to Disjoint_Sets *)
 
@@ -40,7 +40,7 @@ lemma partition_onE:
      "\<And>p p'. p \<in> P \<Longrightarrow> p' \<in> P \<Longrightarrow> p \<noteq> p' \<Longrightarrow> p \<inter> p' = {}"
 using assms unfolding partition_on_def disjoint_def by blast
 
-subsection {* Basic Facts on Set Partitions *}
+subsection \<open>Basic Facts on Set Partitions\<close>
 
 lemma partition_on_notemptyI:
   assumes "partition_on A P"
@@ -74,7 +74,7 @@ proof -
     by (metis Diff_partition sup_commute)
 qed
 
-subsection {* The Unique Part Containing an Element in a Set Partition *}
+subsection \<open>The Unique Part Containing an Element in a Set Partition\<close>
 
 lemma partition_on_partition_on_unique:
   assumes "partition_on A P"
@@ -148,7 +148,7 @@ next
   qed
 qed
 
-subsection {* Cardinality of Parts in a Set Partition *}
+subsection \<open>Cardinality of Parts in a Set Partition\<close>
 
 lemma partition_on_le_set_elements:
   assumes "finite A"
@@ -207,7 +207,7 @@ next
   qed
 qed
 
-subsection {* Operations on Set Partitions *}
+subsection \<open>Operations on Set Partitions\<close>
 
 lemma partition_on_union:
   assumes "A \<inter> B = {}"
