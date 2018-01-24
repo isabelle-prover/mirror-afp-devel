@@ -381,7 +381,7 @@ text \<open>
 function inc :: "nat list \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> nat list"
   where
     "inc y i u =
-      (if i < length u \<and> i < length y then
+      (if i < length y then
         if u ! i < y ! i then u[i := u ! i + 1]
         else inc y (Suc i) u
       else u)"
@@ -431,7 +431,7 @@ lemma sum_list_inc_le:
     (auto simp: inc.simps intro: le_sum_list_mono)
 
 lemma sum_list_inc_gt0:
-  assumes "sum_list u > 0"
+  assumes "sum_list u > 0" and "length y = length u"
   shows "sum_list (inc y i u) > 0"
   using assms
 proof (induct y i u rule: inc.induct)
@@ -459,7 +459,9 @@ lemma sum_list_us_gt0:
   using assms by (induct i) (auto simp: in_set_conv_nth sum_list_inc_gt0' sum_list_inc_gt0)
 
 lemma sum_list_inc_le':
-  "sum_list (inc y i u) \<le> sum_list u + 1"
+  assumes "length u = length y"
+  shows "sum_list (inc y i u) \<le> sum_list u + 1"
+  using assms
   by (induct y i u rule: inc.induct) (auto simp: inc.simps sum_list_update)
 
 lemma sum_list_us_le:
@@ -468,14 +470,11 @@ proof (induct i)
   case 0
   then show ?case
     by (auto simp: sum_list_update)
-      (metis One_nat_def add.commute add.right_neutral in_set_replicate
-       sum_list_eq_0_iff sum_list_inc_le')
+      (metis Suc_eq_plus1 in_set_replicate length_replicate sum_list_eq_0_iff sum_list_inc_le')
 next
   case (Suc i)
   then show ?case
-    by (auto)
-      (metis One_nat_def add.right_neutral leD leI
-       add_Suc_right le_imp_less_Suc less_trans_Suc sum_list_inc_le')
+    by auto (metis Suc_le_mono add.commute le_trans length_us plus_1_eq_Suc sum_list_inc_le')
 qed
 
 lemma sum_list_us_bounded:
@@ -504,7 +503,7 @@ proof (induct i)
        sum_list_eq_0_iff sum_list_inc_eq_sum_list_Suc sum_list_less_diff_Ex us_le)
 qed (metis Suc_eq_plus1 Suc_leI antisym_conv gr_implies_not0 sum_list_us_gt0 sum_list_us_le)
 
-lemma inc_ge: "u \<le>\<^sub>v inc y i u"
+lemma inc_ge: "length u = length y \<Longrightarrow> u \<le>\<^sub>v inc y i u"
   by (induct y i u rule: inc.induct) (auto simp: inc.simps nth_list_update less_eq_def)
 
 lemma us_le_mono:
@@ -514,18 +513,7 @@ lemma us_le_mono:
 proof (induct "j - i" arbitrary: j i)
   case (Suc n)
   then show ?case
-  proof (case_tac j)
-    show ?thesis
-      by (metis Suc.hyps Suc_eq_plus1 Suc_leI Suc_neq_Zero
-          diff_Suc_1 diff_diff_left diff_is_0_eq diffs0_imp_equal
-          huets_us_simps(2) order_vec.dual_order.trans
-          neq0_conv zero_less_diff inc_ge)
-  next
-    show ?thesis
-      by (metis Suc.hyps Suc.prems Suc_eq_plus1 diff_Suc_1
-          diff_diff_left inc_ge huets_us_simps(2) linorder_neqE_nat
-          order_vec.order.trans not_less_eq)
-  qed
+    by (simp add: Suc.prems inc_ge order.strict_implies_order order_vec.lift_Suc_mono_le)
 qed simp
 
 lemma us_mono:
