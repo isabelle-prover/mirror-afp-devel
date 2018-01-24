@@ -4,6 +4,16 @@ theory Poly_Mapping_Finite_Map
     "HOL-Library.Finite_Map"
 begin
 
+subsection \<open>TODO: move!\<close>
+
+lemma finite_fmdom'[simp]: "finite (fmdom' f)"
+  by (simp add: fmdom'_alt_def)
+
+lemma fmdom'_fmap_of_list: "fmdom' (fmap_of_list xs) = set (map fst xs)"
+  by (auto simp: fmdom'_def fmdom'I fmap_of_list.rep_eq weak_map_of_SomeI)
+    (metis map_of_eq_None_iff option.distinct(1))
+
+
 text \<open>In this theory, type @{typ "('a, 'b) poly_mapping"} is represented as association lists.
   Code equations are proved in order actually perform computations (addition, multiplication, etc.).\<close>
 
@@ -22,6 +32,14 @@ definition "clearjunk0 m = fmfilter (\<lambda>k. fmlookup m k \<noteq> Some 0) m
 
 definition "fmlookup_default d m x = (case fmlookup m x of Some v \<Rightarrow> v | None \<Rightarrow> d)"
 abbreviation "lookup0 \<equiv> fmlookup_default 0"
+
+lemma fmlookup_default_fmmap:
+  "fmlookup_default d (fmmap f M) x = (if x \<in> fmdom' M then f (fmlookup_default d M x) else d)"
+  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
+
+lemma fmlookup_default_fmmap_keys: "fmlookup_default d (fmmap_keys f M) x =
+  (if x \<in> fmdom' M then f x (fmlookup_default d M x) else d)"
+  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
 
 lemma fmlookup_default_add[simp]:
   "fmlookup_default d (m ++\<^sub>f n) x =
@@ -128,32 +146,12 @@ lemma compute_range_pp[code]:
   by (force simp: range.rep_eq clearjunk0_def fmran'_fmfilter_eq fmdom'I
       fmlookup_default_def split: option.splits)
 
+subsubsection \<open>Constructors\<close>
 
-subsection \<open>Code setup for type MPoly\<close>
+definition "sparse\<^sub>0 xs = Pm_fmap (fmap_of_list xs)" \<comment>\<open>sparse representation\<close>
+definition "dense\<^sub>0 xs = Pm_fmap (fmap_of_list (zip [0..<length xs] xs))" \<comment>\<open>dense representation\<close>
 
-lift_definition mpoly_of_sparse::"((nat \<times> nat) list \<times> 'a::zero) list \<Rightarrow> 'a mpoly"
-  is "\<lambda>xs. Pm_fmap (fmap_of_list (map (apfst (Pm_fmap o fmap_of_list)) xs))" .
-
-definition "mpoly_of_dense xs = mpoly_of_sparse (map (\<lambda>(xs, c). (zip [0..<length xs] xs, c)) xs)"
-
-definition "monom_of_list xs c = mpoly_of_dense [(xs, c)]"
-
-instantiation mpoly::("{equal, zero}")equal begin
-
-lift_definition equal_mpoly:: "'a mpoly \<Rightarrow> 'a mpoly \<Rightarrow> bool" is HOL.equal .
-
-instance proof standard qed (transfer, rule equal_eq)
-
-end
-
-experiment begin
-
-abbreviation "M  \<equiv> monom_of_list"
-
-lemma "content_primitive (M [1,2,3] (4::int) + M [2, 0, 4] 6 + M [2,0,5] 8) =
-    (2, (M [1,2,3] (2::int) + M [2, 0, 4] 3 + M [2,0,5] 4))"
-  by eval
-
-end
+lemma compute_single[code]: "Poly_Mapping.single k v = sparse\<^sub>0 [(k, v)]"
+  by (auto simp: sparse\<^sub>0_def fmlookup_default_def lookup_single intro!: poly_mapping_eqI )
 
 end

@@ -216,6 +216,33 @@ lemma monom_of_int [simp]:
   apply simp
   done
 
+subsection \<open>Constants and Indeterminates\<close>
+
+text \<open>Embedding of indeterminates and constants in type-class polynomials,
+  can be used as constructors.\<close>
+
+definition Var\<^sub>0 :: "'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::{one,zero}" where
+  "Var\<^sub>0 n \<equiv> Poly_Mapping.single (Poly_Mapping.single n 1) 1"
+definition Const\<^sub>0 :: "'b \<Rightarrow> ('a \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::zero" where "Const\<^sub>0 c \<equiv> Poly_Mapping.single 0 c"
+
+lemma Const\<^sub>0_one: "Const\<^sub>0 1 = 1"
+  by (simp add: Const\<^sub>0_def)
+
+lemma Const\<^sub>0_numeral: "Const\<^sub>0 (numeral x) = numeral x"
+  by (auto intro!: poly_mapping_eqI simp: Const\<^sub>0_def lookup_numeral)
+
+lemma Const\<^sub>0_minus: "Const\<^sub>0 (- x) = - Const\<^sub>0 x"
+  by (simp add: Const\<^sub>0_def single_uminus)
+
+lemma Const\<^sub>0_zero: "Const\<^sub>0 0 = 0"
+  by (auto intro!: poly_mapping_eqI simp: Const\<^sub>0_def)
+
+lemma Var\<^sub>0_power: "Var\<^sub>0 v ^ n = Poly_Mapping.single (Poly_Mapping.single v n) 1"
+  by (induction n) (auto simp: Var\<^sub>0_def mult_single single_add[symmetric])
+
+lift_definition Var::"nat \<Rightarrow> 'b::{one,zero} mpoly" is Var\<^sub>0 .
+lift_definition Const::"'b::zero \<Rightarrow> 'b mpoly" is Const\<^sub>0 .
+
 
 subsection \<open>Integral domains\<close>
 

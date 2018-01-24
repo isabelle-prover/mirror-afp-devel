@@ -369,6 +369,9 @@ lemma lookup_add:
 instance poly_mapping :: (type, comm_monoid_add) comm_monoid_add
   by intro_classes (transfer, simp add: fun_eq_iff ac_simps)+
 
+lemma lookup_sum: "lookup (sum pp X) i = sum (\<lambda>x. lookup (pp x) i) X"
+  by (induction rule: infinite_finite_induct) (auto simp: lookup_add)
+
 (*instance poly_mapping :: (type, "{monoid_add, cancel_semigroup_add}") cancel_semigroup_add
   by intro_classes (transfer, simp add: fun_eq_iff)+*)
 

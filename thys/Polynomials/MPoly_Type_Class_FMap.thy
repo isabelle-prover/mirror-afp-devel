@@ -15,13 +15,18 @@ text \<open>In principle, one could also build upon theory \<open>Polynomials\<c
   power-products and polynomials additionally have to satisfy certain invariants, which we do not
   require here.\<close>
 
-lemma fmlookup_default_fmmap:
-  "fmlookup_default d (fmmap f M) x = (if x \<in> fmdom' M then f (fmlookup_default d M x) else d)"
-  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
 
-lemma fmlookup_default_fmmap_keys: "fmlookup_default d (fmmap_keys f M) x =
-  (if x \<in> fmdom' M then f x (fmlookup_default d M x) else d)"
-  by (auto simp: fmlookup_default_def fmdom'_notI split: option.splits)
+subsection \<open>Auxiliary lemmas, TODO: move\<close>
+
+lemma fmdom'_fmap_of_list: "fmdom' (fmap_of_list xs) = set (map fst xs)"
+  by (auto simp: fmdom'_def fmdom'I fmap_of_list.rep_eq weak_map_of_SomeI)
+    (metis map_of_eq_None_iff option.distinct(1))
+
+lemma finite_fmdom'[simp]: "finite (fmdom' f)"
+  by (simp add: fmdom'_alt_def)
+
+
+subsection \<open>Power Products\<close>
 
 lemma compute_lcs_pp[code]:
   "lcs (Pm_fmap xs) (Pm_fmap ys) =
@@ -82,61 +87,62 @@ lemma compute_dord_pp[code]:
   by (auto simp: Let_def deg_pm.rep_eq dord_fun_def dord_pm.rep_eq)
     (simp_all add: Pm_fmap.abs_eq)
 
+
 subsubsection \<open>Computations\<close>
 
-text \<open>Indeterminates are most conveniently represented by natural numbers:\<close>
+experiment begin
 
 abbreviation "X \<equiv> 0::nat"
 abbreviation "Y \<equiv> 1::nat"
 abbreviation "Z \<equiv> 2::nat"
 
-definition "PM xs = Pm_fmap (fmap_of_list xs)" \<comment>\<open>sparse representation\<close>
-definition "PM' xs = Pm_fmap (fmap_of_list (zip [0..<length xs] xs))" \<comment>\<open>dense representation\<close>
-
 lemma
-  "PM [(X, 2::nat), (Z, 7)] + PM [(Y, 3), (Z, 2)] = PM [(X, 2), (Z, 9), (Y, 3)]"
-  "PM' [2, 0, 7::nat] + PM' [0, 3, 2] = PM' [2, 3, 9]"
+  "sparse\<^sub>0 [(X, 2::nat), (Z, 7)] + sparse\<^sub>0 [(Y, 3), (Z, 2)] = sparse\<^sub>0 [(X, 2), (Z, 9), (Y, 3)]"
+  "dense\<^sub>0 [2, 0, 7::nat] + dense\<^sub>0 [0, 3, 2] = dense\<^sub>0 [2, 3, 9]"
   by eval+
 
 lemma
-  "PM [(X, 2::nat), (Z, 7)] - PM [(X, 2), (Z, 2)] = PM [(Z, 5)]"
+  "sparse\<^sub>0 [(X, 2::nat), (Z, 7)] - sparse\<^sub>0 [(X, 2), (Z, 2)] = sparse\<^sub>0 [(Z, 5)]"
   by eval
 
 lemma
-  "lcs (PM [(X, 2::nat), (Y, 1), (Z, 7)]) (PM [(Y, 3), (Z, 2)]) = PM [(X, 2), (Y, 3), (Z, 7)]"
+  "lcs (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 7)]) (sparse\<^sub>0 [(Y, 3), (Z, 2)]) = sparse\<^sub>0 [(X, 2), (Y, 3), (Z, 7)]"
   by eval
 
 lemma
-  "(PM [(X, 2::nat), (Z, 1)]) adds (PM [(X, 3), (Y, 2), (Z, 1)])"
+  "(sparse\<^sub>0 [(X, 2::nat), (Z, 1)]) adds (sparse\<^sub>0 [(X, 3), (Y, 2), (Z, 1)])"
   by eval
 
 lemma
-  "lookup (PM [(X, 2::nat), (Z, 3)]) X = 2"
+  "lookup (sparse\<^sub>0 [(X, 2::nat), (Z, 3)]) X = 2"
   by eval
 
 lemma
-  "deg_pm (PM [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
+  "deg_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
   by eval
 
 lemma
-  "lex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)])"
+  "lex_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)])"
 by eval
 
 lemma
-  "lex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)])"
+  "lex_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)])"
   by eval
 
 lemma
-  "\<not> (dlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 3)]) (PM [(X, 4)]))"
+  "\<not> (dlex_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)]))"
   by eval
 
 lemma
-  "dlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 2)]) (PM [(X, 5)])"
+  "dlex_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 2)]) (sparse\<^sub>0 [(X, 5)])"
   by eval
 
 lemma
-  "\<not> (drlex_pm (PM [(X, 2::nat), (Y, 1), (Z, 2)]) (PM [(X, 5)]))"
+  "\<not> (drlex_pm (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 2)]) (sparse\<^sub>0 [(X, 5)]))"
   by eval
+
+end
+
 
 subsection \<open>Implementation of Multivariate Polynomials as Association Lists\<close>
 
@@ -194,10 +200,10 @@ next
 qed
 
 lemma compute_monomial[code]:
-  "monomial c t = (if c = 0 then 0 else PM [(t, c)])"
-  by (auto intro!: poly_mapping_eqI simp: PM_def fmlookup_default_def lookup_single)
+  "monomial c t = (if c = 0 then 0 else sparse\<^sub>0 [(t, c)])"
+  by (auto intro!: poly_mapping_eqI simp: sparse\<^sub>0_def fmlookup_default_def lookup_single)
 
-lemma compute_one_poly_mapping [code]: "1 = PM [(0, 1)]"
+lemma compute_one_poly_mapping [code]: "1 = sparse\<^sub>0 [(0, 1)]"
   by (metis compute_monomial single_one zero_neq_one)
 
 lemma compute_mult_poly_mapping[code]:
@@ -206,13 +212,13 @@ lemma compute_mult_poly_mapping[code]:
     Pm_fmap fmempty)"
 proof (split list.splits, simp, intro conjI impI allI, goal_cases)
   case (1 t c ys)
-  have "Pm_fmap (fmupd t c (fmap_of_list ys)) = PM [(t, c)] + except (PM ys) {t}"
-    by (auto simp: PM_def fmlookup_default_def lookup_add lookup_except
+  have "Pm_fmap (fmupd t c (fmap_of_list ys)) = sparse\<^sub>0 [(t, c)] + except (sparse\<^sub>0 ys) {t}"
+    by (auto simp: sparse\<^sub>0_def fmlookup_default_def lookup_add lookup_except
         split: option.splits intro!: poly_mapping_eqI)
-  also have "PM [(t, c)] = monomial c t"
-    by (auto simp: PM_def lookup_single fmlookup_default_def intro!: poly_mapping_eqI)
+  also have "sparse\<^sub>0 [(t, c)] = monomial c t"
+    by (auto simp: sparse\<^sub>0_def lookup_single fmlookup_default_def intro!: poly_mapping_eqI)
   finally show ?case
-    by (simp add: algebra_simps times_monomial_left PM_def)
+    by (simp add: algebra_simps times_monomial_left sparse\<^sub>0_def)
 qed
 
 lemma compute_except_poly_mapping[code]:
@@ -220,62 +226,92 @@ lemma compute_except_poly_mapping[code]:
   by (auto simp: fmlookup_default_def lookup_except split: option.splits intro!: poly_mapping_eqI)
 
 
-subsubsection \<open>Computations\<close>
+lemma lookup0_fmap_of_list_simps:
+  "lookup0 (fmap_of_list ((x, y)#xs)) i = (if x = i then y else lookup0 (fmap_of_list xs) i)"
+  "lookup0 (fmap_of_list []) i = 0"
+  by (auto simp: fmlookup_default_def fmlookup_of_list split: if_splits option.splits)
 
-abbreviation "MP \<equiv> PM"
-abbreviation "MP' \<equiv> PM'"
+lemma if_poly_mapping_eq_iff:
+  "(if x = y then a else b) =
+    (if (\<forall>i\<in>keys x \<union> keys y. lookup x i = lookup y i) then a else b)"
+  by (auto simp: poly_mapping_eq_iff intro!: ext)
+
+lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<inter> keys b. lookup a x + lookup b x = 0}"
+  by (auto simp: in_keys_iff lookup_add add_eq_0_iff
+      simp del: lookup_not_eq_zero_eq_in_keys)
 
 
-lemma
-  "keys (MP [(PM [(X, 2::nat), (Z, 3)], 1::rat), (PM [(Y, 3), (Z, 2)], 2), (PM [(X, 1), (Y, 1)], 0)]) =
-    {PM [(X, 2), (Z, 3)], PM [(Y, 3), (Z, 2)]}"
-  by eval
+subsubsection \<open>restore constructor view\<close>
 
-lemma
-  "- MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] =
-    MP [(PM [(X, 2), (Z, 7)], - 1), (PM [(Y, 3), (Z, 2)], - 2)]"
-by eval
+named_theorems mpoly_simps
 
-lemma
-  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] + MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
-    MP [(PM [(X, 2), (Z, 7)], 1), (PM [(X, 2), (Z, 4)], 1)]"
-by eval
+definition "monomial1 pp = monomial 1 pp"
 
-lemma
-  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] - MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
-    MP [(PM [(X, 2), (Z, 7)], 1), (PM [(Y, 3), (Z, 2)], 4), (PM [(X, 2), (Z, 4)], - 1)]"
-by eval
+lemma monomial1_Nil[mpoly_simps]: "monomial1 0 = 1"
+  by (simp add: monomial1_def)
 
-lemma
-  "lookup (MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2), (PM [], 2)]) (PM [(X, 2), (Z, 7)]) = 1"
-by eval
+lemma monomial_mp: "monomial c (pp::'a\<Rightarrow>\<^sub>0nat) = Const\<^sub>0 c * monomial1 pp"
+  for c::"'b::comm_semiring_1"
+  by (auto intro!: poly_mapping_eqI simp: monomial1_def Const\<^sub>0_def mult_single)
 
-lemma
-  "MP [(PM [(X, 2::nat), (Z, 7)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] \<noteq> MP [(PM [(X, 2), (Z, 4)], 1), (PM [(Y, 3), (Z, 2)], -2)]"
-by eval
+lemma monomial1_add: "(monomial1 (a + b)::('a::monoid_add\<Rightarrow>\<^sub>0'b::comm_semiring_1)) = monomial1 a * monomial1 b"
+  by (auto simp: monomial1_def mult_single)
 
-lemma
-  "MP [(PM [(X, 2::nat), (Z, 7)], 0::rat), (PM [(Y, 3), (Z, 2)], 0)] = 0"
-by eval
+lemma monomial1_monomial: "monomial1 (monomial n v) = (Var\<^sub>0 v::_\<Rightarrow>\<^sub>0('b::comm_semiring_1))^n"
+  by (auto intro!: poly_mapping_eqI simp: monomial1_def Var\<^sub>0_power lookup_single when_def)
 
-lemma
-  "monom_mult (3::rat) (PM [(Y, 2::nat)]) (MP [(PM [(X, 2), (Z, 1)], 1), (PM [(Y, 3), (Z, 2)], 2)]) =
-    MP [(PM [(Y, 2), (Z, 1), (X, 2)], 3), (PM [(Y, 5), (Z, 2)], 6)]"
-by eval
+lemma Ball_True: "(\<forall>x\<in>X. True) \<longleftrightarrow> True" by auto
+lemma Collect_False: "{x. False} = {}" by simp
 
-lemma
-  "monomial (-4::rat) (PM [(X, 2::nat)]) = MP [(PM [(X, 2)], - 4)]"
-by eval
+lemma Pm_fmap_sum: "Pm_fmap f = (\<Sum>x \<in> fmdom' f. monomial (lookup0 f x) x)"
+  including fmap.lifting
+  by (auto intro!: poly_mapping_eqI sum.neutral
+      simp: fmlookup_default_def lookup_sum lookup_single when_def fmdom'I
+      split: option.splits)
 
-lemma
-  "monomial (0::rat) (PM [(X, 2::nat)]) = 0"
-by eval
+lemma MPoly_numeral: "MPoly (numeral x) = numeral x"
+  by (metis monom.abs_eq monom_numeral single_numeral)
 
-lemma
-  "MP [(PM [(X, 2::nat), (Z, 1)], 1::rat), (PM [(Y, 3), (Z, 2)], 2)] *
-      MP [(PM [(X, 2), (Z, 3)], 1), (PM [(Y, 3), (Z, 2)], -2)] =
-    MP [(PM [(X, 4), (Z, 4)], 1), (PM [(X, 2), (Z, 3), (Y, 3)], - 2), (PM [(Y, 6), (Z, 4)], - 4), (PM [(Y, 3), (Z, 5), (X, 2)], 2)]"
-  by eval
+lemma MPoly_power: "MPoly (x ^ n) = MPoly x ^ n"
+  by (induction n) (auto simp: one_mpoly_def times_mpoly.abs_eq[symmetric])
+
+lemmas [mpoly_simps] = Pm_fmap_sum
+  add.assoc[symmetric] mult.assoc[symmetric]
+  add_0 add_0_right mult_1 mult_1_right mult_zero_left mult_zero_right power_0 power_one_right
+  fmdom'_fmap_of_list
+  list.map fst_conv
+  sum.insert_remove finite_insert finite.emptyI
+  lookup0_fmap_of_list_simps
+  num.simps rel_simps
+  if_True if_False
+  insert_Diff_if insert_iff empty_Diff empty_iff
+  simp_thms
+  sum.empty
+  if_poly_mapping_eq_iff
+  keys_zero keys_one
+  keys_add_eq
+  keys_single
+  Un_insert_left Un_empty_left
+  Int_insert_left Int_empty_left
+  Collect_False
+  lookup_add lookup_single lookup_zero lookup_one
+  Set.ball_simps
+  when_simps
+  monomial_mp
+  monomial1_add
+  monomial1_monomial
+  Const\<^sub>0_one Const\<^sub>0_zero Const\<^sub>0_numeral Const\<^sub>0_minus
+  set_simps
+
+text \<open>A simproc for postprocessing with \<open>mpoly_simps\<close> and not polluting \<open>[code_post]\<close>:\<close>
+
+ML \<open>val mpoly_simproc = Simplifier.make_simproc @{context} "multivariate polynomials"
+      {lhss = [@{term "Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _"}],
+       proc = (K (fn ctxt => fn ct =>
+          SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+            (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct)))}\<close>
+setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [mpoly_simproc])\<close>
+
 
 subsubsection \<open>Ordered Power-Products\<close>
 
@@ -421,5 +457,119 @@ end (* ordered_powerprod *)
 
 lifting_update poly_mapping.lifting
 lifting_forget poly_mapping.lifting
+
+subsection \<open>Computations\<close>
+
+type_synonym 'a mpoly_tc = "(nat \<Rightarrow>\<^sub>0 nat)\<Rightarrow>\<^sub>0'a"
+
+locale trivariate\<^sub>0_rat
+begin
+
+abbreviation X::"rat mpoly_tc" where "X \<equiv> Var\<^sub>0 (0::nat)"
+abbreviation Y::"rat mpoly_tc" where "Y \<equiv> Var\<^sub>0 (1::nat)"
+abbreviation Z::"rat mpoly_tc" where "Z \<equiv> Var\<^sub>0 (2::nat)"
+
+end
+
+locale trivariate
+begin
+
+abbreviation "X \<equiv> Var 0"
+abbreviation "Y \<equiv> Var 1"
+abbreviation "Z \<equiv> Var 2"
+
+end
+
+experiment begin interpretation trivariate\<^sub>0_rat .
+
+lemma
+  "keys (X\<^sup>2 * Z ^ 3 + 2 * Y ^ 3 * Z\<^sup>2) =
+    {monomial 2 0 + monomial 3 2, monomial 3 1 + monomial 2 2}"
+  by eval
+
+lemma
+  "keys (X\<^sup>2 * Z ^ 3 + 2 * Y ^ 3 * Z\<^sup>2) =
+    {monomial 2 0 + monomial 3 2, monomial 3 1 + monomial 2 2}"
+  by eval
+
+lemma
+  "- 1 * X\<^sup>2 * Z ^ 7 + - 2 * Y ^ 3 * Z\<^sup>2 = - X\<^sup>2 * Z ^ 7 + - 2 * Y ^ 3 * Z\<^sup>2"
+  by eval
+
+lemma
+  "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 + X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2 = X\<^sup>2 * Z ^ 7 + X\<^sup>2 * Z ^ 4"
+by eval
+
+lemma
+  "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 - X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2 =
+    X\<^sup>2 * Z ^ 7 - X\<^sup>2 * Z ^ 4"
+by eval
+
+lemma
+  "lookup (X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 + 2) (sparse\<^sub>0 [(0, 2), (2, 7)]) = 1"
+by eval
+
+lemma
+  "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 \<noteq>
+   X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2"
+by eval
+
+
+lemma
+  "0 * X^2 * Z^7 + 0 * Y^3*Z\<^sup>2 = 0"
+by eval
+
+lemma
+  "monom_mult 3 (sparse\<^sub>0 [(1, 2::nat)]) (X\<^sup>2 * Z + 2 * Y ^ 3 * Z\<^sup>2) =
+    3 * Y\<^sup>2 * Z * X\<^sup>2 + 6 * Y ^ 5 * Z\<^sup>2"
+by eval
+
+lemma
+  "monomial (-4) (sparse\<^sub>0 [(0, 2::nat)]) = - 4 * X\<^sup>2"
+by eval
+
+lemma
+  "monomial (0::rat) (sparse\<^sub>0 [(0::nat, 2::nat)]) = 0"
+  by eval
+
+lemma
+  "(X\<^sup>2 * Z + 2 * Y ^ 3 * Z\<^sup>2) * (X\<^sup>2 * Z ^ 3 + - 2 * Y ^ 3 * Z\<^sup>2) =
+    X ^ 4 * Z ^ 4 + - 2 * X\<^sup>2 * Z ^ 3 * Y ^ 3 +
+ - 4 * Y ^ 6 * Z ^ 4 + 2 * Y ^ 3 * Z ^ 5 * X\<^sup>2"
+  by eval
+
+end
+
+subsection \<open>Code setup for type MPoly\<close>
+
+text \<open>postprocessing from \<open>Var\<^sub>0, Const\<^sub>0\<close> to \<open>Var, Const\<close>.\<close>
+
+lemmas [code_post] =
+  plus_mpoly.abs_eq[symmetric]
+  times_mpoly.abs_eq[symmetric]
+  MPoly_numeral
+  MPoly_power
+  one_mpoly_def[symmetric]
+  Var.abs_eq[symmetric]
+  Const.abs_eq[symmetric]
+
+instantiation mpoly::("{equal, zero}")equal begin
+
+lift_definition equal_mpoly:: "'a mpoly \<Rightarrow> 'a mpoly \<Rightarrow> bool" is HOL.equal .
+
+instance proof standard qed (transfer, rule equal_eq)
+
+end
+
+experiment begin interpretation trivariate .
+
+lemmas [mpoly_simps] = plus_mpoly.abs_eq
+
+value [code] "content_primitive (4 * X * Y^2 * Z^3 + 6 * X\<^sup>2 * Y^4 + 8 * X\<^sup>2 * Y^5)::(int \<times> int mpoly)"
+lemma "content_primitive (4 * X * Y^2 * Z^3 + 6 * X\<^sup>2 * Y^4 + 8 * X\<^sup>2 * Y^5) =
+    (2::int, 2 * X * Y\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y ^ 4 + 4 * X\<^sup>2 * Y ^ 5)"
+  by eval
+
+end
 
 end (* theory *)
