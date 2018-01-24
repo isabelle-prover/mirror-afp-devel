@@ -901,13 +901,8 @@ fun export_code_cmd' seris tmp_export_code f_err filename_thy raw_cs thy =
           end) seris
       end)
 
-fun scan thy pos str =
-  Symbol.explode str
-  |> Source.of_list
-  |> Token.source (Thy_Header.get_keywords' thy) pos
-  |> Source.exhaust;
-
-fun mk_term ctxt s = fst (Scan.pass (Context.Proof ctxt) Args.term (scan ctxt Position.none s))
+fun mk_term ctxt s =
+  fst (Scan.pass (Context.Proof ctxt) Args.term (Token.explode0 (Thy_Header.get_keywords' ctxt) s))
 
 fun mk_free ctxt s l =
   let val t_s = mk_term ctxt s in
