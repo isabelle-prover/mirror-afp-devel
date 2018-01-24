@@ -202,21 +202,21 @@ definition big_d' :: "nat list \<Rightarrow> nat \<Rightarrow> nat list"
       (let k = n - l in
       map (\<lambda>j. dij a b i (j + k) - 1) (filter (\<lambda>j. y ! j \<ge> eij a b i (j + k)) [0 ..< length y])))"
 
-definition maxy_impl :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_y_impl :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxy_impl x j =
+    "max_y_impl x j =
       (if j < length b \<and> big_e x j \<noteq> [] then Min (set (big_e x j))
       else Max (set a))"
 
-definition maxx_impl :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_x_impl :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxx_impl y i =
+    "max_x_impl y i =
       (if i < length a \<and> big_d y i \<noteq> [] then Min (set (big_d y i))
       else Max (set b))"
 
-definition maxx_impl' :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_x_impl' :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxx_impl' y i =
+    "max_x_impl' y i =
       (if i < length a \<and> big_d' y i \<noteq> [] then Min (set (big_d' y i))
       else Max (set b))"
 
@@ -227,11 +227,11 @@ definition cond_a :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
 definition cond_b :: "nat list \<Rightarrow> bool"
   where
     "cond_b xs \<longleftrightarrow> (\<forall>k\<le>length a.
-      take k a \<bullet> take k xs \<le> b \<bullet> (map (maxy_impl (take k xs)) [0 ..< length b]))"
+      take k a \<bullet> take k xs \<le> b \<bullet> (map (max_y_impl (take k xs)) [0 ..< length b]))"
 
 definition boundr_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
-    "boundr_impl x y \<longleftrightarrow> (\<forall>j<length b. y ! j \<le> maxy_impl x j)"
+    "boundr_impl x y \<longleftrightarrow> (\<forall>j<length b. y ! j \<le> max_y_impl x j)"
 
 definition cond_d :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
@@ -240,13 +240,13 @@ definition cond_d :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
 definition pdprodr_impl :: "nat list \<Rightarrow> bool"
   where
     "pdprodr_impl ys \<longleftrightarrow> (\<forall>l\<le>length b.
-      take l b \<bullet> take l ys \<le> a \<bullet> map (maxx_impl (take l ys)) [0 ..< length a])"
+      take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl (take l ys)) [0 ..< length a])"
 
 definition pdprodl_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
     "pdprodl_impl x y \<longleftrightarrow> (\<forall>k\<le>length a. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
-definition "boundl_impl x y \<longleftrightarrow> (\<forall>i<length a. x ! i \<le> maxx_impl y i)"
+definition "boundl_impl x y \<longleftrightarrow> (\<forall>i<length a. x ! i \<le> max_x_impl y i)"
 
 definition static_bounds
   where
@@ -283,39 +283,39 @@ lemma big_d':
   "length ys \<le> length b \<Longrightarrow> set (big_d' a b ys i) = hlde_ops.Di' a b i ys"
   by (auto simp: hlde_ops.Di'_def big_d'_def Let_def)
 
-lemma maxy_impl:
-  "maxy_impl a b x j = hlde_ops.maxy a b x j"
-  by (simp add: maxy_impl_def big_e hlde_ops.maxy_def set_empty [symmetric])
+lemma max_y_impl:
+  "max_y_impl a b x j = hlde_ops.max_y a b x j"
+  by (simp add: max_y_impl_def big_e hlde_ops.max_y_def set_empty [symmetric])
 
-lemma maxx_impl:
-  "maxx_impl a b y i = hlde_ops.maxx a b y i"
-  by (simp add: maxx_impl_def big_d hlde_ops.maxx_def set_empty [symmetric])
+lemma max_x_impl:
+  "max_x_impl a b y i = hlde_ops.max_x a b y i"
+  by (simp add: max_x_impl_def big_d hlde_ops.max_x_def set_empty [symmetric])
 
-lemma maxx_impl':
+lemma max_x_impl':
   assumes "length y \<le> length b"
-  shows "maxx_impl' a b y i = hlde_ops.maxx' a b y i"
-  by (simp add: maxx_impl'_def big_d' [OF assms] hlde_ops.maxx'_def set_empty [symmetric])
+  shows "max_x_impl' a b y i = hlde_ops.max_x' a b y i"
+  by (simp add: max_x_impl'_def big_d' [OF assms] hlde_ops.max_x'_def set_empty [symmetric])
 
 lemma (in hlde) cond_a [simp]: "cond_a b x y = cond_A x y"
   by (simp add: cond_a_def cond_A_def)
 
 lemma (in hlde) cond_b [simp]: "cond_b a b x = cond_B x"
-  using maxy_impl by (auto simp: cond_b_def cond_B_def) presburger+
+  using max_y_impl by (auto simp: cond_b_def cond_B_def) presburger+
 
 lemma (in hlde) boundr_impl [simp]: "boundr_impl a b x y = boundr x y"
-  by (simp add: boundr_impl_def boundr_def maxy_impl)
+  by (simp add: boundr_impl_def boundr_def max_y_impl)
 
 lemma (in hlde) cond_d [simp]: "cond_d a b x y = cond_D x y"
   by (simp add: cond_d_def cond_D_def)
 
 lemma (in hlde) pdprodr_impl [simp]: "pdprodr_impl a b y = subprodr y"
-  using maxx_impl by (auto simp: pdprodr_impl_def subprodr_def) presburger+
+  using max_x_impl by (auto simp: pdprodr_impl_def subprodr_def) presburger+
 
 lemma (in hlde) pdprodl_impl [simp]: "pdprodl_impl a b x y = subprodl x y"
   by (simp add: pdprodl_impl_def subprodl_def)
 
 lemma (in hlde) cond_bound_impl [simp]: "boundl_impl a b x y = boundl x y"
-  by (simp add: boundl_impl_def boundl_def maxx_impl)
+  by (simp add: boundl_impl_def boundl_def max_x_impl)
 
 lemma (in hlde) check [simp]:
   "check' a b =
@@ -347,12 +347,12 @@ proof -
       using le and that by (intro le_take) (auto simp: len)
     ultimately have "take k a \<bullet> take k u \<le> take k a \<bullet> take k x"
       by (intro dotprod_le_right) (auto simp: len)
-    also have "\<dots> \<le> b \<bullet> map (maxy (take k x)) [0..<n]"
+    also have "\<dots> \<le> b \<bullet> map (max_y (take k x)) [0..<n]"
       using k and B by (auto simp: cond_B_def)
-    also have "\<dots> \<le> b \<bullet> map (maxy (take k u)) [0..<n]"
-      using le_imp_maxy_ge [OF * [OF k]]
+    also have "\<dots> \<le> b \<bullet> map (max_y (take k u)) [0..<n]"
+      using le_imp_max_y_ge [OF * [OF k]]
       using k by (auto simp: len intro!: dotprod_le_right less_eqI)
-    finally show "take k a \<bullet> take k u \<le> b \<bullet> map (maxy (take k u)) [0..<n]" .
+    finally show "take k a \<bullet> take k u \<le> b \<bullet> map (max_y (take k u)) [0..<n]" .
   qed
 next
   assume subprodr: "subprodr y"
@@ -365,17 +365,17 @@ next
       using le and that by (intro le_take) (auto simp: len)
     ultimately have "take l b \<bullet> take l v \<le> take l b \<bullet> take l y"
       by (intro dotprod_le_right) (auto simp: len)
-    also have "\<dots> \<le> a \<bullet> map (maxx (take l y)) [0..<m]"
+    also have "\<dots> \<le> a \<bullet> map (max_x (take l y)) [0..<m]"
       using l and subprodr by (auto simp: subprodr_def)
-    also have "\<dots> \<le> a \<bullet> map (maxx (take l v)) [0..<m]"
-      using le_imp_maxx_ge [OF * [OF l]]
+    also have "\<dots> \<le> a \<bullet> map (max_x (take l v)) [0..<m]"
+      using le_imp_max_x_ge [OF * [OF l]]
       using l by (auto simp: len intro!: dotprod_le_right less_eqI)
-    finally show "take l b \<bullet> take l v \<le> a \<bullet> map (maxx (take l v)) [0..<m]" .
+    finally show "take l b \<bullet> take l v \<le> a \<bullet> map (max_x (take l v)) [0..<m]" .
   qed
 next
   assume C: "boundr x y"
   show "boundr u v"
-    using le_imp_maxy_ge [OF \<open>u \<le>\<^sub>v x\<close>] and C and le
+    using le_imp_max_y_ge [OF \<open>u \<le>\<^sub>v x\<close>] and C and le
     by (auto simp: boundr_def len less_eq_def) (meson order_trans)
 next
   assume "a \<bullet> u = b \<bullet> v" and "cond_D x y"
@@ -528,7 +528,7 @@ proof -
             by (auto simp: non_special_solutions_def minimize_def dest!: minimize_wrtD)
           ultimately show False
             using less
-            apply (auto simp: boundr_def sij_def Special_Solutions_def maxy_def)
+            apply (auto simp: boundr_def sij_def Special_Solutions_def max_y_def)
             apply (drule_tac x = j in spec) apply (auto simp: if_P [OF ne])
             using eij_neq_0 by fastforce
         next
@@ -886,14 +886,14 @@ fun cond1
     "cond1 ys [] s \<longleftrightarrow> True"
   | "cond1 ys (x # xs) s \<longleftrightarrow> s \<le> b \<bullet> ys \<and> x \<le> maxne0_impl ys b"
 
-lemma maxx_impl'_conv:
-  "i < length a \<Longrightarrow> length y = length b \<Longrightarrow> maxx_impl' a b y i = maxx_impl a b y i"
-  by (auto simp: maxx_impl'_def maxx_impl_def Let_def big_d'_def big_d_def)
+lemma max_x_impl'_conv:
+  "i < length a \<Longrightarrow> length y = length b \<Longrightarrow> max_x_impl' a b y i = max_x_impl a b y i"
+  by (auto simp: max_x_impl'_def max_x_impl_def Let_def big_d'_def big_d_def)
 
 fun cond2
   where
     "cond2 [] s \<longleftrightarrow> True"
-  | "cond2 (y # ys) s \<longleftrightarrow> y \<le> Max (set a) \<and> s \<le> a \<bullet> map (maxx_impl' a b (y # ys)) [0 ..< length a]"
+  | "cond2 (y # ys) s \<longleftrightarrow> y \<le> Max (set a) \<and> s \<le> a \<bullet> map (max_x_impl' a b (y # ys)) [0 ..< length a]"
 
 lemma le_imp_big_d'_subset:
   assumes "v \<le>\<^sub>v y"
@@ -927,14 +927,14 @@ proof -
       (meson List.finite_set Max_ge diff_le_self le_trans less_le_trans nth_mem)
 qed
 
-lemma le_imp_maxx_impl'_ge:
+lemma le_imp_max_x_impl'_ge:
   assumes "v \<le>\<^sub>v y"
     and "i < length a"
-  shows "maxx_impl' a b v i \<ge> maxx_impl' a b y i"
+  shows "max_x_impl' a b v i \<ge> max_x_impl' a b y i"
   using assms and le_imp_big_d'_subset [OF assms(1), of i]
     and Min_in [OF finite_big_d', of y i]
     and finite_big_d' and Min_le
-  by (auto simp: maxx_impl'_def Let_def intro!: Min_big_d'_le [of i y])
+  by (auto simp: max_x_impl'_def Let_def intro!: Min_big_d'_le [of i y])
     (fastforce simp: big_d'_def intro: leI)
 
 end
@@ -948,8 +948,8 @@ proof -
   note 1 = this
 
   { fix x x' xs s s' assume "cond2 a b (x # xs) s" and "x' \<le> x" and "s' \<le> s"
-    moreover have "map (maxx_impl' a b (x # xs)) [0..<length a] \<le>\<^sub>v map (maxx_impl' a b (x' # xs)) [0..<length a]"
-      using le_imp_maxx_impl'_ge [of "x' # xs" "x # xs"] and \<open>x' \<le> x\<close>
+    moreover have "map (max_x_impl' a b (x # xs)) [0..<length a] \<le>\<^sub>v map (max_x_impl' a b (x' # xs)) [0..<length a]"
+      using le_imp_max_x_impl'_ge [of "x' # xs" "x # xs"] and \<open>x' \<le> x\<close>
       by (auto simp: le_Cons less_eq_def All_less_Suc2)
     ultimately have "cond2 a b (x' # xs) s'"
       by (auto simp: le_Cons) (metis dotprod_le_right le_trans length_map map_nth) }
@@ -1012,19 +1012,19 @@ proof
   { fix l assume l: "l \<le> length b"
     have "take l b \<bullet> take l ys \<le> b \<bullet> ys"
       using l and assms by (simp add: dotprod_le_take)
-    also have "\<dots> \<le> a \<bullet> map (maxx_impl' a b ys) [0 ..< length a]"
+    also have "\<dots> \<le> a \<bullet> map (max_x_impl' a b ys) [0 ..< length a]"
       using * apply (auto simp: suffs.simps cond_cons_def split: list.splits)
       apply (drule_tac x = "0" in spec)
         apply (cases ys)
        apply auto
       done
-    also have "\<dots> = a \<bullet> map (maxx_impl a b ys) [0 ..< length a]"
-      using maxx_impl'_conv [OF _ assms, of _ a]
+    also have "\<dots> = a \<bullet> map (max_x_impl a b ys) [0 ..< length a]"
+      using max_x_impl'_conv [OF _ assms, of _ a]
       by (metis (mono_tags, lifting) atLeastLessThan_iff map_eq_conv set_upt)
-    also have "\<dots> \<le> a \<bullet> map (maxx_impl a b (take l ys)) [0 ..< length a]"
-      unfolding maxx_impl using hlde_ops.maxx_le_take [OF eq_imp_le, OF assms, of a]
+    also have "\<dots> \<le> a \<bullet> map (max_x_impl a b (take l ys)) [0 ..< length a]"
+      unfolding max_x_impl using hlde_ops.max_x_le_take [OF eq_imp_le, OF assms, of a]
       by (intro dotprod_le_right) (auto simp: less_eq_def)
-    finally have "take l b \<bullet> take l ys \<le> a \<bullet> map (maxx_impl a b (take l ys)) [0 ..< length a]" .
+    finally have "take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl a b (take l ys)) [0 ..< length a]" .
   }
   ultimately show "?R" by (auto simp: pdprodr_impl_def)
 next
@@ -1034,15 +1034,15 @@ next
   { fix i assume i: "i \<le> length b"
     have "drop i b \<bullet> drop i ys \<le> b \<bullet> ys"
       using i and assms by (simp add: dotprod_le_drop)
-    also have "\<dots> \<le> a \<bullet> map (maxx_impl a b ys) [0 ..< length a]"
+    also have "\<dots> \<le> a \<bullet> map (max_x_impl a b ys) [0 ..< length a]"
       using * and assms by (auto simp: pdprodr_impl_def)
-    also have "\<dots> = a \<bullet> map (maxx_impl' a b ys) [0 ..< length a]"
-      using maxx_impl'_conv [OF _ assms, of _ a]
+    also have "\<dots> = a \<bullet> map (max_x_impl' a b ys) [0 ..< length a]"
+      using max_x_impl'_conv [OF _ assms, of _ a]
       by (metis (mono_tags, lifting) atLeastLessThan_iff map_eq_conv set_upt)
-    also have "\<dots> \<le> a \<bullet> map (maxx_impl' a b (drop i ys)) [0 ..< length a]"
-      using hlde_ops.maxx'_le_drop [OF eq_imp_le, OF assms, of a]
-      by (intro dotprod_le_right) (auto simp: less_eq_def maxx_impl' i assms)
-    finally have "drop i b \<bullet> drop i ys \<le> a \<bullet> map (maxx_impl' a b (drop i ys)) [0 ..< length a]" .
+    also have "\<dots> \<le> a \<bullet> map (max_x_impl' a b (drop i ys)) [0 ..< length a]"
+      using hlde_ops.max_x'_le_drop [OF eq_imp_le, OF assms, of a]
+      by (intro dotprod_le_right) (auto simp: less_eq_def max_x_impl' i assms)
+    finally have "drop i b \<bullet> drop i ys \<le> a \<bullet> map (max_x_impl' a b (drop i ys)) [0 ..< length a]" .
   }
   ultimately show "?L"
     using assms

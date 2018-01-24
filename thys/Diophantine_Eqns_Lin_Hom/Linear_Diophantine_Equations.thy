@@ -171,17 +171,17 @@ lemma finite_Di':
   by (rule finite_subset [of _ "(\<lambda>j. dij i (j + length b - length y) - 1) ` {0 ..< length y}"])
     (auto simp: Di'_def)
 
-definition maxy :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_y :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxy x j = (if j < n \<and> Ej j x \<noteq> {} then Min (Ej j x) else Max (set a))"
+    "max_y x j = (if j < n \<and> Ej j x \<noteq> {} then Min (Ej j x) else Max (set a))"
 
-definition maxx :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_x :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxx y i = (if i < m \<and> Di i y \<noteq> {} then Min (Di i y) else Max (set b))"
+    "max_x y i = (if i < m \<and> Di i y \<noteq> {} then Min (Di i y) else Max (set b))"
 
-definition maxx' :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
+definition max_x' :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "maxx' y i = (if i < m \<and> Di' i y \<noteq> {} then Min (Di' i y) else Max (set b))"
+    "max_x' y i = (if i < m \<and> Di' i y \<noteq> {} then Min (Di' i y) else Max (set b))"
 
 lemma Min_Ej_le:
   assumes "j < n"
@@ -239,23 +239,23 @@ proof -
       (meson List.finite_set Max_ge diff_le_self le_trans less_le_trans nth_mem)
 qed
 
-lemma maxy_le_take:
+lemma max_y_le_take:
   assumes "length x \<le> m"
-  shows "maxy x j \<le> maxy (take k x) j"
+  shows "max_y x j \<le> max_y (take k x) j"
   using assms and Min_Ej_le and Ej_take_subset and Min.antimono [OF _ _ finite_Ej]
-  by (auto simp: maxy_def) blast
+  by (auto simp: max_y_def) blast
 
-lemma maxx_le_take:
+lemma max_x_le_take:
   assumes "length y \<le> n"
-  shows "maxx y i \<le> maxx (take l y) i"
+  shows "max_x y i \<le> max_x (take l y) i"
   using assms and Min_Di_le and Di_take_subset and Min.antimono [OF _ _ finite_Di]
-  by (auto simp: maxx_def) blast
+  by (auto simp: max_x_def) blast
 
-lemma maxx'_le_drop:
+lemma max_x'_le_drop:
   assumes "length y \<le> n"
-  shows "maxx' y i \<le> maxx' (drop l y) i"
+  shows "max_x' y i \<le> max_x' (drop l y) i"
   using assms and Min_Di'_le and Di'_drop_subset and Min.antimono [OF _ _ finite_Di']
-  by (auto simp: maxx'_def) blast
+  by (auto simp: max_x'_def) blast
 
 end
 
@@ -898,10 +898,10 @@ definition "cond_A xs ys \<longleftrightarrow> (\<forall>x\<in>set xs. x \<le> m
 
 (*B*)
 definition "cond_B x \<longleftrightarrow>
-  (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> map (maxy (take k x)) [0 ..< n])"
+  (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> map (max_y (take k x)) [0 ..< n])"
 
 (*C*)
-definition "boundr x y \<longleftrightarrow> (\<forall>j<n. y ! j \<le> maxy x j)"
+definition "boundr x y \<longleftrightarrow> (\<forall>j<n. y ! j \<le> max_y x j)"
 
 (*D*)
 definition "cond_D x y \<longleftrightarrow> (\<forall>l\<le>n. take l b \<bullet> take l y \<le> a \<bullet> x)"
@@ -911,13 +911,13 @@ subsection \<open>New conditions: facilitating generation of candidates from rig
 
 (*condition on right sub-dotproduct*)
 definition "subprodr y \<longleftrightarrow>
-  (\<forall>l\<le>n. take l b \<bullet> take l y \<le> a \<bullet> map (maxx (take l y)) [0 ..< m])"
+  (\<forall>l\<le>n. take l b \<bullet> take l y \<le> a \<bullet> map (max_x (take l y)) [0 ..< m])"
 
 (*condition on left sub-dotproduct*)
 definition "subprodl x y \<longleftrightarrow> (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
 (*bound on elements of left vector*)
-definition "boundl x y \<longleftrightarrow> (\<forall>i<m. x ! i \<le> maxx y i)"
+definition "boundl x y \<longleftrightarrow> (\<forall>i<m. x ! i \<le> max_x y i)"
 
 lemma boundr:
   assumes min: "(x, y) \<in> Minimal_Solutions"
@@ -934,11 +934,11 @@ proof (unfold boundr_def, intro allI impI)
     using assms ass le_less_trans by linarith
   consider (notemp) "Ej j x \<noteq> {}"  | (empty) " Ej j x = {}"
     by blast
-  then show "y ! j \<le> maxy x j"
+  then show "y ! j \<le> max_y x j"
   proof (cases)
     case notemp
-    have maxy_def: "maxy x j =  Min (Ej j x)"
-      using j_less_l maxy_def notemp by auto
+    have max_y_def: "max_y x j =  Min (Ej j x)"
+      using j_less_l max_y_def notemp by auto
     have fin_e: "finite (Ej j x)"
       using finite_Ej [of j x] by auto
     have e_def': "\<forall>e \<in> Ej j x. (\<exists>i<length x. x ! i \<ge> dij i j \<and> eij i j - 1 = e)"
@@ -954,7 +954,7 @@ proof (unfold boundr_def, intro allI impI)
       with non_special_solution_non_minimal [of x y i j]
         and i and ln and assms and is_sol and j_less_l
       have "case sij i j of (u, v) \<Rightarrow> u @ v \<le>\<^sub>v x @ y"
-        by (force simp: maxy_def)
+        by (force simp: max_y_def)
       then have cs:"case sij i j of (u, v) \<Rightarrow> u @ v <\<^sub>v x @ y"
         using assms by(auto simp: Special_Solutions_def) (metis append_eq_append_conv
             i(1) j_less_l length_list_update length_replicate sij_def
@@ -982,7 +982,7 @@ proof (unfold boundr_def, intro allI impI)
       using assms and max_coeff_bound and maxne0_le_Max
       using le_trans by blast
     then  show ?thesis
-      using empty j_less_l ln maxy_def by auto
+      using empty j_less_l ln max_y_def by auto
   qed
 qed
 
@@ -1001,11 +1001,11 @@ proof (unfold boundl_def, intro allI impI)
     using assms ass le_less_trans by linarith
   consider (notemp) "Di i y \<noteq> {}"  | (empty) " Di i y = {}"
     by blast
-  then show "x ! i \<le> maxx y i"
+  then show "x ! i \<le> max_x y i"
   proof (cases)
     case notemp
-    have maxx_def: "maxx y i =  Min (Di i y)"
-      using i_less_l maxx_def notemp by auto
+    have max_x_def: "max_x y i =  Min (Di i y)"
+      using i_less_l max_x_def notemp by auto
     have fin_e: "finite (Di i y)"
       using finite_Di [of i y] by auto
     have e_def': "\<forall>e \<in> Di i y. (\<exists>j<length y. y ! j \<ge> eij i j \<and> dij i j - 1 = e)"
@@ -1021,7 +1021,7 @@ proof (unfold boundl_def, intro allI impI)
       with non_special_solution_non_minimal [of x y i j]
         and j and ln and assms and is_sol and i_less_l
       have "case sij i j of (u, v) \<Rightarrow> u @ v \<le>\<^sub>v x @ y"
-        by (force simp: maxx_def)
+        by (force simp: max_x_def)
       then have cs: "case sij i j of (u, v) \<Rightarrow> u @ v <\<^sub>v x @ y"
         using assms by(auto simp: Special_Solutions_def) (metis append_eq_append_conv
             j(1) i_less_l length_list_update length_replicate sij_def
@@ -1050,7 +1050,7 @@ proof (unfold boundl_def, intro allI impI)
       using assms and max_coeff_bound and maxne0_le_Max
       using le_trans by blast
     then  show ?thesis
-      using empty i_less_l ln maxx_def by auto
+      using empty i_less_l ln max_x_def by auto
   qed
 qed
 
@@ -1086,19 +1086,19 @@ proof -
     from k have "take k a \<bullet> take k x \<le> a \<bullet> x"
       using dotprod_le_take ln by blast
     also have "... = b \<bullet> y" by fact
-    also have map_b_dot_p: "... \<le> b \<bullet> map (maxy x) [0..<n]" (is "_ \<le> _ b \<bullet> ?nt")
+    also have map_b_dot_p: "... \<le> b \<bullet> map (max_y x) [0..<n]" (is "_ \<le> _ b \<bullet> ?nt")
       using non_spec and less_eq_def and ln and boundr and min
       by (fastforce intro!: dotprod_le_right simp: boundr_def)
-    also have "... \<le> b \<bullet> map (maxy (take k x)) [0..<n]" (is "_ \<le> _ \<bullet> ?t")
+    also have "... \<le> b \<bullet> map (max_y (take k x)) [0..<n]" (is "_ \<le> _ \<bullet> ?t")
     proof -
       have "\<forall>j<n. ?nt!j \<le> ?t!j"
-        using min and ln and maxy_le_take and k by auto
+        using min and ln and max_y_le_take and k by auto
       then have "?nt \<le>\<^sub>v ?t"
         using less_eq_def by auto
       then show ?thesis
         by (simp add:  dotprod_le_right)
     qed
-    finally show "take k a \<bullet> take k x \<le> b \<bullet> map (maxy (take k x)) [0..<n]"
+    finally show "take k a \<bullet> take k x \<le> b \<bullet> map (max_y (take k x)) [0..<n]"
       by (auto simp: cond_B_def)
   qed
 
@@ -1108,19 +1108,19 @@ proof -
     from l have "take l b \<bullet> take l y \<le> b \<bullet> y"
       using dotprod_le_take ln by blast
     also have "... = a \<bullet> x" by (simp add: sol)
-    also have map_b_dot_p: "... \<le> a \<bullet> map (maxx y) [0..<m]" (is "_ \<le> _ a \<bullet> ?nt")
+    also have map_b_dot_p: "... \<le> a \<bullet> map (max_x y) [0..<m]" (is "_ \<le> _ a \<bullet> ?nt")
       using non_spec and less_eq_def and ln and boundl and min
       by (fastforce intro!: dotprod_le_right simp: boundl_def)
-    also have "... \<le> a \<bullet> map (maxx (take l y)) [0..<m]" (is "_ \<le> _ \<bullet> ?t")
+    also have "... \<le> a \<bullet> map (max_x (take l y)) [0..<m]" (is "_ \<le> _ \<bullet> ?t")
     proof -
       have "\<forall>i<m. ?nt ! i \<le> ?t ! i"
-        using min and ln and maxx_le_take and l by auto
+        using min and ln and max_x_le_take and l by auto
       then have "?nt \<le>\<^sub>v ?t"
         using less_eq_def by auto
       then show ?thesis
         by (simp add:  dotprod_le_right)
     qed
-    finally show "take l b \<bullet> take l y \<le> a \<bullet> map (maxx (take l y)) [0..<m]"
+    finally show "take l b \<bullet> take l y \<le> a \<bullet> map (max_x (take l y)) [0..<m]"
       by (auto simp: cond_B_def)
   qed
 
@@ -1139,24 +1139,24 @@ lemma le_imp_Ej_subset:
   shows "Ej j u \<subseteq> Ej j x"
   using assms and le_trans by (force simp: Ej_def less_eq_def dij_def eij_def)
 
-lemma le_imp_maxy_ge:
+lemma le_imp_max_y_ge:
   assumes "u \<le>\<^sub>v x"
     and "length x \<le> m"
-  shows "maxy u j \<ge> maxy x j"
+  shows "max_y u j \<ge> max_y x j"
   using assms and le_imp_Ej_subset and Min_Ej_le [of j, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Ej maxy_def order_refl subsetCE)
+  by (metis Min.antimono Min_in emptyE finite_Ej max_y_def order_refl subsetCE)
 
 lemma le_imp_Di_subset:
   assumes "v \<le>\<^sub>v y"
   shows "Di i v \<subseteq> Di i y"
   using assms and le_trans by (force simp: Di_def less_eq_def dij_def eij_def)
 
-lemma le_imp_maxx_ge:
+lemma le_imp_max_x_ge:
   assumes "v \<le>\<^sub>v y"
     and "length y \<le> n"
-  shows "maxx v i \<ge> maxx y i"
+  shows "max_x v i \<ge> max_x y i"
   using assms and le_imp_Di_subset and Min_Di_le [of i, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Di maxx_def order_refl subsetCE)
+  by (metis Min.antimono Min_in emptyE finite_Di max_x_def order_refl subsetCE)
 
 end
 
