@@ -4,23 +4,11 @@ section \<open>Proving Falling Factorial of a Sum with Combinatorics\<close>
 
 theory Falling_Factorial_Sum_Combinatorics
 imports
-  "Discrete_Summation.Factorials"
-  "Injectivity_Solver3"
+  Discrete_Summation.Factorials
+  Bell_Numbers_Spivey.Injectivity_Solver
 begin
 
 subsection \<open>Preliminaries\<close>
-
-subsubsection \<open>Addition to List Theory\<close>
-
-lemma finite_lists_distinct_length_eq [intro]:
-  assumes "finite A"
-  shows "finite {xs. length xs = n \<and> distinct xs \<and> set xs \<subseteq> A}" (is "finite ?S")
-proof -
-  have "finite {xs. set xs \<subseteq> A \<and> length xs = n}"
-    using \<open>finite A\<close> by (rule finite_lists_length_eq)
-  moreover have "?S \<subseteq> {xs. set xs \<subseteq> A \<and> length xs = n}" by auto
-  ultimately show ?thesis using finite_subset by auto
-qed
 
 subsubsection \<open>Addition to Factorials Theory\<close>
 

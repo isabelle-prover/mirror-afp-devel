@@ -45,10 +45,7 @@ fun U_sum :: "'op rose_tree \<Rightarrow> real" where
 "U_sum (T f ts) = U f (map state ts) + sum_list (map U_sum ts)"
 
 lemma t_sum_a_sum: "wf ot \<Longrightarrow> cost_sum ot = acost_sum ot - \<Phi>(state ot)"
-apply(induction ot)
-apply (auto simp: acost_def Let_def sum_list_subtractf cong: sum_list_cong)
-apply (simp add: o_def)
-done
+  by (induction ot) (auto simp: acost_def Let_def sum_list_subtractf cong: map_cong)
 
 corollary t_sum_le_a_sum: "wf ot \<Longrightarrow> cost_sum ot \<le> acost_sum ot"
 by (metis add.commute t_sum_a_sum diff_add_cancel le_add_same_cancel2 ppos[OF inv_state])

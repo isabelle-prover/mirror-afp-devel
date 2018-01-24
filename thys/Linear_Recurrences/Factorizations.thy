@@ -5,7 +5,7 @@
 section \<open>Factorizations of polynomials\<close>
 theory Factorizations
 imports
-  Complex_Main 
+  Complex_Main
   Linear_Recurrences_Misc
   "HOL-Computational_Algebra.Computational_Algebra"
   "HOL-Computational_Algebra.Polynomial_Factorial"
@@ -27,12 +27,12 @@ definition interp_alt_factorization where
   "interp_alt_factorization = (\<lambda>(a,cs). Polynomial.smult a (\<Prod>(c,n)\<leftarrow>cs. [:1,-c:] ^ Suc n))"
 
 definition is_factorization_of where
-  "is_factorization_of fctrs p = 
+  "is_factorization_of fctrs p =
      (interp_factorization fctrs = p \<and> distinct (map fst (snd fctrs)))"
 
 definition is_alt_factorization_of where
-  "is_alt_factorization_of fctrs p = 
-     (interp_alt_factorization fctrs = p \<and> 0 \<notin> set (map fst (snd fctrs)) \<and> 
+  "is_alt_factorization_of fctrs p =
+     (interp_alt_factorization fctrs = p \<and> 0 \<notin> set (map fst (snd fctrs)) \<and>
      distinct (map fst (snd fctrs)))"
 
 text \<open>
@@ -42,7 +42,7 @@ lemma interp_factorization_reflect:
   assumes "(0::'a::idom) \<notin> fst ` set (snd fctrs)"
   shows   "reflect_poly (interp_factorization fctrs) = interp_alt_factorization fctrs"
 proof -
-  have "reflect_poly (interp_factorization fctrs) = 
+  have "reflect_poly (interp_factorization fctrs) =
           Polynomial.smult (fst fctrs) (\<Prod>x\<leftarrow>snd fctrs. reflect_poly [:- fst x, 1:] ^ Suc (snd x))"
     by (simp add: interp_factorization_def interp_alt_factorization_def case_prod_unfold
              reflect_poly_smult reflect_poly_prod_list reflect_poly_power o_def del: power_Suc)
@@ -58,7 +58,7 @@ lemma interp_alt_factorization_reflect:
   assumes "(0::'a::idom) \<notin> fst ` set (snd fctrs)"
   shows   "reflect_poly (interp_alt_factorization fctrs) = interp_factorization fctrs"
 proof -
-  have "reflect_poly (interp_alt_factorization fctrs) = 
+  have "reflect_poly (interp_alt_factorization fctrs) =
           Polynomial.smult (fst fctrs) (\<Prod>x\<leftarrow>snd fctrs. reflect_poly [:1, - fst x:] ^ Suc (snd x))"
     by (simp add: interp_factorization_def interp_alt_factorization_def case_prod_unfold
              reflect_poly_smult reflect_poly_prod_list reflect_poly_power o_def del: power_Suc)
@@ -77,7 +77,7 @@ qed
 
 
 lemma coeff_0_interp_factorization:
-  "coeff (interp_factorization fctrs) 0 = (0 :: 'a :: idom) \<longleftrightarrow> 
+  "coeff (interp_factorization fctrs) 0 = (0 :: 'a :: idom) \<longleftrightarrow>
      fst fctrs = 0 \<or> 0 \<in> fst ` set (snd fctrs)"
   by (force simp: interp_factorization_def case_prod_unfold coeff_0_prod_list o_def
                   coeff_0_power prod_list_zero_iff simp del: power_Suc)
@@ -86,14 +86,14 @@ lemma reflect_factorization:
   assumes "coeff p 0 \<noteq> (0::'a::idom)"
   assumes "is_factorization_of fctrs p"
   shows   "is_alt_factorization_of fctrs (reflect_poly p)"
-  using assms by (force simp: interp_factorization_reflect is_factorization_of_def 
+  using assms by (force simp: interp_factorization_reflect is_factorization_of_def
                     is_alt_factorization_of_def coeff_0_interp_factorization)
 
 lemma reflect_factorization':
   assumes "coeff p 0 \<noteq> (0::'a::idom)"
   assumes "is_alt_factorization_of fctrs p"
   shows   "is_factorization_of fctrs (reflect_poly p)"
-  using assms by (force simp: interp_alt_factorization_reflect is_factorization_of_def 
+  using assms by (force simp: interp_alt_factorization_reflect is_factorization_of_def
                     is_alt_factorization_of_def coeff_0_interp_factorization)
 
 lemma zero_in_factorization_iff:
@@ -101,7 +101,7 @@ lemma zero_in_factorization_iff:
   shows   "coeff p 0 = 0 \<longleftrightarrow> p = 0 \<or> (0::'a::idom) \<in> fst ` set (snd fctrs)"
 proof (cases "p = 0")
   assume "p \<noteq> 0"
-  with assms have [simp]: "fst fctrs \<noteq> 0" 
+  with assms have [simp]: "fst fctrs \<noteq> 0"
     by (auto simp: is_factorization_of_def interp_factorization_def case_prod_unfold)
   from assms have "p = interp_factorization fctrs" by (simp add: is_factorization_of_def)
   also have "coeff \<dots> 0 = 0 \<longleftrightarrow> 0 \<in> fst ` set (snd fctrs)"
@@ -111,7 +111,7 @@ proof (cases "p = 0")
 next
   assume p: "p = 0"
   with assms have "interp_factorization fctrs = 0" by (simp add: is_factorization_of_def)
-  also have "interp_factorization fctrs = 0 \<longleftrightarrow> 
+  also have "interp_factorization fctrs = 0 \<longleftrightarrow>
                  fst fctrs = 0 \<or> (\<Prod>(c,n)\<leftarrow>snd fctrs. [:-c,1:]^Suc n) = 0"
     by (simp add: interp_factorization_def case_prod_unfold)
   also have "(\<Prod>(c,n)\<leftarrow>snd fctrs. [:-c,1:]^Suc n) = 0 \<longleftrightarrow> False"
@@ -127,7 +127,7 @@ lemma is_factorization_of_roots:
   assumes "is_factorization_of (a, fctrs) p" "p \<noteq> 0"
   shows   "set (map fst fctrs) = {x. poly p x = 0}"
   using assms
-  by (force simp: is_factorization_of_def interp_factorization_def o_def 
+  by (force simp: is_factorization_of_def interp_factorization_def o_def
         case_prod_unfold prod_list_zero_iff simp del: power_Suc)
 
 lemma (in monoid_mult) prod_list_prod_nth: "prod_list xs = (\<Prod>i<length xs. xs ! i)"
@@ -140,7 +140,7 @@ lemma order_prod:
   using assms
 proof (induction A rule: infinite_finite_induct)
   case (insert x A)
-  from insert.hyps have "order c (prod f (insert x A)) = order c (f x * prod f A)" 
+  from insert.hyps have "order c (prod f (insert x A)) = order c (f x * prod f A)"
     by simp
   also have "\<dots> = order c (f x) + order c (prod f A)"
     using insert.prems and insert.hyps by (intro order_mult) auto
@@ -162,12 +162,12 @@ proof -
     by (auto simp: is_factorization_of_def interp_factorization_def)
   from assms(2) have "p = interp_factorization (a, fctrs)"
     unfolding is_factorization_of_def by simp
-  also have "order c \<dots> = order c (\<Prod>(c,n)\<leftarrow>fctrs. [:-c, 1:] ^ Suc n)" 
+  also have "order c \<dots> = order c (\<Prod>(c,n)\<leftarrow>fctrs. [:-c, 1:] ^ Suc n)"
     unfolding interp_factorization_def by (simp add: order_smult)
-  also have "(\<Prod>(c,n)\<leftarrow>fctrs. [:-c, 1:] ^ Suc n) = 
+  also have "(\<Prod>(c,n)\<leftarrow>fctrs. [:-c, 1:] ^ Suc n) =
                (\<Prod>i\<in>{..<length fctrs}. [:-fst (fctrs ! i), 1:] ^ Suc (snd (fctrs ! i)))"
     by (simp add: prod_list_prod_nth case_prod_unfold)
-  also have "order c \<dots> = 
+  also have "order c \<dots> =
                (\<Sum>x<length fctrs. order c ([:- fst (fctrs ! x), 1:] ^ Suc (snd (fctrs ! x))))"
   proof (rule order_prod)
     fix i
@@ -187,9 +187,9 @@ proof -
   also have "\<dots> = (\<Sum>(c',n')\<leftarrow>fctrs. order c ([:-c', 1:] ^ Suc n'))"
     by (simp add: sum_list_sum_nth case_prod_unfold atLeast0LessThan)
   also have "\<dots> = (\<Sum>(c',n')\<leftarrow>fctrs. if c = c' then Suc n' else 0)"
-    by (intro sum_list_cong) (auto simp add: order_power_n_n order_0I simp del: power_Suc)
+    by (intro arg_cong[OF map_cong]) (auto simp add: order_power_n_n order_0I simp del: power_Suc)
   also have "\<dots> = (\<Sum>x\<leftarrow>fctrs. if x = (c, n) then Suc (snd x) else 0)"
-    using distinct assms by (intro sum_list_cong) (force simp: distinct_map inj_on_def)+
+    using distinct assms by (intro arg_cong[OF map_cong]) (force simp: distinct_map inj_on_def)+
   also from distinct have "\<dots> = (\<Sum>x\<in>set fctrs. if x = (c, n) then Suc (snd x) else 0)"
     by (intro sum_list_distinct_conv_sum_set) (simp_all add: distinct_map)
   also from assms have "\<dots> = Suc n" by simp
@@ -204,17 +204,17 @@ lemma complex_factorization_exists:
   "\<exists>fctrs. is_factorization_of fctrs (p :: complex poly)"
 proof (cases "p = 0")
   case True
-  thus ?thesis 
+  thus ?thesis
     by (intro exI[of _ "(0, [])"]) (auto simp: is_factorization_of_def interp_factorization_def)
 next
   case False
   hence "\<exists>xs. set xs = {x. poly p x = 0} \<and> distinct xs"
     by (intro finite_distinct_list poly_roots_finite)
   then obtain xs where [simp]: "set xs = {x. poly p x = 0}" "distinct xs" by blast
-  have "interp_factorization (lead_coeff p, map (\<lambda>x. (x, order x p - 1)) xs) = 
+  have "interp_factorization (lead_coeff p, map (\<lambda>x. (x, order x p - 1)) xs) =
           smult (lead_coeff p) (\<Prod>x\<leftarrow>xs. [:- x, 1:] ^ Suc (order x p - 1))"
     by (simp add: interp_factorization_def o_def)
-  also have "(\<Prod>x\<leftarrow>xs. [:- x, 1:] ^ Suc (order x p - 1)) = 
+  also have "(\<Prod>x\<leftarrow>xs. [:- x, 1:] ^ Suc (order x p - 1)) =
                (\<Prod>x|poly p x = 0. [:- x, 1:] ^ Suc (order x p - 1))"
     by (subst prod.distinct_set_conv_list [symmetric]) simp_all
   also have "\<dots> = (\<Prod>x|poly p x = 0. [:- x, 1:] ^ order x p)"

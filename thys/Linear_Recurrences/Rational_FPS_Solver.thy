@@ -5,28 +5,28 @@
 section \<open>Solver for rational formal power series\<close>
 
 theory Rational_FPS_Solver
-imports 
-  Complex_Main 
+imports
+  Complex_Main
   Pochhammer_Polynomials
   Partial_Fraction_Decomposition
   Factorizations
   "HOL-Computational_Algebra.Field_as_Ring"
-begin 
+begin
 
 text \<open>
-  We can determine the $k$-th coefficient of an FPS of the form $d/(1-cX)^n$, which is 
-  an important step in solving linear recurrences. The $k$-th coefficient of such an FPS is always 
+  We can determine the $k$-th coefficient of an FPS of the form $d/(1-cX)^n$, which is
+  an important step in solving linear recurrences. The $k$-th coefficient of such an FPS is always
   of the form $p(k) c^k$ where $p$ is the following polynomial:
 \<close>
 
 definition inverse_irred_power_poly :: "'a :: field_char_0 \<Rightarrow> nat \<Rightarrow> 'a poly" where
-  "inverse_irred_power_poly d n = 
+  "inverse_irred_power_poly d n =
        Poly [(d * of_nat (stirling n (k+1))) / (fact (n - 1)). k \<leftarrow> [0..<n]]"
- 
+
 lemma one_minus_const_fps_X_neg_power'':
   fixes c :: "'a :: field_char_0"
   assumes n: "n > 0"
-  shows "fps_const d / ((1 - fps_const (c :: 'a :: field_char_0) * fps_X) ^ n) = 
+  shows "fps_const d / ((1 - fps_const (c :: 'a :: field_char_0) * fps_X) ^ n) =
            Abs_fps (\<lambda>k. poly (inverse_irred_power_poly d n) (of_nat k) * c^k)" (is "?lhs = ?rhs")
 proof (rule fps_ext)
   include fps_notation
@@ -34,7 +34,7 @@ proof (rule fps_ext)
   let ?p = "smult (d / (fact (n - 1))) (pcompose (pochhammer_poly (n - 1)) [:1,1:])"
   from n have "?lhs = fps_const d * inverse ((1 - fps_const c * fps_X) ^ n)"
     by (subst fps_divide_unit) auto
-  also have "inverse ((1 - fps_const c * fps_X) ^ n) = 
+  also have "inverse ((1 - fps_const c * fps_X) ^ n) =
                  Abs_fps (\<lambda>k. of_nat ((n + k - 1) choose k) * c^k)"
     by (intro one_minus_const_fps_X_neg_power' n)
   also have "(fps_const d * \<dots>) $ k  = d * of_nat ((n + k - 1) choose k) * c^k" by simp
@@ -47,14 +47,14 @@ proof (rule fps_ext)
   also {
     from assms have "pCons 0 (pcompose (pochhammer_poly (n-1)) [:1,1::'a:]) = pochhammer_poly n"
       by (subst pochhammer_poly_Suc' [symmetric]) simp
-    also from assms have "\<dots> = pCons 0 (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]])" 
+    also from assms have "\<dots> = pCons 0 (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]])"
       unfolding pochhammer_poly_def
       by (auto simp add: poly_eq_iff nth_default_def coeff_pCons
                split: nat.split simp del: upt_Suc )
     finally have "pcompose (pochhammer_poly (n-1)) [:1,1::'a:] =
                       Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]]" by simp
   }
-  also have "smult (d / fact (n - 1)) (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]]) = 
+  also have "smult (d / fact (n - 1)) (Poly [of_nat (stirling n (k+1)). k \<leftarrow> [0..<Suc n]]) =
                inverse_irred_power_poly d n"
     by (auto simp: poly_eq_iff inverse_irred_power_poly_def nth_default_def)
   also have "poly \<dots> (of_nat k) * c ^ k = ?rhs $ k" by simp
@@ -62,19 +62,19 @@ proof (rule fps_ext)
 qed
 
 lemma inverse_irred_power_poly_code [code abstract]:
-  "coeffs (inverse_irred_power_poly d n) = 
-    (if n = 0 \<or> d = 0 then [] else 
+  "coeffs (inverse_irred_power_poly d n) =
+    (if n = 0 \<or> d = 0 then [] else
      let e = d / (fact (n - 1))
      in  [e * of_nat x. x \<leftarrow> tl (stirling_row n)])"
 proof (cases "n = 0 \<or> d = 0")
   case False
   define e where "e = d / (fact (n - 1))"
-  from False have "coeffs (inverse_irred_power_poly d n) = 
+  from False have "coeffs (inverse_irred_power_poly d n) =
                      [e * of_nat (stirling n (k+1)). k \<leftarrow> [0..<n]]"
     by (auto simp: inverse_irred_power_poly_def Let_def divide_inverse mult_ac last_map
                    stirling_row_def map_tl [symmetric] tl_upt e_def no_trailing_unfold)
   also have "\<dots> = [e * of_nat x. x \<leftarrow> tl (stirling_row n)]"
-    by (simp add: stirling_row_def map_tl [symmetric] o_def tl_upt 
+    by (simp add: stirling_row_def map_tl [symmetric] o_def tl_upt
                   map_Suc_upt [symmetric] del: upt_Suc)
   finally show ?thesis using False by (simp add: Let_def e_def)
 qed (auto simp: inverse_irred_power_poly_def)
@@ -85,8 +85,8 @@ lemma solve_rat_fps_aux:
   assumes azs: "(a, zs) = poly_pfd_simple p cs"
   assumes nz: "0 \<notin> fst ` set cs"
   shows "fps_of_poly p / fps_of_poly (\<Prod>(c,n)\<leftarrow>cs. [:1,-c:]^Suc n) =
-           Abs_fps (\<lambda>k. coeff a k + (\<Sum>i<length cs. poly (\<Sum>j\<le>snd (cs ! i). 
-                   (inverse_irred_power_poly (zs ! i ! j) (snd (cs ! i)+1 - j))) 
+           Abs_fps (\<lambda>k. coeff a k + (\<Sum>i<length cs. poly (\<Sum>j\<le>snd (cs ! i).
+                   (inverse_irred_power_poly (zs ! i ! j) (snd (cs ! i)+1 - j)))
                (of_nat k) * (fst (cs ! i)) ^ k))" (is "_ = ?rhs")
 proof -
   interpret pfd_homomorphism "fps_of_poly :: 'a poly \<Rightarrow> 'a fps"
@@ -110,7 +110,7 @@ proof -
       by simp_all
     with nz have [simp]: "c1 \<noteq> 0" "c2 \<noteq> 0"
       by (auto simp add: image_iff)
-    have "Suc n1 = degree ([:1, - c1:] ^ Suc n1)" 
+    have "Suc n1 = degree ([:1, - c1:] ^ Suc n1)"
       by (simp add: degree_power_eq del: power_Suc)
     also have "\<dots> = degree ([:1, - c2:] ^ Suc n2)"
       using eq by simp
@@ -145,16 +145,16 @@ proof -
     by (intro partial_fraction_decomposition poly_pfd_simple)
        (force simp: o_def case_prod_unfold simp del: power_Suc)+
   note this [symmetric]
-  also from azs [symmetric] 
+  also from azs [symmetric]
     have "?A = fps_of_poly a + (\<Sum>i<n. \<Sum>j\<le>snd (cs ! i). from_decomp
                   (map (map (\<lambda>c. [:c:])) zs ! i ! j) [:1,-fst (cs ! i):] (snd (cs ! i)+1 - j))"
       (is "_ = _ + ?S") by (simp add: case_prod_unfold Let_def n_def)
-  also have "?S = (\<Sum>i<length cs. \<Sum>j\<le>snd (cs ! i). fps_const (zs ! i ! j) / 
+  also have "?S = (\<Sum>i<length cs. \<Sum>j\<le>snd (cs ! i). fps_const (zs ! i ! j) /
                       ((1 - fps_const (fst (cs!i))*fps_X) ^ (snd (cs!i)+1 - j)))"
     by (intro sum.cong refl)
        (auto simp: from_decomp_def map_nth n_def fps_of_poly_linear' fps_of_poly_simps
                     fps_const_neg [symmetric] mult_ac simp del: fps_const_neg)
-  also have "\<dots> = (\<Sum>i<length cs. \<Sum>j\<le>snd (cs ! i) . 
+  also have "\<dots> = (\<Sum>i<length cs. \<Sum>j\<le>snd (cs ! i) .
                       Abs_fps (\<lambda>k. poly (inverse_irred_power_poly (zs ! i ! j)
                           (snd (cs ! i)+1 - j)) (of_nat k) * (fst (cs ! i)) ^ k))"
     using nz by (intro sum.cong refl one_minus_const_fps_X_neg_power'') auto
@@ -165,23 +165,23 @@ qed
 
 
 
-definition solve_factored_ratfps :: 
+definition solve_factored_ratfps ::
     "('a :: {field_char_0,factorial_ring_gcd,normalization_euclidean_semiring}) poly \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a poly \<times> ('a poly \<times> 'a) list" where
   "solve_factored_ratfps p cs = (let n = length cs in case poly_pfd_simple p cs of (a, zs) \<Rightarrow>
-      (a, zip_with (\<lambda>zs (c,n). ((\<Sum>(z,j) \<leftarrow> zip zs [0..<Suc n]. 
+      (a, zip_with (\<lambda>zs (c,n). ((\<Sum>(z,j) \<leftarrow> zip zs [0..<Suc n].
               inverse_irred_power_poly z (n + 1 - j)), c)) zs cs))"
 
 lemma length_snd_poly_pfd_simple [simp]: "length (snd (poly_pfd_simple p cs)) = length cs"
   by (simp add: poly_pfd_simple_def)
-  
-lemma length_nth_snd_poly_pfd_simple [simp]: 
+
+lemma length_nth_snd_poly_pfd_simple [simp]:
   "i < length cs \<Longrightarrow> length (snd (poly_pfd_simple p cs) ! i) = snd (cs!i) + 1"
   by (auto simp: poly_pfd_simple_def case_prod_unfold Let_def)
 
 lemma solve_factored_ratfps_roots:
   "map snd (snd (solve_factored_ratfps p cs)) = map fst cs"
-  by (rule list_ext) 
-     (simp_all add: solve_factored_ratfps_def poly_pfd_simple case_prod_unfold Let_def 
+  by (rule list_ext)
+     (simp_all add: solve_factored_ratfps_def poly_pfd_simple case_prod_unfold Let_def
                     zip_with_altdef o_def)
 
 
@@ -195,21 +195,21 @@ lemma solve_factored_ratfps:
   shows "fps_of_poly p / fps_of_poly (\<Prod>(c,n)\<leftarrow>cs. [:1,-c:]^Suc n) =
            Abs_fps (interp_ratfps_solution (solve_factored_ratfps p cs))" (is "?lhs = ?rhs")
 proof -
-  obtain a zs where azs: "(a, zs) = solve_factored_ratfps p cs" 
+  obtain a zs where azs: "(a, zs) = solve_factored_ratfps p cs"
     using prod.exhaust by metis
   from azs have a: "a = fst (poly_pfd_simple p cs)"
     by (simp add: solve_factored_ratfps_def Let_def case_prod_unfold)
   define zs' where "zs' = snd (poly_pfd_simple p cs)"
   with a have azs': "(a, zs') = poly_pfd_simple p cs" by simp
-  from azs have zs: "zs = snd (solve_factored_ratfps p cs)" 
+  from azs have zs: "zs = snd (solve_factored_ratfps p cs)"
     by (auto simp add: snd_def split: prod.split)
-  
+
   have "?lhs = Abs_fps (\<lambda>k. coeff a k + (\<Sum>i<length cs. poly (\<Sum>j\<le>snd (cs ! i).
-                 inverse_irred_power_poly (zs' ! i ! j) (snd (cs ! i)+1 - j)) 
+                 inverse_irred_power_poly (zs' ! i ! j) (snd (cs ! i)+1 - j))
                  (of_nat k) * (fst (cs ! i)) ^ k))"
     by (rule solve_rat_fps_aux[OF distinct azs' nz])
   also from azs have "\<dots> = ?rhs" unfolding interp_ratfps_solution_def
-    by (auto simp: a zs solve_factored_ratfps_def Let_def case_prod_unfold zip_altdef 
+    by (auto simp: a zs solve_factored_ratfps_def Let_def case_prod_unfold zip_altdef
                    zip_with_altdef' sum_list_sum_nth atLeast0LessThan zs'_def lessThan_Suc_atMost
              intro!: fps_ext sum.cong simp del: upt_Suc)
   finally show ?thesis .
@@ -221,7 +221,7 @@ definition solve_factored_ratfps' where
 
 lemma solve_factored_ratfps':
   assumes "is_alt_factorization_of fctrs q" "q \<noteq> 0"
-  shows   "Abs_fps (interp_ratfps_solution (solve_factored_ratfps' p fctrs)) = 
+  shows   "Abs_fps (interp_ratfps_solution (solve_factored_ratfps' p fctrs)) =
              fps_of_poly p / fps_of_poly q"
 proof -
   from assms have q: "q = interp_alt_factorization fctrs"
@@ -230,7 +230,7 @@ proof -
     by (subst (asm) q) (auto simp: interp_alt_factorization_def case_prod_unfold)
   note q
   also from nz have "coeff (interp_alt_factorization fctrs) 0 \<noteq> 0"
-    by (auto simp: interp_alt_factorization_def case_prod_unfold coeff_0_prod_list 
+    by (auto simp: interp_alt_factorization_def case_prod_unfold coeff_0_prod_list
                    o_def coeff_0_power prod_list_zero_iff)
   finally have "coeff q 0 \<noteq> 0" .
 
@@ -238,8 +238,8 @@ proof -
   obtain b zs where sol: "solve_factored_ratfps' p fctrs = (b, zs)" using prod.exhaust by metis
   from assms have [simp]: "a \<noteq> 0"
     by (auto simp: is_alt_factorization_of_def interp_alt_factorization_def fctrs)
-  
-  have "fps_of_poly p / fps_of_poly (smult a (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n)) = 
+
+  have "fps_of_poly p / fps_of_poly (smult a (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n)) =
           fps_of_poly p / (fps_const a * fps_of_poly (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n))"
     by (simp_all add: fps_of_poly_smult case_prod_unfold del: power_Suc)
   also have "\<dots> = fps_of_poly p / fps_const a / fps_of_poly (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n)"
@@ -249,11 +249,11 @@ proof -
     by (simp add: fps_const_inverse fps_divide_unit)
   also from assms have "smult a (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n) = q"
     by (simp add: is_alt_factorization_of_def interp_alt_factorization_def fctrs del: power_Suc)
-  also have "fps_of_poly (smult (inverse a) p) / 
+  also have "fps_of_poly (smult (inverse a) p) /
                    fps_of_poly (\<Prod>(c, n)\<leftarrow>cs. [:1, - c:] ^ Suc n) =
                Abs_fps (interp_ratfps_solution (solve_factored_ratfps (smult (inverse a) p) cs))"
     (is "?lhs = _") using assms
-    by (intro solve_factored_ratfps) 
+    by (intro solve_factored_ratfps)
        (simp_all add: is_alt_factorization_of_def fctrs solve_factored_ratfps'_def)
   also have "\<dots> = Abs_fps (interp_ratfps_solution (solve_factored_ratfps' p fctrs))"
     by (simp add: solve_factored_ratfps'_def fctrs)
@@ -283,7 +283,7 @@ lemma degree_inverse_irred_power_poly_le:
 lemma degree_inverse_irred_power_poly:
   assumes "c \<noteq> 0"
   shows   "degree (inverse_irred_power_poly c n) = n - 1"
-  unfolding inverse_irred_power_poly_def using assms 
+  unfolding inverse_irred_power_poly_def using assms
   by (subst degree_Poly_eq) (auto simp: last_conv_nth)
 
 
@@ -297,8 +297,8 @@ theorem ratfps_closed_form_exists:
   fixes q :: "complex poly"
   assumes nz: "coeff q 0 \<noteq> 0"
   defines "q' \<equiv> reflect_poly q"
-  obtains r rs 
-  where "\<And>n. fps_nth (fps_of_poly p / fps_of_poly q) n = 
+  obtains r rs
+  where "\<And>n. fps_nth (fps_of_poly p / fps_of_poly q) n =
                 coeff r n + (\<Sum>c | poly q' c = 0. poly (rs c) (of_nat n) * c ^ n)"
   and   "\<And>z. poly q' z = 0 \<Longrightarrow> degree (rs z) \<le> order z q' - 1"
 proof -
@@ -330,17 +330,17 @@ proof -
 
   {
     fix n :: nat
-    have "fps_of_poly p / fps_of_poly q = 
+    have "fps_of_poly p / fps_of_poly q =
             Abs_fps (interp_ratfps_solution (solve_factored_ratfps' p fctrs))"
       using solve_factored_ratfps' [OF fctrs nz'] ..
-    also have "fps_nth \<dots> n = interp_ratfps_solution (solve_factored_ratfps' p fctrs) n" 
+    also have "fps_nth \<dots> n = interp_ratfps_solution (solve_factored_ratfps' p fctrs) n"
       by simp
-    also have "\<dots> = coeff r n + (\<Sum>p\<leftarrow>snd (solve_factored_ratfps' p fctrs). 
+    also have "\<dots> = coeff r n + (\<Sum>p\<leftarrow>snd (solve_factored_ratfps' p fctrs).
                                    poly (fst p) (of_nat n) * snd p ^ n)" (is "_ = _ + ?A")
       unfolding interp_ratfps_solution_def case_prod_unfold r_def by simp
     also have "?A = (\<Sum>p\<leftarrow>ts. poly (rs (snd p)) (of_nat n) * snd p ^ n)"
-      by (intro sum_list_cong refl) (auto simp: rs ts_def)
-    also have "\<dots> = (\<Sum>c\<leftarrow>map snd ts. 
+      by (intro arg_cong[OF map_cong] refl) (auto simp: rs ts_def)
+    also have "\<dots> = (\<Sum>c\<leftarrow>map snd ts.
                        poly (rs c) (of_nat n) * c ^ n)" by (simp add: o_def)
     also have "map snd ts = map fst (snd fctrs)"
       unfolding solve_factored_ratfps'_def case_prod_unfold ts_def
@@ -361,8 +361,8 @@ proof -
       by (simp add: ts_def solve_factored_ratfps'_def case_prod_unfold solve_factored_ratfps_def)
     finally have "rs z = fst (ts ! i)" by (intro rs) auto
     also have "\<dots> = (\<Sum>p\<leftarrow>zip (snd (poly_pfd_simple (smult (inverse (fst fctrs)) p) (snd fctrs)) ! i)
-                       [0..<Suc (snd (snd fctrs ! i))]. 
-                         inverse_irred_power_poly (fst p) (Suc (snd (snd fctrs ! i)) - snd p))" 
+                       [0..<Suc (snd (snd fctrs ! i))].
+                         inverse_irred_power_poly (fst p) (Suc (snd (snd fctrs ! i)) - snd p))"
       using i by (auto simp: ts_def solve_factored_ratfps'_def solve_factored_ratfps_def o_def
                      case_prod_unfold Let_def simp del: upt_Suc power_Suc)
     also have "degree \<dots> \<le> snd (snd fctrs ! i)"

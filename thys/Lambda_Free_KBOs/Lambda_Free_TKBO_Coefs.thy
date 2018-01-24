@@ -125,7 +125,7 @@ abbreviation eval_ztpoly :: "('a \<Rightarrow> zhmultiset) \<Rightarrow> ('a, hm
 lemma eval_tpoly_eq_eval_ztpoly[simp]:
   "zhmset_of (eval_tpoly A p) = eval_ztpoly (\<lambda>v. zhmset_of (A v)) p"
   by (induct p, simp_all add: zhmset_of_sum_list zhmset_of_prod_list o_def,
-    simp_all cong: sum_list_cong prod_list_cong)
+    simp_all cong: map_cong)
 
 definition min_ground_head :: "('s, 'v) hd \<Rightarrow> 's" where
   "min_ground_head \<zeta> =
@@ -275,7 +275,7 @@ lemma wt0_ge_min_ground_head:
   by (cases \<zeta>, simp_all, metis legal_zpassign_def min_zpassign_simps(1))
 
 lemma eval_ztpoly_nonneg: "legal_zpassign A \<Longrightarrow> eval_ztpoly A p \<ge> 0"
-  by (induct p) (auto cong: sum_list_cong prod_list_cong intro!: sum_list_nonneg prod_list_nonneg)
+  by (induct p) (auto cong: map_cong intro!: sum_list_nonneg prod_list_nonneg)
 
 lemma in_zip_imp_size_lt_apps: "(s, y) \<in> set (zip ss ys) \<Longrightarrow> size s < size (apps (Hd \<zeta>) ss)"
   by (auto dest!: set_zip_leftD simp: size_in_args)

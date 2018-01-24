@@ -6,7 +6,6 @@ theory Card_Equiv_Relations
 imports
   Card_Partitions.Card_Partitions
   Bell_Numbers_Spivey.Bell_Numbers
-  More_Set_Partition
 begin
 
 subsection {* Bijection between Equivalence Relations and Set Partitions *}

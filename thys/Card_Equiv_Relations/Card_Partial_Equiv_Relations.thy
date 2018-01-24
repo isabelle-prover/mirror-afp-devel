@@ -7,30 +7,6 @@ imports
   Card_Equiv_Relations
 begin
 
-subsection {* Refined Injectivity Solver Method *}
-
-text {* The injectivity solver of the AFP entry,
-Spivey's Generalized Recurrence for Bell Numbers,
-only works for set monad expressions that end with
-a set monad return (set singleton).
-It is redefined here to support set monad expressions
-that end with a set expression. *}
-
-lemma disjoint_terminal:
-  assumes "s \<noteq> t"
-  assumes "\<And>x x'. S x \<and> T x' \<Longrightarrow> x = x' \<Longrightarrow> s = t"
-  shows "{x. S x} \<inter> {x. T x} = {}"
-using assms by auto
-
-method injectivity_solver uses rule =
-  ((drule injectivity_solver_prep_assms)+)?;
-  rule disjoint_family_onI;
-  ((rule disjoint_bind | rule disjoint_bind')+)?;
-  (erule disjoint_singleton | erule disjoint_terminal);
-  (elim injectivity_solver_CollectE)?;
-  rule rule;
-  assumption+
-
 subsection {* Definition of Partial Equivalence Relation *}
 
 definition partial_equiv :: "'a set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> bool"

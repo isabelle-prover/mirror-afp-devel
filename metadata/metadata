@@ -5456,7 +5456,7 @@ abstract =
   algorithm are also proven. </p>
 
 [Mason_Stothers]
-title = The Mason–Stother's Theorem
+title = The Mason–Stothers Theorem
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Algebra
 date = 2017-12-21
@@ -6541,6 +6541,21 @@ abstract =
   geodesic spaces, the Hausdorff distance, the Cauchy completion of a
   metric space, and the exponential on extended real numbers.
 
+[Ordered_Resolution_Prover]
+title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
+author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
+topic = Logic
+date = 2018-01-18
+notify = andschl@dtu.dk, j.c.blanchette@vu.nl
+abstract = 
+  This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
+  Ganzinger's "Resolution Theorem Proving" chapter in the
+  <em>Handbook of Automated Reasoning</em>. This includes
+  soundness and completeness of unordered and ordered variants of ground
+  resolution with and without literal selection, the standard redundancy
+  criterion, a general framework for refutational theorem proving, and
+  soundness and completeness of an abstract first-order prover.
+
 [BNF_Operations]
 title = Operations on Bounded Natural Functors
 author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
@@ -6558,3 +6573,4 @@ abstract =
   into four simpler operations: Compose, Kill, Lift, and Permute. The
   N2M operation provides mutual (co)induction principles and
   (co)recursors for nested (co)datatypes.
+  

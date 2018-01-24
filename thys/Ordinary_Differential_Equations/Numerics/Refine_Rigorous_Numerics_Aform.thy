@@ -389,7 +389,7 @@ proof (rule eq_reflection)
     unfolding eucl_of_list_def autoref_tag_defs
     apply (subst z)
     apply (subst map_map)
-    apply (auto cong: sum_list_cong simp: split_beta')
+    apply (auto cong: map_cong simp: split_beta')
     done
 qed
 
