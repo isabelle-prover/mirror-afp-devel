@@ -1,3 +1,5 @@
+(* Author: Fabian Immler, TU Muenchen
+*)
 theory Poly_Mapping_Finite_Map
   imports
     "More_MPoly_Type"

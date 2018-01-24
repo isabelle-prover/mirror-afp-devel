@@ -3601,7 +3601,11 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René
+Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky
+<http://www.risc.jku.at/home/amaletzk>, Fabian Immler
+<http://www.in.tum.de/~immler/>, Florian Haftmann, Andreas Lochbihler, Alexander
+  Bentkamp
 date = 2010-08-10
 topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
@@ -3625,7 +3629,10 @@ abstract =
 extra-history =
 	Change history:
 	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
-	[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.
+	[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.<br>
+	[2018-01-23]: Added authors Haftmann, Lochbihler after incorporating
+	their formalization of multivariate polynomials based on Polynomial mappings.
+	Moved material from Bentkamp's entry "Deep Learning".
 notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at, alexander.maletzky@risc.jku.at, immler@in.tum.de
 
 [Sqrt_Babylonian]
