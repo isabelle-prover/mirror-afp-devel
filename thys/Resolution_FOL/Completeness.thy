@@ -1,82 +1,73 @@
-section {* Lifting Lemma *}
+section \<open>Lifting Lemma\<close>
 
 theory Completeness imports Resolution begin
 
 locale unification =
   assumes unification: "\<And>\<sigma> L. finite L \<Longrightarrow> unifier\<^sub>l\<^sub>s \<sigma> L \<Longrightarrow> \<exists>\<theta>. mgu\<^sub>l\<^sub>s \<theta> L"
 begin
-text {*
+text \<open>
   A proof of this assumption is available \cite{unify} in the IsaFoL project \cite{isafol}.
   It uses a similar theorem from the IsaFoR \cite{isafor} project.
-*}
-
+\<close>
 
 lemma lifting:
-  assumes fin: "finite C \<and> finite D "
-  assumes apart: "vars\<^sub>l\<^sub>s C \<inter> vars\<^sub>l\<^sub>s D = {}"
-  assumes inst\<^sub>1: "instance_of\<^sub>l\<^sub>s C' C"
-  assumes inst\<^sub>2: "instance_of\<^sub>l\<^sub>s D' D"
-  assumes appl: "applicable C' D' L' M' \<sigma>"
-  shows "\<exists>L M \<tau>. applicable C D L M \<tau> \<and>
-                   instance_of\<^sub>l\<^sub>s (resolution C' D' L' M' \<sigma>) (resolution C D L M \<tau>)"
+  assumes fin: "finite C\<^sub>1 \<and> finite C\<^sub>2"
+  assumes apart: "vars\<^sub>l\<^sub>s C\<^sub>1 \<inter> vars\<^sub>l\<^sub>s C\<^sub>2 = {}"
+  assumes inst: "instance_of\<^sub>l\<^sub>s C\<^sub>1' C\<^sub>1 \<and> instance_of\<^sub>l\<^sub>s C\<^sub>2' C\<^sub>2"
+  assumes appl: "applicable C\<^sub>1' C\<^sub>2' L\<^sub>1' L\<^sub>2' \<sigma>"
+  shows "\<exists>L\<^sub>1 L\<^sub>2 \<tau>. applicable C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<tau> \<and>
+                instance_of\<^sub>l\<^sub>s (resolution C\<^sub>1' C\<^sub>2' L\<^sub>1' L\<^sub>2' \<sigma>) (resolution C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<tau>)"
 proof -
-  let ?C'\<^sub>1 = "C' - L'"
-  let ?D'\<^sub>1 = "D' - M'"
+  \<comment> \<open>Obtaining the subsets we resolve upon:\<close>
+  let ?R\<^sub>1' = "C\<^sub>1' - L\<^sub>1'" and ?R\<^sub>2' = "C\<^sub>2' - L\<^sub>2'"
 
-  from inst\<^sub>1 obtain lmbd where lmbd_p: "C \<cdot>\<^sub>l\<^sub>s lmbd = C'" unfolding instance_of\<^sub>l\<^sub>s_def by auto
-  from inst\<^sub>2 obtain \<mu> where \<mu>_p: "D \<cdot>\<^sub>l\<^sub>s \<mu> = D'" unfolding instance_of\<^sub>l\<^sub>s_def by auto
-  
-  from \<mu>_p lmbd_p apart obtain \<eta> where \<eta>_p: "C \<cdot>\<^sub>l\<^sub>s \<eta> = C' \<and> D \<cdot>\<^sub>l\<^sub>s \<eta> = D'" using merge_sub by force
+  from inst obtain \<gamma> \<mu> where "C\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<gamma> = C\<^sub>1' \<and> C\<^sub>2 \<cdot>\<^sub>l\<^sub>s \<mu> = C\<^sub>2'"
+    unfolding instance_of\<^sub>l\<^sub>s_def by auto
+  then obtain \<eta> where \<eta>_p: "C\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta> = C\<^sub>1' \<and> C\<^sub>2 \<cdot>\<^sub>l\<^sub>s \<eta> = C\<^sub>2'"
+    using apart merge_sub by force
 
-  from \<eta>_p have "\<exists>L \<subseteq> C. L \<cdot>\<^sub>l\<^sub>s \<eta> = L' \<and> (C - L) \<cdot>\<^sub>l\<^sub>s \<eta> = ?C'\<^sub>1" using appl project_sub[of \<eta> C C' L'] unfolding applicable_def by auto
-  then obtain L where L_p: "L \<subseteq> C \<and> L \<cdot>\<^sub>l\<^sub>s \<eta> = L' \<and> (C - L) \<cdot>\<^sub>l\<^sub>s \<eta> = ?C'\<^sub>1" by auto
-  let ?C\<^sub>1 = "C - L"
+  from \<eta>_p obtain L\<^sub>1 where L\<^sub>1_p: "L\<^sub>1 \<subseteq> C\<^sub>1 \<and> L\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta> = L\<^sub>1' \<and> (C\<^sub>1 - L\<^sub>1) \<cdot>\<^sub>l\<^sub>s \<eta> = ?R\<^sub>1'"
+    using appl project_sub using applicable_def by metis
+  let ?R\<^sub>1 = "C\<^sub>1 - L\<^sub>1"
+  from \<eta>_p obtain L\<^sub>2 where L\<^sub>2_p: "L\<^sub>2 \<subseteq> C\<^sub>2 \<and> L\<^sub>2 \<cdot>\<^sub>l\<^sub>s \<eta> = L\<^sub>2' \<and> (C\<^sub>2 - L\<^sub>2) \<cdot>\<^sub>l\<^sub>s \<eta> = ?R\<^sub>2'"
+    using appl project_sub using applicable_def by metis
+  let ?R\<^sub>2 = "C\<^sub>2 - L\<^sub>2"
 
-  from \<eta>_p have "\<exists>M \<subseteq> D. M \<cdot>\<^sub>l\<^sub>s \<eta> = M' \<and> (D - M) \<cdot>\<^sub>l\<^sub>s \<eta> = ?D'\<^sub>1" using appl project_sub[of \<eta> D D' M'] unfolding applicable_def by auto
-  then obtain M where M_p: "M \<subseteq> D \<and> M \<cdot>\<^sub>l\<^sub>s \<eta> = M' \<and> (D - M) \<cdot>\<^sub>l\<^sub>s \<eta> = ?D'\<^sub>1" by auto
-  let ?D\<^sub>1 = "D - M"
+  \<comment> \<open>Obtaining substitutions:\<close>
+  from appl have "mgu\<^sub>l\<^sub>s \<sigma> (L\<^sub>1' \<union> L\<^sub>2'\<^sup>C)" using applicable_def by auto
+  then have "mgu\<^sub>l\<^sub>s \<sigma> ((L\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta>) \<union> (L\<^sub>2 \<cdot>\<^sub>l\<^sub>s \<eta>)\<^sup>C)" using L\<^sub>1_p L\<^sub>2_p by auto
+  then have "mgu\<^sub>l\<^sub>s \<sigma> ((L\<^sub>1  \<union> L\<^sub>2\<^sup>C) \<cdot>\<^sub>l\<^sub>s \<eta>)" using compls_subls subls_union by auto
+  then have "unifier\<^sub>l\<^sub>s \<sigma> ((L\<^sub>1  \<union> L\<^sub>2\<^sup>C) \<cdot>\<^sub>l\<^sub>s \<eta>)" using mgu\<^sub>l\<^sub>s_def by auto
+  then have \<eta>\<sigma>uni: "unifier\<^sub>l\<^sub>s (\<eta> \<cdot> \<sigma>) (L\<^sub>1  \<union> L\<^sub>2\<^sup>C)"
+    using unifier\<^sub>l\<^sub>s_def composition_conseq2l by auto
+  then obtain \<tau> where \<tau>_p: "mgu\<^sub>l\<^sub>s \<tau> (L\<^sub>1  \<union> L\<^sub>2\<^sup>C)"
+    using unification fin L\<^sub>1_p L\<^sub>2_p by (meson finite_UnI finite_imageI rev_finite_subset)
+  then obtain \<phi> where \<phi>_p: "\<tau> \<cdot> \<phi> = \<eta> \<cdot> \<sigma>" using \<eta>\<sigma>uni mgu\<^sub>l\<^sub>s_def by auto
 
-  from appl have "mgu\<^sub>l\<^sub>s \<sigma> (L' \<union> M'\<^sup>C)" unfolding applicable_def by auto
-  then have "mgu\<^sub>l\<^sub>s \<sigma> ((L \<cdot>\<^sub>l\<^sub>s \<eta>) \<union> (M \<cdot>\<^sub>l\<^sub>s \<eta>)\<^sup>C)" using L_p M_p by auto
-  then have "mgu\<^sub>l\<^sub>s \<sigma> ((L  \<union> M\<^sup>C) \<cdot>\<^sub>l\<^sub>s \<eta>)" using compls_subls subls_union by auto
-  then have "unifier\<^sub>l\<^sub>s \<sigma> ((L  \<union> M\<^sup>C) \<cdot>\<^sub>l\<^sub>s \<eta>)" unfolding mgu\<^sub>l\<^sub>s_def by auto
-  then have \<eta>\<sigma>uni: "unifier\<^sub>l\<^sub>s (\<eta> \<cdot> \<sigma>) (L  \<union> M\<^sup>C)" 
-    unfolding unifier\<^sub>l\<^sub>s_def using composition_conseq2l by auto
-  then obtain \<tau> where \<tau>_p: "mgu\<^sub>l\<^sub>s \<tau> (L  \<union> M\<^sup>C)" using unification fin by (meson L_p M_p finite_UnI finite_imageI rev_finite_subset) 
-  then obtain \<phi> where \<phi>_p: "\<tau> \<cdot> \<phi> = \<eta> \<cdot> \<sigma>" using \<eta>\<sigma>uni unfolding mgu\<^sub>l\<^sub>s_def by auto
-  
   \<comment> \<open>Showing that we have the desired resolvent:\<close>
-  let ?E = "((C - L)  \<union> (D - M)) \<cdot>\<^sub>l\<^sub>s \<tau>"
-  have "?E \<cdot>\<^sub>l\<^sub>s \<phi>  = (?C\<^sub>1 \<union> ?D\<^sub>1 ) \<cdot>\<^sub>l\<^sub>s (\<tau> \<cdot> \<phi>)" using subls_union composition_conseq2ls by auto
-  also have "... = (?C\<^sub>1 \<union> ?D\<^sub>1 ) \<cdot>\<^sub>l\<^sub>s (\<eta> \<cdot> \<sigma>)" using \<phi>_p by auto
-  also have "... = ((?C\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta>) \<union> (?D\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta>)) \<cdot>\<^sub>l\<^sub>s \<sigma>" using subls_union composition_conseq2ls by auto
-  also have "... = (?C'\<^sub>1 \<union> ?D'\<^sub>1) \<cdot>\<^sub>l\<^sub>s \<sigma>" using \<eta>_p L_p M_p by auto
-  finally have "?E \<cdot>\<^sub>l\<^sub>s \<phi> = ((C' - L') \<union> (D' - M')) \<cdot>\<^sub>l\<^sub>s \<sigma>" by auto
-  then have inst: "instance_of\<^sub>l\<^sub>s (resolution C' D' L' M' \<sigma>) (resolution C D L M \<tau>) "
-    unfolding resolution_def instance_of\<^sub>l\<^sub>s_def by blast
+  let ?C = "((C\<^sub>1 - L\<^sub>1)  \<union> (C\<^sub>2 - L\<^sub>2)) \<cdot>\<^sub>l\<^sub>s \<tau>"
+  have "?C \<cdot>\<^sub>l\<^sub>s \<phi>  = (?R\<^sub>1 \<union> ?R\<^sub>2 ) \<cdot>\<^sub>l\<^sub>s (\<tau> \<cdot> \<phi>)"
+    using subls_union composition_conseq2ls by auto
+  also have "... = (?R\<^sub>1 \<union> ?R\<^sub>2 ) \<cdot>\<^sub>l\<^sub>s (\<eta> \<cdot> \<sigma>)" using \<phi>_p by auto
+  also have "... = ((?R\<^sub>1 \<cdot>\<^sub>l\<^sub>s \<eta>) \<union> (?R\<^sub>2 \<cdot>\<^sub>l\<^sub>s \<eta>)) \<cdot>\<^sub>l\<^sub>s \<sigma>"
+    using subls_union composition_conseq2ls by auto
+  also have "... = (?R\<^sub>1' \<union> ?R\<^sub>2') \<cdot>\<^sub>l\<^sub>s \<sigma>" using \<eta>_p L\<^sub>1_p L\<^sub>2_p by auto
+  finally have "?C \<cdot>\<^sub>l\<^sub>s \<phi> = ((C\<^sub>1' - L\<^sub>1') \<union> (C\<^sub>2' - L\<^sub>2')) \<cdot>\<^sub>l\<^sub>s \<sigma>" by auto
+  then have ins: "instance_of\<^sub>l\<^sub>s (resolution C\<^sub>1' C\<^sub>2' L\<^sub>1' L\<^sub>2' \<sigma>) (resolution C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<tau>)"
+    using resolution_def instance_of\<^sub>l\<^sub>s_def by metis
 
-  \<comment> \<open>Showing that the resolution is applicable:\<close>
-  {
-    have "C' \<noteq> {}" using appl unfolding applicable_def by auto
-    then have "C \<noteq> {}" using \<eta>_p by auto
-  } moreover {
-    have "D' \<noteq> {}" using appl unfolding applicable_def by auto
-    then have "D \<noteq> {}" using \<eta>_p by auto
-  } moreover {
-    have "L' \<noteq> {}" using appl unfolding applicable_def by auto
-    then have "L \<noteq> {}" using L_p by auto
-  } moreover {
-    have "M' \<noteq> {}" using appl unfolding applicable_def by auto
-    then have "M \<noteq> {}" using M_p by auto
-  }
-  ultimately have appll: "applicable C D L M \<tau>" 
-    using apart L_p M_p \<tau>_p unfolding applicable_def by auto
+  \<comment> \<open>Showing that the resolution rule is applicable:\<close>
+  have "C\<^sub>1' \<noteq> {} \<and> C\<^sub>2' \<noteq> {} \<and> L\<^sub>1' \<noteq> {} \<and> L\<^sub>2' \<noteq> {}"
+    using appl applicable_def by auto
+  then have "C\<^sub>1 \<noteq> {} \<and> C\<^sub>2 \<noteq> {} \<and> L\<^sub>1 \<noteq> {} \<and> L\<^sub>2 \<noteq> {}" using \<eta>_p L\<^sub>1_p L\<^sub>2_p by auto
+  then have appli: "applicable C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<tau>"
+    using apart L\<^sub>1_p L\<^sub>2_p \<tau>_p applicable_def by auto
 
-  from inst appll show ?thesis by auto
+  from ins appli show ?thesis by auto
 qed
 
 
-section {* Completeness *}
+section \<open>Completeness\<close>
 
 lemma falsifies\<^sub>g_empty:
   assumes "falsifies\<^sub>g [] C"
@@ -109,7 +100,7 @@ lemma complements_do_not_falsify':
   shows "False"
 proof (cases l\<^sub>1)
   case (Pos p ts)
-  let ?i1 = "nat_from_fatom (p, ts)"
+  let ?i1 = "nat_of_fatom (p, ts)"
 
   from assms have gr: "ground\<^sub>l l\<^sub>1" unfolding falsifies\<^sub>l_def by auto
   then have Neg: "l\<^sub>2 = Neg p ts" using comp Pos by (cases l\<^sub>2) auto
@@ -117,7 +108,7 @@ proof (cases l\<^sub>1)
   from falsif have "falsifies\<^sub>l G l\<^sub>1" using l1C1' by auto
   then have "G ! ?i1 = False" using l1C1' Pos unfolding falsifies\<^sub>l_def by (induction "Pos p ts") auto
   moreover
-  let ?i2 = "nat_from_fatom (get_atom l\<^sub>2)"
+  let ?i2 = "nat_of_fatom (get_atom l\<^sub>2)"
   from falsif have "falsifies\<^sub>l G l\<^sub>2" using l\<^sub>2C1' by auto
   then have "G ! ?i2 = (\<not>sign l\<^sub>2)" unfolding falsifies\<^sub>l_def by meson
   then have "G ! ?i1 = (\<not>sign l\<^sub>2)" using Pos Neg comp by simp
@@ -125,7 +116,7 @@ proof (cases l\<^sub>1)
   ultimately show ?thesis by auto
 next
   case (Neg p ts)
-  let ?i1 = "nat_from_fatom (p,ts)"
+  let ?i1 = "nat_of_fatom (p,ts)"
 
   from assms have gr: "ground\<^sub>l l\<^sub>1" unfolding falsifies\<^sub>l_def by auto
   then have Pos: "l\<^sub>2 = Pos p ts" using comp Neg by (cases l\<^sub>2) auto
@@ -133,7 +124,7 @@ next
   from falsif have "falsifies\<^sub>l G l\<^sub>1" using l1C1' by auto
   then have "G ! ?i1 = True" using l1C1' Neg unfolding falsifies\<^sub>l_def by (metis get_atom.simps(2) literal.disc(2)) 
   moreover
-  let ?i2 = "nat_from_fatom (get_atom l\<^sub>2)"
+  let ?i2 = "nat_of_fatom (get_atom l\<^sub>2)"
   from falsif have "falsifies\<^sub>l G l\<^sub>2" using l\<^sub>2C1' by auto
   then have "G ! ?i2 = (\<not>sign l\<^sub>2)" unfolding falsifies\<^sub>l_def by meson
   then have "G ! ?i1 = (\<not>sign l\<^sub>2)" using Pos Neg comp by simp
@@ -150,11 +141,11 @@ using assms complements_do_not_falsify' by blast
 
 lemma other_falsified:
   assumes C1'_p: "ground\<^sub>l\<^sub>s C\<^sub>1' \<and> falsifies\<^sub>g (B@[d]) C\<^sub>1'" 
-  assumes l_p: "l \<in> C\<^sub>1'" "nat_from_fatom (get_atom l) = length B"
+  assumes l_p: "l \<in> C\<^sub>1'" "nat_of_fatom (get_atom l) = length B"
   assumes other: "lo \<in> C\<^sub>1'" "lo \<noteq> l"
   shows "falsifies\<^sub>l B lo"
 proof -
-  let ?i = "nat_from_fatom (get_atom lo)"
+  let ?i = "nat_of_fatom (get_atom lo)"
   have ground_l\<^sub>2: "ground\<^sub>l l" using l_p C1'_p by auto
   \<comment> \<open>They are, of course, also ground:\<close>
   have ground_lo: "ground\<^sub>l lo" using C1'_p other by auto
@@ -163,42 +154,43 @@ proof -
   then have loB\<^sub>2: "falsifies\<^sub>l (B@[d]) lo" using other by auto
   then have "?i < length (B @ [d])" unfolding falsifies\<^sub>l_def by meson
   \<comment> \<open>And they have numbers in the range of @{term "B@[d]"}, i.e. less than @{term "length B + 1"}:\<close>
-  then have "nat_from_fatom (get_atom lo) < length B + 1" using undiag_diag_fatom by (cases lo) auto
+  then have "nat_of_fatom (get_atom lo) < length B + 1" using undiag_diag_fatom by (cases lo) auto
   moreover
   have l_lo: "l\<noteq>lo" using other by auto
   \<comment> \<open>The are not the complement of @{term l }, since then the clause could not be falsified:\<close>
   have lc_lo: "lo \<noteq> l\<^sup>c" using C1'_p l_p other complements_do_not_falsify[of lo C\<^sub>1' l "(B@[d])"] by auto
   from l_lo lc_lo have "get_atom l \<noteq> get_atom lo" using sign_comp_atom by metis
-  then have "nat_from_fatom (get_atom lo) \<noteq> nat_from_fatom (get_atom l)" 
-    using nat_from_fatom_bij ground_lo ground_l\<^sub>2 ground\<^sub>l_ground_fatom 
+  then have "nat_of_fatom (get_atom lo) \<noteq> nat_of_fatom (get_atom l)" 
+    using nat_of_fatom_bij ground_lo ground_l\<^sub>2 ground\<^sub>l_ground_fatom 
     unfolding bij_betw_def inj_on_def by metis
   \<comment> \<open>Therefore they have different numbers:\<close>
-  then have "nat_from_fatom (get_atom lo) \<noteq> length B" using l_p by auto
+  then have "nat_of_fatom (get_atom lo) \<noteq> length B" using l_p by auto
   ultimately 
   \<comment> \<open>So their numbers are in the range of @{term B}:\<close>
-  have "nat_from_fatom (get_atom lo) < length B" by auto
+  have "nat_of_fatom (get_atom lo) < length B" by auto
   \<comment> \<open>So we did not need the last index of @{term "B@[d]"} to falsify them, i.e. @{term B} suffices:\<close>
   then show "falsifies\<^sub>l B lo" using loB\<^sub>2 shorter_falsifies\<^sub>l by blast
 qed
 
-
 theorem completeness':
-  shows "closed_tree T Cs \<Longrightarrow> \<forall>C\<in>Cs. finite C \<Longrightarrow> \<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
-proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
-  fix T::tree
+  assumes "closed_tree T Cs"
+  assumes "\<forall>C\<in>Cs. finite C"
+  shows "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
+using assms proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
+  fix T :: tree
   fix Cs :: "fterm clause set"
-  assume ih: "(\<And>T' Cs. treesize T' < treesize T \<Longrightarrow> closed_tree T' Cs \<Longrightarrow> \<forall>C\<in>Cs. finite C \<Longrightarrow>
-                 \<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs')"
+  assume ih: "\<And>T' Cs. treesize T' < treesize T \<Longrightarrow> closed_tree T' Cs \<Longrightarrow> 
+                            \<forall>C\<in>Cs. finite C \<Longrightarrow> \<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
   assume clo: "closed_tree T Cs"
   assume finite_Cs: "\<forall>C\<in>Cs. finite C"
-  
   { \<comment> \<open>Base case:\<close>
     assume "treesize T = 0"
     then have "T=Leaf" using treesize_Leaf by auto
     then have "closed_branch [] Leaf Cs" using branch_inv_Leaf clo unfolding closed_tree_def by auto
     then have "falsifies\<^sub>c\<^sub>s [] Cs" by auto
     then have "{} \<in> Cs" using falsifies\<^sub>c\<^sub>s_empty by auto
-    then have "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'" unfolding resolution_deriv_def by auto
+    then have "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'" 
+      unfolding resolution_deriv_def by auto
   }
   moreover
   { \<comment> \<open>Induction case:\<close>
@@ -235,7 +227,7 @@ proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
 
     \<comment> \<open>@{term C\<^sub>1'} contains a literal @{term l\<^sub>1} that is falsified by @{term ?B\<^sub>1}, but not @{term B}:\<close>
     from C\<^sub>1'_p l_B obtain l\<^sub>1 where l\<^sub>1_p: "l\<^sub>1 \<in> C\<^sub>1' \<and> falsifies\<^sub>l (B@[True]) l\<^sub>1 \<and> \<not>(falsifies\<^sub>l B l\<^sub>1)" by auto
-    let ?i = "nat_from_fatom (get_atom l\<^sub>1)"
+    let ?i = "nat_of_fatom (get_atom l\<^sub>1)"
 
     \<comment> \<open>@{term l\<^sub>1} is of course ground:\<close>
     have ground_l\<^sub>1: "ground\<^sub>l l\<^sub>1" using C\<^sub>1'_p l\<^sub>1_p by auto
@@ -249,7 +241,7 @@ proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
 
     \<comment> \<open>@{term l\<^sub>1} is negative:\<close>
     from l\<^sub>1_sign_no have l\<^sub>1_sign: "sign l\<^sub>1 = False" by auto
-    from l\<^sub>1_sign_no have l\<^sub>1_no: "nat_from_fatom (get_atom l\<^sub>1) = length B" by auto
+    from l\<^sub>1_sign_no have l\<^sub>1_no: "nat_of_fatom (get_atom l\<^sub>1) = length B" by auto
 
     \<comment> \<open>All the other literals in @{term C\<^sub>1'} must be falsified by B, since they are falsified by @{term ?B\<^sub>1}, but not @{term l\<^sub>1}.\<close>
     from C\<^sub>1'_p l\<^sub>1_no l\<^sub>1_p have B_C\<^sub>1'l\<^sub>1: "falsifies\<^sub>g B (C\<^sub>1' - {l\<^sub>1})" (* This should be a lemma *)
@@ -264,7 +256,7 @@ proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
     
     \<comment> \<open>@{term C\<^sub>2'} contains a literal @{term l\<^sub>2} that is falsified by @{term ?B\<^sub>2}, but not B:\<close>
     from C\<^sub>2'_p l_B obtain l\<^sub>2 where l\<^sub>2_p: "l\<^sub>2 \<in> C\<^sub>2' \<and> falsifies\<^sub>l (B@[False]) l\<^sub>2 \<and> \<not>falsifies\<^sub>l B l\<^sub>2" by auto
-    let ?i = "nat_from_fatom (get_atom l\<^sub>2)"
+    let ?i = "nat_of_fatom (get_atom l\<^sub>2)"
 
     have ground_l\<^sub>2: "ground\<^sub>l l\<^sub>2" using C\<^sub>2'_p l\<^sub>2_p by auto
 
@@ -277,7 +269,7 @@ proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
 
     \<comment> \<open>@{term l\<^sub>2} is negative:\<close>
     from l\<^sub>2_sign_no have l\<^sub>2_sign: "sign l\<^sub>2 = True" by auto
-    from l\<^sub>2_sign_no have l\<^sub>2_no: "nat_from_fatom (get_atom l\<^sub>2) = length B" by auto
+    from l\<^sub>2_sign_no have l\<^sub>2_no: "nat_of_fatom (get_atom l\<^sub>2) = length B" by auto
 
     \<comment> \<open>All the other literals in @{term C\<^sub>2'} must be falsified by B, since they are falsified by 
           @{term ?B\<^sub>2}, but not @{term l\<^sub>2}.\<close>
@@ -289,7 +281,7 @@ proof (induction T arbitrary: Cs rule: measure_induct_rule[of treesize])
     have l\<^sub>2cisl\<^sub>1: "l\<^sub>2\<^sup>c = l\<^sub>1" (* Could perhaps be a lemma *)
       proof -
         from l\<^sub>1_no l\<^sub>2_no ground_l\<^sub>1 ground_l\<^sub>2 have "get_atom l\<^sub>1 = get_atom l\<^sub>2"
-              using nat_from_fatom_bij ground\<^sub>l_ground_fatom 
+              using nat_of_fatom_bij ground\<^sub>l_ground_fatom 
               unfolding bij_betw_def inj_on_def by metis
         then show "l\<^sub>2\<^sup>c = l\<^sub>1" using l\<^sub>1_sign l\<^sub>2_sign using sign_comp_atom by metis 
       qed
@@ -372,6 +364,156 @@ proof -
   then obtain T where "closed_tree T Cs" using herbrand assms by blast
   then show "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'" using completeness' assms by auto
 qed 
+
+definition E_conv :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a var_denot \<Rightarrow> 'b var_denot" where
+  "E_conv b_of_a E \<equiv> \<lambda>x. (b_of_a (E x))"
+
+definition F_conv :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fun_denot \<Rightarrow> 'b fun_denot" where
+  "F_conv b_of_a F \<equiv> \<lambda>f bs. b_of_a (F f (map (inv b_of_a) bs))"
+
+definition G_conv :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a pred_denot \<Rightarrow> 'b pred_denot" where
+  "G_conv b_of_a G \<equiv> \<lambda>p bs. (G p (map (inv b_of_a) bs))"
+  
+lemma eval\<^sub>t_bij:
+  assumes "bij (b_of_a::'a \<Rightarrow> 'b)"
+  shows"eval\<^sub>t (E_conv b_of_a E) (F_conv b_of_a F) t = b_of_a (eval\<^sub>t E F t)"
+proof (induction t)
+  case (Fun f ts)
+  then have "map (inv b_of_a \<circ> eval\<^sub>t (E_conv b_of_a E) (F_conv b_of_a F)) ts = eval\<^sub>t\<^sub>s E F ts"
+    unfolding E_conv_def F_conv_def
+    using assms bij_is_inj by fastforce
+  then have "b_of_a (F f (map (inv b_of_a \<circ> eval\<^sub>t (E_conv b_of_a E) ((F_conv b_of_a F))) ts)) = b_of_a (F f (eval\<^sub>t\<^sub>s E F ts))" by metis
+  then show ?case using assms unfolding E_conv_def F_conv_def by auto
+next
+  case (Var x)
+  then show ?case using assms unfolding E_conv_def by auto
+qed
+
+lemma eval\<^sub>t\<^sub>s_bij:
+  assumes "bij (b_of_a::'a \<Rightarrow> 'b)"
+  shows "G_conv b_of_a G p (eval\<^sub>t\<^sub>s (E_conv b_of_a E) (F_conv b_of_a F) ts) = G p (eval\<^sub>t\<^sub>s E F ts)" 
+  using assms using eval\<^sub>t_bij
+proof -
+  have "map (inv b_of_a \<circ> eval\<^sub>t (E_conv b_of_a E) (F_conv b_of_a F)) ts = eval\<^sub>t\<^sub>s E F ts"
+    using eval\<^sub>t_bij assms bij_is_inj by fastforce
+  then show ?thesis
+    by (metis (no_types) G_conv_def map_map)
+qed
+   
+  
+lemma eval\<^sub>l_bij:
+  assumes "bij (b_of_a::'a \<Rightarrow> 'b)"
+  shows "eval\<^sub>l (E_conv b_of_a E) (F_conv b_of_a F) (G_conv b_of_a G) l = eval\<^sub>l E F G l"
+  using assms eval\<^sub>t\<^sub>s_bij 
+proof (cases l)
+  case (Pos p ts)
+  then show ?thesis
+    by (simp add: eval\<^sub>t\<^sub>s_bij assms) 
+next
+  case (Neg p ts)
+  then show ?thesis
+    by (simp add: eval\<^sub>t\<^sub>s_bij assms)
+qed 
+            
+lemma eval\<^sub>c_bij:
+  assumes "bij (b_of_a::'a \<Rightarrow> 'b)"
+  shows "eval\<^sub>c (F_conv b_of_a F) (G_conv b_of_a G) C = eval\<^sub>c F G C"
+proof -
+  {
+    fix E :: "char list \<Rightarrow> 'b"
+    assume bij_b_of_a: "bij b_of_a"
+    assume C_sat: "\<forall>E :: char list \<Rightarrow> 'a. \<exists>l\<in>C. eval\<^sub>l E F G l" 
+    have E_p: "E = E_conv b_of_a (E_conv (inv b_of_a) E)" 
+      unfolding E_conv_def using bij_b_of_a
+      using bij_betw_inv_into_right by fastforce 
+    have "\<exists>l\<in>C. eval\<^sub>l (E_conv b_of_a (E_conv (inv b_of_a) E)) (F_conv b_of_a F) (G_conv b_of_a G) l"
+      using eval\<^sub>l_bij bij_b_of_a C_sat by blast
+    then have "\<exists>l\<in>C. eval\<^sub>l E (F_conv b_of_a F) (G_conv b_of_a G) l" using E_p by auto 
+  }
+  then show ?thesis
+    by (meson eval\<^sub>l_bij assms eval\<^sub>c_def) 
+qed
+
+lemma eval\<^sub>c\<^sub>s_bij:
+  assumes "bij (b_of_a::'a \<Rightarrow> 'b)"
+  shows "eval\<^sub>c\<^sub>s (F_conv b_of_a F) (G_conv b_of_a G) Cs \<longleftrightarrow> eval\<^sub>c\<^sub>s F G Cs"
+    by (meson eval\<^sub>c_bij assms eval\<^sub>c\<^sub>s_def)
+    
+lemma countably_inf_bij:
+  assumes inf_a_uni: "infinite (UNIV :: ('a ::countable) set)"
+  assumes inf_b_uni: "infinite (UNIV :: ('b ::countable) set)"
+  shows "\<exists>b_of_a :: 'a \<Rightarrow> 'b. bij b_of_a"
+proof -
+  let ?S = "UNIV :: (('a::countable)) set"
+  have "countable ?S" by auto
+  moreover
+  have "infinite ?S" using inf_a_uni by auto
+  ultimately
+  obtain nat_of_a where QWER: "bij (nat_of_a :: 'a \<Rightarrow> nat)" using countableE_infinite[of ?S] by blast
+      
+  let ?T = "UNIV :: (('b::countable)) set"
+  have "countable ?T" by auto
+  moreover
+  have "infinite ?T" using inf_b_uni by auto
+  ultimately
+  obtain nat_of_b where TYUI: "bij (nat_of_b :: 'b \<Rightarrow> nat)" using countableE_infinite[of ?T] by blast
+      
+  let ?b_of_a = "\<lambda>a. (inv nat_of_b) (nat_of_a a)"
+    
+  have bij_nat_of_b: "\<forall>n. nat_of_b (inv nat_of_b n) = n"
+    using TYUI bij_betw_inv_into_right by fastforce
+  have "\<forall>a. inv nat_of_a (nat_of_a a) = a"
+    by (meson QWER UNIV_I bij_betw_inv_into_left) 
+  then have "inj (\<lambda>a. inv nat_of_b (nat_of_a a))"
+    using bij_nat_of_b injI by (metis (no_types))
+  moreover
+  have "range (\<lambda>a. inv nat_of_b (nat_of_a a)) = UNIV"
+    by (metis QWER TYUI bij_def image_image inj_imp_surj_inv)
+  ultimately
+  have "bij ?b_of_a"
+    unfolding bij_def by auto
+      
+  then show ?thesis by auto
+qed
+  
+lemma infinite_hterms: "infinite (UNIV :: hterm set)"
+proof -
+  let ?diago = "\<lambda>n. HFun (string_of_nat n) []"
+  let ?undiago = "\<lambda>a. nat_of_string (case a of HFun f ts \<Rightarrow> f)"
+  have "\<forall>n. ?undiago (?diago n) = n" using nat_of_string_string_of_nat by auto
+  moreover
+  have "\<forall>n. ?diago n \<in> UNIV" by auto
+  ultimately show "infinite (UNIV :: hterm set)" using infinity[of ?undiago ?diago UNIV] by simp
+qed
+
+theorem completeness_countable:
+  assumes inf_uni: "infinite (UNIV :: ('u :: countable) set)"
+  assumes finite_cs: "finite Cs" "\<forall>C\<in>Cs. finite C"
+  assumes unsat: "\<forall>(F::'u fun_denot) (G::'u pred_denot). \<not>eval\<^sub>c\<^sub>s F G Cs"
+  shows "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
+proof -
+  have "\<forall>(F::hterm fun_denot) (G::hterm pred_denot) . \<not>eval\<^sub>c\<^sub>s F G Cs"
+  proof (rule; rule)
+    fix F :: "hterm fun_denot"
+    fix G :: "hterm pred_denot"
+      
+    obtain u_of_hterm :: "hterm \<Rightarrow> 'u" where p_u_of_hterm: "bij u_of_hterm"
+      using countably_inf_bij inf_uni infinite_hterms by auto
+        
+    let ?F = "F_conv u_of_hterm F"
+    let ?G = "G_conv u_of_hterm G"
+    
+    have "\<not> eval\<^sub>c\<^sub>s ?F ?G Cs" using unsat by auto
+    then show "\<not> eval\<^sub>c\<^sub>s F G Cs" using eval\<^sub>c\<^sub>s_bij using p_u_of_hterm by auto
+  qed
+  then show "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'" using finite_cs completeness by auto
+qed
+  
+theorem completeness_nat:
+  assumes finite_cs: "finite Cs" "\<forall>C\<in>Cs. finite C"
+  assumes unsat: "\<forall>(F::nat fun_denot) (G::nat pred_denot) . \<not>eval\<^sub>c\<^sub>s F G Cs"
+  shows "\<exists>Cs'. resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
+  using assms completeness_countable by blast
 
 end \<comment> \<open>unification locale\<close>
 

@@ -1,4 +1,4 @@
-section {* Examples *}
+section \<open>Examples\<close>
 
 theory Examples imports Resolution begin
 
@@ -14,13 +14,13 @@ value "Pos ''equals''
         [Fun ''add''[Fun ''mul''[Var ''y'',Var ''y''], Fun ''one''[]],Var ''x'']"
 
 fun F\<^sub>n\<^sub>a\<^sub>t :: "nat fun_denot" where
-  " F\<^sub>n\<^sub>a\<^sub>t f [n,m] = 
+  "F\<^sub>n\<^sub>a\<^sub>t f [n,m] = 
      (if f = ''add'' then n + m else 
       if f = ''mul'' then n * m else 0)"
-| " F\<^sub>n\<^sub>a\<^sub>t f [] = 
+| "F\<^sub>n\<^sub>a\<^sub>t f [] = 
      (if f = ''one''  then 1 else
       if f = ''zero'' then 0 else 0)"
-| " F\<^sub>n\<^sub>a\<^sub>t f us = 0"
+| "F\<^sub>n\<^sub>a\<^sub>t f us = 0"
 
 fun G\<^sub>n\<^sub>a\<^sub>t :: "nat pred_denot" where
   "G\<^sub>n\<^sub>a\<^sub>t p [x,y] =
@@ -50,6 +50,7 @@ lemma "eval\<^sub>l E\<^sub>n\<^sub>a\<^sub>t F\<^sub>n\<^sub>a\<^sub>t G\<^sub>
   by auto
 lemma "eval\<^sub>l E\<^sub>n\<^sub>a\<^sub>t F\<^sub>n\<^sub>a\<^sub>t G\<^sub>n\<^sub>a\<^sub>t (Pos ''less'' [Var ''x'', Var ''y'']) = False" 
   by auto
+
 lemma "eval\<^sub>l E\<^sub>n\<^sub>a\<^sub>t F\<^sub>n\<^sub>a\<^sub>t G\<^sub>n\<^sub>a\<^sub>t 
        (Pos ''equals'' 
          [Fun ''add'' [Fun ''mul'' [Var ''y'',Var ''y''],Fun ''one'' []]
@@ -69,8 +70,10 @@ definition NP :: "fterm literal" where
 definition NQ :: "fterm literal" where
   "NQ = Neg ''Q'' [Fun ''d'' []]"
 
-theorem empty_mgu: "unifier\<^sub>l\<^sub>s \<epsilon> L \<Longrightarrow> mgu\<^sub>l\<^sub>s \<epsilon> L"
-unfolding unifier\<^sub>l\<^sub>s_def mgu\<^sub>l\<^sub>s_def apply auto
+theorem empty_mgu: 
+  assumes "unifier\<^sub>l\<^sub>s \<epsilon> L"
+  shows "mgu\<^sub>l\<^sub>s \<epsilon> L"
+using assms unfolding unifier\<^sub>l\<^sub>s_def mgu\<^sub>l\<^sub>s_def apply auto
 apply (rule_tac x=u in exI)
 using empty_comp1 empty_comp2 apply auto
 done
@@ -79,10 +82,12 @@ theorem unifier_single: "unifier\<^sub>l\<^sub>s \<sigma> {l}"
 unfolding unifier\<^sub>l\<^sub>s_def by auto
 
 theorem resolution_rule':
-      "C\<^sub>1 \<in> Cs \<Longrightarrow> C\<^sub>2 \<in> Cs \<Longrightarrow> applicable C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<sigma> 
-   \<Longrightarrow> C = {resolution C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<sigma>} 
-   \<Longrightarrow> resolution_step Cs (Cs \<union> C)"
-  using resolution_rule by auto
+  assumes "C\<^sub>1 \<in> Cs"
+  assumes "C\<^sub>2 \<in> Cs"
+  assumes "applicable C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<sigma>"
+  assumes "C = {resolution C\<^sub>1 C\<^sub>2 L\<^sub>1 L\<^sub>2 \<sigma>}"
+  shows "resolution_step Cs (Cs \<union> C)"
+  using assms resolution_rule by auto
 
 lemma resolution_example1: 
    "resolution_deriv {{NP,PQ},{NQ},{PP,PQ}} 
@@ -246,22 +251,10 @@ proof -
   then show ?thesis by auto
 qed
 
-lemma ref_sound: 
-  assumes deriv: "resolution_deriv Cs Cs' \<and> {} \<in> Cs'"
-  shows "\<not>eval\<^sub>c\<^sub>s F G Cs"
-proof -
-  from deriv have "eval\<^sub>c\<^sub>s F G Cs \<Longrightarrow> eval\<^sub>c\<^sub>s F G Cs'" using lsound_derivation by auto
-  moreover
-  from deriv have "eval\<^sub>c\<^sub>s F G Cs' \<Longrightarrow> eval\<^sub>c F G {}" unfolding eval\<^sub>c\<^sub>s_def by auto
-  moreover
-  then have "eval\<^sub>c F G {} \<Longrightarrow> False" unfolding eval\<^sub>c_def by auto
-  ultimately show ?thesis by auto
-qed
-
 lemma resolution_example1_sem: "\<not>eval\<^sub>c\<^sub>s F G {{NP, PQ}, {NQ}, {PP, PQ}}"
-  using resolution_example1 ref_sound by auto
+  using resolution_example1 derivation_sound_refute by auto
 
 lemma resolution_example2_sem: "\<not>eval\<^sub>c\<^sub>s F G {{Nb,Na},{Pax},{Pa},{Na,Pb,Naa}}"
-  using resolution_example2 ref_sound by auto
+  using resolution_example2 derivation_sound_refute by auto
 
 end
