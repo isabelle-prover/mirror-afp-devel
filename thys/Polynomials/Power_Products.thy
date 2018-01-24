@@ -1098,7 +1098,7 @@ qed
 
 end
 
-text \<open>"gd_powerprod" stands for @{emph \<open>graded ordered Dickson power-products\<close>}.\<close>
+text \<open>\<open>gd_powerprod\<close> stands for @{emph \<open>graded ordered Dickson power-products\<close>}.\<close>
 
 locale od_powerprod =
   ordered_powerprod ord ord_strict
@@ -1131,7 +1131,7 @@ qed
 
 end
 
-text \<open>"od_powerprod" stands for @{emph \<open>ordered Dickson power-products\<close>}.\<close>
+text \<open>\<open>od_powerprod\<close> stands for @{emph \<open>ordered Dickson power-products\<close>}.\<close>
 
 subsection \<open>Functions as Power-Products\<close>
 

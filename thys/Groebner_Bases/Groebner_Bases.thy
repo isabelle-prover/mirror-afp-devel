@@ -1107,7 +1107,7 @@ lemmas finite_some_GB_finite = finite_some_GB_dgrad_p_set[OF dickson_grading_dgr
 lemmas some_GB_isGB_finite = some_GB_isGB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas some_GB_pideal_finite = some_GB_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 
-text \<open>Theory "Buchberger_Algorithm" implements an algorithm for effectively computing Gr\"obner bases.\<close>
+text \<open>Theory \<open>Buchberger_Algorithm\<close> implements an algorithm for effectively computing Gr\"obner bases.\<close>
 
 subsection \<open>Relation @{term red_supset}\<close>
 

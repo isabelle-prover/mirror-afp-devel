@@ -423,7 +423,7 @@ proof -
 qed
 
 text \<open>Multiplication by a monomial is injective in the second argument (the power-product) only in
-  context @{locale ordered_powerprod}; see lemma "monom_mult_inj_2" below.\<close>
+  context @{locale ordered_powerprod}; see lemma \<open>monom_mult_inj_2\<close> below.\<close>
 
 lemma monom_mult_inj_3:
   assumes "monom_mult c t p1 = monom_mult c t (p2::('a, 'b::semiring_no_zero_divisors_cancel) poly_mapping)"

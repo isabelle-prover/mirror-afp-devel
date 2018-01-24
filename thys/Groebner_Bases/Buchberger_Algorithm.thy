@@ -13,7 +13,7 @@ text \<open>This theory implements Buchberger's algorithm for computing Gr\"obne
 type_synonym ('a, 'b) apT = "(('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> (('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)) list"
 type_synonym ('a, 'b) critT = "(('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
 
-subsection \<open>The @{emph \<open>add_pairs\<close>} Parameter\<close>
+subsection \<open>The \<open>add_pairs\<close> Parameter\<close>
 
 context gd_powerprod
 begin
