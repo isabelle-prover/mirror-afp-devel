@@ -4,7 +4,7 @@
 
 section \<open>Less common functions on lists\<close>
 
-theory PP_More_List2
+theory More_List2
 imports
   Main
 begin

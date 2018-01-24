@@ -4,11 +4,11 @@
 
 section \<open>Polynomial mapping: combination of almost everywhere zero functions with an algebraic view\<close>
 
-theory PP_Poly_Mapping
+theory Poly_Mapping
 imports
   "HOL-Library.Groups_Big_Fun"
   "HOL-Library.Fun_Lexorder"
-  PP_More_List2
+  More_List2
 begin
 
 subsection \<open>Preliminary: auxiliary operations for \qt{almost everywhere zero}\<close>
@@ -252,6 +252,9 @@ lemma poly_mapping_eqI:
   shows "f = g"
   using assms unfolding poly_mapping.lookup_inject [symmetric] by auto
 
+lemma poly_mapping_eq_iff: "a = b \<longleftrightarrow> lookup a = lookup b"
+  unfolding fun_eq_iff using poly_mapping_eqI by blast
+
 text \<open>
   We model the universe of functions being \qt{almost everywhere zero}
   by means of a separate type @{typ "('a, 'b) poly_mapping"}.
@@ -277,6 +280,7 @@ text \<open>
 \<close>
 
 setup_lifting type_definition_poly_mapping
+code_datatype Abs_poly_mapping\<comment>\<open>FIXME? workaround for preventing \<open>code_abstype\<close> setup\<close>
 
 text \<open>
   @{typ "'a \<Rightarrow>\<^sub>0 'b"} serves distinctive purposes:
@@ -364,6 +368,9 @@ lemma lookup_add:
 
 instance poly_mapping :: (type, comm_monoid_add) comm_monoid_add
   by intro_classes (transfer, simp add: fun_eq_iff ac_simps)+
+
+lemma lookup_sum: "lookup (sum pp X) i = sum (\<lambda>x. lookup (pp x) i) X"
+  by (induction rule: infinite_finite_induct) (auto simp: lookup_add)
 
 (*instance poly_mapping :: (type, "{monoid_add, cancel_semigroup_add}") cancel_semigroup_add
   by intro_classes (transfer, simp add: fun_eq_iff)+*)
@@ -626,7 +633,7 @@ proof
         apply (subst Sum_any_right_distrib)
         apply (rule fin2)
         apply (subst Sum_any_right_distrib)
-        apply (rule fin1)
+         apply (rule fin1)
         apply (subst Sum_any.swap [of ?AB])
         apply (fact \<open>finite ?AB\<close>)
         apply (auto simp add: mult_when ac_simps)
@@ -809,7 +816,7 @@ qed
 subsection \<open>Integral domains\<close>
 
 instance poly_mapping :: ("{ordered_cancel_comm_monoid_add, linorder}", ring_no_zero_divisors) ring_no_zero_divisors
-  \<comment> \<open>The @{class "linorder"} constraint is a pragmatic device for the proof -- maybe it can be dropped\<close>
+  text \<open>The @{class "linorder"} constraint is a pragmatic device for the proof – maybe it can be dropped\<close>
 proof
   fix f g :: "'a \<Rightarrow>\<^sub>0 'b"
   assume "f \<noteq> 0" and "g \<noteq> 0"
@@ -987,7 +994,7 @@ lemma lookup_eq_zero_in_keys_contradict [dest]:
   "lookup f k = 0 \<Longrightarrow> \<not> k \<in> keys f"
   by simp
 
-lemma finite_range [simp]: "finite (PP_Poly_Mapping.range p)"
+lemma finite_range [simp]: "finite (Poly_Mapping.range p)"
 proof transfer
   fix f :: "'b \<Rightarrow> 'a"
   assume *: "finite {x. f x \<noteq> 0}"
@@ -1000,6 +1007,9 @@ qed
 lemma in_keys_lookup_in_range [simp]:
   "k \<in> keys f \<Longrightarrow> lookup f k \<in> range f"
   by transfer simp
+
+lemma in_keys_iff: "x \<in> (keys s) = (lookup s x \<noteq> 0)"
+  by (transfer, simp)
 
 lemma keys_zero [simp]:
   "keys 0 = {}"
@@ -1038,25 +1048,25 @@ lemma keys_mult:
 
 lemma setsum_keys_plus_distrib:
   assumes hom_0: "\<And>k. f k 0 = 0"
-  and hom_plus: "\<And>k. k \<in> PP_Poly_Mapping.keys p \<union> PP_Poly_Mapping.keys q \<Longrightarrow> f k (PP_Poly_Mapping.lookup p k + PP_Poly_Mapping.lookup q k) = f k (PP_Poly_Mapping.lookup p k) + f k (PP_Poly_Mapping.lookup q k)"
+  and hom_plus: "\<And>k. k \<in> Poly_Mapping.keys p \<union> Poly_Mapping.keys q \<Longrightarrow> f k (Poly_Mapping.lookup p k + Poly_Mapping.lookup q k) = f k (Poly_Mapping.lookup p k) + f k (Poly_Mapping.lookup q k)"
   shows
-  "(\<Sum>k\<in>PP_Poly_Mapping.keys (p + q). f k (PP_Poly_Mapping.lookup (p + q) k)) =
-   (\<Sum>k\<in>PP_Poly_Mapping.keys p. f k (PP_Poly_Mapping.lookup p k)) +
-   (\<Sum>k\<in>PP_Poly_Mapping.keys q. f k (PP_Poly_Mapping.lookup q k))"
+  "(\<Sum>k\<in>Poly_Mapping.keys (p + q). f k (Poly_Mapping.lookup (p + q) k)) =
+   (\<Sum>k\<in>Poly_Mapping.keys p. f k (Poly_Mapping.lookup p k)) +
+   (\<Sum>k\<in>Poly_Mapping.keys q. f k (Poly_Mapping.lookup q k))"
   (is "?lhs = ?p + ?q")
 proof -
-  let ?A = "PP_Poly_Mapping.keys p \<union> PP_Poly_Mapping.keys q"
-  have "?lhs = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k + PP_Poly_Mapping.lookup q k))"
+  let ?A = "Poly_Mapping.keys p \<union> Poly_Mapping.keys q"
+  have "?lhs = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k + Poly_Mapping.lookup q k))"
     apply(rule sum.mono_neutral_cong_left)
-       apply(simp_all add: PP_Poly_Mapping.keys_add_subset)
+       apply(simp_all add: Poly_Mapping.keys_add_subset)
      apply(transfer fixing: f)
      apply(auto simp add: hom_0)[1]
     apply(transfer fixing: f)
     apply(auto simp add: hom_0)[1]
     done
-  also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k) + f k (PP_Poly_Mapping.lookup q k))"
+  also have "\<dots> = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k) + f k (Poly_Mapping.lookup q k))"
     by(rule sum.cong)(simp_all add: hom_plus)
-  also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k)) + (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup q k))"
+  also have "\<dots> = (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup p k)) + (\<Sum>k\<in>?A. f k (Poly_Mapping.lookup q k))"
     (is "_ = ?p' + ?q'")
     by(simp add: sum.distrib)
   also have "?p' = ?p"
@@ -1135,7 +1145,7 @@ lemma beyond_degree_lookup_zero:
   unfolding degree_def by transfer auto
 
 lemma degree_add:
-  "degree (f + g) \<le> max (degree f) (PP_Poly_Mapping.degree g)"
+  "degree (f + g) \<le> max (degree f) (Poly_Mapping.degree g)"
 unfolding degree_def proof transfer
   fix f g :: "nat \<Rightarrow> 'a"
   assume f: "finite {x. f x \<noteq> 0}"
@@ -1606,10 +1616,10 @@ lemma mapp_cong [fundef_cong]:
 
 lemma lookup_mapp:
   "lookup (mapp f p) k = (f k (lookup p k) when k \<in> keys p)"
-unfolding when_def by transfer simp
+  unfolding when_def by transfer simp
 
 lemma keys_mapp_subset: "keys (mapp f p) \<subseteq> keys p"
-by transfer auto
+  by transfer auto
 
 hide_const (open) lookup single update keys range map map_key degree nth the_value items foldr mapp
 

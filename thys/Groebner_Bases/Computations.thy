@@ -3,18 +3,18 @@
 section \<open>Computing Gr\"obner Bases\<close>
 
 theory Computations
-imports Groebner_Bases Polynomials.Poly_Lists "HOL-Library.AList"
+  imports
+    Buchberger_Algorithm
+    Polynomials.MPoly_Type_Class_FMap
 begin
 
 text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexicographic and the
   degree-lexicographic term order, making use of the implementation of multivariate polynomials in
-  @{theory "Poly_Lists"}.\<close>
+  @{theory "MPoly_Type_Class_FMap"}.\<close>
 
 subsection \<open>Lexicographic Order\<close>
 
-definition "lex_strict s t \<longleftrightarrow> lex s t \<and> \<not> lex t s"
-
-global_interpretation opp_lex: od_powerprod lex lex_strict
+global_interpretation opp_lex: gd_powerprod lex_pm lex_pm_strict
   defines lp_lex = opp_lex.lp
   and max_lex = opp_lex.ordered_powerprod_lin.max
   and list_max_lex = opp_lex.list_max
@@ -30,137 +30,133 @@ global_interpretation opp_lex: od_powerprod lex lex_strict
   and trd_lex = opp_lex.trd
   and spoly_lex = opp_lex.spoly
   and trdsp_lex = opp_lex.trdsp
-  and gbaux_lex = opp_lex.gbaux
+  and add_pairs_naive_lex = opp_lex.add_pairs_naive
+  and add_pairs_sorted_lex = opp_lex.add_pairs_sorted
+  and pairs_lex = opp_lex.pairs
+  and product_crit_lex = opp_lex.product_crit
+  and chain_crit_lex = opp_lex.chain_crit
+  and comb_crit_lex = opp_lex.comb_crit
+  and pc_crit_lex = opp_lex.pc_crit
+  and gb_aux_lex = opp_lex.gb_aux
   and gb_lex = opp_lex.gb
   apply standard
-  subgoal by (simp add: lex_strict_def)
-  subgoal by (rule lex_refl)
-  subgoal by (erule lex_trans, simp)
-  subgoal by (erule lex_antisym, simp)
-  subgoal by (rule lex_lin)
-  subgoal by (rule lex_zero_min)
-  subgoal by (erule lex_plus_monotone)
+  subgoal by (simp add: lex_pm_strict_def)
+  subgoal by (rule lex_pm_refl)
+  subgoal by (erule lex_pm_trans, simp)
+  subgoal by (erule lex_pm_antisym, simp)
+  subgoal by (rule lex_pm_lin)
+  subgoal by (rule lex_pm_zero_min)
+  subgoal by (erule lex_pm_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
 
-hide_const (open) PP
-abbreviation PP :: "('a \<times> nat) list \<Rightarrow> 'a \<Rightarrow>\<^sub>0 nat" where "PP \<equiv> Poly_Lists.PP"
+context begin interpretation trivariate\<^sub>0_rat .
 
 lemma
-  "lp_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, 2), (Y, 1)]"
-by eval
-
-lemma
-  "lc_lex (MP [(PP [(X, 2::nat), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = 3"
+  "lp_lex (X\<^sup>2 * Z^3 + 3*X\<^sup>2*Y) = sparse\<^sub>0 [(0, 2), (1, 1)]"
   by eval
 
 lemma
-  "tail_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) =
-    MP [(PP [(X, 2), (Z, 3)], 1::rat)]"
-by eval
+  "lc_lex (X\<^sup>2 * Z^3 + 3*X\<^sup>2*Y) = 3"
+  by eval
 
 lemma
-  "higher_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) (PP [(X, 2)]) =
-    MP [(PP [(X, 2), (Z, 3)], 1), (PP [(X,2), (Y,1)], 3)]"
-by eval
+  "tail_lex (X\<^sup>2 * Z^3 + 3*X\<^sup>2*Y) = X\<^sup>2 * Z^3"
+  by eval
 
 lemma
-  "ord_strict_lex
-    (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-    (MP [(PP [(X, 2), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)])"
-by eval
+  "higher_lex (X\<^sup>2 * Z^3 + 3*X\<^sup>2*Y) (sparse\<^sub>0 [(0, 2)]) = X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y"
+  by eval
+
+lemma "ord_strict_lex (X\<^sup>2*Z^4 - 2*Y^3*Z\<^sup>2) (X\<^sup>2*Z^7 + 2 * Y^3*Z\<^sup>2)"
+  by eval
 
 lemma
-  "rd_mult_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    (- 2, PP [(Y, 1), (Z, 1)])"
-by eval
+  "rd_mult_lex (X\<^sup>2*Z^4 - 2*Y^3*Z\<^sup>2) (Y\<^sup>2*Z + 2*Z^3) = (- 2, sparse\<^sub>0 [(1, 1), (2, 1)])"
+  by eval
 
 lemma
-  "rd_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
-by eval
+  "rd_lex (X\<^sup>2*Z^4 - 2*Y^3*Z\<^sup>2) (Y\<^sup>2*Z + 2*Z^3) = X\<^sup>2*Z^4 + 4*Y*Z^4"
+  by eval
 
 lemma
-  "rd_list_lex
-      [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
-by eval
+  "rd_list_lex [Y\<^sup>2*Z + 2*Z^3] (X\<^sup>2*Z^4 - 2*Y^3*Z\<^sup>2) = X\<^sup>2*Z^4 + 4 * Y * Z^4"
+  by eval
 
 lemma
   "trd_lex
-      [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Y, 1), (Z, 3)], 2)]]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 6)], - 8)]"
-by eval
+      [Y\<^sup>2 * Z + 2 * Y * Z ^ 3]
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2) =
+    X\<^sup>2 * Z ^ 4 + - 8 * Y * Z ^ 6"
+  by eval
 
 lemma
   "spoly_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    MP [(PP [(Z, 2), (Y, 5)], - 2), (PP [(X, 2), (Z, 6)], - 2)]"
-by eval
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
+    - 2 * Z\<^sup>2 * Y ^ 5 + - 2 * X\<^sup>2 * Z ^ 6"
+  by eval
 
 lemma
   "trdsp_lex
-      [(MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]), (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)])]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
+      [X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2,
+        Y\<^sup>2 * Z + 2 * Z ^ 3]
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
     0"
-by eval
+  by eval
+
 
 lemma
-  "up [] [MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]] (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    [(MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)], MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)])]"
-by eval
-
-lemma
-  "gb_lex
-    [
-     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]
-    ] =
-    [
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)],
-    MP [(PP [(Y,2), (Z, 1)], 1), (PP [(Z, 3)], 2)]
-   ]"
-by eval
+  "add_pairs_sorted_lex [] [X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2]
+    (Y\<^sup>2 * Z + 2 * Z ^ 3) =
+    [(Y\<^sup>2 * Z + 2 * Z ^ 3,
+     X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)]"
+  by eval
 
 lemma
   "gb_lex
     [
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], -1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)]
+     X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2,
+     Y\<^sup>2 * Z + 2 * Z ^ 3
     ] =
     [
-     MP [(PP [(X, 2)], - 1), (PP [(Y, 5)], 1)],
-     MP [(PP [(Y, 3)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(Y, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+      X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2,
+      Y\<^sup>2 * Z + 2 * Z ^ 3
     ]"
-by eval
+  by eval
+
+lemma
+  "gb_lex
+    [X\<^sup>2 * Z\<^sup>2 - Y,
+     Y\<^sup>2 * Z - 1
+    ] =
+    [ - (Y^5) + X\<^sup>2,
+      - (Y^3) + X\<^sup>2 * Z,
+      X\<^sup>2 * Z\<^sup>2 - Y,
+      Y\<^sup>2 * Z - 1
+    ]"
+  by eval
 
 lemma
   "gb_lex
     [
-     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1::rat), (0, -1)]
+     X ^ 3 -  X * Y * Z\<^sup>2,
+     Y\<^sup>2 * Z - 1
     ] =
     [
-     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)],
-     MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+     X ^ 3 -  X * Y * Z\<^sup>2,
+     Y\<^sup>2 * Z - 1
     ]"
-by eval
+  by eval
+
+end
+
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
-definition "dlex_strict s t \<longleftrightarrow> dlex s t \<and> \<not> dlex t s"
-
-global_interpretation opp_dlex: od_powerprod dlex dlex_strict
+global_interpretation opp_dlex: gd_powerprod dlex_pm dlex_pm_strict
   defines lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
   and list_max_dlex = opp_dlex.list_max
@@ -176,110 +172,120 @@ global_interpretation opp_dlex: od_powerprod dlex dlex_strict
   and trd_dlex = opp_dlex.trd
   and spoly_dlex = opp_dlex.spoly
   and trdsp_dlex = opp_dlex.trdsp
-  and gbaux_dlex = opp_dlex.gbaux
+  and add_pairs_naive_dlex = opp_dlex.add_pairs_naive
+  and add_pairs_sorted_dlex = opp_dlex.add_pairs_sorted
+  and pairs_dlex = opp_dlex.pairs
+  and product_crit_dlex = opp_dlex.product_crit
+  and chain_crit_dlex = opp_dlex.chain_crit
+  and comb_crit_dlex = opp_dlex.comb_crit
+  and pc_crit_dlex = opp_dlex.pc_crit
+  and gb_aux_dlex = opp_dlex.gb_aux
   and gb_dlex = opp_dlex.gb
   apply standard
-  subgoal by (simp add: dlex_strict_def)
-  subgoal by (rule dlex_refl)
-  subgoal by (erule dlex_trans, simp)
-  subgoal by (erule dlex_antisym, simp)
-  subgoal by (rule dlex_lin)
-  subgoal by (rule dlex_zero_min)
-  subgoal by (erule dlex_plus_monotone)
+  subgoal by (simp add: dlex_pm_strict_def)
+  subgoal by (rule dlex_pm_refl)
+  subgoal by (erule dlex_pm_trans, simp)
+  subgoal by (erule dlex_pm_antisym, simp)
+  subgoal by (rule dlex_pm_lin)
+  subgoal by (rule dlex_pm_zero_min)
+  subgoal by (erule dlex_pm_plus_monotone)
   done
 
 subsubsection \<open>Computations\<close>
 
+experiment begin interpretation trivariate\<^sub>0_rat .
+
 lemma
-  "lp_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = PP [(X, Suc (Suc 0)), (Y, Suc 0)]"
+  "lp_lex (X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y) = sparse\<^sub>0 [(0, Suc (Suc 0)), (1, Suc 0)]"
+  by eval
+
+lemma
+  "lc_lex (X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y) = 3"
 by eval
 
 lemma
-  "lc_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = 3"
+  "tail_lex (X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y) = sparse\<^sub>0 [(sparse\<^sub>0 [(0, 2), (2, 3)], 1)]"
 by eval
 
 lemma
-  "tail_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) = MP [(PP [(X, 2), (Z, 3)], 1)]"
-by eval
-
-lemma
-  "higher_lex (MP [(PP [(X, 2), (Z, 3)], 1::rat), (PP [(X, 2), (Y, 1)], 3)]) (PP [(X, 2)]) =
-    MP [(PP [(X, 2), (Z, 3)], 1), (PP [(X, 2), (Y, 1)], 3)]"
+  "higher_lex (X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y) (sparse\<^sub>0 [(0, 2)]) =
+    X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y"
 by eval
 
 lemma
   "ord_strict_lex
-    (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-    (MP [(PP [(X, 2), (Z, 7)], 1::rat), (PP [(Y, 3), (Z, 2)], 2)])"
+    (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+    (X\<^sup>2 *Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2)"
 by eval
 
 lemma
   "rd_mult_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    (- 2, PP [(Y, 1), (Z, 1)])"
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
+    (- 2, sparse\<^sub>0 [(1, 1), (2, 1)])"
 by eval
 
 lemma
   "rd_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
+    X\<^sup>2*Z^4 + 4*Y*Z^4"
 by eval
 
 lemma
   "rd_list_lex
-      [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 4)], 4)]"
+      [Y\<^sup>2 * Z + 2 * Z ^ 3]
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2) =
+    X\<^sup>2*Z^4 + 4*Y*Z^4"
 by eval
 
 lemma
   "trd_lex
-      [MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Y, 1), (Z, 3)], 2)]]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]) =
-    MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 1), (Z, 6)], - 8)]"
+      [Y\<^sup>2*Z + 2*Y*Z^3]
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2) =
+    X\<^sup>2 * Z ^ 4 + - 8 * Y * Z ^ 6"
 by eval
 
 lemma
   "spoly_lex
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
-    MP [(PP [(Z, 2), (Y, 5)], - 2), (PP [(X, 2), (Z, 6)], - 2)]"
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
+    - 2 * Z\<^sup>2 * Y ^ 5 + - 2 * X\<^sup>2 * Z ^ 6"
 by eval
 
 lemma
   "trdsp_lex
-      [(MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]), (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)])]
-      (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)])
-      (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)]) =
+      [(X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2), (Y\<^sup>2 * Z + 2 * Z ^ 3)]
+      (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2)
+      (Y\<^sup>2 * Z + 2 * Z ^ 3) =
     0"
-by eval
+  by eval
 
 lemma
   "gb_dlex
     [
-     (MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], -2)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [(Z, 3)], 2)])
+     (X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2),
+     (Y\<^sup>2 * Z + 2 * Z ^ 3)
     ] =
     [
-     MP [(PP [(X, 2), (Z, 4)], 1), (PP [(Y, 3), (Z, 2)], - 2)],
-     MP [(PP [(Y, 2), (Z, 1)], 1), (PP [(Z, 3)], 2)]
+     X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2,
+     Y\<^sup>2 * Z + 2 * Z ^ 3
     ]"
-by eval
+  by eval
 
 lemma
   "gb_dlex
     [
-     (MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], -1)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
+     (X\<^sup>2 * Z\<^sup>2 + - 1 * X),
+     (Y\<^sup>2 * Z + - 1)
     ] =
     [
-     MP [(PP [(X, 2)], - 1), (PP [(Y, 4), (X, 1)], 1)],
-     MP [(PP [(X, 1), (Y, 2)], - 1), (PP [(X, 2), (Z, 1)], 1)],
-     MP [(PP [(X, 2), (Z, 2)], 1), (PP [(X, 1)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
+     -X*Y^4 + X\<^sup>2,
+     - 1 * X * Y\<^sup>2 + X\<^sup>2 * Z,
+     X\<^sup>2 * Z\<^sup>2 + - 1 * X,
+     Y\<^sup>2 * Z + - 1
     ]"
-by eval
+  by eval
 
 text \<open>The following Gr\"obner basis differs from the one obtained w.r.t. the purely lexicographic
   term-order.\<close>
@@ -287,28 +293,29 @@ text \<open>The following Gr\"obner basis differs from the one obtained w.r.t. t
 lemma
   "gb_dlex
     [
-     (MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
+     (X ^ 3 + - 1 * X * Y * Z\<^sup>2),
+     (Y\<^sup>2 * Z + - 1)
     ] =
-    [
-     MP [(PP [(X, 5)], - 1), (PP [(X, 1), (Z, 3)], 1)],
-     MP [(PP [(X, 3), (Y, 1)], - 1), (PP [(X, 1), (Z, 1)], 1)],
-     MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], - 1)], MP [(PP [(Y, 2), (Z, 1)], 1), (0, - 1)]
-    ]"
-by eval
+    [- 1 * X * Z ^ 3 + X ^ 5,
+     - 1 * X ^ 3 * Y + X * Z,
+    X ^ 3 + - 1 * X * Y * Z\<^sup>2,
+    Y\<^sup>2 * Z + - 1]"
+  by eval
 
 lemma
   "gb_dlex
     [
-     (MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
+     (X ^ 3 + - 1 * X * Y * Z\<^sup>2),
+     (Y\<^sup>2 * Z + - 1)
     ]
    \<noteq>
    gb_lex
     [
-     (MP [(PP [(X, 3)], 1), (PP [(X, 1), (Y, 1), (Z, 2)], -1)]),
-     (MP [(PP [(Y, 2), (Z, 1)], 1::rat), (PP [], -1)])
+     (X ^ 3 + - 1 * X * Y * Z\<^sup>2),
+     (Y\<^sup>2 * Z + - 1)
     ]"
-by eval
+  by eval
+
+end
 
 end (* theory *)

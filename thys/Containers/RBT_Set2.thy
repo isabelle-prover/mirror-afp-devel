@@ -360,7 +360,7 @@ next
   next
     case True
     thus ?thesis using Branch
-      by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_ccompare_def Mapping_RBT'_inverse RBT_ext.linorder.is_rbt_fold_rbt_insert[OF ID_ccompare] linorder.rbt_insert_is_rbt[OF ID_ccompare] ord.Empty_is_rbt)(subst linorder.rbt_lookup_keys[OF ID_ccompare, symmetric], assumption, auto simp add: linorder.rbt_sorted_fold_insert[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_fold_rbt_insert[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_rbt_insert'[OF ID_ccompare] linorder.rbt_insert_rbt_sorted[OF ID_ccompare] ord.is_rbt_rbt_sorted ord.Empty_is_rbt dom_map_of_conv_image_fst RBT_Impl.keys_def ord.rbt_lookup.simps)
+      by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_ccompare_def Mapping_RBT'_inverse RBT_ext.linorder.is_rbt_fold_rbt_insert_impl[OF ID_ccompare] linorder.rbt_insert_is_rbt[OF ID_ccompare] ord.Empty_is_rbt)(subst linorder.rbt_lookup_keys[OF ID_ccompare, symmetric], assumption, auto simp add: linorder.rbt_sorted_fold_insert[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_fold_rbt_insert_impl[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_rbt_insert'[OF ID_ccompare] linorder.rbt_insert_rbt_sorted[OF ID_ccompare] ord.is_rbt_rbt_sorted ord.Empty_is_rbt dom_map_of_conv_image_fst RBT_Impl.keys_def ord.rbt_lookup.simps)
   qed
 qed
 

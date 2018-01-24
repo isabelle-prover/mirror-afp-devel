@@ -4,10 +4,14 @@ session Polynomials (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
     Matrix
-    Show
-    Deep_Learning
+    "Show"
+  theories [document = false]
+    "Abstract-Rewriting.SN_Orders"
+    "Abstract-Rewriting.SN_Order_Carrier"
+    "HOL-Library.AList"
   theories
-    Poly_Lists
+    MPoly_Type_Class_FMap
+    MPoly_Type_Univariate
     Show_Polynomials
     NZM
   document_files

@@ -205,7 +205,28 @@ definition "mig_aforms p x = real_of_float ((fst o the) ((approx p (Norm (map (N
 definition
   "column_of_c1_info x N j = (map (\<lambda>i. the (snd x) ! i) (map (\<lambda>i. i * N + j) [0..<N]))"
 
-definition "print_lorenz_aform print_fun cx cy cz
+definition "rotate_x_fa a =
+  [1, 0, 0,
+  0, Cos a, - Sin a,
+  0, Sin a, Cos a]"
+
+definition "rotate_y_fa a =
+  [Cos a, 0, Sin a,
+  0, 1, 0,
+  - Sin a, 0, Cos a]"
+
+definition "rotate_z_fa a =
+  [Cos a, - Sin a, 0,
+  Sin a, Cos a, 0,
+  0, 0, 1]"
+
+definition "rotate_zx_slp a b xs =
+  slp_of_fas (mvmult_fa 3 3 (mmult_fa 3 3 3 (rotate_x_fa (Rad_of (R\<^sub>e b))) (rotate_z_fa (Rad_of (R\<^sub>e a)))) xs)"
+
+definition "perspective_projection_aforms xs =
+  the (approx_slp_outer 30 3 (rotate_zx_slp (-30) (-60) (map Var [0..<3])) xs)"
+
+definition "print_lorenz_aform print_fun cx cy cz ci
     cd1 cd2
   = (\<lambda>a b.
         let (s1, n) = ((-6), False);
@@ -215,7 +236,10 @@ definition "print_lorenz_aform print_fun cx cy cz
               ([x0, y0, z0], [x1, y1, z1]) \<Rightarrow> ((x0, y0, z0), (x1, y1, z1));
             _ = print_fun (String.implode (shows_segments_of_aform 0 1 b ((shows cx o shows_space o shows z0 o shows_space o shows z1)'''') ''\<newline>''));
             _ = print_fun (String.implode (shows_segments_of_aform 0 2 b ((shows cy o shows_space o shows y0 o shows_space o shows y1)'''') ''\<newline>''));
-            _ = print_fun (String.implode (shows_segments_of_aform 1 2 b ((shows cz o shows_space o shows x0 o shows_space o shows x1)'''') ''\<newline>''))
+            _ = print_fun (String.implode (shows_segments_of_aform 1 2 b ((shows cz o shows_space o shows x0 o shows_space o shows x1)'''') ''\<newline>''));
+            PS = perspective_projection_aforms b;
+            _ = print_fun (String.implode (shows_segments_of_aform 0 1 PS
+                  ((shows ci o shows_space o shows (fst (PS ! 2)) o shows_space o shows (fst (b ! 2))) '''') ''\<newline>''))
         in if \<not> a \<and> length b > 10 then
           print_fun (String.implode (shows_aforms_vareq 3 [(0, 1), (0, 2), (1, 2)] [0..<3]
               cd1
@@ -228,7 +252,7 @@ definition "print_lorenz_aform print_fun cx cy cz
         else ())"
 
 definition "print_lorenz_aform_std print_fun =
-  print_lorenz_aform print_fun ''0x000001'' ''0x000002'' ''0x000012''
+  print_lorenz_aform print_fun ''0x000001'' ''0x000002'' ''0x000012'' ''0x000003''
     [''0xa66f00'', ''0x06266f'', ''0xc60000'']
     [''0xffaa00'', ''0x1240ab'', ''0xc60000'']"
 
@@ -1925,7 +1949,7 @@ lemma check_line_nres:
 
 definition "print_sets_color (print_fun::String.literal \<Rightarrow> unit) (c::string) (X::'a::executable_euclidean_space set) = ()"
 
-definition "print_lorenz_color print_fun cx cy cz cd1 cd2 P = ()"
+definition "print_lorenz_color print_fun cx cy cz ci cd1 cd2 P = ()"
 
 definition "print_aforms print_fun c aforms =
   fold (\<lambda>a _.  print_fun (String.implode (shows_segments_of_aform 0 1 a c ''\<newline>''))) aforms ()"
@@ -1936,14 +1960,14 @@ lemma print_sets_color_impl[autoref_rules]: includes autoref_syntax shows
   by auto
 
 lemma print_lorenz_color_impl[autoref_rules]: includes autoref_syntax shows
-  "(\<lambda>print_fun cx cy cz cd1 cd2 P.
+  "(\<lambda>print_fun cx cy cz ci cd1 cd2 P.
     fold (\<lambda>(_, x) b.
         print_lorenz_aform print_fun
-          cx cy cz cd1 cd2
+          cx cy cz ci cd1 cd2
           False
           (fst x @ the_default [] (snd x))
         ) P (), print_lorenz_color) \<in>
-    (Id \<rightarrow> unit_rel) \<rightarrow> string_rel \<rightarrow> string_rel \<rightarrow> string_rel \<rightarrow>
+    (Id \<rightarrow> unit_rel) \<rightarrow> string_rel \<rightarrow> string_rel \<rightarrow> string_rel \<rightarrow> string_rel \<rightarrow>
     \<langle>\<langle>string_rel\<rangle>list_rel, \<langle>\<langle>string_rel\<rangle>list_rel, (\<langle>clw_rel aform.appr1e_rel, unit_rel\<rangle>fun_rel)\<rangle>fun_rel\<rangle>fun_rel"
   by auto
 
@@ -1959,7 +1983,7 @@ definition check_line_core where
       let _ = print_sets_color print_fun (ST ''0x7f0000'')
           (aform.op_image_fst_coll (Pu:::clw_rel aform.appr1_rel):::clw_rel aform.appr_rel);
       let _ = print_lorenz_color print_fun
-          (ST ''0x7f0000'') (ST ''0x7f0001'') (ST ''0x7f0002'')
+          (ST ''0x7f0000'') (ST ''0x7f0001'') (ST ''0x7f0002'') (ST ''0x7f0003'')
           [(ST ''0xc60000''), (ST ''0xc60000''), (ST ''0xc60000'')]
           [(ST ''0xf60000''), (ST ''0xf60000''), (ST ''0xf60000'')]
           P;

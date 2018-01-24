@@ -1,2359 +1,1302 @@
 (* Author: Fabian Immler, Alexander Maletzky *)
 
-section \<open>Gr\"obner Bases\<close>
+section \<open>Gr\"obner Bases and Buchberger's Theorem\<close>
 
 theory Groebner_Bases
-imports Polynomials.Abstract_Poly Confluence
+imports Reduction
 begin
 
-text \<open>This theory provides the main results about Gr\"obner bases of multivariate polynomials.
-  Function @{term gb} implements Buchberger's algorithm; the key property of @{term gb} is
-  summarized in theorem @{text in_pideal_gb}.\<close>
+text \<open>This theory provides the main results about Gr\"obner bases for multivariate polynomials.\<close>
 
-subsection \<open>Reducibility\<close>
-
-context od_powerprod
+context gd_powerprod
 begin
 
-definition red_single::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> 'a \<Rightarrow> bool" where
-  "red_single p q f t \<equiv> (f \<noteq> 0 \<and> lookup p (t + lp f) \<noteq> 0 \<and>
-                          q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f)"
-definition red::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
-  "red F p q \<equiv> (\<exists>f\<in>F. \<exists>t. red_single p q f t)"
-definition is_red::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
-  "is_red F a \<equiv> \<not> relation.is_final (red F) a"
+definition crit_pair :: "('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> (('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b))"
+  where "crit_pair p q = (monom_mult (1 / lc p) ((lcs (lp p) (lp q)) - (lp p)) (tail p),
+                          monom_mult (1 / lc q) ((lcs (lp p) (lp q)) - (lp q)) (tail q))"
 
-lemma red_setI:
-  fixes t and p q f::"('a, 'b::field) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes "f \<in> F" and a: "red_single p q f t"
-  shows "red F p q"
-unfolding red_def
-proof
-  from \<open>f \<in> F\<close> show "f \<in> F" .
-next
-  from a show "\<exists>t. red_single p q f t" ..
-qed
+definition crit_pair_cbelow_on :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+  where "crit_pair_cbelow_on d m F p q \<longleftrightarrow> cbelow_on (dgrad_p_set d m) (\<prec>p)
+                                                     (monomial 1 (lcs (lp p) (lp q))) (\<lambda>a b. red F a b \<or> red F b a)
+                                                     (fst (crit_pair p q)) (snd (crit_pair p q))"
 
-lemma red_setE:
-  fixes p q::"('a, 'b::field) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes a: "red F p q"
-  obtains f::"('a, 'b) poly_mapping" and t where "f \<in> F" and "red_single p q f t"
-proof -
-  from a obtain f where "f \<in> F" and t: "\<exists>t. red_single p q f t" unfolding red_def by auto
-  from t obtain t where "red_single p q f t" ..
-  from \<open>f \<in> F\<close> this show "?thesis" ..
-qed
+definition spoly :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::field)"
+  where "spoly p q = (monom_mult (1 / lc p) ((lcs (lp p) (lp q)) - (lp p)) p) -
+                      (monom_mult (1 / lc q) ((lcs (lp p) (lp q)) - (lp q)) q)"
 
-lemma red_union:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
-  shows "red (F \<union> G) p q = (red F p q \<or> red G p q)"
-proof
-  assume "red (F \<union> G) p q"
-  from red_setE[OF this] obtain f t where "f \<in> F \<union> G" and r: "red_single p q f t" .
-  from \<open>f \<in> F \<union> G\<close> have "f \<in> F \<or> f \<in> G" by simp
-  thus "red F p q \<or> red G p q"
-  proof
-    assume "f \<in> F" 
-    show ?thesis by (intro disjI1, rule red_setI[OF \<open>f \<in> F\<close> r])
-  next
-    assume "f \<in> G" 
-    show ?thesis by (intro disjI2, rule red_setI[OF \<open>f \<in> G\<close> r])
-  qed
-next
-  assume "red F p q \<or> red G p q"
-  thus "red (F \<union> G) p q"
-  proof
-    assume "red F p q"
-    from red_setE[OF this] obtain f t where "f \<in> F" and "red_single p q f t" .
-    show ?thesis by (intro red_setI[of f _ _ _ t], rule UnI1, rule \<open>f \<in> F\<close>, fact)
-  next
-    assume "red G p q"
-    from red_setE[OF this] obtain f t where "f \<in> G" and "red_single p q f t" .
-    show ?thesis by (intro red_setI[of f _ _ _ t], rule UnI2, rule \<open>f \<in> G\<close>, fact)
-  qed
-qed
+definition (in ordered_powerprod) is_Groebner_basis::"('a \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> bool"
+  where "is_Groebner_basis F \<equiv> relation.is_ChurchRosser (red F)"
 
-lemma red_unionI1:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
-  assumes "red F p q"
-  shows "red (F \<union> G) p q"
-unfolding red_union by (rule disjI1, fact)
+subsection \<open>Critical Pairs and S-Polynomials\<close>
 
-lemma red_unionI2:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
-  assumes "red G p q"
-  shows "red (F \<union> G) p q"
-unfolding red_union by (rule disjI2, fact)
+lemma crit_pair_same: "fst (crit_pair p p) = snd (crit_pair p p)"
+  by (simp add: crit_pair_def)
 
-lemma red_subset:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
-  assumes "red G p q" and "G \<subseteq> F"
-  shows "red F p q"
-proof -
-  from \<open>G \<subseteq> F\<close> obtain H where "F = G \<union> H" by auto
-  show ?thesis unfolding \<open>F = G \<union> H\<close> by (rule red_unionI1, fact)
-qed
+lemma crit_pair_swap: "crit_pair p q = (snd (crit_pair q p), fst (crit_pair q p))"
+  by (simp add: crit_pair_def lcs_comm)
 
-lemma red_rtrancl_subset:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
-  assumes major: "(red G)\<^sup>*\<^sup>* p q" and "G \<subseteq> F"
-  shows "(red F)\<^sup>*\<^sup>* p q"
-using major
-proof (induct rule: rtranclp_induct)
-  show "(red F)\<^sup>*\<^sup>* p p" ..
-next
-  fix r q
-  assume "red G r q" and "(red F)\<^sup>*\<^sup>* p r"
-  show "(red F)\<^sup>*\<^sup>* p q"
-  proof
-    show "(red F)\<^sup>*\<^sup>* p r" by fact
-  next
-    from red_subset[OF \<open>red G r q\<close> \<open>G \<subseteq> F\<close>] show "red F r q" .
-  qed
-qed
+lemma crit_pair_zero [simp]: "fst (crit_pair 0 q) = 0" and "snd (crit_pair p 0) = 0"
+  by (simp_all add: crit_pair_def monom_mult_right0)
 
-lemma red_singleton:
-  fixes p q f::"('a, 'b::field) poly_mapping"
-  shows "red {f} p q \<longleftrightarrow> (\<exists>t. red_single p q f t)"
-unfolding red_def
-proof
-  assume "\<exists>f\<in>{f}. \<exists>t. red_single p q f t"
-  from this obtain f0 where "f0 \<in> {f}" and a: "\<exists>t. red_single p q f0 t" ..
-  from \<open>f0 \<in> {f}\<close> have "f0 = f" by simp
-  from this a show "\<exists>t. red_single p q f t" by simp
-next
-  assume a: "\<exists>t. red_single p q f t"
-  show "\<exists>f\<in>{f}. \<exists>t. red_single p q f t"
-  proof (rule, simp)
-    from a show "\<exists>t. red_single p q f t" .
-  qed
-qed
-
-lemma red_single_lookup:
-  fixes p q f::"('a, 'b::field) poly_mapping" and t
-  assumes "red_single p q f t"
-  shows "lookup q (t + lp f) = 0"
-using assms unfolding red_single_def
-proof
-  assume "f \<noteq> 0" and "lookup p (t + lp f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-  hence "lookup p (t + lp f) \<noteq> 0" and q_def: "q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-    by auto
-  from lookup_minus[of p "monom_mult (lookup p (t + lp f) / lc f) t f" "t + lp f"]
-       monom_mult_lookup[of "lookup p (t + lp f) / lc f" t f "lp f"]
-       lc_not_0[OF \<open>f \<noteq> 0\<close>]
-    show ?thesis unfolding q_def lc_def by simp
-qed
-
-lemma red_single_higher:
-  fixes p q f::"('a, 'b::field) poly_mapping" and t
-  assumes "red_single p q f t"
-  shows "higher q (t + lp f) = higher p (t + lp f)"
-using assms unfolding higher_equal red_single_def
-proof (intro allI, intro impI)
+lemma dgrad_p_set_le_crit_pair_zero: "dgrad_p_set_le d {fst (crit_pair p 0)} {p}"
+proof (simp add: crit_pair_def lp_def[of 0] monom_mult_right0 lcs_comm lcs_zero dgrad_p_set_le_def
+      Keys_insert, rule dgrad_set_leI)
   fix s
-  assume a: "t + lp f \<prec> s"
-    and "f \<noteq> 0 \<and> lookup p (t + lp f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-  hence "f \<noteq> 0"
-    and "lookup p (t + lp f) \<noteq> 0"
-    and q_def: "q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-    by simp_all
-  from \<open>lookup p (t + lp f) \<noteq> 0\<close> lc_not_0[OF \<open>f \<noteq> 0\<close>] have c_not_0: "lookup p (t + lp f) / lc f \<noteq> 0"
-    by (simp add: field_simps)
-  from q_def lookup_minus[of p "monom_mult (lookup p (t + lp f) / lc f) t f"]
-    have q_lookup: "\<And>s. lookup q s = lookup p s - lookup (monom_mult (lookup p (t + lp f) / lc f) t f) s"
-    by simp
-  from a lp_mult[OF c_not_0 \<open>f \<noteq> 0\<close>, of t]
-    have "\<not> s \<preceq> lp (monom_mult (lookup p (t + lp f) / lc f) t f)" by simp
-  with lp_max[of "monom_mult (lookup p (t + lp f) / lc f) t f" s]
-  have "lookup (monom_mult (lookup p (t + lp f) / lc f) t f) s = 0"
-      apply (auto)
-      by (metis lookup_not_eq_zero_eq_in_keys)
-  thus "lookup q s = lookup p s" using q_lookup[of s] by simp
+  assume "s \<in> keys (monom_mult (1 / lc p) 0 (tail p))"
+  from this keys_monom_mult_subset have "s \<in> plus 0 ` keys (tail p)" ..
+  hence "s \<in> keys (tail p)" by simp
+  hence "s \<in> keys p" by (simp add: keys_tail)
+  moreover have "d s \<le> d s" ..
+  ultimately show "\<exists>t\<in>keys p. d s \<le> d t" ..
 qed
 
-lemma red_single_ord:
-  fixes p q f::"('a, 'b::field) poly_mapping" and t
-  assumes "red_single p q f t"
-  shows "q \<prec>p p"
-unfolding ord_strict_higher
-proof (intro exI, intro conjI)
-  from red_single_lookup[OF assms] show "lookup q (t + lp f) = 0" .
+lemma dgrad_p_set_le_fst_crit_pair:
+  assumes "dickson_grading (+) d"
+  shows "dgrad_p_set_le d {fst (crit_pair p q)} {p, q}"
+proof (cases "q = 0")
+  case True
+  have "dgrad_p_set_le d {fst (crit_pair p q)} {p}" unfolding True
+    by (fact dgrad_p_set_le_crit_pair_zero)
+  also have "dgrad_p_set_le d ... {p, q}" by (rule dgrad_p_set_le_subset, simp)
+  finally show ?thesis .
 next
-  from assms show "lookup p (t + lp f) \<noteq> 0" unfolding red_single_def by simp
-next
-  from red_single_higher[OF assms] show "higher q (t + lp f) = higher p (t + lp f)" .
-qed
-
-lemma red_single_nonzero1:
-  assumes "red_single p q f t"
-  shows "p \<noteq> 0"
-proof
-  assume "p = 0"
-  from this red_single_ord[OF assms] ord_p_0_min[of q] show False by simp
-qed
-
-lemma red_single_nonzero2:
-  assumes "red_single p q f t"
-  shows "f \<noteq> 0"
-proof
-  assume "f = 0"
-  from assms monom_mult_right0 have "f \<noteq> 0" unfolding red_single_def by simp
-  from this \<open>f = 0\<close> show False by simp
-qed
-
-lemma red_single_self:
-  assumes "p \<noteq> 0"
-  shows "red_single p 0 p 0"
-proof -
-  from lc_not_0[OF assms] have lc: "lc p \<noteq> 0" .
-  show ?thesis unfolding red_single_def
-  proof (intro conjI)
-    show "p \<noteq> 0" by fact
-  next
-    from lc show "lookup p (0 + lp p) \<noteq> 0" unfolding lc_def by simp
-  next
-    from lc have "(lookup p (0 + lp p)) / lc p = 1" unfolding lc_def by simp
-    from this monom_mult_left1[of p] show "0 = p - monom_mult (lookup p (0 + lp p) / lc p) 0 p"
-      by simp
-  qed
-qed
-
-lemma red_single_trans:
-  assumes "red_single p p0 f t" and "lp g adds lp f" and "g \<noteq> 0"
-  obtains p1 where "red_single p p1 g (t + (lp f - lp g))"
-proof -
-  let ?s = "t + (lp f - lp g)"
-  let ?p = "p - monom_mult (lookup p (?s + lp g) / lc g) ?s g"
-  have "red_single p ?p g ?s" unfolding red_single_def
-  proof (intro conjI)
-    from add_minus_2[of "lp g" "lp f"]
-    have eq: "t + (lp f - lp g) + lp g = t + lp f"
-      apply (auto simp: algebra_simps)
-      by (metis add.commute adds_minus assms(2))
-    from \<open>red_single p p0 f t\<close> have "lookup p (t + lp f) \<noteq> 0" unfolding red_single_def by simp
-    thus "lookup p (t + (lp f - lp g) + lp g) \<noteq> 0" by (simp add: eq)
-  qed (fact, simp)
-  thus ?thesis ..
-qed
-
-lemma red_nonzero:
-  assumes "red F p q"
-  shows "p \<noteq> 0"
-proof -
-  from red_setE[OF assms] obtain f t where "red_single p q f t" .
-  show ?thesis by (rule red_single_nonzero1, fact)
-qed
-
-lemma red_self:
-  assumes "p \<noteq> 0"
-  shows "red {p} p 0"
-unfolding red_singleton
-proof
-  from red_single_self[OF assms] show "red_single p 0 p 0" .
-qed
-
-lemma red_ord:
-  fixes p q::"('a, 'b::field) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes "red F p q"
-  shows "q \<prec>p p"
-proof -
-  from red_setE[OF assms] obtain f and t where "red_single p q f t" .
-  from red_single_ord[OF this] show "q \<prec>p p" .
-qed
-
-lemma red_indI1:
-  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and adds: "lp f adds lp p"
-  shows "red F p (p - monom_mult (lc p / lc f) (lp p - lp f) f)"
-proof (intro red_setI[OF \<open>f \<in> F\<close>])
-  have c: "lookup p (lp p - lp f + lp f) = lc p" unfolding lc_def
-    by (metis adds adds_minus)
-  show "red_single p (p - monom_mult (lc p / lc f) (lp p - lp f) f) f (lp p - lp f)"
-    unfolding red_single_def
-  proof (intro conjI, fact)
-    from c lc_not_0[OF \<open>p \<noteq> 0\<close>] show "lookup p (lp p - lp f + lp f) \<noteq> 0" by simp
-  next
-    from c show "p - monom_mult (lc p / lc f) (lp p - lp f) f =
-                  p - monom_mult (lookup p (lp p - lp f + lp f) / lc f) (lp p - lp f) f"
-      by simp
-  qed
-qed
-
-abbreviation "single \<equiv> (\<lambda>a b. PP_Poly_Mapping.single b a)"
-
-lemma red_indI2:
-  assumes "p \<noteq> 0" and r: "red F (tail p) q"
-  shows "red F p (q + PP_Poly_Mapping.single (lp p) (lc p))"
-proof -
-  from red_setE[OF r] obtain f t where "f \<in> F" and rs: "red_single (tail p) q f t" by auto
-  from rs have "f \<noteq> 0" and ct: "lookup (tail p) (t + lp f) \<noteq> 0"
-    and q: "q = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
-    unfolding red_single_def by simp_all
-  from ct lookup_tail[OF \<open>p \<noteq> 0\<close>, of "t + lp f"] have "t + lp f \<prec> lp p" by (auto split: if_splits)
-  hence c: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" using lookup_tail[OF \<open>p \<noteq> 0\<close>] by simp
+  case False
   show ?thesis
-  proof (intro red_setI[OF \<open>f \<in> F\<close>])
-    show "red_single p (q + PP_Poly_Mapping.single (lp p) (lc p)) f t" unfolding red_single_def
-    proof (intro conjI, fact)
-      from ct c show "lookup p (t + lp f) \<noteq> 0" by simp
-    next
-      from q have "q + single (lc p) (lp p) =
-                  (single (lc p) (lp p) + tail p) - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
-        by simp
-      also have "\<dots> = p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
-        using leading_monomial_tail[OF \<open>p \<noteq> 0\<close>] by auto
-      finally show "q + single (lc p) (lp p) = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-        by (simp only: c)
-    qed
-  qed
-qed
-
-lemma red_indE:
-  assumes "red F p q"
-  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p \<and>
-            (q = p - monom_mult (lc p / lc f) (lp p - lp f) f)) \<or>
-            red F (tail p) (q - single (lc p) (lp p))"
-proof -
-  from red_nonzero[OF assms] have "p \<noteq> 0" .
-  from red_setE[OF assms] obtain f t where "f \<in> F" and rs: "red_single p q f t" by auto
-  from rs have "f \<noteq> 0"
-    and cn0: "lookup p (t + lp f) \<noteq> 0"
-    and q: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
-    unfolding red_single_def by simp_all
-  show ?thesis
-  proof (cases "lp p = t + lp f")
+  proof (cases "p = 0")
     case True
-    hence "lp f adds lp p" by simp
-    from True have eq1: "lp p - lp f = t" by simp
-    from True have eq2: "lc p = lookup p (t + lp f)" unfolding lc_def by simp
-    show ?thesis
-    proof (intro disjI1, rule bexI[of _ f], intro conjI, fact+)
-      from q eq1 eq2 show "q = p - monom_mult (lc p / lc f) (lp p - lp f) f" by simp
-    qed (fact)
+    have "dgrad_p_set_le d {fst (crit_pair p q)} {q}"
+      by (simp add: True dgrad_p_set_le_def dgrad_set_le_def)
+    also have "dgrad_p_set_le d ... {p, q}" by (rule dgrad_p_set_le_subset, simp)
+    finally show ?thesis .
   next
     case False
-    from this lookup_tail_2[OF \<open>p \<noteq> 0\<close>, of "t + lp f"]
-      have ct: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" by simp
     show ?thesis
-    proof (intro disjI2, intro red_setI[of f], fact)
-      show "red_single (tail p) (q - single (lc p) (lp p)) f t" unfolding red_single_def
-      proof (intro conjI, fact)
-        from cn0 ct show "lookup (tail p) (t + lp f) \<noteq> 0" by simp
-      next
-        from leading_monomial_tail[OF \<open>p \<noteq> 0\<close>]
-          have "p - single (lc p) (lp p) = (single (lc p) (lp p) + tail p) - single (lc p) (lp p)"
-          by simp
-        also have "\<dots> = tail p" by simp
-        finally have eq: "p - single (lc p) (lp p) = tail p" .
-        from q have "q - single (lc p) (lp p) =
-                    (p - single (lc p) (lp p)) - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-        also from eq have "\<dots> = tail p - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-        finally show "q - single (lc p) (lp p) = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
-          using ct by simp
-      qed
-    qed
-  qed
-qed
-
-text \<open>In @{term "red F p q"}, @{term p} is greater than @{term q}, so the converse of
-  @{term "red F"} is well-founded.\<close>
-
-lemma red_wf:
-  fixes F::"('a, 'b::field) poly_mapping set"
-  shows "wfP (red F)\<inverse>\<inverse>"
-proof (intro wfP_subset[OF ord_p_wf], rule)
-  fix p q::"('a, 'b) poly_mapping"
-  assume "(red F)\<inverse>\<inverse> q p"
-  hence "red F p q" by (rule conversepD)
-  from red_ord[OF this] show "q \<prec>p p" .
-qed
-
-lemma is_redI:
-  assumes "red F a b"
-  shows "is_red F a"
-unfolding is_red_def relation.is_final_def by (simp, intro exI[of _ b], fact)
-
-lemma is_redE:
-  assumes "is_red F a"
-  obtains b where "red F a b"
-using assms unfolding is_red_def relation.is_final_def
-proof simp
-  assume r: "\<And>b. red F a b \<Longrightarrow> thesis" and b: "\<exists>x. red F a x"
-  from b obtain b where "red F a b" ..
-  show thesis by (rule r[of b], fact)
-qed
-
-lemma is_red_alt:
-  shows "is_red F a \<longleftrightarrow> (\<exists>b. red F a b)"
-proof
-  assume "is_red F a"
-  from is_redE[OF this] obtain b where "red F a b" .
-  show "\<exists>b. red F a b" by (intro exI[of _ b], fact)
-next
-  assume "\<exists>b. red F a b"
-  from this obtain b where "red F a b" ..
-  show "is_red F a" by (rule is_redI, fact)
-qed
-
-lemma is_red_singletonI:
-  fixes F::"('a, 'b::field) poly_mapping set" and q::"('a, 'b) poly_mapping"
-  assumes "is_red F q"
-  obtains p where "p \<in> F" and "is_red {p} q"
-proof -
-  from assms obtain q0 where "red F q q0" unfolding is_red_alt ..
-  from this red_def[of F q q0] obtain p where "p \<in> F" and t: "\<exists>t. red_single q q0 p t" by auto
-  have "is_red {p} q" unfolding is_red_alt
-  proof
-    from red_singleton[of p q q0] t show "red {p} q q0" by simp
-  qed
-  from \<open>p \<in> F\<close> this show ?thesis ..
-qed
-
-lemma is_red_singletonD:
-  fixes F::"('a, 'b::field) poly_mapping set" and p q::"('a, 'b) poly_mapping"
-  assumes "is_red {p} q" and "p \<in> F"
-  shows "is_red F q"
-proof -
-  from assms(1) obtain q0 where "red {p} q q0" unfolding is_red_alt ..
-  from red_singleton[of p q q0] this have "\<exists>t. red_single q q0 p t" ..
-  from this obtain t where "red_single q q0 p t" ..
-  show ?thesis unfolding is_red_alt
-    by (intro exI[of _ q0], intro red_setI[OF assms(2), of q q0 t], fact)
-qed
-
-lemma is_red_singleton_trans:
-  assumes "is_red {f} p" and "lp g adds lp f" and "g \<noteq> 0"
-  shows "is_red {g} p"
-proof -
-  from \<open>is_red {f} p\<close> obtain q where "red {f} p q" unfolding is_red_alt ..
-  from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
-  from red_single_trans[OF this \<open>lp g adds lp f\<close> \<open>g \<noteq> 0\<close>] obtain q0 where
-    "red_single p q0 g (t + (lp f - lp g))" .
-  show ?thesis
-  proof (rule is_redI[of "{g}" p q0])
-    show "red {g} p q0" unfolding red_def
-      by (intro bexI[of _ g], intro exI[of _ "t + (lp f - lp g)"], fact, simp)
-  qed
-qed
-
-lemma is_red_singleton_not_0:
-  assumes "is_red {f} p"
-  shows "f \<noteq> 0"
-using assms unfolding is_red_alt
-proof
-  fix q
-  assume "red {f} p q"
-  from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
-  thus ?thesis unfolding red_single_def ..
-qed
-
-lemma irred_0:
-  shows "\<not> is_red F 0"
-proof (rule, rule is_redE)
-  fix b
-  assume "red F 0 b"
-  from ord_p_0_min[of b] red_ord[OF this] show False by simp
-qed
-
-lemma is_red_indI1:
-  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and "lp f adds lp p"
-  shows "is_red F p"
-by (intro is_redI, rule red_indI1[OF assms])
-
-lemma is_red_indI2:
-  assumes "p \<noteq> 0" and "is_red F (tail p)"
-  shows "is_red F p"
-proof -
-  from is_redE[OF \<open>is_red F (tail p)\<close>] obtain q where "red F (tail p) q" .
-  show ?thesis by (intro is_redI, rule red_indI2[OF \<open>p \<noteq> 0\<close>], fact)
-qed
-
-lemma is_red_indE:
-  assumes "is_red F p"
-  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p) \<or> is_red F (tail p)"
-proof -
-  from is_redE[OF assms] obtain q where "red F p q" .
-  from red_indE[OF this] show ?thesis
-  proof
-    assume "\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p \<and> q = p - monom_mult (lc p / lc f) (lp p - lp f) f"
-    from this obtain f where "f \<in> F" and "f \<noteq> 0" and "lp f adds lp p" by auto
-    show ?thesis by (intro disjI1, rule bexI[of _ f], intro conjI, fact+)
-  next
-    assume "red F (tail p) (q - single (lc p) (lp p))"
-    show ?thesis by (intro disjI2, intro is_redI, fact)
-  qed
-qed
-
-lemma rtrancl_0:
-  assumes "(red F)\<^sup>*\<^sup>* 0 x"
-  shows "x = 0"
-proof -
-  from irred_0[of F] have "relation.is_final (red F) 0" unfolding is_red_def by simp
-  from relation.rtrancl_is_final[OF \<open>(red F)\<^sup>*\<^sup>* 0 x\<close> this] show ?thesis by simp
-qed
-
-subsubsection \<open>Reducibility and Addition \& Multiplication\<close>
-
-lemma red_monom_mult:
-  fixes p q f::"('a, 'b::field) poly_mapping" and s t and c::'b
-  assumes a: "red_single p q f t" and "c \<noteq> 0"
-  shows "red_single (monom_mult c s p) (monom_mult c s q) f (s + t)"
-proof -
-  from a have "f \<noteq> 0"
-    and "lookup p (t + lp f) \<noteq> 0"
-    and q_def: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
-    unfolding red_single_def by auto
-  have assoc: "(s + t) + lp f = s + (t + lp f)" by (simp add: ac_simps)
-  have g2: "lookup (monom_mult c s p) ((s + t) + lp f) \<noteq> 0"
-  proof
-    assume "lookup (monom_mult c s p) ((s + t) + lp f) = 0"
-    hence "c * lookup p (t + lp f) = 0" using assoc monom_mult_lookup[of c s p "t + lp f"] by simp
-    thus False using \<open>c \<noteq> 0\<close> \<open>lookup p (t + lp f) \<noteq> 0\<close> by simp
-  qed
-  have g3: "monom_mult c s q =
-    (monom_mult c s p) - monom_mult ((lookup (monom_mult c s p) ((s + t) + lp f)) / lc f) (s + t) f"
-  proof -
-    from q_def monom_mult_dist_right_minus[of c s p]
-      have "monom_mult c s q =
-            monom_mult c s p - monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f)" by simp
-    also from monom_mult_assoc[of c s "lookup p (t + lp f) / lc f" t f] assoc
-      monom_mult_lookup[of c s p "t + lp f"]
-      have "monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f) =
-            monom_mult ((lookup (monom_mult c s p) ((s + t) + lp f)) / lc f) (s + t) f" by simp
-    finally show ?thesis .
-  qed
-  from \<open>f \<noteq> 0\<close> g2 g3 show ?thesis unfolding red_single_def by auto
-qed
-
-lemma red_single_plus:
-  fixes p q r f::"('a, 'b::field) poly_mapping" and t
-  assumes "red_single p q f t"
-  shows "red_single (p + r) (q + r) f t \<or>
-          red_single (q + r) (p + r) f t \<or>
-          (\<exists>s. red_single (p + r) s f t \<and> red_single (q + r) s f t)"
-proof -
-  from assms have "f \<noteq> 0"
-    and "lookup p (t + lp f) \<noteq> 0"
-    and q_def: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
-    unfolding red_single_def by auto
-  hence q_r: "q + r = (p + r) - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-  from red_single_lookup[OF assms] have cq_0: "lookup q (t + lp f) = 0" .
-  from
-      lc_not_0[OF \<open>f \<noteq> 0\<close>]
-      monom_mult_dist_left[of "(lookup p (t + lp f)) / lc f" "(lookup r (t + lp f)) / lc f" t f]
-    have eq1: "monom_mult ((lookup (p + r) (t + lp f)) / lc f) t f =
-              (monom_mult ((lookup p (t + lp f)) / lc f) t f) +
-                (monom_mult ((lookup r (t + lp f)) / lc f) t f)"
-    by (simp add: field_simps lookup_add)
-  from lc_not_0[OF \<open>f \<noteq> 0\<close>] cq_0
-      monom_mult_dist_left[of "(lookup q (t + lp f)) / lc f" "(lookup r (t + lp f)) / lc f" t f]
-    have eq2: "monom_mult ((lookup (q + r) (t + lp f)) / lc f) t f =
-                monom_mult ((lookup r (t + lp f)) / lc f) t f"
-    by (simp add: field_simps lookup_add)
-  show ?thesis
-  proof (cases "lookup (p + r) (t + lp f) = 0")
-    assume "lookup (p + r) (t + lp f) = 0"
-    with neg_eq_iff_add_eq_0[of "lookup p (t + lp f)" "lookup r (t + lp f)"]
-          lookup_add[of p r "t + lp f"]
-      have cr: "lookup r (t + lp f) = - (lookup p (t + lp f))" by simp
-    hence cr_not_0: "lookup r (t + lp f) \<noteq> 0" using \<open>lookup p (t + lp f) \<noteq> 0\<close> by simp
-    have "red_single (q + r) (p + r) f t" unfolding red_single_def
-    proof
-      from \<open>f \<noteq> 0\<close> show "f \<noteq> 0" .
-    next
-      show "lookup (q + r) (t + lp f) \<noteq> 0 \<and>
-            p + r = q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f"
-      proof
-        from lookup_add[of q r "t + lp f"] cr_not_0 cq_0
-          show "lookup (q + r) (t + lp f) \<noteq> 0" by simp
-      next
-        from eq2 cr monom_mult_uminus_left[of "(lookup p (t + lp f) / lc f)" t f]
-          show "p + r = q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f"
-            unfolding q_def by simp
-      qed
-    qed
-    thus ?thesis by simp
-  next
-    assume cpr: "lookup (p + r) (t + lp f) \<noteq> 0"
-    show ?thesis
-    proof (cases "lookup (q + r) (t + lp f) = 0")
-      case True
-      hence cr_0: "lookup r (t + lp f) = 0" using lookup_add[of q r "t + lp f"] cq_0 by simp
-      have "red_single (p + r) (q + r) f t" unfolding red_single_def
-      proof
-        from \<open>f \<noteq> 0\<close> show "f \<noteq> 0" .
-      next
-        show "lookup (p + r) (t + lp f) \<noteq> 0 \<and>
-              q + r = p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f"
+    proof (simp add: dgrad_p_set_le_def Keys_insert crit_pair_def)
+      define t where "t = lcs (lp p) (lp q) - lp p"
+      let ?m = "monom_mult (1 / lc p) t (tail p)"
+      from assms have "dgrad_set_le d (keys ?m) (insert t (keys (tail p)))"
+        by (rule dgrad_set_le_monom_mult)
+      also have "dgrad_set_le d ... (keys p \<union> keys q)"
+      proof (rule dgrad_set_leI, simp)
+        fix s
+        assume "s = t \<or> s \<in> keys (tail p)"
+        thus "\<exists>t\<in>keys p \<union> keys q. d s \<le> d t"
         proof
-          from cr_0 \<open>lookup p (t + lp f) \<noteq> 0\<close> lookup_add[of p r]
-            show "lookup (p + r) (t + lp f) \<noteq> 0" by simp
+          assume "s = t"
+          from assms have "d s \<le> ord_class.max (d (lp p)) (d (lp q))" unfolding \<open>s = t\<close> t_def
+            by (rule dickson_grading_lcs_minus)
+          hence "d s \<le> d (lp p) \<or> d s \<le> d (lp q)" by auto
+          thus ?thesis
+          proof
+            from \<open>p \<noteq> 0\<close> have "lp p \<in> keys p" by (rule lp_in_keys)
+            hence "lp p \<in> keys p \<union> keys q" by simp
+            moreover assume "d s \<le> d (lp p)"
+            ultimately show ?thesis ..
+          next
+            from \<open>q \<noteq> 0\<close> have "lp q \<in> keys q" by (rule lp_in_keys)
+            hence "lp q \<in> keys p \<union> keys q" by simp
+            moreover assume "d s \<le> d (lp q)"
+            ultimately show ?thesis ..
+          qed
         next
-          from q_r eq1 cr_0 monom_mult_left0[of t f]
-            show "q + r = p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f"
-              by (simp add: field_simps)
+          assume "s \<in> keys (tail p)"
+          hence "s \<in> keys p \<union> keys q" by (simp add: keys_tail)
+          moreover have "d s \<le> d s" ..
+          ultimately show ?thesis ..
         qed
       qed
+      finally show "dgrad_set_le d (keys ?m) (keys p \<union> keys q)" .
+    qed
+  qed
+qed
+
+lemma dgrad_p_set_le_snd_crit_pair:
+  assumes "dickson_grading (+) d"
+  shows "dgrad_p_set_le d {snd (crit_pair p q)} {p, q}"
+  by (simp add: crit_pair_swap[of p] insert_commute[of p q], rule dgrad_p_set_le_fst_crit_pair, fact)
+
+lemma dgrad_p_set_closed_fst_crit_pair:
+  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  shows "fst (crit_pair p q) \<in> dgrad_p_set d m"
+proof -
+  from dgrad_p_set_le_fst_crit_pair[OF assms(1)] have "{fst (crit_pair p q)} \<subseteq> dgrad_p_set d m"
+  proof (rule dgrad_p_set_le_dgrad_p_set)
+    from assms(2, 3) show "{p, q} \<subseteq> dgrad_p_set d m" by simp
+  qed
+  thus ?thesis by simp
+qed
+
+lemma dgrad_p_set_closed_snd_crit_pair:
+  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  shows "snd (crit_pair p q) \<in> dgrad_p_set d m"
+  by (simp add: crit_pair_swap[of p q], rule dgrad_p_set_closed_fst_crit_pair, fact+)
+
+lemma fst_crit_pair_below_lcs: "fst (crit_pair p q) \<prec>p monomial 1 (lcs (lp p) (lp q))"
+proof (cases "tail p = 0")
+  case True
+  thus ?thesis by (simp add: crit_pair_def ord_strict_p_monomial_iff monom_mult_right0)
+next
+  case False
+  hence "p \<noteq> 0" by auto
+  hence "lc p \<noteq> 0" by (rule lc_not_0)
+  hence "1 / lc p \<noteq> 0" by simp
+  from this False have "lp (monom_mult (1 / lc p) (lcs (lp p) (lp q) - lp p) (tail p)) =
+                        lcs (lp p) (lp q) - lp p + lp (tail p)"
+    by (rule lp_monom_mult)
+  also from lp_tail[OF False] have "... \<prec> lcs (lp p) (lp q) - lp p + lp p"
+    by (rule plus_monotone_strict_left)
+  also from adds_lcs have "... = lcs (lp p) (lp q)" by (rule adds_minus)
+  finally show ?thesis by (simp add: crit_pair_def ord_strict_p_monomial_iff)
+qed
+
+lemma snd_crit_pair_below_lcs: "snd (crit_pair p q) \<prec>p monomial 1 (lcs (lp p) (lp q))"
+  by (simp add: crit_pair_swap[of p] lcs_comm[of "lp p"], fact fst_crit_pair_below_lcs)
+
+lemma crit_pair_cbelow_same:
+  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m"
+  shows "crit_pair_cbelow_on d m F p p"
+proof (simp add: crit_pair_cbelow_on_def crit_pair_same cbelow_on_def, intro disjI1 conjI)
+  from assms(1) assms(2) assms(2) show "snd (crit_pair p p) \<in> dgrad_p_set d m"
+    by (rule dgrad_p_set_closed_snd_crit_pair)
+next
+  from snd_crit_pair_below_lcs[of p p] show "snd (crit_pair p p) \<prec>p monomial 1 (lp p)" by simp
+qed
+
+lemma crit_pair_cbelow_sym: "crit_pair_cbelow_on d m F p q \<Longrightarrow> crit_pair_cbelow_on d m F q p"
+proof (simp add: crit_pair_cbelow_on_def crit_pair_swap[of p q] lcs_comm, rule cbelow_on_symmetric)
+  show "symp (\<lambda>a b. red F a b \<or> red F b a)" by (simp add: symp_def)
+qed
+
+lemma crit_pair_cs_imp_crit_pair_cbelow_on:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
+    and "q \<in> dgrad_p_set d m"
+    and "relation.cs (red F) (fst (crit_pair p q)) (snd (crit_pair p q))"
+  shows "crit_pair_cbelow_on d m F p q"
+proof -
+  from assms(1) have "relation_order (red F) (\<prec>p) (dgrad_p_set d m)" by (rule is_relation_order_red)
+  moreover have "relation.dw_closed (red F) (dgrad_p_set d m)"
+    by (rule relation.dw_closedI, rule dgrad_p_set_closed_red, rule assms(1), rule assms(2))
+  moreover note assms(5)
+  moreover from assms(1) assms(3) assms(4) have "fst (crit_pair p q) \<in> dgrad_p_set d m"
+    by (rule dgrad_p_set_closed_fst_crit_pair)
+  moreover from assms(1) assms(3) assms(4) have "snd (crit_pair p q) \<in> dgrad_p_set d m"
+    by (rule dgrad_p_set_closed_snd_crit_pair)
+  moreover note fst_crit_pair_below_lcs snd_crit_pair_below_lcs
+  ultimately show ?thesis unfolding crit_pair_cbelow_on_def by (rule relation_order.cs_implies_cbelow_on)
+qed
+
+lemma crit_pair_cbelow_mono:
+  assumes "crit_pair_cbelow_on d m F p q" and "F \<subseteq> G"
+  shows "crit_pair_cbelow_on d m G p q"
+  using assms(1) unfolding crit_pair_cbelow_on_def
+proof (induct rule: cbelow_on_induct)
+  case base
+  show ?case by (simp add: cbelow_on_def, intro disjI1 conjI, fact+)
+next
+  case (step b c)
+  from step(2) have "red G b c \<or> red G c b" using red_subset[OF _ assms(2)] by blast
+  from step(5) step(3) this step(4) show ?case ..
+qed
+
+lemma lcs_red_single_fst_crit_pair:
+  assumes "p \<noteq> 0"
+  shows "red_single (monomial (-1) (lcs (lp p) (lp q))) (fst (crit_pair p q)) p (lcs (lp p) (lp q) - lp p)"
+proof -
+  let ?l = "lcs (lp p) (lp q)"
+  from assms have "lc p \<noteq> 0" by (rule lc_not_0)
+  have "lp p adds ?l" by (rule adds_lcs)
+  hence eq1: "?l - lp p + lp p = ?l" by (rule adds_minus)
+  with assms show ?thesis
+  proof (simp add: crit_pair_def red_single_def)
+    have eq2: "monomial (-1) ?l = monom_mult (- (1 / lc p)) (?l - lp p) (monomial (lc p) (lp p))"
+      by (simp add: monom_mult_monomial eq1 \<open>lc p \<noteq> 0\<close>)
+    show "monom_mult (1 / lc p) (?l - lp p) (tail p) = monomial (-1) ?l - monom_mult (- (1 / lc p)) (?l - lp p) p"
+      by (simp add: eq2 monom_mult_dist_right_minus[symmetric] tail_alt_2 monom_mult_uminus_left)
+  qed
+qed
+
+corollary lcs_red_single_snd_crit_pair:
+  assumes "q \<noteq> 0"
+  shows "red_single (monomial (-1) (lcs (lp p) (lp q))) (snd (crit_pair p q)) q (lcs (lp p) (lp q) - lp q)"
+  by (simp add: crit_pair_swap[of p q] lcs_comm[of "lp p"], rule lcs_red_single_fst_crit_pair, fact)
+
+lemma GB_imp_crit_pair_cbelow_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "is_Groebner_basis F"
+  assumes "p \<in> F" and "q \<in> F" and "p \<noteq> 0" and "q \<noteq> 0"
+  shows "crit_pair_cbelow_on d m F p q"
+  using assms(1, 2)
+proof (rule crit_pair_cs_imp_crit_pair_cbelow_on)
+  from assms(4, 2) show "p \<in> dgrad_p_set d m" ..
+next
+  from assms(5, 2) show "q \<in> dgrad_p_set d m" ..
+next
+  let ?cp = "crit_pair p q"
+  let ?l = "monomial (-1) (lcs (lp p) (lp q))"
+  from assms(4) lcs_red_single_fst_crit_pair[OF assms(6)] have "red F ?l (fst ?cp)"
+    by (rule red_setI)
+  hence 1: "(red F)\<^sup>*\<^sup>* ?l (fst ?cp)" ..
+  from assms(5) lcs_red_single_snd_crit_pair[OF assms(7)] have "red F ?l (snd ?cp)"
+    by (rule red_setI)
+  hence 2: "(red F)\<^sup>*\<^sup>* ?l (snd ?cp)" ..
+  from assms(3) have "relation.is_confluent_on (red F) UNIV"
+    by (simp only: is_Groebner_basis_def relation.confluence_equiv_ChurchRosser[symmetric]
+        relation.is_confluent_def)
+  from this 1 2 show "relation.cs (red F) (fst ?cp) (snd ?cp)"
+    by (simp add: relation.is_confluent_on_def)
+qed
+
+lemma spoly_alt:
+  assumes "p \<noteq> 0" and "q \<noteq> 0"
+  shows "spoly p q = fst (crit_pair p q) - snd (crit_pair p q)"
+proof (rule poly_mapping_eqI, simp only: lookup_minus)
+  fix t
+  let ?l = "lcs (lp p) (lp q)"
+  let ?cp = "crit_pair p q"
+  let ?a = "\<lambda>x. monom_mult (1 / lc p) (?l - (lp p)) x"
+  let ?b = "\<lambda>x. monom_mult (1 / lc q) (?l - (lp q)) x"
+  have l_1: "(?l - lp p) + lp p = ?l" by (metis add.commute add_diff_cancel_left' adds_def adds_lcs)
+  have l_2: "(?l - lp q) + lp q = ?l" by (metis add.commute add_diff_cancel_left' adds_def adds_lcs_2)
+  show "lookup (spoly p q) t = lookup (fst ?cp) t - lookup (snd ?cp) t"
+  proof (cases "t = ?l")
+    case True
+    have t_1: "t = (?l - lp p) + lp p" by (simp add: True l_1)
+    from \<open>p \<noteq> 0\<close> have "lp p \<in> keys p" by (rule lp_in_keys)
+    hence t_2: "t = (?l - lp q) + lp q" by (simp add: True l_2)
+    from \<open>q \<noteq> 0\<close> have "lp q \<in> keys q" by (rule lp_in_keys)
+    from \<open>lp p \<in> keys p\<close> have "lookup (?a p) t = 1" by (simp add: t_1 lookup_monom_mult lc_def)
+    also from \<open>lp q \<in> keys q\<close> have "... = lookup (?b q) t" by (simp add: t_2 lookup_monom_mult lc_def)
+    finally have "lookup (spoly p q) t = 0" by (simp add: spoly_def lookup_minus)
+    moreover have "lookup (fst ?cp) t = 0"
+      by (simp add: crit_pair_def t_1 lookup_monom_mult,
+          simp only: not_in_keys_iff_lookup_eq_zero[symmetric] keys_tail, simp)
+    moreover have "lookup (snd ?cp) t = 0"
+      by (simp add: crit_pair_def t_2 lookup_monom_mult,
+          simp only: not_in_keys_iff_lookup_eq_zero[symmetric] keys_tail, simp)
+    ultimately show ?thesis by simp
+  next
+    case False
+    have "lookup (?a (tail p)) t = lookup (?a p) t"
+    proof (cases "?l - lp p adds t")
+      case True
+      then obtain s where t: "t = ?l - lp p + s" ..
+      have "s \<noteq> lp p"
+      proof
+        assume "s = lp p"
+        hence "t = ?l" by (simp add: t l_1)
+        with \<open>t \<noteq> ?l\<close> show False ..
+      qed
+      thus ?thesis by (simp add: t lookup_monom_mult lookup_tail_2)
+    next
+      case False
+      thus ?thesis by (simp add: monom_mult.rep_eq)
+    qed
+    moreover have "lookup (?b (tail q)) t = lookup (?b q) t"
+    proof (cases "?l - lp q adds t")
+      case True
+      then obtain s where t: "t = ?l - lp q + s" ..
+      have "s \<noteq> lp q"
+      proof
+        assume "s = lp q"
+        hence "t = ?l" by (simp add: t l_2)
+        with \<open>t \<noteq> ?l\<close> show False ..
+      qed
+      thus ?thesis by (simp add: t lookup_monom_mult lookup_tail_2)
+    next
+      case False
+      thus ?thesis by (simp add: monom_mult.rep_eq)
+    qed
+    ultimately show ?thesis by (simp add: spoly_def crit_pair_def lookup_minus)
+  qed
+qed
+
+lemma spoly_same: "spoly p p = 0"
+  by (simp add: spoly_def)
+
+lemma spoly_swap: "spoly p q = - spoly q p"
+  by (simp add: spoly_def lcs_comm)
+
+lemma spoly_red_zero_imp_crit_pair_cbelow_on:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
+    and "q \<in> dgrad_p_set d m" and "p \<noteq> 0" and "q \<noteq> 0" and "(red F)\<^sup>*\<^sup>* (spoly p q) 0"
+  shows "crit_pair_cbelow_on d m F p q"
+proof -
+  from assms(7) have "relation.cs (red F) (fst (crit_pair p q)) (snd (crit_pair p q))"
+    unfolding spoly_alt[OF assms(5) assms(6)] by (rule red_diff_rtrancl_cs)
+  with assms(1) assms(2) assms(3) assms(4) show ?thesis by (rule crit_pair_cs_imp_crit_pair_cbelow_on)
+qed
+
+lemma dgrad_p_set_le_spoly_zero: "dgrad_p_set_le d {spoly p 0} {p}"
+proof (simp add: spoly_def lp_def[of 0] monom_mult_right0 lcs_comm lcs_zero dgrad_p_set_le_def
+      Keys_insert, rule dgrad_set_leI)
+  fix s
+  assume "s \<in> keys (monom_mult (1 / lc p) 0 p)"
+  from this keys_monom_mult_subset have "s \<in> plus 0 ` keys p" ..
+  hence "s \<in> keys p" by simp
+  moreover have "d s \<le> d s" ..
+  ultimately show "\<exists>t\<in>keys p. d s \<le> d t" ..
+qed
+
+lemma dgrad_p_set_le_spoly:
+  assumes "dickson_grading (+) d"
+  shows "dgrad_p_set_le d {spoly p q} {p, q}"
+proof (cases "p = 0")
+  case True
+  have "dgrad_p_set_le d {spoly p q} {spoly q 0}" unfolding True spoly_swap[of 0 q]
+    by (fact dgrad_p_set_le_uminus)
+  also have "dgrad_p_set_le d ... {q}" by (fact dgrad_p_set_le_spoly_zero)
+  also have "dgrad_p_set_le d ... {p, q}" by (rule dgrad_p_set_le_subset, simp)
+  finally show ?thesis .
+next
+  case False
+  show ?thesis
+  proof (cases "q = 0")
+    case True
+    have "dgrad_p_set_le d {spoly p q} {p}" unfolding True by (fact dgrad_p_set_le_spoly_zero)
+    also have "dgrad_p_set_le d ... {p, q}" by (rule dgrad_p_set_le_subset, simp)
+    finally show ?thesis .
+  next
+    case False
+    have "dgrad_p_set_le d {spoly p q} {fst (crit_pair p q), snd (crit_pair p q)}"
+      unfolding spoly_alt[OF \<open>p \<noteq> 0\<close> False] by (rule dgrad_p_set_le_minus)
+    also have "dgrad_p_set_le d ... {p, q}"
+    proof (rule dgrad_p_set_leI_insert)
+      from assms show "dgrad_p_set_le d {fst (crit_pair p q)} {p, q}"
+        by (rule dgrad_p_set_le_fst_crit_pair)
+    next
+      from assms show "dgrad_p_set_le d {snd (crit_pair p q)} {p, q}"
+        by (rule dgrad_p_set_le_snd_crit_pair)
+    qed
+    finally show ?thesis .
+  qed
+qed
+
+lemma dgrad_p_set_closed_spoly:
+  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  shows "spoly p q \<in> dgrad_p_set d m"
+proof -
+  from dgrad_p_set_le_spoly[OF assms(1)] have "{spoly p q} \<subseteq> dgrad_p_set d m"
+  proof (rule dgrad_p_set_le_dgrad_p_set)
+    from assms(2, 3) show "{p, q} \<subseteq> dgrad_p_set d m" by simp
+  qed
+  thus ?thesis by simp
+qed
+
+subsection \<open>Buchberger's Theorem\<close>
+
+text \<open>Before proving the main theorem of Gr\"obner bases theory for S-polynomials, as is usually done
+  in textbooks, we first prove it for critical pairs: a set @{term F} yields a confluent reduction
+  relation if the critical pairs of all @{term "p \<in> F"} and @{term "q \<in> F"} can be connected below
+  the least common sum of the leading power-products of @{term p} and @{term q}.
+  The reason why we proceed in this way is that it becomes much easier to prove the correctness of
+  Buchberger's second criterion for avoiding useless pairs.\<close>
+
+lemma crit_pair_cbelow_imp_confluent_dgrad_p_set:
+  assumes dg: "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes main: "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> crit_pair_cbelow_on d m F p q"
+  shows "relation.is_confluent_on (red F) (dgrad_p_set d m)"
+proof -
+  let ?A = "dgrad_p_set d m"
+  let ?R = "red F"
+  let ?RS = "\<lambda>a b. red F a b \<or> red F b a"
+  let ?ord = "(\<prec>p)"
+  from dg have ro: "Confluence.relation_order ?R ?ord ?A"
+    by (rule is_relation_order_red)
+  have dw: "relation.dw_closed ?R ?A"
+    by (rule relation.dw_closedI, rule dgrad_p_set_closed_red, rule dg, rule assms(2))
+  show ?thesis
+  proof (rule relation_order.loc_connectivity_implies_confluence, fact ro)
+    show "is_loc_connective_on ?A ?ord ?R" unfolding is_loc_connective_on_def
+    proof (intro ballI allI impI)
+      fix a b1 b2 :: "'a \<Rightarrow>\<^sub>0 'b"
+      assume "a \<in> ?A"
+      assume "?R a b1 \<and> ?R a b2"
+      hence "?R a b1" and "?R a b2" by simp_all
+      hence "b1 \<in> ?A" and "b2 \<in> ?A" and "?ord b1 a" and "?ord b2 a"
+        using red_ord dgrad_p_set_closed_red[OF dg assms(2) \<open>a \<in> ?A\<close>] by blast+
+      from this(1) this(2) have "b1 - b2 \<in> ?A" by (rule dgrad_p_set_closed_minus)
+      from \<open>red F a b1\<close> obtain f1 and t1 where "f1 \<in> F" and r1: "red_single a b1 f1 t1" by (rule red_setE)
+      from \<open>red F a b2\<close> obtain f2 and t2 where "f2 \<in> F" and r2: "red_single a b2 f2 t2" by (rule red_setE)
+      from r1 r2 have "f1 \<noteq> 0" and "f2 \<noteq> 0" by (simp_all add: red_single_def)
+      hence lc1: "lc f1 \<noteq> 0" and lc2: "lc f2 \<noteq> 0" using lc_not_0 by auto
+      show "cbelow_on ?A ?ord a (\<lambda>a b. ?R a b \<or> ?R b a) b1 b2"
+      proof (cases "t1 + lp f1 = t2 + lp f2")
+        case False
+        from confluent_distinct[OF r1 r2 False \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>] obtain s where
+          s1: "(red F)\<^sup>*\<^sup>* b1 s" and s2: "(red F)\<^sup>*\<^sup>* b2 s" .
+        have "relation.cs ?R b1 b2" unfolding relation.cs_def by (intro exI conjI, fact s1, fact s2)
+        from ro dw this \<open>b1 \<in> ?A\<close> \<open>b2 \<in> ?A\<close> \<open>?ord b1 a\<close> \<open>?ord b2 a\<close> show ?thesis
+          by (rule relation_order.cs_implies_cbelow_on)
+      next
+        case True
+        define t where "t \<equiv> t2 + lp f2"
+        define l where "l \<equiv> lcs (lp f1) (lp f2)"
+        define a' where "a' = except a {t}"
+        define ma where "ma = monomial (lookup a t) t"
+        have t_alt: "t = t1 + lp f1" by (simp only: True t_def)
+        have "a = ma + a'" unfolding ma_def a'_def by (fact plus_except)
+
+        from adds_lcs[of "lp f1" "lp f2"] have "(lp f1) adds l" unfolding l_def .
+        from adds_lcs_2[of "lp f2" "lp f1"] have "(lp f2) adds l" unfolding l_def .
+        have "lp f1 adds (t1 + lp f1)" by (simp add: t_def)
+        hence "lp f1 adds t" by (simp add: t_def True)
+        have "lp f2 adds t" by (simp add: t_def)
+        from lcs_adds[OF \<open>lp f1 adds t\<close> \<open>lp f2 adds t\<close>] have "l adds t" unfolding l_def .
+        from True have "t - (lp f1) = t1" unfolding t_def by (metis add_implies_diff)
+        with \<open>l adds t\<close> \<open>lp f1 adds l\<close> have tf1: "(t - l) + (l - (lp f1)) = t1"
+          by (metis minus_plus_minus_cancel)
+        have "t - (lp f2) = t2" by (simp add: t_def)
+        with \<open>l adds t\<close> \<open>lp f2 adds l\<close> have tf2: "(t - l) + (l - (lp f2)) = t2"
+          by (metis minus_plus_minus_cancel)
+        let ?ca = "lookup a t"
+        let ?v = "t - l"
+        from \<open>l adds t\<close> have "?v + l = t" by (simp add: adds_minus)
+        from tf1 have "?v adds t1" using addsI by blast
+        with dg have "d ?v \<le> d t1" by (rule dickson_grading_adds_imp_le)
+        also from dg \<open>a \<in> ?A\<close> r1 have "... \<le> m" by (rule dgrad_p_set_red_single_pp)
+        finally have "d ?v \<le> m" .
+        from r2 have "?ca \<noteq> 0" by (simp add: red_single_def t_def)
+        hence "-?ca \<noteq> 0" by simp
+
+        (* b1 *)
+        from r1 have "b1 = a - monom_mult (?ca / lc f1) t1 f1"
+          by (simp add: red_single_def t_def True)
+        also have "... = monom_mult (- ?ca) ?v (fst (crit_pair f1 f2)) + a'"
+        proof (simp add: a'_def crit_pair_def l_def[symmetric] monom_mult_assoc tf1, rule poly_mapping_eqI,
+              simp add: lookup_add lookup_minus)
+          fix s
+          show "lookup a s - lookup (monom_mult (?ca / lc f1) t1 f1) s =
+                lookup (monom_mult (- (?ca / lc f1)) t1 (tail f1)) s + lookup (except a {t}) s"
+          proof (cases "s = t")
+            case True
+            show ?thesis
+              by (simp add: True lookup_except,
+                  simp add: t_alt lookup_monom_mult lookup_tail_2 lc_def[symmetric] lc1)
+          next
+            case False
+            hence "s \<notin> {t}" by simp
+            moreover
+            {
+              assume "t1 adds s"
+              hence "t1 + (s - t1) = s" by (metis add.commute adds_minus)
+              hence "s - t1 \<noteq> lp f1" using False t_alt by auto
+              hence "lookup f1 (s - t1) = lookup (tail f1) (s - t1)" by (simp add: lookup_tail_2)
+            }
+            ultimately show ?thesis using False by (simp add: lookup_except monom_mult.rep_eq)
+          qed
+        qed
+        finally have b1: "b1 = monom_mult (- ?ca) ?v (fst (crit_pair f1 f2)) + a'" .
+
+        (* b2 *)
+        from r2 have "b2 = a - monom_mult (?ca / lc f2) t2 f2"
+          by (simp add: red_single_def t_def True)
+        also have "... = monom_mult (- ?ca) ?v (snd (crit_pair f1 f2)) + a'"
+        proof (simp add: a'_def crit_pair_def l_def[symmetric] monom_mult_assoc tf2, rule poly_mapping_eqI,
+              simp add: lookup_add lookup_minus)
+          fix s
+          show "lookup a s - lookup (monom_mult (?ca / lc f2) t2 f2) s =
+                lookup (monom_mult (- (?ca / lc f2)) t2 (tail f2)) s + lookup (except a {t}) s"
+          proof (cases "s = t")
+            case True
+            show ?thesis
+              by (simp add: True lookup_except,
+                  simp add: t_def lookup_monom_mult lookup_tail_2 lc_def[symmetric] lc2)
+          next
+            case False
+            hence "s \<notin> {t}" by simp
+            moreover
+            {
+              assume "t2 adds s"
+              hence "t2 + (s - t2) = s" by (metis add.commute adds_minus)
+              hence "s - t2 \<noteq> lp f2" using False t_def by auto
+              hence "lookup f2 (s - t2) = lookup (tail f2) (s - t2)" by (simp add: lookup_tail_2)
+            }
+            ultimately show ?thesis using False by (simp add: lookup_except monom_mult.rep_eq)
+          qed
+        qed
+        finally have b2: "b2 = monom_mult (- ?ca) ?v (snd (crit_pair f1 f2)) + a'" .
+
+        from \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close> \<open>f1 \<noteq> 0\<close> \<open>f2 \<noteq> 0\<close> have "crit_pair_cbelow_on d m F f1 f2" by (rule main)
+        hence "cbelow_on ?A ?ord (monomial 1 l) ?RS (fst (crit_pair f1 f2)) (snd (crit_pair f1 f2))"
+          by (simp only: crit_pair_cbelow_on_def l_def)
+        with dg assms (2) \<open>d ?v \<le> m\<close> \<open>-?ca \<noteq> 0\<close>
+        have "cbelow_on ?A ?ord (monom_mult (-?ca) ?v (monomial 1 l)) ?RS
+              (monom_mult (-?ca) ?v (fst (crit_pair f1 f2))) (monom_mult (-?ca) ?v (snd (crit_pair f1 f2)))"
+          by (rule cbelow_on_monom_mult)
+        hence "cbelow_on ?A ?ord (monomial (-?ca) t) ?RS
+              (monom_mult (-?ca) ?v (fst (crit_pair f1 f2))) (monom_mult (-?ca) ?v (snd (crit_pair f1 f2)))"
+          by (simp add: monom_mult_monomial \<open>?v + l = t\<close>)
+        with \<open>?ca \<noteq> 0\<close> have "cbelow_on ?A ?ord (monomial ?ca (0 + t)) ?RS
+              (monom_mult (-?ca) ?v (fst (crit_pair f1 f2))) (monom_mult (-?ca) ?v (snd (crit_pair f1 f2)))"
+          by (rule cbelow_on_monom_mult_monomial)
+        hence "cbelow_on ?A ?ord ma ?RS
+              (monom_mult (-?ca) ?v (fst (crit_pair f1 f2))) (monom_mult (-?ca) ?v (snd (crit_pair f1 f2)))"
+          by (simp add: ma_def)
+        with dg assms(2) _ _
+        show "cbelow_on ?A ?ord a ?RS b1 b2" unfolding \<open>a = ma + a'\<close> b1 b2
+        proof (rule cbelow_on_plus)
+          show "a' \<in> ?A"
+            by (rule, simp add: a'_def keys_except, erule conjE, intro dgrad_p_setD,
+                rule \<open>a \<in> dgrad_p_set d m\<close>)
+        next
+          show "keys a' \<inter> keys ma = {}" by (simp add: ma_def a'_def keys_except)
+        qed
+      qed
+    qed
+  qed fact
+qed
+
+corollary crit_pair_cbelow_imp_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> crit_pair_cbelow_on d m F p q"
+  shows "is_Groebner_basis F"
+  unfolding is_Groebner_basis_def
+proof (rule relation.confluence_implies_ChurchRosser,
+      simp only: relation.is_confluent_def relation.is_confluent_on_def, intro ballI allI impI)
+  fix a b1 b2
+  assume a: "(red F)\<^sup>*\<^sup>* a b1 \<and> (red F)\<^sup>*\<^sup>* a b2"
+  from assms(2) obtain n where "m \<le> n" and "a \<in> dgrad_p_set d n" and "F \<subseteq> dgrad_p_set d n"
+    by (rule dgrad_p_set_insert)
+  {
+    fix p q
+    assume "p \<in> F" and "q \<in> F" and "p \<noteq> 0" and "q \<noteq> 0"
+    hence "crit_pair_cbelow_on d m F p q" by (rule assms(3))
+    from this dgrad_p_set_subset[OF \<open>m \<le> n\<close>] have "crit_pair_cbelow_on d n F p q"
+      unfolding crit_pair_cbelow_on_def by (rule cbelow_on_mono)
+  }
+  with assms(1) \<open>F \<subseteq> dgrad_p_set d n\<close> have "relation.is_confluent_on (red F) (dgrad_p_set d n)"
+    by (rule crit_pair_cbelow_imp_confluent_dgrad_p_set)
+  from this \<open>a \<in> dgrad_p_set d n\<close> have "\<forall>b1 b2. (red F)\<^sup>*\<^sup>* a b1 \<and> (red F)\<^sup>*\<^sup>* a b2 \<longrightarrow> relation.cs (red F) b1 b2"
+    unfolding relation.is_confluent_on_def ..
+  with a show "relation.cs (red F) b1 b2" by blast
+qed
+
+corollary Buchberger_criterion_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
+  shows "is_Groebner_basis F"
+  using assms(1) assms(2)
+proof (rule crit_pair_cbelow_imp_GB_dgrad_p_set)
+  fix p q
+  assume "p \<in> F" and "q \<in> F" and "p \<noteq> 0" and "q \<noteq> 0"
+  from this(1) this(2) have "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m" using assms(2) by auto
+  from assms(1) assms(2) this \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> show "crit_pair_cbelow_on d m F p q"
+  proof (rule spoly_red_zero_imp_crit_pair_cbelow_on)
+    from \<open>p \<in> F\<close> \<open>q \<in> F\<close> show "(red F)\<^sup>*\<^sup>* (spoly p q) 0" by (rule assms(3))
+  qed
+qed
+
+lemmas Buchberger_criterion_finite = Buchberger_criterion_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+
+lemma (in ordered_powerprod) GB_imp_zero_reducibility:
+  assumes "is_Groebner_basis G" and "f \<in> (pideal G)"
+  shows "(red G)\<^sup>*\<^sup>* f 0"
+proof -
+  from in_pideal_srtc[OF \<open>f \<in> (pideal G)\<close>] \<open>is_Groebner_basis G\<close> have "relation.cs (red G) f 0"
+    unfolding is_Groebner_basis_def relation.is_ChurchRosser_def by simp
+  then obtain s where rfs: "(red G)\<^sup>*\<^sup>* f s" and r0s: "(red G)\<^sup>*\<^sup>* 0 s" unfolding relation.cs_def by auto
+  from rtrancl_0[OF r0s] and rfs show ?thesis by simp
+qed
+
+lemma (in ordered_powerprod) GB_imp_reducibility:
+  assumes "is_Groebner_basis G" and "f \<noteq> 0" and "f \<in> pideal G"
+  shows "is_red G f"
+  using assms by (meson GB_imp_zero_reducibility is_red_def relation.rtrancl_is_final)
+
+lemma is_Groebner_basis_empty: "is_Groebner_basis {}"
+  by (rule Buchberger_criterion_finite, rule, simp)
+
+lemma is_Groebner_basis_singleton: "is_Groebner_basis {f}"
+  by (rule Buchberger_criterion_finite, simp, simp add: spoly_same)
+
+subsection \<open>Buchberger's Criteria for Avoiding Useless Pairs\<close>
+
+lemma product_criterion:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
+    and "p \<noteq> 0" and "q \<noteq> 0" and "gcs (lp p) (lp q) = 0"
+  shows "crit_pair_cbelow_on d m F p q"
+proof -
+  let ?l = "lcs (lp p) (lp q)"
+  define s where "s = monom_mult (- 1 / (lc p * lc q)) 0 (tail p * tail q)"
+  from assms(7) have "?l = lp p + lp q"
+    by (metis add_cancel_left_left gcs_plus_lcs)
+  hence "?l - lp p = lp q" and "?l - lp q = lp p" by simp_all
+
+  from \<open>q \<noteq> 0\<close> have "(red {q})\<^sup>*\<^sup>* (monom_mult (1 / lc p) (lp q) (tail p))
+                      (monom_mult (- (1 / lc p) / lc q) 0 (tail p * tail q))"
+    by (rule red_monom_mult_lp)
+  hence "(red {q})\<^sup>*\<^sup>* (fst (crit_pair p q)) s" by (simp add: crit_pair_def \<open>?l - lp p = lp q\<close> s_def)
+  moreover from \<open>q \<in> F\<close> have "{q} \<subseteq> F" by simp
+  ultimately have 1: "(red F)\<^sup>*\<^sup>* (fst (crit_pair p q)) s" by (rule red_rtrancl_subset)
+
+  from \<open>p \<noteq> 0\<close> have "(red {p})\<^sup>*\<^sup>* (monom_mult (1 / lc q) (lp p) (tail q))
+                      (monom_mult (- (1 / lc q) / lc p) 0 (tail q * tail p))"
+    by (rule red_monom_mult_lp)
+  hence "(red {p})\<^sup>*\<^sup>* (snd (crit_pair p q)) s"
+    by (simp add: crit_pair_def \<open>?l - lp q = lp p\<close> s_def ac_simps)
+  moreover from \<open>p \<in> F\<close> have "{p} \<subseteq> F" by simp
+  ultimately have 2: "(red F)\<^sup>*\<^sup>* (snd (crit_pair p q)) s" by (rule red_rtrancl_subset)
+
+  note assms(1) assms(2)
+  moreover from \<open>p \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "p \<in> dgrad_p_set d m" ..
+  moreover from \<open>q \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "q \<in> dgrad_p_set d m" ..
+  moreover from 1 2 have "relation.cs (red F) (fst (crit_pair p q)) (snd (crit_pair p q))"
+    unfolding relation.cs_def by blast
+  ultimately show ?thesis by (rule crit_pair_cs_imp_crit_pair_cbelow_on)
+qed
+
+lemma chain_criterion:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
+    and "p \<noteq> 0" and "q \<noteq> 0" and "lp r adds lcs (lp p) (lp q)"
+    and pr: "crit_pair_cbelow_on d m F p r" and rq: "crit_pair_cbelow_on d m F r q"
+  shows "crit_pair_cbelow_on d m F p q"
+proof -
+  let ?A = "dgrad_p_set d m"
+  let ?RS = "\<lambda>a b. red F a b \<or> red F b a"
+  let ?lpr = "lcs (lp p) (lp r)"
+  let ?lrq = "lcs (lp r) (lp q)"
+  let ?lpq = "lcs (lp p) (lp q)"
+
+  from \<open>p \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "p \<in> dgrad_p_set d m" ..
+  from this \<open>p \<noteq> 0\<close> have "d (lp p) \<le> m" by (rule dgrad_p_setD_lp)
+  from \<open>q \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "q \<in> dgrad_p_set d m" ..
+  from this \<open>q \<noteq> 0\<close> have "d (lp q) \<le> m" by (rule dgrad_p_setD_lp)
+  from assms(1) have "d ?lpq \<le> ord_class.max (d (lp p)) (d (lp q))" by (rule dickson_grading_lcs)
+  also from \<open>d (lp p) \<le> m\<close> \<open>d (lp q) \<le> m\<close> have "... \<le> m" by simp
+  finally have "d ?lpq \<le> m" .
+
+  from adds_lcs \<open>lp r adds ?lpq\<close> have "?lpr adds ?lpq" by (rule lcs_adds)
+  then obtain up where "?lpq = ?lpr + up" ..
+  hence up1: "?lpq - lp p = up + (?lpr - lp p)" and up2: "up + (?lpr - lp r) = ?lpq - lp r"
+    by (metis add.commute adds_lcs minus_plus, metis add.commute adds_lcs_2 minus_plus)
+  have fst_pq: "fst (crit_pair p q) = monom_mult 1 up (fst (crit_pair p r))"
+    by (simp add: crit_pair_def monom_mult_assoc up1)
+  from assms(1) assms(2) _ _ pr have "cbelow_on ?A (\<prec>p) (monom_mult 1 up (monomial 1 ?lpr)) ?RS
+                                    (fst (crit_pair p q)) (monom_mult 1 up (snd (crit_pair p r)))"
+    unfolding fst_pq crit_pair_cbelow_on_def
+  proof (rule cbelow_on_monom_mult)
+    from \<open>d ?lpq \<le> m\<close> show "d up \<le> m" by (simp add: \<open>?lpq = ?lpr + up\<close> dickson_gradingD1[OF assms(1)])
+  qed simp
+  hence 1: "cbelow_on ?A (\<prec>p) (monomial 1 ?lpq) ?RS (fst (crit_pair p q)) (monom_mult 1 up (snd (crit_pair p r)))"
+    by (simp add: monom_mult_monomial \<open>?lpq = ?lpr + up\<close> add.commute)
+
+  from \<open>lp r adds ?lpq\<close> adds_lcs_2 have "?lrq adds ?lpq" by (rule lcs_adds)
+  then obtain uq where "?lpq = ?lrq + uq" ..
+  hence uq1: "?lpq - lp q = uq + (?lrq - lp q)" and uq2: "uq + (?lrq - lp r) = ?lpq - lp r"
+    by (metis add.commute adds_lcs_2 minus_plus, metis add.commute adds_lcs minus_plus)
+  have eq: "monom_mult 1 uq (fst (crit_pair r q)) = monom_mult 1 up (snd (crit_pair p r))"
+    by (simp add: crit_pair_def monom_mult_assoc up2 uq2)
+  have snd_pq: "snd (crit_pair p q) = monom_mult 1 uq (snd (crit_pair r q))"
+    by (simp add: crit_pair_def monom_mult_assoc uq1)
+  from assms(1) assms(2) _ _ rq have "cbelow_on ?A (\<prec>p) (monom_mult 1 uq (monomial 1 ?lrq)) ?RS
+                                    (monom_mult 1 uq (fst (crit_pair r q))) (snd (crit_pair p q))"
+    unfolding snd_pq crit_pair_cbelow_on_def
+  proof (rule cbelow_on_monom_mult)
+    from \<open>d ?lpq \<le> m\<close> show "d uq \<le> m" by (simp add: \<open>?lpq = ?lrq + uq\<close> dickson_gradingD1[OF assms(1)])
+  qed simp
+  hence "cbelow_on ?A (\<prec>p) (monomial 1 ?lpq) ?RS (monom_mult 1 uq (fst (crit_pair r q))) (snd (crit_pair p q))"
+    by (simp add: monom_mult_monomial \<open>?lpq = ?lrq + uq\<close> add.commute)
+  hence "cbelow_on ?A (\<prec>p) (monomial 1 ?lpq) ?RS (monom_mult 1 up (snd (crit_pair p r))) (snd (crit_pair p q))"
+    by (simp only: eq)
+  
+  with 1 show ?thesis unfolding crit_pair_cbelow_on_def by (rule cbelow_on_transitive)
+qed
+
+subsection \<open>Weak and Strong Gr\"obner Bases\<close>
+
+lemma ord_p_wf_on:
+  assumes "dickson_grading (+) d"
+  shows "wfP_on (dgrad_p_set d m) (\<prec>p)"
+proof (rule wfP_onI_min)
+  fix x::"'a \<Rightarrow>\<^sub>0 'b" and Q
+  assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
+  with assms obtain z where "z \<in> Q" and *: "\<And>y. y \<prec>p z \<Longrightarrow> y \<notin> Q"
+    by (rule ord_p_minimum_dgrad_p_set, blast)
+  from this(1) show "\<exists>z\<in>Q. \<forall>y\<in>dgrad_p_set d m. y \<prec>p z \<longrightarrow> y \<notin> Q"
+  proof
+    show "\<forall>y\<in>dgrad_p_set d m. y \<prec>p z \<longrightarrow> y \<notin> Q" by (intro ballI impI *)
+  qed
+qed
+
+(* TODO: Collect all "_dgrad_p_set"-facts in a locale? *)
+lemma is_red_implies_0_red_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "pideal B \<subseteq> pideal A" and major: "\<And>q. q \<in> pideal A \<Longrightarrow> q \<in> dgrad_p_set d m \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> is_red B q"
+    and in_ideal: "p \<in> pideal A" and "p \<in> dgrad_p_set d m"
+  shows "(red B)\<^sup>*\<^sup>* p 0"
+proof -
+  from ord_p_wf_on[OF assms(1)] assms(6) in_ideal show ?thesis
+  proof (induction p rule: wfP_on_induct)
+    case (step p)
+    show ?case
+    proof (cases "p = 0")
+      case True
       thus ?thesis by simp
     next
       case False
-      let ?s = "(p + r) - monom_mult ((lookup (p + r) (t + lp f)) / lc f) t f"
-      have r1: "red_single (p + r) ?s f t" using \<open>f \<noteq> 0\<close> cpr unfolding red_single_def by simp
-      have r2: "red_single (q + r) ?s f t" unfolding red_single_def
-      proof
-        from \<open>f \<noteq> 0\<close> show "f \<noteq> 0" .
-      next
-        show "lookup (q + r) (t + lp f) \<noteq> 0 \<and>
-                p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f =
-                q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f"
-        proof
-          from False show "lookup (q + r) (t + lp f) \<noteq> 0" .
-        next
-          from eq1 eq2 q_def
-            show "p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f =
-                  q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f" by simp
-        qed
-      qed
-      from r1 r2 show ?thesis by auto
+      from major[OF step(3) step(1) False] obtain q where redpq: "red B p q" unfolding is_red_alt ..
+      with assms(1) assms(2) step(1) have "q \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_red)
+      moreover from redpq have "q \<prec>p p" by (rule red_ord)
+      moreover from \<open>pideal B \<subseteq> pideal A\<close> \<open>p \<in> pideal A\<close> \<open>red B p q\<close> have "q \<in> pideal A"
+        by (rule pideal_closed_red)
+      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule step(2))
+      show ?thesis by (rule converse_rtranclp_into_rtranclp, rule redpq, fact)
     qed
   qed
 qed
 
-lemma red_mult:
-  fixes c::"'b::field" and s and p q::"('a, 'b) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes a: "red F p q" and "c \<noteq> 0"
-  shows "red F (monom_mult c s p) (monom_mult c s q)"
+lemma is_red_implies_0_red_dgrad_p_set':
+  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "pideal B \<subseteq> pideal A" and major: "\<And>q. q \<in> pideal A \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> is_red B q"
+    and in_ideal: "p \<in> pideal A"
+  shows "(red B)\<^sup>*\<^sup>* p 0"
 proof -
-  from red_setE[OF a] obtain f and t where "f \<in> F" and rs: "red_single p q f t" by auto
-  from red_monom_mult[OF rs \<open>c \<noteq> 0\<close>, of s] show ?thesis by (intro red_setI[OF \<open>f \<in> F\<close>])
-qed
-
-lemma red_plus:
-  fixes p q r::"('a, 'b::field) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes a: "red F p q"
-  obtains s::"('a, 'b) poly_mapping" where "(red F)\<^sup>*\<^sup>* (p + r) s" and "(red F)\<^sup>*\<^sup>* (q + r) s"
-proof -
-  from red_setE[OF a] obtain f and t where "f \<in> F" and rs: "red_single p q f t" by auto
-  from red_single_plus[OF rs, of r] show ?thesis
-  proof
-    assume c1: "red_single (p + r) (q + r) f t"
-    show ?thesis
-    proof
-      from c1 show "(red F)\<^sup>*\<^sup>* (p + r) (q + r)" by (intro r_into_rtranclp, intro red_setI[OF \<open>f \<in> F\<close>])
-    next
-      show "(red F)\<^sup>*\<^sup>* (q + r) (q + r)" ..
-    qed
-  next
-    assume "red_single (q + r) (p + r) f t \<or> (\<exists>s. red_single (p + r) s f t \<and> red_single (q + r) s f t)"
-    thus ?thesis
-    proof
-      assume c2: "red_single (q + r) (p + r) f t"
-      show ?thesis
-      proof
-        show "(red F)\<^sup>*\<^sup>* (p + r) (p + r)" ..
-      next
-        from c2 show "(red F)\<^sup>*\<^sup>* (q + r) (p + r)" by (intro r_into_rtranclp, intro red_setI[OF \<open>f \<in> F\<close>])
-      qed
-    next
-      assume "\<exists>s. red_single (p + r) s f t \<and> red_single (q + r) s f t"
-      then obtain s where s1: "red_single (p + r) s f t" and s2: "red_single (q + r) s f t" by auto
-      show ?thesis
-      proof
-        from s1 show "(red F)\<^sup>*\<^sup>* (p + r) s" by (intro r_into_rtranclp, intro red_setI[OF \<open>f \<in> F\<close>])
-      next
-        from s2 show "(red F)\<^sup>*\<^sup>* (q + r) s" by (intro r_into_rtranclp, intro red_setI[OF \<open>f \<in> F\<close>])
-      qed
-    qed
-  qed
-qed
-
-lemma red_uminus:
-  fixes p q::"('a, 'b::field) poly_mapping" and F::"('a, 'b) poly_mapping set"
-  assumes "red F p q"
-  shows "red F (-p) (-q)"
-proof -
-  from red_mult[OF assms, of "-1" 0] show ?thesis by (simp add: uminus_monom_mult)
-qed
-
-lemma red_plus_cs:
-  assumes "red F p q"
-  shows "relation.cs (red F) (p + r) (q + r)"
-unfolding relation.cs_def
-proof -
-  from red_plus[OF assms, of r] obtain s where "(red F)\<^sup>*\<^sup>* (p + r) s" and "(red F)\<^sup>*\<^sup>* (q + r) s" .
-  show "\<exists>s. (red F)\<^sup>*\<^sup>* (p + r) s \<and> (red F)\<^sup>*\<^sup>* (q + r) s" by (intro exI, intro conjI, fact, fact)
-qed
-
-subsubsection \<open>Confluence of Reducibility\<close>
-
-lemma confluent_distinct_aux:
-  fixes p q1 q2 f1 f2::"('a, 'b::field) poly_mapping" and t1 t2 and F::"('a, 'b) poly_mapping set"
-  assumes r1: "red_single p q1 f1 t1" and r2: "red_single p q2 f2 t2"
-    and "t1 + lp f1 \<prec> t2 + lp f2" and "f1 \<in> F" and "f2 \<in> F"
-  obtains s::"('a, 'b) poly_mapping" where "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s"
-proof -
-  from r1 have "f1 \<noteq> 0" and c1: "lookup p (t1 + lp f1) \<noteq> 0"
-    and q1_def: "q1 = p - monom_mult (lookup p (t1 + lp f1) / lc f1) t1 f1"
-    unfolding red_single_def by auto
-  from r2 have "f2 \<noteq> 0" and c2: "lookup p (t2 + lp f2) \<noteq> 0"
-    and q2_def: "q2 = p - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2"
-    unfolding red_single_def by auto
-  from \<open>t1 + lp f1 \<prec> t2 + lp f2\<close>
-  have "lookup (monom_mult (lookup p (t1 + lp f1) / lc f1) t1 f1) (t2 + lp f2) = 0"
-    by (metis coeff_mult_0)
-  from lookup_minus[of p _ "t2 + lp f2"] this have c: "lookup q1 (t2 + lp f2) = lookup p (t2 + lp f2)"
-    unfolding q1_def by simp
-  define q3 where "q3 \<equiv> q1 - monom_mult ((lookup q1 (t2 + lp f2)) / lc f2) t2 f2"
-  have "red_single q1 q3 f2 t2" unfolding red_single_def
-  proof (rule, fact, rule)
-    from c c2 show "lookup q1 (t2 + lp f2) \<noteq> 0" by simp
-  next
-    show "q3 = q1 - monom_mult (lookup q1 (t2 + lp f2) / lc f2) t2 f2" unfolding q3_def ..
-  qed
-  hence "red F q1 q3" by (intro red_setI[OF \<open>f2 \<in> F\<close>])
-  hence q1q3: "(red F)\<^sup>*\<^sup>* q1 q3" by (intro r_into_rtranclp)
-  from r1 have "red F p q1" by (intro red_setI[OF \<open>f1 \<in> F\<close>])
-  from red_plus[OF this, of "- monom_mult ((lookup p (t2 + lp f2)) / lc f2) t2 f2"] obtain s
-    where r3: "(red F)\<^sup>*\<^sup>* (p - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2) s"
-    and r4: "(red F)\<^sup>*\<^sup>* (q1 - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2) s" by auto
-  from r3 have q2s: "(red F)\<^sup>*\<^sup>* q2 s" unfolding q2_def by simp
-  from r4 c have q3s: "(red F)\<^sup>*\<^sup>* q3 s" unfolding q3_def by simp
-  show ?thesis
-  proof
-    from rtranclp_trans[OF q1q3 q3s] show "(red F)\<^sup>*\<^sup>* q1 s" .
-  next
-    from q2s show "(red F)\<^sup>*\<^sup>* q2 s" .
-  qed
-qed
-
-lemma confluent_distinct:
-  fixes p q1 q2 f1 f2::"('a, 'b::field) poly_mapping" and t1 t2 and F::"('a, 'b) poly_mapping set"
-  assumes r1: "red_single p q1 f1 t1" and r2: "red_single p q2 f2 t2"
-    and ne: "t1 + lp f1 \<noteq> t2 + lp f2" and "f1 \<in> F" and "f2 \<in> F"
-  obtains s::"('a, 'b) poly_mapping" where "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s"
-proof -
-  from ne have "t1 + lp f1 \<prec> t2 + lp f2 \<or> t2 + lp f2 \<prec> t1 + lp f1" by auto
-  thus ?thesis
-  proof
-    assume a1: "t1 + lp f1 \<prec> t2 + lp f2"
-    from confluent_distinct_aux[OF r1 r2 a1 \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>] obtain s where
-      "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s" .
-    thus ?thesis ..
-  next
-    assume a2: "t2 + lp f2 \<prec> t1 + lp f1"
-    from confluent_distinct_aux[OF r2 r1 a2 \<open>f2 \<in> F\<close> \<open>f1 \<in> F\<close>] obtain s where
-      "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s" .
-    thus ?thesis ..
-  qed
-qed
-
-subsubsection \<open>Reducibility and Ideal Membership\<close>
-
-lemma srtc_in_pideal:
-  assumes "relation.srtc (red F) p q"
-  shows "p - q \<in> pideal F"
-using assms unfolding relation.srtc_def
-proof (induct rule: rtranclp.induct)
-  fix p
-  from pideal_0[of F] show "p - p \<in> pideal F" by simp
-next
-  fix p r q
-  assume pr_in: "p - r \<in> pideal F" and red: "red F r q \<or> red F q r"
-  from red obtain f c t where "f \<in> F" and "q = r - monom_mult c t f"
-  proof
-    assume "red F r q"
-    thm red_setE[show_types]
-    from red_setE[OF this] obtain f t where "f \<in> F" and "red_single r q f t" .
-    hence "q = r - monom_mult (lookup r (t + lp f) / lc f) t f" unfolding red_single_def by simp
-    show thesis by (rule, fact, fact)
-  next
-    assume "red F q r"
-    from red_setE[OF this] obtain f t where "f \<in> F" and "red_single q r f t" .
-    hence "r = q - monom_mult (lookup q (t + lp f) / lc f) t f" unfolding red_single_def by simp
-    hence "q = r + monom_mult (lookup q (t + lp f) / lc f) t f" by simp
-    hence "q = r - monom_mult (-(lookup q (t + lp f) / lc f)) t f"
-      using monom_mult_uminus_left[of _ t f] by simp
-    show thesis by (rule, fact, fact)
-  qed
-  hence eq: "p - q = (p - r) + monom_mult c t f" by simp
-  show "p - q \<in> pideal F" unfolding eq
-    by (rule pideal_closed_plus, fact, rule monom_mult_in_pideal, fact)
-qed
-
-lemma in_pideal_srtc:
-  assumes "p \<in> pideal F"
-  shows "relation.srtc (red F) p 0"
-using assms
-proof (induct p)
-  show "relation.srtc (red F) 0 0" unfolding relation.srtc_def ..
-next
-  fix a f c t
-  assume a_in: "a \<in> pideal F" and IH: "relation.srtc (red F) a 0" and "f \<in> F"
-  show "relation.srtc (red F) (a + monom_mult c t f) 0"
-  proof (cases "c = 0")
-    assume "c = 0"
-    hence "a + monom_mult c t f = a" using monom_mult_left0[of t f] by simp
-    thus ?thesis using IH by simp
-  next
-    assume "c \<noteq> 0"
-    show ?thesis
-    proof (cases "f = 0")
-      assume "f = 0"
-      hence "a + monom_mult c t f = a" using monom_mult_right0[of c t] by simp
-      thus ?thesis using IH by simp
-    next
-      assume "f \<noteq> 0"
-      from lc_not_0[OF this] have "lc f \<noteq> 0" .
-      have "red F (monom_mult c t f) 0"
-      proof (intro red_setI[OF \<open>f \<in> F\<close>])
-        from monom_mult_lookup[of c t f "lp f"]
-          have eq: "lookup (monom_mult c t f) (t + lp f) = c * lc f" unfolding lc_def .
-        show "red_single (monom_mult c t f) 0 f t" unfolding red_single_def eq
-        proof (intro conjI, fact)
-          from \<open>c \<noteq> 0\<close> \<open>lc f \<noteq> 0\<close> show "c * lc f \<noteq> 0" by simp
-        next
-          from \<open>lc f \<noteq> 0\<close> show "0 = monom_mult c t f - monom_mult (c * lc f / lc f) t f" by simp
-        qed
-      qed
-      from red_plus[OF this, of a] obtain s where
-        s1: "(red F)\<^sup>*\<^sup>* (monom_mult c t f + a) s" and s2: "(red F)\<^sup>*\<^sup>* (0 + a) s" .
-      have "relation.cs (red F) (a + monom_mult c t f) a" unfolding relation.cs_def
-      proof (intro exI[of _ s], intro conjI)
-        from s1 show "(red F)\<^sup>*\<^sup>* (a + monom_mult c t f) s" by (simp only: add.commute)
-      next
-        from s2 show "(red F)\<^sup>*\<^sup>* a s" by simp
-      qed
-      from relation.srtc_transitive[OF relation.cs_implies_srtc[OF this] IH] show ?thesis .
-    qed
-  qed
-qed
-
-lemma is_relation_order:
-  fixes F::"('a, 'b::field) poly_mapping set"
-  shows "Confluence.relation_order (red F) (\<preceq>p) (\<prec>p)"
-proof
-  show "red F \<le> (\<prec>p)\<inverse>\<inverse>"
-  proof
-    fix x y
-    assume "red F x y"
-    show "(\<prec>p)\<inverse>\<inverse> x y"
-    proof
-      from red_ord[OF \<open>red F x y\<close>] show "y \<prec>p x" .
-    qed
-  qed
-next
-  from ord_p_wf show "wfP (\<prec>p)" .
-qed
-
-subsection \<open>Gr\"obner Bases and Buchberger's Theorem\<close>
-
-definition is_Groebner_basis::"('a, 'b::field) poly_mapping set \<Rightarrow> bool"
-  where "is_Groebner_basis F \<equiv> relation.is_ChurchRosser (red F)"
-
-definition spoly::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b::field) poly_mapping" where
-  "spoly p q \<equiv> (monom_mult (1 / lc p) ((lcs (lp p) (lp q)) - (lp p)) p) -
-                (monom_mult (1 / lc q) ((lcs (lp p) (lp q)) - (lp q)) q)"
-
-lemma spoly_same:
-  shows "spoly p p = 0"
-unfolding spoly_def by simp
-
-lemma spoly_exchange:
-  shows "spoly p q = - spoly q p"
-unfolding spoly_def by (simp add: lcs_comm)
-
-lemma red_rtrancl_mult:
-  fixes p q::"('a, 'b::field) poly_mapping" and c::'b and t
-  assumes "(red F)\<^sup>*\<^sup>* p q"
-  shows "(red F)\<^sup>*\<^sup>* (monom_mult c t p) (monom_mult c t q)"
-proof (cases "c = 0")
-  case True
-  have "(red F)\<^sup>*\<^sup>* 0 0" by simp
-  thus ?thesis by (simp only: True monom_mult_left0[of t])
-next
-  case False
-  from assms show ?thesis
-  proof (induct rule: rtranclp_induct)
-    show "(red F)\<^sup>*\<^sup>* (monom_mult c t p) (monom_mult c t p)" by simp
-  next
-    fix q0 q
-    assume "(red F)\<^sup>*\<^sup>* p q0" and "red F q0 q" and "(red F)\<^sup>*\<^sup>* (monom_mult c t p) (monom_mult c t q0)"
-    show "(red F)\<^sup>*\<^sup>* (monom_mult c t p) (monom_mult c t q)"
-    proof (rule rtranclp.intros(2)[OF \<open>(red F)\<^sup>*\<^sup>* (monom_mult c t p) (monom_mult c t q0)\<close>])
-      from red_mult[OF \<open>red F q0 q\<close> False, of t] show "red F (monom_mult c t q0) (monom_mult c t q)" .
-    qed
-  qed
-qed
-
-lemma red_rtrancl_uminus:
-  fixes p q::"('a, 'b::field) poly_mapping"
-  assumes "(red F)\<^sup>*\<^sup>* p q"
-  shows "(red F)\<^sup>*\<^sup>* (-p) (-q)"
-proof -
-  from red_rtrancl_mult[OF assms, of "-1" 0] show ?thesis by (simp add: uminus_monom_mult)
-qed
-
-lemma red_rtrancl_diff_induct:
-  assumes a: "(red F)\<^sup>*\<^sup>* (p - q) r"
-    and cases: "P p p" "!!y z. [| (red F)\<^sup>*\<^sup>* (p - q) z; red F z y; P p (q + z)|] ==> P p (q + y)"
-  shows "P p (q + r)"
-using a
-proof (induct rule: rtranclp_induct)
-  from cases(1) show "P p (q + (p - q))" by simp
-next
-  fix y z
-  assume "(red F)\<^sup>*\<^sup>* (p - q) z" "red F z y" "P p (q + z)"
-  thus "P p (q + y)" using cases(2) by simp
-qed
-
-lemma red_rtrancl_diff_0_induct:
-  assumes a: "(red F)\<^sup>*\<^sup>* (p - q) 0"
-    and base: "P p p" and ind: "\<And>y z. [| (red F)\<^sup>*\<^sup>* (p - q) y; red F y z; P p (y + q)|] ==> P p (z + q)"
-  shows "P p q"
-proof -
-  from ind red_rtrancl_diff_induct[of F p q 0 P, OF a base] have "P p (0 + q)"
-    by (simp add: ac_simps)
-  thus ?thesis by simp
-qed
-
-text \<open>The following is the key result in the theory of Gr\"obner bases. Its proof is modelled after
-  the one given in @{cite Buchberger1998a}.\<close>
-
-theorem Buchberger_criterion:
-  assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
-  shows "is_Groebner_basis F"
-proof -
-  have "relation_order.is_loc_connective (red F) (\<prec>p)"
-    unfolding relation_order.is_loc_connective_def[OF is_relation_order]
-  proof (intro allI, intro impI)
-    fix a b1 b2
-    assume "red F a b1 \<and> red F a b2"
-    hence "red F a b1" and "red F a b2" by auto
-    from red_setE[OF \<open>red F a b1\<close>] obtain f1 and t1 where "f1 \<in> F" and r1: "red_single a b1 f1 t1" .
-    from red_setE[OF \<open>red F a b2\<close>] obtain f2 and t2 where "f2 \<in> F" and r2: "red_single a b2 f2 t2" .
-    from red_single_ord[OF r1] have "b1 \<prec>p a" .
-    from red_single_ord[OF r2] have "b2 \<prec>p a" .
-    from r1 r2 have "f1 \<noteq> 0" and "f2 \<noteq> 0" unfolding red_single_def by simp_all
-    hence lc1: "lc f1 \<noteq> 0" and lc2: "lc f2 \<noteq> 0" using lc_not_0 by auto
-    show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 b2"
-    proof (cases "t1 + lp f1 = t2 + lp f2")
-      case False
-      from confluent_distinct[OF r1 r2 False \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>] obtain s where
-        s1: "(red F)\<^sup>*\<^sup>* b1 s" and s2: "(red F)\<^sup>*\<^sup>* b2 s" .
-      have "relation.cs (red F) b1 b2" unfolding relation.cs_def
-      proof (intro exI, intro conjI)
-        from s1 show "(red F)\<^sup>*\<^sup>* b1 s" .
-      next
-        from s2 show "(red F)\<^sup>*\<^sup>* b2 s" .
-      qed
-      from relation_order.cs_implies_cbelow[OF is_relation_order this \<open>b1 \<prec>p a\<close> \<open>b2 \<prec>p a\<close>]
-        show ?thesis .
-    next
+  from assms(2) obtain n where "m \<le> n" and "p \<in> dgrad_p_set d n" and B: "B \<subseteq> dgrad_p_set d n"
+    by (rule dgrad_p_set_insert)
+  from ord_p_wf_on[OF assms(1)] this(2) in_ideal show ?thesis
+  proof (induction p rule: wfP_on_induct)
+    case (step p)
+    show ?case
+    proof (cases "p = 0")
       case True
-      define t where "t \<equiv> t2 + lp f2"
-      define l where "l \<equiv> lcs (lp f1) (lp f2)"
-      from adds_lcs[of "lp f1" "lp f2"] have "(lp f1) adds l" unfolding l_def .
-      from adds_lcs_2[of "lp f2" "lp f1"] have "(lp f2) adds l" unfolding l_def .
-      have "lp f1 adds (t1 + lp f1)" unfolding t_def by simp
-      hence "lp f1 adds t" using True unfolding t_def by simp
-      have "lp f2 adds t" unfolding t_def by simp
-      from lcs_min[OF \<open>lp f1 adds t\<close> \<open>lp f2 adds t\<close>] have "l adds t" unfolding l_def .
-      from True
-      have "t - (lp f1) = t1" unfolding t_def
-        by (metis add_implies_diff)
-      from \<open>l adds t\<close> \<open>lp f1 adds l\<close> this
-      have tf1: "(t - l) + (l - (lp f1)) = t1"
-        by (metis minus_plus_minus_cancel)
-      have "t - (lp f2) = t2" unfolding t_def by simp
-      from \<open>l adds t\<close> \<open>lp f2 adds l\<close> this
-      have tf2: "(t - l) + (l - (lp f2)) = t2"
-        by (metis minus_plus_minus_cancel)
-      let ?ca = "lookup a t"
-      let ?v = "t - l"
-      have "b2 - b1 = monom_mult (?ca / lc f1) t1 f1 - monom_mult (?ca / lc f2) t2 f2"
-        using True r1 r2 unfolding red_single_def t_def by simp
-      also have "\<dots> = monom_mult ?ca ?v (spoly f1 f2)"
-        using monom_mult_dist_right_minus[of ?ca ?v] monom_mult_assoc[of ?ca ?v] tf1 tf2 lc1 lc2
-        unfolding l_def spoly_def by simp
-      finally have "b2 - b1 = monom_mult ?ca ?v (spoly f1 f2)" .
-      from this red_rtrancl_mult[OF assms[OF \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>], of ?ca ?v]
-        have "(red F)\<^sup>*\<^sup>* (b2 - b1) 0" by (simp add: monom_mult_right0)
-      from red_rtrancl_uminus[OF this] have "(red F)\<^sup>*\<^sup>* (b1 - b2) 0" by simp
-      thus ?thesis
-      proof (rule red_rtrancl_diff_0_induct)
-        show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 b1" unfolding cbelow_def
-          by (intro disjI1, intro conjI, simp, fact)
-      next
-        fix y z
-        assume "(red F)\<^sup>*\<^sup>* (b1 - b2) y" and "red F y z"
-          and "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)"
-        show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (z + b2)"
-        proof (rule cbelow_transitive)
-          show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)" by fact
-        next
-          from True red_single_lookup[OF r1]
-            have c1: "lookup b1 t = 0" unfolding t_def by simp
-          from red_single_lookup[OF r2]
-            have c2: "lookup b2 t = 0" unfolding t_def by simp
-          from red_single_higher[OF r1] True
-            have h1: "higher b1 t = higher a t" unfolding t_def by simp
-          from red_single_higher[OF r2]
-            have h2: "higher b2 t = higher a t" unfolding t_def by simp
-          from h1 h2 have h: "higher b1 t = higher b2 t" by simp
-          from cbelow_second_below[OF \<open>cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) b1 (y + b2)\<close>]
-            have "y + b2 \<prec>p a" .
-          show "cbelow (\<prec>p) a (\<lambda>a b. red F a b \<or> red F b a) (y + b2) (z + b2)"
-          proof (rule relation_order.cs_implies_cbelow[OF is_relation_order red_plus_cs[OF \<open>red F y z\<close>]])
-            from \<open>(red F)\<^sup>*\<^sup>* (b1 - b2) y\<close> \<open>red F y z\<close> have "(red F)\<^sup>*\<^sup>* (b1 - b2) z" by simp
-            hence "lookup z t = 0 \<and> higher z t = 0"
-            proof (induct rule: rtranclp_induct)
-              from lookup_minus[of b1 b2 t] higher_minus[of b1 b2 t] c1 c2 h
-                show "lookup (b1 - b2) t = 0 \<and> higher (b1 - b2) t = 0" by simp
-            next
-              fix y0 z0
-              assume "red F y0 z0" and "lookup y0 t = 0 \<and> higher y0 t = 0"
-              hence cy0: "lookup y0 t = 0" and hy0: "higher y0 t = 0" by auto
-              from red_ord[OF \<open>red F y0 z0\<close>] have "z0 \<preceq>p y0" by simp
-              from higher_lookup_equal_0[OF cy0 hy0 this] show "lookup z0 t = 0 \<and> higher z0 t = 0" .
-            qed
-            hence cz: "lookup z t = 0" and hz: "higher z t = 0" by auto
-            show "z + b2 \<prec>p a" unfolding ord_strict_higher
-            proof
-              show "lookup (z + b2) t = 0 \<and> lookup a t \<noteq> 0 \<and> higher (z + b2) t = higher a t"
-              proof (intro conjI)
-                from cz c2 show "lookup (z + b2) t = 0" by (simp add: lookup_add)
-              next
-                from r2 show "lookup a t \<noteq> 0" unfolding red_single_def t_def by simp
-              next
-                from higher_plus[of z b2 t] hz h2 show "higher (z + b2) t = higher a t" by simp
-              qed
-            qed
-          qed (fact)
-        qed
-      qed
-    qed
-  qed
-  thus ?thesis using relation_order.loc_connectivity_equiv_ChurchRosser[OF is_relation_order, of F]
-    unfolding is_Groebner_basis_def by simp
-qed
-
-end (* od_powerprod *)
-
-subsection \<open>Algorithms\<close>
-
-subsubsection \<open>Functions @{term up} and @{term pairs}\<close>
-
-definition up::"(('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list \<Rightarrow> ('a, 'b) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow>
-                (('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list"
-  where "up ps bs h \<equiv> ps @ (map (\<lambda>b. (b, h)) bs)"
-
-lemma in_upI1:
-  assumes "p \<in> set ps"
-  shows "p \<in> set (up ps bs h)"
-using assms unfolding up_def by simp
-
-lemma in_upI2:
-  assumes "p \<in> set bs"
-  shows "(p, h) \<in> set (up ps bs h)"
-using assms unfolding up_def by simp
-
-lemma in_upE:
-  assumes "(a, b) \<in> set (up ps bs h)"
-  obtains "(a, b) \<in> set ps"|"b = h \<and> a \<in> set bs"
-using assms unfolding up_def
-proof -
-  assume a1: "(a, b) \<in> set ps \<Longrightarrow> thesis" and a2: "b = h \<and> a \<in> set bs \<Longrightarrow> thesis"
-    and pair_in: "(a, b) \<in> set (ps @ map (\<lambda>b. (b, h)) bs)"
-  from pair_in have "(a, b) \<in> set ps \<or> (a, b) \<in> set (map (\<lambda>b. (b, h)) bs)" by simp
-  thus thesis
-  proof
-    assume "(a, b) \<in> set ps"
-    show ?thesis by (rule a1, fact)
-  next
-    assume "(a, b) \<in> set (map (\<lambda>b. (b, h)) bs)"
-    from this obtain a0 where "a0 \<in> set bs" and "(a, b) = (a0, h)" by auto
-    hence "a = a0" and "b = h" by simp_all
-    show ?thesis by (rule a2, intro conjI, fact, simp only: \<open>a = a0\<close>, fact)
-  qed
-qed
-
-fun pairs::"('a, 'b) poly_mapping list \<Rightarrow> (('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list" where
-  "pairs [] = []"|
-  "pairs (x # xs) = (map (Pair x) xs) @ (pairs xs)"
-
-lemma in_pairsI:
-  assumes "p \<noteq> q" and "p \<in> set bs" and "q \<in> set bs"
-  obtains "(p, q) \<in> set (pairs bs)"|"(q, p) \<in> set (pairs bs)"
-using assms
-proof (induct rule: pairs.induct)
-  assume "p \<in> set []"
-  thus thesis by simp
-next
-  fix x xs
-  assume IH: "((p, q) \<in> set (pairs xs) \<Longrightarrow> thesis) \<Longrightarrow> ((q, p) \<in> set (pairs xs) \<Longrightarrow> thesis) \<Longrightarrow>
-              p \<noteq> q \<Longrightarrow> p \<in> set xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> thesis"
-    and pq: "(p, q) \<in> set (pairs (x # xs)) \<Longrightarrow> thesis"
-    and qp: "(q, p) \<in> set (pairs (x # xs)) \<Longrightarrow> thesis"
-    and "p \<noteq> q" and p_in: "p \<in> set (x # xs)" and q_in: "q \<in> set (x # xs)"
-  from p_in have p_cases: "p = x \<or> p \<in> set xs" by simp
-  from q_in have q_cases: "q = x \<or> q \<in> set xs" by simp
-  from p_cases show thesis
-  proof
-    assume "p = x"
-    from this q_cases \<open>p \<noteq> q\<close> have "q \<in> set xs" by simp
-    show ?thesis
-    proof (rule pq, simp only: \<open>p = x\<close>)
-      from \<open>q \<in> set xs\<close> have "(x, q) \<in> set (map (Pair x) xs)" by simp
-      thus "(x, q) \<in> set (pairs (x # xs))" by simp
-    qed
-  next
-    assume "p \<in> set xs"
-    from q_cases show ?thesis
-    proof
-      assume "q = x"
-      show ?thesis
-      proof (rule qp, simp only: \<open>q = x\<close>)
-        from \<open>p \<in> set xs\<close> have "(x, p) \<in> set (map (Pair x) xs)" by simp
-        thus "(x, p) \<in> set (pairs (x # xs))" by simp
-      qed
-    next
-      assume "q \<in> set xs"
-      show ?thesis
-      proof (rule IH)
-        assume a: "(p, q) \<in> set (pairs xs)"
-        show thesis
-        proof (rule pq)
-          from a show "(p, q) \<in> set (pairs (x # xs))" by simp
-        qed
-      next
-        assume a: "(q, p) \<in> set (pairs xs)"
-        show thesis
-        proof (rule qp)
-          from a show "(q, p) \<in> set (pairs (x # xs))" by simp
-        qed
-      qed (fact+)
-    qed
-  qed
-qed
-
-lemma in_pairsD1:
-  assumes "(p, q) \<in> set (pairs bs)"
-  shows "p \<in> set bs"
-using assms
-proof (induct rule: pairs.induct)
-  assume "(p, q) \<in> set (pairs [])"
-  thus "p \<in> set []" by simp
-next
-  fix x xs
-  assume IH: "(p, q) \<in> set (pairs xs) \<Longrightarrow> p \<in> set xs"
-    and a: "(p, q) \<in> set (pairs (x # xs))"
-  from a have "(p, q) \<in> set (map (Pair x) xs) \<or> (p, q) \<in> set (pairs xs)" by simp
-  thus "p \<in> set (x # xs)"
-  proof
-    assume "(p, q) \<in> set (map (Pair x) xs)"
-    hence "p = x" by auto
-    thus ?thesis by simp
-  next
-    assume "(p, q) \<in> set (pairs xs)"
-    from IH[OF this] show ?thesis by simp
-  qed
-qed
-
-lemma in_pairsD2:
-  assumes "(p, q) \<in> set (pairs bs)"
-  shows "q \<in> set bs"
-using assms
-proof (induct rule: pairs.induct)
-  assume "(p, q) \<in> set (pairs [])"
-  thus "q \<in> set []" by simp
-next
-  fix x xs
-  assume IH: "(p, q) \<in> set (pairs xs) \<Longrightarrow> q \<in> set xs"
-    and a: "(p, q) \<in> set (pairs (x # xs))"
-  from a have "(p, q) \<in> set (map (Pair x) xs) \<or> (p, q) \<in> set (pairs xs)" by simp
-  thus "q \<in> set (x # xs)"
-  proof
-    assume "(p, q) \<in> set (map (Pair x) xs)"
-    hence "q \<in> set xs" by auto
-    thus ?thesis by simp
-  next
-    assume "(p, q) \<in> set (pairs xs)"
-    from IH[OF this] show ?thesis by simp
-  qed
-qed
-
-subsubsection \<open>Function @{term rd}\<close>
-
-context od_powerprod
-begin
-
-function rd_mult::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('b * 'a)" where
-  "rd_mult p f =
-    (if p = 0 \<or> f = 0 then
-      (0, 0)
-    else
-      (if lp f adds lp p then
-        (lc p / lc f, lp p - lp f)
-      else
-        rd_mult (tail p) f
-      )
-    )"
-by auto
-termination proof -
-  let ?R = "{(x, y). x \<prec>p y} <*lex*> {}"
-  show ?thesis
-  proof
-    show "wf ?R"
-    proof
-      from ord_p_wf show "wf {(x, y). x \<prec>p y}" unfolding wfP_def .
-    qed (simp)
-  next
-    fix p f::"('a, 'b) poly_mapping"
-    assume "\<not> (p = 0 \<or> f = 0)"
-    hence "p \<noteq> 0" by simp
-    from tail_ord_p[OF this] show "((tail p, f), p, f) \<in> ?R" by simp
-  qed
-qed
-
-definition rd::"('a, 'b::field) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping"
-where "rd p f \<equiv> (let m = rd_mult p f in p - monom_mult (fst m) (snd m) f)"
-
-lemma compute_rd_mult[code]:
-  "rd_mult p f =
-    (if p = 0 \<or> f = 0 then
-      (0, 0)
-    else
-      (if (lp f) adds (lp p) then
-        (lc p / lc f, lp p - lp f)
-      else
-        rd_mult (tail p) f
-      )
-    )"
-  by simp
-
-lemma rd_mult_left0:
-  shows "rd_mult 0 f = (0, 0)"
-by simp
-
-lemma rd_mult_right0:
-  shows "rd_mult p 0 = (0, 0)"
-by simp
-
-lemma rd_mult_adds:
-  assumes "p \<noteq> 0" and "f \<noteq> 0" and "lp f adds lp p"
-  shows "rd_mult p f = (lc p / lc f, lp p - lp f)"
-using assms by simp
-
-lemma rd_mult_nadds:
-  assumes "p \<noteq> 0" and "f \<noteq> 0" and "\<not> lp f adds lp p"
-  shows "rd_mult p f = rd_mult (tail p) f"
-using assms by simp
-
-lemma rd_left0:
-  shows "rd 0 f = 0"
-unfolding rd_def by (simp add: rd_mult_left0 Let_def del: rd_mult.simps, rule monom_mult_left0)
-
-lemma rd_right0:
-  shows "rd p 0 = p"
-unfolding rd_def by (simp add: rd_mult_right0 Let_def del: rd_mult.simps, rule monom_mult_left0)
-
-lemma rd_adds:
-  assumes "p \<noteq> 0" and "f \<noteq> 0" and "lp f adds lp p"
-  shows "rd p f = p - monom_mult (lc p / lc f) (lp p - lp f) f"
-unfolding rd_def by (simp add: rd_mult_adds[OF assms] Let_def del: rd_mult.simps)
-
-lemma rd_nadds:
-  assumes "p \<noteq> 0" and "f \<noteq> 0" and "\<not> lp f adds lp p"
-  shows "rd p f = (single (lc p) (lp p)) + (rd (tail p) f)"
-unfolding rd_def
-by (simp add: rd_mult_nadds[OF assms] Let_def del: rd_mult.simps, rule leading_monomial_tail, fact)
-
-lemma rd_red_set:
-  assumes "is_red {f} p"
-  shows "red {f} p (rd p f)"
-using assms
-proof (induct p rule: mpoly_induct)
-  assume "is_red {f} 0"
-  from this irred_0[of "{f}"] show "red {f} 0 (rd 0 f)" by simp
-next
-  fix p
-  assume "p \<noteq> 0" and IH: "is_red {f} (tail p) \<Longrightarrow> red {f} (tail p) (rd (tail p) f)"
-    and red: "is_red {f} p"
-  show "red {f} p (rd p f)"
-  proof (cases "\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p")
-    assume "\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p"
-    hence "f \<noteq> 0" and "lp f adds lp p" by auto
-    have "red {f} p (p - monom_mult (lc p / lc f) (lp p - lp f) f)"
-      by (intro red_indI1, simp, fact+)
-    thus ?thesis using rd_mult_adds[OF \<open>p \<noteq> 0\<close> \<open>f \<noteq> 0\<close> \<open>lp f adds lp p\<close>] unfolding rd_def by simp
-  next
-    assume "\<not> (\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p)"
-    from this is_red_indE[OF red] have r: "is_red {f} (tail p)"
-      and dis: "f = 0 \<or> \<not> (lp f adds lp p)"
-      by auto
-    from is_red_singleton_not_0[OF r] have "f \<noteq> 0" .
-    from dis this have "\<not> (lp f adds lp p)" by simp
-    from rd_nadds[OF \<open>p \<noteq> 0\<close> \<open>f \<noteq> 0\<close> this] red_indI2[OF \<open>p \<noteq> 0\<close> IH[OF r]]
-      show ?thesis by (simp only: rd_def ac_simps)
-  qed
-qed
-
-lemma rd_irred_set:
-  assumes "\<not> is_red {f} p"
-  shows "rd p f = p"
-using assms
-proof (induct p rule: mpoly_induct, simp only: rd_left0)
-  fix p
-  assume "p \<noteq> 0" and IH: "\<not> is_red {f} (tail p) \<Longrightarrow> rd (tail p) f = tail p"
-    and irred: "\<not> is_red {f} p"
-  have "f \<in> {f}" by simp
-  from irred is_red_indI1[OF this _ \<open>p \<noteq> 0\<close>] have dis: "f = 0 \<or> \<not> (lp f adds lp p)" by auto
-  show "rd p f = p"
-  proof (cases "f = 0")
-    case True
-    thus ?thesis by (simp only: rd_right0)
-  next
-    case False
-    hence nadds: "\<not> (lp f adds lp p)" using dis by simp
-    from irred is_red_indI2[OF \<open>p \<noteq> 0\<close>, of "{f}"] have "\<not> is_red {f} (tail p)" by auto
-    from IH[OF this] rd_nadds[OF \<open>p \<noteq> 0\<close> False nadds] leading_monomial_tail[OF \<open>p \<noteq> 0\<close>]
-      show ?thesis by simp
-  qed
-qed
-
-lemma rd_red:
-  assumes "red_single p q f t"
-  shows "\<exists>t. red_single p (rd p f) f t"
-proof -
-  have "is_red {f} p" by (intro is_redI, intro red_setI[of f], simp, fact)
-  from red_setE[OF rd_red_set[OF this]] obtain t where "red_single p (rd p f) f t" by force
-  show ?thesis by (intro exI, fact)
-qed
-
-lemma rd_irred:
-  assumes "\<And>q t. \<not> red_single p q f t"
-  shows "rd p f = p"
-proof (rule rd_irred_set, rule)
-  assume "is_red {f} p"
-  from is_redE[OF this] obtain q where "red {f} p q" .
-  from red_setE[OF this] obtain t where "red_single p q f t" by force
-  from this assms[of q t] show False by simp
-qed
-
-lemma rd_id_set:
-  shows "(rd p f = p) = (\<forall>q. \<not> red {f} p q)"
-proof
-  assume "rd p f = p"
-  show "\<forall>q. \<not> red {f} p q"
-  proof (intro allI)
-    fix q
-    show "\<not> red {f} p q"
-    proof
-      assume "red {f} p q"
-      have "is_red {f} p" by (intro is_redI, fact)
-      from rd_red_set[OF this] \<open>rd p f = p\<close> have "red {f} p p" by simp
-      from red_ord[OF this] show False by simp
-    qed
-  qed
-next
-  assume a: "\<forall>q. \<not> red {f} p q"
-  show "rd p f = p"
-  proof (intro rd_irred_set, intro notI)
-    assume "is_red {f} p"
-    from is_redE[OF this] obtain q where "red {f} p q" .
-    from this a show False by simp
-  qed
-qed
-
-lemma rd_id:
-  shows "(rd p f = p) = (\<forall>q t. \<not> red_single p q f t)"
-proof
-  assume "rd p f = p"
-  show "\<forall>q t. \<not> red_single p q f t"
-  proof (intro allI)
-    fix q t
-    show "\<not> red_single p q f t"
-    proof
-      assume "red_single p q f t"
-      from rd_red[OF this] obtain s where "red_single p (rd p f) f s" ..
-      hence "red_single p p f s" using \<open>rd p f = p\<close> by simp
-      from red_single_ord[OF this] show False by simp
-    qed
-  qed
-next
-  assume a: "\<forall>q t. \<not> red_single p q f t"
-  show "rd p f = p"
-  proof (intro rd_irred, intro notI)
-    fix q t
-    assume "red_single p q f t"
-    from this a show False by simp
-  qed
-qed
-
-lemma rd_less_eq:
-  shows "(rd p f) \<preceq>p p"
-proof (cases "\<forall>q. \<not> red {f} p q")
-  case True
-  hence "rd p f = p" using rd_id_set[of p f] by simp
-  thus ?thesis by simp
-next
-  case False
-  hence "\<exists>q. red {f} p q" by simp
-  from this obtain q where "red {f} p q" by auto
-  from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
-  from rd_red[OF this] obtain s where "red_single p (rd p f) f s" ..
-  from red_single_ord[OF this] show ?thesis by simp
-qed
-
-lemma rd_lessI:
-  assumes "red_single p q f t"
-  shows "(rd p f) \<prec>p p"
-proof -
-  from rd_red[OF assms] obtain s where "red_single p (rd p f) f s" ..
-  from red_single_ord[OF this] show ?thesis .
-qed
-
-lemma rd_lessE:
-  assumes "(rd p f) \<prec>p p"
-  obtains t where "red_single p (rd p f) f t"
-proof -
-  from assms have "(rd p f) \<noteq> p" by simp
-  hence "\<exists>q t. red_single p q f t" using rd_id[of p f] by simp
-  from this obtain q s where "red_single p q f s" by auto
-  from rd_red[OF this] obtain t where "red_single p (rd p f) f t" ..
-  thus ?thesis ..
-qed
-
-subsubsection \<open>Functions @{term rd_list} and @{term trd}\<close>
-
-primrec rd_list::"('a, 'b::field) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping" where
-  rd_list_base: "rd_list Nil p = p"|
-  rd_list_rec: "rd_list (f # fs) p = (let q = rd p f in (if q = p then rd_list fs p else q))"
-
-lemma rd_list_red:
-  assumes "is_red (set fs) p"
-  shows "red (set fs) p (rd_list fs p)"
-proof -
-  from assms obtain q where "red (set fs) p q" unfolding is_red_alt ..
-  thus ?thesis
-  proof (induct fs)
-    case Nil
-    from Nil have "red {} p q" by simp
-    from red_setE[OF this] obtain f t where "f \<in> {}" and "red_single p q f t" .
-    from \<open>f \<in> {}\<close> show "red (set []) p (rd_list [] p)" ..
-  next
-    case Cons
-    fix f fs
-    assume IH: "red (set fs) p q \<Longrightarrow> red (set fs) p (rd_list fs p)" and r: "red (set (f # fs)) p q"
-    from r have "red (insert f (set fs)) p q" by simp
-    from red_setE[OF this] obtain g t where
-      g: "g \<in> (insert f (set fs))" and red_g: "red_single p q g t" .
-    from g have g_cases: "g = f \<or> g \<in> set fs" by simp
-    show "red (set (f # fs)) p (rd_list (f # fs) p)" unfolding rd_list_rec
-    proof (cases "rd p f = p")
-      case True
-      hence irred: "\<forall>q t. \<not> red_single p q f t" using rd_id[of p f] by simp
-      from g_cases have "g \<in> set fs"
-      proof (rule, simp_all)
-        assume "g = f"
-        from this irred[rule_format, of q t] red_g show "f \<in> set fs" by simp
-      qed
-      from red_unionI2[OF IH[OF red_setI[OF this red_g]], of "{f}"] True
-        show "red (set (f # fs)) p (let q = rd p f in if q = p then rd_list fs p else q)" by simp
+      thus ?thesis by simp
     next
       case False
-      from this rd_id[of p f] have "\<exists>q t. red_single p q f t" by simp
-      from this obtain q0 t0 where "red_single p q0 f t0" by auto
-      have "red ({f} \<union> (set fs)) p (rd p f)"
-        by (rule red_unionI1, simp only: red_singleton, rule rd_red[OF \<open>red_single p q0 f t0\<close>])
-      with False show "red (set (f # fs)) p (let q = rd p f in if q = p then rd_list fs p else q)"
-        by simp
+      from major[OF \<open>p \<in> (pideal A)\<close> False] obtain q where redpq: "red B p q" unfolding is_red_alt ..
+      with assms(1) B \<open>p \<in> dgrad_p_set d n\<close> have "q \<in> dgrad_p_set d n" by (rule dgrad_p_set_closed_red)
+      moreover from redpq have "q \<prec>p p" by (rule red_ord)
+      moreover from \<open>pideal B \<subseteq> pideal A\<close> \<open>p \<in> pideal A\<close> \<open>red B p q\<close> have "q \<in> pideal A"
+        by (rule pideal_closed_red)
+      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule step(2))
+      show ?thesis by (rule converse_rtranclp_into_rtranclp, rule redpq, fact)
     qed
   qed
 qed
 
-lemma rd_list_fixpointI:
-  assumes "\<not> is_red (set fs) p"
-  shows "(rd_list fs p) = p"
+lemma GB_implies_unique_nf_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G"
+  shows "\<exists>! h. (red G)\<^sup>*\<^sup>* f h \<and> \<not> is_red G h"
 proof -
-  from assms have "\<And>q. \<not> red (set fs) p q" unfolding is_red_alt by simp
-  thus ?thesis
-  proof (induct fs, simp)
-    fix f fs
-    assume IH: "(\<And>q. \<not> red (set fs) p q) \<Longrightarrow> rd_list fs p = p"
-      and irred: "\<And>q. \<not> red (set (f # fs)) p q"
-    from irred have "\<And>q. \<not> red ({f} \<union> (set fs)) p q" by simp
-    hence "\<And>q. \<not> ((red {f} p q) \<or> (red (set fs) p q))" using red_union[of "{f}" "set fs" p] by simp
-    hence irred1: "\<And>q. \<not> red {f} p q" and irred2: "\<And>q. \<not> red (set fs) p q" by simp_all
-    from irred1 have eq: "(rd p f) = p" unfolding rd_id_set ..
-    from IH[OF irred2] eq show "rd_list (f # fs) p = p" unfolding rd_list_rec by simp
-  qed
-qed
-
-lemma rd_list_fixpointD:
-  assumes "(rd_list fs p) = p"
-  shows "\<not> is_red (set fs) p"
-proof
-  assume "is_red (set fs) p"
-  from red_ord[OF rd_list_red[OF this]] assms show False by simp
-qed
-
-lemma rd_list_less_eq:
-  shows "(rd_list fs p) \<preceq>p p"
-proof (cases "is_red (set fs) p")
-  case True
-  from red_ord[OF rd_list_red[OF this]] show ?thesis by simp
-next
-  case False
-  from rd_list_fixpointI[OF this] show ?thesis by simp
-qed
-
-lemma rd_list_in_pideal_ind:
-  assumes "set fs \<subseteq> bs"
-  shows "p - (rd_list fs p) \<in> pideal bs"
-using assms
-proof (induct fs)
-  from pideal_0 show "p - rd_list [] p \<in> pideal bs" by simp
-next
-  fix a fs
-  assume IH: "set fs \<subseteq> bs \<Longrightarrow> p - rd_list fs p \<in> pideal bs" and a: "set (a # fs) \<subseteq> bs"
-  from a have "a \<in> bs" by simp
-  from a have "set fs \<subseteq> bs" by simp
-  show "p - rd_list (a # fs) p \<in> pideal bs" unfolding rd_list_rec Let_def
-  proof (simp add: if_splits, rule, intro impI)
-    assume "rd p a = p"
-    from IH[OF \<open>set fs \<subseteq> bs\<close>] show "p - rd_list fs p \<in> pideal bs" .
+  from assms(1) assms(2) have "wfP (red G)\<inverse>\<inverse>" by (rule red_wf_dgrad_p_set)
+  then obtain h where ftoh: "(red G)\<^sup>*\<^sup>* f h" and irredh: "relation.is_final (red G) h"
+    by (rule relation.wf_imp_nf_ex)
+  show ?thesis
+  proof
+    from ftoh and irredh show "(red G)\<^sup>*\<^sup>* f h \<and> \<not> is_red G h" by (simp add: is_red_def)
   next
-    show "rd p a \<noteq> p \<longrightarrow> p - rd p a \<in> pideal bs"
-    proof
-      assume "rd p a \<noteq> p"
-      hence "rd p a \<prec>p p" using rd_less_eq[of p a] by simp
-      from rd_lessE[OF this] obtain t where "red_single p (rd p a) a t" .
-      hence eq: "p - rd p a = monom_mult (lookup p (t + lp a) / lc a) t a"
-        unfolding red_single_def by simp
-      show "p - rd p a \<in> pideal bs" unfolding eq by (rule monom_mult_in_pideal, rule \<open>a \<in> bs\<close>)
-    qed
+    fix h'
+    assume "(red G)\<^sup>*\<^sup>* f h' \<and> \<not> is_red G h'"
+    hence ftoh': "(red G)\<^sup>*\<^sup>* f h'" and irredh': "relation.is_final (red G) h'" by (simp_all add: is_red_def)
+    show "h' = h"
+    proof (rule relation.ChurchRosser_unique_final)
+      from isGB show "relation.is_ChurchRosser (red G)" by (simp only: is_Groebner_basis_def)
+    qed fact+
   qed
 qed
 
-lemma rd_list_in_pideal:
-  shows "p - (rd_list fs p) \<in> pideal (set fs)"
-by (rule rd_list_in_pideal_ind, simp)
-
-function trd::"('a, 'b::field) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping" where
-  "trd fs p = (let q = rd_list fs p in (if q = p then p else trd fs q))"
-by (pat_completeness, auto)
-termination proof -
-  let ?R = "(measure length) <*lex*> {(x, y). x \<prec>p y}"
-  show ?thesis proof
-    show "wf ?R"
-    proof (rule, rule)
-      from ord_p_wf show "wf {(x, y). x \<prec>p y}" unfolding wfP_def .
-    qed
-  next
-    fix p fs and q::"('a, 'b) poly_mapping"
-    assume q: "q = rd_list fs p" and neq: "q \<noteq> p"
-    show "((fs, q), (fs, p)) \<in> ?R" unfolding in_lex_prod
-    proof (rule disjI2, simp)
-      from rd_list_less_eq[of fs p] q neq show "q \<prec>p p" by simp
-    qed
-  qed
-qed
-
-lemma trd_induct:
-  assumes base: "\<And>fs p. rd_list fs p = p \<Longrightarrow> P fs p p"
-    and ind: "\<And>fs p. rd_list fs p \<noteq> p \<Longrightarrow> P fs (rd_list fs p) (trd fs (rd_list fs p)) \<Longrightarrow>
-              P fs p (trd fs (rd_list fs p))"
-  shows "P fs p (trd fs p)"
-proof (induct p rule: trd.induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  let ?x = "rd_list fs p"
-  assume "\<And>x. x = rd_list fs p \<Longrightarrow> x \<noteq> p \<Longrightarrow> P fs x (trd fs x)"
-  from this[of ?x] have imp: "?x \<noteq> p \<Longrightarrow> P fs ?x (trd fs ?x)" by simp
-  show "P fs p (trd fs p)"
-  proof (cases "?x = p")
+lemma translation_property':
+  assumes "p \<noteq> 0" and red_p_0: "(red F)\<^sup>*\<^sup>* p 0"
+  shows "is_red F (p + q) \<or> is_red F q"
+proof (rule disjCI)
+  assume not_red: "\<not> is_red F q"
+  from red_p_0 \<open>p \<noteq> 0\<close> obtain f where "f \<in> F" and "f \<noteq> 0" and lp_adds: "lp f adds lp p"
+    by (rule zero_reducibility_implies_lp_divisibility)
+  show "is_red F (p + q)"
+  proof (cases "q = 0")
     case True
-    from base[OF True] True show ?thesis by simp
+    with is_red_indI1[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> \<open>p \<noteq> 0\<close> lp_adds] show ?thesis by simp
   next
     case False
-    hence eq: "trd fs p = trd fs ?x" by (simp del: trd.simps add: trd.simps[of fs p])
-    from ind[OF False imp[OF False]] eq show ?thesis by simp
+    from not_red is_red_addsI[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> _ lp_adds, of q] have "\<not> lp p \<in> (keys q)" by blast
+    hence "lookup q (lp p) = 0" by simp
+    with lp_in_keys[OF \<open>p \<noteq> 0\<close>] have "lp p \<in> (keys (p + q))" unfolding in_keys_iff by (simp add: lookup_add)
+    from is_red_addsI[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> this lp_adds] show ?thesis .
   qed
 qed
+  
+lemma translation_property:
+  assumes "p \<noteq> q" and red_0: "(red F)\<^sup>*\<^sup>* (p - q) 0"
+  shows "is_red F p \<or> is_red F q"
+proof -
+  from \<open>p \<noteq> q\<close> have "p - q \<noteq> 0" by simp
+  from translation_property'[OF this red_0, of q] show ?thesis by simp
+qed
 
-lemma trd_red_rtrancl:
-  shows "(red (set fs))\<^sup>*\<^sup>* p (trd fs p)"
-proof (induct rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume "rd_list fs p = p"
-  show "(red (set fs))\<^sup>*\<^sup>* p p" ..
-next
-  fix fs and p::"('a, 'b) poly_mapping"
-  let ?x = "rd_list fs p"
-  assume "?x \<noteq> p" and "(red (set fs))\<^sup>*\<^sup>* ?x (trd fs ?x)"
-  show "(red (set fs))\<^sup>*\<^sup>* p (trd fs ?x)"
-  proof (rule converse_rtranclp_into_rtranclp)
-    from \<open>?x \<noteq> p\<close> rd_list_fixpointI[of fs p] have "is_red (set fs) p" by auto
-    from rd_list_red[OF this] show "red (set fs) p ?x" .
+lemma weak_GB_is_strong_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "\<And>f. f \<in> pideal G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> (red G)\<^sup>*\<^sup>* f 0"
+  shows "is_Groebner_basis G"
+  using assms(1, 2)
+proof (rule Buchberger_criterion_dgrad_p_set)
+  fix p q
+  assume "p \<in> G" and "q \<in> G"
+  show "(red G)\<^sup>*\<^sup>* (spoly p q) 0"
+  proof (rule assms(3))
+    show "spoly p q \<in> pideal G" unfolding spoly_def
+      by (rule pideal_closed_minus, (rule pideal_closed_monom_mult, rule generator_in_pideal, fact)+)
   next
-    show "(red (set fs))\<^sup>*\<^sup>* ?x (trd fs ?x)" by fact
+    note assms(1)
+    moreover from \<open>p \<in> G\<close> assms(2) have "p \<in> dgrad_p_set d m" ..
+    moreover from \<open>q \<in> G\<close> assms(2) have "q \<in> dgrad_p_set d m" ..
+    ultimately show "spoly p q \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_spoly)
   qed
 qed
 
-lemma trd_irred:
-  shows "\<not> is_red (set fs) (trd fs p)"
-proof (induct rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume "rd_list fs p = p"
-  from rd_list_fixpointD[OF this] show "\<not> is_red (set fs) p" .
-next
-  fix fs and p::"('a, 'b) poly_mapping"
-  let ?x = "rd_list fs p"
-  assume "\<not> is_red (set fs) (trd fs ?x)"
-  show "\<not> is_red (set fs) (trd fs ?x)" by fact
+lemma weak_GB_is_strong_GB:
+  assumes "\<And>f. f \<in> (pideal G) \<Longrightarrow> (red G)\<^sup>*\<^sup>* f 0"
+  shows "is_Groebner_basis G"
+  unfolding is_Groebner_basis_def
+proof (rule relation.confluence_implies_ChurchRosser,
+      simp add: relation.is_confluent_def relation.is_confluent_on_def, intro allI impI, erule conjE)
+  fix f p q
+  assume "(red G)\<^sup>*\<^sup>* f p" and "(red G)\<^sup>*\<^sup>* f q"
+  hence "relation.srtc (red G) p q"
+    by (meson relation.rtc_implies_srtc relation.srtc_symmetric relation.srtc_transitive)
+  hence "p - q \<in> pideal G" by (rule srtc_in_pideal)
+  hence "(red G)\<^sup>*\<^sup>* (p - q) 0" by (rule assms)
+  thus "relation.cs (red G) p q" by (rule red_diff_rtrancl_cs)
 qed
 
-lemma trd_in_pideal:
-  shows "(p - (trd fs p)) \<in> pideal (set fs)"
-proof (induct p rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  from pideal_0 show "p - p \<in> pideal (set fs)" by simp
-next
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume IH: "(rd_list fs p - trd fs (rd_list fs p)) \<in> pideal (set fs)"
-  from pideal_closed_plus[OF IH rd_list_in_pideal[of p fs]]
-    show "p - trd fs (rd_list fs p) \<in> pideal (set fs)" by simp
+corollary GB_alt_1_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pideal G. f \<in> dgrad_p_set d m \<longrightarrow> (red G)\<^sup>*\<^sup>* f 0)"
+  using weak_GB_is_strong_GB_dgrad_p_set[OF assms] GB_imp_zero_reducibility by blast
+
+corollary GB_alt_1: "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pideal G. (red G)\<^sup>*\<^sup>* f 0)"
+  using weak_GB_is_strong_GB GB_imp_zero_reducibility by blast
+
+lemma isGB_I_is_red:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "\<And>f. f \<in> pideal G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> is_red G f"
+  shows "is_Groebner_basis G"
+  unfolding GB_alt_1_dgrad_p_set[OF assms(1, 2)]
+proof (intro ballI impI)
+  fix f
+  assume "f \<in> pideal G" and "f \<in> dgrad_p_set d m"
+  with assms(1, 2) subset_refl assms(3) show "(red G)\<^sup>*\<^sup>* f 0"
+    by (rule is_red_implies_0_red_dgrad_p_set)
 qed
 
-lemma pideal_closed_trd:
-  assumes "p \<in> pideal (set fs)"
-  shows "(trd fs p) \<in> pideal (set fs)"
-using assms
-proof (induct rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume "p \<in> pideal (set fs)"
-  thus "p \<in> pideal (set fs)" .
+lemma GB_alt_2_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pideal G. f \<noteq> 0 \<longrightarrow> is_red G f)"
+proof
+  assume "is_Groebner_basis G"
+  show "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> is_red G f"
+  proof (intro ballI, intro impI)
+    fix f
+    assume "f \<in> (pideal G)" and "f \<noteq> 0"
+    show "is_red G f" by (rule GB_imp_reducibility, fact+)
+  qed
 next
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume IH: "rd_list fs p \<in> pideal (set fs) \<Longrightarrow> trd fs (rd_list fs p) \<in> pideal (set fs)"
-    and p_in: "p \<in> pideal (set fs)"
-  show "trd fs (rd_list fs p) \<in> pideal (set fs)"
-  proof (rule IH)
-    from pideal_closed_minus[OF p_in rd_list_in_pideal[of p fs]]
-      show "rd_list fs p \<in> pideal (set fs)" by simp
+  assume a2: "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> is_red G f"
+  show "is_Groebner_basis G" unfolding GB_alt_1
+  proof
+    fix f
+    assume "f \<in> pideal G"
+    from assms show "(red G)\<^sup>*\<^sup>* f 0"
+    proof (rule is_red_implies_0_red_dgrad_p_set')
+      fix q
+      assume "q \<in> pideal G" and "q \<noteq> 0"
+      thus "is_red G q" by (rule a2[rule_format])
+    qed (fact subset_refl, fact)
+  qed
+qed
+  
+lemma GB_adds_lp:
+  assumes "is_Groebner_basis G" and "f \<in> pideal G" and "f \<noteq> 0"
+  obtains g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f"
+proof -
+  from assms(1) assms(2) have "(red G)\<^sup>*\<^sup>* f 0" by (rule GB_imp_zero_reducibility)
+  show ?thesis by (rule zero_reducibility_implies_lp_divisibility, fact+)
+qed
+
+lemma isGB_I_adds_lp:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "\<And>f. f \<in> pideal G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lp g adds lp f)"
+  shows "is_Groebner_basis G"
+  using assms(1, 2)
+proof (rule isGB_I_is_red)
+  fix f
+  assume "f \<in> pideal G" and "f \<in> dgrad_p_set d m" and "f \<noteq> 0"
+  hence "(\<exists>g \<in> G. g \<noteq> 0 \<and> lp g adds lp f)" by (rule assms(3))
+  then obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by blast
+  thus "is_red G f" using \<open>f \<noteq> 0\<close> is_red_indI1 by blast
+qed
+
+lemma GB_alt_3_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pideal G. f \<noteq> 0 \<longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lp g adds lp f))"
+    (is "?L \<longleftrightarrow> ?R")
+proof
+  assume ?L
+  show ?R
+  proof (intro ballI impI)
+    fix f
+    assume "f \<in> pideal G" and "f \<noteq> 0"
+    with \<open>?L\<close> obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by (rule GB_adds_lp)
+    thus "\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f" by blast
+  qed
+next
+  assume ?R
+  show ?L unfolding GB_alt_2_dgrad_p_set[OF assms]
+  proof (intro ballI impI)
+    fix f
+    assume "f \<in> pideal G" and "f \<noteq> 0"
+    with \<open>?R\<close> have "(\<exists>g \<in> G. g \<noteq> 0 \<and> lp g adds lp f)" by blast
+    then obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by blast
+    thus "is_red G f" using \<open>f \<noteq> 0\<close> is_red_indI1 by blast
+  qed
+qed
+  
+lemma GB_insert:
+  assumes "is_Groebner_basis G" and "f \<in> pideal G"
+  shows "is_Groebner_basis (insert f G)"
+  using assms by (metis GB_alt_1 GB_imp_zero_reducibility pideal_insert red_rtrancl_subset subset_insertI)
+
+lemma GB_subset:
+  assumes "is_Groebner_basis G" and "G \<subseteq> G'" and "pideal G' = pideal G"
+  shows "is_Groebner_basis G'"
+  using assms(1) unfolding GB_alt_1 using assms(2) assms(3) red_rtrancl_subset by blast
+
+lemmas is_red_implies_0_red_finite = is_red_implies_0_red_dgrad_p_set'[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_implies_unique_nf_finite = GB_implies_unique_nf_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_alt_2_finite = GB_alt_2_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_alt_3_finite = GB_alt_3_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+
+subsection \<open>An Inconstructive Proof of the Existence of Finite Gr\"obner Bases\<close>
+
+lemma ex_finite_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  obtains G where "finite G" and "is_Groebner_basis G" and "pideal G = pideal F"
+proof -
+  define S where "S = {lp f | f. f \<in> pideal F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0}"
+  have "S \<subseteq> dgrad_set d m"
+  proof
+    fix s
+    assume "s \<in> S"
+    then obtain f where "f \<in> pideal F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0" and "s = lp f"
+      unfolding S_def by blast
+    from this(1) have "f \<in> dgrad_p_set d m" and "f \<noteq> 0" by simp_all
+    from this(2) have "s \<in> keys f" unfolding \<open>s = lp f\<close> by (rule lp_in_keys)
+    with \<open>f \<in> dgrad_p_set d m\<close> have "d s \<le> m" by (rule dgrad_p_setD)
+    thus "s \<in> dgrad_set d m" by (simp add: dgrad_set_def)
+  qed
+  with assms(1) obtain T where "finite T" and "T \<subseteq> S" and *: "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
+    by (rule ex_finite_adds, blast)
+  define crit where "crit = (\<lambda>t f. f \<in> pideal F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0 \<and> t = lp f)"
+  have ex_crit: "t \<in> T \<Longrightarrow> (\<exists>f. crit t f)" for t
+  proof -
+    assume "t \<in> T"
+    from this \<open>T \<subseteq> S\<close> have "t \<in> S" ..
+    then obtain f where "f \<in> pideal F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0" and "t = lp f"
+      unfolding S_def by blast
+    thus "\<exists>f. crit t f" unfolding crit_def by blast
+  qed
+  define G where "G = (\<lambda>t. SOME g. crit t g) ` T"
+  have G: "g \<in> G \<Longrightarrow> g \<in> pideal F \<and> g \<in> dgrad_p_set d m \<and> g \<noteq> 0" for g
+  proof -
+    assume "g \<in> G"
+    then obtain t where "t \<in> T" and g: "g = (SOME h. crit t h)" unfolding G_def ..
+    have "crit t g" unfolding g by (rule someI_ex, rule ex_crit, fact)
+    thus "g \<in> pideal F \<and> g \<in> dgrad_p_set d m \<and> g \<noteq> 0" by (simp add: crit_def)
+  qed
+  have **: "t \<in> T \<Longrightarrow> (\<exists>g\<in>G. lp g = t)" for t
+  proof -
+    assume "t \<in> T"
+    define g where "g = (SOME h. crit t h)"
+    from \<open>t \<in> T\<close> have "g \<in> G" unfolding g_def G_def by blast
+    thus "\<exists>g\<in>G. lp g = t"
+    proof
+      have "crit t g" unfolding g_def by (rule someI_ex, rule ex_crit, fact)
+      thus "lp g = t" by (simp add: crit_def)
+    qed
+  qed
+  have adds: "f \<in> pideal F \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)" for f
+  proof -
+    assume "f \<in> pideal F" and "f \<in> dgrad_p_set d m" and "f \<noteq> 0"
+    hence "lp f \<in> S" unfolding S_def by blast
+    hence "\<exists>t\<in>T. t adds (lp f)" by (rule *)
+    then obtain t where "t \<in> T" and "t adds (lp f)" ..
+    from this(1) have "\<exists>g\<in>G. lp g = t" by (rule **)
+    then obtain g where "g \<in> G" and "lp g = t" ..
+    show "\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f"
+    proof (intro bexI conjI)
+      from G[OF \<open>g \<in> G\<close>] show "g \<noteq> 0" by (elim conjE)
+    next
+      from \<open>t adds lp f\<close> show "lp g adds lp f" by (simp only: \<open>lp g = t\<close>)
+    qed fact
+  qed
+  have sub1: "pideal G \<subseteq> pideal F"
+  proof (rule pideal_subset_pidealI, rule)
+    fix g
+    assume "g \<in> G"
+    from G[OF this] show "g \<in> pideal F" ..
+  qed
+  have sub2: "G \<subseteq> dgrad_p_set d m"
+  proof
+    fix g
+    assume "g \<in> G"
+    from G[OF this] show "g \<in> dgrad_p_set d m" by (elim conjE)
+  qed
+  show ?thesis
+  proof
+    from \<open>finite T\<close> show "finite G" unfolding G_def ..
+  next
+    from assms(1) sub2 adds show "is_Groebner_basis G"
+    proof (rule isGB_I_adds_lp)
+      fix f
+      assume "f \<in> pideal G"
+      from this sub1 show "f \<in> pideal F" ..
+    qed
+  next
+    show "pideal G = pideal F"
+    proof
+      show "pideal F \<subseteq> pideal G"
+      proof (rule pideal_subset_pidealI, rule)
+        fix f
+        assume "f \<in> F"
+        hence "f \<in> pideal F" by (rule generator_in_pideal)
+        from \<open>f \<in> F\<close> assms(2) have "f \<in> dgrad_p_set d m" ..
+        with assms(1) sub2 sub1 _ \<open>f \<in> pideal F\<close> have "(red G)\<^sup>*\<^sup>* f 0"
+        proof (rule is_red_implies_0_red_dgrad_p_set)
+          fix q
+          assume "q \<in> pideal F" and "q \<in> dgrad_p_set d m" and "q \<noteq> 0"
+          hence "(\<exists>g \<in> G. g \<noteq> 0 \<and> lp g adds lp q)" by (rule adds)
+          then obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp q" by blast
+          thus "is_red G q" using \<open>q \<noteq> 0\<close> is_red_indI1 by blast
+        qed
+        thus "f \<in> pideal G" by (rule red_rtranclp_0_in_pideal)
+      qed
+    qed fact
   qed
 qed
 
-subsubsection \<open>Relation @{term red_supset}\<close>
+text \<open>The preceding lemma justifies the following definition.\<close>
+
+definition some_GB :: "('a \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::field) set"
+  where "some_GB F = (SOME G. finite G \<and> is_Groebner_basis G \<and> pideal G = pideal F)"
+
+lemma some_GB_props_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  shows "finite (some_GB F) \<and> is_Groebner_basis (some_GB F) \<and> pideal (some_GB F) = pideal F"
+proof -
+  from assms obtain G where "finite G" and "is_Groebner_basis G" and "pideal G = pideal F"
+    by (rule ex_finite_GB_dgrad_p_set)
+  hence "finite G \<and> is_Groebner_basis G \<and> pideal G = pideal F" by simp
+  thus "finite (some_GB F) \<and> is_Groebner_basis (some_GB F) \<and> pideal (some_GB F) = pideal F"
+    unfolding some_GB_def by (rule someI)
+qed
+
+lemma finite_some_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  shows "finite (some_GB F)"
+  using some_GB_props_dgrad_p_set[OF assms] ..
+
+lemma some_GB_isGB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  shows "is_Groebner_basis (some_GB F)"
+  using some_GB_props_dgrad_p_set[OF assms] by (elim conjE)
+
+lemma some_GB_pideal_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  shows "pideal (some_GB F) = pideal F"
+  using some_GB_props_dgrad_p_set[OF assms] by (elim conjE)
+
+lemmas finite_some_GB_finite = finite_some_GB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas some_GB_isGB_finite = some_GB_isGB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas some_GB_pideal_finite = some_GB_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+
+text \<open>Theory \<open>Buchberger_Algorithm\<close> implements an algorithm for effectively computing Gr\"obner bases.\<close>
+
+subsection \<open>Relation @{term red_supset}\<close>
 
 text \<open>The following relation is needed for proving the termination of Buchberger's algorithm (i.e.
   function @{term gbaux}).\<close>
 
-definition red_supset::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set \<Rightarrow> bool" (infixl "\<sqsupset>p" 50) where
-  "red_supset as bs \<equiv> (\<exists>p. is_red as p \<and> \<not> is_red bs p) \<and> (\<forall>p. is_red bs p \<longrightarrow> is_red as p)"
+definition red_supset::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set \<Rightarrow> bool" (infixl "\<sqsupset>p" 50)
+  where "red_supset A B \<equiv> (\<exists>p. is_red A p \<and> \<not> is_red B p) \<and> (\<forall>p. is_red B p \<longrightarrow> is_red A p)"
 
-lemma red_supsetD1:
-  assumes "as \<sqsupset>p bs"
-  obtains p where "is_red as p" and "\<not> is_red bs p"
+lemma red_supsetE:
+  assumes "A \<sqsupset>p B"
+  obtains p where "is_red A p" and "\<not> is_red B p"
 proof -
-  from assms have "\<exists>p. is_red as p \<and> \<not> is_red bs p" unfolding red_supset_def by simp
-  from this obtain p where "is_red as p" and " \<not> is_red bs p" by auto
+  from assms have "\<exists>p. is_red A p \<and> \<not> is_red B p" by (simp add: red_supset_def)
+  from this obtain p where "is_red A p" and " \<not> is_red B p" by auto
   thus ?thesis ..
 qed
 
-lemma red_supsetD2:
-  assumes a1: "as \<sqsupset>p bs" and a2: "is_red bs p"
-  shows "is_red as p"
+lemma red_supsetD:
+  assumes a1: "A \<sqsupset>p B" and a2: "is_red B p"
+  shows "is_red A p"
 proof -
-  from assms have "\<forall>p. is_red bs p \<longrightarrow> is_red as p" unfolding red_supset_def by simp
-  hence "is_red bs p \<longrightarrow> is_red as p" ..
+  from assms have "\<forall>p. is_red B p \<longrightarrow> is_red A p" by (simp add: red_supset_def)
+  hence "is_red B p \<longrightarrow> is_red A p" ..
   from a2 this show ?thesis by simp
 qed
 
-lemma red_supsetI[intro]:
-  assumes "\<And>q. is_red bs q \<Longrightarrow> is_red as q" and "is_red as p" and "\<not> is_red bs p"
-  shows "as \<sqsupset>p bs"
-unfolding red_supset_def
-proof (intro conjI, intro exI)
-  from assms show "is_red as p \<and> \<not> is_red bs p" by simp
-next
-  show "\<forall>p. is_red bs p \<longrightarrow> is_red as p"
-  proof (intro allI, intro impI)
-    fix q
-    assume "is_red bs q"
-    from assms this show "is_red as q" by simp
-  qed
-qed
+lemma red_supsetI [intro]:
+  assumes "\<And>q. is_red B q \<Longrightarrow> is_red A q" and "is_red A p" and "\<not> is_red B p"
+  shows "A \<sqsupset>p B"
+  unfolding red_supset_def using assms by auto
 
 lemma red_supset_insertI:
-  assumes "x \<noteq> 0" and "\<not> is_red as x"
-  shows "(insert x as) \<sqsupset>p as"
+  assumes "x \<noteq> 0" and "\<not> is_red A x"
+  shows "(insert x A) \<sqsupset>p A"
 proof
   fix q
-  assume "is_red as q"
-  thus "is_red (insert x as) q" unfolding is_red_alt
+  assume "is_red A q"
+  thus "is_red (insert x A) q" unfolding is_red_alt
   proof
     fix a
-    assume "red as q a"
-    from red_unionI2[OF this, of "{x}"] have "red (insert x as) q a" by simp
-    show "\<exists>qa. red (insert x as) q qa"
+    assume "red A q a"
+    from red_unionI2[OF this, of "{x}"] have "red (insert x A) q a" by simp
+    show "\<exists>qa. red (insert x A) q qa"
     proof
-      show "red (insert x as) q a" by fact
+      show "red (insert x A) q a" by fact
     qed
   qed
 next
-  show "is_red (insert x as) x" unfolding is_red_alt
+  show "is_red (insert x A) x" unfolding is_red_alt
   proof
-    from red_unionI1[OF red_self[OF \<open>x \<noteq> 0\<close>], of as] show "red (insert x as) x 0" by simp
+    from red_unionI1[OF red_self[OF \<open>x \<noteq> 0\<close>], of A] show "red (insert x A) x 0" by simp
   qed
 next
-  show "\<not> is_red as x" by fact
+  show "\<not> is_red A x" by fact
 qed
 
 lemma red_supset_transitive:
   assumes "A \<sqsupset>p B" and "B \<sqsupset>p C"
   shows "A \<sqsupset>p C"
 proof -
-  from red_supsetD1[OF assms(2)] obtain p where "is_red B p" and "\<not> is_red C p" .
+  from assms(2) obtain p where "is_red B p" and "\<not> is_red C p" by (rule red_supsetE)
   show ?thesis
   proof
     fix q
     assume "is_red C q"
-    from red_supsetD2[OF assms(2) this] have "is_red B q" .
-    from red_supsetD2[OF assms(1) this] show "is_red A q" .
+    with assms(2) have "is_red B q" by (rule red_supsetD)
+    with assms(1) show "is_red A q" by (rule red_supsetD)
   next
-    from red_supsetD2[OF assms(1) \<open>is_red B p\<close>] show "is_red A p" .
-  next
-    show "\<not> is_red C p" by fact
-  qed
+    from assms(1) \<open>is_red B p\<close> show "is_red A p" by (rule red_supsetD)
+  qed fact
 qed
 
-lemma red_supset_wf:
-  shows "wfP (\<sqsupset>p)"
-proof (rule wfP_chain)
-  show "\<not>(\<exists>f::(nat \<Rightarrow> (('a, 'b) poly_mapping set)). \<forall>i. f (Suc i) \<sqsupset>p f i)"
-  proof (intro notI, erule exE)
-    fix f::"nat \<Rightarrow> (('a, 'b) poly_mapping set)"
-    assume a1: "\<forall>i. f (Suc i) \<sqsupset>p f i"
-    have a1_trans: "\<And>i j. i < j \<longrightarrow> f j \<sqsupset>p f i"
+lemma red_supset_wf_on:
+  assumes "dickson_grading (+) d"
+  shows "wfP_on (Pow (dgrad_p_set d m)) (\<sqsupset>p)"
+proof (rule wfP_on_chain, rule, erule exE)
+  let ?A = "dgrad_p_set d m"
+  fix f::"nat \<Rightarrow> (('a \<Rightarrow>\<^sub>0 'b) set)"
+  assume "\<forall>i. f i \<in> Pow ?A \<and> f (Suc i) \<sqsupset>p f i"
+  hence a1_subset: "f i \<subseteq> ?A" and a1: "f (Suc i) \<sqsupset>p f i" for i by simp_all
+
+  have a1_trans: "i < j \<Longrightarrow> f j \<sqsupset>p f i" for i j
+  proof -
+    assume "i < j"
+    thus "f j \<sqsupset>p f i"
+    proof (induct j)
+      case 0
+      thus ?case by simp
+    next
+      case (Suc j)
+      from Suc(2) have "i = j \<or> i < j" by auto
+      thus ?case
+      proof
+        assume "i = j"
+        show ?thesis unfolding \<open>i = j\<close> by (fact a1)
+      next
+        assume "i < j"
+        from a1 have "f (Suc j) \<sqsupset>p f j" .
+        also from \<open>i < j\<close> have "... \<sqsupset>p f i" by (rule Suc(1))
+        finally(red_supset_transitive) show ?thesis .
+      qed
+    qed
+  qed
+
+  have a2: "\<exists>p \<in> f (Suc i). \<exists>q. is_red {p} q \<and> \<not> is_red (f i) q" for i
+  proof -
+    from a1 have "f (Suc i) \<sqsupset>p f i" .
+    then obtain q where red: "is_red (f (Suc i)) q" and irred: "\<not> is_red (f i) q"
+      by (rule red_supsetE)
+    from red obtain p where "p \<in> f (Suc i)" and "is_red {p} q" by (rule is_red_singletonI)
+    show "\<exists>p\<in>f (Suc i). \<exists>q. is_red {p} q \<and> \<not> is_red (f i) q"
+    proof
+      show "\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q"
+      proof (intro exI, intro conjI)
+        show "is_red {p} q" by fact
+      qed (fact)
+    next
+      show "p \<in> f (Suc i)" by fact
+    qed
+  qed
+
+  let ?P = "\<lambda>i p. p \<in> (f (Suc i)) \<and> (\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q)"
+  define g where "g \<equiv> \<lambda>i::nat. (SOME p. ?P i p)"
+  have a3: "?P i (g i)" for i
+  proof -
+    from a2[of i] obtain gi where "gi \<in> f (Suc i)" and "\<exists>q. is_red {gi} q \<and> \<not> is_red (f i) q" ..
+    show ?thesis unfolding g_def by (rule someI[of _ gi], intro conjI, fact+)
+  qed
+
+  have a4: "i < j \<Longrightarrow> \<not> lp (g i) adds (lp (g j))" for i j
+  proof
+    assume "i < j" and adds: "lp (g i) adds lp (g j)"
+    from a3 have "\<exists>q. is_red {g j} q \<and> \<not> is_red (f j) q" ..
+    then obtain q where redj: "is_red {g j} q" and "\<not> is_red (f j) q" by auto
+    have *: "\<not> is_red (f (Suc i)) q"
     proof -
-      fix i j::nat
-      show "i < j \<longrightarrow> f j \<sqsupset>p f i"
-      proof (induct j)
-        show "i < 0 \<longrightarrow> f 0 \<sqsupset>p f i" by (intro impI, simp)
-      next
-        fix j::nat
-        assume IH: "i < j \<longrightarrow> f j \<sqsupset>p f i"
-        from a1 have supj: "f (Suc j) \<sqsupset>p f j" by simp
-        show "i < Suc j \<longrightarrow> f (Suc j) \<sqsupset>p f i"
-        proof
-          assume "i < Suc j"
-          hence "i < j \<or> i = j" by auto
-          thus "f (Suc j) \<sqsupset>p f i"
-          proof
-            assume "i < j"
-            from this IH have "f j \<sqsupset>p f i" by simp
-            from red_supset_transitive[OF \<open>f (Suc j) \<sqsupset>p f j\<close> this] show ?thesis .
-          next
-            assume "i = j"
-            thus ?thesis using supj by simp
-          qed
-        qed
-      qed
-    qed
-    have a2: "\<And>i. \<exists>p \<in> f (Suc i). \<exists>q. is_red {p} q \<and> \<not> is_red (f i) q"
-    proof -
-      fix i::nat
-      from a1 have "f (Suc i) \<sqsupset>p f i" ..
-      from red_supsetD1[OF this] obtain q where
-        red: "is_red (f (Suc i)) q" and irred: "\<not> is_red (f i) q" .
-      from is_red_singletonI[OF red] obtain p where "p \<in> f (Suc i)" and "is_red {p} q" .
-      show "\<exists>p\<in>f (Suc i). \<exists>q. is_red {p} q \<and> \<not> is_red (f i) q"
-      proof
-        show "\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q"
-        proof (intro exI, intro conjI)
-          show "is_red {p} q" by fact
-        qed (fact)
-      next
-        show "p \<in> f (Suc i)" by fact
-      qed
-    qed
-    define g where "g \<equiv> \<lambda>i::nat. (SOME p::('a, 'b) poly_mapping. p \<in> (f (Suc i)) \<and> (\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q))"
-    have a3: "\<And>i j. i < j \<Longrightarrow> \<not> lp (g i) adds (lp (g j))"
-    proof
-      fix i j::nat
-      assume "i < j" and adds: "lp (g i) adds lp (g j)"
-      from a2[of j] obtain gj where "gj \<in> f (Suc j)" and "\<exists>q. is_red {gj} q \<and> \<not> is_red (f j) q" ..
-      have "g j \<in> f (Suc j) \<and> (\<exists>q. is_red {g j} q \<and> \<not> is_red (f j) q)"
-        unfolding g_def by (rule someI[of _ gj], intro conjI, fact+)
-      hence "\<exists>q. is_red {g j} q \<and> \<not> is_red (f j) q" ..
-      from this obtain q where redj: "is_red {g j} q" and "\<not> is_red (f j) q" by auto
-      have a4: "\<not> is_red (f (Suc i)) q"
-      proof -
-        from \<open>i < j\<close> have "i + 1 < j \<or> i + 1 = j" by auto
-        thus ?thesis
-        proof
-          assume "i + 1 < j"
-          from red_supsetD2[OF a1_trans[rule_format, OF this], of q] \<open>\<not> is_red (f j) q\<close>
-            show ?thesis by auto
-        next
-          assume "i + 1 = j"
-          thus ?thesis using \<open>\<not> is_red (f j) q\<close> by simp
-        qed
-      qed
-      from a2[of i] obtain gi where "gi \<in> f (Suc i)" and "\<exists>q. is_red {gi} q \<and> \<not> is_red (f i) q" ..
-      have "g i \<in> f (Suc i) \<and> (\<exists>q. is_red {g i} q \<and> \<not> is_red (f i) q)"
-        unfolding g_def by (rule someI[of _ gi], intro conjI, fact+)
-      hence "g i \<in> f (i + 1)" and redi: "\<exists>q. is_red {g i} q \<and> \<not> is_red (f i) q" by simp_all
-      have "\<not> is_red {g i} q"
-      proof
-        assume "is_red {g i} q"
-        from is_red_singletonD[OF this \<open>g i \<in> f (i + 1)\<close>] a4 show False by simp
-      qed
-      have "g i \<noteq> 0"
-      proof -
-        from redi obtain q0 where "is_red {g i} q0" by auto
-        from is_red_singleton_not_0[OF this] show ?thesis .
-      qed
-      from \<open>\<not> is_red {g i} q\<close> is_red_singleton_trans[OF redj adds \<open>g i \<noteq> 0\<close>] show False by simp
-    qed
-    from dickson[of "lp o g"] obtain i j where "i < j" and "lp (g i) adds lp (g j)" by auto
-    from this a3[OF \<open>i < j\<close>] show False by simp
-  qed
-qed
-
-subsubsection \<open>Function @{term gb}\<close>
-
-definition trdsp::"('a, 'b::field) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping"
-  where "trdsp bs p q \<equiv> trd bs (spoly p q)"
-
-lemma trdsp_in_pideal:
-  assumes "p \<in> set bs" and "q \<in> set bs"
-  shows "trdsp bs p q \<in> pideal (set bs)"
-unfolding trdsp_def spoly_def
-apply (rule pideal_closed_trd)
-apply (rule pideal_closed_minus)
-subgoal by (rule monom_mult_in_pideal, fact)
-subgoal by (rule monom_mult_in_pideal, fact)
-done
-
-text \<open>Functions @{term gb} and @{term gbaux} implement Buchberger's original algorithm for computing
-  Gr\"obner bases. The efficiency of @{term gbaux} could be improved by incorporating Buchberger's
-  criteria for avoiding useless S-polynomials.\<close>
-
-function gbaux::"('a, 'b::field) poly_mapping list \<Rightarrow> (('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list \<Rightarrow>
-                  ('a, 'b) poly_mapping list" where
-  gbaux_base: "gbaux B [] = B"|
-  gbaux_rec: "gbaux B ((p, q) # r) =
-    (let h = trdsp B p q in
-      (if h = 0 then
-        gbaux B r
-      else
-        gbaux (h # B) (up r B h)
-      )
-    )"
-by pat_completeness auto
-termination proof -
-  let ?R = "{(a, b::('a, 'b) poly_mapping list). (set a) \<sqsupset>p (set b)} <*lex*> (measure length)"
-  show ?thesis
-  proof
-    show "wf ?R"
-    proof
-      show "wf {(a, b::('a, 'b) poly_mapping list). (set a) \<sqsupset>p (set b)}"
-      proof (rule wfI_min)
-        fix x and Q::"('a, 'b) poly_mapping list set"
-        assume "x \<in> Q"
-        hence "set x \<in> set`Q" by simp
-        from red_supset_wf have "wf {(p, q). p \<sqsupset>p q}" unfolding wfP_def .
-        from wfE_min[OF this \<open>set x \<in> set`Q\<close>] obtain z where
-          "z \<in> set`Q" and z_min: "\<And>y. (y, z) \<in> {(p, q). p \<sqsupset>p q} \<Longrightarrow> y \<notin> set`Q" by auto
-        from \<open>z \<in> set`Q\<close> obtain z0 where "z0 \<in> Q" and z_def: "z = set z0" by auto
-        show "\<exists>z\<in>Q. \<forall>y. (y, z) \<in> {(a, b). set a \<sqsupset>p set b} \<longrightarrow> y \<notin> Q"
-        proof (intro bexI, intro allI)
-          fix y
-          show "(y, z0) \<in> {(a, b). set a \<sqsupset>p set b} \<longrightarrow> y \<notin> Q"
-          proof
-            assume "(y, z0) \<in> {(a, b). set a \<sqsupset>p set b}"
-            hence "set y \<sqsupset>p z" using z_def by simp
-            hence "(set y, z) \<in> {(p, q). p \<sqsupset>p q}" by simp
-            from z_min[OF this] show "y \<notin> Q" by auto
-          qed
-        next
-          show "z0 \<in> Q" by fact
-        qed
-      qed
-    next
-      show "wf (measure length)" ..
-    qed
-  next
-    fix B p q r and h::"('a, 'b) poly_mapping"
-    assume "h = trdsp B p q" and "h = 0"
-    show "((B, r), (B, (p, q) # r)) \<in> ?R"
-      unfolding in_lex_prod by (intro disjI2, intro conjI, simp_all)
-  next
-    fix B p q r and h::"('a, 'b) poly_mapping"
-    assume h_def: "h = trdsp B p q" and "h \<noteq> 0"
-    show "((h # B, (up r B h)), (B, (p, q) # r)) \<in> ?R" unfolding in_lex_prod
-    proof (intro disjI1, simp)
-      show "insert h (set B) \<sqsupset>p set B"
-      proof (rule red_supset_insertI[OF \<open>h \<noteq> 0\<close>, of "set B"])
-        from trd_irred[of B "(spoly p q)"] h_def show "\<not> is_red (set B) h"
-          unfolding trdsp_def by simp
-      qed
-    qed
-  qed
-qed
-
-definition gb::"('a, 'b::field) poly_mapping list \<Rightarrow> ('a, 'b) poly_mapping list" where "gb B \<equiv> gbaux B (pairs B)"
-
-lemma gbaux_induct:
-  assumes base: "\<And>bs. P bs [] bs"
-    and ind1: "\<And>bs ps p q. trdsp bs p q = 0 \<Longrightarrow> P bs ps (gbaux bs ps) \<Longrightarrow>
-                P bs ((p, q)#ps) (gbaux bs ps)"
-    and ind2: "\<And>bs ps p q h. h = trdsp bs p q \<Longrightarrow> h \<noteq> 0 \<Longrightarrow>
-                P (h#bs) (up ps bs h) (gbaux (h#bs) (up ps bs h)) \<Longrightarrow>
-                P bs ((p, q)#ps) (gbaux (h#bs) (up ps bs h))"
-  shows "P bs ps (gbaux bs ps)"
-proof (induct bs ps rule: gbaux.induct)
-  fix bs
-  from base[of bs] show "P bs [] (gbaux bs [])" by simp
-next
-  fix bs ps p and q::"('a, 'b) poly_mapping"
-  let ?h = "trdsp bs p q"
-  assume IH1: "\<And>x. x = trdsp bs p q \<Longrightarrow> x = 0 \<Longrightarrow> P bs ps (gbaux bs ps)"
-    and IH2: "\<And>x. x = trdsp bs p q \<Longrightarrow> x \<noteq> 0 \<Longrightarrow>
-              P (x # bs) (up ps bs x) (gbaux (x # bs) (up ps bs x))"
-  show "P bs ((p, q) # ps) (gbaux bs ((p, q) # ps))"
-  proof (cases "?h = 0")
-    case True
-    from IH1[OF _ True] have "P bs ps (gbaux bs ps)" by simp
-    from True ind1[OF True this] show ?thesis by simp
-  next
-    case False
-    from IH2[OF _ False] have a: "P (?h#bs) (up ps bs ?h) (gbaux (?h#bs) (up ps bs ?h))" by simp
-    from False gbaux_rec[of bs p q ps]
-      have eq: "gbaux bs ((p, q) # ps) = gbaux (?h # bs) (up ps bs ?h)"
-      by (simp del: gbaux.simps add: Let_def)
-    from ind2[OF _ False a, of p q] eq show ?thesis by simp
-  qed
-qed
-
-lemma gbaux_sublist:
-  obtains cs::"('a, 'b::field) poly_mapping list" where "gbaux bs ps = cs @ bs"
-proof (induct rule: gbaux_induct)
-  fix bs::"('a, 'b) poly_mapping list"
-  assume a1: "\<And>cs. bs = cs @ bs \<Longrightarrow> thesis"
-  show thesis by (rule a1[of "[]"], simp)
-next
-  fix bs ps p and q::"('a, 'b) poly_mapping"
-  assume "trdsp bs p q = 0"
-    and a2: "(\<And>cs. gbaux bs ps = cs @ bs \<Longrightarrow> thesis) \<Longrightarrow> thesis"
-    and "\<And>cs. gbaux bs ps = cs @ bs \<Longrightarrow> thesis"
-  show thesis by (rule a2, fact)
-next
-  fix bs ps p q and h::"('a, 'b) poly_mapping"
-  assume h_def: "h = trdsp bs p q" and "h \<noteq> 0"
-    and a3: "(\<And>cs. gbaux (h # bs) (up ps bs h) = cs @ h # bs \<Longrightarrow> thesis) \<Longrightarrow> thesis"
-    and a4: "\<And>cs. gbaux (h # bs) (up ps bs h) = cs @ bs \<Longrightarrow> thesis"
-  show thesis
-  proof (rule a3, rule a4)
-    fix cs
-    assume "gbaux (h # bs) (up ps bs h) = cs @ h # bs"
-    thus "gbaux (h # bs) (up ps bs h) = (cs @ [h]) @ bs" by simp
-  qed
-qed
-
-lemma gbaux_subset:
-  shows "set bs \<subseteq> set (gbaux bs ps)"
-proof -
-  from gbaux_sublist[of bs ps] obtain cs where eq: "gbaux bs ps = cs @ bs" .
-  from eq show ?thesis by simp
-qed
-
-definition nproc::"(('a, 'b) poly_mapping * ('a, 'b) poly_mapping) \<Rightarrow> ('a, 'b) poly_mapping list \<Rightarrow>
-                    (('a, 'b) poly_mapping * ('a, 'b) poly_mapping) list \<Rightarrow> bool" where
-  "nproc p as ps \<equiv> (p \<in> set ps) \<or> ((snd p, fst p) \<in> set ps) \<or> (fst p \<notin> set as) \<or> (snd p \<notin> set as)"
-
-lemma nproc_alt:
-  shows "nproc (a, b) as ps \<longleftrightarrow> ((a, b) \<in> set ps) \<or> ((b, a) \<in> set ps) \<or> (a \<notin> set as) \<or> (b \<notin> set as)"
-unfolding nproc_def by auto
-
-lemma nproc_nil:
-  assumes major: "nproc (f, g) bs []"
-    and a1: "f \<notin> set bs \<Longrightarrow> thesis"
-    and a2: "g \<notin> set bs \<Longrightarrow> thesis"
-  shows thesis
-using major unfolding nproc_alt
-proof
-  assume "(f, g) \<in> set []"
-  thus ?thesis by simp
-next
-  assume "(g, f) \<in> set [] \<or> f \<notin> set bs \<or> g \<notin> set bs"
-  thus ?thesis
-  proof
-    assume "(g, f) \<in> set []"
-    thus ?thesis by simp
-  next
-    assume "f \<notin> set bs \<or> g \<notin> set bs"
-    thus ?thesis
-    proof
-      assume "f \<notin> set bs"
-      from a1[OF this] show ?thesis .
-    next
-      assume "g \<notin> set bs"
-      from a2[OF this] show ?thesis .
-    qed
-  qed
-qed
-
-lemma nproc_cons:
-  assumes major: "nproc (f, g) bs ((p, q) # ps)"
-    and a1: "f = p \<Longrightarrow> g = q \<Longrightarrow> thesis"
-    and a2: "f = q \<Longrightarrow> g = p \<Longrightarrow> thesis"
-    and a3: "nproc (f, g) bs ps \<Longrightarrow> thesis"
-  shows thesis
-using major unfolding nproc_alt
-proof
-  assume "(f, g) \<in> set ((p, q) # ps)"
-  hence "(f, g) = (p, q) \<or> (f, g) \<in> set ps" by simp
-  thus ?thesis
-  proof
-    assume "(f, g) = (p, q)"
-    hence "f = p" and "g = q" by simp_all
-    show ?thesis by (rule a1, fact, fact)
-  next
-    assume "(f, g) \<in> set ps"
-    show ?thesis by (rule a3, simp only: nproc_alt, rule disjI1, fact)
-  qed
-next
-  assume "(g, f) \<in> set ((p, q) # ps) \<or> f \<notin> set bs \<or> g \<notin> set bs"
-  thus ?thesis
-  proof
-    assume "(g, f) \<in> set ((p, q) # ps)"
-    hence "(g, f) = (p, q) \<or> (g, f) \<in> set ps" by simp
-    thus ?thesis
-    proof
-      assume "(g, f) = (p, q)"
-      hence "f = q" and "g = p" by simp_all
-      show ?thesis by (rule a2, fact, fact)
-    next
-      assume "(g, f) \<in> set ps"
-      show ?thesis by (rule a3, simp only: nproc_alt, rule disjI2, rule disjI1, fact)
-    qed
-  next
-    assume "f \<notin> set bs \<or> g \<notin> set bs"
-    show ?thesis by (rule a3, simp only: nproc_alt, rule disjI2, rule disjI2, fact)
-  qed
-qed
-
-lemma nproc_pairs:
-  assumes "f \<noteq> g" and "f \<in> set bs" and "g \<in> set bs"
-  shows "nproc (f, g) bs (pairs bs)"
-proof (rule in_pairsI[OF assms])
-  assume "(f, g) \<in> set (pairs bs)"
-  show ?thesis unfolding nproc_alt by (rule disjI1, fact)
-next
-  assume "(g, f) \<in> set (pairs bs)"
-  show ?thesis unfolding nproc_alt by (rule disjI2, rule disjI1, fact)
-qed
-
-lemma nproc_up:
-  assumes "f \<notin> set bs \<or> g \<notin> set bs"
-  shows "nproc (f, g) (h # bs) (up ps bs h) \<or> (f = h \<and> g = h)"
-proof (rule disjCI)
-  assume "\<not> (f = h \<and> g = h)"
-  hence dis: "f \<noteq> h \<or> g \<noteq> h" by simp
-  show "nproc (f, g) (h # bs) (up ps bs h)"
-  proof (cases "f = h")
-    assume "f = h"
-    hence "g \<noteq> h" using dis by simp
-    show ?thesis
-    proof (cases "g \<in> set bs")
-      case True
-      show ?thesis unfolding nproc_alt \<open>f = h\<close> by (rule disjI2, rule disjI1, rule in_upI2, fact)
-    next
-      case False
-      show ?thesis unfolding nproc_alt
-      proof ((rule disjI2)+, rule)
-        assume "g \<in> set (h # bs)"
-        hence "g = h \<or> g \<in> set bs" by simp
-        from this \<open>g \<noteq> h\<close> False show False by simp
-      qed
-    qed
-  next
-    assume "f \<noteq> h"
-    show ?thesis
-    proof (cases "g = h")
-      assume "g = h"
-      show ?thesis
-      proof (cases "f \<in> set bs")
-        case True
-        show ?thesis unfolding nproc_alt \<open>g = h\<close> by (rule disjI1, rule in_upI2, fact)
-      next
-        case False
-        show ?thesis unfolding nproc_alt
-        proof (rule disjI2, rule disjI2, rule disjI1, rule)
-          assume "f \<in> set (h # bs)"
-          hence "f = h \<or> f \<in> set bs" by simp
-          from this \<open>f \<noteq> h\<close> False show False by simp
-        qed
-      qed
-    next
-      assume "g \<noteq> h"
-      from assms show ?thesis
-      proof
-        assume "f \<notin> set bs"
-        show ?thesis unfolding nproc_alt
-        proof (rule disjI2, rule disjI2, rule disjI1, rule)
-          assume "f \<in> set (h # bs)"
-          hence "f = h \<or> f \<in> set bs" by simp
-          from this \<open>f \<noteq> h\<close> \<open>f \<notin> set bs\<close> show False by simp
-        qed
-      next
-        assume "g \<notin> set bs"
-        show ?thesis unfolding nproc_alt
-        proof ((rule disjI2)+, rule)
-          assume "g \<in> set (h # bs)"
-          hence "g = h \<or> g \<in> set bs" by simp
-          from this \<open>g \<noteq> h\<close> \<open>g \<notin> set bs\<close> show False by simp
-        qed
-      qed
-    qed
-  qed
-qed
-
-lemma gbaux_connectible:
-  assumes "f \<in> set (gbaux bs ps)" and "g \<in> set (gbaux bs ps)" and "nproc (f, g) bs ps"
-  shows "(red (set (gbaux bs ps)))\<^sup>*\<^sup>* (spoly f g) 0"
-using assms
-proof (induct rule: gbaux_induct)
-  fix bs
-  assume "f \<in> set bs" and "g \<in> set bs" and nproc: "nproc (f, g) bs []"
-  show "(red (set bs))\<^sup>*\<^sup>* (spoly f g) 0"
-  proof (rule nproc_nil[OF nproc])
-    assume "f \<notin> set bs"
-    thus ?thesis using \<open>f \<in> set bs\<close> by simp
-  next
-    assume "g \<notin> set bs"
-    thus ?thesis using \<open>g \<in> set bs\<close> by simp
-  qed
-
-next
-  fix bs ps p and q::"('a, 'b) poly_mapping"
-  assume h0: "trdsp bs p q = 0"
-    and IH: "f \<in> set (gbaux bs ps) \<Longrightarrow> g \<in> set (gbaux bs ps) \<Longrightarrow> nproc (f, g) bs ps \<Longrightarrow>
-              (red (set (gbaux bs ps)))\<^sup>*\<^sup>* (spoly f g) 0"
-    and f_in: "f \<in> set (gbaux bs ps)"
-    and g_in: "g \<in> set (gbaux bs ps)"
-    and nproc: "nproc (f, g) bs ((p, q) # ps)"
-  
-  from h0 trd_red_rtrancl[of bs "spoly p q"] have "(red (set bs))\<^sup>*\<^sup>* (spoly p q) 0"
-    unfolding trdsp_def by simp
-  from red_rtrancl_subset[OF this gbaux_subset, of ps]
-    have pq: "(red (set (gbaux bs ps)))\<^sup>*\<^sup>* (spoly p q) 0" .
-  from red_rtrancl_uminus[OF this] spoly_exchange[of q p]
-    have qp: "(red (set (gbaux bs ps)))\<^sup>*\<^sup>* (spoly q p) 0" by simp
-  
-  show "(red (set (gbaux bs ps)))\<^sup>*\<^sup>* (spoly f g) 0"
-  proof (rule nproc_cons[OF nproc])
-    assume "f = p" and "g = q"
-    thus ?thesis using pq by simp
-  next
-    assume "f = q" and "g = p"
-    thus ?thesis using qp by simp
-  next
-    assume "nproc (f, g) bs ps"
-    from IH[OF f_in g_in this] show ?thesis .
-  qed
-
-next
-  fix bs ps p q and h::"('a, 'b) poly_mapping"
-  assume h_def: "h = trdsp bs p q" and "h \<noteq> 0"
-    and IH: "f \<in> set (gbaux (h # bs) (up ps bs h)) \<Longrightarrow>
-              g \<in> set (gbaux (h # bs) (up ps bs h)) \<Longrightarrow> nproc (f, g) (h # bs) (up ps bs h) \<Longrightarrow>
-             (red (set (gbaux (h # bs) (up ps bs h))))\<^sup>*\<^sup>* (spoly f g) 0"
-    and f_in: "f \<in> set (gbaux (h # bs) (up ps bs h))"
-    and g_in: "g \<in> set (gbaux (h # bs) (up ps bs h))"
-    and nproc: "nproc (f, g) bs ((p, q) # ps)"
-
-  have "set bs \<subseteq> set (h # bs)" by auto
-  have "{h} \<subseteq> set (h # bs)" by simp
-  from trd_red_rtrancl[of bs "spoly p q"] have "(red (set bs))\<^sup>*\<^sup>* (spoly p q) h"
-    unfolding h_def trdsp_def .
-  from red_rtrancl_subset[OF this \<open>set bs \<subseteq> set (h # bs)\<close>]
-    have r1: "(red (set (h # bs)))\<^sup>*\<^sup>* (spoly p q) h" .
-  from red_self[OF \<open>h \<noteq> 0\<close>] have "(red {h})\<^sup>*\<^sup>* h 0" ..
-  from red_rtrancl_subset[OF this \<open>{h} \<subseteq> set (h # bs)\<close>] have r2: "(red (set (h # bs)))\<^sup>*\<^sup>* h 0" .
-  from red_rtrancl_subset[OF rtranclp_trans[OF r1 r2] gbaux_subset, of "up ps bs h"]
-    have pq: "(red (set (gbaux (h # bs) (up ps bs h))))\<^sup>*\<^sup>* (spoly p q) 0" .
-  from red_rtrancl_uminus[OF this] spoly_exchange[of q p]
-    have qp: "(red (set (gbaux (h # bs) (up ps bs h))))\<^sup>*\<^sup>* (spoly q p) 0" by simp
-
-  show "(red (set (gbaux (h # bs) (up ps bs h))))\<^sup>*\<^sup>* (spoly f g) 0"
-  proof (rule nproc_cons[OF nproc])
-    assume "f = p" and "g = q"
-    thus ?thesis using pq by simp
-  next
-    assume "f = q" and "g = p"
-    thus ?thesis using qp by simp
-  next
-    assume "nproc (f, g) bs ps"
-    thus ?thesis unfolding nproc_alt
-    proof
-      assume "(f, g) \<in> set ps"
-      show ?thesis
-      proof (rule IH[OF f_in g_in])
-        show "nproc (f, g) (h # bs) (up ps bs h)"
-          unfolding nproc_alt by (rule disjI1, rule in_upI1, fact)
-      qed
-    next
-      assume "(g, f) \<in> set ps \<or> f \<notin> set bs \<or> g \<notin> set bs"
+      from \<open>i < j\<close> have "i + 1 < j \<or> i + 1 = j" by auto
       thus ?thesis
       proof
-        assume "(g, f) \<in> set ps"
-        show ?thesis
-        proof (rule IH[OF f_in g_in])
-          show "nproc (f, g) (h # bs) (up ps bs h)"
-            unfolding nproc_alt by (rule disjI2, rule disjI1, rule in_upI1, fact)
-        qed
+        assume "i + 1 < j"
+        from red_supsetD[OF a1_trans[rule_format, OF this], of q] \<open>\<not> is_red (f j) q\<close>
+          show ?thesis by auto
       next
-        assume "f \<notin> set bs \<or> g \<notin> set bs"
-        from nproc_up[OF this] show ?thesis
-        proof
-          assume "f = h \<and> g = h"
-          hence "spoly f g = 0" unfolding spoly_def by simp
-          thus ?thesis by simp
-        next
-          assume "nproc (f, g) (h # bs) (up ps bs h)"
-          from IH[OF f_in g_in this] show ?thesis .
-        qed
+        assume "i + 1 = j"
+        thus ?thesis using \<open>\<not> is_red (f j) q\<close> by simp
       qed
     qed
-  qed
-qed
-
-lemma gbaux_pideal:
-  assumes "\<And>a b. (a, b) \<in> set ps \<Longrightarrow> (a \<in> set bs \<and> b \<in> set bs)"
-  shows "pideal (set (gbaux bs ps)) = pideal (set bs)"
-using assms
-proof (induction rule: gbaux_induct)
-  fix bs::"('a, 'b) poly_mapping list"
-  show "pideal (set bs) = pideal (set bs)" ..
-next
-  fix bs ps p and q::"('a, 'b) poly_mapping"
-  assume IH: "(\<And>a b. (a, b) \<in> set ps \<Longrightarrow> a \<in> set bs \<and> b \<in> set bs) \<Longrightarrow>
-                pideal (set (gbaux bs ps)) = pideal (set bs)"
-    and ps_sub: "\<And>a b. (a, b) \<in> set ((p, q) # ps) \<Longrightarrow> a \<in> set bs \<and> b \<in> set bs"
-  show "pideal (set (gbaux bs ps)) = pideal (set bs)"
-  proof (rule IH)
-    fix a b
-    assume pair_in: "(a, b) \<in> set ps"
-    show "a \<in> set bs \<and> b \<in> set bs"
-    proof (rule ps_sub)
-      from pair_in show "(a, b) \<in> set ((p, q) # ps)" by simp
+    from a3 have "g i \<in> f (i + 1)" and redi: "\<exists>q. is_red {g i} q \<and> \<not> is_red (f i) q" by simp_all
+    have "\<not> is_red {g i} q"
+    proof
+      assume "is_red {g i} q"
+      from is_red_singletonD[OF this \<open>g i \<in> f (i + 1)\<close>] * show False by simp
     qed
-  qed
-next
-  fix bs ps p q and h::"('a, 'b) poly_mapping"
-  assume h_def: "h = trdsp bs p q"
-    and IH: "(\<And>a b. (a, b) \<in> set (up ps bs h) \<Longrightarrow> a \<in> set (h # bs) \<and> b \<in> set (h # bs)) \<Longrightarrow>
-            pideal (set (gbaux (h # bs) (up ps bs h))) = pideal (set (h # bs))"
-    and ps_sub: "\<And>a b. (a, b) \<in> set ((p, q) # ps) \<Longrightarrow> a \<in> set bs \<and> b \<in> set bs"
-  have "(p, q) \<in> set ((p, q) # ps)" by simp
-  from ps_sub[OF this] have "p \<in> set bs" and "q \<in> set bs" by simp_all
-  have eq: "pideal (insert h (set bs)) = pideal (set bs)"
-    unfolding h_def by (rule pideal_insert, rule trdsp_in_pideal, fact+)
-  have "pideal (set (gbaux (h # bs) (up ps bs h))) = pideal (set (h # bs))"
-  proof (rule IH)
-    fix a b
-    assume "(a, b) \<in> set (up ps bs h)"
-    thus "a \<in> set (h # bs) \<and> b \<in> set (h # bs)"
-    proof (rule in_upE)
-      assume "(a, b) \<in> set ps"
-      hence "(a, b) \<in> set ((p, q) # ps)" by simp
-      from ps_sub[OF this] have "a \<in> set bs" and "b \<in> set bs" by simp_all
-      show ?thesis
-      proof
-        from \<open>a \<in> set bs\<close> show "a \<in> set (h # bs)" by simp
-      next
-        from \<open>b \<in> set bs\<close> show "b \<in> set (h # bs)" by simp
-      qed
-    next
-      assume "b = h \<and> a \<in> set bs"
-      hence "b = h" and "a \<in> set bs" by simp_all
-      show ?thesis
-      proof
-        from \<open>a \<in> set bs\<close> show "a \<in> set (h # bs)" by simp
-      next
-        from \<open>b = h\<close> show "b \<in> set (h # bs)" by simp
-      qed
+    have "g i \<noteq> 0"
+    proof -
+      from redi obtain q0 where "is_red {g i} q0" by auto
+      from is_red_singleton_not_0[OF this] show ?thesis .
     qed
+    from \<open>\<not> is_red {g i} q\<close> is_red_singleton_trans[OF redj adds \<open>g i \<noteq> 0\<close>] show False by simp
   qed
-  from this eq show "pideal (set (gbaux (h # bs) (up ps bs h))) = pideal (set bs)" by simp
-qed
 
-theorem gb_isGB:
-  shows "is_Groebner_basis (set (gb bs))"
-proof (rule Buchberger_criterion)
-  fix p q
-  assume p_in: "p \<in> set (gb bs)" and q_in: "q \<in> set (gb bs)"
-  from p_in have p_in_2: "p \<in> set (gbaux bs (pairs bs))" unfolding gb_def .
-  from q_in have q_in_2: "q \<in> set (gbaux bs (pairs bs))" unfolding gb_def .
-  show "(red (set (gb bs)))\<^sup>*\<^sup>* (spoly p q) 0"
-  proof (cases "p = q")
-    assume "p = q"
-    from this spoly_same[of q] show ?thesis by simp
-  next
-    assume "p \<noteq> q"
-    show ?thesis unfolding gb_def
-    proof (rule gbaux_connectible[OF p_in_2 q_in_2], cases "p \<in> set bs \<and> q \<in> set bs")
-      case True
-      hence "p \<in> set bs" and "q \<in> set bs" by simp_all
-      from nproc_pairs[OF \<open>p \<noteq> q\<close> this] show "nproc (p, q) bs (pairs bs)" .
-    next
-      case False
-      hence "p \<notin> set bs \<or> q \<notin> set bs" by simp
-      show "nproc (p, q) bs (pairs bs)" unfolding nproc_alt by (rule disjI2, rule disjI2, fact)
-    qed
+  have a5: "d ((lp \<circ> g) i) \<le> m" for i
+  proof simp
+    from a3 have "g i \<in> f (Suc i)" and "\<exists>q. is_red {g i} q \<and> \<not> is_red (f i) q" by simp_all
+    from this(2) obtain q where "is_red {g i} q" by auto
+    hence "g i \<noteq> 0" by (rule is_red_singleton_not_0)
+    from a1_subset \<open>g i \<in> f (Suc i)\<close> have "g i \<in> ?A" ..
+    from this \<open>g i \<noteq> 0\<close> show "d (lp (g i)) \<le> m" by (rule dgrad_p_setD_lp)
   qed
+
+  from dickson_gradingE2[OF assms a5, of id] obtain i j where "i < j" and "lp (g i) adds lp (g j)"
+    by auto
+  from this a4[OF \<open>i < j\<close>] show False by simp
 qed
 
-theorem gb_pideal:
-  shows "pideal (set (gb bs)) = pideal (set bs)"
-unfolding gb_def
-proof (rule gbaux_pideal)
-  fix a b
-  assume pair_in: "(a, b) \<in> set (pairs bs)"
-  show "a \<in> set bs \<and> b \<in> set bs" by (rule, rule in_pairsD1[OF pair_in], rule in_pairsD2[OF pair_in])
-qed
+end (* gd_powerprod *)
 
-text \<open>The following theorem yields a criterion for deciding whether a given polynomial belongs to
-  the ideal generated by a given list of polynomials. Note again that @{term "pideal (set bs)"}
-  coincides with the ideal (in @{typ "('a, 'b) poly_mapping"}) generated by @{term "set bs"}!\<close>
+lemma in_lex_prod_alt:
+  "(x, y) \<in> r <*lex*> s \<longleftrightarrow> (((fst x), (fst y)) \<in> r \<or> (fst x = fst y \<and> ((snd x), (snd y)) \<in> s))"
+  by (metis in_lex_prod prod.collapse prod.inject surj_pair)
 
-theorem in_pideal_gb:
-  shows "p \<in> pideal (set bs) \<longleftrightarrow> (trd (gb bs) p) = 0"
-proof
-  assume "p \<in> pideal (set bs)"
-  hence p_in: "p \<in> pideal (set (gb bs))" using gb_pideal[of bs] by simp
-  from gb_isGB[of bs] have cr: "relation.is_ChurchRosser (red (set (gb bs)))"
-    unfolding is_Groebner_basis_def .
-  hence a: "\<forall>a b. relation.srtc (red (set (gb bs))) a b \<longrightarrow> relation.cs (red (set (gb bs))) a b"
-    unfolding relation.is_ChurchRosser_def .
-  from a[rule_format, OF in_pideal_srtc[OF p_in]] obtain s
-    where r1: "(red (set (gb bs)))\<^sup>*\<^sup>* p s" and r2: "(red (set (gb bs)))\<^sup>*\<^sup>* 0 s"
-      unfolding relation.cs_def by auto
-  from r1 rtrancl_0[OF r2] have r0: "(red (set (gb bs)))\<^sup>*\<^sup>* p 0" by simp
-  from irred_0[of "set (gb bs)"] have fin_0: "relation.is_final (red (set (gb bs))) 0"
-    unfolding is_red_def by simp
-  from trd_irred[of "gb bs" p] have fin_trd: "relation.is_final (red (set (gb bs))) (trd (gb bs) p)"
-    unfolding is_red_def by simp
-  from relation.ChurchRosser_unique_final[OF cr trd_red_rtrancl[of "gb bs" p] r0 fin_trd fin_0]
-    show "trd (gb bs) p = 0" .
-next
-  assume "trd (gb bs) p = 0"
-  from this trd_in_pideal[of p "gb bs"] have "p \<in> pideal (set (gb bs))" by simp
-  thus "p \<in> pideal (set bs)" using gb_pideal[of bs] by simp
-qed
+subsection \<open>Context @{locale od_powerprod}\<close>
+
+context od_powerprod
+begin
+
+lemmas red_wf = red_wf_dgrad_p_set[OF dickson_grading_zero subset_dgrad_p_set_zero]
+lemmas Buchberger_criterion = Buchberger_criterion_dgrad_p_set[OF dickson_grading_zero subset_dgrad_p_set_zero]
 
 end (* od_powerprod *)
 
