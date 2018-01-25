@@ -1520,4 +1520,32 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit':
+  fixes f::"'a::geodesic_space \<Rightarrow> 'b::Gromov_hyperbolic_space"
+  assumes "quasi_isometry lambda C f"
+  shows "Gromov_hyperbolic_subset (656 * lambda^3 * (lambda + C + deltaG(TYPE('b))^2)) (UNIV::('a set))"
+proof -
+  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('b Bonk_Schramm_extension \<Rightarrow> 'b Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('b)))"
+    apply standard using Bonk_Schramm_extension_hyperbolic by auto
+  have A: "quasi_isometry_on (lambda * 1) (C * 1 + 0) UNIV (to_Bonk_Schramm_extension o f)"
+    by (rule quasi_isometry_on_compose[OF assms, of _ _ UNIV])
+       (auto simp add: isometry_quasi_isometry_on[OF to_Bonk_Schramm_extension_isometry])
+  have *: "deltaG(TYPE('b)) = deltaG(TYPE('b Bonk_Schramm_extension))"
+    by (simp add: deltaG_Bonk_Schramm_extension_def)
+  show ?thesis
+    unfolding *
+    apply (rule Gromov_hyperbolic_invariant_under_quasi_isometry_explicit[of _ _ "to_Bonk_Schramm_extension o f"])
+    using A by auto
+qed
+
+theorem Gromov_hyperbolic_invariant_under_quasi_isometry':
+  assumes "quasi_isometric (UNIV::('a::geodesic_space) set) (UNIV::('b::Gromov_hyperbolic_space) set)"
+  shows "\<exists>delta. Gromov_hyperbolic_subset delta (UNIV::'a set)"
+proof -
+  obtain C lambda f where f: "quasi_isometry_between lambda C (UNIV::'a set) (UNIV::'b set) f"
+    using assms unfolding quasi_isometric_def by auto
+  show ?thesis using Gromov_hyperbolic_invariant_under_quasi_isometry_explicit'[OF quasi_isometry_betweenD(1)[OF f]] by blast
+qed
+
+
 end (*of theory Bonk_Schramm_Extension*)
