@@ -10,6 +10,7 @@ theory Randomised_Quick_Sort
     "HOL-Probability.Probability"
     Landau_Symbols.Landau_Symbols
     Comparison_Sort_Lower_Bound.Linorder_Relations
+    "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 subsection \<open>Deletion by index\<close>  
@@ -68,7 +69,7 @@ lemma mset_delete_index [simp]:
   by (induction i xs rule: delete_index.induct) simp_all
 
 
-subsection \<open>Definition of QuickSort\<close>
+subsection \<open>Definition\<close>
 
 text \<open>
   The following is a functional randomised version of QuickSort that also records the number 
@@ -446,4 +447,272 @@ proof -
   finally show ?thesis .
 qed
 
+lemma harm_mono: "m \<le> n \<Longrightarrow> harm m \<le> (harm n :: real)"
+  unfolding harm_def by (intro sum_mono2) auto
+
+lemma harm_Suc_0 [simp]: "harm (Suc 0) = 1"
+  by (simp add: harm_def)
+
+lemma harm_ge_1: "n > 0 \<Longrightarrow> harm n \<ge> (1::real)"
+  using harm_mono[of 1 n] by simp
+
+lemma mono_rqs_cost_exp: "mono rqs_cost_exp"
+proof (rule incseq_SucI)
+  fix n show "rqs_cost_exp n \<le> rqs_cost_exp (Suc n)"
+  proof (cases "n = 0")
+    case False
+    have "0 < (1 * 2 * (real n + 1) - 2 * real n) / (real n + 1)" by simp
+    also have "\<dots> \<le> (harm n * 2 * (real n + 1) - 2 * real n) / (real n + 1)" using False
+      by (intro divide_right_mono diff_right_mono mult_right_mono) (auto simp: harm_ge_1)
+    also have "\<dots> = rqs_cost_exp (Suc n) - rqs_cost_exp n"
+      by (simp add: rqs_cost_exp_eq harm_Suc field_simps)
+    finally show ?thesis by simp
+  qed auto
+qed
+
+lemma rqs_cost_exp_leI: "m \<le> n \<Longrightarrow> rqs_cost_exp m \<le> rqs_cost_exp n"
+  using mono_rqs_cost_exp by (simp add: mono_def)
+
+
+subsection \<open>Version for lists with repeated elements\<close>
+
+definition threeway_partition where
+  "threeway_partition x R xs = 
+     (filter (\<lambda>y. (y,x) \<in> R \<and> (x,y) \<notin> R) xs, 
+      filter (\<lambda>y. (x,y) \<in> R \<and> (y,x) \<in> R) xs, 
+      filter (\<lambda>y. (x,y) \<in> R \<and> (y,x) \<notin> R) xs)"
+
+text \<open>
+  The following version of randomised Quicksort uses a three-way partitioning function
+  in order to also achieve expected logarithmic running time on lists with repeated elements.
+\<close>
+function rquicksort' :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> nat) pmf" where
+  "rquicksort' R xs = 
+     (if xs = [] then 
+        return_pmf ([], 0)
+      else
+        do {
+          i \<leftarrow> pmf_of_set {..<length xs};
+          let x = xs ! i;
+          case threeway_partition x R (delete_index i xs) of
+            (ls, es, rs) \<Rightarrow> do {
+              (ls, n1) \<leftarrow> rquicksort' R ls;
+              (rs, n2) \<leftarrow> rquicksort' R rs;
+              return_pmf (ls @ x # es @ rs, length xs - 1 + n1 + n2)
+            }
+        })"
+  by auto
+termination proof (relation "Wellfounded.measure (length \<circ> snd)", goal_cases)
+  show "wf (Wellfounded.measure (length \<circ> snd))" by simp
+qed (subst (asm) set_pmf_of_set;
+     force intro!: le_less_trans[OF length_filter_le] simp: threeway_partition_def)+
+
+declare rquicksort'.simps [simp del]
+
+lemma rquicksort'_Nil [simp]: "rquicksort' R [] = return_pmf ([], 0)"
+  by (simp add: rquicksort'.simps)
+
+context
+begin
+  
+qualified definition lesss :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "lesss R x xs = filter (\<lambda>y. (y, x) \<in> R \<and> (x, y) \<notin> R) xs"
+
+qualified definition greaters :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "greaters R x xs = filter (\<lambda>y. (x, y) \<in> R \<and> (y, x) \<notin> R) xs"
+
+qualified lemma lesss_Cons:
+  "lesss R x (y # ys) = 
+     (if (y, x) \<in> R \<and> (x, y) \<notin> R then y # lesss R x ys else lesss R x ys)"
+  by (simp add: lesss_def)
+
+qualified lemma length_lesss_le [intro]: "length (lesss R x xs) \<le> length xs"
+  by (simp add: lesss_def)
+
+qualified lemma length_lesss_less [intro]:
+  assumes "x \<in> set xs"
+  shows   "length (lesss R x xs) < length xs"
+  using assms by (induction xs) (auto simp: lesss_Cons intro: le_less_trans)
+
+qualified lemma greaters_Cons:
+  "greaters R x (y # ys) = 
+     (if (x, y) \<in> R \<and> (y, x) \<notin> R then y # greaters R x ys else greaters R x ys)"
+  by (simp add: greaters_def)
+
+qualified lemma length_greaters_le [intro]: "length (greaters R x xs) \<le> length xs"
+  by (simp add: greaters_def)
+
+qualified lemma length_greaters_less [intro]:
+  assumes "x \<in> set xs"
+  shows   "length (greaters R x xs) < length xs"
+  using assms by (induction xs) (auto simp: greaters_Cons intro: le_less_trans)
+  
+
+text \<open>
+  The following function counts the comparisons made by the modified randomised Quicksort.
+\<close>
+function rqs'_cost :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> nat pmf" where
+  "rqs'_cost R xs = 
+     (if xs = [] then 
+        return_pmf 0
+      else
+        do {
+          i \<leftarrow> pmf_of_set {..<length xs};
+          let x = xs ! i;
+          map_pmf (\<lambda>(n1,n2). length xs - 1 + n1 + n2) 
+            (pair_pmf (rqs'_cost R (lesss R x xs)) (rqs'_cost R (greaters R x xs)))
+        })"
+  by auto
+termination by (relation "Wellfounded.measure (length \<circ> snd)") auto
+
+declare rqs'_cost.simps [simp del]
+
+lemma rqs'_cost_nonempty:
+  "xs \<noteq> [] \<Longrightarrow> rqs'_cost R xs = 
+     do {
+       i \<leftarrow> pmf_of_set {..<length xs};
+       let x = xs ! i;
+       n1 \<leftarrow> rqs'_cost R (lesss R x xs);
+       n2 \<leftarrow> rqs'_cost R (greaters R x xs);
+       return_pmf (length xs - 1 + n1 + n2)
+     }"
+  by (subst rqs'_cost.simps) (auto simp: pair_pmf_def Let_def map_bind_pmf)
+
+lemma finite_set_pmf_rqs'_cost [simp, intro]:
+  "finite (set_pmf (rqs'_cost R xs))"
+  by (induction R xs rule: rqs'_cost.induct) (auto simp: rqs'_cost.simps Let_def)
+
+(* TODO: Move? *)
+lemma expectation_pair_pmf_fst [simp]:
+  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
+  shows "measure_pmf.expectation (pair_pmf p q) (\<lambda>x. f (fst x)) = measure_pmf.expectation p f"
+proof -
+  have "measure_pmf.expectation (pair_pmf p q) (\<lambda>x. f (fst x)) = 
+          measure_pmf.expectation (map_pmf fst (pair_pmf p q)) f" by simp
+  also have "map_pmf fst (pair_pmf p q) = p"
+    by (simp add: map_fst_pair_pmf)
+  finally show ?thesis .
+qed
+
+lemma expectation_pair_pmf_snd [simp]:
+  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
+  shows "measure_pmf.expectation (pair_pmf p q) (\<lambda>x. f (snd x)) = measure_pmf.expectation q f"
+proof -
+  have "measure_pmf.expectation (pair_pmf p q) (\<lambda>x. f (snd x)) = 
+          measure_pmf.expectation (map_pmf snd (pair_pmf p q)) f" by simp
+  also have "map_pmf snd (pair_pmf p q) = q"
+    by (simp add: map_snd_pair_pmf)
+  finally show ?thesis .
+qed
+
+qualified lemma length_lesss_le_sorted:
+  assumes "sorted_wrt R xs" "i < length xs"
+  shows   "length (lesss R (xs ! i) xs) \<le> i"
+  using assms by (induction arbitrary: i rule: sorted_wrt.induct)
+                 (force simp: lesss_def nth_Cons le_Suc_eq split: nat.splits)+
+
+qualified lemma length_greaters_le_sorted:
+  assumes "sorted_wrt R xs" "i < length xs"
+  shows   "length (greaters R (xs ! i) xs) \<le> length xs - i - 1"
+  using assms 
+  by (induction arbitrary: i rule: sorted_wrt.induct)
+     (force simp: greaters_def nth_Cons le_Suc_eq split: nat.splits)+
+
+qualified lemma length_lesss_le':
+  assumes "i < length xs" "linorder_on A R" "set xs \<subseteq> A"
+  shows   "length (lesss R (insort_wrt R xs ! i) xs) \<le> i"
+proof -
+  define x where "x = insort_wrt R xs ! i"
+  define less where "less = (\<lambda>x y. (x,y) \<in> R \<and> (y,x) \<notin> R)"
+  have "length (lesss R x xs) = size {# y \<in># mset xs. less y x #}"
+    by (simp add: lesss_def size_mset [symmetric] less_def mset_filter del: size_mset)
+  also have "mset xs = mset (insort_wrt R xs)" by simp
+  also have "size {#y \<in># mset (insort_wrt R xs). less y x#} =
+               length (lesss R x (insort_wrt R xs))"
+    by (simp only: mset_filter [symmetric] size_mset lesss_def less_def)
+  also have "\<dots> \<le> i" unfolding x_def by (rule length_lesss_le_sorted) (use assms in auto)
+  finally show ?thesis unfolding x_def .
+qed
+
+qualified lemma length_greaters_le':
+  assumes "i < length xs" "linorder_on A R" "set xs \<subseteq> A"
+  shows   "length (greaters R (insort_wrt R xs ! i) xs) \<le> length xs - i - 1"
+proof -
+  define x where "x = insort_wrt R xs ! i"
+  define less where "less = (\<lambda>x y. (x,y) \<in> R \<and> (y,x) \<notin> R)"
+  have "length (greaters R x xs) = size {# y \<in># mset xs. less x y #}"
+    by (simp add: greaters_def size_mset [symmetric] less_def mset_filter del: size_mset)
+  also have "mset xs = mset (insort_wrt R xs)" by simp
+  also have "size {#y \<in># mset (insort_wrt R xs). less x y#} =
+               length (greaters R x (insort_wrt R xs))"
+    by (simp only: mset_filter [symmetric] size_mset greaters_def less_def)
+  also have "\<dots> \<le> length (insort_wrt R xs) - i - 1" unfolding x_def
+    by (rule length_greaters_le_sorted) (use assms in auto)
+  finally show ?thesis unfolding x_def by simp
+qed
+
+text \<open>
+  We can show quite easily that the expected number of comparisons in this modified
+  QuickSort is bounded above by the expected number of comparisons on a list of the same length
+  with no repeated elements.
+\<close>
+theorem rqs'_cost_expectation_le:
+  assumes "linorder_on A R" "set xs \<subseteq> A"
+  shows   "measure_pmf.expectation (rqs'_cost R xs) real \<le> rqs_cost_exp (length xs)"
+  using assms
+proof (induction R xs rule: rqs'_cost.induct)
+  case (1 R xs)
+  show ?case
+  proof (cases "xs = []")
+    case False
+    define n where "n = length xs - 1"
+    have length_eq: "length xs = Suc n" using False by (simp add: n_def)
+    define E where "E = (\<lambda>xs. measure_pmf.expectation (rqs'_cost R xs) real)"
+    define f where "f = (\<lambda>x. rqs_cost_exp (length (lesss R x xs)) +
+                                rqs_cost_exp (length (greaters R x xs)))"
+    have "rqs'_cost R xs =
+            do {
+              i \<leftarrow> pmf_of_set {..<length xs};
+              map_pmf (\<lambda>(n1, y). length xs - Suc 0 + n1 + y)
+                (pair_pmf (rqs'_cost R (lesss R (xs ! i) xs))
+                          (rqs'_cost R (greaters R (xs ! i) xs)))
+            }"
+      using False by (subst rqs'_cost.simps) (simp_all add: Let_def)
+    also have "measure_pmf.expectation \<dots> real = real n +
+           (\<Sum>k<length xs. E (lesss R (xs ! k) xs) + E (greaters R (xs ! k) xs)) / real (length xs)"
+      using False
+      by (subst pmf_expectation_bind_pmf_of_set)
+         (auto intro!: finite_imageI finite_cartesian_product simp: case_prod_unfold
+            integrable_measure_pmf_finite sum_divide_distrib [symmetric] field_simps
+            length_eq sum.distrib E_def)
+    also have "\<dots> \<le> real n + (\<Sum>k<length xs. f (xs ! k)) / real (length xs)"
+      unfolding E_def f_def using False "1.prems"
+      by (intro add_mono order.refl divide_right_mono sum_mono "1.IH"[OF _ _ refl] False)
+         (auto simp: lesss_def greaters_def)
+    also have "(\<Sum>k<length xs. f (xs ! k)) = (\<Sum>x\<in>#mset xs. f x)"
+      by (simp only: mset_map [symmetric] sum_mset_sum_list sum_list_sum_nth)
+         (simp_all add: atLeast0LessThan)
+    also have "mset xs = mset (insort_wrt R xs)"
+      by simp
+    also have "(\<Sum>x\<in>#\<dots>. f x) = (\<Sum>i<length xs. f (insort_wrt R xs ! i))"
+      by (simp only: mset_map [symmetric] sum_mset_sum_list sum_list_sum_nth)
+         (simp_all add: atLeast0LessThan)
+    also have "\<dots> \<le> (\<Sum>i<length xs. rqs_cost_exp i + rqs_cost_exp (length xs - i - 1))"
+      unfolding f_def
+    proof (intro sum_mono add_mono rqs_cost_exp_leI)
+      fix i assume i: "i \<in> {..<length xs}"
+      show "length (lesss R (insort_wrt R xs ! i) xs) \<le> i"
+        using i "1.prems" by (intro length_lesss_le'[where A = A]) auto
+      show "length (greaters R (insort_wrt R xs ! i) xs) \<le> length xs - i - 1"
+        using i "1.prems" by (intro length_greaters_le'[where A = A]) auto
+    qed
+    also have "\<dots> = (\<Sum>i\<le>n. rqs_cost_exp i + rqs_cost_exp (n - i))"
+      by (intro sum.cong) (auto simp: length_eq)
+    also have "real n + \<dots> / real (length xs) = rqs_cost_exp (length xs)"
+      by (simp add: length_eq rqs_cost_exp.simps(2))
+    finally show ?thesis by (simp add: divide_right_mono)
+  qed (auto simp: rqs'_cost.simps)
+qed
+
+end
 end

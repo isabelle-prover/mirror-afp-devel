@@ -125,6 +125,22 @@ lemma size_bst_of_list_distinct [simp]:
   shows   "size (bst_of_list xs) = length xs"
   using assms by (induction xs rule: rev_induct) (auto simp: size_bst_insert)
 
+lemma strict_mono_on_imp_less_iff:
+  assumes "strict_mono_on f A" "x \<in> A" "y \<in> A"
+  shows   "f x < (f y :: 'b :: linorder) \<longleftrightarrow> x < (y :: 'a :: linorder)"
+  using assms by (cases x y rule: linorder_cases; force simp: strict_mono_on_def)+
+
+lemma bst_of_list_map: 
+  fixes f :: "'a :: linorder \<Rightarrow> 'b :: linorder"
+  assumes "strict_mono_on f A" "set xs \<subseteq> A"
+  shows   "bst_of_list (map f xs) = map_tree f (bst_of_list xs)"
+  using assms
+proof (induction xs rule: bst_of_list.induct)
+  case (2 x xs)
+  have "[xa\<leftarrow>xs . f xa < f x] = [xa\<leftarrow>xs . xa < x]" and "[xa\<leftarrow>xs . f xa > f x] = [xa\<leftarrow>xs . xa > x]"
+    using "2.prems" by (auto simp: strict_mono_on_imp_less_iff intro!: filter_cong)
+  with 2 show ?case by (auto simp: filter_map o_def)
+qed auto  
 
 
 subsection \<open>Random BSTs\<close>
@@ -252,6 +268,24 @@ proof -
   thus ?thesis using \<open>finite A\<close> by (simp add: distinct_card)
 qed
 
+lemma random_bst_image:
+  assumes "finite A" "strict_mono_on f A"
+  shows   "random_bst (f ` A) = map_pmf (map_tree f) (random_bst A)"
+proof -
+  from assms(2) have inj: "inj_on f A" by (rule strict_mono_on_imp_inj_on)
+  with assms have "inj_on (map f) (permutations_of_set A)"
+    by (intro inj_on_mapI) auto
+  with assms inj have "random_bst (f ` A) = 
+                         map_pmf (\<lambda>x. bst_of_list (map f x)) (pmf_of_set (permutations_of_set A))"
+    by (simp add: random_bst_altdef permutations_of_set_image_inj map_pmf_of_set_inj [symmetric]
+                  pmf.map_comp o_def)
+  also have "\<dots> = map_pmf (map_tree f) (random_bst A)"
+    unfolding random_bst_altdef[OF \<open>finite A\<close>] pmf.map_comp o_def using assms
+    by (intro map_pmf_cong refl bst_of_list_map[of f A]) (auto dest: permutations_of_setD)
+  finally show ?thesis .
+qed
+
+
 text \<open>
   We can also re-phrase the non-recursive definition using the @{const fold_random_permutation}
   combinator from the HOL-Probability library, which folds over a given set in random order.
@@ -297,133 +331,204 @@ lemma eheight_Node:
   by (cases l; cases r) (simp_all add: eheight_def max_power_distrib_right)
 
 
+fun eheight_rbst :: "nat \<Rightarrow> nat pmf" where
+  "eheight_rbst 0 = return_pmf 0"
+| "eheight_rbst (Suc 0) = return_pmf 1"
+| "eheight_rbst (Suc n) =
+     do {
+       k \<leftarrow> pmf_of_set {..n};
+       h1 \<leftarrow> eheight_rbst k;
+       h2 \<leftarrow> eheight_rbst (n - k);
+       return_pmf (2 * max h1 h2)}"
+
+definition eheight_exp :: "nat \<Rightarrow> real" where
+  "eheight_exp n = measure_pmf.expectation (eheight_rbst n) real"
+
+lemma eheight_rbst_reduce:
+  assumes "n > 1"
+  shows   "eheight_rbst n =
+             do {k \<leftarrow> pmf_of_set {..<n}; h1 \<leftarrow> eheight_rbst k; h2 \<leftarrow> eheight_rbst (n - k - 1);
+                 return_pmf (2 * max h1 h2)}"
+  using assms by (cases n rule: eheight_rbst.cases) (simp_all add: lessThan_Suc_atMost)
+
+lemma Leaf_in_set_random_bst_iff:
+  assumes "finite A"
+  shows   "Leaf \<in> set_pmf (random_bst A) \<longleftrightarrow> A = {}"
+proof
+  assume "Leaf \<in> set_pmf (random_bst A)"
+  from size_random_bst[OF this] and assms show "A = {}" by auto
+qed auto  
+
+lemma eheight_rbst:
+  assumes "finite A"
+  shows   "eheight_rbst (card A) = map_pmf eheight (random_bst A)"
+using assms
+proof (induction A rule: finite_psubset_induct)
+  case (psubset A)
+ define rank where "rank = linorder_rank {(x,y). x \<le> y} A"
+  from \<open>finite A\<close> have "A = {} \<or> is_singleton A \<or> card A > 1"
+    by (auto simp: not_less le_Suc_eq is_singleton_altdef)
+  then consider "A = {}" | "is_singleton A" | "card A > 1" by blast
+  thus ?case
+  proof cases
+    case 3
+    hence nonempty: "A \<noteq> {}" by auto
+    from 3 have "\<not>is_singleton A" by (auto simp: is_singleton_def)
+    hence exists_other: "\<exists>y\<in>A. y \<noteq> x" for x using \<open>A \<noteq> {}\<close> by (force simp: is_singleton_def)
+
+    hence "map_pmf eheight (random_bst A) = 
+             do {
+               x \<leftarrow> pmf_of_set A;
+               l \<leftarrow> random_bst {y \<in> A. y < x};
+               r \<leftarrow> random_bst {y \<in> A. y > x};
+               return_pmf (eheight (Node l x r))
+             }"
+      using \<open>finite A\<close> by (subst random_bst.simps) (auto simp: map_bind_pmf)
+    also have "\<dots> = do {
+                      x \<leftarrow> pmf_of_set A;
+                      l \<leftarrow> random_bst {y \<in> A. y < x};
+                      r \<leftarrow> random_bst {y \<in> A. y > x};
+                      return_pmf (2 * max (eheight l) (eheight r))
+                    }"
+      using 3 \<open>finite A\<close> exists_other
+      by (intro bind_pmf_cong refl, subst eheight_Node)
+         (force simp: Leaf_in_set_random_bst_iff not_less nonempty eheight_Node)+
+    also have "\<dots> = do {
+                      x \<leftarrow> pmf_of_set A;
+                      h1 \<leftarrow> map_pmf eheight (random_bst {y \<in> A. y < x});
+                      h2 \<leftarrow> map_pmf eheight (random_bst {y \<in> A. y > x});
+                      return_pmf (2 * max h1 h2)
+                    }"
+      by (simp add: bind_map_pmf)
+    also have "\<dots> = do {
+                      x \<leftarrow> pmf_of_set A;
+                      h1 \<leftarrow> eheight_rbst (card {y \<in> A. y < x});
+                      h2 \<leftarrow> eheight_rbst (card {y \<in> A. y > x});
+                      return_pmf (2 * max h1 h2)
+                    }"
+      using \<open>A \<noteq> {}\<close> \<open>finite A\<close> by (intro bind_pmf_cong psubset.IH [symmetric] refl) auto
+    also have "\<dots> = do {
+                      k \<leftarrow> map_pmf rank (pmf_of_set A);
+                      h1 \<leftarrow> eheight_rbst k;
+                      h2 \<leftarrow> eheight_rbst (card A - k - 1);
+                      return_pmf (2 * max h1 h2)
+                    }"
+      unfolding bind_map_pmf
+    proof (intro bind_pmf_cong refl, goal_cases)
+      case (1 x)
+      have "rank x = card {y\<in>A-{x}. y \<le> x}" by (simp add: rank_def linorder_rank_def)
+      also have "{y\<in>A-{x}. y \<le> x} = {y\<in>A. y < x}" by auto
+      finally show ?case by simp
+    next
+      case (2 x)
+      have "A - {x} = {y\<in>A-{x}. y \<le> x} \<union> {y\<in>A. y > x}" by auto
+      also have "card \<dots> = rank x + card {y\<in>A. y > x}"
+        using \<open>finite A\<close> by (subst card_Un_disjoint) (auto simp: rank_def linorder_rank_def)
+      finally have "card {y\<in>A. y > x} = card A - rank x - 1"
+        using 2 \<open>finite A\<close> \<open>A \<noteq> {}\<close> by simp
+      thus ?case by simp
+    qed
+    also have "map_pmf rank (pmf_of_set A) = pmf_of_set {..<card A}"
+      using \<open>A \<noteq> {}\<close> \<open>finite A\<close> unfolding rank_def
+      by (intro map_pmf_of_set_bij_betw bij_betw_linorder_rank[of UNIV]) auto
+    also have "do {
+                 k \<leftarrow> pmf_of_set {..<card A};
+                 h1 \<leftarrow> eheight_rbst k;
+                 h2 \<leftarrow> eheight_rbst (card A - k - 1);
+                 return_pmf (2 * max h1 h2)
+               } = eheight_rbst (card A)"
+      by (rule eheight_rbst_reduce [symmetric]) fact+
+    finally show ?thesis ..
+  qed (auto simp: is_singleton_def)
+qed
+
+lemma finite_pmf_set_eheight_rbst [simp, intro]: "finite (set_pmf (eheight_rbst n))"
+proof -
+  have "eheight_rbst n = map_pmf eheight (random_bst {..<n})"
+    by (subst eheight_rbst [symmetric]) auto
+  also have "finite (set_pmf \<dots>)" by simp
+  finally show ?thesis .
+qed
+
+lemma eheight_exp_0 [simp]: "eheight_exp 0 = 0"
+  by (simp add: eheight_exp_def)
+
+lemma eheight_exp_1 [simp]: "eheight_exp (Suc 0) = 1"
+  by (simp add: eheight_exp_def lessThan_Suc)
+
+lemma eheight_exp_reduce_bound:
+  assumes "n > 1"
+  shows   "eheight_exp n \<le> 4 / n * (\<Sum>k<n. eheight_exp k)"
+proof -
+  have [simp]: "real (max a b) = max (real a) (real b)" for a b
+    by (simp add: max_def)
+  let ?f = "\<lambda>(h1,h2). max h1 h2"
+  let ?p = "\<lambda>k. pair_pmf (eheight_rbst k) (eheight_rbst (n - Suc k))"
+  have "eheight_exp n = measure_pmf.expectation (eheight_rbst n) real"
+    by (simp add: eheight_exp_def)
+  also have "\<dots> = 1 / real n * (\<Sum>k<n. measure_pmf.expectation
+                                         (map_pmf (\<lambda>(h1,h2). 2 * max h1 h2) (?p k)) real)"
+    (is "_ = _ * ?S") unfolding pair_pmf_def map_bind_pmf
+    by (subst eheight_rbst_reduce [OF assms], subst pmf_expectation_bind_pmf_of_set)
+       (insert assms, auto simp: sum_divide_distrib divide_simps)
+  also have "?S = (\<Sum>k<n. measure_pmf.expectation (map_pmf (\<lambda>x. 2 * x) (map_pmf ?f (?p k))) real)"
+    by (simp only: pmf.map_comp o_def case_prod_unfold)
+  also have "\<dots> = 2 * (\<Sum>k<n. measure_pmf.expectation (map_pmf ?f (?p k)) real)" (is "_ = _ * ?S'")
+    by (subst integral_map_pmf) (simp add: sum_distrib_left)
+  also have "?S' = (\<Sum>k<n. measure_pmf.expectation (?p k) (\<lambda>(h1,h2). max (real h1) (real h2)))"
+    by (simp add: case_prod_unfold)
+  also have "\<dots> \<le> (\<Sum>k<n. measure_pmf.expectation (?p k) (\<lambda>(h1,h2). real h1 + real h2))"
+    unfolding integral_map_pmf case_prod_unfold
+    by (intro sum_mono Bochner_Integration.integral_mono integrable_measure_pmf_finite) auto
+  also have "\<dots> = (\<Sum>k<n. eheight_exp k) + (\<Sum>k<n. eheight_exp (n - Suc k))"
+    by (subst expectation_add_pair_pmf) (auto simp: sum.distrib eheight_exp_def)
+  also have "(\<Sum>k<n. eheight_exp (n - Suc k)) = (\<Sum>k<n. eheight_exp k)"
+    by (intro sum.reindex_bij_witness[of _ "\<lambda>k. n - Suc k" "\<lambda>k. n - Suc k"]) auto
+  also have "1 / real n * (2 * (\<dots> + \<dots>)) = 4 / real n * \<dots>" by simp
+  finally show ?thesis using assms by (simp_all add: mult_left_mono divide_right_mono)
+qed
+
+
 text \<open>
   We now define the following upper bound on the expected exponential height due to
   Cormen\ \textit{et\ al.}~\cite{cormen}:
 \<close>
-definition eheight_exp_approx :: "nat \<Rightarrow> real" where
-  "eheight_exp_approx n = real ((n + 3) choose 3) / 4"
+lemma eheight_exp_bound: "eheight_exp n \<le> real ((n + 3) choose 3) / 4"
+proof (induction n rule: less_induct)
+  case (less n)
+  consider "n = 0" | "n = 1" | "n > 1" by force
+  thus ?case
+  proof cases
+    case 3
+    hence "eheight_exp n \<le> 4 / n * (\<Sum>k<n. eheight_exp k)"
+      by (rule eheight_exp_reduce_bound)
+    also have "(\<Sum>k<n. eheight_exp k) \<le> (\<Sum>k<n. real ((k + 3) choose 3) / 4)"
+      by (intro sum_mono less.IH) auto
+    also have "\<dots> = real (\<Sum>k<n. ((k + 3) choose 3)) / 4"
+      by (simp add: sum_divide_distrib)
+    also have "(\<Sum>k<n. ((k + 3) choose 3)) = (\<Sum>k\<le>n - 1. ((k + 3) choose 3))"
+      using \<open>n > 1\<close> by (intro sum.cong) auto
+    also have "\<dots> = ((n + 3) choose 4)"
+      using choose_rising_sum(1)[of 3 "n - 1"] and \<open>n > 1\<close> by (simp add: add_ac Suc3_eq_add_3)
+    also have "4 / real n * (\<dots> / 4) = real ((n + 3) choose 3) / 4" using \<open>n > 1\<close>
+      by (cases n) (simp_all add: binomial_fact fact_numeral divide_simps)
+    finally show ?thesis using \<open>n > 1\<close> by (simp add: mult_left_mono divide_right_mono)
+  qed (auto simp: eval_nat_numeral)
+qed
+
 
 text \<open>
   We then show that this is indeed an upper bound on the expected exponential height by induction
   over the set of elements. This proof mostly follows that by Cormen\ \textit{et al.}~\cite{cormen},
   and partially an answer on the Computer Science Stack Exchange~\cite{sofl}.
 \<close>
-lemma eheight_expectation_bound:
-  assumes "finite A"
-  shows   "measure_pmf.expectation (random_bst A) eheight \<le> eheight_exp_approx (card A)"
-using assms
-proof (induction A rule: finite_psubset_induct)
-  case (psubset A)
-  define n where "n = card A"
-  write measure_pmf.expectation ("EXP _ _" [1000, 1000] 1000)
-  consider "card A = 0" | "card A = 1" | "card A > 1" by linarith
-  thus ?case
-  proof cases
-    assume "card A = 0"
-    with \<open>finite A\<close> show ?thesis by (simp add: eheight_def eheight_exp_approx_def)
-  next
-    assume "card A = 1"
-    then obtain x where "A = {x}" by (erule card_1_singletonE)
-    thus ?thesis by (simp add: eheight_exp_approx_def eheight_def eval_nat_numeral)
-  next
-    assume "card A > 1"
-    hence "A \<noteq> {}" by auto
-    note A = \<open>finite A\<close> \<open>A \<noteq> {}\<close>
-    from A have n: "n \<noteq> 0" by (auto simp: n_def)
-    let ?rank = "linorder_rank {(x,y). x \<le> y} A"
-    let ?eheight' = "\<lambda>t::'a tree. if t = Leaf then 0 else (2 ^ height t :: nat)"
-
-    have "EXP (random_bst A) (\<lambda>t. real (eheight t)) =
-            measure_pmf.expectation (map_pmf (\<lambda>t. real (eheight t)) (random_bst A)) id"
-      unfolding integral_map_pmf using A
-      by (intro integral_cong_AE) (auto simp: random_bst_altdef eheight_def AE_measure_pmf_iff)
-    also have "map_pmf (\<lambda>t. real (eheight t)) (random_bst A) =
-      pmf_of_set A \<bind> (\<lambda>x. map_pmf (\<lambda>(l,r). real (eheight (Node l x r)))
-        (pair_pmf (random_bst {y\<in>A. y < x}) (random_bst {y\<in>A. y > x})))"
-      using A by (subst random_bst.simps)
-                 (simp_all add: A map_pmf_def bind_assoc_pmf bind_return_pmf pair_pmf_def)
-    also have "\<dots> =
-      pmf_of_set A \<bind> (\<lambda>x. map_pmf (\<lambda>(l,r). 2 * real (max (eheight l) (eheight r)))
-        (pair_pmf (random_bst {y\<in>A. y < x}) (random_bst {y\<in>A. y > x})))"
-    proof (intro bind_pmf_cong map_pmf_cong refl, clarify, goal_cases)
-      case (1 x l r)
-      from 1 and A have "card (A - {x}) = card A - 1" by simp
-      with \<open>card A > 1\<close> have "A - {x} \<noteq> {}" by (intro notI) simp_all
-      also have "A - {x} = {y \<in> A. y < x} \<union> {y \<in> A. y > x}" by auto
-      finally have "{y \<in> A. y < x} \<noteq> {} \<or> {y \<in> A. y > x} \<noteq> {}" by blast
-      with 1(2) and A have "l \<noteq> Leaf \<or> r \<noteq> Leaf" by (auto simp: random_bst_altdef)
-      thus ?case by (simp add: eheight_Node)
-    qed
-    also from A have "EXP \<dots> id =
-      (\<Sum>x\<in>A. EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
-                (\<lambda>(l,r). 2 * max (eheight l) (eheight r))) / n" (is "_ = ?S / _")
-      by (subst pmf_expectation_bind_pmf_of_set)
-         (auto intro!: finite_cartesian_product
-               simp: case_prod_unfold n_def sum_divide_distrib field_simps)
-    also have "?S \<le> (\<Sum>x\<in>A. 2 * (eheight_exp_approx (?rank x) +
-                                 eheight_exp_approx (n - 1 - ?rank x)))"
-    proof (intro sum_mono, goal_cases)
-      case (1 x)
-      define lhs where
-        "lhs = EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
-                   (\<lambda>(l,r). 2 * real (max (eheight l) (eheight r)))"
-      have "lhs = 2 * EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
-                          (\<lambda>(l,r). real (max (eheight l) (eheight r)))" (is "_ = _ * ?E")
-        by (subst integral_mult_right_zero [symmetric]) (simp add: case_prod_unfold lhs_def)
-      also have "?E \<le> EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
-                  (\<lambda>(l,r). real (eheight l) + real (eheight r))"
-        using A by (intro integral_mono integrable_measure_pmf_finite)
-                   (auto simp: finite_cartesian_product max_def split: if_splits)
-      also have "\<dots> = EXP (random_bst {y \<in> A. y < x}) eheight +
-                      EXP (random_bst {y \<in> A. y > x}) eheight"
-        unfolding eheight_def using A by (intro expectation_add_pair_pmf) auto
-      also have "\<dots> \<le> eheight_exp_approx (card {y \<in> A. y < x}) +
-                      eheight_exp_approx (card {y \<in> A. y > x})"
-        using \<open>x \<in> A\<close> by (intro add_mono psubset.IH) auto
-      also have "{y \<in> A. y > x} = A - {x} - {y \<in> A. y < x}" by auto
-      also have "card \<dots> = n - 1 - card {y \<in> A. y < x}"
-        using A and \<open>x \<in> A\<close>  by (subst card_Diff_subset) (auto simp: n_def)
-      also have "card {y \<in> A. y < x} = ?rank x"
-        by (simp add: linorder_rank_def order.strict_iff_order conj_comms)
-      finally show ?case unfolding lhs_def by (simp_all add: case_prod_unfold)
-    qed
-    also have "\<dots> = 2 * (\<Sum>x\<in>A. eheight_exp_approx (?rank x) +
-                                eheight_exp_approx (n - 1 - ?rank x))" (is "_ = _ * ?S")
-      by (simp add: sum_distrib_left)
-    also have "?S = (\<Sum>i<n. eheight_exp_approx i + eheight_exp_approx (n - 1 - i))"
-      unfolding n_def using A by (intro sum.reindex_bij_betw bij_betw_linorder_rank[of UNIV]) auto
-    also have "\<dots> = (\<Sum>i<n. eheight_exp_approx i) + (\<Sum>i<n. eheight_exp_approx (n - 1 - i))"
-      by (simp add: sum.distrib)
-    also have "(\<Sum>i<n. eheight_exp_approx (n - 1 - i)) = (\<Sum>i<n. eheight_exp_approx i)"
-      by (intro sum.reindex_bij_witness[of _ "\<lambda>i. n - 1 - i" "\<lambda>i. n - 1 - i"]) auto
-    also have "2 * (\<dots> + \<dots>) = 4 * \<dots>" by simp
-    also have "4 * (\<Sum>i<n. eheight_exp_approx i) / real n =
-                 (\<Sum>i<n. (i + 3) choose 3) / real n"
-      using n by (simp add: eheight_exp_approx_def sum_divide_distrib [symmetric])
-    also have "(\<Sum>i<n. (i + 3) choose 3) = (\<Sum>i\<le>n - 1. (i + 3) choose 3)"
-      using n by (intro sum.cong refl) auto
-    also have "\<dots> = (n + 3) choose 4"
-      using choose_rising_sum(1)[of 3 "n - 1"] n by (simp add: add_ac Suc3_eq_add_3)
-    also have "real ((n + 3) choose 4) = fact (n + 3) / (fact 4 * fact (n - 1))"
-      using n by (subst binomial_fact) simp_all
-    also have "\<dots> / n = fact (n + 3) / (fact 3 * fact n) / 4"
-      using n by (simp add: divide_simps fact_reduce[of n] fact_reduce[of 4])
-    also have "fact (n + 3) / (fact 3 * fact n) = ((n + 3) choose 3)"
-      using n by (subst binomial_fact) simp_all
-    also have "real ((n + 3) choose 3) / 4 = eheight_exp_approx n"
-      by (simp add: eheight_exp_approx_def)
-    finally show ?thesis using A by (simp add: n_def divide_simps)
-  qed
-qed
-
 
 text \<open>
   Since the function $\uplambda x.\ 2 ^ x$ is convex, we can then easily derive a bound on the
   actual height using Jensen's inequality:
 \<close>
 definition height_exp_approx :: "nat \<Rightarrow> real" where
-  "height_exp_approx n = log 2 (eheight_exp_approx n) + 1"
+  "height_exp_approx n = log 2 (real ((n + 3) choose 3) / 4) + 1"
 
 theorem height_expectation_bound:
   assumes "finite A" "A \<noteq> {}"
@@ -445,7 +550,13 @@ proof -
     using assms
     by (intro integral_cong_AE)
        (auto simp: AE_measure_pmf_iff random_bst_altdef eheight_def)
-  also have "\<dots> \<le> eheight_exp_approx (card A)" by (rule eheight_expectation_bound) fact+
+  also have "\<dots> = measure_pmf.expectation (map_pmf eheight (random_bst A)) real"
+    by simp
+  also have "map_pmf eheight (random_bst A) = eheight_rbst (card A)"
+    by (rule eheight_rbst [symmetric]) fact+
+  also have "measure_pmf.expectation \<dots> real = eheight_exp (card A)"
+    by (simp add: eheight_exp_def)
+  also have "\<dots> \<le> real ((card A + 3) choose 3) / 4" by (rule eheight_exp_bound)
   also have "measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t - 1)) =
                measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
   proof (intro integral_cong_AE AE_pmfI, goal_cases)
@@ -454,10 +565,10 @@ proof -
       by (subst of_nat_diff) (auto simp: Suc_le_eq random_bst_altdef)
   qed auto
   finally have "2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)
-                  \<le> eheight_exp_approx (card A)" .
+                  \<le> real ((card A + 3) choose 3) / 4" .
   hence "log 2 (2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)) \<le>
-           log 2 (eheight_exp_approx (card A))" (is "?lhs \<le> ?rhs")
-    by (subst log_le_cancel_iff) (auto simp: eheight_exp_approx_def)
+           log 2 (real ((card A + 3) choose 3) / 4)" (is "?lhs \<le> ?rhs")
+    by (subst log_le_cancel_iff) (auto simp: )
   also have "?lhs = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
     by simp
   also have "\<dots> = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t)) - 1"
@@ -510,7 +621,7 @@ proof -
   proof eventually_elim
     case (elim n)
     have "height_exp_approx n = log 2 (real (n + 3 choose 3) / 4) + 1"
-      by (simp add: height_exp_approx_def eheight_exp_approx_def log_divide)
+      by (simp add: height_exp_approx_def log_divide)
     also have "real ((n + 3) choose 3) = real (n + 3) gchoose 3"
       by (simp add: binomial_gbinomial)
     also have "\<dots> / 4 = (real n + 1) * (real n + 2) * (real n + 3) / 24"
