@@ -15,7 +15,7 @@ theory Word_Lemmas
   Complex_Main
   Aligned
   Word_Enum
-  "HOL-Library.Prefix_Order"
+  "HOL-Library.Sublist"
 begin
 
 text \<open>Set up quickcheck to support words\<close>
@@ -181,7 +181,7 @@ lemma bl_pad_to_length:
   using lbl by (simp add: bl_pad_to_def)
 
 lemma bl_pad_to_prefix:
-  "bl \<le> bl_pad_to bl sz"
+  "prefix bl (bl_pad_to bl sz)"
   by (simp add: bl_pad_to_def)
 
 lemma same_length_is_parallel:
@@ -1475,8 +1475,8 @@ lemma power_le_mono:
   done
 
 lemma sublist_equal_part:
-  "xs \<le> ys \<Longrightarrow> take (length xs) ys = xs"
-  by (clarsimp simp: prefix_def less_eq_list_def)
+  "prefix xs ys \<Longrightarrow> take (length xs) ys = xs"
+  by (clarsimp simp: prefix_def)
 
 lemma two_power_eq:
   "\<lbrakk>n < len_of TYPE('a); m < len_of TYPE('a)\<rbrakk>
@@ -1486,18 +1486,10 @@ lemma two_power_eq:
    apply (simp add: power_le_mono[where 'a='a])+
   done
 
-lemma prefix_length_less:
-  "xs < ys \<Longrightarrow> length xs < length ys"
-  apply (clarsimp simp: less_list_def' strict_prefix_def less_eq_list_def[symmetric])  
-  apply (frule prefix_length_le)
-  apply (rule ccontr, simp)
-  apply (clarsimp simp: less_eq_list_def prefix_def)
-  done
-
-lemmas take_less = take_strict_prefix [folded less_list_def']
+lemmas take_less = take_strict_prefix
 
 lemma not_prefix_longer:
-  "\<lbrakk> length xs > length ys \<rbrakk> \<Longrightarrow> \<not> xs \<le> ys"
+  "\<lbrakk> length xs > length ys \<rbrakk> \<Longrightarrow> \<not> prefix xs ys"
   by (clarsimp dest!: prefix_length_le)
 
 lemma of_bl_length:
@@ -1582,10 +1574,6 @@ lemma of_nat_inj:
   "\<lbrakk>x < 2 ^ len_of TYPE('a); y < 2 ^ len_of TYPE('a)\<rbrakk> \<Longrightarrow>
    (of_nat x = (of_nat y :: 'a :: len word)) = (x = y)"
   by (simp add: word_unat.norm_eq_iff [symmetric])
-
-lemma map_prefixI:
-  "xs \<le> ys \<Longrightarrow> map f xs \<le> map f ys"
-  by (clarsimp simp: less_eq_list_def prefix_def)
 
 lemma if_Some_None_eq_None:
   "((if P then Some v else None) = None) = (\<not> P)"
@@ -1890,19 +1878,12 @@ lemma mask_add_aligned:
   done
 
 lemma take_prefix:
-  "(take (length xs) ys = xs) = (xs \<le> ys)"
+  "(take (length xs) ys = xs) = (prefix xs ys)"
 proof (induct xs arbitrary: ys)
   case Nil then show ?case by simp
 next
   case Cons then show ?case by (cases ys) auto
 qed
-
-lemma take_is_prefix:
-  "take n xs \<le> xs"
-  apply (simp add: less_eq_list_def prefix_def)
-  apply (rule_tac x="drop n xs" in exI)
-  apply simp
-  done
 
 lemma cart_singleton_empty:
   "(S \<times> {e} = {}) = (S = {})"
