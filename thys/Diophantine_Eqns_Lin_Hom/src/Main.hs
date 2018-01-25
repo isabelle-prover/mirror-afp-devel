@@ -32,7 +32,7 @@ parse _ = do
 start input = do
   let (a, b) = read input :: ([Integer], [Integer])
   if 0 `elem` a || 0 `elem` b then do
-    hPutStrLn stderr "0 coefficients are not allowed"
+    hPutStrLn stderr "0-coefficients are not allowed"
     exitWith (ExitFailure 2)
   else if null a || null b then do
     hPutStrLn stderr "empty lists of coefficients are not allowed"
