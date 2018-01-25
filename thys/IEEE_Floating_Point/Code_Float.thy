@@ -109,7 +109,7 @@ declare [[code drop: float_of_integer]]
 subsection \<open>Conversion to and from software floats\<close>
 
 lemma valid_man_exp_float_format:
-  "valid_man_exp float_format m e \<longleftrightarrow> \<bar>m\<bar> < 4503599627370496 \<and> - 971 < e \<and> e < 973"
+  "valid_man_exp float_format m e \<longleftrightarrow> \<bar>m\<bar> < 9007199254740992 \<and> - 971 < e \<and> e < 972"
   by (simp add: valid_man_exp_def float_format_def bias_def bitlen_le_iff_power)
 
 code_printing
@@ -121,7 +121,7 @@ fun to_man_exp_float x =
   case Real.toManExp x of {man = m, exp = e} =>
     (Real.floor (Real.* (m, Math.pow (2.0, 53.0))), IntInf.- (e, 53))
 fun from_man_exp_float m e =
-  if IntInf.abs m < 4503599627370496 andalso ~971 < e andalso e < 973
+  if IntInf.abs m < 9007199254740992 andalso ~971 < e andalso e < 972
   then Real.fromManExp {man = Real.fromLargeInt m, exp = e}
   else Real.posInf
 end

@@ -148,9 +148,9 @@ definition normal_rep_of_man_exp :: "format \<Rightarrow> int \<Rightarrow> int 
 
 lemma normal_rep_of_man_exp_correct:
   assumes "m \<noteq> 0"
-  assumes mantissa: "bitlen \<bar>m\<bar> \<le> fracwidth x"
+  assumes mantissa: "bitlen \<bar>m\<bar> \<le> fracwidth x + 1"
   assumes exponent: "- int (bias x) - bitlen \<bar>m\<bar> + 1 < e"
-    "e < 2^(expwidth x) - int (bias x) - fracwidth x"
+    "e < 2^(expwidth x) - int (bias x) - fracwidth x - 1"
   shows "valof x (normal_rep_of_man_exp x m e) = m * 2 powr e" (is ?th1)
     and "is_valid x (normal_rep_of_man_exp x m e)" (is ?th2)
     and "is_normal x (normal_rep_of_man_exp x m e)" (is ?th3)
@@ -301,8 +301,8 @@ proof -
 qed
 
 definition "valid_man_exp x m e \<longleftrightarrow>
-  bitlen (abs m) \<le> int (fracwidth x) \<and> int (fracwidth x) - int (bias x) < e \<and>
-  e < 2 ^ expwidth x - int (bias x) - int (fracwidth x)"
+  bitlen (abs m) \<le> int (fracwidth x) + 1 \<and> int (fracwidth x) - int (bias x) < e \<and>
+  e < 2 ^ expwidth x - int (bias x) - int (fracwidth x) - 1"
 
 definition float_rep_of_man_exp :: "format \<Rightarrow> int \<Rightarrow> int \<Rightarrow> representation" where
   "float_rep_of_man_exp x m e = (
