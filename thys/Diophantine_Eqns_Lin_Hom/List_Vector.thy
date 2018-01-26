@@ -584,9 +584,13 @@ definition rlex (infix "<\<^sub>r\<^sub>l\<^sub>e\<^sub>x" 50)
 
 lemma rev_le [simp]:
   "rev xs \<le>\<^sub>v rev ys \<longleftrightarrow> xs \<le>\<^sub>v ys"
-  apply (auto simp: less_eq_def rev_nth)
-  apply (drule_tac x = "length ys - i - 1" in spec)
-  by simp
+proof -
+  { fix i assume i: "i < length ys" and [simp]: "length xs = length ys"
+      and "\<forall>i < length ys. rev xs ! i \<le> rev ys ! i"
+    then have "rev xs ! (length ys - i - 1) \<le> rev ys ! (length ys - i - 1)" by auto
+    then have "xs ! i \<le> ys ! i" using i by (auto simp: rev_nth) }
+  then show ?thesis by (auto simp: less_eq_def rev_nth)
+qed
 
 lemma rev_less [simp]:
   "rev xs <\<^sub>v rev ys \<longleftrightarrow> xs <\<^sub>v ys"
