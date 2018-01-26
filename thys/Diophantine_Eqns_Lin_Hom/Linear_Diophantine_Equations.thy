@@ -448,9 +448,8 @@ lemma sum_list_inc_gt0':
 proof (induct y j u rule: inc.induct)
   case (1 y i u)
   then show ?case
-    apply (subst inc.simps)
-    by (auto simp: sum_list_update) (metis elem_le_sum_list
-        le_antisym le_zero_eq neq0_conv not_less_eq_eq sum_list_inc_gt0)
+    by (auto simp: inc.simps [of y i] sum_list_update)
+      (metis elem_le_sum_list le_antisym le_zero_eq neq0_conv not_less_eq_eq sum_list_inc_gt0)
 qed
 
 lemma sum_list_us_gt0:

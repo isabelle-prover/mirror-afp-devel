@@ -732,10 +732,7 @@ lemma in_incs:
     (subst (asm) (2) incs.simps, auto simp: Let_def)
 
 lemma incs_Nil [simp]: "x > B \<Longrightarrow> incs a x (xs, s) = []"
-  apply (induct a x "(xs, s)" rule: incs.induct)
-  apply (subst incs.simps)
-  apply (insert bound, auto simp: Let_def)
-  done
+  by (induct a x "(xs, s)" rule: incs.induct) (simp add: incs.simps bound)
 
 lemma incs_filter:
   assumes "x \<le> B"
@@ -747,10 +744,8 @@ proof
   proof (induct a x xss rule: incs.induct)
     case (1 a x xs s)
     then show ?case
-      apply (subst incs.simps)
-      apply (cases "x = B")
-       apply (auto simp: filter_empty_conv Let_def cond_cons_def upt_conv_Cons intro: cond_antimono)
-      done
+      by (unfold incs.simps [of a x], cases "x = B")
+        (auto simp: filter_empty_conv Let_def cond_cons_def upt_conv_Cons intro: cond_antimono)
   qed
 qed
 
@@ -870,10 +865,7 @@ lemma tl_generate_check_filter:
     and "suffs C\<^sub>2 b (zeroes (length b), 0)"
   shows "tl (generate_check a b) = [(xs, ys) \<leftarrow> tl (alls2 (B\<^sub>1 b) B\<^sub>2 a b). suffs (C\<^sub>1 b (fst ys)) a xs \<and> suffs C\<^sub>2 b ys]"
   using assms
-  apply (auto simp: generate_check_filter)
-  apply (subst (1 2) alls2_Cons_tl_conv)
-  apply auto
-  done
+  by (unfold generate_check_filter, subst (1 2) alls2_Cons_tl_conv) auto
 
 end
 
@@ -1074,13 +1066,9 @@ lemma check_cond_conv:
 lemma tune:
   "check' a b (generate (Max (set b)) (Max (set a)) a b) = fast_filter a b"
   using cond1_cond2_zeroes
-  unfolding fast_filter_def
-  apply (subst c12.tl_generate_check_filter)
-    apply (auto simp: check'_def generate_def map_tl [symmetric] filter_map post_cond_def intro!: map_cong)
-  apply (auto simp: o_def)
-  apply (rule filter_cong)
-   apply (auto dest!: list.set_sel(2) [THEN check_cond_conv, OF alls2_ne])
-  done
+  by (auto simp: c12.tl_generate_check_filter check'_def generate_def map_tl [symmetric]
+      filter_map post_cond_def fast_filter_def
+      intro!: map_cong filter_cong dest: list.set_sel(2) [THEN check_cond_conv, OF alls2_ne])
 
 locale bounded_incs =
   fixes cond :: "nat list \<Rightarrow> nat \<Rightarrow> bool"
@@ -1107,10 +1095,7 @@ lemma in_incs:
     (subst (asm) (2) incs.simps, auto simp: Let_def)
 
 lemma incs_Nil [simp]: "x > B \<Longrightarrow> incs a x (xs, s) = []"
-  apply (induct a x "(xs, s)" rule: incs.induct)
-  apply (subst incs.simps)
-  apply (insert bound, auto simp: Let_def)
-  done
+  by (induct a x "(xs, s)" rule: incs.induct) (auto simp: Let_def incs.simps bound)
 
 end
 
@@ -1141,11 +1126,8 @@ proof -
   have eq: "c1_incs b ys a1 0 (a, ba) = c1.incs a1 0 (a, ba)" if "(a, ba) \<in> set (c1.gen_check a2)"
     for a a1 a2 ba
     using that
-    apply (induct rule: c1.incs.induct)
-    apply (auto dest!: c1.in_gen_check)
-    apply (subst incs1.incs.simps)
-    apply (subst c1.incs.simps)
-    by (auto simp: Let_def)
+    by (induct rule: c1.incs.induct)
+      (auto dest!: c1.in_gen_check simp: Let_def incs1.incs.simps c1.incs.simps)
   show ?thesis
     by (induct a) (auto intro!: arg_cong [of _ _ concat] dest: eq)
 qed
