@@ -4,7 +4,6 @@ session Bell_Numbers_Spivey (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
-    Card_Number_Partitions
     Card_Partitions
   theories
     Card_Partitions.Card_Partitions   (* FIXME document? *)

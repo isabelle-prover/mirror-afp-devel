@@ -7,16 +7,13 @@ imports
   "HOL-Library.Disjoint_Sets"
   "HOL-Library.Monad_Syntax"
   "HOL-Eisbach.Eisbach"
-  Card_Number_Partitions.Additions_to_Main
 begin
 
 subsubsection \<open>Cardinality Theorems for Set.bind\<close>
 
-lemma finite_bind:
-  assumes "finite S"
-  assumes "\<forall>x \<in> S. finite (f x)"
-  shows "finite (S \<bind> f)"
-using assms by (simp add: bind_UNION)
+text \<open>
+These two lemmas shall be added to the Disjoint Set theory.
+\<close>
 
 lemma card_bind:
   assumes "finite S"

@@ -8,7 +8,6 @@ imports
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Stirling"
   Injectivity_Solver
-  Card_Number_Partitions.Additions_to_Main
   Set_Partition
 begin
 
