@@ -242,19 +242,19 @@ qed
 lemma max_y_le_take:
   assumes "length x \<le> m"
   shows "max_y x j \<le> max_y (take k x) j"
-  using assms and Min_Ej_le and Ej_take_subset and Min.antimono [OF _ _ finite_Ej]
+  using assms and Min_Ej_le and Ej_take_subset and Min.subset_imp [OF _ _ finite_Ej]
   by (auto simp: max_y_def) blast
 
 lemma max_x_le_take:
   assumes "length y \<le> n"
   shows "max_x y i \<le> max_x (take l y) i"
-  using assms and Min_Di_le and Di_take_subset and Min.antimono [OF _ _ finite_Di]
+  using assms and Min_Di_le and Di_take_subset and Min.subset_imp [OF _ _ finite_Di]
   by (auto simp: max_x_def) blast
 
 lemma max_x'_le_drop:
   assumes "length y \<le> n"
   shows "max_x' y i \<le> max_x' (drop l y) i"
-  using assms and Min_Di'_le and Di'_drop_subset and Min.antimono [OF _ _ finite_Di']
+  using assms and Min_Di'_le and Di'_drop_subset and Min.subset_imp [OF _ _ finite_Di']
   by (auto simp: max_x'_def) blast
 
 end
@@ -1143,7 +1143,7 @@ lemma le_imp_max_y_ge:
     and "length x \<le> m"
   shows "max_y u j \<ge> max_y x j"
   using assms and le_imp_Ej_subset and Min_Ej_le [of j, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Ej max_y_def order_refl subsetCE)
+  by (metis Min.subset_imp Min_in emptyE finite_Ej max_y_def order_refl subsetCE)
 
 lemma le_imp_Di_subset:
   assumes "v \<le>\<^sub>v y"
@@ -1155,7 +1155,7 @@ lemma le_imp_max_x_ge:
     and "length y \<le> n"
   shows "max_x v i \<ge> max_x y i"
   using assms and le_imp_Di_subset and Min_Di_le [of i, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Di max_x_def order_refl subsetCE)
+  by (metis Min.subset_imp Min_in emptyE finite_Di max_x_def order_refl subsetCE)
 
 end
 

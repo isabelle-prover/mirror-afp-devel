@@ -633,7 +633,7 @@ next
       using 1 by (auto simp add:safeInits_def initSets_def)
         (metis equals0D less_eq_def)
     have 6:"\<Sqinter> (initVals s2) \<preceq> \<Sqinter> ivs" using 3 P13 4
-      by (metis P13.simps antimono) 
+      by (simp add: subset_imp) 
     have 7:"initVals s2 = initVals t2" using Reco2(1) by auto
     show "P12 (t1,t2)" using 2 5 6 7 
       by (metis P12.simps absorb2 coboundedI1)
@@ -1086,7 +1086,8 @@ next
           moreover 
           have "P13 (s1,s2)" using reach P13_invariant
             by (metis invariant_def)
-          ultimately show ?thesis using 2 3 antimono by simp
+          ultimately show ?thesis
+            using 2 3 by (simp add: subset_imp)
         qed
         show ?thesis using that 1 4 by simp
           (metis coboundedI2 less_eq_def orderE) 
