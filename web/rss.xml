@@ -119,7 +119,7 @@ call that lead to the linear upper bound on the run-time of the
 algorithm are also proven. &lt;/p&gt;</description>
     </item>
     <item>
-       <title>The Mason–Stother's Theorem</title>
+       <title>The Mason–Stothers Theorem</title>
               <link>https://www.isa-afp.org/entries/Mason_Stothers.html</link>
        <guid>https://www.isa-afp.org/entries/Mason_Stothers.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
