@@ -378,7 +378,7 @@ fun ensure_info tyco lthy =
 fun dest_showsp showsp =
   dest_Const showsp
   ||> (
-    binder_types #> take_prefix (fn T => T <> @{typ nat})
+    binder_types #> chop_prefix (fn T => T <> @{typ nat})
     #>> map (freeify_tvars o dest_showspT)
     ##> map (dest_TFree o freeify_tvars) o snd o dest_Type o hd o tl)
 

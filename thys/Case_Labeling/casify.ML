@@ -169,7 +169,7 @@ fun build_precase (prg_ctxt, (prems, t))=
             val (m, Block (s, vars)) = bl
             val fixes = map #fix vars
             val params = map #abs vars
-            val (prems1, prems2) = take_prefix (fn (m,_) => m = n) prems
+            val (prems1, prems2) = chop_prefix (fn (m,_) => m = n) prems
 
             val abs_fixes = abs_ofixes o fold_rev Term.absfree params
 

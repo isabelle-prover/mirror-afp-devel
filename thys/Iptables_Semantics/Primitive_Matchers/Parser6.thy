@@ -10,9 +10,9 @@ begin
  ! ! ! do not edit by hand ! ! !*)
 
 ML\<open>(*my personal small library*)
-fun takeWhile p xs = fst (take_prefix p xs);
+fun takeWhile p xs = take_prefix p xs;
 
-fun dropWhile p xs = snd (take_prefix p xs);
+fun dropWhile p xs = drop_prefix p xs;
 
 fun dropWhileInclusive p xs = drop 1 (dropWhile p xs)
 

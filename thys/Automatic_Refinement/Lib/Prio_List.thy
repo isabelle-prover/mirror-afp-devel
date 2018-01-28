@@ -42,12 +42,12 @@ ML {*
 
     fun add_before l e a = let 
       val l = remove eq e l
-      val (l1,(l2,l3)) = take_prefix (fn x => not (eq (x,a))) l ||> chop 1
+      val (l1,(l2,l3)) = chop_prefix (fn x => not (eq (x,a))) l ||> chop 1
     in l1@l2@e::l3 end;
 
     fun add_after l e b = let 
       val l = remove eq e l
-      val (l1,l2) = take_prefix (fn x => not (eq (x,b))) l
+      val (l1,l2) = chop_prefix (fn x => not (eq (x,b))) l
     in l1@e::l2 end
 
     val delete = remove eq
