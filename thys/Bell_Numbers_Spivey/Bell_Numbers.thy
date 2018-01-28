@@ -7,7 +7,7 @@ imports
   "HOL-Library.FuncSet"
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Stirling"
-  Injectivity_Solver
+  Card_Partitions.Injectivity_Solver
   Set_Partition
 begin
 

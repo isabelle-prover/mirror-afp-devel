@@ -4,7 +4,7 @@ session Falling_Factorial_Sum (AFP) = "HOL-Library" +
   options [timeout=120]
   sessions
     Discrete_Summation
-    Bell_Numbers_Spivey
+    Card_Partitions
   theories
     Falling_Factorial_Sum_Combinatorics
     Falling_Factorial_Sum_Induction

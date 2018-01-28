@@ -5,7 +5,7 @@ section \<open>Proving Falling Factorial of a Sum with Combinatorics\<close>
 theory Falling_Factorial_Sum_Combinatorics
 imports
   Discrete_Summation.Factorials
-  Bell_Numbers_Spivey.Injectivity_Solver
+  Card_Partitions.Injectivity_Solver
 begin
 
 subsection \<open>Preliminaries\<close>

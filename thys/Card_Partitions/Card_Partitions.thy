@@ -6,6 +6,7 @@ theory Card_Partitions
 imports
   "HOL-Library.Stirling"
   "HOL-Library.Disjoint_Sets"
+  Injectivity_Solver
 begin
 
 subsection {* Insertion of Elements into Set Partitions *}
