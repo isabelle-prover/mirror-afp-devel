@@ -1745,7 +1745,7 @@ and print_infix_term_aux isleft oldprec newprec sym p q = (
 
 fun print_term prec fm = (print_term_aux prec fm; print_flush ())
 and print_fargs f args = (print_fargs_aux f args; print_flush ())
-and print_infix_term il op np sym p q = (print_infix_term_aux il op np sym p q; print_flush ());
+and print_infix_term il old_prec new_prec sym p q = (print_infix_term_aux il old_prec new_prec sym p q; print_flush ());
 
 fun printert_aux tm = (
   open_box 0; print_string "<!|";
