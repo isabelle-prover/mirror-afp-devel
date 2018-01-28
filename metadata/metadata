@@ -3601,11 +3601,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René
-Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky
-<http://www.risc.jku.at/home/amaletzk>, Fabian Immler
-<http://www.in.tum.de/~immler/>, Florian Haftmann, Andreas Lochbihler, Alexander
-  Bentkamp
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
 topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
