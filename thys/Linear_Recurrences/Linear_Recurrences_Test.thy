@@ -3,7 +3,6 @@ theory Linear_Recurrences_Test
 imports 
   Complex_Main
   "HOL-Library.Code_Target_Numeral"
-  "HOL-Library.Code_Char"
   Linear_Recurrences_Solver
   Linear_Recurrences_Pretty
   Algebraic_Numbers.Show_Real_Precise

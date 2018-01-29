@@ -9,7 +9,6 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
     "HOL-Library.AList"
     "HOL-Library.Cardinality"
     "HOL-Library.Char_ord"
-    "HOL-Library.Code_Char"
     "HOL-Library.Code_Binary_Nat"
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.DAList"
