@@ -76,23 +76,6 @@ proof -
 qed
 
 
-subsection \<open>First-Order Logic\<close>
-
-inductive true_fo_cls :: "'a interp \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<Turnstile>fo" 50) where
-  true_fo_cls: "(\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> C \<cdot> \<sigma>) \<Longrightarrow> I \<Turnstile>fo C"
-
-lemma true_fo_cls_inst: "I \<Turnstile>fo C \<Longrightarrow> is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> C \<cdot> \<sigma>"
-  by (rule true_fo_cls.induct)
-
-inductive true_fo_cls_mset :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix "\<Turnstile>fom" 50) where
-  true_fo_cls_mset: "(\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m CC \<cdot>cm \<sigma>) \<Longrightarrow> I \<Turnstile>fom CC"
-
-lemma true_fo_cls_mset_inst: "I \<Turnstile>fom C \<Longrightarrow> is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m C \<cdot>cm \<sigma>"
-  by (rule true_fo_cls_mset.induct)
-
-lemma true_fo_cls_mset_def2: "I \<Turnstile>fom CC \<longleftrightarrow> (\<forall>C \<in># CC. I \<Turnstile>fo C)"
-  unfolding true_fo_cls_mset.simps true_fo_cls.simps true_cls_mset_def by force
-
 context
   fixes S :: "'a clause \<Rightarrow> 'a clause"
 begin
@@ -162,8 +145,7 @@ lemma ord_resolve_rename_empty_main_prem: "\<not> ord_resolve_rename Cs {#} AAs 
 subsection \<open>Soundness\<close>
 
 text \<open>
-Soundness is not discussed in the chapter, but it is an important property. The following lemma is
-used to prove soundness. It is also used to prove Lemma 4.10, which is used to prove completeness.
+Soundness is not discussed in the chapter, but it is an important property.
 \<close>
 
 lemma ord_resolve_ground_inst_sound:
@@ -228,60 +210,9 @@ proof (cases rule: ord_resolve.cases)
   qed
 qed
 
-lemma ord_resolve_sound:
-  assumes
-    res_e: "ord_resolve CAs DA AAs As \<sigma> E" and
-    cc_d_true: "I \<Turnstile>fom mset CAs + {#DA#}"
-  shows "I \<Turnstile>fo E"
-proof (rule true_fo_cls, use res_e in \<open>cases rule: ord_resolve.cases\<close>)
-  fix \<eta>
-  assume ground_subst_\<eta>: "is_ground_subst \<eta>"
-  case (ord_resolve n Cs D)
-  note da = this(1) and e = this(2) and cas_len = this(3) and cs_len = this(4)
-    and aas_len = this(5) and as_len = this(6) and cas = this(8) and mgu = this(10)
-
-  have "is_ground_subst (\<sigma> \<odot> \<eta>)"
-    using ground_subst_\<eta> by (rule is_ground_comp_subst)
-  then have cas_true: "I \<Turnstile>m mset CAs \<cdot>cm \<sigma> \<cdot>cm \<eta>" and da_true: "I \<Turnstile> DA \<cdot> \<sigma> \<cdot> \<eta>"
-    using true_fo_cls_mset_inst[OF cc_d_true, of "\<sigma> \<odot> \<eta>"] by auto
-  show "I \<Turnstile> E \<cdot> \<eta>"
-    using ord_resolve_ground_inst_sound[OF res_e cas_true da_true] ground_subst_\<eta> by auto
-qed
-
-lemma subst_sound: "I \<Turnstile>fo C \<Longrightarrow> I \<Turnstile>fo (C \<cdot> \<rho>)"
-  by (metis is_ground_comp_subst subst_cls_comp_subst true_fo_cls true_fo_cls_inst)
-
-lemma true_fo_cls_mset_true_fo_cls: "I \<Turnstile>fom CC \<Longrightarrow> C \<in># CC \<Longrightarrow> I \<Turnstile>fo C"
-  using true_fo_cls_mset_def2 by auto
-
-lemma subst_sound_scl:
-  assumes
-    len: "length P = length CAs" and
-    true_cas: "I \<Turnstile>fom mset CAs"
-  shows "I \<Turnstile>fom mset (CAs \<cdot>\<cdot>cl P)"
-proof -
-  from true_cas have "\<forall>CA. CA\<in># mset CAs \<longrightarrow> I \<Turnstile>fo CA"
-    using true_fo_cls_mset_true_fo_cls by auto
-  then have "\<forall>i < length CAs. I \<Turnstile>fo CAs ! i"
-    using in_set_conv_nth by auto
-  then have true_cp: "\<forall>i < length CAs. I \<Turnstile>fo CAs ! i \<cdot> P ! i"
-    using subst_sound len by auto
-
-  {
-    fix CA
-    assume "CA \<in># mset (CAs \<cdot>\<cdot>cl P)"
-    then obtain i where
-      i_x: "i < length (CAs \<cdot>\<cdot>cl P)" "CA = (CAs \<cdot>\<cdot>cl P) ! i"
-      by (metis in_mset_conv_nth)
-    then have "I \<Turnstile>fo CA"
-      using true_cp unfolding subst_cls_lists_def by (simp add: len)
-  }
-  then show ?thesis
-    unfolding true_fo_cls_mset_def2 by auto
-qed
-
 text \<open>
-This is a lemma needed to prove Lemma 4.11.
+The previous lemma is not only used to prove soundness, but also the following lemma which is 
+used to prove Lemma 4.10.
 \<close>
 
 lemma ord_resolve_rename_ground_inst_sound:
@@ -295,21 +226,84 @@ lemma ord_resolve_rename_ground_inst_sound:
   shows "I \<Turnstile> E \<cdot> \<eta>"
   using assms by (cases rule: ord_resolve_rename.cases) (fast intro: ord_resolve_ground_inst_sound)
 
+text \<open>
+Here follows the soundness theorem for the resolution rule.
+\<close>
+
+theorem ord_resolve_sound:
+ assumes
+   res_e: "ord_resolve CAs DA AAs As \<sigma> E" and
+   cc_d_true: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset CAs + {#DA#}) \<cdot>cm \<sigma>" and
+   ground_subst_\<eta>: "is_ground_subst \<eta>"
+ shows "I \<Turnstile> E \<cdot> \<eta>"
+proof (use res_e in \<open>cases rule: ord_resolve.cases\<close>)
+  case (ord_resolve n Cs D)
+  note da = this(1) and e = this(2) and cas_len = this(3) and cs_len = this(4)
+    and aas_len = this(5) and as_len = this(6) and cas = this(8) and mgu = this(10)
+  have ground_subst_\<sigma>_\<eta>: "is_ground_subst (\<sigma> \<odot> \<eta>)"
+    using ground_subst_\<eta> by (rule is_ground_comp_subst)
+  have cas_true: "I \<Turnstile>m mset CAs \<cdot>cm \<sigma> \<cdot>cm \<eta>"
+    using cc_d_true ground_subst_\<sigma>_\<eta> by fastforce
+  have da_true: "I \<Turnstile> DA \<cdot> \<sigma> \<cdot> \<eta>"
+    using cc_d_true ground_subst_\<sigma>_\<eta> by fastforce
+  show "I \<Turnstile> E \<cdot> \<eta>"
+    using ord_resolve_ground_inst_sound[OF res_e cas_true da_true] ground_subst_\<eta> by auto
+qed
+
+lemma subst_sound:
+  assumes 
+    "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> (C \<cdot> \<sigma>)" and
+    "is_ground_subst \<eta>"
+  shows "I \<Turnstile> (C \<cdot> \<rho>) \<cdot> \<eta>"
+  using assms is_ground_comp_subst subst_cls_comp_subst by metis 
+
+lemma subst_sound_scl:
+  assumes
+    len: "length P = length CAs" and
+    true_cas: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset CAs) \<cdot>cm \<sigma>" and
+    ground_subst_\<eta>: "is_ground_subst \<eta>" 
+  shows "I \<Turnstile>m mset (CAs \<cdot>\<cdot>cl P) \<cdot>cm \<eta>"
+proof -
+  from true_cas have "\<And>CA. CA\<in># mset CAs \<Longrightarrow> (\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> CA \<cdot> \<sigma>)"
+    unfolding true_cls_mset_def by force
+  then have "\<forall>i < length CAs. \<forall>\<sigma>. is_ground_subst \<sigma> \<longrightarrow> (I \<Turnstile> CAs ! i \<cdot> \<sigma>)"
+    using in_set_conv_nth by auto
+  then have true_cp: "\<forall>i < length CAs. \<forall>\<sigma>. is_ground_subst \<sigma> \<longrightarrow> I \<Turnstile> CAs ! i \<cdot> P ! i \<cdot> \<sigma>"
+    using subst_sound len by auto
+
+  {
+    fix CA
+    assume "CA \<in># mset (CAs \<cdot>\<cdot>cl P)"
+    then obtain i where
+      i_x: "i < length (CAs \<cdot>\<cdot>cl P)" "CA = (CAs \<cdot>\<cdot>cl P) ! i"
+      by (metis in_mset_conv_nth)
+    then have "\<forall>\<sigma>. is_ground_subst \<sigma> \<longrightarrow> I \<Turnstile> CA \<cdot> \<sigma>"
+      using true_cp unfolding subst_cls_lists_def by (simp add: len)
+  }
+  then show ?thesis
+    using assms unfolding true_cls_mset_def by auto
+qed
+
+text \<open>
+Here follows the soundness theorem for the resolution rule with renaming.
+\<close>
+
 lemma ord_resolve_rename_sound:
   assumes
     res_e: "ord_resolve_rename CAs DA AAs As \<sigma> E" and
-    cc_d_true: "I \<Turnstile>fom (mset CAs) + {#DA#}"
-  shows "I \<Turnstile>fo E"
+    cc_d_true: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m ((mset CAs) + {#DA#}) \<cdot>cm \<sigma>" and
+    ground_subst_\<eta>: "is_ground_subst \<eta>"
+  shows "I \<Turnstile> E \<cdot> \<eta>"
   using res_e
 proof (cases rule: ord_resolve_rename.cases)
   case (ord_resolve_rename n \<rho> \<rho>s)
   note \<rho>s = this(7) and res = this(8)
   have len: "length \<rho>s = length CAs"
     using \<rho>s renames_apart by auto
-  have "I \<Turnstile>fom mset (CAs \<cdot>\<cdot>cl \<rho>s) + {#DA \<cdot> \<rho>#}"
-    using subst_sound_scl[OF len, of I] subst_sound cc_d_true by (simp add: true_fo_cls_mset_def2)
-  then show "I \<Turnstile>fo E"
-    using ord_resolve_sound[OF res] by simp
+  have "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset (CAs \<cdot>\<cdot>cl \<rho>s) + {#DA \<cdot> \<rho>#}) \<cdot>cm \<sigma>"
+    using subst_sound_scl[OF len, of I] subst_sound cc_d_true by auto
+  then show "I \<Turnstile> E \<cdot> \<eta>"
+    using ground_subst_\<eta> ord_resolve_sound[OF res] by simp
 qed
 
 
