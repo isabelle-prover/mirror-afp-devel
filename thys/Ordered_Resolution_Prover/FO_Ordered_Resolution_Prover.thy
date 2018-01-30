@@ -1371,26 +1371,12 @@ lemma empty_clause_in_Q_of_Liminf_state:
 proof -
   define Ns :: "'a clause set llist" where
     ns: "Ns = lmap grounding_of_state Sts"
-
   from empty_in have in_Liminf_not_Rf: "{#} \<in> Liminf_llist Ns - sr.Rf (Liminf_llist Ns)"
     unfolding ns sr.Rf_def by auto
-
-  from assms obtain i where
-    i_p: "enat i < llength (lmap grounding_of_state Sts)"
-    "{#} \<in> lnth (lmap grounding_of_state Sts) i"
-    unfolding Liminf_llist_def by force
-  then have "{#} \<in> grounding_of_state (lnth Sts i)"
-    by auto
-  then have "{#} \<in> clss_of_state (lnth Sts i)"
-    unfolding grounding_of_clss_def grounding_of_cls_def by auto
-  then have in_Sup_state: "{#} \<in> clss_of_state (Sup_state Sts)"
-    using i_p(1) unfolding Sup_state_def clss_of_state_def
-    by simp (metis llength_lmap lnth_lmap lnth_subset_Sup_llist set_mp)
-  then have "\<exists>D' \<sigma>'. D' \<in> Q_of_state (Liminf_state Sts) \<and> D' \<cdot> \<sigma>' = {#} \<and> is_ground_subst \<sigma>'"
-    using eventually_in_Qinf[of "{#}" "{#}" Ns, OF in_Sup_state _ _ fair ns in_Liminf_not_Rf]
-    unfolding is_ground_cls_def strictly_subsumes_def subsumes_def by simp
+  then have "{#} \<in> grounding_of_clss (Q_of_state (Liminf_state Sts))"
+    using fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state[OF fair ns] by auto
   then show ?thesis
-    by simp
+    unfolding grounding_of_clss_def grounding_of_cls_def by auto
 qed
 
 lemma grounding_of_state_Liminf_state_subseteq:
