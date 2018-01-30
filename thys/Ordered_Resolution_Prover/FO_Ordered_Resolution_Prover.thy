@@ -1275,7 +1275,6 @@ The following corresponds to Lemma 4.11:
 
 lemma fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Ns = lmap grounding_of_state Sts"
   shows "Liminf_llist Ns - sr.Rf (Liminf_llist Ns) \<subseteq> grounding_of_clss (Q_of_state (Liminf_state Sts))"
