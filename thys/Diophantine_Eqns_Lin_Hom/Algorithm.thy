@@ -485,99 +485,6 @@ proof -
     using z by blast
 qed
 
-lemma (in hlde) in_solve_in_solutions:
-  assumes "(x, y) \<in> set (solve a b)"
-  shows "(x, y) \<in> set (solutions a b)"
-proof -
-  consider "(x, y) \<in> set (special_solutions a b)"
-    | (nonspecial) "(x, y) \<in> set (non_special_solutions a b)"
-    using assms by (auto simp: solve_def)
-  then show ?thesis
-  proof (cases)
-    case nonspecial
-    then have "(x, y) \<in> Solutions" by (fact in_non_special_solutions)
-    then have [simp]: "length x = m" "length y = n" by (auto simp: in_Solutions_iff)
-    have "(x, y) \<in> Minimal_Solutions"
-    proof (intro Minimal_SolutionsI')
-      show "(x, y) \<in> Solutions" by fact
-      then show "nonzero x"
-        using zeroes_ni_non_special_solutions and nonspecial
-        by (auto dest: nonzero_Solutions_iff simp: not_nonzero_iff)
-      show "\<not> (\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y)"
-      proof
-        assume "\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y"
-        then obtain u and v where "(u, v) \<in> Minimal_Solutions"
-          and less: "u @ v <\<^sub>v x @ y" by blast
-        then consider "(u, v) \<in> Special_Solutions" | "(u, v) \<in> Minimal_Solutions - Special_Solutions" by blast
-        then show False
-        proof (cases)
-          case 1
-          then obtain i and j where ij: "i < m" "j < n"
-            and [simp]: "u = (zeroes m)[i := dij i j]" "v = (zeroes n)[j := eij i j]"
-            by (auto simp: Special_Solutions_def sij_def)
-          moreover have "dij i j \<le> x ! i" and "eij i j \<le> y ! j"
-            using less and ij
-             apply auto
-             apply (metis \<open>length x = m\<close> le_append length_list_update length_replicate less_eq_def nth_list_update_eq order_vec.dual_order.strict_iff_order)
-            apply (metis \<open>length x = m\<close> le_append length_list_update length_replicate less_eq_def nth_list_update_eq order_vec.dual_order.strict_iff_order)
-            done
-          moreover then have "eij i j - 1 \<in> Ej j x" using ij by (auto simp: Ej_def)
-          moreover then have ne: "Ej j x \<noteq> {}" and "Min (Ej j x) \<le> eij i j - 1" by (auto simp: finite_Ej)
-          moreover have "boundr_impl a b x y"
-            using nonspecial
-            by (auto simp: non_special_solutions_def minimize_def dest!: minimize_wrtD)
-          ultimately show False
-            using less
-            apply (auto simp: boundr_def sij_def Special_Solutions_def max_y_def)
-            apply (drule_tac x = j in spec) apply (auto simp: if_P [OF ne])
-            using eij_neq_0 by fastforce
-        next
-          case 2
-          let ?P = "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"
-          let ?A = "Max (set b)" and ?B = "Max (set a)"
-          let ?xs = "check' a b (generate ?A ?B a b)"
-          have xy: "(x, y) \<in> set (minimize ?xs)" using nonspecial by (auto simp: non_special_solutions_def)
-          have sorted: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) ?xs" by (intro sorted_wrt_check_generate)
-          have rlex2: "(u, v) <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2 (x, y)" by (intro less_imp_rlex2) (auto simp: less)
-          note minimize_False = in_minimize_wrt_False [OF rlex2_not_sym sorted _ _ rlex2, of ?P, folded minimize_def]
-          show False using less
-          proof (intro minimize_False [OF _ xy])
-            show "(u, v) \<in> set ?xs"
-              using 2 and max_coeff_bound_right
-              apply (auto dest: conds simp: set_gen2' set_generate Minimal_Solutions_length max_coeff_bound static_bounds_def maxne0_impl)
-              using Minimal_Solutions_gt0 apply fastforce
-              apply (metis Minimal_Solutions_length hlde.max_coeff_bound_right hlde_axioms le_not_less_replicate le_trans maxne0_le_Max order_vec.dual_order.strict_implies_order order_vec.eq_iff)
-              apply (metis Minimal_Solutions_length hlde.max_coeff_bound hlde_axioms le_replicateI le_trans maxne0_le_Max)
-              using Minimal_Solutions_imp_Solutions Solutions_def apply blast
-              done
-          qed auto
-        qed
-      qed
-    qed
-    then show ?thesis by simp
-  qed (simp add: Special_Solutions_in_Minimal_Solutions)
-qed
-
-lemma (in hlde) in_solutions_in_solve:
-  assumes "(x, y) \<in> set (solutions a b)"
-  shows "(x, y) \<in> set (solve a b)"
-proof -
-  have "(x, y) \<in> Minimal_Solutions" using assms by simp
-  then show ?thesis
-    apply (auto simp: solve_def non_special_solutions_def minimize_def conds static_bounds_def set_gen2' set_generate intro!: in_minimize_wrtI)
-    using Minimal_Solutions_gt0 apply fastforce
-          apply (metis Minimal_Solutions_length le_replicateI le_trans max_coeff_bound_right maxne0_le_Max)
-         apply (metis Minimal_Solutions_length le_replicateI le_trans max_coeff_bound maxne0_le_Max)
-        apply (auto simp add: Minimal_Solutions_length max_coeff_bound maxne0_impl)
-    using Minimal_Solutions_imp_Solutions Solutions_def apply blast
-     apply (metis (no_types, hide_lams) Minimal_Solutions_min eq_0_iff length_replicate less_eq_def nonzero_append nonzero_iff)
-    by (metis (no_types, hide_lams) Minimal_Solutions_min eq_0_iff length_replicate less_eq_def nonzero_append nonzero_iff)
-qed
-
-lemma (in hlde) solutions_solve_conv:
-  "set (solutions a b) = set (solve a b)"
-  by (auto simp only: in_solutions_in_solve in_solve_in_solutions)
-
 
 subsubsection \<open>Correctness: \<open>solve\<close> generates only minimal solutions.\<close>
 
@@ -643,12 +550,9 @@ proof (rule subrelI)
       moreover have "y \<le>\<^sub>v replicate n ?a"
         using xs by (auto simp: less_eqI minimize_def set_generate set_alls2 dest!: minimize_wrtD)
       ultimately have "(u, v) \<in> set ?xs"
-        using sol' set_generate [of ?b ?a a b] uv [THEN Minimal_Solutions_imp_Solutions] and nonzero
-        unfolding set_generate and set_gen2
-        apply (simp add:)
-        unfolding set_generate set_gen2
-        apply (simp)
-        by (metis in_set_replicate le order_vec.dual_order.trans nonzero_iff)
+        using sol' and set_generate [of ?b ?a a b] and uv [THEN Minimal_Solutions_imp_Solutions] and nonzero
+        by (simp add: set_generate set_gen2)
+          (metis in_set_replicate le order_vec.dual_order.trans nonzero_iff)
       from * [OF _ _ _ this] and less show False
         using less_imp_rlex and rlex_not_sym by force
     qed
@@ -697,11 +601,10 @@ proof (rule subrelI)
 qed
 
 
-text \<open>the main correctness and completeness result of our algorithm\<close>
+text \<open>The main correctness and completeness result of our algorithm.\<close>
 lemma (in hlde) solve [simp]:
   shows "set (solve a b) = Minimal_Solutions"
-  unfolding set_solutions [symmetric]
-  using in_solve_in_solutions and in_solutions_in_solve by auto
+  using Minimal_Solutions_subset_solve and solve_subset_Minimal_Solutions by blast
 
 
 section \<open>Making the Algorithm More Efficient\<close>
