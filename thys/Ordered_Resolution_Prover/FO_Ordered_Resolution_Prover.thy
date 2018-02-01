@@ -727,8 +727,8 @@ Another formulation of the part of Lemma 4.10 that states we have a theorem prov
 
 (* FIXME: rename *)
 lemma resolution_prover_ground_derivation:
-  "chain (\<leadsto>) Sts \<Longrightarrow> chain sr_ext.derive (lmap grounding_of_state Sts)"
-  using resolution_prover_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
+  "chain sr_ext.derive (lmap grounding_of_state Sts)"
+  using deriv resolution_prover_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
 
 text \<open>
 The following is used prove to Lemma 4.11:
@@ -1422,13 +1422,12 @@ theorem RP_sound:
 proof -
   from assms have "{#} \<in> grounding_of_state (Liminf_state Sts)"
     unfolding grounding_of_clss_def by (force intro: ex_ground_subst)
-  then have "\<not> satisfiable (grounding_of_state (Liminf_state Sts))"
-    unfolding true_clss_def by auto
+  then have "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)"
+    using grounding_of_state_Liminf_state_subseteq by auto
   then have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    using grounding_of_state_Liminf_state_subseteq true_clss_mono by blast
+    using true_clss_def by auto
   then have "\<not> satisfiable (lhd (lmap grounding_of_state Sts))"
-    using sr_ext.sat_deriv_Liminf_iff[of "lmap grounding_of_state Sts"]
-    by (metis deriv resolution_prover_ground_derivation)
+    using sr_ext.sat_deriv_Liminf_iff resolution_prover_ground_derivation by metis
   then show ?thesis
     unfolding lhd_lmap_Sts .
 qed
@@ -1682,7 +1681,7 @@ corollary RP_complete_if_fair:
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    unfolding sr_ext.sat_deriv_Liminf_iff[OF resolution_prover_ground_derivation[OF deriv]]
+    unfolding sr_ext.sat_deriv_Liminf_iff[OF resolution_prover_ground_derivation]
     by (rule unsat[folded lhd_lmap_Sts[of grounding_of_state]])
   moreover have "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
     by (rule RP_saturated_if_fair[OF fair, simplified])
