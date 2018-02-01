@@ -909,11 +909,11 @@ definition "cond_D x y \<longleftrightarrow> (\<forall>l\<le>n. take l b \<bulle
 subsection \<open>New conditions: facilitating generation of candidates from right to left\<close>
 
 (*condition on right sub-dotproduct*)
-definition "subprodr y \<longleftrightarrow>
+definition "subdprodr y \<longleftrightarrow>
   (\<forall>l\<le>n. take l b \<bullet> take l y \<le> a \<bullet> map (max_x (take l y)) [0 ..< m])"
 
 (*condition on left sub-dotproduct*)
-definition "subprodl x y \<longleftrightarrow> (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> y)"
+definition "subdprodl x y \<longleftrightarrow> (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
 (*bound on elements of left vector*)
 definition "boundl x y \<longleftrightarrow> (\<forall>i<m. x ! i \<le> max_x y i)"
@@ -1058,11 +1058,11 @@ lemma Solution_imp_cond_D:
   shows "cond_D x y"
   using assms and dotprod_le_take by (auto simp: cond_D_def in_Solutions_iff)
 
-lemma Solution_imp_subprodl:
+lemma Solution_imp_subdprodl:
   assumes "(x, y) \<in> Solutions"
-  shows "subprodl x y"
+  shows "subdprodl x y"
   using assms and dotprod_le_take
-  by (auto simp: subprodl_def in_Solutions_iff) metis
+  by (auto simp: subdprodl_def in_Solutions_iff) metis
 
 theorem conds:
   assumes min: "(x, y) \<in> Minimal_Solutions"
@@ -1070,8 +1070,8 @@ theorem conds:
     and cond_B: "(x, y) \<notin> Special_Solutions \<Longrightarrow> cond_B x"
     and "(x, y) \<notin> Special_Solutions \<Longrightarrow> boundr x y"
     and cond_D: "cond_D x y"
-    and subprodr: "(x, y) \<notin> Special_Solutions \<Longrightarrow> subprodr y"
-    and subprodl: "subprodl x y"
+    and subdprodr: "(x, y) \<notin> Special_Solutions \<Longrightarrow> subdprodr y"
+    and subdprodl: "subdprodl x y"
 proof -
   have sol: "a \<bullet> x = b \<bullet> y" and ln: "m = length x \<and> n = length y"
     using min by (auto simp: Minimal_Solutions_def in_Solutions_iff)
@@ -1101,8 +1101,8 @@ proof -
       by (auto simp: cond_B_def)
   qed
 
-  show "(x, y) \<notin> Special_Solutions \<Longrightarrow> subprodr y"
-  proof (unfold subprodr_def, intro allI impI)
+  show "(x, y) \<notin> Special_Solutions \<Longrightarrow> subdprodr y"
+  proof (unfold subdprodr_def, intro allI impI)
     fix l assume non_spec: "(x, y) \<notin> Special_Solutions" and l: "l \<le> n"
     from l have "take l b \<bullet> take l y \<le> b \<bullet> y"
       using dotprod_le_take ln by blast
@@ -1129,8 +1129,8 @@ proof -
   show "cond_D x y"
     using ln and dotprod_le_take and sol by (auto simp: cond_D_def)
 
-  show "subprodl x y"
-    using ln and dotprod_le_take and sol by (force simp: subprodl_def)
+  show "subdprodl x y"
+    using ln and dotprod_le_take and sol by (force simp: subdprodl_def)
 qed
 
 lemma le_imp_Ej_subset:

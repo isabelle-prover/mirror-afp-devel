@@ -237,14 +237,14 @@ definition cond_d :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
     "cond_d xs ys \<longleftrightarrow> (\<forall>l\<le>length b. take l b \<bullet> take l ys \<le> a \<bullet> xs)"
 
-definition pdprodr_impl :: "nat list \<Rightarrow> bool"
+definition subdprodr_impl :: "nat list \<Rightarrow> bool"
   where
-    "pdprodr_impl ys \<longleftrightarrow> (\<forall>l\<le>length b.
+    "subdprodr_impl ys \<longleftrightarrow> (\<forall>l\<le>length b.
       take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl (take l ys)) [0 ..< length a])"
 
-definition pdprodl_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
+definition subdprodl_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
-    "pdprodl_impl x y \<longleftrightarrow> (\<forall>k\<le>length a. take k a \<bullet> take k x \<le> b \<bullet> y)"
+    "subdprodl_impl x y \<longleftrightarrow> (\<forall>k\<le>length a. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
 definition "boundl_impl x y \<longleftrightarrow> (\<forall>i<length a. x ! i \<le> max_x_impl y i)"
 
@@ -255,7 +255,7 @@ definition static_bounds
       (\<forall>x\<in>set x. x \<le> mx) \<and> (\<forall>y\<in>set y. y \<le> my))"
 
 definition "check_cond =
-  (\<lambda>(x, y). static_bounds x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr_impl x y \<and> pdprodl_impl x y \<and> pdprodr_impl y)"
+  (\<lambda>(x, y). static_bounds x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr_impl x y \<and> subdprodl_impl x y \<and> subdprodr_impl y)"
 
 definition "check' = filter check_cond"
 
@@ -308,11 +308,11 @@ lemma (in hlde) boundr_impl [simp]: "boundr_impl a b x y = boundr x y"
 lemma (in hlde) cond_d [simp]: "cond_d a b x y = cond_D x y"
   by (simp add: cond_d_def cond_D_def)
 
-lemma (in hlde) pdprodr_impl [simp]: "pdprodr_impl a b y = subprodr y"
-  using max_x_impl by (auto simp: pdprodr_impl_def subprodr_def) presburger+
+lemma (in hlde) subdprodr_impl [simp]: "subdprodr_impl a b y = subdprodr y"
+  using max_x_impl by (auto simp: subdprodr_impl_def subdprodr_def) presburger+
 
-lemma (in hlde) pdprodl_impl [simp]: "pdprodl_impl a b x y = subprodl x y"
-  by (simp add: pdprodl_impl_def subprodl_def)
+lemma (in hlde) subdprodl_impl [simp]: "subdprodl_impl a b x y = subdprodl x y"
+  by (simp add: subdprodl_impl_def subdprodl_def)
 
 lemma (in hlde) cond_bound_impl [simp]: "boundl_impl a b x y = boundl x y"
   by (simp add: boundl_impl_def boundl_def max_x_impl)
@@ -320,12 +320,12 @@ lemma (in hlde) cond_bound_impl [simp]: "boundl_impl a b x y = boundl x y"
 lemma (in hlde) check [simp]:
   "check' a b =
     filter (\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<and>
-    subprodl x y \<and>
-    subprodr y)"
+    subdprodl x y \<and>
+    subdprodr y)"
   by (simp add: check'_def check_cond_def)
 
 text \<open>
-  conditions B, C, and D from Huet as well as "subprodr" and "subprodl" are
+  conditions B, C, and D from Huet as well as "subdprodr" and "subdprodl" are
   preserved by smaller solutions
 \<close>
 lemma (in hlde) le_imp_conds:
@@ -334,8 +334,8 @@ lemma (in hlde) le_imp_conds:
   shows "cond_B x \<Longrightarrow> cond_B u"
     and "boundr x y \<Longrightarrow> boundr u v"
     and "a \<bullet> u = b \<bullet> v \<Longrightarrow> cond_D x y \<Longrightarrow> cond_D u v"
-    and "a \<bullet> u = b \<bullet> v \<Longrightarrow> subprodl x y \<Longrightarrow> subprodl u v"
-    and "subprodr y \<Longrightarrow> subprodr v"
+    and "a \<bullet> u = b \<bullet> v \<Longrightarrow> subdprodl x y \<Longrightarrow> subdprodl u v"
+    and "subdprodr y \<Longrightarrow> subdprodr v"
 proof -
   assume B: "cond_B x"
   have "length u = m" using len and le by (auto)
@@ -355,10 +355,10 @@ proof -
     finally show "take k a \<bullet> take k u \<le> b \<bullet> map (max_y (take k u)) [0..<n]" .
   qed
 next
-  assume subprodr: "subprodr y"
+  assume subdprodr: "subdprodr y"
   have "length v = n" using len and le by (auto)
-  show "subprodr v"
-  proof (unfold subprodr_def, intro allI impI)
+  show "subdprodr v"
+  proof (unfold subdprodr_def, intro allI impI)
     fix l
     assume l: "l \<le> n"
     moreover have *: "take l v \<le>\<^sub>v take l y" if "l \<le> n" for l
@@ -366,7 +366,7 @@ next
     ultimately have "take l b \<bullet> take l v \<le> take l b \<bullet> take l y"
       by (intro dotprod_le_right) (auto simp: len)
     also have "\<dots> \<le> a \<bullet> map (max_x (take l y)) [0..<m]"
-      using l and subprodr by (auto simp: subprodr_def)
+      using l and subdprodr by (auto simp: subdprodr_def)
     also have "\<dots> \<le> a \<bullet> map (max_x (take l v)) [0..<m]"
       using le_imp_max_x_ge [OF * [OF l]]
       using l by (auto simp: len intro!: dotprod_le_right less_eqI)
@@ -382,9 +382,9 @@ next
   then show "cond_D u v"
     using le by (auto simp: cond_D_def len le_length intro: dotprod_le_take)
 next
-  assume "a \<bullet> u = b \<bullet> v" and "subprodl x y"
-  then show "subprodl u v"
-    using le by (metis subprodl_def dotprod_le_take le_length len(1))
+  assume "a \<bullet> u = b \<bullet> v" and "subdprodl x y"
+  then show "subdprodl u v"
+    using le by (metis subdprodl_def dotprod_le_take le_length len(1))
 qed
 
 lemma (in hlde) special_solutions [simp]:
@@ -506,11 +506,11 @@ proof (rule subrelI)
   next
     let ?xs = "[(x, y) \<leftarrow> generate ?b ?a a b.
       static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
-      subprodl x y \<and>
-      subprodr y]"
+      subdprodl x y \<and>
+      subdprodr y]"
     case 2
     then have conds: "\<forall>e\<in>set x. e \<le> Max (set b)" "boundr x y" (*"cond_B x" "cond_D x y"*)
-      "subprodl x y" "subprodr y"
+      "subdprodl x y" "subdprodr y"
       and xs: "(x, y) \<in> set (minimize ?xs)"
       by (auto simp: non_special_solutions_def minimize_def set_alls2
         dest!: minimize_wrtD in_generate)
@@ -525,8 +525,8 @@ proof (rule subrelI)
     proof
       let ?P = "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"
       let ?Q = "(\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
-        subprodl x y \<and>
-        subprodr y)"
+        subdprodl x y \<and>
+        subdprodr y)"
       note sorted = sorted_wrt_generate [THEN sorted_wrt_filter, of ?Q ?b ?a a b]
       note * = in_minimize_wrt_False [OF _ sorted, of "(x, y)" ?P, OF _ xs [unfolded minimize_def]]
 
@@ -539,7 +539,7 @@ proof (rule subrelI)
       (*with le_imp_conds [OF le conds(2-)]*)
       with le_imp_conds(2,4,5) [OF le] and conds(2-)
       have conds': "\<forall>e\<in>set u. e \<le> Max (set b)" "boundr u v" (*"cond_B u" "cond_D u v"*)
-        "subprodl u v" "subprodr v"
+        "subdprodl u v" "subdprodr v"
         using conds(1,3,4) by (auto simp: len less_eq_def) (metis in_set_conv_nth le_trans len(1))
       moreover have "static_bounds a b u v"
         using max_coeff_bound [OF uv] and Minimal_Solutions_length [OF uv]
@@ -893,7 +893,7 @@ lemma suffs_cond1I:
 lemma suffs_cond2_conv:
   assumes "length ys = length b"
   shows "suffs (cond2 a b) b (ys, b \<bullet> ys) \<longleftrightarrow>
-    (\<forall>y\<in>set ys. y \<le> Max (set a)) \<and> pdprodr_impl a b ys"
+    (\<forall>y\<in>set ys. y \<le> Max (set a)) \<and> subdprodr_impl a b ys"
     (is "?L \<longleftrightarrow> ?R")
 proof
   assume *: ?L
@@ -921,16 +921,16 @@ proof
       by (intro dotprod_le_right) (auto simp: less_eq_def)
     finally have "take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl a b (take l ys)) [0 ..< length a]" .
   }
-  ultimately show "?R" by (auto simp: pdprodr_impl_def)
+  ultimately show "?R" by (auto simp: subdprodr_impl_def)
 next
   assume *: ?R
-  then have "\<forall>y\<in>set ys. y \<le> Max (set a)" and "pdprodr_impl a b ys" by auto
+  then have "\<forall>y\<in>set ys. y \<le> Max (set a)" and "subdprodr_impl a b ys" by auto
   moreover
   { fix i assume i: "i \<le> length b"
     have "drop i b \<bullet> drop i ys \<le> b \<bullet> ys"
       using i and assms by (simp add: dotprod_le_drop)
     also have "\<dots> \<le> a \<bullet> map (max_x_impl a b ys) [0 ..< length a]"
-      using * and assms by (auto simp: pdprodr_impl_def)
+      using * and assms by (auto simp: subdprodr_impl_def)
     also have "\<dots> = a \<bullet> map (max_x_impl' a b ys) [0 ..< length a]"
       using max_x_impl'_conv [OF _ assms, of _ a]
       by (metis (mono_tags, lifting) atLeastLessThan_iff map_eq_conv set_upt)
@@ -950,7 +950,7 @@ qed
 lemma suffs_cond2I:
   assumes "\<forall>y\<in>set aaa. y \<le> Max (set a)"
     and "length aaa = length b"
-    and "pdprodr_impl a b aaa"
+    and "subdprodr_impl a b aaa"
   shows "suffs (cond2 a b) b (aaa, b \<bullet> aaa)"
   using assms by (subst suffs_cond2_conv) simp_all
 
@@ -962,7 +962,7 @@ lemma check_cond_conv:
     suffs (cond2 a b) b y"
   using assms
   apply (cases x; cases y; auto simp: static_bounds_def check_cond_def set_alls2 split: list.splits)
-     apply (auto intro: suffs_cond1I suffs_cond2I simp: pdprodl_impl_def suffs_cond2_conv)
+     apply (auto intro: suffs_cond1I suffs_cond2I simp: subdprodl_impl_def suffs_cond2_conv)
   apply (metis in_set_conv_nth)
   by (metis dotprod_le_take)
 
