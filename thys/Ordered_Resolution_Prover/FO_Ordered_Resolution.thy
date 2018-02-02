@@ -1108,7 +1108,7 @@ proof (cases rule: ord_resolve.cases)
   next
     show "\<forall>i<length (Cs' \<cdot>cl \<eta>). (Cs' \<cdot>cl \<eta>) ! i = Cs ! i"
     proof (rule, rule) (* FIXME: Clean up this mess. *)
-      fix i :: "nat"
+      fix i
       assume "i < length (Cs' \<cdot>cl \<eta>)"
       then have a: "i < n"
         using n by force
@@ -1123,7 +1123,6 @@ proof (cases rule: ord_resolve.cases)
         using a n by force
       ultimately show "(Cs' \<cdot>cl \<eta>) ! i = Cs ! i"
         by auto
-      thm Cs'_Cs \<eta>_p \<open>\<forall>i<n. Cs' ! i \<subseteq># CAs' ! i\<close> a
     qed
   qed
 

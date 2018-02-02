@@ -1356,6 +1356,28 @@ proof -
     unfolding lhd_lmap_Sts .
 qed
 
+lemma ground_ord_resolve_ground: 
+  assumes 
+    CAs_p: "gr.ord_resolve CAs DA AAs As E" and
+    ground_cas: "is_ground_cls_list CAs" and
+    ground_da: "is_ground_cls DA"
+  shows "is_ground_cls E"
+proof -
+  have a1: "atms_of E \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA) \<union> atms_of DA"
+    using gr.ord_resolve_atms_of_concl_subset[of CAs DA _ _ E] CAs_p by auto
+  {
+    fix L :: "'a literal"
+    assume "L \<in># E"
+    then have "atm_of L \<in> atms_of E"
+      by (meson atm_of_lit_in_atms_of)
+    then have "is_ground_atm (atm_of L)"
+      using a1 ground_cas ground_da is_ground_cls_imp_is_ground_atm is_ground_cls_list_def
+      by auto
+  }
+  then show ?thesis
+    unfolding is_ground_cls_def is_ground_lit_def by simp
+qed
+
 theorem RP_saturated_if_fair:
   assumes fair: "fair_state_seq Sts"
   shows "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
@@ -1408,23 +1430,8 @@ proof -
     then have ground_cas: "is_ground_cls_list CAs"
       using CAs_p unfolding is_ground_cls_list_def by auto
 
-    have ground_e: "is_ground_cls ?E"
-    proof - (* FIXME: turn in to a LEMMA? *)
-      have a1: "atms_of ?E \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA) \<union> atms_of ?DA"
-        using \<gamma>_p ground_cc ground_da gr.ord_resolve_atms_of_concl_subset[of CAs ?DA _ _ ?E] CAs_p
-        by auto
-      {
-        fix L :: "'a literal"
-        assume "L \<in># concl_of \<gamma>"
-        then have "atm_of L \<in> atms_of (concl_of \<gamma>)"
-          by (meson atm_of_lit_in_atms_of)
-        then have "is_ground_atm (atm_of L)"
-          using a1 ground_cas ground_da is_ground_cls_imp_is_ground_atm is_ground_cls_list_def
-          by auto
-      }
-      then show ?thesis
-        unfolding is_ground_cls_def is_ground_lit_def by simp
-    qed
+    then have ground_e: "is_ground_cls ?E"
+      using ground_ord_resolve_ground CAs_p ground_da by auto
 
     have "\<exists>AAs As \<sigma>. ord_resolve (S_M S (Q_of_state (Liminf_state Sts))) CAs ?DA AAs As \<sigma> ?E"
       using CAs_p[THEN conjunct1]
@@ -1556,9 +1563,6 @@ proof -
       "C' \<in> set CAs' \<union> {DA'}"
       "C' \<notin> ?Qs (j - 1)"
       using j_adds_CAs' by (induction rule: RP.cases) auto
-    (* FIXME: come up with a better name than ihih *)
-    then have ihih: "set CAs' \<union> {DA'} - {C'} \<subseteq> ?Qs (j - 1)"
-      using j_adds_CAs' by auto
     have "E' \<in> ?Ns j"
     proof -
       have "E' \<in> concls_of (ord_FO_resolution.inferences_between (Q_of_state (lnth Sts (j - 1))) C')"
