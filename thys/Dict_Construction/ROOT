@@ -8,9 +8,10 @@ session Dict_Construction (AFP) = HOL +
     Lazy_Case
     Show
   theories
-    Introduction
-    Impossibility
+    "Documentation/Introduction"
+    "Documentation/Impossibility"
     Dict_Construction
+    "Documentation/Termination"
     Test_Dict_Construction
   document_files
     "root.bib"
