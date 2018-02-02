@@ -10,6 +10,7 @@ session Probabilistic_While (AFP) = "HOL-Probability" +
     Bernoulli
     Geometric
     Fast_Dice_Roll
+    Resampling
   document_files
     "root.bib"
     "root.tex"
