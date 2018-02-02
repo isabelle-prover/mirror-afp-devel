@@ -121,11 +121,11 @@ definition Minimal_Solutions :: "(nat list \<times> nat list) set"
 
 definition dij :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "dij i j = (lcm (a ! i) (b ! j)) div (a ! i)"
+    "dij i j = lcm (a ! i) (b ! j) div (a ! i)"
 
 definition eij :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "eij i j = (lcm (a ! i) (b ! j)) div (b ! j)"
+    "eij i j = lcm (a ! i) (b ! j) div (b ! j)"
 
 definition sij :: "nat \<Rightarrow> nat \<Rightarrow> (nat list \<times> nat list)"
   where
