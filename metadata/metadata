@@ -6497,3 +6497,24 @@ abstract =
   criterion, a general framework for refutational theorem proving, and
   soundness and completeness of an abstract first-order prover.
 
+[LLL_Basis_Reduction]
+title = A verified LLL algorithm
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+topic = Computer Science/Algorithms, Mathematics/Algebra
+date = 2018-02-02
+notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+abstract = 
+  The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
+  LLL algorithm, is an algorithm to find a basis with short, nearly
+  orthogonal vectors of an integer lattice. Thereby, it can also be seen
+  as an approximation to solve the shortest vector problem (SVP), which
+  is an NP-hard problem, where the approximation quality solely depends
+  on the dimension of the lattice, but not the lattice itself. The
+  algorithm also possesses many applications in diverse fields of
+  computer science, from cryptanalysis to number theory, but it is
+  specially well-known since it was used to implement the first
+  polynomial-time algorithm to factor polynomials. In this work we
+  present the first mechanized soundness proof of the LLL algorithm to
+  compute short vectors in lattices. The formalization follows a
+  textbook by von zur Gathen and Gerhard.
+

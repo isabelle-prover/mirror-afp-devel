@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>XML - Archive of Formal Proofs
+<title>A verified LLL algorithm - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,13 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">X</font>ML
+  <h1>          <font class="first">A</font>
+  
+          verified
+  
+          <font class="first">L</font>LL
+  
+          algorithm
   
 </h1>
   <p>&nbsp;</p>
@@ -70,7 +76,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">XML</td>
+  <td class="data" width="80%">A verified LLL algorithm</td>
 </tr>
 
 <tr>
@@ -78,8 +84,10 @@
           Authors:
       </td>
   <td class="data">
-                    Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com) and
-          <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">René Thiemann</a>
+                      <a href="http://www.unirioja.es/cu/jodivaso/">Jose Divasón</a>,
+                  <a href="http://sjcjoosten.nl/">Sebastiaan Joosten</a>,
+                <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">René Thiemann</a> and
+          Akihisa Yamada
       </td>
 </tr>
 
@@ -87,32 +95,38 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2014-10-03</td>
+  <td class="data">2018-02-02</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry provides an XML library for Isabelle/HOL. This includes parsing
-and pretty printing of XML trees as well as combinators for transforming XML
-trees into arbitrary user-defined data. The main contribution of this entry is
-an interface (fit for code generation) that allows for communication between
-verified programs formalized in Isabelle/HOL and the outside world via XML.
-This library was developed as part of the IsaFoR/CeTA project
-to which we refer for examples of its usage.</td>
+The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
+LLL algorithm, is an algorithm to find a basis with short, nearly
+orthogonal vectors of an integer lattice. Thereby, it can also be seen
+as an approximation to solve the shortest vector problem (SVP), which
+is an NP-hard problem, where the approximation quality solely depends
+on the dimension of the lattice, but not the lattice itself. The
+algorithm also possesses many applications in diverse fields of
+computer science, from cryptanalysis to number theory, but it is
+specially well-known since it was used to implement the first
+polynomial-time algorithm to factor polynomials. In this work we
+present the first mechanized soundness proof of the LLL algorithm to
+compute short vectors in lattices. The formalization follows a
+textbook by von zur Gathen and Gerhard.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{XML-AFP,
-  author  = {Christian Sternagel and René Thiemann},
-  title   = {XML},
+        <pre>@article{LLL_Basis_Reduction-AFP,
+  author  = {Jose Divasón and Sebastiaan Joosten and René Thiemann and Akihisa Yamada},
+  title   = {A verified LLL algorithm},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/XML.html},
+  month   = feb,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/LLL_Basis_Reduction.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -124,7 +138,7 @@ to which we refer for examples of its usage.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Certification_Monads.html">Certification_Monads</a>, <a href="Show.html">Show</a>      </td></tr>
+          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Berlekamp_Zassenhaus.html">Berlekamp_Zassenhaus</a>, <a href="Perron_Frobenius.html">Perron_Frobenius</a>      </td></tr>
           
                     
 
@@ -138,44 +152,23 @@ to which we refer for examples of its usage.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/XML/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/XML/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/LLL_Basis_Reduction/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/LLL_Basis_Reduction/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/XML/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/LLL_Basis_Reduction/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-XML-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-LLL_Basis_Reduction-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-XML-2016-12-17.tar.gz">
-            afp-XML-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-XML-2016-02-22.tar.gz">
-            afp-XML-2016-02-22.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2015:
-          <a href="../release/afp-XML-2015-05-27.tar.gz">
-            afp-XML-2015-05-27.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2014:
-          <a href="../release/afp-XML-2014-10-08.tar.gz">
-            afp-XML-2014-10-08.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
