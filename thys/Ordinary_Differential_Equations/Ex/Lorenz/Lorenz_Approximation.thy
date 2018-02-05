@@ -2833,6 +2833,7 @@ lemma compute_float_round_down[code]:
     (let d = bitlen \<bar>m\<bar> - int prec - 1 in
       if 0 < d then Float (div_twopow_int m d) (e + d)
       else Float m e)"
+  including float.lifting
   using Float.compute_float_down[of "Suc prec - bitlen \<bar>m\<bar> - e" m e, symmetric]
   by transfer
      (auto simp add: field_simps abs_mult log_mult bitlen_alt_def truncate_down_def
