@@ -9,6 +9,8 @@ text \<open>
 This topology is totally disconnected and not complete, in which sense is it useful?
 Perhaps for convergence of intervals?\<close>
 
+unbundle float.lifting
+
 instantiation float :: dist
 begin
 
@@ -215,5 +217,8 @@ proof
     using filterlim_ident[of "nhds a"]
     by (auto intro!: tendstoI dest!: tendstoD simp: dist_float_def dist_minus)
 qed
+
+lifting_update float.lifting
+lifting_forget float.lifting
 
 end
