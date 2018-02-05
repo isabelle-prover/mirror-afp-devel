@@ -4,135 +4,150 @@
 section \<open>Specification of the IEEE standard\<close>
 
 theory IEEE
-imports Complex_Main
+  imports
+    "HOL-Library.Float"
+    Word_Lib.Word_Lemmas
 begin
 
-type_synonym format = "nat \<times> nat"
-type_synonym representation = "nat \<times> nat \<times> nat"
+typedef (overloaded) ('e::len, 'f::len) float = "UNIV::(1 word \<times> 'e word \<times> 'f word) set"
+  by auto
 
+setup_lifting type_definition_float
+
+syntax "_float" :: "type \<Rightarrow> type \<Rightarrow> type" ("'(_, _') float")
+text \<open>parse \<open>('a, 'b) float\<close> as ('a::len, 'b::len) float.\<close>
+
+parse_translation \<open>
+  let
+    fun float t u = Syntax.const @{type_syntax float} $ t $ u;
+    fun len_tr u =
+      (case Term_Position.strip_positions u of
+        v as Free (x, _) =>
+          if Lexicon.is_tid x then
+            (Syntax.const @{syntax_const "_ofsort"} $ v $
+              Syntax.const @{class_syntax len})
+          else u
+      | _ => u)
+    fun len_float_tr [t, u] =
+      float (len_tr t) (len_tr u)
+  in
+    [(@{syntax_const "_float"}, K len_float_tr)]
+  end
+\<close>
 
 subsection \<open>Derived parameters for floating point formats\<close>
 
-fun expwidth :: "format \<Rightarrow> nat"
-  where "expwidth (ew, fw) = ew"
+definition wordlength :: "('e, 'f) float itself \<Rightarrow> nat"
+  where "wordlength x = LENGTH('e) + LENGTH('f) + 1"
 
-fun fracwidth :: "format \<Rightarrow> nat"
-  where "fracwidth (ew, fw) = fw"
+definition bias :: "('e, 'f) float itself \<Rightarrow> nat"
+  where "bias x = 2^(LENGTH('e) - 1) - 1"
 
-definition wordlength :: "format \<Rightarrow> nat"
-  where "wordlength x = expwidth x + fracwidth x + 1"
+definition emax :: "('e, 'f) float itself \<Rightarrow> nat"
+  where "emax x = unat(max_word::'e word)"
 
-definition emax :: "format \<Rightarrow> nat"
-  where "emax x =  2^(expwidth x) - 1"
-
-definition bias :: "format \<Rightarrow> nat"
-  where "bias x = 2^(expwidth x - 1) - 1"
-
+abbreviation fracwidth::"('e, 'f) float itself \<Rightarrow> nat" where
+  "fracwidth _ \<equiv> LENGTH('f)"
 
 subsection \<open>Predicates for the four IEEE formats\<close>
 
-definition is_single :: "format \<Rightarrow> bool"
-  where "is_single x \<longleftrightarrow> expwidth x = 8 \<and> wordlength x = 32"
+definition is_single :: "('e, 'f) float itself \<Rightarrow> bool"
+  where "is_single x \<longleftrightarrow> LENGTH('e) = 8 \<and> wordlength x = 32"
 
-definition is_double :: "format \<Rightarrow> bool"
-  where "is_double x \<longleftrightarrow> expwidth x = 11 \<and> wordlength x = 64"
+definition is_double :: "('e, 'f) float itself \<Rightarrow> bool"
+  where "is_double x \<longleftrightarrow> LENGTH('e) = 11 \<and> wordlength x = 64"
 
-definition is_single_extended :: "format \<Rightarrow> bool"
-  where "is_single_extended x \<longleftrightarrow> expwidth x \<ge> 11 \<and> wordlength x \<ge> 43"
+definition is_single_extended :: "('e, 'f) float itself \<Rightarrow> bool"
+  where "is_single_extended x \<longleftrightarrow> LENGTH('e) \<ge> 11 \<and> wordlength x \<ge> 43"
 
-definition is_double_extended :: "format \<Rightarrow> bool"
-  where "is_double_extended x \<longleftrightarrow> expwidth x \<ge> 15 \<and> wordlength x \<ge> 79"
+definition is_double_extended :: "('e, 'f) float itself \<Rightarrow> bool"
+  where "is_double_extended x \<longleftrightarrow> LENGTH('e) \<ge> 15 \<and> wordlength x \<ge> 79"
 
 
 subsection \<open>Extractors for fields\<close>
 
-fun sign :: "representation \<Rightarrow> nat"
-  where "sign (s, e, f) = s"
+lift_definition sign::"('e, 'f) float \<Rightarrow> nat" is
+  "\<lambda>(s::1 word, _::'e word, _::'f word). unat s" .
 
-fun exponent :: "representation \<Rightarrow> nat"
-  where "exponent (s, e, f) = e"
+lift_definition exponent::"('e, 'f) float \<Rightarrow> nat" is
+  "\<lambda>(_, e::'e word, _). unat e" .
 
-fun fraction :: "representation \<Rightarrow> nat"
-  where "fraction (s, e, f) = f"
+lift_definition fraction::"('e, 'f) float \<Rightarrow> nat" is
+  "\<lambda>(_, _, f::'f word). unat f" .
 
+abbreviation "real_of_word x \<equiv> real (unat x)"
+
+lift_definition valof :: "('e, 'f) float \<Rightarrow> real"
+is "\<lambda>(s, e, f).
+    let x = (TYPE(('e, 'f) float)) in
+    (if e = 0
+     then (-1::real)^(unat s) * (2 / (2^bias x)) * (real_of_word f/2^(LENGTH('f)))
+     else (-1::real)^(unat s) * ((2^(unat e)) / (2^bias x)) * (1 + real_of_word f/2^LENGTH('f)))"
+  .
 
 subsection \<open>Partition of numbers into disjoint classes\<close>
 
-definition is_nan :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_nan x a \<longleftrightarrow> exponent a = emax x \<and> fraction a \<noteq> 0"
+definition is_nan :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_nan a \<longleftrightarrow> exponent a = emax TYPE(('e, 'f)float) \<and> fraction a \<noteq> 0"
 
-definition is_infinity :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_infinity x a \<longleftrightarrow> exponent a = emax x \<and> fraction a = 0"
+definition is_infinity :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_infinity a \<longleftrightarrow> exponent a = emax TYPE(('e, 'f)float) \<and> fraction a = 0"
 
-definition is_normal :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_normal x a \<longleftrightarrow> 0 < exponent a \<and> exponent a < emax x"
+definition is_normal :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_normal a \<longleftrightarrow> 0 < exponent a \<and> exponent a < emax TYPE(('e, 'f)float)"
 
-definition is_denormal :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_denormal x a \<longleftrightarrow> exponent a = 0 \<and> fraction a \<noteq> 0"
+definition is_denormal :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_denormal a \<longleftrightarrow> exponent a = 0 \<and> fraction a \<noteq> 0"
 
-definition is_zero :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_zero x a \<longleftrightarrow> exponent a = 0 \<and> fraction a = 0"
+definition is_zero :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_zero a \<longleftrightarrow> exponent a = 0 \<and> fraction a = 0"
 
-definition is_valid :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_valid x a \<longleftrightarrow> sign a < 2 \<and> exponent a < 2^(expwidth x) \<and> fraction a < 2^(fracwidth x)"
-
-definition is_finite :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_finite x a \<longleftrightarrow> is_valid x a \<and> (is_normal x a \<or> is_denormal x a \<or> is_zero x a)"
+definition is_finite :: "('e, 'f) float \<Rightarrow> bool"
+  where "is_finite a \<longleftrightarrow> (is_normal a \<or> is_denormal a \<or> is_zero a)"
 
 
 subsection \<open>Special values\<close>
 
-definition plus_infinity :: "format \<Rightarrow> representation"
-  where "plus_infinity x = (0, emax x, 0)"
+lift_definition plus_infinity :: "('e, 'f) float" ("\<infinity>") is "(0, max_word, 0)" .
 
-definition minus_infinity :: "format \<Rightarrow> representation"
-  where "minus_infinity x = (1, emax x, 0)"
+lift_definition topfloat :: "('e, 'f) float" is "(0, max_word - 1, 2^LENGTH('f) - 1)" .
 
-definition plus_zero :: "format \<Rightarrow> representation"
-  where [simp]: "plus_zero x = (0, 0, 0)"
+instantiation float::(len, len) zero begin
 
-definition minus_zero :: "format \<Rightarrow> representation"
-  where [simp]: "minus_zero x = (1, 0, 0)"
+lift_definition zero_float :: "('e, 'f) float" is "(0, 0, 0)" .
 
-definition topfloat :: "format \<Rightarrow> representation"
-  where "topfloat x = (0, (emax x - 1), 2^(fracwidth x) - 1)"
+instance proof qed
 
-definition bottomfloat :: "format \<Rightarrow> representation"
-  where "bottomfloat x = (1, (emax x - 1), 2^(fracwidth x) - 1)"
-
+end
 
 subsection \<open>Negation operation on floating point values\<close>
 
-definition minus :: "format \<Rightarrow> representation \<Rightarrow> representation"
-  where [simp]: "minus x a = (1 - sign a, exponent a, fraction a)"
+instantiation float::(len, len) uminus begin
+lift_definition uminus_float :: "('e, 'f) float \<Rightarrow> ('e, 'f) float" is  "\<lambda>(s, e, f). (1 - s, e, f)" .
+instance proof qed
+end
 
-
-subsection \<open>Concrete encodings\<close>
-
-fun encoding :: "format \<Rightarrow> representation \<Rightarrow> nat"
-  where "encoding x (s, e, f) = s * power 2 (wordlength x - 1) + e * power 2 (fracwidth x) + f"
+abbreviation (input) "minus_zero \<equiv> - (0::('e, 'f)float)"
+abbreviation (input) "minus_infinity \<equiv> - \<infinity>"
+abbreviation (input) "bottomfloat \<equiv> - topfloat"
 
 
 subsection \<open>Real number valuations\<close>
 
-fun valof :: "format \<Rightarrow> representation \<Rightarrow> real"
-where
-  "valof x (s, e, f) =
-    (if e = 0
-     then (-1::real)^s * (2 / (2^bias x)) * (real f/2^(fracwidth x))
-     else (-1::real)^s * ((2^e) / (2^bias x)) * (1 + real f/2^fracwidth x))"
-
 text \<open>The largest value that can be represented in floating point format.\<close>
-definition largest :: "format \<Rightarrow> real"
+definition largest :: "('e, 'f) float itself \<Rightarrow> real"
   where "largest x = (2^(emax x - 1) / 2^bias x) * (2 - 1/(2^fracwidth x))"
 
 text \<open>Threshold, used for checking overflow.\<close>
-definition threshold :: "format \<Rightarrow> real"
+definition threshold :: "('e, 'f) float itself \<Rightarrow> real"
   where "threshold x = (2^(emax x - 1) / 2^bias x) * (2 - 1/(2^(Suc(fracwidth x))))"
 
 text \<open>Unit of least precision.\<close>
-definition ulp :: "format \<Rightarrow> representation \<Rightarrow> real"
-  where "ulp x a = valof x (0, exponent a, 1) - valof x (0, exponent a, 0)"
+
+lift_definition one_lp::"('e ,'f) float \<Rightarrow> ('e ,'f) float" is "\<lambda>(s, e, f). (0, e::'e word, 1)" .
+lift_definition zero_lp::"('e ,'f) float \<Rightarrow> ('e ,'f) float" is "\<lambda>(s, e, f). (0, e::'e word, 0)" .
+
+definition ulp :: "('e, 'f) float \<Rightarrow> real" where "ulp a = valof (one_lp a) - valof (zero_lp a)"
 
 text \<open>Enumerated type for rounding modes.\<close>
 datatype roundmode = To_nearest | float_To_zero | To_pinfinity | To_ninfinity
@@ -147,57 +162,57 @@ definition "closest v p s x =
 
 subsection \<open>Rounding\<close>
 
-fun round :: "format \<Rightarrow> roundmode \<Rightarrow> real \<Rightarrow> representation"
+fun round :: "roundmode \<Rightarrow> real \<Rightarrow> ('e ,'f) float"
 where
-  "round x To_nearest y =
-   (if y \<le> - threshold x then minus_infinity x
-    else if y \<ge> threshold x then plus_infinity x
-    else closest (valof x) (\<lambda>a. even (fraction a)) {a. is_finite x a} y)"
-| "round x float_To_zero y =
-   (if y < - largest x then bottomfloat x
-    else if y > largest x then topfloat x
-    else closest (valof x) (\<lambda>a. True) {a. is_finite x a \<and> \<bar>valof x a\<bar> \<le> \<bar>y\<bar>} y)"
-| "round x To_pinfinity y =
-   (if y < - largest x then bottomfloat x
-    else if y > largest x then plus_infinity x
-    else closest (valof x) (\<lambda>a. True) {a. is_finite x a \<and> valof x a \<ge> y} y)"
-| "round x To_ninfinity y =
-   (if y < - largest x then minus_infinity x
-    else if y > largest x then topfloat x
-    else closest (valof x) (\<lambda>a. True) {a. is_finite x a \<and> valof x a \<le> y} y)"
+  "round To_nearest y =
+   (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
+    else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
+    else closest (valof) (\<lambda>a. even (fraction a)) {a. is_finite a} y)"
+| "round float_To_zero y =
+   (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+    else if y > largest TYPE(('e ,'f) float) then topfloat
+    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
+| "round To_pinfinity y =
+   (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+    else if y > largest TYPE(('e ,'f) float) then plus_infinity
+    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> valof a \<ge> y} y)"
+| "round To_ninfinity y =
+   (if y < - largest TYPE(('e ,'f) float) then minus_infinity
+    else if y > largest TYPE(('e ,'f) float) then topfloat
+    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> valof a \<le> y} y)"
 
 text \<open>Rounding to integer values in floating point format.\<close>
 
-definition is_integral :: "format \<Rightarrow> representation \<Rightarrow> bool"
-  where "is_integral x a \<longleftrightarrow> is_finite x a \<and> (\<exists>n::nat. \<bar>valof x a\<bar> = real n)"
+definition is_integral :: "('e ,'f) float \<Rightarrow> bool"
+  where "is_integral a \<longleftrightarrow> is_finite a \<and> (\<exists>n::nat. \<bar>valof a\<bar> = real n)"
 
-fun intround :: "format \<Rightarrow> roundmode \<Rightarrow> real \<Rightarrow> representation"
+fun intround :: "roundmode \<Rightarrow> real \<Rightarrow> ('e ,'f) float"
 where
-  "intround x To_nearest y =
-    (if y \<le> - threshold x then minus_infinity x
-     else if y \<ge> threshold x then plus_infinity x
-     else closest (valof x) (\<lambda>a. (\<exists>n::nat. even n \<and> \<bar>valof x a\<bar> = real n)) {a. is_integral x a} y)"
-|"intround x float_To_zero y =
-    (if y < - largest x then bottomfloat x
-     else if y > largest x then topfloat x
-     else closest (valof x) (\<lambda>x. True) {a. is_integral x a \<and> \<bar>valof x a\<bar> \<le> \<bar>y\<bar>} y)"
-|"intround x To_pinfinity y =
-    (if y < - largest x then bottomfloat x
-     else if y > largest x then plus_infinity x
-     else closest (valof x) (\<lambda>x. True) {a. is_integral x a \<and> valof x a \<ge> y} y)"
-|"intround x To_ninfinity y =
-    (if y < - largest x then minus_infinity x
-     else if y > largest x then topfloat x
-     else closest (valof x) (\<lambda>x. True) {a. is_integral x a \<and> valof x a \<ge> y} y)"
+  "intround To_nearest y =
+    (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
+     else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
+     else closest (valof) (\<lambda>a. (\<exists>n::nat. even n \<and> \<bar>valof a\<bar> = real n)) {a. is_integral a} y)"
+|"intround float_To_zero y =
+    (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+     else if y > largest TYPE(('e ,'f) float) then topfloat
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
+|"intround To_pinfinity y =
+    (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+     else if y > largest TYPE(('e ,'f) float) then plus_infinity
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
+|"intround To_ninfinity y =
+    (if y < - largest TYPE(('e ,'f) float) then minus_infinity
+     else if y > largest TYPE(('e ,'f) float) then topfloat
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
 
 text \<open>Non-standard of NaN.\<close>
-definition some_nan :: "format \<Rightarrow> representation"
-  where "some_nan x = (SOME a. is_nan x a)"
+definition some_nan :: "('e ,'f) float"
+  where "some_nan = (SOME a. is_nan a)"
 
 text \<open>Coercion for signs of zero results.\<close>
-definition zerosign :: "format \<Rightarrow> nat \<Rightarrow> representation \<Rightarrow> representation"
-  where "zerosign x s a =
-    (if is_zero x a then (if s = 0 then plus_zero x else minus_zero x) else a)"
+definition zerosign :: "nat \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "zerosign s a =
+    (if is_zero a then (if s = 0 then 0 else - 0) else a)"
 
 text \<open>Remainder operation.\<close>
 definition rem :: "real \<Rightarrow> real \<Rightarrow> real"
@@ -205,264 +220,195 @@ definition rem :: "real \<Rightarrow> real \<Rightarrow> real"
     (let n = closest id (\<lambda>x. \<exists>n::nat. even n \<and> \<bar>x\<bar> = real n) {x. \<exists>n :: nat. \<bar>x\<bar> = real n} (x / y)
      in x - n * y)"
 
-definition frem :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> representation"
-  where "frem x m a b =
-    (if is_nan x a \<or> is_nan x b \<or> is_infinity x a \<or> is_zero x b then some_nan x
-     else zerosign x (sign a) (round x m (rem (valof x a) (valof x b))))"
+definition frem :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "frem m a b =
+    (if is_nan a \<or> is_nan b \<or> is_infinity a \<or> is_zero b then some_nan
+     else zerosign (sign a) (round m (rem (valof a) (valof b))))"
 
 
 subsection \<open>Definitions of the arithmetic operations\<close>
 
-definition fintrnd :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation"
-  where "fintrnd x m a =
-    (if is_nan x a then (some_nan x)
-     else if is_infinity x a then a
-     else zerosign x (sign a) (intround x m (valof x a)))"
+definition fintrnd :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fintrnd m a =
+    (if is_nan a then (some_nan)
+     else if is_infinity a then a
+     else zerosign (sign a) (intround m (valof a)))"
 
-definition fadd :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> representation"
-  where "fadd x m a b =
-    (if is_nan x a \<or> is_nan x b \<or> (is_infinity x a \<and> is_infinity x b \<and> sign a \<noteq> sign b)
-     then some_nan x
-     else if (is_infinity x a) then a
-     else if (is_infinity x b) then b
+definition fadd :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fadd m a b =
+    (if is_nan a \<or> is_nan b \<or> (is_infinity a \<and> is_infinity b \<and> sign a \<noteq> sign b)
+     then some_nan
+     else if (is_infinity a) then a
+     else if (is_infinity b) then b
      else
-      zerosign x
-        (if is_zero x a \<and> is_zero x b \<and> sign a = sign b then sign a
+      zerosign
+        (if is_zero a \<and> is_zero b \<and> sign a = sign b then sign a
          else if m = To_ninfinity then 1 else 0)
-        (round x m (valof x a + valof x b)))"
+        (round m (valof a + valof b)))"
 
-definition fsub :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> representation"
-  where "fsub x m a b =
-    (if is_nan x a \<or> is_nan x b \<or> (is_infinity x a \<and> is_infinity x b \<and> sign a = sign b)
-     then some_nan x
-     else if is_infinity x a then a
-     else if is_infinity x b then minus x b
+definition fsub :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fsub m a b =
+    (if is_nan a \<or> is_nan b \<or> (is_infinity a \<and> is_infinity b \<and> sign a = sign b)
+     then some_nan
+     else if is_infinity a then a
+     else if is_infinity b then - b
      else
-      zerosign x
-        (if is_zero x a \<and> is_zero x b \<and> sign a \<noteq> sign b then sign a
+      zerosign
+        (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a
          else if m = To_ninfinity then 1 else 0)
-        (round x m (valof x a - valof x b)))"
+        (round m (valof a - valof b)))"
 
-definition fmul :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> representation"
-  where "fmul x m a b =
-    (if is_nan x a \<or> is_nan x b \<or> (is_zero x a \<and> is_infinity x b) \<or> (is_infinity x a \<and> is_zero x b)
-     then some_nan x
-     else if is_infinity x a \<or> is_infinity x b
-     then (if sign a = sign b then plus_infinity x else minus_infinity x)
-     else zerosign x (if sign a = sign b then 0 else 1 ) (round x m (valof x a * valof x b)))"
+definition fmul :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fmul m a b =
+    (if is_nan a \<or> is_nan b \<or> (is_zero a \<and> is_infinity b) \<or> (is_infinity a \<and> is_zero b)
+     then some_nan
+     else if is_infinity a \<or> is_infinity b
+     then (if sign a = sign b then plus_infinity else minus_infinity)
+     else zerosign (if sign a = sign b then 0 else 1 ) (round m (valof a * valof b)))"
 
-definition fdiv :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> representation"
-  where "fdiv x m a b =
-    (if is_nan x a \<or> is_nan x b \<or> (is_zero x a \<and> is_zero x b) \<or> (is_infinity x a \<and> is_infinity x b)
-     then some_nan x
-     else if is_infinity x a \<or> is_zero x b
-     then (if sign a = sign b then plus_infinity x else minus_infinity x)
-     else if is_infinity x b
-     then (if sign a = sign b then plus_zero x else minus_zero x)
-     else zerosign x (if sign a = sign b then 0 else 1) (round x m (valof x a / valof x b)))"
+definition fdiv :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fdiv m a b =
+    (if is_nan a \<or> is_nan b \<or> (is_zero a \<and> is_zero b) \<or> (is_infinity a \<and> is_infinity b)
+     then some_nan
+     else if is_infinity a \<or> is_zero b
+     then (if sign a = sign b then plus_infinity else minus_infinity)
+     else if is_infinity b
+     then (if sign a = sign b then 0 else - 0)
+     else zerosign (if sign a = sign b then 0 else 1) (round m (valof a / valof b)))"
 
-definition fsqrt :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation"
-  where "fsqrt x m a =
-    (if is_nan x a then some_nan x
-     else if is_zero x a \<or> is_infinity x a \<and> sign a = 0 then a
-     else if sign a = 1 then some_nan x
-     else zerosign x (sign a) (round x m (sqrt (valof x a))))"
-
-text \<open>Negation.\<close>
-definition fneg :: "format \<Rightarrow> roundmode \<Rightarrow> representation \<Rightarrow> representation"
-  where "fneg x m a = (1 - sign a, exponent a, fraction a)"
+definition fsqrt :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
+  where "fsqrt m a =
+    (if is_nan a then some_nan
+     else if is_zero a \<or> is_infinity a \<and> sign a = 0 then a
+     else if sign a = 1 then some_nan
+     else zerosign (sign a) (round m (sqrt (valof a))))"
 
 
 subsection \<open>Comparison operations\<close>
 
 datatype ccode = Gt | Lt | Eq | Und
 
-definition fcompare :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> ccode"
-  where "fcompare x a b =
-    (if is_nan x a \<or> is_nan x b then Und
-     else if is_infinity x a \<and> sign a = 1
-     then (if is_infinity x b \<and> sign b = 1 then Eq else Lt)
-     else if is_infinity x a \<and> sign a = 0
-     then (if is_infinity x b \<and> sign b = 0 then Eq else Gt)
-     else if is_infinity x b \<and> sign b = 1 then Gt
-     else if is_infinity x b \<and> sign b = 0 then Lt
-     else if valof x a < valof x b then Lt
-     else if valof x a = valof x b then Eq
+definition fcompare :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ccode"
+  where "fcompare a b =
+    (if is_nan a \<or> is_nan b then Und
+     else if is_infinity a \<and> sign a = 1
+     then (if is_infinity b \<and> sign b = 1 then Eq else Lt)
+     else if is_infinity a \<and> sign a = 0
+     then (if is_infinity b \<and> sign b = 0 then Eq else Gt)
+     else if is_infinity b \<and> sign b = 1 then Gt
+     else if is_infinity b \<and> sign b = 0 then Lt
+     else if valof a < valof b then Lt
+     else if valof a = valof b then Eq
      else Gt)"
 
-definition flt :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> bool"
-  where [simp]: "flt x a b \<longleftrightarrow> fcompare x a b = Lt"
+definition flt :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> bool"
+  where "flt a b \<longleftrightarrow> fcompare a b = Lt"
 
-definition fle :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> bool"
-  where [simp]: "fle x a b \<longleftrightarrow> fcompare x a b = Lt \<or> fcompare x a b = Eq"
+definition fle :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> bool"
+  where "fle a b \<longleftrightarrow> fcompare a b = Lt \<or> fcompare a b = Eq"
 
-definition fgt :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> bool"
-  where [simp]: "fgt x a b \<longleftrightarrow> fcompare x a b = Gt"
+definition fgt :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> bool"
+  where "fgt a b \<longleftrightarrow> fcompare a b = Gt"
 
-definition fge :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> bool"
-  where [simp]: "fge x a b \<longleftrightarrow> fcompare x a b = Gt \<or> fcompare x a b = Eq"
+definition fge :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> bool"
+  where "fge a b \<longleftrightarrow> fcompare a b = Gt \<or> fcompare a b = Eq"
 
-definition feq :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> bool"
-  where [simp]: "feq x a b \<longleftrightarrow> fcompare x a b = Eq"
+definition feq :: "('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> bool"
+  where "feq a b \<longleftrightarrow> fcompare a b = Eq"
 
 
 section \<open>Specify float to be double  precision and round to even\<close>
 
-definition float_format :: format
-  where "float_format = (11, 52)"
-
-text \<open>The float type.\<close>
-typedef float = "{a. is_valid float_format a}"
-proof
-  show "(0, 0, 0) \<in> ?float" by (simp add: is_valid_def)
-qed
-
-definition Val :: "float \<Rightarrow> real"
-  where "Val a = valof (float_format) (Rep_float a)"
-
-definition Float :: "real \<Rightarrow> float"
-  where "Float x = Abs_float (round float_format To_nearest x)"
-
-definition Sign :: "float \<Rightarrow> nat"
-  where "Sign a = sign (Rep_float a)"
-
-definition Exponent :: "float \<Rightarrow> nat"
-  where "Exponent a = exponent (Rep_float a)"
-
-definition Fraction :: "float \<Rightarrow> nat"
-  where "Fraction a = fraction (Rep_float a)"
-
-definition Ulp :: "float \<Rightarrow> real"
-  where "Ulp a = ulp float_format (Rep_float a)"
-
-text \<open>Lifting of the discriminator functions.\<close>
-definition Isnan :: "float \<Rightarrow> bool"
-  where "Isnan a = is_nan float_format (Rep_float a)"
-
-definition Infinity :: "float \<Rightarrow> bool"
-  where "Infinity a \<longleftrightarrow> is_infinity float_format (Rep_float a)"
-
-definition Isnormal :: "float \<Rightarrow> bool"
-  where "Isnormal a \<longleftrightarrow> is_normal float_format (Rep_float a)"
-
-definition Isdenormal :: "float \<Rightarrow> bool"
-  where "Isdenormal a \<longleftrightarrow> is_denormal float_format (Rep_float a)"
-
-definition Iszero :: "float \<Rightarrow> bool"
-  where "Iszero a \<longleftrightarrow> is_zero float_format (Rep_float a)"
-
-definition Finite :: "float \<Rightarrow> bool"
-  where "Finite a \<longleftrightarrow> Isnormal a \<or> Isdenormal a \<or> Iszero a"
-
-definition Isintegral :: "float \<Rightarrow> bool"
-  where "Isintegral a \<longleftrightarrow> is_integral float_format (Rep_float a)"
-
-
-text \<open>Basic operations on floats.\<close>
-
-definition Topfloat :: "float"
-  where "Topfloat = Abs_float (topfloat float_format)"
-
-definition Bottomfloat :: "float"
-  where "Bottomfloat = Abs_float (bottomfloat float_format)"
-
-definition Plus_zero :: "float"
-  where "Plus_zero = Abs_float (plus_zero float_format)"
-
-definition Minus_zero :: "float"
-  where "Minus_zero = Abs_float (minus_zero float_format)"
-
-definition Minus_infinity :: "float"
-  where "Minus_infinity = Abs_float (minus_infinity float_format)"
-
-definition Plus_infinity :: "float"
-  where "Plus_infinity = Abs_float (plus_infinity float_format)"
-
-instantiation float :: plus
+instantiation float :: (len, len) plus
 begin
 
-definition plus_float :: "float \<Rightarrow> float \<Rightarrow> float"
-  where "a + b = Abs_float (fadd float_format To_nearest (Rep_float a) (Rep_float b))"
+definition plus_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "a + b = fadd To_nearest a b"
 
 instance ..
 
 end
 
-instantiation float :: minus
+instantiation float :: (len, len) minus
 begin
 
-definition minus_float :: "float \<Rightarrow> float \<Rightarrow> float"
-  where "a - b = Abs_float (fsub float_format To_nearest (Rep_float a) (Rep_float b))"
+definition minus_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "a - b = fsub To_nearest a b"
 
 instance ..
 
 end
 
-instantiation float :: times
+instantiation float :: (len, len) times
 begin
 
-definition times_float :: "float \<Rightarrow> float \<Rightarrow> float"
-  where "a * b = Abs_float (fmul float_format To_nearest (Rep_float a) (Rep_float b))"
+definition times_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "a * b = fmul To_nearest a b"
 
 instance ..
 
 end
 
-instantiation float :: inverse
+instantiation float :: (len, len) one
 begin
 
-definition divide_float :: "float \<Rightarrow> float \<Rightarrow> float"
-  where "a div b = Abs_float (fdiv float_format To_nearest (Rep_float a) (Rep_float b))"
-
-definition inverse_float :: "float \<Rightarrow> float"
-  where "inverse_float a = Float (1 / Val a)"
+lift_definition one_float :: "('a, 'b) float" is "(0, 2^(LENGTH('a) - 1) - 1, 0)" .
 
 instance ..
 
 end
 
-definition float_rem :: "float \<Rightarrow> float \<Rightarrow> float"
-  where "float_rem a b = Abs_float (frem float_format To_nearest (Rep_float a) (Rep_float b))"
-
-definition float_sqrt :: "float \<Rightarrow> float"
-  where "float_sqrt a = Abs_float (fsqrt float_format To_nearest (Rep_float a))"
-
-definition ROUNDFLOAT :: "float \<Rightarrow> float"
-  where "ROUNDFLOAT a = Abs_float (fintrnd float_format To_nearest (Rep_float a))"
-
-
-instantiation float :: ord
+instantiation float :: (len, len) inverse
 begin
 
-definition less_float :: "float \<Rightarrow> float \<Rightarrow> bool"
-  where "a < b \<longleftrightarrow> flt float_format (Rep_float a) (Rep_float b)"
+definition divide_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "a div b = fdiv To_nearest a b"
 
-definition less_eq_float :: "float \<Rightarrow> float \<Rightarrow> bool"
-  where "a \<le> b \<longleftrightarrow> fle float_format (Rep_float a) (Rep_float b)"
+definition inverse_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "inverse_float a = fdiv To_nearest 1 a"
 
 instance ..
 
 end
 
+definition float_rem :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "float_rem a b = frem To_nearest a b"
 
-definition float_gt :: "float \<Rightarrow> float \<Rightarrow> bool"
-  where "float_gt a b = fgt float_format (Rep_float a) (Rep_float b)"
+definition float_sqrt :: "('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "float_sqrt a = fsqrt To_nearest a"
 
-definition float_ge :: "float \<Rightarrow> float \<Rightarrow> bool"
-  where "float_ge a b = fge float_format (Rep_float a) (Rep_float b)"
+definition ROUNDFLOAT ::"('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "ROUNDFLOAT a = fintrnd To_nearest a"
 
-definition float_eq :: "float \<Rightarrow> float \<Rightarrow> bool"  (infixl "\<doteq>" 70)
-  where "float_eq a b = feq float_format (Rep_float a) (Rep_float b)"
 
-definition float_neg :: "float \<Rightarrow> float"
-  where "float_neg a = Abs_float (fneg float_format To_nearest (Rep_float a))"
+instantiation float :: (len, len) ord
+begin
 
-definition float_abs :: "float \<Rightarrow> float"
-  where "float_abs a = (if sign (Rep_float a) = 0 then a else float_neg a)"
+definition less_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> bool"
+  where "a < b \<longleftrightarrow> flt a b"
+
+definition less_eq_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> bool"
+  where "a \<le> b \<longleftrightarrow> fle a b"
+
+instance ..
+
+end
+
+definition float_eq :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> bool"  (infixl "\<doteq>" 70)
+  where "float_eq a b = feq a b"
+
+instantiation float :: (len, len) abs
+begin
+
+definition abs_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float"
+  where "abs_float a = (if sign a = 0 then a else - a)"
+
+instance ..
+end
 
 text \<open>The \<open>1 + \<epsilon>\<close> property.\<close>
-definition normalizes :: "real \<Rightarrow> bool"
-  where "normalizes x =
+definition normalizes :: "_ itself \<Rightarrow> real \<Rightarrow> bool"
+  where "normalizes float_format x =
     (1/ (2::real)^(bias float_format - 1) \<le> \<bar>x\<bar> \<and> \<bar>x\<bar> < threshold float_format)"
 
 end

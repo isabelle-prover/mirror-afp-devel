@@ -3292,8 +3292,8 @@ lemma mult_aform'_float: "mult_aform' p x y = ((a, b), ba) \<Longrightarrow> a \
   by (auto simp: mult_aform'_def Let_def split_beta')
 
 lemma inverse_aform'_float: "inverse_aform' p x = ((a, bb), baa) \<Longrightarrow> a \<in> float"
-  unfolding inverse_aform'_def
-  by (auto simp: inverse_aform'_def Let_def split!: if_splits)
+  using [[linarith_split_limit=256]]
+  by (auto simp: inverse_aform'_def Let_def)
 
 lemma inverse_aform_float:
   "inverse_aform p x = Some ((a, bb), baa) \<Longrightarrow> a \<in> float"

@@ -1,4 +1,7 @@
-(* Author: Lei Yu, University of Cambridge *)
+(* Author: Lei Yu, University of Cambridge
+   Author: Fabian Hellauer
+           Fabian Immler
+*)
 
 section \<open>Proofs of Properties about Floating Point Arithmetic\<close>
 
@@ -6,89 +9,159 @@ theory IEEE_Properties
 imports IEEE
 begin
 
-lemmas float_defs =
-  Finite_def Infinity_def Iszero_def Isnan_def Val_def Sign_def
-  Isnormal_def Isdenormal_def Fraction_def Exponent_def float_format_def
-  Plus_zero_def Minus_zero_def
-
-
 subsection \<open>Theorems derived from definitions\<close>
 
-lemma sign: "\<And>a. sign a = fst a"
-  by auto
 
-lemma exponent: "\<And>a. exponent a = fst (snd a)"
-  by auto
+lemma valof_eq:
+  "valof x =
+    (if exponent x = 0
+       then (- 1) ^ sign x * (2 / 2 ^ bias TYPE(('a, 'b) float)) *
+            (real (fraction x) / 2 ^ LENGTH('b))
+       else (- 1) ^ sign x * (2 ^ exponent x / 2 ^ bias TYPE(('a, 'b) float)) *
+            (1 + real (fraction x) / 2 ^ LENGTH('b)))"
+  for x::"('a, 'b) float"
+  unfolding Let_def
+  by transfer (auto simp: bias_def divide_simps unat_eq_0)
 
-lemma fraction: "\<And>a. fraction a = snd (snd a)"
-  by auto
+lemma exponent_le[simp]:
+  "exponent a \<le> unat (max_word::'a word)" for a::"('a, _)float"
+  by transfer (auto intro!: unat_mono simp: word_le_nat_alt[symmetric])
 
-lemma is_valid:
-  "is_valid x a \<longleftrightarrow>
-    sign a < 2 \<and> exponent a < 2^(expwidth x) \<and> fraction a < 2^(fracwidth x)"
-  by (auto simp: is_valid_def emax_def)
+lemma
+  max_word_le_exponent_iff[simp]:
+  "unat (max_word::'a word) \<le> exponent a \<longleftrightarrow> unat (max_word::'a word) = exponent a"
+  for a::"('a, _)float"
+  using le_antisym by fastforce
 
-lemma is_valid_defloat: "is_valid float_format (Rep_float a)"
-  by (cases a) (simp add: Abs_float_inverse)
+lemma infinity_simps:
+  "sign (plus_infinity::('e, 'f)float) = 0"
+  "sign (minus_infinity::('e, 'f)float) = 1"
+  "exponent (plus_infinity::('e, 'f)float) = emax TYPE(('e, 'f)float)"
+  "exponent (minus_infinity::('e, 'f)float) = emax TYPE(('e, 'f)float)"
+  "fraction (plus_infinity::('e, 'f)float) = 0"
+  "fraction (minus_infinity::('e, 'f)float) = 0"
+  subgoal by transfer auto
+  subgoal by transfer auto
+  subgoal by transfer (auto simp: emax_def)
+  subgoal by transfer (auto simp: emax_def)
+  subgoal by transfer auto
+  subgoal by transfer auto
+  done
 
-lemma float_cases: "Isnan a \<or> Infinity a \<or> Isnormal a \<or> Isdenormal a \<or> Iszero a"
-  by (cases a)
-    (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
-      is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
+lemma zero_simps:
+  "sign (0::('e, 'f)float) = 0"
+  "sign (- 0::('e, 'f)float) = 1"
+  "exponent (0::('e, 'f)float) = 0"
+  "exponent (- 0::('e, 'f)float) = 0"
+  "fraction (0::('e, 'f)float) = 0"
+  "fraction (- 0::('e, 'f)float) = 0"
+  subgoal by transfer auto
+  subgoal by transfer auto
+  subgoal by transfer auto
+  subgoal by transfer auto
+  subgoal by transfer auto
+  subgoal by transfer auto
+  done
 
-lemma float_cases_finite: "Isnan a \<or> Infinity a \<or> Finite a"
-  by (cases a)
-    (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
-      is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
+lemma topfloat_simps:
+  "sign (topfloat::('e, 'f)float) = 0"
+  "exponent (topfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
+  "fraction (topfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
+  and bottomfloat_simps:
+  "sign (bottomfloat::('e, 'f)float) = 1"
+  "exponent (bottomfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
+  "fraction (bottomfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
+  subgoal by transfer auto
+  subgoal by transfer (auto simp: emax_def unat_sub)
+  subgoal
+    apply transfer
+    apply safe
+    by (metis One_nat_def diff_less lessI minus_one_norm minus_one_word unat_0 unat_lt2p
+        unat_of_nat_len)
+  subgoal by transfer auto
+  subgoal by transfer (auto simp: emax_def unat_sub)
+  subgoal
+    apply transfer
+    apply safe
+    by (metis One_nat_def diff_less lessI minus_one_norm minus_one_word unat_0 unat_lt2p
+        unat_of_nat_len)
+  done
 
-lemma float_zero1: "Iszero Plus_zero"
-  by (auto simp: float_defs Abs_float_inverse is_zero_def is_valid_def)
+lemma emax_eq: "emax x = 2^LENGTH('e) - 1"
+  for x::"('e, 'f)float itself"
+  unfolding bias_def emax_def
+  by (auto simp: max_word_eq unat_minus word_size)
 
-lemma float_zero2: "Iszero Minus_zero"
-  by (auto simp: float_defs Abs_float_inverse is_zero_def is_valid_def)
+lemmas float_defs =
+  is_finite_def is_infinity_def is_zero_def is_nan_def
+  is_normal_def is_denormal_def valof_eq
+  less_eq_float_def less_float_def
+  flt_def fgt_def fle_def fge_def feq_def
+  fcompare_def
+  infinity_simps
+  zero_simps
+  topfloat_simps
+  bottomfloat_simps
+  float_eq_def
 
-lemma is_valid_special:
-  "is_valid x (minus_infinity x)"
-  "is_valid x (plus_infinity x)"
-  "is_valid x (topfloat x)"
-  "is_valid x (bottomfloat x)"
-  "is_valid x (plus_zero x)"
-  "is_valid x (minus_zero x)"
-  by (auto simp: emax_def is_valid_def minus_infinity_def
-    plus_infinity_def topfloat_def bottomfloat_def)
+lemma float_cases: "is_nan a \<or> is_infinity a \<or> is_normal a \<or> is_denormal a \<or> is_zero a"
+  by (auto simp: emax_def float_defs not_less)
 
-lemma sign_0_1: "is_valid x a \<Longrightarrow> sign a < 2"
-  by (auto simp: is_valid_def)
+lemma float_cases_finite: "is_nan a \<or> is_infinity a \<or> is_finite a"
+  by (simp add: float_cases is_finite_def)
+
+lemma float_zero1[simp]: "is_zero 0"
+  unfolding float_defs
+  by transfer auto
+
+lemma float_zero2[simp]: "is_zero (- x) \<longleftrightarrow> is_zero x"
+  unfolding float_defs
+  by transfer auto
+
+lemma emax_pos[simp]: "0 < emax x" "emax x \<noteq> 0"
+  by (auto simp: emax_def)
 
 text \<open>The types of floating-point numbers are mutually distinct.\<close>
 lemma float_distinct:
-  "\<not> (Isnan a \<and> Infinity a)"
-  "\<not> (Isnan a \<and> Isnormal a)"
-  "\<not> (Isnan a \<and> Isdenormal a)"
-  "\<not> (Isnan a \<and> Iszero a)"
-  "\<not> (Infinity a \<and> Isnormal a)"
-  "\<not> (Infinity a \<and> Isdenormal a)"
-  "\<not> (Infinity a \<and> Iszero a)"
-  "\<not> (Isnormal a \<and> Isdenormal a)"
-  "\<not> (Isdenormal a \<and> Iszero a)"
-  by (auto simp: emax_def float_defs is_nan_def is_infinity_def
-    is_normal_def is_denormal_def is_zero_def)
+  "\<not> (is_nan a \<and> is_infinity a)"
+  "\<not> (is_nan a \<and> is_normal a)"
+  "\<not> (is_nan a \<and> is_denormal a)"
+  "\<not> (is_nan a \<and> is_zero a)"
+  "\<not> (is_infinity a \<and> is_normal a)"
+  "\<not> (is_infinity a \<and> is_denormal a)"
+  "\<not> (is_infinity a \<and> is_zero a)"
+  "\<not> (is_normal a \<and> is_denormal a)"
+  "\<not> (is_denormal a \<and> is_zero a)"
+  by (auto simp: float_defs)
 
-lemma float_distinct_finite: "\<not> (Isnan a \<and> Finite a)" "\<not>(Infinity a \<and> Finite a)"
-  by (auto simp: emax_def float_defs is_nan_def
-    is_infinity_def is_normal_def is_denormal_def is_zero_def)
+lemma denormal_imp_not_zero: "is_denormal f \<Longrightarrow> \<not>is_zero f"
+  by (simp add: is_denormal_def is_zero_def)
 
-lemma finite_infinity: "Finite a \<Longrightarrow> \<not> Infinity a"
-  by (auto simp: emax_def float_defs is_infinity_def is_normal_def is_denormal_def is_zero_def)
+lemma normal_imp_not_zero: "is_normal f \<Longrightarrow> \<not>is_zero f"
+  by (simp add: is_normal_def is_zero_def)
 
-lemma finite_nan: "Finite a \<Longrightarrow> \<not> Isnan a"
-  by (auto simp: emax_def float_defs is_nan_def is_infinity_def
-    is_normal_def is_denormal_def is_zero_def)
+lemma normal_imp_not_denormal: "is_normal f \<Longrightarrow> \<not>is_denormal f"
+  by (simp add: is_normal_def is_denormal_def)
+
+lemma denormal_zero[simp]: "\<not>is_denormal 0" "\<not>is_denormal minus_zero"
+  using denormal_imp_not_zero float_zero1 float_zero2 by blast+
+
+lemma normal_zero[simp]: "\<not>is_normal 0" "\<not>is_normal minus_zero"
+  using normal_imp_not_zero float_zero1 float_zero2 by blast+
+
+lemma float_distinct_finite: "\<not> (is_nan a \<and> is_finite a)" "\<not>(is_infinity a \<and> is_finite a)"
+  by (auto simp: float_defs)
+
+lemma finite_infinity: "is_finite a \<Longrightarrow> \<not> is_infinity a"
+  by (auto simp: float_defs)
+
+lemma finite_nan: "is_finite a \<Longrightarrow> \<not> is_nan a"
+  by (auto simp: float_defs)
 
 text \<open>For every real number, the floating-point numbers closest to it always exist.\<close>
 lemma is_closest_exists:
-  fixes v :: "representation \<Rightarrow> real"
-    and s :: "representation set"
+  fixes v :: "('e, 'f)float \<Rightarrow> real"
+    and s :: "('e, 'f)float set"
   assumes finite: "finite s"
     and non_empty: "s \<noteq> {}"
   shows "\<exists>a. is_closest v s x a"
@@ -126,8 +199,8 @@ next
 qed
 
 lemma closest_is_everything:
-  fixes v :: "representation \<Rightarrow> real"
-    and s :: "representation set"
+  fixes v :: "('e, 'f)float \<Rightarrow> real"
+    and s :: "('e, 'f)float set"
   assumes finite: "finite s"
     and non_empty: "s \<noteq> {}"
   shows "is_closest v s x (closest v p s x) \<and>
@@ -136,173 +209,139 @@ lemma closest_is_everything:
   by (rule someI_ex) (metis assms is_closest_exists [of s v x])
 
 lemma closest_in_set:
-  fixes v :: "representation \<Rightarrow> real"
+  fixes v :: "('e, 'f)float \<Rightarrow> real"
   assumes "finite s" and "s \<noteq> {}"
   shows "closest v p s x \<in> s"
   by (metis assms closest_is_everything is_closest_def)
 
-lemma closest_is_closest:
-  fixes v :: "representation \<Rightarrow> real"
+lemma closest_is_closest_finite:
+  fixes v :: "('e, 'f)float \<Rightarrow> real"
   assumes "finite s" and "s \<noteq> {}"
   shows "is_closest v s x (closest v p s x)"
   by (metis closest_is_everything assms)
 
-lemma float_first_cross:
-  "{a::representation. fst a < m \<and> fst (snd a) < n \<and> snd (snd a) < p} =
-    image (\<lambda>((x::nat), (y, z)). (x, y, z)) ({x. x < m} \<times> {y. y < n} \<times> {z. z < p})"
-  by auto
+instance float::(len, len) finite proof qed (transfer, simp)
 
-lemma finite_r3: "finite {a::representation. fst a < m \<and> fst (snd a) < n \<and> snd (snd a) < p}"
-  by (auto simp: float_first_cross)
-
-lemma is_valid_finite: "finite {a. is_valid x a}"
-  by (auto simp: finite_r3 sign exponent fraction is_valid_def)
-
-lemma is_finite_subset: "{a::representation. is_finite x a} \<subseteq> {a. is_valid x a} "
-  by (auto simp: is_finite_def)
-
-lemma match_float_finite:
-  assumes "{a::representation. is_finite x a} \<subseteq> {a. is_valid x a}"
-  shows "finite {a. is_finite x a}"
-  by (metis assms finite_subset is_valid_finite)
-
-lemma is_finite_finite: "finite {a::representation. is_finite x a}"
-  by (metis is_finite_subset match_float_finite)
-
-lemma is_valid_nonempty: "{a::representation. is_valid x a} \<noteq> {}"
-  by (metis Collect_empty_eq is_valid_special(2))
-
-lemma is_finite_nonempty: "{a::representation. is_finite x a} \<noteq> {}"
+lemma is_finite_nonempty: "{a. is_finite a} \<noteq> {}"
 proof -
-  have "(0, 0, 0) \<in> {a. is_finite x a}"
-    by (auto simp: is_zero_def is_valid_def is_finite_def)
+  have "0 \<in> {a. is_finite a}"
+    unfolding float_defs
+    by transfer auto
   then show ?thesis by (metis empty_iff)
 qed
 
-lemma is_finite_closest:
-  fixes v :: "representation \<Rightarrow> real"
-  shows "is_finite f (closest v p {a. is_finite f a} x)"
-  by (metis closest_in_set is_finite_finite is_finite_nonempty mem_Collect_eq)
-
-lemma is_valid_closest:
-  fixes v :: "representation \<Rightarrow> real"
-  shows "is_valid f (closest v p {a. is_finite f a} x)"
-  by (metis is_finite_closest is_finite_def)
-
-lemma is_valid_round: "is_valid f (round f To_nearest x)"
-proof -
-  have "is_valid f (minus_infinity f)"
-    and "is_valid f (plus_infinity f)"
-    and "is_valid f (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x)"
-    using is_valid_special is_valid_closest by auto
-  then have "is_valid f (round f To_nearest x)" by auto
-  then show ?thesis by auto
-qed
-
-lemma zerosign_valid:
-  assumes "is_valid x a"
-  shows "is_valid x (zerosign x s a)"
-  using is_valid_special by (metis assms zerosign_def)
-
-lemma defloat_float_zerosign_round:
-  "Rep_float(Abs_float (zerosign float_format s (round float_format To_nearest x))) =
-    zerosign float_format s (round float_format To_nearest x)"
-  by (metis is_valid_round mem_Collect_eq zerosign_valid Abs_float_inverse)
+lemma closest_is_closest:
+  fixes v :: "('e, 'f)float \<Rightarrow> real"
+  assumes "s \<noteq> {}"
+  shows "is_closest v s x (closest v p s x)"
+  by (rule closest_is_closest_finite) (auto simp: assms)
 
 
 subsection \<open>Properties about ordering and bounding\<close>
 
 text \<open>Lifting of non-exceptional comparisons.\<close>
 lemma float_lt [simp]:
-  assumes "Finite a" "Finite b"
-  shows "a < b \<longleftrightarrow> Val a < Val b"
+  assumes "is_finite a" "is_finite b"
+  shows "a < b \<longleftrightarrow> valof a < valof b"
 proof
-  assume "Val a < Val b"
-  moreover have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  assume "valof a < valof b"
+  moreover have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms by (auto simp: finite_nan finite_infinity)
-  ultimately have "fcompare float_format (Rep_float a) (Rep_float b) = Lt"
-    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
-  then show "a < b" by (auto simp: less_float_def)
+  ultimately have "fcompare a b = Lt"
+    by (auto simp add: is_infinity_def is_nan_def valof_def fcompare_def)
+  then show "a < b" by (auto simp: float_defs)
 next
   assume "a < b"
-  then have lt: "fcompare float_format (Rep_float a) (Rep_float b) = Lt"
-    by (simp add: less_float_def)
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  then have lt: "fcompare a b = Lt"
+    by (simp add: float_defs)
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms by (auto simp: finite_nan finite_infinity)
-  then show "Val a < Val b"
+  then show "valof a < valof b"
     using lt assms
-    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: if_split_asm)
+    by (simp add: fcompare_def is_nan_def is_infinity_def valof_def split: if_split_asm)
 qed
 
 lemma float_eq [simp]:
-  assumes "Finite a" "Finite b"
-  shows "a \<doteq> b \<longleftrightarrow> Val a = Val b"
+  assumes "is_finite a" "is_finite b"
+  shows "a \<doteq> b \<longleftrightarrow> valof a = valof b"
 proof
-  assume *: "Val a = Val b"
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  assume *: "valof a = valof b"
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms float_distinct_finite by auto
-  with * have "fcompare float_format (Rep_float a) (Rep_float b) = Eq"
-    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
-  then show "a \<doteq> b" by (auto simp: float_eq_def)
+  with * have "fcompare a b = Eq"
+    by (auto simp add: is_infinity_def is_nan_def valof_def fcompare_def)
+  then show "a \<doteq> b" by (auto simp: float_defs)
 next
   assume "a \<doteq> b"
-  then have eq: "fcompare float_format (Rep_float a) (Rep_float b) = Eq"
-    by (simp add: float_eq_def)
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  then have eq: "fcompare a b = Eq"
+    by (simp add: float_defs)
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms float_distinct_finite by auto
-  then show "Val a = Val b"
+  then show "valof a = valof b"
     using eq assms
-    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: if_split_asm)
+    by (simp add: fcompare_def is_nan_def is_infinity_def valof_def split: if_split_asm)
 qed
 
 lemma float_le [simp]:
-  assumes "Finite a" "Finite b"
-  shows "a \<le> b \<longleftrightarrow> Val a \<le> Val b"
+  assumes "is_finite a" "is_finite b"
+  shows "a \<le> b \<longleftrightarrow> valof a \<le> valof b"
 proof -
   have "a \<le> b \<longleftrightarrow>  a < b \<or> a \<doteq> b"
-    by (auto simp add: less_eq_float_def less_float_def float_eq_def)
+    by (auto simp add: float_defs)
   then show ?thesis
     by (auto simp add: assms)
 qed
 
 text \<open>Reflexivity of equality for non-NaNs.\<close>
-lemma float_eq_refl [simp]: "a \<doteq> a \<longleftrightarrow> \<not> Isnan a"
-  by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def float_eq_def)
+lemma float_eq_refl [simp]: "a \<doteq> a \<longleftrightarrow> \<not> is_nan a"
+  by (auto simp: float_defs)
 
 text \<open>Properties about Ordering.\<close>
-lemma float_lt_trans: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite c \<Longrightarrow> a < b \<Longrightarrow> b < c \<Longrightarrow> a < c"
+lemma float_lt_trans: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite c \<Longrightarrow> a < b \<Longrightarrow> b < c \<Longrightarrow> a < c"
   by (auto simp: le_trans)
 
-lemma float_le_less_trans: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite c \<Longrightarrow> a \<le> b \<Longrightarrow> b < c \<Longrightarrow> a < c"
+lemma float_le_less_trans: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite c \<Longrightarrow> a \<le> b \<Longrightarrow> b < c \<Longrightarrow> a < c"
   by (auto simp: le_trans)
 
-lemma float_le_trans: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite c \<Longrightarrow> a \<le> b \<Longrightarrow> b \<le> c \<Longrightarrow> a \<le> c"
+lemma float_le_trans: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite c \<Longrightarrow> a \<le> b \<Longrightarrow> b \<le> c \<Longrightarrow> a \<le> c"
   by (auto simp: le_trans)
 
-lemma float_le_neg: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> \<not> a < b \<longleftrightarrow> b \<le> a"
+lemma float_le_neg: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> \<not> a < b \<longleftrightarrow> b \<le> a"
   by auto
 
 
 text \<open>Properties about bounding.\<close>
 
-lemma float_le_infinity [simp]: "\<not> Isnan a \<Longrightarrow> a \<le> Plus_infinity"
-  by (auto simp: Isnan_def fcompare_def is_nan_def is_infinity_def plus_infinity_def
-      Plus_infinity_def less_eq_float_def Abs_float_inverse emax_def is_valid_def)
+lemma float_le_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_infinity"
+  unfolding float_defs
+  by auto
 
-lemma [simp]: "Plus_zero \<le> Abs_float (topfloat float_format)"
-  by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def float_format_def
-      Abs_float_inverse emax_def is_infinity_def is_zero_def is_valid_def Plus_zero_def)
+lemma zero_le_topfloat[simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
+  unfolding float_defs
+  by (auto simp: sign_simps divide_simps power_gt1_lemma)
 
-lemma valof_topfloat: "valof float_format (topfloat float_format) = largest float_format"
-  by (simp add: emax_def float_format_def topfloat_def largest_def)
+lemma LENGTH_contr:
+  "Suc 0 < LENGTH('e) \<Longrightarrow> 2 ^ LENGTH('e::len) \<le> Suc (Suc 0) \<Longrightarrow> False"
+  by (metis le_antisym len_gt_0 n_less_equal_power_2 not_less_eq numeral_2_eq_2 one_le_numeral
+      self_le_power)
 
-lemma float_frac_le: "Finite a \<Longrightarrow> Fraction a \<le> 2^52 - 1"
-  by (cases a) (auto simp: Abs_float_inverse float_defs is_valid_def)
+lemma valof_topfloat: "valof (topfloat::('e, 'f)float) = largest TYPE(('e, 'f)float)"
+  if "LENGTH('e) > 1"
+  using that LENGTH_contr
+  by (auto simp add: emax_eq largest_def divide_simps float_defs )
 
-lemma float_exp_le: "Finite a \<Longrightarrow> Exponent a \<le> 2046"
-  by (cases a) (auto simp: emax_def float_defs is_normal_def is_denormal_def is_zero_def)
+lemma float_frac_le: "fraction a \<le> 2^LENGTH('f) - 1"
+  for a::"('e, 'f)float"
+  unfolding float_defs
+  using less_Suc_eq_le
+  by transfer fastforce
 
-lemma float_sign_le: "(-1::real)^(Sign a) = 1 \<or> (-1::real)^(Sign a) = -1"
+lemma float_exp_le: "is_finite a \<Longrightarrow> exponent a \<le> emax TYPE(('e, 'f)float) - 1"
+  for a::"('e, 'f)float"
+  unfolding float_defs
+  by auto
+
+lemma float_sign_le: "(-1::real)^(sign a) = 1 \<or> (-1::real)^(sign a) = -1"
   by (metis neg_one_even_power neg_one_odd_power)
 
 lemma exp_less: "a \<le> b \<Longrightarrow> (2::real)^a \<le> 2^b" for a b :: nat
@@ -311,95 +350,332 @@ lemma exp_less: "a \<le> b \<Longrightarrow> (2::real)^a \<le> 2^b" for a b :: n
 lemma div_less: "a \<le> b \<and> c > 0 \<Longrightarrow> a/c \<le> b/c" for a b c :: "'a::linordered_field"
   by (metis divide_le_cancel less_asym)
 
-lemma finite_topfloat: "Finite Topfloat"
-  by (auto simp: float_defs Topfloat_def topfloat_def Abs_float_inverse
-      emax_def is_normal_def is_valid_def)
-
-lemma valof_eq:
-  "\<And>r. valof fmt r =
-    (if exponent r = 0
-     then (-1)^sign r * (2 / (2^bias fmt)) * real (fraction r)/2^(fracwidth fmt)
-     else (-1)^sign r * ((2^exponent r) / (2^bias fmt)) * (1 + real (fraction r)/2^fracwidth fmt))"
+lemma finite_topfloat: "is_finite topfloat"
+  unfolding float_defs
   by auto
 
-lemma float_le_topfloat:
-  assumes "Finite a"
-  shows "a \<le> Topfloat"
-proof -
-  have vt: "valof float_format (topfloat float_format) =
-      ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)"
-    by (auto simp: emax_def float_format_def topfloat_def)
-  have frale: "Fraction a \<le> 2^52 - 1"
-    by (rule float_frac_le [OF assms])
-  moreover from assms have exple: "Exponent a \<le> 2046"
-    by (rule float_exp_le)
-  ultimately have "Fraction a/2^(fracwidth float_format) \<le> (2^52 - 1)/2^(fracwidth float_format)"
-    by (auto simp: float_format_def)
-  then have "(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le>
-      (2 / (2^bias float_format)) * ((2^52 - 1)/2^(fracwidth float_format))"
-    by (auto simp: float_format_def bias_def)
-  then have ineq: "0 < 1 + Fraction a/2^fracwidth float_format"
-       "(1 + Fraction a/2^fracwidth float_format) \<le> 1 + (2^52 - 1)/2^fracwidth float_format"
-    by (auto simp: float_format_def bias_def)
-  then have "0 < (2::real)^Exponent a / (2^bias float_format)"
-    by (metis zero_less_divide_iff zero_less_numeral zero_less_power)
-  then have gt0: "0 < (2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format)"
-    using ineq by (metis zero_less_mult_iff)
-  moreover
-  have "(2::real)^Exponent a / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
-    by (metis exple exp_less div_less zero_less_numeral zero_less_power)
-  ultimately
-  have "(2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format) \<le>
-      valof float_format (topfloat float_format)"
-    by (metis vt ineq div_0 pos_divide_less_eq mult_mono' less_eq_real_def)
-  then
-  have "1 * (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le>
-      valof float_format (topfloat float_format)"
-    and "-1* (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le>
-      valof float_format (topfloat float_format)"
-    using gt0 by auto
-  then have nzexp: \<comment> \<open>nonzero exponent case\<close>
-    "(-1)^(Sign a) * (2^Exponent a / 2^bias float_format) *
-      (1 + Fraction a/2^fracwidth float_format) \<le> valof float_format (topfloat float_format)"
-    by (metis float_sign_le)
-  have "-1* (2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le>
-      valof float_format (topfloat float_format)"
-    and "1 * (2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le>
-      valof float_format (topfloat float_format)"
-    using frale vt by (auto simp: float_format_def bias_def)
-  then have  \<comment> \<open>zero exponent case\<close>
-    "(-1)^(Sign a)*(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le>
-      valof float_format (topfloat float_format)"
-    by (metis float_sign_le)
-  then have "Val a \<le> Val Topfloat"
-    using nzexp
-    by (cases a) (auto simp: float_defs Abs_float_inverse Topfloat_def is_valid_special)
-  then show ?thesis
-    by (metis assms finite_topfloat float_le)
+lemmas float_leI = float_le[THEN iffD2]
+
+lemma factor_minus: "x * a - x = x * (a - 1)"
+  for x a::"'a::comm_semiring_1_cancel"
+  by (simp add: algebra_simps)
+
+lemma real_le_power_numeral_diff: "real a \<le> numeral b ^ n - 1 \<longleftrightarrow> a \<le> numeral b ^ n - 1"
+  by (metis (mono_tags, lifting) of_nat_1 of_nat_diff of_nat_le_iff of_nat_numeral
+      one_le_numeral one_le_power semiring_1_class.of_nat_power)
+
+definition denormal_exponent::"('e, 'f)float itself \<Rightarrow> int" where
+  "denormal_exponent x = 1 - (int (LENGTH('f)) + int (bias TYPE(('e, 'f)float)))"
+
+definition normal_exponent::"('e, 'f)float \<Rightarrow> int" where
+  "normal_exponent x = int (exponent x) - int (bias TYPE(('e, 'f)float)) - int (LENGTH('f))"
+
+definition denormal_mantissa::"('e, 'f)float \<Rightarrow> int" where
+  "denormal_mantissa x = (-1::int)^sign x * int (fraction x)"
+
+definition normal_mantissa::"('e, 'f)float \<Rightarrow> int" where
+  "normal_mantissa x = (-1::int)^sign x * (2^LENGTH('f) + int (fraction x))"
+
+lemma unat_one_word_le: "unat a \<le> Suc 0" for a::"1 word"
+  using unat_lt2p[of a]
+  by auto
+
+lemma one_word_le: "a \<le> 1" for a::"1 word"
+  by (auto simp: word_le_nat_alt unat_one_word_le)
+
+lemma sign_cases[case_names pos neg]:
+  obtains "sign x = 0" | "sign x = 1"
+proof cases
+  assume "sign x = 0"
+  then show ?thesis ..
+next
+  assume "sign x \<noteq> 0"
+  have "sign x \<le> 1"
+    by transfer (auto simp: unat_one_word_le)
+  then have "sign x = 1" using \<open>sign x \<noteq> 0\<close>
+    by auto
+  then show ?thesis ..
 qed
 
-lemma topfloat_eq_largest: "Val Topfloat = largest float_format"
+lemma is_infinity_cases:
+  assumes "is_infinity x"
+  obtains "x = plus_infinity" | "x = minus_infinity"
+proof (cases rule: sign_cases[of x])
+  assume "sign x = 0"
+  then have "x = plus_infinity" using assms
+    unfolding float_defs
+    by transfer (auto simp: emax_def unat_eq_0)
+  then show ?thesis ..
+next
+  assume "sign x = 1"
+  then have "x = minus_infinity" using assms
+    unfolding float_defs
+    by transfer (auto simp: emax_def unat_eq_of_nat)
+  then show ?thesis ..
+qed
+
+lemma is_zero_cases:
+  assumes "is_zero x"
+  obtains "x = 0" | "x = - 0"
+proof (cases rule: sign_cases[of x])
+  assume "sign x = 0"
+  then have "x = 0" using assms
+    unfolding float_defs
+    by transfer (auto simp: emax_def unat_eq_0)
+  then show ?thesis ..
+next
+  assume "sign x = 1"
+  then have "x = minus_zero" using assms
+    unfolding float_defs
+    by transfer (auto simp: emax_def unat_eq_of_nat)
+  then show ?thesis ..
+qed
+
+lemma minus_minus_float[simp]: "- (-f) = f" for f::"('e, 'f)float"
+  by transfer auto
+
+lemma sign_minus_float: "sign (-f) = (1 - sign f)" for f::"('e, 'f)float"
+  by transfer (auto simp: unat_eq_1 one_word_le unat_sub)
+
+lemma exponent_uminus[simp]: "exponent (- f) = exponent f" by transfer auto
+lemma fraction_uminus[simp]: "fraction (- f) = fraction f" by transfer auto
+
+lemma is_normal_minus_float[simp]: "is_normal (-f) = is_normal f" for f::"('e, 'f)float"
+  by (auto simp: is_normal_def)
+
+lemma is_denormal_minus_float[simp]: "is_denormal (-f) = is_denormal f" for f::"('e, 'f)float"
+  by (auto simp: is_denormal_def)
+
+lemma bitlen_normal_mantissa:
+  "bitlen (abs (normal_mantissa x)) = Suc LENGTH('f)" for x::"('e, 'f)float"
 proof -
-  have "Val Topfloat = valof float_format (topfloat float_format)"
-    by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
-  also have "\<dots> = largest float_format"
-    by (simp add: emax_def largest_def float_format_def topfloat_def)
+  have "fraction x < 2 ^ LENGTH('f)"
+    using float_frac_le[of x]
+    by (metis One_nat_def Suc_pred le_imp_less_Suc pos2 zero_less_power)
+  moreover have "- int (fraction x) \<le> 2 ^ LENGTH('f)"
+    using negative_zle_0 order_trans zero_le_numeral zero_le_power by blast
+  ultimately show ?thesis
+    by (cases x rule: sign_cases)
+      (auto simp: bitlen_le_iff_power bitlen_ge_iff_power nat_add_distrib abs_mult sign_simps
+        add_nonneg_pos normal_mantissa_def intro!: antisym)
+qed
+
+lemma less_int_natI: "x < y" if "0 \<le> x" "nat x < nat y"
+  using that by arith
+
+lemma normal_exponent_bounds_int:
+  "2 - 2 ^ (LENGTH('e) - 1) - int LENGTH('f) \<le> normal_exponent x"
+  "normal_exponent x \<le> 2 ^ (LENGTH('e) - 1) - int LENGTH('f) - 1"
+  if "is_normal x"
+  for x::"('e, 'f)float"
+  using that
+  unfolding normal_exponent_def is_normal_def emax_eq bias_def
+  by (auto simp del: zless_nat_conj intro!: less_int_natI
+      simp: nat_add_distrib nat_mult_distrib nat_power_eq
+      power_Suc[symmetric])
+
+lemmas of_int_leI = of_int_le_iff[THEN iffD2]
+
+lemma normal_exponent_bounds_real:
+  "2 - 2 ^ (LENGTH('e) - 1) - real LENGTH('f) \<le> normal_exponent x"
+  "normal_exponent x \<le> 2 ^ (LENGTH('e) - 1) - real LENGTH('f) - 1"
+  if "is_normal x"
+  for x::"('e, 'f)float"
+  subgoal by (rule order_trans[OF _ of_int_leI[OF normal_exponent_bounds_int(1)[OF that]]]) auto
+  subgoal by (rule order_trans[OF of_int_leI[OF normal_exponent_bounds_int(2)[OF that]]]) auto
+  done
+
+lemma float_eqI:
+  "x = y" if "sign x = sign y" "fraction x = fraction y" "exponent x = exponent y"
+  using that
+  by transfer auto
+
+lemma float_induct[induct type:float, case_names normal denormal neg zero infinity nan]:
+  fixes a::"('e, 'f)float"
+  assumes normal:
+    "\<And>x. is_normal x \<Longrightarrow> valof x = normal_mantissa x * 2 powr normal_exponent x \<Longrightarrow> P x"
+  assumes denormal:
+    "\<And>x. is_denormal x \<Longrightarrow>
+      valof x = denormal_mantissa x * 2 powr denormal_exponent TYPE(('e, 'f)float) \<Longrightarrow>
+      P x"
+  assumes zero: "P 0" "P minus_zero"
+  assumes infty: "P plus_infinity" "P minus_infinity"
+  assumes nan: "\<And>x. is_nan x \<Longrightarrow> P x"
+  shows "P a"
+proof -
+  from float_cases[of a]
+  consider "is_nan a" | "is_infinity a" | "is_normal a" | "is_denormal a" | "is_zero a" by blast
+  then show ?thesis
+  proof cases
+    case 1
+    then show ?thesis by (rule nan)
+  next
+    case 2
+    then consider "a = plus_infinity" | "a = minus_infinity" by (rule is_infinity_cases)
+    then show ?thesis
+      by cases (auto intro: infty)
+  next
+    case hyps: 3
+    from hyps have "valof a = normal_mantissa a * 2 powr normal_exponent a"
+      by (cases a rule: sign_cases)
+        (auto simp: valof_eq normal_mantissa_def normal_exponent_def is_normal_def
+          powr_realpow[symmetric] powr_diff powr_add divide_simps algebra_simps)
+    from hyps this show ?thesis
+      by (rule normal)
+  next
+    case hyps: 4
+    from hyps have "valof a = denormal_mantissa a * 2 powr denormal_exponent TYPE(('e, 'f)float)"
+      by (cases a rule: sign_cases)
+        (auto simp: valof_eq denormal_mantissa_def denormal_exponent_def is_denormal_def
+          powr_realpow[symmetric] powr_diff powr_add divide_simps algebra_simps)
+    from hyps this show ?thesis
+      by (rule denormal)
+  next
+    case 5
+    then consider "a = 0" | "a = minus_zero" by (rule is_zero_cases)
+    then show ?thesis
+      by cases (auto intro: zero)
+  qed
+qed
+
+lemma infinite_infinity[simp]: "\<not> is_finite plus_infinity" "\<not> is_finite minus_infinity"
+  by (auto simp: is_finite_def is_normal_def infinity_simps is_denormal_def is_zero_def)
+
+lemma nan_not_finite[simp]: "is_nan x \<Longrightarrow> \<not> is_finite x"
+  using float_distinct_finite(1) by blast
+
+lemma valof_nonneg:
+  "valof x \<ge> 0" if "sign x = 0" for x::"('e, 'f)float"
+  by (auto simp: valof_eq that)
+
+lemma valof_nonpos:
+  "valof x \<le> 0" if "sign x = 1" for x::"('e, 'f)float"
+  using that
+  by (auto simp: valof_eq is_finite_def)
+
+lemma real_le_intI: "x \<le> y" if "floor x \<le> floor y" "x \<in> \<int>" for x y::real
+  using that(2,1)
+  by (induction rule: Ints_induct) (auto elim!: Ints_induct simp: le_floor_iff)
+
+lemma real_of_int_le_2_powr_bitlenI:
+  "real_of_int x \<le> 2 powr n - 1" if "bitlen (abs x) \<le> m" "m \<le> n"
+proof -
+  have "real_of_int x \<le> abs (real_of_int x)" by simp
+  also have "\<dots> < 2 powr (bitlen (abs x))"
+    by (rule abs_real_le_2_powr_bitlen)
+  finally have "real_of_int x \<le> 2 powr (bitlen (abs x)) - 1"
+    by (auto simp: powr_real_of_int bitlen_nonneg intro!: real_le_intI)
+  also have "\<dots> \<le> 2 powr m - 1"
+    by (simp add: that)
+  also have "\<dots> \<le> 2 powr n - 1"
+    by (simp add: that)
   finally show ?thesis .
 qed
 
+lemma largest_eq:
+  "largest TYPE(('e, 'f)float) =
+    (2 ^ (LENGTH('f) + 1) - 1) * 2 powr real_of_int (2 ^ (LENGTH('e) - 1) - int LENGTH('f) - 1)"
+proof -
+  have "2 ^ LENGTH('e) - 1 - 1 = (2::nat) ^ LENGTH('e) - 2"
+    by arith
+  then have "largest TYPE(('e, 'f)float) =
+    (2 ^ (LENGTH('f) + 1) - 1) *
+    2 powr (real (2 ^ LENGTH('e) - 2) + 1 - real (2 ^ (LENGTH('e) - 1)) - LENGTH('f))"
+    unfolding largest_def emax_eq bias_def
+    by (auto simp: largest_def powr_realpow[symmetric]
+        powr_minus divide_simps algebra_simps powr_diff powr_add)
+  also
+  have "2 ^ LENGTH('e) \<ge> (2::nat)"
+    by (simp add: self_le_power)
+  then have "(real (2 ^ LENGTH('e) - 2) + 1 - real (2 ^ (LENGTH('e) - 1)) - LENGTH('f)) =
+    (real (2 ^ LENGTH('e)) - 2 ^ (LENGTH('e) - 1) - LENGTH('f)) - 1"
+    by auto
+  also have "real (2 ^ LENGTH('e)) = 2 ^ LENGTH('e)" by auto
+  also have "(2 ^ LENGTH('e) - 2 ^ (LENGTH('e) - 1) - real LENGTH('f) - 1) =
+    real_of_int ((2 ^ (LENGTH('e) - 1) - int (LENGTH('f)) - 1))"
+    by (simp, subst power_Suc[symmetric], simp)
+  finally show ?thesis by simp
+qed
+
+lemma bitlen_denormal_mantissa:
+  "bitlen (abs (denormal_mantissa x)) \<le> LENGTH('f)" for x::"('e, 'f)float"
+proof -
+  have "fraction x < 2 ^ LENGTH('f)"
+    using float_frac_le[of x]
+    by (metis One_nat_def Suc_pred le_imp_less_Suc pos2 zero_less_power)
+  moreover have "- int (fraction x) \<le> 2 ^ LENGTH('f)"
+    using negative_zle_0 order_trans zero_le_numeral zero_le_power by blast
+  ultimately show ?thesis
+    by (cases x rule: sign_cases)
+      (auto simp: bitlen_le_iff_power nat_add_distrib abs_mult sign_simps
+        add_nonneg_pos denormal_mantissa_def intro!: antisym)
+qed
+
+lemma float_le_topfloat:
+  fixes a::"('e, 'f)float"
+  assumes "is_finite a" "LENGTH('e) > 1"
+  shows "a \<le> topfloat"
+  using assms(1)
+proof (induction a rule: float_induct)
+  case (normal x)
+  note normal(2)
+  also have "real_of_int (normal_mantissa x) * 2 powr real_of_int (normal_exponent x) \<le>
+    (2 powr (LENGTH('f) + 1) - 1) * 2 powr (2 ^ (LENGTH('e) - 1) - int LENGTH('f) - 1)"
+    using normal_exponent_bounds_real(2)[OF \<open>is_normal x\<close>]
+    by (auto intro!: mult_mono real_of_int_le_2_powr_bitlenI
+        simp: bitlen_normal_mantissa powr_realpow[symmetric] ge_one_powr_ge_zero)
+  also have "\<dots> = largest TYPE(('e, 'f) IEEE.float)"
+    unfolding largest_eq
+    by (auto simp: powr_realpow powr_add)
+  also have "\<dots> = valof (topfloat::('e, 'f) float)"
+    using assms
+    by (simp add: valof_topfloat)
+  finally show ?case
+    by (intro float_leI normal finite_topfloat)
+next
+  case (denormal x)
+  note denormal(2)
+  also
+  have "3 \<le> 2 powr (1 + real (LENGTH('e) - Suc 0))"
+  proof -
+    have "3 \<le> 2 powr (2::real)" by simp
+    also have "\<dots> \<le> 2 powr (1 + real (LENGTH('e) - Suc 0))"
+      using assms
+      by (subst powr_le_cancel_iff) auto
+    finally show ?thesis .
+  qed
+  then have "real_of_int (denormal_mantissa x) * 2 powr real_of_int (denormal_exponent TYPE(('e, 'f)float)) \<le>
+    (2 powr (LENGTH('f) + 1) - 1) * 2 powr (2 ^ (LENGTH('e) - 1) - int LENGTH('f) - 1)"
+    using bitlen_denormal_mantissa[of x]
+    by (auto intro!: mult_mono real_of_int_le_2_powr_bitlenI
+        simp: bitlen_normal_mantissa powr_realpow[symmetric] ge_one_powr_ge_zero
+        denormal_exponent_def bias_def powr_mult_base)
+  also have "\<dots> \<le> largest TYPE(('e, 'f) IEEE.float)"
+    unfolding largest_eq
+    by (rule mult_mono)
+      (auto simp: powr_realpow powr_add power_Suc[symmetric] simp del: power_Suc)
+  also have "\<dots> = valof (topfloat::('e, 'f) float)"
+    using assms
+    by (simp add: valof_topfloat)
+  finally show ?case
+    by (intro float_leI denormal finite_topfloat)
+qed auto
+
 lemma float_val_le_largest:
-  assumes "Finite a"
-  shows "Val a \<le> largest float_format"
-  by (metis assms finite_topfloat float_le float_le_topfloat topfloat_eq_largest)
+  "valof a \<le> largest TYPE(('e, 'f)float)"
+  if "is_finite a" "LENGTH('e) > 1"
+  for a::"('e, 'f)float"
+  by (metis that finite_topfloat float_le float_le_topfloat valof_topfloat)
 
 lemma float_val_lt_threshold:
-  assumes "Finite a"
-  shows "Val a < threshold float_format"
+  "valof a < threshold TYPE(('e, 'f)float)"
+  if "is_finite a" "LENGTH('e) > 1"
+  for a::"('e, 'f)float"
 proof -
-  have "Val a \<le> largest float_format"
-    by (rule float_val_le_largest [OF assms])
-  also have "\<dots> < threshold float_format"
-    by (auto simp: float_format_def largest_def threshold_def bias_def)
+  have "valof a \<le> largest TYPE(('e, 'f)float)"
+    by (rule float_val_le_largest [OF that])
+  also have "\<dots> < threshold TYPE(('e, 'f)float)"
+    by (auto simp: largest_def threshold_def divide_simps)
   finally show ?thesis .
 qed
 
@@ -408,397 +684,232 @@ subsection \<open>Algebraic properties about basic arithmetic\<close>
 
 text \<open>Commutativity of addition.\<close>
 lemma
-  assumes "Finite a" "Finite b"
+  assumes "is_finite a" "is_finite b"
   shows float_plus_comm_eq: "a + b = b + a"
-    and float_plus_comm: "Finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
+    and float_plus_comm: "is_finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
 proof -
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms by (auto simp: finite_nan finite_infinity)
   then show "a + b = b + a"
     by (simp add: float_defs fadd_def plus_float_def add.commute)
-  then show "Finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
+  then show "is_finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
     by (metis float_eq)
 qed
 
-text \<open>Showing \<open>-(- a) = a\<close>.\<close>
-lemma sign_double_neg [simp]:
-  assumes "is_valid x a"
-  shows "1 - (1 - sign a) = sign a"
-proof -
-  from assms have "sign a < 2"
-    by (auto simp: is_valid_def)
-  then show "(1 - (1 - sign a)) = sign a"
-    by auto
-qed
-
-lemma float_double_neg_eq [simp]:
-  assumes "\<not> Isnan a"
-  shows "float_neg (float_neg a) = a"
-proof -
-  have isv: "is_valid float_format ((1 - (Sign a), Exponent a, Fraction a))"
-    by (cases a) (auto simp: float_defs Abs_float_inverse is_valid_def)
-  have "float_neg (float_neg a) =
-      Abs_float (fneg float_format To_nearest
-        (Rep_float (Abs_float (1 - (Sign a), Exponent a, Fraction a))))"
-    by (simp add: float_defs float_neg_def fneg_def)
-  also have "\<dots> = Abs_float (fneg float_format To_nearest (1 - (Sign a), Exponent a, Fraction a))"
-    using isv by (simp add: Abs_float_inverse)
-  also have "\<dots> = Abs_float (1 - (1 - (Sign a)), Exponent a, Fraction a)"
-    by (auto simp: fneg_def)
-  also have "\<dots> = Abs_float ((Sign a), Exponent a, Fraction a)"
-    by (metis Sign_def is_valid_defloat sign_double_neg)
-  finally show "float_neg (float_neg a) = a"
-    by (simp add: float_defs) (metis Rep_float_inverse exponent.elims fraction.simps sign.simps)
-qed
-
-lemma float_double_neg [simp]: "\<not> Isnan a \<Longrightarrow> float_neg (float_neg a) \<doteq> a"
-  by auto
-
 text \<open>The floating-point number a falls into the same category as the negation of \<open>a\<close>.\<close>
-lemma neg_zero: "is_zero x a \<longleftrightarrow> is_zero x (fneg x m a)"
-  by (auto simp: fneg_def is_zero_def)
+lemma is_zero_uminus[simp]: "is_zero (- a) \<longleftrightarrow> is_zero a"
+  by (simp add: is_zero_def)
 
-lemma float_neg_zero [simp]: "Iszero (float_neg a) = Iszero a"
-proof -
-  have isv: "is_valid float_format ((1 - (Sign a), Exponent a, Fraction a))"
-    by (cases a) (auto simp: float_defs Abs_float_inverse is_valid_def)
-  have "Iszero (float_neg a) = Iszero (Abs_float (fneg float_format To_nearest (Rep_float a)))"
-    by (auto simp: Iszero_def float_neg_def)
-  also have "\<dots> = is_zero float_format (fneg float_format To_nearest (Rep_float a))"
-    using isv by (auto simp: float_defs Abs_float_inverse fneg_def)
-  also have "\<dots> = Iszero a" by (metis Iszero_def neg_zero)
-  finally show ?thesis
-    by metis
-qed
+lemma is_infinity_uminus [simp]: "is_infinity (- a) = is_infinity a"
+  by (simp add: is_infinity_def)
 
-lemma neg_infinity [simp]: "is_infinity x (fneg x m a) = is_infinity x a"
-  by (auto simp: fneg_def is_infinity_def)
+lemma is_finite_uminus[simp]: "is_finite (- a) \<longleftrightarrow> is_finite a"
+  by (simp add: is_finite_def)
 
-lemma neg_normal [simp]: "is_normal x (fneg x m a) = is_normal x a"
-  by (auto simp: fneg_def is_normal_def)
-
-lemma float_neg_normal [simp]: "Isnormal (float_neg a) = Isnormal a"
-proof -
-  have "is_valid float_format (1 - (Sign a), Exponent a, Fraction a)"
-    by (cases a) (auto simp: float_defs Abs_float_inverse is_valid_def)
-  then have "Isnormal (float_neg a) =
-      is_normal float_format (fneg float_format To_nearest (Rep_float a))"
-    by (auto simp: Abs_float_inverse float_defs fneg_def float_neg_def)
-  also have "\<dots> = Isnormal a"
-    by (metis Isnormal_def neg_normal)
-  finally show ?thesis .
-qed
-
-lemma neg_denormal [simp]: "is_denormal x (fneg x m a) \<longleftrightarrow> is_denormal x a"
-  by (auto simp: fneg_def is_denormal_def)
-
-lemma float_neg_denormal [simp]: "Isdenormal (float_neg a) \<longleftrightarrow> Isdenormal a"
-proof -
-  have "is_valid float_format (1 - (Sign a), Exponent a, Fraction a)"
-    by (cases a) (auto simp: float_defs Abs_float_inverse is_valid_def)
-  then have "Isdenormal (Abs_float (fneg float_format To_nearest (Rep_float a))) =
-      is_denormal float_format (fneg float_format To_nearest (Rep_float a))"
-    by (auto simp: float_defs Abs_float_inverse fneg_def)
-  also have "\<dots> = Isdenormal a"
-    by (metis Isdenormal_def neg_denormal)
-  finally show ?thesis
-    by (simp add: float_neg_def)
-qed
-
-lemma neg_valid: "is_valid x a \<Longrightarrow> is_valid x (fneg x m a)"
-  by (auto simp: fneg_def is_valid_def)
-
-lemma neg_finite: "is_finite x a \<Longrightarrow> is_finite x (fneg x m a) "
-  by (metis is_finite_def neg_denormal neg_normal neg_valid neg_zero)
-
-lemma float_neg_finite: "Finite a \<Longrightarrow> Finite (float_neg a)"
-  by (metis Finite_def float_neg_denormal float_neg_normal float_neg_zero)
+lemma is_nan_uminus[simp]: "is_nan (- a) \<longleftrightarrow> is_nan a"
+  by (simp add: is_nan_def)
 
 text \<open>The sign of a and the sign of a's negation is different.\<close>
-lemma float_neg_sign: "(Sign a) \<noteq> (Sign (float_neg a))"
-proof -
-  have "Sign a < 2"
-    by (metis Sign_def is_valid_defloat sign_0_1)
-  moreover have "Sign a = 0 \<Longrightarrow> Sign (float_neg a) = 1"
-    by (cases a) (auto simp: Sign_def fneg_def float_neg_def Abs_float_inverse is_valid_def)
-  moreover have "Sign a = 1 \<Longrightarrow> Sign (float_neg a) = 0"
-    by (cases a) (auto simp: Sign_def fneg_def float_neg_def Abs_float_inverse is_valid_def)
-  ultimately show ?thesis
-    by (metis One_nat_def less_2_cases zero_neq_one)
-qed
+lemma float_neg_sign: "(sign a) \<noteq> (sign (- a))"
+  by (cases a rule: sign_cases) (auto simp: sign_minus_float)
 
-lemma float_neg_sign1: "Sign a = Sign (float_neg b) \<longleftrightarrow> Sign a \<noteq> Sign b"
-  by (metis Sign_def float_neg_sign is_valid_defloat less_2_cases sign_0_1)
+lemma float_neg_sign1: "sign a = sign (- b) \<longleftrightarrow> sign a \<noteq> sign b"
+  by (metis float_neg_sign sign_cases)
 
-lemma neg_val:
-  assumes "is_finite float_format a"
-  shows "valof float_format (fneg float_format m a) = - valof float_format a" (is "?L = ?R")
-proof -
-  have A: "?L =
-    valof float_format
-      (sign (fneg float_format m a),
-        exponent (fneg float_format m a), fraction (fneg float_format m a))"
-    by (metis exponent.simps fneg_def fraction.simps sign.simps)
-  also have "\<dots> = valof float_format (1 - sign a, exponent a, fraction a)"
-    by (metis calculation fneg_def)
-  finally have Leq: "?L = valof float_format (1 - sign a, exponent a, fraction a)" .
-  have C: "sign a = 0 \<longleftrightarrow> 1 - (sign a) = 1"
-    by auto
-  have D: "sign a = 1 \<longleftrightarrow> 1 - (sign a) = 0"
-    using sign_0_1 assms by (auto simp: is_valid_def is_finite_def)
-  then have "valof float_format (0, exponent a, fraction a) =
-      - valof float_format (1, exponent a, fraction a)"
-    by auto
-  then show "?thesis"
-    using A C D Leq
-    by (metis diff_0_right exponent.simps fraction.cases fraction.simps
-      less_one minus_diff_eq neq0_conv sign.simps zero_less_diff)
-qed
+lemma valof_uminus:
+  assumes "is_finite a"
+  shows "valof (- a) = - valof a" (is "?L = ?R")
+  by (cases a rule: sign_cases)  (auto simp: valof_eq sign_minus_float)
 
-lemma float_neg_val:
-  assumes "Finite b"
-  shows "Val (float_neg b) = - (Val b)"
-proof -
-  have "Val (float_neg b) =
-      valof float_format (Sign (float_neg b), Exponent (float_neg b), Fraction (float_neg b))"
-    unfolding float_defs
-    by (metis prod.exhaust exponent.simps fraction.simps sign.simps)
-  also have "\<dots> = valof float_format (1 - (Sign b), Exponent b, Fraction b)"
-    using float_neg_def fneg_def Abs_float_inverse
-    by (cases b) (auto simp: float_defs is_valid_def)
-  finally have Vb: "Val (float_neg b) =
-    valof float_format (1 - (Sign b), Exponent b, Fraction b)" .
-  have C: "Val b = valof float_format (Sign b, Exponent b, Fraction b)"
-    unfolding float_defs
-    by (metis exponent.simps fraction.simps prod.exhaust sign.simps)
-  then show ?thesis
-    using assms Vb C
-    unfolding Val_def Exponent_def Finite_def Fraction_def Isdenormal_def
-      Isnormal_def Iszero_def Sign_def
-    by (metis fneg_def is_finite_def is_valid_defloat neg_val)
-qed
 
 text \<open>Showing \<open>a + (- b) = a - b\<close>.\<close>
 lemma float_neg_add:
-  "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a - b) \<Longrightarrow> Val a + Val (float_neg b) = Val a - Val b"
-  by (simp add: float_neg_val)
+  "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite (a - b) \<Longrightarrow> valof a + valof (- b) = valof a - valof b"
+  by (simp add: valof_uminus)
 
 lemma float_plus_minus:
-  assumes "Finite a" "Finite b" "Finite (a - b)"
-  shows "(a + float_neg b) \<doteq> (a - b)"
+  assumes "is_finite a" "is_finite b" "is_finite (a - b)"
+  shows "(a + - b) \<doteq> (a - b)"
 proof -
-  have nab: "\<not> Isnan a" "\<not> Isnan (float_neg b)" "\<not> Infinity a" "\<not> Infinity (float_neg  b)"
-    using assms by (auto simp: finite_nan finite_infinity float_neg_finite)
-  have "a - b =
-    Abs_float
-      (zerosign float_format
-        (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b then (Sign a) else 0)
-        (round float_format To_nearest (Val a - Val b)))"
-    using assms finite_infinity finite_nan
-    by (simp add: fsub_def minus_float_def float_defs [symmetric])
+  have nab: "\<not> is_nan a" "\<not> is_nan (- b)" "\<not> is_infinity a" "\<not> is_infinity (-  b)"
+    using assms by (auto simp: finite_nan finite_infinity)
+  have "a - b = (zerosign
+        (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then (sign a) else 0)
+        (round To_nearest (valof a - valof b)))"
+    using nab
+    by (auto simp: minus_float_def fsub_def)
   also have "\<dots> =
-    Abs_float
-      (zerosign float_format
-        (if Iszero a \<and> Iszero (float_neg b) \<and> Sign a = Sign (float_neg b) then Sign a else 0)
-        (round float_format To_nearest (Val a + Val (float_neg b))))"
-    using assms by (simp add: float_neg_sign1 float_neg_add)
-  also have "\<dots> = a + float_neg b"
+    (zerosign
+        (if is_zero a \<and> is_zero (- b) \<and> sign a = sign (- b) then sign a else 0)
+        (round To_nearest (valof a + valof (- b))))"
+    using assms
+    by (simp add: float_neg_sign1 float_neg_add)
+  also have "\<dots> = a + - b"
     using nab by (auto simp: float_defs fadd_def plus_float_def)
   finally show ?thesis
     using assms by (metis float_eq)
 qed
 
-lemma bottomfloat_eq_m_largest: "Val Bottomfloat = - largest float_format"
+lemma finite_bottomfloat: "is_finite bottomfloat"
+  by (simp add: finite_topfloat)
+
+lemma bottomfloat_eq_m_largest: "valof (bottomfloat::('e, 'f)float) = - largest TYPE(('e, 'f)float)"
+  if "LENGTH('e) > 1"
+  using that
+  by (auto simp: valof_topfloat valof_uminus finite_topfloat)
+
+lemma float_val_ge_bottomfloat: "valof a \<ge> valof (bottomfloat::('e, 'f)float)"
+  if "LENGTH('e) > 1" "is_finite a"
+  for a::"('e,'f)float"
 proof -
-  have "Val Bottomfloat = valof float_format (bottomfloat float_format)"
-    by (simp add: Abs_float_inverse Bottomfloat_def is_valid_special Val_def)
-  also have "\<dots> = - largest float_format"
-    by (simp add: emax_def largest_def float_format_def bottomfloat_def)
+  have "- a \<le> topfloat"
+    using that
+    by (auto intro: float_le_topfloat)
+  then show ?thesis
+    using that
+    by (auto simp: valof_uminus finite_topfloat)
+qed
+
+lemma float_ge_bottomfloat: "is_finite a \<Longrightarrow> a \<ge> bottomfloat"
+  if "LENGTH('e) > 1" "is_finite a"
+  for a::"('e,'f)float"
+  by (metis finite_bottomfloat float_le float_val_ge_bottomfloat that)
+
+lemma float_val_ge_largest:
+  fixes a::"('e,'f)float"
+  assumes "LENGTH('e) > 1" "is_finite a"
+  shows "valof a \<ge> - largest TYPE(('e,'f)float)"
+proof -
+  have "- largest TYPE(('e,'f)float) = valof (bottomfloat::('e,'f)float)"
+    using assms
+    by (simp add: bottomfloat_eq_m_largest)
+  also have "\<dots> \<le> valof a"
+    using assms by (simp add: float_val_ge_bottomfloat)
   finally show ?thesis .
 qed
 
-lemma Bottomfloat_m_Topfloat: "Val Bottomfloat = - Val Topfloat"
-  by (metis bottomfloat_eq_m_largest topfloat_eq_largest)
-
-lemma float_val_ge_bottomfloat: "Finite a \<Longrightarrow> Val a \<ge> Val Bottomfloat"
-  by (metis Bottomfloat_m_Topfloat float_neg_finite float_neg_val float_val_le_largest
-      minus_minus neg_le_iff_le topfloat_eq_largest)
-
-lemma finite_Bottomfloat: "Finite Bottomfloat"
-  by (auto simp: float_defs Bottomfloat_def bottomfloat_def Abs_float_inverse
-      emax_def is_normal_def is_valid_def)
-
-lemma float_ge_bottomfloat: "Finite a \<Longrightarrow> a \<ge> Bottomfloat"
-  by (metis finite_Bottomfloat float_le float_val_ge_bottomfloat)
-
-lemma sign_Rep_Topfloat [simp]: "sign (Rep_float Topfloat) = 0"
-  using is_valid_special
-  by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
-
-lemma exponent_Rep_Topfloat [simp]:
-  "exponent (Rep_float Topfloat) = emax float_format - Suc 0"
-  using is_valid_special
-  by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
-
-lemma fraction_Rep_Topfloat [simp]:
-  "fraction (Rep_float Topfloat) = 2 ^ fracwidth float_format - Suc 0"
-  using is_valid_special
-  by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
-
-lemma Bottomfloat_fneg_Topfloat: "Bottomfloat = float_neg Topfloat"
-  using is_valid_special
-  by (auto simp add: Abs_float_inject float_neg_def fneg_def Bottomfloat_def bottomfloat_def)
-
-lemma float_val_ge_largest:
-  assumes "Finite a"
-  shows "Val a \<ge> - largest float_format"
-proof -
-  have "Val Bottomfloat = valof float_format (bottomfloat float_format)"
-    using Bottomfloat_def Abs_float_inverse is_valid_special
-    by (metis (full_types) Val_def mem_Collect_eq)
-  also have "\<dots> = - largest float_format"
-    by (auto simp: emax_def bias_def bottomfloat_def float_format_def largest_def)
-  finally have "Val Bottomfloat = -largest float_format" .
-  then show ?thesis
-    using float_val_ge_bottomfloat by (metis assms)
-qed
-
 lemma float_val_gt_threshold:
-  assumes "Finite a"
-  shows "Val a > - threshold float_format"
+  fixes a::"('e,'f)float"
+  assumes "LENGTH('e) > 1" "is_finite a"
+  shows "valof a > - threshold TYPE(('e,'f)float)"
 proof -
-  have largest: "Val a \<ge> -largest float_format"
-    using float_val_ge_bottomfloat assms by (metis float_val_ge_largest)
-  then have "-largest float_format > - threshold float_format"
-    by (auto simp: bias_def threshold_def float_format_def largest_def)
+  have largest: "valof a \<ge> -largest TYPE(('e,'f)float)"
+    using assms by (metis float_val_ge_largest)
+  then have "-largest TYPE(('e,'f)float) > - threshold TYPE(('e,'f)float)"
+    by (auto simp: bias_def threshold_def largest_def divide_simps)
   then show ?thesis
     by (metis largest less_le_trans)
 qed
 
 text \<open>Showing \<open>abs (- a) = abs a\<close>.\<close>
-lemma float_abs [simp]: "\<not> Isnan a \<Longrightarrow> float_abs (float_neg a) = float_abs a"
-  by (cases a) (auto simp: float_abs_def float_neg_def fneg_def Abs_float_inverse is_valid_def)
+lemma float_abs [simp]: "\<not> is_nan a \<Longrightarrow> abs (- a) = abs a"
+  by (metis IEEE.abs_float_def float_neg_sign1 minus_minus_float zero_simps(1))
 
-lemma neg_zerosign: "fneg x m (zerosign x s a) = zerosign x (1 - s) (fneg x m a)"
-  by (auto simp: fneg_def zerosign_def is_zero_def is_valid_def)
-
-lemma finite_valid: "is_finite x a \<Longrightarrow> is_valid x a"
-  by (cases a) (metis is_finite_def)
+lemma neg_zerosign: "- (zerosign s a) = zerosign (1 - s) (- a)"
+  by (auto simp: zerosign_def)
 
 
 subsection \<open>Properties about Rounding Errors\<close>
 
-definition error :: "real \<Rightarrow> real"
-  where "error x = Val (Abs_float (round float_format To_nearest x)) - x"
+definition error :: "('e, 'f)float itself \<Rightarrow> real \<Rightarrow> real"
+  where "error _ x = valof (round To_nearest x::('e, 'f)float) - x"
 
 lemma bound_at_worst_lemma:
-  assumes threshold: "\<bar>x\<bar> < threshold float_format"
-  assumes finite: "is_finite float_format a"
-  shows "\<bar>valof float_format (round float_format To_nearest x) - x\<bar> \<le> \<bar>valof float_format a - x\<bar>"
+  fixes a::"('e, 'f)float"
+  assumes threshold: "\<bar>x\<bar> < threshold TYPE(('e, 'f)float)"
+  assumes finite: "is_finite a"
+  shows "\<bar>valof (round To_nearest x::('e, 'f)float) - x\<bar> \<le> \<bar>valof a - x\<bar>"
 proof -
-  have "round float_format To_nearest x =
-      closest (valof float_format)  (\<lambda>a. even (fraction a)) {a. is_finite float_format a} x"
-    using threshold by (metis abs_less_iff le_minus_iff not_less round.simps(1))
-  then have "is_closest (valof float_format) {a. is_finite float_format a} x
-      (round float_format To_nearest x)"
-    using closest_is_closest by (metis is_finite_finite is_finite_nonempty)
+  have *: "(round To_nearest x::('e,'f)float) =
+      closest valof (\<lambda>a. even (fraction a)) {a. is_finite a} x"
+    using threshold finite
+    by auto
+  have "is_closest (valof) {a. is_finite a} x (round To_nearest x::('e,'f)float)"
+    using is_finite_nonempty
+    unfolding *
+    by (intro closest_is_closest) auto
   then show ?thesis
     using finite is_closest_def by (metis mem_Collect_eq)
 qed
 
-lemma defloat_float_round:
-  "Rep_float (Abs_float (round float_format To_nearest x)) =
-    round (float_format) To_nearest x"
-  by (metis mem_Collect_eq Abs_float_inverse is_valid_round)
-
 lemma error_at_worst_lemma:
-  assumes "\<bar>x\<bar> < threshold float_format" and "Finite a"
-  shows "\<bar>error x\<bar> \<le> \<bar>Val a - x\<bar> "
-proof -
-  have "Finite a = is_finite float_format (Rep_float a)"
-    using is_valid_defloat
-    by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
-  then have "\<bar>Val(Abs_float(round float_format To_nearest x)) - x\<bar> \<le> \<bar>Val a - x\<bar>"
-    using bound_at_worst_lemma assms
-    by (metis Val_def defloat_float_round)
-  then show ?thesis
-    by (metis error_def)
-qed
+  fixes a::"('e, 'f)float"
+  assumes threshold: "\<bar>x\<bar> < threshold TYPE(('e, 'f)float)"
+    and "is_finite a"
+  shows "\<bar>error TYPE(('e, 'f)float) x\<bar> \<le> \<bar>valof a - x\<bar> "
+  unfolding error_def
+  by (rule bound_at_worst_lemma; fact)
 
 lemma error_is_zero [simp]:
-  assumes "Finite a"
-  shows "error (Val a) = 0"
+  fixes a::"('e, 'f)float"
+  assumes "is_finite a" "1 < LENGTH('e)"
+  shows "error TYPE(('e, 'f)float) (valof a) = 0"
 proof -
-  have "\<bar>Val a\<bar> < threshold float_format"
+  have "\<bar>valof a\<bar> < threshold TYPE(('e, 'f)float)"
     by (metis abs_less_iff minus_less_iff float_val_gt_threshold float_val_lt_threshold assms)
   then show ?thesis
-    by (metis abs_le_zero_iff abs_zero diff_self error_at_worst_lemma assms)
+    by (metis abs_le_zero_iff abs_zero diff_self error_at_worst_lemma assms(1))
 qed
 
-lemma valof_scale_up:
-  assumes "e \<noteq> 0"
-  shows "valof float_format (s::nat, e + k, f) = 2^k * valof float_format (s, e, f)"
-  using assms
-  by auto (metis add.commute power_add)
+lemma is_finite_zerosign[simp]: "is_finite (zerosign s a) \<longleftrightarrow> is_finite a"
+  by (auto simp: zerosign_def is_finite_def)
 
-lemma is_finite_zerosign:
-  assumes "is_finite float_format a"
-  shows "is_finite float_format (zerosign float_format s a)"
-  using assms
-  by (metis (full_types) exponent.simps fraction.simps is_finite_def is_zero_def
-    minus_zero_def plus_zero_def zerosign_def zerosign_valid)
+lemma is_finite_closest: "is_finite (closest (v::_\<Rightarrow>real) p {a. is_finite a} x)"
+  using closest_is_closest[OF is_finite_nonempty, of v x p]
+  by (auto simp: is_closest_def)
 
 lemma defloat_float_zerosign_round_finite:
-  assumes threshold: "\<bar>x\<bar> < threshold float_format"
-  shows "is_finite float_format (zerosign float_format s (round float_format To_nearest x))"
+  assumes threshold: "\<bar>x\<bar> < threshold TYPE(('e, 'f)float)"
+  shows "is_finite (zerosign s (round To_nearest x::('e, 'f)float))"
 proof -
-  have "round float_format To_nearest x =
-      (closest (valof float_format) (\<lambda>a. even (fraction a)) {a. is_finite float_format a} x)"
+  have "(round To_nearest x::('e, 'f)float) =
+      (closest valof (\<lambda>a. even (fraction a)) {a. is_finite a} x)"
     using threshold by (metis (full_types) abs_less_iff leD le_minus_iff round.simps(1))
-  then have "is_finite float_format (round float_format To_nearest x) "
+  then have "is_finite (round To_nearest x::('e, 'f)float)"
     by (metis is_finite_closest)
   then show ?thesis
     using is_finite_zerosign by auto
 qed
 
+lemma valof_zero[simp]: "valof 0 = 0" "valof minus_zero = 0"
+  by (auto simp add: zerosign_def valof_eq zero_simps)
+
 lemma signzero_zero:
-  "is_zero float_format a \<Longrightarrow> valof float_format (zerosign float_format s a) = 0"
+  "is_zero a \<Longrightarrow> valof (zerosign s a) = 0"
   by (auto simp add: zerosign_def)
 
-lemma val_zero: "is_zero float_format a \<Longrightarrow> valof float_format a = 0"
-  by (cases a) (auto simp add: is_zero_def)
+lemma val_zero: "is_zero a \<Longrightarrow> valof a = 0"
+  by (cases a rule: is_zero_cases) auto
 
 lemma float_add:
-  assumes "Finite a"
-    and "Finite b"
-    and threshold: "\<bar>Val a + Val b\<bar> < threshold float_format"
-  shows finite_float_add: "Finite (a + b)"
-    and error_float_add:  "Val (a + b) = Val a + Val b + error (Val a + Val b)"
+  fixes a b::"('e, 'f)float"
+  assumes "is_finite a"
+    and "is_finite b"
+    and threshold: "\<bar>valof a + valof b\<bar> < threshold TYPE(('e, 'f)float)"
+  shows finite_float_add: "is_finite (a + b)"
+    and error_float_add:  "valof (a + b) = valof a + valof b + error TYPE(('e, 'f)float) (valof a + valof b)"
 proof -
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms float_distinct_finite by auto
   then have ab: "(a + b) =
-    Abs_float (zerosign float_format
-      (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then (Sign a) else 0)
-      (round float_format To_nearest (Val a + Val b)))"
+    (zerosign
+      (if is_zero a \<and> is_zero b \<and> sign a = sign b then (sign a) else 0)
+      (round To_nearest (valof a + valof b)))"
     using assms by (auto simp add: float_defs fadd_def plus_float_def)
-  then have "is_finite float_format (Rep_float (a + b))"
-    by (metis threshold defloat_float_zerosign_round defloat_float_zerosign_round_finite)
-  then show "Finite (a + b)"
-    by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
-  have val_ab: "Val (a + b) =
-    valof float_format (zerosign float_format
-      (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then (Sign a) else 0)
-      (round float_format To_nearest (Val a + Val b)))"
-    using defloat_float_zerosign_round
-    by (auto simp: ab Infinity_def Isnan_def Val_def)
-  show "Val (a + b) = Val a + Val b + error (Val a + Val b)"
-  proof (cases "is_zero float_format (round float_format To_nearest (Val a + Val b))")
+  then show "is_finite ((a + b))"
+    by (metis threshold defloat_float_zerosign_round_finite)
+  have val_ab: "valof (a + b) =
+    valof (zerosign
+      (if is_zero a \<and> is_zero b \<and> sign a = sign b then (sign a) else 0)
+      (round To_nearest (valof a + valof b)::('e, 'f)float))"
+    by (auto simp: ab is_infinity_def is_nan_def valof_def)
+  show "valof (a + b) = valof a + valof b + error TYPE(('e, 'f)float) (valof a + valof b)"
+  proof (cases "is_zero (round To_nearest (valof a + valof b)::('e, 'f)float)")
     case True
-    have "Val a + Val b + error (Val a + Val b) =
-        valof float_format (round float_format To_nearest (Val a + Val b))"
-      unfolding error_def Val_def
-      by (metis add_diff_cancel_left add_0_right defloat_float_round diff_add_cancel)
+    have "valof a + valof b + error TYPE(('e, 'f)float) (valof a + valof b) =
+        valof (round To_nearest (valof a + valof b)::('e, 'f)float)"
+      unfolding error_def
+      by simp
     then show ?thesis
       by (metis True signzero_zero val_zero val_ab)
   next
@@ -809,36 +920,33 @@ proof -
 qed
 
 lemma float_sub:
-  assumes "Finite a"
-    and "Finite b"
-    and threshold: "\<bar>Val a - Val b\<bar> < threshold float_format"
-  shows finite_float_sub: "Finite (a - b)"
-    and error_float_sub: "Val (a - b) = Val a - Val b + error (Val a - Val b)"
+  fixes a b::"('e, 'f)float"
+  assumes "is_finite a"
+    and "is_finite b"
+    and threshold: "\<bar>valof a - valof b\<bar> < threshold TYPE(('e, 'f)float)"
+  shows finite_float_sub: "is_finite (a - b)"
+    and error_float_sub: "valof (a - b) = valof a - valof b + error TYPE(('e, 'f)float) (valof a - valof b)"
 proof -
-  have "\<not> Isnan a" and "\<not> Isnan b" and "\<not> Infinity a" and "\<not> Infinity b"
+  have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms by (auto simp: finite_nan finite_infinity)
   then have ab: "a - b =
-    Abs_float (zerosign float_format
-      (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b then Sign a else 0)
-      (round float_format To_nearest (Val a - Val b)))"
+    (zerosign
+      (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a else 0)
+      (round To_nearest (valof a - valof b)))"
     using assms by (auto simp add: float_defs fsub_def minus_float_def)
-  then have "is_finite float_format (Rep_float (a - b))"
-   by (metis threshold defloat_float_zerosign_round_finite defloat_float_zerosign_round)
-  then show "Finite (a - b)"
-    by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
-  have val_ab: "Val (a - b) =
-    valof float_format (zerosign float_format
-      (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b then Sign a else 0)
-      (round float_format To_nearest (Val a - Val b)))"
-    using defloat_float_zerosign_round
-    by (auto simp: ab Infinity_def Isnan_def Val_def)
-  show "Val (a - b) = Val a - Val b + error (Val a - Val b)"
-  proof (cases "is_zero float_format (round float_format To_nearest (Val a - Val b))")
+  then show "is_finite (a - b)"
+   by (metis threshold defloat_float_zerosign_round_finite)
+  have val_ab: "valof (a - b) =
+    valof (zerosign
+      (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a else 0)
+      (round To_nearest (valof a - valof b)::('e, 'f)float))"
+    by (auto simp: ab is_infinity_def is_nan_def valof_def)
+  show "valof (a - b) = valof a - valof b + error TYPE(('e, 'f)float) (valof a - valof b)"
+  proof (cases "is_zero (round To_nearest (valof a - valof b)::('e, 'f)float)")
     case True
-    have "Val a - Val b + error (Val a - Val b) =
-        valof float_format (round float_format To_nearest (Val a - Val b))"
-      unfolding error_def Val_def
-      by (metis add_diff_cancel_left add_0_right defloat_float_round diff_add_cancel)
+    have "valof a - valof b + error TYPE(('e, 'f)float) (valof a - valof b) =
+        valof (round To_nearest (valof a - valof b)::('e, 'f)float)"
+      unfolding error_def by simp
     then show ?thesis
       by (metis True signzero_zero val_zero val_ab)
   next
@@ -849,34 +957,32 @@ proof -
 qed
 
 lemma float_mul:
-  assumes "Finite a"
-    and "Finite b"
-    and threshold: "\<bar>Val a * Val b\<bar> < threshold float_format"
-  shows finite_float_mul: "Finite (a * b)"
-    and error_float_mul: "Val (a * b) = Val a * Val b + error (Val a * Val b)"
+  fixes a b::"('e, 'f)float"
+  assumes "is_finite a"
+    and "is_finite b"
+    and threshold: "\<bar>valof a * valof b\<bar> < threshold TYPE(('e, 'f)float)"
+  shows finite_float_mul: "is_finite (a * b)"
+    and error_float_mul: "valof (a * b) = valof a * valof b + error TYPE(('e, 'f)float) (valof a * valof b)"
 proof -
-  have non: "\<not> Isnan a" "\<not> Isnan b" "\<not> Infinity a" "\<not> Infinity b"
+  have non: "\<not> is_nan a" "\<not> is_nan b" "\<not> is_infinity a" "\<not> is_infinity b"
     using assms float_distinct_finite by auto
   then have ab: "a * b =
-    Abs_float (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-      (round float_format To_nearest (Val a * Val b)))"
+    (zerosign (of_bool (sign a \<noteq> sign b))
+      (round To_nearest (valof a * valof b)::('e, 'f)float))"
     using assms by (auto simp: float_defs fmul_def times_float_def)
-  then have "is_finite float_format (Rep_float (a * b))"
-    by (metis threshold defloat_float_zerosign_round_finite defloat_float_zerosign_round)
-  then show "Finite (a * b)"
-    by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
-  have val_ab: "Val (a * b) =
-      valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest (Val a * Val b)))"
-    using defloat_float_zerosign_round
+  then show "is_finite (a * b)"
+    by (metis threshold defloat_float_zerosign_round_finite)
+  have val_ab: "valof (a * b) =
+      valof (zerosign (of_bool (sign a \<noteq> sign b))
+        (round To_nearest (valof a * valof b)::('e, 'f)float))"
     by (auto simp: ab float_defs of_bool_def)
-  show "Val (a * b) = Val a * Val b + error (Val a * Val b)"
-  proof (cases "is_zero float_format (round float_format To_nearest (Val a * Val b))")
+  show "valof (a * b) = valof a * valof b + error TYPE(('e, 'f)float) (valof a * valof b)"
+  proof (cases "is_zero (round To_nearest (valof a * valof b)::('e, 'f)float)")
     case True
-    have "Val a * Val b + error (Val a * Val b) =
-        valof float_format (round float_format To_nearest (Val a * Val b))"
-      unfolding error_def Val_def
-      by (metis add_diff_cancel_left add_0_right defloat_float_round diff_add_cancel)
+    have "valof a * valof b + error TYPE(('e, 'f)float)  (valof a * valof b) =
+        valof (round To_nearest (valof a * valof b)::('e, 'f)float)"
+      unfolding error_def
+      by simp
     then show ?thesis
       by (metis True signzero_zero val_zero val_ab)
   next
@@ -886,34 +992,32 @@ proof -
 qed
 
 lemma float_div:
-  assumes "Finite a"
-    and "Finite b"
-    and not_zero: "\<not> Iszero b"
-    and threshold: "\<bar>Val a / Val b\<bar> < threshold float_format"
-  shows finite_float_div: "Finite (a / b)"
-    and error_float_div: "Val (a / b) = Val a / Val b + error (Val a / Val b)"
+  fixes a b::"('e, 'f)float"
+  assumes "is_finite a"
+    and "is_finite b"
+    and not_zero: "\<not> is_zero b"
+    and threshold: "\<bar>valof a / valof b\<bar> < threshold TYPE(('e, 'f)float)"
+  shows finite_float_div: "is_finite (a / b)"
+    and error_float_div: "valof (a / b) = valof a / valof b + error TYPE(('e, 'f)float) (valof a / valof b)"
 proof -
   have ab: "a / b =
-    Abs_float (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-      (round float_format To_nearest (Val a / Val b)))"
+    (zerosign (of_bool (sign a \<noteq> sign b))
+      (round To_nearest (valof a / valof b)))"
      using assms
      by (simp add: divide_float_def fdiv_def finite_infinity finite_nan not_zero float_defs [symmetric])
-  then have "is_finite float_format (Rep_float(a / b))"
-    by (metis threshold defloat_float_zerosign_round_finite defloat_float_zerosign_round)
-  then show "Finite (a / b)"
-    by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
-  have val_ab: "Val (a / b) =
-      valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest (Val a / Val b)))"
-    using defloat_float_zerosign_round
+  then show "is_finite (a / b)"
+    by (metis threshold defloat_float_zerosign_round_finite)
+  have val_ab: "valof (a / b) =
+      valof (zerosign (of_bool (sign a \<noteq> sign b))
+        (round To_nearest (valof a / valof b))::('e, 'f)float)"
     by (auto simp: ab float_defs of_bool_def)
-  show "Val (a / b) = Val a / Val b + error (Val a / Val b)"
-  proof (cases "is_zero float_format (round float_format To_nearest (Val a / Val b))")
+  show "valof (a / b) = valof a / valof b + error TYPE(('e, 'f)float)  (valof a / valof b)"
+  proof (cases "is_zero (round To_nearest (valof a / valof b)::('e, 'f)float)")
     case True
-    have "Val a / Val b + error (Val a / Val b) =
-        valof float_format (round float_format To_nearest (Val a / Val b))"
-      unfolding error_def Val_def
-      by (metis add_diff_cancel_left add_0_right defloat_float_round diff_add_cancel)
+    have "valof a / valof b + error TYPE(('e, 'f)float) (valof a / valof b) =
+        valof (round To_nearest (valof a / valof b)::('e, 'f)float)"
+      unfolding error_def
+      by simp
     then show ?thesis
       by (metis True signzero_zero val_zero val_ab)
   next
@@ -921,5 +1025,8 @@ proof -
       by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
   qed
 qed
+
+lemma valof_one[simp]: "valof (1::('e, 'f)float) = (if LENGTH('e) \<le> 1 then 0 else 1)"
+  by transfer (auto simp: bias_def unat_sub word_1_le_power p2_eq_1)
 
 end

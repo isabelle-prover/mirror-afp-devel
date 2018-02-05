@@ -2860,6 +2860,13 @@ lemma sint_eq_uint:
   apply simp
   done
 
+lemma uints_mono_iff: "uints l \<subseteq> uints m \<longleftrightarrow> l \<le> m"
+  using power_increasing_iff[of "2::int" l m]
+  apply (auto simp: uints_num subset_iff simp del: power_increasing_iff)
+  by (meson less_irrefl not_less zle2p)
+
+lemmas uints_monoI = uints_mono_iff[THEN iffD2]
+
 lemma scast_eq_ucast:
   "\<not> msb x \<Longrightarrow> scast x = ucast x"
   by (simp add: scast_def ucast_def sint_eq_uint)
@@ -5243,5 +5250,74 @@ lemma NOT_mask_shifted_lenword:
   apply (rule word_eqI)
   apply (simp add: word_size nth_shiftl nth_shiftr)
   by auto
+
+
+lemma Bit_in_uints_Suc: "w BIT c \<in> uints (Suc m)" if "w \<in> uints m"
+  using that
+  by (auto simp: uints_num Bit_def)
+
+lemma Bit_in_uintsI: "w BIT c \<in> uints m" if "w \<in> uints (m - 1)" "m > 0"
+  using Bit_in_uints_Suc[OF that(1)] that(2)
+  by auto
+
+lemma bin_cat_in_uintsI: "bin_cat a n b \<in> uints m" if "a \<in> uints l" "m \<ge> l + n"
+  using that
+proof (induction n arbitrary: b m)
+  case 0
+  then have "uints l \<subseteq> uints m"
+    by (intro uints_monoI) auto
+  then show ?case using 0 by auto
+next
+  case (Suc n)
+  then show ?case
+    by (auto intro!: Bit_in_uintsI)
+qed
+
+lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
+  if "n = m" "a = c" "bintrunc m b = bintrunc m d"
+  using that(3) unfolding that(1,2)
+proof (induction m arbitrary: b d)
+  case (Suc m)
+  show ?case
+    using Suc.prems
+    by (auto intro: Suc.IH)
+qed simp
+
+lemma bin_cat_eqD1: "bin_cat a n b = bin_cat c n d \<Longrightarrow> a = c"
+  by (induction n arbitrary: b d) auto
+
+lemma bin_cat_eqD2: "bin_cat a n b = bin_cat c n d \<Longrightarrow> bintrunc n b = bintrunc n d"
+  by (induction n arbitrary: b d) auto
+
+lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c \<and> bintrunc n b = bintrunc n d"
+  by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
+
+lemma word_of_int_bin_cat_eq_iff:
+  "(word_of_int (bin_cat (uint a) LENGTH('b) (uint b))::'c::len0 word) =
+  word_of_int (bin_cat (uint c) LENGTH('b) (uint d)) \<longleftrightarrow> b = d \<and> a = c"
+  if "LENGTH('a) + LENGTH('b) \<le> LENGTH('c)"
+  for a::"'a::len0 word" and b::"'b::len0 word"
+   by (subst word_uint.Abs_inject)
+     (auto simp: bin_cat_inj intro!: word_uint.Rep that bin_cat_in_uintsI)
+
+lemma word_cat_inj: "(word_cat a b::'c::len0 word) = word_cat c d \<longleftrightarrow> a = c \<and> b = d"
+  if "LENGTH('a) + LENGTH('b) \<le> LENGTH('c)"
+  for a::"'a::len0 word" and b::"'b::len0 word"
+  by (auto simp: word_cat_def word_uint.Abs_inject word_of_int_bin_cat_eq_iff that)
+
+lemma p2_eq_1: "2 ^ n = (1::'a::len word) \<longleftrightarrow> n = 0"
+proof -
+  have "2 ^ n = (1::'a word) \<Longrightarrow> n = 0"
+    by (metis One_nat_def not_less one_less_numeral_iff p2_eq_0 p2_gt_0 power_0 power_0
+        power_inject_exp semiring_norm(76) unat_power_lower zero_neq_one)
+  then show ?thesis by auto
+qed
+
+lemma max_word_ne_zero[simp]: "(max_word::'a::len word) \<noteq> 0"
+  by (metis (full_types)
+      word_bool_alg.conj_one_right word_bool_alg.conj_zero_right word_less_1 word_neq_0_conv)
+
+lemma unat_max_word_pos[simp]: "0 < unat max_word"
+  by (auto simp: unat_gt_0)
 
 end
