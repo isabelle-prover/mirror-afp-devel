@@ -6536,3 +6536,27 @@ abstract =
   compute short vectors in lattices. The formalization follows a
   textbook by von zur Gathen and Gerhard.
 
+[Treaps]
+title = Treaps
+author = Manuel Eberl <https://www.in.tum.de/~eberlm>, Max Haslbeck <https://home.in.tum.de/~haslbecm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+topic = Computer Science/Data Structures
+date = 2018-02-06
+notify = eberlm@in.tum.de
+abstract = 
+  <p> A Treap is a binary tree whose nodes contain pairs
+  consisting of some payload and an associated priority. It must have
+  the search-tree property w.r.t. the payloads and the heap property
+  w.r.t. the priorities. Treaps are an interesting data structure that
+  is related to binary search trees (BSTs) in the following way: if one
+  forgets all the priorities of a treap, the resulting BST is exactly
+  the same as if one had inserted the elements into an empty BST in
+  order of ascending priority. This means that a treap behaves like a
+  BST where we can pretend the elements were inserted in a different
+  order from the one in which they were actually inserted. </p>
+  <p> In particular, by choosing these priorities at random upon
+  insertion of an element, we can pretend that we inserted the elements
+  in <em>random order</em>, so that the shape of the
+  resulting tree is that of a random BST no matter in what order we
+  insert the elements. This is the main result of this
+  formalisation.</p>
+  

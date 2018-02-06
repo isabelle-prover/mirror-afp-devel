@@ -11,6 +11,30 @@
     </description>
     <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
     <item>
+       <title>Treaps</title>
+              <link>https://www.isa-afp.org/entries/Treaps.html</link>
+       <guid>https://www.isa-afp.org/entries/Treaps.html</guid>
+       <dc:creator> Manuel Eberl, Max Haslbeck, Tobias Nipkow       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; A Treap is a binary tree whose nodes contain pairs
+consisting of some payload and an associated priority. It must have
+the search-tree property w.r.t. the payloads and the heap property
+w.r.t. the priorities. Treaps are an interesting data structure that
+is related to binary search trees (BSTs) in the following way: if one
+forgets all the priorities of a treap, the resulting BST is exactly
+the same as if one had inserted the elements into an empty BST in
+order of ascending priority. This means that a treap behaves like a
+BST where we can pretend the elements were inserted in a different
+order from the one in which they were actually inserted. &lt;/p&gt;
+&lt;p&gt; In particular, by choosing these priorities at random upon
+insertion of an element, we can pretend that we inserted the elements
+in &lt;em&gt;random order&lt;/em&gt;, so that the shape of the
+resulting tree is that of a random BST no matter in what order we
+insert the elements. This is the main result of this
+formalisation.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>First-Order Terms</title>
               <link>https://www.isa-afp.org/entries/First_Order_Terms.html</link>
        <guid>https://www.isa-afp.org/entries/First_Order_Terms.html</guid>
@@ -564,36 +588,6 @@ then simply transforms the terms algebraically to yield the
 conjectured relation. The formalization in Isabelle can closely follow
 the informal proofs described in the Wikipedia articles of those two
 theorems.</description>
-    </item>
-    <item>
-       <title>Dynamic Architectures</title>
-              <link>https://www.isa-afp.org/entries/DynamicArchitectures.html</link>
-       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.html</guid>
-       <dc:creator> Diego Marmsoler       </dc:creator>
-       <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-The architecture of a system describes the system&#39;s overall
-organization into components and connections between those components.
-With the emergence of mobile computing, dynamic architectures have
-become increasingly important. In such architectures, components may
-appear or disappear, and connections may change over time. In the
-following we mechanize a theory of dynamic architectures and verify
-the soundness of a corresponding calculus. Therefore, we first
-formalize the notion of configuration traces as a model for dynamic
-architectures. Then, the behavior of single components is formalized
-in terms of behavior traces and an operator is introduced and studied
-to extract the behavior of a single component out of a given
-configuration trace. Then, behavior trace assertions are introduced as
-a temporal specification technique to specify behavior of components.
-Reasoning about component behavior in a dynamic context is formalized
-in terms of a calculus for dynamic architectures. Finally, the
-soundness of the calculus is verified by introducing an alternative
-interpretation for behavior trace assertions over configuration traces
-and proving the rules of the calculus. Since projection may lead to
-finite as well as infinite behavior traces, they are formalized in
-terms of coinductive lists. Thus, our theory is based on
-Lochbihler&#39;s formalization of coinductive lists. The theory may
-be applied to verify properties for dynamic architectures.</description>
     </item>
   </channel>
 </rss>

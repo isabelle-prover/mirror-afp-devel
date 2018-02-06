@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Abstract Interpretation of Annotated Commands - Archive of Formal Proofs
+<title>Treaps - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,7 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>bstract
-  
-          <font class="first">I</font>nterpretation
-  
-          of
-  
-          <font class="first">A</font>nnotated
-  
-          <font class="first">C</font>ommands
+  <h1>          <font class="first">T</font>reaps
   
 </h1>
   <p>&nbsp;</p>
@@ -78,15 +70,17 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Abstract Interpretation of Annotated Commands</td>
+  <td class="data" width="80%">Treaps</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+                      <a href="https://www.in.tum.de/~eberlm">Manuel Eberl</a>,
+                <a href="https://home.in.tum.de/~haslbecm">Max Haslbeck</a> and
+          <a href="https://www.in.tum.de/~nipkow">Tobias Nipkow</a>
       </td>
 </tr>
 
@@ -94,37 +88,41 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-11-23</td>
+  <td class="data">2018-02-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This is the Isabelle formalization of the material decribed in the
-eponymous <a href="http://dx.doi.org/10.1007/978-3-642-32347-8_9">ITP 2012 paper</a>.
-It develops a generic abstract interpreter for a
-while-language, including widening and narrowing. The collecting
-semantics and the abstract interpreter operate on annotated commands:
-the program is represented as a syntax tree with the semantic
-information directly embedded, without auxiliary labels. The aim of
-the formalization is simplicity, not efficiency or
-precision. This is motivated by the inclusion of the material in a
-theorem prover based course on semantics. A similar (but more
-polished) development is covered in the book
-<a href="http://dx.doi.org/10.1007/978-3-319-10542-0">Concrete Semantics</a>.</td>
+<p> A Treap is a binary tree whose nodes contain pairs
+consisting of some payload and an associated priority. It must have
+the search-tree property w.r.t. the payloads and the heap property
+w.r.t. the priorities. Treaps are an interesting data structure that
+is related to binary search trees (BSTs) in the following way: if one
+forgets all the priorities of a treap, the resulting BST is exactly
+the same as if one had inserted the elements into an empty BST in
+order of ascending priority. This means that a treap behaves like a
+BST where we can pretend the elements were inserted in a different
+order from the one in which they were actually inserted. </p>
+<p> In particular, by choosing these priorities at random upon
+insertion of an element, we can pretend that we inserted the elements
+in <em>random order</em>, so that the shape of the
+resulting tree is that of a random BST no matter in what order we
+insert the elements. This is the main result of this
+formalisation.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Abs_Int_ITP2012-AFP,
-  author  = {Tobias Nipkow},
-  title   = {Abstract Interpretation of Annotated Commands},
+        <pre>@article{Treaps-AFP,
+  author  = {Manuel Eberl and Max Haslbeck and Tobias Nipkow},
+  title   = {Treaps},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Abs_Int_ITP2012.html},
+  month   = feb,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Treaps.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -135,7 +133,9 @@ polished) development is covered in the book
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Comparison_Sort_Lower_Bound.html">Comparison_Sort_Lower_Bound</a>, <a href="Random_BSTs.html">Random_BSTs</a>      </td></tr>
+          
                     
 
         
@@ -148,29 +148,23 @@ polished) development is covered in the book
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Abs_Int_ITP2012/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Abs_Int_ITP2012/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Treaps/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Treaps/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Abs_Int_ITP2012/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Treaps/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Abs_Int_ITP2012-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Treaps-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Abs_Int_ITP2012-2016-12-17.tar.gz">
-            afp-Abs_Int_ITP2012-2016-12-17.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
