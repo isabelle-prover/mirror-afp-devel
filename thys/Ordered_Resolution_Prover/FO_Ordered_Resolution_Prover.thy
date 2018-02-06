@@ -221,29 +221,26 @@ proof -
     using sr.Rf_def by blast
 qed
 
-lemma strict_subset_subsumption_redundant_state:
+lemma strict_subset_subsumption_redundant_clss:
   assumes
     "D \<cdot> \<sigma> \<subset># C" and
     "is_ground_subst \<sigma>" and
-    "D \<in> clss_of_state St"
-  shows "C \<in> sr.Rf (grounding_of_state St)"
+    "D \<in> CC"
+  shows "C \<in> sr.Rf (grounding_of_clss CC)"
   using assms
-proof (induction St)
-  case (fields N P Q)
-  note sub = this(1) and gr = this(2) and d_in = this(3)
-
+proof -
   have "C \<in> sr.Rf (grounding_of_cls D)"
-    by (rule strict_subset_subsumption_redundant_clause[OF sub gr])
-  then show ?case
-    using d_in unfolding clss_of_state_def grounding_of_clss_def
+    using strict_subset_subsumption_redundant_clause assms by auto
+  then show ?thesis
+    using assms unfolding clss_of_state_def grounding_of_clss_def
     by (metis (no_types) sr.Rf_mono sup_ge1 SUP_absorb contra_subsetD)
 qed
 
-lemma strict_subset_subsumption_grounding_redundant_state:
+lemma strict_subset_subsumption_grounding_redundant_clss:
   assumes 
     D\<sigma>_subset_C: "D \<cdot> \<sigma> \<subset># C" and
-    D_in_St: "D \<in> clss_of_state St"
-  shows "grounding_of_cls C \<subseteq> sr.Rf (grounding_of_state St)"
+    D_in_St: "D \<in> CC"
+  shows "grounding_of_cls C \<subseteq> sr.Rf (grounding_of_clss CC)"
 proof
   fix C\<mu>
   assume "C\<mu> \<in> grounding_of_cls C"
@@ -252,8 +249,8 @@ proof
     unfolding grounding_of_cls_def by auto
   have D\<sigma>\<mu>C\<mu>: "D \<cdot> \<sigma> \<cdot> \<mu> \<subset># C \<cdot> \<mu>"
     using D\<sigma>_subset_C subst_subset_mono by auto
-  then show "C\<mu> \<in> sr.Rf (grounding_of_state St)"
-    using \<mu>_p strict_subset_subsumption_redundant_state[of D "\<sigma> \<odot> \<mu>" "C \<cdot> \<mu>" St] D_in_St 
+  then show "C\<mu> \<in> sr.Rf (grounding_of_clss CC)"
+    using \<mu>_p strict_subset_subsumption_redundant_clss[of D "\<sigma> \<odot> \<mu>" "C \<cdot> \<mu>"] D_in_St 
     unfolding clss_of_state_def by auto
 qed
 
@@ -295,10 +292,74 @@ proof -
   next
     assume a: "D \<cdot> \<sigma> \<subset># C"
     then have "grounding_of_cls C \<subseteq> sr.Rf (grounding_of_state St)"
-      using strict_subset_subsumption_grounding_redundant_state assms by auto
+      using strict_subset_subsumption_grounding_redundant_clss assms by auto
     then show ?thesis
       unfolding clss_of_state_def grounding_of_clss_def by (force intro: sr_ext.derive.intros)
   qed
+qed
+
+(* FIXME: better name *)
+lemma reduction_in_concls_of:
+  assumes 
+    "C\<mu> \<in> grounding_of_cls C" and
+    "D + {#L'#} \<in> CC" and
+    "- L = L' \<cdot>l \<sigma>" and
+    "D \<cdot> \<sigma> \<subseteq># C"
+  shows "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
+proof -
+  from assms 
+  obtain \<mu> where
+    \<mu>_p: "C\<mu> = C \<cdot> \<mu> \<and> is_ground_subst \<mu>"
+    unfolding grounding_of_cls_def by auto
+
+  define \<gamma> where
+    "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
+
+  have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_clss (CC \<union> {C + {#L#}})"
+    unfolding grounding_of_clss_def grounding_of_cls_def 
+    by (rule UN_I[of "D + {#L'#}"], use assms(2) clss_of_state_def in simp,
+        metis (mono_tags, lifting) \<mu>_p is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
+  moreover have "(C + {#L#}) \<cdot> \<mu> \<in> grounding_of_clss (CC \<union> {C + {#L#}})"
+    using \<mu>_p unfolding  grounding_of_clss_def grounding_of_cls_def by auto
+  moreover have "\<forall>I. I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + {#- (L  \<cdot>l \<mu>)#} \<longrightarrow> I \<Turnstile> C  \<cdot> \<mu> + {#L  \<cdot>l \<mu>#} \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
+    by auto
+  then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
+    using assms
+    by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus) 
+  then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
+    using assms by (metis (no_types, lifting) subset_mset.le_iff_add subst_cls_union true_cls_union)
+  then have "\<forall>I. I \<Turnstile>m {#(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>#} \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
+    by (meson true_cls_mset_singleton)
+  ultimately have "\<gamma> \<in> sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}}))"
+    unfolding sr_ext.inferences_from_def unfolding ground_sound_\<Gamma>_def infer_from_def \<gamma>_def by auto
+  then have "C \<cdot> \<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
+    using image_iff unfolding \<gamma>_def by fastforce
+  then show "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
+    using \<mu>_p by auto
+qed
+
+lemma reduction_derivable:
+  assumes
+    "D + {#L'#} \<in> CC" and
+    "- L = L' \<cdot>l \<sigma>" and
+    "D \<cdot> \<sigma> \<subseteq># C"
+  shows "sr_ext.derive (grounding_of_clss (CC \<union> {C + {#L#}})) (grounding_of_clss (CC \<union> {C}))"
+proof -
+  from assms have "grounding_of_clss (CC \<union> {C}) - grounding_of_clss (CC \<union> {C + {#L#}}) 
+    \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
+    using reduction_in_concls_of unfolding grounding_of_clss_def clss_of_state_def 
+    by auto
+  moreover
+  have "grounding_of_cls (C + {#L#}) \<subseteq> sr.Rf (grounding_of_clss (CC \<union> {C}))"
+    using strict_subset_subsumption_grounding_redundant_clss[of C "id_subst"]
+    by auto
+  then have "grounding_of_clss (CC \<union> {C + {#L#}}) - grounding_of_clss (CC \<union> {C}) 
+    \<subseteq> sr.Rf (grounding_of_clss (CC \<union> {C}))"
+    unfolding clss_of_state_def grounding_of_clss_def by auto
+  ultimately show "sr_ext.derive (grounding_of_clss (CC \<union> {C + {#L#}}))  (grounding_of_clss (CC \<union> {C}))"
+    using sr_ext.derive.intros[of "grounding_of_clss (CC \<union> {C})" 
+        "grounding_of_clss (CC \<union> {C + {#L#}})"]
+    by auto
 qed
 
 text \<open>
@@ -345,151 +406,16 @@ next
     by (simp add: sup_commute sup_left_commute)
 next
   case (forward_reduction D L' P Q L \<sigma> C N)
-  note DL'_p = this
-  {
-    fix C\<mu>
-    assume "C\<mu> \<in> grounding_of_cls C"
-    then obtain \<mu> where
-      \<mu>_p: "C\<mu> = C \<cdot> \<mu> \<and> is_ground_subst \<mu>"
-      unfolding grounding_of_cls_def by auto
-
-    define \<gamma> where
-      "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
-
-    have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_state (N \<union> {C + {#L#}}, P, Q)"
-      unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def
-      by (rule UN_I[of "D + {#L'#}"], use DL'_p(1) in simp,
-          metis (mono_tags, lifting) \<mu>_p is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
-    moreover have "(C + {#L#}) \<cdot> \<mu> \<in> grounding_of_state (N \<union> {C + {#L#}}, P, Q)"
-      using \<mu>_p unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def by auto
-    moreover have "\<forall>I. I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + {#- (L  \<cdot>l \<mu>)#} \<longrightarrow> I \<Turnstile> C  \<cdot> \<mu> + {#L  \<cdot>l \<mu>#} \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      by auto
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      using DL'_p
-      by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus)
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
-      using DL'_p by (metis (no_types, lifting) subset_mset.le_iff_add subst_cls_union true_cls_union)
-    then have "\<forall>I. I \<Turnstile>m {#(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>#} \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
-      by (meson true_cls_mset_singleton)
-    ultimately have "\<gamma> \<in> sr_ext.inferences_from (grounding_of_state (N \<union> {C + {#L#}}, P, Q))"
-      unfolding sr_ext.inferences_from_def unfolding ground_sound_\<Gamma>_def infer_from_def \<gamma>_def by auto
-    then have "C \<cdot> \<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N \<union> {C + {#L#}}, P, Q)))"
-      using image_iff unfolding \<gamma>_def by fastforce
-    then have "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N \<union> {C + {#L#}}, P, Q)))"
-      using \<mu>_p by auto
-  }
-  then have "grounding_of_state (N \<union> {C}, P, Q) - grounding_of_state (N \<union> {C + {#L#}}, P, Q) 
-    \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_state (N \<union> {C + {#L#}}, P, Q)))"
-    unfolding grounding_of_clss_def clss_of_state_def by auto
-  moreover
-  have "grounding_of_cls (C + {#L#}) \<subseteq> sr.Rf (grounding_of_state (N \<union> {C}, P, Q))"
-    using strict_subset_subsumption_grounding_redundant_state[of C "id_subst"]
-    by (force simp add: clss_of_state_def)
-  then have "grounding_of_state (N \<union> {C + {#L#}}, P, Q) - grounding_of_state (N \<union> {C}, P, Q) 
-    \<subseteq> sr.Rf (grounding_of_state (N \<union> {C}, P, Q))"
-    unfolding clss_of_state_def grounding_of_clss_def by auto
-  ultimately show ?case
-    using sr_ext.derive.intros[of "grounding_of_state (N \<union> {C}, P, Q)" 
-        "grounding_of_state (N \<union> {C + {#L#}}, P, Q)"]
-    by auto
+  then show ?case
+    using reduction_derivable[of _ _ "N \<union> P \<union> Q"] unfolding clss_of_state_def by force
 next
-  case (backward_reduction_P D L' N L \<sigma> C P Q) (* Adapted from previous proof *)
-  note DL'_p = this
-  {
-    fix C\<mu>
-    assume "C\<mu> \<in> grounding_of_cls C"
-    then obtain \<mu> where
-      \<mu>_p: "C\<mu> = C \<cdot> \<mu> \<and> is_ground_subst \<mu>"
-      unfolding grounding_of_cls_def by auto
-
-    define \<gamma> where
-      "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
-
-    have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_state (N, P \<union> {C + {#L#}}, Q)"
-      unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def
-      by (rule UN_I[of "D + {#L'#}"], use DL'_p(1) in simp,
-          metis (mono_tags, lifting) \<mu>_p is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
-    moreover have "(C + {#L#}) \<cdot> \<mu> \<in> grounding_of_state (N, P \<union> {C + {#L#}}, Q)"
-      using \<mu>_p unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def by auto
-    moreover have "\<forall>I. I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + {#- (L  \<cdot>l \<mu>)#} \<longrightarrow> I \<Turnstile> C  \<cdot> \<mu> + {#L  \<cdot>l \<mu>#} \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      by auto
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      using DL'_p
-      by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus)
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
-      using DL'_p by (metis (no_types, lifting) subset_mset.le_iff_add subst_cls_union true_cls_union)
-    then have "\<forall>I. I \<Turnstile>m {#(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>#} \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow>  I \<Turnstile> C \<cdot> \<mu>"
-      by (meson true_cls_mset_singleton)
-    ultimately have "\<gamma> \<in> sr_ext.inferences_from (grounding_of_state (N, P \<union> {C + {#L#}}, Q))"
-      unfolding sr_ext.inferences_from_def unfolding ground_sound_\<Gamma>_def infer_from_def \<gamma>_def by simp
-    then have "C \<cdot> \<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N, P \<union> {C + {#L#}}, Q)))"
-      using image_iff unfolding \<gamma>_def by fastforce
-    then have "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N, P \<union> {C + {#L#}}, Q)))"
-      using \<mu>_p by auto
-  }
-  then have "grounding_of_state (N, P \<union> {C}, Q) - grounding_of_state (N, P \<union> {C + {#L#}}, Q) 
-    \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_state (N, P \<union> {C + {#L#}}, Q)))"
-    unfolding grounding_of_clss_def clss_of_state_def by auto
-  moreover
-  have "grounding_of_cls (C + {#L#}) \<subseteq> sr.Rf (grounding_of_state (N, P \<union> {C}, Q))"
-    using strict_subset_subsumption_grounding_redundant_state[of C "id_subst"]
-    by (force simp add: clss_of_state_def)
-  then have "grounding_of_state (N, P  \<union> {C + {#L#}}, Q) - grounding_of_state (N, P \<union> {C}, Q) 
-    \<subseteq> sr.Rf (grounding_of_state (N, P \<union> {C}, Q))"
-    unfolding clss_of_state_def grounding_of_clss_def by auto
-  ultimately show ?case
-    using sr_ext.derive.intros[of "grounding_of_state (N, P \<union> {C}, Q)" 
-        "grounding_of_state (N, P \<union> {C + {#L#}}, Q)"]
-    by auto
+  case (backward_reduction_P D L' N L \<sigma> C P Q)
+  then show ?case
+    using reduction_derivable[of _ _ "N \<union> P \<union> Q"] unfolding clss_of_state_def by force
 next
-  case (backward_reduction_Q D L' N L \<sigma> C P Q) (* Adapted from previous proof *)
-  note DL'_p = this
-  {
-    fix C\<mu>
-    assume "C\<mu> \<in> grounding_of_cls C"
-    then obtain \<mu> where
-      \<mu>_p: "C\<mu> = C \<cdot> \<mu> \<and> is_ground_subst \<mu>"
-      unfolding grounding_of_cls_def by auto
-
-    define \<gamma> where
-      "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
-
-    have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_state (N, P, Q \<union> {C + {#L#}})"
-      unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def
-      by (rule UN_I[of "D + {#L'#}"], use DL'_p(1) in simp,
-          metis (mono_tags, lifting) \<mu>_p is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
-    moreover have "(C + {#L#}) \<cdot> \<mu> \<in> grounding_of_state (N, P, Q \<union> {C + {#L#}})"
-      using \<mu>_p unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def by auto
-    moreover have "\<forall>I. I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + {#- (L  \<cdot>l \<mu>)#} \<longrightarrow> I \<Turnstile> C  \<cdot> \<mu> + {#L  \<cdot>l \<mu>#} \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      by auto
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
-      using DL'_p
-      by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus)
-    then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
-      using DL'_p by (metis (no_types, lifting) subset_mset.le_iff_add subst_cls_union true_cls_union)
-    then have "\<forall>I. I \<Turnstile>m {#(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>#} \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
-      by (meson true_cls_mset_singleton)
-    ultimately have "\<gamma> \<in> sr_ext.inferences_from (grounding_of_state (N, P, Q \<union> {C + {#L#}}))"
-      unfolding sr_ext.inferences_from_def unfolding ground_sound_\<Gamma>_def infer_from_def \<gamma>_def by simp
-    then have "C \<cdot> \<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N, P, Q \<union> {C + {#L#}})))"
-      using image_iff unfolding \<gamma>_def by fastforce
-    then have "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state (N, P, Q \<union> {C + {#L#}})))"
-      using \<mu>_p by auto
-  }
-  then have "grounding_of_state (N, P \<union> {C}, Q) - grounding_of_state (N, P, Q \<union> {C + {#L#}}) 
-    \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_state (N, P, Q \<union> {C + {#L#}})))"
-    unfolding grounding_of_clss_def clss_of_state_def by auto
-  moreover
-  have "grounding_of_cls (C + {#L#}) \<subseteq> sr.Rf (grounding_of_state (N, P \<union> {C}, Q))"
-    using strict_subset_subsumption_grounding_redundant_state[of C "id_subst"]
-    by (force simp add: clss_of_state_def)
-  then have "grounding_of_state (N, P, Q \<union> {C + {#L#}}) - grounding_of_state (N, P \<union> {C}, Q) 
-    \<subseteq> sr.Rf (grounding_of_state (N, P \<union> {C}, Q))"
-    unfolding clss_of_state_def grounding_of_clss_def by auto
-  ultimately show ?case
-    using sr_ext.derive.intros[of "grounding_of_state (N, P \<union> {C}, Q)" 
-        "grounding_of_state (N, P, Q \<union> {C + {#L#}})"]
-    by auto
+  case (backward_reduction_Q D L' N L \<sigma> C P Q)
+  then show ?case
+    using reduction_derivable[of _ _ "N \<union> P \<union> Q"] unfolding clss_of_state_def by force
 next
   case (clause_processing N C P Q)
   then show ?case
@@ -771,7 +697,7 @@ proof -
     moreover have "D \<in> clss_of_state (lnth Sts i)"
       using d unfolding clss_of_state_def by auto
     ultimately have "C \<in> sr.Rf (grounding_of_state (lnth Sts i))"
-      using strict_subset_subsumption_redundant_state[of D \<tau> C "lnth Sts i"] by auto
+      using strict_subset_subsumption_redundant_clss by auto
     then have "C \<in> sr.Rf (Sup_llist Ns)"
       using d ns by (metis contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr.Rf_mono)
     then have "C \<in> sr.Rf (Liminf_llist Ns)"
