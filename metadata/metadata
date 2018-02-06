@@ -3467,6 +3467,24 @@ extra-history =
 	[2013-10-16]: Generalized delta-orders from rationals to Archimedean fields.
 notify = christian.sternagel@uibk.ac.at, rene.thiemann@uibk.ac.at
 
+[First_Order_Terms]
+title = First-Order Terms
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+topic = Logic/Rewriting, Computer Science/Algorithms
+license = LGPL
+date = 2018-02-06
+notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize basis results on first-order terms, including a
+  first-order unification algorithm, as well as well-foundedness of the
+  subsumption order. This entry is part of the <i>Isabelle
+  Formalization of Rewriting</i> <a
+  href="http://cl-informatik.uibk.ac.at/isafor">IsaFoR</a>,
+  where first-order terms are omni-present: the unification algorithm is
+  used to certify several confluence and termination techniques, like
+  critical-pair computation and dependency graph approximations; and the
+  subsumption order is a crucial ingredient for completion.
+
 [Free-Groups]
 title = Free Groups
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>

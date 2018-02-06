@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>02 Feb 2018 00:00:00 +0000</pubDate>
+    <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>First-Order Terms</title>
+              <link>https://www.isa-afp.org/entries/First_Order_Terms.html</link>
+       <guid>https://www.isa-afp.org/entries/First_Order_Terms.html</guid>
+       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize basis results on first-order terms, including a
+first-order unification algorithm, as well as well-foundedness of the
+subsumption order. This entry is part of the &lt;i&gt;Isabelle
+Formalization of Rewriting&lt;/i&gt; &lt;a
+href=&#34;http://cl-informatik.uibk.ac.at/isafor&#34;&gt;IsaFoR&lt;/a&gt;,
+where first-order terms are omni-present: the unification algorithm is
+used to certify several confluence and termination techniques, like
+critical-pair computation and dependency graph approximations; and the
+subsumption order is a crucial ingredient for completion.</description>
+    </item>
     <item>
        <title>A verified LLL algorithm</title>
               <link>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</link>
@@ -577,33 +594,6 @@ finite as well as infinite behavior traces, they are formalized in
 terms of coinductive lists. Thus, our theory is based on
 Lochbihler&#39;s formalization of coinductive lists. The theory may
 be applied to verify properties for dynamic architectures.</description>
-    </item>
-    <item>
-       <title>Declarative Semantics for Functional Languages</title>
-              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</link>
-       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</guid>
-       <dc:creator> Jeremy Siek       </dc:creator>
-       <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a semantics for an applied call-by-value lambda-calculus
-that is compositional, extensional, and elementary. We present four
-different views of the semantics: 1) as a relational (big-step)
-semantics that is not operational but instead declarative, 2) as a
-denotational semantics that does not use domain theory, 3) as a
-non-deterministic interpreter, and 4) as a variant of the intersection
-type systems of the Torino group.  We prove that the semantics is
-correct by showing that it is sound and complete with respect to
-operational semantics on programs and that is sound with respect to
-contextual equivalence. We have not yet investigated whether it is
-fully abstract. We demonstrate that this approach to semantics is
-useful with three case studies. First, we use the semantics to prove
-correctness of a compiler optimization that inlines function
-application. Second, we adapt the semantics to the polymorphic
-lambda-calculus extended with general recursion and prove semantic
-type soundness.  Third, we adapt the semantics to the call-by-value
-lambda-calculus with mutable references.
-&lt;br&gt;
-The paper that accompanies these Isabelle theories is &lt;a href=&#34;https://arxiv.org/abs/1707.03762&#34;&gt;available on arXiv&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
