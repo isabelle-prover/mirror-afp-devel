@@ -310,7 +310,6 @@ lemma extendf_deriv:
      have chain:"\<And>f f' x s g g'. (f has_derivative f') (at x within s) \<Longrightarrow>
       (g has_derivative g') (at (f x) within f ` s) \<Longrightarrow> (g \<circ> f has_derivative g' \<circ> f') (at x within s)"
        by (auto intro: derivative_intros)
-     note chain = Deriv.derivative_intros(106)
      let ?f = "(\<lambda>x. Functions I a x)"
      let ?g = "(\<lambda> R. (\<chi> i. dterm_sem
                        \<lparr>Functions = case_sum (Functions I) (\<lambda>f' _. R $ f'), Predicates = Predicates I, Contexts = Contexts I,
@@ -326,7 +325,7 @@ lemma extendf_deriv:
        by auto
      have "\<forall>x. ((?f o ?g) has_derivative (?myf' x \<circ> ?myg' x)) (at x)"
        apply (rule allI)
-       apply (rule chain)
+       apply (rule diff_chain_at)
        subgoal for xa
          apply (rule has_derivative_vec)
          subgoal for i using IH1'[of i xa] by auto
