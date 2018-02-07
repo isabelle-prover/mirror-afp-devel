@@ -3470,6 +3470,24 @@ extra-history =
 	[2013-10-16]: Generalized delta-orders from rationals to Archimedean fields.
 notify = christian.sternagel@uibk.ac.at, rene.thiemann@uibk.ac.at
 
+[First_Order_Terms]
+title = First-Order Terms
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+topic = Logic/Rewriting, Computer Science/Algorithms
+license = LGPL
+date = 2018-02-06
+notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize basic results on first-order terms, including a
+  first-order unification algorithm, as well as well-foundedness of the
+  subsumption order. This entry is part of the <i>Isabelle
+  Formalization of Rewriting</i> <a
+  href="http://cl-informatik.uibk.ac.at/isafor">IsaFoR</a>,
+  where first-order terms are omni-present: the unification algorithm is
+  used to certify several confluence and termination techniques, like
+  critical-pair computation and dependency graph approximations; and the
+  subsumption order is a crucial ingredient for completion.
+
 [Free-Groups]
 title = Free Groups
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
@@ -6586,4 +6604,70 @@ abstract =
   into four simpler operations: Compose, Kill, Lift, and Permute. The
   N2M operation provides mutual (co)induction principles and
   (co)recursors for nested (co)datatypes.
+
+[LLL_Basis_Reduction]
+title = A verified LLL algorithm
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+topic = Computer Science/Algorithms, Mathematics/Algebra
+date = 2018-02-02
+notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+abstract = 
+  The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
+  LLL algorithm, is an algorithm to find a basis with short, nearly
+  orthogonal vectors of an integer lattice. Thereby, it can also be seen
+  as an approximation to solve the shortest vector problem (SVP), which
+  is an NP-hard problem, where the approximation quality solely depends
+  on the dimension of the lattice, but not the lattice itself. The
+  algorithm also possesses many applications in diverse fields of
+  computer science, from cryptanalysis to number theory, but it is
+  specially well-known since it was used to implement the first
+  polynomial-time algorithm to factor polynomials. In this work we
+  present the first mechanized soundness proof of the LLL algorithm to
+  compute short vectors in lattices. The formalization follows a
+  textbook by von zur Gathen and Gerhard.
+
+[LLL_Factorization]
+title = A verified factorization algorithm for integer polynomials with polynomial complexity
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
+topic = Mathematics/Algebra
+date = 2018-02-06
+notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+abstract = 
+  Short vectors in lattices and factors of integer polynomials are
+  related. Each factor of an integer polynomial belongs to a certain
+  lattice. When factoring polynomials, the condition that we are looking
+  for an irreducible polynomial means that we must look for a small
+  element in a lattice, which can be done by a basis reduction
+  algorithm. In this development we formalize this connection and
+  thereby one main application of the LLL basis reduction algorithm: an
+  algorithm to factor square-free integer polynomials which runs in
+  polynomial time. The work is based on our previous
+  Berlekamp–Zassenhaus development, where the exponential reconstruction
+  phase has been replaced by the polynomial-time basis reduction
+  algorithm. Thanks to this formalization we found a serious flaw in a
+  textbook.
+
+[Treaps]
+title = Treaps
+author = Max Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+topic = Computer Science/Data Structures
+date = 2018-02-06
+notify = eberlm@in.tum.de
+abstract = 
+  <p> A Treap is a binary tree whose nodes contain pairs
+  consisting of some payload and an associated priority. It must have
+  the search-tree property w.r.t. the payloads and the heap property
+  w.r.t. the priorities. Treaps are an interesting data structure that
+  is related to binary search trees (BSTs) in the following way: if one
+  forgets all the priorities of a treap, the resulting BST is exactly
+  the same as if one had inserted the elements into an empty BST in
+  order of ascending priority. This means that a treap behaves like a
+  BST where we can pretend the elements were inserted in a different
+  order from the one in which they were actually inserted. </p>
+  <p> In particular, by choosing these priorities at random upon
+  insertion of an element, we can pretend that we inserted the elements
+  in <em>random order</em>, so that the shape of the
+  resulting tree is that of a random BST no matter in what order we
+  insert the elements. This is the main result of this
+  formalisation.</p>
   

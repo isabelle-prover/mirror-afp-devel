@@ -1,0 +1,18 @@
+chapter AFP
+
+session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
+  description {* LLL Algorithm *}
+  options [timeout = 600]
+  sessions 
+    Algebraic_Numbers
+    Perron_Frobenius
+  theories
+    List_Representation
+    Norms
+    Missing_Lemmas
+    Vector_Lattice_Locale
+    Gram_Schmidt_2
+    LLL    
+  document_files
+    "root.tex"
+    "root.bib"

@@ -9,7 +9,90 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
+    <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Treaps</title>
+              <link>https://www.isa-afp.org/entries/Treaps.html</link>
+       <guid>https://www.isa-afp.org/entries/Treaps.html</guid>
+       <dc:creator> Max Haslbeck, Manuel Eberl, Tobias Nipkow       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; A Treap is a binary tree whose nodes contain pairs
+consisting of some payload and an associated priority. It must have
+the search-tree property w.r.t. the payloads and the heap property
+w.r.t. the priorities. Treaps are an interesting data structure that
+is related to binary search trees (BSTs) in the following way: if one
+forgets all the priorities of a treap, the resulting BST is exactly
+the same as if one had inserted the elements into an empty BST in
+order of ascending priority. This means that a treap behaves like a
+BST where we can pretend the elements were inserted in a different
+order from the one in which they were actually inserted. &lt;/p&gt;
+&lt;p&gt; In particular, by choosing these priorities at random upon
+insertion of an element, we can pretend that we inserted the elements
+in &lt;em&gt;random order&lt;/em&gt;, so that the shape of the
+resulting tree is that of a random BST no matter in what order we
+insert the elements. This is the main result of this
+formalisation.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+              <link>https://www.isa-afp.org/entries/LLL_Factorization.html</link>
+       <guid>https://www.isa-afp.org/entries/LLL_Factorization.html</guid>
+       <dc:creator> Jose Divasón, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+Short vectors in lattices and factors of integer polynomials are
+related. Each factor of an integer polynomial belongs to a certain
+lattice. When factoring polynomials, the condition that we are looking
+for an irreducible polynomial means that we must look for a small
+element in a lattice, which can be done by a basis reduction
+algorithm. In this development we formalize this connection and
+thereby one main application of the LLL basis reduction algorithm: an
+algorithm to factor square-free integer polynomials which runs in
+polynomial time. The work is based on our previous
+Berlekamp–Zassenhaus development, where the exponential reconstruction
+phase has been replaced by the polynomial-time basis reduction
+algorithm. Thanks to this formalization we found a serious flaw in a
+textbook.</description>
+    </item>
+    <item>
+       <title>First-Order Terms</title>
+              <link>https://www.isa-afp.org/entries/First_Order_Terms.html</link>
+       <guid>https://www.isa-afp.org/entries/First_Order_Terms.html</guid>
+       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize basic results on first-order terms, including a
+first-order unification algorithm, as well as well-foundedness of the
+subsumption order. This entry is part of the &lt;i&gt;Isabelle
+Formalization of Rewriting&lt;/i&gt; &lt;a
+href=&#34;http://cl-informatik.uibk.ac.at/isafor&#34;&gt;IsaFoR&lt;/a&gt;,
+where first-order terms are omni-present: the unification algorithm is
+used to certify several confluence and termination techniques, like
+critical-pair computation and dependency graph approximations; and the
+subsumption order is a crucial ingredient for completion.</description>
+    </item>
+    <item>
+       <title>A verified LLL algorithm</title>
+              <link>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</link>
+       <guid>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</guid>
+       <dc:creator> Jose Divasón, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
+       <pubDate>02 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
+LLL algorithm, is an algorithm to find a basis with short, nearly
+orthogonal vectors of an integer lattice. Thereby, it can also be seen
+as an approximation to solve the shortest vector problem (SVP), which
+is an NP-hard problem, where the approximation quality solely depends
+on the dimension of the lattice, but not the lattice itself. The
+algorithm also possesses many applications in diverse fields of
+computer science, from cryptanalysis to number theory, but it is
+specially well-known since it was used to implement the first
+polynomial-time algorithm to factor polynomials. In this work we
+present the first mechanized soundness proof of the LLL algorithm to
+compute short vectors in lattices. The formalization follows a
+textbook by von zur Gathen and Gerhard.</description>
+    </item>
     <item>
        <title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</title>
               <link>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
@@ -517,80 +600,6 @@ both. The theorem is the mathematical formulation of Adam Smith&#39;s
 famous &lt;i&gt;invisible hand&lt;/i&gt; and states that a group of
 self-interested and rational actors will eventually achieve an
 efficient allocation of goods and services.</description>
-    </item>
-    <item>
-       <title>Root-Balanced Tree</title>
-              <link>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</link>
-       <guid>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;
-Andersson introduced &lt;em&gt;general balanced trees&lt;/em&gt;,
-search trees based on the design principle of partial rebuilding:
-perform update operations naively until the tree becomes too
-unbalanced, at which point a whole subtree is rebalanced.  This article
-defines and analyzes a functional version of general balanced trees,
-which we call &lt;em&gt;root-balanced trees&lt;/em&gt;. Using a lightweight model
-of execution time, amortized logarithmic complexity is verified in
-the theorem prover Isabelle.
-&lt;/p&gt;
-&lt;p&gt;
-This is the Isabelle formalization of the material decribed in the APLAS 2017 article
-&lt;a href=&#34;http://www.in.tum.de/~nipkow/pubs/aplas17.html&#34;&gt;Verified Root-Balanced Trees&lt;/a&gt;
-by the same author, which also presents experimental results that show
-competitiveness of root-balanced with AVL and red-black trees.
-&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Orbit-Stabiliser Theorem with Application to Rotational Symmetries</title>
-              <link>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</link>
-       <guid>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</guid>
-       <dc:creator> Jonas Rädle       </dc:creator>
-       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
-       <description>
-The Orbit-Stabiliser theorem is a basic result in the algebra of
-groups that factors the order of a group into the sizes of its orbits
-and stabilisers.  We formalize the notion of a group action and the
-related concepts of orbits and stabilisers. This allows us to prove
-the orbit-stabiliser theorem.  In the second part of this work, we
-formalize the tetrahedral group and use the orbit-stabiliser theorem
-to prove that there are twelve (orientation-preserving) rotations of
-the tetrahedron.</description>
-    </item>
-    <item>
-       <title>The LambdaMu-calculus</title>
-              <link>https://www.isa-afp.org/entries/LambdaMu.html</link>
-       <guid>https://www.isa-afp.org/entries/LambdaMu.html</guid>
-       <dc:creator> Cristina Matache, Victor B. F. Gomes, Dominic P. Mulligan       </dc:creator>
-       <pubDate>16 Aug 2017 00:00:00 +0000</pubDate>
-       <description>
-The propositions-as-types correspondence is ordinarily presented as
-linking the metatheory of typed λ-calculi and the proof theory of
-intuitionistic logic. Griffin observed that this correspondence could
-be extended to classical logic through the use of control operators.
-This observation set off a flurry of further research, leading to the
-development of Parigots λμ-calculus. In this work, we formalise λμ-
-calculus in Isabelle/HOL and prove several metatheoretical properties
-such as type preservation and progress.</description>
-    </item>
-    <item>
-       <title>Stewart's Theorem and Apollonius' Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
-       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.html</guid>
-       <dc:creator> Lukas Bulwahn       </dc:creator>
-       <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the two geometric theorems, Stewart&#39;s and
-Apollonius&#39; theorem. Stewart&#39;s Theorem relates the length of
-a triangle&#39;s cevian to the lengths of the triangle&#39;s two
-sides. Apollonius&#39; Theorem is a specialisation of Stewart&#39;s
-theorem, restricting the cevian to be the median. The proof applies
-the law of cosines, some basic geometric facts about triangles and
-then simply transforms the terms algebraically to yield the
-conjectured relation. The formalization in Isabelle can closely follow
-the informal proofs described in the Wikipedia articles of those two
-theorems.</description>
     </item>
   </channel>
 </rss>
