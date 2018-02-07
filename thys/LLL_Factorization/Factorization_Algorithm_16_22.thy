@@ -248,8 +248,8 @@ proof -
       using deg_b_not0 deg_ab degree_1 degree_primitive_part by metis
     ultimately have "primitive_part a = normalize b" by simp
     thus ?thesis
-      by (metis (no_types, lifting) b b_gc c1 gcd.normalize_idem gcd_dvd_b irreducible_normalized_divisors 
-          is_unit_gcd mult.commute mult_cancel_right2 mult_minus_left not_unit_gcd) 
+      by (metis (no_types, lifting) b_gc c1 dvd_triv_left gcd.normalize_idem mult.commute 
+          minus_dvd_iff mult.right_neutral mult_minus_left normalization_semidom_class.associatedI)
   next
     case False
     have ppa_0: "primitive_part a \<noteq> 0" using a0 by simp
@@ -269,9 +269,8 @@ proof -
       by (metis degree_1 degree_minus degree_primitive_part)
     ultimately have "- primitive_part a = normalize b" by auto
     thus ?thesis
-      by (metis (no_types, lifting) add.inverse_inverse b b_gc c1 gcd.normalize_idem gcd_dvd_b 
-          irreducible_normalized_divisors 
-          is_unit_gcd mult.commute mult.right_neutral mult_minus_left not_unit_gcd)
+      by (metis (no_types, hide_lams) add.inverse_inverse b_gc c1 gcd.normalize_idem  
+          gcd.top_left_normalize gcd_neg2 mult.commute mult.left_neutral mult_minus_left)
   qed
 qed
 
@@ -335,7 +334,9 @@ proof (induct l arbitrary: c rule: less_induct)
     proof (cases "p dvd c")
       case False
       let ?i = "inverse_mod c (p ^ l)" 
-      have "gcd c p = 1" using prime_imp_coprime[OF p False] gcd.commute[of p] by simp
+      have "gcd c p = 1" using p False
+        by (metis Primes.prime_int_iff gcd_ge_0_int semiring_gcd_class.gcd_dvd1 semiring_gcd_class.gcd_dvd2)
+      hence "coprime c p" by (metis dvd_refl gcd_dvd_1)
       from pl.inverse_mod_coprime_exp[OF refl p l0 this] 
       have id: "pl.M (?i * c) = 1" .
       have "pl.Mp (smult ?i (smult c f)) = pl.Mp (smult (pl.M (?i * c)) f)" by simp
@@ -424,8 +425,8 @@ interpretation pl: poly_mod_2 "p^l"
   by (standard, insert p1 l0, auto)
 
 lemma coprime_pl: "coprime a p \<Longrightarrow> coprime (pl.M a) p" 
-  unfolding coprime_iff_gcd_one pl.M_def
-  by (metis coprime_power gcd_mod_left l_gt_0 pl_not0)
+  unfolding coprime_iff_coprime pl.M_def
+  by (meson coprime_mod_left_iff coprime_power_right_iff l0 pl_not0)
 
 private lemmas pl_dvdm_imp_p_dvdm = p.pl_dvdm_imp_p_dvdm[OF l0]
 
@@ -792,7 +793,7 @@ proof (rule ccontr)
     by (subst (asm) degree_mult_eq, insert g g0, force, force) simp
   from degree0_coeffs[OF this] g g0
   obtain d where p: "q = [:d:]" and d: "d \<noteq> 0" by fastforce
-  from arg_cong[OF factor, of "op * q"] 
+  from arg_cong[OF factor, of "( * ) q"] 
   have "q * factor = h * g"
     by (subst g, auto simp: ac_simps)
   hence "smult d factor = h * g" unfolding p h by auto
@@ -907,7 +908,6 @@ proof -
     proof (rule poly_mod.degree_m_eq[OF _ pl.m1])
       have "coprime (lead_coeff f') p" 
         by (rule  p.coprime_lead_coeff_factor[OF p.prime cop[unfolded fh]])
-      hence "gcd_class.coprime (lead_coeff f') p" by auto
       thus "lead_coeff f' mod p ^ l \<noteq> 0" using l0 p.prime by fastforce
     qed
     finally have degf': "degree f' = 0" by auto
