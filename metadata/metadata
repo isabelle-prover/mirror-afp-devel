@@ -1,6 +1,6 @@
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
-author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www4.in.tum.de/~lammich/>
+author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
 topic = Computer Science/Algorithms
 date = 2017-12-18
 notify = hellauer@in.tum.de, lammich@in.tum.de
@@ -55,7 +55,7 @@ abstract =
 
 [Propositional_Proof_Systems]
 title = Propositional Proof Systems
-author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow/>
+author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 topic = Logic
 date = 2017-06-21
 notify = maintainafpppt@liftm.de
@@ -312,7 +312,7 @@ abstract =
 
 [DFS_Framework]
 title = A Framework for Verifying Depth-First Search Algorithms
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>, René Neumann <mailto:neumannr@in.tum.de>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, René Neumann <mailto:neumannr@in.tum.de>
 notify = lammich@in.tum.de
 date = 2016-07-05
 topic = Computer Science/Algorithms
@@ -336,7 +336,7 @@ abstract =
 
 [Flow_Networks]
 title = Flow Networks and the Min-Cut-Max-Flow Theorem
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar <>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, S. Reza Sefidgar <>
 topic = Mathematics/Graph Theory
 date = 2017-06-01
 notify = lammich@in.tum.de
@@ -348,7 +348,7 @@ abstract =
 
 [Prpu_Maxflow]
 title = Formalizing Push-Relabel Algorithms
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar <>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, S. Reza Sefidgar <>
 topic = Computer Science/Algorithms, Mathematics/Graph Theory
 date = 2017-06-01
 notify = lammich@in.tum.de
@@ -614,7 +614,7 @@ extra-history =
 
 [Liouville_Numbers]
 title = Liouville numbers
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis, Mathematics/Number Theory
 abstract =
@@ -636,7 +636,7 @@ notify = eberlm@in.tum.de
 
 [Triangle]
 title = Basic Geometric Properties of Triangles
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Geometry
 abstract =
@@ -655,7 +655,7 @@ notify = eberlm@in.tum.de
 
 [Prime_Harmonic_Series]
 title = The Divergence of the Prime Harmonic Series
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Number Theory
 abstract =
@@ -676,7 +676,7 @@ notify = eberlm@in.tum.de
 
 [Descartes_Sign_Rule]
 title = Descartes' Rule of Signs
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
 abstract =
@@ -749,7 +749,7 @@ notify = lukas.bulwahn@gmail.com
 
 [Multirelations]
 title = Binary Multirelations
-author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2015-06-11
 topic = Mathematics/Algebra
 abstract =
@@ -884,7 +884,7 @@ notify = g.struth@sheffield.ac.uk
 
 [ConcurrentGC]
 title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
-author = Peter Gammie <http://peteg.org/>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
+author = Peter Gammie <http://peteg.org>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
 date = 2015-04-13
 topic = Computer Science/Algorithms/Concurrent
 abstract =
@@ -899,7 +899,7 @@ notify = peteg42@gmail.com
 
 [List_Update]
 title = Analysis of List Update Algorithms
-author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2016-02-17
 topic = Computer Science/Algorithms/Online
 abstract =
@@ -910,14 +910,14 @@ abstract =
 	</p>
 	<p>
 	For an informal description see the FSTTCS 2016 publication
-	<a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
+	<a href="http://www21.in.tum.de/~nipkowpubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
 	by Haslbeck and Nipkow.
 	</p>
 notify = nipkow@in.tum.de
 
 [ConcurrentIMP]
 title = Concurrent IMP
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 date = 2015-04-13
 topic = Computer Science/Programming Languages/Logics
 abstract =
@@ -927,7 +927,7 @@ notify = peteg42@gmail.com
 
 [TortoiseHare]
 title = The Tortoise and Hare Algorithm
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 date = 2015-11-18
 topic = Computer Science/Algorithms
 abstract = We formalize the Tortoise and Hare cycle-finding algorithm ascribed to Floyd by Knuth, and an improved version due to Brent.
@@ -954,7 +954,7 @@ notify = adbrucker@0x5f.org, wolff@lri.fr, lukas.a.bruegger@gmail.com
 
 [UPF_Firewall]
 title = Formal Network Models and Their Application to Firewall Policies
-author = Achim D. Brucker <https:/www.brucker.ch>, Lukas Brügger<>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+author = Achim D. Brucker <https://www.brucker.ch>, Lukas Brügger<>, Burkhart Wolff <https://www.lri.fr/~wolff/>
 topic = Computer Science/Security, Computer Science/Networks
 date = 2017-01-08
 notify = adbrucker@0x5f.org
@@ -969,7 +969,7 @@ abstract =
 
 [AODV]
 title = Loop freedom of the (untimed) AODV routing protocol
-author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>
+author = Timothy Bourke <http://www.tbrk.org>, Peter Höfner <http://www.hoefner-online.de/>
 date = 2014-10-23
 topic = Computer Science/Concurrency/Process Calculi
 abstract =
@@ -1021,7 +1021,7 @@ notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 
 [CISC-Kernel]
 title = Formal Specification of a Generic Separation Kernel
-author = Freek Verbeek <mailto:Freek.Verbeek@ou.nl>, Sergey Tverdyshev <mailto:stv@sysgo.com>, Oto Havle <mailto:oha@sysgo.com>, Holger Blasum <mailto:holger.blasum@sysgo.com>, Bruno Langenstein <mailto:langenstein@dfki.de>, Werner Stephan <mailto:stephan@dfki.de>, Yakoub Nemouchi <mailto:nemouchi@lri.fr>, Abderrahmane Feliachi <mailto:Abderrahmane.FELIACHI@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Julien Schmaltz <mailto:Julien.Schmaltz@ou.nl>
+author = Freek Verbeek <mailto:Freek.Verbeek@ou.nl>, Sergey Tverdyshev <mailto:stv@sysgo.com>, Oto Havle <mailto:oha@sysgo.com>, Holger Blasum <mailto:holger.blasum@sysgo.com>, Bruno Langenstein <mailto:langenstein@dfki.de>, Werner Stephan <mailto:stephan@dfki.de>, Yakoub Nemouchi <mailto:nemouchi@lri.fr>, Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Julien Schmaltz <mailto:Julien.Schmaltz@ou.nl>
 date = 2014-07-18
 topic = Computer Science/Security
 abstract =
@@ -1090,7 +1090,7 @@ notify = pasquale.noce.lavoro@gmail.com
 
 [Floyd_Warshall]
 title = The Floyd-Warshall Algorithm for Shortest Paths
-author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich>
 topic = Computer Science/Algorithms
 date = 2017-05-08
 notify = wimmers@in.tum.de
@@ -1333,7 +1333,7 @@ notify =
 
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
-author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
 topic = Computer Science/Algorithms
 date = 2012-01-30
 abstract = We implement and prove correct Dijkstra's algorithm for the
@@ -1345,7 +1345,7 @@ notify = lammich@in.tum.de
 
 [Refine_Monadic]
 title = Refinement for Monadic Programs
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
 topic = Computer Science/Programming Languages/Logics
 date = 2012-01-30
 abstract = We provide a framework for program and data refinement in Isabelle/HOL.
@@ -1384,7 +1384,7 @@ notify = lammich@in.tum.de
 
 [Refine_Imperative_HOL]
 title = The Imperative Refinement Framework
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
 notify = lammich@in.tum.de
 date = 2016-08-08
 topic = Computer Science/Programming Languages/Transformations,Computer Science/Data Structures
@@ -1488,7 +1488,7 @@ notify = ralph.romanos@student.ecp.fr, lp15@cam.ac.uk
 
 [IP_Addresses]
 title = IP Addresses
-author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 notify = diekmann@net.in.tum.de
 date = 2016-06-28
 topic = Computer Science/Networks
@@ -1508,7 +1508,7 @@ abstract =
 
 [Simple_Firewall]
 title = Simple Firewall
-author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Maximilian Haslbeck<https://home.in.tum.de/~haslbecm/>
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
@@ -1531,7 +1531,7 @@ abstract =
 
 [Iptables_Semantics]
 title = Iptables Semantics
-author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 notify = diekmann@net.in.tum.de, hupel@in.tum.de
 date = 2016-09-09
 topic = Computer Science/Networks
@@ -1554,7 +1554,7 @@ abstract =
 
 [Routing]
 title = Routing
-author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+author = Julius Michaelis <http://liftm.de>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
 notify = afp@liftm.de
 date = 2016-08-31
 topic = Computer Science/Networks
@@ -1570,7 +1570,7 @@ abstract =
 
 [KBPs]
 title = Knowledge-based programs
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-05-17
 abstract = Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.
@@ -1636,7 +1636,7 @@ notify = immler@in.tum.de
 
 [Regular-Sets]
 title = Regular Sets and Expressions
-author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Automata and Formal Languages
 date = 2010-05-12
@@ -1650,7 +1650,7 @@ notify = nipkow@in.tum.de, krauss@in.tum.de, christian.urban@kcl.ac.uk
 
 [Regex_Equivalence]
 title = Unified Decision Procedures for Regular Expression Equivalence
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>, Dmitriy Traytel <mailto:traytel@in.tum.de>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Dmitriy Traytel <mailto:traytel@in.tum.de>
 topic = Computer Science/Automata and Formal Languages
 date = 2014-01-30
 abstract =
@@ -1662,14 +1662,14 @@ abstract =
 	thought to be the same, are different, and one seems to produce uniformly
 	smaller automata.  The common framework makes it possible to compare the
 	performance of the different decision procedures in a meaningful way.
-	<a href="http://www.in.tum.de/~nipkow/pubs/itp14.html">
+	<a href="http://www21.in.tum.de/~nipkowpubs/itp14.html">
 	The formalization is described in a paper of the same name presented at
 	Interactive Theorem Proving 2014</a>.
 notify = nipkow@in.tum.de, traytel@in.tum.de
 
 [MSO_Regex_Equivalence]
 title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions
-author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages, Logic
 date = 2014-06-12
 abstract =
@@ -1689,12 +1689,12 @@ abstract =
 	translation of formulas into regular expressions with respect to two
 	different semantics of MSO.
 	<p>
-	The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
+	The formalization is described in this <a href="http://www21.in.tum.de/~nipkowpubs/icfp13.html">ICFP 2013 functional pearl</a>.
 notify = traytel@in.tum.de, nipkow@in.tum.de
 
 [Formula_Derivatives]
 title = Derivatives of Logical Formulas
-author = Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+author = Dmitriy Traytel <http://www21.in.tum.de/~traytel>
 topic = Computer Science/Automata and Formal Languages, Logic
 date = 2015-05-28
 abstract =
@@ -1739,7 +1739,7 @@ notify = maksym.bortin@nicta.com.au
 
 [Boolean_Expression_Checkers]
 title = Boolean Expression Checkers
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-06-08
 topic = Computer Science/Algorithms, Logic
 abstract =
@@ -1761,7 +1761,7 @@ notify = berghofe@in.tum.de
 
 [Functional-Automata]
 title = Functional Automata
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2004-03-30
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
@@ -1788,7 +1788,7 @@ notify = helke@cs.tu-berlin.de, nipkow@in.tum.de
 
 [Stuttering_Equivalence]
 title = Stuttering Equivalence
-author = Stephan Merz <http://www.loria.fr/~merz/>
+author = Stephan Merz <http://www.loria.fr/~merz>
 topic = Computer Science/Automata and Formal Languages
 date = 2012-05-07
 abstract = <p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p>
@@ -1823,7 +1823,7 @@ notify = traytel@in.tum.de
 
 [Tree-Automata]
 title = Tree Automata
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2009-11-25
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
@@ -1847,7 +1847,7 @@ notify = ballarin@in.tum.de
 
 [Gauss-Jordan-Elim-Fun]
 title = Gauss-Jordan Elimination for Matrices Represented as Functions
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2011-08-19
 topic = Computer Science/Algorithms, Mathematics/Algebra
 abstract = This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations.
@@ -1949,7 +1949,7 @@ notify = boehmes@in.tum.de
 [DiskPaxos]
 title = Proving the Correctness of Disk Paxos
 date = 2005-06-22
-author = Mauro Jaskelioff <http://www.fceia.unr.edu.ar/~mauro/>, Stephan Merz <http://www.loria.fr/~merz/>
+author = Mauro Jaskelioff <http://www.fceia.unr.edu.ar/~mauro/>, Stephan Merz <http://www.loria.fr/~merz>
 topic = Computer Science/Algorithms/Distributed
 abstract = Disk Paxos is an algorithm for building arbitrary fault-tolerant distributed systems. The specification of Disk Paxos has been proved correct informally and tested using the TLC model checker, but up to now, it has never been fully formally verified. In this work we have formally verified its correctness using the Isabelle theorem prover and the HOL logic system, showing that Isabelle is a practical tool for verifying properties of TLA+ specifications.
 notify = kleing@cse.unsw.edu.au
@@ -1973,7 +1973,7 @@ notify = kleing@cse.unsw.edu.au
 [Heard_Of]
 title = Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model
 date = 2012-07-27
-author = Henri Debrat <mailto:henri.debrat@loria.fr>, Stephan Merz <http://www.loria.fr/~merz/>
+author = Henri Debrat <mailto:henri.debrat@loria.fr>, Stephan Merz <http://www.loria.fr/~merz>
 topic = Computer Science/Algorithms/Distributed
 abstract =
 	Distributed computing is inherently based on replication, promising
@@ -2094,7 +2094,7 @@ notify = giuliano@losa.fr, nipkow@in.tum.de
 
 [Amortized_Complexity]
 title = Amortized Complexity Verified
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-07-07
 topic = Computer Science/Data Structures
 abstract =
@@ -2104,10 +2104,10 @@ abstract =
 	splay trees, splay heaps and pairing heaps.
 	<p>
 	A preliminary version of this work (without pairing heaps) is described
-	in a <a href="http://www.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
+	in a <a href="http://www21.in.tum.de/~nipkowpubs/itp15.html">paper</a>
 	published in the proceedings of the conference on Interactive
 	Theorem Proving ITP 2015. An extended version of this publication
-	is available <a href="http://www.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.
+	is available <a href="http://www21.in.tum.de/~nipkowpubs/jfp16.html">here</a>.
 extra-history =
 	Change history:
 	[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
@@ -2117,7 +2117,7 @@ notify = nipkow@in.tum.de
 
 [Dynamic_Tables]
 title = Parameterized Dynamic Tables
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2015-06-07
 topic = Computer Science/Data Structures
 abstract =
@@ -2126,12 +2126,12 @@ abstract =
 	expansion and contraction factors.
 	<P>
 	A full description is found in a
-	<a href="http://www.in.tum.de/~nipkow/pubs">companion paper</a>.
+	<a href="http://www21.in.tum.de/~nipkowpubs">companion paper</a>.
 notify = nipkow@in.tum.de
 
 [AVL-Trees]
 title = AVL Trees
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Cornelia Pusch <>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Cornelia Pusch <>
 date = 2004-03-19
 topic = Computer Science/Data Structures
 abstract = Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.
@@ -2158,7 +2158,7 @@ notify = lp15@cam.ac.uk
 
 [Splay_Tree]
 title = Splay Tree
-author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 notify = nipkow@in.tum.de
 date = 2014-08-12
 topic = Computer Science/Data Structures
@@ -2175,7 +2175,7 @@ extra-history =
 
 [Root_Balanced_Tree]
 title = Root-Balanced Tree
-author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 notify = nipkow@in.tum.de
 date = 2017-08-20
 topic = Computer Science/Data Structures
@@ -2192,14 +2192,14 @@ abstract =
  </p>
  <p>
  This is the Isabelle formalization of the material decribed in the APLAS 2017 article
- <a href="http://www.in.tum.de/~nipkow/pubs/aplas17.html">Verified Root-Balanced Trees</a>
+ <a href="http://www21.in.tum.de/~nipkowpubs/aplas17.html">Verified Root-Balanced Trees</a>
  by the same author, which also presents experimental results that show
  competitiveness of root-balanced with AVL and red-black trees.
  </p>
 
 [Skew_Heap]
 title = Skew Heap
-author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-08-13
 topic = Computer Science/Data Structures
 abstract =
@@ -2214,7 +2214,7 @@ notify = nipkow@in.tum.de
 
 [Pairing_Heap]
 title = Pairing Heap
-author = Hauke Brinkop <mailto:hauke.brinkop@googlemail.com>, Tobias Nipkow <http://in.tum.de/~nipkow/>
+author = Hauke Brinkop <mailto:hauke.brinkop@googlemail.com>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2016-07-14
 topic = Computer Science/Data Structures
 abstract =
@@ -2230,7 +2230,7 @@ notify = nipkow@in.tum.de
 
 [Priority_Queue_Braun]
 title = Priority Queues Based on Braun Trees
-author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-09-04
 topic = Computer Science/Data Structures
 abstract =
@@ -2249,7 +2249,7 @@ notify = florian.haftmann@informatik.tu-muenchen.de, rene.neumann@informatik.tu-
 
 [Binomial-Heaps]
 title = Binomial Heaps and Skew Binomial Heaps
-author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
@@ -2267,7 +2267,7 @@ notify = peter.lammich@uni-muenster.de
 
 [Finger-Trees]
 title = Finger Trees
-author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
@@ -2285,7 +2285,7 @@ notify = peter.lammich@uni-muenster.de
 
 [Trie]
 title = Trie
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2015-03-30
 topic = Computer Science/Data Structures
 abstract =
@@ -2317,7 +2317,7 @@ notify = nipkow@in.tum.de
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
 contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk <>
 date = 2009-11-25
 topic = Computer Science/Data Structures
@@ -2418,7 +2418,7 @@ notify = rene.thiemann@uibk.ac.at
 [List-Index]
 title = List Index
 date = 2010-02-20
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 abstract = This theory provides functions for finding the index of an element in a list, by predicate and by value.
 notify = nipkow@in.tum.de
@@ -2469,7 +2469,7 @@ notify = prathamesh@imsc.res.in
 
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm
-author = Jasmin Christian Blanchette <http://www4.in.tum.de/~blanchet>
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>
 date = 2008-10-15
 topic = Computer Science/Data Structures
 abstract = Huffman's algorithm is a procedure for constructing a binary tree with minimum weighted path length. This report presents a formal proof of the correctness of Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the sketches found in standard algorithms textbooks, uncovering a few snags in the process. Another distinguishing feature of our formalization is the use of custom induction rules to help Isabelle's automatic tactics, leading to very short proofs for most of the lemmas.
@@ -2598,7 +2598,7 @@ notify = kleing@cse.unsw.edu.au
 
 [Jinja]
 title = Jinja is not Java
-author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2005-06-01
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL.
@@ -2672,7 +2672,7 @@ notify = flokam@cs.tu-berlin.de, nipkow@in.tum.de
 
 [AutoFocus-Stream]
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
-author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
+author = David Trachtenherz <http://www4.in.tum.de/~trachten>
 date = 2011-02-23
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
@@ -2696,7 +2696,7 @@ notify = lp15@cam.ac.uk, maria.spichkova@rmit.edu.au
 
 [Isabelle_Meta_Model]
 title = A Meta-Model for the Isabelle API
-author = Frédéric Tuong <mailto:tuong@users.gforge.inria.fr>, Burkhart Wolff <http://www.lri.fr/~wolff/>
+author = Frédéric Tuong <mailto:tuong@users.gforge.inria.fr>, Burkhart Wolff <https://www.lri.fr/~wolff/>
 date = 2015-09-16
 topic = Computer Science/Programming Languages/Language Definitions
 abstract =
@@ -2768,7 +2768,7 @@ notify = doczkal@ps.uni-saarland.de, nipkow@in.tum.de
 
 [MiniML]
 title = Mini ML
-author = Wolfgang Naraschewski <>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Wolfgang Naraschewski <>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2004-03-19
 topic = Computer Science/Programming Languages/Type Systems
 abstract = This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules.
@@ -2794,7 +2794,7 @@ notify = kleing@cse.unsw.edu.au, rafal.kolanski@nicta.com.au
 
 [Separation_Logic_Imperative_HOL]
 title = A Separation Logic Framework for Imperative HOL
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>, Rene Meis <mailto:rene.meis@uni-due.de>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Rene Meis <mailto:rene.meis@uni-due.de>
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
@@ -2832,7 +2832,7 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
 	compositionality w.r.t. the language constructs. Compositionality
 	yields sound syntactic criteria (a.k.a. type systems) in a uniform way.
 	<p>
-	An <a href="http://www.in.tum.de/~nipkow/pubs/cpp12.html">article</a>
+	An <a href="http://www21.in.tum.de/~nipkowpubs/cpp12.html">article</a>
 	about these proofs is published in the proceedings
 	of the conference Certified Programs and Proofs 2012.
 notify = hoelzl@in.tum.de
@@ -2978,7 +2978,7 @@ notify = daniel.wasserrab@kit.edu
 
 [Abstract-Hoare-Logics]
 title = Abstract Hoare Logics
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2006-08-08
 topic = Computer Science/Programming Languages/Logics
 abstract = These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
@@ -3162,7 +3162,7 @@ notify = ggrov@inf.ed.ac.uk
 
 [Compiling-Exceptions-Correctly]
 title = Compiling Exceptions Correctly
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2004-07-09
 topic = Computer Science/Programming Languages/Compiling
 abstract = An exception compilation scheme that dynamically creates and removes exception handler entries on the stack. A formalization of an article of the same name by <a href="http://www.cs.nott.ac.uk/~gmh/">Hutton</a> and Wright.
@@ -3170,7 +3170,7 @@ notify = nipkow@in.tum.de
 
 [NormByEval]
 title = Normalization by Evaluation
-author = Klaus Aehlig <http://www.linta.de/~aehlig/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Klaus Aehlig <http://www.linta.de/~aehlig/>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-02-18
 topic = Computer Science/Programming Languages/Compiling
 abstract = This article formalizes normalization by evaluation as implemented in Isabelle. Lambda calculus plus term rewriting is compiled into a functional program with pattern matching. It is proved that the result of a successful evaluation is a) correct, i.e. equivalent to the input, and b) in normal form.
@@ -3179,7 +3179,7 @@ notify = nipkow@in.tum.de
 [Program-Conflict-Analysis]
 title = Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
 topic = Computer Science/Programming Languages/Static Analysis
-author = Peter Lammich <http://www21.in.tum.de/~lammich/>, Markus Müller-Olm <http://cs.uni-muenster.de/u/mmo/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Markus Müller-Olm <http://cs.uni-muenster.de/u/mmo/>
 date = 2007-12-14
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point.
 notify = peter.lammich@uni-muenster.de
@@ -3215,7 +3215,7 @@ notify = nipkow@in.tum.de, daniel.wasserrab@kit.edu
 
 [WorkerWrapper]
 title = The Worker/Wrapper Transformation
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 date = 2009-10-30
 topic = Computer Science/Programming Languages/Transformations
 abstract = Gill and Hutton formalise the worker/wrapper transformation, building on the work of Launchbury and Peyton-Jones who developed it as a way of changing the type at which a recursive function operates. This development establishes the soundness of the technique and several examples of its use.
@@ -3232,7 +3232,7 @@ notify = kleing@cse.unsw.edu.au, schirmer@in.tum.de
 
 [HotelKeyCards]
 title = Hotel Key Card System
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2006-09-09
 topic = Computer Science/Security
 abstract = Two models of an electronic hotel key card system are contrasted: a state based and a trace based one. Both are defined, verified, and proved equivalent in the theorem prover Isabelle/HOL. It is shown that if a guest follows a certain safety policy regarding her key cards, she can be sure that nobody but her can enter her room.
@@ -3370,7 +3370,7 @@ notify = pc@cs.st-andrews.ac.uk, nipkow@in.tum.de
 
 [LinearQuantifierElim]
 title = Quantifier Elimination for Linear Arithmetic
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-01-11
 topic = Logic
 abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
@@ -3378,7 +3378,7 @@ notify = nipkow@in.tum.de
 
 [Nat-Interval-Logic]
 title = Interval Temporal Logic on Natural Numbers
-author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
+author = David Trachtenherz <http://www4.in.tum.de/~trachten>
 date = 2011-02-23
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
@@ -3532,7 +3532,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 
 [Affine_Arithmetic]
 title = Affine Arithmetic
-author = Fabian Immler <http://home.in.tum.de/~immler/>
+author = Fabian Immler <http://www21.in.tum.de/~immler>
 date = 2014-02-07
 topic = Mathematics/Analysis
 abstract =
@@ -3566,7 +3566,7 @@ notify = richter@informatik.rwth-aachen.de, nipkow@in.tum.de, hoelzl@in.tum.de
 
 [Ordinary_Differential_Equations]
 title = Ordinary Differential Equations
-author = Fabian Immler <http://home.in.tum.de/~immler>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
+author = Fabian Immler <http://www21.in.tum.de/~immler>, Johannes Hölzl <http://in.tum.de/~hoelzl>
 topic = Mathematics/Analysis
 date = 2012-04-26
 abstract =
@@ -3601,7 +3601,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
 topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
@@ -3650,7 +3650,7 @@ notify = rene.thiemann@uibk.ac.at
 
 [Sturm_Sequences]
 title = Sturm's Theorem
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2014-01-11
 topic = Mathematics/Analysis
 abstract = Sturm's Theorem states that polynomial sequences with certain
@@ -3673,7 +3673,7 @@ notify = wl302@cam.ac.uk
 
 [Markov_Models]
 title = Markov Models
-author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Johannes Hölzl <http://in.tum.de/~hoelzl>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2012-01-03
 topic = Mathematics/Probability Theory, Computer Science/Automata and Formal Languages
 abstract = This is a formalization of Markov models in Isabelle/HOL. It
@@ -3689,9 +3689,9 @@ notify = hoelzl@in.tum.de
 
 [Probabilistic_System_Zoo]
 title = A Zoo of Probabilistic Systems
-author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>,
+author = Johannes Hölzl <http://in.tum.de/~hoelzl>,
 	Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>,
-	Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+	Dmitriy Traytel <http://www21.in.tum.de/~traytel>
 date = 2015-05-27
 topic = Computer Science/Automata and Formal Languages
 abstract =
@@ -3707,7 +3707,7 @@ notify = traytel@in.tum.de
 
 [Density_Compiler]
 title = A Verified Compiler for Probability Density Functions
-author = Manuel Eberl <http://www.in.tum.de/~eberlm>, Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Johannes Hölzl <http://in.tum.de/~hoelzl>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-10-09
 topic = Mathematics/Probability Theory, Computer Science/Programming Languages/Compiling
 abstract =
@@ -3833,7 +3833,7 @@ title = A Fully Verified Executable LTL Model Checker
 author = Javier Esparza <https://www7.in.tum.de/~esparza/>,
 	Peter Lammich <http://www21.in.tum.de/~lammich>,
 	René Neumann <mailto:rene.neumann@in.tum.de>,
-	Tobias Nipkow <http://www.in.tum.de/~nipkow>,
+	Tobias Nipkow <http://www21.in.tum.de/~nipkow>,
 	Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>,
 	Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus>
 date = 2014-05-28
@@ -3853,7 +3853,7 @@ abstract =
 	can be tested.
 	<p>
 	An early version of this model checker is described in the
-	<a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
+	<a href="http://www21.in.tum.de/~nipkowpubs/cav13.html">CAV 2013 paper</a>
 	with the same title.
 notify = rene.neumann@in.tum.de, lammich@in.tum.de
 
@@ -3902,15 +3902,15 @@ notify = noschinl@in.tum.de, simon.wimmer@tum.de
 
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-09-01
 topic = Mathematics/Economics
-abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>.
+abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www21.in.tum.de/~nipkowpubs/arrow.html">here</a>.
 notify = nipkow@in.tum.de
 
 [SenSocialChoice]
 title = Some classical results in Social Choice Theory
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 date = 2008-11-09
 topic = Mathematics/Economics
 abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare" (1970), this development proves Arrow's General Possibility Theorem, Sen's Liberal Paradox and May's Theorem in a general setting. The goal was to make precise the classical statements and proofs of these results, and to provide a foundation for more recent results such as the Gibbard-Satterthwaite and Duggan-Schwartz theorems.
@@ -3984,7 +3984,7 @@ notify = noschinl@in.tum.de
 
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
-author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
+author = Christine Rizkallah <https://www.mpi-inf.mpg.de/~crizkall/>
 date = 2011-07-21
 topic = Mathematics/Graph Theory
 abstract =
@@ -4025,7 +4025,7 @@ notify = hupel@in.tum.de
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs
-author = Gertrud Bauer <>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Gertrud Bauer <>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2006-05-22
 topic = Mathematics/Graph Theory
 abstract =
@@ -4034,8 +4034,8 @@ abstract =
 	book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
 	The values of the constants in the definition of tameness are identical to
 	those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
-	The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
-	the <a href="http://www.in.tum.de/~nipkow/pubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
+	The <a href="http://www21.in.tum.de/~nipkowpubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
+	the <a href="http://www21.in.tum.de/~nipkowpubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
 extra-history =
 	Change history:
 	[2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
@@ -4078,7 +4078,7 @@ notify = c.sternagel@gmail.com
 
 [Marriage]
 title = Hall's Marriage Theorem
-author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2010-12-17
 topic = Mathematics/Combinatorics
 abstract = Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to Rado.
@@ -4137,7 +4137,7 @@ notify = florian.haftmann@informatik.tu-muenchen.de
 
 [Open_Induction]
 title = Open Induction
-author = Mizuhito Ogawa <>, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
+author = Mizuhito Ogawa <>, Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
 abstract =
@@ -4167,7 +4167,7 @@ notify = apk32@cam.ac.uk
 
 [FunWithFunctions]
 title = Fun With Functions
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-08-26
 topic = Mathematics/Misc
 abstract = This is a collection of cute puzzles of the form ``Show that if a function satisfies the following constraints, it must be ...'' Please add further examples to this collection!
@@ -4175,7 +4175,7 @@ notify = nipkow@in.tum.de
 
 [FunWithTilings]
 title = Fun With Tilings
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/users/lcp/>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2008-11-07
 topic = Mathematics/Misc
 abstract = Tilings are defined inductively. It is shown that one form of mutilated chess board cannot be tiled with dominoes, while another one can be tiled with L-shaped tiles. Please add further fun examples of this kind!
@@ -4186,7 +4186,7 @@ title = Lazy Lists II
 author = Stefan Friedrich <>
 date = 2004-04-26
 topic = Computer Science/Data Structures
-abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
+abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/~lp15/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
 notify = lcp@cl.cam.ac.uk
 
 [Ribbon_Proofs]
@@ -4236,7 +4236,7 @@ abstract =
 [IEEE_Floating_Point]
 title = A Formal Model of IEEE Floating Point Arithmetic
 author = Lei Yu <mailto:ly271@cam.ac.uk>
-contributors =  Fabian Hellauer, Fabian Immler <http://www21.in.tum.de/~immler/>
+contributors =  Fabian Hellauer, Fabian Immler <http://www21.in.tum.de/~immler>
 date = 2013-07-27
 topic = Computer Science/Data Structures
 abstract = This development provides a formal model of IEEE-754 floating-point arithmetic. This formalization, including formal specification of the standard and proofs of important properties of floating-point arithmetic, forms the foundation for verifying programs with floating-point computation. There is also a code generation setup for floats so that we can execute programs using this formalization in functional programming languages.
@@ -4252,7 +4252,7 @@ extra-history =
 [Native_Word]
 title = Native Word
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
-contributors = Peter Lammich <http://www21.in.tum.de/~lammich/>
+contributors = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2013-09-17
 topic = Computer Science/Data Structures
 abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
@@ -4359,7 +4359,7 @@ notify = lp15@cam.ac.uk, c.benzmueller@fu-berlin.de
 
 [Types_Tableaus_and_Goedels_God]
 title = Types, Tableaus and Gödel’s God in Isabelle/HOL
-author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://christoph-benzmueller.de>
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
 topic = Logic
 date = 2017-05-01
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
@@ -4378,7 +4378,7 @@ abstract =
 
 [Lowe_Ontological_Argument]
 title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
-author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <www.christoph-benzmueller.de>
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
 topic = Logic
 date = 2017-09-21
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
@@ -4542,7 +4542,7 @@ notify = stvienna@gmail.com
 
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
-author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
+author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://in.tum.de/~hoelzl>
 date = 2014-03-11
 topic = Computer Science/Security
 abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
@@ -4579,7 +4579,7 @@ notify = uuomul@yahoo.com, lammich@in.tum.de
 
 [Network_Security_Policy_Verification]
 title = Network Security Policy Verification
-author = Cornelius Diekmann <http://www.net.in.tum.de/de/mitarbeiter/diekmann/>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>
 date = 2014-07-04
 topic = Computer Science/Security
 abstract =
@@ -4659,7 +4659,7 @@ notify = lp15@cam.ac.uk
 
 [Landau_Symbols]
 title = Landau Symbols
-author = Manuel Eberl <https://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-07-14
 topic = Mathematics/Analysis
 abstract = This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
@@ -4667,7 +4667,7 @@ notify = eberlm@in.tum.de
 
 [Akra_Bazzi]
 title = The Akra-Bazzi theorem and the Master theorem
-author = Manuel Eberl <https://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-07-14
 topic = Mathematics/Analysis
 abstract = This article contains a formalisation of the Akra-Bazzi method
@@ -4853,7 +4853,7 @@ notify = jasmin.blanchette@gmail.com
 [Rep_Fin_Groups]
 title = Representations of Finite Groups
 topic = Mathematics/Algebra
-author = Jeremy Sylvestre <http://www.ualberta.ca/~jsylvest/>
+author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
 date = 2015-08-12
 abstract = We provide a formal framework for the theory of representations of finite groups, as modules over the group ring. Along the way, we develop the general theory of groups (relying on the group_add class for the basics), modules, and vector spaces, to the extent required for theory of group representations. We then provide formal proofs of several important introductory theorems in the subject, including Maschke's theorem, Schur's lemma, and Frobenius reciprocity. We also prove that every irreducible representation is isomorphic to a submodule of the group ring, leading to the fact that for a finite group there are only finitely many isomorphism classes of irreducible representations. In all of this, no restriction is made on the characteristic of the ring or field of scalars until the definition of a group representation, and then the only restriction made is that the characteristic must not divide the order of the group.
 notify = jsylvest@ualberta.ca
@@ -5014,7 +5014,7 @@ notify = mail@andreas-lochbihler.de
 
 [Stern_Brocot]
 title = The Stern-Brocot Tree
-author = Peter Gammie <http://peteg.org/>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Peter Gammie <http://peteg.org>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2015-12-22
 topic = Mathematics/Number Theory
 abstract = The Stern-Brocot tree contains all rational numbers exactly once and in their lowest terms.  We formalise the Stern-Brocot tree as a coinductive tree using recursive and iterative specifications, which we have proven equivalent, and show that it indeed contains all the numbers as stated.  Following Hinze, we prove that the Stern-Brocot tree can be linearised looplessly into Stern's diatonic sequence (also known as Dijkstra's fusc function) and that it is a permutation of the Bird tree.
@@ -5115,7 +5115,7 @@ extra-history =
 
 [Stochastic_Matrices]
 title = Stochastic Matrices and the Perron-Frobenius Theorem
-author = René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+author = René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 topic = Mathematics/Algebra, Computer Science/Automata and Formal Languages
 date = 2017-11-22
 notify = rene.thiemann@uibk.ac.at
@@ -5339,7 +5339,7 @@ abstract =
 
 [ROBDD]
 title = Algorithms for Reduced Ordered Binary Decision Diagrams
-author = Julius Michaelis <http://liftm.de/>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <https://www21.in.tum.de/~lammich/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Julius Michaelis <http://liftm.de>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Data Structures
 abstract =
@@ -5367,7 +5367,7 @@ notify = m.stannett@sheffield.ac.uk
 
 [Groebner_Bases]
 title = Gröbner Bases Theory
-author = Fabian Immler <http://www.in.tum.de/~immler/>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
+author = Fabian Immler <http://www21.in.tum.de/~immler>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
 date = 2016-05-02
 topic = Mathematics/Algebra, Computer Science/Algorithms
 abstract =
@@ -5533,7 +5533,7 @@ abstract =
 
 [Incredible_Proof_Machine]
 title = The meta theory of the Incredible Proof Machine
-author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
+author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
 date = 2016-05-20
 topic = Logic
 abstract =
@@ -5560,7 +5560,7 @@ abstract =
 
 [Catalan_Numbers]
 title = Catalan Numbers
-author = Manuel Eberl <http://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-06-21
 topic = Mathematics/Combinatorics
@@ -5581,7 +5581,7 @@ abstract =
 
 [Fisher_Yates]
 title = Fisher–Yates shuffle
-author = Manuel Eberl <https://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-09-30
 topic = Computer Science/Algorithms
@@ -5668,7 +5668,7 @@ extra-history =
 
 [Surprise_Paradox]
 title = Surprise Paradox
-author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
+author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 notify = mail@joachim-breitner.de
 date = 2016-07-17
 topic = Logic
@@ -5713,7 +5713,7 @@ abstract =
 
 [InfPathElimination]
 title = Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths
-author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.fr>
+author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto:wolff@lri.fr>
 notify = wolff@lri.fr
 date = 2016-08-18
 topic = Computer Science/Programming Languages/Static Analysis
@@ -5735,7 +5735,7 @@ abstract =
 
 [Stirling_Formula]
 title = Stirling's formula
-author = Manuel Eberl <https://in.tum.de/~eberlm>
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-09-01
 topic = Mathematics/Analysis
@@ -5875,7 +5875,7 @@ abstract =
 
 [LOFT]
 title = LOFT — Verified Migration of Linux Firewalls to SDN
-author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+author = Julius Michaelis <http://liftm.de>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
 notify = isabelleopenflow@liftm.de
 date = 2016-10-21
 topic = Computer Science/Networks
@@ -5889,7 +5889,7 @@ abstract =
 
 [Stable_Matching]
 title = Stable Matching
-author = Peter Gammie <http://peteg.org/>
+author = Peter Gammie <http://peteg.org>
 notify = peteg42@gmail.com
 date = 2016-10-24
 topic = Mathematics/Economics
@@ -5924,7 +5924,7 @@ extra-history =
 
 [Abs_Int_ITP2012]
 title = Abstract Interpretation of Annotated Commands
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 notify = nipkow@in.tum.de
 date = 2016-11-23
 topic = Computer Science/Programming Languages/Static Analysis
@@ -5972,7 +5972,7 @@ extra-history =
 
 [Paraconsistency]
 title = Paraconsistency
-author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
 topic = Logic
 date = 2016-12-07
 notify = andschl@dtu.dk, jovi@dtu.dk
@@ -6014,7 +6014,7 @@ abstract =
 
 [Concurrent_Ref_Alg]
 title = Concurrent Refinement Algebra and Rely Quotients
-author = Julian Fell <mailto:julian.fell@uq.net.au>, Ian Hayes <mailto:Ian.Hayes@itee.uq.edu.au>, Andrius Velykis <http://andrius.velykis.lt>
+author = Julian Fell <mailto:julian.fell@uq.net.au>, Ian J. Hayes <mailto:ian.hayes@itee.uq.edu.au>, Andrius Velykis <http://andrius.velykis.lt>
 topic = Computer Science/Concurrency
 date = 2016-12-30
 notify = Ian.Hayes@itee.uq.edu.au
@@ -6040,7 +6040,7 @@ abstract =
 
 [FOL_Harrison]
 title = First-Order Logic According to Harrison
-author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
 topic = Logic
 date = 2017-01-01
 notify = aleje@dtu.dk, andschl@dtu.dk, jovi@dtu.dk
@@ -6282,7 +6282,7 @@ abstract =
 
 [LambdaMu]
 title = The LambdaMu-calculus
-author = Cristina Matache <mailto:cris.matache@gmail.com>, Victor B. F. Gomes <mailto:victorborgesfg@gmail.com>, Dominic P. Mulligan <mailto:dominic.p.mulligan>
+author = Cristina Matache <mailto:cris.matache@gmail.com>, Victor B. F. Gomes <mailto:victorborgesfg@gmail.com>, Dominic P. Mulligan <mailto:dominic.p.mulligan@googlemail.com>
 topic = Computer Science/Programming Languages/Lambda Calculi, Logic
 date = 2017-08-16
 notify = victorborgesfg@gmail.com, dominic.p.mulligan@googlemail.com
@@ -6496,7 +6496,7 @@ abstract =
 
 [Taylor_Models]
 title = Taylor Models
-author = Christoph Traut<>, Fabian Immler <http://home.in.tum.de/~immler/>
+author = Christoph Traut<>, Fabian Immler <http://www21.in.tum.de/~immler>
 topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
 date = 2018-01-08
 notify = immler@in.tum.de
