@@ -35,6 +35,27 @@ insert the elements. This is the main result of this
 formalisation.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+              <link>https://www.isa-afp.org/entries/LLL_Factorization.html</link>
+       <guid>https://www.isa-afp.org/entries/LLL_Factorization.html</guid>
+       <dc:creator> Jose Divasón, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+Short vectors in lattices and factors of integer polynomials are
+related. Each factor of an integer polynomial belongs to a certain
+lattice. When factoring polynomials, the condition that we are looking
+for an irreducible polynomial means that we must look for a small
+element in a lattice, which can be done by a basis reduction
+algorithm. In this development we formalize this connection and
+thereby one main application of the LLL basis reduction algorithm: an
+algorithm to factor square-free integer polynomials which runs in
+polynomial time. The work is based on our previous
+Berlekamp–Zassenhaus development, where the exponential reconstruction
+phase has been replaced by the polynomial-time basis reduction
+algorithm. Thanks to this formalization we found a serious flaw in a
+textbook.</description>
+    </item>
+    <item>
        <title>First-Order Terms</title>
               <link>https://www.isa-afp.org/entries/First_Order_Terms.html</link>
        <guid>https://www.isa-afp.org/entries/First_Order_Terms.html</guid>
@@ -570,24 +591,6 @@ This observation set off a flurry of further research, leading to the
 development of Parigots λμ-calculus. In this work, we formalise λμ-
 calculus in Isabelle/HOL and prove several metatheoretical properties
 such as type preservation and progress.</description>
-    </item>
-    <item>
-       <title>Stewart's Theorem and Apollonius' Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
-       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.html</guid>
-       <dc:creator> Lukas Bulwahn       </dc:creator>
-       <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the two geometric theorems, Stewart&#39;s and
-Apollonius&#39; theorem. Stewart&#39;s Theorem relates the length of
-a triangle&#39;s cevian to the lengths of the triangle&#39;s two
-sides. Apollonius&#39; Theorem is a specialisation of Stewart&#39;s
-theorem, restricting the cevian to be the median. The proof applies
-the law of cosines, some basic geometric facts about triangles and
-then simply transforms the terms algebraically to yield the
-conjectured relation. The formalization in Isabelle can closely follow
-the informal proofs described in the Wikipedia articles of those two
-theorems.</description>
     </item>
   </channel>
 </rss>

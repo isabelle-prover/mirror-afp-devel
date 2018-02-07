@@ -6536,6 +6536,27 @@ abstract =
   compute short vectors in lattices. The formalization follows a
   textbook by von zur Gathen and Gerhard.
 
+[LLL_Factorization]
+title = A verified factorization algorithm for integer polynomials with polynomial complexity
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
+topic = Mathematics/Algebra
+date = 2018-02-06
+notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+abstract = 
+  Short vectors in lattices and factors of integer polynomials are
+  related. Each factor of an integer polynomial belongs to a certain
+  lattice. When factoring polynomials, the condition that we are looking
+  for an irreducible polynomial means that we must look for a small
+  element in a lattice, which can be done by a basis reduction
+  algorithm. In this development we formalize this connection and
+  thereby one main application of the LLL basis reduction algorithm: an
+  algorithm to factor square-free integer polynomials which runs in
+  polynomial time. The work is based on our previous
+  Berlekamp–Zassenhaus development, where the exponential reconstruction
+  phase has been replaced by the polynomial-time basis reduction
+  algorithm. Thanks to this formalization we found a serious flaw in a
+  textbook.
+
 [Treaps]
 title = Treaps
 author = Manuel Eberl <https://www.in.tum.de/~eberlm>, Max Haslbeck <https://home.in.tum.de/~haslbecm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
