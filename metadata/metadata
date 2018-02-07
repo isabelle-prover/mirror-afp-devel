@@ -3475,7 +3475,7 @@ license = LGPL
 date = 2018-02-06
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 abstract = 
-  We formalize basis results on first-order terms, including a
+  We formalize basic results on first-order terms, including a
   first-order unification algorithm, as well as well-foundedness of the
   subsumption order. This entry is part of the <i>Isabelle
   Formalization of Rewriting</i> <a
@@ -6559,7 +6559,7 @@ abstract =
 
 [Treaps]
 title = Treaps
-author = Manuel Eberl <https://www.in.tum.de/~eberlm>, Max Haslbeck <https://home.in.tum.de/~haslbecm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+author = Max Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 date = 2018-02-06
 notify = eberlm@in.tum.de

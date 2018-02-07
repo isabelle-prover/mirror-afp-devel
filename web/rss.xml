@@ -14,7 +14,7 @@
        <title>Treaps</title>
               <link>https://www.isa-afp.org/entries/Treaps.html</link>
        <guid>https://www.isa-afp.org/entries/Treaps.html</guid>
-       <dc:creator> Manuel Eberl, Max Haslbeck, Tobias Nipkow       </dc:creator>
+       <dc:creator> Max Haslbeck, Manuel Eberl, Tobias Nipkow       </dc:creator>
        <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
        <description>
 &lt;p&gt; A Treap is a binary tree whose nodes contain pairs
@@ -62,7 +62,7 @@ textbook.</description>
        <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
        <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
        <description>
-We formalize basis results on first-order terms, including a
+We formalize basic results on first-order terms, including a
 first-order unification algorithm, as well as well-foundedness of the
 subsumption order. This entry is part of the &lt;i&gt;Isabelle
 Formalization of Rewriting&lt;/i&gt; &lt;a
