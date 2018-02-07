@@ -72,8 +72,9 @@ proof (rule comp_inj_on)
   proof (auto simp add: inj_on_def)
     fix x y::"'c vec" assume "n = dim_vec x" and dim_xy: "dim_vec y = dim_vec x"
     and Poly_eq: "Poly (list_of_vec x) = Poly (list_of_vec y)"
-    show "list_of_vec x = list_of_vec y"
-    proof (rule nth_equalityI, auto simp add: dim_xy)
+    note [simp del] = nth_list_of_vec
+    show "list_of_vec x = list_of_vec y"  
+    proof (rule nth_equalityI, auto simp: dim_xy)
       have length_eq: "length (list_of_vec x ) = length (list_of_vec y)"
         using dim_xy by (transfer, auto)
       fix i assume "i < dim_vec x"
@@ -149,7 +150,7 @@ proof -
   have "coeff (Poly (list_of_vec (row A i))) x  = nth_default 0 (list_of_vec (row A i)) x"
     unfolding coeff_Poly_eq  by simp
   also have "... = A $$ (i, x)" using x list_of_vec_row_nth
-    unfolding nth_default_def by auto
+    unfolding nth_default_def by (auto simp del: nth_list_of_vec)
   finally show ?thesis .
 qed
 
@@ -296,9 +297,6 @@ next
   qed
 qed
 qed
-
-lemma degree_normalize[simp]: "degree (normalize (p :: 'b :: {field,euclidean_ring_gcd} poly)) = degree p"
-  unfolding normalize_poly_old_def by auto
 
 lemma irreducible\<^sub>d_dvd_smult':
   assumes n: "normalize p = normalize q" and d: "degree (p :: 'b :: {field,euclidean_ring_gcd} poly) > 0"
@@ -2476,8 +2474,7 @@ proof -
   moreover have "?f ` (carrier W) = ?B"
   proof (auto simp add: image_def)
     fix xa
-    show "vec n (\<lambda>i. coeff (xa mod m i) 0) \<in> carrier_vec (card P)"
-      unfolding carrier_vec_def by (auto simp add: n)
+    show "n = card P" by (auto simp add: n)
     next
     fix x::"'a mod_ring vec" assume x: "x \<in> carrier_vec (card P)"
     have " \<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>i\<in>{i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))"

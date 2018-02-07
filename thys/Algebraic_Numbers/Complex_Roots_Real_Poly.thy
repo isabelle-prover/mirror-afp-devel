@@ -431,7 +431,7 @@ proof -
     next
       case False
       with dq have deg: "degree q = 0 \<or> degree q = 2" by arith
-      from Cons(2) have "q * prod_list qs \<noteq> 0" by auto
+      from Cons(2) have "q * prod_list qs \<noteq> 0" by fastforce
       hence "q \<noteq> 0" "prod_list qs \<noteq> 0" by auto
       from degree_mult_eq[OF this]
       have "degree (prod_list (q # qs)) = degree q + degree (prod_list qs)" by simp

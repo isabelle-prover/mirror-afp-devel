@@ -438,12 +438,14 @@ proof(cases "b = 0")
   case True then show ?thesis by auto
 next
   case False
-    with dvdE[OF assms] obtain c where *: "b = a * c" by auto
-    also with False have "a \<noteq> 0" by auto
-    then have "a * c div a = c" by auto
-    also note *[symmetric]
-    finally show ?thesis.
+  with dvdE[OF assms] obtain c where *: "b = a * c" by auto
+  also with False have "a \<noteq> 0" by auto
+  then have "a * c div a = c" by auto
+  also note *[symmetric]
+  finally show ?thesis.
 qed
-  
+
+lemma (in semidom) prod_list_zero_iff[simp]: 
+  "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
 
 end

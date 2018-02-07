@@ -315,4 +315,16 @@ next
   qed
 qed
 
+lemma deg_not_zero_imp_not_unit: 
+  fixes f:: "'a::{idom_divide,semidom_divide_unit_factor} poly"
+  assumes deg_f: "degree f > 0"
+  shows "\<not> is_unit f"
+proof -
+  have "degree (normalize f) > 0" 
+    using deg_f degree_normalize by auto  
+  hence "normalize f \<noteq> 1"
+    by fastforce
+  thus "\<not> is_unit f" using normalize_1_iff by auto
+qed
+
 end

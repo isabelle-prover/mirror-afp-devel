@@ -72,4 +72,20 @@ begin
   instance by (intro_classes, auto)
 end
 
+lemma conjugate_square_eq_0 [simp]:
+  fixes x :: "'a :: {conjugatable_ring,semiring_no_zero_divisors}"
+  shows "x * conjugate x = 0 \<longleftrightarrow> x = 0" "conjugate x * x = 0 \<longleftrightarrow> x = 0"
+  by auto
+
+lemma conjugate_square_greater_0 [simp]:
+  fixes x :: "'a :: {conjugatable_ordered_ring,ring_no_zero_divisors}"
+  shows "x * conjugate x > 0 \<longleftrightarrow> x \<noteq> 0" 
+  using conjugate_square_positive[of x]
+  by (auto simp: le_less)
+
+lemma conjugate_square_smaller_0 [simp]:
+  fixes x :: "'a :: {conjugatable_ordered_ring,ring_no_zero_divisors}"
+  shows "\<not> x * conjugate x < 0"
+  using conjugate_square_positive[of x] by auto
+
 end

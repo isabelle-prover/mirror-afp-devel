@@ -4,7 +4,7 @@
 section \<open>Rank and Submatrices\<close>
 
 theory DL_Rank_Submatrix
-imports DL_Rank DL_Submatrix DL_Missing_Matrix
+imports DL_Rank DL_Submatrix Matrix
 begin
 
 lemma row_submatrix_UNIV:

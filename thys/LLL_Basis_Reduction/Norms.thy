@@ -544,5 +544,39 @@ lemma sq_norm_of_int: "\<parallel>map_vec of_int v :: 'a :: {conjugatable_ring,r
   unfolding hom_distribs
   by (rule sum.cong, auto)
 
+definition "norm1 p = sum_list (map abs (coeffs p))"
+
+lemma norm1_ge_0: "norm1 (f :: 'a :: {abs,ordered_semiring_0,ordered_ab_group_add_abs}poly) \<ge> 0" 
+  unfolding norm1_def by (rule sum_list_nonneg, auto)
+
+lemma norm2_norm1_main_equality: fixes f :: "nat \<Rightarrow> 'a :: linordered_idom" 
+  shows "(\<Sum>i = 0..<n. \<bar>f i\<bar>)\<^sup>2 = (\<Sum>i = 0..<n. f i * f i)
+      + (\<Sum>i = 0..<n. \<Sum>j = 0..<n. if i = j then 0 else \<bar>f i\<bar> * \<bar>f j\<bar>)"  
+proof (induct n)
+  case (Suc n)
+  have id: "{0 ..< Suc n} = insert n {0 ..< n}" by auto
+  have id: "sum f {0 ..< Suc n} = f n + sum f {0 ..< n}" for f :: "nat \<Rightarrow> 'a" 
+    unfolding id by (rule sum.insert, auto)
+  show ?case unfolding id power2_sum unfolding Suc
+    by (auto simp: power2_eq_square sum_distrib_left sum.distrib ac_simps)
+qed auto
+
+lemma norm2_norm1_main_inequality: fixes f :: "nat \<Rightarrow> 'a :: linordered_idom" 
+  shows "(\<Sum>i = 0..<n. f i * f i) \<le> (\<Sum>i = 0..<n. \<bar>f i\<bar>)\<^sup>2"  
+  unfolding norm2_norm1_main_equality 
+  by (auto intro!: sum_nonneg)  
+
+lemma norm2_le_norm1_int: "\<parallel>f :: int poly\<parallel>\<^sup>2 \<le> (norm1 f)^2" 
+proof -
+  define F where "F = (!) (coeffs f)" 
+  define n where "n = length (coeffs f)" 
+  have 1: "\<parallel>f\<parallel>\<^sup>2 = (\<Sum>i = 0..<n. F i * F i)" 
+    unfolding norm1_def sq_norm_poly_def sum_list_sum_nth F_def n_def
+    by (subst sum.cong, auto simp: power2_eq_square)
+  have 2: "norm1 f = (\<Sum>i = 0..<n. \<bar>F i\<bar>)" 
+    unfolding norm1_def sq_norm_poly_def sum_list_sum_nth F_def n_def
+    by (subst sum.cong, auto)
+  show ?thesis unfolding 1 2 by (rule norm2_norm1_main_inequality)
+qed
 
 end
