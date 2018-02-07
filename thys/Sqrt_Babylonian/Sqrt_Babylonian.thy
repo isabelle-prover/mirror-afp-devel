@@ -161,6 +161,11 @@ lemma sqrt_int_ceiling_code[code]: "sqrt_int_ceiling x = (if x \<ge> 0 then sqrt
 lemma sqrt_int_ceiling[simp]: "sqrt_int_ceiling x = \<lceil> sqrt (of_int x) \<rceil>"
   by (simp add: sqrt_int_ceiling_def sqrt_def)
 
+lemma sqrt_int_ceiling_bound: "0 \<le> x \<Longrightarrow> x \<le> (sqrt_int_ceiling x)^2"
+  unfolding sqrt_int_ceiling using le_of_int_ceiling sqrt_le_D
+  by (metis of_int_power_le_of_int_cancel_iff)
+
+
 subsection {* Square roots for the naturals *}
 
 

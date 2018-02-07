@@ -10,7 +10,6 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     List_Representation
     Norms
     Missing_Lemmas
-    Vector_Lattice_Locale
     Gram_Schmidt_2
     LLL    
   document_files

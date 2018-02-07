@@ -3,7 +3,7 @@
 section \<open>Matrix Rank\<close>
 
 theory DL_Rank
-imports DL_Missing_VS_Connect DL_Missing_List
+imports VS_Connect DL_Missing_List
  Determinant
  Missing_VectorSpace
 begin

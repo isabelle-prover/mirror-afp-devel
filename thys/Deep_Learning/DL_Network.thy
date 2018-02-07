@@ -4,12 +4,16 @@ section \<open>Deep Learning Networks\<close>
 
 theory DL_Network
 imports Tensor_Product HOL.Real
-  Jordan_Normal_Form.DL_Missing_Matrix Tensor_Unit_Vec DL_Flatten_Matrix 
+  Jordan_Normal_Form.Matrix Tensor_Unit_Vec DL_Flatten_Matrix 
   Jordan_Normal_Form.DL_Missing_List
 begin
 
 text \<open>This symbol is used for the Tensor product:\<close>
 no_notation Group.monoid.mult (infixl "\<otimes>\<index>" 70)
+
+notation Matrix.unit_vec ("unit\<^sub>v")
+hide_const (open) Matrix.unit_vec 
+
 
 datatype 'a convnet = Input nat | Conv 'a "'a convnet" | Pool "'a convnet" "'a convnet"
 
@@ -168,8 +172,6 @@ next
     using vec_setI by (metis index_component_mult)
   then show ?case unfolding remove_weights.simps input_sizes.simps by (simp add: Pool.IH(1) Pool.IH(2))
 qed
-
-notation Matrix.unit_vec ("unit\<^sub>v")
 
 definition base_input :: "real mat convnet \<Rightarrow> nat list \<Rightarrow> real vec list" where
 "base_input m is = (map (\<lambda>(n, i). unit\<^sub>v n i) (zip (input_sizes m) is))"

@@ -8,6 +8,8 @@ DL_Missing_Finite_Set Jordan_Normal_Form.DL_Missing_Sublist Jordan_Normal_Form.D
 begin
 
 hide_const(open) Polynomial.order
+hide_const (open) Matrix.unit_vec 
+
 
 fun deep_model and deep_model' where
 "deep_model' Y [] = Input Y" |

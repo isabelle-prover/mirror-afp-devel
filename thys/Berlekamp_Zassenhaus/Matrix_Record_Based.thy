@@ -423,7 +423,7 @@ end
 
 lemma list_of_vec_transfer[transfer_rule]: "(vec_rel A ===> list_all2 A) list_of_vec list_of_vec"
   unfolding rel_fun_def vec_rel_def vec_eq_iff list_all2_conv_all_nth
-  by (auto, (transfer, auto)+)
+  by auto
 
 definition sub'' :: "'a iarray \<Rightarrow> integer \<Rightarrow> 'a" where "sub'' a i = IArray.sub' (a,i)" 
 definition tabulate'' :: "(integer \<Rightarrow> 'a) \<Rightarrow> integer \<Rightarrow> 'a iarray" where 

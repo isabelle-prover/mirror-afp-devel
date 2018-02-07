@@ -503,9 +503,6 @@ qed auto
 lemma list_trisect: "x < length lst \<Longrightarrow> [0..<length lst] = [0..<x]@x#[Suc x..<length lst]"
   by (induct lst, force, rename_tac a lst, case_tac "x = length lst", auto)
 
-lemma nth_map_out_of_bound: "i \<ge> length xs \<Longrightarrow> map f xs ! i = [] ! (i - length xs)"
-  by (induct xs arbitrary:i, auto)
-
 lemma filter_mset_inequality: "filter_mset f xs \<noteq> xs \<Longrightarrow> \<exists> x \<in># xs. \<not> f x" 
   by (induct xs, auto)
 
@@ -538,10 +535,6 @@ proof -
     by (rule mult_left_mono, insert assms, auto)
   finally show ?thesis unfolding abs_mult by auto
 qed
-
-lemma sqrt_int_ceiling_bound: "0 \<le> x \<Longrightarrow> x \<le> (sqrt_int_ceiling x)^2"
-  unfolding sqrt_int_ceiling using le_of_int_ceiling sqrt_le_D
-  by (metis of_int_power_le_of_int_cancel_iff)
 
 lemma mod_0_abs_less_imp_0:
   fixes a::int
@@ -733,145 +726,10 @@ lemma coeff_mult_monom:
 
 (**** End of the lemmas which may be part of the standard library ****)
 
-(**** The following lemmas could be moved to Polynomial_Interpolation/Missing_Polynomial.thy ****)
-lemma smult_sum2: "smult m (\<Sum>i \<in> S. f i) = (\<Sum>i \<in> S. smult m (f i))"
-  by (induct S rule: infinite_finite_induct, auto simp add: smult_add_right)
-
-lemma deg_not_zero_imp_not_unit: 
-  fixes f:: "'a::{idom_divide,semidom_divide_unit_factor} poly"
-  assumes deg_f: "degree f > 0"
-  shows "\<not> is_unit f"
-proof -
-  have "degree (normalize f) > 0" 
-    using deg_f degree_normalize by auto  
-  hence "normalize f \<noteq> 1"
-    by fastforce
-  thus "\<not> is_unit f" using normalize_1_iff by auto
-qed
-
-(**** End of lemmas which could be moved to Polynomial_Interpolation/Missing_Polynomial.thy ****)
 
 (**** The following lemmas could be part of Jordan_Normal_Form/Conjugate.thy ****)
 
-(* replace conjugate_square_0 *)
-lemma conjugate_square_eq_0 [simp]:
-  fixes x :: "'a :: {conjugatable_ring,semiring_no_zero_divisors}"
-  shows "x * conjugate x = 0 \<longleftrightarrow> x = 0"
-  by simp
-
-lemma conjugate_square_greater_0 [simp]:
-  fixes x :: "'a :: {conjugatable_ordered_ring,ring_no_zero_divisors}"
-  shows "x * conjugate x > 0 \<longleftrightarrow> x \<noteq> 0"
-  using conjugate_square_positive[of x]
-  by (auto simp: le_less)
-
-(**** End of lemmas could be part of Jordan_Normal_Form/Conjugate.thy ****)
-
 (**** The following lemmas could be part of Jordan_Normal_Form/Matrix.thy ****)
-
-lemma set_rows_carrier:
-  assumes "A \<in> carrier_mat m n" and "v \<in> set (rows A)" shows "v \<in> carrier_vec n"
-  using assms by (auto simp: set_conv_nth)
-
-(* Allows induction on dimension *)
-abbreviation vNil where "vNil \<equiv> vec 0 undefined"
-definition vCons where "vCons a v \<equiv> vec (Suc (dim_vec v)) (\<lambda>i. case i of 0 \<Rightarrow> a | Suc i \<Rightarrow> v $ i)"
-
-lemma vec_index_vCons_0 [simp]: "vCons a v $ 0 = a"
-  by (simp add: vCons_def)
-
-lemma vec_index_vCons_Suc [simp]:
-  fixes v :: "'a vec"
-  shows "vCons a v $ Suc n = v $ n"
-proof-
-  have 1: "vec (Suc d) f $ Suc n = vec d (f \<circ> Suc) $ n" for d and f :: "nat \<Rightarrow> 'a"
-    by (transfer, auto simp: mk_vec_def)
-  show ?thesis
-    apply (auto simp: 1 vCons_def o_def) apply transfer apply (auto simp: mk_vec_def)
-    done
-qed
-
-lemma vec_index_vCons: "vCons a v $ n = (if n = 0 then a else v $ (n - 1))"
-  by (cases n, auto)
-
-lemma dim_vec_vCons [simp]: "dim_vec (vCons a v) = Suc (dim_vec v)"
-  by (simp add: vCons_def)
-
-lemma vCons_carrier_vec[simp]: "vCons a v \<in> carrier_vec (Suc n) \<longleftrightarrow> v \<in> carrier_vec n"
-  by (auto dest!: carrier_vecD intro: carrier_vecI)
-
-lemma vec_Suc: "vec (Suc n) f = vCons (f 0) (vec n (f \<circ> Suc))" (is "?l = ?r")
-proof (unfold vec_eq_iff, intro conjI allI impI)
-  fix i assume "i < dim_vec ?r"
-  then show "?l $ i = ?r $ i" by (cases i, auto)
-qed simp
-
-declare Abs_vec_cases[cases del]
-
-lemma vec_cases [case_names vNil vCons, cases type: vec]:
-  assumes "v = vNil \<Longrightarrow> thesis" and "\<And>a w. v = vCons a w \<Longrightarrow> thesis"
-  shows "thesis"
-proof (cases "dim_vec v")
-  case 0 then show thesis by (intro assms(1), auto)
-next
-  case (Suc n)
-  show thesis
-  proof (rule assms(2))
-    show v: "v = vCons (v $ 0) (vec n (\<lambda>i. v $ Suc i))" (is "v = ?r")
-    proof (rule eq_vecI, unfold dim_vec_vCons dim_vec Suc)
-      fix i
-      assume "i < Suc n"
-      then show "v $ i = ?r $ i" by (cases i, auto simp: vCons_def)
-    qed simp
-  qed
-qed
-
-lemma vec_induct [case_names vNil vCons, induct type: vec]:
-  assumes "P vNil" and "\<And>a v. P v \<Longrightarrow> P (vCons a v)"
-  shows "P v"
-proof (induct "dim_vec v" arbitrary:v)
-  case 0 then show ?case by (cases v, auto intro: assms(1))
-next
-  case (Suc n) then show ?case by (cases v, auto intro: assms(2))
-qed
-
-lemma carrier_vec_induct [consumes 1, case_names 0 Suc, induct set:carrier_vec]:
-  assumes v: "v \<in> carrier_vec n"
-    and 1: "P 0 vNil" and 2: "\<And>n a v. v \<in> carrier_vec n \<Longrightarrow> P n v \<Longrightarrow> P (Suc n) (vCons a v)"
-  shows "P n v"
-proof (insert v, induct n arbitrary: v)
-  case 0 then have "v = vec 0 undefined" by auto
-  with 1 show ?case by auto
-next
-  case (Suc n) then show ?case by (cases v, auto dest!: carrier_vecD intro:2)
-qed
-
-lemma vec_of_list_Cons[simp]: "vec_of_list (a#as) = vCons a (vec_of_list as)"
-  by (unfold vCons_def, transfer, auto simp:mk_vec_def split:nat.split)
-
-lemma vec_of_list_Nil[simp]: "vec_of_list [] = vNil"
-  by transfer auto
-
-lemma scalar_prod_vCons[simp]:
-  "vCons a v \<bullet> vCons b w = a * b + v \<bullet> w"
-  apply (unfold scalar_prod_def atLeast0_lessThan_Suc_eq_insert_0 dim_vec_vCons)
-  apply (subst sum.insert) apply (simp,simp)
-  apply (subst sum.reindex) apply force
-  apply simp
-  done
-
-lemma zero_vec_Suc: "0\<^sub>v (Suc n) = vCons 0 (0\<^sub>v n)"
-  by (auto simp: zero_vec_def vec_Suc o_def)
-
-lemma zero_vec_zero[simp]: "0\<^sub>v 0 = vNil" by auto
-
-lemma vCons_eq_vCons[simp]: "vCons a v = vCons b w \<longleftrightarrow> a = b \<and> v = w" (is "?l \<longleftrightarrow> ?r")
-proof
-  assume ?l
-  note arg_cong[OF this]
-  from this[of dim_vec] this[of "\<lambda>x. x$0"] this[of "\<lambda>x. x$Suc _"]
-  show ?r by (auto simp: vec_eq_iff)
-qed simp
 
 (* adapting from Jordan_Normal_Form/Gram_Schmidt to a class-oriented manner *)
 instantiation vec :: (conjugate) conjugate
@@ -971,9 +829,6 @@ lemma conjugate_vec_sprod_comm:
   shows "v \<bullet>c w = (conjugate w \<bullet> v)"
   unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto simp: ac_simps)
 
-lemma vec_carrier_vec[simp]: "vec n f \<in> carrier_vec m \<longleftrightarrow> n = m"
-  unfolding carrier_vec_def by auto
-
 lemma conjugate_square_ge_0_vec[intro!]:
   fixes v :: "'a :: conjugatable_ordered_ring vec"
   shows "v \<bullet>c v \<ge> 0"
@@ -1008,136 +863,10 @@ lemma conjugate_square_greater_0_vec[simp]:
 lemma vec_conjugate_rat[simp]: "(conjugate :: rat vec \<Rightarrow> rat vec) = (\<lambda>x. x)" by force
 lemma vec_conjugate_real[simp]: "(conjugate :: real vec \<Rightarrow> real vec) = (\<lambda>x. x)" by force
 
-notation transpose_mat ("(_\<^sup>T)" [1000])
-
-lemma cols_transpose[simp]: "cols A\<^sup>T = rows A" unfolding cols_def rows_def by auto
-lemma rows_transpose[simp]: "rows A\<^sup>T = cols A" unfolding cols_def rows_def by auto
-lemma list_of_vec_vec [simp]: "list_of_vec (vec n f) = map f [0..<n]"
-  by (transfer, auto simp: mk_vec_def)
-
-lemma list_of_vec_0 [simp]: "list_of_vec (0\<^sub>v n) = replicate n 0"
-  by (simp add: zero_vec_def map_replicate_trivial)
-
-lemma diag_mat_map:
-  assumes M_carrier: "M \<in> carrier_mat n n"
-  shows "diag_mat (map_mat f M) = map f (diag_mat M)"
-proof -
-  have dim_eq: "dim_row M = dim_col M" using M_carrier by auto
-  have m: "map_mat f M $$ (i, i) = f (M $$ (i, i))" if i: "i < dim_row M" for i
-    using dim_eq i by auto
-  show ?thesis 
-    by (rule nth_equalityI, insert m, auto simp add: diag_mat_def M_carrier)
-qed
-
-lemma mat_of_rows_map [simp]: 
-  assumes x: "set vs \<subseteq> carrier_vec n"
-  shows "mat_of_rows n (map (map_vec f) vs) = map_mat f (mat_of_rows n vs)"
-proof-
-  have "\<forall>x\<in>set vs. dim_vec x = n" using x by auto
-  then show ?thesis by (auto simp add: mat_eq_iff map_vec_def mat_of_rows_def)
-qed
-
-lemma mat_of_cols_map [simp]: 
-  assumes x: "set vs \<subseteq> carrier_vec n"
-  shows "mat_of_cols n (map (map_vec f) vs) = map_mat f (mat_of_cols n vs)"
-proof-
-  have "\<forall>x\<in>set vs. dim_vec x = n" using x by auto
-  then show ?thesis by (auto simp add: mat_eq_iff map_vec_def mat_of_cols_def)
-qed
-
-lemma vec_of_list_map [simp]: "vec_of_list (map f xs) = map_vec f (vec_of_list xs)"
-  unfolding map_vec_def by (transfer, auto simp add: mk_vec_def)
-
-lemma map_vec: "map_vec f (vec n g) = vec n (f o g)" by auto
-
-lemma mat_of_cols_Cons_index_0: "i < n \<Longrightarrow> mat_of_cols n (w # ws) $$ (i, 0) = w $ i"
-  by (unfold mat_of_cols_def, transfer', auto simp: mk_mat_def)
-
-lemma mat_of_cols_Cons_index_Suc:
-  "i < n \<Longrightarrow> mat_of_cols n (w # ws) $$ (i, Suc j) = mat_of_cols n ws $$ (i,j)"
-  by (unfold mat_of_cols_def, transfer, auto simp: mk_mat_def undef_mat_def nth_append nth_map_out_of_bound)
-
-lemma mat_of_cols_index: "i < n \<Longrightarrow> j < length ws \<Longrightarrow> mat_of_cols n ws $$ (i,j) = ws ! j $ i"
-  by (unfold mat_of_cols_def, auto)
-
-lemma mat_of_rows_index: "i < length rs \<Longrightarrow> j < n \<Longrightarrow> mat_of_rows n rs $$ (i,j) = rs ! i $ j"
-  by (unfold mat_of_rows_def, auto)
-
-lemma transpose_mat_of_rows: "(mat_of_rows n vs)\<^sup>T = mat_of_cols n vs"
-  by (auto intro!: eq_matI simp: mat_of_rows_index mat_of_cols_index)
-
-lemma transpose_mat_of_cols: "(mat_of_cols n vs)\<^sup>T = mat_of_rows n vs"
-  by (auto intro!: eq_matI simp: mat_of_rows_index mat_of_cols_index)
-
-lemma vec_of_poly_0 [simp]: "vec_of_poly 0 = 0\<^sub>v 1" by (auto simp: vec_of_poly_def)
-
-(* Found in Berlekamp_Type_Based, but better be moved *)
-lemma nth_list_of_vec [simp]:
-  assumes "i < dim_vec v" shows "list_of_vec v ! i = v $ i"
-  using assms by (transfer, auto)
-
-lemma length_list_of_vec [simp]:
-  "length (list_of_vec v) = dim_vec v" by (transfer, auto)
-
-lemma vec_eq_0_iff:
-  "v = 0\<^sub>v n \<longleftrightarrow> n = dim_vec v \<and> (n = 0 \<or> set (list_of_vec v) = {0})" (is "?l \<longleftrightarrow> ?r")
-proof
-  show "?l \<Longrightarrow> ?r" by auto
-  show "?r \<Longrightarrow> ?l" by (intro iffI eq_vecI, force simp: set_conv_nth, force)
-qed
-
-lemma list_of_vec_vCons[simp]: "list_of_vec (vCons a v) = a # list_of_vec v" (is "?l = ?r")
-proof (intro nth_equalityI allI impI)
-  fix i
-  assume "i < length ?l"
-  then show "?l ! i = ?r ! i" by (cases i, auto)
-qed simp
-
-lemma append_vec_vCons[simp]: "vCons a v @\<^sub>v w = vCons a (v @\<^sub>v w)" (is "?l = ?r")
-proof (unfold vec_eq_iff, intro conjI allI impI)
-  fix i assume "i < dim_vec ?r"
-  then show "?l $ i = ?r $ i" by (cases i; subst index_append_vec, auto)
-qed simp
-
-lemma append_vec_vNil[simp]: "vNil @\<^sub>v v = v"
-  by (unfold vec_eq_iff, auto)
-
-lemma list_of_vec_append[simp]: "list_of_vec (v @\<^sub>v w) = list_of_vec v @ list_of_vec w"
-  by (induct v, auto)
-
-lemma transpose_mat_eq[simp]: "A\<^sup>T = B\<^sup>T \<longleftrightarrow> A = B"
-  using transpose_transpose by metis
-
-lemma mat_col_eqI: assumes cols: "\<And> i. i < dim_col B \<Longrightarrow> col A i = col B i"
-  and dims: "dim_row A = dim_row B" "dim_col A = dim_col B"
-shows "A = B"
-  by(subst transpose_mat_eq[symmetric], rule eq_rowI,insert assms,auto)
-
-lemma upper_triangular_imp_det_eq_0_iff:
-  fixes A :: "'a :: idom mat"
-  assumes "A \<in> carrier_mat n n" and "upper_triangular A"
-  shows "det A = 0 \<longleftrightarrow> 0 \<in> set (diag_mat A)"
-  using assms by (auto simp: det_upper_triangular)
-
-lemma upper_triangular_imp_distinct:
-  fixes u :: "'a :: {zero_neq_one} poly"
-  assumes A: "A \<in> carrier_mat n n"
-    and tri: "upper_triangular A"
-    and diag: "0 \<notin> set (diag_mat A)"
-  shows "distinct (rows A)"
-proof-
-  { fix i and j 
-    assume eq: "rows A ! i = rows A ! j" and ij: "i < j" and jn: "j < n"
-    from tri A ij jn have "rows A ! j $ i = 0" by (auto dest!:upper_triangularD)
-    with eq have "rows A ! i $ i = 0" by auto
-    with diag ij jn A have False by (auto simp: diag_mat_def)
-  }
-  with A show ?thesis by (force simp: distinct_conv_nth nat_neq_iff)
-qed
-
 (**** End of the lemmas which could be part of Jordan_Normal_Form/Matrix.thy ****)
 
 (**** The following lemmas could be moved to Algebraic_Numbers/Resultant.thy ****)
+lemma vec_of_poly_0 [simp]: "vec_of_poly 0 = 0\<^sub>v 1" by (auto simp: vec_of_poly_def)
 
 lemma vec_index_vec_of_poly [simp]: "i \<le> degree p \<Longrightarrow> vec_of_poly p $ i = coeff p (degree p - i)"
   by (simp add: vec_of_poly_def Let_def)
@@ -1605,25 +1334,6 @@ proof -
   ultimately show ?thesis by auto
 qed
 (**** End of the lemmas that could be moved to Computational_Algebra/Polynomial.thy ****)
-
-(**** The following lemmas could be part of Jordan_Normal_Form/Determinant.thy ****)
-lemma det_identical_columns:
-  assumes A: "A \<in> carrier_mat n n"  
-    and ij: "i \<noteq> j"
-    and i: "i < n" and j: "j < n"
-    and r: "col A i = col A j"
-  shows "det A = 0"
-proof-
-  have "det A = det A\<^sup>T" using det_transpose[OF A] ..
-  also have "... = 0" 
-  proof (rule det_identical_rows[of _ n i j])
-     show "row (transpose_mat A) i = row (transpose_mat A) j"
-       using A i j r by auto
-  qed (auto simp add: assms)
-  finally show ?thesis .
-qed
-
-(**** End of the lemmas could be part of Jordan_Normal_Form/Determinant.thy ****)
 
 (**** Lemmas which could be moved to Berlekamp_Zassenhaus/Unique_Factorization.thy ****)
 lemma irreducible_uminus [simp]:
