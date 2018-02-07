@@ -20,8 +20,6 @@ lemma comp_image:
   "((`) f \<circ> (`) g) = (`) (f o g)"
 by rule auto
 
-subsection \<open>Proof that relies on other partition_on introduction rule\<close>
-
 subsection \<open>Introduction and Elimination Rules\<close>
 
 text \<open>The definition of @{const partition_on} is in @{theory Disjoint_Sets}.\<close>
