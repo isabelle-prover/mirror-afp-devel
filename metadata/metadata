@@ -910,7 +910,7 @@ abstract =
 	</p>
 	<p>
 	For an informal description see the FSTTCS 2016 publication
-	<a href="http://www21.in.tum.de/~nipkowpubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
+	<a href="http://www21.in.tum.de/~nipkow/pubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
 	by Haslbeck and Nipkow.
 	</p>
 notify = nipkow@in.tum.de
@@ -1662,7 +1662,7 @@ abstract =
 	thought to be the same, are different, and one seems to produce uniformly
 	smaller automata.  The common framework makes it possible to compare the
 	performance of the different decision procedures in a meaningful way.
-	<a href="http://www21.in.tum.de/~nipkowpubs/itp14.html">
+	<a href="http://www21.in.tum.de/~nipkow/pubs/itp14.html">
 	The formalization is described in a paper of the same name presented at
 	Interactive Theorem Proving 2014</a>.
 notify = nipkow@in.tum.de, traytel@in.tum.de
@@ -1689,7 +1689,7 @@ abstract =
 	translation of formulas into regular expressions with respect to two
 	different semantics of MSO.
 	<p>
-	The formalization is described in this <a href="http://www21.in.tum.de/~nipkowpubs/icfp13.html">ICFP 2013 functional pearl</a>.
+	The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
 notify = traytel@in.tum.de, nipkow@in.tum.de
 
 [Formula_Derivatives]
@@ -2104,10 +2104,10 @@ abstract =
 	splay trees, splay heaps and pairing heaps.
 	<p>
 	A preliminary version of this work (without pairing heaps) is described
-	in a <a href="http://www21.in.tum.de/~nipkowpubs/itp15.html">paper</a>
+	in a <a href="http://www21.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
 	published in the proceedings of the conference on Interactive
 	Theorem Proving ITP 2015. An extended version of this publication
-	is available <a href="http://www21.in.tum.de/~nipkowpubs/jfp16.html">here</a>.
+	is available <a href="http://www21.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.
 extra-history =
 	Change history:
 	[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
@@ -2126,7 +2126,7 @@ abstract =
 	expansion and contraction factors.
 	<P>
 	A full description is found in a
-	<a href="http://www21.in.tum.de/~nipkowpubs">companion paper</a>.
+	<a href="http://www21.in.tum.de/~nipkow/pubs">companion paper</a>.
 notify = nipkow@in.tum.de
 
 [AVL-Trees]
@@ -2192,7 +2192,7 @@ abstract =
  </p>
  <p>
  This is the Isabelle formalization of the material decribed in the APLAS 2017 article
- <a href="http://www21.in.tum.de/~nipkowpubs/aplas17.html">Verified Root-Balanced Trees</a>
+ <a href="http://www21.in.tum.de/~nipkow/pubs/aplas17.html">Verified Root-Balanced Trees</a>
  by the same author, which also presents experimental results that show
  competitiveness of root-balanced with AVL and red-black trees.
  </p>
@@ -2832,7 +2832,7 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
 	compositionality w.r.t. the language constructs. Compositionality
 	yields sound syntactic criteria (a.k.a. type systems) in a uniform way.
 	<p>
-	An <a href="http://www21.in.tum.de/~nipkowpubs/cpp12.html">article</a>
+	An <a href="http://www21.in.tum.de/~nipkow/pubs/cpp12.html">article</a>
 	about these proofs is published in the proceedings
 	of the conference Certified Programs and Proofs 2012.
 notify = hoelzl@in.tum.de
@@ -3871,7 +3871,7 @@ abstract =
 	can be tested.
 	<p>
 	An early version of this model checker is described in the
-	<a href="http://www21.in.tum.de/~nipkowpubs/cav13.html">CAV 2013 paper</a>
+	<a href="http://www21.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
 	with the same title.
 notify = rene.neumann@in.tum.de, lammich@in.tum.de
 
@@ -3923,7 +3923,7 @@ title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-09-01
 topic = Mathematics/Economics
-abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www21.in.tum.de/~nipkowpubs/arrow.html">here</a>.
+abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www21.in.tum.de/~nipkow/pubs/arrow.html">here</a>.
 notify = nipkow@in.tum.de
 
 [SenSocialChoice]
@@ -4052,8 +4052,8 @@ abstract =
 	book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
 	The values of the constants in the definition of tameness are identical to
 	those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
-	The <a href="http://www21.in.tum.de/~nipkowpubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
-	the <a href="http://www21.in.tum.de/~nipkowpubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
+	The <a href="http://www21.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
+	the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
 extra-history =
 	Change history:
 	[2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
