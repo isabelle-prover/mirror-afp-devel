@@ -73,6 +73,18 @@ critical-pair computation and dependency graph approximations; and the
 subsumption order is a crucial ingredient for completion.</description>
     </item>
     <item>
+       <title>The Error Function</title>
+              <link>https://www.isa-afp.org/entries/Error_Function.html</link>
+       <guid>https://www.isa-afp.org/entries/Error_Function.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; This entry provides the definitions and basic properties of
+the complex and real error function erf and the complementary error
+function erfc. Additionally, it gives their full asymptotic
+expansions. &lt;/p&gt;</description>
+    </item>
+    <item>
        <title>A verified LLL algorithm</title>
               <link>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</link>
        <guid>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</guid>
@@ -575,22 +587,6 @@ the orbit-stabiliser theorem.  In the second part of this work, we
 formalize the tetrahedral group and use the orbit-stabiliser theorem
 to prove that there are twelve (orientation-preserving) rotations of
 the tetrahedron.</description>
-    </item>
-    <item>
-       <title>The LambdaMu-calculus</title>
-              <link>https://www.isa-afp.org/entries/LambdaMu.html</link>
-       <guid>https://www.isa-afp.org/entries/LambdaMu.html</guid>
-       <dc:creator> Cristina Matache, Victor B. F. Gomes, Dominic P. Mulligan       </dc:creator>
-       <pubDate>16 Aug 2017 00:00:00 +0000</pubDate>
-       <description>
-The propositions-as-types correspondence is ordinarily presented as
-linking the metatheory of typed λ-calculi and the proof theory of
-intuitionistic logic. Griffin observed that this correspondence could
-be extended to classical logic through the use of control operators.
-This observation set off a flurry of further research, leading to the
-development of Parigots λμ-calculus. In this work, we formalise λμ-
-calculus in Isabelle/HOL and prove several metatheoretical properties
-such as type preservation and progress.</description>
     </item>
   </channel>
 </rss>

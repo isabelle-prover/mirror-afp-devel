@@ -3474,7 +3474,7 @@ topic = Logic/Rewriting, Computer Science/Algorithms
 license = LGPL
 date = 2018-02-06
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formalize basic results on first-order terms, including a
   first-order unification algorithm, as well as well-foundedness of the
   subsumption order. This entry is part of the <i>Isabelle
@@ -4668,6 +4668,18 @@ date = 2015-07-14
 topic = Mathematics/Analysis
 abstract = This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
 notify = eberlm@in.tum.de
+
+[Error_Function]
+title = The Error Function
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2018-02-06
+notify = eberlm@in.tum.de
+abstract =
+  <p> This entry provides the definitions and basic properties of
+  the complex and real error function erf and the complementary error
+  function erfc. Additionally, it gives their full asymptotic
+  expansions. </p>
 
 [Akra_Bazzi]
 title = The Akra-Bazzi theorem and the Master theorem
@@ -6472,7 +6484,7 @@ author = Christoph Traut<>, Fabian Immler <http://home.in.tum.de/~immler/>
 topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
 date = 2018-01-08
 notify = immler@in.tum.de
-abstract = 
+abstract =
   We present a formally verified implementation of multivariate Taylor
   models. Taylor models are a form of rigorous polynomial approximation,
   consisting of an approximation polynomial based on Taylor expansions,
@@ -6489,7 +6501,7 @@ author = Mohammad Abdulaziz <mailto:mohammad.abdulaziz8@gmail.com>, Lawrence C. 
 topic = Mathematics/Analysis
 date = 2018-01-11
 notify = mohammad.abdulaziz8@gmail.com, lp15@cam.ac.uk
-abstract = 
+abstract =
   We formalise a statement of Green’s theorem—the first formalisation to
   our knowledge—in Isabelle/HOL. The theorem statement that we formalise
   is enough for most applications, especially in physics and
@@ -6499,14 +6511,14 @@ abstract =
   explicitly with respect to the outwards-pointing normal vector.
   Instead we appeal to a homological argument about equivalences between
   paths.
-  
+
 [Ordered_Resolution_Prover]
 title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
 author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
 topic = Logic
 date = 2018-01-18
 notify = andschl@dtu.dk, j.c.blanchette@vu.nl
-abstract = 
+abstract =
   This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
   Ganzinger's "Resolution Theorem Proving" chapter in the
   <em>Handbook of Automated Reasoning</em>. This includes
@@ -6521,7 +6533,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2018-02-02
 notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
-abstract = 
+abstract =
   The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
   LLL algorithm, is an algorithm to find a basis with short, nearly
   orthogonal vectors of an integer lattice. Thereby, it can also be seen
@@ -6542,7 +6554,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten
 topic = Mathematics/Algebra
 date = 2018-02-06
 notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
-abstract = 
+abstract =
   Short vectors in lattices and factors of integer polynomials are
   related. Each factor of an integer polynomial belongs to a certain
   lattice. When factoring polynomials, the condition that we are looking
@@ -6563,7 +6575,7 @@ author = Max Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://
 topic = Computer Science/Data Structures
 date = 2018-02-06
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p> A Treap is a binary tree whose nodes contain pairs
   consisting of some payload and an associated priority. It must have
   the search-tree property w.r.t. the payloads and the heap property
@@ -6580,4 +6592,4 @@ abstract =
   resulting tree is that of a random BST no matter in what order we
   insert the elements. This is the main result of this
   formalisation.</p>
-  
+
