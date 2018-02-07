@@ -6649,7 +6649,7 @@ abstract =
 
 [Treaps]
 title = Treaps
-author = Max Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+author = Maximilian Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 date = 2018-02-06
 notify = eberlm@in.tum.de
