@@ -1390,6 +1390,121 @@ lemma is_red_monomialE:
   obtains f where "f \<in> F" and "f \<noteq> 0" and "lp f adds t"
   using assms unfolding is_red_monomial_iff by blast
 
+lemma replace_lp_adds_stable_is_red:
+  assumes red: "is_red F f" and "q \<noteq> 0" and "lp q adds lp p"
+  shows "is_red (insert q (F - {p})) f"
+proof -
+  from red obtain g t where "g \<in> F" and "g \<noteq> 0" and "t \<in> keys f" and "lp g adds t" by (rule is_red_addsE)
+  show ?thesis
+  proof (cases "g = p")
+    case True
+    show ?thesis
+    proof (rule is_red_addsI)
+      show "q \<in> insert q (F - {p})" by simp
+    next
+      have "lp q adds lp p" by fact
+      also have "... adds t" using \<open>lp g adds t\<close> unfolding True .
+      finally show "lp q adds t" .
+    qed (fact+)
+  next
+    case False
+    with \<open>g \<in> F\<close> have "g \<in> insert q (F - {p})" by blast
+    from this \<open>g \<noteq> 0\<close> \<open>t \<in> keys f\<close> \<open>lp g adds t\<close> show ?thesis by (rule is_red_addsI)
+  qed
+qed
+  
+lemma conversion_property:
+  assumes "is_red {p} f" and "red {r} p q"
+  shows "is_red {q} f \<or> is_red {r} f"
+proof -
+  from \<open>is_red {p} f\<close> obtain t where "t \<in> keys f" and "lp p adds t" and "p \<noteq> 0" by (rule is_red_addsE, simp)
+  from red_indE[OF \<open>red {r} p q\<close>]
+    have "(r \<noteq> 0 \<and> lp r adds lp p \<and> q = p - monom_mult (lc p / lc r) (lp p - lp r) r) \<or>
+          red {r} (tail p) (q - monomial (lc p) (lp p))" by simp
+  thus ?thesis
+  proof
+    assume "r \<noteq> 0 \<and> lp r adds lp p \<and> q = p - monom_mult (lc p / lc r) (lp p - lp r) r"
+    hence "r \<noteq> 0" and "lp r adds lp p" by simp_all
+    show ?thesis by (intro disjI2, rule is_red_singleton_trans, rule \<open>is_red {p} f\<close>, fact+)
+  next
+    assume "red {r} (tail p) (q - monomial (lc p) (lp p))" (is "red _ ?p' ?q'")
+    with red_ord have "?q' \<prec>p ?p'" .
+    hence "?p' \<noteq> 0"
+      and assm: "(?q' = 0 \<or> ((lp ?q') \<prec> (lp ?p') \<or> (lp ?q') = (lp ?p')))"
+      unfolding ord_strict_p_rec[of ?q' ?p'] by (auto simp add: Let_def lc_def)
+    have "lp ?p' \<prec> lp p" by (rule lp_tail, fact)
+    let ?m = "monomial (lc p) (lp p)"
+    from monomial_0D[of "lp p" "lc p"] lc_not_0[OF \<open>p \<noteq> 0\<close>] have "?m \<noteq> 0" by blast
+    have "lp ?m = lp p" by (rule lp_monomial, rule lc_not_0, fact)
+    have "q \<noteq> 0 \<and> lp q = lp p"
+    proof (cases "?q' = 0")
+      case True
+      hence "q = ?m" by simp
+      with \<open>?m \<noteq> 0\<close> \<open>lp ?m = lp p\<close> show ?thesis by simp
+    next
+      case False
+      from assm show ?thesis
+      proof
+        assume "(lp ?q') \<prec> (lp ?p') \<or> (lp ?q') = (lp ?p')"
+        hence "lp ?q' \<preceq> lp ?p'" by auto
+        also have "... \<prec> lp p" by fact
+        finally have "lp ?q' \<prec> lp p" .
+        hence "lp ?q' \<prec> lp ?m" unfolding \<open>lp ?m = lp p\<close> .
+        from lp_plus_eqI[OF this] \<open>lp ?m = lp p\<close> have "lp q = lp p" by simp
+        show ?thesis
+        proof (intro conjI, rule ccontr)
+          assume "\<not> q \<noteq> 0"
+          hence "q = 0" by simp
+          hence "?q' = -?m" by simp
+          hence "lp ?q' = lp (-?m)" by simp
+          also have "... = lp ?m" using lp_uminus .
+          finally have "lp ?q' = lp ?m" .
+          with \<open>lp ?q' \<prec> lp ?m\<close> show False by simp
+        qed (fact)
+      next
+        assume "?q' = 0"
+        with False show ?thesis ..
+      qed
+    qed
+    hence "q \<noteq> 0" and "lp q adds lp p" by simp_all
+    show ?thesis by (intro disjI1, rule is_red_singleton_trans, rule \<open>is_red {p} f\<close>, fact+)
+  qed
+qed
+  
+lemma replace_red_stable_is_red:
+  assumes a1: "is_red F f" and a2: "red (F - {p}) p q"
+  shows "is_red (insert q (F - {p})) f" (is "is_red ?F' f")
+proof -
+  from a1 obtain g where "g \<in> F" and "is_red {g} f" by (rule is_red_singletonI)
+  show ?thesis
+  proof (cases "g = p")
+    case True
+    from a2 obtain h where "h \<in> F - {p}" and "red {h} p q" unfolding red_def by auto
+    from \<open>is_red {g} f\<close> have "is_red {p} f" unfolding True .
+    have "is_red {q} f \<or> is_red {h} f" by (rule conversion_property, fact+)
+    thus ?thesis
+    proof
+      assume "is_red {q} f"
+      show ?thesis
+      proof (rule is_red_singletonD)
+        show "q \<in> ?F'" by auto
+      qed fact
+    next
+      assume "is_red {h} f"
+      show ?thesis
+      proof (rule is_red_singletonD)
+        from \<open>h \<in> F - {p}\<close> show "h \<in> ?F'" by simp
+      qed fact
+    qed
+  next
+    case False
+    show ?thesis
+    proof (rule is_red_singletonD)
+      from \<open>g \<in> F\<close> False show "g \<in> ?F'" by blast
+    qed fact
+  qed
+qed
+
 end (* ordered_powerprod *)
 
 subsection \<open>Well-foundedness and Termination\<close>

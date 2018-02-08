@@ -1579,8 +1579,7 @@ next
   qed
 qed
 
-lemma lex_fun_refl:
-  shows "lex_fun s s"
+lemma lex_fun_refl: "lex_fun s s"
 unfolding lex_fun_alt by simp
 
 lemma lex_fun_antisym:
@@ -1707,6 +1706,10 @@ proof (intro disjCI)
     thus "s x \<le> t x \<or> (\<exists>y<x. s y \<noteq> t y)" by auto
   qed
 qed
+
+corollary lex_fun_strict_alt [code]:
+  "lex_fun_strict s t = (\<not> lex_fun t s)" for s t::"'a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding lex_fun_strict_def using lex_fun_lin[of s t] by auto
 
 lemma lex_fun_zero_min: "lex_fun 0 s" for s::"'a \<Rightarrow> 'b::add_linorder_min"
   by (simp add: lex_fun_def zero_min)
@@ -2036,7 +2039,6 @@ lemma dlex_fun_refl:
   shows "dlex_fun s s"
 unfolding dlex_fun_def by (rule dord_fun_refl, rule lex_fun_refl)
 
-thm dord_fun_antisym
 lemma dlex_fun_antisym:
   assumes "dlex_fun s t" and "dlex_fun t s"
   shows "s = t"
@@ -2051,7 +2053,11 @@ lemma dlex_fun_trans:
 
 lemma dlex_fun_lin: "dlex_fun s t \<or> dlex_fun t s"
   for s t::"('a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder})"
-unfolding dlex_fun_def by (rule dord_fun_lin, rule lex_fun_lin)
+  unfolding dlex_fun_def by (rule dord_fun_lin, rule lex_fun_lin)
+
+corollary dlex_fun_strict_alt [code]:
+  "dlex_fun_strict s t = (\<not> dlex_fun t s)" for s t::"'a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding dlex_fun_strict_def using dlex_fun_lin by auto
 
 lemma dlex_fun_zero_min:
   fixes s t::"('a \<Rightarrow> 'b::add_linorder_min)"
@@ -2100,7 +2106,11 @@ lemma drlex_fun_trans:
 
 lemma drlex_fun_lin: "drlex_fun s t \<or> drlex_fun t s"
   for s t::"('a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder})"
-unfolding drlex_fun_def by (rule dord_fun_lin, rule lex_fun_lin)
+  unfolding drlex_fun_def by (rule dord_fun_lin, rule lex_fun_lin)
+
+corollary drlex_fun_strict_alt [code]:
+  "drlex_fun_strict s t = (\<not> drlex_fun t s)" for s t::"'a \<Rightarrow> 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding drlex_fun_strict_def using drlex_fun_lin by auto
 
 lemma drlex_fun_zero_min:
   fixes s t::"('a \<Rightarrow> 'b::add_linorder_min)"
@@ -2462,6 +2472,10 @@ lemma lex_pm_trans:
 lemma lex_pm_lin: "lex_pm s t \<or> lex_pm t s" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
   by (simp only: lex_pm.rep_eq, fact lex_fun_lin)
 
+corollary lex_pm_strict_alt [code]:
+  "lex_pm_strict s t = (\<not> lex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding lex_pm_strict_def using lex_pm_lin by auto
+
 lemma lex_pm_zero_min: "lex_pm 0 s" for s::"'a \<Rightarrow>\<^sub>0 'b::add_linorder_min"
   by (simp only: lex_pm.rep_eq lookup_zero_fun, fact lex_fun_zero_min)
 
@@ -2490,6 +2504,16 @@ lemma deg_pm_superset:
 
 lemma deg_pm_plus: "deg_pm (s + t) = deg_pm s + deg_pm (t::'a \<Rightarrow>\<^sub>0 'b::comm_monoid_add)"
   by (simp only: deg_pm.rep_eq lookup_plus_fun, rule deg_fun_plus, simp_all add: keys_eq_supp[symmetric])
+
+lemma deg_pm_single: "deg_pm (Poly_Mapping.single x k) = k"
+proof -
+  have "keys (Poly_Mapping.single x k) \<subseteq> {x}" by simp
+  moreover have "finite {x}" by simp
+  ultimately have "deg_pm (Poly_Mapping.single x k) = (\<Sum>y\<in>{x}. lookup (Poly_Mapping.single x k) y)"
+    by (rule deg_pm_superset)
+  also have "... = k" by simp
+  finally show ?thesis .
+qed
 
 subsubsection \<open>General Degree-Orders\<close>
 
@@ -2589,6 +2613,10 @@ lemma dlex_pm_lin: "dlex_pm s t \<or> dlex_pm t s"
   for s t::"('a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder})"
   by (simp only: dlex_pm_iff, fact dlex_fun_lin)
 
+corollary dlex_pm_strict_alt [code]:
+  "dlex_pm_strict s t = (\<not> dlex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding dlex_pm_strict_def using dlex_pm_lin by auto
+
 lemma dlex_pm_zero_min: "dlex_pm 0 s"
   for s t::"('a \<Rightarrow>\<^sub>0 'b::add_linorder_min)"
   by (simp only: dlex_pm_iff lookup_zero_fun, rule dlex_fun_zero_min, simp add: keys_eq_supp[symmetric])
@@ -2630,6 +2658,10 @@ lemma drlex_pm_trans:
 lemma drlex_pm_lin: "drlex_pm s t \<or> drlex_pm t s"
   for s t::"('a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder})"
   by (simp only: drlex_pm_iff, fact drlex_fun_lin)
+
+corollary drlex_pm_strict_alt [code]:
+  "drlex_pm_strict s t = (\<not> drlex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
+  unfolding drlex_pm_strict_def using drlex_pm_lin by auto
 
 lemma drlex_pm_zero_min: "drlex_pm 0 s"
   for s t::"('a \<Rightarrow>\<^sub>0 'b::add_linorder_min)"

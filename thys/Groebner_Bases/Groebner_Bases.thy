@@ -959,16 +959,256 @@ lemma GB_subset:
   shows "is_Groebner_basis G'"
   using assms(1) unfolding GB_alt_1 using assms(2) assms(3) red_rtrancl_subset by blast
 
+lemma (in ordered_powerprod) GB_remove_0_stable_GB:
+  assumes "is_Groebner_basis G"
+  shows "is_Groebner_basis (G - {0})"
+  using assms by (simp only: is_Groebner_basis_def red_minus_singleton_zero)
+
 lemmas is_red_implies_0_red_finite = is_red_implies_0_red_dgrad_p_set'[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas GB_implies_unique_nf_finite = GB_implies_unique_nf_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas GB_alt_2_finite = GB_alt_2_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas GB_alt_3_finite = GB_alt_3_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 
+subsection \<open>Replacing Elements in Gr\"obner Bases\<close>
+
+lemma replace_in_dgrad_p_set:
+  assumes "G \<subseteq> dgrad_p_set d m"
+  obtains n where "q \<in> dgrad_p_set d n" and "G \<subseteq> dgrad_p_set d n"
+    and "insert q (G - {p}) \<subseteq> dgrad_p_set d n"
+proof -
+  from assms obtain n where "m \<le> n" and 1: "q \<in> dgrad_p_set d n" and 2: "G \<subseteq> dgrad_p_set d n"
+    by (rule dgrad_p_set_insert)
+  from this(2, 3) have "insert q (G - {p}) \<subseteq> dgrad_p_set d n" by auto
+  with 1 2 show ?thesis ..
+qed
+
+lemma GB_replace_lp_adds_stable_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and q: "q \<in> (pideal G)" and "lp q adds lp p"
+  shows "is_Groebner_basis (insert q (G - {p}))" (is "is_Groebner_basis ?G'")
+proof -
+  from assms(2) obtain n where 1: "G \<subseteq> dgrad_p_set d n" and 2: "?G' \<subseteq> dgrad_p_set d n"
+    by (rule replace_in_dgrad_p_set)
+  from isGB show ?thesis unfolding GB_alt_3_dgrad_p_set[OF assms(1) 1] GB_alt_3_dgrad_p_set[OF assms(1) 2]
+  proof (intro ballI impI)
+    fix f
+    assume f1: "f \<in> (pideal ?G')" and "f \<noteq> 0"
+      and a1: "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)"
+    from f1 replace_pideal[OF q, of p] have "f \<in> pideal G" ..
+    from a1[rule_format, OF this \<open>f \<noteq> 0\<close>] obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by auto
+    show "\<exists>g\<in>?G'. g \<noteq> 0 \<and> lp g adds lp f"
+    proof (cases "g = p")
+      case True
+      show ?thesis
+      proof
+        from \<open>lp q adds lp p\<close> have "lp q adds lp g" unfolding True .
+        also have "... adds lp f" by fact
+        finally have "lp q adds lp f" .
+        with \<open>q \<noteq> 0\<close> show "q \<noteq> 0 \<and> lp q adds lp f" ..
+      next
+        show "q \<in> ?G'" by simp
+      qed
+    next
+      case False
+      show ?thesis
+      proof
+        show "g \<noteq> 0 \<and> lp g adds lp f" by (rule, fact+)
+      next
+        from \<open>g \<in> G\<close> False show "g \<in> ?G'" by blast
+      qed
+    qed
+  qed
+qed
+  
+lemma GB_replace_lp_adds_stable_pideal_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and "q \<in> pideal G" and "lp q adds lp p"
+  shows "pideal (insert q (G - {p})) = pideal G" (is "pideal ?G' = pideal G")
+proof (rule, rule replace_pideal, fact, rule)
+  fix f
+  assume "f \<in> pideal G"
+  note assms(1)
+  moreover from assms(2) obtain n where "?G' \<subseteq> dgrad_p_set d n" by (rule replace_in_dgrad_p_set)
+  moreover have "is_Groebner_basis ?G'" by (rule GB_replace_lp_adds_stable_GB_dgrad_p_set, fact+)
+  ultimately have "\<exists>! h. (red ?G')\<^sup>*\<^sup>* f h \<and> \<not> is_red ?G' h" by (rule GB_implies_unique_nf_dgrad_p_set)
+  then obtain h where ftoh: "(red ?G')\<^sup>*\<^sup>* f h" and irredh: "\<not> is_red ?G' h" by auto
+  have "\<not> is_red G h"
+  proof
+    assume "is_red G h"
+    have "is_red ?G' h" by (rule replace_lp_adds_stable_is_red, fact+)
+    with irredh show False ..
+  qed
+  have "f - h \<in> pideal ?G'" by (rule red_rtranclp_diff_in_pideal, rule ftoh)
+  have "f - h \<in> pideal G" by (rule, fact, rule replace_pideal, fact)
+  from pideal_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
+  from pideal_closed_uminus[OF this] have "h \<in> pideal G" by simp
+  with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
+  with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
+  thus "f \<in> pideal ?G'" by (simp add: red_rtranclp_0_in_pideal)
+qed
+  
+lemma GB_replace_red_stable_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "p \<in> G" and q: "red (G - {p}) p q"
+  shows "is_Groebner_basis (insert q (G - {p}))" (is "is_Groebner_basis ?G'")
+proof -
+  from assms(2) obtain n where 1: "G \<subseteq> dgrad_p_set d n" and 2: "?G' \<subseteq> dgrad_p_set d n"
+    by (rule replace_in_dgrad_p_set)
+  from isGB show ?thesis unfolding GB_alt_2_dgrad_p_set[OF assms(1) 1] GB_alt_2_dgrad_p_set[OF assms(1) 2]
+  proof (intro ballI impI)
+    fix f
+    assume f1: "f \<in> (pideal ?G')" and "f \<noteq> 0"
+      and a1: "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> is_red G f"
+    have "q \<in> pideal G"
+    proof (rule pideal_closed_red, rule pideal_mono)
+      from generator_subset_pideal \<open>p \<in> G\<close> show "p \<in> pideal G" ..
+    next
+      show "G - {p} \<subseteq> G" by (rule Diff_subset)
+    qed (rule q)
+    from f1 replace_pideal[OF this, of p] have "f \<in> pideal G" ..
+    have "is_red G f" by (rule a1[rule_format], fact+)
+    show "is_red ?G' f" by (rule replace_red_stable_is_red, fact+)
+  qed
+qed
+
+lemma GB_replace_red_stable_pideal_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "red (G - {p}) p q"
+  shows "pideal (insert q (G - {p})) = pideal G" (is "pideal ?G' = _")
+proof -
+  from \<open>p \<in> G\<close> generator_subset_pideal have "p \<in> pideal G" ..
+  have "q \<in> pideal G"
+    by (rule pideal_closed_red, rule pideal_mono, rule Diff_subset, rule \<open>p \<in> pideal G\<close>, rule ptoq)
+  show ?thesis
+  proof (rule, rule replace_pideal, fact, rule)
+    fix f
+    assume "f \<in> pideal G"
+    note assms(1)
+    moreover from assms(2) obtain n where "?G' \<subseteq> dgrad_p_set d n" by (rule replace_in_dgrad_p_set)
+    moreover have "is_Groebner_basis ?G'" by (rule GB_replace_red_stable_GB_dgrad_p_set, fact+)
+    ultimately have "\<exists>! h. (red ?G')\<^sup>*\<^sup>* f h \<and> \<not> is_red ?G' h" by (rule GB_implies_unique_nf_dgrad_p_set)
+    then obtain h where ftoh: "(red ?G')\<^sup>*\<^sup>* f h" and irredh: "\<not> is_red ?G' h" by auto
+    have "\<not> is_red G h"
+    proof
+      assume "is_red G h"
+      have "is_red ?G' h" by (rule replace_red_stable_is_red, fact+)
+      with irredh show False ..
+    qed
+    have "f - h \<in> pideal ?G'" by (rule red_rtranclp_diff_in_pideal, rule ftoh)
+    have "f - h \<in> pideal G" by (rule, fact, rule replace_pideal, fact)
+    from pideal_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
+    from pideal_closed_uminus[OF this] have "h \<in> pideal G" by simp
+    with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
+    with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
+    thus "f \<in> pideal ?G'" by (simp add: red_rtranclp_0_in_pideal)
+  qed
+qed
+  
+lemma GB_replace_red_rtranclp_stable_GB_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "(red (G - {p}))\<^sup>*\<^sup>* p q"
+  shows "is_Groebner_basis (insert q (G - {p}))"
+  using ptoq
+proof (induct q rule: rtranclp_induct)
+  case base
+  from isGB \<open>p \<in> G\<close> show ?case by (simp add: insert_absorb)
+next
+  case (step y z)
+  show ?case
+  proof (cases "y = p")
+    case True
+    from assms(1) assms(2) isGB \<open>p \<in> G\<close> show ?thesis
+    proof (rule GB_replace_red_stable_GB_dgrad_p_set)
+      from \<open>red (G - {p}) y z\<close> show "red (G - {p}) p z" unfolding True .
+    qed
+  next
+    case False
+    show ?thesis
+      proof (cases "y \<in> G")
+        case True
+        with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
+        hence "insert y (G - {p}) = ?G'" by auto
+        with step(3) have "is_Groebner_basis ?G'" by simp
+        from \<open>y \<in> ?G'\<close> generator_subset_pideal have "y \<in> pideal ?G'" ..
+        have "z \<in> pideal ?G'" by (rule pideal_closed_red, rule subset_refl, fact+)
+        show "is_Groebner_basis (insert z ?G')" by (rule GB_insert, fact+)
+      next
+        case False
+        from assms(2) obtain n where "insert y (G - {p}) \<subseteq> dgrad_p_set d n"
+            by (rule replace_in_dgrad_p_set)
+        from assms(1) this step(3) have "is_Groebner_basis (insert z (insert y (G - {p}) - {y}))"
+        proof (rule GB_replace_red_stable_GB_dgrad_p_set)
+          from \<open>red (G - {p}) y z\<close> False show "red ((insert y (G - {p})) - {y}) y z" by simp
+        qed simp
+        moreover from False have "... = (insert z (G - {p}))" by simp
+        ultimately show ?thesis by simp
+      qed
+  qed
+qed
+
+lemma GB_replace_red_rtranclp_stable_pideal_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "(red (G - {p}))\<^sup>*\<^sup>* p q"
+  shows "pideal (insert q (G - {p})) = pideal G"
+  using ptoq
+proof (induct q rule: rtranclp_induct)
+  case base
+  from \<open>p \<in> G\<close> show ?case by (simp add: insert_absorb)
+next
+  case (step y z)
+  show ?case
+  proof (cases "y = p")
+    case True
+    from assms(1) assms(2) isGB \<open>p \<in> G\<close> step(2) show ?thesis unfolding True
+      by (rule GB_replace_red_stable_pideal_dgrad_p_set)
+  next
+    case False
+    have gb: "is_Groebner_basis (insert y (G - {p}))"
+      by (rule GB_replace_red_rtranclp_stable_GB_dgrad_p_set, fact+)
+    show ?thesis
+    proof (cases "y \<in> G")
+      case True
+      with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
+      hence eq: "insert y ?G' = ?G'" by auto
+      from \<open>y \<in> ?G'\<close> generator_subset_pideal have "y \<in> pideal ?G'" ..
+      have "z \<in> pideal ?G'" by (rule pideal_closed_red, rule subset_refl, fact+)
+      hence "pideal (insert z ?G') = pideal ?G'" by (rule pideal_insert)
+      also from step(3) have "... = pideal G" by (simp only: eq)
+      finally show ?thesis .
+    next
+      case False
+      from assms(2) obtain n where 1: "insert y (G - {p}) \<subseteq> dgrad_p_set d n"
+        by (rule replace_in_dgrad_p_set)
+      from False have "pideal (insert z (G - {p})) = pideal (insert z (insert y (G - {p}) - {y}))"
+        by auto
+      also from assms(1) 1 gb have "... = pideal (insert y (G - {p}))"
+      proof (rule GB_replace_red_stable_pideal_dgrad_p_set)
+        from step(2) False show "red ((insert y (G - {p})) - {y}) y z" by simp
+      qed simp
+      also have "... = pideal G" by fact
+      finally show ?thesis .
+    qed
+  qed
+qed
+
+lemmas GB_replace_lp_adds_stable_GB_finite =
+  GB_replace_lp_adds_stable_GB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_replace_lp_adds_stable_pideal_finite =
+  GB_replace_lp_adds_stable_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_replace_red_stable_GB_finite =
+  GB_replace_red_stable_GB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_replace_red_stable_pideal_finite =
+  GB_replace_red_stable_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_replace_red_rtranclp_stable_GB_finite =
+  GB_replace_red_rtranclp_stable_GB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas GB_replace_red_rtranclp_stable_pideal_finite =
+  GB_replace_red_rtranclp_stable_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+
 subsection \<open>An Inconstructive Proof of the Existence of Finite Gr\"obner Bases\<close>
 
 lemma ex_finite_GB_dgrad_p_set:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
-  obtains G where "finite G" and "is_Groebner_basis G" and "pideal G = pideal F"
+  obtains G where "G \<subseteq> dgrad_p_set d m" and "finite G" and "is_Groebner_basis G" and "pideal G = pideal F"
 proof -
   define S where "S = {lp f | f. f \<in> pideal F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0}"
   have "S \<subseteq> dgrad_set d m"
@@ -1069,6 +1309,14 @@ proof -
         thus "f \<in> pideal G" by (rule red_rtranclp_0_in_pideal)
       qed
     qed fact
+  next
+    show "G \<subseteq> dgrad_p_set d m"
+    proof
+      fix g
+      assume "g \<in> G"
+      hence "g \<in> pideal F \<and> g \<in> dgrad_p_set d m \<and> g \<noteq> 0" by (rule G)
+      thus "g \<in> dgrad_p_set d m" by (elim conjE)
+    qed
   qed
 qed
 

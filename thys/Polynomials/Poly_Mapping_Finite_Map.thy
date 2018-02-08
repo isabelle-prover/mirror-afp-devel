@@ -108,20 +108,20 @@ lemma compute_keys_pp[code]: "keys (Pm_fmap xs) = fmdom' (clearjunk0 xs)"
 lemma compute_zero_pp[code]: "0 = Pm_fmap fmempty"
   by (auto intro!: poly_mapping_eqI simp: fmlookup_default_def)
 
-lemma compute_plus_pp[code]:
-  "Pm_fmap xs + Pm_fmap ys = Pm_fmap (fmmap_keys (\<lambda>k v. lookup0 xs k + lookup0 ys k) (xs ++\<^sub>f ys))"
+lemma compute_plus_pp [code]:
+  "Pm_fmap xs + Pm_fmap ys = Pm_fmap (clearjunk0 (fmmap_keys (\<lambda>k v. lookup0 xs k + lookup0 ys k) (xs ++\<^sub>f ys)))"
   by (auto intro!: poly_mapping_eqI
-      simp: fmlookup_default_def lookup_add fmlookup_dom_iff
+      simp: fmlookup_default_def lookup_add fmlookup_dom_iff PM_clearjunk0_cong
       split: option.splits)
 
 lemma compute_lookup_pp[code]:
   "lookup (Pm_fmap xs) x = lookup0 xs x"
   by (transfer, simp)
 
-lemma compute_minus_pp[code]:
-  "Pm_fmap xs - Pm_fmap ys = Pm_fmap (fmmap_keys (\<lambda>k v. lookup0 xs k - lookup0 ys k) (xs ++\<^sub>f ys))"
+lemma compute_minus_pp [code]:
+  "Pm_fmap xs - Pm_fmap ys = Pm_fmap (clearjunk0 (fmmap_keys (\<lambda>k v. lookup0 xs k - lookup0 ys k) (xs ++\<^sub>f ys)))"
   by (auto intro!: poly_mapping_eqI
-      simp: fmlookup_default_def lookup_minus fmlookup_dom_iff
+      simp: fmlookup_default_def lookup_minus fmlookup_dom_iff PM_clearjunk0_cong
       split: option.splits)
 
 lemma compute_uminus_pp[code]:
