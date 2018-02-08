@@ -310,7 +310,10 @@ ML \<open>val mpoly_simproc = Simplifier.make_simproc @{context} "multivariate p
        proc = (K (fn ctxt => fn ct =>
           SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
             (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct)))}\<close>
-setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [mpoly_simproc])\<close>
+
+(* The simproc slows down computations *a lot*, so it is deactivated by default. *)
+
+(* setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [mpoly_simproc])\<close> *)
 
 
 subsubsection \<open>Ordered Power-Products\<close>
