@@ -2213,4 +2213,27 @@ proof -
       intro!: order.trans[OF degree_prod_sum_le])
 qed
 
+lemma upper_triangular_imp_det_eq_0_iff:
+  fixes A :: "'a :: idom mat"
+  assumes "A \<in> carrier_mat n n" and "upper_triangular A"
+  shows "det A = 0 \<longleftrightarrow> 0 \<in> set (diag_mat A)"
+  using assms by (auto simp: det_upper_triangular)
+
+lemma det_identical_columns:
+  assumes A: "A \<in> carrier_mat n n"  
+    and ij: "i \<noteq> j"
+    and i: "i < n" and j: "j < n"
+    and r: "col A i = col A j"
+  shows "det A = 0"
+proof-
+  have "det A = det A\<^sup>T" using det_transpose[OF A] ..
+  also have "... = 0" 
+  proof (rule det_identical_rows[of _ n i j])
+     show "row (transpose_mat A) i = row (transpose_mat A) j"
+       using A i j r by auto
+  qed (auto simp add: assms)
+  finally show ?thesis .
+qed
+
+
 end

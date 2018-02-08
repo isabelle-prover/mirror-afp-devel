@@ -114,23 +114,22 @@ lemma sorted_wrt_gen2:
    apply (auto simp: rlex_def set_alls intro: lex_append_leftI lex_append_rightI)
   done
 
-definition generate
+definition generate'
   where
-    "generate A B a b = tl (map (\<lambda>(x, y). (fst x, fst y)) (alls2 A B a b))"
+    "generate' A B a b = tl (map (\<lambda>(x, y). (fst x, fst y)) (alls2 A B a b))"
 
-lemma sorted_wrt_generate:
-  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate A B a b)"
-  by (auto simp: generate_def sorted_wrt_gen2 sorted_wrt_tl)
+lemma sorted_wrt_generate':
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (generate' A B a b)"
+  by (auto simp: generate'_def sorted_wrt_gen2 sorted_wrt_tl)
 
 lemma gen2_nth0 [simp]:
   "gen2 A B a b ! 0 = (zeroes (length a), zeroes (length b))"
-  by (auto simp: generate_def)
+  by auto
 
-lemma gen2_ne [simp, intro]: "gen2 m n b c \<noteq> []"
-  by (auto simp: generate_def)
+lemma gen2_ne [simp, intro]: "gen2 m n b c \<noteq> []" by auto
 
-lemma in_generate: "x \<in> set (generate m n c b) \<Longrightarrow> x \<in> set (gen2 m n c b)"
-  unfolding generate_def by (rule list.set_sel) simp
+lemma in_generate': "x \<in> set (generate' m n c b) \<Longrightarrow> x \<in> set (gen2 m n c b)"
+  unfolding generate'_def by (rule list.set_sel) simp
 
 definition "cond_cons P = (\<lambda>(ys, s). case ys of [] \<Rightarrow> True | ys \<Rightarrow> P ys s)"
 
@@ -184,7 +183,7 @@ begin
 
 definition special_solutions :: "(nat list \<times> nat list) list"
   where
-    "special_solutions = map (\<lambda>(i, j). sij a b i j) (List.product [0 ..< length a] [0 ..< length b])"
+    "special_solutions = [sij a b i j . i \<leftarrow> [0 ..< length a], j \<leftarrow> [0 ..< length b]]"
 
 definition big_e :: "nat list \<Rightarrow> nat \<Rightarrow> nat list"
   where
@@ -237,14 +236,14 @@ definition cond_d :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
     "cond_d xs ys \<longleftrightarrow> (\<forall>l\<le>length b. take l b \<bullet> take l ys \<le> a \<bullet> xs)"
 
-definition pdprodr_impl :: "nat list \<Rightarrow> bool"
+definition subdprodr_impl :: "nat list \<Rightarrow> bool"
   where
-    "pdprodr_impl ys \<longleftrightarrow> (\<forall>l\<le>length b.
+    "subdprodr_impl ys \<longleftrightarrow> (\<forall>l\<le>length b.
       take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl (take l ys)) [0 ..< length a])"
 
-definition pdprodl_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
+definition subdprodl_impl :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
   where
-    "pdprodl_impl x y \<longleftrightarrow> (\<forall>k\<le>length a. take k a \<bullet> take k x \<le> b \<bullet> y)"
+    "subdprodl_impl x y \<longleftrightarrow> (\<forall>k\<le>length a. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
 definition "boundl_impl x y \<longleftrightarrow> (\<forall>i<length a. x ! i \<le> max_x_impl y i)"
 
@@ -255,21 +254,21 @@ definition static_bounds
       (\<forall>x\<in>set x. x \<le> mx) \<and> (\<forall>y\<in>set y. y \<le> my))"
 
 definition "check_cond =
-  (\<lambda>(x, y). static_bounds x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr_impl x y \<and> pdprodl_impl x y \<and> pdprodr_impl y)"
+  (\<lambda>(x, y). static_bounds x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr_impl x y \<and> subdprodl_impl x y \<and> subdprodr_impl y)"
 
 definition "check' = filter check_cond"
 
 definition "non_special_solutions =
   (let A = Max (set b); B = Max (set a)
-  in minimize (check' (generate A B a b)))"
+  in minimize (check' (generate' A B a b)))"
 
 definition "solve = special_solutions @ non_special_solutions"
 
 end
 
-lemma sorted_wrt_check_generate:
-  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check' a b (generate A B a b))"
-  by (auto simp: check'_def intro!: sorted_wrt_filter sorted_wrt_generate sorted_wrt_tl)
+lemma sorted_wrt_check_generate':
+  "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (check' a b (generate' A B a b))"
+  by (auto simp: check'_def intro!: sorted_wrt_filter sorted_wrt_generate' sorted_wrt_tl)
 
 lemma big_e:
   "set (big_e a b xs j) = hlde_ops.Ej a b j xs"
@@ -308,11 +307,11 @@ lemma (in hlde) boundr_impl [simp]: "boundr_impl a b x y = boundr x y"
 lemma (in hlde) cond_d [simp]: "cond_d a b x y = cond_D x y"
   by (simp add: cond_d_def cond_D_def)
 
-lemma (in hlde) pdprodr_impl [simp]: "pdprodr_impl a b y = subprodr y"
-  using max_x_impl by (auto simp: pdprodr_impl_def subprodr_def) presburger+
+lemma (in hlde) subdprodr_impl [simp]: "subdprodr_impl a b y = subdprodr y"
+  using max_x_impl by (auto simp: subdprodr_impl_def subdprodr_def) presburger+
 
-lemma (in hlde) pdprodl_impl [simp]: "pdprodl_impl a b x y = subprodl x y"
-  by (simp add: pdprodl_impl_def subprodl_def)
+lemma (in hlde) subdprodl_impl [simp]: "subdprodl_impl a b x y = subdprodl x y"
+  by (simp add: subdprodl_impl_def subdprodl_def)
 
 lemma (in hlde) cond_bound_impl [simp]: "boundl_impl a b x y = boundl x y"
   by (simp add: boundl_impl_def boundl_def max_x_impl)
@@ -320,12 +319,12 @@ lemma (in hlde) cond_bound_impl [simp]: "boundl_impl a b x y = boundl x y"
 lemma (in hlde) check [simp]:
   "check' a b =
     filter (\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<and>
-    subprodl x y \<and>
-    subprodr y)"
+    subdprodl x y \<and>
+    subdprodr y)"
   by (simp add: check'_def check_cond_def)
 
 text \<open>
-  conditions B, C, and D from Huet as well as "subprodr" and "subprodl" are
+  conditions B, C, and D from Huet as well as "subdprodr" and "subdprodl" are
   preserved by smaller solutions
 \<close>
 lemma (in hlde) le_imp_conds:
@@ -334,8 +333,8 @@ lemma (in hlde) le_imp_conds:
   shows "cond_B x \<Longrightarrow> cond_B u"
     and "boundr x y \<Longrightarrow> boundr u v"
     and "a \<bullet> u = b \<bullet> v \<Longrightarrow> cond_D x y \<Longrightarrow> cond_D u v"
-    and "a \<bullet> u = b \<bullet> v \<Longrightarrow> subprodl x y \<Longrightarrow> subprodl u v"
-    and "subprodr y \<Longrightarrow> subprodr v"
+    and "a \<bullet> u = b \<bullet> v \<Longrightarrow> subdprodl x y \<Longrightarrow> subdprodl u v"
+    and "subdprodr y \<Longrightarrow> subdprodr v"
 proof -
   assume B: "cond_B x"
   have "length u = m" using len and le by (auto)
@@ -355,10 +354,10 @@ proof -
     finally show "take k a \<bullet> take k u \<le> b \<bullet> map (max_y (take k u)) [0..<n]" .
   qed
 next
-  assume subprodr: "subprodr y"
+  assume subdprodr: "subdprodr y"
   have "length v = n" using len and le by (auto)
-  show "subprodr v"
-  proof (unfold subprodr_def, intro allI impI)
+  show "subdprodr v"
+  proof (unfold subdprodr_def, intro allI impI)
     fix l
     assume l: "l \<le> n"
     moreover have *: "take l v \<le>\<^sub>v take l y" if "l \<le> n" for l
@@ -366,7 +365,7 @@ next
     ultimately have "take l b \<bullet> take l v \<le> take l b \<bullet> take l y"
       by (intro dotprod_le_right) (auto simp: len)
     also have "\<dots> \<le> a \<bullet> map (max_x (take l y)) [0..<m]"
-      using l and subprodr by (auto simp: subprodr_def)
+      using l and subdprodr by (auto simp: subdprodr_def)
     also have "\<dots> \<le> a \<bullet> map (max_x (take l v)) [0..<m]"
       using le_imp_max_x_ge [OF * [OF l]]
       using l by (auto simp: len intro!: dotprod_le_right less_eqI)
@@ -382,9 +381,9 @@ next
   then show "cond_D u v"
     using le by (auto simp: cond_D_def len le_length intro: dotprod_le_take)
 next
-  assume "a \<bullet> u = b \<bullet> v" and "subprodl x y"
-  then show "subprodl u v"
-    using le by (metis subprodl_def dotprod_le_take le_length len(1))
+  assume "a \<bullet> u = b \<bullet> v" and "subdprodl x y"
+  then show "subdprodl u v"
+    using le by (metis subdprodl_def dotprod_le_take le_length len(1))
 qed
 
 lemma (in hlde) special_solutions [simp]:
@@ -394,7 +393,6 @@ proof -
     by (auto simp: Special_Solutions_def special_solutions_def) (blast)
   moreover have "Special_Solutions \<subseteq> set (special_solutions a b)"
     by (auto simp: Special_Solutions_def special_solutions_def)
-      (metis SigmaI atLeast0LessThan lessThan_iff pair_imageI)
   ultimately show ?thesis ..
 qed
 
@@ -421,7 +419,7 @@ lemma (in hlde) in_non_special_solutions:
   assumes "(x, y) \<in> set (non_special_solutions a b)"
   shows "(x, y) \<in> Solutions"
   using assms
-  by (auto dest!: minimize_wrtD in_generate
+  by (auto dest!: minimize_wrtD in_generate'
     simp: non_special_solutions_def in_Solutions_iff minimize_def set_alls2)
 
 lemma generate_unique:
@@ -440,34 +438,34 @@ lemma gen2_unique:
   using sorted_wrt_nth_less [OF sorted_wrt_gen2 assms]
   by (auto simp: rlex2_irrefl)
 
-lemma zeroes_ni_generate:
-  "(zeroes (length a), zeroes (length b)) \<notin> set (generate A B a b)"
+lemma zeroes_ni_generate':
+  "(zeroes (length a), zeroes (length b)) \<notin> set (generate' A B a b)"
 proof -
   have "gen2 A B a b ! 0 = (zeroes (length a), zeroes (length b))" by (auto)
   with gen2_unique [of 0 A B a b] show ?thesis
-    by (auto simp: in_set_conv_nth nth_tl generate_def)
+    by (auto simp: in_set_conv_nth nth_tl generate'_def)
       (metis One_nat_def Suc_eq_plus1 less_diff_conv zero_less_Suc)
 qed
 
 lemma set_generate':
-  "set (generate A B a b) =
+  "set (generate' A B a b) =
     {(x, y). (x, y) \<noteq> (zeroes (length a), zeroes (length b)) \<and> (x, y) \<in> set (gen2 A B a b)}"
 proof
-  show "set (generate A B a b)
+  show "set (generate' A B a b)
         \<subseteq> {(x, y).(x, y) \<noteq> (zeroes (length a), zeroes (length b)) \<and> (x, y) \<in> set (gen2 A B a b)}"
-    using in_generate and mem_Collect_eq and zeroes_ni_generate by (auto)
+    using in_generate' and mem_Collect_eq and zeroes_ni_generate' by (auto)
 next
   have "(zeroes (length a), zeroes (length b)) = hd (gen2 A B a b)"
     by (simp add: hd_conv_nth)
   moreover have "set (gen2 A B a b) = set (tl (gen2 A B a b)) \<union> {(zeroes (length a), zeroes (length b))}"
     by (metis Un_empty_right Un_insert_right gen2_ne calculation list.exhaust_sel list.simps(15))
   ultimately show " {(x, y). (x, y) \<noteq> (zeroes (length a), zeroes (length b)) \<and> (x, y) \<in> set (gen2 A B a b)}
-        \<subseteq> set (generate A B a b)"
-    unfolding generate_def by blast
+        \<subseteq> set (generate' A B a b)"
+    unfolding generate'_def by blast
 qed
 
-lemma set_generate:
-  "set (generate A B a b) =
+lemma set_generate'':
+  "set (generate' A B a b) =
   {(x, y). (x, y) \<noteq> (zeroes (length a), zeroes (length b)) \<and> x \<le>\<^sub>v replicate (length a) A \<and> y \<le>\<^sub>v replicate (length b) B}"
   by (simp add: set_generate' set_gen2')
 
@@ -478,105 +476,12 @@ proof -
     All_lex: "All_lex = gen2 (Max (set b)) (Max (set a)) a b"
   define z where z: "z = (zeroes m, zeroes n)"
   have "set (non_special_solutions a b) \<subseteq> set (tl (All_lex))"
-    by (auto simp: All_lex generate_def non_special_solutions_def minimize_def dest: minimize_wrtD)
+    by (auto simp: All_lex generate'_def non_special_solutions_def minimize_def dest: minimize_wrtD)
   moreover have "z \<notin> set (tl (All_lex))"
-    using zeroes_ni_generate All_lex z by (auto simp: generate_def)
+    using zeroes_ni_generate' All_lex z by (auto simp: generate'_def)
   ultimately show ?thesis
     using z by blast
 qed
-
-lemma (in hlde) in_solve_in_solutions:
-  assumes "(x, y) \<in> set (solve a b)"
-  shows "(x, y) \<in> set (solutions a b)"
-proof -
-  consider "(x, y) \<in> set (special_solutions a b)"
-    | (nonspecial) "(x, y) \<in> set (non_special_solutions a b)"
-    using assms by (auto simp: solve_def)
-  then show ?thesis
-  proof (cases)
-    case nonspecial
-    then have "(x, y) \<in> Solutions" by (fact in_non_special_solutions)
-    then have [simp]: "length x = m" "length y = n" by (auto simp: in_Solutions_iff)
-    have "(x, y) \<in> Minimal_Solutions"
-    proof (intro Minimal_SolutionsI')
-      show "(x, y) \<in> Solutions" by fact
-      then show "nonzero x"
-        using zeroes_ni_non_special_solutions and nonspecial
-        by (auto dest: nonzero_Solutions_iff simp: not_nonzero_iff)
-      show "\<not> (\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y)"
-      proof
-        assume "\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y"
-        then obtain u and v where "(u, v) \<in> Minimal_Solutions"
-          and less: "u @ v <\<^sub>v x @ y" by blast
-        then consider "(u, v) \<in> Special_Solutions" | "(u, v) \<in> Minimal_Solutions - Special_Solutions" by blast
-        then show False
-        proof (cases)
-          case 1
-          then obtain i and j where ij: "i < m" "j < n"
-            and [simp]: "u = (zeroes m)[i := dij i j]" "v = (zeroes n)[j := eij i j]"
-            by (auto simp: Special_Solutions_def sij_def)
-          moreover have "dij i j \<le> x ! i" and "eij i j \<le> y ! j"
-            using less and ij
-             apply auto
-             apply (metis \<open>length x = m\<close> le_append length_list_update length_replicate less_eq_def nth_list_update_eq order_vec.dual_order.strict_iff_order)
-            apply (metis \<open>length x = m\<close> le_append length_list_update length_replicate less_eq_def nth_list_update_eq order_vec.dual_order.strict_iff_order)
-            done
-          moreover then have "eij i j - 1 \<in> Ej j x" using ij by (auto simp: Ej_def)
-          moreover then have ne: "Ej j x \<noteq> {}" and "Min (Ej j x) \<le> eij i j - 1" by (auto simp: finite_Ej)
-          moreover have "boundr_impl a b x y"
-            using nonspecial
-            by (auto simp: non_special_solutions_def minimize_def dest!: minimize_wrtD)
-          ultimately show False
-            using less
-            apply (auto simp: boundr_def sij_def Special_Solutions_def max_y_def)
-            apply (drule_tac x = j in spec) apply (auto simp: if_P [OF ne])
-            using eij_neq_0 by fastforce
-        next
-          case 2
-          let ?P = "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"
-          let ?A = "Max (set b)" and ?B = "Max (set a)"
-          let ?xs = "check' a b (generate ?A ?B a b)"
-          have xy: "(x, y) \<in> set (minimize ?xs)" using nonspecial by (auto simp: non_special_solutions_def)
-          have sorted: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) ?xs" by (intro sorted_wrt_check_generate)
-          have rlex2: "(u, v) <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2 (x, y)" by (intro less_imp_rlex2) (auto simp: less)
-          note minimize_False = in_minimize_wrt_False [OF rlex2_not_sym sorted _ _ rlex2, of ?P, folded minimize_def]
-          show False using less
-          proof (intro minimize_False [OF _ xy])
-            show "(u, v) \<in> set ?xs"
-              using 2 and max_coeff_bound_right
-              apply (auto dest: conds simp: set_gen2' set_generate Minimal_Solutions_length max_coeff_bound static_bounds_def maxne0_impl)
-              using Minimal_Solutions_gt0 apply fastforce
-              apply (metis Minimal_Solutions_length hlde.max_coeff_bound_right hlde_axioms le_not_less_replicate le_trans maxne0_le_Max order_vec.dual_order.strict_implies_order order_vec.eq_iff)
-              apply (metis Minimal_Solutions_length hlde.max_coeff_bound hlde_axioms le_replicateI le_trans maxne0_le_Max)
-              using Minimal_Solutions_imp_Solutions Solutions_def apply blast
-              done
-          qed auto
-        qed
-      qed
-    qed
-    then show ?thesis by simp
-  qed (simp add: Special_Solutions_in_Minimal_Solutions)
-qed
-
-lemma (in hlde) in_solutions_in_solve:
-  assumes "(x, y) \<in> set (solutions a b)"
-  shows "(x, y) \<in> set (solve a b)"
-proof -
-  have "(x, y) \<in> Minimal_Solutions" using assms by simp
-  then show ?thesis
-    apply (auto simp: solve_def non_special_solutions_def minimize_def conds static_bounds_def set_gen2' set_generate intro!: in_minimize_wrtI)
-    using Minimal_Solutions_gt0 apply fastforce
-          apply (metis Minimal_Solutions_length le_replicateI le_trans max_coeff_bound_right maxne0_le_Max)
-         apply (metis Minimal_Solutions_length le_replicateI le_trans max_coeff_bound maxne0_le_Max)
-        apply (auto simp add: Minimal_Solutions_length max_coeff_bound maxne0_impl)
-    using Minimal_Solutions_imp_Solutions Solutions_def apply blast
-     apply (metis (no_types, hide_lams) Minimal_Solutions_min eq_0_iff length_replicate less_eq_def nonzero_append nonzero_iff)
-    by (metis (no_types, hide_lams) Minimal_Solutions_min eq_0_iff length_replicate less_eq_def nonzero_append nonzero_iff)
-qed
-
-lemma (in hlde) solutions_solve_conv:
-  "set (solutions a b) = set (solve a b)"
-  by (auto simp only: in_solutions_in_solve in_solve_in_solutions)
 
 
 subsubsection \<open>Correctness: \<open>solve\<close> generates only minimal solutions.\<close>
@@ -597,16 +502,16 @@ proof (rule subrelI)
     then show ?thesis
       by (simp add: Special_Solutions_in_Minimal_Solutions)
   next
-    let ?xs = "[(x, y) \<leftarrow> generate ?b ?a a b.
+    let ?xs = "[(x, y) \<leftarrow> generate' ?b ?a a b.
       static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
-      subprodl x y \<and>
-      subprodr y]"
+      subdprodl x y \<and>
+      subdprodr y]"
     case 2
     then have conds: "\<forall>e\<in>set x. e \<le> Max (set b)" "boundr x y" (*"cond_B x" "cond_D x y"*)
-      "subprodl x y" "subprodr y"
+      "subdprodl x y" "subdprodr y"
       and xs: "(x, y) \<in> set (minimize ?xs)"
       by (auto simp: non_special_solutions_def minimize_def set_alls2
-        dest!: minimize_wrtD in_generate)
+        dest!: minimize_wrtD in_generate')
         (metis in_set_conv_nth)
     have sol: "(x, y) \<in> Solutions"
       using ass by (auto simp: solve_def Special_Solutions_in_Solutions in_non_special_solutions)
@@ -618,9 +523,9 @@ proof (rule subrelI)
     proof
       let ?P = "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"
       let ?Q = "(\<lambda>(x, y). static_bounds a b x y \<and> a \<bullet> x = b \<bullet> y \<and> boundr x y \<^cancel>\<open>\<and> cond_B x \<and> cond_D x y\<close> \<and>
-        subprodl x y \<and>
-        subprodr y)"
-      note sorted = sorted_wrt_generate [THEN sorted_wrt_filter, of ?Q ?b ?a a b]
+        subdprodl x y \<and>
+        subdprodr y)"
+      note sorted = sorted_wrt_generate' [THEN sorted_wrt_filter, of ?Q ?b ?a a b]
       note * = in_minimize_wrt_False [OF _ sorted, of "(x, y)" ?P, OF _ xs [unfolded minimize_def]]
 
       assume "\<exists>(u, v)\<in>Minimal_Solutions. u @ v <\<^sub>v x @ y"
@@ -632,23 +537,19 @@ proof (rule subrelI)
       (*with le_imp_conds [OF le conds(2-)]*)
       with le_imp_conds(2,4,5) [OF le] and conds(2-)
       have conds': "\<forall>e\<in>set u. e \<le> Max (set b)" "boundr u v" (*"cond_B u" "cond_D u v"*)
-        "subprodl u v" "subprodr v"
+        "subdprodl u v" "subdprodr v"
         using conds(1,3,4) by (auto simp: len less_eq_def) (metis in_set_conv_nth le_trans len(1))
       moreover have "static_bounds a b u v"
         using max_coeff_bound [OF uv] and Minimal_Solutions_length [OF uv]
         by (auto simp: static_bounds_def maxne0_impl)
       moreover have "x \<le>\<^sub>v replicate m ?b"
-        using xs set_generate [of "Max (set b)" "Max (set a)" a b]
+        using xs set_generate' [of "Max (set b)" "Max (set a)" a b]
           cond_A_def conds(1) le_replicateI len by metis
       moreover have "y \<le>\<^sub>v replicate n ?a"
-        using xs by (auto simp: less_eqI minimize_def set_generate set_alls2 dest!: minimize_wrtD)
+        using xs by (auto simp: less_eqI minimize_def set_generate' set_alls2 dest!: minimize_wrtD)
       ultimately have "(u, v) \<in> set ?xs"
-        using sol' set_generate [of ?b ?a a b] uv [THEN Minimal_Solutions_imp_Solutions] and nonzero
-        unfolding set_generate and set_gen2
-        apply (simp add:)
-        unfolding set_generate set_gen2
-        apply (simp)
-        by (metis in_set_replicate le order_vec.dual_order.trans nonzero_iff)
+        using sol' and set_generate'' [of ?b ?a a b] and uv [THEN Minimal_Solutions_imp_Solutions] and nonzero
+        by (simp add: set_gen2) (metis in_set_replicate le order_vec.dual_order.trans nonzero_iff)
       from * [OF _ _ _ this] and less show False
         using less_imp_rlex and rlex_not_sym by force
     qed
@@ -675,17 +576,17 @@ proof (rule subrelI)
     then show ?thesis
       by (simp add: no0 solve_def)
   next
-    define all where "all = generate (Max (set b)) (Max (set a)) a b"
+    define all where "all = generate' (Max (set b)) (Max (set a)) a b"
     have *: "\<forall>(u, v) \<in> set (check' a b all). \<not> u @ v <\<^sub>v x @ y"
       using min and no0
-      by (auto simp: all_def set_generate neq_0_iff' nonzero_iff dest!: Minimal_Solutions_min)
+      by (auto simp: all_def set_generate'' neq_0_iff' nonzero_iff dest!: Minimal_Solutions_min)
 
     case not_special
     from conds [OF min] and not_special
     have "(x, y) \<in> set (check' a b all)"
       using max_coeff_bound [OF min] and maxne0_le_Max
         and Minimal_Solutions_length [OF min]
-      apply (auto simp: sol all_def set_generate cond_A_def less_eq_def static_bounds_def maxne0_impl)
+      apply (auto simp: sol all_def set_generate'' cond_A_def less_eq_def static_bounds_def maxne0_impl)
        apply (metis le_trans nth_mem sol(2))
        by (metis le_trans nth_mem sol(3))
     from in_minimize_wrtI [OF this, of "\<lambda>(x, y) (u, v). \<not> x @ y <\<^sub>v u @ v"] *
@@ -697,11 +598,10 @@ proof (rule subrelI)
 qed
 
 
-text \<open>the main correctness and completeness result of our algorithm\<close>
+text \<open>The main correctness and completeness result of our algorithm.\<close>
 lemma (in hlde) solve [simp]:
   shows "set (solve a b) = Minimal_Solutions"
-  unfolding set_solutions [symmetric]
-  using in_solve_in_solutions and in_solutions_in_solve by auto
+  using Minimal_Solutions_subset_solve and solve_subset_Minimal_Solutions by blast
 
 
 section \<open>Making the Algorithm More Efficient\<close>
@@ -990,7 +890,7 @@ lemma suffs_cond1I:
 lemma suffs_cond2_conv:
   assumes "length ys = length b"
   shows "suffs (cond2 a b) b (ys, b \<bullet> ys) \<longleftrightarrow>
-    (\<forall>y\<in>set ys. y \<le> Max (set a)) \<and> pdprodr_impl a b ys"
+    (\<forall>y\<in>set ys. y \<le> Max (set a)) \<and> subdprodr_impl a b ys"
     (is "?L \<longleftrightarrow> ?R")
 proof
   assume *: ?L
@@ -1018,16 +918,16 @@ proof
       by (intro dotprod_le_right) (auto simp: less_eq_def)
     finally have "take l b \<bullet> take l ys \<le> a \<bullet> map (max_x_impl a b (take l ys)) [0 ..< length a]" .
   }
-  ultimately show "?R" by (auto simp: pdprodr_impl_def)
+  ultimately show "?R" by (auto simp: subdprodr_impl_def)
 next
   assume *: ?R
-  then have "\<forall>y\<in>set ys. y \<le> Max (set a)" and "pdprodr_impl a b ys" by auto
+  then have "\<forall>y\<in>set ys. y \<le> Max (set a)" and "subdprodr_impl a b ys" by auto
   moreover
   { fix i assume i: "i \<le> length b"
     have "drop i b \<bullet> drop i ys \<le> b \<bullet> ys"
       using i and assms by (simp add: dotprod_le_drop)
     also have "\<dots> \<le> a \<bullet> map (max_x_impl a b ys) [0 ..< length a]"
-      using * and assms by (auto simp: pdprodr_impl_def)
+      using * and assms by (auto simp: subdprodr_impl_def)
     also have "\<dots> = a \<bullet> map (max_x_impl' a b ys) [0 ..< length a]"
       using max_x_impl'_conv [OF _ assms, of _ a]
       by (metis (mono_tags, lifting) atLeastLessThan_iff map_eq_conv set_upt)
@@ -1047,7 +947,7 @@ qed
 lemma suffs_cond2I:
   assumes "\<forall>y\<in>set aaa. y \<le> Max (set a)"
     and "length aaa = length b"
-    and "pdprodr_impl a b aaa"
+    and "subdprodr_impl a b aaa"
   shows "suffs (cond2 a b) b (aaa, b \<bullet> aaa)"
   using assms by (subst suffs_cond2_conv) simp_all
 
@@ -1059,14 +959,14 @@ lemma check_cond_conv:
     suffs (cond2 a b) b y"
   using assms
   apply (cases x; cases y; auto simp: static_bounds_def check_cond_def set_alls2 split: list.splits)
-     apply (auto intro: suffs_cond1I suffs_cond2I simp: pdprodl_impl_def suffs_cond2_conv)
+     apply (auto intro: suffs_cond1I suffs_cond2I simp: subdprodl_impl_def suffs_cond2_conv)
   apply (metis in_set_conv_nth)
   by (metis dotprod_le_take)
 
 lemma tune:
-  "check' a b (generate (Max (set b)) (Max (set a)) a b) = fast_filter a b"
+  "check' a b (generate' (Max (set b)) (Max (set a)) a b) = fast_filter a b"
   using cond1_cond2_zeroes
-  by (auto simp: c12.tl_generate_check_filter check'_def generate_def map_tl [symmetric]
+  by (auto simp: c12.tl_generate_check_filter check'_def generate'_def map_tl [symmetric]
       filter_map post_cond_def fast_filter_def
       intro!: map_cong filter_cong dest: list.set_sel(2) [THEN check_cond_conv, OF alls2_ne])
 

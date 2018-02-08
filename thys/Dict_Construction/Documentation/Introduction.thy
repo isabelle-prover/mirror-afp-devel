@@ -135,7 +135,7 @@ text \<open>
 
   \<^item> The new constant needs to be proven terminating. We apply some heuristics to transfer the
     original termination proof to the new definition. This only works when the termination condition
-    does not rely on class axioms.
+    does not rely on class axioms. (See \<open>\<section>\<close>\ref{sec:termination} for details.)
   \<^item> Pattern matching must be performed on datatypes, instead of the more general
     @{command code_datatype}s.
   \<^item> The set of code equations must be exhaustive and non-overlapping.

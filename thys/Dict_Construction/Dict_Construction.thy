@@ -27,10 +27,23 @@ unfolding set_of_def by simp
 lemma set_ofD: "(x, y) \<in> set_of P \<Longrightarrow> P x y"
 unfolding set_of_def by simp
 
+lemma wfP_simulate_simple:
+  assumes "wfP r"
+  assumes "\<And>x y. r' x y \<Longrightarrow> r (g x) (g y)"
+  shows "wfP r'"
+apply (rule wf_set_of_implies_wfP)
+apply (rule wf_simulate_simple[where g = g])
+apply (rule wfP_implies_wf_set_of)
+apply (fact assms)
+using assms(2) by (auto intro: set_ofI dest: set_ofD)
+
 lemma wf_implies_dom: "wf (set_of R) \<Longrightarrow> All (Wellfounded.accp R)"
 apply (rule allI)
 apply (rule accp_wfPD)
 apply (rule wf_set_of_implies_wfP) .
+
+lemma wfP_implies_dom: "wfP R \<Longrightarrow> All (Wellfounded.accp R)"
+by (metis wfP_implies_wf_set_of wf_implies_dom)
 
 named_theorems dict_construction_specs
 

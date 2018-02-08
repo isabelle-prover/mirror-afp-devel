@@ -1350,4 +1350,7 @@ qed
 lemma pderiv_sum: "pderiv (sum f I) = sum (\<lambda> i. (pderiv (f i))) I" 
   by (induct I rule: infinite_finite_induct, auto simp: pderiv_add)
 
+lemma smult_sum2: "smult m (\<Sum>i \<in> S. f i) = (\<Sum>i \<in> S. smult m (f i))"
+  by (induct S rule: infinite_finite_induct, auto simp add: smult_add_right)
+
 end

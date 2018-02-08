@@ -440,6 +440,33 @@ next
   qed
 qed
 
+lemma mahler_measure_poly_ge_1:
+  assumes "h \<noteq> 0"
+  shows "(1::real) \<le> mahler_measure h"
+proof -
+  have rc: "\<bar>real_of_int i\<bar> = of_int \<bar>i\<bar>" for i by simp
+  from assms have "cmod (lead_coeff (map_poly complex_of_int h)) > 0" by simp
+  hence "cmod (lead_coeff (map_poly complex_of_int h)) \<ge> 1"
+    by(cases "lead_coeff h = 0", auto simp del: leading_coeff_0_iff)
+  from mult_mono[OF this mahler_measure_monic_ge_1 norm_ge_zero]
+  show ?thesis unfolding mahler_measure_def mahler_measure_poly_via_monic
+    by auto
+qed
+
+lemma mahler_measure_dvd: assumes "f \<noteq> 0" and "h dvd f" 
+  shows "mahler_measure h \<le> mahler_measure f" 
+proof -
+  from assms obtain g where f: "f = g * h" unfolding dvd_def by auto
+  from f assms have g0: "g \<noteq> 0" by auto
+  hence mg: "mahler_measure g \<ge> 1" by (rule mahler_measure_poly_ge_1)
+  have "1 * mahler_measure h \<le> mahler_measure f" 
+    unfolding mahler_measure_def f measure_eq_prod
+      of_int_poly_hom.hom_mult unfolding mahler_measure_def[symmetric]
+    by (rule mult_right_mono[OF mg mahler_measure_ge_0])    
+  thus ?thesis by simp
+qed
+
+
 definition graeffe_poly :: "'a \<Rightarrow> 'a :: comm_ring_1 list \<Rightarrow> nat \<Rightarrow> 'a poly" where
   "graeffe_poly c as m = smult (c ^ (2^m)) (\<Prod>a\<leftarrow>as. [:- (a ^ (2^m)), 1:])" 
   
@@ -727,8 +754,39 @@ definition mahler_landau_graeffe_approximation :: "nat \<Rightarrow> nat \<Right
   "mahler_landau_graeffe_approximation kk dd f = (let 
      no = sum_list (map (\<lambda> a. a * a) (coeffs f))
     in root_int_floor kk (dd * no))" 
-  
-lemma mahler_landau_graeffe_approximation: 
+
+lemma mahler_landau_graeffe_approximation_core: 
+  assumes g: "g = graeffe_poly_impl f k" 
+  shows "mahler_measure f \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" 
+proof -
+  have "mahler_measure f = root (2^k) (mahler_measure f ^ (2^k))" 
+    by (simp add: real_root_power_cancel mahler_measure_ge_0) 
+  also have "\<dots> = root (2^k) (mahler_measure g)" 
+    unfolding graeffe_poly_impl_mahler g by simp
+  also have "\<dots> = root (2^k) (root 2 (((mahler_measure g)^2)))" 
+    by (simp add: real_root_power_cancel mahler_measure_ge_0) 
+  also have "\<dots> = root (2^Suc k) (((mahler_measure g)^2))"
+    by (metis power_Suc2 real_root_mult_exp)
+  also have "\<dots> \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" 
+  proof (rule real_root_le_mono, force)
+    have square_mono: "0 \<le> (x :: real) \<Longrightarrow> x \<le> y \<Longrightarrow> x * x \<le> y * y" for x y
+      by (simp add: mult_mono')
+    obtain gs where gs: "coeffs g = gs" by auto
+    have "(mahler_measure g)\<^sup>2 \<le> real_of_int \<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar>" 
+      using square_mono[OF mahler_measure_ge_0 Landau_inequality[of "of_int_poly g", folded mahler_measure_def]]
+      by (auto simp: power2_eq_square coeffs_map_poly o_def of_int_hom.hom_sum_list)
+    also have "\<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar> = (\<Sum>a\<leftarrow>coeffs g. a * a)" unfolding gs
+      by (induct gs, auto)
+    finally show "(mahler_measure g)\<^sup>2 \<le> real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a)" .
+  qed
+  finally show "mahler_measure f \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" .
+qed
+
+lemma Landau_inequality_mahler_measure: "mahler_measure f \<le> sqrt (real_of_int (\<Sum>a\<leftarrow>coeffs f. a * a))"
+  by (rule order.trans[OF mahler_landau_graeffe_approximation_core[OF refl, of _ 0]],
+  auto simp: graeffe_poly_impl_def sqrt_def)
+
+lemma mahler_landau_graeffe_approximation:
   assumes g: "g = graeffe_poly_impl f k" "dd = d^(2^(Suc k))" "kk = 2^(Suc k)" 
   shows "\<lfloor>real d * mahler_measure f\<rfloor> \<le> mahler_landau_graeffe_approximation kk dd g"
 proof -
@@ -736,29 +794,8 @@ proof -
   have id2: "root (2 ^ Suc k) (real d ^ 2 ^ Suc k) = real d" 
     by (simp add: real_root_power_cancel)
   show ?thesis unfolding mahler_landau_graeffe_approximation_def Let_def root_int_floor of_int_mult g(2-3)
-  proof (rule floor_mono, unfold real_root_mult id1 id2, rule mult_left_mono)
-    have "mahler_measure f = root (2^k) (mahler_measure f ^ (2^k))" 
-      by (simp add: real_root_power_cancel mahler_measure_ge_0) 
-    also have "\<dots> = root (2^k) (mahler_measure g)" 
-      unfolding graeffe_poly_impl_mahler g by simp
-    also have "\<dots> = root (2^k) (root 2 (((mahler_measure g)^2)))" 
-      by (simp add: real_root_power_cancel mahler_measure_ge_0) 
-    also have "\<dots> = root (2^Suc k) (((mahler_measure g)^2))"
-      by (metis power_Suc2 real_root_mult_exp)
-    also have "\<dots> \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" 
-    proof (rule real_root_le_mono, force)
-      have square_mono: "0 \<le> (x :: real) \<Longrightarrow> x \<le> y \<Longrightarrow> x * x \<le> y * y" for x y
-        by (simp add: mult_mono')
-      obtain gs where gs: "coeffs g = gs" by auto
-      have "(mahler_measure g)\<^sup>2 \<le> real_of_int \<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar>" 
-        using square_mono[OF mahler_measure_ge_0 Landau_inequality[of "of_int_poly g", folded mahler_measure_def]]
-        by (auto simp: power2_eq_square coeffs_map_poly o_def of_int_hom.hom_sum_list)
-      also have "\<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar> = (\<Sum>a\<leftarrow>coeffs g. a * a)" unfolding gs
-        by (induct gs, auto)
-      finally show "(mahler_measure g)\<^sup>2 \<le> real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a)" .
-    qed
-    finally show "mahler_measure f \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" .
-  qed auto
+    by (rule floor_mono, unfold real_root_mult id1 id2, rule mult_left_mono, 
+    rule mahler_landau_graeffe_approximation_core[OF g(1)], auto)
 qed
 
 context 

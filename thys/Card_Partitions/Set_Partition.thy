@@ -4,8 +4,8 @@ section \<open>Set Partitions\<close>
 
 theory Set_Partition
 imports
+  "HOL-Library.Disjoint_Sets"
   "HOL-Library.FuncSet"
-  Card_Partitions.Card_Partitions
 begin
 
 subsection \<open>Useful Additions to Main Theories\<close>
@@ -24,7 +24,7 @@ subsection \<open>Introduction and Elimination Rules\<close>
 
 text \<open>The definition of @{const partition_on} is in @{theory Disjoint_Sets}.\<close>
 
-(* TODO: move the following theorems to Disjoint_Sets *)
+(* TODO: move the following theorems to Disjoint Sets *)
 
 lemma partition_onI:
   assumes "\<And>p. p \<in> P \<Longrightarrow> p \<noteq> {}"
@@ -41,6 +41,42 @@ lemma partition_onE:
 using assms unfolding partition_on_def disjoint_def by blast
 
 subsection \<open>Basic Facts on Set Partitions\<close>
+
+lemma partition_onD4: "partition_on A P \<Longrightarrow> p \<in> P \<Longrightarrow> q \<in> P \<Longrightarrow> x \<in> p \<Longrightarrow> x \<in> q \<Longrightarrow> p = q"
+  by (auto simp: partition_on_def disjoint_def)
+
+lemma partition_on_Diff:
+  assumes P: "partition_on A P" shows "Q \<subseteq> P \<Longrightarrow> partition_on (A - \<Union>Q) (P - Q)"
+  using P P[THEN partition_onD4] by (auto simp: partition_on_def disjoint_def)
+
+thm partition_onI
+lemma partition_on_UN:
+  assumes A: "partition_on A B" and B: "\<And>b. b \<in> B \<Longrightarrow> partition_on b (P b)"
+  shows "partition_on A (\<Union>b\<in>B. P b)"
+proof (rule partition_onI)
+  show "\<Union>(\<Union>b\<in>B. P b) = A"
+    using B[THEN partition_onD1] A[THEN partition_onD1] by blast
+next
+  show "p \<noteq> {}" if "p \<in> (\<Union>b\<in>B. P b)" for p
+    using B[THEN partition_onD3] that by auto
+next
+  fix p q assume "p \<in> (\<Union>i\<in>B. P i)" "q \<in> (\<Union>i\<in>B. P i)" and "p \<noteq> q"
+  then obtain i j where i: "p \<in> P i" "i \<in> B" and j: "q \<in> P j" "j \<in> B"
+    by auto
+  show "p \<inter> q = {}"
+  proof cases
+    assume "i = j" then show ?thesis
+      using i j \<open>p \<noteq> q\<close> B[THEN partition_onD2, of i] by (simp add: disjointD)
+  next
+    assume "i \<noteq> j"
+    then have "disjnt i j"
+      using i j A[THEN partition_onD2] by (auto simp: pairwise_def)
+    moreover have "p \<subseteq> i" "q \<subseteq> j"
+      using B[THEN partition_onD1, of i, symmetric] B[THEN partition_onD1, of j, symmetric] i j by auto
+    ultimately show ?thesis
+      by (auto simp: disjnt_def)
+  qed
+qed
 
 lemma partition_on_notemptyI:
   assumes "partition_on A P"
@@ -60,6 +96,10 @@ lemma partition_on_eq_implies_eq_carrier:
   assumes "partition_on B Q"
   shows "A = B"
 using assms by (fastforce elim: partition_onE)
+
+lemma partition_on_insert:
+  "partition_on A B \<Longrightarrow> disjnt A A' \<Longrightarrow> A' \<noteq> {} \<Longrightarrow> partition_on (A \<union> A') (insert A' B)"
+  by (auto simp: partition_on_def disjoint_def disjnt_def)
 
 text \<open>An alternative formulation of @{thm partition_on_insert}\<close>
 lemma partition_on_insert':

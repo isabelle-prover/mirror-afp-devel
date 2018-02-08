@@ -8,7 +8,7 @@ imports
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Stirling"
   Card_Partitions.Injectivity_Solver
-  Set_Partition
+  Card_Partitions.Card_Partitions
 begin
 
 subsection \<open>Preliminaries\<close>

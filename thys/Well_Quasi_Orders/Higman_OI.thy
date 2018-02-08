@@ -117,28 +117,94 @@ proof
   with \<open>lexmin C \<in> SEQ A\<close> show "\<exists>f \<in> SEQ A. glb (LEXEQ P) C f" by blast
 qed
 
-lemma open_on_good:
-  "open_on (LEXEQ P) (good Q) (SEQ A)"
-proof
-  fix C assume chain: "chain_on (LEXEQ P) C (SEQ A)" and ne: "C \<noteq> {}"
-    and "\<exists>g \<in> SEQ A. glb (LEXEQ P) C g \<and> good Q g"
-  then obtain g where g: "g \<in> SEQ A" and "glb (LEXEQ P) C g"
-    and good: "good Q g" by blast
-  then have glb: "glb (LEX P) C g" by (auto simp: glb_def lb_def)
-  from chain have "chain_on (LEX P) C (SEQ A)" and C: "C \<subseteq> SEQ A" by (auto simp: chain_on_def)
-  note * = glb_LEX_lexmin [OF this(1) \<open>C \<noteq> {}\<close>]
-  have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> using C by (intro lexmin_SEQ_mem)
-  from glb_unique [OF _ g this glb *]
-    and antisymp_on_LEX [OF po_on_imp_irreflp_on [OF po] po_on_imp_antisymp_on [OF po]]
-    have [simp]: "lexmin C = g" by auto
-  from good obtain i j :: nat where "i < j" and "Q (g i) (g j)" by (auto simp: good_def)
-  moreover from eq_upto_lexmin_non_empty [OF C ne, of "Suc j"]
-    obtain f where "f \<in> eq_upto C g (Suc j)" by auto
-  ultimately have "f \<in> C" and "Q (f i) (f j)" by auto
-  then show "\<exists>f \<in> C. good Q f" using \<open>i < j\<close> by (auto simp: good_def)
+end
+
+text \<open>
+  Properties that only depend on finite initial segments of a sequence
+  (i.e., which are open with respect to the product topology).
+\<close>
+definition "pt_open_on Q A \<longleftrightarrow> (\<forall>f\<in>A. Q f \<longleftrightarrow> (\<exists>n. (\<forall>g\<in>A. (\<forall>i<n. g i = f i) \<longrightarrow> Q g)))"
+
+lemma pt_open_onD:
+  "pt_open_on Q A \<Longrightarrow> Q f \<Longrightarrow> f \<in> A \<Longrightarrow> (\<exists>n. (\<forall>g\<in>A. (\<forall>i<n. g i = f i) \<longrightarrow> Q g))"
+  unfolding pt_open_on_def by blast
+
+lemma pt_open_on_good:
+  "pt_open_on (good Q) (SEQ A)"
+proof (unfold pt_open_on_def, intro ballI)
+  fix f assume f: "f \<in> SEQ A"
+  show "good Q f = (\<exists>n. \<forall>g\<in>SEQ A. (\<forall>i<n. g i = f i) \<longrightarrow> good Q g)"
+  proof
+    assume "good Q f"
+    then obtain i and j where *: "i < j" "Q (f i) (f j)" by auto
+    have "\<forall>g\<in>SEQ A. (\<forall>i<Suc j. g i = f i) \<longrightarrow> good Q g"
+    proof (intro ballI impI)
+      fix g assume "g \<in> SEQ A" and "\<forall>i<Suc j. g i = f i"
+      then show "good Q g" using * by (force simp: good_def)
+    qed
+    then show "\<exists>n. \<forall>g\<in>SEQ A. (\<forall>i<n. g i = f i) \<longrightarrow> good Q g" ..
+  next
+    assume "\<exists>n. \<forall>g\<in>SEQ A. (\<forall>i<n. g i = f i) \<longrightarrow> good Q g"
+    with f show "good Q f" by blast
+  qed
 qed
 
+context minimal_element
+begin
+
+lemma pt_open_on_imp_open_on_LEXEQ:
+  assumes "pt_open_on Q (SEQ A)"
+  shows "open_on (LEXEQ P) Q (SEQ A)"
+proof
+  fix C assume chain: "chain_on (LEXEQ P) C (SEQ A)" and ne: "C \<noteq> {}"
+    and "\<exists>g\<in>SEQ A. glb (LEXEQ P) C g \<and> Q g"
+  then obtain g where g: "g \<in> SEQ A" and "glb (LEXEQ P) C g"
+    and Q: "Q g" by blast
+  then have glb: "glb (LEX P) C g" by (auto simp: glb_def lb_def)
+  from chain have "chain_on (LEX P) C (SEQ A)" and C: "C \<subseteq> SEQ A" by (auto simp: chain_on_def)
+  note * = glb_LEX_lexmin [OF this(1) ne]
+  have "lexmin C \<in> SEQ A" using ne and C by (intro lexmin_SEQ_mem)
+  from glb_unique [OF _ g this glb *]
+    and antisymp_on_LEX [OF po_on_imp_irreflp_on [OF po] po_on_imp_antisymp_on [OF po]]
+  have [simp]: "lexmin C = g" by auto
+  from assms [THEN pt_open_onD, OF Q g]
+  obtain n :: nat where **: "\<And>h. h \<in> SEQ A \<Longrightarrow> (\<forall>i<n. h i = g i) \<longrightarrow> Q h" by blast
+  from eq_upto_lexmin_non_empty [OF C ne, of n]
+  obtain f where "f \<in> eq_upto C g n" by auto
+  then have "f \<in> C" and "Q f" using ** [of f] and C by force+
+  then show "\<exists>f\<in>C. Q f" by blast
+qed
+
+lemma open_on_good:
+  "open_on (LEXEQ P) (good Q) (SEQ A)"
+  by (intro pt_open_on_imp_open_on_LEXEQ pt_open_on_good)
+
 end
+
+lemma open_on_LEXEQ_imp_pt_open_on_counterexample:
+  fixes a b :: "'a"
+  defines "A \<equiv> {a, b}" and "P \<equiv> (\<lambda>x y. False)" and "Q \<equiv> (\<lambda>f. \<forall>i. f i = b)"
+  assumes [simp]: "a \<noteq> b"
+  shows "minimal_element P A" and "open_on (LEXEQ P) Q (SEQ A)"
+    and "\<not> pt_open_on Q (SEQ A)"
+proof -
+  show "minimal_element P A"
+    by standard (auto simp: P_def po_on_def irreflp_on_def transp_on_def wfp_on_def)
+  show "open_on (LEXEQ P) Q (SEQ A)"
+    by (auto simp: P_def open_on_def chain_on_def SEQ_def glb_def lb_def LEX_def)
+  show "\<not> pt_open_on Q (SEQ A)"
+  proof
+    define f :: "nat \<Rightarrow> 'a" where "f \<equiv> (\<lambda>x. b)"
+    have "f \<in> SEQ A" by (auto simp: A_def f_def)
+    moreover assume "pt_open_on Q (SEQ A)"
+    ultimately have "Q f \<longleftrightarrow> (\<exists>n. (\<forall>g\<in>SEQ A. (\<forall>i<n. g i = f i) \<longrightarrow> Q g))"
+      unfolding pt_open_on_def by blast
+    moreover have "Q f" by (auto simp: Q_def f_def)
+    moreover have "\<exists>g\<in>SEQ A. (\<forall>i<n. g i = f i) \<and> \<not> Q g" for n
+      by (intro bexI [of _ "f(n := a)"]) (auto simp: f_def Q_def A_def)
+    ultimately show False by blast
+  qed
+qed
 
 lemma higman:
   assumes "almost_full_on P A"

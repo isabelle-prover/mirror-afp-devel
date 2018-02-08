@@ -1902,7 +1902,7 @@ lemma [code_computation_unfold]:
   "numeral x = real_of_int (Code_Target_Int.positive x)"
   by simp
 lemma [code_computation_unfold]: "numeral x \<equiv> Float (Code_Target_Int.positive x) 0"
-  by (simp add: Float_def)
+  by (simp add: Float_def float_of_numeral)
 
 definition no_print::"String.literal \<Rightarrow> unit" where "no_print x = ()"
 

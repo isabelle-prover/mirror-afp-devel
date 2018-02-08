@@ -7,7 +7,6 @@ imports
   "HOL-Library.Product_Lexorder"
   (*maybe import the following only at the end*)
   Efficient_Distinct
-  "HOL-Library.Code_Char"
   "HOL-Library.Code_Target_Nat"
 begin
 

@@ -51,8 +51,6 @@ and args_ord (f $ t, g $ u) =
       (case args_ord (f, g) of EQUAL => term_ord (t, u) | ord => ord)
   | args_ord _ = EQUAL;
 
-fun termless tu = (term_ord tu = LESS);
-
 end;
 
 
@@ -95,7 +93,7 @@ fun normalise_step ctxt ct =
     fun commute' commute_eq u ct' = if Term.loose_bvar1 (u, 0) then NONE
       else
         let val ct'' = Conv.rewr_conv commute_eq ct' |> Thm.rhs_of;
-        in if termless (apply2 (Envir.beta_eta_contract o Thm.term_of) (ct'', ct'))
+        in if is_less (term_ord (apply2 (Envir.beta_eta_contract o Thm.term_of) (ct'', ct')))
           then SOME (rename_commute_rule commute_eq ct') else NONE end;
 
     fun commute info u v = (case #bind_commute info of

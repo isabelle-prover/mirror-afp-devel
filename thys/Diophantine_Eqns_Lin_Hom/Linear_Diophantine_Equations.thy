@@ -121,11 +121,11 @@ definition Minimal_Solutions :: "(nat list \<times> nat list) set"
 
 definition dij :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "dij i j = (lcm (a ! i) (b ! j)) div (a ! i)"
+    "dij i j = lcm (a ! i) (b ! j) div (a ! i)"
 
 definition eij :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
-    "eij i j = (lcm (a ! i) (b ! j)) div (b ! j)"
+    "eij i j = lcm (a ! i) (b ! j) div (b ! j)"
 
 definition sij :: "nat \<Rightarrow> nat \<Rightarrow> (nat list \<times> nat list)"
   where
@@ -242,19 +242,19 @@ qed
 lemma max_y_le_take:
   assumes "length x \<le> m"
   shows "max_y x j \<le> max_y (take k x) j"
-  using assms and Min_Ej_le and Ej_take_subset and Min.antimono [OF _ _ finite_Ej]
+  using assms and Min_Ej_le and Ej_take_subset and Min.subset_imp [OF _ _ finite_Ej]
   by (auto simp: max_y_def) blast
 
 lemma max_x_le_take:
   assumes "length y \<le> n"
   shows "max_x y i \<le> max_x (take l y) i"
-  using assms and Min_Di_le and Di_take_subset and Min.antimono [OF _ _ finite_Di]
+  using assms and Min_Di_le and Di_take_subset and Min.subset_imp [OF _ _ finite_Di]
   by (auto simp: max_x_def) blast
 
 lemma max_x'_le_drop:
   assumes "length y \<le> n"
   shows "max_x' y i \<le> max_x' (drop l y) i"
-  using assms and Min_Di'_le and Di'_drop_subset and Min.antimono [OF _ _ finite_Di']
+  using assms and Min_Di'_le and Di'_drop_subset and Min.subset_imp [OF _ _ finite_Di']
   by (auto simp: max_x'_def) blast
 
 end
@@ -909,11 +909,11 @@ definition "cond_D x y \<longleftrightarrow> (\<forall>l\<le>n. take l b \<bulle
 subsection \<open>New conditions: facilitating generation of candidates from right to left\<close>
 
 (*condition on right sub-dotproduct*)
-definition "subprodr y \<longleftrightarrow>
+definition "subdprodr y \<longleftrightarrow>
   (\<forall>l\<le>n. take l b \<bullet> take l y \<le> a \<bullet> map (max_x (take l y)) [0 ..< m])"
 
 (*condition on left sub-dotproduct*)
-definition "subprodl x y \<longleftrightarrow> (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> y)"
+definition "subdprodl x y \<longleftrightarrow> (\<forall>k\<le>m. take k a \<bullet> take k x \<le> b \<bullet> y)"
 
 (*bound on elements of left vector*)
 definition "boundl x y \<longleftrightarrow> (\<forall>i<m. x ! i \<le> max_x y i)"
@@ -1058,11 +1058,11 @@ lemma Solution_imp_cond_D:
   shows "cond_D x y"
   using assms and dotprod_le_take by (auto simp: cond_D_def in_Solutions_iff)
 
-lemma Solution_imp_subprodl:
+lemma Solution_imp_subdprodl:
   assumes "(x, y) \<in> Solutions"
-  shows "subprodl x y"
+  shows "subdprodl x y"
   using assms and dotprod_le_take
-  by (auto simp: subprodl_def in_Solutions_iff) metis
+  by (auto simp: subdprodl_def in_Solutions_iff) metis
 
 theorem conds:
   assumes min: "(x, y) \<in> Minimal_Solutions"
@@ -1070,8 +1070,8 @@ theorem conds:
     and cond_B: "(x, y) \<notin> Special_Solutions \<Longrightarrow> cond_B x"
     and "(x, y) \<notin> Special_Solutions \<Longrightarrow> boundr x y"
     and cond_D: "cond_D x y"
-    and subprodr: "(x, y) \<notin> Special_Solutions \<Longrightarrow> subprodr y"
-    and subprodl: "subprodl x y"
+    and subdprodr: "(x, y) \<notin> Special_Solutions \<Longrightarrow> subdprodr y"
+    and subdprodl: "subdprodl x y"
 proof -
   have sol: "a \<bullet> x = b \<bullet> y" and ln: "m = length x \<and> n = length y"
     using min by (auto simp: Minimal_Solutions_def in_Solutions_iff)
@@ -1101,8 +1101,8 @@ proof -
       by (auto simp: cond_B_def)
   qed
 
-  show "(x, y) \<notin> Special_Solutions \<Longrightarrow> subprodr y"
-  proof (unfold subprodr_def, intro allI impI)
+  show "(x, y) \<notin> Special_Solutions \<Longrightarrow> subdprodr y"
+  proof (unfold subdprodr_def, intro allI impI)
     fix l assume non_spec: "(x, y) \<notin> Special_Solutions" and l: "l \<le> n"
     from l have "take l b \<bullet> take l y \<le> b \<bullet> y"
       using dotprod_le_take ln by blast
@@ -1129,8 +1129,8 @@ proof -
   show "cond_D x y"
     using ln and dotprod_le_take and sol by (auto simp: cond_D_def)
 
-  show "subprodl x y"
-    using ln and dotprod_le_take and sol by (force simp: subprodl_def)
+  show "subdprodl x y"
+    using ln and dotprod_le_take and sol by (force simp: subdprodl_def)
 qed
 
 lemma le_imp_Ej_subset:
@@ -1143,7 +1143,7 @@ lemma le_imp_max_y_ge:
     and "length x \<le> m"
   shows "max_y u j \<ge> max_y x j"
   using assms and le_imp_Ej_subset and Min_Ej_le [of j, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Ej max_y_def order_refl subsetCE)
+  by (metis Min.subset_imp Min_in emptyE finite_Ej max_y_def order_refl subsetCE)
 
 lemma le_imp_Di_subset:
   assumes "v \<le>\<^sub>v y"
@@ -1155,7 +1155,7 @@ lemma le_imp_max_x_ge:
     and "length y \<le> n"
   shows "max_x v i \<ge> max_x y i"
   using assms and le_imp_Di_subset and Min_Di_le [of i, OF _ _ assms(2)]
-  by (metis Min.antimono Min_in emptyE finite_Di max_x_def order_refl subsetCE)
+  by (metis Min.subset_imp Min_in emptyE finite_Di max_x_def order_refl subsetCE)
 
 end
 

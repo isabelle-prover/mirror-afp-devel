@@ -6,7 +6,6 @@ session Bell_Numbers_Spivey (AFP) = "HOL-Library" +
     Card_Partitions
   theories
     Card_Partitions.Card_Partitions   (* FIXME document? *)
-    Set_Partition
     Bell_Numbers
   document_files
     "root.bib"

@@ -3,6 +3,8 @@
                  Akihisa Yamada
     License:     BSD
 *)
+(* with contributions from Alexander Bentkamp, Universität des Saarlandes *)
+
 section\<open>Vectors and Matrices\<close>
 
 text \<open>We define vectors as pairs of dimension and a characteristic function from natural numbers
@@ -556,6 +558,10 @@ lemma nth_rows[simp]: "i < dim_row A \<Longrightarrow> rows A ! i = row A i"
 
 lemma row_mat_of_row_fun[simp]: "i < nr \<Longrightarrow> dim_vec (f i) = nc \<Longrightarrow> row (mat\<^sub>r nr nc f) i = f i"
   by (rule eq_vecI, auto simp: row_def)  
+
+lemma set_rows_carrier:
+  assumes "A \<in> carrier_mat m n" and "v \<in> set (rows A)" shows "v \<in> carrier_vec n"
+  using assms by (auto simp: rows_def row_def)
 
 definition mat_of_rows :: "nat \<Rightarrow> 'a vec list \<Rightarrow> 'a mat"
   where "mat_of_rows n rs = mat (length rs) n (\<lambda>(i,j). rs ! i $ j)"
@@ -2408,5 +2414,273 @@ lemma mat_diag_diag[simp]: "mat_diag n f * mat_diag n g = mat_diag n (\<lambda> 
   by (subst mat_diag_mult_left[of _ n n], auto simp: mat_diag_def)
 
 lemma mat_diag_one[simp]: "mat_diag n (\<lambda> x. 1) = 1\<^sub>m n" unfolding mat_diag_def by auto
+
+text \<open>Allowing to construct and deconstruct vectors like lists\<close>
+abbreviation vNil where "vNil \<equiv> vec 0 ((!) [])"
+definition vCons where "vCons a v \<equiv> vec (Suc (dim_vec v)) (\<lambda>i. case i of 0 \<Rightarrow> a | Suc i \<Rightarrow> v $ i)"
+
+lemma vec_index_vCons_0 [simp]: "vCons a v $ 0 = a"
+  by (simp add: vCons_def)
+
+lemma vec_index_vCons_Suc [simp]:
+  fixes v :: "'a vec"
+  shows "vCons a v $ Suc n = v $ n"
+proof-
+  have 1: "vec (Suc d) f $ Suc n = vec d (f \<circ> Suc) $ n" for d and f :: "nat \<Rightarrow> 'a"
+    by (transfer, auto simp: mk_vec_def)
+  show ?thesis
+    apply (auto simp: 1 vCons_def o_def) apply transfer apply (auto simp: mk_vec_def)
+    done
+qed
+
+lemma vec_index_vCons: "vCons a v $ n = (if n = 0 then a else v $ (n - 1))"
+  by (cases n, auto)
+
+lemma dim_vec_vCons [simp]: "dim_vec (vCons a v) = Suc (dim_vec v)"
+  by (simp add: vCons_def)
+
+lemma vCons_carrier_vec[simp]: "vCons a v \<in> carrier_vec (Suc n) \<longleftrightarrow> v \<in> carrier_vec n"
+  by (auto dest!: carrier_vecD intro: carrier_vecI)
+
+lemma vec_Suc: "vec (Suc n) f = vCons (f 0) (vec n (f \<circ> Suc))" (is "?l = ?r")
+proof (unfold vec_eq_iff, intro conjI allI impI)
+  fix i assume "i < dim_vec ?r"
+  then show "?l $ i = ?r $ i" by (cases i, auto)
+qed simp
+
+declare Abs_vec_cases[cases del]
+
+lemma vec_cases [case_names vNil vCons, cases type: vec]:
+  assumes "v = vNil \<Longrightarrow> thesis" and "\<And>a w. v = vCons a w \<Longrightarrow> thesis"
+  shows "thesis"
+proof (cases "dim_vec v")
+  case 0 then show thesis by (intro assms(1), auto)
+next
+  case (Suc n)
+  show thesis
+  proof (rule assms(2))
+    show v: "v = vCons (v $ 0) (vec n (\<lambda>i. v $ Suc i))" (is "v = ?r")
+    proof (rule eq_vecI, unfold dim_vec_vCons dim_vec Suc)
+      fix i
+      assume "i < Suc n"
+      then show "v $ i = ?r $ i" by (cases i, auto simp: vCons_def)
+    qed simp
+  qed
+qed
+
+lemma vec_induct [case_names vNil vCons, induct type: vec]:
+  assumes "P vNil" and "\<And>a v. P v \<Longrightarrow> P (vCons a v)"
+  shows "P v"
+proof (induct "dim_vec v" arbitrary:v)
+  case 0 then show ?case by (cases v, auto intro: assms(1))
+next
+  case (Suc n) then show ?case by (cases v, auto intro: assms(2))
+qed
+
+lemma carrier_vec_induct [consumes 1, case_names 0 Suc, induct set:carrier_vec]:
+  assumes v: "v \<in> carrier_vec n"
+    and 1: "P 0 vNil" and 2: "\<And>n a v. v \<in> carrier_vec n \<Longrightarrow> P n v \<Longrightarrow> P (Suc n) (vCons a v)"
+  shows "P n v"
+proof (insert v, induct n arbitrary: v)
+  case 0 then have "v = vec 0 ((!) [])" by auto
+  with 1 show ?case by auto
+next
+  case (Suc n) then show ?case by (cases v, auto dest!: carrier_vecD intro:2)
+qed
+
+lemma vec_of_list_Cons[simp]: "vec_of_list (a#as) = vCons a (vec_of_list as)"
+  by (unfold vCons_def, transfer, auto simp:mk_vec_def split:nat.split)
+
+lemma vec_of_list_Nil[simp]: "vec_of_list [] = vNil"
+  by (transfer', auto)
+
+lemma scalar_prod_vCons[simp]:
+  "vCons a v \<bullet> vCons b w = a * b + v \<bullet> w"
+  apply (unfold scalar_prod_def atLeast0_lessThan_Suc_eq_insert_0 dim_vec_vCons)
+  apply (subst sum.insert) apply (simp,simp)
+  apply (subst sum.reindex) apply force
+  apply simp
+  done
+
+lemma zero_vec_Suc: "0\<^sub>v (Suc n) = vCons 0 (0\<^sub>v n)"
+  by (auto simp: zero_vec_def vec_Suc o_def)
+
+lemma zero_vec_zero[simp]: "0\<^sub>v 0 = vNil" by auto
+
+lemma vCons_eq_vCons[simp]: "vCons a v = vCons b w \<longleftrightarrow> a = b \<and> v = w" (is "?l \<longleftrightarrow> ?r")
+proof
+  assume ?l
+  note arg_cong[OF this]
+  from this[of dim_vec] this[of "\<lambda>x. x$0"] this[of "\<lambda>x. x$Suc _"]
+  show ?r by (auto simp: vec_eq_iff)
+qed simp
+
+lemma vec_carrier_vec[simp]: "vec n f \<in> carrier_vec m \<longleftrightarrow> n = m"
+  unfolding carrier_vec_def by auto
+
+notation transpose_mat ("(_\<^sup>T)" [1000])
+
+lemma cols_transpose[simp]: "cols A\<^sup>T = rows A" unfolding cols_def rows_def by auto
+lemma rows_transpose[simp]: "rows A\<^sup>T = cols A" unfolding cols_def rows_def by auto
+lemma list_of_vec_vec [simp]: "list_of_vec (vec n f) = map f [0..<n]"
+  by (transfer, auto simp: mk_vec_def)
+
+lemma list_of_vec_0 [simp]: "list_of_vec (0\<^sub>v n) = replicate n 0"
+  by (simp add: zero_vec_def map_replicate_trivial)
+
+lemma diag_mat_map:
+  assumes M_carrier: "M \<in> carrier_mat n n"
+  shows "diag_mat (map_mat f M) = map f (diag_mat M)"
+proof -
+  have dim_eq: "dim_row M = dim_col M" using M_carrier by auto
+  have m: "map_mat f M $$ (i, i) = f (M $$ (i, i))" if i: "i < dim_row M" for i
+    using dim_eq i by auto
+  show ?thesis 
+    by (rule nth_equalityI, insert m, auto simp add: diag_mat_def M_carrier)
+qed
+
+lemma mat_of_rows_map [simp]: 
+  assumes x: "set vs \<subseteq> carrier_vec n"
+  shows "mat_of_rows n (map (map_vec f) vs) = map_mat f (mat_of_rows n vs)"
+proof-
+  have "\<forall>x\<in>set vs. dim_vec x = n" using x by auto
+  then show ?thesis by (auto simp add: mat_eq_iff map_vec_def mat_of_rows_def)
+qed
+
+lemma mat_of_cols_map [simp]: 
+  assumes x: "set vs \<subseteq> carrier_vec n"
+  shows "mat_of_cols n (map (map_vec f) vs) = map_mat f (mat_of_cols n vs)"
+proof-
+  have "\<forall>x\<in>set vs. dim_vec x = n" using x by auto
+  then show ?thesis by (auto simp add: mat_eq_iff map_vec_def mat_of_cols_def)
+qed
+
+lemma vec_of_list_map [simp]: "vec_of_list (map f xs) = map_vec f (vec_of_list xs)"
+  unfolding map_vec_def by (transfer, auto simp add: mk_vec_def)
+
+lemma map_vec: "map_vec f (vec n g) = vec n (f o g)" by auto
+
+lemma mat_of_cols_Cons_index_0: "i < n \<Longrightarrow> mat_of_cols n (w # ws) $$ (i, 0) = w $ i"
+  by (unfold mat_of_cols_def, transfer', auto simp: mk_mat_def)
+
+lemma nth_map_out_of_bound: "i \<ge> length xs \<Longrightarrow> map f xs ! i = [] ! (i - length xs)"
+  by (induct xs arbitrary:i, auto)
+
+lemma mat_of_cols_Cons_index_Suc:
+  "i < n \<Longrightarrow> mat_of_cols n (w # ws) $$ (i, Suc j) = mat_of_cols n ws $$ (i,j)"
+  by (unfold mat_of_cols_def, transfer, auto simp: mk_mat_def undef_mat_def nth_append nth_map_out_of_bound)
+
+lemma mat_of_cols_index: "i < n \<Longrightarrow> j < length ws \<Longrightarrow> mat_of_cols n ws $$ (i,j) = ws ! j $ i"
+  by (unfold mat_of_cols_def, auto)
+
+lemma mat_of_rows_index: "i < length rs \<Longrightarrow> j < n \<Longrightarrow> mat_of_rows n rs $$ (i,j) = rs ! i $ j"
+  by (unfold mat_of_rows_def, auto)
+
+lemma transpose_mat_of_rows: "(mat_of_rows n vs)\<^sup>T = mat_of_cols n vs"
+  by (auto intro!: eq_matI simp: mat_of_rows_index mat_of_cols_index)
+
+lemma transpose_mat_of_cols: "(mat_of_cols n vs)\<^sup>T = mat_of_rows n vs"
+  by (auto intro!: eq_matI simp: mat_of_rows_index mat_of_cols_index)
+
+lemma nth_list_of_vec [simp]:
+  assumes "i < dim_vec v" shows "list_of_vec v ! i = v $ i"
+  using assms by (transfer, auto)
+
+lemma length_list_of_vec [simp]:
+  "length (list_of_vec v) = dim_vec v" by (transfer, auto)
+
+lemma vec_eq_0_iff:
+  "v = 0\<^sub>v n \<longleftrightarrow> n = dim_vec v \<and> (n = 0 \<or> set (list_of_vec v) = {0})" (is "?l \<longleftrightarrow> ?r")
+proof
+  show "?l \<Longrightarrow> ?r" by auto
+  show "?r \<Longrightarrow> ?l" by (intro iffI eq_vecI, force simp: set_conv_nth, force)
+qed
+
+lemma list_of_vec_vCons[simp]: "list_of_vec (vCons a v) = a # list_of_vec v" (is "?l = ?r")
+proof (intro nth_equalityI allI impI)
+  fix i
+  assume "i < length ?l"
+  then show "?l ! i = ?r ! i" by (cases i, auto)
+qed simp
+
+lemma append_vec_vCons[simp]: "vCons a v @\<^sub>v w = vCons a (v @\<^sub>v w)" (is "?l = ?r")
+proof (unfold vec_eq_iff, intro conjI allI impI)
+  fix i assume "i < dim_vec ?r"
+  then show "?l $ i = ?r $ i" by (cases i; subst index_append_vec, auto)
+qed simp
+
+lemma append_vec_vNil[simp]: "vNil @\<^sub>v v = v"
+  by (unfold vec_eq_iff, auto)
+
+lemma list_of_vec_append[simp]: "list_of_vec (v @\<^sub>v w) = list_of_vec v @ list_of_vec w"
+  by (induct v, auto)
+
+lemma transpose_mat_eq[simp]: "A\<^sup>T = B\<^sup>T \<longleftrightarrow> A = B"
+  using transpose_transpose by metis
+
+lemma mat_col_eqI: assumes cols: "\<And> i. i < dim_col B \<Longrightarrow> col A i = col B i"
+  and dims: "dim_row A = dim_row B" "dim_col A = dim_col B"
+shows "A = B"
+  by(subst transpose_mat_eq[symmetric], rule eq_rowI,insert assms,auto)
+
+lemma upper_triangular_imp_distinct:
+  assumes A: "A \<in> carrier_mat n n"
+    and tri: "upper_triangular A"
+    and diag: "0 \<notin> set (diag_mat A)"
+  shows "distinct (rows A)"
+proof-
+  { fix i and j 
+    assume eq: "rows A ! i = rows A ! j" and ij: "i < j" and jn: "j < n"
+    from tri A ij jn have "rows A ! j $ i = 0" by (auto dest!:upper_triangularD)
+    with eq have "rows A ! i $ i = 0" by auto
+    with diag ij jn A have False by (auto simp: diag_mat_def)
+  }
+  with A show ?thesis by (force simp: distinct_conv_nth nat_neq_iff)
+qed
+
+lemma dim_vec_of_list[simp] :"dim_vec (vec_of_list as) = length as" by transfer auto
+
+lemma list_vec: "list_of_vec (vec_of_list xs) = xs"
+by (transfer, metis (mono_tags, lifting) atLeastLessThan_iff map_eq_conv map_nth mk_vec_def old.prod.case set_upt)
+
+lemma vec_list: "vec_of_list (list_of_vec v) = v"
+apply transfer unfolding mk_vec_def by auto
+
+lemma index_vec_of_list: "i<length xs \<Longrightarrow> (vec_of_list xs) $ i = xs ! i"
+by (metis vec.abs_eq index_vec vec_of_list.abs_eq)
+
+lemma vec_of_list_index: "vec_of_list xs $ j = xs ! j"
+  apply transfer unfolding mk_vec_def unfolding undef_vec_def
+  by (simp, metis append_Nil2 nth_append)
+
+lemma list_of_vec_index: "list_of_vec v ! j = v $ j"
+  by (metis vec_list vec_of_list_index)
+    
+lemma list_of_vec_map: "list_of_vec xs = map (($) xs) [0..<dim_vec xs]" by transfer auto
+
+definition "component_mult v w = vec (min (dim_vec v) (dim_vec w)) (\<lambda>i. v $ i * w $ i)"
+definition vec_set::"'a vec \<Rightarrow> 'a set" ("set\<^sub>v")
+  where "vec_set v = vec_index v ` {..<dim_vec v}"
+
+lemma index_component_mult:
+assumes "i < dim_vec v" "i < dim_vec w"
+shows "component_mult v w $ i = v $ i * w $ i"
+  unfolding component_mult_def using assms index_vec by auto
+
+lemma dim_component_mult:
+"dim_vec (component_mult v w) = min (dim_vec v) (dim_vec w)"
+  unfolding component_mult_def using index_vec by auto
+
+lemma vec_setE:
+assumes "a \<in> set\<^sub>v v"
+obtains i where "v$i = a" "i<dim_vec v" using assms unfolding vec_set_def by blast
+
+lemma vec_setI:
+assumes "v$i = a" "i<dim_vec v"
+shows "a \<in> set\<^sub>v v" using assms unfolding vec_set_def using image_eqI lessThan_iff by blast
+
+lemma set_list_of_vec: "set (list_of_vec v) = set\<^sub>v v" unfolding vec_set_def by transfer auto
+
+
 
 end

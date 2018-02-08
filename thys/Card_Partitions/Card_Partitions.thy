@@ -5,49 +5,11 @@ section {* Cardinality of Set Partitions *}
 theory Card_Partitions
 imports
   "HOL-Library.Stirling"
-  "HOL-Library.Disjoint_Sets"
+  Set_Partition
   Injectivity_Solver
 begin
 
 subsection {* Insertion of Elements into Set Partitions *}
-
-lemma partition_onD4: "partition_on A P \<Longrightarrow> p \<in> P \<Longrightarrow> q \<in> P \<Longrightarrow> x \<in> p \<Longrightarrow> x \<in> q \<Longrightarrow> p = q"
-  by (auto simp: partition_on_def disjoint_def)
-
-lemma partition_on_Diff:
-  assumes P: "partition_on A P" shows "Q \<subseteq> P \<Longrightarrow> partition_on (A - \<Union>Q) (P - Q)"
-  using P P[THEN partition_onD4] by (auto simp: partition_on_def disjoint_def)
-
-lemma partition_on_UN:
-  assumes A: "partition_on A B" and B: "\<And>b. b \<in> B \<Longrightarrow> partition_on b (P b)"
-  shows "partition_on A (\<Union>b\<in>B. P b)"
-proof (rule partition_onI)
-  show "\<Union>(\<Union>b\<in>B. P b) = A"
-    using B[THEN partition_onD1] A[THEN partition_onD1] by blast
-  show "{} \<notin> (\<Union>i\<in>B. P i)"
-    using B[THEN partition_onD3] by simp
-next
-  fix p q assume "p \<in> (\<Union>i\<in>B. P i)" "q \<in> (\<Union>i\<in>B. P i)" and "p \<noteq> q"
-  then obtain i j where i: "p \<in> P i" "i \<in> B" and j: "q \<in> P j" "j \<in> B"
-    by auto
-  show "disjnt p q"
-  proof cases
-    assume "i = j" then show ?thesis
-      using i j \<open>p \<noteq> q\<close> B[THEN partition_onD2, of i] by (auto simp: pairwise_def)
-  next
-    assume "i \<noteq> j"
-    then have "disjnt i j"
-      using i j A[THEN partition_onD2] by (auto simp: pairwise_def)
-    moreover have "p \<subseteq> i" "q \<subseteq> j"
-      using B[THEN partition_onD1, of i, symmetric] B[THEN partition_onD1, of j, symmetric] i j by auto
-    ultimately show ?thesis
-      by (auto simp: disjnt_def)
-  qed
-qed
-
-lemma partition_on_insert:
-  "partition_on A B \<Longrightarrow> disjnt A A' \<Longrightarrow> A' \<noteq> {} \<Longrightarrow> partition_on (A \<union> A') (insert A' B)"
-  by (auto simp: partition_on_def disjoint_def disjnt_def)
 
 lemma partition_on_insert_rewrite1:
   assumes a: "a \<notin> A"

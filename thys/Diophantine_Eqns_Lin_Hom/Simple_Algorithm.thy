@@ -136,8 +136,7 @@ lemma set_minimize_check_generate:
   "set (minimize (check_generate a b)) =
     {(x, y)\<in>set (check_generate a b). \<not> (\<exists>(u, v)\<in>set (check_generate a b). u @ v <\<^sub>v x @ y)}"
   unfolding minimize_def
-  by (subst set_minimize_wrt [OF _ sorted_wrt_check_generate])
-    (auto simp: set_minimize_wrt [OF _ sorted_wrt_check_generate] dest: rlex_not_sym less_imp_rlex)
+  by (subst set_minimize_wrt [OF _ sorted_wrt_check_generate]) (auto dest: rlex_not_sym less_imp_rlex)
 
 lemma set_solutions_iff:
   "set (solutions a b) =

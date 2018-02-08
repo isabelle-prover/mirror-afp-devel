@@ -3,7 +3,7 @@ imports
   Automatic_Refinement.Misc (*mergesort*)
   "HOL-Library.List_lexord"
   "HOL-Library.Product_Lexorder"
-  "HOL-Library.Code_Char"
+  "HOL-Library.Char_ord"
   TopoS_Util
 begin
 

@@ -1153,7 +1153,7 @@ unfolding degree_def proof transfer
   let ?f = "Max (insert 0 (Suc ` {k. f k \<noteq> 0}))"
   let ?g = "Max (insert 0 (Suc ` {k. g k \<noteq> 0}))"
   have "Max (insert 0 (Suc ` {k. f k + g k \<noteq> 0})) \<le> Max (insert 0 (Suc ` ({k. f k \<noteq> 0} \<union> {k. g k \<noteq> 0})))"
-    by (rule Max.antimono) (insert f g, auto)
+    by (rule Max.subset_imp) (insert f g, auto)
   also have "\<dots> = max ?f ?g"
     using f g by (simp_all add: image_Un Max_Un [symmetric])
   finally show "Max (insert 0 (Suc ` {k. f k + g k \<noteq> 0}))
