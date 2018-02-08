@@ -933,4 +933,13 @@ lemma witness_det: "det (submatrix Aw' rows_with_1 rows_with_1) \<noteq> 0" unfo
 
 end
 
+(* Examples to show that the locales can be instantiated: *)
+
+interpretation example : deep_model_correct_params "[10,10,10]"
+  unfolding deep_model_correct_params_def by simp
+
+interpretation example : deep_model_correct_params_y "[10,10,10]" 1
+  unfolding deep_model_correct_params_y_def deep_model_correct_params_y_axioms_def 
+  deep_model_correct_params_def by simp
+
 end
