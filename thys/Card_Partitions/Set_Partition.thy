@@ -24,7 +24,7 @@ subsection \<open>Introduction and Elimination Rules\<close>
 
 text \<open>The definition of @{const partition_on} is in @{theory Disjoint_Sets}.\<close>
 
-(* TODO: move the following theorems to Disjoint_Sets *)
+(* TODO: move the following theorems to Disjoint Sets *)
 
 lemma partition_onI:
   assumes "\<And>p. p \<in> P \<Longrightarrow> p \<noteq> {}"
