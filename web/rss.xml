@@ -14,7 +14,7 @@
        <title>Treaps</title>
               <link>https://www.isa-afp.org/entries/Treaps.html</link>
        <guid>https://www.isa-afp.org/entries/Treaps.html</guid>
-       <dc:creator> Max Haslbeck, Manuel Eberl, Tobias Nipkow       </dc:creator>
+       <dc:creator> Maximilian Haslbeck, Manuel Eberl, Tobias Nipkow       </dc:creator>
        <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
        <description>
 &lt;p&gt; A Treap is a binary tree whose nodes contain pairs
@@ -71,6 +71,18 @@ where first-order terms are omni-present: the unification algorithm is
 used to certify several confluence and termination techniques, like
 critical-pair computation and dependency graph approximations; and the
 subsumption order is a crucial ingredient for completion.</description>
+    </item>
+    <item>
+       <title>The Error Function</title>
+              <link>https://www.isa-afp.org/entries/Error_Function.html</link>
+       <guid>https://www.isa-afp.org/entries/Error_Function.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; This entry provides the definitions and basic properties of
+the complex and real error function erf and the complementary error
+function erfc. Additionally, it gives their full asymptotic
+expansions. &lt;/p&gt;</description>
     </item>
     <item>
        <title>A verified LLL algorithm</title>
@@ -580,26 +592,6 @@ Paul Oppenheimer and Edward Zalta&#39;s formalisation of
 Anselm&#39;s ontological argument for the existence of God is
 automated by embedding a free logic for definite descriptions within
 Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>Microeconomics and the First Welfare Theorem</title>
-              <link>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</guid>
-       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
-       <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
-       <description>
-Economic activity has always been a fundamental part of society. Due
-to modern day politics, economic theory has gained even more influence
-on our lives. Thus we want models and theories to be as precise as
-possible. This can be achieved using certification with the help of
-formal proof technology. Hence we will use Isabelle/HOL to construct
-two economic models, that of the the pure exchange economy and a
-version of the Arrow-Debreu Model. We will prove that the
-&lt;i&gt;First Theorem of Welfare Economics&lt;/i&gt; holds within
-both. The theorem is the mathematical formulation of Adam Smith&#39;s
-famous &lt;i&gt;invisible hand&lt;/i&gt; and states that a group of
-self-interested and rational actors will eventually achieve an
-efficient allocation of goods and services.</description>
     </item>
   </channel>
 </rss>
