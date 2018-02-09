@@ -415,22 +415,27 @@ lemma eq_almost_full_on_finite_set:
 
 subsection \<open>Further Results\<close>
 
-lemma af_trans_imp_wf:
-  assumes af: "almost_full_on P A"
-    and trans: "transp_on P A"
-  shows "wfp_on (strict P) A"
-proof -
-  show "wfp_on (strict P) A"
-  proof (unfold wfp_on_def, rule notI)
-    assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict P (f (Suc i)) (f i)"
-    then obtain f where *: "\<forall>i. f i \<in> A \<and> ((strict P)\<inverse>\<inverse>) (f i) (f (Suc i))" by blast
-    from chain_transp_on_less [OF this]
-      and transp_on_strict [THEN transp_on_converse, OF trans]
-      have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
-    with af show False
-      using * by (auto simp: almost_full_on_def good_def)
-  qed
+lemma af_trans_extension_imp_wf:
+  assumes subrel: "\<And>x y. P x y \<Longrightarrow> Q x y"
+    and af: "almost_full_on P A"
+    and trans: "transp_on Q A"
+  shows "wfp_on (strict Q) A"
+proof (unfold wfp_on_def, rule notI)
+  assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict Q (f (Suc i)) (f i)"
+  then obtain f where *: "\<forall>i. f i \<in> A \<and> ((strict Q)\<inverse>\<inverse>) (f i) (f (Suc i))" by blast
+  from chain_transp_on_less [OF this]
+    and transp_on_strict [THEN transp_on_converse, OF trans]
+  have "\<forall>i j. i < j \<longrightarrow> \<not> Q (f i) (f j)" by blast
+  with subrel have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
+  with af show False
+    using * by (auto simp: almost_full_on_def good_def)
 qed
+
+lemma af_trans_imp_wf:
+  assumes "almost_full_on P A"
+    and "transp_on P A"
+  shows "wfp_on (strict P) A"
+  using assms by (intro af_trans_extension_imp_wf)
 
 lemma wf_and_no_antichain_imp_qo_extension_wf:
   assumes wf: "wfp_on (strict P) A"
