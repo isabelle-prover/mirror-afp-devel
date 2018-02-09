@@ -224,7 +224,6 @@ fun mk_node class info super_evs lthy =
         map local_param_eq params @ super_certs
       end
     val cert_var_name = "dict"
-    val _ = List.foldr
     val cert_term =
       Abs (cert_var_name, typ,
         List.foldr HOLogic.mk_conj @{term True} (map (fn x => x (Bound 0)) cert_body))
