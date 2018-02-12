@@ -473,7 +473,7 @@ Then at least one of Q and R does not dominate P. *}
       then obtain m' ms' where ms': "g \<turnstile> m'-ms'\<rightarrow>defNode g s" "m' \<in> set ns\<^sub>1 \<union> set ns\<^sub>2" "set (tl ms') \<inter> (set ns\<^sub>1 \<union> set ns\<^sub>2) = {}" "suffix ms' ms"
         by - (rule old.path2_split_last_prop[OF ms(2), of "\<lambda>x. x \<in> set ns\<^sub>1 \<union> set ns\<^sub>2"], auto)
       from this(4) ms(3) have 2: "defNode g r \<notin> set ms'"
-        by (auto dest:suffix_set_subset)
+        by (auto dest: set_mono_suffix)
       {
         fix n\<^sub>1 ns\<^sub>1 n\<^sub>2 ns\<^sub>2
         assume 4: "m' \<in> set ns\<^sub>1"

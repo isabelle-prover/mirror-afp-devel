@@ -26,7 +26,7 @@ lemma butlast_strict_prefix: "xs \<noteq> [] \<Longrightarrow> strict_prefix (bu
   by (metis append_butlast_last_id strict_prefixI')
 
 lemma set_tl: "set (tl xs) \<subseteq> set xs"
-  by (metis suffix_set_subset suffix_tl)
+  by (metis set_mono_suffix suffix_tl)
 
 lemma in_set_tlD[elim]: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
   using set_tl[of xs] by auto
@@ -58,10 +58,10 @@ lemma prefix_tl_subset: "prefix xs ys \<Longrightarrow> set (tl xs) \<subseteq> 
   by (metis Nil_tl prefix_bot.bot.extremum prefix_def set_mono_prefix tl_append2)
 
 lemma suffix_tl_subset: "suffix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
-  by (metis append_Nil suffix_def suffix_set_subset suffix_tl suffix_order.order_trans tl_append2)
+  by (metis append_Nil suffix_def set_mono_suffix suffix_tl suffix_order.order_trans tl_append2)
 
 lemma set_tl_append': "set (tl (xs @ ys)) \<subseteq> set (tl xs) \<union> set ys"
-  by (metis list.sel(2) order_refl set_append suffix_set_subset suffix_tl tl_append2)
+  by (metis list.sel(2) order_refl set_append set_mono_suffix suffix_tl tl_append2)
 
 lemma last_in_tl: "length xs > 1 \<Longrightarrow> last xs \<in> set (tl xs)"
   by (metis One_nat_def diff_Suc_Suc last_in_set last_tl length_tl less_numeral_extra(4) list.size(3) zero_less_diff)
