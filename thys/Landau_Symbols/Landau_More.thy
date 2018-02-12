@@ -112,6 +112,7 @@ lemma power_smallo_exponential:
   shows "(\<lambda>x. x powr n) \<in> o(\<lambda>x. b powr x)"
 proof (rule smalloI_tendsto)
   from assms have "filterlim (\<lambda>x. x * ln b - n * ln x) at_top at_top" 
+    using [[simproc add: simplify_landau_sum]]
     by (simp add: filterlim_at_top_iff_smallomega eventually_nonzero_simps)
   hence "((\<lambda>x. exp (-(x * ln b - n * ln x))) \<longlongrightarrow> 0) at_top" (is ?A)
     by (intro filterlim_compose[OF exp_at_bot] 
@@ -208,7 +209,8 @@ proof(cases p "0 :: real" rule: linorder_cases)
   also { have "eventually (\<lambda>x. f x \<ge> 0) at_top" using assms by(simp add: filterlim_at_top)
     then have "O(\<lambda>x. inverse (f x powr p)) = O(\<lambda>x. \<bar>inverse (f x)\<bar> powr p)"
       by(intro landau_o.big.cong)(auto elim!: eventually_rev_mp)
-    also have "(\<lambda>_. \<bar>(\<bar>c\<bar> powr inverse p)\<bar> powr p) \<in> \<dots> \<longleftrightarrow> (\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> O(\<lambda>x. inverse (f x))"
+    also have "(\<lambda>_. \<bar>(\<bar>c\<bar> powr inverse p)\<bar> powr p) \<in> \<dots> \<longleftrightarrow> 
+                 (\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> O(\<lambda>x. inverse (f x))"
       using p_pos by(rule bigo_abs_powr_iff)
     also note calculation }
   also have "(\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> O(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0" using assms by simp

@@ -31,7 +31,7 @@ lemma Gamma_minus_one_half_real:
 lemma gbinomial_asymptotic':
   assumes "z \<notin> \<nat>"
   shows   "(\<lambda>n. z gchoose (n + k)) \<sim>
-             (\<lambda>n. (-1)^(n+k) / (Gamma (-z) * of_nat n powr (z + 1)))"
+             (\<lambda>n. (-1)^(n+k) / (Gamma (-z) * of_nat n powr (z + 1)) :: real)"
 proof -
   from assms have [simp]: "Gamma (-z) \<noteq> 0"
     by (simp_all add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff)

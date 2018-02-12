@@ -492,7 +492,7 @@ proof (rule asymp_equiv_sandwich)
   have "((\<lambda>x::real. exp (1 / (12 * x))) \<longlongrightarrow> exp 0) at_top"
     by (rule tendsto_intros real_tendsto_divide_at_top filterlim_tendsto_pos_mult_at_top)+
        (simp_all add: filterlim_ident)
-  hence "(\<lambda>x. exp (1 / (12 * x))) \<sim> (\<lambda>x. 1)"
+  hence "(\<lambda>x. exp (1 / (12 * x))) \<sim> (\<lambda>x. 1 :: real)"
     by (intro asymp_equivI') simp_all
   hence "(\<lambda>x. exp c * x powr (x - 1 / 2) / exp x * 1) \<sim>
           (\<lambda>x. exp c * x powr (x - 1 / 2) / exp x * exp (1 / (12 * x)))"
