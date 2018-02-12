@@ -509,16 +509,10 @@ shows "dim_row (A' ws) = (last rs) ^ N_half" "dim_col (A' ws) = (last rs) ^ N_ha
 definition "Aw = tensors_from_net (witness_l rs) $ y"
 definition "Aw' = ten2mat Aw"
 
-definition "witness_weights = (SOME ws. witness_l rs = insert_weights shared_weights (deep_model_l rs) ws)"
+definition "witness_weights = extract_weights shared_weights (witness_l rs)"
 
 lemma witness_weights:"witness_l rs = insert_weights shared_weights (deep_model_l rs) witness_weights"
-proof -
-  have 0:"\<exists>x. witness_l rs = insert_weights shared_weights (deep_model_l rs) x"
-    unfolding weight_space_dim_def using shared_weight_net_witness insert_extract_weights_cong_shared 
-    insert_extract_weights_cong_unshared witness_is_deep_model by (metis (full_types))
-  show "witness_l rs = insert_weights shared_weights (deep_model_l rs) witness_weights"
-    unfolding witness_weights_def using someI_ex[OF 0] by blast
-qed
+  by (metis (full_types) insert_extract_weights_cong_shared insert_extract_weights_cong_unshared shared_weight_net_witness witness_is_deep_model witness_weights_def)
 
 lemma Aw_def': "Aw = A witness_weights" unfolding Aw_def A_def using witness_weights by auto
 
