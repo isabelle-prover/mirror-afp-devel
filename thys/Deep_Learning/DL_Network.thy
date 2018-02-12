@@ -18,10 +18,13 @@ fun input_sizes :: "'a convnet \<Rightarrow> nat list" where
 "input_sizes (Conv A m) = input_sizes m" |
 "input_sizes (Pool m1 m2) = input_sizes m1 @ input_sizes m2"
 
-fun count_weights :: "(nat \<times> nat) convnet \<Rightarrow> nat" where
-"count_weights (Input M) = 0" |
-"count_weights (Conv (r0, r1) m) = r0 * r1 + count_weights m" |
-"count_weights (Pool m1 m2) = count_weights m1 + count_weights m2"
+fun count_weights :: "bool \<Rightarrow> (nat \<times> nat) convnet \<Rightarrow> nat" where
+"count_weights shared (Input M) = 0" |
+"count_weights shared (Conv (r0, r1) m) = r0 * r1 + count_weights shared m" |
+"count_weights shared (Pool m1 m2) = 
+  (if shared 
+    then max (count_weights shared m1) (count_weights shared m2) 
+    else count_weights shared m1 + count_weights shared m2)"
 
 fun output_size :: "(nat \<times> nat) convnet \<Rightarrow> nat" where
 "output_size (Input M) = M" |
@@ -34,14 +37,14 @@ inductive valid_net :: "(nat\<times>nat) convnet \<Rightarrow> bool" where
 "output_size m1 = output_size m2 \<Longrightarrow> valid_net m1 \<Longrightarrow> valid_net m2 \<Longrightarrow> valid_net (Pool m1 m2)"
 
 
-fun insert_weights :: "(nat \<times> nat) convnet \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> real mat convnet" where
-"insert_weights (Input M) w = Input M" |
-"insert_weights (Conv (r0,r1) m) w = Conv
+fun insert_weights :: "bool \<Rightarrow> (nat \<times> nat) convnet \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> real mat convnet" where
+"insert_weights shared (Input M) w = Input M" |
+"insert_weights shared (Conv (r0,r1) m) w = Conv
   (extract_matrix w r0 r1)
-  (insert_weights m (\<lambda>i. w (i+r0*r1)))" |
-"insert_weights (Pool m1 m2) w = Pool
-  (insert_weights m1 w)
-  (insert_weights m2 (\<lambda>i. w (i+(count_weights m1))))"
+  (insert_weights shared m (\<lambda>i. w (i+r0*r1)))" |
+"insert_weights shared (Pool m1 m2) w = Pool
+  (insert_weights shared m1 w)
+  (insert_weights shared m2 (if shared then w else (\<lambda>i. w (i+(count_weights shared m1)))))"
 
 fun remove_weights :: "real mat convnet \<Rightarrow> (nat \<times> nat) convnet" where
 "remove_weights (Input M) = Input M" |
@@ -63,25 +66,28 @@ where "mat_tensorlist_mult A Ts ds
  = Matrix.vec (dim_row A) (\<lambda>j. tensor_from_lookup ds (\<lambda>is. (A *\<^sub>v (map_vec (\<lambda>T. Tensor.lookup T is) Ts)) $j))"
 
 lemma insert_weights_cong:
-assumes "(\<And>i. i<count_weights m \<Longrightarrow> w1 i = w2 i)"
-shows "insert_weights m w1 = insert_weights m w2"
+assumes "(\<And>i. i<count_weights s m \<Longrightarrow> w1 i = w2 i)"
+shows "insert_weights s m w1 = insert_weights s m w2"
 using assms proof (induction m arbitrary: w1 w2)
   case Input
   then show ?case by simp
 next
   case (Conv r01 m)
   then obtain r0 r1 where "r01 = (r0,r1)" by (meson surj_pair)
-  have 2:"insert_weights m (\<lambda>i. w1 (i + r0 * r1)) = insert_weights m (\<lambda>i. w2 (i + r0 * r1))" using Conv
+  have 2:"insert_weights s m (\<lambda>i. w1 (i + r0 * r1)) = insert_weights s m (\<lambda>i. w2 (i + r0 * r1))" using Conv
     using \<open>r01 = (r0, r1)\<close> add.commute add_less_cancel_right count_weights.simps(2) by fastforce
   then show ?case unfolding `r01 = (r0,r1)` insert_weights.simps
     by (metis Conv.prems \<open>r01 = (r0, r1)\<close> count_weights.simps(2) extract_matrix_cong trans_less_add1)
 next
   case (Pool m1 m2)
-  have 1:"insert_weights m1 w1 = insert_weights m1 w2"
-    using Pool(1)[of w1 w2] Pool(3)[unfolded count_weights.simps] by simp
-  have 2:"insert_weights m2 (\<lambda>i. w1 (i + count_weights m1)) = insert_weights m2 (\<lambda>i. w2 (i + count_weights m1))"
-    using Pool(2)[of "\<lambda>i. w1 (i + count_weights m1)" "\<lambda>i. w2 (i + count_weights m1)"] Pool(3)[unfolded count_weights.simps] by simp
-  show ?case unfolding insert_weights.simps 1 2 by metis
+  have 1:"insert_weights s m1 w1 = insert_weights s m1 w2"
+    using Pool(1)[of w1 w2] Pool(3)[unfolded count_weights.simps] 
+    by (cases s; auto)
+  have shared:"s=True \<Longrightarrow> insert_weights s m2 w1 = insert_weights s m2 w2"
+    using Pool(2)[of w1 w2] Pool(3)[unfolded count_weights.simps] by auto
+  have unshared:"s=False \<Longrightarrow> insert_weights s m2 (\<lambda>i. w1 (i + count_weights s m1)) = insert_weights s m2 (\<lambda>i. w2 (i + count_weights s m1))"
+    using Pool(2) Pool(3) count_weights.simps by fastforce
+  show ?case unfolding insert_weights.simps 1 using unshared shared by simp
 qed
 
 lemma dims_mat_tensorlist_mult:
@@ -347,46 +353,136 @@ next
   then show ?case using lookup_prod IH base_input_def by auto
 qed
 
-lemma insert_remove_weights:
-obtains w where "m = insert_weights (remove_weights m) w"
-proof (induction m arbitrary:thesis)
-  case (Input m thesis)
-  then show ?case by simp
+primrec extract_weights::"bool \<Rightarrow> real mat convnet \<Rightarrow> nat \<Rightarrow> real" where
+  extract_weights_Input: "extract_weights shared (Input M) = (\<lambda>x. 0)"
+| extract_weights_Conv: "extract_weights shared (Conv A m) = 
+    (\<lambda>x. if x < dim_row A * dim_col A then flatten_matrix A x 
+         else extract_weights shared m (x - dim_row A * dim_col A))"
+| extract_weights_Pool: "extract_weights shared (Pool m1 m2) = 
+    (\<lambda>x. if x < count_weights shared (remove_weights m1) 
+         then extract_weights shared m1 x 
+         else extract_weights shared m2 (x - count_weights shared (remove_weights m1)))"
+
+inductive balanced_net::"(nat \<times> nat) convnet \<Rightarrow> bool" where
+  balanced_net_Input: "balanced_net (Input M)"
+| balanced_net_Conv: "balanced_net m \<Longrightarrow> balanced_net (Conv A m)"
+| balanced_net_Pool: "balanced_net m1 \<Longrightarrow> balanced_net m2 \<Longrightarrow> 
+    count_weights True m1 = count_weights True m2 \<Longrightarrow> balanced_net (Pool m1 m2)"
+
+inductive shared_weight_net::"real mat convnet \<Rightarrow> bool" where
+  shared_weight_net_Input: "shared_weight_net (Input M)"
+| shared_weight_net_Conv: "shared_weight_net m \<Longrightarrow> shared_weight_net (Conv A m)"
+| shared_weight_net_Pool: "shared_weight_net m1 \<Longrightarrow> shared_weight_net m2 \<Longrightarrow> 
+  count_weights True (remove_weights m1) = count_weights True (remove_weights m2) \<Longrightarrow> 
+  (\<And>x. x < count_weights True (remove_weights m1) \<Longrightarrow> extract_weights True m1 x = extract_weights True m2 x)
+   \<Longrightarrow> shared_weight_net (Pool m1 m2)"
+
+lemma insert_extract_weights_cong_shared:
+assumes "shared_weight_net m"
+assumes "\<And>x. x < count_weights True (remove_weights m) \<Longrightarrow> f x = extract_weights True m x"
+shows "m = insert_weights True (remove_weights m) f"
+using assms proof (induction m arbitrary:f)
+case (shared_weight_net_Input M)
+  then show ?case 
+    by simp
 next
-  case (Conv A m thesis)
-  then obtain w where "m = insert_weights (remove_weights m) w" by auto
-  then have 1:"remove_weights (Conv A m) = Conv (dim_row A, dim_col A) (remove_weights m)" by simp
-  have "Conv A m = insert_weights (remove_weights (Conv A m)) (\<lambda>i. if i<dim_row A *dim_col A then flatten_matrix A i else w (i-dim_row A *dim_col A))"
-    unfolding 1 insert_weights.simps
-    using extract_matrix_flatten_matrix[of A] extract_matrix_cong[of "dim_row A" "dim_col A"
-    "\<lambda>i. if i < dim_row A * dim_col A then flatten_matrix A i else w (i - dim_row A * dim_col A)" "flatten_matrix A"]
-    using \<open>m = insert_weights (remove_weights m) w\<close> by fastforce
-  then show ?case using Conv.prems by blast
+  case (shared_weight_net_Conv m A)
+  have "extract_matrix f (dim_row A) (dim_col A) = A"
+    by (simp add: extract_matrix_cong extract_matrix_flatten_matrix shared_weight_net_Conv.prems)
+  then show ?case
+    using shared_weight_net_Conv.IH[of "(\<lambda>i. f (i + dim_row A * dim_col A))"]
+    using shared_weight_net_Conv.prems by auto
+next
+  case (shared_weight_net_Pool m1 m2)
+  have "m1 = insert_weights True (remove_weights m1) f"
+    using shared_weight_net_Pool.IH(1) shared_weight_net_Pool.prems by auto
+  have "m2 = insert_weights True (remove_weights m2) f"
+    using local.shared_weight_net_Pool(3) shared_weight_net_Pool.IH(2) 
+    shared_weight_net_Pool.hyps(4) shared_weight_net_Pool.prems by fastforce
+  then show ?case
+    using \<open>m1 = insert_weights True (remove_weights m1) f\<close> by auto
+qed
+
+lemma insert_extract_weights_cong_unshared:
+assumes "\<And>x. x < count_weights False (remove_weights m) \<Longrightarrow> f x = extract_weights False m x"
+shows "m = insert_weights False (remove_weights m) f"
+using assms proof (induction m arbitrary:f)
+case (Input M)
+  then show ?case 
+    by simp
+next
+  case (Conv A m)
+  then have "extract_matrix f (dim_row A) (dim_col A) = A"
+    by (metis count_weights.simps(2) extract_matrix_flatten_matrix_cong extract_weights_Conv remove_weights.simps(2) trans_less_add1)
+  then show ?case 
+    using Conv.IH Conv.prems by auto
 next
   case (Pool m1 m2)
-  then obtain w1 w2 where "m1 = insert_weights (remove_weights m1) w1" "m2 = insert_weights (remove_weights m2) w2" by metis
-  then have "Pool m1 m2 = insert_weights (remove_weights (Pool m1 m2)) (\<lambda>i. if i<count_weights (remove_weights m1) then w1 i else w2 (i - count_weights (remove_weights m1)))"
-    unfolding remove_weights.simps insert_weights.simps
-    using insert_weights_cong[of _ "\<lambda>i. if i < count_weights (remove_weights m1) then w1 i else w2 (i - count_weights (remove_weights m1))" w1] by fastforce
-  then show ?case unfolding Pool using Pool.prems by blast
+  then show ?case
+    using Pool.IH(1) Pool.IH(2) Pool.prems by auto
 qed
 
 lemma remove_insert_weights:
-shows "remove_weights (insert_weights m w) = m"
+shows "remove_weights (insert_weights s m w) = m"
 proof (induction m arbitrary:w)
   case Input
   then show ?case by simp
 next
   case (Conv r12 m)
   then obtain r1 r2 where "r12 = (r1, r2)" by fastforce
-  then have "remove_weights (insert_weights m w) = m" using Conv.IH by blast
-  then have "remove_weights (insert_weights (Conv (r1,r2) m) w) = Conv (r1,r2) m"
+  then have "remove_weights (insert_weights s m w) = m" using Conv.IH by blast
+  then have "remove_weights (insert_weights s (Conv (r1,r2) m) w) = Conv (r1,r2) m"
     unfolding insert_weights.simps remove_weights.simps
     using extract_matrix_def Conv.IH dim_extract_matrix(1) by (metis dim_col_mat(1) )
   then show ?case using \<open>r12 = (r1, r2)\<close> by blast
 next
   case (Pool m1 m2 w)
   then show ?case unfolding insert_weights.simps remove_weights.simps using Pool.IH by blast
+qed
+
+lemma extract_insert_weights_shared: 
+assumes "x<count_weights True m"
+and "balanced_net m"
+shows "extract_weights True (insert_weights True m w) x = w x"
+using assms
+proof (induction m arbitrary:w x)
+  case (Input x)
+  then show ?case 
+    by simp
+next
+  case (Conv r01 m)
+  obtain r0 r1 where "r01 = (r0,r1)" by force
+  then show ?case unfolding \<open>r01 = (r0,r1)\<close> insert_weights.simps extract_weights.simps 
+    apply (cases "x < dim_row (extract_matrix w r0 r1) * dim_col (extract_matrix w r0 r1)")  
+     apply (auto simp add: dim_extract_matrix(1) dim_extract_matrix(2) flatten_matrix_extract_matrix)
+    using Conv.IH[of _ "\<lambda>i. w (i + r0 * r1)"] Conv.prems(1) Conv.prems(2) \<open>r01 = (r0, r1)\<close> balanced_net.cases by force
+next
+  case (Pool m1 m2)
+  then show ?case unfolding insert_weights.simps extract_weights.simps  remove_insert_weights
+    apply (cases "x < count_weights True m1")
+     apply (metis balanced_net.simps convnet.distinct(5) convnet.inject(3) count_weights.simps(1) not_less_zero)
+    by (metis (no_types, lifting) balanced_net.simps convnet.distinct(5) convnet.inject(3) count_weights.simps(1) count_weights.simps(3) less_max_iff_disj not_less_zero)
+qed
+
+lemma shared_weight_net_insert_weights: "balanced_net m \<Longrightarrow> shared_weight_net (insert_weights True m w)"
+proof (induction m arbitrary:w)
+  case (Input x)
+  then show ?case using insert_weights.simps balanced_net.simps shared_weight_net.simps by metis
+next
+  case (Conv r01 m)
+  then obtain r0 r1 where "r01 = (r0,r1)" by force
+  then show ?case  unfolding \<open>r01 = (r0,r1)\<close> insert_weights.simps  
+    by (metis Conv.IH Conv.prems balanced_net.simps convnet.distinct(1) convnet.distinct(5) convnet.inject(2) shared_weight_net_Conv)
+next
+  case (Pool m1 m2)
+  have "balanced_net m1" "balanced_net m2"
+    using Pool.prems balanced_net.simps by blast+              
+  have "\<And>x. x < count_weights True m1 \<Longrightarrow>
+         extract_weights True (insert_weights True m1 w) x = extract_weights True (insert_weights True m2 w) x"
+    using extract_insert_weights_shared 
+    by (metis Pool.prems balanced_net.simps convnet.distinct(3) convnet.distinct(5) convnet.inject(3))
+  then show ?case unfolding insert_weights.simps using Pool(1)[of w] Pool(2)[of w] 
+    by (metis Pool.prems balanced_net.simps convnet.distinct(3) convnet.distinct(5) convnet.inject(3) remove_insert_weights shared_weight_net_Pool)
 qed
 
 lemma finite_valid_index: "finite {is. is \<lhd> ds}"

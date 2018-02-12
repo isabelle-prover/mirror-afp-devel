@@ -255,6 +255,16 @@ lemma witness_valid: "valid_net' (witness Y r rs)"
 lemma witness'_valid: "valid_net' (witness' Y rs)"
   using valid_deep_model' witness'_is_deep_model by auto
 
+lemma shared_weight_net_witness: "shared_weight_net (witness Y r rs)"
+proof (induction rs arbitrary:Y r)
+case Nil
+  then show ?case unfolding witness.simps witness'.simps by (simp add: shared_weight_net_Conv shared_weight_net_Input)
+next
+  case (Cons a rs)
+  then show ?case unfolding witness.simps witness'.simps
+    by (simp add: shared_weight_net_Conv shared_weight_net_Input shared_weight_net_Pool)
+qed 
+
 lemma witness_l0': "witness' Y [M] =
     (Pool
       (Conv (eye_matrix Y M) (Input M))
@@ -438,6 +448,7 @@ abbreviation "ten2mat == matricize {n. even n}"
 abbreviation "mat2ten == dematricize {n. even n}"
 
 locale deep_model_correct_params =
+fixes shared_weights::bool
 fixes rs::"nat list"
 assumes deep:"length rs \<ge> 3"
 and no_zeros:"\<And>r. r\<in>set rs \<Longrightarrow> 0 < r"
@@ -445,7 +456,7 @@ begin
 
 definition "r = min (last rs) (last (butlast rs))"
 definition "N_half = 2^(length rs - 3)"
-definition "weight_space_dim = count_weights(deep_model_l rs)"
+definition "weight_space_dim = count_weights shared_weights (deep_model_l rs)"
 
 end
 
@@ -455,7 +466,7 @@ assumes y_valid:"y < rs ! 0"
 begin
 
 
-definition "A ws = tensors_from_net (insert_weights (deep_model_l rs) ws) $ y"
+definition "A ws = tensors_from_net (insert_weights shared_weights (deep_model_l rs) ws) $ y"
 definition "A' ws = ten2mat (A ws)"
 
 
@@ -498,13 +509,14 @@ shows "dim_row (A' ws) = (last rs) ^ N_half" "dim_col (A' ws) = (last rs) ^ N_ha
 definition "Aw = tensors_from_net (witness_l rs) $ y"
 definition "Aw' = ten2mat Aw"
 
-definition "witness_weights = (SOME ws. witness_l rs = insert_weights (deep_model_l rs) ws)"
+definition "witness_weights = (SOME ws. witness_l rs = insert_weights shared_weights (deep_model_l rs) ws)"
 
-lemma witness_weights:"witness_l rs = insert_weights (deep_model_l rs) witness_weights"
+lemma witness_weights:"witness_l rs = insert_weights shared_weights (deep_model_l rs) witness_weights"
 proof -
-  have 0:"\<exists>x. witness_l rs = insert_weights (deep_model_l rs) x"
-    unfolding weight_space_dim_def using  insert_remove_weights witness_is_deep_model by metis
-  show "witness_l rs = insert_weights (deep_model_l rs) witness_weights"
+  have 0:"\<exists>x. witness_l rs = insert_weights shared_weights (deep_model_l rs) x"
+    unfolding weight_space_dim_def using shared_weight_net_witness insert_extract_weights_cong_shared 
+    insert_extract_weights_cong_unshared witness_is_deep_model by (metis (full_types))
+  show "witness_l rs = insert_weights shared_weights (deep_model_l rs) witness_weights"
     unfolding witness_weights_def using someI_ex[OF 0] by blast
 qed
 
@@ -935,10 +947,10 @@ end
 
 (* Examples to show that the locales can be instantiated: *)
 
-interpretation example : deep_model_correct_params "[10,10,10]"
+interpretation example : deep_model_correct_params False "[10,10,10]"
   unfolding deep_model_correct_params_def by simp
 
-interpretation example : deep_model_correct_params_y "[10,10,10]" 1
+interpretation example : deep_model_correct_params_y False "[10,10,10]" 1
   unfolding deep_model_correct_params_y_def deep_model_correct_params_y_axioms_def 
   deep_model_correct_params_def by simp
 
