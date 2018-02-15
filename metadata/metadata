@@ -148,6 +148,12 @@ abstract =
   implement probabilistic algorithms for the Bernoulli, geometric and
   arbitrary uniform distributions that only use fair coin flips, and
   prove them correct and terminating with probability 1.
+extra-history =
+	Change history:
+	[2018-02-02]:
+	Added a proof that probabilistic conditioning can be implemented by repeated sampling.
+	(revision 305867c4e911)<br>
+
 
 [Monad_Normalisation]
 title = Monad normalisation
@@ -181,6 +187,13 @@ abstract =
   same definition for different (combinations of) effects. We illustrate
   the usefulness of effect polymorphism with a monadic interpreter for a
   simple language.
+extra-history =
+	Change history:
+	[2018-02-15]:
+	added further specifications and implementations of non-determinism;
+        more examples
+	(revision bc5399eea78e)<br>
+
 
 [Constructor_Funs]
 title = Constructor Functions
