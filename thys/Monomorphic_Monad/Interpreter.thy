@@ -11,17 +11,6 @@ definition "apply" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" 
 lemma apply_eq_onp: includes lifting_syntax shows "(eq_onp P ===> (=) ===> (=)) apply apply"
 by(simp add: rel_fun_def eq_onp_def)
 
-lemma case_option_apply: "case_option none some x y = case_option (none y) (\<lambda>a. some a y) x"
-by(simp split: option.split)
-
-lemma (in monad_base) bind_if2:
-  "bind m (\<lambda>x. if b then t x else e x) = (if b then bind m t else bind m e)"
-by simp
-
-lemma (in monad_base) bind_case_option2:
-  "bind m (\<lambda>x. case_option (none x) (some x) y) = case_option (bind m none) (\<lambda>a. bind m (\<lambda>x. some x a)) y"
-by(simp split: option.split)
-
 subsubsection \<open>Basic interpreter\<close>
 
 datatype (vars: 'v) exp = Var 'v | Const int | Plus "'v exp" "'v exp" | Div "'v exp" "'v exp"
@@ -93,8 +82,18 @@ qed
 
 end
 
-
 subsubsection \<open>Memoisation\<close>
+
+lemma case_option_apply: "case_option none some x y = case_option (none y) (\<lambda>a. some a y) x"
+by(simp split: option.split)
+
+lemma (in monad_base) bind_if2:
+  "bind m (\<lambda>x. if b then t x else e x) = (if b then bind m t else bind m e)"
+by simp
+
+lemma (in monad_base) bind_case_option2:
+  "bind m (\<lambda>x. case_option (none x) (some x) y) = case_option (bind m none) (\<lambda>a. bind m (\<lambda>x. some x a)) y"
+by(simp split: option.split)
 
 locale memoization_base = monad_state_base return bind get put
   for return :: "('a, 'm) return"
@@ -114,6 +113,8 @@ lemma memo_cong [cong, fundef_cong]: "\<lbrakk> x = y; f y = g y \<rbrakk> \<Lon
 by(simp add: memo_def cong del: option.case_cong_weak)
 
 end
+
+declare memoization_base.memo_def [code]
 
 locale memoization = memoization_base return bind get put + monad_state return bind get put
   for return :: "('a, 'm) return"
@@ -216,6 +217,11 @@ definition eager :: "('v \<Rightarrow> int pmf) \<Rightarrow> 'v exp \<Rightarro
   "eager p e = sample_vars p (vars e) (eval lookup e)"
 
 end
+
+lemmas [code] =
+  prob_exp_base.sample_var_def
+  prob_exp_base.lazy_def
+  prob_exp_base.eager_def
 
 locale prob_exp = prob_exp_base return bind fail get put sample + 
   memoization return bind get put +
@@ -495,5 +501,107 @@ lemma prob_eval_lookup:
 by(rule cr_envT_stateT_eval[of E, THEN rel_funD, OF refl, unfolded eq_alt, unfolded cr_prod1_Grp option.rel_Grp cr_id_prob_Grp rel_optionT_Grp, simplified, THEN cr_envT_stateTD, unfolded BNF_Def.Grp_def, THEN conjunct1])
 
 end
+
+subsection \<open>Non-deterministic interpreter\<close>
+
+locale choose_base = monad_altc_base return bind altc
+  for return :: "(int, 'm) return"
+  and bind :: "(int, 'm) bind"
+  and altc :: "(int, 'm) altc"
+begin
+
+definition choose_var :: "('v \<Rightarrow> int cset) \<Rightarrow> 'v \<Rightarrow> 'm" where
+  "choose_var X x = altc (X x) return"
+
+end
+
+declare choose_base.choose_var_def [code]
+
+locale nondet_exp_base = choose_base return bind altc
+  for return :: "(int, 'm) return"
+  and bind :: "(int, 'm) bind"
+  and get :: "('v \<rightharpoonup> int, 'm) get"
+  and put :: "('v \<rightharpoonup> int, 'm) put"
+  and altc :: "(int, 'm) altc"
+begin
+
+sublocale memo_exp_base return bind fail get put .
+
+definition lazy where "lazy X = eval (memo (choose_var X))"
+
+end
+
+locale nondet_exp =
+  monad_state_altc return bind get put altc +
+  nondet_exp_base return bind get put altc + 
+  memoization return bind get put
+  for return :: "(int, 'm) return"
+  and bind :: "(int, 'm) bind"
+  and get :: "('v \<rightharpoonup> int, 'm) get"
+  and put :: "('v \<rightharpoonup> int, 'm) put"
+  and altc :: "(int, 'm) altc"
+begin
+
+sublocale monad_fail return bind fail by(rule monad_fail)
+
+end
+
+global_interpretation NI: cset_nondetM return_id bind_id merge_id merge_id 
+  defines NI_return = NI.return_nondet
+    and NI_bind = NI.bind_nondet
+    and NI_altc = NI.altc_nondet
+  ..
+
+global_interpretation SNI: nondet_exp
+  "return_state NI_return"
+  "bind_state NI_bind"
+  "get_state"
+  "put_state"
+  "altc_state NI_altc"
+  defines SNI_lazy = SNI.lazy
+  ..
+
+value "run_state (SNI_lazy (\<lambda>x. cinsert 0 (cinsert 1 cempty)) (Div (Const 2) (Var (CHR ''x'')))) Map.empty"
+
+locale nondet_fail_exp_base = choose_base return bind altc
+  for return :: "(int, 'm) return"
+  and bind :: "(int, 'm) bind"
+  and fail :: "'m fail"
+  and get :: "('v \<rightharpoonup> int, 'm) get"
+  and put :: "('v \<rightharpoonup> int, 'm) put"
+  and altc :: "(int, 'm) altc"
+begin
+
+sublocale memo_exp_base return bind fail get put .
+
+definition lazy where "lazy X = eval (memo (choose_var X))"
+
+end
+
+locale nondet_fail_exp =
+  monad_state_altc return bind get put altc +
+  nondet_fail_exp_base return bind fail get put altc + 
+  memoization return bind get put +
+  fail: monad_fail return bind fail
+  for return :: "(int, 'm) return"
+  and bind :: "(int, 'm) bind"
+  and fail :: "'m fail"
+  and get :: "('v \<rightharpoonup> int, 'm) get"
+  and put :: "('v \<rightharpoonup> int, 'm) put"
+  and altc :: "(int, 'm) altc"
+
+global_interpretation SFNI: nondet_fail_exp
+  "return_state (return_option NI_return)"
+  "bind_state (bind_option NI_return NI_bind)"
+  "fail_state (fail_option NI_return)"
+  "get_state"
+  "put_state"
+  "altc_state (altc_option NI_altc)"
+  defines SFNI_lazy = SFNI.lazy
+  ..
+
+value "run_state (SFP.lazy (\<lambda>x. pmf_of_set {0, 1}) (Div (Const 2) (Var (CHR ''x'')))) Map.empty"
+
+value "run_state (SFNI_lazy (\<lambda>x. cinsert 0 (cinsert 1 cempty)) (Div (Const 2) (Var (CHR ''x'')))) Map.empty"
 
 end
