@@ -611,7 +611,7 @@ by(auto simp add: rel_set_def BNF_Def.Grp_def fun_eq_iff)
 
 lemma rel_set_comp_Grp:
   "rel_set R = (BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} ((`) fst))\<inverse>\<inverse> OO BNF_Def.Grp {x. x \<subseteq> {(x, y). R x y}} ((`) snd)"
-apply(auto 4 3 del: ext intro!: ext simp add: BNF_Def.Grp_def intro!: rel_setI intro: rev_bexI)
+apply(auto 4 4 del: ext intro!: ext simp add: BNF_Def.Grp_def intro!: rel_setI intro: rev_bexI)
 apply(simp add: relcompp_apply)
 subgoal for A B
   apply(rule exI[where x="A \<times> B \<inter> {(x, y). R x y}"])
