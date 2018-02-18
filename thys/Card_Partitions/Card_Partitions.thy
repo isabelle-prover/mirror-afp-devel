@@ -9,158 +9,145 @@ imports
   Injectivity_Solver
 begin
 
-subsection {* Insertion of Elements into Set Partitions *}
-
-lemma partition_on_insert_rewrite1:
-  assumes a: "a \<notin> A"
-  assumes A: "finite A"
-  shows "{P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<in> P} = (\<lambda>P. insert {a} P) ` {P. partition_on A P \<and> card P = k}"
-    (is "?S = ?T")
+lemma set_partition_on_insert_with_fixed_card_eq:
+  assumes "finite A"
+  assumes "a \<notin> A"
+  shows "{P. partition_on (insert a A) P \<and> card P = Suc k} = (do {
+     P <- {P. partition_on A P \<and> card P = Suc k};
+     p <- P;
+     {insert (insert a p) (P - {p})}
+  })
+  \<union> (do {
+    P <- {P. partition_on A P \<and> card P = k};
+    {insert {a} P}
+  })" (is "?S = ?T")
 proof
-  {
-    fix P
-    assume partition_on: "partition_on (insert a A) P"
-      and card: "card P = Suc k"
-      and mem: "{a} \<in> P"
-    from card mem have "card (P - {{a}}) = k"
-      by (subst card_Diff_singleton) (auto intro: card_ge_0_finite)
-    moreover have "partition_on A (P - {{a}})"
-      using mem partition_on[THEN partition_on_Diff, of "{{a}}"] a by auto
-    ultimately have "card (P - {{a}}) = k" "partition_on A (P - {{a}})" .
-  } note P_without_a = this
   show "?S \<subseteq> ?T"
   proof
-    fix p
-    assume "p \<in> {P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<in> P}"
-    from P_without_a this show "p \<in> insert {a} ` {P. partition_on A P \<and> card P = k}"
-      by (intro image_eqI[where x = "p - {{a}}"]) fast+
+    fix P
+    assume "P \<in> {P. partition_on (insert a A) P \<and> card P = Suc k}"
+    from this have "partition_on (insert a A) P" and "card P = Suc k" by auto
+    show "P \<in> ?T"
+    proof cases
+      assume "{a} \<in> P"
+      have "partition_on A (P - {{a}})"
+        using \<open>{a} \<in> P\<close> \<open>partition_on (insert a A) P\<close>[THEN partition_on_Diff, of "{{a}}"] \<open>a \<notin> A\<close>
+        by auto
+      moreover from \<open>{a} \<in> P\<close> \<open>card P = Suc k\<close> have "card (P - {{a}}) = k"
+        by (subst card_Diff_singleton) (auto intro: card_ge_0_finite)
+      moreover from \<open>{a} \<in> P\<close> have "P = insert {a} (P - {{a}})" by auto
+      ultimately have "P \<in> {P. partition_on A P \<and> card P = k} \<bind> (\<lambda>P. {insert {a} P})"
+        by auto
+      from this show ?thesis by auto
+    next
+      assume "{a} \<notin> P"
+      let ?p' = "(THE X. a \<in> X \<and> X \<in> P)"
+      let ?p = "(THE X. a \<in> X \<and> X \<in> P) - {a}"
+      let ?P' = "insert ?p (P - {?p'})"
+      from \<open>partition_on (insert a A) P\<close> have "a \<in> (THE X. a \<in> X \<and> X \<in> P)"
+        using partition_on_in_the_unique_part by fastforce
+      from \<open>partition_on (insert a A) P\<close> have "(THE X. a \<in> X \<and> X \<in> P) \<in> P"
+        using partition_on_the_part_mem by fastforce
+      from this \<open>partition_on (insert a A) P\<close> have "(THE X. a \<in> X \<and> X \<in> P) - {a} \<notin> P"
+        using partition_subset_imp_notin \<open>a \<in> (THE X. a \<in> X \<and> X \<in> P)\<close> by blast
+      have "(THE X. a \<in> X \<and> X \<in> P) \<noteq> {a}"
+        using \<open>(THE X. a \<in> X \<and> X \<in> P) \<in> P\<close> \<open>{a} \<notin> P\<close> by auto
+      from \<open>partition_on (insert a A) P\<close> have "(THE X. a \<in> X \<and> X \<in> P) \<subseteq> insert a A"
+        using \<open>(THE X. a \<in> X \<and> X \<in> P) \<in> P\<close> partition_onD1 by fastforce
+      note facts_on_the_part_of = \<open>a \<in> (THE X. a \<in> X \<and> X \<in> P)\<close> \<open>(THE X. a \<in> X \<and> X \<in> P) \<in> P\<close>
+        \<open>(THE X. a \<in> X \<and> X \<in> P) - {a} \<notin> P\<close> \<open>(THE X. a \<in> X \<and> X \<in> P) \<noteq> {a}\<close>
+        \<open>(THE X. a \<in> X \<and> X \<in> P) \<subseteq> insert a A\<close>
+      from \<open>partition_on (insert a A) P\<close> \<open>finite A\<close> have "finite P"
+        by (meson finite.insertI finite_elements)
+      from \<open>partition_on (insert a A) P\<close> \<open>a \<notin> A\<close> have "partition_on (A - ?p) (P - {?p'})"
+        using facts_on_the_part_of by (auto intro: partition_on_remove_singleton)
+      from this have "partition_on A ?P'"
+        using facts_on_the_part_of by (auto intro: partition_on_insert simp add: disjnt_iff)
+      moreover have "card ?P' = Suc k"
+      proof -
+        from \<open>card P = Suc k\<close> have "card (P - {THE X. a \<in> X \<and> X \<in> P}) = k"
+          using \<open>finite P\<close> \<open>(THE X. a \<in> X \<and> X \<in> P) \<in> P\<close> by simp
+        from this show ?thesis
+          using \<open>finite P\<close> \<open>(THE X. a \<in> X \<and> X \<in> P) - {a} \<notin> P\<close> by (simp add: card_insert_if)
+      qed
+      moreover have "?p \<in> ?P'" by auto
+      moreover have "P = insert (insert a ?p) (?P' - {?p})"
+        using facts_on_the_part_of by (auto simp add: insert_absorb)
+      ultimately have "P \<in> {P. partition_on A P \<and> card P = Suc k} \<bind> (\<lambda>P. P \<bind> (\<lambda>p. {insert (insert a p) (P - {p})}))"
+        by auto
+      then show ?thesis by auto
+    qed
   qed
 next
-  {
+  show "?T \<subseteq> ?S"
+  proof
     fix P
-    assume p: "partition_on A P"
-    assume c: "card P = k"
-    from a p have not_mem: "{a} \<notin> P"
-      unfolding partition_on_def by auto
-    from p A have "finite P" by (auto intro: finite_elements)
-    from a c not_mem this have "card (insert {a} P) = Suc k"
-      by (simp add: card_insert)
-    moreover from a p have "partition_on (insert a A) (insert {a} P)"
-      using partition_on_insert[of A P "{a}"] by (auto simp: disjnt_def)
-    ultimately have "card (insert {a} P) = Suc k" "partition_on (insert a A) (insert {a} P)" .
-  }
-  from this show "?T \<subseteq> ?S" by auto
-qed
-
-lemma partition_on_insert_rewrite2:
-  assumes "a \<notin> A"
-  shows "{P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<notin> P} =
-    \<Union>((\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) ` {P. partition_on A P \<and> card P = Suc k})"
-  (is "?S = ?T")
-proof
-  {
-    fix P
-    assume p: "partition_on (insert a A) P"
-    assume c: "card P = Suc k"
-    assume a: "{a} \<notin> P"
-    from p obtain p where p_def: "p : P" "a : p"
-      unfolding partition_on_def by blast
-    from p p_def have a_notmem: "\<forall>p'\<in> P - {p}. a \<notin> p'"
-      unfolding partition_on_def disjoint_def by blast
-    from p p_def have p': "p - {a} \<notin> P"
-      unfolding partition_on_def disjoint_def
-      by (metis Diff_insert_absorb Diff_subset inf.orderE mk_disjoint_insert)
-    let ?P' = "insert (p - {a}) (P - {p})"
-    from c have f: "finite P" by (simp add: card_ge_0_finite)
-    from this have "card ?P' = Suc (card (P - {p} - {p - {a}}))"
-      by (simp add: card_insert)
-    also from f have "... = Suc (card (P - {p}))"
-      by (subst card_Diff_singleton_if) (simp add: p')+
-    also from c f have "... = Suc k"
-      by (subst card_Diff_singleton) (simp add: p_def)+
-    finally have 2: "card ?P' = Suc k" .
-    from p' p_def have "P = insert (insert a (p - {a})) (?P' - {p - {a}})"
-      by (simp add: insert_absorb)
-    from this have 3: "P \<in> (\<lambda>p. insert (insert a p) (?P' - {p})) ` (insert (p - {a}) (P - {p}))"
-      by simp
-    have 1: "partition_on A (insert (p - {a}) (P - {p}))"
-    proof -
-      from p have "{} \<notin> P"
-        unfolding partition_on_def by auto
-      from this p_def a have 1: "{} \<notin> insert (p - {a}) (P - {p})"
-        using subset_singletonD[of p a] by auto
-      from p have "\<Union>P = insert a A"
-        unfolding partition_on_def by auto
-      from p_def this assms a_notmem have 2: "\<Union>insert (p - {a}) (P - {p}) = A"
-        by auto
-      from p p_def a_notmem have 3: "\<forall>pa\<in>insert (p - {a}) (P - {p}). \<forall>p'\<in>insert (p - {a}) (P - {p}). pa \<noteq> p' \<longrightarrow> pa \<inter> p' = {}"
-        unfolding partition_on_def disjoint_def by (metis disjoint_iff_not_equal insert_Diff insert_iff)
-      from 1 2 3 show ?thesis unfolding partition_on_def disjoint_def by simp
+    assume "P \<in> ?T" (is "_ \<in> ?subexpr1 \<union> ?subexpr2")
+    from this show "P \<in> ?S"
+    proof
+      assume "P \<in> ?subexpr1"
+      from this obtain p P' where "P = insert (insert a p) (P' - {p})"
+        and "partition_on A P'" and "card P' = Suc k" and "p \<in> P'"  by auto
+      from \<open>p \<in> P'\<close> \<open>partition_on A P'\<close> have "partition_on (A - p) (P' - {p})"
+        by (simp add: partition_on_remove_singleton)
+      from \<open>partition_on A P'\<close> \<open>finite A\<close> have "finite P"
+        using \<open>P = _\<close> finite_elements by auto
+      from \<open>partition_on A P'\<close> \<open>a \<notin> A\<close> have "insert a p \<notin> P' - {p}"
+        using partition_onD1 by fastforce
+      from \<open>P = _\<close> this \<open>card P' = Suc k\<close> \<open>finite P\<close> \<open>p \<in> P'\<close>
+      have "card P = Suc k" by auto
+      moreover have "partition_on (insert a A) P"
+        using \<open>partition_on (A - p) (P' - {p})\<close> \<open>a \<notin> A\<close> \<open>p \<in> P'\<close> \<open>partition_on A P'\<close> \<open>P = _\<close>
+        by (auto intro!: partition_on_insert dest: partition_onD1 simp add: disjnt_iff)
+      ultimately show "P \<in> ?S" by auto
+    next
+      assume "P \<in> ?subexpr2"
+      from this obtain P' where "P = insert {a} P'" and "partition_on A P'" and "card P' = k" by auto
+      from \<open>partition_on A P'\<close> \<open>finite A\<close> have "finite P"
+        using \<open>P = insert {a} P'\<close> finite_elements by auto
+      from \<open>partition_on A P'\<close> \<open>a \<notin> A\<close> have "{a} \<notin> P'"
+        using partition_onD1 by fastforce
+      from \<open>P = insert {a} P'\<close> \<open>card P' = k\<close> this \<open>finite P\<close> have "card P = Suc k" by auto
+      moreover from \<open>partition_on A P'\<close> \<open>a \<notin> A\<close> have "partition_on (insert a A) P"
+        using \<open>P = insert {a} P'\<close> by (simp add: partition_on_insert_singleton)
+      ultimately show "P \<in> ?S" by auto
     qed
-    from 1 2 3 have "\<exists>P'. partition_on A P' \<and> card P' = Suc k \<and> P \<in> (\<lambda>p. insert (insert a p) (P' - {p})) ` P'" by blast
-  }
-  from this show "?S \<subseteq> ?T" by auto
-next
-  {
-    fix P p
-    assume partition_on: "partition_on A P"
-    assume c: "card P = Suc k"
-    assume p: "p \<in> P"
-    from partition_on p assms have p2: "p \<noteq> {}" "a \<notin> p"  and non_empty: "\<forall>p\<in>P. p \<noteq> {}"
-      and a_notmem: "\<forall>p\<in>P. a \<notin> p" and a: "{a} \<notin> P"
-      unfolding partition_on_def by auto
-    from partition_on p have "\<Union>(P - {p}) \<subseteq> A" "p \<subseteq> A" "\<Union>P = A"
-      unfolding partition_on_def by auto
-    from this have Un:"\<Union>insert (insert a p) (P - {p}) = insert a A" by auto
-    {
-      fix q q'
-      assume 1: "q \<in> insert (insert a p) (P - {p})"
-      assume 2: "q' \<in> insert (insert a p) (P - {p})"
-      assume noteq: "q \<noteq> q'"
-      from 1 have "q \<inter> q' = {}"
-      proof
-        assume q: "q = insert a p"
-        from 2 show ?thesis
-        proof
-          assume "q' = insert a p"
-          from noteq this q show ?thesis by simp
-        next
-          assume q': "q' \<in> P - {p}"
-          from this p partition_on have "\<forall>x\<in>p. x \<notin> q'"
-            unfolding partition_on_def disjoint_def by auto
-          from this q q' a_notmem show ?thesis by auto
-        qed
-      next
-        assume q: "q \<in> P - {p}"
-        from 2 show ?thesis
-        proof
-          assume q': "q' = insert a p"
-          from q p partition_on have "\<forall>x\<in>p. x \<notin> q"
-            unfolding partition_on_def disjoint_def by auto
-          from this q q' a_notmem show ?thesis by auto
-        next
-          assume q': "q' \<in> P - {p}"
-          from q q' noteq partition_on show ?thesis
-            unfolding partition_on_def disjoint_def by auto
-        qed
-      qed
-    }
-    from this have no_overlap: "(\<forall>pa\<in>insert (insert a p) (P - {p}). \<forall>p'\<in>insert (insert a p) (P - {p}). pa \<noteq> p' \<longrightarrow> pa \<inter> p' = {})"
-      by blast
-    from non_empty Un this have 1: "partition_on (insert a A) (insert (insert a p) (P - {p}))"
-      unfolding partition_on_def disjoint_def by auto
-    from c p a_notmem have 2: "card (insert (insert a p) (P - {p})) = Suc k"
-      by (subst card.insert) (auto simp add: card_ge_0_finite)
-    from p2 p a have 3: "{a} \<notin> insert (insert a p) (P - {p})" by auto
-    from 1 2 3 have "partition_on (insert a A) (insert (insert a p) (P - {p}))"
-      "card (insert (insert a p) (P - {p})) = Suc k"
-      "{a} \<notin> insert (insert a p) (P - {p})"
-      by auto
-  }
-  from this show "?T \<subseteq> ?S" by blast
+  qed
 qed
 
-subsection {* Cardinality of Set Partitions *}
+lemma injectivity_subexpr1:
+  assumes "a \<notin> A"
+  assumes "X \<in> P \<and> X' \<in> P'"
+  assumes "insert (insert a X) (P - {X}) = insert (insert a X') (P' - {X'})"
+  assumes "(partition_on A P \<and> card P = Suc k') \<and> (partition_on A P' \<and> card P' = Suc k')"
+  shows "P = P'" and "X = X'"
+proof -
+  from assms(1, 2, 4) have "a \<notin> X" "a \<notin> X'"
+    using partition_onD1 by auto
+  from assms(1, 4) have "insert a X \<notin> P" "insert a X' \<notin> P'"
+    using partition_onD1 by auto
+  from assms(1, 3, 4) have "insert a X = insert a X'"
+    by (metis Diff_iff insertE insertI1 mem_simps(9) partition_onD1)
+  from this \<open>a \<notin> X'\<close> \<open>a \<notin> X\<close> show "X = X'"
+    by (meson insert_ident)
+  from assms(2, 3) show "P = P'"
+    using \<open>insert a X = insert a X'\<close> \<open>insert a X \<notin> P\<close> \<open>insert a X' \<notin> P'\<close>
+    by (metis insert_Diff insert_absorb insert_commute insert_ident)
+qed
+
+lemma injectivity_subexpr2:
+  assumes "a \<notin> A"
+  assumes "insert {a} P = insert {a} P'"
+  assumes "(partition_on A P \<and> card P = k') \<and> partition_on A P' \<and> card P' = k'"
+  shows "P = P'"
+proof -
+  from assms(1, 3) have "{a} \<notin> P" and "{a} \<notin> P'"
+    using partition_onD1 by auto
+  from \<open>{a} \<notin> P\<close> have "P = insert {a} P - {{a}}" by simp
+  also from \<open>insert {a} P = insert {a} P'\<close> have "\<dots> = insert {a} P' - {{a}}" by simp
+  also from \<open>{a} \<notin> P'\<close> have "\<dots> = P'" by simp
+  finally show ?thesis .
+qed
 
 theorem card_partition_on:
   assumes "finite A"
@@ -172,7 +159,6 @@ proof (induct A arbitrary: k)
     show ?case by (cases k) (auto simp add: partition_on_empty eq)
 next
   case (insert a A)
-
   from this show ?case
   proof (cases k)
     case 0
@@ -180,121 +166,78 @@ next
       unfolding partition_on_def by (auto simp add: card_eq_0_iff finite_UnionD)
     from 0 insert show ?thesis by (auto simp add: empty)
   next
-    case (Suc k)
-    let ?P1 = "{P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<in> P}"
-    let ?P2 = "{P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<notin> P}"
-    have fin1: "\<And>A k. finite A \<Longrightarrow> finite {P. partition_on A P \<and> card P = k}"
-      and fin2: "\<And>A k Q. finite A \<Longrightarrow> finite {P. partition_on A P \<and> card P = k \<and> Q P}"
-      by (simp add: finitely_many_partition_on)+
-    have finite_elements: "finite (\<Union>((\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) ` {P. partition_on A P \<and> card P = Suc k}))"
-      using insert(1) by (auto intro: fin1 finite_elements)
-    from insert(2) have split: "{P. partition_on (insert a A) P \<and> card P = Suc k} = ?P1 \<union> ?P2"
-      by fast
-
-    have inj: "inj_on (insert {a}) {P. partition_on A P \<and> card P = k}"
-    proof (rule inj_onI; clarify)
-      fix p q
-      assume part: "partition_on A p" "partition_on A q"
-      assume i: "insert {a} p = insert {a} q"
-      from insert(2) part have "{a} \<notin> p" "{a} \<notin> q"
-        unfolding partition_on_def by auto
-      from this i show "p = q" by (meson insert_ident)
-    qed
-    from insert(1, 2) inj have eq1: "card ?P1 = Stirling (card A) k"
-      by (simp add: partition_on_insert_rewrite1 card_image insert(3))
-
-    have inj2: "\<And>P. partition_on A P \<Longrightarrow> inj_on (\<lambda>p. insert (insert a p) (P - {p})) P"
-    proof (rule inj_onI)
-      fix P p q
-      assume a: "partition_on A P"
-      assume P: "p \<in> P" "q \<in> P"
-        and eq: "insert (insert a p) (P - {p}) = insert (insert a q) (P - {q})"
-      from insert(2) a have "insert a p \<notin> P" "insert a q \<notin> P"
-        unfolding partition_on_def by auto
-      from this eq P have "P - {p} = P - {q}" by (metis Diff_insert_absorb Set.set_insert insertE insertI2)
-      from this P show "p = q" by blast
-    qed
-
-    have inj1: "inj_on (\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) {P. partition_on A P \<and> card P = Suc k}"
+    case (Suc k')
+    let ?subexpr1 = "do {
+      P <- {P. partition_on A P \<and> card P = Suc k'};
+      p <- P;
+      {insert (insert a p) (P - {p})}
+    }"
+    let ?subexpr2 = "do {
+      P <- {P. partition_on A P \<and> card P = k'};
+      {insert {a} P}
+    }"
+    let ?expr = "?subexpr1 \<union> ?subexpr2"
+    have "card {P. partition_on (insert a A) P \<and> card P = k} = card ?expr"
+      using \<open>finite A\<close> \<open>a \<notin> A\<close> \<open>k = Suc k'\<close> by (simp add: set_partition_on_insert_with_fixed_card_eq)
+    also have "card ?expr = Stirling (card A) k' + Stirling (card A) (Suc k') * Suc k'"
     proof -
-      {
-        fix P Q
-        assume partition_on: "partition_on A P" "partition_on A Q"
-        assume card: "card P = Suc k" "card Q = Suc k"
-        assume eq: "(\<lambda>p. insert (insert a p) (P - {p})) ` P = (\<lambda>p. insert (insert a p) (Q - {p})) ` Q"
-        have "P = Q"
-        proof (rule ccontr)
-          from partition_on insert(2) have a_notmem: "\<forall>p\<in>P. a \<notin> p" "\<forall>q\<in>Q. a \<notin> q"
-            unfolding partition_on_def by auto
-          assume "P \<noteq> Q"
-          from this have "(\<exists>x. x \<in> P \<and> x \<notin> Q) \<or> (\<exists>x. x \<notin> P \<and> x \<in> Q)"
-            by auto
-          from this have "(\<lambda>p. insert (insert a p) (P - {p})) ` P \<noteq> (\<lambda>p. insert (insert a p) (Q - {p})) ` Q"
-          proof
-            assume "(\<exists>x. x \<in> P \<and> x \<notin> Q)"
-            from this obtain p where p: "p : P" "p \<notin> Q" by auto
-            from p this a_notmem have "insert (insert a p) (P - {p}) \<notin> (\<lambda>p. insert (insert a p) (Q - {p})) ` Q"
-              by clarify (metis Diff_insert_absorb insertCI insertE insertI1 insert_Diff)
-            from p this show "(\<lambda>p. insert (insert a p) (P - {p})) ` P \<noteq> (\<lambda>p. insert (insert a p) (Q - {p})) ` Q"
-              by blast
-          next
-            assume "(\<exists>x. x \<notin> P \<and> x \<in> Q)"
-            from this obtain q where q: "q : Q" "q \<notin> P" by auto
-            from this a_notmem have "insert (insert a q) (Q - {q}) \<notin> (\<lambda>p. insert (insert a p) (P - {p})) ` P"
-              by clarify (metis Diff_insert_absorb insertCI insertE insertI1 insert_Diff)
-            from q this show "(\<lambda>p. insert (insert a p) (P - {p})) ` P \<noteq> (\<lambda>p. insert (insert a p) (Q - {p})) ` Q"
-              by blast
-          qed
-          from this eq show "False" by blast
+      have "finite ?subexpr1 \<and> card ?subexpr1 = Stirling (card A) (Suc k') * Suc k'"
+      proof -
+        from \<open>finite A\<close> have "finite {P. partition_on A P \<and> card P = Suc k'}"
+          by (simp add: finitely_many_partition_on)
+        moreover have "\<forall>X\<in>{P. partition_on A P \<and> card P = Suc k'}. finite (X \<bind> (\<lambda>p. {insert (insert a p) (X - {p})}))"
+          using finite_elements \<open>finite A\<close> finite_bind
+          by (metis (no_types, lifting) finite.emptyI finite_insert mem_Collect_eq)
+        moreover have "disjoint_family_on (\<lambda>P. P \<bind> (\<lambda>p. {insert (insert a p) (P - {p})})) {P. partition_on A P \<and> card P = Suc k'}"
+          by (injectivity_solver rule: injectivity_subexpr1(1)[OF \<open>a \<notin> A\<close>])
+        moreover have "card (P \<bind> (\<lambda>p. {insert (insert a p) (P - {p})})) = Suc k'"
+          if "P \<in> {P. partition_on A P \<and> card P = Suc k'}" for P
+        proof -
+          from that \<open>finite A\<close> have "finite P"
+            using finite_elements by blast
+          moreover have "inj_on (\<lambda>p. insert (insert a p) (P - {p})) P"
+            using that injectivity_subexpr1(2)[OF \<open>a \<notin> A\<close>] by (simp add: inj_onI)
+          moreover from that have "card P = Suc k'" by simp
+          ultimately show ?thesis by (simp add: card_bind_singleton)
         qed
-      }
-      from this show ?thesis
-      unfolding inj_on_def by auto
-    qed
-
-    {
-      fix c
-      assume "c \<in> (\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) ` {P. partition_on A P \<and> card P = Suc k}"
-      from this inj2 have "card c = Suc k"
-        by (auto simp add: card_image)
-    } note card = this
-
-    {
-      fix P Q
-      let ?f = "(\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})))"
-      assume partition_on: "partition_on A P" "partition_on A Q"
-      assume neq: "?f P ` P \<noteq> ?f Q ` Q"
-      from insert(2) partition_on have a: "\<forall>p \<in> P. a \<notin> p" "\<forall>q \<in> Q. a \<notin> q"
-        unfolding partition_on_def by auto
-      have "?f P ` P \<inter> ?f Q ` Q = {}"
-      proof (rule ccontr)
-        assume "?f P ` P \<inter> ?f Q ` Q \<noteq> {}"
-        from this obtain q where q: "q \<in> ?f P ` P" "q \<in> ?f Q ` Q" by auto
-        from q(2) obtain p where p: "insert a p \<in> q" "p \<in> Q" by auto
-        from q(1) obtain p' where p': "insert a p' \<in> q" "p' \<in> P" by auto
-        from q p p' a have eq: "p = p'" by clarify (metis insert_Diff insert_ident insert_iff)
-        from q p a have "q - {insert a p} = P - {p}" "q - {insert a p} = Q - {p}"
-          by (clarify; metis (no_types, hide_lams) Diff_iff Diff_insert_absorb insert_iff)+
-        from this p p' eq have "P = Q" by auto
-        from this neq show "False" by blast
+        ultimately have "card ?subexpr1 = card {P. partition_on A P \<and> card P = Suc k'} * Suc k'"
+          by (subst card_bind_constant) simp+
+        from this have "card ?subexpr1 = Stirling (card A) (Suc k') * Suc k'"
+          using insert.hyps(3) by simp
+        moreover have "finite ?subexpr1"
+          using \<open>finite {P. partition_on A P \<and> card P = Suc k'}\<close>
+          \<open>\<forall>X\<in>{P. partition_on A P \<and> card P = Suc k'}. finite (X \<bind> (\<lambda>p. {insert (insert a p) (X - {p})}))\<close>
+          by (auto intro: finite_bind)
+        ultimately show ?thesis by blast
       qed
-    } note no_intersect = this
-
-    from insert(2) have "card {P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<notin> P} =
-      card (\<Union>((\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) ` {P. partition_on A P \<and> card P = Suc k}))"
-      by (simp add: partition_on_insert_rewrite2)
-    also have "... = Suc k * card ((\<lambda>P. (\<lambda>p. insert (insert a p) (P - {p})) ` P) ` {P. partition_on A P \<and> card P = Suc k})"
-      using card insert(1) no_intersect
-      by (subst card_partition[symmetric]) (force intro: fin1)+
-    also have "... = Suc k * Stirling (card A) (Suc k)"
-      using inj1 insert(3) by (subst card_image) auto
-    finally have eq2: "card {P. partition_on (insert a A) P \<and> card P = Suc k \<and> {a} \<notin> P} = Suc k * Stirling (card A) (Suc k)" .
-
-    have "card {P. partition_on (insert a A) P \<and> card P = Suc k} = card ?P1 + card ?P2"
-      by (subst split; subst card_Un_disjoint) (auto intro: fin2 insert(1))
-    also have "... = Stirling (card (insert a A)) (Suc k)"
-      using insert(1, 2) by (simp add: eq1 eq2)
-    finally show ?thesis using Suc by auto
+      moreover have "finite ?subexpr2 \<and> card ?subexpr2 = Stirling (card A) k'"
+      proof -
+        from \<open>finite A\<close> have "finite {P. partition_on A P \<and> card P = k'}"
+          by (simp add: finitely_many_partition_on)
+        moreover have " inj_on (insert {a}) {P. partition_on A P \<and> card P = k'}"
+          using injectivity_subexpr2[OF \<open>a \<notin> A\<close>] by (simp add: inj_on_def)
+        ultimately have "card ?subexpr2 = card {P. partition_on A P \<and> card P = k'}"
+          by (simp add: card_bind_singleton)
+        also have "\<dots> = Stirling (card A) k'"
+          using insert.hyps(3) .
+        finally have "card ?subexpr2 = Stirling (card A) k'" .
+        moreover have "finite ?subexpr2"
+          by (simp add: \<open>finite {P. partition_on A P \<and> card P = k'}\<close> finite_bind)
+        ultimately show ?thesis by blast
+      qed
+      moreover have "?subexpr1 \<inter> ?subexpr2 = {}"
+      proof -
+        have "\<forall>P\<in>?subexpr1. {a} \<notin> P"
+          using insert.hyps(2) by (force elim!: partition_onE)
+        moreover have "\<forall>P\<in>?subexpr2. {a} \<in> P" by auto
+        ultimately show "?subexpr1 \<inter> ?subexpr2 = {}" by blast
+      qed
+      ultimately show ?thesis
+        by (simp add: card_Un_disjoint)
+    qed
+    also have "\<dots> = Stirling (card (insert a A)) k"
+      using insert(1, 2) \<open>k = Suc k'\<close> by simp
+    finally show ?thesis .
   qed
 qed
 
