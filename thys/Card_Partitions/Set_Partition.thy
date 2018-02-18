@@ -45,11 +45,25 @@ subsection \<open>Basic Facts on Set Partitions\<close>
 lemma partition_onD4: "partition_on A P \<Longrightarrow> p \<in> P \<Longrightarrow> q \<in> P \<Longrightarrow> x \<in> p \<Longrightarrow> x \<in> q \<Longrightarrow> p = q"
   by (auto simp: partition_on_def disjoint_def)
 
+lemma partition_subset_imp_notin:
+  assumes "partition_on A P" "X \<in> P"
+  assumes "X' \<subset> X"
+  shows "X' \<notin> P"
+proof
+  assume "X' \<in> P"
+  from \<open>X' \<in> P\<close> \<open>partition_on A P\<close> have "X' \<noteq> {}"
+    using partition_onD3 by blast
+  moreover from \<open>X' \<in> P\<close> \<open>X \<in> P\<close> \<open>partition_on A P\<close> \<open>X' \<subset> X\<close> have "disjnt X X'"
+    by (metis disjnt_def disjointD inf.strict_order_iff partition_onD2)
+  moreover note \<open>X' \<subset> X\<close>
+  ultimately show False
+    by (meson all_not_in_conv disjnt_iff psubsetD)
+qed
+
 lemma partition_on_Diff:
   assumes P: "partition_on A P" shows "Q \<subseteq> P \<Longrightarrow> partition_on (A - \<Union>Q) (P - Q)"
   using P P[THEN partition_onD4] by (auto simp: partition_on_def disjoint_def)
 
-thm partition_onI
 lemma partition_on_UN:
   assumes A: "partition_on A B" and B: "\<And>b. b \<in> B \<Longrightarrow> partition_on b (P b)"
   shows "partition_on A (\<Union>b\<in>B. P b)"
@@ -98,8 +112,11 @@ lemma partition_on_eq_implies_eq_carrier:
 using assms by (fastforce elim: partition_onE)
 
 lemma partition_on_insert:
-  "partition_on A B \<Longrightarrow> disjnt A A' \<Longrightarrow> A' \<noteq> {} \<Longrightarrow> partition_on (A \<union> A') (insert A' B)"
-  by (auto simp: partition_on_def disjoint_def disjnt_def)
+  assumes "partition_on A P"
+  assumes "disjnt A X" "X \<noteq> {}"
+  assumes "A \<union> X = A'"
+  shows "partition_on A' (insert X P)"
+using assms by (auto simp: partition_on_def disjoint_def disjnt_def)
 
 text \<open>An alternative formulation of @{thm partition_on_insert}\<close>
 lemma partition_on_insert':
@@ -109,10 +126,20 @@ lemma partition_on_insert':
 proof -
   have "disjnt (A - X) X" by (simp add: disjnt_iff)
   from assms(1) this assms(3) have "partition_on ((A - X) \<union> X) (insert X P)"
-    by (rule partition_on_insert)
+    by (auto intro: partition_on_insert)
   from this \<open>X \<subseteq> A\<close> show ?thesis
     by (metis Diff_partition sup_commute)
 qed
+
+lemma partition_on_insert_singleton:
+  assumes "partition_on A P" "a \<notin> A" "insert a A = A'"
+  shows "partition_on A' (insert {a} P)"
+using assms by (auto simp: partition_on_def disjoint_def disjnt_def)
+
+lemma partition_on_remove_singleton:
+  assumes "partition_on A P" "X \<in> P" "A - X = A'"
+  shows "partition_on A' (P - {X})"
+using assms partition_on_Diff by (metis Diff_cancel Diff_subset cSup_singleton insert_subset)
 
 subsection \<open>The Unique Part Containing an Element in a Set Partition\<close>
 

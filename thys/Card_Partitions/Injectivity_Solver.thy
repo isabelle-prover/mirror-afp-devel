@@ -9,11 +9,20 @@ imports
   "HOL-Eisbach.Eisbach"
 begin
 
-subsubsection \<open>Cardinality Theorems for Set.bind\<close>
+subsection \<open>Preliminaries\<close>
 
 text \<open>
-These two lemmas shall be added to the Disjoint Set theory.
+These lemmas shall be added to the Disjoint Set theory.
 \<close>
+
+subsubsection \<open>Injectivity and Disjoint Families\<close>
+
+lemma inj_on_impl_disjoint_family_on_singleton:
+  assumes "inj_on f A"
+  shows "disjoint_family_on (\<lambda>x. {f x}) A"
+using assms disjoint_family_on_def inj_on_contraD by fastforce
+
+subsubsection \<open>Cardinality Theorems for Set.bind\<close>
 
 lemma card_bind:
   assumes "finite S"
@@ -36,6 +45,12 @@ lemma card_bind_constant:
   assumes "\<And>x. x \<in> S \<Longrightarrow> card (f x) = k"
   shows "card (S \<bind> f) = card S * k"
 using assms by (simp add: card_bind)
+
+lemma card_bind_singleton:
+  assumes "finite S"
+  assumes "inj_on f S"
+  shows "card (S \<bind> (\<lambda>x. {f x})) = card S"
+using assms by (auto simp add: card_bind_constant inj_on_impl_disjoint_family_on_singleton)
 
 subsection \<open>Third Version of Injectivity Solver\<close>
 
