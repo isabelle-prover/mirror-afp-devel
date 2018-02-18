@@ -169,21 +169,18 @@ fun get_monad_rules context =
 
 fun get_monad ctxt bindc =
   let
-    val transfer = Thm.transfer (Proof_Context.theory_of ctxt);
     val {monads, ...} = Data.get (Context.Proof ctxt);
-  in Option.map (map_info_thms transfer) (Symtab.lookup monads bindc) end;
+  in Option.map (map_info_thms (Thm.transfer' ctxt)) (Symtab.lookup monads bindc) end;
 
 fun get_distrib_rule ctxt controlc =
   let
-    val transfer = Thm.transfer (Proof_Context.theory_of ctxt);
     val {distribs, ...} = Data.get (Context.Proof ctxt);
-  in Option.map transfer (Symtab.lookup distribs controlc) end;
+  in Option.map (Thm.transfer' ctxt) (Symtab.lookup distribs controlc) end;
 
 fun get_distrib_rules context =
   let
     val {distribs, ...} = Data.get context
-  in Symtab.dest distribs |> map snd
-  end;
+  in Symtab.dest distribs |> map snd end;
 
 fun add_monad_rule thm context =
   let

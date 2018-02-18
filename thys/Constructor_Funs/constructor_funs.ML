@@ -105,8 +105,7 @@ fun comb_conv ctxt cv1 cv2 ct =
 fun conv ctxt =
   let
     val (_, unfolds, _) = Data.get (Context.Proof ctxt)
-    val transfer = Thm.transfer (Proof_Context.theory_of ctxt)
-    val unfolds = map (apsnd transfer) unfolds
+    val unfolds = map (apsnd (Thm.transfer' ctxt)) unfolds
 
     fun full_conv ct =
       let

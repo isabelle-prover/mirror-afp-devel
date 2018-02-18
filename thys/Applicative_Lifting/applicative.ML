@@ -352,7 +352,7 @@ fun afuns_of_typ_generic context = map (afun_of_generic context) o match_typ con
 val afuns_of_typ = afuns_of_typ_generic o Context.Proof;
 
 fun all_unfolds_of_generic context =
-  let val unfolds_of = map (Thm.transfer (Context.theory_of context)) o unfolds_of_afun;
+  let val unfolds_of = map (Thm.transfer'' context) o unfolds_of_afun;
   in Name_Space.fold_table (fn (_, af) => append (unfolds_of af)) (get_afun_table context) [] end;
 
 val all_unfolds_of = all_unfolds_of_generic o Context.Proof;
