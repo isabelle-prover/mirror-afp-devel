@@ -183,7 +183,7 @@ proof
     unfolding semBV.simps using set_eq by auto
   have fact:"dterm_sem I (f1 fid1 vid1) (mk_v I (OSing vid1 (f1 fid1 vid1)) (ab, bb) (sol t))
           = snd (mk_v I (OSing vid1 (f1 fid1 vid1)) (ab, bb) (sol t)) $ vid1"
-    using agree apply(simp only: Vagree_def dterm_sem.simps f1_def mk_xode.simps)
+    using agree unfolding Vagree_def dterm_sem.simps f1_def mk_xode.simps
   proof -
     assume alls:"(\<forall>i. Inl i \<in> {Inl vid1, Inr vid1} \<longrightarrow>
         fst (mk_v I (OSing vid1 ($f fid1 (singleton (trm.Var vid1)))) (ab, bb) (sol t)) $ i =
@@ -196,7 +196,7 @@ proof
     have argsEq:"(\<chi> i. dterm_sem I (singleton (trm.Var vid1) i)
           (mk_v I (OSing vid1 ($f fid1 (singleton (trm.Var vid1)))) (ab, bb) (sol t)))
           = (\<chi> i.  sterm_sem I (singleton (trm.Var vid1) i) (sol t))"
-      using agree by (simp add: vec_extensionality Vagree_def f1_def)
+      using alls f1_def by auto
     thus "Functions I fid1 (\<chi> i. dterm_sem I (singleton (trm.Var vid1) i)
           (mk_v I (OSing vid1 ($f fid1 (singleton (trm.Var vid1)))) (ab, bb) (sol t))) 
         = snd (mk_v I (OSing vid1 ($f fid1 (singleton (trm.Var vid1)))) (ab, bb) (sol t)) $ vid1"
@@ -2642,7 +2642,9 @@ Predicates I vid1
      (\<chi> i. dterm_sem I (if i = vid1 then trm.Var vid1 else Const 0)
             (mk_v I (OSing vid1 ($f fid1 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0))) (a, b) (sol t)))"
      using pred_sem dsem_eq by auto
-qed
+ qed
+
+
 done
 qed
 end end

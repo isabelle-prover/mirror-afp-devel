@@ -371,7 +371,8 @@ next
     done
   have trm:"sterm_sem I  \<theta> (fst \<nu>) = sterm_sem J \<theta> (fst \<nu>')"
     using coincidence_sterm' free VA' IA agree_Lem[of \<theta>, OF free] by blast
-  show "(\<chi> i. if i = x then sterm_sem I \<theta> (fst \<nu>) else 0) = (\<chi> i. if i = x then sterm_sem J \<theta> (fst \<nu>') else 0)"
+  show "(\<lambda>i. if i = x then sterm_sem I \<theta> (fst \<nu>) else 0) =
+        (\<lambda>i. if i = x then sterm_sem J \<theta> (fst \<nu>') else 0)"
     by (auto simp add: vec_eq_iff trm)
   qed
 next

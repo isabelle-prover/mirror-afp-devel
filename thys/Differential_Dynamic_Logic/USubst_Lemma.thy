@@ -2221,10 +2221,7 @@ proof (induction rule: osafe.induct)
 next
   case (osafe_Sing \<theta> x)
   then show ?case apply auto
-    apply(rule vec_extensionality)
-    apply auto
-    using nsubst_sterm' [of  \<sigma> \<theta> I "(fst \<nu>)" "(snd \<nu>)"]
-    by auto
+    using nsubst_sterm' [of  \<sigma> \<theta> I "(fst \<nu>)" "(snd \<nu>)"] by auto
 next
   case (osafe_Prod ODE1 ODE2) then
   have NO1:"OadmitFO \<sigma> ODE1 U" and NO2:"OadmitFO \<sigma> ODE2 U" 
@@ -2957,15 +2954,7 @@ proof (induction rule: PPadmit_PFadmit.induct)
           (\<exists>ta. mk_v (PFadjoint I \<sigma>) ODE (sol 0, b) (sol t) = mk_v I ODE (sola 0, b) (sola ta) \<and>
                 0 \<le> ta \<and> (sola solves_ode (\<lambda>a. ODE_sem I ODE)) {0..ta} {x. mk_v I ODE (sola 0, b) x \<in> fml_sem I (PFsubst \<phi> \<sigma>)})"
         apply(rule exI[where x=sol])
-        apply(rule conjI)
-         apply(rule refl)
-        apply(rule exI[where x=t])
-        apply(rule conjI)
-         subgoal using mkv_eq t by auto
-        apply(rule conjI)
-         apply(rule t)
-        apply(rule sol'') 
-        done
+        by (metis dual_order.refl intervalE mkv_eq sol'' t)
     qed
   qed
   then show ?case
@@ -2978,11 +2967,7 @@ next
     then have dsafe:"dsafe \<theta>" by auto
     assume safes:"(\<forall>i. fsafe (\<sigma> i))"
     show "?thesis"
-      apply(auto)
-       apply(rule vec_extensionality)
-       subgoal using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
-       apply(rule vec_extensionality)
-       using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
+      using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
   qed
   then show "?case" by auto 
 next
@@ -2993,12 +2978,8 @@ next
     then have dsafe:"dsafe \<theta>" by auto
     assume safes:"(\<forall>i. fsafe (\<sigma> i))"
     show "?thesis"
-      apply(auto)
-       apply(rule vec_extensionality)
-       subgoal using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
-       apply(rule vec_extensionality)
-       using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
-  qed
+      using psubst_dterm[OF good_interp dsafe, of \<sigma>] by auto
+   qed
   then show ?case by auto
 next
   case (PFadmit_Geq \<sigma> \<theta>1 \<theta>2) then 
@@ -3167,9 +3148,7 @@ proof (induction rule: osafe.induct)
   then show ?case unfolding adjoint_def by (cases "SODEs \<sigma> c", auto)
 next
   case (osafe_Sing \<theta> x)
-  then show ?case apply auto
-    apply(rule vec_extensionality)
-    apply auto
+  then show ?case 
     using subst_sterm [of  \<sigma> \<theta> I "\<nu>"]
     unfolding ssafe_def by auto
 next

@@ -260,72 +260,7 @@ lemma Radj_repd3:
 lemma Radj_eq_iff:"(a = b) = ((Radj x y a) = (Radj x y b))"
   unfolding Radj_def RSadj_def apply auto
   apply (rule state_eq)
-   subgoal for i 
-     apply(cases "i = x", cases "i = y", auto)
-       using vec_lambda_beta apply (metis)
-     proof -
-       assume "x \<noteq> y"
-       assume "(\<chi> z. fst a $ (if z = x then y else if z = y then x else z)) = (\<chi> z. fst b $ (if z = x then y else if z = y then x else z))"
-       then have "\<And>s. (\<chi> s. fst a $ (if s = x then y else if s = y then x else s)) $ s = fst b $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then have "\<And>s. fst b $ (if s = x then y else if s = y then x else s) = fst a $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then show "fst a $ x = fst b $ x"
-         by presburger
-     next
-       assume "(\<chi> z. fst a $ (if z = x then y else if z = y then x else z)) = (\<chi> z. fst b $ (if z = x then y else if z = y then x else z))"
-       then have "\<And>s. (\<chi> s. fst a $ (if s = x then y else if s = y then x else s)) $ s = fst b $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then have "\<And>s. fst b $ (if s = x then y else if s = y then x else s) = fst a $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then show "fst a $ i = fst b $ i"
-       proof -
-         { assume "fst b $ x \<noteq> fst a $ x"
-           have "fst b $ x = fst a $ x"
-             using \<open>\<And>s. fst b $ (if s = x then y else if s = y then x else s) = fst a $ (if s = x then y else if s = y then x else s)\<close> by presburger }
-         moreover
-         { assume "i \<noteq> x"
-           then have "i \<noteq> x \<and> i \<noteq> y \<or> fst a $ i = fst b $ i"
-             using \<open>\<And>s. fst b $ (if s = x then y else if s = y then x else s) = fst a $ (if s = x then y else if s = y then x else s)\<close> by presburger
-           then have ?thesis
-             using \<open>\<And>s. fst b $ (if s = x then y else if s = y then x else s) = fst a $ (if s = x then y else if s = y then x else s)\<close> by presburger }
-         ultimately show ?thesis
-           by force
-       qed
-     qed
-   subgoal for i 
-     apply(cases "i = x", cases "i = y", auto)
-       using vec_lambda_beta apply (metis)
-     proof -
-       assume "x \<noteq> y"
-       assume "(\<chi> z. snd a $ (if z = x then y else if z = y then x else z)) = (\<chi> z. snd b $ (if z = x then y else if z = y then x else z))"
-       then have "\<And>s. (\<chi> s. snd a $ (if s = x then y else if s = y then x else s)) $ s = snd b $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then have "\<And>s. snd b $ (if s = x then y else if s = y then x else s) = snd a $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then show "snd a $ x = snd b $ x"
-         by presburger
-     next
-       assume "(\<chi> z. snd a $ (if z = x then y else if z = y then x else z)) = (\<chi> z. snd b $ (if z = x then y else if z = y then x else z))"
-       then have "\<And>s. (\<chi> s. snd a $ (if s = x then y else if s = y then x else s)) $ s = snd b $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then have "\<And>s. snd b $ (if s = x then y else if s = y then x else s) = snd a $ (if s = x then y else if s = y then x else s)"
-         by simp
-       then show "snd a $ i = snd b $ i"
-       proof -
-         { assume "snd b $ x \<noteq> snd a $ x"
-           have "snd b $ x = snd a $ x"
-             using \<open>\<And>s. snd b $ (if s = x then y else if s = y then x else s) = snd a $ (if s = x then y else if s = y then x else s)\<close> by presburger }
-         moreover
-         { assume "i \<noteq> x"
-           then have "i \<noteq> x \<and> i \<noteq> y \<or> snd a $ i = snd b $ i"
-             using \<open>\<And>s. snd b $ (if s = x then y else if s = y then x else s) = snd a $ (if s = x then y else if s = y then x else s)\<close> by presburger
-           then have ?thesis
-             using \<open>\<And>s. snd b $ (if s = x then y else if s = y then x else s) = snd a $ (if s = x then y else if s = y then x else s)\<close> by presburger }
-         ultimately show ?thesis
-           by force
-       qed
-     qed
+   apply smt+
   done
 
 lemma RSadj_cancel:"RSadj x y (RSadj x y \<nu>) = \<nu>"
@@ -368,51 +303,10 @@ lemma mkv_lemma:
   shows "Radj x y (mk_v I (OUrename x y ODE) (a, b) c) = mk_v I ODE (RSadj x y a, RSadj x y b) (RSadj x y c)"
 proof -
   have inner1:"(mk_v I (OUrename x y ODE) (a, b) c) = ((\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then c else a) $ i), (\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then ODE_sem I (OUrename x y ODE) c else b) $ i))"
-    using mk_v_concrete[of I "OUrename x y ODE" "(a,b)" c]
-    apply auto
-     by (rule vec_extensionality | auto)+
+    using mk_v_concrete[of I "OUrename x y ODE" "(a,b)" c] by auto
   have inner2:"(((\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then c else a) $ i), (\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then ODE_sem I (OUrename x y ODE) c else b) $ i))) 
             = (((\<chi> i. (if (swap x y i) \<in> ODE_vars I ODE then c else a) $ i), (\<chi> i. (if (swap x y i) \<in> ODE_vars I ODE then ODE_sem I (OUrename x y ODE) c else b) $ i)))"
-    apply auto
-     apply (rule vec_extensionality)
-    using OUrename_preserves_ODE_vars[OF ORA]
-    subgoal for i
-    proof -
-      have f1: "\<forall>s sa i sb. (sb \<in> {sb. swap s sa sb \<in> ODE_vars (i::('sf, 'a, 'sz) interp) ODE}) = (if sb = s then sa \<in> ODE_vars i ODE else if sb = sa then s \<in> ODE_vars i ODE else sb \<in> ODE_vars i ODE)"
-        by simp
-      then have f2: "i \<in> ODE_vars I (OUrename x y ODE) \<longrightarrow> (if i = x then y \<in> ODE_vars I ODE else if i = y then x \<in> ODE_vars I ODE else i \<in> ODE_vars I ODE)"
-        using \<open>\<And>y x I. {z. swap x y z \<in> ODE_vars I ODE} = ODE_vars I (OUrename x y ODE)\<close> by blast
-      have "(if (if i = x then y else if i = y then x else i) \<in> ODE_vars I ODE then c else a) $ i = a $ i \<or> (if i = x then y \<in> ODE_vars I ODE else if i = y then x \<in> ODE_vars I ODE else i \<in> ODE_vars I ODE)"
-        by presburger
-      moreover
-      { assume "(if (if i = x then y else if i = y then x else i) \<in> ODE_vars I ODE then c else a) $ i = a $ i"
-        then have "(\<chi> s. (if s \<in> ODE_vars I (OUrename x y ODE) then c else a) $ s) $ i = (\<chi> s. (if (if s = x then y else if s = y then x else s) \<in> ODE_vars I ODE then c else a) $ s) $ i \<or> i \<in> ODE_vars I (OUrename x y ODE)"
-        by force }
-      ultimately have "(\<chi> s. (if s \<in> ODE_vars I (OUrename x y ODE) then c else a) $ s) $ i = (\<chi> s. (if (if s = x then y else if s = y then x else s) \<in> ODE_vars I ODE then c else a) $ s) $ i \<or> i \<in> ODE_vars I (OUrename x y ODE)"
-      using f1 \<open>\<And>y x I. {z. swap x y z \<in> ODE_vars I ODE} = ODE_vars I (OUrename x y ODE)\<close> by blast
-      then show "(\<chi> s. (if s \<in> ODE_vars I (OUrename x y ODE) then c else a) $ s) $ i = (\<chi> s. (if (if s = x then y else if s = y then x else s) \<in> ODE_vars I ODE then c else a) $ s) $ i"
-      using f2 by fastforce
-    qed
-    apply(rule vec_extensionality)
-    subgoal for i
-      using OUrename_preserves_ODE_vars[OF ORA]
-    proof -
-      have f1: "\<forall>s sa i sb. (sb \<in> {sb. swap s sa sb \<in> ODE_vars (i::('sf, 'a, 'sz) interp) ODE}) = (if sb = s then sa \<in> ODE_vars i ODE else if sb = sa then s \<in> ODE_vars i ODE else sb \<in> ODE_vars i ODE)"
-        by simp
-      then have f2: "i \<in> ODE_vars I (OUrename x y ODE) \<longrightarrow> (if i = x then y \<in> ODE_vars I ODE else if i = y then x \<in> ODE_vars I ODE else i \<in> ODE_vars I ODE)"
-        using \<open>\<And>y x I. {z. swap x y z \<in> ODE_vars I ODE} = ODE_vars I (OUrename x y ODE)\<close> by blast
-      have "(if (if i = x then y else if i = y then x else i) \<in> ODE_vars I ODE then ODE_sem I (OUrename x y ODE) c else b) $ i = b $ i \<or> (if i = x then y \<in> ODE_vars I ODE else if i = y then x \<in> ODE_vars I ODE else i \<in> ODE_vars I ODE)"
-        by presburger
-      moreover
-      { assume "(if (if i = x then y else if i = y then x else i) \<in> ODE_vars I ODE then ODE_sem I (OUrename x y ODE) c else b) $ i = b $ i"
-        then have "(\<chi> s. (if s \<in> ODE_vars I (OUrename x y ODE) then ODE_sem I (OUrename x y ODE) c else b) $ s) $ i = (\<chi> s. (if (if s = x then y else if s = y then x else s) \<in> ODE_vars I ODE then ODE_sem I (OUrename x y ODE) c else b) $ s) $ i \<or> i \<in> ODE_vars I (OUrename x y ODE)"
-          by fastforce }
-        ultimately have "(\<chi> s. (if s \<in> ODE_vars I (OUrename x y ODE) then ODE_sem I (OUrename x y ODE) c else b) $ s) $ i = (\<chi> s. (if (if s = x then y else if s = y then x else s) \<in> ODE_vars I ODE then ODE_sem I (OUrename x y ODE) c else b) $ s) $ i \<or> i \<in> ODE_vars I (OUrename x y ODE)"
-        using f1 \<open>\<And>y x I. {z. swap x y z \<in> ODE_vars I ODE} = ODE_vars I (OUrename x y ODE)\<close> by blast
-        then show ?thesis
-        using f2 by force
-      qed
-    done
+    by (force simp: OUrename_preserves_ODE_vars[OF ORA, symmetric])
   have "Radj x y (mk_v I (OUrename x y ODE) (a, b) c) = 
         Radj x y (((\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then c else a) $ i), (\<chi> i. (if i \<in> ODE_vars I (OUrename x y ODE) then ODE_sem I (OUrename x y ODE) c else b) $ i)))"
     using inner1 by auto
@@ -427,21 +321,16 @@ proof -
     using swap_cancel by auto
   moreover have "... = (((\<chi> i. (if i \<in> ODE_vars I ODE then RSadj x y c else RSadj x y a) $ i)),
                          (\<chi> i. (if i \<in> ODE_vars I ODE then RSadj x y (ODE_sem I (OUrename x y ODE) c) else RSadj x y b) $ i))"
-    apply(auto)
-     by(rule vec_extensionality, auto simp add: ren_proj)+
+     by(auto simp add: ren_proj)
   moreover have "... = (((\<chi> i. (if i \<in> ODE_vars I ODE then RSadj x y c else RSadj x y a) $ i)),
                          (\<chi> i. (if i \<in> ODE_vars I ODE then RSadj x y (RSadj x y (ODE_sem I ODE (RSadj x y c))) else RSadj x y b) $ i))"
-    apply(auto)
-    apply(rule vec_extensionality, auto)
     using OUren[OF ORA, of I x y c] by auto
   moreover have "... = (((\<chi> i. (if i \<in> ODE_vars I ODE then RSadj x y c else RSadj x y a) $ i)),
                          (\<chi> i. (if i \<in> ODE_vars I ODE then (ODE_sem I ODE (RSadj x y c)) else RSadj x y b) $ i))"
-    apply(auto)
-    by(rule vec_extensionality, auto simp add: RSadj_cancel)
+    by(auto simp add: RSadj_cancel)
   moreover have "... = mk_v I ODE (RSadj x y a, RSadj x y b) (RSadj x y c)"
     using mk_v_concrete[of I "ODE" "(RSadj x y a, RSadj x y b)" "RSadj x y c"]
-    apply auto
-     by (rule vec_extensionality | auto)+
+    by auto
   ultimately show ?thesis by auto
 qed
 
