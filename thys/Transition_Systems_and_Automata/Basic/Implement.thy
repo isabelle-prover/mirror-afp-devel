@@ -109,6 +109,12 @@ begin
 
   subsection {* Implementations for Sets Represented by Lists *}
 
+  lemma list_set_rel_Id_on[simp]: "\<langle>Id_on A\<rangle> list_set_rel = \<langle>Id\<rangle> list_set_rel \<inter> UNIV \<times> Pow A"
+    unfolding list_set_rel_def relcomp_unfold in_br_conv by auto
+
+  lemma list_set_card[param]: "(length, card) \<in> \<langle>A\<rangle> list_set_rel \<rightarrow> nat_rel"
+    unfolding list_set_rel_def relcomp_unfold in_br_conv
+    by (auto simp: distinct_card list_rel_imp_same_length)
   lemma list_set_insert[param]:
     assumes "y \<notin> Y"
     assumes "(x, y) \<in> A" "(xs, Y) \<in> \<langle>A\<rangle> list_set_rel"
@@ -189,6 +195,7 @@ begin
 
   subsection {* Autoref Setup *}
 
+  (* TODO: inline this? *)
   lemma dflt_ahm_rel_finite_nat: "finite_map_rel (\<langle>nat_rel, V\<rangle> dflt_ahm_rel)" by tagged_solver
 
   context
@@ -196,7 +203,6 @@ begin
 
     interpretation autoref_syn by this
 
-    lemma [autoref_op_pat]: "UNION S f \<equiv> OP UNION S f" by simp
     lemma [autoref_op_pat]: "(Some \<circ> f) |` X \<equiv> OP (\<lambda> f X. (Some \<circ> f) |` X) f X" by simp
 
     lemma list_set_union_autoref[autoref_rules]:
@@ -226,6 +232,9 @@ begin
         by (induct l' arbitrary: s) (auto simp: br_def dest: injD)
       finally (relcompI) show ?thesis unfolding autoref_tag_defs list_set_rel_def by this
     qed
+    (* TODO: figure out how to do this without
+      lemma [autoref_op_pat]: "UNION S f \<equiv> OP UNION S f" by simp
+      since that blocks using generic algorithms for Union and image to implement UNION *)
     lemma list_set_UNION_autoref[autoref_rules]:
       assumes "PRIO_TAG_OPTIMIZATION"
       assumes "SIDE_PRECOND_OPT (\<forall> x \<in> S. \<forall> y \<in> S. x \<noteq> y \<longrightarrow> g x \<inter> g y = {})"
@@ -235,9 +244,208 @@ begin
         \<langle>B\<rangle> list_set_rel"
       using assms list_set_bind unfolding bind_UNION autoref_tag_defs by metis
 
+    definition gen_equals where
+      "gen_equals ball lu eq f g \<equiv>
+        ball f (\<lambda> (k, v). rel_option eq (lu k g) (Some v)) \<and>
+        ball g (\<lambda> (k, v). rel_option eq (lu k f) (Some v))"
+
+    lemma gen_equals[autoref_rules]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes BALL: "GEN_OP ball op_map_ball (\<langle>Rk, Rv\<rangle> Rm \<rightarrow> (Rk \<times>\<^sub>r Rv \<rightarrow> bool_rel) \<rightarrow> bool_rel)"
+      assumes LU: "GEN_OP lu op_map_lookup (Rk \<rightarrow> \<langle>Rk, Rv\<rangle> Rm \<rightarrow> \<langle>Rv\<rangle> option_rel)"
+      assumes EQ: "GEN_OP eq HOL.eq (Rv \<rightarrow> Rv \<rightarrow> bool_rel)"
+      shows "(gen_equals ball lu eq, HOL.eq) \<in> \<langle>Rk, Rv\<rangle> Rm \<rightarrow> \<langle>Rk, Rv\<rangle> Rm \<rightarrow> bool_rel"
+    proof (intro fun_relI)
+      note [unfolded autoref_tag_defs, param] = BALL LU EQ
+      fix fi f gi g
+      assume [param]: "(fi, f) \<in> \<langle>Rk, Rv\<rangle> Rm" "(gi, g) \<in> \<langle>Rk, Rv\<rangle> Rm"
+      have "gen_equals ball lu eq fi gi \<longleftrightarrow> ball fi (\<lambda> (k, v). rel_option eq (lu k gi) (Some v)) \<and>
+        ball gi (\<lambda> (k, v). rel_option eq (lu k fi) (Some v))"
+        unfolding gen_equals_def by rule
+      also have "ball fi (\<lambda> (k, v). rel_option eq (lu k gi) (Some v)) \<longleftrightarrow>
+        op_map_ball f (\<lambda> (k, v). rel_option HOL.eq (op_map_lookup k g) (Some v))"
+        by (rule IdD) (parametricity)
+      also have "ball gi (\<lambda> (k, v). rel_option eq (lu k fi) (Some v)) \<longleftrightarrow>
+        op_map_ball g (\<lambda> (k, v). rel_option HOL.eq (op_map_lookup k f) (Some v))"
+        by (rule IdD) (parametricity)
+      also have "op_map_ball f (\<lambda> (k, v). rel_option HOL.eq (op_map_lookup k g) (Some v)) \<and>
+        op_map_ball g (\<lambda> (k, v). rel_option HOL.eq (op_map_lookup k f) (Some v)) \<longleftrightarrow>
+        (\<forall> a b. f a = Some b \<longleftrightarrow> g a = Some b)"
+        unfolding op_map_ball_def map_to_set_def option.rel_eq op_map_lookup_def by auto
+      also have "(\<forall> a b. f a = Some b \<longleftrightarrow> g a = Some b) \<longleftrightarrow> f = g" using option.exhaust ext by metis
+      finally show "(gen_equals ball lu eq fi gi, f = g) \<in> bool_rel" by simp
+    qed
+
+    (* TODO: why don't we just SPEC a list and then use map_of \<circ> enumerate, all of this
+      could be done right in the implementation so we don't need a generic algorithm *)
+    (* TODO: generic algorithms should really be generic, this is sort of specialized,
+      replace with do { xs \<leftarrow> op_set_to_list S; RETURN (map_of (xs || [0 ..< length xs])) } *)
+    definition op_set_enumerate :: "'a set \<Rightarrow> ('a \<rightharpoonup> nat) nres" where
+      "op_set_enumerate S \<equiv> SPEC (\<lambda> f. dom f = S \<and> inj_on f S)"
+
+    lemma [autoref_itype]: "op_set_enumerate ::\<^sub>i \<langle>A\<rangle>\<^sub>i i_set \<rightarrow>\<^sub>i \<langle>\<langle>A, i_nat\<rangle>\<^sub>i i_map\<rangle>\<^sub>i i_nres" by simp
+    lemma [autoref_hom]: "CONSTRAINT op_set_enumerate (\<langle>A\<rangle> Rs \<rightarrow> \<langle>\<langle>A, nat_rel\<rangle> Rm\<rangle> nres_rel)" by simp
+
+    definition gen_enumerate where
+      "gen_enumerate tol upd emp S \<equiv> snd (fold (\<lambda> x (k, m). (Suc k, upd x k m)) (tol S) (0, emp))"
+
+    lemma gen_enumerate[autoref_rules_raw]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes to_list: "SIDE_GEN_ALGO (is_set_to_list A Rs tol)"
+      assumes empty: "GEN_OP emp op_map_empty (\<langle>A, nat_rel\<rangle> Rm)"
+      assumes update: "GEN_OP upd op_map_update (A \<rightarrow> nat_rel \<rightarrow> \<langle>A, nat_rel\<rangle> Rm \<rightarrow> \<langle>A, nat_rel\<rangle> Rm)"
+      shows "(\<lambda> S. RETURN (gen_enumerate tol upd emp S), op_set_enumerate) \<in>
+        \<langle>A\<rangle> Rs \<rightarrow> \<langle>\<langle>A, nat_rel\<rangle> Rm\<rangle> nres_rel"
+    proof
+      note [unfolded autoref_tag_defs, param] = empty update
+      fix T S
+      assume 1: "(T, S) \<in> \<langle>A\<rangle> Rs"
+      obtain tsl' where
+        [param]: "(tol T, tsl') \<in> \<langle>A\<rangle>list_rel"
+        and IT': "RETURN tsl' \<le> it_to_sorted_list (\<lambda>_ _. True) S"
+        using to_list[unfolded autoref_tag_defs is_set_to_list_def] 1
+        by (rule is_set_to_sorted_listE)
+      from IT' have 10: "S = set tsl'" "distinct tsl'" unfolding it_to_sorted_list_def by simp_all
+      have 2: "dom (snd (fold (\<lambda> x (k, m). (Suc k, m (x \<mapsto> k))) tsl' (k, m))) = dom m \<union> set tsl'"
+        for k m by (induct tsl' arbitrary: k m) (auto)
+      have 3: "inj_on (snd (fold (\<lambda> x (k, m). (Suc k, m (x \<mapsto> k))) tsl' (0, Map.empty))) (set tsl')"
+        using 10(2) by (auto intro!: inj_onI simp: fold_map_of)
+          (metis diff_zero distinct_Ex1 distinct_upt length_upt map_of_zip_nth option.simps(1))
+      let ?f = "RETURN (snd (fold (\<lambda> x (k, m). (Suc k, op_map_update x k m)) tsl' (0, op_map_empty)))"
+      have "(RETURN (gen_enumerate tol upd emp T), ?f) \<in> \<langle>\<langle>A, nat_rel\<rangle> Rm\<rangle> nres_rel"
+        unfolding gen_enumerate_def by parametricity
+      also have "(?f, op_set_enumerate S) \<in> \<langle>Id\<rangle> nres_rel"
+        unfolding op_set_enumerate_def using 2 3 10 by refine_vcg auto
+      finally show "(RETURN (gen_enumerate tol upd emp T), op_set_enumerate S) \<in>
+        \<langle>\<langle>A, nat_rel\<rangle> Rm\<rangle> nres_rel" unfolding nres_rel_comp by simp
+    qed
+
     lemma list_map_build_autoref[autoref_rules]: "(\<lambda> g. map (\<lambda> x. (x, g x)), \<lambda> f X. (Some \<circ> f) |` X) \<in>
       (K \<rightarrow> V) \<rightarrow> \<langle>K\<rangle> list_set_rel \<rightarrow> \<langle>K, V\<rangle> list_map_rel"
       using list_map_build unfolding zip_map2 zip_same_conv_map map_map comp_apply prod.case by blast
+
+    definition expand_map_impl' :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set nres" where
+      "expand_map_impl' f \<equiv> ASSUME (finite (dom f)) \<then> FOREACH (map_to_set f) (\<lambda> (x, S) X. do {
+          ASSERT (\<forall> g \<in> X. x \<notin> dom g);
+          ASSERT (\<forall> a \<in> S. \<forall> b \<in> S. a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) b = {});
+          RETURN (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` X)
+        }) {empty}"
+
+    lemma expand_map_impl'_refine: "(expand_map_impl', \<lambda> f. RETURN (expand_map f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
+      unfolding expand_map_impl'_def
+      by (refine_vcg FOREACH_rule_map_eq[where X = expand_map]) (auto dest!: expand_map_dom map_upd_eqD1)
+
+    context
+      fixes f fi
+      fixes A B
+      assumes fi[autoref_rules]: "(fi, f) \<in> \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel"
+    begin
+
+      private lemma UNION_pat[autoref_op_pat]: "UNION S m \<equiv> OP UNION S m" by simp
+
+      private lemma [simp]: "finite (dom f)"
+        using list_map_rel_finite fi unfolding finite_map_rel_def by force
+      private lemma [simp]:
+        assumes "\<And> m. m \<in> S \<Longrightarrow> x \<notin> dom m"
+        shows "inj_on (\<lambda> m. m (x \<mapsto> y)) S"
+        using assms unfolding dom_def inj_on_def by (auto) (metis fun_upd_triv fun_upd_upd)
+      private lemmas [simp] = op_map_update_def[abs_def]
+
+      schematic_goal expand_map_impl: "(?f, expand_map_impl' f) \<in>
+        \<langle>\<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
+        unfolding expand_map_impl'_def by (autoref_monadic (plain))
+      concrete_definition expand_map_impl uses expand_map_impl
+
+      lemmas [autoref_op_pat del] = UNION_pat
+
+    end
+
+    lemma expand_map_impl_refine[autoref_rules]: "(expand_map_impl, expand_map) \<in>
+      \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel"
+    proof -
+      have "(\<lambda> f. RETURN (local.expand_map_impl f), expand_map_impl') \<in>
+        \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
+        using expand_map_impl.refine by auto
+      also note expand_map_impl'_refine
+      finally show ?thesis unfolding nres_rel_comp unfolding nres_rel_def fun_rel_def by auto
+    qed
+
+    (* TODO: do we really need stronger versions of all these small lemmata? *)
+    lemma param_foldli:
+      assumes "(xs, ys) \<in> \<langle>Ra\<rangle> list_rel"
+      assumes "(c, d) \<in> Rs \<rightarrow> bool_rel"
+      assumes "\<And> x y. (x, y) \<in> Ra \<Longrightarrow> x \<in> set xs \<Longrightarrow> y \<in> set ys \<Longrightarrow> (f x, g y) \<in> Rs \<rightarrow> Rs"
+      assumes "(a, b) \<in> Rs"
+      shows "(foldli xs c f a, foldli ys d g b) \<in> Rs"
+    using assms
+    proof (induct arbitrary: a b)
+      case 1
+      then show ?case by simp
+    next
+      case (2 x y xs ys)
+      show ?case
+      proof (cases "c a")
+        case True
+        have 10: "(c a, d b) \<in> bool_rel" using 2 by parametricity
+        have 20: "d b" using 10 True by auto
+        have 30: "(foldli xs c f (f x a), foldli ys d g (g y b)) \<in> Rs"
+          by (auto intro!: 2 2(5)[THEN fun_relD])
+        show ?thesis using True 20 30 by simp
+      next
+        case False
+        have 10: "(c a, d b) \<in> bool_rel" using 2 by parametricity
+        have 20: "\<not> d b" using 10 False by auto
+        show ?thesis unfolding foldli.simps using False 20 2 by simp
+      qed
+    qed
+    lemma det_fold_sorted_set:
+      assumes 1: "det_fold_set ordR c' f' \<sigma>' result"
+      assumes 2: "is_set_to_sorted_list ordR Rk Rs tsl"
+      assumes SREF[param]: "(s,s')\<in>\<langle>Rk\<rangle>Rs"
+      assumes [param]:  "(c,c')\<in>R\<sigma>\<rightarrow>Id"
+      assumes [param]: "\<And> x y. (x, y) \<in> Rk \<Longrightarrow> y \<in> s' \<Longrightarrow> (f x,f' y)\<in>R\<sigma> \<rightarrow> R\<sigma>"
+      assumes [param]: "(\<sigma>,\<sigma>')\<in>R\<sigma>"
+      shows "(foldli (tsl s) c f \<sigma>, result s') \<in> R\<sigma>"
+    proof -
+      obtain tsl' where
+        n[param]: "(tsl s,tsl') \<in> \<langle>Rk\<rangle>list_rel"
+        and IT: "RETURN tsl' \<le> it_to_sorted_list ordR s'"
+        using 2 SREF
+        by (rule is_set_to_sorted_listE)
+      from IT have suen: "s' = set tsl'"
+        unfolding it_to_sorted_list_def by simp_all
+      have "(foldli (tsl s) c f \<sigma>, foldli tsl' c' f' \<sigma>') \<in> R\<sigma>"
+        using assms(4, 5, 6) n unfolding suen
+        using param_foldli[OF n assms(4)] assms by simp
+      also have "foldli tsl' c' f' \<sigma>' = result s'"
+        using 1 IT
+        unfolding det_fold_set_def it_to_sorted_list_def
+        by simp
+      finally show ?thesis .
+    qed
+    lemma det_fold_set:
+      assumes "det_fold_set (\<lambda>_ _. True) c' f' \<sigma>' result"
+      assumes "is_set_to_list Rk Rs tsl"
+      assumes "(s,s')\<in>\<langle>Rk\<rangle>Rs"
+      assumes "(c,c')\<in>R\<sigma>\<rightarrow>Id"
+      assumes "\<And> x y. (x, y) \<in> Rk \<Longrightarrow> y \<in> s' \<Longrightarrow> (f x, f' y)\<in>R\<sigma> \<rightarrow> R\<sigma>"
+      assumes "(\<sigma>,\<sigma>')\<in>R\<sigma>"
+      shows "(foldli (tsl s) c f \<sigma>, result s') \<in> R\<sigma>"
+      using assms unfolding is_set_to_list_def by (rule det_fold_sorted_set)
+    lemma gen_image[autoref_rules_raw]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs1 it1)"
+      assumes INS: "GEN_OP ins2 Set.insert (Rk'\<rightarrow>\<langle>Rk'\<rangle>Rs2\<rightarrow>\<langle>Rk'\<rangle>Rs2)"
+      assumes EMPTY: "GEN_OP empty2 {} (\<langle>Rk'\<rangle>Rs2)"
+      assumes "\<And> xi x. (xi, x) \<in> Rk \<Longrightarrow> x \<in> s \<Longrightarrow> (fi xi, f $ x) \<in> Rk'"
+      assumes "(l, s) \<in> \<langle>Rk\<rangle>Rs1"
+      shows "(gen_image (\<lambda> x. foldli (it1 x)) empty2 ins2 fi l,
+        (OP image ::: (Rk\<rightarrow>Rk') \<rightarrow> (\<langle>Rk\<rangle>Rs1) \<rightarrow> (\<langle>Rk'\<rangle>Rs2)) $ f $ s) \<in> (\<langle>Rk'\<rangle>Rs2)"
+    proof -
+      note [unfolded autoref_tag_defs, param] = INS EMPTY
+      note 1 = det_fold_set[OF foldli_image IT[unfolded autoref_tag_defs]]
+      show ?thesis using assms 1 unfolding gen_image_def autoref_tag_defs by parametricity
+    qed
 
   end
 

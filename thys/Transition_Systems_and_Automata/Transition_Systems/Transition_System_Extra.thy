@@ -7,6 +7,10 @@ begin
   context transition_system
   begin
 
+    definition "enableds p \<equiv> {a. enabled a p}"
+    definition "paths p \<equiv> {r. path r p}"
+    definition "runs p \<equiv> {r. run r p}"
+
     lemma stake_run:
       assumes "\<And> k. path (stake k r) p"
       shows "run r p"

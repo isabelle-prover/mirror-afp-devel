@@ -12,7 +12,7 @@ begin
     initial :: "'state"
     accepting :: "'state set"
 
-  global_interpretation dfa: transition_system_initial "succ A" "\<lambda> _ _. True" "\<lambda> p. p = initial A"
+  global_interpretation dfa: transition_system_initial "succ A" "top" "\<lambda> p. p = initial A"
     for A
     defines path = dfa.path and run = dfa.run and reachable = dfa.reachable and nodes = dfa.nodes
     by this

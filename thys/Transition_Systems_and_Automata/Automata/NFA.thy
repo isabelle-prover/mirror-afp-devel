@@ -14,7 +14,7 @@ begin
     accepting :: "'state set"
 
   global_interpretation nfa: transition_system_initial
-    "\<lambda> (a, q) p. q" "\<lambda> (a, q) p. q \<in> succ A a p" "\<lambda> p. p \<in> initial A"
+    "\<lambda> a p. snd a" "\<lambda> a p. snd a \<in> succ A (fst a) p" "\<lambda> p. p \<in> initial A"
     for A
     defines path = nfa.path and run = nfa.run and reachable = nfa.reachable and nodes = nfa.nodes
     by this
@@ -27,7 +27,7 @@ begin
     "successors \<equiv> nfa.successors TYPE('label) TYPE('more)"
 
   lemma states_alt_def: "states r p = map snd r" by (induct r arbitrary: p) (auto)
-  lemma trace_alt_def: "trace r p = smap snd r" by (coinduction arbitrary: r p) (auto split: prod.splits)
+  lemma trace_alt_def: "trace r p = smap snd r" by (coinduction arbitrary: r p) (auto)
 
   definition language :: "('label, 'state) nfa \<Rightarrow> 'label list set" where
     "language A \<equiv> {map fst r |r p. path A r p \<and> p \<in> initial A \<and> target r p \<in> accepting A}"

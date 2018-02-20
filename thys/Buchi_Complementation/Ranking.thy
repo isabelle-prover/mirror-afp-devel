@@ -186,7 +186,7 @@ begin
     shows "finite (level A w k l)"
   proof -
     have "level A w k l \<subseteq> {v \<in> gunodes A w. fst v = l}" by (simp add: graph_nodes subset_CollectI)
-    also have "{v \<in> gunodes A w. fst v = l} \<subseteq> {l} \<times> nodes A" using gnodes_nodes by auto
+    also have "{v \<in> gunodes A w. fst v = l} \<subseteq> {l} \<times> nodes A" using gnodes_nodes by force
     also have "finite ({l} \<times> nodes A)" using assms(1) by simp
     finally show ?thesis by this
   qed
@@ -317,7 +317,7 @@ begin
     proof (rule 0)
       fix l :: nat
       have "finite ({l} \<times> nodes A)" using assms(1) by simp
-      also have "level A w 0 l \<subseteq> {l} \<times> nodes A" using gnodes_nodes by auto
+      also have "level A w 0 l \<subseteq> {l} \<times> nodes A" using gnodes_nodes by force
       also (card_mono) have "card \<dots> = card (nodes A)" using assms(1) by simp
       finally show "card (level A w (2 * 0) l) \<le> card (nodes A) - 0" by simp
     qed

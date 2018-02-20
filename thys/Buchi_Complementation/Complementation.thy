@@ -1,7 +1,9 @@
 section {* Complementation *}
 
 theory Complementation
-imports "Ranking"
+imports
+  "Transition_Systems_and_Automata.Maps"
+  "Ranking"
 begin
 
   subsection {* Level Rankings and Complementation States *}
@@ -27,13 +29,11 @@ begin
   definition complement :: "('label, 'state) ba \<Rightarrow> ('label, 'state cs) ba" where
     "complement A \<equiv>
     \<lparr>
-      succ = complement_succ A,
+      alphabet = alphabet A,
       initial = {const (Some (2 * card (nodes A))) |` initial A} \<times> {{}},
+      succ = complement_succ A,
       accepting = \<lambda> (f, P). P = {}
     \<rparr>"
-
-  lemma nodes_succ[intro]: "p \<in> nodes A \<Longrightarrow> q \<in> succ A a p \<Longrightarrow> q \<in> nodes A"
-    using ba.nodes.execute by (metis case_prod_conv)
 
   lemma dom_nodes:
     assumes "fP \<in> nodes (complement A)"
@@ -64,7 +64,7 @@ begin
     unfolding 1 3 ran_def
     proof safe
       fix q k
-      assume 5: "fst (g, Q) q = Some k"
+      assume 5: "fst (snd (a, (g, Q))) q = Some k"
       have 6: "q \<in> dom g" using 5 by auto
       obtain p where 7: "p \<in> dom f" "q \<in> succ A a p" using 6 unfolding 8 by auto
       have "k = the (g q)" using 5 by auto
@@ -85,14 +85,15 @@ begin
     obtain f P where 1: "fP = (f, P)" by force
     have 2: "P \<subseteq> nodes A" using execute(2) unfolding 1 by auto
     obtain a g Q where 3: "agQ = (a, (g, Q))" using prod_cases3 by this
+    have 11: "a \<in> alphabet A" using execute(3) unfolding 3 complement_def by auto
     have 10: "(g, Q) \<in> nodes (complement A)" using execute(1, 3) unfolding 1 3 by auto
     have 4: "dom g \<subseteq> nodes A" using dom_nodes[OF 10] by simp
-    have 5: "UNION P (succ A a) \<subseteq> nodes A" using execute(2) unfolding 1 by auto
+    have 5: "UNION P (succ A a) \<subseteq> nodes A" using 2 11 by auto
     have 6: "Q \<subseteq> nodes A"
       using execute(3)
       unfolding 1 3 complement_def ba.simps complement_succ_def st_succ_def
       using 4 5
-      by auto
+      by (auto split: if_splits)
     show ?case using 6 unfolding 3 by auto
   qed
 
@@ -293,7 +294,9 @@ begin
     "reach A w i \<equiv> {target r p |r p. path A r p \<and> p \<in> initial A \<and> map fst r = stake i w}"
 
   lemma reach_0[simp]: "reach A w 0 = initial A" unfolding reach_def by auto
-  lemma reach_Suc[simp]: "reach A w (Suc n) = UNION (reach A w n) (succ A (w !! n))"
+  lemma reach_Suc_empty:
+    assumes "w !! n \<notin> alphabet A"
+    shows "reach A w (Suc n) = {}"
   proof safe
     fix q
     assume 1: "q \<in> reach A w (Suc n)"
@@ -301,7 +304,27 @@ begin
       using 1 unfolding reach_def by blast
     have 3: "path A (take n r @ drop n r) p" using 2(2) by simp
     have 4: "map fst r = stake n w @ [w !! n]" using 2(4) stake_Suc by auto
-    have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4 
+    have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
+      by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
+        append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
+        length_map length_stake lessI ba.target_alt_def states_alt_def zero_less_Suc)
+    have 6: "drop n r = [(w !! n, q)]" using 4 5
+      by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
+        length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
+        take_map zip_Cons_Cons zip_map_fst_snd)
+    show "q \<in> {}" using assms 3 unfolding 6 by auto
+  qed
+  lemma reach_Suc_succ:
+    assumes "w !! n \<in> alphabet A"
+    shows "reach A w (Suc n) = UNION (reach A w n) (succ A (w !! n))"
+  proof safe
+    fix q
+    assume 1: "q \<in> reach A w (Suc n)"
+    obtain r p where 2: "q = target r p" "path A r p" "p \<in> initial A" "map fst r = stake (Suc n) w"
+      using 1 unfolding reach_def by blast
+    have 3: "path A (take n r @ drop n r) p" using 2(2) by simp
+    have 4: "map fst r = stake n w @ [w !! n]" using 2(4) stake_Suc by auto
+    have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
       by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
         append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
         length_map length_stake lessI ba.target_alt_def states_alt_def zero_less_Suc)
@@ -328,32 +351,21 @@ begin
     unfolding reach_def
     proof (intro CollectI exI conjI)
       show "q = target (r @ [(w !! n, q)]) x" using 1 2 by auto
-      show "path A (r @ [(w !! n, q)]) x" using 1(2) 2(1, 2) by auto
+      show "path A (r @ [(w !! n, q)]) x" using assms 1(2) 2(1, 2) by auto
       show "x \<in> initial A" using 2(3) by this
       show "map fst (r @ [(w !! n, q)]) = stake (Suc n) w" using 1 2
         by (metis eq_fst_iff list.simps(8) list.simps(9) map_append stake_Suc)
     qed
   qed
-  lemma reach_nodes: "reach A w i \<subseteq> nodes A"
-  proof (induct i)
-    case 0
-    show ?case by auto
-  next
-    case (Suc i)
-    show ?case
-    proof safe
-      fix q
-      assume 1: "q \<in> reach A w (Suc i)"
-      obtain p where 2: "p \<in> reach A w i" "q \<in> succ A (w !! i) p" using 1 by auto
-      have 3: "p \<in> nodes A" using Suc 2(1) by auto
-      show "q \<in> nodes A" using 3 2(2) by (metis ba.nodes.execute split_conv)
-    qed
-  qed
+  lemma reach_Suc[simp]: "reach A w (Suc n) = (if w !! n \<in> alphabet A
+    then UNION (reach A w n) (succ A (w !! n)) else {})"
+    using reach_Suc_empty reach_Suc_succ by metis
+  lemma reach_nodes: "reach A w i \<subseteq> nodes A" by (induct i) (auto)
   lemma reach_gunodes: "{i} \<times> reach A w i \<subseteq> gunodes A w"
     by (induct i) (auto intro: graph.nodes.execute)
 
   lemma ranking_complement:
-    assumes "finite (nodes A)" "ranking A w f"
+    assumes "finite (nodes A)" "w \<in> streams (alphabet A)" "ranking A w f"
     shows "w \<in> language (complement A)"
   proof -
     define f' where "f' \<equiv> \<lambda> (k, p). if k = 0 then 2 * card (nodes A) else f (k, p)"
@@ -361,14 +373,14 @@ begin
     unfolding ranking_def
     proof (intro conjI ballI impI allI)
       show "\<And> v. v \<in> gunodes A w \<Longrightarrow> f' v \<le> 2 * card (nodes A)"
-        using assms(2) unfolding ranking_def f'_def by auto
+        using assms(3) unfolding ranking_def f'_def by auto
       show "\<And> v u. v \<in> gunodes A w \<Longrightarrow> u \<in> gusuccessors A w v \<Longrightarrow> f' u \<le> f' v"
-        using assms(2) unfolding ranking_def f'_def by fastforce
+        using assms(3) unfolding ranking_def f'_def by fastforce
       show "\<And> v. v \<in> gunodes A w \<Longrightarrow> gaccepting A v \<Longrightarrow> even (f' v)"
-        using assms(2) unfolding ranking_def f'_def by auto
+        using assms(3) unfolding ranking_def f'_def by auto
     next
       have 1: "v \<in> gunodes A w \<Longrightarrow> gurun A w r v \<Longrightarrow> smap f (gtrace r v) = sconst k \<Longrightarrow> odd k"
-        for v r k using assms(2) unfolding ranking_def by meson
+        for v r k using assms(3) unfolding ranking_def by meson
       fix v r k
       assume 2: "v \<in> gunodes A w" "gurun A w r v" "smap f' (gtrace r v) = sconst k"
       have 20: "shd r \<in> gureachable A w v" using 2
@@ -407,13 +419,13 @@ begin
     have g_Suc[simp]: "g (Suc n) \<in> lr_succ A (w !! n) (g n)" for n
     unfolding lr_succ_def
     proof (intro CollectI conjI ballI impI)
-      show "dom (g (Suc n)) = UNION (dom (g n)) (succ A (w !! n))" by simp
+      show "dom (g (Suc n)) = UNION (dom (g n)) (succ A (w !! n))" using snth_in assms(2) by auto
     next
       fix p q
       assume 100: "p \<in> dom (g n)" "q \<in> succ A (w !! n) p"
-      have 101: "q \<in> reach A w (Suc n)" using 100 by auto
+      have 101: "q \<in> reach A w (Suc n)" using snth_in assms(2) 100 by auto
       have 102: "(n, p) \<in> gunodes A w" using 100(1) reach_gunodes g_dom by blast
-      have 103: "(Suc n, q) \<in> gusuccessors A w (n, p)" using 102 100(2) by auto
+      have 103: "(Suc n, q) \<in> gusuccessors A w (n, p)" using snth_in assms(2) 102 100(2) by auto
       have 104: "p \<in> reach A w n" using 100(1) by simp
       have "g (Suc n) q = Some (f' (Suc n, q))" using 101 unfolding g_def by simp
       also have "the \<dots> = f' (Suc n, q)" by simp
@@ -436,7 +448,8 @@ begin
     have P_0[simp]: "P 0 = {}" unfolding P_def by simp
     have P_Suc[simp]: "P (Suc n) = st_succ A (w !! n) (g (Suc n)) (P n)" for n
       unfolding P_def by simp
-    have P_reach: "P n \<subseteq> reach A w n" for n by (induct n) (auto simp add: st_succ_def)
+    have P_reach: "P n \<subseteq> reach A w n" for n
+      using snth_in assms(2) by (induct n) (auto simp add: st_succ_def)
     have "P n \<subseteq> reach A w n" for n using P_reach by auto
     also have "\<dots> n \<subseteq> nodes A" for n using reach_nodes by this
     also have "finite (nodes A)" using assms(1) by this
@@ -447,8 +460,9 @@ begin
     show ?thesis
     proof
       show "run (complement A) (w ||| stl s) (shd s)"
-      proof (intro ba.snth_run, simp_all del: stake.simps stake_szip)
+      proof (intro ba.snth_run conjI, simp_all del: stake.simps stake_szip)
         fix k
+        show "w !! k \<in> alphabet (complement A)" using snth_in assms(2) unfolding complement_def by auto
         have "stl s !! k = s !! Suc k" by simp
         also have "\<dots> \<in> complement_succ A (w !! k) (s !! k)"
           unfolding complement_succ_def s_def using P_Suc by simp
@@ -472,7 +486,7 @@ begin
           have R_Suc[simp]: "R (Suc i) n = m (n + i) \<circ> R i n" for i n unfolding R_def by auto
           have R_Suc': "R (Suc i) n = R i (Suc n) \<circ> m n" for i n unfolding R_Suc by (induct i) (auto)
           have R_reach: "R i n S \<subseteq> reach A w (n + i)" if "S \<subseteq> reach A w n" for i n S
-            using that m_def by (induct i) (auto)
+            using snth_in assms(2) that m_def by (induct i) (auto)
           have P_R: "P (k + i) = R i k (P k)" for i
             using 22 by (induct i) (auto simp add: case_prod_beta' m_def st_succ_def)
 
@@ -528,9 +542,9 @@ begin
             "run A r p" "\<And> i. Q i ((p ## trace r p) !! i)" "\<And> i. fst (r !! i) = w !! (k + i)"
           proof (rule ba.invariant_run_index[of Q 0 p A "\<lambda> n p a. fst a = w !! (k + n)"])
             show "Q 0 p" unfolding Q_def using 3 by auto
-            show "Q n p \<Longrightarrow> \<exists> a. (case a of (a, q) \<Rightarrow> \<lambda> p. q \<in> succ A a p) p \<and>
-              Q (Suc n) ((case a of (a, q) \<Rightarrow> \<lambda> p. q) p) \<and> fst a = w !! (k + n)" for n p
-              using 5 by auto
+            show "\<exists> a. (fst a \<in> alphabet A \<and> snd a \<in> succ A (fst a) p) \<and>
+              Q (Suc n) (snd a) \<and> fst a = w !! (k + n)" if "Q n p" for n p
+              using snth_in assms(2) 5 that by fastforce
           qed auto
           have 20: "smap fst r = sdrop k w" using 23(3) by (intro eqI_snth) (simp add: case_prod_beta)
           have 21: "(p ## smap snd r) !! i \<in> P (k + i)" for i
@@ -578,16 +592,19 @@ begin
     qed
   qed
 
-  subsection {* Correctness Theorems *}
-
-  lemma complement_ranking_iff:
-    assumes "finite (nodes A)"
-    shows "w \<in> language (complement A) \<longleftrightarrow> (\<exists> f. ranking A w f)"
-    using complement_ranking ranking_complement assms by metis
+  subsection {* Correctness Theorem *}
 
   theorem complement_language:
     assumes "finite (nodes A)"
-    shows "language (complement A) = - language A"
-    using complement_ranking_iff language_ranking_iff assms by force
+    shows "language (complement A) = streams (alphabet A) - language A"
+  proof (safe del: notI)
+    have 1: "alphabet (complement A) = alphabet A" unfolding complement_def ba.simps by rule
+    show "w \<in> streams (alphabet A)" if "w \<in> language (complement A)" for w
+      using language_alphabet that 1 by force
+    show "w \<notin> language A" if "w \<in> language (complement A)" for w
+      using complement_ranking ranking_language that by metis
+    show "w \<in> language (complement A)" if "w \<in> streams (alphabet A)" "w \<notin> language A" for w
+      using language_ranking ranking_complement assms that by blast
+  qed
 
 end

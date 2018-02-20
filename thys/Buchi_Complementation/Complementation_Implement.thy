@@ -7,12 +7,16 @@ imports
   "Complementation"
 begin
 
-  subsection {* Phase 1 *}
+  (* TODO: split this into refine and implement parts? *)
 
   type_synonym item = "nat \<times> bool"
+  (* TODO: inline? *)
   type_synonym 'state items = "'state \<rightharpoonup> item"
 
   abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"
+  abbreviation "state_rel \<equiv> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
+
+  subsection {* Phase 1 *}
 
   definition cs_lr :: "'state items \<Rightarrow> 'state lr" where
     "cs_lr f \<equiv> map_option fst \<circ> f"
@@ -51,6 +55,9 @@ begin
   abbreviation cs_rel :: "('state items \<times> 'state cs) set" where
     "cs_rel \<equiv> br cs_abs top"
 
+  lemma cs_rel_inv_single_valued: "single_valued (cs_rel\<inverse>)"
+    by (auto intro!: inj_onI) (metis cs_abs_rep)
+
   definition refresh_1 :: "'state items \<Rightarrow> 'state items" where
     "refresh_1 f \<equiv> if True \<in> snd ` ran f then f else map_option (apsnd top) \<circ> f"
   definition ranks_1 ::
@@ -66,8 +73,9 @@ begin
   definition complement_1 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
     "complement_1 A \<equiv>
     \<lparr>
-      succ = complement_succ_1 A,
+      alphabet = alphabet A,
       initial = {const (Some (2 * card (nodes A), False)) |` initial A},
+      succ = complement_succ_1 A,
       accepting = \<lambda> f. cs_st f = {}
     \<rparr>"
 
@@ -223,8 +231,9 @@ begin
   definition complement_2 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
     "complement_2 A \<equiv>
     \<lparr>
-      succ = complement_succ_2 A,
+      alphabet = alphabet A,
       initial = {const (Some (2 * card (nodes A), False)) |` initial A},
+      succ = complement_succ_2 A,
       accepting = \<lambda> f. True \<notin> snd ` ran f
     \<rparr>"
 
@@ -334,8 +343,9 @@ begin
   definition complement_3 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
     "complement_3 A \<equiv>
     \<lparr>
-      succ = complement_succ_3 A,
+      alphabet = alphabet A,
       initial = {(Some \<circ> (const (2 * card (nodes A), False))) |` initial A},
+      succ = complement_succ_3 A,
       accepting = \<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c
     \<rparr>"
 
@@ -386,6 +396,18 @@ begin
 
   subsection {* Phase 4 *}
 
+  (* TODO: find abstract representations for all of these, have them implemented by autoref,
+    we don't want to deal with this intermediate representation by hand on the overall algorithm
+    level, since it's all compositional and can be handled on an operations level,
+    although some things can't be implemented on an operations level since we have to prove
+    at some point that the nondeterminism actually doesn't matter, like with expand_map
+    just keep the 3 step process (abstract, abstract algorithm, implementation) as short and
+    isolated as possible in these cases, use resulting transitive rule as autoref rule, don't
+    do the composition by hand *)
+  (* TODO: this is just a map (or build_map?), can't autoref do this? *)
+  (* TODO: it would be ideal if we could just give a deterministic abstract specification for
+    the whole complement automaton from which autoref can generate the implementation automaton
+    with the correct refinement statement *)
   definition refresh_4 :: "'state items \<Rightarrow> 'state items nres" where
     "refresh_4 f \<equiv> if \<exists> (p, k, c) \<in> map_to_set f. c
       then RETURN f
@@ -399,11 +421,8 @@ begin
         }
         ) empty
       }"
-  fun merge_4 :: "item option \<Rightarrow> item option \<Rightarrow> item option" where
-    "merge_4 None None = None" |
-    "merge_4 (Some s) None = Some s" |
-    "merge_4 None (Some t) = Some t" |
-    "merge_4 (Some (k, c)) (Some (l, d)) = Some (k \<sqinter> l, c \<squnion> d)"
+  definition merge_4 :: "item \<Rightarrow> item option \<Rightarrow> item" where
+    "merge_4 \<equiv> \<lambda> (k, c). \<lambda> None \<Rightarrow> (k, c) | Some (l, d) \<Rightarrow> (k \<sqinter> l, c \<squnion> d)"
   definition bounds_4 :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items nres" where
     "bounds_4 A a f \<equiv> do
     {
@@ -411,7 +430,7 @@ begin
       ASSUME (\<forall> p. finite (succ A a p));
       FOREACH (map_to_set f) (\<lambda> (p, s) m.
         FOREACH (succ A a p) (\<lambda> q f.
-          RETURN (f (q := merge_4 (Some s) (f q))))
+          RETURN (f (q \<mapsto> merge_4 s (f q))))
         m)
       empty
     }"
@@ -440,19 +459,15 @@ begin
       expand_4 (get_4 A f)
     }"
 
-  lemma merge_4_Some: "merge_4 (Some s) t =
-    Some (case t of None \<Rightarrow> s | Some (l, d) \<Rightarrow> (fst s \<sqinter> l, snd s \<squnion> d))"
-    by (cases s) (auto split: option.splits)
-
   lemma bounds_3_empty: "bounds_3 A a empty = empty"
     unfolding bounds_3_def Let_def by auto
   lemma bounds_3_update: "bounds_3 A a (f (p \<mapsto> s)) =
-    override_on (bounds_3 A a f) (merge_4 (Some s) \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
+    override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
   proof
     note fun_upd_image[simp]
     fix q
     show "bounds_3 A a (f (p \<mapsto> s)) q =
-      override_on (bounds_3 A a f) (merge_4 (Some s) \<circ> bounds_3 A a (f (p := None))) (succ A a p) q"
+      override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None))) (succ A a p) q"
     proof (cases "q \<in> succ A a p")
       case True
       define S where "S \<equiv> Some -` f ` (pred A a q - {p})"
@@ -460,9 +475,9 @@ begin
       have 2: "Some -` f (p := None) ` pred A a q = S" unfolding S_def by auto
       have "bounds_3 A a (f (p \<mapsto> s)) q = Some (INFIMUM (insert s S) fst, SUPREMUM (insert s S) snd)"
         unfolding bounds_3_def 1 by simp
-      also have "\<dots> = merge_4 (Some s) (bounds_3 A a (f (p := None)) q)"
-        unfolding 2 bounds_3_def by (cases s) (auto simp: cINF_insert)
-      also have "\<dots> = override_on (bounds_3 A a f) (merge_4 (Some s) \<circ> bounds_3 A a (f (p := None)))
+      also have "\<dots> = Some (merge_4 s (bounds_3 A a (f (p := None)) q))"
+        unfolding 2 bounds_3_def merge_4_def by (cases s) (auto simp: cINF_insert)
+      also have "\<dots> = override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None)))
         (succ A a p) q" using True by simp
       finally show ?thesis by this
     next
@@ -504,7 +519,7 @@ begin
       ASSERT (\<forall> g \<in> X. k \<notin> dom g);
       ASSERT (\<forall> a \<in> (items_4 A k v). \<forall> b \<in> (items_4 A k v). a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) b = {});
       RETURN (\<Union> y \<in> items_4 A k v. (\<lambda> g. g (k \<mapsto> y)) ` X)
-      }) {Map.empty}"
+      }) {empty}"
 
   lemma expand_map_get_5_refine: "(expand_map_get_5, expand_4 \<circ>\<circ> get_4) \<in> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
     unfolding expand_map_get_5_def expand_4_def get_4_def by (auto intro: FOREACH_rule_map_map[param_fo])
@@ -565,7 +580,7 @@ begin
     private lemma [autoref_rules]: "(min, min) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by simp
 
     schematic_goal bounds_6: "(?f :: ?'a, bounds_4 A a f) \<in> ?R"
-      unfolding bounds_4_def merge_4_Some sup_bool_def inf_nat_def by (autoref_monadic (plain))
+      unfolding bounds_4_def merge_4_def sup_bool_def inf_nat_def by (autoref_monadic (plain))
 
   end
 
@@ -595,6 +610,7 @@ begin
 
   concrete_definition items_6 uses items_6
 
+  (* TODO: use generic expand_map implementation *)
   context
     fixes A :: "('label, nat) ba"
     fixes ai
@@ -611,6 +627,7 @@ begin
       using assms unfolding dom_def inj_on_def by (auto) (metis fun_upd_triv fun_upd_upd)
     private lemmas [simp] = op_map_update_def[abs_def]
 
+    private lemma UNION_pat[autoref_op_pat]: "UNION S m \<equiv> OP UNION S m" by simp
     private lemma [autoref_op_pat]: "items_4 A \<equiv> OP (items_4 A)" by simp
 
     private lemmas [autoref_rules] = items_6.refine[OF ai]
@@ -618,6 +635,8 @@ begin
     schematic_goal expand_map_get_6: "(?f, expand_map_get_5 A f) \<in>
       \<langle>\<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
       unfolding expand_map_get_5_def by (autoref_monadic (plain))
+
+    lemmas [autoref_op_pat del] = UNION_pat
 
   end
 
@@ -642,8 +661,8 @@ begin
     assumes pi[autoref_rules]: "(pi, p) \<in> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
   begin
 
-    private lemmas succi = bai_ba_param(2)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
-    private lemmas acceptingi = bai_ba_param(4)[THEN fun_relD, OF Ai]
+    private lemmas succi = bai_ba_param(4)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
+    private lemmas acceptingi = bai_ba_param(5)[THEN fun_relD, OF Ai]
 
     private lemma [autoref_op_pat]: "(\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g) \<equiv>
       OP (\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g)" by simp
@@ -695,32 +714,37 @@ begin
   definition complement_6 :: "('label, nat) bai \<Rightarrow> nat \<Rightarrow> ('label, (nat \<times> item) list) bai" where
     "complement_6 Ai ni \<equiv>
     \<lparr>
-      succi = complement_succ_6 Ai,
+      alphabeti = alphabeti Ai,
       initiali = complement_initial_6 Ai ni,
+      succi = complement_succ_6 Ai,
       acceptingi = complement_accepting_6
     \<rparr>"
 
-  lemma complement_6_refine:
+  lemma complement_6_refine[autoref_rules]:
     assumes "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
-    assumes "(ni, card (nodes A)) \<in> nat_rel"
-    shows "(complement_6 Ai ni, complement_3 A) \<in>
-      \<langle>Id, \<langle>nat_rel, item_rel\<rangle> list_map_rel, Id\<rangle> bai_ba_rel"
+    assumes "(ni,
+      (OP card ::: \<langle>Id\<rangle> ahs_rel bhc \<rightarrow> nat_rel) $
+      ((OP nodes ::: \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> \<langle>Id\<rangle> ahs_rel bhc) $ A)) \<in> nat_rel"
+    shows "(complement_6 Ai ni, (OP complement_3 :::
+      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> \<langle>Id, state_rel, Id\<rangle> bai_ba_rel) $ A) \<in> \<langle>Id, state_rel, Id\<rangle> bai_ba_rel"
   proof -
     note complement_succ_6_refine
     also note complement_succ_5_refine
     also note complement_succ_4_refine
-    finally have 1: "(complement_succ_6, complement_succ_3) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow>
-      \<langle>nat_rel, item_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> list_set_rel"
+    finally have 1: "(complement_succ_6, complement_succ_3) \<in>
+      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow> \<langle>state_rel\<rangle> list_set_rel"
       unfolding nres_rel_comp unfolding nres_rel_def unfolding fun_rel_def by auto
     show ?thesis
       unfolding complement_6_def complement_3_def
       using 1 complement_initial_6.refine complement_accepting_6.refine assms
+      unfolding autoref_tag_defs
       by parametricity
   qed
 
   theorem complement_6_correct:
     assumes "bai A" "finite (nodes (ba A))"
-    shows "language (ba (complement_6 A (card (nodes (ba A))))) = - language (ba A)"
+    shows "language (ba (complement_6 A (card (nodes (ba A))))) =
+      streams (alphabet (ba A)) - language (ba A)"
   proof -
     let ?I = "\<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
     let ?n = "card (nodes (ba A))"
@@ -735,7 +759,7 @@ begin
       using complement_2_refine by parametricity auto
     also have "(language (complement_1 (ba A)), language (complement (ba A))) \<in> ?I"
       using complement_1_refine by parametricity auto
-    also have "language (complement (ba A)) = - language (ba A)"
+    also have "language (complement (ba A)) = streams (alphabet (ba A)) - language (ba A)"
       using complement_language assms(2) by this
     finally show ?thesis by simp
   qed

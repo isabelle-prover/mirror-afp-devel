@@ -8,6 +8,7 @@ imports
     with the nondeterminism monad *)
   "Refine_Monadic.Refine_Foreach"
   "Sequence_LTL"
+  "Maps"
 begin
 
   (* TODO Peter:
@@ -50,6 +51,9 @@ begin
   lemma rel_set_set_rel_eq[pred_set_conv]:
     "rel_set (\<lambda> x y. (x, y) \<in> A) = (\<lambda> f g. (f, g) \<in> \<langle>A\<rangle> set_rel)"
     unfolding rel_set_def set_rel_def by simp
+  lemma rel_option_option_rel_eq[pred_set_conv]:
+    "rel_option (\<lambda> x y. (x, y) \<in> A) = (\<lambda> f g. (f, g) \<in> \<langle>A\<rangle> option_rel)"
+    by (force simp: option_rel_def elim: option.rel_cases)
 
   (* TODO Peter: pred_set_conv examples *)
   thm image_transfer image_transfer[to_set]
@@ -134,12 +138,29 @@ begin
   lemma prod_rel_domain[simp]: "Domain (A \<times>\<^sub>r B) = Domain A \<times> Domain B" unfolding prod_rel_def by auto
   lemma prod_rel_range[simp]: "Range (A \<times>\<^sub>r B) = Range A \<times> Range B" unfolding prod_rel_def by auto
 
+  lemma member_Id_on[iff]: "(x, y) \<in> Id_on A \<longleftrightarrow> x = y \<and> y \<in> A" unfolding Id_on_def by auto
+  lemma bijective_Id_on[intro!, simp]: "bijective (Id_on A)" unfolding bijective_def by auto
+  lemma relcomp_Id_on[simp]: "Id_on A O Id_on B = Id_on (A \<inter> B)" by auto
+
+  lemma prod_rel_Id_on[simp]: "Id_on A \<times>\<^sub>r Id_on B = Id_on (A \<times> B)" by auto
+  lemma set_rel_Id_on[simp]: "\<langle>Id_on S\<rangle> set_rel = Id_on (Pow S)" unfolding set_rel_def by auto
+
   subsection {* Parametricity *}
 
   lemmas basic_param[param] =
+    option.rel_transfer[unfolded pred_bool_Id, to_set]
     All_transfer[unfolded pred_bool_Id, to_set]
     Ex_transfer[unfolded pred_bool_Id, to_set]
+    Union_transfer[to_set]
     image_transfer[to_set]
+    Image_parametric[to_set]
+
+  lemma Sigma_param[param]: "(Sigma, Sigma) \<in> \<langle>A\<rangle> set_rel \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> set_rel) \<rightarrow> \<langle>A \<times>\<^sub>r B\<rangle> set_rel"
+    unfolding Sigma_def by parametricity
+  (* TODO: Lifting_Set.filter_transfer is too weak *)
+  lemma set_filter_param[param]:
+    "(Set.filter, Set.filter) \<in> (A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle> set_rel \<rightarrow> \<langle>A\<rangle> set_rel"
+    unfolding Set.filter_def fun_rel_def set_rel_def by blast
 
   subsection {* Lists *}
 
@@ -230,9 +251,42 @@ begin
   lemmas stream_rel_domain[simp] = stream.Domainp_rel[to_set]
   lemmas stream_rel_range[simp] = stream_Rangep_rel[to_set]
 
+  lemma stream_param[param]:
+    assumes"(HOL.eq, HOL.eq) \<in> R \<rightarrow> R \<rightarrow> bool_rel"
+    shows "(HOL.eq, HOL.eq) \<in> \<langle>R\<rangle> stream_rel \<rightarrow> \<langle>R\<rangle> stream_rel \<rightarrow> bool_rel"
+  proof -
+    have "(stream_all2 HOL.eq, stream_all2 HOL.eq) \<in> \<langle>R\<rangle> stream_rel \<rightarrow> \<langle>R\<rangle> stream_rel \<rightarrow> bool_rel"
+      using assms by parametricity
+    then show ?thesis unfolding stream.rel_eq by this
+  qed
+
   lemmas szip_param[param] = szip_transfer[to_set]
   lemmas siterate_param[param] = siterate_transfer[to_set]
   lemmas sscan_param[param] = sscan.transfer[to_set]
+
+  lemma streams_param[param]: "(streams, streams) \<in> \<langle>A\<rangle> set_rel \<rightarrow> \<langle>\<langle>A\<rangle> stream_rel\<rangle> set_rel"
+  proof (intro fun_relI set_relI)
+    fix S T
+    assume 1: "(S, T) \<in> \<langle>A\<rangle> set_rel"
+    obtain f where 2: "\<And> x. x \<in> S \<Longrightarrow> f x \<in> T \<and> (x, f x) \<in> A"
+      using 1 unfolding set_rel_def by auto metis
+    have 3: "f ` S \<subseteq> T" "(id, f) \<in> Id_on S \<rightarrow> A" using 2 by auto
+    obtain g where 4: "\<And> y. y \<in> T \<Longrightarrow> g y \<in> S \<and> (g y, y) \<in> A"
+      using 1 unfolding set_rel_def by auto metis
+    have 5: "g ` T \<subseteq> S" "(g, id) \<in> Id_on T \<rightarrow> A" using 4 by auto
+    show "\<exists> v \<in> streams T. (u, v) \<in> \<langle>A\<rangle> stream_rel" if "u \<in> streams S" for u
+    proof
+      show "smap f u \<in> streams T" using smap_streams 3 that by blast
+      have "(smap id u, smap f u) \<in> \<langle>A\<rangle> stream_rel" using 3 that by parametricity auto
+      then show "(u, smap f u) \<in> \<langle>A\<rangle> stream_rel" by simp
+    qed
+    show "\<exists> u \<in> streams S. (u, v) \<in> \<langle>A\<rangle> stream_rel" if "v \<in> streams T" for v
+    proof
+      show "smap g v \<in> streams S" using smap_streams 5 that by blast
+      have "(smap g v, smap id v) \<in> \<langle>A\<rangle> stream_rel" using 5 that by parametricity auto
+      then show "(smap g v, v) \<in> \<langle>A\<rangle> stream_rel" by simp
+    qed
+  qed
 
   lemma holds_param[param]: "(holds, holds) \<in> (A \<rightarrow> bool_rel) \<rightarrow> (\<langle>A\<rangle> stream_rel \<rightarrow> bool_rel)"
     unfolding holds.simps by parametricity

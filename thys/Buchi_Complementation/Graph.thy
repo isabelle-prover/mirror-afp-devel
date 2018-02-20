@@ -10,14 +10,16 @@ begin
   abbreviation "gaccepting A \<equiv> accepting A \<circ> snd"
 
   global_interpretation graph: transition_system_initial
-    "const" "\<lambda> u (k, p). u \<in> {Suc k} \<times> succ A (w !! k) p \<inter> V" "\<lambda> v. v \<in> ginitial A \<inter> V"
+    "const"
+    "\<lambda> u (k, p). w !! k \<in> alphabet A \<and> u \<in> {Suc k} \<times> succ A (w !! k) p \<inter> V"
+    "\<lambda> v. v \<in> ginitial A \<inter> V"
     for A w V
     defines
       gpath = graph.path and grun = graph.run and
       greachable = graph.reachable and gnodes = graph.nodes
     by this
 
-  (* disable rules that are degenerate due to execute = const *)
+  text {* We disable rules that are degenerate due to @{term "execute = const"}. *}
   declare graph.reachable.execute[rule del]
   declare graph.nodes.execute[rule del]
 
@@ -27,7 +29,7 @@ begin
 
   abbreviation gsuccessors :: "('label, 'state, 'more) ba_scheme \<Rightarrow> 'label stream \<Rightarrow>
     'state node set \<Rightarrow> 'state node \<Rightarrow> 'state node set" where
-    "gsuccessors \<equiv> graph.successors TYPE('label) TYPE('more)"
+    "gsuccessors A w V \<equiv> graph.successors TYPE('label) TYPE('more) w A V"
 
   abbreviation "gusuccessors A w \<equiv> gsuccessors A w UNIV"
   abbreviation "gupath A w \<equiv> gpath A w UNIV"
@@ -137,14 +139,7 @@ begin
   proof
     fix v
     assume "v \<in> gnodes A w V"
-    then show "v \<in> UNIV \<times> nodes A"
-    proof induct
-      case (initial v)
-      then show ?case by auto
-    next
-      case (execute v u)
-      show ?case using ba.nodes.execute[of "snd v" "A" "(w !! fst v, snd u)"] execute by auto
-    qed
+    then show "v \<in> UNIV \<times> nodes A" by induct auto
   qed
 
   lemma gpath_subset:
