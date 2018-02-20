@@ -53,19 +53,7 @@ subsection{*Proving that they are subspaces*}
 lemma subspace_null_space:
   fixes A::"'a::{field}^'n^'m"
   shows "vec.subspace (null_space A)"
-proof (unfold vec.subspace_def null_space_def, auto)
-  show "A *v 0 = 0" by (metis add_diff_cancel eq_iff_diff_eq_0 matrix_vector_right_distrib) 
-  fix x y
-  assume Ax: "A *v x = 0" and Ay: "A *v y = 0"
-  have "A *v (x + y) = (A *v x) + (A *v y)" unfolding matrix_vector_right_distrib ..
-  also have "... = 0" unfolding Ax Ay by simp
-  finally show "A *v (x + y) = 0" .
-  fix c 
-  have "A *v (c *s x) = c *s (A *v x)"
-    unfolding scalar_matrix_vector_assoc matrix_scalar_vector_ac by auto
-  also have "... = 0" unfolding Ax by simp
-  finally show "A *v (c *s x) = 0" .
-  qed
+  by (auto simp: vec.subspace_def null_space_def vec.linear_cmul vec.add)
 
 lemma subspace_left_null_space:
   fixes A::"'a::{field}^'n^'m"
@@ -155,38 +143,38 @@ lemma col_space_eq_range:
   unfolding col_space_eq unfolding matrix_works[OF lf] by blast
 
 lemma null_space_is_preserved:
-fixes A::"'a::{field}^'cols^'rows"
-assumes P: "invertible P"
-shows "null_space (P**A) = null_space A"
-unfolding null_space_def 
-using P matrix_inv_left matrix_left_invertible_ker matrix_vector_mul_assoc matrix_vector_zero
-by metis
+  fixes A::"'a::{field}^'cols^'rows"
+  assumes P: "invertible P"
+  shows "null_space (P**A) = null_space A"
+  unfolding null_space_def 
+  using P matrix_inv_left matrix_left_invertible_ker matrix_vector_mul_assoc matrix_vector_zero
+  by metis
 
 lemma row_space_is_preserved:
-fixes A::"'a::{field}^'cols^'rows::{finite, wellorder}" 
-  and P::"'a::{field}^'rows::{finite, wellorder}^'rows::{finite, wellorder}"
-assumes P: "invertible P"
-shows "row_space (P**A) = row_space A"
+  fixes A::"'a::{field}^'cols^'rows::{finite, wellorder}" 
+    and P::"'a::{field}^'rows::{finite, wellorder}^'rows::{finite, wellorder}"
+  assumes P: "invertible P"
+  shows "row_space (P**A) = row_space A"
 proof (auto)
-fix w
-assume w: "w \<in> row_space (P**A)"
-from this obtain y where w_By: "w=(transpose (P**A)) *v y" 
-  unfolding row_space_eq[of "P ** A" ] by fast
-have "w = (transpose (P**A)) *v y" using w_By .
-also have "... = ((transpose A) ** (transpose P)) *v y" unfolding matrix_transpose_mul ..
-also have "... = (transpose A) *v ((transpose P) *v y)" unfolding matrix_vector_mul_assoc ..
-finally show "w \<in> row_space A" unfolding row_space_eq by blast
+  fix w
+  assume w: "w \<in> row_space (P**A)"
+  from this obtain y where w_By: "w=(transpose (P**A)) *v y" 
+    unfolding row_space_eq[of "P ** A" ] by fast
+  have "w = (transpose (P**A)) *v y" using w_By .
+  also have "... = ((transpose A) ** (transpose P)) *v y" unfolding matrix_transpose_mul ..
+  also have "... = (transpose A) *v ((transpose P) *v y)" unfolding matrix_vector_mul_assoc ..
+  finally show "w \<in> row_space A" unfolding row_space_eq by blast
 next
-fix w
-assume w: "w \<in> row_space A"
-from this obtain y where w_Ay: "w=(transpose A) *v y" unfolding row_space_eq by fast
-have "w = (transpose A) *v y" using w_Ay .
-also have "... = (transpose ((matrix_inv P) ** (P**A))) *v y" 
-  by (metis P matrix_inv_left matrix_mul_assoc matrix_mul_lid)
-also have "... = (transpose (P**A) ** (transpose (matrix_inv P))) *v y" 
-  unfolding matrix_transpose_mul ..
-also have "... = transpose (P**A) *v (transpose (matrix_inv P) *v y)" 
-  unfolding matrix_vector_mul_assoc ..
-finally show "w \<in> row_space (P**A)"  unfolding row_space_eq by blast
+  fix w
+  assume w: "w \<in> row_space A"
+  from this obtain y where w_Ay: "w=(transpose A) *v y" unfolding row_space_eq by fast
+  have "w = (transpose A) *v y" using w_Ay .
+  also have "... = (transpose ((matrix_inv P) ** (P**A))) *v y" 
+    by (metis P matrix_inv_left matrix_mul_assoc matrix_mul_lid)
+  also have "... = (transpose (P**A) ** (transpose (matrix_inv P))) *v y" 
+    unfolding matrix_transpose_mul ..
+  also have "... = transpose (P**A) *v (transpose (matrix_inv P) *v y)" 
+    unfolding matrix_vector_mul_assoc ..
+  finally show "w \<in> row_space (P**A)"  unfolding row_space_eq by blast
 qed
 end
