@@ -383,10 +383,7 @@ lemma matrix_inv_invertible:
 lemma vector_matrix_mul_rid:
   fixes v :: "('a::semiring_1)^('n::finite)"
   shows "v v* mat 1 = v"
-proof -
-  have "v v* mat 1 = transpose (mat 1) *v v" by simp
-  thus "v v* mat 1 = v" by (simp only: transpose_mat matrix_vector_mul_lid)
-qed
+  by (metis matrix_vector_mul_lid transpose_mat vector_transpose_matrix)
 
 lemma vector_matrix_mul_assoc:
   fixes v :: "('a::comm_semiring_1)^'n"
