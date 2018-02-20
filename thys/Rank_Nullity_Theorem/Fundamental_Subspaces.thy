@@ -91,7 +91,7 @@ lemma col_space_eq:
   let ?g="\<lambda>y. {i. y=column i A}"
   let ?x="(\<chi> i. if i=(LEAST a. a \<in> ?g (column i A)) then u (column i A) else 0)"
   show "\<exists>x. A *v x = (\<Sum>v\<in>columns A. u v *s v)"
-  proof (unfold matrix_mult_vsum, rule exI[of _ "?x"], auto)
+  proof (unfold matrix_mult_sum, rule exI[of _ "?x"], auto)
       have inj: "inj_on ?g (columns A)" unfolding inj_on_def unfolding columns_def by auto
       have union_univ: "\<Union>(?g`(columns A)) = UNIV" unfolding columns_def by auto               
       have "sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) UNIV 

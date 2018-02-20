@@ -285,7 +285,7 @@ proof (rule exI[of _ "\<lambda>y. sum (\<lambda>i. x $ i) {i. y = column i A}"])
   let ?g="(\<lambda>y. {i. y=column i (A)})"
   have inj: "inj_on ?g (columns (A))" unfolding inj_on_def unfolding columns_def by auto
   have union_univ: "\<Union> (?g`(columns (A))) = UNIV" unfolding columns_def by auto
-  have "A *v x = (\<Sum>i\<in>UNIV. x $ i *s column i A)" unfolding matrix_mult_vsum ..
+  have "A *v x = (\<Sum>i\<in>UNIV. x $ i *s column i A)" unfolding matrix_mult_sum ..
   also have "... = sum (\<lambda>i.  x $ i *s column i A) (\<Union>(?g`(columns A)))" unfolding union_univ ..
   also have "... = sum (sum ((\<lambda>i.  x $ i *s column i A)))  (?g`(columns A))"
     by (rule sum.Union_disjoint[unfolded o_def], auto) 

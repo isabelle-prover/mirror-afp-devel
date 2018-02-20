@@ -676,7 +676,7 @@ qed
 lemma matrix':
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   shows "f (X$i) = sum (\<lambda>j. (matrix' X Y f) $ j $ i *s (Y$j)) UNIV" 
-proof (unfold matrix'_def coord_def matrix_mult_vsum column_def, vector, auto)
+proof (unfold matrix'_def coord_def matrix_mult_sum column_def, vector, auto)
   fix j
   obtain g where  g: "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f (X $ i)" using basis_UNIV[OF basis_Y] by blast
   have the_g: "(THE fa. \<forall>ia. f (X $ i) $ ia = (\<Sum>x\<in>UNIV. fa x * Y $ x $ ia)) = g"
@@ -720,7 +720,7 @@ lemma coord_matrix':
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   and linear_f: "linear (( *s)) (( *s)) f"
   shows "coord Y (f v) = (matrix' X Y f) *v (coord X v)"  
-proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
+proof (unfold matrix_mult_sum matrix'_def column_def coord_def, vector, auto)
   fix i 
   obtain g where g: "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using basis_UNIV[OF basis_Y] by auto
   obtain s where s: "(\<Sum>x\<in>UNIV. s x *s X $ x) = v" using basis_UNIV[OF basis_X] by auto
@@ -837,7 +837,7 @@ lemma matrix_change_of_basis_works:
   assumes basis_X: "is_basis (set_of_vector X)" 
   and basis_Y: "is_basis (set_of_vector Y)"
   shows "(matrix_change_of_basis X Y) *v (coord X v) = (coord Y v)"
-proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, vector, auto)
+proof (unfold matrix_mult_sum matrix_change_of_basis_def column_def coord_def, vector, auto)
   fix i
   obtain f where f: "(\<Sum>x\<in>UNIV. f x *s Y $ x) = v" using basis_UNIV[OF basis_Y] by blast
   obtain g where g: "(\<Sum>x\<in>UNIV. g x *s X $ x) = v" using basis_UNIV[OF basis_X] by blast

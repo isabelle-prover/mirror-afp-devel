@@ -585,7 +585,7 @@ proof (transfer fixing: i i')
   { fix q assume "q \<notin> ?s`?E" "q permutes UNIV" with `i \<noteq> i'` have "evenperm q"
       by (auto simp add: comp_assoc[symmetric] image_iff p elim!: allE[of _ "?s q"]) }
   then have "(\<Sum>p | p permutes UNIV. ?p p) = (\<Sum>p\<in>?E. ?p p) + (\<Sum>p\<in>?s`?E. ?p p)"
-    by (intro sum_union_disjoint') (auto simp: p `i \<noteq> i'`)
+    by (intro sum.union_disjoint) (auto simp: p `i \<noteq> i'`)
   also have "(\<Sum>p\<in>?s`?E. ?p p) = (\<Sum>p\<in>?E. - ?p p)"
     using `i \<noteq> i'` by (subst sum.reindex) (auto intro!: sum.cong simp: p)
   finally show "(\<Sum>p | p permutes UNIV. ?p p) = 0"

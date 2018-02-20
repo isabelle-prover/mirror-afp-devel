@@ -1888,7 +1888,7 @@ proof -
       let ?x = "\<chi> i. c i"
       have th0:"A *v ?x = 0"
         using c
-        unfolding matrix_mult_vsum vec_eq_iff
+        unfolding matrix_mult_sum vec_eq_iff
         by auto
       from k[rule_format, OF th0] i
       have "c i = 0" by (vector vec_eq_iff)}
@@ -1897,7 +1897,7 @@ proof -
   { assume H: ?rhs
     { fix x assume x: "A *v x = 0"
       let ?c = "\<lambda>i. ((x$i ):: 'a)"
-      from H[rule_format, of ?c, unfolded matrix_mult_vsum[symmetric], OF x]
+      from H[rule_format, of ?c, unfolded matrix_mult_sum[symmetric], OF x]
       have "x = 0" by vector }
   }
   ultimately show ?thesis unfolding matrix_left_invertible_ker by auto
@@ -2392,7 +2392,7 @@ lemma invertible_left_inverse:
   shows "invertible A \<longleftrightarrow> (\<exists>(B::'a^'n^'n). B ** A = mat 1)"
   by (metis invertible_def matrix_left_right_inverse)
 
-  lemma invertible_righ_inverse:
+  lemma invertible_right_inverse:
   fixes A :: "'a::{field}^'n^'n"
   shows "invertible A \<longleftrightarrow> (\<exists>(B::'a^'n^'n). A** B = mat 1)"
   by (metis invertible_def matrix_left_right_inverse)
@@ -2404,7 +2404,7 @@ proof -
   {
     assume "invertible A"
     then obtain B :: "'a^'n^'n" where B: "A ** B = mat 1"
-      unfolding invertible_righ_inverse by blast
+      unfolding invertible_right_inverse by blast
     then have "det (A ** B) = det (mat 1 :: 'a^'n^'n)"
       by simp
     then have "det A \<noteq> 0"
@@ -2419,7 +2419,7 @@ proof -
     from H obtain c i where c: "sum (\<lambda>i. c i *s row i A) ?U = 0"
       and iU: "i \<in> ?U"
       and ci: "c i \<noteq> 0"
-      unfolding invertible_righ_inverse
+      unfolding invertible_right_inverse
       unfolding matrix_right_invertible_independent_rows
       by blast
     have *: "\<And>(a::'a^'n) b. a + b = 0 \<Longrightarrow> -a = b"

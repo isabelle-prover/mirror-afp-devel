@@ -330,7 +330,7 @@ lemma invertible_transpose:
   fixes A::"'a::{field}^'n^'n"
   assumes "invertible A"
   shows "invertible (transpose A)"
-  by (metis assms invertible_left_inverse invertible_righ_inverse 
+  by (metis assms invertible_left_inverse invertible_right_inverse 
       matrix_transpose_mul transpose_mat)
 
 text{*The following lemmas are generalizations of some parts of the library. They should be 
