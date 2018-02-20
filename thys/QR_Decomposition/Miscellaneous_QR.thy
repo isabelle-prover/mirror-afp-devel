@@ -266,21 +266,22 @@ lemma norm_mult_vec:
 lemma norm_equivalence: 
   fixes A::"real^'n^'m"
   shows "((transpose A) *v (A *v x) = 0) \<longleftrightarrow> (A *v x = 0)" 
-proof (auto)
-  show "transpose A *v 0 = 0" unfolding matrix_vector_zero ..
-next
-  assume a: "transpose A *v (A *v x) = 0"
-  have eq: "(x v* (transpose A)) = (A *v x)"
-    by (metis Cartesian_Euclidean_Space.transpose_transpose transpose_vector)
-  have eq_0: "0 = (x v* (transpose A)) * (A *v x)"
-    by auto (metis a dot_lmul_matrix inner_eq_zero_iff inner_zero_left mult_not_zero transpose_vector)
-  hence "0 = norm ((x v* (transpose A)) * (A *v x))" by auto
-  also have "... = norm ((A *v x)*(A *v x))" unfolding eq ..
-  also have "... = norm ((A *v x) \<bullet> (A *v x))"
-    by (metis eq_0 a dot_lmul_matrix eq inner_zero_right norm_zero)
-  also have "... = norm (A *v x)^2" unfolding norm_mult_vec[of "(A *v x)"] power2_eq_square ..
-  finally show "A *v x = 0"
-    by (metis (lifting) power_not_zero norm_eq_0_imp)
+proof -
+  have "A *v x = 0" if "transpose A *v (A *v x) = 0"
+  proof -
+    have eq: "(x v* (transpose A)) = (A *v x)"
+      by (metis Cartesian_Euclidean_Space.transpose_transpose transpose_vector)
+    have eq_0: "0 = (x v* (transpose A)) * (A *v x)"
+      by auto (metis that dot_lmul_matrix inner_eq_zero_iff inner_zero_left mult_not_zero transpose_vector)
+    hence "0 = norm ((x v* (transpose A)) * (A *v x))" by auto
+    also have "... = norm ((A *v x)*(A *v x))" unfolding eq ..
+    also have "... = norm ((A *v x) \<bullet> (A *v x))"
+      by (metis eq_0 that dot_lmul_matrix eq inner_zero_right norm_zero)
+    also have "... = norm (A *v x)^2" unfolding norm_mult_vec[of "(A *v x)"] power2_eq_square ..
+    finally show "A *v x = 0"
+      by (metis (lifting) power_not_zero norm_eq_0_imp)
+  qed
+  then show ?thesis by auto
 qed
 
 
