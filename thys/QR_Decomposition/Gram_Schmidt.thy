@@ -297,9 +297,9 @@ proof -
   proof (auto, vector, metis less_Suc_eq_le to_nat_le)
     fix i::'cols
     assume "to_nat i \<le> k"
-    hence "to_nat i< Suc k" by simp
+    hence "to_nat i < Suc k" by simp
     hence i_less_suc: "i < from_nat (Suc k)" using from_nat_le[OF _ k] by simp
-    show "\<exists>ia. (\<chi> ia. Gram_Schmidt_upt_k A k $ ia $ i) = (\<chi> iaa. Gram_Schmidt_upt_k A k $ iaa $ ia) \<and> ia < from_nat (Suc k)"
+    show "\<exists>l. (\<lambda>j. Gram_Schmidt_upt_k A k $ j $ i) = (\<lambda>j'. Gram_Schmidt_upt_k A k $ j' $ l) \<and>  l < mod_type_class.from_nat (Suc k)"
       by (rule exI[of _ i], simp add: i_less_suc)
   qed
   have rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [(Suc k)]" by simp
