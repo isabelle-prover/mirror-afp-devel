@@ -239,8 +239,6 @@ proof -
     by metis
   then show ?thesis unfolding lookup_tensors_from_net[OF 1 2 3]
     using polyfun_evaluate_net[OF base_input_length[OF 2, unfolded input_sizes, symmetric] assms(1) assms(3), of s]
-(* TODO: Investigate why sledgehammer fails:
-    using polyfun_evaluate_net[OF base_input_length[OF 2, unfolded input_sizes, symmetric] assms(1) assms(3)] sledgehammer *)
     by simp
 qed
 
