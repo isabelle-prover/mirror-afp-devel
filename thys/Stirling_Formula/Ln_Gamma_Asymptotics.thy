@@ -306,7 +306,7 @@ proof -
           (\<Sum>I\<in>?A. (Inf I + 1 / 2 + s) * (ln (Inf I + 1 + s) - ln (Inf I + s)) - 1))
           (\<Union>n\<in>{0..<N}. {real n..real (n + 1)})" (is "(_ has_integral ?i) _")
     apply (intro has_integral_Union * finite_imageI)
-      apply (force intro!: negligible_atLeastAtMostI)+
+      apply (force intro!: negligible_atLeastAtMostI pairwiseI)+
     done
   hence has_integral: "((\<lambda>x. - pbernpoly 1 x / (x + s)) has_integral ?i) {0..real N}"
     by (rule has_integral_spike_set)
