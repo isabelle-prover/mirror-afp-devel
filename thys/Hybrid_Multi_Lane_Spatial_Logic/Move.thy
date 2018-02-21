@@ -23,7 +23,6 @@ begin
 
 context traffic 
 begin  
-lemmas[simp] = shift_dict length_dict
 
 definition move::"traffic \<Rightarrow> traffic \<Rightarrow> view \<Rightarrow> view"
   where 
@@ -73,7 +72,7 @@ proof
       "(shift (ext v) ((pos ts'' (own v)) + ( -1 *  pos ts (own v)))) = 
        shift (shift  (ext v) (pos ts' (own v) + - 1 * pos ts (own v))) 
           (pos ts'' (own v) + - 1 * pos ts' (own v))"  
-      by (metis f2 real_int.shift_additivity shift_dict)
+      by (metis f2 real_int.shift_additivity)
     then show ?thesis
       using move_def f2 by simp
   qed

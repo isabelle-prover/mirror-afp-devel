@@ -42,7 +42,10 @@ lift_definition right::"real_int \<Rightarrow> real" is snd proof - qed
   
 lemmas[simp] = left.rep_eq right.rep_eq  
   
-class real_int
+locale real_int
+interpretation real_int_class?: real_int .
+
+context real_int
 begin
   
 definition length :: "real_int \<Rightarrow> real" ("\<parallel>_\<parallel>" 70)
