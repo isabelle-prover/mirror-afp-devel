@@ -271,7 +271,7 @@ definition two_chain_boundary:: "two_chain \<Rightarrow> one_chain" where
   "two_chain_boundary twoChain == \<Union>(boundary ` twoChain)"
 
 definition gen_division where
-  "gen_division s S \<equiv> (finite S \<and> (\<Union>S = s) \<and> (\<forall>u \<in> S. \<forall>t \<in> S. u \<noteq> t \<longrightarrow> negligible (u \<inter> t)))"
+  "gen_division s S \<equiv> (finite S \<and> (\<Union>S = s) \<and> pairwise (\<lambda>X Y. negligible (X \<inter> Y)) S)"
 
 
 definition two_chain_horizontal_boundary:: "two_chain \<Rightarrow> one_chain" where
@@ -521,8 +521,8 @@ proof -
       using Henstock_Kurzweil_Integration.integrable_neg by force
     have finite_images: "finite (cubeImage ` twoChain)"
       using gen_division gen_division_def by auto
-    have negligible_images: "\<And>s s'. \<lbrakk>s \<in> cubeImage ` twoChain; s'\<in>cubeImage ` twoChain; s \<noteq> s'\<rbrakk> \<Longrightarrow> negligible (s \<inter> s')"
-      using gen_division  by (auto simp add: gen_division_def)
+    have negligible_images: "pairwise (\<lambda>S S'. negligible (S \<inter> S')) (cubeImage ` twoChain)"
+      using gen_division  by (auto simp add: gen_division_def pairwise_def)
     have inj: "inj_on cubeImage twoChain"
       using valid_two_chain by (simp add: inj_on_def valid_two_chain_def)
     have "integral s F = (\<Sum>twoCubeImg\<in>cubeImage ` twoChain. integral twoCubeImg F)"
@@ -1652,15 +1652,14 @@ proof -
       using integrable_neg by force
     have finite_images: "finite (cubeImage ` two_chain)"
       using gen_division gen_division_def by auto
-    have negligible_images: "\<And>s s'. \<lbrakk>s\<in>cubeImage ` two_chain; s'\<in>cubeImage ` two_chain; s \<noteq> s'\<rbrakk> \<Longrightarrow> negligible (s \<inter> s')"
-      using gen_division by (auto simp add: gen_division_def)
+    have negligible_images: "pairwise (\<lambda>S S'. negligible (S \<inter> S')) (cubeImage ` two_chain)"
+      using gen_division by (auto simp add: gen_division_def pairwise_def)
     have "inj_on cubeImage two_chain" using valid_typeII_div valid_two_chain_def by auto
     then have "(\<Sum>twoCubeImg\<in>cubeImage ` two_chain. integral twoCubeImg (\<lambda>x. ?F_a' x))
              = (\<Sum>C\<in>two_chain. integral (cubeImage C) (\<lambda>a. ?F_a' a))"
       using sum.reindex by auto
     then show "integral s (\<lambda>x. ?F_a' x) = (\<Sum>C\<in>two_chain. integral (cubeImage C) (\<lambda>a. ?F_a' a))"
-      using has_integral_Union[OF finite_images partial_deriv_integrable negligible_images]
-        gen_division
+      using has_integral_Union[OF finite_images partial_deriv_integrable negligible_images] gen_division
       by (auto simp add: gen_division_def)
   qed
   then show ?thesis
@@ -1702,7 +1701,13 @@ proof -
   qed
     (*then, the x axis line_integral on the boundaries of the twoCube is equal to the line_integral on the horizontal boundaries of the twoCube \<longrightarrow> 1*)
   have boundary_is_finite: "finite (two_chain_boundary two_chain)"
-    by (metis (no_types, lifting) card.infinite finite_UN_I finite_imageD gen_division_def zero_neq_numeral two_chain_boundary_def valid_two_chain_def valid_two_cube_def valid_typeII_div)
+    unfolding two_chain_boundary_def
+  proof (rule finite_UN_I)
+    show "finite two_chain"
+      using valid_typeII_div finite_image_iff gen_division_def valid_two_chain_def by auto
+    show "\<And>a. a \<in> two_chain \<Longrightarrow> finite (boundary a)"
+      by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+  qed
   have boundary_is_vert_hor:
      "two_chain_boundary two_chain =
       (two_chain_vertical_boundary two_chain) \<union>
@@ -1900,14 +1905,17 @@ proof -
       by (simp add: prod.case_eq_if)
   qed
     (*then, the x axis line_integral on the boundaries of the twoCube is equal to the line_integral on the horizontal boundaries of the twoCube \<longrightarrow> 1*)
-  have boundary_is_finite:
-    "finite (two_chain_boundary two_chain)"
-    by (metis (no_types, lifting) boundary_def finite_UN finite_UnI finite_imageD finite_two_chain_horizontal_boundary finite_two_chain_vertical_boundary valid_typeII_div gen_division_def two_chain_boundary_def two_chain_horizontal_boundary_def two_chain_vertical_boundary_def valid_two_chain_def)
+  have boundary_is_finite: "finite (two_chain_boundary two_chain)"
+    unfolding two_chain_boundary_def
+  proof (rule finite_UN_I)
+    show "finite two_chain"
+      using valid_typeII_div finite_image_iff gen_division_def valid_two_chain_def by auto
+    show "\<And>a. a \<in> two_chain \<Longrightarrow> finite (boundary a)"
+      by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+  qed
   have boundary_is_vert_hor:
-    "(two_chain_boundary two_chain) =
-      (two_chain_vertical_boundary two_chain) \<union> (two_chain_horizontal_boundary two_chain)"
-    by(auto simp add: two_chain_boundary_def two_chain_vertical_boundary_def two_chain_horizontal_boundary_def
-        boundary_def)
+    "two_chain_boundary two_chain = (two_chain_vertical_boundary two_chain) \<union> (two_chain_horizontal_boundary two_chain)"
+    by(auto simp add: two_chain_boundary_def two_chain_vertical_boundary_def two_chain_horizontal_boundary_def boundary_def)
   then have hor_vert_finite:
     "finite (two_chain_vertical_boundary two_chain)"
     "finite (two_chain_horizontal_boundary two_chain)"
@@ -2443,12 +2451,16 @@ proof -
   qed
     (*then, the x axis line_integral on the boundaries of the twoCube is equal to the line_integral on the horizontal boundaries of the twoCube \<longrightarrow> 1*)
   have boundary_is_finite: "finite (two_chain_boundary two_chain)"
-    by (metis (no_types, lifting) all_two_cubes_have_four_distict_edges assms(1) card_infinite finite_UN finite_imageD gen_division_def zero_neq_numeral two_chain_boundary_def valid_two_chain_def)
-  have boundary_is_vert_hor: "(two_chain_boundary two_chain) =
-                              (two_chain_vertical_boundary two_chain) \<union>
-                              (two_chain_horizontal_boundary two_chain)"
-    by (auto simp add: two_chain_boundary_def two_chain_vertical_boundary_def two_chain_horizontal_boundary_def
-        boundary_def)
+    unfolding two_chain_boundary_def
+  proof (rule finite_UN_I)
+    show "finite two_chain"
+      using assms(1) finite_imageD gen_division_def valid_two_chain_def by auto
+    show "\<And>a. a \<in> two_chain \<Longrightarrow> finite (boundary a)"
+      by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+  qed
+  have boundary_is_vert_hor: "two_chain_boundary two_chain =
+                              (two_chain_vertical_boundary two_chain) \<union> (two_chain_horizontal_boundary two_chain)"
+    by (auto simp add: two_chain_boundary_def two_chain_vertical_boundary_def two_chain_horizontal_boundary_def boundary_def)
   then have hor_vert_finite:
     "finite (two_chain_vertical_boundary two_chain)"
     "finite (two_chain_horizontal_boundary two_chain)"
@@ -2626,17 +2638,19 @@ proof -
   proof -
     have "\<forall>twoCube \<in> two_chain_typeII. (?F_a' has_integral integral (cubeImage twoCube) ?F_a') (cubeImage twoCube)"
       by (simp add: analytically_valid_imp_part_deriv_integrable_on T2.F_anal_valid has_integral_iff)
-    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral (u) ?F_a') (u)"
+    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral u ?F_a') u"
       by auto
     then have "(?F_a' has_integral (\<Sum>img\<in>cubeImage ` two_chain_typeII. integral img ?F_a')) s"
-      by (metis (mono_tags, lifting) gen_division_def gen_divisions(2) has_integral_Union)
+      using gen_divisions(2) unfolding gen_division_def
+      by (metis has_integral_Union)
     then have F_a'_integrable: "(?F_a' integrable_on s)" by auto
     have "\<forall>twoCube \<in> two_chain_typeI. (?F_b' has_integral integral (cubeImage twoCube) ?F_b') (cubeImage twoCube)"
       using analytically_valid_imp_part_deriv_integrable_on T1.F_anal_valid by blast
-    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral (u) ?F_b') (u)"
+    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral u ?F_b') u"
       by auto
     then have "(?F_b' has_integral (\<Sum>img\<in>cubeImage ` two_chain_typeI. integral img ?F_b')) s"
-      by (metis (no_types, lifting) gen_division_def gen_divisions(1) has_integral_Union)
+      using gen_divisions(1) unfolding gen_division_def
+      by (metis has_integral_Union)
     then show ?thesis
       by (simp add: F_a'_integrable Henstock_Kurzweil_Integration.integral_diff has_integral_iff)
   qed
@@ -2825,18 +2839,20 @@ proof -
     have "(?F_a' has_integral integral (cubeImage twoCube) ?F_a') (cubeImage twoCube)"
       if "twoCube \<in> two_chain_typeII" for twoCube
       by (simp add: analytically_valid_imp_part_deriv_integrable_on T2.F_anal_valid has_integral_integrable_integral that)
-    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral (u) ?F_a') (u)"
+    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral u ?F_a') u"
       by auto
     then have "(?F_a' has_integral (\<Sum>img\<in>cubeImage ` two_chain_typeII. integral img ?F_a')) s"
-      by (metis (no_types, lifting) T2.valid_typeII_div gen_division_def has_integral_Union)
+      using T2.valid_typeII_div unfolding gen_division_def
+      by (metis has_integral_Union)
     then have F_a'_integrable:
       "(?F_a' integrable_on s)" by auto
     have "\<forall>twoCube \<in> two_chain_typeI. (?F_b' has_integral integral (cubeImage twoCube) ?F_b') (cubeImage twoCube)"
       using analytically_valid_imp_part_deriv_integrable_on T1.F_anal_valid by blast
-    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral (u) ?F_b') (u)"
+    then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral u ?F_b') u"
       by auto
     then have "(?F_b' has_integral (\<Sum>img\<in>cubeImage ` two_chain_typeI. integral img ?F_b')) s"
-      by (metis (mono_tags, lifting) T1.valid_typeI_div gen_division_def has_integral_Union)
+      using T1.valid_typeI_div unfolding gen_division_def
+      by (metis has_integral_Union)
     then show ?thesis
       by (simp add: F_a'_integrable Henstock_Kurzweil_Integration.integral_diff has_integral_iff)
   qed
@@ -2912,15 +2928,25 @@ proof -
       by (fastforce simp add: valid_two_chain_def)
     then show ii: "\<forall>(k,\<gamma>)\<in>one_chain_typeI. line_integral_exists F {i} \<gamma>" by auto
     have "finite (two_chain_boundary two_chain_typeI)"
-      by (metis (no_types, lifting) card_infinite finite_UN_I finite_imageD gen_division_def zero_neq_numeral two_chain_boundary_def valid_two_chain_def T1.valid_typeI_div valid_two_cube_def)
+      unfolding two_chain_boundary_def
+    proof (rule finite_UN_I)
+      show "finite two_chain_typeI"
+        using T1.valid_typeI_div finite_imageD gen_division_def valid_two_chain_def by auto
+      show "\<And>a. a \<in> two_chain_typeI \<Longrightarrow> finite (boundary a)"
+        by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+    qed
     then have "finite one_chain_typeI"
-      using boundary_of_region_is_subset_of_partition_boundaries(1) finite_subset
-      by fastforce
+      using boundary_of_region_is_subset_of_partition_boundaries(1) finite_subset by fastforce
     moreover have "finite (two_chain_boundary two_chain_typeII)"
-      by (metis (no_types, lifting) T2.valid_typeII_div card_infinite finite_UN_I finite_imageD gen_division_def rel_simps(76) two_chain_boundary_def valid_two_chain_def valid_two_cube_def)
+      unfolding two_chain_boundary_def
+    proof (rule finite_UN_I)
+      show "finite two_chain_typeII"
+        using T2.valid_typeII_div finite_imageD gen_division_def valid_two_chain_def by auto
+      show "\<And>a. a \<in> two_chain_typeII \<Longrightarrow> finite (boundary a)"
+        by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+    qed
     then have "finite one_chain_typeII"
-      using boundary_of_region_is_subset_of_partition_boundaries(2) finite_subset
-      by fastforce
+      using boundary_of_region_is_subset_of_partition_boundaries(2) finite_subset by fastforce
     ultimately show "one_chain_line_integral F {i} one_chain_typeI = one_chain_line_integral F {i} one_chain_typeII"
       "\<forall>(k, \<gamma>)\<in>one_chain_typeII. line_integral_exists F {i} \<gamma>"
       using ii common_subdivision_imp_eq_line_integral[OF typeI_and_typII_one_chains_have_common_subdiv
@@ -2948,12 +2974,24 @@ proof -
     qed
     then show ii: " \<forall>(k,\<gamma>)\<in>one_chain_typeII. line_integral_exists F {j} \<gamma>" by auto
     have "finite (two_chain_boundary two_chain_typeI)"
-      by (metis (no_types, lifting)  card_infinite finite_UN finite_imageD gen_division_def zero_neq_numeral two_chain_boundary_def valid_two_chain_def T1.valid_typeI_div valid_two_cube_def)
+      unfolding two_chain_boundary_def
+    proof (rule finite_UN_I)
+      show "finite two_chain_typeI"
+        using T1.valid_typeI_div finite_imageD gen_division_def valid_two_chain_def by auto
+      show "\<And>a. a \<in> two_chain_typeI \<Longrightarrow> finite (boundary a)"
+        by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+    qed
     then have iv: "finite one_chain_typeI"
       using boundary_of_region_is_subset_of_partition_boundaries(1) finite_subset
       by fastforce
     have "finite (two_chain_boundary two_chain_typeII)"
-      by (metis (no_types, lifting) card_infinite finite_UN finite_imageD gen_division_def zero_neq_numeral two_chain_boundary_def valid_two_chain_def T2.valid_typeII_div valid_two_cube_def)
+      unfolding two_chain_boundary_def
+    proof (rule finite_UN_I)
+      show "finite two_chain_typeII"
+        using T2.valid_typeII_div finite_imageD gen_division_def valid_two_chain_def by auto
+      show "\<And>a. a \<in> two_chain_typeII \<Longrightarrow> finite (boundary a)"
+        by (simp add: boundary_def horizontal_boundary_def vertical_boundary_def)
+    qed
     then have iv': "finite one_chain_typeII"
       using boundary_of_region_is_subset_of_partition_boundaries(2) finite_subset
       by fastforce
@@ -3047,10 +3085,11 @@ proof -
       have "(?F_a' has_integral integral (cubeImage twoCube) ?F_a') (cubeImage twoCube)"
         if "twoCube \<in> two_chain_typeII" for twoCube
         by (simp add: analytically_valid_imp_part_deriv_integrable_on T2.F_anal_valid has_integral_integrable_integral that) 
-      then have  "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral (u) ?F_a') (u)"
+      then have  "\<And>u. u \<in> (cubeImage ` two_chain_typeII) \<Longrightarrow> (?F_a' has_integral integral u ?F_a') u"
         by auto
       then show ?thesis
-        by (metis (mono_tags, lifting) gen_division_def gen_divisions(2) has_integral_Union)
+      using gen_divisions(2) unfolding gen_division_def
+      by (metis has_integral_Union)
     qed
     then have F_a'_integrable:
       "(?F_a' integrable_on s)" by auto
@@ -3058,10 +3097,11 @@ proof -
     proof -
       have "\<forall>twoCube \<in> two_chain_typeI. (?F_b' has_integral integral (cubeImage twoCube) ?F_b') (cubeImage twoCube)"
         by (simp add: analytically_valid_imp_part_deriv_integrable_on T1.F_anal_valid has_integral_integrable_integral) 
-      then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral (u) ?F_b') (u)"
+      then have "\<And>u. u \<in> (cubeImage ` two_chain_typeI) \<Longrightarrow> (?F_b' has_integral integral u ?F_b') u"
         by auto
       then show ?thesis
-        by (metis (no_types, lifting) gen_division_def gen_divisions(1) has_integral_Union)
+      using gen_divisions(1) unfolding gen_division_def
+      by (metis has_integral_Union)
     qed
     then show ?thesis
       using F_a'_integrable Henstock_Kurzweil_Integration.integral_diff by auto
