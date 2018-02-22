@@ -445,7 +445,7 @@ proof -
       apply (subst existence_ivl0_cong[OF cong])
     apply auto
     apply (drule Y.closed_segment_subset_existence_ivl)
-    by (auto simp: open_segment_real closed_segment_real split: if_splits)
+    by (auto simp: open_segment_eq_real_ivl closed_segment_eq_real_ivl split: if_splits)
 qed
 
 lemma flowsto_congI2:

@@ -1222,7 +1222,7 @@ lemma lorenz_poincare[le, refine_vcg]:
     proof -
       from that t have s: "s \<in> lorenz.v.existence_ivl0 x0"
         by (auto dest!: lorenz.a.v.closed_segment_subset_existence_ivl
-            simp: closed_segment_real)
+            simp: closed_segment_eq_real_ivl)
       have "lorenz.v.flow0 x0 s
         \<in> aform.Csafe lorenz_fas true_form -
            op_atLeastAtMost_ivl (eucl_of_list [- 6, - 6, 27]) (eucl_of_list [6, 6, 27]) \<inter>
@@ -2183,12 +2183,12 @@ proof (rule check_line_nres[OF \<open>NF\<close>, le], clarsimp, goal_cases)
       subgoal by fact
       subgoal using dxrdyr
         apply (intro cos_gt_zero_pi)
-        unfolding pi_half_less_rad_of rad_of_less_pi_half
-        by auto
+        unfolding rad_of_lt_iff rad_of_gt_iff
+        by (auto simp: deg_of_def)
       subgoal using dxrdyr
         apply (intro cos_gt_zero_pi)
-        unfolding pi_half_less_rad_of rad_of_less_pi_half
-        by auto
+        unfolding rad_of_lt_iff rad_of_gt_iff
+        by (auto simp: deg_of_def)
       subgoal by fact
       subgoal by fact
       done
@@ -2368,7 +2368,7 @@ lemma lorenz_S_returns_toI[simp]:
       unfolding eventually_at_filter
       apply eventually_elim
       using \<open>0 < t\<close> lorenz.closed_segment_subset_existence_ivl[OF prems(3)]
-      by (auto simp: closed_segment_real subset_iff)
+      by (auto simp: closed_segment_eq_real_ivl subset_iff)
     then show ?thesis using prems(1)
       by eventually_elim force
   qed

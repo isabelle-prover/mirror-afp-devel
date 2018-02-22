@@ -143,7 +143,7 @@ proof (rule dense_eq0_I, cases)
     by (simp add: dist_commute)
   moreover have "dist (I *\<^sub>R y) ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> norm y * e"
     using f_less
-    by (auto simp add: scaleR_dist_distrib_right[symmetric] dist_real_def mult.commute [of _ "norm y"]
+    by (auto simp add: dist_real_def mult.commute [of _ "norm y"]
       intro!: mult_left_mono)
   ultimately
   have "dist P (I *\<^sub>R y) \<le> e + norm y * e"
@@ -522,12 +522,10 @@ next
     using \<open>0 \<le> h\<close>
     by (simp add: algebra_simps power2_eq_square divide_simps)
   have integral: "((-) (t + h) has_integral h\<^sup>2 / 2) (cbox t (t + h))"
-    unfolding *
-    apply (rule has_integral_diff)
-    unfolding cbox_interval
-    apply (rule has_integral_const_real)
-    apply (rule has_integral_id)
-    done
+    unfolding * cbox_interval
+    using \<open>0 \<le> h\<close>
+    by (auto intro!: has_integral_diff ident_has_integral[THEN has_integral_eq_rhs]
+        has_integral_const_real[THEN has_integral_eq_rhs])
   from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
   have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
     by (simp add: eval_nat_numeral diff_def)
@@ -625,7 +623,7 @@ next
   note x'[simplified has_vector_derivative_def, derivative_intros]
 
   have x_cont: "continuous_on {t..u} x"
-    by (rule has_vector_derivative_continuous_on) (rule x')
+    by (rule continuous_on_vector_derivative) (rule x')
   have f_cont: "continuous_on (T \<times> X) f"
     apply (rule has_derivative_continuous_on)
     apply (rule has_derivative_at_within)
@@ -754,7 +752,7 @@ next
       by (simp add: ac_simps)
     also have "\<dots> \<in> {t .. u}"
       using \<open>0 < p\<close> \<open>p \<le> 1\<close> s
-      by (intro line_in) (auto intro!: mult_nonneg_nonneg mult_left_le_one_le mult_le_oneI)
+      by (intro line_in) (auto intro!: mult_nonneg_nonneg mult_left_le_one_le mult_le_one)
     also note \<open>\<dots> \<subseteq> T\<close>
     finally show "t + s * (h * p) \<in> T" .
     show "x t + (s * (h * p)) *\<^sub>R f (t, x t) \<in> X"
@@ -816,7 +814,7 @@ next
     using \<open>h > 0\<close>
     by (simp add: algebra_simps diff_divide_distrib power2_eq_square power3_eq_cube)
   have integral_minus: "((-) 1 has_integral 1/2) (cbox 0 (1::real))"
-    by (auto intro!: has_integral_eq_rhs[OF has_integral_diff] has_integral_id)
+    by (auto intro!: has_integral_eq_rhs[OF has_integral_diff] ident_has_integral)
 
   have bounded_f: "bounded ((\<lambda>xa. f (h * xa + t, x (h * xa + t))) ` {0..1})"
     using \<open>0 \<le> h\<close>

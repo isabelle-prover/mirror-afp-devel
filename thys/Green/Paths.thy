@@ -1182,7 +1182,7 @@ proof -
         using Derivative.vector_derivative_const_at
         by auto
       then have 0: "\<forall>x\<in>{0..1}. (vector_derivative (\<lambda>x. 0) (at x within{0..1})) = 0"
-        by (metis (no_types) box_real(2) vector_derivative_within_closed_interval zero_less_one)
+        by (metis (no_types) box_real(2) vector_derivative_within_cbox zero_less_one)
       have "(\<forall>x\<in>{0..1}. (\<Sum>b\<in>basis. F 0 \<bullet> b * (vector_derivative (\<lambda>x. 0) (at x within {0..1}) \<bullet> b)) = 0)"
         by (simp add: 0)
       then show "((\<lambda>x. \<Sum>b\<in>basis. F 0 \<bullet> b * (vector_derivative (\<lambda>x. 0) (at x within {0..1}) \<bullet> b)) has_integral 0) {0..1}"

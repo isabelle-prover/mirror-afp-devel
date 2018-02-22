@@ -449,12 +449,13 @@ proof -
   {
     from f' have f_cont: "continuous_on G f"
       by (rule has_derivative_continuous_on[OF has_derivative_at_within])
+    note [continuous_intros] = continuous_on_compose2[OF this]
     from f'_cont have f'_cont: "continuous_on G f'"
       by (auto intro!: continuous_at_imp_continuous_on)
 
     note continuous_on_diff2=continuous_on_diff[OF continuous_on_compose[OF continuous_on_snd] continuous_on_compose[OF continuous_on_fst], where s="G \<times> G", simplified]
     have "continuous_on (G \<times> G) (\<lambda>(a, b). f b - f a)"
-      by (rule iffD1[OF continuous_on_cong continuous_on_diff2[OF f_cont f_cont]], auto)
+      by (auto intro!: continuous_intros simp: split_beta)
     moreover have "continuous_on (G \<times> G) (\<lambda>(a, b). f' a (b - a))"
       by (auto intro!: continuous_intros simp: split_beta')
     ultimately have "continuous_on (G \<times> G) (\<lambda>(a, b). R a b)"

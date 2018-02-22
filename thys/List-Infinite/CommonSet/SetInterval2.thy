@@ -1231,10 +1231,6 @@ apply (rule_tac f="\<lambda>x. n - x" in inj_on_infinite_image_iff[THEN iffD1, r
  apply (simp add: inj_on_def)
 apply (rule_tac t="((-) n ` {..n})" and s="{0..}" in subst)
  apply (simp add: set_eq_iff image_iff Bex_def)
- apply (rule allI, rename_tac n1)
- apply (rule iffI)
-  apply (rule_tac x="n - n1" in exI, simp)
-  apply fastforce
 apply (rule infinite_atLeast_int)
 done
 

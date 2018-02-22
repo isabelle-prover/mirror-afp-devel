@@ -340,7 +340,7 @@ proof -
     have "\<bar>u \<bullet> v\<bar> \<le> norm u * norm v"
       by (rule Cauchy_Schwarz_ineq2)
     then have "abs (u \<bullet> v * sin (2 * t)) \<le> 1"
-      by (auto simp add: abs_mult assms intro!: mult_le_oneI)
+      by (auto simp add: abs_mult assms intro!: mult_le_one)
     then show ?thesis
       by (subst mult.assoc sin_times_cos)+ auto
   qed

@@ -643,7 +643,7 @@ lemma bounded_linear_matrix_blinfun_apply: "bounded_linear (\<lambda>x::(real^'n
 
 lemma matrix_has_derivative:
   shows "((\<lambda>x::(real^'n)\<Rightarrow>\<^sub>L(real^'n). matrix (blinfun_apply x)) has_derivative (\<lambda>h. matrix (blinfun_apply h))) (at x)"
-  apply (auto simp: has_derivative_at)
+  apply (auto simp: has_derivative_at2)
   unfolding linear_linear
   subgoal by (rule bounded_linear_matrix_blinfun_apply)
   subgoal

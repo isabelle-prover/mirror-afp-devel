@@ -201,7 +201,7 @@ proof safe
     assume "h' \<notin> {0 <--< h}"
     with that have h': "h' - h \<in> {0 <--< i}" if "h' \<noteq> h"
       using that
-      by (auto simp: open_segment_real closed_segment_real split: if_splits)
+      by (auto simp: open_segment_eq_real_ivl closed_segment_eq_real_ivl split: if_splits)
     from i(4)[OF this]
     show ?thesis
       apply (cases "h' = h")
@@ -258,7 +258,7 @@ lemma
 lemma flowsto_imp_flowsto:
   "flowpipe Y h h CY Z \<Longrightarrow> flowsto Y {h} (CY) Z"
   unfolding flowpipe_def flowsto_def
-  by (auto simp: open_segment_real split_beta')
+  by (auto simp: open_segment_eq_real_ivl split_beta')
 
 lemma connected_below_halfspace:
   assumes "x \<in> below_halfspace sctn"
@@ -313,7 +313,7 @@ proof -
     apply (rule eventually_conj[OF eventually_at_right_less])
     using eventually_at_right h(1) by blast
   then show ?thesis
-    by eventually_elim (auto intro!: h simp: open_segment_real)
+    by eventually_elim (auto intro!: h simp: open_segment_eq_real_ivl)
 qed
 
 lemma frontier_aux_lemma:
@@ -391,7 +391,7 @@ proof -
     proof (cases "\<forall>s\<in>{0..t}. flow0 x s \<in> ?sB")
       case True
       then have "(x, d) \<in> ?X2" using assms t \<open>(x, d) \<in> X0\<close>
-        by (auto simp: flowpipe_def flowsto_def open_segment_real dest!: bspec[where x="(x, d)"])
+        by (auto simp: flowpipe_def flowsto_def open_segment_eq_real_ivl dest!: bspec[where x="(x, d)"])
       then show ?thesis ..
     next
       case False
@@ -449,8 +449,8 @@ proof -
       with s' have "(x, d) \<in> ?X1" using assms that s t \<open>0 < s'\<close>
         ivl_subset_existence_ivl[OF \<open>t \<in> existence_ivl0 x\<close>]
         frontier_subset_closed[OF \<open>closed ?A\<close>]
-        apply (auto simp: flowsto_def flowpipe_def open_segment_real frontier_halfspace_component_ge
-            intro!: 
+        apply (auto simp: flowsto_def flowpipe_def open_segment_eq_real_ivl frontier_halfspace_component_ge
+            intro!:
             dest!: bspec[where x="(x, d)"]
             intro: exivlI)
         apply (safe intro!: bexI[where x=s'])
@@ -491,7 +491,7 @@ proof -
         apply (rule return_time_le[OF ret _ _ \<open>0 < t\<close>])
         using prems \<open>closed ?P\<close> by auto
       from prems have CX: "(flow0 x h', (Dflow x h') o\<^sub>L d) \<in> CX" if "0 < h'" "h' \<le> t" for h'
-        using that by (auto simp: open_segment_real)
+        using that by (auto simp: open_segment_eq_real_ivl)
       have PDP: "(poincare_map ?P x, Dpoincare_map' n c R x o\<^sub>L d) \<in> PDP"
         unfolding poincare_map_def Dpoincare_map'_def
         unfolding blinfun_compose_assoc blinfun_minus_comp_distrib
@@ -517,7 +517,7 @@ proof -
         "flow0 x h \<in> fst ` CX \<and> (c > flow0 x h \<bullet> n)"
         if "0 < h" "h < return_time ?P x" for h
         using CX[of h] ret that ret_le \<open>0 < h\<close>
-        apply (auto simp: open_segment_real intro!: image_eqI[where x="(flow0 x h, (Dflow x h) o\<^sub>L d)"])
+        apply (auto simp: open_segment_eq_real_ivl intro!: image_eqI[where x="(flow0 x h, (Dflow x h) o\<^sub>L d)"])
         using prems
         by (auto simp add: open_segment_eq_real_ivl dest!: bspec[where x=t])
       ultimately show ?thesis
@@ -761,7 +761,7 @@ proof (auto, goal_cases)
     "(\<And>h'. h' \<in> {0<--<h} \<Longrightarrow> (flow0 x0 h', Dflow x0 h' o\<^sub>L d0) \<in> CX)"
     by auto
   then have CX: "(\<And>h'. 0 < h' \<Longrightarrow> h' < h \<Longrightarrow> (flow0 x0 h', Dflow x0 h' o\<^sub>L d0) \<in> CX)"
-    by (auto simp: nn open_segment_real)
+    by (auto simp: nn open_segment_eq_real_ivl)
   from 1 have "0 \<le> h" by (auto simp: nn)
   from assms have CX_p2D: "x \<in> CX \<Longrightarrow> fst x \<notin> p2" for x by auto
   from assms have P1_p2D: "x \<in> P1 \<Longrightarrow> fst x \<notin> p2" for x by auto
@@ -1018,7 +1018,7 @@ proof (rule return_time_continuous_below)
   from Dneg \<open>(x, _) \<in> X0\<close> show "Ds x (f x) < 0" by force
   from \<open>_ \<in> X1\<close> X1 CX h
   have "return_time {x \<in> S. s x = 0} x = h"
-    by (fastforce intro!: return_time_eqI cs pos h simp: open_segment_real)
+    by (fastforce intro!: return_time_eqI cs pos h simp: open_segment_eq_real_ivl)
   then have "?p \<in> fst ` X1"
     using \<open>_ \<in> X1\<close> by (force simp: poincare_map_def)
   from rel_int[OF this] show " \<forall>\<^sub>F x in at (poincare_map {x \<in> S. s x = 0} x). s x = 0 \<longrightarrow> x \<in> S"

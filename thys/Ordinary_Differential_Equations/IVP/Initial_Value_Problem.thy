@@ -2,6 +2,8 @@ section\<open>Initial Value Problems\<close>
 theory Initial_Value_Problem
   imports
     "../ODE_Auxiliarities"
+    "../Library/Interval_Integral_HK"
+    "../Library/Gronwall"
 begin
 
 lemma clamp_le[simp]: "x \<le> a \<Longrightarrow> clamp a b x = a" for x::"'a::ordered_euclidean_space"
@@ -26,12 +28,12 @@ definition half_open_segment::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a
 lemma half_open_segment_real:
   fixes a b::real
   shows "{a --< b} = (if a \<le> b then {a ..< b} else {b <.. a})"
-  by (auto simp: half_open_segment_def closed_segment_real)
+  by (auto simp: half_open_segment_def closed_segment_eq_real_ivl)
 
 lemma closure_half_open_segment:
   fixes a b::real
   shows "closure {a --< b} = (if a = b then {} else {a -- b})"
-  unfolding closed_segment_real if_distrib half_open_segment_real
+  unfolding closed_segment_eq_real_ivl if_distrib half_open_segment_real
   unfolding cond_application_beta
   by simp
 
@@ -66,7 +68,7 @@ proof -
       by (cases "t0 = s") (auto simp: islimpt_in_closure)
   qed
   ultimately show ?thesis using assms
-    by (auto simp: half_open_segment_real closed_segment_real)
+    by (auto simp: half_open_segment_real closed_segment_eq_real_ivl)
 qed
 
 lemma
@@ -86,7 +88,7 @@ proof (split if_split, safe)
   have "\<forall>\<^sub>F t1' in at t1' within {t0..<t1'}. t < t1'"
     by (rule order_tendstoD)
   ultimately show "\<forall>\<^sub>F t1' in at t1' within {t0..<t1'}. t \<in> {t0--t1'}"
-    by eventually_elim (auto simp add: closed_segment_real)
+    by eventually_elim (auto simp add: closed_segment_eq_real_ivl)
 next
   assume le: "\<not> t0 \<le> t1'"
   with assms have t: "t \<le> t0" "t1' < t"
@@ -98,12 +100,12 @@ next
   have "\<forall>\<^sub>F t1' in at t1' within {t1'<..t0}. t1' < t"
     by (rule order_tendstoD)
   ultimately show "\<forall>\<^sub>F t1' in at t1' within {t1'<..t0}. t \<in> {t0--t1'}"
-    by eventually_elim (auto simp add: closed_segment_real)
+    by eventually_elim (auto simp add: closed_segment_eq_real_ivl)
 qed
 
 lemma closed_segment_half_open_segment_subsetI:
   fixes x::real shows "x \<in> {t0--<t1} \<Longrightarrow> {t0--x} \<subseteq> {t0--<t1}"
-  by (auto simp: half_open_segment_real closed_segment_real split: if_split_asm)
+  by (auto simp: half_open_segment_real closed_segment_eq_real_ivl split: if_split_asm)
 
 lemma dist_component_le:
   fixes x y::"'a::euclidean_space"
@@ -406,9 +408,11 @@ proof safe
   have tendsto: "(f t \<longlongrightarrow> f t x) (at x within cball x u \<inter> X)"
     using \<open>0 < u\<close> \<open>x \<in> X\<close> \<open>t \<in> T\<close>
     by (auto simp: continuous_on_def)
-  then show "(f t \<longlongrightarrow> f t x) (at x within X)"
-    using \<open>x \<in> ball x u\<close>
-    by (rule tendsto_within_nhd) (auto simp: ball_subset_cball)
+  moreover have "\<forall>\<^sub>F xa in at x. (xa \<in> cball x u \<inter> X) = (xa \<in> X)"
+    using eventually_at_ball[OF \<open>0 < u\<close>, of x UNIV]
+    by eventually_elim auto
+  ultimately show "(f t \<longlongrightarrow> f t x) (at x within X)"
+    by (rule Lim_transform_within_set)
 qed
 
 lemma
@@ -867,15 +871,6 @@ proof (rule solves_odeI)
     done
 qed
 
-lemma solves_ode_on_union_closed:
-  assumes x: "(x solves_ode f) T X"
-  assumes y: "(x solves_ode f) S Y"
-  assumes conn_T: "closure S \<inter> closure T \<subseteq> T"
-  assumes conn_S: "closure S \<inter> closure T \<subseteq> S"
-  shows "(x solves_ode f) (T \<union> S) (X \<union> Y)"
-  using connection_solves_ode[OF assms]
-  by simp
-
 lemma
   solves_ode_subset_range:
   assumes x: "(x solves_ode f) T X"
@@ -1201,7 +1196,7 @@ begin
 
 lemma is_solution_ext_cont:
   "continuous_on T x \<Longrightarrow> (ext_cont x (min t0 t1) (max t0 t1) solves_ode f) T X = (x solves_ode f) T X"
-  by (rule solves_ode_cong) (auto simp add: T_def min_def max_def closed_segment_real)
+  by (rule solves_ode_cong) (auto simp add: T_def min_def max_def closed_segment_eq_real_ivl)
 
 lemma solution_fixed_point:
   fixes x:: "real \<Rightarrow> 'a::banach"
@@ -1210,7 +1205,7 @@ lemma solution_fixed_point:
 proof -
   from solves_odeD(1)[OF x, unfolded T_def]
   have "(x has_vderiv_on (\<lambda>t. f t (x t))) (closed_segment t0 t)"
-    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_real T_def)
+    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_eq_real_ivl T_def)
   from fundamental_theorem_of_calculus_ivl_integral[OF this]
   have "((\<lambda>t. f t (x t)) has_ivl_integral x t - x t0) t0 t" .
   from this[THEN ivl_integral_unique]
@@ -1224,7 +1219,7 @@ lemma solution_fixed_point_left:
 proof -
   from solves_odeD(1)[OF x, unfolded T_def]
   have "(x has_vderiv_on (\<lambda>t. f t (x t))) (closed_segment t t1)"
-    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_real T_def)
+    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_eq_real_ivl T_def)
   from fundamental_theorem_of_calculus_ivl_integral[OF this]
   have "((\<lambda>t. f t (x t)) has_ivl_integral x t1 - x t) t t1" .
   from this[THEN ivl_integral_unique]
@@ -1272,7 +1267,7 @@ proof -
     apply (rule bounded_vderiv_on_imp_lipschitz)
     apply (rule solves_odeD[OF ode])
     using solves_odeD(2)[OF ode] \<open>0 < B\<close>
-    by (auto simp: closed_segment_real half_open_segment_real subset_iff
+    by (auto simp: closed_segment_eq_real_ivl half_open_segment_real subset_iff
       intro!: B split: if_split_asm)
 
   have "t1 \<in> closure ({t0 --< t1})"
@@ -1312,7 +1307,7 @@ proof -
         fix s
         assume s: "s \<in> {t0--<t1}"
         with prems have subs: "{t0--s} \<subseteq> {t0--<t1}"
-          by (auto simp: half_open_segment_real closed_segment_real)
+          by (auto simp: half_open_segment_real closed_segment_eq_real_ivl)
         with ode have sol: "(x solves_ode f) ({t0--s}) X"
           by (rule solves_ode_on_subset) (rule order_refl)
         from subs have inner_eq: "t \<in> {t0 -- s} \<Longrightarrow> x t = g t" for t
@@ -1324,7 +1319,7 @@ proof -
       } note fp = this
 
       from prems have subs: "{t0--s} \<subseteq> {t0--t1}"
-        by (auto simp: closed_segment_real)
+        by (auto simp: closed_segment_eq_real_ivl)
       have int: "(\<lambda>t. f t (g t)) integrable_on {t0--t1}"
         using prems subs
         by (auto intro!: integrable_continuous_closed_segment continuous_intros g_mem
@@ -1367,8 +1362,8 @@ begin
 lemma continuous_rhs_comp[continuous_intros]:
   assumes [continuous_intros]: "continuous_on S g"
   assumes [continuous_intros]: "continuous_on S h"
-  assumes "\<And>t. t \<in> S \<Longrightarrow> g t \<in> T"
-  assumes "\<And>t. t \<in> S \<Longrightarrow> h t \<in> X"
+  assumes "g ` S \<subseteq> T"
+  assumes "h ` S \<subseteq> X"
   shows "continuous_on S (\<lambda>x. f (g x) (h x))"
   using continuous_on_compose_Pair[OF continuous assms(1,2)] assms(3,4)
   by auto
@@ -1420,7 +1415,7 @@ lemma tmin_le_tmax[intro, simp]: "tmin \<le> tmax"
 
 lemma T_def: "T = {tmin .. tmax}"
   using closed_segment_subset_interval[OF interval tmin(2) tmax(2)]
-  by (auto simp: closed_segment_real subset_iff intro!: tmin tmax)
+  by (auto simp: closed_segment_eq_real_ivl subset_iff intro!: tmin tmax)
 
 lemma mem_T_I[intro, simp]: "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> t \<in> T"
   using interval mem_is_interval_1_I tmax(2) tmin(2) by blast
@@ -1571,16 +1566,16 @@ lemma continuous_on_T: "continuous_on {tmin .. tmax} g \<Longrightarrow> continu
 
 lemma T_closed_segment_subsetI[intro, simp]: "t \<in> {tmin--tmax} \<Longrightarrow> t \<in> T"
   and T_subsetI[intro, simp]: "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> t \<in> T"
-  by (subst T_def, simp add: closed_segment_real)+
+  by (subst T_def, simp add: closed_segment_eq_real_ivl)+
 
 lemma t0_mem_closed_segment[intro, simp]: "t0 \<in> {tmin--tmax}"
   using T_def iv_defined
-  by (simp add: closed_segment_real)
+  by (simp add: closed_segment_eq_real_ivl)
 
 lemma tmin_le_t0[intro, simp]: "tmin \<le> t0"
   and tmax_ge_t0[intro, simp]: "tmax \<ge> t0"
   using t0_mem_closed_segment
-  unfolding closed_segment_real
+  unfolding closed_segment_eq_real_ivl
   by simp_all
 
 lemma apply_bcontfun_solution_fixed_point:
@@ -1610,10 +1605,10 @@ lemma
   shows "z \<in> iter_space" (is "?z \<in> _")
 proof -
   from T_def ode have ode: "(z solves_ode f) {tmin -- tmax} X"
-    by (simp add: closed_segment_real)
+    by (simp add: closed_segment_eq_real_ivl)
   have "(?z solves_ode f) T X"
     using is_solution_ext_cont[OF solves_ode_continuous_on[OF ode], of f X] ode T_def
-    by (auto simp: min_def max_def closed_segment_real)
+    by (auto simp: min_def max_def closed_segment_eq_real_ivl)
   then have "z \<in> T \<rightarrow>\<^sub>C X"
     by (auto simp add: solves_ode_def mem_PiC_iff)
   thus "?z \<in> iter_space"
@@ -1651,7 +1646,7 @@ proof (rule lipschitzI)
     fix t
     assume t_bounds: "tmin \<le> t" "t \<le> tmax"
     then have cs_subs: "closed_segment t0 t \<subseteq> closed_segment tmin tmax"
-      by (auto simp: closed_segment_real)
+      by (auto simp: closed_segment_eq_real_ivl)
     then have cs_subs_ext: "\<And>ta. ta \<in> {t0--t} \<Longrightarrow> ta \<in> {tmin--tmax}" by auto
 
     have "norm (P_inner y t - P_inner z t) =
@@ -1674,7 +1669,7 @@ proof (rule lipschitzI)
       using t_bounds L_nonneg by (simp add: abs_mult)
     also have "... \<le> L * (tmax - tmin) * norm (y - z)"
       using t_bounds zero_le_dist L_nonneg cs_subs tmin_le_t0 tmax_ge_t0
-      by (auto intro!: mult_right_mono mult_left_mono simp: closed_segment_real abs_real_def
+      by (auto intro!: mult_right_mono mult_left_mono simp: closed_segment_eq_real_ivl abs_real_def
         simp del: tmin_le_t0 tmax_ge_t0 split: if_split_asm)
     finally
     have "dist (P_inner y t) (P_inner z t) \<le> (tmax - tmin) * L * dist y z"
@@ -1735,7 +1730,7 @@ proof -
       using t fixed_point_domain
       by (auto simp: P_def' mem_PiC_iff)
     finally show "x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x)) = fixed_point t" by simp
-  qed (insert T_def, auto simp: closed_segment_real)
+  qed (insert T_def, auto simp: closed_segment_eq_real_ivl)
 qed
 
 lemma fixed_point_solution:
@@ -1797,7 +1792,7 @@ proof -
     using subset by auto
   interpret s: unique_on_bounded_closed t0 "{t0--t1'}" x0 f X L
     apply - apply unfold_locales
-    subgoal by (simp add: closed_segment_real is_interval_closed_interval)
+    subgoal by (simp add: closed_segment_eq_real_ivl)
     subgoal by simp
     subgoal by simp
     subgoal by simp
@@ -1841,7 +1836,7 @@ lemma closed_segment_Un:
   assumes "b \<in> closed_segment a c"
   shows "closed_segment a b \<union> closed_segment b c = closed_segment a c"
   using assms
-  by (auto simp: closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl)
 
 lemma closed_segment_closed_segment_subset:
   fixes s::real and i::nat
@@ -1849,7 +1844,7 @@ lemma closed_segment_closed_segment_subset:
   assumes "a \<in> closed_segment c d" "b \<in> closed_segment c d"
   shows "s \<in> closed_segment c d"
   using assms
-  by (auto simp: closed_segment_real split: if_split_asm)
+  by (auto simp: closed_segment_eq_real_ivl split: if_split_asm)
 
 
 context unique_on_closed begin
@@ -1889,7 +1884,7 @@ lemma subdivide_lipschitz_lemma:
   apply (rule subdivide_lipschitz)
   apply (rule order_trans[where y="abs (b - a)"])
   using assms
-  by (auto simp: closed_segment_real split: if_splits)
+  by (auto simp: closed_segment_eq_real_ivl split: if_splits)
 
 definition "step = (t1 - t0) / Suc subdivide_count"
 
@@ -1899,7 +1894,7 @@ lemma last_step: "t0 + real (Suc subdivide_count) * step = t1"
 lemma step_in_segment:
   assumes "0 \<le> i" "i \<le> real (Suc subdivide_count)"
   shows "t0 + i * step \<in> closed_segment t0 t1"
-  unfolding closed_segment_real step_def
+  unfolding closed_segment_eq_real_ivl step_def
 proof (clarsimp, safe)
   assume "t0 \<le> t1"
   then have "(t1 - t0) * i \<le> (t1 - t0) * (1 + subdivide_count)"
@@ -1977,7 +1972,7 @@ next
       subgoal
         using \<open>step \<noteq> 0\<close>
         by (cases "step \<ge> 0")
-          (auto simp add: S_def closed_segment_real zero_le_mult_iff split: if_split_asm)
+          (auto simp add: S_def closed_segment_eq_real_ivl zero_le_mult_iff split: if_split_asm)
       done
 
     have "y = t0 + real i * s"
@@ -1999,7 +1994,7 @@ next
       for xa t
       apply (cases "step > 0"; cases "step = 0")
       using that
-      by (auto simp: S_def closed_segment_real split: if_split_asm)
+      by (auto simp: S_def closed_segment_eq_real_ivl split: if_split_asm)
 
     have right_cond: "t0 \<le> t" "t \<le> t1" if "t0 + real i * step \<le> t" "t \<le> t0 + (step + real i * step)" for t
     proof -
@@ -2070,7 +2065,7 @@ next
       also
       from t right_cond(1) have cs: "closed_segment t0 t = closed_segment t0 ?i \<union> closed_segment ?i t"
         by (intro closed_segment_Un[symmetric])
-          (auto simp: closed_segment_real algebra_simps mult_le_0_iff split: if_split_asm
+          (auto simp: closed_segment_eq_real_ivl algebra_simps mult_le_0_iff split: if_split_asm
             intro!: segment_inter segment_inter[symmetric])
       have cont_if: "continuous_on (closed_segment t0 t) ?if"
         unfolding cs
@@ -2115,7 +2110,7 @@ next
         by (auto simp: segment_inter psolution_eq)
       finally
       show "x ?i + ivl_integral ?i t (\<lambda>t. f t (x t)) \<in> X" .
-    qed (auto simp add: S_def closed_segment_real is_interval_closed_interval)
+    qed (auto simp add: S_def closed_segment_eq_real_ivl)
     have "S (Suc i) \<subseteq> T"
       unfolding S_def
       apply (rule subsetI)
@@ -2125,10 +2120,10 @@ next
       fix x assume x: "x \<in> {t0 + real (Suc i - 1) * step--t0 + real (Suc i) * step}"
       from x have nn: "((x - t0) / step) \<ge> 0"
         using False right_cond(1)[of x] left_cond(2)[of x]
-        by (auto simp: closed_segment_real divide_simps algebra_simps split: if_splits)
+        by (auto simp: closed_segment_eq_real_ivl divide_simps algebra_simps split: if_splits)
       have "t1 < t0 \<Longrightarrow> t1 \<le> x" "t1 > t0 \<Longrightarrow> x \<le> t1"
         using x False right_cond(1,2)[of x] left_cond(1,2)[of x]
-        by (auto simp: closed_segment_real algebra_simps split: if_splits)
+        by (auto simp: closed_segment_eq_real_ivl algebra_simps split: if_splits)
       then have le: "(x - t0) / step \<le> 1 + real subdivide_count"
         unfolding step_def
         by (auto simp: divide_simps)
@@ -2158,25 +2153,25 @@ next
       for y t
       apply (cases "t = t0 + real i * step")
       subgoal using that \<open>step \<noteq> 0\<close>
-        by (auto simp add: S_def closed_segment_real algebra_simps zero_le_mult_iff split: if_splits )
+        by (auto simp add: S_def closed_segment_eq_real_ivl algebra_simps zero_le_mult_iff split: if_splits )
       subgoal premises ne
       proof (cases)
         assume "step > 0"
         with that have "t0 + real i * step \<le> t" "t \<le> t0 + (1 + real i) * step"
           "t0 + real (y - Suc 0) * step \<le> t" "t \<le> t0 + real y * step"
-          by (auto simp: closed_segment_real S_def)
+          by (auto simp: closed_segment_eq_real_ivl S_def)
         then have "real i * step < real y * step" using \<open>step > 0\<close> ne
           by arith
-        then show ?thesis using \<open>step > 0\<close> that by (auto simp add: closed_segment_real S_def)
+        then show ?thesis using \<open>step > 0\<close> that by (auto simp add: closed_segment_eq_real_ivl S_def)
       next
         assume "\<not> step > 0" with \<open>step \<noteq> 0\<close> have "step < 0" by simp
         with that have "t0 + (1 + real i) * step \<le> t" "t \<le> t0 + real i * step"
           "t0 + real y * step \<le> t" "t \<le> t0 + real (y - Suc 0) * step" using ne
-          by (auto simp: closed_segment_real S_def diff_Suc zero_le_mult_iff split: if_splits nat.splits)
+          by (auto simp: closed_segment_eq_real_ivl S_def diff_Suc zero_le_mult_iff split: if_splits nat.splits)
         then have "real y * step < real i * step"
           using \<open>step < 0\<close> ne
           by arith
-        then show ?thesis using \<open>step < 0\<close> by (auto simp add: closed_segment_real S_def)
+        then show ?thesis using \<open>step < 0\<close> by (auto simp add: closed_segment_eq_real_ivl S_def)
       qed
       done
     have "(?sol usolves_ode f from ?i) (closed_segment ?i ?si) X"
@@ -2213,7 +2208,7 @@ next
     also have "closed_segment t0 ?i \<union> closed_segment ?i ?si = closed_segment t0 ?si"
       apply (rule closed_segment_Un)
       by (cases "step < 0")
-        (auto simp: closed_segment_real zero_le_mult_iff mult_le_0_iff
+        (auto simp: closed_segment_eq_real_ivl zero_le_mult_iff mult_le_0_iff
           intro!: mult_right_mono
           split: if_split_asm)
     finally show ?case by simp
@@ -2243,10 +2238,10 @@ lemma solution_usolves_ode: "(solution usolves_ode f from t0) T X"
 proof -
   from psolutions_usolves_ode[OF tmin(2)] tmin_le_t0
   have u1: "(psolutions tmin usolves_ode f from t0) {tmin .. t0} X"
-    by (auto simp: closed_segment_real split: if_splits)
+    by (auto simp: closed_segment_eq_real_ivl split: if_splits)
   from psolutions_usolves_ode[OF tmax(2)] tmin_le_t0
   have u2: "(psolutions tmax usolves_ode f from t0) {t0 .. tmax} X"
-    by (auto simp: closed_segment_real split: if_splits)
+    by (auto simp: closed_segment_eq_real_ivl split: if_splits)
   have "(solution usolves_ode f from t0) ({tmin .. t0} \<union> {t0 .. tmax}) (X \<union> X)"
     apply (rule usolves_ode_union_closed[where t=t0])
     subgoal by (subst usolves_ode_cong[where y="psolutions tmin"]) (auto simp: solution_eq_left u1)
@@ -2331,7 +2326,7 @@ next
     assume "t0 \<noteq> t"
     then have b_less: "B * abs (t - t0) \<le> b"
       using b_pos e_bounded using \<open>b > 0\<close> \<open>B > 0\<close> \<open>t \<in> T\<close>
-      by (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_real split: if_split_asm)
+      by (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_eq_real_ivl split: if_split_asm)
     define b where  "b \<equiv> B * abs (t - t0)"
     have "b > 0" using \<open>t0 \<noteq> t\<close> by (auto intro!: mult_pos_pos simp: algebra_simps b_def \<open>B > 0\<close>)
     from cont
@@ -2350,10 +2345,10 @@ next
         by (rule distance_attains_inf[OF closed notempty, of t0]) blast
       have "s \<noteq> t0" using exceeds \<open>b > 0\<close> by auto
       have st: "closed_segment t0 t \<supseteq> open_segment t0 s" using s_bound
-        by (auto simp: closed_segment_real open_segment_real)
+        by (auto simp: closed_segment_eq_real_ivl open_segment_eq_real_ivl)
       from cont have cont: "continuous_on (closed_segment t0 s) x"
         by (rule continuous_on_subset)
-          (insert b_pos closed_segment_subset_domain s_bound, auto simp: closed_segment_real)
+          (insert b_pos closed_segment_subset_domain s_bound, auto simp: closed_segment_eq_real_ivl)
       have bnd_cont: "continuous_on (closed_segment t0 s) (( * ) B)"
         and bnd_deriv: "(( * ) B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
         by (auto intro!: continuous_intros derivative_eq_intros
@@ -2367,7 +2362,7 @@ next
           hence "norm (x ss - x t0) \<in> {b..}" by auto
           from min[rule_format, OF \<open>ss \<in> closed_segment t0 t\<close> this]
           show False using ss \<open>s \<noteq> t0\<close>
-            by (auto simp: dist_real_def open_segment_real split_ifs)
+            by (auto simp: dist_real_def open_segment_eq_real_ivl split_ifs)
         qed
         have "norm (f ss (y ss)) \<le> B"
           apply (rule norm_f)
@@ -2378,7 +2373,7 @@ next
           done
       } note bnd = this
       have subs: "open_segment t0 s \<subseteq> open_segment t0 t" using s_bound \<open>s \<noteq> t0\<close>
-        by (auto simp: closed_segment_real open_segment_real)
+        by (auto simp: closed_segment_eq_real_ivl open_segment_eq_real_ivl)
       with differentiable_bound_general_open_segment[OF cont bnd_cont has_vderiv_on_subset[OF solves subs]
         bnd_deriv bnd]
       have "norm (x s - x t0) \<le> B * \<bar>s - t0\<bar>"
@@ -2386,11 +2381,11 @@ next
       also
       have "s \<noteq> t"
         using s_bound exceeds min not_max
-        by (auto simp: dist_norm closed_segment_real split_ifs)
+        by (auto simp: dist_norm closed_segment_eq_real_ivl split_ifs)
       hence "B * \<bar>s - t0\<bar> < \<bar>t - t0\<bar> * B"
         using s_bound \<open>B > 0\<close>
         by (intro le_neq_trans)
-          (auto simp: algebra_simps closed_segment_real split_ifs
+          (auto simp: algebra_simps closed_segment_eq_real_ivl split_ifs
             intro!: mult_left_mono)
       finally have "norm (x s - x t0) < \<bar>t - t0\<bar> * B" .
       moreover
@@ -2409,7 +2404,7 @@ next
       assume H: "\<not> norm (x t - x t0) \<le> b"
       hence "b \<in> closed_segment (norm (x t0 - x t0)) (norm (x t - x t0))"
         using assms T_def \<open>0 < b\<close>
-        by (auto simp: closed_segment_real )
+        by (auto simp: closed_segment_eq_real_ivl )
       from IVT'_closed_segment_real[OF this continuous_on_norm[OF cont_diff]]
       obtain s where s: "s \<in> closed_segment t0 t" "norm (x s - x t0) = b"
         using \<open>b > 0\<close> by auto
@@ -2437,7 +2432,7 @@ proof -
   have "x t \<in> cball x0 (B * abs (t - t0))" .
   moreover have "B * abs (t - t0) \<le> b" using e_bounded b_pos B_nonneg \<open>t \<in> T\<close>
     by (cases "B = 0")
-      (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_real split: if_splits)
+      (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_eq_real_ivl split: if_splits)
   ultimately show ?thesis by (auto simp: cylinder mem_cball)
 qed
 
@@ -2457,7 +2452,7 @@ next
       (auto intro: cont continuous_on_subset[OF continuous] simp: cylinder split: if_splits)
   from closed_segment_subset_domain[OF initial_time_in \<open>t \<in> T\<close>]
   have subsets: "s \<in> {t0--t} \<Longrightarrow> s \<in> T" "s \<in> open_segment t0 t \<Longrightarrow> s \<in> {t0--t}" for s
-    by (auto simp: closed_segment_real open_segment_real initial_time_in split: if_split_asm)
+    by (auto simp: closed_segment_eq_real_ivl open_segment_eq_real_ivl initial_time_in split: if_split_asm)
   show ?thesis
     unfolding \<open>x t0 = _\<close>
     using assms \<open>t \<noteq> t0\<close>
@@ -2466,7 +2461,7 @@ next
         split: if_split_asm
         intro!: cont_f has_vector_derivative_const integrable_continuous_closed_segment
           has_vector_derivative_within_subset[OF ivl_integral_has_vector_derivative]
-          has_vector_derivative_add[THEN vector_derivative_eq_rhs]
+          has_vector_derivative_add[THEN has_vector_derivative_eq_rhs]
           continuous_intros indefinite_ivl_integral_continuous)
 qed
 

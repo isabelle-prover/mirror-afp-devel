@@ -363,7 +363,7 @@ proof cases
             using ivl_subset_existence_ivl by blast
           with flow_solves_ode have sol: "(flow t0 y' solves_ode f) {t0 .. s} X"
             by (rule solves_ode_on_subset) (auto intro!: \<open>y' \<in> X\<close> \<open>t0 \<in> T\<close>)
-          have "{t0 .. s} \<subseteq> S" using \<open>{t0 -- s} \<subseteq> S\<close> by (simp add: closed_segment_real split: if_splits)
+          have "{t0 .. s} \<subseteq> S" using \<open>{t0 -- s} \<subseteq> S\<close> by (simp add: closed_segment_eq_real_ivl split: if_splits)
           with v' have v': "(v has_vderiv_on v') {t0 .. s}"
             by (rule has_vderiv_on_subset)
           from \<open>y t0 < y'\<close> \<open>v t0 = y t0\<close> have less_init: "v t0 < flow t0 y' t0"
@@ -371,7 +371,7 @@ proof cases
           from strict_lower_solution[OF sol v' lower less_imp_le[OF less_init] _ \<open>t0 < s\<close>]
             \<open>{t0 .. s} \<subseteq> S\<close>
             less_init \<open>t0 < s\<close>
-          have "v s < flow t0 y' s" by (simp add: subset_iff is_interval_closed_interval)
+          have "v s < flow t0 y' s" by (simp add: subset_iff is_interval_cc)
           then show ?thesis by simp
         qed
       qed
@@ -456,7 +456,7 @@ proof cases
             using ivl_subset_existence_ivl by blast
           with flow_solves_ode have sol: "(flow t0 y' solves_ode f) {t0 .. s} X"
             by (rule solves_ode_on_subset) (auto intro!: \<open>y' \<in> X\<close> \<open>t0 \<in> T\<close>)
-          have "{t0 .. s} \<subseteq> S" using \<open>{t0 -- s} \<subseteq> S\<close> by (simp add: closed_segment_real split: if_splits)
+          have "{t0 .. s} \<subseteq> S" using \<open>{t0 -- s} \<subseteq> S\<close> by (simp add: closed_segment_eq_real_ivl split: if_splits)
           with v' have v': "(v has_vderiv_on v') {t0 .. s}"
             by (rule has_vderiv_on_subset)
           from \<open>y' < y t0\<close> \<open>v t0 = y t0\<close> have less_init: "flow t0 y' t0 < v t0"
@@ -464,7 +464,7 @@ proof cases
           from strict_upper_solution[OF sol v' upper less_imp_le[OF less_init] _ \<open>t0 < s\<close>]
             \<open>{t0 .. s} \<subseteq> S\<close>
             less_init \<open>t0 < s\<close>
-          have "flow t0 y' s < v s" by (simp add: subset_iff is_interval_closed_interval)
+          have "flow t0 y' s < v s" by (simp add: subset_iff is_interval_cc)
           then show ?thesis by simp
         qed
       qed

@@ -5,6 +5,7 @@ imports
   "HOL-Library.Diagonal_Subsequence"
   "../Library/Bounded_Linear_Operator"
   "../Library/Multivariate_Taylor"
+  "../Library/Interval_Integral_HK"
 begin
 
 text \<open>TODO: extend theorems for dependence on initial time\<close>
@@ -38,21 +39,21 @@ lemma integrable_on_refl_ivl[intro, simp]: "g integrable_on {b .. (b::'b::ordere
   using integrable_on_refl by auto
 
 lemma integrable_const_ivl_closed_segment[intro, simp]: "(\<lambda>x. c) integrable_on closed_segment a (b::real)"
-  by (auto simp: closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl)
 
 lemma integrable_ident_ivl[intro, simp]: "(\<lambda>x. x) integrable_on closed_segment a (b::real)"
   and integrable_ident_cbox[intro, simp]: "(\<lambda>x. x) integrable_on cbox a (b::real)"
-  by (auto simp: closed_segment_real ident_integrable_on)
+  by (auto simp: closed_segment_eq_real_ivl ident_integrable_on)
 
 lemma content_closed_segment_real:
   fixes a b::real
   shows "content (closed_segment a b) = abs (b - a)"
-  by (auto simp: closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl)
 
 lemma integral_const_closed_segment:
   fixes a b::real
   shows "integral (closed_segment a b) (\<lambda>x. c) = abs (b - a) *\<^sub>R c"
-  by (auto simp: closed_segment_real content_closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl content_closed_segment_real)
 
 lemmas [integrable_on_simps] =
   integrable_on_empty \<comment> \<open>empty\<close>
@@ -60,11 +61,18 @@ lemmas [integrable_on_simps] =
   integrable_const integrable_const_ivl integrable_const_ivl_closed_segment \<comment> \<open>constant\<close>
   ident_integrable_on integrable_ident_ivl integrable_ident_cbox \<comment> \<open>identity\<close>
 
+lemma integrable_cmul_real:
+  fixes K::real
+  shows "f integrable_on X \<Longrightarrow> (\<lambda>x. K * f x) integrable_on X "
+  unfolding real_scaleR_def[symmetric]
+  by (rule integrable_cmul)
+
 lemmas [integrable_on_simps] =
   integrable_0
   integrable_neg
   integrable_cmul
-  integrable_mult
+  integrable_cmul_real
+  integrable_on_cmult_iff
   integrable_on_cmult_left
   integrable_on_cmult_right
   integrable_on_cdivide
@@ -231,7 +239,7 @@ proof -
   proof -
     have "flow t0 x0 s = uc.solution s" "uc.solution s \<in> C"
       using solves_odeD[OF uc.solution_solves_ode] that assms
-      by (auto simp: is_interval_closed_interval closed_segment_iv_subset_domain
+      by (auto simp: closed_segment_iv_subset_domain
         intro!:  maximal_existence_flowI(2)[where K="{t0 -- t}"])
     thus ?thesis by simp
   qed
@@ -399,7 +407,7 @@ lemma
     and ivl_subset_existence_ivl: "{t0 .. t} \<subseteq> existence_ivl t0 x0"
     and ivl_subset_existence_ivl': "{t .. t0} \<subseteq> existence_ivl t0 x0"
   using assms in_existence_between_zeroI
-  by (auto simp: closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl)
 
 lemma flow_fixed_point:
   assumes t: "t \<in> existence_ivl t0 x0"
@@ -475,7 +483,7 @@ next
     have
       y0': "s \<in> existence_ivl t0 y0" and
       z0': "s \<in> existence_ivl t0 z0"
-      by (auto simp: closed_segment_real)
+      by (auto simp: closed_segment_eq_real_ivl)
     have integrable:
       "(\<lambda>t. f t (flow t0 y0 t)) integrable_on {t0--s}"
       "(\<lambda>t. f t (flow t0 z0 t)) integrable_on {t0--s}"
@@ -556,7 +564,7 @@ proof -
     have sol: "(flow t0 y solves_ode f) (cball t0 t) X"
       by (rule solves_ode_on_subset)
     note * = maximal_existence_flow[OF sol flow_initial_time
-        ODE_Auxiliarities.is_interval_real_cball _ order_trans[OF subsT existence_ivl_subset],
+        is_interval_cball_1 _ order_trans[OF subsT existence_ivl_subset],
         unfolded centre_in_cball, OF iv' less_imp_le[OF \<open>0 < t\<close>]]
     have eivl: "cball t0 t \<subseteq> existence_ivl t0 y"
       by (rule *)
@@ -604,7 +612,7 @@ proof -
     proof (rule exponential_initial_condition[where Y = "cball x0 (2 * u)"])
       fix s assume "s \<in> closed_segment t0 t2" hence s: "s \<in> cball t0 t"
         using t2
-        by (auto simp: dist_real_def closed_segment_real split: if_split_asm)
+        by (auto simp: dist_real_def closed_segment_eq_real_ivl split: if_split_asm)
       show "flow t0 x1 s \<in> cball x0 (2 * u)"
         by (rule flow_in_cball[OF s x1])
       show "flow t0 x2 s \<in> cball x0 (2 * u)"
@@ -627,7 +635,7 @@ proof -
       "\<bar>t0 - t1\<bar> \<le> t \<Longrightarrow> \<bar>t0 - t2\<bar> \<le> t \<Longrightarrow> x \<in> {t1--t2} \<Longrightarrow> \<bar>t0 - x\<bar> \<le> t"
       for x
       using t1 t2 t1_ex x1 flow_in_cball[OF _ x1]
-      by (auto simp: closed_segment_real split: if_splits)
+      by (auto simp: closed_segment_eq_real_ivl split: if_splits)
 
     have integrable:
       "(\<lambda>t. f t (flow t0 x1 t)) integrable_on {t0--t1}"
@@ -640,7 +648,7 @@ proof -
         simp: dist_real_def integral_minus_sets')
 
     have *: "\<bar>t0 - t1\<bar> \<le> t \<Longrightarrow> \<bar>t0 - t2\<bar> \<le> t \<Longrightarrow> s \<in> {t1--t2} \<Longrightarrow> \<bar>t0 - s\<bar> \<le> t" for s
-      by (auto simp: closed_segment_real split: if_splits)
+      by (auto simp: closed_segment_eq_real_ivl split: if_splits)
     note [simp] = t1_ex t2_ex \<open>x1 \<in> X\<close> integrable
     have "dist (flow t0 x1 t1) (flow t0 x1 t2) \<le> dist t1 t2 * B"
       using t1 t2 x1 flow_in_cball[OF _ x1] \<open>t0 \<in> T\<close>
@@ -857,14 +865,14 @@ proof -
   note iv_defined = mem_existence_ivl_iv_defined[OF b]
   define seg where "seg \<equiv> (\<lambda>t. flow t0 x0 t) ` (closed_segment t0 b)"
   have [simp]: "x0 \<in> seg"
-    by (auto simp: seg_def intro!: image_eqI[where x=t0] simp: closed_segment_real iv_defined)
-  have "seg \<noteq> {}" by (auto simp: seg_def closed_segment_real)
+    by (auto simp: seg_def intro!: image_eqI[where x=t0] simp: closed_segment_eq_real_ivl iv_defined)
+  have "seg \<noteq> {}" by (auto simp: seg_def closed_segment_eq_real_ivl)
   moreover
   have "compact seg"
     using iv_defined b
-    by (auto simp: seg_def closed_segment_real
+    by (auto simp: seg_def closed_segment_eq_real_ivl
         intro!: compact_continuous_image continuous_at_imp_continuous_on flow_continuous;
-      metis (erased, hide_lams) atLeastAtMost_iff closed_segment_real
+      metis (erased, hide_lams) atLeastAtMost_iff closed_segment_eq_real_ivl
         closed_segment_subset_existence_ivl contra_subsetD order.trans)
   moreover note open_domain(2)
   moreover have "seg \<subseteq> X"
@@ -879,7 +887,7 @@ proof -
   have "A \<subseteq> X" using e by (simp add: A_def)
 
   have mem_existence_ivlI: "\<And>s. t0 \<le> s \<Longrightarrow> s \<le> b \<Longrightarrow> s \<in> existence_ivl t0 x0"
-    by (rule in_existence_between_zeroI[OF b]) (auto simp: closed_segment_real)
+    by (rule in_existence_between_zeroI[OF b]) (auto simp: closed_segment_eq_real_ivl)
 
   have "compact A"
     unfolding A_def
@@ -948,7 +956,7 @@ proof -
             using closed_segment_subset_existence_ivl t iv_defined
             by (force intro!: continuous_at_imp_continuous_on
               continuous_intros flow_continuous
-              simp: closed_segment_real)
+              simp: closed_segment_eq_real_ivl)
           thus "closed ?out"
             by (simp add: continuous_on_closed_vimage)
         qed
@@ -968,7 +976,7 @@ proof -
         have flow_in: "flow t0 x0 s \<in> A" if s: "s \<in> {t0 .. t'}" for s
         proof -
           from s have "s \<in> closed_segment t0 b"
-            using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_real)
+            using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_eq_real_ivl)
           then show ?thesis
             using s \<open>e > 0\<close> by (auto simp: seg_def A_def)
         qed
@@ -979,7 +987,7 @@ proof -
         have "flow t0 y s \<in> A" if s: "s \<in> {t0 ..< t'}" for s
         proof -
           from s have "s \<in> closed_segment t0 b"
-            using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_real)
+            using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_eq_real_ivl)
           from t'(1)[of s]
           have "t' > s \<Longrightarrow> t0 \<le> s \<Longrightarrow> s \<le> t \<Longrightarrow> e > infdist (flow t0 y s) seg"
             by force
@@ -991,7 +999,7 @@ proof -
         have "closed A" using \<open>compact A\<close> by (auto simp: compact_eq_bounded_closed)
         have "((\<lambda>s. flow t0 y s) \<longlongrightarrow> flow t0 y t') (at_left t')"
           using closed_segment_subset_existence_ivl[OF t(2)] t' \<open>y \<in> X\<close> iv_defined
-          by (intro flow_tendsto) (auto intro!: tendsto_intros simp: closed_segment_real)
+          by (intro flow_tendsto) (auto intro!: tendsto_intros simp: closed_segment_eq_real_ivl)
         with \<open>closed A\<close> _ _ have "t' \<noteq> t0 \<Longrightarrow> flow t0 y t' \<in> A"
         proof (rule Lim_in_closed_set)
           assume "t' \<noteq> t0"
@@ -1042,26 +1050,26 @@ proof -
           by (subst Henstock_Kurzweil_Integration.integral_diff)
             (auto intro!: integrable_continuous_real continuous_at_imp_continuous_on
               f_flow_continuous
-              simp: closed_segment_real)
+              simp: closed_segment_eq_real_ivl)
         also have "\<dots> \<le> (integral {t0 .. s} (\<lambda>t. norm (f t (flow t0 y t) - f t (flow t0 x0 t))))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
           by (intro integral_norm_bound_integral)
             (auto intro!: integrable_continuous_real continuous_at_imp_continuous_on
             f_flow_continuous continuous_intros
-              simp: closed_segment_real)
+              simp: closed_segment_eq_real_ivl)
       also have "\<dots> \<le> (integral {t0 .. s} (\<lambda>t. K * norm ((flow t0 y t) - (flow t0 x0 t))))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
             iv_defined s t'(3,5) \<open>s \<le> b\<close>
           by (auto simp del: Henstock_Kurzweil_Integration.integral_mult_right intro!: integral_le integrable_continuous_real
             continuous_at_imp_continuous_on lipschitz_norm_leI[OF K]
             flow_continuous f_flow_continuous continuous_intros
-            simp: closed_segment_real)
+            simp: closed_segment_eq_real_ivl)
         also have "\<dots> = K * integral {t0 .. s} (\<lambda>t. norm (flow t0 y t - flow t0 x0 t))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
           by (subst integral_mult)
              (auto intro!: integrable_continuous_real continuous_at_imp_continuous_on
                lipschitz_norm_leI[OF K] flow_continuous f_flow_continuous continuous_intros
-               simp: closed_segment_real)
+               simp: closed_segment_eq_real_ivl)
         finally
         have norm: "norm (flow t0 y s - flow t0 x0 s) \<le>
           norm (y - x0) + K * integral {t0 .. s} (\<lambda>t. norm (flow t0 y t - flow t0 x0 t))"
@@ -1069,7 +1077,7 @@ proof -
         note norm \<open>s \<le> b\<close> sx0 sy
       } note norm_le = this
       from norm_le(2) t' have "t' \<in> closed_segment t0 b"
-        by (auto simp: closed_segment_real)
+        by (auto simp: closed_segment_eq_real_ivl)
       hence "infdist (flow t0 y t') seg \<le> dist (flow t0 y t') (flow t0 x0 t')"
         by (auto simp: seg_def infdist_le)
       also have "\<dots> \<le> norm (flow t0 y t' - flow t0 x0 t')"
@@ -1080,9 +1088,9 @@ proof -
         subgoal by (metis atLeastAtMost_iff local.norm_le(4) order_refl t'(1))
         subgoal by (metis atLeastAtMost_iff local.norm_le(3) order_refl t'(1))
         subgoal using e by (simp add: A_def)
-        subgoal by (metis closed_segment_real t'(1,5))
-        subgoal by (metis closed_segment_real t'(1,3))
-        subgoal by (simp add: closed_segment_real local.norm_le(2) t'(1))
+        subgoal by (metis closed_segment_eq_real_ivl t'(1,5))
+        subgoal by (metis closed_segment_eq_real_ivl t'(1,3))
+        subgoal by (simp add: closed_segment_eq_real_ivl local.norm_le(2) t'(1))
         done
       also have "\<dots> < d * exp (K * (t - t0))"
         using y d t' t
@@ -1098,14 +1106,14 @@ proof -
 
     have "{t0..b} \<subseteq> existence_ivl t0 y"
     by (rule subset_mem_compact_implies_subset_existence_interval[OF
-      _ is_interval_closed_interval \<open>{t0..b} \<subseteq> T\<close> \<open>y \<in> X\<close> in_A \<open>compact A\<close> \<open>A \<subseteq> X\<close>])
+      _ is_interval_cc \<open>{t0..b} \<subseteq> T\<close> \<open>y \<in> X\<close> in_A \<open>compact A\<close> \<open>A \<subseteq> X\<close>])
       (auto simp: \<open>t0 \<le> b\<close>)
     with \<open>t0 \<le> b\<close> have b_in: "b \<in> existence_ivl t0 y"
       by force
     {
       fix t assume t: "t \<in> {t0 .. b}"
       also have "{t0 .. b} = {t0 -- b}"
-        by (auto simp: closed_segment_real assms)
+        by (auto simp: closed_segment_eq_real_ivl assms)
       also note closed_segment_subset_existence_ivl[OF b_in]
       finally have t_in: "t \<in> existence_ivl t0 y" .
 
@@ -1117,7 +1125,7 @@ proof -
         unfolding K_def
         using t closed_segment_subset_existence_ivl[OF b_in] \<open>0 < e\<close>
         by (intro in_A exponential_initial_condition[OF t_in t_in' \<open>A \<subseteq> X\<close> _ _ K'])
-          (auto simp: closed_segment_real A_def seg_def)
+          (auto simp: closed_segment_eq_real_ivl A_def seg_def)
       hence "dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * \<bar>t - t0\<bar>)"
         by (auto simp: dist_norm[symmetric] dist_commute)
     }
@@ -1208,7 +1216,7 @@ proof -
       closed_segment_subset_existence_ivl[OF left(4), of y]
       closed_segment_subset_existence_ivl[OF right(4), of y]
     have "a \<in> existence_ivl t0 y" "b \<in> existence_ivl t0 y"
-      by (auto simp: d_def l_def r_def min_def max_def closed_segment_real split: if_split_asm)
+      by (auto simp: d_def l_def r_def min_def max_def closed_segment_eq_real_ivl split: if_split_asm)
   }
   moreover
   {
@@ -1254,8 +1262,8 @@ proof -
   note \<open>K > 0\<close>
   moreover
   have "eventually (\<lambda>y. y \<in> ball x0 d) (at x0)"
-    using \<open>d > 0\<close>
-    by (rule eventually_at_in_ball)
+    using \<open>d > 0\<close>[THEN eventually_at_ball]
+    by eventually_elim simp
   hence "eventually (\<lambda>y. \<forall>t\<in>{a..b}. dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * \<bar>t - t0\<bar>)) (at x0)"
     by eventually_elim (safe intro!: *)
   ultimately show ?thesis ..
@@ -1279,8 +1287,8 @@ proof -
         dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * abs (t - t0))"
       by auto
     have "eventually (\<lambda>y. y \<in> ball x0 d) (at x0)"
-      using \<open>d > 0\<close>
-      by (rule eventually_at_in_ball)
+      using \<open>d > 0\<close>[THEN eventually_at_ball]
+      by eventually_elim simp
     then have "\<forall>\<^sub>F x in at x0. a \<in> existence_ivl t0 x \<and> b \<in> existence_ivl t0 x"
       by (eventually_elim) (auto intro!: *)
   } from this[OF b eiit] this[OF eiit b]
@@ -1312,6 +1320,22 @@ proof (rule uniform_limitI)
     by eventually_elim (force simp: dist_commute)
 qed
 
+lemma eventually_at_fst:
+  assumes "eventually P (at (fst x))"
+  assumes "P (fst x)"
+  shows "eventually (\<lambda>h. P (fst h)) (at x)"
+  using assms
+  unfolding eventually_at_topological
+  by (metis open_vimage_fst rangeI range_fst vimageE vimageI)
+
+lemma eventually_at_snd:
+  assumes "eventually P (at (snd x))"
+  assumes "P (snd x)"
+  shows "eventually (\<lambda>h. P (snd h)) (at x)"
+  using assms
+  unfolding eventually_at_topological
+  by (metis open_vimage_snd rangeI range_snd vimageE vimageI)
+
 lemma
   shows open_state_space: "open (Sigma X (existence_ivl t0))"
   and flow_continuous_on_state_space:
@@ -1340,7 +1364,7 @@ proof (safe intro!: topological_space_class.openI continuous_at_imp_continuous_o
     fix s y assume y: "y \<in> ball x d" and s: "s \<in> ball t e"
     with \<open>ball x d \<subseteq> X\<close> show "y \<in> X" by auto
     have "ball t e \<subseteq> closed_segment t0 (t - e) \<union> closed_segment t0 (t + e)"
-      by (auto simp: closed_segment_real dist_real_def)
+      by (auto simp: closed_segment_eq_real_ivl dist_real_def)
     with \<open>y \<in> X\<close> s closed_segment_subset_existence_ivl[OF dK(4)[OF y]]
       closed_segment_subset_existence_ivl[OF dK(5)[OF y]]
     show "s \<in> existence_ivl t0 y"
@@ -1367,16 +1391,18 @@ proof (safe intro!: topological_space_class.openI continuous_at_imp_continuous_o
       by (auto simp: dist_real_def intro!: order_tendstoD[OF _ \<open>0 < e\<close>]
         intro!: tendsto_eq_intros)
     moreover from uniform_limit_flow[OF ivl, THEN uniform_limitD, OF \<open>eps > 0\<close>]
-    have "\<forall>\<^sub>F h in at (fst (0::'a*real)).
-        \<forall>t\<in>{t - e..t + e}. dist (flow t0 x t) (flow t0 (x + h) t) < eps"
-      by (subst (asm) eventually_at_shift_zero[symmetric]) (simp add: dist_commute)
+    have "\<forall>\<^sub>F (h::(_ )) in at (fst (0::'a*real)).
+      \<forall>t\<in>{t - e..t + e}. dist (flow t0 x t) (flow t0 (x + h) t) < eps"
+      by (subst (asm) at_to_0)
+        (auto simp: eventually_filtermap dist_commute ac_simps)
     hence "\<forall>\<^sub>F (h::(_ * real)) in at 0.
       \<forall>t\<in>{t - e..t + e}. dist (flow t0 x t) (flow t0 (x + fst h) t) < eps"
       by (rule eventually_at_fst) (simp add: \<open>eps > 0\<close>)
     moreover
     have "\<forall>\<^sub>F h in at (snd (0::'a * _)). norm (flow t0 x (t + h) - flow t0 x t) < eps"
       using flow_continuous[OF t, unfolded isCont_def, THEN tendstoD, OF \<open>eps > 0\<close>]
-      by (subst (asm) eventually_at_shift_zero[symmetric]) (auto simp: dist_norm)
+      by (subst (asm) at_to_0)
+        (auto simp: eventually_filtermap dist_norm ac_simps)
     hence "\<forall>\<^sub>F h::('a * _) in at 0. norm (flow t0 x (t + snd h) - flow t0 x t) < eps"
       by (rule eventually_at_snd) (simp add: \<open>eps > 0\<close>)
     ultimately
@@ -1420,7 +1446,7 @@ lemma
   assumes "s \<in> existence_ivl t0 x0"
   shows "(\<lambda>x. norm (flow t0 x0 x)) integrable_on closed_segment t0 s"
   using assms
-  by (auto simp: closed_segment_real intro!: integrable_continuous_real continuous_intros
+  by (auto simp: closed_segment_eq_real_ivl intro!: integrable_continuous_real continuous_intros
     flow_continuous_on_intro
     intro: in_existence_between_zeroI)
 
@@ -1457,7 +1483,7 @@ proof -
           subgoal by (metis (full_types) atLeastAtMost_iff closed_segment_eq_real_ivl order_trans tmtM(1))
           subgoal by (metis (full_types) atLeastAtMost_iff closed_segment_eq_real_ivl order_trans tmtM(2))
           done
-        from sc have nle: "norm (t0 - s) \<le> norm (t0 - t)" by (auto simp: closed_segment_real split: if_split_asm)
+        from sc have nle: "norm (t0 - s) \<le> norm (t0 - t)" by (auto simp: closed_segment_eq_real_ivl split: if_split_asm)
         from flow_fixed_point[OF s]
         have "norm (flow t0 x0 s) \<le> norm x0 + integral (closed_segment t0 s) (\<lambda>t. M + L * norm (flow t0 x0 t))"
           using tmtM
@@ -1471,9 +1497,9 @@ proof -
               continuous_on_subset[OF flow_continuous_on]
               flow_in_domain
               mem_existence_ivl_subset)
-          (auto simp: closed_segment_real split: if_splits)
+          (auto simp: closed_segment_eq_real_ivl split: if_splits)
         also have "\<dots> = norm x0 + norm (t0 - s) * M + L * integral (closed_segment t0 s) (\<lambda>t. norm (flow t0 x0 t))"
-          by (simp add: Henstock_Kurzweil_Integration.integral_add integrable_on_simps \<open>s \<in> existence_ivl _ _\<close>
+          by (simp add: integral_add integrable_on_simps \<open>s \<in> existence_ivl _ _\<close>
             integral_const_closed_segment abs_minus_commute)
         also have "norm (t0 - s) * M \<le> norm (t0 - t) * M "
           using nle \<open>M > 0\<close> by auto
@@ -1497,7 +1523,7 @@ proof -
     have "{tm..tM} \<subseteq> existence_ivl t0 x0"
       using tmtM tm \<open>x0 \<in> X\<close> \<open>compact K\<close> \<open>K \<subseteq> X\<close> mem_is_intervalI[OF \<open>is_interval T\<close> \<open>tm \<in> T\<close> \<open>tM \<in> T\<close>]
       by (intro subset_mem_compact_implies_subset_existence_interval[OF _ _ _ _flow_compact])
-         (auto simp: tmtM is_interval_closed_interval)
+         (auto simp: tmtM is_interval_cc)
   } note bnds = this
 
   show "existence_ivl t0 x0 = T"
@@ -1813,6 +1839,9 @@ Moreover, \<open>(+) _ ` _\<close> and \<open>_ + _ - _\<close> etc should have 
 
 lemma existence_ivl_zero: "x0 \<in> X \<Longrightarrow> 0 \<in> existence_ivl0 x0" by simp
 
+lemmas [continuous_intros del] = continuous_on_f
+lemmas continuous_on_f_comp[continuous_intros] = continuous_on_f[OF continuous_on_const _ subset_UNIV]
+
 end
 
 locale compact_continuously_diff =
@@ -1990,7 +2019,7 @@ proof (rule var.existence_ivl_eq_domain)
   then have "{s .. t} \<subseteq> existence_ivl0 x0"
     by (metis atLeastatMost_empty_iff2 empty_subsetI real_Icc_closed_segment var.closed_segment_subset_domain)
   then have "continuous_on {s .. t} (vareq x0)"
-    by (auto simp: closed_segment_real intro!: continuous_intros flow0_defined)
+    by (auto simp: closed_segment_eq_real_ivl intro!: continuous_intros flow0_defined)
   then have "compact ((vareq x0) ` {s .. t})"
     using compact_Icc
     by (rule compact_continuous_image)
@@ -2646,7 +2675,7 @@ text \<open> \<open>U t\<close>, i.e. the solution of the variational equation, 
 lemma flow_dx_derivative:
 assumes "t \<in> existence_ivl0 x0"
 shows "((\<lambda>x0. flow0 x0 t) has_derivative (\<lambda>z. vector_Dflow x0 z t)) (at x0)"
-  unfolding has_derivative_at
+  unfolding has_derivative_at2
   using assms
   by (intro iffD1[OF LIM_equal proposition_17_6_weak[OF assms]] conjI[OF bounded_linear_vector_Dflow[OF assms]])
     (simp add: diff_diff_add inverse_eq_divide)
@@ -2747,7 +2776,7 @@ proof (safe intro!: tendstoI)
   define d where "d \<equiv> e * K / (exp (K * (abs t + abs dt + 1)) - 1)"
   have "d > 0" by (auto simp: d_def intro!: mult_pos_pos divide_pos_pos \<open>0 < e\<close> \<open>K > 0\<close>)
 
-  have cmpct: "compact (?T \<times> ?X \<times> cball x dx)" "compact (?T \<times> ?X)"
+  have cmpct: "compact ((?T \<times> ?X) \<times> cball x dx)" "compact (?T \<times> ?X)"
     using \<open>compact ?T\<close> \<open>compact ?X\<close>
     by (auto intro!: compact_cball compact_Times)
 
@@ -2755,12 +2784,12 @@ proof (safe intro!: tendstoI)
     using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> one_exivl
     by (force intro!: compact_continuous_image \<open>compact ?T\<close> continuous_on_subset[OF mvar.flow_continuous_on] simp: \<open>x \<in> X\<close>)
 
-  from continuous_on_compact_product_lemma[OF cont cmpct(2) compact_cball \<open>0 < d\<close>]
+  from compact_uniformly_continuous[OF cont cmpct(1), unfolded uniformly_continuous_on_def,
+      rule_format, OF \<open>0 < d\<close>]
   obtain d' where d': "d' > 0"
     "\<And>ta xa xa' y. ta \<in> ?T \<Longrightarrow> xa \<in> ?X \<Longrightarrow> xa'\<in>cball x dx \<Longrightarrow> y\<in>cball x dx \<Longrightarrow> dist xa' y < d' \<Longrightarrow>
       dist (vareq xa' ta o\<^sub>L xa) (vareq y ta o\<^sub>L xa) < d"
-    by auto
-
+    by (auto simp: dist_prod_def)
   {
     fix y
     assume dxy: "dist x y < d'"
@@ -3022,9 +3051,11 @@ proof -
   have "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within ball x0 e \<times> ball t e)"
     using subs
     unfolding UNIV_Times_UNIV[symmetric]
-    by (intro Derivative.has_derivative_partialsI[OF d1 d2, THEN has_derivative_eq_rhs])
-      (auto intro!: \<open>0 < e\<close> continuous_intros flow_in_domain simp: flowderiv_def split_beta'
-        mem_ball)
+    by (intro has_derivative_partialsI[OF d1 d2, THEN has_derivative_eq_rhs])
+       (auto intro!: \<open>0 < e\<close> continuous_intros flow_in_domain
+          continuous_on_imp_continuous_within[where s="Sigma X existence_ivl0"]
+          assms
+        simp: flowderiv_def split_beta' flow0_defined assms mem_ball)
   then have "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within Sigma X existence_ivl0)"
     by (auto simp: at_within_open[OF _ open_state_space] at_within_open[OF _ open_Times] assms \<open>0 < e\<close>
         mem_existence_ivl_iv_defined[OF assms])

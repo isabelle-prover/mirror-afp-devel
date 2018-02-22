@@ -19,13 +19,13 @@ lemma nonneg_interval_mem_existence_ivlI[intro]:\<comment> \<open>TODO: move!\<c
   apply (drule ivl_subset_existence_ivl) apply auto
   apply (drule ivl_subset_existence_ivl') apply auto
   apply (drule segment_subset_existence_ivl, assumption)
-  apply (auto simp: closed_segment_real)
+  apply (auto simp: closed_segment_eq_real_ivl)
   done
 
 lemma interval_subset_existence_ivl:
   "t \<in> existence_ivl0 x0 \<Longrightarrow> s \<in> existence_ivl0 x0 \<Longrightarrow> t \<le> s \<Longrightarrow> {t .. s} \<subseteq> existence_ivl0 x0"
   using segment_subset_existence_ivl[of s x0 t]
-  by (auto simp: closed_segment_real)
+  by (auto simp: closed_segment_eq_real_ivl)
 
 end
 
@@ -55,36 +55,6 @@ lemma [autoref_op_pat_def]: "ST xs \<equiv> OP (ST xs)" by simp
 lemma [autoref_rules]: "(x, ST x) \<in> string_rel"
   by (auto simp: string_rel_def)
 end
-
-lemma has_derivative_partials_openI:\<comment> \<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::real_normed_vector \<Rightarrow> 'c::real_normed_vector"
-  assumes fx: "((\<lambda>x. f x (snd xy)) has_derivative fx (fst xy) (snd xy)) (at (fst xy))"
-  assumes fy: "\<And>x y. (x, y) \<in> XY \<Longrightarrow> ((\<lambda>y. f x y) has_derivative blinfun_apply (fy x y)) (at y)"
-  assumes fy_cont: "((\<lambda>(x, y). fy x y) \<longlongrightarrow> fy (fst xy) (snd xy)) (at xy)"
-  assumes "xy \<in> XY" "open XY"
-  shows "((\<lambda>(x, y). f x y) has_derivative (\<lambda>(tx, ty). fx (fst xy) (snd xy) tx + fy (fst xy) (snd xy) ty)) (at xy)"
-proof -
-  let ?x = "fst xy"
-  let ?y = "snd xy"
-  from \<open>xy \<in> XY\<close> \<open>open XY\<close> obtain X Y where "xy \<in> X \<times> Y" "open X" "open Y" "X \<times> Y \<subseteq> XY"
-    by (auto simp: open_prod_def)
-  then have "?x \<in> X" "snd xy \<in> Y"
-    by auto
-  from openE[OF \<open>open X\<close> \<open>?x \<in> X\<close>] openE[OF \<open>open Y\<close> \<open>?y \<in> Y\<close>]
-  obtain e1 e2 where balls: "0 < e1" "0 < e2"
-    "ball ?x e1 \<subseteq> X" (is "?X \<subseteq> _")
-    "ball ?y e2 \<subseteq> Y" (is "?Y \<subseteq> _")
-    by metis
-  then have "xy \<in> ?X \<times> ?Y" "open (?X \<times> ?Y)" "?x \<in> ?X"  "?y \<in> ?Y"
-    by (cases xy) (auto intro!: open_Times balls)
-  show ?thesis
-    apply (rule has_derivative_partialsI[of f "snd xy" fx "fst xy" ?X ?Y fy,
-      unfolded prod.collapse at_within_open[OF \<open>_ \<in> ?X \<times> ?Y\<close> \<open>open (?X \<times> ?Y)\<close>]])
-        apply (auto simp: assms balls at_within_open[OF \<open>?x \<in> ?X\<close>])
-    apply (subst at_within_open[of _ ?Y])
-    using balls \<open>X \<times> Y \<subseteq> _\<close>
-    by (auto simp: assms subset_iff intro!: assms)
-qed
 
 
 context auto_ll_on_open begin
@@ -1361,7 +1331,7 @@ lemma continuous_on_ode1:
 lemma continuous_on_ode[continuous_intros]:
   "continuous_on s g \<Longrightarrow> (\<And>x. x \<in> s \<Longrightarrow> (g x) \<in> Csafe) \<Longrightarrow> continuous_on s (\<lambda>x. ode (g x))"
   using continuous_on_ode1
-  by (rule continuous_on_subset_comp) auto
+  by (rule continuous_on_compose2) auto
 
 lemma fderiv'[derivative_intros]:
   assumes "(g has_derivative g' y) (at y within X)"
@@ -1734,7 +1704,7 @@ next
         have *: "h \<in> existence_ivl0 x0" "s \<in> {0 .. h} \<Longrightarrow> flow0 x0 s \<in> PHI''" for s
           using \<open>x0 \<in> X0\<close> \<open>PHI'' \<subseteq> PHI'\<close> \<open>0 \<le> h\<close> PHI'(3) \<open>x0 \<in> PHI''\<close>
           by (auto
-              simp: cfuncset_def Pi_iff closed_segment_real ivl_integral_def
+              simp: cfuncset_def Pi_iff closed_segment_eq_real_ivl ivl_integral_def
               intro!: Picard_iterate_mem_existence_ivlI[OF UNIV_I _ UNIV_I \<open>compact PHI''\<close>
                 \<open>x0 \<in> PHI''\<close> \<open>PHI'' \<subseteq> Csafe\<close>] PHI'(4)) force+
         show h_ex: "h \<in> existence_ivl0 x0" by fact
@@ -2154,7 +2124,7 @@ proof (goal_cases)
         have "s2 * rk2_param optns * h \<le> h"
           apply (rule mult_left_le_one_le)
           using assms prems
-          by (auto intro!: mult_le_oneI)
+          by (auto intro!: mult_le_one)
         then have s2: "(s2 * h * rk2_param optns) \<in> {0 .. h}"
           using prems assms by (auto simp: ac_simps)
         have s1: "h * s1 \<in> {0 .. h}" using prems
@@ -3933,7 +3903,7 @@ lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto:\<comment> \<open>TODO: mov
   assumes "flowpipe X0 hl hu CX Y" "hl > 0"
   shows "flowsto X0 {0<..hl} CX Y"
   using assms
-  by (fastforce simp: flowsto_def flowpipe_def open_segment_real
+  by (fastforce simp: flowsto_def flowpipe_def open_segment_eq_real_ivl
       dest: bspec[where x=hl]
       intro!: bexI[where x=hl])
 
@@ -4206,13 +4176,13 @@ proof -
     using order_tendstoD(2)[OF tendsto_ident_at \<open>0 < h\<close>, of "{0<..}"]
     by (auto simp: eventually_at_filter)
   then have "\<forall>\<^sub>F t in at_right 0. flow0 x0 t \<in> fst ` CX"
-    by eventually_elim (use CX \<open>0 < h\<close> open_segment_real in auto)
+    by eventually_elim (use CX \<open>0 < h\<close> open_segment_eq_real_ivl in auto)
   then have evnP: "\<forall>\<^sub>F t in at_right 0. flow0 x0 t \<notin> P"
     by eventually_elim (use P in force)
   from \<open>h > 0\<close> h(2) \<open>flow0 x0 h \<in> P\<close> evnP P(2) show "returns_to P x0"
     by (rule returns_toI)
   have nin_P: "0 < s \<Longrightarrow> s < h \<Longrightarrow> flow0 x0 s \<notin> P" for s
-    using CX[of s] P by (auto simp: open_segment_real)
+    using CX[of s] P by (auto simp: open_segment_eq_real_ivl)
   have "return_time P x0 = h"
     using h X1
     by (auto intro!: return_time_eqI \<open>0 < h\<close> h assms simp: nin_P)
@@ -5194,7 +5164,7 @@ lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto_nonneg:\<comment> \<open>TO
   assumes "flowpipe X0 hl hu CX Y"
   shows "flowsto X0 {0..} CX Y"
   using assms
-  by (fastforce simp: flowsto_def flowpipe_def open_segment_real
+  by (fastforce simp: flowsto_def flowpipe_def open_segment_eq_real_ivl
       dest: bspec[where x=hl]
       intro!: bexI[where x=hl])
 
@@ -6083,7 +6053,7 @@ proof safe
   with assms obtain t where
     "t>0" "t \<in> existence_ivl0 x" "(\<forall>s\<in>{0<..<t}. (flow0 x s, Dflow x s o\<^sub>L d) \<in> CXS)"
     "(flow0 x t, Dflow x t o\<^sub>L d) \<in> X1"
-    by (auto simp: flowsto_def subset_iff open_segment_real)
+    by (auto simp: flowsto_def subset_iff open_segment_eq_real_ivl)
   moreover
   have "\<forall>s\<in>{0<..<t}. flow0 x s \<in> sbelow_halfspace sctn"
   proof (rule ccontr, clarsimp)
@@ -6117,7 +6087,7 @@ proof safe
   ultimately
   show "\<exists>t\<in>{0<..}. t \<in> existence_ivl0 x \<and> (flow0 x t, Dflow x t o\<^sub>L d) \<in> X1 \<and>
                 (\<forall>s\<in>{0<--<t}. (flow0 x s, Dflow x s o\<^sub>L d) \<in> CXS \<inter> sbelow_halfspace sctn \<times> UNIV)"
-    by (auto intro!: simp: open_segment_real)
+    by (auto intro!: simp: open_segment_eq_real_ivl)
 qed
 
 
@@ -6646,7 +6616,7 @@ proof safe
     h \<in> existence_ivl0 x0 \<and> (flow0 x0 h, Dflow x0 h o\<^sub>L d0) \<in> fst ` X1 \<times> UNIV \<and>
     (\<forall>h'\<in>{0<--<h}. (flow0 x0 h', Dflow x0 h' o\<^sub>L d0) \<in> CX \<times> UNIV)"
     by (auto intro!: bexI[where x="return_time P x0"] return_time_exivl D assms return_time_pos
-        simp: open_segment_real)
+        simp: open_segment_eq_real_ivl)
 qed
 
 lemma flowsto_poincare_mapsto_trans_flowsto:
@@ -9157,7 +9127,7 @@ proof (rule, goal_cases)
     by auto
   then show ?case
     using 1 trapprop
-    apply (auto intro!: bexI[where x=h] dest!: stable_onD simp: open_segment_real image_Un)
+    apply (auto intro!: bexI[where x=h] dest!: stable_onD simp: open_segment_eq_real_ivl image_Un)
     subgoal for s by (cases "s = h") auto
     done
 qed

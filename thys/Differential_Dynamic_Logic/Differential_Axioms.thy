@@ -2063,7 +2063,7 @@ proof -
            (\<lambda>i. if i = vid1 then blin_frechet (good_interp I) (simple_term ($f fid1 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0))) b
                 else Blinfun (\<lambda>_. 0)))"])
            apply(rule the_thing)
-          by (auto simp add: continuous_on_snd)
+          by (auto intro!: continuous_intros)
        have ext:"(\<lambda>x. case x of
         (t, b) \<Rightarrow>
           blinfun_vec
@@ -2243,7 +2243,7 @@ proof -
         apply(rule continuous_on_compose2[of "ll_old.existence_ivl 0 (sol 0)" "(\<lambda>x. Blinfun (\<lambda>y'. y' * sterm_sem I (f1 fid2 vid1) (ll_old.flow 0 (sol 0) x)))" "(ll_old.existence_ivl 0 (sol 0) \<times> UNIV)" "fst"])
           apply(rule continuous_on_compose2[of "(ll_old.flow 0 (sol 0) ` ll_old.existence_ivl 0 (sol 0))" "(\<lambda>x. Blinfun (\<lambda>y'. y' * sterm_sem I (f1 fid2 vid1) x))" 
                 "(ll_old.existence_ivl 0 (sol 0))" "(ll_old.flow 0 (sol 0))"])
-            using conF conFlow continuous_on_fst by (auto)
+            using conF conFlow by (auto intro!: continuous_intros)
       qed
     let ?ivl = "ll_old.existence_ivl 0 (sol 0)"
     \<comment> \<open>Construct solution to ODE for \<open>y'\<close> here:\<close>

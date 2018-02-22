@@ -900,7 +900,8 @@ proof -
     unfolding geodesic_segment_def by force
   show "path_connected G"
     using assms is_interval_path_connected geodesic_segment_homeo_interval homeomorphic_path_connectedness
-    unfolding geodesic_segment_def by (metis is_interval_closed_interval)
+    unfolding geodesic_segment_def
+    by (metis is_interval_cc)
   then show "connected G"
     using path_connected_imp_connected by auto
   show "bounded G"

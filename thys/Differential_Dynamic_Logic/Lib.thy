@@ -357,20 +357,6 @@ proof -
   show "?thesis"
     using bounded_proj unfolding has_derivative_def by auto
 qed
-  
-lemma has_vector_derivative_zero_constant:
-  assumes "convex s"
-  assumes "\<And>x. x \<in> s \<Longrightarrow> (f has_vector_derivative 0) (at x within s)"
-  obtains c where "\<And>x. x \<in> s \<Longrightarrow> f x = c"
-  using has_derivative_zero_constant[of s f] assms
-  by (auto simp: has_vector_derivative_def)
-
-lemma has_vderiv_on_zero_constant:
-  assumes "convex s"
-  assumes "(f has_vderiv_on (\<lambda>h. 0)) s"
-  obtains c where "\<And>x. x \<in> s \<Longrightarrow> f x = c"
-  using has_vector_derivative_zero_constant[of s f] assms
-  by (auto simp: has_vderiv_on_def)
 
 lemma constant_when_zero:
   fixes v::"real \<Rightarrow> (real, 'i::finite) vec"

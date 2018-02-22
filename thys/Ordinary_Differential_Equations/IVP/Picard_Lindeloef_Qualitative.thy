@@ -11,7 +11,7 @@ text\<open>\label{sec:qpl-lipschitz}\<close>
 lemma cball_eq_closed_segment_real:
   fixes x e::real
   shows "cball x e = (if e \<ge> 0 then {x - e -- x + e} else {})"
-  by (auto simp: closed_segment_real dist_real_def mem_cball)
+  by (auto simp: closed_segment_eq_real_ivl dist_real_def mem_cball)
 
 lemma cube_in_cball:
   fixes x y :: "'a::euclidean_space"
@@ -26,7 +26,7 @@ proof -
     assume "i \<in> Basis"
     thus "(dist (x \<bullet> i) (y \<bullet> i))\<^sup>2 \<le> (r / sqrt(DIM('a)))\<^sup>2"
       using assms
-      by (auto intro: sqrt_le_rsquare)
+      by (auto intro: sqrt_le_D)
   qed
   moreover
   have "... \<le> r\<^sup>2"
@@ -211,18 +211,8 @@ proof -
   thus ?thesis ..
 qed
 
-lemma continuous_on_Times_f: "continuous_on (T \<times> X) (\<lambda>(t, x). f t x)"
-  by (rule continuous_on_TimesI[OF local_lipschitz cont])
-
-lemma continuous_on_f[continuous_intros]:
-  assumes "continuous_on S g"
-  assumes "continuous_on S h"
-  assumes "h ` S \<subseteq> X"
-  assumes "g ` S \<subseteq> T"
-  shows "continuous_on S (\<lambda>x. f (g x) (h x))"
-  using assms
-  by (intro continuous_on_compose2[OF continuous_on_Times_f , of S "\<lambda>x. (g x, h x)", simplified])
-    (auto intro!: continuous_intros)
+lemmas continuous_on_Times_f = continuous
+lemmas continuous_on_f = continuous_rhs_comp
 
 lemma
   lipschitz_on_compact:
@@ -330,7 +320,7 @@ proof -
   have "\<forall>\<^sub>F e in at_right 0. cball t0 (t * e) \<subseteq> T"
     using eventually_open_cball[OF open_domain(1) iv_defined(1)]
     by (subst eventually_filtermap[symmetric, where f="\<lambda>x. t * x"])
-      (simp add: filtermap_times_real t_pos)
+      (simp add: filtermap_times_pos_at_right t_pos)
   moreover
   have "eventually (\<lambda>e. cball x0 e \<subseteq> X) (at_right 0)"
     using open_domain(2) iv_defined(2)
@@ -357,11 +347,12 @@ proof -
 
     have "{t0 -- t0 + t * e} \<subseteq> cball t0 (t * e)"
       using \<open>t > 0\<close> \<open>e > 0\<close>
-      by (auto simp: cball_eq_closed_segment_real closed_segment_real)
+      by (auto simp: cball_eq_closed_segment_real closed_segment_eq_real_ivl)
     then have "unique_on_cylinder t0 (cball t0 (t * e)) x0 e f B L"
       using T X \<open>t > 0\<close> \<open>e > 0\<close> \<open>t * e \<le> e / B\<close>
       by unfold_locales
         (auto intro!: continuous_rhs_comp continuous_on_fst continuous_on_snd B L
+          continuous_on_id
           simp: split_beta' dist_commute mem_cball)
     ultimately show ?case by auto
   qed
@@ -389,7 +380,7 @@ proof -
     then obtain csol t1 where csol: "(csol t, t1) \<in> csols t0 x0" "t \<in> {t0 -- t1}"
       by (auto simp: existence_ivl_def)
     then have "{t0--t} \<subseteq> {t0 -- t1}"
-      by (auto simp: closed_segment_real)
+      by (auto simp: closed_segment_eq_real_ivl)
     then have "(csol t, t) \<in> csols t0 x0" using csol
       by (auto simp: csols_def intro: solves_ode_on_subset)
     then show "\<exists>y. (y, t) \<in> csols t0 x0" by force
@@ -498,17 +489,17 @@ proof (rule openI)
       let ?t1' = "if t0 \<le> t then t + et else t - et"
       have lsol_ode: "(solution solves_ode f) {t -- ?t1'} (cball (flow t0 x0 t) ex)"
         by (rule solves_ode_on_subset[OF lsol_ode])
-          (insert \<open>0 < et\<close> \<open>0 < ex\<close>, auto simp: mem_cball closed_segment_real dist_real_def)
+          (insert \<open>0 < et\<close> \<open>0 < ex\<close>, auto simp: mem_cball closed_segment_eq_real_ivl dist_real_def)
       let ?if = "\<lambda>ta. if ta \<in> {t0--t} then csol t0 x0 t ta else solution ta"
       let ?iff = "\<lambda>ta. if ta \<in> {t0--t} then f ta else f ta"
       have "(?if solves_ode ?iff) ({t0--t} \<union> {t -- ?t1'}) X"
         apply (rule connection_solves_ode[OF csol(4) lsol_ode, unfolded Un_absorb2[OF \<open>_ \<subseteq> X\<close>]])
         using lsol solution_iv \<open>t \<in> existence_ivl t0 x0\<close>
-        by (auto intro!: simp: closed_segment_real flow_def split: if_split_asm)
+        by (auto intro!: simp: closed_segment_eq_real_ivl flow_def split: if_split_asm)
       also have "?iff = f" by auto
       also have Un_eq: "{t0--t} \<union> {t -- ?t1'} = {t0 -- ?t1'}"
         using \<open>0 < et\<close> \<open>0 < ex\<close>
-        by (auto simp: closed_segment_real)
+        by (auto simp: closed_segment_eq_real_ivl)
       finally have continuation: "(?if solves_ode f) {t0--?t1'} X" .
       have subset_T: "{t0 -- ?t1'} \<subseteq> T"
         unfolding Un_eq[symmetric]
@@ -517,12 +508,12 @@ proof (rule openI)
         subgoal using _ lsol(3)
           apply (rule order_trans)
           using \<open>0 < et\<close> \<open>0 < ex\<close>
-          by (auto simp: closed_segment_real subset_iff mem_cball dist_real_def)
+          by (auto simp: closed_segment_eq_real_ivl subset_iff mem_cball dist_real_def)
         done
       fix t' assume "t' \<in> ball t ?m"
       then have scs: "{t0 -- t'} \<subseteq> {t0--?t1'}"
         using \<open>0 < et\<close> \<open>0 < ex\<close>
-        by (auto simp: closed_segment_real dist_real_def abs_real_def mem_ball split: if_split_asm)
+        by (auto simp: closed_segment_eq_real_ivl dist_real_def abs_real_def mem_ball split: if_split_asm)
       with continuation have "(?if solves_ode f) {t0 -- t'} X"
         by (rule solves_ode_on_subset) simp
       then have "(?if, t') \<in> csols t0 x0"
@@ -574,7 +565,7 @@ proof (rule ccontr)
     by (blast intro: distance_attains_inf)
   have max_equal_flows: "x t = y t" if "t \<in> {t0 -- t_max}" for t
     using max(1) that
-    by (auto simp: connected_component_def vimage_def subset_iff closed_segment_real
+    by (auto simp: connected_component_def vimage_def subset_iff closed_segment_eq_real_ivl
       split: if_split_asm) (metis connected_iff_interval)+
   then have t_ne_outside: "t_ne \<notin> {t0 -- t_max}" using t_ne by auto
 
@@ -601,23 +592,23 @@ proof (rule ccontr)
 
   have ge_imps: "t0 \<le> t1" "t0 \<le> t2" "t0 \<le> t_max" "t_max < t_ne" if "t0 \<le> t_ne"
     using that t_ne_outside \<open>0 < et\<close> \<open>0 < ex\<close> max(1) \<open>t_max \<in> ?S\<close> \<open>t_max \<in> T\<close> t_ne x0 y0
-    by (auto simp: min_def dist_real_def max_def closed_segment_real split: if_split_asm)
+    by (auto simp: min_def dist_real_def max_def closed_segment_eq_real_ivl split: if_split_asm)
   have le_imps: "t0 \<ge> t1" "t0 \<ge> t2" "t0 \<ge> t_max" "t_max > t_ne" if "t0 \<ge> t_ne"
     using that t_ne_outside \<open>0 < et\<close> \<open>0 < ex\<close> max(1) \<open>t_max \<in> ?S\<close> \<open>t_max \<in> T\<close> t_ne x0 y0
-    by (auto simp: min_def dist_real_def max_def closed_segment_real split: if_split_asm)
+    by (auto simp: min_def dist_real_def max_def closed_segment_eq_real_ivl split: if_split_asm)
 
   define tt where "tt \<equiv> if t0 \<le> t_ne then min (t_max + et) t_ne else max (t_max - et) t_ne"
   have "tt \<in> cball t_max et" "tt \<in> {t0 -- t1}" "tt \<in> {t0 -- t2}"
     using ge_imps le_imps \<open>0 < et\<close> t_ne(1)
-    by (auto simp: mem_cball closed_segment_real tt_def dist_real_def abs_real_def min_def max_def not_less)
+    by (auto simp: mem_cball closed_segment_eq_real_ivl tt_def dist_real_def abs_real_def min_def max_def not_less)
 
   have segment_unsplit: "{t0 -- t_max} \<union> {t_max -- tt} = {t0 -- tt}"
     using ge_imps le_imps \<open>0 < et\<close>
-    by (auto simp: tt_def closed_segment_real min_def max_def split: if_split_asm) arith
+    by (auto simp: tt_def closed_segment_eq_real_ivl min_def max_def split: if_split_asm) arith
 
   have "tt \<in> {t0 -- t1}"
     using ge_imps le_imps \<open>0 < et\<close> t_ne(1)
-    by (auto simp: tt_def closed_segment_real min_def max_def split: if_split_asm)
+    by (auto simp: tt_def closed_segment_eq_real_ivl min_def max_def split: if_split_asm)
 
   have "tt \<in> ?Z"
   proof (safe intro!: connected_componentI[where t = "{t0 -- t_max} \<union> {t_max -- tt}"])
@@ -630,7 +621,7 @@ proof (rule ccontr)
     finally have subset: "{t_max--s} \<subseteq> cball t_max et" .
     from s show "s \<in> {t0--t1}" "s \<in> {t0--t2}"
       using ge_imps le_imps t_ne \<open>0 < et\<close>
-      by (auto simp: tt_def min_def max_def closed_segment_real split: if_split_asm)
+      by (auto simp: tt_def min_def max_def closed_segment_eq_real_ivl split: if_split_asm)
     have ivl: "t_max \<in> {t_max -- s}" "is_interval {t_max--s}"
       using \<open>tt \<in> cball t_max et\<close> \<open>0 < et\<close> s
       by (simp_all add: is_interval_convex_1)
@@ -695,7 +686,7 @@ proof safe
   have csol_eq: "csol t0 x0 (t - e) s = flow t0 x0 s" if "t - e \<le> s" "s \<le> t0" for s
     unfolding flow_def
     using that \<open>0 < e\<close> t e
-    by (auto simp: cball_def dist_real_def abs_real_def closed_segment_real subset_iff
+    by (auto simp: cball_def dist_real_def abs_real_def closed_segment_eq_real_ivl subset_iff
       intro!: csol_unique in_existence_between_zeroI[of "t - e" x0 s]
       split: if_split_asm)
   from e[of "t - e"] \<open>0 < e\<close> have "t - e \<in> existence_ivl t0 x0" by (auto simp: mem_cball)
@@ -706,13 +697,13 @@ proof safe
   from csol(4)[OF e[of "t - e"]] \<open>0 < e\<close>
   have 1: "(csol t0 x0 (t - e) solves_ode f) ?s X"
     by (auto simp: mem_cball)
-  have "t \<in> {t0 -- t - e}" using t \<open>0 < e\<close> by (auto simp: closed_segment_real)
+  have "t \<in> {t0 -- t - e}" using t \<open>0 < e\<close> by (auto simp: closed_segment_eq_real_ivl)
   from solves_odeD(1)[OF 1, unfolded has_vderiv_on_def, rule_format, OF this]
   have "(csol t0 x0 (t - e) has_vector_derivative f t (csol t0 x0 (t - e) t)) (at t within ?s)" .
   also have "at t within ?s = (at t within ?l)"
     using t \<open>0 < e\<close>
     by (intro at_within_nhd[where S="{t - e <..< t0 + 1}"])
-      (auto simp: closed_segment_real intro!: in_existence_between_zeroI[OF \<open>t - e \<in> existence_ivl t0 x0\<close>])
+      (auto simp: closed_segment_eq_real_ivl intro!: in_existence_between_zeroI[OF \<open>t - e \<in> existence_ivl t0 x0\<close>])
   finally
   have "(csol t0 x0 (t - e) has_vector_derivative f t (csol t0 x0 (t - e) t)) (at t within existence_ivl t0 x0 \<inter> {..t0})" .
   also have "csol t0 x0 (t - e) t = flow t0 x0 t"
@@ -736,7 +727,7 @@ proof safe
   have csol_eq: "csol t0 x0 (t + e) s = flow t0 x0 s" if "s \<le> t + e" "t0 \<le> s" for s
     unfolding flow_def
     using e that \<open>0 < e\<close>
-    by (auto simp: cball_def dist_real_def abs_real_def closed_segment_real subset_iff
+    by (auto simp: cball_def dist_real_def abs_real_def closed_segment_eq_real_ivl subset_iff
       intro!: csol_unique in_existence_between_zeroI[of "t + e" x0 s]
       split: if_split_asm)
   from e[of "t + e"] \<open>0 < e\<close> have "t + e \<in> existence_ivl t0 x0" by (auto simp: mem_cball dist_real_def)
@@ -747,13 +738,13 @@ proof safe
   from csol(4)[OF e[of "t + e"]] \<open>0 < e\<close>
   have 1: "(csol t0 x0 (t + e) solves_ode f) ?s X"
     by (auto simp: dist_real_def mem_cball)
-  have "t \<in> {t0 -- t + e}" using t \<open>0 < e\<close> by (auto simp: closed_segment_real)
+  have "t \<in> {t0 -- t + e}" using t \<open>0 < e\<close> by (auto simp: closed_segment_eq_real_ivl)
   from solves_odeD(1)[OF 1, unfolded has_vderiv_on_def, rule_format, OF this]
   have "(csol t0 x0 (t + e) has_vector_derivative f t (csol t0 x0 (t + e) t)) (at t within ?s)" .
   also have "at t within ?s = (at t within ?l)"
     using t \<open>0 < e\<close>
     by (intro at_within_nhd[where S="{t0 - 1 <..< t + e}"])
-      (auto simp: closed_segment_real intro!: in_existence_between_zeroI[OF \<open>t + e \<in> existence_ivl t0 x0\<close>])
+      (auto simp: closed_segment_eq_real_ivl intro!: in_existence_between_zeroI[OF \<open>t + e \<in> existence_ivl t0 x0\<close>])
   finally
   have "(csol t0 x0 (t + e) has_vector_derivative f t (csol t0 x0 (t + e) t)) (at t within ?l)" .
   also have "csol t0 x0 (t + e) t = flow t0 x0 t"

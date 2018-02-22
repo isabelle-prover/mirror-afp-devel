@@ -1307,7 +1307,7 @@ proof -
       apply (rule in_existence_between_zeroI)
       apply (drule spec[where x=a])
        apply (drule spec[where x="t + e0"])
-       apply (auto simp: dist_real_def closed_segment_real)
+       apply (auto simp: dist_real_def closed_segment_eq_real_ivl)
       done
     done
   then show ?thesis ..
@@ -1456,7 +1456,7 @@ proof -
     proof eventually_elim
       case (elim z)
       from closed_segment_subset_existence_ivl[OF \<open>z \<in> existence_ivl0 x\<close>]
-      have csi: "{0..z} \<subseteq> existence_ivl0 x" by (auto simp add: closed_segment_real)
+      have csi: "{0..z} \<subseteq> existence_ivl0 x" by (auto simp add: closed_segment_eq_real_ivl)
       then have cont: "continuous_on {0..z} (\<lambda>t. s (flow0 x t))"
         by (auto intro!: continuous_intros)
       have "\<forall>xa\<in>{0<..<z}. ((\<lambda>t. s (flow0 x t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 x xa)) (f (flow0 x xa)))) (at xa)"
@@ -1549,7 +1549,8 @@ proof -
     "e > 0"
     by (force simp: split_beta')+
   have "\<forall>\<^sub>F y in at x. y \<in> ball x e"
-    by (rule eventually_at_in_ball) fact
+    using eventually_at_ball[OF \<open>0 < e\<close>]
+    by eventually_elim auto
   then have ev_cball: "\<forall>\<^sub>F y in at x. y \<in> cball x e"
     by eventually_elim (use \<open>e > 0\<close> in auto)
   moreover
@@ -1639,68 +1640,6 @@ proof -
     done
 qed
 
-(* lemma
-  flow_stays_below:
-  fixes s::"'a \<Rightarrow> real"
-  assumes rt: "returns_to {x. s x = 0} x" (is "returns_to ?P x")
-  assumes cont_s: "continuous_on UNIV s"
-  assumes t: "0 \<le> t" "t < return_time ?P x"
-  assumes "s x < 0"
-  shows "s (flow0 x t) < 0"
-proof cases
-  assume "t = 0"
-  moreover have "flow0 x 0 = x"
-    apply (rule flow_initial_time)
-    apply (auto intro!: )
-    using returns_toE rt by blast
-  ultimately show ?thesis using \<open>s x < 0\<close> by simp
-next
-  assume "t \<noteq> 0"
-  with t have t: "0 < t" "t < return_time ?P x"
-    by auto
-  show ?thesis
-  proof (rule ccontr)
-    note cls = closed_levelset[OF cont_s]
-    assume "\<not> s (flow0 x t) < 0"
-    moreover
-    from return_time_least[OF rt cls t]
-    have "flow0 x t \<notin> {x. s x = 0}" .
-    ultimately have gt: "s (flow0 x t) > 0" by auto
-
-    have [simp]: "x \<in> X" by (rule mem_existence_ivl_iv_defined return_time_exivl[OF rt cls])+
-    from \<open>s x < 0\<close> have lt: "s (flow0 x 0) < 0" by auto
-    from assms have le: "0 \<le> t" by simp
-
-    have "return_time ?P x \<in> existence_ivl0 x"
-      by (rule return_time_exivl; fact)
-    from closed_segment_subset_existence_ivl[OF this]
-    have "0 \<le> s \<Longrightarrow> s \<le> return_time ?P x \<Longrightarrow> s \<in> existence_ivl0 x" for s
-      by (auto simp: closed_segment_real)
-    then have C: "\<forall>t'. 0 \<le> t' \<and> t' \<le> t \<longrightarrow> isCont (\<lambda>a. s (flow0 x a)) t'"
-      using t
-      by (auto simp: isCont_def intro!: continuous_on_tendsto_compose[OF cont_s] flow_tendsto)
-    from IVT_strict[OF lt gt le C]
-    obtain t' where "0 < t'" "t' < t" "s (flow0 x t') = 0" by auto
-    with return_time_least[OF rt cls, of t'] t
-    show False by auto
-  qed
-qed
-
-lemma
-  flow_stays_above:
-  fixes s::"'a \<Rightarrow> real"
-  assumes rt: "returns_to {x. s x = 0} x" (is "returns_to ?P x")
-  assumes cont_s: "continuous_on UNIV s"
-  assumes t: "0 \<le> t" "t < return_time ?P x"
-  assumes "s x > 0"
-  shows "s (flow0 x t) > 0"
-proof -
-  have "(- s) (flow0 x t) < 0"
-    by (rule flow_stays_below[of "-s" x t]) (auto simp: assms intro!: continuous_intros)
-  then show ?thesis by simp
-qed
- *)
-
 lemma
   return_time_isCont_outside:
   fixes s::"'a::euclidean_space \<Rightarrow> real"
@@ -1748,7 +1687,7 @@ proof (rule tendstoI)
   have "u x > 0" by (auto simp: u intro!: return_time_pos rt)
   from order_tendstoD(1)[OF u_tendsto this] have "\<forall>\<^sub>F x in at x. 0 < u x" .
   moreover have "\<forall>\<^sub>F y in at x. y \<in> cball x eu"
-    using eventually_at_in_ball[OF \<open>0 < eu\<close>, of x]
+    using eventually_at_ball[OF \<open>0 < eu\<close>, of x]
     by eventually_elim auto
   moreover
   have "x \<notin> S \<or> s x \<noteq> 0 \<or> blinfun_apply (Ds x) (f x) \<noteq> 0" using outside by auto
@@ -1756,7 +1695,8 @@ proof (rule tendstoI)
     by (rule eventually_returns_to; fact)
   moreover
   have "\<forall>\<^sub>F y in at x. y \<in> ball x eu"
-    by (rule eventually_at_in_ball) fact
+    using eventually_at_ball[OF \<open>0 < eu\<close>]
+    by eventually_elim simp
   then have ev_cball: "\<forall>\<^sub>F y in at x. y \<in> cball x eu"
     by eventually_elim (use \<open>e > 0\<close> in auto)
   have "continuous_on (ball x eu) u"
@@ -1793,7 +1733,7 @@ proof (rule tendstoI)
   have mt_in: "ml \<in> existence_ivl0 x"
     using \<open>0 < e\<close>
     by (auto intro!: mem_existence_ivl_iv_defined in_existence_between_zeroI[OF ret_exivl]
-        simp: closed_segment_real ml_def)
+        simp: closed_segment_eq_real_ivl ml_def)
   from open_existence_ivlE[OF mt_in]
   obtain e0 where e0: "e0 > 0" "cball x e0 \<times> {0..ml + e0} \<subseteq> Sigma X existence_ivl0" (is "?D \<subseteq> _")
     by auto
@@ -1812,7 +1752,7 @@ proof (rule tendstoI)
     using \<open>0 < e\<close>
     by (intro uniform_limit_flow)
       (auto intro!: mem_existence_ivl_iv_defined in_existence_between_zeroI[OF ret_exivl]
-        simp: closed_segment_real )
+        simp: closed_segment_eq_real_ivl )
   have "\<forall>\<^sub>F y in at x. \<forall>t\<in>{0..ml}. flow0 y t \<in> - {x \<in> S. s x = 0}"
     apply (rule uniform_limit_in_open)
     apply (rule ul)
@@ -1982,7 +1922,7 @@ proof (rule tendstoI)
   have "u x > 0" by (auto simp: u intro!: return_time_pos rt)
   from order_tendstoD(1)[OF u_tendsto this] have "\<forall>\<^sub>F x in at x. 0 < u x" .
   moreover have "\<forall>\<^sub>F y in at x. y \<in> cball x eu"
-    using eventually_at_in_ball[OF \<open>0 < eu\<close>, of x]
+    using eventually_at_ball[OF \<open>0 < eu\<close>, of x]
     by eventually_elim auto
   moreover
   have "x \<notin> S \<or> s x \<noteq> 0 \<or> blinfun_apply (Ds x) (f x) \<noteq> 0" using inside by auto
@@ -1990,7 +1930,8 @@ proof (rule tendstoI)
     by (rule eventually_returns_to; fact)
   moreover
   have "\<forall>\<^sub>F y in at x. y \<in> ball x eu"
-    by (rule eventually_at_in_ball) fact
+    using eventually_at_ball[OF \<open>0 < eu\<close>]
+    by eventually_elim simp
   then have ev_cball: "\<forall>\<^sub>F y in at x. y \<in> cball x eu"
     by eventually_elim (use \<open>e > 0\<close> in auto)
   have "continuous_on (ball x eu) u"
@@ -2034,7 +1975,7 @@ proof (rule tendstoI)
   have mt_in: "ml \<in> existence_ivl0 x"
     using \<open>0 < e\<close> \<open>0 < d\<close> d_less
     by (auto intro!: mem_existence_ivl_iv_defined in_existence_between_zeroI[OF ret_exivl]
-        simp: closed_segment_real ml_def)
+        simp: closed_segment_eq_real_ivl ml_def)
   from open_existence_ivlE[OF mt_in]
   obtain e0 where e0: "e0 > 0" "cball x e0 \<times> {0..ml + e0} \<subseteq> Sigma X existence_ivl0" (is "?D \<subseteq> _")
     by auto
@@ -2053,7 +1994,7 @@ proof (rule tendstoI)
     using \<open>0 < e\<close> \<open>0 < d\<close> d_less
     by (intro uniform_limit_flow)
       (auto intro!: mem_existence_ivl_iv_defined in_existence_between_zeroI[OF ret_exivl]
-        simp: closed_segment_real )
+        simp: closed_segment_eq_real_ivl )
   {
     have "\<forall>\<^sub>F y in at x within {x. s x \<le> 0}. y \<in> X"
       by (rule topological_tendstoD[OF tendsto_ident_at open_dom \<open>x \<in> X\<close>])
@@ -2461,7 +2402,8 @@ proof -
     subgoal
     proof -
       have "\<forall>\<^sub>F x' in at x. x' \<in> ball x e'"
-        using \<open>0 < e'\<close> eventually_at_in_ball by blast
+        using eventually_at_ball[OF \<open>0 < e'\<close>]
+        by eventually_elim simp
       then have "\<forall>\<^sub>F x' in at x. u x' = return_time ?P x'"
         unfolding e'_eq
         by eventually_elim (rule u_rt, auto)
