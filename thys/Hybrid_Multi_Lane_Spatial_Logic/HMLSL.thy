@@ -38,8 +38,6 @@ sublocale hmlsl<sensors
 context hmlsl
 begin
 
-lemmas[simp] = minimum_dict maximum_dict
-
 text{* 
 All formulas are defined as abbreviations. As a consequence,
 proofs will directly refer to the semantics of HMLSL, i.e.,
@@ -357,13 +355,13 @@ lemma width_hchop_stable: "\<Turnstile>((\<^bold>\<omega> = x) \<^bold>\<leftrig
   by force 
 
 lemma length_geq_zero:"\<Turnstile> (\<^bold>\<l> \<ge> 0)"
-  by (metis order.not_eq_order_implies_strict real_int.length_ge_zero length_dict)
+  by (metis order.not_eq_order_implies_strict real_int.length_ge_zero)
 
 lemma length_split: "\<Turnstile>((\<^bold>\<l> > 0) \<^bold>\<rightarrow> (\<^bold>\<l> > 0) \<^bold>\<frown> (\<^bold>\<l> > 0))"
   using horizontal_chop_non_empty  by fastforce
 
 lemma length_meld: "\<Turnstile>((\<^bold>\<l> > 0) \<^bold>\<frown> (\<^bold>\<l> > 0) \<^bold>\<rightarrow> (\<^bold>\<l> > 0))"
-  using hchop_def real_int.chop_add_length_ge_0  length_dict 
+  using hchop_def real_int.chop_add_length_ge_0 
   by (metis (no_types, lifting))
 
 lemma length_dense:"\<Turnstile>((\<^bold>\<l> > 0) \<^bold>\<leftrightarrow> (\<^bold>\<l> > 0) \<^bold>\<frown> (\<^bold>\<l> > 0))"
@@ -454,20 +452,20 @@ proof (rule allI|rule notI)+
     where chops:"(v=vu--v1) \<and> (v1 = vm--vd)\<and> (ts,vu \<Turnstile>\<^bold>\<langle>re(c)\<^bold>\<rangle>) 
                  \<and> (ts,vm \<Turnstile> \<^bold>\<langle>re(c)\<^bold>\<rangle> ) \<and>( ts,vd \<Turnstile> \<^bold>\<langle> re(c)\<^bold>\<rangle>)"
     using assm by blast
-  from chops have res_vu:"|restrict vu (res ts) c| \<ge> 1" using card'_dict  
+  from chops have res_vu:"|restrict vu (res ts) c| \<ge> 1" 
     by (metis restriction_card_somewhere_mon)
-  from chops have res_vm:"|restrict vm (res ts) c| \<ge> 1" using card'_dict  
+  from chops have res_vm:"|restrict vm (res ts) c| \<ge> 1" 
     by (metis restriction_card_somewhere_mon)
-  from chops have res_vd:"|restrict vd (res ts) c| \<ge> 1" using card'_dict  
+  from chops have res_vd:"|restrict vd (res ts) c| \<ge> 1"
     by (metis restriction_card_somewhere_mon)
   from chops have 
     "|restrict v (res ts) c | = 
      |restrict vu (res ts) c|+ |restrict vm (res ts) c| + |restrict vd (res ts) c| "
-    using restriction_add_res using   card'_dict   by force
+    using restriction_add_res by force
   with res_vu and res_vd res_vm have "|restrict v (res ts) c | \<ge> 3" 
     by linarith
   with restriction_res_leq_two show False  
-    by (metis not_less_eq_eq numeral_2_eq_2 numeral_3_eq_3 card'_dict)
+    by (metis not_less_eq_eq numeral_2_eq_2 numeral_3_eq_3)
 qed
 
 lemma res_adj:"\<Turnstile>\<^bold>\<not>  (re(c) \<^bold>\<smile> (\<^bold>\<omega> > 0) \<^bold>\<smile> re(c)) " 
@@ -480,38 +478,38 @@ proof (rule allI|rule notI)+
     by blast
   hence res1:"|restrict v1 (res ts) c| \<ge> 1" by (simp add: le_numeral_extra(4))
   from chop have res2: "|restrict v2 (res ts) c| \<ge> 1" by (simp add: le_numeral_extra(4))
-  from res1 and res2 have "|restrict v (res ts) c| \<ge> 2" using   card'_dict 
+  from res1 and res2 have "|restrict v (res ts) c| \<ge> 2"
     using chop restriction.restriction_add_res by auto  
-  then have resv:"|restrict v (res ts) c| = 2" 
-    by (simp add: dual_order.antisym restriction.restriction_res_leq_two)
-  hence res_two_lanes:"|res ts c| =2" using atMostTwoRes restrict_res card'_dict card'_dict  
+  then have resv:"|restrict v (res ts) c| = 2"
+    using dual_order.antisym restriction.restriction_res_leq_two by blast
+  hence res_two_lanes:"|res ts c| =2" using atMostTwoRes restrict_res 
     by (metis (no_types, lifting) nat_int.card_subset_le dual_order.antisym)
   from this obtain p where p_def:"Rep_nat_int (res ts c) = {p, p+1}" 
-    using consecutiveRes card'_dict   by force
+    using consecutiveRes by force
   have "Abs_nat_int {p,p+1} \<sqsubseteq> lan v"  
-    by (metis card'_dict Rep_nat_int_inverse atMostTwoRes card_seteq finite_atLeastAtMost
+    by (metis Rep_nat_int_inverse atMostTwoRes card_seteq finite_atLeastAtMost
         insert_not_empty nat_int.card'.rep_eq nat_int.card_seq less_eq_nat_int.rep_eq
         p_def resv restrict_res restrict_view)
-  have vn_not_e:"lan vn \<noteq> \<emptyset>" using chop using card'_dict
+  have vn_not_e:"lan vn \<noteq> \<emptyset>" using chop
     by (metis nat_int.card_empty_zero less_irrefl width_ge)
   hence consec_vn_v2:"nat_int.consec (lan vn) (lan v2)" 
-    using nat_int.card_empty_zero chop nat_int.nchop_def one_neq_zero vchop_def card'_dict
+    using nat_int.card_empty_zero chop nat_int.nchop_def one_neq_zero vchop_def
     by auto
-  have v'_not_e:"lan v' \<noteq> \<emptyset>" using card'_dict chop 
+  have v'_not_e:"lan v' \<noteq> \<emptyset>" using chop 
     by (metis less_irrefl nat_int.card_empty_zero view.vertical_chop_assoc2 width_ge)
   hence consec_v1_v':"nat_int.consec (lan v1) (lan v')"
     by (metis (no_types, lifting) nat_int.card_empty_zero chop nat_int.nchop_def
-        card'_dict one_neq_zero vchop_def)
+        one_neq_zero vchop_def)
   hence consec_v1_vn:"nat_int.consec (lan v1) (lan vn)"
     by (metis (no_types, lifting) chop consec_vn_v2 nat_int.consec_def 
         nat_int.chop_min vchop_def)
   hence lesser_con:"\<forall>n m. (n \<^bold>\<in> (lan v1) \<and> m \<^bold>\<in> (lan v2) \<longrightarrow> n < m)" 
-    using consec_v1_vn consec_vn_v2 nat_int.consec_trans_lesser el_dict
+    using consec_v1_vn consec_vn_v2 nat_int.consec_trans_lesser
     by auto
   have p_in_v1:"p \<^bold>\<in> lan v1" 
   proof (rule ccontr)
     assume "\<not> p \<^bold>\<in> lan v1"
-    then have "p \<^bold>\<notin> lan v1" using el_dict not_in_dict by (simp )
+    then have "p \<^bold>\<notin> lan v1" by (simp )
     hence "p \<^bold>\<notin> restrict v1 (res ts) c"  using chop  by (simp add: chop )
     then have "p+1 \<^bold>\<in> restrict v1 (res ts) c"  
     proof -
@@ -526,7 +524,7 @@ proof (rule allI|rule notI)+
     qed
     hence suc_p:"p+1 \<^bold>\<in> lan v1" using chop by (simp add: chop)
     hence "p+1 \<^bold>\<notin> lan v2" using p_def restrict_def using lesser_con nat_int.el.rep_eq
-        nat_int.not_in.rep_eq not_in_dict el_dict by auto
+        nat_int.not_in.rep_eq by auto
     then have "p \<^bold>\<in> restrict v2 (res ts) c"
     proof -
       have f1: "minimum (lan v2) \<in> Rep_nat_int (lan v2)"
@@ -543,7 +541,7 @@ proof (rule allI|rule notI)+
     show False using lesser_con suc_p p by blast
   qed
   hence p_not_in_v2:"p \<^bold>\<notin> lan v2" using p_def restrict_def lesser_con 
-      nat_int.el.rep_eq nat_int.not_in.rep_eq el_dict not_in_dict
+      nat_int.el.rep_eq nat_int.not_in.rep_eq
     by auto
   then have "p+1 \<^bold>\<in> restrict v2 (res ts) c"
   proof -
@@ -558,18 +556,18 @@ proof (rule allI|rule notI)+
   qed
   hence suc_p_in_v2:"p+1 \<^bold>\<in> lan v2" using p_def restrict_def using chop by auto
   have "\<forall>n m. (n \<^bold>\<in> (lan v1) \<and> m \<^bold>\<in> (lan vn) \<longrightarrow> n < m)" 
-    using consec_v1_vn nat_int.consec_lesser el_dict by auto
+    using consec_v1_vn nat_int.consec_lesser by auto
   with p_in_v1 have ge_p:"\<forall>m. (m \<^bold>\<in> lan vn \<longrightarrow> p < m)" 
     by blast
   have "\<forall>n m. (n \<^bold>\<in> (lan vn) \<and> m \<^bold>\<in> (lan v2) \<longrightarrow> n < m)" 
-    using consec_vn_v2 nat_int.consec_lesser el_dict by auto
+    using consec_vn_v2 nat_int.consec_lesser by auto
   with suc_p_in_v2 have less_suc_p:"\<forall>m. (m \<^bold>\<in> lan vn \<longrightarrow>  m< p+1)"
     by blast
   have "\<forall>m. (m \<^bold>\<in> lan vn \<longrightarrow>  (m< p+1 \<and> m > p) )" 
     using ge_p less_suc_p by auto
   hence "\<not>(\<exists>m. (m \<^bold>\<in> lan vn))" 
     by (metis One_nat_def Suc_leI add.right_neutral add_Suc_right linorder_not_less)
-  hence "lan vn = \<emptyset>" using nat_int.non_empty_elem_in el_dict by auto
+  hence "lan vn = \<emptyset>" using nat_int.non_empty_elem_in by auto
   with vn_not_e show False by blast 
 qed
 
@@ -646,7 +644,7 @@ lemma res_continuous :"\<Turnstile>(re(c)) \<^bold>\<rightarrow> (\<^bold>\<not>
   by (metis (no_types, lifting) hchop_def len_view_hchop_left len_view_hchop_right
       restrict_def)
 
-lemma no_clm_before_res:"\<Turnstile>\<^bold>\<not>(cl(c) \<^bold>\<frown> re(c))" using card'_dict      
+lemma no_clm_before_res:"\<Turnstile>\<^bold>\<not>(cl(c) \<^bold>\<frown> re(c))"  
   by (metis (no_types, lifting) nat_int.card_empty_zero nat_int.card_subset_le
       disjoint hchop_def inf_assoc inf_le1 not_one_le_zero restrict_def)
 
@@ -658,7 +656,7 @@ proof (rule ccontr)
     using restriction_stable
     by (metis (no_types, lifting) hchop_def restrict_def)      
   have "restrict v (clm ts )c \<noteq> \<emptyset>" 
-    using assm nat_int.card_non_empty_geq_one restriction_stable1 card'_dict
+    using assm nat_int.card_non_empty_geq_one restriction_stable1
     by auto
   then have res_in_neq:"restrict v (clm ts) c \<sqinter> restrict v (res ts) c \<noteq>\<emptyset>"
     using clm_subs inf_absorb1
@@ -703,17 +701,17 @@ lemma clm_continuous :"\<Turnstile>(cl(c)) \<^bold>\<rightarrow> (\<^bold>\<not>
 
 
 lemma res_not_free: "\<Turnstile>(\<^bold>\<exists> c. re(c) \<^bold>\<rightarrow> \<^bold>\<not>free)" 
-  using nat_int.card_empty_zero one_neq_zero card'_dict by auto
+  using nat_int.card_empty_zero one_neq_zero by auto
 
 lemma clm_not_free: "\<Turnstile>(\<^bold>\<exists> c. cl(c) \<^bold>\<rightarrow> \<^bold>\<not>free)"
-  using nat_int.card_empty_zero card'_dict by auto
+  using nat_int.card_empty_zero by auto
 
 lemma free_no_res:"\<Turnstile>(free \<^bold>\<rightarrow>  \<^bold>\<not>(\<^bold>\<exists> c. re(c)))" 
-  using nat_int.card_empty_zero one_neq_zero card'_dict 
+  using nat_int.card_empty_zero one_neq_zero 
   by (metis less_irrefl)
 
 lemma free_no_clm:"\<Turnstile>(free \<^bold>\<rightarrow>  \<^bold>\<not>(\<^bold>\<exists> c. cl(c)))" 
-  using nat_int.card_empty_zero one_neq_zero card'_dict by (metis less_irrefl)
+  using nat_int.card_empty_zero one_neq_zero by (metis less_irrefl)
 
 lemma free_decompose:"\<Turnstile>free \<^bold>\<rightarrow> ( free \<^bold>\<frown> free)"
 proof (rule allI|rule impI)+
@@ -816,7 +814,7 @@ proof (rule allI|rule impI)+
       using ge_0 one_lane by blast
     hence ex_car:
       "\<exists>c. \<parallel>len v ts c\<parallel> > 0 \<and> (restrict v (clm ts) c \<noteq> \<emptyset> \<or> restrict v (res ts) c \<noteq> \<emptyset>)" 
-      using real_int.length_ge_zero dual_order.antisym not_le length_dict 
+      using real_int.length_ge_zero dual_order.antisym not_le 
       by metis
     obtain c where c_def:
       "\<parallel>len v ts c\<parallel> > 0 \<and> (restrict v (clm ts) c \<noteq> \<emptyset> \<or> restrict v (res ts) c \<noteq> \<emptyset>)"       
@@ -826,7 +824,7 @@ proof (rule allI|rule impI)+
     proof
       assume "restrict v (clm ts) c \<noteq> \<emptyset>"
       with one_lane have clm_one:"|restrict v (clm ts) c| = 1" 
-        using el_in_restriction_clm_singleton card'_dict el_dict      
+        using el_in_restriction_clm_singleton      
         by (metis card_non_empty_geq_one dual_order.antisym restriction.restriction_clm_leq_one)
       obtain v1 and v2 and v3 and v4 
         where "v=v1\<parallel>v2" and "v2=v3\<parallel>v4" 
@@ -850,7 +848,7 @@ proof (rule allI|rule impI)+
         have "restrict v3 (clm ts) c \<sqsubseteq> lan v3"      
           by (simp add: restrict_view)
         hence "\<exists>n. n \<^bold>\<notin> restrict v3 (clm ts) c \<and> n \<^bold>\<in> lan v3" 
-          using el_dict not_in_dict aux \<open>|restrict v3 (clm ts) c| = 1\<close> 
+          using aux \<open>|restrict v3 (clm ts) c| = 1\<close> 
             restriction.restrict_eq_lan_subs v3_one_lane
           by auto
         hence "|lan v3| > 1" 
@@ -869,7 +867,7 @@ proof (rule allI|rule impI)+
     next
       assume "restrict v (res ts) c \<noteq> \<emptyset>"
       with one_lane have clm_one:"|restrict v (res ts) c| = 1" 
-        using el_in_restriction_clm_singleton card'_dict      
+        using el_in_restriction_clm_singleton      
         by (metis nat_int.card_non_empty_geq_one nat_int.card_subset_le 
             dual_order.antisym restrict_view)
       obtain v1 and v2 and v3 and v4 
@@ -893,8 +891,8 @@ proof (rule allI|rule impI)+
         assume  aux:"restrict v3 (res ts) c \<noteq> lan v3"
         have "restrict v3 (res ts) c \<sqsubseteq> lan v3"      
           by (simp add: restrict_view)
-        hence "\<exists>n. n \<^bold>\<notin> restrict v3 (res ts) c \<and> n \<^bold>\<in> lan v3" using el_dict not_in_dict 
-         aux \<open>|restrict v3 (res ts) c| = 1\<close> restriction.restrict_eq_lan_subs v3_one_lane
+        hence "\<exists>n. n \<^bold>\<notin> restrict v3 (res ts) c \<and> n \<^bold>\<in> lan v3"
+          using aux \<open>|restrict v3 (res ts) c| = 1\<close> restriction.restrict_eq_lan_subs v3_one_lane
           by auto
         hence "|lan v3| > 1" 
           using \<open>| (restrict v3 (res ts) c)| = 1\<close> \<open>restrict v3 (res ts) c \<le> lan v3\<close> aux
@@ -926,11 +924,11 @@ proof (rule allI | rule impI)+
     from this obtain c and v1 and v' and v2 and vc where 
       vc_def:"(v=v1\<parallel>v') \<and> (v'=vc\<parallel>v2) \<and> (ts,vc \<Turnstile> cl(c) \<^bold>\<or> re(c))" by blast
     hence len_ge_zero:"\<parallel>len v ts c\<parallel> > 0" 
-      by (metis len_empty_on_subview1 len_empty_on_subview2 length_dict less_eq_real_def
+      by (metis len_empty_on_subview1 len_empty_on_subview2 less_eq_real_def
           real_int.length_ge_zero)
     from vc_def have vc_ex_car:
       "restrict vc (clm ts) c \<noteq> \<emptyset> \<or> restrict vc (res ts) c \<noteq>\<emptyset>" 
-      using nat_int.card_empty_zero one_neq_zero card'_dict by auto
+      using nat_int.card_empty_zero one_neq_zero by auto
     have eq_lan:"lan v = lan vc" using vc_def hchop_def by auto
     hence v_ex_car:"restrict v (clm ts) c \<noteq> \<emptyset> \<or> restrict v (res ts) c \<noteq>\<emptyset>" 
       using vc_ex_car by (simp add: restrict_def)

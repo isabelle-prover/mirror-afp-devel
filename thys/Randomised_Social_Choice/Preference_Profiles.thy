@@ -43,7 +43,7 @@ lemma finite_alts [simp]: "finite alts"
 proof -
   from nonempty_agents obtain i where "i \<in> agents" by blast
   then interpret finite_total_preorder_on alts "R i" by simp
-  show ?thesis by fact
+  show ?thesis by (rule finite_carrier)
 qed
 
 lemma prefs_wf' [simp]:

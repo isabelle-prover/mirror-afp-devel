@@ -365,7 +365,7 @@ proof-
       then obtain n where n: "lset (ldropn n P) \<subseteq> V'" by blast
       define P' where "P' = ldropn n P"
       hence "lset P' \<subseteq> V'" using n by blast
-      interpret vmc_path G' P' "lhd P'" p \<sigma>2 proof
+      interpret vmc_path': vmc_path G' P' "lhd P'" p \<sigma>2 proof
         show "\<not>lnull P'" unfolding P'_def
           using `\<not>lfinite P` lfinite_ldropn lnull_imp_lfinite by blast
         show "G'.valid_path P'" proof-
@@ -387,16 +387,16 @@ proof-
         qed
       qed simp
       have "G'.winning_strategy p \<sigma>2 (lhd P')"
-        using `lset P' \<subseteq> V'` `\<not>lnull P'` \<sigma>2(2)[of "lhd P'"] `V\<^bsub>G'\<^esub> = V'` llist.set_sel(1)
+        using `lset P' \<subseteq> V'` vmc_path'.P_not_null \<sigma>2(2)[of "lhd P'"] `V\<^bsub>G'\<^esub> = V'` llist.set_sel(1)
         by blast
-      hence "G'.winning_path p P'" using G'.winning_strategy_def vmc_path_axioms by blast
+      hence "G'.winning_path p P'" using G'.winning_strategy_def vmc_path'.vmc_path_axioms by blast
       moreover have "G'.VV p** \<subseteq> VV p**" unfolding G'_def using subgame_VV by simp
       ultimately have "winning_path p P'"
         using G'.winning_path_supergame[of p P' G] `\<omega>\<^bsub>G'\<^esub> = \<omega>` ParityGame_axioms by blast
       thus ?thesis
         unfolding P'_def
         using infinite_small_llength[OF `\<not>lfinite P`]
-              winning_path_drop_add[of P p n] `valid_path P`
+              winning_path_drop_add[of P p n] P_valid
         by blast
     next
       assume asm: "\<not>(\<exists>n. lset (ldropn n P) \<subseteq> V')"

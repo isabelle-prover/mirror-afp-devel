@@ -735,7 +735,7 @@ next
 
   show ?case unfolding has_parametrized_subprob_density_def
   proof (intro ballI conjI)
-    have "density_context {} (V \<union> V') \<Gamma> (\<lambda>a. 1)" by fact
+    have "density_context {} (V \<union> V') \<Gamma> (\<lambda>a. 1)" by (rule dc.density_context_empty)
     moreover note hd_let.prems
     ultimately have "has_parametrized_subprob_density (state_measure (V \<union> V') \<Gamma>)
                          (\<lambda>\<rho>. dens_ctxt_measure ({},V\<union>V',\<Gamma>,\<lambda>a. 1) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e1))

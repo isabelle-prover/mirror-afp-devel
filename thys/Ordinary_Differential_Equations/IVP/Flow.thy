@@ -2873,7 +2873,7 @@ proof (safe intro!: tendstoI)
           subgoal using dx by (auto; force)
           done
         subgoal by (simp add: \<open>x \<in> X\<close>)
-        subgoal by fact
+        subgoal by (rule both.J_ivl)
         subgoal using both.t0_in_J by blast
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> by blast
         subgoal using s by blast
@@ -2943,7 +2943,7 @@ proof (safe intro!: tendstoI)
           subgoal by simp
           done
         subgoal using \<open>y \<in> X\<close> auto_ll_on_open.existence_ivl_zero auto_ll_on_open_axioms both.F_iv_defined(2) twoR.flow_initial_time by blast
-        subgoal by fact
+        subgoal by (rule both.J_ivl)
         subgoal using both.t0_in_J by blast
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 y\<close> by blast
         subgoal using s by blast

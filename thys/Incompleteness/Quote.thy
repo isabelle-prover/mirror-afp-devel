@@ -666,14 +666,14 @@ proof -
                      \<turnstile> PfP (Q_Mem (Var i') (Var sm')) IMP
                        PfP (Q_Mem (Var i') (Q_Eats (Var sm') (Var sn')))"
          using qp.quote_all_MonPon_PfP_ssubst [OF Mem1 subset_refl] assms atoms V_mem
-         by (simp add: vquot_fm_def `finite V`) (simp add: qp.F_unfold p_def)
+         by (simp add: vquot_fm_def qp.Vs) (simp add: qp.F_unfold p_def)
       have Mem2: "{} \<turnstile> (Var i EQ Var sn) IMP (Var i IN Eats (Var sm) (Var sn))"
         by (blast intro: Mem_Eats_I2)
       have Q_Mem2: "quote_all p V
                  \<turnstile> PfP (Q_Eq (Var i') (Var sn')) IMP
                    PfP (Q_Mem (Var i') (Q_Eats (Var sm') (Var sn')))"
          using qp.quote_all_MonPon_PfP_ssubst [OF Mem2 subset_refl] assms atoms V_mem
-         by (simp add: vquot_fm_def `finite V`) (simp add: qp.F_unfold p_def)
+         by (simp add: vquot_fm_def qp.Vs) (simp add: qp.F_unfold p_def)
       have Subs1: "{} \<turnstile> Zero SUBS Var j"
         by blast
       have Q_Subs1: "{QuoteP (Var j) (Var j')} \<turnstile> PfP (Q_Subset Zero (Var j'))"

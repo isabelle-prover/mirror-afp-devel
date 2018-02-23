@@ -271,12 +271,12 @@ proof -
   interpret gba G by fact
   
   from INJ interpret gba_rename_precond G f "\<lambda>_. ()"
-    apply unfold_locales by simp_all
+    by unfold_locales simp_all
 
-  show "gba ?G'" by fact
-  show "finite (g_V G) \<Longrightarrow> finite (g_V ?G')" by fact
-  show "G'.accept = accept" by fact
-  show "G'.lang = lang" by fact
+  show "gba ?G'" by (rule G'.is_gba)
+  show "finite (g_V G) \<Longrightarrow> finite (g_V ?G')" by (fact finite_G'_V)
+  show "G'.accept = accept" by simp
+  show "G'.lang = lang" by simp
 qed
 
 subsection "Buchi Graphs"

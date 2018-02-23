@@ -58,7 +58,7 @@ lemma restriction_stable2:"(v=u\<parallel>w) \<longrightarrow> restrict v f  c =
 lemma restriction_un:
   "(v=u--w) \<longrightarrow> restrict v f c = (restrict u f c \<squnion> restrict w f c)"
   using nat_int.inter_distr1 nat_int.inter_empty1 nat_int.un_empty_absorb1
-    nat_int.un_empty_absorb2 nat_int.nchop_def restrict_def vchop_def union_dict 
+    nat_int.un_empty_absorb2 nat_int.nchop_def restrict_def vchop_def 
   by auto
     
 lemma restriction_mon1:"(v=u--w) \<longrightarrow> restrict u f c \<sqsubseteq> restrict v f c" 
@@ -144,16 +144,16 @@ proof
           using less_eq_nat_int.rep_eq subs by blast 
         have "\<forall>m . m \<^bold>\<in> lan v2 \<longrightarrow> m \<ge> minimum (lan v2)" 
           by (metis consec_lanes nat_int.minimum_def nat_int.consec_def 
-            nat_int.el.rep_eq el_dict atLeastAtMost_iff nat_int.leq_min_inf
+            nat_int.el.rep_eq atLeastAtMost_iff nat_int.leq_min_inf
             nat_int.rep_non_empty_means_seq)
         then have "\<forall>m . m \<^bold>\<in> lan v2 \<longrightarrow> m > maximum (lan v1)" 
           using assm nat_int.consec_def by fastforce
         then have "\<forall>m . m \<^bold>\<in> lan v2 \<longrightarrow> m > n+1" 
           using consec_lanes nat_int.maximum_def nat_int.card_seq 
-            nat_int.consec_def suc_n_in_v1 el_dict
+            nat_int.consec_def suc_n_in_v1
           by (simp add: nat_int.consec_lesser)
         then have "n \<notin> Rep_nat_int ((lan v2))" 
-          using suc_n_in_v1 assm nat_int.consec_def nat_int.el.rep_eq el_dict 
+          using suc_n_in_v1 assm nat_int.consec_def nat_int.el.rep_eq
           by auto
         hence "n\<notin> Rep_nat_int (restrict v2 (res ts) c)"
           using less_eq_nat_int.rep_eq set_rev_mp subs by blast
@@ -199,19 +199,19 @@ proof
           then have min:"nat_int.minimum (restrict v2 (res ts) c) = n+1" 
             by (metis (no_types) Min_singleton nat_int.minimum_def non_empty)              
           then have suc_n_in_v2:"n+1 \<^bold>\<in> (lan v2)"
-            using nat_int.el.rep_eq less_eq_nat_int.rep_eq subs True el_dict
+            using nat_int.el.rep_eq less_eq_nat_int.rep_eq subs True
             by auto
           have "\<forall>m . m \<^bold>\<in> lan v1 \<longrightarrow> m \<le> maximum (lan v1)" 
             by (metis atLeastAtMost_iff consec_lanes nat_int.maximum_def  nat_int.consec_def
-              nat_int.el.rep_eq el_dict nat_int.leq_max_sup nat_int.rep_non_empty_means_seq)
+              nat_int.el.rep_eq nat_int.leq_max_sup nat_int.rep_non_empty_means_seq)
           then have "\<forall>m . m \<^bold>\<in> lan v1 \<longrightarrow> m < minimum (lan v2)" using assm 
             using nat_int.consec_lesser nat_int.minimum_in nat_int.consec_def 
             by auto 
           then have "\<forall>m . m \<^bold>\<in> lan v1 \<longrightarrow> m < n+1" 
             using consec_lanes  nat_int.card_seq nat_int.consec_def suc_n_in_v2 
-              nat_int.consec_lesser el_dict by auto
+              nat_int.consec_lesser by auto
           then have suc_n_not_in_v1:"n+1 \<notin> Rep_nat_int ((lan v1))" 
-            using nat_int.el.rep_eq el_dict by auto
+            using nat_int.el.rep_eq by auto
           have suc_n_not_in_res_v1:"n+1 \<notin> Rep_nat_int (restrict v1 (res ts) c)" 
             using less_eq_nat_int.rep_eq restrict_view suc_n_not_in_v1 by blast
           from rep_restrict_v1 and n_in_res_v1 have res_v1_singleton:
@@ -264,15 +264,15 @@ proof
   assume n_in_restr:"n \<^bold>\<in> restrict v (clm ts) c"
   hence "n \<^bold>\<in> ((clm ts) c \<sqinter> (lan v))" by (simp add: restrict_def)
   hence "n \<in> (Rep_nat_int (clm ts c) \<inter> Rep_nat_int (lan v))" 
-    by (simp add: inf_nat_int.rep_eq nat_int.el_def el_dict)
+    by (simp add: inf_nat_int.rep_eq nat_int.el_def)
   hence n_in_rep_clm:"n \<in> (Rep_nat_int ((clm ts) c))" by simp
   then have "(clm ts) c \<noteq> \<emptyset>" using nat_int.el.rep_eq nat_int.non_empty_elem_in 
     by auto
   then have "|(clm ts) c| \<ge> 1" 
-    by (simp add: nat_int.card_non_empty_geq_one card'_dict)
+    by (simp add: nat_int.card_non_empty_geq_one)
   then have "|(clm ts) c| = 1" using atMostOneClm le_antisym 
     by blast
-  with n_in_rep_clm show "(clm ts) c = Abs_nat_int({n})" using card'_dict el_dict
+  with n_in_rep_clm show "(clm ts) c = Abs_nat_int({n})"
     by (metis Rep_nat_int_inverse nat_int.singleton singletonD)
 qed
   
@@ -286,7 +286,7 @@ proof
   have "(clm ts) c = Abs_nat_int({n})" 
     using n_in_res_v2  by (simp add: el_in_restriction_clm_singleton)   
   then show "restrict u (clm ts) c = \<emptyset>" 
-    by (metis assm el_dict inf.absorb_iff2 inf_commute less_eq_nat_int.rep_eq 
+    by (metis assm inf.absorb_iff2 inf_commute less_eq_nat_int.rep_eq 
         n_in_res_v2 nat_int.el.rep_eq nat_int.in_singleton restriction.restrict_subseteq
         restriction.restriction_disj subsetI) 
 qed
@@ -312,26 +312,26 @@ proof
   from assm have "restrict v (res ts) c=restrict u (res ts) c\<squnion>restrict w (res ts) c" 
     using restriction.restriction_un by blast
   with 1 show " |restrict v (res ts) c|=|restrict u (res ts) c|+|restrict w (res ts) c|" 
-    by (metis add.right_neutral add_cancel_left_left assm card'_dict nat_int.card_empty_zero
+    by (metis add.right_neutral add_cancel_left_left assm nat_int.card_empty_zero
         nat_int.card_un_add nat_int.un_empty_absorb1 nat_int.un_empty_absorb2 
-        restriction.restriction_consec_res union_dict)
+        restriction.restriction_consec_res)
 qed    
   
 lemma restriction_eq_view_card:"restrict v f c = lan v \<longrightarrow> |restrict v f c| =|lan v|" 
   by simp
     
 lemma restriction_card_mon1:"(v=u--w) \<longrightarrow> |restrict u f c| \<le> |restrict v f c|"
-  using nat_int.card_subset_le restriction_mon1 card'_dict by (simp )
+  using nat_int.card_subset_le restriction_mon1 by (simp )
     
 lemma restriction_card_mon2:"(v=u--w) \<longrightarrow> |restrict w f c| \<le> |restrict v f c|"
-  using nat_int.card_subset_le restriction_mon2 card'_dict by (simp )
+  using nat_int.card_subset_le restriction_mon2 by (simp )
     
 lemma restriction_res_leq_two:"|restrict v (res ts) c| \<le> 2"
-  using atMostTwoRes nat_int.card_subset_le le_trans restrict_res card'_dict 
+  using atMostTwoRes nat_int.card_subset_le le_trans restrict_res
   by metis
     
 lemma restriction_clm_leq_one:"|restrict v (clm ts) c| \<le> 1"
-  using atMostOneClm nat_int.card_subset_le le_trans restrict_clm card'_dict 
+  using atMostOneClm nat_int.card_subset_le le_trans restrict_clm
   by metis
     
 
@@ -367,11 +367,11 @@ proof
     next
       assume no_clm_w:"|restrict w (clm ts) c| = 0"
       then have "|restrict v (clm ts) c| = 0" 
-        by (metis N_Chop_dict assm card'_dict card_empty_zero chop_empty 
+        by (metis assm card_empty_zero chop_empty 
             nat_int.card_non_empty_geq_one nat_int.nchop_def no_clm_u 
-            restriction.restriction_un union_dict)
-      then show ?thesis 
-        by (simp add: no_clm_w no_clm_u)
+            restriction.restriction_un)
+      then show ?thesis
+        using no_clm_u no_clm_w by linarith
     qed
   qed
 qed
@@ -402,9 +402,9 @@ proof
   proof (cases "|restrict v f c| = 0")
     case True
     then have res_empty:"restrict v f c = \<emptyset>" 
-      by (metis nat_int.card_non_empty_geq_one nat_int.card_empty_zero card'_dict)
+      by (metis nat_int.card_non_empty_geq_one nat_int.card_empty_zero)
     then have "lan v = \<emptyset>" 
-      by (metis assm nat_int.card_empty_zero card'_dict nat_int.card_non_empty_geq_one)
+      by (metis assm nat_int.card_empty_zero nat_int.card_non_empty_geq_one)
     then show "restrict v f c = lan v" 
       using res_empty by auto
   next
@@ -432,12 +432,12 @@ proof
   proof (cases "clm ts c = \<emptyset>")
     case True
     hence res_ts'eq_ts:"res ts' c = res ts c" 
-      using res_ts' nat_int.un_empty_absorb1 union_dict by simp
+      using res_ts' nat_int.un_empty_absorb1 by simp
     from True have restrict_clm:"restrict v (clm ts) c = \<emptyset>" 
       using nat_int.inter_empty2 restrict_def by simp 
     from res_ts'eq_ts have "restrict v (res ts') c = restrict v (res ts) c" 
       by (simp add: restrict_def)
-    thus ?thesis using restrict_clm union_dict 
+    thus ?thesis using restrict_clm 
       by (simp add: nat_int.un_empty_absorb1)
   next 
     case False
@@ -447,12 +447,12 @@ proof
     proof
       assume consec:"consec (clm ts c) (res ts c)"
       then show ?thesis 
-        using consec_dict inter_distr1 res_ts' restriction.restrict_def 
-        by (simp add: Un_ac(3) inf_commute nat_int.union_def union_dict )
+        using inter_distr1 res_ts' restriction.restrict_def 
+        by (simp add: Un_ac(3) inf_commute nat_int.union_def)
     next
       assume consec:"consec (res ts c) (clm ts c)"
       then show ?thesis 
-        by (simp add: consec_dict inter_distr2 res_ts' restriction.restrict_def)
+        by (simp add: inter_distr2 res_ts' restriction.restrict_def)
     qed
   qed
 qed

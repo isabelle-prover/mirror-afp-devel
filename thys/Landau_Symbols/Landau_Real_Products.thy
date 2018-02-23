@@ -227,7 +227,7 @@ lemma landau_function_family_pair_trans_powr:
 proof (rule landau_function_family_pair_trans[OF _ assms(1)])
   interpret GH: landau_function_family_pair F "powr_closure g" H "\<lambda>x. g x powr 1" by fact
   interpret F: landau_function_family F "powr_closure f"
-    by (rule landau_function_family_powr_closure) fact+
+    by (rule landau_function_family_powr_closure) (rule GH.G.F_nontrivial, rule assms)
   show "landau_function_family_pair F (powr_closure f) (powr_closure g) (\<lambda>x. f x powr 1)"
   proof (unfold_locales; (elim powr_closureE; hypsubst)?)
     show "(\<lambda>x. f x powr 1) \<in> powr_closure f" by (rule powr_closureI)

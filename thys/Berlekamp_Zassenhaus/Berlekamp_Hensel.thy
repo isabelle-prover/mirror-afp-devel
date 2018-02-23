@@ -93,7 +93,7 @@ lemma prime_cop_exp_poly_mod:
 proof -
   from prime have p1: "p > 1" by (simp add: prime_int_iff)
   interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using p1 n by simp
-  from cop \<open>p > 1\<close> \<open>p ^ n > 1\<close> have "M c \<noteq> 0"
+  from cop p1 m1 have "M c \<noteq> 0"
     by (auto simp add: M_def)
   moreover have "M c < p^n" "M c \<ge> 0" unfolding M_def using m1 by auto
   ultimately show ?thesis by auto

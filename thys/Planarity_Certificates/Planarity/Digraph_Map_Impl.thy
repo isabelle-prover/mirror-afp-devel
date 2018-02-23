@@ -124,7 +124,7 @@ next
   then have "edge_rev M = swap_in (arcs G)"
     by (metis prod.collapse fun_eq_iff)
   then show "M \<in> all_maps G"
-    using \<open>edge_succ M permutes _\<close> M.edge_succ_cyclic
+    using M.edge_succ_permutes M.edge_succ_cyclic
     unfolding all_maps_def
     by (auto simp: to_map_def intro!: image_eqI[where x="edge_succ M"])
 qed

@@ -63,16 +63,16 @@ proof-
             using choose_good good_def step.hyps(2) by blast
           ultimately show ?thesis
             by (metis strategy_attracts_via_successor strategy_attracts_via_v0
-                      choose_strategy step.hyps(2) `v0\<rightarrow>w0` w0_V)
+                      choose_strategy step.hyps(2) v0_edge_w0 w0_V)
         qed (metis DiffD1 assms(2) step.hyps(2) strategy_attracts_via_successor
-                   strategy_attracts_via_v0 `v0\<rightarrow>w0` w0_V)
+                   strategy_attracts_via_v0 v0_edge_w0 w0_V)
         with * ** show ?case by blast
       qed
 
       have "\<not>lfinite P" proof
         assume "lfinite P"
-        hence "deadend (llast P)" using P_maximal `\<not>lnull P` maximal_ends_on_deadend by blast
-        moreover have "llast P \<in> S - W" using `lset P \<subseteq> S - W` `\<not>lnull P` `lfinite P` lfinite_lset by blast
+        hence "deadend (llast P)" using P_maximal P_not_null maximal_ends_on_deadend by blast
+        moreover have "llast P \<in> S - W" using `lset P \<subseteq> S - W` P_not_null `lfinite P` lfinite_lset by blast
         ultimately show False using S_W_no_deadends by blast
       qed
 
@@ -155,7 +155,7 @@ proof-
         hence "choose v0 v0 = w0" by (simp add: step.hyps(2) well_ordered_strategy_def)
       }
       hence "choose v0 \<in> good w0" using strategies_continue choose_good step.hyps(2) by simp
-      thus ?case unfolding good_def winning_region_def using `w0 \<in> V` by blast
+      thus ?case unfolding good_def winning_region_def using w0_V by blast
     qed (insert `v0 \<in> winning_region p`)
 
     have "winning_path p P" proof (rule ccontr)
@@ -165,7 +165,7 @@ proof-
         assume "lfinite P"
         hence "deadend (llast P)" using maximal_ends_on_deadend by simp
         moreover have "llast P \<in> winning_region p"
-          using `lset P \<subseteq> winning_region p` `\<not>lnull P` `lfinite P` lfinite_lset by blast
+          using `lset P \<subseteq> winning_region p` P_not_null `lfinite P` lfinite_lset by blast
         moreover have "llast P \<in> VV p"
           using contra paths_are_winning_for_one_player `lfinite P`
           unfolding winning_path_def by simp
