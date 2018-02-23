@@ -72,72 +72,70 @@ by (simp add:has_field_derivative_at_within)
 lemma order_zorder:
   fixes p::"complex poly" and z::complex
   assumes "poly p z=0" and "p\<noteq>0"
-  shows "order z p = zorder (poly p) z"
+  shows "order z p = nat (zorder (poly p) z)"
 proof -
-  define n where "n=zorder (poly p) z" 
-  define h where "h=zer_poly (poly p) z"
+  define n where "n=nat (zorder (poly p) z)" 
+  define h where "h=zor_poly (poly p) z"
   have "\<exists>w. poly p w \<noteq> 0" using assms(2) poly_all_0_iff_0 by auto
   then obtain r where "0 < n" "0 < r" "cball z r \<subseteq> UNIV" and 
       h_holo: "h holomorphic_on cball z r" and
       poly_prod:"(\<forall>w\<in>cball z r. poly p w = h w * (w - z) ^ n \<and> h w \<noteq> 0)"
-    using zorder_exist[of UNIV z "poly p",folded n_def h_def] `poly p z=0` poly_holomorphic_on
-    by auto
+    using zorder_exist_zero[of "poly p" UNIV z,folded h_def] `poly p z=0` poly_holomorphic_on
+    unfolding n_def by auto
   then have "h holomorphic_on ball z r"
     and "(\<forall>w\<in>ball z r. poly p w = h w * (w - z) ^ n)" 
     and "h z\<noteq>0"
     by auto
   then have "order z p = n" using `p\<noteq>0`
-    proof (induct n arbitrary:p h)
-      case 0
-      then have "poly p z=h z" using `r>0` by auto 
-      then have "poly p z\<noteq>0" using `h z\<noteq>0` by auto
-      then show ?case using order_root by blast
-    next
-      case (Suc n)
-      define sn where "sn=Suc n"
-      define h' where "h'\<equiv> \<lambda>w. deriv h w * (w-z)+ sn * h w"
-      have "(poly p has_field_derivative poly (pderiv p) w) (at w)" for w
-        using poly_DERIV[of p w] .
-      moreover have "(poly p has_field_derivative (h' w)*(w-z)^n ) (at w)" when "w\<in>ball z r" for w
-        proof (subst DERIV_cong_ev[of w w "poly p" "\<lambda>w.  h w * (w - z) ^ Suc n" ],simp_all)
-          show "\<forall>\<^sub>F x in nhds w. poly p x = h x * ((x - z) * (x - z) ^ n)"
-            unfolding eventually_nhds using Suc(3) `w\<in>ball z r`
-            apply (intro exI[where x="ball z r"])
-            by auto
-        next
-          have "(h has_field_derivative deriv h w) (at w)" 
-            using `h holomorphic_on ball z r` `w\<in>ball z r`  
-              holomorphic_on_imp_differentiable_at 
-            by (simp add: holomorphic_derivI)
-          then have "((\<lambda>w. h w * ((w - z) ^ sn)) 
-              has_field_derivative h' w * (w - z) ^ (sn - 1)) (at w)"
-            unfolding h'_def
-            apply (auto intro!: derivative_eq_intros simp add:field_simps)
-            by (auto simp add:field_simps sn_def)
-          then show "((\<lambda>w. h w * ((w - z) * (w - z) ^ n)) 
-              has_field_derivative h' w * (w - z) ^ n) (at w)"
-            unfolding sn_def by auto
-        qed
-      ultimately have "\<forall>w\<in>ball z r. poly (pderiv p) w = h' w * (w - z) ^ n"
-        using DERIV_unique by blast  
-      moreover have "h' holomorphic_on ball z r"
-        unfolding h'_def using `h holomorphic_on ball z r`
-        by (auto intro!: holomorphic_intros)
-      moreover have "h' z\<noteq>0" unfolding h'_def sn_def using `h z \<noteq> 0` of_nat_neq_0 by auto
-      moreover have "pderiv p \<noteq> 0"  
-        proof 
-          assume "pderiv p = 0"
-          obtain c where "p=[:c:]" using `pderiv p = 0` using pderiv_iszero by blast
-          then have "c=0"
-            using Suc(3)[rule_format,of z] `r>0` by auto
-          then show False using `p\<noteq>0` using `p=[:c:]` by auto
-        qed
-      ultimately have "order z (pderiv p) = n" 
-        by (auto elim: Suc.hyps)
-      moreover have "order z p \<noteq> 0"
-        using Suc(3)[rule_format,of z] `r>0` order_root `p\<noteq>0` by auto
-      ultimately show ?case using order_pderiv[OF `pderiv p \<noteq> 0`] by auto
+  proof (induct n arbitrary:p h)
+    case 0
+    then have "poly p z=h z" using `r>0` by auto 
+    then have "poly p z\<noteq>0" using `h z\<noteq>0` by auto
+    then show ?case using order_root by blast
+  next
+    case (Suc n)
+    define sn where "sn=Suc n"
+    define h' where "h'\<equiv> \<lambda>w. deriv h w * (w-z)+ sn * h w"
+    have "(poly p has_field_derivative poly (pderiv p) w) (at w)" for w
+      using poly_DERIV[of p w] .
+    moreover have "(poly p has_field_derivative (h' w)*(w-z)^n ) (at w)" when "w\<in>ball z r" for w
+    proof (subst DERIV_cong_ev[of w w "poly p" "\<lambda>w.  h w * (w - z) ^ Suc n" ],simp_all)
+      show "\<forall>\<^sub>F x in nhds w. poly p x = h x * ((x - z) * (x - z) ^ n)"
+        unfolding eventually_nhds using Suc(3) `w\<in>ball z r`
+        apply (intro exI[where x="ball z r"])
+        by auto
+      next
+        have "(h has_field_derivative deriv h w) (at w)" 
+          using `h holomorphic_on ball z r` `w\<in>ball z r` holomorphic_on_imp_differentiable_at 
+          by (simp add: holomorphic_derivI)
+        then have "((\<lambda>w. h w * ((w - z) ^ sn)) 
+                      has_field_derivative h' w * (w - z) ^ (sn - 1)) (at w)"
+          unfolding h'_def
+          apply (auto intro!: derivative_eq_intros simp add:field_simps)
+          by (auto simp add:field_simps sn_def)
+        then show "((\<lambda>w. h w * ((w - z) * (w - z) ^ n)) 
+                      has_field_derivative h' w * (w - z) ^ n) (at w)"
+          unfolding sn_def by auto
+      qed
+    ultimately have "\<forall>w\<in>ball z r. poly (pderiv p) w = h' w * (w - z) ^ n"
+      using DERIV_unique by blast  
+    moreover have "h' holomorphic_on ball z r"
+      unfolding h'_def using `h holomorphic_on ball z r`
+      by (auto intro!: holomorphic_intros)
+    moreover have "h' z\<noteq>0" unfolding h'_def sn_def using `h z \<noteq> 0` of_nat_neq_0 by auto
+    moreover have "pderiv p \<noteq> 0"  
+    proof 
+      assume "pderiv p = 0"
+      obtain c where "p=[:c:]" using `pderiv p = 0` using pderiv_iszero by blast
+      then have "c=0"
+        using Suc(3)[rule_format,of z] `r>0` by auto
+      then show False using `p\<noteq>0` using `p=[:c:]` by auto
     qed
+    ultimately have "order z (pderiv p) = n" by (auto elim: Suc.hyps)
+    moreover have "order z p \<noteq> 0"
+      using Suc(3)[rule_format,of z] `r>0` order_root `p\<noteq>0` by auto
+    ultimately show ?case using order_pderiv[OF `pderiv p \<noteq> 0`] by auto
+  qed
   then show ?thesis unfolding n_def .
 qed  
  
@@ -459,14 +457,16 @@ lemma argument_principle_poly:
             (\<Sum>x\<in>proots p. winding_number g x * of_nat (order x p))"  
 proof -
   have "contour_integral g (\<lambda>x. deriv (poly p) x / poly p x) = 2 * of_real pi * \<i> * 
-          (\<Sum>x | poly p x = 0. winding_number g x * of_nat (zorder (poly p) x))"
+          (\<Sum>x | poly p x = 0. winding_number g x * of_int (zorder (poly p) x))"
     apply (rule argument_principle[of UNIV "poly p" "{}" "\<lambda>_. 1" g,simplified,OF _ valid loop])
     using no_proots[unfolded proots_def] by (auto simp add:poly_roots_finite[OF \<open>p\<noteq>0\<close>] )
   also have "... =  2 * of_real pi * \<i> * (\<Sum>x\<in>proots p. winding_number g x * of_nat (order x p))"
   proof -
-    have "zorder (poly p) x = order x p" when "x\<in>proots p" for x 
+    have "nat (zorder (poly p) x) = order x p" when "x\<in>proots p" for x 
       using order_zorder[OF _ \<open>p\<noteq>0\<close>] that unfolding proots_def by auto
-    then show ?thesis unfolding proots_def by (auto intro!:comm_monoid_add_class.sum.cong)
+    then show ?thesis unfolding proots_def 
+      apply (auto intro!:comm_monoid_add_class.sum.cong)
+      by (metis assms(1) nat_eq_iff2 of_nat_nat order_root)
   qed
   finally show ?thesis . 
 qed  

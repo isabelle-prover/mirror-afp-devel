@@ -527,7 +527,7 @@ proof -
     also have "... = 1/(2 * of_real pi * \<i>) *contour_integral rec (\<lambda>x. deriv (poly p) x / poly p x)"
     proof -
       have "contour_integral rec (\<lambda>x. deriv (poly p) x / poly p x) = 2 * of_real pi * \<i> 
-              * (\<Sum>x | poly p x = 0. winding_number rec x * of_nat (zorder (poly p) x))"
+              * (\<Sum>x | poly p x = 0. winding_number rec x * of_int (zorder (poly p) x))"
       proof (rule argument_principle[of UNIV "poly p" "{}" "\<lambda>_. 1" rec,simplified])
         show "connected (UNIV::complex set)" using connected_UNIV[where 'a=complex] .
         show "path_image rec \<subseteq> UNIV - {x. poly p x = 0}" 
@@ -535,7 +535,9 @@ proof -
         show "finite {x. poly p x = 0}" by (simp add: poly_roots_finite that(3))
       qed
       also have " ... = 2 * of_real pi * \<i> * (\<Sum>x\<in>proots p. winding_number rec x * (order x p))" 
-        unfolding proots_within_def by (auto intro!:sum.cong simp add:order_zorder[OF _ \<open>p\<noteq>0\<close>])
+        unfolding proots_within_def 
+        apply (auto intro!:sum.cong simp add:order_zorder[OF _ \<open>p\<noteq>0\<close>] )
+        by (metis nat_eq_iff2 of_nat_nat order_root order_zorder that(3))
       finally show ?thesis by auto
     qed  
     also have "... = winding_number (poly p \<circ> rec) 0"

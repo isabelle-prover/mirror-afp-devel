@@ -24,9 +24,9 @@ proof -
   have "residue (\<lambda>z. (1 / z ^ m) / (exp z - 1)) (2 * pi * real_of_int n * \<i>) =
           1 / (2 * pi * real_of_int n * \<i>) ^ m / 1"
     using exp_integer_2pi[of "real_of_int n"] and assms
-    by (intro residue_simple_pole_deriv[of "UNIV-{0}"])
-       (auto intro!: holomorphic_intros derivative_eq_intros connected_open_delete_finite 
-             simp: mult_ac)
+    apply (rule_tac residue_simple_pole_deriv[where s="-{0}"])
+    by (auto intro!: holomorphic_intros derivative_eq_intros connected_open_delete_finite 
+             simp add: mult_ac connected_punctured_universe)
   thus ?thesis by (simp add: divide_simps)
 qed
 

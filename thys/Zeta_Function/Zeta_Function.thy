@@ -664,17 +664,18 @@ qed
 corollary is_pole_zeta: "is_pole zeta 1"
   unfolding zeta_def by (rule is_pole_hurwitz_zeta) auto
 
-theorem porder_hurwitz_zeta: 
+theorem zorder_hurwitz_zeta: 
   assumes "a > 0"
-  shows   "porder (hurwitz_zeta a) 1 = 1"
-proof (rule porder_eqI)
-  fix w :: complex assume "w \<in> UNIV - {1}"
-  thus "hurwitz_zeta a w = (pre_zeta a w * (w - 1) + a powr (1 - w)) / (w - 1) ^ 1"
-    by (simp add: hurwitz_zeta_def field_simps)
+  shows   "zorder (hurwitz_zeta a) 1 = -1"
+proof (rule zorder_eqI[of UNIV])
+  fix w :: complex assume "w \<in> UNIV" "w \<noteq> 1"
+  thus "hurwitz_zeta a w = (pre_zeta a w * (w - 1) + a powr (1 - w)) * (w - 1) powr (of_int (-1))"
+    apply (subst (1) powr_of_int)
+    by (auto simp add: hurwitz_zeta_def field_simps)
 qed (insert assms, auto intro!: holomorphic_intros)
 
-corollary porder_zeta: "porder zeta 1 = 1"
-  unfolding zeta_def by (rule porder_hurwitz_zeta) auto
+corollary zorder_zeta: "zorder zeta 1 = - 1"
+  unfolding zeta_def by (rule zorder_hurwitz_zeta) auto
 
 theorem residue_hurwitz_zeta: 
   assumes "a > 0"
