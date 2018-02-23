@@ -61,7 +61,7 @@ proof
     assume restr_res_nonempty:"restrict v (res ts) c \<noteq> \<emptyset>"
     hence restrict_one:"|restrict v (res ts) c | = 1" 
       using nat_int.card_non_empty_geq_one nat_int.card_subset_le dual_order.antisym
-        restr_subs_res assm card'_dict by fastforce
+        restr_subs_res assm by fastforce
     have "restrict v (res ts ) c \<sqsubseteq> lan v" using restr_subs_res assm by auto
     hence "restrict v (res ts)c = lan v" using restriction.restrict_eq_lan_subs
         restrict_one assm  by auto
@@ -74,7 +74,7 @@ proof
           un_empty_absorb1)
     then  have restrict_one:"|restrict v (clm ts) c | = 1" 
       using nat_int.card_non_empty_geq_one nat_int.card_subset_le dual_order.antisym
-        restr_subs_clm assm card'_dict by fastforce
+        restr_subs_clm assm by fastforce
     have "restrict v (clm ts ) c \<sqsubseteq> lan v" using restr_subs_clm assm by auto
     hence "restrict v (clm ts)c = lan v" using restriction.restrict_eq_lan_subs
         restrict_one assm   by auto

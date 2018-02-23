@@ -52,7 +52,7 @@ context pseudo_hoop_algebra begin
       by (rule right_complemented_monoid_algebra)
     show "lesseq_r a b = (a \<le> b)"
       apply (subst  le_iff_inf)
-      apply (subst `lesseq_r a b = (inf_rr a b = a)`)
+      apply (subst A.dual_algebra.inf.absorb_iff1 [of a b])
       apply (unfold inf_rr_inf [THEN sym])
       by simp
   qed

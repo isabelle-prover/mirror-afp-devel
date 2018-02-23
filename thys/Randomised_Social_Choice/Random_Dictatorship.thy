@@ -68,7 +68,7 @@ lemma pmf_random_dictatorship:
               real (card (favorites R i))) / real (card agents)"
 proof -
   from assms(1) interpret pref_profile_wf agents alts R .
-  from \<open>agents \<noteq> {}\<close> have "card agents > 0" by (auto simp del: nonempty_agents)
+  from nonempty_dom have "card agents > 0" by (auto simp del: nonempty_agents)
   hence "ennreal (pmf (RD R) x) = 
            ennreal ((\<Sum>i\<in>agents. pmf (pmf_of_set (favorites R i)) x) / real (card agents))"
     (is "_ = ennreal (?p / _)") unfolding random_dictatorship_def[OF assms]

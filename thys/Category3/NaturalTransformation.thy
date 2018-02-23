@@ -457,7 +457,7 @@ begin
     interpret \<rho>\<sigma>_\<tau>: vertical_composite A B F H K \<rho>\<sigma>.map \<tau> ..
     show ?thesis
       apply (intro eqI)
-      (* 3 *) using `natural_transformation A B F K \<rho>\<sigma>_\<tau>.map` apply simp
+      (* 3 *) using \<rho>\<sigma>_\<tau>.is_natural_transformation apply simp
       (* 2 *) using \<rho>_\<sigma>\<tau>.natural_transformation_axioms apply blast
       (* 1 *) by (simp add: \<rho>\<sigma>.map_def \<rho>\<sigma>_\<tau>.map_def \<rho>_\<sigma>\<tau>.map_simp_2 \<sigma>\<tau>.map_def)
   qed

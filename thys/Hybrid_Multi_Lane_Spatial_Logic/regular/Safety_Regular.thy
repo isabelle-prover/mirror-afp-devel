@@ -305,13 +305,13 @@ proof -
       
   have disj:"\<forall>c .((re c) \<sqinter> (cl c) = \<emptyset>)" by (simp add: clm_def nat_int.inter_empty1)
   have re_geq_one:"\<forall>c. |re c| \<ge> 1" 
-    by (simp add: Abs_nat_int_inverse nat_int.card'_def res_def card'_dict)
+    by (simp add: Abs_nat_int_inverse nat_int.card'_def res_def)
   have re_leq_two:"\<forall>c. |re c| \<le> 2" 
-    using nat_int.card'.rep_eq res_def nat_int.rep_single card'_dict by auto
+    using nat_int.card'.rep_eq res_def nat_int.rep_single by auto
   have cl_leq_one:"\<forall>c. |cl c| \<le> 1" 
-    using nat_int.card_empty_zero clm_def card'_dict by (simp )
+    using nat_int.card_empty_zero clm_def by (simp )
   have add_leq_two:"\<forall>c . |re c| + |cl c| \<le> 2"  
-    using nat_int.card_empty_zero clm_def re_leq_two card'_dict by (simp )
+    using nat_int.card_empty_zero clm_def re_leq_two by (simp )
   have  clNextRe : 
     "\<forall>c. ((cl c) \<noteq> \<emptyset> \<longrightarrow> (\<exists> n. Rep_nat_int (re c) \<union> Rep_nat_int (cl c) = {n, n+1}))"
     by (simp add: clm_def)
@@ -546,7 +546,7 @@ proof -
       have "ts,vc' \<Turnstile> re(c) \<^bold>\<and> re(d)" using 
           len_d len_c vc'_def ts_def ts_rep_def ts_in_type Abs_traffic_inverse
           res_c res_d nat_int.card'_def
-          Abs_real_int_inverse real_int.length_def traffic.res_def card'_dict
+          Abs_real_int_inverse real_int.length_def traffic.res_def
           nat_int.singleton2 Abs_nat_int_inverse
         by auto
       with leqvc have "ts,vc \<Turnstile> \<^bold>\<langle>re(c) \<^bold>\<and> re(d)\<^bold>\<rangle>" using somewhere_leq by blast

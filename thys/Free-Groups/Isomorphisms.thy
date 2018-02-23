@@ -163,7 +163,7 @@ proof-
       have "inv\<^bsub>int_group\<^esub> 1 = -1" 
         using int.inv_equality by auto
       hence "abs (group.lift_gi int_group f a) = 1"
-      using `group int_group`
+      using int.is_group
         by(auto simp add: group.lift_gi_def f_def)
       ultimately
       show False by simp

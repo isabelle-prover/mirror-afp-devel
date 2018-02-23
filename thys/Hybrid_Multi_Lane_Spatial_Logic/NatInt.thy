@@ -38,7 +38,10 @@ setup_lifting type_definition_nat_int
 
 subsection {* Basic properties of discrete intervals. *}
   
-class nat_int 
+locale nat_int 
+interpretation nat_int_class?: nat_int .
+
+context nat_int
 begin
   
 lemma un_consec_seq: "(m::nat)\<le> n \<and> n+1 \<le> l \<longrightarrow> {m..n} \<union> {n+1..l} = {m..l}" 
@@ -728,8 +731,8 @@ proof
     have "Rep_nat_int j \<noteq> {}"
       using f1 Rep_nat_int_inject bot_nat_int.rep_eq by auto
     then show ?thesis
-      using f2 f1 Abs_nat_int_inverse Rep_nat_int 1 local.union_result maximum_dict
-        minimum_dict nat_int.union_def nat_int_class.maximum_def nat_int_class.minimum_def
+      using f2 f1 Abs_nat_int_inverse Rep_nat_int 1 local.union_result
+        nat_int.union_def nat_int_class.maximum_def nat_int_class.minimum_def
         by force
   qed
 qed
@@ -784,7 +787,7 @@ proof (induct x)
       hence "n \<le> (m-1)" by simp
       obtain i' where  i_def:"i' = Abs_nat_int {n..m-1}" by blast
       then have card_i':"|i'| = x" 
-        using assm_IS card'_dict leq_nat_non_empty n_le_m
+        using assm_IS leq_nat_non_empty n_le_m
           nat_int_class.card_min_max nat_int_class.leq_max_sup' nat_int_class.leq_min_inf'
           seq_def by auto
       hence "Rep_nat_int i' = {} \<or> (\<exists>n. Rep_nat_int i' = {n.. n + (x - 1)})" 

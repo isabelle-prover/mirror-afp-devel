@@ -73,8 +73,6 @@ notation nat_int.maximum ("maximum")
 notation nat_int.minimum ("minimum")
 notation nat_int.consec ("consec")
 
-lemmas[simp] = R_Chop_dict N_Chop_dict length_dict
-
 text{* We lift the chopping relations from discrete and continuous intervals
 to views, and introduce new notation for these relations.*} 
 
@@ -251,9 +249,9 @@ proof
     where v'_def:"v' =\<lparr> ext = ext v, lan=(lan v1) \<squnion> (lan v3), own = (own v) \<rparr>"
     by simp
   then have 1:"v=v'--v4" 
-    using assm nat_int.chop_assoc1 vchop_def union_dict by auto
+    using assm nat_int.chop_assoc1 vchop_def by auto
   have 2:"v'=v1--v3" 
-    using v'_def assm nat_int.chop_assoc1 vchop_def union_dict by auto
+    using v'_def assm nat_int.chop_assoc1 vchop_def by auto
   from 1 and 2 have "(v=v'--v4) \<and>  (v'=v1--v3)" by best
   then show "(\<exists>v'. (v=v'--v4)  \<and> (v'=v1--v3))" ..
 qed
@@ -266,20 +264,20 @@ proof
     where v'_def:"v'=\<lparr> ext = ext v, lan =(lan v4) \<squnion> (lan v2), own = (own v) \<rparr>"  
     by simp
   then have 1:"v=v3--v'" 
-    using assm fst_conv nat_int.chop_assoc2 snd_conv vchop_def union_dict by auto
+    using assm fst_conv nat_int.chop_assoc2 snd_conv vchop_def by auto
   have 2: "v'=v4--v2" 
-    using assm nat_int.chop_assoc2 v'_def vchop_def union_dict by auto
+    using assm nat_int.chop_assoc2 v'_def vchop_def by auto
   from 1 and 2 have "(v=v3--v') \<and> (v'=v4--v2)" by best
   then show "(\<exists>v'. (v=v3--v') \<and> (v'=v4--v2))" ..
 qed
 
 lemma vertical_chop_singleton:
   "(v=u--w) \<and> |lan v| = 1 \<longrightarrow> ( |lan u| = 0 \<or> |lan w| = 0)" 
-  using nat_int.chop_single vchop_def Rep_nat_int_inverse card'_dict 
+  using nat_int.chop_single vchop_def Rep_nat_int_inverse 
   by fastforce
     
 lemma vertical_chop_add1:"(v=u--w) \<longrightarrow> |lan v| = |lan u| + |lan w|"
-  using nat_int.chop_add1 vchop_def card'_dict by fastforce
+  using nat_int.chop_add1 vchop_def by fastforce
 
     
 lemma vertical_chop_add2:
@@ -287,13 +285,13 @@ lemma vertical_chop_add2:
 proof
   assume assm:"|lan v| = x+y"
   hence add:"\<exists>i j. N_Chop(lan v, i,j) \<and> |i| = x \<and> |j| = y"
-    using  card'_dict  chop_add2 by blast
+    using chop_add2 by blast
   obtain i and j where l1_l2_def:"N_Chop(lan v, i,j) \<and> |i| = x \<and> |j| = y"
     using add by blast
   obtain u and w where "u=\<lparr>ext =  ext v, lan = i, own = (own v) \<rparr>"
     and "w = \<lparr> ext = ext v, lan = j, own = (own v) \<rparr> " by blast
   hence "(v=u--w) \<and> |lan u|=x \<and> |lan w|=y" 
-    using l1_l2_def view.vchop_def card'_dict 
+    using l1_l2_def view.vchop_def
     by (simp)
   thus "(\<exists> u w.  (v=u--w) \<and> |lan u| = x \<and> |lan w| = y)" by blast
 qed
@@ -414,14 +412,14 @@ proof
         have disjoint:" lan v \<sqinter>  lan vu = \<emptyset>" 
           by (simp add: consec nat_int.consec_inter_empty)
         have union:"lan v' = lan v \<squnion> lan vu"
-          by (metis Suc_eq_plus1 Suc_leI consec leq_max_sup' max maximum_dict min
+          by (metis Suc_eq_plus1 Suc_leI consec leq_max_sup' max min
               nat_int.consec_un_equality nat_int.consec_un_max nat_int.consec_un_min 
-              select_convs(2) union_dict v'_neq_empty vu)
+              select_convs(2) v'_neq_empty vu)
         then have "(v2=vd--v3) \<and> (v3=v--vu)"
           using vd v3 vu vchop_def nat_int.nchop_def nat_int.un_empty_absorb1 
             nat_int.un_empty_absorb2 nat_int.inter_empty1 nat_int.inter_empty2
             lanes_v2 own_v2 ext_v2 assm_exp vu_in_type  Abs_nat_int_inverse
-            consec union disjoint select_convs  N_Chop_dict union_dict 
+            consec union disjoint select_convs
           by force
         then show ?thesis using hchops by blast
       next
@@ -444,23 +442,23 @@ proof
             and 
             vu:"vu = \<lparr> ext = ext v2, lan = \<emptyset> , own = own v' \<rparr>" by blast
           have consec:"consec (lan vd) (lan v)" 
-            using True leq_max_sup' leq_nat_non_empty maximum_dict min 
+            using True leq_max_sup' leq_nat_non_empty min 
               nat_int.consec_def vd by auto
           have "maximum (lan vd \<squnion> lan v) = maximum (lan v)" 
-            using consec consec_dict consec_un_max maximum_dict by auto
+            using consec consec_un_max by auto
           then have max':"maximum (lan vd \<squnion> lan v) = maximum (lan v')"
-            by (simp add: maximum_dict max)
+            by (simp add: max)
           have "minimum (lan vd \<squnion> lan v) = minimum (lan vd)" 
-            using consec consec_dict consec_un_min minimum_dict by auto
+            using consec consec_un_min by auto
           then have min':"minimum (lan vd \<squnion> lan v) = minimum (lan v')"   
             by (metis atLeastatMost_empty_iff vd bot_nat_int.abs_eq consec 
                 nat_int.consec_def nat_int.leq_min_inf' select_convs(2))
           have union:" lan v' = lan vd \<squnion> lan v" 
-            using consec max' min' nat_int.consec_un_equality union_dict v'_neq_empty
+            using consec max' min' nat_int.consec_un_equality v'_neq_empty
             by fastforce
           then have "(v2=vd--v3) \<and> (v3=v--vu)"
             using assm_exp consec ext_v2 lanes_v2 nat_int.nchop_def nat_int.un_empty_absorb1
-              own_v2 union_dict v3 vd view.vchop_def vu by force
+              own_v2 v3 vd view.vchop_def vu by force
           then show ?thesis 
             using hchops by blast
         next
@@ -487,36 +485,35 @@ proof
           have union:"lan v3 = lan v \<squnion> lan vu"      
             by (simp add: v3 min max consec)              
           then have chop1:" (v3=v--vu)" 
-            using assm_exp consec ext_v2 nat_int.nchop_def union_dict v3 view.vchop_def
+            using assm_exp consec ext_v2 nat_int.nchop_def v3 view.vchop_def
               vu
             by auto
           have min_eq:"minimum (lan v3) = minimum (lan v)" 
             using chop1 consec nat_int.chop_min vchop_def by blast
           have neq3:"lan v3 \<noteq> \<emptyset>" 
             by (metis bot.extremum_uniqueI consec nat_int.consec_def nat_int.un_subset2
-                union union_dict)
+                union)
           have consec2:"consec (lan vd) (lan v3)"
             using min consec union min_eq Suc_leI nat_int.consec_def nat_int.leq_max_sup'
               nat_int.leq_min_inf' nat_int.leq_nat_non_empty neq3 v3 vd 
             by (auto)   
           have "minimum (lan vd \<squnion> lan v3) = minimum (lan vd)" 
-            using consec2 consec_dict consec_un_min minimum_dict by auto 
+            using consec2 consec_un_min by auto 
           then have min':"minimum (lan vd \<squnion> lan v3) = minimum (lan v')"
             by (metis vd atLeastatMost_empty_iff2 bot_nat_int.abs_eq consec2 leq_min_inf'
-                minimum_dict nat_int.consec_def select_convs(2))
+                nat_int.consec_def select_convs(2))
           have "maximum (lan vd \<squnion>lan v3) = maximum (lan v3)" 
-            using consec2 consec_dict consec_un_max maximum_dict by auto
+            using consec2 consec_un_max by auto
           then have "maximum (lan vd \<squnion>lan v3) = maximum (lan vu)" 
-            using consec consec_dict consec_un_max union maximum_dict by auto
+            using consec consec_un_max union by auto
           then have max':"maximum (lan vd \<squnion>lan v3) = maximum (lan v')"
             by (metis Suc_eq_plus1 Suc_leI max nat_int.leq_max_sup' 
                 select_convs(2) vu)
           have union2:" lan v' = lan vd \<squnion> lan v3" 
-            using min max consec2 neq3 union_dict min' max' maximum_dict
-              minimum_dict nat_int.consec_un_equality v'_neq_empty 
+            using min max consec2 neq3 min' max' nat_int.consec_un_equality v'_neq_empty 
             by force
           have "(v2=vd--v3) \<and> (v3=v--vu)" 
-            using union2 chop1 consec2 nat_int.nchop_def union_dict v2 v3 vd 
+            using union2 chop1 consec2 nat_int.nchop_def v2 v3 vd 
               view.vchop_def
             by fastforce
           then show ?thesis using hchops by blast
