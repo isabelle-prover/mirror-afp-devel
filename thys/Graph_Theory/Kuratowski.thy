@@ -1377,7 +1377,7 @@ next
   interpret spd_G': pair_pseudo_graph G'
   proof (unfold_locales, simp add: symmetric_def)
     have "sym {(u,v), (v,u)}" "sym (parcs G)" "sym {(u, w), (w, u), (v, w), (w, v)}"
-      using `symmetric G` by (auto simp: symmetric_def sym_def) 
+      using G.sym_arcs by (auto simp: symmetric_def sym_def) 
     then have "sym ({(u,v), (v,u)} \<union> (parcs G - {(u,w), (w,u), (v,w), (w,v)}))"
       by (intro sym_Un) (auto simp: sym_diff)
     then show "sym (parcs G')" unfolding G'_def by simp

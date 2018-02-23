@@ -71,7 +71,7 @@ lemma fifo_push2_aux_refine:
     then interpret l': push_effect_locale c s t f l u v by unfold_locales
     show ?thesis 
       apply (safe intro!: ext)
-      using l'.excess'_if l'.\<Delta>_def l'.cf'_alt \<open>u\<noteq>v\<close>
+      using l'.excess'_if l'.\<Delta>_def l'.cf'_alt l'.uv_not_eq(1)
       by (auto)  
   qed
   done  

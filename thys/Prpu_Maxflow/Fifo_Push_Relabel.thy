@@ -232,7 +232,7 @@ proof -
                   
               assume "v' \<in> it \<longrightarrow> v' = v" and UV'E: "(u, v') \<in> pe.l'.cf.E" and LUSLV': "l' v = l' v'"    
               with E'SS have "v'\<notin>it" by auto
-              moreover from UV'E E'SS \<open>v\<noteq>u\<close> have "(u,v')\<in>l'.cf.E" by auto  
+              moreover from UV'E E'SS pe.uv_not_eq(2) have "(u,v')\<in>l'.cf.E" by auto  
               ultimately have "l' u \<noteq> Suc (l' v')" using SAT_EDGES by auto    
               with LUSLV' show False by simp  
             qed      

@@ -118,7 +118,7 @@ lemma mahler_measure_poly_via_monic :
 lemma smult_inj[simp]: assumes "(a::'a::idom) \<noteq> 0" shows "inj (smult a)"
 proof-
   interpret map_poly_inj_zero_hom "( * ) a" using assms by (unfold_locales, auto)
-  show ?thesis unfolding smult_as_map_poly by fact
+  show ?thesis unfolding smult_as_map_poly by (rule inj_f)
 qed
 
 definition reconstruct_poly::"'a::idom \<Rightarrow> 'a list \<Rightarrow> 'a poly" where

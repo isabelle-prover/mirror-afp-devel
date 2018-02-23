@@ -352,7 +352,7 @@ begin
           done
       qed
     }
-    then obtain pl where "pl\<noteq>[]" "path (lvE \<inter> last p\<times>last p) w pl w" 
+    then obtain pl where pl: "pl\<noteq>[]" "path (lvE \<inter> last p\<times>last p) w pl w" 
       "\<forall>i<num_acc. \<exists>q\<in>set pl. i\<in>acc q" by blast
     hence "path E w pl w" and L_SS: "set pl \<subseteq> last p"
       apply -
@@ -367,7 +367,7 @@ begin
 
     have LASSO: "is_lasso_prpl (pr,pl)"
       unfolding is_lasso_prpl_def is_lasso_prpl_pre_def
-      by (simp,intro exI conjI) fact+
+      using \<open>path E w pl w\<close> P_REACH pl by auto
     
     from p_sc have "last p \<times> last p \<subseteq> (lvE \<inter> last p \<times> last p)\<^sup>*" by auto
     with lvE_ss_E have VL_CLOSED: "last p \<times> last p \<subseteq> (E \<inter> last p \<times> last p)\<^sup>*"

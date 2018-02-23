@@ -779,7 +779,7 @@ next
             have "dX X'' (Xd x) \<subseteq> Field (Pd (Xd x))"
               by (force simp: Pd_shuffle_to_top_simps shuffle_to_top_Field)
             moreover note \<open>allocation Y\<close> bspec[OF III[unfolded IH] \<open>d \<in> ds''\<close>] \<open>d \<notin> ds'\<close> \<open>x \<in> X''\<close> \<open>Xd x = d\<close>
-                          Pds'.stable_on_allocation[OF \<open>Pds'.stable_on ds ?Z\<close>] Pbos
+                          Pds'.stable_on_allocation[OF Pds'.Theorem_1] Pbos
             ultimately show ?thesis
               by (clarsimp simp: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_Above Pdds'.Cd_Above
                                  Int_Un_distrib2 Pd_shuffle_to_top_Field)

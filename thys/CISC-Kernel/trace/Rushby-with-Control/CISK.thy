@@ -459,7 +459,7 @@ proof-
         using spec_of_waiting by blast
   qed
   
-  note interpreted=`Interruptible_Separation_Kernel kstep output_f s0 current cswitch kprecondition realistic_execution CISK_control kinvolved ifp vpeq AS_set invariant AS_precondition aborting waiting`
+  note interpreted = int.Interruptible_Separation_Kernel_axioms
   note run_total_induct = Interruptible_Separation_Kernel.run_total.induct[of kstep output_f s0 current cswitch kprecondition realistic_execution
                                                                              CISK_control kinvolved ifp vpeq AS_set invariant AS_precondition aborting waiting _ interrupt]
   have run_equals_run_total:

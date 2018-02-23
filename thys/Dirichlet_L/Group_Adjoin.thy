@@ -35,9 +35,9 @@ proof -
   interpret H': subgroup H' G by fact
   show ?thesis
   proof
-    have "H \<subseteq> carrier (G\<lparr>carrier := H'\<rparr>)" by fact
+    have "H \<subseteq> carrier (G\<lparr>carrier := H'\<rparr>)" by (rule H.subset)
     also have "\<dots> = H'" by simp
-    also have "\<dots> \<subseteq> carrier G" by fact
+    also have "\<dots> \<subseteq> carrier G" by (rule H'.subset)
     finally show "H \<subseteq> \<dots>" .
   next
     fix x y assume "x \<in> H" "y \<in> H"
