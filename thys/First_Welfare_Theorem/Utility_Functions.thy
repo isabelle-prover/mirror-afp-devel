@@ -149,13 +149,13 @@ proof-
       then have "yn \<subseteq> xn"
         by (simp add: asm yn assms(2) rational_preference.no_better_subset_pref)
       then have "card yn \<le> card xn"
-        by (simp add: x_c y_c asm assms(1) assms(2) rational_preference.card_leq_pref xn yn)
+        by (simp add: x_c y_c asm assms rational_preference.card_leq_pref xn yn)
       then show "(real (f y) \<le> real (f x))"
-        using  f xn yn linordered_semidom_class.of_nat_le_iff by blast
+        using  f xn yn of_nat_le_iff by blast
     next
       assume "real (f y) \<le> real (f x)"
       then show "x \<succeq>[relation] y"
-        using assms(1) assms(2) f rational_preference.card_leq_pref x_c y_c by fastforce
+        using assms f rational_preference.card_leq_pref x_c y_c by fastforce
     qed
   next
     fix x y

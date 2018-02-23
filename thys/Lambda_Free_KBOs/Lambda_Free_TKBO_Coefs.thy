@@ -1892,10 +1892,10 @@ proof -
       case \<delta>_ne_0: False
       hence ary_f_ne_inf: "arity_sym f \<noteq> \<infinity>"
         using arity_sym_ne_infinity_if_\<delta>_gt_0 of_nat_0 by blast
-      show ?thesis
-        by (simp del: enat_ord_simps(1) add: max_args_def \<delta>_ne_0 enat_ord_simps(1)[symmetric]
-              enat_the_enat_iden[OF ary_f_ne_inf])
-          (rule wary_num_args_le_arity_head[OF ffi_wary[of "i + k2"], unfolded hd_eq_f, simplified])
+      have "enat (num_args (worst_chain (\<lambda>t s. ground t \<and> t >\<^sub>t\<^sub>w s) (\<lambda>t s. size s < size t) (i + k2))) \<le> arity_sym f"
+        using wary_num_args_le_arity_head[OF ffi_wary[of "i + k2"]] by (simp add: hd_eq_f)
+      with \<delta>_ne_0 show ?thesis
+        by (simp del: enat_ord_simps add: max_args_def  enat_ord_simps(1)[symmetric] enat_the_enat_iden[OF ary_f_ne_inf])
     next
       case \<delta>_eq_0: True
       show ?thesis

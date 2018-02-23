@@ -235,7 +235,7 @@ instance hmultiset :: bounded_lattice_bot
   by intro_classes
 
 instance hmultiset :: linordered_nonzero_semiring
-  by intro_classes
+  by intro_classes simp
 
 instance hmultiset :: semiring_no_zero_divisors
   by intro_classes (use mult_pos_pos not_gr_zero_hmset in blast)
