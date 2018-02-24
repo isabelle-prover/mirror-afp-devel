@@ -29,7 +29,7 @@ declare Un_upper1 [simp] Un_upper2 [simp]
 declare is_bound_typ_instance_closed_subst [simp]
 
 lemma s'_t_equals_s_t: 
-  "!!t::typ. $(%n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) t = $S t"
+  "\<And>t::typ. $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) t = $S t"
 apply (rule typ_substitutions_only_on_free_variables)
 apply (simp add: Ball_def)
 done
@@ -37,7 +37,7 @@ done
 declare s'_t_equals_s_t [simp]
 
 lemma s'_a_equals_s_a: 
-  "!!A::type_scheme list. $(%n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) A = $S A"
+  "\<And>A::type_scheme list. $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) A = $S A"
 apply (rule scheme_list_substitutions_only_on_free_variables)
 apply (simp add: Ball_def)
 done
@@ -45,64 +45,64 @@ done
 declare s'_a_equals_s_a [simp]
 
 lemma replace_s_by_s': 
- "$(%n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) A |-  
-     e :: $(%n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) t  
-  ==> $S A |- e :: $S t"
-apply (rule_tac P = "%A. A |- e :: $S t" in ssubst)
+ "$(\<lambda>n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) A |-  
+     e :: $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) t  
+  \<Longrightarrow> $S A |- e :: $S t"
+apply (rule_tac P = "\<lambda>A. A |- e :: $S t" in ssubst)
 apply (rule s'_a_equals_s_a [symmetric])
-apply (rule_tac P = "%t. $ (%n. if n : free_tv A Un free_tv (t2 S) then S n else TVar n) A |- e :: t" for t2 in ssubst)
+apply (rule_tac P = "\<lambda>t. $ (\<lambda>n. if n : free_tv A Un free_tv (t2 S) then S n else TVar n) A |- e :: t" for t2 in ssubst)
 apply (rule s'_t_equals_s_t [symmetric])
 apply simp
 done
 
 lemma alpha_A': 
-  "!!A::type_scheme list. $ (%x. TVar (if x : free_tv A then x else n + x)) A = $ id_subst A"
+  "\<And>A::type_scheme list. $ (\<lambda>x. TVar (if x : free_tv A then x else n + x)) A = $ id_subst A"
 apply (rule scheme_list_substitutions_only_on_free_variables)
 apply (simp add: id_subst_def)
 done
 
 lemma alpha_A: 
-  "!!A::type_scheme list. $ (%x. TVar (if x : free_tv A then x else n + x)) A = A"
+  "\<And>A::type_scheme list. $ (\<lambda>x. TVar (if x : free_tv A then x else n + x)) A = A"
 apply (rule alpha_A' [THEN ssubst])
 apply simp
 done
 
 lemma S_o_alpha_typ: 
-  "$ (S o alpha) (t::typ) = $ S ($ (%x. TVar (alpha x)) t)"
+  "$ (S \<circ> alpha) (t::typ) = $ S ($ (\<lambda>x. TVar (alpha x)) t)"
 apply (induct_tac "t")
 apply (simp_all)
 done
 
 lemma S_o_alpha_typ': 
-  "$ (%u. (S o alpha) u) (t::typ) = $ S ($ (%x. TVar (alpha x)) t)"
+  "$ (\<lambda>u. (S \<circ> alpha) u) (t::typ) = $ S ($ (\<lambda>x. TVar (alpha x)) t)"
 apply (induct_tac "t")
 apply (simp_all)
 done
 
 lemma S_o_alpha_type_scheme: 
-  "$ (S o alpha) (sch::type_scheme) = $ S ($ (%x. TVar (alpha x)) sch)"
+  "$ (S \<circ> alpha) (sch::type_scheme) = $ S ($ (\<lambda>x. TVar (alpha x)) sch)"
 apply (induct_tac "sch")
 apply (simp_all)
 done
 
 lemma S_o_alpha_type_scheme_list: 
-  "$ (S o alpha) (A::type_scheme list) = $ S ($ (%x. TVar (alpha x)) A)"
+  "$ (S \<circ> alpha) (A::type_scheme list) = $ S ($ (\<lambda>x. TVar (alpha x)) A)"
 apply (induct_tac "A")
 apply (simp_all) 
 apply (rule S_o_alpha_type_scheme [unfolded o_def])
 done
 
-lemma S'_A_eq_S'_alpha_A: "!!A::type_scheme list.  
-      $ (%n. if n : free_tv A Un free_tv t then S n else TVar n) A =  
-      $ ((%x. if x : free_tv A Un free_tv t then S x else TVar x) o  
-         (%x. if x : free_tv A then x else n + x)) A"
+lemma S'_A_eq_S'_alpha_A: "\<And>A::type_scheme list.  
+      $ (\<lambda>n. if n : free_tv A Un free_tv t then S n else TVar n) A =  
+      $ ((\<lambda>x. if x : free_tv A Un free_tv t then S x else TVar x) \<circ>  
+         (\<lambda>x. if x : free_tv A then x else n + x)) A"
 apply (subst S_o_alpha_type_scheme_list)
 apply (subst alpha_A)
 apply (rule refl)
 done
 
 lemma dom_S': 
- "dom (%n. if n : free_tv A Un free_tv t then S n else TVar n) <=  
+ "dom (\<lambda>n. if n : free_tv A Un free_tv t then S n else TVar n) \<subseteq>  
   free_tv A Un free_tv t"
 apply (unfold free_tv_subst dom_def)
 apply (simp (no_asm))
@@ -110,8 +110,8 @@ apply fast
 done
 
 lemma cod_S': 
-  "!!(A::type_scheme list) (t::typ).   
-   cod (%n. if n : free_tv A Un free_tv t then S n else TVar n) <=  
+  "\<And>(A::type_scheme list) (t::typ).   
+   cod (\<lambda>n. if n : free_tv A Un free_tv t then S n else TVar n) \<subseteq>  
    free_tv ($ S A) Un free_tv ($ S t)"
 apply (unfold free_tv_subst cod_def subset_eq)
 apply (rule ballI)
@@ -122,16 +122,16 @@ apply (fast dest: free_tv_of_substitutions_extend_to_scheme_lists intro: free_tv
 done
 
 lemma free_tv_S': 
- "!!(A::type_scheme list) (t::typ).  
-  free_tv (%n. if n : free_tv A Un free_tv t then S n else TVar n) <=  
+ "\<And>(A::type_scheme list) (t::typ).  
+  free_tv (\<lambda>n. if n : free_tv A Un free_tv t then S n else TVar n) \<subseteq>  
   free_tv A Un free_tv ($ S A) Un free_tv t Un free_tv ($ S t)"
 apply (unfold free_tv_subst)
 apply (fast dest: dom_S' [THEN subsetD] cod_S' [THEN subsetD])
 done
 
-lemma free_tv_alpha: "!!t1::typ.  
-      (free_tv ($ (%x. TVar (if x : free_tv A then x else n + x)) t1) - free_tv A) <=  
-          {x. ? y. x = n + y}"
+lemma free_tv_alpha: "\<And>t1::typ.  
+      (free_tv ($ (\<lambda>x. TVar (if x : free_tv A then x else n + x)) t1) - free_tv A) \<subseteq>  
+          {x. \<exists>y. x = n + y}"
 apply (induct_tac "t1")
 apply (simp (no_asm))
 apply fast
@@ -139,7 +139,7 @@ apply (simp (no_asm))
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_type: "!!t::typ. new_tv n t ==> {x. ? y. x = n + y} Int free_tv t = {}"
+lemma new_tv_Int_free_tv_empty_type: "\<And>t::typ. new_tv n t \<Longrightarrow> {x. \<exists>y. x = n + y} Int free_tv t = {}"
 apply safe
 apply (cut_tac le_add1)
 apply (drule new_tv_le)
@@ -149,7 +149,7 @@ apply (drule new_tv_not_free_tv)
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_scheme: "!!sch::type_scheme. new_tv n sch ==> {x. ? y. x = n + y} Int free_tv sch = {}"
+lemma new_tv_Int_free_tv_empty_scheme: "\<And>sch::type_scheme. new_tv n sch \<Longrightarrow> {x. \<exists>y. x = n + y} Int free_tv sch = {}"
 apply safe
 apply (cut_tac le_add1)
 apply (drule new_tv_le)
@@ -159,7 +159,7 @@ apply (drule new_tv_not_free_tv)
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_scheme_list: "!A::type_scheme list. new_tv n A --> {x. ? y. x = n + y} Int free_tv A = {}"
+lemma new_tv_Int_free_tv_empty_scheme_list: "\<forall>A::type_scheme list. new_tv n A \<longrightarrow> {x. \<exists>y. x = n + y} Int free_tv A = {}"
 apply (rule allI)
 apply (induct_tac "A")
 apply (simp (no_asm))
@@ -168,18 +168,18 @@ apply (fast dest: new_tv_Int_free_tv_empty_scheme)
 done
 
 lemma gen_t_le_gen_alpha_t [rule_format (no_asm)]: 
-   "new_tv n A --> gen A t <= gen A ($ (%x. TVar (if x : free_tv A then x else n + x)) t)"
+   "new_tv n A \<longrightarrow> gen A t \<le> gen A ($ (\<lambda>x. TVar (if x : free_tv A then x else n + x)) t)"
 apply (unfold le_type_scheme_def is_bound_typ_instance)
 apply (intro strip)
 apply (erule exE)
 apply (hypsubst)
-apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
+apply (rule_tac x = " (\<lambda>x. S (if n \<le> x then x - n else x))" in exI)
 apply (induct_tac t)
 apply (simp (no_asm))
 apply (rename_tac nat)
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))
-apply (subgoal_tac "n <= n + nat")
+apply (subgoal_tac "n \<le> n + nat")
 apply (drule new_tv_le)
 apply assumption
 apply (drule new_tv_not_free_tv)
@@ -191,7 +191,7 @@ done
 
 declare has_type.intros [intro!]
 
-lemma has_type_le_env [rule_format (no_asm)]: "A |- e::t ==> !B. A <= B -->  B |- e::t"
+lemma has_type_le_env [rule_format (no_asm)]: "A |- e::t \<Longrightarrow> \<forall>B. A \<le> B \<longrightarrow> B |- e::t"
 apply (erule has_type.induct)
    apply (simp (no_asm) add: le_env_def)
    apply (fastforce elim: bound_typ_instance_trans)
@@ -201,7 +201,7 @@ apply (slow elim: le_env_free_tv [THEN free_tv_subset_gen_le])
 done
 
 \<comment> \<open>@{text has_type} is closed w.r.t. substitution\<close>
-lemma has_type_cl_sub: "A |- e :: t ==> !S. $S A |- e :: $S t"
+lemma has_type_cl_sub: "A |- e :: t \<Longrightarrow> \<forall>S. $S A |- e :: $S t"
 apply (erule has_type.induct)
 (* case VarI *)
    apply (rule allI)
@@ -225,8 +225,8 @@ apply (rule replace_s_by_s')
 apply (cut_tac A = "$ S A" and A' = "A" and t = "t" and t' = "$ S t" in ex_fresh_variable)
 apply (erule exE)
 apply (erule conjE)+ 
-apply (rule_tac ?t1.0 = "$ ((%x. if x : free_tv A Un free_tv t then S x else TVar x) o (%x. if x : free_tv A then x else n + x)) t1" in has_type.LETI)
- apply (drule_tac x = " (%x. if x : free_tv A Un free_tv t then S x else TVar x) o (%x. if x : free_tv A then x else n + x) " in spec)
+apply (rule_tac ?t1.0 = "$ ((\<lambda>x. if x : free_tv A Un free_tv t then S x else TVar x) \<circ> (\<lambda>x. if x : free_tv A then x else n + x)) t1" in has_type.LETI)
+ apply (drule_tac x = " (\<lambda>x. if x : free_tv A Un free_tv t then S x else TVar x) \<circ> (\<lambda>x. if x : free_tv A then x else n + x) " in spec)
  apply (subst S'_A_eq_S'_alpha_A)
  apply assumption
 apply (subst S_o_alpha_typ)

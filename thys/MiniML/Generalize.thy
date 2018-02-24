@@ -29,11 +29,11 @@ definition gen_ML :: "[ctxt, typ] => type_scheme" where
 declare equalityE [elim!]
 
 lemma gen_eq_on_free_tv: 
-    "free_tv A = free_tv B ==> gen A t = gen B t"
+    "free_tv A = free_tv B \<Longrightarrow> gen A t = gen B t"
   by (induct t) simp_all
 
 lemma gen_without_effect [simp]:
-    "(free_tv t) <= (free_tv sch) \<Longrightarrow> gen sch t = (mk_scheme t)"
+    "(free_tv t) \<subseteq> (free_tv sch) \<Longrightarrow> gen sch t = (mk_scheme t)"
   by (induct t) auto
 
 lemma free_tv_gen [simp]: 
@@ -60,14 +60,14 @@ done
 
 lemma gen_subst_commutes [rule_format]: 
   "(free_tv S) Int ((free_tv t) - (free_tv A)) = {}  
-      --> gen ($ S A) ($ S t) = $ S (gen A t)"
+      \<longrightarrow> gen ($ S A) ($ S t) = $ S (gen A t)"
 apply (induct t)
  apply (intro strip)
  apply (rename_tac nat)
  apply (case_tac "nat : (free_tv A) ")
   apply (simp (no_asm_simp))
  apply simp
- apply (subgoal_tac "nat ~: free_tv S")
+ apply (subgoal_tac "nat \<notin> free_tv S")
   prefer 2 apply (fast)
  apply (simp add: free_tv_subst dom_def)
  apply (cut_tac free_tv_app_subst_scheme_list)
@@ -77,46 +77,46 @@ apply blast
 done
 
 lemma bound_typ_inst_gen [simp]:
-    "free_tv(t::typ) <= free_tv(A) \<Longrightarrow> bound_typ_inst S (gen A t) = t"
+    "free_tv(t::typ) \<subseteq> free_tv(A) \<Longrightarrow> bound_typ_inst S (gen A t) = t"
   by (induct t) simp_all
 
 lemma gen_bound_typ_instance: 
-  "gen ($ S A) ($ S t) <= $ S (gen A t)"
+  "gen ($ S A) ($ S t) \<le> $ S (gen A t)"
 apply (unfold le_type_scheme_def is_bound_typ_instance)
 apply safe
 apply (rename_tac "R")
-apply (rule_tac x = " (%a. bound_typ_inst R (gen ($S A) (S a))) " in exI)
+apply (rule_tac x = " (\<lambda>a. bound_typ_inst R (gen ($S A) (S a))) " in exI)
 apply (induct_tac "t")
  apply simp
 apply simp
 done
 
 lemma free_tv_subset_gen_le: 
-  "free_tv B <= free_tv A ==> gen A t <= gen B t"
+  "free_tv B \<subseteq> free_tv A \<Longrightarrow> gen A t \<le> gen B t"
 apply (unfold le_type_scheme_def is_bound_typ_instance)
 apply safe
 apply (rename_tac "S")
-apply (rule_tac x = "%b. if b:free_tv A then TVar b else S b" in exI)
+apply (rule_tac x = "\<lambda>b. if b:free_tv A then TVar b else S b" in exI)
 apply (induct_tac "t")
  apply fastforce
 apply simp
 done
 
 lemma gen_t_le_gen_alpha_t [rule_format, simp]: 
-  "new_tv n A -->  
-   gen A t <= gen A ($ (%x. TVar (if x : free_tv A then x else n + x)) t)"
+  "new_tv n A \<longrightarrow>  
+   gen A t \<le> gen A ($ (\<lambda>x. TVar (if x \<in> free_tv A then x else n + x)) t)"
 apply (unfold le_type_scheme_def is_bound_typ_instance)
 apply (intro strip)
 apply (erule exE)
 apply (hypsubst)
-apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
+apply (rule_tac x = " (\<lambda>x. S (if n \<le> x then x - n else x))" in exI)
 apply (induct t)
 apply (simp (no_asm))
 apply (rename_tac nat S)
-apply (case_tac "nat : free_tv A")
+apply (case_tac "nat \<in> free_tv A")
 apply (simp (no_asm_simp))
 apply (simp (no_asm_simp))
-apply (subgoal_tac "n <= n + nat")
+apply (subgoal_tac "n \<le> n + nat")
 apply (frule_tac t = "A" in new_tv_le)
 apply assumption
 apply (drule new_tv_not_free_tv)

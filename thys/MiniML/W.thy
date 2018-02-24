@@ -15,7 +15,7 @@ type_synonym result_W = "(subst * typ * nat) option"
 primrec W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
-                                 bound_typ_inst (%b. TVar(b+n)) (A!i),   
+                                 bound_typ_inst (\<lambda>b. TVar(b+n)) (A!i),   
                                  n + (min_new_bound_tv (A!i)) )  
                       else None)"
   
@@ -25,11 +25,11 @@ primrec W :: "[expr, ctxt, nat] => result_W" where
 | "W (App e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
                          (S2,t2,m2) := W e2 ($S1 A) m1;
                          U := mgu ($S2 t1) (t2 -> (TVar m2));
-                         Some( $U o $S2 o S1, U m2, Suc m2) )"
+                         Some( $U \<circ> $S2 \<circ> S1, U m2, Suc m2) )"
   
 | "W (LET e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
                          (S2,t2,m2) := W e2 ((gen ($S1 A) t1)#($S1 A)) m1;
-                         Some( $S2 o S1, t2, m2) )"
+                         Some( $S2 \<circ> S1, t2, m2) )"
 
 
 declare Suc_le_lessD [simp]
@@ -43,7 +43,7 @@ inductive_cases has_type_casesE:
 
 \<comment> \<open>the resulting type variable is always greater or equal than the given one\<close>
 lemma W_var_ge [rule_format (no_asm)]: 
-  "!A n S t m. W e A n  = Some (S,t,m) --> n<=m"
+  "\<forall>A n S t m. W e A n  = Some (S,t,m) \<longrightarrow> n\<le>m"
 apply (induct_tac "e")
 (* case Var(n) *)
 apply (simp (no_asm) split: split_option_bind)
@@ -61,12 +61,12 @@ done
 declare W_var_ge [simp]
 
 lemma W_var_geD: 
-  "Some (S,t,m) = W e A n ==> n<=m"
+  "Some (S,t,m) = W e A n \<Longrightarrow> n\<le>m"
 apply (simp add: eq_sym_conv)
 done
 
 lemma new_tv_compatible_W: 
-  "new_tv n A ==> Some (S,t,m) = W e A n ==> new_tv m A"
+  "new_tv n A \<Longrightarrow> Some (S,t,m) = W e A n \<Longrightarrow> new_tv m A"
 apply (drule W_var_geD)
 apply (rule new_scheme_list_le)
 apply assumption
@@ -74,7 +74,7 @@ apply assumption
 done
 
 lemma new_tv_bound_typ_inst_sch [rule_format (no_asm)]: 
-  "new_tv n sch --> new_tv (n + (min_new_bound_tv sch)) (bound_typ_inst (%b. TVar (b + n)) sch)"
+  "new_tv n sch \<longrightarrow> new_tv (n + (min_new_bound_tv sch)) (bound_typ_inst (\<lambda>b. TVar (b + n)) sch)"
 apply (induct_tac "sch")
   apply simp
  apply (simp add: add.commute)
@@ -98,8 +98,8 @@ declare new_tv_bound_typ_inst_sch [simp]
 
 \<comment> \<open>resulting type variable is new\<close>
 lemma new_tv_W [rule_format (no_asm)]: 
-  "!n A S t m. new_tv n A --> W e A n = Some (S,t,m) -->     
-               new_tv m S & new_tv m t"
+  "\<forall>n A S t m. new_tv n A \<longrightarrow> W e A n = Some (S,t,m) \<longrightarrow>     
+               new_tv m S \<and> new_tv m t"
 proof (induct e)
   case Var then show ?case
     apply (simp (no_asm) split: split_option_bind)
@@ -188,7 +188,7 @@ next
 qed
 
 lemma free_tv_bound_typ_inst1 [rule_format (no_asm)]: 
-  "(v ~: free_tv sch) --> (v : free_tv (bound_typ_inst (TVar o S) sch)) --> (? x. v = S x)"
+  "(v \<notin> free_tv sch) \<longrightarrow> (v \<in> free_tv (bound_typ_inst (TVar \<circ> S) sch)) \<longrightarrow> (\<exists>x. v = S x)"
 apply (induct_tac "sch")
 apply simp
 apply simp
@@ -201,8 +201,8 @@ done
 declare free_tv_bound_typ_inst1 [simp]
 
 lemma free_tv_W [rule_format (no_asm)]: 
-  "!n A S t m v. W e A n = Some (S,t,m) -->             
-          (v:free_tv S | v:free_tv t) --> v<n --> v:free_tv A"
+  "\<forall>n A S t m v. W e A n = Some (S,t,m) \<longrightarrow>             
+          (v\<in>free_tv S \<or> v\<in>free_tv t) \<longrightarrow> v<n \<longrightarrow> v\<in>free_tv A"
 proof (induct e)
   case (Var n) then show ?case
     apply (simp (no_asm) add: free_tv_subst split: split_option_bind)
@@ -284,16 +284,16 @@ next
     done
 qed
 
-lemma weaken_A_Int_B_eq_empty: "(!x. x : A --> x ~: B) ==> A Int B = {}"
+lemma weaken_A_Int_B_eq_empty: "(\<forall>x. x \<in> A \<longrightarrow> x \<notin> B) \<Longrightarrow> A \<inter> B = {}"
 apply fast
 done
 
-lemma weaken_not_elem_A_minus_B: "x ~: A | x : B ==> x ~: A - B"
+lemma weaken_not_elem_A_minus_B: "x \<notin> A \<or> x \<in> B \<Longrightarrow> x \<notin> A - B"
 apply fast
 done
 
 \<comment> \<open>correctness of W with respect to @{text has_type}\<close>
-lemma W_correct_lemma [rule_format (no_asm)]: "!A S t m n . new_tv n A --> Some (S,t,m) = W e A n --> $S A |- e :: t"
+lemma W_correct_lemma [rule_format (no_asm)]: "\<forall>A S t m n . new_tv n A \<longrightarrow> Some (S,t,m) = W e A n \<longrightarrow> $S A |- e :: t"
 apply (induct_tac "e")
 (* case Var n *)
 apply simp
@@ -410,9 +410,9 @@ done
 
 \<comment> \<open>Completeness of W w.r.t. @{text has_type}\<close>
 lemma W_complete_lemma [rule_format (no_asm)]: 
-  "ALL S' A t' n. $S' A |- e :: t' --> new_tv n A -->      
-               (EX S t. (EX m. W e A n = Some (S,t,m)) &   
-                       (EX R. $S' A = $R ($S A) & t' = $R t))"
+  "\<forall>S' A t' n. $S' A |- e :: t' \<longrightarrow> new_tv n A \<longrightarrow>
+               (\<exists>S t. (\<exists>m. W e A n = Some (S,t,m)) \<and>
+                       (\<exists>R. $S' A = $R ($S A) \<and> t' = $R t))"
 apply (induct e)
    (* case Var n *)
    apply (intro strip)
@@ -422,7 +422,7 @@ apply (induct e)
    apply (erule exE)
    apply (hypsubst)
    apply (rename_tac "S")
-   apply (rule_tac x = "%x. (if x < n then S' x else S (x - n))" in exI)
+   apply (rule_tac x = "\<lambda>x. (if x < n then S' x else S (x - n))" in exI)
    apply (rule conjI)
    apply (simp (no_asm_simp))
    apply (simp (no_asm_simp) add: bound_typ_inst_composed_subst [symmetric] new_tv_nth_nat_A o_def nth_subst 
@@ -431,7 +431,7 @@ apply (induct e)
   (* case Abs e *)
   apply (intro strip)
   apply (erule has_type_casesE)
-  apply (erule_tac x = "%x. if x=n then t1 else (S' x) " in allE)
+  apply (erule_tac x = "\<lambda>x. if x=n then t1 else (S' x) " in allE)
   apply (erule_tac x = " (FVar n) #A" in allE)
   apply (erule_tac x = "t2" in allE)
   apply (erule_tac x = "Suc n" in allE)
@@ -454,15 +454,15 @@ apply (induct e)
   apply (blast intro: sym [THEN W_var_geD] new_tv_W [THEN conjunct1] new_scheme_list_le new_tv_subst_scheme_list)
  
  (** LEVEL 33 **)
-apply (subgoal_tac "$ (%x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) = $ (%x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) (ta -> (TVar ma))")
-apply (rule_tac [2] t = "$ (%x. if x = ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) " and s = " ($ Ra ta) -> t'" in ssubst)
+apply (subgoal_tac "$ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) = $ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) (ta -> (TVar ma))")
+apply (rule_tac [2] t = "$ (\<lambda>x. if x = ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) " and s = " ($ Ra ta) -> t'" in ssubst)
 prefer 2 apply (simp (no_asm_simp) add: subst_comp_te) prefer 2
 apply (rule_tac [2] eq_free_eq_subst_te)
 prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "na ~=ma")
+apply (subgoal_tac [2] "na \<noteq>ma")
  prefer 3 apply (best dest: new_tv_W sym [THEN W_var_geD] new_tv_not_free_tv new_tv_le)
 apply (case_tac [2] "na:free_tv Sa")
-(* n1 ~: free_tv S1 *)
+(* n1 \<notin> free_tv S1 *)
 apply (frule_tac [3] not_free_impl_id)
  prefer 3 apply (simp)
 (* na : free_tv Sa *)
@@ -471,12 +471,12 @@ apply (drule_tac [2] eq_subst_scheme_list_eq_free)
  prefer 2 apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
 prefer 2 apply (simp (no_asm_simp)) prefer 2
 apply (case_tac [2] "na:dom Sa")
-(* na ~: dom Sa *)
+(* na \<notin> dom Sa *)
  prefer 3 apply (simp add: dom_def)
 (* na : dom Sa *)
 apply (rule_tac [2] eq_free_eq_subst_te)
 prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "nb ~= ma")
+apply (subgoal_tac [2] "nb \<noteq> ma")
 apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
 apply (erule_tac [3] conjE)
 apply (drule_tac [3] new_tv_subst_scheme_list)
@@ -486,13 +486,13 @@ apply (drule_tac [3] new_tv_subst_scheme_list)
 prefer 2 apply (simp (no_asm)) prefer 2
 apply (rule_tac [2] eq_free_eq_subst_te)
 prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "na ~= ma")
+apply (subgoal_tac [2] "na \<noteq> ma")
 apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
 apply (erule_tac [3] conjE)
 apply (drule_tac [3] sym [THEN W_var_geD])
  prefer 3 apply (fast dest: new_scheme_list_le new_tv_subst_scheme_list new_tv_W new_tv_not_free_tv)
 apply (case_tac [2] "na: free_tv t - free_tv Sa")
-(* case na ~: free_tv t - free_tv Sa *)
+(* case na \<notin> free_tv t - free_tv Sa *)
  prefer 3 
  apply simp
  apply fast
@@ -522,7 +522,7 @@ apply (simp add: o_def eq_sym_conv)
 apply (drule_tac s = "Some _" in sym)
 apply (rule eq_free_eq_subst_scheme_list)
 apply safe
-apply (subgoal_tac "ma ~= na")
+apply (subgoal_tac "ma \<noteq> na")
 apply (frule_tac [2] new_tv_W) prefer 2 apply assumption
 apply (erule_tac [2] conjE)
 apply (drule_tac [2] new_tv_subst_scheme_list)
@@ -535,7 +535,7 @@ apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
       addDs [sym RS @{thm W_var_geD}, @{thm new_scheme_list_le}, @{thm codD},
         @{thm new_tv_not_free_tv}]) 2) *})
 apply (case_tac "na: free_tv t - free_tv Sa")
-(* case na ~: free_tv t - free_tv Sa *)
+(* case na \<notin> free_tv t - free_tv Sa *)
  prefer 2 apply simp apply blast
 (* case na : free_tv t - free_tv Sa *)
 apply simp
@@ -576,8 +576,8 @@ done
 
 
 lemma W_complete: 
-  "[] |- e :: t' ==> (? S t. (? m. W e [] n = Some(S,t,m)) &   
-                     (? R. t' = $ R t))"
+  "[] |- e :: t' \<Longrightarrow> (\<exists>S t. (\<exists>m. W e [] n = Some(S,t,m)) \<and>
+                     (\<exists>R. t' = $ R t))"
 apply (cut_tac A = "[]" and S' = "id_subst" and e = "e" and t' = "t'" in W_complete_lemma)
 apply simp_all
 done
