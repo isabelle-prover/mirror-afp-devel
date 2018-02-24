@@ -106,9 +106,9 @@ instance ..
 end
 
 text  
-{* @{text "new_tv s n"} computes whether n is a new type variable w.r.t. a type 
+\<open>\<open>new_tv s n\<close> computes whether n is a new type variable w.r.t. a type 
    structure s, i.e. whether n is greater than any type variable 
-   occurring in the type structure *}
+   occurring in the type structure\<close>
 definition
   new_tv :: "[nat,'a::type_struct] => bool" where
   "new_tv n ts = (\<forall>m. m:(free_tv ts) \<longrightarrow> m<n)"
@@ -331,9 +331,9 @@ apply simp
 done
 
 text
-{* if two substitutions yield the same result if applied to a type
+\<open>if two substitutions yield the same result if applied to a type
    structure the substitutions coincide on the free type variables
-   occurring in the type structure *}
+   occurring in the type structure\<close>
 
 lemma typ_substitutions_only_on_free_variables: 
   "(\<forall>x\<in>free_tv t. (S x) = (S' x)) \<Longrightarrow> $ S (t::typ) = $ S' t"
