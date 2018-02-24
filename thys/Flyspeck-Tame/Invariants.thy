@@ -560,7 +560,7 @@ by (simp add: replacefacesAt_eq)
 lemmas replacefacesAt_simps = replacefacesAt_Nil replacefacesAt_Cons
 
 lemma len_nth_repAt[simp]:
-"!!xs. i < |xs| \<Longrightarrow> |replacefacesAt is x [y] xs ! i| = |xs!i|"
+"\<And>xs. i < |xs| \<Longrightarrow> |replacefacesAt is x [y] xs ! i| = |xs!i|"
 by (induct "is") (simp_all add: add:nth_list_update)
 
 
@@ -1653,9 +1653,9 @@ lemma split_face_edge_disj:
 apply(frule pre_split_face_p_between[THEN between_inter_empty])
 apply(unfold pre_split_face_def)
 apply clarify
-apply(subgoal_tac "!!x y. x \<in> set vs \<Longrightarrow> y \<in> \<V> f \<Longrightarrow> x \<noteq> y")
+apply(subgoal_tac "\<And>x y. x \<in> set vs \<Longrightarrow> y \<in> \<V> f \<Longrightarrow> x \<noteq> y")
  prefer 2 apply blast
-apply(subgoal_tac "!!x y. x \<in> set vs \<Longrightarrow> y \<in> \<V> f \<Longrightarrow> y \<noteq> x")
+apply(subgoal_tac "\<And>x y. x \<in> set vs \<Longrightarrow> y \<in> \<V> f \<Longrightarrow> y \<noteq> x")
  prefer 2 apply blast
 apply(subgoal_tac "a \<notin> set vs")
  prefer 2 apply blast
@@ -1676,9 +1676,9 @@ apply(subgoal_tac "vs \<noteq> [] \<Longrightarrow> hd vs \<notin> \<V> f")
  prefer 2 apply(drule hd_in_set) apply blast
 apply(subgoal_tac "vs \<noteq> [] \<Longrightarrow> last vs \<notin> \<V> f")
  prefer 2 apply(drule last_in_set) apply blast
-apply(subgoal_tac "!!u v. between (vertices f) u v \<noteq> [] \<Longrightarrow> hd(between (vertices f) u v) \<in> \<V> f")
+apply(subgoal_tac "\<And>u v. between (vertices f) u v \<noteq> [] \<Longrightarrow> hd(between (vertices f) u v) \<in> \<V> f")
  prefer 2 apply(drule hd_in_set)apply(drule inbetween_inset) apply blast
-apply(subgoal_tac "!!u v. between (vertices f) u v \<noteq> [] \<Longrightarrow> last (between (vertices f) u v) \<in> \<V> f")
+apply(subgoal_tac "\<And>u v. between (vertices f) u v \<noteq> [] \<Longrightarrow> last (between (vertices f) u v) \<in> \<V> f")
  prefer 2 apply(drule last_in_set) apply(drule inbetween_inset) apply blast
 apply(simp add:split_face_def edges_conv_Edges Edges_append Edges_Cons
  last_rev notinset_notinEdge1 notinset_notinEdge2 notinset_notinbetween
@@ -1742,7 +1742,7 @@ proof -
             \<E> f \<union> UNIV \<times> set vs \<union> set vs \<times> UNIV"
         using split_face_edges_f12_f21[OF pre_split_face split_face]
         by simp (fastforce dest:in_Edges_in_set)
-      have "!!x y. (y,x) \<in> \<E> f' \<Longrightarrow> x \<notin> set vs \<and> y \<notin> set vs"
+      have "\<And>x y. (y,x) \<in> \<E> f' \<Longrightarrow> x \<notin> set vs \<and> y \<notin> set vs"
         using f' gvs by(blast dest:in_edges_in_vertices)
       then show ?thesis using f f' f12 disj vs
         by(simp add: edges_graph_def edges_disj_def) blast
@@ -1857,7 +1857,7 @@ proof -
         by(auto simp:vertices_conv_Union_edges)
       moreover obtain z where "(x,z) \<in> \<E> f\<^sub>2" using `x \<in> \<V> f\<^sub>2`
         by(auto simp:vertices_conv_Union_edges)
-      moreover have "\<not>(EX y. (y,x) \<in> \<E> h)"
+      moreover have "\<not>(\<exists>y. (y,x) \<in> \<E> h)"
         using `x \<notin> \<V> g` minGraphProps9[OF mgp hg]
         by(blast dest:in_edges_in_vertices)
       ultimately show ?thesis by blast
@@ -1876,7 +1876,7 @@ proof -
       by(fastforce simp:face_face_op_def)
   next
     assume "|faces g| \<noteq> 2"
-    hence E: "!!f f'. f\<in>\<F> g \<Longrightarrow> f'\<in>\<F> g \<Longrightarrow> f \<noteq> f' \<Longrightarrow> \<E> f \<noteq> (\<E> f')\<inverse>"
+    hence E: "\<And>f f'. f\<in>\<F> g \<Longrightarrow> f'\<in>\<F> g \<Longrightarrow> f \<noteq> f' \<Longrightarrow> \<E> f \<noteq> (\<E> f')\<inverse>"
       using mgp by(simp add:minGraphProps_def face_face_op_def)
     thus ?thesis using set_faces_splitFace[OF mgp fg pre fdg] C12 Cg12
       by(fastforce simp:face_face_op_def)
@@ -2629,9 +2629,9 @@ qed
 subsection{* Increasing properties of @{const subdivFace'} *}
 
 lemma subdivFace'_incr:
-assumes Ptrans: "!!x y z.  Q x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
-and mkFin: "!!f g. f \<in> \<F> g \<Longrightarrow> \<not> final f \<Longrightarrow> P g (makeFaceFinal f g)"
-and fdg_incr: "!! g u v f vs.
+assumes Ptrans: "\<And>x y z.  Q x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
+and mkFin: "\<And>f g. f \<in> \<F> g \<Longrightarrow> \<not> final f \<Longrightarrow> P g (makeFaceFinal f g)"
+and fdg_incr: "\<And>g u v f vs.
    pre_splitFace g u v f vs \<Longrightarrow>
    Q g (snd(snd(splitFace g u v f vs)))"
 shows
@@ -2701,9 +2701,9 @@ proof -
 qed
 
 lemma next_plane0_incr:
-assumes Ptrans: "!!x y z. Q x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
-and mkFin: "!!f g. f \<in> \<F> g \<Longrightarrow> \<not> final f \<Longrightarrow> P g (makeFaceFinal f g)"
-and fdg_incr: "!! g u v f vs.
+assumes Ptrans: "\<And>x y z. Q x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
+and mkFin: "\<And>f g. f \<in> \<F> g \<Longrightarrow> \<not> final f \<Longrightarrow> P g (makeFaceFinal f g)"
+and fdg_incr: "\<And>g u v f vs.
    pre_splitFace g u v f vs \<Longrightarrow>
    Q g (snd(snd(splitFace g u v f vs)))"
 and mgp: "minGraphProps g" and gg': "g [next_plane0\<^bsub>p\<^esub>]\<rightarrow> g'"

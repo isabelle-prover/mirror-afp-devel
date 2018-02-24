@@ -7,7 +7,7 @@ fixes empty :: "'m"
 and up :: "'a \<Rightarrow> 'b list \<Rightarrow> 'm \<Rightarrow> 'm"
 and map_of :: "'m \<Rightarrow> 'a \<Rightarrow> 'b list"
 and M :: "'m \<Rightarrow> bool"
-assumes map_empty: "map_of empty = (%a. [])"
+assumes map_empty: "map_of empty = (\<lambda>a. [])"
 and map_up: "map_of (up a b m) = (map_of m)(a := b)"
 and M_empty: "M empty"
 and M_up: "M m \<Longrightarrow> M (up a b m)"
@@ -33,7 +33,7 @@ begin
 
 definition "insert_mod x m =
   (let k = key x; ys = map_of m k
-   in if (EX y : set ys. subsumed x y) then m else up k (x#ys) m)"
+   in if (\<exists>y \<in> set ys. subsumed x y) then m else up k (x#ys) m)"
 
 end
 

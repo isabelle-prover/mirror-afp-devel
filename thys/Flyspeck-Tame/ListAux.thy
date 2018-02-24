@@ -116,7 +116,7 @@ lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
 subsubsection {* @{const concat} *}
 
 syntax
-  "_concat" :: "idt => 'a list => 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
+  "_concat" :: "idt \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
 translations
   "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
 
@@ -175,7 +175,7 @@ primrec mapAt :: "nat list \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a
      else mapAt ns f as)"
 
 
-lemma length_mapAt[simp]: "!!xs. length(mapAt vs f xs) = length xs"
+lemma length_mapAt[simp]: "\<And>xs. length(mapAt vs f xs) = length xs"
 by(induct vs) auto
 
 lemma length_replace1[simp]: "length(replace x [y] xs) = length xs"
@@ -358,7 +358,7 @@ qed
 subsubsection {* Misc *}
 
 (* FIXME move to List *)
-lemma drop_last_in: "!!n. n < length ls \<Longrightarrow> last ls \<in> set (drop n ls)"
+lemma drop_last_in: "\<And>n. n < length ls \<Longrightarrow> last ls \<in> set (drop n ls)"
 apply (frule_tac last_drop) apply(erule subst)
 apply (case_tac "drop n ls" rule: rev_exhaust) by simp_all
 
@@ -554,9 +554,9 @@ definition splitAt :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> '
 
 subsubsection {* @{const splitAtRec} *}
 
-lemma splitAtRec_conv: "!!bs.
+lemma splitAtRec_conv: "\<And>bs.
  splitAtRec x bs xs =
- (bs @ takeWhile (%y. y\<noteq>x) xs, tl(dropWhile (%y. y\<noteq>x) xs))"
+ (bs @ takeWhile (\<lambda>y. y\<noteq>x) xs, tl(dropWhile (\<lambda>y. y\<noteq>x) xs))"
 by(induct xs) auto
 
 lemma splitAtRec_distinct_fst: "\<And> s. distinct vs \<Longrightarrow> distinct s \<Longrightarrow> (set s) \<inter>  (set vs) = {} \<Longrightarrow> distinct (fst (splitAtRec ram1 s vs))"
@@ -592,7 +592,7 @@ by (induct vs) auto
 subsubsection {* @{const splitAt} *}
 
 lemma splitAt_conv:
- "splitAt x xs = (takeWhile (%y. y\<noteq>x) xs, tl(dropWhile (%y. y\<noteq>x) xs))"
+ "splitAt x xs = (takeWhile (\<lambda>y. y\<noteq>x) xs, tl(dropWhile (\<lambda>y. y\<noteq>x) xs))"
 by(simp add: splitAt_def splitAtRec_conv)
 
 lemma splitAt_no_ram[simp]:
@@ -866,13 +866,13 @@ proof -
 qed
 
 lemma fst_splitAt_upt:
- "j <= i \<Longrightarrow> i < k \<Longrightarrow> fst(splitAt i [j..<k]) = [j..<i]"
+ "j \<le> i \<Longrightarrow> i < k \<Longrightarrow> fst(splitAt i [j..<k]) = [j..<i]"
 using splitAt_take[where ls = "[j..<k]" and i="i-j"]
 apply (simp del:splitAt_take)
 done
 
 lemma snd_splitAt_upt:
- "j <= i \<Longrightarrow> i < k \<Longrightarrow> snd(splitAt i [j..<k]) = [i+1..<k]"
+ "j \<le> i \<Longrightarrow> i < k \<Longrightarrow> snd(splitAt i [j..<k]) = [i+1..<k]"
 using splitAt_drop[where ls = "[j..<k]" and i="i-j"]
 by simp
 
@@ -968,7 +968,7 @@ apply (induct a) by auto
 
 
 lemma splitAt_rotate_pair_conv:
-  "!!xs. \<lbrakk> distinct xs; x \<in> set xs \<rbrakk>
+  "\<And>xs. \<lbrakk> distinct xs; x \<in> set xs \<rbrakk>
   \<Longrightarrow> snd (splitAt x (rotate n xs)) @ fst (splitAt x (rotate n xs)) =
       snd (splitAt x xs) @ fst (splitAt x xs)"
 apply(induct n) apply simp

@@ -60,8 +60,8 @@ lemma length_deleteAround: "length (deleteAround g v ps) \<le> length ps"
   by (auto simp only: deleteAround_def length_removeKeyList Let_def)
 
 function ExcessNotAtRec :: "(nat, nat) table \<Rightarrow> graph \<Rightarrow> nat" where
- "ExcessNotAtRec [] = (%g. 0)"
- | "ExcessNotAtRec ((x, y)#ps) = (%g.  max (ExcessNotAtRec ps g)
+ "ExcessNotAtRec [] = (\<lambda>g. 0)"
+ | "ExcessNotAtRec ((x, y)#ps) = (\<lambda>g.  max (ExcessNotAtRec ps g)
          (y + ExcessNotAtRec (deleteAround g x ps) g))"
 by pat_completeness auto
 termination by (relation "measure size") 
@@ -111,7 +111,7 @@ definition next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("ne
           in \<Squnion>\<^bsub>i \<in> polysizes p g\<^esub> generatePolygonTame i v f g"
 
 text{*\noindent Extensionally, @{const next_tame0} is just
-@{term"filter P o next_plane p"} for some suitable @{text P}. But
+@{term"filter P \<circ> next_plane p"} for some suitable @{text P}. But
 efficiency suffers considerably if we first create many graphs and
 then filter out the ones not in @{const polysizes}. *}
 

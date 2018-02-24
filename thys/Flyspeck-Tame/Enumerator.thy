@@ -47,7 +47,7 @@ definition enumBase :: "nat \<Rightarrow> nat list list" where
 definition enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list list" where
  "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<leftarrow> [last is ..< Suc nmax]]"
 
-definition enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where (* precondition inner >= 3 *)
+definition enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where (* precondition inner \<ge> 3 *)
  "enumerator inner outer \<equiv>
      let nmax = outer - 2; k = inner - 3 in 
      [[0] @ is @ [outer - 1]. is \<leftarrow> (enumAppend nmax ^^ k) (enumBase nmax)]"    
@@ -57,7 +57,7 @@ definition enumTab :: "nat list list iarray iarray" where
 
 (* never used with > 8 but easier this way *)
 definition enum :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where
-"enum inner outer \<equiv> if inner < 9 & outer < 9 then enumTab\<lbrakk>inner,outer\<rbrakk>
+"enum inner outer \<equiv> if inner < 9 \<and> outer < 9 then enumTab\<lbrakk>inner,outer\<rbrakk>
                     else enumerator inner outer"
 
 text{* \paragraph{Conversion to list of vertices} *}

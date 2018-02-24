@@ -49,7 +49,7 @@ apply blast
 done
 
 
-(* Could prove = instead of >=, but who needs it? *)
+(* Could prove = instead of \<ge>, but who needs it? *)
 lemma genPoly_incr_facesquander_lb:
 assumes "g' \<in> set (generatePolygon n v f g)" "inv g"
         "f \<in> set(nonFinals g)" "v \<in> \<V> f" "3 \<le> n"
@@ -129,7 +129,7 @@ qed
 
 
 lemma sep_conv:
-assumes mgp: "minGraphProps g" and "V <= \<V> g"
+assumes mgp: "minGraphProps g" and "V \<subseteq> \<V> g"
 shows "separated g V = (\<forall>u\<in>V.\<forall>v\<in>V. u \<noteq> v \<longrightarrow> \<not> close g u v)" (is "?P = ?Q")
 proof
   assume sep: ?P
@@ -140,7 +140,7 @@ proof
       "if": "if |vertices f| = 4 then (v = f \<bullet> u) \<or> (v = f \<bullet> (f \<bullet> u))
                                else (v = f \<bullet> u)"
       by (unfold close_def) blast
-    have "u : \<V> g" using `u : V` `V <= \<V> g` by blast
+    have "u : \<V> g" using `u : V` `V \<subseteq> \<V> g` by blast
     note uf = minGraphProps6[OF mgp `u : \<V> g` f]
     show False
     proof cases
@@ -176,7 +176,7 @@ next
     show "separated\<^sub>2 g V"
     proof (clarsimp simp:separated\<^sub>2_def)
       fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
-      have "v : \<V> g" using a(1) `V <= \<V> g` by blast
+      have "v : \<V> g" using a(1) `V \<subseteq> \<V> g` by blast
       show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
         by(fastforce simp: close_def split:if_split_asm)
     qed
@@ -184,7 +184,7 @@ next
     proof (clarsimp simp:separated\<^sub>3_def)
       fix v f
       assume "v \<in> V" and f: "f \<in> set (facesAt g v)" and len: "|vertices f| \<le> 4"
-      have vg: "v : \<V> g" using `v : V` `V <= \<V> g` by blast
+      have vg: "v : \<V> g" using `v : V` `V \<subseteq> \<V> g` by blast
       note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp vg f]]
       note vf = minGraphProps6[OF mgp vg f]
       { fix u assume "u \<in> \<V> f" and "u \<in> V"
@@ -260,7 +260,7 @@ by(unfold separated_def separated\<^sub>2_def separated\<^sub>3_def) blast
 
 lemma ExcessNotAtRec_conv_Max:
 assumes mgp: "minGraphProps g"
-shows "set(map fst ps) <= \<V> g \<Longrightarrow> distinct(map fst ps) \<Longrightarrow>
+shows "set(map fst ps) \<subseteq> \<V> g \<Longrightarrow> distinct(map fst ps) \<Longrightarrow>
   ExcessNotAtRec ps g =
   Max{ \<Sum>p\<in>P. snd p |P. P \<subseteq> set ps \<and> separated g (fst ` P)}"
   (is "_ \<Longrightarrow> _ \<Longrightarrow> _ = Max(?M ps)" is "_ \<Longrightarrow> _ \<Longrightarrow> _ = Max{_ |P. ?S ps P}")
@@ -276,18 +276,18 @@ proof(induct ps rule: length_induct)
     have le: "|?ps| \<le> |ps|" by(simp add:delAround_def)
     have dist': "distinct(map fst ?ps)" using dist Cons
       apply (clarsimp simp:delAround_def)
-      apply(drule distinct_filter[where P = "Not o close g (fst p)"])
+      apply(drule distinct_filter[where P = "Not \<circ> close g (fst p)"])
       apply(simp add: filter_map o_def)
       done
-    have "fst p : \<V> g" and "fst ` set ps <= \<V> g"
+    have "fst p : \<V> g" and "fst ` set ps \<subseteq> \<V> g"
       using subset Cons by auto
-    have sub1: "!!P Q. P <= {x : set ps. Q x} \<Longrightarrow> fst ` P <= \<V> g"
+    have sub1: "\<And>P Q. P \<subseteq> {x : set ps. Q x} \<Longrightarrow> fst ` P \<subseteq> \<V> g"
       using subset Cons by auto
-    have sub2: "!!P Q. P <= insert p {x : set ps. Q x} \<Longrightarrow> fst ` P <= \<V> g"
+    have sub2: "\<And>P Q. P \<subseteq> insert p {x : set ps. Q x} \<Longrightarrow> fst ` P \<subseteq> \<V> g"
       using subset Cons by auto
-    have sub3: "!!P. P <= insert p (set ps) \<Longrightarrow> fst ` P <= \<V> g"
+    have sub3: "\<And>P. P \<subseteq> insert p (set ps) \<Longrightarrow> fst ` P \<subseteq> \<V> g"
       using subset Cons by auto
-    have "!!a. set (map fst (deleteAround g a ps)) \<subseteq> \<V> g"
+    have "\<And>a. set (map fst (deleteAround g a ps)) \<subseteq> \<V> g"
       using deleteAround_subset[of g _ ps] subset Cons
       by auto
     hence "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
@@ -310,7 +310,7 @@ proof(induct ps rule: length_induct)
       apply(rule_tac x = "insert p P" in exI)
       apply simp
       apply(rule conjI) apply blast
-      using `image fst (set ps) <= \<V> g` `fst p : \<V> g`
+      using `image fst (set ps) \<subseteq> \<V> g` `fst p : \<V> g`
       apply (blast intro:close_sym[OF mgp])
       apply(rule_tac x = "P-{p}" in exI)
       apply (simp add:insert_absorb)
@@ -387,9 +387,9 @@ apply(rule Max_mono)
 apply auto
 apply(rule_tac x=P in exI)
 apply auto
-apply(subgoal_tac "fst ` P <= \<V> g'")
+apply(subgoal_tac "fst ` P \<subseteq> \<V> g'")
  prefer 2 apply (blast dest: ExcessTab_vertex)
-apply(subgoal_tac "fst ` P <= \<V> g")
+apply(subgoal_tac "fst ` P \<subseteq> \<V> g")
  prefer 2 apply (blast dest: ExcessTab_vertex)
 apply(simp add:sep_conv)
 apply (blast intro:close_antimono ExcessTab_final ExcessTab_vertex)

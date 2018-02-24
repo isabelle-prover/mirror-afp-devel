@@ -34,7 +34,7 @@ by(induct xs) simp_all
 
 
 lemma listsum_cong:
- "\<lbrakk> xs = ys; \<And>y. y \<in> set ys ==> f y = g y \<rbrakk>
+ "\<lbrakk> xs = ys; \<And>y. y \<in> set ys \<Longrightarrow> f y = g y \<rbrakk>
   \<Longrightarrow> ListSum xs f = ListSum ys g"
 apply simp
 apply(erule thin_rl)

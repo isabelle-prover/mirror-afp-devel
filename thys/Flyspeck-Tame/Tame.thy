@@ -101,7 +101,7 @@ definition admissible\<^sub>2 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \
 
 definition admissible\<^sub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
  "admissible\<^sub>3 w g  \<equiv>
-  \<forall>v \<in> \<V> g. vertextype g v = (5,0,1) \<longrightarrow> (\<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f)) >= \<a>"
+  \<forall>v \<in> \<V> g. vertextype g v = (5,0,1) \<longrightarrow> (\<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f)) \<ge> \<a>"
 
 
 text {* Finally we define admissibility of weights functions. *}
@@ -116,13 +116,13 @@ definition tame9a :: "graph \<Rightarrow> bool" where
 "tame9a g \<equiv> \<forall>f \<in> \<F> g. 3 \<le> |vertices f| \<and> |vertices f| \<le> 6"
 
 definition tame10 :: "graph \<Rightarrow> bool" where
-"tame10 g = (let n = countVertices g in 13 <= n & n <= 15)"
+"tame10 g = (let n = countVertices g in 13 \<le> n \<and> n \<le> 15)"
 
 definition tame10ub :: "graph \<Rightarrow> bool" where
-"tame10ub g = (countVertices g <= 15)"
+"tame10ub g = (countVertices g \<le> 15)"
 
 definition tame11a :: "graph \<Rightarrow> bool" where
-"tame11a g = (\<forall>v \<in> \<V> g. 3 <= degree g v)"
+"tame11a g = (\<forall>v \<in> \<V> g. 3 \<le> degree g v)"
 
 definition tame11b :: "graph \<Rightarrow> bool" where
 "tame11b g = (\<forall>v \<in> \<V> g. degree g v \<le> (if except g v = 0 then 7 else 6))"

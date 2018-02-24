@@ -27,7 +27,7 @@ by(simp add: all_trie_eq_ran set_tries_eq_ran)
 lemma samet_imp_iso_seteq:
 assumes pre1: "\<And>gs g. gsopt = Some gs \<Longrightarrow> g \<in> set_tries gs \<Longrightarrow> pre_iso_test g"
 and pre2: "\<And>g. g \<in> set arch \<Longrightarrow> pre_iso_test g"
-and inv: "!!gs. gsopt = Some gs \<Longrightarrow> invar_trie gs"
+and inv: "\<And>gs. gsopt = Some gs \<Longrightarrow> invar_trie gs"
 and same: "samet gsopt arch"
 shows "\<exists>gs. gsopt = Some gs \<and> set_tries gs =\<^sub>\<simeq> set arch"
 proof -
@@ -61,7 +61,7 @@ qed
 lemma samet_imp_iso_subseteq:
 assumes pre1: "\<And>gs g. gsopt = Some gs \<Longrightarrow> g \<in> set_tries gs \<Longrightarrow> pre_iso_test g"
 and pre2: "\<And>g. g \<in> set arch \<Longrightarrow> pre_iso_test g"
-and inv: "!!gs. gsopt = Some gs \<Longrightarrow> invar_trie gs"
+and inv: "\<And>gs. gsopt = Some gs \<Longrightarrow> invar_trie gs"
 and same: "samet gsopt arch"
 shows "\<exists>gs. gsopt = Some gs \<and> set_tries gs \<subseteq>\<^sub>\<simeq> set arch"
 using qle_gr.seteq_qle_def assms samet_imp_iso_seteq by metis
@@ -90,7 +90,7 @@ apply (auto simp: set_of_conv inv_Seed mgp_pre_iso_test RTranCl_conv)
 done
 
 lemma tameEnumFilter_subseteq_TameEnum:
-  "tameEnumFilter p = Some t \<Longrightarrow> set_tries t <= fgraph ` TameEnum\<^bsub>p\<^esub>"
+  "tameEnumFilter p = Some t \<Longrightarrow> set_tries t \<subseteq> fgraph ` TameEnum\<^bsub>p\<^esub>"
 by(auto simp add:tameEnumFilter_def TameEnumP_def enum_filter_finals_def
      set_of_conv inv_Seed mgp_pre_iso_test RTranCl_conv
      dest!: set_mod_trie.worklist_tree_coll_subseteq[OF _ inv_inv_next_tame])

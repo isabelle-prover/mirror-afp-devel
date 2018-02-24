@@ -8,14 +8,14 @@ begin
 
 function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "qsort le []       = []" |
-"qsort le (x#xs) = qsort le [y\<leftarrow>xs . ~ le x y] @ [x] @
+"qsort le (x#xs) = qsort le [y\<leftarrow>xs . \<not> le x y] @ [x] @
                    qsort le [y\<leftarrow>xs . le x y]"
 by pat_completeness auto
-termination by (relation "measure (size o snd)")
+termination by (relation "measure (size \<circ> snd)")
   (auto simp add: length_filter_le [THEN le_less_trans])
 
 definition nof_vertices :: "'a fgraph \<Rightarrow> nat" where
-"nof_vertices = length o remdups o concat"
+"nof_vertices = length \<circ> remdups \<circ> concat"
 
 definition fgraph :: "graph \<Rightarrow> nat fgraph" where
 "fgraph g = map vertices (faces g)"
@@ -23,7 +23,7 @@ definition fgraph :: "graph \<Rightarrow> nat fgraph" where
 definition hash :: "nat fgraph \<Rightarrow> nat list" where
   "hash fs = (let n = nof_vertices fs in
      [n, size fs] @
-     qsort (%x y. y < x) (map (%i. foldl (+) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
+     qsort (\<lambda>x y. y < x) (map (\<lambda>i. foldl (+) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
                              [0..<n]))"
 (*
 definition diff2 :: "nat fgraph list \<Rightarrow> nat fgraph list
@@ -31,15 +31,15 @@ definition diff2 :: "nat fgraph list \<Rightarrow> nat fgraph list
 "diff2 fgs ags =
  (let tfgs = trie_of_list hash fgs;
       tags = trie_of_list hash ags in
-  (filter (%fg. ~list_ex (iso_test fg) (lookup_trie tags (hash fg))) fgs,
-   filter (%ag. ~list_ex (iso_test ag) (lookup_trie tfgs (hash ag))) ags))"
+  (filter (\<lambda>fg. \<not>list_ex (iso_test fg) (lookup_trie tags (hash fg))) fgs,
+   filter (\<lambda>ag. \<not>list_ex (iso_test ag) (lookup_trie tfgs (hash ag))) ags))"
 *)
 definition samet :: "(nat,nat fgraph) tries option \<Rightarrow> nat fgraph list \<Rightarrow> bool"
 where
   "samet fgto ags = (case fgto of None \<Rightarrow> False | Some tfgs \<Rightarrow>
    let tags = tries_of_list hash ags in
-   (all_tries (%fg. list_ex (iso_test fg) (lookup_tries tags (hash fg))) tfgs &
-    all_tries (%ag. list_ex (iso_test ag) (lookup_tries tfgs (hash ag))) tags))"
+   (all_tries (\<lambda>fg. list_ex (iso_test fg) (lookup_tries tags (hash fg))) tfgs \<and>
+    all_tries (\<lambda>ag. list_ex (iso_test ag) (lookup_tries tfgs (hash ag))) tags))"
 
 definition pre_iso_test :: "vertex fgraph \<Rightarrow> bool" where
   "pre_iso_test Fs \<longleftrightarrow>

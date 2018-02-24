@@ -2151,7 +2151,7 @@ lemma Edges_compl:
  Edges(x # between vs x y @ [y]) \<inter> Edges(y # between vs y x @ [x]) = {}"
 using [[linarith_neq_limit = 1]]
 apply(subgoal_tac
- "!!xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
+ "\<And>xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
  prefer 2 apply(drule hd_in_set) apply(blast)
 apply(frule split_list[of  x])
 apply clarsimp
@@ -2176,7 +2176,7 @@ lemma Edges_disj:
     y \<in> set(between vs x z) \<rbrakk> \<Longrightarrow>
  Edges(x # between vs x y @ [y]) \<inter> Edges(y # between vs y z @ [z]) = {}"
 apply(subgoal_tac
- "!!xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
+ "\<And>xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
  prefer 2 apply(drule hd_in_set) apply(blast)
 apply(frule split_list[of x])
 apply clarsimp

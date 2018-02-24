@@ -28,10 +28,10 @@ by (simp add: subseteq_qle_def in_qle_def) (metis qle_trans)
 lemma empty_subseteq_qle[simp]: "{} \<subseteq>\<^sub>\<preceq> A"
 by (simp add: subseteq_qle_def)
 
-lemma subseteq_qleI2: "(!!x. x \<in> M \<Longrightarrow> EX y : N. x \<preceq> y) \<Longrightarrow> M \<subseteq>\<^sub>\<preceq> N"
+lemma subseteq_qleI2: "(\<And>x. x \<in> M \<Longrightarrow> \<exists>y \<in> N. x \<preceq> y) \<Longrightarrow> M \<subseteq>\<^sub>\<preceq> N"
 by (auto simp add: subseteq_qle_def in_qle_def)
 
-lemma subseteq_qleD2: "M \<subseteq>\<^sub>\<preceq> N \<Longrightarrow> x \<in> M \<Longrightarrow> EX y : N. x \<preceq> y"
+lemma subseteq_qleD2: "M \<subseteq>\<^sub>\<preceq> N \<Longrightarrow> x \<in> M \<Longrightarrow> \<exists>y \<in> N. x \<preceq> y"
 by (auto simp add: subseteq_qle_def in_qle_def)
 
 lemma seteq_qle_refl[iff]: "A =\<^sub>\<preceq> A"

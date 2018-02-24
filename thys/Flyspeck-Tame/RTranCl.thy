@@ -11,7 +11,7 @@ function of type @{typ"'a \<Rightarrow> 'a list"}. Instead of defining the closu
 again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}. *}
 
 abbreviation (input)
-  in_set :: "'a => ('a => 'b list) => 'b => bool" ("_ [_]\<rightarrow> _" [55,0,55] 50) where
+  in_set :: "'a \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> 'b \<Rightarrow> bool" ("_ [_]\<rightarrow> _" [55,0,55] 50) where
   "g [succs]\<rightarrow> g' == g' \<in> set (succs g)"
 
 inductive_set
@@ -54,7 +54,7 @@ lemma invariantE:
 by(simp add:invariant_def)
 
 lemma inv_subset:
- "invariant P f \<Longrightarrow> (!!g. P g \<Longrightarrow> set(f' g) \<subseteq> set(f g)) \<Longrightarrow> invariant P f'"
+ "invariant P f \<Longrightarrow> (\<And>g. P g \<Longrightarrow> set(f' g) \<subseteq> set(f g)) \<Longrightarrow> invariant P f'"
 by(auto simp:invariant_def)
 
 lemma RTranCl_inv:
@@ -63,7 +63,7 @@ by (erule RTranCl_induct)(auto simp:invariant_def)
 
 lemma RTranCl_subset2:
 assumes a: "(s,g) : RTranCl f"
-shows "(!!g. (s,g) \<in> RTranCl f \<Longrightarrow> set(f g) \<subseteq> set(h g)) \<Longrightarrow> (s,g) : RTranCl h"
+shows "(\<And>g. (s,g) \<in> RTranCl f \<Longrightarrow> set(f g) \<subseteq> set(h g)) \<Longrightarrow> (s,g) : RTranCl h"
 using a
 proof (induct rule: RTranCl.induct)
   case refl show ?case by(rule RTranCl.intros)

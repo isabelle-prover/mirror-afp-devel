@@ -80,7 +80,7 @@ proof -
       exceptionalVertex_def)
 (*>*) (* *)
 
-  have V_subset_simp: "!!v. v: set V \<Longrightarrow> v : \<V> g"
+  have V_subset_simp: "\<And>v. v: set V \<Longrightarrow> v : \<V> g"
     using V_subset by fast
 
   have "(\<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v)
@@ -248,7 +248,7 @@ proof -
       (\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )"
       by(simp only: T_def E_def ListSum_compl2)
     also have "(\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) =
-          (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int Collect triangle]\<^esub> \<d> |vertices f| )"
+          (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) \<inter> Collect triangle]\<^esub> \<d> |vertices f| )"
       by(rule listsum_cong[OF _ HOL.refl])
         (simp add:T_def F3 Int_def)
     also have "\<dots> = (\<Sum>\<^bsub>v \<in> V3\<^esub> \<Sum>\<^bsub>f \<in> filter triangle (facesAt g v)\<^esub> \<d> |vertices f| )"
@@ -265,7 +265,7 @@ proof -
       using `admissible w g`
       by(rule_tac ListSum_le)
         (simp add: admissible_def admissible\<^sub>3_def V3_def V2_def V_subset_simp)
-    also have "\<dots> = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int Collect triangle]\<^esub> w f)"
+    also have "\<dots> = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) \<inter> Collect triangle]\<^esub> w f)"
       by(rule ListSum_V_F_eq_ListSum_F[OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
         (simp add:Ball_def)
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>T\<^esub> w f)"

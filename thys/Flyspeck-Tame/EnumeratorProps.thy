@@ -75,7 +75,7 @@ qed
 lemma enumBase_length: "ls \<in> set (enumBase nmax) \<Longrightarrow> length ls = 1"
 by (auto simp: enumBase_def)
 
-lemma enumBase_bound: "\<forall> y \<in> set (enumBase nmax). \<forall> z \<in> set y. z <= nmax"
+lemma enumBase_bound: "\<forall>y \<in> set (enumBase nmax). \<forall>z \<in> set y. z \<le> nmax"
 by (auto simp: enumBase_def)
 
 lemmas enumBase_simps = enumBase_length enumBase_bound

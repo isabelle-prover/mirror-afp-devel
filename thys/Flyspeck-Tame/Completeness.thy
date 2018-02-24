@@ -36,10 +36,10 @@ proof -
   show "p \<le> 3"
   proof (rule ccontr)
     assume 6: "\<not> p \<le> 3"
-    obtain f where "f \<in> set (finals g) & |vertices f| = p+3"
+    obtain f where "f \<in> set (finals g) \<and> |vertices f| = p+3"
       using max_face_ex[OF g] by auto
     also from `final g` have "set (finals g) = set (faces g)" by simp
-    finally have "f \<in> \<F> g & 6 < |vertices f|" using 6 by arith
+    finally have "f \<in> \<F> g \<and> 6 < |vertices f|" using 6 by arith
     with bound show False by auto
   qed
 qed

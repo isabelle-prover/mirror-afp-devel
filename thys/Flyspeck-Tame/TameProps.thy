@@ -30,10 +30,10 @@ by(auto simp:tame_def tame11b_def split:if_split_asm)
 
 
 lemma filter_tame_succs:
-assumes invP: "invariant P succs" and fin: "!!g. final g \<Longrightarrow> succs g = []"
-and ok_untame: "!!g. P g \<Longrightarrow> \<not> ok g \<Longrightarrow> final g \<and> \<not> tame g"
+assumes invP: "invariant P succs" and fin: "\<And>g. final g \<Longrightarrow> succs g = []"
+and ok_untame: "\<And>g. P g \<Longrightarrow> \<not> ok g \<Longrightarrow> final g \<and> \<not> tame g"
 and gg': "g [succs]\<rightarrow>* g'"
-shows "P g \<Longrightarrow> final g' \<Longrightarrow> tame g' \<Longrightarrow> g [filter ok o succs]\<rightarrow>* g'"
+shows "P g \<Longrightarrow> final g' \<Longrightarrow> tame g' \<Longrightarrow> g [filter ok \<circ> succs]\<rightarrow>* g'"
 using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
@@ -59,9 +59,9 @@ definition untame :: "(graph \<Rightarrow> bool) \<Rightarrow> bool" where
 
 
 lemma filterout_untame_succs:
-assumes invP: "invariant P f" and invPU: "invariant (%g. P g \<and>  U g) f"
-and untame: "untame(%g. P g \<and> U g)"
-and new_untame: "!!g g'. \<lbrakk> P g; g' \<in> set(f g); g' \<notin> set(f' g) \<rbrakk> \<Longrightarrow> U g'"
+assumes invP: "invariant P f" and invPU: "invariant (\<lambda>g. P g \<and>  U g) f"
+and untame: "untame(\<lambda>g. P g \<and> U g)"
+and new_untame: "\<And>g g'. \<lbrakk> P g; g' \<in> set(f g); g' \<notin> set(f' g) \<rbrakk> \<Longrightarrow> U g'"
 and gg': "g [f]\<rightarrow>* g'"
 shows "P g \<Longrightarrow> final g' \<Longrightarrow> tame g' \<Longrightarrow> g [f']\<rightarrow>* g'"
 using gg'

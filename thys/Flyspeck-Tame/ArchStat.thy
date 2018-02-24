@@ -7,9 +7,9 @@ begin
 definition stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat" where
 "stat A =
  (length A,
-  foldl (%x y. if x<y then y else x) 0 (map length A),
+  foldl (\<lambda>x y. if x<y then y else x) 0 (map length A),
   foldl (+) 0 (map length A),
-  foldl (%x y. if x<y then y else x)  0 (map nof_vertices A),
+  foldl (\<lambda>x y. if x<y then y else x)  0 (map nof_vertices A),
   foldl (+) 0 (map nof_vertices A)
  )"
 
@@ -40,7 +40,7 @@ fun insert_mod :: "graph \<Rightarrow> config \<Rightarrow> config" where
   then
     let
       fg = fgraph x; h = hash fg; ys = Tries.lookup t h;
-      t' = if (EX y:set ys. iso_test fg y) then t else Tries.update t h (fg#ys)
+      t' = if (\<exists>y:set ys. iso_test fg y) then t else Tries.update t h (fg#ys)
     in (t', tot+1, fins+1)
   else (t,tot+1,fins))"
 
@@ -52,7 +52,7 @@ where
 fun stat_of_tries where
 "stat_of_tries(Tries vs al) =
    (if vs=[] then [] else [length vs]) @
-   concat(map (%(a,t). stat_of_tries t) al)"
+   concat(map (\<lambda>(a,t). stat_of_tries t) al)"
 
 definition "avgmax ns = (listsum ns, length ns, max_list ns)"
 

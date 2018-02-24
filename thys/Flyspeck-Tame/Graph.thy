@@ -8,10 +8,10 @@ imports Rotation
 begin
 
 syntax
-  "_UNION1"     :: "pttrns => 'b set => 'b set"           ("(3\<Union>(\<open>unbreakable\<close>\<^bsub>_\<^esub>)/ _)" [0, 10] 10)
-  "_INTER1"     :: "pttrns => 'b set => 'b set"           ("(3\<Inter>(\<open>unbreakable\<close>\<^bsub>_\<^esub>)/ _)" [0, 10] 10)
-  "_UNION"      :: "pttrn => 'a set => 'b set => 'b set"  ("(3\<Union>(\<open>unbreakable\<close>\<^bsub>_\<in>_\<^esub>)/ _)" [0, 0, 10] 10)
-  "_INTER"      :: "pttrn => 'a set => 'b set => 'b set"  ("(3\<Inter>(\<open>unbreakable\<close>\<^bsub>_\<in>_\<^esub>)/ _)" [0, 0, 10] 10)
+  "_UNION1"     :: "pttrns \<Rightarrow> 'b set \<Rightarrow> 'b set"           ("(3\<Union>(\<open>unbreakable\<close>\<^bsub>_\<^esub>)/ _)" [0, 10] 10)
+  "_INTER1"     :: "pttrns \<Rightarrow> 'b set \<Rightarrow> 'b set"           ("(3\<Inter>(\<open>unbreakable\<close>\<^bsub>_\<^esub>)/ _)" [0, 10] 10)
+  "_UNION"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'b set"  ("(3\<Union>(\<open>unbreakable\<close>\<^bsub>_\<in>_\<^esub>)/ _)" [0, 0, 10] 10)
+  "_INTER"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'b set"  ("(3\<Inter>(\<open>unbreakable\<close>\<^bsub>_\<in>_\<^esub>)/ _)" [0, 0, 10] 10)
 
 
 subsection{* Notation *}

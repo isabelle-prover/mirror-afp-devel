@@ -202,7 +202,7 @@ subsection{* Increasing vertex degrees *}
 
 lemma next_plane0_incr_faceListAt:
  "\<lbrakk> g' \<in> set (next_plane0\<^bsub>p\<^esub> g); minGraphProps g \<rbrakk>
-  \<Longrightarrow> |faceListAt g| \<le> |faceListAt g'| &
+  \<Longrightarrow> |faceListAt g| \<le> |faceListAt g'| \<and>
       (\<forall>v < |faceListAt g|. |faceListAt g ! v| \<le> |faceListAt g' ! v| )"
  (is "_ \<Longrightarrow> _ \<Longrightarrow> ?Q g g'")
 apply(rule next_plane0_incr[where Q = ?Q])

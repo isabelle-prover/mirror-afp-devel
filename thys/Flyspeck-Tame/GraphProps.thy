@@ -119,7 +119,7 @@ done
 
 
 lemma nextElem_nth:
- "!!i. \<lbrakk>distinct xs; i < length xs \<rbrakk>
+ "\<And>i. \<lbrakk>distinct xs; i < length xs \<rbrakk>
    \<Longrightarrow> nextElem xs z (xs!i) = (if length xs = i+1 then z else xs!(i+1))"
 apply(induct xs) apply simp
 apply(case_tac i)
@@ -230,7 +230,7 @@ qed
 lemma tri_next3_id:
  "|vertices f| = 3 \<Longrightarrow> distinct(vertices f) \<Longrightarrow> v \<in> \<V> f
   \<Longrightarrow> f \<bullet> (f \<bullet> (f \<bullet> v)) = v"
-apply(subgoal_tac "ALL (i::nat) < 3. (((((i+1) mod 3)+1) mod 3)+1) mod 3 = i")
+apply(subgoal_tac "\<forall>(i::nat) < 3. (((((i+1) mod 3)+1) mod 3)+1) mod 3 = i")
  apply(clarsimp simp:in_set_conv_nth nextVertex_nth)
 apply(presburger)
 done
@@ -270,7 +270,7 @@ qed
 lemma quad_next4_id:
  "\<lbrakk> |vertices f| = 4; distinct(vertices f); v \<in> \<V> f \<rbrakk> \<Longrightarrow>
   f \<bullet> (f \<bullet> (f \<bullet> (f \<bullet> v))) = v"
-apply(subgoal_tac "ALL (i::nat) < 4.
+apply(subgoal_tac "\<forall>(i::nat) < 4.
  (((((((i+1) mod 4)+1) mod 4)+1) mod 4)+1) mod 4 = i")
  apply(clarsimp simp:in_set_conv_nth nextVertex_nth)
 apply(presburger)

@@ -148,7 +148,7 @@ by (simp add: separated_def separated\<^sub>2_def separated\<^sub>3_def)
 
 lemma separated_insert:
 assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
-  and Vg: "V <= \<V> g"
+  and Vg: "V \<subseteq> \<V> g"
   and ps: "separated g V"
   and s2: "(\<And>f. f \<in> set (facesAt g a) \<Longrightarrow> f \<bullet> a \<notin> V)"
   and s3: "(\<And>f. f \<in> set (facesAt g a) \<Longrightarrow>
@@ -205,8 +205,8 @@ qed
 
 
 function ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list" where
-  "ExcessNotAtRecList [] = (%g. [])"
-  | "ExcessNotAtRecList ((x, y) # ps) = (%g.
+  "ExcessNotAtRecList [] = (\<lambda>g. [])"
+  | "ExcessNotAtRecList ((x, y) # ps) = (\<lambda>g.
       let l1 = ExcessNotAtRecList ps g;
       l2 = ExcessNotAtRecList (deleteAround g x ps) g in
       if ExcessNotAtRec ps g
@@ -309,10 +309,10 @@ proof -
 
         show "set (ExcessNotAtRecList (deleteAround g a ps) g) \<subseteq> \<V> g"
         proof-
-          have "set (ExcessNotAtRecList (deleteAround g a ps) g) <=
+          have "set (ExcessNotAtRecList (deleteAround g a ps) g) \<subseteq>
                 set (map fst (deleteAround g a ps))"
             by(rule ExcessNotAtRecList_subset[simplified concat_map_singleton])
-          also have "\<dots> <= set (map fst ps)"
+          also have "\<dots> \<subseteq> set (map fst ps)"
             using deleteAround_subset by fastforce
           finally show ?thesis using prem by(auto simp: isTable_def)
         qed
@@ -569,15 +569,15 @@ next
 qed
 
 lemma separated_separating:
-assumes Vg: "set V <= \<V> g"
+assumes Vg: "set V \<subseteq> \<V> g"
 and pS: "separated g (set V)"
-and noex: "ALL f:P. |vertices f| <= 4"
-shows "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
+and noex: "\<forall>f\<in>P. |vertices f| \<le> 4"
+shows "separating (set V) (\<lambda>v. set (facesAt g v) \<inter> P)"
 proof -
   from pS have i: "\<forall>v\<in>set V. \<forall>f\<in>set (facesAt g v).
     |vertices f| \<le> 4 \<longrightarrow> set (vertices f) \<inter> set V = {v}"
     by (simp add: separated_def separated\<^sub>3_def)
-  show "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
+  show "separating (set V) (\<lambda>v. set (facesAt g v) \<inter> P)"
   proof (simp add: separating_def, intro ballI impI)
     fix v1 v2 assume v: "v1 \<in> set V" "v2 \<in> set V" "v1 \<noteq> v2"
     hence "v1 : \<V> g" using Vg by blast
@@ -600,11 +600,11 @@ lemma ListSum_V_F_eq_ListSum_F:
 assumes pl: "inv g"
 and pS: "separated g (set V)" and dist: "distinct V"
 and V_subset: "set V \<subseteq> set (vertices g)"
-and noex: "ALL f : Collect P. |vertices f| <= 4"
+and noex: "\<forall>f \<in> Collect P. |vertices f| \<le> 4"
 shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> filter P (facesAt g v)\<^esub> (w::face \<Rightarrow> nat) f)
-       = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int Collect P]\<^esub> w f)"
+       = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) \<inter> Collect P]\<^esub> w f)"
 proof -
-  have s: "separating (set V) (\<lambda>v. set (facesAt g v) Int Collect P)"
+  have s: "separating (set V) (\<lambda>v. set (facesAt g v) \<inter> Collect P)"
     by (rule separated_separating[OF V_subset pS noex])
   moreover note dist
   moreover from pl V_subset
@@ -613,12 +613,12 @@ proof -
   hence v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (filter P (facesAt g v))"
     by simp
   moreover
-  have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int Collect P]"
+  have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) \<inter> Collect P]"
     by (intro distinct_filter minGraphProps11'[OF inv_mgp[OF pl]])
   moreover from pl have "{x. x \<in> \<F> g \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v) \<and> P x)} =
-      (\<Union>v\<in>set V. set (facesAt g v) Int Collect P)" using V_subset
+      (\<Union>v\<in>set V. set (facesAt g v) \<inter> Collect P)" using V_subset
     by (blast intro:minGraphProps inv_mgp)
-  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. sum w (set(facesAt g v) Int Collect P))"
+  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. sum w (set(facesAt g v) \<inter> Collect P))"
     by (auto simp add: ListSum_conv_sum Int_def)
   ultimately show ?thesis
     by (simp add: ListSum_conv_sum sum_disj_Union)
@@ -631,8 +631,8 @@ and V_subset: "set V \<subseteq> set (vertices g)"
 shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> (w::face \<Rightarrow> nat) f)
        = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f)"
 proof -
-  let ?P = "\<lambda>f. |vertices f| <= 4"
-  have "ALL v : set V. ALL f : set (facesAt g v). |vertices f| <= 4"
+  let ?P = "\<lambda>f. |vertices f| \<le> 4"
+  have "\<forall>v \<in> set V. \<forall>f \<in> set (facesAt g v). |vertices f| \<le> 4"
     using V_subset ne
     by (auto simp: noExceptionals_def
       intro: minGraphProps5[OF inv_mgp[OF pl]] not_exceptional[OF pl fin])

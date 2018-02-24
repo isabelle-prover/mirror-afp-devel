@@ -7,7 +7,7 @@ imports Main Quasi_Order
 begin
 
 (* FIXME globalize *)
-lemma image_image_id_if[simp]: "(!!x. f(f x) = x) \<Longrightarrow> f ` f ` M = M"
+lemma image_image_id_if[simp]: "(\<And>x. f(f x) = x) \<Longrightarrow> f ` f ` M = M"
 by (auto simp: image_iff)
 
 
@@ -167,10 +167,10 @@ lemma pr_Hom_pres_face_nodes:
  "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2 \<Longrightarrow> (\<Union>F\<in>Fs\<^sub>1. {\<phi> ` (set F)}) = (\<Union>F\<in>Fs\<^sub>2. {set F})"
 apply(clarsimp simp:is_pr_Hom_def quotient_def)
 apply auto
-apply(subgoal_tac "EX F' : Fs\<^sub>2. {\<cong>} `` {map \<phi> F} = {\<cong>} `` {F'}")
+apply(subgoal_tac "\<exists>F' \<in> Fs\<^sub>2. {\<cong>} `` {map \<phi> F} = {\<cong>} `` {F'}")
  prefer 2 apply blast
 apply (fastforce simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
-apply(subgoal_tac "EX F' : Fs\<^sub>1. {\<cong>} `` {map \<phi> F'} = {\<cong>} `` {F}")
+apply(subgoal_tac "\<exists>F' \<in> Fs\<^sub>1. {\<cong>} `` {map \<phi> F'} = {\<cong>} `` {F}")
  apply (fastforce simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
 apply (erule equalityE)
 apply(fastforce simp:UN_subset_iff)
@@ -214,13 +214,13 @@ text{* Isomorphisms preserve the number of faces. *}
 
 lemma pr_iso_same_no_faces:
   assumes dist1: "distinct Fs\<^sub>1" and dist2: "distinct Fs\<^sub>2"
-  and inj1: "inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1)"
-  and inj2: "inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2)" and iso: "is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2"
+  and inj1: "inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1)"
+  and inj2: "inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2)" and iso: "is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2"
   shows "length Fs\<^sub>1 = length Fs\<^sub>2"
 proof -
   have injphi: "\<forall>F\<in>set Fs\<^sub>1. \<forall>F'\<in>set Fs\<^sub>1. inj_on \<phi> (set F \<union> set F')" using iso
     by(auto simp:is_pr_iso_def is_pr_Iso_def is_pr_Hom_def inj_on_def)
-  have inj1': "inj_on (%xs. {xs} // {\<cong>}) (map \<phi> ` set Fs\<^sub>1)"
+  have inj1': "inj_on (\<lambda>xs. {xs} // {\<cong>}) (map \<phi> ` set Fs\<^sub>1)"
     apply(rule inj_on_imageI)
     apply(simp add:inj_on_def quotient_def eq_equiv_class_iff[OF equiv_EqF])
     apply(simp add: congs_map_eq_iff injphi)
@@ -268,24 +268,24 @@ apply blast
 done
 
 lemma is_pr_Hom_trans: assumes f: "is_pr_Hom f A B" and g: "is_pr_Hom g B C"
-shows "is_pr_Hom (g o f) A C"
+shows "is_pr_Hom (g \<circ> f) A C"
 proof-
-  from f have f1: "ALL a:A. EX b:B. map f a \<cong> b"
+  from f have f1: "\<forall>a\<in>A. \<exists>b\<in>B. map f a \<cong> b"
     apply(simp add: is_pr_Hom_def quotient_def Iso_def)
     apply(erule equalityE)
     apply blast
     done
-  from f have f2: "ALL b:B. EX a:A. map f a \<cong> b"
+  from f have f2: "\<forall>b\<in>B. \<exists>a\<in>A. map f a \<cong> b"
     apply(simp add: is_pr_Hom_def quotient_def Iso_def)
     apply(erule equalityE)
     apply blast
     done
-  from g have g1: "ALL b:B. EX c:C. map g b \<cong> c"
+  from g have g1: "\<forall>b\<in>B. \<exists>c\<in>C. map g b \<cong> c"
     apply(simp add: is_pr_Hom_def quotient_def Iso_def)
     apply(erule equalityE)
     apply blast
     done
-  from g have g2: "ALL c:C. EX b:B. map g b \<cong> c"
+  from g have g2: "\<forall>c\<in>C. \<exists>b\<in>B. map g b \<cong> c"
     apply(simp add: is_pr_Hom_def quotient_def Iso_def)
     apply(erule equalityE)
     apply blast
@@ -310,7 +310,7 @@ done
 text{* A kind of recursion rule, a first step towards executability: *}
 
 lemma is_pr_Iso_rec:
- "\<lbrakk> inj_on (%xs. {xs}//{\<cong>}) Fs\<^sub>1; inj_on (%xs. {xs}//{\<cong>}) Fs\<^sub>2; F\<^sub>1 \<in> Fs\<^sub>1 \<rbrakk> \<Longrightarrow>
+ "\<lbrakk> inj_on (\<lambda>xs. {xs}//{\<cong>}) Fs\<^sub>1; inj_on (\<lambda>xs. {xs}//{\<cong>}) Fs\<^sub>2; F\<^sub>1 \<in> Fs\<^sub>1 \<rbrakk> \<Longrightarrow>
  is_pr_Iso \<phi> Fs\<^sub>1 Fs\<^sub>2 =
  (\<exists>F\<^sub>2 \<in> Fs\<^sub>2. length F\<^sub>1 = length F\<^sub>2 \<and> is_pr_Iso \<phi> (Fs\<^sub>1 - {F\<^sub>1}) (Fs\<^sub>2 - {F\<^sub>2})
     \<and> (\<exists>n. map \<phi> F\<^sub>1 = rotate n F\<^sub>2)
@@ -374,7 +374,7 @@ done
 
 lemma is_iso_Cons:
  "\<lbrakk> distinct (F\<^sub>1#Fs\<^sub>1'); distinct Fs\<^sub>2;
-    inj_on (%xs.{xs}//{\<cong>}) (set(F\<^sub>1#Fs\<^sub>1')); inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk>
+    inj_on (\<lambda>xs.{xs}//{\<cong>}) (set(F\<^sub>1#Fs\<^sub>1')); inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk>
   \<Longrightarrow>
  is_pr_iso \<phi> (F\<^sub>1#Fs\<^sub>1') Fs\<^sub>2 =
  (\<exists>F\<^sub>2 \<in> set Fs\<^sub>2. length F\<^sub>1 = length F\<^sub>2 \<and> is_pr_iso \<phi> Fs\<^sub>1' (remove1 F\<^sub>2 Fs\<^sub>2)
@@ -414,7 +414,7 @@ primrec pr_iso_test0 :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a fgraph \<Rig
           if m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m'))
           then pr_iso_test0 (m ++ m') Fs\<^sub>1 (remove1 F\<^sub>2 Fs\<^sub>2) else False))"
 
-lemma map_compatI: "\<lbrakk> f \<subseteq>\<^sub>m Some o h; g \<subseteq>\<^sub>m Some o h \<rbrakk> \<Longrightarrow> f \<subseteq>\<^sub>m f++g"
+lemma map_compatI: "\<lbrakk> f \<subseteq>\<^sub>m Some \<circ> h; g \<subseteq>\<^sub>m Some \<circ> h \<rbrakk> \<Longrightarrow> f \<subseteq>\<^sub>m f++g"
 by (fastforce simp add: map_le_def map_add_def dom_def split:option.splits)
 
 lemma inj_on_map_addI1:
@@ -439,7 +439,7 @@ lemma map_image_eq: "\<lbrakk> A \<subseteq> dom m; m \<subseteq>\<^sub>m m' \<r
 by(force simp:map_le_def dom_def split:option.splits)
 
 lemma inj_on_map_add_Un:
- "\<lbrakk> inj_on m (dom m); inj_on m' (dom m'); m \<subseteq>\<^sub>m Some o f; m' \<subseteq>\<^sub>m Some o f;
+ "\<lbrakk> inj_on m (dom m); inj_on m' (dom m'); m \<subseteq>\<^sub>m Some \<circ> f; m' \<subseteq>\<^sub>m Some \<circ> f;
     inj_on f (dom m' \<union> dom m); A = dom m'; B = dom m \<rbrakk>
   \<Longrightarrow> inj_on (m ++ m') (A \<union> B)"
 apply(simp add:inj_on_Un)
@@ -450,10 +450,10 @@ apply(subgoal_tac "m ++ m' \<subseteq>\<^sub>m Some \<circ> f")
  prefer 2 apply(fast intro:map_add_le_mapI map_compatI)
 apply(subgoal_tac "dom m' - dom m \<subseteq> dom(m++m')")
  prefer 2 apply(fastforce)
-apply(insert map_image_eq[of "dom m' - dom m" "m++m'" "Some o f"])
+apply(insert map_image_eq[of "dom m' - dom m" "m++m'" "Some \<circ> f"])
 apply(subgoal_tac "dom m - dom m' \<subseteq> dom(m++m')")
  prefer 2 apply(fastforce)
-apply(insert map_image_eq[of "dom m - dom m'" "m++m'" "Some o f"])
+apply(insert map_image_eq[of "dom m - dom m'" "m++m'" "Some \<circ> f"])
 apply (clarsimp simp add: image_comp [symmetric])
 apply blast
 done
@@ -484,16 +484,16 @@ done
 
 lemma pr_iso_test0_correct: "\<And>m Fs\<^sub>2.
  \<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2); inj_on m (dom m) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2); inj_on m (dom m) \<rbrakk> \<Longrightarrow>
        pr_iso_test0 m Fs\<^sub>1 Fs\<^sub>2 =
-       (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<and> m \<subseteq>\<^sub>m Some o \<phi> \<and>
+       (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<and> m \<subseteq>\<^sub>m Some \<circ> \<phi> \<and>
             inj_on \<phi> (dom m \<union> (\<Union>F\<in>set Fs\<^sub>1. set F)))"
 apply(induct Fs\<^sub>1)
  apply(simp add:inj_on_def dom_def)
  apply(rule iffI)
   apply (simp add:is_pr_iso_def is_pr_Iso_def is_pr_Hom_def)
-  apply(rule_tac x = "the o m" in exI)
+  apply(rule_tac x = "the \<circ> m" in exI)
   apply (fastforce simp: map_le_def)
  apply (clarsimp simp:is_pr_iso_def is_pr_Iso_def is_pr_Hom_def)
 apply(rename_tac F\<^sub>1 Fs\<^sub>1' m Fs\<^sub>2)
@@ -547,8 +547,8 @@ done
 
 corollary pr_iso_test0_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
        pr_iso_test0 empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 apply(subst pr_iso_test0_correct)
  apply assumption+
@@ -569,7 +569,7 @@ primrec pr_iso_test1 :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a fgraph \<Rig
           then pr_iso_test1 (m ++ m') Fs\<^sub>1 (remove1 F\<^sub>2 Fs\<^sub>2) else False))"
 
 lemma test0_conv_test1:
- "!!m Fs\<^sub>2. [] \<notin> set Fs\<^sub>2 \<Longrightarrow> pr_iso_test1 m Fs\<^sub>1 Fs\<^sub>2 = pr_iso_test0 m Fs\<^sub>1 Fs\<^sub>2"
+ "\<And>m Fs\<^sub>2. [] \<notin> set Fs\<^sub>2 \<Longrightarrow> pr_iso_test1 m Fs\<^sub>1 Fs\<^sub>2 = pr_iso_test0 m Fs\<^sub>1 Fs\<^sub>2"
 apply(induct Fs\<^sub>1)
  apply simp
 apply simp
@@ -589,8 +589,8 @@ text{* Thus correctness carries over to @{text pr_iso_test1}: *}
 
 corollary pr_iso_test1_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
        pr_iso_test1 empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 by(simp add: test0_conv_test1 pr_iso_test0_corr)
 
@@ -645,13 +645,13 @@ lemma lem: "Ball (set xs) P \<Longrightarrow> Ball (set (remove1 x xs)) P = True
 by(induct xs) simp_all
 
 lemma pr_iso_test2_conv_1:
-  "!!I Fs\<^sub>2.
+  "\<And>I Fs\<^sub>2.
   \<lbrakk> \<forall>I I'. oneone I \<longrightarrow> oneone I' \<longrightarrow>
            tst I' I = (let m = map_of I; m' = map_of I'
                        in m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m')));
    \<forall>I I'. oneone I \<longrightarrow> oneone I' \<longrightarrow> tst I' I
           \<longrightarrow> map_of(mrg I' I) = map_of I ++ map_of I';
-   \<forall>I I'. oneone I & oneone I' \<longrightarrow> tst I' I \<longrightarrow> oneone (mrg I' I);
+   \<forall>I I'. oneone I \<and> oneone I' \<longrightarrow> tst I' I \<longrightarrow> oneone (mrg I' I);
    oneone I;
    \<forall>F \<in> set Fs\<^sub>1. distinct F; \<forall>F \<in> set Fs\<^sub>2. distinct F \<rbrakk> \<Longrightarrow>
   pr_iso_test2 tst mrg I Fs\<^sub>1 Fs\<^sub>2 = pr_iso_test1 (map_of I) Fs\<^sub>1 Fs\<^sub>2"
@@ -672,7 +672,7 @@ by(auto simp:image_def dom_def)
 
 
 lemma image_map_of_conv_Image:
- "!!A. \<lbrakk> distinct(map fst xys) \<rbrakk>
+ "\<And>A. \<lbrakk> distinct(map fst xys) \<rbrakk>
  \<Longrightarrow> map_of xys ` A = Some ` (set xys `` A) \<union> (if A \<subseteq> fst ` set xys then {} else {None})"
 apply (induct xys)
  apply (simp add:image_def Image_def Collect_conv_if)
@@ -769,8 +769,8 @@ done
 
 corollary pr_iso_test2_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
        pr_iso_test2 compat merge0 [] Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 by(simp add: pr_iso_test2_conv_1[OF compat_corr merge0_correct merge0_inv]
              pr_iso_test1_corr)
@@ -797,7 +797,7 @@ primrec pr_iso_test_rec :: "('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 
           compat I' I \<and> pr_iso_test_rec (merge I' I) Fs\<^sub>1 (remove1 F\<^sub>2 Fs\<^sub>2)))"
 
 lemma pr_iso_test_rec_conv_2:
-  "!!I Fs\<^sub>2. pr_iso_test_rec I Fs\<^sub>1 Fs\<^sub>2 = pr_iso_test2 compat merge0 I Fs\<^sub>1 Fs\<^sub>2"
+  "\<And>I Fs\<^sub>2. pr_iso_test_rec I Fs\<^sub>1 Fs\<^sub>2 = pr_iso_test2 compat merge0 I Fs\<^sub>1 Fs\<^sub>2"
 apply(induct Fs\<^sub>1)
  apply simp
 apply(auto simp: merge_conv_merge0 list_ex_iff Bex_def Let_def)
@@ -805,8 +805,8 @@ done
 
 corollary pr_iso_test_rec_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
        pr_iso_test_rec [] Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 by(simp add: pr_iso_test_rec_conv_2 pr_iso_test2_corr)
 
@@ -815,8 +815,8 @@ definition pr_iso_test :: "'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
 
 corollary pr_iso_test_correct:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
   pr_iso_test Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 apply(simp add:pr_iso_test_def pr_iso_test_rec_corr)
 done
@@ -871,8 +871,8 @@ definition iso_test :: "'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" wh
 
 theorem iso_correct:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
-   distinct Fs\<^sub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
-   distinct Fs\<^sub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
+   distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
+   distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
   iso_test Fs\<^sub>1 Fs\<^sub>2 = (Fs\<^sub>1 \<simeq> Fs\<^sub>2)"
 apply(simp add:iso_test_def pr_iso_test_correct iso_fgraph_def)
 apply(subst pr_iso_test_correct)
