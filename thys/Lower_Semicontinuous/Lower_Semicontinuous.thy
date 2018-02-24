@@ -2,13 +2,13 @@
     Author:    Bogdan Grechuk, University of Edinburgh
 *)
 
-section {* Lower semicontinuous functions *}
+section \<open>Lower semicontinuous functions\<close>
 
 theory Lower_Semicontinuous
 imports "HOL-Analysis.Analysis"
 begin
 
-subsection{* Relative interior in one dimension *}
+subsection\<open>Relative interior in one dimension\<close>
 
 lemma rel_interior_ereal_semiline:
   fixes a :: ereal
@@ -34,7 +34,7 @@ lemma ereal_semiline_unique:
   shows "{y. a \<le> ereal y} = {y. b \<le> ereal y} \<longleftrightarrow> a = b"
 by (metis mem_Collect_eq ereal_le_real order_antisym)
 
-subsection {* Lower and upper semicontinuity *}
+subsection \<open>Lower and upper semicontinuity\<close>
 
 definition
   lsc_at :: "'a \<Rightarrow> ('a::topological_space \<Rightarrow> 'b::order_topology) \<Rightarrow> bool" where
@@ -95,7 +95,7 @@ moreover
      from this obtain S V where SV_def: "open S \<and> open V \<and> f x0 : S \<and> A : V \<and> S Int V = {}"
         using hausdorff[of "f x0" A] by auto
      from this obtain T where T_def: "open T \<and> x0 : T \<and> (\<forall>x'\<in>T. (f x' \<le> f x0 \<longrightarrow> f x' \<in> S))"
-       using `?rhs` by metis
+       using \<open>?rhs\<close> by metis
      from this obtain N1 where "\<forall>n\<ge>N1. x n \<in> T" using x_def tendsto_explicit[of x x0] by auto
      hence *: "\<forall>n\<ge>N1. (f (x n) \<le> f x0 \<longrightarrow> f(x n) \<in> S)" using T_def by auto
      from SV_def obtain N2 where "\<forall>n\<ge>N2. f(x n) \<in> V"
@@ -144,7 +144,7 @@ obtain m where m_def: "f x0 = ereal m" using assms by (cases "f x0") auto
     from this obtain T where T_def: "open T \<and> x0 : T \<and> (\<forall>x'\<in>T. f x' \<le> f x0 \<longrightarrow> f x' \<in> {f x0 - e <..< f x0 + e})"
        apply (subst lsc_at_open_mem[of x0 f "{f x0 - e <..< f x0 + e}"]) using lsc e_def by auto
     { fix y assume "y:T"
-      { assume "f y \<le> f x0" hence "f y >  f x0 - e" using T_def `y:T` by auto }
+      { assume "f y \<le> f x0" hence "f y >  f x0 - e" using T_def \<open>y:T\<close> by auto }
       moreover
       { assume "f y > f x0" hence "\<dots>>f x0 - e" using * by auto }
       ultimately have "f y >  f x0 - e" using not_le by blast
@@ -157,10 +157,10 @@ moreover
     from this obtain e where e_def: "e>0 \<and> {f x0 - e<..<f x0 + e} \<le> S"
       apply (subst ereal_open_cont_interval[of S "f x0"]) using assms by auto
     from this obtain T where T_def: "open T \<and> x0 : T \<and> (\<forall>y \<in> T. f y > f x0 - e)"
-        using `?rhs`[rule_format, of e] by auto
+        using \<open>?rhs\<close>[rule_format, of e] by auto
     { fix y assume "y:T" "f y \<le> f x0" hence "f y < f x0 + e"
          using assms e_def ereal_between[of "f x0" e] by auto
-      hence "f y \<in> S" using e_def T_def `y\<in>T` by auto
+      hence "f y \<in> S" using e_def T_def \<open>y\<in>T\<close> by auto
     } hence "\<exists>T. open T \<and> x0 : T \<and> (\<forall>y\<in>T. (f y \<le> f x0 \<longrightarrow> f y \<in> S))" using T_def by auto
   } hence "lsc_at x0 f" using lsc_at_open by auto
 } ultimately show ?thesis by auto
@@ -188,7 +188,7 @@ moreover
     { fix S assume S_def: "open S \<and> f x0 : S"
       then obtain C where C_def: "ereal C < f x0 \<and> {ereal C<..} \<le> S" using pinf open_PInfty by auto
       then obtain T where T_def: "open T \<and> x0 : T \<and> (\<forall>y \<in> T. f y \<in> S)"
-        using `?rhs`[rule_format, of "ereal C"] by auto
+        using \<open>?rhs\<close>[rule_format, of "ereal C"] by auto
       hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y\<in>T. (f y \<le> f x0 \<longrightarrow> f y \<in> S))" using T_def by auto
     } hence "lsc_at x0 f" using lsc_at_open by auto
   } ultimately have ?thesis by blast
@@ -208,7 +208,7 @@ moreover
   { assume "?rhs"
     { fix e :: ereal assume "e>0"
       hence "f x0 - e < f x0" using fin apply (cases "f x0", cases e) by auto
-      hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y\<in>T. f x0 - e < f y)" using fin `?rhs` by auto
+      hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y\<in>T. f x0 - e < f y)" using fin \<open>?rhs\<close> by auto
     } hence "lsc_at x0 f" using lsc_at_real[of f x0] fin by auto
   } ultimately have ?thesis by blast
 } ultimately show ?thesis by blast
@@ -231,7 +231,7 @@ proof-
 moreover
 { assume "?rhs"
   { fix C :: ereal assume "C<f x0"
-    from this obtain d where "d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)" using `?rhs` by auto
+    from this obtain d where "d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)" using \<open>?rhs\<close> by auto
     hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y \<in> T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
       apply (simp add: centre_in_ball) done
   } hence "lsc_at x0 f" using lsc_at_ereal[of x0 f] by auto
@@ -293,7 +293,7 @@ shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x. x \<longlonglongrightarrow
 proof-
 { assume "?rhs"
   { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f \<circ> x) \<longlonglongrightarrow> A"
-    hence "f x0 \<le> A" using `?rhs` lim_imp_Liminf[of sequentially] by auto
+    hence "f x0 \<le> A" using \<open>?rhs\<close> lim_imp_Liminf[of sequentially] by auto
   } hence "?lhs" unfolding lsc_at_def by blast
 } from this show ?thesis using lsc_imp_liminf by auto
 qed
@@ -310,13 +310,13 @@ proof-
     moreover
     { assume "l = -\<infinity>"
       { fix B :: real obtain N where N_def: "\<forall>n\<ge>N. f(x n) \<le> ereal B"
-           using Lim_MInfty[of "f \<circ> x"] `(f \<circ> x) \<longlonglongrightarrow> l` `l = -\<infinity>` by auto
+           using Lim_MInfty[of "f \<circ> x"] \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> \<open>l = -\<infinity>\<close> by auto
         define g where "g n = (if n\<ge>N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
-          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ \<open>x \<longlonglongrightarrow> x0\<close>])
              (auto simp: eventually_sequentially)
         moreover have "\<forall>n. f(g n) \<le> ereal B" using g_def N_def by auto
-        ultimately have "f x0 \<le> ereal B" using `?rhs` by auto
+        ultimately have "f x0 \<le> ereal B" using \<open>?rhs\<close> by auto
       } hence "f x0 = -\<infinity>" using ereal_bot by auto
       hence "f x0 \<le> l" by auto }
     moreover
@@ -324,13 +324,13 @@ proof-
       { fix e assume e_def: "(e :: ereal)>0"
         from this obtain N where N_def: "\<forall>n\<ge>N. f(x n) \<in> {l - e <..< l + e}"
            apply (subst tendsto_obtains_N[of "f \<circ> x" l "{l - e <..< l + e}"])
-           using fin e_def ereal_between `(f \<circ> x) \<longlonglongrightarrow> l` by auto
+           using fin e_def ereal_between \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> by auto
         define g where "g n = (if n\<ge>N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
-          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ \<open>x \<longlonglongrightarrow> x0\<close>])
              (auto simp: eventually_sequentially)
         moreover have "\<forall>n. f(g n) \<le> l + e" using g_def N_def by auto
-        ultimately have "f x0 \<le> l + e" using `?rhs` by auto
+        ultimately have "f x0 \<le> l + e" using \<open>?rhs\<close> by auto
       } hence "f x0 \<le> l" using ereal_le_epsilon by auto
     } ultimately have "f x0 \<le> l" by blast
   } hence "lsc_at x0 f" unfolding lsc_at_def by auto
@@ -357,7 +357,7 @@ proof-
   { fix x c0 assume a: "x \<longlonglongrightarrow> x0 \<and> (\<forall>n. f (x n) \<le> c0)"
     define c where "c = (\<lambda>n::nat. c0)"
     hence "c \<longlonglongrightarrow> c0" by auto
-    hence "f(x0)\<le>c0" using `?rhs`[rule_format, of x c c0] using a c_def by auto
+    hence "f(x0)\<le>c0" using \<open>?rhs\<close>[rule_format, of x c c0] using a c_def by auto
   } hence "?lhs" using lsc_sequentially[of x0 f] by auto
 }
 moreover
@@ -455,7 +455,7 @@ moreover
 { assume a: "(lsc_at x0 f) \<and> (usc_at x0 f)"
   { fix x assume "x \<longlonglongrightarrow> x0"
     hence "limsup (f \<circ> x) \<le> f x0" using a unfolding usc_limsup by auto
-    moreover have "\<dots> \<le> liminf (f \<circ> x)" using a `x \<longlonglongrightarrow> x0` unfolding lsc_liminf by auto
+    moreover have "\<dots> \<le> liminf (f \<circ> x)" using a \<open>x \<longlonglongrightarrow> x0\<close> unfolding lsc_liminf by auto
     ultimately have "limsup (f \<circ> x) = f x0 \<and> liminf (f \<circ> x) = f x0"
        using Liminf_le_Limsup[of sequentially "f \<circ> x"] by auto
     hence "(f \<circ> x) \<longlonglongrightarrow> f x0" using Liminf_eq_Limsup[of sequentially] by auto
@@ -502,7 +502,7 @@ lemma continuous_UNIV_iff_lsc_usc:
 by (metis continuous_iff_lsc_usc lsc_def usc_def)
 
 
-subsection {* Epigraphs *}
+subsection \<open>Epigraphs\<close>
 
 
 definition "Epigraph S (f::_ \<Rightarrow> ereal) = {xy. fst xy : S \<and> f (fst xy) \<le> ereal(snd xy)}"
@@ -518,13 +518,13 @@ shows "(\<forall>y. closed {x. f(x)\<le>y}) \<longleftrightarrow> (\<forall>r. c
 proof-
 { assume "?rhs"
   { fix y :: ereal
-    { assume "y \<noteq> \<infinity> \<and> y \<noteq> -\<infinity>" hence "closed {x. f(x)\<le>y}" using `?rhs` by (cases y) auto }
+    { assume "y \<noteq> \<infinity> \<and> y \<noteq> -\<infinity>" hence "closed {x. f(x)\<le>y}" using \<open>?rhs\<close> by (cases y) auto }
     moreover
     { assume "y=\<infinity>" hence  "closed {x. f(x)\<le>y}" by auto }
     moreover
     { assume "y=-\<infinity>"
       hence "{x. f(x)\<le>y} = Inter {{x. f(x)\<le>ereal r} |r. r : UNIV}" using ereal_bot by auto
-      hence "closed {x. f(x)\<le>y}" using closed_Inter `?rhs` by auto
+      hence "closed {x. f(x)\<le>y}" using closed_Inter \<open>?rhs\<close> by auto
     } ultimately have "closed {x. f(x)\<le>y}" by blast
   } hence "?lhs" by auto
 } from this show ?thesis by auto
@@ -547,7 +547,7 @@ proof-
        using tendsto_fst[of z z0] tendsto_snd[of z z0] by auto
     from this obtain x0 c0 where xc0_def: "z0 = (x0, c0) \<and> x \<longlonglongrightarrow> x0 \<and> c \<longlonglongrightarrow> c0" by auto
     hence "f(x0)\<le>ereal c0" apply (subst lsc_sequentially_mem[of x0 f x "ereal \<circ> c" "ereal c0"])
-       using `lsc f` xc_def unfolding lsc_def unfolding o_def by auto
+       using \<open>lsc f\<close> xc_def unfolding lsc_def unfolding o_def by auto
     hence "z0 : (Epigraph UNIV f)" unfolding Epigraph_def using xc0_def by auto
   } hence "closed (Epigraph UNIV f)" by (simp add: closed_sequential_limits)
 }
@@ -571,10 +571,10 @@ moreover
       { assume mi: "l = -\<infinity>"
         { fix B :: real
           obtain N where N_def: "\<forall>n\<ge>N. f(x n)\<le>ereal B"
-             using mi `(f \<circ> x) \<longlonglongrightarrow> l` Lim_MInfty[of "f \<circ> x"] by auto
+             using mi \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> Lim_MInfty[of "f \<circ> x"] by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "\<forall>n\<ge>N1. dist (x n) x0 < d"
-               using `x \<longlonglongrightarrow> x0` unfolding lim_sequentially by auto
+               using \<open>x \<longlonglongrightarrow> x0\<close> unfolding lim_sequentially by auto
             hence "\<exists>y. dist y x0 < d \<and> y : {x. f(x)\<le>ereal B}"
               apply (rule_tac x="x (max N N1)" in exI) using N_def by auto
           }
@@ -587,11 +587,11 @@ moreover
         { fix e assume e_def: "(e :: ereal)>0"
           from this obtain N where N_def: "\<forall>n\<ge>N. f(x n) : {l - e <..< l + e}"
              apply (subst tendsto_obtains_N[of "f \<circ> x" l "{l - e <..< l + e}"])
-             using fin e_def ereal_between `(f \<circ> x) \<longlonglongrightarrow> l` by auto
+             using fin e_def ereal_between \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> by auto
           hence *: "\<forall>n\<ge>N. x n : {x. f(x)\<le>l+e}" using N_def by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "\<forall>n\<ge>N1. dist (x n) x0 < d"
-               using `x \<longlonglongrightarrow> x0` unfolding lim_sequentially by auto
+               using \<open>x \<longlonglongrightarrow> x0\<close> unfolding lim_sequentially by auto
             hence "\<exists>y. dist y x0 < d \<and> y : {x. f(x)\<le>l+e}"
               apply (rule_tac x="x (max N N1)" in exI) using * by auto
           }
@@ -642,7 +642,7 @@ lemma mono_epigraph:
   shows "\<exists>g. ((Epigraph UNIV g) = S)"
 proof-
 { fix x
-  have "closed {z. (x, z) : S}" using `closed S` closed_epigraph_lines by auto
+  have "closed {z. (x, z) : S}" using \<open>closed S\<close> closed_epigraph_lines by auto
   hence "\<exists>a. {z. (x, z) : S} = {z. a \<le> ereal z}" apply (subst mono_closed_ereal) using mono by auto
 } from this obtain g where g_def: "\<forall>x. {z. (x, z) : S} = {z. g x \<le> ereal z}" by metis
 { fix s
@@ -770,8 +770,8 @@ proof-
 { assume "?lhs" hence "?rhs" using lsc_lsc_hull lsc_hull_le lsc_hull_greatest by metis }
 moreover
 { assume "?rhs"
-  { fix x have "(lsc_hull f) x \<le> g x" using `?rhs` lsc_lsc_hull lsc_hull_le by metis
-    moreover have "(lsc_hull f) x \<ge> g x" using `?rhs` lsc_hull_greatest by metis
+  { fix x have "(lsc_hull f) x \<le> g x" using \<open>?rhs\<close> lsc_lsc_hull lsc_hull_le by metis
+    moreover have "(lsc_hull f) x \<ge> g x" using \<open>?rhs\<close> lsc_hull_greatest by metis
     ultimately have "(lsc_hull f) x = g x" by auto
   } hence "?lhs" by (simp add: ext)
 } ultimately show ?thesis by blast
@@ -804,7 +804,7 @@ proof-
   hence xz_def: "ereal z \<ge> (SUP e:{0<..}. INF y:ball x e. f y)"
     unfolding Epigraph_def min_Liminf_at by auto
   { fix e::real assume "e>0"
-    hence "e/sqrt 2>0" using `e>0` by simp
+    hence "e/sqrt 2>0" using \<open>e>0\<close> by simp
     from this obtain e1 where e1_def: "e1<e/sqrt 2 \<and> e1>0" using dense by auto
     hence "(SUP e:{0<..}. INF y:ball x e. f y) \<ge> (INF y:ball x e1. f y)"
       by (auto intro: SUP_upper)
@@ -848,15 +848,15 @@ moreover
   { fix e assume "(e::real)>0"
     { fix d assume "(d::real)>0"
       { assume "d<e"
-        have "(INF y:ball x d. f y) < ereal(z+d)" using * `d>0` by auto
-        also have "\<dots>< ereal(z+e)" using `d<e` by auto
+        have "(INF y:ball x d. f y) < ereal(z+d)" using * \<open>d>0\<close> by auto
+        also have "\<dots>< ereal(z+e)" using \<open>d<e\<close> by auto
         finally have "(INF y:ball x d. f y) < ereal(z+e)" by auto
       }
       moreover
       { assume "~(d<e)"
         hence "ball x e \<le> ball x d" by auto
         hence "(INF y:ball x d. f y) \<le> (INF y:ball x e. f y)" apply (subst INF_mono) by auto
-        also have "\<dots>< ereal(z+e)" using * `e>0` by auto
+        also have "\<dots>< ereal(z+e)" using * \<open>e>0\<close> by auto
         finally have "(INF y:ball x d. f y) < ereal(z+e)" by auto
       } ultimately have "(INF y:ball x d. f y) < ereal(z+e)" by blast
       hence "(INF y:ball x d. f y) \<le> ereal(z+e)" by auto
@@ -887,7 +887,7 @@ ultimately show ?thesis by auto
 qed
 
 
-subsection {* Convex Functions *}
+subsection \<open>Convex Functions\<close>
 
 
 definition
@@ -1057,16 +1057,16 @@ proof (induct s arbitrary:a rule:finite_ne_induct)
   thus ?case by (auto simp: one_ereal_def[symmetric])
 next
   case (insert i s)
-  from `convex_on C f`
+  from \<open>convex_on C f\<close>
   have conv: "\<forall>x y m. ((x \<in> C \<and> y \<in> C \<and> 0 \<le> m \<and> m \<le> 1)
       \<longrightarrow> f (m *\<^sub>R x + (1 - m) *\<^sub>R y) \<le> (ereal m) * f x + (1 - ereal m) * f y)"
-      using convex_on_ereal_alt[of C f] `convex C` by auto
+      using convex_on_ereal_alt[of C f] \<open>convex C\<close> by auto
   { assume "a i = 1"
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "\<forall>j. (j \<in> s \<longrightarrow> a j = 0)"
       using insert by (simp add: sum_nonneg_eq_0_iff)
-    hence ?case using insert.hyps(1-3) `a i = 1`
+    hence ?case using insert.hyps(1-3) \<open>a i = 1\<close>
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
   { assume asm: "a i \<noteq> 1"
@@ -1088,12 +1088,12 @@ next
     hence "(SUM j : s. a j) / (1 - a i) = 1" using i0 by auto
     hence a1: "(SUM j : s. ?a j) = 1" unfolding sum_divide_distrib by simp
     have asum: "(SUM j : s. ?a j *\<^sub>R y j) : C"
-      using insert convex_sum[OF `finite s`
-        `convex C` a1 a_nonneg] by auto
+      using insert convex_sum[OF \<open>finite s\<close>
+        \<open>convex C\<close> a1 a_nonneg] by auto
     have asum_le: "f (SUM j : s. ?a j *\<^sub>R y j) \<le> (SUM j : s. ereal (?a j) * f (y j))"
       using a_nonneg a1 insert by blast
     have "f (SUM j : insert i s. a j *\<^sub>R y j) = f ((SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
-      using sum.insert[of s i "\<lambda>j. a j *\<^sub>R y j", OF `finite s` `i \<notin> s`]
+      using sum.insert[of s i "\<lambda>j. a j *\<^sub>R y j", OF \<open>finite s\<close> \<open>i \<notin> s\<close>]
       by (auto simp only:add.commute)
     also have "\<dots> = f (((1 - a i) * inverse (1 - a i)) *\<^sub>R (SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
       using i0 by auto
@@ -1138,7 +1138,7 @@ proof-
     moreover from * have "k \<noteq> 0" using zero by metis
     ultimately have "f (sum (\<lambda>i. u i *\<^sub>R x i) {1..k} )
       \<le> sum (\<lambda>i. (ereal (u i)) * f(x i)) {1..k}"
-      using convex_on_ereal_sum[of "{1..k}" s f u x] using assms `?rhs` by auto
+      using convex_on_ereal_sum[of "{1..k}" s f u x] using assms \<open>?rhs\<close> by auto
   } hence "?lhs" by auto
 }
 moreover
@@ -1155,7 +1155,7 @@ moreover
     moreover have "(SUM i = 1..2. ereal (uv i) * f (xy i)) = ereal u * f x + ereal v * f y"
         using sum_2[of "(\<lambda>i. ereal (uv i) * f (xy i))"] unfolding xy_def uv_def using xys uv1 by auto
     ultimately have "f (u *\<^sub>R x + v *\<^sub>R y) \<le> ereal u * f x + ereal v * f y"
-      using `?lhs`[rule_format, of "2" uv xy] by auto
+      using \<open>?lhs\<close>[rule_format, of "2" uv xy] by auto
   } hence "?rhs" unfolding convex_on_def by auto
 } ultimately show ?thesis by blast
 qed
@@ -1416,13 +1416,13 @@ lemma convex_lsc_improper:
 proof-
 { fix x assume "f x \<noteq> \<infinity>"
   hence "lsc_at x f" using assms unfolding lsc_def by auto
-  have "x: domain f" unfolding domain_def using `f x \<noteq> \<infinity>` by auto
+  have "x: domain f" unfolding domain_def using \<open>f x \<noteq> \<infinity>\<close> by auto
   hence "x : closure (domain f)" using closure_subset by auto
   hence x_def: "x : closure (rel_interior (domain f))"
     by (metis assms(1) convex_closure_rel_interior convex_domain)
   { fix C assume "C<f x"
     from this obtain d where d_def: "d>0 \<and> (\<forall>y. dist x y < d \<longrightarrow> C < f y)"
-       using lst_at_delta[of x f] `lsc_at x f` by auto
+       using lst_at_delta[of x f] \<open>lsc_at x f\<close> by auto
     from this obtain y where y_def: "y:rel_interior (domain f) \<and> dist y x < d"
        using x_def closure_approachable[of x "rel_interior (domain f)"] by auto
     hence "f y = -\<infinity>" by (metis assms(1) assms(2) convex_improper)
@@ -1594,7 +1594,7 @@ proof-
 have "S \<le> domain f" using assms unfolding finite_on_def domain_def by auto
 { assume "\<not>(\<forall>x\<in>closure S. f x \<ge> a)"
   hence "\<exists>x\<in>closure S. f x < a" by (simp add: not_le)
-  hence False using convex_less_inS[of f S a] assms `S \<le> domain f` by auto
+  hence False using convex_less_inS[of f S a] assms \<open>S \<le> domain f\<close> by auto
 } thus ?thesis by auto
 qed
 
@@ -1780,11 +1780,11 @@ proof-
   then obtain e where e_def: "e>0 \<and> cball b e \<le> T" using open_contains_cball[of T] by auto
   hence "(b-e):cball b e" unfolding cball_def dist_norm by auto
   moreover
-  { assume "a\<ge>b-e" hence "a:cball b e" unfolding cball_def dist_norm using `a<b` by auto }
+  { assume "a\<ge>b-e" hence "a:cball b e" unfolding cball_def dist_norm using \<open>a<b\<close> by auto }
   ultimately have "max a (b-e):cball b e"
     by (metis max.absorb1 max.absorb2 linear)
   hence "max a (b-e):T" using e_def by auto
-  moreover have "max a (b-e):{a..<b}" using e_def `a<b` by auto
+  moreover have "max a (b-e):{a..<b}" using e_def \<open>a<b\<close> by auto
   ultimately have "\<exists>y\<in>{a..<b}. y : T \<and> y \<noteq> b" by auto
 } thus ?thesis unfolding islimpt_def by auto
 qed
@@ -1811,7 +1811,7 @@ proof (cases "y=x")
   case True
     hence "?g = (\<lambda>m. f y)" by (simp add: algebra_simps)
     hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by simp
-    moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
+    moreover have "(lsc_hull f) y = f y" by (metis \<open>y=x\<close> assms lsc_hull_of_convex_agrees_onRI)
     ultimately show ?thesis by auto
 next
   case False
@@ -1820,7 +1820,7 @@ next
   also have "\<dots> \<le> Liminf (at 1 within {0..<1}) ?g" unfolding min_Liminf_at unfolding Liminf_within
      apply (subst SUP_mono) apply (rule_tac x="n/norm(y-x)" in bexI)
      apply (subst INF_mono) apply (rule_tac x="(1 - m) *\<^sub>R x + m *\<^sub>R y" in bexI) prefer 2
-     unfolding ball_def dist_norm by (auto simp add: aux `y\<noteq>x` less_divide_eq)
+     unfolding ball_def dist_norm by (auto simp add: aux \<open>y\<noteq>x\<close> less_divide_eq)
   finally have *: "(lsc_hull f) y \<le> Liminf (at 1 within {0..<1}) ?g" by auto
   { fix b assume "ereal b\<ge>(lsc_hull f) y"
     hence yb: "(y,b):closure(Epigraph UNIV f)" by (metis epigraph_lsc_hull mem_Epigraph UNIV_I)
