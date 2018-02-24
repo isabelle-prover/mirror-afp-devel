@@ -109,11 +109,11 @@ lemma conc_pow_comm:
 by (induct n) (simp_all add: conc_assoc[symmetric])
 
 lemma length_lang_pow_ub:
-  "ALL w : A. length w \<le> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<le> k*n"
+  "\<forall>w \<in> A. length w \<le> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<le> k*n"
 by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
 lemma length_lang_pow_lb:
-  "ALL w : A. length w \<ge> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<ge> k*n"
+  "\<forall>w \<in> A. length w \<ge> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<ge> k*n"
 by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
 lemma lang_pow_subset_lists: "A \<subseteq> lists S \<Longrightarrow> A ^^ n \<subseteq> lists S"
@@ -185,22 +185,21 @@ lemma concat_in_star: "set ws \<subseteq> A \<Longrightarrow> concat ws : star A
 by (induct ws) simp_all
 
 lemma in_star_iff_concat:
-  "w : star A = (EX ws. set ws \<subseteq> A & w = concat ws)"
-  (is "_ = (EX ws. ?R w ws)")
+  "w \<in> star A = (\<exists>ws. set ws \<subseteq> A \<and> w = concat ws)"
+  (is "_ = (\<exists>ws. ?R w ws)")
 proof
-  assume "w : star A" thus "EX ws. ?R w ws"
+  assume "w : star A" thus "\<exists>ws. ?R w ws"
   proof induct
     case Nil have "?R [] []" by simp
     thus ?case ..
   next
     case (append u v)
-    moreover
     then obtain ws where "set ws \<subseteq> A \<and> v = concat ws" by blast
-    ultimately have "?R (u@v) (u#ws)" by auto
+    with append have "?R (u@v) (u#ws)" by auto
     thus ?case ..
   qed
 next
-  assume "EX us. ?R w us" thus "w : star A"
+  assume "\<exists>us. ?R w us" thus "w : star A"
   by (auto simp: concat_in_star)
 qed
 
@@ -210,8 +209,8 @@ by (fastforce simp: in_star_iff_concat)
 lemma star_insert_eps[simp]: "star (insert [] A) = star(A)"
 proof-
   { fix us
-    have "set us \<subseteq> insert [] A \<Longrightarrow> EX vs. concat us = concat vs \<and> set vs \<subseteq> A"
-      (is "?P \<Longrightarrow> EX vs. ?Q vs")
+    have "set us \<subseteq> insert [] A \<Longrightarrow> \<exists>vs. concat us = concat vs \<and> set vs \<subseteq> A"
+      (is "?P \<Longrightarrow> \<exists>vs. ?Q vs")
     proof
       let ?vs = "filter (%u. u \<noteq> []) us"
       show "?P \<Longrightarrow> ?Q ?vs" by (induct us) auto
@@ -371,18 +370,18 @@ proof
   assume eq: "X = A @@ X \<union> B"
   { fix w assume "w : X"
     let ?n = "size w"
-    from \<open>[] \<notin> A\<close> have "ALL u : A. length u \<ge> 1"
+    from \<open>[] \<notin> A\<close> have "\<forall>u \<in> A. length u \<ge> 1"
       by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
-    hence "ALL u : A^^(?n+1). length u \<ge> ?n+1"
+    hence "\<forall>u \<in> A^^(?n+1). length u \<ge> ?n+1"
       by (metis length_lang_pow_lb nat_mult_1)
-    hence "ALL u : A^^(?n+1)@@X. length u \<ge> ?n+1"
+    hence "\<forall>u \<in> A^^(?n+1)@@X. length u \<ge> ?n+1"
       by(auto simp only: conc_def length_append)
     hence "w \<notin> A^^(?n+1)@@X" by auto
     hence "w : star A @@ B" using \<open>w : X\<close> using arden_helper[OF eq, where n="?n"]
       by (auto simp add: star_def conc_UNION_distrib)
   } moreover
   { fix w assume "w : star A @@ B"
-    hence "EX n. w : A^^n @@ B" by(auto simp: conc_def star_def)
+    hence "\<exists>n. w \<in> A^^n @@ B" by(auto simp: conc_def star_def)
     hence "w : X" using arden_helper[OF eq] by blast
   } ultimately show "X = star A @@ B" by blast 
 next
@@ -425,18 +424,18 @@ proof
  assume eq: "X = X @@ A \<union> B"
   { fix w assume "w : X"
     let ?n = "size w"
-    from \<open>[] \<notin> A\<close> have "ALL u : A. length u \<ge> 1"
+    from \<open>[] \<notin> A\<close> have "\<forall>u \<in> A. length u \<ge> 1"
       by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
-    hence "ALL u : A^^(?n+1). length u \<ge> ?n+1"
+    hence "\<forall>u \<in> A^^(?n+1). length u \<ge> ?n+1"
       by (metis length_lang_pow_lb nat_mult_1)
-    hence "ALL u : X @@ A^^(?n+1). length u \<ge> ?n+1"
+    hence "\<forall>u \<in> X @@ A^^(?n+1). length u \<ge> ?n+1"
       by(auto simp only: conc_def length_append)
     hence "w \<notin> X @@ A^^(?n+1)" by auto
     hence "w : B @@ star A" using \<open>w : X\<close> using reversed_arden_helper[OF eq, where n="?n"]
       by (auto simp add: star_def conc_UNION_distrib)
   } moreover
   { fix w assume "w : B @@ star A"
-    hence "EX n. w : B @@ A^^n" by (auto simp: conc_def star_def)
+    hence "\<exists>n. w \<in> B @@ A^^n" by (auto simp: conc_def star_def)
     hence "w : X" using reversed_arden_helper[OF eq] by blast
   } ultimately show "X = B @@ star A" by blast 
 next 

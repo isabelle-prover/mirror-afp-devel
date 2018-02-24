@@ -883,7 +883,7 @@ lemma lemma_2_15_iii_1: "1 \<in> supremum {a, b} \<Longrightarrow> 1 \<in> supre
   apply auto[1]
   apply (drule drop_assumption)
   apply (drule lemma_2_15_iii_0)
-  apply (subgoal_tac "!a . (a ^ (2::nat) ^ n)\<^sup>2 = a ^ (2::nat) ^ Suc n")
+  apply (subgoal_tac "\<forall>a . (a ^ (2::nat) ^ n)\<^sup>2 = a ^ (2::nat) ^ Suc n")
   apply simp
   apply safe
   apply (cut_tac a = aa and m = "2 ^ n" and n = 2 in  power_mult)

@@ -691,7 +691,7 @@ apply (blast intro: analz_mono [THEN [2] rev_subsetD] analz_mono [THEN synth_mon
 done
 
 lemma analz_conj_parts [simp]:
-     "(X \<in> analz H & X \<in> parts H) = (X \<in> analz H)"
+     "(X \<in> analz H \<and> X \<in> parts H) = (X \<in> analz H)"
 by (blast intro: analz_subset_parts [THEN subsetD])
 
 lemma analz_disj_parts [simp]:
@@ -702,7 +702,7 @@ text{*Without this equation, other rules for synth and analz would yield
   redundant cases*}
 lemma MPair_synth_analz [iff]:
      "(\<lbrace>X,Y\<rbrace> \<in> synth (analz H)) =  
-      (X \<in> synth (analz H) & Y \<in> synth (analz H))"
+      (X \<in> synth (analz H) \<and> Y \<in> synth (analz H))"
 by blast
 
 lemma Crypt_synth_analz:
@@ -745,15 +745,15 @@ lemmas HPair_neqs = Agent_neq_HPair Nonce_neq_HPair Number_neq_HPair
 declare HPair_neqs [iff]
 declare HPair_neqs [symmetric, iff]
 
-lemma HPair_eq [iff]: "(Hash[X'] Y' = Hash[X] Y) = (X' = X & Y'=Y)"
+lemma HPair_eq [iff]: "(Hash[X'] Y' = Hash[X] Y) = (X' = X \<and> Y'=Y)"
 by (simp add: HPair_def)
 
 lemma MPair_eq_HPair [iff]:
-     "(\<lbrace>X',Y'\<rbrace> = Hash[X] Y) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
+     "(\<lbrace>X',Y'\<rbrace> = Hash[X] Y) = (X' = Hash\<lbrace>X,Y\<rbrace> \<and> Y'=Y)"
 by (simp add: HPair_def)
 
 lemma HPair_eq_MPair [iff]:
-     "(Hash[X] Y = \<lbrace>X',Y'\<rbrace>) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
+     "(Hash[X] Y = \<lbrace>X',Y'\<rbrace>) = (X' = Hash\<lbrace>X,Y\<rbrace> \<and> Y'=Y)"
 by (auto simp add: HPair_def)
 
 
@@ -775,7 +775,7 @@ by (simp add: HPair_def)
 lemma HPair_synth_analz [simp]:
      "X \<notin> synth (analz H)  
     ==> (Hash[X] Y \<in> synth (analz H)) =  
-        (Hash \<lbrace>X, Y\<rbrace> \<in> analz H & Y \<in> synth (analz H))"
+        (Hash \<lbrace>X, Y\<rbrace> \<in> analz H \<and> Y \<in> synth (analz H))"
 by (auto simp add: HPair_def)
 
 
@@ -905,12 +905,12 @@ by (metis Fake_analz_insert Un_absorb Un_absorb1 Un_commute
 
 text{*Two generalizations of @{text analz_insert_eq}*}
 lemma gen_analz_insert_eq [rule_format]:
-     "X \<in> analz H ==> ALL G. H \<subseteq> G --> analz (insert X G) = analz G"
+     "X \<in> analz H ==> \<forall>G. H \<subseteq> G --> analz (insert X G) = analz G"
 by (blast intro: analz_cut analz_insertI analz_mono [THEN [2] rev_subsetD])
 
 lemma synth_analz_insert_eq [rule_format]:
      "X \<in> synth (analz H) 
-      ==> ALL G. H \<subseteq> G --> (Key K \<in> analz (insert X G)) = (Key K \<in> analz G)"
+      ==> \<forall>G. H \<subseteq> G --> (Key K \<in> analz (insert X G)) = (Key K \<in> analz G)"
 apply (erule synth.induct) 
 apply (simp_all add: gen_analz_insert_eq subset_trans [OF _ subset_insertI]) 
 done

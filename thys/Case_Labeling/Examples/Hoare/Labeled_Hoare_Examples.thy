@@ -10,20 +10,20 @@ begin
 subsubsection \<open>Multiplication by successive addition\<close>
 
 lemma multiply_by_add: "VARS m s a b
-  {a=A & b=B}
+  {a=A \<and> b=B}
   m := 0; s := 0;
-  WHILE m~=a
-  INV {s=m*b & a=A & b=B}
+  WHILE m\<noteq>a
+  INV {s=m*b \<and> a=A \<and> b=B}
   DO s := s+b; m := m+(1::nat) OD
   {s = A*B}"
 by vcg_simp
 
 lemma "VARS M N P :: int
- {m=M & n=N}
+ {m=M \<and> n=N}
  IF M < 0 THEN M := -M; N := -N ELSE SKIP FI;
  P := 0;
  WHILE 0 < M
- INV {0 <= M & (EX p. p = (if m<0 then -m else m) & p*N = m*n & P = (p-M)*N)}
+ INV {0 \<le> M \<and> (\<exists>p. p = (if m<0 then -m else m) \<and> p*N = m*n \<and> P = (p-M)*N)}
  DO P := P+N; M := M - 1 OD
  {P = m*n}"
 proof casified_vcg_simp
@@ -42,10 +42,10 @@ qed
 subsubsection \<open>Euclid's algorithm for GCD\<close>
 
 lemma Euclid_GCD: "VARS a b
- {0<A & 0<B}
+ {0<A \<and> 0<B}
  a := A; b := B;
  WHILE  a \<noteq> b
- INV {0<a & 0<b & gcd A B = gcd a b}
+ INV {0<a \<and> 0<b \<and> gcd A B = gcd a b}
  DO IF a<b THEN b := b-a ELSE a := a-b FI OD
  {a = gcd A B}"
 proof casified_vcg_simp
@@ -77,11 +77,11 @@ lemmas distribs =
   diff_mult_distrib diff_mult_distrib2 add_mult_distrib add_mult_distrib2
 
 lemma gcd_scm: "VARS a b x y
- {0<A & 0<B & a=A & b=B & x=B & y=A}
- WHILE  a ~= b
- INV {0<a & 0<b & gcd A B = gcd a b & 2*A*B = a*x + b*y}
+ {0<A \<and> 0<B \<and> a=A \<and> b=B \<and> x=B \<and> y=A}
+ WHILE  a \<noteq> b
+ INV {0<a \<and> 0<b \<and> gcd A B = gcd a b \<and> 2*A*B = a*x + b*y}
  DO IF a<b THEN (b := b-a; x := x+y) ELSE (a := a-b; y := y+x) FI OD
- {a = gcd A B & 2*A*B = a*(x+y)}"
+ {a = gcd A B \<and> 2*A*B = a*(x+y)}"
 proof casified_vcg
   case while {
     case precondition then show ?case by simp
@@ -101,9 +101,9 @@ qed
 subsubsection \<open>Power by iterated squaring and multiplication\<close>
 
 lemma power_by_mult: "VARS a b c
- {a=A & b=B}
+ {a=A \<and> b=B}
  c := (1::nat);
- WHILE b ~= 0
+ WHILE b \<noteq> 0
  INV {A^B = c * a^b}
  DO  WHILE b mod 2 = 0
      INV {A^B = c * a^b}
@@ -125,7 +125,7 @@ subsubsection \<open>Factorial\<close>
 lemma factorial: "VARS a b
  {a=A}
  b := 1;
- WHILE a ~= 0
+ WHILE a \<noteq> 0
  INV {fac A = b * fac a}
  DO b := b*a; a := a - 1 OD
  {b = fac A}"
@@ -136,7 +136,7 @@ lemma factorial: "VARS a b
 lemma "VARS i f
  {True}
  i := (1::nat); f := 1;
- WHILE i <= n INV {f = fac(i - 1) & 1 <= i & i <= n+1}
+ WHILE i \<le> n INV {f = fac(i - 1) \<and> 1 \<le> i \<and> i \<le> n+1}
  DO f := f*i; i := i+1 OD
  {f = fac n}"
 proof casified_vcg_simp
@@ -167,23 +167,23 @@ text \<open>
 
 lemma Partition:
   fixes pivot
-  defines "leq == %A i. !k. k<i --> A!k <= pivot"
-  defines "geq == %A i. !k. i<k & k<length A --> pivot <= A!k"
+  defines "leq \<equiv> \<lambda>A i. \<forall>k. k<i \<longrightarrow> A!k \<le> pivot"
+  defines "geq \<equiv> \<lambda>A i. \<forall>k. i<k \<and> k<length A \<longrightarrow> pivot \<le> A!k"
   shows "
    VARS A u l
    {0 < length(A::('a::order)list)}
    l := 0; u := length A - Suc 0;
-   WHILE l <= u
-    INV {leq A l & geq A u & u<length A & l<=length A}
-    DO WHILE l < length A & A!l <= pivot
-       INV {leq A l & geq A u & u<length A & l<=length A}
+   WHILE l \<le> u
+    INV {leq A l \<and> geq A u \<and> u<length A \<and> l\<le>length A}
+    DO WHILE l < length A \<and> A!l \<le> pivot
+       INV {leq A l \<and> geq A u \<and> u<length A \<and> l\<le>length A}
        DO l := l+1 OD;
-       WHILE 0 < u & pivot <= A!u
-       INV {leq A l & geq A u  & u<length A & l<=length A}
+       WHILE 0 < u \<and> pivot \<le> A!u
+       INV {leq A l \<and> geq A u  \<and> u<length A \<and> l\<le>length A}
        DO u := u - 1 OD;
-       IF l <= u THEN A := A[l := A!u, u := A!l] ELSE SKIP FI
+       IF l \<le> u THEN A := A[l := A!u, u := A!l] ELSE SKIP FI
     OD
-   {leq A u & (!k. u<k & k<l --> A!k = pivot) & geq A l}"
+   {leq A u \<and> (\<forall>k. u<k \<and> k<l \<longrightarrow> A!k = pivot) \<and> geq A l}"
   unfolding leq_def geq_def
 proof casified_vcg_simp
   case basic
@@ -204,7 +204,7 @@ next
       case whilea
       { case invariant
         { case basic
-          have lem: "\<And>m n. m - Suc 0 < n ==> m < Suc n" by linarith
+          have lem: "\<And>m n. m - Suc 0 < n \<Longrightarrow> m < Suc n" by linarith
           from basic show ?case by (blast elim!: less_SucE intro: less_imp_diff_less dest: lem)
         }
       }

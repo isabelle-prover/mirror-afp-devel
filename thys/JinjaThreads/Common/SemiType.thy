@@ -543,7 +543,7 @@ proof -
 qed
 
 lemma sup_exists:
-  "\<lbrakk> widen P a c; widen P b c \<rbrakk> \<Longrightarrow> EX T. sup P a b = OK T"
+  "\<lbrakk> widen P a c; widen P b c \<rbrakk> \<Longrightarrow> \<exists>T. sup P a b = OK T"
 by(cases b a rule: ty.exhaust[case_product ty.exhaust])(auto simp add: sup_def)
 
 lemma err_semilat_JType_esl:

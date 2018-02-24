@@ -35,7 +35,7 @@ definition "\<gamma>_st \<gamma> F = {f. \<forall>x. f x \<in> \<gamma>(lookup F
 instantiation st :: (SL_top) SL_top
 begin
 
-definition "le_st F G = (ALL x : set(dom G). lookup F x \<sqsubseteq> fun G x)"
+definition "le_st F G = (\<forall>x \<in> set(dom G). lookup F x \<sqsubseteq> fun G x)"
 
 definition
 "join_st F G =

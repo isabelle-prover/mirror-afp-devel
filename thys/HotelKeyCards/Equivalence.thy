@@ -68,7 +68,7 @@ by (induct s) (auto split:event.split)
 
 
 lemma ownsD: "owns s r = Some g \<Longrightarrow>
- EX s\<^sub>1 s\<^sub>2 c. s = s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in s\<^sub>2 r"
+ \<exists>s\<^sub>1 s\<^sub>2 c. s = s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in s\<^sub>2 r"
 apply(induct s)
  apply simp
 apply (auto split:event.splits)
@@ -156,7 +156,7 @@ apply (fastforce simp add: fun_eq_iff)
 done
 
 lemma reach_hotel: "s : reach \<Longrightarrow>
- EX t ik. initk = ik \<longrightarrow> hotel t \<and>
+ \<exists>t ik. initk = ik \<longrightarrow> hotel t \<and>
  state.cards s = cards t \<and>
  state.isin s =  isin t \<and>
  state.roomk s = roomk t \<and> state.owns s = owns t \<and>

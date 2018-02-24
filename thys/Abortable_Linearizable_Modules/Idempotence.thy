@@ -14,7 +14,7 @@ lemmas ids = id1 id2
 definition composition where
   "composition  \<equiv> 
      hide ((ioa 0 id1) \<parallel> (ioa id1 id2))
-          {act . EX p c av . act = Switch id1 p c av }"
+          {act . \<exists>p c av . act = Switch id1 p c av }"
 
 lemmas comp_simps = hide_def composition_def ioa_def par2_def is_trans_def
   start_def actions_def asig_def trans_def

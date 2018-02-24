@@ -181,9 +181,9 @@ proof-
     let ?X = "set(dom S)" let ?Y = "set(dom S')"
     let ?f = "fun S" let ?g = "fun S'"
     let ?X' = "{x:?X. ~ \<top> \<sqsubseteq> ?f x}" let ?Y' = "{y:?Y. ~ \<top> \<sqsubseteq> ?g y}"
-    from `S \<sqsubseteq> S'` have "ALL y:?Y'\<inter>?X. ?f y \<sqsubseteq> ?g y"
+    from `S \<sqsubseteq> S'` have "\<forall>y\<in>?Y'\<inter>?X. ?f y \<sqsubseteq> ?g y"
       by(auto simp: le_st_def lookup_def)
-    hence 1: "ALL y:?Y'\<inter>?X. m(?g y)+1 \<le> m(?f y)+1"
+    hence 1: "\<forall>y\<in>?Y'\<inter>?X. m(?g y)+1 \<le> m(?f y)+1"
       using assms(1,2) by(fastforce)
     from `~ S' \<sqsubseteq> S` obtain u where u: "u : ?X" "~ lookup S' u \<sqsubseteq> ?f u"
       by(auto simp: le_st_def)
@@ -274,7 +274,7 @@ proof-
       (is "_ \<Longrightarrow> \<exists>ys. ?P Q ys")
     proof(induction xs arbitrary: Q rule: length_induct)
       case (1 xs)
-      { have "!!ys Q. size ys < size xs \<Longrightarrow> ys : Q \<Longrightarrow> EX ms. ?P Q ms"
+      { have "!!ys Q. size ys < size xs \<Longrightarrow> ys : Q \<Longrightarrow> \<exists>ms. ?P Q ms"
           using "1.IH" by blast
       } note IH = this
       show ?case
@@ -331,7 +331,7 @@ text{* Termination of the fixed-point finders, assuming monotone functions: *}
 lemma pfp_termination:
 fixes x0 :: "'a::preord"
 assumes mono: "\<And>x y. x \<sqsubseteq> y \<Longrightarrow> f x \<sqsubseteq> f y" and "acc {(x::'a,y). x \<sqsubseteq> y}"
-and "x0 \<sqsubseteq> f x0" shows "EX x. pfp f x0 = Some x"
+and "x0 \<sqsubseteq> f x0" shows "\<exists>x. pfp f x0 = Some x"
 proof(simp add: pfp_def, rule wf_while_option_Some[where P = "%x. x \<sqsubseteq> f x"])
   show "wf {(x, s). (s \<sqsubseteq> f s \<and> \<not> f s \<sqsubseteq> s) \<and> x = f s}"
     by(rule wf_subset[OF assms(2)]) auto

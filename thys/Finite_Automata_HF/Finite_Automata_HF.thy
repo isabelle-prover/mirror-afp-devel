@@ -1199,7 +1199,7 @@ subsection{*More about the relation @{term eq_app_right}*}
     by fastforce
 
   definition index_f :: "'a list set \<Rightarrow> hf" where
-    "index_f \<equiv> @h. bij_betw h (UNIV // eq_app_right language) (hfset (ord_of min_states))"
+    "index_f \<equiv> SOME h. bij_betw h (UNIV // eq_app_right language) (hfset (ord_of min_states))"
 
   lemma index_f: "bij_betw index_f (UNIV // eq_app_right language) (hfset (ord_of min_states))"
   proof -

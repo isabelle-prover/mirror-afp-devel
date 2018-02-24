@@ -69,15 +69,15 @@ instantiation prod:: (well_founded, well_founded) well_founded
 begin
 instance proof
   fix P::"('a * 'b) \<Rightarrow> bool"
-  have a:  "!P . (!x::'a . (!y . y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (!a . P a)"
+  have a:  "\<forall>P. (\<forall>x::'a . (\<forall>y. y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (\<forall>a . P a)"
     apply safe
     apply (rule less_induct1)
     by blast
-  have b:  "!P . (!x::'b . (!y . y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (!a . P a)"
+  have b:  "\<forall>P. (\<forall>x::'b. (\<forall>y . y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (\<forall>a . P a)"
     apply safe
     apply (rule less_induct1)
     by blast
-  from a and b have c: "(!x . (!y . y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (!a . P a)"
+  from a and b have c: "(\<forall>x. (\<forall>y. y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (\<forall>a. P a)"
     apply (unfold less_pair_def)
     apply (rule impI)
     apply (simp (no_asm_use) only: split_paired_All)
@@ -118,7 +118,7 @@ begin
 instance proof
   fix P::"nat \<Rightarrow> bool" 
   fix a
-  assume A: "(!!x . (!!y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x)"
+  assume A: "(\<And>x . (\<And>y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x)"
   show "P a"
   by (rule less_induct, rule A, simp)
   qed

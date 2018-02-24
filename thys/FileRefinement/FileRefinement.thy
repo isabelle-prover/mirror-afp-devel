@@ -138,13 +138,13 @@ definition unallocatedBlocksInvariant :: "CFile => bool" where
    writeExtendCorrect. It says that any unallocated block contains
    fillByte's.\<close>
   "unallocatedBlocksInvariant state ==
-   ALL blockNum i . 
+   \<forall>blockNum i . 
      ~ blockNum < nextFreeBlock state & blockNum < numBlocks & i < blockSize 
      --> data state blockNum i = fillByte"
 
 definition lastBlockInvariant :: "CFile => bool" where
   "lastBlockInvariant state ==
-   ALL index .
+   \<forall>index .
      ~ index < fileSize state & nextFreeBlock state = index div blockSize + 1
      --> data state (index div blockSize) (index mod blockSize) = fillByte"
 

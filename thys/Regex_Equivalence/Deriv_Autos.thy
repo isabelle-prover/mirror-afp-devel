@@ -113,7 +113,7 @@ qed
 
 subsection {* Partial Derivatives *}
 
-global_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. EX p:P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
+global_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. \<exists>p\<in>P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
   defines pderiv_closure = pderiv.closure
     and check_eqv_p = pderiv.check_eqv
     and reachable_p = pderiv.reachable

@@ -246,7 +246,7 @@ subsection {* Lemmas and Tactics *}
 lemma intD[dest]: "\<turnstile> A \<Longrightarrow> w \<Turnstile> A"
 proof -
   assume a:"\<turnstile> A"
-  from a have "ALL w. w \<Turnstile> A" by (auto simp add: Valid_def)
+  from a have "\<forall>w. w \<Turnstile> A" by (auto simp add: Valid_def)
   thus ?thesis ..
 qed
 
@@ -266,7 +266,7 @@ method_setup int_unlift = {*
 
 lemma inteq_reflection: assumes P1: "\<turnstile> x=y" shows  "(x \<equiv> y)"
 proof -
-  from P1 have P2: "ALL w. x w = y w" by (unfold Valid_def unl_lift2)
+  from P1 have P2: "\<forall>w. x w = y w" by (unfold Valid_def unl_lift2)
   hence P3:"x=y" by blast
   thus "x \<equiv> y" by (rule "eq_reflection")
 qed

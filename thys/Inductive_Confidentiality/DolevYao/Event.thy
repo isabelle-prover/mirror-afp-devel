@@ -198,7 +198,7 @@ done
 text{*What agents DIFFERENT FROM Spy know 
   was either said, or noted, or got, or known initially*}
 lemma knows_imp_Says_Gets_Notes_initState [rule_format]:
-     "[| X \<in> knows A evs; A \<noteq> Spy |] ==> EX B.  
+     "[| X \<in> knows A evs; A \<noteq> Spy |] ==> \<exists>B.  
   Says A B X \<in> set evs | Gets A X \<in> set evs | Notes A X \<in> set evs | X \<in> initState A"
 apply (erule rev_mp)
 apply (induct_tac "evs")
@@ -209,7 +209,7 @@ done
 text{*What the Spy knows -- for the time being --
   was either said or noted, or known initially*}
 lemma knows_Spy_imp_Says_Notes_initState [rule_format]:
-     "[| X \<in> knows Spy evs |] ==> EX A B.  
+     "[| X \<in> knows Spy evs |] ==> \<exists>A B.  
   Says A B X \<in> set evs | Notes A X \<in> set evs | X \<in> initState Spy"
 apply (erule rev_mp)
 apply (induct_tac "evs")

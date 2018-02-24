@@ -13,7 +13,7 @@ definition
 
 definition
   sran :: "('a => 'b set) => 'b set" where
-  "sran m = {b. EX a. b \<in> m a}"
+  "sran m = {b. \<exists>a. b \<in> m a}"
 
 lemma sranI: "b \<in> m a \<Longrightarrow> b \<in> sran m"
   by(auto simp: sran_def)

@@ -37,7 +37,7 @@ lemma cong_sum_poly:
 lemma cong_iff_lin_poly: "([(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
   using cong_diff_iff_cong_0 [of b a m] by (auto simp add: cong_0_iff dvd_def algebra_simps dest: cong_sym)
 
-lemma cong_solve_poly: "(a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> EX x. [a * x = gcd a n] (mod n)"
+lemma cong_solve_poly: "(a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> \<exists>x. [a * x = gcd a n] (mod n)"
 proof (cases "n = 0")
   case True
   note n0=True
@@ -64,7 +64,7 @@ qed
 
 lemma cong_solve_coprime_poly: 
 assumes coprime_an:"coprime (a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) n"
-shows "EX x. [a * x = 1] (mod n)"
+shows "\<exists>x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
   case True
   show ?thesis unfolding cong_def
@@ -85,14 +85,14 @@ lemma chinese_remainder_aux_poly:
   fixes A :: "'a set"
     and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
   assumes fin: "finite A"
-    and cop: "ALL i : A. (ALL j : A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
-  shows "EX b. (ALL i : A. [b i = 1] (mod m i) \<and> [b i = 0] (mod (\<Prod>j \<in> A - {i}. m j)))"
+    and cop: "\<forall>i \<in> A. (\<forall>j \<in> A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
+  shows "\<exists>b. (\<forall>i \<in> A. [b i = 1] (mod m i) \<and> [b i = 0] (mod (\<Prod>j \<in> A - {i}. m j)))"
 proof (rule finite_set_choice, rule fin, rule ballI)
   fix i
   assume "i : A"
   with cop have "coprime (\<Prod>j \<in> A - {i}. m j) (m i)"
     by (auto intro: prod_coprime_left)
-  then have "EX x. [(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
+  then have "\<exists>x. [(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
     by (elim cong_solve_coprime_poly)
   then obtain x where "[(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
     by auto
@@ -111,11 +111,11 @@ lemma chinese_remainder_poly:
     and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
     and u :: "'a \<Rightarrow> 'b poly"
   assumes fin: "finite A"
-    and cop: "ALL i:A. (ALL j : A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
-  shows "EX x. (ALL i:A. [x = u i] (mod m i))"
+    and cop: "\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
+  shows "\<exists>x. (\<forall>i\<in>A. [x = u i] (mod m i))"
 proof -
   from chinese_remainder_aux_poly [OF fin cop] obtain b where
-    bprop: "ALL i:A. [b i = 1] (mod m i) \<and>
+    bprop: "\<forall>i\<in>A. [b i = 1] (mod m i) \<and>
       [b i = 0] (mod (\<Prod>j \<in> A - {i}. m j))"
     by blast
   let ?x = "\<Sum>i\<in>A. (u i) * (b i)"
@@ -198,12 +198,12 @@ lemma chinese_remainder_unique_poly:
     (*The following assumption should not be necessary, but I need it since in Isabelle 
       degree 0 is 0 instead of -\<infinity>*)
     and not_constant: "0 < degree (prod m A)" 
-  shows "EX! x. degree x < (\<Sum>i\<in>A. degree (m i)) \<and> (\<forall>i\<in>A. [x = u i] (mod m i))"
+  shows "\<exists>!x. degree x < (\<Sum>i\<in>A. degree (m i)) \<and> (\<forall>i\<in>A. [x = u i] (mod m i))"
 proof -
   from not_constant have fin: "finite A"
     by (metis degree_1 gr_implies_not0 prod.infinite)
   from chinese_remainder_poly [OF fin cop]
-  obtain y where one: "(ALL i:A. [y = u i] (mod m i))"
+  obtain y where one: "(\<forall>i\<in>A. [y = u i] (mod m i))"
     by blast
   let ?x = "y mod (\<Prod>i\<in>A. m i)"
   have degree_prod_sum: "degree (prod m A) = (\<Sum>i\<in>A. degree (m i))" 
@@ -216,7 +216,7 @@ proof -
     using degree_mod_less[OF prodnz, of y]
     using not_constant
     by auto    
-  have cong: "ALL i:A. [?x = u i] (mod m i)"
+  have cong: "\<forall>i\<in>A. [?x = u i] (mod m i)"
     apply auto
     apply (rule cong_trans_poly)
     prefer 2
@@ -228,17 +228,17 @@ proof -
     apply (rule fin)
     apply assumption
     done    
-  have unique: "ALL z. degree z < (\<Sum>i\<in>A. degree (m i)) \<and>
-      (ALL i:A. [z = u i] (mod m i)) \<longrightarrow> z = ?x"
+  have unique: "\<forall>z. degree z < (\<Sum>i\<in>A. degree (m i)) \<and>
+      (\<forall>i\<in>A. [z = u i] (mod m i)) \<longrightarrow> z = ?x"
   proof (clarify)
     fix z::"'b poly"
     assume zless: "degree z < (\<Sum>i\<in>A. degree (m i))"
-    assume zcong: "(ALL i:A. [z = u i] (mod m i))"   
+    assume zcong: "(\<forall>i\<in>A. [z = u i] (mod m i))"   
     have deg1: "degree z < degree (prod m A)"
       using degree_prod_sum zless by simp
     have deg2: "degree ?x < degree (prod m A)"
       by (metis deg1 degree_0 degree_mod_less gr0I gr_implies_not0)
-    have "ALL i:A. [?x = z] (mod m i)"
+    have "\<forall>i\<in>A. [?x = z] (mod m i)"
       apply clarify
       apply (rule cong_trans_poly)
       using cong apply (erule bspec)

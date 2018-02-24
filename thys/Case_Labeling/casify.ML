@@ -260,7 +260,7 @@ fun extract_cases_tac (ctxt, st) =
   in CONTEXT_CASES (mk_cases' ctxt st) tac (ctxt, st) end
 
 
-(* Splits the nth ALL into its components and simplifies any case_prod over this variable*)
+(* Splits the nth \<forall> into its components and simplifies any case_prod over this variable*)
 
 structure Splitsubst = Hypsubst
 (

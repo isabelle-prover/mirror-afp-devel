@@ -2374,9 +2374,9 @@ text{* Linear patterns: *}
 
 function linpats :: "tm list \<Rightarrow> bool" where
 "linpats ts \<longleftrightarrow>
- (ALL i<size ts. (EX x. ts!i = V x) |
-    (EX nm ts'. ts!i = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' \<and> linpats ts')) &
- (ALL i<size ts. ALL j<size ts. i\<noteq>j \<longrightarrow> fv(ts!i) \<inter> fv(ts!j) = {})"
+ (\<forall>i<size ts. (\<exists>x. ts!i = V x) \<or>
+    (\<exists>nm ts'. ts!i = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' \<and> linpats ts')) \<and>
+ (\<forall>i<size ts. \<forall>j<size ts. i\<noteq>j \<longrightarrow> fv(ts!i) \<inter> fv(ts!j) = {})"
 by pat_completeness auto
 termination
 apply(relation "measure(%ts. size ts + (SUM t<-ts. size t))")
@@ -2387,11 +2387,11 @@ declare linpats.simps[simp del]
 
 (* FIXME move *)
 lemma eq_lists_iff_eq_nth:
-  "size xs = size ys \<Longrightarrow> (xs=ys) = (ALL i<size xs. xs!i = ys!i)"
+  "size xs = size ys \<Longrightarrow> (xs=ys) = (\<forall>i<size xs. xs!i = ys!i)"
 by (metis nth_equalityI)
 
 lemma pattern_subst_ML_coincidence:
- "pattern t \<Longrightarrow> ALL i:fv t. \<sigma> i = \<sigma>' i
+ "pattern t \<Longrightarrow> \<forall>i\<in>fv t. \<sigma> i = \<sigma>' i
   \<Longrightarrow> subst_ML \<sigma> (comp_pat t) = subst_ML \<sigma>' (comp_pat t)"
 by(induct pred:pattern) auto
 
@@ -2403,7 +2403,7 @@ proof(induct ts rule:linpats.induct)
     fix t assume "t : set ts"
     then obtain i where "i < size ts" and [simp]: "t = ts!i"
       by (auto simp: in_set_conv_nth)
-    hence "(EX x. t = V x) | (EX nm ts'. t = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' & linpats ts')"
+    hence "(\<exists>x. t = V x) \<or> (\<exists>nm ts'. t = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' & linpats ts')"
       (is "?V | ?C")
       using 1(2) by(simp add:linpats.simps[of ts])
     thus "pattern t"
@@ -2424,14 +2424,14 @@ apply (fastforce simp:rev_nth)
 done
 
 lemma no_match_ML_aux:
-  "ALL v : set cvs. C\<^sub>Us v \<Longrightarrow> linpats ps \<Longrightarrow> size ps = size cvs \<Longrightarrow>
+  "\<forall>v \<in> set cvs. C\<^sub>Us v \<Longrightarrow> linpats ps \<Longrightarrow> size ps = size cvs \<Longrightarrow>
   \<forall>\<sigma>. map (subst\<^sub>M\<^sub>L \<sigma>) (map comp_pat ps) \<noteq> cvs \<Longrightarrow>
   no_match\<^sub>M\<^sub>L (map comp_pat ps) cvs"
 apply(induct ps arbitrary: cvs rule:linpats.induct)
 apply(frule linpats_pattern)
 apply(subst (asm) linpats.simps) back
 apply auto
-apply(case_tac "ALL i<size ts. EX \<sigma>. subst\<^sub>M\<^sub>L \<sigma> (comp_pat (ts!i)) = cvs!i")
+apply(case_tac "\<forall>i<size ts. \<exists>\<sigma>. subst\<^sub>M\<^sub>L \<sigma> (comp_pat (ts!i)) = cvs!i")
  apply(clarsimp simp:Skolem_list_nth)
  apply(rename_tac "\<sigma>s")
  apply(erule_tac x="%x. (\<sigma>s!(THE i. i<size ts & x : fv(ts!i)))x" in allE)
@@ -2456,15 +2456,15 @@ apply(rule_tac x="size ts - i - 1" in exI)
 apply simp
 apply rule
  apply simp
-apply(subgoal_tac "~(EX x. ts!i = V x)")
+apply(subgoal_tac "\<not>(\<exists>x. ts!i = V x)")
  prefer 2
  apply fastforce
-apply(subgoal_tac "EX nm ts'. ts!i = C nm \<bullet>\<bullet> ts' & size ts' = arity nm & linpats ts'")
+apply(subgoal_tac "\<exists>nm ts'. ts!i = C nm \<bullet>\<bullet> ts' & size ts' = arity nm & linpats ts'")
  prefer 2
  apply fastforce
 apply clarsimp
 apply(rule_tac x=nm in exI)
-apply(subgoal_tac "EX nm' vs'. cvs!i = C\<^sub>U nm' vs' & size vs' = arity nm' & (ALL v' : set vs'. C\<^sub>Us v')")
+apply(subgoal_tac "\<exists>nm' vs'. cvs!i = C\<^sub>U nm' vs' & size vs' = arity nm' & (\<forall>v' \<in> set vs'. C\<^sub>Us v')")
  prefer 2
  apply(drule_tac x="cvs!i" in bspec)
   apply simp

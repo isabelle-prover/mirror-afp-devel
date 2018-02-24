@@ -325,7 +325,7 @@ proof(induction t rule: splay_max.induct)
   case (3 l b rl c rr)
   { fix rrl' d' rrr'
     have "splay_max rr = Node rrl' d' rrr'
-       \<Longrightarrow> !x : set_tree(Node rrl' d' rrr'). c < x" 
+       \<Longrightarrow> \<forall>x \<in> set_tree(Node rrl' d' rrr'). c < x" 
       using "3.prems" set_splay_max[of rr]
       by (clarsimp split: tree.split simp: ball_Un)
   }

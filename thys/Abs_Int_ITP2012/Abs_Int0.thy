@@ -53,7 +53,7 @@ end
 instantiation "fun" :: (type, SL_top) SL_top
 begin
 
-definition "f \<sqsubseteq> g = (ALL x. f x \<sqsubseteq> g x)"
+definition "f \<sqsubseteq> g = (\<forall>x. f x \<sqsubseteq> g x)"
 definition "f \<squnion> g = (\<lambda>x. f x \<squnion> g x)"
 definition "\<top> = (\<lambda>x. \<top>)"
 

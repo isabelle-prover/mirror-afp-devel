@@ -78,27 +78,27 @@ subsection {* Lemmas @{text mapset_none} and @{text mapset_some} establish
               a relation between the set and map abstraction of the tree *}
 
 lemma assumes v: "valid_tmap t"
-      shows mapset_none: "(mapOf t i = None) = (ALL a. (i,a) ~: setOf t)"
+      shows mapset_none: "(mapOf t i = None) = (\<forall>a. (i,a) \<notin> setOf t)"
 proof
   \<comment> \<open>==>\<close>
   assume mapNone: "mapOf t i = None"
   from v mapNone mapOf_lookup3 have lnone: "tlookup fst i t = None" by auto
-  show "ALL a. (i,a) ~: setOf t"
+  show "\<forall>a. (i,a) \<notin> setOf t"
   proof
     fix a
     show "(i,a) ~: setOf t"
     proof
       assume iain: "(i,a) : setOf t"
       have tlookup_none_inst: 
-      "sortedTree fst t & (tlookup fst i t = None) --> (ALL x:setOf t. fst x ~= i)"
+      "sortedTree fst t & (tlookup fst i t = None) --> (\<forall>x \<in> setOf t. fst x ~= i)"
       by (insert tlookup_none [of "fst" "t" "i"], assumption)
-      from v lnone tlookup_none_inst have "ALL x : setOf t. fst x ~= i" by simp
+      from v lnone tlookup_none_inst have "\<forall>x \<in> setOf t. fst x ~= i" by simp
       from this iain have "fst (i,a) ~= i" by fastforce
       from this show False by simp
     qed
   qed
   \<comment> \<open><==\<close>
-  next assume h: "ALL a. (i,a) ~: setOf t"
+  next assume h: "\<forall>a. (i,a) \<notin> setOf t"
   show "mapOf t i = None"
   proof (cases "mapOf t i")
   case None then show ?thesis .
@@ -186,8 +186,8 @@ proof
     have lhs_res: "mapOf (mupdate i a t) i2 = mapOf t i2"
     proof (cases "mapOf t i2")
     case None from this have mapNone: "mapOf t i2 = None" by simp
-      from v mapNone mapset_none have i2nin: "ALL a. (i2,a) ~: setOf t" by fastforce
-      have noneIn: "ALL b. (i2,b) ~: setOf ?tr"
+      from v mapNone mapset_none have i2nin: "\<forall>a. (i2,a) \<notin> setOf t" by fastforce
+      have noneIn: "\<forall>b. (i2,b) \<notin> setOf ?tr"
       proof 
         fix b 
         from v binsert_set 
@@ -196,7 +196,7 @@ proof
         from this i2nei i2nin show "(i2,b) ~: setOf ?tr" by fastforce
       qed
       have mapset_none_inst: 
-      "valid_tmap ?tr --> (mapOf ?tr i2 = None) = (ALL a. (i2, a) ~: setOf ?tr)" 
+      "valid_tmap ?tr --> (mapOf ?tr i2 = None) = (\<forall>a. (i2, a) \<notin> setOf ?tr)" 
       by (insert mapset_none [of "?tr" i2], simp)
       from vr noneIn mapset_none_inst have "mapOf ?tr i2 = None" by fastforce
       from this upres mapNone show ?thesis by simp
@@ -242,16 +242,16 @@ proof (simp add: mremove_def)
     from v remove_spec 
     have remSet: "setOf ?tr = setOf t - eqs fst (i, undefined)"
     by fastforce
-    have noneIn: "ALL a. (i,a) ~: setOf ?tr"
+    have noneIn: "\<forall>a. (i,a) \<notin> setOf ?tr"
     proof 
       fix a
       from remSet show "(i,a) ~: setOf ?tr" by (simp add: eqs_def)
     qed
     from v remove_sort have vr: "valid_tmap ?tr" by fastforce
     have mapset_none_inst: "valid_tmap ?tr ==>
-    (mapOf ?tr i = None) = (ALL a. (i,a) ~: setOf ?tr)"
+    (mapOf ?tr i = None) = (\<forall>a. (i,a) \<notin> setOf ?tr)"
     by (insert mapset_none [of "?tr" "i"], simp)
-    from vr this have "(mapOf ?tr i = None) = (ALL a. (i,a) ~: setOf ?tr)" by fastforce
+    from vr this have "(mapOf ?tr i = None) = (\<forall>a. (i,a) \<notin> setOf ?tr)" by fastforce
     from this noneIn show "mapOf ?tr i = None" by simp    
   qed
 qed

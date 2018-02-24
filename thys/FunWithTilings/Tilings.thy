@@ -26,7 +26,7 @@ lemma tiling_Diff1E:
 assumes "t-a \<in> tiling A" and "a \<in> A" and "a \<subseteq> t"
 shows "t \<in> tiling A"
 proof -
-  from assms(2-3) have  "EX r. t = r Un a & r Int a = {}"
+  from assms(2-3) have  "\<exists>r. t = r Un a & r Int a = {}"
     by (metis Diff_disjoint Int_commute Un_Diff_cancel Un_absorb1 Un_commute)
   thus ?thesis using assms(1,2)
     by (auto simp:Un_Diff)

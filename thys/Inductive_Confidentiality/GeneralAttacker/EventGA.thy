@@ -34,12 +34,12 @@ primrec
         follows @{term Says} in real protocols.  Seems difficult to change.
         See @{text Gets_correct} in theory @{text "Guard/Extensions.thy"}.\<close>
 
-lemma Notes_imp_used [rule_format]: "Notes A X \<in> set evs --> X \<in> used evs"
+lemma Notes_imp_used [rule_format]: "Notes A X \<in> set evs \<longrightarrow> X \<in> used evs"
 apply (induct_tac evs)
 apply (auto split: event.split) 
 done
 
-lemma Says_imp_used [rule_format]: "Says A B X \<in> set evs --> X \<in> used evs"
+lemma Says_imp_used [rule_format]: "Says A B X \<in> set evs \<longrightarrow> X \<in> used evs"
 apply (induct_tac evs)
 apply (auto split: event.split) 
 done
@@ -63,14 +63,14 @@ by simp
 
 text{*Everybody sees what is sent on the traffic*}
 lemma Says_imp_knows [rule_format]:
-     "Says A' B X \<in> set evs --> (\<forall>A. X \<in> knows A evs)"
+     "Says A' B X \<in> set evs \<longrightarrow> (\<forall>A. X \<in> knows A evs)"
 apply (induct_tac "evs")
 apply (simp_all (no_asm_simp) split: event.split)
 apply auto
 done
 
 lemma Notes_imp_knows [rule_format]:
-"Notes A' X \<in> set evs --> X \<in> knows A' evs"
+"Notes A' X \<in> set evs \<longrightarrow> X \<in> knows A' evs"
 apply (induct_tac "evs")
 apply (simp_all (no_asm_simp) split: event.split)
 done
@@ -99,8 +99,8 @@ lemma knows_subset_knows_Gets: "knows A evs \<subseteq> knows A (Gets A' X # evs
 by (simp add: subset_insertI)
 
 lemma knows_imp_Says_Gets_Notes_initState [rule_format]:
-     "X \<in> knows A evs ==> EX A' B.  
-  Says A' B X \<in> set evs | Notes A X \<in> set evs | X \<in> initState A"
+     "X \<in> knows A evs \<Longrightarrow> \<exists>A' B.  
+  Says A' B X \<in> set evs \<or> Notes A X \<in> set evs \<or> X \<in> initState A"
 apply (erule rev_mp)
 apply (induct_tac "evs")
 apply (simp_all (no_asm_simp) split: event.split)
@@ -114,7 +114,7 @@ done
 
 lemmas usedI = parts_knows_subset_used [THEN subsetD, intro]
 
-lemma initState_into_used: "X \<in> parts (initState B) ==> X \<in> used evs"
+lemma initState_into_used: "X \<in> parts (initState B) \<Longrightarrow> X \<in> used evs"
 apply (induct_tac "evs")
 apply (simp_all add: parts_insert_knows_A split: event.split, blast)
 done
@@ -175,7 +175,7 @@ fun analz_mono_contra_tac ctxt =
 
 method_setup analz_mono_contra = {*
     Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (analz_mono_contra_tac ctxt))) *}
-    "for proving theorems of the form X \<notin> analz (knows A evs) --> P"
+    "for proving theorems of the form X \<notin> analz (knows A evs) \<longrightarrow> P"
 
 text{*Useful for case analysis on whether a hash is a spoof or not*}
 
@@ -196,6 +196,6 @@ fun synth_analz_mono_contra_tac ctxt =
 
 method_setup synth_analz_mono_contra = {*
     Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (synth_analz_mono_contra_tac ctxt))) *}
-    "for proving theorems of the form X \<notin> synth (analz (knows A evs)) --> P"
+    "for proving theorems of the form X \<notin> synth (analz (knows A evs)) \<longrightarrow> P"
 
 end

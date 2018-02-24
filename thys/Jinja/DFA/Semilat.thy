@@ -277,7 +277,7 @@ done
 
 lemma extend_lub:
   "\<lbrakk> single_valued r; is_lub (r^* ) x y u; (x',x) \<in> r \<rbrakk> 
-  \<Longrightarrow> EX v. is_lub (r^* ) x' y v"
+  \<Longrightarrow> \<exists>v. is_lub (r^* ) x' y v"
 (*<*)
 apply (unfold is_lub_def is_ub_def)
 apply (case_tac "(y,x) \<in> r^*")
@@ -294,7 +294,7 @@ done
 
 lemma single_valued_has_lubs [rule_format]:
   "\<lbrakk> single_valued r; (x,u) \<in> r^* \<rbrakk> \<Longrightarrow> (\<forall>y. (y,u) \<in> r^* \<longrightarrow> 
-  (EX z. is_lub (r^* ) x y z))"
+  (\<exists>z. is_lub (r^* ) x y z))"
 (*<*)
 apply (erule converse_rtrancl_induct)
  apply clarify

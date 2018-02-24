@@ -89,25 +89,25 @@ lemma strip_anno[simp]: "strip (anno a c) = c"
 by(induct c) simp_all
 
 lemma strip_eq_SKIP:
-  "strip c = com.SKIP \<longleftrightarrow> (EX P. c = SKIP {P})"
+  "strip c = com.SKIP \<longleftrightarrow> (\<exists>P. c = SKIP {P})"
 by (cases c) simp_all
 
 lemma strip_eq_Assign:
-  "strip c = x::=e \<longleftrightarrow> (EX P. c = x::=e {P})"
+  "strip c = x::=e \<longleftrightarrow> (\<exists>P. c = x::=e {P})"
 by (cases c) simp_all
 
 lemma strip_eq_Seq:
-  "strip c = c1;;c2 \<longleftrightarrow> (EX d1 d2. c = d1;;d2 & strip d1 = c1 & strip d2 = c2)"
+  "strip c = c1;;c2 \<longleftrightarrow> (\<exists>d1 d2. c = d1;;d2 & strip d1 = c1 & strip d2 = c2)"
 by (cases c) simp_all
 
 lemma strip_eq_If:
   "strip c = IF b THEN c1 ELSE c2 \<longleftrightarrow>
-  (EX d1 d2 P. c = IF b THEN d1 ELSE d2 {P} & strip d1 = c1 & strip d2 = c2)"
+  (\<exists>d1 d2 P. c = IF b THEN d1 ELSE d2 {P} & strip d1 = c1 & strip d2 = c2)"
 by (cases c) simp_all
 
 lemma strip_eq_While:
   "strip c = WHILE b DO c1 \<longleftrightarrow>
-  (EX I d1 P. c = {I} WHILE b DO d1 {P} & strip d1 = c1)"
+  (\<exists>I d1 P. c = {I} WHILE b DO d1 {P} & strip d1 = c1)"
 by (cases c) simp_all
 
 

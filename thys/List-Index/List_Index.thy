@@ -64,11 +64,11 @@ lemma index_conv_size_if_notin[simp]: "x \<notin> set xs \<Longrightarrow> index
 by (induct xs) auto
 
 lemma find_index_eq_size_conv:
-  "size xs = n \<Longrightarrow> (find_index P xs = n) = (ALL x : set xs. ~ P x)"
+  "size xs = n \<Longrightarrow> (find_index P xs = n) = (\<forall>x \<in> set xs. ~ P x)"
 by(induct xs arbitrary: n) auto
 
 lemma size_eq_find_index_conv:
-  "size xs = n \<Longrightarrow> (n = find_index P xs) = (ALL x : set xs. ~ P x)"
+  "size xs = n \<Longrightarrow> (n = find_index P xs) = (\<forall>x \<in> set xs. ~ P x)"
 by(metis find_index_eq_size_conv)
 
 lemma index_size_conv: "size xs = n \<Longrightarrow> (index xs x = n) = (x \<notin> set xs)"
@@ -89,7 +89,7 @@ lemma size_last_index_conv:
 by (metis last_index_size_conv)
 
 lemma find_index_less_size_conv:
-  "(find_index P xs < size xs) = (EX x : set xs. P x)"
+  "(find_index P xs < size xs) = (\<exists>x \<in> set xs. P x)"
 by (induct xs) auto
 
 lemma index_less_size_conv:

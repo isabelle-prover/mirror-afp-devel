@@ -266,12 +266,10 @@ lemma union_less_term_w[simp]: "(\<Union>v\<in>{v. v < w}. {s. t s = v}) = {s . 
 lemma sup_union[simp]: "Sup (range A) i =  (\<Union> w . A w i)"
   by (simp_all add: Sup_fun_def)
 
-lemma forall_simp [simp]: "(!a b. \<forall> x\<in> A . (a = (t x)) \<longrightarrow> (h x) \<or> b \<noteq> u x) = (\<forall> x\<in> A . h x)"
-  apply safe
+lemma forall_simp [simp]: "(\<forall>a b. \<forall>x\<in>A. (a = (t x)) \<longrightarrow> (h x) \<or> b \<noteq> u x) = (\<forall>x\<in> A . h x)"
   by auto
 
-lemma forall_simp2 [simp]: "(!a b. \<forall> x\<in> A . !y . (a  = t x y) \<longrightarrow> (h x y) \<longrightarrow> (g x y) \<or> b \<noteq> u x y) = (\<forall> x\<in> A . ! y . h x y \<longrightarrow> g x y )"
-  apply safe
+lemma forall_simp2 [simp]: "(\<forall>a b. \<forall>x\<in>A. \<forall>y. (a  = t x y) \<longrightarrow> (h x y) \<longrightarrow> (g x y) \<or> b \<noteq> u x y) = (\<forall>x\<in>A. \<forall>y. h x y \<longrightarrow> g x y)"
   by auto
 
 subsection {* Diagram correctness *}

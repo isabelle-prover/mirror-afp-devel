@@ -105,7 +105,7 @@ apply (simp add: wf_eq_minimal)
 apply clarify
 apply (unfold lesub_def)
 apply (rename_tac M T) 
-apply (case_tac "EX C. Class C : M")
+apply (case_tac "\<exists>C. Class C \<in> M")
  prefer 2
  apply (case_tac T)
      apply fastforce
@@ -241,7 +241,7 @@ qed
 (*>*)
 
 lemma sup_exists:
-  "\<lbrakk> subtype P a c; subtype P b c \<rbrakk> \<Longrightarrow> EX T. sup P a b = OK T"
+  "\<lbrakk> subtype P a c; subtype P b c \<rbrakk> \<Longrightarrow> \<exists>T. sup P a b = OK T"
 (*<*)
 apply (unfold sup_def)
 apply (cases b)

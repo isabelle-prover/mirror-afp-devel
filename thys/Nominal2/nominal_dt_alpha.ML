@@ -462,7 +462,7 @@ fun raw_prove_alpha_eq_iff ctxt alpha_result raw_dt_info =
 
 (** reflexivity proof for the alphas **)
 
-val exi_zero = @{lemma "P (0::perm) ==> (? x. P x)" by auto}
+val exi_zero = @{lemma "P (0::perm) \<Longrightarrow> (\<exists>x. P x)" by auto}
 
 fun cases_tac intros ctxt =
   let
@@ -495,7 +495,7 @@ fun raw_prove_refl ctxt alpha_result raw_dt_induct =
 
 (** symmetry proof for the alphas **)
 
-val exi_neg = @{lemma "(EX (p::perm). P p) ==> (!!q. P q ==> Q (- q)) ==> EX p. Q p"
+val exi_neg = @{lemma "(\<exists>(p::perm). P p) \<Longrightarrow> (\<And>q. P q \<Longrightarrow> Q (- q)) \<Longrightarrow> \<exists>p. Q p"
   by (erule exE, rule_tac x="-p" in exI, auto)}
 
 (* for premises that contain binders *)
@@ -619,13 +619,13 @@ fun raw_prove_trans ctxt alpha_result raw_dt_thms alpha_eqvt =
 (** proves the equivp predicate for all alphas **)
 
 val reflp_def' = 
-  @{lemma "reflp R == !x. R x x" by (simp add: reflp_def refl_on_def)}
+  @{lemma "reflp R == \<forall>x. R x x" by (simp add: reflp_def refl_on_def)}
 
 val symp_def' =
-  @{lemma "symp R == !x y . R x y --> R y x" by (simp add: symp_def sym_def)}
+  @{lemma "symp R \<equiv> \<forall>x y . R x y --> R y x" by (simp add: symp_def sym_def)}
 
 val transp_def' =
-  @{lemma "transp R == !x y. R x y --> (!z. R y z --> R x z)" 
+  @{lemma "transp R \<equiv> \<forall>x y. R x y \<longrightarrow> (\<forall>z. R y z \<longrightarrow> R x z)" 
     by (rule eq_reflection, auto simp add: trans_def transp_def)}
 
 fun raw_prove_equivp ctxt alpha_result refl symm trans = 
@@ -799,7 +799,7 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
 
 (* rsp for permute_bn functions *)
 
-val perm_bn_rsp = @{lemma "(!x y p. R x y --> R (f p x) (f p y)) ==> ((=) ===> R ===> R) f f"
+val perm_bn_rsp = @{lemma "(\<forall>x y p. R x y \<longrightarrow> R (f p x) (f p y)) \<Longrightarrow> ((=) ===> R ===> R) f f"
  by (simp add: rel_fun_def)}
 
 fun raw_prove_perm_bn_tac alpha_result simps ctxt = 
@@ -853,7 +853,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
 (* transformation of the natural rsp-lemmas into standard form *)
 
 val fun_rsp = @{lemma
-  "(!x y. R x y --> f x = f y) ==> (R ===> (=)) f f" by (simp add: rel_fun_def)}
+  "(\<forall>x y. R x y \<longrightarrow> f x = f y) \<Longrightarrow> (R ===> (=)) f f" by (simp add: rel_fun_def)}
 
 fun mk_funs_rsp ctxt thm = 
   thm
@@ -863,7 +863,7 @@ fun mk_funs_rsp ctxt thm =
 
 
 val permute_rsp = @{lemma 
-  "(!x y p. R x y --> R (permute p x) (permute p y)) 
+  "(\<forall>x y p. R x y \<longrightarrow> R (permute p x) (permute p y)) 
      ==> ((=) ===> R ===> R) permute permute"  by (simp add: rel_fun_def)}
 
 fun mk_alpha_permute_rsp ctxt thm = 
@@ -876,4 +876,3 @@ fun mk_alpha_permute_rsp ctxt thm =
 
 
 end (* structure *)
-

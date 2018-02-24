@@ -101,8 +101,8 @@ by(auto elim: exec.cases intro:exec.intros split:if_split_asm)
 
 
 lemma while_lemma[rule_format]:
-"s -w\<rightarrow> t \<Longrightarrow> !b c. w = WHILE b DO c \<and> P s \<and>
-                    (!s s'. P s \<and> b s \<and> s -c\<rightarrow> s' \<longrightarrow> P s') \<longrightarrow> P t \<and> \<not>b t"
+"s -w\<rightarrow> t \<Longrightarrow> \<forall>b c. w = WHILE b DO c \<and> P s \<and>
+                    (\<forall>s s'. P s \<and> b s \<and> s -c\<rightarrow> s' \<longrightarrow> P s') \<longrightarrow> P t \<and> \<not>b t"
 apply(erule exec.induct)
 apply clarify+
 defer

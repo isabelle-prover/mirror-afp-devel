@@ -459,7 +459,7 @@ lemma (in Module) mem_fgs_l_comb:"\<lbrakk>K \<noteq> {}; K \<subseteq> carrier 
 apply (simp add:fgs_def linear_span_def)
 done
 
-lemma PairE_lemma: "EX x y. p = (x, y)" by auto
+lemma PairE_lemma: "\<exists>x y. p = (x, y)" by auto
 
 lemma (in Module) fsps_chain_boundTr1:"\<lbrakk>R module N; free_generator R M H; 
        f \<in> H \<rightarrow> carrier N; C \<subseteq> fsps R M N f H; 

@@ -290,13 +290,13 @@ corollary lm028:
 
 (* E.g. in the following example, with X = {{1}, {1,2}}, x can be {1} and {1,2} and Y is {{1}} and {{1},{2}}, that is, the lefthand and righthand sides evaluate to {{1},{2}} *)
 lemma unionFinestPart: 
-  "{Y | Y. EX x.((Y \<in> finestpart x) & (x \<in> X))} = \<Union>(finestpart`X)" 
+  "{Y | Y. \<exists>x.((Y \<in> finestpart x) \<and> (x \<in> X))} = \<Union>(finestpart`X)" 
   by auto
 
 (* Now we specialize the previous lemma to the situation where X consists of a relation (that is is a set of pairs) *)
 lemma rangeSetOfPairs: 
   "Range {(fst pair, Y)| Y pair. Y \<in> finestpart (snd pair) & pair \<in> X} = 
-   {Y. EX x. ((Y \<in> finestpart x) & (x \<in> Range X))}" 
+   {Y. \<exists>x. ((Y \<in> finestpart x) \<and> (x \<in> Range X))}" 
   by auto
 
 (* Further specialization to a singleton for Y *)
@@ -839,7 +839,7 @@ corollary lm106:
   assumes "Z \<subseteq> X \<union> Y" 
   shows "sum (X <| Y) Z = sum (chi X) Z"  
 proof - 
-  have "!x:Z.(X<|Y) x=(chi X) x" using assms lm102 in_mono by metis 
+  have "\<forall>x\<in>Z.(X<|Y) x=(chi X) x" using assms lm102 in_mono by metis 
   thus ?thesis using lm104 by blast 
 qed
 

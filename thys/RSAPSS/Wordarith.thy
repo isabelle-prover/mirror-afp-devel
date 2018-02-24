@@ -199,7 +199,7 @@ qed
 
 lemma nat_to_bv_non_empty: assumes a: "0<n" shows "nat_to_bv n ~= []"
 proof -
-  from nat_to_bv_non0[of n] have "EX x. nat_to_bv n = x@[if n mod 2 = 0 then \<zero> else \<one>]" using a by simp
+  from nat_to_bv_non0[of n] have "\<exists>x. nat_to_bv n = x@[if n mod 2 = 0 then \<zero> else \<one>]" using a by simp
   then show ?thesis by auto
 qed
 

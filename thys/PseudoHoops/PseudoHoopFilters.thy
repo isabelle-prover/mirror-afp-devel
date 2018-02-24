@@ -134,7 +134,7 @@ lemma prop_3_2_i:
   apply safe
   apply (rule filter_ii)
   apply simp_all
-  apply (subgoal_tac "!x . x \<in> X *^ n \<longrightarrow> x \<in> xb")
+  apply (subgoal_tac "\<forall>x . x \<in> X *^ n \<longrightarrow> x \<in> xb")
   apply simp
   apply (induct_tac n)
   apply (simp add: power_set_0)

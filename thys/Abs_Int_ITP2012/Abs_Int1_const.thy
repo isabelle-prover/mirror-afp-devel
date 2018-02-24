@@ -133,7 +133,7 @@ lemma measure_const_eq:
   "\<forall> x y::const. x \<sqsubseteq> y \<and> y \<sqsubseteq> x \<longrightarrow> m_const x = m_const y"
 by(auto simp: m_const_def split: const.splits)
 
-lemma "EX c'. AI_const c = Some c'"
+lemma "\<exists>c'. AI_const c = Some c'"
 by(rule AI_Some_measure[OF measure_const measure_const_eq])
 
 end

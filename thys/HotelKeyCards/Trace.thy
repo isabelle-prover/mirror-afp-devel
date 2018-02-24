@@ -245,7 +245,7 @@ lemma in_set_conv_decomp_firstD:
 assumes "P x"
 shows "x \<in> set xs \<Longrightarrow>
   \<exists>ys x zs. xs = ys @ x # zs \<and> P x \<and> (\<forall>y \<in> set ys. \<not> P y)"
-  (is "_ \<Longrightarrow> EX ys x zs. ?P xs ys x zs")
+  (is "_ \<Longrightarrow> \<exists>ys x zs. ?P xs ys x zs")
 proof (induct xs)
   case Nil thus ?case by simp
 next
@@ -261,7 +261,7 @@ next
 qed
 
 lemma ownsD: "owns s r = Some g \<Longrightarrow>
- EX s\<^sub>1 s\<^sub>2 g c. s = s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in s\<^sub>2 r"
+ \<exists>s\<^sub>1 s\<^sub>2 g c. s = s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in s\<^sub>2 r"
 apply(induct s)
  apply simp
 apply (auto split:event.splits)

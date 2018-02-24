@@ -305,7 +305,7 @@ fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param
     EVERY1 [ DETERM o resolve_tac ctxt [raw_induct], RANGE cases_tac ]
   end
 
-val normalise = @{lemma "(Q --> (!p c. P p c)) ==> (!!c. Q ==> P (0::perm) c)" by simp}
+val normalise = @{lemma "(Q \<longrightarrow> (\<forall>p c. P p c)) \<Longrightarrow> (\<And>c. Q \<Longrightarrow> P (0::perm) c)" by simp}
 
 fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
   let

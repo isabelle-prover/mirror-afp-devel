@@ -797,7 +797,7 @@ subsubsection {* Union, difference and intersection *}
                 moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
                 ultimately have D: "?SIZE = sum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
                 moreover have "sum (count S) (set_mset S - {t}) = sum (count (S-{#t#})) (set_mset S - {t})" proof -
-                        have "ALL x:(set_mset S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
+                        have "\<forall>x\<in>(set_mset S - {t}). count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
                         thus ?thesis by simp
                 qed
                 ultimately have D: "?SIZE = sum (count (S-{#t#})) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (simp)
@@ -830,7 +830,7 @@ subsubsection {* Union, difference and intersection *}
   qed
 
 (*  lemma mset_diff_diff_left: "A-B-C = A-((B::'a multiset)+C)" proof -
-    have "ALL e . count (A-B-C) e = count (A-(B+C)) e" by auto
+    have "\<forall>e . count (A-B-C) e = count (A-(B+C)) e" by auto
     thus ?thesis by (simp add: multiset_eq_conv_count_eq)
   qed
 
@@ -842,8 +842,8 @@ subsubsection {* Union, difference and intersection *}
 
   lemma mset_diff_same_empty[simp]: "(S::'a multiset) - S = {#}"
   proof -
-    have "ALL e . count (S-S) e = 0" by auto
-    hence "ALL e . ~ (e : set_mset (S-S))" by auto
+    have "\<forall>e . count (S-S) e = 0" by auto
+    hence "\<forall>e . ~ (e : set_mset (S-S))" by auto
     hence "set_mset (S-S) = {}" by blast
     thus ?thesis by (auto)
   qed
@@ -2292,15 +2292,15 @@ lemma in_set_upd_eq:
   qed
 
 
-  lemma list_decomp_1: "length l=1 \<Longrightarrow> EX a . l=[a]"
+  lemma list_decomp_1: "length l=1 \<Longrightarrow> \<exists>a. l=[a]"
     by (case_tac l, auto)
 
-  lemma list_decomp_2: "length l=2 \<Longrightarrow> EX a b . l=[a,b]"
+  lemma list_decomp_2: "length l=2 \<Longrightarrow> \<exists>a b. l=[a,b]"
     by (case_tac l, auto simp add: list_decomp_1)
 
 
 
-  lemma list_rest_coinc: "\<lbrakk>length s2 <= length s1; s1@r1 = s2@r2\<rbrakk> \<Longrightarrow> EX r1p . r2=r1p@r1"
+  lemma list_rest_coinc: "\<lbrakk>length s2 \<le> length s1; s1@r1 = s2@r2\<rbrakk> \<Longrightarrow> \<exists>r1p. r2=r1p@r1"
     by (metis append_eq_append_conv_if)
 
   lemma list_tail_coinc: "n1#r1 = n2#r2 \<Longrightarrow> n1=n2 & r1=r2"
@@ -3106,7 +3106,7 @@ proof (rule classical)
 qed
 
 subsubsection {* Induction on nat *}
-  lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; !! n . ALL nn . nn <= n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"
+  lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; \<And>n . \<forall>nn. nn \<le> n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"
     apply(induct_tac n rule: nat_less_induct)
     apply(case_tac n)
     apply(auto)
@@ -3221,9 +3221,9 @@ subsection {* Definite and indefinite description *}
   lemma some_theI: assumes EX: "\<exists>a b . P a b" and BUN: "!! b1 b2 . \<lbrakk>\<exists>a . P a b1; \<exists>a . P a b2\<rbrakk> \<Longrightarrow> b1=b2"
     shows "P (SOME a . \<exists>b . P a b) (THE b . \<exists>a . P a b)"
   proof -
-                from EX have "EX b . P (SOME a . EX b . P a b) b" by (rule someI_ex)
-                moreover from EX have "EX b . EX a . P a b" by blast
-    with BUN theI'[of "\<lambda>b . EX a . P a b"] have "EX a . P a (THE b . EX a . P a b)" by (unfold Ex1_def, blast)
+                from EX have "\<exists>b. P (SOME a. \<exists>b. P a b) b" by (rule someI_ex)
+                moreover from EX have "\<exists>b. \<exists>a. P a b" by blast
+    with BUN theI'[of "\<lambda>b. \<exists>a. P a b"] have "\<exists>a. P a (THE b. \<exists>a. P a b)" by (unfold Ex1_def, blast)
                 moreover note BUN
                 ultimately show ?thesis by (fast)
         qed

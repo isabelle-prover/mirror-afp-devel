@@ -652,13 +652,13 @@ lemma in_set_in_list[rule_format]: "a \<in> set p \<longrightarrow> all_in_list 
     
 lemma sorted_Consb[rule_format]: 
   "all_in_list (x#xs) l \<longrightarrow> singleCombinators (x#xs) \<longrightarrow> 
-    (sorted xs l & (ALL y:set xs. smaller x y l)) \<longrightarrow>  (sorted (x#xs) l) "
+    (sorted xs l & (\<forall>y\<in>set xs. smaller x y l)) \<longrightarrow>  (sorted (x#xs) l) "
   apply(induct xs arbitrary: x) 
    apply (auto simp: order_trans)
   done
     
 lemma sorted_Cons: "\<lbrakk>all_in_list (x#xs) l; singleCombinators (x#xs)\<rbrakk> \<Longrightarrow> 
-              (sorted xs l & (ALL y:set xs. smaller x y l)) =  (sorted (x#xs) l)"
+              (sorted xs l & (\<forall>y\<in>set xs. smaller x y l)) =  (sorted (x#xs) l)"
   apply auto
     apply (rule sorted_Consb, simp_all)
    apply (metis singleCombinatorsConc singleCombinatorsStart sortedConcEnd)
@@ -702,7 +702,7 @@ lemma all_in_list_insort: "\<lbrakk>all_in_list xs l; singleCombinators (x#xs);
   done
     
 lemma sorted_ConsA:"\<lbrakk>all_in_list (x#xs) l; singleCombinators (x#xs)\<rbrakk> \<Longrightarrow> 
-              (sorted (x#xs) l)  = (sorted xs l & (ALL y:set xs. smaller x y l))"
+              (sorted (x#xs) l)  = (sorted xs l & (\<forall>y\<in>set xs. smaller x y l))"
   by (metis sorted_Cons)
     
 lemma is_in_insort: "y \<in> set xs \<Longrightarrow> y \<in> set (insort x xs l)"

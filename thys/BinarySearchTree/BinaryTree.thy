@@ -46,8 +46,8 @@ where
   "sortedTree h Tip = True"
 | "sortedTree h (T t1 x t2) = 
     (sortedTree h t1 & 
-     (ALL l: setOf t1. h l < h x) &
-     (ALL r: setOf t2. h x < h r) &
+     (\<forall>l \<in> setOf t1. h l < h x) &
+     (\<forall>r \<in> setOf t2. h x < h r) &
      sortedTree h t2)"
 
 lemma sortLemmaL: 
@@ -69,7 +69,7 @@ where
     else Some x)"
 
 lemma tlookup_none: 
-     "sortedTree h t & (tlookup h k t = None) --> (ALL x:setOf t. h x ~= k)"
+     "sortedTree h t & (tlookup h k t = None) --> (\<forall>x\<in>setOf t. h x ~= k)"
 by (induct t, auto) 
 
 lemma tlookup_some:
@@ -184,7 +184,7 @@ proof safe
   proof (cases "tlookup h (h y) t")
   case None note res = this    
     from s res have "sortedTree h t & (tlookup h (h y) t = None)" by simp
-    from this have o1: "ALL x:setOf t. h x ~= h y" by (simp add: tlookup_none)
+    from this have o1: "\<forall>x\<in>setOf t. h x ~= h y" by (simp add: tlookup_none)
     from o1 yint have "h y ~= h y" by fastforce (* auto does not work *)
     from this show ?thesis by simp
   next case (Some z) note res = this
@@ -212,7 +212,7 @@ lemma assumes s: "sortedTree h t"
 proof (cases "tlookup h (h x) t")
 case None note tNone = this
   from tNone have res: "memb h x t = False" by (simp add: memb_def)
-  from s tNone tlookup_none have o1: "ALL y:setOf t. h y ~= h x" by fastforce
+  from s tNone tlookup_none have o1: "\<forall>y\<in>setOf t. h y ~= h x" by fastforce
   have notIn: "x ~: setOf t"
   proof
     assume h: "x : setOf t"
@@ -297,17 +297,17 @@ proof (induct t)
           show "insert x (insert e (setOf t1 - eqs h e Un setOf t2)) = 
                 insert e (insert x (setOf t1 Un setOf t2) - eqs h e)"
           proof -
-            have eqsLessX: "ALL el: eqs h e. h el < h x" by (simp add: eqs_def eLess)
-            from this have eqsDisjX: "ALL el: eqs h e. h el ~= h x" by fastforce
-            from s have xLessT2: "ALL r: setOf t2. h x < h r" by auto
-            have eqsLessT2: "ALL el: eqs h e. ALL r: setOf t2. h el < h r"
+            have eqsLessX: "\<forall>el \<in> eqs h e. h el < h x" by (simp add: eqs_def eLess)
+            from this have eqsDisjX: "\<forall>el \<in> eqs h e. h el ~= h x" by fastforce
+            from s have xLessT2: "\<forall>r \<in> setOf t2. h x < h r" by auto
+            have eqsLessT2: "\<forall>el \<in> eqs h e. \<forall>r \<in> setOf t2. h el < h r"
             proof safe
               fix el assume hel: "el : eqs h e"
               from hel eqs_def have o1: "h el = h e" by fastforce (* auto fails here! *)
               fix r assume hr: "r : setOf t2"
               from xLessT2 hr o1 eLess show "h el < h r" by auto
             qed
-            from eqsLessT2 have eqsDisjT2: "ALL el: eqs h e. ALL r: setOf t2. h el ~= h r"
+            from eqsLessT2 have eqsDisjT2: "\<forall>el \<in> eqs h e. \<forall>r \<in> setOf t2. h el ~= h r"
             by fastforce (* auto fails here *)
             from eqsDisjX eqsDisjT2 show ?thesis by fastforce
           qed
@@ -323,17 +323,17 @@ proof (induct t)
           show "insert x (insert e (setOf t1 Un (setOf t2 - eqs h e))) = 
                 insert e (insert x (setOf t1 Un setOf t2) - eqs h e)"
           proof -
-            have XLessEqs: "ALL el: eqs h e. h x < h el" by (simp add: eqs_def xLess)
-            from this have eqsDisjX: "ALL el: eqs h e. h el ~= h x" by auto
-            from s have t1LessX: "ALL l: setOf t1. h l < h x" by auto
-            have T1lessEqs: "ALL el: eqs h e. ALL l: setOf t1. h l < h el"
+            have XLessEqs: "\<forall>el \<in> eqs h e. h x < h el" by (simp add: eqs_def xLess)
+            from this have eqsDisjX: "\<forall>el \<in> eqs h e. h el ~= h x" by auto
+            from s have t1LessX: "\<forall>l \<in> setOf t1. h l < h x" by auto
+            have T1lessEqs: "\<forall>el \<in> eqs h e. \<forall>l \<in> setOf t1. h l < h el"
             proof safe
               fix el assume hel: "el : eqs h e"
               fix l assume hl: "l : setOf t1"
               from hel eqs_def have o1: "h el = h e" by fastforce (* auto fails here! *)
               from t1LessX hl o1 xLess show "h l < h el" by auto
             qed
-            from T1lessEqs have T1disjEqs: "ALL el: eqs h e. ALL l: setOf t1. h el ~= h l"
+            from T1lessEqs have T1disjEqs: "\<forall>el \<in> eqs h e. \<forall>l \<in> setOf t1. h el ~= h l"
             by fastforce
             from eqsDisjX T1lessEqs show ?thesis by auto
           qed
@@ -473,7 +473,7 @@ proof (induct t)
               insert x (setOf t1 Un setOf t2) - {rm h t2}"
         proof -
           from s rm_set t2nTip have xOk: "h x < h (rm h t2)" by auto 
-          have t1Ok: "ALL l:setOf t1. h l < h (rm h t2)"
+          have t1Ok: "\<forall>l \<in> setOf t1. h l < h (rm h t2)"
           proof safe
             fix l :: 'a  assume ldef: "l : setOf t1"
             from ldef s have lx: "h l < h x" by auto
@@ -509,7 +509,7 @@ proof (induct t)
       from s have s2: "sortedTree h t2" by simp
       from s2 h2 t2nTip have o1: "sortedTree h (wrm h t2)" by simp
       from s2 t2nTip wrm_set1 have o2: "setOf (wrm h t2) <= setOf t2" by auto
-      from s o2 have o3: "ALL r: setOf (wrm h t2). h x < h r" by auto
+      from s o2 have o3: "\<forall>r \<in> setOf (wrm h t2). h x < h r" by auto
       from s1 o1 o3 res s show "sortedTree h (wrm h (T t1 x t2))" by simp
     qed
   qed
@@ -517,7 +517,7 @@ qed
 
 lemma wrm_less_rm: 
   "t ~= Tip & sortedTree h t --> 
-   (ALL l:setOf (wrm h t). h l < h (rm h t))" (is "?P t")
+   (\<forall>l \<in> setOf (wrm h t). h l < h (rm h t))" (is "?P t")
 proof (induct t)
   show "?P Tip" by simp
   fix t1 :: "'a Tree" assume h1: "?P t1"
@@ -723,8 +723,8 @@ proof (induct t)
       by simp
       show ?thesis
       proof (simp add: s sr1 s2 elx res)
-        let ?C1 = "ALL l:setOf (remove h e t1). h l < h x"
-        let ?C2 = "ALL r:setOf t2. h x < h r"
+        let ?C1 = "\<forall>l \<in> setOf (remove h e t1). h l < h x"
+        let ?C2 = "\<forall>r \<in> setOf t2. h x < h r"
         have o1: "?C1"
         proof -
           from s1 have "setOf (remove h e t1) = setOf t1 - eqs h e" by (simp add: remove_set)
@@ -739,8 +739,8 @@ proof (induct t)
         from xle have res: "remove h e (T t1 x t2) = T t1 x (remove h e t2)" by simp
         show ?thesis
         proof (simp add: s s1 sr2 xle nelx res)
-          let ?C1 = "ALL l:setOf t1. h l < h x"
-          let ?C2 = "ALL r:setOf (remove h e t2). h x < h r"
+          let ?C1 = "\<forall>l \<in> setOf t1. h l < h x"
+          let ?C2 = "\<forall>r \<in> setOf (remove h e t2). h x < h r"
           have o2: "?C2"
           proof -
             from s2 have "setOf (remove h e t2) = setOf t2 - eqs h e" by (simp add: remove_set)
@@ -763,8 +763,8 @@ proof (induct t)
           from res show ?thesis
           proof simp
             let ?C1 = "sortedTree h (wrm h t1)"
-            let ?C2 = "ALL l:setOf (wrm h t1). h l < h (rm h t1)"
-            let ?C3 = "ALL r:setOf t2. h (rm h t1) < h r"
+            let ?C2 = "\<forall>l \<in> setOf (wrm h t1). h l < h (rm h t1)"
+            let ?C3 = "\<forall>r \<in> setOf t2. h (rm h t1) < h r"
             let ?C4 = "sortedTree h t2"
             from s1 t1nTip have o1: ?C1 by (simp add: wrm_sort)
             from s1 t1nTip have o2: ?C2 by (simp add: wrm_less_rm)

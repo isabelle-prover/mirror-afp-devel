@@ -209,12 +209,12 @@ definition
 definition
   StepRelSem :: "('s,'e,'d)hierauto
               => (('s,'e,'d)status * ('s,'e,'d)status) set" where
-  "StepRelSem A == {(ST,ST'). (HA ST) = A &
-                    ((HPT ST ~= {}) -->
-                       (EX TS : HPT ST.
-                           EX U : ResolveRacing TS.
+  "StepRelSem A == {(ST,ST'). (HA ST) = A \<and>
+                    ((HPT ST \<noteq> {}) \<longrightarrow>
+                       (\<exists>TS \<in> HPT ST.
+                           \<exists>U \<in> ResolveRacing TS.
                                   ST' = StepStatus ST TS U)) &
-                    ((HPT ST = {}) -->
+                    ((HPT ST = {}) \<longrightarrow>
                        (ST' = StepStatus ST {} DefaultUpdate))}"
 
 (* --------------------------------------------------------------- *)

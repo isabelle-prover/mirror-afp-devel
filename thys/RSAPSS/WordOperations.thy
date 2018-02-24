@@ -109,14 +109,14 @@ next
   qed
 qed
 
-lemma selectlenhelp2:  "\<And> i. ALL l j. EX k. select l i j = select k 0 (j - i)"
+lemma selectlenhelp2:  "\<And>i. \<forall>l j. \<exists>k. select l i j = select k 0 (j - i)"
 proof (auto)
   fix i
-  show "\<And> l j. \<exists>k. select l i j = select k 0 (j - i)"
+  show "\<And>l j. \<exists>k. select l i j = select k 0 (j - i)"
   proof (induct i)
     fix l and j 
     have "select l 0 j = select l 0 (j-(0::nat))" by simp
-    then show "EX k. select l 0 j = select k 0 (j - (0::nat))" by auto
+    then show "\<exists>k. select l 0 j = select k 0 (j - (0::nat))" by auto
   next
     case (Suc x)
     have b: "select l (Suc x) j = select (tl l) x (j-(1::nat))"
@@ -132,13 +132,13 @@ proof (auto)
       ultimately show ?thesis by simp
     qed
     have "\<exists>k. select l x j = select k 0 (j - (x::nat))" using Suc by simp
-    moreover have  "EX k. select (tl l) x (j-(1::nat)) = select k 0 (j-(1::nat)-(x::nat))" using Suc[of "tl l" "j-(1::nat)"] by auto
-    ultimately have "EX k. select l (Suc x) j = select k 0 (j-(1::nat) - (x::nat))" using b by auto
-    then show "EX k. select l (Suc x) j = select k 0 (j - Suc x)" by simp
+    moreover have  "\<exists>k. select (tl l) x (j-(1::nat)) = select k 0 (j-(1::nat)-(x::nat))" using Suc[of "tl l" "j-(1::nat)"] by auto
+    ultimately have "\<exists>k. select l (Suc x) j = select k 0 (j-(1::nat) - (x::nat))" using b by auto
+    then show "\<exists>k. select l (Suc x) j = select k 0 (j - Suc x)" by simp
   qed
 qed
 
-lemma selectlenhelp3: "ALL j. select l 0 j = selecthelp l j"
+lemma selectlenhelp3: "\<forall>j. select l 0 j = selecthelp l j"
 proof
   fix j
   show "select l 0 j = selecthelp l j"
@@ -154,9 +154,9 @@ qed
 
 lemma selectlen: "length (select l i j) = j - i + 1"
 proof -
-  from selectlenhelp2 have "EX k. select l i j = select k 0 (j-i)" by simp
-  then have "EX k. length (select l i j) = length (select k 0 (j-i))" by auto
-  then have c: "EX k. length (select l i j) = length (selecthelp k (j-i))"
+  from selectlenhelp2 have "\<exists>k. select l i j = select k 0 (j-i)" by simp
+  then have "\<exists>k. length (select l i j) = length (select k 0 (j-i))" by auto
+  then have c: "\<exists>k. length (select l i j) = length (selecthelp k (j-i))"
     using selectlenhelp3 by simp
   from c obtain k where d: "length (select l i j) = length (selecthelp k (j-i))" by auto
   have "0<=j-i" by arith

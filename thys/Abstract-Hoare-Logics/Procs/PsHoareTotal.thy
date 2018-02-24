@@ -326,7 +326,7 @@ definition  termi_call_steps :: "((pname \<times> state) \<times> (pname \<times
     {((q,t),(p,s)). body p\<down>s \<and> (\<exists>cs. ([body p], s) \<rightarrow>\<^sup>* (CALL q# cs, t))}"
 
 lemma lem:
-  "!y. (a,y):r\<^sup>+ \<longrightarrow> P a \<longrightarrow> P y \<Longrightarrow> ((b,a) : {(y,x). P x \<and> (x,y):r}\<^sup>+) = ((b,a) : {(y,x). P x \<and> (x,y):r\<^sup>+})"
+  "\<forall>y. (a,y)\<in>r\<^sup>+ \<longrightarrow> P a \<longrightarrow> P y \<Longrightarrow> ((b,a) \<in> {(y,x). P x \<and> (x,y)\<in>r}\<^sup>+) = ((b,a) \<in> {(y,x). P x \<and> (x,y)\<in>r\<^sup>+})"
 apply(rule iffI)
  apply clarify
  apply(erule trancl_induct)
@@ -340,7 +340,7 @@ done
 
 
 lemma renumber_aux:
- "\<lbrakk>\<forall>i. (a,f i) : r^* \<and> (f i,f(Suc i)) : r; (a,b) : r^* \<rbrakk> \<Longrightarrow> b = f 0 \<longrightarrow> (\<exists>f. f 0 = a & (\<forall>i. (f i, f(Suc i)) : r))"
+ "\<lbrakk>\<forall>i. (a,f i) \<in> r^* \<and> (f i,f(Suc i)) : r; (a,b) : r^* \<rbrakk> \<Longrightarrow> b = f 0 \<longrightarrow> (\<exists>f. f 0 = a & (\<forall>i. (f i, f(Suc i)) : r))"
 apply(erule converse_rtrancl_induct)
  apply blast
 apply(clarsimp)
@@ -470,7 +470,7 @@ lemma exec1_only1: "(c#cs,s) \<rightarrow> (cs',t) \<Longrightarrow> \<exists>cs
 by(blast dest:exec1_only1_aux)
 
 lemma exec1_drop_suffix_aux:
-"(cs12,s) \<rightarrow> (cs1'2,s') \<Longrightarrow> !cs1 cs2 cs1'.
+"(cs12,s) \<rightarrow> (cs1'2,s') \<Longrightarrow> \<forall>cs1 cs2 cs1'.
  cs12 = cs1@cs2 & cs1'2 = cs1'@cs2 & cs1 \<noteq> [] \<longrightarrow> (cs1,s) \<rightarrow> (cs1',s')"
 apply(erule exec1.induct)
        apply (force intro:exec1.intros simp add: neq_Nil_conv)+
@@ -481,8 +481,8 @@ lemma exec1_drop_suffix:
 by(blast dest:exec1_drop_suffix_aux)
 
 lemma execs_drop_suffix[rule_format(no_asm)]:
-  "\<lbrakk> f 0 = (c#cs,s);!i. f(i) \<rightarrow> f(Suc i) \<rbrakk> \<Longrightarrow>
-   (!i<k. p i \<noteq> [] & fst(f i) = p i@cs) \<longrightarrow> fst(f k) = p k@cs
+  "\<lbrakk> f 0 = (c#cs,s);\<forall>i. f(i) \<rightarrow> f(Suc i) \<rbrakk> \<Longrightarrow>
+   (\<forall>i<k. p i \<noteq> [] & fst(f i) = p i@cs) \<longrightarrow> fst(f k) = p k@cs
    \<longrightarrow> ([c],s) \<rightarrow>\<^sup>* (p k,snd(f k))"
 apply(induct_tac k)
  apply simp
@@ -497,7 +497,7 @@ apply(blast dest:exec1_drop_suffix)
 done
 
 lemma execs_drop_suffix0:
-  "\<lbrakk> f 0 = (c#cs,s);!i. f(i) \<rightarrow> f(Suc i); !i<k. p i \<noteq> [] & fst(f i) = p i@cs;
+  "\<lbrakk> f 0 = (c#cs,s);\<forall>i. f(i) \<rightarrow> f(Suc i); \<forall>i<k. p i \<noteq> [] & fst(f i) = p i@cs;
      fst(f k) = cs; p k = [] \<rbrakk> \<Longrightarrow> ([c],s) \<rightarrow>\<^sup>* ([],snd(f k))"
 apply(drule execs_drop_suffix,assumption,assumption)
  apply simp
@@ -510,7 +510,7 @@ apply(fast intro:someI2)
 done
 
 lemma least_aux: "\<lbrakk>f 0 = (c # cs, s); \<forall>i. f i \<rightarrow> f (Suc i);
-        fst(f k) = cs; !i<k. fst(f i) \<noteq> cs\<rbrakk>
+        fst(f k) = cs; \<forall>i<k. fst(f i) \<noteq> cs\<rbrakk>
        \<Longrightarrow> \<forall>i \<le> k. (\<exists>p. (p \<noteq> []) = (i < k) & fst(f i) = p @ cs)"
 apply(rule allI)
 apply(induct_tac i)
@@ -540,13 +540,13 @@ apply(case_tac cs1)
 apply simp
 done
 
-lemma least_lem: "\<lbrakk>f 0 = (c#cs,s); !i. f i \<rightarrow> f(Suc i); EX i. fst(f i) = cs \<rbrakk>
-       \<Longrightarrow> EX k. fst(f k) = cs & ([c],s) \<rightarrow>\<^sup>* ([],snd(f k))"
+lemma least_lem: "\<lbrakk>f 0 = (c#cs,s); \<forall>i. f i \<rightarrow> f(Suc i); \<exists>i. fst(f i) = cs \<rbrakk>
+       \<Longrightarrow> \<exists>k. fst(f k) = cs & ([c],s) \<rightarrow>\<^sup>* ([],snd(f k))"
 apply(rule_tac x="LEAST i. fst(f i) = cs" in exI)
 apply(rule conjI)
  apply(fast intro: LeastI)
 apply(subgoal_tac
- "!i<=LEAST i. fst (f i) = cs. EX p. ((p \<noteq> []) = (i<(LEAST i. fst (f i) = cs))) & fst(f i) = p@cs")
+ "\<forall>i\<le>LEAST i. fst (f i) = cs. \<exists>p. ((p \<noteq> []) = (i<(LEAST i. fst (f i) = cs))) & fst(f i) = p@cs")
  apply(drule skolemize1)
  apply clarify
  apply(rename_tac p)
@@ -571,7 +571,7 @@ done
 lemma inf_cases: "inf (c#cs) s \<Longrightarrow> inf [c] s \<or> (\<exists>t. s -c\<rightarrow> t \<and> inf cs t)"
 apply(unfold inf_def)
 apply (clarsimp del: disjCI)
-apply(case_tac "EX i. fst(f i) = cs")
+apply(case_tac "\<exists>i. fst(f i) = cs")
  apply(rule disjI2)
  apply(drule least_lem, assumption, assumption)
  apply clarify
@@ -639,7 +639,7 @@ apply(subgoal_tac "wf({(y,x). ([c],s) \<rightarrow>\<^sup>* x & x \<rightarrow> 
  apply(simp only:wf_iff_no_infinite_down_chain)
  apply(erule contrapos_nn)
  apply clarify
- apply(subgoal_tac "!i. ([c], s) \<rightarrow>\<^sup>* f i")
+ apply(subgoal_tac "\<forall>i. ([c], s) \<rightarrow>\<^sup>* f i")
   prefer 2
   apply(rule allI)
   apply(induct_tac i)
@@ -711,7 +711,7 @@ apply(induct_tac c)
      apply(blast dest: execs_pres_termi)
 (*Semi*)
     apply(rename_tac c1 c2)
-    apply(rule_tac Q = "\<lambda>z s. body q\<down>pre & (EX cs. ([body q], pre) \<rightarrow>\<^sup>* (c2#cs,s)) & z -c1\<rightarrow>s & c2\<down>s" in thoare.Semi)
+    apply(rule_tac Q = "\<lambda>z s. body q\<down>pre & (\<exists>cs. ([body q], pre) \<rightarrow>\<^sup>* (c2#cs,s)) & z -c1\<rightarrow>s & c2\<down>s" in thoare.Semi)
      apply(erule thoare.Conseq)
      apply(rule conjI)
       apply clarsimp

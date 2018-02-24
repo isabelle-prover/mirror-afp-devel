@@ -63,14 +63,14 @@ proof -
       show ?case
       proof cases
         assume "i mod 2 = 0"
-        hence "EX k. i=2*k" by arith
+        hence "\<exists>k. i=2*k" by arith
         then obtain k where "i = 2*k" ..
         hence "0 < k" and "k<i" using `~i\<le>1` by arith+
         hence "f(k) = k" using less(1) by blast
         thus "f(i) = i" using `i = 2*k` by(simp add:f_times 2)
       next
         assume "i mod 2 \<noteq> 0"
-        hence "EX k. i=2*k+1" by arith
+        hence "\<exists>k. i=2*k+1" by arith
         then obtain k where "i = 2*k+1" ..
         hence "0<k" and "k+1<i" using `~i\<le>1` by arith+
         have "2*k < f(2*k+1)"

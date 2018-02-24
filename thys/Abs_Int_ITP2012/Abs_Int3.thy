@@ -544,7 +544,7 @@ fixes c0 :: "'a::WN acom"
 assumes P_f: "\<And>c. P c \<Longrightarrow> P(f c)"
 assumes P_widen: "\<And>c c'. P c \<Longrightarrow> P c' \<Longrightarrow> P(c \<nabla>\<^sub>c c')"
 and "wf({(c::'a acom,c \<nabla>\<^sub>c c')|c c'. P c \<and> P c' \<and> ~ c' \<sqsubseteq> c}^-1)"
-and "P c0" and "c0 \<sqsubseteq> f c0" shows "EX c. iter_widen f c0 = Some c"
+and "P c0" and "c0 \<sqsubseteq> f c0" shows "\<exists>c. iter_widen f c0 = Some c"
 proof(simp add: iter_widen_def, rule wf_while_option_Some[where P = "P"])
   show "wf {(cc', c). (P c \<and> \<not> f c \<sqsubseteq> c) \<and> cc' = c \<nabla>\<^sub>c f c}"
     apply(rule wf_subset[OF assms(3)]) by(blast intro: P_f)
@@ -557,7 +557,7 @@ qed
 lemma iter_narrow_termination:
 assumes P_f: "\<And>c. P c \<Longrightarrow> P(c \<triangle>\<^sub>c f c)"
 and wf: "wf({(c, c \<triangle>\<^sub>c f c)|c c'. P c \<and> ~ c \<sqsubseteq> c \<triangle>\<^sub>c f c}^-1)"
-and "P c0" shows "EX c. iter_narrow f c0 = Some c"
+and "P c0" shows "\<exists>c. iter_narrow f c0 = Some c"
 proof(simp add: iter_narrow_def, rule wf_while_option_Some[where P = "P"])
   show "wf {(c', c). (P c \<and> \<not> c \<sqsubseteq> c \<triangle>\<^sub>c f c) \<and> c' = c \<triangle>\<^sub>c f c}"
     apply(rule wf_subset[OF wf]) by(blast intro: P_f)
@@ -568,7 +568,7 @@ next
 qed
 
 lemma iter_winden_step_ivl_termination:
-  "EX c. iter_widen (step_ivl \<top>) (\<bottom>\<^sub>c c0) = Some c"
+  "\<exists>c. iter_widen (step_ivl \<top>) (\<bottom>\<^sub>c c0) = Some c"
 apply(rule iter_widen_termination[where
   P = "%c. strip c = c0 \<and> c : Com(vars c0)"])
 apply (simp_all add: step'_Com bot_acom)
@@ -582,7 +582,7 @@ done
 
 lemma iter_narrow_step_ivl_termination:
   "c0 \<in> Com (vars(strip c0)) \<Longrightarrow> step_ivl \<top> c0 \<sqsubseteq> c0 \<Longrightarrow>
-  EX c. iter_narrow (step_ivl \<top>) c0 = Some c"
+  \<exists>c. iter_narrow (step_ivl \<top>) c0 = Some c"
 apply(rule iter_narrow_termination[where
   P = "%c. strip c = strip c0 \<and> c : Com(vars(strip c0)) \<and> step_ivl \<top> c \<sqsubseteq> c"])
 apply (simp_all add: step'_Com)
@@ -637,7 +637,7 @@ done
 end
 
 theorem AI_ivl'_termination:
-  "EX c'. AI_ivl' c = Some c'"
+  "\<exists>c'. AI_ivl' c = Some c'"
 apply(auto simp: AI_wn_def pfp_wn_def iter_winden_step_ivl_termination split: option.split)
 apply(rule iter_narrow_step_ivl_termination)
 apply (metis bot_acom_Com iter_widen_step'_Com[OF _ subset_refl] strip_iter_widen strip_step')
@@ -677,6 +677,6 @@ apply(auto simp add:le_option_def widen_ivl_def split: if_splits option.splits)[
 done
 
 lemma widen_step_trans:
-  "~ (y::ivl) \<sqsubseteq> x \<Longrightarrow> ~ z \<sqsubseteq> x \<nabla> y \<Longrightarrow> EX u. (x \<nabla> y) \<nabla> z = x \<nabla> u \<and> ~ u \<sqsubseteq> x"
+  "~ (y::ivl) \<sqsubseteq> x \<Longrightarrow> ~ z \<sqsubseteq> x \<nabla> y \<Longrightarrow> \<exists>u. (x \<nabla> y) \<nabla> z = x \<nabla> u \<and> ~ u \<sqsubseteq> x"
 by (metis widen_assoc preord_class.le_trans widen1)
 *)

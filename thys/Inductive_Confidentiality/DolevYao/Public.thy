@@ -56,7 +56,7 @@ text{*By freeness of agents, no two agents have the same key.  Since
   @{term "True\<noteq>False"}, no agent has identical signing and encryption keys*}
 specification (publicKey)
   injective_publicKey:
-    "publicKey b A = publicKey c A' ==> b=c & A=A'"
+    "publicKey b A = publicKey c A' ==> b=c \<and> A=A'"
    apply (rule exI [of _ 
        "%b A. 2 * case_agent 0 (\<lambda>n. n + 2) 1 A + case_keymode 0 1 b"])
    apply (auto simp add: inj_on_def split: agent.split keymode.split)
@@ -76,7 +76,7 @@ declare publicKey_neq_privateKey [iff]
 
 subsection{*Basic properties of @{term pubK} and @{term priK}*}
 
-lemma publicKey_inject [iff]: "(publicKey b A = publicKey c A') = (b=c & A=A')"
+lemma publicKey_inject [iff]: "(publicKey b A = publicKey c A') = (b=c \<and> A=A')"
 by (blast dest!: injective_publicKey) 
 
 lemma not_symKeys_pubK [iff]: "publicKey b A \<notin> symKeys"
@@ -108,14 +108,14 @@ by auto
 
 (*holds because invKey is injective*)
 lemma publicKey_image_eq [simp]:
-     "(publicKey b x \<in> publicKey c ` AA) = (b=c & x \<in> AA)"
+     "(publicKey b x \<in> publicKey c ` AA) = (b=c \<and> x \<in> AA)"
 by auto
 
 lemma privateKey_notin_image_publicKey [simp]: "privateKey b x \<notin> publicKey c ` AA"
 by auto
 
 lemma privateKey_image_eq [simp]:
-     "(privateKey b A \<in> invKey ` publicKey c ` AS) = (b=c & A\<in>AS)"
+     "(privateKey b A \<in> invKey ` publicKey c ` AS) = (b=c \<and> A\<in>AS)"
 by auto
 
 lemma publicKey_notin_image_privateKey [simp]: "publicKey b A \<notin> invKey ` publicKey c ` AS"
@@ -236,7 +236,7 @@ txt{*Base case*}
 apply (auto dest!: parts_cut simp add: used_Nil) 
 done
 
-lemma MPair_used_D: "\<lbrace>X,Y\<rbrace> \<in> used H ==> X \<in> used H & Y \<in> used H"
+lemma MPair_used_D: "\<lbrace>X,Y\<rbrace> \<in> used H ==> X \<in> used H \<and> Y \<in> used H"
 by (drule used_parts_subset_parts, simp, blast)
 
 text{*There was a similar theorem in Event.thy, so perhaps this one can
@@ -355,7 +355,7 @@ by (simp add: used_Nil)
 subsection{*Supply fresh nonces for possibility theorems*}
 
 text{*In any trace, there is an upper bound N on the greatest nonce in use*}
-lemma Nonce_supply_lemma: "EX N. ALL n. N<=n --> Nonce n \<notin> used evs"
+lemma Nonce_supply_lemma: "\<exists>N. \<forall>n. N\<le>n --> Nonce n \<notin> used evs"
 apply (induct_tac "evs")
 apply (rule_tac x = 0 in exI)
 apply (simp_all (no_asm_simp) add: used_Cons split: event.split)
@@ -363,17 +363,17 @@ apply safe
 apply (rule msg_Nonce_supply [THEN exE], blast elim!: add_leE)+
 done
 
-lemma Nonce_supply1: "EX N. Nonce N \<notin> used evs"
+lemma Nonce_supply1: "\<exists>N. Nonce N \<notin> used evs"
 by (rule Nonce_supply_lemma [THEN exE], blast)
 
-lemma Nonce_supply: "Nonce (@ N. Nonce N \<notin> used evs) \<notin> used evs"
+lemma Nonce_supply: "Nonce (SOME N. Nonce N \<notin> used evs) \<notin> used evs"
 apply (rule Nonce_supply_lemma [THEN exE])
 apply (rule someI, fast)
 done
 
 subsection{*Specialized Rewriting for Theorems About @{term analz} and Image*}
 
-lemma insert_Key_singleton: "insert (Key K) H = Key ` {K} Un H"
+lemma insert_Key_singleton: "insert (Key K) H = Key ` {K} \<union> H"
 by blast
 
 lemma insert_Key_image: "insert (Key K) (Key`KK \<union> C) = Key ` (insert K KK) \<union> C"

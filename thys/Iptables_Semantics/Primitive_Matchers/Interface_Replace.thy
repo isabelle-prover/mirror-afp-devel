@@ -165,8 +165,8 @@ end
 
 subsection\<open>Sanity checking the assumption\<close>
 (* we need a good formulation of the assumption. the case stuff is so undefined for the None case \<dots>
-   EX-quantor is too strong
-  Also holds if EX replaced by ALL*)
+   \<exists>-quantor is too strong
+  Also holds if \<exists> replaced by \<forall>*)
 lemma "(\<exists>ips. ipassmt (Iface (p_iiface p)) = Some ips \<and> p_src p \<in> ipcidr_union_set (set ips)) \<Longrightarrow>
        (case ipassmt (Iface (p_iiface p)) of Some ips \<Rightarrow> p_src p \<in> ipcidr_union_set (set ips))"
       "(case ipassmt (Iface (p_iiface p)) of Some ips \<Rightarrow> p_src p \<in> ipcidr_union_set (set ips)) \<Longrightarrow>

@@ -30,7 +30,7 @@ primrec sorted :: "tree => bool"
 where
   "sorted Tip = True"
 | "sorted(Nd l y r) =
-    (sorted l & sorted r & (ALL x:set_of l. x < y) & (ALL z:set_of r. y < z))"
+    (sorted l & sorted r & (\<forall>x \<in> set_of l. x < y) & (\<forall>z \<in> set_of r. y < z))"
 
 (*============================================================*)
 section {* Tree Membership *}

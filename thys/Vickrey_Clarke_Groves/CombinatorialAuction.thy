@@ -113,7 +113,7 @@ lemma onlyGoodsAreSold:
 
 lemma soldAllocationIsRestricted: 
   "a \<in> soldAllocations'' N \<Omega> = 
-   (EX aa. aa -- (seller) = a  &  aa \<in> allAllocations'' (N \<union> {seller}) \<Omega>)" 
+   (\<exists>aa. aa -- (seller) = a  \<and>  aa \<in> allAllocations'' (N \<union> {seller}) \<Omega>)" 
   by blast
 
 (* Note that +* enlarges the function by one additional pair *)
@@ -449,7 +449,7 @@ corollary neutralSellerVariant:
 
 lemma vcgaIsMaximalAux1: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" 
-  shows "EX a. ((a \<in> (maximalStrictAllocations N (set \<Omega>) b))  &  (vcga' N \<Omega> b r = a -- seller)  &
+  shows "\<exists>a. ((a \<in> (maximalStrictAllocations N (set \<Omega>) b))  \<and>  (vcga' N \<Omega> b r = a -- seller)  &
                 (a \<in> argmax (sum b) (allAllocations ({seller}\<union>N) (set \<Omega>))))" 
   using assms winningAllocationIsMaximalWithoutSeller by fast
 

@@ -186,8 +186,8 @@ done
 
 
 lemma while_lemma[rule_format]:
-"s -w-n\<rightarrow> t \<Longrightarrow> !b c. w = WHILE b DO c \<and> P s \<and>
-                    (!s s'. P s \<and> b s \<and> s -c-n\<rightarrow> s' \<longrightarrow> P s') \<longrightarrow> P t \<and> \<not>b t"
+"s -w-n\<rightarrow> t \<Longrightarrow> \<forall>b c. w = WHILE b DO c \<and> P s \<and>
+                    (\<forall>s s'. P s \<and> b s \<and> s -c-n\<rightarrow> s' \<longrightarrow> P s') \<longrightarrow> P t \<and> \<not>b t"
 apply(erule execn.induct)
 apply clarify+
 defer

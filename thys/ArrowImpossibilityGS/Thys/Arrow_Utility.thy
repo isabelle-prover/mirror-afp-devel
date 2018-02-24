@@ -131,7 +131,7 @@ by(simp add:mktop_def bot_def alt2 finite_alt)
 lemma [simp]: "a \<noteq> b \<Longrightarrow> \<not> P p a < mkbot (P p) b b"
 proof (simp add:mkbot_def finite_alt)
   have "\<not> P p a + 1 < P p a" by simp
-  thus "EX x. \<not> P p a + 1 < P p x" ..
+  thus "\<exists>x. \<not> P p a + 1 < P p x" ..
 qed
 
 text{* The proof starts here. *}

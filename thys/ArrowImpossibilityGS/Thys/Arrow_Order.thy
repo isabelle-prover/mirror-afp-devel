@@ -141,7 +141,7 @@ done
 lemma const_Lin_Prof: "L:Lin \<Longrightarrow> (%p. L) : Prof"
 by(simp add:Prof_def Pi_def)
 
-lemma complete_Lin: assumes "a\<noteq>b" shows "EX L:Lin. (a,b) : L"
+lemma complete_Lin: assumes "a\<noteq>b" shows "\<exists>L\<in>Lin. (a,b) : L"
 proof -
   from linear_alt obtain R where "R:Lin" by auto
   thus ?thesis by (metis assms in_mkbot mkbot_Lin)
@@ -150,7 +150,7 @@ qed
 declare Let_def[simp]
 
 theorem Arrow: assumes "F : SWF" and u: "unanimity F" and "IIA F"
-shows "EX i. dictator F i"
+shows "\<exists>i. dictator F i"
 proof -
   { fix a b a' b' and P P'
     assume d1: "a\<noteq>b" "a'\<noteq>b'" and d2: "a\<noteq>b'" "b\<noteq>a'" and
@@ -262,7 +262,7 @@ proof -
   let ?Pi = "%n. %i. if h i < n then Lab else Lba"
   have PiProf: "!!n. ?Pi n : Prof" using `Lab:Lin` `Lba:Lin`
     unfolding Prof_def Pi_def by simp
-  have "EX n<N. (\<forall>m\<le>n. (b,a) : F(?Pi m)) & (a,b) : F(?Pi(n+1))"
+  have "\<exists>n<N. (\<forall>m\<le>n. (b,a) : F(?Pi m)) & (a,b) : F(?Pi(n+1))"
   proof -
     have 0: "!!n. F(?Pi n) : Lin" using `F : SWF` PiProf by(simp add:Pi_def)
     have "F(%i. Lba):Lin" using `F:SWF` `Lba:Lin` by(simp add:Prof_def Pi_def)

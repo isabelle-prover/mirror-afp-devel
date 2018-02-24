@@ -40,11 +40,11 @@ lemma of_fun_nth:
 subsubsection{*Definitions*}
 
 fun all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> bool"
-where "all p (IArray as) = (ALL a : set as. p a)"
+where "all p (IArray as) = (\<forall>a \<in> set as. p a)"
  hide_const (open) all
 
 fun exists :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> bool"
-where "exists p (IArray as) = (EX a : set as. p a)"
+where "exists p (IArray as) = (\<exists>a \<in> set as. p a)"
 hide_const (open) exists
 
 (*

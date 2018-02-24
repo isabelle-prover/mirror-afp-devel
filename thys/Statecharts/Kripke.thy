@@ -63,7 +63,7 @@ definition
 definition
    Paths :: "[('s,'a) kripke, 's] =>
              (nat => 's) set" where
-  "Paths M S == { p . S = p (0::nat) \<and> (ALL i. (p i, p (i+1)) \<in> (StepRel M))}"
+  "Paths M S == { p . S = p (0::nat) \<and> (\<forall>i. (p i, p (i+1)) \<in> (StepRel M))}"
 
 datatype ('s,'a) ctl =  Atom "'a"
                           | AND "('s,'a) ctl" "('s,'a) ctl"
