@@ -8,21 +8,21 @@ theory DA
 imports AutoProj
 begin
 
-type_synonym ('a,'s)da = "'s * ('a => 's => 's) * ('s => bool)"
+type_synonym ('a,'s)da = "'s * ('a \<Rightarrow> 's \<Rightarrow> 's) * ('s \<Rightarrow> bool)"
 
 definition
- foldl2 :: "('a => 'b => 'b) => 'a list => 'b => 'b" where
-"foldl2 f xs a = foldl (%a b. f b a) a xs"
+ foldl2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b \<Rightarrow> 'b" where
+"foldl2 f xs a = foldl (\<lambda>a b. f b a) a xs"
 
 definition
- delta :: "('a,'s)da => 'a list => 's => 's" where
+ delta :: "('a,'s)da \<Rightarrow> 'a list \<Rightarrow> 's \<Rightarrow> 's" where
 "delta A = foldl2 (next A)"
 
 definition
- accepts :: "('a,'s)da => 'a list => bool" where
-"accepts A = (%w. fin A (delta A w (start A)))"
+ accepts :: "('a,'s)da \<Rightarrow> 'a list \<Rightarrow> bool" where
+"accepts A = (\<lambda>w. fin A (delta A w (start A)))"
 
-lemma [simp]: "foldl2 f [] a = a & foldl2 f (x#xs) a = foldl2 f xs (f x a)"
+lemma [simp]: "foldl2 f [] a = a \<and> foldl2 f (x#xs) a = foldl2 f xs (f x a)"
 by(simp add:foldl2_def)
 
 lemma delta_Nil[simp]: "delta A [] s = s"
@@ -32,7 +32,7 @@ lemma delta_Cons[simp]: "delta A (a#w) s = delta A w (next A a s)"
 by(simp add:delta_def)
 
 lemma delta_append[simp]:
- "!!q ys. delta A (xs@ys) q = delta A ys (delta A xs q)"
+ "\<And>q ys. delta A (xs@ys) q = delta A ys (delta A xs q)"
 by(induct xs) simp_all
 
 end

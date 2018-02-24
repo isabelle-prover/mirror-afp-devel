@@ -17,32 +17,32 @@ theory RegSet_of_nat_DA
 imports "Regular-Sets.Regular_Set" DA
 begin
 
-type_synonym 'a nat_next = "'a => nat => nat"
+type_synonym 'a nat_next = "'a \<Rightarrow> nat \<Rightarrow> nat"
 
 abbreviation
-  deltas :: "'a nat_next => 'a list => nat => nat" where
-  "deltas == foldl2"
+  deltas :: "'a nat_next \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> nat" where
+  "deltas \<equiv> foldl2"
 
-primrec trace :: "'a nat_next => nat => 'a list => nat list"  where
+primrec trace :: "'a nat_next \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat list"  where
 "trace d i [] = []" |
 "trace d i (x#xs) = d x i # trace d (d x i) xs"
 
 (* conversion a la Warshall *)
 
-primrec regset :: "'a nat_next => nat => nat => nat => 'a list set" where
+primrec regset :: "'a nat_next \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list set" where
 "regset d i j 0 = (if i=j then insert [] {[a] | a. d a i = j}
                           else {[a] | a. d a i = j})" |
 "regset d i j (Suc k) =
-  regset d i j k Un
+  regset d i j k \<union>
   (regset d i k k) @@ (star(regset d k k k)) @@ (regset d k j k)"
 
 definition
- regset_of_DA :: "('a,nat)da => nat => 'a list set" where
-"regset_of_DA A k = (UN j:{j. j<k & fin A j}. regset (next A) (start A) j k)"
+ regset_of_DA :: "('a,nat)da \<Rightarrow> nat \<Rightarrow> 'a list set" where
+"regset_of_DA A k = (\<Union>j\<in>{j. j<k \<and> fin A j}. regset (next A) (start A) j k)"
 
 definition
- bounded :: "'a nat_next => nat => bool" where
-"bounded d k = (!n. n < k --> (!x. d x n < k))"
+ bounded :: "'a nat_next \<Rightarrow> nat \<Rightarrow> bool" where
+"bounded d k = (\<forall>n. n < k \<longrightarrow> (\<forall>x. d x n < k))"
 
 declare
   in_set_butlast_appendI[simp,intro] less_SucI[simp] image_eqI[simp]
@@ -50,11 +50,11 @@ declare
 (* Lists *)
 
 lemma butlast_empty[iff]:
-  "(butlast xs = []) = (case xs of [] => True | y#ys => ys=[])"
+  "(butlast xs = []) = (case xs of [] \<Rightarrow> True | y#ys \<Rightarrow> ys=[])"
 by (cases xs) simp_all
 
 lemma in_set_butlast_concatI:
- "x:set(butlast xs) ==> xs:set xss ==> x:set(butlast(concat xss))"
+ "x:set(butlast xs) \<Longrightarrow> xs:set xss \<Longrightarrow> x:set(butlast(concat xss))"
 apply (induct "xss")
  apply simp
 apply (simp add: butlast_append del: ball_simps)
@@ -74,12 +74,12 @@ done
    how to decompose a trace into a prefix, a list of loops and a suffix.
 *)
 lemma decompose[rule_format]:
- "!i. k : set(trace d i xs) --> (EX pref mids suf.
-  xs = pref @ concat mids @ suf &
-  deltas d pref i = k & (!n:set(butlast(trace d i pref)). n ~= k) &
-  (!mid:set mids. (deltas d mid k = k) &
-                  (!n:set(butlast(trace d k mid)). n ~= k)) &
-  (!n:set(butlast(trace d k suf)). n ~= k))"
+ "\<forall>i. k \<in> set(trace d i xs) \<longrightarrow> (\<exists>pref mids suf.
+  xs = pref @ concat mids @ suf \<and>
+  deltas d pref i = k \<and> (\<forall>n\<in>set(butlast(trace d i pref)). n \<noteq> k) \<and>
+  (\<forall>mid\<in>set mids. (deltas d mid k = k) \<and>
+                  (\<forall>n\<in>set(butlast(trace d k mid)). n \<noteq> k)) \<and>
+  (\<forall>n\<in>set(butlast(trace d k suf)). n \<noteq> k))"
 apply (induct "xs")
  apply (simp)
 apply (rename_tac a as)
@@ -110,35 +110,35 @@ apply (rule_tac x = "suf" in exI)
 apply simp
 done
 
-lemma length_trace[simp]: "!!i. length(trace d i xs) = length xs"
+lemma length_trace[simp]: "\<And>i. length(trace d i xs) = length xs"
 by (induct "xs") simp_all
 
 lemma deltas_append[simp]:
-  "!!i. deltas d (xs@ys) i = deltas d ys (deltas d xs i)"
+  "\<And>i. deltas d (xs@ys) i = deltas d ys (deltas d xs i)"
 by (induct "xs") simp_all
 
 lemma trace_append[simp]:
-  "!!i. trace d i (xs@ys) = trace d i xs @ trace d (deltas d xs i) ys"
+  "\<And>i. trace d i (xs@ys) = trace d i xs @ trace d (deltas d xs i) ys"
 by (induct "xs") simp_all
 
 lemma trace_concat[simp]:
- "(!xs: set xss. deltas d xs i = i) ==>
+ "(\<forall>xs \<in> set xss. deltas d xs i = i) \<Longrightarrow>
   trace d i (concat xss) = concat (map (trace d i) xss)"
 by (induct "xss") simp_all
 
-lemma trace_is_Nil[simp]: "!!i. (trace d i xs = []) = (xs = [])"
+lemma trace_is_Nil[simp]: "\<And>i. (trace d i xs = []) = (xs = [])"
 by (case_tac "xs") simp_all
 
 lemma trace_is_Cons_conv[simp]:
  "(trace d i xs = n#ns) =
-  (case xs of [] => False | y#ys => n = d y i & ns = trace d n ys)"
+  (case xs of [] \<Rightarrow> False | y#ys \<Rightarrow> n = d y i \<and> ns = trace d n ys)"
 apply (case_tac "xs")
 apply simp_all
 apply (blast)
 done
 
 lemma set_trace_conv:
- "!!i. set(trace d i xs) =
+ "\<And>i. set(trace d i xs) =
   (if xs=[] then {} else insert(deltas d xs i)(set(butlast(trace d i xs))))"
 apply (induct "xs")
  apply (simp)
@@ -146,15 +146,15 @@ apply (simp add: insert_commute)
 done
 
 lemma deltas_concat[simp]:
- "(!mid:set mids. deltas d mid k = k) ==> deltas d (concat mids) k = k"
+ "(\<forall>mid\<in>set mids. deltas d mid k = k) \<Longrightarrow> deltas d (concat mids) k = k"
 by (induct mids) simp_all
 
-lemma lem: "[| n < Suc k; n ~= k |] ==> n < k"
+lemma lem: "[| n < Suc k; n \<noteq> k |] ==> n < k"
 by arith
 
 lemma regset_spec:
- "!!i j xs. xs : regset d i j k =
-        ((!n:set(butlast(trace d i xs)). n < k) & deltas d xs i = j)"
+ "\<And>i j xs. xs \<in> regset d i j k =
+        ((\<forall>n\<in>set(butlast(trace d i xs)). n < k) \<and> deltas d xs i = j)"
 apply (induct k)
  apply(simp split: list.split)
  apply(fastforce)
@@ -165,7 +165,7 @@ apply (rule iffI)
  apply (erule exE conjE)+
  apply simp
  apply (subgoal_tac
-      "(!m:set(butlast(trace d k xsb)). m < Suc k) & deltas d xsb k = k")
+      "(\<forall>m\<in>set(butlast(trace d k xsb)). m < Suc k) \<and> deltas d xsb k = k")
   apply (simp add: set_trace_conv butlast_append ball_Un)
  apply (erule star_induct)
   apply (simp)
@@ -199,7 +199,7 @@ apply (rule lem)
 done
 
 lemma trace_below:
- "bounded d k ==> !i. i < k --> (!n:set(trace d i xs). n < k)"
+ "bounded d k \<Longrightarrow> \<forall>i. i < k \<longrightarrow> (\<forall>n\<in>set(trace d i xs). n < k)"
 apply (unfold bounded_def)
 apply (induct "xs")
  apply simp
@@ -216,7 +216,7 @@ apply (blast dest: trace_below in_set_butlastD)
 done
 
 lemma deltas_below:
- "!!i. bounded d k ==> i < k ==> deltas d w i < k"
+ "\<And>i. bounded d k \<Longrightarrow> i < k \<Longrightarrow> deltas d w i < k"
 apply (unfold bounded_def)
 apply (induct "w")
  apply simp_all

@@ -13,9 +13,9 @@ theory AutoProj
 imports Main
 begin
 
-definition start :: "'a * 'b * 'c => 'a" where "start A = fst A"
-definition "next" :: "'a * 'b * 'c => 'b" where "next A = fst(snd(A))"
-definition fin :: "'a * 'b * 'c => 'c" where "fin A = snd(snd(A))"
+definition start :: "'a * 'b * 'c \<Rightarrow> 'a" where "start A = fst A"
+definition "next" :: "'a * 'b * 'c \<Rightarrow> 'b" where "next A = fst(snd(A))"
+definition fin :: "'a * 'b * 'c \<Rightarrow> 'c" where "fin A = snd(snd(A))"
 
 lemma [simp]: "start(q,d,f) = q"
 by(simp add:start_def)
