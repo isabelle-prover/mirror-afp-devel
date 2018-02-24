@@ -1,12 +1,12 @@
 (*  Author:    Lukas Bulwahn, TUM 2011 *)
 
-section {* Executing Automata and membership of Regular Expressions  *}
+section \<open>Executing Automata and membership of Regular Expressions\<close>
 
 theory Execute
 imports AutoRegExp
 begin
 
-subsection {* Example *}
+subsection \<open>Example\<close>
 
 definition example_expression
 where
