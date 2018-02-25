@@ -236,7 +236,7 @@ proof -
     from that obtain i where i: "a $ i \<noteq> b $ i"
       by (auto simp: vec_eq_iff)
     have "R a \<inter> R b = cbox (\<chi> i. max (a $ i) (b $ i)) (\<chi> i. min (a $ i + 1) (b $ i + 1))"
-      unfolding inter_interval_cart R_def interval_cbox
+      unfolding Int_interval_cart R_def interval_cbox
       by (simp add: of_int_vec_def max_def min_def if_distrib cong: if_cong)
     hence "emeasure lebesgue (R a \<inter> R b) = emeasure lborel \<dots>"
       by simp

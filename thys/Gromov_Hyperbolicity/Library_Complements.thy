@@ -743,7 +743,7 @@ proof -
     assume "\<not>(emeasure lborel (cball (0::'a::euclidean_space) 1) > 0)"
     then have "emeasure lborel (cball (0::'a) 1) = 0" by auto
     then have "emeasure lborel (cball (0::'a) n) = 0" for n::nat
-      using lebesgue_measure_ball(2)[of "real n" 0] by (metis mult_zero_right of_nat_nonneg)
+      using lebesgue_measure_ball(2)[of "real n" 0] by (metis mult_zero_right of_nat_0_le_iff)
     then have "emeasure lborel (\<Union>n. cball (0::'a) (real n)) = 0"
       by (metis (mono_tags, lifting) borel_closed closed_cball emeasure_UN_eq_0 imageE sets_lborel subsetI)
     moreover have "(\<Union>n. cball (0::'a) (real n)) = UNIV" by (auto simp add: real_arch_simple)

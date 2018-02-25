@@ -154,7 +154,7 @@ proof
   fix b
   show "\<exists>N. \<forall>n\<ge>N. ereal b \<le> ereal (poly p (real n))" 
     unfolding ereal_less_eq using poly_pinfty_ge[OF assms, of b]
-    by (meson Extended_Nonnegative_Real.of_nat_le_iff order_trans real_arch_simple)
+    by (meson of_nat_le_iff order_trans real_arch_simple)
 qed
 
 definition diagvector :: "('n \<Rightarrow> 'a :: semiring_0) \<Rightarrow> 'a ^ 'n ^ 'n" where

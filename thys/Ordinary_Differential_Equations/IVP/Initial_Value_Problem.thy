@@ -1982,7 +1982,7 @@ next
       from that have "(1 + real i) * s \<le> real i * s" "0 \<le> real i * s"
         by arith+
       have "s + (t0 + s * real i) \<le> t \<Longrightarrow> t \<le> y \<Longrightarrow> y \<le> t0 + s * real i \<Longrightarrow> t0 \<le> y \<Longrightarrow> y = t0 + s * real i"
-        by (metis add_decreasing2 eq_iff le_add_same_cancel2 linear mult_le_0_iff of_nat_nonneg order.trans)
+        by (metis add_decreasing2 eq_iff le_add_same_cancel2 linear mult_le_0_iff of_nat_0_le_iff order.trans)
       then show ?thesis using that
         by (simp add: algebra_simps)
     qed
