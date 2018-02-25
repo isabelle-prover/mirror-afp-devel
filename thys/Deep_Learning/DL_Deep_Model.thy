@@ -466,8 +466,10 @@ assumes y_valid:"y < rs ! 0"
 begin
 
 
-definition "A ws = tensors_from_net (insert_weights shared_weights (deep_model_l rs) ws) $ y"
-definition "A' ws = ten2mat (A ws)"
+definition A :: "(nat \<Rightarrow> real) \<Rightarrow> real tensor"
+  where "A ws = tensors_from_net (insert_weights shared_weights (deep_model_l rs) ws) $ y"
+definition A' :: "(nat \<Rightarrow> real) \<Rightarrow> real mat"
+  where "A' ws = ten2mat (A ws)"
 
 
 lemma dims_tensor_deep_model:

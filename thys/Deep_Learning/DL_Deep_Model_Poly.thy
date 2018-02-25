@@ -6,7 +6,8 @@ theory DL_Deep_Model_Poly
 imports DL_Deep_Model Polynomials.More_MPoly_Type Jordan_Normal_Form.Determinant
 begin
 
-definition "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"
+definition polyfun :: "nat set \<Rightarrow> ((nat \<Rightarrow> 'a::comm_semiring_1) \<Rightarrow> 'a) \<Rightarrow> bool"
+  where "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"
 
 lemma polyfunI: "(\<And>P. (\<And>p. vars p \<subseteq> N \<Longrightarrow> (\<And>x. insertion x p = f x) \<Longrightarrow> P) \<Longrightarrow> P) \<Longrightarrow> polyfun N f"
   unfolding polyfun_def by metis
