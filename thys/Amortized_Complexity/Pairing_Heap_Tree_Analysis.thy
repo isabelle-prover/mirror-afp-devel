@@ -109,15 +109,23 @@ proof (induction hs)
   case (Node lx x rx)
   thus ?case 
   proof (cases rx)
-    case *: (Node ly y ry)
+    case 1: (Node ly y ry)
     let ?h = "Node lx x rx"
-    obtain la a where **: "pass\<^sub>2 rx = Node la a Leaf" 
-      using pass\<^sub>2_struct * by force
-    hence "size \<dots> = size rx" using size_pass\<^sub>2 by metis
-    hence "\<Phi> (pass\<^sub>2 ?h) - \<Phi> ?h  
-      \<le> log 2 (size ?h) - log 2  \<dots> + \<Phi> (pass\<^sub>2 rx) - \<Phi> rx"
-      using * ** by (simp add: algebra_simps) 
-    thus ?thesis using Node.IH * by simp
+    obtain la a where 2: "pass\<^sub>2 rx = Node la a Leaf" 
+      using pass\<^sub>2_struct 1 by force
+    hence 3: "size rx = size \<dots>" using size_pass\<^sub>2 by metis
+    have link: "\<Phi>(link(Node lx x (pass\<^sub>2 rx))) - \<Phi> lx - \<Phi> (pass\<^sub>2 rx) =
+          log 2 (size lx + size rx + 1) + log 2 (size lx + size rx) - log 2 (size rx)"
+      using 2 3 by (simp add: algebra_simps) 
+    have "\<Phi> (pass\<^sub>2 ?h) - \<Phi> ?h =
+        \<Phi> (link (Node lx x (pass\<^sub>2 rx))) - \<Phi> lx - \<Phi> rx - log 2 (size lx + size rx + 1)"
+      by (simp)
+    also have "\<dots> = \<Phi> (pass\<^sub>2 rx) - \<Phi> rx + log 2 (size lx + size rx) - log 2 (size rx)"
+      using link by linarith
+    also have "\<dots> \<le> log 2 (size lx + size rx)"
+      using Node.IH 1 by simp
+    also have "\<dots> \<le> log 2 (size ?h)" using 1 by simp
+    finally show ?thesis .
   qed simp
 qed simp
 
