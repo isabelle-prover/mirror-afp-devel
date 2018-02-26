@@ -38,7 +38,7 @@ definition "plotcolors =
 
 primrec prove_pos::"(nat * nat * string) list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
     (nat \<Rightarrow> real aform list \<Rightarrow> real aform option) \<Rightarrow> real aform list list \<Rightarrow> bool" where
-  "prove_pos prnt 0 p F X = (let _ = if prnt \<noteq> [] then print (String.implode ''# depth limit exceeded\<newline>'') else () in False)"
+  "prove_pos prnt 0 p F X = (let _ = if prnt \<noteq> [] then print (STR ''# depth limit exceeded\<newline>'') else () in False)"
 | "prove_pos prnt (Suc i) p F XXS =
     (case XXS of [] \<Rightarrow> True | (X#XS) \<Rightarrow>
     let
@@ -47,8 +47,8 @@ primrec prove_pos::"(nat * nat * string) list \<Rightarrow> nat \<Rightarrow> na
         _ = fold (\<lambda>(a, b, c) _. print (String.implode (shows_segments_of_aform a b X c ''\<newline>''))) prnt ()
     in
     if R \<noteq> None \<and> 0 < Inf_aform' p (the R)
-    then let _ = if prnt \<noteq> [] then print (String.implode ''# Success\<newline>'') else () in prove_pos prnt i p F XS
-    else let _ = if prnt \<noteq> [] then print (String.implode ''# Split\<newline>'') else () in case split_aforms_largest_uncond X of (a, b) \<Rightarrow>
+    then let _ = if prnt \<noteq> [] then print (STR ''# Success\<newline>'') else () in prove_pos prnt i p F XS
+    else let _ = if prnt \<noteq> [] then print (STR ''# Split\<newline>'') else () in case split_aforms_largest_uncond X of (a, b) \<Rightarrow>
       prove_pos prnt i p F (a#b#XS))"
 
 definition "prove_pos_slp prnt p fa i xs = (let slp = slp_of_fas [fa] in prove_pos prnt i p (\<lambda>p xs.

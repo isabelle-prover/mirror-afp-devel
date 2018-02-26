@@ -1975,7 +1975,7 @@ definition check_line_core where
  "check_line_core print_funo m0 n0 c1 i =
   do {
       let print_fun = the_default (\<lambda>_. ()) print_funo;
-      CHECK (\<lambda>_. print_fun (String.implode ''Hey, out of bounds!'')) (i < length results);
+      CHECK (\<lambda>_. print_fun (STR ''Hey, out of bounds!'')) (i < length results);
       let res = ((results:::\<langle>Id\<rangle>list_rel) ! (i:::nat_rel));
       (r, P, B) \<leftarrow> check_line_nres print_funo m0 n0 c1 res;
       let _ = print_sets_color print_fun (ST ''0x007f00'') (aform.sets_of_ivls B);

@@ -32,7 +32,7 @@ definition "Inf_tm p params tm =
 
 primrec prove_pos::"bool \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow>
     (nat \<Rightarrow> nat \<Rightarrow> taylor_model list \<Rightarrow> taylor_model option) \<Rightarrow> float interval list list \<Rightarrow> bool" where
-  "prove_pos prnt 0 p ord F X = (let _ = if prnt then print (String.implode ''# depth limit exceeded\<newline>'') else () in False)"
+  "prove_pos prnt 0 p ord F X = (let _ = if prnt then print (STR ''# depth limit exceeded\<newline>'') else () in False)"
 | "prove_pos prnt (Suc i) p ord F XXS =
     (case XXS of [] \<Rightarrow> True | (X#XS) \<Rightarrow>
     let
@@ -41,7 +41,7 @@ primrec prove_pos::"bool \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \
        _ = if prnt  then print (String.implode ((shows ''# '' o shows (map (\<lambda>ivl. (lower ivl, upper ivl)) X)) ''\<newline>'')) else ()
     in
     if R \<noteq> None \<and> 0 < Inf_tm p params (the R)
-    then let _ = if prnt then print (String.implode ''# Success\<newline>'') else () in prove_pos prnt i p ord F XS
+    then let _ = if prnt then print (STR ''# Success\<newline>'') else () in prove_pos prnt i p ord F XS
     else let _ = if prnt then print (String.implode ((shows ''# Split ('' o shows ((map_option (Inf_tm p params)) R) o shows '')'') ''\<newline>'')) else () in case split_largest_interval X of (a, b) \<Rightarrow>
       prove_pos prnt i p ord F (a#b#XS))"
 

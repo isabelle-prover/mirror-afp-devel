@@ -14,8 +14,8 @@ concrete_definition reify_example for i j k uses reify_example
 
 hide_const (open) Print.file_output
 definition "file_output s f =
-  (if s = String.implode ''''      then f (\<lambda>_. ())
-  else if s = String.implode ''-'' then f print
+  (if s = STR ''''      then f (\<lambda>_. ())
+  else if s = STR ''-'' then f print
   else                                  Print.file_output s f)"
 
 definition "aforms_of_point xs = aforms_of_ivls xs xs"
