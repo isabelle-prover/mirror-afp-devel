@@ -118,8 +118,6 @@ text \<open>This is the critical inner loop.
 
   With these two modifications, Algorithm 16.22 will become sound as proven below.\<close>
 
-private definition n where "n \<equiv> degree f"
-declare n_def[simp]
 definition "LLL_reconstruction_inner j \<equiv>
   (*short vector computation*)
   let g' = LLL_implementation.LLL_short_polynomial pl j u 
@@ -142,7 +140,7 @@ function LLL_reconstruction_inner_loop where
      of Some tuple \<Rightarrow> tuple
      |  None \<Rightarrow> LLL_reconstruction_inner_loop (j+1))"
   by auto
-termination by (relation "measure (\<lambda> j. Suc n - j)", auto)
+termination by (relation "measure (\<lambda> j. Suc (degree f) - j)", auto)
 
 end
 (*The main loop (line 6)*)
@@ -1479,11 +1477,6 @@ proof -
 qed
 end
 end
-
-text \<open>fix code equation for @{const linf_norm_poly}\<close>
-definition "new_zero = 0" 
-lemma linf_norm_poly_code[code]: "linf_norm_poly f = max_list (map abs (coeffs f) @ [new_zero])"
-  unfolding new_zero_def linf_norm_poly_def ..
 
 subsubsection \<open>Final statement\<close>
 lemma factorization_algorithm_16_22:
