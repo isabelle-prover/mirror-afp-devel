@@ -32,9 +32,9 @@ text {* Various other functions *}
 
 instantiation heapobj :: toString begin
 primrec toString_heapobj :: "heapobj \<Rightarrow> String.literal" where
-  "toString (Obj C fs) = Auxiliary.concat [STR ''(Obj '', toString C, STR '', '', toString fs, STR '')'']"
+  "toString (Obj C fs) = sum_list [STR ''(Obj '', toString C, STR '', '', toString fs, STR '')'']"
 | "toString (Arr T si fs el) = 
-   Auxiliary.concat [STR ''(['', toString si, STR '']'', toString T, STR '', '', toString fs, STR '', '', toString (map snd (rm_to_list el)), STR '')'']"
+   sum_list [STR ''(['', toString si, STR '']'', toString T, STR '', '', toString fs, STR '', '', toString (map snd (rm_to_list el)), STR '')'']"
 instance proof qed
 end
 

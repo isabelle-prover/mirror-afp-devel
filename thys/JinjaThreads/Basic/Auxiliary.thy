@@ -848,7 +848,11 @@ by(blast dest: invariant3pD intro: invariant3pI)
 subsection {* Concatenation for @{typ String.literal} *}
 
 definition concat :: "String.literal list \<Rightarrow> String.literal"
-where [code del]: "concat xs = String.implode (List.concat (map String.explode xs))"
+  where [code_abbrev, code del]: "concat = sum_list"
+
+lemma explode_add [simp]:
+  "String.explode (s + t) = String.explode s @ String.explode t"
+  by (fact plus_literal.rep_eq)
 
 code_printing
   constant concat \<rightharpoonup>

@@ -222,7 +222,7 @@ where
                Some g \<Rightarrow> fV n g idx
              | None \<Rightarrow> (case lm.lookup n c of
                    Some g \<Rightarrow> fC n g idx
-                 | None \<Rightarrow> err' (String.implode (''Unknown variable referenced: '' @ String.explode n)))))"
+                 | None \<Rightarrow> err' (STR ''Unknown variable referenced: '' + n))))"
 
 primrec enforceChan :: "varRef + chanRef \<Rightarrow> chanRef" where
   "enforceChan (Inl _) = err ''Channel expected. Got normal variable.''"

@@ -39,7 +39,7 @@ where
 
 instantiation list :: (toString) toString begin
 definition [code]:
-  "toString (xs :: 'a list) = Auxiliary.concat (STR ''['' # list_toString (STR '','') xs @ [STR '']''])"
+  "toString (xs :: 'a list) = sum_list (STR ''['' # list_toString (STR '','') xs @ [STR '']''])"
 instance proof qed
 end
 
@@ -67,7 +67,7 @@ by pat_completeness simp
 termination by size_change
 
 instantiation int :: toString begin
-definition [code]: "toString i = Auxiliary.concat (int_toString i)"
+definition [code]: "toString i = sum_list (int_toString i)"
 instance proof qed
 end
 
@@ -79,14 +79,14 @@ end
 instantiation option :: (toString) toString begin
 primrec toString_option :: "'a option \<Rightarrow> String.literal" where
   "toString None = STR ''None''"
-| "toString (Some a) = Auxiliary.concat [STR ''Some ('', toString a, STR '')'']"
+| "toString (Some a) = sum_list [STR ''Some ('', toString a, STR '')'']"
 instance proof qed
 end
 
 instantiation finfun :: ("{toString, card_UNIV, equal, linorder}", toString) toString begin
 definition [code]: 
   "toString (f :: 'a \<Rightarrow>f 'b) = 
-   Auxiliary.concat 
+   sum_list 
      (STR ''('' 
      # toString (finfun_default f) 
      # concat (map (\<lambda>x. [STR '','', toString x, STR ''|->'', toString (f $ x)]) (finfun_to_list f)) 
@@ -109,9 +109,9 @@ fun toString_val :: "('a :: toString) val \<Rightarrow> String.literal"
 where
   "toString Unit = STR ''Unit''"
 | "toString Null = STR ''Null''"
-| "toString (Bool b) = Auxiliary.concat [STR ''Bool '', toString b]"
-| "toString (Intg i) = Auxiliary.concat [STR ''Intg '', toString i]"
-| "toString (Addr a) = Auxiliary.concat [STR ''Addr '', toString a]"
+| "toString (Bool b) = sum_list [STR ''Bool '', toString b]"
+| "toString (Intg i) = sum_list [STR ''Intg '', toString i]"
+| "toString (Addr a) = sum_list [STR ''Addr '', toString a]"
 instance proof qed
 end
 
@@ -122,8 +122,8 @@ where
 | "toString Boolean = STR ''Boolean''"
 | "toString Integer = STR ''Integer''"
 | "toString NT = STR ''NT''"
-| "toString (Class C) = Auxiliary.concat [STR ''Class '', toString C]"
-| "toString (T\<lfloor>\<rceil>) = Auxiliary.concat [toString T, STR ''[]'']"
+| "toString (Class C) = sum_list [STR ''Class '', toString C]"
+| "toString (T\<lfloor>\<rceil>) = sum_list [toString T, STR ''[]'']"
 instance proof qed
 end
 
@@ -151,15 +151,15 @@ end
 
 instantiation addr_loc :: toString begin
 primrec toString_addr_loc :: "addr_loc \<Rightarrow> String.literal" where
-  "toString (CField C F) = Auxiliary.concat [STR ''CField '', F, STR ''{'', C, STR ''}'']"
-| "toString (ACell n) = Auxiliary.concat [STR ''ACell '', toString n]"
+  "toString (CField C F) = sum_list [STR ''CField '', F, STR ''{'', C, STR ''}'']"
+| "toString (ACell n) = sum_list [STR ''ACell '', toString n]"
 instance proof qed
 end
 
 instantiation htype :: toString begin
 fun toString_htype :: "htype \<Rightarrow> String.literal" where
   "toString (Class_type C) = C"
-| "toString (Array_type T n) = Auxiliary.concat [toString T, STR ''['', toString n, STR '']'']"
+| "toString (Array_type T n) = sum_list [toString T, STR ''['', toString n, STR '']'']"
 instance proof qed
 end
 
@@ -167,28 +167,28 @@ instantiation obs_event :: (toString, toString) toString begin
 primrec toString_obs_event :: "('a :: toString, 'b :: toString) obs_event \<Rightarrow> String.literal"
 where
   "toString (ExternalCall ad M vs v) = 
-   Auxiliary.concat [STR ''ExternalCall '', M, STR ''('', toString vs, STR '') = '', toString v]"
+   sum_list [STR ''ExternalCall '', M, STR ''('', toString vs, STR '') = '', toString v]"
 | "toString (ReadMem ad al v) =
-   Auxiliary.concat [STR ''ReadMem '', toString ad, STR ''@'', toString al, STR ''='', toString v]"
+   sum_list [STR ''ReadMem '', toString ad, STR ''@'', toString al, STR ''='', toString v]"
 | "toString (WriteMem ad al v) =
-   Auxiliary.concat [STR ''WriteMem '', toString ad, STR ''@'', toString al, STR ''='', toString v]"
-| "toString (NewHeapElem ad hT) = Auxiliary.concat [STR ''Allocate '', toString ad, STR '':'', toString hT]"
-| "toString (ThreadStart t) = Auxiliary.concat [STR ''ThreadStart '', toString t]"
-| "toString (ThreadJoin t) = Auxiliary.concat [STR ''ThreadJoin '', toString t]"
-| "toString (SyncLock ad) = Auxiliary.concat [STR ''SyncLock '', toString ad]"
-| "toString (SyncUnlock ad) = Auxiliary.concat [STR ''SyncUnlock '', toString ad]"
-| "toString (ObsInterrupt t) = Auxiliary.concat [STR ''Interrupt '', toString t]"
-| "toString (ObsInterrupted t) = Auxiliary.concat [STR ''Interrupted '', toString t]"
+   sum_list [STR ''WriteMem '', toString ad, STR ''@'', toString al, STR ''='', toString v]"
+| "toString (NewHeapElem ad hT) = sum_list [STR ''Allocate '', toString ad, STR '':'', toString hT]"
+| "toString (ThreadStart t) = sum_list [STR ''ThreadStart '', toString t]"
+| "toString (ThreadJoin t) = sum_list [STR ''ThreadJoin '', toString t]"
+| "toString (SyncLock ad) = sum_list [STR ''SyncLock '', toString ad]"
+| "toString (SyncUnlock ad) = sum_list [STR ''SyncUnlock '', toString ad]"
+| "toString (ObsInterrupt t) = sum_list [STR ''Interrupt '', toString t]"
+| "toString (ObsInterrupted t) = sum_list [STR ''Interrupted '', toString t]"
 instance proof qed
 end
 
 instantiation prod :: (toString, toString) toString begin
-definition "toString = (\<lambda>(a, b). Auxiliary.concat [STR ''('', toString a, STR '', '', toString b, STR '')''])"
+definition "toString = (\<lambda>(a, b). sum_list [STR ''('', toString a, STR '', '', toString b, STR '')''])"
 instance proof qed
 end
 
 instantiation fmod_ext :: (toString) toString begin
-definition "toString fd = Auxiliary.concat [STR ''{|volatile='', toString (volatile fd), STR '', '', toString (fmod.more fd), STR ''|}'']"
+definition "toString fd = sum_list [STR ''{|volatile='', toString (volatile fd), STR '', '', toString (fmod.more fd), STR ''|}'']"
 instance proof qed
 end
 
@@ -200,53 +200,53 @@ end
 instantiation exp :: (toString, toString, toString) toString begin
 fun toString_exp :: "('a :: toString, 'b :: toString, 'c :: toString) exp \<Rightarrow> String.literal"
 where
-  "toString (new C) = Auxiliary.concat [STR ''new '', C]"
-| "toString (newArray T e) = Auxiliary.concat [STR ''new '', toString T, STR ''['', toString e, STR '']'']"
-| "toString (Cast T e) = Auxiliary.concat [STR ''('', toString T, STR '') ('', toString e, STR '')'']"
-| "toString (InstanceOf e T) = Auxiliary.concat [STR ''('', toString e, STR '') instanceof '', toString T]"
-| "toString (Val v) = Auxiliary.concat [STR ''Val ('', toString v, STR '')'']"
-| "toString (e1 \<guillemotleft>bop\<guillemotright> e2) = Auxiliary.concat [STR ''('', toString e1, STR '') '', toString bop, STR '' ('', toString e2, STR '')'']"
-| "toString (Var V) = Auxiliary.concat [STR ''Var '', toString V]"
-| "toString (V := e) = Auxiliary.concat [toString V, STR '' := ('', toString e, STR '')'']"
-| "toString (AAcc a i) = Auxiliary.concat [STR ''('', toString a, STR '')['', toString i, STR '']'']"
-| "toString (AAss a i e) = Auxiliary.concat [STR ''('', toString a, STR '')['', toString i, STR ''] := ('', toString e, STR '')'']"
-| "toString (ALen a) = Auxiliary.concat [STR ''('', toString a, STR '').length'']"
-| "toString (FAcc e F D) = Auxiliary.concat [STR ''('', toString e, STR '').'', F, STR ''{'', D, STR ''}'']"
-| "toString (FAss e F D e') = Auxiliary.concat [STR ''('', toString e, STR '').'', F, STR ''{'', D, STR ''} := ('', toString e', STR '')'']"
-| "toString (Call e M es) = Auxiliary.concat ([STR ''('', toString e, STR '').'', M, STR ''(''] @ map toString es @ [STR '')''])"
-| "toString (Block V T vo e) = Auxiliary.concat ([STR ''{'', toString V, STR '':'', toString T] @ (case vo of None \<Rightarrow> [] | Some v \<Rightarrow> [STR ''='', toString v]) @ [STR ''; '', toString e, STR ''}''])"
-| "toString (Synchronized V e e') = Auxiliary.concat [STR ''synchronized_'', toString V, STR ''_('', toString e, STR '') {'', toString e', STR ''}'']"
-| "toString (InSynchronized V ad e) = Auxiliary.concat [STR ''insynchronized_'', toString V, STR ''_('', toString ad, STR '') {'', toString e, STR ''}'']"
-| "toString (e;;e') = Auxiliary.concat [toString e, STR ''; '', toString e']"
-| "toString (if (e) e' else e'') = Auxiliary.concat [STR ''if ('', toString e, STR '') { '', toString e', STR '' } else { '', toString e'', STR ''}'']"
-| "toString (while (e) e') = Auxiliary.concat [STR ''while ('', toString e, STR '') { '', toString e', STR '' }'']"
-| "toString (throw e) = Auxiliary.concat [STR ''throw ('', toString e, STR '')'']"
-| "toString (try e catch(C V) e') = Auxiliary.concat [STR ''try { '', toString e, STR '' } catch ('', C, STR '' '', toString V, STR '') { '', toString e', STR '' }'']"
+  "toString (new C) = sum_list [STR ''new '', C]"
+| "toString (newArray T e) = sum_list [STR ''new '', toString T, STR ''['', toString e, STR '']'']"
+| "toString (Cast T e) = sum_list [STR ''('', toString T, STR '') ('', toString e, STR '')'']"
+| "toString (InstanceOf e T) = sum_list [STR ''('', toString e, STR '') instanceof '', toString T]"
+| "toString (Val v) = sum_list [STR ''Val ('', toString v, STR '')'']"
+| "toString (e1 \<guillemotleft>bop\<guillemotright> e2) = sum_list [STR ''('', toString e1, STR '') '', toString bop, STR '' ('', toString e2, STR '')'']"
+| "toString (Var V) = sum_list [STR ''Var '', toString V]"
+| "toString (V := e) = sum_list [toString V, STR '' := ('', toString e, STR '')'']"
+| "toString (AAcc a i) = sum_list [STR ''('', toString a, STR '')['', toString i, STR '']'']"
+| "toString (AAss a i e) = sum_list [STR ''('', toString a, STR '')['', toString i, STR ''] := ('', toString e, STR '')'']"
+| "toString (ALen a) = sum_list [STR ''('', toString a, STR '').length'']"
+| "toString (FAcc e F D) = sum_list [STR ''('', toString e, STR '').'', F, STR ''{'', D, STR ''}'']"
+| "toString (FAss e F D e') = sum_list [STR ''('', toString e, STR '').'', F, STR ''{'', D, STR ''} := ('', toString e', STR '')'']"
+| "toString (Call e M es) = sum_list ([STR ''('', toString e, STR '').'', M, STR ''(''] @ map toString es @ [STR '')''])"
+| "toString (Block V T vo e) = sum_list ([STR ''{'', toString V, STR '':'', toString T] @ (case vo of None \<Rightarrow> [] | Some v \<Rightarrow> [STR ''='', toString v]) @ [STR ''; '', toString e, STR ''}''])"
+| "toString (Synchronized V e e') = sum_list [STR ''synchronized_'', toString V, STR ''_('', toString e, STR '') {'', toString e', STR ''}'']"
+| "toString (InSynchronized V ad e) = sum_list [STR ''insynchronized_'', toString V, STR ''_('', toString ad, STR '') {'', toString e, STR ''}'']"
+| "toString (e;;e') = sum_list [toString e, STR ''; '', toString e']"
+| "toString (if (e) e' else e'') = sum_list [STR ''if ('', toString e, STR '') { '', toString e', STR '' } else { '', toString e'', STR ''}'']"
+| "toString (while (e) e') = sum_list [STR ''while ('', toString e, STR '') { '', toString e', STR '' }'']"
+| "toString (throw e) = sum_list [STR ''throw ('', toString e, STR '')'']"
+| "toString (try e catch(C V) e') = sum_list [STR ''try { '', toString e, STR '' } catch ('', C, STR '' '', toString V, STR '') { '', toString e', STR '' }'']"
 instance proof qed
 end
 
 instantiation instr :: (toString) toString begin
 primrec toString_instr :: "'a instr \<Rightarrow> String.literal" where
-  "toString (Load i) = Auxiliary.concat [STR ''Load ('', toString i, STR '')'']"
-| "toString (Store i) = Auxiliary.concat [STR ''Store ('', toString i, STR '')'']"
-| "toString (Push v) = Auxiliary.concat [STR ''Push ('', toString v, STR '')'']"
-| "toString (New C) = Auxiliary.concat [STR ''New '', toString C]"
-| "toString (NewArray T) = Auxiliary.concat [STR ''NewArray '', toString T]"
+  "toString (Load i) = sum_list [STR ''Load ('', toString i, STR '')'']"
+| "toString (Store i) = sum_list [STR ''Store ('', toString i, STR '')'']"
+| "toString (Push v) = sum_list [STR ''Push ('', toString v, STR '')'']"
+| "toString (New C) = sum_list [STR ''New '', toString C]"
+| "toString (NewArray T) = sum_list [STR ''NewArray '', toString T]"
 | "toString ALoad = STR ''ALoad''"
 | "toString AStore = STR ''AStore''"
 | "toString ALength = STR ''ALength''"
-| "toString (Getfield F D) = Auxiliary.concat [STR ''Getfield  '', toString F, STR '' '', toString D]"
-| "toString (Putfield F D) = Auxiliary.concat [STR ''Putfield  '', toString F, STR '' '', toString D]"
-| "toString (Checkcast T) = Auxiliary.concat [STR ''Checkcast '', toString T]"
-| "toString (Instanceof T) = Auxiliary.concat [STR ''Instanceof '', toString T]"
-| "toString (Invoke M n) =  Auxiliary.concat [STR ''Invoke '', toString M, STR '' '', toString n]"
+| "toString (Getfield F D) = sum_list [STR ''Getfield  '', toString F, STR '' '', toString D]"
+| "toString (Putfield F D) = sum_list [STR ''Putfield  '', toString F, STR '' '', toString D]"
+| "toString (Checkcast T) = sum_list [STR ''Checkcast '', toString T]"
+| "toString (Instanceof T) = sum_list [STR ''Instanceof '', toString T]"
+| "toString (Invoke M n) =  sum_list [STR ''Invoke '', toString M, STR '' '', toString n]"
 | "toString Return = STR ''Return''"
 | "toString Pop = STR ''Pop''"
 | "toString Dup = STR ''Dup''"
 | "toString Swap = STR ''Swap''"
-| "toString (BinOpInstr bop) = Auxiliary.concat [STR ''BinOpInstr  '', toString bop]"
-| "toString (Goto i) = Auxiliary.concat [STR ''Goto '', toString i]"
-| "toString (IfFalse i) = Auxiliary.concat [STR ''IfFalse '', toString i]"
+| "toString (BinOpInstr bop) = sum_list [STR ''BinOpInstr  '', toString bop]"
+| "toString (Goto i) = sum_list [STR ''Goto '', toString i]"
+| "toString (IfFalse i) = sum_list [STR ''IfFalse '', toString i]"
 | "toString ThrowExc = STR ''ThrowExc''"
 | "toString MEnter = STR ''monitorenter''"
 | "toString MExit = STR ''monitorexit''"
@@ -261,7 +261,7 @@ end
 instantiation rbt :: ("{toString,linorder}", toString) toString begin
 definition [code]: 
   "toString (t :: ('a, 'b) rbt) = 
-   Auxiliary.concat (list_toString (STR [CHR 0x2C, CHR 0x0A]) (rm_to_list t))"
+   sum_list (list_toString (STR [CHR 0x2C, CHR 0x0A]) (rm_to_list t))"
 instance proof qed
 end
 
