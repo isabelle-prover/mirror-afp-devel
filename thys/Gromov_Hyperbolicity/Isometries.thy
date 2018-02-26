@@ -7,341 +7,6 @@ theory Isometries
   imports Library_Complements Hausdorff_Distance
 begin
 
-section \<open>Lipschitz maps\<close>
-
-definition lipschitz_on::"real \<Rightarrow>'a set \<Rightarrow> ('a::metric_space \<Rightarrow> 'b::metric_space) \<Rightarrow> bool"
-  where "lipschitz_on C U f = ((\<forall>x \<in> U. \<forall>y \<in> U. dist (f x) (f y) \<le> C * dist x y) \<and> C \<ge> 0)"
-
-named_theorems lipschitz_intros "structural introduction rules for Lipschitz controls"
-
-lemma lipschitz_onD:
-  assumes "lipschitz_on C U f"
-  shows "\<And>x y. x \<in> U \<Longrightarrow> y \<in> U \<Longrightarrow> dist (f x) (f y) \<le> C * dist x y"
-        "C \<ge> 0"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_onI:
-  assumes "\<And>x y. x \<in> U \<Longrightarrow> y \<in> U \<Longrightarrow> dist (f x) (f y) \<le> C * dist x y"
-          "C \<ge> 0"
-  shows "lipschitz_on C U f"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_on_uniformly_continuous:
-  assumes "lipschitz_on C U f"
-  shows "uniformly_continuous_on U f"
-proof (cases "C > 0")
-  case False
-  then have "f x = f y" if "x \<in> U" "y \<in> U" for x y using lipschitz_onD(1)[OF assms that]
-    by (metis (no_types, hide_lams) dist_not_less_zero dual_order.trans less_eq_real_def
-        zero_le_dist zero_less_dist_iff zero_less_mult_iff)
-  then show ?thesis
-    by (metis dist_eq_0_iff uniformly_continuous_on_def)
-next
-  case True
-  then have "dist (f x) (f y) < e" if "dist x y < e/C" "x \<in> U" "y \<in> U" "e>0" for e x y
-    using lipschitz_onD(1)[OF assms \<open>x \<in> U\<close> \<open>y \<in> U\<close>] that by (metis le_less_trans mult.commute pos_less_divide_eq)
-  then show ?thesis unfolding uniformly_continuous_on_def using \<open>C > 0\<close> by (meson divide_pos_pos)
-qed
-
-lemma lipschitz_on_continuous:
-  assumes "lipschitz_on C U f"
-  shows "continuous_on U f"
-by (rule uniformly_continuous_imp_continuous[OF lipschitz_on_uniformly_continuous[OF assms]])
-
-lemma lipschitz_on_compose [lipschitz_intros]:
-  assumes "lipschitz_on C U f"
-          "lipschitz_on D (f`U) g"
-  shows "lipschitz_on (D * C) U (g o f)"
-proof (rule lipschitz_onI)
-  show "D* C \<ge> 0" using lipschitz_onD[OF assms(1)] lipschitz_onD[OF assms(2)] by auto
-  fix x y assume H: "x \<in> U" "y \<in> U"
-  have "dist (g (f x)) (g (f y)) \<le> D * dist (f x) (f y)"
-    apply (rule lipschitz_onD(1)[OF assms(2)]) using H by auto
-  also have "... \<le> D * C * dist x y"
-    using mult_left_mono[OF lipschitz_onD(1)[OF assms(1) H] lipschitz_onD(2)[OF assms(2)]] by auto
-  finally show "dist ((g \<circ> f) x) ((g \<circ> f) y) \<le> D * C* dist x y"
-    unfolding comp_def by (auto simp add: mult.commute)
-qed
-
-lemma lipschitz_on_compose2:
-  assumes "lipschitz_on C U f"
-          "lipschitz_on D (f`U) g"
-  shows "lipschitz_on (D * C) U (\<lambda>x. g (f x))"
-using assms lipschitz_on_compose unfolding comp_def by force
-
-lemma lipschitz_on_cong:
-  assumes "lipschitz_on C U f"
-          "\<And>x. x \<in> U \<Longrightarrow> g x = f x"
-  shows "lipschitz_on C U g"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_on_mono:
-  assumes "lipschitz_on C U f"
-          "D \<ge> C"
-  shows "lipschitz_on D U f"
-using assms unfolding lipschitz_on_def by (auto, meson mult_right_mono order_trans zero_le_dist)
-
-lemma lipschitz_on_subset:
-  assumes "lipschitz_on C U f"
-          "V \<subseteq> U"
-  shows "lipschitz_on C V f"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_on_singleton [lipschitz_intros]:
-  assumes "C \<ge> 0"
-  shows "lipschitz_on C {x} f"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_on_empty [lipschitz_intros]:
-  assumes "C \<ge> 0"
-  shows "lipschitz_on C {} f"
-using assms unfolding lipschitz_on_def by auto
-
-lemma lipschitz_id [lipschitz_intros]:
-  "lipschitz_on 1 U (\<lambda>x. x)"
-unfolding lipschitz_on_def by auto
-
-lemma lipschitz_constant [lipschitz_intros]:
-  "lipschitz_on 0 U (\<lambda>x. a)"
-unfolding lipschitz_on_def by auto
-
-lemma lipschitz_on_add [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow>'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-          "lipschitz_on D U g"
-  shows "lipschitz_on (C+D) U (\<lambda>x. f x + g x)"
-proof (rule lipschitz_onI)
-  show "C + D \<ge> 0"
-    using lipschitz_onD(2)[OF assms(1)] lipschitz_onD(2)[OF assms(2)] by auto
-  fix x y assume H: "x \<in> U" "y \<in> U"
-  have "dist (f x + g x) (f y + g y) \<le> dist (f x) (f y) + dist (g x) (g y)"
-    by (simp add: dist_triangle_add)
-  also have "... \<le> C * dist x y + D * dist x y"
-    using lipschitz_onD(1)[OF assms(1) H] lipschitz_onD(1)[OF assms(2) H] by auto
-  finally show "dist (f x + g x) (f y + g y) \<le> (C+D) * dist x y" by (auto simp add: algebra_simps)
-qed
-
-lemma lipschitz_on_cmult [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> 'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-  shows "lipschitz_on (abs(a) * C) U (\<lambda>x. a *\<^sub>R f x)"
-proof (rule lipschitz_onI)
-  show "abs(a) * C \<ge> 0" using lipschitz_onD(2)[OF assms(1)] by auto
-  fix x y assume H: "x \<in> U" "y \<in> U"
-  have "dist (a *\<^sub>R f x) (a *\<^sub>R f y) = abs(a) * dist (f x) (f y)"
-    by (metis dist_norm norm_scaleR real_vector.scale_right_diff_distrib)
-  also have "... \<le> abs(a) * C * dist x y"
-    using lipschitz_onD(1)[OF assms(1) H] by (simp add: Groups.mult_ac(1) mult_left_mono)
-  finally show "dist (a *\<^sub>R f x) (a *\<^sub>R f y) \<le> \<bar>a\<bar> * C * dist x y" by auto
-qed
-
-lemma lipschitz_on_cmult_real [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> real"
-  assumes "lipschitz_on C U f"
-  shows "lipschitz_on (abs(a) * C) U (\<lambda>x. a * f x)"
-using lipschitz_on_cmult[OF assms] by auto
-
-lemma lipschitz_on_cmult_nonneg [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> 'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-          "a \<ge> 0"
-  shows "lipschitz_on (a * C) U (\<lambda>x. a *\<^sub>R f x)"
-  using lipschitz_on_cmult[OF assms(1), of a] assms(2) by auto
-
-lemma lipschitz_on_cmult_real_nonneg [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> real"
-  assumes "lipschitz_on C U f"
-          "a \<ge> 0"
-  shows "lipschitz_on (a * C) U (\<lambda>x. a * f x)"
-using lipschitz_on_cmult_nonneg[OF assms] by auto
-
-lemma lipschitz_on_cmult_upper [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> 'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-          "abs(a) \<le> D"
-  shows "lipschitz_on (D * C) U (\<lambda>x. a *\<^sub>R f x)"
-apply (rule lipschitz_on_mono[OF lipschitz_on_cmult[OF assms(1), of a], of "D * C"])
-using assms(2) lipschitz_onD(2)[OF assms(1)] mult_right_mono by auto
-
-lemma lipschitz_on_cmult_real_upper [lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow> real"
-  assumes "lipschitz_on C U f"
-          "abs(a) \<le> D"
-        shows "lipschitz_on (D * C) U (\<lambda>x. a * f x)"
-using lipschitz_on_cmult_upper[OF assms] by auto
-
-lemma lipschitz_on_minus[lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow>'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-  shows "lipschitz_on C U (\<lambda>x. - f x)"
-by (metis (no_types, lifting) assms diff_0 dist_minus lipschitz_on_def)
-
-lemma lipschitz_on_diff[lipschitz_intros]:
-  fixes f::"'a::metric_space \<Rightarrow>'b::real_normed_vector"
-  assumes "lipschitz_on C U f"
-          "lipschitz_on D U g"
-  shows "lipschitz_on (C+D) U (\<lambda>x. f x - g x)"
-using lipschitz_on_add[OF assms(1) lipschitz_on_minus[OF assms(2)]] by auto
-
-lemma lipschitz_on_closure [lipschitz_intros]:
-  assumes "lipschitz_on C U f"
-          "continuous_on (closure U) f"
-  shows "lipschitz_on C (closure U) f"
-proof (rule lipschitz_onI)
-  show "C \<ge> 0" using lipschitz_onD(2)[OF assms(1)] by simp
-  fix x y assume "x \<in> closure U" "y \<in> closure U"
-  obtain u v::"nat \<Rightarrow> 'a" where *: "\<And>n. u n \<in> U" "u \<longlonglongrightarrow> x"
-                                   "\<And>n. v n \<in> U" "v \<longlonglongrightarrow> y"
-    using \<open>x \<in> closure U\<close> \<open>y \<in> closure U\<close> unfolding closure_sequential by blast
-  have a: "(\<lambda>n. f (u n)) \<longlonglongrightarrow> f x"
-    using *(1) *(2) \<open>x \<in> closure U\<close> \<open>continuous_on (closure U) f\<close>
-    unfolding comp_def continuous_on_closure_sequentially[of U f] by auto
-  have b: "(\<lambda>n. f (v n)) \<longlonglongrightarrow> f y"
-    using *(3) *(4) \<open>y \<in> closure U\<close> \<open>continuous_on (closure U) f\<close>
-    unfolding comp_def continuous_on_closure_sequentially[of U f] by auto
-  have l: "(\<lambda>n. C * dist (u n) (v n) - dist (f (u n)) (f (v n))) \<longlonglongrightarrow> C * dist x y - dist (f x) (f y)"
-    by (intro tendsto_intros * a b)
-  have "C * dist (u n) (v n) - dist (f (u n)) (f (v n)) \<ge> 0" for n
-    using lipschitz_onD(1)[OF assms(1) \<open>u n \<in> U\<close> \<open>v n \<in> U\<close>] by simp
-  then have "C * dist x y - dist (f x) (f y) \<ge> 0" using LIMSEQ_le_const[OF l, of 0] by auto
-  then show "dist (f x) (f y) \<le> C * dist x y" by auto
-qed
-
-lemma lipschitz_extend_closure:
-  fixes f::"('a::metric_space) \<Rightarrow> ('b::complete_space)"
-  assumes "lipschitz_on C U f"
-  shows "\<exists>g. lipschitz_on C (closure U) g \<and> (\<forall>x\<in>U. g x = f x)"
-proof -
-  obtain g where g: "\<And>x. x \<in> U \<Longrightarrow> g x = f x" "uniformly_continuous_on (closure U) g"
-    using uniformly_continuous_on_extension_on_closure[OF lipschitz_on_uniformly_continuous[OF assms]] by metis
-  have "lipschitz_on C (closure U) g"
-    apply (rule lipschitz_on_closure, rule lipschitz_on_cong[OF assms])
-    using g uniformly_continuous_imp_continuous[OF g(2)] by auto
-  then show ?thesis using g(1) by auto
-qed
-
-text \<open>Given a function defined on a real interval, it is Lipschitz-continuous if and only if
-it is locally so, as proved in the following lemmas. It is useful especially for
-piecewise-defined functions: if each piece is Lipschitz, then so is the whole function.
-The same goes for functions defined on geodesic spaces, or more generally on geodesic subsets
-in a metric space (for instance convex subsets in a real vector space), and this follows readily
-from the real case, but we will not prove it explicitly.
-
-We give several variations around this statement. This is essentially a connectedness argument.\<close>
-
-lemma locally_lipschitz_imp_lispchitz_aux:
-  fixes f::"real \<Rightarrow> ('a::metric_space)"
-  assumes "a \<le> b"
-          "continuous_on {a..b} f"
-          "\<And>x. x \<in> {a..<b} \<Longrightarrow> \<exists>y \<in> {x<..b}. dist (f y) (f x) \<le> M * (y-x)"
-  shows "dist (f b) (f a) \<le> M * (b-a)"
-proof -
-  define A where "A = {x \<in> {a..b}. dist (f x) (f a) \<le> M * (x-a)}"
-  have *: "A = (\<lambda>x. M * (x-a) - dist (f x) (f a))-`{0..} \<inter> {a..b}"
-    unfolding A_def by auto
-  have "a \<in> A" unfolding A_def using \<open>a \<le> b\<close> by auto
-  then have "A \<noteq> {}" by auto
-  moreover have "bdd_above A" unfolding A_def by auto
-  moreover have "closed A" unfolding * by (rule closed_vimage_Int, auto intro!: continuous_intros assms)
-  ultimately have "Sup A \<in> A" by (rule closed_contains_Sup)
-  have "Sup A = b"
-  proof (rule ccontr)
-    assume "Sup A \<noteq> b"
-    define x where "x = Sup A"
-    have I: "dist (f x) (f a) \<le> M * (x-a)" using \<open>Sup A \<in> A\<close> x_def A_def by auto
-    have "x \<in> {a..<b}" unfolding x_def using \<open>Sup A \<in> A\<close> \<open>Sup A \<noteq> b\<close> A_def by auto
-    then obtain y where J: "y \<in> {x<..b}" "dist (f y) (f x) \<le> M * (y-x)" using assms(3) by blast
-    have "dist (f y) (f a) \<le> dist (f y) (f x) + dist (f x) (f a)" by (rule dist_triangle)
-    also have "... \<le> M * (y-x) + M * (x-a)" using I J(2) by auto
-    finally have "dist (f y) (f a) \<le> M * (y-a)" by (auto simp add: algebra_simps)
-    then have "y \<in> A" unfolding A_def using \<open>y \<in> {x<..b}\<close> \<open>x \<in> {a..<b}\<close> by auto
-    then have "y \<le> Sup A" by (rule cSup_upper, auto simp: A_def)
-    then show False using \<open>y \<in> {x<..b}\<close> x_def by auto
-  qed
-  then show ?thesis using \<open>Sup A \<in> A\<close> A_def by auto
-qed
-
-lemma locally_lipschitz_imp_lipschitz:
-  fixes f::"real \<Rightarrow> ('a::metric_space)"
-  assumes "continuous_on {a..b} f"
-          "\<And>x y. x \<in> {a..<b} \<Longrightarrow> y > x \<Longrightarrow> \<exists>z \<in> {x<..y}. dist (f z) (f x) \<le> M * (z-x)"
-          "M \<ge> 0"
-  shows "lipschitz_on M {a..b} f"
-proof (rule lipschitz_onI[OF _ \<open>M \<ge> 0\<close>])
-  have *: "dist (f t) (f s) \<le> M * (t-s)" if "s \<le> t" "s \<in> {a..b}" "t \<in> {a..b}" for s t
-  proof (rule locally_lipschitz_imp_lispchitz_aux, simp add: \<open>s \<le> t\<close>)
-    show "continuous_on {s..t} f" using continuous_on_subset[OF assms(1)] that by auto
-    fix x assume "x \<in> {s..<t}"
-    then have "x \<in> {a..<b}" using that by auto
-    show "\<exists>z\<in>{x<..t}. dist (f z) (f x) \<le> M * (z - x)"
-      using assms(2)[OF \<open>x \<in> {a..<b}\<close>, of t] \<open>x \<in> {s..<t}\<close> by auto
-  qed
-  fix x y assume "x \<in> {a..b}" "y \<in> {a..b}"
-  consider "x \<le> y" | "y \<le> x" by linarith
-  then show "dist (f x) (f y) \<le> M * dist x y"
-    apply (cases)
-    using *[OF _ \<open>x \<in> {a..b}\<close> \<open>y \<in> {a..b}\<close>] *[OF _ \<open>y \<in> {a..b}\<close> \<open>x \<in> {a..b}\<close>]
-    by (auto simp add: dist_commute dist_real_def)
-qed
-
-text \<open>We deduce that if a function is Lipschitz on finitely many closed sets on the real line, then
-it is Lipschitz on any interval contained in their union. The difficulty in the proof is to show
-that any point $z$ in this interval (except the maximum) has a point arbitrarily close to it on its
-right which is contained in a common initial closed set. Otherwise, we show that there is a small
-interval $(z, T)$ which does not intersect any of the initial closed sets, a contradiction.\<close>
-
-proposition lipschitz_on_closed_Union:
-  assumes "\<And>i. i \<in> I \<Longrightarrow> lipschitz_on M (U i) f"
-          "\<And>i. i \<in> I \<Longrightarrow> closed (U i)"
-          "finite I"
-          "M \<ge> 0"
-          "{u..(v::real)} \<subseteq> (\<Union>i\<in>I. U i)"
-  shows "lipschitz_on M {u..v} f"
-proof (rule locally_lipschitz_imp_lipschitz[OF _ _ \<open>M \<ge> 0\<close>])
-  have *: "continuous_on (U i) f" if "i \<in> I" for i
-    by (rule lipschitz_on_continuous[OF assms(1)[OF \<open>i\<in> I\<close>]])
-  have "continuous_on (\<Union>i\<in>I. U i) f"
-    apply (rule continuous_on_closed_Union) using \<open>finite I\<close> * assms(2) by auto
-  then show "continuous_on {u..v} f"
-    using \<open>{u..(v::real)} \<subseteq> (\<Union>i\<in>I. U i)\<close> continuous_on_subset by auto
-
-  fix z Z assume z: "z \<in> {u..<v}" "z < Z"
-  then have "u \<le> v" by auto
-  define T where "T = min Z v"
-  then have T: "T > z" "T \<le> v" "T \<ge> u" "T \<le> Z" using z by auto
-  define A where "A = (\<Union>i\<in> I \<inter> {i. U i \<inter> {z<..T} \<noteq> {}}. U i \<inter> {z..T})"
-  have a: "closed A"
-    unfolding A_def apply (rule closed_UN) using \<open>finite I\<close> \<open>\<And>i. i \<in> I \<Longrightarrow> closed (U i)\<close> by auto
-  have b: "bdd_below A" unfolding A_def using \<open>finite I\<close> by auto
-  have "\<exists>i \<in> I. T \<in> U i" using \<open>{u..v} \<subseteq> (\<Union>i\<in>I. U i)\<close> T by auto
-  then have c: "T \<in> A" unfolding A_def using T by (auto, fastforce)
-  have "Inf A \<ge> z"
-    apply (rule cInf_greatest, auto) using c unfolding A_def by auto
-  moreover have "Inf A \<le> z"
-  proof (rule ccontr)
-    assume "\<not>(Inf A \<le> z)"
-    then obtain w where w: "w > z" "w < Inf A" by (meson dense not_le_imp_less)
-    have "Inf A \<le> T" using a b c by (simp add: cInf_lower)
-    then have "w \<le> T" using w by auto
-    then have "w \<in> {u..v}" using w \<open>z \<in> {u..<v}\<close> T by auto
-    then obtain j where j: "j \<in> I" "w \<in> U j" using \<open>{u..v} \<subseteq> (\<Union>i\<in>I. U i)\<close> by fastforce
-    then have "w \<in> U j \<inter> {z..T}" "U j \<inter> {z<..T} \<noteq> {}" using j T w \<open>w \<le> T\<close> by auto
-    then have "w \<in> A" unfolding A_def using \<open>j \<in> I\<close> by auto
-    then have "Inf A \<le> w" using a b by (simp add: cInf_lower)
-    then show False using w by auto
-  qed
-  ultimately have "Inf A = z" by simp
-  moreover have "Inf A \<in> A"
-    apply (rule closed_contains_Inf) using a b c by auto
-  ultimately have "z \<in> A" by simp
-  then obtain i where i: "i \<in> I" "U i \<inter> {z<..T} \<noteq> {}" "z \<in> U i" unfolding A_def by auto
-  then obtain t where "t \<in> U i \<inter> {z<..T}" by blast
-  then have "dist (f t) (f z) \<le> M * (t - z)"
-    using lipschitz_onD(1)[OF assms(1)[of i], of t z] i dist_real_def by auto
-  then show "\<exists>t\<in>{z<..Z}. dist (f t) (f z) \<le> M * (t - z)" using \<open>T \<le> Z\<close> \<open>t \<in> U i \<inter> {z<..T}\<close> by auto
-qed
-
-
 section \<open>Isometries\<close>
 
 text \<open>Isometries, i.e., functions that preserve distances, show up very often in mathematics.
@@ -378,7 +43,7 @@ lemma
 proof -
   show "lipschitz_on 1 X f" apply (rule lipschitz_onI) using isometry_onD[OF assms] by auto
   then show "uniformly_continuous_on X f" "continuous_on X f"
-    using lipschitz_on_uniformly_continuous lipschitz_on_continuous by auto
+    using lipschitz_on_uniformly_continuous lipschitz_on_continuous_on by auto
 qed
 
 lemma isometry_on_injective:
@@ -2750,7 +2415,7 @@ proof -
     then have a: "lipschitz_on (9 * lambda) {a..b} c"
       apply (rule lipschitz_on_mono) using quasi_isometry_onD[OF assms(1)] by auto
     then have b: "continuous_on {a..b} c"
-      using lipschitz_on_continuous by blast
+      using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
                 \<and> quasi_isometry_on lambda (10*C) {a..b} c
@@ -2765,7 +2430,7 @@ proof -
     have a: "lipschitz_on (9 * lambda) {a..b} c"
       unfolding * apply (rule lipschitz_intros) using quasi_isometry_onD[OF assms(1)] by auto
     then have b: "continuous_on {a..b} c"
-      using lipschitz_on_continuous by blast
+      using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
                 \<and> quasi_isometry_on lambda (10*C) {a..b} c
@@ -2866,7 +2531,7 @@ proof -
       qed
       then show ?thesis
         using *[OF \<open>u \<in> A -{b}\<close> \<open>v = next_in A u\<close>] unfolding v_def
-        by (auto, meson atLeastAtMost_iff lipschitz_on_cong)
+        by (auto intro: lipschitz_on_transform)
     qed
 
     text \<open>The Lipschitz continuity of $d$ now follows from its Lipschitz continuity on each
@@ -2875,7 +2540,7 @@ proof -
       apply (rule lipschitz_on_closed_Union[of "{{u..next_in A u} |u. u \<in> A - {b}}" _ "\<lambda>x. x"])
       using lip \<open>finite A\<close> C intervals_decomposition[OF A] by auto
     then have "continuous_on {a..b} d"
-      using lipschitz_on_continuous by auto
+      using lipschitz_on_continuous_on by auto
 
     text \<open>We can now show that $c$ and $d$ are pointwise close. This follows from the fact that they
     coincide on $A$ and are well controlled in between (for $c$, this is a consequence of the choice

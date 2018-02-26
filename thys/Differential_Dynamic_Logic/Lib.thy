@@ -437,9 +437,9 @@ proof -
   let ?t0.0 = 0
   let ?x0.0 = "\<chi> i::('sz::finite). x"
   interpret ll: ll_on_open "UNIV" "(\<lambda>t x. \<chi> i::('sz::finite). 0)" UNIV
-    apply unfold_locales
-        using gt_ex lipschitz_constI
-        by (force simp: interval_def continuous_on_def local_lipschitz_def)+
+    using gt_ex
+    by unfold_locales
+      (auto simp: interval_def continuous_on_def local_lipschitz_def intro!: lipschitz_intros)
   have foo1:"?t0.0 \<in> ?T" by auto
   have foo2:"?x0.0 \<in> ?X" by auto
   let ?v = "ll.flow  ?t0.0 ?x0.0"

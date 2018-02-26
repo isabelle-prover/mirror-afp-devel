@@ -156,14 +156,14 @@ lemma local_lipschitz_c1_euclideanI:
    apply (rule has_derivative_bounded_linear)
   by auto
 
-lemma lipschitz_congI:
-  assumes "lipschitz s' g' L'"
+lemma lipschitz_on_congI:
+  assumes "L'-lipschitz_on s' g'"
   assumes "s' = s"
   assumes "L' \<le> L"
   assumes "\<And>x y. x \<in> s \<Longrightarrow> g' x = g x"
-  shows "lipschitz s g L"
+  shows "L-lipschitz_on s g"
   using assms
-  by (auto simp: lipschitz_def intro!: order_trans[OF _ mult_right_mono[OF \<open>L' \<le> L\<close>]])
+  by (auto simp: lipschitz_on_def intro!: order_trans[OF _ mult_right_mono[OF \<open>L' \<le> L\<close>]])
 
 lemma local_lipschitz_congI:
   assumes "local_lipschitz s' t' g'"
@@ -184,7 +184,7 @@ proof -
       apply (auto intro!: exI[where x=L])
       apply (drule bspec)
       apply simp
-      apply (rule lipschitz_congI, assumption, rule refl, rule order_refl)
+      apply (rule lipschitz_on_congI, assumption, rule refl, rule order_refl)
       using assms
       apply (auto)
       done
@@ -2949,9 +2949,9 @@ proof (rule banach_fix)
     by (auto intro: has_derivative_within_subset)
   from bounded_derivative_imp_lipschitz[of S "poincare_map \<Sigma>" D B, OF this] \<open>convex S\<close> D c
     \<open>0 \<le> B\<close>
-  have "lipschitz S (poincare_map \<Sigma>) B" by auto
+  have "B-lipschitz_on S (poincare_map \<Sigma>)" by auto
   then show "\<forall>x\<in>S. \<forall>y\<in>S. dist (poincare_map \<Sigma> x) (poincare_map \<Sigma> y) \<le> B * dist x y"
-    by (auto simp: lipschitz_def)
+    by (auto simp: lipschitz_on_def)
 qed
 
 end

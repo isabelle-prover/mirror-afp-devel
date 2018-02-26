@@ -1797,7 +1797,7 @@ proof (rule completeI)
   fix u::"nat \<Rightarrow> 'a Gromov_completion" assume "\<forall>n. u n \<in> Gromov_boundary" "Cauchy u"
   then have u: "\<And>n. u n \<in> Gromov_boundary" by auto
   have *: "\<exists>x \<in> range to_Gromov_completion. dist (u n) x < 1/real(n+1)" for n
-    by (rule closureD, auto simp add: to_Gromov_completion_range_dense)
+    by (rule closure_approachableD, auto simp add: to_Gromov_completion_range_dense)
   have "\<exists>v. \<forall>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
     using of_nat_less_top apply (intro choice) using * by (auto simp add: dist_commute)
   then obtain v where v: "\<And>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
@@ -1886,7 +1886,7 @@ proof (rule completeI, auto)
       using \<open>Cauchy u0\<close> r(1) u_def by (simp add: Cauchy_subseq_Cauchy)
 
     have *: "\<exists>x \<in> range to_Gromov_completion. dist (u n) x < 1/real(n+1)" for n
-      by (rule closureD, auto simp add: to_Gromov_completion_range_dense)
+      by (rule closure_approachableD, auto simp add: to_Gromov_completion_range_dense)
     have "\<exists>v. \<forall>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
       using of_nat_less_top apply (intro choice) using * by (auto simp add: dist_commute)
     then obtain v where v: "\<And>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
@@ -2112,7 +2112,7 @@ proof -
     proof -
       obtain x1 where x1: "dist x x1 < e/2" "x1 \<in> range to_Gromov_completion"
         using to_Gromov_completion_range_dense \<open>e > 0\<close>
-        by (metis (no_types, hide_lams) UNIV_I closureD divide_pos_pos zero_less_numeral)
+        by (metis (no_types, hide_lams) UNIV_I closure_approachableD divide_pos_pos zero_less_numeral)
       then obtain z where z: "x1 = to_Gromov_completion z" by auto
       then obtain y where y: "y \<in> k" "dist (to_Gromov_completion y) (to_Gromov_completion z) \<le> e/2"
         using B by auto

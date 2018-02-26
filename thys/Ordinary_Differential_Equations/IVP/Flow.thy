@@ -112,7 +112,7 @@ lemma
     "0 < t" "0 < u"
     "cball t0 t \<subseteq> existence_ivl t0 x0"
     "cball x0 (2 * u) \<subseteq> X"
-    "\<And>t'. t' \<in> cball t0 t \<Longrightarrow> lipschitz (cball x0 (2 * u)) (f t') L"
+    "\<And>t'. t' \<in> cball t0 t \<Longrightarrow> L-lipschitz_on (cball x0 (2 * u)) (f t')"
     "\<And>x. x \<in> cball x0 u \<Longrightarrow> (flow t0 x usolves_ode f from t0) (cball t0 t) (cball x u)"
     "\<And>x. x \<in> cball x0 u \<Longrightarrow> cball x u \<subseteq> X"
 proof -
@@ -145,7 +145,7 @@ proof -
     by (force simp: et'_def dest!: double_nonneg_le)
   moreover
   from this have "cball t0 et' \<subseteq> T" using existence_ivl_subset[of x0] by simp
-  have  "cball x0 (2 * ex') \<subseteq> X" "\<And>t'. t' \<in> cball t0 et' \<Longrightarrow> lipschitz (cball x0 (2 * ex')) (f t') L"
+  have  "cball x0 (2 * ex') \<subseteq> X" "\<And>t'. t' \<in> cball t0 et' \<Longrightarrow> L-lipschitz_on (cball x0 (2 * ex')) (f t')"
     using cyl.lipschitz \<open>0 < et\<close> \<open>cball x0 ex \<subseteq> X\<close>
     by (auto simp: ex'_def et'_def intro!:)
   moreover
@@ -187,7 +187,7 @@ proof -
     interpret cyl': unique_on_cylinder t0 "cball t0 et'" x0' ex' "cball x0' ex'" f B L
       using cyl.lipschitz[simplified] subs subs1
       by (unfold_locales)
-         (auto simp: triangle intro!: half_intros lipschitz_subset[OF _ subs2])
+         (auto simp: triangle intro!: half_intros lipschitz_on_subset[OF _ subs2])
     from cyl'.solution_usolves_ode
     have "(flow t0 x0' usolves_ode f from t0) (cball t0 et') (cball x0' ex')"
       apply (rule usolves_ode_solves_odeI)
@@ -223,7 +223,7 @@ proof -
   have "{t0 -- t} \<subseteq> T"
     by (intro closed_segment_subset_domain iv_defined assms)
   from lipschitz_on_compact[OF compact_segment \<open>{t0 -- t} \<subseteq> T\<close> \<open>compact C\<close> \<open>C \<subseteq> X\<close>]
-  obtain L where L: "\<And>s. s \<in> {t0 -- t} \<Longrightarrow> lipschitz C (f s) L" by metis
+  obtain L where L: "\<And>s. s \<in> {t0 -- t} \<Longrightarrow> L-lipschitz_on C (f s)" by metis
   interpret uc: unique_on_closed t0 "{t0 -- t}" x0 f C L
     using assms closed_segment_iv_subset_domain
     by unfold_locales
@@ -454,7 +454,7 @@ lemma exponential_initial_condition:
   assumes "Y \<subseteq> X"
   assumes remain: "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> flow t0 y0 s \<in> Y"
     "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> flow t0 z0 s \<in> Y"
-  assumes lipschitz: "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> lipschitz Y (f s) K"
+  assumes lipschitz: "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> K-lipschitz_on Y (f s)"
   shows "norm (flow t0 y0 t - flow t0 z0 t) \<le> norm (y0 - z0) * exp ((K + 1) * abs (t - t0))"
 proof cases
   assume "y0 = z0"
@@ -463,9 +463,9 @@ proof cases
 next
   assume ne: "y0 \<noteq> z0"
   define K' where "K' \<equiv> K + 1"
-  from lipschitz have "lipschitz Y (f s) K'" if "s \<in> {t0 -- t}" for s
+  from lipschitz have "K'-lipschitz_on Y (f s)" if "s \<in> {t0 -- t}" for s
     using that
-    by (auto simp: lipschitz_def K'_def
+    by (auto simp: lipschitz_on_def K'_def
       intro!: order_trans[OF _ mult_right_mono[of K "K + 1"]])
 
   from mem_existence_ivl_iv_defined[OF y0] mem_existence_ivl_iv_defined[OF z0]
@@ -507,7 +507,7 @@ next
           intro!: norm_triangle_le ivl_integral_norm_bound_integral
             integrable_continuous_closed_segment continuous_intros
             continuous_at_imp_continuous_on flow_continuous f_flow_continuous
-            lipschitz_norm_leI[OF \<open>_ \<Longrightarrow> lipschitz _ _ K'\<close>] remain)
+            lipschitz_on_normD[OF \<open>_ \<Longrightarrow> K'-lipschitz_on _ _\<close>] remain)
   } note le = this
   have cont: "continuous_on {t0 -- t} v"
     using closed_segment_subset_existence_ivl[OF y0] closed_segment_subset_existence_ivl[OF z0] inX
@@ -520,7 +520,7 @@ next
   have lippos: "K' > 0"
   proof -
     have "0 \<le> dist (f t0 y0) (f t0 z0)" by simp
-    also from lipschitzD[OF lipschitz \<open>y0 \<in> Y\<close> \<open>z0 \<in> Y\<close>, of t0]ne
+    also from lipschitz_onD[OF lipschitz \<open>y0 \<in> Y\<close> \<open>z0 \<in> Y\<close>, of t0]ne
     have "\<dots> \<le> K * dist y0 z0"
       by simp
     finally have "0 \<le> K"
@@ -541,7 +541,7 @@ lemma
   where
     "\<And>y. y \<in> cball x0 u \<Longrightarrow> cball t0 t \<subseteq> existence_ivl t0 y"
     "\<And>s y. y \<in> cball x0 u \<Longrightarrow> s \<in> cball t0 t \<Longrightarrow> flow t0 y s \<in> cball y u"
-    "lipschitz (cball t0 t\<times>cball x0 u) (\<lambda>(t, x). flow t0 x t) L"
+    "L-lipschitz_on (cball t0 t\<times>cball x0 u) (\<lambda>(t, x). flow t0 x t)"
     "\<And>y. y \<in> cball x0 u \<Longrightarrow> cball y u \<subseteq> X"
     "0 < t" "0 < u"
 proof -
@@ -550,7 +550,7 @@ proof -
   obtain t u L where tu: "0 < t" "0 < u"
     and subsT: "cball t0 t \<subseteq> existence_ivl t0 x0"
     and subs': "cball x0 (2 * u) \<subseteq> X"
-    and lipschitz: "\<And>s. s \<in> cball t0 t \<Longrightarrow> lipschitz (cball x0 (2*u)) (f s) L"
+    and lipschitz: "\<And>s. s \<in> cball t0 t \<Longrightarrow> L-lipschitz_on (cball x0 (2*u)) (f s)"
     and usol: "\<And>y. y \<in> cball x0 u \<Longrightarrow> (flow t0 y usolves_ode f from t0) (cball t0 t) (cball y u)"
     and subs: "\<And>y. y \<in> cball x0 u \<Longrightarrow> cball y u \<subseteq> X"
     by metis
@@ -595,8 +595,8 @@ proof -
         simp: dist_commute)
     finally show ?thesis .
   qed
-  have "lipschitz (cball t0 t\<times>cball x0 u) (\<lambda>(t, x). flow t0 x t) (B + exp ((L + 1) * \<bar>t\<bar>))"
-  proof (rule lipschitzI, safe)
+  have "(B + exp ((L + 1) * \<bar>t\<bar>))-lipschitz_on (cball t0 t\<times>cball x0 u) (\<lambda>(t, x). flow t0 x t)"
+  proof (rule lipschitz_onI, safe)
     fix t1 t2 :: real and x1 x2
     assume t1: "t1 \<in> cball t0 t" and t2: "t2 \<in> cball t0 t"
       and x1: "x1 \<in> cball x0 u" and x2: "x2 \<in> cball x0 u"
@@ -617,14 +617,14 @@ proof -
         by (rule flow_in_cball[OF s x1])
       show "flow t0 x2 s \<in> cball x0 (2 * u)"
         by (rule flow_in_cball[OF s x2])
-      show "lipschitz (cball x0 (2 * u)) (f s) L" if "s \<in> closed_segment t0 t2" for s
+      show "L-lipschitz_on (cball x0 (2 * u)) (f s)" if "s \<in> closed_segment t0 t2" for s
         using that centre_in_cball convex_contains_segment less_imp_le t2 tu(1)
         by (blast intro!: lipschitz)
     qed (fact)+
     also have "\<dots> \<le> dist x1 x2 * exp ((L + 1) * \<bar>t\<bar>)"
       using \<open>u > 0\<close> t2
       by (auto
-        intro!: mult_left_mono add_nonneg_nonneg lipschitz[THEN lipschitz_nonneg]
+        intro!: mult_left_mono add_nonneg_nonneg lipschitz[THEN lipschitz_on_nonneg]
         simp: cball_eq_empty cball_eq_sing' dist_real_def)
     also
     have "x1 \<in> X"
@@ -899,17 +899,16 @@ proof -
       by blast
     done
   from lipschitz_on_compact[OF this \<open>compact A\<close> \<open>A \<subseteq> X\<close>]
-  obtain K' where "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> lipschitz A (f t) K'"
+  obtain K' where K': "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> K'-lipschitz_on A (f t)"
     by metis
-  hence K': "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> lipschitz A (f t) (abs K')"
-    by (rule nonneg_lipschitz)
-  define K where "K \<equiv> abs K' + 1"
+  define K where "K \<equiv> K' + 1"
   have "0 < K" "0 \<le> K"
+    using assms lipschitz_on_nonneg[OF K', of t0]
     by (auto simp: K_def)
-  have K: "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> lipschitz A (f t) K"
+  have K: "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> K-lipschitz_on A (f t)"
     unfolding K_def
-    using \<open>_ \<Longrightarrow> lipschitz A _ K'\<close>
-    by (rule pos_lipschitz)
+    using \<open>_ \<Longrightarrow> lipschitz_on K' A _\<close>
+    by (rule lipschitz_on_mono) auto
 
   have [simp]: "x0 \<in> A" using \<open>0 < e\<close> by (auto simp: A_def)
 
@@ -1061,14 +1060,14 @@ proof -
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
             iv_defined s t'(3,5) \<open>s \<le> b\<close>
           by (auto simp del: Henstock_Kurzweil_Integration.integral_mult_right intro!: integral_le integrable_continuous_real
-            continuous_at_imp_continuous_on lipschitz_norm_leI[OF K]
+            continuous_at_imp_continuous_on lipschitz_on_normD[OF K]
             flow_continuous f_flow_continuous continuous_intros
             simp: closed_segment_eq_real_ivl)
         also have "\<dots> = K * integral {t0 .. s} (\<lambda>t. norm (flow t0 y t - flow t0 x0 t))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
           by (subst integral_mult)
              (auto intro!: integrable_continuous_real continuous_at_imp_continuous_on
-               lipschitz_norm_leI[OF K] flow_continuous f_flow_continuous continuous_intros
+               lipschitz_on_normD[OF K] flow_continuous f_flow_continuous continuous_intros
                simp: closed_segment_eq_real_ivl)
         finally
         have norm: "norm (flow t0 y s - flow t0 x0 s) \<le>
@@ -1568,7 +1567,7 @@ locale two_ll_on_open =
   assumes t0_in_J: "0 \<in> J"
   assumes J_subset: "J \<subseteq> F.existence_ivl 0 x0"
   assumes J_ivl: "is_interval J"
-  assumes F_lipschitz: "\<And>t. t \<in> J \<Longrightarrow> lipschitz X (F t) K"
+  assumes F_lipschitz: "\<And>t. t \<in> J \<Longrightarrow> K-lipschitz_on X (F t)"
   assumes K_pos: "0 < K"
   assumes F_G_norm_ineq: "\<And>t x. t \<in> J \<Longrightarrow> x \<in> X \<Longrightarrow> norm (F t x - G t x) < e"
 begin
@@ -1657,10 +1656,10 @@ proof(safe)
       also have "... \<le> integral {0..s} (\<lambda>s. K * ?u s) + integral {0..s} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
         show "norm (F x (flow0 x) - F x (Y x)) \<le> K * norm (flow0 x - Y x)" if "x \<in> {0..s}" for x
-          using F_lipschitz[unfolded lipschitz_def, THEN conjunct2] that
+          using F_lipschitz[unfolded lipschitz_on_def, THEN conjunct2] that
             cont_statements(1,2,4)
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
-          by (metis F_lipschitz flow0_def Y_def \<open>{0..s} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
+          by (metis F_lipschitz flow0_def Y_def \<open>{0..s} \<subseteq> J\<close> lipschitz_on_normD F.flow_in_domain
             G.flow_in_domain subsetCE)
         show "\<And>x. x \<in> {0..s} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq cont_statements(2,3) t0_s_in_existence
@@ -1748,10 +1747,10 @@ proof(safe)
       also have "... \<le> integral {s..0} (\<lambda>s. K * ?u s) + integral {s..0} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
         show "norm (F x (flow0 x) - F x (Y x)) \<le> K * norm (flow0 x - Y x)" if "x\<in>{s..0}" for x
-          using F_lipschitz[unfolded lipschitz_def, THEN conjunct2]
+          using F_lipschitz[unfolded lipschitz_on_def, THEN conjunct2]
             cont_statements(1,2,4) that
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
-          by (metis F_lipschitz flow0_def Y_def \<open>{s..0} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
+          by (metis F_lipschitz flow0_def Y_def \<open>{s..0} \<subseteq> J\<close> lipschitz_on_normD F.flow_in_domain
             G.flow_in_domain subsetCE)
         show "\<And>x. x \<in> {s..0} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq Y_def \<open>{s..0} \<subseteq> J\<close> cont_statements(5) subset_iff t0_s_in_existence(2)
@@ -1875,7 +1874,7 @@ sublocale closed_domain X
   using compact_domain by unfold_locales (rule compact_imp_closed)
 
 sublocale global_lipschitz T X f onorm_bound
-proof (unfold_locales, rule lipschitzI)
+proof (unfold_locales, rule lipschitz_onI)
   fix t z y
   assume "t \<in> T" "y \<in> X" "z \<in> X"
   then have "norm (f t y - f t z) \<le> onorm_bound * norm (y - z)"
@@ -1953,10 +1952,10 @@ proof (standard, rule local_lipschitzI)
       (auto simp: convex_cball cball_eq_empty split_beta'
         intro!: derivative_eq_intros continuous_on_compose2[OF continuous_derivative]
           continuous_intros)
-  have "lipschitz ?X f onorm_bound"
+  have "onorm_bound-lipschitz_on ?X f"
     using lipschitz[of t] uv
     by auto
-  thus "\<exists>u>0. \<exists>L. \<forall>t \<in> cball t u \<inter> UNIV. lipschitz (cball x u \<inter> X) f L"
+  thus "\<exists>u>0. \<exists>L. \<forall>t \<in> cball t u \<inter> UNIV. L-lipschitz_on (cball x u \<inter> X) f"
     by (intro exI[where x=v])
       (auto intro!: exI[where x=onorm_bound] \<open>0 < v\<close> simp: Int_absorb2 uv)
 qed (auto intro!: continuous_intros)
@@ -2607,7 +2606,7 @@ qed
 
 lemma local_lipschitz_A:
   "OT \<subseteq> existence_ivl0 x0 \<Longrightarrow> local_lipschitz OT (OS::('a \<Rightarrow>\<^sub>L 'a) set) (\<lambda>t. (o\<^sub>L) (vareq x0 t))"
-  by (rule local_lipschitz_on_subset[OF _ _ subset_UNIV, where T="existence_ivl0 x0"])
+  by (rule local_lipschitz_subset[OF _ _ subset_UNIV, where T="existence_ivl0 x0"])
      (auto simp: split_beta' vareq_def
       intro!: c1_implies_local_lipschitz[where f'="\<lambda>(t, x). comp3 (f' (flow0 x0 t))"]
         derivative_eq_intros blinfun_eqI ext
@@ -2743,20 +2742,20 @@ proof (safe intro!: tendstoI)
 
   from mvar.local_lipschitz \<open>?T \<subseteq> _\<close>
   have llc: "local_lipschitz ?T ?X (\<lambda>t. (o\<^sub>L) (vareq x t))"
-    by (rule local_lipschitz_on_subset) auto
+    by (rule local_lipschitz_subset) auto
 
   have cont: "\<And>xa. xa \<in> ?X \<Longrightarrow> continuous_on ?T (\<lambda>t. vareq x t o\<^sub>L xa)"
     using \<open>?T \<subseteq> _\<close>
     by (auto intro!: continuous_intros \<open>x \<in> X\<close>)
 
-  from local_lipschitz_on_compact_implies_lipschitz[OF llc \<open>compact ?X\<close> \<open>compact ?T\<close> cont]
-  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X ((o\<^sub>L) (vareq x ta)) K'"
+  from local_lipschitz_compact_implies_lipschitz[OF llc \<open>compact ?X\<close> \<open>compact ?T\<close> cont]
+  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> K'-lipschitz_on ?X ((o\<^sub>L) (vareq x ta))"
     by blast
   define K where "K \<equiv> abs K' + 1"
   have "K > 0"
     by (simp add: K_def)
-  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X ((o\<^sub>L) (vareq x ta)) K"
-    by (auto intro!: lipschitzI mult_right_mono order_trans[OF lipschitzD[OF K']] simp: K_def)
+  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> K-lipschitz_on ?X ((o\<^sub>L) (vareq x ta))"
+    by (auto intro!: lipschitz_onI mult_right_mono order_trans[OF lipschitz_onD[OF K']] simp: K_def)
 
   have ex_ivlI: "\<And>y. y \<in> cball x dx \<Longrightarrow> ?T \<subseteq> existence_ivl0 y"
     using dx dt OXOT
@@ -2833,8 +2832,8 @@ proof (safe intro!: tendstoI)
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> by blast
         done
       fix s assume s: "s \<in> ?T"
-      then show "lipschitz ?X' ((o\<^sub>L) (vareq x s)) K"
-        by (intro lipschitz_subset[OF K \<open>?X' \<subseteq> ?X\<close>]) auto
+      then show "K-lipschitz_on ?X' ((o\<^sub>L) (vareq x s))"
+        by (intro lipschitz_on_subset[OF K \<open>?X' \<subseteq> ?X\<close>]) auto
       fix j assume j: "j \<in> ?X'"
       show "norm ((vareq x s o\<^sub>L j) - (vareq y s o\<^sub>L j)) < d"
         unfolding dist_norm[symmetric]

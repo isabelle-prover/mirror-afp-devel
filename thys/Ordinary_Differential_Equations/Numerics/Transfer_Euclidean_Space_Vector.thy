@@ -64,10 +64,10 @@ lemma uniformity_transfer[transfer_rule]:
   unfolding uniformity_dist
   by transfer_prover
 
-lemma lipschitz_transfer[transfer_rule]:
-  "((rel_set A) ===> (A ===> B) ===> (=) ===> (=)) lipschitz lipschitz"
+lemma lipschitz_on_transfer[transfer_rule]:
+  "((=) ===> (rel_set A) ===> (A ===> B) ===> (=)) lipschitz_on lipschitz_on"
   if [transfer_rule]: "(B ===> B ===> (=)) dist dist" "(A ===> A ===> (=)) dist dist"
-  unfolding lipschitz_def by transfer_prover
+  unfolding lipschitz_on_def by transfer_prover
 
 lemma cball_transfer[transfer_rule]:
   "(A ===> (=) ===> rel_set A) cball cball"

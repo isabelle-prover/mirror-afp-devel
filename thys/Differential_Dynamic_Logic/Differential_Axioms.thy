@@ -745,7 +745,7 @@ next
     apply(standard)
         apply(auto)
      unfolding local_lipschitz_def f0_def empty_def sterm_sem.simps apply(safe)
-     using gt_ex lipschitz_constI apply blast
+     using gt_ex lipschitz_on_constant apply blast
     by (simp add: continuous_on_const)
   have eq_UNIV:"ll.existence_ivl 0 (sol 0) = UNIV"
     apply(rule ll.existence_ivl_eq_domain)

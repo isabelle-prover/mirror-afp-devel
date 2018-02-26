@@ -437,10 +437,10 @@ lemma euler_float_increment:
 
 lemma euler_lipschitz:
   assumes t: "t \<in> {t0..T}"
-  assumes lipschitz: "\<forall>t\<in>{t0..T}. lipschitz D' (\<lambda>x. f t x) L"
-  shows "lipschitz D' (euler_increment f h t) L"
+  assumes lipschitz: "\<forall>t\<in>{t0..T}. L-lipschitz_on D' (\<lambda>x. f t x)"
+  shows "L-lipschitz_on D' (euler_increment f h t)"
   using t lipschitz
-  by (simp add: lipschitz_def euler_increment del: One_nat_def)
+  by (simp add: lipschitz_on_def euler_increment del: One_nat_def)
 
 lemma rk2_increment:
   shows "rk2_increment p f h t x =
@@ -970,8 +970,8 @@ qed
 sublocale g?: global_lipschitz _ _ _ B'
 proof
   fix t assume "t \<in> T"
-  show "lipschitz X (f t) B'"
-  proof (rule lipschitzI)
+  show "B'-lipschitz_on X (f t)"
+  proof (rule lipschitz_onI)
     show "0 \<le> B'" using f'_bound_nonneg .
     fix x y
     let ?I = "T \<times> X"
@@ -1117,7 +1117,7 @@ locale ivp_rectangle_bounded_derivative =
 
 sublocale ivp_rectangle_bounded_derivative \<subseteq> unique_on_cylinder t0 T x0 b X f B B'
   by unfold_locales (insert subset_cylinders positive_time,
-      auto intro!: lipschitz_subset[OF lipschitz] simp: mem_cball)
+      auto intro!: lipschitz_on_subset[OF lipschitz] simp: mem_cball)
 
 sublocale ivp_rectangle_bounded_derivative \<subseteq> euler_consistent T f X "cball x0 r" B f' B' solution t0 x0 "r - b" e
 proof -
@@ -1166,7 +1166,7 @@ sublocale euler_consistent \<subseteq>
 proof
   show "0 < (1::nat)" by simp
   show "0 \<le> euler_C(TYPE('a))" using euler_C_nonneg by simp
-  show "0 \<le> B'" using lipschitz_nonneg[OF lipschitz] iv_defined by simp
+  show "0 \<le> B'" using lipschitz_on_nonneg[OF lipschitz] iv_defined by simp
   fix s x assume s: "s \<in> {t0 .. t0 + e}"
   show "consistent solution s (t0 + e) (euler_C(TYPE('a))) 1 (euler_increment f)"
     using interval s f_bounded f'_bounded f'
@@ -1174,12 +1174,12 @@ proof
     by (intro euler_consistent_solution) auto
   fix h
   assume "h \<in> {0 .. t0 + e - s}"
-  have "lipschitz X' (euler_increment f h s) B'"
+  have "B'-lipschitz_on X' (euler_increment f h s)"
     using s lipschitz interval strip
     by (auto intro!: euler_lipschitz)
-  thus "lipschitz (cball (solution s) \<bar>r\<bar>) (euler_increment f h s) B'"
+  thus "B'-lipschitz_on (cball (solution s) \<bar>r\<bar>) (euler_increment f h s)"
     using s interval
-    by (auto intro: lipschitz_subset[OF _ lipschitz_area])
+    by (auto intro: lipschitz_on_subset[OF _ lipschitz_area])
 qed
 
 sublocale euler_convergent \<subseteq>

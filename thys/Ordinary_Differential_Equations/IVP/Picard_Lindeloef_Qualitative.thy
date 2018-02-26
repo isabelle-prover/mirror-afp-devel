@@ -188,26 +188,26 @@ lemma ll_on_open_rev[intro, simp]: "ll_on_open (preflect t0 ` T) (\<lambda>t. - 
   using local_lipschitz interval
   by unfold_locales
     (auto intro!: continuous_intros cont intro: local_lipschitz_compose1
-      simp: fun_Compl_def local_lipschitz_uminus local_lipschitz_on_subset open_neg_translation
+      simp: fun_Compl_def local_lipschitz_minus local_lipschitz_subset open_neg_translation
         image_image preflect_def)
 
 lemma eventually_lipschitz:
   assumes "t0 \<in> T" "x0 \<in> X" "c > 0"
   obtains L where
     "eventually (\<lambda>u. \<forall>t' \<in> cball t0 (c * u) \<inter> T.
-      lipschitz (cball x0 u \<inter> X) (\<lambda>y. f t' y) L) (at_right 0)"
+      L-lipschitz_on (cball x0 u \<inter> X) (\<lambda>y. f t' y)) (at_right 0)"
 proof -
   from local_lipschitzE[OF local_lipschitz, OF \<open>t0 \<in> T\<close> \<open>x0 \<in> X\<close>]
   obtain u L where
     "u > 0"
-    "\<And>t'. t' \<in> cball t0 u \<inter> T \<Longrightarrow> lipschitz (cball x0 u \<inter> X) (\<lambda>y. f t' y) L"
+    "\<And>t'. t' \<in> cball t0 u \<inter> T \<Longrightarrow> L-lipschitz_on (cball x0 u \<inter> X) (\<lambda>y. f t' y)"
     by auto
   hence "eventually (\<lambda>u. \<forall>t' \<in> cball t0 (c * u) \<inter> T.
-      lipschitz (cball x0 u \<inter> X) (\<lambda>y. f t' y) L) (at_right 0)"
+      L-lipschitz_on (cball x0 u \<inter> X) (\<lambda>y. f t' y)) (at_right 0)"
     using \<open>u > 0\<close> \<open>c > 0\<close>
-    by (auto simp: dist_real_def eventually_at divide_simps algebra_simps mem_cball
+    by (auto simp: dist_real_def eventually_at divide_simps algebra_simps
       intro!: exI[where x="min u (u / c)"]
-      intro: lipschitz_subset[where D="cball x0 u \<inter> X"])
+      intro: lipschitz_on_subset[where E="cball x0 u \<inter> X"])
   thus ?thesis ..
 qed
 
@@ -218,15 +218,15 @@ lemma
   lipschitz_on_compact:
   assumes "compact K" "K \<subseteq> T"
   assumes "compact Y" "Y \<subseteq> X"
-  obtains L where "\<And>t. t \<in> K \<Longrightarrow> lipschitz Y (f t) L"
+  obtains L where "\<And>t. t \<in> K \<Longrightarrow> L-lipschitz_on Y (f t)"
 proof -
   have cont: "\<And>x. x \<in> Y \<Longrightarrow> continuous_on K (\<lambda>t. f t x)"
     using \<open>Y \<subseteq> X\<close> \<open>K \<subseteq> T\<close>
     by (auto intro!: continuous_on_f continuous_intros)
   from local_lipschitz
   have "local_lipschitz K Y f"
-    by (rule local_lipschitz_on_subset[OF _ \<open>K \<subseteq> T\<close> \<open>Y \<subseteq> X\<close>])
-  from local_lipschitz_on_compact_implies_lipschitz[OF this \<open>compact Y\<close> \<open>compact K\<close> cont] that
+    by (rule local_lipschitz_subset[OF _ \<open>K \<subseteq> T\<close> \<open>Y \<subseteq> X\<close>])
+  from local_lipschitz_compact_implies_lipschitz[OF this \<open>compact Y\<close> \<open>compact K\<close> cont] that
   show ?thesis by metis
 qed
 
@@ -314,7 +314,7 @@ proof -
   moreover
 
   from eventually_lipschitz[OF iv_defined t_pos] obtain L where
-    "\<forall>\<^sub>F u in at_right 0. \<forall>t'\<in>cball t0 (t * u) \<inter> T. lipschitz (cball x0 u \<inter> X) (f t') L"
+    "\<forall>\<^sub>F u in at_right 0. \<forall>t'\<in>cball t0 (t * u) \<inter> T. L-lipschitz_on (cball x0 u \<inter> X) (f t')"
     by auto
   moreover
   have "\<forall>\<^sub>F e in at_right 0. cball t0 (t * e) \<subseteq> T"
@@ -336,7 +336,7 @@ proof -
     note X = \<open>cball x0 e \<subseteq> X\<close>
     moreover
     from elim Int_absorb2[OF \<open>cball x0 e \<subseteq> X\<close>]
-    have L: "t' \<in> cball t0 (t * e) \<inter> T \<Longrightarrow> lipschitz (cball x0 e) (f t') L" for t'
+    have L: "t' \<in> cball t0 (t * e) \<inter> T \<Longrightarrow> L-lipschitz_on (cball x0 e) (f t')" for t'
       by auto
     from elim have B: "\<And>t' x. t' \<in> cball t0 (t * e) \<Longrightarrow> x \<in> cball x0 e \<Longrightarrow> norm (f t' x) \<le> B"
       by auto

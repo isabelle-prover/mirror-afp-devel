@@ -350,7 +350,7 @@ locale consistent_one_step =
   assumes consistent: "\<And>s. s \<in> {t0..t1} \<Longrightarrow> consistent x s t1 B p incr"
   assumes lipschitz_nonneg: "L \<ge> 0"
   assumes lipschitz_incr: "\<And>s h. s \<in> {t0..t1} \<Longrightarrow> h \<in> {0..t1 - s} \<Longrightarrow>
-    lipschitz (cball (x s) \<bar>r\<bar>) (\<lambda>x. incr h s x) L"
+    L-lipschitz_on (cball (x s) \<bar>r\<bar>) (\<lambda>x. incr h s x)"
 
 locale max_step = grid +
   fixes t1 p L B r
@@ -420,7 +420,7 @@ proof -
     ultimately
     show ?thesis
       using lipschitz_incr grid_from
-      unfolding lipschitz_def
+      unfolding lipschitz_on_def
       by blast
   qed
   have
@@ -431,7 +431,7 @@ proof -
       consistence_error lipschitz_grid
     by (intro error_accumulation[OF max_step]) (auto intro!:
       divide_nonneg_nonneg mult_nonneg_nonneg zero_le_power grid_mono
-      simp add: lipschitz_def stepsize_def)
+      simp add: lipschitz_on_def stepsize_def)
   also have "... \<le>
     (B / L * (exp (L * (t1 - t 0) + 1) - 1)) * max_stepsize j ^ p"
     using \<open>t j \<le> t1\<close> \<open>0\<le>L\<close> \<open>0\<le>B\<close> max_stepsize_nonneg
@@ -565,7 +565,7 @@ proof -
         grid_ge_min
         grid_stepsize_nonneg
         grid_mono[of j]
-      by (intro lipschitz_incr[THEN lipschitzD]) (auto simp: stepsize_def mem_cball)
+      by (intro lipschitz_incr[THEN lipschitz_onD]) (auto simp: stepsize_def mem_cball)
   next
     show "dist (grid_function (discrete_evolution incrs) (x (t 0) + s0) t 0)
       (x (t 0))

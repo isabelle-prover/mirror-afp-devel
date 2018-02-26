@@ -212,9 +212,10 @@ by (rule bij_betw_byWitness[of _ "\<lambda>x. x * x"], auto)
 
 lemma esqrt_strict_mono:
   "strict_mono esqrt"
-unfolding esqrt_def apply (rule strict_mono_o2[of "\<lambda>x. eln x/2"], rule strict_mono_o2[of "\<lambda>x. eln x"])
-apply (auto simp add: eln_strict_mono eexp_strict_mono)
-by (auto simp add: ereal_less_divide_pos ereal_mult_divide strict_mono_def)
+  unfolding esqrt_def
+  apply (rule strict_mono_compose[OF eexp_strict_mono])
+  apply (rule strict_mono_compose[OF _ eln_strict_mono])
+  by (auto simp add: ereal_less_divide_pos ereal_mult_divide strict_mono_def)
 
 lemma esqrt_mono:
   "mono esqrt"

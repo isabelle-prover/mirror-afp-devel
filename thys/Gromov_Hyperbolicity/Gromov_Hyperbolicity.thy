@@ -787,7 +787,7 @@ proposition (in Gromov_hyperbolic_space_geodesic) lipschitz_path_close_to_geodes
           "x \<in> G"
   shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
 proof -
-  have "M \<ge> 0" by (rule lipschitz_onD(2)[OF assms(1)])
+  have "M \<ge> 0" by (rule lipschitz_on_nonneg[OF assms(1)])
   have Main: "a \<in> {A..B} \<Longrightarrow> b \<in> {A..B} \<Longrightarrow> a \<le> b \<Longrightarrow> b-a \<le> 2^(n+1) \<Longrightarrow> geodesic_segment_between H (c a) (c b)
         \<Longrightarrow> y \<in> H \<Longrightarrow> infdist y (c`{A..B}) \<le> 4 * deltaG(TYPE('a)) * n + M" for a b H y n
   proof (induction n arbitrary: a b H y)
@@ -1214,7 +1214,7 @@ proof -
         have *: "lipschitz_on 1 {0..dist xm ym} (geodesic_segment_param {xm--ym} xm)"
           by (rule isometry_on_lipschitz, simp)
         have **: "lipschitz_on 1 {0..dist xm ym} excursion"
-          using lipschitz_on_cong[OF * E1] by simp
+          using lipschitz_on_transform[OF * E1] by simp
         show "lipschitz_on (9 * lambda) {0..dist xm ym} excursion"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
 
@@ -1222,7 +1222,7 @@ proof -
                 ((geodesic_segment_param {yM--xM} yM) o (\<lambda>t. t - (dist xm ym + abs (uM -um))))"
           by (intro lipschitz_intros, rule isometry_on_lipschitz, auto)
         have **: "lipschitz_on (1*(1+0)) {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
-          apply (rule lipschitz_on_cong[OF *]) using E3 unfolding comp_def by (auto simp add: algebra_simps)
+          apply (rule lipschitz_on_transform[OF *]) using E3 unfolding comp_def by (auto simp add: algebra_simps)
         show "lipschitz_on (9 * lambda) {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
 
@@ -1232,7 +1232,7 @@ proof -
         have ***: "lipschitz_on (9 * lambda) {dist xm ym..dist xm ym + abs(uM - um)} (d o (\<lambda>t. um + sgn(uM-um) * (t - dist xm ym)))"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
         show "lipschitz_on (9 * lambda) {dist xm ym..dist xm ym + abs(uM - um)} excursion"
-          apply (rule lipschitz_on_cong[OF ***]) using E2 by auto
+          apply (rule lipschitz_on_transform[OF ***]) using E2 by auto
       qed
 
       have *: "dist x z \<ge> D" if z: "z \<in> excursion`{0..L}" for z

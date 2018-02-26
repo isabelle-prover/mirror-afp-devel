@@ -257,4 +257,13 @@ lemma
   using has_vector_derivative_zero_constant[of s f] assms
   by (auto simp: has_vderiv_on_def)
 
+lemma bounded_vderiv_on_imp_lipschitz:
+  assumes "(f has_vderiv_on f') X"
+  assumes convex: "convex X"
+  assumes "\<And>x. x \<in> X \<Longrightarrow> norm (f' x) \<le> C" "0 \<le> C"
+  shows "C-lipschitz_on X f"
+  using assms
+  by (auto simp: has_vderiv_on_def has_vector_derivative_def onorm_scaleR_left onorm_id
+    intro!: bounded_derivative_imp_lipschitz[where f' = "\<lambda>x d. d *\<^sub>R f' x"])
+
 end

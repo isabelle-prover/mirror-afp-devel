@@ -121,71 +121,9 @@ lemma mult_ge1_powers [mono_intros]:
   shows "1 \<le> a * a" "1 \<le> a * a * a" "1 \<le> a * a * a * a"
 using assms by (meson assms dual_order.trans mult_ge1_mono(1) zero_le_one)+
 
-text \<open>\verb+ln_bound+ is formulated with the assumption that $x \geq 1$, while it works for $x > 0$.\<close>
-
-lemma ln_bound' [mono_intros]: "0 < x \<Longrightarrow> ln x \<le> x" for x :: real
-  using ln_le_minus_one by force
-
+lemmas [mono_intros] = ln_bound
 
 subsection \<open>More topology\<close>
-
-subsubsection \<open>Characterizations of continuity using sequences\<close>
-
-text \<open>The lemma \verb+continuous_within_sequentially+ is formulated on metric spaces, but we will
-need it in weaker contexts. We formalize separately the two implications of this lemma, as they do
-not require the same strength of assumptions.
-
-One of the implications is the following characterization of continuity using sequences.\<close>
-
-lemma continuous_within_sequentially':
-  fixes f :: "'a::{first_countable_topology, t2_space} \<Rightarrow> 'b::topological_space"
-  assumes "\<And>u::nat \<Rightarrow> 'a. u \<longlonglongrightarrow> a \<Longrightarrow> (\<forall>n. u n \<in> s) \<Longrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> f a"
-  shows "continuous (at a within s) f"
-using assms unfolding continuous_within tendsto_def[where l = "f a"]
-by (auto intro!: sequentially_imp_eventually_within)
-
-text \<open>The other implication deals with composition of limits, when the function is only continuous
-at a point on some subset\<close>
-
-lemma continuous_within_tendsto_compose:
-  fixes f::"'a::t2_space \<Rightarrow> 'b::topological_space"
-  assumes "continuous (at a within s) f"
-          "eventually (\<lambda>n. x n \<in> s) F"
-          "(x \<longlongrightarrow> a) F "
-  shows "((\<lambda>n. f (x n)) \<longlongrightarrow> f a) F"
-proof -
-  have *: "filterlim x (inf (nhds a) (principal s)) F"
-    using assms(2) assms(3) unfolding at_within_def filterlim_inf by (auto simp add: filterlim_principal eventually_mono)
-  show ?thesis
-    by (auto simp add: assms(1) continuous_within[symmetric] tendsto_at_within_iff_tendsto_nhds[symmetric] intro!: filterlim_compose[OF _ *])
-qed
-
-lemma continuous_within_tendsto_compose':
-  fixes f::"'a::t2_space \<Rightarrow> 'b::topological_space"
-  assumes "continuous (at a within s) f"
-          "\<And>n. x n \<in> s"
-          "(x \<longlongrightarrow> a) F "
-  shows "((\<lambda>n. f (x n)) \<longlongrightarrow> f a) F"
-by (auto intro!: continuous_within_tendsto_compose[OF assms(1)] simp add: assms)
-
-text \<open>Next, we do the same for the other variants (continuity at a point, continuity on a set).
-Continuity of composition are already available, as \verb+isCont_tendsto_compose+ and
-\verb+continuous_on_tendsto_compose+, so we do not reformulate them and we only give the
-characterizations of continuity in terms of sequences.\<close>
-
-lemma continuous_at_sequentially':
-  fixes f :: "'a::{first_countable_topology, t2_space} \<Rightarrow> 'b::topological_space"
-  assumes "\<And>u. u \<longlonglongrightarrow> a \<Longrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> f a"
-  shows "continuous (at a) f"
-using continuous_within_sequentially'[of a UNIV f] assms by auto
-
-lemma continuous_on_sequentially':
-  fixes f :: "'a::{first_countable_topology, t2_space} \<Rightarrow> 'b::topological_space"
-  assumes "\<And>u a. (\<forall>n. u n \<in> s) \<Longrightarrow> a \<in> s \<Longrightarrow> u \<longlonglongrightarrow> a \<Longrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> f a"
-  shows "continuous_on s f"
-using assms unfolding continuous_on_eq_continuous_within
-using continuous_within_sequentially'[of _ s f] by auto
-
 
 text \<open>In situations of interest to us later on, convergence is well controlled only for sequences
 living in some dense subset of the space (but the limit can be anywhere). This is enough to
@@ -452,10 +390,10 @@ proof -
   then have "inj_on f S" by (simp add: inj_on_def)
 
   have Cf: "continuous_on S f"
-    apply (rule continuous_on_sequentially') using assms by auto
+    apply (rule continuous_on_sequentiallyI) using assms by auto
   define g where "g = inv_into S f"
   have Cg: "continuous_on (f`S) g"
-  proof (rule continuous_on_sequentially')
+  proof (rule continuous_on_sequentiallyI)
     fix v b assume H: "\<forall>n. v n \<in> f ` S" "b \<in> f ` S" "v \<longlonglongrightarrow> b"
     define u where "u = (\<lambda>n. g (v n))"
     define a where "a = g b"
@@ -619,21 +557,6 @@ apply (rule homeomorphism_on_extension_sequentially[of S]) using assms by auto
 
 subsubsection \<open>Connectedness\<close>
 
-text \<open>Connectedness is invariant under homeomorphisms.\<close>
-
-lemma homeomorphic_connectedness:
-  assumes "s homeomorphic t"
-  shows "connected s \<longleftrightarrow> connected t"
-using assms unfolding homeomorphic_def homeomorphism_def by (metis connected_continuous_image)
-
-text \<open>If a connnected set is written as the union of two nonempty closed sets, then these sets
-have to intersect.\<close>
-
-lemma connected_as_closed_union:
-  assumes "connected C" "C = A \<union> B" "closed A" "closed B" "A \<noteq> {}" "B \<noteq> {}"
-  shows "A \<inter> B \<noteq> {}"
-by (metis assms closed_Un connected_closed_set)
-
 subsubsection \<open>Proper spaces\<close>
 
 text \<open>Proper spaces, i.e., spaces in which every closed ball is compact -- or, equivalently,
@@ -758,19 +681,6 @@ qed
 
 subsubsection \<open>Miscellaneous topology\<close>
 
-text \<open>Oddly, the distance characterization of the limit is not readily available yet.\<close>
-lemma tendsto_dist_iff:
-  "((f \<longlongrightarrow> l) F) \<longleftrightarrow> (((\<lambda>x. dist (f x) l) \<longlongrightarrow> 0) F)"
-unfolding tendsto_iff by simp
-
-text \<open>The metric characterization of closures is given in the library, but not in a form which
-is easily usable.\<close>
-lemma closureD:
-  assumes "x \<in> closure S"
-          "e>0"
-  shows "\<exists>y\<in>S. dist x y < e"
-using assms unfolding closure_approachable by (auto simp add: dist_commute)
-
 text \<open>When manipulating the triangle inequality, it is very frequent to deal with 4 points
 (and automation has trouble doing it automatically). Even sometimes with 5 points...\<close>
 
@@ -781,19 +691,6 @@ using dist_triangle[of x z y] dist_triangle[of x t z] by auto
 lemma dist_triangle5 [mono_intros]:
   "dist x u \<le> dist x y + dist y z + dist z t + dist t u"
 using dist_triangle4[of x u y z] dist_triangle[of z u t] by auto
-
-text \<open>If a function is continuous on finitely many closed sets, it is continuous on their union
-(for open sets, this is true whatever the number of sets). This follows from the case of two sets
-by induction.\<close>
-
-lemma continuous_on_closed_Union:
-  assumes "finite I"
-          "\<And>i. i \<in> I \<Longrightarrow> closed (U i)"
-          "\<And>i. i \<in> I \<Longrightarrow> continuous_on (U i) f"
-  shows "continuous_on (\<Union> i \<in> I. U i) f"
-using assms apply (induction I)
-apply simp+
-apply (rule continuous_on_closed_Un) by auto
 
 text \<open>A thickening of a compact set is closed.\<close>
 
@@ -818,75 +715,9 @@ proof (auto simp add: closed_sequential_limits)
   then show "\<exists>x\<in>C. dist x l \<le> f x" using \<open>c \<in> C\<close> by auto
 qed
 
-text \<open>Yet another useful characterization of bounded sets (without reference to any fixed
-arbitrary point).\<close>
-
-lemma bounded_two_points:
-  "bounded S \<longleftrightarrow> (\<exists>e. \<forall>x\<in>S. \<forall>y\<in>S. dist x y \<le> e)"
-  apply auto
-  using diameter_bounded(1) apply auto[1]
-  using bounded_any_center by blast
-
-text \<open>To prove that a Cauchy sequence converges, it suffices to show that a subsequence converges.\<close>
-lemma Cauchy_converges_subseq:
-  fixes u::"nat \<Rightarrow> 'a::metric_space"
-  assumes "Cauchy u"
-          "strict_mono r"
-          "(u o r) \<longlonglongrightarrow> l"
-  shows "u \<longlonglongrightarrow> l"
-proof -
-  have *: "eventually (\<lambda>n. dist (u n) l < e) sequentially" if "e > 0" for e
-  proof -
-    have "e/2 > 0" using that by auto
-    then obtain N1 where N1: "\<And>m n. m \<ge> N1 \<Longrightarrow> n \<ge> N1 \<Longrightarrow> dist (u m) (u n) < e/2"
-      using \<open>Cauchy u\<close> unfolding Cauchy_def by blast
-    obtain N2 where N2: "\<And>n. n \<ge> N2 \<Longrightarrow> dist ((u o r) n) l < e / 2"
-      using order_tendstoD(2)[OF iffD1[OF tendsto_dist_iff \<open>(u o r) \<longlonglongrightarrow> l\<close>] \<open>e/2 > 0\<close>]
-      unfolding eventually_sequentially by auto
-    have "dist (u n) l < e" if "n \<ge> max N1 N2" for n
-    proof -
-      have "dist (u n) l \<le> dist (u n) ((u o r) n) + dist ((u o r) n) l"
-        by (intro mono_intros)
-      also have "... < e/2 + e/2"
-        apply (intro mono_intros)
-        using N1[of n "r n"] N2[of n] that unfolding comp_def
-        by (auto simp add: less_imp_le) (meson assms(2) less_imp_le order.trans seq_suble)
-      finally show ?thesis by simp
-    qed
-    then show ?thesis unfolding eventually_sequentially by blast
-  qed
-  have "(\<lambda>n. dist (u n) l) \<longlonglongrightarrow> 0"
-    apply (rule order_tendstoI)
-    using * by auto (meson eventually_sequentiallyI less_le_trans zero_le_dist)
-  then show ?thesis using tendsto_dist_iff by auto
-qed
-
 subsection \<open>Material on ereal and ennreal\<close>
 
 text \<open>More additions to \verb+tendsto_intros+.\<close>
-
-declare tendsto_ennrealI [tendsto_intros]
-
-lemma tendsto_enn2erealI [tendsto_intros]:
-  assumes "(f \<longlongrightarrow> l) F"
-  shows "((\<lambda>i. enn2ereal(f i)) \<longlongrightarrow> enn2ereal l) F"
-using tendsto_enn2ereal_iff assms by auto
-
-lemma tendsto_e2ennrealI [tendsto_intros]:
-  assumes "(f \<longlongrightarrow> l) F"
-  shows "((\<lambda>i. e2ennreal(f i)) \<longlongrightarrow> e2ennreal l) F"
-proof -
-  have *: "e2ennreal (max x 0) = e2ennreal x" for x
-    by (simp add: e2ennreal_def max.commute)
-  have "((\<lambda>i. max (f i) 0) \<longlongrightarrow> max l 0) F"
-    apply (intro tendsto_intros) using assms by auto
-  then have "((\<lambda>i. enn2ereal(e2ennreal (max (f i) 0))) \<longlongrightarrow> enn2ereal (e2ennreal (max l 0))) F"
-    by (subst enn2ereal_e2ennreal, auto)+
-  then have "((\<lambda>i. e2ennreal (max (f i) 0)) \<longlongrightarrow> e2ennreal (max l 0)) F"
-    using tendsto_enn2ereal_iff by auto
-  then show ?thesis
-    unfolding * by auto
-qed
 
 lemma ereal_leq_imp_neg_leq [mono_intros]:
   fixes x y::ereal
@@ -928,45 +759,7 @@ lemma enn2ereal_a_minus_b_plus_b [mono_intros]:
   "enn2ereal a \<le> enn2ereal (a - b) + enn2ereal b"
 by (metis diff_add_self_ennreal less_eq_ennreal.rep_eq linear plus_ennreal.rep_eq)
 
-text \<open>The next lemma is wrong for $a = top$, for $b = c = 1$ for instance.\<close>
-
-lemma ennreal_right_diff_distrib:
-  fixes a b c::ennreal
-  assumes "a \<noteq> top"
-  shows "a * (b - c) = a * b - a * c"
-  apply (cases a, cases b, cases c, auto simp add: assms)
-  apply (metis (mono_tags, lifting) ennreal_minus ennreal_mult' linordered_field_class.sign_simps(38) split_mult_pos_le)
-  apply (metis ennreal_minus_zero ennreal_mult_cancel_left ennreal_top_eq_mult_iff minus_top_ennreal mult_eq_0_iff top_neq_ennreal)
-  apply (metis ennreal_minus_eq_top ennreal_minus_zero ennreal_mult_eq_top_iff mult_eq_0_iff)
-  done
-
 text \<open>The next lemma follows from the same assertion in ereals.\<close>
-
-lemma tendsto_mult_ennreal [tendsto_intros]:
-  fixes l m::ennreal
-  assumes "(u \<longlongrightarrow> l) F" "(v \<longlongrightarrow> m) F" "\<not>((l = 0 \<and> m = \<infinity>) \<or> (l = \<infinity> \<and> m = 0))"
-  shows "((\<lambda>n. u n * v n) \<longlongrightarrow> l * m) F"
-proof -
-  have "((\<lambda>n. e2ennreal(enn2ereal (u n) * enn2ereal (v n))) \<longlongrightarrow> e2ennreal(enn2ereal l * enn2ereal m)) F"
-    apply (intro tendsto_intros) using assms apply auto
-    using enn2ereal_inject zero_ennreal.rep_eq by fastforce+
-  moreover have "e2ennreal(enn2ereal (u n) * enn2ereal (v n)) = u n * v n" for n
-    by (subst times_ennreal.abs_eq[symmetric], auto simp add: eq_onp_same_args)
-  moreover have "e2ennreal(enn2ereal l * enn2ereal m) = l * m"
-    by (subst times_ennreal.abs_eq[symmetric], auto simp add: eq_onp_same_args)
-  ultimately show ?thesis
-    by auto
-qed
-
-declare lim_real_of_ereal [tendsto_intros]
-
-lemma tendsto_enn2real [tendsto_intros]:
-  assumes "(u \<longlongrightarrow> ennreal l) F" "l \<ge> 0"
-  shows "((\<lambda>n. enn2real (u n)) \<longlongrightarrow> l) F"
-  unfolding enn2real_def
-  apply (intro tendsto_intros)
-  apply (subst enn2ereal_ennreal[symmetric])
-  by (intro tendsto_intros assms)+
 
 lemma enn2ereal_strict_mono [mono_intros]:
   assumes "x < y"
@@ -991,34 +784,6 @@ lemma ereal_minus_le_minus_plus [mono_intros]:
   using assms apply (cases a, cases b, cases c, auto)
   using ereal_infty_less_eq2(2) ereal_plus_1(4) by fastforce
 
-text \<open>The current \verb+tendsto_diff_ereal+ assumptions are too strong, we weaken them.\<close>
-
-lemma tendsto_diff_ereal_general [tendsto_intros]:
-  fixes u v::"'a \<Rightarrow> ereal"
-  assumes "(u \<longlongrightarrow> l) F" "(v \<longlongrightarrow> m) F" "\<not>((l = \<infinity> \<and> m = \<infinity>) \<or> (l = -\<infinity> \<and> m = -\<infinity>))"
-  shows "((\<lambda>n. u n - v n) \<longlongrightarrow> l - m) F"
-proof -
-  have "((\<lambda>n. u n + (-v n)) \<longlongrightarrow> l + (-m)) F"
-    apply (intro tendsto_intros assms) using assms by (auto simp add: ereal_uminus_eq_reorder)
-  then show ?thesis by (simp add: minus_ereal_def)
-qed
-
-text \<open>We deduce the same statement in ennreal, by going through ereal.\<close>
-
-lemma e2eenreal_enn2ereal_diff [simp]:
-  "e2ennreal(enn2ereal x - enn2ereal y) = x - y" for x y
-by (cases x, cases y, auto simp add: ennreal_minus e2ennreal_neg)
-
-lemma tendsto_diff_ennreal [tendsto_intros]:
-  fixes u v::"'a \<Rightarrow> ennreal"
-  assumes "(u \<longlongrightarrow> l) F" "(v \<longlongrightarrow> m) F" "\<not>(l = \<infinity> \<and> m = \<infinity>)"
-  shows "((\<lambda>n. u n - v n) \<longlongrightarrow> l - m) F"
-proof -
-  have "((\<lambda>n. e2ennreal(enn2ereal(u n) - enn2ereal(v n))) \<longlongrightarrow> e2ennreal(enn2ereal l - enn2ereal m)) F"
-    apply (intro tendsto_intros) using assms by auto
-  then show ?thesis by auto
-qed
-
 lemma tendsto_ennreal_0 [tendsto_intros]:
   assumes "(u \<longlongrightarrow> 0) F"
   shows "((\<lambda>n. ennreal(u n)) \<longlongrightarrow> 0) F"
@@ -1029,62 +794,12 @@ lemma tendsto_ennreal_1 [tendsto_intros]:
   shows "((\<lambda>n. ennreal(u n)) \<longlongrightarrow> 1) F"
 unfolding ennreal_1[symmetric] by (intro tendsto_intros assms)
 
-text \<open>Continuity of absolute value on ereals\<close>
-
-lemma continuous_ereal_abs [continuous_intros]:
-  "continuous_on (UNIV::ereal set) abs"
-proof -
-  have "continuous_on ({..0} \<union> {(0::ereal)..}) abs"
-    apply (rule continuous_on_closed_Un, auto)
-    apply (rule iffD1[OF continuous_on_cong, of "{..0}" _ "\<lambda>x. -x"])
-    using less_eq_ereal_def apply (auto simp add: continuous_uminus_ereal)
-    apply (rule iffD1[OF continuous_on_cong, of "{0..}" _ "\<lambda>x. x"])
-      apply (auto simp add: continuous_on_id)
-    done
-  moreover have "(UNIV::ereal set) = {..0} \<union> {(0::ereal)..}" by auto
-  ultimately show ?thesis by auto
-qed
-
-lemma tendsto_abs_ereal [tendsto_intros]:
-  assumes "(u \<longlongrightarrow> (l::ereal)) F"
-  shows "((\<lambda>n. abs(u n)) \<longlongrightarrow> abs l) F"
-using continuous_ereal_abs assms by (metis UNIV_I continuous_on tendsto_compose)
-
-lemma ereal_minus_real_tendsto_MInf [tendsto_intros]:
-  "(\<lambda>x. ereal (- real x)) \<longlonglongrightarrow> - \<infinity>"
-by (subst uminus_ereal.simps(1)[symmetric], intro tendsto_intros)
-
 subsection \<open>Miscellaneous\<close>
 
 lemma power4_eq_xxxx:
   fixes x::"'a::monoid_mult"
   shows "x^4 = x * x * x * x"
 by (simp add: mult.assoc power_numeral_even)
-
-subsubsection \<open>Monotonous maps\<close>
-
-text \<open>Variants of \verb+max_of_mono+ and \verb+min_of_mono+ for \verb+antimono+ maps.\<close>
-
-lemma min_of_antimono:
-  fixes f::"'a::linorder \<Rightarrow> 'b::linorder"
-  assumes "antimono f"
-  shows "min (f x) (f y) = f (max x y)"
-using assms eq_iff max_of_mono unfolding antimono_def min_def max_def by auto
-
-lemma max_of_antimono:
-  fixes f::"'a::linorder \<Rightarrow> 'b::linorder"
-  assumes "antimono f"
-  shows "max (f x) (f y) = f (min x y)"
-using assms eq_iff max_of_mono unfolding antimono_def min_def max_def by auto
-
-
-text \<open>Stability of strict monotonicity under composition is written for $g \circ f$, but in
-applications it is more common to apply it to $(\lambda x. g(f x))$, so the next lemma is more useful.\<close>
-
-lemma strict_mono_o2:
-  assumes "strict_mono f" "strict_mono g"
-  shows "strict_mono (\<lambda>x. g (f x))"
-using assms strict_mono_o unfolding comp_def by auto
 
 subsubsection \<open>Liminfs and Limsups\<close>
 
@@ -1121,13 +836,6 @@ lemma liminf_obtain:
   assumes "liminf u < c"
   shows "\<exists>n \<ge> N. u n < c"
 using Liminf_obtain'[OF assms, of "\<lambda>n. n \<ge> N"] unfolding eventually_sequentially by auto
-
-text \<open>The next one is missing close to \verb+image_diff_atLeastAtMost+.\<close>
-
-lemma image_diff_atLeastAtMost' [simp]:
-  fixes d::"'a::linordered_idom"
-  shows "(\<lambda>t. t-d)`{a..b} = {a-d..b-d}"
-by (metis (no_types, lifting) diff_conv_add_uminus image_add_atLeastAtMost' image_cong)
 
 text \<open>The Liminf of a minimum is the minimum of the Liminfs.\<close>
 
