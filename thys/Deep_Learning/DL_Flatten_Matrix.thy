@@ -28,6 +28,12 @@ lemma extract_matrix_flatten_matrix:
 "extract_matrix (flatten_matrix A) (dim_row A) (dim_col A) = A"
 unfolding extract_matrix_def flatten_matrix_def by auto
 
+lemma extract_matrix_flatten_matrix_cong:
+  assumes "\<And>x. x < dim_row A * dim_col A \<Longrightarrow> f x = flatten_matrix A x"
+  shows "extract_matrix f (dim_row A) (dim_col A) = A"
+  unfolding extract_matrix_def
+  by (metis assms extract_matrix_cong extract_matrix_def extract_matrix_flatten_matrix)
+
 lemma flatten_matrix_extract_matrix:
   "flatten_matrix (extract_matrix a m n) k = a k" if "k < m * n"
 proof -

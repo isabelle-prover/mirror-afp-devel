@@ -45,31 +45,34 @@ qed
 
 lemma  if_polynomial_0_evaluate:
 assumes "polynomial_f wd \<noteq> 0"
-assumes "\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow> evaluate_net (insert_weights (deep_model_l rs) wd) inputs
- = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs"
+assumes "\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow> evaluate_net (insert_weights shared_weights (deep_model_l rs) wd) inputs
+ = evaluate_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs"
 shows "Z \<ge> r ^ N_half"
 proof -
-  have valid1:"valid_net' (insert_weights (deep_model_l rs) wd)"
+  have valid1:"valid_net' (insert_weights shared_weights (deep_model_l rs) wd)"
     using remove_insert_weights valid_deep_model by presburger
-  have valid2:"valid_net' (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws)"
+  have valid2:"valid_net' (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws)"
     by (simp add: remove_insert_weights valid_shallow_model)
-  have input_sizes: "input_sizes (insert_weights (deep_model_l rs) wd)
-    = input_sizes (insert_weights (shallow_model (rs ! 0) Z (last rs) (2 * N_half - 1)) ws)"
+  have input_sizes: "input_sizes (insert_weights shared_weights (deep_model_l rs) wd)
+    = input_sizes (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2 * N_half - 1)) ws)"
     by (metis N_half_def Suc_mult_two_diff_one input_sizes_remove_weights input_sizes_shallow_model local.input_sizes_deep_model power_eq_0_iff remove_insert_weights zero_neq_numeral)
-  have "tensors_from_net (insert_weights (deep_model_l rs) wd)
-        = tensors_from_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half -1)) ws)"
+  have 0:"tensors_from_net (insert_weights shared_weights (deep_model_l rs) wd)
+        = tensors_from_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half -1)) ws)"
     using tensors_from_net_eqI[OF valid1 valid2 input_sizes, unfolded input_sizes_remove_weights remove_insert_weights]
     using assms by blast
+  have "cprank (tensors_from_net (insert_weights shared_weights (deep_model_l rs) wd) $ y) \<le> Z"
+    unfolding 0 using y_valid cprank_shallow_model by blast
   then show ?thesis
    using if_polynomial_0_rank assms
-   by (metis A_def assms(1) cprank_shallow_model less_le_trans not_le remove_insert_weights y_valid)
+   using A_def assms(1)  less_le_trans not_le remove_insert_weights
+   by fastforce
 qed
 
 lemma  if_polynomial_0_evaluate_notex:
 assumes "polynomial_f wd \<noteq> 0"
 shows "\<not>(\<exists>weights_shallow Z. Z < r ^ N_half \<and> (\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow>
-evaluate_net (insert_weights (deep_model_l rs) wd) inputs
- = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
+evaluate_net (insert_weights shared_weights (deep_model_l rs) wd) inputs
+ = evaluate_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
   using assms if_polynomial_0_evaluate not_le by blast
 
 theorem fundamental_theorem_network_capacity:
@@ -80,8 +83,8 @@ using AE_I'[OF lebesgue_mpoly_zero_set[OF polynomial_p_not_0 vars_polynomial_p]]
 theorem fundamental_theorem_network_capacity_v2:
 shows "AE wd in lborel_f weight_space_dim.
    \<not>(\<exists>ws Z. Z < r ^ N_half \<and>  (\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow>
-evaluate_net (insert_weights (deep_model_l rs) wd) inputs
- = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
+evaluate_net (insert_weights shared_weights (deep_model_l rs) wd) inputs
+ = evaluate_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
   apply (rule AE_I'[OF lebesgue_mpoly_zero_set[OF polynomial_p_not_0 vars_polynomial_p], unfolded polynomial_pf])
   apply (rule subsetI) unfolding mem_Collect_eq
   using if_polynomial_0_evaluate_notex by metis
