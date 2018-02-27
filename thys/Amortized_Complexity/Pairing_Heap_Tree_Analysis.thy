@@ -179,7 +179,7 @@ qed simp
 lemma pass\<^sub>1_len: "len (pass\<^sub>1 h) \<le> len h"
 by (induct h rule: pass\<^sub>1.induct) simp_all
 
-fun exec :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
+fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" | 
 "exec Del_min [h] = del_min h" |
 "exec (Insert x) [h] = insert x h" |
@@ -194,14 +194,14 @@ fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" whe
   "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 Leaf = 1"
 | "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (Node _ _ rx) = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 rx + 1"
 
-fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+fun cost :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
   "cost Empty [] = 1"
 | "cost Del_min [Leaf] = 1"
 | "cost Del_min [Node lx _  _] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
 | "cost (Insert a) _ = 1"
 | "cost Merge _ = 1"
 
-fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> real" where
+fun U :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> real" where
   "U Empty [] = 1"
 | "U (Insert a) [h] = log 2 (size h + 1) + 1"
 | "U Del_min [h] = 3*log 2 (size h + 1) + 4"

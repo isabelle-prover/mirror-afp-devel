@@ -114,21 +114,21 @@ next
 qed (auto simp: le_less)
 
 
-datatype 'a op\<^sub>s\<^sub>t = Empty | Splay 'a | Insert 'a | Delete 'a
+datatype 'a op = Empty | Splay 'a | Insert 'a | Delete 'a
 
-fun arity :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> nat" where
+fun arity :: "'a::linorder op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity (Splay a) = 1" |
 "arity (Insert a) = 1" |
 "arity (Delete a) = 1"
 
-fun exec :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
+fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
 "exec (Splay a) [t] = splay a t" |
 "exec (Insert a) [t] = Splay_Tree.insert a t" |
 "exec (Delete a) [t] = Splay_Tree.delete a t"
 
-fun cost :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
 "cost (Splay a) [t] = t_splay a t" |
 "cost (Insert a) [t] = t_splay a t" |

@@ -13,9 +13,9 @@ subsection "Binary Counter"
 locale Bin_Counter
 begin
 
-datatype ops = Empty | Incr
+datatype op = Empty | Incr
 
-fun arity :: "ops \<Rightarrow> nat" where
+fun arity :: "op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity Incr = 1"
 
@@ -37,11 +37,11 @@ apply(induction bs rule: incr.induct)
 apply (simp_all add: \<Phi>_def)
 done
 
-fun exec :: "ops \<Rightarrow> bool list list \<Rightarrow> bool list" where
+fun exec :: "op \<Rightarrow> bool list list \<Rightarrow> bool list" where
 "exec Empty [] = []" |
 "exec Incr [bs] = incr bs"
 
-fun cost :: "ops \<Rightarrow> bool list list \<Rightarrow> nat" where
+fun cost :: "op \<Rightarrow> bool list list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Incr [bs] = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs"
 
@@ -53,7 +53,7 @@ proof (standard, goal_cases)
 next
   case 2 show ?case by(simp add: \<Phi>_def)
 next
-  case 3 thus ?case using a_incr by(auto simp: \<Phi>_def split: ops.split)
+  case 3 thus ?case using a_incr by(auto simp: \<Phi>_def split: op.split)
 qed
 
 end (* Bin_Counter *)
@@ -64,19 +64,19 @@ subsection "Stack with multipop"
 locale Multipop
 begin
 
-datatype 'a ops = Empty | Push 'a | Pop nat
+datatype 'a op = Empty | Push 'a | Pop nat
 
-fun arity :: "'a ops \<Rightarrow> nat" where
+fun arity :: "'a op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity (Push _) = 1" |
 "arity (Pop _) = 1"
 
-fun exec :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> 'a list" where
+fun exec :: "'a op \<Rightarrow> 'a list list \<Rightarrow> 'a list" where
 "exec Empty [] = []" |
 "exec (Push x) [xs] = x # xs" |
 "exec (Pop n) [xs] = drop n xs"
 
-fun cost :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> nat" where
+fun cost :: "'a op \<Rightarrow> 'a list list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost (Push x) _ = 1" |
 "cost (Pop n) [xs] = min n (length xs)"
@@ -91,7 +91,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by simp
 next
-  case 3 thus ?case by (auto split: ops.split)
+  case 3 thus ?case by (auto split: op.split)
 qed
 
 end (* Multipop *)
@@ -104,17 +104,17 @@ begin
 
 type_synonym tab = "nat \<times> nat"
 
-datatype ops = Empty | Ins
+datatype op = Empty | Ins
 
-fun arity :: "ops \<Rightarrow> nat" where
+fun arity :: "op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity Ins = 1"
 
-fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
+fun exec :: "op \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 
-fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+fun cost :: "op \<Rightarrow> tab list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Ins [(n,l)] = (if n<l then 1 else n+1)"
 
@@ -128,7 +128,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
-  case 3 thus ?case by (auto split: ops.split) linarith
+  case 3 thus ?case by (auto split: op.split) linarith
 qed
 
 end (* Dyn_Tab1 *)
@@ -156,21 +156,21 @@ using ac by (simp add: b_def)
 
 type_synonym tab = "nat \<times> nat"
 
-datatype ops = Empty | Ins
+datatype op = Empty | Ins
 
-fun arity :: "ops \<Rightarrow> nat" where
+fun arity :: "op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity Ins = 1"
 
 fun "ins" :: "tab \<Rightarrow> tab" where
 "ins(n,l) = (n+1, if n<l then l else if l=0 then 1 else nat(ceiling(c*l)))"
 
-fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
+fun exec :: "op \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [s] = ins s" |
 "exec _ _ = (0,0)" (* otherwise fun goes wrong with odd error msg *)
 
-fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+fun cost :: "op \<Rightarrow> tab list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Ins [(n,l)] = (if n<l then 1 else n+1)"
 
@@ -270,19 +270,19 @@ begin
 
 type_synonym tab = "nat \<times> nat"
 
-datatype ops = Empty | Ins | Del
+datatype op = Empty | Ins | Del
 
-fun arity :: "ops \<Rightarrow> nat" where
+fun arity :: "op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity Ins = 1" |
 "arity Del = 1"
 
-fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
+fun exec :: "op \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
 "exec Del [(n,l)] = (n-1, if n\<le>1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
-fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+fun cost :: "op \<Rightarrow> tab list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Ins [(n,l)] = (if n<l then 1 else n+1)" |
 "cost Del [(n,l)] = (if n\<le>1 then 1 else if 4*(n - 1)<l then n else 1)"
@@ -311,21 +311,21 @@ text{* See, for example, the book by Okasaki~\cite{Okasaki}. *}
 locale Queue
 begin
 
-datatype 'a ops = Empty | Enq 'a | Deq
+datatype 'a op = Empty | Enq 'a | Deq
 
 type_synonym 'a queue = "'a list * 'a list"
 
-fun arity :: "'a ops \<Rightarrow> nat" where
+fun arity :: "'a op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity (Enq _) = 1" |
 "arity Deq = 1"
 
-fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
+fun exec :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec Empty [] = ([],[])" |
 "exec (Enq x) [(xs,ys)] = (x#xs,ys)" |
 "exec Deq [(xs,ys)] = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
-fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
+fun cost :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> nat" where
 "cost Empty _ = 0" |
 "cost (Enq x) [(xs,ys)] = 1" |
 "cost Deq [(xs,ys)] = (if ys = [] then length xs else 0)"
@@ -339,7 +339,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by (auto split: prod.splits)
 next
-  case 3 thus ?case by(auto split: ops.split)
+  case 3 thus ?case by(auto split: op.split)
 qed
 
 end (* Queue *)
@@ -347,11 +347,11 @@ end (* Queue *)
 locale Queue2
 begin
 
-datatype 'a ops = Empty | Enq 'a | Deq
+datatype 'a op = Empty | Enq 'a | Deq
 
 type_synonym 'a queue = "'a list * 'a list"
 
-fun arity :: "'a ops \<Rightarrow> nat" where
+fun arity :: "'a op \<Rightarrow> nat" where
 "arity Empty = 0" |
 "arity (Enq _) = 1" |
 "arity Deq = 1"
@@ -359,12 +359,12 @@ fun arity :: "'a ops \<Rightarrow> nat" where
 fun balance :: "'a queue \<Rightarrow> 'a queue" where
 "balance(xs,ys) = (if size xs \<le> size ys then (xs,ys) else ([], ys @ rev xs))"
 
-fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
+fun exec :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec Empty [] = ([],[])" |
 "exec (Enq x) [(xs,ys)] = balance(x#xs,ys)" |
 "exec Deq [(xs,ys)] = balance (xs, tl ys)"
 
-fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
+fun cost :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> nat" where
 "cost Empty _ = 0" |
 "cost (Enq x) [(xs,ys)] = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
 "cost Deq [(xs,ys)] = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"

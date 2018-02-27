@@ -173,12 +173,12 @@ next
   qed
 qed
 
-fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
+fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
 "exec (Insert a) [t] = insert a t" |
 "exec Del_min [t] = del_min t"
 
-fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
 "cost (Insert a) [t] = t_in a t" |
 "cost Del_min [t] = t_dm t"

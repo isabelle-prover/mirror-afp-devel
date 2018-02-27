@@ -228,7 +228,7 @@ proof -
 qed
 
 
-fun exec :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
+fun exec :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
 "exec Empty [] = heap.Empty" | 
 "exec Del_min [h] = del_min h" |
 "exec (Insert x) [h] = Pairing_Heap_List1.insert x h" |
@@ -243,14 +243,14 @@ fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a heap list \<Rightarrow> nat
  "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 [] = 1"
 | "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (_ # hs) = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 hs"
 
-fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
+fun cost :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Del_min [heap.Empty] = 1" |
 "cost Del_min [Hp x hs] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
 "cost (Insert a) _ = 1" |
 "cost Merge _ = 1"
 
-fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> real" where
+fun U :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> real" where
 "U Empty _ = 1" |
 "U (Insert a) [h] = log 2 (size_hp h + 1) + 1" |
 "U Del_min [h] = 3*log 2 (size_hp h + 1) + 4" |

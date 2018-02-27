@@ -143,13 +143,13 @@ subsubsection "Instantiation of Amortized Framework"
 lemma t_merge_nneg: "t_merge h1 h2 \<ge> 0"
 by(induction h1 h2 rule: t_merge.induct) auto
 
-fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
+fun exec :: "'a::linorder op \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
 "exec Empty [] = Leaf" |
 "exec (Insert a) [h] = Skew_Heap.insert a h" |
 "exec Del_min [h] = del_min h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
+fun cost :: "'a::linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
 "cost (Insert a) [h] = t_merge (Node Leaf a Leaf) h" |
 "cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2)" |
