@@ -357,7 +357,7 @@ fun arity :: "'a op \<Rightarrow> nat" where
 "arity Deq = 1"
 
 fun adjust :: "'a queue \<Rightarrow> 'a queue" where
-"adjust(xs,ys) = (if ys = [] then ([], ys @ rev xs) else (xs,ys))"
+"adjust(xs,ys) = (if ys = [] then ([], rev xs) else (xs,ys))"
 
 fun exec :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec Empty [] = ([],[])" |
@@ -366,8 +366,8 @@ fun exec :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 
 fun cost :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> nat" where
 "cost Empty _ = 0" |
-"cost (Enq x) [(xs,ys)] = 1 + (if ys = [] then size xs + 1 + size ys else 0)" |
-"cost Deq [(xs,ys)] = (if ys = [] then size xs + (size ys - 1) else 0)"
+"cost (Enq x) [(xs,ys)] = 1 + (if ys = [] then size xs + 1 else 0)" |
+"cost Deq [(xs,ys)] = (if tl ys = [] then size xs else 0)"
 
 interpretation Amortized
 where arity = arity and exec = exec
