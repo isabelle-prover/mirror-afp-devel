@@ -356,6 +356,46 @@ fun arity :: "'a op \<Rightarrow> nat" where
 "arity (Enq _) = 1" |
 "arity Deq = 1"
 
+fun adjust :: "'a queue \<Rightarrow> 'a queue" where
+"adjust(xs,ys) = (if ys = [] then ([], ys @ rev xs) else (xs,ys))"
+
+fun exec :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
+"exec Empty [] = ([],[])" |
+"exec (Enq x) [(xs,ys)] = adjust(x#xs,ys)" |
+"exec Deq [(xs,ys)] = adjust (xs, tl ys)"
+
+fun cost :: "'a op \<Rightarrow> 'a queue list \<Rightarrow> nat" where
+"cost Empty _ = 0" |
+"cost (Enq x) [(xs,ys)] = 1 + (if ys = [] then size xs + 1 + size ys else 0)" |
+"cost Deq [(xs,ys)] = (if ys = [] then size xs + (size ys - 1) else 0)"
+
+interpretation Amortized
+where arity = arity and exec = exec
+and inv = "\<lambda>_. True"
+and cost = cost and \<Phi> = "\<lambda>(xs,ys). size xs"
+and U = "\<lambda>f _. case f of Empty \<Rightarrow> 0 | Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
+proof (standard, goal_cases)
+  case (1 _ f) thus ?case by (cases f) (auto split: if_splits)
+next
+  case 2 thus ?case by (auto)
+next
+  case (3 _ f) thus ?case by(cases f) (auto split: if_splits)
+qed
+
+end (* Queue2 *)
+
+locale Queue3
+begin
+
+datatype 'a op = Empty | Enq 'a | Deq
+
+type_synonym 'a queue = "'a list * 'a list"
+
+fun arity :: "'a op \<Rightarrow> nat" where
+"arity Empty = 0" |
+"arity (Enq _) = 1" |
+"arity Deq = 1"
+
 fun balance :: "'a queue \<Rightarrow> 'a queue" where
 "balance(xs,ys) = (if size xs \<le> size ys then (xs,ys) else ([], ys @ rev xs))"
 
@@ -382,6 +422,6 @@ next
   case (3 _ f) thus ?case by(cases f) (auto split: prod.splits)
 qed
 
-end (* Queue2 *)
+end (* Queue3 *)
 
 end
