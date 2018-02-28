@@ -475,11 +475,11 @@ lemma trdsp_in_pideal:
   shows "trdsp bs p q \<in> pideal (set bs)"
   unfolding trdsp_def spoly_def
   apply (rule pideal_closed_trd)
-    subgoal apply (rule pideal_closed_minus)
+    subgoal apply (rule ideal.module_closed_minus)
       subgoal by (rule monom_mult_in_pideal, fact)
       subgoal by (rule monom_mult_in_pideal, fact)
       done
-    subgoal by (fact generator_subset_pideal)
+    subgoal by (fact ideal.generator_subset_module)
   done
 
 lemma trdsp_eq_zero_imp_cbelow_on:
@@ -1040,7 +1040,7 @@ next
     qed
   qed
   also have "... = pideal (set bs)"
-    by (simp add: ind2(2), rule pideal_insert, rule trdsp_in_pideal, fact+)
+    by (simp add: ind2(2), rule ideal.module_insert, rule trdsp_in_pideal, fact+)
   finally show "pideal (set (gbaux apf cf (h # bs) (apf ps bs h))) = pideal (set bs)" .
 qed
 

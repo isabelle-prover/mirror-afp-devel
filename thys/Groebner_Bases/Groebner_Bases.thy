@@ -833,7 +833,7 @@ proof (rule Buchberger_criterion_dgrad_p_set)
   show "(red G)\<^sup>*\<^sup>* (spoly p q) 0"
   proof (rule assms(3))
     show "spoly p q \<in> pideal G" unfolding spoly_def
-      by (rule pideal_closed_minus, (rule pideal_closed_monom_mult, rule generator_in_pideal, fact)+)
+      by (rule ideal.module_closed_minus, (rule pideal_closed_monom_mult, rule ideal.generator_in_module, fact)+)
   next
     note assms(1)
     moreover from \<open>p \<in> G\<close> assms(2) have "p \<in> dgrad_p_set d m" ..
@@ -952,7 +952,7 @@ qed
 lemma GB_insert:
   assumes "is_Groebner_basis G" and "f \<in> pideal G"
   shows "is_Groebner_basis (insert f G)"
-  using assms by (metis GB_alt_1 GB_imp_zero_reducibility pideal_insert red_rtrancl_subset subset_insertI)
+  using assms by (metis GB_alt_1 GB_imp_zero_reducibility ideal.module_insert red_rtrancl_subset subset_insertI)
 
 lemma GB_subset:
   assumes "is_Groebner_basis G" and "G \<subseteq> G'" and "pideal G' = pideal G"
@@ -994,7 +994,7 @@ proof -
     fix f
     assume f1: "f \<in> (pideal ?G')" and "f \<noteq> 0"
       and a1: "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)"
-    from f1 replace_pideal[OF q, of p] have "f \<in> pideal G" ..
+    from f1 ideal.replace_module[OF q, of p] have "f \<in> pideal G" ..
     from a1[rule_format, OF this \<open>f \<noteq> 0\<close>] obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by auto
     show "\<exists>g\<in>?G'. g \<noteq> 0 \<and> lp g adds lp f"
     proof (cases "g = p")
@@ -1024,7 +1024,7 @@ lemma GB_replace_lp_adds_stable_pideal_dgrad_p_set:
   assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and "q \<in> pideal G" and "lp q adds lp p"
   shows "pideal (insert q (G - {p})) = pideal G" (is "pideal ?G' = pideal G")
-proof (rule, rule replace_pideal, fact, rule)
+proof (rule, rule ideal.replace_module, fact, rule)
   fix f
   assume "f \<in> pideal G"
   note assms(1)
@@ -1039,9 +1039,9 @@ proof (rule, rule replace_pideal, fact, rule)
     with irredh show False ..
   qed
   have "f - h \<in> pideal ?G'" by (rule red_rtranclp_diff_in_pideal, rule ftoh)
-  have "f - h \<in> pideal G" by (rule, fact, rule replace_pideal, fact)
-  from pideal_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
-  from pideal_closed_uminus[OF this] have "h \<in> pideal G" by simp
+  have "f - h \<in> pideal G" by (rule, fact, rule ideal.replace_module, fact)
+  from ideal.module_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
+  from ideal.module_closed_uminus[OF this] have "h \<in> pideal G" by simp
   with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
   with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
   thus "f \<in> pideal ?G'" by (simp add: red_rtranclp_0_in_pideal)
@@ -1060,12 +1060,12 @@ proof -
     assume f1: "f \<in> (pideal ?G')" and "f \<noteq> 0"
       and a1: "\<forall>f\<in>pideal G. f \<noteq> 0 \<longrightarrow> is_red G f"
     have "q \<in> pideal G"
-    proof (rule pideal_closed_red, rule pideal_mono)
-      from generator_subset_pideal \<open>p \<in> G\<close> show "p \<in> pideal G" ..
+    proof (rule pideal_closed_red, rule ideal.module_mono)
+      from ideal.generator_subset_module \<open>p \<in> G\<close> show "p \<in> pideal G" ..
     next
       show "G - {p} \<subseteq> G" by (rule Diff_subset)
     qed (rule q)
-    from f1 replace_pideal[OF this, of p] have "f \<in> pideal G" ..
+    from f1 ideal.replace_module[OF this, of p] have "f \<in> pideal G" ..
     have "is_red G f" by (rule a1[rule_format], fact+)
     show "is_red ?G' f" by (rule replace_red_stable_is_red, fact+)
   qed
@@ -1076,11 +1076,11 @@ lemma GB_replace_red_stable_pideal_dgrad_p_set:
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "red (G - {p}) p q"
   shows "pideal (insert q (G - {p})) = pideal G" (is "pideal ?G' = _")
 proof -
-  from \<open>p \<in> G\<close> generator_subset_pideal have "p \<in> pideal G" ..
+  from \<open>p \<in> G\<close> ideal.generator_subset_module have "p \<in> pideal G" ..
   have "q \<in> pideal G"
-    by (rule pideal_closed_red, rule pideal_mono, rule Diff_subset, rule \<open>p \<in> pideal G\<close>, rule ptoq)
+    by (rule pideal_closed_red, rule ideal.module_mono, rule Diff_subset, rule \<open>p \<in> pideal G\<close>, rule ptoq)
   show ?thesis
-  proof (rule, rule replace_pideal, fact, rule)
+  proof (rule, rule ideal.replace_module, fact, rule)
     fix f
     assume "f \<in> pideal G"
     note assms(1)
@@ -1095,9 +1095,9 @@ proof -
       with irredh show False ..
     qed
     have "f - h \<in> pideal ?G'" by (rule red_rtranclp_diff_in_pideal, rule ftoh)
-    have "f - h \<in> pideal G" by (rule, fact, rule replace_pideal, fact)
-    from pideal_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
-    from pideal_closed_uminus[OF this] have "h \<in> pideal G" by simp
+    have "f - h \<in> pideal G" by (rule, fact, rule ideal.replace_module, fact)
+    from ideal.module_closed_minus[OF this \<open>f \<in> pideal G\<close>] have "-h \<in> pideal G" by simp
+    from ideal.module_closed_uminus[OF this] have "h \<in> pideal G" by simp
     with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
     with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
     thus "f \<in> pideal ?G'" by (simp add: red_rtranclp_0_in_pideal)
@@ -1129,7 +1129,7 @@ next
         with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
         hence "insert y (G - {p}) = ?G'" by auto
         with step(3) have "is_Groebner_basis ?G'" by simp
-        from \<open>y \<in> ?G'\<close> generator_subset_pideal have "y \<in> pideal ?G'" ..
+        from \<open>y \<in> ?G'\<close> ideal.generator_subset_module have "y \<in> pideal ?G'" ..
         have "z \<in> pideal ?G'" by (rule pideal_closed_red, rule subset_refl, fact+)
         show "is_Groebner_basis (insert z ?G')" by (rule GB_insert, fact+)
       next
@@ -1170,9 +1170,9 @@ next
       case True
       with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
       hence eq: "insert y ?G' = ?G'" by auto
-      from \<open>y \<in> ?G'\<close> generator_subset_pideal have "y \<in> pideal ?G'" ..
+      from \<open>y \<in> ?G'\<close> ideal.generator_subset_module have "y \<in> pideal ?G'" ..
       have "z \<in> pideal ?G'" by (rule pideal_closed_red, rule subset_refl, fact+)
-      hence "pideal (insert z ?G') = pideal ?G'" by (rule pideal_insert)
+      hence "pideal (insert z ?G') = pideal ?G'" by (rule ideal.module_insert)
       also from step(3) have "... = pideal G" by (simp only: eq)
       finally show ?thesis .
     next
@@ -1268,7 +1268,7 @@ proof -
     qed fact
   qed
   have sub1: "pideal G \<subseteq> pideal F"
-  proof (rule pideal_subset_pidealI, rule)
+  proof (rule ideal.module_subset_moduleI, rule)
     fix g
     assume "g \<in> G"
     from G[OF this] show "g \<in> pideal F" ..
@@ -1293,10 +1293,10 @@ proof -
     show "pideal G = pideal F"
     proof
       show "pideal F \<subseteq> pideal G"
-      proof (rule pideal_subset_pidealI, rule)
+      proof (rule ideal.module_subset_moduleI, rule)
         fix f
         assume "f \<in> F"
-        hence "f \<in> pideal F" by (rule generator_in_pideal)
+        hence "f \<in> pideal F" by (rule ideal.generator_in_module)
         from \<open>f \<in> F\<close> assms(2) have "f \<in> dgrad_p_set d m" ..
         with assms(1) sub2 sub1 _ \<open>f \<in> pideal F\<close> have "(red G)\<^sup>*\<^sup>* f 0"
         proof (rule is_red_implies_0_red_dgrad_p_set)
