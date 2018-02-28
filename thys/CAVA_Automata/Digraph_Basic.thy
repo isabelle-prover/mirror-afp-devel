@@ -1,8 +1,8 @@
 section {* Relations interpreted as Directed Graphs *}
 theory Digraph_Basic
 imports   
-  Misc
-  Refine_Util
+  "Automatic_Refinement.Misc"
+  "Automatic_Refinement.Refine_Util"
   "HOL-Library.Omega_Words_Fun"
 begin
 

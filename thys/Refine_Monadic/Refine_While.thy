@@ -1292,30 +1292,26 @@ theorem nofail_WHILEIT_wf_rel:
   shows "wf ((rwof_rel init cond step)\<inverse>)"
 proof (rule ccontr)
   assume "\<not>wf ((rwof_rel init cond step)\<inverse>)"
-  then obtain f where IP: "ipath (rwof_rel init cond step) f"
-    by (auto simp: wf_iff_no_infinite_down_chain ipath_def)
-  hence "rwof init cond step (f 0)" by (auto simp: rwof_rel_def ipath_def) 
-  then obtain s0 w where 
-    "path (rwof_rel init cond step) s0 w (f 0)" 
-    "inres init s0"
-    apply -
-    apply (drule rwof_reachable)
-    apply (auto elim: rtrancl_is_path)
-    done
-  with IP have "ipath (rwof_rel init cond step) (w\<frown>f)" "inres init ((w\<frown>f) 0)"
-    apply -
-    apply (auto simp: ipath_conc_conv) []
-    apply (cases w, auto simp: path_simps conc_def) []
-    done
-  then obtain f where 
-    P: "ipath (rwof_rel init cond step) f" 
-    and I: "inres init (f 0)" ..
+  then obtain f where IP: "\<And> i. (f i, f (Suc i)) \<in> rwof_rel init cond step"
+    unfolding wf_iff_no_infinite_down_chain by auto
+  hence "rwof init cond step (f 0)" by (auto simp: rwof_rel_def)
+  then obtain s0 sn where "(s0, sn) \<in> (rwof_rel init cond step)\<^sup>*" "inres init s0" "sn = f 0"
+    using rwof_reachable by metis
+  then obtain f where P: "\<And> i. (f i, f (Suc i)) \<in> rwof_rel init cond step" and I: "inres init (f 0)"
+  using IP
+  proof (induct arbitrary: f)
+    case (step sk sn)
+    let ?f = "case_nat sk f"
+    have "sk = ?f 0" "\<And> i. (?f i, ?f (Suc i)) \<in> rwof_rel init cond step"
+      using step by (auto split: nat.splits)
+    then show ?case using step by blast
+  qed auto
 
   from P have [simp]: "\<And>i. cond (f i)"
-    unfolding ipath_def rwof_rel_def by auto
+    unfolding rwof_rel_def by auto
 
   from P have SIR: "\<And>i. inres (step (f i)) (f (Suc i))"
-    unfolding ipath_def rwof_rel_def by auto
+    unfolding rwof_rel_def by auto
 
   define F where "F = (WHILEI_body (\<bind>) RETURN I cond step)"
 

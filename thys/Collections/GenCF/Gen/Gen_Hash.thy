@@ -10,7 +10,7 @@ lemma prod_bhc_ga[autoref_ga_rules]:
   \<Longrightarrow> is_bounded_hashcode (R\<times>\<^sub>rS) (prod_eq eq1 eq2) (prod_bhc bhc1 bhc2)"
   unfolding is_bounded_hashcode_def prod_bhc_def prod_eq_def[abs_def]
   apply safe
-  apply (auto dest: fun_relD)
+  apply (auto dest: fun_relD simp: Domain_unfold; metis)+
   done
 
 lemma prod_dhs_ga[autoref_ga_rules]:

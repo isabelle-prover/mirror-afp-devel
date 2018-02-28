@@ -13,7 +13,6 @@ imports
   Indep_Vars
   Select_Solve
   Mk_Record_Simp
-  Digraph_Basic
 begin
   ML_file "Cond_Rewr_Conv.ML"
   ML_file "Revert_Abbrev.ML"

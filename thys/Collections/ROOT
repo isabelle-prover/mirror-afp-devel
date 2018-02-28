@@ -137,6 +137,9 @@ session Collections (AFP) = Refine_Monadic +
 session Collections_Examples (AFP) = Collections +
   options [timeout = 1200]
 
+  sessions
+     CAVA_Automata
+
   (* Examples *)
   theories
     "Examples/Examples_Chapter"

@@ -5,6 +5,7 @@ session Formal_SSA (AFP) = Collections +
   sessions
     Dijkstra_Shortest_Path
     Slicing
+    CAVA_Automata
   theories
     FormalSSA_Misc
     Serial_Rel
