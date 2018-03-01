@@ -572,16 +572,24 @@ qed
 
 corollary Buchberger_criterion_dgrad_p_set:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
-  assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
+  assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> p \<noteq> q \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
   shows "is_Groebner_basis F"
   using assms(1) assms(2)
 proof (rule crit_pair_cbelow_imp_GB_dgrad_p_set)
   fix p q
   assume "p \<in> F" and "q \<in> F" and "p \<noteq> 0" and "q \<noteq> 0"
-  from this(1) this(2) have "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m" using assms(2) by auto
-  from assms(1) assms(2) this \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> show "crit_pair_cbelow_on d m F p q"
-  proof (rule spoly_red_zero_imp_crit_pair_cbelow_on)
-    from \<open>p \<in> F\<close> \<open>q \<in> F\<close> show "(red F)\<^sup>*\<^sup>* (spoly p q) 0" by (rule assms(3))
+  from this(1) this(2) have p: "p \<in> dgrad_p_set d m" and q: "q \<in> dgrad_p_set d m"
+    using assms(2) by auto
+  show "crit_pair_cbelow_on d m F p q"
+  proof (cases "p = q")
+    case True
+    from assms(1) q show ?thesis unfolding True by (rule crit_pair_cbelow_same)
+  next
+    case False
+    from assms(1) assms(2) p q \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> show ?thesis
+    proof (rule spoly_red_zero_imp_crit_pair_cbelow_on)
+      from \<open>p \<in> F\<close> \<open>q \<in> F\<close> \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> False show "(red F)\<^sup>*\<^sup>* (spoly p q) 0" by (rule assms(3))
+    qed
   qed
 qed
 
@@ -771,6 +779,52 @@ proof -
     qed
   qed
 qed
+
+lemma pideal_eqI_adds_lp_dgrad_p_set:
+  fixes G::"('a \<Rightarrow>\<^sub>0 'b::field) set"
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m" and "B \<subseteq> dgrad_p_set d m" and "pideal G \<subseteq> pideal B"
+  assumes "\<And>f. f \<in> pideal B \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)"
+  shows "pideal G = pideal B"
+proof
+  show "pideal B \<subseteq> pideal G"
+  proof (rule ideal.module_subset_moduleI, rule)
+    fix p
+    assume "p \<in> B"
+    hence "p \<in> pideal B" and "p \<in> dgrad_p_set d m"
+      by (rule ideal.generator_in_module, rule, intro assms(3))
+    with assms(1, 2, 4) _ have "(red G)\<^sup>*\<^sup>* p 0"
+    proof (rule is_red_implies_0_red_dgrad_p_set)
+      fix f
+      assume "f \<in> pideal B" and "f \<in> dgrad_p_set d m" and "f \<noteq> 0"
+      hence "(\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)" by (rule assms(5))
+      then obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by blast
+      thus "is_red G f" using \<open>f \<noteq> 0\<close> is_red_indI1 by blast
+    qed
+    thus "p \<in> pideal G" by (rule red_rtranclp_0_in_pideal)
+  qed
+qed fact
+
+lemma pideal_eqI_adds_lp_dgrad_p_set':
+  fixes G::"('a \<Rightarrow>\<^sub>0 'b::field) set"
+  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m" and "pideal G \<subseteq> pideal B"
+  assumes "\<And>f. f \<in> pideal B \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)"
+  shows "pideal G = pideal B"
+proof
+  show "pideal B \<subseteq> pideal G"
+  proof
+    fix p
+    assume "p \<in> pideal B"
+    with assms(1, 2, 3) _ have "(red G)\<^sup>*\<^sup>* p 0"
+    proof (rule is_red_implies_0_red_dgrad_p_set')
+      fix f
+      assume "f \<in> pideal B" and "f \<noteq> 0"
+      hence "(\<exists>g\<in>G. g \<noteq> 0 \<and> lp g adds lp f)" by (rule assms(4))
+      then obtain g where "g \<in> G" and "g \<noteq> 0" and "lp g adds lp f" by blast
+      thus "is_red G f" using \<open>f \<noteq> 0\<close> is_red_indI1 by blast
+    qed
+    thus "p \<in> pideal G" by (rule red_rtranclp_0_in_pideal)
+  qed
+qed fact
 
 lemma GB_implies_unique_nf_dgrad_p_set:
   assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
@@ -968,6 +1022,7 @@ lemmas is_red_implies_0_red_finite = is_red_implies_0_red_dgrad_p_set'[OF dickso
 lemmas GB_implies_unique_nf_finite = GB_implies_unique_nf_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas GB_alt_2_finite = GB_alt_2_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas GB_alt_3_finite = GB_alt_3_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+lemmas pideal_eqI_adds_lp_finite = pideal_eqI_adds_lp_dgrad_p_set'[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 
 subsection \<open>Replacing Elements in Gr\"obner Bases\<close>
 

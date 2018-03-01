@@ -853,6 +853,17 @@ qed
 lemma (in -) times_sum_monomials: "q * p = (\<Sum>t\<in>keys q. monom_mult (lookup q t) t p)"
   by (simp only: times_monomial_left[symmetric] sum_distrib_right[symmetric] poly_mapping_sum_monomials)
 
+lemma fun_times_commute:
+  assumes "f 0 = 0" and "\<And>x y. f (x + y) = f x + f y"
+    and "\<And>c t. f (monom_mult c t p) = monom_mult c t (f p)"
+  shows "f (q * p) = q * (f p)"
+  by (simp add: times_sum_monomials assms(3)[symmetric], rule fun_sum_commute, fact+)
+
+lemma fun_times_commute_canc:
+  assumes "\<And>x y. f (x + y) = f x + f y" and "\<And>c t. f (monom_mult c t p) = monom_mult c t (f p)"
+  shows "f (q * p) = q * (f (p::'a::comm_powerprod \<Rightarrow>\<^sub>0 'b::{semiring_0,cancel_comm_monoid_add}))"
+  by (simp add: times_sum_monomials assms(2)[symmetric], rule fun_sum_commute_canc, fact)
+
 lemma monomial_sum: "monomial (sum f C) t = (\<Sum>c\<in>C. monomial (f c) t)"
   by (rule fun_sum_commute, simp_all add: single_add)
 
@@ -3262,6 +3273,187 @@ proof
   moreover from assms(1) have "lc p \<noteq> 0" by (rule lc_not_0)
   moreover from assms(2) have "lc q \<noteq> 0" by (rule lc_not_0)
   ultimately show False by simp
+qed
+
+subsubsection \<open>Lists of Keys\<close>
+
+text \<open>Function "pps_to_list" turns finite sets of power-products into sorted lists, where the lists
+  are sorted descending (i.e. greater elements come before smaller ones).\<close>
+
+definition pps_to_list :: "'a set \<Rightarrow> 'a list" where
+  "pps_to_list S = rev (ordered_powerprod_lin.sorted_list_of_set S)"
+
+definition keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a list"
+  where "keys_to_list p = pps_to_list (keys p)"
+
+definition Keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) list \<Rightarrow> 'a list"
+  where "Keys_to_list ps = fold (\<lambda>p ts. merge_wrt (\<succ>) (keys_to_list p) ts) ps []"
+
+lemma distinct_pps_to_list: "distinct (pps_to_list S)"
+  unfolding pps_to_list_def distinct_rev by (rule ordered_powerprod_lin.distinct_sorted_list_of_set)
+
+lemma set_pps_to_list:
+  assumes "finite S"
+  shows "set (pps_to_list S) = S"
+  unfolding pps_to_list_def set_rev using assms by simp
+
+lemma length_pps_to_list: "length (pps_to_list S) = card S"
+proof (cases "finite S")
+  case True
+  from distinct_card[OF distinct_pps_to_list] have "length (pps_to_list S) = card (set (pps_to_list S))"
+    by simp
+  also from True have "... = card S" by (simp only: set_pps_to_list)
+  finally show ?thesis .
+next
+  case False
+  thus ?thesis by (simp add: pps_to_list_def)
+qed
+
+lemma pps_to_list_sorted_wrt: "sorted_wrt (\<succ>) (pps_to_list S)"
+proof -
+  have "sorted_wrt (\<succeq>) (pps_to_list S)"
+    proof -
+    have tr: "transp (\<succeq>)" using transp_def by fastforce
+    have *: "(\<lambda>x y. y \<succeq> x) = (\<preceq>)" by simp
+    show ?thesis
+      by (simp only: pps_to_list_def sorted_wrt_rev * ordered_powerprod_lin.sorted_sorted_wrt[symmetric],
+          rule ordered_powerprod_lin.sorted_sorted_list_of_set)
+  qed
+  with distinct_pps_to_list have "sorted_wrt (\<lambda>x y. x \<succeq> y \<and> x \<noteq> y) (pps_to_list S)"
+    by (rule distinct_sorted_wrt_imp_sorted_wrt_strict)
+  moreover have "(\<succ>) = (\<lambda>x y. x \<succeq> y \<and> x \<noteq> y)"
+    using ordered_powerprod_lin.dual_order.order_iff_strict by auto
+  ultimately show ?thesis by simp
+qed
+
+lemma pps_to_list_nth_leI:
+  assumes "j \<le> i" and "i < card S"
+  shows "(pps_to_list S) ! i \<preceq> (pps_to_list S) ! j"
+proof (cases "j = i")
+  case True
+  show ?thesis by (simp add: True)
+next
+  case False
+  with assms(1) have "j < i" by simp
+  let ?ts = "pps_to_list S"
+  have "transp (\<succ>)" unfolding transp_def by fastforce
+  hence "(?ts ! j) \<succ> (?ts ! i)" using pps_to_list_sorted_wrt \<open>j < i\<close>
+  proof (rule sorted_wrt_nth_mono)
+    from assms(2) show "i < length ?ts" by (simp only: length_pps_to_list)
+  qed
+  thus ?thesis by simp
+qed
+
+lemma pps_to_list_nth_lessI:
+  assumes "j < i" and "i < card S"
+  shows "(pps_to_list S) ! i \<prec> (pps_to_list S) ! j"
+proof -
+  let ?ts = "pps_to_list S"
+  from assms(1) have "j \<le> i" and "i \<noteq> j" by simp_all
+  with assms(2) have "i < length ?ts" and "j < length ?ts" by (simp_all only: length_pps_to_list)
+  show ?thesis
+  proof (rule ordered_powerprod_lin.neq_le_trans)
+    from \<open>i \<noteq> j\<close> show "?ts ! i \<noteq> ?ts ! j"
+      by (simp add: nth_eq_iff_index_eq[OF distinct_pps_to_list \<open>i < length ?ts\<close> \<open>j < length ?ts\<close>])
+  next
+    from \<open>j \<le> i\<close> assms(2) show "?ts ! i \<preceq> ?ts ! j" by (rule pps_to_list_nth_leI)
+  qed
+qed
+
+lemma pps_to_list_nth_leD:
+  assumes "(pps_to_list S) ! i \<preceq> (pps_to_list S) ! j" and "j < card S"
+  shows "j \<le> i"
+proof (rule ccontr)
+  assume "\<not> j \<le> i"
+  hence "i < j" by simp
+  from this \<open>j < card S\<close> have "(pps_to_list S) ! j \<prec> (pps_to_list S) ! i" by (rule pps_to_list_nth_lessI)
+  with assms(1) show False by simp
+qed
+
+lemma pps_to_list_nth_lessD:
+  assumes "(pps_to_list S) ! i \<prec> (pps_to_list S) ! j" and "j < card S"
+  shows "j < i"
+proof (rule ccontr)
+  assume "\<not> j < i"
+  hence "i \<le> j" by simp
+  from this \<open>j < card S\<close> have "(pps_to_list S) ! j \<preceq> (pps_to_list S) ! i" by (rule pps_to_list_nth_leI)
+  with assms(1) show False by simp
+qed
+
+lemma set_keys_to_list: "set (keys_to_list p) = keys p"
+  by (simp add: keys_to_list_def set_pps_to_list)
+
+lemma length_keys_to_list: "length (keys_to_list p) = card (keys p)"
+  by (simp only: keys_to_list_def length_pps_to_list)
+
+lemma keys_to_list_zero [simp]: "keys_to_list 0 = []"
+  by (simp add: keys_to_list_def pps_to_list_def)
+
+lemma Keys_to_list_Nil [simp]: "Keys_to_list [] = []"
+  by (simp add: Keys_to_list_def)
+
+lemma set_Keys_to_list: "set (Keys_to_list ps) = Keys (set ps)"
+proof -
+  have "set (Keys_to_list ps) = (\<Union>p\<in>set ps. set (keys_to_list p)) \<union> set []"
+    unfolding Keys_to_list_def by (rule set_fold, simp only: set_merge_wrt)
+  also have "... = Keys (set ps)" by (simp add: Keys_def set_keys_to_list)
+  finally show ?thesis .
+qed
+
+lemma Keys_to_list_sorted_wrt_aux:
+  assumes "sorted_wrt (\<succ>) ts"
+  shows "sorted_wrt (\<succ>) (fold (\<lambda>p ts. merge_wrt (\<succ>) (keys_to_list p) ts) ps ts)"
+  using assms
+proof (induct ps arbitrary: ts)
+  case Nil
+  thus ?case by simp
+next
+  case (Cons p ps)
+  show ?case
+  proof (simp only: fold.simps o_def, rule Cons(1), rule sorted_merge_wrt)
+    show "transp (\<succ>)" unfolding transp_def by fastforce
+  next
+    fix x y :: 'a
+    assume "x \<noteq> y"
+    thus "x \<succ> y \<or> y \<succ> x" by auto
+  next
+    show "sorted_wrt (\<succ>) (keys_to_list p)" unfolding keys_to_list_def
+      by (fact pps_to_list_sorted_wrt)
+  qed fact
+qed
+
+corollary Keys_to_list_sorted_wrt: "sorted_wrt (\<succ>) (Keys_to_list ps)"
+  unfolding Keys_to_list_def
+proof (rule Keys_to_list_sorted_wrt_aux)
+  show "sorted_wrt (\<succ>) []" by simp
+qed
+
+corollary distinct_Keys_to_list: "distinct (Keys_to_list ps)"
+proof (rule distinct_sorted_wrt_irrefl)
+  show "irreflp (\<succ>)" by (simp add: irreflp_def)
+next
+  show "transp (\<succ>)" unfolding transp_def by fastforce
+next
+  show "sorted_wrt (\<succ>) (Keys_to_list ps)" by (fact Keys_to_list_sorted_wrt)
+qed
+
+lemma length_Keys_to_list: "length (Keys_to_list ps) = card (Keys (set ps))"
+proof -
+  from distinct_Keys_to_list have "card (set (Keys_to_list ps)) = length (Keys_to_list ps)"
+    by (rule distinct_card)
+  thus ?thesis by (simp only: set_Keys_to_list)
+qed
+
+lemma Keys_to_list_eq_pps_to_list: "Keys_to_list ps = pps_to_list (Keys (set ps))"
+  using _ _ Keys_to_list_sorted_wrt distinct_Keys_to_list pps_to_list_sorted_wrt distinct_pps_to_list
+proof (rule sorted_wrt_distinct_set_unique)
+  show "transp (\<succ>)" unfolding transp_def by fastforce
+next
+  show "antisymp (\<succ>)" unfolding antisymp_def by fastforce
+next
+  from finite_set have fin: "finite (Keys (set ps))" by (rule finite_Keys)
+  show "set (Keys_to_list ps) = set (pps_to_list (Keys (set ps)))"
+    by (simp add: set_Keys_to_list set_pps_to_list[OF fin])
 qed
 
 end (* ordered_powerprod *)
