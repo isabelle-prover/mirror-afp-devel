@@ -238,16 +238,18 @@ begin
 lemma comp_fun_commute_sample_var: "comp_fun_commute (\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m))"
 by unfold_locales(auto intro!: memo_commute simp add: fun_eq_iff sample_var_def bind_sample1 bind_sample2 return_bind sample_get)
 
-interpretation sample_var: comp_fun_commute "\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)" for X
+interpretation sample_var: comp_fun_commute "\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)"
   rewrites "\<And>X m A. Finite_Set.fold (\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)) m A \<equiv> sample_vars X A m"
+  for X
 by(rule comp_fun_commute_sample_var)(simp add: sample_vars_def)
 
 lemma comp_fun_idem_sample_var: "comp_fun_idem (\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m))"
 by unfold_locales(simp add: fun_eq_iff memo_same)
 
-interpretation sample_var: comp_fun_idem "\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)" for X
+interpretation sample_var: comp_fun_idem "\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)"
   rewrites "\<And>X m A. Finite_Set.fold (\<lambda>x m. bind (memo (sample_var X) x) (\<lambda>_. m)) m A \<equiv> sample_vars X A m"
-by(rule comp_fun_idem_sample_var)(simp add: sample_vars_def)
+  for X
+  by(rule comp_fun_idem_sample_var)(simp add: sample_vars_def)
 
 lemma sample_vars_empty [simp]: "sample_vars X {} m = m"
 by(simp add: sample_vars_def)
