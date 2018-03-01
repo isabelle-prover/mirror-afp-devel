@@ -6,7 +6,7 @@ session Groebner_Bases (AFP) = Polynomials +
     "Abstract-Rewriting.Abstract_Rewriting"
     Polynomials.MPoly_Type_Class_FMap
   theories
-    Computations
+    Buchberger_Examples
   document_files
     "root.tex"
     "root.bib"

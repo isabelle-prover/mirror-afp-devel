@@ -750,7 +750,7 @@ qed
 lemma red_uminus:
   assumes "red F p q"
   shows "red F (-p) (-q)"
-  using red_monom_mult[OF assms, of "-1" 0] by (simp add: uminus_monom_mult)
+  using red_monom_mult[OF assms, of "-1" 0] by simp
 
 lemma red_diff:
   assumes "red F (p - q) r"
@@ -917,7 +917,7 @@ lemma srtc_in_pideal:
   using assms unfolding relation.srtc_def
 proof (induct rule: rtranclp.induct)
   fix p
-  from zero_in_pideal[of F] show "p - p \<in> pideal F" by simp
+  from ideal.module_0[of F] show "p - p \<in> pideal F" by simp
 next
   fix p r q
   assume pr_in: "p - r \<in> pideal F" and red: "red F r q \<or> red F q r"
@@ -938,7 +938,7 @@ next
   qed
   hence eq: "p - q = (p - r) + monom_mult c t f" by simp
   show "p - q \<in> pideal F" unfolding eq
-    by (rule pideal_closed_plus, fact, rule monom_mult_in_pideal, fact)
+    by (rule ideal.module_closed_plus, fact, rule monom_mult_in_pideal, fact)
 qed
 
 lemma in_pideal_srtc:
@@ -1015,10 +1015,10 @@ proof -
   have "q - p \<in> pideal A"
   proof
     have "p - q \<in> pideal B" by (rule red_diff_in_pideal, fact)
-    hence "- (p - q) \<in> pideal B" by (rule pideal_closed_uminus)
+    hence "- (p - q) \<in> pideal B" by (rule ideal.module_closed_uminus)
     thus "q - p \<in> pideal B" by simp
   qed fact
-  from pideal_closed_plus[OF this \<open>p \<in> pideal A\<close>] show ?thesis by simp
+  from ideal.module_closed_plus[OF this \<open>p \<in> pideal A\<close>] show ?thesis by simp
 qed
 
 subsection \<open>More Properties of @{const red}, @{const red_single} and @{const is_red}\<close>
@@ -1048,7 +1048,7 @@ qed
 corollary red_rtrancl_uminus:
   assumes "(red F)\<^sup>*\<^sup>* p q"
   shows "(red F)\<^sup>*\<^sup>* (-p) (-q)"
-  using red_rtrancl_mult[OF assms, of "-1" 0] by (simp add: uminus_monom_mult)
+  using red_rtrancl_mult[OF assms, of "-1" 0] by simp
 
 lemma red_rtrancl_diff_induct [consumes 1, case_names base step]:
   assumes a: "(red F)\<^sup>*\<^sup>* (p - q) r"
@@ -1885,13 +1885,11 @@ lemma rd_mult_nadds:
   shows "rd_mult p f = rd_mult (tail p) f"
 using assms by simp
 
-lemma rd_left0:
-  shows "rd 0 f = 0"
-unfolding rd_def by (simp add: rd_mult_left0 Let_def del: rd_mult.simps, rule monom_mult_left0)
+lemma rd_left0: "rd 0 f = 0"
+  by (simp add: rd_def rd_mult_left0 Let_def del: rd_mult.simps)
 
-lemma rd_right0:
-  shows "rd p 0 = p"
-unfolding rd_def by (simp add: rd_mult_right0 Let_def del: rd_mult.simps, rule monom_mult_left0)
+lemma rd_right0: "rd p 0 = p"
+  by (simp add: rd_def rd_mult_right0 Let_def del: rd_mult.simps)
 
 lemma rd_adds:
   assumes "p \<noteq> 0" and "f \<noteq> 0" and "lp f adds lp p"
@@ -2148,7 +2146,7 @@ lemma rd_list_in_pideal_ind:
   shows "p - (rd_list fs p) \<in> pideal bs"
 using assms
 proof (induct fs)
-  from zero_in_pideal show "p - rd_list [] p \<in> pideal bs" by simp
+  from ideal.module_0 show "p - rd_list [] p \<in> pideal bs" by simp
 next
   fix a fs
   assume IH: "set fs \<subseteq> bs \<Longrightarrow> p - rd_list fs p \<in> pideal bs" and a: "set (a # fs) \<subseteq> bs"
@@ -2297,11 +2295,11 @@ qed
 lemma trd_in_pideal: "(p - (trd fs p)) \<in> pideal (set fs)"
 proof (induct p rule: trd_induct)
   fix fs and p::"('a, 'b) poly_mapping"
-  from zero_in_pideal show "p - p \<in> pideal (set fs)" by simp
+  from ideal.module_0 show "p - p \<in> pideal (set fs)" by simp
 next
   fix fs and p::"('a, 'b) poly_mapping"
   assume IH: "(rd_list fs p - trd fs (rd_list fs p)) \<in> pideal (set fs)"
-  from pideal_closed_plus[OF IH rd_list_in_pideal[of p fs]]
+  from ideal.module_closed_plus[OF IH rd_list_in_pideal[of p fs]]
     show "p - trd fs (rd_list fs p) \<in> pideal (set fs)" by simp
 qed
 
@@ -2309,9 +2307,9 @@ lemma pideal_closed_trd:
   assumes "p \<in> pideal B" and "set fs \<subseteq> pideal B"
   shows "(trd fs p) \<in> pideal B"
 proof -
-  from assms(2) have "pideal (set fs) \<subseteq> pideal B" by (rule pideal_subset_pidealI)
+  from assms(2) have "pideal (set fs) \<subseteq> pideal B" by (rule ideal.module_subset_moduleI)
   with trd_in_pideal have "p - trd fs p \<in> pideal B" ..
-  with assms(1) have "p - (p - trd fs p) \<in> pideal B" by (rule pideal_closed_minus)
+  with assms(1) have "p - (p - trd fs p) \<in> pideal B" by (rule ideal.module_closed_minus)
   thus ?thesis by simp
 qed
 
