@@ -100,4 +100,52 @@ definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
 lemma set_insert_list: "set (insert_list x xs) = insert x (set xs)"
   by (auto simp add: insert_list_def)
 
+subsection \<open>@{term map_idx}\<close>
+
+primrec map_idx :: "('a \<Rightarrow> nat \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> 'b list" where
+  "map_idx f [] n = []"|
+  "map_idx f (x # xs) n = (f x n) # (map_idx f xs (Suc n))"
+
+lemma map_idx_eq_map2: "map_idx f xs n = map2 f xs [n..<n + length xs]"
+proof (induct xs arbitrary: n)
+  case Nil
+  show ?case by simp
+next
+  case (Cons x xs)
+  have eq: "[n..<n + length (x # xs)] = n # [Suc n..<Suc (n + length xs)]"
+    by (metis add_Suc_right length_Cons less_add_Suc1 upt_conv_Cons)
+  show ?case unfolding eq by (simp add: Cons del: upt_Suc)
+qed
+
+lemma length_map_idx [simp]: "length (map_idx f xs n) = length xs"
+  by (simp add: map_idx_eq_map2)
+
+lemma map_idx_append: "map_idx f (xs @ ys) n = (map_idx f xs n) @ (map_idx f ys (n + length xs))"
+  by (simp add: map_idx_eq_map2 ab_semigroup_add_class.add_ac(1) zip_append1)
+
+lemma map_idx_nth:
+  assumes "i < length xs"
+  shows "(map_idx f xs n) ! i = f (xs ! i) (n + i)"
+  using assms by (simp add: map_idx_eq_map2)
+
+lemma map_map_idx: "map f (map_idx g xs n) = map_idx (\<lambda>x i. f (g x i)) xs n"
+  by (auto simp add: map_idx_eq_map2)
+
+lemma map_idx_map: "map_idx f (map g xs) n = map_idx (f \<circ> g) xs n"
+  by (simp add: map_idx_eq_map2 map_zip_map)
+
+lemma map_idx_no_idx: "map_idx (\<lambda>x _. f x) xs n = map f xs"
+  by (induct xs arbitrary: n, simp_all)
+
+lemma map_idx_no_elem: "map_idx (\<lambda>_. f) xs n = map f [n..<n + length xs]"
+proof (induct xs arbitrary: n)
+  case Nil
+  show ?case by simp
+next
+  case (Cons x xs)
+  have eq: "[n..<n + length (x # xs)] = n # [Suc n..<Suc (n + length xs)]"
+    by (metis add_Suc_right length_Cons less_add_Suc1 upt_conv_Cons)
+  show ?case unfolding eq by (simp add: Cons del: upt_Suc)
+qed
+
 end (* theory *)

@@ -384,11 +384,11 @@ qed
 subsection \<open>Buchberger's Theorem\<close>
 
 text \<open>Before proving the main theorem of Gr\"obner bases theory for S-polynomials, as is usually done
-  in textbooks, we first prove it for critical pairs: a set @{term F} yields a confluent reduction
-  relation if the critical pairs of all @{term "p \<in> F"} and @{term "q \<in> F"} can be connected below
-  the least common sum of the leading power-products of @{term p} and @{term q}.
-  The reason why we proceed in this way is that it becomes much easier to prove the correctness of
-  Buchberger's second criterion for avoiding useless pairs.\<close>
+  in textbooks, we first prove it for critical pairs: a set \<open>F\<close> yields a confluent reduction
+  relation if the critical pairs of all @{prop \<open>p \<in> F\<close>} and @{prop \<open>q \<in> F\<close>} can be connected below
+  the least common sum of the leading power-products of \<open>p\<close> and \<open>q\<close>.
+  The reason why we proceed in this way is that proving the correctness of Buchberger's second
+  criterion for avoiding useless pairs gets much easier.\<close>
 
 lemma crit_pair_cbelow_imp_confluent_dgrad_p_set:
   assumes dg: "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
@@ -1410,14 +1410,14 @@ lemmas finite_some_GB_finite = finite_some_GB_dgrad_p_set[OF dickson_grading_dgr
 lemmas some_GB_isGB_finite = some_GB_isGB_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 lemmas some_GB_pideal_finite = some_GB_pideal_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 
-text \<open>Theory \<open>Buchberger_Algorithm\<close> implements an algorithm for effectively computing Gr\"obner bases.\<close>
+text \<open>Theory \<open>Buchberger\<close> implements an algorithm for effectively computing Gr\"obner bases.\<close>
 
 subsection \<open>Relation @{term red_supset}\<close>
 
-text \<open>The following relation is needed for proving the termination of Buchberger's algorithm (i.e.
-  function @{term gbaux}).\<close>
+text \<open>The following relation is needed for proving the termination of the algorithm schema in theory
+  \<open>Algorithm_Schema\<close>, i.\,e. function \<open>gb_schema_aux\<close>).\<close>
 
-definition red_supset::"('a, 'b::field) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set \<Rightarrow> bool" (infixl "\<sqsupset>p" 50)
+definition red_supset::"('a \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> bool" (infixl "\<sqsupset>p" 50)
   where "red_supset A B \<equiv> (\<exists>p. is_red A p \<and> \<not> is_red B p) \<and> (\<forall>p. is_red B p \<longrightarrow> is_red A p)"
 
 lemma red_supsetE:

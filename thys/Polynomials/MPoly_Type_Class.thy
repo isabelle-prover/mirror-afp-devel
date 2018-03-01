@@ -3277,9 +3277,6 @@ qed
 
 subsubsection \<open>Lists of Keys\<close>
 
-text \<open>Function "pps_to_list" turns finite sets of power-products into sorted lists, where the lists
-  are sorted descending (i.e. greater elements come before smaller ones).\<close>
-
 definition pps_to_list :: "'a set \<Rightarrow> 'a list" where
   "pps_to_list S = rev (ordered_powerprod_lin.sorted_list_of_set S)"
 
@@ -3288,6 +3285,9 @@ definition keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a
 
 definition Keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) list \<Rightarrow> 'a list"
   where "Keys_to_list ps = fold (\<lambda>p ts. merge_wrt (\<succ>) (keys_to_list p) ts) ps []"
+
+text \<open>Function @{const pps_to_list} turns finite sets of power-products into sorted lists, where the lists
+  are sorted descending (i.\,e. greater elements come before smaller ones).\<close>
 
 lemma distinct_pps_to_list: "distinct (pps_to_list S)"
   unfolding pps_to_list_def distinct_rev by (rule ordered_powerprod_lin.distinct_sorted_list_of_set)
