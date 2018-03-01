@@ -6612,3 +6612,25 @@ abstract =
   big-O style of reasoning.  Finally we compare the expressive power of
   the three systems.
   
+[Architectural_Design_Patterns]
+title = A Theory of Architectural Design Patterns
+author = Diego Marmsoler<>
+topic = Computer Science/System Description Languages
+date = 2018-03-01
+notify = diego.marmsoler@tum.de
+abstract = 
+  The following document formalizes and verifies several architectural
+  design patterns. Each pattern specification is formalized in terms of
+  a locale where the locale assumptions correspond to the assumptions
+  which a pattern poses on an architecture. Thus, pattern specifications
+  may build on top of each other by interpreting the corresponding
+  locale. A pattern is verified using the framework provided by the AFP
+  entry Dynamic Architectures. Currently, the document consists of
+  formalizations of 4 different patterns: the singleton, the publisher
+  subscriber, the blackboard pattern, and the blockchain pattern.
+  Thereby, the publisher component of the publisher subscriber pattern
+  is modeled as an instance of the singleton pattern and the blackboard
+  pattern is modeled as an instance of the publisher subscriber pattern.
+  In general, this entry provides the first steps towards an overall
+  theory of architectural design patterns.
+

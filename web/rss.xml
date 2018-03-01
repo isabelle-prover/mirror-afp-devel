@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Feb 2018 00:00:00 +0000</pubDate>
+    <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Theory of Architectural Design Patterns</title>
+              <link>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</link>
+       <guid>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</guid>
+       <dc:creator> Diego Marmsoler       </dc:creator>
+       <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
+       <description>
+The following document formalizes and verifies several architectural
+design patterns. Each pattern specification is formalized in terms of
+a locale where the locale assumptions correspond to the assumptions
+which a pattern poses on an architecture. Thus, pattern specifications
+may build on top of each other by interpreting the corresponding
+locale. A pattern is verified using the framework provided by the AFP
+entry Dynamic Architectures. Currently, the document consists of
+formalizations of 4 different patterns: the singleton, the publisher
+subscriber, the blackboard pattern, and the blockchain pattern.
+Thereby, the publisher component of the publisher subscriber pattern
+is modeled as an instance of the singleton pattern and the blackboard
+pattern is modeled as an instance of the publisher subscriber pattern.
+In general, this entry provides the first steps towards an overall
+theory of architectural design patterns.</description>
+    </item>
     <item>
        <title>Hoare Logics for Time Bounds</title>
               <link>https://www.isa-afp.org/entries/Hoare_Time.html</link>
@@ -566,30 +588,6 @@ both. The theorem is the mathematical formulation of Adam Smith&#39;s
 famous &lt;i&gt;invisible hand&lt;/i&gt; and states that a group of
 self-interested and rational actors will eventually achieve an
 efficient allocation of goods and services.</description>
-    </item>
-    <item>
-       <title>Root-Balanced Tree</title>
-              <link>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</link>
-       <guid>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;
-Andersson introduced &lt;em&gt;general balanced trees&lt;/em&gt;,
-search trees based on the design principle of partial rebuilding:
-perform update operations naively until the tree becomes too
-unbalanced, at which point a whole subtree is rebalanced.  This article
-defines and analyzes a functional version of general balanced trees,
-which we call &lt;em&gt;root-balanced trees&lt;/em&gt;. Using a lightweight model
-of execution time, amortized logarithmic complexity is verified in
-the theorem prover Isabelle.
-&lt;/p&gt;
-&lt;p&gt;
-This is the Isabelle formalization of the material decribed in the APLAS 2017 article
-&lt;a href=&#34;http://www.in.tum.de/~nipkow/pubs/aplas17.html&#34;&gt;Verified Root-Balanced Trees&lt;/a&gt;
-by the same author, which also presents experimental results that show
-competitiveness of root-balanced with AVL and red-black trees.
-&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
