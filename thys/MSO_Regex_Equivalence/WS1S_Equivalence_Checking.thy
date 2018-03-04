@@ -31,6 +31,7 @@ proof (rule notI)
 qed
 
 global_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} list"
+  rewrites "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a :: {enum, linorder} list)) (case_prod Singleton) = \<QQ> Enum.enum"
   defines
       pre_wf_formula = \<Phi>.pre_wf_formula
   and wf_formula = \<Phi>.wf_formula
@@ -43,7 +44,6 @@ global_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} list"
   and ENC = \<Phi>.ENC
   and dec_interp = \<Phi>.stream_dec
   and any = \<Phi>.any
-  rewrites "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a :: {enum, linorder} list)) (case_prod Singleton) = \<QQ> Enum.enum"
   by unfold_locales (auto simp: \<sigma>_def \<pi>_def \<QQ>_def)
 
 lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of_norm = trans[OF sym[OF \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_norm] \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of]
