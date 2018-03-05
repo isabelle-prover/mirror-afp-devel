@@ -242,43 +242,43 @@ next
       show ?case 
       proof(cases "pbval b ps3")
         case True
-        -- \<open>prepare premise to obtain ...\<close>
+        \<comment> \<open>prepare premise to obtain ...\<close>
         from less(2) obtain x' where P: "P (ps3, x')" and dom: "vars b \<subseteq> dom ps3"  and Suc: "x = Suc x'" unfolding sep_conj_def dollar_def by auto 
         from P dom True have 
            g: "((\<lambda>(s, n). P (s, n) \<and> lmaps_to_axpr b True s)) (ps3, x')" 
             unfolding dollar_def by auto  
-        -- \<open>... the loop body from the outer IH\<close>
+        \<comment> \<open>... the loop body from the outer IH\<close>
         from While(2)[unfolded hoare3_valid_def] g obtain ps3' x'' where C: "(C, ps3) \<Rightarrow>\<^sub>A x'' \<Down> ps3'" and x: "x'' \<le> x'" and P': "(P \<and>* $ 1) (ps3', x' - x'')" by blast
         then obtain x''' where P'': "P (ps3', x''')"  and Suc'': "x' - x'' = Suc x'''" unfolding sep_conj_def dollar_def by auto  
               
         from C big_step_t3_post_dom_conv have "dom ps3 = dom ps3'" by simp
         with dom have dom': "vars b \<subseteq> dom ps3'" by auto
               
-        -- \<open>prepare premises to ...\<close>
+        \<comment> \<open>prepare premises to ...\<close>
         from C big_step_t3_gt0 have gt0: "x'' > 0" by auto
         have "\<exists>ps' m. (WHILE b DO C, ps3') \<Rightarrow>\<^sub>A m \<Down> ps' \<and> m \<le> (x - (1 + x'')) \<and> P (ps', (x - (1 + x'')) - m) \<and> vars b \<subseteq> dom ps' \<and> \<not> pbval b ps'"
           apply(rule less(1))
           using gt0 x Suc apply simp 
             using dom' Suc P' unfolding dollar_def sep_conj_def  
             by force 
-        -- \<open>... obtain the tail of the While loop from the inner IH\<close>
+        \<comment> \<open>... obtain the tail of the While loop from the inner IH\<close>
         then obtain ps3'' m where w: "((WHILE b DO C, ps3') \<Rightarrow>\<^sub>A m \<Down> ps3'')"
                     and m'': "m \<le> (x - (1 + x''))" and P'': "P (ps3'', (x - (1 + x'')) - m)"
                     and dom'': "vars b \<subseteq> dom ps3''" and b'': "\<not> pbval b ps3''" by auto
         
-        -- \<open>combine body and tail to one loop unrolling:\<close>
-        -- \<open>- the Bigstep Semantic\<close>
+        \<comment> \<open>combine body and tail to one loop unrolling:\<close>
+        \<comment> \<open>- the Bigstep Semantic\<close>
         have BigStep: "(WHILE b DO C, ps3) \<Rightarrow>\<^sub>A 1 + x'' + m \<Down> ps3''"
           apply(rule big_step_t_part.WhileTrue)
               apply (fact True) apply (fact dom) apply (fact C) apply (fact w) by simp            
-        -- \<open>- the TimeBound\<close> 
+        \<comment> \<open>- the TimeBound\<close> 
         have TimeBound: "1 + x'' + m \<le> x"
           using m'' Suc'' Suc by simp            
-        -- \<open>- the invariantPreservation\<close> 
+        \<comment> \<open>- the invariantPreservation\<close> 
         have invariantPreservation: "P (ps3'', x - (1 + x'' + m))" using P'' m'' by auto 
             
             
-        -- \<open>finally combine BigStep Semantic, TimeBound, invariantPreservation\<close>
+        \<comment> \<open>finally combine BigStep Semantic, TimeBound, invariantPreservation\<close>
         show ?thesis
           apply(rule exI[where x="ps3''"])
           apply(rule exI[where x="1 + x'' + m"]) 

@@ -107,7 +107,7 @@ lemma assumes "(IF b THEN SKIP ELSE SKIP, s) \<Rightarrow> t"
 shows "t = s"
 proof-
   from assms show ?thesis
-  proof cases  --"inverting assms"
+  proof cases  \<comment> \<open>inverting assms\<close>
     case IfTrue thm IfTrue
     thus ?thesis by blast
   next
@@ -134,7 +134,7 @@ proof
   with c1
   show "(c1;; (c2;; c3), s) \<Rightarrow> s'" by (rule Seq)
 next
-  -- "The other direction is analogous"
+  \<comment> \<open>The other direction is analogous\<close>
   assume "(c1;; (c2;; c3), s) \<Rightarrow> s'"
   thus "(c1;; c2;; c3, s) \<Rightarrow> s'" by auto
 qed
@@ -162,54 +162,54 @@ Warning: @{text"\<sim>"} is the symbol written \verb!\ < s i m >! (without space
 lemma unfold_while:
   "(WHILE b DO c) \<sim> (IF b THEN c;; WHILE b DO c ELSE SKIP)" (is "?w \<sim> ?iw")
 proof -
-  -- "to show the equivalence, we look at the derivation tree for"
-  -- "each side and from that construct a derivation tree for the other side"
+  \<comment> \<open>to show the equivalence, we look at the derivation tree for\<close>
+  \<comment> \<open>each side and from that construct a derivation tree for the other side\<close>
   { fix s t assume "(?w, s) \<Rightarrow> t"
-    -- "as a first thing we note that, if @{text b} is @{text False} in state @{text s},"
-    -- "then both statements do nothing:"
+    \<comment> \<open>as a first thing we note that, if @{text b} is @{text False} in state @{text s},\<close>
+    \<comment> \<open>then both statements do nothing:\<close>
     { assume "\<not>bval b s"
       hence "t = s" using `(?w,s) \<Rightarrow> t` by blast
       hence "(?iw, s) \<Rightarrow> t" using `\<not>bval b s` by blast
     }
     moreover
-    -- "on the other hand, if @{text b} is @{text True} in state @{text s},"
-    -- {* then only the @{text WhileTrue} rule can have been used to derive @{text "(?w, s) \<Rightarrow> t"} *}
+    \<comment> \<open>on the other hand, if @{text b} is @{text True} in state @{text s},\<close>
+    \<comment> \<open>then only the @{text WhileTrue} rule can have been used to derive @{text "(?w, s) \<Rightarrow> t"}\<close>
     { assume "bval b s"
       with `(?w, s) \<Rightarrow> t` obtain s' where
         "(c, s) \<Rightarrow> s'" and "(?w, s') \<Rightarrow> t" by auto
-      -- "now we can build a derivation tree for the @{text IF}"
-      -- "first, the body of the True-branch:"
+      \<comment> \<open>now we can build a derivation tree for the @{text IF}\<close>
+      \<comment> \<open>first, the body of the True-branch:\<close>
       hence "(c;; ?w, s) \<Rightarrow> t" by (rule Seq)
-      -- "then the whole @{text IF}"
+      \<comment> \<open>then the whole @{text IF}\<close>
       with `bval b s` have "(?iw, s) \<Rightarrow> t" by (rule IfTrue)
     }
     ultimately
-    -- "both cases together give us what we want:"
+    \<comment> \<open>both cases together give us what we want:\<close>
     have "(?iw, s) \<Rightarrow> t" by blast
   }
   moreover
-  -- "now the other direction:"
+  \<comment> \<open>now the other direction:\<close>
   { fix s t assume "(?iw, s) \<Rightarrow> t"
-    -- "again, if @{text b} is @{text False} in state @{text s}, then the False-branch"
-    -- "of the @{text IF} is executed, and both statements do nothing:"
+    \<comment> \<open>again, if @{text b} is @{text False} in state @{text s}, then the False-branch\<close>
+    \<comment> \<open>of the @{text IF} is executed, and both statements do nothing:\<close>
     { assume "\<not>bval b s"
       hence "s = t" using `(?iw, s) \<Rightarrow> t` by blast
       hence "(?w, s) \<Rightarrow> t" using `\<not>bval b s` by blast
     }
     moreover
-    -- "on the other hand, if @{text b} is @{text True} in state @{text s},"
-    -- {* then this time only the @{text IfTrue} rule can have be used *}
+    \<comment> \<open>on the other hand, if @{text b} is @{text True} in state @{text s},\<close>
+    \<comment> \<open>then this time only the @{text IfTrue} rule can have be used\<close>
     { assume "bval b s"
       with `(?iw, s) \<Rightarrow> t` have "(c;; ?w, s) \<Rightarrow> t" by auto
-      -- "and for this, only the Seq-rule is applicable:"
+      \<comment> \<open>and for this, only the Seq-rule is applicable:\<close>
       then obtain s' where
         "(c, s) \<Rightarrow> s'" and "(?w, s') \<Rightarrow> t" by auto
-      -- "with this information, we can build a derivation tree for the @{text WHILE}"
+      \<comment> \<open>with this information, we can build a derivation tree for the @{text WHILE}\<close>
       with `bval b s`
       have "(?w, s) \<Rightarrow> t" by (rule WhileTrue)
     }
     ultimately
-    -- "both cases together again give us what we want:"
+    \<comment> \<open>both cases together again give us what we want:\<close>
     have "(?w, s) \<Rightarrow> t" by blast
   }
   ultimately
@@ -266,14 +266,14 @@ text {*
 theorem
   "(c,s) \<Rightarrow> t  \<Longrightarrow>  (c,s) \<Rightarrow> t'  \<Longrightarrow>  t' = t"
 proof (induction arbitrary: t' rule: big_step.induct)
-  -- "the only interesting case, @{text WhileTrue}:"
+  \<comment> \<open>the only interesting case, @{text WhileTrue}:\<close>
   fix b c s s\<^sub>1 t t'
-  -- "The assumptions of the rule:"
+  \<comment> \<open>The assumptions of the rule:\<close>
   assume "bval b s" and "(c,s) \<Rightarrow> s\<^sub>1" and "(WHILE b DO c,s\<^sub>1) \<Rightarrow> t"
-  -- {* Ind.Hyp; note the @{text"\<And>"} because of arbitrary: *}
+  \<comment> \<open>Ind.Hyp; note the @{text"\<And>"} because of arbitrary:\<close>
   assume IHc: "\<And>t'. (c,s) \<Rightarrow> t' \<Longrightarrow> t' = s\<^sub>1"
   assume IHw: "\<And>t'. (WHILE b DO c,s\<^sub>1) \<Rightarrow> t' \<Longrightarrow> t' = t"
-  -- "Premise of implication:"
+  \<comment> \<open>Premise of implication:\<close>
   assume "(WHILE b DO c,s) \<Rightarrow> t'"
   with `bval b s` obtain s\<^sub>1' where
       c: "(c,s) \<Rightarrow> s\<^sub>1'" and
@@ -281,6 +281,6 @@ proof (induction arbitrary: t' rule: big_step.induct)
     by auto
   from c IHc have "s\<^sub>1' = s\<^sub>1" by blast
   with w IHw show "t' = t" by blast
-qed blast+ -- "prove the rest automatically"
+qed blast+ \<comment> \<open>prove the rest automatically\<close>
 
 end

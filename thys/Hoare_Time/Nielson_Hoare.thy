@@ -448,7 +448,7 @@ next
   case Assign show ?case apply (auto intro:hoare1.Assign simp add: gg) done
 next
   case (Seq c1 c2)  
-  -- \<open>choose a fresh logical variable x\<close>
+  \<comment> \<open>choose a fresh logical variable x\<close>
   let ?x = "new Q"
   have "\<exists>x. x \<notin> support Q" using Seq.prems infinite_UNIV_listI
     using ex_new_if_finite by blast
@@ -456,26 +456,26 @@ next
   then have x2: "?x \<notin> support (wp\<^sub>1 c2 Q)"  using support_wpt by (fast)
   then have x12: "?x \<notin> support (wp\<^sub>1 (c1;;c2) Q)" apply simp using support_wpt by fast
 
-  -- \<open>assemble a postcondition Q1 that ensures the weakest precondition of Q before c2
-        and saves the running time of c2 into the logical variable x \<close>
+  \<comment> \<open>assemble a postcondition Q1 that ensures the weakest precondition of Q before c2
+        and saves the running time of c2 into the logical variable x\<close>
   let ?Q1 = "(\<lambda>l s. (wp\<^sub>1 c2 Q) l s \<and>  \<down>\<^sub>t (c2, s) = l ?x)"
   have "finite (support ?Q1)" apply(rule rev_finite_subset[OF _ support_and])
      apply(rule finite_UnI)
       apply(rule rev_finite_subset[OF _ support_wpt]) apply(fact)
     apply(rule rev_finite_subset[OF _ support_single]) by simp
-  -- \<open>we can now specify this Q1 in the first Induction Hypothesis\<close>    
+  \<comment> \<open>we can now specify this Q1 in the first Induction Hypothesis\<close>    
   then have pre: "\<And>u. \<turnstile>\<^sub>1 {wp\<^sub>1 c1 ?Q1 } c1 { \<lambda>s. \<down>\<^sub>t (c1, s) \<Down>  ?Q1  }"
     using Seq(1) by simp  
 
-  -- \<open>we can rewrite this into the form we need for the Seq rule\<close>
+  \<comment> \<open>we can rewrite this into the form we need for the Seq rule\<close>
   have A: " \<turnstile>\<^sub>1 {\<lambda>l s. wp\<^sub>1 (c1;;c2) Q l s \<and> l ?x = (prec c1 (%s. \<down>\<^sub>t (c2, s))) s} c1 { \<lambda>s. \<down>\<^sub>t (c1, s) \<Down> \<lambda>l s. wp\<^sub>1 c2 Q l s \<and>  \<down>\<^sub>t (c2, s) \<le> l ?x}"
     apply(rule conseq_old[OF _ pre ])
     by(auto simp add: wp1_prec) 
 
-  -- \<open>we can now apply the Seq rule with the first IH (in the right shape A) and the second IH \<close>
+  \<comment> \<open>we can now apply the Seq rule with the first IH (in the right shape A) and the second IH\<close>
   show "\<turnstile>\<^sub>1 {wp\<^sub>1 (c1;; c2) Q} c1;; c2 { \<lambda>s. \<down>\<^sub>t (c1;; c2, s) \<Down> Q}"
     apply(rule hoare1.Seq[OF A Seq(2)])  
-       -- \<open>finally some side conditions have to be proven\<close> 
+       \<comment> \<open>finally some side conditions have to be proven\<close> 
        using Seq(3) x12 x2 wp1_prec_Seq_correct .
 next
   case (If b c1 c2)

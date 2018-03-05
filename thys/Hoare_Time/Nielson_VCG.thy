@@ -79,7 +79,7 @@ proof (clarify, goal_cases)
     using 1(2) P by force            
 qed 
   
--- \<open>collects the logical variables in the Invariants and Loop Bodies as well as the annotated
+\<comment> \<open>collects the logical variables in the Invariants and Loop Bodies as well as the annotated
     assertions at CONSEQs of an annotated command\<close>
 fun varacom :: "acom \<Rightarrow> lvname set" where
   "varacom (C\<^sub>1;; C\<^sub>2)= varacom C\<^sub>1 \<union> varacom C\<^sub>2"
@@ -676,7 +676,7 @@ next
       then show "time C s \<le> k * eannot s" using ih1' by simp
                    
       fix t
-      -- \<open>we now have to construct a logical environment, that both
+      \<comment> \<open>we now have to construct a logical environment, that both
           * satisfies the annotated postcondition Qannot (we obtain it from the first IH)
           * lets the updates come true (we have to show that resetting these logical variables
               does not interfere with the other variables)\<close>  
@@ -764,7 +764,7 @@ next
   have sup_L: "support (preList upds (C1;;C2)) \<subseteq> lesvars upds"
     apply(rule support_preList) done 
   
-  -- \<open>choose a fresh logical variable ?y in order to pull through the cost of the second command\<close>
+  \<comment> \<open>choose a fresh logical variable ?y in order to pull through the cost of the second command\<close>
   let ?y = "SOME x. x \<notin> ?P'" 
   have fP': "finite (?P')" using finite_varacom Aseq(4,5)   apply simp done
   from fP' have "\<exists>x. x \<notin> ?P'" using infinite_UNIV_listI
@@ -774,17 +774,17 @@ next
   have sup_B: "support ?P \<subseteq> ?P'"                         
     apply(rule subset_trans[OF support_and]) apply simp using support_pre sup_L by blast   
         
-  -- \<open>we show the first goal: we can deduce the desired Hoare Triple\<close>  
+  \<comment> \<open>we show the first goal: we can deduce the desired Hoare Triple\<close>  
   have C1: "\<turnstile>\<^sub>1 {\<lambda>l s. pre (C1;; C2) Q l s \<and> preList upds (C1;; C2) l s} strip C1;; strip C2
          { time (C1;; C2) \<Down> \<lambda>l s. Q l s \<and> postList upds l s}"
   proof (rule Seq[rotated])
-    -- \<open>start from the back: we can simply use the IH for C2, 
-          and solve the side conditions automatically \<close>
+    \<comment> \<open>start from the back: we can simply use the IH for C2, 
+          and solve the side conditions automatically\<close>
     show "\<turnstile>\<^sub>1 {(%l s. pre C2 Q l s \<and>  preList upds C2 l s )} strip C2 { time C2 \<Down> (%l s. Q l s \<and> postList upds l s)}"
       apply(rule Aseq(2)[THEN conjunct1])  
       using Aseq(3-7) by auto   
   next    
-    -- \<open>prepare the new updates: pull them through C2 and save the new execution time of C2 in ?y \<close>    
+    \<comment> \<open>prepare the new updates: pull them through C2 and save the new execution time of C2 in ?y\<close>    
     let ?upds = "map (\<lambda>a. case a of (x,e) \<Rightarrow> (x, preT C2 e )) upds"
     let ?upds' = "(?y,time C2)#?upds"   
       
@@ -792,20 +792,20 @@ next
       using  ynP' Aseq(7) apply simp apply safe 
         using image_iff apply fastforce  by (simp add: case_prod_beta' distinct_conv_nth) 
     
-    -- \<open>now use the first induction hypothesis (specialised with the augmented upds list, and the
+    \<comment> \<open>now use the first induction hypothesis (specialised with the augmented upds list, and the
         weakest precondition of Q through C as post condition)\<close>
     have IH1s: "\<turnstile>\<^sub>1 {\<lambda>l s. pre C1 (pre C2 Q) l s \<and> preList ?upds' C1 l s} strip C1
                     { time C1 \<Down> \<lambda>l s. pre C2 Q l s \<and> postList ?upds' l s}"
       apply(rule Aseq(1)[THEN conjunct1])
         using Aseq(3-7) ysupC1 dst_upds' by auto  
     
-    -- \<open>glue it together with a consequence rule, side conditions are automatic\<close>
+    \<comment> \<open>glue it together with a consequence rule, side conditions are automatic\<close>
     show " \<turnstile>\<^sub>1 {\<lambda>l s. (pre (C1;; C2) Q l s \<and> preList upds (C1;; C2) l s) \<and> l ?y = preT C1 (time C2) s} strip C1
      { time C1 \<Down> \<lambda>l s. (\<lambda>l s. pre C2 Q l s \<and> preList upds C2 l s) l s \<and> time C2 s \<le> l ?y}" 
       apply(rule conseq_old[OF _ IH1s]) 
       by (auto simp: preList_Seq postList_preList)  
   next
-    -- \<open>solve some side conditions showing that, ?y is indeed fresh\<close>
+    \<comment> \<open>solve some side conditions showing that, ?y is indeed fresh\<close>
     show "?y \<notin> support ?P"
       using sup_B ynP' by auto        
     have F: "support (preList upds C2) \<subseteq> lesvars upds"  
@@ -816,7 +816,7 @@ next
     show "?y \<notin> support (\<lambda>l s. pre C2 Q l s \<and> preList upds C2 l s)" by blast 
   qed simp
    
-  -- \<open>we show the second goal: weakest precondition implies, that
+  \<comment> \<open>we show the second goal: weakest precondition implies, that
         Q holds after the execution of C1 and C2\<close>  
   have C2: "\<And>l s. pre (C1;; C2) Q l s \<Longrightarrow> Q l (postQ (C1;; C2) s)"
   proof -
@@ -835,7 +835,7 @@ next
 next
   case (Awhile A b C Q upds)
   
-  -- \<open>Let us first see, what we got from the induction hypothesis:\<close>
+  \<comment> \<open>Let us first see, what we got from the induction hypothesis:\<close>
   obtain I S E  where [simp]: "A = (I,(S,(E)))" using prod_cases3 by blast
   with `vc (Awhile A b C) Q` have "vc (Awhile (I,S,E) b C) Q" by blast
   then  have vc: "vc C I"  and  pre2: "\<And>l s. I l s \<Longrightarrow> \<not> bval b s \<Longrightarrow>  Q l s \<and> 1 \<le> E s \<and> S s = s"
@@ -843,7 +843,7 @@ next
                          pre C I l s
                           \<and>  1 + preT C E s + time C s \<le> E s \<and> S s = S (postQ C s)"  by auto      
     
-  -- \<open>the logical variable x represents the number of loop unfoldings\<close>
+  \<comment> \<open>the logical variable x represents the number of loop unfoldings\<close>
        
   
   from IQ2 have IQ_in: "\<And>l s. I l s \<Longrightarrow>   bval b s \<Longrightarrow> S s = S (postQ C s)" by auto
@@ -858,7 +858,7 @@ next
   have "lesvars upds \<inter> support I = {}" using Awhile(5) by auto
     
     
-  -- \<open>we need a fresh variable ?z to remember the time bound of the tail of the loop\<close>
+  \<comment> \<open>we need a fresh variable ?z to remember the time bound of the tail of the loop\<close>
   let ?P="lesvars upds \<union> varacom ({A} WHILE b DO C)"
   let ?z="SOME z::lvname. z \<notin> ?P"
   have "finite ?P" using Awhile by auto 
@@ -878,7 +878,7 @@ next
   hence step: "\<And>l s. pre C I l s \<Longrightarrow> I l (postQ C s)" by simp
  
       
-  -- \<open>we adapt the updates, by pulling them through the loop body 
+  \<comment> \<open>we adapt the updates, by pulling them through the loop body 
       and remembering the time bound of the tail of the loop\<close>
   let ?upds = "map (\<lambda>(x, e). (x, \<lambda>s. e (S s))) upds"
   have fua: "lesvars ?upds = lesvars upds"
@@ -888,15 +888,15 @@ next
       
   have g: "\<And>e. e \<circ> S = (%s. e (S s))" by auto
        
-  -- \<open>show that the Hoare Rule is derivable\<close>    
+  \<comment> \<open>show that the Hoare Rule is derivable\<close>    
   have G1: "\<turnstile>\<^sub>1 {\<lambda>l s. I l s \<and> preList upds ({(I, S, E)} WHILE b DO C) l s} WHILE b DO strip C
          { E \<Down> \<lambda>l s. Q l s \<and> postList upds l s}"
   proof(rule conseq_old)
     show "\<turnstile>\<^sub>1 {\<lambda>l s. I l s \<and> postList ?upds l s} WHILE b DO strip C
               { E \<Down> \<lambda>l s. (I l s \<and> postList ?upds l s) \<and> \<not>bval b s }"
-    -- \<open>We use the While Rule and then have to show, that ...\<close>
+    \<comment> \<open>We use the While Rule and then have to show, that ...\<close>
     proof(rule While, goal_cases) 
-      -- \<open>A) the loop body preserves the loop invariant\<close>
+      \<comment> \<open>A) the loop body preserves the loop invariant\<close>
       have "lesvars ?upds' \<inter> varacom C = {}"
         using yC blb by(auto)
           
@@ -904,16 +904,16 @@ next
       have "distinct (map fst ?upds')"
         using Awhile(6) zny by (auto simp add: z)       
       
-      -- \<open>for showing preservation of the invariant, use the consequence rule ...\<close>
+      \<comment> \<open>for showing preservation of the invariant, use the consequence rule ...\<close>
       show "\<turnstile>\<^sub>1 {\<lambda>l s. (I l s \<and> postList ?upds l s) \<and> bval b s \<and> preT C E s = l ?z}
        strip C {  time C \<Down> \<lambda>l s. (I l s \<and> postList ?upds l s) \<and> E s \<le> l ?z}" 
       proof (rule conseq_old)
-        -- \<open>... and employ the induction hypothesis, ...\<close>
+        \<comment> \<open>... and employ the induction hypothesis, ...\<close>
         show " \<turnstile>\<^sub>1 {\<lambda>l s. pre C I l s \<and> preList ?upds' C l s} strip C
                 { time C \<Down> \<lambda>l s. I l s \<and> postList ?upds' l s}"
           apply(rule Awhile.IH[THEN conjunct1]) by fact+              
       next
-        -- \<open>finally we have to prove the side condition. \<close>
+        \<comment> \<open>finally we have to prove the side condition.\<close>
         show "\<exists>k>0. \<forall>l s. (I l s \<and> postList ?upds l s) \<and> bval b s \<and> preT C E s = l ?z
                    \<longrightarrow> (pre C I l s \<and> preList ?upds' C l s) \<and> time C s \<le> k * time C s"
           apply(rule exI[where x=1]) apply(simp)
@@ -926,7 +926,7 @@ next
         qed   
       qed auto
     next
-      -- \<open>B) the invariant with number of loop unfoldings greater than 0 implies true loop guard
+      \<comment> \<open>B) the invariant with number of loop unfoldings greater than 0 implies true loop guard
              and running time is correctly bounded\<close>
       show "\<forall>l s. bval b s  \<and> I l s \<and> postList ?upds l s \<longrightarrow> 1 + preT C E s + time C s \<le> E s"        
       proof (clarify, goal_cases)
@@ -934,7 +934,7 @@ next
         show ?case using IQ2 1(1,2) by auto            
       qed
     next
-      -- \<open>C) the invariant with number of loop unfoldings equal to 0 implies false loop guard
+      \<comment> \<open>C) the invariant with number of loop unfoldings equal to 0 implies false loop guard
              and running time is correctly bounded\<close>
       show "\<forall>l s.  \<not> bval b s \<and> I l s \<and> postList ?upds l s \<longrightarrow>  1 \<le> E s"
       proof (clarify, goal_cases)
@@ -943,7 +943,7 @@ next
           using pre2 1(2) by auto
       qed  
     next
-      -- \<open>D) ?z is indeed a fresh variable\<close>
+      \<comment> \<open>D) ?z is indeed a fresh variable\<close>
       have pff: "?z \<notin> lesvars ?upds" apply(simp only: fua) by fact
       have "support (\<lambda>l s. I l s \<and> postList ?upds l s) \<subseteq> support I \<union> support (postList ?upds)"
         by(rule support_and) 

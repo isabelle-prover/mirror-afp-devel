@@ -79,7 +79,7 @@ lemma assumes "(IF b THEN SKIP ELSE SKIP, s) \<Rightarrow> x \<Down> t"
 shows "t = s"
 proof-
   from assms show ?thesis
-  proof cases  --"inverting assms"
+  proof cases  \<comment> \<open>inverting assms\<close>
     case IfTrue
     thus ?thesis by blast
   next
@@ -107,7 +107,7 @@ proof
   with c1
   show "(c1;; (c2;; c3), s) \<Rightarrow> p \<Down> s'" unfolding p apply (rule Seq) by simp
 next
-  -- "The other direction is analogous"
+  \<comment> \<open>The other direction is analogous\<close>
   assume "(c1;; (c2;; c3), s) \<Rightarrow> p \<Down> s'"
   then obtain s1 s2 p1 p2 p3 where
     c1: "(c1, s) \<Rightarrow> p1 \<Down> s1" and

@@ -210,12 +210,12 @@ next
           using WhileFalse[OF False] one_enat_def by fastforce
       next
         case True
-        -- \<open>obtain the loop body from the outer IH\<close>
+        \<comment> \<open>obtain the loop body from the outer IH\<close>
         with less(2) WH2 obtain t p
           where o: "(c, s) \<Rightarrow> p \<Down> t"
             and q: "enat p + INV t + 1 \<le> INV s " by force
 
-        -- \<open>prepare premises to ...\<close>
+        \<comment> \<open>prepare premises to ...\<close>
         from q have g: "INV t < INV s"
           using help2 less(2) by metis 
         then have ninfINVt: "INV t < \<infinity>" using less(2)
@@ -224,7 +224,7 @@ next
           by auto 
         with less(2) have ii: "n' < n"
           using g by auto
-        -- \<open>... obtain the tail of the While loop from the inner IH\<close>
+        \<comment> \<open>... obtain the tail of the While loop from the inner IH\<close>
         from i ii less(1) obtain t2 p2
           where o2: "(WHILE b DO c, t) \<Rightarrow> p2 \<Down> t2"
             and q2: "enat p2 + (INV t2 + emb (\<not> bval b t2)) \<le> INV t + 1" by blast
@@ -232,11 +232,11 @@ next
           apply(rule ccontr) apply(simp) using q2 ninfINVt
           by (simp add: i one_enat_def) 
             
-        -- \<open>combine body and tail to one loop unrolling:\<close>
-        -- \<open>- the Bigstep Semantic\<close>
+        \<comment> \<open>combine body and tail to one loop unrolling:\<close>
+        \<comment> \<open>- the Bigstep Semantic\<close>
         from WhileTrue[OF True o o2] have BigStep: "(WHILE b DO c, s) \<Rightarrow> 1 + p + p2 \<Down> t2" by simp
 
-        -- \<open>- the potentialPreservation\<close>       
+        \<comment> \<open>- the potentialPreservation\<close>       
         from ende q2 have q2': "enat p2 + INV t2 \<le> INV t + 1" by simp
         
         have potentialPreservation: "enat (1 + p + p2) + (INV t2 + \<up> (\<not> bval b t2)) \<le> INV s + 1"     
@@ -251,7 +251,7 @@ next
           finally show "enat (1 + p + p2) + (INV t2 + \<up> (\<not> bval b t2)) \<le> INV s + 1" .
         qed
             
-        -- \<open>finally combine BigStep Semantic and TimeBound\<close>
+        \<comment> \<open>finally combine BigStep Semantic and TimeBound\<close>
         show ?thesis 
           apply(rule exI[where x=t2])
           apply(rule exI[where x= "1 + p + p2"])

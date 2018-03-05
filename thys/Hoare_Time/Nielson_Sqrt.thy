@@ -66,17 +66,17 @@ lemma
   shows " \<turnstile>\<^sub>1 {P} c { e \<Down> Q}"
 proof -
   
-  -- "first we create an annotated command"
+  \<comment> \<open>first we create an annotated command\<close>
   let ?lb = "''m'' ::= 
               (Div (Plus (V ''l'') (V ''r'')) (N 2)) ;; 
               (IF Not (Less (Times (V ''m'') (V ''m'')) (V ''x'')) 
                 THEN ''l'' ::= V ''m''
                 ELSE ''r'' ::= V ''m'');;
               (''m'' ::= N 0)::acom"
-  -- "with an Invariant"
+  \<comment> \<open>with an Invariant\<close>
   define I :: assn2 where "I \<equiv> (\<lambda>l s. (\<exists>k. s ''r'' - s ''l'' = 2 ^ k ) \<and> s ''l'' \<ge> 0 )"
     
-  -- "and an time bound annotation for the loop"  
+  \<comment> \<open>and an time bound annotation for the loop\<close>  
   define E :: tbd where "E \<equiv> %s. 1 + 5 * Discrete.log (nat(s ''r'' - s ''l''))"
   define S :: "state \<Rightarrow> state" where "S \<equiv> %s. s"
   define Es :: "vname \<Rightarrow> vname set" where "Es  = (%x. {x})"
@@ -86,15 +86,15 @@ proof -
     
   let ?C = "''l''::= N 0 ;; (''m'' ::= N 0) ;; ''r''::= Plus (N 1) (V ''x'');; ({R} WHILE (Less (Plus (N 1) (V ''l'')) (V ''r'')) DO ?lb)"
   
-  -- \<open>we show that the annotated command corresponds to the command we are interested in\<close>  
+  \<comment> \<open>we show that the annotated command corresponds to the command we are interested in\<close>  
   have s: "strip ?C = c" unfolding c_def by auto
     
-  -- \<open>now we show that the annotated command is correct; here we use the improved VCG and the
+  \<comment> \<open>now we show that the annotated command is correct; here we use the improved VCG and the
       Nielson\<close>
   have v: "\<turnstile>\<^sub>1 {P} strip ?C {e  \<Down> Q}"
   proof (rule vc_sound'', safe)     
     
-    -- "A) first lets show the verification conditions:"
+    \<comment> \<open>A) first lets show the verification conditions:\<close>
     show "vc ?C Q {} {}"  unfolding R_def apply (simp only: vc.simps) apply auto
       subgoal unfolding I_def by auto
       subgoal unfolding I_def by auto
@@ -123,17 +123,17 @@ proof -
       show "Suc 0 \<le> E s" unfolding E_def by auto
     qed    
   next
-    -- \<open>B) lets show that the precondition implies the weakest precondition, and that the
+    \<comment> \<open>B) lets show that the precondition implies the weakest precondition, and that the
             time bound of C can be bounded by log ''x''\<close>
     fix s
     show "(\<exists>k>0. \<forall>l s. P l s \<longrightarrow> pre ?C Q l s \<and> time ?C s \<le> k * e s)"
       apply(rule exI[where x=100])
       unfolding P R_def I_def E_def e by (auto simp: nat_power_eq absch) 
   qed
-    -- "last side conditions are proven automatically"
+    \<comment> \<open>last side conditions are proven automatically\<close>
     (auto simp: Q support_inv R_def I_def)
     
-  -- \<open>now we conclude with the correctness of the Hoare triple involving the time bound\<close>
+  \<comment> \<open>now we conclude with the correctness of the Hoare triple involving the time bound\<close>
   from s v show ?thesis by simp
 qed
 

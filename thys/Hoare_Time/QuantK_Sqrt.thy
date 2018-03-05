@@ -65,25 +65,25 @@ lemma
       Q[simp]: "Q = (\<lambda>_. 0)" 
   shows " \<turnstile>\<^sub>2\<^sub>' {P} c {Q}"
 proof -
-  -- "first we create an annotated command"
+  \<comment> \<open>first we create an annotated command\<close>
   let ?lb = "''m'' ::= 
               (Div (Plus (V ''l'') (V ''r'')) (N 2)) ;; 
               (IF Not (Less (Times (V ''m'') (V ''m'')) (V ''x'')) 
                 THEN ''l'' ::= V ''m''
                 ELSE ''r'' ::= V ''m'');;
               (''m'' ::= N 0)::acom"
-  -- "with an invariant potential"
+  \<comment> \<open>with an invariant potential\<close>
   define I   where "I \<equiv> (\<lambda>s::state. (( emb (  s ''l''\<ge>0   \<and> ( \<exists>k. s ''r'' - s ''l'' = 2 ^ k) ) + 5 * Discrete.log (nat (s ''r'') - nat (s ''l'')))::enat) )"
   let ?C = " ((''l''::= N 0) :: acom) ;; (''m'' ::= N 0) ;; ''r''::= Plus (N 1) (V ''x'');; ({I} WHILE (Less (Plus (N 1) (V ''l'')) (V ''r'')) DO ?lb)"
   
-  -- \<open>we show that the annotated command corresponds to the command we are interested in\<close>
+  \<comment> \<open>we show that the annotated command corresponds to the command we are interested in\<close>
   have s: "strip ?C = c" unfolding c_def by auto
     
-  -- \<open>now we show that the annotated command is correct; here we use the VCG for the QuantK logic\<close>
+  \<comment> \<open>now we show that the annotated command is correct; here we use the VCG for the QuantK logic\<close>
   have v: "\<turnstile>\<^sub>2\<^sub>' {P} strip ?C {Q}"
   proof (rule vc_sound'', safe) 
     
-    -- "A) first lets show the verification conditions:"
+    \<comment> \<open>A) first lets show the verification conditions:\<close>
     show "vc ?C Q" apply auto 
       unfolding I_def
       subgoal for s
@@ -128,7 +128,7 @@ proof -
         show ?case   apply (simp only : R R' S' k') by (auto simp: eSuc_enat plus_1_eSuc(2))        
       qed done        
   next
-    -- \<open>B) lets show that the precondition implies the weakest precondition, and that the
+    \<comment> \<open>B) lets show that the precondition implies the weakest precondition, and that the
             time bound of C can be bounded by log ''x''\<close>
     fix s
     show "pre ?C Q s \<le> enat 100 * P s" unfolding  I_def apply(simp only: P)  apply auto apply(cases "(\<exists>k. 1 + s ''x''   = 2 ^ k)") 
