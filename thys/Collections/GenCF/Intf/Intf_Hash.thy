@@ -15,7 +15,7 @@ subsection {* Abstract and concrete hash functions *}
 definition is_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c eq \<Rightarrow> 'c bhc \<Rightarrow> bool"
   where "is_bounded_hashcode R eq bhc \<equiv> 
              ((eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<and>
-             (\<forall>n x y. eq x y \<longrightarrow> bhc n x = bhc n y) \<and>
+             (\<forall>n. \<forall> x \<in> Domain R. \<forall> y \<in> Domain R. eq x y \<longrightarrow> bhc n x = bhc n y) \<and>
              (\<forall>n x. 1 < n \<longrightarrow> bhc n x < n)"
 definition abstract_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c bhc \<Rightarrow> 'a bhc"
   where "abstract_bounded_hashcode Rk bhc n x' \<equiv> 
@@ -25,14 +25,14 @@ definition abstract_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c bhc
 
 lemma is_bounded_hashcodeI[intro]:
   "((eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel) \<Longrightarrow>
-   (\<And>x y n. eq x y \<Longrightarrow> bhc n x = bhc n y) \<Longrightarrow>
+   (\<And>x y n. x \<in> Domain R \<Longrightarrow> y \<in> Domain R \<Longrightarrow> eq x y \<Longrightarrow> bhc n x = bhc n y) \<Longrightarrow>
    (\<And>x n. 1 < n \<Longrightarrow> bhc n x < n) \<Longrightarrow> is_bounded_hashcode R eq bhc"
   unfolding is_bounded_hashcode_def by force
 
 lemma is_bounded_hashcodeD[dest]:
   assumes "is_bounded_hashcode R eq bhc"
   shows "(eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel" and
-        "\<And>n x y. eq x y \<Longrightarrow> bhc n x = bhc n y" and
+        "\<And>n x y. x \<in> Domain R \<Longrightarrow> y \<in> Domain R \<Longrightarrow> eq x y \<Longrightarrow> bhc n x = bhc n y" and
         "\<And>n x. 1 < n \<Longrightarrow> bhc n x < n"
   using assms unfolding is_bounded_hashcode_def by simp_all
 
@@ -43,7 +43,7 @@ lemma bounded_hashcode_welldefined:
 proof-
   from is_bounded_hashcodeD[OF BHC] have "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel" by simp
   with R1 R2 have "eq x1 x2" by (force dest: fun_relD)
-  thus ?thesis using BHC by blast
+  thus ?thesis using R1 R2 BHC by blast
 qed
 
 lemma abstract_bhc_correct[intro]:
