@@ -126,7 +126,7 @@ subsection "Relation to Big-Step Semantics"
 lemma "(\<exists>p. ((c, s) \<Rightarrow> p \<Down>  s')) = ((c, s) \<Rightarrow> s')"
 proof 
     assume "\<exists>p. (c, s) \<Rightarrow> p \<Down> s'"
-    then obtain p where "(c, s) \<Rightarrow> p \<Down> s'" try0
+    then obtain p where "(c, s) \<Rightarrow> p \<Down> s'"
 by blast
     then show "((c, s) \<Rightarrow> s')"
       apply(induct c s p s' rule: big_step_t_induct)

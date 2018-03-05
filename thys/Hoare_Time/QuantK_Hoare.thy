@@ -156,11 +156,11 @@ next
         
     have za: "?k = (k1 div gcd k1 k2) * k2" 
       apply(simp only: lcm_nat_def)
-      by (smt "10" dvd_mult_div_cancel gcd_dvd1 lcm_nat_def mult.commute mult.left_commute mult_cancel_left neq0_conv prod_gcd_lcm_nat) 
+      by (simp add: dvd_div_mult)
         
     have za2: "?k = (k2 div gcd k1 k2) * k1" 
       apply(simp only: lcm_nat_def)
-      by (smt dvd_mult_div_cancel gcd_dvd1 gcd_dvd2 lcm_nat_def semiring_normalization_rules(17) semiring_normalization_rules(7) za)
+      by (metis dvd_div_mult gcd_dvd2 mult.commute)
         
     from q1[unfolded u1 u2 u0] have z: "p1 + k1 * u1 \<le> k1 * u0" by auto
     from q2[unfolded u1 u2 u0] have y: "  p2 + k2 *   u2 \<le> k2 *   u1" by auto
@@ -247,25 +247,26 @@ next
 next
   case (conseq P c Q k1 P' Q') 
   from conseq(5) obtain k where c4: "\<forall>s. P s < \<infinity> \<longrightarrow> (\<exists>t p. (c, s) \<Rightarrow> p \<Down> t \<and> enat p + enat k * Q t \<le> enat k * P s)" and 0: "k>0" by blast
-  show ?case apply(rule exI[where x="k1*k"])
+  show ?case apply(rule exI[where x="k*k1"])
   proof (safe)
-    show "k1*k>0" using 0 conseq(4) by auto
+    show "k*k1>0" using 0 conseq(4) by auto
     fix s
     assume "P' s < \<infinity>"
     with conseq(2,4)  have "P s < \<infinity>"
       using le_less_trans
       by (metis enat.distinct(2) enat_ord_simps(4) imult_is_infinity)  
     with c4 obtain p t where 1: "(c, s) \<Rightarrow> p \<Down> t" and 2: "enat p + enat k * Q t \<le> enat k * P s" by blast   
-        
-        
-    have "enat p + enat (k1*k) * Q' t \<le> enat p + enat (k) * Q t" using conseq(3)
-      by (smt add_left_mono distrib_left le_iff_add mult.assoc mult.commute not_le order_refl times_enat_simps(1))
+               
+    have "enat p + enat (k*k1) * Q' t = enat p + enat (k) * ( (enat k1) * Q' t)"
+      by (metis mult.assoc times_enat_simps(1))       
+    also have "\<dots> \<le> enat p + enat (k) * Q t" using conseq(3)
+      by (metis add_left_mono distrib_left le_iff_add)  
     also have "\<dots> \<le> enat k * P s" using 2 by auto
-    also have "\<dots> \<le> enat (k1*k)  * P' s" using conseq(2) try0
-      by (smt Groups.mult_ac(1) Groups.mult_ac(2) mult_left_mono times_enat_simps(1) zero_order(1))
-    finally have 2: "enat p + enat (k1*k) * Q' t \<le> enat (k1*k) * P' s"
+    also have "\<dots> \<le> enat (k*k1)  * P' s" using conseq(2)
+      by (metis mult.assoc mult_left_mono not_less not_less_zero times_enat_simps(1))
+    finally have 2: "enat p + enat (k*k1) * Q' t \<le> enat (k*k1) * P' s"
       by auto
-    from 1 2 show "\<exists>t p. (c, s) \<Rightarrow> p \<Down> t \<and> enat p + (k1*k) * Q' t \<le> (k1*k) * P' s" by auto
+    from 1 2 show "\<exists>t p. (c, s) \<Rightarrow> p \<Down> t \<and> enat p + (k*k1) * Q' t \<le> (k*k1) * P' s" by auto
   qed
 next
   case (While INV b c)  
@@ -299,7 +300,7 @@ next
       next
         case True
         with less(2) W2 have "(\<exists>t p. (c, s) \<Rightarrow> p \<Down> t \<and> enat p + enat k * (INV t + 1) \<le> enat k * INV s )"
-          by (smt One_nat_def add.right_neutral eSuc_enat emb.simps(2) enat.distinct(2) enat_ord_simps(4) iadd_Suc_right one_enat_def zero_enat_def)  
+          by force  
         then obtain t p where o: "(c, s) \<Rightarrow> p \<Down> t" and q: "enat p + enat k * (INV t + 1) \<le> enat k * INV s " by auto
         from o bigstep_progress have p: "p > 0" by blast
              
@@ -679,7 +680,7 @@ proof -
   from assms have nn: "0 \<le> X" by auto
   from assms have "0 < nat X" by auto 
   then have "0 < enat (nat X)" by (simp add: zero_enat_def)  
-  then have A: "eSuc 0 \<le> enat (nat X)" using ileI1 try0
+  then have A: "eSuc 0 \<le> enat (nat X)" using ileI1
     by blast
       
   have " (nat X) \<le>  (nat (X*X))"  using nn nat_mult_distrib  by auto
