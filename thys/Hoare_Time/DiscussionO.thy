@@ -29,19 +29,21 @@ proof -
       by blast
     have t: "\<down>\<^sub>s (c, s) = t" using bigstepT_the_state[OF i] by auto   
       
-    from P' obtain pre where pre: "enat pre = P' s" by fastforce
+    from P' obtain pre where pre: "P' s = enat pre" by fastforce
     from e have "Q' t < \<infinity>" unfolding emN_def by auto
-    then obtain post where post: "enat post = Q' t" by fastforce
+    then obtain post where post: "Q' t = enat post" by fastforce
       
     have "p > 0" using i bigstep_progress by auto     
-        
-    have k: "(THE e. enat e = P' s - Q' (THE t. \<exists>n. (c, s) \<Rightarrow> n \<Down> t)) = pre - post" unfolding t using pre post  
-      by (smt enat.inject idiff_enat_enat the_equality)     
+      
+    thm enat.inject idiff_enat_enat the_equality
+    have k: "(THE e. enat e = P' s - Q' (THE t. \<exists>n. (c, s) \<Rightarrow> n \<Down> t)) = pre - post" 
+      unfolding t pre post apply(rule the_equality)   
+       using idiff_enat_enat by auto 
     with p have ieq: "p \<le> k * (pre - post)" by auto
     then have "p + k * post \<le> k * pre" using `p>0`
       using diff_mult_distrib2 by auto
        then 
-    have ii: "enat p + k * Q' t \<le> k * P' s" unfolding post[symmetric] pre[symmetric] by simp                           
+    have ii: "enat p + k * Q' t \<le> k * P' s" unfolding post pre by simp                           
     from i ii show "(\<exists>t p. (c, s) \<Rightarrow> p \<Down> t \<and> enat p + k * Q' t \<le> k * P' s)" by auto
   qed 
 qed
@@ -69,8 +71,9 @@ proof -
       by blast
     have t: "\<down>\<^sub>s (c, s) = t" using bigstepT_the_state[OF i] by auto   
        
-    from P have Q: "Q l t" using p
-      by (smt emb.simps(1) enat.distinct(2) enat_0_iff(2) enat_ord_simps(4) imult_is_infinity k leD not_gr_zero plus_enat_simps(3))       
+    from P have Q: "Q l t" using p k
+      apply auto
+      by (metis (full_types) emb.simps(1) enat_ord_simps(2) imult_is_infinity infinity_ileE not_less_zero plus_enat_simps(3))      
     with sQ have "\<forall>l. Q l t" by auto
     then have "?Q t = 0" by auto
     with p have "enat p \<le> enat k * ?P s" by auto
@@ -125,7 +128,7 @@ qed
 
 definition embe :: "(pstate_t \<Rightarrow> bool) \<Rightarrow> qassn" where
     "embe P = (%s. Inf {enat n|n. P (part s, n)} )"
-
+ 
 lemma assumes s: "\<Turnstile>\<^sub>2\<^sub>' { embe P } c { embe Q }" and full: "\<And>ps n. P (ps,n) \<Longrightarrow> dom ps = UNIV"            
   shows  "\<Turnstile>\<^sub>3\<^sub>' {  P} c { Q }"
 proof -
@@ -138,19 +141,19 @@ proof -
     with full have "dom ps = UNIV" by auto
     then have ps: "part ?s = ps" by simp
     from P have l': "({enat n |n. P (ps, n)} = {}) =  False " by auto
-    have t: "embe P ?s < \<infinity>" unfolding embe_def Inf_enat_def
-      unfolding ps l' apply auto apply(rule ccontr)  apply auto
-      by (smt Collect_empty_eq LeastI enat.distinct(1) l') 
+    have t: "embe P ?s < \<infinity>" unfolding embe_def Inf_enat_def ps l'
+      apply(rule ccontr) using l' apply auto
+      by (metis (mono_tags, lifting) Least_le infinity_ileE)  
     with s obtain t p where c: "(c, ?s) \<Rightarrow> p \<Down> t" and ineq: "enat p + enat k * embe Q t \<le> enat k * embe P ?s" by blast
     from t obtain z where z: "embe P ?s = enat z"
       using less_infinityE by blast 
     with ineq obtain y where y: "embe Q t = enat y"
       using k by fastforce   
     then have l: "embe Q t < \<infinity>" by auto
-    then have zz: "({enat n|n. Q (part t, n)} = {}) = False" unfolding embe_def Inf_enat_def apply safe by simp 
+    then have zz: "({enat n|n. Q (part t, n)} = {}) = False" unfolding embe_def Inf_enat_def apply safe by simp  
     from y have "Q (part t, y)"  unfolding embe_def zz Inf_enat_def apply auto
-       using zz by (smt Collect_empty_eq LeastI enat.inject)
-
+       using zz apply auto   by (smt Collect_empty_eq LeastI enat.inject)
+    
     from full_to_part[OF c] ps have c': "(c, ps) \<Rightarrow>\<^sub>A p \<Down> part t" by auto
 
     have "\<And>P n. P (n::nat) \<Longrightarrow> (LEAST n. P n) \<le> n" apply(rule Least_le) by auto
