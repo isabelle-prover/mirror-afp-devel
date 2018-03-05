@@ -501,10 +501,11 @@ proof -
   have [simp]: "verts ?H = verts G" using uv by simp
   have [intro]: "\<And>a. compatible (add_arc a) G" by (simp add: compatible_def)
 
-  interpret H: fin_digraph "add_arc a" for a
+  interpret H: fin_digraph "add_arc a"
     rewrites "tail (add_arc a) = tail G" and "head (add_arc a) = head G"
       and "pre_digraph.cas (add_arc a) = cas"
       and "pre_digraph.awalk_verts (add_arc a) = awalk_verts"
+     for a
       by unfold_locales (auto dest: wellformed intro: compatible_cas compatible_awalk_verts
           simp: verts_add_arc_conv)
 

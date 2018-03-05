@@ -240,6 +240,49 @@ lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<in
   by (auto simp: in_keys_iff lookup_add add_eq_0_iff
       simp del: lookup_not_eq_zero_eq_in_keys)
 
+definition keys_list :: "('a \<times> 'b::zero) list \<Rightarrow> 'a list"
+  where "keys_list xs = map fst [x\<leftarrow>AList.clearjunk xs. snd x \<noteq> 0]"
+
+lemma distinct_keys_list: "distinct (keys_list xs)"
+  unfolding keys_list_def using distinct_clearjunk by (rule distinct_map_filter)
+
+lemma compute_keys_alt [code]: "keys (Pm_fmap (fmap_of_list xs)) = set (keys_list xs)"
+proof (simp add: compute_keys_pp clearjunk0_def fmlookup_of_list fmdom'_alt_def fset_of_list.rep_eq
+      keys_list_def)
+  show "{x. map_of xs x \<noteq> Some 0} \<inter> fst ` set xs = fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}"
+      (is "?l = ?r")
+  proof
+    show "?l \<subseteq> ?r"
+    proof (rule, simp, elim conjE)
+      fix t
+      assume "map_of xs t \<noteq> Some 0" and "t \<in> fst ` set xs"
+      hence "map_of (AList.clearjunk xs) t \<noteq> Some 0" and "t \<in> fst ` set (AList.clearjunk xs)"
+        by (simp_all add: map_of_clearjunk dom_clearjunk)
+      then obtain c where "(t, c) \<in> set (AList.clearjunk xs)" and "c \<noteq> 0"
+        by (metis domD dom_map_of_conv_image_fst map_of_SomeD)
+      hence "(t, c) \<in> {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by simp
+      thus "t \<in> fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by force
+    qed
+  next
+    show "?r \<subseteq> ?l"
+    proof (rule, simp)
+      fix t
+      assume "t \<in> fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}"
+      then obtain c where "(t, c) \<in> {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by fastforce
+      hence 1: "(t, c) \<in> set (AList.clearjunk xs)" and "c \<noteq> 0" by simp_all
+      from 1 have "map_of (AList.clearjunk xs) t = Some c" by simp
+      hence "map_of xs t = Some c" by (simp only: map_of_clearjunk)
+      with \<open>c \<noteq> 0\<close> have "map_of xs t \<noteq> Some 0" by simp
+      moreover from 1 have "t \<in> fst ` set xs"
+      proof -
+        from 1 have "t \<in> fst ` set (AList.clearjunk xs)" by force
+        thus ?thesis by (simp only: dom_clearjunk)
+      qed
+      ultimately show "map_of xs t \<noteq> Some 0 \<and> t \<in> fst ` set xs" ..
+    qed
+  qed
+qed
+
 
 subsubsection \<open>restore constructor view\<close>
 
@@ -455,6 +498,11 @@ lemma compute_lower_poly_mapping[code]:
   "lower (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. k \<prec> t) xs)"
   unfolding lower_def compute_except_poly_mapping
   by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
+
+lemma compute_keys_to_list [code]:
+  "keys_to_list (Pm_fmap (fmap_of_list xs)) = rev (ordered_powerprod_lin.sort (keys_list xs))"
+  by (simp add: compute_keys_alt distinct_keys_list distinct_remdups_id keys_to_list_def
+      ordered_powerprod_lin.sorted_list_of_set_sort_remdups pps_to_list_def)
 
 end (* ordered_powerprod *)
 

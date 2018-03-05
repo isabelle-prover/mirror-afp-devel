@@ -7,6 +7,7 @@ theory Power_Products
   "HOL-Library.Function_Algebras"
   "HOL-Library.Countable"
   "More_MPoly_Type"
+  "Utils"
 begin
 
 text \<open>This theory formalizes the concept of "power-products". A power-product can be thought of as
@@ -685,39 +686,6 @@ end
 
 subsection \<open>Ordered Power-Products\<close>
 
-lemma wfP_chain:
-  assumes "\<not>(\<exists>f. \<forall>i. r (f (Suc i)) (f i))"
-  shows "wfP r"
-proof -
-  from assms wf_iff_no_infinite_down_chain[of "{(x, y). r x y}"] have "wf {(x, y). r x y}" by auto
-  thus "wfP r" unfolding wfP_def .
-qed
-
-lemma transp_sequence:
-  assumes "transp r" and "\<And>i. r (seq (Suc i)) (seq i)" and "i < j"
-  shows "r (seq j) (seq i)"
-proof -
-  have "\<And>k. r (seq (i + Suc k)) (seq i)"
-  proof -
-    fix k::nat
-    show "r (seq (i + Suc k)) (seq i)"
-    proof (induct k)
-      case 0
-      from assms(2) have "r (seq (Suc i)) (seq i)" .
-      thus ?case by simp
-    next
-      case (Suc k)
-      note assms(1)
-      moreover from assms(2) have "r (seq (Suc (Suc i + k))) (seq (Suc (i + k)))" by simp
-      moreover have "r (seq (Suc (i + k))) (seq i)" using Suc.hyps by simp
-      ultimately have "r (seq (Suc (Suc i + k))) (seq i)" by (rule transpD)
-      thus ?case by simp
-    qed
-  qed
-  hence "r (seq (i + Suc(j - i - 1))) (seq i)" .
-  thus "r (seq j) (seq i)" using \<open>i < j\<close> by simp
-qed
-
 locale ordered_powerprod =
   ordered_powerprod_lin: linorder ord ord_strict
   for ord::"'a \<Rightarrow> 'a::comm_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
@@ -930,90 +898,33 @@ lemma ex_finite_adds:
   assumes "dickson_grading (+) d" and "S \<subseteq> dgrad_set d m"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
 proof -
-  define crit where "crit = (\<lambda>U s. s \<in> S \<and> (\<forall>u\<in>U. \<not> u adds s))"
-  have critD: "crit U s \<Longrightarrow> s \<notin> U" for U s
-  proof
-    assume "crit U s" and "s \<in> U"
-    from this(1) have "\<forall>u\<in>U. \<not> u adds s" unfolding crit_def ..
-    from this \<open>s \<in> U\<close> have "\<not> s adds s" ..
-    from this adds_refl show False ..
-  qed
-  define "fun"
-    where "fun = (\<lambda>U. (if (\<exists>s. crit U s) then
-                        insert (SOME s. crit U s) U
-                      else
-                        U
-                      ))"
-  define seq where "seq = rec_nat {} (\<lambda>_. fun)"
-  have seq_Suc: "seq (Suc i) = fun (seq i)" for i by (simp add: seq_def)
-  
-  have seq_incr_Suc: "seq i \<subseteq> seq (Suc i)" for i by (auto simp add: seq_Suc fun_def)
-  have seq_incr: "i \<le> j \<Longrightarrow> seq i \<subseteq> seq j" for i j
-  proof -
-    assume "i \<le> j"
-    hence "i = j \<or> i < j" by auto
-    thus "seq i \<subseteq> seq j"
-    proof
-      assume "i = j"
-      thus ?thesis by simp
-    next
-      assume "i < j"
-      with _ seq_incr_Suc show ?thesis by (rule transp_sequence, simp add: transp_def)
-    qed
-  qed
-  have sub: "seq i \<subseteq> S" for i
-  proof (induct i, simp add: seq_def, simp add: seq_Suc fun_def, rule)
-    fix i
-    assume "Ex (crit (seq i))"
-    hence "crit (seq i) (Eps (crit (seq i)))" by (rule someI_ex)
-    thus "Eps (crit (seq i)) \<in> S" by (simp add: crit_def)
-  qed
-  have "\<exists>i. seq (Suc i) = seq i"
-  proof (rule ccontr, simp)
-    assume "\<forall>i. seq (Suc i) \<noteq> seq i"
-    with seq_incr_Suc have "seq i \<subset> seq (Suc i)" for i by blast
-    define seq1 where "seq1 = (\<lambda>n. (SOME s. s \<in> seq (Suc n) \<and> s \<notin> seq n))"
-    have seq1: "seq1 n \<in> seq (Suc n) \<and> seq1 n \<notin> seq n" for n unfolding seq1_def
-    proof (rule someI_ex)
-      from \<open>seq n \<subset> seq (Suc n)\<close> show "\<exists>x. x \<in> seq (Suc n) \<and> x \<notin> seq n" by blast
-    qed
-    from assms(1) obtain a b where "a < b" and "seq1 a adds seq1 b"
-    proof (rule dickson_gradingE2)
-      fix i
-      from seq1 have "seq1 i \<in> seq (Suc i)" ..
-      also have "... \<subseteq> S" by (rule sub)
-      also from assms(2) have "... \<subseteq> dgrad_set d m" .
-      finally show "d (seq1 i) \<le> m" by (simp add: dgrad_set_def)
-    qed
-    from \<open>a < b\<close> have "Suc a \<le> b" by simp
-    from seq1 have "seq1 a \<in> seq (Suc a)" ..
-    also from \<open>Suc a \<le> b\<close> have "... \<subseteq> seq b" by (rule seq_incr)
-    finally have "seq1 a \<in> seq b" .
-    from seq1 have "seq1 b \<in> seq (Suc b)" and "seq1 b \<notin> seq b" by blast+
-    hence "crit (seq b) (seq1 b)" by (simp add: seq_Suc fun_def someI split: if_splits)
-    hence "\<forall>u\<in>seq b. \<not> u adds (seq1 b)" by (simp add: crit_def)
-    from this \<open>seq1 a \<in> seq b\<close> have "\<not> (seq1 a) adds (seq1 b)" ..
-    from this \<open>(seq1 a) adds (seq1 b)\<close> show False ..
-  qed
-  then obtain i where "seq (Suc i) = seq i" ..
+  define Q where "Q = (\<lambda>A. A \<subseteq> dgrad_set d m)"
   show ?thesis
-  proof
-    show "finite (seq i)" by (induct i, simp_all add: seq_def fun_def)
+  proof (rule ex_finite_subset)
+    show "reflp ((adds)::'a \<Rightarrow> _)" by (simp add: reflp_def)
   next
-    fix s
-    assume "s \<in> S"
-    let ?s = "Eps (crit (seq i))"
-    show "\<exists>t\<in>seq i. t adds s"
-    proof (rule ccontr, simp)
-      assume "\<forall>t\<in>seq i. \<not> t adds s"
-      with \<open>s \<in> S\<close> have "crit (seq i) s" by (simp only: crit_def)
-      hence "crit (seq i) ?s" and eq: "seq (Suc i) = insert ?s (seq i)"
-        by (auto simp add: seq_Suc fun_def intro: someI)
-      from this(1) have "?s \<notin> seq i" by (rule critD)
-      hence "seq (Suc i) \<noteq> seq i" unfolding eq by blast
-      from this \<open>seq (Suc i) = seq i\<close> show False ..
+    fix T
+    assume "T \<subseteq> S"
+    show "Q T" unfolding Q_def
+    proof
+      fix t
+      assume "t \<in> T"
+      also have "... \<subseteq> S" by fact
+      also have "... \<subseteq> dgrad_set d m" by fact
+      finally show "t \<in> dgrad_set d m" .
     qed
-  qed (fact sub)
+  next
+    fix seq::"nat \<Rightarrow> 'a"
+    assume "Q (range seq)"
+    hence "range seq \<subseteq> dgrad_set d m" by (simp add: Q_def)
+    with assms(1) obtain i j where "i < j" and "seq i adds seq j"
+      by (metis UNIV_I dgrad_setD dickson_gradingE2 image_subset_iff)
+    thus "\<exists>i j. i < j \<and> seq i adds seq j" by blast
+  next
+    fix T
+    assume "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. t adds s"
+    thus thesis ..
+  qed
 qed
 
 lemma dickson_leI:

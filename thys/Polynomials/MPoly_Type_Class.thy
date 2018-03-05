@@ -4,6 +4,7 @@ section \<open>Type-Class-Multivariate Polynomials\<close>
 
 theory MPoly_Type_Class
   imports
+    Module_Type_Class
     Utils
     Power_Products
 begin
@@ -852,6 +853,17 @@ qed
 lemma (in -) times_sum_monomials: "q * p = (\<Sum>t\<in>keys q. monom_mult (lookup q t) t p)"
   by (simp only: times_monomial_left[symmetric] sum_distrib_right[symmetric] poly_mapping_sum_monomials)
 
+lemma fun_times_commute:
+  assumes "f 0 = 0" and "\<And>x y. f (x + y) = f x + f y"
+    and "\<And>c t. f (monom_mult c t p) = monom_mult c t (f p)"
+  shows "f (q * p) = q * (f p)"
+  by (simp add: times_sum_monomials assms(3)[symmetric], rule fun_sum_commute, fact+)
+
+lemma fun_times_commute_canc:
+  assumes "\<And>x y. f (x + y) = f x + f y" and "\<And>c t. f (monom_mult c t p) = monom_mult c t (f p)"
+  shows "f (q * p) = q * (f (p::'a::comm_powerprod \<Rightarrow>\<^sub>0 'b::{semiring_0,cancel_comm_monoid_add}))"
+  by (simp add: times_sum_monomials assms(2)[symmetric], rule fun_sum_commute_canc, fact)
+
 lemma monomial_sum: "monomial (sum f C) t = (\<Sum>c\<in>C. monomial (f c) t)"
   by (rule fun_sum_commute, simp_all add: single_add)
 
@@ -906,853 +918,93 @@ next
   thus ?thesis by simp
 qed
 
-subsection \<open>Ideal-like Sets of Polynomials\<close>
+subsection \<open>Ideals and Linear Hulls of Sets of Polynomials\<close>
 
-text \<open>We now introduce ideal-like sets of polynomials, i.e. sets that are closed under addition and
-  under multiplication by polynomials from a certain set @{term C} @{emph \<open>from the left\<close>}.
-  We later define "real" ideals as well as linear hulls in terms of these ideal-like sets; in the
-  former case, @{term C} is taken to be the universe, in the latter case it is taken to be the set
-  of all monomials with power-product @{term 0}.\<close>
+text \<open>Both ideals and linear hulls are just special cases of modules over the polynomial ring.\<close>
 
-inductive_set ideal_like::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) set"
-for C::"('a, 'b) poly_mapping set" and B::"('a, 'b) poly_mapping set" where
-  ideal_like_0: "0 \<in> (ideal_like C B)"|
-  ideal_like_plus: "a \<in> (ideal_like C B) \<Longrightarrow> b \<in> B \<Longrightarrow> q \<in> C \<Longrightarrow> a + q * b \<in> (ideal_like C B)"
+subsubsection \<open>Ideals\<close>
 
-lemma times_in_ideal_like:
-  assumes "q \<in> C" and "b \<in> B"
-  shows "q * b \<in> ideal_like C B"
-proof -
-  have "0 + q * b \<in> ideal_like C B" by (rule ideal_like_plus, rule ideal_like_0, fact+)
-  thus ?thesis by (simp add: times_monomial_left)
-qed
+text \<open>To be consistent with constant \<open>phull\<close> that is introduced below, we also introduce \<open>pideal\<close>
+  as an abbreviation of @{const ideal} specifically for ideals of polynomials.\<close>
 
-lemma monom_mult_in_ideal_like:
-  assumes "monomial c t \<in> C" and "b \<in> B"
-  shows "monom_mult c t b \<in> ideal_like C B"
-  unfolding times_monomial_left[symmetric] using assms by (rule times_in_ideal_like)
-
-lemma generator_subset_ideal_like:
-  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
-  assumes "1 \<in> C"
-  shows "B \<subseteq> ideal_like C B"
-proof
-  fix b
-  assume b_in: "b \<in> B"
-  have "0 + 1 * b \<in> ideal_like C B" by (rule ideal_like_plus, fact ideal_like_0, fact+)
-  thus "b \<in> ideal_like C B" by simp
-qed
-
-lemma ideal_like_closed_plus:
-  assumes p_in: "p \<in> ideal_like C B" and r_in: "r \<in> ideal_like C B"
-  shows "p + r \<in> ideal_like C B"
-  using p_in
-proof (induct p)
-  case ideal_like_0
-  from r_in show "0 + r \<in> ideal_like C B" by simp
-next
-  case step: (ideal_like_plus a b q)
-  have "(a + r) + q * b \<in> ideal_like C B" by (rule ideal_like_plus, fact+)
-  thus "(a + q * b) + r \<in> ideal_like C B"
-    by (metis ab_semigroup_add_class.add.commute semigroup_add_class.add.assoc)
-qed
-
-lemma ideal_like_closed_uminus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes "\<And>q. q \<in> C \<Longrightarrow> -q \<in> C"
-  assumes p_in: "p \<in> ideal_like C B"
-  shows "-p \<in> ideal_like C B"
-  using p_in
-proof (induct p)
-  case ideal_like_0
-  show "-0 \<in> ideal_like C B" by (simp, rule ideal_like_0)
-next
-  case step: (ideal_like_plus a b q)
-  have eq: "- (a + q * b) = (-a) + ((-q) * b)" by simp
-  from step(4) have "-q \<in> C" by (rule assms(1))
-  have "0 + (-q) * b \<in> ideal_like C B" by (rule ideal_like_plus, fact ideal_like_0, fact+)
-  hence "(-q) * b \<in> ideal_like C B" by simp
-  with step(2) show "- (a + q * b) \<in> ideal_like C B" unfolding eq
-    by (rule ideal_like_closed_plus)
-qed
-
-lemma ideal_like_closed_minus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes "\<And>q. q \<in> C \<Longrightarrow> -q \<in> C"
-  assumes "p \<in> ideal_like C B" and "r \<in> ideal_like C B"
-  shows "p - r \<in> ideal_like C B"
-  using assms(2) assms(3) ideal_like_closed_plus ideal_like_closed_uminus[OF assms(1)] by fastforce
-
-lemma ideal_like_closed_times:
-  assumes "\<And>q. q \<in> C \<Longrightarrow> r * q \<in> C"
-  assumes "p \<in> ideal_like C B"
-  shows "r * p \<in> ideal_like C B"
-  using assms(2)
-proof (induct p)
-  case ideal_like_0
-  show "r * 0 \<in> ideal_like C B" by (simp, rule ideal_like_0)
-next
-  case step: (ideal_like_plus a b q)
-  have *: "r * (a + q * b) = r * a + (r * q) * b" by (simp add: algebra_simps)
-  show "r * (a + q * b) \<in> ideal_like C B" unfolding *
-    by (rule ideal_like_plus, fact, fact, rule assms(1), fact)
-qed
-
-lemma ideal_like_closed_monom_mult:
-  assumes "\<And>q. q \<in> C \<Longrightarrow> monom_mult c t q \<in> C"
-  assumes "p \<in> ideal_like C B"
-  shows "monom_mult c t p \<in> ideal_like C B"
-  unfolding times_monomial_left[symmetric] using _ assms(2)
-proof (rule ideal_like_closed_times)
-  fix q
-  assume "q \<in> C"
-  thus "monomial c t * q \<in> C" unfolding times_monomial_left by (rule assms(1))
-qed
-
-lemma ideal_like_mono_1:
-  assumes "C1 \<subseteq> C2"
-  shows "ideal_like C1 B \<subseteq> ideal_like C2 B"
-proof
-  fix p
-  assume "p \<in> ideal_like C1 B"
-  thus "p \<in> ideal_like C2 B"
-  proof (induct p rule: ideal_like.induct)
-    case ideal_like_0
-    show ?case ..
-  next
-    case step: (ideal_like_plus a b q)
-    show ?case by (rule ideal_like_plus, fact, fact, rule, fact+)
-  qed
-qed
-
-lemma ideal_like_mono_2:
-  assumes "A \<subseteq> B"
-  shows "ideal_like C A \<subseteq> ideal_like C B"
-proof
-  fix p
-  assume "p \<in> ideal_like C A"
-  thus "p \<in> ideal_like C B"
-  proof (induct p rule: ideal_like.induct)
-    case ideal_like_0
-    show ?case ..
-  next
-    case step: (ideal_like_plus a b q)
-    show ?case by (rule ideal_like_plus, fact, rule, fact+)
-  qed
-qed
-
-lemma in_ideal_like_insertI:
-  assumes "p \<in> ideal_like C B"
-  shows "p \<in> ideal_like C (insert r B)"
-  using assms
-proof (induct p)
-  case ideal_like_0
-  show "0 \<in> ideal_like C (insert r B)" ..
-next
-  case step: (ideal_like_plus a b q)
-  show "a + q * b \<in> ideal_like C (insert r B)"
-  proof (rule, fact)
-    from step(3) show "b \<in> insert r B" by simp
-  qed fact
-qed
-
-lemma in_ideal_like_insertD:
-  assumes "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
-  assumes p_in: "p \<in> ideal_like C (insert r B)" and r_in: "r \<in> ideal_like C B"
-  shows "p \<in> ideal_like C B"
-  using p_in
-proof (induct p)
-  case ideal_like_0
-  show "0 \<in> ideal_like C B" ..
-next
-  case step: (ideal_like_plus a b q)
-  from step(3) have "b = r \<or> b \<in> B" by simp
-  thus "a + q * b \<in> ideal_like C B"
-  proof
-    assume eq: "b = r"
-    show ?thesis unfolding eq
-      by (rule ideal_like_closed_plus, fact, rule ideal_like_closed_times, rule assms(1), rule step(4),
-          assumption, fact)
-  next
-    assume "b \<in> B"
-    show ?thesis by (rule, fact+)
-  qed
-qed
-
-lemma ideal_like_insert:
-  assumes "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
-  assumes "r \<in> ideal_like C B"
-  shows "ideal_like C (insert r B) = ideal_like C B"
-proof (rule, rule)
-  fix p
-  assume "p \<in> ideal_like C (insert r B)"
-  from assms(1) this assms(2) show "p \<in> ideal_like C B" by (rule in_ideal_like_insertD)
-next
-  show "ideal_like C B \<subseteq> ideal_like C (insert r B)"
-  proof
-    fix p
-    assume "p \<in> ideal_like C B"
-    thus "p \<in> ideal_like C (insert r B)" by (rule in_ideal_like_insertI)
-  qed
-qed
-
-lemma ideal_like_insert_zero: "ideal_like C (insert 0 B) = ideal_like C B"
-proof (rule, rule)
-  fix p
-  assume "p \<in> ideal_like C (insert 0 B)"
-  thus "p \<in> ideal_like C B"
-  proof (induct p)
-    case ideal_like_0
-    show "0 \<in> ideal_like C B" ..
-  next
-    case step: (ideal_like_plus a b q)
-    from step(3) have "b = 0 \<or> b \<in> B" by simp
-    thus "a + q * b \<in> ideal_like C B"
-    proof
-      assume "b = 0"
-      thus ?thesis using step(2) by simp
-    next
-      assume "b \<in> B"
-      show ?thesis by (rule, fact+)
-    qed
-  qed
-next
-  show "ideal_like C B \<subseteq> ideal_like C (insert 0 B)" by (rule ideal_like_mono_2, auto)
-qed
-
-lemma ideal_like_minus_singleton_zero: "ideal_like C (B - {0}) = ideal_like C B"
-  by (metis ideal_like_insert_zero insert_Diff_single)
-
-lemma ideal_like_empty_1: "ideal_like {} B = {0}"
-proof (rule, rule)
-  fix p::"('a, 'b) poly_mapping"
-  assume "p \<in> ideal_like {} B"
-  thus "p \<in> {0}" by (induct p, simp_all)
-next
-  show "{0} \<subseteq> ideal_like {} B" by (rule, simp add: ideal_like_0)
-qed
-
-lemma ideal_like_empty_2: "ideal_like C {} = {0}"
-proof (rule, rule)
-  fix p::"('a, 'b) poly_mapping"
-  assume "p \<in> ideal_like C {}"
-  thus "p \<in> {0}" by (induct p, simp_all)
-next
-  show "{0} \<subseteq> ideal_like C {}" by (rule, simp add: ideal_like_0)
-qed
-  
-lemma generator_in_ideal_like:
-  assumes "1 \<in> C" and "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
-  shows "f \<in> ideal_like C B"
-  by (rule, fact assms(2), rule generator_subset_ideal_like, fact)
-
-lemma ideal_like_insert_subset:
-  assumes "1 \<in> C" and "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 * q2 \<in> C"
-  assumes "ideal_like C A \<subseteq> ideal_like C B" and "r \<in> ideal_like C (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
-  shows "ideal_like C (insert r A) \<subseteq> ideal_like C B"
-proof
-  fix p
-  assume "p \<in> ideal_like C (insert r A)"
-  thus "p \<in> ideal_like C B"
-  proof (induct p rule: ideal_like.induct)
-    case ideal_like_0
-    show ?case ..
-  next
-    case step: (ideal_like_plus a b q)
-    show ?case
-    proof (rule ideal_like_closed_plus)
-      show "q * b \<in> ideal_like C B"
-      proof (rule ideal_like_closed_times, rule assms(2), rule step(4), assumption)
-        from \<open>b \<in> insert r A\<close> show "b \<in> ideal_like C B"
-        proof
-          assume "b = r"
-          thus "b \<in> ideal_like C B" using \<open>r \<in> ideal_like C B\<close> by simp
-        next
-          assume "b \<in> A"
-          hence "b \<in> ideal_like C A" using generator_subset_ideal_like[OF assms(1), of A] ..
-          thus "b \<in> ideal_like C B" using \<open>ideal_like C A \<subseteq> ideal_like C B\<close> ..
-        qed
-      qed
-    qed fact
-  qed
-qed
-
-lemma in_ideal_like_finite_subset:
-  assumes "p \<in> (ideal_like C B)"
-  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> (ideal_like C A)"
-  using assms
-proof (induct p arbitrary: thesis)
-  case ideal_like_0
-  show ?case
-  proof (rule ideal_like_0(1))
-    show "finite {}" ..
-  next
-    show "{} \<subseteq> B" ..
-  qed (simp add: ideal_like_empty_2)
-next
-  case step: (ideal_like_plus p b q)
-  obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> (ideal_like C A)" by (rule step(2))
-  let ?A = "insert b A"
-  show ?case
-  proof (rule step(5))
-    from 1 show "finite ?A" ..
-  next
-    from step(3) 2 show "insert b A \<subseteq> B" by simp
-  next
-    show "p + q * b \<in> ideal_like C (insert b A)"
-      by (rule ideal_like_plus, rule, fact 3, rule ideal_like_mono_2, auto intro: step(4))
-  qed
-qed
-
-lemma in_ideal_like_finiteE:
-  assumes "0 \<in> C" and C_closed: "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 + q2 \<in> C"
-  assumes fin: "finite B" and p_in: "p \<in> (ideal_like C B)"
-  obtains q where "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>B. (q b) * b)"
-  using p_in
-proof (induct p arbitrary: thesis)
-  case base: ideal_like_0
-  let ?q = "\<lambda>_. (0::('a, 'b) poly_mapping)"
-  show ?case
-  proof (rule base(1))
-    fix x
-    from assms(1) show "?q x \<in> C" .
-  next
-    show "0 = (\<Sum>b\<in>B. ?q b * b)" by simp
-  qed
-next
-  case step: (ideal_like_plus p b r)
-  obtain q where *: "\<And>x. q x \<in> C" and **: "p = (\<Sum>b\<in>B. (q b) * b)" by (rule step(2), auto)
-  let ?q = "q(b := (q b + r))"
-  show ?case
-  proof (rule step(5))
-    have "p = q b * b + (\<Sum>b\<in>B - {b}. q b * b)"
-      by (simp only: **, simp add: comm_monoid_add_class.sum.remove[OF assms(3) step(3)])
-    thus "p + r * b = (\<Sum>b\<in>B. ?q b * b)"
-      by (simp add: comm_monoid_add_class.sum.remove[OF assms(3) step(3)]
-          algebra_simps times_monomial_left)
-  next
-    fix x
-    show "?q x \<in> C" by (simp, intro conjI impI, rule C_closed, rule *, rule step(4), rule *)
-  qed
-qed
-
-lemma in_ideal_likeE:
-  assumes "0 \<in> C" and C_closed: "\<And>q1 q2. q1 \<in> C \<Longrightarrow> q2 \<in> C \<Longrightarrow> q1 + q2 \<in> C"
-  assumes "p \<in> (ideal_like C B)"
-  obtains A q where "finite A" and "A \<subseteq> B" and "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>A. (q b) * b)"
-proof -
-  from assms(3) obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> ideal_like C A"
-    by (rule in_ideal_like_finite_subset)
-  from assms(1) assms(2) 1 3 obtain q where "\<And>x. q x \<in> C" and "p = (\<Sum>b\<in>A. (q b) * b)"
-    by (rule in_ideal_like_finiteE, auto)
-  with 1 2 show ?thesis ..
-qed
-
-lemma sum_in_ideal_likeI:
-  assumes "\<And>b. b \<in> B \<Longrightarrow> q b \<in> C"
-  shows "(\<Sum>b\<in>B. q b * b) \<in> ideal_like C B"
-proof (cases "finite B")
-  case True
-  from this assms show ?thesis
-  proof (induct B, simp add: ideal_like_0)
-    case ind: (insert b B)
-    have "(\<Sum>b\<in>B. q b * b) \<in> ideal_like C (insert b B)"
-      by (rule, rule ind(3), rule ind(4), simp, rule ideal_like_mono_2, auto)
-    moreover have "b \<in> insert b B" by simp
-    moreover have "q b \<in> C" by (rule ind(4), simp)
-    ultimately have "(\<Sum>b\<in>B. q b * b) + q b * b \<in> ideal_like C (insert b B)" by (rule ideal_like_plus)
-    thus ?case unfolding sum.insert[OF ind(1) ind(2)] by (simp add: ac_simps)
-  qed
-next
-  case False
-  thus ?thesis by (simp add: ideal_like_0)
-qed
-
-lemma ideal_like_subset_ideal_likeI:
-  assumes "\<And>r q. r \<in> C \<Longrightarrow> q \<in> C \<Longrightarrow> r * q \<in> C"
-  assumes "A \<subseteq> ideal_like C B"
-  shows "ideal_like C A \<subseteq> ideal_like C B"
-proof
-  fix p
-  assume "p \<in> ideal_like C A"
-  thus "p \<in> ideal_like C B"
-  proof (induct p)
-    case base: ideal_like_0
-    show ?case by (fact ideal_like_0)
-  next
-    case step: (ideal_like_plus a b q)
-    from step(3) assms(2) have "b \<in> ideal_like C B" ..
-    with _ have "q * b \<in> ideal_like C B"
-    proof (rule ideal_like_closed_times)
-      fix r
-      assume "r \<in> C"
-      with step(4) show "q * r \<in> C" by (rule assms(1))
-    qed
-    with step(2) show ?case by (rule ideal_like_closed_plus)
-  qed
-qed
-
-lemma ideal_like_insert_cong:
-  assumes "1 \<in> C" and "\<And>r q. r \<in> C \<Longrightarrow> q \<in> C \<Longrightarrow> r * q \<in> C"
-  assumes "ideal_like C A = ideal_like C B"
-  shows "ideal_like C (insert p A) = ideal_like C (insert (p::('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1)) B)"
-    (is "?l = ?r")
-proof
-  from assms(2) show "?l \<subseteq> ?r"
-  proof (rule ideal_like_subset_ideal_likeI)
-    show "insert p A \<subseteq> ?r"
-    proof (rule insert_subsetI)
-      from assms(1) show "p \<in> ?r" by (rule generator_in_ideal_like, simp)
-    next
-      from assms(1) have "A \<subseteq> ideal_like C A" by (rule generator_subset_ideal_like)
-      also from assms(3) have "... = ideal_like C B" .
-      also have "... \<subseteq> ?r" by (rule ideal_like_mono_2, blast)
-      finally show "A \<subseteq> ?r" .
-    qed
-  qed
-next
-  from assms(2) show "?r \<subseteq> ?l"
-  proof (rule ideal_like_subset_ideal_likeI)
-    show "insert p B \<subseteq> ?l"
-    proof (rule insert_subsetI)
-      from assms(1) show "p \<in> ?l" by (rule generator_in_ideal_like, simp)
-    next
-      from assms(1) have "B \<subseteq> ideal_like C B" by (rule generator_subset_ideal_like)
-      also from assms(3) have "... = ideal_like C A" by simp
-      also have "... \<subseteq> ?l" by (rule ideal_like_mono_2, blast)
-      finally show "B \<subseteq> ?l" .
-    qed
-  qed
-qed
-
-lemma ideal_like_ideal_like_subset:
-  assumes "\<And>a b. a \<in> C2 \<Longrightarrow> b \<in> C1 \<Longrightarrow> a * b \<in> C1"
-  shows "ideal_like C2 (ideal_like C1 B) \<subseteq> ideal_like C1 B"
-proof
-  fix p
-  assume "p \<in> ideal_like C2 (ideal_like C1 B)"
-  thus "p \<in> ideal_like C1 B"
-  proof (induct p)
-    case base: ideal_like_0
-    show ?case by (fact ideal_like_0)
-  next
-    case step: (ideal_like_plus a b q)
-    from step(2) show ?case
-    proof (rule ideal_like_closed_plus)
-      show "q * b \<in> ideal_like C1 B"
-      proof (rule ideal_like_closed_times)
-        fix r
-        assume "r \<in> C1"
-        with \<open>q \<in> C2\<close> show "q * r \<in> C1" by (rule assms(1))
-      qed fact
-    qed
-  qed
-qed
-
-lemma ideal_like_closed_sum:
-  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> ideal_like C B"
-  shows "(\<Sum>a\<in>A. f a) \<in> ideal_like C B"
-proof (cases "finite A")
-  case True
-  from this assms show ?thesis
-  proof induct
-    case empty
-    thus ?case by (simp add: ideal_like_0)
-  next
-    case (insert a A)
-    show ?case
-    proof (simp only: sum.insert[OF insert(1, 2)], rule ideal_like_closed_plus)
-      have "a \<in> insert a A" by simp
-      thus "f a \<in> ideal_like C B" by (rule insert.prems)
-    next
-      show "sum f A \<in> ideal_like C B"
-      proof (rule insert(3))
-        fix b
-        assume "b \<in> A"
-        hence "b \<in> insert a A" by simp
-        thus "f b \<in> ideal_like C B" by (rule insert.prems)
-      qed
-    qed
-  qed
-next
-  case False
-  thus ?thesis by (simp add: ideal_like_0)
-qed
-
-subsubsection \<open>Polynomial Ideals\<close>
-
-definition pideal::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
-  where "pideal = ideal_like UNIV"
-
-lemma zero_in_pideal: "0 \<in> pideal B"
-  unfolding pideal_def by (rule ideal_like_0)
-
-lemma times_in_pideal:
-  assumes "b \<in> B"
-  shows "q * b \<in> pideal B"
-  unfolding pideal_def by (rule times_in_ideal_like, rule, fact)
+abbreviation pideal :: "('a \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::ring_1) set"
+  where "pideal \<equiv> ideal"
 
 lemma monom_mult_in_pideal:
   assumes "b \<in> B"
   shows "monom_mult c t b \<in> pideal B"
-  unfolding pideal_def by (rule monom_mult_in_ideal_like, rule, fact)
-
-lemma generator_subset_pideal:
-  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
-  shows "B \<subseteq> pideal B"
-  unfolding pideal_def by (rule generator_subset_ideal_like, rule)
-
-lemma pideal_closed_plus:
-  assumes "p \<in> pideal B" and "q \<in> pideal B"
-  shows "p + q \<in> pideal B"
-  using assms unfolding pideal_def by (rule ideal_like_closed_plus)
-
-lemma pideal_closed_uminus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes p_in: "p \<in> pideal B"
-  shows "-p \<in> pideal B"
-  using _ assms unfolding pideal_def by (rule ideal_like_closed_uminus, intro UNIV_I)
-
-lemma pideal_closed_minus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes "p \<in> pideal B" and "q \<in> pideal B"
-  shows "p - q \<in> pideal B"
-  using assms pideal_closed_plus pideal_closed_uminus by fastforce
-
-lemma pideal_closed_times:
-  assumes "p \<in> pideal B"
-  shows "q * p \<in> pideal B"
-  using _ assms unfolding pideal_def by (rule ideal_like_closed_times, intro UNIV_I)
+  unfolding times_monomial_left[symmetric] using assms by (rule ideal.smult_in_module)
 
 lemma pideal_closed_monom_mult:
   assumes "p \<in> pideal B"
   shows "monom_mult c t p \<in> pideal B"
-  using _ assms unfolding pideal_def by (rule ideal_like_closed_monom_mult, intro UNIV_I)
-
-lemma in_pideal_insertI:
-  assumes "p \<in> pideal B"
-  shows "p \<in> pideal (insert q B)"
-  using assms unfolding pideal_def by (rule in_ideal_like_insertI)
-
-lemma in_pideal_insertD:
-  assumes "p \<in> pideal (insert q B)" and "q \<in> pideal B"
-  shows "p \<in> pideal B"
-  using _ assms unfolding pideal_def by (rule in_ideal_like_insertD, intro UNIV_I)
-
-lemma pideal_insert:
-  assumes "q \<in> pideal B"
-  shows "pideal (insert q B) = pideal B"
-  using _ assms unfolding pideal_def by (rule ideal_like_insert, intro UNIV_I)
-
-lemma pideal_empty: "pideal {} = {0}"
-  unfolding pideal_def by (fact ideal_like_empty_2)
-
-lemma pideal_insert_zero: "pideal (insert 0 B) = pideal B"
-  unfolding pideal_def by (fact ideal_like_insert_zero)
-
-lemma pideal_minus_singleton_zero: "pideal (B - {0}) = pideal B"
-  unfolding pideal_def by (fact ideal_like_minus_singleton_zero)
-  
-lemma generator_in_pideal:
-  assumes "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
-  shows "f \<in> pideal B"
-  by (rule, fact assms, rule generator_subset_pideal)
-
-lemma pideal_mono:
-  assumes "A \<subseteq> B"
-  shows "pideal A \<subseteq> pideal B"
-  unfolding pideal_def using assms by (rule ideal_like_mono_2)
-
-lemma pideal_insert_subset:
-  assumes "pideal A \<subseteq> pideal B" and "q \<in> pideal (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
-  shows "pideal (insert q A) \<subseteq> pideal B"
-  using _ _ assms unfolding pideal_def by (rule ideal_like_insert_subset, intro UNIV_I, intro UNIV_I)
-
-lemma replace_pideal:
-  assumes "q \<in> (pideal B)"
-  shows "pideal (insert q (B - {p})) \<subseteq> pideal (B::('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1) set)"
-  by (rule pideal_insert_subset, rule pideal_mono, fact Diff_subset, fact)
-
-lemma in_pideal_finite_subset:
-  assumes "p \<in> (pideal B)"
-  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> (pideal A)"
-  using assms unfolding pideal_def by (rule in_ideal_like_finite_subset)
-
-lemma in_pideal_finiteE:
-  assumes "finite B" and "p \<in> (pideal B)"
-  obtains q where "p = (\<Sum>b\<in>B. (q b) * b)"
-  using _ _ assms unfolding pideal_def by (rule in_ideal_like_finiteE, intro UNIV_I, intro UNIV_I)
-
-lemma in_pidealE:
-  assumes "p \<in> (pideal B)"
-  obtains A q where "finite A" and "A \<subseteq> B" and "p = (\<Sum>b\<in>A. (q b) * b)"
-proof -
-  from assms obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> pideal A"
-    by (rule in_pideal_finite_subset)
-  from 1 3 obtain q where "p = (\<Sum>b\<in>A. (q b) * b)" by (rule in_pideal_finiteE)
-  with 1 2 show ?thesis ..
-qed
-
-lemma sum_in_pidealI: "(\<Sum>b\<in>B. q b * b) \<in> pideal B"
-  unfolding pideal_def by (rule sum_in_ideal_likeI, intro UNIV_I)
+  using assms unfolding times_monomial_left[symmetric] by (rule ideal.module_closed_smult)
 
 lemma pideal_induct [consumes 1, case_names pideal_0 pideal_plus]:
-  assumes "p \<in> pideal B" and "P 0" and "\<And>a p c t. a \<in> pideal B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c t p)"
+  assumes "p \<in> pideal B" and "P 0"
+    and "\<And>a p c t. a \<in> pideal B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c t p)"
   shows "P p"
-  using assms(1) unfolding pideal_def
+  using assms(1)
 proof (induct p)
-  case ideal_like_0
+  case module_0
   from assms(2) show ?case .
 next
-  case ind: (ideal_like_plus a b q)
+  case ind: (module_plus a b q)
   from this(1) this(2) show ?case
   proof (induct q arbitrary: a rule: poly_mapping_except_induct)
     case 1
     thus ?case by simp
   next
     case step: (2 q0 t)
-    from this(4) have "a \<in> pideal B" by (simp only: pideal_def)
-    from this step(5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t * b)" unfolding times_monomial_left
+    from step(4, 5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t * b)" unfolding times_monomial_left
     proof (rule assms(3))
       from step(2) show "lookup q0 t \<noteq> 0" by simp
     qed
     with _ have "P ((a + monomial (lookup q0 t) t * b) + except q0 {t} * b)"
     proof (rule step(3))
-      from step(4) \<open>b \<in> B\<close> show "a + monomial (lookup q0 t) t * b \<in> ideal_like UNIV B"
-        by (rule ideal_like_plus, intro UNIV_I)
+      from step(4) \<open>b \<in> B\<close> show "a + monomial (lookup q0 t) t * b \<in> ideal B"
+        by (rule ideal.module_plus)
     qed
     hence "P (a + (monomial (lookup q0 t) t + except q0 {t}) * b)" by (simp add: algebra_simps)
     thus ?case by (simp only: plus_except[of q0 t, symmetric])
   qed
 qed
 
-lemma pideal_subset_pidealI:
-  assumes "A \<subseteq> pideal B"
-  shows "pideal A \<subseteq> pideal B"
-  using _ assms unfolding pideal_def by (rule ideal_like_subset_ideal_likeI, intro UNIV_I)
-
-lemma pideal_eq_UNIV_iff_contains_one:
-  "pideal F = UNIV \<longleftrightarrow> (1::'a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1) \<in> pideal F"
-proof
-  assume *: "1 \<in> pideal F"
-  show "pideal F = UNIV"
-  proof
-    show "UNIV \<subseteq> pideal F"
-    proof
-      fix p
-      from * have "p * 1 \<in> pideal F" by (rule pideal_closed_times)
-      thus "p \<in> pideal F" by simp
-    qed
-  qed simp
-qed simp
-
-lemma pideal_insert_cong:
-  assumes "pideal A = pideal B"
-  shows "pideal (insert p A) = pideal (insert (p::('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1)) B)"
-  using UNIV_I UNIV_I assms unfolding pideal_def by (rule ideal_like_insert_cong)
-
-lemma pideal_idem [simp]: "pideal (pideal B) = pideal (B::(_ \<Rightarrow>\<^sub>0 'b::semiring_1) set)"
-proof
-  show "pideal (pideal B) \<subseteq> pideal B" unfolding pideal_def
-    by (rule ideal_like_ideal_like_subset, rule)
-qed (fact generator_subset_pideal)
-
-lemma pideal_closed_sum:
-  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> pideal B"
-  shows "(\<Sum>a\<in>A. f a) \<in> pideal B"
-  using assms unfolding pideal_def by (rule ideal_like_closed_sum)
-
 subsubsection \<open>Linear Hulls of Sets of Polynomials\<close>
 
-definition phull::"('a::comm_powerprod, 'b::semiring_0) poly_mapping set \<Rightarrow> ('a, 'b) poly_mapping set"
-  where "phull = ideal_like {monomial c 0 | c. True}"
+interpretation phull: module_struct "\<lambda>c. monom_mult c 0"
+  apply standard
+  subgoal by (simp only: monom_mult_left1)
+  subgoal by (simp add: monom_mult_assoc) 
+  subgoal by (simp only: monom_mult_dist_left)
+  subgoal by (simp only: monom_mult_dist_right)
+  done
 
-lemma zero_in_phull: "0 \<in> phull B"
-  unfolding phull_def by (rule ideal_like_0)
+abbreviation "phull \<equiv> phull.module"
 
 lemma times_in_phull:
   assumes "b \<in> B"
   shows "monomial c 0 * b \<in> phull B"
-  unfolding phull_def by (rule times_in_ideal_like, auto intro: assms)
-
-lemma monom_mult_in_phull:
-  assumes "b \<in> B"
-  shows "monom_mult c 0 b \<in> phull B"
-  unfolding phull_def by (rule monom_mult_in_ideal_like, auto intro: assms)
-
-lemma generator_subset_phull:
-  fixes B::"('a::comm_powerprod, 'b::semiring_1) poly_mapping set"
-  shows "B \<subseteq> phull B"
-  unfolding phull_def
-proof (rule generator_subset_ideal_like, simp, rule)
-  show "monomial 1 0 = 1" by simp
-qed
-
-lemma phull_closed_plus:
-  assumes "p \<in> phull B" and "q \<in> phull B"
-  shows "p + q \<in> phull B"
-  using assms unfolding phull_def by (rule ideal_like_closed_plus)
-
-lemma phull_closed_uminus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes p_in: "p \<in> phull B"
-  shows "-p \<in> phull B"
-  using _ assms unfolding phull_def
-  by (rule ideal_like_closed_uminus, auto simp add: single_uminus[symmetric])
-
-lemma phull_closed_minus:
-  fixes B::"('a::comm_powerprod, 'b::ring) poly_mapping set"
-  assumes "p \<in> phull B" and "q \<in> phull B"
-  shows "p - q \<in> phull B"
-  using assms phull_closed_plus phull_closed_uminus by fastforce
+  unfolding times_monomial_left using assms by (rule phull.smult_in_module)
 
 lemma phull_closed_times:
   assumes "p \<in> phull B"
   shows "monomial c 0 * p \<in> phull B"
-  using _ assms unfolding phull_def by (rule ideal_like_closed_times, auto simp add: mult_single)
-
-lemma phull_closed_monom_mult:
-  assumes "p \<in> phull B"
-  shows "monom_mult c 0 p \<in> phull B"
-  using _ assms unfolding phull_def by (rule ideal_like_closed_monom_mult, auto simp add: monom_mult_monomial)
-
-lemma in_phull_insertI:
-  assumes "p \<in> phull B"
-  shows "p \<in> phull (insert q B)"
-  using assms unfolding phull_def by (rule in_ideal_like_insertI)
-
-lemma in_phull_insertD:
-  assumes "p \<in> phull (insert q B)" and "q \<in> phull B"
-  shows "p \<in> phull B"
-  using _ assms unfolding phull_def by (rule in_ideal_like_insertD, auto simp add: mult_single)
-
-lemma phull_insert:
-  assumes "q \<in> phull B"
-  shows "phull (insert q B) = phull B"
-  using _ assms unfolding phull_def by (rule ideal_like_insert, auto simp add: mult_single)
-
-lemma phull_empty: "phull {} = {0}"
-  unfolding phull_def by (fact ideal_like_empty_2)
-
-lemma phull_insert_zero: "phull (insert 0 B) = phull B"
-  unfolding phull_def by (fact ideal_like_insert_zero)
-
-lemma phull_minus_singleton_zero: "phull (B - {0}) = phull B"
-  unfolding phull_def by (fact ideal_like_minus_singleton_zero)
-  
-lemma generator_in_phull:
-  assumes "(f::('a::comm_powerprod, 'b::semiring_1) poly_mapping) \<in> B"
-  shows "f \<in> phull B"
-  by (rule, fact assms, rule generator_subset_phull)
-
-lemma phull_mono:
-  assumes "A \<subseteq> B"
-  shows "phull A \<subseteq> phull B"
-  unfolding phull_def using assms by (rule ideal_like_mono_2)
+  unfolding times_monomial_left using assms by (rule phull.module_closed_smult)
 
 lemma phull_subset_pideal: "phull B \<subseteq> pideal B"
-  unfolding phull_def pideal_def by (rule ideal_like_mono_1, simp)
-
-lemma phull_insert_subset:
-  assumes "phull A \<subseteq> phull B" and "q \<in> phull (B::('a::comm_powerprod, 'b::semiring_1) poly_mapping set)"
-  shows "phull (insert q A) \<subseteq> phull B"
-  using _ _ assms unfolding phull_def
-proof (rule ideal_like_insert_subset, simp, intro exI)
-  show "monomial 1 0 = 1" by simp
-qed (auto simp add: mult_single)
-
-lemma replace_phull:
-  assumes "q \<in> (phull B)"
-  shows "phull (insert q (B - {p})) \<subseteq> phull (B::('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1) set)"
-  by (rule phull_insert_subset, rule phull_mono, fact Diff_subset, fact)
-
-lemma in_phull_finite_subset:
-  assumes "p \<in> phull B"
-  obtains A where "finite A" and "A \<subseteq> B" and "p \<in> phull A"
-  using assms unfolding phull_def by (rule in_ideal_like_finite_subset)
-
-lemma in_phull_finiteE:
-  assumes "finite B" and "p \<in> phull B"
-  obtains c where "p = (\<Sum>b\<in>B. monom_mult (c b) 0 b)"
-proof -
-  from _ _ assms obtain q where *: "\<And>x. q x \<in> {monomial c 0 | c. True}" and **: "p = (\<Sum>b\<in>B. q b * b)"
-    unfolding phull_def
-  proof (rule in_ideal_like_finiteE, simp, intro exI)
-    show "monomial 0 0 = 0" by simp
-  next
-    fix q1 q2::"('a, 'b) poly_mapping"
-    assume "q1 \<in> {monomial c 0 |c. True}" and "q2 \<in> {monomial c 0 |c. True}"
-    thus "q1 + q2 \<in> {monomial c 0 |c. True}" by (auto, metis single_add)
-  qed auto
-  from * have "\<forall>x. \<exists>c. q x = monomial c 0" by simp
-  hence "\<exists>c. \<forall>x. q x = monomial (c x) 0" by (rule choice)
-  then obtain c where ***: "\<And>x. q x = monomial (c x) 0" by auto
-  show ?thesis
-  proof
-    show "p = (\<Sum>b\<in>B. monom_mult (c b) 0 b)" by (simp only: ** *** times_monomial_left)
-  qed
-qed
-
-lemma in_phullE:
-  assumes "p \<in> phull B"
-  obtains A c where "finite A" and "A \<subseteq> B" and "p = (\<Sum>b\<in>A. monom_mult (c b) 0 b)"
-proof -
-  from assms obtain A where 1: "finite A" and 2: "A \<subseteq> B" and 3: "p \<in> phull A"
-    by (rule in_phull_finite_subset)
-  from 1 3 obtain c where "p = (\<Sum>b\<in>A. monom_mult (c b) 0 b)" by (rule in_phull_finiteE)
-  with 1 2 show ?thesis ..
-qed
-
-lemma sum_in_phullI: "(\<Sum>b\<in>B. monom_mult (c b) 0 b) \<in> phull B"
-  unfolding phull_def times_monomial_left[symmetric] by (rule sum_in_ideal_likeI, auto)
-
-lemma phull_induct [consumes 1, case_names phull_0 phull_plus]:
-  assumes "p \<in> phull B" and "P 0" and "\<And>a p c. a \<in> phull B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c 0 p)"
-  shows "P p"
-  using assms(1) unfolding phull_def
-proof (induct p)
-  case ideal_like_0
-  from assms(2) show ?case .
-next
-  case ind: (ideal_like_plus a b q)
-  from this(1) have "a \<in> phull B" by (simp only: phull_def)
-  from ind(4) obtain c where q: "q = monomial c 0" by auto
-  show ?case
-  proof (cases "c = 0")
-    case True
-    from ind(2) show ?thesis unfolding q True by simp
-  next
-    case False
-    from \<open>a \<in> phull B\<close> ind(2) ind(3) False show ?thesis unfolding q times_monomial_left by (rule assms(3))
-  qed
-qed
-
-lemma phull_subset_phullI:
-  assumes "A \<subseteq> phull B"
-  shows "phull A \<subseteq> phull B"
-  using _ assms unfolding phull_def by (rule ideal_like_subset_ideal_likeI, auto simp add: mult_single)
-
-lemma phull_insert_cong:
-  assumes "phull A = phull B"
-  shows "phull (insert p A) = phull (insert (p::('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::semiring_1)) B)"
-  using _ _ assms unfolding phull_def
-proof (rule ideal_like_insert_cong)
-  show "1 \<in> {monomial c 0 |c. True}"
-  proof (simp, rule)
-    show "monomial 1 0 = 1" by simp
-  qed
-qed (auto simp add: mult_single)
-
-lemma phull_idem [simp]: "phull (phull B) = phull (B::(_ \<Rightarrow>\<^sub>0 'b::semiring_1) set)"
 proof
-  show "phull (phull B) \<subseteq> phull B" unfolding phull_def
-    by (rule ideal_like_ideal_like_subset, auto simp add: mult_single)
-qed (fact generator_subset_phull)
-
-lemma phull_closed_sum:
-  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> phull B"
-  shows "(\<Sum>a\<in>A. f a) \<in> phull B"
-  using assms unfolding phull_def by (rule ideal_like_closed_sum)
+  fix p
+  assume "p \<in> phull B"
+  thus "p \<in> pideal B"
+  proof (induct p rule: phull.module_induct)
+    case module_0
+    show ?case by (fact ideal.module_0)
+  next
+    case (module_plus a c p)
+    show ?case by (rule ideal.module_closed_plus, fact, rule monom_mult_in_pideal, fact)
+  qed
+qed
 
 
 subsection \<open>Polynomials in Ordered Power-products\<close>
@@ -4021,6 +3273,187 @@ proof
   moreover from assms(1) have "lc p \<noteq> 0" by (rule lc_not_0)
   moreover from assms(2) have "lc q \<noteq> 0" by (rule lc_not_0)
   ultimately show False by simp
+qed
+
+subsubsection \<open>Lists of Keys\<close>
+
+definition pps_to_list :: "'a set \<Rightarrow> 'a list" where
+  "pps_to_list S = rev (ordered_powerprod_lin.sorted_list_of_set S)"
+
+definition keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'a list"
+  where "keys_to_list p = pps_to_list (keys p)"
+
+definition Keys_to_list :: "('a \<Rightarrow>\<^sub>0 'b::zero) list \<Rightarrow> 'a list"
+  where "Keys_to_list ps = fold (\<lambda>p ts. merge_wrt (\<succ>) (keys_to_list p) ts) ps []"
+
+text \<open>Function @{const pps_to_list} turns finite sets of power-products into sorted lists, where the lists
+  are sorted descending (i.\,e. greater elements come before smaller ones).\<close>
+
+lemma distinct_pps_to_list: "distinct (pps_to_list S)"
+  unfolding pps_to_list_def distinct_rev by (rule ordered_powerprod_lin.distinct_sorted_list_of_set)
+
+lemma set_pps_to_list:
+  assumes "finite S"
+  shows "set (pps_to_list S) = S"
+  unfolding pps_to_list_def set_rev using assms by simp
+
+lemma length_pps_to_list: "length (pps_to_list S) = card S"
+proof (cases "finite S")
+  case True
+  from distinct_card[OF distinct_pps_to_list] have "length (pps_to_list S) = card (set (pps_to_list S))"
+    by simp
+  also from True have "... = card S" by (simp only: set_pps_to_list)
+  finally show ?thesis .
+next
+  case False
+  thus ?thesis by (simp add: pps_to_list_def)
+qed
+
+lemma pps_to_list_sorted_wrt: "sorted_wrt (\<succ>) (pps_to_list S)"
+proof -
+  have "sorted_wrt (\<succeq>) (pps_to_list S)"
+    proof -
+    have tr: "transp (\<succeq>)" using transp_def by fastforce
+    have *: "(\<lambda>x y. y \<succeq> x) = (\<preceq>)" by simp
+    show ?thesis
+      by (simp only: pps_to_list_def sorted_wrt_rev * ordered_powerprod_lin.sorted_sorted_wrt[symmetric],
+          rule ordered_powerprod_lin.sorted_sorted_list_of_set)
+  qed
+  with distinct_pps_to_list have "sorted_wrt (\<lambda>x y. x \<succeq> y \<and> x \<noteq> y) (pps_to_list S)"
+    by (rule distinct_sorted_wrt_imp_sorted_wrt_strict)
+  moreover have "(\<succ>) = (\<lambda>x y. x \<succeq> y \<and> x \<noteq> y)"
+    using ordered_powerprod_lin.dual_order.order_iff_strict by auto
+  ultimately show ?thesis by simp
+qed
+
+lemma pps_to_list_nth_leI:
+  assumes "j \<le> i" and "i < card S"
+  shows "(pps_to_list S) ! i \<preceq> (pps_to_list S) ! j"
+proof (cases "j = i")
+  case True
+  show ?thesis by (simp add: True)
+next
+  case False
+  with assms(1) have "j < i" by simp
+  let ?ts = "pps_to_list S"
+  have "transp (\<succ>)" unfolding transp_def by fastforce
+  hence "(?ts ! j) \<succ> (?ts ! i)" using pps_to_list_sorted_wrt \<open>j < i\<close>
+  proof (rule sorted_wrt_nth_mono)
+    from assms(2) show "i < length ?ts" by (simp only: length_pps_to_list)
+  qed
+  thus ?thesis by simp
+qed
+
+lemma pps_to_list_nth_lessI:
+  assumes "j < i" and "i < card S"
+  shows "(pps_to_list S) ! i \<prec> (pps_to_list S) ! j"
+proof -
+  let ?ts = "pps_to_list S"
+  from assms(1) have "j \<le> i" and "i \<noteq> j" by simp_all
+  with assms(2) have "i < length ?ts" and "j < length ?ts" by (simp_all only: length_pps_to_list)
+  show ?thesis
+  proof (rule ordered_powerprod_lin.neq_le_trans)
+    from \<open>i \<noteq> j\<close> show "?ts ! i \<noteq> ?ts ! j"
+      by (simp add: nth_eq_iff_index_eq[OF distinct_pps_to_list \<open>i < length ?ts\<close> \<open>j < length ?ts\<close>])
+  next
+    from \<open>j \<le> i\<close> assms(2) show "?ts ! i \<preceq> ?ts ! j" by (rule pps_to_list_nth_leI)
+  qed
+qed
+
+lemma pps_to_list_nth_leD:
+  assumes "(pps_to_list S) ! i \<preceq> (pps_to_list S) ! j" and "j < card S"
+  shows "j \<le> i"
+proof (rule ccontr)
+  assume "\<not> j \<le> i"
+  hence "i < j" by simp
+  from this \<open>j < card S\<close> have "(pps_to_list S) ! j \<prec> (pps_to_list S) ! i" by (rule pps_to_list_nth_lessI)
+  with assms(1) show False by simp
+qed
+
+lemma pps_to_list_nth_lessD:
+  assumes "(pps_to_list S) ! i \<prec> (pps_to_list S) ! j" and "j < card S"
+  shows "j < i"
+proof (rule ccontr)
+  assume "\<not> j < i"
+  hence "i \<le> j" by simp
+  from this \<open>j < card S\<close> have "(pps_to_list S) ! j \<preceq> (pps_to_list S) ! i" by (rule pps_to_list_nth_leI)
+  with assms(1) show False by simp
+qed
+
+lemma set_keys_to_list: "set (keys_to_list p) = keys p"
+  by (simp add: keys_to_list_def set_pps_to_list)
+
+lemma length_keys_to_list: "length (keys_to_list p) = card (keys p)"
+  by (simp only: keys_to_list_def length_pps_to_list)
+
+lemma keys_to_list_zero [simp]: "keys_to_list 0 = []"
+  by (simp add: keys_to_list_def pps_to_list_def)
+
+lemma Keys_to_list_Nil [simp]: "Keys_to_list [] = []"
+  by (simp add: Keys_to_list_def)
+
+lemma set_Keys_to_list: "set (Keys_to_list ps) = Keys (set ps)"
+proof -
+  have "set (Keys_to_list ps) = (\<Union>p\<in>set ps. set (keys_to_list p)) \<union> set []"
+    unfolding Keys_to_list_def by (rule set_fold, simp only: set_merge_wrt)
+  also have "... = Keys (set ps)" by (simp add: Keys_def set_keys_to_list)
+  finally show ?thesis .
+qed
+
+lemma Keys_to_list_sorted_wrt_aux:
+  assumes "sorted_wrt (\<succ>) ts"
+  shows "sorted_wrt (\<succ>) (fold (\<lambda>p ts. merge_wrt (\<succ>) (keys_to_list p) ts) ps ts)"
+  using assms
+proof (induct ps arbitrary: ts)
+  case Nil
+  thus ?case by simp
+next
+  case (Cons p ps)
+  show ?case
+  proof (simp only: fold.simps o_def, rule Cons(1), rule sorted_merge_wrt)
+    show "transp (\<succ>)" unfolding transp_def by fastforce
+  next
+    fix x y :: 'a
+    assume "x \<noteq> y"
+    thus "x \<succ> y \<or> y \<succ> x" by auto
+  next
+    show "sorted_wrt (\<succ>) (keys_to_list p)" unfolding keys_to_list_def
+      by (fact pps_to_list_sorted_wrt)
+  qed fact
+qed
+
+corollary Keys_to_list_sorted_wrt: "sorted_wrt (\<succ>) (Keys_to_list ps)"
+  unfolding Keys_to_list_def
+proof (rule Keys_to_list_sorted_wrt_aux)
+  show "sorted_wrt (\<succ>) []" by simp
+qed
+
+corollary distinct_Keys_to_list: "distinct (Keys_to_list ps)"
+proof (rule distinct_sorted_wrt_irrefl)
+  show "irreflp (\<succ>)" by (simp add: irreflp_def)
+next
+  show "transp (\<succ>)" unfolding transp_def by fastforce
+next
+  show "sorted_wrt (\<succ>) (Keys_to_list ps)" by (fact Keys_to_list_sorted_wrt)
+qed
+
+lemma length_Keys_to_list: "length (Keys_to_list ps) = card (Keys (set ps))"
+proof -
+  from distinct_Keys_to_list have "card (set (Keys_to_list ps)) = length (Keys_to_list ps)"
+    by (rule distinct_card)
+  thus ?thesis by (simp only: set_Keys_to_list)
+qed
+
+lemma Keys_to_list_eq_pps_to_list: "Keys_to_list ps = pps_to_list (Keys (set ps))"
+  using _ _ Keys_to_list_sorted_wrt distinct_Keys_to_list pps_to_list_sorted_wrt distinct_pps_to_list
+proof (rule sorted_wrt_distinct_set_unique)
+  show "transp (\<succ>)" unfolding transp_def by fastforce
+next
+  show "antisymp (\<succ>)" unfolding antisymp_def by fastforce
+next
+  from finite_set have fin: "finite (Keys (set ps))" by (rule finite_Keys)
+  show "set (Keys_to_list ps) = set (pps_to_list (Keys (set ps)))"
+    by (simp add: set_Keys_to_list set_pps_to_list[OF fin])
 qed
 
 end (* ordered_powerprod *)
