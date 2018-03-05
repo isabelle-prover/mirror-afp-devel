@@ -193,7 +193,7 @@ locale Blockchain = dynamic_component cmp active
     and attacker: "\<And>kid t t' bc'. \<lbrakk>\<not> trusted kid\<rbrakk> \<Longrightarrow> eval kid t t' 0 (\<box>(ass (\<lambda>kt. bc' = (SOME b. b \<in> (pin kt \<union> {bc kt}))) \<longrightarrow>\<^sup>b
       \<circle> (ass (\<lambda>kt.(\<not> mining kt \<and> prefix (bc kt) bc' \<or> mining kt \<and> bc kt = bc' @ [kid])))))"
     and forward: "\<And>kid t t'. eval kid t t' 0 (\<box>(ass (\<lambda>kt. pout kt = bc kt)))"
-    -- "At each time point a node will forward its blockchain to the network"
+    \<comment> \<open>At each time point a node will forward its blockchain to the network\<close>
     and conn: "\<And>k kid. active kid k
       \<Longrightarrow> pin (cmp kid k) = (\<Union>kid'\<in>{kid'. active kid' k}. {pout (cmp kid' k)})"
     and act: "\<And>t n::nat. finite {kid::'nid. \<parallel>kid\<parallel>\<^bsub>t n\<^esub>}"
