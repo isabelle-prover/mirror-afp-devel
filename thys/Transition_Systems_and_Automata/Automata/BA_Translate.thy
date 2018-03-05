@@ -4,6 +4,13 @@ theory BA_Translate
 imports BA_Explicit
 begin
 
+  subsection {* Syntax *}
+
+  (* TODO: this syntax has unnecessarily high inner binding strength, requiring extra parentheses
+    the regular let syntax correctly uses inner binding strength 0: ("(2_ =/ _)" 10) *)
+  no_syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" ("(2let _ =/ _)" [1000, 13] 13)
+  syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" ("(2let _ =/ _)" 13)
+
   section {* Image on Explicit Automata *}
 
   definition bae_image where "bae_image f A \<equiv> \<lparr> alphabete = alphabete A, initiale = f ` initiale A,
@@ -36,15 +43,18 @@ begin
     assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
     assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
     shows "(?f :: ?'a, do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        ASSERT (dom f = nodes A);
+        let N = nodes A;
+        f \<leftarrow> op_set_enumerate N;
+        ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
         ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        ASSERT (\<forall> p \<in> nodes A. f p \<noteq> None);
-        RETURN (bae_image (the \<circ> f) (ba_bae A))
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+          transe = \<Union> p \<in> N. \<Union> a \<in> alphabet A. (\<lambda> x. the (f x)) ` {p} \<times> {a} \<times>
+          (\<lambda> x. the (f x)) ` succ A a p,
+          acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
       }) \<in> ?R"
-    unfolding bae_image_ba_bae comp_apply by autoref
-  concrete_definition to_baei_impl uses to_baei_impl[unfolded nres_monad1]
+    by autoref
+  concrete_definition to_baei_impl uses to_baei_impl[unfolded bind_to_let_conv push_in_let_conv]
   lemma to_baei_impl_refine'':
     fixes S :: "('statei \<times> 'state) set"
     assumes "finite (nodes A)"
@@ -59,17 +69,20 @@ begin
   proof -
     note to_baei_impl.refine[OF assms]
     also have "(do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        ASSERT (dom f = nodes A);
+        let N = nodes A;
+        f \<leftarrow> op_set_enumerate N;
+        ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
         ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        ASSERT (\<forall> p \<in> nodes A. f p \<noteq> None);
-        RETURN (bae_image (the \<circ> f) (ba_bae A))
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda>x. the (f x)) ` initial A,
+          transe = \<Union> p \<in> N. \<Union> a \<in> alphabet A. (\<lambda>x. the (f x)) ` {p} \<times> {a} \<times>
+          (\<lambda>x. the (f x)) ` succ A a p,
+          acceptinge = (\<lambda>x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
       },  do {
         f \<leftarrow> op_set_enumerate (nodes A);
         RETURN (bae_image (the \<circ> f) (ba_bae A))
       }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding op_set_enumerate_def by refine_vcg auto
+      unfolding Let_def bae_image_ba_bae comp_apply op_set_enumerate_def by refine_vcg auto
     finally show ?thesis unfolding nres_rel_comp by simp
   qed
 
