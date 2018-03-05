@@ -139,6 +139,7 @@ session Collections_Examples (AFP) = Collections +
 
   sessions
      CAVA_Automata
+     Containers
 
   (* Examples *)
   theories
