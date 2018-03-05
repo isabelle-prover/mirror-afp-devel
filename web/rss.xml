@@ -9,7 +9,48 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
+    <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Theory of Architectural Design Patterns</title>
+              <link>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</link>
+       <guid>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</guid>
+       <dc:creator> Diego Marmsoler       </dc:creator>
+       <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
+       <description>
+The following document formalizes and verifies several architectural
+design patterns. Each pattern specification is formalized in terms of
+a locale where the locale assumptions correspond to the assumptions
+which a pattern poses on an architecture. Thus, pattern specifications
+may build on top of each other by interpreting the corresponding
+locale. A pattern is verified using the framework provided by the AFP
+entry Dynamic Architectures. Currently, the document consists of
+formalizations of 4 different patterns: the singleton, the publisher
+subscriber, the blackboard pattern, and the blockchain pattern.
+Thereby, the publisher component of the publisher subscriber pattern
+is modeled as an instance of the singleton pattern and the blackboard
+pattern is modeled as an instance of the publisher subscriber pattern.
+In general, this entry provides the first steps towards an overall
+theory of architectural design patterns.</description>
+    </item>
+    <item>
+       <title>Hoare Logics for Time Bounds</title>
+              <link>https://www.isa-afp.org/entries/Hoare_Time.html</link>
+       <guid>https://www.isa-afp.org/entries/Hoare_Time.html</guid>
+       <dc:creator> Maximilian P. L. Haslbeck, Tobias Nipkow       </dc:creator>
+       <pubDate>26 Feb 2018 00:00:00 +0000</pubDate>
+       <description>
+We study three different Hoare logics for reasoning about time bounds
+of imperative programs and formalize them in Isabelle/HOL: a classical
+Hoare like logic due to Nielson, a logic with potentials due to
+Carbonneaux &lt;i&gt;et al.&lt;/i&gt; and a &lt;i&gt;separation
+logic&lt;/i&gt; following work by Atkey, Chaguérand and Pottier.
+These logics are formally shown to be sound and complete. Verification
+condition generators are developed and are shown sound and complete
+too.  We also consider variants of the systems where we abstract from
+multiplicative constants in the running time bounds, thus supporting a
+big-O style of reasoning.  Finally we compare the expressive power of
+the three systems.</description>
+    </item>
     <item>
        <title>Treaps</title>
               <link>https://www.isa-afp.org/entries/Treaps.html</link>
@@ -535,63 +576,6 @@ Anselm&#39;s ontological argument by E. J. Lowe, which is a
 paradigmatic example of a natural-language argument with strong ties
 to metaphysics and religion, we offer an ideal showcase for our
 computer-assisted interpretive method.</description>
-    </item>
-    <item>
-       <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/PLM.html</link>
-       <guid>https://www.isa-afp.org/entries/PLM.html</guid>
-       <dc:creator> Daniel Kirchner       </dc:creator>
-       <pubDate>17 Sep 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; We present an embedding of the second-order fragment of the
-Theory of Abstract Objects as described in Edward Zalta&#39;s
-upcoming work &lt;a
-href=&#34;https://mally.stanford.edu/principia.pdf&#34;&gt;Principia
-Logico-Metaphysica (PLM)&lt;/a&gt; in the automated reasoning
-framework Isabelle/HOL. The Theory of Abstract Objects is a
-metaphysical theory that reifies property patterns, as they for
-example occur in the abstract reasoning of mathematics, as
-&lt;b&gt;abstract objects&lt;/b&gt; and provides an axiomatic
-framework that allows to reason about these objects. It thereby serves
-as a fundamental metaphysical theory that can be used to axiomatize
-and describe a wide range of philosophical objects, such as Platonic
-forms or Leibniz&#39; concepts, and has the ambition to function as a
-foundational theory of mathematics. The target theory of our embedding
-as described in chapters 7-9 of PLM employs a modal relational type
-theory as logical foundation for which a representation in functional
-type theory is &lt;a
-href=&#34;https://mally.stanford.edu/Papers/rtt.pdf&#34;&gt;known to
-be challenging&lt;/a&gt;. &lt;/p&gt; &lt;p&gt; Nevertheless we arrive
-at a functioning representation of the theory in the functional logic
-of Isabelle/HOL based on a semantical representation of an Aczel-model
-of the theory. Based on this representation we construct an
-implementation of the deductive system of PLM which allows to
-automatically and interactively find and verify theorems of PLM.
-&lt;/p&gt; &lt;p&gt; Our work thereby supports the concept of shallow
-semantical embeddings of logical systems in HOL as a universal tool
-for logical reasoning &lt;a
-href=&#34;http://www.mi.fu-berlin.de/inf/groups/ag-ki/publications/Universal-Reasoning/1703_09620_pd.pdf&#34;&gt;as
-promoted by Christoph Benzm&amp;uuml;ller&lt;/a&gt;. &lt;/p&gt;
-&lt;p&gt; The most notable result of the presented work is the
-discovery of a previously unknown paradox in the formulation of the
-Theory of Abstract Objects. The embedding of the theory in
-Isabelle/HOL played a vital part in this discovery. Furthermore it was
-possible to immediately offer several options to modify the theory to
-guarantee its consistency. Thereby our work could provide a
-significant contribution to the development of a proper grounding for
-object theory. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Anselm's God in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/AnselmGod.html</link>
-       <guid>https://www.isa-afp.org/entries/AnselmGod.html</guid>
-       <dc:creator> Ben Blumson       </dc:creator>
-       <pubDate>06 Sep 2017 00:00:00 +0000</pubDate>
-       <description>
-Paul Oppenheimer and Edward Zalta&#39;s formalisation of
-Anselm&#39;s ontological argument for the existence of God is
-automated by embedding a free logic for definite descriptions within
-Isabelle/HOL.</description>
     </item>
   </channel>
 </rss>

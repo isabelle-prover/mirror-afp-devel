@@ -10,9 +10,11 @@ URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada9818850
 set -e
 
 source "$(dirname "$0")/common"
-cd $AFP_ROOT
+cd "$AFP_ROOT"
 
-while getopts "t:r:" OPT
+USE_PYTHON_3=false
+
+while getopts "t:r:p" OPT
 do
     case "$OPT" in
       r)
@@ -21,24 +23,21 @@ do
       t)
         ISABELLE_TOOL="$OPTARG"
         ;;
+      p)
+        USE_PYTHON_3=true
+        ;;
     esac
 done
 shift $((OPTIND-1))
 
 set_isabelle_tool
 
-echo "Obtaining dependency information ..."
-
 DEPENDENCIES_FILE="$(mktemp /tmp/afp.XXX)"
+
+echo "Obtaining dependency information ..."
 "$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || fail "Could not obtain dependency information"
 
 echo "Checking presence of Python ..."
-
-USE_PYTHON_3=false
-if [ "$1" = "--python3" ]; then
-  USE_PYTHON_3=true
-  shift
-fi
 
 case "$(uname -s)" in
   Darwin)
@@ -97,6 +96,17 @@ source "$VENV_DIR/bin/activate"
 PYTHON="$VENV_DIR/bin/python"
 PIP="$VENV_DIR/bin/pip"
 
+echo "Checking Python version in venv ..."
+PYTHON_VERSION="$("$PYTHON" --version 2>&1)"
+case "${PYTHON_VERSION//Python /}" in
+  2*)
+     [ "$USE_PYTHON_3" = false ] || fail "Bootstrapped with $PYTHON_VERSION, but Python 3 requested"
+     ;;
+  3*)
+     [ "$USE_PYTHON_3" = true ] || fail "Bootstrapped with $PYTHON_VERSION, but Python 2 requested"
+     ;;
+esac
+
 echo "Installing dependencies ..."
 "$PIP" install -q -r "$AFP_ROOT/admin/sitegen-req.txt"
 
@@ -104,4 +114,4 @@ echo "Running sitegen ..."
 "$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
                                        --templates=admin/sitegen-lib/templates \
                                        --deps="$DEPENDENCIES_FILE" \
-                                       metadata thys $@
+                                       metadata thys "$@"

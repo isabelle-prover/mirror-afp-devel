@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Effect polymorphism in higher-order logic - Archive of Formal Proofs
+<title>Hoare Logics for Time Bounds - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">E</font>ffect
+  <h1>          <font class="first">H</font>oare
   
-          polymorphism
+          <font class="first">L</font>ogics
   
-          in
+          for
   
-          higher-order
+          <font class="first">T</font>ime
   
-          logic
+          <font class="first">B</font>ounds
   
 </h1>
   <p>&nbsp;</p>
@@ -78,15 +78,16 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Effect polymorphism in higher-order logic</td>
+  <td class="data" width="80%">Hoare Logics for Time Bounds</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                    <a href="http://www.in.tum.de/~haslbema">Maximilian P. L. Haslbeck</a> and
+          <a href="https://www.in.tum.de/~nipkow">Tobias Nipkow</a>
       </td>
 </tr>
 
@@ -94,41 +95,36 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-05-05</td>
+  <td class="data">2018-02-26</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-The notion of a monad cannot be expressed within higher-order logic
-(HOL) due to type system restrictions. We show that if a monad is used
-with values of only one type, this notion can be formalised in HOL.
-Based on this idea, we develop a library of effect specifications and
-implementations of monads and monad transformers. Hence, we can
-abstract over the concrete monad in HOL definitions and thus use the
-same definition for different (combinations of) effects. We illustrate
-the usefulness of effect polymorphism with a monadic interpreter for a
-simple language.</td>
+We study three different Hoare logics for reasoning about time bounds
+of imperative programs and formalize them in Isabelle/HOL: a classical
+Hoare like logic due to Nielson, a logic with potentials due to
+Carbonneaux <i>et al.</i> and a <i>separation
+logic</i> following work by Atkey, Chaguérand and Pottier.
+These logics are formally shown to be sound and complete. Verification
+condition generators are developed and are shown sound and complete
+too.  We also consider variants of the systems where we abstract from
+multiplicative constants in the running time bounds, thus supporting a
+big-O style of reasoning.  Finally we compare the expressive power of
+the three systems.</td>
 </tr>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2018-02-15]:
-added further specifications and implementations of non-determinism;
-more examples
-(revision bc5399eea78e)<br></td>
-  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Monomorphic_Monad-AFP,
-  author  = {Andreas Lochbihler},
-  title   = {Effect polymorphism in higher-order logic},
+        <pre>@article{Hoare_Time-AFP,
+  author  = {Maximilian P. L. Haslbeck and Tobias Nipkow},
+  title   = {Hoare Logics for Time Bounds},
   journal = {Archive of Formal Proofs},
-  month   = may,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Monomorphic_Monad.html},
+  month   = feb,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Hoare_Time.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -139,10 +135,10 @@ more examples
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CryptHOL.html">CryptHOL</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Separation_Algebra.html">Separation_Algebra</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -154,29 +150,23 @@ more examples
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Hoare_Time/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Hoare_Time/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Hoare_Time/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Monomorphic_Monad-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Hoare_Time-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Monomorphic_Monad-2017-05-11.tar.gz">
-            afp-Monomorphic_Monad-2017-05-11.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

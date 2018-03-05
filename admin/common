@@ -9,7 +9,7 @@
 PRG="$(basename "$0")"
 DIR="$(dirname "$0")"
 
-AFP_ROOT="$(cd ${DIR}/..; pwd)"
+AFP_ROOT="$(cd "${DIR}/.."; pwd)"
 THYS="$AFP_ROOT/thys"
 
 source "$AFP_ROOT/admin/version"
@@ -24,13 +24,13 @@ function fail()
 
 function timestamp()
 {
-   echo "[timestamp: `date "+%Y-%m-%d %H:%M:%S"`]"
+   echo "[timestamp: $(date "+%Y-%m-%d %H:%M:%S")]"
 }
 
 function check_isabelle()
 {
-  [ -x $ISABELLE_TOOL ] || fail "No isabelle tool wrapper found at [$ISABELLE_TOOL]."
-  ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
+  [ -x "$ISABELLE_TOOL" ] || fail "No isabelle tool wrapper found at [$ISABELLE_TOOL]."
+  ISABELLE_HOME="$("$ISABELLE_TOOL" getenv -b ISABELLE_HOME)" || fail "could not find Isabelle home"
 }
 
 

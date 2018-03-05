@@ -6696,3 +6696,44 @@ abstract =
   insert the elements. This is the main result of this
   formalisation.</p>
 
+[Hoare_Time]
+title = Hoare Logics for Time Bounds
+author = Maximilian P. L. Haslbeck <http://www.in.tum.de/~haslbema>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+topic = Computer Science/Programming Languages/Logics
+date = 2018-02-26
+notify = haslbema@in.tum.de
+abstract = 
+  We study three different Hoare logics for reasoning about time bounds
+  of imperative programs and formalize them in Isabelle/HOL: a classical
+  Hoare like logic due to Nielson, a logic with potentials due to
+  Carbonneaux <i>et al.</i> and a <i>separation
+  logic</i> following work by Atkey, Chaguérand and Pottier.
+  These logics are formally shown to be sound and complete. Verification
+  condition generators are developed and are shown sound and complete
+  too.  We also consider variants of the systems where we abstract from
+  multiplicative constants in the running time bounds, thus supporting a
+  big-O style of reasoning.  Finally we compare the expressive power of
+  the three systems.
+  
+[Architectural_Design_Patterns]
+title = A Theory of Architectural Design Patterns
+author = Diego Marmsoler<>
+topic = Computer Science/System Description Languages
+date = 2018-03-01
+notify = diego.marmsoler@tum.de
+abstract = 
+  The following document formalizes and verifies several architectural
+  design patterns. Each pattern specification is formalized in terms of
+  a locale where the locale assumptions correspond to the assumptions
+  which a pattern poses on an architecture. Thus, pattern specifications
+  may build on top of each other by interpreting the corresponding
+  locale. A pattern is verified using the framework provided by the AFP
+  entry Dynamic Architectures. Currently, the document consists of
+  formalizations of 4 different patterns: the singleton, the publisher
+  subscriber, the blackboard pattern, and the blockchain pattern.
+  Thereby, the publisher component of the publisher subscriber pattern
+  is modeled as an instance of the singleton pattern and the blackboard
+  pattern is modeled as an instance of the publisher subscriber pattern.
+  In general, this entry provides the first steps towards an overall
+  theory of architectural design patterns.
+
