@@ -1,10 +1,10 @@
 section {* \isaheader{Nested DFS (HPY improvement)} *}
 theory Nested_DFS
 imports 
-  Collections.Refine_Dflt 
-  Buchi_Graph_Basic
+  Collections.Refine_Dflt
   Succ_Graph
   Collections.Code_Target_ICF
+  CAVA_Automata.Digraph_Basic
 begin
 
 text {*
@@ -356,6 +356,23 @@ definition blue_dfs
 
 subsection "Correctness"
 
+subsubsection "Specification"
+
+text {* Specification of a reachable accepting cycle: *}
+definition "has_acc_cycle E A v0 \<equiv> \<exists>v\<in>A. (v0,v)\<in>E\<^sup>* \<and> (v,v)\<in>E\<^sup>+"
+
+text {* Specification of witness for accepting cycle *}
+definition "is_acc_cycle E A v0 v r c 
+  \<equiv> v\<in>A \<and> path E v0 r v \<and> path E v c v \<and> c\<noteq>[]"
+
+text {* Specification is compatible with existence of accepting cycle *}
+lemma is_acc_cycle_eq:
+  "has_acc_cycle E A v0 \<longleftrightarrow> (\<exists>v r c. is_acc_cycle E A v0 v r c)"
+  unfolding has_acc_cycle_def is_acc_cycle_def
+  by (auto elim!: rtrancl_is_path trancl_is_path
+    intro: path_is_rtrancl path_is_trancl) 
+
+subsubsection "Correctness Proofs"
 
 text {* Additional invariant to be maintained between calls of red dfs *}
 definition "red_dfs_inv E U reds onstack \<equiv> 
