@@ -864,5 +864,12 @@ lemma cmp_extend_paramD:
   apply (rule cmp_combine_paramD)
   done
   
+
+subsection \<open>Tuning of Generated Implementation\<close>
+lemma [autoref_post_simps]: "comp2eq (dflt_cmp (\<le>) ((<)::_::linorder\<Rightarrow>_)) = (=)"
+  by (simp add: class_to_eq_linorder eq_linorder_comp2eq_eq)
+
+
+
 end
 

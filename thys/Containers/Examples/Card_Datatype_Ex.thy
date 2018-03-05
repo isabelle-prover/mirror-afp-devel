@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory Card_Datatype_Ex imports
-  Card_Datatype
+  "../Card_Datatype"
 begin
 
 subsection {* Examples *}

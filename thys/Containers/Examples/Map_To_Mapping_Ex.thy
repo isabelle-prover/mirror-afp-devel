@@ -1,7 +1,7 @@
 (*  Title:      Containers/Map_To_Mapping_Ex.thy
     Author:     Andreas Lochbihler, ETH Zurich *)
 
-theory Map_To_Mapping_Ex imports Map_To_Mapping begin
+theory Map_To_Mapping_Ex imports "../Map_To_Mapping" begin
 
 subsection {* Test cases for replacing @{typ "'a \<rightharpoonup> 'b"} with @{typ "('a, 'b) mapping"} *}
 

@@ -1061,6 +1061,9 @@ proof (intro ext, goal_cases)
     done
 qed
 
+lemma [autoref_post_simps]: "ord.rbt_lookup ((<)::_::linorder\<Rightarrow>_) = rbt_lookup"
+  unfolding ord.rbt_lookup_def rbt_lookup_def ..
+
 lemma [simp,autoref_post_simps]:
   "ord.rbt_insert_with_key (<) = rbt_insert_with_key"
   "ord.rbt_insert (<) = rbt_insert"

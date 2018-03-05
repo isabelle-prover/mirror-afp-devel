@@ -17,8 +17,11 @@ session Containers (AFP) = "Deriving" +
     Compatibility_Containers_Regular_Sets
     Containers_Userguide
   theories [document = false]
-    Card_Datatype_Ex
-    Map_To_Mapping_Ex
+    "Examples/Card_Datatype_Ex"
+    "Examples/Map_To_Mapping_Ex"
+    "Examples/TwoSat_Ex"
+    "Examples/Containers_DFS_Ex"
+    "Examples/Containers_TwoSat_Ex"
   document_files
     "root.tex"
     "root.bib"

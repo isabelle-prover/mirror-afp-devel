@@ -1011,15 +1011,19 @@ object Test {
 code_printing
   type_constructor array \<rightharpoonup> (Scala) "DiffArray.T[_]"
 | constant Array \<rightharpoonup> (Scala) "DiffArray.array'_of'_list"
-| constant new_array' \<rightharpoonup> (Scala) "DiffArray.new'_array((_),(_).as'_Int)"
-| constant array_length' \<rightharpoonup> (Scala) "Natural(DiffArray.length((_)))"
-| constant array_get' \<rightharpoonup> (Scala) "DiffArray.get((_),(_).as'_Int)"
-| constant array_set' \<rightharpoonup> (Scala) "DiffArray.set((_),(_).as'_Int,(_))"
-| constant array_grow' \<rightharpoonup> (Scala) "DiffArray.grow((_),(_).as'_Int,(_))"
-| constant array_shrink' \<rightharpoonup> (Scala) "DiffArray.shrink((_),(_).as'_Int)"
+| constant new_array' \<rightharpoonup> (Scala) "DiffArray.new'_array((_),(_).toInt)"
+| constant array_length' \<rightharpoonup> (Scala) "DiffArray.length((_)).toInt"
+| constant array_get' \<rightharpoonup> (Scala) "DiffArray.get((_),(_).toInt)"
+| constant array_set' \<rightharpoonup> (Scala) "DiffArray.set((_),(_).toInt,(_))"
+| constant array_grow' \<rightharpoonup> (Scala) "DiffArray.grow((_),(_).toInt,(_))"
+| constant array_shrink' \<rightharpoonup> (Scala) "DiffArray.shrink((_),(_).toInt)"
 | constant array_of_list \<rightharpoonup> (Scala) "DiffArray.array'_of'_list"
-| constant array_get_oo' \<rightharpoonup> (Scala) "DiffArray.get'_oo((_),(_),(_).as'_Int)"
-| constant array_set_oo' \<rightharpoonup> (Scala) "DiffArray.set'_oo((_),(_),(_).as'_Int,(_))"
+| constant array_get_oo' \<rightharpoonup> (Scala) "DiffArray.get'_oo((_),(_),(_).toInt)"
+| constant array_set_oo' \<rightharpoonup> (Scala) "DiffArray.set'_oo((_),(_),(_).toInt,(_))"
 
+context begin
+(*private*) definition "test_diffarray_setup \<equiv> (Array,new_array',array_length',array_get', array_set', array_grow', array_shrink',array_of_list,array_get_oo',array_set_oo')"
+export_code test_diffarray_setup checking Scala SML OCaml? (*Haskell?*)
+end
 
 end

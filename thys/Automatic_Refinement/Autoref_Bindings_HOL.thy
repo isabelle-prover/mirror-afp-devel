@@ -161,9 +161,15 @@ context begin interpretation autoref_syn .
     using assms by (auto)
 
   lemma [autoref_itype]: "Let ::\<^sub>i Ix \<rightarrow>\<^sub>i (Ix\<rightarrow>\<^sub>iIy) \<rightarrow>\<^sub>i Iy" by auto
-  lemma autoref_Let[autoref_rules]: 
+  lemma autoref_Let: 
     "(Let,Let)\<in>Ra \<rightarrow> (Ra\<rightarrow>Rr) \<rightarrow> Rr"
     by (auto dest: fun_relD)
+
+  lemma autoref_Let_cong[autoref_rules]:
+    assumes "(x',x)\<in>Ra"
+    assumes "\<And>y y'. REMOVE_INTERNAL (x=y) \<Longrightarrow> (y',y)\<in>Ra \<Longrightarrow> (f' y', f$y)\<in>Rr"
+    shows "(Let x' f',(OP Let ::: Ra \<rightarrow> (Ra \<rightarrow> Rr) \<rightarrow> Rr)$x$f)\<in>Rr"
+    using assms by (auto)
 
 end
 
