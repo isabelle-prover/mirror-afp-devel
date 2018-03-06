@@ -4,6 +4,7 @@ theory Complementation_Final
 imports
   "Complementation_Implement"
   "Transition_Systems_and_Automata.BA_Translate"
+  "HOL-Library.Permutation"
 begin
 
   lemma complement_3_finite[simp]:
@@ -36,20 +37,50 @@ begin
     finally show "language (complement_3 A) = streams (alphabet A) - language A" by simp
   qed
 
-  term list_map_rel
-  definition state_hash :: "nat \<Rightarrow> (nat \<times> item) list \<Rightarrow> nat" where
-    "state_hash n p \<equiv> undefined"
+  definition list_hash :: "('a :: hashable) list \<Rightarrow> uint32" where
+    "list_hash xs \<equiv> fold (bitXOR \<circ> hashcode) xs 0"
 
-  (* TODO: bot is a terrible hash function *)
-  lemma [autoref_ga_rules]: "is_bounded_hashcode
-    state_rel
-    (gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup HOL.eq) (prod_eq HOL.eq HOL.eq))
-    bot"
-    apply rule
-    subgoal by autoref
-    subgoal unfolding bot_fun_def bot_nat_def by simp
-    subgoal unfolding bot_fun_def bot_nat_def by simp
-    done
+  lemma list_hash_eq:
+    assumes "distinct xs" "distinct ys" "set xs = set ys"
+    shows "list_hash xs = list_hash ys"
+  proof -
+    have "remdups xs <~~> remdups ys" using eq_set_perm_remdups assms(3) by this
+    then have "xs <~~> ys" using assms(1, 2) by (simp add: distinct_remdups_id)
+    then have "fold (bitXOR \<circ> hashcode) xs a = fold (bitXOR \<circ> hashcode) ys a" for a
+    proof (induct arbitrary: a)
+      case (swap y x l)
+      have "x XOR y XOR a = y XOR x XOR a" for x y by (transfer) (simp add: word_bw_lcs(3))
+      then show ?case by simp
+    qed simp+
+    then show ?thesis unfolding list_hash_def by this
+  qed
+
+  definition state_hash :: "nat \<Rightarrow> (nat \<times> item) list \<Rightarrow> nat" where
+    "state_hash n p \<equiv> nat_of_hashcode (list_hash p) mod n"
+
+  lemma state_hash_bounded_hashcode[autoref_ga_rules]: "is_bounded_hashcode state_rel
+    (gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup (=))
+    (prod_eq (=) (\<longleftrightarrow>))) state_hash"
+  proof
+    show [param]: "(gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup (=))
+      (prod_eq (=) (\<longleftrightarrow>)), (=)) \<in> state_rel \<rightarrow> state_rel \<rightarrow> bool_rel" by autoref
+    show "state_hash n xs = state_hash n ys" if "xs \<in> Domain state_rel" "ys \<in> Domain state_rel"
+      "gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list))
+      (list_map_lookup (=)) (prod_eq (=) (=)) xs ys" for xs ys n
+    proof -
+      have 1: "distinct (map fst xs)" "distinct (map fst ys)"
+        using that(1, 2) unfolding list_map_rel_def list_map_invar_def by (auto simp: in_br_conv)
+      have 2: "distinct xs" "distinct ys" using 1 by (auto intro: distinct_mapI)
+      have 3: "(xs, map_of xs) \<in> state_rel" "(ys, map_of ys) \<in> state_rel"
+        using 1 unfolding list_map_rel_def list_map_invar_def by (auto simp: in_br_conv)
+      have 4: "(gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup (=))
+        (prod_eq (=) (\<longleftrightarrow>)) xs ys, map_of xs = map_of ys) \<in> bool_rel" using 3 by parametricity
+      have 5: "map_to_set (map_of xs) = map_to_set (map_of ys)" using that(3) 4 by simp
+      have 6: "set xs = set ys" using map_to_set_map_of 1 5 by blast
+      show "state_hash n xs = state_hash n ys" unfolding state_hash_def using list_hash_eq 2 6 by metis
+    qed
+    show "state_hash n x < n" if "1 < n" for n x using that unfolding state_hash_def by simp
+  qed
 
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
@@ -73,7 +104,7 @@ begin
 
   definition s where
     "s a p \<equiv> if p = 0
-      then (if a = ''a'' then [0, 1] else [1])
+      then (if a = ''a'' then [0, 1, 2] else [1])
       else (if a = ''a'' then [1] else [])"
   definition Ai where
     "Ai \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s, acceptingi = \<lambda> p. False \<rparr>"
@@ -85,9 +116,8 @@ begin
   export_code complement_impl in SML module_name Complementation
 
   (* TODO: is it supposed to be this many states/transitions?
-    make sure that we generate only one representative per equivalence class (maybe prove?)
-    maybe we can also do some crude optimizations *)
+    maybe we can also do some crude optimizations about reachability *)
   value "length (transei (complement_impl Ai))"
-  value "length (remdups (map fst (transei (complement_impl Ai))))"
+  (*value "length (remdups (map fst (transei (complement_impl Ai))))"*)
 
 end
