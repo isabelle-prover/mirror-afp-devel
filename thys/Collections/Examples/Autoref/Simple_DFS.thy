@@ -293,7 +293,7 @@ concrete_definition dfs_impl for succi src tgt uses dfs_impl_refine_aux
 text \<open>Set up code equations for the recursion combinators\<close>
 prepare_code_thms dfs_impl_def
 text \<open>And export the algorithm to all supported target languages\<close>
-export_code dfs_impl checking SML OCaml? (*Haskell?*) Scala
+export_code dfs_impl checking SML OCaml? Haskell? Scala
 
 
 text {* Chaining the refinement theorems, we get correctness arguments that 
@@ -415,7 +415,7 @@ prepare_code_thms dfs_impl2_def
 prepare_code_thms dfs_impl3_def
 prepare_code_thms dfs_impl3'_def
 
-export_code dfs_impl dfs_impl2 dfs_impl3 dfs_impl3' checking SML OCaml? (*Haskell?*) Scala
+export_code dfs_impl dfs_impl2 dfs_impl3 dfs_impl3' checking SML OCaml? Haskell? Scala
 
 text \<open>And we prove the alternative implementations correct \<close>
 

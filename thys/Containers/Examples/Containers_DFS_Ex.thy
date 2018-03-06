@@ -221,7 +221,7 @@ next
           assume src_x: "(src, x) \<in> (E \<upharpoonleft> - visited)\<^sup>*"
             and y_x: "(y, x) \<notin> (E \<upharpoonleft> - insert src visited)\<^sup>*"
           from src_x have "(src, x) \<in> (E \<upharpoonleft> - ?visited)\<^sup>*"
-            by (metis rtrancl_restrict_start Compl_insert Containers_DFS.restrict_restrict Diff_Compl double_complement)
+            by (metis rtrancl_restrict_start Compl_insert Containers_DFS_Ex.restrict_restrict Diff_Compl double_complement)
           from rtrancl_restrict_reachable[OF this y_x]
           have "(src, x) \<in> (E \<upharpoonleft> - ?visited')\<^sup>*" by simp (metis Un_insert_left compl_sup) }
         then have "?visited' \<union> (E \<upharpoonleft> - ?visited')\<^sup>* `` {src} = visited \<union> (E \<upharpoonleft> - visited)\<^sup>* `` {src}"

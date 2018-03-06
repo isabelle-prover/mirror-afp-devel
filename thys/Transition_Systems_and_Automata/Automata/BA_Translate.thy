@@ -54,6 +54,7 @@ begin
           acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
       }) \<in> ?R"
     by autoref
+
   concrete_definition to_baei_impl uses to_baei_impl[unfolded bind_to_let_conv push_in_let_conv]
   lemma to_baei_impl_refine'':
     fixes S :: "('statei \<times> 'state) set"
