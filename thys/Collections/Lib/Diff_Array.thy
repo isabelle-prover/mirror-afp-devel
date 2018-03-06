@@ -493,10 +493,11 @@ code_printing type_constructor array \<rightharpoonup>
 
 code_reserved Haskell array_of_list
 
+(*
 code_printing code_module "Array" \<rightharpoonup>
   (Haskell) {*
-import qualified Data.Array.Diff as Arr;
---import qualified Data.Array as Arr;
+--import qualified Data.Array.Diff as Arr;
+import qualified Data.Array as Arr;
 import Data.Array.IArray;
 import Nat;
 
@@ -539,6 +540,45 @@ array_grow a i x = let (s, e) = bounds a in Arr.listArray (s, e+i) (Arr.elems a 
 array_shrink :: ArrayType e -> Nat -> ArrayType e;
 array_shrink a sz = if sz > array_length a then undefined else array_of_size sz (Arr.elems a);
 *}
+*)
+
+(* TODO/FIXME: Using standard functional arrays here, as DiffArray seems 
+  to be discontinued in Haskell! *)
+code_printing code_module "Array" \<rightharpoonup>
+  (Haskell) {*
+--import qualified Data.Array.Diff as Arr;
+import qualified Data.Array as Arr;
+
+type ArrayType = Arr.Array Integer;
+
+
+array_of_size :: Integer -> [e] -> ArrayType e;
+array_of_size n = Arr.listArray (0, n-1);
+
+new_array :: e -> Integer -> ArrayType e;
+new_array a n = array_of_size n (repeat a);
+
+array_length :: ArrayType e -> Integer;
+array_length a = let (s, e) = Arr.bounds a in e;
+
+array_get :: ArrayType e -> Integer -> e;
+array_get a i = a Arr.! i;
+
+array_set :: ArrayType e -> Integer -> e -> ArrayType e;
+array_set a i e = a Arr.// [(i, e)];
+
+array_of_list :: [e] -> ArrayType e;
+array_of_list xs = array_of_size (toInteger (length xs)) xs;
+
+array_grow :: ArrayType e -> Integer -> e -> ArrayType e;
+array_grow a i x = let (s, e) = Arr.bounds a in Arr.listArray (s, e+i) (Arr.elems a ++ repeat x);
+
+array_shrink :: ArrayType e -> Integer -> ArrayType e;
+array_shrink a sz = if sz > array_length a then undefined else array_of_size sz (Arr.elems a);
+*}
+
+
+
 
 code_printing constant Array \<rightharpoonup> (Haskell) "Array.array'_of'_list"
 code_printing constant new_array' \<rightharpoonup> (Haskell) "Array.new'_array"
@@ -1023,7 +1063,7 @@ code_printing
 
 context begin
 (*private*) definition "test_diffarray_setup \<equiv> (Array,new_array',array_length',array_get', array_set', array_grow', array_shrink',array_of_list,array_get_oo',array_set_oo')"
-export_code test_diffarray_setup checking Scala SML OCaml? (*Haskell?*)
+export_code test_diffarray_setup checking Scala SML OCaml? Haskell?
 end
 
 end
