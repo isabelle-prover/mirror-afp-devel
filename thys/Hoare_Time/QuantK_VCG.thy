@@ -39,9 +39,7 @@ lemma mydiv_mult_leq: "0 < k \<Longrightarrow> l\<le>k \<Longrightarrow> mydiv (
   by(simp add: mydiv_le_E)
    
 lemma mydiv_cancel3: "0 < k \<Longrightarrow> i \<le> k * mydiv i k"
-  unfolding mydiv_def apply auto
-  by (metis less_le mult_Suc_right split_div_lemma) 
-       
+  by (auto simp add: mydiv_def dividend_less_times_div le_eq_less_or_eq)  
                                                                                                     
 definition "ediv a k = (if a=\<infinity> then \<infinity> else enat (mydiv (THE i. a=enat i) k))"  
   
@@ -52,11 +50,6 @@ lemma ediv_mydiv[simp]: "ediv (enat a) k \<le> enat f \<longleftrightarrow> mydi
   
 lemma ediv_mono: "a\<le>b \<Longrightarrow> ediv a k \<le> ediv b k"
   unfolding ediv_def by (auto simp add: mydiv_mono) 
-    
-    
-lemma ediv_mono: " ediv a k \<le> ediv b k \<Longrightarrow> a \<le> b"
-  unfolding ediv_def apply(cases "a=\<infinity>") apply(cases "b=\<infinity>") apply auto
-    apply(cases "b=\<infinity>") apply auto oops (* counter example: k=2, a=3, b=2 , 1\<le>1 \<Longrightarrow> 3\<le>2 WRONG *)
 
 lemma ediv_cancel2: "k>0 \<Longrightarrow> ediv (enat k * x) k = x"
   unfolding ediv_def apply(cases "x=\<infinity>") using mydiv_cancel by auto

@@ -1053,7 +1053,7 @@ proof -
     with P obtain ps' ps'' m e e' where 1: "(c, ps) \<Rightarrow>\<^sub>A m \<Down> ps' + ps''" "ps' ## ps''" and e: "k * (n div k) = k * e + e' + m" and Q: "Q (ps', e)"
       by blast
     have "k * (n div k) \<le> n" using k0
-      using split_div_lemma by blast 
+      by simp  
     then obtain e'' where "n = k * (n div k) + e''" using le_Suc_ex by blast
     also have "\<dots> = k * e + e' + e'' + m" using e   by auto 
     finally have "n = k * e + (e'+e'') + m"  and "Q (ps', (k*e) div k)" using Q k0 by auto
