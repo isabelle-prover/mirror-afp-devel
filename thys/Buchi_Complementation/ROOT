@@ -5,6 +5,7 @@ session Buchi_Complementation (AFP) = "Transition_Systems_and_Automata" +
   theories
     "Complementation"
     "Complementation_Implement"
+    "Complementation_Final"
   document_files
     "root.tex"
     "root.bib"
