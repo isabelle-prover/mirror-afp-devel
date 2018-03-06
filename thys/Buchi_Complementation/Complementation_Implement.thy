@@ -579,7 +579,9 @@ begin
 
     private lemma [autoref_rules]: "(min, min) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by simp
 
-    schematic_goal bounds_6: "(?f :: ?'a, bounds_4 A a f) \<in> ?R"
+    schematic_goal bounds_6: 
+      notes ty_REL[where R="\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel", autoref_tyrel] 
+      shows "(?f :: ?'a, bounds_4 A a f) \<in> ?R"
       unfolding bounds_4_def merge_4_def sup_bool_def inf_nat_def by (autoref_monadic (plain))
 
   end

@@ -855,11 +855,10 @@ schematic_goal pn_map_code_aux: "RETURN ?c \<le> pn_map_impl x"
 concrete_definition pn_map_code uses pn_map_code_aux
 lemmas [refine_transfer] = pn_map_code.refine 
 
-thm autoref_tyrel
-
 schematic_goal cr_rename_gba_impl_aux:
   assumes ID[relator_props]: "R=Id"
-  notes [autoref_tyrel del] = TYRELI[of "\<langle>nat_rel\<rangle>dflt_rs_rel"]
+  notes [autoref_tyrel del] = tyrel_dflt_linorder_set
+  notes [autoref_tyrel] = ty_REL[of "\<langle>nat_rel\<rangle>list_set_rel"]
   shows "(?c,cr_rename_gba) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> (?R::(?'c \<times> _) set)"
   unfolding ID

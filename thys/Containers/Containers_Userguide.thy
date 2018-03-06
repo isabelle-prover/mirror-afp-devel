@@ -444,7 +444,7 @@ text {*
 (*<*)end(*>*)
 
 text {* 
-  For datatypes, the theory @{theory Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Card_Datatype_Ex.thy"} for examples.
+  For datatypes, the theory @{theory Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Examples/Card_Datatype_Ex.thy"} for examples.
   With this, it is easy to instantiate @{class card_UNIV} for our running examples:
 *}
 
