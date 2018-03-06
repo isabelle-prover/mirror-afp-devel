@@ -1,3 +1,6 @@
+(* Title:      Containers/Examples/Containers_DFS_Ex.thy
+   Author:     Andreas Lochbihler, ETH Zurich *)
+
 section \<open>Formalisation of depth-first search using Containers\<close>
 
 theory Containers_DFS_Ex imports

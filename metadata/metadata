@@ -2375,7 +2375,8 @@ extra-history =
 	[2013-09-20]:
 	provide generators for canonical type class instantiations
 	(revision 159f4401f4a8 by René Thiemann)<br>
-	[2014-07-08]: add support for going from partial functions to mappings (revision 7a6fc957e8ed)
+	[2014-07-08]: add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br>
+        [2018-03-05]: add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)
 notify = mail@andreas-lochbihler.de
 
 [FileRefinement]

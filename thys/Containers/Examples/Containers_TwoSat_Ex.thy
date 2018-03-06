@@ -1,3 +1,6 @@
+(* Title:      Containers/Examples/Containers_TwoSat_Ex.thy
+   Author:     Andreas Lochbihler, ETH Zurich *)
+
 section \<open>Implementation of 2SAT using Containers\<close>
 
 theory Containers_TwoSat_Ex imports

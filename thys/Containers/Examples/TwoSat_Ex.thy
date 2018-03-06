@@ -1,3 +1,7 @@
+(* Title:      Containers/Examples/TwoSat_Ex.thy
+   Author:     Andreas Lochbihler, ETH Zurich
+   Author:     Peter Lammich, TU Munich *)
+
 section \<open>Formalisation of 2SAT independent of an implementation\<close>
 
 theory TwoSat_Ex imports

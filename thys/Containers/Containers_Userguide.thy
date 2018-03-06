@@ -15,6 +15,7 @@ text {*
   For a more theoretical discussion, see \cite{Lochbihler2013ITP}.
   This user guide assumes that you are familiar with refinement in the code generator \cite{HaftmannBulwahn2013codetut,HaftmannKrausKuncarNipkow2013ITP}.
   The theory @{text Containers_Userguide} generates it; so if you want to experiment with the examples, you can find their source code there.
+  Further examples can be found in the @{dir Examples} folder.
 *}
 
 section {* Characteristics *}
@@ -65,7 +66,7 @@ text {*
   Run the following command, e.g., to check that LC works correctly and implements sets of @{typ int}s as red-black trees (RBT):
 *}
 
-value "{1 :: int}"
+value [code] "{1 :: int}"
 
 text {*
   This should produce @{value [names_short] "{1 :: int}"}.
@@ -366,13 +367,13 @@ declare (*<*)(in -) (*>*)pretty_sets [code_post]
 (*<*)
   (* The following value commands ensure that the code generator executes @{value ...} above,
      I could not find a way to specify [code] to @{value}. *)
-  value "{} :: expr set"
-  value "empty :: (expr, unit) mapping"
-  value "{} :: string expr' set"
-  value "{} :: (nat \<Rightarrow> nat) expr' set"
-  value "{} :: bool expr' set"
-  value "empty :: (bool expr', unit) mapping"
-(*>*)
+  value [code] "{} :: expr set"
+  value [code] "empty :: (expr, unit) mapping"
+  value [code] "{} :: string expr' set"
+  value [code] "{} :: (nat \<Rightarrow> nat) expr' set"
+  value [code] "{} :: bool expr' set"
+  value [code] "empty :: (bool expr', unit) mapping"
+(*>*)   
 (*<*)end(*>*)
 
 subsection {* Set comprehensions *}
