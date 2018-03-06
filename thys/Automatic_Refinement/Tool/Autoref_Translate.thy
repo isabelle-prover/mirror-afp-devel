@@ -309,9 +309,8 @@ declaration {*
   Tagged_Solver.declare_solver @{thms PRECOND_tagI} @{binding PRECOND} 
     "Refinement: Solve preconditions" 
     ( fn ctxt => SOLVED' (
-        asm_full_simp_tac ctxt
-        THEN_ALL_NEW clarsimp_tac ctxt
-        THEN_ALL_NEW asm_full_simp_tac ctxt)
+        SELECT_GOAL (auto_tac ctxt)
+      )
     )
 *}
 

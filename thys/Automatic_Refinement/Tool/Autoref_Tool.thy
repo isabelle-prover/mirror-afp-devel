@@ -103,11 +103,17 @@ setup {*
 *}
 
 subsection {* Advanced Debugging *}
-method_setup autoref_trans_step = {*
+method_setup autoref_trans_step_keep = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Translate.trans_dbg_step_tac (Autoref_Phases.init_data ctxt)
   ))
   *} "Single translation step, leaving unsolved side-coditions"
+
+method_setup autoref_trans_step = {*
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Autoref_Translate.trans_step_tac (Autoref_Phases.init_data ctxt)
+  ))
+  *} "Single translation step"
 
 method_setup autoref_trans_step_only = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
