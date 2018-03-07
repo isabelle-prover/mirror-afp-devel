@@ -503,7 +503,6 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
                                                Expression.Positional (map (SOME o of_semi__term)
                                                                           loc_param), [])))]
                                      , [])
-                                     []
     |> global_terminal_proof o_by)
 (*in fn t => fn thy => f t thy handle ERROR s => (warning s; thy)
  end*)
