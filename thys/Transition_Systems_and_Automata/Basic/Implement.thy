@@ -324,52 +324,6 @@ begin
       (K \<rightarrow> V) \<rightarrow> \<langle>K\<rangle> list_set_rel \<rightarrow> \<langle>K, V\<rangle> list_map_rel"
       using list_map_build unfolding zip_map2 zip_same_conv_map map_map comp_apply prod.case by blast
 
-    definition expand_map_impl' :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set nres" where
-      "expand_map_impl' f \<equiv> ASSUME (finite (dom f)) \<then> FOREACH (map_to_set f) (\<lambda> (x, S) X. do {
-          ASSERT (\<forall> g \<in> X. x \<notin> dom g);
-          ASSERT (\<forall> a \<in> S. \<forall> b \<in> S. a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) b = {});
-          RETURN (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` X)
-        }) {empty}"
-
-    lemma expand_map_impl'_refine: "(expand_map_impl', \<lambda> f. RETURN (expand_map f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
-      unfolding expand_map_impl'_def
-      by (refine_vcg FOREACH_rule_map_eq[where X = expand_map]) (auto dest!: expand_map_dom map_upd_eqD1)
-
-    context
-      fixes f fi
-      fixes A B
-      assumes fi[autoref_rules]: "(fi, f) \<in> \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel"
-    begin
-
-      private lemma UNION_pat[autoref_op_pat]: "UNION S m \<equiv> OP UNION S m" by simp
-
-      private lemma [simp]: "finite (dom f)"
-        using list_map_rel_finite fi unfolding finite_map_rel_def by force
-      private lemma [simp]:
-        assumes "\<And> m. m \<in> S \<Longrightarrow> x \<notin> dom m"
-        shows "inj_on (\<lambda> m. m (x \<mapsto> y)) S"
-        using assms unfolding dom_def inj_on_def by (auto) (metis fun_upd_triv fun_upd_upd)
-      private lemmas [simp] = op_map_update_def[abs_def]
-
-      schematic_goal expand_map_impl: "(?f, expand_map_impl' f) \<in>
-        \<langle>\<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
-        unfolding expand_map_impl'_def by (autoref_monadic (plain))
-      concrete_definition expand_map_impl uses expand_map_impl
-
-      lemmas [autoref_op_pat del] = UNION_pat
-
-    end
-
-    lemma expand_map_impl_refine[autoref_rules]: "(expand_map_impl, expand_map) \<in>
-      \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel"
-    proof -
-      have "(\<lambda> f. RETURN (local.expand_map_impl f), expand_map_impl') \<in>
-        \<langle>A, \<langle>B\<rangle> list_set_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>\<langle>A, B\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
-        using expand_map_impl.refine by auto
-      also note expand_map_impl'_refine
-      finally show ?thesis unfolding nres_rel_comp unfolding nres_rel_def fun_rel_def by auto
-    qed
-
     (* TODO: do we really need stronger versions of all these small lemmata? *)
     lemma param_foldli:
       assumes "(xs, ys) \<in> \<langle>Ra\<rangle> list_rel"
