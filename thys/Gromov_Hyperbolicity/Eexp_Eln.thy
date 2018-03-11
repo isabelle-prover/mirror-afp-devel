@@ -2,12 +2,11 @@
     License: BSD
 *)
 
+section \<open>The exponential on extended real numbers.\<close>
 
 theory Eexp_Eln
   imports Library_Complements
 begin
-
-section \<open>The exponential on extended real numbers.\<close>
 
 text \<open>To define the distance on the Gromov completion of hyperbolic spaces, we need to use
 the exponential on extended real numbers. We can not use the symbol \verb+exp+, as this symbol

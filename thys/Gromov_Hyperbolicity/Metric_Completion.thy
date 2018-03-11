@@ -2,13 +2,11 @@
     License: BSD
 *)
 
+section \<open>The metric completion of a metric space\<close>
 
 theory Metric_Completion
   imports Isometries
 begin
-
-
-section \<open>The metric completion of a metric space\<close>
 
 text \<open>Any metric space can be completed, by adding the missing limits of Cauchy sequences.
 Formally, there exists an isometric embedding of the space in a complete space, with dense image.
