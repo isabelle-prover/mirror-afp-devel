@@ -771,11 +771,6 @@ fun prep_wit_red v NONE = NONE
 
 fun rbt_delete less k t = paint B (rbt_del less k t);
 
-fun rbt_lookup less (Branch (uu, l, x, y, r)) k =
-  (if less k x then rbt_lookup less l k
-    else (if less x k then rbt_lookup less r k else SOME y))
-  | rbt_lookup less Empty k = NONE;
-
 fun the_res (DRETURN x) = x;
 
 fun map2set_memb l k s = (case l k s of NONE => false | SOME _ => true);
@@ -1051,6 +1046,11 @@ fun rbt_insert_with_key A_ f k v t = paint B (rbt_ins A_ f k v t);
 
 fun rbt_insert A_ = rbt_insert_with_key A_ (fn _ => fn _ => fn nv => nv);
 
+fun rbt_lookup A_ Empty k = NONE
+  | rbt_lookup A_ (Branch (uu, l, x, y, r)) k =
+    (if less A_ k x then rbt_lookup A_ l k
+      else (if less A_ x k then rbt_lookup A_ r k else SOME y));
+
 fun imp_acc_of_list l = ias_from_list (map nat_of_integer l);
 
 fun imp_ndfs_sz_impl x = blue_dfs_impl_sz x;
@@ -1070,7 +1070,7 @@ fun red_dfs_impl_0a onstack e x =
             (fn xb => fn s =>
               dbind s
                 (fn _ =>
-                  (if map2set_memb (fn k => fn t => rbt_lookup less_nat t k) xb
+                  (if map2set_memb (fn k => fn t => rbt_lookup ord_nat t k) xb
                         onstack
                     then DRETURN (red_init_witness b xb) else DRETURN NONE)))
             (DRETURN NONE))
@@ -1089,7 +1089,7 @@ fun red_dfs_impl_0a onstack e x =
                 dbind s
                   (fn (aa, _) =>
                     (if not (map2set_memb
-                              (fn k => fn t => rbt_lookup less_nat t k) xc aa)
+                              (fn k => fn t => rbt_lookup ord_nat t k) xc aa)
                       then dbind (red_dfs_impl_0a onstack e (aa, xc))
                              (fn (ab, bb) => DRETURN (ab, prep_wit_red b bb))
                       else DRETURN (aa, NONE))))
@@ -1108,13 +1108,13 @@ fun fun_ndfs_impl_0 succi ai x =
     dbind (foldli (succi bb)
             (fn ac =>
               (case ac of DSUCCEEDi => false | DFAILi => false
-                | DRETURN (_, (_, (_, xj))) =>
-                  equal_blue_witness equal_nat xj NO_CYC))
+                | DRETURN (_, (_, (_, xh))) =>
+                  equal_blue_witness equal_nat xh NO_CYC))
             (fn xc => fn s =>
               dbind s
                 (fn (ac, (ad, (ae, be))) =>
-                  (if not (map2set_memb
-                            (fn k => fn t => rbt_lookup less_nat t k) xc ac)
+                  (if not (map2set_memb (fn k => fn t => rbt_lookup ord_nat t k)
+                            xc ac)
                     then dbind (fun_ndfs_impl_0 succi ai (ac, (ad, (ae, xc))))
                            (fn (af, (ag, (ah, bh))) =>
                              DRETURN
@@ -1123,7 +1123,7 @@ fun fun_ndfs_impl_0 succi ai x =
             (DRETURN (xa, (aa, (xb, NO_CYC)))))
       (fn (ac, (ad, (ae, be))) =>
         dbind (if equal_blue_witness equal_nat be NO_CYC andalso
-                    map2set_memb (fn k => fn t => rbt_lookup less_nat t k) bb ai
+                    map2set_memb (fn k => fn t => rbt_lookup ord_nat t k) bb ai
                 then let
                        val (af, bf) = red_dfs_impla bb ad ae succi;
                      in
@@ -1195,8 +1195,8 @@ fun funs_ndfs_impl_0 succi ai x =
     dbind (foldli (succi bb)
             (fn ac =>
               (case ac of DSUCCEEDi => false | DFAILi => false
-                | DRETURN (_, (_, (_, xj))) =>
-                  equal_blue_witness equal_nat xj NO_CYC))
+                | DRETURN (_, (_, (_, xh))) =>
+                  equal_blue_witness equal_nat xh NO_CYC))
             (fn xc => fn s =>
               dbind s
                 (fn (ac, (ad, (ae, be))) =>
@@ -1233,15 +1233,15 @@ fun funs_ndfs_impl succi ai s =
 fun succ_of_list_impl x =
   (fn xa =>
     let
-      val xaa =
+      val y =
         fold (fn (xaa, xb) => fn xc =>
-               (case rbt_lookup less_nat xc xaa
+               (case rbt_lookup ord_nat xc xaa
                  of NONE => rbt_insert ord_nat xaa [xb] xc
                  | SOME xd =>
                    rbt_insert ord_nat xaa (glist_insert equal_nata xb xd) xc))
           xa Empty;
     in
-      (fn xb => (case rbt_lookup less_nat xaa xb of NONE => [] | SOME xc => xc))
+      (fn xaa => (case rbt_lookup ord_nat y xaa of NONE => [] | SOME xb => xb))
     end)
     x;
 
@@ -1257,14 +1257,14 @@ fun funs_acc_of_list x = (acc_of_list_impla o map nat_of_integer) x;
 fun succ_of_list_impla x =
   (fn xa =>
     let
-      val xaa =
+      val y =
         fold (fn (xaa, xb) => fn xc =>
                (case iam_alpha xc xaa of NONE => iam_update xaa [xb] xc
                  | SOME xd =>
                    iam_update xaa (glist_insert equal_nata xb xd) xc))
           xa (iam_empty ());
     in
-      (fn xb => (case iam_alpha xaa xb of NONE => [] | SOME xc => xc))
+      (fn xaa => (case iam_alpha y xaa of NONE => [] | SOME xb => xb))
     end)
     x;
 

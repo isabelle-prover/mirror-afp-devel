@@ -50,7 +50,7 @@ proof -
       by (simp add: sup_inf_distrib2)
     also have "\<dots> = ([\<cdot>p] * x) \<sqinter>  ([\<cdot>-p] * y) \<sqinter> (([\<cdot>p] * x) \<squnion> ([\<cdot>-p] * y))"
       apply (simp add: sup_comp [THEN sym] )
-      by (simp add: assert_sup [THEN sym] inf_assoc sup_compl_top)
+      by (simp add: assert_sup [THEN sym] inf_assoc)
     also have "\<dots> = ([\<cdot>p] * x) \<sqinter>  ([\<cdot>-p] * y)"
       by (rule antisym, simp_all add: inf_assoc)
     finally show ?thesis .
@@ -212,9 +212,9 @@ lemma (in boolean_algebra) sup_neg_inf:
   "(p \<le> q \<squnion> r) = (p \<sqinter> -q \<le> r)"
   apply (safe)
   apply(cut_tac a = p and c = "q \<squnion> r" and b = "-q" and d = "-q" in inf_mono)
-  apply simp apply simp apply (simp add: inf_sup_distrib2 inf_compl_bot)
+  apply simp apply simp apply (simp add: inf_sup_distrib2)
   apply(cut_tac b = "p \<sqinter> - q" and d = "r" and a = "q" and c = "q" in sup_mono)
-  apply simp apply simp  by (simp add: sup_inf_distrib sup_compl_top)
+  apply simp apply simp  by (simp add: sup_inf_distrib)
 
 lemma hoare_if: "hoare p (If b then x else y) q = (hoare (p \<sqinter> b) x q \<and> hoare (p \<sqinter> -b) y q)"
   by (simp add: hoare_def if_stm_def wp_choice inf_fun_def wp_comp wp_assume sup_neg_inf)
