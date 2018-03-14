@@ -2,12 +2,11 @@
     License: BSD
 *)
 
-theory Gouezel_Karlsson
-imports Asymptotic_Density Kingman
-
-begin
-
 section \<open>Gouezel-Karlsson\<close>
+
+theory Gouezel_Karlsson
+  imports Asymptotic_Density Kingman
+begin
 
 text \<open>This section is devoted to the proof of the main ergodic result of
 the article "Subadditive and multiplicative ergodic theorems" by Gouezel and
@@ -59,7 +58,7 @@ proof -
     fix x assume "x \<in> G"
     then have "x \<in> space M" unfolding G_def by simp
     have "eventually (\<lambda>n. card({n. P x n} \<inter> {..<n}) < a * n) sequentially"
-      using \<open>x \<in> G\<close> unfolding G_def using upper_asymptotic_density_event1 by auto
+      using \<open>x \<in> G\<close> unfolding G_def using upper_asymptotic_densityD by auto
     then obtain N where "\<And>n. n \<ge> N \<Longrightarrow> card({n. P x n} \<inter> {..<n}) < a * n"
       using eventually_sequentially by auto
     then have "x \<in> H N" unfolding H_def using \<open>x \<in> space M\<close> by auto
@@ -1245,7 +1244,7 @@ proof -
     define A where "A = {n. \<forall>l \<in> {1..n}. u n x - u (n-l) ((T^^l) x) > - delta l * l}"
     have "upper_asymptotic_density A < 1-d" using H unfolding A_def by simp
     then have "\<exists>i. \<forall>N\<ge>i. card (A \<inter> {..<N}) \<le> (1-d)* real N"
-      using upper_asymptotic_density_event1[of A "1-d"] by (metis (no_types, lifting) eventually_sequentially less_imp_le)
+      using upper_asymptotic_densityD[of A "1-d"] by (metis (no_types, lifting) eventually_sequentially less_imp_le)
     then obtain i where "card (A \<inter> {..<N}) \<le> (1-d)* real N" if "N\<ge>i" for N by blast
     moreover have "A \<inter> {..<N} = {n. n<N \<and> (\<forall>l \<in> {1..n}. u n x - u (n-l) ((T^^l) x) > - delta l * l)}" for N
       unfolding A_def by auto
@@ -1805,6 +1804,4 @@ proof -
     using Gouezel_Karlsson_Kingman[OF assms] kingman_theorem_nonergodic(1)[OF assms] by auto
 qed
 
-
-
-end
+end (*of Gouezel_Karlsson.thy*)

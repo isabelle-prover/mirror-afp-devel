@@ -2,13 +2,11 @@
     License: BSD
 *)
 
+section \<open>A theorem by Kohlberg and Neyman\<close>
 
 theory Kohlberg_Neyman_Karlsson
   imports Fekete
-
 begin
-
-section\<open>A theorem by Kohlberg and Neyman\<close>
 
 text \<open>In this section, we prove a theorem due to Kohlberg and Neyman: given a semicontraction
 $T$ of a euclidean space, then $T^n(0)/n$ converges when $n \to \infty$. The proof we give
@@ -253,7 +251,7 @@ qed
 
 end
 
-end
+end (*of Kolberg_Neyman_Karlsson.thy*)
 
 
 

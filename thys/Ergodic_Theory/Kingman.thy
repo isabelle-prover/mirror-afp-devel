@@ -2,11 +2,11 @@
     License: BSD
 *)
 
-theory Kingman
-imports Ergodicity Fekete
-begin
-
 section \<open>Subcocycles, subadditive ergodic theory\<close>
+
+theory Kingman
+  imports Ergodicity Fekete
+begin
 
 text \<open>Subadditive ergodic theory is the branch of ergodic theory devoted
 to the study of subadditive cocycles (named subcocycles in what follows), i.e.,
@@ -929,7 +929,7 @@ proof -
       fix x assume H: "(\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
                       "\<And>N. N > 1 \<Longrightarrow> limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
       have 1: "eventually (\<lambda>N. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x)) sequentially"
-        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)]) 
+        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)])
         using \<open>strict_mono r\<close> less_le_trans seq_suble by blast
       have 2: "(\<lambda>N. F K e x + (abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x))) \<longlonglongrightarrow> ereal(F K e x) + (abs(F K e x) * ereal 0)"
         by (intro tendsto_intros) (auto simp add: H(1))
@@ -2110,5 +2110,4 @@ proof -
     using subcocycle_lim_ereal_Tinv[OF assms] by auto
 qed
 
-
-end
+end (*of Kingman.thy*)

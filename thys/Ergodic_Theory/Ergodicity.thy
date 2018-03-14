@@ -2,11 +2,11 @@
     License: BSD
 *)
 
-theory Ergodicity
-imports Invariants
-begin
-
 section \<open>Ergodicity\<close>
+
+theory Ergodicity
+  imports Invariants
+begin
 
 text \<open>A transformation is \emph{ergodic} if any invariant set has zero measure or full measure.
 Ergodic transformations are, in a sense, extremal among measure preserving transformations.
@@ -494,4 +494,4 @@ proof (rule ccontr)
   then show "False" using x(2) by simp
 qed
 
-end
+end (*of Ergodicity.thy*)

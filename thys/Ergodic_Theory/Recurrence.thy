@@ -2,14 +2,13 @@
     License: BSD
 *)
 
+section \<open>Conservativity, recurrence\<close>
+
 theory Recurrence
-imports Measure_Preserving_Transformations
+  imports Measure_Preserving_Transformations
 begin
 
-
-section\<open>Conservativity, recurrence\<close>
-
-text\<open>A dynamical system is conservative if almost every point comes back close to its starting point.
+text \<open>A dynamical system is conservative if almost every point comes back close to its starting point.
 This is always the case if the measure is finite, not when it is infinite (think of the translation
 on $\mathbb{Z}$). In conservative systems, an important construction is the induced map: the first return
 map to a set of finite measure. It is measure-preserving and conservative if the original system is.
@@ -66,6 +65,20 @@ proof (auto simp add: assms)
     ultimately have "emeasure M A = 0" by (meson A2_meas C_meas emeasure_eq_0 sets.Un)
     then show False using \<open>emeasure M A > 0\<close> by auto
   qed
+qed
+
+text \<open>There is also a dual formulation, saying that conservativity follows from the fact
+that a set disjoint from all its preimages has to be null.\<close>
+
+lemma conservativeI3:
+  assumes "qmpt M T"
+          "\<And>A. A \<in> sets M \<Longrightarrow> (\<forall>n>0. (T^^n)-`A \<inter> A = {}) \<Longrightarrow> A \<in> null_sets M"
+  shows "conservative M T"
+proof (rule conservativeI2[OF assms(1)])
+  fix A assume "A \<in> sets M" "0 < emeasure M A"
+  then have "\<not>(A \<in> null_sets M)" unfolding null_sets_def by auto
+  then show "\<exists>n>0. (T ^^ n) -` A \<inter> A \<noteq> {}"
+    using assms(2)[OF \<open>A \<in> sets M\<close>] by auto
 qed
 
 text \<open>The inverse of a conservative map is still conservative\<close>
@@ -127,14 +140,14 @@ proof (rule conservative_mptI)
     have same: "measure M (B n) = measure M A" for n
       by (simp add: B_def A_meas T_vrestr_same_measure(2))
 
-    {
-      fix m n::"nat" assume "n>m"
+    have "B n \<inter> B m = {}" if "n > m" for m n
+    proof -
       have "B n \<inter> B m = (T^^m)--` (B (n-m) \<inter> A)"
         using B_def \<open>m < n\<close> A_meas vrestr_intersec T_vrestr_composed(1) by auto
       moreover have "B (n-m) \<inter> A = {}" unfolding B_def
         by (metis disj \<open>m < n\<close> Suc_diff_Suc)
-      ultimately have "B n \<inter> B m = {}" by simp
-    }
+      ultimately show ?thesis by simp
+    qed
     then have "disjoint_family B" by (metis disjoint_family_on_def inf_sup_aci(1) less_linear)
 
     have "measure M A < e" if "e>0" for e::real
@@ -273,6 +286,21 @@ lemma (in conservative) disjoint_then_null:
   shows "A \<in> null_sets M"
 by (rule ae_disjoint_then_null, auto simp add: assms)
 
+text \<open>Conservativity is preserved by replacing the measure by an equivalent one.\<close>
+
+lemma (in conservative) conservative_density:
+  assumes [measurable]: "h \<in> borel_measurable M"
+      and "AE x in M. h x \<noteq> 0" "AE x in M. h x \<noteq> \<infinity>"
+  shows "conservative (density M h) T"
+proof -
+  interpret A: qmpt "density M h" T
+    by (rule qmpt_density[OF assms])
+  show ?thesis
+    apply (rule conservativeI3) apply (simp add: A.qmpt_axioms)
+    unfolding sets_density null_sets_density[OF assms(1) assms(2)]
+    by (metis conservative emeasure_empty not_gr_zero null_setsI)
+qed
+
 context qmpt begin
 
 text \<open>We introduce the recurrent subset of $A$, i.e., the set of points of $A$ that return to
@@ -323,6 +351,23 @@ next
       unfolding recurrent_subset_def using \<open>k>0\<close> by auto
   }
   then show "x \<in> recurrent_subset_infty A" unfolding recurrent_subset_infty_def using * by auto
+qed
+
+lemma recurrent_subset_infty_series_infinite:
+  assumes "x \<in> recurrent_subset_infty A"
+  shows "(\<Sum>n. indicator A ((T^^n) x)) = (\<infinity>::ennreal)"
+proof (rule ennreal_ge_nat_imp_PInf)
+  have *: "\<not> finite {n. (T^^n) x \<in> A}" using recurrent_subset_infty_inf_returns assms by auto
+  fix N::nat
+  obtain F where F: "finite F" "F \<subseteq> {n. (T^^n) x \<in> A}" "card F = N"
+    using infinite_arbitrarily_large[OF *] by blast
+  have "N = (\<Sum>n \<in> F. 1::ennreal)"
+    using F(3) by auto
+  also have "... = (\<Sum>n \<in> F. (indicator A ((T^^n) x))::ennreal)"
+    apply (rule sum.cong) using F(2) indicator_def by auto
+  also have "... \<le> (\<Sum>n. indicator A ((T^^n) x))"
+    by (rule sum_le_suminf, auto simp add: F)
+  finally show "N \<le> (\<Sum>n. (indicator A ((T^^n) x))::ennreal)" by auto
 qed
 
 lemma recurrent_subset_infty_def':
@@ -413,8 +458,8 @@ qed
 text \<open>The Poincare recurrence theorem states that almost every point of $A$ returns
 (infinitely often) to $A$, i.e., the recurrent and infinitely recurrent subsets of $A$
 coincide almost everywhere with $A$. This is essentially trivial in conservative systems,
-as it is a reformulation of the definition of conservativity. (What is not trivial, and will be
-proved below, is that it is true in finite measure preserving systems, i.e., finite measure
+as it is a reformulation of the definition of conservativity. (What is not trivial, and has been
+proved above, is that it is true in finite measure preserving systems, i.e., finite measure
 preserving systems are automatically conservative.)\<close>
 
 theorem (in conservative) Poincare_recurrence_thm:
@@ -425,6 +470,7 @@ theorem (in conservative) Poincare_recurrence_thm:
         "A \<Delta> recurrent_subset_infty A \<in> null_sets M"
         "emeasure M (recurrent_subset A) = emeasure M A"
         "emeasure M (recurrent_subset_infty A) = emeasure M A"
+        "AE x \<in> A in M. x \<in> recurrent_subset_infty A"
 proof -
   define B where "B = {x \<in> A. \<forall> n\<in>{1..}. (T^^n) x \<in> (space M - A)}"
 
@@ -455,6 +501,57 @@ proof -
   then show "A \<Delta> recurrent_subset_infty A \<in> null_sets M" using \<open>A - recurrent_subset_infty A \<in> null_sets M\<close> by auto
   then show "emeasure M (recurrent_subset_infty A) = emeasure M A"
     by (rule Delta_null_same_emeasure[symmetric], auto)
+
+  show "AE x\<in>A in M. x \<in> recurrent_subset_infty A"
+    unfolding eventually_ae_filter
+    by (metis (no_types, lifting) DiffI \<open>A - recurrent_subset_infty A \<in> null_sets M\<close> mem_Collect_eq subsetI)
+qed
+
+text \<open>A convenient way to use conservativity is given in the following theorem: if $T$ is
+conservative, then the series $\sum_n f(T^n x)$ is infinite for almost every $x$ with $f x > 0$.
+When $f$ is an indicator function, this is the fact that, starting from $B$, one returns
+infinitely many times to $B$ almost surely. The general case follows by approximating $f$ from
+below by constants time indicators.\<close>
+
+theorem (in conservative) recurrence_series_infinite:
+  fixes f::"'a \<Rightarrow> ennreal"
+  assumes [measurable]: "f \<in> borel_measurable M"
+  shows "AE x in M. f x > 0 \<longrightarrow> (\<Sum>n. f ((T^^n) x)) = \<infinity>"
+proof -
+  have *: "AE x in M. f x > epsilon \<longrightarrow> (\<Sum>n. f ((T^^n) x)) = \<top>" if "epsilon > 0" for epsilon
+  proof -
+    define B where "B = {x \<in> space M. f x > epsilon}"
+    have [measurable]: "B \<in> sets M" unfolding B_def by auto
+    have "(\<Sum>n. f ((T^^n) x)) = \<infinity>" if "x \<in> recurrent_subset_infty B" for x
+    proof -
+      have "\<infinity> = epsilon * \<infinity>" using \<open>epsilon > 0\<close> ennreal_mult_top by auto
+      also have "... = epsilon * (\<Sum>n. indicator B ((T^^n) x))"
+        using recurrent_subset_infty_series_infinite[OF that] by simp
+      also have "... = (\<Sum>n. epsilon * indicator B ((T^^n) x))"
+        by auto
+      also have "... \<le> (\<Sum>n. f ((T^^n) x))"
+        apply (rule suminf_le) unfolding indicator_def B_def by auto
+      finally show ?thesis
+        by (simp add: dual_order.antisym)
+    qed
+    moreover have "AE x in M. f x > epsilon \<longrightarrow> x \<in> recurrent_subset_infty B"
+      using Poincare_recurrence_thm(7)[OF \<open>B \<in> sets M\<close>] unfolding B_def by auto
+    ultimately show ?thesis by auto
+  qed
+  have "\<exists>u::(nat \<Rightarrow> ennreal). (\<forall>n. u n > 0) \<and> u \<longlonglongrightarrow> 0"
+    by (meson approx_from_above_dense_linorder ex_gt_or_lt gr_implies_not_zero)
+  then obtain u::"nat \<Rightarrow> ennreal" where u: "\<And>n. u n > 0" "u \<longlonglongrightarrow> 0"
+    by auto
+  have "AE x in M. (\<forall>n::nat. (f x > u n \<longrightarrow> (\<Sum>n. f ((T^^n) x)) = \<top>))"
+    unfolding AE_all_countable using u by (auto intro!: *)
+  moreover have "f x > 0 \<longrightarrow> (\<Sum>n. f ((T^^n) x)) = \<infinity>" if "(\<forall>n::nat. (f x > u n \<longrightarrow> (\<Sum>n. f ((T^^n) x)) = \<top>))" for x
+  proof (auto)
+    assume "f x > 0"
+    obtain n where "u n < f x"
+      using order_tendstoD(2)[OF u(2) \<open>f x > 0\<close>] eventually_False_sequentially eventually_mono by blast
+    then show "(\<Sum>n. f ((T^^n) x)) = \<top>" using that by auto
+  qed
+  ultimately show ?thesis by auto
 qed
 
 
@@ -592,7 +689,7 @@ $n$, then their preimages either have first entrance time equal to $n+1$ (these 
 not in $A$) or they belong to $A$ and have first return time equal to $n+1$. When $T$ preserves the
 measure, this gives an inductive control on the measure of the first entrance set, that will be
 used again and again in the proof of Kac's Formula. We formulate these (simple but extremely useful)
-fact now.\<close>
+facts now.\<close>
 
 lemma first_entrance_rec:
   assumes [measurable]: "A \<in> sets M"
@@ -699,7 +796,7 @@ text \<open>The fact that local times are unbounded will be the main technical t
 of recurrence results or Kac formula below. In this direction, we prove more and more general
 results in the lemmas below.
 
-*We show that, in $T^{-n}(A)$, the number of visits to $A$ tends to infinity in
+We show that, in $T^{-n}(A)$, the number of visits to $A$ tends to infinity in
 measure, when $A$ has finite measure. In other words, the points in $T^{-n}(A)$ with
 local time $<k$ have a measure tending to $0$ with $k$. The argument, by induction on $k$, goes
 as follows.
@@ -757,15 +854,13 @@ next
       have B_meas [measurable]: "B i \<in> sets M" for i unfolding B_def by measurable
       have disj_B: "disjoint_family_on B {..<N}"
       proof -
-        {
-          fix i j
-          assume "i\<in>{..<N}" "j\<in>{..<N}" "i < j"
-          then have "n > i" "n>j" using \<open>n>N\<close> by auto
+        have "B i \<inter> B j = {}" if "i\<in>{..<N}" "j\<in>{..<N}" "i < j" for i j
+        proof -
+          have "n > i" "n>j" using \<open>n>N\<close> that by auto
           let ?k = "j-i"
-          {
-            fix x
-            assume "x \<in> B j"
-            then have "(T^^(n-j-1)) x \<in> return_partition A (j+1)" using B_def by auto
+          have "x \<notin> B i" if "x \<in> B j" for x
+          proof -
+            have "(T^^(n-j-1)) x \<in> return_partition A (j+1)" using B_def that by auto
             moreover have "?k>0" using \<open>i < j\<close> by simp
             moreover have "?k < j+1" by simp
             ultimately have "(T^^(n-j-1)) x \<notin> (T^^?k)--`A" using return_partition_def by auto
@@ -773,19 +868,18 @@ next
             then have "x \<notin> (T^^(n-j-1 + ?k))--`A" using T_vrestr_composed[OF A_meas] by simp
             then have "x \<notin> (T^^(n-i-1))--`A" using \<open>i<j\<close> \<open>n>j\<close> by auto
             then have "x \<notin> (T^^(n-i-1))--` (return_partition A (i+1))" using return_partition_def by auto
-            then have "x \<notin> B i" using B_def by auto
-          }
-          then have "B i \<inter> B j = {}" by auto
-        }
+            then show "x \<notin> B i" using B_def by auto
+          qed
+          then show "B i \<inter> B j = {}" by auto
+        qed
         then have "\<And>i j. i\<in>{..<N} \<Longrightarrow> j\<in>{..<N} \<Longrightarrow> i \<noteq> j \<Longrightarrow> B i \<inter> B j = {}"
           by (metis Int_commute linorder_neqE_nat)
         then show ?thesis unfolding disjoint_family_on_def by auto
       qed
 
-      have incl_B: "\<And>i. i \<in> {..<N} \<Longrightarrow> B i \<subseteq> (T^^n)--`A"
+      have incl_B: "B i \<subseteq> (T^^n)--`A" if "i \<in> {..<N}" for i
       proof -
-        fix i assume "i \<in> {..<N}"
-        then have "n > i" using \<open>n>N\<close> by auto
+        have "n > i" using \<open>n>N\<close> that by auto
         have "B i \<subseteq> (T^^(n-i-1))--` (T^^(i+1))--` A"
           using B_def return_partition_def by auto
         then show "B i \<subseteq> (T^^n)--`A"
@@ -2192,5 +2286,4 @@ qed
 
 end
 
-
-end
+end (*of Recurrence.thy*)
