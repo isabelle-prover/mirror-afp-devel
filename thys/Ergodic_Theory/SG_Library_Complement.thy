@@ -52,7 +52,7 @@ using card_Un_le nat_add_left_cancel_le order_trans by blast
 
 subsection \<open>Set-Interval.thy\<close>
 
-text\<open>The next two lemmas belong naturally to \verb+Set_Interval.thy+, next to
+text \<open>The next two lemmas belong naturally to \verb+Set_Interval.thy+, next to
 \verb+UN_le_add_shift+. They are not trivially equivalent to the corresponding lemmas
 with large inequalities, due to the difference when $n = 0$.\<close>
 
@@ -128,7 +128,7 @@ proof -
   then show ?thesis using \<open>n > 0\<close> by auto
 qed
 
-text\<open>This lemma is certainly available somewhere, but I couldn't
+text \<open>This lemma is certainly available somewhere, but I couldn't
 locate it\<close>
 
 lemma tends_to_real_e:
@@ -941,7 +941,7 @@ qed
 text \<open>The next lemma asserts that, in an uncountable family of disjoint sets, then there is one
 set with zero measure (and in fact uncountably many). It is often applied to the boundaries of
 $r$-neighborhoods of a given set, to show that one could choose $r$ for which this boundary has
-zero measure (this shows up often in relation with weak convergence.\<close>
+zero measure (this shows up often in relation with weak convergence).\<close>
 
 lemma (in finite_measure) uncountable_disjoint_family_then_exists_zero_measure:
   assumes [measurable]: "\<And>i. i \<in> I \<Longrightarrow> A i \<in> sets M"
@@ -1056,7 +1056,7 @@ qed
 
 subsection \<open>Nonnegative-Lebesgue-Integration.thy\<close>
 
-text\<open>The next lemma is a variant of \verb+nn_integral_density+,
+text \<open>The next lemma is a variant of \verb+nn_integral_density+,
 with the density on the right instead of the left, as seems more common.\<close>
 
 lemma nn_integral_densityR:
@@ -1222,7 +1222,7 @@ qed
 
 subsection \<open>Lebesgue-Measure.thy\<close>
 
-text\<open>The next lemma is the same as \verb+lborel_distr_plus+ which is only formulated
+text \<open>The next lemma is the same as \verb+lborel_distr_plus+ which is only formulated
 on the real line, but on any euclidean space\<close>
 
 lemma lborel_distr_plus2:

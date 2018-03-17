@@ -41,7 +41,7 @@ lemma borel_measurable_nn_transfer_operator_iterates [measurable]:
   shows "(nn_transfer_operator^^n) f \<in> borel_measurable M"
 by (cases n, auto)
 
-text\<open>The next lemma is arguably the most fundamental property of the transfer operator: it is the
+text \<open>The next lemma is arguably the most fundamental property of the transfer operator: it is the
 adjoint of the composition by $T$. If one defined it as an abstract adjoint, it would be defined
 on the dual of $L^\infty$, which is a large unwieldy space. The point is that it can be defined
 on genuine functions, using the push-forward point of view above. However, once we have this

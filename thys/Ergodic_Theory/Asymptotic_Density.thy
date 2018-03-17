@@ -329,11 +329,6 @@ proposition upper_asymptotic_density_incseq_Union:
   assumes "\<And>(n::nat). upper_asymptotic_density (A n) \<le> l" "incseq A"
   shows "\<exists>B. upper_asymptotic_density B \<le> l \<and> (\<forall>n. \<exists>N. A n \<inter> {N..} \<subseteq> B)"
 proof -
-text \<open>Now, we combine the sets $B_{1/2^k}$ to form a global bad set named $C$.
-  It is defined as the union of $B_{1/2^k} \cap [N_k, N_{k+1})$ where $N$ has to be
-  carefully chosen to be increasing and large enough so that the density $0$ property for
-  $B_{1/2^k}$ is seen at that time scale.\<close>
-
   have A: "\<exists>N. \<forall>j \<ge> N. card (A k \<inter> {..<j}) < (l + (1/2)^k) * j" for k
   proof -
     have *: "upper_asymptotic_density (A k) < l + (1/2)^k" using assms(1)[of k]

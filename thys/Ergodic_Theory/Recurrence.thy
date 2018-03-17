@@ -720,9 +720,9 @@ proof -
 qed
 
 
-subsection\<open>Local time controls\<close>
+subsection \<open>Local time controls\<close>
 
-text\<open>The local time is the time that an orbit spends in a given set. Local time controls
+text \<open>The local time is the time that an orbit spends in a given set. Local time controls
 are basic to all the forthcoming developments.\<close>
 
 definition local_time::"'a set \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat"
@@ -765,11 +765,7 @@ qed
 lemma local_time_meas [measurable]:
   assumes [measurable]: "A \<in> sets M"
   shows "local_time A n \<in> borel_measurable M"
-proof -
-  have "birkhoff_sum(indicator A::'a\<Rightarrow>nat) n \<in> borel_measurable M"
-    using assms measurable_simple_function birkhoff_sum_meas_nat[of "indicator A", of n] by blast
-  then show ?thesis by (metis measurable_cong local_time_birkhoff)
-qed
+unfolding local_time_birkhoff by auto
 
 lemma local_time_cocycle:
   "local_time A n x + local_time A m ((T^^n)x) = local_time A (n+m) x"
@@ -1125,7 +1121,7 @@ qed
 
 
 
-subsection\<open>The induced map\<close>
+subsection \<open>The induced map\<close>
 
 text \<open>The map induced by $T$ on a set $A$ is obtained by iterating $T$ until one lands again
 in $A$. (Outside of $A$, we take the identity for definiteness.) It has very nice properties:
@@ -1787,7 +1783,7 @@ proof -
   qed
 qed
 
-text\<open>The next lemma is very simple (just a change of variables to reorder
+text \<open>The next lemma is very simple (just a change of variables to reorder
 the indices in the double sum). However, the proof I give is very tedious:
 infinite sums on proper subsets are not handled well, hence I use integrals
 on products of discrete spaces instead, and go back and forth between the two

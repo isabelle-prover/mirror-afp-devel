@@ -1302,7 +1302,7 @@ proof (rule conservative_mptI)
   define c where "c = (measure M Cx)/2"
   have "c > 0" unfolding c_def using Cxe(2) by (simp add: emeasure_eq_measure)
 
-  text\<open>We will apply Birkhoff theorem to show that most preimages of $C$ at time $n$ are contained in a cylinder
+  text \<open>We will apply Birkhoff theorem to show that most preimages of $C$ at time $n$ are contained in a cylinder
   of height roughly $r n$, for some suitably small $r$. How small $r$ should be to get a
   contradiction can be determined at the end of the proof. It turns out that the good condition
   is the following one -- this is by no means obvious now.\<close>
@@ -1501,7 +1501,7 @@ qed
 
 subsubsection \<open>Oscillations around the limit in Birkhoff theorem\<close>
 
-text\<open>In this paragraph, we prove that, in Birkhoff theorem with vanishing limit, the Birkhoff sums
+text \<open>In this paragraph, we prove that, in Birkhoff theorem with vanishing limit, the Birkhoff sums
 are infinitely many times arbitrarily close to $0$, both on the positive and the negative side.
 
 In the ergodic case, this statement implies for instance that if the Birkhoff sums of an integrable
@@ -1693,7 +1693,7 @@ qed
 
 subsubsection \<open>Conditional expectation for the induced map\<close>
 
-text\<open>Thanks to Birkhoff theorem, one can relate conditional expectations with respect to the invariant
+text \<open>Thanks to Birkhoff theorem, one can relate conditional expectations with respect to the invariant
 sigma algebra, for a map and for a corresponding induced map, as follows.\<close>
 
 proposition Invariants_cond_exp_induced_map:

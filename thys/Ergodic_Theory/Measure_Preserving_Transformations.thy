@@ -359,7 +359,7 @@ lemma fmpt_empty_space:
   shows "fmpt M T"
 by (rule fmpt_null_space, auto simp add: assms measurable_empty_iff)
 
-text\<open>Translations are measure-preserving\<close>
+text \<open>Translations are measure-preserving\<close>
 
 lemma mpt_translation:
   fixes c :: "'a::euclidean_space"
@@ -373,7 +373,7 @@ proof (rule mpt_I, auto simp add: lborel.sigma_finite_measure_axioms)
   finally show "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel A" by simp
 qed
 
-text\<open>Skew products are fibered maps of the form $(x,y)\mapsto (Tx, U(x,y))$. If the base map
+text \<open>Skew products are fibered maps of the form $(x,y)\mapsto (Tx, U(x,y))$. If the base map
 and the fiber maps all are measure preserving, so is the skew product.\<close>
 
 lemma pair_measure_null_product:
@@ -476,7 +476,7 @@ subsection \<open>Preimages restricted to $space M$\<close>
 
 context qmpt begin
 
-text\<open>One is all the time lead to take the preimages of sets, and restrict them to
+text \<open>One is all the time lead to take the preimages of sets, and restrict them to
 \verb+space M+ where the dynamics is living. We introduce a shortcut for this notion.\<close>
 
 definition vimage_restr :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr "--`" 90)
@@ -799,7 +799,7 @@ end
 
 subsection \<open>Birkhoff sums\<close>
 
-text\<open>Birkhoff sums, obtained by summing a function along the orbit of a map, are basic objects
+text \<open>Birkhoff sums, obtained by summing a function along the orbit of a map, are basic objects
 to be understood in ergodic theory.\<close>
 
 context qmpt
@@ -808,23 +808,8 @@ begin
 definition birkhoff_sum::"('a \<Rightarrow> 'b::comm_monoid_add) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'b"
   where "birkhoff_sum f n x = (\<Sum>i\<in>{..<n}. f((T^^i)x))"
 
-text\<open>I did not find a way to prove a lemma applying simultaneously in \verb+real+ and \verb+ennreal+
-and \verb+nat+, so I give three separate statements about measurability.\<close>
-
 lemma birkhoff_sum_meas [measurable]:
-  fixes f::"'a \<Rightarrow> real"
-  assumes [measurable]: "f \<in> borel_measurable M"
-  shows "birkhoff_sum f n \<in> borel_measurable M"
-proof -
-  define F where "F = (\<lambda>i x. f((T^^i)x))"
-  have "\<And>i. F i \<in> borel_measurable M" using assms F_def by auto
-  then have "(\<lambda>x. (\<Sum>i<n. F i x)) \<in> borel_measurable M" by measurable
-  then have "(\<lambda>x. birkhoff_sum f n x) \<in> borel_measurable M" unfolding birkhoff_sum_def F_def by auto
-  then show ?thesis by simp
-qed
-
-lemma birkhoff_sum_meas_ennreal [measurable]:
-  fixes f::"'a \<Rightarrow> ennreal"
+  fixes f::"'a \<Rightarrow> 'b::{second_countable_topology, topological_comm_monoid_add}"
   assumes "f \<in> borel_measurable M"
   shows "birkhoff_sum f n \<in> borel_measurable M"
 proof -
@@ -833,22 +818,6 @@ proof -
   then have "(\<lambda>x. (\<Sum>i<n. F i x)) \<in> borel_measurable M" by measurable
   then have "(\<lambda>x. birkhoff_sum f n x) \<in> borel_measurable M" unfolding birkhoff_sum_def F_def by auto
   then show ?thesis by simp
-qed
-
-lemma birkhoff_sum_meas_nat [measurable]:
-  fixes f::"'a \<Rightarrow> nat"
-  assumes [measurable]: "f \<in> measurable M (count_space UNIV)"
-  shows "birkhoff_sum f n \<in> borel_measurable M"
-proof -
-  define g where "g = (\<lambda>x. real(f x))"
-  have [measurable]: "g \<in> borel_measurable M" unfolding g_def using assms by auto
-  have [measurable]: "birkhoff_sum g n \<in> borel_measurable M" by auto
-  have "\<And>x. real(birkhoff_sum f n x) = birkhoff_sum g n x"
-    unfolding g_def birkhoff_sum_def by auto
-  then have "(\<lambda>x. real(birkhoff_sum f n x)) \<in> borel_measurable M" by simp
-  then have "birkhoff_sum f n \<in> measurable M (count_space UNIV)" by (rule measurable_real_imp_nat[of "birkhoff_sum f n", of M])
-  then show "birkhoff_sum f n \<in> borel_measurable M"
-    using measurable_cong_sets sets_borel_eq_count_space by blast
 qed
 
 lemma birkhoff_sum_1 [simp]:

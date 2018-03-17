@@ -254,7 +254,7 @@ by (rule cesaro_imp_density_one[OF _ disjoint_sets_measure_Cesaro_tendsto_zero[O
 
 subsection \<open>Normalizing sequences do not grow exponentially in conservative systems\<close>
 
-text \<open>we prove the main result in~\cite{gouezel_normalizing_sequences}: in a
+text \<open>We prove the main result in~\cite{gouezel_normalizing_sequences}: in a
 conservative system, if a renormalized sequence $S_n f/B_n$ converges in distribution towards
 a limit which is not a Dirac mass at $0$, then $B_n$ can not grow exponentially fast. The proof
 is expressed in the following locale. The main theorem is Theorem~\verb+subexponential_growth+
@@ -1416,7 +1416,7 @@ proof -
       also have "... \<le> C * (E * B m)"
         apply (rule mult_left_mono) using \<open>C \<ge> 1\<close> E[of m] by auto
       also have "... \<le> 2^k * (2^k * B m)"
-        apply (intro mult_mono) using \<open>C \<le> 2^k\<close> \<open>C \<ge> 1\<close>\<open>E \<ge> 1\<close> \<open>E \<le> 2^k\<close> Bpos[of m] by auto
+        apply (intro mult_mono) using \<open>C \<le> 2^k\<close> \<open>C \<ge> 1\<close> \<open>E \<ge> 1\<close> \<open>E \<le> 2^k\<close> Bpos[of m] by auto
       also have "... \<le> 2^k * (2^k * (P * 2^(2 * k * r)))"
         apply (intro mult_left_mono) using * by auto
       also have "... = P * 2^(2 * k * Suc r)"
