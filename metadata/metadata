@@ -1,3 +1,17 @@
+[CakeML]
+title = CakeML
+author = Lars Hupel <https://www21.in.tum.de/~hupel/>
+topic = Computer Science/Programming Languages/Language Definitions
+date = 2018-03-12
+notify = hupel@in.tum.de
+abstract = 
+  CakeML is a functional programming language with a proven-correct
+  compiler and runtime system. This entry contains an unofficial version
+  of the CakeML semantics that has been exported from the Lem
+  specifications to Isabelle. Additionally, there are some hand-written
+  theory files that adapt the exported code to Isabelle and port proofs
+  from the HOL4 formalization, e.g. termination and equivalence proofs.
+
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
 author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
