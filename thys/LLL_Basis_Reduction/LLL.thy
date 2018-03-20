@@ -1090,7 +1090,7 @@ proof (atomize(full), cases "i = 0")
         assume "x \<in> ?S"
         hence x: "x \<in> ?S'" using S'S by simp
         show "(?g1 i + ?mu_f1) \<bullet> x = 0"
-        proof (rule gs.orthocompl_span[OF connH _ G' inRn x])
+        proof (rule gs.orthocompl_span[OF _ G' inRn x])
           fix x
           assume "x \<in> ?gs1"
           then obtain j where j: "j < i - 1" and x_id: "x = ?g1 j" by auto
