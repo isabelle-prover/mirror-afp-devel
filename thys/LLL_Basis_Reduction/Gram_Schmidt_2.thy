@@ -830,6 +830,29 @@ definition strictly_reduced :: "nat \<Rightarrow> 'a \<Rightarrow> 'a vec list \
 definition
   "is_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
 
+lemma is_projection_sq_norm: assumes "is_projection w S v"
+  and S: "S \<subseteq> carrier_vec n" 
+  and v: "v \<in> carrier_vec n" 
+shows "sq_norm w \<le> sq_norm v" 
+proof -
+  from assms[unfolded is_projection_def]
+  have w: "w \<in> carrier_vec n" 
+    and vw: "v - w \<in> span S" and ortho: "\<And> u. u \<in> S \<Longrightarrow> w \<bullet> u = 0" by auto
+  have "sq_norm v = sq_norm ((v - w) + w)" using v w 
+    by (intro arg_cong[of _ _ sq_norm_vec], auto)
+  also have "\<dots> = ((v - w) + w) \<bullet> ((v - w) + w)" unfolding sq_norm_vec_as_cscalar_prod
+    by simp
+  also have "\<dots> = (v - w) \<bullet> ((v - w) + w) + w \<bullet> ((v - w) + w)" 
+    by (rule add_scalar_prod_distrib, insert v w, auto)
+  also have "\<dots> = ((v - w) \<bullet> (v - w) + (v - w) \<bullet> w) + (w \<bullet> (v - w) + w \<bullet> w)" 
+    by (subst (1 2) scalar_prod_add_distrib, insert v w, auto)
+  also have "\<dots> = sq_norm (v - w) + 2 * (w \<bullet> (v - w)) + sq_norm w" 
+    unfolding sq_norm_vec_as_cscalar_prod using v w by (auto simp: comm_scalar_prod[of w _ "v - w"])
+  also have "\<dots> \<ge> 2 * (w \<bullet> (v - w)) + sq_norm w" using sq_norm_vec_ge_0[of "v - w"] by auto
+  also have "w \<bullet> (v - w) = 0" using orthocompl_span[OF ortho S w vw] by auto
+  finally show ?thesis by auto
+qed
+
 definition projection where
 "projection S fi \<equiv> (SOME v. is_projection v S fi)"
 
