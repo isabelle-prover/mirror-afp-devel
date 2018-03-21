@@ -708,7 +708,7 @@ proof (induct k)
       smult_scalar_prod_distrib[OF gsk gsk]
     unfolding Suc(1)[OF kn]
     by (simp add: 0 comm_scalar_prod[OF v2 v1])
-qed auto    
+qed auto  
 end
 
 
@@ -785,6 +785,11 @@ proof -
   }
   thus ?thesis using \<open>y \<in> span S\<close> unfolding span_def by auto
 qed
+
+lemma orthogonal_sumlist:
+  assumes ortho: "\<And> x. x \<in> set S \<Longrightarrow> v \<bullet> x = 0" and S: "set S \<subseteq> carrier_vec n" and v: "v \<in> carrier_vec n"
+  shows "v \<bullet> sumlist S = 0"
+  by (rule orthocompl_span[OF ortho S v sumlist_in_span[OF S span_mem[OF S]]])
 
 lemma projection_alt_def:
   assumes carr:"(W::'a vec set) \<subseteq> carrier_vec n" "x \<in> carrier_vec n"

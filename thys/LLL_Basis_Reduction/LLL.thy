@@ -197,11 +197,10 @@ lemma \<mu>_i_im1: assumes gr: "f_repr i Fr F" and gso:"g_repr i G F"
 context fixes L :: "int vec set" and \<alpha> :: rat and A :: nat
 begin
 
-definition g_short :: "rat vec list \<Rightarrow> bool" where 
-  "g_short gs = (\<forall> i < m. sq_norm (gs ! i) \<le> of_nat A)" 
+text \<open>This is the core invariant which enables to prove functional correctness.\<close>
 
-definition LLL_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where 
-  "LLL_invariant state F G = (case state of (i,Fr,Gr) \<Rightarrow> 
+definition LLL_partial_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where 
+  "LLL_partial_invariant state F G = (case state of (i,Fr,Gr) \<Rightarrow> 
   snd (gram_schmidt_int n F) = G \<and>
   gs.lin_indpt_list (RAT F) \<and> 
   lattice_of F = L \<and>
@@ -210,9 +209,23 @@ definition LLL_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat 
   i \<le> m \<and>
   length F = m \<and>
   f_repr i Fr F \<and> 
-  g_repr i Gr F \<and>
-  g_short G
+  g_repr i Gr F
   )" 
+
+definition f_short :: "int vec list \<Rightarrow> bool" where 
+  "f_short fs = (\<forall> i < m. sq_norm (fs ! i) \<le> int (A * m))" 
+
+definition g_short :: "rat vec list \<Rightarrow> bool" where 
+  "g_short gs = (\<forall> i < m. sq_norm (gs ! i) \<le> of_nat A)" 
+
+text \<open>The full invariant also states that the numbers during the computation 
+  stay small. Only exception: we do not yet prove that the denominators in the GSO-vectors
+  stay small.\<close>
+
+definition LLL_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where
+  "LLL_invariant state F G = (LLL_partial_invariant state F G \<and> f_short F \<and> g_short G)" 
+
+lemmas LLL_invariants_def = LLL_invariant_def LLL_partial_invariant_def 
 
 lemma LLL_invD: assumes "LLL_invariant (i,Fr,Gr) F G"
   shows "F = of_list_repr Fr" 
@@ -226,8 +239,23 @@ lemma LLL_invD: assumes "LLL_invariant (i,Fr,Gr) F G"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
   "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "f_short F"
   "g_short G"
-  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariant_def split by auto
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
+
+lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
+  shows "F = of_list_repr Fr" 
+  "snd (gram_schmidt_int n F) = G" 
+  "set F \<subseteq> carrier_vec n"
+  "length F = m"
+  "lattice_of F = L" 
+  "gs.weakly_reduced \<alpha> i G"
+  "i \<le> m"
+  "f_repr i Fr F"
+  "g_repr i Gr F" 
+  "gs.lin_indpt_list (RAT F)" 
+  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
 
 lemma LLL_invI: assumes  
   "f_repr i Fr F"
@@ -239,10 +267,23 @@ lemma LLL_invI: assumes
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
   "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "f_short F" 
   "g_short G" 
 shows "LLL_invariant (i,Fr,Gr) F G" 
-  unfolding LLL_invariant_def Let_def split using assms of_list_repr[OF assms(1)] by auto
-    
+  unfolding LLL_invariants_def Let_def split using assms of_list_repr[OF assms(1)] by auto
+
+lemma LLL_pinvI: assumes  
+  "f_repr i Fr F"
+  "g_repr i Gr F" 
+  "snd (gram_schmidt_int n F) = G" 
+  "lattice_of F = L" 
+  "gs.weakly_reduced \<alpha> i G"
+  "i \<le> m"
+  "length F = m" 
+  "gs.lin_indpt_list (RAT F)"
+  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+shows "LLL_partial_invariant (i,Fr,Gr) F G" 
+  unfolding LLL_invariants_def Let_def split using assms of_list_repr[OF assms(1)] by auto
   
 lemma gram_schmidt_int_connect: fixes F :: "int vec list" 
   assumes "gs.lin_indpt_list (RAT F)" "snd (gram_schmidt_int n F) = G" "length F = m" 
@@ -401,18 +442,18 @@ proof -
     by (rule LLL_invI[OF Fr' Gr'], insert inv red sred i, auto)
 qed
 
-lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
+lemma basis_reduction_add_row_main: assumes Linv: "LLL_partial_invariant (i,Fr,Gr) F G"
   and i: "i < m"  and j: "j < i" 
   and res: "basis_reduction_add_row_main (i,Fr,Gr) fj mu = ((i',Fr',Gr'), c)"
   and fj: "fj = F ! j" 
   and mu: "mu = gs.\<mu> (RAT F) i j" 
-shows "\<exists> v. LLL_invariant (i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (mu - of_int c) \<le> inverse 2 
+shows "\<exists> v. LLL_partial_invariant (i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (mu - of_int c) \<le> inverse 2 
   \<and> mu - of_int c = gs.\<mu> (RAT (F[ i := v])) i j
   \<and> (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> (i' \<noteq> i \<or> j' > j) 
       \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i' j' = gs.\<mu> (RAT F) i' j')"
 proof -
   define M where "M = map (\<lambda>i. map (gs.\<mu> (RAT F) i) [0..<m]) [0..<m]"
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_pinvD[OF Linv]
   note Gr = inv(1)
   have ji: "j \<le> i" "j < m" and jstrict: "j < i" 
     and add: "set F \<subseteq> carrier_vec n" "i < length F" "j < length F" "i \<noteq> j" 
@@ -675,9 +716,9 @@ proof -
     hence gso'': "g_repr i Gr F1" unfolding g_repr_def using i by simp
     have repr': "f_repr i Fr1 F1" unfolding F1_def Fr1_def x map_update
       by (rule update_i[OF Fr], insert add, auto)
-    have "LLL_invariant (i, Fr1, Gr) F1 G" unfolding Hs[symmetric]
-      apply (rule LLL_invI[OF repr' gso'' G1_def(2)[folded snd_gram_schmidt_int,symmetric] _ red inv(7) _ _ sred])
-      by (insert F1 F1_F inv(5) inv(12) indep_F1 Hs, auto)
+    have "LLL_partial_invariant (i, Fr1, Gr) F1 G" unfolding Hs[symmetric]
+      apply (rule LLL_pinvI[OF repr' gso'' G1_def(2)[folded snd_gram_schmidt_int,symmetric] _ red inv(7) _ _ sred])
+      by (insert F1 F1_F inv(5) indep_F1 Hs, auto)
   } note inv_gso = this
   { 
     fix ia assume "ia \<le> j" hence "ia < i" using ji j by auto
@@ -714,7 +755,7 @@ qed
 lemma basis_reduction_add_row_i_all: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
   and i: "i < m" 
   and res: "basis_reduction_add_row_i_all (i,Fr,Gr) = (i',Fr',Gr')"
-shows "\<exists> F'. LLL_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> 
+shows "\<exists> F' fi. LLL_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
   (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
     gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')"
@@ -734,14 +775,18 @@ proof -
   have id: "fst Fr = rev (take ii F)" unfolding id ii_def by auto
   let ?small = "\<lambda> F j. abs (gs.\<mu> (RAT F) i j) \<le> 1/2" 
   have small: "\<forall> j. ii \<le> j \<longrightarrow> j < i \<longrightarrow> ?small F j" unfolding ii_def by auto
+  from Linv have Lpinv: "LLL_partial_invariant (i, Fr, Gr) F G" unfolding LLL_invariants_def by auto
   from res[unfolded id id'] have
     "basis_reduction_add_row_i_all_main (i, Fr, Gr) (rev (take ii F))
      (rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (gs.gso (RAT F)) [0..<ii]))) =
     (i', Fr', Gr')" "ii \<le> i" unfolding ii_def by auto 
-  thus ?thesis using Linv small 
+  hence "\<exists> F' fi. LLL_partial_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
+  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
+  (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
+    gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')" using Lpinv small 
   proof (induct ii arbitrary: Fr F)
     case (Suc ii Fr F)
-    note inv = LLL_invD[OF Suc(4)]
+    note inv = LLL_pinvD[OF Suc(4)]
     let ?fs = "gs.gso (RAT F) ii" 
     let ?fsn = "(?fs, \<parallel>?fs\<parallel>\<^sup>2)"       
     let ?main = "basis_reduction_add_row_main (i, Fr, Gr) (F ! ii)
@@ -759,7 +804,7 @@ proof -
       by auto
     from basis_reduction_add_row_main[OF Suc(4) i ii(1) main refl pair]
     obtain v where
-        Linv: "LLL_invariant (i, Fr'', Gr) (F[i := v]) G" 
+        Linv: "LLL_partial_invariant (i, Fr'', Gr) (F[i := v]) G" 
       and id: "i'' = i" "Gr'' = Gr" 
       and small: "?small (F[i := v]) ii" 
       and id': "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> (i' \<noteq> i \<or> ii < j') \<longrightarrow>
@@ -797,21 +842,75 @@ proof -
         show ?thesis by auto
       qed
     qed
-    from Suc(1)[OF res ii_le Linv small] obtain G' where
-      Linv: "LLL_invariant (i, Fr', Gr) G' G" 
+    from Suc(1)[OF res ii_le Linv small] obtain G' fi where
+      Linv: "LLL_partial_invariant (i, Fr', Gr) G' G" 
       and i': "i' = i" 
+      and fi: "G' = F[i := v, i := fi]" 
       and gso': "Gr' = Gr" 
       and small: "(\<forall>j<i. ?small G' j)" 
       and id: "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> i' \<noteq> i \<Longrightarrow>
            gs.\<mu> (RAT G') i' j' =
            gs.\<mu> (RAT ?G) i' j'" by blast
+    from fi have fi: "G' = F[i := fi]" by auto
     show ?case
-    proof (intro exI conjI, rule Linv, rule i', rule gso', rule small, intro allI impI, goal_cases)
+    proof (intro exI conjI, rule Linv, rule i', rule gso', rule fi, rule small, intro allI impI, goal_cases)
       case (1 i' j')
       show ?case unfolding id[OF 1] 
         by (rule id'[rule_format], insert 1 i', auto)
     qed
-  qed auto
+  next
+    case 0
+    thus ?case by (intro exI[of _ F] exI[of _ "F ! i"], auto)
+  qed
+  then obtain F' fi where Lpinv: "LLL_partial_invariant (i,Fr',Gr) F' G" 
+    and *: "i' = i" "Gr' = Gr" and F': "F' = F[i := fi]" 
+    and mu: "\<And> j. j < i \<Longrightarrow> abs (gs.\<mu> (RAT F') i j) \<le> 1/2" 
+    and **: "(\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
+     gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')" by blast
+  let ?mu = "gs.\<mu> (RAT F') i" 
+  let ?G = "gs.gso (RAT F')" 
+  from Linv[unfolded LLL_invariant_def] have g_short: "g_short G" 
+    and f_short: "f_short F" by auto
+  note inv = LLL_pinvD[OF Lpinv]
+  have GF': "G = map ?G [0..<m]" using gram_schmidt_int_connect[of F' G] inv by auto
+  let ?r = "rat_of_int" 
+  have "map_vec ?r (F' ! i) = RAT F' ! i" using i inv by auto 
+  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v ?G j) [0..<Suc i])" 
+    using gs.fi_is_sum_of_mu_gso[OF inv(10) _ refl i] inv(4) i by auto
+  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0 ..< Suc i])" 
+    by (rule arg_cong[of _ _ "gs.sumlist"], rule map_cong[OF refl], unfold GF', insert i, auto)
+  also have "sq_norm \<dots> = sum_list (map sq_norm (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0..<Suc i]))" 
+    unfolding map_map o_def sq_norm_smult_vec
+    unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
+  proof (rule gs.scalar_prod_lincomb_orthogonal)
+    show "Suc i \<le> length G" unfolding GF' using i by auto
+    show "set G \<subseteq> Rn" unfolding GF' using gs.gso_carrier[OF inv(10) _ refl] inv(4) by auto
+    show "orthogonal G" 
+      using gs.gram_schmidt[OF inv(10) _ inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]] inv(4)
+      by auto
+  qed
+  also have "\<dots> \<le> sum_list (map (\<lambda> i. 1 * of_nat A) [0..<Suc i])"
+  proof (rule sum_list_ge_mono, force, unfold length_map length_upt map_map o_def, 
+    subst (1 2) nth_map_upt, force, unfold sq_norm_smult_vec, goal_cases)
+    case (1 j)
+    hence "j < Suc i" by auto
+    with mu[of j] have "abs (?mu j) \<le> 1" by (cases "j = i", auto simp: gs.\<mu>.simps[of _ _ i])
+    hence mu: "?mu j * ?mu j \<le> 1"
+      by (metis abs_ge_zero abs_mult_self_eq mult_le_one)
+    from g_short[unfolded g_short_def] i 1 have G: "sq_norm (G ! j) \<le> of_nat A" by auto
+    show ?case
+      by (rule mult_mono, insert mu G, auto)
+  qed
+  also have "\<dots> = of_nat A * of_nat (Suc i)" unfolding sum_list_triv by simp 
+  also have "\<dots> \<le> of_nat A * of_nat m" 
+    by (rule mult_left_mono, insert i, auto)
+  also have "\<dots> = of_nat (A * m)" by simp
+  finally have "?r \<parallel>(F' ! i)\<parallel>\<^sup>2 \<le> rat_of_int (A * m)" unfolding sq_norm_of_int by auto
+  hence Fi: "\<parallel>(F' ! i)\<parallel>\<^sup>2 \<le> int (A * m)" by linarith
+  from f_short Fi have f_short: "f_short F'" unfolding f_short_def F' 
+    by (auto, rename_tac ii, case_tac "ii = i", auto)
+  show ?thesis using f_short g_short * Lpinv mu F' mu ** unfolding LLL_invariant_def split
+    by (intro exI[of _ F'] exI[of _ fi], auto)
 qed
 
 context
@@ -916,6 +1015,7 @@ proof (atomize(full), cases "i = 0")
     and repr: "f_repr i Fr1 F1" and gS: "snd (gram_schmidt_int n F1) = G" 
     and len: "length F1 = m" and HC: "set F1 \<subseteq> carrier_vec n" 
     and gso: "g_repr i Gr1 F1" and L: "lattice_of F1 = L" 
+    and f_short: "f_short F1" 
     using i by auto 
   from g_i[OF Linv' i] have y: "?y' = sq_norm ?y" by auto
   from g_im1[OF Linv' i i0] have x: "?x' = sq_norm ?x" by auto
@@ -1352,7 +1452,7 @@ proof (atomize(full), cases "i = 0")
     from inv' have short: "\<And> k. k < m \<Longrightarrow> \<parallel>G ! k\<parallel>\<^sup>2 \<le> of_nat A" by (auto simp: g_short_def)
     from short[of "i - 1"] i 
     have short_im1: "sq_norm (?g1 (i - 1)) \<le> of_nat A" unfolding Gs_fs by auto
-    have short: "g_short G2" unfolding g_short_def
+    have g_short: "g_short G2" unfolding g_short_def
     proof (intro allI impI)
       fix k 
       assume km: "k < m" 
@@ -1378,11 +1478,21 @@ proof (atomize(full), cases "i = 0")
         also have "\<dots> \<le> of_nat A" by fact
         finally show ?thesis .
       qed
-    qed        
+    qed
+
+    have f_short: "f_short F2" unfolding f_short_def
+    proof (intro allI impI)
+      fix j
+      assume j: "j < m" 
+      note short = f_short[unfolded f_short_def, rule_format]
+      consider "j \<noteq> i" "j \<noteq> i - 1" | "j = i" | "j = i - 1" by auto
+      thus "\<parallel>F2 ! j\<parallel>\<^sup>2 \<le> int (A * m)" using short[OF j] short[OF i] short[OF \<open>i - 1 < m\<close>] len j i i0
+        unfolding F2_def by (cases, auto)
+    qed
         
     (* invariant is established *)
     have newInv: "LLL_invariant (i - 1, Fr2, Gr2) F2 G2" 
-      by (rule LLL_invI[OF repr' g_repr gH' L red], insert short connH' len' span' i m12 F2 sred, auto)
+      by (rule LLL_invI[OF repr' g_repr gH' L red], insert g_short f_short connH' len' span' i m12 F2 sred, auto)
 
     have norm_pos: "j < m \<Longrightarrow> sq_norm (?g2 j) > 0" for j 
       using gs.sq_norm_pos[OF connH',of j] unfolding G2_F2 o_def by simp
@@ -1509,7 +1619,7 @@ proof -
   hence F0: "F ! 0 \<noteq> 0\<^sub>v n" by auto
   hence "sq_norm (F ! 0) \<noteq> 0" using F by simp
   hence 1: "sq_norm (F ! 0) \<ge> 1" using sq_norm_vec_ge_0[of "F ! 0"] by auto
-  from inv(12) m have "sq_norm (G ! 0) \<le> of_nat A" unfolding g_short_def by auto
+  from inv(13) m have "sq_norm (G ! 0) \<le> of_nat A" unfolding g_short_def by auto
   also have "G ! 0 = RAT F ! 0" unfolding conn upt using F by (simp add: gs.gso.simps[of _ 0])
   also have "RAT F ! 0 = map_vec ?r (F ! 0)" using inv(4) m by auto
   also have "sq_norm \<dots> = ?r (sq_norm (F ! 0))" by (simp add: sq_norm_of_int)
@@ -1528,7 +1638,7 @@ proof -
   have "rat_of_int (dk i F) = (\<Prod>j<i. \<parallel>G ! j\<parallel>\<^sup>2)" unfolding dk_def using i
     by (auto simp: Gramian_determinant [OF LLL])
   also have "\<dots> \<le> (\<Prod>j<i. of_nat A)" using i
-    by (intro prod_mono ballI conjI prod_nonneg, insert inv(12)[unfolded g_short_def], auto)
+    by (intro prod_mono ballI conjI prod_nonneg, insert inv(13)[unfolded g_short_def], auto)
   also have "\<dots> = (of_nat A)^i" unfolding prod_constant by simp
   also have "\<dots> = of_nat (A^i)" by simp
   finally show ?thesis by simp
@@ -1630,7 +1740,7 @@ next
       define G1 where Gr: "G1 = of_list_repr Fr1" 
       note inv = inv[unfolded LLL_invariant_def split Gr[symmetric] Let_def]
       from False res have state': "state' = (i, Fr1, Gr1)" by simp
-      from False inv have i: "i = m" unfolding LLL_invariant_def by auto
+      from False inv have i: "i = m" unfolding LLL_invariants_def by auto
       show ?thesis using 1(2) unfolding state' state i by auto
     qed
   qed
@@ -1669,16 +1779,19 @@ proof -
     unfolding Gr0_def FrF GSO_def gram_schmidt_triv using len by auto
   from gram_schmidt_int_connect[OF lin_dep gs len]
   have gso0: "g_repr 0 ?Gr0 F" unfolding gso_init g_repr_def list_repr_def gs by auto
-  have short: "g_short A G" unfolding g_short_def
-  proof (intro allI impI)
+  have short: "g_short A G \<and> f_short A F" unfolding g_short_def f_short_def
+  proof (intro allI impI conjI)
     fix i
     assume i: "i < m" 
     let ?N = "map (nat o sq_norm) F"
     let ?r = rat_of_int
     from i have mem: "nat (sq_norm (F ! i)) \<in> set ?N" using G'(1) unfolding set_conv_nth by force
     from mem_set_imp_le_max_list[OF _ mem]
-    have "nat (sq_norm (F ! i)) \<le> A" unfolding A by force
-    hence "rat_of_nat (nat (sq_norm (F ! i))) \<le> rat_of_nat A" by simp
+    have FA: "nat (sq_norm (F ! i)) \<le> A" unfolding A by force
+    hence "\<parallel>F ! i\<parallel>\<^sup>2 \<le> int A" using i by auto
+    also have "\<dots> \<le> int (A * m)" using i by fastforce
+    finally show "\<parallel>F ! i\<parallel>\<^sup>2 \<le> int (A * m)" .
+    from FA have "rat_of_nat (nat (sq_norm (F ! i))) \<le> rat_of_nat A" by simp
     also have "rat_of_nat (nat (sq_norm (F ! i))) = ?r (sq_norm (F ! i))" 
       using sq_norm_vec_ge_0[of "F ! i"] by auto
     also have "\<dots> = sq_norm (RAT F ! i)" unfolding sq_norm_of_int[symmetric] using G' i by auto
