@@ -7,12 +7,10 @@ imports
   "Complementation"
 begin
 
-  (* TODO: split this into refine and implement parts? *)
-
   type_synonym item = "nat \<times> bool"
-  (* TODO: inline? *)
   type_synonym 'state items = "'state \<rightharpoonup> item"
 
+  type_synonym state = "(nat \<times> item) list"
   abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"
   abbreviation "state_rel \<equiv> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
 
@@ -545,11 +543,11 @@ begin
 
   context
     fixes fi f
-    assumes fi[autoref_rules]: "(fi, f) \<in> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
+    assumes fi[autoref_rules]: "(fi, f) \<in> state_rel"
   begin
 
     private lemma [simp]: "finite (dom f)"
-      using list_map_rel_finite fi unfolding finite_map_rel_def by force
+      using list_map_rel_finite dflt_ahm_rel_finite_nat fi unfolding finite_map_rel_def by force
 
     schematic_goal refresh_6: "(?f :: ?'a, refresh_4 f) \<in> ?R"
       unfolding refresh_4_def by (autoref_monadic (plain))
@@ -558,29 +556,26 @@ begin
 
   concrete_definition refresh_6 uses refresh_6
 
-  lemma refresh_6_refine:
-    "(\<lambda> f. RETURN (refresh_6 f), refresh_4) \<in>
-    \<langle>nat_rel, item_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> nres_rel"
+  lemma refresh_6_refine: "(\<lambda> f. RETURN (refresh_6 f), refresh_4) \<in> state_rel \<rightarrow> \<langle>state_rel\<rangle> nres_rel"
     using refresh_6.refine by fast
 
   context
     fixes A :: "('label, nat) ba"
     fixes succi a fi f
     assumes succi[autoref_rules]: "(succi, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
-    assumes fi[autoref_rules]: "(fi, f) \<in> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
+    assumes fi[autoref_rules]: "(fi, f) \<in> state_rel"
   begin
 
     private lemma [simp]: "finite (succ A a p)"
       using list_set_rel_finite succi[param_fo] unfolding finite_set_rel_def by blast
-    private lemma [simp]: "finite (dom f)"
-      using list_map_rel_finite fi unfolding finite_map_rel_def by force
+    private lemma [simp]: "finite (dom f)" using fi by force
 
     private lemma [autoref_op_pat]: "succ A a \<equiv> OP (succ A a)" by simp
 
     private lemma [autoref_rules]: "(min, min) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by simp
 
     schematic_goal bounds_6: 
-      notes ty_REL[where R="\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel", autoref_tyrel] 
+      notes ty_REL[where R = "\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel", autoref_tyrel]
       shows "(?f :: ?'a, bounds_4 A a f) \<in> ?R"
       unfolding bounds_4_def merge_4_def sup_bool_def inf_nat_def by (autoref_monadic (plain))
 
@@ -590,7 +585,7 @@ begin
 
   lemma bounds_6_refine: "(si, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel \<Longrightarrow>
     (\<lambda> p. RETURN (bounds_6 si p), bounds_4 A a) \<in>
-    \<langle>nat_rel, item_rel\<rangle> list_map_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel\<rangle> nres_rel"
+    state_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel\<rangle> nres_rel"
     using bounds_6.refine by auto
 
   context
@@ -635,7 +630,7 @@ begin
     private lemmas [autoref_rules] = items_6.refine[OF ai]
 
     schematic_goal expand_map_get_6: "(?f, expand_map_get_5 A f) \<in>
-      \<langle>\<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
+      \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
       unfolding expand_map_get_5_def by (autoref_monadic (plain))
 
     lemmas [autoref_op_pat del] = UNION_pat
@@ -648,7 +643,7 @@ begin
     assumes "(ai, accepting A) \<in> nat_rel \<rightarrow> bool_rel"
     shows "(\<lambda> fi. RETURN (expand_map_get_6 ai fi),
       \<lambda> f. ASSUME (finite (dom f)) \<then> expand_map_get_5 A f) \<in>
-      \<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel \<rightarrow> \<langle>\<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
+      \<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel \<rightarrow> \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
     using expand_map_get_6.refine[OF assms] by auto
 
   context
@@ -660,7 +655,7 @@ begin
     fixes pi
     assumes Ai: "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
     assumes ai: "(ai, a) \<in> Id"
-    assumes pi[autoref_rules]: "(pi, p) \<in> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
+    assumes pi[autoref_rules]: "(pi, p) \<in> state_rel"
   begin
 
     private lemmas succi = bai_ba_param(4)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
@@ -684,8 +679,8 @@ begin
 
   lemma complement_succ_6_refine:
     "(RETURN \<circ>\<circ>\<circ> complement_succ_6, complement_succ_5) \<in>
-      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow> \<langle>nat_rel, item_rel\<rangle> list_map_rel \<rightarrow>
-      \<langle>\<langle>\<langle>nat_rel, item_rel\<rangle> list_map_rel\<rangle> list_set_rel\<rangle> nres_rel"
+      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow>
+      \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
     using complement_succ_6.refine unfolding comp_apply by parametricity
 
   context
@@ -701,19 +696,20 @@ begin
     private lemmas [autoref_rules] = bai_ba_param(3)[THEN fun_relD, OF Ai]
 
     schematic_goal complement_initial_6:
-      "(?f :: ?'a, {(Some \<circ> (const (2 * n, False))) |` initial A}) \<in> ?R"
+      "(?f, {(Some \<circ> (const (2 * n, False))) |` initial A}) \<in> \<langle>state_rel\<rangle> list_set_rel"
       by autoref
 
   end
 
   concrete_definition complement_initial_6 uses complement_initial_6
 
-  schematic_goal complement_accepting_6: "(?f :: ?'a, \<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c) \<in> ?R"
+  schematic_goal complement_accepting_6: "(?f, \<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c) \<in>
+    state_rel \<rightarrow> bool_rel"
     by autoref
 
   concrete_definition complement_accepting_6 uses complement_accepting_6
 
-  definition complement_6 :: "('label, nat) bai \<Rightarrow> nat \<Rightarrow> ('label, (nat \<times> item) list) bai" where
+  definition complement_6 :: "('label, nat) bai \<Rightarrow> nat \<Rightarrow> ('label, state) bai" where
     "complement_6 Ai ni \<equiv>
     \<lparr>
       alphabeti = alphabeti Ai,

@@ -55,7 +55,7 @@ begin
     then show ?thesis unfolding list_hash_def by this
   qed
 
-  definition state_hash :: "nat \<Rightarrow> (nat \<times> item) list \<Rightarrow> nat" where
+  definition state_hash :: "nat \<Rightarrow> Complementation_Implement.state \<Rightarrow> nat" where
     "state_hash n p \<equiv> nat_of_hashcode (list_hash p) mod n"
 
   lemma state_hash_bounded_hashcode[autoref_ga_rules]: "is_bounded_hashcode state_rel
@@ -103,21 +103,24 @@ begin
   qed
 
   definition s where
-    "s a p \<equiv> if p = 0
-      then (if a = ''a'' then [0, 1, 2] else [1])
+    "s n a p \<equiv> if p = 0
+      then (if a = ''a'' then [0 ..< n] else [1])
       else (if a = ''a'' then [1] else [])"
   definition Ai where
-    "Ai \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s, acceptingi = \<lambda> p. False \<rparr>"
+    "Ai n \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s n, acceptingi = \<lambda> p. False \<rparr>"
+
+  definition "test n \<equiv> length (transei (complement_impl (Ai n)))"
 
   (* TODO: look through code
-    - equality on maps needs a lot of lookups, make sure those are fast,
+    - equality on maps needs a lot of lookups, make sure those are fast (alternatively, use sorting)
     - make sure we don't use slow generic algorithms when fast specializations are possible *)
-  (* TODO: the reachability analysis should only be done once *)
-  export_code complement_impl in SML module_name Complementation
+  (* TODO: maybe we can also do some crude optimizations about reachability *)
+  (* TODO: this is actually faster with the bot hash function? why? *)
+  export_code complement_impl nat_of_integer integer_of_nat test
+    in SML module_name Complementation file "code/Complementation_Export.sml"
 
-  (* TODO: is it supposed to be this many states/transitions?
-    maybe we can also do some crude optimizations about reachability *)
-  value "length (transei (complement_impl Ai))"
-  (*value "length (remdups (map fst (transei (complement_impl Ai))))"*)
+  value "test (Suc (Suc (Suc 0)))"
+
+  thm to_baei_impl_def
 
 end

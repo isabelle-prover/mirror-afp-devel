@@ -172,27 +172,6 @@ begin
     finally show ?thesis by this
   qed
 
-  subsection {* Implementations for Maps Represented by Lists *}
-
-  lemma list_map_build:
-    assumes "(g, f) \<in> K \<rightarrow> V"
-    assumes "(xs, X) \<in> \<langle>K\<rangle> list_set_rel"
-    shows "(zip xs (map g xs), (Some \<circ> f) |` X) \<in> \<langle>K, V\<rangle> list_map_rel"
-  proof -
-    obtain ys where 1: "(xs, ys) \<in> \<langle>K\<rangle> list_rel" "X = set ys" "distinct ys"
-      using assms(2) unfolding list_set_rel_def relcomp_unfold in_br_conv by auto
-    show ?thesis
-    unfolding list_map_rel_def relcomp_unfold in_br_conv list_map_invar_def
-    unfolding mem_Collect_eq prod.case
-    proof (intro exI conjI ext)
-      show "(zip xs (map g xs), zip ys (map f ys)) \<in> \<langle>K \<times>\<^sub>r V\<rangle> list_rel"
-        using assms(1) 1(1) by parametricity
-      show "((Some \<circ> f) |` X) k = map_of (zip ys (map f ys)) k" for k
-        unfolding map_of_zip_map restrict_map_def 1(2) comp_apply by rule
-      show "(distinct \<circ> map fst) (zip ys (map f ys))" using 1(3) by simp
-    qed
-  qed
-
   subsection {* Autoref Setup *}
 
   (* TODO: inline this? *)
@@ -320,9 +299,36 @@ begin
         \<langle>\<langle>A, nat_rel\<rangle> Rm\<rangle> nres_rel" unfolding nres_rel_comp by simp
     qed
 
-    lemma list_map_build_autoref[autoref_rules]: "(\<lambda> g. map (\<lambda> x. (x, g x)), \<lambda> f X. (Some \<circ> f) |` X) \<in>
-      (K \<rightarrow> V) \<rightarrow> \<langle>K\<rangle> list_set_rel \<rightarrow> \<langle>K, V\<rangle> list_map_rel"
-      using list_map_build unfolding zip_map2 zip_same_conv_map map_map comp_apply prod.case by blast
+    definition gen_build where
+      "gen_build tol upd emp f X \<equiv> fold (\<lambda> x. upd x (f x)) (tol X) emp"
+
+    lemma gen_build[autoref_rules]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes to_list: "SIDE_GEN_ALGO (is_set_to_list A Rs tol)"
+      assumes empty: "GEN_OP emp op_map_empty (\<langle>A, B\<rangle> Rm)"
+      assumes update: "GEN_OP upd op_map_update (A \<rightarrow> B \<rightarrow> \<langle>A, B\<rangle> Rm \<rightarrow> \<langle>A, B\<rangle> Rm)"
+      shows "(\<lambda> f X. gen_build tol upd emp f X, \<lambda> f X. (Some \<circ> f) |` X) \<in>
+        (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle> Rs \<rightarrow> \<langle>A, B\<rangle> Rm"
+    proof (intro fun_relI)
+      note [unfolded autoref_tag_defs, param] = empty update
+      fix f g T S
+      assume 1[param]: "(g, f) \<in> A \<rightarrow> B" "(T, S) \<in> \<langle>A\<rangle> Rs"
+      obtain tsl' where
+        [param]: "(tol T, tsl') \<in> \<langle>A\<rangle>list_rel"
+        and IT': "RETURN tsl' \<le> it_to_sorted_list (\<lambda>_ _. True) S"
+        using to_list[unfolded autoref_tag_defs is_set_to_list_def] 1(2)
+        by (rule is_set_to_sorted_listE)
+      from IT' have 10: "S = set tsl'" "distinct tsl'" unfolding it_to_sorted_list_def by simp_all
+      have "gen_build tol upd emp g T = fold (\<lambda> x. upd x (g x)) (tol T) emp"
+        unfolding gen_build_def by rule
+      also have "(\<dots>, fold (\<lambda> x. op_map_update x (f x)) tsl' op_map_empty) \<in> \<langle>A, B\<rangle> Rm"
+        by parametricity
+      also have "fold (\<lambda> x. op_map_update x (f x)) tsl' m = m ++ (Some \<circ> f) |` S" for m
+        unfolding 10 op_map_update_def
+        by (induct tsl' arbitrary: m rule: rev_induct) (auto simp add: restrict_map_insert)
+      also have "op_map_empty ++ (Some \<circ> f) |` S = (Some \<circ> f) |` S" by simp
+      finally show "(gen_build tol upd emp g T, (Some \<circ> f) |` S) \<in> \<langle>A, B\<rangle> Rm" by this
+    qed
 
     (* TODO: do we really need stronger versions of all these small lemmata? *)
     lemma param_foldli:
