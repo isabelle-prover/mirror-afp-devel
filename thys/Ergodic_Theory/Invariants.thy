@@ -2,12 +2,11 @@
     License: BSD
 *)
 
+section \<open>The invariant sigma-algebra, Birkhoff theorem\<close>
+
 theory Invariants
-imports Recurrence "HOL-Probability.Conditional_Expectation"
+  imports Recurrence "HOL-Probability.Conditional_Expectation"
 begin
-
-
-section\<open>The invariant sigma-algebra, Birkhoff theorem\<close>
 
 subsection \<open>The sigma-algebra of invariant subsets\<close>
 
@@ -232,7 +231,7 @@ proof -
   then have "disjoint_family (\<lambda>n. (T^^n)--`A - (T^^(Suc n))--`A)" by (rule disjoint_family_Suc2[where ?A = "\<lambda>n. (T^^n)--`A"])
   moreover have "(T^^n)--`A - (T^^(Suc n))--`A = (T^^n)--`B" for n unfolding B_def Suc_eq_plus1 using T_vrestr_composed(3)[OF assms(1)] by auto
   ultimately have "disjoint_family (\<lambda>n. (T^^n)--` B)" by simp
-  then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0[OF \<open>B \<in> sets M\<close>])
+  then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0(1)[OF \<open>B \<in> sets M\<close>])
   then have "\<And>n. n > 0 \<Longrightarrow> (T^^n)-`B \<inter> B = {}" unfolding vimage_restr_def by (simp add: Int_assoc)
   then have "B \<in> null_sets M" using disjoint_then_null[OF \<open>B \<in> sets M\<close>] Int_commute by auto
   then show ?thesis unfolding B_def using assms(2) by (simp add: Diff_mono Un_absorb2)
@@ -248,7 +247,7 @@ proof -
   then have "disjoint_family (\<lambda>n. (T^^(Suc n))--`A - (T^^n)--`A)" by (rule disjoint_family_Suc[where ?A = "\<lambda>n. (T^^n)--`A"])
   moreover have "\<And>n. (T^^(Suc n))--`A - (T^^n)--`A = (T^^n)--`B" unfolding B_def Suc_eq_plus1 using T_vrestr_composed(3)[OF assms(1)] by auto
   ultimately have "disjoint_family (\<lambda>n. (T^^n)--` B)" by simp
-  then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0[OF \<open>B \<in> sets M\<close>])
+  then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0(1)[OF \<open>B \<in> sets M\<close>])
   then have "\<And>n. n > 0 \<Longrightarrow> (T^^n)-`B \<inter> B = {}" unfolding vimage_restr_def by (simp add: Int_assoc)
   then have "B \<in> null_sets M" using disjoint_then_null[OF \<open>B \<in> sets M\<close>] Int_commute by auto
   then show ?thesis unfolding B_def using assms(2) by (simp add: Diff_mono Un_absorb1)
@@ -308,14 +307,14 @@ next
   have [measurable]: "good_time \<in> measurable M (count_space UNIV)" unfolding good_time_def by measurable
   have [measurable]: "g \<in> borel_measurable M" unfolding g_def by measurable
 
-  {
-    fix x assume "x \<in> good_set"
-    then have a: "0 \<in> {n. (T^^n) x \<in> good_set}" by simp
+  have "f x = g x" if "x \<in> good_set" for x
+  proof -
+    have a: "0 \<in> {n. (T^^n) x \<in> good_set}" using that by simp
     have "good_time x = 0"
       unfolding good_time_def apply (intro cInf_eq_non_empty) using a by blast+
     moreover have "{n. (T^^n) x \<in> good_set} \<noteq> {}" using a by blast
-    ultimately have "f x = g x" unfolding g_def by auto
-  } note f_eq_g = this
+    ultimately show "f x = g x" unfolding g_def by auto
+  qed
   then have "AE x in M. f x = g x" using \<open>AE x in M. x \<in> good_set\<close> by auto
 
   have *: "f((T^^(Suc 0)) x) = f((T^^0) x)" if "x \<in> good_set" for x
@@ -326,7 +325,7 @@ next
   then have good_k: "\<And>x. x \<in> good_set \<Longrightarrow> (T^^k) x \<in> good_set \<and> f((T^^k) x) = f x" for k
       by (induction k, auto)
 
-  have "g(T x) = g x " if "x \<in> space M" for x
+  have "g(T x) = g x" if "x \<in> space M" for x
   proof (cases)
     assume *: "\<exists>n. (T^^n) (T x) \<in> good_set"
     define n where "n = Inf {n. (T^^n) (T x) \<in> good_set}"
@@ -888,7 +887,7 @@ proof -
     obtain k where "x \<in> F k" using H(2) by auto
     then have "infinite {n. (T^^n) x \<in> E k}"
       unfolding F_def recurrent_subset_infty_inf_returns by auto
-    with infinite_enumerate[OF this] obtain r :: "nat \<Rightarrow> nat" 
+    with infinite_enumerate[OF this] obtain r :: "nat \<Rightarrow> nat"
       where r: "strict_mono r" "\<And>n. r n \<in> {n. (T^^n) x \<in> E k}"
       by auto
     have A: "(\<lambda>n. k * (1/r n)) \<longlonglongrightarrow> real k * 0"
@@ -1303,7 +1302,7 @@ proof (rule conservative_mptI)
   define c where "c = (measure M Cx)/2"
   have "c > 0" unfolding c_def using Cxe(2) by (simp add: emeasure_eq_measure)
 
-  text\<open>We will apply Birkhoff theorem to show that most preimages of $C$ at time $n$ are contained in a cylinder
+  text \<open>We will apply Birkhoff theorem to show that most preimages of $C$ at time $n$ are contained in a cylinder
   of height roughly $r n$, for some suitably small $r$. How small $r$ should be to get a
   contradiction can be determined at the end of the proof. It turns out that the good condition
   is the following one -- this is by no means obvious now.\<close>
@@ -1502,7 +1501,7 @@ qed
 
 subsubsection \<open>Oscillations around the limit in Birkhoff theorem\<close>
 
-text\<open>In this paragraph, we prove that, in Birkhoff theorem with vanishing limit, the Birkhoff sums
+text \<open>In this paragraph, we prove that, in Birkhoff theorem with vanishing limit, the Birkhoff sums
 are infinitely many times arbitrarily close to $0$, both on the positive and the negative side.
 
 In the ergodic case, this statement implies for instance that if the Birkhoff sums of an integrable
@@ -1694,7 +1693,7 @@ qed
 
 subsubsection \<open>Conditional expectation for the induced map\<close>
 
-text\<open>Thanks to Birkhoff theorem, one can relate conditional expectations with respect to the invariant
+text \<open>Thanks to Birkhoff theorem, one can relate conditional expectations with respect to the invariant
 sigma algebra, for a map and for a corresponding induced map, as follows.\<close>
 
 proposition Invariants_cond_exp_induced_map:

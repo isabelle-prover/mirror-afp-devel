@@ -579,4 +579,9 @@ proof -
   show ?thesis unfolding 1 2 by (rule norm2_norm1_main_inequality)
 qed
 
+lemma sq_norm_smult_vec: "sq_norm ((c :: 'a :: {conjugatable_ring,comm_semiring_0}) \<cdot>\<^sub>v v) = (c * conjugate c) * sq_norm v" 
+  unfolding sq_norm_vec_as_cscalar_prod 
+  by (subst scalar_prod_smult_left, force, unfold conjugate_smult_vec, 
+    subst scalar_prod_smult_right, force, simp add: ac_simps)
+
 end

@@ -2,12 +2,14 @@
     License: BSD
 *)
 
+section \<open>Gromov hyperbolic spaces\<close>
 
 theory Gromov_Hyperbolicity
-  imports Isometries Hausdorff_Distance Metric_Completion
+  imports "HOL-Decision_Procs.Approximation" Isometries Hausdorff_Distance Metric_Completion
 begin
 
-section \<open>Gromov hyperbolic spaces\<close>
+hide_const (open) Approximation.Min
+hide_const (open) Approximation.Max
 
 subsection \<open>Definition, basic properties\<close>
 
@@ -391,7 +393,7 @@ proof (rule Gromov_hyperbolic_subsetI2)
   have "t + dist wy z = dist e wz + dist wy z"
     unfolding wz_def apply (auto intro!: geodesic_segment_param_in_geodesic_spaces(6)[symmetric])
     unfolding t_def by (auto, meson Gromov_product_le_dist(2) min.absorb_iff1 min.right_idem order.trans)
-  also have "... \<le> dist e wz  + (dist wy wz + dist wz z)"
+  also have "... \<le> dist e wz + (dist wy wz + dist wz z)"
     by (intro mono_intros)
   also have "... \<le> dist e wz + (delta + dist wz z)"
     using \<open>dist wy wz \<le> delta\<close> by (auto simp add: metric_space_class.dist_commute)
@@ -782,7 +784,7 @@ class Gromov_hyperbolic_space_geodesic = Gromov_hyperbolic_space + geodesic_spac
 
 proposition (in Gromov_hyperbolic_space_geodesic) lipschitz_path_close_to_geodesic:
   fixes c::"real \<Rightarrow> 'a"
-  assumes "lipschitz_on M {A..B} c"
+  assumes "M-lipschitz_on {A..B} c"
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
   shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
@@ -898,14 +900,14 @@ statement.\<close>
 
 proposition (in Gromov_hyperbolic_space_geodesic) lipschitz_path_close_to_geodesic':
   fixes c::"real \<Rightarrow> 'a"
-  assumes "lipschitz_on M {A..B} c"
+  assumes "M-lipschitz_on {A..B} c"
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
           "a > 0"
   shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a * (B-A))) + M/a"
 proof -
   define d where "d = c o (\<lambda>t. (1/a) * t)"
-  have *: "lipschitz_on (M * ((1/a)* 1)) {a * A..a * B} d"
+  have *: "(M * ((1/a)* 1))-lipschitz_on {a * A..a * B} d"
     unfolding d_def apply (rule lipschitz_on_compose, intro lipschitz_intros) using assms by auto
   have "d`{a * A..a * B} = c`{A..B}"
     unfolding d_def image_comp[symmetric]
@@ -929,29 +931,13 @@ Contrary to usual practice, we try to get an explicit constant for the upper bou
 although we do not try to get something particularly good. What the proof really
 gives is a bound of the form $K \lambda^2 (C + \delta \ln (\lambda (1+C)))$ for some explicit
 constant $K$. However, for convenience of use, we bound this from above by
-$K'\lambda^2 (C+\lambda+\delta^2)$ for some $K'$ -- we get $K'=81$.
+$K'\lambda^2 (C+\lambda+\delta^2)$ for some $K'$ -- we get $K' = 81$.
 
 We follow the proof in~\cite{bridson_haefliger}.\<close>
 
-text \<open>The next lemma is good enough for our purposes. -- the true value is $6.57$\<close>
-lemma ln_720_bound:
-  "ln (720::real) \<le> 20/3"
-proof -
-  text \<open>We go close enough to $1$ by taking the power $1/10$, and then use a series approximation.
-  In this proof, the rational approximations to real numbers have been chosen using continued
-  fractions expansion, to keep denominators small.\<close>
-  have "ln(720::real) \<le> ln((56/29)^10)"
-    apply (intro mono_intros) by (auto simp add: eval_nat_numeral)
-  also have "... = real 10 * ln (56/29)"
-    by (rule ln_realpow, auto)
-  also have "... \<le> real 10 * (2/3)"
-    using ln_approx_bounds[of "56/29" 2] by (simp add: eval_nat_numeral)
-  finally show ?thesis by simp
-qed
-
 theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem:
   fixes c::"real \<Rightarrow> 'a"
-  assumes "quasi_isometry_on lambda C {A..B} c"
+  assumes "lambda C-quasi_isometry_on {A..B} c"
   shows "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof -
   have C: "C \<ge> 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms] by auto
@@ -971,7 +957,7 @@ proof -
     then have *: "B - A \<le> 3 * lambda * C" using 2 unfolding dist_real_def by auto
     show ?thesis
     proof (rule hausdorff_distanceI2)
-      show "0 \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)" using delta_nonneg C by auto
+      show "0 \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)" using C by auto
       fix x assume "x \<in> c`{A..B}"
       then obtain t where t: "x = c t" "t \<in> {A..B}" by auto
       have "dist x (c A) \<le> lambda * dist t A + C"
@@ -1006,8 +992,8 @@ proof -
     case 3
     then obtain d where d: "continuous_on {A..B} d" "d A = c A" "d B = c B"
               "\<And>x. x \<in> {A..B} \<Longrightarrow> dist (c x) (d x) \<le> 5*C"
-              "quasi_isometry_on lambda (10 * C) {A..B} d"
-              "lipschitz_on (9 * lambda) {A..B} d"
+              "lambda (10 * C)-quasi_isometry_on {A..B} d"
+              "(9 * lambda)-lipschitz_on {A..B} d"
       using quasi_geodesic_made_lipschitz[OF assms] by auto
     have "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 5*C"
       apply (rule hausdorff_distance_vimage) using d C by auto
@@ -1180,7 +1166,7 @@ proof -
       qed
 
       have "(1/lambda) * dist um uM - (10 * C) \<le> dist (d um) (d uM)"
-        by (rule quasi_isometry_onD(2)[OF \<open>quasi_isometry_on lambda (10 * C) {A..B} d\<close> \<open>um \<in> {A..B}\<close> \<open>uM \<in> {A..B}\<close>])
+        by (rule quasi_isometry_onD(2)[OF \<open>lambda (10 * C)-quasi_isometry_on {A..B} d\<close> \<open>um \<in> {A..B}\<close> \<open>uM \<in> {A..B}\<close>])
       also have "... \<le> dist ym xm + dist xm x + dist x xM + dist xM yM"
         unfolding um(2)[symmetric] uM(2)[symmetric] by (rule dist_triangle5)
       also have "... \<le> D + (2*D) + (2*D) + D"
@@ -1207,31 +1193,31 @@ proof -
       finally have middle: "((\<lambda>t. um + sgn (uM - um) * (t - dist xm ym)) ` {dist xm ym..dist xm ym + \<bar>uM - um\<bar>}) \<subseteq> {A..B}"
         by simp
 
-      have "lipschitz_on (9 * lambda) {0..L} excursion"
+      have "(9 * lambda)-lipschitz_on {0..L} excursion"
       proof (unfold L_def, rule lipschitz_on_closed_Union[of "{{0..dist xm ym}, {dist xm ym..dist xm ym + abs(uM - um)}, {dist xm ym + abs(uM - um)..dist xm ym + abs(uM - um) + dist yM xM}}" _ "\<lambda> i. i"], auto)
         show "lambda \<ge> 0" using C by auto
 
-        have *: "lipschitz_on 1 {0..dist xm ym} (geodesic_segment_param {xm--ym} xm)"
+        have *: "1-lipschitz_on {0..dist xm ym} (geodesic_segment_param {xm--ym} xm)"
           by (rule isometry_on_lipschitz, simp)
-        have **: "lipschitz_on 1 {0..dist xm ym} excursion"
+        have **: "1-lipschitz_on {0..dist xm ym} excursion"
           using lipschitz_on_transform[OF * E1] by simp
-        show "lipschitz_on (9 * lambda) {0..dist xm ym} excursion"
+        show "(9 * lambda)-lipschitz_on {0..dist xm ym} excursion"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
 
-        have *: "lipschitz_on (1*(1+0)) {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM}
+        have *: "(1*(1+0))-lipschitz_on {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM}
                 ((geodesic_segment_param {yM--xM} yM) o (\<lambda>t. t - (dist xm ym + abs (uM -um))))"
           by (intro lipschitz_intros, rule isometry_on_lipschitz, auto)
-        have **: "lipschitz_on (1*(1+0)) {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
+        have **: "(1*(1+0))-lipschitz_on {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
           apply (rule lipschitz_on_transform[OF *]) using E3 unfolding comp_def by (auto simp add: algebra_simps)
-        show "lipschitz_on (9 * lambda) {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
+        show "(9 * lambda)-lipschitz_on {dist xm ym + \<bar>uM - um\<bar>..dist xm ym + \<bar>uM - um\<bar> + dist yM xM} excursion"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
 
-        have **: "lipschitz_on ((9 * lambda) * (0 + abs(sgn (uM - um)) * (1 + 0))) {dist xm ym..dist xm ym + abs(uM - um)} (d o (\<lambda>t. um + sgn(uM-um) * (t - dist xm ym)))"
+        have **: "((9 * lambda) * (0 + abs(sgn (uM - um)) * (1 + 0)))-lipschitz_on {dist xm ym..dist xm ym + abs(uM - um)} (d o (\<lambda>t. um + sgn(uM-um) * (t - dist xm ym)))"
           apply (intro lipschitz_intros, rule lipschitz_on_subset[OF _ middle])
-          using \<open>lipschitz_on (9 * lambda) {A..B} d\<close> by simp
-        have ***: "lipschitz_on (9 * lambda) {dist xm ym..dist xm ym + abs(uM - um)} (d o (\<lambda>t. um + sgn(uM-um) * (t - dist xm ym)))"
+          using \<open>(9 * lambda)-lipschitz_on {A..B} d\<close> by simp
+        have ***: "(9 * lambda)-lipschitz_on {dist xm ym..dist xm ym + abs(uM - um)} (d o (\<lambda>t. um + sgn(uM-um) * (t - dist xm ym)))"
           apply (rule lipschitz_on_mono[OF **]) using C by auto
-        show "lipschitz_on (9 * lambda) {dist xm ym..dist xm ym + abs(uM - um)} excursion"
+        show "(9 * lambda)-lipschitz_on {dist xm ym..dist xm ym + abs(uM - um)} excursion"
           apply (rule lipschitz_on_transform[OF ***]) using E2 by auto
       qed
 
@@ -1265,8 +1251,6 @@ proof -
         apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>D \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
       then have "ln (720 * lambda * lambda * (1+C/D)) \<ge> 0"
         apply (subst ln_ge_zero_iff) by auto
-      have "32 / (7 * ln 2) \<le> (12 * 27/(49::real))"
-        apply (auto simp add: divide_simps) using ln_approx_bounds[of 2 2]  by (simp add: eval_nat_numeral)
       define a where "a = 72 * lambda/D"
       have "a > 0" unfolding a_def using \<open>D \<ge> 1\<close> \<open>lambda \<ge> 1\<close> by auto
 
@@ -1274,7 +1258,7 @@ proof -
         unfolding infdist_def apply auto apply (rule cInf_greatest) using * by auto
       also have "... \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a * (L-0))) + (9 * lambda) / a"
       proof (rule lipschitz_path_close_to_geodesic'[of _ _ _ _ "geodesic_subsegment {c A--c B} (c A) tm tM"])
-        show "lipschitz_on (9 * lambda) {0..L} excursion" by fact
+        show "(9 * lambda)-lipschitz_on {0..L} excursion" by fact
         have *: "geodesic_subsegment {c A--c B} (c A) tm tM = geodesic_segment_param {c A--c B} (c A) ` {tm..tM} "
           apply (rule geodesic_subsegment(1)[of _ _ "c B"])
           using \<open>tm \<in> {0..dist (c A) (c B)}\<close> \<open>tM \<in> {0..dist (c A) (c B)}\<close> \<open>tm \<le> tM\<close> by auto
@@ -1284,7 +1268,7 @@ proof -
           unfolding E0 EL xm_def xM_def apply (rule geodesic_subsegment[of _ _ "c B"])
           using \<open>tm \<in> {0..dist (c A) (c B)}\<close> \<open>tM \<in> {0..dist (c A) (c B)}\<close> \<open>tm \<le> tM\<close> by auto
       qed (fact)
-      also have "... =  (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a *L)) + D/8"
+      also have "... = (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (a *L)) + D/8"
         unfolding a_def using \<open>D \<ge> 1\<close> \<open>lambda \<ge> 1\<close> by (simp add: algebra_simps)
       finally have "(7 * ln 2 / 32) * D \<le> deltaG(TYPE('a)) * max 0 (ln (a * L))"
         by (auto simp add: algebra_simps divide_simps)
@@ -1317,17 +1301,17 @@ proof -
       approximation $20/3$.\<close>
       also have "... \<le> (deltaG(TYPE('a))^2/2 + 1^2/2) * (20/3)
            + 2 * ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln lambda)^2 / 2) + ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln (1+C))^2 / 2)"
-        by (intro mono_intros ln_720_bound, auto)
+        by (intro mono_intros, auto, approximation 7)
       also have "... = (49/12) * deltaG(TYPE('a))^2 + 10/3 + 2 * (ln lambda)^2 + (ln (1+C))^2"
         by (auto simp add: algebra_simps)
       also have "... \<le> (49/12) * deltaG(TYPE('a))^2 + 10/3 + 2 * (2 * lambda - 2) + (2 * (1+C) - 2)"
-        apply (intro mono_intros)  using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+        apply (intro mono_intros) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
       also have "... \<le> 49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C"
         by auto
       finally have "D \<le> (32/ (7 * ln 2)) * (49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C)"
         by (auto simp add: divide_simps)
       also have "... \<le> (12 * 27/49) * (49/12 * deltaG(TYPE('a))^2 + 4 * lambda + 2 * C)"
-        apply (intro mono_intros, fact) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
+        apply (intro mono_intros, approximation 10) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
       also have "... \<le> 27 * deltaG(TYPE('a))^2 + 27 * lambda + 14 * C"
         using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
       finally show ?thesis by simp
@@ -1336,7 +1320,7 @@ proof -
     have first_step: "infdist y (d`{A..B}) \<le> D0" if "y \<in> {c A--c B}" for y
       using x(2)[OF that] D_bound unfolding D0_def D_def by auto
     have "1 * 1 + 4 * 0 + 27 * 0 \<le> D0"
-      unfolding D0_def  apply (intro mono_intros) using C delta_nonneg by auto
+      unfolding D0_def apply (intro mono_intros) using C delta_nonneg by auto
     then have "D0 > 0" by simp
     text \<open>This is the end of the first step, i.e., showing that $[c(A), c(B)]$ is included in
     the neighborhood of size $D0$ of the quasi-geodesic.\<close>
@@ -1533,8 +1517,8 @@ qed
 
 theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem2:
   fixes c d::"real \<Rightarrow> 'a"
-  assumes "quasi_isometry_on lambda C {A..B} c"
-          "quasi_isometry_on lambda C {A..B} d"
+  assumes "lambda C-quasi_isometry_on {A..B} c"
+          "lambda C-quasi_isometry_on {A..B} d"
           "c A = d A" "c B = d B"
   shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 162 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
 proof (cases "A \<le> B")
@@ -1545,7 +1529,7 @@ next
   case True
   have "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
     by (rule Morse_Gromov_theorem[OF assms(1)])
-  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le>  81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
+  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('a))^2)"
     unfolding \<open>c A = d A\<close> \<open>c B = d B\<close> apply (subst hausdorff_distance_sym)
     by (rule Morse_Gromov_theorem[OF assms(2)])
   moreover have "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> hausdorff_distance (c`{A..B}) {c A--c B} + hausdorff_distance {c A--c B} (d`{A..B})"
@@ -1561,12 +1545,12 @@ a geodesic segment in Hausdorff distance, as it is a quasi-geodesic.\<close>
 
 lemma geodesic_quasi_isometric_image:
   fixes f::"'a::metric_space \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry_on lambda C UNIV f"
+  assumes "lambda C-quasi_isometry_on UNIV f"
           "geodesic_segment_between G x y"
   shows "hausdorff_distance (f`G) {f x--f y} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
 proof -
   define c where "c = f o (geodesic_segment_param G x)"
-  have *: "quasi_isometry_on (1 * lambda) (0 * lambda + C) {0..dist x y} c"
+  have *: "(1 * lambda) (0 * lambda + C)-quasi_isometry_on {0..dist x y} c"
     unfolding c_def by (rule quasi_isometry_on_compose[where Y = UNIV], auto intro!: isometry_quasi_isometry_on simp add: assms)
   have "hausdorff_distance (c`{0..dist x y}) {c 0--c (dist x y)} \<le> 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
     apply (rule Morse_Gromov_theorem) using * by auto
@@ -1588,7 +1572,7 @@ distances by a bounded amount.\<close>
 
 lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit:
   fixes f::"'a::geodesic_space \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
+  assumes "lambda C-quasi_isometry f"
   shows "Gromov_hyperbolic_subset (656 * lambda^3 * (lambda + C + deltaG(TYPE('b))^2)) (UNIV::('a set))"
 proof -
   have C: "lambda \<ge> 1" "C \<ge> 0"
@@ -1685,7 +1669,7 @@ theorem Gromov_hyperbolic_invariant_under_quasi_isometry:
   assumes "quasi_isometric (UNIV::('a::geodesic_space) set) (UNIV::('b::Gromov_hyperbolic_space_geodesic) set)"
   shows "\<exists>delta. Gromov_hyperbolic_subset delta (UNIV::'a set)"
 proof -
-  obtain C lambda f where f: "quasi_isometry_between lambda C (UNIV::'a set) (UNIV::'b set) f"
+  obtain C lambda f where f: "lambda C-quasi_isometry_between (UNIV::'a set) (UNIV::'b set) f"
     using assms unfolding quasi_isometric_def by auto
   show ?thesis
     using Gromov_hyperbolic_invariant_under_quasi_isometry_explicit[OF quasi_isometry_betweenD(1)[OF f]] by blast
@@ -1964,7 +1948,7 @@ class Gromov_hyperbolic_space_0 = Gromov_hyperbolic_space +
 class Gromov_hyperbolic_space_0_geodesic = Gromov_hyperbolic_space_0 + geodesic_space
 
 text \<open>Isabelle does not accept cycles in the class graph. So, we will show that
-\verb+metric_tree_with_delta+ is a subclass of \verb+Gromov_hyperbolic_0_geodesic+, and
+\verb+metric_tree_with_delta+ is a subclass of \verb+Gromov_hyperbolic_space_0_geodesic+, and
 conversely that \verb+Gromov_hyperbolic_space_0_geodesic+ is a subclass of \verb+metric_tree+.
 
 In a tree, we have already proved that triangles are $0$-slim (the center is common to all sides

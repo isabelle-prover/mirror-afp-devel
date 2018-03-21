@@ -18,6 +18,19 @@ text \<open>
   We prove a number of basic geometric properties of triangles. All theorems hold
   in any real inner product space.
 \<close>
+subsection \<open>Thales' theorem\<close>
+
+theorem thales:
+  fixes A B C :: "'a :: real_inner"
+  assumes "dist B (midpoint A C) = dist A C / 2"
+  shows   "orthogonal (A - B) (C - B)"
+proof -
+  have "dist A C ^ 2 = dist B (midpoint A C) ^ 2 * 4"
+    by (subst assms) (simp add: field_simps power2_eq_square)
+  thus ?thesis
+    by (auto simp: orthogonal_def dist_norm power2_norm_eq_inner midpoint_def
+                   algebra_simps inner_commute)
+qed
 
 subsection \<open>Sine and cosine laws\<close>
 
@@ -299,7 +312,7 @@ lemma isosceles_triangle_converse:
 subsection\<open>Contributions by Lukas Bulwahn\<close>
   
 lemma Pythagoras:
-  fixes A B C :: "'a :: euclidean_space"
+  fixes A B C :: "'a :: real_inner"
   assumes "orthogonal (A - C) (B - C)"
   shows "(dist B C) ^ 2 + (dist C A) ^ 2 = (dist A B) ^ 2"
 proof -
@@ -310,14 +323,15 @@ proof -
 qed
 
 lemma isosceles_triangle_orthogonal_on_midpoint:
-  fixes A B C :: "'a::euclidean_space"
+  fixes A B C :: "'a :: euclidean_space"
   assumes "dist C A = dist C B"
   shows "orthogonal (C - midpoint A B) (A - midpoint A B)"
 proof (cases "A = B")
   assume "A \<noteq> B"
   let ?M = "midpoint A B"
-  have "angle A ?M C = pi - angle B ?M C"
-    using \<open>A \<noteq> B\<close> angle_inverse between_midpoint(1) midpoint_eq_endpoint by metis
+  from \<open>A \<noteq> B\<close> have "angle A ?M C = pi - angle B ?M C"
+    by (intro angle_inverse between_midpoint)
+       (auto simp: between_midpoint eq_commute[of _ "midpoint A B" for A B])
   moreover have "angle A ?M C = angle C ?M B"
   proof -
     have congruence: "congruent_triangle C A ?M C B ?M"

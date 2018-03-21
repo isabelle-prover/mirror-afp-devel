@@ -2,12 +2,11 @@
     License: BSD
 *)
 
-theory Gouezel_Karlsson
-imports Asymptotic_Density Kingman
-
-begin
-
 section \<open>Gouezel-Karlsson\<close>
+
+theory Gouezel_Karlsson
+  imports Asymptotic_Density Kingman
+begin
 
 text \<open>This section is devoted to the proof of the main ergodic result of
 the article "Subadditive and multiplicative ergodic theorems" by Gouezel and
@@ -28,20 +27,22 @@ vanishes almost everywhere, in the locale \verb+Gouezel_Karlsson_Kingman+.
 The final result is proved by an easy reduction to this case.
 
 The main steps of the proof are as follows:
-- assume first that the map is invertible, and consider the inverse map and the corresponding
+\begin{itemize}
+\item assume first that the map is invertible, and consider the inverse map and the corresponding
 inverse subcocycle. With combinatorial arguments that only work for this inverse subcocycle, we
 control the density of bad times given some allowed error $d>0$, in a precise quantitative way, in
 Lemmas~\verb+upper_density_all_times+ and~\verb+upper_density_large_k+. We put these estimates
 together in Lemma~\verb+upper_density_delta+.
-- These estimates are then transfered to the original time direction and the original subcocycle in
+\item These estimates are then transfered to the original time direction and the original subcocycle in
 Lemma~\verb+upper_density_good_direction_invertible+. The fact that we have quantitative estimates
 in terms of asymptotic densities is central here, just having some infiniteness statement would not be
 enough.
-- The invertibility assumption is removed in Lemma~\verb+upper_density_good_direction+ by
+\item The invertibility assumption is removed in Lemma~\verb+upper_density_good_direction+ by
 using the result in the natural extension.
-- Finally, the main result is deduced in Lemma~\verb+infinite_AE+ (still assuming that the
+\item Finally, the main result is deduced in Lemma~\verb+infinite_AE+ (still assuming that the
 asymptotic limit vanishes almost everywhere), and in full generality in
 Theorem~\verb+Gouezel_Karlsson_Kingman+.
+\end{itemize}
 \<close>
 
 
@@ -59,7 +60,7 @@ proof -
     fix x assume "x \<in> G"
     then have "x \<in> space M" unfolding G_def by simp
     have "eventually (\<lambda>n. card({n. P x n} \<inter> {..<n}) < a * n) sequentially"
-      using \<open>x \<in> G\<close> unfolding G_def using upper_asymptotic_density_event1 by auto
+      using \<open>x \<in> G\<close> unfolding G_def using upper_asymptotic_densityD by auto
     then obtain N where "\<And>n. n \<ge> N \<Longrightarrow> card({n. P x n} \<inter> {..<n}) < a * n"
       using eventually_sequentially by auto
     then have "x \<in> H N" unfolding H_def using \<open>x \<in> space M\<close> by auto
@@ -1245,7 +1246,7 @@ proof -
     define A where "A = {n. \<forall>l \<in> {1..n}. u n x - u (n-l) ((T^^l) x) > - delta l * l}"
     have "upper_asymptotic_density A < 1-d" using H unfolding A_def by simp
     then have "\<exists>i. \<forall>N\<ge>i. card (A \<inter> {..<N}) \<le> (1-d)* real N"
-      using upper_asymptotic_density_event1[of A "1-d"] by (metis (no_types, lifting) eventually_sequentially less_imp_le)
+      using upper_asymptotic_densityD[of A "1-d"] by (metis (no_types, lifting) eventually_sequentially less_imp_le)
     then obtain i where "card (A \<inter> {..<N}) \<le> (1-d)* real N" if "N\<ge>i" for N by blast
     moreover have "A \<inter> {..<N} = {n. n<N \<and> (\<forall>l \<in> {1..n}. u n x - u (n-l) ((T^^l) x) > - delta l * l)}" for N
       unfolding A_def by auto
@@ -1429,7 +1430,7 @@ proof -
   have [simp]: "projJ \<in> measure_preserving M MJ" using mpt_factorE(1)[OF *] by simp
   then have [measurable]: "projJ \<in> measurable M MJ" by (simp add: measure_preservingE(1))
 
-  text\<open>We define a subcocycle $uJ$ in the projection corresponding to the original
+  text \<open>We define a subcocycle $uJ$ in the projection corresponding to the original
         subcocycle $u$ above. (With the natural definition, it is only a subcocycle almost
         everywhere.) We check that it shares most properties of $u$.\<close>
 
@@ -1511,7 +1512,7 @@ proof -
     apply (rule quasi_measure_preserving_AE[OF measure_preserving_is_quasi_measure_preserving[OF \<open>projI \<in> measure_preserving MI MJ\<close>]])
     using uJ_0 by simp
 
-  text\<open>As $uI$ is only a subcocycle almost everywhere, we correct it to get a genuine subcocycle,
+  text \<open>As $uI$ is only a subcocycle almost everywhere, we correct it to get a genuine subcocycle,
         to which we will apply Lemma \verb+upper_density_good_direction_invertible+.\<close>
 
   obtain vI where H: "I.subcocycle vI" "AE x in MI. \<forall>n. vI n x = uI n x"
@@ -1539,7 +1540,7 @@ proof -
       "emeasure MI {x \<in> space MI. upper_asymptotic_density {n. \<forall>l\<in>{1..n}. - delta l * real l < vI n x - vI (n - l) ((TI ^^ l) x)} \<ge> 1 - d } \<ge> 1 - d"
     using GKK.upper_density_good_direction_invertible[OF \<open>I.invertible_qmpt\<close> \<open>d>0\<close> \<open>d\<le>1\<close>] by blast
 
-  text\<open>Then, we need to go back to the original system, showing that the estimates for $TI$ carry
+  text \<open>Then, we need to go back to the original system, showing that the estimates for $TI$ carry
         over. First, we go to $TJ$.\<close>
 
   have BJ: "emeasure MJ {x \<in> space MJ. upper_asymptotic_density {n. \<forall>l\<in>{1..n}. - delta l * real l < uJ n x - uJ (n - l) ((TJ ^^ l) x)} \<ge> 1 - d } \<ge> 1 - d"
@@ -1805,6 +1806,4 @@ proof -
     using Gouezel_Karlsson_Kingman[OF assms] kingman_theorem_nonergodic(1)[OF assms] by auto
 qed
 
-
-
-end
+end (*of Gouezel_Karlsson.thy*)

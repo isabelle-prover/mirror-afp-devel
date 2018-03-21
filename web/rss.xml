@@ -9,7 +9,37 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
+    <pubDate>13 Mar 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Weight-Balanced Trees</title>
+              <link>https://www.isa-afp.org/entries/Weight_Balanced_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Weight_Balanced_Trees.html</guid>
+       <dc:creator> Tobias Nipkow, Stefan Dirix       </dc:creator>
+       <pubDate>13 Mar 2018 00:00:00 +0000</pubDate>
+       <description>
+This theory provides a verified implementation of weight-balanced
+trees following the work of &lt;a
+href=&#34;https://doi.org/10.1017/S0956796811000104&#34;&gt;Hirai
+and Yamamoto&lt;/a&gt; who proved that all parameters in a certain
+range are valid, i.e. guarantee that insertion and deletion preserve
+weight-balance. Instead of a general theorem we provide parameterized
+proofs of preservation of the invariant that work for many (all?)
+valid parameters.</description>
+    </item>
+    <item>
+       <title>CakeML</title>
+              <link>https://www.isa-afp.org/entries/CakeML.html</link>
+       <guid>https://www.isa-afp.org/entries/CakeML.html</guid>
+       <dc:creator> Lars Hupel       </dc:creator>
+       <pubDate>12 Mar 2018 00:00:00 +0000</pubDate>
+       <description>
+CakeML is a functional programming language with a proven-correct
+compiler and runtime system. This entry contains an unofficial version
+of the CakeML semantics that has been exported from the Lem
+specifications to Isabelle. Additionally, there are some hand-written
+theory files that adapt the exported code to Isabelle and port proofs
+from the HOL4 formalization, e.g. termination and equivalence proofs.</description>
+    </item>
     <item>
        <title>A Theory of Architectural Design Patterns</title>
               <link>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</link>
@@ -534,48 +564,6 @@ Isabelle &amp;ndash; such as formal power series and polynomial
 factorisation algorithms &amp;ndash; to develop a theory of these
 recurrences and derive a fully executable solver for them that can be
 exported to programming languages like Haskell. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Dirichlet Series</title>
-              <link>https://www.isa-afp.org/entries/Dirichlet_Series.html</link>
-       <guid>https://www.isa-afp.org/entries/Dirichlet_Series.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry is a formalisation of much of Chapters 2, 3, and 11 of
-Apostol&#39;s &amp;ldquo;Introduction to Analytic Number
-Theory&amp;rdquo;. This includes: &lt;ul&gt; &lt;li&gt;Definitions and
-basic properties for several number-theoretic functions (Euler&#39;s
-&amp;phi;, M&amp;ouml;bius &amp;mu;, Liouville&#39;s &amp;lambda;,
-the divisor function &amp;sigma;, von Mangoldt&#39;s
-&amp;Lambda;)&lt;/li&gt; &lt;li&gt;Executable code for most of these
-functions, the most efficient implementations using the factoring
-algorithm by Thiemann &lt;i&gt;et al.&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;Dirichlet products and formal Dirichlet series&lt;/li&gt;
-&lt;li&gt;Analytic results connecting convergent formal Dirichlet
-series to complex functions&lt;/li&gt; &lt;li&gt;Euler product
-expansions&lt;/li&gt; &lt;li&gt;Asymptotic estimates of
-number-theoretic functions including the density of squarefree
-integers and the average number of divisors of a natural
-number&lt;/li&gt; &lt;/ul&gt; These results are useful as a basis for
-developing more number-theoretic results, such as the Prime Number
-Theorem.</description>
-    </item>
-    <item>
-       <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument</title>
-              <link>https://www.isa-afp.org/entries/Lowe_Ontological_Argument.html</link>
-       <guid>https://www.isa-afp.org/entries/Lowe_Ontological_Argument.html</guid>
-       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
-       <pubDate>21 Sep 2017 00:00:00 +0000</pubDate>
-       <description>
-Computers may help us to understand --not just verify-- philosophical
-arguments. By utilizing modern proof assistants in an iterative
-interpretive process, we can reconstruct and assess an argument by
-fully formal means. Through the mechanization of a variant of St.
-Anselm&#39;s ontological argument by E. J. Lowe, which is a
-paradigmatic example of a natural-language argument with strong ties
-to metaphysics and religion, we offer an ideal showcase for our
-computer-assisted interpretive method.</description>
     </item>
   </channel>
 </rss>

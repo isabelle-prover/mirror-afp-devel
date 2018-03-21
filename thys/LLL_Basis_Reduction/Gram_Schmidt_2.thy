@@ -708,7 +708,7 @@ proof (induct k)
       smult_scalar_prod_distrib[OF gsk gsk]
     unfolding Suc(1)[OF kn]
     by (simp add: 0 comm_scalar_prod[OF v2 v1])
-qed auto    
+qed auto  
 end
 
 
@@ -764,6 +764,33 @@ proof -
   qed
 qed
 
+lemma orthocompl_span:
+  assumes "\<And> x. x \<in> S \<Longrightarrow> v \<bullet> x = 0" "S \<subseteq> carrier_vec n" and [intro]: "v \<in> carrier_vec n"
+  and "y \<in> span S" 
+  shows "v \<bullet> y = 0"
+proof -
+  {fix a A
+   assume "y = lincomb a A" "finite A" "A \<subseteq> S"
+   note assms = assms this
+   hence [intro!]:"lincomb a A \<in> carrier_vec n" "(\<lambda>v. a v \<cdot>\<^sub>v v) \<in> A \<rightarrow> carrier_vec n" by auto
+   have "\<forall>x\<in>A. (a x \<cdot>\<^sub>v x) \<bullet> v = 0" proof fix x assume "x \<in> A" note assms = assms this
+     hence x:"x \<in> S" by auto
+     with assms have [intro]:"x \<in> carrier_vec n" by auto
+     from assms(1)[OF x] have "x \<bullet> v = 0" by(subst comm_scalar_prod) force+
+     thus "(a x \<cdot>\<^sub>v x) \<bullet> v = 0"
+       apply(subst smult_scalar_prod_distrib) by force+
+   qed
+   hence "v \<bullet> lincomb a A = 0" apply(subst comm_scalar_prod) apply force+ unfolding lincomb_def
+     apply(subst finsum_scalar_prod_sum) by force+
+  }
+  thus ?thesis using \<open>y \<in> span S\<close> unfolding span_def by auto
+qed
+
+lemma orthogonal_sumlist:
+  assumes ortho: "\<And> x. x \<in> set S \<Longrightarrow> v \<bullet> x = 0" and S: "set S \<subseteq> carrier_vec n" and v: "v \<in> carrier_vec n"
+  shows "v \<bullet> sumlist S = 0"
+  by (rule orthocompl_span[OF ortho S v sumlist_in_span[OF S span_mem[OF S]]])
+
 lemma projection_alt_def:
   assumes carr:"(W::'a vec set) \<subseteq> carrier_vec n" "x \<in> carrier_vec n"
       and alt1:"y1 \<in> W" "x - y1 \<in> orthogonal_complement W"
@@ -807,6 +834,29 @@ definition strictly_reduced :: "nat \<Rightarrow> 'a \<Rightarrow> 'a vec list \
 
 definition
   "is_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
+
+lemma is_projection_sq_norm: assumes "is_projection w S v"
+  and S: "S \<subseteq> carrier_vec n" 
+  and v: "v \<in> carrier_vec n" 
+shows "sq_norm w \<le> sq_norm v" 
+proof -
+  from assms[unfolded is_projection_def]
+  have w: "w \<in> carrier_vec n" 
+    and vw: "v - w \<in> span S" and ortho: "\<And> u. u \<in> S \<Longrightarrow> w \<bullet> u = 0" by auto
+  have "sq_norm v = sq_norm ((v - w) + w)" using v w 
+    by (intro arg_cong[of _ _ sq_norm_vec], auto)
+  also have "\<dots> = ((v - w) + w) \<bullet> ((v - w) + w)" unfolding sq_norm_vec_as_cscalar_prod
+    by simp
+  also have "\<dots> = (v - w) \<bullet> ((v - w) + w) + w \<bullet> ((v - w) + w)" 
+    by (rule add_scalar_prod_distrib, insert v w, auto)
+  also have "\<dots> = ((v - w) \<bullet> (v - w) + (v - w) \<bullet> w) + (w \<bullet> (v - w) + w \<bullet> w)" 
+    by (subst (1 2) scalar_prod_add_distrib, insert v w, auto)
+  also have "\<dots> = sq_norm (v - w) + 2 * (w \<bullet> (v - w)) + sq_norm w" 
+    unfolding sq_norm_vec_as_cscalar_prod using v w by (auto simp: comm_scalar_prod[of w _ "v - w"])
+  also have "\<dots> \<ge> 2 * (w \<bullet> (v - w)) + sq_norm w" using sq_norm_vec_ge_0[of "v - w"] by auto
+  also have "w \<bullet> (v - w) = 0" using orthocompl_span[OF ortho S w vw] by auto
+  finally show ?thesis by auto
+qed
 
 definition projection where
 "projection S fi \<equiv> (SOME v. is_projection v S fi)"
@@ -1334,28 +1384,6 @@ proof
   show "fs ! i - gso i = lincomb ?a ?A" unfolding lincomb_def gso.simps[of i] id
     by (rule eq_vecI, auto)
 qed auto
-
-lemma orthocompl_span:
-  assumes "\<And> x. x \<in> S \<Longrightarrow> v \<bullet> x = 0" "S \<subseteq> carrier_vec n" and [intro]: "v \<in> carrier_vec n"
-  and "y \<in> span S" 
-  shows "v \<bullet> y = 0"
-proof -
-  {fix a A
-   assume "y = lincomb a A" "finite A" "A \<subseteq> S"
-   note assms = assms this
-   hence [intro!]:"lincomb a A \<in> carrier_vec n" "(\<lambda>v. a v \<cdot>\<^sub>v v) \<in> A \<rightarrow> carrier_vec n" by auto
-   have "\<forall>x\<in>A. (a x \<cdot>\<^sub>v x) \<bullet> v = 0" proof fix x assume "x \<in> A" note assms = assms this
-     hence x:"x \<in> S" by auto
-     with assms have [intro]:"x \<in> carrier_vec n" by auto
-     from assms(1)[OF x] have "x \<bullet> v = 0" by(subst comm_scalar_prod) force+
-     thus "(a x \<cdot>\<^sub>v x) \<bullet> v = 0"
-       apply(subst smult_scalar_prod_distrib) by force+
-   qed
-   hence "v \<bullet> lincomb a A = 0" apply(subst comm_scalar_prod) apply force+ unfolding lincomb_def
-     apply(subst finsum_scalar_prod_sum) by force+
-  }
-  thus ?thesis using \<open>y \<in> span S\<close> unfolding span_def by auto
-qed
 
 lemma projection_unique:
   assumes "i < m" 

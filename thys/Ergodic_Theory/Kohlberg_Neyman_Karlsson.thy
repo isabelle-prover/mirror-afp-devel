@@ -2,17 +2,15 @@
     License: BSD
 *)
 
+section \<open>A theorem by Kohlberg and Neyman\<close>
 
 theory Kohlberg_Neyman_Karlsson
   imports Fekete
-
 begin
-
-section\<open>A theorem by Kohlberg and Neyman\<close>
 
 text \<open>In this section, we prove a theorem due to Kohlberg and Neyman: given a semicontraction
 $T$ of a euclidean space, then $T^n(0)/n$ converges when $n \to \infty$. The proof we give
-is due to Karlsson. It mainly builds on subadditivity idea, the geometry of the space
+is due to Karlsson. It mainly builds on subadditivity ideas. The geometry of the space
 is essentially not relevant except at the very end of the argument, where strict convexity
 comes into play.\<close>
 
@@ -27,7 +25,7 @@ lemma fekete:
   shows "(\<lambda>n. u n/n) \<longlonglongrightarrow> Inf {u n/n | n. n>0}"
 apply (rule subadditive_converges_bounded) unfolding subadditive_def using assms by auto
 
-text\<open>A real sequence tending to infinity has infinitely many high-scores, i.e.,
+text \<open>A real sequence tending to infinity has infinitely many high-scores, i.e.,
 there are infinitely many times where it is larger than all its previous values.\<close>
 
 lemma high_scores:
@@ -253,7 +251,7 @@ qed
 
 end
 
-end
+end (*of Kolberg_Neyman_Karlsson.thy*)
 
 
 

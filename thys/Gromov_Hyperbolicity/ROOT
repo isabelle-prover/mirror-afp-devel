@@ -4,6 +4,7 @@ session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Cardinals"
+    "HOL-Decision_Procs"
   theories
     Library_Complements
     Eexp_Eln

@@ -19,7 +19,7 @@ d(x,y)$. What is not clear, however, is if $\tilde d(x,y)$ can be zero if $x \ne
 generally how one can bound $\tilde d$ from below. The main point of this contruction is that,
 if $d$ satisfies the inequality $d(x,z) \leq \sqrt{2} \max(d(x,y), d(y,z))$, then one
 has $\tilde d(x,y) \geq d(x,y)/2$ (and in particular $\tilde d$ defines the same topology, the
-same set of Lipshcitz functions, and so on, as $d$).
+same set of Lipschitz functions, and so on, as $d$).
 
 This statement can be found in [Bourbaki, topologie generale, chapitre 10] or in
 [Ghys-de la Harpe] for instance. We follow their proof.
@@ -1481,7 +1481,7 @@ boundary correspond to equivalence classes of sequences whose mutual Gromov prod
 infinity. We show that this is compatible with our topology: the sequences that are in the equivalence
 class of a point on the boundary are exactly the sequences that converge to this point. This is also
 a direct consequence of the definitions, although the proof requires some unfolding (and playing
-with the hyperbolicity inequality several times.\<close>
+with the hyperbolicity inequality several times).\<close>
 
 text \<open>First, we show that a sequence in the equivalence class of $x$ converges to $x$.\<close>
 
@@ -2558,7 +2558,7 @@ qed
 
 lemma Gromov_converging_at_infinity_quasi_isometry:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
+  assumes "lambda C-quasi_isometry f"
   shows "Gromov_converging_at_boundary (\<lambda>n. f (u n)) \<longleftrightarrow> Gromov_converging_at_boundary u"
 proof
   assume "Gromov_converging_at_boundary u"
@@ -2609,7 +2609,7 @@ qed
 
 text \<open>We define the extension to the completion of a function $f: X \to Y$ where $X$ and $Y$
 are geodesic Gromov-hyperbolic spaces, as a function from $X \cup \partial X$ to $Y\cup \partial Y$,
-as follows. If $x$ is in the space, we just use $X$ (with the suitable coercions for the
+as follows. If $x$ is in the space, we just use $f(x)$ (with the suitable coercions for the
 definition). Otherwise, we wish to define $f(x)$ as the limit of $f(u_n)$ for all sequences tending
 to $x$. For the definition, we use one such sequence chosen arbitrarily (this is the role of
 \verb+rep_Gromov_completion x+ below, it is indeed a sequence in the space tending to $x$), and
@@ -2619,7 +2619,7 @@ but it will make no sense whatsoever).
 For quasi-isometries, we have indeed that $f(u_n)$ converges if $u_n$ converges to a boundary point,
 by \verb+Gromov_converging_at_infinity_quasi_isometry+, so this definition is meaningful. Moreover,
 continuity of the extension follows readily from this (modulo a suitable criterion for continuity
-based on sequences convergence, established in \verb+continuous_at_extension_sequentially'+.\<close>
+based on sequences convergence, established in \verb+continuous_at_extension_sequentially'+).\<close>
 
 definition Gromov_extension::"('a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic) \<Rightarrow> ('a Gromov_completion \<Rightarrow> 'b Gromov_completion)"
   where "Gromov_extension f x = (if x \<in> Gromov_boundary then lim (to_Gromov_completion o f o (rep_Gromov_completion x))
@@ -2631,7 +2631,7 @@ unfolding Gromov_extension_def by auto
 
 lemma Gromov_extension_boundary_to_boundary:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
+  assumes "lambda C-quasi_isometry f"
           "x \<in> Gromov_boundary"
   shows "(Gromov_extension f) x \<in> Gromov_boundary"
 proof -
@@ -2644,7 +2644,7 @@ qed
 
 proposition Gromov_extension_continuous:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
+  assumes "lambda C-quasi_isometry f"
           "x \<in> Gromov_boundary"
   shows "continuous (at x) (Gromov_extension f)"
 proof -
@@ -2678,7 +2678,7 @@ of a quasi-isometry to the boundary is a homeomorphism on its image.\<close>
 
 proposition Gromov_extension_homeo:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
+  assumes "lambda C-quasi_isometry f"
   shows "homeomorphism_on Gromov_boundary (Gromov_extension f)"
 proof (rule homeomorphism_on_extension_sequentially'[of "range to_Gromov_completion"])
   fix u and b::"'a Gromov_completion"
@@ -2724,7 +2724,7 @@ extension on the original point, proving the surjectivity.\<close>
 
 lemma Gromov_extension_onto:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry_between lambda C UNIV UNIV f"
+  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
           "y \<in> Gromov_boundary"
   shows "\<exists>x \<in> Gromov_boundary. Gromov_extension f x = y"
 proof -
@@ -2752,7 +2752,7 @@ qed
 
 lemma Gromov_extension_onto':
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry_between lambda C UNIV UNIV f"
+  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
   shows "(Gromov_extension f)`Gromov_boundary = Gromov_boundary"
 using Gromov_extension_onto[OF assms] Gromov_extension_boundary_to_boundary[OF quasi_isometry_betweenD(1)[OF assms]] by auto
 
@@ -2761,7 +2761,7 @@ homeomorphism of their boundaries.\<close>
 
 theorem Gromov_boundaries_homeomorphic:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry_between lambda C UNIV UNIV f"
+  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
   shows "(Gromov_boundary::'a Gromov_completion set) homeomorphic (Gromov_boundary::'b Gromov_completion set)"
 using Gromov_extension_homeo[OF quasi_isometry_betweenD(1)[OF assms]] Gromov_extension_onto'[OF assms]
 unfolding homeomorphic_def homeomorphism_on_def by auto

@@ -1,0 +1,53 @@
+chapter AFP
+
+session LEM (AFP) = "Word_Lib" +
+  options [timeout = 120]
+  sessions
+    "HOL-Library"
+  theories
+    "generated/Lem_pervasives"
+    "generated/Lem_pervasives_extra"
+    "generated/Lem_list_extra"
+    "generated/Lem_set_extra"
+    "generated/Lem_string"
+    "generated/Lem_string_extra"
+
+session CakeML_Prelim (AFP) = LEM +
+  options [timeout = 120]
+  sessions
+    Coinductive
+    IEEE_Floating_Point
+  theories
+    "Coinductive.Coinductive_List"
+    "IEEE_Floating_Point.FP64"
+
+session CakeML (AFP) = CakeML_Prelim +
+  options [timeout = 300]
+  theories
+    "doc/Doc_Generated"
+  theories
+    "generated/CakeML/Ast"
+    "generated/CakeML/AstAuxiliary"
+    "generated/CakeML/BigStep"
+    "generated/CakeML/Evaluate"
+    "generated/CakeML/Lib"
+    "generated/CakeML/LibAuxiliary"
+    "generated/CakeML/Namespace"
+    "generated/CakeML/NamespaceAuxiliary"
+    "generated/CakeML/PrimTypes"
+    "generated/CakeML/SemanticPrimitives"
+    "generated/CakeML/SemanticPrimitivesAuxiliary"
+    "generated/CakeML/SimpleIO"
+    "generated/CakeML/TypeSystem"
+    "generated/CakeML/TypeSystemAuxiliary"
+  theories
+    "doc/Doc_Proofs"
+  theories
+    Semantic_Extras
+    Evaluate_Termination
+    Evaluate_Clock
+    Big_Step_Determ
+    Big_Step_Total
+    Big_Step_Fun_Equiv
+  document_files
+    "root.tex"

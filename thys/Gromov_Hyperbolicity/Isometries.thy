@@ -2,12 +2,11 @@
     License: BSD
 *)
 
+section \<open>Isometries\<close>
 
 theory Isometries
   imports Library_Complements Hausdorff_Distance
 begin
-
-section \<open>Isometries\<close>
 
 text \<open>Isometries, i.e., functions that preserve distances, show up very often in mathematics.
 We introduce a dedicated definition, and show its basic properties.\<close>
@@ -37,11 +36,11 @@ using assms unfolding isometry_on_def by auto
 
 lemma
   assumes "isometry_on X f"
-  shows isometry_on_lipschitz: "lipschitz_on 1 X f"
+  shows isometry_on_lipschitz: "1-lipschitz_on X f"
     and isometry_on_uniformly_continuous: "uniformly_continuous_on X f"
     and isometry_on_continuous: "continuous_on X f"
 proof -
-  show "lipschitz_on 1 X f" apply (rule lipschitz_onI) using isometry_onD[OF assms] by auto
+  show "1-lipschitz_on X f" apply (rule lipschitz_onI) using isometry_onD[OF assms] by auto
   then show "uniformly_continuous_on X f" "continuous_on X f"
     using lipschitz_on_uniformly_continuous lipschitz_on_continuous_on by auto
 qed
@@ -1361,16 +1360,18 @@ is the only case of interest (any two bounded sets are quasi-isometric), we inco
 this requirement in the definition.\<close>
 
 definition quasi_isometry_on::"real \<Rightarrow> real \<Rightarrow> ('a::metric_space) set \<Rightarrow> ('a \<Rightarrow> ('b::metric_space)) \<Rightarrow> bool"
-  where "quasi_isometry_on lambda C X f = ((lambda \<ge> 1) \<and> (C \<ge> 0) \<and>
+  ("_ _ -quasi'_isometry'_on" [1000, 999])
+  where "lambda C-quasi_isometry_on X f = ((lambda \<ge> 1) \<and> (C \<ge> 0) \<and>
     (\<forall>x \<in> X. \<forall>y \<in> X. (dist (f x) (f y) \<le> lambda * dist x y + C \<and> dist (f x) (f y) \<ge> (1/lambda) * dist x y - C)))"
 
 abbreviation quasi_isometry :: "real \<Rightarrow> real \<Rightarrow> ('a::metric_space \<Rightarrow> 'b::metric_space) \<Rightarrow> bool"
-  where "quasi_isometry lambda C f \<equiv> quasi_isometry_on lambda C UNIV f"
+  ("_ _ -quasi'_isometry" [1000, 999])
+  where "quasi_isometry lambda C f \<equiv> lambda C-quasi_isometry_on UNIV f"
 
 subsection \<open>Basic properties of quasi-isometries\<close>
 
 lemma quasi_isometry_onD:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
   shows "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
         "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<ge> (1/lambda) * dist x y - C"
         "lambda \<ge> 1" "C \<ge> 0"
@@ -1380,17 +1381,17 @@ lemma quasi_isometry_onI [intro]:
   assumes "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
           "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<ge> (1/lambda) * dist x y - C"
           "lambda \<ge> 1" "C \<ge> 0"
-  shows "quasi_isometry_on lambda C X f"
+  shows "lambda C-quasi_isometry_on X f"
 using assms unfolding quasi_isometry_on_def by auto
 
 lemma isometry_quasi_isometry_on:
   assumes "isometry_on X f"
-  shows "quasi_isometry_on 1 0 X f"
+  shows "1 0-quasi_isometry_on X f"
 using assms unfolding isometry_on_def quasi_isometry_on_def by auto
 
 lemma quasi_isometry_on_change_params:
-  assumes "quasi_isometry_on lambda C X f" "mu \<ge> lambda" "D \<ge> C"
-  shows "quasi_isometry_on mu D X f"
+  assumes "lambda C-quasi_isometry_on X f" "mu \<ge> lambda" "D \<ge> C"
+  shows "mu D-quasi_isometry_on X f"
 proof (rule quasi_isometry_onI)
   have P1: "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
   then show P2: "mu \<ge> 1" "D \<ge> 0" using assms by auto
@@ -1409,16 +1410,16 @@ proof (rule quasi_isometry_onI)
 qed
 
 lemma quasi_isometry_on_subset:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
           "Y \<subseteq> X"
-  shows "quasi_isometry_on lambda C Y f"
+  shows "lambda C-quasi_isometry_on Y f"
 using assms unfolding quasi_isometry_on_def by auto
 
 lemma quasi_isometry_on_perturb:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
           "D \<ge> 0"
           "\<And>x. x \<in> X \<Longrightarrow> dist (f x) (g x) \<le> D"
-  shows "quasi_isometry_on lambda (C + 2 * D) X g"
+  shows "lambda (C + 2 * D)-quasi_isometry_on X g"
 proof (rule quasi_isometry_onI)
   show "lambda \<ge> 1" "C + 2 * D \<ge> 0" using \<open>D \<ge> 0\<close> quasi_isometry_onD[OF assms(1)] by auto
   fix x y assume *: "x \<in> X" "y \<in> X"
@@ -1433,10 +1434,10 @@ proof (rule quasi_isometry_onI)
 qed
 
 lemma quasi_isometry_on_compose:
-  assumes "quasi_isometry_on lambda C X f"
-          "quasi_isometry_on mu D Y g"
+  assumes "lambda C-quasi_isometry_on X f"
+          "mu D-quasi_isometry_on Y g"
           "f`X \<subseteq> Y"
-  shows "quasi_isometry_on (lambda * mu) (C * mu + D) X (g o f)"
+  shows "(lambda * mu) (C * mu + D)-quasi_isometry_on X (g o f)"
 proof (rule quasi_isometry_onI)
   have I: "lambda \<ge> 1" "C \<ge> 0" "mu \<ge> 1" "D \<ge> 0"
     using quasi_isometry_onD[OF assms(1)] quasi_isometry_onD[OF assms(2)] by auto
@@ -1465,7 +1466,7 @@ proof (rule quasi_isometry_onI)
 qed
 
 lemma quasi_isometry_on_bounded:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
           "bounded X"
   shows "bounded (f`X)"
 proof (cases "X = {}")
@@ -1489,14 +1490,14 @@ qed
 
 lemma quasi_isometry_on_empty:
   assumes "C \<ge> 0" "lambda \<ge> 1"
-  shows "quasi_isometry_on lambda C {} f"
+  shows "lambda C-quasi_isometry_on {} f"
 using assms unfolding quasi_isometry_on_def by auto
 
 text \<open>Quasi-isometries change the distance to a set by at most $\lambda \cdot + C$, this follows
 readily from the fact that this inequality holds pointwise.\<close>
 
 lemma quasi_isometry_on_infdist:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
           "w \<in> X"
           "S \<subseteq> X"
   shows "infdist (f w) (f`S) \<le> lambda * infdist w S + C"
@@ -1551,14 +1552,15 @@ whose (quasi)-inverse (which is non-unique) is given by the function integer par
 formalized in the next definition.\<close>
 
 definition quasi_isometry_between::"real \<Rightarrow> real \<Rightarrow> ('a::metric_space) set \<Rightarrow> ('b::metric_space) set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
-  where "quasi_isometry_between lambda C X Y f = ((quasi_isometry_on lambda C X f) \<and> (f`X \<subseteq> Y) \<and> (\<forall>y\<in>Y. \<exists>x\<in>X. dist (f x) y \<le> C))"
+  ("_ _ -quasi'_isometry'_between" [1000, 999])
+  where "lambda C-quasi_isometry_between X Y f = ((lambda C-quasi_isometry_on X f) \<and> (f`X \<subseteq> Y) \<and> (\<forall>y\<in>Y. \<exists>x\<in>X. dist (f x) y \<le> C))"
 
 definition quasi_isometric::"('a::metric_space) set \<Rightarrow> ('b::metric_space) set \<Rightarrow> bool"
-  where "quasi_isometric X Y = (\<exists>lambda C f. quasi_isometry_between lambda C X Y f)"
+  where "quasi_isometric X Y = (\<exists>lambda C f. lambda C-quasi_isometry_between X Y f)"
 
 lemma quasi_isometry_betweenD:
-  assumes "quasi_isometry_between lambda C X Y f"
-  shows "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_between X Y f"
+  shows "lambda C-quasi_isometry_on X f"
         "f`X \<subseteq> Y"
         "\<And>y. y \<in> Y \<Longrightarrow> \<exists>x\<in>X. dist (f x) y \<le> C"
         "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
@@ -1567,22 +1569,22 @@ lemma quasi_isometry_betweenD:
 using assms unfolding quasi_isometry_between_def quasi_isometry_on_def by auto
 
 lemma quasi_isometry_betweenI:
-  assumes "quasi_isometry_on lambda C X f"
+  assumes "lambda C-quasi_isometry_on X f"
           "f`X \<subseteq> Y"
           "\<And>y. y \<in> Y \<Longrightarrow> \<exists>x\<in>X. dist (f x) y \<le> C"
-  shows "quasi_isometry_between lambda C X Y f"
+  shows "lambda C-quasi_isometry_between X Y f"
 using assms unfolding quasi_isometry_between_def by auto
 
 lemma quasi_isometry_on_between:
-  assumes "quasi_isometry_on lambda C X f"
-  shows "quasi_isometry_between lambda C X (f`X) f"
+  assumes "lambda C-quasi_isometry_on X f"
+  shows "lambda C-quasi_isometry_between X (f`X) f"
 using assms unfolding quasi_isometry_between_def quasi_isometry_on_def by force
 
 lemma quasi_isometry_between_change_params:
-  assumes "quasi_isometry_between lambda C X Y f" "mu \<ge> lambda" "D \<ge> C"
-  shows "quasi_isometry_between mu D X Y f"
+  assumes "lambda C-quasi_isometry_between X Y f" "mu \<ge> lambda" "D \<ge> C"
+  shows "mu D-quasi_isometry_between X Y f"
 proof (rule quasi_isometry_betweenI)
-  show "quasi_isometry_on mu D X f"
+  show "mu D-quasi_isometry_on X f"
     by (rule quasi_isometry_on_change_params[OF quasi_isometry_betweenD(1)[OF assms(1)] assms(2) assms(3)])
   show "f`X \<subseteq> Y" using quasi_isometry_betweenD[OF assms(1)] by auto
   fix y assume "y \<in> Y"
@@ -1591,12 +1593,12 @@ qed
 
 lemma quasi_isometry_subset:
   assumes "X \<subseteq> Y" "\<And>y. y \<in> Y \<Longrightarrow> \<exists>x\<in>X. dist x y \<le> C" "C \<ge> 0"
-  shows "quasi_isometry_between 1 C X Y (\<lambda>x. x)"
+  shows "1 C-quasi_isometry_between X Y (\<lambda>x. x)"
 unfolding quasi_isometry_between_def using assms by auto
 
 proposition quasi_isometry_inverse:
-  assumes "quasi_isometry_between lambda C X Y f"
-  shows "\<exists>g. quasi_isometry_between lambda (3 * C * lambda) Y X g
+  assumes "lambda C-quasi_isometry_between X Y f"
+  shows "\<exists>g. lambda (3 * C * lambda)-quasi_isometry_between Y X g
           \<and> (\<forall>x\<in>X. dist x (g (f x)) \<le> 3 * C * lambda)
           \<and> (\<forall>y\<in>Y. dist y (f (g y)) \<le> 3 * C * lambda)"
 proof -
@@ -1623,7 +1625,7 @@ proof -
     finally show ?thesis by auto
   qed
 
-  have "quasi_isometry_on lambda (3 * C * lambda) Y g"
+  have "lambda (3 * C * lambda)-quasi_isometry_on Y g"
   proof (rule quasi_isometry_onI)
     show "lambda \<ge> 1" "3 * C * lambda \<ge> 0" using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
     fix y1 y2 assume inY: "y1 \<in> Y" "y2 \<in> Y"
@@ -1652,7 +1654,7 @@ proof -
     finally show "dist (g y1) (g y2) \<le> lambda * dist y1 y2 + 3 * C * lambda"
       using \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps algebra_simps)
   qed
-  then have "quasi_isometry_between lambda (3 * C * lambda) Y X g"
+  then have "lambda (3 * C * lambda)-quasi_isometry_between Y X g"
   proof (rule quasi_isometry_betweenI)
     show "g ` Y \<subseteq> X" using * by auto
     fix x assume "x \<in> X"
@@ -1664,14 +1666,14 @@ proof -
 qed
 
 proposition quasi_isometry_compose:
-  assumes "quasi_isometry_between lambda C X Y f"
-          "quasi_isometry_between mu D Y Z g"
-  shows "quasi_isometry_between (lambda * mu) (C * mu + 2 * D) X Z (g o f)"
+  assumes "lambda C-quasi_isometry_between X Y f"
+          "mu D-quasi_isometry_between Y Z g"
+  shows "(lambda * mu) (C * mu + 2 * D)-quasi_isometry_between X Z (g o f)"
 proof (rule quasi_isometry_betweenI)
-  have "quasi_isometry_on (lambda * mu) (C * mu + D) X (g \<circ> f)"
+  have "(lambda * mu) (C * mu + D)-quasi_isometry_on X (g \<circ> f)"
     by (rule quasi_isometry_on_compose[OF quasi_isometry_betweenD(1)[OF assms(1)]
         quasi_isometry_betweenD(1)[OF assms(2)] quasi_isometry_betweenD(2)[OF assms(1)]])
-  then show "quasi_isometry_on (lambda * mu) (C * mu + 2 * D) X (g \<circ> f)"
+  then show "(lambda * mu) (C * mu + 2 * D)-quasi_isometry_on X (g \<circ> f)"
     apply (rule quasi_isometry_on_change_params) using quasi_isometry_betweenD(7)[OF assms(2)] by auto
 
   show "(g \<circ> f) ` X \<subseteq> Z"
@@ -1724,7 +1726,7 @@ proof (cases "X = {}")
   show ?thesis using quasi_isometric_empty[OF True assms(2)] by auto
 next
   case False
-  obtain lambda C f where QI: "quasi_isometry_between lambda C X Y f"
+  obtain lambda C f where QI: "lambda C-quasi_isometry_between X Y f"
     using assms(2) unfolding quasi_isometric_def by auto
   obtain x where "x \<in> X" using False by auto
   obtain e where e: "\<And>z. z \<in> X \<Longrightarrow> dist x z \<le> e"
@@ -1756,10 +1758,10 @@ proof -
   have "D \<ge> 0" using D[OF \<open>x \<in> X\<close>] by auto
 
   define f::"'a \<Rightarrow> 'b" where "f = (\<lambda>_. y)"
-  have "quasi_isometry_between 1 (C + 2 * D) X Y f"
+  have "1 (C + 2 * D)-quasi_isometry_between X Y f"
   proof (rule quasi_isometry_betweenI)
     show "f`X \<subseteq> Y" unfolding f_def using \<open>y \<in> Y\<close> by auto
-    show "quasi_isometry_on 1 (C + 2 * D) X f"
+    show "1 (C + 2 * D)-quasi_isometry_on X f"
     proof (rule quasi_isometry_onI, auto simp add: \<open>C \<ge> 0\<close> \<open>D \<ge> 0\<close> f_def)
       fix a b assume "a \<in> X" "b \<in> X"
       have "dist a b \<le> dist a x + dist x b"
@@ -1977,7 +1979,7 @@ to map quasi-isometrically a Euclidean space in a space of strictly smaller dime
 
 proposition quasi_isometry_on_euclidean:
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes "quasi_isometry_on lambda C UNIV f"
+  assumes "lambda C-quasi_isometry_on UNIV f"
   shows "DIM('a) \<le> DIM('b)"
 proof -
   have C: "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms] by auto
@@ -2071,13 +2073,13 @@ theorem quasi_isometric_euclidean:
   assumes "quasi_isometric (UNIV::'a::euclidean_space set) (UNIV::'b::euclidean_space set)"
   shows "DIM('a) = DIM('b)"
 proof -
-  obtain lambda C and f::"'a \<Rightarrow>'b" where "quasi_isometry_on lambda C UNIV f"
+  obtain lambda C and f::"'a \<Rightarrow>'b" where "lambda C-quasi_isometry_on UNIV f"
     using assms unfolding quasi_isometric_def quasi_isometry_between_def by auto
   then have *: "DIM('a) \<le> DIM('b)" using quasi_isometry_on_euclidean by auto
 
   have "quasi_isometric (UNIV::'b::euclidean_space set) (UNIV::'a::euclidean_space set)"
     using quasi_isometric_equiv_rel(3)[OF assms] by auto
-  then obtain lambda C and f::"'b \<Rightarrow>'a" where "quasi_isometry_on lambda C UNIV f"
+  then obtain lambda C and f::"'b \<Rightarrow>'a" where "lambda C-quasi_isometry_on UNIV f"
     unfolding quasi_isometric_def quasi_isometry_between_def by auto
   then have "DIM('b) \<le> DIM('a)" using quasi_isometry_on_euclidean by auto
   then show ?thesis using * by auto
@@ -2132,7 +2134,7 @@ the details on the two delicate points above as they are not treated in this art
 
 lemma quasi_geodesic_good_partition:
   fixes c::"real \<Rightarrow> ('a::metric_space)"
-  assumes "quasi_isometry_on lambda C {a..b} c" "dist (c a) (c b) \<ge> 2 * C" "a < b" "Delta > 1" "Delta \<le> 2" "C>0"
+  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> 2 * C" "a < b" "Delta > 1" "Delta \<le> 2" "C>0"
   shows "\<exists>A. A \<subseteq> {a..b} \<and> finite A \<and> a \<in> A \<and> b \<in> A
             \<and> (\<forall>u \<in> A - {b}. dist (c u) (c (next_in A u)) \<le> 3 * Delta * C
                             \<and> dist (c u) (c (next_in A u)) \<ge> Delta * C)
@@ -2398,11 +2400,11 @@ trivial if the quasi-geodesic is short, so this is not a true limitation.\<close
 
 proposition (in geodesic_space) quasi_geodesic_made_lipschitz:
   fixes c::"real \<Rightarrow> 'a"
-  assumes "quasi_isometry_on lambda C {a..b} c" "dist (c a) (c b) \<ge> 2 * C"
+  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> 2 * C"
   shows "\<exists>d. continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
               \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 5 * C)
-              \<and> quasi_isometry_on lambda (10 * C) {a..b} d
-              \<and> lipschitz_on (9 * lambda) {a..b} d"
+              \<and> lambda (10 * C)-quasi_isometry_on {a..b} d
+              \<and> (9 * lambda)-lipschitz_on {a..b} d"
 proof -
   consider "C = 0" | "C > 0 \<and> b \<le> a" | "C > 0 \<and> a < b"
     using quasi_isometry_onD(4)[OF assms(1)] by fastforce
@@ -2410,16 +2412,16 @@ proof -
   proof (cases)
     text \<open>If the original function is Lipschitz, we can use it directly.\<close>
     case 1
-    have "lipschitz_on lambda {a..b} c"
+    have "lambda-lipschitz_on {a..b} c"
       apply (rule lipschitz_onI) using 1 quasi_isometry_onD[OF assms(1)] by auto
-    then have a: "lipschitz_on (9 * lambda) {a..b} c"
+    then have a: "(9 * lambda)-lipschitz_on {a..b} c"
       apply (rule lipschitz_on_mono) using quasi_isometry_onD[OF assms(1)] by auto
     then have b: "continuous_on {a..b} c"
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
-                \<and> quasi_isometry_on lambda (10*C) {a..b} c
-                \<and> lipschitz_on (9 * lambda) {a..b} c"
+                \<and> lambda (10*C)-quasi_isometry_on {a..b} c
+                \<and> (9 * lambda)-lipschitz_on {a..b} c"
       using 1 a b assms(1) by auto
     then show ?thesis by blast
   next
@@ -2427,14 +2429,14 @@ proof -
     case 2
     then have "b < a" using assms(2) less_eq_real_def by auto
     then have *: "{a..b} = {}" by auto
-    have a: "lipschitz_on (9 * lambda) {a..b} c"
+    have a: "(9 * lambda)-lipschitz_on {a..b} c"
       unfolding * apply (rule lipschitz_intros) using quasi_isometry_onD[OF assms(1)] by auto
     then have b: "continuous_on {a..b} c"
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
-                \<and> quasi_isometry_on lambda (10*C) {a..b} c
-                \<and> lipschitz_on (9 * lambda) {a..b} c"
+                \<and> lambda (10*C)-quasi_isometry_on {a..b} c
+                \<and> (9 * lambda)-lipschitz_on {a..b} c"
       using a b quasi_isometry_on_empty assms(1) quasi_isometry_onD[OF assms(1)] * by auto
     then show ?thesis by blast
   next
@@ -2491,20 +2493,20 @@ proof -
 
     text \<open>From the above formula, we deduce that $d$ is Lipschitz on those intervals.
     The good choice of $A$ is important here.\<close>
-    have lip: "lipschitz_on (9 * lambda) {u..next_in A u} d" if "u \<in> A - {b}" for u
+    have lip: "(9 * lambda)-lipschitz_on {u..next_in A u} d" if "u \<in> A - {b}" for u
     proof -
       define v where "v = next_in A u"
       have "u \<in> {a..<b}" using that \<open>A \<subseteq> {a..b}\<close> by fastforce
       have "u \<in> A" "v \<in> A" "u< v" "A \<inter> {u<..<v} = {}"
         unfolding v_def using that next_in_basics[OF A \<open>u \<in> {a..<b}\<close>] by auto
 
-      have "lipschitz_on (1 * ((9*lambda) * (1+0))) {u..v} (\<lambda>x. geodesic_segment_param {(c u)--(c v)} (c u) ((dist (c u) (c v) /(v-u)) * (x-u)))"
+      have "(1 * ((9*lambda) * (1+0)))-lipschitz_on {u..v} (\<lambda>x. geodesic_segment_param {(c u)--(c v)} (c u) ((dist (c u) (c v) /(v-u)) * (x-u)))"
       proof (rule lipschitz_on_compose2[of _ _ "\<lambda>x. ((dist (c u) (c v) /(v-u)) * (x-u))"], intro lipschitz_intros)
         have "(\<lambda>x. dist (c u) (c v) / (v - u) * (x - u)) ` {u..v} \<subseteq> {0..dist (c u) (c v)}"
           apply auto using \<open>u < v\<close> by (auto simp add: algebra_simps divide_simps intro: mult_right_mono)
-        moreover have "lipschitz_on 1 {0..dist (c u) (c v)} (geodesic_segment_param {c u--c v} (c u))"
+        moreover have "1-lipschitz_on {0..dist (c u) (c v)} (geodesic_segment_param {c u--c v} (c u))"
           by (rule isometry_on_lipschitz, simp)
-        ultimately show "lipschitz_on 1 ((\<lambda>x. dist (c u) (c v) / (v - u) * (x - u)) ` {u..v}) (geodesic_segment_param {c u--c v} (c u))"
+        ultimately show "1-lipschitz_on ((\<lambda>x. dist (c u) (c v) / (v - u) * (x - u)) ` {u..v}) (geodesic_segment_param {c u--c v} (c u))"
           using lipschitz_on_subset by auto
 
         have "Delta * C \<le> dist (c u) (c v)" using Abounds(2)[OF \<open>u \<in> A - {b}\<close>] v_def by auto
@@ -2536,7 +2538,7 @@ proof -
 
     text \<open>The Lipschitz continuity of $d$ now follows from its Lipschitz continuity on each
     subinterval in $I$.\<close>
-    have "lipschitz_on (9 * lambda) {a..b} d"
+    have "(9 * lambda)-lipschitz_on {a..b} d"
       apply (rule lipschitz_on_closed_Union[of "{{u..next_in A u} |u. u \<in> A - {b}}" _ "\<lambda>x. x"])
       using lip \<open>finite A\<close> C intervals_decomposition[OF A] by auto
     then have "continuous_on {a..b} d"
@@ -2566,17 +2568,17 @@ proof -
 
     text \<open>We deduce that $d$, as a bounded perturbation of the quasi-isometry $c$, is also a
     quasi-isometry (with explicit constants).\<close>
-    have "quasi_isometry_on lambda (C + 2 * (4 * Delta * C)) {a..b} d"
+    have "lambda (C + 2 * (4 * Delta * C))-quasi_isometry_on {a..b} d"
       apply (rule quasi_isometry_on_perturb[OF assms(1)])
       using dist_c_d C \<open>Delta > 1\<close> by auto
-    then have "quasi_isometry_on lambda (10*C) {a..b} d" unfolding Delta_def by auto
+    then have "lambda (10*C)-quasi_isometry_on {a..b} d" unfolding Delta_def by auto
 
     text \<open>We have proved that $d$ has all the properties we wanted.\<close>
     then have "continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
-          \<and> quasi_isometry_on lambda (10*C) {a..b} d
+          \<and> lambda (10*C)-quasi_isometry_on {a..b} d
           \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 5*C)
-          \<and> lipschitz_on (9*lambda) {a..b} d"
-      using dist_c_d2 \<open>continuous_on {a..b} d\<close> \<open>d a = c a\<close> \<open>d b = c b\<close> \<open>lipschitz_on (9*lambda) {a..b} d\<close> by auto
+          \<and> (9*lambda)-lipschitz_on {a..b} d"
+      using dist_c_d2 \<open>continuous_on {a..b} d\<close> \<open>d a = c a\<close> \<open>d b = c b\<close> \<open> (9*lambda)-lipschitz_on {a..b} d\<close> by auto
     then show ?thesis by auto
   qed
 qed

@@ -2,13 +2,13 @@
     License: BSD
 *)
 
+section \<open>Measure preserving or quasi-preserving maps\<close>
+
 theory Measure_Preserving_Transformations
-imports SG_Library_Complement
+  imports SG_Library_Complement
 begin
 
-section\<open>Measure preserving or quasi-preserving maps\<close>
-
-text\<open>Ergodic theory in general is the study of the properties of measure preserving or
+text \<open>Ergodic theory in general is the study of the properties of measure preserving or
 quasi-preserving dynamical systems. In this section, we introduce the basic definitions
 in this respect.\<close>
 
@@ -100,6 +100,38 @@ proof -
   then show ?thesis unfolding U_def using AE_iff_null by blast
 qed
 
+text \<open>The push-forward under a quasi-measure preserving map $f$ of a measure absolutely
+continuous with respect to $M$ is absolutely continuous with respect to $N$.\<close>
+lemma quasi_measure_preserving_absolutely_continuous:
+  assumes "f \<in> quasi_measure_preserving M N"
+          "u \<in> borel_measurable M"
+  shows "absolutely_continuous N (distr (density M u) N f)"
+proof -
+  have [measurable]: "f \<in> measurable M N" using quasi_measure_preservingE[OF assms(1)] by auto
+  have "S \<in> null_sets (distr (density M u) N f)" if [measurable]: "S \<in> null_sets N" for S
+  proof -
+    have [measurable]: "S \<in> sets N" using null_setsD2[OF that] by auto
+    have *: "AE x in N. x \<notin> S"
+      by (metis AE_not_in that)
+    have "AE x in M. f x \<notin> S"
+      by (rule quasi_measure_preserving_AE[OF _ *], simp add: assms)
+    then have *: "AE x in M. indicator S (f x) * u x = 0"
+      by force
+
+    have "emeasure (distr (density M u) N f) S = (\<integral>\<^sup>+x. indicator S x \<partial>(distr (density M u) N f))"
+      by auto
+    also have "... = (\<integral>\<^sup>+x. indicator S (f x) \<partial>(density M u))"
+      by (rule nn_integral_distr, auto)
+    also have "... = (\<integral>\<^sup>+x. indicator S (f x) * u x \<partial>M)"
+      by (rule nn_integral_densityR[symmetric], auto simp add: assms)
+    also have "... = (\<integral>\<^sup>+x. 0 \<partial>M)"
+      using * by (rule nn_integral_cong_AE)
+    finally have "emeasure (distr (density M u) N f) S = 0" by auto
+    then show ?thesis by auto
+  qed
+  then show ?thesis unfolding absolutely_continuous_def by auto
+qed
+
 definition measure_preserving::"'a measure \<Rightarrow> 'b measure \<Rightarrow> ('a \<Rightarrow> 'b) set"
   where "measure_preserving M N
           = {f \<in> measurable M N. (\<forall> A \<in> sets N. emeasure M (f-`A \<inter> space M) = emeasure N A)}"
@@ -144,7 +176,6 @@ qed
 lemma measure_preserving_preserves_nn_integral:
   assumes "T \<in> measure_preserving M N"
           "f \<in> borel_measurable N"
-          "\<And>x. f x \<ge> 0"
   shows "(\<integral>\<^sup>+x. f x \<partial>N) = (\<integral>\<^sup>+x. f (T x) \<partial>M)"
 proof -
   have "(\<integral>\<^sup>+x. f (T x) \<partial>M) = (\<integral>\<^sup>+y. f y \<partial>distr M N T)"
@@ -328,7 +359,7 @@ lemma fmpt_empty_space:
   shows "fmpt M T"
 by (rule fmpt_null_space, auto simp add: assms measurable_empty_iff)
 
-text\<open>Translations are measure-preserving\<close>
+text \<open>Translations are measure-preserving\<close>
 
 lemma mpt_translation:
   fixes c :: "'a::euclidean_space"
@@ -342,7 +373,7 @@ proof (rule mpt_I, auto simp add: lborel.sigma_finite_measure_axioms)
   finally show "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel A" by simp
 qed
 
-text\<open>Skew products are fibered maps of the form $(x,y)\mapsto (Tx, U(x,y))$. If the base map
+text \<open>Skew products are fibered maps of the form $(x,y)\mapsto (Tx, U(x,y))$. If the base map
 and the fiber maps all are measure preserving, so is the skew product.\<close>
 
 lemma pair_measure_null_product:
@@ -404,20 +435,20 @@ next
     define B where "B = (\<lambda>(x, y). (T x, U x y)) -` A \<inter> space (M \<Otimes>\<^sub>M N)"
     then have [measurable]: "B \<in> sets (M \<Otimes>\<^sub>M N)" by auto
 
-    {
-      fix x assume x: "x \<in> space M" "mpt N (U x)"
-      then have "T x \<in> space M" by (meson \<open>T \<in> measurable M M\<close> \<open>x \<in> space M\<close> measurable_space)
+    have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)" if "x \<in> space M" "mpt N (U x)" for x
+    proof -
+      have "T x \<in> space M" by (meson \<open>T \<in> measurable M M\<close> \<open>x \<in> space M\<close> measurable_space)
       then have 1: "(\<lambda>y. (indicator A (T x, y))::ennreal) \<in> borel_measurable N" using \<open>A \<in> sets (M \<Otimes>\<^sub>M N)\<close> by auto
       have 2: "\<And>y. ((indicator B (x, y))::ennreal) = indicator A (T x, U x y) * indicator (space M) x * indicator (space N) y"
         unfolding B_def by (simp add: indicator_def space_pair_measure)
-      have 3: "U x \<in> measure_preserving N N" using assms(2) x(2) by (simp add: mpt.Tm)
+      have 3: "U x \<in> measure_preserving N N" using assms(2) that(2) by (simp add: mpt.Tm)
 
       have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, U x y) \<partial>N)"
         using 2 by (intro nn_integral_cong_strong) (auto simp add: indicator_def \<open>x \<in> space M\<close>)
       also have "... = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)"
-        by (rule measure_preserving_preserves_nn_integral[OF 3, symmetric], metis 1, simp add: indicator_def)
-      finally have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)" by simp
-    }
+        by (rule measure_preserving_preserves_nn_integral[OF 3, symmetric], metis 1)
+      finally show ?thesis by simp
+    qed
     then have *: "AE x in M. (\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)"
       using assms(2) by auto
 
@@ -445,7 +476,7 @@ subsection \<open>Preimages restricted to $space M$\<close>
 
 context qmpt begin
 
-text\<open>One is all the time lead to take the preimages of sets, and restrict them to
+text \<open>One is all the time lead to take the preimages of sets, and restrict them to
 \verb+space M+ where the dynamics is living. We introduce a shortcut for this notion.\<close>
 
 definition vimage_restr :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr "--`" 90)
@@ -688,7 +719,23 @@ lemma T_Tn_T_compose:
   "(T^^n) (T x) = (T^^(Suc n)) x"
 by (auto simp add: funpow_swap1)
 
+lemma (in qmpt) qmpt_density:
+  assumes [measurable]: "h \<in> borel_measurable M"
+      and "AE x in M. h x \<noteq> 0" "AE x in M. h x \<noteq> \<infinity>"
+  shows "qmpt (density M h) T"
+proof -
+  interpret A: sigma_finite_measure "density M h"
+    apply (subst sigma_finite_iff_density_finite) using assms by auto
+  show ?thesis
+    apply (standard) apply (rule quasi_measure_preservingI)
+    unfolding null_sets_density[OF \<open>h \<in> borel_measurable M\<close> \<open>AE x in M. h x \<noteq> 0\<close>] sets_density space_density
+    using quasi_measure_preservingE(2)[OF Tqm] by auto
+qed
+
 end
+
+
+
 
 subsection \<open>Basic properties of mpt\<close>
 
@@ -716,15 +763,15 @@ using measure_preserving_preserves_integral[OF Tn_measure_preserving assms] by a
 
 lemma T_nn_integral_preserving:
   fixes f :: "'a \<Rightarrow> ennreal"
-  assumes "\<And>x. f x \<ge> 0" "f \<in> borel_measurable M"
+  assumes "f \<in> borel_measurable M"
   shows "(\<integral>\<^sup>+x. f(T x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
-using measure_preserving_preserves_nn_integral[OF Tm assms(2) assms(1)] by auto
+using measure_preserving_preserves_nn_integral[OF Tm assms] by auto
 
 lemma Tn_nn_integral_preserving:
   fixes f :: "'a \<Rightarrow> ennreal"
-  assumes "\<And>x. f x \<ge> 0" "f \<in> borel_measurable M"
+  assumes "f \<in> borel_measurable M"
   shows "(\<integral>\<^sup>+x. f((T^^n) x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
-using measure_preserving_preserves_nn_integral[OF Tn_measure_preserving assms(2) assms(1)] by auto
+using measure_preserving_preserves_nn_integral[OF Tn_measure_preserving assms(1)] by auto
 
 lemma mpt_power:
   "mpt M (T^^n)"
@@ -752,7 +799,7 @@ end
 
 subsection \<open>Birkhoff sums\<close>
 
-text\<open>Birkhoff sums, obtained by summing a function along the orbit of a map, are basic objects
+text \<open>Birkhoff sums, obtained by summing a function along the orbit of a map, are basic objects
 to be understood in ergodic theory.\<close>
 
 context qmpt
@@ -761,23 +808,8 @@ begin
 definition birkhoff_sum::"('a \<Rightarrow> 'b::comm_monoid_add) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'b"
   where "birkhoff_sum f n x = (\<Sum>i\<in>{..<n}. f((T^^i)x))"
 
-text\<open>I did not find a way to prove a lemma applying simultaneously in \verb+real+ and \verb+ennreal+
-and \verb+nat+, so I give three separate statements about measurability.\<close>
-
 lemma birkhoff_sum_meas [measurable]:
-  fixes f::"'a \<Rightarrow> real"
-  assumes [measurable]: "f \<in> borel_measurable M"
-  shows "birkhoff_sum f n \<in> borel_measurable M"
-proof -
-  define F where "F = (\<lambda>i x. f((T^^i)x))"
-  have "\<And>i. F i \<in> borel_measurable M" using assms F_def by auto
-  then have "(\<lambda>x. (\<Sum>i<n. F i x)) \<in> borel_measurable M" by measurable
-  then have "(\<lambda>x. birkhoff_sum f n x) \<in> borel_measurable M" unfolding birkhoff_sum_def F_def by auto
-  then show ?thesis by simp
-qed
-
-lemma birkhoff_sum_meas_ennreal [measurable]:
-  fixes f::"'a \<Rightarrow> ennreal"
+  fixes f::"'a \<Rightarrow> 'b::{second_countable_topology, topological_comm_monoid_add}"
   assumes "f \<in> borel_measurable M"
   shows "birkhoff_sum f n \<in> borel_measurable M"
 proof -
@@ -786,22 +818,6 @@ proof -
   then have "(\<lambda>x. (\<Sum>i<n. F i x)) \<in> borel_measurable M" by measurable
   then have "(\<lambda>x. birkhoff_sum f n x) \<in> borel_measurable M" unfolding birkhoff_sum_def F_def by auto
   then show ?thesis by simp
-qed
-
-lemma birkhoff_sum_meas_nat [measurable]:
-  fixes f::"'a \<Rightarrow> nat"
-  assumes [measurable]: "f \<in> measurable M (count_space UNIV)"
-  shows "birkhoff_sum f n \<in> borel_measurable M"
-proof -
-  define g where "g = (\<lambda>x. real(f x))"
-  have [measurable]: "g \<in> borel_measurable M" unfolding g_def using assms by auto
-  have [measurable]: "birkhoff_sum g n \<in> borel_measurable M" by auto
-  have "\<And>x. real(birkhoff_sum f n x) = birkhoff_sum g n x"
-    unfolding g_def birkhoff_sum_def by auto
-  then have "(\<lambda>x. real(birkhoff_sum f n x)) \<in> borel_measurable M" by simp
-  then have "birkhoff_sum f n \<in> measurable M (count_space UNIV)" by (rule measurable_real_imp_nat[of "birkhoff_sum f n", of M])
-  then show "birkhoff_sum f n \<in> borel_measurable M"
-    using measurable_cong_sets sets_borel_eq_count_space by blast
 qed
 
 lemma birkhoff_sum_1 [simp]:
@@ -1619,4 +1635,4 @@ qed
 
 end
 
-end
+end (*of Measure_Preserving_Transformations.thy*)

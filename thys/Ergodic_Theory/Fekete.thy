@@ -2,11 +2,11 @@
     License: BSD
 *)
 
+section \<open>Subadditive and submultiplicative sequences\<close>
+
 theory Fekete
   imports "HOL-Analysis.Analysis"
 begin
-
-section \<open>Subadditive and submultiplicative sequences\<close>
 
 text \<open>A real sequence is subadditive if $u_{n+m} \leq u_n+u_m$. This implies the
 convergence of $u_n/n$ to $Inf\{u_n/n\} \in [-\infty, +\infty)$, a useful result known
@@ -65,7 +65,7 @@ proof -
       by (metis \<open>0 < n\<close> add.commute mod_eqD mod_less_divisor)
     define a where "a = a0-1"
     define r where "r = r0+n"
-    have "r<2*n" "r\<ge>n" unfolding r_def by (auto simp add:\<open>r0<n\<close>)
+    have "r<2*n" "r\<ge>n" unfolding r_def by (auto simp add: \<open>r0<n\<close>)
     have "a0>0" using \<open>m = a0*n + r0\<close> \<open>n \<le> m\<close> \<open>r0 < n\<close> not_le by fastforce
     then have "m = a * n + r" using a_def r_def \<open>m = a0*n+r0\<close> mult_eq_if by auto
     then have real_eq: "-r = real n * a - m" by simp
@@ -320,4 +320,4 @@ proof -
   then show ?thesis unfolding spectral_radius_def using submultiplicative_converges by auto
 qed
 
-end
+end (*of Fekete.thy*)

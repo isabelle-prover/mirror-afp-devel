@@ -2,12 +2,11 @@
     License: BSD
 *)
 
+section \<open>Hausdorff distance\<close>
 
 theory Hausdorff_Distance
-  imports "HOL-Analysis.Analysis" Library_Complements
+  imports Library_Complements
 begin
-
-section \<open>Hausdorff distance\<close>
 
 subsection \<open>Preliminaries\<close>
 

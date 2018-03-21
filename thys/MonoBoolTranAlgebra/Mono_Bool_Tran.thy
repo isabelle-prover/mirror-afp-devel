@@ -249,10 +249,20 @@ lemma [transfer_rule]:
 end
 
 instance MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
-  apply intro_classes
-  apply transfer apply (simp add: inf_Sup sup_Inf)
-  apply transfer apply (simp add: inf_Sup sup_Inf)
-  done
+proof (intro_classes, transfer)
+  fix A :: "('a \<Rightarrow> 'a) set set"
+  assume " \<forall>A\<in>A. Ball A mono"
+  from this have [simp]: "{f ` A |f. \<forall>Y\<in>A. f Y \<in> Y} = {x. (\<exists>f. (\<forall>x. (\<forall>x\<in>x. mono x) \<longrightarrow> mono (f x)) \<and> x = f ` A \<and> (\<forall>Y\<in>A. f Y \<in> Y)) \<and> (\<forall>x\<in>x. mono x)}"
+    apply safe
+      apply (rule_tac x = "\<lambda> x . if x \<in> A then f x else \<bottom>" in exI)
+      apply (simp add: if_split image_def)
+    by blast+
+
+  show " INFIMUM A Sup \<le> SUPREMUM {x. (\<exists>f\<in>Collect (pred_fun (\<lambda>A. Ball A mono) mono). x = f ` A \<and> (\<forall>Y\<in>A. f Y \<in> Y)) \<and> Ball x mono} Inf"
+    by (simp add: Inf_Sup)
+qed
+
+
 
 definition
   "dual_fun (f::'a::boolean_algebra \<Rightarrow> 'a) = uminus \<circ> f \<circ> uminus"
@@ -475,7 +485,7 @@ lemma assertion_fun_disj_less_one: "assertion_fun = Apply.disjunctive \<inter> {
   by (rule assert_cont, simp_all)
 
 lemma assert_fun_dual: "((assert_fun p) o \<top>) \<sqinter> (dual_fun (assert_fun p)) = assert_fun p"
-  by (simp add: fun_eq_iff inf_fun_def dual_fun_def o_def assert_fun_def top_fun_def inf_sup_distrib inf_compl_bot)
+  by (simp add: fun_eq_iff inf_fun_def dual_fun_def o_def assert_fun_def top_fun_def inf_sup_distrib)
 
 lemma assertion_fun_dual: "x \<in> assertion_fun \<Longrightarrow> (x o \<top>) \<sqinter> (dual_fun x) = x"
   by (simp add: assertion_fun_def, safe, simp add: assert_fun_dual)

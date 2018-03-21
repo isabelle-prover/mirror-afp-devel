@@ -112,7 +112,7 @@ next
 next
   fix x :: "'a MonoTran" show "x * \<top> \<sqinter> (x ^ o * \<bottom>) = \<bottom>"
     apply transfer
-    apply (simp add: fun_eq_iff inf_compl_bot)
+    apply (simp add: fun_eq_iff)
     done
 next
   fix x :: "'a MonoTran" show "x ^ \<omega> = x * x ^ \<omega> \<sqinter> 1"
