@@ -6,8 +6,8 @@ locale unification =
   assumes unification: "\<And>\<sigma> L. finite L \<Longrightarrow> unifier\<^sub>l\<^sub>s \<sigma> L \<Longrightarrow> \<exists>\<theta>. mgu\<^sub>l\<^sub>s \<theta> L"
 begin
 text \<open>
-  A proof of this assumption is available \cite{unify} in the IsaFoL project \cite{isafol}.
-  It uses a similar theorem from the IsaFoR \cite{isafor} project.
+  A proof of this assumption is available in @{file "Unification_theorem.thy"} and used in
+  @{file "Completeness_Instance.thy"}.
 \<close>
 
 lemma lifting:

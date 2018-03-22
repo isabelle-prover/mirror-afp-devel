@@ -5722,7 +5722,8 @@ abstract =
 	<a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.
 extra-history =
 	Change history:
-	[2018-01-24]: added several new versions of the soundness and completeness theorems as described in the paper [Sch18].
+	[2018-01-24]: added several new versions of the soundness and completeness theorems as described in the paper [Sch18]. <br>
+	[2018-03-20]: added a concrete instance of the unification and completeness theorems using the First-Order Terms AFP-entry from IsaFoR as described in the papers [Sch16] and [Sch18].
 
 [Surprise_Paradox]
 title = Surprise Paradox
