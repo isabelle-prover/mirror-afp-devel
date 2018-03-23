@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Mar 2018 00:00:00 +0000</pubDate>
+    <pubDate>22 Mar 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
+              <link>https://www.isa-afp.org/entries/Fishburn_Impossibility.html</link>
+       <guid>https://www.isa-afp.org/entries/Fishburn_Impossibility.html</guid>
+       <dc:creator> Felix Brandt, Manuel Eberl, Christian Saile, Christian Stricker       </dc:creator>
+       <pubDate>22 Mar 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This formalisation contains the proof that there is no
+anonymous Social Choice Function for at least three agents and
+alternatives that fulfils both Pareto-Efficiency and
+Fishburn-Strategyproofness. It was derived from a proof of &lt;a
+href=&#34;http://dss.in.tum.de/files/brandt-research/stratset.pdf&#34;&gt;Brandt
+&lt;em&gt;et al.&lt;/em&gt;&lt;/a&gt;, which relies on an unverified
+translation of a fixed finite instance of the original problem to SAT.
+This Isabelle proof contains a machine-checked version of both the
+statement for exactly three agents and alternatives and the lifting to
+the general case.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Weight-Balanced Trees</title>
               <link>https://www.isa-afp.org/entries/Weight_Balanced_Trees.html</link>
@@ -572,18 +590,6 @@ possible to immediately offer several options to modify the theory to
 guarantee its consistency. Thereby our work could provide a
 significant contribution to the development of a proper grounding for
 object theory. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Anselm's God in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/AnselmGod.html</link>
-       <guid>https://www.isa-afp.org/entries/AnselmGod.html</guid>
-       <dc:creator> Ben Blumson       </dc:creator>
-       <pubDate>06 Sep 2017 00:00:00 +0000</pubDate>
-       <description>
-Paul Oppenheimer and Edward Zalta&#39;s formalisation of
-Anselm&#39;s ontological argument for the existence of God is
-automated by embedding a free logic for definite descriptions within
-Isabelle/HOL.</description>
     </item>
   </channel>
 </rss>

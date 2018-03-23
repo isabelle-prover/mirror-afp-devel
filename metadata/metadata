@@ -6650,3 +6650,21 @@ abstract =
   proofs of preservation of the invariant that work for many (all?)
   valid parameters.  
 
+[Fishburn_Impossibility]
+title = The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency
+author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
+topic = Mathematics/Economics
+date = 2018-03-22
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This formalisation contains the proof that there is no
+  anonymous Social Choice Function for at least three agents and
+  alternatives that fulfils both Pareto-Efficiency and
+  Fishburn-Strategyproofness. It was derived from a proof of <a
+  href="http://dss.in.tum.de/files/brandt-research/stratset.pdf">Brandt
+  <em>et al.</em></a>, which relies on an unverified
+  translation of a fixed finite instance of the original problem to SAT.
+  This Isabelle proof contains a machine-checked version of both the
+  statement for exactly three agents and alternatives and the lifting to
+  the general case.</p>
+
