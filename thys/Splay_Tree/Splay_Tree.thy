@@ -132,20 +132,14 @@ by(induction t rule: splay_max.induct)(auto split: tree.splits)
 
 subsubsection "Verification of @{const isin}"
 
-lemma
-  "splay x t = Node l a r \<Longrightarrow> sorted(inorder t) \<Longrightarrow>
-  x \<in> elems (inorder t) \<longleftrightarrow> x=a"
-by(induction x t arbitrary: l a r rule: splay.induct)
-  (auto simp: elems_simps1 ball_Un split: tree.splits)
-
 lemma splay_elemsD:
   "splay x t = Node l a r \<Longrightarrow> sorted(inorder t) \<Longrightarrow>
-  x \<in> elems (inorder t) \<longleftrightarrow> x=a"
+  x \<in> set (inorder t) \<longleftrightarrow> x=a"
 by(induction x t arbitrary: l a r rule: splay.induct)
-  (auto simp: elems_simps2 split: tree.splits)
+  (auto simp: isin_simps ball_Un split: tree.splits)
 
-lemma isin_set: "sorted(inorder t) \<Longrightarrow> isin t x = (x \<in> elems (inorder t))"
-by (auto simp: isin_def is_root_def splay_elemsD split: tree.splits)
+lemma isin_set: "sorted(inorder t) \<Longrightarrow> isin t x = (x \<in> set (inorder t))"
+by (auto simp: isin_def is_root_def dest: splay_elemsD split: tree.splits)
 
 
 subsubsection "Verification of @{const insert}"
