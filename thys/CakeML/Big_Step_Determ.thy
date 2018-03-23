@@ -25,7 +25,7 @@ next
 next
   case (handle2 ck s1 s2 env e pes v1 bv)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Handle e pes) r3b"; cases r3b; auto)
+    by - (ind_cases "evaluate ck env s1 (Handle e pes) r3b"; fastforce)
 next
   case (handle3 ck s1 s2 env e pes a)
   then show ?case
@@ -33,7 +33,7 @@ next
 next
   case (con1 ck env cn es vs s s' v1)
   then show ?case
-    by - (ind_cases "evaluate ck env s (Con cn es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s (Con cn es) r3b"; fastforce)
 next
   case (con2 ck env cn es s)
   then show ?case
@@ -45,39 +45,39 @@ next
 next
   case (app1 ck env es vs env' e bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; fastforce)
 next
   case (app2 ck env es vs env' e s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; force)
 next
   case (app3 ck env es vs s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App Opapp es) r3b"; force)
 next
   case (app4 ck env op0 es vs res s1 s2 refs' ffi')
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; fastforce)
 next
   case (app5 ck env op0 es vs s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; force)
 next
   case (app6 ck env op0 es err s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (App op0 es) r3b"; force)
 next
   case (log1 ck env op0 e1 e2 v1 e' bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; fastforce)
 next
   case (log2 ck env op0 e1 e2 v1 bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; force)
 next
   case (log3 ck env op0 e1 e2 v1 s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (Log op0 e1 e2) r3b"; force)
 next
   case (log4 ck env op0 e1 e2 err s s')
   then show ?case
@@ -85,7 +85,7 @@ next
 next
   case (if1 ck env e1 e2 e3 v1 e' bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (If e1 e2 e3) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (If e1 e2 e3) r3b"; fastforce)
 next
   case (if2 ck env e1 e2 e3 v1 s1 s2)
   then show ?case
@@ -97,7 +97,7 @@ next
 next
   case (mat1 ck env e pes v1 bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Mat e pes) r3b"; cases r3b; force)
+    by - (ind_cases "evaluate ck env s1 (Mat e pes) r3b"; fastforce)
 next
   case (mat2 ck env e pes err s s')
   then show ?case
@@ -105,7 +105,7 @@ next
 next
   case (let1 ck env n e1 e2 v1 bv s1 s2)
   then show ?case
-    by - (ind_cases "evaluate ck env s1 (Let n e1 e2) r3b"; cases r3b; auto)
+    by - (ind_cases "evaluate ck env s1 (Let n e1 e2) r3b"; fastforce)
 next
   case (let2 ck env n e1 e2 err s s')
   then show ?case
@@ -113,7 +113,7 @@ next
 next
   case (letrec1 ck env funs e bv s)
   then show ?case
-    by - (ind_cases "evaluate ck env s (Letrec funs e) r3b"; cases r3b; auto)
+    by - (ind_cases "evaluate ck env s (Letrec funs e) r3b"; fastforce)
 next
   case (letrec2 ck env funs e s)
   then show ?case
@@ -141,19 +141,19 @@ next
 next
   case (mat_cons1 ck env env' v1 p pes e bv err_v s)
   then show ?case
-    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; cases r1b; auto)
+    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; fastforce)
 next
   case (mat_cons2 ck env v1 p e pes bv s err_v)
   then show ?case
-    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; cases r1b; auto)
+    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; fastforce)
 next
   case (mat_cons3 ck env v1 p e pes s err_v)
   then show ?case
-    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; auto)
+    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b", auto)
 next
   case (mat_cons4 ck env v1 p e pes s err_v)
   then show ?case
-    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b"; auto)
+    by - (ind_cases "evaluate_match ck env s v1 ((p, e) # pes) err_v r1b", auto)
 qed (auto elim: evaluate.cases evaluate_list.cases evaluate_match.cases)
 
 end

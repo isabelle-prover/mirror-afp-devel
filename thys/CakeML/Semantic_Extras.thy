@@ -157,6 +157,23 @@ lemma match_result_sound:
 by (induction rule: match_result.induct)
    (auto intro: evaluate_match_evaluate_list_evaluate.intros split: match_result.splits result.splits)
 
+lemma match_result_sound_val:
+  assumes "match_result env s v0 pes err_v = Rval (e, env')"
+  assumes "evaluate ck (env \<lparr> sem_env.v := nsAppend (alist_to_ns env')(sem_env.v env) \<rparr>) s e bv"
+  shows "evaluate_match ck env s v0 pes err_v bv"
+proof -
+  note match_result_sound[where env = env and s = s and ?v0.0 = v0 and pes = pes and err_v = err_v, unfolded assms result.case prod.case]
+  with assms show ?thesis by blast
+qed
+
+lemma match_result_sound_err:
+  assumes "match_result env s v0 pes err_v = Rerr err"
+  shows "evaluate_match ck env s v0 pes err_v (s, Rerr err)"
+proof -
+  note match_result_sound[where env = env and s = s and ?v0.0 = v0 and pes = pes and err_v = err_v, unfolded assms result.case prod.case]
+  then show ?thesis by blast
+qed
+
 lemma match_result_correct:
   assumes "evaluate_match ck env s v0 pes err_v (s', bv)"
   shows "case bv of

@@ -47,7 +47,8 @@ session CakeML (AFP) = CakeML_Prelim +
     Evaluate_Termination
     Evaluate_Clock
     Big_Step_Determ
-    Big_Step_Total
     Big_Step_Fun_Equiv
+    Big_Step_Unclocked
+    Big_Step_Total
   document_files
     "root.tex"
