@@ -7,7 +7,7 @@
 LEM_REPOSITORY="https://github.com/larsrh/lem"
 LEM_COMMIT="42135384608fdb768582be8f1c95671cc9235778"
 CAKEML_REPOSITORY="https://github.com/CakeML/cakeml"
-CAKEML_COMMIT="120c3f18b89f91ef6697c1f29d2025cbe2369b9a" # 'version2' branch
+CAKEML_COMMIT="120c3f18b89f91ef6697c1f29d2025cbe2369b9a" # v2.0 tag
 
 # Isabelle tools (if not specified in the environment)
 
