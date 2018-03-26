@@ -1,7 +1,7 @@
 chapter AFP
 
 session LEM (AFP) = "Word_Lib" +
-  options [timeout = 120]
+  options [timeout = 300]
   sessions
     "HOL-Library"
   theories
@@ -13,7 +13,7 @@ session LEM (AFP) = "Word_Lib" +
     "generated/Lem_string_extra"
 
 session CakeML_Prelim (AFP) = LEM +
-  options [timeout = 120]
+  options [timeout = 300]
   sessions
     Coinductive
     IEEE_Floating_Point
@@ -22,7 +22,7 @@ session CakeML_Prelim (AFP) = LEM +
     "IEEE_Floating_Point.FP64"
 
 session CakeML (AFP) = CakeML_Prelim +
-  options [timeout = 300]
+  options [timeout = 600]
   theories
     "doc/Doc_Generated"
   theories
