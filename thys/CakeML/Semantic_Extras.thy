@@ -16,7 +16,29 @@ code_pred
       and evaluate_list: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool
       and evaluate_match: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) evaluate .
 
-case_of_simps do_log_alt_def: do_log.simps
+code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) evaluate_dec .
+code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) evaluate_decs .
+code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) evaluate_top .
+code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool as compute_prog) evaluate_prog .
+
+termination pmatch_list by lexicographic_order
+termination do_eq_list by lexicographic_order
+
+lemma all_distinct_alt_def: "allDistinct = distinct"
+proof
+  fix xs :: "'a list"
+  show "allDistinct xs = distinct xs"
+    by (induct xs) auto
+qed
+
+lemma find_recfun_someD:
+  assumes "find_recfun n funs = Some (x, e)"
+  shows "(n, x, e) \<in> set funs"
+using assms
+by (induct funs) (auto split: if_splits)
+
+lemma find_recfun_alt_def[simp]: "find_recfun n funs = map_of funs n"
+by (induction funs) auto
 
 lemma size_list_rev[simp]: "size_list f (rev xs) = size_list f xs"
 by (auto simp: size_list_conv_sum_list rev_map[symmetric])
@@ -29,6 +51,7 @@ lemma do_if_cases:
 unfolding do_if_def
 by meson
 
+case_of_simps do_log_alt_def: do_log.simps
 case_of_simps do_con_check_alt_def: do_con_check.simps
 case_of_simps list_result_alt_def: list_result.simps
 
@@ -41,6 +64,15 @@ by (erule do_logE)
    (auto split: v.splits option.splits if_splits tid_or_exn.splits id0.splits list.splits)
 
 end
+
+lemma c_of_merge[simp]: "c (extend_dec_env env2 env1) = nsAppend (c env2) (c env1)"
+by (cases env1; cases env2; simp add: extend_dec_env_def)
+
+lemma v_of_merge[simp]: "sem_env.v (extend_dec_env env2 env1) = nsAppend (sem_env.v env2) (sem_env.v env1)"
+by (cases env1; cases env2; simp add: extend_dec_env_def)
+
+lemma nsEmpty_nsAppend[simp]: "nsAppend e nsEmpty = e" "nsAppend nsEmpty e = e"
+by (cases e; auto simp: nsEmpty_def)+
 
 lemma do_log_cases:
   obtains

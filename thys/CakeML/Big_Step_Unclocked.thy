@@ -245,7 +245,7 @@ evaluate env s (Let n e1 e2) (s', Rerr err)"
 |
 
 "letrec1" : " \<And> env funs e bv s.
-Lem_list.allDistinct (List.map ( \<lambda>x .
+distinct (List.map ( \<lambda>x .
   (case  x of (x,y,z) => x )) funs) \<Longrightarrow>
 evaluate ( env (| sem_env.v := (build_rec_env funs env(sem_env.v   env)) |)) s e bv
 ==>
@@ -254,7 +254,7 @@ evaluate env s (Letrec funs e) bv "
 |
 
 "letrec2" : " \<And> env funs e s.
-\<not> (Lem_list.allDistinct (List.map ( \<lambda>x .
+\<not> (distinct (List.map ( \<lambda>x .
   (case  x of (x,y,z) => x )) funs))
 ==>
 evaluate env s (Letrec funs e) (s, Rerr (Rabort Rtype_error))"
@@ -301,7 +301,7 @@ evaluate env s1 e (s2, Rval v1) \<Longrightarrow>
 evaluate_list env s2 es (s3, Rerr err)
 ==>
 evaluate_list env s1 (e # es) (s3, Rerr err)"
-
+print_statement evaluate_list_evaluate.inducts
 lemma unclocked_sound:
   "evaluate_list v s es bv \<Longrightarrow> BigStep.evaluate_list False v s es bv"
   "evaluate v s e bv' \<Longrightarrow> BigStep.evaluate False v s e bv'"
@@ -337,7 +337,7 @@ next
     apply (rule match_result_sound_err)
     apply fact
     done
-qed (fastforce intro: evaluate_match_evaluate_list_evaluate.intros)+
+qed (fastforce simp: all_distinct_alt_def[symmetric] intro: evaluate_match_evaluate_list_evaluate.intros)+
 
 context begin
 
@@ -427,7 +427,7 @@ next
   case (mat_cons2 ck env v1 p e pes a b s err_v)
   then show ?case
     by (auto split: result.splits)
-qed (fastforce intro: evaluate_list_evaluate.intros)+
+qed (fastforce simp: all_distinct_alt_def intro: evaluate_list_evaluate.intros)+
 
 lemma unclocked_complete:
   "BigStep.evaluate_list False v s es bv' \<Longrightarrow> evaluate_list v s es bv'"
