@@ -84,7 +84,7 @@ begin
 
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
-    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel, unit_rel\<rangle> bai_ba_rel"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id :: 'a :: hashable rel, nat_rel, unit_rel\<rangle> bai_ba_rel"
     shows "(?f :: ?'c, to_baei (complement_3 A)) \<in> ?R"
     by autoref
   concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
@@ -105,7 +105,7 @@ begin
   definition s where
     "s n a p \<equiv> if p = 0
       then (if a = ''a'' then [0 ..< n] else [1])
-      else (if a = ''a'' then [1] else [])"
+      else (if a = ''a'' then [1 ..< n] else [])"
   definition Ai where
     "Ai n \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s n, acceptingi = \<lambda> p. False \<rparr>"
 

@@ -30,31 +30,85 @@ begin
 
   section {* Exploration and Translation *}
 
+  definition trans_spec where
+    "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p"
+
+  definition trans_algo where
+    "trans_algo N L S f \<equiv>
+      FOREACH N (\<lambda> p T. do {
+        ASSERT (p \<in> N);
+        FOREACH L (\<lambda> a T. do {
+          ASSERT (a \<in> L);
+          FOREACH (S a p) (\<lambda> q T. do {
+            ASSERT (q \<in> S a p);
+            RETURN (insert (f p, a, f q) T) }
+          ) T }
+        ) T }
+      ) {}"
+
+  lemma trans_algo_refine:
+    assumes "finite (nodes A)" "finite (alphabet A)"
+    assumes "N = nodes A" "L = alphabet A" "S = succ A"
+    shows "(trans_algo N L S f, SPEC (HOL.eq (trans_spec A f))) \<in> \<langle>Id\<rangle> nres_rel"
+    unfolding trans_algo_def trans_spec_def assms(3, 4, 5)
+    apply (refine_rcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
+      (\<Union> p \<in> S. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
+    apply (rule assms(1))
+    apply simp
+    apply simp
+    subgoal for T x
+    apply (refine_vcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
+      (\<Union> a \<in> S. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
+    apply (rule assms(2))
+    apply simp
+    apply simp
+    subgoal for TT xx
+    apply (refine_rcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
+      (f ` {x} \<times> {xx} \<times> f ` S) \<union>
+      (\<Union> a \<in> TT. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
+    apply (meson infinite_subset nodes_succ subsetI assms(1))
+    apply simp
+    apply simp
+    apply simp
+    done
+    done
+    done
+
   definition to_baei :: "('state, 'label, 'more) ba_scheme \<Rightarrow> ('state, 'label, 'more) ba_scheme"
     where "to_baei \<equiv> id"
 
-  (* TODO: generalize L *)
-  (* TODO: make separate implementations for "ba_bae" and "op_set_enumerate \<bind> bae_image" *)
-  schematic_goal to_baei_impl:
-    fixes S :: "('statei \<times> 'state) set"
-    assumes [simp]: "finite (nodes A)"
-    assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
-    assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
-    assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
-    shows "(?f :: ?'a, do {
-        let N = nodes A;
-        f \<leftarrow> op_set_enumerate N;
-        ASSERT (dom f = N);
-        ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
-          transe = \<Union> p \<in> N. \<Union> a \<in> alphabet A. (\<lambda> x. the (f x)) ` {p} \<times> {a} \<times>
-          (\<lambda> x. the (f x)) ` succ A a p,
-          acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
-      }) \<in> ?R"
-    by (autoref_monadic (plain))
-  concrete_definition to_baei_impl uses to_baei_impl
+  context
+  begin
+
+    interpretation autoref_syn by this
+
+    (* TODO: generalize L *)
+    (* TODO: make separate implementations for "ba_bae" and "op_set_enumerate \<bind> bae_image" *)
+    schematic_goal to_baei_impl:
+      fixes S :: "('statei \<times> 'state) set"
+      assumes [simp]: "finite (nodes A)"
+      assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
+      assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
+      assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
+      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
+      shows "(?f :: ?'a, do {
+          let N = nodes A;
+          f \<leftarrow> op_set_enumerate N;
+          ASSERT (dom f = N);
+          ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
+          ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
+          T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+          RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+            transe = CAST (T ::: \<langle>nat_rel \<times>\<^sub>r Id \<times>\<^sub>r nat_rel\<rangle> dflt_ahs_rel),
+            acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
+        }) \<in> ?R"
+      unfolding trans_algo_def by (autoref_monadic (plain))
+
+  end
+
+  concrete_definition to_baei_impl uses to_baei_impl[unfolded autoref_tag_defs CAST_def id_apply]
   lemma to_baei_impl_refine'':
     fixes S :: "('statei \<times> 'state) set"
     assumes "finite (nodes A)"
@@ -67,6 +121,9 @@ begin
         RETURN (bae_image (the \<circ> f) (ba_bae A))
       }) \<in> \<langle>\<langle>Id, nat_rel, M\<rangle> baei_bae_rel\<rangle> nres_rel"
   proof -
+    have 1: "finite (alphabet A)"
+      using bai_ba_param(2)[param_fo, OF assms(5)] list_set_rel_finite
+      unfolding finite_set_rel_def by auto
     note to_baei_impl.refine[OF assms]
     also have "(do {
         let N = nodes A;
@@ -74,15 +131,27 @@ begin
         ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
         ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda>x. the (f x)) ` initial A,
-          transe = \<Union> p \<in> N. \<Union> a \<in> alphabet A. (\<lambda>x. the (f x)) ` {p} \<times> {a} \<times>
-          (\<lambda>x. the (f x)) ` succ A a p,
-          acceptinge = (\<lambda>x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
+        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+          transe = T, acceptinge = (\<lambda>x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
+      }, do {
+        f \<leftarrow> op_set_enumerate (nodes A);
+        T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+          transe = T, acceptinge = (\<lambda>x. the (f x)) ` {p \<in> nodes A. accepting A p}, \<dots> = ba.more A \<rparr>
+      }) \<in> \<langle>Id\<rangle> nres_rel"
+      unfolding Let_def comp_apply op_set_enumerate_def
+      using assms(1) 1 by (refine_rcg vcg0[OF trans_algo_refine]) (auto)
+    also have "(do {
+        f \<leftarrow> op_set_enumerate (nodes A);
+        T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+          transe = T, acceptinge = (\<lambda>x. the (f x)) ` {p \<in> nodes A. accepting A p}, \<dots> = ba.more A \<rparr>
       },  do {
         f \<leftarrow> op_set_enumerate (nodes A);
         RETURN (bae_image (the \<circ> f) (ba_bae A))
       }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding Let_def bae_image_ba_bae comp_apply op_set_enumerate_def by refine_vcg auto
+      unfolding trans_spec_def bae_image_ba_bae by refine_vcg force
     finally show ?thesis unfolding nres_rel_comp by simp
   qed
 
@@ -95,7 +164,7 @@ begin
     assumes b: "is_bounded_hashcode S seq bhc"
     assumes c: "is_valid_def_hm_size TYPE('statei) hms"
     assumes d: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes e: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
+    assumes e: "(Ai, A) \<in> \<langle>Id :: 'a :: hashable rel, S, M\<rangle> bai_ba_rel"
   begin
 
     definition f' where "f' \<equiv> SOME f'.

@@ -25,4 +25,4 @@ fun run_test n =
 	print (Statistics.pretty_stats (Statistics.get_active_stats ()) ^ "\n")
 )
 
-val _ = run_test (nat_of_integer (getParameterInteger 0 3))
+val _ = run_test (nat_of_integer (getParameterInteger 0 4))
