@@ -167,8 +167,6 @@ text {*
   to work with.
 *}
 
-(* TODO: Generalise w.r.t. arbitrary filters? *)
-
 definition bigo :: "'a filter \<Rightarrow> ('a \<Rightarrow> ('b :: real_normed_field)) \<Rightarrow> ('a \<Rightarrow> 'b) set" 
     ("(1O[_]'(_'))")
   where "bigo F g = {f. (\<exists>c>0. eventually (\<lambda>x. norm (f x) \<le> c * norm (g x)) F)}"  
@@ -1324,25 +1322,6 @@ proof (rule landau_omega.smallI)
     with A show "(norm (f x)) \<ge> c * (norm (g x))" by (simp add: field_simps norm_divide)
   qed
 qed
-  
-(* TODO: Move ? *)
-lemma filterlim_at_infinity_imp_norm_at_top:
-  assumes "filterlim f at_infinity F"
-  shows   "filterlim (\<lambda>x. norm (f x)) at_top F"
-proof -
-  {
-    fix r :: real 
-    have "\<forall>\<^sub>F x in F. r \<le> norm (f x)" using filterlim_at_infinity[of 0 f F] assms 
-      by (cases "r > 0") 
-         (auto simp: not_less intro: always_eventually order.trans[OF _ norm_ge_zero])
-  }
-  thus ?thesis by (auto simp: filterlim_at_top)
-qed
-  
-lemma filterlim_norm_at_top_imp_at_infinity:
-  assumes "filterlim (\<lambda>x. norm (f x)) at_top F"
-  shows   "filterlim f at_infinity F"
-  using filterlim_at_infinity[of 0 f F] assms by (auto simp: filterlim_at_top)
 
 lemma smallomegaI_filterlim_at_infinity:
   assumes lim: "filterlim (\<lambda>x. f x / g x) at_infinity F"
@@ -1351,7 +1330,7 @@ proof (rule smallomegaI_filterlim_at_top_norm)
   from lim show "filterlim (\<lambda>x. norm (f x / g x)) at_top F"
     by (rule filterlim_at_infinity_imp_norm_at_top)
 qed
-
+  
 lemma smallomegaD_filterlim_at_top_norm:
   assumes "f \<in> \<omega>[F](g)"
   assumes "eventually (\<lambda>x. g x \<noteq> 0) F"
@@ -2166,5 +2145,74 @@ lemma smallo_const_inverse [simp]:
 
 lemma const_in_smallo_const [simp]: "(\<lambda>_. b) \<in> o(\<lambda>_ :: _ :: linorder. c) \<longleftrightarrow> b = 0" (is "?lhs \<longleftrightarrow> ?rhs")
   by (cases "b = 0"; cases "c = 0") (simp_all add: landau_o.small_refl_iff)
+
+lemma smallomega_1_conv_filterlim: "f \<in> \<omega>[F](\<lambda>_. 1) \<longleftrightarrow> filterlim f at_infinity F"
+  by (auto intro: smallomegaI_filterlim_at_infinity dest: smallomegaD_filterlim_at_infinity)
+
+
+subsection \<open>Flatness of real functions\<close>
+
+text \<open>
+  Given two real-valued functions $f$ and $g$, we say that $f$ is flatter than $g$ if
+  any power of $f(x)$ is asymptotically dominated by any positive power of $g(x)$. This is
+  a useful notion since, given two products of powers of functions sorted by flatness, we can
+  compare them asymptotically by simply comparing the exponent lists lexicographically.
+
+  A simple sufficient criterion for flatness it that $\ln f(x) \in o(\ln g(x))$, which we show
+  now.
+\<close>
+lemma ln_smallo_imp_flat:
+  fixes f g :: "real \<Rightarrow> real"
+  assumes lim_f: "filterlim f at_top at_top"
+  assumes lim_g: "filterlim g at_top at_top"
+  assumes ln_o_ln: "(\<lambda>x. ln (f x)) \<in> o(\<lambda>x. ln (g x))"
+  assumes q: "q > 0"
+  shows   "(\<lambda>x. f x powr p) \<in> o(\<lambda>x. g x powr q)"
+proof (rule smalloI_tendsto)
+  from lim_f have "eventually (\<lambda>x. f x > 0) at_top" 
+    by (simp add: filterlim_at_top_dense)
+  hence f_nz: "eventually (\<lambda>x. f x \<noteq> 0) at_top" by eventually_elim simp
+  
+  from lim_g have g_gt_1: "eventually (\<lambda>x. g x > 1) at_top"
+    by (simp add: filterlim_at_top_dense)
+  hence g_nz: "eventually (\<lambda>x. g x \<noteq> 0) at_top" by eventually_elim simp
+  thus "eventually (\<lambda>x. g x powr q \<noteq> 0) at_top"
+    by eventually_elim simp
+  
+  have eq: "eventually (\<lambda>x. q * (p/q * (ln (f x) / ln (g x)) - 1) * ln (g x) = 
+                          p * ln (f x) - q * ln (g x)) at_top"
+    using g_gt_1 by eventually_elim (insert q, simp_all add: field_simps)
+  have "filterlim (\<lambda>x. q * (p/q * (ln (f x) / ln (g x)) - 1) * ln (g x)) at_bot at_top"
+    by (insert q)
+       (rule filterlim_tendsto_neg_mult_at_bot tendsto_mult
+              tendsto_const tendsto_diff smalloD_tendsto[OF ln_o_ln] lim_g
+              filterlim_compose[OF ln_at_top] | simp)+
+  hence "filterlim (\<lambda>x. p * ln (f x) - q * ln (g x)) at_bot at_top"
+    by (subst (asm) filterlim_cong[OF refl refl eq])
+  hence *: "((\<lambda>x. exp (p * ln (f x) - q * ln (g x))) \<longlongrightarrow> 0) at_top"
+    by (rule filterlim_compose[OF exp_at_bot])
+  have eq: "eventually (\<lambda>x. exp (p * ln (f x) - q * ln (g x)) = f x powr p / g x powr q) at_top"
+    using f_nz g_nz by eventually_elim (simp add: powr_def exp_diff)
+  show "((\<lambda>x. f x powr p / g x powr q) \<longlongrightarrow> 0) at_top"
+    using * by (subst (asm) filterlim_cong[OF refl refl eq])
+qed
+
+lemma ln_smallo_imp_flat':
+  fixes f g :: "real \<Rightarrow> real"
+  assumes lim_f: "filterlim f at_top at_top"
+  assumes lim_g: "filterlim g at_top at_top"
+  assumes ln_o_ln: "(\<lambda>x. ln (f x)) \<in> o(\<lambda>x. ln (g x))"
+  assumes q: "q < 0"
+  shows   "(\<lambda>x. g x powr q) \<in> o(\<lambda>x. f x powr p)"
+proof -
+  from lim_f lim_g have "eventually (\<lambda>x. f x > 0) at_top" "eventually (\<lambda>x. g x > 0) at_top"
+    by (simp_all add: filterlim_at_top_dense)
+  hence "eventually (\<lambda>x. f x \<noteq> 0) at_top" "eventually (\<lambda>x. g x \<noteq> 0) at_top"
+    by (auto elim: eventually_mono)
+  moreover from assms have "(\<lambda>x. f x powr -p) \<in> o(\<lambda>x. g x powr -q)"
+    by (intro ln_smallo_imp_flat assms) simp_all
+  ultimately show ?thesis unfolding powr_minus
+    by (simp add: landau_o.small.inverse_cancel)
+qed
 
 end
