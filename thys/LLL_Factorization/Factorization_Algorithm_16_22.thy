@@ -152,7 +152,7 @@ definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly lis
      n = degree f;
      \<comment> \<open>bound improved according to textbook, which uses $no = (n + 1) * (max-norm f)^2$\<close>
      no = \<parallel>f\<parallel>\<^sup>2;
-     \<comment> \<open>possible improvement: $B = sqrt (2 ^{5 * n * (n - 1)} * no ^ {2 * n - 1}, cf. @{const LLL_factorization}\<close>
+     \<comment> \<open>possible improvement: $B = sqrt (2 ^{5 * n * (n - 1)} * no ^ {2 * n - 1}$, cf. @{const LLL_factorization}\<close>
      B = sqrt_int_ceiling (2 ^ (5 * n * n) * no ^ (2 * n));
      l = find_exponent p B;
      \<comment> \<open>perform hensel lifting to lift factorization to mod $p^l$\<close>
