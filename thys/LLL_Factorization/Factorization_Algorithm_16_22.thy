@@ -100,15 +100,15 @@ text \<open>This is the critical inner loop.
   With these two modifications, Algorithm 16.22 will become sound as proven below.\<close>
 
 definition "LLL_reconstruction_inner j \<equiv>
-  (*short vector computation*)
+  \<comment> \<open>short vector computation\<close>
   let g' = LLL_implementation.LLL_short_polynomial pl j u 
-  (* fix: forbid multiples of p^l as short vector, unclear whether this is really required *)
+  \<comment> \<open>fix: forbid multiples of p^l as short vector, unclear whether this is really required\<close>
   in if abs (lead_coeff g') \<ge> pl then None else 
   let ppg = primitive_part g'
   in
-  (* slight deviation from textbook: we check divisibility instead of norm-inequality *)
+  \<comment> \<open>slight deviation from textbook: we check divisibility instead of norm-inequality\<close>
   case div_int_poly f ppg of Some f' \<Rightarrow>
-    (* fix: consider modular factors of ppg and not of g' *)
+    \<comment> \<open>fix: consider modular factors of ppg and not of g'\<close>
     Some (filter (\<lambda>gi. \<not> poly_mod.dvdm p gi ppg) gs, lead_coeff f', f', ppg)  
   | None \<Rightarrow> None"
 
@@ -145,20 +145,20 @@ end
 
 definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly list" where
   "factorization_algorithm_16_22 f = (let 
-     (* find suitable prime *)
+     \<comment> \<open>find suitable prime\<close>
      p = suitable_prime_bz f;
-     (* compute finite field factorization *)
+     \<comment> \<open>compute finite field factorization\<close>
      (_, fs) = finite_field_factorization_int p f;
-     (* determine l and B*)
+     \<comment> \<open>determine l and B\<close>
      n = degree f;
-     (* bound according to textbook, can be improved by not using max-norm, 
-        cf. LLL_factorization-bound  *)
+     \<comment> \<open>bound according to textbook, can be improved by not using max-norm, 
+        cf. LLL_factorization-bound\<close>
      no = int (n + 1) * (\<parallel>f\<parallel>\<^sub>\<infinity>)\<^sup>2;
      B = sqrt_int_ceiling (2 ^ (5 * n * n) * no ^ (2 * n));
      l = find_exponent p B;
-     (* perform hensel lifting to lift factorization to mod (p^l) *)     
+     \<comment> \<open>perform hensel lifting to lift factorization to mod (p^l)\<close>
      vs = hensel_lifting p l f fs
-     (* reconstruct integer factors *) 
+     \<comment> \<open>reconstruct integer factors\<close>
    in reconstruction_of_algorithm_16_22 p (p^l) vs f)"
 
 

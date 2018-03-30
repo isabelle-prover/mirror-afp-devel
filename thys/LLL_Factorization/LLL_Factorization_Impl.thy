@@ -70,7 +70,7 @@ definition LLL_short_polynomial where
 function LLL_reconstruction where 
   "LLL_reconstruction f us = (let 
      u = choose_u us in
-      (* sanity checks which are solely used to ensure termination *)
+      \<comment> \<open>sanity checks which are solely used to ensure termination\<close>
       if \<not> (degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl \<noteq> 0) then 
           Code.abort (STR ''LLL_reconstruction is invoked with non-suitable arguments'') (\<lambda> _. [])
     else let 
@@ -87,18 +87,18 @@ declare LLL_implementation.LLL_short_polynomial_def[code]
 
 definition LLL_factorization :: "int poly \<Rightarrow> int poly list" where
   "LLL_factorization f = (let 
-     (* find suitable prime *)
+     \<comment> \<open>find suitable prime\<close>
      p = suitable_prime_bz f;
-     (* compute finite field factorization *)
+     \<comment> \<open>compute finite field factorization\<close>
      (_, fs) = finite_field_factorization_int p f;
-     (* determine exponent l and B*)
+     \<comment> \<open>determine exponent l and B\<close>
      n = degree f;
      no = \<parallel>f\<parallel>\<^sup>2;
      B = sqrt_int_ceiling (2^(5 * n * (n - 1)) * no^(2 * n - 1));
      l = find_exponent p B;
-     (* perform hensel lifting to lift factorization to mod (p^l) *)     
+     \<comment> \<open>perform hensel lifting to lift factorization to mod (p^l)\<close>
      us = hensel_lifting p l f fs;
-     (* reconstruct integer factors via LLL algorithm *) 
+     \<comment> \<open>reconstruct integer factors via LLL algorithm\<close>
      pl = p^l
    in LLL_implementation.LLL_reconstruction p pl f us)"
 
