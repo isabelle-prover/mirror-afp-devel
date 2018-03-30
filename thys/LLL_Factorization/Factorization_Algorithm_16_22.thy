@@ -28,20 +28,8 @@ begin
 
 subsection \<open>Previous lemmas obtained using local type definitions\<close>
 
-(*Obtaining some useful lemmas using local type definitions*)
 context poly_mod_prime_type
 begin                           
-
-lemma irreducible_m_field_connect_aux [simp]:
-  fixes f :: "int poly"
-  shows "irreducible\<^sub>d_m f = irreducible_m f"
-proof -
-  let ?F="(of_int_poly f)::'a mod_ring poly"  
-  have [transfer_rule]: "poly_mod_type.MP_Rel m f ?F"
-    by (simp add: MP_Rel_def Mp_f_representative)
-  have 1: "irreducible\<^sub>d ?F = irreducible ?F" by (transfer, rule irreducible_field_connect)
-  from this[untransferred] show ?thesis .
-qed
 
 lemma irreducible\<^sub>d_m_dvdm_prod_list_connect:
   assumes irr: "irreducible\<^sub>d_m a"
@@ -65,13 +53,6 @@ qed
 
 end
 
-lemma (in poly_mod_prime) irreducible_m_field_connect [simp]:
-  fixes f :: "int poly"  
-  shows "irreducible\<^sub>d_m f = irreducible_m f"
-  by (rule poly_mod_prime_type.irreducible_m_field_connect_aux[unfolded poly_mod_type_simps, 
-        internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, 
-        cancel_type_definition, OF non_empty])
-
 lemma (in poly_mod_prime) irreducible\<^sub>d_m_dvdm_prod_list:
   assumes irr: "irreducible\<^sub>d_m a"
   and dvd: "a dvdm (prod_list xs)"
@@ -83,7 +64,7 @@ lemma (in poly_mod_prime) irreducible\<^sub>d_m_dvdm_prod_list:
 
 subsection \<open>The modified version of Algorithm 16.22\<close>
 
-    (*Now I implement the for loop of step 8. The loop will finishes in two cases:
+    (* Implementation of the for loop of step 8. The loop will finishes in two cases:
       - If j>n'
       - If a divisor is found *)
 
@@ -183,115 +164,6 @@ definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly lis
 
 subsection \<open>Soundness proof\<close>
 
-subsubsection \<open>Previous facts\<close>
-
-lemma primitive_part_eq_irreducible:
-  fixes a::"int poly"
-  assumes a0: "a \<noteq> 0" 
-  and deg_gcd: "degree (gcd a b) > 0" 
-  and b: "irreducible b" 
-  and deg_ab: "degree a \<le> degree b"
-  shows "primitive_part a = b \<or> -(primitive_part a) = b"
-proof -
-  have "b \<noteq> 0 \<and> \<not> b dvd 1 \<and> (\<forall>c d. b = c * d \<longrightarrow> is_unit c \<or> is_unit d)" 
-    using b by blast
-  let ?g = "(gcd a b)"
-  have deg_b_not0: "degree b \<noteq> 0" using b
-    by (metis a0 deg_ab deg_gcd degree_gcd1 le_0_eq neq0_conv)
-  hence b0: "b \<noteq> 0" by auto
-  have not_unit_gcd: "\<not> is_unit ?g" using deg_gcd by auto
-  have gcd_dvd_b: "?g dvd b" by simp
-  from this obtain c where b_gc: "b = ?g * c" unfolding dvd_def by auto
-  hence unit_c: "is_unit c" using b not_unit_gcd by blast
-  hence c1: "c = 1 \<or> c = -1" unfolding is_unit_poly_iff unfolding is_unit_int by auto
-  have g_dvd_a: "?g dvd a" by simp
-  have deg_gb: "degree ?g = degree b" using b_gc unit_c 
-    by (metis (no_types, hide_lams) c1 degree_minus mult.commute mult.left_neutral mult_minus_left)
-  have deg_ga: "degree ?g \<le> degree a" by (rule degree_gcd1[OF a0])
-  hence deg_ab: "degree a = degree b" using deg_ga deg_gb deg_ab by auto
-  have content_1: "content b = 1" using nonconst_poly_irreducible_iff[OF deg_b_not0] b by auto 
-  have "?g dvd a" by simp
-  from this obtain d' where a_gd': "a = ?g * d'" unfolding dvd_def by blast
-  have g0: "?g \<noteq> 0" using gcd_eq_0_iff b0 a0 by auto
-  hence d'0: "d' \<noteq> 0" using a_gd' a0 by force
-  have "degree d' = 0"
-  proof -
-    have "degree a = degree (?g * d')" using a_gd' by auto
-    also have "... = degree ?g + degree d'" 
-      by (rule degree_mult_eq[OF g0 d'0])      
-    also have "... = degree a + degree d'" using deg_gb deg_ab by auto
-    finally show ?thesis by auto
-  qed
-  from this obtain d where d: "d' = [:d:]" using degree0_coeffs by auto
-  have d0: "d \<noteq> 0" using d'0 d by auto
-  have db_dvd_a: "smult d b dvd a" 
-    using a_gd' d
-    by (metis Polynomial.smult_one b_gc mult_unit_dvd_iff 
-        dvd_dvd_smult dvd_refl mult_smult_right unit_c)
-  have a_dvd_db: "a dvd smult d b"
-    using a_gd' d
-    by (metis (no_types, hide_lams) Polynomial.smult_one dvd_mult_cancel_left mult.commute 
-        mult.right_neutral mult_smult_right semiring_gcd_class.gcd_dvd2)
-  show ?thesis
-  proof (cases "unit_factor (primitive_part a) = 1")
-    case True
-    have "primitive_part a = 1 \<or> primitive_part a = normalize b" 
-    proof (rule irreducible_normalized_divisors[OF b])
-      show "normalize (primitive_part a) = primitive_part a" 
-        by (rule unit_factor_1_imp_normalized[OF True])
-      show "primitive_part a dvd b" 
-        by (rule dvd_smult_int[OF d0 a_dvd_db])
-    qed
-    moreover have "primitive_part a \<noteq> 1" 
-      using deg_b_not0 deg_ab degree_1 degree_primitive_part by metis
-    ultimately have "primitive_part a = normalize b" by simp
-    thus ?thesis
-      by (metis (no_types, lifting) b_gc c1 dvd_triv_left gcd.normalize_idem mult.commute 
-          minus_dvd_iff mult.right_neutral mult_minus_left normalization_semidom_class.associatedI)
-  next
-    case False
-    have ppa_0: "primitive_part a \<noteq> 0" using a0 by simp
-    have "coeff (primitive_part a) (degree a) \<noteq> 0" using leading_coeff_neq_0[OF ppa_0] by auto
-    hence uf_pa: "unit_factor (primitive_part (-a)) = 1" 
-      using False unfolding unit_factor_poly_def
-      by (auto, insert zsgn_def, auto)
-    have "primitive_part (-a) = 1 \<or> primitive_part (-a) = normalize b" 
-    proof (rule irreducible_normalized_divisors[OF b])
-      show "normalize (primitive_part (-a)) = primitive_part (-a)"
-        by (rule unit_factor_1_imp_normalized[OF uf_pa])
-      show "primitive_part (-a) dvd b"
-        unfolding primitive_part_neg minus_dvd_iff 
-        by (rule dvd_smult_int[OF d0 a_dvd_db])
-    qed
-    moreover have "primitive_part (-a) \<noteq> 1" using deg_b_not0 deg_ab
-      by (metis degree_1 degree_minus degree_primitive_part)
-    ultimately have "- primitive_part a = normalize b" by auto
-    thus ?thesis
-      by (metis (no_types, hide_lams) add.inverse_inverse b_gc c1 gcd.normalize_idem  
-          gcd.top_left_normalize gcd_neg2 mult.commute mult.left_neutral mult_minus_left)
-  qed
-qed
-
-lemma not_irreducibleI:
-  fixes f:: "'a::{idom_divide,semidom_divide_unit_factor} poly"
-  assumes factor_dvd: "factor dvd f" 
-    and deg_factor: "degree factor < degree f" 
-    and deg_factor0: "degree factor > 0"
-  shows "\<not> irreducible f"
-proof (rule ccontr, unfold not_not)
-  assume irreducible_f: "irreducible f"
-  have not_unit_factor: "\<not> is_unit factor" by (rule deg_not_zero_imp_not_unit[OF deg_factor0])
-  let ?f' = "f div factor"
-  have f_f'_factor: "f = ?f' * factor" using factor_dvd by auto  
-  have not_unit_f': "\<not> is_unit ?f'" 
-    by (rule deg_not_zero_imp_not_unit)  (metis deg_factor degree_0 degree_mult_eq f_f'_factor 
-        less_add_same_cancel2 mult_eq_0_iff not_less_zero)
-  have not_unit_f: "\<not> is_unit f" 
-    by (rule deg_not_zero_imp_not_unit, insert deg_factor, auto) 
-  show False using irreducible_f f_f'_factor not_unit_f not_unit_f' not_unit_factor 
-      unfolding irreducible_def by fast
-qed
-
 subsubsection \<open>Starting the proof\<close>
 
 text \<open>Key lemma to show that forbidding values of $p^l$ or larger suffices to find correct factors.\<close>
@@ -376,12 +248,11 @@ context
     and l :: nat
   defines [simp]: "N \<equiv> degree F"
   assumes p: "prime p"
-      and content_F[simp]: "content F = 1"
       and N0: "N > 0"
       and bound_l: "2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N) \<le> (p^l)\<^sup>2"
 begin
 
-private lemma F0: "F\<noteq>0" using content_F 
+private lemma F0: "F\<noteq>0" using N0 
   by fastforce
 
 private lemma p1: "p > 1" using p prime_gt_1_int by auto
@@ -422,10 +293,6 @@ lemma pl_not0: "p ^ l \<noteq> 0" using p1 l0 by auto
 interpretation pl: poly_mod_2 "p^l" 
   by (standard, insert p1 l0, auto)
 
-lemma coprime_pl: "coprime a p \<Longrightarrow> coprime (pl.M a) p" 
-  unfolding coprime_iff_coprime pl.M_def
-  by (meson coprime_mod_left_iff coprime_power_right_iff l0 pl_not0)
-
 private lemmas pl_dvdm_imp_p_dvdm = p.pl_dvdm_imp_p_dvdm[OF l0]
 
 lemma p_Mp_pl_Mp[simp]: "p.Mp (pl.Mp k) = p.Mp k" 
@@ -438,7 +305,7 @@ context
   defines [simp]: "d \<equiv> degree u"
   assumes d0: "d > 0"
       and u: "monic u"
-      and irred_u: "p.irreducible_m u"
+      and irred_u: "p.irreducible\<^sub>d_m u"
       and uf: "pl.dvdm u f"
       and f_dvd_F: "f dvd F"
       and [simp]: "n == degree f"
@@ -449,13 +316,9 @@ context
       and u_gs: "u \<in> set gs" 
       and norm_gs: "map pl.Mp gs = gs" 
 begin
-
-private lemma content_f[simp]: "content f = 1" 
-  by (rule content_dvd_1[OF content_F f_dvd_F]) 
-
 interpretation pl: poly_mod_2 "p^l" using l0 p1 by (unfold_locales, auto)
 
-private lemma f0: "f \<noteq> 0" using content_f by fastforce
+private lemma f0: "f \<noteq> 0" using sf_F unfolding square_free_def by fastforce
 
 private lemma Mpf0: "pl.Mp f \<noteq> 0"
   by (metis p.square_free_m_def p_Mp_pl_Mp sf)
@@ -475,70 +338,13 @@ proof -
   from berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF refl sf_F deg_f]
   obtain fs where f_fs: "f = prod_list fs"
     and c: "(\<forall>fi\<in>set fs. irreducible\<^sub>d fi \<and> 0 < degree fi )" by blast 
-  have irrd_u: "p.irreducible\<^sub>d_m u" by (simp add: irred_u)
   have "pl.dvdm u (prod_list fs)" using uf f_fs by simp
   hence "p.dvdm u (prod_list fs)" by (rule pl_dvdm_imp_p_dvdm)
   from this obtain h0 where h0: "h0 \<in> set fs" and dvdm_u_h0: "p.dvdm u h0" 
-    using p.irreducible\<^sub>d_m_dvdm_prod_list[OF irrd_u] by auto
+    using p.irreducible\<^sub>d_m_dvdm_prod_list[OF irred_u] by auto
   moreover have "h0 dvd f" by (unfold f_fs, rule prod_list_dvd[OF h0])  
   moreover have "irreducible\<^sub>d h0" using c h0 by auto
   ultimately show ?thesis by blast
-qed
-
-lemma irred_pl_u: "pl.irreducible\<^sub>d_m u" 
-  using u_gs f_gs unfolding pl.unique_factorization_m_alt_def pl.factorization_m_def by auto
-
-private lemma prime_u: assumes "pl.dvdm u (g * h)" and "g * h dvd f"
-  shows "pl.dvdm u g \<or> pl.dvdm u h"
-proof -
-  let ?uf = "pl.unique_factorization_m" 
-  from assms(2) obtain k where f: "f = (g * h) * k" unfolding dvd_def by auto
-  from pl.unique_factorization_m_factor[OF p.prime f_gs[unfolded f] _ _ l0 refl, folded f, OF cop sf]
-  obtain fs where fs: "?uf (g * h) (lead_coeff (g * h), fs)" 
-    and Mp_fs: "image_mset pl.Mp fs = fs" by auto
-  from p.coprime_lead_coeff_factor[OF p.prime cop[unfolded f]] 
-  have cop_gh: "coprime (lead_coeff (g * h)) p" by auto
-  from sf[unfolded f] have sf_gh: "p.square_free_m (g * h)" by (rule p.square_free_m_factor)
-  from pl.unique_factorization_m_factor[OF p.prime fs cop_gh sf_gh l0 refl]
-  obtain gs hs where uf: "?uf g (lead_coeff g, gs)" "?uf h (lead_coeff h, hs)" 
-    and id: "pl.Mf (lead_coeff (g * h), fs) = pl.Mf (lead_coeff g * lead_coeff h, gs + hs)" by auto  
-  show ?thesis 
-  proof (cases "pl.Mp u \<in># image_mset pl.Mp (gs + hs)")
-    case True
-    hence "pl.Mp u \<in># image_mset pl.Mp gs \<or> pl.Mp u \<in># image_mset pl.Mp hs" by auto
-    with uf obtain k ks where k: "k \<in> {g,h}" and uf: "?uf k (lead_coeff k, ks)" 
-      and mem: "pl.Mp u \<in># image_mset pl.Mp ks" by auto
-    from pl.factorization_m_mem_dvdm[OF pl.unique_factorization_m_imp_factorization[OF uf] mem] k
-    show ?thesis by auto
-  next
-    case False
-    hence u_fs: "pl.Mp u \<notin># fs" using id[unfolded pl.Mf_def] Mp_fs by auto
-    from assms(1)[unfolded pl.dvdm_def] obtain v where id_pl: "pl.eq_m (g * h) (u * v)" by auto
-    define w where "w = pl.Mp v" 
-    with id_pl have id_pl: "pl.eq_m (g * h) (u * w)" and w: "pl.Mp w = w" by auto
-    from arg_cong[OF id_pl, of p.Mp]  have id_p: "p.eq_m (g * h) (u * w)" by simp
-    from sf_gh id_p have sf_uv: "p.square_free_m (u * w)" by (rule p.square_free_m_cong)
-    hence sf_w: "p.square_free_m w" by (rule p.square_free_m_factor)
-    have "lead_coeff w = lead_coeff (pl.Mp (u * w))" using w \<open>monic u\<close>
-      by (smt leading_coeff_neq_0 pl.M_def pl.degree_m_eq_lead_coeff pl.m1 poly_mod.degree_m_eq 
-          poly_mod.lead_coeff_monic_mult)
-    also have "\<dots> = lead_coeff (pl.Mp (g * h))" unfolding id_pl ..
-    also have "\<dots> = pl.M (lead_coeff (g * h))"
-      by (rule pl.degree_m_eq_lead_coeff[OF pl.degree_m_eq[OF p.coprime_exp_mod[OF cop_gh l0] pl.m1]])
-    also have "coprime \<dots> p" using cop_gh by (rule coprime_pl)
-    finally have cop_w: "coprime (lead_coeff w) p" .  
-    from p.berlekamp_hensel[OF cop_w sf_w refl l0] 
-    obtain wc ws where 1: "pl.factorization_m w (wc, ws)" by auto
-    have 2: "pl.factorization_m u (1,{#u#})" unfolding pl.factorization_m_def
-      using irred_pl_u pl.monic_Mp[OF \<open>monic u\<close>] by auto
-    from pl.factorization_m_prod[OF 2 1]
-    have "pl.factorization_m (pl.Mp (u * w)) (wc, {#u#} + ws)" by auto
-    hence "pl.factorization_m (g * h) (wc, {#u#} + ws)" unfolding id_pl[symmetric] by simp
-    with fs[unfolded pl.unique_factorization_m_alt_def] 
-    have "pl.Mf (wc, {# u #} + ws) = pl.Mf (lead_coeff (g * h), fs)" by blast
-    with u_fs Mp_fs have False unfolding pl.Mf_def by auto
-    thus ?thesis ..
-  qed
 qed
 
 lemma dvdm_power: assumes "g dvd f" 
@@ -639,83 +445,50 @@ proof (atomize(full), goal_cases)
   note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pl_not0, folded g_def]
   from short(1-3) short(4)[OF u ju'] show ?case by blast
 qed
-  
-
-private lemma [simp]:
-  assumes "rat_of_int (sq_norm_vec b) \<le> 2 ^ m * rat_of_int (sq_norm_vec a)"
-  shows "(sq_norm_vec b) \<le> 2 ^ m * (sq_norm_vec a)" 
-  using of_int_le_iff assms by fastforce
-  
-lemma
-  assumes u_factor: "pl.dvdm u factor"
-     and factor_f: "factor dvd f"
-     and deg_factor: "degree factor > 0"
-     and "degree factor \<le> j'"
-   shows deg_g_0: "degree g > 0"
-     and sq_norm_factor_g_bound: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' < (p^l)\<^sup>2 "
+    
+private lemma factor_irreducible\<^sub>dI: assumes hf: "h dvd f" 
+  and pluh: "pl.dvdm u h" 
+  and degh: "degree h > 0" 
+  and degh_j: "degree h \<le> j'"
+shows "irreducible\<^sub>d h" 
 proof -
-  have deg_factor_j [simp]: "degree factor = j'" 
-    using assms deg[OF u_factor factor_f] by auto
-  hence deg_factor_lt_j: "degree factor < j" by simp
-  from deg_factor have j'0: "j' > 0" by simp
-  from factor_f f0 have factor0: "factor \<noteq> 0" by auto
-  have factor_dvd_F: "factor dvd F" using dvd_trans factor_f f_dvd_F by auto 
-  from short_g[OF factor0 u_factor deg_factor_lt_j] 
-  have short: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * \<parallel>factor\<parallel>\<^sup>2" by simp
-  have "\<dots> \<le> 2 ^ j' * ((1 + int N) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2)" 
-    using sq_norm_factor_bound[OF factor_dvd_F F0] by auto
-  also have "\<dots> < 2 ^ j' * B2_LLL F"
-    using jn n_le_N by (auto intro!: mult_strict_right_mono simp: B2_LLL_def)
-  finally have 2: "2 ^ j' * \<parallel>factor\<parallel>\<^sup>2 < \<dots>" by simp 
-  from le_less_trans[OF short 2] have "\<parallel>g\<parallel>\<^sup>2 < \<dots>" by auto
-  with j'0 have "\<parallel>g\<parallel>\<^sup>2^j' < \<dots>^j'" by (intro power_strict_mono, auto)
-  with j'0 factor0 have "\<parallel>g\<parallel>\<^sup>2^j' * \<parallel>factor\<parallel>\<^sup>2 ^ degree g < \<dots> * \<parallel>factor\<parallel>\<^sup>2 ^ degree g"
-    by (intro mult_strict_right_mono, auto)
-  also have "\<dots> \<le> (2 ^ j' * B2_LLL F)^j' * \<parallel>factor\<parallel>\<^sup>2 ^ j'" using deg_g_j
-    using B2_0 factor0 
-    by (auto intro!: mult_left_mono power_increasing simp:int_one_le_iff_zero_less)
-  also have "\<dots> = (2 ^ j' * \<parallel>factor\<parallel>\<^sup>2) ^ j' * B2_LLL F ^ j'" using j'0 factor0 B2_0
-    by (auto simp add: field_simps)
-  also from 2 have "\<dots> < (2 ^ j' * B2_LLL F) ^ j' * B2_LLL F ^ j'"
-    using j'0 factor0 B2_0
-    by (intro mult_strict_right_mono power_strict_mono mult_nonneg_nonneg, auto)
-  also have "\<dots> \<le> 2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N)"
-    using j'n B2_0 n_le_N
-    by (auto simp: semiring_normalization_rules intro!:mult_mono power_increasing power_mono)
-  also from bound_l have "\<dots> \<le> (p ^ l)\<^sup>2".
-  finally show a: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' < (p^l)\<^sup>2" by (auto simp: field_simps)
-  show "degree g > 0"
-  proof (rule ccontr)
-    assume a1: "\<not> 0 < degree g"
-    have deg_g0: "degree g = 0" using a1 by auto 
-    obtain k' where g_k': "g = [:k':]" using deg_g0 degree0_coeffs  by auto
-    have "k' mod p^l = 0" 
-    proof (rule pl.monic_dvdm_constant[OF _ u])
-      show "pl.dvdm u [:k':]" using ug g_k' by auto        
-      show "0 < degree u" using d0 unfolding d_def by simp
-    qed
-    from this obtain k where g_def: "g = [:k* p^l:]" 
-        using g_k' zmod_eq_0_iff by fastforce        
-    have k: "k \<noteq> 0" using g_def g0 by auto     
-    have "\<parallel>g\<parallel>\<^sup>2 ^ j' = \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j'" unfolding deg_g0 by auto
-    also have "... < (p^l)\<^sup>2" using a by auto
-    finally have b: "\<parallel>g\<parallel>\<^sup>2 ^ j' < (p^l)\<^sup>2" by auto      
-    have "\<parallel>g\<parallel>\<^sup>2 = k\<^sup>2* (p^l)^2" unfolding g_def
-      by (simp add: numeral_2_eq_2)
-    hence 3: "(k\<^sup>2* (p^l)^2)^ j' < (p^l)\<^sup>2" using b by auto      
-    have pl_g0: "(p ^ l)\<^sup>2 > 0" using p1 l0 by auto
-    have pl_ge1: "(p ^ l)\<^sup>2 \<ge> 1" using p1 one_le_power by auto
-    have kj_ge_1: "1 \<le> k\<^sup>2 ^ j'" by (rule one_le_power, simp add: int_one_le_iff_zero_less k)
-    have "(p^l)\<^sup>2 = (p^l)\<^sup>2^1" by auto
-    also have "... \<le> ((p^l)\<^sup>2)^j'"
-      by (rule power_increasing[OF _ pl_ge1], insert j'0, linarith)
-    also have "... \<le> (k\<^sup>2)^j' * (p ^ l)\<^sup>2 ^ j'" 
-      by (auto simp add: mult_le_cancel_right1 kj_ge_1)      
-    also have "... = (k\<^sup>2 * (p ^ l)\<^sup>2)^ j'" 
-      unfolding power_mult_distrib[of "k\<^sup>2" "(p ^ l)\<^sup>2" j'] by simp      
-    finally show False using 3 by auto
+  from pluh have puh: "p.dvdm u h" by (rule pl_dvdm_imp_p_dvdm)
+  note uf_partition = p.unique_factorization_m_factor_partition[OF l0]
+  obtain gs1 gs2 where part: "partition (\<lambda>gi. p.dvdm gi h) gs = (gs1, gs2)" by force
+  from part u_gs puh 
+  have u_gs1: "u \<in> set gs1" unfolding p by auto
+  have gs1: "gs1 = filter (\<lambda> gi. p.dvdm gi h) gs" using part by auto
+  obtain k where f: "f = h * k" using hf unfolding dvd_def by auto
+  from uf_partition[OF f_gs f cop sf part] 
+  have uf_h: "pl.unique_factorization_m h (lead_coeff h, mset gs1)" by auto
+  show ?thesis
+  proof (intro irreducible\<^sub>dI degh)
+    fix q r
+    assume deg_q: "degree q > 0" "degree q < degree h"
+      and deg_r: "degree r > 0" "degree r < degree h"
+      and h: "h = q * r"
+    then have "r dvd h" by auto
+    with h dvd_trans[OF _ hf] have 1: "q dvd f" "r dvd f" by auto
+    from cop[unfolded f] have cop: "coprime (lead_coeff h) p"
+      using p.prime pl.coprime_lead_coeff_factor(1) by blast
+    from sf[unfolded f] have sf: "p.square_free_m h" using p.square_free_m_factor by metis
+    have norm_gs1: "image_mset pl.Mp (mset gs1) = mset gs1" using norm_gs unfolding gs1
+      by (induct gs, auto)
+    from pl.unique_factorization_m_factor[OF p uf_h[unfolded h], folded h, OF cop sf l0 refl]
+    obtain fs gs where uf_q: "pl.unique_factorization_m q (lead_coeff q, fs)"
+     and uf_r: "pl.unique_factorization_m r (lead_coeff r, gs)"
+     and id: "mset gs1 = fs + gs"
+      unfolding pl.Mf_def split using norm_gs1 by auto
+    from degh degh_j deg_q deg_r have qj': "degree q < j'" and rj': "degree r < j'" by auto
+    have intro: "u \<in># r \<Longrightarrow> pl.Mp u \<in># image_mset pl.Mp r" for r by auto 
+    note dvdI = pl.factorization_m_mem_dvdm[OF pl.unique_factorization_m_imp_factorization intro]
+    from u_gs1 id have "u \<in># fs \<or> u \<in># gs" unfolding in_multiset_in_set[symmetric] by auto
+    with dvdI[OF uf_q] dvdI[OF uf_r] have "pl.dvdm u q \<or> pl.dvdm u r" by auto
+    with 1 qj' rj' show False
+      by (elim disjE, auto dest!: deg)
   qed
 qed
+
 
 lemma LLL_reconstruction_inner_complete:
   assumes ret: "LLL_reconstruction_inner p (p^l) gs f u j = None"
@@ -724,58 +497,114 @@ proof (rule ccontr)
   fix factor
   assume u_factor: "pl.dvdm u factor"
      and factor_f: "factor dvd f"
-     and deg_factor2: "\<not> j \<le> degree factor"
-  with deg[OF this(1,2)] have deg_factor_j [simp]: "degree factor = j'" by auto
-  from content_dvd_1[OF content_f factor_f] have cf: "content factor = 1" by auto
+     and deg_factor2: "\<not> j \<le> degree factor" 
+  with deg[OF this(1,2)] have deg_factor_j [simp]: "degree factor = j'" and deg_factor_lt_j: "degree factor < j" by auto
   have deg_factor: "degree factor > 0"
     using d0 deg_factor_j dj' by linarith 
+  from f0 deg_factor divides_degree[OF factor_f] have deg_f: "degree f > 0" by auto
   from deg_factor have j'0: "j' > 0" by simp
   from factor_f f0 have factor0: "factor \<noteq> 0" by auto
-  have irred: "irreducible factor"
-  proof (rule irreducibleI)
-    show factor0: "factor \<noteq> 0" using deg_factor by fastforce
-    show "\<not> is_unit factor" using deg_factor by (rule deg_not_zero_imp_not_unit)
-    fix a b
-    assume fact: "factor = a * b" 
-    from arg_cong[OF this, of degree, unfolded deg_factor_j] 
-    have deg_ab: "degree a + degree b = j'" 
-      using factor0[unfolded fact] by (auto simp: degree_mult_eq)
-    from prime_u[OF u_factor[unfolded fact] factor_f[unfolded fact]]
-    have dvd: "pl.dvdm u a \<or> pl.dvdm u b" by auto
-    show "is_unit a \<or> is_unit b"
-    proof (rule ccontr)
-      assume "\<not> ?thesis" 
-      hence ab: "\<not> is_unit a" "\<not> is_unit b" by auto
-      {
-        fix c
-        assume "c \<in> {a,b}" 
-        with fact ab have c: "c dvd factor" "\<not> is_unit c" by auto
-        from content_dvd_1[OF cf c(1)] have cc: "content c = 1" .
-        with c(2) have dc: "degree c > 0" using content_free_unit by blast
-        note dc cc c
-      } note * = this
-      from *(1)[of a] *(1)[of b] deg_ab have deg_ab: "degree a < j'" "degree b < j'" by auto
-      from dvd obtain c where c: "c \<in> {a,b}" and dvd: "pl.dvdm u c" by auto
-      from deg_ab *[OF c] c
-      have c: "0 < degree c" "content c = 1" "c dvd factor" "degree c < j'" by auto        
-      from dvd_trans[OF c(3) factor_f] have c_f: "c dvd f" .
-      from deg[OF dvd c_f] c(4) show False by auto
-    qed
+  from factor_f obtain f2 where f: "f = factor * f2" unfolding dvd_def by auto
+  from deg_u have deg_u0: "degree u \<noteq> 0" by auto
+  from u_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
+    using d_def deg_factor_j dj' by blast
+  hence u_j: "degree u \<le> j" "degree u < j" by auto
+  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pl_not0, folded g_def]
+  note ret = ret[unfolded LLL_reconstruction_inner_def g_def[symmetric] Let_def]
+  note LLL = LLL(1-3) LLL(4)[OF u u_j(2) factor0 u_factor deg_factor_lt_j]
+  hence deg_g: "degree g \<le> j'" by simp
+  from LLL(2) have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
+  from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
+  from factor0 have normf1: "\<parallel>factor\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of factor] by presburger
+  from F0 have normF: "\<parallel>F\<parallel>\<^sub>\<infinity> \<ge> 1" using linf_norm_poly_greater_0[of F] by presburger
+  from factor_f \<open>f dvd F\<close> have factor_F: "factor dvd F" by (rule dvd_trans)
+  have large: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < (p^l)\<^sup>2"
+  proof (rule less_le_trans[OF _ bound_l])
+    have gg: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2)"
+      by (rule order.trans[OF LLL(4)], simp, rule order.trans[OF sq_norm_factor_bound(1)[OF factor_F F0]], simp)
+    have ff: "\<parallel>factor\<parallel>\<^sup>2 \<le> int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2" using sq_norm_factor_bound(1)[OF factor_F F0]
+      by auto
+    have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' \<le> (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ degree g * 
+        (2 ^ j' * (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2))^j'"
+      by (rule mult_mono[OF power_mono[OF ff] power_mono[OF gg]], auto) 
+    also have "\<dots> = 2 ^ (2 * j' * degree g + 3 * j' * j') * (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (degree g + j')" 
+      unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric] power_add[symmetric])
+    also have "\<dots> < 2 ^ (N\<^sup>2 + 4 * N*N) * (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (2 * N)" 
+    proof (rule mult_less_le_imp_less[OF power_strict_increasing pow_mono_exp])
+      show "1 \<le> int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2" by (rule mult_ge_one, insert normF, auto) 
+      have jN': "j' < N" and jN: "j' \<le> N" using jn divides_degree[OF \<open>f dvd F\<close>] F0 by auto
+      have "degree g + j' \<le> j' + j'" using deg_g j'n by auto
+      also have "\<dots> = 2 * j'" by auto
+      also have "\<dots> \<le> 2 * N" using jN by auto
+      finally show "degree g + j' \<le> 2 * N" .
+      show "0 < (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (degree g + j')" 
+        by (rule zero_less_power[OF mult_pos_pos], insert normF, auto) 
+      have "2 * j' * degree g + 3 * j' * j' \<le> 2 * j' * j' + 3 * j' * j'" using deg_g by auto
+      also have "\<dots> = 5 * (j' * j')" by auto
+      also have "\<dots> < 5 * (N * N)"
+        by (rule mult_strict_left_mono[OF mult_strict_mono], insert jN', auto)
+      also have "\<dots> = N\<^sup>2 + 4 * N * N" by (simp add: power2_eq_square) 
+      finally show "2 * j' * degree g + 3 * j' * j' < N\<^sup>2 + 4 * N * N" .
+    qed auto
+    also have "\<dots> = 2 ^ N\<^sup>2 * (int (N + 1) * 2 ^ (2 * N) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (2 * N)"
+      unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric])
+    finally show "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < 2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N)" 
+      unfolding B2_LLL_def by simp
   qed
+  have "(\<bar>lead_coeff g\<bar>)^2 < (p^l)^2" 
+  proof (rule le_less_trans[OF _ large])
+    have "1 * (\<bar>lead_coeff g\<bar>\<^sup>2)^1 \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor"
+      by (rule mult_mono[OF _ order.trans[OF power_mono pow_mono_exp]], 
+      insert normg normf1 deg_f g0 coeff_le_sq_norm[of g] j'0, 
+      auto intro: pow_mono_one) 
+    thus "\<bar>lead_coeff g\<bar>\<^sup>2 \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor" by simp
+  qed
+  hence "(lead_coeff g)^2 < (p^l)^2" by simp
+  hence "\<bar>lead_coeff g\<bar> < p^l" using p.m1 abs_le_square_iff[of "p^l" "lead_coeff g"] by auto 
+  hence "(p^l \<le> \<bar>lead_coeff g\<bar>) = False" by auto
+  note ret = ret[unfolded this if_False]
+  have deg_f: "degree f > 0" using n0 by auto
+  have deg_ug: "degree u \<le> degree g" 
+  proof (rule pl.dvdm_degree[OF u LLL(3)], standard)
+    assume "pl.Mp g = 0" 
+    from arg_cong[OF this, of "\<lambda> p. coeff p (degree g)"]
+    have "pl.M (coeff g (degree g)) = 0" by (auto simp: pl.Mp_def coeff_map_poly)
+    from this[unfolded pl.M_def] obtain c where lg: "lead_coeff g = p^l * c" by auto
+    with LLL(2) have c0: "c \<noteq> 0" by auto
+    hence "(p^l)^2 \<le> (lead_coeff g)^2" unfolding lg abs_le_square_iff[symmetric]
+      by (rule aux_abs_int)
+    also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2" using coeff_le_sq_norm[of g] by auto 
+    also have "\<dots> = \<parallel>g\<parallel>\<^sup>2 ^ 1" by simp
+    also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2 ^ degree factor" 
+      by (rule pow_mono_exp, insert deg_f normg j'0, auto)
+    also have "\<dots> = 1 * \<dots>" by simp
+    also have "\<dots> \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor" 
+      by (rule mult_right_mono, insert normf1, auto)
+    also have "\<dots> < (p^l)\<^sup>2" by (rule large)
+    finally show False by auto
+  qed
+  with deg_u have deg_g: "degree g > 0" by simp
+  from j'0 have deg_factor: "degree factor > 0" by simp
   let ?g = "gcd factor g" 
-  have gcd: "degree ?g > 0"
-    apply (rule common_factor_via_short[OF _ _ u _ u_factor ug], unfold deg_factor_j)
-    using d0 dj' p1
-    apply (auto intro!: sq_norm_factor_g_bound deg_g_0 u_factor factor_f deg_factor)
-    done
-  have "?g dvd factor" by auto
-  then obtain h where factor: "factor = ?g * h" unfolding dvd_def by auto
-  from irreducibleD[OF irred this] gcd have "is_unit h" by auto
-  then obtain k where hk1: "h * k = 1" unfolding dvd_def by auto
-  from arg_cong[OF this, of degree]
-  have "degree h = 0"
-    by (subst (asm) degree_mult_eq, insert hk1, auto)
-  from degree0_coeffs[OF this] hk1
+  from common_factor_via_short[OF deg_factor deg_g u deg_u u_factor LLL(3) large] pl.m1
+  have gcd: "0 < degree ?g" by auto
+  have gcd_factor: "?g dvd factor" by auto
+  from dvd_trans[OF this factor_f] have gcd_f: "?g dvd f" .
+  from deg_g have g0: "g \<noteq> 0" by auto
+  have gcd_g: "degree ?g \<le> degree g" using g0 using divides_degree by blast
+  from gcd_g LLL(1) have hj': "degree ?g \<le> j'" by auto
+  let ?pp = "primitive_part g" 
+  from ret have "div_int_poly f ?pp = None" by (auto split: option.splits)
+  from div_int_poly[of f ?pp, unfolded this] g0 have ppf: "\<not> ?pp dvd f" unfolding dvd_def by force
+  have irr_f1: "irreducible\<^sub>d factor" 
+    by (rule factor_irreducible\<^sub>dI[OF factor_f u_factor deg_factor], simp)
+  from gcd_factor obtain h where factor: "factor = ?g * h" unfolding dvd_def by auto
+  from irreducible\<^sub>dD(2)[OF irr_f1, of ?g h, folded factor] have "\<not> (degree ?g < j' \<and> degree h < j')" 
+    by auto
+  moreover have "j' = degree ?g + degree h" using factor0 arg_cong[OF factor, of degree] 
+    by (subst (asm) degree_mult_eq, insert j'0, auto)
+  ultimately have "degree h = 0" using gcd by linarith
+  from degree0_coeffs[OF this] factor factor0
   obtain c where h: "h = [:c:]" and c: "c \<noteq> 0" by fastforce
   from arg_cong[OF factor, of degree] have id: "degree ?g = degree factor" 
     unfolding h using c by auto
@@ -798,45 +627,14 @@ proof (rule ccontr)
   hence "g dvd smult d factor" by simp
   from dvd_smult_int[OF d this]
   have "primitive_part g dvd factor" .
-  with factor_f have dvd: "primitive_part g dvd f" by (auto dest: dvd_trans)
-  from ret[unfolded LLL_reconstruction_inner_def Let_def, folded g_def]
-  have ret': "div_int_poly f (primitive_part g) = None \<or> p^l \<le> abs (lead_coeff g)" 
-    using not_None_eq by (fastforce split: if_splits)
-  with dvd g0 div_int_poly[of f "primitive_part g"]
-  have "p^l \<le> abs (lead_coeff g)" unfolding dvd_def mult.commute[of _ "primitive_part g"] by force
-  hence "(p^l)^2 \<le> (abs (lead_coeff g))^2" using pl.m1
-    by (smt power2_less_imp_less) 
-  also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2" by (rule coeff_le_sq_norm)
-  also have "\<dots> \<le> 2 ^ j' * \<parallel>factor\<parallel>\<^sup>2" 
-    using short_g[OF factor0 u_factor] deg_factor_j by auto
-  also have "\<dots> < 2 ^ N * \<parallel>factor\<parallel>\<^sup>2" 
-    by (rule mult_strict_right_mono[OF power_strict_increasing], insert j'n n_le_N factor0, auto)
-  also have "\<dots> \<le> 2 ^ N * (int (degree F + 1) * 2 ^ (2 * degree factor) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2)" 
-    by (rule mult_left_mono[OF sq_norm_factor_bound(1)[OF dvd_trans[OF factor_f f_dvd_F] F0]], auto)
-  also have "\<dots> \<le> 2 ^ N * (int (N + 1) * 2 ^ (2 * N) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2)" unfolding N_def[symmetric]
-    by (rule mult_left_mono[OF mult_right_mono[OF mult_left_mono[OF power_increasing]]],
-    insert j'n n_le_N, auto)
-  also have "\<dots> \<le> (p ^ l)\<^sup>2" 
-  proof (rule order.trans[OF _ bound_l[unfolded B2_LLL_def, folded N_def]], rule mult_mono[OF power_increasing])
-    from F0 have "\<parallel>F\<parallel>\<^sub>\<infinity> \<noteq> 0" by auto
-    moreover have "\<parallel>F\<parallel>\<^sub>\<infinity> \<ge> 0" by auto
-    ultimately have F1: "\<parallel>F\<parallel>\<^sub>\<infinity> \<ge> 1" by linarith
-    show "N \<le> N^2" using power_increasing[of 1 2 N] \<open>N > 0\<close> by auto
-    show "int (N + 1) * 2 ^ (2 * N) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2 \<le> (int (N + 1) * 2 ^ (2 * N) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (2 * N)" 
-      unfolding power_mult[symmetric] power_mult_distrib 
-      by (intro mult_mono power_increasing self_le_power, insert \<open>N > 0\<close> F0 F1, auto)
-  qed auto
-  finally show False by simp
-qed
+  from dvd_trans[OF this factor_f] ppf show False by auto
+qed  
 
 lemma LLL_reconstruction_inner_sound:
   assumes ret: "LLL_reconstruction_inner p (p^l) gs f u j = Some (gs',b',f',h)" 
-  and uf: "pl.unique_factorization_m f (lead_coeff f, mset gs)"
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "p.square_free_m f" 
   notes ret' = ret[unfolded LLL_reconstruction_inner_def Let_def, folded g_def]
   shows "f = f' * h" (is "?g1")
-    and "irreducible h" (is "?g2")
+    and "irreducible\<^sub>d h" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (lead_coeff f', mset gs')" (is "?g4")
     and "pl.dvdm u h" (is ?g5)
@@ -862,28 +660,14 @@ proof -
   finally have ct_pl: "\<bar>?c\<bar> < p^l" .
   from ug have "pl.dvdm u (smult ?c ?ppg)" by simp
   from poly_mod_dvd_drop_smult[OF u p ct0 ct_pl this]
-  have "p.dvdm u h" by simp
+  have puh: "p.dvdm u h" by simp
   with dvdm_power[of h] f
   show uh: "pl.dvdm u h" by (auto simp: dvd_def)
-  have "content_free h" using h0 unfolding out by simp
-  note irr_con = irreducible_content_free_connect[OF this]
   from f have hf: "h dvd f" by (auto intro:dvdI)
   have degh: "degree h > 0"
     by (metis d_def deg deg_u dj' hf le_neq_implies_less not_less0 uh neq0_conv)
   show irr_h: ?g2
-  proof (fold irr_con, intro irreducible\<^sub>dI degh)
-    fix q r
-    assume deg_q: "degree q > 0" "degree q < degree h"
-      and deg_r: "degree r > 0" "degree r < degree h"
-      and h: "h = q * r"
-    then have g_qr: "primitive_part g = q * r" by auto
-    then have "r dvd h" by auto
-    with g_qr dvd_trans[OF _ hf] have 1: "q dvd f" "r dvd f" by auto
-    from deg_g_j deg_q deg_r have qj': "degree q < j'" and rj': "degree r < j'" by auto
-    from prime_u[OF uh[unfolded out g_qr] hf[unfolded h]] have "pl.dvdm u q \<or> pl.dvdm u r" .
-    with 1 qj' rj' show False
-      by (elim disjE, auto dest!: deg)
-  qed
+    by (intro factor_irreducible\<^sub>dI degh hf uh, insert deg_g_j, simp)
   show deg_h: ?g6 using deg deg_g_j g_def hf le_less_Suc_eq uh degree_primitive_part by force
   show ?g7 unfolding out 
     by (rule length_filter_less[of u], insert pl_dvdm_imp_p_dvdm[OF uh] u_gs, auto)
@@ -909,12 +693,13 @@ proof -
       thus "lead_coeff f' mod p ^ l \<noteq> 0" using l0 p.prime by fastforce
     qed
     finally have degf': "degree f' = 0" by auto
-    from content_f[unfolded fh content_mult] have "content f' * content h = 1" by (simp add: ac_simps)
-    from pos_zmult_eq_1_iff_lemma[OF this] have "content f' = 1" using content_ge_0_int[of f'] by auto
-    with degree0_coeffs[OF degf'] have f': "f' = 1 \<or> f' = -1" by auto
-    with \<open>irreducible h\<close> fh have irr_f: "irreducible f" by auto
+    from degree0_coeffs[OF this] f0 fh obtain c where "f' = [:c:]" and c: "c \<noteq> 0" and fch: "f = smult c h"
+      by auto
+    from \<open>irreducible\<^sub>d h\<close> have irr_f: "irreducible\<^sub>d f" 
+      using irreducible\<^sub>d_smult_int[OF c, of h] unfolding fch by auto
     have "degree f = j'" using hf irr_h deg_h
-      using irr_f \<open>n \<equiv> degree f\<close> degh j'n not_irreducibleI by blast
+      using irr_f \<open>n \<equiv> degree f\<close> degh j'n
+      by (metis add.right_neutral degf' degree_mult_eq f0 fh mult_not_zero)
     thus "False" using j'n by auto    
   qed
 qed
@@ -963,7 +748,7 @@ qed
 
 lemma LLL_reconstruction_inner_all_None_imp_irreducible:
   assumes i: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p (p^l) gs f u i = None"
-  shows "irreducible f" 
+  shows "irreducible\<^sub>d f" 
 proof - 
   obtain factor 
     where irreducible_factor: "irreducible\<^sub>d factor" 
@@ -975,32 +760,17 @@ proof -
     by (rule degree_factor_ge_degree_u[OF dvdpl_u_factor factor_dvd_f])
   hence factor_not0: "factor \<noteq> 0" using d0 by auto
   hence deg_factor2: "degree factor \<le> degree f" using divides_degree[OF factor_dvd_f] f0 by auto
-  have content_factor: "content factor = 1"
-    using content_dvd_1 content_f factor_dvd_f by blast
   let ?j = "degree factor"  
   show ?thesis
   proof (cases "degree factor = degree f")
-    case True    
-    have "primitive_part f = factor \<or> - primitive_part f = factor"
-    proof (rule primitive_part_eq_irreducible[OF f0])      
-      have "(gcd f factor) = normalize factor" by (unfold gcd_proj2_iff, rule factor_dvd_f)      
-      thus "0 < degree (gcd f factor)" using deg_factor1 d0 by auto
-      show "irreducible factor" 
-        using irreducible_factor content_factor irreducible_content_free_connect by auto
-      show "degree f \<le> degree factor" using True by auto
-    qed
-    hence f_factor: "f = factor \<or> -f = factor" using primitive_part_prim[OF content_f] by simp            
-    show ?thesis
-    proof (cases "f = factor")
-      case True
-      then show ?thesis using irreducible_factor irreducible_content_free_connect content_f by auto
-    next
-      case False
-      hence "-f = factor" using f_factor by simp
-      then show ?thesis 
-        using irreducible_factor irreducible_content_free_connect content_f irreducible_uminus
-        by (metis content_free_iff_content_eq_1 content_uminus)
-    qed        
+    case True
+    from factor_dvd_f obtain g where f_factor: "f = factor * g" unfolding dvd_def by auto
+    from True[unfolded f_factor] f0[unfolded f_factor] have "degree g = 0" "g \<noteq> 0" 
+      by (subst (asm) degree_mult_eq, auto)
+    from degree0_coeffs[OF this(1)] this(2) obtain c where "g = [:c:]" and c: "c \<noteq> 0" by auto
+    with f_factor have fc: "f = smult c factor" by auto
+    from irreducible_factor irreducible\<^sub>d_smult_int[OF c, of factor, folded fc]
+    show ?thesis by simp
   next
     case False
     hence Suc_j: "Suc ?j \<le> degree f" using deg_factor2 by auto
@@ -1016,7 +786,7 @@ proof -
 qed
 
 lemma irreducible_imp_LLL_reconstruction_inner_all_None:
-  assumes irr_f: "irreducible f"
+  assumes irr_f: "irreducible\<^sub>d f"
   shows "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p (p^l) gs f u i = None"   
 proof (rule ccontr)
   let ?LLL_inner = "\<lambda>i. LLL_reconstruction_inner p (p ^ l) gs f u i"
@@ -1047,14 +817,16 @@ proof (rule ccontr)
     using LLL_inner_eq Suc_j1_eq by auto  
   have deg_factor: "degree factor = j-1" 
     and ff': "f = f' * factor"
-    and irreducible_factor: "irreducible factor"
-    using LLL_reconstruction_inner_sound[OF dj jn degree LLL_inner_Some f_gs cop sf] by (metis+)
+    and irreducible_factor: "irreducible\<^sub>d factor"
+    using LLL_reconstruction_inner_sound[OF dj jn degree LLL_inner_Some] by (metis+)
+  have "degree f' = n - (j - 1)"  using arg_cong[OF ff', of degree]
+    by (subst (asm) degree_mult_eq, insert f0 ff' deg_factor, auto)
+  also have "\<dots> < n" using irreducible_factor jn unfolding irreducible\<^sub>d_def deg_factor by auto
+  finally have deg_f': "degree f' < degree f" by auto
   from ff' have factor_dvd_f: "factor dvd f" by auto
-  have "\<not> irreducible f" 
-  proof (rule not_irreducibleI[OF factor_dvd_f])
-    show "degree factor < degree f" using deg_factor j by auto
-    show "0 < degree factor" using d0 deg_factor dj by linarith
-  qed
+  have "\<not> irreducible\<^sub>d f" 
+    by (rule reducible\<^sub>dI, rule exI[of _ f'], rule exI[of _ factor], 
+        intro conjI ff', insert deg_factor jn deg_f', auto)
   thus False using irr_f by contradiction  
 qed
 
@@ -1082,7 +854,7 @@ proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
 qed
 
 corollary irreducible_imp_LLL_reconstruction_inner_loop_f:
-  assumes irr_f: "irreducible f" and dj: "d<j" 
+  assumes irr_f: "irreducible\<^sub>d f" and dj: "d<j" 
 shows "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)"
   using irreducible_imp_LLL_reconstruction_inner_all_None[OF irr_f]
   using LLL_reconstruction_inner_all_None[OF _ dj] by auto
@@ -1090,7 +862,7 @@ shows "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)"
 lemma exists_index_LLL_reconstruction_inner_Some:
   assumes inner_loop: "LLL_reconstruction_inner_loop p (p^l) gs f u j = (gs',b',f',factor)"
     and i: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
-    and dj: "d<j" and jn: "j\<le>n" and f: "\<not> irreducible f"
+    and dj: "d<j" and jn: "j\<le>n" and f: "\<not> irreducible\<^sub>d f"
   shows "\<exists>j'. j \<le> j' \<and> j'\<le>n \<and> d<j'
     \<and> (LLL_reconstruction_inner p (p ^ l) gs f u j' = Some (gs', b', f', factor))
     \<and> (\<forall>i\<in>{d+1..<j'}. LLL_reconstruction_inner p (p^l) gs f u i = None)"
@@ -1113,7 +885,7 @@ proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
         case True
         have i2: "\<forall>i\<in>{d + 1..n}. LLL_reconstruction_inner p (p ^ l) gs f u i = None" 
           using 2 j_eq_n True by auto
-        have "irreducible f"
+        have "irreducible\<^sub>d f"
           by(rule LLL_reconstruction_inner_all_None_imp_irreducible[OF i2])
         thus ?thesis using f by simp
       next
@@ -1187,7 +959,7 @@ lemma LLL_reconstruction_inner_loop_j_le_n:
     and jn: "j \<le> n"
     and dj: "d < j"
   shows "f = f' * factor" (is "?g1")
-    and "irreducible factor" (is "?g2")
+    and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4")
     and "pl.dvdm u factor" (is ?g5)
@@ -1216,7 +988,7 @@ next
     case False
     have LLL_rw: "LLL_reconstruction_inner p (p ^ l) gs f u (Suc j) = Some (gs', b', f', factor)"
       using False deg Suc.prems by auto
-    show ?thesis using LLL_reconstruction_inner_sound[OF dj jn c LLL_rw f_gs cop sf] by fastforce
+    show ?thesis using LLL_reconstruction_inner_sound[OF dj jn c LLL_rw] by fastforce
   next    
     case True note Suc_j_None = True
     show ?thesis
@@ -1228,7 +1000,7 @@ next
     next
       case True note d_eq_j = True
       show ?thesis
-      proof (cases "irreducible f")
+      proof (cases "irreducible\<^sub>d f")
         case True
         have pl_Mp_1: "pl.Mp 1 = 1" by auto
         have d_Suc_j: "d < Suc j" using Suc.prems by auto
@@ -1268,7 +1040,7 @@ next
           by (rule LLL_reconstruction_inner_None_upt_j, insert dj' Suc_rw j'n prev_None, auto)
         hence c2: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j' \<le> degree factor"
           using j' by force
-        show ?thesis using LLL_reconstruction_inner_sound[OF dj' j'n c2 LLL f_gs cop sf] by fastforce
+        show ?thesis using LLL_reconstruction_inner_sound[OF dj' j'n c2 LLL] by fastforce
       qed
     qed
   qed
@@ -1280,7 +1052,7 @@ lemma LLL_reconstruction_inner_loop_j_ge_n:
     and dj: "d < j"
     and jn: "j>n"
   shows "f = f' * factor" (is "?g1")
-    and "irreducible factor" (is "?g2")
+    and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4") 
     and "pl.dvdm u factor" (is ?g5)
@@ -1292,7 +1064,7 @@ lemma LLL_reconstruction_inner_loop_j_ge_n:
 proof -
   have "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)" using jn by auto
   hence gs': "gs'=[]" and b': "b'=1" and f': "f' = 1" and factor: "factor = f" using ret by auto
-  have "irreducible f"
+  have "irreducible\<^sub>d f"
     by (rule LLL_reconstruction_inner_all_None_imp_irreducible[OF ij])
   thus ?g1 ?g2 ?g3 ?g4 ?g5 ?g6 ?g7 ?g8 ?g9 ?g10 using f' factor b' gs' uf 
     by (auto simp: unique_factorization_m_1)
@@ -1304,7 +1076,7 @@ lemma LLL_reconstruction_inner_loop:
     and n: "n = degree f"
     and dj: "d < j"
   shows "f = f' * factor" (is "?g1")
-    and "irreducible factor" (is "?g2")
+    and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4") 
     and "pl.dvdm u factor" (is ?g5)
@@ -1329,7 +1101,7 @@ end
 
 lemma LLL_reconstruction'':
   assumes 1: "LLL_reconstruction'' p (p^l) gs b f G = G'"
-    and irreducible_G: "\<And>factor. factor \<in> set G \<Longrightarrow> irreducible factor" 
+    and irreducible_G: "\<And>factor. factor \<in> set G \<Longrightarrow> irreducible\<^sub>d factor" 
     and 3: "F = f * prod_list G"
     and 4: "pl.unique_factorization_m f (lead_coeff f, mset gs)"
     and 5: "gs \<noteq> []"
@@ -1338,7 +1110,7 @@ lemma LLL_reconstruction'':
     and 8: "p.square_free_m f" 
     and 9: "coprime (lead_coeff f) p" 
     and sf_F: "square_free F" 
-  shows "(\<forall>g \<in> set G'. irreducible g) \<and> F = prod_list G'"
+  shows "(\<forall>g \<in> set G'. irreducible\<^sub>d g) \<and> F = prod_list G'"
   using 1 irreducible_G 3 4 5 6 7 8 9
 proof (induction gs arbitrary: b f G G' rule: length_induct)
   case (1 gs)  
@@ -1384,21 +1156,20 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   have degree_m_u: "p.degree_m u = degree u" using monic_u by simp
   have degree_u[simp]: "0 < degree u" 
     using p.irreducible\<^sub>d_mD(1)[OF irred_d_u] unfolding degree_m_u .
-  have irred_u: "p.irreducible_m u" using irred_d_u by auto
   have deg_u_d: "degree u < d + 1" by auto 
   from F_f_G have f_dvd_F: "f dvd F" by auto
   from square_free_factor[OF f_dvd_F sf_F] have sf_f: "square_free f" . 
   have n_def': "n \<equiv> degree f" by auto
   from norm have norm_map: "map pl.Mp gs = gs" by (induct gs, auto)
   have length_less: "length gs' < length gs" 
-    and irreducible_factor: "irreducible factor"
+    and irreducible_factor: "irreducible\<^sub>d factor"
     and h_dvd_f: "h dvd f"
     and f_h_factor: "f = h * factor" 
     and h_eq: "pl.unique_factorization_m h (b', mset gs')"
     and gs'_gs: "set gs' \<subseteq> set gs"
     and b': "b' = lead_coeff h" 
     and h1: "gs' = [] \<longrightarrow> h = 1"
-    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_u pl_uf f_dvd_F n_def' 
+    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_d_u pl_uf f_dvd_F n_def' 
       f_gs_factor cop sf sf_f u_gs norm_map
       a1 a2 n_def deg_u_d] 
       gs_not_empty
@@ -1406,7 +1177,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   have F_h_factor_G: "F = h * prod_list (factor # G)"
     using F_f_G f_h_factor by auto
   hence h_dvd_F: "h dvd F" using f_dvd_F dvd_trans by auto
-  have irreducible_factor_G: "\<And> x. x \<in> set (factor # G) \<Longrightarrow> irreducible x"
+  have irreducible_factor_G: "\<And> x. x \<in> set (factor # G) \<Longrightarrow> irreducible\<^sub>d x"
     using irreducible_factor irreducible_G by auto
   from p.coprime_lead_coeff_factor[OF \<open>prime p\<close> cop[unfolded f_h_factor]] 
   have cop': "coprime (lead_coeff h) p" by auto
@@ -1428,7 +1199,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     case False
     have pl_ge0: "p^l > 0" using p1 by auto
     have G'_eq: "G' = factor # G" using LLL_eq False using LLL_reconstruction''.simps by auto
-    have condition1: "(\<forall>a\<in>set G'. irreducible a)" using irreducible_factor_G G'_eq by auto
+    have condition1: "(\<forall>a\<in>set G'. irreducible\<^sub>d a)" using irreducible_factor_G G'_eq by auto
     have h_eq2: "pl.Mp h = pl.Mp [:b':]" using h_eq False 
       unfolding pl.unique_factorization_m_alt_def pl.factorization_m_def by auto
     have Mp_const_rw[simp]: "pl.Mp [:b':] = [:b' mod p^l:]" using pl.Mp_const_poly by blast
@@ -1466,7 +1237,7 @@ qed
 
 lemma reconstruction_of_algorithm_16_22:   
   assumes 1: "reconstruction_of_algorithm_16_22 p (p^l) gs F = G"
-  shows "(\<forall>g\<in>set G. irreducible g) \<and> F = prod_list G"
+  shows "(\<forall>g\<in>set G. irreducible\<^sub>d g) \<and> F = prod_list G"
 proof -
   note * = p.berlekamp_hensel_unique[OF cop sf gs_hen l0]
   obtain c fs where "finite_field_factorization_int p F = (c, fs)" by force
@@ -1482,9 +1253,8 @@ subsubsection \<open>Final statement\<close>
 lemma factorization_algorithm_16_22:
   assumes res: "factorization_algorithm_16_22 f = G"
   and sff: "square_free f"
-  and cf: "content f = 1" 
   and deg: "degree f > 0" 
-  shows "(\<forall>g\<in>set G. irreducible g) \<and> f = prod_list G"
+  shows "(\<forall>g\<in>set G. irreducible\<^sub>d g) \<and> f = prod_list G"
 proof -
   let ?lc = "lead_coeff f" 
   define p where "p \<equiv> suitable_prime_bz f" 
@@ -1509,7 +1279,7 @@ proof -
   note bh = berlekamp_and_hensel_separated[OF cop sf refl fff n(2)]
   note res = res[folded bh(1)]
   show ?thesis
-  proof (rule reconstruction_of_algorithm_16_22[OF prime cf deg _ refl cop sf sff res])
+  proof (rule reconstruction_of_algorithm_16_22[OF prime deg _ refl cop sf sff res])
     from n(1) have "N \<le> p ^ n" by simp
     hence *: "N^2 \<le> (p^n)^2" 
       by (intro power_mono N0, auto)        
@@ -1523,5 +1293,4 @@ proof -
     qed
   qed
 qed
-
 end
