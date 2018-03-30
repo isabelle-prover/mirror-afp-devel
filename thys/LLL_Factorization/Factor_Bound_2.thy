@@ -40,8 +40,7 @@ lemma mahler_measure_l2norm: "mahler_measure f \<le> sqrt (of_int \<parallel>f\<
 lemma sq_norm_factor_bound: 
   fixes f h :: "int poly"
   assumes dvd: "h dvd f" and f0: "f \<noteq> 0" 
-  shows "\<parallel>h\<parallel>\<^sup>2 \<le> int (degree f + 1) * 2^(2 * degree h) * \<parallel>f\<parallel>\<^sub>\<infinity>\<^sup>2" (is ?g1)
-  "\<parallel>h\<parallel>\<^sup>2 \<le> 2 ^ (2 * degree h) * \<parallel>f\<parallel>\<^sup>2" 
+  shows "\<parallel>h\<parallel>\<^sup>2 \<le> 2 ^ (2 * degree h) * \<parallel>f\<parallel>\<^sup>2" 
 proof - 
   let ?r = real_of_int
   have h21: "?r \<parallel>h\<parallel>\<^sup>2 \<le> (?r (norm1 h))^2" using norm2_le_norm1_int[of h]
@@ -65,9 +64,6 @@ proof -
   also have "\<dots> = ?r (2^(2*degree h) * \<parallel>f\<parallel>\<^sup>2)" 
     by (simp add: ac_simps)
   finally show "\<parallel>h\<parallel>\<^sup>2 \<le> 2 ^ (2 * degree h) * \<parallel>f\<parallel>\<^sup>2" unfolding of_int_le_iff .
-  also have "\<dots> \<le> 2^(2 * degree h) * (int (degree f + 1) * \<parallel>f\<parallel>\<^sub>\<infinity>\<^sup>2)" 
-    by (rule mult_left_mono, rule sq_norm_poly_le_linf_norm, auto)
-  finally show ?g1 by (simp add: ac_simps)
 qed
 
 end

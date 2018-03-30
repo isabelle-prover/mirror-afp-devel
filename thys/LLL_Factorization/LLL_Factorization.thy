@@ -881,7 +881,7 @@ proof -
         have "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (?n - 1) * \<parallel>f1\<parallel>\<^sup>2" unfolding g_def
           by (rule short_main(4)[OF mon_u deg_uf _ uf1], insert deg, auto)
         also have "\<dots> \<le> 2 ^ (?n - 1) * (2 ^ (2 * degree f1) * \<parallel>F\<parallel>\<^sup>2)" 
-          by (rule mult_left_mono[OF sq_norm_factor_bound(2)[OF f1F F0]], simp)
+          by (rule mult_left_mono[OF sq_norm_factor_bound[OF f1F F0]], simp)
         also have "\<dots> = 2 ^ ((?n - 1) + 2 * degree f1) * \<parallel>F\<parallel>\<^sup>2" 
           unfolding power_add by simp
         also have "\<dots> \<le> 2 ^ ((?n - 1) + 2 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2" 
@@ -893,7 +893,7 @@ proof -
         from F0 have normF: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] by presburger
         from g0 have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
         from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
-        from power_mono[OF sq_norm_factor_bound(2)[OF fF F0], of "degree g"]
+        from power_mono[OF sq_norm_factor_bound[OF fF F0], of "degree g"]
         have ineq2: "\<parallel>f\<parallel>\<^sup>2 ^ degree g \<le> (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ degree g" by auto
         also have "\<dots> \<le> (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1)"
           by (rule pow_mono_exp, insert deg_gf normF, auto)          

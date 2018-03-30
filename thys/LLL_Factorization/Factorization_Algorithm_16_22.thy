@@ -69,7 +69,7 @@ subsection \<open>The modified version of Algorithm 16.22\<close>
       - If a divisor is found *)
 
 definition B2_LLL :: "int poly \<Rightarrow> int" where
-  "B2_LLL f = int (degree f +1) * 2 ^ (2 * degree f) * \<parallel>f\<parallel>\<^sub>\<infinity>\<^sup>2" 
+  "B2_LLL f = 2 ^ (2 * degree f) * \<parallel>f\<parallel>\<^sup>2" 
 
 context
   fixes p pl :: int
@@ -113,7 +113,6 @@ definition "LLL_reconstruction_inner j \<equiv>
   | None \<Rightarrow> None"
 
 
-
 function LLL_reconstruction_inner_loop where
  "LLL_reconstruction_inner_loop j =
   (if j > degree f then ([],1,1,f)
@@ -151,9 +150,9 @@ definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly lis
      (_, fs) = finite_field_factorization_int p f;
      \<comment> \<open>determine l and B\<close>
      n = degree f;
-     \<comment> \<open>bound according to textbook, can be improved by not using max-norm, 
-        cf. LLL_factorization-bound\<close>
-     no = int (n + 1) * (\<parallel>f\<parallel>\<^sub>\<infinity>)\<^sup>2;
+     \<comment> \<open>bound improved according to textbook, which uses no = (n + 1) * (max-norm f)^2\<close>
+     no = \<parallel>f\<parallel>\<^sup>2;
+     \<comment> \<open>possible improvement: B = sqrt (2 ^ (5 * n * (n - 1)) * no ^ (2 * n - 1), cf. @{const LLL_factorization}\<close>
      B = sqrt_int_ceiling (2 ^ (5 * n * n) * no ^ (2 * n));
      l = find_exponent p B;
      \<comment> \<open>perform hensel lifting to lift factorization to mod (p^l)\<close>
@@ -263,11 +262,11 @@ interpretation pl: poly_mod "p^l".
 
 lemma B2_2: "2 \<le> B2_LLL F" 
 proof -
-  from F0 have "\<parallel>F\<parallel>\<^sub>\<infinity> \<noteq> 0" by simp
-  hence F1: "\<parallel>F\<parallel>\<^sub>\<infinity> \<ge> 1" using linf_norm_poly_ge_0[of F] by linarith  
-  have "(2 :: int) = 2 * 1 * (1^2)" by simp
+  from F0 have "\<parallel>F\<parallel>\<^sup>2 \<noteq> 0" by simp
+  hence F1: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] F0 by linarith  
+  have "(2 :: int) = 2^1 * 1" by simp
   also have "\<dots> \<le> B2_LLL F" unfolding B2_LLL_def
-    by (intro mult_mono power_mono, insert N0 F1, auto)
+    by (intro mult_mono power_increasing F1, insert N0, auto)  
   finally show "2 \<le> B2_LLL F" .
 qed
 
@@ -516,29 +515,30 @@ proof (rule ccontr)
   from LLL(2) have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
   from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
   from factor0 have normf1: "\<parallel>factor\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of factor] by presburger
-  from F0 have normF: "\<parallel>F\<parallel>\<^sub>\<infinity> \<ge> 1" using linf_norm_poly_greater_0[of F] by presburger
+  from F0 have normF: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] by presburger
   from factor_f \<open>f dvd F\<close> have factor_F: "factor dvd F" by (rule dvd_trans)
   have large: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < (p^l)\<^sup>2"
   proof (rule less_le_trans[OF _ bound_l])
-    have gg: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2)"
-      by (rule order.trans[OF LLL(4)], simp, rule order.trans[OF sq_norm_factor_bound(1)[OF factor_F F0]], simp)
-    have ff: "\<parallel>factor\<parallel>\<^sup>2 \<le> int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2" using sq_norm_factor_bound(1)[OF factor_F F0]
+    have gg: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2)"
+      by (rule order.trans[OF LLL(4)], simp, rule order.trans[OF sq_norm_factor_bound[OF factor_F F0]], simp)
+    have ff: "\<parallel>factor\<parallel>\<^sup>2 \<le> 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2" using sq_norm_factor_bound[OF factor_F F0]
       by auto
-    have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' \<le> (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ degree g * 
-        (2 ^ j' * (int (N + 1) * 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2))^j'"
-      by (rule mult_mono[OF power_mono[OF ff] power_mono[OF gg]], auto) 
-    also have "\<dots> = 2 ^ (2 * j' * degree g + 3 * j' * j') * (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (degree g + j')" 
-      unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric] power_add[symmetric])
-    also have "\<dots> < 2 ^ (N\<^sup>2 + 4 * N*N) * (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (2 * N)" 
+    have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' \<le> (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2) ^ degree g * 
+        (2 ^ j' * (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2))^j'"
+      by (rule mult_mono[OF power_mono[OF ff] power_mono[OF gg]], auto intro!: zero_le_power)
+    also have "\<dots> = 2 ^ (2 * j' * degree g + 3 * j' * j') * \<parallel>F\<parallel>\<^sup>2 ^ (degree g + j')" 
+      unfolding power_mult_distrib power_add power_mult 
+      by (simp add: power_mult[symmetric] power_add power_mult_distrib[symmetric])
+    also have "\<dots> < 2 ^ (N\<^sup>2 + 4 * N*N) * \<parallel>F\<parallel>\<^sup>2 ^ (2 * N)" 
     proof (rule mult_less_le_imp_less[OF power_strict_increasing pow_mono_exp])
-      show "1 \<le> int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2" by (rule mult_ge_one, insert normF, auto) 
+      show "1 \<le> \<parallel>F\<parallel>\<^sup>2" by (rule normF) 
       have jN': "j' < N" and jN: "j' \<le> N" using jn divides_degree[OF \<open>f dvd F\<close>] F0 by auto
       have "degree g + j' \<le> j' + j'" using deg_g j'n by auto
       also have "\<dots> = 2 * j'" by auto
       also have "\<dots> \<le> 2 * N" using jN by auto
       finally show "degree g + j' \<le> 2 * N" .
-      show "0 < (int (N + 1) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (degree g + j')" 
-        by (rule zero_less_power[OF mult_pos_pos], insert normF, auto) 
+      show "0 < \<parallel>F\<parallel>\<^sup>2 ^ (degree g + j')" 
+        by (rule zero_less_power, insert normF, auto) 
       have "2 * j' * degree g + 3 * j' * j' \<le> 2 * j' * j' + 3 * j' * j'" using deg_g by auto
       also have "\<dots> = 5 * (j' * j')" by auto
       also have "\<dots> < 5 * (N * N)"
@@ -546,7 +546,7 @@ proof (rule ccontr)
       also have "\<dots> = N\<^sup>2 + 4 * N * N" by (simp add: power2_eq_square) 
       finally show "2 * j' * degree g + 3 * j' * j' < N\<^sup>2 + 4 * N * N" .
     qed auto
-    also have "\<dots> = 2 ^ N\<^sup>2 * (int (N + 1) * 2 ^ (2 * N) * \<parallel>F\<parallel>\<^sub>\<infinity>\<^sup>2) ^ (2 * N)"
+    also have "\<dots> = 2 ^ N\<^sup>2 * (2 ^ (2 * N) * \<parallel>F\<parallel>\<^sup>2) ^ (2 * N)"
       unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric])
     finally show "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < 2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N)" 
       unfolding B2_LLL_def by simp
@@ -1268,7 +1268,7 @@ proof -
   note res
   from prime interpret poly_mod_prime p by unfold_locales
   define K where "K = 2 ^ (5 * degree f * degree f) *
-            (int (degree f + 1) * (\<parallel>f\<parallel>\<^sub>\<infinity>)\<^sup>2) ^ (2 * degree f)"
+            \<parallel>f\<parallel>\<^sup>2 ^ (2 * degree f)"
   define N where "N = sqrt_int_ceiling K" 
   have K0: "K \<ge> 0" unfolding K_def by auto
   have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
