@@ -102,7 +102,7 @@ text \<open>This is the critical inner loop.
 definition "LLL_reconstruction_inner j \<equiv>
   \<comment> \<open>short vector computation\<close>
   let g' = LLL_implementation.LLL_short_polynomial pl j u 
-  \<comment> \<open>fix: forbid multiples of p^l as short vector, unclear whether this is really required\<close>
+  \<comment> \<open>fix: forbid multiples of $p^l$ as short vector, unclear whether this is really required\<close>
   in if abs (lead_coeff g') \<ge> pl then None else 
   let ppg = primitive_part g'
   in
@@ -150,12 +150,12 @@ definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly lis
      (_, fs) = finite_field_factorization_int p f;
      \<comment> \<open>determine l and B\<close>
      n = degree f;
-     \<comment> \<open>bound improved according to textbook, which uses no = (n + 1) * (max-norm f)^2\<close>
+     \<comment> \<open>bound improved according to textbook, which uses $no = (n + 1) * (max-norm f)^2$\<close>
      no = \<parallel>f\<parallel>\<^sup>2;
-     \<comment> \<open>possible improvement: B = sqrt (2 ^ (5 * n * (n - 1)) * no ^ (2 * n - 1), cf. @{const LLL_factorization}\<close>
+     \<comment> \<open>possible improvement: $B = sqrt (2 ^{5 * n * (n - 1)} * no ^ {2 * n - 1}, cf. @{const LLL_factorization}\<close>
      B = sqrt_int_ceiling (2 ^ (5 * n * n) * no ^ (2 * n));
      l = find_exponent p B;
-     \<comment> \<open>perform hensel lifting to lift factorization to mod (p^l)\<close>
+     \<comment> \<open>perform hensel lifting to lift factorization to mod $p^l$\<close>
      vs = hensel_lifting p l f fs
      \<comment> \<open>reconstruct integer factors\<close>
    in reconstruction_of_algorithm_16_22 p (p^l) vs f)"
