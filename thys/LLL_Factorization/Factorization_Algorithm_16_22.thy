@@ -72,7 +72,7 @@ definition B2_LLL :: "int poly \<Rightarrow> int" where
   "B2_LLL f = 2 ^ (2 * degree f) * \<parallel>f\<parallel>\<^sup>2" 
 
 context
-  fixes p pl :: int
+  fixes p pl :: int and l :: nat
 begin
 
 private definition pl2 where "pl2 \<equiv> pl div 2"
@@ -101,7 +101,12 @@ text \<open>This is the critical inner loop.
 
 definition "LLL_reconstruction_inner j \<equiv>
   \<comment> \<open>short vector computation\<close>
-  let g' = LLL_implementation.LLL_short_polynomial pl j u 
+  let j' = j - 1;
+      ll = (let n = sqrt_int_ceiling (\<parallel>f\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j')); 
+      ll' = find_exponent p n in if ll' < l then ll' else l);
+  \<comment> \<open>deviation from textbook: we dynamically adjust the modulus\<close>
+      pl = p^ll;
+      g' = LLL_implementation.LLL_short_polynomial pl j u 
   \<comment> \<open>fix: forbid multiples of $p^l$ as short vector, unclear whether this is really required\<close>
   in if abs (lead_coeff g') \<ge> pl then None else 
   let ppg = primitive_part g'
@@ -158,7 +163,7 @@ definition factorization_algorithm_16_22 :: "int poly \<Rightarrow> int poly lis
      \<comment> \<open>perform hensel lifting to lift factorization to mod $p^l$\<close>
      vs = hensel_lifting p l f fs
      \<comment> \<open>reconstruct integer factors\<close>
-   in reconstruction_of_algorithm_16_22 p (p^l) vs f)"
+   in reconstruction_of_algorithm_16_22 p l vs f)"
 
 
 subsection \<open>Soundness proof\<close>
@@ -238,7 +243,6 @@ proof (induct l arbitrary: c rule: less_induct)
     qed
   qed
 qed
-
 
 context
   fixes p :: int
@@ -479,24 +483,55 @@ proof -
   qed
 qed
 
+private definition "ll = (let n = sqrt_int_ceiling (\<parallel>f\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j')); 
+    ll' = find_exponent p n in if ll' < l then ll' else l)" 
 
-private definition "g \<equiv> LLL_implementation.LLL_short_polynomial (p^l) j u"
+lemma ll: "ll \<le> l" unfolding ll_def Let_def by auto
+
+lemma ll0: "ll \<noteq> 0" using l0 find_exponent[OF p.m1] 
+  unfolding ll_def Let_def by auto
+
+interpretation pll: poly_mod_2 "p^ll" 
+  using ll0 p.m1 by (unfold_locales, auto) 
+
+lemma pll0: "p^ll \<noteq> 0" using p by auto
+
+lemma dvdm_l_ll: assumes "pl.dvdm a b"
+  shows "pll.dvdm a b" 
+proof -
+  have id: "p^l = p^ll * p ^ (l - ll)" using ll unfolding power_add[symmetric] by auto
+  from assms[unfolded pl.dvdm_def] obtain c where eq: "pl.eq_m b (a * c)" by blast
+  from pll.Mp_shrink_modulus[OF eq[unfolded id]] p have "pll.eq_m b (a * c)" by auto
+  thus ?thesis unfolding pll.dvdm_def ..
+qed
+
+private definition "g \<equiv> LLL_implementation.LLL_short_polynomial (p^ll) j u"
 
 lemma deg_g_j: "degree g < j" 
     and g0: "g \<noteq> 0" 
-    and ug :"pl.dvdm u g" 
-    and short_g: "h \<noteq> 0 \<Longrightarrow> pl.dvdm u h \<Longrightarrow> degree h < j \<Longrightarrow> \<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (j - 1) * \<parallel>h\<parallel>\<^sup>2" 
+    and ug :"pll.dvdm u g" 
+    and short_g: "h \<noteq> 0 \<Longrightarrow> pll.dvdm u h \<Longrightarrow> degree h \<le> j' \<Longrightarrow> \<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * \<parallel>h\<parallel>\<^sup>2" 
 proof (atomize(full), goal_cases)
   case 1
   from deg_u have degu0: "degree u \<noteq> 0" by auto
   have ju: "j \<ge> degree u" using d_def dj' le_Suc_eq by blast 
   have ju': "j > degree u" using d_def dj' by auto 
-  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pl_not0, folded g_def]
-  from short(1-3) short(4)[OF u ju'] show ?case by blast
+  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pll0, folded g_def]
+  from short(1-3) short(4)[OF u ju'] show ?case by auto
 qed
 
+lemma LLL_reconstruction_inner_simps: "LLL_reconstruction_inner p l gs f u j
+  = (if p ^ ll \<le> \<bar>lead_coeff g\<bar> then None
+   else case div_int_poly f (primitive_part g) of None \<Rightarrow> None
+        | Some f' \<Rightarrow> Some ([gi\<leftarrow>gs . \<not> p.dvdm gi (primitive_part g)], lead_coeff f', f', primitive_part g))" 
+proof -
+  have Suc: "Suc j' - 1 = j'" by simp
+  show ?thesis unfolding LLL_reconstruction_inner_def Suc Let_def ll_def[unfolded Let_def, symmetric]
+     g_def[unfolded Let_def, symmetric] by simp
+qed
+  
 lemma LLL_reconstruction_inner_complete:
-  assumes ret: "LLL_reconstruction_inner p (p^l) gs f u j = None"
+  assumes ret: "LLL_reconstruction_inner p l gs f u j = None"
   shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
 proof (rule ccontr)
   fix factor
@@ -505,6 +540,7 @@ proof (rule ccontr)
      and deg_factor2: "\<not> j \<le> degree factor" 
   with deg[OF this(1,2)] have deg_factor_j [simp]: "degree factor = j'" and deg_factor_lt_j: "degree factor < j" by auto
   from dvdm_power[OF factor_f] pu_factor have u_factor: "pl.dvdm u factor" by auto  
+  from dvdm_l_ll[OF u_factor] have pll_u_factor: "pll.dvdm u factor" by auto
   have deg_factor: "degree factor > 0"
     using d0 deg_factor_j dj' by linarith 
   from f0 deg_factor divides_degree[OF factor_f] have deg_f: "degree f > 0" by auto
@@ -515,50 +551,82 @@ proof (rule ccontr)
   from pu_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
     using d_def deg_factor_j dj' by blast
   hence u_j: "degree u \<le> j" "degree u < j" by auto
-  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pl_not0, folded g_def]
-  note ret = ret[unfolded LLL_reconstruction_inner_def g_def[symmetric] Let_def]
-  note LLL = LLL(1-3) LLL(4)[OF u u_j(2) factor0 u_factor deg_factor_lt_j]
+  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pll0, folded g_def]
+  note ret = ret[unfolded LLL_reconstruction_inner_simps]   
+  note LLL = LLL(1-3) LLL(4)[OF u u_j(2) factor0 pll_u_factor deg_factor_lt_j]
   hence deg_g: "degree g \<le> j'" by simp
   from LLL(2) have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
   from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
   from factor0 have normf1: "\<parallel>factor\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of factor] by presburger
   from F0 have normF: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] by presburger
   from factor_f \<open>f dvd F\<close> have factor_F: "factor dvd F" by (rule dvd_trans)
-  have large: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < (p^l)\<^sup>2"
-  proof (rule less_le_trans[OF _ bound_l])
-    have gg: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ j' * (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2)"
-      by (rule order.trans[OF LLL(4)], simp, rule order.trans[OF sq_norm_factor_bound[OF factor_F F0]], simp)
-    have ff: "\<parallel>factor\<parallel>\<^sup>2 \<le> 2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2" using sq_norm_factor_bound[OF factor_F F0]
-      by auto
-    have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ j' \<le> (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2) ^ degree g * 
-        (2 ^ j' * (2 ^ (2 * j') * \<parallel>F\<parallel>\<^sup>2))^j'"
-      by (rule mult_mono[OF power_mono[OF ff] power_mono[OF gg]], auto intro!: zero_le_power)
-    also have "\<dots> = 2 ^ (2 * j' * degree g + 3 * j' * j') * \<parallel>F\<parallel>\<^sup>2 ^ (degree g + j')" 
-      unfolding power_mult_distrib power_add power_mult 
-      by (simp add: power_mult[symmetric] power_add power_mult_distrib[symmetric])
-    also have "\<dots> < 2 ^ (N\<^sup>2 + 4 * N*N) * \<parallel>F\<parallel>\<^sup>2 ^ (2 * N)" 
-    proof (rule mult_less_le_imp_less[OF power_strict_increasing pow_mono_exp])
-      show "1 \<le> \<parallel>F\<parallel>\<^sup>2" by (rule normF) 
-      have jN': "j' < N" and jN: "j' \<le> N" using jn divides_degree[OF \<open>f dvd F\<close>] F0 by auto
-      have "degree g + j' \<le> j' + j'" using deg_g j'n by auto
-      also have "\<dots> = 2 * j'" by auto
-      also have "\<dots> \<le> 2 * N" using jN by auto
-      finally show "degree g + j' \<le> 2 * N" .
-      show "0 < \<parallel>F\<parallel>\<^sup>2 ^ (degree g + j')" 
-        by (rule zero_less_power, insert normF, auto) 
-      have "2 * j' * degree g + 3 * j' * j' \<le> 2 * j' * j' + 3 * j' * j'" using deg_g by auto
-      also have "\<dots> = 5 * (j' * j')" by auto
-      also have "\<dots> < 5 * (N * N)"
-        by (rule mult_strict_left_mono[OF mult_strict_mono], insert jN', auto)
-      also have "\<dots> = N\<^sup>2 + 4 * N * N" by (simp add: power2_eq_square) 
-      finally show "2 * j' * degree g + 3 * j' * j' < N\<^sup>2 + 4 * N * N" .
-    qed auto
-    also have "\<dots> = 2 ^ N\<^sup>2 * (2 ^ (2 * N) * \<parallel>F\<parallel>\<^sup>2) ^ (2 * N)"
+  have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor \<le> \<parallel>factor\<parallel>\<^sup>2 ^ j' * \<parallel>g\<parallel>\<^sup>2 ^ j'"
+    by (rule mult_mono[OF power_increasing], insert normg normf1 deg_g, auto)
+  also have "\<dots> = (\<parallel>factor\<parallel>\<^sup>2 * \<parallel>g\<parallel>\<^sup>2)^j'" by (simp add: power_mult_distrib)
+  also have "\<dots> \<le> (\<parallel>factor\<parallel>\<^sup>2 * (2 ^ j' * \<parallel>factor\<parallel>\<^sup>2))^j'"
+    by (rule power_mono[OF mult_left_mono], insert LLL(4), auto)
+  also have "\<dots> = \<parallel>factor\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (j' * j')" 
+    unfolding power_mult_distrib power_mult power_add mult_2 by simp
+  finally have approx_part_1: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor \<le> \<parallel>factor\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (j' * j')" .
+  {
+    fix f :: "int poly" 
+    assume *: "factor dvd f" "f \<noteq> 0" 
+    note approx_part_1
+    also have "\<parallel>factor\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (j' * j') \<le> (2^(2*j') * \<parallel>f\<parallel>\<^sup>2) ^ (2 * j') * 2 ^ (j' * j')" 
+      by (rule mult_right_mono[OF power_mono], insert sq_norm_factor_bound[OF *], auto)
+    also have "\<dots> = \<parallel>f\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (2*j' * 2*j' + j' * j')" 
       unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric])
-    finally show "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < 2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N)" 
-      unfolding B2_LLL_def by simp
+    also have "2*j' * 2*j' + j' * j' = 5 * j' * j'" by simp
+    finally have "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor \<le> \<parallel>f\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j')" .
+  } note approx = this
+  note approx_1 = approx[OF factor_f f0]
+  note approx_2_part = approx[OF factor_F F0]
+  have large: "\<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor < (p^ll)\<^sup>2" 
+  proof (cases "ll = l")
+    case False
+    let ?n = "\<parallel>f\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j')" 
+    have n: "?n \<ge> 0" by auto
+    let ?s = "sqrt_int_ceiling ?n" 
+    from False have "ll = find_exponent p ?s" unfolding ll_def Let_def by auto
+    hence spll: "?s < p^ll" using find_exponent(1)[OF p.m1] by auto
+    have "sqrt ?n \<ge> 0" by auto
+    hence sqrt: "sqrt ?n > -1" by linarith    
+    have ns: "?n \<le> ?s^2" using sqrt_int_ceiling_bound[OF n] .
+    also have "\<dots> < (p^ll)^2" 
+      by (rule power_strict_mono[OF spll], insert sqrt, auto)
+    finally show ?thesis using approx_1 by auto
+  next
+    case True
+    hence ll: "p^ll = p^l" by simp
+    show ?thesis unfolding ll
+    proof (rule less_le_trans[OF le_less_trans[OF approx_2_part] bound_l])
+      have "\<parallel>F\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j') 
+          = 2 ^ (2 * j' * j' + 3 * j' * j') * \<parallel>F\<parallel>\<^sup>2 ^ (j' + j')" 
+        unfolding mult_2 by simp 
+      also have "\<dots> < 2 ^ (N\<^sup>2 + 4 * N*N) * \<parallel>F\<parallel>\<^sup>2 ^ (2 * N)" 
+      proof (rule mult_less_le_imp_less[OF power_strict_increasing pow_mono_exp])
+        show "1 \<le> \<parallel>F\<parallel>\<^sup>2" by (rule normF) 
+        have jN': "j' < N" and jN: "j' \<le> N" using jn divides_degree[OF \<open>f dvd F\<close>] F0 by auto
+        have "j' + j' \<le> j' + j'" using deg_g j'n by auto
+        also have "\<dots> = 2 * j'" by auto
+        also have "\<dots> \<le> 2 * N" using jN by auto
+        finally show "j' + j' \<le> 2 * N" .
+        show "0 < \<parallel>F\<parallel>\<^sup>2 ^ (j' + j')" 
+          by (rule zero_less_power, insert normF, auto) 
+        have "2 * j' * j' + 3 * j' * j' \<le> 2 * j' * j' + 3 * j' * j'" by auto
+        also have "\<dots> = 5 * (j' * j')" by auto
+        also have "\<dots> < 5 * (N * N)"
+          by (rule mult_strict_left_mono[OF mult_strict_mono], insert jN', auto)
+        also have "\<dots> = N\<^sup>2 + 4 * N * N" by (simp add: power2_eq_square) 
+        finally show "2 * j' * j' + 3 * j' * j' < N\<^sup>2 + 4 * N * N" .
+      qed auto
+      also have "\<dots> = 2 ^ N\<^sup>2 * (2 ^ (2 * N) * \<parallel>F\<parallel>\<^sup>2) ^ (2 * N)"
+        unfolding power_mult_distrib power_add by (simp add: power_mult[symmetric])
+      finally show "\<parallel>F\<parallel>\<^sup>2 ^ (2 * j') * 2 ^ (5 * j' * j') < 2 ^ N\<^sup>2 * B2_LLL F ^ (2 * N)" 
+        unfolding B2_LLL_def by simp
+    qed
   qed
-  have "(\<bar>lead_coeff g\<bar>)^2 < (p^l)^2" 
+  have "(\<bar>lead_coeff g\<bar>)^2 < (p^ll)^2" 
   proof (rule le_less_trans[OF _ large])
     have "1 * (\<bar>lead_coeff g\<bar>\<^sup>2)^1 \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor"
       by (rule mult_mono[OF _ order.trans[OF power_mono pow_mono_exp]], 
@@ -566,19 +634,19 @@ proof (rule ccontr)
       auto intro: pow_mono_one) 
     thus "\<bar>lead_coeff g\<bar>\<^sup>2 \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor" by simp
   qed
-  hence "(lead_coeff g)^2 < (p^l)^2" by simp
-  hence "\<bar>lead_coeff g\<bar> < p^l" using p.m1 abs_le_square_iff[of "p^l" "lead_coeff g"] by auto 
-  hence "(p^l \<le> \<bar>lead_coeff g\<bar>) = False" by auto
+  hence "(lead_coeff g)^2 < (p^ll)^2" by simp
+  hence "\<bar>lead_coeff g\<bar> < p^ll" using p.m1 abs_le_square_iff[of "p^ll" "lead_coeff g"] by auto 
+  hence "(p^ll \<le> \<bar>lead_coeff g\<bar>) = False" by auto
   note ret = ret[unfolded this if_False]
   have deg_f: "degree f > 0" using n0 by auto
   have deg_ug: "degree u \<le> degree g" 
-  proof (rule pl.dvdm_degree[OF u LLL(3)], standard)
-    assume "pl.Mp g = 0" 
+  proof (rule pll.dvdm_degree[OF u LLL(3)], standard)
+    assume "pll.Mp g = 0" 
     from arg_cong[OF this, of "\<lambda> p. coeff p (degree g)"]
-    have "pl.M (coeff g (degree g)) = 0" by (auto simp: pl.Mp_def coeff_map_poly)
-    from this[unfolded pl.M_def] obtain c where lg: "lead_coeff g = p^l * c" by auto
+    have "pll.M (coeff g (degree g)) = 0" by (auto simp: pll.Mp_def coeff_map_poly)
+    from this[unfolded pll.M_def] obtain c where lg: "lead_coeff g = p^ll * c" by auto
     with LLL(2) have c0: "c \<noteq> 0" by auto
-    hence "(p^l)^2 \<le> (lead_coeff g)^2" unfolding lg abs_le_square_iff[symmetric]
+    hence "(p^ll)^2 \<le> (lead_coeff g)^2" unfolding lg abs_le_square_iff[symmetric]
       by (rule aux_abs_int)
     also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2" using coeff_le_sq_norm[of g] by auto 
     also have "\<dots> = \<parallel>g\<parallel>\<^sup>2 ^ 1" by simp
@@ -587,13 +655,13 @@ proof (rule ccontr)
     also have "\<dots> = 1 * \<dots>" by simp
     also have "\<dots> \<le> \<parallel>factor\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree factor" 
       by (rule mult_right_mono, insert normf1, auto)
-    also have "\<dots> < (p^l)\<^sup>2" by (rule large)
+    also have "\<dots> < (p^ll)\<^sup>2" by (rule large)
     finally show False by auto
   qed
   with deg_u have deg_g: "degree g > 0" by simp
   from j'0 have deg_factor: "degree factor > 0" by simp
   let ?g = "gcd factor g" 
-  from common_factor_via_short[OF deg_factor deg_g u deg_u u_factor LLL(3) large] pl.m1
+  from common_factor_via_short[OF deg_factor deg_g u deg_u pll_u_factor LLL(3) large] pll.m1
   have gcd: "0 < degree ?g" by auto
   have gcd_factor: "?g dvd factor" by auto
   from dvd_trans[OF this factor_f] have gcd_f: "?g dvd f" .
@@ -602,7 +670,8 @@ proof (rule ccontr)
   from gcd_g LLL(1) have hj': "degree ?g \<le> j'" by auto
   let ?pp = "primitive_part g" 
   from ret have "div_int_poly f ?pp = None" by (auto split: option.splits)
-  from div_int_poly[of f ?pp, unfolded this] g0 have ppf: "\<not> ?pp dvd f" unfolding dvd_def by force
+  from div_int_poly[of f ?pp, unfolded this] g0 
+  have ppf: "\<not> ?pp dvd f" unfolding dvd_def by (auto simp: ac_simps)
   have irr_f1: "irreducible\<^sub>d factor" 
     by (rule factor_irreducible\<^sub>dI[OF factor_f pu_factor deg_factor], simp)
   from gcd_factor obtain h where factor: "factor = ?g * h" unfolding dvd_def by auto
@@ -638,8 +707,7 @@ proof (rule ccontr)
 qed  
 
 lemma LLL_reconstruction_inner_sound:
-  assumes ret: "LLL_reconstruction_inner p (p^l) gs f u j = Some (gs',b',f',h)" 
-  notes ret' = ret[unfolded LLL_reconstruction_inner_def Let_def, folded g_def]
+  assumes ret: "LLL_reconstruction_inner p l gs f u j = Some (gs',b',f',h)" 
   shows "f = f' * h" (is "?g1")
     and "irreducible\<^sub>d h" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
@@ -651,21 +719,22 @@ lemma LLL_reconstruction_inner_sound:
     and "gs' \<noteq> []" (is ?g9) 
 proof -
   let ?ppg = "primitive_part g" 
-  from ret' have lc: "abs (lead_coeff g) < p^l" by (auto split: if_splits)
-  from ret' obtain rest where rest: "div_int_poly f (primitive_part g) = Some rest" 
+  note ret = ret[unfolded LLL_reconstruction_inner_simps]   
+  from ret have lc: "abs (lead_coeff g) < p^ll" by (auto split: if_splits)
+  from ret obtain rest where rest: "div_int_poly f (primitive_part g) = Some rest" 
     by (auto split: if_splits option.splits)
-  from ret'[unfolded this] div_int_then_rqp[OF this] lc
+  from ret[unfolded this] div_int_then_rqp[OF this] lc
   have out [simp]: "h = ?ppg" "gs' = filter (\<lambda> gi. \<not> p.dvdm gi ?ppg) gs" 
     "f' = rest" "b' = lead_coeff rest"
    and f: "f = ?ppg * rest" by auto
   with div_int_then_rqp[OF rest] show ?g1 ?g3 by auto
-  with f0 have h0: "h \<noteq> 0" by auto
+  from \<open>?g1\<close> f0 have h0: "h \<noteq> 0" by auto
   let ?c = "content g" 
   from g0 have ct0: "?c \<noteq> 0" by auto
   have "\<bar>?c\<bar> \<le> \<bar>lead_coeff g\<bar>" by (rule content_le_lead_coeff)
-  also have "\<dots> < p^l" by fact
-  finally have ct_pl: "\<bar>?c\<bar> < p^l" .
-  from ug have "pl.dvdm u (smult ?c ?ppg)" by simp
+  also have "\<dots> < p^ll" by fact
+  finally have ct_pl: "\<bar>?c\<bar> < p^ll" .
+  from ug have "pll.dvdm u (smult ?c ?ppg)" by simp
   from poly_mod_dvd_drop_smult[OF u p ct0 ct_pl this]
   show puh: "p.dvdm u h" by simp
   with dvdm_power[of h] f
@@ -717,7 +786,7 @@ subsubsection \<open>Outer loop\<close>
 interpretation LLL d .
 
 lemma LLL_reconstruction_inner_None_upt_j':
-  assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
+  assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p l gs f u i = None" 
     and dj: "d<j" and "j\<le>n"
   shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
   using assms
@@ -739,7 +808,7 @@ proof (induct j)
 qed auto
 
 corollary LLL_reconstruction_inner_None_upt_j:
-  assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
+  assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p l gs f u i = None" 
     and dj: "d\<le>j" and jn: "j\<le>n"
   shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
 proof (cases "d=j")
@@ -754,7 +823,7 @@ next
 qed
 
 lemma LLL_reconstruction_inner_all_None_imp_irreducible:
-  assumes i: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p (p^l) gs f u i = None"
+  assumes i: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p l gs f u i = None"
   shows "irreducible\<^sub>d f" 
 proof - 
   obtain factor 
@@ -783,7 +852,7 @@ proof -
     have "Suc ?j \<le> degree factor"
     proof (rule LLL_reconstruction_inner_None_upt_j[OF _ _ _ dvdp_u_factor factor_dvd_f])
       show "d \<le> Suc ?j" using deg_factor1 by auto
-      show "\<forall>i\<in>{d + 1..(Suc ?j)}. LLL_reconstruction_inner p (p ^ l) gs f u i = None"
+      show "\<forall>i\<in>{d + 1..(Suc ?j)}. LLL_reconstruction_inner p l gs f u i = None"
         using Suc_j i by auto
       show "Suc ?j \<le> n" using Suc_j by simp
     qed
@@ -793,9 +862,9 @@ qed
 
 lemma irreducible_imp_LLL_reconstruction_inner_all_None:
   assumes irr_f: "irreducible\<^sub>d f"
-  shows "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p (p^l) gs f u i = None"   
+  shows "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p l gs f u i = None"   
 proof (rule ccontr)
-  let ?LLL_inner = "\<lambda>i. LLL_reconstruction_inner p (p ^ l) gs f u i"
+  let ?LLL_inner = "\<lambda>i. LLL_reconstruction_inner p l gs f u i"
   let ?G ="{j. j \<in> {d + 1..n} \<and> ?LLL_inner j \<noteq> None}"
   assume "\<not> (\<forall>i\<in>{d + 1..n}. ?LLL_inner i = None)"
   hence G_not_empty: "?G \<noteq> {}" by auto
@@ -837,21 +906,21 @@ proof (rule ccontr)
 qed
 
 lemma LLL_reconstruction_inner_all_None:
-  assumes i: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
+  assumes i: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p l gs f u i = None"
   and dj: "d<j"
-shows "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)"
+shows "LLL_reconstruction_inner_loop p l gs f u j = ([],1,1,f)"
   using dj                             
-proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
+proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p l gs u])
   case (1 j)
   note hyp = "1.hyps"
   note dj = "1.prems"(1)
   show ?case 
   proof (cases "j\<le>n")
     case True note jn = True
-    have step: "LLL_reconstruction_inner p (p ^ l) gs f u j = None"
+    have step: "LLL_reconstruction_inner p l gs f u j = None"
       by (cases "d=j", insert  i jn dj, auto)     
-    have "LLL_reconstruction_inner_loop p (p ^ l) gs f u j
-      = LLL_reconstruction_inner_loop p (p ^ l) gs f u (j+1)"
+    have "LLL_reconstruction_inner_loop p l gs f u j
+      = LLL_reconstruction_inner_loop p l gs f u (j+1)"
       using jn step by auto
     also have "... = ([], 1, 1, f)"
       by (rule hyp[OF _ step], insert jn dj, auto simp add: jn dj)      
@@ -861,19 +930,19 @@ qed
 
 corollary irreducible_imp_LLL_reconstruction_inner_loop_f:
   assumes irr_f: "irreducible\<^sub>d f" and dj: "d<j" 
-shows "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)"
+shows "LLL_reconstruction_inner_loop p l gs f u j = ([],1,1,f)"
   using irreducible_imp_LLL_reconstruction_inner_all_None[OF irr_f]
   using LLL_reconstruction_inner_all_None[OF _ dj] by auto
   
 lemma exists_index_LLL_reconstruction_inner_Some:
-  assumes inner_loop: "LLL_reconstruction_inner_loop p (p^l) gs f u j = (gs',b',f',factor)"
-    and i: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
+  assumes inner_loop: "LLL_reconstruction_inner_loop p l gs f u j = (gs',b',f',factor)"
+    and i: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p l gs f u i = None"
     and dj: "d<j" and jn: "j\<le>n" and f: "\<not> irreducible\<^sub>d f"
   shows "\<exists>j'. j \<le> j' \<and> j'\<le>n \<and> d<j'
-    \<and> (LLL_reconstruction_inner p (p ^ l) gs f u j' = Some (gs', b', f', factor))
-    \<and> (\<forall>i\<in>{d+1..<j'}. LLL_reconstruction_inner p (p^l) gs f u i = None)"
+    \<and> (LLL_reconstruction_inner p l gs f u j' = Some (gs', b', f', factor))
+    \<and> (\<forall>i\<in>{d+1..<j'}. LLL_reconstruction_inner p l gs f u i = None)"
   using inner_loop i dj jn
-proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
+proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p l gs u])
   case (1 j)
   note hyp = "1.hyps"  
   note 1 = "1.prems"(1)
@@ -881,24 +950,24 @@ proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
   note dj = "1.prems"(3)
   note jn = "1.prems"(4)
   show ?case
-  proof (cases "LLL_reconstruction_inner p (p ^ l) gs f u j = None")
+  proof (cases "LLL_reconstruction_inner p l gs f u j = None")
     case True
     show ?thesis
     proof (cases "j=n")
       case True note j_eq_n = True
       show ?thesis
-      proof (cases "LLL_reconstruction_inner p (p ^ l) gs f u n = None")
+      proof (cases "LLL_reconstruction_inner p l gs f u n = None")
         case True
-        have i2: "\<forall>i\<in>{d + 1..n}. LLL_reconstruction_inner p (p ^ l) gs f u i = None" 
+        have i2: "\<forall>i\<in>{d + 1..n}. LLL_reconstruction_inner p l gs f u i = None" 
           using 2 j_eq_n True by auto
         have "irreducible\<^sub>d f"
           by(rule LLL_reconstruction_inner_all_None_imp_irreducible[OF i2])
         thus ?thesis using f by simp
       next
         case False
-        have "LLL_reconstruction_inner p (p ^ l) gs f u n = Some (gs', b', f', factor)" 
+        have "LLL_reconstruction_inner p l gs f u n = Some (gs', b', f', factor)" 
           using False 1 j_eq_n by auto
-        moreover have "\<forall>i\<in>{d + 1..<n}. LLL_reconstruction_inner p (p ^ l) gs f u i = None" 
+        moreover have "\<forall>i\<in>{d + 1..<n}. LLL_reconstruction_inner p l gs f u i = None" 
           using 2 j_eq_n by simp
         moreover have "d < n" using 1 2 jn j_eq_n
           using False  dn nat_less_le
@@ -908,30 +977,30 @@ proof (induct j rule: LLL_reconstruction_inner_loop.induct[of f p "(p^l)" gs u])
     next
       case False
       have "\<exists>j'\<ge>j + 1. j' \<le> n \<and> d < j' \<and>
-                 LLL_reconstruction_inner p (p ^ l) gs f u j' = Some (gs', b', f', factor) \<and>
-                 (\<forall>i\<in>{d + 1..<j'}. LLL_reconstruction_inner p (p ^ l) gs f u i = None)"
+                 LLL_reconstruction_inner p l gs f u j' = Some (gs', b', f', factor) \<and>
+                 (\<forall>i\<in>{d + 1..<j'}. LLL_reconstruction_inner p l gs f u i = None)"
       proof (rule hyp)
         show "\<not> degree f < j" using jn by auto
-        show "LLL_reconstruction_inner p (p ^ l) gs f u j = None" using True by auto
-        show "LLL_reconstruction_inner_loop p (p ^ l) gs f u (j + 1) = (gs', b', f', factor)" 
+        show "LLL_reconstruction_inner p l gs f u j = None" using True by auto
+        show "LLL_reconstruction_inner_loop p l gs f u (j + 1) = (gs', b', f', factor)" 
           using 1 True jn by auto
-        show "\<forall>i\<in>{d + 1..<j + 1}. LLL_reconstruction_inner p (p ^ l) gs f u i = None"        
+        show "\<forall>i\<in>{d + 1..<j + 1}. LLL_reconstruction_inner p l gs f u i = None"        
           by (metis "2" One_nat_def True add.comm_neutral add_Suc_right atLeastLessThan_iff 
               le_neq_implies_less less_Suc_eq_le)      
         show "d < j + 1" using dj by auto
         show " j + 1 \<le> n" using jn False by auto
       qed
       from this obtain j' where a1: "j'\<ge>j + 1" and a2: "j' \<le> n" and a3: "d < j'"
-        and a4: "LLL_reconstruction_inner p (p ^ l) gs f u j' = Some (gs', b', f', factor)"
-        and a5: "(\<forall>i\<in>{d + 1..<j'}. LLL_reconstruction_inner p (p ^ l) gs f u i = None)" by auto
+        and a4: "LLL_reconstruction_inner p l gs f u j' = Some (gs', b', f', factor)"
+        and a5: "(\<forall>i\<in>{d + 1..<j'}. LLL_reconstruction_inner p l gs f u i = None)" by auto
       moreover have "j'\<ge>j" using a1 by auto
       ultimately show ?thesis by fastforce
     qed
   next
     case False    
-    have 1: "LLL_reconstruction_inner p (p ^ l) gs f u j = Some (gs', b', f', factor)" 
+    have 1: "LLL_reconstruction_inner p l gs f u j = Some (gs', b', f', factor)" 
       using False 1 jn by auto
-    moreover have 2: "(\<forall>i\<in>{d + 1..<j}. LLL_reconstruction_inner p (p ^ l) gs f u i = None)" 
+    moreover have 2: "(\<forall>i\<in>{d + 1..<j}. LLL_reconstruction_inner p l gs f u i = None)" 
       by (rule 2)
     moreover have 3: "j \<le> n" using jn by auto
     moreover have 4: "d < j" using 2 False dj jn
@@ -959,8 +1028,8 @@ proof (intro pl.unique_factorization_mI)
 qed (auto simp: pl.factorization_m_def)
 
 lemma LLL_reconstruction_inner_loop_j_le_n:
-  assumes ret: "LLL_reconstruction_inner_loop p (p^l) gs f u j = (gs',b',f',factor)"
-    and ij: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
+  assumes ret: "LLL_reconstruction_inner_loop p l gs f u j = (gs',b',f',factor)"
+    and ij: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p l gs f u i = None"
     and n: "n = degree f"
     and jn: "j \<le> n"
     and dj: "d < j"
@@ -980,19 +1049,19 @@ proof (atomize(full), induct j)
   then show ?case using deg_u by auto
 next
   case (Suc j)
-  have ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
+  have ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p l gs f u i = None" 
     using Suc.prems by auto  
   have dj: "d \<le> j" using Suc.prems by auto
   have jn: "j<n" using Suc.prems by auto
   have deg: "Suc j \<le> degree f" using Suc.prems by auto
   have c: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j \<le> degree factor" 
     by (rule LLL_reconstruction_inner_None_upt_j[OF ij dj], insert n jn, auto)
-  have 1: "LLL_reconstruction_inner_loop p (p ^ l) gs f u (Suc j) = (gs', b', f', factor)"
+  have 1: "LLL_reconstruction_inner_loop p l gs f u (Suc j) = (gs', b', f', factor)"
     using Suc.prems by auto
   show ?case
-  proof (cases "LLL_reconstruction_inner p (p ^ l) gs f u (Suc j) = None")
+  proof (cases "LLL_reconstruction_inner p l gs f u (Suc j) = None")
     case False
-    have LLL_rw: "LLL_reconstruction_inner p (p ^ l) gs f u (Suc j) = Some (gs', b', f', factor)"
+    have LLL_rw: "LLL_reconstruction_inner p l gs f u (Suc j) = Some (gs', b', f', factor)"
       using False deg Suc.prems by auto
     show ?thesis using LLL_reconstruction_inner_sound[OF dj jn c LLL_rw] by fastforce
   next    
@@ -1010,7 +1079,7 @@ next
         case True
         have pl_Mp_1: "pl.Mp 1 = 1" by auto
         have d_Suc_j: "d < Suc j" using Suc.prems by auto
-        have "LLL_reconstruction_inner_loop p (p ^ l) gs f u (Suc j) = ([],1,1,f)" 
+        have "LLL_reconstruction_inner_loop p l gs f u (Suc j) = ([],1,1,f)" 
           by (rule irreducible_imp_LLL_reconstruction_inner_loop_f[OF True d_Suc_j])
         hence result_eq: "([],1,1,f) = (gs', b', f', factor)" using Suc.prems by auto
         moreover have thesis1: "p.dvdm u factor" using u_f result_eq by auto
@@ -1020,26 +1089,26 @@ next
       next
         case False note irreducible_f = False
         have "\<exists>j'. Suc j \<le> j' \<and> j'\<le>n \<and> d<j'
-        \<and> (LLL_reconstruction_inner p (p ^ l) gs f u j' = Some (gs', b', f', factor))
-        \<and> (\<forall>i\<in>{d+1..<j'}. LLL_reconstruction_inner p (p^l) gs f u i = None)"
+        \<and> (LLL_reconstruction_inner p l gs f u j' = Some (gs', b', f', factor))
+        \<and> (\<forall>i\<in>{d+1..<j'}. LLL_reconstruction_inner p l gs f u i = None)"
         proof (rule exists_index_LLL_reconstruction_inner_Some[OF _ _ _ _ False])        
-          show "LLL_reconstruction_inner_loop p (p ^ l) gs f u (Suc j) = (gs', b', f', factor)" 
+          show "LLL_reconstruction_inner_loop p l gs f u (Suc j) = (gs', b', f', factor)" 
             using Suc.prems by auto       
-          show "\<forall>i \<in> {d + 1..<Suc j}. LLL_reconstruction_inner p (p ^ l) gs f u i = None" 
+          show "\<forall>i \<in> {d + 1..<Suc j}. LLL_reconstruction_inner p l gs f u i = None" 
             using Suc.prems by auto
           show "Suc j \<le> n" using jn by auto
           show "d < Suc j " using Suc.prems by auto
         qed
         from this obtain a where da: "d < a" and an: "a \<le> n" and ja: "j \<le> a"
-          and a1: "LLL_reconstruction_inner p (p ^ l) gs f u a = Some (gs', b', f', factor)"
-          and a2: "\<forall>i\<in>{d+1..<a}. LLL_reconstruction_inner p (p^l) gs f u i = None" by auto
+          and a1: "LLL_reconstruction_inner p l gs f u a = Some (gs', b', f', factor)"
+          and a2: "\<forall>i\<in>{d+1..<a}. LLL_reconstruction_inner p l gs f u i = None" by auto
         define j' where j'[simp]: "j'\<equiv>a-1"
         have dj': "d \<le> j'" using da by auto
         have j': "j' \<noteq> 0" using dj' d0 by auto
         hence j'n: "j' < n" using an by auto
-        have LLL: "LLL_reconstruction_inner p (p ^ l) gs f u (Suc j') = Some (gs', b', f', factor)" 
+        have LLL: "LLL_reconstruction_inner p l gs f u (Suc j') = Some (gs', b', f', factor)" 
           using a1 j' by auto
-        have prev_None: "\<forall>i\<in>{d+1..j'}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
+        have prev_None: "\<forall>i\<in>{d+1..j'}. LLL_reconstruction_inner p l gs f u i = None" 
           using a2 j' by auto
         have Suc_rw: "Suc (j'- 1) = j'" using j' by auto
         have c: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> Suc (j' - 1) \<le> degree factor"        
@@ -1053,8 +1122,8 @@ next
 qed
 
 lemma LLL_reconstruction_inner_loop_j_ge_n:
-  assumes ret: "LLL_reconstruction_inner_loop p (p^l) gs f u j = (gs',b',f',factor)"
-    and ij: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
+  assumes ret: "LLL_reconstruction_inner_loop p l gs f u j = (gs',b',f',factor)"
+    and ij: "\<forall>i\<in>{d+1..n}. LLL_reconstruction_inner p l gs f u i = None"
     and dj: "d < j"
     and jn: "j>n"
   shows "f = f' * factor" (is "?g1")
@@ -1068,7 +1137,7 @@ lemma LLL_reconstruction_inner_loop_j_ge_n:
     and "set gs' \<subseteq> set gs" (is ?g9)
     and "f' = 1" (is ?g10)
 proof -
-  have "LLL_reconstruction_inner_loop p (p^l) gs f u j = ([],1,1,f)" using jn by auto
+  have "LLL_reconstruction_inner_loop p l gs f u j = ([],1,1,f)" using jn by auto
   hence gs': "gs'=[]" and b': "b'=1" and f': "f' = 1" and factor: "factor = f" using ret by auto
   have "irreducible\<^sub>d f"
     by (rule LLL_reconstruction_inner_all_None_imp_irreducible[OF ij])
@@ -1077,8 +1146,8 @@ proof -
 qed
 
 lemma LLL_reconstruction_inner_loop:
-  assumes ret: "LLL_reconstruction_inner_loop p (p^l) gs f u j = (gs',b',f',factor)"
-    and ij: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p  (p^l) gs f u i = None"
+  assumes ret: "LLL_reconstruction_inner_loop p l gs f u j = (gs',b',f',factor)"
+    and ij: "\<forall>i\<in>{d+1..<j}. LLL_reconstruction_inner p l gs f u i = None"
     and n: "n = degree f"
     and dj: "d < j"
   shows "f = f' * factor" (is "?g1")
@@ -1093,7 +1162,7 @@ lemma LLL_reconstruction_inner_loop:
     and "gs' = [] \<longrightarrow> f' = 1" (is ?g10)
 proof (atomize(full),(cases "j>n"; intro conjI))
   case True
-  have ij2: "\<forall>i\<in>{d + 1..n}. LLL_reconstruction_inner p (p ^ l) gs f u i = None" 
+  have ij2: "\<forall>i\<in>{d + 1..n}. LLL_reconstruction_inner p l gs f u i = None" 
     using ij True by auto
   show ?g1 ?g2 ?g3 ?g4 ?g5 ?g6 ?g7 ?g8 ?g9 ?g10
     using LLL_reconstruction_inner_loop_j_ge_n[OF ret ij2 dj True] by blast+
@@ -1106,7 +1175,7 @@ qed
 end
 
 lemma LLL_reconstruction'':
-  assumes 1: "LLL_reconstruction'' p (p^l) gs b f G = G'"
+  assumes 1: "LLL_reconstruction'' p l gs b f G = G'"
     and irreducible_G: "\<And>factor. factor \<in> set G \<Longrightarrow> irreducible\<^sub>d factor" 
     and 3: "F = f * prod_list G"
     and 4: "pl.unique_factorization_m f (lead_coeff f, mset gs)"
@@ -1135,18 +1204,18 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   define d n where [simp]: "d = degree u" "n = degree f"
   hence n_def: "n = degree f" "n \<equiv> degree f" by auto
   obtain gs' b' h factor where inner_loop_result: 
-    "LLL_reconstruction_inner_loop p (p^l) gs f u (d+1) = (gs',b',h,factor)"
+    "LLL_reconstruction_inner_loop p l gs f u (d+1) = (gs',b',h,factor)"
     by (metis prod_cases4)
   have a1: 
-    "LLL_reconstruction_inner_loop p (p ^ l) gs f u (d+1) = (gs', b', h, factor)" 
+    "LLL_reconstruction_inner_loop p l gs f u (d+1) = (gs', b', h, factor)" 
     using inner_loop_result by auto
   have a2: 
-    "\<forall>i\<in>{degree u + 1..<(d+1)}. LLL_reconstruction_inner p (p ^ l) gs f u i = None"
+    "\<forall>i\<in>{degree u + 1..<(d+1)}. LLL_reconstruction_inner p l gs f u i = None"
     by auto
-  have "LLL_reconstruction'' p (p^l) gs b f G = LLL_reconstruction'' p (p^l) gs' b' h (factor # G)" 
-    unfolding LLL_reconstruction''.simps[of p "(p^l)" gs] using gs_not_empty
+  have "LLL_reconstruction'' p l gs b f G = LLL_reconstruction'' p l gs' b' h (factor # G)" 
+    unfolding LLL_reconstruction''.simps[of p l gs] using gs_not_empty
     unfolding Let_def using choose_u_result inner_loop_result by auto
-  hence LLL_eq: "LLL_reconstruction'' p (p^l) gs' b' h (factor # G) = G'" using LLL_f' by auto
+  hence LLL_eq: "LLL_reconstruction'' p l gs' b' h (factor # G) = G'" using LLL_f' by auto
   from pl.unique_factorization_m_imp_factorization[OF f_gs_factor, 
     unfolded pl.factorization_m_def] norm
   have f_gs: "pl.eq_m f (smult (lead_coeff f) (prod_mset (mset gs)))" and 
@@ -1239,7 +1308,7 @@ proof (rule ccontr, simp)
 qed
 
 lemma reconstruction_of_algorithm_16_22:   
-  assumes 1: "reconstruction_of_algorithm_16_22 p (p^l) gs F = G"
+  assumes 1: "reconstruction_of_algorithm_16_22 p l gs F = G"
   shows "(\<forall>g\<in>set G. irreducible\<^sub>d g) \<and> F = prod_list G"
 proof -
   note * = p.berlekamp_hensel_unique[OF cop sf gs_hen l0]
