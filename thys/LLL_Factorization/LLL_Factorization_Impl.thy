@@ -94,7 +94,7 @@ definition LLL_factorization :: "int poly \<Rightarrow> int poly list" where
      \<comment> \<open>determine exponent l and B\<close>
      n = degree f;
      no = \<parallel>f\<parallel>\<^sup>2;
-     B = sqrt_int_ceiling (2^(5 * n * (n - 1)) * no^(2 * n - 1));
+     B = sqrt_int_ceiling (2^(5 * (n - 1) * (n - 1)) * no^(2 * (n - 1)));
      l = find_exponent p B;
      \<comment> \<open>perform hensel lifting to lift factorization to mod $p^l$\<close>
      us = hensel_lifting p l f fs;

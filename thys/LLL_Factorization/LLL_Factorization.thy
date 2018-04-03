@@ -770,7 +770,7 @@ lemma LLL_reconstruction: assumes "LLL_reconstruction f us = fs"
   and pl1: "pl > 1" 
   and plp: "pl = p^l" 
   and p: "prime p" 
-  and large: "2^(5 * degree F * (degree F - 1)) * (\<parallel>F\<parallel>\<^sup>2)^(2 * degree F - 1) < pl\<^sup>2"
+  and large: "2^(5 * (degree F - 1) * (degree F - 1)) * \<parallel>F\<parallel>\<^sup>2^(2 * (degree F - 1)) < pl\<^sup>2"
 shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
   interpret p: poly_mod_prime p by (standard, rule p)
@@ -869,7 +869,8 @@ proof -
           by (rule pl.dvdm_degree[OF mon_u uf1 plf1])
         with deg have deg_uf: "degree u < degree f" by auto
         have pl0: "pl \<noteq> 0" using pl.m1 plp by linarith
-        let ?n = "degree f" 
+        let ?n = "degree f"
+        let ?n1 = "degree f1" 
         let ?d = "degree u" 
         from prod fF have f1F: "f1 dvd F" unfolding dvd_def by auto
         from deg_uf have deg_uf': "?d \<le> ?n" by auto
@@ -878,6 +879,7 @@ proof -
         have g0: "g \<noteq> 0" using short_main(2) unfolding g_def .
         have deg_gf: "degree g < degree f" using short_main(1) unfolding g_def .
         let ?N = "degree F" 
+        from fF prod have f1F: "f1 dvd F" unfolding dvd_def by auto
         have "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (?n - 1) * \<parallel>f1\<parallel>\<^sup>2" unfolding g_def
           by (rule short_main(4)[OF mon_u deg_uf _ uf1], insert deg, auto)
         also have "\<dots> \<le> 2 ^ (?n - 1) * (2 ^ (2 * degree f1) * \<parallel>F\<parallel>\<^sup>2)" 
@@ -888,31 +890,33 @@ proof -
           by (rule mult_right_mono, insert deg(3), auto)
         also have "\<dots> = 2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2" by simp
         finally have ineq_g: "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2" .
-        from power_mono[OF this, of ?n]
-        have ineq1: "\<parallel>g\<parallel>\<^sup>2 ^ ?n \<le> (2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2)^?n" by auto
+        from power_mono[OF this, of ?n1]
+        have ineq1: "\<parallel>g\<parallel>\<^sup>2 ^ ?n1 \<le> (2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2)^?n1" by auto
         from F0 have normF: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] by presburger
         from g0 have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
         from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
-        from power_mono[OF sq_norm_factor_bound[OF fF F0], of "degree g"]
-        have ineq2: "\<parallel>f\<parallel>\<^sup>2 ^ degree g \<le> (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ degree g" by auto
-        also have "\<dots> \<le> (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1)"
+        from f1_0 have normf1: "\<parallel>f1\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f1] by presburger
+        from power_mono[OF sq_norm_factor_bound[OF f1F F0], of "degree g"]
+        have ineq2: "\<parallel>f1\<parallel>\<^sup>2 ^ degree g \<le> (2 ^ (2 * ?n1) * \<parallel>F\<parallel>\<^sup>2) ^ degree g" by auto
+        also have "\<dots> \<le> (2 ^ (2 * ?n1) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1)"
           by (rule pow_mono_exp, insert deg_gf normF, auto)          
-        finally have ineq2: "\<parallel>f\<parallel>\<^sup>2 ^ degree g \<le> (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1)" .
+        finally have ineq2: "\<parallel>f1\<parallel>\<^sup>2 ^ degree g \<le> (2 ^ (2 * ?n1) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1)" .
         have nN: "?n \<le> ?N" using fF F0 by (metis dvd_imp_degree_le)
-        have "\<parallel>f\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree f \<le> 
-          (2 ^ (2 * ?n) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1) * (2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2)^?n" 
+        from deg nN have n1N: "?n1 \<le> ?N - 1" by auto
+        have "\<parallel>f1\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ ?n1 \<le> 
+          (2 ^ (2 * ?n1) * \<parallel>F\<parallel>\<^sup>2) ^ (?n - 1) * (2 ^ (3 * (?n - 1)) * \<parallel>F\<parallel>\<^sup>2)^?n1" 
           by (rule mult_mono[OF ineq2 ineq1], force+)
-        also have "\<dots> \<le> (2 ^ (2 * ?N) * \<parallel>F\<parallel>\<^sup>2) ^ (?N - 1) *
-          (2 ^ (3 * (?N - 1)) * \<parallel>F\<parallel>\<^sup>2) ^ ?N"
+        also have "\<dots> \<le> (2 ^ (2 * (?N - 1)) * \<parallel>F\<parallel>\<^sup>2) ^ (?N - 1) *
+          (2 ^ (3 * (?N - 1)) * \<parallel>F\<parallel>\<^sup>2) ^ (?N - 1)"
           by (rule mult_mono[OF power_both_mono[OF _ _ mult_mono] 
-          power_both_mono], insert normF nN, auto intro: power_both_mono mult_mono) 
-        also have "\<dots> = 2 ^ (2 * ?N * (?N - 1) + 3 * (?N - 1) * ?N) 
-            * (\<parallel>F\<parallel>\<^sup>2)^(?N - 1 + ?N)" 
+          power_both_mono], insert normF n1N nN, auto intro: power_both_mono mult_mono) 
+        also have "\<dots> = 2 ^ (2 * (?N -1) * (?N - 1) + 3 * (?N - 1) * (?N - 1)) 
+            * (\<parallel>F\<parallel>\<^sup>2)^((?N - 1) + (?N - 1))" 
           unfolding power_mult_distrib power_add power_mult by simp
-        also have "2 * ?N * (?N - 1) + 3 * (?N - 1) * ?N = 5 * ?N * (?N - 1)" by simp
-        also have "?N - 1 + ?N = 2 * ?N - 1" by simp
-        also have "2^(5 * ?N * (?N - 1)) * (\<parallel>F\<parallel>\<^sup>2)^(2 * ?N - 1) < pl^2" by (rule large)
-        finally have large: "\<parallel>f\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree f < pl\<^sup>2" .
+        also have "2 * (?N - 1) * (?N - 1) + 3 * (?N - 1) * (?N - 1) = 5 * (?N - 1) * (?N - 1)" by simp
+        also have "?N - 1 + (?N - 1) = 2 * (?N - 1)" by simp
+        also have "2^(5 * (?N - 1) * (?N - 1)) * \<parallel>F\<parallel>\<^sup>2^(2 * (?N - 1)) < pl^2" by (rule large)
+        finally have large: "\<parallel>f1\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree f1 < pl\<^sup>2" .
         have deg_ug: "degree u \<le> degree g" 
         proof (rule pl.dvdm_degree[OF mon_u ug], standard)
           assume "pl.Mp g = 0" 
@@ -924,18 +928,20 @@ proof -
             by (rule aux_abs_int)
           also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2" using coeff_le_sq_norm[of g] by auto 
           also have "\<dots> = \<parallel>g\<parallel>\<^sup>2 ^ 1" by simp
-          also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2 ^ degree f" 
-            by (rule pow_mono_exp, insert degf normg, auto)
+          also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2 ^ degree f1" 
+            by (rule pow_mono_exp, insert deg normg, auto)
           also have "\<dots> = 1 * \<dots>" by simp
-          also have "\<dots> \<le> \<parallel>f\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree f" 
-            by (rule mult_right_mono, insert normf, auto)
-          also have "\<dots> < pl\<^sup>2" by (rule large)
+          also have "\<dots> \<le> \<parallel>f1\<parallel>\<^sup>2 ^ degree g * \<parallel>g\<parallel>\<^sup>2 ^ degree f1" 
+            by (rule mult_right_mono, insert normf1, auto)
+          also have "\<dots> < pl\<^sup>2" by (rule large) 
           finally show False by auto
         qed
-        from degf have "degree f > 0" by auto
-        from common_factor_via_short[OF this _ mon_u _ u_f ug large] deg_u True[unfolded k_def] pl.m1
-        have "degree g = 0" by auto
-        with deg_ug deg_u show False by auto
+        from deg deg_u deg_ug have "degree f1 > 0" "degree g > 0" by auto
+        from common_factor_via_short[OF this mon_u _ uf1 ug large] deg_u pl.m1
+        have "0 < degree (gcd f1 g)" by auto
+        moreover from True[unfolded k_def] have "degree (gcd f g) = 0" .
+        moreover have dvd: "gcd f1 g dvd gcd f g" using f0 unfolding prod by simp
+        ultimately show False using divides_degree[OF dvd] using f0 by simp 
       qed
       show ?thesis unfolding fs using irr by auto
     next
@@ -992,7 +998,7 @@ proof -
     unfolding p_def by auto
   note res
   from prime interpret p: poly_mod_prime p by unfold_locales
-  define K where "K = 2^(5 * degree f * (degree f - 1)) * (\<parallel>f\<parallel>\<^sup>2)^(2 * degree f - 1)"
+  define K where "K = 2^(5 * (degree f - 1) * (degree f - 1)) * \<parallel>f\<parallel>\<^sup>2^(2 * (degree f - 1))"
   define N where "N = sqrt_int_ceiling K" 
   have K0: "K \<ge> 0" unfolding K_def by fastforce
   have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
