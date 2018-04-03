@@ -61,7 +61,7 @@ fun mk_vc_compat (avoid, avoid_trm) prems concl_args params =
 
 (* fixme: move to nominal_library *)
 fun map_term prop f trm =
-  if prop trm 
+  if prop trm
   then f trm
   else case trm of
     (t1 $ t2) => map_term prop f t1 $ map_term prop f t2
@@ -144,7 +144,7 @@ local
   open Nominal_Permeq
 in
 
-  (* by default eqvt_strict_config contains unwanted @{thm permute_pure} *) 
+  (* by default eqvt_strict_config contains unwanted @{thm permute_pure} *)
 
   val eqvt_sconfig = eqvt_strict_config addpres @{thms permute_minus_cancel}
 
@@ -153,7 +153,7 @@ in
 
 end
 
-val all_elims = 
+val all_elims =
   let
     fun spec' ct =
       Thm.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
@@ -175,109 +175,109 @@ fun helper_tac flag prm p ctxt =
       asm_full_simp_tac (put_simpset HOL_ss ctxt' addsimps (prm' :: @{thms HOL.induct_forall_def})) 1
     end) ctxt
 
-fun non_binder_tac prem intr_cvars Ps ctxt = 
+fun non_binder_tac prem intr_cvars Ps ctxt =
   Subgoal.SUBPROOF (fn {context = ctxt', params, prems, ...} =>
     let
       val (prms, p, _) = split_last2 (map snd params)
       val prm_tys = map (fastype_of o Thm.term_of) prms
       val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
-      val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
+      val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms
       val prem' = prem
-        |> infer_instantiate ctxt' (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ p_prms) 
+        |> infer_instantiate ctxt' (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ p_prms)
         |> eqvt_srule ctxt'
 
       (* for inductive-premises*)
       fun tac1 prm = helper_tac true prm p ctxt'
 
-      (* for non-inductive premises *)   
-      fun tac2 prm =  
-        EVERY' [ minus_permute_intro_tac ctxt' p, 
-                 eqvt_stac ctxt', 
+      (* for non-inductive premises *)
+      fun tac2 prm =
+        EVERY' [ minus_permute_intro_tac ctxt' p,
+                 eqvt_stac ctxt',
                  helper_tac false prm p ctxt' ]
 
       fun select prm (t, i) =
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
     in
-      EVERY1 [ eqvt_stac ctxt', 
-               resolve_tac ctxt' [prem'], 
+      EVERY1 [ eqvt_stac ctxt',
+               resolve_tac ctxt' [prem'],
                RANGE (map (SUBGOAL o select) prems) ]
     end) ctxt
 
 fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
   let
-    val conj1 = 
+    val conj1 =
       mk_fresh_star (mk_perm (Bound 0) (mk_perm p avoid_trm)) c
     val conj2 =
       mk_fresh_star_ty @{typ perm} (mk_supp (HOLogic.mk_tuple (map (mk_perm p) concl_args))) (Bound 0)
     val fresh_goal = mk_exists ("q", @{typ perm}) (HOLogic.mk_conj (conj1, conj2))
       |> HOLogic.mk_Trueprop
 
-    val ss = @{thms finite_supp supp_Pair finite_Un permute_finite} @ 
+    val ss = @{thms finite_supp supp_Pair finite_Un permute_finite} @
              @{thms fresh_star_Pair fresh_star_permute_iff}
     val simp = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
-  in 
+  in
     Goal.prove ctxt [] [] fresh_goal
       (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding2}
           THEN_ALL_NEW EVERY' [cut_facts_tac user_thm, REPEAT o
             eresolve_tac ctxt @{thms conjE}, simp])))
   end
 
-val supp_perm_eq' = @{lemma "fresh_star (supp (permute p x)) q ==> permute p x == permute (q + p) x" 
+val supp_perm_eq' = @{lemma "fresh_star (supp (permute p x)) q ==> permute p x == permute (q + p) x"
   by (simp add: supp_perm_eq)}
 
-val fresh_star_plus = @{lemma "fresh_star (permute q (permute p x)) c ==> fresh_star (permute (q + p) x) c" 
+val fresh_star_plus = @{lemma "fresh_star (permute q (permute p x)) c ==> fresh_star (permute (q + p) x) c"
   by (simp add: permute_plus)}
 
 
-fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt = 
+fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt =
   Subgoal.FOCUS (fn {context = ctxt, params, prems, concl, ...} =>
     let
       val (prms, p, c) = split_last2 (map snd params)
       val prm_trms = map Thm.term_of prms
       val prm_tys = map fastype_of prm_trms
 
-      val avoid_trm' = subst_free (param_trms ~~ prm_trms) avoid_trm 
-      val concl_args' = map (subst_free (param_trms ~~ prm_trms)) concl_args 
-      
+      val avoid_trm' = subst_free (param_trms ~~ prm_trms) avoid_trm
+      val concl_args' = map (subst_free (param_trms ~~ prm_trms)) concl_args
+
       val user_thm' = map (infer_instantiate ctxt (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ prms)) user_thm
         |> map (full_simplify (put_simpset HOL_ss ctxt addsimps (@{thm fresh_star_Pair}::prems)))
-      
+
       val fthm = fresh_thm ctxt user_thm' (Thm.term_of p) (Thm.term_of c) concl_args' avoid_trm'
 
       val (([(_, q)], fprop :: fresh_eqs), ctxt') = Obtain.result
-              (K (EVERY1 [eresolve_tac ctxt @{thms exE}, 
+              (K (EVERY1 [eresolve_tac ctxt @{thms exE},
                           full_simp_tac (put_simpset HOL_basic_ss ctxt
                             addsimps @{thms supp_Pair fresh_star_Un}),
                           REPEAT o eresolve_tac ctxt @{thms conjE},
                           dresolve_tac ctxt [fresh_star_plus],
-                          REPEAT o dresolve_tac ctxt [supp_perm_eq']])) [fthm] ctxt 
+                          REPEAT o dresolve_tac ctxt [supp_perm_eq']])) [fthm] ctxt
 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
 
       val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
-      val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
+      val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms
       val prem' = prem
         |> infer_instantiate ctxt' (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ qp_prms)
         |> eqvt_srule ctxt'
 
-      val fprop' = eqvt_srule ctxt' fprop 
+      val fprop' = eqvt_srule ctxt' fprop
       val tac_fresh = simp_tac (put_simpset HOL_basic_ss ctxt' addsimps [fprop'])
 
       (* for inductive-premises*)
-      fun tac1 prm = helper_tac true prm (mk_cplus q p) ctxt' 
+      fun tac1 prm = helper_tac true prm (mk_cplus q p) ctxt'
 
-      (* for non-inductive premises *)   
-      fun tac2 prm =  
-        EVERY' [ minus_permute_intro_tac ctxt' (mk_cplus q p), 
-                 eqvt_stac ctxt', 
+      (* for non-inductive premises *)
+      fun tac2 prm =
+        EVERY' [ minus_permute_intro_tac ctxt' (mk_cplus q p),
+                 eqvt_stac ctxt',
                  helper_tac false prm (mk_cplus q p) ctxt' ]
 
       fun select prm (t, i) =
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
 
       val side_thm = Goal.prove ctxt' [] [] (Thm.term_of concl)
-        (fn {context = ctxt'', ...} => 
+        (fn {context = ctxt'', ...} =>
            EVERY1 [ CONVERSION (expand_conv_bot ctxt''),
                     eqvt_stac ctxt'',
                     resolve_tac ctxt'' [prem'],
@@ -291,17 +291,17 @@ fun case_tac ctxt Ps avoid avoid_trm intr_cvars param_trms prem user_thm concl_a
   let
     val tac1 = non_binder_tac prem intr_cvars Ps ctxt
     val tac2 = binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt
-  in 
-    EVERY' [ resolve_tac ctxt @{thms allI}, resolve_tac ctxt @{thms allI}, 
+  in
+    EVERY' [ resolve_tac ctxt @{thms allI}, resolve_tac ctxt @{thms allI},
              if null avoid then tac1 else tac2 ]
   end
 
-fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms concl_args 
+fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms concl_args
   {prems, context = ctxt} =
   let
-    val cases_tac = 
+    val cases_tac =
       map7 (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
-  in 
+  in
     EVERY1 [ DETERM o resolve_tac ctxt [raw_induct], RANGE cases_tac ]
   end
 
@@ -316,7 +316,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
       |> Logic.strip_horn
       |>> map strip_full_horn
     val params = map (fn (x, _, _) => x) ind_prems
-    val param_trms = (map o map) Free params  
+    val param_trms = (map o map) Free params
 
     val intr_vars_tys = map (fn t => rev (Term.add_vars (Thm.prop_of t) [])) intrs
     val intr_vars = (map o map) fst intr_vars_tys
@@ -333,10 +333,10 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
       map (snd o fixed_nonfixed_args ctxt' o HOLogic.dest_Trueprop) intr_concls
 
     val avoid_trms = avoids
-      |> (map o map) (setify ctxt') 
+      |> (map o map) (setify ctxt')
       |> map fold_union
 
-    val vc_compat_goals = 
+    val vc_compat_goals =
       map4 mk_vc_compat (avoids ~~ avoid_trms) intr_prems intr_concls_args params
 
     val ([c_name, a, p], ctxt'') = Variable.variant_fixes ["c", "'a", "p"] ctxt'
@@ -346,7 +346,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
 
     val (preconds, ind_concls) = ind_concl
       |> HOLogic.dest_Trueprop
-      |> HOLogic.dest_conj 
+      |> HOLogic.dest_conj
       |> map HOLogic.dest_imp
       |> split_list
 
@@ -354,23 +354,23 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
 
     val ind_concl' = ind_concls
       |> map (add_p_c p (c, c_ty))
-      |> (curry (op ~~)) preconds  
+      |> (curry (op ~~)) preconds
       |> map HOLogic.mk_imp
       |> fold_conj
       |> HOLogic.mk_Trueprop
 
     val ind_prems' = ind_prems
-      |> map2 (prep_prem Ps c_name c_ty) (avoids ~~ avoid_trms)   
+      |> map2 (prep_prem Ps c_name c_ty) (avoids ~~ avoid_trms)
 
-    fun after_qed ctxt_outside user_thms ctxt = 
+    fun after_qed ctxt_outside user_thms ctxt =
       let
-        val strong_ind_thms = Goal.prove ctxt [] ind_prems' ind_concl' 
-        (prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms intr_concls_args) 
+        val strong_ind_thms = Goal.prove ctxt [] ind_prems' ind_concl'
+        (prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms intr_concls_args)
           |> singleton (Proof_Context.export ctxt ctxt_outside)
           |> Old_Datatype_Aux.split_conj_thm
           |> map (fn thm => thm RS normalise)
           |> map (asm_full_simplify (put_simpset HOL_basic_ss ctxt
-              addsimps @{thms permute_zero induct_rulify})) 
+              addsimps @{thms permute_zero induct_rulify}))
           |> map (Drule.rotate_prems (length ind_prems'))
           |> map zero_var_indexes
 
@@ -379,13 +379,13 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
           |> space_implode "_"
           |> (fn s => Binding.qualify false s (Binding.name "strong_induct"))
 
-        val attrs = 
+        val attrs =
           [ Attrib.internal (K (Rule_Cases.consumes 1)),
             Attrib.internal (K (Rule_Cases.case_names rule_names)) ]
       in
         ctxt
-        |> Local_Theory.note ((qualified_thm_name, attrs), strong_ind_thms)    
-        |> snd   
+        |> Local_Theory.note ((qualified_thm_name, attrs), strong_ind_thms)
+        |> snd
       end
   in
     Proof.theorem NONE (after_qed ctxt) ((map o map) (rpair []) vc_compat_goals) ctxt''

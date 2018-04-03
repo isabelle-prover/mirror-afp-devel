@@ -1,8 +1,8 @@
 theory Nominal2_Abs
-imports Nominal2_Base 
-        HOL.Quotient 
+imports Nominal2_Base
+        HOL.Quotient
         "HOL-Library.Quotient_List"
-        "HOL-Library.Quotient_Product" 
+        "HOL-Library.Quotient_Product"
 begin
 
 
@@ -12,9 +12,9 @@ fun
   alpha_set
 where
   alpha_set[simp del]:
-  "alpha_set (bs, x) R f p (cs, y) \<longleftrightarrow> 
-     f x - bs = f y - cs \<and> 
-     (f x - bs) \<sharp>* p \<and> 
+  "alpha_set (bs, x) R f p (cs, y) \<longleftrightarrow>
+     f x - bs = f y - cs \<and>
+     (f x - bs) \<sharp>* p \<and>
      R (p \<bullet> x) y \<and>
      p \<bullet> bs = cs"
 
@@ -22,18 +22,18 @@ fun
   alpha_res
 where
   alpha_res[simp del]:
-  "alpha_res (bs, x) R f p (cs, y) \<longleftrightarrow> 
-     f x - bs = f y - cs \<and> 
-     (f x - bs) \<sharp>* p \<and> 
+  "alpha_res (bs, x) R f p (cs, y) \<longleftrightarrow>
+     f x - bs = f y - cs \<and>
+     (f x - bs) \<sharp>* p \<and>
      R (p \<bullet> x) y"
 
 fun
   alpha_lst
 where
   alpha_lst[simp del]:
-  "alpha_lst (bs, x) R f p (cs, y) \<longleftrightarrow> 
-     f x - set bs = f y - set cs \<and> 
-     (f x - set bs) \<sharp>* p \<and> 
+  "alpha_lst (bs, x) R f p (cs, y) \<longleftrightarrow>
+     f x - set bs = f y - set cs \<and>
+     (f x - set bs) \<sharp>* p \<and>
      R (p \<bullet> x) y \<and>
      p \<bullet> bs = cs"
 
@@ -42,15 +42,15 @@ lemmas alphas = alpha_set.simps alpha_res.simps alpha_lst.simps
 notation
   alpha_set ("_ \<approx>set _ _ _ _" [100, 100, 100, 100, 100] 100) and
   alpha_res ("_ \<approx>res _ _ _ _" [100, 100, 100, 100, 100] 100) and
-  alpha_lst ("_ \<approx>lst _ _ _ _" [100, 100, 100, 100, 100] 100) 
+  alpha_lst ("_ \<approx>lst _ _ _ _" [100, 100, 100, 100, 100] 100)
 
 section {* Mono *}
 
-lemma [mono]: 
+lemma [mono]:
   shows "R1 \<le> R2 \<Longrightarrow> alpha_set bs R1 \<le> alpha_set bs R2"
   and   "R1 \<le> R2 \<Longrightarrow> alpha_res bs R1 \<le> alpha_res bs R2"
   and   "R1 \<le> R2 \<Longrightarrow> alpha_lst cs R1 \<le> alpha_lst cs R2"
-  by (case_tac [!] bs, case_tac [!] cs) 
+  by (case_tac [!] bs, case_tac [!] cs)
      (auto simp: le_fun_def le_bool_def alphas)
 
 section {* Equivariance *}
@@ -58,7 +58,7 @@ section {* Equivariance *}
 lemma alpha_eqvt[eqvt]:
   shows "(bs, x) \<approx>set R f q (cs, y) \<Longrightarrow> (p \<bullet> bs, p \<bullet> x) \<approx>set (p \<bullet> R) (p \<bullet> f) (p \<bullet> q) (p \<bullet> cs, p \<bullet> y)"
   and   "(bs, x) \<approx>res R f q (cs, y) \<Longrightarrow> (p \<bullet> bs, p \<bullet> x) \<approx>res (p \<bullet> R) (p \<bullet> f) (p \<bullet> q) (p \<bullet> cs, p \<bullet> y)"
-  and   "(ds, x) \<approx>lst R f q (es, y) \<Longrightarrow> (p \<bullet> ds, p \<bullet> x) \<approx>lst (p \<bullet> R) (p \<bullet> f) (p \<bullet> q) (p \<bullet> es, p \<bullet> y)" 
+  and   "(ds, x) \<approx>lst R f q (es, y) \<Longrightarrow> (p \<bullet> ds, p \<bullet> x) \<approx>lst (p \<bullet> R) (p \<bullet> f) (p \<bullet> q) (p \<bullet> es, p \<bullet> y)"
   unfolding alphas
   unfolding permute_eqvt[symmetric]
   unfolding set_eqvt[symmetric]
@@ -75,7 +75,7 @@ lemma alpha_refl:
   shows "(bs, x) \<approx>set R f 0 (bs, x)"
   and   "(bs, x) \<approx>res R f 0 (bs, x)"
   and   "(cs, x) \<approx>lst R f 0 (cs, x)"
-  using a 
+  using a
   unfolding alphas
   unfolding fresh_star_def
   by (simp_all add: fresh_zero_perm)
@@ -99,10 +99,10 @@ lemma alpha_trans:
   by (simp_all add: fresh_plus_perm)
 
 lemma alpha_sym_eqvt:
-  assumes a: "R (p \<bullet> x) y \<Longrightarrow> R y (p \<bullet> x)" 
+  assumes a: "R (p \<bullet> x) y \<Longrightarrow> R y (p \<bullet> x)"
   and     b: "p \<bullet> R = R"
-  shows "(bs, x) \<approx>set R f p (cs, y) \<Longrightarrow> (cs, y) \<approx>set R f (- p) (bs, x)" 
-  and   "(bs, x) \<approx>res R f p (cs, y) \<Longrightarrow> (cs, y) \<approx>res R f (- p) (bs, x)" 
+  shows "(bs, x) \<approx>set R f p (cs, y) \<Longrightarrow> (cs, y) \<approx>set R f (- p) (bs, x)"
+  and   "(bs, x) \<approx>res R f p (cs, y) \<Longrightarrow> (cs, y) \<approx>res R f (- p) (bs, x)"
   and   "(ds, x) \<approx>lst R f p (es, y) \<Longrightarrow> (es, y) \<approx>lst R f (- p) (ds, x)"
 apply(auto intro!: alpha_sym)
 apply(drule_tac [!] a)
@@ -112,7 +112,7 @@ done
 
 lemma alpha_set_trans_eqvt:
   assumes b: "(cs, y) \<approx>set R f q (ds, z)"
-  and     a: "(bs, x) \<approx>set R f p (cs, y)" 
+  and     a: "(bs, x) \<approx>set R f p (cs, y)"
   and     d: "q \<bullet> R = R"
   and     c: "\<lbrakk>R (p \<bullet> x) y; R y (- q \<bullet> z)\<rbrakk> \<Longrightarrow> R (p \<bullet> x) (- q \<bullet> z)"
   shows "(bs, x) \<approx>set R f (q + p) (ds, z)"
@@ -127,7 +127,7 @@ done
 
 lemma alpha_res_trans_eqvt:
   assumes  b: "(cs, y) \<approx>res R f q (ds, z)"
-  and     a: "(bs, x) \<approx>res R f p (cs, y)" 
+  and     a: "(bs, x) \<approx>res R f p (cs, y)"
   and     d: "q \<bullet> R = R"
   and     c: "\<lbrakk>R (p \<bullet> x) y; R y (- q \<bullet> z)\<rbrakk> \<Longrightarrow> R (p \<bullet> x) (- q \<bullet> z)"
   shows "(bs, x) \<approx>res R f (q + p) (ds, z)"
@@ -142,7 +142,7 @@ done
 
 lemma alpha_lst_trans_eqvt:
   assumes b: "(cs, y) \<approx>lst R f q (ds, z)"
-  and     a: "(bs, x) \<approx>lst R f p (cs, y)" 
+  and     a: "(bs, x) \<approx>lst R f p (cs, y)"
   and     d: "q \<bullet> R = R"
   and     c: "\<lbrakk>R (p \<bullet> x) y; R y (- q \<bullet> z)\<rbrakk> \<Longrightarrow> R (p \<bullet> x) (- q \<bullet> z)"
   shows "(bs, x) \<approx>lst R f (q + p) (ds, z)"
@@ -161,7 +161,7 @@ lemmas alpha_trans_eqvt = alpha_set_trans_eqvt alpha_res_trans_eqvt alpha_lst_tr
 section {* General Abstractions *}
 
 fun
-  alpha_abs_set 
+  alpha_abs_set
 where
   [simp del]:
   "alpha_abs_set (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>set ((=)) supp p (cs, y))"
@@ -189,7 +189,7 @@ lemmas alphas_abs = alpha_abs_set.simps alpha_abs_res.simps alpha_abs_lst.simps
 lemma alphas_abs_refl:
   shows "(bs, x) \<approx>abs_set (bs, x)"
   and   "(bs, x) \<approx>abs_res (bs, x)"
-  and   "(cs, x) \<approx>abs_lst (cs, x)" 
+  and   "(cs, x) \<approx>abs_lst (cs, x)"
   unfolding alphas_abs
   unfolding alphas
   unfolding fresh_star_def
@@ -245,7 +245,7 @@ lemma supp_property_res:
   shows "p \<bullet> (supp x \<inter> as) = supp x' \<inter> as'"
 proof -
   from a have "(supp x - as) \<sharp>* p" by  (auto simp only: alphas)
-  then have *: "p \<bullet> (supp x - as) = (supp x - as)" 
+  then have *: "p \<bullet> (supp x - as) = (supp x - as)"
     by (simp add: atom_set_perm_eq)
   have "(supp x' - as') \<union> (supp x' \<inter> as') = supp x'" by auto
   also have "\<dots> = supp (p \<bullet> x)" using a by (simp add: alphas)
@@ -255,9 +255,9 @@ proof -
   also have "\<dots> = (supp x - as) \<union> (p \<bullet> (supp x \<inter> as))" using * by simp
   also have "\<dots> = (supp x' - as') \<union> (p \<bullet> (supp x \<inter> as))" using a by (simp add: alphas)
   finally have "(supp x' - as') \<union> (supp x' \<inter> as') = (supp x' - as') \<union> (p \<bullet> (supp x \<inter> as))" .
-  moreover 
+  moreover
   have "(supp x' - as') \<inter> (supp x' \<inter> as') = {}" by auto
-  moreover 
+  moreover
   have "(supp x - as) \<inter> (supp x \<inter> as) = {}" by auto
   then have "p \<bullet> ((supp x - as) \<inter> (supp x \<inter> as) = {})" by (simp add: permute_bool_def)
   then have "(p \<bullet> (supp x - as)) \<inter> (p \<bullet> (supp x \<inter> as)) = {}" by (perm_simp) (simp)
@@ -269,10 +269,10 @@ qed
 
 lemma alpha_abs_res_stronger1_aux:
   assumes asm: "(as, x) \<approx>res (=) supp p' (as', x')"
-  shows "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" 
+  shows "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')"
 proof -
   from asm have 0: "(supp x - as) \<sharp>* p'" by  (auto simp only: alphas)
-  then have #: "p' \<bullet> (supp x - as) = (supp x - as)" 
+  then have #: "p' \<bullet> (supp x - as) = (supp x - as)"
     by (simp add: atom_set_perm_eq)
   obtain p where *: "\<forall>b \<in> supp x. p \<bullet> b = p' \<bullet> b" and **: "supp p \<subseteq> supp x \<union> p' \<bullet> supp x"
     using set_renaming_perm2 by blast
@@ -283,20 +283,20 @@ proof -
     by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - as) \<union> (supp x \<inter> as)" by auto
   have "supp p \<subseteq> supp x \<union> p' \<bullet> supp x" using ** by simp
-  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as)))" 
+  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as)))"
     using b by simp
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> ((p' \<bullet> (supp x - as)) \<union> (p' \<bullet> (supp x \<inter> as)))"
     by (simp add: union_eqvt)
-  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (p' \<bullet> (supp x \<inter> as))" 
+  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (p' \<bullet> (supp x \<inter> as))"
     using # by auto
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (supp x' \<inter> as')" using asm
     by (simp add: supp_property_res)
   finally have "supp p \<subseteq> (supp x - as) \<union> (supp x \<inter> as) \<union> (supp x' \<inter> as')" .
-  then 
+  then
   have "supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" using 2 by auto
-  moreover 
+  moreover
   have "(as, x) \<approx>res (=) supp p (as', x')" using asm 1 a by (simp add: alphas)
-  ultimately 
+  ultimately
   show "\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> (supp x \<inter> as) \<union> (supp x' \<inter> as')" by blast
 qed
 
@@ -335,15 +335,15 @@ lemma alpha_abs_set_stronger1:
   shows "\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'"
 proof -
   from asm have 0: "(supp x - as) \<sharp>* p'" by  (auto simp only: alphas)
-  then have #: "p' \<bullet> (supp x - as) = (supp x - as)" 
+  then have #: "p' \<bullet> (supp x - as) = (supp x - as)"
     by (simp add: atom_set_perm_eq)
-  obtain p where *: "\<forall>b \<in> (supp x \<union> as). p \<bullet> b = p' \<bullet> b" 
+  obtain p where *: "\<forall>b \<in> (supp x \<union> as). p \<bullet> b = p' \<bullet> b"
     and **: "supp p \<subseteq> (supp x \<union> as) \<union> p' \<bullet> (supp x \<union> as)"
     using set_renaming_perm2 by blast
   from * have "\<forall>b \<in> supp x. p \<bullet> b = p' \<bullet> b" by blast
   then have a: "p \<bullet> x = p' \<bullet> x" using supp_perm_perm_eq by auto
   from * have "\<forall>b \<in> as. p \<bullet> b = p' \<bullet> b" by blast
-  then have zb: "p \<bullet> as = p' \<bullet> as" 
+  then have zb: "p \<bullet> as = p' \<bullet> as"
     apply(auto simp: permute_set_def)
     apply(rule_tac x="xa" in exI)
     apply(simp)
@@ -355,22 +355,22 @@ proof -
     by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - as) \<union> (supp x \<inter> as)" by auto
   have "supp p \<subseteq> supp x \<union> as \<union> p' \<bullet> supp x \<union> p' \<bullet> as" using ** using union_eqvt by blast
-  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as))) \<union> p' \<bullet> as" 
+  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as))) \<union> p' \<bullet> as"
     using b by simp
-  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> 
+  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union>
     ((p' \<bullet> (supp x - as)) \<union> (p' \<bullet> (supp x \<inter> as))) \<union> p' \<bullet> as" by (simp add: union_eqvt)
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> (p' \<bullet> (supp x \<inter> as)) \<union> p' \<bullet> as"
     using # by auto
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> p' \<bullet> ((supp x \<inter> as) \<union> as)" using union_eqvt
     by auto
-  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> p' \<bullet> as" 
+  also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> p' \<bullet> as"
     by (metis Int_commute Un_commute sup_inf_absorb)
   also have "\<dots> = (supp x - as) \<union> as \<union> p' \<bullet> as" by blast
   finally have "supp p \<subseteq> (supp x - as) \<union> as \<union> p' \<bullet> as" .
   then have "supp p \<subseteq> as \<union> p' \<bullet> as" using 2 by blast
-  moreover 
+  moreover
   have "(as, x) \<approx>set (=) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
-  ultimately 
+  ultimately
   show "\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as'" using zc by blast
 qed
 
@@ -379,9 +379,9 @@ lemma alpha_abs_lst_stronger1:
   shows "\<exists>p. (as, x) \<approx>lst (=) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'"
 proof -
   from asm have 0: "(supp x - set as) \<sharp>* p'" by  (auto simp only: alphas)
-  then have #: "p' \<bullet> (supp x - set as) = (supp x - set as)" 
+  then have #: "p' \<bullet> (supp x - set as) = (supp x - set as)"
     by (simp add: atom_set_perm_eq)
-  obtain p where *: "\<forall>b \<in> (supp x \<union> set as). p \<bullet> b = p' \<bullet> b" 
+  obtain p where *: "\<forall>b \<in> (supp x \<union> set as). p \<bullet> b = p' \<bullet> b"
     and **: "supp p \<subseteq> (supp x \<union> set as) \<union> p' \<bullet> (supp x \<union> set as)"
     using set_renaming_perm2 by blast
   from * have "\<forall>b \<in> supp x. p \<bullet> b = p' \<bullet> b" by blast
@@ -395,29 +395,29 @@ proof -
     by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - set as) \<union> (supp x \<inter> set as)" by auto
   have "supp p \<subseteq> supp x \<union> set as \<union> p' \<bullet> supp x \<union> p' \<bullet> set as" using ** using union_eqvt by blast
-  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> 
+  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union>
     (p' \<bullet> ((supp x - set as) \<union> (supp x \<inter> set as))) \<union> p' \<bullet> set as" using b by simp
-  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> 
+  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union>
     ((p' \<bullet> (supp x - set as)) \<union> (p' \<bullet> (supp x \<inter> set as))) \<union> p' \<bullet> set as" by (simp add: union_eqvt)
-  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> 
+  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union>
     (p' \<bullet> (supp x \<inter> set as)) \<union> p' \<bullet> set as" using # by auto
-  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> p' \<bullet> ((supp x \<inter> set as) \<union> set as)" 
+  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> p' \<bullet> ((supp x \<inter> set as) \<union> set as)"
     using union_eqvt by auto
-  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> p' \<bullet> set as" 
+  also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> p' \<bullet> set as"
     by (metis Int_commute Un_commute sup_inf_absorb)
   also have "\<dots> = (supp x - set as) \<union> set as \<union> p' \<bullet> set as" by blast
   finally have "supp p \<subseteq> (supp x - set as) \<union> set as \<union> p' \<bullet> set as" .
   then have "supp p \<subseteq> set as \<union> p' \<bullet> set as" using 2 by blast
-  moreover 
+  moreover
   have "(as, x) \<approx>lst (=) supp p (as', x')" using asm 1 a zb by (simp add: alphas)
-  ultimately 
-  show "\<exists>p. (as, x) \<approx>lst (=) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'" using zc by blast 
+  ultimately
+  show "\<exists>p. (as, x) \<approx>lst (=) supp p (as', x') \<and> supp p \<subseteq> set as \<union> set as'" using zc by blast
 qed
 
 lemma alphas_abs_stronger:
   shows "(as, x) \<approx>abs_set (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>set (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
   and   "(as, x) \<approx>abs_res (as', x') \<longleftrightarrow> (\<exists>p. (as, x) \<approx>res (=) supp p (as', x') \<and> supp p \<subseteq> as \<union> as')"
-  and   "(bs, x) \<approx>abs_lst (bs', x') \<longleftrightarrow> 
+  and   "(bs, x) \<approx>abs_lst (bs', x') \<longleftrightarrow>
    (\<exists>p. (bs, x) \<approx>lst (=) supp p (bs', x') \<and> supp p \<subseteq> set bs \<union> set bs')"
 apply(rule iffI)
 apply(auto simp: alphas_abs alpha_abs_set_stronger1)[1]
@@ -528,11 +528,11 @@ begin
 quotient_definition
   "permute_abs_set::perm \<Rightarrow> ('a::pt abs_set) \<Rightarrow> 'a abs_set"
 is
-  "permute:: perm \<Rightarrow> (atom set \<times> 'a::pt) \<Rightarrow> (atom set \<times> 'a::pt)" 
+  "permute:: perm \<Rightarrow> (atom set \<times> 'a::pt) \<Rightarrow> (atom set \<times> 'a::pt)"
   by (auto intro: alphas_abs_eqvt simp only: Pair_eqvt)
 
 lemma permute_Abs_set[simp]:
-  fixes x::"'a::pt"  
+  fixes x::"'a::pt"
   shows "(p \<bullet> ([as]set. x)) = [p \<bullet> as]set. (p \<bullet> x)"
   by (lifting permute_prod.simps[where 'a="atom set" and 'b="'a"])
 
@@ -554,7 +554,7 @@ is
   by (auto intro: alphas_abs_eqvt simp only: Pair_eqvt)
 
 lemma permute_Abs_res[simp]:
-  fixes x::"'a::pt"  
+  fixes x::"'a::pt"
   shows "(p \<bullet> ([as]res. x)) = [p \<bullet> as]res. (p \<bullet> x)"
   by (lifting permute_prod.simps[where 'a="atom set" and 'b="'a"])
 
@@ -576,7 +576,7 @@ is
   by (auto intro: alphas_abs_eqvt simp only: Pair_eqvt)
 
 lemma permute_Abs_lst[simp]:
-  fixes x::"'a::pt"  
+  fixes x::"'a::pt"
   shows "(p \<bullet> ([as]lst. x)) = [p \<bullet> as]lst. (p \<bullet> x)"
   by (lifting permute_prod.simps[where 'a="atom list" and 'b="'a"])
 
@@ -598,9 +598,9 @@ lemma Abs_swap1:
   and   "[bs]res. x = [(a \<rightleftharpoons> b) \<bullet> bs]res. ((a \<rightleftharpoons> b) \<bullet> x)"
   unfolding Abs_eq_iff
   unfolding alphas
-  unfolding supp_eqvt[symmetric] Diff_eqvt[symmetric] 
+  unfolding supp_eqvt[symmetric] Diff_eqvt[symmetric]
   unfolding fresh_star_def fresh_def
-  unfolding swap_set_not_in[OF a1 a2] 
+  unfolding swap_set_not_in[OF a1 a2]
   using a1 a2
   by (rule_tac [!] x="(a \<rightleftharpoons> b)" in exI)
      (auto simp: supp_perm swap_atom)
@@ -773,33 +773,33 @@ proof -
   have "[{atom a}]set. x = (a \<leftrightarrow> c) \<bullet> ([{atom a}]set. x)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[{atom a}]set. x = [{atom c}]set. ((a \<leftrightarrow> c) \<bullet> x)" by simp
-  moreover 
+  moreover
   have "[{atom b}]set. y = (b \<leftrightarrow> c) \<bullet> ([{atom b}]set. y)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[{atom b}]set. y = [{atom c}]set. ((b \<leftrightarrow> c) \<bullet> y)" by simp
-  ultimately 
+  ultimately
   show "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y"
     by (simp add: Abs1_eq)
 next
   have "[{atom a}]res. x = (a \<leftrightarrow> c) \<bullet> ([{atom a}]res. x)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[{atom a}]res. x = [{atom c}]res. ((a \<leftrightarrow> c) \<bullet> x)" by simp
-  moreover 
+  moreover
   have "[{atom b}]res. y = (b \<leftrightarrow> c) \<bullet> ([{atom b}]res. y)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[{atom b}]res. y = [{atom c}]res. ((b \<leftrightarrow> c) \<bullet> y)" by simp
-  ultimately 
+  ultimately
   show "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y"
     by (simp add: Abs1_eq)
 next
   have "[[atom a]]lst. x = (a \<leftrightarrow> c) \<bullet> ([[atom a]]lst. x)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[[atom a]]lst. x = [[atom c]]lst. ((a \<leftrightarrow> c) \<bullet> x)" by simp
-  moreover 
+  moreover
   have "[[atom b]]lst. y = (b \<leftrightarrow> c) \<bullet> ([[atom b]]lst. y)"
     by (rule_tac flip_fresh_fresh[symmetric]) (simp_all add: Abs_fresh_iff assms)
   then have "[[atom b]]lst. y = [[atom c]]lst. ((b \<leftrightarrow> c) \<bullet> y)" by simp
-  ultimately 
+  ultimately
   show "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y"
     by (simp add: Abs1_eq)
 qed
@@ -811,7 +811,7 @@ lemma Abs1_eq_iff_all:
   shows "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
   and   "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
   and   "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
-apply(auto) 
+apply(auto)
 apply(simp add: Abs1_eq_iff_fresh(1)[symmetric])
 apply(rule_tac ?'a="'b::at" and x="(a, b, x, y, z)" in obtain_fresh)
 apply(drule_tac x="aa" in spec)
@@ -851,7 +851,7 @@ proof -
     also have "\<dots> = [{atom a}]set. x" using ** by simp
     finally have "a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y" using # * by (simp add: Abs1_eq Abs_fresh_iff)
   }
-  moreover 
+  moreover
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "[{atom a}]set. x = [{atom a}]set. ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
     also have "\<dots> = (a \<leftrightarrow> b) \<bullet> ([{atom b}]set. y)" by (simp add: permute_set_def)
@@ -859,7 +859,7 @@ proof -
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "[{atom a}]set. x = [{atom b}]set. y" .
   }
-  ultimately 
+  ultimately
   show "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y)"
     by blast
 next
@@ -875,7 +875,7 @@ next
     also have "\<dots> = Abs_res {atom a} x" using ** by simp
     finally have "a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y" using # * by (simp add: Abs1_eq Abs_fresh_iff)
   }
-  moreover 
+  moreover
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "Abs_res {atom a} x = Abs_res {atom a} ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
     also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_res {atom b} y" by (simp add: permute_set_def)
@@ -883,7 +883,7 @@ next
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "Abs_res {atom a} x = Abs_res {atom b} y" .
   }
-  ultimately 
+  ultimately
   show "Abs_res {atom a} x = Abs_res {atom b} y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y)"
     by blast
 next
@@ -899,7 +899,7 @@ next
     also have "\<dots> = Abs_lst [atom a] x" using ** by simp
     finally have "a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y" using # * by (simp add: Abs1_eq Abs_fresh_iff)
   }
-  moreover 
+  moreover
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "Abs_lst [atom a] x = Abs_lst [atom a] ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
     also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_lst [atom b] y" by simp
@@ -907,7 +907,7 @@ next
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "Abs_lst [atom a] x = Abs_lst [atom b] y" .
   }
-  ultimately 
+  ultimately
   show "Abs_lst [atom a] x = Abs_lst [atom b] y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y)"
     by blast
 qed
@@ -933,19 +933,19 @@ fun alpha_single_simproc thm _ ctxt ctrm =
       |> Thm.cterm_of ctxt
     val cvrs_ty = Thm.ctyp_of_cterm cvrs
     val thm' = thm
-      |> Thm.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 
+      |> Thm.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs]
   in
     SOME thm'
   end
 *}
 
-simproc_setup alpha_set ("[{atom a}]set. x = [{atom b}]set. y") = 
+simproc_setup alpha_set ("[{atom a}]set. x = [{atom b}]set. y") =
   {* alpha_single_simproc @{thm Abs1_eq_iff_all(1)[THEN eq_reflection]} *}
 
-simproc_setup alpha_res ("[{atom a}]res. x = [{atom b}]res. y") = 
+simproc_setup alpha_res ("[{atom a}]res. x = [{atom b}]res. y") =
   {* alpha_single_simproc @{thm Abs1_eq_iff_all(2)[THEN eq_reflection]} *}
 
-simproc_setup alpha_lst ("[[atom a]]lst. x = [[atom b]]lst. y") = 
+simproc_setup alpha_lst ("[[atom a]]lst. x = [[atom b]]lst. y") =
   {* alpha_single_simproc @{thm Abs1_eq_iff_all(3)[THEN eq_reflection]} *}
 
 
@@ -953,11 +953,11 @@ subsection {* Renaming of bodies of abstractions *}
 
 lemma Abs_rename_set:
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> bs) \<sharp>* x" 
+  assumes a: "(p \<bullet> bs) \<sharp>* x"
   (*and     b: "finite bs"*)
   shows "\<exists>q. [bs]set. x = [p \<bullet> bs]set. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 proof -
-  from set_renaming_perm2 
+  from set_renaming_perm2
   obtain q where *: "\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> bs \<union> (p \<bullet> bs)" by blast
   have ***: "q \<bullet> bs = p \<bullet> bs" using *
     unfolding permute_set_eq_image image_def by auto
@@ -974,13 +974,13 @@ qed
 
 lemma Abs_rename_res:
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> bs) \<sharp>* x" 
+  assumes a: "(p \<bullet> bs) \<sharp>* x"
   (*and     b: "finite bs"*)
   shows "\<exists>q. [bs]res. x = [p \<bullet> bs]res. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 proof -
-  from set_renaming_perm2 
+  from set_renaming_perm2
   obtain q where *: "\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> bs \<union> (p \<bullet> bs)" by blast
-  have ***: "q \<bullet> bs = p \<bullet> bs" using * 
+  have ***: "q \<bullet> bs = p \<bullet> bs" using *
     unfolding permute_set_eq_image image_def by auto
   have "[bs]res. x =  q \<bullet> ([bs]res. x)"
     apply(rule perm_supp_eq[symmetric])
@@ -995,10 +995,10 @@ qed
 
 lemma Abs_rename_lst:
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> (set bs)) \<sharp>* x" 
+  assumes a: "(p \<bullet> (set bs)) \<sharp>* x"
   shows "\<exists>q. [bs]lst. x = [p \<bullet> bs]lst. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 proof -
-  from list_renaming_perm 
+  from list_renaming_perm
   obtain q where *: "\<forall>b \<in> set bs. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> set bs \<union> (p \<bullet> set bs)" by blast
   have ***: "q \<bullet> bs = p \<bullet> bs" using * by (induct bs) (simp_all add: insert_eqvt)
   have "[bs]lst. x =  q \<bullet> ([bs]lst. x)"
@@ -1017,21 +1017,21 @@ text {* for deep recursive binders *}
 
 lemma Abs_rename_set':
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> bs) \<sharp>* x" 
+  assumes a: "(p \<bullet> bs) \<sharp>* x"
   (*and     b: "finite bs"*)
   shows "\<exists>q. [bs]set. x = [q \<bullet> bs]set. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 using Abs_rename_set[OF a] by metis
 
 lemma Abs_rename_res':
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> bs) \<sharp>* x" 
+  assumes a: "(p \<bullet> bs) \<sharp>* x"
   (*and     b: "finite bs"*)
   shows "\<exists>q. [bs]res. x = [q \<bullet> bs]res. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 using Abs_rename_res[OF a] by metis
 
 lemma Abs_rename_lst':
   fixes x::"'a::fs"
-  assumes a: "(p \<bullet> (set bs)) \<sharp>* x" 
+  assumes a: "(p \<bullet> (set bs)) \<sharp>* x"
   shows "\<exists>q. [bs]lst. x = [q \<bullet> bs]lst. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 using Abs_rename_lst[OF a] by metis
 
@@ -1042,7 +1042,7 @@ fun
 where
   "prod_fv fv1 fv2 (x, y) = fv1 x \<union> fv2 y"
 
-definition 
+definition
   prod_alpha :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool)"
 where
  "prod_alpha = rel_prod"
@@ -1058,18 +1058,18 @@ lemma [quot_preserve]:
   shows "((abs1 ---> id) ---> (abs2 ---> id) ---> map_prod rep1 rep2 ---> id) prod_fv = prod_fv"
   by (simp add: fun_eq_iff Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2])
 
-lemma [mono]: 
+lemma [mono]:
   shows "A <= B \<Longrightarrow> C <= D ==> prod_alpha A C <= prod_alpha B D"
   unfolding prod_alpha_def
   by auto
 
-lemma [eqvt]: 
+lemma [eqvt]:
   shows "p \<bullet> prod_alpha A B x y = prod_alpha (p \<bullet> A) (p \<bullet> B) (p \<bullet> x) (p \<bullet> y)"
   unfolding prod_alpha_def
   unfolding rel_prod_conv
   by (perm_simp) (rule refl)
 
-lemma [eqvt]: 
+lemma [eqvt]:
   shows "p \<bullet> prod_fv A B (x, y) = prod_fv (p \<bullet> A) (p \<bullet> B) (p \<bullet> x, p \<bullet> y)"
   unfolding prod_fv.simps
   by (perm_simp) (rule refl)

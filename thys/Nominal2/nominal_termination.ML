@@ -69,7 +69,7 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
               case_names=case_names, fs=fs, R=R, psimps=psimps, pinducts=pinducts,
               simps=SOME simps, inducts=SOME inducts, termination=termination, eqvts=teqvts }
             in
-              lthy 
+              lthy
               |> Local_Theory.declaration {syntax = false, pervasive = false}
                    (add_function_data o morph_function_data info')
               |> Spec_Rules.add Spec_Rules.Equational (fs, tsimps)
@@ -102,14 +102,14 @@ val termination_cmd = gen_termination Syntax.read_term
 (* outer syntax *)
 
 val option_parser =
-  (Scan.optional (@{keyword "("} |-- Parse.!!! 
+  (Scan.optional (@{keyword "("} |-- Parse.!!!
     ((Parse.reserved "eqvt" >> K true) ||
      (Parse.reserved "no_eqvt" >> K false)) --| @{keyword ")"}) (false))
 
 val _ =
   Outer_Syntax.local_theory_to_proof @{command_keyword nominal_termination}
     "prove termination of a recursive nominal function"
-      (option_parser -- Scan.option Parse.term >> 
+      (option_parser -- Scan.option Parse.term >>
         (fn (is_eqvt, opt_trm) => termination_cmd is_eqvt opt_trm))
 
 end

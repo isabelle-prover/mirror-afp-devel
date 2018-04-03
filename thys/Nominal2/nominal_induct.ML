@@ -57,8 +57,8 @@ fun inst_mutual_rule ctxt insts avoiding rules =
      val substs =
        map2 subst insts concls |> flat |> distinct (op =)
        |> map (fn (t, u) => (#1 (dest_Var t), Thm.cterm_of ctxt u));
-  in 
-    (((cases, nconcls), consumes), infer_instantiate ctxt substs joined_rule) 
+  in
+    (((cases, nconcls), consumes), infer_instantiate ctxt substs joined_rule)
   end;
 
 fun rename_params_rule internal xs rule =
@@ -171,7 +171,7 @@ val rule_spec = Scan.lift (Args.$$$ "rule" -- Args.colon) |-- Attrib.thms;
 in
 
 val nominal_induct_method =
-  Scan.lift (Args.mode Induct.no_simpN) -- 
+  Scan.lift (Args.mode Induct.no_simpN) --
     (Parse.and_list' (Scan.repeat (unless_more_args def_inst)) --
       avoiding -- fixing -- rule_spec) >>
   (fn (no_simp, (((x, y), z), w)) => fn _ => fn facts =>

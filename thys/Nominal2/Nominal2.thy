@@ -1,5 +1,5 @@
 theory Nominal2
-imports 
+imports
   Nominal2_Base Nominal2_Abs Nominal2_FCB
 keywords
   "nominal_datatype" :: thy_decl and
@@ -53,7 +53,7 @@ fun get_cnstrs dts =
   map snd dts
 
 fun get_typed_cnstrs dts =
-  flat (map (fn ((bn, _, _), constrs) => 
+  flat (map (fn ((bn, _, _), constrs) =>
    (map (fn (bn', _, _) => (Binding.name_of bn, Binding.name_of bn')) constrs)) dts)
 
 fun get_cnstr_strs dts =
@@ -71,13 +71,13 @@ fun add_raw s = s ^ "_raw"
 fun add_raws ss = map add_raw ss
 fun raw_bind bn = Binding.suffix_name "_raw" bn
 
-fun replace_str ss s = 
-  case (AList.lookup (op =) ss s) of 
+fun replace_str ss s =
+  case (AList.lookup (op =) ss s) of
      SOME s' => s'
    | NONE => s
 
 fun replace_typ ty_ss (Type (a, Ts)) = Type (replace_str ty_ss a, map (replace_typ ty_ss) Ts)
-  | replace_typ ty_ss T = T  
+  | replace_typ ty_ss T = T
 
 fun raw_dts ty_ss dts =
 let
@@ -95,7 +95,7 @@ fun replace_aterm trm_ss (Const (a, T)) = Const (replace_str trm_ss a, T)
   | replace_aterm trm_ss trm = trm
 
 fun replace_term trm_ss ty_ss trm =
-  trm |> Term.map_aterms (replace_aterm trm_ss) |> map_types (replace_typ ty_ss) 
+  trm |> Term.map_aterms (replace_aterm trm_ss) |> map_types (replace_typ ty_ss)
 *}
 
 ML {*
@@ -105,20 +105,20 @@ fun rawify_dts dts dts_env = raw_dts dts_env dts
 ML {*
 fun rawify_bn_funs dts_env cnstrs_env bn_fun_env bn_funs bn_eqs =
 let
-  val bn_funs' = map (fn (bn, ty, _) => 
+  val bn_funs' = map (fn (bn, ty, _) =>
     (raw_bind bn, SOME (replace_typ dts_env ty), NoSyn)) bn_funs
-  
-  val bn_eqs' = map (fn (attr, trm) => 
+
+  val bn_eqs' = map (fn (attr, trm) =>
     ((attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm), [], [])) bn_eqs
 in
-  (bn_funs', bn_eqs') 
-end 
+  (bn_funs', bn_eqs')
+end
 *}
 
-ML {* 
+ML {*
 fun rawify_bclauses dts_env cnstrs_env bn_fun_env bclauses =
 let
-  fun rawify_bnds bnds = 
+  fun rawify_bnds bnds =
     map (apfst (Option.map (replace_term (cnstrs_env @ bn_fun_env) dts_env))) bnds
 
   fun rawify_bclause (BC (mode, bnds, bdys)) = BC (mode, rawify_bnds bnds, bdys)
@@ -137,37 +137,37 @@ let
   val thy_name = Context.theory_name thy
 
   val dt_names = map (fn ((s, _, _), _) => Binding.name_of s) dts
-  val dt_full_names = map (Long_Name.qualify thy_name) dt_names 
+  val dt_full_names = map (Long_Name.qualify thy_name) dt_names
   val dt_full_names' = add_raws dt_full_names
   val dts_env = dt_full_names ~~ dt_full_names'
 
   val cnstr_full_names = map (Long_Name.qualify thy_name) cnstr_names
-  val cnstr_full_names' = map (fn (x, y) => Long_Name.qualify thy_name 
+  val cnstr_full_names' = map (fn (x, y) => Long_Name.qualify thy_name
     (Long_Name.qualify (add_raw x) (add_raw y))) cnstr_tys
   val cnstrs_env = cnstr_full_names ~~ cnstr_full_names'
 
   val bn_fun_strs = get_bn_fun_strs bn_funs
   val bn_fun_strs' = add_raws bn_fun_strs
   val bn_fun_env = bn_fun_strs ~~ bn_fun_strs'
-  val bn_fun_full_env = map (apply2 (Long_Name.qualify thy_name)) 
+  val bn_fun_full_env = map (apply2 (Long_Name.qualify thy_name))
     (bn_fun_strs ~~ bn_fun_strs')
-  
-  val raw_dts = rawify_dts dts dts_env
-  val (raw_bn_funs, raw_bn_eqs) = rawify_bn_funs dts_env cnstrs_env bn_fun_env bn_funs bn_eqs 
-  val raw_bclauses = rawify_bclauses dts_env cnstrs_env bn_fun_full_env bclauses 
 
-  val (raw_full_dt_names', thy1) = 
+  val raw_dts = rawify_dts dts dts_env
+  val (raw_bn_funs, raw_bn_eqs) = rawify_bn_funs dts_env cnstrs_env bn_fun_env bn_funs bn_eqs
+  val raw_bclauses = rawify_bclauses dts_env cnstrs_env bn_fun_full_env bclauses
+
+  val (raw_full_dt_names', thy1) =
     BNF_LFP_Compat.add_datatype [BNF_LFP_Compat.Kill_Type_Args] raw_dts thy
 
   val lthy1 = Named_Target.theory_init thy1
 
-  val dtinfos = map (Old_Datatype_Data.the_info (Proof_Context.theory_of lthy1)) raw_full_dt_names' 
+  val dtinfos = map (Old_Datatype_Data.the_info (Proof_Context.theory_of lthy1)) raw_full_dt_names'
   val {descr, ...} = hd dtinfos
 
   val raw_tys = Old_Datatype_Aux.get_rec_types descr
   val raw_ty_args = hd raw_tys
     |> snd o dest_Type
-    |> map dest_TFree 
+    |> map dest_TFree
 
   val raw_cns_info = all_dtyp_constrs_types descr
   val raw_all_cns = (map o map) (fn (c, _, _, _) => c) raw_cns_info
@@ -181,7 +181,7 @@ let
   val raw_size_thms = these (Option.map (#2 o #2)
     (BNF_LFP_Size.size_of lthy1 (hd raw_full_dt_names')))
 
-  val raw_result = RawDtInfo 
+  val raw_result = RawDtInfo
     {raw_dt_names = raw_full_dt_names',
      raw_dts = raw_dts,
      raw_tys = raw_tys,
@@ -209,9 +209,9 @@ let
 
   val _ = trace_msg (K "Defining raw datatypes...")
   val (raw_bclauses, raw_bn_funs, raw_bn_eqs, raw_dt_info, lthy0) =
-    define_raw_dts dts cnstr_names cnstr_tys bn_funs bn_eqs bclauses lthy   
+    define_raw_dts dts cnstr_names cnstr_tys bn_funs bn_eqs bclauses lthy
 
-  val RawDtInfo 
+  val RawDtInfo
     {raw_dt_names,
      raw_tys,
      raw_ty_args,
@@ -223,56 +223,56 @@ let
      raw_exhaust_thms,
      raw_size_trms,
      raw_size_thms, ...} = raw_dt_info
-  
+
   val _ = trace_msg (K "Defining raw permutations...")
   val ((raw_perm_funs, raw_perm_simps, raw_perm_laws), lthy2a) = define_raw_perms raw_dt_info lthy0
- 
+
   (* noting the raw permutations as eqvt theorems *)
   val lthy3 = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_perm_simps) lthy2a)
 
   val _ = trace_msg (K "Defining raw fv- and bn-functions...")
   val (raw_bns, raw_bn_defs, raw_bn_info, raw_bn_inducts, lthy3a) =
     define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy3
-    
+
   (* defining the permute_bn functions *)
-  val (raw_perm_bns, raw_perm_bn_simps, lthy3b) = 
+  val (raw_perm_bns, raw_perm_bn_simps, lthy3b) =
     define_raw_bn_perms raw_dt_info raw_bn_info lthy3a
-    
-  val (raw_fvs, raw_fv_bns, raw_fv_defs, raw_fv_bns_induct, lthy3c) = 
+
+  val (raw_fvs, raw_fv_bns, raw_fv_defs, raw_fv_bns_induct, lthy3c) =
     define_raw_fvs raw_dt_info raw_bn_info raw_bclauses lthy3b
-    
+
   val _ = trace_msg (K "Defining alpha relations...")
   val (alpha_result, lthy4) =
     define_raw_alpha raw_dt_info raw_bn_info raw_bclauses raw_fvs lthy3c
-    
+
   val _ = trace_msg (K "Proving distinct theorems...")
   val alpha_distincts = raw_prove_alpha_distincts lthy4 alpha_result raw_dt_info
 
   val _ = trace_msg (K "Proving eq-iff theorems...")
   val alpha_eq_iff = raw_prove_alpha_eq_iff lthy4 alpha_result raw_dt_info
-    
+
   val _ = trace_msg (K "Proving equivariance of bns, fvs, size and alpha...")
-  val raw_bn_eqvt = 
+  val raw_bn_eqvt =
     raw_prove_eqvt raw_bns raw_bn_inducts (raw_bn_defs @ raw_perm_simps) lthy4
-    
+
   (* noting the raw_bn_eqvt lemmas in a temprorary theory *)
   val lthy_tmp = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt) lthy4)
 
-  val raw_fv_eqvt = 
-    raw_prove_eqvt (raw_fvs @ raw_fv_bns) raw_fv_bns_induct (raw_fv_defs @ raw_perm_simps) 
+  val raw_fv_eqvt =
+    raw_prove_eqvt (raw_fvs @ raw_fv_bns) raw_fv_bns_induct (raw_fv_defs @ raw_perm_simps)
       (Local_Theory.reset lthy_tmp)
-    
+
   val raw_size_eqvt =
     let
       val RawDtInfo {raw_size_trms, raw_size_thms, raw_induct_thms, ...} = raw_dt_info
     in
-      raw_prove_eqvt raw_size_trms raw_induct_thms (raw_size_thms @ raw_perm_simps) 
+      raw_prove_eqvt raw_size_trms raw_induct_thms (raw_size_thms @ raw_perm_simps)
         (Local_Theory.reset lthy_tmp)
         |> map (rewrite_rule (Local_Theory.reset lthy_tmp)
             @{thms permute_nat_def[THEN eq_reflection]})
         |> map (fn thm => thm RS @{thm sym})
-    end 
-     
+    end
+
   val lthy5 = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_fv_eqvt) lthy_tmp)
 
   val alpha_eqvt =
@@ -285,20 +285,20 @@ let
   val alpha_eqvt_norm = map (Nominal_ThmDecls.eqvt_transform lthy5) alpha_eqvt
 
   val _ = trace_msg (K "Proving equivalence of alpha...")
-  val alpha_refl_thms = raw_prove_refl lthy5 alpha_result raw_induct_thm  
+  val alpha_refl_thms = raw_prove_refl lthy5 alpha_result raw_induct_thm
   val alpha_sym_thms = raw_prove_sym lthy5 alpha_result alpha_eqvt_norm
   val alpha_trans_thms =
     raw_prove_trans lthy5 alpha_result (raw_distinct_thms @ raw_inject_thms) alpha_eqvt_norm
 
-  val (alpha_equivp_thms, alpha_bn_equivp_thms) = 
+  val (alpha_equivp_thms, alpha_bn_equivp_thms) =
     raw_prove_equivp lthy5 alpha_result alpha_refl_thms alpha_sym_thms alpha_trans_thms
 
   val _ = trace_msg (K "Proving alpha implies bn...")
   val alpha_bn_imp_thms = raw_prove_bn_imp lthy5 alpha_result
 
   val _ = trace_msg (K "Proving respectfulness...")
-  val raw_funs_rsp_aux = 
-    raw_fv_bn_rsp_aux lthy5 alpha_result raw_fvs raw_bns raw_fv_bns (raw_bn_defs @ raw_fv_defs) 
+  val raw_funs_rsp_aux =
+    raw_fv_bn_rsp_aux lthy5 alpha_result raw_fvs raw_bns raw_fv_bns (raw_bn_defs @ raw_fv_defs)
 
   val raw_funs_rsp = map (Drule.eta_contraction_rule o mk_funs_rsp lthy5) raw_funs_rsp_aux
 
@@ -311,16 +311,16 @@ let
   val raw_bn_rsp = map find_matching_rsp raw_bns;
   val raw_fv_bn_rsp = map find_matching_rsp raw_fv_bns;
 
-  val raw_size_rsp = 
+  val raw_size_rsp =
     raw_size_rsp_aux lthy5 alpha_result (raw_size_thms @ raw_size_eqvt)
       |> map (mk_funs_rsp lthy5)
 
-  val raw_constrs_rsp = 
-    raw_constrs_rsp lthy5 alpha_result raw_all_cns (alpha_bn_imp_thms @ raw_funs_rsp_aux) 
-    
+  val raw_constrs_rsp =
+    raw_constrs_rsp lthy5 alpha_result raw_all_cns (alpha_bn_imp_thms @ raw_funs_rsp_aux)
+
   val alpha_permute_rsp = map (mk_alpha_permute_rsp lthy5) alpha_eqvt
 
-  val alpha_bn_rsp = 
+  val alpha_bn_rsp =
     raw_alpha_bn_rsp alpha_result alpha_bn_equivp_thms alpha_bn_imp_thms
 
   val raw_perm_bn_rsp = raw_perm_bn_rsp lthy5 alpha_result raw_perm_bns raw_perm_bn_simps
@@ -354,11 +354,11 @@ let
     map2 (fn (b, _, _) => fn (t, th) => ("fv_" ^ Variable.check_name b, t, NoSyn, th))
       bn_funs (raw_fv_bns ~~ raw_fv_bn_rsp)
 
-  val qalpha_bns_descr = 
+  val qalpha_bns_descr =
     let
-      val AlphaResult {alpha_bn_trms, ...} = alpha_result 
+      val AlphaResult {alpha_bn_trms, ...} = alpha_result
     in
-      map2 (fn (b, _, _) => fn (t, th) => ("alpha_" ^ Variable.check_name b, t, NoSyn, th)) 
+      map2 (fn (b, _, _) => fn (t, th) => ("alpha_" ^ Variable.check_name b, t, NoSyn, th))
         bn_funs (alpha_bn_trms ~~ alpha_bn_rsp)
     end
 
@@ -370,24 +370,24 @@ let
     map2 (fn n => fn (t, th) => ("size_" ^ n, t, NoSyn, th)) qty_names
       (raw_size_trms ~~ (take (length raw_size_trms) raw_size_rsp))
 
-  val qperm_bn_descr = 
+  val qperm_bn_descr =
     map2 (fn (b, _, _) => fn (t, th) => ("permute_" ^ Variable.check_name b, t, NoSyn, th))
       bn_funs (raw_perm_bns ~~ raw_perm_bn_rsp)
 
-  val ((((((qconstrs_infos, qbns_info), qfvs_info), qfv_bns_info), qalpha_bns_info), qperm_bns_info), 
-    lthy8) = 
+  val ((((((qconstrs_infos, qbns_info), qfvs_info), qfv_bns_info), qalpha_bns_info), qperm_bns_info),
+    lthy8) =
       lthy7
-      |> fold_map (define_qconsts qtys) qconstrs_descrs 
-      ||>> define_qconsts qtys qbns_descr 
+      |> fold_map (define_qconsts qtys) qconstrs_descrs
+      ||>> define_qconsts qtys qbns_descr
       ||>> define_qconsts qtys qfvs_descr
       ||>> define_qconsts qtys qfv_bns_descr
       ||>> define_qconsts qtys qalpha_bns_descr
       ||>> define_qconsts qtys qperm_bn_descr
 
-  val lthy9 = 
-    define_qperms qtys qty_full_names raw_ty_args qperm_descr raw_perm_laws lthy8 
-  
-  val lthy9a = 
+  val lthy9 =
+    define_qperms qtys qty_full_names raw_ty_args qperm_descr raw_perm_laws lthy8
+
+  val lthy9a =
     define_qsizes qtys qty_full_names raw_ty_args qsize_descr lthy9
 
   val qtrms = (map o map) #qconst qconstrs_infos
@@ -397,16 +397,16 @@ let
   val qalpha_bns = map #qconst qalpha_bns_info
   val qperm_bns = map #qconst qperm_bns_info
 
-  val _ = trace_msg (K "Lifting of theorems...")  
+  val _ = trace_msg (K "Lifting of theorems...")
   val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def rel_prod_sel
-    prod.case} 
+    prod.case}
 
-  val ([ qdistincts, qeq_iffs, qfv_defs, qbn_defs, qperm_simps, qfv_qbn_eqvts, 
-         qbn_inducts, qsize_eqvt, [qinduct], qexhausts, qsize_simps, qperm_bn_simps, 
-         qalpha_refl_thms, qalpha_sym_thms, qalpha_trans_thms ], lthyB) = 
-    lthy9a    
-    |>>> lift_thms qtys [] alpha_distincts  
-    ||>>> lift_thms qtys eq_iff_simps alpha_eq_iff       
+  val ([ qdistincts, qeq_iffs, qfv_defs, qbn_defs, qperm_simps, qfv_qbn_eqvts,
+         qbn_inducts, qsize_eqvt, [qinduct], qexhausts, qsize_simps, qperm_bn_simps,
+         qalpha_refl_thms, qalpha_sym_thms, qalpha_trans_thms ], lthyB) =
+    lthy9a
+    |>>> lift_thms qtys [] alpha_distincts
+    ||>>> lift_thms qtys eq_iff_simps alpha_eq_iff
     ||>>> lift_thms qtys [] raw_fv_defs
     ||>>> lift_thms qtys [] raw_bn_defs
     ||>>> lift_thms qtys [] raw_perm_simps
@@ -433,8 +433,8 @@ let
   val lthyC = fs_instance qtys qty_full_names raw_ty_args qfsupp_thms lthyB
 
   val _ = trace_msg (K "Proving equality between fv and supp...")
-  val qfv_supp_thms = 
-    prove_fv_supp qtys (flat qtrms) qfvs qfv_bns qalpha_bns qfv_defs qeq_iffs 
+  val qfv_supp_thms =
+    prove_fv_supp qtys (flat qtrms) qfvs qfv_bns qalpha_bns qfv_defs qeq_iffs
       qperm_simps qfv_qbn_eqvts qinduct (flat raw_bclauses) lthyC
     |> map Drule.eta_contraction_rule
 
@@ -446,7 +446,7 @@ let
 
   (* filters the theorems that are of the form "qfv = supp" *)
   val qfv_names = map (fst o dest_Const) qfvs
-  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) = 
+  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) =
     member (op =) qfv_names lhs
   | is_qfv_thm _ = false
 
@@ -455,26 +455,26 @@ let
         addsimps (filter (is_qfv_thm o Thm.prop_of) qfv_supp_thms)))
 
   val transform_thm = @{lemma "x = y \<Longrightarrow> a \<notin> x \<longleftrightarrow> a \<notin> y" by simp}
-  val transform_thms = 
-    [ @{lemma "a \<notin> (S \<union> T) \<longleftrightarrow> a \<notin> S \<and> a \<notin> T" by simp}, 
-      @{lemma "a \<notin> (S - T) \<longleftrightarrow> a \<notin> S \<or> a \<in> T" by simp}, 
-      @{lemma "(lhs = (a \<notin> {})) \<longleftrightarrow> lhs" by simp}, 
+  val transform_thms =
+    [ @{lemma "a \<notin> (S \<union> T) \<longleftrightarrow> a \<notin> S \<and> a \<notin> T" by simp},
+      @{lemma "a \<notin> (S - T) \<longleftrightarrow> a \<notin> S \<or> a \<in> T" by simp},
+      @{lemma "(lhs = (a \<notin> {})) \<longleftrightarrow> lhs" by simp},
       @{thm fresh_def[symmetric]}]
 
   val qfresh_constrs = qsupp_constrs
-    |> map (fn thm => thm RS transform_thm) 
+    |> map (fn thm => thm RS transform_thm)
     |> map (simplify (put_simpset HOL_basic_ss lthyC addsimps transform_thms))
 
   (* proving that the qbn result is finite *)
   val qbn_finite_thms = prove_bns_finite qtys qbns qinduct qbn_defs lthyC
 
   (* proving that perm_bns preserve alpha *)
-  val qperm_bn_alpha_thms = 
-    prove_perm_bn_alpha_thms qtys qperm_bns qalpha_bns qinduct qperm_bn_simps qeq_iffs' 
+  val qperm_bn_alpha_thms =
+    prove_perm_bn_alpha_thms qtys qperm_bns qalpha_bns qinduct qperm_bn_simps qeq_iffs'
       qalpha_refl_thms lthyC
 
   (* proving the relationship of bn and permute_bn *)
-  val qpermute_bn_thms = 
+  val qpermute_bn_thms =
     prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qfv_qbn_eqvts lthyC
 
   val _ = trace_msg (K "Proving strong exhaust lemmas...")
@@ -484,11 +484,11 @@ let
   val _ = trace_msg (K "Proving strong induct lemmas...")
   val qstrong_induct_thms =  prove_strong_induct lthyC qinduct qstrong_exhaust_thms qsize_simps bclauses
 
-  (* noting the theorems *)  
+  (* noting the theorems *)
 
   (* generating the prefix for the theorem names *)
-  val thms_name = 
-    the_default (Binding.name (space_implode "_" qty_names)) opt_thms_name 
+  val thms_name =
+    the_default (Binding.name (space_implode "_" qty_names)) opt_thms_name
   fun thms_suffix s = Binding.qualify_name true thms_name s
   val case_names_attr = Attrib.internal (K (Rule_Cases.case_names cnstr_names))
 
@@ -496,16 +496,16 @@ let
 
   val (_, lthy9') = lthyC
      |> Local_Theory.declaration {syntax = false, pervasive = false} (K (fold register_info infos))
-     |> Local_Theory.note ((thms_suffix "distinct", [induct_attr, simp_attr]), qdistincts) 
+     |> Local_Theory.note ((thms_suffix "distinct", [induct_attr, simp_attr]), qdistincts)
      ||>> Local_Theory.note ((thms_suffix "eq_iff", [induct_attr, simp_attr]), qeq_iffs')
-     ||>> Local_Theory.note ((thms_suffix "fv_defs", []), qfv_defs) 
-     ||>> Local_Theory.note ((thms_suffix "bn_defs", []), qbn_defs) 
-     ||>> Local_Theory.note ((thms_suffix "bn_inducts", []), qbn_inducts) 
-     ||>> Local_Theory.note ((thms_suffix "perm_simps", [eqvt_attr, simp_attr]), qperm_simps) 
-     ||>> Local_Theory.note ((thms_suffix "fv_bn_eqvt", [eqvt_attr]), qfv_qbn_eqvts) 
+     ||>> Local_Theory.note ((thms_suffix "fv_defs", []), qfv_defs)
+     ||>> Local_Theory.note ((thms_suffix "bn_defs", []), qbn_defs)
+     ||>> Local_Theory.note ((thms_suffix "bn_inducts", []), qbn_inducts)
+     ||>> Local_Theory.note ((thms_suffix "perm_simps", [eqvt_attr, simp_attr]), qperm_simps)
+     ||>> Local_Theory.note ((thms_suffix "fv_bn_eqvt", [eqvt_attr]), qfv_qbn_eqvts)
      ||>> Local_Theory.note ((thms_suffix "size", [simp_attr]), qsize_simps)
      ||>> Local_Theory.note ((thms_suffix "size_eqvt", []), qsize_eqvt)
-     ||>> Local_Theory.note ((thms_suffix "induct", [case_names_attr]), [qinduct]) 
+     ||>> Local_Theory.note ((thms_suffix "induct", [case_names_attr]), [qinduct])
      ||>> Local_Theory.note ((thms_suffix "inducts", [case_names_attr]), qinducts)
      ||>> Local_Theory.note ((thms_suffix "exhaust", [case_names_attr]), qexhausts)
      ||>> Local_Theory.note ((thms_suffix "strong_exhaust", [case_names_attr]), qstrong_exhaust_thms)
@@ -521,10 +521,10 @@ let
      ||>> Local_Theory.note ((thms_suffix "alpha_refl", []), qalpha_refl_thms)
      ||>> Local_Theory.note ((thms_suffix "alpha_sym", []), qalpha_sym_thms)
      ||>> Local_Theory.note ((thms_suffix "alpha_trans", []), qalpha_trans_thms)
-     
+
 in
   lthy9'
-end 
+end
 *}
 
 
@@ -539,21 +539,21 @@ fun augment_sort_typ thy =
   map_type_tfree (fn (s, S) => TFree (s, augment_sort thy S))
 *}
 
-ML {* 
+ML {*
 (* generates the parsed datatypes and declares the constructors *)
 
-fun prepare_dts dt_strs thy = 
+fun prepare_dts dt_strs thy =
 let
   fun prep_spec ((tname, tvs, mx), constrs) =
     ((tname, tvs, mx), constrs |> map (fn (c, atys, mx', _) => (c, map snd atys, mx')))
 
-  val (dts, spec_ctxt) = 
+  val (dts, spec_ctxt) =
     Old_Datatype.read_specs (map prep_spec dt_strs) thy
- 
+
   fun augment ((tname, tvs, mx), constrs) =
-    ((tname, map (apsnd (augment_sort thy)) tvs, mx), 
+    ((tname, map (apsnd (augment_sort thy)) tvs, mx),
       constrs |> map (fn (c, tys, mx') => (c, map (augment_sort_typ thy) tys, mx')))
-  
+
   val dts' = map augment dts
 
   fun mk_constr_trms ((tname, tvs, _), constrs) =
@@ -564,7 +564,7 @@ let
     end
 
   val constr_trms = flat (map mk_constr_trms dts')
-  
+
   (* FIXME: local version *)
   (* val (_, spec_ctxt') = Proof_Context.add_fixes constr_trms spec_ctxt *)
 
@@ -581,18 +581,18 @@ fun prepare_bn_funs bn_fun_strs bn_eq_strs thy =
 let
   val lthy = Named_Target.theory_init thy
 
-  val ((bn_funs, bn_eqs), lthy') = 
+  val ((bn_funs, bn_eqs), lthy') =
     Specification.read_multi_specs bn_fun_strs bn_eq_strs lthy
 
-  fun prep_bn_fun ((bn, T), mx) = (bn, T, mx) 
-  
+  fun prep_bn_fun ((bn, T), mx) = (bn, T, mx)
+
   val bn_funs' = map prep_bn_fun bn_funs
 
 in
   (Local_Theory.exit_global lthy')
   |> Sign.add_consts bn_funs'
-  |> pair (bn_funs', bn_eqs) 
-end 
+  |> pair (bn_funs', bn_eqs)
+end
 *}
 
 text {* associates every SOME with the index in the list; drops NONEs *}
@@ -602,8 +602,8 @@ let
   fun mapp _ [] = []
     | mapp i (NONE :: xs) = mapp (i + 1) xs
     | mapp i (SOME x :: xs) = (x, i) :: mapp (i + 1) xs
-in 
-  mapp 0 xs 
+in
+  mapp 0 xs
 end
 
 fun index_lookup xs x =
@@ -613,7 +613,7 @@ fun index_lookup xs x =
 *}
 
 ML {*
-fun prepare_bclauses dt_strs thy = 
+fun prepare_bclauses dt_strs thy =
 let
   val annos_bclauses =
     get_cnstrs dt_strs
@@ -624,18 +624,18 @@ let
       Free (x, _) => (NONE, index_lookup env x)
     | Const (a, T) $ Free (x, _) => (SOME (Const (a, T)), index_lookup env x)
     | _ => error ("The term " ^ bn_str ^ " is not allowed as binding function.")
- 
+
   fun prep_body env bn_str = index_lookup env bn_str
 
-  fun prep_bclause env (mode, binders, bodies) = 
+  fun prep_bclause env (mode, binders, bodies) =
   let
     val binders' = map (prep_binder env) binders
     val bodies' = map (prep_body env) bodies
-  in  
+  in
     BC (mode, binders', bodies')
   end
 
-  fun prep_bclauses (annos, bclause_strs) = 
+  fun prep_bclauses (annos, bclause_strs) =
   let
     val env = indexify annos (* for every label, associate the index *)
   in
@@ -646,31 +646,31 @@ in
 end
 *}
 
-text {* 
+text {*
   adds an empty binding clause for every argument
   that is not already part of a binding clause
 *}
 
 ML {*
-fun included i bcs = 
+fun included i bcs =
 let
-  fun incl (BC (_, bns, bds)) = 
+  fun incl (BC (_, bns, bds)) =
     member (op =) (map snd bns) i orelse member (=) bds i
 in
-  exists incl bcs 
+  exists incl bcs
 end
 *}
 
-ML {* 
-fun complete dt_strs bclauses = 
+ML {*
+fun complete dt_strs bclauses =
 let
-  val args = 
+  val args =
     get_cnstrs dt_strs
     |> (map o map) (fn (_, antys, _, _) => length antys)
 
-  fun complt n bcs = 
+  fun complt n bcs =
   let
-    fun add bcs i = (if included i bcs then [] else [BC (Lst, [], [i])]) 
+    fun add bcs i = (if included i bcs then [] else [BC (Lst, [], [i])])
   in
     bcs @ (flat (map_range (add bcs) n))
   end
@@ -680,24 +680,24 @@ end
 *}
 
 ML {*
-fun nominal_datatype2_cmd (opt_thms_name, dt_strs, bn_fun_strs, bn_eq_strs) lthy = 
+fun nominal_datatype2_cmd (opt_thms_name, dt_strs, bn_fun_strs, bn_eq_strs) lthy =
 let
   (* this theory is used just for parsing *)
-  val thy = Proof_Context.theory_of lthy  
+  val thy = Proof_Context.theory_of lthy
 
-  val (((dts, (bn_funs, bn_eqs)), bclauses), _) = 
+  val (((dts, (bn_funs, bn_eqs)), bclauses), _) =
     thy
-    |> prepare_dts dt_strs 
-    ||>> prepare_bn_funs bn_fun_strs bn_eq_strs 
+    |> prepare_dts dt_strs
+    ||>> prepare_bn_funs bn_fun_strs bn_eq_strs
     ||>> prepare_bclauses dt_strs
 
   val bclauses' = complete dt_strs bclauses
 in
-  nominal_datatype2 opt_thms_name dts bn_funs bn_eqs bclauses' lthy 
+  nominal_datatype2 opt_thms_name dts bn_funs bn_eqs bclauses' lthy
 end
 *}
 
-ML {* 
+ML {*
 (* nominal datatype parser *)
 local
   fun triple1 ((x, y), z) = (x, y, z)
@@ -711,10 +711,10 @@ val opt_name = Scan.option (Parse.binding --| Args.colon)
 val anno_typ = Scan.option (Parse.name --| @{keyword "::"}) -- Parse.typ
 
 val bind_mode = @{keyword "binds"} |--
-  Scan.optional (Args.parens 
+  Scan.optional (Args.parens
     (Args.$$$ "list" >> K Lst || (Args.$$$ "set" -- Args.$$$ "+") >> K Res || Args.$$$ "set" >> K Set)) Lst
 
-val bind_clauses = 
+val bind_clauses =
   Parse.enum "," (bind_mode -- Scan.repeat1 Parse.term -- (@{keyword "in"} |-- Scan.repeat1 Parse.name) >> triple1)
 
 val cnstr_parser =
@@ -722,11 +722,11 @@ val cnstr_parser =
 
 (* datatype parser *)
 val dt_parser =
-  (Parse.type_args_constrained -- Parse.binding -- Parse.opt_mixfix >> triple2) -- 
+  (Parse.type_args_constrained -- Parse.binding -- Parse.opt_mixfix >> triple2) --
     (@{keyword "="} |-- Parse.enum1 "|" cnstr_parser)
 
 (* binding function parser *)
-val bnfun_parser = 
+val bnfun_parser =
   Scan.optional (@{keyword "binder"} |-- Parse_Spec.specification) ([], [])
 
 (* main parser *)
@@ -737,7 +737,7 @@ end
 
 (* Command Keyword *)
 val _ = Outer_Syntax.local_theory @{command_keyword nominal_datatype}
-  "declaration of nominal datatypes" 
+  "declaration of nominal datatypes"
     (main_parser >> nominal_datatype2_cmd)
 *}
 

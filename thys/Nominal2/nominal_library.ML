@@ -26,7 +26,7 @@ sig
 
   val to_set_ty: typ -> term -> term
   val to_set: term -> term
-  
+
   val atomify_ty: Proof.context -> typ -> term -> term
   val atomify: Proof.context -> term -> term
   val setify_ty: Proof.context -> typ -> term -> term
@@ -69,7 +69,7 @@ sig
   val fold_append: term list -> term
   val mk_conj: term * term -> term
   val fold_conj: term list -> term
-  val fold_conj_balanced: term list -> term 
+  val fold_conj_balanced: term list -> term
 
   (* functions for de-Bruijn open terms *)
   val mk_binop_env: typ list -> string -> term * term -> term
@@ -100,7 +100,7 @@ sig
 
   (* transformation into the object logic *)
   val atomize: Proof.context -> thm -> thm
-  val atomize_rule: Proof.context -> int -> thm -> thm 
+  val atomize_rule: Proof.context -> int -> thm -> thm
   val atomize_concl: Proof.context -> thm -> thm
 
   (* applies a tactic to a formula composed of conjunctions *)
@@ -120,7 +120,7 @@ fun mk_atom t = mk_atom_ty (fastype_of t) t;
 
 fun mk_atom_set_ty ty t =
   let
-    val atom_ty = HOLogic.dest_setT ty 
+    val atom_ty = HOLogic.dest_setT ty
     val img_ty = (atom_ty --> @{typ atom}) --> ty --> @{typ "atom set"};
   in
     Const (@{const_name image}, img_ty) $ atom_const atom_ty $ t
@@ -147,7 +147,7 @@ fun mk_atom_fset t = mk_atom_fset_ty (fastype_of t) t
 fun mk_atom_list t = mk_atom_list_ty (fastype_of t) t
 
 (* coerces a list into a set *)
-  
+
 fun to_set_ty ty t =
   case ty of
     @{typ "atom list"} => @{term "set :: atom list => atom set"} $ t
@@ -171,7 +171,7 @@ fun is_atom_list ctxt (Type (@{type_name "list"}, [ty])) = is_atom ctxt ty
   | is_atom_list _ _ = false
 
 
-(* functions that coerce singletons, sets, fsets and lists of concrete 
+(* functions that coerce singletons, sets, fsets and lists of concrete
    atoms into general atoms sets / lists *)
 fun atomify_ty ctxt ty t =
   if is_atom ctxt ty
@@ -246,14 +246,14 @@ fun mk_diff (@{term "{}::atom set"}, _) = @{term "{}::atom set"}
 
 fun mk_append (t1, @{term "[]::atom list"}) = t1
   | mk_append (@{term "[]::atom list"}, t2) = t2
-  | mk_append (t1, t2) = HOLogic.mk_binop @{const_name "append"} (t1, t2) 
+  | mk_append (t1, t2) = HOLogic.mk_binop @{const_name "append"} (t1, t2)
 
 fun mk_union (t1, @{term "{}::atom set"}) = t1
   | mk_union (@{term "{}::atom set"}, t2) = t2
   | mk_union (t1, @{term "set ([]::atom list)"}) = t1
   | mk_union (@{term "set ([]::atom list)"}, t2) = t2
-  | mk_union (t1, t2) = HOLogic.mk_binop @{const_name "sup"} (t1, t2)  
- 
+  | mk_union (t1, t2) = HOLogic.mk_binop @{const_name "sup"} (t1, t2)
+
 fun fold_union trms = fold_rev (curry mk_union) trms @{term "{}::atom set"}
 fun fold_append trms = fold_rev (curry mk_append) trms @{term "[]::atom list"}
 
@@ -268,8 +268,8 @@ fun fold_conj_balanced ts = Balanced_Tree.make HOLogic.mk_conj ts
 (* functions for de-Bruijn open terms *)
 
 fun mk_binop_env tys c (t, u) =
-  let 
-    val ty = fastype_of1 (tys, t) 
+  let
+    val ty = fastype_of1 (tys, t)
   in
     Const (c, [ty, ty] ---> ty) $ t $ u
   end
@@ -278,9 +278,9 @@ fun mk_union_env tys (t1, @{term "{}::atom set"}) = t1
   | mk_union_env tys (@{term "{}::atom set"}, t2) = t2
   | mk_union_env tys (t1, @{term "set ([]::atom list)"}) = t1
   | mk_union_env tys (@{term "set ([]::atom list)"}, t2) = t2
-  | mk_union_env tys (t1, t2) = mk_binop_env tys @{const_name "sup"} (t1, t2)  
+  | mk_union_env tys (t1, t2) = mk_binop_env tys @{const_name "sup"} (t1, t2)
 
-fun fold_union_env tys trms = fold_left (mk_union_env tys) trms @{term "{}::atom set"} 
+fun fold_union_env tys trms = fold_left (mk_union_env tys) trms @{term "{}::atom set"}
 
 
 (* produces fresh arguments for a term *)
@@ -324,12 +324,12 @@ type cns_info = (term * typ * typ list * bool list) list
 *)
 
 (* returns info about constructors in a datatype *)
-fun all_dtyp_constrs_info descr = 
+fun all_dtyp_constrs_info descr =
   map (fn (_, (ty, vs, constrs)) => map (pair (ty, vs)) constrs) descr
 
-(* returns the constants of the constructors plus the 
+(* returns the constants of the constructors plus the
    corresponding type and types of arguments *)
-fun all_dtyp_constrs_types descr = 
+fun all_dtyp_constrs_types descr =
   let
     fun aux ((ty_name, vs), (cname, args)) =
       let
@@ -359,12 +359,12 @@ fun pat_completeness_simp simps ctxt =
 val size_ss =
   simpset_of (put_simpset HOL_ss @{context}
    addsimprocs [@{simproc natless_cancel_numerals}]
-   addsimps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral 
+   addsimps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral
      zero_less_Suc prod.size(1) mult_Suc_right})
 
 val natT = @{typ nat}
-    
-fun size_prod_const T1 T2 = 
+
+fun size_prod_const T1 T2 =
   let
     val T1_fun = T1 --> natT
     val T2_fun = T2 --> natT
@@ -374,21 +374,21 @@ fun size_prod_const T1 T2 =
   end
 
 fun snd_const T1 T2 =
-  Const (@{const_name Product_Type.snd}, HOLogic.mk_prodT (T1, T2) --> T2) 
+  Const (@{const_name Product_Type.snd}, HOLogic.mk_prodT (T1, T2) --> T2)
 
 
-fun mk_measure_trm f ctxt T = 
+fun mk_measure_trm f ctxt T =
   HOLogic.dest_setT T
   |> fst o HOLogic.dest_prodT
   |> f
   |> curry (op $) (Const (@{const_name "measure"}, dummyT))
   |> Syntax.check_term ctxt
-  
-(* wf-goal arising in induction_schema *)    
+
+(* wf-goal arising in induction_schema *)
 fun prove_termination_ind ctxt =
   let
     fun mk_size_measure T =
-      case T of    
+      case T of
         (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
            Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
       | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
@@ -396,7 +396,7 @@ fun prove_termination_ind ctxt =
       | _ => HOLogic.size_const T
 
     val measure_trm = mk_measure_trm (mk_size_measure) ctxt
-  in 
+  in
     Function_Relation.relation_tac ctxt measure_trm
   end
 
@@ -404,7 +404,7 @@ fun prove_termination_ind ctxt =
 fun prove_termination_fun size_simps ctxt =
 let
   fun mk_size_measure T =
-    case T of    
+    case T of
       (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
          Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
     | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
@@ -413,33 +413,33 @@ let
 
   val measure_trm = mk_measure_trm (mk_size_measure) ctxt
 
-  val tac = 
+  val tac =
     Function_Relation.relation_tac ctxt measure_trm
     THEN_ALL_NEW simp_tac (put_simpset size_ss ctxt addsimps size_simps)
-  in 
+  in
     Function.prove_termination NONE (HEADGOAL tac) ctxt
   end
 
 (** transformations of premises (in inductive proofs) **)
 
-(* 
- given the theorem F[t]; proves the theorem F[f t] 
+(*
+ given the theorem F[t]; proves the theorem F[f t]
 
   - F needs to be monotone
-  - f returns either SOME for a term it fires on 
-    and NONE elsewhere 
+  - f returns either SOME for a term it fires on
+    and NONE elsewhere
 *)
-fun map_term f t = 
+fun map_term f t =
   (case f t of
-     NONE => map_term' f t 
+     NONE => map_term' f t
    | x => x)
-and map_term' f (t $ u) = 
+and map_term' f (t $ u) =
     (case (map_term f t, map_term f u) of
         (NONE, NONE) => NONE
       | (SOME t'', NONE) => SOME (t'' $ u)
       | (NONE, SOME u'') => SOME (t $ u'')
       | (SOME t'', SOME u'') => SOME (t'' $ u''))
-  | map_term' f (Abs (s, T, t)) = 
+  | map_term' f (Abs (s, T, t)) =
       (case map_term f t of
         NONE => NONE
       | SOME t'' => SOME (Abs (s, T, t'')))
@@ -450,7 +450,7 @@ fun map_thm_tac ctxt tac thm =
     val monos = Inductive.get_monos ctxt
     val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms split_def}
   in
-    EVERY [cut_facts_tac [thm] 1, eresolve_tac ctxt [rev_mp] 1, 
+    EVERY [cut_facts_tac [thm] 1, eresolve_tac ctxt [rev_mp] 1,
       REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac ctxt monos)),
       REPEAT_DETERM (resolve_tac ctxt [impI] 1 THEN (assume_tac ctxt 1 ORELSE tac))]
   end
@@ -462,23 +462,23 @@ fun map_thm ctxt f tac thm =
     case opt_goal_trm of
       NONE => thm
     | SOME goal =>
-        Goal.prove ctxt [] [] goal (fn _ => map_thm_tac ctxt tac thm) 
+        Goal.prove ctxt [] [] goal (fn _ => map_thm_tac ctxt tac thm)
   end
 
 (*
  inductive premises can be of the form
 
-     R ... /\ P ...; 
- 
+     R ... /\ P ...;
+
  split_conj_i picks out the part R or P part
 *)
-fun split_conj1 names (Const (@{const_name "conj"}, _) $ f1 $ _) = 
+fun split_conj1 names (Const (@{const_name "conj"}, _) $ f1 $ _) =
   (case head_of f1 of
      Const (name, _) => if member (op =) names name then SOME f1 else NONE
    | _ => NONE)
 | split_conj1 _ _ = NONE;
 
-fun split_conj2 names (Const (@{const_name "conj"}, _) $ f1 $ f2) = 
+fun split_conj2 names (Const (@{const_name "conj"}, _) $ f1 $ f2) =
   (case head_of f1 of
      Const (name, _) => if member (op =) names name then SOME f2 else NONE
    | _ => NONE)

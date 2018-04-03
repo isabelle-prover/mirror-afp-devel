@@ -1,10 +1,10 @@
 (*  Title:      nominal_atoms/ML
     Authors:    Brian Huffman, Christian Urban
 
-    Command for defining concrete atom types. 
-    
+    Command for defining concrete atom types.
+
     At the moment, only single-sorted atom types
-    are supported. 
+    are supported.
 *)
 
 signature ATOM_DECL =
@@ -77,7 +77,7 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
 (** outer syntax **)
 val _ =
   Outer_Syntax.command @{command_keyword atom_decl}
-    "declaration of a concrete atom type" 
+    "declaration of a concrete atom type"
       ((Parse.binding -- Scan.option (Args.parens (Parse.binding))) >>
         (Toplevel.theory o add_atom_decl))
 

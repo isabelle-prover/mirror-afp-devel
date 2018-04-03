@@ -1,76 +1,76 @@
 (*  Title:      Nominal2_Eqvt
-    Author:     Brian Huffman, 
+    Author:     Brian Huffman,
     Author:     Christian Urban
 
     Test cases for perm_simp
 *)
 theory Eqvt
-imports Nominal2_Base 
+imports Nominal2_Base
 begin
 
 
 declare [[trace_eqvt = false]]
 (* declare [[trace_eqvt = true]] *)
 
-lemma 
+lemma
   fixes B::"'a::pt"
   shows "p \<bullet> (B = C)"
 apply(perm_simp)
 oops
 
-lemma 
+lemma
   fixes B::"bool"
   shows "p \<bullet> (B = C)"
 apply(perm_simp)
 oops
 
-lemma 
+lemma
   fixes B::"bool"
   shows "p \<bullet> (A \<longrightarrow> B = C)"
-apply (perm_simp) 
+apply (perm_simp)
 oops
 
-lemma 
+lemma
   shows "p \<bullet> (\<lambda>(x::'a::pt). A \<longrightarrow> (B::'a \<Rightarrow> bool) x = C) = foo"
 apply(perm_simp)
 oops
 
-lemma 
+lemma
   shows "p \<bullet> (\<lambda>B::bool. A \<longrightarrow> (B = C)) = foo"
 apply (perm_simp)
 oops
 
-lemma 
+lemma
   shows "p \<bullet> (\<lambda>x y. \<exists>z. x = z \<and> x = y \<longrightarrow> z \<noteq> x) = foo"
 apply (perm_simp)
 oops
 
-lemma 
+lemma
   shows "p \<bullet> (\<lambda>f x. f (g (f x))) = foo"
 apply (perm_simp)
 oops
 
-lemma 
+lemma
   fixes p q::"perm"
   and   x::"'a::pt"
   shows "p \<bullet> (q \<bullet> x) = foo"
 apply(perm_simp)
 oops
 
-lemma 
+lemma
   fixes p q r::"perm"
   and   x::"'a::pt"
   shows "p \<bullet> (q \<bullet> r \<bullet> x) = foo"
 apply(perm_simp)
 oops
 
-lemma 
+lemma
   fixes p r::"perm"
   shows "p \<bullet> (\<lambda>q::perm. q \<bullet> (r \<bullet> x)) = foo"
 apply (perm_simp)
 oops
 
-lemma 
+lemma
   fixes C D::"bool"
   shows "B (p \<bullet> (C = D))"
 apply(perm_simp)
@@ -84,7 +84,7 @@ apply(perm_strict_simp exclude: The)
 apply(perm_simp exclude: The)
 oops
 
-lemma 
+lemma
   fixes P :: "(('b \<Rightarrow> bool) \<Rightarrow> ('b::pt)) \<Rightarrow> ('a::pt)"
   shows "p \<bullet> (P The) = foo"
 apply(perm_simp exclude: The)

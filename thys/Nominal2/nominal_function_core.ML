@@ -20,12 +20,12 @@ sig
     -> (term   (* f *)
         * term (* G(raph) *)
         * thm list (* GIntros *)
-        * thm (* Ginduct *) 
+        * thm (* Ginduct *)
         * thm  (* goalstate *)
         * (Proof.context -> thm -> Nominal_Function_Common.nominal_function_result) (* continuation *)
        ) * local_theory
 
-  val inductive_def : (binding * typ) * mixfix -> term list -> local_theory 
+  val inductive_def : (binding * typ) * mixfix -> term list -> local_theory
     -> (term * thm list * thm * thm) * local_theory
 end
 
@@ -130,11 +130,11 @@ fun mk_eqvt trm =
     |> HOLogic.mk_Trueprop
   end
 
-fun mk_inv inv (f_trm, arg_trm) = 
+fun mk_inv inv (f_trm, arg_trm) =
   betapplys (inv, [arg_trm, (f_trm $ arg_trm)])
   |> HOLogic.mk_Trueprop
 
-fun mk_invariant (Globals {x, y, ...}) G invariant = 
+fun mk_invariant (Globals {x, y, ...}) G invariant =
   let
     val prem = HOLogic.mk_Trueprop (G $ x $ y)
     val concl = HOLogic.mk_Trueprop (betapplys (invariant, [x, y]))
@@ -142,17 +142,17 @@ fun mk_invariant (Globals {x, y, ...}) G invariant =
     Logic.mk_implies (prem, concl)
     |> mk_forall_rename ("y", y)
     |> mk_forall_rename ("x", x)
-  end  
+  end
 
 (** building proof obligations *)
-fun mk_eqvt_proof_obligation qs fvar (vs, assms, arg) = 
+fun mk_eqvt_proof_obligation qs fvar (vs, assms, arg) =
   mk_eqvt_at (fvar, arg)
   |> curry Logic.list_implies (map Thm.prop_of assms)
   |> fold_rev (Logic.all o Free) vs
   |> fold_rev absfree qs
   |> strip_abs_body
 
-fun mk_inv_proof_obligation inv qs fvar (vs, assms, arg) = 
+fun mk_inv_proof_obligation inv qs fvar (vs, assms, arg) =
   mk_inv inv (fvar, arg)
   |> curry Logic.list_implies (map Thm.prop_of assms)
   |> fold_rev (Logic.all o Free) vs
@@ -361,11 +361,11 @@ fun mk_replacement_lemma ctxt h ih_elim clause =
   end
 
 (* nominal *)
-(* Generates the eqvt lemmas for each clause *) 
+(* Generates the eqvt lemmas for each clause *)
 fun mk_eqvt_lemma ctxt ih_eqvt clause =
   let
     val ClauseInfo {cdata=ClauseContext {cqs, ags, case_hyp, ...}, RCs, ...} = clause
-     
+
     local open Conv in
       val ih_conv = arg1_conv o arg_conv o arg_conv
     end
@@ -373,23 +373,23 @@ fun mk_eqvt_lemma ctxt ih_eqvt clause =
     val ih_eqvt_case =
       Conv.fconv_rule (ih_conv (K (case_hyp RS eq_reflection))) ih_eqvt
 
-    fun prep_eqvt (RCInfo {llRI, RIvs, CCas, ...}) = 
+    fun prep_eqvt (RCInfo {llRI, RIvs, CCas, ...}) =
         (llRI RS ih_eqvt_case)
         |> fold_rev (Thm.implies_intr o Thm.cprop_of) CCas
-        |> fold_rev (Thm.forall_intr o Thm.cterm_of ctxt o Free) RIvs 
+        |> fold_rev (Thm.forall_intr o Thm.cterm_of ctxt o Free) RIvs
   in
     map prep_eqvt RCs
     |> map (fold_rev (Thm.implies_intr o Thm.cprop_of) ags)
     |> map (Thm.implies_intr (Thm.cprop_of case_hyp))
     |> map (fold_rev Thm.forall_intr cqs)
-    |> map (Thm.close_derivation) 
+    |> map (Thm.close_derivation)
   end
 
 (* nominal *)
 fun mk_invariant_lemma ctxt ih_inv clause =
   let
     val ClauseInfo {cdata=ClauseContext {cqs, ags, case_hyp, ...}, RCs, ...} = clause
-     
+
     local open Conv in
       val ih_conv = arg1_conv o arg_conv o arg_conv
     end
@@ -397,16 +397,16 @@ fun mk_invariant_lemma ctxt ih_inv clause =
     val ih_inv_case =
       Conv.fconv_rule (ih_conv (K (case_hyp RS eq_reflection))) ih_inv
 
-    fun prep_inv (RCInfo {llRI, RIvs, CCas, ...}) = 
+    fun prep_inv (RCInfo {llRI, RIvs, CCas, ...}) =
         (llRI RS ih_inv_case)
         |> fold_rev (Thm.implies_intr o Thm.cprop_of) CCas
-        |> fold_rev (Thm.forall_intr o Thm.cterm_of ctxt o Free) RIvs 
+        |> fold_rev (Thm.forall_intr o Thm.cterm_of ctxt o Free) RIvs
   in
     map prep_inv RCs
     |> map (fold_rev (Thm.implies_intr o Thm.cprop_of) ags)
     |> map (Thm.implies_intr (Thm.cprop_of case_hyp))
     |> map (fold_rev Thm.forall_intr cqs)
-    |> map (Thm.close_derivation) 
+    |> map (Thm.close_derivation)
   end
 
 (* nominal *)
@@ -415,22 +415,22 @@ fun mk_uniqueness_clause ctxt globals compat_store eqvts invs clausei clausej RL
     val thy = Proof_Context.theory_of ctxt
 
     val Globals {h, y, x, fvar, ...} = globals
-    val ClauseInfo {no=i, cdata=cctxi as ClauseContext {ctxt=ctxti, lhs=lhsi, case_hyp, cqs = cqsi, 
+    val ClauseInfo {no=i, cdata=cctxi as ClauseContext {ctxt=ctxti, lhs=lhsi, case_hyp, cqs = cqsi,
       ags = agsi, ...}, ...} = clausei
     val ClauseInfo {no=j, qglr=cdescj, RCs=RCsj, ...} = clausej
 
     val cctxj as ClauseContext {ags = agsj', lhs = lhsj', rhs = rhsj', qs = qsj', cqs = cqsj', ...} =
-      mk_clause_context x ctxti cdescj 
+      mk_clause_context x ctxti cdescj
 
     val rhsj'h = Pattern.rewrite_term thy [(fvar,h)] [] rhsj'
 
-    val Ghsj' = map 
+    val Ghsj' = map
       (fn RCInfo {h_assum, ...} =>
         Thm.assume (Thm.cterm_of ctxt (subst_bounds (rev qsj', h_assum)))) RCsj
 
     val y_eq_rhsj'h = Thm.assume (Thm.cterm_of ctxt (HOLogic.mk_Trueprop (mk_eq (y, rhsj'h))))
     val lhsi_eq_lhsj' = Thm.assume (Thm.cterm_of ctxt (HOLogic.mk_Trueprop (mk_eq (lhsi, lhsj'))))
-       (* lhs_i = lhs_j' |-- lhs_i = lhs_j' *) 
+       (* lhs_i = lhs_j' |-- lhs_i = lhs_j' *)
 
     val case_hypj' = trans OF [case_hyp, lhsi_eq_lhsj']
 
@@ -491,11 +491,11 @@ fun mk_uniqueness_case ctxt
       full_simplify (put_simpset HOL_basic_ss ctxt addsimps [case_hyp])
         ih_intro
 
-    fun prep_RC (RCInfo {llRI, RIvs, CCas, ...}) = 
+    fun prep_RC (RCInfo {llRI, RIvs, CCas, ...}) =
         (llRI RS ih_intro_case)
         |> fold_rev (Thm.implies_intr o Thm.cprop_of) CCas
         |> fold_rev (Thm.forall_intr o Thm.cterm_of ctxt o Free) RIvs
- 
+
     val existence = fold (curry op COMP o prep_RC) RCs lGI
 
     val P = Thm.cterm_of ctxt (mk_eq (y, rhsC))
@@ -571,9 +571,9 @@ fun prove_stuff ctxt
 
     val _ = trace_msg (K "Proving cases for unique existence...")
     val (ex1s, values) =
-      split_list (map (mk_uniqueness_case ctxt globals G f 
+      split_list (map (mk_uniqueness_case ctxt globals G f
         ihyp ih_intro G_elim compat_store clauses repLemmas eqvtLemmas invLemmas) clauses)
-     
+
     val _ = trace_msg (K "Proving: Graph is a function")
     val graph_is_function = complete
       |> Thm.forall_elim_vars 0
@@ -585,7 +585,7 @@ fun prove_stuff ctxt
       |> (fn it =>
           fold (Thm.forall_intr o Thm.cterm_of ctxt o Var) (Term.add_vars (Thm.prop_of it) []) it)
 
-    val goalstate =  
+    val goalstate =
       Conjunction.intr (Conjunction.intr (Conjunction.intr graph_is_function complete) invariant) G_eqvt
       |> Thm.close_derivation
       |> Goal.protect 0
@@ -599,7 +599,7 @@ fun prove_stuff ctxt
 
 (* wrapper -- restores quantifiers in rule specifications *)
 fun inductive_def (binding as ((R, T), _)) intrs lthy =
-  let 
+  let
     val ({intrs = intrs_gen, elims = [elim_gen], preds = [ Rdef ], induct, raw_induct, ...}, lthy) =
       lthy
       |> Config.put Inductive.inductive_internals true
@@ -662,7 +662,7 @@ fun define_graph Gname fvar domT ranT clauses RCss lthy =
 fun define_function fdefname (fname, mixfix) domT ranT G default lthy =
   let
     val f_def =
-      Abs ("x", domT, Const (@{const_name Fun_Def.THE_default}, ranT --> (ranT --> boolT) --> ranT) 
+      Abs ("x", domT, Const (@{const_name Fun_Def.THE_default}, ranT --> (ranT --> boolT) --> ranT)
         $ (default $ Bound 0) $ Abs ("y", ranT, G $ Bound 1 $ Bound 0))
       |> Syntax.check_term lthy
   in
@@ -1009,7 +1009,7 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
 
     val invariant_trm = Syntax.parse_term lthy invariant_str
       |> Type.constraint ([domT, ranT] ---> @{typ bool}) |> Syntax.check_term lthy
-    
+
     val (globals, ctxt') = fix_globals domT ranT fvar lthy
 
     val Globals { x, h, ... } = globals
@@ -1052,19 +1052,19 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
       mk_completeness globals clauses abstract_qglrs |> cert |> Thm.assume
 
     val compat =
-      mk_compat_proof_obligations domT ranT fvar f RCss invariant_trm abstract_qglrs 
+      mk_compat_proof_obligations domT ranT fvar f RCss invariant_trm abstract_qglrs
       |> map (cert #> Thm.assume)
 
     val G_eqvt = mk_eqvt G |> cert |> Thm.assume
- 
+
     val invariant = mk_invariant globals G invariant_trm |> cert |> Thm.assume
- 
+
     val compat_store = store_compat_thms n compat
 
     val (goalstate, values) = PROFILE "prove_stuff"
       (prove_stuff lthy globals G f R xclauses complete compat
          compat_store G_elim G_eqvt invariant) f_defthm
-     
+
     fun mk_partial_rules newctxt provedgoal =
       let
         val ((graph_is_function, complete_thm), graph_is_eqvt) =

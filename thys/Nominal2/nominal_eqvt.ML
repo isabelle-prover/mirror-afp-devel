@@ -35,9 +35,9 @@ fun eqvt_rel_single_case_tac ctxt pred_names pi intro =
     val cpi = Thm.cterm_of ctxt pi
     val pi_intro_rule = Thm.instantiate' [] [NONE, SOME cpi] @{thm permute_boolI}
     val eqvt_sconfig = eqvt_strict_config addexcls pred_names
-    val simps1 = 
+    val simps1 =
       put_simpset HOL_basic_ss ctxt addsimps @{thms permute_fun_def permute_self split_paired_all}
-    val simps2 = 
+    val simps2 =
       put_simpset HOL_basic_ss ctxt addsimps @{thms permute_bool_def permute_minus_cancel(2)}
   in
     eqvt_tac ctxt eqvt_sconfig THEN'
