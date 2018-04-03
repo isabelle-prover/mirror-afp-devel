@@ -28,6 +28,9 @@ begin
 
 subsection \<open>Previous lemmas obtained using local type definitions\<close>
 
+declare poly_mod.inv_Mp_def[code]
+declare poly_mod.inv_M_def[code]
+
 context poly_mod_prime_type
 begin                           
 
@@ -72,10 +75,8 @@ definition B2_LLL :: "int poly \<Rightarrow> int" where
   "B2_LLL f = 2 ^ (2 * degree f) * \<parallel>f\<parallel>\<^sup>2" 
 
 context
-  fixes p pl :: int and l :: nat
+  fixes p :: int and l :: nat
 begin
-
-private definition pl2 where "pl2 \<equiv> pl div 2"
 
 context
   fixes gs :: "int poly list" 
