@@ -305,7 +305,7 @@ context
   assumes d0: "d > 0"
       and u: "monic u"
       and irred_u: "p.irreducible\<^sub>d_m u"
-      and uf: "pl.dvdm u f"
+      and u_f: "p.dvdm u f"
       and f_dvd_F: "f dvd F"
       and [simp]: "n == degree f"
       and f_gs: "pl.unique_factorization_m f (lead_coeff f, mset gs)" 
@@ -322,7 +322,10 @@ private lemma f0: "f \<noteq> 0" using sf_F unfolding square_free_def by fastfor
 private lemma Mpf0: "pl.Mp f \<noteq> 0"
   by (metis p.square_free_m_def p_Mp_pl_Mp sf)
 
-private lemma dn: "d \<le> n" using pl.dvdm_imp_degree_le[OF uf u] Mpf0 p1 l0 by auto
+private lemma pMpf0: "p.Mp f \<noteq> 0"
+  using p.square_free_m_def sf by auto
+
+private lemma dn: "d \<le> n" using p.dvdm_imp_degree_le[OF u_f u pMpf0 p1] by auto
 
 private lemma n0: "n > 0" using d0 dn by auto
 
@@ -330,21 +333,6 @@ private lemma B2_0[intro!]: "B2_LLL F > 0" using B2_2 by auto
 private lemma deg_u: "degree u > 0" using d0 d_def by auto
 
 private lemma n_le_N: "n\<le>N" by (simp add: dvd_imp_degree_le[OF f_dvd_F F0])
-
-lemma exists_reconstruction: "\<exists>h0. irreducible\<^sub>d h0 \<and> p.dvdm u h0 \<and> h0 dvd f"
-proof -   
-  have deg_f: "degree f > 0" using \<open>n \<equiv> degree f\<close> n0 by blast
-  from berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF refl sf_F deg_f]
-  obtain fs where f_fs: "f = prod_list fs"
-    and c: "(\<forall>fi\<in>set fs. irreducible\<^sub>d fi \<and> 0 < degree fi )" by blast 
-  have "pl.dvdm u (prod_list fs)" using uf f_fs by simp
-  hence "p.dvdm u (prod_list fs)" by (rule pl_dvdm_imp_p_dvdm)
-  from this obtain h0 where h0: "h0 \<in> set fs" and dvdm_u_h0: "p.dvdm u h0" 
-    using p.irreducible\<^sub>d_m_dvdm_prod_list[OF irred_u] by auto
-  moreover have "h0 dvd f" by (unfold f_fs, rule prod_list_dvd[OF h0])  
-  moreover have "irreducible\<^sub>d h0" using c h0 by auto
-  ultimately show ?thesis by blast
-qed
 
 lemma dvdm_power: assumes "g dvd f" 
   shows "p.dvdm u g \<longleftrightarrow> pl.dvdm u g"
@@ -388,6 +376,23 @@ next
   qed
 qed
 
+lemma uf: "pl.dvdm u f" using dvdm_power[OF dvd_refl] u_f by simp
+
+lemma exists_reconstruction: "\<exists>h0. irreducible\<^sub>d h0 \<and> p.dvdm u h0 \<and> h0 dvd f"
+proof -   
+  have deg_f: "degree f > 0" using \<open>n \<equiv> degree f\<close> n0 by blast
+  from berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF refl sf_F deg_f]
+  obtain fs where f_fs: "f = prod_list fs"
+    and c: "(\<forall>fi\<in>set fs. irreducible\<^sub>d fi \<and> 0 < degree fi )" by blast 
+  have "pl.dvdm u (prod_list fs)" using uf f_fs by simp
+  hence "p.dvdm u (prod_list fs)" by (rule pl_dvdm_imp_p_dvdm)
+  from this obtain h0 where h0: "h0 \<in> set fs" and dvdm_u_h0: "p.dvdm u h0" 
+    using p.irreducible\<^sub>d_m_dvdm_prod_list[OF irred_u] by auto
+  moreover have "h0 dvd f" by (unfold f_fs, rule prod_list_dvd[OF h0])  
+  moreover have "irreducible\<^sub>d h0" using c h0 by auto
+  ultimately show ?thesis by blast
+qed
+
 lemma factor_dvd_f_0: assumes "factor dvd f" 
   shows "pl.Mp factor \<noteq> 0"
 proof -
@@ -398,11 +403,11 @@ proof -
 qed
 
 lemma degree_factor_ge_degree_u:
-  assumes u_dvdm_factor: "pl.dvdm u factor" 
+  assumes u_dvdm_factor: "p.dvdm u factor" 
     and factor_dvd: "factor dvd f" shows "degree u \<le> degree factor"
 proof - 
   from factor_dvd_f_0[OF factor_dvd] have factor0: "pl.Mp factor \<noteq> 0" .  
-  from u_dvdm_factor[unfolded pl.dvdm_def] obtain v where
+  from u_dvdm_factor[unfolded dvdm_power[OF factor_dvd] pl.dvdm_def] obtain v where
     *: "pl.Mp factor = pl.Mp (u * pl.Mp v)" by auto
   with factor0 have v0: "pl.Mp v \<noteq> 0" by fastforce
   hence "0 \<noteq> lead_coeff (pl.Mp v)" by auto
@@ -423,35 +428,20 @@ context
   fixes j' :: nat
   assumes dj': "d \<le> j'"
       and j'n: "j' < n"
-      and deg: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j'"
+      and deg: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j'"
 begin
 
 private abbreviation (input) "j \<equiv> Suc j'"
 
 private lemma jn: "j \<le> n" using j'n by auto
-
-private definition "g \<equiv> LLL_implementation.LLL_short_polynomial (p^l) j u"
-
-lemma deg_g_j: "degree g < j" 
-    and g0: "g \<noteq> 0" 
-    and ug :"pl.dvdm u g" 
-    and short_g: "h \<noteq> 0 \<Longrightarrow> pl.dvdm u h \<Longrightarrow> degree h < j \<Longrightarrow> \<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (j - 1) * \<parallel>h\<parallel>\<^sup>2" 
-proof (atomize(full), goal_cases)
-  case 1
-  from deg_u have degu0: "degree u \<noteq> 0" by auto
-  have ju: "j \<ge> degree u" using d_def dj' le_Suc_eq by blast 
-  have ju': "j > degree u" using d_def dj' by auto 
-  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pl_not0, folded g_def]
-  from short(1-3) short(4)[OF u ju'] show ?case by blast
-qed
     
 private lemma factor_irreducible\<^sub>dI: assumes hf: "h dvd f" 
-  and pluh: "pl.dvdm u h" 
+  and puh: "p.dvdm u h" 
   and degh: "degree h > 0" 
   and degh_j: "degree h \<le> j'"
 shows "irreducible\<^sub>d h" 
 proof -
-  from pluh have puh: "p.dvdm u h" by (rule pl_dvdm_imp_p_dvdm)
+  from dvdm_power[OF hf] puh have pluh: "pl.dvdm u h" by simp
   note uf_partition = p.unique_factorization_m_factor_partition[OF l0]
   obtain gs1 gs2 where part: "partition (\<lambda>gi. p.dvdm gi h) gs = (gs1, gs2)" by force
   from part u_gs puh 
@@ -483,21 +473,38 @@ proof -
     note dvdI = pl.factorization_m_mem_dvdm[OF pl.unique_factorization_m_imp_factorization intro]
     from u_gs1 id have "u \<in># fs \<or> u \<in># gs" unfolding in_multiset_in_set[symmetric] by auto
     with dvdI[OF uf_q] dvdI[OF uf_r] have "pl.dvdm u q \<or> pl.dvdm u r" by auto
+    hence "p.dvdm u q \<or> p.dvdm u r" using pl_dvdm_imp_p_dvdm by blast
     with 1 qj' rj' show False
       by (elim disjE, auto dest!: deg)
   qed
 qed
 
 
+private definition "g \<equiv> LLL_implementation.LLL_short_polynomial (p^l) j u"
+
+lemma deg_g_j: "degree g < j" 
+    and g0: "g \<noteq> 0" 
+    and ug :"pl.dvdm u g" 
+    and short_g: "h \<noteq> 0 \<Longrightarrow> pl.dvdm u h \<Longrightarrow> degree h < j \<Longrightarrow> \<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (j - 1) * \<parallel>h\<parallel>\<^sup>2" 
+proof (atomize(full), goal_cases)
+  case 1
+  from deg_u have degu0: "degree u \<noteq> 0" by auto
+  have ju: "j \<ge> degree u" using d_def dj' le_Suc_eq by blast 
+  have ju': "j > degree u" using d_def dj' by auto 
+  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pl_not0, folded g_def]
+  from short(1-3) short(4)[OF u ju'] show ?case by blast
+qed
+
 lemma LLL_reconstruction_inner_complete:
   assumes ret: "LLL_reconstruction_inner p (p^l) gs f u j = None"
-  shows "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
+  shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
 proof (rule ccontr)
   fix factor
-  assume u_factor: "pl.dvdm u factor"
+  assume pu_factor: "p.dvdm u factor"
      and factor_f: "factor dvd f"
      and deg_factor2: "\<not> j \<le> degree factor" 
   with deg[OF this(1,2)] have deg_factor_j [simp]: "degree factor = j'" and deg_factor_lt_j: "degree factor < j" by auto
+  from dvdm_power[OF factor_f] pu_factor have u_factor: "pl.dvdm u factor" by auto  
   have deg_factor: "degree factor > 0"
     using d0 deg_factor_j dj' by linarith 
   from f0 deg_factor divides_degree[OF factor_f] have deg_f: "degree f > 0" by auto
@@ -505,7 +512,7 @@ proof (rule ccontr)
   from factor_f f0 have factor0: "factor \<noteq> 0" by auto
   from factor_f obtain f2 where f: "f = factor * f2" unfolding dvd_def by auto
   from deg_u have deg_u0: "degree u \<noteq> 0" by auto
-  from u_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
+  from pu_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
     using d_def deg_factor_j dj' by blast
   hence u_j: "degree u \<le> j" "degree u < j" by auto
   note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pl_not0, folded g_def]
@@ -597,7 +604,7 @@ proof (rule ccontr)
   from ret have "div_int_poly f ?pp = None" by (auto split: option.splits)
   from div_int_poly[of f ?pp, unfolded this] g0 have ppf: "\<not> ?pp dvd f" unfolding dvd_def by force
   have irr_f1: "irreducible\<^sub>d factor" 
-    by (rule factor_irreducible\<^sub>dI[OF factor_f u_factor deg_factor], simp)
+    by (rule factor_irreducible\<^sub>dI[OF factor_f pu_factor deg_factor], simp)
   from gcd_factor obtain h where factor: "factor = ?g * h" unfolding dvd_def by auto
   from irreducible\<^sub>dD(2)[OF irr_f1, of ?g h, folded factor] have "\<not> (degree ?g < j' \<and> degree h < j')" 
     by auto
@@ -637,7 +644,7 @@ lemma LLL_reconstruction_inner_sound:
     and "irreducible\<^sub>d h" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (lead_coeff f', mset gs')" (is "?g4")
-    and "pl.dvdm u h" (is ?g5)
+    and "p.dvdm u h" (is ?g5)
     and "degree h = j'" (is ?g6)
     and "length gs' < length gs" (is ?g7)
     and "set gs' \<subseteq> set gs" (is ?g8)
@@ -660,15 +667,15 @@ proof -
   finally have ct_pl: "\<bar>?c\<bar> < p^l" .
   from ug have "pl.dvdm u (smult ?c ?ppg)" by simp
   from poly_mod_dvd_drop_smult[OF u p ct0 ct_pl this]
-  have puh: "p.dvdm u h" by simp
+  show puh: "p.dvdm u h" by simp
   with dvdm_power[of h] f
-  show uh: "pl.dvdm u h" by (auto simp: dvd_def)
+  have uh: "pl.dvdm u h" by (auto simp: dvd_def)
   from f have hf: "h dvd f" by (auto intro:dvdI)
   have degh: "degree h > 0"
-    by (metis d_def deg deg_u dj' hf le_neq_implies_less not_less0 uh neq0_conv)
+    by (metis d_def deg deg_u puh dj' hf le_neq_implies_less not_less0 neq0_conv)
   show irr_h: ?g2
-    by (intro factor_irreducible\<^sub>dI degh hf uh, insert deg_g_j, simp)
-  show deg_h: ?g6 using deg deg_g_j g_def hf le_less_Suc_eq uh degree_primitive_part by force
+    by (intro factor_irreducible\<^sub>dI degh hf puh, insert deg_g_j, simp)
+  show deg_h: ?g6 using deg deg_g_j g_def hf le_less_Suc_eq puh degree_primitive_part by force
   show ?g7 unfolding out 
     by (rule length_filter_less[of u], insert pl_dvdm_imp_p_dvdm[OF uh] u_gs, auto)
   show ?g8 by auto
@@ -712,20 +719,20 @@ interpretation LLL d .
 lemma LLL_reconstruction_inner_None_upt_j':
   assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
     and dj: "d<j" and "j\<le>n"
-  shows "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
+  shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
   using assms
 proof (induct j)
   case (Suc j)
   show ?case 
   proof (rule LLL_reconstruction_inner_complete)
-    show "\<And>factor2. pl.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
+    show "\<And>factor2. p.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
     proof (cases "d = j")
        case False
-       show "\<And>factor2. pl.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
+       show "\<And>factor2. p.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
          by (rule Suc.hyps, insert Suc.prems False, auto)
      next
        case True
-       then show "\<And>factor2. pl.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
+       then show "\<And>factor2. p.dvdm u factor2 \<Longrightarrow> factor2 dvd f \<Longrightarrow> j \<le> degree factor2"
          using degree_factor_ge_degree_u by auto
     qed
   qed (insert Suc.prems, auto)
@@ -734,15 +741,15 @@ qed auto
 corollary LLL_reconstruction_inner_None_upt_j:
   assumes ij: "\<forall>i\<in>{d+1..j}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
     and dj: "d\<le>j" and jn: "j\<le>n"
-  shows "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
+  shows "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> degree factor \<ge> j"
 proof (cases "d=j")
   case True
-  then show "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> d = j \<Longrightarrow> j \<le> degree factor" 
+  then show "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> d = j \<Longrightarrow> j \<le> degree factor" 
     using degree_factor_ge_degree_u by auto 
 next
   case False
   hence dj2: "d<j" using dj by auto
-  then show "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> d \<noteq> j \<Longrightarrow> j \<le> degree factor" 
+  then show "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> d \<noteq> j \<Longrightarrow> j \<le> degree factor" 
     using LLL_reconstruction_inner_None_upt_j'[OF ij dj2 jn] by auto
 qed
 
@@ -754,10 +761,9 @@ proof -
     where irreducible_factor: "irreducible\<^sub>d factor" 
       and dvdp_u_factor: "p.dvdm u factor" and factor_dvd_f: "factor dvd f"
     using exists_reconstruction by blast
-  have dvdpl_u_factor: "pl.dvdm u factor" using dvdm_power[OF factor_dvd_f] dvdp_u_factor by auto
   have f0: "f \<noteq> 0" using n0 by auto
   have deg_factor1: "degree u \<le> degree factor" 
-    by (rule degree_factor_ge_degree_u[OF dvdpl_u_factor factor_dvd_f])
+    by (rule degree_factor_ge_degree_u[OF dvdp_u_factor factor_dvd_f])
   hence factor_not0: "factor \<noteq> 0" using d0 by auto
   hence deg_factor2: "degree factor \<le> degree f" using divides_degree[OF factor_dvd_f] f0 by auto
   let ?j = "degree factor"  
@@ -775,7 +781,7 @@ proof -
     case False
     hence Suc_j: "Suc ?j \<le> degree f" using deg_factor2 by auto
     have "Suc ?j \<le> degree factor"
-    proof (rule LLL_reconstruction_inner_None_upt_j[OF _ _ _ dvdpl_u_factor factor_dvd_f])
+    proof (rule LLL_reconstruction_inner_None_upt_j[OF _ _ _ dvdp_u_factor factor_dvd_f])
       show "d \<le> Suc ?j" using deg_factor1 by auto
       show "\<forall>i\<in>{d + 1..(Suc ?j)}. LLL_reconstruction_inner p (p ^ l) gs f u i = None"
         using Suc_j i by auto
@@ -811,7 +817,7 @@ proof (rule ccontr)
   have Suc_j1_eq: "Suc (j - 1) = j" using j d0 by auto
   have jn: "j - 1 < n"  using j by auto
   have dj: "d \<le> j-1" using j d0 by auto
-  have degree: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j - 1 \<le> degree factor" 
+  have degree: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j - 1 \<le> degree factor" 
     by (rule LLL_reconstruction_inner_None_upt_j[OF all_None dj], insert jn, auto)  
   have LLL_inner_Some: "?LLL_inner (Suc (j - 1)) = Some (gs', b', f', factor)" 
     using LLL_inner_eq Suc_j1_eq by auto  
@@ -962,7 +968,7 @@ lemma LLL_reconstruction_inner_loop_j_le_n:
     and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4")
-    and "pl.dvdm u factor" (is ?g5)
+    and "p.dvdm u factor" (is ?g5)
     and "gs \<noteq> [] \<longrightarrow> length gs' < length gs" (is ?g6)
     and "factor dvd f" (is ?g7)
     and "f' dvd f" (is ?g8)
@@ -979,7 +985,7 @@ next
   have dj: "d \<le> j" using Suc.prems by auto
   have jn: "j<n" using Suc.prems by auto
   have deg: "Suc j \<le> degree f" using Suc.prems by auto
-  have c: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j \<le> degree factor" 
+  have c: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j \<le> degree factor" 
     by (rule LLL_reconstruction_inner_None_upt_j[OF ij dj], insert n jn, auto)
   have 1: "LLL_reconstruction_inner_loop p (p ^ l) gs f u (Suc j) = (gs', b', f', factor)"
     using Suc.prems by auto
@@ -1007,7 +1013,7 @@ next
         have "LLL_reconstruction_inner_loop p (p ^ l) gs f u (Suc j) = ([],1,1,f)" 
           by (rule irreducible_imp_LLL_reconstruction_inner_loop_f[OF True d_Suc_j])
         hence result_eq: "([],1,1,f) = (gs', b', f', factor)" using Suc.prems by auto
-        moreover have thesis1: "pl.dvdm u factor" using uf result_eq by auto
+        moreover have thesis1: "p.dvdm u factor" using u_f result_eq by auto
         moreover have thesis2: "f' = pl.Mp (Polynomial.smult b' (prod_list gs'))" 
           using result_eq pl_Mp_1 by auto
         ultimately show ?thesis using True by (auto simp: unique_factorization_m_1)
@@ -1036,9 +1042,9 @@ next
         have prev_None: "\<forall>i\<in>{d+1..j'}. LLL_reconstruction_inner p (p^l) gs f u i = None" 
           using a2 j' by auto
         have Suc_rw: "Suc (j'- 1) = j'" using j' by auto
-        have c: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> Suc (j' - 1) \<le> degree factor"        
+        have c: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> Suc (j' - 1) \<le> degree factor"        
           by (rule LLL_reconstruction_inner_None_upt_j, insert dj' Suc_rw j'n prev_None, auto)
-        hence c2: "\<And>factor. pl.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j' \<le> degree factor"
+        hence c2: "\<And>factor. p.dvdm u factor \<Longrightarrow> factor dvd f \<Longrightarrow> j' \<le> degree factor"
           using j' by force
         show ?thesis using LLL_reconstruction_inner_sound[OF dj' j'n c2 LLL] by fastforce
       qed
@@ -1055,7 +1061,7 @@ lemma LLL_reconstruction_inner_loop_j_ge_n:
     and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4") 
-    and "pl.dvdm u factor" (is ?g5)
+    and "p.dvdm u factor" (is ?g5)
     and "gs \<noteq> [] \<longrightarrow> length gs' < length gs" (is ?g6)
     and "factor dvd f" (is ?g7)
     and "f' dvd f" (is ?g8)
@@ -1066,7 +1072,7 @@ proof -
   hence gs': "gs'=[]" and b': "b'=1" and f': "f' = 1" and factor: "factor = f" using ret by auto
   have "irreducible\<^sub>d f"
     by (rule LLL_reconstruction_inner_all_None_imp_irreducible[OF ij])
-  thus ?g1 ?g2 ?g3 ?g4 ?g5 ?g6 ?g7 ?g8 ?g9 ?g10 using f' factor b' gs' uf 
+  thus ?g1 ?g2 ?g3 ?g4 ?g5 ?g6 ?g7 ?g8 ?g9 ?g10 using f' factor b' gs' u_f 
     by (auto simp: unique_factorization_m_1)
 qed
 
@@ -1079,7 +1085,7 @@ lemma LLL_reconstruction_inner_loop:
     and "irreducible\<^sub>d factor" (is "?g2")
     and "b' = lead_coeff f'" (is "?g3")
     and "pl.unique_factorization_m f' (b', mset gs')" (is "?g4") 
-    and "pl.dvdm u factor" (is ?g5)
+    and "p.dvdm u factor" (is ?g5)
     and "gs \<noteq> [] \<longrightarrow> length gs' < length gs" (is ?g6)
     and "factor dvd f" (is ?g7)
     and "f' dvd f" (is ?g8)
@@ -1126,9 +1132,8 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   obtain u where choose_u_result: "choose_u gs = u" by auto
   from choose_u_member[OF  gs_not_empty, unfolded choose_u_result]
   have u_gs: "u \<in> set gs" by auto
-  define u' d n where "u' = pl.inv_Mp2 ((p^l) div 2) (pl.Mp (smult b u))"
-    and [simp]: "d = degree u"
-    and [simp]: "n = degree f"
+  define d n where [simp]: "d = degree u" "n = degree f"
+  hence n_def: "n = degree f" "n \<equiv> degree f" by auto
   obtain gs' b' h factor where inner_loop_result: 
     "LLL_reconstruction_inner_loop p (p^l) gs f u (d+1) = (gs',b',h,factor)"
     by (metis prod_cases4)
@@ -1140,7 +1145,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     by auto
   have "LLL_reconstruction'' p (p^l) gs b f G = LLL_reconstruction'' p (p^l) gs' b' h (factor # G)" 
     unfolding LLL_reconstruction''.simps[of p "(p^l)" gs] using gs_not_empty
-    unfolding Let_def using choose_u_result u'_def d_def inner_loop_result by auto
+    unfolding Let_def using choose_u_result inner_loop_result by auto
   hence LLL_eq: "LLL_reconstruction'' p (p^l) gs' b' h (factor # G) = G'" using LLL_f' by auto
   from pl.unique_factorization_m_imp_factorization[OF f_gs_factor, 
     unfolded pl.factorization_m_def] norm
@@ -1151,6 +1156,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     from f_gs[unfolded gs] have "pl.dvdm u f" unfolding pl.dvdm_def
       by (intro exI[of  _ "smult (lead_coeff f) (prod_mset (mset (gs1 @ gs2)))"], auto)
   } note pl_uf = this
+  hence p_uf: "p.dvdm u f" by (rule pl_dvdm_imp_p_dvdm)
   have monic_u: "monic u" using mon[OF u_gs] .
   have irred_d_u: "p.irreducible\<^sub>d_m u" using irred_p[OF u_gs] by auto
   have degree_m_u: "p.degree_m u = degree u" using monic_u by simp
@@ -1159,7 +1165,6 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   have deg_u_d: "degree u < d + 1" by auto 
   from F_f_G have f_dvd_F: "f dvd F" by auto
   from square_free_factor[OF f_dvd_F sf_F] have sf_f: "square_free f" . 
-  have n_def': "n \<equiv> degree f" by auto
   from norm have norm_map: "map pl.Mp gs = gs" by (induct gs, auto)
   have length_less: "length gs' < length gs" 
     and irreducible_factor: "irreducible\<^sub>d factor"
@@ -1169,11 +1174,9 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     and gs'_gs: "set gs' \<subseteq> set gs"
     and b': "b' = lead_coeff h" 
     and h1: "gs' = [] \<longrightarrow> h = 1"
-    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_d_u pl_uf f_dvd_F n_def' 
+    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_d_u p_uf f_dvd_F n_def(2)
       f_gs_factor cop sf sf_f u_gs norm_map
-      a1 a2 n_def deg_u_d] 
-      gs_not_empty
-    by metis+
+      a1 a2 n_def(1) deg_u_d] gs_not_empty by metis+
   have F_h_factor_G: "F = h * prod_list (factor # G)"
     using F_f_G f_h_factor by auto
   hence h_dvd_F: "h dvd F" using f_dvd_F dvd_trans by auto
