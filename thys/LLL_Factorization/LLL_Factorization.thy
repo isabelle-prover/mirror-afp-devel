@@ -702,15 +702,31 @@ context LLL_implementation
 begin
 
 lemma LLL_short_polynomial: assumes deg_u_0: "degree u \<noteq> 0" and deg_le: "degree u \<le> n" 
-  and pl0: "pl \<noteq> 0" 
+  and pl1: "pl > 1" 
+  and monic: "monic u" 
 shows "degree (LLL_short_polynomial n u) < n" 
   and "LLL_short_polynomial n u \<noteq> 0"
   and "poly_mod.dvdm pl u (LLL_short_polynomial n u)" 
-  and "monic u \<Longrightarrow> degree u < n \<Longrightarrow> f \<noteq> 0 \<Longrightarrow>
+  and "degree u < n \<Longrightarrow> f \<noteq> 0 \<Longrightarrow>
     poly_mod.dvdm pl u f \<Longrightarrow> degree f < n \<Longrightarrow> \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2 \<le> 2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2" 
 proof -
-  let ?d = "degree u" 
-  let ?L = "factorization_lattice u (n - ?d) pl" 
+  interpret poly_mod_2 pl 
+    by (unfold_locales, insert pl1, auto)
+  from pl1 have pl0: "pl \<noteq> 0" by auto
+  let ?d = "degree u"
+  let ?u = "Mp u" 
+  let ?iu = "inv_Mp ?u" 
+  from Mp_inv_Mp_id[of ?u] have "?iu =m ?u" .
+  also have "\<dots> =m u" by simp
+  finally have iu_u: "?iu =m u" by simp
+  have degu[simp]: "degree ?u = degree u" using monic by simp
+  have mon: "monic ?u" using monic by (rule monic_Mp)
+  have "degree ?iu = degree ?u" unfolding inv_Mp_def
+    by (rule degree_map_poly, unfold mon, insert mon pl1, auto simp: inv_M_def)
+  with degu have deg_iu: "degree ?iu = degree u" by simp
+  have mon_iu: "monic ?iu" unfolding deg_iu unfolding inv_Mp_def Mp_def inv_M_def M_def
+    by (insert pl1, auto simp: coeff_map_poly monic)
+  let ?L = "factorization_lattice ?iu (n - ?d) pl" 
   let ?sv = "short_vector 2 ?L" 
   from deg_u_0 deg_le have n: "n \<noteq> 0" by auto
   from deg_u_0 have u0: "u \<noteq> 0" by auto
@@ -718,22 +734,36 @@ proof -
     unfolding LLL_short_polynomial_def by blast
   have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2" unfolding id by simp
   interpret LLL n n .
+  from deg_le deg_iu have deg_iu_le: "degree ?iu \<le> n" by simp
   have len: "length ?L = n" 
-    unfolding factorization_lattice_def using deg_le by auto
-  from lin_indpt_list_factorization_lattice[OF refl deg_le u0 pl0]
-  have "4/3 \<le> (2 :: rat)" "gs.lin_indpt_list (RAT ?L)"  by auto
+    unfolding factorization_lattice_def using deg_le deg_iu by auto
+  from deg_u_0 deg_iu have deg_iu0: "degree ?iu \<noteq> 0" by auto
+  hence iu0: "?iu \<noteq> 0" by auto
+  from lin_indpt_list_factorization_lattice[OF refl deg_iu_le iu0 pl0]
+  have "4/3 \<le> (2 :: rat)" "gs.lin_indpt_list (RAT ?L)" by (auto simp: deg_iu)
   note short = short_vector[OF this len refl n, unfolded id']
   from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
-  from factorization_lattice(1)[OF deg_u_0 pl0 deg_le n mem]
-  show "degree (LLL_short_polynomial n u) < n" "poly_mod.dvdm pl u (LLL_short_polynomial n u)" by auto
+  note fact = factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
+  show "degree (LLL_short_polynomial n u) < n" using fact by auto
+  from fact have "?iu dvdm (LLL_short_polynomial n u)" by auto
+  then obtain h where "LLL_short_polynomial n u =m ?iu * h" unfolding dvdm_def by auto
+  also have "?iu * h =m Mp ?iu * h" unfolding mult_Mp by simp
+  also have "Mp ?iu * h =m u * h" unfolding iu_u unfolding mult_Mp by simp
+  finally show "u dvdm (LLL_short_polynomial n u)" unfolding dvdm_def by auto
   from short have sv1: "?sv \<in> carrier_vec n" by auto  
   from short have "?sv \<noteq> 0\<^sub>v j" for j by auto
   thus "LLL_short_polynomial n u \<noteq> 0" unfolding id by simp
-  assume mon: "monic u" and degu: "degree u < n" and dvd: "poly_mod.dvdm pl u f" 
+  assume degu: "degree u < n" and dvd: "u dvdm f" 
     and degf: "degree f < n" and f0: "f \<noteq> 0" 
-  from factorization_lattice(2)[OF deg_u_0 pl0 mon degu degf dvd]
-  have "f \<in> poly_of_vec ` lattice_of ?L" by auto 
+  from dvd obtain h where "f =m u * h" unfolding dvdm_def by auto
+  also have "u * h =m Mp u * h" unfolding mult_Mp by simp
+  also have "Mp u * h =m Mp ?iu * h" unfolding iu_u by simp
+  also have "Mp ?iu * h =m ?iu * h" unfolding mult_Mp by simp
+  finally have dvd: "?iu dvdm f" unfolding dvdm_def by auto
+  from degu deg_iu have deg_iun: "degree ?iu < n" by auto
+  from factorization_lattice(2)[OF deg_iu0 pl0 mon_iu deg_iun degf dvd]
+  have "f \<in> poly_of_vec ` lattice_of ?L" using deg_iu by auto 
   then obtain fv where f: "f = poly_of_vec fv" and fv: "fv \<in> lattice_of ?L" by auto
   have norm: "\<parallel>fv\<parallel>\<^sup>2 = \<parallel>f\<parallel>\<^sup>2" unfolding f by simp
   have fv0: "fv \<noteq> 0\<^sub>v n" using f0 unfolding f by auto
@@ -753,8 +783,8 @@ proof (standard, rule wf_measure[of "\<lambda> (f,gs). degree f"], goal_cases)
   finally show ?case by simp
 next
   case (2 f gs u g k f1)
-  hence "degree u \<noteq> 0" "degree u \<le> degree f" "pl \<noteq> 0" by auto
-  from LLL_short_polynomial[OF this(1-3)] 2
+  hence "degree u \<noteq> 0" "degree u \<le> degree f" "pl > 1" "monic u" by auto
+  from LLL_short_polynomial[OF this(1-4)] 2
   have "degree g < degree f" "g \<noteq> 0" by auto
   thus ?case unfolding \<open>k = gcd f g\<close> using degree_gcd1[of g f] by (auto simp: gcd.commute[of f g])
 qed
@@ -811,15 +841,15 @@ proof -
     hence deg_u: "degree u \<noteq> 0" unfolding pl.irreducible\<^sub>d_m_def norm[OF u_gs] by auto
     have deg_uf: "degree u \<le> degree f" unfolding degf_gs using split_list[OF u_gs] by auto
     from mon_gs[OF u_gs] have mon_u: "monic u" and u0: "u \<noteq> 0" by auto
-    let ?cond = "degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl \<noteq> 0" 
+    let ?cond = "degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl > 1 \<and> monic u" 
     have cond: "?cond = True" "\<not> \<not> ?cond" 
-      using deg_uf degf deg_u pl1 by auto
+      using deg_uf degf deg_u pl1 mon_u by auto
     note res = res[unfolded LLL_reconstruction.simps[of f us] Let_def, folded u_def, 
         folded g_def, folded k_def, unfolded cond]
     have f0: "f \<noteq> 0" using degf by auto
     from norm have norm': "image_mset pl.Mp (mset us) = mset us" by (induct us, auto)
     have pl0: "pl \<noteq> 0" using pl1 by auto
-    note short_main = LLL_short_polynomial[OF deg_u deg_uf pl0]
+    note short_main = LLL_short_polynomial[OF deg_u deg_uf pl1 mon_u]
     show ?case
     proof (cases "degree k = 0")
       case True
@@ -881,7 +911,7 @@ proof -
         let ?N = "degree F" 
         from fF prod have f1F: "f1 dvd F" unfolding dvd_def by auto
         have "\<parallel>g\<parallel>\<^sup>2 \<le> 2 ^ (?n - 1) * \<parallel>f1\<parallel>\<^sup>2" unfolding g_def
-          by (rule short_main(4)[OF mon_u deg_uf _ uf1], insert deg, auto)
+          by (rule short_main(4)[OF deg_uf _ uf1], insert deg, auto)
         also have "\<dots> \<le> 2 ^ (?n - 1) * (2 ^ (2 * degree f1) * \<parallel>F\<parallel>\<^sup>2)" 
           by (rule mult_left_mono[OF sq_norm_factor_bound[OF f1F F0]], simp)
         also have "\<dots> = 2 ^ ((?n - 1) + 2 * degree f1) * \<parallel>F\<parallel>\<^sup>2" 

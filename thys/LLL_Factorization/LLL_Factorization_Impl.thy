@@ -64,14 +64,16 @@ locale LLL_implementation =
   fixes p pl :: int
 begin
 
+text \<open>Optimization: directly try to minimize coefficients of polynomial $u$.\<close>
 definition LLL_short_polynomial where
-  "LLL_short_polynomial n u = poly_of_vec (short_vector 2 (factorization_lattice u (n - degree u) pl))" 
+  "LLL_short_polynomial n u = poly_of_vec (short_vector 2 (factorization_lattice 
+     (poly_mod.inv_Mp pl (poly_mod.Mp pl u)) (n - degree u) pl))" 
 
 function LLL_reconstruction where 
   "LLL_reconstruction f us = (let 
      u = choose_u us in
       \<comment> \<open>sanity checks which are solely used to ensure termination\<close>
-      if \<not> (degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl \<noteq> 0) then 
+      if \<not> (degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl > 1 \<and> monic u) then 
           Code.abort (STR ''LLL_reconstruction is invoked with non-suitable arguments'') (\<lambda> _. [])
     else let 
      g = LLL_short_polynomial (degree f) u;

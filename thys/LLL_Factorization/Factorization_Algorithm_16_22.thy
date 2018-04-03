@@ -491,6 +491,8 @@ lemma ll: "ll \<le> l" unfolding ll_def Let_def by auto
 lemma ll0: "ll \<noteq> 0" using l0 find_exponent[OF p.m1] 
   unfolding ll_def Let_def by auto
 
+lemma pll1: "p^ll > 1" sorry
+
 interpretation pll: poly_mod_2 "p^ll" 
   using ll0 p.m1 by (unfold_locales, auto) 
 
@@ -516,8 +518,8 @@ proof (atomize(full), goal_cases)
   from deg_u have degu0: "degree u \<noteq> 0" by auto
   have ju: "j \<ge> degree u" using d_def dj' le_Suc_eq by blast 
   have ju': "j > degree u" using d_def dj' by auto 
-  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pll0, folded g_def]
-  from short(1-3) short(4)[OF u ju'] show ?case by auto
+  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pll1 u, folded g_def]
+  from short(1-3) short(4)[OF ju'] show ?case by auto
 qed
 
 lemma LLL_reconstruction_inner_simps: "LLL_reconstruction_inner p l gs f u j
@@ -551,9 +553,9 @@ proof (rule ccontr)
   from pu_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
     using d_def deg_factor_j dj' by blast
   hence u_j: "degree u \<le> j" "degree u < j" by auto
-  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pll0, folded g_def]
+  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pll1 u, folded g_def]
   note ret = ret[unfolded LLL_reconstruction_inner_simps]   
-  note LLL = LLL(1-3) LLL(4)[OF u u_j(2) factor0 pll_u_factor deg_factor_lt_j]
+  note LLL = LLL(1-3) LLL(4)[OF u_j(2) factor0 pll_u_factor deg_factor_lt_j]
   hence deg_g: "degree g \<le> j'" by simp
   from LLL(2) have normg: "\<parallel>g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of g] by presburger
   from f0 have normf: "\<parallel>f\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f] by presburger
