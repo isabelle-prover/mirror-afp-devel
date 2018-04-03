@@ -492,7 +492,7 @@ lemma ll: "ll \<le> l" unfolding ll_def Let_def by auto
 lemma ll0: "ll \<noteq> 0" using l0 find_exponent[OF p.m1] 
   unfolding ll_def Let_def by auto
 
-lemma pll1: "p^ll > 1" sorry
+lemma pll1: "p^ll > 1" using ll0 p.m1 by auto
 
 interpretation pll: poly_mod_2 "p^ll" 
   using ll0 p.m1 by (unfold_locales, auto) 
