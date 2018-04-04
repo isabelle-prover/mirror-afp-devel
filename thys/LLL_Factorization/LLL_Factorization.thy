@@ -47,14 +47,11 @@ lemma set_factorization_lattice_in_carrier[simp]: "set (factorization_lattice u 
   using dim_factorization_lattice by (auto simp: factorization_lattice_def Let_def) 
 
 lemma choose_u_Cons: "choose_u (x#xs) = 
-  (if xs = [] then x else max_degree_poly x (choose_u xs))"
+  (if xs = [] then x else min_degree_poly x (choose_u xs))"
   by (cases xs, auto)
 
 lemma choose_u_member: "xs \<noteq> [] \<Longrightarrow> choose_u xs \<in> set xs"
   by (induct xs, auto simp: choose_u_Cons)
-
-lemma choose_u_maximal: "gi \<in> set gs \<Longrightarrow> degree gi \<le> degree (choose_u gs)" 
-  by (induct gs, auto simp: choose_u_Cons)
 
 declare choose_u.simps[simp del]
 

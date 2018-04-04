@@ -13,6 +13,14 @@ theory Modern_Computer_Algebra_Problem
       "HOL-Library.Code_Char"
 begin
 
+fun max_degree_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly"
+  where "max_degree_poly a b = (if degree a \<ge> degree b then a else b)"
+ 
+fun choose_u :: "int poly list \<Rightarrow> int poly"
+   where "choose_u [] = undefined"
+ | "choose_u [gi] = gi" 
+ | "choose_u (gi # gj # gs) = max_degree_poly gi (choose_u (gj # gs))"
+
 subsection {* A real problem of Algorithm 16.22 *}
 
 text \<open>Bogus example for Modern Computer Algebra (2nd edition), Algorithm 16.22, step 9:
