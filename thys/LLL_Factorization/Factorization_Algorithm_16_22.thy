@@ -30,9 +30,6 @@ begin
 
 subsection \<open>Previous lemmas obtained using local type definitions\<close>
 
-declare poly_mod.inv_Mp_def[code]
-declare poly_mod.inv_M_def[code]
-
 context poly_mod_prime_type
 begin                           
 

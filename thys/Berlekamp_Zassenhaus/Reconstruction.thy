@@ -93,7 +93,9 @@ declare poly_mod.reconstruction.simps[code]
 declare poly_mod.prod_list_m.simps[code]
 declare poly_mod.mul_const_def[code]
 declare poly_mod.inv_M2_def[code]
+declare poly_mod.inv_M_def[code]
 declare poly_mod.inv_Mp2_def[code_unfold]
+declare poly_mod.inv_Mp_def[code_unfold]
 
 definition zassenhaus_reconstruction_generic :: 
   "(int poly, int \<times> int poly list, 'state) subseqs_foldr_impl
