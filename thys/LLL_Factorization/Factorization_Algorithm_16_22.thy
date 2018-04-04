@@ -73,6 +73,11 @@ subsection \<open>The modified version of Algorithm 16.22\<close>
 definition B2_LLL :: "int poly \<Rightarrow> int" where
   "B2_LLL f = 2 ^ (2 * degree f) * \<parallel>f\<parallel>\<^sup>2" 
 
+hide_const (open) factors
+hide_const (open) factors
+hide_const (open) factor
+hide_const (open) factor
+
 context
   fixes p :: int and l :: nat
 begin
@@ -1420,4 +1425,10 @@ proof -
     qed
   qed
 qed
+
+lift_definition increasing_lattices_LLL_factorization :: int_poly_factorization_algorithm
+  is factorization_algorithm_16_22 using factorization_algorithm_16_22 by auto
+
+thm factorize_int_poly[of increasing_lattices_LLL_factorization]
+
 end

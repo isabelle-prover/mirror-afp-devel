@@ -106,20 +106,4 @@ proof -
   show ?thesis 
     by (rule zassenhaus_reconstruction[OF prime cop sf deg refl _ res], insert n db, auto)
 qed
-
-corollary berlekamp_zassenhaus_factorization_irreducible:
-  assumes res: "berlekamp_zassenhaus_factorization f = fs" 
-  and sf: "square_free f"
-  and deg: "degree f > 0"
-  and cf: "content_free f"
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi \<and> degree fi > 0 \<and> content_free fi)" 
-proof (intro conjI ballI)
-  note * = berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF res sf deg]
-  from * show f: "f = prod_list fs" by auto
-  fix fi assume fi: "fi \<in> set fs"
-  with content_free_prod_list[OF cf[unfolded f]] show "content_free fi" by auto
-  from irreducible_content_free_connect[OF this] * cf[unfolded f] fi
-  show "irreducible fi" by auto
-  from * fi show "degree fi > 0" by (auto)
-qed
 end

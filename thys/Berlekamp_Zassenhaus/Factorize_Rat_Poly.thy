@@ -13,14 +13,6 @@ imports
   Factorize_Int_Poly
 begin
 
-definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_rat_poly f = (case rat_to_normalized_int_poly f of
-     (c,g) \<Rightarrow> case factorize_int_poly g of (d,fs) \<Rightarrow> (c * rat_of_int d, 
-     map (\<lambda> (fi,i). (map_poly rat_of_int fi, i)) fs))" 
-  
-lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
-  unfolding factorize_rat_poly_def rat_to_normalized_int_poly_def by simp
-
 (*TODO: Move*)
 interpretation content_hom: monoid_mult_hom "content::'a::factorial_semiring_gcd poly \<Rightarrow> _"
 by (unfold_locales, auto simp: content_mult)
@@ -54,8 +46,19 @@ lemma content_field_poly[simp]:
   shows "content f = (if f = 0 then 0 else 1)"
   by(induct f, auto simp: dvd_field_iff is_unit_normalize)
 
+context
+  fixes alg :: int_poly_factorization_algorithm
+begin
+definition factorize_rat_poly_generic :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
+  "factorize_rat_poly_generic f = (case rat_to_normalized_int_poly f of
+     (c,g) \<Rightarrow> case factorize_int_poly_generic alg g of (d,fs) \<Rightarrow> (c * rat_of_int d, 
+     map (\<lambda> (fi,i). (map_poly rat_of_int fi, i)) fs))" 
+  
+lemma factorize_rat_poly_0[simp]: "factorize_rat_poly_generic 0 = (0,[])" 
+  unfolding factorize_rat_poly_generic_def rat_to_normalized_int_poly_def by simp
+
 lemma factorize_rat_poly:
-  assumes res: "factorize_rat_poly f = (c,fs)"
+  assumes res: "factorize_rat_poly_generic f = (c,fs)"
   shows "square_free_factorization f (c,fs)"
     and "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
 proof(atomize(full), cases "f=0", goal_cases)
@@ -66,8 +69,8 @@ next
     let ?r = rat_of_int
     let ?rp = "map_poly ?r" 
     obtain d g where ri: "rat_to_normalized_int_poly f = (d,g)" by force
-    obtain e gs where fi: "factorize_int_poly g = (e,gs)" by force
-    from res[unfolded factorize_rat_poly_def ri fi split]
+    obtain e gs where fi: "factorize_int_poly_generic alg g = (e,gs)" by force
+    from res[unfolded factorize_rat_poly_generic_def ri fi split]
     have c: "c = d * ?r e" and fs: "fs = map (\<lambda> (fi,i). (?rp fi, i)) gs" by auto
     from factorize_int_poly[OF fi]
     have irr: "(fi, i) \<in> set gs \<Longrightarrow> irreducible fi \<and> content fi = 1" for fi i
@@ -119,5 +122,10 @@ next
     }
   qed
 qed
+
+end
+
+abbreviation factorize_rat_poly where 
+  "factorize_rat_poly \<equiv> factorize_rat_poly_generic berlekamp_zassenhaus_factorization_algorithm" 
 
 end

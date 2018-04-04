@@ -14,7 +14,8 @@ text \<open>This theory connects short vectors of lattices and factors of polyno
 
 theory LLL_Factorization
   imports
-    LLL_Factorization_Impl    
+    LLL_Factorization_Impl  
+    Berlekamp_Zassenhaus.Factorize_Int_Poly
 begin
 
 subsection \<open>Basic facts about the auxiliary functions\<close>
@@ -1052,4 +1053,9 @@ proof -
     by (rule LLL_implementation.LLL_reconstruction[OF res deg uf dvd_refl norm f0 cop sf pn1 
           refl prime K[unfolded K_def]]) 
 qed
+
+lift_definition one_lattice_LLL_factorization :: int_poly_factorization_algorithm
+  is LLL_factorization using LLL_factorization by auto
+
+thm factorize_int_poly[of one_lattice_LLL_factorization]
 end
