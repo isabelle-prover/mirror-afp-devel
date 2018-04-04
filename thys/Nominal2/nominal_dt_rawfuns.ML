@@ -136,7 +136,7 @@ fun define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy =
 
 fun mk_fv_rhs lthy fv_map fv_bn_map args (BC (bmode, binders, bodies)) =
   let
-    fun mk_fv_body fv_map args i =
+    fun mk_fv_body i =
       let
         val arg = nth args i
         val ty = fastype_of arg
@@ -146,31 +146,28 @@ fun mk_fv_rhs lthy fv_map fv_bn_map args (BC (bmode, binders, bodies)) =
         | SOME fv => fv $ arg
       end
 
-  fun mk_fv_binder lthy fv_bn_map args binders =
-    let
-      fun bind_set lthy args (NONE, i) = (setify lthy (nth args i), @{term "{}::atom set"})
-        | bind_set _ args (SOME bn, i) = (bn $ (nth args i),
-            if  member (op=) bodies i then @{term "{}::atom set"}
-            else lookup fv_bn_map bn $ (nth args i))
-      fun bind_lst lthy args (NONE, i) = (listify lthy (nth args i), @{term "[]::atom list"})
-        | bind_lst _ args (SOME bn, i) = (bn $ (nth args i),
-            if  member (op=) bodies i then @{term "[]::atom list"}
-            else lookup fv_bn_map bn $ (nth args i))
+    fun bind_set (NONE, i) = (setify lthy (nth args i), @{term "{}::atom set"})
+      | bind_set (SOME bn, i) = (bn $ (nth args i),
+          if  member (op=) bodies i then @{term "{}::atom set"}
+          else lookup fv_bn_map bn $ (nth args i))
 
-      val (combine_fn, bind_fn) =
-        case bmode of
-          Lst => (fold_append, bind_lst)
-        | Set => (fold_union, bind_set)
-        | Res => (fold_union, bind_set)
-    in
+    fun bind_lst (NONE, i) = (listify lthy (nth args i), @{term "[]::atom list"})
+      | bind_lst (SOME bn, i) = (bn $ (nth args i),
+          if  member (op=) bodies i then @{term "[]::atom list"}
+          else lookup fv_bn_map bn $ (nth args i))
+
+    val (combine_fn, bind_fn) =
+      case bmode of
+        Lst => (fold_append, bind_lst)
+      | Set => (fold_union, bind_set)
+      | Res => (fold_union, bind_set)
+
+    val t1 = map mk_fv_body bodies
+    val (t2, t3) =
       binders
-      |> map (bind_fn lthy args)
+      |> map bind_fn
       |> split_list
       |> apply2 combine_fn
-    end
-
-    val t1 = map (mk_fv_body fv_map args) bodies
-    val (t2, t3) = mk_fv_binder lthy fv_bn_map args binders
   in
     mk_union (mk_diff (fold_union t1, to_set t2), to_set t3)
   end
