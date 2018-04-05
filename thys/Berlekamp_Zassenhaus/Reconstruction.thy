@@ -825,10 +825,10 @@ qed
 
 interpretation p: poly_mod_prime p using prime by unfold_locales
 
-lemma zassenhaus_reconstruction_generic: 
+lemma zassenhaus_reconstruction_generic:
   assumes sl_impl: "correct_subseqs_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)"
 proof -
   let ?lc = "lead_coeff f" 
   let ?ff = "smult ?lc f" 
@@ -870,12 +870,19 @@ proof -
   show ?thesis by simp
 qed
 
-lemma zassenhaus_reconstruction: 
-  assumes res: "zassenhaus_reconstruction hs p n f = fs" 
+lemma zassenhaus_reconstruction_irreducible\<^sub>d:
+  assumes res: "zassenhaus_reconstruction hs p n f = fs"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
   by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
       res[unfolded zassenhaus_reconstruction_def Let_def]])
 
+corollary zassenhaus_reconstruction:
+  assumes cf: "content_free f"
+  assumes res: "zassenhaus_reconstruction hs p n f = fs"
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)"
+  using zassenhaus_reconstruction_irreducible\<^sub>d[OF res] cf
+    irreducible_content_free_connect[OF content_free_prod_list]
+    by auto
 end
 
 end

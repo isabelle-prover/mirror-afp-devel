@@ -184,7 +184,7 @@ proof -
   show ?thesis
   proof (induct n arbitrary: p q)
     case (0 p q)
-    from is_unit_iff_degree[OF 0(1)] 0(2) show ?case by auto
+    from is_unit_iff_degree[OF 0(1)] 0(2) show ?case by blast
   next
     case (Suc n p q)
     let ?P = "{x. poly p x = 0}"
