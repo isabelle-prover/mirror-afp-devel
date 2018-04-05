@@ -70,8 +70,8 @@ fun basis_reduction_add_row_i_all_main :: "state \<Rightarrow> int vec list \<Ri
     basis_reduction_add_row_i_all_main (fst (basis_reduction_add_row_main state fj (\<mu>_ij fi gj))) fjs gjs)"
 | "basis_reduction_add_row_i_all_main state _ _ = state" 
 
-definition basis_reduction_add_row_i_all :: "state \<Rightarrow> state" where 
-  "basis_reduction_add_row_i_all state = (case state of (i,F,G) \<Rightarrow>
+definition basis_reduction_add_rows :: "state \<Rightarrow> state" where 
+  "basis_reduction_add_rows state = (case state of (i,F,G) \<Rightarrow>
     let fjs = fst F;
         gjs = fst G
       in basis_reduction_add_row_i_all_main state fjs gjs)" 
@@ -96,7 +96,7 @@ fun basis_reduction_swap :: "state \<Rightarrow> state" where
 
 definition basis_reduction_step :: "rat \<Rightarrow> state \<Rightarrow> state" where
   "basis_reduction_step \<alpha> state = (if fst state = 0 then increase_i state
-     else let state' = basis_reduction_add_row_i_all state in
+     else let state' = basis_reduction_add_rows state in
      case state' of (i, F, G) \<Rightarrow>
       if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
       then basis_reduction_swap state'
@@ -752,9 +752,9 @@ proof -
   thus ?thesis using mu_change inv_gso mudiff unfolding res j F1_def by auto
 qed
 
-lemma basis_reduction_add_row_i_all: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
+lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
   and i: "i < m" 
-  and res: "basis_reduction_add_row_i_all (i,Fr,Gr) = (i',Fr',Gr')"
+  and res: "basis_reduction_add_rows (i,Fr,Gr) = (i',Fr',Gr')"
 shows "\<exists> F' fi. LLL_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
   (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
@@ -767,7 +767,7 @@ proof -
     by (auto simp: rev_map[symmetric] take_map o_def)
   from inv(9) have id': "fst Gr = rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) ?xs)" 
     unfolding g_repr_def list_repr_def GSO_def by (auto simp: take_map)
-  note res = res[unfolded basis_reduction_add_row_i_all_def split Let_def]
+  note res = res[unfolded basis_reduction_add_rows_def split Let_def]
   define ii where "ii = i" 
   hence id'': "[0..< i] = [0 ..< ii]" by auto
   have id': "fst Gr = rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (gs.gso (RAT F)) [0 ..< ii]))" 
@@ -987,9 +987,9 @@ proof (atomize(full), cases "i = 0")
   case i0: False
   note res = res[unfolded basis_reduction_step_def split] 
   obtain i1 Fr1 Gr1 where 
-    il: "basis_reduction_add_row_i_all (i,Fr,Gr) = ((i1, Fr1, Gr1))" (is "?b = _")
+    il: "basis_reduction_add_rows (i,Fr,Gr) = ((i1, Fr1, Gr1))" (is "?b = _")
     by (cases ?b, auto)
-  from basis_reduction_add_row_i_all[OF inv i il] i0 obtain F1 
+  from basis_reduction_add_rows[OF inv i il] i0 obtain F1 
     where Linv': "LLL_invariant (i, Fr1, Gr1) F1 G" and ii: "i1 = i" 
       and mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>gs.\<mu> (RAT F1) i j\<bar> \<le> 1 / 2" 
       and mu_F1_non_i: "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> i' \<noteq> i \<Longrightarrow> gs.\<mu> (RAT F1) i' j' = gs.\<mu> (RAT F) i' j'"       
