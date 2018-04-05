@@ -827,10 +827,10 @@ definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<R
   where "weakly_reduced \<alpha> k gs = (\<forall> i. Suc i < k \<longrightarrow> 
     sq_norm (gs ! i) \<le> \<alpha> * sq_norm (gs ! (Suc i)))" 
   
-definition strictly_reduced :: "nat \<Rightarrow> 'a \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
+definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
   (* this is reduced according to LLL original paper *)
-  where "strictly_reduced N \<alpha> gs mu = (weakly_reduced \<alpha> N gs \<and> 
-    (\<forall> i j. i < N \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
+  where "reduced \<alpha> k gs mu = (weakly_reduced \<alpha> k gs \<and> 
+    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
 
 definition
   "is_oc_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"

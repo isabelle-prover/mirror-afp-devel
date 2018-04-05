@@ -204,8 +204,7 @@ definition LLL_partial_invariant :: "state \<Rightarrow> int vec list \<Rightarr
   snd (gram_schmidt_int n F) = G \<and>
   gs.lin_indpt_list (RAT F) \<and> 
   lattice_of F = L \<and>
-  gs.weakly_reduced \<alpha> i G \<and>
-  gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F)) \<and>
+  gs.reduced \<alpha> i G (gs.\<mu> (RAT F)) \<and>
   i \<le> m \<and>
   length F = m \<and>
   f_repr i Fr F \<and> 
@@ -238,10 +237,11 @@ lemma LLL_invD: assumes "LLL_invariant (i,Fr,Gr) F G"
   "f_repr i Fr F"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_short F"
   "g_short G"
-  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
+  unfolding LLL_invariants_def split gs.reduced_def by auto
 
 lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
   shows "F = of_list_repr Fr" 
@@ -254,8 +254,9 @@ lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
   "f_repr i Fr F"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
-  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
+  unfolding LLL_invariants_def split gs.reduced_def by auto
 
 lemma LLL_invI: assumes  
   "f_repr i Fr F"
@@ -266,7 +267,7 @@ lemma LLL_invI: assumes
   "i \<le> m"
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_short F" 
   "g_short G" 
 shows "LLL_invariant (i,Fr,Gr) F G" 
@@ -281,7 +282,7 @@ lemma LLL_pinvI: assumes
   "i \<le> m"
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
 shows "LLL_partial_invariant (i,Fr,Gr) F G" 
   unfolding LLL_invariants_def Let_def split using assms of_list_repr[OF assms(1)] by auto
   
@@ -428,15 +429,15 @@ proof -
   note inv = LLL_invD[OF LLL]
   from inv have Gr: "g_repr i Gr F" and Fr: "f_repr i Fr F"
     and red: "gs.weakly_reduced \<alpha> i G" 
-    and sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" by auto
+    and sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" by auto
   from inv i inc_i_gso[OF i Gr] inc_i[OF Fr]
   have Gr': "g_repr (Suc i) (inc_i Gr) F" and Fr': "f_repr (Suc i) (inc_i Fr) F" 
     by auto
   from red red_i have red: "gs.weakly_reduced \<alpha> (Suc i) G" 
     unfolding gs.weakly_reduced_def
     by (intro allI impI, rename_tac ii, case_tac "Suc ii = i", auto)
-  from sred sred_i have sred: "gs.strictly_reduced (Suc i) \<alpha> G (gs.\<mu> (RAT F))"
-    unfolding gs.strictly_reduced_def
+  from sred sred_i have sred: "gs.reduced \<alpha> (Suc i) G (gs.\<mu> (RAT F))"
+    unfolding gs.reduced_def
     by (intro conjI[OF red] allI impI, rename_tac ii j, case_tac "ii = i", auto)
   show ?thesis unfolding increase_i_def split
     by (rule LLL_invI[OF Fr' Gr'], insert inv red sred i, auto)
@@ -648,7 +649,7 @@ proof -
   finally have "det (?GsM * ?GsM\<^sup>T) \<noteq> 0" by simp
   from vec_space.det_nonzero_congruence[OF EMN this _ _ N] Gs E M
   have EMN: "E * M' = N'" by auto (* lemma 16.12(i), part 2 *) 
-  from inv have sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" by auto
+  from inv have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" by auto
   {
     fix i' j'
     assume ij: "i' < m" "j' < m" and choice: "i' \<noteq> i \<or> j < j'" 
@@ -671,11 +672,11 @@ proof -
       using ij len unfolding M'_def gs.M_def by auto
     also note calculation
   } note mu_change = this
-  have sred: "gs.strictly_reduced i \<alpha> G1 (gs.\<mu> (RAT F1))"
-    unfolding gs.strictly_reduced_def 
+  have sred: "gs.reduced \<alpha> i G1 (gs.\<mu> (RAT F1))"
+    unfolding gs.reduced_def 
   proof (intro conjI[OF red] impI allI, goal_cases)
     case (1 i' j)
-    with mu_change[of i' j] sred[unfolded gs.strictly_reduced_def, THEN conjunct2, rule_format, of i' j] i 
+    with mu_change[of i' j] sred[unfolded gs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
     show ?case by auto
   qed
   (* now let us head for the implementation *)
@@ -756,9 +757,10 @@ lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) 
   and i: "i < m" 
   and res: "basis_reduction_add_rows (i,Fr,Gr) = (i',Fr',Gr')"
 shows "\<exists> F' fi. LLL_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
-  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
+  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2)"
+(* unused: and 
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
-    gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')"
+    gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j') *)
 proof -
   note inv = LLL_invD[OF Linv]
   let ?xs = "map (gs.gso (RAT F)) [0..<i]"
@@ -992,7 +994,6 @@ proof (atomize(full), cases "i = 0")
   from basis_reduction_add_rows[OF inv i il] i0 obtain F1 
     where Linv': "LLL_invariant (i, Fr1, Gr1) F1 G" and ii: "i1 = i" 
       and mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>gs.\<mu> (RAT F1) i j\<bar> \<le> 1 / 2" 
-      and mu_F1_non_i: "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> i' \<noteq> i \<Longrightarrow> gs.\<mu> (RAT F1) i' j' = gs.\<mu> (RAT F) i' j'"       
       and m12: "\<bar>gs.\<mu> (RAT F1) i (i - 1)\<bar> \<le> inverse 2"
       by auto
   note dk = dk_def  
@@ -1351,12 +1352,12 @@ proof (atomize(full), cases "i = 0")
         unfolding g2'_im1_def[symmetric] apply (intro conjI i1n')
         apply(rule dec_i[OF _ i0]) by(auto simp: i intro!:upd_im1 update_i[OF gsoH])
     } note g_repr = this
-    from inv' have sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F1))" by auto
-    have sred: "gs.strictly_reduced (i - 1) \<alpha> G2 (gs.\<mu> (RAT F2))"
-      unfolding gs.strictly_reduced_def
+    from inv' have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F1))" by auto
+    have sred: "gs.reduced \<alpha> (i - 1) G2 (gs.\<mu> (RAT F2))"
+      unfolding gs.reduced_def
     proof (intro conjI[OF red] allI impI, goal_cases)
       case (1 i' j)
-      with sred have "\<bar>gs.\<mu> (RAT F1) i' j\<bar> \<le> 1 / 2" unfolding gs.strictly_reduced_def by auto
+      with sred have "\<bar>gs.\<mu> (RAT F1) i' j\<bar> \<le> 1 / 2" unfolding gs.reduced_def by auto
       also have "gs.\<mu> (RAT F1) i' j = gs.\<mu> (RAT F2) i' j" using 1 i len
         by (subst gs_\<mu>_identical[of _ _ "RAT F1" "RAT F2"], auto simp: F2_def)
       finally show ?case by auto
@@ -1803,7 +1804,7 @@ proof -
   qed
   have inv: "LLL_invariant (lattice_of F) \<alpha> A (0, Fr0, ?Gr0) F G" 
     by (rule LLL_invI[OF repr gso0 gs refl _ _ _ lin_dep], auto simp:gs.weakly_reduced_def 
-        gs.strictly_reduced_def len short)
+        gs.reduced_def len short)
   obtain i Fr1 Gr1 where br:"state = (i, Fr1, Gr1)" by(cases state,auto)
   note * = assms(1)[unfolded basis_reduction_state_def o_def Let_def,folded Gr0_def Fr0_def,unfolded len]
   from basis_reduction_main[OF inv * \<alpha>]
@@ -1812,7 +1813,7 @@ qed
 
 lemma reduce_basis: assumes res: "reduce_basis n \<alpha> F = (F', G')" 
   shows "lattice_of F = lattice_of F'" (is ?g1)
-  "gs.strictly_reduced m \<alpha> G' (gs.\<mu> (RAT F'))" (is ?g2)
+  "gs.reduced \<alpha> m G' (gs.\<mu> (RAT F'))" (is ?g2)
   "G' = gram_schmidt n (RAT F')" (is ?g3)
   "gs.lin_indpt_list (RAT F')" (is ?g4)
   "length F' = m" (is ?g5)
@@ -1852,7 +1853,7 @@ proof -
     and basis: "gs.lin_indpt_list (RAT F1)" 
     and lenH: "length F1 = m" 
     and H: "set F1 \<subseteq> carrier_vec n" 
-    by (auto simp: gs.lin_indpt_list_def gs.strictly_reduced_def)
+    by (auto simp: gs.lin_indpt_list_def gs.reduced_def)
   from lin_dep have G: "set F \<subseteq> carrier_vec n" unfolding gs.lin_indpt_list_def by auto
   with m0 len have "dim_vec (hd F) = n" by (cases F, auto)
   note res = assms[unfolded short_vector_def this reduce]
