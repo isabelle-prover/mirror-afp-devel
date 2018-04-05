@@ -566,7 +566,7 @@ proof -
     unfolding RAT_F1_i using carr1 carr2
     by (intro eq_vecI, auto)
   hence in1:"((RAT F) ! i - gs.gso (RAT F1) i) - ?mui \<in> ?rs"
-    using gram_schmidt.projection_exist[OF conn2 i]
+    using gram_schmidt.oc_projection_exist[OF conn2 i]
     unfolding span_G1_G by auto
   from \<open>j < i\<close> have Gj_mem: "(RAT F) ! j \<in> (\<lambda> x. ((RAT F) ! x)) ` {0 ..< i}" by auto  
   have id1: "set (take i (map of_int_hom.vec_hom F)) = (\<lambda>x. of_int_hom.vec_hom (F ! x)) ` {0..<i}"
@@ -592,7 +592,7 @@ proof -
     have "gs.gso (RAT F1) i \<bullet> gs.gso (RAT F1) x = 0" by auto
   }
   hence G1_G: "gs.gso (RAT F1) i = gs.gso (RAT F) i"
-    apply(intro gram_schmidt.projection_unique[OF conn1 i gs.gso_carrier[OF conn2 i]])
+    apply(intro gram_schmidt.oc_projection_unique[OF conn1 i gs.gso_carrier[OF conn2 i]])
     using in_span by (auto simp: eq_part[symmetric])
   have eq_fs:"x < m \<Longrightarrow> gs.gso (RAT F1) x = gs.gso (RAT F) x"
     for x proof(induct x rule:nat_less_induct[rule_format])
@@ -1148,14 +1148,14 @@ proof (atomize(full), cases "i = 0")
     let ?S' = "gs.span ?gs1" 
     have S'S: "?S' = ?S" 
       by (rule gs.partial_span'[OF connH], insert i, auto)
-    have "gs.is_projection (?g2 (i - 1)) (gs.span (?g2 ` {0..< (i - 1)})) (?f2 (i - 1))" 
-      by (rule gs.gso_projection_span(2)[OF connH' \<open>i - 1 < m\<close>])
+    have "gs.is_oc_projection (?g2 (i - 1)) (gs.span (?g2 ` {0..< (i - 1)})) (?f2 (i - 1))" 
+      by (rule gs.gso_oc_projection_span(2)[OF connH' \<open>i - 1 < m\<close>])
     also have "?f2 (i - 1) = ?f1 i" unfolding F2_def using len i by auto
     also have "gs.span (?g2 ` {0 ..< (i - 1)}) = gs.span (?f2 ` {0 ..< (i - 1)})" 
       by (rule gs.partial_span'[OF connH'], insert i, auto)
     also have "?f2 ` {0 ..< (i - 1)} = ?fs1" 
       by (rule image_cong[OF refl], insert len i, auto simp: F2_def)
-    finally have claim1: "gs.is_projection (?g2 (i - 1)) ?S (?f1 i)" .
+    finally have claim1: "gs.is_oc_projection (?g2 (i - 1)) ?S (?f1 i)" .
     have "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i] @ [?g1 i])" 
       unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i < m\<close>] by (simp add: gs.\<mu>.simps)
     also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" 
@@ -1168,8 +1168,8 @@ proof (atomize(full), cases "i = 0")
     also have "\<dots> = [0 ..< i - 1] @ [i - 1]" by simp
     finally have list: "[0 ..< i] = [0 ..< i - 1] @ [i - 1]" .
     have g2_im1: "?g2 (i - 1) = ?g1 i + ?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)" (is "_ = _ + ?mu_f1") 
-    proof (rule gs.is_projection_eq[OF connH claim1 _ S g[OF i]])
-      show "gs.is_projection (?g1 i + ?mu_f1) ?S (?f1 i)" unfolding gs.is_projection_def
+    proof (rule gs.is_oc_projection_eq[OF connH claim1 _ S g[OF i]])
+      show "gs.is_oc_projection (?g1 i + ?mu_f1) ?S (?f1 i)" unfolding gs.is_oc_projection_def
       proof (intro conjI allI impI)
         let ?sum' = "gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1])" 
         have sum': "?sum' \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
@@ -1221,8 +1221,8 @@ proof (atomize(full), cases "i = 0")
       fix k
       assume kn: "k < m" 
         and ki: "k \<noteq> i" "k \<noteq> i - 1"
-      have "?g2 k = gs.projection (gs.span (?g2 ` {0..<k})) (?f2 k)" 
-        by (rule gs.gso_projection_span[OF connH' kn])
+      have "?g2 k = gs.oc_projection (gs.span (?g2 ` {0..<k})) (?f2 k)" 
+        by (rule gs.gso_oc_projection_span[OF connH' kn])
       also have "gs.span (?g2 ` {0..<k}) = gs.span (?f2 ` {0..<k})" 
         by (rule gs.partial_span'[OF connH'], insert kn, auto)
       also have "?f2 ` {0..<k} = ?f1 ` {0..<k}"
@@ -1241,8 +1241,8 @@ proof (atomize(full), cases "i = 0")
       also have "gs.span \<dots> = gs.span (?g1 ` {0..<k})" 
         by (rule sym, rule gs.partial_span'[OF connH], insert kn, auto)
       also have "?f2 k = ?f1 k" using ki kn len unfolding F2_def by auto
-      also have "gs.projection (gs.span (?g1 ` {0..<k})) \<dots> = ?g1 k" 
-        by (subst gs.gso_projection_span[OF connH kn], auto)
+      also have "gs.oc_projection (gs.span (?g1 ` {0..<k})) \<dots> = ?g1 k" 
+        by (subst gs.gso_oc_projection_span[OF connH kn], auto)
       finally have "?g2 k = ?g1 k" . 
     } note g2_g1_identical = this
     {
@@ -1427,8 +1427,8 @@ proof (atomize(full), cases "i = 0")
       have u: "u \<in> Rn" using uU U by simp
       have id_u: "u + (?g1 (i - 1) - ?g2 i) = u + ?g1 (i - 1) - ?g2 i" 
         using u g2i \<open>?g1 (i - 1) \<in> Rn\<close> by auto
-      from gs.gso_projection_span(2)[OF connH' i]
-      have "gs.is_projection (?g2 i) (gs.span (gs.gso (RAT F2) ` {0 ..< i}))  (?f1 (i - 1))" 
+      from gs.gso_oc_projection_span(2)[OF connH' i]
+      have "gs.is_oc_projection (?g2 i) (gs.span (gs.gso (RAT F2) ` {0 ..< i}))  (?f1 (i - 1))" 
         unfolding F2_def using len i i0 by simp
       also have "?f1 (i - 1) = u + ?g1 (i - 1) " 
         unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i - 1 < m\<close>] list_id map_append u_def using gs' gsi
@@ -1441,11 +1441,11 @@ proof (atomize(full), cases "i = 0")
       also have "?f2 ` \<dots> = ?f2 ` {0 ..< i - 1} \<union> {?f2 (i - 1)}" by auto
       also have "\<dots> = U" unfolding U_def F2_def 
         by (rule arg_cong2[of _ _ _ _ "(\<union>)"], insert i len, force+)
-      finally have "gs.is_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
-      hence proj: "gs.is_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
-        unfolding gs.is_projection_def using gs.span_add[OF U uU, of "?g1 (i - 1) - ?g2 i"] 
+      finally have "gs.is_oc_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
+      hence proj: "gs.is_oc_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
+        unfolding gs.is_oc_projection_def using gs.span_add[OF U uU, of "?g1 (i - 1) - ?g2 i"] 
         \<open>?g1 (i - 1) \<in> Rn\<close> g2i u id_u by (auto simp: U)
-      from gs.is_projection_sq_norm[OF this gs.span_is_subset2[OF U] \<open>?g1 (i - 1) \<in> Rn\<close>]
+      from gs.is_oc_projection_sq_norm[OF this gs.span_is_subset2[OF U] \<open>?g1 (i - 1) \<in> Rn\<close>]
       have "sq_norm (?g2 i) \<le> sq_norm (?g1 (i - 1))" .
     } note sq_norm_g2_i = this (* Lemma 16.13 (iii) *)
 
