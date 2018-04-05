@@ -41,41 +41,9 @@ proof -
   with * f show "A = A'" by auto
 qed
 
-lemma (in poly_mod_prime_type) uniqueness_poly_equality_mod_int: 
-  assumes deg: "b =m 0 \<or> degree_m b < degree_m f" "b' =m 0 \<or> degree_m b' < degree_m f"
-  and f0: "\<not> (f =m 0)" 
-  and cop: "coprime_m f g" 
-  and eq: "a * f + b * g =m a' * f + b' * g" 
-  shows "a =m a'" "b =m b'"
-proof -
-  obtain F G A B A' B' :: "'a mod_ring poly" where 
-    f: "F = of_int_poly f"
-  and g: "G = of_int_poly g" 
-  and a: "A = of_int_poly a"
-  and b: "B = of_int_poly b"
-  and a': "A' = of_int_poly a'"
-  and b': "B' = of_int_poly b'" by auto
-  have f[transfer_rule]: "MP_Rel f F" unfolding f MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have g[transfer_rule]: "MP_Rel g G" unfolding g MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have a[transfer_rule]: "MP_Rel a A" unfolding a MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have b[transfer_rule]: "MP_Rel b B" unfolding b MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have a'[transfer_rule]: "MP_Rel a' A'" unfolding a' MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have b'[transfer_rule]: "MP_Rel b' B'" unfolding b' MP_Rel_def
-    by (simp add: Mp_f_representative)
-  have eq: "A * F + B * G = A' * F + B' * G" by (transfer, rule eq)
-  have 0: "F \<noteq> 0" by (transfer, rule f0)
-  have degB: "B = 0 \<or> degree B < degree F" by (transfer, rule deg)
-  have degB': "B' = 0 \<or> degree B' < degree F" by (transfer, rule deg)
-  from cop have "coprime F G" using coprime_MP_Rel[unfolded rel_fun_def, rule_format, OF f g] by auto
-  from uniqueness_poly_equality[OF this degB degB' 0 eq, untransferred] show "a =m a'" "b =m b'" .
-qed
-
-lemmas (in poly_mod_prime) uniqueness_poly_equality_mod = poly_mod_prime_type.uniqueness_poly_equality_mod_int
+lemmas (in poly_mod_prime_type) uniqueness_poly_equality =
+  uniqueness_poly_equality[where 'a="'a mod_ring", untransferred]
+lemmas (in poly_mod_prime) uniqueness_poly_equality = poly_mod_prime_type.uniqueness_poly_equality
   [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemma pseudo_divmod_main_list_1_is_divmod_poly_one_main_list: 
@@ -368,7 +336,7 @@ proof -
   from mon D have D0: "\<not> (D =m 0)" by auto
   from prime interpret poly_mod_prime m by unfold_locales
   from another eq have "A' * D + B' * H =m A * D + B * H" by simp
-  from uniqueness_poly_equality_mod[OF degB' degB D0 cop this]
+  from uniqueness_poly_equality[OF cop degB' degB D0 this]
   show "A' = A \<and> B' = B" unfolding norm Mp by auto
 qed
 
@@ -1523,6 +1491,7 @@ definition hensel_lifting :: "int poly \<Rightarrow> int poly list \<Rightarrow>
 
 end
 
+
 context poly_mod_prime begin
 
 context
@@ -1697,7 +1666,7 @@ lemma hensel_lifting:
   shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
       "sort (map degree fs) = sort (map degree gs)                \<comment> \<open>degrees stay the same\<close>"
       "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>   \<comment> \<open>monic and normalized\<close>
-        irreducible\<^sub>d_m g \<and>                               \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+        irreducible_m g \<and>                               \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
         degree_m g = degree g   \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   interpret poly_mod_prime p using prime by unfold_locales
@@ -1778,7 +1747,7 @@ proof -
     fix g
     assume "g \<in> set gs" 
     from g[OF this]
-    show "monic g \<and> q.Mp g = g \<and> irreducible\<^sub>d_m g \<and> degree_m g = degree g" by auto
+    show "monic g \<and> q.Mp g = g \<and> irreducible_m g \<and> degree_m g = degree g" by auto
   }
   show "sort (map degree fs) = sort (map degree gs)" 
   proof (rule sort_key_eq_sort_key)

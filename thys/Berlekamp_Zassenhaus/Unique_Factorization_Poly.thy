@@ -608,16 +608,22 @@ next
   with a0 a1 show ?thesis by (auto simp: irreducible_altdef p)
 qed
 
-lemma irreducible_PFM_degree:
-  fixes p :: "'a :: ufd fract poly" assumes "irreducible p"
-  shows "degree p \<noteq> 0" 
-proof 
-  assume "degree p = 0"
-  from degree0_coeffs[OF this] assms obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
-  hence "1 = p * [:inverse a:]" by auto
-  hence "p dvd 1" ..
-  hence "p \<in> Units mk_monoid" by simp
-  with assms show False unfolding irreducible_def by auto
+lemma content_free_irreducible_imp_degree:
+ "content_free (p::'a::{semiring_gcd,idom} poly) \<Longrightarrow> irreducible p \<Longrightarrow> degree p > 0"
+  by (unfold irreducible_content_free_connect[symmetric], auto)
+
+lemma irreducible_degree_field:
+  fixes p :: "'a :: field poly" assumes "irreducible p"
+  shows "degree p > 0"
+proof-
+  {
+    assume "degree p = 0"
+    from degree0_coeffs[OF this] assms obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
+    hence "1 = p * [:inverse a:]" by auto
+    hence "p dvd 1" ..
+    hence "p \<in> Units mk_monoid" by simp
+    with assms have False unfolding irreducible_def by auto
+  } then show ?thesis by auto
 qed
 
 lemma irreducible_PFM_PM: assumes
@@ -628,7 +634,7 @@ proof -
   let ?p = "?E p"
   from ct have p0: "p \<noteq> 0" by (auto simp: eq_dff_def divides_ff_def)
   moreover
-    from irreducible_PFM_degree[OF irr] have deg: "degree p \<noteq> 0" by simp
+    from irreducible_degree_field[OF irr] have deg: "degree p \<noteq> 0" by simp
     from irr[unfolded irreducible_altdef]
     have irr: "\<And> b. b dvd ?p \<Longrightarrow> \<not> ?p dvd b \<Longrightarrow> b dvd 1" by auto
     have "\<not> p dvd 1" using deg divides_degree[of p 1] by auto

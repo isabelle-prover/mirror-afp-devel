@@ -254,7 +254,7 @@ lemma reconstruction: assumes
   and lu: "lu = lead_coeff u" 
   and factors: "unique_factorization_m u (lu,mset vs)" 
   and sf: "poly_mod.square_free_m p u" 
-  and cop: "coprime lu p" 
+  and cop: "coprime lu p"
   and norm: "\<And> v.  v \<in> set vs \<Longrightarrow> Mp v = v" 
   and tests: "\<And> ws. ws \<subseteq># mset vs \<Longrightarrow> ws \<noteq> {#} \<Longrightarrow> 
     size ws < d \<or> size ws = d \<and> ws \<notin> (mset o snd) ` set cands 
@@ -270,7 +270,7 @@ lemma reconstruction: assumes
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)"
 proof -
   from large have large: "large_m (smult lu u) vs" unfolding large_m_def by auto
-  interpret p: poly_mod_2 p using prime unfolding poly_mod_2_def by (simp add: prime_int_iff)  
+  interpret p: poly_mod_prime p using prime by unfold_locales  
   define R where "R \<equiv> measures [
     \<lambda> (n :: nat,cds :: (int \<times> int poly list) list). n, 
     \<lambda> (n,cds). length cds]" 

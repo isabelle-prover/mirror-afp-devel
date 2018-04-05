@@ -85,7 +85,7 @@ lemma complex_roots_1 [simp]:
   "complex_roots_complex 1 = []"
   using complex_roots_c [of 1] by (simp add: pCons_one)
 
-lemma linear_term_irreducible\<^sub>d[simp]: "irreducible\<^sub>d [:- a, 1:]" 
+lemma linear_term_irreducible\<^sub>d[simp]: "irreducible\<^sub>d [: a, 1:]" 
   by (rule linear_irreducible\<^sub>d, simp)
 
 definition complex_roots_int where
@@ -142,20 +142,20 @@ lemma linear_term_inj[simplified,simp]: "inj (\<lambda> a. [:- a, 1::'a::idom:])
   unfolding inj_on_def by simp
 
 lemma reconstruct_poly_monic_defines_mset:
-  assumes "(\<Prod>a\<leftarrow>as. [:- a, 1:]) = (\<Prod>a\<leftarrow>bs. [:- a, 1::'a::{field,euclidean_ring_gcd}:])"
+  assumes "(\<Prod>a\<leftarrow>as. [:- a, 1:]) = (\<Prod>a\<leftarrow>bs. [:- a, 1::'a::field:])"
   shows "mset as = mset bs"
 proof -
   let ?as = "mset (map (\<lambda> a. [:- a, 1:]) as)"
   let ?bs = "mset (map (\<lambda> a. [:- a, 1:]) bs)"
   have eq_smult:"prod_mset ?as = prod_mset ?bs" using assms by (metis prod_mset_prod_list)
-  have irr:"\<And> as. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    using linear_term_irreducible\<^sub>d by auto
+  have irr:"\<And> as::'a list. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible q \<and> monic q}"
+    by (auto intro!: linear_term_irreducible\<^sub>d[of "-_::'a", simplified])
   from monic_factorization_unique_mset[OF eq_smult irr irr]
   show ?thesis apply (subst inj_eq[OF multiset.inj_map,symmetric]) by auto
 qed
 
 lemma reconstruct_poly_defines_mset_of_argument:
-  assumes "(a::'a::{field,euclidean_ring_gcd}) \<noteq> 0"
+  assumes "(a::'a::field) \<noteq> 0"
           "reconstruct_poly a as = reconstruct_poly a bs"
   shows "mset as = mset bs"
 proof -
