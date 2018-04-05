@@ -70,8 +70,8 @@ fun basis_reduction_add_row_i_all_main :: "state \<Rightarrow> int vec list \<Ri
     basis_reduction_add_row_i_all_main (fst (basis_reduction_add_row_main state fj (\<mu>_ij fi gj))) fjs gjs)"
 | "basis_reduction_add_row_i_all_main state _ _ = state" 
 
-definition basis_reduction_add_row_i_all :: "state \<Rightarrow> state" where 
-  "basis_reduction_add_row_i_all state = (case state of (i,F,G) \<Rightarrow>
+definition basis_reduction_add_rows :: "state \<Rightarrow> state" where 
+  "basis_reduction_add_rows state = (case state of (i,F,G) \<Rightarrow>
     let fjs = fst F;
         gjs = fst G
       in basis_reduction_add_row_i_all_main state fjs gjs)" 
@@ -96,7 +96,7 @@ fun basis_reduction_swap :: "state \<Rightarrow> state" where
 
 definition basis_reduction_step :: "rat \<Rightarrow> state \<Rightarrow> state" where
   "basis_reduction_step \<alpha> state = (if fst state = 0 then increase_i state
-     else let state' = basis_reduction_add_row_i_all state in
+     else let state' = basis_reduction_add_rows state in
      case state' of (i, F, G) \<Rightarrow>
       if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
       then basis_reduction_swap state'
@@ -204,8 +204,7 @@ definition LLL_partial_invariant :: "state \<Rightarrow> int vec list \<Rightarr
   snd (gram_schmidt_int n F) = G \<and>
   gs.lin_indpt_list (RAT F) \<and> 
   lattice_of F = L \<and>
-  gs.weakly_reduced \<alpha> i G \<and>
-  gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F)) \<and>
+  gs.reduced \<alpha> i G (gs.\<mu> (RAT F)) \<and>
   i \<le> m \<and>
   length F = m \<and>
   f_repr i Fr F \<and> 
@@ -238,10 +237,11 @@ lemma LLL_invD: assumes "LLL_invariant (i,Fr,Gr) F G"
   "f_repr i Fr F"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_short F"
   "g_short G"
-  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
+  unfolding LLL_invariants_def split gs.reduced_def by auto
 
 lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
   shows "F = of_list_repr Fr" 
@@ -254,8 +254,9 @@ lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
   "f_repr i Fr F"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
-  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] unfolding LLL_invariants_def split by auto
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
+  using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
+  unfolding LLL_invariants_def split gs.reduced_def by auto
 
 lemma LLL_invI: assumes  
   "f_repr i Fr F"
@@ -266,7 +267,7 @@ lemma LLL_invI: assumes
   "i \<le> m"
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_short F" 
   "g_short G" 
 shows "LLL_invariant (i,Fr,Gr) F G" 
@@ -281,7 +282,7 @@ lemma LLL_pinvI: assumes
   "i \<le> m"
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
-  "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" 
+  "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
 shows "LLL_partial_invariant (i,Fr,Gr) F G" 
   unfolding LLL_invariants_def Let_def split using assms of_list_repr[OF assms(1)] by auto
   
@@ -428,15 +429,15 @@ proof -
   note inv = LLL_invD[OF LLL]
   from inv have Gr: "g_repr i Gr F" and Fr: "f_repr i Fr F"
     and red: "gs.weakly_reduced \<alpha> i G" 
-    and sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" by auto
+    and sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" by auto
   from inv i inc_i_gso[OF i Gr] inc_i[OF Fr]
   have Gr': "g_repr (Suc i) (inc_i Gr) F" and Fr': "f_repr (Suc i) (inc_i Fr) F" 
     by auto
   from red red_i have red: "gs.weakly_reduced \<alpha> (Suc i) G" 
     unfolding gs.weakly_reduced_def
     by (intro allI impI, rename_tac ii, case_tac "Suc ii = i", auto)
-  from sred sred_i have sred: "gs.strictly_reduced (Suc i) \<alpha> G (gs.\<mu> (RAT F))"
-    unfolding gs.strictly_reduced_def
+  from sred sred_i have sred: "gs.reduced \<alpha> (Suc i) G (gs.\<mu> (RAT F))"
+    unfolding gs.reduced_def
     by (intro conjI[OF red] allI impI, rename_tac ii j, case_tac "ii = i", auto)
   show ?thesis unfolding increase_i_def split
     by (rule LLL_invI[OF Fr' Gr'], insert inv red sred i, auto)
@@ -566,7 +567,7 @@ proof -
     unfolding RAT_F1_i using carr1 carr2
     by (intro eq_vecI, auto)
   hence in1:"((RAT F) ! i - gs.gso (RAT F1) i) - ?mui \<in> ?rs"
-    using gram_schmidt.projection_exist[OF conn2 i]
+    using gram_schmidt.oc_projection_exist[OF conn2 i]
     unfolding span_G1_G by auto
   from \<open>j < i\<close> have Gj_mem: "(RAT F) ! j \<in> (\<lambda> x. ((RAT F) ! x)) ` {0 ..< i}" by auto  
   have id1: "set (take i (map of_int_hom.vec_hom F)) = (\<lambda>x. of_int_hom.vec_hom (F ! x)) ` {0..<i}"
@@ -592,7 +593,7 @@ proof -
     have "gs.gso (RAT F1) i \<bullet> gs.gso (RAT F1) x = 0" by auto
   }
   hence G1_G: "gs.gso (RAT F1) i = gs.gso (RAT F) i"
-    apply(intro gram_schmidt.projection_unique[OF conn1 i gs.gso_carrier[OF conn2 i]])
+    apply(intro gram_schmidt.oc_projection_unique[OF conn1 i gs.gso_carrier[OF conn2 i]])
     using in_span by (auto simp: eq_part[symmetric])
   have eq_fs:"x < m \<Longrightarrow> gs.gso (RAT F1) x = gs.gso (RAT F) x"
     for x proof(induct x rule:nat_less_induct[rule_format])
@@ -648,7 +649,7 @@ proof -
   finally have "det (?GsM * ?GsM\<^sup>T) \<noteq> 0" by simp
   from vec_space.det_nonzero_congruence[OF EMN this _ _ N] Gs E M
   have EMN: "E * M' = N'" by auto (* lemma 16.12(i), part 2 *) 
-  from inv have sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F))" by auto
+  from inv have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" by auto
   {
     fix i' j'
     assume ij: "i' < m" "j' < m" and choice: "i' \<noteq> i \<or> j < j'" 
@@ -671,11 +672,11 @@ proof -
       using ij len unfolding M'_def gs.M_def by auto
     also note calculation
   } note mu_change = this
-  have sred: "gs.strictly_reduced i \<alpha> G1 (gs.\<mu> (RAT F1))"
-    unfolding gs.strictly_reduced_def 
+  have sred: "gs.reduced \<alpha> i G1 (gs.\<mu> (RAT F1))"
+    unfolding gs.reduced_def 
   proof (intro conjI[OF red] impI allI, goal_cases)
     case (1 i' j)
-    with mu_change[of i' j] sred[unfolded gs.strictly_reduced_def, THEN conjunct2, rule_format, of i' j] i 
+    with mu_change[of i' j] sred[unfolded gs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
     show ?case by auto
   qed
   (* now let us head for the implementation *)
@@ -752,13 +753,14 @@ proof -
   thus ?thesis using mu_change inv_gso mudiff unfolding res j F1_def by auto
 qed
 
-lemma basis_reduction_add_row_i_all: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
+lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
   and i: "i < m" 
-  and res: "basis_reduction_add_row_i_all (i,Fr,Gr) = (i',Fr',Gr')"
+  and res: "basis_reduction_add_rows (i,Fr,Gr) = (i',Fr',Gr')"
 shows "\<exists> F' fi. LLL_invariant (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
-  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
+  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2)"
+(* unused: and 
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
-    gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')"
+    gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j') *)
 proof -
   note inv = LLL_invD[OF Linv]
   let ?xs = "map (gs.gso (RAT F)) [0..<i]"
@@ -767,7 +769,7 @@ proof -
     by (auto simp: rev_map[symmetric] take_map o_def)
   from inv(9) have id': "fst Gr = rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) ?xs)" 
     unfolding g_repr_def list_repr_def GSO_def by (auto simp: take_map)
-  note res = res[unfolded basis_reduction_add_row_i_all_def split Let_def]
+  note res = res[unfolded basis_reduction_add_rows_def split Let_def]
   define ii where "ii = i" 
   hence id'': "[0..< i] = [0 ..< ii]" by auto
   have id': "fst Gr = rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (gs.gso (RAT F)) [0 ..< ii]))" 
@@ -987,12 +989,11 @@ proof (atomize(full), cases "i = 0")
   case i0: False
   note res = res[unfolded basis_reduction_step_def split] 
   obtain i1 Fr1 Gr1 where 
-    il: "basis_reduction_add_row_i_all (i,Fr,Gr) = ((i1, Fr1, Gr1))" (is "?b = _")
+    il: "basis_reduction_add_rows (i,Fr,Gr) = ((i1, Fr1, Gr1))" (is "?b = _")
     by (cases ?b, auto)
-  from basis_reduction_add_row_i_all[OF inv i il] i0 obtain F1 
+  from basis_reduction_add_rows[OF inv i il] i0 obtain F1 
     where Linv': "LLL_invariant (i, Fr1, Gr1) F1 G" and ii: "i1 = i" 
       and mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>gs.\<mu> (RAT F1) i j\<bar> \<le> 1 / 2" 
-      and mu_F1_non_i: "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> i' \<noteq> i \<Longrightarrow> gs.\<mu> (RAT F1) i' j' = gs.\<mu> (RAT F) i' j'"       
       and m12: "\<bar>gs.\<mu> (RAT F1) i (i - 1)\<bar> \<le> inverse 2"
       by auto
   note dk = dk_def  
@@ -1148,14 +1149,14 @@ proof (atomize(full), cases "i = 0")
     let ?S' = "gs.span ?gs1" 
     have S'S: "?S' = ?S" 
       by (rule gs.partial_span'[OF connH], insert i, auto)
-    have "gs.is_projection (?g2 (i - 1)) (gs.span (?g2 ` {0..< (i - 1)})) (?f2 (i - 1))" 
-      by (rule gs.gso_projection_span(2)[OF connH' \<open>i - 1 < m\<close>])
+    have "gs.is_oc_projection (?g2 (i - 1)) (gs.span (?g2 ` {0..< (i - 1)})) (?f2 (i - 1))" 
+      by (rule gs.gso_oc_projection_span(2)[OF connH' \<open>i - 1 < m\<close>])
     also have "?f2 (i - 1) = ?f1 i" unfolding F2_def using len i by auto
     also have "gs.span (?g2 ` {0 ..< (i - 1)}) = gs.span (?f2 ` {0 ..< (i - 1)})" 
       by (rule gs.partial_span'[OF connH'], insert i, auto)
     also have "?f2 ` {0 ..< (i - 1)} = ?fs1" 
       by (rule image_cong[OF refl], insert len i, auto simp: F2_def)
-    finally have claim1: "gs.is_projection (?g2 (i - 1)) ?S (?f1 i)" .
+    finally have claim1: "gs.is_oc_projection (?g2 (i - 1)) ?S (?f1 i)" .
     have "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i] @ [?g1 i])" 
       unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i < m\<close>] by (simp add: gs.\<mu>.simps)
     also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" 
@@ -1168,8 +1169,8 @@ proof (atomize(full), cases "i = 0")
     also have "\<dots> = [0 ..< i - 1] @ [i - 1]" by simp
     finally have list: "[0 ..< i] = [0 ..< i - 1] @ [i - 1]" .
     have g2_im1: "?g2 (i - 1) = ?g1 i + ?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)" (is "_ = _ + ?mu_f1") 
-    proof (rule gs.is_projection_eq[OF connH claim1 _ S g[OF i]])
-      show "gs.is_projection (?g1 i + ?mu_f1) ?S (?f1 i)" unfolding gs.is_projection_def
+    proof (rule gs.is_oc_projection_eq[OF connH claim1 _ S g[OF i]])
+      show "gs.is_oc_projection (?g1 i + ?mu_f1) ?S (?f1 i)" unfolding gs.is_oc_projection_def
       proof (intro conjI allI impI)
         let ?sum' = "gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1])" 
         have sum': "?sum' \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
@@ -1221,8 +1222,8 @@ proof (atomize(full), cases "i = 0")
       fix k
       assume kn: "k < m" 
         and ki: "k \<noteq> i" "k \<noteq> i - 1"
-      have "?g2 k = gs.projection (gs.span (?g2 ` {0..<k})) (?f2 k)" 
-        by (rule gs.gso_projection_span[OF connH' kn])
+      have "?g2 k = gs.oc_projection (gs.span (?g2 ` {0..<k})) (?f2 k)" 
+        by (rule gs.gso_oc_projection_span[OF connH' kn])
       also have "gs.span (?g2 ` {0..<k}) = gs.span (?f2 ` {0..<k})" 
         by (rule gs.partial_span'[OF connH'], insert kn, auto)
       also have "?f2 ` {0..<k} = ?f1 ` {0..<k}"
@@ -1241,8 +1242,8 @@ proof (atomize(full), cases "i = 0")
       also have "gs.span \<dots> = gs.span (?g1 ` {0..<k})" 
         by (rule sym, rule gs.partial_span'[OF connH], insert kn, auto)
       also have "?f2 k = ?f1 k" using ki kn len unfolding F2_def by auto
-      also have "gs.projection (gs.span (?g1 ` {0..<k})) \<dots> = ?g1 k" 
-        by (subst gs.gso_projection_span[OF connH kn], auto)
+      also have "gs.oc_projection (gs.span (?g1 ` {0..<k})) \<dots> = ?g1 k" 
+        by (subst gs.gso_oc_projection_span[OF connH kn], auto)
       finally have "?g2 k = ?g1 k" . 
     } note g2_g1_identical = this
     {
@@ -1351,12 +1352,12 @@ proof (atomize(full), cases "i = 0")
         unfolding g2'_im1_def[symmetric] apply (intro conjI i1n')
         apply(rule dec_i[OF _ i0]) by(auto simp: i intro!:upd_im1 update_i[OF gsoH])
     } note g_repr = this
-    from inv' have sred: "gs.strictly_reduced i \<alpha> G (gs.\<mu> (RAT F1))" by auto
-    have sred: "gs.strictly_reduced (i - 1) \<alpha> G2 (gs.\<mu> (RAT F2))"
-      unfolding gs.strictly_reduced_def
+    from inv' have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F1))" by auto
+    have sred: "gs.reduced \<alpha> (i - 1) G2 (gs.\<mu> (RAT F2))"
+      unfolding gs.reduced_def
     proof (intro conjI[OF red] allI impI, goal_cases)
       case (1 i' j)
-      with sred have "\<bar>gs.\<mu> (RAT F1) i' j\<bar> \<le> 1 / 2" unfolding gs.strictly_reduced_def by auto
+      with sred have "\<bar>gs.\<mu> (RAT F1) i' j\<bar> \<le> 1 / 2" unfolding gs.reduced_def by auto
       also have "gs.\<mu> (RAT F1) i' j = gs.\<mu> (RAT F2) i' j" using 1 i len
         by (subst gs_\<mu>_identical[of _ _ "RAT F1" "RAT F2"], auto simp: F2_def)
       finally show ?case by auto
@@ -1427,8 +1428,8 @@ proof (atomize(full), cases "i = 0")
       have u: "u \<in> Rn" using uU U by simp
       have id_u: "u + (?g1 (i - 1) - ?g2 i) = u + ?g1 (i - 1) - ?g2 i" 
         using u g2i \<open>?g1 (i - 1) \<in> Rn\<close> by auto
-      from gs.gso_projection_span(2)[OF connH' i]
-      have "gs.is_projection (?g2 i) (gs.span (gs.gso (RAT F2) ` {0 ..< i}))  (?f1 (i - 1))" 
+      from gs.gso_oc_projection_span(2)[OF connH' i]
+      have "gs.is_oc_projection (?g2 i) (gs.span (gs.gso (RAT F2) ` {0 ..< i}))  (?f1 (i - 1))" 
         unfolding F2_def using len i i0 by simp
       also have "?f1 (i - 1) = u + ?g1 (i - 1) " 
         unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i - 1 < m\<close>] list_id map_append u_def using gs' gsi
@@ -1441,11 +1442,11 @@ proof (atomize(full), cases "i = 0")
       also have "?f2 ` \<dots> = ?f2 ` {0 ..< i - 1} \<union> {?f2 (i - 1)}" by auto
       also have "\<dots> = U" unfolding U_def F2_def 
         by (rule arg_cong2[of _ _ _ _ "(\<union>)"], insert i len, force+)
-      finally have "gs.is_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
-      hence proj: "gs.is_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
-        unfolding gs.is_projection_def using gs.span_add[OF U uU, of "?g1 (i - 1) - ?g2 i"] 
+      finally have "gs.is_oc_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
+      hence proj: "gs.is_oc_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
+        unfolding gs.is_oc_projection_def using gs.span_add[OF U uU, of "?g1 (i - 1) - ?g2 i"] 
         \<open>?g1 (i - 1) \<in> Rn\<close> g2i u id_u by (auto simp: U)
-      from gs.is_projection_sq_norm[OF this gs.span_is_subset2[OF U] \<open>?g1 (i - 1) \<in> Rn\<close>]
+      from gs.is_oc_projection_sq_norm[OF this gs.span_is_subset2[OF U] \<open>?g1 (i - 1) \<in> Rn\<close>]
       have "sq_norm (?g2 i) \<le> sq_norm (?g1 (i - 1))" .
     } note sq_norm_g2_i = this (* Lemma 16.13 (iii) *)
 
@@ -1803,7 +1804,7 @@ proof -
   qed
   have inv: "LLL_invariant (lattice_of F) \<alpha> A (0, Fr0, ?Gr0) F G" 
     by (rule LLL_invI[OF repr gso0 gs refl _ _ _ lin_dep], auto simp:gs.weakly_reduced_def 
-        gs.strictly_reduced_def len short)
+        gs.reduced_def len short)
   obtain i Fr1 Gr1 where br:"state = (i, Fr1, Gr1)" by(cases state,auto)
   note * = assms(1)[unfolded basis_reduction_state_def o_def Let_def,folded Gr0_def Fr0_def,unfolded len]
   from basis_reduction_main[OF inv * \<alpha>]
@@ -1812,7 +1813,7 @@ qed
 
 lemma reduce_basis: assumes res: "reduce_basis n \<alpha> F = (F', G')" 
   shows "lattice_of F = lattice_of F'" (is ?g1)
-  "gs.strictly_reduced m \<alpha> G' (gs.\<mu> (RAT F'))" (is ?g2)
+  "gs.reduced \<alpha> m G' (gs.\<mu> (RAT F'))" (is ?g2)
   "G' = gram_schmidt n (RAT F')" (is ?g3)
   "gs.lin_indpt_list (RAT F')" (is ?g4)
   "length F' = m" (is ?g5)
@@ -1852,7 +1853,7 @@ proof -
     and basis: "gs.lin_indpt_list (RAT F1)" 
     and lenH: "length F1 = m" 
     and H: "set F1 \<subseteq> carrier_vec n" 
-    by (auto simp: gs.lin_indpt_list_def gs.strictly_reduced_def)
+    by (auto simp: gs.lin_indpt_list_def gs.reduced_def)
   from lin_dep have G: "set F \<subseteq> carrier_vec n" unfolding gs.lin_indpt_list_def by auto
   with m0 len have "dim_vec (hd F) = n" by (cases F, auto)
   note res = assms[unfolded short_vector_def this reduce]

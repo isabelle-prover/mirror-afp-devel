@@ -254,7 +254,7 @@ lemma reconstruction: assumes
   and lu: "lu = lead_coeff u" 
   and factors: "unique_factorization_m u (lu,mset vs)" 
   and sf: "poly_mod.square_free_m p u" 
-  and cop: "coprime lu p" 
+  and cop: "coprime lu p"
   and norm: "\<And> v.  v \<in> set vs \<Longrightarrow> Mp v = v" 
   and tests: "\<And> ws. ws \<subseteq># mset vs \<Longrightarrow> ws \<noteq> {#} \<Longrightarrow> 
     size ws < d \<or> size ws = d \<and> ws \<notin> (mset o snd) ` set cands 
@@ -270,7 +270,7 @@ lemma reconstruction: assumes
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)"
 proof -
   from large have large: "large_m (smult lu u) vs" unfolding large_m_def by auto
-  interpret p: poly_mod_2 p using prime unfolding poly_mod_2_def by (simp add: prime_int_iff)  
+  interpret p: poly_mod_prime p using prime by unfold_locales  
   define R where "R \<equiv> measures [
     \<lambda> (n :: nat,cds :: (int \<times> int poly list) list). n, 
     \<lambda> (n,cds). length cds]" 
@@ -825,10 +825,10 @@ qed
 
 interpretation p: poly_mod_prime p using prime by unfold_locales
 
-lemma zassenhaus_reconstruction_generic: 
+lemma zassenhaus_reconstruction_generic:
   assumes sl_impl: "correct_subseqs_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)"
 proof -
   let ?lc = "lead_coeff f" 
   let ?ff = "smult ?lc f" 
@@ -870,12 +870,19 @@ proof -
   show ?thesis by simp
 qed
 
-lemma zassenhaus_reconstruction: 
-  assumes res: "zassenhaus_reconstruction hs p n f = fs" 
+lemma zassenhaus_reconstruction_irreducible\<^sub>d:
+  assumes res: "zassenhaus_reconstruction hs p n f = fs"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
   by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
       res[unfolded zassenhaus_reconstruction_def Let_def]])
 
+corollary zassenhaus_reconstruction:
+  assumes cf: "content_free f"
+  assumes res: "zassenhaus_reconstruction hs p n f = fs"
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)"
+  using zassenhaus_reconstruction_irreducible\<^sub>d[OF res] cf
+    irreducible_content_free_connect[OF content_free_prod_list]
+    by auto
 end
 
 end

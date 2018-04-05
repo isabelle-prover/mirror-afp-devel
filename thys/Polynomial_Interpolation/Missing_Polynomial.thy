@@ -585,6 +585,7 @@ next
 qed
 
 text \<open>Degree based version of irreducibility.\<close>
+
 definition irreducible\<^sub>d :: "'a :: comm_semiring_1 poly \<Rightarrow> bool" where
   "irreducible\<^sub>d p = (degree p > 0 \<and> (\<forall> q r. degree q < degree p \<longrightarrow> degree r < degree p \<longrightarrow> p \<noteq> q * r))"
 
@@ -865,108 +866,6 @@ proof
   then show False by auto
 qed
 
-lemma degree_mult_not_eq:
-  "degree (f * g) \<noteq> degree f + degree g \<Longrightarrow> lead_coeff f * lead_coeff g = 0"
-  by (rule ccontr, auto simp: coeff_mult_degree_sum degree_mult_le le_antisym le_degree)
-
-lemma irreducible\<^sub>d_smult_field[simp]:
-  fixes c :: "'a :: field"
-  shows "irreducible\<^sub>d (smult c p) \<longleftrightarrow> c \<noteq> 0 \<and> irreducible\<^sub>d p" (is "?L \<longleftrightarrow> ?R")
-proof (intro iffI conjI irreducible\<^sub>d_smult_not_zero_divisor_left[of c p])
-  assume "irreducible\<^sub>d (smult c p)"
-  then show "c \<noteq> 0" by auto
-  then show "\<not>zero_divisor c" by auto
-next
-  assume ?R
-  then have c0: "c \<noteq> 0" and irr: "irreducible\<^sub>d p" by auto
-  show ?L
-  proof (intro irreducible\<^sub>dI, unfold degree_smult_eq if_not_P[OF c0])
-    show "degree p > 0" using irr by auto
-    fix q r
-    from c0 have "p = smult (1/c) (smult c p)" by simp
-    also assume "smult c p = q * r"
-    finally have [simp]: "p = smult (1/c) \<dots>".
-    assume main: "degree q < degree p" "degree r < degree p"
-    have "\<not>irreducible\<^sub>d p" by (rule reducible\<^sub>dI, rule exI[of _ "smult (1/c) q"], rule exI[of _ r], insert irr c0 main, simp)
-    with irr show False by auto
-  qed
-qed auto
-
-lemma irreducible\<^sub>d_monic_factor: fixes p :: "'a :: field poly" 
-  assumes "degree p > 0" 
-  shows "\<exists> q r. irreducible\<^sub>d q \<and> p = q * r \<and> monic q"
-proof -
-  from irreducible\<^sub>d_factorization_exists[OF assms]
-  obtain fs where "fs \<noteq> []" and "set fs \<subseteq> Collect irreducible\<^sub>d" and "p = prod_list fs" by auto
-  then have q: "irreducible\<^sub>d (hd fs)" and p: "p = hd fs * prod_list (tl fs)" by (atomize(full), cases fs, auto)
-  define c where "c = coeff (hd fs) (degree (hd fs))"
-  from q have c: "c \<noteq> 0" unfolding c_def irreducible\<^sub>d_def by auto
-  show ?thesis
-    by (rule exI[of _ "smult (1/c) (hd fs)"], rule exI[of _ "smult c (prod_list (tl fs))"], unfold p,
-    insert q c, auto simp: c_def)
-qed
-
-lemma monic_irreducible\<^sub>d_factorization: fixes p :: "'a :: field poly" 
-  shows "monic p \<Longrightarrow> 
-  \<exists> as f. finite as \<and> p = prod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-proof (induct "degree p" arbitrary: p rule: less_induct)
-  case (less p)
-  show ?case
-  proof (cases "degree p > 0")
-    case False
-    with less(2) have "p = 1" by (simp add: coeff_eq_0 poly_eq_iff)
-    thus ?thesis by (intro exI[of _ "{}"], auto)
-  next
-    case True
-    from irreducible\<^sub>d_factor[OF this] obtain q r where p: "p = q * r"
-      and q: "irreducible\<^sub>d q" and deg: "degree r < degree p" by auto
-    hence q0: "q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
-    define c where "c = coeff q (degree q)"
-    let ?q = "smult (1/c) q"
-    let ?r = "smult c r"
-    from q0 have c: "c \<noteq> 0" "1 / c \<noteq> 0" unfolding c_def by auto
-    hence p: "p = ?q * ?r" unfolding p by auto
-    have deg: "degree ?r < degree p" using c deg by auto
-    let ?Q = "{q. irreducible\<^sub>d q \<and> monic (q :: 'a poly)}"
-    have mon: "monic ?q" unfolding c_def using q0 by auto
-    from monic_factor[OF `monic p`[unfolded p] this] have "monic ?r" .
-    from less(1)[OF deg this] obtain f as
-      where as: "finite as" "?r = (\<Prod> a \<in>as. a ^ Suc (f a))"
-        "as \<subseteq> ?Q" by blast
-    from q c have irred: "irreducible\<^sub>d ?q" by simp
-    show ?thesis
-    proof (cases "?q \<in> as")
-      case False
-      let ?as = "insert ?q as"
-      let ?f = "\<lambda> a. if a = ?q then 0 else f a"
-      have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
-      also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = (\<Prod> a \<in>as. a ^ Suc (?f a))"
-        by (rule prod.cong, insert False, auto)
-      also have "?q * \<dots> = (\<Prod> a \<in> ?as. a ^ Suc (?f a))"
-        by (subst prod.insert, insert as False, auto)
-      finally have p: "p = (\<Prod> a \<in> ?as. a ^ Suc (?f a))" .
-      from as(1) have fin: "finite ?as" by auto
-      from as mon irred have Q: "?as \<subseteq> ?Q" by auto
-      from fin p Q show ?thesis 
-        by(intro exI[of _ ?as] exI[of _ ?f], auto)
-    next
-      case True
-      let ?f = "\<lambda> a. if a = ?q then Suc (f a) else f a"
-      have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
-      also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = ?q ^ Suc (f ?q) * (\<Prod> a \<in>(as - {?q}). a ^ Suc (f a))"
-        by (subst prod.remove[OF _ True], insert as, auto)
-      also have "(\<Prod> a \<in>(as - {?q}). a ^ Suc (f a)) = (\<Prod> a \<in>(as - {?q}). a ^ Suc (?f a))"
-        by (rule prod.cong, auto)
-      also have "?q * (?q ^ Suc (f ?q) * \<dots> ) = ?q ^ Suc (?f ?q) * \<dots>"
-        by (simp add: ac_simps)
-      also have "\<dots> = (\<Prod> a \<in> as. a ^ Suc (?f a))"
-        by (subst prod.remove[OF _ True], insert as, auto)
-      finally have "p = (\<Prod> a \<in> as. a ^ Suc (?f a))" .
-      with as show ?thesis 
-        by (intro exI[of _ as] exI[of _ ?f], auto)
-    qed
-  qed
-qed
 
 lemma linear_irreducible\<^sub>d: assumes "degree p = 1"
   shows "irreducible\<^sub>d p"
@@ -1160,11 +1059,6 @@ lemma irreducible\<^sub>d_dvd_eq:
   by (metis (no_types, lifting) coeff_smult degree_smult_eq irreducible\<^sub>dD(1) irreducible\<^sub>d_dvd_smult 
     mult.right_neutral smult_1_left)
 
-lemma monic_irreducible\<^sub>d_gcd: 
-  "monic (f::'a::{field,euclidean_ring_gcd} poly) \<Longrightarrow> irreducible\<^sub>d f \<Longrightarrow> gcd f u \<in> {1,f}"
-  by (metis zero_neq_one gcd_dvd1 insert_iff irreducible\<^sub>d_dvd_eq irreducible\<^sub>d_dvd_smult Nat.neq0_conv
-    irreducible\<^sub>d_smult_field leading_coeff_0_iff monic_degree_0 poly_gcd_monic)
-
 lemma monic_gcd_dvd:
   assumes fg: "f dvd g" and mon: "monic f" and gcd: "gcd g h \<in> {1, g}"
   shows "gcd f h \<in> {1, f}"
@@ -1353,4 +1247,156 @@ lemma pderiv_sum: "pderiv (sum f I) = sum (\<lambda> i. (pderiv (f i))) I"
 lemma smult_sum2: "smult m (\<Sum>i \<in> S. f i) = (\<Sum>i \<in> S. smult m (f i))"
   by (induct S rule: infinite_finite_induct, auto simp add: smult_add_right)
 
+lemma degree_mult_not_eq:
+  "degree (f * g) \<noteq> degree f + degree g \<Longrightarrow> lead_coeff f * lead_coeff g = 0"
+  by (rule ccontr, auto simp: coeff_mult_degree_sum degree_mult_le le_antisym le_degree)
+
+lemma irreducible\<^sub>d_multD:
+  fixes a b :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes l: "irreducible\<^sub>d (a*b)"
+  shows "degree a = 0 \<and> a \<noteq> 0 \<and> irreducible\<^sub>d b \<or> degree b = 0 \<and> b \<noteq> 0 \<and> irreducible\<^sub>d a"
+proof-
+  from l have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
+  note [simp] = degree_mult_eq[OF this]
+  from l have "degree a = 0 \<or> degree b = 0" apply (unfold irreducible\<^sub>d_def) by force
+  then show ?thesis
+  proof(elim disjE)
+    assume a: "degree a = 0"
+    with l a0 have "irreducible\<^sub>d b"
+      unfolding irreducible\<^sub>d_def
+      by (smt add.left_neutral degree_mult_not_eq leading_coeff_0_iff sign_simps(4) mult_eq_0_iff)
+    with a a0 show ?thesis by auto
+  next
+    assume b: "degree b = 0"
+    with l b0 have "irreducible\<^sub>d a"
+      unfolding irreducible\<^sub>d_def
+      by (smt add_cancel_left_right degree_mult_eq degree_mult_eq_0 neq0_conv semiring_normalization_rules(16))
+    with b b0 show ?thesis by auto
+  qed
+qed
+
+lemma irreducible_connect_field[simp]:
+  fixes f :: "'a :: field poly"
+  shows "irreducible\<^sub>d f = irreducible f" (is "?l = ?r")
+proof
+  show "?r \<Longrightarrow> ?l"
+    apply (intro irreducible\<^sub>dI, force simp:is_unit_iff_degree)
+    by (auto dest!: irreducible_multD simp: poly_dvd_1)
+next
+  assume l: ?l
+  show ?r
+  proof (rule irreducibleI)
+    from l show "f \<noteq> 0" "\<not> is_unit f" by (auto simp: poly_dvd_1)
+    fix a b assume "f = a * b"
+    from l[unfolded this]
+    show "a dvd 1 \<or> b dvd 1" by (auto dest!: irreducible\<^sub>d_multD simp:is_unit_iff_degree)
+  qed
+qed
+
+lemma is_unit_field_poly[simp]:
+  fixes p :: "'a::field poly"
+  shows "is_unit p \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
+  by (cases "p=0", auto simp: is_unit_iff_degree)
+
+lemma irreducible_smult_field[simp]:
+  fixes c :: "'a :: field"
+  shows "irreducible (smult c p) \<longleftrightarrow> c \<noteq> 0 \<and> irreducible p" (is "?L \<longleftrightarrow> ?R")
+proof (intro iffI conjI irreducible\<^sub>d_smult_not_zero_divisor_left[of c p, simplified])
+  assume "irreducible (smult c p)"
+  then show "c \<noteq> 0" by auto
+next
+  assume ?R
+  then have c0: "c \<noteq> 0" and irr: "irreducible p" by auto
+  show ?L
+  proof (fold irreducible_connect_field, intro irreducible\<^sub>dI, unfold degree_smult_eq if_not_P[OF c0])
+    show "degree p > 0" using irr by auto
+    fix q r
+    from c0 have "p = smult (1/c) (smult c p)" by simp
+    also assume "smult c p = q * r"
+    finally have [simp]: "p = smult (1/c) \<dots>".
+    assume main: "degree q < degree p" "degree r < degree p"
+    have "\<not>irreducible\<^sub>d p" by (rule reducible\<^sub>dI, rule exI[of _ "smult (1/c) q"], rule exI[of _ r], insert irr c0 main, simp)
+    with irr show False by auto
+  qed
+qed auto
+
+lemma irreducible_monic_factor: fixes p :: "'a :: field poly" 
+  assumes "degree p > 0" 
+  shows "\<exists> q r. irreducible q \<and> p = q * r \<and> monic q"
+proof -
+  from irreducible\<^sub>d_factorization_exists[OF assms]
+  obtain fs where "fs \<noteq> []" and "set fs \<subseteq> Collect irreducible" and "p = prod_list fs" by auto
+  then have q: "irreducible (hd fs)" and p: "p = hd fs * prod_list (tl fs)" by (atomize(full), cases fs, auto)
+  define c where "c = coeff (hd fs) (degree (hd fs))"
+  from q have c: "c \<noteq> 0" unfolding c_def irreducible\<^sub>d_def by auto
+  show ?thesis
+    by (rule exI[of _ "smult (1/c) (hd fs)"], rule exI[of _ "smult c (prod_list (tl fs))"], unfold p,
+    insert q c, auto simp: c_def)
+qed
+
+lemma monic_irreducible_factorization: fixes p :: "'a :: field poly" 
+  shows "monic p \<Longrightarrow> 
+  \<exists> as f. finite as \<and> p = prod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible q \<and> monic q}"
+proof (induct "degree p" arbitrary: p rule: less_induct)
+  case (less p)
+  show ?case
+  proof (cases "degree p > 0")
+    case False
+    with less(2) have "p = 1" by (simp add: coeff_eq_0 poly_eq_iff)
+    thus ?thesis by (intro exI[of _ "{}"], auto)
+  next
+    case True
+    from irreducible\<^sub>d_factor[OF this] obtain q r where p: "p = q * r"
+      and q: "irreducible q" and deg: "degree r < degree p" by auto
+    hence q0: "q \<noteq> 0" by auto
+    define c where "c = coeff q (degree q)"
+    let ?q = "smult (1/c) q"
+    let ?r = "smult c r"
+    from q0 have c: "c \<noteq> 0" "1 / c \<noteq> 0" unfolding c_def by auto
+    hence p: "p = ?q * ?r" unfolding p by auto
+    have deg: "degree ?r < degree p" using c deg by auto
+    let ?Q = "{q. irreducible q \<and> monic (q :: 'a poly)}"
+    have mon: "monic ?q" unfolding c_def using q0 by auto
+    from monic_factor[OF `monic p`[unfolded p] this] have "monic ?r" .
+    from less(1)[OF deg this] obtain f as
+      where as: "finite as" "?r = (\<Prod> a \<in>as. a ^ Suc (f a))"
+        "as \<subseteq> ?Q" by blast
+    from q c have irred: "irreducible ?q" by simp
+    show ?thesis
+    proof (cases "?q \<in> as")
+      case False
+      let ?as = "insert ?q as"
+      let ?f = "\<lambda> a. if a = ?q then 0 else f a"
+      have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
+      also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = (\<Prod> a \<in>as. a ^ Suc (?f a))"
+        by (rule prod.cong, insert False, auto)
+      also have "?q * \<dots> = (\<Prod> a \<in> ?as. a ^ Suc (?f a))"
+        by (subst prod.insert, insert as False, auto)
+      finally have p: "p = (\<Prod> a \<in> ?as. a ^ Suc (?f a))" .
+      from as(1) have fin: "finite ?as" by auto
+      from as mon irred have Q: "?as \<subseteq> ?Q" by auto
+      from fin p Q show ?thesis 
+        by(intro exI[of _ ?as] exI[of _ ?f], auto)
+    next
+      case True
+      let ?f = "\<lambda> a. if a = ?q then Suc (f a) else f a"
+      have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
+      also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = ?q ^ Suc (f ?q) * (\<Prod> a \<in>(as - {?q}). a ^ Suc (f a))"
+        by (subst prod.remove[OF _ True], insert as, auto)
+      also have "(\<Prod> a \<in>(as - {?q}). a ^ Suc (f a)) = (\<Prod> a \<in>(as - {?q}). a ^ Suc (?f a))"
+        by (rule prod.cong, auto)
+      also have "?q * (?q ^ Suc (f ?q) * \<dots> ) = ?q ^ Suc (?f ?q) * \<dots>"
+        by (simp add: ac_simps)
+      also have "\<dots> = (\<Prod> a \<in> as. a ^ Suc (?f a))"
+        by (subst prod.remove[OF _ True], insert as, auto)
+      finally have "p = (\<Prod> a \<in> as. a ^ Suc (?f a))" .
+      with as show ?thesis 
+        by (intro exI[of _ as] exI[of _ ?f], auto)
+    qed
+  qed
+qed
+
+lemma monic_irreducible_gcd: 
+  "monic (f::'a::{field,euclidean_ring_gcd} poly) \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
+  by (metis gcd_dvd1 irreducible_altdef insertCI is_unit_gcd_iff poly_dvd_antisym poly_gcd_monic)
 end

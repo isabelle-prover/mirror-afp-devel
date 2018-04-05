@@ -33,8 +33,8 @@ subsection \<open>Previous lemmas obtained using local type definitions\<close>
 context poly_mod_prime_type
 begin                           
 
-lemma irreducible\<^sub>d_m_dvdm_prod_list_connect:
-  assumes irr: "irreducible\<^sub>d_m a"
+lemma irreducible_m_dvdm_prod_list_connect:
+  assumes irr: "irreducible_m a"
   and dvd: "a dvdm (prod_list xs)"
 shows "\<exists> b \<in> set xs. a dvdm b"
 proof -
@@ -49,17 +49,17 @@ proof -
     by (simp add: MP_Rel_def Mp_f_representative list_all2_conv_all_nth)
   have A: "?A dvd ?XS1" using dvd by transfer
   have "\<exists> b \<in> set ?XS. ?A dvd b" 
-    by (rule irreducible\<^sub>d_dvd_prod_list, insert irr, transfer, auto simp add: A)
+    by (rule irreducible_dvd_prod_list, insert irr, transfer, auto simp add: A)
   from this[untransferred] show ?thesis .
 qed
 
 end
 
-lemma (in poly_mod_prime) irreducible\<^sub>d_m_dvdm_prod_list:
-  assumes irr: "irreducible\<^sub>d_m a"
+lemma (in poly_mod_prime) irreducible_m_dvdm_prod_list:
+  assumes irr: "irreducible_m a"
   and dvd: "a dvdm (prod_list xs)"
   shows "\<exists> b \<in> set xs. a dvdm b"
-  by (rule poly_mod_prime_type.irreducible\<^sub>d_m_dvdm_prod_list_connect[unfolded poly_mod_type_simps, 
+  by (rule poly_mod_prime_type.irreducible_m_dvdm_prod_list_connect[unfolded poly_mod_type_simps, 
         internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, 
         cancel_type_definition, OF non_empty irr dvd])
 
@@ -321,7 +321,7 @@ context
   defines [simp]: "d \<equiv> degree u"
   assumes d0: "d > 0"
       and u: "monic u"
-      and irred_u: "p.irreducible\<^sub>d_m u"
+      and irred_u: "p.irreducible_m u"
       and u_f: "p.dvdm u f"
       and f_dvd_F: "f dvd F"
       and [simp]: "n == degree f"
@@ -405,7 +405,7 @@ proof -
   have "pl.dvdm u (prod_list fs)" using uf f_fs by simp
   hence "p.dvdm u (prod_list fs)" by (rule pl_dvdm_imp_p_dvdm)
   from this obtain h0 where h0: "h0 \<in> set fs" and dvdm_u_h0: "p.dvdm u h0" 
-    using p.irreducible\<^sub>d_m_dvdm_prod_list[OF irred_u] by auto
+    using p.irreducible_m_dvdm_prod_list[OF irred_u] by auto
   moreover have "h0 dvd f" by (unfold f_fs, rule prod_list_dvd[OF h0])  
   moreover have "irreducible\<^sub>d h0" using c h0 by auto
   ultimately show ?thesis by blast
@@ -1252,10 +1252,10 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
   } note pl_uf = this
   hence p_uf: "p.dvdm u f" by (rule pl_dvdm_imp_p_dvdm)
   have monic_u: "monic u" using mon[OF u_gs] .
-  have irred_d_u: "p.irreducible\<^sub>d_m u" using irred_p[OF u_gs] by auto
+  have irred_u: "p.irreducible_m u" using irred_p[OF u_gs] by auto
   have degree_m_u: "p.degree_m u = degree u" using monic_u by simp
   have degree_u[simp]: "0 < degree u" 
-    using p.irreducible\<^sub>d_mD(1)[OF irred_d_u] unfolding degree_m_u .
+    using irred_u by (fold degree_m_u, auto simp add: p.irreducible_degree)
   have deg_u_d: "degree u < d + 1" by auto 
   from F_f_G have f_dvd_F: "f dvd F" by auto
   from square_free_factor[OF f_dvd_F sf_F] have sf_f: "square_free f" . 
@@ -1302,7 +1302,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     and gs'_gs: "set gs' \<subseteq> set gs"
     and b': "b' = lead_coeff h" 
     and h1: "gs' = [] \<longrightarrow> h = 1"
-    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_d_u p_uf f_dvd_F n_def(2)
+    using LLL_reconstruction_inner_loop[OF degree_u monic_u irred_u p_uf f_dvd_F n_def(2)
       f_gs_factor cop sf sf_f u_gs norm_map Degs
       a1 a2 n_def(1)] deg_u_d gs_not_empty by metis+
   have F_h_factor_G: "F = h * prod_list (factor # G)"

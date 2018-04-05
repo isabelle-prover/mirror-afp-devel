@@ -616,12 +616,10 @@ qed
 lemma rational_poly_cond_iff: assumes "poly_cond p" and "ipoly p x = 0" and "degree p > 1"
   shows "(x \<in> \<rat>) = (degree p = 1)"
 proof (rule rational_root_free_degree_iff[OF _ assms(2)])
-  from poly_condD[OF assms(1)] have p: "irreducible p" by auto
-  have "irreducible (map_poly rat_of_int p)"
-    apply (rule irreducible_connect)
-    apply (rule irreducible\<^sub>d_int_rat)
-    apply (rule irreducible_connect_rev)
-    using p assms(3) by auto 
+  from poly_condD[OF assms(1)] irreducible_connect_rev[of p] assms(3)
+  have p: "irreducible\<^sub>d p" by auto
+  from irreducible\<^sub>d_int_rat[OF this]
+  have "irreducible (map_poly rat_of_int p)" by simp
   thus "root_free (map_poly rat_of_int p)" by (rule irreducible_root_free) 
 qed
 

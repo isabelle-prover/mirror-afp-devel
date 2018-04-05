@@ -24,7 +24,8 @@ proof (insert assms, induct rule:finite_induct)
   show ?case
   proof (cases "x = x'")
     case True
-    with IH show ?thesis using  dvd_trans[of "f x'" "f x' * _" 1] by (auto intro: dvdI)
+    with IH show ?thesis using  dvd_trans[of "f x'" "f x' * _" 1]
+      by (metis dvd_triv_left prod.insert)
   next
     case False
     then show ?thesis using IH by (auto intro!: IH(3) dvd_trans[of "prod f X" "_ * prod f X" 1])

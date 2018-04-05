@@ -217,7 +217,7 @@ assumes "degree (prod_list P) > 0"
   and "\<And> u. u \<in> set P \<Longrightarrow> degree u > 0 \<and> monic u"
   and "square_free (prod_list P)"
 shows "\<exists>Q. prod_list Q = prod_list P \<and> length P \<le> length Q
-           \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible\<^sub>d u \<and> monic u)"
+           \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible u \<and> monic u)"
 using assms
 proof (induct P)
   case Nil
@@ -229,8 +229,8 @@ next
   have deg_x: "degree x > 0" using Cons.prems by auto
   have distinct_P: "distinct P"
     by (meson Cons.prems(2) Cons.prems(3) distinct.simps(2) square_free_prod_list_distinct)
-  have "\<exists>A. finite A \<and> x = \<Prod>A \<and> A \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    proof (rule monic_square_free_irreducible\<^sub>d_factorization)
+  have "\<exists>A. finite A \<and> x = \<Prod>A \<and> A \<subseteq> {q. irreducible q \<and> monic q}"
+    proof (rule monic_square_free_irreducible_factorization)
       show "monic x" by (simp add: Cons.prems(2))
       show "square_free x"
         by (metis Cons.prems(3) dvd_triv_left prod_list.Cons square_free_factor)
@@ -260,13 +260,13 @@ next
       show "prod_list A' = x" using x_prod_list_A' by simp
       show "Suc 0 \<le> length A'" using A_not_empty using s length_A'
         by (simp add: Suc_leI card_gt_0_iff fin_A)
-      show "\<And>u. u \<in> set A' \<Longrightarrow> irreducible\<^sub>d u" using s A by auto
+      show "\<And>u. u \<in> set A' \<Longrightarrow> irreducible u" using s A by auto
       show "\<And>u. u \<in> set A' \<Longrightarrow> monic u" using s A by auto
     qed
  next
   case False
   have hyp: "\<exists>Q. prod_list Q = prod_list P
-    \<and> length P \<le> length Q \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible\<^sub>d u \<and> monic u)"
+    \<and> length P \<le> length Q \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible u \<and> monic u)"
   proof (rule Cons.hyps[OF _ _ sf_P])
     have set_P: "set P \<noteq> {}" using False by auto
     have "prod_list P = prod_list (map id P)" by simp
@@ -286,29 +286,34 @@ next
     show "\<And>u. u \<in> set P \<Longrightarrow> degree u > 0 \<and> monic u" using Cons.prems by auto
   qed
   from this obtain Q where QP: "prod_list Q = prod_list P" and length_PQ: "length P \<le> length Q"
-  and monic_irr_Q: "(\<forall>u. u \<in> set Q \<longrightarrow> irreducible\<^sub>d u \<and> monic u)" by blast
+  and monic_irr_Q: "(\<forall>u. u \<in> set Q \<longrightarrow> irreducible u \<and> monic u)" by blast
   show ?thesis
   proof (rule exI[of _ "A' @ Q"], auto simp add: monic_irr_Q)
     show "prod_list A' * prod_list Q = x * prod_list P" unfolding QP x_prod_list_A' by auto
     have "length A' \<noteq> 0" using A_not_empty using s length_A' by auto
     thus "Suc (length P) \<le> length A' + length Q" using QP length_PQ by linarith
-    show "\<And>u. u \<in> set A' \<Longrightarrow> irreducible\<^sub>d u" using s A by auto
+    show "\<And>u. u \<in> set A' \<Longrightarrow> irreducible u" using s A by auto
     show "\<And>u. u \<in> set A' \<Longrightarrow> monic u" using s A by auto
   qed
 qed
 qed
 
-lemma irreducible\<^sub>d_dvd_smult':
-  assumes n: "normalize p = normalize q" and d: "degree (p :: 'b :: {field,euclidean_ring_gcd} poly) > 0"
+lemma normalize_eq_imp_smult:
+  fixes p :: "'b :: {euclidean_ring_gcd} poly"
+  assumes n: "normalize p = normalize q"
   shows "\<exists> c. c \<noteq> 0 \<and> q = smult c p"
-proof -
+proof(cases "p = 0")
+  case True with n show ?thesis by (auto intro:exI[of _ 1])
+next
+  case p0: False
   have degree_eq: "degree p = degree q" using n degree_normalize by metis
-  hence nz: "p \<noteq> 0" "q \<noteq> 0" using d degree_0 by auto
+  hence q0:  "q \<noteq> 0" using p0 n by auto
   have p_dvd_q: "p dvd q" using n by (simp add: associatedD1)
   from p_dvd_q obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
-  with nz have "k \<noteq> 0" by auto
-  from this have "degree k = 0"
-    using  associatedD2 is_unit_iff_degree n nz(1) q by fastforce
+  with q0 have "k \<noteq> 0" by auto
+  then have "degree k = 0"
+    using  associatedD2 n p0 q
+    by (metis (no_types, lifting) mult_cancel_right1 normalize_eq_0_iff normalize_mult poly_dvd_1)
   then obtain c where k: "k = [: c :]" by (metis degree_0_id)
   with `k \<noteq> 0` have "c \<noteq> 0" by auto
   have "q = smult c p" unfolding q k by simp
@@ -746,19 +751,19 @@ qed auto
 
 
 lemma coprime_polynomial_factorization:
-  fixes a1 :: "'b :: {normalization_euclidean_semiring,field,factorial_ring_gcd} poly"
-  assumes  irr: "as \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+  fixes a1 :: "'b :: {field,factorial_ring_gcd} poly"
+  assumes  irr: "as \<subseteq> {q. irreducible q \<and> monic q}"
   and "finite as" and a1: "a1 \<in> as" and a2: "a2 \<in> as" and a1_not_a2: "a1 \<noteq> a2"
   shows "coprime a1 a2"
 proof (rule ccontr)
   assume not_coprime: "\<not> coprime a1 a2"
   let ?b= "gcd a1 a2"
   have b_dvd_a1: "?b dvd a1" and b_dvd_a2: "?b dvd a2" by simp+
-  have irr_a1: "irreducible\<^sub>d a1" using a1 irr by blast
-  have irr_a2: "irreducible\<^sub>d a2" using a2 irr by blast
+  have irr_a1: "irreducible a1" using a1 irr by blast
+  have irr_a2: "irreducible a2" using a2 irr by blast
   have a2_not0: "a2 \<noteq> 0" using a2 irr by auto
-  have degree_a1: "degree a1 \<noteq> 0" by (simp add: irr_a1 irreducible\<^sub>dD(1))
-  have degree_a2: "degree a2 \<noteq> 0" by (simp add: irr_a2 irreducible\<^sub>dD(1))
+  have degree_a1: "degree a1 \<noteq> 0" using irr_a1 by auto
+  have degree_a2: "degree a2 \<noteq> 0" using irr_a2 by auto
   have not_a2_dvd_a1: "\<not> a2 dvd a1"
   proof (rule ccontr, simp)
     assume a2_dvd_a1: "a2 dvd a1"
@@ -770,9 +775,9 @@ proof (rule ccontr)
       have "degree a2 < degree a1"
         using False a2_dvd_a1 degree_a1 divides_degree
         by fastforce
-      hence "\<not> irreducible\<^sub>d a1"
+      hence "\<not> irreducible a1"
         using degree_a2 a2_dvd_a1 degree_a2
-        using irreducible\<^sub>d_dvd_smult by force
+        by (metis degree_a1 irreducible\<^sub>dD(2) irreducible\<^sub>d_multD irreducible_connect_field k neq0_conv)
       thus False using irr_a1 by contradiction
     next
       case True
@@ -788,11 +793,10 @@ proof (rule ccontr)
   have degree_b: "degree ?b > 0"
     using not_coprime[simplified] b_not0 is_unit_gcd is_unit_iff_degree by blast
   have "degree ?b < degree a2"
-   using euclidean_size_gcd_less2[of a2 a1] not_a2_dvd_a1 a2_not0
-   unfolding euclidean_size_poly_def by auto
+    by (meson b_dvd_a1 b_dvd_a2 irreducibleD' dvd_trans gcd_dvd_1 irr_a2 not_a2_dvd_a1 not_coprime)
   hence "\<not> irreducible\<^sub>d a2" using degree_a2 b_dvd_a2 degree_b
     by (metis degree_smult_eq irreducible\<^sub>d_dvd_smult less_not_refl3)
-  thus False using irr_a2 by contradiction
+  thus False using irr_a2 by auto
 qed
 
 (*
@@ -820,8 +824,8 @@ proof (cases "f=0")
       let ?p = "CARD('a)"
       obtain P  where finite_P: "finite P"
       and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-        using monic_square_free_irreducible\<^sub>d_factorization[OF monic_f sf_f] by blast
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+        using monic_square_free_irreducible_factorization[OF monic_f sf_f] by auto
       have f_dvd_hqh: "f dvd (h^?p - h)" using hq_mod_f unfolding cong_def
         using mod_eq_dvd_iff_poly by blast
       also have hq_h_rw: "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
@@ -843,10 +847,10 @@ proof (cases "f=0")
             also have "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
               unfolding hq_h_rw by simp
             finally have fi_dvd_prod_hc: "fi dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
-            have irr_fi: "irreducible\<^sub>d (fi)" using fi_P P by blast
+            have irr_fi: "irreducible (fi)" using fi_P P by blast
             have fi_not_unit: "\<not> is_unit fi" using irr_fi by (simp add: irreducible\<^sub>dD(1) poly_dvd_1)
             have fi_dvd_hc: "\<exists>c\<in>UNIV::'a mod_ring set. fi dvd (h-[:c:])"
-              by (rule irreducible\<^sub>d_dvd_prod[OF irr_fi fi_dvd_prod_hc])
+              by (rule irreducible_dvd_prod[OF _ fi_dvd_prod_hc], simp add: irr_fi)
             thus "\<exists>c. fi dvd h - [:c:]" by simp
           qed
         qed
@@ -1529,7 +1533,7 @@ lemma exists_s_factor_dvd_h_s:
 fixes fi::"'a mod_ring poly"
 assumes finite_P: "finite P"
       and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
       and fi_P: "fi \<in> P"
       and h: "h \<in> {v. [v^(CARD('a)) = v] (mod f)}"
       shows "\<exists>s. fi dvd (h - [:s:])"
@@ -1545,9 +1549,9 @@ proof -
           hence "fi dvd (h^?p - h)" using dvd_trans f_dvd_hqh by auto
           also have "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" unfolding hq_h_rw by simp
           finally have fi_dvd_prod_hc: "fi dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
-          have irr_fi: "irreducible\<^sub>d (fi)" using fi_P P by blast
+          have irr_fi: "irreducible fi" using fi_P P by blast
           have fi_not_unit: "\<not> is_unit fi" using irr_fi by (simp add: irreducible\<^sub>dD(1) poly_dvd_1)
-          show ?thesis using irreducible\<^sub>d_dvd_prod[OF irr_fi fi_dvd_prod_hc] by auto
+          show ?thesis using irreducible_dvd_prod[OF _ fi_dvd_prod_hc] irr_fi by auto
 qed
 
 
@@ -1555,13 +1559,13 @@ corollary exists_unique_s_factor_dvd_h_s:
   fixes fi::"'a mod_ring poly"
   assumes finite_P: "finite P"
     and f_desc_square_free: "f = (\<Prod>a\<in>P. a)"
-    and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+    and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
     and fi_P: "fi \<in> P"
     and h: "h \<in> {v. [v^(CARD('a)) = v] (mod f)}"
     shows "\<exists>!s. fi dvd (h - [:s:])"
 proof -
   obtain c where fi_dvd: "fi dvd (h - [:c:])" using assms exists_s_factor_dvd_h_s by blast
-  have irr_fi: "irreducible\<^sub>d fi" using fi_P P by blast
+  have irr_fi: "irreducible fi" using fi_P P by blast
   have fi_not_unit: "\<not> is_unit fi"
     by (simp add: irr_fi irreducible\<^sub>dD(1) poly_dvd_1)
   show ?thesis
@@ -1569,7 +1573,7 @@ proof -
     fix c2 assume fi_dvd_hc2: "fi dvd h - [:c2:]"
     have *: "fi dvd (h - [:c:]) * (h - [:c2:])" using fi_dvd by auto
     hence "fi dvd (h - [:c:]) \<or> fi dvd (h - [:c2:])"
-      using irreducible\<^sub>d_dvd_mult[OF irr_fi] by blast
+      using irr_fi by auto
     thus "c2 = c"
       using coprime_h_c_poly coprime_not_unit_not_dvd fi_dvd fi_dvd_hc2 fi_not_unit by blast
   qed
@@ -1584,7 +1588,7 @@ lemma coprime_cong_mult_factorization_poly:
   fixes f::"'b::{field} poly"
     and a b p :: "'c :: {factorial_ring_gcd,field} poly"
   assumes finite_P: "finite P"
-    and P: "P \<subseteq> {q. irreducible\<^sub>d q}"
+    and P: "P \<subseteq> {q. irreducible q}"
     and p: "\<forall>p\<in>P. [a=b] (mod p)"
     and coprime_P: "\<forall>p1 p2. p1 \<in> P \<and> p2 \<in> P \<and> p1 \<noteq> p2 \<longrightarrow> coprime p1 p2"
   shows "[a = b] (mod (\<Prod>a\<in>P. a))"
@@ -1603,9 +1607,6 @@ next
   qed
   thus ?case by (simp add: insert.hyps(1) insert.hyps(2))
 qed
-
-lemma poly_const_pow: "[:a:]^b = [:a^b:]"
-  by (metis Groups.mult_ac(2) monom_0 monom_power mult_zero_right)
 
 end
 
@@ -1681,13 +1682,13 @@ lemma degree_u_mod_irreducible\<^sub>d_factor_0:
 fixes v and u::"'a mod_ring poly"
 defines W: "W \<equiv> {v. [v ^ CARD('a) = v] (mod u)}"
 assumes v: "v \<in> W"
-and finite_U: "finite U" and u_U: "u = \<Prod>U" and U_irr_monic: "U \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+and finite_U: "finite U" and u_U: "u = \<Prod>U" and U_irr_monic: "U \<subseteq> {q. irreducible q \<and> monic q}"
 and fi_U: "fi \<in> U"
 shows "degree (v mod fi) = 0"
 proof -
   have deg_fi: "degree fi > 0"
     using U_irr_monic
-    using fi_U irreducible\<^sub>dD by auto
+    using fi_U irreducible\<^sub>dD[of fi] by auto
   have "u dvd (v^CARD('a) - v)"
     using v unfolding W cong_def
     by (simp add: mod_eq_dvd_iff_poly)
@@ -1695,12 +1696,12 @@ proof -
   ultimately have "fi dvd (v^CARD('a) - v)" using dvd_trans by fast
   hence fi_dvd_prod_vc: "fi dvd prod (\<lambda>c. v - [:c:]) (UNIV::'a mod_ring set)"
     by (simp add: poly_identity_mod_p)
-  have irr_fi: "irreducible\<^sub>d (fi)" using fi_U U_irr_monic by blast
+  have irr_fi: "irreducible fi" using fi_U U_irr_monic by blast
   have fi_not_unit: "\<not> is_unit fi"
     using irr_fi
-    by (simp add: irreducible\<^sub>dD(1) poly_dvd_1)
+    by (auto simp: poly_dvd_1)
   have fi_dvd_vc: "\<exists>c. fi dvd v - [:c:]"
-    using irreducible\<^sub>d_dvd_prod[OF irr_fi fi_dvd_prod_vc] by auto
+    using irreducible_dvd_prod[OF _ fi_dvd_prod_vc] irr_fi by auto
   from this obtain a where "fi dvd v - [:a:]" by blast
   hence "v mod fi = [:a:] mod fi" using mod_eq_dvd_iff_poly by blast
   also have "... = [:a:]" by (simp add: deg_fi mod_poly_less)
@@ -2188,10 +2189,10 @@ lemma exists_vector_in_Berlekamp_subspace_dvd:
 fixes p_i::"'a mod_ring poly"
 assumes finite_P: "finite P"
       and f_desc_square_free: "u = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
       and pi: "p_i \<in> P" and pj: "p_j \<in> P" and pi_pj: "p_i \<noteq> p_j"
       and monic_f: "monic u" and sf_f: "square_free u"
-      and not_irr_w: "\<not> irreducible\<^sub>d w"
+      and not_irr_w: "\<not> irreducible w"
       and w_dvd_f: "w dvd u" and monic_w: "monic w"
       and pi_dvd_w: "p_i dvd w" and pj_dvd_w: "p_j dvd w"
 shows "\<exists>v. v \<in> {h. [h^(CARD('a)) = h] (mod u) \<and> degree h < degree u}
@@ -2202,8 +2203,8 @@ shows "\<exists>v. v \<in> {h. [h^(CARD('a)) = h] (mod u) \<and> degree h < degr
   \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> gcd w (v - [:s:]) \<noteq> 1)"
 proof -
   have f_not_0: "u \<noteq> 0" using monic_f by auto
-  have irr_pi: "irreducible\<^sub>d p_i" using pi P by auto
-  have irr_pj: "irreducible\<^sub>d p_j" using pj P by auto
+  have irr_pi: "irreducible p_i" using pi P by auto
+  have irr_pj: "irreducible p_j" using pj P by auto
   obtain m and n::nat where P_m: "P = m ` {i. i < n}" and inj_on_m: "inj_on m {i. i < n}"
     using finite_imp_nat_seg_image_inj_on[OF finite_P] by blast
   hence "n = card P" by (simp add: card_image)
@@ -2236,7 +2237,7 @@ proof -
   proof (rule exI[of _ v], auto)
     show vp_v_mod: "[v ^ CARD('a) = v] (mod u)"
     proof (unfold f_desc_square_free, rule coprime_cong_mult_factorization_poly[OF finite_P])
-      show "P \<subseteq> {q. irreducible\<^sub>d q}" using P by blast
+      show "P \<subseteq> {q. irreducible q}" using P by blast
       show "\<forall>p\<in>P. [v ^ CARD('a) = v] (mod p)"
       proof (rule ballI)
         fix p assume p: "p \<in> P"
@@ -2259,12 +2260,12 @@ proof -
     qed
     have "[v = ?u i] (mod m i)" using v i by auto
     hence v_pi_si_mod: "v mod p_i = [:s_i:] mod p_i" unfolding cong_def mi by auto
-    also have "... = [:s_i:]" apply (rule mod_poly_less) using irreducible\<^sub>dD(1)[OF irr_pi] by simp
+    also have "... = [:s_i:]" apply (rule mod_poly_less) using irr_pi by auto
     finally have v_pi_si: "v mod p_i = [:s_i:]" .
 
     have "[v = ?u j] (mod m j)" using v j by auto
     hence v_pj_sj_mod: "v mod p_j = [:s_j:] mod p_j" unfolding cong_def mj using ij by auto
-    also have "... = [:s_j:]" apply (rule mod_poly_less) using irreducible\<^sub>dD(1)[OF irr_pj] by simp
+    also have "... = [:s_j:]" apply (rule mod_poly_less) using irr_pj by auto
     finally have v_pj_sj: "v mod p_j = [:s_j:]" .
     show "v mod p_i = v mod p_j \<Longrightarrow> False" using si_sj v_pi_si v_pj_sj by auto
     show "degree (v mod p_i) = 0" unfolding v_pi_si by simp
@@ -2282,11 +2283,11 @@ proof -
       show "gcd w (v - [:s_i:]) \<noteq> w"
       proof (rule ccontr, simp)
         assume gcd_w: "gcd w (v - [:s_i:]) = w"
-        show False
-          by (metis \<open>v mod p_i = v mod p_j \<Longrightarrow> False\<close> degree_si dvd_gcdD2 gcd_w irr_pj irreducible\<^sub>dD(1) mod_eq_dvd_iff_poly mod_poly_less neq0_conv pj_dvd_w v_pi_si)
-     qed
-     show "gcd w (v - [:s_i:]) \<noteq> 1"
-          by (metis gcd_greatest_iff irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1 less_imp_not_eq)
+        show False apply (rule \<open>v mod p_i = v mod p_j \<Longrightarrow> False\<close>)
+        by (metis irreducibleE \<open>degree (v mod p_i) = 0\<close> gcd_greatest_iff gcd_w irr_pj is_unit_field_poly mod_eq_dvd_iff_poly mod_poly_less neq0_conv pj_dvd_w v_pi_si)
+      qed
+      show "gcd w (v - [:s_i:]) \<noteq> 1"
+        by (metis irreducibleE gcd_greatest_iff irr_pi pi_dvd_v_si pi_dvd_w)
     qed
     show "degree v < degree u"
     proof -
@@ -2304,10 +2305,10 @@ assumes basis_V: "Berlekamp_subspace.basis B"
   and finite_V: "finite B" (*This should be removed, since the Berlekamp subspace is a finite set*)
 assumes finite_P: "finite P"
       and f_desc_square_free: "u = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
       and pi: "p_i \<in> P" and pj: "p_j \<in> P" and pi_pj: "p_i \<noteq> p_j"
       and monic_f: "monic u" and sf_f: "square_free u"
-      and not_irr_w: "\<not> irreducible\<^sub>d w"
+      and not_irr_w: "\<not> irreducible w"
       and w_dvd_f: "w dvd u" and monic_w: "monic w"
       and pi_dvd_w: "p_i dvd w" and pj_dvd_w: "p_j dvd w"
     shows "\<exists>v \<in> B. v mod p_i \<noteq> v mod p_j"
@@ -2356,10 +2357,10 @@ assumes basis_V: "Berlekamp_subspace.basis B"
 and finite_V: "finite B" (*This should be removed, since the Berlekamp subspace is a finite set*)
 assumes finite_P: "finite P"
       and f_desc_square_free: "u = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
       and pi: "p_i \<in> P" and pj: "p_j \<in> P" and pi_pj: "p_i \<noteq> p_j"
       and monic_f: "monic u" and sf_f: "square_free u"
-      and not_irr_w: "\<not> irreducible\<^sub>d w"
+      and not_irr_w: "\<not> irreducible w"
       and w_dvd_f: "w dvd u" and monic_w: "monic w"
       and pi_dvd_w: "p_i dvd w" and pj_dvd_w: "p_j dvd w"
 shows "\<exists>v \<in> B. v mod p_i \<noteq> v mod p_j
@@ -2369,8 +2370,8 @@ shows "\<exists>v \<in> B. v mod p_i \<noteq> v mod p_j
   \<and> (\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> \<not> coprime w (v - [:s:]))"
 proof -
   have f_not_0: "u \<noteq> 0" using monic_f by auto
-  have irr_pi: "irreducible\<^sub>d p_i" using pi P by fast
-  have irr_pj: "irreducible\<^sub>d p_j" using pj P by fast
+  have irr_pi: "irreducible p_i" using pi P by fast
+  have irr_pj: "irreducible p_j" using pj P by fast
   obtain v where vV: "v \<in> B" and v_pi_pj: "v mod p_i \<noteq> v mod p_j"
     using assms exists_vector_in_Berlekamp_basis_dvd_aux by blast
   have v: "v \<in> {v. [v ^ CARD('a) = v] (mod u)}"
@@ -2393,7 +2394,7 @@ proof -
       show "monic w" by (rule monic_w)
     qed
     show "gcd w (v - [:s_i:]) \<noteq> w"
-      by (metis deg_v_pi dvd_gcdD2 irr_pj irreducible\<^sub>dD(1) mod_eq_dvd_iff_poly mod_poly_less pj_dvd_w v_pi_pj v_pi_si)
+      by (metis irreducibleE deg_v_pi gcd_greatest_iff irr_pj is_unit_field_poly mod_eq_dvd_iff_poly mod_poly_less neq0_conv pj_dvd_w v_pi_pj v_pi_si)
     show "\<not> Rings.coprime w (v - [:s_i:])"
       using irr_pi pi_dvd_v_si pi_dvd_w 
       by (simp add: irreducible\<^sub>dD(1) not_coprimeI)
@@ -2404,7 +2405,7 @@ qed
 lemma exists_bijective_linear_map_W_vec:
   assumes finite_P: "finite P"
       and u_desc_square_free: "u = (\<Prod>a\<in>P. a)"
-      and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+      and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
   shows "\<exists>f. linear_map class_ring W (module_vec TYPE('a mod_ring) (card P)) f
   \<and> bij_betw f (carrier W) (carrier_vec (card P)::'a mod_ring vec set)"
 proof -
@@ -2489,13 +2490,12 @@ proof -
     proof (rule exI[of _ v], auto)
       show v: "[v ^ CARD('a) = v] (mod u)"
       proof (unfold u_desc_square_free, rule coprime_cong_mult_factorization_poly[OF finite_P], auto)
-        fix y assume y: "y \<in> P" thus "irreducible\<^sub>d y" using P by blast
+        fix y assume y: "y \<in> P" thus "irreducible y" using P by blast
         obtain i where i: "i \<in> {i. i < n}" and mi: "y = m i" using P_m y by blast
-        have deg_mi: "0 < degree (m i)" using i P_m P unfolding irreducible\<^sub>d_def by fast
-        have "[v = [:x $ i:]] (mod m i)" using v_x_cong i by auto
-        hence v_mi_eq_xi: "v mod m i = [:x $ i:]"
-          unfolding cong_def
-          by auto (rule mod_poly_less, simp add: deg_mi)
+        have "irreducible (m i)" using i P_m P by auto
+        moreover have "[v = [:x $ i:]] (mod m i)" using v_x_cong i by auto
+        ultimately have v_mi_eq_xi: "v mod m i = [:x $ i:]"
+          by (auto simp: cong_def intro!: mod_poly_less)
         have xi_pow_xi: "[:x $ i:]^CARD('a) = [:x $ i:]" by (simp add: poly_const_pow)
         hence "(v mod m i)^CARD('a) = v mod m i" using v_mi_eq_xi by auto
         hence "(v mod m i)^CARD('a) = (v^CARD('a) mod m i)"
@@ -2513,14 +2513,14 @@ proof -
          show "\<forall>i<dim_vec (vec n (\<lambda>i. coeff (v mod m i) 0)). x $ i = vec n (\<lambda>i. coeff (v mod m i) 0) $ i"
          proof (auto)
            fix i assume i: "i < n"
-           have deg_mi: "0 < degree (m i)" using i P_m P unfolding irreducible\<^sub>d_def by fast
+           have deg_mi: "irreducible (m i)" using i P_m P by auto
            have deg_v_mi: "degree (v mod m i) = 0"
            proof (rule degree_u_mod_irreducible\<^sub>d_factor_0[OF _ finite_P u_desc_square_free P])
               show "v \<in> {v. [v ^ CARD('a) = v] (mod u)}" using v by fast
               show "m i \<in> P" using P_m i by auto
            qed
            have "v mod m i = [:x $ i:] mod m i" using v_x_cong i unfolding cong_def by auto
-           also have "... = [:x $ i:]" by (rule mod_poly_less, simp add: deg_mi)
+           also have "... = [:x $ i:]" using deg_mi by (auto intro!: mod_poly_less)
            finally show "x $ i = coeff (v mod m i) 0" by simp
          qed
       qed
@@ -2549,7 +2549,7 @@ context
   fixes P
   assumes finite_P: "finite P"
   and u_desc_square_free: "u = (\<Prod>a\<in>P. a)"
-  and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+  and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
 begin
 
 interpretation RV: vec_space "TYPE('a mod_ring)" "card P" .
@@ -2618,8 +2618,8 @@ proof (cases "degree f = 0")
 next
   case False
   hence f_not_0: "f \<noteq> 0" using degree_0 by fastforce
-  obtain P where fin_P: "finite P" and f_P: "f = \<Prod>P" and P: "P \<subseteq> {p. irreducible\<^sub>d p \<and> monic p}"
-    using monic_square_free_irreducible\<^sub>d_factorization[OF monic_f sf] by blast
+  obtain P where fin_P: "finite P" and f_P: "f = \<Prod>P" and P: "P \<subseteq> {p. irreducible p \<and> monic p}"
+    using monic_square_free_irreducible_factorization[OF monic_f sf] by auto
   have n_card_P: "n = card P"
     using P False f_P fin_P length_berlekamp_basis_numbers_factors n by blast
   have distinct_us: "distinct us" using d f sf square_free_prod_list_distinct by blast
@@ -2631,9 +2631,8 @@ next
     proof (auto simp add: inj_on_def, rule ccontr)
        fix x y assume x: "x \<in> set us" and y: "y \<in> set us" and n: "normalize x = normalize y"
        and x_not_y: "x \<noteq> y"
-       have "\<exists>c. c \<noteq> 0 \<and> y = Polynomial.smult c x"
-        by (rule irreducible\<^sub>d_dvd_smult'[OF n d[OF x]])
-       from this obtain c where c0: "c \<noteq> 0" and y_smult: "y = smult c x" by blast
+       from normalize_eq_imp_smult[OF n]
+       obtain c where c0: "c \<noteq> 0" and y_smult: "y = smult c x" by blast
        have sf_xy: "square_free (x*y)"
        proof (rule square_free_factor[OF _ sf])
           have "x*y = prod_list [x,y]" by simp
@@ -2658,7 +2657,7 @@ next
     finally show ?thesis .
   qed
   have "\<exists>Q. prod_list Q = prod_list ?us' \<and> length ?us' \<le> length Q
-           \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible\<^sub>d u \<and> monic u)"
+           \<and> (\<forall>u. u \<in> set Q \<longrightarrow> irreducible u \<and> monic u)"
   proof (rule exists_factorization_prod_list)
     show "degree (prod_list ?us') > 0" using False f_us' by auto
     show "square_free (prod_list ?us')" using f_us' sf by auto
@@ -2671,20 +2670,18 @@ next
   from this obtain Q
   where Q_us': "prod_list Q = prod_list ?us'"
   and length_us'_Q: "length ?us' \<le> length Q"
-  and Q: "(\<forall>u. u \<in> set Q \<longrightarrow> irreducible\<^sub>d u \<and> monic u)"
+  and Q: "(\<forall>u. u \<in> set Q \<longrightarrow> irreducible u \<and> monic u)"
   by blast
   have distinct_Q: "distinct Q"
   proof (rule square_free_prod_list_distinct)
     show "square_free (prod_list Q)" using Q_us' f_us' sf by auto
-    show "\<And>u. u \<in> set Q \<Longrightarrow> degree u > 0" using Q irreducible\<^sub>dD(1) by auto
+    show "\<And>u. u \<in> set Q \<Longrightarrow> degree u > 0" using Q irreducible_degree_field by auto
   qed
   have set_Q_P: "set Q = P"
-  proof (rule monic_factorization_uniqueness[OF _ _ _ fin_P P])
-    show "finite (set Q)" by auto
+  proof (rule monic_factorization_uniqueness)
     show "\<Prod>(set Q) = \<Prod>P" using Q_us'
       by (metis distinct_Q f_P f_us' list.map_ident prod.distinct_set_conv_list)
-    show "set Q \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" using Q by auto
-  qed
+  qed (insert P Q fin_P, auto)
   hence "length Q = card P" using distinct_Q distinct_card by fastforce
   have "length us = length ?us'" by (rule length_us_us')
   also have "... \<le> length Q" using length_us'_Q by auto
@@ -2693,12 +2690,12 @@ next
   finally show ?thesis using n_card_P by simp
 qed
 
-lemma berlekamp_basis_irreducible\<^sub>d: assumes f: "f = prod_list us"
+lemma berlekamp_basis_irreducible: assumes f: "f = prod_list us"
   and n_us: "length us = n"
   and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u > 0"
   and u: "u \<in> set us"
-  shows "irreducible\<^sub>d u"
-proof (intro irreducible\<^sub>dI[OF us[OF u]])
+  shows "irreducible u"
+proof (fold irreducible_connect_field, intro irreducible\<^sub>dI[OF us[OF u]])
   fix q r :: "'a mod_ring poly"
   assume dq: "degree q > 0" and qu: "degree q < degree u" and dr: "degree r > 0" and uqr: "u = q * r"
   with us[OF u] have q: "q \<noteq> 0" and r: "r \<noteq> 0" by auto
@@ -2718,9 +2715,9 @@ proof (intro irreducible\<^sub>dI[OF us[OF u]])
 qed
 end
 
-lemma not_irreducible\<^sub>d_factor_yields_prime_factors:
-  assumes uf: "u dvd (f :: 'b :: {field,euclidean_ring_gcd} poly)" and fin: "finite P" and fP: "f = \<Prod>P" and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    and u: "degree u > 0" "\<not> irreducible\<^sub>d u"
+lemma not_irreducible_factor_yields_prime_factors:
+  assumes uf: "u dvd (f :: 'b :: {field,euclidean_ring_gcd} poly)" and fin: "finite P" and fP: "f = \<Prod>P" and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+    and u: "degree u > 0" "\<not> irreducible u"
   shows "\<exists> pi pj. pi \<in> P \<and> pj \<in> P \<and> pi \<noteq> pj \<and> pi dvd u \<and> pj dvd u"
 proof -
   from finite_distinct_list[OF fin] obtain ps where Pps: "P = set ps" and dist: "distinct ps" by auto
@@ -2735,11 +2732,11 @@ proof -
     with u show ?case using divides_degree[of u 1] by auto
   next
     case (Cons p ps)
-    from Cons(3) have ps: "set ps \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" by auto
+    from Cons(3) have ps: "set ps \<subseteq> {q. irreducible q \<and> monic q}" by auto
     from Cons(2) have dvd: "u dvd p * prod_list ps" by simp
     obtain k where gcd: "u = gcd p u * k" by (meson dvd_def gcd_dvd2)
-    from Cons(3) have *: "monic p" "irreducible\<^sub>d p" "p \<noteq> 0" by auto
-    from monic_irreducible\<^sub>d_gcd[OF this(1-2), of u]
+    from Cons(3) have *: "monic p" "irreducible p" "p \<noteq> 0" by auto
+    from monic_irreducible_gcd[OF *(1), of u] *(2)
     have "gcd p u = 1 \<or> gcd p u = p" by auto
     thus ?case
     proof
@@ -2755,9 +2752,7 @@ proof -
       hence p: "p dvd u" by auto
       from dvd[unfolded upk] *(3) have kps: "k dvd prod_list ps" by auto
       from dvd u * have dk: "degree k > 0"
-        by (metis (no_types, hide_lams) dvd_mult_cancel_right
-          irreducible\<^sub>d_dvd_smult irreducible\<^sub>d_smult_field is_unit_iff_degree mult.commute
-          mult.left_neutral u upk Nat.neq0_conv)
+        by (metis gr0I irreducible_mult_unit_right is_unit_iff_degree mult_zero_right upk)
       from ps kps have "\<exists> q \<in> set ps. q dvd k"
       proof (induct ps)
         case Nil
@@ -2766,8 +2761,8 @@ proof -
         case (Cons p ps)
         from Cons(3) have dvd: "k dvd p * prod_list ps" by simp
         obtain l where gcd: "k = gcd p k * l" by (meson dvd_def gcd_dvd2)
-        from Cons(2) have *: "monic p" "irreducible\<^sub>d p" "p \<noteq> 0" by auto
-        from monic_irreducible\<^sub>d_gcd[OF this(1-2), of k]
+        from Cons(2) have *: "monic p" "irreducible p" "p \<noteq> 0" by auto
+        from monic_irreducible_gcd[OF *(1), of k] *(2)
         have "gcd p k = 1 \<or> gcd p k = p" by auto
         thus ?case
         proof
@@ -2798,19 +2793,19 @@ lemma berlekamp_factorization_main:
     and n_bb: "n = length (berlekamp_basis f)"
     and n: "n = length us1 + n2"
     and us: "us = us1 @ berlekamp_factorization_main d divs vs2 n2"
-    and us1: "\<And> u. u \<in> set us1 \<Longrightarrow> monic u \<and> irreducible\<^sub>d u"
+    and us1: "\<And> u. u \<in> set us1 \<Longrightarrow> monic u \<and> irreducible u"
     and divs: "\<And> d. d \<in> set divs \<Longrightarrow> monic d \<and> degree d > 0"
     and vs1: "\<And> u v i. v \<in> set vs1 \<Longrightarrow> u \<in> set us1 \<union> set divs
       \<Longrightarrow> i < CARD('a) \<Longrightarrow> gcd u (v - [:of_nat i:]) \<in> {1,u}"
     and f: "f = prod_list (us1 @ divs)"
     and deg_f: "degree f > 0"
-    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible\<^sub>d g" 
-  shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible\<^sub>d u)"
+    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible g" 
+  shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
 proof -
   have mon_f: "monic f" unfolding f
     by (rule monic_prod_list, insert divs us1, auto)
-  from monic_square_free_irreducible\<^sub>d_factorization[OF mon_f sf_f] obtain P where
-    P: "finite P" "f = \<Prod> P" "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" by auto
+  from monic_square_free_irreducible_factorization[OF mon_f sf_f] obtain P where
+    P: "finite P" "f = \<Prod> P" "P \<subseteq> {q. irreducible q \<and> monic q}" by auto
   hence f0: "f \<noteq> 0" by auto
   show ?thesis
     using vs n us divs f us1 vs1
@@ -2981,7 +2976,7 @@ proof -
           fix u
           assume "u \<in> set ((us1 @ lin) @ nonlin)"
           with part have "u \<in> set facts \<union> set us1" by auto
-          with facts Cons(7)[unfolded irreducible\<^sub>d_def] have "degree u > 0" by auto
+          with facts Cons(7) have "degree u > 0" by (auto simp: irreducible_degree_field)
         } note deg = this
         from berlekamp_basis_length_factorization[OF sf_f n_bb mon_f f deg, unfolded Cons(3)]
         have "n2 \<ge> length lin" by auto
@@ -3005,7 +3000,7 @@ proof -
             with uu' have "u dvd f" by (rule dvd_trans)
             from facts[OF uf] d[OF this deg] * have False by auto
           }
-          thus "monic u \<and> irreducible\<^sub>d u" by auto
+          thus "monic u \<and> irreducible u" by auto
         next
           fix w u i
           assume w: "w \<in> set (vs1 @ [v])"
@@ -3015,8 +3010,8 @@ proof -
           show "gcd u (w - [:of_nat i:]) \<in> {1, u}"
           proof (cases "u \<in> set us1")
             case True
-            from Cons(7)[OF this] have "monic u" "irreducible\<^sub>d u" by auto
-            thus ?thesis by (rule monic_irreducible\<^sub>d_gcd)
+            from Cons(7)[OF this] have "monic u" "irreducible u" by auto
+            thus ?thesis by (rule monic_irreducible_gcd)
           next
             case False
             with u have u: "u \<in> set facts" by auto
@@ -3050,13 +3045,13 @@ proof -
             fix u
             assume "u \<in> set us"
             hence "degree u > 0" using Cons(5) Cons(7)[unfolded irreducible\<^sub>d_def]
-              unfolding us by auto
+              unfolding us by (auto simp: irreducible_degree_field)
           } note deg = this
           fix u
           assume u: "u \<in> set us"
           thus "monic u" unfolding us using Cons(5) Cons(7) by auto
-          show "irreducible\<^sub>d u"
-            by (rule berlekamp_basis_irreducible\<^sub>d[OF sf_f n_bb mon_f f n[symmetric] deg u])
+          show "irreducible u"
+            by (rule berlekamp_basis_irreducible[OF sf_f n_bb mon_f f n[symmetric] deg u])
         qed
       qed
     next
@@ -3084,7 +3079,7 @@ proof -
     with vsf have vs1: "vs1 = berlekamp_basis f" by auto
     from Nil(3) have us: "us = us1 @ divs" by auto
     from Nil(4,6) have md: "\<And> u. u \<in> set us \<Longrightarrow> monic u \<and> degree u > 0"
-      unfolding us irreducible\<^sub>d_def by auto
+      unfolding us by (auto simp: irreducible_degree_field)
     from Nil(7)[unfolded vs1] us
     have no_further_splitting_possible:
       "\<And> u v i. v \<in> set (berlekamp_basis f) \<Longrightarrow> u \<in> set us
@@ -3096,12 +3091,12 @@ proof -
       assume u: "u \<in> set us"
       from md[OF this] have mon_u: "monic u" and deg_u: "degree u > 0" by auto
       from prod u have uf: "u dvd f" by (simp add: prod_list_dvd)
-      from monic_square_free_irreducible\<^sub>d_factorization[OF mon_f sf_f] obtain P where
-        P: "finite P" "f = \<Prod>P" "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" by auto
-      show "irreducible\<^sub>d u"
+      from monic_square_free_irreducible_factorization[OF mon_f sf_f] obtain P where
+        P: "finite P" "f = \<Prod>P" "P \<subseteq> {q. irreducible q \<and> monic q}" by auto
+      show "irreducible u"
       proof (rule ccontr)
-        assume irr_u: "\<not> irreducible\<^sub>d u"
-        from not_irreducible\<^sub>d_factor_yields_prime_factors[OF uf P deg_u this]
+        assume irr_u: "\<not> irreducible u"
+        from not_irreducible_factor_yields_prime_factors[OF uf P deg_u this]
         obtain pi pj where pij: "pi \<in> P" "pj \<in> P" "pi \<noteq> pj" "pi dvd u" "pj dvd u" by blast
         from exists_vector_in_Berlekamp_basis_dvd[OF
           deg_f berlekamp_basis_basis[OF deg_f, folded vs1] finite_set
@@ -3120,10 +3115,10 @@ lemma berlekamp_monic_factorization:
   fixes f::"'a mod_ring poly"
   assumes sf_f: "square_free f"
     and us: "berlekamp_monic_factorization d f = us"
-    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible\<^sub>d g" 
+    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible g" 
     and deg: "degree f > 0" 
     and mon: "monic f" 
-  shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible\<^sub>d u)"
+  shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
 proof -
   from us[unfolded berlekamp_monic_factorization_def Let_def] deg
   have us: "us = [] @ berlekamp_factorization_main d [f] (berlekamp_basis f) (length (berlekamp_basis f))"
@@ -3132,7 +3127,7 @@ proof -
     "length (berlekamp_basis f) = length [] + length (berlekamp_basis f)"
     "f = prod_list ([] @ [f])"
     by auto
-  show "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible\<^sub>d u)"
+  show "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
     by (rule berlekamp_factorization_main[OF sf_f id(1) refl refl id(2) us _ _ _ id(3)],
     insert mon deg d, auto)
 qed
