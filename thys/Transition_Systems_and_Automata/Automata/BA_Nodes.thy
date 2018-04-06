@@ -27,7 +27,7 @@ begin
     (* TODO: can these (synthetization + definition + autoref_rule) be done with less boilerplate? *)
 
     schematic_goal bai_Gi:
-      assumes [autoref_rules]: "(state_eq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
+      assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
       assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S, M\<rangle> bai_ba_rel"
       shows "(?f :: ?'a, ba_G A) \<in> ?A" unfolding ba_G_def successors_alt_def by autoref
     concrete_definition bai_Gi uses bai_Gi

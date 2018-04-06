@@ -33,6 +33,8 @@ begin
   definition trans_spec where
     "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p"
 
+  (* TODO: maybe we can actually just translate the union thing again, since we know that
+    everything is disjoint, will get translated to bind *)
   definition trans_algo where
     "trans_algo N L S f \<equiv>
       FOREACH N (\<lambda> p T. do {
@@ -41,16 +43,17 @@ begin
           ASSERT (a \<in> L);
           FOREACH (S a p) (\<lambda> q T. do {
             ASSERT (q \<in> S a p);
+            ASSERT ((f p, a, f q) \<notin> T);
             RETURN (insert (f p, a, f q) T) }
           ) T }
         ) T }
       ) {}"
 
   lemma trans_algo_refine:
-    assumes "finite (nodes A)" "finite (alphabet A)"
+    assumes "finite (nodes A)" "finite (alphabet A)" "inj_on f (nodes A)"
     assumes "N = nodes A" "L = alphabet A" "S = succ A"
     shows "(trans_algo N L S f, SPEC (HOL.eq (trans_spec A f))) \<in> \<langle>Id\<rangle> nres_rel"
-    unfolding trans_algo_def trans_spec_def assms(3, 4, 5)
+    unfolding trans_algo_def trans_spec_def assms(4-6)
     apply (refine_rcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
       (\<Union> p \<in> S. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
     apply (rule assms(1))
@@ -72,6 +75,11 @@ begin
     apply simp
     apply simp
     apply simp
+    apply refine_vcg
+    using assms(3)
+    apply auto
+    apply (metis (full_types) contra_subsetD inv_on_f_f nodes_succ)
+    apply (metis (full_types) contra_subsetD inj_on_eq_iff)
     done
     done
     done
@@ -79,35 +87,30 @@ begin
   definition to_baei :: "('state, 'label, 'more) ba_scheme \<Rightarrow> ('state, 'label, 'more) ba_scheme"
     where "to_baei \<equiv> id"
 
-  context
-  begin
-
-    interpretation autoref_syn by this
-
-    (* TODO: generalize L *)
-    (* TODO: make separate implementations for "ba_bae" and "op_set_enumerate \<bind> bae_image" *)
-    schematic_goal to_baei_impl:
-      fixes S :: "('statei \<times> 'state) set"
-      assumes [simp]: "finite (nodes A)"
-      assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
-      assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
-      assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
-      shows "(?f :: ?'a, do {
-          let N = nodes A;
-          f \<leftarrow> op_set_enumerate N;
-          ASSERT (dom f = N);
-          ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-          ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
-          T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
-          RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
-            transe = CAST (T ::: \<langle>nat_rel \<times>\<^sub>r Id \<times>\<^sub>r nat_rel\<rangle> dflt_ahs_rel),
-            acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
-        }) \<in> ?R"
-      unfolding trans_algo_def by (autoref_monadic (plain))
-
-  end
-
+  (* TODO:
+    - test how many hash collisions happen inside ba_nodes
+    - where do all the equality comparisons happen?
+    - try without intinf
+   *)
+  (* TODO: make separate implementations for "ba_bae" and "op_set_enumerate \<bind> bae_image" *)
+  schematic_goal to_baei_impl:
+    fixes S :: "('statei \<times> 'state) set"
+    assumes [simp]: "finite (nodes A)"
+    assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
+    assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
+    assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S, M\<rangle> bai_ba_rel"
+    shows "(?f :: ?'a, do {
+        let N = nodes A;
+        f \<leftarrow> op_set_enumerate N;
+        ASSERT (dom f = N);
+        ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
+        ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
+        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
+          transe = T, acceptinge = (\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}, \<dots> = ba.more A \<rparr>
+      }) \<in> ?R"
+    unfolding trans_algo_def by (autoref_monadic (plain))
   concrete_definition to_baei_impl uses to_baei_impl[unfolded autoref_tag_defs CAST_def id_apply]
   lemma to_baei_impl_refine'':
     fixes S :: "('statei \<times> 'state) set"
@@ -115,11 +118,11 @@ begin
     assumes "is_bounded_hashcode S seq bhc"
     assumes "is_valid_def_hm_size TYPE('statei) hms"
     assumes "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
+    assumes "(Ai, A) \<in> \<langle>L, S, M\<rangle> bai_ba_rel"
     shows "(RETURN (to_baei_impl seq bhc hms Ai), do {
         f \<leftarrow> op_set_enumerate (nodes A);
         RETURN (bae_image (the \<circ> f) (ba_bae A))
-      }) \<in> \<langle>\<langle>Id, nat_rel, M\<rangle> baei_bae_rel\<rangle> nres_rel"
+      }) \<in> \<langle>\<langle>L, nat_rel, M\<rangle> baei_bae_rel\<rangle> nres_rel"
   proof -
     have 1: "finite (alphabet A)"
       using bai_ba_param(2)[param_fo, OF assms(5)] list_set_rel_finite
@@ -141,7 +144,12 @@ begin
           transe = T, acceptinge = (\<lambda>x. the (f x)) ` {p \<in> nodes A. accepting A p}, \<dots> = ba.more A \<rparr>
       }) \<in> \<langle>Id\<rangle> nres_rel"
       unfolding Let_def comp_apply op_set_enumerate_def
-      using assms(1) 1 by (refine_rcg vcg0[OF trans_algo_refine]) (auto)
+      using assms(1) 1
+      apply (refine_rcg vcg0[OF trans_algo_refine])
+      apply auto
+      apply (rule inj_on_map_the[unfolded comp_apply])
+      apply auto
+      done
     also have "(do {
         f \<leftarrow> op_set_enumerate (nodes A);
         T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
@@ -155,6 +163,7 @@ begin
     finally show ?thesis unfolding nres_rel_comp by simp
   qed
 
+  (* TODO: generalize L *)
   context
     fixes Ai A
     fixes seq bhc hms
@@ -164,7 +173,7 @@ begin
     assumes b: "is_bounded_hashcode S seq bhc"
     assumes c: "is_valid_def_hm_size TYPE('statei) hms"
     assumes d: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes e: "(Ai, A) \<in> \<langle>Id :: 'a :: hashable rel, S, M\<rangle> bai_ba_rel"
+    assumes e: "(Ai, A) \<in> \<langle>Id, S, M\<rangle> bai_ba_rel"
   begin
 
     definition f' where "f' \<equiv> SOME f'.

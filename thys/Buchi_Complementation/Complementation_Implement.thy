@@ -547,7 +547,7 @@ begin
   begin
 
     private lemma [simp]: "finite (dom f)"
-      using list_map_rel_finite dflt_ahm_rel_finite_nat fi unfolding finite_map_rel_def by force
+      using list_map_rel_finite fi unfolding finite_map_rel_def by force
 
     schematic_goal refresh_6: "(?f :: ?'a, refresh_4 f) \<in> ?R"
       unfolding refresh_4_def by (autoref_monadic (plain))
@@ -624,7 +624,6 @@ begin
       using assms unfolding dom_def inj_on_def by (auto) (metis fun_upd_triv fun_upd_upd)
     private lemmas [simp] = op_map_update_def[abs_def]
 
-    private lemma UNION_pat[autoref_op_pat]: "UNION S m \<equiv> OP UNION S m" by simp
     private lemma [autoref_op_pat]: "items_4 A \<equiv> OP (items_4 A)" by simp
 
     private lemmas [autoref_rules] = items_6.refine[OF ai]
@@ -632,8 +631,6 @@ begin
     schematic_goal expand_map_get_6: "(?f, expand_map_get_5 A f) \<in>
       \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
       unfolding expand_map_get_5_def by (autoref_monadic (plain))
-
-    lemmas [autoref_op_pat del] = UNION_pat
 
   end
 

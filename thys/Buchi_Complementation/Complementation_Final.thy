@@ -84,9 +84,9 @@ begin
 
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
-    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id :: 'a :: hashable rel, nat_rel, unit_rel\<rangle> bai_ba_rel"
-    shows "(?f :: ?'c, to_baei (complement_3 A)) \<in> ?R"
-    by autoref
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel, unit_rel\<rangle> bai_ba_rel"
+    shows "(?f :: ?'c, RETURN (to_baei (complement_3 A))) \<in> ?R"
+    by (autoref_monadic (plain))
   concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
 
   theorem
@@ -96,7 +96,8 @@ begin
   proof -
     have "(language ((bae_ba \<circ> bae) (complement_impl Ai)), language (id (complement_3 A))) \<in>
       \<langle>\<langle>Id_on (alphabet (complement_3 A))\<rangle> stream_rel\<rangle> set_rel"
-      using complement_impl.refine[OF assms, unfolded to_baei_def id_apply] by parametricity
+      using complement_impl.refine[OF assms, unfolded to_baei_def id_apply, THEN RETURN_nres_relD]
+      by parametricity
     also have "language (id (complement_3 A)) = streams (alphabet A) - language A"
       using assms(1) by simp
     finally show ?thesis by simp
@@ -120,7 +121,5 @@ begin
     in SML module_name Complementation file "code/Complementation_Export.sml"
 
   value "test (Suc (Suc (Suc 0)))"
-
-  thm to_baei_impl_def
 
 end
