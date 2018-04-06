@@ -1,5 +1,7 @@
 theory Asymptotic_Equivalence
-imports Complex_Main Landau_Symbols_Definition
+imports
+  Complex_Main
+  Landau_Symbols_Definition
 begin
 
 named_theorems asymp_equiv_intros
@@ -17,6 +19,10 @@ lemma asymp_equivI: "((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g
 
 lemma asymp_equivD: "f \<sim>[F] g \<Longrightarrow> ((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F"
   by (simp add: asymp_equiv_def)
+
+lemma asymp_equiv_filtermap_iff:
+  "f \<sim>[filtermap h F] g \<longleftrightarrow> (\<lambda>x. f (h x)) \<sim>[F] (\<lambda>x. g (h x))"
+  by (simp add: asymp_equiv_def filterlim_filtermap)
 
 lemma asymp_equiv_refl [simp, asymp_equiv_intros]: "f \<sim>[F] f"
 proof (intro asymp_equivI)
