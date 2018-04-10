@@ -33,8 +33,6 @@ begin
   definition trans_spec where
     "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p"
 
-  (* TODO: maybe we can actually just translate the union thing again, since we know that
-    everything is disjoint, will get translated to bind *)
   definition trans_algo where
     "trans_algo N L S f \<equiv>
       FOREACH N (\<lambda> p T. do {
@@ -53,36 +51,50 @@ begin
     assumes "finite (nodes A)" "finite (alphabet A)" "inj_on f (nodes A)"
     assumes "N = nodes A" "L = alphabet A" "S = succ A"
     shows "(trans_algo N L S f, SPEC (HOL.eq (trans_spec A f))) \<in> \<langle>Id\<rangle> nres_rel"
-    unfolding trans_algo_def trans_spec_def assms(4-6)
-    apply (refine_rcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
-      (\<Union> p \<in> S. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
-    apply (rule assms(1))
-    apply simp
-    apply simp
-    subgoal for T x
-    apply (refine_vcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
-      (\<Union> a \<in> S. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
-    apply (rule assms(2))
-    apply simp
-    apply simp
-    subgoal for TT xx
-    apply (refine_rcg FOREACH_rule_insert_eq[where X = "\<lambda> S.
-      (f ` {x} \<times> {xx} \<times> f ` S) \<union>
-      (\<Union> a \<in> TT. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"])
-    apply (meson infinite_subset nodes_succ subsetI assms(1))
-    apply simp
-    apply simp
-    apply simp
-    apply refine_vcg
-    using assms(3)
-    apply auto
-    apply (metis (full_types) contra_subsetD inv_on_f_f nodes_succ)
-    apply (metis (full_types) contra_subsetD inj_on_eq_iff)
-    done
-    done
-    done
+  unfolding trans_algo_def trans_spec_def assms(4-6)
+  proof (refine_vcg FOREACH_rule_insert_eq)
+    show "finite (nodes A)" using assms(1) by this
+    show "(\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)" by rule
+    show "(\<Union> p \<in> {}. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) = {}" by simp
+    fix T x
+    assume 1: "T \<subseteq> nodes A" "x \<in> nodes A" "x \<notin> T"
+    show "finite (alphabet A)" using assms(2) by this
+    show "(\<Union> a \<in> {}. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      "(\<Union> a \<in> alphabet A. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)" by auto
+    fix Ta xa
+    assume 2: "Ta \<subseteq> alphabet A" "xa \<in> alphabet A" "xa \<notin> Ta"
+    show "finite (succ A xa x)" using 1 2 assms(1) by (meson infinite_subset nodes_succ subsetI)
+    show "(f ` {x} \<times> {xa} \<times> f ` succ A xa x) \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> a \<in> insert xa Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      by auto
+    show "(f ` {x} \<times> {xa} \<times> f ` {}) \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      by auto
+    fix Tb xb
+    assume 3: "Tb \<subseteq> succ A xa x" "xb \<in> succ A xa x" "xb \<notin> Tb"
+    show "(f x, xa, f xb) \<notin> f ` {x} \<times> {xa} \<times> f ` Tb \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      using 1 2 3 assms(3) by (blast dest: inj_onD)
+    show "f ` {x} \<times> {xa} \<times> f ` insert xb Tb \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      insert (f x, xa, f xb) (f ` {x} \<times> {xa} \<times> f ` Tb \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p))"
+      by auto
+  qed
 
   definition to_baei :: "('state, 'label, 'more) ba_scheme \<Rightarrow> ('state, 'label, 'more) ba_scheme"
     where "to_baei \<equiv> id"
@@ -143,13 +155,8 @@ begin
         RETURN \<lparr> alphabete = alphabet A, initiale = (\<lambda> x. the (f x)) ` initial A,
           transe = T, acceptinge = (\<lambda>x. the (f x)) ` {p \<in> nodes A. accepting A p}, \<dots> = ba.more A \<rparr>
       }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding Let_def comp_apply op_set_enumerate_def
-      using assms(1) 1
-      apply (refine_rcg vcg0[OF trans_algo_refine])
-      apply auto
-      apply (rule inj_on_map_the[unfolded comp_apply])
-      apply auto
-      done
+      unfolding Let_def comp_apply op_set_enumerate_def using assms(1) 1
+      by (refine_vcg vcg0[OF trans_algo_refine]) (auto intro!: inj_on_map_the[unfolded comp_apply])
     also have "(do {
         f \<leftarrow> op_set_enumerate (nodes A);
         T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
