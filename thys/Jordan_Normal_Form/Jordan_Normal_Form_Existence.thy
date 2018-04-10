@@ -2306,7 +2306,7 @@ next
         by (cases "be = i_end", auto)
     } note blocksB = this
     have bs: "set bs \<subseteq> set (identify_blocks A k)" using blocks(1) by auto
-    have inv_oz: "inv_at one_zero B k" using inv(3) ibe kn unfolding B inv_at_def one_zero_def by auto
+    have inv_oz: "inv_at one_zero B k" using inv(3) ibe kn unfolding B inv_at_def one_zero_def by simp
     show ?thesis unfolding id 
       using IH[OF Bn kn, folded ib, OF lbl inv_jb inv_ut inv_oz inv_ev bs blocksB blocks(3) xB x(2)]
       using same_diag_trans[OF sdAB] same_upto_trans[OF suAB]

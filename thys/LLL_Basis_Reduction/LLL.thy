@@ -197,7 +197,11 @@ lemma \<mu>_i_im1: assumes gr: "f_repr i Fr F" and gso:"g_repr i G F"
 context fixes L :: "int vec set" and \<alpha> :: rat and A :: nat
 begin
 
-text \<open>This is the core invariant which enables to prove functional correctness.\<close>
+text \<open>This is the core invariant which enables to prove functional correctness.
+  It moreover states that the norms of the GSO vectors stay small.\<close>
+
+definition g_bound :: "rat vec list \<Rightarrow> bool" where 
+  "g_bound gs = (\<forall> i < m. sq_norm (gs ! i) \<le> of_nat A)" 
 
 definition LLL_partial_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where 
   "LLL_partial_invariant state F G = (case state of (i,Fr,Gr) \<Rightarrow> 
@@ -208,21 +212,16 @@ definition LLL_partial_invariant :: "state \<Rightarrow> int vec list \<Rightarr
   i \<le> m \<and>
   length F = m \<and>
   f_repr i Fr F \<and> 
-  g_repr i Gr F
+  g_repr i Gr F \<and> g_bound G
   )" 
 
 definition f_bound :: "int vec list \<Rightarrow> bool" where 
   "f_bound fs = (\<forall> i < m. sq_norm (fs ! i) \<le> int (A * m))" 
 
-definition g_bound :: "rat vec list \<Rightarrow> bool" where 
-  "g_bound gs = (\<forall> i < m. sq_norm (gs ! i) \<le> of_nat A)" 
-
-text \<open>The full invariant also states that the numbers during the computation 
-  stay small. Only exception: we do not yet prove that the denominators in the GSO-vectors
-  stay small.\<close>
+text \<open>The full invariant also states that the norms of the f-vectors stay small.\<close>
 
 definition LLL_invariant :: "state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where
-  "LLL_invariant state F G = (LLL_partial_invariant state F G \<and> f_bound F \<and> g_bound G)" 
+  "LLL_invariant state F G = (LLL_partial_invariant state F G \<and> f_bound F)" 
 
 lemmas LLL_invariants_def = LLL_invariant_def LLL_partial_invariant_def 
 
@@ -255,6 +254,7 @@ lemma LLL_pinvD: assumes "LLL_partial_invariant (i,Fr,Gr) F G"
   "g_repr i Gr F" 
   "gs.lin_indpt_list (RAT F)" 
   "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
+  "g_bound G"
   using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
   unfolding LLL_invariants_def split gs.reduced_def by auto
 
@@ -283,6 +283,7 @@ lemma LLL_pinvI: assumes
   "length F = m" 
   "gs.lin_indpt_list (RAT F)"
   "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
+  "g_bound G" 
 shows "LLL_partial_invariant (i,Fr,Gr) F G" 
   unfolding LLL_invariants_def Let_def split using assms of_list_repr[OF assms(1)] by auto
   
@@ -356,9 +357,9 @@ qed
     
 definition reduction where "reduction = (4+\<alpha>)/(4*\<alpha>)"
 
-definition dk :: "nat \<Rightarrow> int vec list \<Rightarrow> int" where "dk k fs = (gs.Gramian_determinant fs k)"
+definition dk :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "dk fs k = (gs.Gramian_determinant fs k)"
 
-definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. dk i fs)" 
+definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. dk fs i)" 
 
 definition logD :: "int vec list \<Rightarrow> nat"
   where "logD fs = (if \<alpha> = 4/3 then (D fs) else nat (floor (log (1 / of_rat reduction) (D fs))))" 
@@ -405,7 +406,7 @@ qed
 
 lemma LLL_dk_pos [intro]: assumes inv: "LLL_invariant state F G" 
   and k: "k \<le> m" 
-shows "dk k F > 0"
+shows "dk F k > 0"
 proof -
   obtain i Gr gso where trip: "state = (i, Gr, gso)" by (cases state, auto)
   note inv = inv[unfolded trip]
@@ -415,7 +416,7 @@ qed
 lemma LLL_D_pos: assumes inv: "LLL_invariant state F G" 
 shows "D F > 0"
 proof -
-  have "(\<Prod> j < m. dk j F) > 0"
+  have "(\<Prod> j < m. dk F j) > 0"
     by (rule prod_pos, insert LLL_dk_pos[OF inv], auto)
   thus ?thesis unfolding D_def by auto
 qed
@@ -719,7 +720,7 @@ proof -
       by (rule update_i[OF Fr], insert add, auto)
     have "LLL_partial_invariant (i, Fr1, Gr) F1 G" unfolding Hs[symmetric]
       apply (rule LLL_pinvI[OF repr' gso'' G1_def(2)[folded snd_gram_schmidt_int,symmetric] _ red inv(7) _ _ sred])
-      by (insert F1 F1_F inv(5) indep_F1 Hs, auto)
+      by (insert F1 F1_F inv(5) indep_F1 Hs inv(12), auto)
   } note inv_gso = this
   { 
     fix ia assume "ia \<le> j" hence "ia < i" using ji j by auto
@@ -871,7 +872,7 @@ proof -
      gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')" by blast
   let ?mu = "gs.\<mu> (RAT F') i" 
   let ?G = "gs.gso (RAT F')" 
-  from Linv[unfolded LLL_invariant_def] have g_bound: "g_bound G" 
+  from LLL_invD[OF Linv] have g_bound: "g_bound G" 
     and f_bound: "f_bound F" by auto
   note inv = LLL_pinvD[OF Lpinv]
   have GF': "G = map ?G [0..<m]" using gram_schmidt_int_connect[of F' G] inv by auto
@@ -930,7 +931,7 @@ lemma reduction: "0 < reduction" "reduction \<le> 1"
 lemma dk_swap_unchanged: assumes len: "length F1 = m" 
   and i0: "i \<noteq> 0" and i: "i < m" and ki: "k \<noteq> i" and km: "k \<le> m"   
   and swap: "F2 = F1[i := F1 ! (i - 1), i - 1 := F1 ! i]"
-shows "dk k F1 = dk k F2"
+shows "dk F1 k = dk F2 k"
 proof -
   let ?F1_M = "mat k n (\<lambda>(i, y). F1 ! i $ y)" 
   let ?F2_M = "mat k n (\<lambda>(i, y). F2 ! i $ y)" 
@@ -958,7 +959,7 @@ proof -
     finally show ?thesis using * by metis
   qed
   then obtain P where P: "P \<in> carrier_mat k k" and detP: "det P \<in> {-1, 1}" and H': "?F2_M = P * ?F1_M" by auto
-  have "dk k F2 = det (gs.Gramian_matrix F2 k)" 
+  have "dk F2 k = det (gs.Gramian_matrix F2 k)" 
     unfolding dk_def gs.Gramian_determinant_def by simp
   also have "\<dots> = det (?F2_M * ?F2_M\<^sup>T)" unfolding gs.Gramian_matrix_def Let_def by simp
   also have "?F2_M * ?F2_M\<^sup>T = ?F2_M * (?F1_M\<^sup>T * P\<^sup>T)" unfolding H'
@@ -972,11 +973,11 @@ proof -
   also have "det \<dots> = det (?F1_M * ?F1_M\<^sup>T) * det P" 
     by (subst det_mult, insert P, auto simp: det_transpose)
   also have "det (?F1_M * ?F1_M\<^sup>T) = det (gs.Gramian_matrix F1 k)" unfolding gs.Gramian_matrix_def Let_def by simp
-  also have "\<dots> = dk k F1" 
+  also have "\<dots> = dk F1 k" 
     unfolding dk_def gs.Gramian_determinant_def by simp
-  finally have "dk k F2 = (det P * det P) * dk k F1" by simp
+  finally have "dk F2 k = (det P * det P) * dk F1 k" by simp
   also have "det P * det P = 1" using detP by auto
-  finally show "dk k F1 = dk k F2" by simp
+  finally show "dk F1 k = dk F2 k" by simp
 qed
 
 
@@ -999,7 +1000,7 @@ proof (atomize(full), cases "i = 0")
   note dk = dk_def  
   note Gd = Gramian_determinant(1)
   note Gd12 = Gd[OF inv] Gd[OF Linv']
-  have dk_eq: "k \<le> m \<Longrightarrow> dk k F = dk k F1" for k (* Lemma 16.16 (i) *)
+  have dk_eq: "k \<le> m \<Longrightarrow> dk F k = dk F1 k" for k (* Lemma 16.16 (i) *)
     unfolding dk using Gd12[of k] by auto
   have D_eq: "D F = D F1" unfolding D_def
     by (rule arg_cong[of _ _ nat], rule prod.cong, insert dk_eq, auto)
@@ -1502,7 +1503,7 @@ proof (atomize(full), cases "i = 0")
       assume k: "k = i" 
       hence kn: "k \<le> m" using i by auto
       from Gd[OF newInv, folded dk_def, folded state, OF kn] k
-      have "?R (dk k F2) = (\<Prod>j<i. sq_norm (G2 ! j) )" by auto
+      have "?R (dk F2 k) = (\<Prod>j<i. sq_norm (G2 ! j) )" by auto
       also have "\<dots> = prod (\<lambda> j. sq_norm (?g2 j)) ({0 ..< i-1} \<union> {i - 1})" 
         by (rule sym, rule prod.cong, (insert i0, auto)[1], insert G2_F2 i, auto simp: o_def)
       also have "\<dots> = sq_norm (?g2 (i - 1)) * prod (\<lambda> j. sq_norm (?g2 j)) ({0 ..< i-1})" 
@@ -1515,41 +1516,41 @@ proof (atomize(full), cases "i = 0")
         = reduction * prod (\<lambda> j. sq_norm (?g1 j)) ({0 ..< i-1} \<union> {i - 1})" by simp
       also have "prod (\<lambda> j. sq_norm (?g1 j)) ({0 ..< i-1} \<union> {i - 1}) = (\<Prod>j<i. sq_norm (?g1 j))"
         by (rule prod.cong, insert i0, auto)
-      also have "\<dots> = ?R (dk k F1)" unfolding dk_def Gd[OF Linv' kn] unfolding k
+      also have "\<dots> = ?R (dk F1 k)" unfolding dk_def Gd[OF Linv' kn] unfolding k
         by (rule prod.cong[OF refl], insert i, auto simp: Gs_fs o_def)
-      also have "\<dots> = ?R (dk k F)" unfolding dk_eq[OF kn] by simp
-      finally have "dk k F2 < real_of_rat reduction * dk k F"
+      also have "\<dots> = ?R (dk F k)" unfolding dk_eq[OF kn] by simp
+      finally have "dk F2 k < real_of_rat reduction * dk F k"
         using of_rat_less of_rat_mult of_rat_of_int_eq by metis
     } note dk_i = this[OF refl]
     {
       fix k
       assume kn: "k \<le> m" and ki: "k \<noteq> i" 
       from dk_swap_unchanged[OF len i0 i ki kn F2_def] dk_eq[OF kn] 
-      have "dk k F = dk k F2" by simp
+      have "dk F k = dk F2 k" by simp
     } note dk = this
-    have pos: "k < m \<Longrightarrow> 0 < dk k F2" "k < m \<Longrightarrow> 0 \<le> dk k F2" for k 
+    have pos: "k < m \<Longrightarrow> 0 < dk F2 k" "k < m \<Longrightarrow> 0 \<le> dk F2 k" for k 
       using LLL_dk_pos[OF newInv, folded state, of k] by auto
-    have prodpos:"0< (\<Prod>i<m. dk i F2)" apply (rule prod_pos)
+    have prodpos:"0< (\<Prod>i<m. dk F2 i)" apply (rule prod_pos)
       using LLL_dk_pos[OF newInv, folded state] by auto
-    have prod_pos':"0 < (\<Prod>x\<in>{0..<m} - {i}. real_of_int (dk x F2))" apply (rule prod_pos)
+    have prod_pos':"0 < (\<Prod>x\<in>{0..<m} - {i}. real_of_int (dk F2 x))" apply (rule prod_pos)
       using LLL_dk_pos[OF newInv, folded state] pos by auto
-    have prod_nonneg:"0 \<le> (\<Prod>x\<in>{0..<m} - {i}. real_of_int (dk x F2))" apply (rule prod_nonneg)
+    have prod_nonneg:"0 \<le> (\<Prod>x\<in>{0..<m} - {i}. real_of_int (dk F2 x))" apply (rule prod_nonneg)
       using LLL_dk_pos[OF newInv, folded state] pos by auto
-    have prodpos2:"0<(\<Prod>ia<m. dk ia F)" apply (rule prod_pos)
+    have prodpos2:"0<(\<Prod>ia<m. dk F ia)" apply (rule prod_pos)
       using LLL_dk_pos[OF assms(1)] by auto
-    have "D F2 = real_of_int (\<Prod>i<m. dk i F2)" unfolding D_def using prodpos by simp
-    also have "(\<Prod>i<m. dk i F2) = (\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk j F2)"
+    have "D F2 = real_of_int (\<Prod>i<m. dk F2 i)" unfolding D_def using prodpos by simp
+    also have "(\<Prod>i<m. dk F2 i) = (\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk F2 j)"
       by (rule prod.cong, insert i, auto)
-    also have "real_of_int \<dots> = real_of_int (\<Prod> j \<in> {0 ..< m} - {i}. dk j F2) * real_of_int (dk i F2)" 
+    also have "real_of_int \<dots> = real_of_int (\<Prod> j \<in> {0 ..< m} - {i}. dk F2 j) * real_of_int (dk F2 i)" 
       by (subst prod.union_disjoint, auto)
-    also have "\<dots> < (\<Prod> j \<in> {0 ..< m} - {i}. dk j F2) * (of_rat reduction * dk i F)"
+    also have "\<dots> < (\<Prod> j \<in> {0 ..< m} - {i}. dk F2 j) * (of_rat reduction * dk F i)"
       by(rule mult_strict_left_mono[OF dk_i],insert prod_pos',auto)
-    also have "(\<Prod> j \<in> {0 ..< m} - {i}. dk j F2) = (\<Prod> j \<in> {0 ..< m} - {i}. dk j F)"
+    also have "(\<Prod> j \<in> {0 ..< m} - {i}. dk F2 j) = (\<Prod> j \<in> {0 ..< m} - {i}. dk F j)"
       by (rule prod.cong, insert dk, auto)
-    also have "\<dots> * (of_rat reduction * dk i F) 
-      = of_rat reduction * (\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk j F)" 
+    also have "\<dots> * (of_rat reduction * dk F i) 
+      = of_rat reduction * (\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk F j)" 
       by (subst prod.union_disjoint, auto)
-    also have "(\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk j F) = (\<Prod> j<m. dk j F)" 
+    also have "(\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. dk F j) = (\<Prod> j<m. dk F j)" 
       by (subst prod.cong, insert i, auto)
     finally have D: "D F2 < real_of_rat reduction * D F"
       unfolding D_def using prodpos2 by auto
@@ -1630,13 +1631,13 @@ qed
 (* equation (3) in front of Lemma 16.18 *)
 lemma dk_approx: assumes LLL: "LLL_invariant (ix, Fr, Gr) F G" 
   and i: "i < m" 
-shows "rat_of_int (dk i F) \<le> rat_of_nat (A^i)" 
+shows "rat_of_int (dk F i) \<le> rat_of_nat (A^i)" 
 proof -
   note inv = LLL_invD[OF LLL]
   note conn = LLL_connect[OF LLL]
   from LLL_invariant_A_pos[OF LLL] i have A: "0 < A" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
-  have "rat_of_int (dk i F) = (\<Prod>j<i. \<parallel>G ! j\<parallel>\<^sup>2)" unfolding dk_def using i
+  have "rat_of_int (dk F i) = (\<Prod>j<i. \<parallel>G ! j\<parallel>\<^sup>2)" unfolding dk_def using i
     by (auto simp: Gramian_determinant [OF LLL])
   also have "\<dots> \<le> (\<Prod>j<i. of_nat A)" using i
     by (intro prod_mono ballI conjI prod_nonneg, insert inv(13)[unfolded g_bound_def], auto)
@@ -1652,15 +1653,15 @@ proof -
   note conn = LLL_connect[OF assms]
   from LLL_invariant_A_pos[OF assms] have A: "m \<noteq> 0 \<Longrightarrow> 0 < A" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
-  have "rat_of_int (\<Prod>i<m. dk i F) = (\<Prod>i<m. rat_of_int (dk i F))" by simp
+  have "rat_of_int (\<Prod>i<m. dk F i) = (\<Prod>i<m. rat_of_int (dk F i))" by simp
   also have "\<dots> \<le> (\<Prod>i<m. (of_nat A) ^ i)" 
     by (rule prod_mono, insert dk_approx[OF assms] LLL_dk_pos[OF assms], auto simp: less_le)
   also have "\<dots> \<le> (\<Prod>i<m. (of_nat A ^ m))" 
     by (rule prod_mono, insert A, auto intro: pow_mono_exp)
   also have "\<dots> = (of_nat A)^(m * m)" unfolding prod_constant power_mult by simp
   also have "\<dots> = of_nat (A ^ (m * m))" by simp
-  finally have "(\<Prod>i<m. dk i F) \<le> A ^ (m * m)" by linarith
-  also have "(\<Prod>i<m. dk i F) = D F" unfolding D_def 
+  finally have "(\<Prod>i<m. dk F i) \<le> A ^ (m * m)" by linarith
+  also have "(\<Prod>i<m. dk F i) = D F" unfolding D_def 
     by (subst nat_0_le, rule prod_nonneg, insert LLL_dk_pos[OF assms], auto simp: le_less)  
   finally show "D F \<le> A ^ (m * m)" by linarith 
 qed
