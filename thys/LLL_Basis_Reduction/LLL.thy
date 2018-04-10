@@ -754,6 +754,60 @@ proof -
   thus ?thesis using mu_change inv_gso mudiff unfolding res j F1_def by auto
 qed
 
+lemma sq_norm_fs_via_sum_mu_gso: assumes Lpinv: "LLL_partial_invariant (ii,Fr,Gr) F G"
+  and i: "i < m" 
+  shows "rat_of_int \<parallel>F ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (gs.\<mu> (RAT F) i j)\<^sup>2 * \<parallel>G ! j\<parallel>\<^sup>2)" 
+proof -
+  let ?mu = "gs.\<mu> (RAT F) i" 
+  let ?G = "gs.gso (RAT F)" 
+  note inv = LLL_pinvD[OF Lpinv]
+  have GF': "G = map ?G [0..<m]" using gram_schmidt_int_connect[of F G] inv by auto
+  let ?r = "rat_of_int" 
+  have "?r \<parallel>(F ! i)\<parallel>\<^sup>2 = sq_norm (map_vec ?r (F ! i))" unfolding sq_norm_of_int ..
+  also have "map_vec ?r (F ! i) = RAT F ! i" using i inv by auto 
+  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v ?G j) [0..<Suc i])" 
+    using gs.fi_is_sum_of_mu_gso[OF inv(10) _ refl i] inv(4) i by auto
+  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0 ..< Suc i])" 
+    by (rule arg_cong[of _ _ "gs.sumlist"], rule map_cong[OF refl], unfold GF', insert i, auto)
+  also have "sq_norm \<dots> = sum_list (map sq_norm (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0..<Suc i]))" 
+    unfolding map_map o_def sq_norm_smult_vec
+    unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
+  proof (rule gs.scalar_prod_lincomb_orthogonal)
+    show "Suc i \<le> length G" unfolding GF' using i by auto
+    show "set G \<subseteq> Rn" unfolding GF' using gs.gso_carrier[OF inv(10) _ refl] inv(4) by auto
+    show "orthogonal G" 
+      using gs.gram_schmidt[OF inv(10) _ inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]] inv(4)
+      by auto
+  qed
+  also have "map sq_norm (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0..<Suc i]) = map (\<lambda>j. (?mu j)^2 * sq_norm (G ! j)) [0..<Suc i]" 
+    unfolding map_map o_def sq_norm_smult_vec by (rule map_cong, auto simp: power2_eq_square)
+  finally show ?thesis . 
+qed
+
+lemma sq_norm_fs_mu_G_bound: assumes Lpinv: "LLL_partial_invariant (ii,Fr,Gr) F G"
+  and i: "i < m" 
+  and mu_bound: "\<And> j. j \<le> i \<Longrightarrow> (gs.\<mu> (RAT F) i j)^2 \<le> a" 
+shows "rat_of_int \<parallel>F ! i\<parallel>\<^sup>2 \<le> of_nat (Suc i * A) * a" 
+proof -
+  have "rat_of_int \<parallel>F ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (gs.\<mu> (RAT F) i j)\<^sup>2 * \<parallel>G ! j\<parallel>\<^sup>2)" 
+    by (rule sq_norm_fs_via_sum_mu_gso[OF Lpinv i])
+  also have "\<dots> \<le> (\<Sum>j\<leftarrow>[0..<Suc i]. a * of_nat A)" 
+  proof (rule sum_list_ge_mono, force, unfold length_map length_upt,
+    subst (1 2) nth_map_upt, force, goal_cases)
+    case (1 j)
+    hence ji: "j \<le> i" by auto
+    from LLL_pinvD[OF Lpinv] have "g_bound G" by auto
+    from this[unfolded g_bound_def] i ji 
+    have GB: "sq_norm (G ! j) \<le> of_nat A" by auto
+    show ?case 
+      by (rule mult_mono, insert mu_bound[OF ji] GB order.trans[OF zero_le_power2], auto)
+  qed
+  also have "\<dots> = of_nat (Suc i) * (a * of_nat A)" unfolding sum_list_triv length_upt by simp
+  also have "\<dots> = of_nat (Suc i * A) * a" unfolding of_nat_mult by simp
+  finally show ?thesis .
+qed
+
+
 lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant (i,Fr,Gr) F G"
   and i: "i < m" 
   and res: "basis_reduction_add_rows (i,Fr,Gr) = (i',Fr',Gr')"
@@ -877,38 +931,20 @@ proof -
   note inv = LLL_pinvD[OF Lpinv]
   have GF': "G = map ?G [0..<m]" using gram_schmidt_int_connect[of F' G] inv by auto
   let ?r = "rat_of_int" 
-  have "map_vec ?r (F' ! i) = RAT F' ! i" using i inv by auto 
-  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v ?G j) [0..<Suc i])" 
-    using gs.fi_is_sum_of_mu_gso[OF inv(10) _ refl i] inv(4) i by auto
-  also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0 ..< Suc i])" 
-    by (rule arg_cong[of _ _ "gs.sumlist"], rule map_cong[OF refl], unfold GF', insert i, auto)
-  also have "sq_norm \<dots> = sum_list (map sq_norm (map (\<lambda>j. ?mu j \<cdot>\<^sub>v G ! j) [0..<Suc i]))" 
-    unfolding map_map o_def sq_norm_smult_vec
-    unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
-  proof (rule gs.scalar_prod_lincomb_orthogonal)
-    show "Suc i \<le> length G" unfolding GF' using i by auto
-    show "set G \<subseteq> Rn" unfolding GF' using gs.gso_carrier[OF inv(10) _ refl] inv(4) by auto
-    show "orthogonal G" 
-      using gs.gram_schmidt[OF inv(10) _ inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]] inv(4)
-      by auto
-  qed
-  also have "\<dots> \<le> sum_list (map (\<lambda> i. 1 * of_nat A) [0..<Suc i])"
-  proof (rule sum_list_ge_mono, force, unfold length_map length_upt map_map o_def, 
-    subst (1 2) nth_map_upt, force, unfold sq_norm_smult_vec, goal_cases)
-    case (1 j)
-    hence "j < Suc i" by auto
+  have "?r (sq_norm (F' ! i)) \<le> of_nat (Suc i * A) * 1"
+  proof (rule sq_norm_fs_mu_G_bound[OF Lpinv i])
+    fix j 
+    assume ji: "j \<le> i" 
+    hence "j < Suc i" by simp
     with mu[of j] have "abs (?mu j) \<le> 1" by (cases "j = i", auto simp: gs.\<mu>.simps[of _ _ i])
-    hence mu: "?mu j * ?mu j \<le> 1"
+    thus "(?mu j)^2 \<le> 1" unfolding power2_eq_square
       by (metis abs_ge_zero abs_mult_self_eq mult_le_one)
-    from g_bound[unfolded g_bound_def] i 1 have G: "sq_norm (G ! j) \<le> of_nat A" by auto
-    show ?case
-      by (rule mult_mono, insert mu G, auto)
   qed
-  also have "\<dots> = of_nat A * of_nat (Suc i)" unfolding sum_list_triv by simp 
+  also have "\<dots> = of_nat A * of_nat (Suc i)" unfolding of_nat_mult by simp 
   also have "\<dots> \<le> of_nat A * of_nat m" 
     by (rule mult_left_mono, insert i, auto)
   also have "\<dots> = of_nat (A * m)" by simp
-  finally have "?r \<parallel>(F' ! i)\<parallel>\<^sup>2 \<le> rat_of_int (A * m)" unfolding sq_norm_of_int by auto
+  finally have "?r \<parallel>(F' ! i)\<parallel>\<^sup>2 \<le> rat_of_int (A * m)" by simp
   hence Fi: "\<parallel>(F' ! i)\<parallel>\<^sup>2 \<le> int (A * m)" by linarith
   from f_bound Fi have f_bound: "f_bound F'" unfolding f_bound_def F' 
     by (auto, rename_tac ii, case_tac "ii = i", auto)
