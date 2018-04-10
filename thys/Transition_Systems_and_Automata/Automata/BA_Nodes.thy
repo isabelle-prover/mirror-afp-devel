@@ -26,6 +26,7 @@ begin
 
     (* TODO: can these (synthetization + definition + autoref_rule) be done with less boilerplate? *)
 
+    (* TODO: 90% of the time is spent in insert_glist for the successors set *)
     schematic_goal bai_Gi:
       assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
       assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S, M\<rangle> bai_ba_rel"
