@@ -1821,20 +1821,20 @@ subsubsection \<open>Function @{term rd}\<close>
 context ordered_powerprod
 begin
 
-function rd_mult::"('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('b * 'a)" where
+function rd_mult :: "('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('b \<times> 'a) option" where
   "rd_mult p f =
-    (if p = 0 \<or> f = 0 then
-      (0, 0)
+    (if p = 0 then
+      None
     else
       (if lp f adds lp p then
-        (lc p / lc f, lp p - lp f)
+        Some (lc p / lc f, lp p - lp f)
       else
         rd_mult (tail p) f
       )
     )"
   by auto
 termination proof -
-  let ?R = "{(x, y::('a, 'b) poly_mapping). keys x \<subset> keys y} <*lex*> {}"
+  let ?R = "{(x, y::'a \<Rightarrow>\<^sub>0 'b). keys x \<subset> keys y} <*lex*> {}"
   show ?thesis
   proof
     show "wf ?R"
@@ -1842,336 +1842,362 @@ termination proof -
       from keys_subset_wf show "wf {(x, y). keys x \<subset> keys y}" by (simp only: wfP_def)
     qed simp
   next
-    fix p f::"('a, 'b) poly_mapping"
-    assume "\<not> (p = 0 \<or> f = 0)"
-    hence "p \<noteq> 0" by simp
+    fix p f::"'a \<Rightarrow>\<^sub>0 'b"
+    assume "p \<noteq> 0"
     hence "lp p \<in> keys p" by (rule lp_in_keys)
     hence "keys (tail p) \<subset> keys p" unfolding keys_tail by auto
     thus "((tail p, f), p, f) \<in> ?R" by simp
   qed
 qed
 
-definition rd::"('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)"
-  where "rd p f \<equiv> (let m = rd_mult p f in p - monom_mult (fst m) (snd m) f)"
+definition rd::"('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> (('a \<Rightarrow>\<^sub>0 'b) \<times> bool)"
+  where "rd p f =
+          (if f = 0 then
+            (p, False)
+          else
+            (case rd_mult p f of Some (c, t) \<Rightarrow> (p - monom_mult c t f, True) | None \<Rightarrow> (p, False)))"
 
 lemma compute_rd_mult[code]:
   "rd_mult p f =
-    (if p = 0 \<or> f = 0 then
-      (0, 0)
+    (if p = 0 then
+      None
     else
       (if (lp f) adds (lp p) then
-        (lc p / lc f, lp p - lp f)
+        Some (lc p / lc f, lp p - lp f)
       else
         rd_mult (tail p) f
       )
     )"
   by simp
 
-lemma rd_mult_left0:
-  shows "rd_mult 0 f = (0, 0)"
-by simp
-
-lemma rd_mult_right0:
-  shows "rd_mult p 0 = (0, 0)"
-by simp
+lemma rd_mult_left0: "rd_mult 0 f = None"
+  by simp
 
 lemma rd_mult_adds:
-  assumes "p \<noteq> 0" and "f \<noteq> 0" and "lp f adds lp p"
-  shows "rd_mult p f = (lc p / lc f, lp p - lp f)"
-using assms by simp
+  assumes "p \<noteq> 0" and "lp f adds lp p"
+  shows "rd_mult p f = Some (lc p / lc f, lp p - lp f)"
+  using assms by simp
 
 lemma rd_mult_nadds:
   assumes "p \<noteq> 0" and "f \<noteq> 0" and "\<not> lp f adds lp p"
   shows "rd_mult p f = rd_mult (tail p) f"
-using assms by simp
+  using assms by simp
 
-lemma rd_left0: "rd 0 f = 0"
-  by (simp add: rd_def rd_mult_left0 Let_def del: rd_mult.simps)
+lemma rd_left0: "rd 0 f = (0, False)"
+  by (simp add: rd_def rd_mult_left0 del: rd_mult.simps)
 
-lemma rd_right0: "rd p 0 = p"
-  by (simp add: rd_def rd_mult_right0 Let_def del: rd_mult.simps)
+lemma rd_right0: "rd p 0 = (p, False)"
+  by (simp add: rd_def del: rd_mult.simps)
 
 lemma rd_adds:
   assumes "p \<noteq> 0" and "f \<noteq> 0" and "lp f adds lp p"
-  shows "rd p f = p - monom_mult (lc p / lc f) (lp p - lp f) f"
-unfolding rd_def by (simp add: rd_mult_adds[OF assms] Let_def del: rd_mult.simps)
+  shows "rd p f = (p - monom_mult (lc p / lc f) (lp p - lp f) f, True)"
+  by (simp add: rd_def rd_mult_adds[OF assms(1, 3)] assms(2) del: rd_mult.simps)
 
-lemma rd_nadds:
+lemma case_distrib:
+  "f (case x of None \<Rightarrow> h | Some (a, b) \<Rightarrow> g a b) = (case x of None \<Rightarrow> f h | Some (a, b) \<Rightarrow> f (g a b))"
+  by (simp add: option.case_eq_if split_beta)
+
+lemma fst_rd:
+  "fst (rd p f) = (if f = 0 then p else (case rd_mult p f of Some (c, t) \<Rightarrow> p - monom_mult c t f | None \<Rightarrow> p))"
+  by (simp add: rd_def case_distrib[of fst] del: rd_mult.simps cong: option.case_cong)
+
+lemma fst_rd_nadds:
   assumes "p \<noteq> 0" and "f \<noteq> 0" and "\<not> lp f adds lp p"
-  shows "rd p f = (monomial (lc p) (lp p)) + (rd (tail p) f)"
-  by (simp add: rd_def rd_mult_nadds[OF assms] Let_def del: rd_mult.simps, rule leading_monomial_tail)
+  shows "fst (rd p f) = (monomial (lc p) (lp p)) + fst (rd (tail p) f)"
+  by (simp add: fst_rd rd_mult_nadds[OF assms] assms(2) case_distrib[of "(+) (monomial (lc p) (lp p))"]
+      leading_monomial_tail[symmetric] add_diff_eq del: rd_mult.simps cong: option.case_cong)
 
-lemma rd_red_set:
+lemma fst_rd_red_set:
   assumes "is_red {f} p"
-  shows "red {f} p (rd p f)"
-using assms
+  shows "red {f} p (fst (rd p f))"
+  using assms
 proof (induct p rule: poly_mapping_tail_induct)
   case 0
-  from this irred_0[of "{f}"] show "red {f} 0 (rd 0 f)" by simp
+  from this irred_0[of "{f}"] show "red {f} 0 (fst (rd 0 f))" by simp
 next
   case (tail p)
-  assume "p \<noteq> 0" and IH: "is_red {f} (tail p) \<Longrightarrow> red {f} (tail p) (rd (tail p) f)"
-    and red: "is_red {f} p"
-  show "red {f} p (rd p f)"
+  show "red {f} p (fst (rd p f))"
   proof (cases "\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p")
     assume "\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p"
     hence "f \<noteq> 0" and "lp f adds lp p" by auto
     have "red {f} p (p - monom_mult (lc p / lc f) (lp p - lp f) f)"
       by (intro red_indI1, simp, fact+)
-    thus ?thesis using rd_mult_adds[OF \<open>p \<noteq> 0\<close> \<open>f \<noteq> 0\<close> \<open>lp f adds lp p\<close>] unfolding rd_def by simp
+    with \<open>f \<noteq> 0\<close> show ?thesis using rd_mult_adds[OF \<open>p \<noteq> 0\<close> \<open>lp f adds lp p\<close>] by (simp add: rd_def)
   next
     assume "\<not> (\<exists>f\<in>{f}. f \<noteq> 0 \<and> lp f adds lp p)"
-    from this is_red_indE[OF red] have r: "is_red {f} (tail p)"
+    from this is_red_indE[OF tail(3)] have r: "is_red {f} (tail p)"
       and dis: "f = 0 \<or> \<not> (lp f adds lp p)"
       by auto
     from is_red_singleton_not_0[OF r] have "f \<noteq> 0" .
     from dis this have "\<not> (lp f adds lp p)" by simp
-    from rd_nadds[OF \<open>p \<noteq> 0\<close> \<open>f \<noteq> 0\<close> this] red_indI2[OF \<open>p \<noteq> 0\<close> IH[OF r]]
+    from fst_rd_nadds[OF \<open>p \<noteq> 0\<close> \<open>f \<noteq> 0\<close> this] red_indI2[OF \<open>p \<noteq> 0\<close> tail(2)[OF r]]
       show ?thesis by (simp only: rd_def ac_simps)
   qed
 qed
 
-lemma rd_irred_set:
+lemma fst_rd_irred_set:
   assumes "\<not> is_red {f} p"
-  shows "rd p f = p"
-using assms
-proof (induct p rule: poly_mapping_tail_induct, simp only: rd_left0)
+  shows "fst (rd p f) = p"
+  using assms
+proof (induct p rule: poly_mapping_tail_induct, simp add: rd_left0)
   fix p
-  assume "p \<noteq> 0" and IH: "\<not> is_red {f} (tail p) \<Longrightarrow> rd (tail p) f = tail p"
+  assume "p \<noteq> 0" and IH: "\<not> is_red {f} (tail p) \<Longrightarrow> fst (rd (tail p) f) = tail p"
     and irred: "\<not> is_red {f} p"
   have "f \<in> {f}" by simp
   from irred is_red_indI1[OF this _ \<open>p \<noteq> 0\<close>] have dis: "f = 0 \<or> \<not> (lp f adds lp p)" by auto
-  show "rd p f = p"
+  show "fst (rd p f) = p"
   proof (cases "f = 0")
     case True
-    thus ?thesis by (simp only: rd_right0)
+    thus ?thesis by (simp add: rd_def)
   next
     case False
     hence nadds: "\<not> (lp f adds lp p)" using dis by simp
     from irred is_red_indI2[OF \<open>p \<noteq> 0\<close>, of "{f}"] have "\<not> is_red {f} (tail p)" by auto
-    from IH[OF this] rd_nadds[OF \<open>p \<noteq> 0\<close> False nadds] leading_monomial_tail[of p]
+    from IH[OF this] fst_rd_nadds[OF \<open>p \<noteq> 0\<close> False nadds] leading_monomial_tail[of p]
       show ?thesis by simp
   qed
 qed
 
-lemma rd_red:
+lemma fst_rd_red:
   assumes "red_single p q f t"
-  shows "\<exists>t. red_single p (rd p f) f t"
+  shows "\<exists>t. red_single p (fst (rd p f)) f t"
 proof -
   have "is_red {f} p" by (intro is_redI, intro red_setI[of f], simp, fact)
-  from red_setE[OF rd_red_set[OF this]] obtain t where "red_single p (rd p f) f t" by force
+  from red_setE[OF fst_rd_red_set[OF this]] obtain t where "red_single p (fst (rd p f)) f t" by force
   show ?thesis by (intro exI, fact)
 qed
 
-lemma rd_irred:
+lemma fst_rd_irred:
   assumes "\<And>q t. \<not> red_single p q f t"
-  shows "rd p f = p"
-proof (rule rd_irred_set, rule)
+  shows "fst (rd p f) = p"
+proof (rule fst_rd_irred_set, rule)
   assume "is_red {f} p"
   from is_redE[OF this] obtain q where "red {f} p q" .
   from red_setE[OF this] obtain t where "red_single p q f t" by force
   from this assms[of q t] show False by simp
 qed
 
-lemma rd_id_set:
-  shows "(rd p f = p) = (\<forall>q. \<not> red {f} p q)"
+lemma fst_rd_id_set: "(fst (rd p f) = p) \<longleftrightarrow> (\<not> is_red {f} p)"
 proof
-  assume "rd p f = p"
-  show "\<forall>q. \<not> red {f} p q"
-  proof (intro allI)
-    fix q
-    show "\<not> red {f} p q"
-    proof
-      assume "red {f} p q"
-      have "is_red {f} p" by (intro is_redI, fact)
-      from rd_red_set[OF this] \<open>rd p f = p\<close> have "red {f} p p" by simp
-      from red_ord[OF this] show False by simp
-    qed
+  assume "fst (rd p f) = p"
+  show "\<not> is_red {f} p"
+  proof
+    assume "is_red {f} p"
+    from fst_rd_red_set[OF this] \<open>fst (rd p f) = p\<close> have "red {f} p p" by simp
+    from red_ord[OF this] show False by simp
   qed
 next
-  assume a: "\<forall>q. \<not> red {f} p q"
-  show "rd p f = p"
-  proof (intro rd_irred_set, intro notI)
+  assume a: "\<not> is_red {f} p"
+  show "fst (rd p f) = p"
+  proof (intro fst_rd_irred_set notI)
     assume "is_red {f} p"
-    from is_redE[OF this] obtain q where "red {f} p q" .
-    from this a show False by simp
+    with \<open>\<not> is_red {f} p\<close> show False ..
   qed
 qed
 
-lemma rd_id:
-  shows "(rd p f = p) = (\<forall>q t. \<not> red_single p q f t)"
+lemma fst_rd_id: "(fst (rd p f) = p) \<longleftrightarrow> (\<forall>q t. \<not> red_single p q f t)"
 proof
-  assume "rd p f = p"
+  assume "fst (rd p f) = p"
   show "\<forall>q t. \<not> red_single p q f t"
   proof (intro allI)
     fix q t
     show "\<not> red_single p q f t"
     proof
       assume "red_single p q f t"
-      from rd_red[OF this] obtain s where "red_single p (rd p f) f s" ..
-      hence "red_single p p f s" using \<open>rd p f = p\<close> by simp
+      from fst_rd_red[OF this] obtain s where "red_single p (fst (rd p f)) f s" ..
+      hence "red_single p p f s" using \<open>fst (rd p f) = p\<close> by simp
       from red_single_ord[OF this] show False by simp
     qed
   qed
 next
   assume a: "\<forall>q t. \<not> red_single p q f t"
-  show "rd p f = p"
-  proof (intro rd_irred, intro notI)
+  show "fst (rd p f) = p"
+  proof (intro fst_rd_irred, intro notI)
     fix q t
     assume "red_single p q f t"
     from this a show False by simp
   qed
 qed
 
-lemma rd_less_eq:
-  shows "(rd p f) \<preceq>p p"
-proof (cases "\<forall>q. \<not> red {f} p q")
+lemma fst_rd_less_eq: "fst (rd p f) \<preceq>p p"
+proof (cases "is_red {f} p")
   case True
-  hence "rd p f = p" using rd_id_set[of p f] by simp
-  thus ?thesis by simp
+  then obtain q where "red {f} p q" by (rule is_redE)
+  from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
+  from fst_rd_red[OF this] obtain s where "red_single p (fst (rd p f)) f s" ..
+  from red_single_ord[OF this] show ?thesis by simp
 next
   case False
-  hence "\<exists>q. red {f} p q" by simp
-  from this obtain q where "red {f} p q" by auto
-  from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
-  from rd_red[OF this] obtain s where "red_single p (rd p f) f s" ..
-  from red_single_ord[OF this] show ?thesis by simp
+  hence "fst (rd p f) = p" using fst_rd_id_set[of p f] by simp
+  thus ?thesis by simp
 qed
 
-lemma rd_lessI:
+lemma fst_rd_lessI:
   assumes "red_single p q f t"
-  shows "(rd p f) \<prec>p p"
+  shows "fst (rd p f) \<prec>p p"
 proof -
-  from rd_red[OF assms] obtain s where "red_single p (rd p f) f s" ..
+  from fst_rd_red[OF assms] obtain s where "red_single p (fst (rd p f)) f s" ..
   from red_single_ord[OF this] show ?thesis .
 qed
 
-lemma rd_lessE:
-  assumes "(rd p f) \<prec>p p"
-  obtains t where "red_single p (rd p f) f t"
+lemma fst_rd_lessE:
+  assumes "fst (rd p f) \<prec>p p"
+  obtains t where "red_single p (fst (rd p f)) f t"
 proof -
-  from assms have "(rd p f) \<noteq> p" by simp
-  hence "\<exists>q t. red_single p q f t" using rd_id[of p f] by simp
+  from assms have "fst (rd p f) \<noteq> p" by simp
+  hence "\<exists>q t. red_single p q f t" using fst_rd_id[of p f] by simp
   from this obtain q s where "red_single p q f s" by auto
-  from rd_red[OF this] obtain t where "red_single p (rd p f) f t" ..
+  from fst_rd_red[OF this] obtain t where "red_single p (fst (rd p f)) f t" ..
   thus ?thesis ..
 qed
 
+lemma snd_rd_iff_neq: "snd (rd p f) \<longleftrightarrow> (fst (rd p f) \<noteq> p)"
+proof (simp add: rd_def del: rd_mult.simps split: option.split, intro allI impI)
+  fix c t
+  assume "f \<noteq> 0"
+  assume "rd_mult p f = Some (c, t)"
+  hence "c \<noteq> 0"
+  proof (induct p rule: poly_mapping_tail_induct)
+    case 0
+    thus ?case by simp
+  next
+    case (tail p)
+    from tail(3) show ?case
+    proof (simp add: compute_rd_mult[of p] del: rd_mult.simps split: if_splits)
+      assume "lc p / lc f = c \<and> lp p - lp f = t"
+      hence c: "c = lc p / lc f" by simp
+      assume "p \<noteq> 0"
+      hence "lc p \<noteq> 0" by (rule lc_not_0)
+      moreover from \<open>f \<noteq> 0\<close> have "lc f \<noteq> 0" by (rule lc_not_0)
+      ultimately show ?thesis by (simp add: c)
+    next
+      assume "rd_mult (tail p) f = Some (c, t)"
+      thus ?thesis by (rule tail(2))
+    qed
+  qed
+  with \<open>f \<noteq> 0\<close> show "monom_mult c t f \<noteq> 0" by (simp add: monom_mult_0_iff)
+qed
+
+corollary snd_rd_iff_is_red: "snd (rd p f) \<longleftrightarrow> (is_red {f} p)"
+  by (simp add: snd_rd_iff_neq fst_rd_id_set)
+
 subsubsection \<open>Functions @{term rd_list} and @{term trd}\<close>
 
-primrec rd_list::"('a \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" where
-  rd_list_base: "rd_list Nil p = p"|
-  rd_list_rec: "rd_list (f # fs) p = (let q = rd p f in (if q = p then rd_list fs p else q))"
+primrec rd_list::"('a \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<times> bool" where
+  rd_list_base: "rd_list Nil p = (p, False)"|
+  rd_list_rec: "rd_list (f # fs) p = (let q = rd p f in (if snd q then q else rd_list fs p))"
 
-lemma rd_list_red:
+lemma fst_rd_list_red:
   assumes "is_red (set fs) p"
-  shows "red (set fs) p (rd_list fs p)"
-proof -
-  from assms obtain q where "red (set fs) p q" unfolding is_red_alt ..
-  thus ?thesis
-  proof (induct fs)
-    case Nil
-    from Nil have "red {} p q" by simp
-    from red_setE[OF this] obtain f t where "f \<in> {}" and "red_single p q f t" .
-    from \<open>f \<in> {}\<close> show "red (set []) p (rd_list [] p)" ..
+  shows "red (set fs) p (fst (rd_list fs p))"
+  using assms
+proof (induct fs)
+  case Nil
+  from Nil have "is_red {} p" by simp
+  then obtain q where "red {} p q" by (rule is_redE)
+  from red_setE[OF this] obtain f t where "f \<in> {}" and "red_single p q f t" .
+  from \<open>f \<in> {}\<close> show "red (set []) p (fst (rd_list [] p))" ..
+next
+  case (Cons f fs)
+  show "red (set (f # fs)) p (fst (rd_list (f # fs) p))" unfolding rd_list_rec
+  proof (cases "snd (rd p f)")
+    case True
+    hence "is_red {f} p" by (simp only: snd_rd_iff_is_red)
+    have "red ({f} \<union> (set fs)) p (fst (rd p f))" by (rule red_unionI1, rule fst_rd_red_set, fact)
+    with True show "red (set (f # fs)) p (fst (let q = rd p f in if snd q then q else rd_list fs p))"
+      by simp
   next
-    case Cons
-    fix f fs
-    assume IH: "red (set fs) p q \<Longrightarrow> red (set fs) p (rd_list fs p)" and r: "red (set (f # fs)) p q"
-    from r have "red (insert f (set fs)) p q" by simp
-    from red_setE[OF this] obtain g t where
-      g: "g \<in> (insert f (set fs))" and red_g: "red_single p q g t" .
-    from g have g_cases: "g = f \<or> g \<in> set fs" by simp
-    show "red (set (f # fs)) p (rd_list (f # fs) p)" unfolding rd_list_rec
-    proof (cases "rd p f = p")
-      case True
-      hence irred: "\<forall>q t. \<not> red_single p q f t" using rd_id[of p f] by simp
-      from g_cases have "g \<in> set fs"
-      proof (rule, simp_all)
-        assume "g = f"
-        from this irred[rule_format, of q t] red_g show "f \<in> set fs" by simp
-      qed
-      from red_unionI2[OF IH[OF red_setI[OF this red_g]], of "{f}"] True
-        show "red (set (f # fs)) p (let q = rd p f in if q = p then rd_list fs p else q)" by simp
-    next
-      case False
-      from this rd_id[of p f] have "\<exists>q t. red_single p q f t" by simp
-      from this obtain q0 t0 where "red_single p q0 f t0" by auto
-      have "red ({f} \<union> (set fs)) p (rd p f)"
-        by (rule red_unionI1, simp only: red_singleton, rule rd_red[OF \<open>red_single p q0 f t0\<close>])
-      with False show "red (set (f # fs)) p (let q = rd p f in if q = p then rd_list fs p else q)"
-        by simp
-    qed
+    case False
+    hence irred: "\<not> is_red {f} p" by (simp add: snd_rd_iff_is_red)
+    from Cons(2) have "is_red ({f} \<union> (set fs)) p" by simp
+    hence "is_red {f} p \<or> is_red (set fs) p" by (simp only: is_red_union)
+    with irred have "is_red (set fs) p" by simp
+    hence "red (set fs) p (fst (rd_list fs p))" by (rule Cons(1))
+    hence "red (set (f # fs)) p (fst (rd_list fs p))" by (meson red_subset set_subset_Cons)
+    thus "red (set (f # fs)) p (fst (let q = rd p f in if snd q then q else rd_list fs p))"
+      by (simp add: Let_def False)
   qed
 qed
 
 lemma rd_list_fixpointI:
   assumes "\<not> is_red (set fs) p"
-  shows "(rd_list fs p) = p"
-proof -
-  from assms have "\<And>q. \<not> red (set fs) p q" unfolding is_red_alt by simp
-  thus ?thesis
-  proof (induct fs, simp)
-    fix f fs
-    assume IH: "(\<And>q. \<not> red (set fs) p q) \<Longrightarrow> rd_list fs p = p"
-      and irred: "\<And>q. \<not> red (set (f # fs)) p q"
-    from irred have "\<And>q. \<not> red ({f} \<union> (set fs)) p q" by simp
-    hence "\<And>q. \<not> ((red {f} p q) \<or> (red (set fs) p q))" using red_union[of "{f}" "set fs" p] by simp
-    hence irred1: "\<And>q. \<not> red {f} p q" and irred2: "\<And>q. \<not> red (set fs) p q" by simp_all
-    from irred1 have eq: "(rd p f) = p" unfolding rd_id_set ..
-    from IH[OF irred2] eq show "rd_list (f # fs) p = p" unfolding rd_list_rec by simp
-  qed
+  shows "fst (rd_list fs p) = p"
+  using assms
+proof (induct fs, simp)
+  fix f fs
+  assume IH: "(\<not> is_red (set fs) p) \<Longrightarrow> fst (rd_list fs p) = p"
+    and irred: "\<not> is_red (set (f # fs)) p"
+  from irred have "\<not> is_red ({f} \<union> (set fs)) p" by simp
+  hence "\<not> ((is_red {f} p) \<or> (is_red (set fs) p))" using is_red_union[of "{f}" "set fs" p] by simp
+  hence irred1: "\<not> is_red {f} p" and irred2: "\<not> is_red (set fs) p" by simp_all
+  from irred1 have eq: "\<not> snd (rd p f)" by (simp add: snd_rd_iff_is_red)
+  from IH[OF irred2] eq show "fst (rd_list (f # fs) p) = p" by simp
 qed
 
 lemma rd_list_fixpointD:
-  assumes "(rd_list fs p) = p"
+  assumes "fst (rd_list fs p) = p"
   shows "\<not> is_red (set fs) p"
 proof
   assume "is_red (set fs) p"
-  from red_ord[OF rd_list_red[OF this]] assms show False by simp
+  from red_ord[OF fst_rd_list_red[OF this]] assms show False by simp
 qed
 
-lemma rd_list_le:
-  shows "(rd_list fs p) \<preceq>p p"
+corollary fst_rd_list_id: "(fst (rd_list fs p) = p) \<longleftrightarrow> (\<not> is_red (set fs) p)"
+  using rd_list_fixpointI rd_list_fixpointD by auto
+
+lemma fst_rd_list_le: "fst (rd_list fs p) \<preceq>p p"
 proof (cases "is_red (set fs) p")
   case True
-  from red_ord[OF rd_list_red[OF this]] show ?thesis by simp
+  from red_ord[OF fst_rd_list_red[OF this]] show ?thesis by simp
 next
   case False
   from rd_list_fixpointI[OF this] show ?thesis by simp
 qed
 
-lemma rd_list_in_pideal_ind:
+lemma fst_rd_list_in_pideal_ind:
   assumes "set fs \<subseteq> bs"
-  shows "p - (rd_list fs p) \<in> pideal bs"
-using assms
+  shows "p - fst (rd_list fs p) \<in> pideal bs"
+  using assms
 proof (induct fs)
-  from ideal.module_0 show "p - rd_list [] p \<in> pideal bs" by simp
+  from ideal.module_0 show "p - fst (rd_list [] p) \<in> pideal bs" by simp
 next
   fix a fs
-  assume IH: "set fs \<subseteq> bs \<Longrightarrow> p - rd_list fs p \<in> pideal bs" and a: "set (a # fs) \<subseteq> bs"
+  assume IH: "set fs \<subseteq> bs \<Longrightarrow> p - fst (rd_list fs p) \<in> pideal bs" and a: "set (a # fs) \<subseteq> bs"
   from a have "a \<in> bs" by simp
   from a have "set fs \<subseteq> bs" by simp
-  show "p - rd_list (a # fs) p \<in> pideal bs" unfolding rd_list_rec Let_def
+  show "p - fst (rd_list (a # fs) p) \<in> pideal bs" unfolding rd_list_rec Let_def
   proof (simp add: if_splits, rule, intro impI)
-    assume "rd p a = p"
-    from IH[OF \<open>set fs \<subseteq> bs\<close>] show "p - rd_list fs p \<in> pideal bs" .
+    assume "snd (rd p a)"
+    hence "fst (rd p a) \<noteq> p" by (simp add: fst_rd_id_set snd_rd_iff_is_red)
+    hence "fst (rd p a) \<prec>p p" using fst_rd_less_eq[of p a] by simp
+    from fst_rd_lessE[OF this] obtain t where "red_single p (fst (rd p a)) a t" .
+    hence eq: "p - fst (rd p a) = monom_mult (lookup p (t + lp a) / lc a) t a"
+      unfolding red_single_def by simp
+    show "p - fst (rd p a) \<in> pideal bs" unfolding eq by (rule monom_mult_in_pideal, rule \<open>a \<in> bs\<close>)
   next
-    show "rd p a \<noteq> p \<longrightarrow> p - rd p a \<in> pideal bs"
+    show "\<not> snd (rd p a) \<longrightarrow> p - fst (rd_list fs p) \<in> pideal bs"
     proof
-      assume "rd p a \<noteq> p"
-      hence "rd p a \<prec>p p" using rd_less_eq[of p a] by simp
-      from rd_lessE[OF this] obtain t where "red_single p (rd p a) a t" .
-      hence eq: "p - rd p a = monom_mult (lookup p (t + lp a) / lc a) t a"
-        unfolding red_single_def by simp
-      show "p - rd p a \<in> pideal bs" unfolding eq by (rule monom_mult_in_pideal, rule \<open>a \<in> bs\<close>)
+      assume "\<not> snd (rd p a)"
+      from IH[OF \<open>set fs \<subseteq> bs\<close>] show "p - fst (rd_list fs p) \<in> pideal bs" .
     qed
   qed
 qed
 
-lemma rd_list_in_pideal:
-  shows "p - (rd_list fs p) \<in> pideal (set fs)"
-  by (rule rd_list_in_pideal_ind, simp)
+lemma fst_rd_list_in_pideal: "p - fst (rd_list fs p) \<in> pideal (set fs)"
+  by (rule fst_rd_list_in_pideal_ind, simp)
+
+lemma snd_rd_list_iff_neq: "snd (rd_list fs p) \<longleftrightarrow> (fst (rd_list fs p) \<noteq> p)"
+proof (induct fs)
+  case Nil
+  show ?case by simp
+next
+  case (Cons f fs)
+  show ?case by (simp add: Let_def Cons snd_rd_iff_neq)
+qed
+
+corollary snd_rd_list_iff_is_red: "snd (rd_list fs p) \<longleftrightarrow> (is_red (set fs) p)"
+  by (simp add: snd_rd_list_iff_neq fst_rd_list_id)
 
 end (* ordered_powerprod *)
 
@@ -2215,92 +2241,87 @@ proof (rule wfI_min)
   qed
 qed
 
-function trd::"('a \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)"
-  where "trd fs p = (let q = rd_list fs p in (if q = p then p else trd fs q))"
+function trd :: "('a \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)"
+  where "trd fs p = (let q = rd_list fs p in (if snd q then trd fs (fst q) else fst q))"
   by (pat_completeness, auto)
 termination proof -
   from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
   let ?R = "trd_term d"
   show ?thesis
   proof (rule, rule trd_term_wf, fact)
-    fix p fs and q::"('a, 'b) poly_mapping"
-    assume q: "q = rd_list fs p" and neq: "q \<noteq> p"
-    have red: "red (set fs) p q" unfolding q
-      by (rule rd_list_red, rule ccontr, drule rd_list_fixpointI, simp only: q[symmetric] neq)
-    show "((fs, q), (fs, p)) \<in> ?R"
+    fix p fs and q::"('a \<Rightarrow>\<^sub>0 'b) \<times> bool"
+    assume q: "q = rd_list fs p" and "snd q"
+    from this(2) have "is_red (set fs) p" by (simp add: q snd_rd_list_iff_is_red)
+    hence red: "red (set fs) p (fst q)" unfolding q by (rule fst_rd_list_red)
+    show "((fs, fst q), (fs, p)) \<in> ?R"
     proof (simp add: trd_term_def, rule)
-      from dg red have "dgrad_p_set_le d {q} (insert p (set fs))"
+      from dg red have "dgrad_p_set_le d {fst q} (insert p (set fs))"
         by (rule dgrad_p_set_le_red)
-      show "dgrad_p_set_le d (insert q (set fs)) (insert p (set fs))"
+      show "dgrad_p_set_le d (insert (fst q) (set fs)) (insert p (set fs))"
       proof (rule dgrad_p_set_leI_insert)
         show "dgrad_p_set_le d (set fs) (insert p (set fs))" by (rule dgrad_p_set_le_subset, blast)
       qed fact
     next
-      from red show "q \<prec>p p" by (rule red_ord)
+      from red show "fst q \<prec>p p" by (rule red_ord)
     qed
   qed
 qed
 
 lemma trd_induct:
-  assumes base: "\<And>fs p. rd_list fs p = p \<Longrightarrow> P fs p p"
-    and ind: "\<And>fs p. rd_list fs p \<noteq> p \<Longrightarrow> P fs (rd_list fs p) (trd fs (rd_list fs p)) \<Longrightarrow>
-              P fs p (trd fs (rd_list fs p))"
+  assumes base: "\<And>fs p. fst (rd_list fs p) = p \<Longrightarrow> P fs p p"
+    and ind: "\<And>fs p. fst (rd_list fs p) \<noteq> p \<Longrightarrow> P fs (fst (rd_list fs p)) (trd fs (fst (rd_list fs p))) \<Longrightarrow>
+              P fs p (trd fs (fst (rd_list fs p)))"
   shows "P fs p (trd fs p)"
 proof (induct p rule: trd.induct)
-  fix fs and p::"('a, 'b) poly_mapping"
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
   let ?x = "rd_list fs p"
-  assume "\<And>x. x = rd_list fs p \<Longrightarrow> x \<noteq> p \<Longrightarrow> P fs x (trd fs x)"
-  from this[of ?x] have imp: "?x \<noteq> p \<Longrightarrow> P fs ?x (trd fs ?x)" by simp
+  assume "\<And>x. x = ?x \<Longrightarrow> snd x \<Longrightarrow> P fs (fst x) (trd fs (fst x))"
+  from this[of ?x] have imp: "snd ?x \<Longrightarrow> P fs (fst ?x) (trd fs (fst ?x))" by simp
   show "P fs p (trd fs p)"
-  proof (cases "?x = p")
+  proof (cases "snd ?x")
     case True
-    from base[OF True] True show ?thesis by simp
+    hence eq: "trd fs p = trd fs (fst ?x)" by (simp del: trd.simps add: trd.simps[of fs p])
+    from True have "fst (rd_list fs p) \<noteq> p" by (simp add: snd_rd_list_iff_neq)
+    from ind[OF this imp[OF True]] eq show ?thesis by simp
   next
     case False
-    hence eq: "trd fs p = trd fs ?x" by (simp del: trd.simps add: trd.simps[of fs p])
-    from ind[OF False imp[OF False]] eq show ?thesis by simp
+    hence "fst (rd_list fs p) = p" by (simp add: snd_rd_list_iff_neq)
+    with base[OF this] False show ?thesis by simp
   qed
 qed
 
 lemma trd_red_rtrancl: "(red (set fs))\<^sup>*\<^sup>* p (trd fs p)"
 proof (induct rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume "rd_list fs p = p"
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
+  assume "fst (rd_list fs p) = p"
   show "(red (set fs))\<^sup>*\<^sup>* p p" ..
 next
-  fix fs and p::"('a, 'b) poly_mapping"
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
   let ?x = "rd_list fs p"
-  assume "?x \<noteq> p" and "(red (set fs))\<^sup>*\<^sup>* ?x (trd fs ?x)"
-  show "(red (set fs))\<^sup>*\<^sup>* p (trd fs ?x)"
+  assume "fst ?x \<noteq> p" and "(red (set fs))\<^sup>*\<^sup>* (fst ?x) (trd fs (fst ?x))"
+  show "(red (set fs))\<^sup>*\<^sup>* p (trd fs (fst ?x))"
   proof (rule converse_rtranclp_into_rtranclp)
-    from \<open>?x \<noteq> p\<close> rd_list_fixpointI[of fs p] have "is_red (set fs) p" by auto
-    from rd_list_red[OF this] show "red (set fs) p ?x" .
-  next
-    show "(red (set fs))\<^sup>*\<^sup>* ?x (trd fs ?x)" by fact
-  qed
+    from \<open>fst ?x \<noteq> p\<close> rd_list_fixpointI[of fs p] have "is_red (set fs) p" by auto
+    thus "red (set fs) p (fst ?x)" by (rule fst_rd_list_red)
+  qed fact
 qed
 
 lemma trd_irred: "\<not> is_red (set fs) (trd fs p)"
 proof (induct rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume "rd_list fs p = p"
-  from rd_list_fixpointD[OF this] show "\<not> is_red (set fs) p" .
-next
-  fix fs and p::"('a, 'b) poly_mapping"
-  let ?x = "rd_list fs p"
-  assume "\<not> is_red (set fs) (trd fs ?x)"
-  show "\<not> is_red (set fs) (trd fs ?x)" by fact
-qed
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
+  assume "fst (rd_list fs p) = p"
+  thus "\<not> is_red (set fs) p" by (rule rd_list_fixpointD)
+qed assumption
 
 lemma trd_in_pideal: "(p - (trd fs p)) \<in> pideal (set fs)"
 proof (induct p rule: trd_induct)
-  fix fs and p::"('a, 'b) poly_mapping"
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
   from ideal.module_0 show "p - p \<in> pideal (set fs)" by simp
 next
-  fix fs and p::"('a, 'b) poly_mapping"
-  assume IH: "(rd_list fs p - trd fs (rd_list fs p)) \<in> pideal (set fs)"
-  from ideal.module_closed_plus[OF IH rd_list_in_pideal[of p fs]]
-    show "p - trd fs (rd_list fs p) \<in> pideal (set fs)" by simp
+  fix fs and p::"'a \<Rightarrow>\<^sub>0 'b"
+  assume IH: "(fst (rd_list fs p) - trd fs (fst (rd_list fs p))) \<in> pideal (set fs)"
+  from ideal.module_closed_plus[OF IH fst_rd_list_in_pideal[of p fs]]
+    show "p - trd fs (fst (rd_list fs p)) \<in> pideal (set fs)" by simp
 qed
 
 lemma pideal_closed_trd:
