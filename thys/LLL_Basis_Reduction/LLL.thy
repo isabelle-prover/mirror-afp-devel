@@ -94,8 +94,12 @@ fun basis_reduction_swap :: "state \<Rightarrow> state" where
     F' = dec_i (update_im1 (update_i F fim1) fi)
   in (i - 1, F', G'))"
 
-definition basis_reduction_step :: "rat \<Rightarrow> state \<Rightarrow> state" where
-  "basis_reduction_step \<alpha> state = (if fst state = 0 then increase_i state
+context 
+  fixes \<alpha> :: rat
+  and m :: nat
+begin
+definition basis_reduction_step :: "state \<Rightarrow> state" where
+  "basis_reduction_step state = (if fst state = 0 then increase_i state
      else let state' = basis_reduction_add_rows state in
      case state' of (i, F, G) \<Rightarrow>
       if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
@@ -103,18 +107,22 @@ definition basis_reduction_step :: "rat \<Rightarrow> state \<Rightarrow> state"
       else increase_i state'  
      )" 
 
-partial_function (tailrec) basis_reduction_main :: "rat \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> state" where
-  [code]: "basis_reduction_main \<alpha> m state = (case state of (i,F,G) \<Rightarrow>
+partial_function (tailrec) basis_reduction_main :: "state \<Rightarrow> state" where
+  [code]: "basis_reduction_main state = (case state of (i,F,G) \<Rightarrow>
      if i < m 
-     then basis_reduction_main \<alpha> m (basis_reduction_step \<alpha> state) 
+     then basis_reduction_main (basis_reduction_step state) 
      else state)"
+end
 
-definition basis_reduction_state :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> state" where 
-  "basis_reduction_state n \<alpha> F = (let m = length F;
+definition initial_state :: "nat \<Rightarrow> int vec list \<Rightarrow> state" where
+  "initial_state n F = (let m = length F;
      G = gram_schmidt_triv n (map (map_vec of_int) F);
      Fr = ([], F);
      Gr = ([], G)
-     in basis_reduction_main \<alpha> m (0, Fr, Gr))" 
+     in (0, Fr, Gr))" 
+
+definition basis_reduction_state :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> state" where 
+  "basis_reduction_state n \<alpha> F = (basis_reduction_main \<alpha> (length F) (initial_state n F))" 
 
 definition reduce_basis :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> int vec list \<times> rat vec list" where
   "reduce_basis n \<alpha> F = (\<lambda> state. ((of_list_repr o fst o snd) state, 
@@ -1790,9 +1798,9 @@ context fixes \<alpha> :: rat and F
     and len: "length F = m" 
 begin
 
-lemma basis_reduction_state: assumes "basis_reduction_state n \<alpha> F = state" 
+lemma initial_state: assumes "initial_state n F = state" 
   and A: "A = max_list (map (nat o sq_norm) F)" 
-  shows "\<exists>F' G'. LLL_invariant (lattice_of F) \<alpha> A state F' G' \<and> fst state = m" 
+shows "\<exists> F' G'. LLL_invariant (lattice_of F) \<alpha> A state F' G'" 
 proof -
   let ?F = "RAT F"
   define Fr0::f_repr where "Fr0 = ([], F)"
@@ -1839,13 +1847,25 @@ proof -
     also have "gs.gso (RAT F) i = G ! i" unfolding GG using i by auto
     finally show "\<parallel>G ! i\<parallel>\<^sup>2 \<le> rat_of_nat A" .
   qed
-  have inv: "LLL_invariant (lattice_of F) \<alpha> A (0, Fr0, ?Gr0) F G" 
+  have "LLL_invariant (lattice_of F) \<alpha> A (0, Fr0, ?Gr0) F G" 
     by (rule LLL_invI[OF repr gso0 gs refl _ _ _ lin_dep], auto simp:gs.weakly_reduced_def 
         gs.reduced_def len short)
-  obtain i Fr1 Gr1 where br:"state = (i, Fr1, Gr1)" by(cases state,auto)
-  note * = assms(1)[unfolded basis_reduction_state_def o_def Let_def,folded Gr0_def Fr0_def,unfolded len]
-  from basis_reduction_main[OF inv * \<alpha>]
-  show ?thesis by auto
+  also have "(0, Fr0, ?Gr0) = state" unfolding assms(1)[symmetric] initial_state_def Let_def
+    Fr0_def Gr0_def ..
+  finally show ?thesis by blast
+qed
+
+
+lemma basis_reduction_state: assumes "basis_reduction_state n \<alpha> F = state" 
+  and A: "A = max_list (map (nat o sq_norm) F)" 
+  shows "\<exists>F' G'. LLL_invariant (lattice_of F) \<alpha> A state F' G' \<and> fst state = m" 
+proof -
+  let ?state = "initial_state n F" 
+  from initial_state[OF refl A]
+  obtain F' G' where inv: "LLL_invariant (lattice_of F) \<alpha> A ?state F' G'" by auto
+  from assms(1)[unfolded basis_reduction_state_def len]
+  have res: "basis_reduction_main \<alpha> m ?state = state" .
+  from basis_reduction_main[OF inv res \<alpha>] show ?thesis by blast
 qed
 
 lemma reduce_basis: assumes res: "reduce_basis n \<alpha> F = (F', G')" 
