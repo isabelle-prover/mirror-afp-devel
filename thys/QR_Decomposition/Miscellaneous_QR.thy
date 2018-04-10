@@ -443,6 +443,6 @@ proof -
 qed
 
 lemma op_vec_scaleR: "( *s) = ( *\<^sub>R)"
-  using scalar_mult_eq_scaleR by auto
+  by (force intro: scalar_mult_eq_scaleR)
 
 end

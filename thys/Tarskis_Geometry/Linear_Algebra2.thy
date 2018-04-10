@@ -148,7 +148,8 @@ lemma orthogonal_sum:
   shows "orthogonal v (\<Sum> w\<in>S. c w *s w)"
 proof -
   from dot_sum_distrib_left [of v]
-  have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. v \<bullet> (c w *s w))" by auto
+  have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. v \<bullet> (c w *s w))"
+    by blast
   with inner_scaleR_right [of v]
   have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. c w * (v \<bullet> w))"
     by (simp add: scalar_equiv)
@@ -202,30 +203,13 @@ qed
 
 lemma dot_scaleR_mult:
   shows "(k *\<^sub>R a) \<bullet> b = k * (a \<bullet> b)" and "a \<bullet> (k *\<^sub>R b) = k * (a \<bullet> b)"
-  unfolding inner_vec_def
-  by (simp_all add: algebra_simps sum_distrib_left)
+  by auto
 
 lemma dependent_explicit_finite:
   fixes S :: "(('a::{real_vector,field})^'n) set"
   assumes "finite S"
   shows "dependent S \<longleftrightarrow> (\<exists> u. (\<exists> v\<in>S. u v \<noteq> 0) \<and> (\<Sum> v\<in>S. u v *\<^sub>R v) = 0)"
-proof
-  assume "dependent S"
-  with dependent_explicit [of S]
-  obtain S' and u where
-    "S' \<subseteq> S" and "\<exists> v\<in>S'. u v \<noteq> 0" and "(\<Sum> v\<in>S'. u v *\<^sub>R v) = 0"
-    by auto
-  let ?u' = "\<lambda> v. if v \<in> S' then u v else 0"
-  from `S' \<subseteq> S` and `\<exists> v\<in>S'. u v \<noteq> 0` have "\<exists> v\<in>S. ?u' v \<noteq> 0" by auto
-  moreover from sum.mono_neutral_cong_right [of S S' "\<lambda> v. ?u' v *\<^sub>R v"]
-    and `S' \<subseteq> S` and `(\<Sum> v\<in>S'. u v *\<^sub>R v) = 0` and `finite S`
-  have "(\<Sum> v\<in>S. ?u' v *\<^sub>R v) = 0" by simp
-  ultimately show "(\<exists> u. (\<exists> v\<in>S. u v \<noteq> 0) \<and> (\<Sum> v\<in>S. u v *\<^sub>R v) = 0)" by auto
-next
-  assume "(\<exists> u. (\<exists> v\<in>S. u v \<noteq> 0) \<and> (\<Sum> v\<in>S. u v *\<^sub>R v) = 0)"
-  with dependent_explicit [of S] and `finite S`
-  show "dependent S" by auto
-qed
+  by (simp add: assms dependent_finite)
 
 lemma dependent_explicit_2:
   fixes v w :: "('a::{field,real_vector})^'n"

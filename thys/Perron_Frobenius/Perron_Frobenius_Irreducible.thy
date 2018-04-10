@@ -562,7 +562,8 @@ proof (rule ccontr)
   have le: "le_vec ((sr + eps) *s ?y) (A *v ?y)"
   proof 
     fix i
-    have "((sr + eps) *s ?y) $ i = sr * ?y $ i + eps * ?y $ i" by simp
+    have "((sr + eps) *s ?y) $ i = sr * ?y $ i + eps * ?y $ i"
+      by (simp add: comm_semiring_class.distrib)
     also have "\<dots> \<le> sr * ?y $ i + ?f i * ?y $ i" 
     proof (rule add_left_mono[OF mult_right_mono])
       show "0 \<le> ?y $ i" using y_pos[rule_format, of i] by auto
@@ -592,9 +593,8 @@ proof -
   also have "\<dots> = c *s u" unfolding c_def A1n_def n_def[symmetric]
   proof (induct n)
     case (Suc n)
-    show ?case by (simp add: matrix_add_ldistrib matrix_mul_rid 
-      matrix_add_vect_distrib Suc matpow_1_commute matrix_vector_mul_assoc[symmetric] 
-      vector_smult_distrib sr_imp_eigen_vector_main[symmetric] field_simps)
+    then show ?case
+      by (simp add: matrix_vector_mul_assoc[symmetric] algebra_simps sr_imp_eigen_vector_main[symmetric])
   qed (auto simp: matrix_vector_mul_lid)
   finally have lt: "lt_vec 0 (c *s u)" .
   have "0 < u $ i" for i using lt[rule_format, of i] c by simp (metis zero_less_mult_pos)
@@ -886,7 +886,7 @@ proof -
   finally have eq1: "sr *s (rowvector w *v y) = rowvector w *v (A *v y)" .
   have "le_vec (rowvector w *v (A *v y)) (?w *v (mu *s y))" 
     by (rule le_vec_mono_left[OF _ le], insert w(2), auto simp: rowvector_def order.strict_iff_order)
-  also have "?w *v (mu *s y) = mu *s (?w *v y)" by (simp add: vector_smult_distrib)
+  also have "?w *v (mu *s y) = mu *s (?w *v y)" by (simp add: algebra_simps)
   finally have le1: "le_vec (rowvector w *v (A *v y)) (mu *s (?w *v y))" .
   from le1[unfolded eq1[symmetric]] 
   have 2: "le_vec (sr *s (?w *v y)) (mu *s (?w *v y))" .
@@ -917,7 +917,7 @@ proof -
       by (simp add: matrix_add_ldistrib matrix_mul_rid matrix_add_vect_distrib matpow_1_commute
        matrix_vector_mul_assoc[symmetric])
     have "le_vec ?b (?mu^n *s (A *v y))" 
-      using le_vec_mono_left[OF nonneg Suc] by (simp add: vector_smult_distrib)    
+      using le_vec_mono_left[OF nonneg Suc] by (simp add: algebra_simps)    
     moreover have "le_vec (?mu^n *s (A *v y)) (?mu^n *s (mu *s y))" 
       using le mu by auto
     moreover have id: "?mu^n *s (mu *s y) = (?mu^n * mu) *s y" by simp
@@ -926,7 +926,7 @@ proof -
     from Suc have le2: "le_vec ?c ((mu + 1) ^ n *s y)" .
     have le: "le_vec ?a ((?mu^n * mu) *s y + ?mu^n *s y)" 
       unfolding id' using add_mono[OF le1[rule_format] le2[rule_format]] by auto    
-    have id'': "(?mu^n * mu) *s y + ?mu^n *s y = ?mu^Suc n *s y" by (simp add: field_simps)
+    have id'': "(?mu^n * mu) *s y + ?mu^n *s y = ?mu^Suc n *s y" by (simp add: algebra_simps)
     show ?case using le unfolding id'' .
   qed (simp add: matrix_vector_mul_lid)
   have lt: "0 < cc * y $ i" for i using lt[of i] le[rule_format, of i] by auto

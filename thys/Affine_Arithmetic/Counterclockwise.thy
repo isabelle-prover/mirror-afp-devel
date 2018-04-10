@@ -43,6 +43,12 @@ lemma fold_if_in_set:
 
 subsection \<open>Sort Elements of a List\<close>
 
+no_syntax
+  "_MIN1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3MIN _./ _)" [0, 10] 10)
+  "_MIN"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3MIN _:_./ _)" [0, 0, 10] 10)
+  "_MIN1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3MIN _./ _)" [0, 10] 10)
+  "_MIN"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3MIN _\<in>_./ _)" [0, 0, 10] 10)
+
 locale linorder_list0 = fixes LE::"'a \<Rightarrow> 'a \<Rightarrow> bool"
 begin
 
