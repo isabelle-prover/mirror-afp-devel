@@ -366,7 +366,7 @@ text \<open>
 The following corresponds the part of Lemma 4.10 that states we have a theorem proving process:
 \<close>
 
-lemma resolution_prover_ground_derive:
+lemma RP_ground_derive:
   "St \<leadsto> St' \<Longrightarrow> sr_ext.derive (grounding_of_state St) (grounding_of_state St')"
 proof (induction rule: RP.induct)
   case (tautology_deletion A C N P Q)
@@ -538,7 +538,7 @@ A useful consequence:
 \<close>
 
 lemma RP_model: "St \<leadsto> St' \<Longrightarrow> I \<Turnstile>s grounding_of_state St' \<longleftrightarrow> I \<Turnstile>s grounding_of_state St"
-proof (drule resolution_prover_ground_derive, erule sr_ext.derive.cases, hypsubst)
+proof (drule RP_ground_derive, erule sr_ext.derive.cases, hypsubst)
   let
     ?gSt = "grounding_of_state St" and
     ?gSt' = "grounding_of_state St'"
@@ -576,9 +576,9 @@ Another formulation of the part of Lemma 4.10 that states we have a theorem prov
 \<close>
 
 (* FIXME: rename *)
-lemma resolution_prover_ground_derivation:
+lemma RP_ground_derive_chain:
   "chain sr_ext.derive (lmap grounding_of_state Sts)"
-  using deriv resolution_prover_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
+  using deriv RP_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
 
 text \<open>
 The following is used prove to Lemma 4.11:
@@ -679,7 +679,7 @@ proof -
     using c using Liminf_grounding_of_state_ground ns by auto
 
   have derivns: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation deriv ns by auto
+    using RP_ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C"
   proof (rule ccontr)
@@ -728,16 +728,13 @@ proof -
     using c using Liminf_grounding_of_state_ground ns by auto
 
   have derivns: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation deriv ns by auto
+    using RP_ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
     using instance_if_subsumed_and_in_limit ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
-
-  from deriv have four_ten: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation ns by auto
 
   have in_Sts_in_Sts_Suc:
     "\<forall>l \<ge> i. enat (Suc l) < llength Sts \<longrightarrow> D \<in> Q_of_state (lnth Sts l) \<longrightarrow> D \<in> Q_of_state (lnth Sts (Suc l))"
@@ -831,16 +828,13 @@ proof -
     using c using Liminf_grounding_of_state_ground ns by auto
 
   have derivns: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation deriv ns by auto
+    using RP_ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
     using instance_if_subsumed_and_in_limit ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
-
-  from deriv have four_ten: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation ns by auto
 
   obtain l where
     l_p: "D \<in> P_of_state (lnth Sts l) \<and> D \<notin> P_of_state (lnth Sts (Suc l)) \<and> i \<le> l \<and> enat (Suc l) < llength Sts"
@@ -958,7 +952,7 @@ proof -
     using c using Liminf_grounding_of_state_ground ns by auto
 
   have derivns: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation deriv ns by auto
+    using RP_ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
     using instance_if_subsumed_and_in_limit ns c d by blast
@@ -968,9 +962,6 @@ proof -
 
   from c have no_taut: "\<not> (\<exists>A. Pos A \<in># C \<and> Neg A \<in># C)"
     using sr.tautology_redundant by auto
-
-  from deriv have four_ten: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation ns by auto
 
   have "\<exists>l. D \<in> N_of_state (lnth Sts l) \<and> D \<notin> N_of_state (lnth Sts (Suc l)) \<and> i \<le> l \<and> enat (Suc l) < llength Sts"
     using fair using eventually_removed_from_N d unfolding ns by auto
@@ -1070,7 +1061,7 @@ proof -
     unfolding clss_of_state_def Sup_state_def
     by simp_all (metis (no_types) in_Sup_llist_in_nth llength_lmap lnth_lmap)
 
-  have derivns: "chain sr_ext.derive Ns" using resolution_prover_ground_derivation deriv ns by auto
+  have derivns: "chain sr_ext.derive Ns" using RP_ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
     using instance_if_subsumed_and_in_limit[OF ns c] D_p i_p by blast
@@ -1277,7 +1268,7 @@ proof -
   then have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
     using true_clss_def by auto
   then have "\<not> satisfiable (lhd (lmap grounding_of_state Sts))"
-    using sr_ext.sat_deriv_Liminf_iff resolution_prover_ground_derivation by metis
+    using sr_ext.sat_deriv_Liminf_iff RP_ground_derive_chain by metis
   then show ?thesis
     unfolding lhd_lmap_Sts .
 qed
@@ -1322,7 +1313,7 @@ proof -
     using fair deriv fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state ns by blast
 
   have derivns: "chain sr_ext.derive Ns"
-    using resolution_prover_ground_derivation deriv ns by auto
+    using RP_ground_derive_chain deriv ns by auto
 
   {
     fix \<gamma> :: "'a inference"
@@ -1535,7 +1526,7 @@ corollary RP_complete_if_fair:
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    unfolding sr_ext.sat_deriv_Liminf_iff[OF resolution_prover_ground_derivation]
+    unfolding sr_ext.sat_deriv_Liminf_iff[OF RP_ground_derive_chain]
     by (rule unsat[folded lhd_lmap_Sts[of grounding_of_state]])
   moreover have "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
     by (rule RP_saturated_if_fair[OF fair, simplified])
