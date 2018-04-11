@@ -222,6 +222,7 @@ lemma basis_reduction_main_cost: fixes F G assumes "LLL_invariant A state F G"
   shows "result (basis_reduction_main_cost state) = basis_reduction_main \<alpha> m state" (is ?g1) 
    "cost (basis_reduction_main_cost state) \<le> body_cost * num_loops A" (is ?g2)
 proof -
+  have inv: "LLL_partial_invariant A state F G" using assms unfolding LLL_invariant_def by auto
   have ?g1 and cost: "cost (basis_reduction_main_cost state) \<le> body_cost * LLL_measure state"
     using assms
   proof (atomize (full), induct state arbitrary: F G rule: wf_induct[OF wf_measure[of LLL_measure]])
@@ -269,7 +270,7 @@ proof -
     define l where "l = log (4 * real_of_rat \<alpha> / (4 + real_of_rat \<alpha>)) (real A)" 
     define k where "k = 2 * m * m" 
     have "LLL_measure state \<le> nat (ceiling (m + k * l))" unfolding l_def k_def
-      using LLL_measure_approx[OF alpha assms[unfolded state] \<alpha> m0, folded state] by linarith
+      using LLL_measure_approx[OF alpha inv[unfolded state] \<alpha> m0, folded state] by linarith
     also have "\<dots> \<le> num_loops A" unfolding num_loops_def l_def[symmetric] k_def[symmetric]
       by (simp add: of_nat_ceiling times_right_mono)
     finally show "LLL_measure state \<le> num_loops A" .
