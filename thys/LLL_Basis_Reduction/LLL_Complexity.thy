@@ -9,8 +9,8 @@ text \<open>In this section we define a version of the LLL algorithm which expli
   costs of running the algorithm. Its soundness is mainly proven by stating that 
   projecting away yields the original result.
 
-  The cost model is quite basic. At the moment it uses a fixed parameter for the costs 
-  of executing the body of the outer while-loop.\<close>
+  The cost model counts the number of arithmetic operations that occur in vector-addition, scalar-products,
+  and scalar multiplication. At the moment it does not look inside the costs to compute the initial GSO.\<close>
 
 theory LLL_Complexity
   imports LLL 
@@ -28,27 +28,175 @@ context LLL
 begin
 
 context
-  fixes \<alpha> :: rat and L :: "int vec set"
   assumes \<alpha>: "\<alpha> > 4/3" and m0: "m \<noteq> 0" 
 begin
 
 private lemma alpha: "\<alpha> \<ge> 4/3" using \<alpha> by auto
 
 context
-  fixes body_cost initial_gso_cost :: nat
+  fixes arith_cost initial_gso_cost :: nat
 begin
 
-definition basis_reduction_step_cost :: "state \<Rightarrow> state cost" where
-  "basis_reduction_step_cost state = (basis_reduction_step \<alpha> state, body_cost)"
+fun basis_reduction_add_row_main_cost :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> (state \<times> int) cost" where 
+  "basis_reduction_add_row_main_cost (i,F,G) fj mu = (let     
+     c = floor_ceil mu \<comment> \<open>ignore costs for this computation\<close>
+     in if c = 0 then let costs = 0 in
+       (((i,F,G), c), costs)
+     else 
+     let 
+     fi = get_nth_i F - (c \<cdot>\<^sub>v fj);
+     F' = update_i F fi;
+     costs = n * arith_cost \<comment> \<open>n arithmetic operations in scalar-multiplication\<close>
+     in (((i,F',G), c), costs))"
 
-lemma basis_reduction_step_cost: "cost (basis_reduction_step_cost state) \<le> body_cost" 
-  "result (basis_reduction_step_cost state) = basis_reduction_step \<alpha> state" 
-  unfolding basis_reduction_step_cost_def cost_simps by auto
+lemma basis_reduction_add_row_main_cost: 
+   "result (basis_reduction_add_row_main_cost state fj mu) = basis_reduction_add_row_main state fj mu"  
+   "cost (basis_reduction_add_row_main_cost state fj mu) \<le> n * arith_cost" 
+  by (cases "state", auto simp: Let_def cost_simps)+
+
+definition \<mu>_ij_cost :: "int vec \<Rightarrow> rat vec \<times> rat \<Rightarrow> rat cost" where
+  "\<mu>_ij_cost fi gj_norm = (let cost = 2 * n * arith_cost 
+    in \<comment> \<open>2n arithmetic operations in scalar-product\<close>
+    case gj_norm of (gj,norm_gj) \<Rightarrow> ((fi \<bullet>i gj) / norm_gj, cost))" 
+
+lemma \<mu>_ij_cost:  
+   "result (\<mu>_ij_cost fi gj_norm) = \<mu>_ij fi gj_norm"  
+   "cost (\<mu>_ij_cost fi gj_norm) \<le> 2* n * arith_cost" 
+  unfolding \<mu>_ij_cost_def \<mu>_ij_def Let_def by (cases gj_norm, auto simp: cost_simps)+
+
+definition "\<mu>_i_im1_cost Fr Gr = (let cost = 2 * n * arith_cost 
+  in \<comment> \<open>2n arithmetic operations in scalar-product\<close>
+  ((get_nth_i Fr \<bullet>i g_im1 Gr) / sqnorm_g_im1 Gr, cost))" 
+
+lemma \<mu>_i_im1_cost:  
+   "result (\<mu>_i_im1_cost fr gr) = \<mu>_i_im1 fr gr"  
+   "cost (\<mu>_i_im1_cost fr gr) \<le> 2 * n * arith_cost" 
+  unfolding \<mu>_i_im1_cost_def \<mu>_i_im1_def Let_def by (auto simp: cost_simps)
+
+fun basis_reduction_add_row_i_all_main_cost :: "state \<Rightarrow> int vec list \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> state cost" where
+  "basis_reduction_add_row_i_all_main_cost state (Cons fj fjs) (Cons gj gjs) = (case state of (i,F,G) \<Rightarrow> 
+    let fi = get_nth_i F in
+    case \<mu>_ij_cost fi gj of (mu, c1) \<Rightarrow> 
+    case basis_reduction_add_row_main_cost state fj mu of (res,c2) \<Rightarrow>
+    case basis_reduction_add_row_i_all_main_cost (fst res) fjs gjs of (state, c3) \<Rightarrow>
+      (state, c1 + c2 + c3))"
+| "basis_reduction_add_row_i_all_main_cost state _ _ = (let costs = 0 in (state,costs))" 
+
+lemma basis_reduction_add_row_i_all_main_cost: 
+   "result (basis_reduction_add_row_i_all_main_cost state fjs gjs) = basis_reduction_add_row_i_all_main state fjs gjs"  
+   "cost (basis_reduction_add_row_i_all_main_cost state fjs gjs) \<le> 3 * length fjs * n * arith_cost" 
+proof (atomize (full), induct fjs arbitrary: gjs state)
+  case (Cons fj fjs gs)
+  show ?case 
+  proof (cases gs)
+    case gs: (Cons gj gjs)
+    obtain i F G where state: "state = (i, F, G)" by (cases state, auto)
+    let ?fi = "get_nth_i F"
+    obtain mu c1 where mu: "\<mu>_ij_cost ?fi gj = (mu, c1)" (is "?mu = _") by (cases ?mu, auto)
+    obtain res c2 where row: "basis_reduction_add_row_main_cost (i, F, G) fj mu = (res, c2)" (is "?row = _") 
+      by (cases ?row, auto)
+    obtain state c3 where rec: "basis_reduction_add_row_i_all_main_cost (fst res) fjs gjs = (state, c3)" (is "?rec = _")
+      by (cases ?rec, auto)    
+    from \<mu>_ij_cost[of ?fi gj, unfolded mu cost_simps]
+    have mu': "\<mu>_ij (get_nth_i F) gj = mu" and c1: "c1 \<le> 2 * n * arith_cost" by auto
+    from basis_reduction_add_row_main_cost[of "(i,F,G)" fj mu, unfolded row cost_simps]
+    have row': "basis_reduction_add_row_main (i, F, G) fj mu = res" and c2: "c2 \<le> n * arith_cost" by auto
+    from Cons[of "fst res" gjs, unfolded rec cost_simps] 
+    have rec': "basis_reduction_add_row_i_all_main (fst res) fjs gjs = state" and 
+      c3: "c3 \<le> 3 * length fjs * n * arith_cost" by auto
+    have c: "c1 + c2 + c3 \<le> 3 * length (fj # fjs) * n * arith_cost" using c1 c2 c3 
+      by (auto simp: distrib_right)  
+    show ?thesis 
+      unfolding basis_reduction_add_row_i_all_main_cost.simps 
+        basis_reduction_add_row_i_all_main.simps gs state split mu Let_def row rec cost_simps 
+        mu' row' rec' using c by auto
+  qed (auto simp: cost_simps)
+qed (auto simp: cost_simps)
+
+fun basis_reduction_swap_cost :: "state \<Rightarrow> state cost" where
+  "basis_reduction_swap_cost (i,F,G) = (
+    case \<mu>_i_im1_cost F G of (mu,c1) \<Rightarrow>
+    let
+      gi = g_i G; 
+      gim1 = g_im1 G;
+      fi = get_nth_i F;
+      fim1 = get_nth_im1 F;
+      new_gim1 = gi + mu \<cdot>\<^sub>v gim1; \<comment> \<open>2n arithmetic operations in scalar-product and addition\<close>
+      norm_gim1 = sq_norm new_gim1; \<comment> \<open>2n arithmetic operations to compute squared norm\<close>
+      new_gi = gim1 - (fim1 \<bullet>i new_gim1 / norm_gim1) \<cdot>\<^sub>v new_gim1; \<comment> \<open>4n arithmetic operations: minus, scalar-prod and scalar-mult\<close>
+      norm_gi = sq_norm new_gi; \<comment> \<open>2n arithmetic operations to compute squared norm\<close>
+      G' = dec_i (update_im1 (update_i G (new_gi,norm_gi)) (new_gim1,norm_gim1));
+      F' = dec_i (update_im1 (update_i F fim1) fi);
+      c2 = (2 + 2 + 4 + 2) * n * arith_cost
+    in ((i - 1, F', G'), c1 + c2))"
+
+lemma basis_reduction_swap_cost: 
+   "result (basis_reduction_swap_cost state) = basis_reduction_swap state"  
+   "cost (basis_reduction_swap_cost state) \<le> 12 * n * arith_cost" 
+proof (atomize(full), goal_cases)
+  case 1
+  obtain i F G where state: "state = (i,F,G)" by (cases state, auto)
+  obtain mu c1 where mu: "\<mu>_i_im1_cost F G = (mu,c1)" (is "?mu = _") by (cases ?mu, auto)
+  from \<mu>_i_im1_cost[of F G, unfolded mu cost_simps]
+  have mu': "\<mu>_i_im1 F G = mu" and c1: "c1 \<le> 2 * n * arith_cost" by auto
+  show ?case unfolding state basis_reduction_swap_cost.simps 
+    basis_reduction_swap.simps mu split Let_def mu' cost_simps
+    by (intro conjI[OF refl], insert c1, auto simp: ac_simps)
+qed
+  
+definition basis_reduction_add_rows_cost :: "state \<Rightarrow> state cost" where 
+  "basis_reduction_add_rows_cost state = (case state of (i,F,G) \<Rightarrow>
+    let fjs = fst F;
+        gjs = fst G
+      in basis_reduction_add_row_i_all_main_cost state fjs gjs)" 
+
+lemma basis_reduction_add_rows_cost: assumes "LLL_invariant A state F G" 
+  shows "result (basis_reduction_add_rows_cost state) = basis_reduction_add_rows state" (is ?g1)
+     "cost (basis_reduction_add_rows_cost state) \<le> 4 * m * n * arith_cost" (is ?g2)
+proof -
+  obtain i Fr Gr where state: "state = (i, Fr, Gr)" by (cases state, auto)
+  show ?g1 unfolding basis_reduction_add_rows_cost_def state split Let_def basis_reduction_add_rows_def
+    by (simp add: basis_reduction_add_row_i_all_main_cost)
+  from LLL_invD(1,4)[OF assms[unfolded state]] have len: "length (fst Fr) \<le> m"
+    unfolding of_list_repr_def by auto
+  show ?g2 unfolding basis_reduction_add_rows_cost_def state split Let_def
+    by (rule order.trans, rule basis_reduction_add_row_i_all_main_cost, insert len, auto)
+qed
+
+definition basis_reduction_step_cost :: "state \<Rightarrow> state cost" where
+  "basis_reduction_step_cost state = (if fst state = 0 then (let c = 0 in (increase_i state, c))
+     else case basis_reduction_add_rows_cost state of (state',c1) \<Rightarrow>
+     case state' of (i, F, G) \<Rightarrow>
+      if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
+      then case basis_reduction_swap_cost state' of (state'',c2) \<Rightarrow> (state'', c1 + c2)
+      else (increase_i state', c1)
+     )" 
+
+definition "body_cost = (4 * m + 12) * n * arith_cost" 
+
+lemma basis_reduction_step_cost: assumes "LLL_invariant A state F G" 
+  shows "result (basis_reduction_step_cost state) = basis_reduction_step \<alpha> state" (is ?g1)
+     "cost (basis_reduction_step_cost state) \<le> body_cost" (is ?g2)
+proof -
+  obtain state' c1 where add: "basis_reduction_add_rows_cost state = (state',c1)" (is "?add = _") by (cases ?add, auto)
+  obtain i F G where state': "state' = (i,F,G)" by (cases state', auto)
+  obtain state'' c2 where swap: "basis_reduction_swap_cost (i,F,G) = (state'',c2)" (is "?swap = _") by (cases ?swap, auto)
+  from basis_reduction_add_rows_cost[OF assms, unfolded add cost_simps]
+  have add': "basis_reduction_add_rows state = state'" 
+    and c1: "c1 \<le> 4 * m * n * arith_cost" by auto
+  from basis_reduction_swap_cost[of "(i,F,G)", unfolded swap cost_simps]
+  have swap': "basis_reduction_swap (i, F, G) = state''" 
+    and c2: "c2 \<le> 12 * n * arith_cost" by auto
+  note d = basis_reduction_step_cost_def basis_reduction_step_def Let_def add split swap 
+      state' add' swap'
+  show ?g1 unfolding d by (auto split: if_splits simp: cost_simps)
+  show ?g2 unfolding d nat_distrib body_cost_def using c1 c2 by (auto split: if_splits simp: cost_simps)
+qed
 
 function basis_reduction_main_cost :: "state \<Rightarrow> state cost" where
   "basis_reduction_main_cost state = (
      case state of (i,F,G) \<Rightarrow>
-     if i < m \<and> (\<exists> A FF GG. LLL_invariant L \<alpha> A state FF GG) 
+     if i < m \<and> (\<exists> A FF GG. LLL_invariant A state FF GG) 
        \<comment> \<open>The check on the invariant is just to be able to prove termination. 
           One cannot use partial-function at this point, since the function with cost is not tail-recursive.\<close>
      then case basis_reduction_step_cost state of 
@@ -59,30 +207,30 @@ function basis_reduction_main_cost :: "state \<Rightarrow> state cost" where
   by pat_completeness auto
 
 termination
-proof (standard, rule wf_measure[of "LLL_measure \<alpha>"], goal_cases)
+proof (standard, rule wf_measure[of LLL_measure], goal_cases)
   case (1 state i FG F G state1 c1)
   note * = 1(1)[symmetric] 1(2)[symmetric] 1(3) 1(4)[symmetric]
-  from * obtain FF GG A where i: "i < m" and inv: "LLL_invariant L \<alpha> A (i, F, G) FF GG" by auto
-  from basis_reduction_step_cost[of state, unfolded *(4)] 
-  have res: "basis_reduction_step \<alpha> (i, F, G) = state1" unfolding * cost_simps by auto
+  from * obtain FF GG A where i: "i < m" and inv: "LLL_invariant A (i, F, G) FF GG" by auto
+  from basis_reduction_step_cost[OF inv, unfolded *] 
+  have res: "basis_reduction_step \<alpha> (i, F, G) = state1" using * cost_simps(2) by metis
   from basis_reduction_step[OF alpha inv i res]
   show ?case unfolding * by auto
 qed
 
 declare basis_reduction_main_cost.simps[simp del]
 
-definition "num_loops A = nat (ceiling (m + 2 * m * m * log (4 * of_rat \<alpha> / (4 + of_rat \<alpha>)) (real A)))"
+definition "num_loops A = m + 2 * m * m * nat (ceiling (log (4 * of_rat \<alpha> / (4 + of_rat \<alpha>)) (real A)))"
 
-lemma basis_reduction_main_cost: fixes F G assumes "LLL_invariant L \<alpha> A state F G"
+lemma basis_reduction_main_cost: fixes F G assumes "LLL_invariant A state F G"
   shows "result (basis_reduction_main_cost state) = basis_reduction_main \<alpha> m state" (is ?g1) 
    "cost (basis_reduction_main_cost state) \<le> body_cost * num_loops A" (is ?g2)
 proof -
-  have ?g1 and cost: "cost (basis_reduction_main_cost state) \<le> body_cost * LLL_measure \<alpha> state"
+  have ?g1 and cost: "cost (basis_reduction_main_cost state) \<le> body_cost * LLL_measure state"
     using assms
-  proof (atomize (full), induct state arbitrary: F G rule: wf_induct[OF wf_measure[of "LLL_measure \<alpha>"]])
+  proof (atomize (full), induct state arbitrary: F G rule: wf_induct[OF wf_measure[of LLL_measure]])
     case (1 state F G)
     note inv = 1(2)
-    have ex: "(\<exists>A FF. Ex (LLL_invariant L \<alpha> A state FF)) = True" using inv by auto
+    have ex: "(\<exists>A FF. Ex (LLL_invariant A state FF)) = True" using inv by auto
     note IH = 1(1)[rule_format]
     obtain i Fr1 Gr1 where state: "state = (i,Fr1,Gr1)" by (cases state, auto)
     note inv = inv[unfolded state]
@@ -93,22 +241,22 @@ proof -
       obtain c1 state1 where b: "basis_reduction_step_cost (i, Fr1, Gr1) = (state1, c1)" (is "?b = _")
         by (cases ?b, auto)
       note simp = simp[unfolded state b split, folded state]
-      from basis_reduction_step_cost[of state, unfolded state b cost_simps]
+      from basis_reduction_step_cost[OF inv, unfolded state b cost_simps]
       have c1: "c1 \<le> body_cost" and bb: "basis_reduction_step \<alpha> (i, Fr1, Gr1) = state1" by auto
       obtain c2 state2 where rec: "basis_reduction_main_cost state1 = (state2, c2)" (is "?rec = _")
         by (cases ?rec, auto)
       note simp = simp[unfolded rec split]
       from simp i have res: "basis_reduction_main_cost state = (state2, c1 + c2)" by auto    
       note bsr = basis_reduction_step[OF alpha inv i bb]
-      from bsr(1) obtain F' G' where inv: "LLL_invariant L \<alpha> A state1 F' G'" by auto
-      from bsr(2) have "(state1 ,state) \<in> measure (LLL_measure \<alpha>)" by (auto simp: state)
+      from bsr(1) obtain F' G' where inv: "LLL_invariant A state1 F' G'" by auto
+      from bsr(2) have "(state1 ,state) \<in> measure LLL_measure" by (auto simp: state)
       from IH[OF this inv, unfolded rec cost_simps]
       have res': "basis_reduction_main \<alpha> m state1 = state2" 
-        and c2: "c2 \<le> body_cost * LLL_measure \<alpha> state1" by auto
+        and c2: "c2 \<le> body_cost * LLL_measure state1" by auto
       have res': "basis_reduction_main \<alpha> m state = state2"
         unfolding basis_reduction_main.simps[of _ _ state] unfolding split b state bb res' using i by auto
-      from bsr(2)[folded state] obtain k where meas: "LLL_measure \<alpha> state = Suc (LLL_measure \<alpha> state1) + k" 
-        and "k = LLL_measure \<alpha> state - Suc (LLL_measure \<alpha> state1)" by simp 
+      from bsr(2)[folded state] obtain k where meas: "LLL_measure state = Suc (LLL_measure state1) + k" 
+        and "k = LLL_measure state - Suc (LLL_measure state1)" by simp 
       show ?thesis unfolding res' res cost_simps
         by (intro conjI[OF refl], rule order.trans[OF add_mono[OF c1 c2]], unfold meas, auto)
     next
@@ -119,9 +267,16 @@ proof -
   qed
   show ?g1 by fact
   obtain i F G where state: "state = (i, F, G)" by (cases state, auto)
-  note cost also have "body_cost * LLL_measure \<alpha> state \<le> body_cost * num_loops A" 
-    by (rule mult_left_mono, unfold num_loops_def, insert 
-    LLL_measure_approx[OF alpha assms[unfolded state] \<alpha> m0, folded state], linarith+)
+  note cost also have "body_cost * LLL_measure state \<le> body_cost * num_loops A" 
+  proof (rule mult_left_mono; linarith?)
+    define l where "l = log (4 * real_of_rat \<alpha> / (4 + real_of_rat \<alpha>)) (real A)" 
+    define k where "k = 2 * m * m" 
+    have "LLL_measure state \<le> nat (ceiling (m + k * l))" unfolding l_def k_def
+      using LLL_measure_approx[OF alpha assms[unfolded state] \<alpha> m0, folded state] by linarith
+    also have "\<dots> \<le> num_loops A" unfolding num_loops_def l_def[symmetric] k_def[symmetric]
+      by (simp add: of_nat_ceiling times_right_mono)
+    finally show "LLL_measure state \<le> num_loops A" .
+  qed
   finally show ?g2 . 
 qed
 
@@ -163,8 +318,8 @@ proof -
     unfolding basis_reduction_state_cost_def init main split by simp
   from initial_state_cost[of F, unfolded init cost_simps]
   have c1: "c1 \<le> initial_gso_cost" and init: "initial_state n F = state1" by auto
-  from initial_state[OF alpha lin_dep len init refl, folded A_def] L
-  obtain F' G' where inv: "LLL_invariant L \<alpha> (A F) state1 F' G'" by auto
+  from initial_state[OF alpha lin_dep len L init refl, folded A_def]
+  obtain F' G' where inv: "LLL_invariant (A F) state1 F' G'" by auto
   from basis_reduction_main_cost[OF inv, unfolded main cost_simps]
   have main: "basis_reduction_main \<alpha> m state1 = state2" and c2: "c2 \<le> body_cost * num_loops (A F)" 
     by auto
@@ -190,7 +345,7 @@ proof -
 qed
 
 text \<open>Theorem with expanded costs\<close>
-thm reduce_basis_cost(2)[unfolded num_loops_def A_def]
+thm reduce_basis_cost(2)[unfolded num_loops_def A_def body_cost_def]
 
 end (* lin-indep F *)
 end (* fixing body_cost and initial_gso_cost *)

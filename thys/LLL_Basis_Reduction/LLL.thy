@@ -157,6 +157,7 @@ lemma int_times_rat_code[code abstract]: "quotient_of (int_times_rat i x) =
 
 locale LLL =
   fixes n :: nat (* n-dimensional vectors, *) and m :: nat (* number of vectors *)
+   and L :: "int vec set" (* lattice *) and \<alpha> :: rat (* approximation factor *)
 begin
 
 sublocale vec_module "TYPE(int)" n.
@@ -201,7 +202,7 @@ lemma \<mu>_i_im1: assumes gr: "f_repr i Fr F" and gso:"g_repr i G F"
             sqnorm_g_im1_GSO[OF gso i(1)] GSO_def
   using i n dim by auto
 
-context fixes L :: "int vec set" and \<alpha> :: rat and A :: nat
+context fixes A :: nat
 begin
 
 text \<open>This is the core invariant which enables to prove functional correctness.
@@ -1746,10 +1747,10 @@ qed
 end
 end
 
-lemma basis_reduction_main: fixes F G assumes "LLL_invariant L \<alpha> A state F G"
+lemma basis_reduction_main: fixes F G assumes "LLL_invariant A state F G"
   and "basis_reduction_main \<alpha> m state = state'" 
   and \<alpha>: "\<alpha> \<ge> 4/3"
-shows "\<exists> F' G'. LLL_invariant L \<alpha> A state' F' G' \<and> fst state' = m" 
+shows "\<exists> F' G'. LLL_invariant A state' F' G' \<and> fst state' = m" 
 proof (cases "m = 0")
   case True
   from assms(2)[unfolded True basis_reduction_main.simps[of _ 0 state]] 
@@ -1761,7 +1762,7 @@ next
   case ne: False  
   note [simp] = basis_reduction_main.simps
   show ?thesis using assms(1-2) 
-  proof (induct state arbitrary: F G rule: wf_induct[OF wf_measure[of "LLL_measure \<alpha>"]])
+  proof (induct state arbitrary: F G rule: wf_induct[OF wf_measure[of LLL_measure]])
     case (1 state F G)
     note inv = 1(2)
     note IH = 1(1)[rule_format]
@@ -1777,8 +1778,8 @@ next
       from res True b
       have res: "basis_reduction_main \<alpha> m  state'' = state'" by simp
       note bsr = basis_reduction_step[OF \<alpha> inv i b]
-      from bsr(1) obtain F' G' where inv: "LLL_invariant L \<alpha> A state'' F' G'" by auto
-      from bsr(2) have "(state'' ,state) \<in> measure (LLL_measure \<alpha>)" by (auto simp: state)
+      from bsr(1) obtain F' G' where inv: "LLL_invariant A state'' F' G'" by auto
+      from bsr(2) have "(state'' ,state) \<in> measure LLL_measure" by (auto simp: state)
       from IH[OF this inv] b res state show ?thesis by auto
     next
       case False
@@ -1791,15 +1792,16 @@ next
   qed
 qed
 
-context fixes \<alpha> :: rat and F
+context fixes F
   assumes \<alpha>: "\<alpha> \<ge> 4/3" 
     and lin_dep: "gs.lin_indpt_list (RAT F)" 
     and len: "length F = m" 
+    and L: "lattice_of F = L" 
 begin
 
 lemma initial_state: assumes "initial_state n F = state" 
   and A: "A = max_list (map (nat o sq_norm) F)" 
-shows "\<exists> F' G'. LLL_invariant (lattice_of F) \<alpha> A state F' G'" 
+shows "\<exists> F' G'. LLL_invariant A state F' G'" 
 proof -
   let ?F = "RAT F"
   define Fr0::f_repr where "Fr0 = ([], F)"
@@ -1846,8 +1848,8 @@ proof -
     also have "gs.gso (RAT F) i = G ! i" unfolding GG using i by auto
     finally show "\<parallel>G ! i\<parallel>\<^sup>2 \<le> rat_of_nat A" .
   qed
-  have "LLL_invariant (lattice_of F) \<alpha> A (0, Fr0, ?Gr0) F G" 
-    by (rule LLL_invI[OF repr gso0 gs refl _ _ _ lin_dep], auto simp:gs.weakly_reduced_def 
+  have "LLL_invariant A (0, Fr0, ?Gr0) F G"
+    by (rule LLL_invI[OF repr gso0 gs L _ _ _ lin_dep], auto simp:gs.weakly_reduced_def 
         gs.reduced_def len short)
   also have "(0, Fr0, ?Gr0) = state" unfolding assms(1)[symmetric] initial_state_def Let_def
     Fr0_def Gr0_def ..
@@ -1857,18 +1859,18 @@ qed
 
 lemma basis_reduction_state: assumes "basis_reduction_state n \<alpha> F = state" 
   and A: "A = max_list (map (nat o sq_norm) F)" 
-  shows "\<exists>F' G'. LLL_invariant (lattice_of F) \<alpha> A state F' G' \<and> fst state = m" 
+  shows "\<exists>F' G'. LLL_invariant A state F' G' \<and> fst state = m" 
 proof -
   let ?state = "initial_state n F" 
   from initial_state[OF refl A]
-  obtain F' G' where inv: "LLL_invariant (lattice_of F) \<alpha> A ?state F' G'" by auto
+  obtain F' G' where inv: "LLL_invariant A ?state F' G'" by auto
   from assms(1)[unfolded basis_reduction_state_def len]
   have res: "basis_reduction_main \<alpha> m ?state = state" .
   from basis_reduction_main[OF inv res \<alpha>] show ?thesis by blast
 qed
 
 lemma reduce_basis: assumes res: "reduce_basis n \<alpha> F = (F', G')" 
-  shows "lattice_of F = lattice_of F'" (is ?g1)
+  shows "lattice_of F' = L" (is ?g1)
   "gs.reduced \<alpha> m G' (gs.\<mu> (RAT F'))" (is ?g2)
   "G' = gram_schmidt n (RAT F')" (is ?g3)
   "gs.lin_indpt_list (RAT F')" (is ?g4)
@@ -1877,7 +1879,7 @@ proof -
   obtain i Fr Gr where 1: "basis_reduction_state n \<alpha> F = (i, Fr, Gr)" (is "?main = _") 
     by (cases ?main) auto
   from basis_reduction_state[OF 1 refl] obtain F1 G1 A
-    where Linv: "LLL_invariant (lattice_of F) \<alpha> A (i, Fr, Gr) F1 G1" 
+    where Linv: "LLL_invariant A (i, Fr, Gr) F1 G1" 
      and i_n: "i = m" by auto
   from res[unfolded reduce_basis_def 1] have R: "F' = of_list_repr Fr" 
     and Rs: "G' = map fst (of_list_repr Gr)" by auto
@@ -1895,15 +1897,15 @@ qed
 lemma short_vector: assumes "short_vector \<alpha> F = v" 
   and m0: "m \<noteq> 0"
 shows "v \<in> carrier_vec n"
-  "v \<in> lattice_of F - {0\<^sub>v n}"  
-  "h \<in> lattice_of F - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)" 
+  "v \<in> L - {0\<^sub>v n}"  
+  "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)" 
   "v \<noteq> 0\<^sub>v j" 
 proof -
   let ?L = "lattice_of F" 
   have a1: "\<alpha> \<ge> 1" using \<alpha> by auto 
   obtain F1 G1 where reduce: "reduce_basis n \<alpha> F = (F1, G1)" by force
   from reduce_basis[OF reduce] len have 
-    L: "lattice_of F1 = ?L" 
+    L: "lattice_of F1 = L" 
     and red: "gs.weakly_reduced \<alpha> m G1" 
     and Gs: "G1 = gram_schmidt n (RAT F1)" 
     and basis: "gs.lin_indpt_list (RAT F1)" 
@@ -1920,7 +1922,7 @@ proof -
   let ?rv = "map_vec ?r" 
   let ?F = "RAT F1" 
   let ?h = "?rv h" 
-  { assume h:"h \<in> ?L - {0\<^sub>v n}" (is ?h_req)
+  { assume h:"h \<in> L - {0\<^sub>v n}" (is ?h_req)
     from h[folded L] have h: "h \<in> lattice_of F1" "h \<noteq> 0\<^sub>v n" by auto
     {
       assume f: "?h = 0\<^sub>v n" 
@@ -1933,17 +1935,17 @@ proof -
     have "?h \<in> gs.lattice_of ?F - {0\<^sub>v n}" by auto
   } 
   from gs.weakly_reduced_imp_short_vector[OF basis _ gs red this a1] lenH
-  show "h \<in> ?L - {0\<^sub>v n} \<Longrightarrow> ?r (sq_norm v) \<le> \<alpha> ^ (m - 1) * ?r (sq_norm h)"
+  show "h \<in> L - {0\<^sub>v n} \<Longrightarrow> ?r (sq_norm v) \<le> \<alpha> ^ (m - 1) * ?r (sq_norm h)"
     unfolding L v by (auto simp: sq_norm_of_int)
   from m0 H lenH show vn: "v \<in> carrier_vec n" unfolding v by (cases F1, auto)
-  have vL: "v \<in> ?L" unfolding L[symmetric] v using m0 H lenH
+  have vL: "v \<in> L" unfolding L[symmetric] v using m0 H lenH
     by (intro basis_in_latticeI, cases F1, auto)
   {
     assume "v = 0\<^sub>v n" 
     hence "hd ?F = 0\<^sub>v n" unfolding v using m0 lenH by (cases F1, auto)
     with gs.lin_indpt_list_nonzero[OF basis] have False using m0 lenH by (cases F1, auto)
   }
-  with vL show v: "v \<in> ?L - {0\<^sub>v n}" by auto
+  with vL show v: "v \<in> L - {0\<^sub>v n}" by auto
   have jn:"0\<^sub>v j \<in> carrier_vec n \<Longrightarrow> j = n" unfolding zero_vec_def carrier_vec_def by auto
   with v vn show "v \<noteq> 0\<^sub>v j" by auto
 qed

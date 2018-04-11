@@ -731,7 +731,8 @@ proof -
   have id: "LLL_short_polynomial n u = poly_of_vec ?sv" 
     unfolding LLL_short_polynomial_def by blast
   have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2" unfolding id by simp
-  interpret LLL n n .
+  interpret vec_module "TYPE(int)" n.
+  interpret LLL n n "lattice_of ?L" 2 .
   from deg_le deg_iu have deg_iu_le: "degree ?iu \<le> n" by simp
   have len: "length ?L = n" 
     unfolding factorization_lattice_def using deg_le deg_iu by auto
@@ -739,7 +740,7 @@ proof -
   hence iu0: "?iu \<noteq> 0" by auto
   from lin_indpt_list_factorization_lattice[OF refl deg_iu_le iu0 pl0]
   have "4/3 \<le> (2 :: rat)" "gs.lin_indpt_list (RAT ?L)" by (auto simp: deg_iu)
-  note short = short_vector[OF this len refl n, unfolded id']
+  note short = short_vector[OF this len refl refl n, unfolded id']
   from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
   note fact = factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
