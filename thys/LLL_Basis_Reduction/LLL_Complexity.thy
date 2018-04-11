@@ -10,7 +10,7 @@ text \<open>In this section we define a version of the LLL algorithm which expli
   projecting away yields the original result.
 
   The cost model counts the number of arithmetic operations that occur in vector-addition, scalar-products,
-  and scalar multiplication. At the moment it does not look inside the costs to compute the initial GSO.\<close>
+  and scalar multiplication and we prove a polynomial bound on this number.\<close>
 
 theory LLL_Complexity
   imports LLL 
@@ -28,14 +28,11 @@ context LLL
 begin
 
 context
+  fixes arith_cost :: nat
   assumes \<alpha>: "\<alpha> > 4/3" and m0: "m \<noteq> 0" 
 begin
 
 private lemma alpha: "\<alpha> \<ge> 4/3" using \<alpha> by auto
-
-context
-  fixes arith_cost initial_gso_cost :: nat
-begin
 
 fun basis_reduction_add_row_main_cost :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> (state \<times> int) cost" where 
   "basis_reduction_add_row_main_cost (i,F,G) fj mu = (let     
@@ -280,20 +277,96 @@ proof -
   finally show ?g2 . 
 qed
 
-definition initial_state_cost :: "int vec list \<Rightarrow> state cost" where
-  "initial_state_cost F = (let G = gram_schmidt_triv n (map (map_vec of_int) F);
-     Fr = ([], F);
-     Gr = ([], G)
-     in ((0, Fr, Gr), initial_gso_cost))" 
+fun adjuster_triv_cost :: "'a :: trivial_conjugatable_ordered_field vec \<Rightarrow> ('a vec \<times> 'a) list \<Rightarrow> 'a vec cost"
+  where "adjuster_triv_cost w [] = (let cost = 0 in (0\<^sub>v n, cost))"
+  |  "adjuster_triv_cost w ((u,nu)#us) = (case adjuster_triv_cost w us of (res,c1)
+     \<Rightarrow> let c2 = 4 * n * arith_cost in \<comment> \<open>2n for scalar-prod, n for scalar-mult and n for vector addition\<close>
+      ((-(w \<bullet> u)/ nu \<cdot>\<^sub>v u) + res, c1 + c2))"
 
-lemma initial_state_cost: "cost (initial_state_cost F) \<le> initial_gso_cost" 
-  "result (initial_state_cost F) = initial_state n F" 
-  unfolding initial_state_cost_def initial_state_def Let_def cost_simps by auto
+lemma adjuster_triv_cost: "result (adjuster_triv_cost w xs) = adjuster_triv n w xs"
+  "cost (adjuster_triv_cost w xs) \<le> 4 * length xs * n * arith_cost" 
+proof (atomize(full), induct xs)
+  case (Cons unu us)
+  obtain u nu where unu: "unu = (u,nu)" by force
+  obtain res c1 where rec: "adjuster_triv_cost w us = (res,c1)" (is "?adj = _") by (cases ?adj, auto)
+  show ?case using Cons
+    unfolding unu adjuster_triv_cost.simps adjuster_triv.simps rec split Let_def cost_simps
+    by (auto simp: nat_distrib)
+qed (auto simp: cost_simps)
+
+fun gram_schmidt_sub_triv_cost
+  where "gram_schmidt_sub_triv_cost us [] = (let cost = 0 in (us, cost))"
+  | "gram_schmidt_sub_triv_cost us (w # ws) = (
+     case adjuster_triv_cost w us of (adj,c1) \<Rightarrow> 
+      let u = adj + w in \<comment> \<open>n ops\<close>
+      let sqn = sq_norm u in \<comment> \<open>2n ops\<close>
+      let c2 = 3 * n * arith_cost in
+     case gram_schmidt_sub_triv_cost ((u, sqn) # us) ws of (res,c3) \<Rightarrow>
+       (res, c1 + c2 + c3))"
+
+lemma gram_schmidt_sub_triv_cost: assumes "length us + length ws \<le> m" 
+  shows "result (gram_schmidt_sub_triv_cost us ws) = gram_schmidt_sub_triv n us ws" (is ?g1)
+  "cost (gram_schmidt_sub_triv_cost us ws) \<le> (4 * m + 3) * m * n * arith_cost" (is ?g2)
+proof -
+  have main: "?g1 \<and> cost (gram_schmidt_sub_triv_cost us ws) \<le> (4 * m + 3) * length ws * n * arith_cost" 
+    using assms
+  proof (induct ws arbitrary: us)
+    case (Cons w ws us)
+    obtain adj c1 where adj: "adjuster_triv_cost w us = (adj,c1)" (is "?adj = _") by (cases ?adj, auto)  
+    from adjuster_triv_cost[of w us, unfolded adj cost_simps]
+    have adj': "adjuster_triv n w us = adj" and c1: "c1 \<le> 4 * length us * n * arith_cost" by auto
+    note c1
+    also have "4 * length us * n * arith_cost \<le> 4 * m * n * arith_cost" using Cons(2)
+      by (auto simp: nat_distrib)
+    finally have c1: "c1 \<le> 4 * m * n * arith_cost" .
+    let ?us = "((adj + w, \<parallel>adj + w\<parallel>\<^sup>2) # us)" 
+    from Cons(2) have "length ?us + length ws \<le> m" by auto
+    note IH = Cons(1)[OF this]
+    obtain c3 res where rec: "gram_schmidt_sub_triv_cost ?us ws = (res,c3)" (is "?rec = _") by (cases ?rec, auto)
+    note d = gram_schmidt_sub_triv_cost.simps gram_schmidt_sub_triv.simps adj split adj'
+      Let_def rec cost_simps
+    have c3: "c3 \<le> (4 * m + 3) * length ws * n * arith_cost" 
+      using IH[unfolded d] by auto
+    have "cost (gram_schmidt_sub_triv_cost us (w # ws)) = (c1 + 3 * n * arith_cost) + c3" 
+      unfolding d by auto
+    also have "\<dots> \<le> (4 * m + 3) * length (w # ws) * n * arith_cost" 
+      using c1 c3 by (auto simp: nat_distrib)
+    finally have cost: "cost (gram_schmidt_sub_triv_cost us (w # ws)) \<le> (4 * m + 3) * length (w # ws) * n * arith_cost" 
+      by auto
+    show ?case using IH cost unfolding d by auto
+  qed (auto simp: cost_simps)
+  thus ?g1 by blast
+  from main have "cost (gram_schmidt_sub_triv_cost us ws) \<le> (4 * m + 3) * length ws * n * arith_cost" by auto
+  also have "\<dots> \<le> (4 * m + 3) * m * n * arith_cost" using assms by auto
+  finally show ?g2 .
+qed
+
+definition gram_schmidt_triv_cost :: "'a :: trivial_conjugatable_ordered_field vec list \<Rightarrow> ('a vec \<times> 'a) list cost"
+  where "gram_schmidt_triv_cost ws = (case gram_schmidt_sub_triv_cost [] ws of (res,c) \<Rightarrow> (rev res, c))" 
+
+lemma gram_schmidt_triv_cost: assumes "length ws \<le> m" 
+  shows "result (gram_schmidt_triv_cost ws) = gram_schmidt_triv n ws" (is ?g1)
+  "cost (gram_schmidt_triv_cost ws) \<le> (4 * m + 3) * m * n * arith_cost" (is ?g2)
+proof -
+  let ?us = "Nil :: ('a vec \<times> 'a) list" 
+  obtain res c where sub: "gram_schmidt_sub_triv_cost ?us ws = (res,c)" (is "?sub = _") by (cases ?sub, auto) 
+  from assms have "length ?us + length ws \<le> m" by auto
+  note subc = gram_schmidt_sub_triv_cost[OF this, unfolded sub cost_simps]
+  show ?g1 ?g2 unfolding gram_schmidt_triv_cost_def sub split cost_simps gram_schmidt_triv_def subc(1)[symmetric]
+    using subc(2) by auto
+qed
+
+definition "initial_gso_cost = (4 * m + 3) * m * n * arith_cost" 
+
+definition initial_state_cost :: "int vec list \<Rightarrow> state cost" where
+  "initial_state_cost F = (case gram_schmidt_triv_cost (map (map_vec of_int) F)
+     of (G,c) \<Rightarrow> ((0, ([], F), ([], G)), c))" 
 
 definition basis_reduction_state_cost :: "int vec list \<Rightarrow> state cost" where 
-  "basis_reduction_state_cost F = (case initial_state_cost F of
-     (state1,c1) \<Rightarrow> case basis_reduction_main_cost state1
-     of (state2,c2) \<Rightarrow> (state2,c1 + c2))" 
+  "basis_reduction_state_cost F = (
+    case initial_state_cost F of (state1, c1) \<Rightarrow> 
+    case basis_reduction_main_cost state1 of (state2, c2) \<Rightarrow> 
+      (state2, c1 + c2))" 
 
 definition reduce_basis_cost :: "int vec list \<Rightarrow> int vec list cost" where
   "reduce_basis_cost F = (case basis_reduction_state_cost F of (state,c) \<Rightarrow> 
@@ -308,6 +381,18 @@ context
   and L: "lattice_of F = L" 
 begin
 
+lemma initial_state_cost: "result (initial_state_cost F) = initial_state n F" (is ?g1)
+  "cost (initial_state_cost F) \<le> initial_gso_cost" (is ?g2)
+proof -
+  let ?F = "map (map_vec rat_of_int) F" 
+  have len: "length ?F \<le> m" using len by auto
+  obtain G c where gso: "gram_schmidt_triv_cost ?F = (G,c)" (is "?gso = _")
+    by (cases ?gso, auto)
+  note gsoc = gram_schmidt_triv_cost[OF len, unfolded gso cost_simps]
+  show ?g1 ?g2 unfolding initial_gso_cost_def initial_state_cost_def gso split cost_simps 
+    initial_state_def Let_def gsoc(1)[symmetric] using gsoc(2) by auto
+qed
+
 lemma basis_reduction_state_cost: 
    "result (basis_reduction_state_cost F) = basis_reduction_state n \<alpha> F"  (is ?g1)
    "cost (basis_reduction_state_cost F) \<le> initial_gso_cost + body_cost * num_loops (A F)" (is ?g2)
@@ -316,7 +401,7 @@ proof -
   obtain state2 c2 where main: "basis_reduction_main_cost state1 = (state2, c2)" (is "?main = _") by (cases ?main, auto)
   have res: "basis_reduction_state_cost F = (state2, c1 + c2)" 
     unfolding basis_reduction_state_cost_def init main split by simp
-  from initial_state_cost[of F, unfolded init cost_simps]
+  from initial_state_cost[unfolded init cost_simps]
   have c1: "c1 \<le> initial_gso_cost" and init: "initial_state n F = state1" by auto
   from initial_state[OF alpha lin_dep len L init refl, folded A_def]
   obtain F' G' where inv: "LLL_invariant (A F) state1 F' G'" by auto
@@ -344,11 +429,21 @@ proof -
   show ?g1 ?g2 unfolding reduce_basis_cost_def reduce_basis_def b bb split cost_simps fst_conv using c by auto
 qed
 
-text \<open>Theorem with expanded costs\<close>
-thm reduce_basis_cost(2)[unfolded num_loops_def A_def body_cost_def]
+text \<open>Theorem with expanded costs: $O(n\cdot m^3 \cdot \log (\mathit{maxnorm}\ F))$ arithmetic operations\<close>
+lemma reduce_basis_cost_full: 
+  "cost (reduce_basis_cost F)
+  \<le> (4 * m * m + 3 * m  +
+     (4 * m * m + 12 * m) * 
+      (1 + 2 * m * nat \<lceil>log (4 * real_of_rat \<alpha> / (4 + real_of_rat \<alpha>)) 
+         (real (max_list (map (nat \<circ> sq_norm) F)))\<rceil>))
+     * n * arith_cost"
+  using reduce_basis_cost(2)[unfolded num_loops_def A_def body_cost_def initial_gso_cost_def]
+  by (auto simp: nat_distrib ac_simps)
 
 end (* lin-indep F *)
-end (* fixing body_cost and initial_gso_cost *)
-end (* fixing \<alpha> and assume \<alpha> > 4/3 *)
-end (* LLL locale which just fixes n and m *)
+end (* fixing arith_cost and assume \<alpha> > 4/3 *)
+end (* LLL locale which fixes n m \<alpha> L *)
+
+text \<open>Expanded theorem outside locale listing all preconditions\<close>
+thm LLL.reduce_basis_cost_full[OF _ _ refl _ refl]
 end (* theory *)
