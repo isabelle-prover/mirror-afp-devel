@@ -3,8 +3,17 @@
                 René Thiemann
     License:    BSD
 *)
+section \<open>Complexity of the LLL algorithm\<close>
+
+text \<open>In this section we define a version of the LLL algorithm which explicitly returns the
+  costs of running the algorithm. Its soundness is mainly proven by stating that 
+  projecting away yields the original result.
+
+  The cost model is quite basic. At the moment it uses a fixed parameter for the costs 
+  of executing the body of the outer while-loop.\<close>
+
 theory LLL_Complexity
-  imports LLL
+  imports LLL 
 begin
 
 context
@@ -50,8 +59,7 @@ begin
 
 lemma basis_reduction_main_cost: fixes F G assumes "LLL_invariant L \<alpha> A state F G"
   and "basis_reduction_main_cost body_cost \<alpha> m (state,c) = (state',c')" 
-shows "\<exists> F' G'. LLL_invariant L \<alpha> A state' F' G' \<and> fst state' = m \<and> 
-  basis_reduction_main \<alpha> m state = state' \<and> c' \<le> c + body_cost * LLL_measure \<alpha> state"
+shows "basis_reduction_main \<alpha> m state = state' \<and> c' \<le> c + body_cost * LLL_measure \<alpha> state"
   using assms
 proof (induct state arbitrary: F G c rule: wf_induct[OF wf_measure[of "LLL_measure \<alpha>"]])
   case (1 state F G c)
@@ -71,15 +79,13 @@ proof (induct state arbitrary: F G c rule: wf_induct[OF wf_measure[of "LLL_measu
     note bsr = basis_reduction_step[OF alpha inv i b]
     from bsr(1) obtain F' G' where inv: "LLL_invariant L \<alpha> A state'' F' G'" by auto
     from bsr(2) have "(state'' ,state) \<in> measure (LLL_measure \<alpha>)" by (auto simp: state)
-    from IH[OF this inv res] obtain F' G' where
-      inv: "LLL_invariant L \<alpha> A state' F' G'" 
-      and fst: "fst state' = m"
-      and res': "basis_reduction_main \<alpha> m state'' = state'" 
+    from IH[OF this inv res] have
+      res': "basis_reduction_main \<alpha> m state'' = state'" 
       and c: "c' \<le> c + body_cost * (Suc (LLL_measure \<alpha> state''))" by auto
     have res: "basis_reduction_main \<alpha> m state = state'"
       unfolding basis_reduction_main.simps[of _ _ state] unfolding state split b res' using True by auto
     show ?thesis
-      by (intro exI conjI fst res, rule inv, rule order.trans[OF c add_left_mono[OF mult_left_mono]],
+      by (intro conjI res, rule order.trans[OF c add_left_mono[OF mult_left_mono]],
         insert bsr(2) state, auto)
   next
     case False
@@ -89,7 +95,7 @@ proof (induct state arbitrary: F G c rule: wf_induct[OF wf_measure[of "LLL_measu
         basis_reduction_main.simps[of _ _ state] unfolding split state by auto
     from False LLL_invD[OF inv] have im: "i = m" by auto
     show ?thesis unfolding state' fst_conv c
-      by (intro exI conjI im res, rule inv, auto)
+      by (intro conjI im res, auto)
   qed
 qed
 end
