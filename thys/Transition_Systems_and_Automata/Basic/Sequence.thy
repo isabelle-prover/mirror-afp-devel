@@ -20,6 +20,8 @@ begin
     obtains (nil) "xs = []" | (cons) y ys where "xs = y # ys" "P y" "list_all P ys"
     using assms by (cases xs) (auto)
 
+  lemma lists_iff_set: "w \<in> lists A \<longleftrightarrow> set w \<subseteq> A" by auto
+
   lemma fold_const: "fold const xs a = last (a # xs)"
     by (induct xs arbitrary: a) (auto simp: last.simps)
 

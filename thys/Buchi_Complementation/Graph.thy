@@ -1,7 +1,7 @@
 section {* Run Graphs *}
 
 theory Graph
-imports "Transition_Systems_and_Automata.BA"
+imports "Transition_Systems_and_Automata.NBA"
 begin
 
   type_synonym 'state node = "nat \<times> 'state"
@@ -27,7 +27,7 @@ begin
   abbreviation "gstates \<equiv> graph.states"
   abbreviation "gtrace \<equiv> graph.trace"
 
-  abbreviation gsuccessors :: "('label, 'state, 'more) ba_scheme \<Rightarrow> 'label stream \<Rightarrow>
+  abbreviation gsuccessors :: "('label, 'state, 'more) nba_scheme \<Rightarrow> 'label stream \<Rightarrow>
     'state node set \<Rightarrow> 'state node \<Rightarrow> 'state node set" where
     "gsuccessors A w V \<equiv> graph.successors TYPE('label) TYPE('more) w A V"
 
@@ -106,7 +106,7 @@ begin
   lemma run_grun:
     assumes "run A (sdrop k w ||| r) p"
     shows "gurun A w (fromN (Suc k) ||| r) (k, p)"
-    using assms by (coinduction arbitrary: k p r) (auto elim: ba.run.cases)
+    using assms by (coinduction arbitrary: k p r) (auto elim: nba.run.cases)
 
   lemma grun_run:
     assumes "grun A w V (fromN (Suc k) ||| r) (k, p)"
