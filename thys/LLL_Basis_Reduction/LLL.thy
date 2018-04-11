@@ -115,8 +115,7 @@ partial_function (tailrec) basis_reduction_main :: "state \<Rightarrow> state" w
 end
 
 definition initial_state :: "nat \<Rightarrow> int vec list \<Rightarrow> state" where
-  "initial_state n F = (let m = length F;
-     G = gram_schmidt_triv n (map (map_vec of_int) F);
+  "initial_state n F = (let G = gram_schmidt_triv n (map (map_vec of_int) F);
      Fr = ([], F);
      Gr = ([], G)
      in (0, Fr, Gr))" 
