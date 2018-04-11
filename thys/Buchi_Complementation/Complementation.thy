@@ -10,7 +10,7 @@ begin
 
   type_synonym 'state lr = "'state \<rightharpoonup> nat"
 
-  definition lr_succ :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state lr set" where
+  definition lr_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state lr set" where
     "lr_succ A a f \<equiv> {g.
       dom g = UNION (dom f) (succ A a) \<and>
       (\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. the (g q) \<le> the (f p)) \<and>
@@ -18,15 +18,15 @@ begin
 
   type_synonym 'state st = "'state set"
 
-  definition st_succ :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state st \<Rightarrow> 'state st" where
+  definition st_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state st \<Rightarrow> 'state st" where
     "st_succ A a g P \<equiv> {q \<in> if P = {} then dom g else UNION P (succ A a). even (the (g q))}"
 
   type_synonym 'state cs = "'state lr \<times> 'state st"
 
-  definition complement_succ :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state cs \<Rightarrow> 'state cs set" where
+  definition complement_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state cs \<Rightarrow> 'state cs set" where
     "complement_succ A a \<equiv> \<lambda> (f, P). {(g, st_succ A a g P) |g. g \<in> lr_succ A a f}"
 
-  definition complement :: "('label, 'state) ba \<Rightarrow> ('label, 'state cs) ba" where
+  definition complement :: "('label, 'state) nba \<Rightarrow> ('label, 'state cs) nba" where
     "complement A \<equiv>
     \<lparr>
       alphabet = alphabet A,
@@ -54,11 +54,11 @@ begin
     obtain a g Q where 3: "agQ = (a, (g, Q))" using prod_cases3 by this
     have 4: "p \<in> dom f \<Longrightarrow> q \<in> succ A a p \<Longrightarrow> the (g q) \<le> the (f p)" for p q
       using execute(3)
-      unfolding 1 3 complement_def ba.simps complement_succ_def lr_succ_def
+      unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
     have 8: "dom g = UNION (dom f) (succ A a)"
       using execute(3)
-      unfolding 1 3 complement_def ba.simps complement_succ_def lr_succ_def
+      unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
     show ?case
     unfolding 1 3 ran_def
@@ -91,7 +91,7 @@ begin
     have 5: "UNION P (succ A a) \<subseteq> nodes A" using 2 11 by auto
     have 6: "Q \<subseteq> nodes A"
       using execute(3)
-      unfolding 1 3 complement_def ba.simps complement_succ_def st_succ_def
+      unfolding 1 3 complement_def nba.simps complement_succ_def st_succ_def
       using 4 5
       by (auto split: if_splits)
     show ?case using 6 unfolding 3 by auto
@@ -117,7 +117,7 @@ begin
       "fst (m !! Suc k) \<in> lr_succ A (w !! k) (fst (m !! k))"
       "snd (m !! Suc k) = st_succ A (w !! k) (fst (m !! Suc k)) (snd (m !! k))"
   proof
-    have 1: "r !! k \<in> succ (complement A) (w !! k) (m !! k)" using ba.run_snth assms by force
+    have 1: "r !! k \<in> succ (complement A) (w !! k) (m !! k)" using nba.run_snth assms by force
     show "fst (m !! Suc k) \<in> lr_succ A (w !! k) (fst (m !! k))"
       using assms(2) 1 unfolding complement_def complement_succ_def trace_alt_def by auto
     show "snd (m !! Suc k) = st_succ A (w !! k) (fst (m !! Suc k)) (snd (m !! k))"
@@ -307,7 +307,7 @@ begin
     have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
       by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
         append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
-        length_map length_stake lessI ba.target_alt_def states_alt_def zero_less_Suc)
+        length_map length_stake lessI nba.target_alt_def states_alt_def zero_less_Suc)
     have 6: "drop n r = [(w !! n, q)]" using 4 5
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
@@ -327,7 +327,7 @@ begin
     have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
       by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
         append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
-        length_map length_stake lessI ba.target_alt_def states_alt_def zero_less_Suc)
+        length_map length_stake lessI nba.target_alt_def states_alt_def zero_less_Suc)
     have 6: "drop n r = [(w !! n, q)]" using 4 5
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
@@ -460,7 +460,7 @@ begin
     show ?thesis
     proof
       show "run (complement A) (w ||| stl s) (shd s)"
-      proof (intro ba.snth_run conjI, simp_all del: stake.simps stake_szip)
+      proof (intro nba.snth_run conjI, simp_all del: stake.simps stake_szip)
         fix k
         show "w !! k \<in> alphabet (complement A)" using snth_in assms(2) unfolding complement_def by auto
         have "stl s !! k = s !! Suc k" by simp
@@ -469,7 +469,7 @@ begin
         also have "\<dots> = complement_succ A (w !! k) (target (stake k (w ||| stl s)) (shd s))"
           unfolding sscan_scons_snth[symmetric] trace_alt_def by simp
         also have "\<dots> = succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))"
-          unfolding complement_def ba.simps by rule
+          unfolding complement_def nba.simps by rule
         finally show "stl s !! k \<in>
           succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
       qed
@@ -540,7 +540,7 @@ begin
           qed
           obtain r where 23:
             "run A r p" "\<And> i. Q i ((p ## trace r p) !! i)" "\<And> i. fst (r !! i) = w !! (k + i)"
-          proof (rule ba.invariant_run_index[of Q 0 p A "\<lambda> n p a. fst a = w !! (k + n)"])
+          proof (rule nba.invariant_run_index[of Q 0 p A "\<lambda> n p a. fst a = w !! (k + n)"])
             show "Q 0 p" unfolding Q_def using 3 by auto
             show "\<exists> a. (fst a \<in> alphabet A \<and> snd a \<in> succ A (fst a) p) \<and>
               Q (Suc n) (snd a) \<and> fst a = w !! (k + n)" if "Q n p" for n p
@@ -598,7 +598,7 @@ begin
     assumes "finite (nodes A)"
     shows "language (complement A) = streams (alphabet A) - language A"
   proof (safe del: notI)
-    have 1: "alphabet (complement A) = alphabet A" unfolding complement_def ba.simps by rule
+    have 1: "alphabet (complement A) = alphabet A" unfolding complement_def nba.simps by rule
     show "w \<in> streams (alphabet A)" if "w \<in> language (complement A)" for w
       using language_alphabet that 1 by force
     show "w \<notin> language A" if "w \<in> language (complement A)" for w

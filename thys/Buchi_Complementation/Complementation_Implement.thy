@@ -3,7 +3,7 @@ section {* Complementation Implementation *}
 theory Complementation_Implement
 imports
   "HOL-Library.Lattice_Syntax"
-  "Transition_Systems_and_Automata.BA_Implement"
+  "Transition_Systems_and_Automata.NBA_Implement"
   "Complementation"
 begin
 
@@ -59,16 +59,16 @@ begin
   definition refresh_1 :: "'state items \<Rightarrow> 'state items" where
     "refresh_1 f \<equiv> if True \<in> snd ` ran f then f else map_option (apsnd top) \<circ> f"
   definition ranks_1 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "ranks_1 A a f \<equiv> {g.
       dom g = UNION (dom f) (succ A a) \<and>
       (\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. fst (the (g q)) \<le> fst (the (f p))) \<and>
       (\<forall> q \<in> dom g. accepting A q \<longrightarrow> even (fst (the (g q)))) \<and>
       cs_st g = {q \<in> UNION (cs_st f) (succ A a). even (fst (the (g q)))}}"
   definition complement_succ_1 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "complement_succ_1 A a = ranks_1 A a \<circ> refresh_1"
-  definition complement_1 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
+  definition complement_1 :: "('label, 'state) nba \<Rightarrow> ('label, 'state items) nba" where
     "complement_1 A \<equiv>
     \<lparr>
       alphabet = alphabet A,
@@ -174,7 +174,7 @@ begin
   lemma complement_succ_1_refine: "(complement_succ_1, complement_succ) \<in>
     Id \<rightarrow> Id \<rightarrow> cs_rel \<rightarrow> \<langle>cs_rel\<rangle> set_rel"
   proof (clarsimp simp: br_set_rel_alt in_br_conv)
-    fix A :: "('a, 'b) ba"
+    fix A :: "('a, 'b) nba"
     fix a f
     show "complement_succ A a (cs_abs f) = cs_abs ` complement_succ_1 A a f"
     proof safe
@@ -198,11 +198,11 @@ begin
       show "cs_abs g \<in> complement_succ A a (cs_abs f)" using complement_succ_1_abs 1 by this
     qed
   qed
-  lemma complement_1_refine: "(complement_1, complement) \<in> \<langle>Id, Id, Id\<rangle> ba_rel \<rightarrow> \<langle>Id, cs_rel, Id\<rangle> ba_rel"
+  lemma complement_1_refine: "(complement_1, complement) \<in> \<langle>Id, Id, Id\<rangle> nba_rel \<rightarrow> \<langle>Id, cs_rel, Id\<rangle> nba_rel"
   unfolding complement_1_def complement_def
   proof parametricity
-    fix A B :: "('a, 'b) ba"
-    assume 1: "(A, B) \<in> \<langle>Id, Id, Id\<rangle> ba_rel"
+    fix A B :: "('a, 'b) nba"
+    assume 1: "(A, B) \<in> \<langle>Id, Id, Id\<rangle> nba_rel"
     have 2: "(const (Some (2 * card (nodes B), False)) |` initial B,
       const (Some (2 * card (nodes B))) |` initial B, {}) \<in> cs_rel"
       unfolding cs_lr_def cs_st_def in_br_conv by (force simp: restrict_map_def)
@@ -216,7 +216,7 @@ begin
 
   subsection {* Phase 2 *}
 
-  definition ranks_2 :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+  definition ranks_2 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "ranks_2 A a f \<equiv> {g.
       dom g = UNION (dom f) (succ A a) \<and>
       (\<forall> q l d. g q = Some (l, d) \<longrightarrow>
@@ -224,9 +224,9 @@ begin
         (d \<longleftrightarrow> \<Squnion> (snd ` Some -` f ` pred A a q) \<and> even l) \<and>
         (accepting A q \<longrightarrow> even l))}"
   definition complement_succ_2 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "complement_succ_2 A a \<equiv> ranks_2 A a \<circ> refresh_1"
-  definition complement_2 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
+  definition complement_2 :: "('label, 'state) nba \<Rightarrow> ('label, 'state items) nba" where
     "complement_2 A \<equiv>
     \<lparr>
       alphabet = alphabet A,
@@ -237,7 +237,7 @@ begin
 
   lemma ranks_2_refine: "ranks_2 = ranks_1"
   proof (intro ext)
-    fix A :: "('a, 'b) ba" and a f
+    fix A :: "('a, 'b) nba" and a f
     show "ranks_2 A a f = ranks_1 A a f"
     proof safe
       fix g
@@ -322,23 +322,23 @@ begin
     qed
   qed
 
-  lemma complement_2_refine: "(complement_2, complement_1) \<in> \<langle>Id, Id, Id\<rangle> ba_rel \<rightarrow> \<langle>Id, Id, Id\<rangle> ba_rel"
+  lemma complement_2_refine: "(complement_2, complement_1) \<in> \<langle>Id, Id, Id\<rangle> nba_rel \<rightarrow> \<langle>Id, Id, Id\<rangle> nba_rel"
     unfolding complement_2_def complement_1_def complement_succ_2_def complement_succ_1_def
     unfolding ranks_2_refine cs_st_def image_def vimage_def ran_def by auto
 
   subsection {* Phase 3 *}
 
-  definition bounds_3 :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items" where
+  definition bounds_3 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items" where
     "bounds_3 A a f \<equiv> \<lambda> q. let S = Some -` f ` pred A a q in
       if S = {} then None else Some (INFIMUM S fst, SUPREMUM S snd)"
-  definition items_3 :: "('label, 'state) ba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
+  definition items_3 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
     "items_3 A p \<equiv> \<lambda> (k, c). {(l, c \<and> even l) |l. l \<le> k \<and> (accepting A p \<longrightarrow> even l)}"
-  definition get_3 :: "('label, 'state) ba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
+  definition get_3 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
     "get_3 A f \<equiv> \<lambda> p. map_option (items_3 A p) (f p)"
   definition complement_succ_3 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "complement_succ_3 A a \<equiv> expand_map \<circ> get_3 A \<circ> bounds_3 A a \<circ> refresh_1"
-  definition complement_3 :: "('label, 'state) ba \<Rightarrow> ('label, 'state items) ba" where
+  definition complement_3 :: "('label, 'state) nba \<Rightarrow> ('label, 'state items) nba" where
     "complement_3 A \<equiv>
     \<lparr>
       alphabet = alphabet A,
@@ -387,7 +387,7 @@ begin
   lemma complement_accepting_3_refine: "True \<notin> snd ` ran f \<longleftrightarrow> (\<forall> (p, k, c) \<in> map_to_set f. \<not> c)"
     unfolding map_to_set_def ran_def by auto
 
-  lemma complement_3_refine: "(complement_3, complement_2) \<in> \<langle>Id, Id, Id\<rangle> ba_rel \<rightarrow> \<langle>Id, Id, Id\<rangle> ba_rel"
+  lemma complement_3_refine: "(complement_3, complement_2) \<in> \<langle>Id, Id, Id\<rangle> nba_rel \<rightarrow> \<langle>Id, Id, Id\<rangle> nba_rel"
     unfolding complement_3_def complement_2_def
     unfolding complement_succ_3_refine complement_initial_3_refine complement_accepting_3_refine
     by auto
@@ -421,7 +421,7 @@ begin
       }"
   definition merge_4 :: "item \<Rightarrow> item option \<Rightarrow> item" where
     "merge_4 \<equiv> \<lambda> (k, c). \<lambda> None \<Rightarrow> (k, c) | Some (l, d) \<Rightarrow> (k \<sqinter> l, c \<squnion> d)"
-  definition bounds_4 :: "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items nres" where
+  definition bounds_4 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items nres" where
     "bounds_4 A a f \<equiv> do
     {
       ASSUME (finite (dom f));
@@ -432,14 +432,14 @@ begin
         m)
       empty
     }"
-  definition items_4 :: "('label, 'state) ba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
+  definition items_4 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
     "items_4 A p \<equiv> \<lambda> (k, c). do
     {
       let values = if accepting A p then Set.filter even {.. k} else {.. k};
       let item = \<lambda> l. (l, c \<and> even l);
       item ` values
     }"
-  definition get_4 :: "('label, 'state) ba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
+  definition get_4 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
     "get_4 A f \<equiv> \<lambda> p. map_option (items_4 A p) (f p)"
   definition expand_4 :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set nres" where
     "expand_4 f \<equiv> FOREACH (map_to_set f) (\<lambda> (x, S) X. do {
@@ -448,7 +448,7 @@ begin
         RETURN (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` X)
       }) {empty}"
   definition complement_succ_4 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
     "complement_succ_4 A a f \<equiv> do
     {
       f \<leftarrow> refresh_4 f;
@@ -512,7 +512,7 @@ begin
 
   subsection {* Phase 5 *}
 
-  definition expand_map_get_5 :: "('label, 'state) ba \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
+  definition expand_map_get_5 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
     "expand_map_get_5 A f \<equiv> FOREACH (map_to_set f) (\<lambda> (k, v) X. do {
       ASSERT (\<forall> g \<in> X. k \<notin> dom g);
       ASSERT (\<forall> a \<in> (items_4 A k v). \<forall> b \<in> (items_4 A k v). a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) b = {});
@@ -523,7 +523,7 @@ begin
     unfolding expand_map_get_5_def expand_4_def get_4_def by (auto intro: FOREACH_rule_map_map[param_fo])
 
   definition complement_succ_5 ::
-    "('label, 'state) ba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
     "complement_succ_5 A a f \<equiv> do
     {
       f \<leftarrow> refresh_4 f;
@@ -560,7 +560,7 @@ begin
     using refresh_6.refine by fast
 
   context
-    fixes A :: "('label, nat) ba"
+    fixes A :: "('label, nat) nba"
     fixes succi a fi f
     assumes succi[autoref_rules]: "(succi, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
     assumes fi[autoref_rules]: "(fi, f) \<in> state_rel"
@@ -589,7 +589,7 @@ begin
     using bounds_6.refine by auto
 
   context
-    fixes A :: "('label, nat) ba"
+    fixes A :: "('label, nat) nba"
     fixes acci
     assumes [autoref_rules]: "(acci, accepting A) \<in> nat_rel \<rightarrow> bool_rel"
   begin
@@ -609,7 +609,7 @@ begin
 
   (* TODO: use generic expand_map implementation *)
   context
-    fixes A :: "('label, nat) ba"
+    fixes A :: "('label, nat) nba"
     fixes ai
     fixes fi f
     assumes ai: "(ai, accepting A) \<in> nat_rel \<rightarrow> bool_rel"
@@ -644,19 +644,19 @@ begin
     using expand_map_get_6.refine[OF assms] by auto
 
   context
-    fixes A :: "('label, nat) ba"
+    fixes A :: "('label, nat) nba"
     fixes a :: "'label"
     fixes p :: "nat items"
     fixes Ai
     fixes ai
     fixes pi
-    assumes Ai: "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
+    assumes Ai: "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> nbai_nba_rel"
     assumes ai: "(ai, a) \<in> Id"
     assumes pi[autoref_rules]: "(pi, p) \<in> state_rel"
   begin
 
-    private lemmas succi = bai_ba_param(4)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
-    private lemmas acceptingi = bai_ba_param(5)[THEN fun_relD, OF Ai]
+    private lemmas succi = nbai_nba_param(4)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
+    private lemmas acceptingi = nbai_nba_param(5)[THEN fun_relD, OF Ai]
 
     private lemma [autoref_op_pat]: "(\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g) \<equiv>
       OP (\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g)" by simp
@@ -676,21 +676,21 @@ begin
 
   lemma complement_succ_6_refine:
     "(RETURN \<circ>\<circ>\<circ> complement_succ_6, complement_succ_5) \<in>
-      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow>
+      \<langle>Id, Id, Id\<rangle> nbai_nba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow>
       \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
     using complement_succ_6.refine unfolding comp_apply by parametricity
 
   context
-    fixes A :: "('label, nat) ba"
+    fixes A :: "('label, nat) nba"
     fixes Ai
     fixes n ni :: nat
-    assumes Ai: "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
+    assumes Ai: "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> nbai_nba_rel"
     assumes ni[autoref_rules]: "(ni, n) \<in> Id"
   begin
 
     private lemma [autoref_op_pat]: "initial A \<equiv> OP (initial A)" by simp
 
-    private lemmas [autoref_rules] = bai_ba_param(3)[THEN fun_relD, OF Ai]
+    private lemmas [autoref_rules] = nbai_nba_param(3)[THEN fun_relD, OF Ai]
 
     schematic_goal complement_initial_6:
       "(?f, {(Some \<circ> (const (2 * n, False))) |` initial A}) \<in> \<langle>state_rel\<rangle> list_set_rel"
@@ -706,7 +706,7 @@ begin
 
   concrete_definition complement_accepting_6 uses complement_accepting_6
 
-  definition complement_6 :: "('label, nat) bai \<Rightarrow> nat \<Rightarrow> ('label, state) bai" where
+  definition complement_6 :: "('label, nat) nbai \<Rightarrow> nat \<Rightarrow> ('label, state) nbai" where
     "complement_6 Ai ni \<equiv>
     \<lparr>
       alphabeti = alphabeti Ai,
@@ -716,18 +716,18 @@ begin
     \<rparr>"
 
   lemma complement_6_refine[autoref_rules]:
-    assumes "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
+    assumes "(Ai, A) \<in> \<langle>Id, Id, Id\<rangle> nbai_nba_rel"
     assumes "(ni,
       (OP card ::: \<langle>Id\<rangle> ahs_rel bhc \<rightarrow> nat_rel) $
-      ((OP nodes ::: \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> \<langle>Id\<rangle> ahs_rel bhc) $ A)) \<in> nat_rel"
+      ((OP nodes ::: \<langle>Id, Id, Id\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id\<rangle> ahs_rel bhc) $ A)) \<in> nat_rel"
     shows "(complement_6 Ai ni, (OP complement_3 :::
-      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> \<langle>Id, state_rel, Id\<rangle> bai_ba_rel) $ A) \<in> \<langle>Id, state_rel, Id\<rangle> bai_ba_rel"
+      \<langle>Id, Id, Id\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id, state_rel, Id\<rangle> nbai_nba_rel) $ A) \<in> \<langle>Id, state_rel, Id\<rangle> nbai_nba_rel"
   proof -
     note complement_succ_6_refine
     also note complement_succ_5_refine
     also note complement_succ_4_refine
     finally have 1: "(complement_succ_6, complement_succ_3) \<in>
-      \<langle>Id, Id, Id\<rangle> bai_ba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow> \<langle>state_rel\<rangle> list_set_rel"
+      \<langle>Id, Id, Id\<rangle> nbai_nba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow> \<langle>state_rel\<rangle> list_set_rel"
       unfolding nres_rel_comp unfolding nres_rel_def unfolding fun_rel_def by auto
     show ?thesis
       unfolding complement_6_def complement_3_def
@@ -737,24 +737,24 @@ begin
   qed
 
   theorem complement_6_correct:
-    assumes "bai A" "finite (nodes (ba A))"
-    shows "language (ba (complement_6 A (card (nodes (ba A))))) =
-      streams (alphabet (ba A)) - language (ba A)"
+    assumes "nbai A" "finite (nodes (nba A))"
+    shows "language (nba (complement_6 A (card (nodes (nba A))))) =
+      streams (alphabet (nba A)) - language (nba A)"
   proof -
     let ?I = "\<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
-    let ?n = "card (nodes (ba A))"
-    have 1: "(A, ba A) \<in> \<langle>Id, Id, Id\<rangle> bai_ba_rel"
-      unfolding bai_ba_br in_br_conv using assms(1) by auto
-    have "(language (ba (complement_6 A ?n)), language (id (complement_3 (ba A)))) \<in> ?I"
+    let ?n = "card (nodes (nba A))"
+    have 1: "(A, nba A) \<in> \<langle>Id, Id, Id\<rangle> nbai_nba_rel"
+      unfolding nbai_nba_br in_br_conv using assms(1) by auto
+    have "(language (nba (complement_6 A ?n)), language (id (complement_3 (nba A)))) \<in> ?I"
       using complement_6_refine 1 by parametricity auto
-    also have "language (id (complement_3 (ba A))) = language (complement_3 (ba A))" by simp
-    also have "(language (complement_3 (ba A)), language (complement_2 (ba A))) \<in> ?I"
+    also have "language (id (complement_3 (nba A))) = language (complement_3 (nba A))" by simp
+    also have "(language (complement_3 (nba A)), language (complement_2 (nba A))) \<in> ?I"
       using complement_3_refine by parametricity auto
-    also have "(language (complement_2 (ba A)), language (complement_1 (ba A))) \<in> ?I"
+    also have "(language (complement_2 (nba A)), language (complement_1 (nba A))) \<in> ?I"
       using complement_2_refine by parametricity auto
-    also have "(language (complement_1 (ba A)), language (complement (ba A))) \<in> ?I"
+    also have "(language (complement_1 (nba A)), language (complement (nba A))) \<in> ?I"
       using complement_1_refine by parametricity auto
-    also have "language (complement (ba A)) = streams (alphabet (ba A)) - language (ba A)"
+    also have "language (complement (nba A)) = streams (alphabet (nba A)) - language (nba A)"
       using complement_language assms(2) by this
     finally show ?thesis by simp
   qed
