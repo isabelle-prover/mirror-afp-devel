@@ -372,7 +372,7 @@ definition reduce_basis_cost :: "int vec list \<Rightarrow> int vec list cost" w
   "reduce_basis_cost F = (case basis_reduction_state_cost F of (state,c) \<Rightarrow> 
     ((of_list_repr o fst o snd) state, c))" 
 
-definition "A (F :: int vec list) = max_list (map (nat o sq_norm) F)" 
+definition "max_sqnorm (F :: int vec list) = max_list (map (nat o sq_norm) F)" 
 
 context
   fixes F :: "int vec list" 
@@ -395,7 +395,7 @@ qed
 
 lemma basis_reduction_state_cost: 
    "result (basis_reduction_state_cost F) = basis_reduction_state n \<alpha> F"  (is ?g1)
-   "cost (basis_reduction_state_cost F) \<le> initial_gso_cost + body_cost * num_loops (A F)" (is ?g2)
+   "cost (basis_reduction_state_cost F) \<le> initial_gso_cost + body_cost * num_loops (max_sqnorm F)" (is ?g2)
 proof -
   obtain state1 c1 where init: "initial_state_cost F = (state1, c1)" (is "?init = _") by (cases ?init, auto)
   obtain state2 c2 where main: "basis_reduction_main_cost state1 = (state2, c2)" (is "?main = _") by (cases ?main, auto)
@@ -403,10 +403,10 @@ proof -
     unfolding basis_reduction_state_cost_def init main split by simp
   from initial_state_cost[unfolded init cost_simps]
   have c1: "c1 \<le> initial_gso_cost" and init: "initial_state n F = state1" by auto
-  from initial_state[OF alpha lin_dep len L init refl, folded A_def]
-  obtain F' G' where inv: "LLL_invariant (A F) state1 F' G'" by auto
+  from initial_state[OF alpha lin_dep len L init refl, folded max_sqnorm_def]
+  obtain F' G' where inv: "LLL_invariant (max_sqnorm F) state1 F' G'" by auto
   from basis_reduction_main_cost[OF inv, unfolded main cost_simps]
-  have main: "basis_reduction_main \<alpha> m state1 = state2" and c2: "c2 \<le> body_cost * num_loops (A F)" 
+  have main: "basis_reduction_main \<alpha> m state1 = state2" and c2: "c2 \<le> body_cost * num_loops (max_sqnorm F)" 
     by auto
   have res': "basis_reduction_state n \<alpha> F = state2" unfolding basis_reduction_state_def len init main ..
   show ?g1 unfolding res res' cost_simps ..
@@ -420,11 +420,11 @@ text \<open>The lemma for the LLL algorithm with explicit cost annotations @{con
 
 lemma reduce_basis_cost: 
    "result (reduce_basis_cost F) = fst (reduce_basis n \<alpha> F)"  (is ?g1)
-   "cost (reduce_basis_cost F) \<le> initial_gso_cost + body_cost * num_loops (A F)" (is ?g2)
+   "cost (reduce_basis_cost F) \<le> initial_gso_cost + body_cost * num_loops (max_sqnorm F)" (is ?g2)
 proof -
   obtain state c where b: "basis_reduction_state_cost F = (state,c)" (is "?b = _") by (cases ?b, auto)
   from basis_reduction_state_cost[unfolded b cost_simps]
-  have bb: "basis_reduction_state n \<alpha> F = state" and c: "c \<le> initial_gso_cost + body_cost * num_loops (A F)" 
+  have bb: "basis_reduction_state n \<alpha> F = state" and c: "c \<le> initial_gso_cost + body_cost * num_loops (max_sqnorm F)" 
     by auto
   show ?g1 ?g2 unfolding reduce_basis_cost_def reduce_basis_def b bb split cost_simps fst_conv using c by auto
 qed
@@ -437,7 +437,7 @@ lemma reduce_basis_cost_full:
       (1 + 2 * m * nat \<lceil>log (4 * real_of_rat \<alpha> / (4 + real_of_rat \<alpha>)) 
          (real (max_list (map (nat \<circ> sq_norm) F)))\<rceil>))
      * n * arith_cost"
-  using reduce_basis_cost(2)[unfolded num_loops_def A_def body_cost_def initial_gso_cost_def]
+  using reduce_basis_cost(2)[unfolded num_loops_def max_sqnorm_def body_cost_def initial_gso_cost_def]
   by (auto simp: nat_distrib ac_simps)
 
 end (* lin-indep F *)
