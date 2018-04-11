@@ -62,7 +62,8 @@ proof -
   have 1: "stoch_vec u" unfolding stoch_vec_def nu[symmetric] norm1_def
     by (rule sum.cong, insert nn[unfolded non_neg_vec_def], auto)
   from arg_cong[OF ev, of "\<lambda> x. inverse ?n *s x"]
-  have ev: "?A *v u = a *s u" unfolding u_def by (auto simp: ac_simps vector_smult_distrib)
+  have ev: "?A *v u = a *s u" unfolding u_def
+    by (auto simp: ac_simps vector_smult_distrib matrix_vect_scaleR)
   from right_stoch_mat_mult_stoch_vec[OF right_stoch_mat_st_mat[of A] 1, unfolded ev]
   have st: "stoch_vec (a *s u)" .
   from non_neg_mat_mult_non_neg_vec[OF non_neg_mat_st_mat[of A] nn, unfolded ev]
