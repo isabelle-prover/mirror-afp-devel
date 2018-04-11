@@ -6,8 +6,8 @@ imports
   NBA_Implement
 begin
 
-  definition nba_G :: "('label, 'state, 'more) nba_scheme \<Rightarrow> ('state, 'more) graph_rec_scheme" where
-    "nba_G A \<equiv> \<lparr> g_V = UNIV, g_E = E_of_succ (successors A), g_V0 = initial A, \<dots> = nba.more A \<rparr>"
+  definition nba_G :: "('label, 'state) nba \<Rightarrow> 'state graph_rec" where
+    "nba_G A \<equiv> \<lparr> g_V = UNIV, g_E = E_of_succ (successors A), g_V0 = initial A \<rparr>"
 
   lemma nba_G_graph[simp]: "graph (nba_G A)" unfolding nba_G_def graph_def by simp
   lemma nba_G_reachable_nodes: "op_reachable (nba_G A) = nodes A"
@@ -29,13 +29,13 @@ begin
     (* TODO: 90% of the time is spent in insert_glist for the successors set *)
     schematic_goal nbai_Gi:
       assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S, M\<rangle> nbai_nba_rel"
+      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
       shows "(?f :: ?'a, nba_G A) \<in> ?A" unfolding nba_G_def successors_alt_def by autoref
     concrete_definition nbai_Gi uses nbai_Gi
     (* TODO: why are term local.nbai_Gi and term BA_Nodes.nbai_Gi not the same *)
     lemma nbai_Gi_refine[autoref_rules]:
       assumes "GEN_OP state_eq HOL.eq (S \<rightarrow> S \<rightarrow> bool_rel)"
-      shows "(NBA_Nodes.nbai_Gi state_eq, nba_G) \<in> \<langle>L, S, M\<rangle> nbai_nba_rel \<rightarrow> \<langle>M, S\<rangle> g_impl_rel_ext"
+      shows "(NBA_Nodes.nbai_Gi state_eq, nba_G) \<in> \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>unit_rel, S\<rangle> g_impl_rel_ext"
       using nbai_Gi.refine assms unfolding autoref_tag_defs by blast
 
     schematic_goal nba_nodes:
@@ -44,7 +44,7 @@ begin
       assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
       assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
       assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S, M\<rangle> nbai_nba_rel"
+      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
       shows "(?f :: ?'a, op_reachable (nba_G A)) \<in> ?R" by autoref
     concrete_definition nba_nodes uses nba_nodes
     lemma nba_nodes_refine[autoref_rules]:
@@ -53,9 +53,9 @@ begin
       assumes "SIDE_GEN_ALGO (is_bounded_hashcode S seq bhc)"
       assumes "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('statei) hms)"
       assumes "GEN_OP seq HOL.eq (S \<rightarrow> S \<rightarrow> bool_rel)"
-      assumes "(Ai, A) \<in> \<langle>L, S, M\<rangle> nbai_nba_rel"
+      assumes "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
       shows "(NBA_Nodes.nba_nodes seq bhc hms Ai,
-        (OP nodes ::: \<langle>L, S, M\<rangle> nbai_nba_rel \<rightarrow> \<langle>S\<rangle> ahs_rel bhc) $ A) \<in> \<langle>S\<rangle> ahs_rel bhc"
+        (OP nodes ::: \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>S\<rangle> ahs_rel bhc) $ A) \<in> \<langle>S\<rangle> ahs_rel bhc"
     proof -
       have "finite ((g_E (nba_G A))\<^sup>* `` g_V0 (nba_G A))"
         using assms(1) unfolding autoref_tag_defs nba_G_reachable_nodes[symmetric] by simp

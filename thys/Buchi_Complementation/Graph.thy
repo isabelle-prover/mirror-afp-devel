@@ -27,9 +27,9 @@ begin
   abbreviation "gstates \<equiv> graph.states"
   abbreviation "gtrace \<equiv> graph.trace"
 
-  abbreviation gsuccessors :: "('label, 'state, 'more) nba_scheme \<Rightarrow> 'label stream \<Rightarrow>
+  abbreviation gsuccessors :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow>
     'state node set \<Rightarrow> 'state node \<Rightarrow> 'state node set" where
-    "gsuccessors A w V \<equiv> graph.successors TYPE('label) TYPE('more) w A V"
+    "gsuccessors A w V \<equiv> graph.successors TYPE('label) w A V"
 
   abbreviation "gusuccessors A w \<equiv> gsuccessors A w UNIV"
   abbreviation "gupath A w \<equiv> gpath A w UNIV"

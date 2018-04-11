@@ -8,11 +8,11 @@ imports
   "../Transition_Systems/Transition_System_Construction"
 begin
 
-  record ('label, 'state) nba =
-    alphabet :: "'label set"
-    initial :: "'state set"
-    succ :: "'label \<Rightarrow> 'state \<Rightarrow> 'state set"
-    accepting :: "'state \<Rightarrow> bool"
+  datatype ('label, 'state) nba = nba
+    (alphabet: "'label set")
+    (initial: "'state set")
+    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state set")
+    (accepting: "'state \<Rightarrow> bool")
 
   global_interpretation nba: transition_system_initial
     "\<lambda> a p. snd a" "\<lambda> a p. fst a \<in> alphabet A \<and> snd a \<in> succ A (fst a) p" "\<lambda> p. p \<in> initial A"
@@ -28,8 +28,8 @@ begin
   lemma states_alt_def: "states r p = map snd r" by (induct r arbitrary: p) (auto)
   lemma trace_alt_def: "trace r p = smap snd r" by (coinduction arbitrary: r p) (auto)
 
-  abbreviation successors :: "('label, 'state, 'more) nba_scheme \<Rightarrow> 'state \<Rightarrow> 'state set" where
-    "successors \<equiv> nba.successors TYPE('label) TYPE('more)"
+  abbreviation successors :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> 'state set" where
+    "successors \<equiv> nba.successors TYPE('label)"
 
   lemma successors_alt_def: "successors A p = (\<Union> a \<in> alphabet A. succ A a p)" by auto
 
@@ -44,7 +44,7 @@ begin
     shows "q \<in> nodes A"
     using nba.nodes.execute assms by force
 
-  definition language :: "('label, 'state, 'more) nba_scheme \<Rightarrow> 'label stream set" where
+  definition language :: "('label, 'state) nba \<Rightarrow> 'label stream set" where
     "language A \<equiv> {w |w r p. p \<in> initial A \<and> run A (w ||| r) p \<and> infs (accepting A) (trace (w ||| r) p)}"
 
   lemma language[intro]:

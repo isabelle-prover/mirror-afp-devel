@@ -27,13 +27,11 @@ begin
     "complement_succ A a \<equiv> \<lambda> (f, P). {(g, st_succ A a g P) |g. g \<in> lr_succ A a f}"
 
   definition complement :: "('label, 'state) nba \<Rightarrow> ('label, 'state cs) nba" where
-    "complement A \<equiv>
-    \<lparr>
-      alphabet = alphabet A,
-      initial = {const (Some (2 * card (nodes A))) |` initial A} \<times> {{}},
-      succ = complement_succ A,
-      accepting = \<lambda> (f, P). P = {}
-    \<rparr>"
+    "complement A \<equiv> nba
+      (alphabet A)
+      ({const (Some (2 * card (nodes A))) |` initial A} \<times> {{}})
+      (complement_succ A)
+      (\<lambda> (f, P). P = {})"
 
   lemma dom_nodes:
     assumes "fP \<in> nodes (complement A)"
@@ -469,7 +467,7 @@ begin
         also have "\<dots> = complement_succ A (w !! k) (target (stake k (w ||| stl s)) (shd s))"
           unfolding sscan_scons_snth[symmetric] trace_alt_def by simp
         also have "\<dots> = succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))"
-          unfolding complement_def nba.simps by rule
+          unfolding complement_def nba.sel by rule
         finally show "stl s !! k \<in>
           succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
       qed
@@ -598,7 +596,7 @@ begin
     assumes "finite (nodes A)"
     shows "language (complement A) = streams (alphabet A) - language A"
   proof (safe del: notI)
-    have 1: "alphabet (complement A) = alphabet A" unfolding complement_def nba.simps by rule
+    have 1: "alphabet (complement A) = alphabet A" unfolding complement_def nba.sel by rule
     show "w \<in> streams (alphabet A)" if "w \<in> language (complement A)" for w
       using language_alphabet that 1 by force
     show "w \<notin> language A" if "w \<in> language (complement A)" for w
