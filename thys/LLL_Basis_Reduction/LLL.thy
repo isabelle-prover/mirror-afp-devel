@@ -87,9 +87,9 @@ fun basis_reduction_swap :: "state \<Rightarrow> state" where
     fi = get_nth_i F;
     fim1 = get_nth_im1 F;
     new_gim1 = gi + mu \<cdot>\<^sub>v gim1;
-    norm_gim1 = sq_norm new_gim1;
+    norm_gim1 = sq_norm_vec_rat new_gim1;
     new_gi = gim1 - (fim1 \<bullet>i new_gim1 / norm_gim1) \<cdot>\<^sub>v new_gim1;
-    norm_gi = sq_norm new_gi;
+    norm_gi = sq_norm_vec_rat new_gi;
     G' = dec_i (update_im1 (update_i G (new_gi,norm_gi)) (new_gim1,norm_gim1));
     F' = dec_i (update_im1 (update_i F fim1) fi)
   in (i - 1, F', G'))"

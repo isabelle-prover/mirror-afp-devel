@@ -138,7 +138,7 @@ proof (atomize(full), goal_cases)
   have mu': "\<mu>_i_im1 F G = mu" and c1: "c1 \<le> 2 * n * arith_cost" by auto
   show ?case unfolding state basis_reduction_swap_cost.simps 
     basis_reduction_swap.simps mu split Let_def mu' cost_simps
-    by (intro conjI[OF refl], insert c1, auto simp: ac_simps)
+    by (intro conjI, insert c1, auto simp: ac_simps)
 qed
   
 definition basis_reduction_add_rows_cost :: "state \<Rightarrow> state cost" where 
