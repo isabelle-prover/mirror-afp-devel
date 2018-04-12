@@ -33,8 +33,6 @@ begin
 
   lemma successors_alt_def: "successors A p = (\<Union> a \<in> alphabet A. succ A a p)" by auto
 
-  abbreviation "pred A a q \<equiv> {p. q \<in> succ A a p}"
-
   lemma reachable_succ[intro]:
     assumes "a \<in> alphabet A" "q \<in> reachable A p" "r \<in> succ A a q"
     shows "r \<in> reachable A p"
