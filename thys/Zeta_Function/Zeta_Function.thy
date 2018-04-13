@@ -1520,6 +1520,7 @@ proof -
 
   have meas1: "set_borel_measurable lebesgue {0<..} 
                  (\<lambda>x. of_real x powr (z - 1) / of_real (exp ((n+a) * x)))"
+    unfolding set_borel_measurable_def
     by (intro measurable_completion, subst measurable_lborel2, 
         intro borel_measurable_continuous_on_indicator) (auto intro!: continuous_intros)
   show integrable1: "set_integrable lebesgue {0<..} 
@@ -1541,24 +1542,29 @@ proof -
   also have "set_lebesgue_integral \<dots> {0<..} (\<lambda>t. of_real t powr (z - 1) / of_real (exp t)) = 
                set_lebesgue_integral (distr lebesgue lebesgue (\<lambda>t. (real n + a) * t)) {0<..}
                  (\<lambda>t. (real n + a) * t powr (z - 1) / exp t)" using integrable pos
-    by (subst integral_density) (simp_all add: exp_of_real algebra_simps scaleR_conv_of_real)
+    unfolding set_lebesgue_integral_def
+    by (subst integral_density) (simp_all add: exp_of_real algebra_simps scaleR_conv_of_real set_integrable_def)
   also have "\<dots> = ?INT (\<lambda>s. (n + a) * (of_real (n+a) * of_real s) powr (z - 1) / 
                     of_real (exp ((n+a) * s)))"
+    unfolding set_lebesgue_integral_def
   proof (subst integral_distr)
     show "( * ) (real n + a) \<in> lebesgue \<rightarrow>\<^sub>M lebesgue"
       using lebesgue_measurable_scaling[of "real n + a", where ?'a = real]
       unfolding real_scaleR_def .
   next
     have "(\<lambda>x. (n+a) * (indicator {0<..} x *\<^sub>R (of_real x powr (z - 1) / of_real (exp x)))) 
-             \<in> lebesgue \<rightarrow>\<^sub>M borel" using integrable by (intro borel_measurable_times) simp_all
-    thus "set_borel_measurable lebesgue {0<..} 
-            (\<lambda>x. of_real (n+a) * of_real x powr (z - 1) / of_real (exp x))" by simp
+             \<in> lebesgue \<rightarrow>\<^sub>M borel" 
+      using integrable unfolding set_integrable_def by (intro borel_measurable_times) simp_all
+    thus "(\<lambda>x. indicator {0<..} x *\<^sub>R
+           (complex_of_real (real n + a) * complex_of_real x powr (z - 1) / exp x))
+    \<in> borel_measurable lebesgue" by simp
   qed (intro Bochner_Integration.integral_cong refl, insert pos, 
        auto simp: indicator_def zero_less_mult_iff)
   also have "\<dots> = ?INT (\<lambda>s. ((n+a) powr z) * (s powr (z - 1) / exp ((n+a) * s)))" using pos
     by (intro set_lebesgue_integral_cong refl allI impI, simp, subst powr_times_real)
        (auto simp: powr_diff)
   also have "\<dots> = (n + a) powr z * ?INT (\<lambda>s. s powr (z - 1) / exp ((n+a) * s))"
+    unfolding set_lebesgue_integral_def
     by (subst integral_mult_right_zero [symmetric]) simp_all
   finally show "Gamma z / (of_nat n + of_real a) powr z = 
                   ?INT (\<lambda>s. s powr (z - 1) / exp ((n+a) * s))" 
@@ -1576,6 +1582,7 @@ lemma
 proof -
   show "set_integrable lebesgue {0<..} (\<lambda>s. s powr (x - 1) / exp ((real n + a) * s))"
     using absolutely_integrable_Gamma_integral[of "of_real x" "real n + a"]
+    unfolding set_integrable_def
   proof (rule Bochner_Integration.integrable_bound, goal_cases)
     case 3
     have "set_integrable lebesgue {0<..} (\<lambda>xa. complex_of_real xa powr (of_real x - 1) / 
@@ -1583,10 +1590,12 @@ proof -
       using assms by (intro Gamma_hurwitz_zeta_aux_integrable) auto
     also have "?this \<longleftrightarrow> integrable lebesgue
                  (\<lambda>s. complex_of_real (indicator {0<..} s *\<^sub>R (s powr (x - 1) / (exp ((n+a) * s)))))"
+      unfolding set_integrable_def
       by (intro Bochner_Integration.integrable_cong refl) (auto simp: powr_Reals_eq indicator_def)
     finally have "set_integrable lebesgue {0<..} (\<lambda>s. s powr (x - 1) / exp ((n+a) * s))"
-      by (subst (asm) complex_of_real_integrable_eq)
-    thus ?case by simp
+      unfolding set_integrable_def complex_of_real_integrable_eq .
+    thus ?case
+      by (simp add: set_integrable_def)
   qed (insert assms, auto intro!: AE_I2 simp: indicator_def norm_divide norm_powr_real_powr)
   from Gamma_hurwitz_zeta_aux_integral[of "of_real x" a n] and assms
     have "of_real (Gamma x / (real n + a) powr x) = set_lebesgue_integral lebesgue {0<..} 
@@ -1594,10 +1603,12 @@ proof -
       by (auto simp: Gamma_complex_of_real powr_Reals_eq)
   also have "?I = lebesgue_integral lebesgue
                     (\<lambda>s. of_real (indicator {0<..} s *\<^sub>R (s powr (x - 1) / exp ((n+a) * s))))"
+    unfolding set_lebesgue_integral_def
     using assms by (intro Bochner_Integration.integral_cong refl) 
                    (auto simp: indicator_def powr_Reals_eq)
   also have "\<dots> = of_real (set_lebesgue_integral lebesgue {0<..} 
                     (\<lambda>s. s powr (x - 1) / exp ((n+a) * s)))"
+    unfolding set_lebesgue_integral_def
     by (rule Bochner_Integration.integral_complex_of_real)
   finally show "Gamma x / (real n + a) powr x = set_lebesgue_integral lebesgue {0<..} 
                   (\<lambda>s. s powr (x - 1) / exp ((real n + a) * s))"
@@ -1644,11 +1655,13 @@ proof -
         by (subst Gamma_hurwitz_zeta_aux_integral_real) simp_all
       also have "\<dots> = (\<integral>xa\<in>{0<..}. norm (of_real xa powr (z-1) / of_real (exp ((n+a) * xa)))
                          \<partial>lebesgue)"
+        unfolding set_lebesgue_integral_def
         by (intro Bochner_Integration.integral_cong refl)
-           (auto simp: indicator_def norm_divide norm_powr_real_powr)
+          (auto simp: indicator_def norm_divide norm_powr_real_powr)
       finally show ?case .
     qed
-    finally show ?thesis by simp
+    finally show ?thesis
+      by (simp add: set_lebesgue_integral_def)
   qed
 
   have sum_eq: "(\<Sum>n. indicator {0<..} s *\<^sub>R (of_real s powr (z - 1) / of_real (exp ((n+a) * s)))) = 
@@ -1673,16 +1686,18 @@ proof -
 
   show "set_integrable lebesgue {0<..} 
           (\<lambda>x. of_real x powr (z - 1) * of_real (exp (-a*x) / (1 - exp (-x))))"
-    unfolding sum_eq [symmetric] by (intro integrable_suminf[OF _ AE_I2] 1 2 3)
+    using 1 unfolding sum_eq [symmetric] set_integrable_def 
+    by (intro integrable_suminf[OF _ AE_I2] 2 3)
 
   have "(\<lambda>n. ?INT (\<lambda>s. s powr (z - 1) / exp ((n+a) * s))) sums lebesgue_integral lebesgue
             (\<lambda>s. \<Sum>n. indicator {0<..} s *\<^sub>R (s powr (z - 1) / exp ((n+a) * s)))" (is "?A sums ?B")
-    by (rule sums_integral[OF 1 AE_I2[OF 2] 3])
+    using 1 unfolding set_lebesgue_integral_def set_integrable_def
+    by (rule sums_integral[OF _ AE_I2[OF 2] 3])
   also have "?A = (\<lambda>n. Gamma z * (n + a) powr -z)"
     using assms by (subst Gamma_hurwitz_zeta_aux_integral [symmetric]) 
                    (simp_all add: powr_minus divide_simps)
   also have "?B = ?INT (\<lambda>s. of_real s powr (z - 1) * of_real (exp (-a * s) / (1 - exp (-s))))"
-    unfolding sum_eq ..
+    unfolding sum_eq set_lebesgue_integral_def ..
   finally have "(\<lambda>n. Gamma z * (of_nat n + of_real a) powr -z) sums
                   ?INT (\<lambda>x. of_real x powr (z - 1) * of_real (exp (-a * x) / (1 - exp (-x))))" 
     by simp
@@ -1707,9 +1722,9 @@ proof -
              (\<lambda>x. indicator {0<..} x *\<^sub>R (of_real x powr (z - 1) / of_real (exp x - 1)))"
     by (intro ext) (simp add: field_simps exp_minus indicator_def)
   from Gamma_times_hurwitz_zeta_integral [OF assms zero_less_one] and *
-    show ?th1 by (simp add: zeta_def)
+    show ?th1 by (simp add: zeta_def set_lebesgue_integral_def)
   from Gamma_times_hurwitz_zeta_integrable [OF assms zero_less_one] and *
-    show ?th2 by (simp add: zeta_def)
+    show ?th2 by (simp add: zeta_def set_integrable_def)
 qed
 
 corollary hurwitz_zeta_integral_Gamma_def:
