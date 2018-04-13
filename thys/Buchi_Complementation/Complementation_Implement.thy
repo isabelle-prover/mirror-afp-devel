@@ -14,6 +14,8 @@ begin
   abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"
   abbreviation "state_rel \<equiv> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
 
+  abbreviation "pred A a q \<equiv> {p. q \<in> succ A a p}"
+
   subsection {* Phase 1 *}
 
   definition cs_lr :: "'state items \<Rightarrow> 'state lr" where

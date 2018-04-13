@@ -302,22 +302,23 @@ subsection "Preservation of WB tree Invariant for Concrete Parameters"
 
 text \<open>A number of sample interpretations with valid parameters:\<close>
 
-interpretation WBT where \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 14 and \<Gamma>2 = 10
-(*interpretation WBT where \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 15 and \<Gamma>2 = 10*)
-(*interpretation WBT where \<Delta>1 = 28 and \<Delta>2 = 10 and \<Gamma>1 = 10 and \<Gamma>2 = 7*) (* smt! *)
+interpretation WBT where
+  \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 14 and \<Gamma>2 = 10
+(* \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 15 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 28 and \<Delta>2 = 10 and \<Gamma>1 = 10 and \<Gamma>2 = 7*)
 
-(*interpretation WBT where \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
   (* The only integer solution: *)
-(*interpretation WBT where \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 2 and \<Gamma>2 = "Suc 0"*)
-(*interpretation WBT where \<Delta>1 = 31 and \<Delta>2 = 10 and \<Gamma>1 = 18 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 2 and \<Gamma>2 = "Suc 0"*)
+(* \<Delta>1 = 31 and \<Delta>2 = 10 and \<Gamma>1 = 18 and \<Gamma>2 = 10*)
 
-(*interpretation WBT where \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 45 and \<Gamma>2 = 35*) (* smt! *)
-(*interpretation WBT where \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 4 and \<Gamma>2 = 3*)  (* smt! *)
-(*interpretation WBT where \<Delta>1 = 37 and \<Delta>2 = 10 and \<Gamma>1 = 13 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 45 and \<Gamma>2 = 35*)
+(* \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 37 and \<Delta>2 = 10 and \<Gamma>1 = 13 and \<Gamma>2 = 10*)
 
-(*interpretation WBT where \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 4*)
-(*interpretation WBT where \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 3*)
-(* interpretation WBT where \<Delta>1 = 17 and \<Delta>2 = 4 and \<Gamma>1 = 5 and \<Gamma>2 = 3 *) (* smt! *)
+(* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 4*)
+(* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 17 and \<Delta>2 = 4 and \<Gamma>1 = 5 and \<Gamma>2 = 3 *)
 by (auto simp add: WBT_def)  
 
 lemma wbt_insert:
