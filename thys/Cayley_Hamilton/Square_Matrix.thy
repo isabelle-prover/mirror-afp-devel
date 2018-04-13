@@ -338,7 +338,7 @@ lemma permutes_UNIV_permutation: "permutation p \<longleftrightarrow> p permutes
   by (auto simp: permutation_permutes permutes_def)
 
 lemma det_0[simp]: "det 0 = 0"
-  by transfer (simp add: prod_zero)
+  by transfer (simp add: zero_power)
 
 lemma det_transpose: "det (transpose A) = det A"
   apply transfer

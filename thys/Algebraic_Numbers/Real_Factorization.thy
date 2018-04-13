@@ -208,7 +208,7 @@ proof -
           unfolding xi_def xx yis by simp
         note IH = IH(2)[OF False xx yis xi]
         have "irreducible xi"
-          apply (rule irreducible_connect)
+          apply (fold irreducible_connect_field)
         proof (rule irreducible\<^sub>dI)
           show "degree xi > 0" unfolding xi by auto
           fix q p :: "real poly" 

@@ -231,21 +231,6 @@ proof (insert assms, induct fs arbitrary: f)
   moreover from Cons.prems have "f = f' \<or> f \<in> set fs" by auto
   ultimately show ?case using Cons.hyps[of f] by auto
 qed auto
-  
-context comm_semiring_1
-begin
-lemma irreducibleE[elim]:
-  assumes "irreducible p"
-      and "p \<noteq> 0 \<Longrightarrow> \<not> p dvd 1 \<Longrightarrow> (\<And>a b. p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1) \<Longrightarrow> thesis"
-  shows thesis using assms by (auto simp: irreducible_def)
-
-lemma not_irreducibleE:
-  assumes "\<not> irreducible x"
-      and "x = 0 \<Longrightarrow> thesis"
-      and "x dvd 1 \<Longrightarrow> thesis"
-      and "\<And>a b. x = a * b \<Longrightarrow> \<not> a dvd 1 \<Longrightarrow> \<not> b dvd 1 \<Longrightarrow> thesis"
-  shows thesis using assms unfolding irreducible_def by auto
-end
 
 lemma irreducible_imp_content_free:
   fixes f :: "'a :: {idom,semiring_gcd} poly"

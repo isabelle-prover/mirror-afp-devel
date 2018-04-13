@@ -10,7 +10,7 @@ begin
 
   type_synonym 'state ranking = "'state node \<Rightarrow> nat"
 
-  definition ranking :: "('label, 'state) ba \<Rightarrow> 'label stream \<Rightarrow> 'state ranking \<Rightarrow> bool" where
+  definition ranking :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state ranking \<Rightarrow> bool" where
     "ranking A w f \<equiv>
       (\<forall> v \<in> gunodes A w. f v \<le> 2 * card (nodes A)) \<and>
       (\<forall> v \<in> gunodes A w. \<forall> u \<in> gusuccessors A w v. f u \<le> f v) \<and>
@@ -119,7 +119,7 @@ begin
 
   subsubsection {* Removal of Endangered Nodes *}
 
-  definition clean :: "('label, 'state) ba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
+  definition clean :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
     "clean A w V \<equiv> {v \<in> V. infinite (greachable A w V v)}"
 
   lemma clean_decreasing: "clean A w V \<subseteq> V" unfolding clean_def by auto
@@ -137,7 +137,7 @@ begin
 
   subsubsection {* Removal of Safe Nodes *}
 
-  definition prune :: "('label, 'state) ba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
+  definition prune :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
     "prune A w V \<equiv> {v \<in> V. \<exists> u \<in> greachable A w V v. gaccepting A u}"
 
   lemma prune_decreasing: "prune A w V \<subseteq> V" unfolding prune_def by auto
@@ -154,7 +154,7 @@ begin
 
   subsubsection {* Run Graph Interation *}
 
-  definition graph :: "('label, 'state) ba \<Rightarrow> 'label stream \<Rightarrow> nat \<Rightarrow> 'state node set" where
+  definition graph :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> nat \<Rightarrow> 'state node set" where
     "graph A w k \<equiv> alternate (clean A w) (prune A w) k (gunodes A w)"
 
   abbreviation "level A w k l \<equiv> {v \<in> graph A w k. fst v = l}"
@@ -235,7 +235,7 @@ begin
     have 8: "run A (w ||| s) q" using grun_run[OF 104[unfolded 7]] by simp
     have 9: "q \<in> initial A" using 100(1) 7(2) by auto
     have 91: "sset (trace (w ||| s) q) \<subseteq> reachable A q"
-      using ba.reachable_trace ba.reachable.reflexive 8 by this
+      using nba.reachable_trace nba.reachable.reflexive 8 by this
     have 10: "\<not> infs (accepting A) (trace (w ||| s) q)" using 3 9 8 by this
     have 11: "\<not> infs (accepting A) s" using 10 unfolding trace_alt_def by simp
     have 12: "infs (gaccepting A) r" using infs_mono[OF _ 6(2)] by simp
@@ -393,7 +393,7 @@ begin
 
   subsection {* Node Ranks *}
 
-  definition rank :: "('label, 'state) ba \<Rightarrow> 'label stream \<Rightarrow> 'state node \<Rightarrow> nat" where
+  definition rank :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node \<Rightarrow> nat" where
     "rank A w v \<equiv> GREATEST k. v \<in> graph A w k"
 
   lemma rank_member:

@@ -365,12 +365,6 @@ proof -
   from rat_to_int_factor[OF this] show ?thesis by auto
 qed
 
-lemma irreducible_field_connect [simp]:
-  fixes p :: "'a :: {field,semiring_gcd} poly"
-  shows "irreducible\<^sub>d p \<longleftrightarrow> irreducible p"
-  apply (cases "p = 0", force, rule irreducible_content_free_connect)
-  by (meson const_poly_dvd_1 content_eq_zero_iff content_free_iff_content_eq_1 is_unit_content_iff is_unit_triv)
-
 (* TODO: move *)
 lemma irreducible_smult [simp]:
   fixes c :: "'a :: field"

@@ -39,7 +39,7 @@ lemma berlekamp_hensel_main:
   shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
     and "sort (map degree fs) = sort (map degree gs)"
     and "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  \<comment> \<open>monic and normalized\<close>
-        poly_mod.irreducible\<^sub>d_m p g \<and> \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+        poly_mod.irreducible_m p g \<and> \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
         poly_mod.degree_m p g = degree g  \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   from res[unfolded berlekamp_hensel_def berl split] 
@@ -51,7 +51,7 @@ proof -
   show "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" 
     "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  
-      poly_mod.irreducible\<^sub>d_m p g \<and> 
+      poly_mod.irreducible_m p g \<and> 
       poly_mod.degree_m p g = degree g" using hen by auto
 qed
 
@@ -61,13 +61,13 @@ theorem berlekamp_hensel:
     and res: "berlekamp_hensel p n f = gs"
     and n: "n \<noteq> 0"
   shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs) \<comment> \<open>factorization mod \<open>p^n\<close>\<close>"
-    and "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g
-      \<comment> \<open>normalized and \<open>irreducible\<^sub>d\<close> even mod \<open>p\<close>\<close>"
+    and "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g
+      \<comment> \<open>normalized and \<open>irreducible\<close> even mod \<open>p\<close>\<close>"
 proof -
   obtain c fs where "finite_field_factorization_int p f = (c,fs)" by force
   from berlekamp_hensel_main[OF n res cop sf this]
   show "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" 
-    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g" by auto
+    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g" by auto
 qed
 
 lemma berlekamp_and_hensel_separated:
@@ -310,7 +310,7 @@ proof -
     have "coprime (lead_coeff (q.Mp f)) p" using mon[OF f] prime by simp
     from berlekamp_hensel[OF this sf_Mf refl n, unfolded lc] obtain gs where
       qfact: "q.factorization_m (q.Mp f) (1, mset gs)"
-      and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g" by blast
+      and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible_m g" by blast
     hence fact: "q.Mp f = q.Mp (prod_list gs)" 
       and gs: "\<And> g. g\<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g \<and> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)" 
       unfolding q.factorization_m_def by auto
@@ -578,13 +578,13 @@ lemma hensel_lifting_unique:
 shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" \<comment> \<open>unique factorization mod \<open>p^n\<close>\<close>
     "sort (map degree fs) = sort (map degree gs)"                       \<comment> \<open>degrees stay the same\<close>
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    \<comment> \<open>monic and normalized\<close>
-      poly_mod.irreducible\<^sub>d_m p g \<and>                              \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
+      poly_mod.irreducible_m p g \<and>                              \<comment> \<open>irreducibility even mod \<open>p\<close>\<close>
       poly_mod.degree_m p g = degree g   \<comment> \<open>mod \<open>p\<close> does not change degree of \<open>g\<close>\<close>"
 proof -
   note hensel = hensel_lifting[OF assms]
   show "sort (map degree fs) = sort (map degree gs)" 
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and> 
-      poly_mod.irreducible\<^sub>d_m p g \<and>                            
+      poly_mod.irreducible_m p g \<and>                            
       poly_mod.degree_m p g = degree g" using hensel by auto
   from berlekamp_hensel_unique[OF cop sf refl n]
   have "poly_mod.unique_factorization_m (p ^ n) f (lead_coeff f, mset (berlekamp_hensel p n f))"  by auto

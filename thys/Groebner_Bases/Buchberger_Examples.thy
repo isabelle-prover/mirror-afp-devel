@@ -74,17 +74,17 @@ lemma
 
 lemma
   "rd_mult_drlex (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) (Y\<^sup>2 * Z + 2 * Z ^ 3) =
-    (1 / 2, sparse\<^sub>0 [(0, 2), (2, 1)])"
+    Some (1 / 2, sparse\<^sub>0 [(0, 2), (2, 1)])"
   by eval
 
 lemma
   "rd_drlex (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) (Y\<^sup>2 * Z + 2 * Z ^ 3) =
-    -2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2"
+    (-2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2, True)"
   by eval
 
 lemma
   "rd_list_drlex [Y\<^sup>2 * Z + 2 * Z ^ 3] (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) =
-    -2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2"
+    (-2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2, True)"
   by eval
 
 lemma

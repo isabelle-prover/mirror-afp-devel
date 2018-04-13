@@ -14,7 +14,8 @@ text \<open>This theory connects short vectors of lattices and factors of polyno
 
 theory LLL_Factorization
   imports
-    LLL_Factorization_Impl    
+    LLL_Factorization_Impl  
+    Berlekamp_Zassenhaus.Factorize_Int_Poly
 begin
 
 subsection \<open>Basic facts about the auxiliary functions\<close>
@@ -46,14 +47,11 @@ lemma set_factorization_lattice_in_carrier[simp]: "set (factorization_lattice u 
   using dim_factorization_lattice by (auto simp: factorization_lattice_def Let_def) 
 
 lemma choose_u_Cons: "choose_u (x#xs) = 
-  (if xs = [] then x else max_degree_poly x (choose_u xs))"
+  (if xs = [] then x else min_degree_poly x (choose_u xs))"
   by (cases xs, auto)
 
 lemma choose_u_member: "xs \<noteq> [] \<Longrightarrow> choose_u xs \<in> set xs"
   by (induct xs, auto simp: choose_u_Cons)
-
-lemma choose_u_maximal: "gi \<in> set gs \<Longrightarrow> degree gi \<le> degree (choose_u gs)" 
-  by (induct gs, auto simp: choose_u_Cons)
 
 declare choose_u.simps[simp del]
 
@@ -733,7 +731,8 @@ proof -
   have id: "LLL_short_polynomial n u = poly_of_vec ?sv" 
     unfolding LLL_short_polynomial_def by blast
   have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2" unfolding id by simp
-  interpret LLL n n .
+  interpret vec_module "TYPE(int)" n.
+  interpret LLL n n "lattice_of ?L" 2 .
   from deg_le deg_iu have deg_iu_le: "degree ?iu \<le> n" by simp
   have len: "length ?L = n" 
     unfolding factorization_lattice_def using deg_le deg_iu by auto
@@ -741,7 +740,7 @@ proof -
   hence iu0: "?iu \<noteq> 0" by auto
   from lin_indpt_list_factorization_lattice[OF refl deg_iu_le iu0 pl0]
   have "4/3 \<le> (2 :: rat)" "gs.lin_indpt_list (RAT ?L)" by (auto simp: deg_iu)
-  note short = short_vector[OF this len refl n, unfolded id']
+  note short = short_vector[OF this len refl refl n, unfolded id']
   from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
   note fact = factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
@@ -1052,4 +1051,9 @@ proof -
     by (rule LLL_implementation.LLL_reconstruction[OF res deg uf dvd_refl norm f0 cop sf pn1 
           refl prime K[unfolded K_def]]) 
 qed
+
+lift_definition one_lattice_LLL_factorization :: int_poly_factorization_algorithm
+  is LLL_factorization using LLL_factorization by auto
+
+thm factorize_int_poly[of one_lattice_LLL_factorization]
 end

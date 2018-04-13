@@ -791,7 +791,7 @@ lemma orthogonal_sumlist:
   shows "v \<bullet> sumlist S = 0"
   by (rule orthocompl_span[OF ortho S v sumlist_in_span[OF S span_mem[OF S]]])
 
-lemma projection_alt_def:
+lemma oc_projection_alt_def:
   assumes carr:"(W::'a vec set) \<subseteq> carrier_vec n" "x \<in> carrier_vec n"
       and alt1:"y1 \<in> W" "x - y1 \<in> orthogonal_complement W"
       and alt2:"y2 \<in> W" "x - y2 \<in> orthogonal_complement W"
@@ -827,20 +827,20 @@ definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<R
   where "weakly_reduced \<alpha> k gs = (\<forall> i. Suc i < k \<longrightarrow> 
     sq_norm (gs ! i) \<le> \<alpha> * sq_norm (gs ! (Suc i)))" 
   
-definition strictly_reduced :: "nat \<Rightarrow> 'a \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
+definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
   (* this is reduced according to LLL original paper *)
-  where "strictly_reduced N \<alpha> gs mu = (weakly_reduced \<alpha> N gs \<and> 
-    (\<forall> i j. i < N \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
+  where "reduced \<alpha> k gs mu = (weakly_reduced \<alpha> k gs \<and> 
+    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
 
 definition
-  "is_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
+  "is_oc_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
 
-lemma is_projection_sq_norm: assumes "is_projection w S v"
+lemma is_oc_projection_sq_norm: assumes "is_oc_projection w S v"
   and S: "S \<subseteq> carrier_vec n" 
   and v: "v \<in> carrier_vec n" 
 shows "sq_norm w \<le> sq_norm v" 
 proof -
-  from assms[unfolded is_projection_def]
+  from assms[unfolded is_oc_projection_def]
   have w: "w \<in> carrier_vec n" 
     and vw: "v - w \<in> span S" and ortho: "\<And> u. u \<in> S \<Longrightarrow> w \<bullet> u = 0" by auto
   have "sq_norm v = sq_norm ((v - w) + w)" using v w 
@@ -858,8 +858,8 @@ proof -
   finally show ?thesis by auto
 qed
 
-definition projection where
-"projection S fi \<equiv> (SOME v. is_projection v S fi)"
+definition oc_projection where
+"oc_projection S fi \<equiv> (SOME v. is_oc_projection v S fi)"
 
 context
   fixes fs :: "'a vec list" 
@@ -1344,7 +1344,7 @@ proof -
 qed
 
 (* Theorem 16.5 (ii), first half *)
-lemma projection_exist:
+lemma oc_projection_exist:
   assumes "i < m" 
   shows "fs ! i - gso i \<in> span (gso ` {0..<i})"
 proof
@@ -1385,7 +1385,7 @@ proof
     by (rule eq_vecI, auto)
 qed auto
 
-lemma projection_unique:
+lemma oc_projection_unique:
   assumes "i < m" 
           "v \<in> carrier_vec n"
           "\<And> x. x \<in> gso ` {0..<i} \<Longrightarrow> v \<bullet> x = 0"
@@ -1404,10 +1404,10 @@ proof -
     by (rule orthocompl_span[OF _ carr gso_carrier[OF assms(1)],rule_format])
   hence oc2:"fs ! i - (fs ! i - gso i) \<in> orthogonal_complement (span (gso ` {0..< i}))"
     unfolding eq orthogonal_complement_def using assms by auto
-  note pe= projection_exist[OF assms(1)]
-  note prerec = carr_span f_carrier[OF assms(1)] assms(4) oc1 projection_exist[OF assms(1)] oc2
+  note pe= oc_projection_exist[OF assms(1)]
+  note prerec = carr_span f_carrier[OF assms(1)] assms(4) oc1 oc_projection_exist[OF assms(1)] oc2
   have gsoi: "gso i \<in> carrier_vec n" "fs ! i \<in> carrier_vec n" by (rule gso_carrier[OF \<open>i < m\<close>], rule f_carrier[OF \<open>i < m\<close>])
-  note main = arg_cong[OF projection_alt_def[OF carr_span f_carrier[OF assms(1)] assms(4) oc1 pe oc2], 
+  note main = arg_cong[OF oc_projection_alt_def[OF carr_span f_carrier[OF assms(1)] assms(4) oc1 pe oc2], 
      of "\<lambda> v. - v $ j + fs ! i $ j" for j]
   show "v = gso i" 
   proof (intro eq_vecI)
@@ -1417,24 +1417,24 @@ proof -
   qed (insert assms(2) gsoi, auto)
 qed
 
-lemma gso_projection:
+lemma gso_oc_projection:
   assumes "i < m"
-  shows "gso i = projection (gso ` {0..<i}) (fs ! i)"
-  unfolding projection_def is_projection_def
-proof (rule some_equality[symmetric,OF _ projection_unique[OF assms]])
+  shows "gso i = oc_projection (gso ` {0..<i}) (fs ! i)"
+  unfolding oc_projection_def is_oc_projection_def
+proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
   have orthogonal:"\<And> xa. xa < i \<Longrightarrow> gso i \<bullet> gso xa = 0" by (rule orthogonal,insert assms, auto)
   show "gso i \<in> carrier_vec n \<and>
         fs ! i - gso i \<in> span (gso ` {0..<i}) \<and>
         (\<forall>x. x \<in> gso ` {0..<i} \<longrightarrow> gso i \<bullet> x = 0)"
-    using gso_carrier[OF assms] projection_exist[OF assms] orthogonal by auto
+    using gso_carrier[OF assms] oc_projection_exist[OF assms] orthogonal by auto
 qed auto
 
-lemma gso_projection_span:
+lemma gso_oc_projection_span:
   assumes "i < m"
-  shows "gso i = projection (span (gso ` {0..<i})) (fs ! i)"
-    and "is_projection (gso i) (span (gso ` {0..<i})) (fs ! i)"
-  unfolding projection_def is_projection_def
-proof (rule some_equality[symmetric,OF _ projection_unique[OF assms]])
+  shows "gso i = oc_projection (span (gso ` {0..<i})) (fs ! i)"
+    and "is_oc_projection (gso i) (span (gso ` {0..<i})) (fs ! i)"
+  unfolding oc_projection_def is_oc_projection_def
+proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
   let "?P v" = "v \<in> carrier_vec n \<and> fs ! i - v \<in> span (span (gso ` {0..<i})) 
     \<and> (\<forall>x. x \<in> span (gso ` {0..<i}) \<longrightarrow> v \<bullet> x = 0)"
   have carr:"gso ` {0..<i} \<subseteq> carrier_vec n" using assms by auto
@@ -1442,7 +1442,7 @@ proof (rule some_equality[symmetric,OF _ projection_unique[OF assms]])
   have orthogonal:"\<And>x. x \<in> span (gso ` {0..<i}) \<Longrightarrow> gso i \<bullet> x = 0"
     apply(rule orthocompl_span) using assms * by auto
   show "?P (gso i)" "?P (gso i)" unfolding span_span[OF carr]
-    using gso_carrier[OF assms] projection_exist[OF assms] orthogonal by auto
+    using gso_carrier[OF assms] oc_projection_exist[OF assms] orthogonal by auto
   fix v assume p:"?P v"
   then show "v \<in> carrier_vec n" by auto
   from p show "fs ! i - v \<in> span (gso ` {0..<i})" unfolding span_span[OF carr] by auto
@@ -1451,8 +1451,8 @@ proof (rule some_equality[symmetric,OF _ projection_unique[OF assms]])
   thus "v \<bullet> xa = 0" using p by auto
 qed
 
-lemma is_projection_eq:
-  assumes ispr:"is_projection a S v" "is_projection b S v" 
+lemma is_oc_projection_eq:
+  assumes ispr:"is_oc_projection a S v" "is_oc_projection b S v" 
     and carr: "S \<subseteq> carrier_vec n" "v \<in> carrier_vec n"
   shows "a = b"
 proof -
@@ -1460,9 +1460,9 @@ proof -
   have a:"v - (v - a) = a" using carr ispr by auto
   have b:"v - (v - b) = b" using carr ispr by auto
   have "(v - a) = (v - b)" 
-    apply(rule projection_alt_def[OF c2])
+    apply(rule oc_projection_alt_def[OF c2])
     using ispr a b unfolding in_orthogonal_complement_span[OF carr(1)]
-    unfolding orthogonal_complement_def is_projection_def by auto
+    unfolding orthogonal_complement_def is_oc_projection_def by auto
   hence "v - (v - a) = v - (v - b)" by metis
   thus ?thesis unfolding a b.
 qed

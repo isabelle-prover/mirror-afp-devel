@@ -3,7 +3,7 @@ section "Splay Tree"
 theory Splay_Tree
 imports
   "HOL-Library.Tree"
-  "HOL-Data_Structures.Set_by_Ordered"
+  "HOL-Data_Structures.Set_Specs"
   "HOL-Data_Structures.Cmp"
 begin
 

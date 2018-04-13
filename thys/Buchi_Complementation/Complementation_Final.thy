@@ -3,7 +3,7 @@ section {* Complementation to Explicit Büchi Automaton *}
 theory Complementation_Final
 imports
   "Complementation_Implement"
-  "Transition_Systems_and_Automata.BA_Translate"
+  "Transition_Systems_and_Automata.NBA_Translate"
   "HOL-Library.Permutation"
 begin
 
@@ -37,8 +37,15 @@ begin
     finally show "language (complement_3 A) = streams (alphabet A) - language A" by simp
   qed
 
+(*
   definition list_hash :: "('a :: hashable) list \<Rightarrow> uint32" where
     "list_hash xs \<equiv> fold (bitXOR \<circ> hashcode) xs 0"
+*)
+
+  definition "hci k \<equiv> uint32_of_nat k * 1103515245 + 12345"
+  definition "hc \<equiv> \<lambda> (p, q, b). hci p + hci q * 31 + (if b then 1 else 0)"
+  definition list_hash :: "(nat \<times> item) list \<Rightarrow> uint32" where
+    "list_hash xs \<equiv> fold (bitXOR \<circ> hc) xs 0"
 
   lemma list_hash_eq:
     assumes "distinct xs" "distinct ys" "set xs = set ys"
@@ -46,7 +53,7 @@ begin
   proof -
     have "remdups xs <~~> remdups ys" using eq_set_perm_remdups assms(3) by this
     then have "xs <~~> ys" using assms(1, 2) by (simp add: distinct_remdups_id)
-    then have "fold (bitXOR \<circ> hashcode) xs a = fold (bitXOR \<circ> hashcode) ys a" for a
+    then have "fold (bitXOR \<circ> hc) xs a = fold (bitXOR \<circ> hc) ys a" for a
     proof (induct arbitrary: a)
       case (swap y x l)
       have "x XOR y XOR a = y XOR x XOR a" for x y by (transfer) (simp add: word_bw_lcs(3))
@@ -84,19 +91,20 @@ begin
 
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
-    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id :: 'a :: hashable rel, nat_rel, unit_rel\<rangle> bai_ba_rel"
-    shows "(?f :: ?'c, to_baei (complement_3 A)) \<in> ?R"
-    by autoref
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(?f :: ?'c, RETURN (to_nbaei (complement_3 A))) \<in> ?R"
+    by (autoref_monadic (plain))
   concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
 
   theorem
     assumes "finite (nodes A)"
-    assumes "(Ai, A) \<in> \<langle>Id, nat_rel, unit_rel\<rangle> bai_ba_rel"
-    shows "language (bae_ba (bae (complement_impl Ai))) = streams (alphabet A) - language A"
+    assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "language (nbae_nba (nbaei_nbae (complement_impl Ai))) = streams (alphabet A) - language A"
   proof -
-    have "(language ((bae_ba \<circ> bae) (complement_impl Ai)), language (id (complement_3 A))) \<in>
+    have "(language ((nbae_nba \<circ> nbaei_nbae) (complement_impl Ai)), language (id (complement_3 A))) \<in>
       \<langle>\<langle>Id_on (alphabet (complement_3 A))\<rangle> stream_rel\<rangle> set_rel"
-      using complement_impl.refine[OF assms, unfolded to_baei_def id_apply] by parametricity
+      using complement_impl.refine[OF assms, unfolded to_nbaei_def id_apply, THEN RETURN_nres_relD]
+      by parametricity
     also have "language (id (complement_3 A)) = streams (alphabet A) - language A"
       using assms(1) by simp
     finally show ?thesis by simp
@@ -106,21 +114,22 @@ begin
     "s n a p \<equiv> if p = 0
       then (if a = ''a'' then [0 ..< n] else [1])
       else (if a = ''a'' then [1 ..< n] else [])"
-  definition Ai where
-    "Ai n \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s n, acceptingi = \<lambda> p. False \<rparr>"
+  definition "Ai n \<equiv> nbai [''a'', ''b''] [0] (s n) bot"
 
   definition "test n \<equiv> length (transei (complement_impl (Ai n)))"
 
-  (* TODO: look through code
-    - equality on maps needs a lot of lookups, make sure those are fast (alternatively, use sorting)
-    - make sure we don't use slow generic algorithms when fast specializations are possible *)
   (* TODO: maybe we can also do some crude optimizations about reachability *)
-  (* TODO: this is actually faster with the bot hash function? why? *)
   export_code complement_impl nat_of_integer integer_of_nat test
     in SML module_name Complementation file "code/Complementation_Export.sml"
 
-  value "test (Suc (Suc (Suc 0)))"
-
-  thm to_baei_impl_def
+  value "succi (complement_6 (Ai 3) 3) ''a'' (initiali (complement_6 (Ai 3) 3) ! 0) ! 7"
+  value "succi (complement_6 (Ai 3) 3) ''a'' (initiali (complement_6 (Ai 3) 3) ! 0) ! 27"
+  value "hashcode (1 :: nat, 1 :: nat, False)"
+  value "hashcode (0 :: nat, 0 :: nat, True)"
+  value "(1 :: nat) XOR 66"
+  value "hashcode (1 :: nat, 3 :: nat, False)"
+  value "hashcode (0 :: nat, 6 :: nat, True)"
+  value "(132 :: nat) XOR 199"
+  value "list_hash (succi (complement_6 (Ai 3) 3) ''a'' (initiali (complement_6 (Ai 3) 3) ! 0) ! 7)"
 
 end

@@ -11,7 +11,7 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Unsorted
 imports
-  HOL.Complex
+  HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
 lemma bernoulli_inequality: assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
@@ -447,5 +447,205 @@ qed
 
 lemma (in semidom) prod_list_zero_iff[simp]: 
   "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
+
+
+context comm_monoid_mult begin
+
+lemma unit_prod [intro]:
+  shows "a dvd 1 \<Longrightarrow> b dvd 1 \<Longrightarrow> (a * b) dvd 1"
+  by (subst mult_1_left [of 1, symmetric]) (rule mult_dvd_mono)
+
+lemma is_unit_mult_iff[simp]:
+  shows "(a * b) dvd 1 \<longleftrightarrow> a dvd 1 \<and> b dvd 1"
+  by (auto dest: dvd_mult_left dvd_mult_right)
+
+end
+
+context comm_semiring_1
+begin
+lemma irreducibleE[elim]:
+  assumes "irreducible p"
+      and "p \<noteq> 0 \<Longrightarrow> \<not> p dvd 1 \<Longrightarrow> (\<And>a b. p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1) \<Longrightarrow> thesis"
+  shows thesis using assms by (auto simp: irreducible_def)
+
+lemma not_irreducibleE:
+  assumes "\<not> irreducible x"
+      and "x = 0 \<Longrightarrow> thesis"
+      and "x dvd 1 \<Longrightarrow> thesis"
+      and "\<And>a b. x = a * b \<Longrightarrow> \<not> a dvd 1 \<Longrightarrow> \<not> b dvd 1 \<Longrightarrow> thesis"
+  shows thesis using assms unfolding irreducible_def by auto
+
+lemma prime_elem_dvd_prod_list:
+  assumes p: "prime_elem p" and pA: "p dvd prod_list A" shows "\<exists>a \<in> set A. p dvd a"
+proof(insert pA, induct A)
+  case Nil
+  with p show ?case by (simp add: prime_elem_not_unit)
+next
+  case (Cons a A)
+  then show ?case by (auto simp: prime_elem_dvd_mult_iff[OF p])
+qed
+
+lemma prime_elem_dvd_prod_mset:
+  assumes p: "prime_elem p" and pA: "p dvd prod_mset A" shows "\<exists>a \<in># A. p dvd a"
+proof(insert pA, induct A)
+  case empty
+  with p show ?case by (simp add: prime_elem_not_unit)
+next
+  case (add a A)
+  then show ?case by (auto simp: prime_elem_dvd_mult_iff[OF p])
+qed
+
+lemma mult_unit_dvd_iff[simp]:
+  assumes "b dvd 1"
+  shows "a * b dvd c \<longleftrightarrow> a dvd c"
+proof
+  assume "a * b dvd c"
+  with assms show "a dvd c" using dvd_mult_left[of a b c] by simp
+next
+  assume "a dvd c"
+  with assms mult_dvd_mono show "a * b dvd c" by fastforce
+qed
+
+lemma mult_unit_dvd_iff'[simp]: "a dvd 1 \<Longrightarrow> (a * b) dvd c \<longleftrightarrow> b dvd c"
+  using mult_unit_dvd_iff [of a b c] by (simp add: ac_simps)
+
+lemma irreducibleD':
+  assumes "irreducible a" "b dvd a"
+  shows   "a dvd b \<or> b dvd 1"
+proof -
+  from assms obtain c where c: "a = b * c" by (elim dvdE)
+  from irreducibleD[OF assms(1) this] have "b dvd 1 \<or> c dvd 1" .
+  thus ?thesis by (auto simp: c)
+qed
+
+end
+
+
+
+context idom
+begin
+
+text \<open>
+  Following lemmas are adapted and generalized so that they don't use "algebraic" classes.
+\<close>
+
+lemma dvd_times_left_cancel_iff [simp]:
+  assumes "a \<noteq> 0"
+  shows "a * b dvd a * c \<longleftrightarrow> b dvd c"
+    (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs
+  then obtain d where "a * c = a * b * d" ..
+  with assms have "c = b * d" by (auto simp add: ac_simps)
+  then show ?rhs ..
+next
+  assume ?rhs
+  then obtain d where "c = b * d" ..
+  then have "a * c = a * b * d" by (simp add: ac_simps)
+  then show ?lhs ..
+qed
+
+lemma dvd_times_right_cancel_iff [simp]:
+  assumes "a \<noteq> 0"
+  shows "b * a dvd c * a \<longleftrightarrow> b dvd c"
+  using dvd_times_left_cancel_iff [of a b c] assms by (simp add: ac_simps)
+
+
+lemma irreducibleI':
+  assumes "a \<noteq> 0" "\<not> a dvd 1" "\<And>b. b dvd a \<Longrightarrow> a dvd b \<or> b dvd 1"
+  shows   "irreducible a"
+proof (rule irreducibleI)
+  fix b c assume a_eq: "a = b * c"
+  hence "a dvd b \<or> b dvd 1" by (intro assms) simp_all
+  thus "b dvd 1 \<or> c dvd 1"
+  proof
+    assume "a dvd b"
+    hence "b * c dvd b * 1" by (simp add: a_eq)
+    moreover from \<open>a \<noteq> 0\<close> a_eq have "b \<noteq> 0" by auto
+    ultimately show ?thesis using dvd_times_left_cancel_iff by fastforce
+  qed blast
+qed (simp_all add: assms(1,2))
+
+lemma irreducible_altdef:
+  shows "irreducible x \<longleftrightarrow> x \<noteq> 0 \<and> \<not> x dvd 1 \<and> (\<forall>b. b dvd x \<longrightarrow> x dvd b \<or> b dvd 1)"
+  using irreducibleI'[of x] irreducibleD'[of x] irreducible_not_unit[of x] by auto
+
+lemma dvd_mult_unit_iff:
+  assumes b: "b dvd 1"
+  shows "a dvd c * b \<longleftrightarrow> a dvd c"
+proof-
+  from b obtain b' where 1: "b * b' = 1" by (elim dvdE, auto)
+  then have b0: "b \<noteq> 0" by auto
+  from 1 have "a = (a * b') * b" by (simp add: ac_simps)
+  also have "\<dots> dvd c * b \<longleftrightarrow> a * b' dvd c" using b0 by auto
+  finally show ?thesis by (auto intro: dvd_mult_left)
+qed
+
+lemma dvd_mult_unit_iff': "b dvd 1 \<Longrightarrow> a dvd b * c \<longleftrightarrow> a dvd c"
+  using dvd_mult_unit_iff [of b a c] by (simp add: ac_simps)
+
+lemma irreducible_mult_unit_left:
+  shows "a dvd 1 \<Longrightarrow> irreducible (a * p) \<longleftrightarrow> irreducible p"
+  by (auto simp: irreducible_altdef mult.commute[of a] dvd_mult_unit_iff)
+
+lemma irreducible_mult_unit_right:
+  shows "a dvd 1 \<Longrightarrow> irreducible (p * a) \<longleftrightarrow> irreducible p"
+  by (auto simp: irreducible_altdef mult.commute[of a] dvd_mult_unit_iff)
+
+lemma prime_elem_imp_irreducible:
+  assumes "prime_elem p"
+  shows   "irreducible p"
+proof (rule irreducibleI)
+  fix a b
+  assume p_eq: "p = a * b"
+  with assms have nz: "a \<noteq> 0" "b \<noteq> 0" by auto
+  from p_eq have "p dvd a * b" by simp
+  with \<open>prime_elem p\<close> have "p dvd a \<or> p dvd b" by (rule prime_elem_dvd_multD)
+  with \<open>p = a * b\<close> have "a * b dvd 1 * b \<or> a * b dvd a * 1" by auto
+  thus "a dvd 1 \<or> b dvd 1"
+    by (simp only: dvd_times_left_cancel_iff[OF nz(1)] dvd_times_right_cancel_iff[OF nz(2)])
+qed (insert assms, simp_all add: prime_elem_def)
+
+lemma unit_imp_dvd [dest]: "b dvd 1 \<Longrightarrow> b dvd a"
+  by (rule dvd_trans [of _ 1]) simp_all
+
+lemma unit_mult_left_cancel: "a dvd 1 \<Longrightarrow> a * b = a * c \<longleftrightarrow> b = c"
+  using mult_cancel_left [of a b c] by auto
+
+lemma unit_mult_right_cancel: "a dvd 1 \<Longrightarrow> b * a = c * a \<longleftrightarrow> b = c"
+  using unit_mult_left_cancel [of a b c] by (auto simp add: ac_simps)
+
+text {* New parts from here *}
+
+lemma irreducible_multD:
+  assumes l: "irreducible (a*b)"
+  shows "a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
+proof-
+  from l have "a dvd 1 \<or> b dvd 1" using irreducibleD by auto
+  then show ?thesis
+  proof(elim disjE)
+    assume a: "a dvd 1"
+    with l have "irreducible b"
+      unfolding irreducible_def
+      by (metis is_unit_mult_iff mult.left_commute mult_not_zero)
+    with a show ?thesis by auto
+  next
+    assume a: "b dvd 1"
+    with l have "irreducible a"
+      unfolding irreducible_def
+      by (meson is_unit_mult_iff mult_not_zero semiring_normalization_rules(16))
+    with a show ?thesis by auto
+  qed
+qed
+
+end
+
+lemma (in field) irreducible_field[simp]:
+  "irreducible x \<longleftrightarrow> False" by (auto simp: dvd_field_iff irreducible_def)
+
+lemma (in idom) irreducible_mult:
+  shows "irreducible (a*b) \<longleftrightarrow> a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
+  by (auto dest: irreducible_multD simp: irreducible_mult_unit_left irreducible_mult_unit_right)
+
 
 end

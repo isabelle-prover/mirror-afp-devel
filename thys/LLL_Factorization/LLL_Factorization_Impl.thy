@@ -39,13 +39,13 @@ definition factorization_lattice where "factorization_lattice u k m \<equiv>
     map (\<lambda>i. vec_of_poly_n (u * monom 1 i) (degree u + k)) [k>..0] @
     map (\<lambda>i. vec_of_poly_n (monom m i) (degree u + k)) [degree u >..0]"
 
-fun max_degree_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly"
-  where "max_degree_poly a b = (if degree a\<ge>degree b then a else b)"
+fun min_degree_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly"
+  where "min_degree_poly a b = (if degree a \<le> degree b then a else b)"
 
 fun choose_u :: "int poly list \<Rightarrow> int poly"
   where "choose_u [] = undefined"
   | "choose_u [gi] = gi" 
-  | "choose_u (gi # gj # gs) = max_degree_poly gi (choose_u (gj # gs))"
+  | "choose_u (gi # gj # gs) = min_degree_poly gi (choose_u (gj # gs))"
 
 lemma factorization_lattice_code[code]: "factorization_lattice u k m = (
   let n = degree u in

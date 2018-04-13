@@ -242,14 +242,13 @@ lemma eq_m_irreducible_m: "f =m g \<Longrightarrow> irreducible_m f \<longleftri
 definition mset_factors_m where "mset_factors_m F p \<equiv>
   F \<noteq> {#} \<and> (\<forall>f. f \<in># F \<longrightarrow> irreducible_m f) \<and> p =m prod_mset F"
 
-term factors
 end
 
 declare poly_mod.M_def[code]
 declare poly_mod.Mp_def[code]
 
 definition Irr_Mon :: "'a :: comm_semiring_1 poly set"
-  where "Irr_Mon = {x. irreducible\<^sub>d x \<and> monic x}" 
+  where "Irr_Mon = {x. irreducible x \<and> monic x}" 
 
 definition factorization :: "'a :: comm_semiring_1 poly set \<Rightarrow> 'a poly \<Rightarrow> ('a \<times> 'a poly multiset) \<Rightarrow> bool" where
   "factorization Factors f cfs \<equiv> (case cfs of (c,fs) \<Rightarrow> f = (smult c (prod_mset fs)) \<and> (set_mset fs \<subseteq> Factors))" 
@@ -257,52 +256,74 @@ definition factorization :: "'a :: comm_semiring_1 poly set \<Rightarrow> 'a pol
 definition unique_factorization :: "'a :: comm_semiring_1 poly set \<Rightarrow> 'a poly \<Rightarrow> ('a \<times> 'a poly multiset) \<Rightarrow> bool" where
   "unique_factorization Factors f cfs = (Collect (factorization Factors f) = {cfs})" 
 
-lemma irreducible\<^sub>d_dvd_prod_mset:
-  fixes p :: "'a :: {field,factorial_ring_gcd} poly"
-  assumes irr: "irreducible\<^sub>d p" and dvd: "p dvd prod_mset as"
+lemma irreducible_multD:
+  assumes l: "irreducible (a*b)"
+  shows "a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
+proof-
+  from l have "a dvd 1 \<or> b dvd 1" by auto
+  then show ?thesis
+  proof(elim disjE)
+    assume a: "a dvd 1"
+    with l have "irreducible b"
+      unfolding irreducible_def
+      by (meson is_unit_mult_iff mult.left_commute mult_not_zero)
+    with a show ?thesis by auto
+  next
+    assume a: "b dvd 1"
+    with l have "irreducible a"
+      unfolding irreducible_def
+      by (meson is_unit_mult_iff mult_not_zero semiring_normalization_rules(16))
+    with a show ?thesis by auto
+  qed
+qed
+
+lemma irreducible_dvd_prod_mset:
+  fixes p :: "'a :: field poly"
+  assumes irr: "irreducible p" and dvd: "p dvd prod_mset as"
   shows "\<exists> a \<in># as. p dvd a"
 proof -
-  from irr[unfolded irreducible\<^sub>d_def] have deg: "degree p \<noteq> 0" by auto
+  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
   hence p1: "\<not> p dvd 1" unfolding dvd_def
     by (metis degree_1 nonzero_mult_div_cancel_left div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
   from dvd show ?thesis
   proof (induct as)
     case (add a as)
     hence "prod_mset (add_mset a as) = a * prod_mset as" by auto
-    from irreducible\<^sub>d_dvd_mult[OF irr add(2)[unfolded this]] add(1)
+    from add(2)[unfolded this] add(1) irr
     show ?case by auto
   qed (insert p1, auto)
 qed
 
 lemma monic_factorization_unique_mset:
-  fixes P::"'a::{field,euclidean_ring_gcd} poly multiset"
+  fixes P::"'a::field poly multiset"
   assumes eq: "prod_mset P = prod_mset Q" 
-    and P: "set_mset P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    and Q: "set_mset Q \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+    and P: "set_mset P \<subseteq> {q. irreducible q \<and> monic q}"
+    and Q: "set_mset Q \<subseteq> {q. irreducible q \<and> monic q}"
   shows "P = Q" 
 proof -
   {
     fix P Q :: "'a poly multiset"
     assume id: "prod_mset P = prod_mset Q" 
-    and P: "set_mset P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    and Q: "set_mset Q \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+    and P: "set_mset P \<subseteq> {q. irreducible q \<and> monic q}"
+    and Q: "set_mset Q \<subseteq> {q. irreducible q \<and> monic q}"
     hence "P \<subseteq># Q"
     proof (induct P arbitrary: Q)
       case (add x P Q')
-      from add(3) have irr: "irreducible\<^sub>d x" and mon: "monic x" by auto
+      from add(3) have irr: "irreducible x" and mon: "monic x" by auto
       have "\<exists> a \<in># Q'. x dvd a"
-      proof (rule irreducible\<^sub>d_dvd_prod_mset[OF irr])
+      proof (rule irreducible_dvd_prod_mset[OF irr])
         show "x dvd prod_mset Q'" unfolding add(2)[symmetric] by simp
       qed
       then obtain y Q where Q': "Q' = add_mset y Q" and xy: "x dvd y" by (meson mset_add)
-      from add(4) Q' have irr': "irreducible\<^sub>d y" and mon': "monic y" by auto
-      have "x = y" using irreducible\<^sub>d_dvd_eq[OF irr irr' xy mon mon'] .
+      from add(4) Q' have irr': "irreducible y" and mon': "monic y" by auto
+      have "x = y"  using irr irr' xy mon mon'
+        by (metis irreducibleD' irreducible_not_unit poly_dvd_antisym)
       hence Q': "Q' = Q + {#x#}" using Q' by auto
       from mon have x0: "x \<noteq> 0" by auto
       from arg_cong[OF add(2)[unfolded Q'], of "\<lambda> z. z div x"] 
       have eq: "prod_mset P = prod_mset Q" using x0 by auto
       from add(3-4)[unfolded Q'] 
-      have "set_mset P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" "set_mset Q \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" 
+      have "set_mset P \<subseteq> {q. irreducible q \<and> monic q}" "set_mset Q \<subseteq> {q. irreducible q \<and> monic q}" 
         by auto
       from add(1)[OF eq this] show ?case unfolding Q' by auto
     qed auto
@@ -313,12 +334,12 @@ qed
 
 
 lemma exactly_one_monic_factorization:
-  assumes mon: "monic (f :: 'a :: {field,euclidean_ring_gcd} poly)"
-  shows "\<exists>! fs. f = prod_mset fs \<and> set_mset fs \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+  assumes mon: "monic (f :: 'a :: field poly)"
+  shows "\<exists>! fs. f = prod_mset fs \<and> set_mset fs \<subseteq> {q. irreducible q \<and> monic q}"
 proof -
-  from monic_irreducible\<^sub>d_factorization[OF mon]
+  from monic_irreducible_factorization[OF mon]
   obtain gs g where fin: "finite gs" and f: "f = (\<Prod>a\<in>gs. a ^ Suc (g a))" 
-    and gs: "gs \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" 
+    and gs: "gs \<subseteq> {q. irreducible q \<and> monic q}" 
     by blast
   from fin 
   have "\<exists> fs. set_mset fs \<subseteq> gs \<and> prod_mset fs = (\<Prod>a\<in>gs. a ^ Suc (g a))" 
@@ -334,7 +355,7 @@ proof -
     qed
   qed simp
   then obtain fs where "set_mset fs \<subseteq> gs" "prod_mset fs = (\<Prod>a\<in>gs. a ^ Suc (g a))" by auto
-  with gs f have ex: "\<exists>fs. f = prod_mset fs \<and> set_mset fs \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
+  with gs f have ex: "\<exists>fs. f = prod_mset fs \<and> set_mset fs \<subseteq> {q. irreducible q \<and> monic q}"
     by (intro exI[of _ fs], auto)
   thus ?thesis using monic_factorization_unique_mset by blast
 qed
@@ -346,7 +367,7 @@ lemma monic_prod_mset:
   by (induct as, auto intro: monic_mult)
 
 lemma exactly_one_factorization:
-  assumes f: "f \<noteq> (0 :: 'a :: {field,euclidean_ring_gcd} poly)"
+  assumes f: "f \<noteq> (0 :: 'a :: field poly)"
   shows "\<exists>! cfs. factorization Irr_Mon f cfs"
 proof -
   let ?a = "coeff f (degree f)" 
@@ -475,7 +496,7 @@ begin
 
 definition factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
   "factorization_m f cfs \<equiv> (case cfs of (c,fs) \<Rightarrow> f =m (smult c (prod_mset fs)) \<and> 
-    (\<forall> f \<in> set_mset fs. irreducible\<^sub>d_m f \<and> monic (Mp f)))"  
+    (\<forall> f \<in> set_mset fs. irreducible\<^sub>d_m f \<and> monic (Mp f)))"
 
 definition Mf :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset" where
   "Mf cfs \<equiv> case cfs of (c,fs) \<Rightarrow> (M c, image_mset Mp fs)" 

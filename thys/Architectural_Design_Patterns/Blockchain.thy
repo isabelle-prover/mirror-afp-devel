@@ -113,6 +113,12 @@ type_synonym 'a BC = "'a list"
 abbreviation max_cond:: "('a BC) set \<Rightarrow> 'a BC \<Rightarrow> bool"
   where "max_cond B b \<equiv> b \<in> B \<and> (\<forall>b'\<in>B. length b' \<le> length b)"
 
+no_syntax 
+  "_MAX1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3MAX _./ _)" [0, 10] 10)
+  "_MAX"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3MAX _:_./ _)" [0, 0, 10] 10)
+  "_MAX1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3MAX _./ _)" [0, 10] 10)
+  "_MAX"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3MAX _\<in>_./ _)" [0, 0, 10] 10)
+
 definition MAX:: "('a BC) set \<Rightarrow> 'a BC"
   where "MAX B = (SOME b. max_cond B b)"
 

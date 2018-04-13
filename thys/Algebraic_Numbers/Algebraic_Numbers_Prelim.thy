@@ -513,7 +513,7 @@ lemma factors_of_int_poly_const: assumes "degree p = 0"
 proof -
   from degree0_coeffs[OF assms] obtain a where p: "p = [: a :]" by auto
   show ?thesis unfolding p factors_of_int_poly_def
-    factorize_int_poly_def x_split_def
+    factorize_int_poly_generic_def x_split_def
     by (cases "a = 0", auto simp add: Let_def factorize_int_last_nz_poly_def)
 qed
 

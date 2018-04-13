@@ -606,4 +606,15 @@ lemmas (in poly_mod_prime_type) prime_elem_iff_irreducible =
 lemmas (in poly_mod_prime) prime_elem_iff_irreducible[simp] = poly_mod_prime_type.prime_elem_iff_irreducible
   [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
+lemmas (in poly_mod_prime_type) irreducible_connect =
+  irreducible_connect_field[where 'a = "'a mod_ring", untransferred]
+lemmas (in poly_mod_prime) irreducible_connect[simp] = poly_mod_prime_type.irreducible_connect
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas (in poly_mod_prime_type) irreducible_degree =
+  irreducible_degree_field[where 'a = "'a mod_ring", untransferred]
+lemmas (in poly_mod_prime) irreducible_degree = poly_mod_prime_type.irreducible_degree
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+
 end
