@@ -360,9 +360,9 @@ proof -
        (insert l d, auto intro!: AE_I2 simp: indicator_def min_def sin_ge_zero)
   hence "?I = set_lebesgue_integral lborel {0..pi} (\<lambda>\<phi>. min (d / 2) (sin \<phi> * l / 2))"
     by (subst nn_integral_eq_integral, assumption)
-       (insert d l, auto intro!: AE_I2 simp: sin_ge_zero min_def indicator_def)
+       (insert d l, auto intro!: AE_I2 simp: sin_ge_zero min_def indicator_def set_lebesgue_integral_def)
   also have "\<dots> = ennreal (integral {0..pi} (\<lambda>x. min (d / 2) (sin x * l / 2)))"
-    (is "_ = ennreal ?I") using int by (subst set_borel_integral_eq_integral) simp_all
+    (is "_ = ennreal ?I") using int by (subst set_borel_integral_eq_integral) (simp_all add: set_integrable_def)
   finally show ?thesis by (simp add: lborel_prod)
 qed
 
