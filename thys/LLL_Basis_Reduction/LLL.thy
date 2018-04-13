@@ -375,6 +375,26 @@ definition logD :: "int vec list \<Rightarrow> nat"
 definition LLL_measure :: "state \<Rightarrow> nat" where 
   "LLL_measure state = (case state of (i,fs,gs) \<Rightarrow> 2 * logD (of_list_repr fs) + m - i)" 
 
+lemma of_int_Gramian_determinant:
+  assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
+  shows "gs.Gramian_determinant (map of_int_hom.vec_hom F) k = of_int (gs.Gramian_determinant F k)"
+  unfolding gs.Gramian_determinant_def of_int_hom.hom_det[symmetric]
+proof (rule arg_cong[of _ _ det])
+  let ?F = "map of_int_hom.vec_hom F"
+  have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
+  show "gs.Gramian_matrix ?F k = map_mat of_int (gs.Gramian_matrix F k)" 
+    unfolding gs.Gramian_matrix_def Let_def
+  proof (subst of_int_hom.mat_hom_mult[of _ k n _ k], (auto)[2], rule cong)
+    show id: "mat k n (\<lambda> (i,j). ?F ! i $ j) = map_mat of_int (mat k n (\<lambda> (i, j). F ! i $ j))" (is "?L = map_mat _ ?R")
+    proof (rule eq_matI, goal_cases)
+      case (1 i j)
+      hence ij: "i < k" "j < n" "i < length F" "dim_vec (F ! i) = n" using assms by auto
+      show ?case using ij by simp 
+    qed auto
+    show "?L\<^sup>T = map_mat of_int ?R\<^sup>T" unfolding id by (rule eq_matI, auto)
+  qed
+qed
+
 lemma Gramian_determinant: assumes "LLL_partial_invariant (i,Fr,Gr) F G" 
   and k: "k \<le> m" 
 shows "of_int (gs.Gramian_determinant F k) = (\<Prod> j<k. sq_norm (G ! j))" 
@@ -393,21 +413,7 @@ proof -
   have det: "gs.Gramian_determinant ?F k = (\<Prod>j<k. \<parallel>G ! j\<parallel>\<^sup>2)" "(0 :: rat) < gs.Gramian_determinant ?F k" 
     using gs.Gramian_determinant[OF conn k] by auto
   have hom: "gs.Gramian_determinant ?F k = of_int (gs.Gramian_determinant F k)"
-    unfolding gs.Gramian_determinant_def of_int_hom.hom_det[symmetric]
-  proof (rule arg_cong[of _ _ det])
-    have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
-    show "gs.Gramian_matrix ?F k = map_mat of_int (gs.Gramian_matrix F k)" 
-      unfolding gs.Gramian_matrix_def Let_def
-    proof (subst of_int_hom.mat_hom_mult[of _ k n _ k], (auto)[2], rule cong) 
-      show id: "mat k n (\<lambda> (i,j). ?F ! i $ j) = map_mat of_int (mat k n (\<lambda> (i, j). F ! i $ j))" (is "?L = map_mat _ ?R")
-      proof (rule eq_matI, goal_cases)
-        case (1 i j)
-        hence ij: "i < k" "j < n" "i < length F" "dim_vec (F ! i) = n" using len k Fi[of i] by auto
-        show ?case using ij by simp 
-      qed auto
-      show "?L\<^sup>T = map_mat of_int ?R\<^sup>T" unfolding id by (rule eq_matI, auto)
-    qed
-  qed
+    by (auto intro!: of_int_Gramian_determinant simp add: LLLD(4) k Fi)
   show "of_int (gs.Gramian_determinant F k) = (\<Prod> j<k. sq_norm (G ! j))" 
     "gs.Gramian_determinant F k > (0 :: int)" using det[unfolded hom] by auto
 qed
