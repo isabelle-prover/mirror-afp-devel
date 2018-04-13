@@ -8,7 +8,7 @@ imports
   "../Transition_Systems/Transition_System_Construction"
 begin
 
-  datatype ('label, 'state) dba = DBA
+  datatype ('label, 'state) dba = dba
     (alphabet: "'label set")
     (initial: "'state")
     (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
@@ -54,6 +54,9 @@ begin
     assumes "w \<in> language A"
     obtains "run A w (initial A)" "infs (accepting A) (trace A w (initial A))"
     using assms unfolding language_def by auto
+
+  lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
+    unfolding language_def run_alt_def using sset_streams by auto
 
   (* TODO: the following statements are equivalent:
       run A w p
