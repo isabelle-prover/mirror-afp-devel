@@ -469,12 +469,12 @@ lemma real_transfer_operator_charact:
 proof (rule AE_symmetric[OF density_unique_real])
   fix A assume [measurable]: "A \<in> sets M"
   have "set_lebesgue_integral M A (real_transfer_operator f) = (\<integral>x. indicator A x * real_transfer_operator f x \<partial>M)"
-    by auto
+    unfolding set_lebesgue_integral_def by auto
   also have "... = (\<integral>x. indicator A (T x) * f x \<partial>M)"
     apply (rule real_transfer_operator_intg, auto)
     by (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. abs(f x)"], auto simp add: assms indicator_def)
   also have "... = set_lebesgue_integral M A g"
-    using assms(1)[OF \<open>A \<in> sets M\<close>] by auto
+    unfolding set_lebesgue_integral_def using assms(1)[OF \<open>A \<in> sets M\<close>] by auto
   finally show "set_lebesgue_integral M A g = set_lebesgue_integral M A (real_transfer_operator f)"
     by simp
 qed (auto simp add: assms real_transfer_operator_int)

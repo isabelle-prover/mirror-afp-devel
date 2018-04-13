@@ -1180,7 +1180,7 @@ proof (rule ccontr)
   have "eventually (\<lambda>n. abs (\<integral>x. indicator (A n) x * h x \<partial>M) < delta) sequentially"
     apply (rule order_tendstoD[OF L]) using \<open>delta > 0\<close> by auto
   then show False
-    using Large by auto
+    using Large by (auto simp: set_lebesgue_integral_def)
 qed
 
 text \<open>We also give the version for nonnegative ennreal valued functions. It follows from the
@@ -1214,7 +1214,7 @@ proof -
       apply (rule Bochner_Integration.integrable_bound[OF \<open>integrable M f\<close>])
       unfolding indicator_def f_def by auto
     also have "... < ennreal delta"
-      apply (rule ennreal_lessI) using H(2)[OF that] by auto
+      apply (rule ennreal_lessI) using H(2)[OF that] by (auto simp: set_lebesgue_integral_def)
     finally show ?thesis by (auto simp add: mult.commute)
   qed
   then show ?thesis using \<open>epsilon > 0\<close> by auto

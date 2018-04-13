@@ -2208,7 +2208,7 @@ proof -
     by simp
 
   have "(\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M) = (\<integral> x. f x * indicator (\<Union>n. (T^^n)--`A) x \<partial>M)"
-    by (simp add: mult.commute)
+    by (simp add: mult.commute set_lebesgue_integral_def)
   also have "... = enn2real (\<integral>\<^sup>+ x. (f x * indicator (\<Union>n. (T^^n)--`A) x) \<partial>M)"
     by (rule integral_eq_nn_integral, auto simp add: f_pos)
   also have "... = enn2real (\<integral>\<^sup>+x. ennreal (induced_function A f x) \<partial>M)" using * by simp
@@ -2250,6 +2250,7 @@ proof -
     using induced_function_integral_aux(2) g_def h_def g_int h_int by auto
   also have "... = (\<integral>x \<in> (\<Union>n. (T^^n)--`A). (g x - h x) \<partial>M)"
     apply (rule set_integral_diff(2)[symmetric])
+    unfolding set_integrable_def
     using g_int h_int integrable_mult_indicator[OF U_meas] by blast+
   also have "... = (\<integral>x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
     using D1 by simp
@@ -2267,13 +2268,16 @@ proof -
   have [measurable]: "integrable M (induced_function A f)" by (rule induced_function_integral_nonergodic(1)[OF assms])
   then show "integrable (restrict_space M A) (induced_function A f)"
     by (metis assms(1) integrable_mult_indicator integrable_restrict_space sets.Int_space_eq2)
-  have "induced_function A f y = 0" if "y \<notin> A" for y unfolding induced_function_def
-    using that return_time0[of A] recurrent_subset_incl(1)[of A] return_time_function_def by auto
-  then have *: "induced_function A f y = indicator A y * induced_function A f y" for y
-    unfolding indicator_def by auto
   have "(\<integral>y. induced_function A f y \<partial>(restrict_space M A)) = (\<integral>y \<in> A. induced_function A f y \<partial>M)"
-    by (simp add: integral_restrict_space)
-  also have "... = (\<integral>y. induced_function A f y \<partial>M)" using * real_scaleR_def by presburger
+    by (simp add: integral_restrict_space set_lebesgue_integral_def)
+  also have "... = (\<integral>y. induced_function A f y \<partial>M)"
+    unfolding real_scaleR_def set_lebesgue_integral_def
+  proof (rule Bochner_Integration.integral_cong [OF refl])
+    have "induced_function A f y = 0" if "y \<notin> A" for y unfolding induced_function_def
+      using that return_time0[of A] recurrent_subset_incl(1)[of A] return_time_function_def by auto
+    then show "\<And>x. indicator A x * induced_function A f x = induced_function A f x" 
+      unfolding indicator_def by auto
+  qed
   also have "... = (\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
     by (rule induced_function_integral_nonergodic(2)[OF assms])
   finally show "(\<integral>y. induced_function A f y \<partial>(restrict_space M A)) = (\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
