@@ -431,13 +431,12 @@ proof -
 qed
 
 text \<open>Theorem with expanded costs: $O(n\cdot m^3 \cdot \log (\mathit{maxnorm}\ F))$ arithmetic operations\<close>
-lemma reduce_basis_cost_full: 
-  "cost (reduce_basis_cost F)
-  \<le> (4 * m * m + 3 * m  +
-     (4 * m * m + 12 * m) * 
-      (1 + 2 * m * nat \<lceil>log (4 * real_of_rat \<alpha> / (4 + real_of_rat \<alpha>)) 
-         (real (max_list (map (nat \<circ> sq_norm) F)))\<rceil>))
-     * n * arith_cost"
+lemma reduce_basis_cost_expanded: 
+  assumes "A = max_list (map (nat \<circ> sq_norm) F)" 
+  and "Log = nat \<lceil>log (4 * of_rat \<alpha> / (4 + of_rat \<alpha>)) A\<rceil>" 
+  shows "cost (reduce_basis_cost F)
+  \<le> (4 * m * m + 3 * m + (4 * m * m + 12 * m) * (1 + 2 * m * Log)) * n * arith_cost"
+  unfolding assms
   using reduce_basis_cost(2)[unfolded num_loops_def max_sqnorm_def body_cost_def initial_gso_cost_def]
   by (auto simp: nat_distrib ac_simps)
 
@@ -446,5 +445,5 @@ end (* fixing arith_cost and assume \<alpha> > 4/3 *)
 end (* LLL locale which fixes n m \<alpha> L *)
 
 text \<open>Expanded theorem outside locale listing all preconditions\<close>
-thm LLL.reduce_basis_cost_full[OF _ _ refl _ refl]
+thm LLL.reduce_basis_cost_expanded[OF _ _ refl _ refl]
 end (* theory *)
