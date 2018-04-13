@@ -162,20 +162,25 @@ let
   val lthy1 = Named_Target.theory_init thy1
 
   val dtinfos = map (Old_Datatype_Data.the_info (Proof_Context.theory_of lthy1)) raw_full_dt_names'
+  val raw_fp_sugars = map (the o BNF_FP_Def_Sugar.fp_sugar_of lthy1) raw_full_dt_names'
   val {descr, ...} = hd dtinfos
 
-  val raw_tys = Old_Datatype_Aux.get_rec_types descr
-  val raw_ty_args = hd raw_tys
+  val raw_ty_args = hd (Old_Datatype_Aux.get_rec_types descr)
     |> snd o dest_Type
     |> map dest_TFree
+  val raw_schematic_ty_args = (snd o dest_Type o #T o hd) raw_fp_sugars
+  val typ_subst = raw_schematic_ty_args ~~ map TFree raw_ty_args
+  val freezeT = Term.typ_subst_atomic typ_subst
+  val freeze = Term.subst_atomic_types typ_subst
+  val raw_tys = map (freezeT o #T) raw_fp_sugars
 
   val raw_cns_info = all_dtyp_constrs_types descr
-  val raw_all_cns = (map o map) (fn (c, _, _, _) => c) raw_cns_info
+  val raw_all_cns = map (map freeze o #ctrs o #ctr_sugar o #fp_ctr_sugar) raw_fp_sugars
 
   val raw_inject_thms = flat (map #inject dtinfos)
   val raw_distinct_thms = flat (map #distinct dtinfos)
-  val raw_induct_thm = #induct (hd dtinfos)
-  val raw_induct_thms = #inducts (hd dtinfos)
+  val raw_induct_thm = (hd o #common_co_inducts o the o #fp_co_induct_sugar o hd) raw_fp_sugars
+  val raw_induct_thms = map (the_single o #co_inducts o the o #fp_co_induct_sugar) raw_fp_sugars
   val raw_exhaust_thms = map #exhaust dtinfos
   val raw_size_trms = map HOLogic.size_const raw_tys
   val raw_size_thms = these (Option.map (#2 o #2)
@@ -183,6 +188,7 @@ let
 
   val raw_result = RawDtInfo
     {raw_dt_names = raw_full_dt_names',
+     raw_fp_sugars = raw_fp_sugars,
      raw_dts = raw_dts,
      raw_tys = raw_tys,
      raw_ty_args = raw_ty_args,
@@ -215,6 +221,7 @@ let
     {raw_dt_names,
      raw_tys,
      raw_ty_args,
+     raw_fp_sugars,
      raw_all_cns,
      raw_inject_thms,
      raw_distinct_thms,

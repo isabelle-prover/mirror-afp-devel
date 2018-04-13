@@ -34,6 +34,7 @@ sig
 
   datatype raw_dt_info = RawDtInfo of
     {raw_dt_names         : string list,
+     raw_fp_sugars        : BNF_FP_Def_Sugar.fp_sugar list,
      raw_dts              : Old_Datatype.spec list,
      raw_tys              : typ list,
      raw_ty_args          : (string * sort) list,
@@ -120,6 +121,7 @@ datatype user_data = UserData of
 
 datatype raw_dt_info = RawDtInfo of
   {raw_dt_names         : string list,
+   raw_fp_sugars        : BNF_FP_Def_Sugar.fp_sugar list,
    raw_dts              : Old_Datatype.spec list,
    raw_tys              : typ list,
    raw_ty_args          : (string * sort) list,

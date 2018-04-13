@@ -345,7 +345,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
 
 (** proves the two pt-type class properties **)
 
-fun prove_permute_zero induct perm_defs perm_fns ctxt =
+fun prove_permute_zero induct bnfs perm_defs perm_fns ctxt =
   let
     val perm_types = map (body_type o fastype_of) perm_fns
     val perm_indnames = Old_Datatype_Prop.make_tnames perm_types
@@ -356,17 +356,22 @@ fun prove_permute_zero induct perm_defs perm_fns ctxt =
     val goals =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
+
+    val map_ids = map BNF_Def.map_ident_of_bnf bnfs
+    val rules = @{thm permute_zero} :: perm_defs @ map_ids
+    val congs = map BNF_Def.map_cong0_of_bnf bnfs
   in
     Goal.prove ctxt perm_indnames [] goals
       (fn {context = ctxt', ...} =>
         (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
           asm_simp_tac
-            (put_simpset HOL_basic_ss ctxt' addsimps (@{thm permute_zero} :: perm_defs))) 1)
+            (fold Simplifier.add_cong congs
+              (put_simpset HOL_basic_ss ctxt' addsimps rules))) 1)
     |> Old_Datatype_Aux.split_conj_thm
   end
 
 
-fun prove_permute_plus induct perm_defs perm_fns ctxt =
+fun prove_permute_plus induct bnfs perm_defs perm_fns ctxt =
   let
     val p = Free ("p", @{typ perm})
     val q = Free ("q", @{typ perm})
@@ -379,27 +384,61 @@ fun prove_permute_plus induct perm_defs perm_fns ctxt =
     val goals =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
+
+    val map_comps = map BNF_Def.map_comp_of_bnf bnfs
+    val rules = @{thms permute_plus o_def} @ perm_defs @ map_comps
+    val congs = map BNF_Def.map_cong0_of_bnf bnfs
   in
     Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals
       (fn {context = ctxt', ...} =>
         (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
           asm_simp_tac
-            (put_simpset HOL_basic_ss ctxt' addsimps (@{thm permute_plus} :: perm_defs))) 1)
+            (fold Simplifier.add_cong congs
+              (put_simpset HOL_basic_ss ctxt' addsimps rules))) 1)
     |> Old_Datatype_Aux.split_conj_thm
   end
 
 
-fun mk_perm_eq ty_perm_assoc cnstr =
+(* Return the map operator for the given type, along with its list of
+argument types, if a map operator exists; otherwise return NONE *)
+fun mk_map_of_type lthy (Type (c, tys)) =
   let
-    fun lookup_perm p (ty, arg) =
+    fun mk_map bnf =
+      let
+        val live = BNF_Def.live_of_bnf bnf
+        val t = BNF_Def.mk_map live tys tys (BNF_Def.map_of_bnf bnf)
+        val (map_arg_tys, _) = BNF_Util.strip_typeN live (fastype_of t)
+      in
+        (t, map domain_type map_arg_tys)
+      end
+  in
+    Option.map mk_map (BNF_Def.bnf_of lthy c)
+  end
+  | mk_map_of_type _ _ = NONE
+
+
+fun mk_perm_eq lthy ty_perm_assoc cnstr =
+  let
+    (* permute function with boolean flag indicating recursion *)
+    fun mk_perm p ty =
       case (AList.lookup (op=) ty_perm_assoc ty) of
-        SOME perm => perm $ p $ arg
-      | NONE => Const (@{const_name permute}, perm_ty ty) $ p $ arg
+        SOME perm => (perm $ p, true)
+      | NONE =>
+        (case mk_map_of_type lthy ty of
+          SOME (t, tys) =>
+          let
+            val (ts, recs) = split_list (map (mk_perm p) tys)
+          in
+            if exists I recs
+            then (list_comb (t, ts), true)
+            else (perm_const ty $ p, false)
+          end
+        | NONE => (perm_const ty $ p, false))
+
+    fun lookup_perm p (ty, arg) = fst (mk_perm p ty) $ arg
 
     val p = Free ("p", @{typ perm})
-    val (arg_tys, ty) =
-      fastype_of cnstr
-      |> strip_type
+    val (arg_tys, ty) = strip_type (fastype_of cnstr)
 
     val arg_names = Name.variant_list ["p"] (Old_Datatype_Prop.make_tnames arg_tys)
     val args = map Free (arg_names ~~ arg_tys)
@@ -416,8 +455,9 @@ fun mk_perm_eq ty_perm_assoc cnstr =
 fun define_raw_perms raw_dt_info lthy =
   let
     val RawDtInfo
-      {raw_dt_names, raw_tys, raw_ty_args, raw_all_cns, raw_induct_thm, ...} = raw_dt_info
+      {raw_dt_names, raw_fp_sugars, raw_tys, raw_ty_args, raw_all_cns, raw_induct_thm, ...} = raw_dt_info
 
+    val bnfs = (#fp_nesting_bnfs o hd) raw_fp_sugars
     val perm_fn_names = raw_dt_names
       |> map Long_Name.base_name
       |> map (prefix "permute_")
@@ -426,7 +466,7 @@ fun define_raw_perms raw_dt_info lthy =
     val perm_fn_frees = map Free (perm_fn_names ~~ perm_fn_types)
     val perm_fn_binds = map (fn s => (Binding.name s, NONE, NoSyn)) perm_fn_names
 
-    val perm_eqs = map (mk_perm_eq (raw_tys ~~ perm_fn_frees)) (flat raw_all_cns)
+    val perm_eqs = map (mk_perm_eq lthy (raw_tys ~~ perm_fn_frees)) (flat raw_all_cns)
 
     fun tac ctxt (_, _, simps) =
       Class.intro_classes_tac ctxt [] THEN ALLGOALS (resolve_tac ctxt simps)
@@ -442,8 +482,8 @@ fun define_raw_perms raw_dt_info lthy =
       |> Class.instantiation (raw_dt_names, raw_ty_args, @{sort pt})
       |> BNF_LFP_Compat.primrec perm_fn_binds perm_eqs
 
-    val perm_zero_thms = prove_permute_zero raw_induct_thm perm_eq_thms perm_funs lthy'
-    val perm_plus_thms = prove_permute_plus raw_induct_thm perm_eq_thms perm_funs lthy'
+    val perm_zero_thms = prove_permute_zero raw_induct_thm bnfs perm_eq_thms perm_funs lthy'
+    val perm_plus_thms = prove_permute_plus raw_induct_thm bnfs perm_eq_thms perm_funs lthy'
   in
     lthy'
     |> Class.prove_instantiation_exit_result morphism tac
