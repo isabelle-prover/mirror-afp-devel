@@ -398,7 +398,7 @@ proof -
       by (rule integrable_on_superset) (auto simp: f_def)
   next
     fix n :: nat
-    show "\<forall>x\<in>{a..}. norm (f n x) \<le> of_real (1/12) * (1 / x^2)"
+    show "norm (f n x) \<le> of_real (1/12) * (1 / x^2)" if "x \<in> {a..}" for x
       using a P_ge_0 P_upper_bound by (auto simp: f_def)
   next
     show "(\<lambda>x::real. of_real (1/12) * (1 / x^2)) integrable_on {a..}"
