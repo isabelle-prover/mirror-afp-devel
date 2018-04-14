@@ -446,7 +446,7 @@ proof -
     apply (safe intro!: integral_eucl_le)
     using \<open>0 \<in> {l .. u}\<close>
     apply (auto intro!: assms
-      intro: integrable_continuous_real  integrable_spike[where S="{t0, h}", OF _ _ f_int]
+      intro: integrable_continuous_real  integrable_spike[where S="{t0, h}", OF f_int]
       simp: eucl_le[where 'a='a] divide_simps
       split: if_split_asm)
     done
