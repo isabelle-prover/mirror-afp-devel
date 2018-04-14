@@ -24,7 +24,7 @@ lemma cramer_lemma_real: fixes A :: "real mat"
   and x: "x \<in> carrier_vec n" 
   and k: "k < n" 
 shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A" 
-  using cramer_lemma[folded replace_col_hma_def, untransferred, cancel_card_constraint, OF A x k] k
+  using cramer_lemma[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
   by auto
 
 lemma cramer_lemma_rat: fixes A :: "rat mat" 
@@ -60,7 +60,7 @@ lemma vec_cong:
 lemma mat_cong:
   assumes "\<And>m' n'. m' < m \<Longrightarrow> n' < n \<Longrightarrow> f (m', n') = g (m',n')"
   shows "mat m n f = mat m n g"
-  using assms by (auto)
+  using assms by auto
 
 lemma rat_of_int_dvd:
   assumes "b \<noteq> 0" "rat_of_int a / rat_of_int b \<in> \<int>"
@@ -89,12 +89,11 @@ proof -
       quotient_of_coprime coprime_dvd_mult_left_iff by blast
 qed
 
-lemma
-  fixes i::int
+lemma quotient_of_bounds: 
   assumes "quotient_of r = (z, n)" "rat_of_int i * r \<in> \<int>" "0 < i" "\<bar>r\<bar> \<le> b"
-  shows "rat_of_int \<bar>z\<bar> \<le> rat_of_int i * b"
+  shows "rat_of_int \<bar>z\<bar> \<le> rat_of_int i * b" "n \<le> i" 
 proof -
-  have ni: "n \<le> i"
+  show ni: "n \<le> i"
     using assms denom_dvd_ints  by (intro zdvd_imp_le) blast+
   have "\<bar>r\<bar> = \<bar>rat_of_int z / rat_of_int n\<bar>"
     using assms quotient_of_div by blast
@@ -106,7 +105,7 @@ proof -
     using assms quotient_of_denom_pos by auto
   also have "\<dots> \<le> rat_of_int i * b"
     using ni assms of_int_le_iff by (auto intro!: mult_right_mono)
-  finally show ?thesis
+  finally show "rat_of_int \<bar>z\<bar> \<le> rat_of_int i * b" 
     by simp
 qed
 
@@ -328,6 +327,16 @@ end
 
 end
 
+lemma Ints_sum:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "sum f A \<in> \<int>"
+  using assms by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_prod:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "prod f A \<in> \<int>"
+using assms by (induction A rule: infinite_finite_induct) auto
+
 hide_const (open) Inner_Product.real_inner_class.inner
 
 locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
@@ -365,16 +374,6 @@ proof -
     unfolding Gramian_matrix_def using con_assms assms
     by (intro eq_matI) (auto simp add: Let_def)
 qed
-
-lemma Ints_sum:
-  assumes "finite A" "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
-  shows "sum f A \<in> \<int>"
-  using assms by (induction A rule: finite_induct) auto
-
-lemma Ints_prod:
-  assumes "finite A" "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
-  shows "prod f A \<in> \<int>"
-using assms by (induction A rule: finite_induct) auto
 
 lemma Gramian_determinant_Ints:
   assumes "k < m"
@@ -468,8 +467,6 @@ proof -
      apply(auto)
     using assms apply simp
     apply(rule Ints_sum)
-    subgoal
-      using finite_permutations by blast
     apply(rule Ints_mult)
     unfolding signof_def apply(simp)
     apply(rule Ints_prod)
@@ -633,17 +630,17 @@ lemma vec_hom_ints:
   shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
   using assms by auto
 
-lemma LLL_invariant_g_num_denom: assumes inv: "LLL_partial_invariant A (i, Fs, Gs) fs gs" 
+lemma LLL_invariant_g_num_denom_bound: assumes inv: "LLL_partial_invariant A (i, Fs, Gs) fs gs" 
   and k: "k < n" and i: "i < m" 
   and alpha: "4 / 3 \<le> \<alpha>" 
   and quot: "quotient_of (gs ! i $ k) = (num, denom)" 
-shows "\<bar>num\<bar> \<le> A ^ (i + 1)" "denom \<le> A ^ i" 
+shows "\<bar>num\<bar> \<le> A ^ (i + 1)" "denom \<le> A ^ i" (* tighter bounds *)
+  "\<bar>num\<bar> \<le> A ^ m" "\<bar>denom\<bar> \<le> A ^ m"         (* bounds independent of i *)
 proof -
   note * = LLL_pinvD[OF inv]
   interpret gs: gram_schmidt_rat n .
   note dk_approx[OF alpha inv i, unfolded dk_def]  
   note *(12)[unfolded g_bound_def, rule_format, OF i]
-  thm f_bound_def
   let ?r = "rat_of_int" 
   let ?fs = "map of_int_hom.vec_hom fs" 
   note gs.inti_inti[OF *(10)]
@@ -674,41 +671,34 @@ proof -
     by (rule self_le_power, auto) 
   also have "\<dots> \<le> of_nat A" using gs_sq A0 unfolding max_def by auto
   finally have gs_bound: "\<bar>(gs ! i $ k)\<bar> \<le> of_nat A" .
-  from quot have quot: "quotient_of \<bar>(gs ! i $ k)\<bar> = (abs num, denom)"
-    by (simp add: rat_abs_code)
-  from quotient_of_denom_pos[OF quot] have denom: "denom > 0" "rat_of_int denom \<noteq> 0" by auto
-  have "rat_of_int (abs num) = \<bar>gs ! i $v k\<bar> * rat_of_int denom" unfolding quotient_of_div[OF quot] 
-    using denom(2) by simp
-  also have "\<dots> \<le> of_nat A * rat_of_int denom" 
-    by (rule mult_right_mono[OF gs_bound], insert denom, auto)
-  also have "\<dots> = rat_of_int (int A * denom)" by simp
-  finally have abs: "abs num \<le> int A * denom" by linarith
   have "gs.Gramian_determinant (map of_int_hom.vec_hom fs) i = rat_of_int (gs.Gramian_determinant fs i)"
      using  assms *(3,4) carrier_vecD nth_mem by (intro of_int_Gramian_determinant) (simp, blast)
   with int have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v k \<in> \<int>" unfolding dk_def by simp
   also have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v k = of_int (dk fs i) * (gs ! i $ k)" using gsi i k by auto
-  also have "gs ! i $ k = ?r num / ?r denom" using quotient_of_div[OF assms(5)] by simp
-  also have "?r (dk fs i) * \<dots> = ?r (dk fs i * num) / ?r denom" by simp
-  finally have "denom dvd (dk fs i * num)"
-    apply(intro rat_of_int_dvd) 
-    using denom(1) apply blast+ done
-  find_theorems "_ dvd _" \<int>
-  with quotient_of_coprime[OF assms(5)] have "denom dvd dk fs i"
-    apply(subst coprime_dvd_mult_left_iff[symmetric])
-    using quotient_of_coprime by (auto simp add: ac_simps)
-  then have "denom \<le> dk fs i"
-    apply(rule zdvd_imp_le)
-    using "*"(7) assms(1) by blast
-  then show "denom \<le> A ^ i"
-    using dk_approx[OF alpha inv i] by linarith
-  have "abs num \<le> A * (A ^ i)"
-    apply(rule order_trans, rule abs) apply(simp)
-    apply(rule mult_left_mono)
-    using \<open>denom \<le> int (A ^ i)\<close> apply auto[1] by simp
-  also have "\<dots> = A ^ (i + 1)"
-    by auto
-  finally show "\<bar>num\<bar> \<le> A ^ (i + 1)"
-    by simp
+  finally have "of_int (dk fs i) * gs ! i $v k \<in> \<int>" by auto
+  from quotient_of_bounds[OF quot this LLL_dk_pos[OF inv \<open>i \<le> m\<close>] gs_bound] 
+  have num: "rat_of_int \<bar>num\<bar> \<le> of_int (dk fs i * int A)" 
+    and denom: "denom \<le> dk fs i" by auto
+  from num have num: "\<bar>num\<bar> \<le> dk fs i * int A" by linarith
+  from dk_approx[OF alpha inv i] have dk: "dk fs i \<le> int (A ^ i)" by linarith
+  from denom dk show denom: "denom \<le> int (A ^ i)" by auto
+  note num also have "dk fs i * int A \<le> int (A ^ i) * int A" 
+    by (rule mult_right_mono[OF dk], auto)
+  also have "\<dots> = int (A ^ (Suc i))" by simp
+  finally show num: "\<bar>num\<bar> \<le> int (A ^ (i + 1))" by auto
+  {
+    fix j
+    assume "j \<le> i + 1" 
+    with i have "j \<le> m" by auto
+    from pow_mono_exp[OF _ this, of A] A0
+    have "A^j \<le> A^m" by auto
+    hence "int (A^j) \<le> int (A^m)" by linarith
+  } note j_m = this
+  have "\<bar>denom\<bar> = denom" using quotient_of_denom_pos[OF quot] by auto
+  also have "\<dots> \<le> int (A ^ i)" by fact 
+  also have "\<dots> \<le> int (A ^ m)" by (rule j_m, auto)
+  finally show "\<bar>denom\<bar> \<le> int (A ^ m)" by auto
+  show "\<bar>num\<bar> \<le> int (A ^ m)" using j_m[of "i+1"] num by auto
 qed
 
 
