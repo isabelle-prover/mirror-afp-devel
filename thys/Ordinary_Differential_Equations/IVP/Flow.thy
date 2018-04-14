@@ -3059,7 +3059,7 @@ proof -
     by (auto simp: at_within_open[OF _ open_state_space] at_within_open[OF _ open_Times] assms \<open>0 < e\<close>
         mem_existence_ivl_iv_defined[OF assms])
   then show ?thesis unfolding at_within_open[OF Sigma open_state_space]
-    by (rule has_derivative_at_within)
+    by (rule has_derivative_at_withinI)
 qed
 
 lemma flow0_comp_has_derivative:

@@ -479,7 +479,7 @@ lemma symmetric_second_derivative:
 proof -
   interpret second_derivative_within'
     by unfold_locales
-      (auto intro!: derivative_intros intro: has_derivative_at_within \<open>a \<in> G\<close>)
+      (auto intro!: derivative_intros intro: has_derivative_at_withinI \<open>a \<in> G\<close>)
   from \<open>a \<in> G\<close> open_G
   obtain e where e: "e > 0" "\<And>y. dist y a < e \<Longrightarrow> y \<in> G"
     by (force simp: open_dist)

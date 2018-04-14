@@ -336,7 +336,7 @@ lemma extendf_deriv:
          and cont:"continuous_on UNIV (\<lambda>x. Blinfun (FunctionFrechet I a x))"
            using good_interp[unfolded is_interp_def] by auto
          show ?thesis
-           apply(rule has_derivative_at_within)
+           apply(rule has_derivative_at_withinI)
            using deriv by auto
        qed
       done

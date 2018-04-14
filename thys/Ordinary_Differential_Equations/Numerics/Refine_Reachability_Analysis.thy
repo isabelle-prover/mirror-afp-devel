@@ -1316,7 +1316,7 @@ lemma fderiv2[derivative_intros]:
 
 lemma derivative_within_safe[derivative_intros]:
   "(g has_derivative h) (at x) \<Longrightarrow> (g has_derivative h) (at x within Csafe)"
-  by (rule has_derivative_at_within)
+  by (rule has_derivative_at_withinI)
 
 lemma cont_fderiv: "continuous_on (Csafe) ode_d1"
   by (rule has_derivative_continuous_on) (auto intro!: derivative_intros)
@@ -2490,7 +2490,7 @@ proof (rule var.existence_ivl_maximal_segment)
         apply (rule refl)
         apply (rule refl)
         apply (rule refl)
-       apply (rule has_derivative_at_within)
+       apply (rule has_derivative_at_withinI)
        apply (rule Dflow_has_derivative)
        apply force
       apply (rule refl)

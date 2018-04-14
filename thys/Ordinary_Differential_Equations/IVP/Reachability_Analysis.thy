@@ -855,7 +855,7 @@ proof (auto, goal_cases)
     by (auto simp: return_time_step intro!: return_time_exivl return_time_pos)
   from _ this have "(poincare_map p2 has_derivative blinfun_apply (D2 o\<^sub>L ?D1)) (at x0 within S)"
     apply (rule has_derivative_transform_eventually)
-    apply (rule has_derivative_at_within)
+    apply (rule has_derivative_at_withinI)
     apply (rule has_derivative_compose[OF flow_has_space_derivative 2(3), THEN has_derivative_eq_rhs])
     by (auto simp: \<open>x0 \<in> S\<close> pm_eq 1)
   moreover have "(poincare_map p2 x0, (D2 o\<^sub>L ?D1) o\<^sub>L d0) \<in> P2"
@@ -924,7 +924,7 @@ proof (auto, goal_cases)
   from _ evrt_eq
   have "(return_time p2 has_derivative (\<lambda>x. dR2 (blinfun_apply ?D1 x))) (at x0 within S)"
     apply (rule has_derivative_transform_eventually)
-      apply (rule has_derivative_at_within)
+      apply (rule has_derivative_at_withinI)
     by (auto intro!: derivative_eq_intros has_derivative_compose[OF flow_has_space_derivative 2(2)] 1 \<open>x0 \<in> S\<close>
         simp: rt_eq)
   then show "return_time p2 differentiable at x0 within S" by (auto intro!: differentiableI)
@@ -972,7 +972,7 @@ qed
 
 lemma section_closed[intro, simp]: "section s Ds S \<Longrightarrow> closed {x \<in> S. s x = 0}"
   by (auto intro!: closed_levelset_within simp: section_def
-      intro!: has_derivative_continuous_on has_derivative_at_within[where s=S])
+      intro!: has_derivative_continuous_on has_derivative_at_withinI[where s=S])
 
 
 lemma return_time_continuous_belowI:

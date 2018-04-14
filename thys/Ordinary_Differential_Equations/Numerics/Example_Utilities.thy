@@ -336,7 +336,7 @@ lemma f'_cong: "(g has_derivative blinfun_apply (f' x)) (at x)" if "x \<in> Y"
 proof -
   from derivative_rhs[of x] that cong
   have "(f has_derivative blinfun_apply (f' x)) (at x within Y)"
-    by (auto intro!: has_derivative_at_within)
+    by (auto intro!: has_derivative_at_withinI)
   then have "(g has_derivative blinfun_apply (f' x)) (at x within Y)"
     by (rule has_derivative_transform_within[OF _ zero_less_one that])
        (auto simp: cong)

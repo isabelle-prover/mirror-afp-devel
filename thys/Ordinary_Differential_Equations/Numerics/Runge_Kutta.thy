@@ -626,11 +626,11 @@ next
     by (rule continuous_on_vector_derivative) (rule x')
   have f_cont: "continuous_on (T \<times> X) f"
     apply (rule has_derivative_continuous_on)
-    apply (rule has_derivative_at_within)
+    apply (rule has_derivative_at_withinI)
     by (rule assms)
   have f'_cont: "continuous_on (T \<times> X) f'"
     apply (rule has_derivative_continuous_on)
-    apply (rule has_derivative_at_within)
+    apply (rule has_derivative_at_withinI)
     by (rule assms)
   note [continuous_intros] =
     continuous_on_compose2[OF x_cont]
@@ -640,10 +640,10 @@ next
   from f' f''
   have f'_within: "tx \<in> T \<times> X \<Longrightarrow> (f has_derivative f' tx) (at tx within T \<times> X)"
     and f''_within: "tx \<in> T \<times> X \<Longrightarrow> (f' has_derivative f'' tx) (at tx within T \<times> X)" for tx
-    by (auto intro: has_derivative_at_within)
+    by (auto intro: has_derivative_at_withinI)
 
   from f'' have f''_within: "tx \<in> T \<times> X \<Longrightarrow> (f' has_derivative ($) (f'' tx)) (at tx within T \<times> X)" for tx
-    by (auto intro: has_derivative_at_within)
+    by (auto intro: has_derivative_at_withinI)
   note [derivative_intros] =
     has_derivative_in_compose2[OF f'_within]
     has_derivative_in_compose2[OF f''_within]
