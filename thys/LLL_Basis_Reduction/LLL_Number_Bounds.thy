@@ -630,12 +630,15 @@ lemma vec_hom_ints:
   shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
   using assms by auto
 
-lemma LLL_invariant_g_num_denom_bound: assumes inv: "LLL_partial_invariant A (i, Fs, Gs) fs gs" 
-  and k: "k < n" and i: "i < m" 
-  and alpha: "4 / 3 \<le> \<alpha>" 
-  and quot: "quotient_of (gs ! i $ k) = (num, denom)" 
-shows "\<bar>num\<bar> \<le> A ^ (i + 1)" "denom \<le> A ^ i" (* tighter bounds *)
-  "\<bar>num\<bar> \<le> A ^ m" "\<bar>denom\<bar> \<le> A ^ m"         (* bounds independent of i *)
+context 
+  assumes alpha: "4 / 3 \<le> \<alpha>" 
+begin
+
+lemma LLL_partial_invariant_g_num_denom_bound:
+  assumes inv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" 
+  and j: "j < n" and i: "i < m" 
+  and quot: "quotient_of (gs ! i $ j) = (num, denom)" 
+shows "\<bar>num\<bar> \<le> A ^ m" "\<bar>denom\<bar> \<le> A ^ m"
 proof -
   note * = LLL_pinvD[OF inv]
   interpret gs: gram_schmidt_rat n .
@@ -644,9 +647,8 @@ proof -
   let ?r = "rat_of_int" 
   let ?fs = "map of_int_hom.vec_hom fs" 
   note gs.inti_inti[OF *(10)]
-  have 1: "gs.gso ?fs i = gs ! i"
-    by (metis "*"(9) GSO_def LLL.g_i(1) assms(1) g_i_GSO i)
-  from gs.inti_inti[OF *(10)] have int: "(gs.Gramian_determinant ?fs i \<cdot>\<^sub>v (gs ! i)) $v k \<in> \<int>"
+  have 1: "gs.gso ?fs i = gs ! i" using LLL_connect[OF inv] i by auto
+  from gs.inti_inti[OF *(10)] have int: "(gs.Gramian_determinant ?fs i \<cdot>\<^sub>v (gs ! i)) $v j \<in> \<int>"
     apply(subst 1[symmetric])
     apply(rule gs.inti_inti[OF *(10), of m gs])
     using * assms apply(auto)[1]
@@ -658,7 +660,7 @@ proof -
     apply(subst 1[symmetric])
     apply(rule)
     using "*"(10) "*"(4) gram_schmidt.f_carrier i by fastforce
-  have gs_sq: "\<bar>(gs ! i $ k)\<bar>\<^sup>2 \<le> rat_of_nat A"
+  have gs_sq: "\<bar>(gs ! i $ j)\<bar>\<^sup>2 \<le> rat_of_nat A"
     apply(rule order_trans)
      apply(rule vec_le_sq_norm[of _ n])
     apply (rule gsi)
@@ -666,33 +668,33 @@ proof -
   from i have "m * m \<noteq> 0" by auto
   with D_approx[OF alpha inv] LLL_D_pos[OF inv] have A0: "A \<noteq> 0"
     by (meson nat_SN.compat nat_zero_less_power_iff order_less_irrefl)
-  have "\<bar>(gs ! i $ k)\<bar> \<le> max 1 \<bar>(gs ! i $ k)\<bar>" by simp
-  also have "\<dots> \<le> (max 1 \<bar>gs ! i $ k\<bar>)\<^sup>2"
+  have "\<bar>(gs ! i $ j)\<bar> \<le> max 1 \<bar>(gs ! i $ j)\<bar>" by simp
+  also have "\<dots> \<le> (max 1 \<bar>gs ! i $ j\<bar>)\<^sup>2"
     by (rule self_le_power, auto) 
   also have "\<dots> \<le> of_nat A" using gs_sq A0 unfolding max_def by auto
-  finally have gs_bound: "\<bar>(gs ! i $ k)\<bar> \<le> of_nat A" .
+  finally have gs_bound: "\<bar>(gs ! i $ j)\<bar> \<le> of_nat A" .
   have "gs.Gramian_determinant (map of_int_hom.vec_hom fs) i = rat_of_int (gs.Gramian_determinant fs i)"
      using  assms *(3,4) carrier_vecD nth_mem by (intro of_int_Gramian_determinant) (simp, blast)
-  with int have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v k \<in> \<int>" unfolding dk_def by simp
-  also have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v k = of_int (dk fs i) * (gs ! i $ k)" using gsi i k by auto
-  finally have "of_int (dk fs i) * gs ! i $v k \<in> \<int>" by auto
-  from quotient_of_bounds[OF quot this LLL_dk_pos[OF inv \<open>i \<le> m\<close>] gs_bound] 
+  with int have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v j \<in> \<int>" unfolding dk_def by simp
+  also have "(of_int (dk fs i) \<cdot>\<^sub>v gs ! i) $v j = of_int (dk fs i) * (gs ! i $ j)" using gsi i j by auto
+  finally have "of_int (dk fs i) * gs ! i $v j \<in> \<int>" by auto
+  from quotient_of_bounds[OF quot this LLL_dk_pos[OF inv] gs_bound] i
   have num: "rat_of_int \<bar>num\<bar> \<le> of_int (dk fs i * int A)" 
     and denom: "denom \<le> dk fs i" by auto
   from num have num: "\<bar>num\<bar> \<le> dk fs i * int A" by linarith
   from dk_approx[OF alpha inv i] have dk: "dk fs i \<le> int (A ^ i)" by linarith
-  from denom dk show denom: "denom \<le> int (A ^ i)" by auto
+  from denom dk have denom: "denom \<le> int (A ^ i)" by auto
   note num also have "dk fs i * int A \<le> int (A ^ i) * int A" 
     by (rule mult_right_mono[OF dk], auto)
   also have "\<dots> = int (A ^ (Suc i))" by simp
-  finally show num: "\<bar>num\<bar> \<le> int (A ^ (i + 1))" by auto
+  finally have num: "\<bar>num\<bar> \<le> int (A ^ (i + 1))" by auto
   {
-    fix j
-    assume "j \<le> i + 1" 
-    with i have "j \<le> m" by auto
+    fix jj
+    assume "jj \<le> i + 1" 
+    with i have "jj \<le> m" by auto
     from pow_mono_exp[OF _ this, of A] A0
-    have "A^j \<le> A^m" by auto
-    hence "int (A^j) \<le> int (A^m)" by linarith
+    have "A^jj \<le> A^m" by auto
+    hence "int (A^jj) \<le> int (A^m)" by linarith
   } note j_m = this
   have "\<bar>denom\<bar> = denom" using quotient_of_denom_pos[OF quot] by auto
   also have "\<dots> \<le> int (A ^ i)" by fact 
@@ -701,107 +703,89 @@ proof -
   show "\<bar>num\<bar> \<le> int (A ^ m)" using j_m[of "i+1"] num by auto
 qed
 
-
-lemma max_image_ex:
-  assumes "A \<noteq> {}" "finite A"
-  shows "\<exists>a \<in> A. f a = (MAX j\<in>A. f j)"
-  using assms
-  by (metis (mono_tags, lifting) Max_in finite_imageI image_iff image_is_empty)
-
-lemma LLL_invariant_g_bound: 
-  assumes inv: "LLL_invariant A (i, Fs, Gs) fs gs" 
-  and k: "k < n" and i: "i < m"                 
-  and alpha: "4 / 3 \<le> \<alpha>" 
-  and A: "0 < A"
-shows "(MAX j\<in>{..i}. (gs.\<mu> (map of_int_hom.vec_hom fs) i j)\<^sup>2) \<le> rat_of_nat (m * A ^ Suc i)"
+lemma LLL_invariant_mu_num_denom_bound: 
+  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+  and i: "i < m" and j: "j < i"                
+  and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
+shows "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" 
+  and "\<bar>denom\<bar> \<le> int (A ^ m)" 
 proof -
-  have inv': "LLL_partial_invariant A (i, Fs, Gs) fs gs"
+  have inv': "LLL_partial_invariant A (k, Fs, Gs) fs gs"
     using inv unfolding LLL_invariant_def by auto
+  from LLL_invariant_A_pos[OF alpha inv'] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
+  let ?mu = "gs.\<mu> (RAT fs) i j" 
   interpret gs: gram_schmidt_rat n .
   note dk_approx[OF alpha inv' i, unfolded dk_def]  
   note *(13)[unfolded g_bound_def, rule_format, OF i]
   note vec_le_sq_norm
   note *(2)  
-  thm f_bound_def
-  thm sq_norm_fs_mu_G_bound
-  define \<mu>_max where "\<mu>_max = (\<lambda>i. Max ((\<lambda>j. (gs.\<mu> (RAT fs) i j)\<^sup>2) ` {..i}))"
-  have "rat_of_int \<parallel>fs ! i\<parallel>\<^sup>2 \<le> rat_of_nat (Suc i * A) * \<mu>_max i"
-    using inv' assms by (intro sq_norm_fs_mu_G_bound) (auto simp add: \<mu>_max_def)
-  have "\<mu>_max i \<le> rat_of_nat (m * (A ^ (Suc i)))"
-  proof -
-    { assume "i > 0"
-      then have "\<exists>j \<in> {..i}. (gs.\<mu> (RAT fs) i j)\<^sup>2 = \<mu>_max i"
-        by (auto intro!: max_image_ex simp add: \<mu>_max_def)
-      then obtain j where j: "j \<le> i" "\<mu>_max i = (gs.\<mu> (RAT fs) i j)\<^sup>2"
-        by auto
-      {  assume ji: "j < i"
-        then have "(gs.\<mu> (RAT fs) i j)\<^sup>2 \<le> gs.Gramian_determinant (RAT fs) j * \<parallel>(RAT fs) ! i\<parallel>\<^sup>2"
-        apply(intro gs.mu_bound_Gramian_determinant)
-             apply (auto simp add: *(10))
-         apply (meson "*"(3) nth_mem subset_code(1) vec_hom_ints)
-        using assms
-        using "*"(4) by blast
-      also have "gs.Gramian_determinant (RAT fs) j = of_int (dk fs j)"
-        unfolding dk_def apply(rule of_int_Gramian_determinant)
-        using ji assms
-        using "*"(4) dual_order.strict_trans apply simp
-        using "*"(3) carrier_vecD nth_mem by blast
-      also have "of_int (dk fs j) * \<parallel>(RAT fs) ! i\<parallel>\<^sup>2 \<le> rat_of_nat (A ^ j) * \<parallel>(RAT fs) ! i\<parallel>\<^sup>2"
-        apply(rule mult_right_mono)
-         apply(rule dk_approx)
-           apply(rule alpha) apply(rule inv')
-        using ji i by (auto)
-      also have "rat_of_nat (A ^ j) * \<parallel>(RAT fs) ! i\<parallel>\<^sup>2 \<le> rat_of_nat (A ^ j) *  rat_of_int \<parallel>fs ! i\<parallel>\<^sup>2 "
-        by (simp add: "*"(4) i sq_norm_of_int)
-      also have "\<dots> \<le> rat_of_nat (A ^ j) * rat_of_nat (A * m)"
-        apply(rule mult_left_mono)
-        using f_bound_def
-        apply (metis "*"(12) assms(3) of_int_le_iff of_int_of_nat_eq)
-        using inv' i by (auto)
-      also have "\<dots> \<le> rat_of_nat (A ^ i) * rat_of_nat (A * m)"
-      proof -
-        show ?thesis
-        apply(rule mult_right_mono)
-           apply(auto) apply(subst power_increasing)
-          using ji apply(simp)
-          using assms apply(simp) by (simp)
-      qed
-      finally have "\<mu>_max i \<le> rat_of_nat (m * (A ^ (Suc i)))"
-        by (auto simp add: field_simps j)
-    }
-    moreover 
-    { assume ji: "j = i"
-      then have mi: "\<mu>_max i = 1"
-        using j by (auto simp add: gs.\<mu>.simps)
-      from ji have "(gs.\<mu> (map of_int_hom.vec_hom fs) i j)\<^sup>2 = 1"
-        by (simp add: gs.\<mu>.simps)
-      also have "\<dots> \<le> rat_of_nat (A ^ (Suc i))"
-        using A by auto
-      also have "\<dots> \<le> rat_of_nat (m * (A ^ (Suc i)))"
-        using i by fastforce
-      finally have "(gs.\<mu> (map of_int_hom.vec_hom fs) i j)\<^sup>2 \<le> rat_of_nat (m * (A ^ (Suc i)))"
-        by (auto simp add: j)
-    }
-    ultimately have "\<mu>_max i \<le> rat_of_nat (m * (A ^ (Suc i)))"
-      using j by (fastforce)
-  }
-  moreover {
-    assume "i = 0"
-    then have mi: "\<mu>_max i = 1"
-      unfolding \<mu>_max_def by (simp add: gs.\<mu>.simps)
-      also have "\<dots> \<le> rat_of_nat (A ^ Suc i)"
-        using A by auto
-      also have "\<dots> \<le>  rat_of_nat (m * (A ^ (Suc i)))"
-        using i by fastforce
-      finally have "\<mu>_max i \<le> rat_of_nat (m * (A ^ (Suc i)))"
-        by simp
-    }
-    ultimately show "\<mu>_max i \<le> rat_of_nat (m * (A ^ (Suc i)))"
-      by fastforce
-  qed
-  then show ?thesis
-    unfolding \<mu>_max_def by simp
+  from j i have jm: "j < m" by auto
+  from quotient_of_square[OF quot] 
+  have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
+    unfolding power2_eq_square by auto
+  from dk_approx[OF alpha inv' jm]
+  have dkj: "dk fs j \<le> int (A ^ j)" by linarith
+  from LLL_dk_pos[OF inv', of "Suc j"] i j have dksj: "0 < dk fs (Suc j)" by auto
+  hence dk_pos: "0 < (dk fs (Suc j))^2" by auto
+  from dk_approx[OF alpha inv', of "Suc j"] j i 
+  have "rat_of_int (dk fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
+    by auto
+  hence dk_j_bound: "dk fs (Suc j) \<le> int (A^Suc j)" by linarith
+  have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
+    by (rule gs.mu_bound_Gramian_determinant[OF *(10) _ _ _ j i],
+    insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
+  also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
+    unfolding sq_norm_of_int[symmetric] using *(4) i by auto
+  also have "(gs.Gramian_determinant (RAT fs) j) = of_int (dk fs j)" 
+    unfolding dk_def apply(rule of_int_Gramian_determinant)
+    using j assms
+    using *(4) dual_order.strict_trans apply simp
+    using *(3) carrier_vecD nth_mem by blast
+  also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (dk fs j * sq_norm (fs ! i))" by simp 
+  also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
+    by (rule mult_mono[OF dkj \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
+  also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
+  also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
+    by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
+  finally have mu_bound: "abs (?mu^2) \<le> of_nat (A ^ m * m)" by auto
+  have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
+    by (rule gs.Gramian_determinant_mu_ints[OF *(10) _ _ _ j i],
+    insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
+  also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (dk fs (Suc j))" 
+    unfolding dk_def apply(rule of_int_Gramian_determinant)
+    using j assms
+    using *(4) dual_order.strict_trans apply simp
+    using *(3) carrier_vecD nth_mem by blast
+  finally have ints: "of_int (dk fs (Suc j)) * ?mu \<in> \<int>" .
+  have "dk fs (Suc j) \<le> A ^ (Suc j)" by fact
+  also have "\<dots> \<le> A ^ m" unfolding of_nat_le_iff
+    by (rule pow_mono_exp, insert A jm, auto)
+  finally have dk_j: "dk fs (Suc j) \<le> A ^ m" .
+  from ints have "(of_int (dk fs (Suc j)) * ?mu)^2 \<in> \<int>" by auto
+  also have "(of_int (dk fs (Suc j)) * ?mu)^2 = of_int ((dk fs (Suc j))^2) * ?mu^2" 
+    unfolding power2_eq_square of_int_mult by simp
+  finally have "of_int ((dk fs (Suc j))^2) * ?mu^2 \<in> \<int>" .
+  note quot_bounds = quotient_of_bounds[OF quot_sq this dk_pos mu_bound]
+  have "(abs denom)^2 = denom * denom" unfolding power2_eq_square by auto
+  also have "\<dots> \<le> (dk fs (Suc j))^2" by fact
+  finally have "abs denom \<le> dk fs (Suc j)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
+  also have "\<dots> \<le> A ^ m" by fact
+  finally show "\<bar>denom\<bar> \<le> int (A ^ m)" .
+  from quot_bounds(1)
+  have "\<bar>num\<bar>^2 \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * 1" 
+    unfolding power2_eq_square
+    by (subst of_int_le_iff[symmetric, where ?'a = rat], auto)
+  also have "\<dots> \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * int (A ^ m * m)" 
+    by (rule mult_left_mono, insert A i, auto)
+  also have "\<dots> = (dk fs (Suc j)* int (A ^ m * m))\<^sup>2" unfolding power2_eq_square by auto
+  finally have "\<bar>num\<bar> \<le> dk fs (Suc j)* int (A ^ m * m)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
+  also have "\<dots> \<le> A^m * int (A^m * m)" 
+    by (rule mult_right_mono[OF dk_j], auto)
+  also have "\<dots> = int ((A^m * A ^ m) * m)" by simp
+  also have "A^m * A ^ m = A^(2 * m)" unfolding power_add[symmetric] 
+    by (rule arg_cong[of _ _ "\<lambda> x. A^x"], simp)
+  finally show "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" .
 qed
 
 
