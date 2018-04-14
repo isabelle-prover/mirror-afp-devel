@@ -634,11 +634,29 @@ context
   assumes alpha: "4 / 3 \<le> \<alpha>" 
 begin
 
-lemma LLL_partial_invariant_g_num_denom_bound:
+lemma LLL_invariant_f_bound: 
+  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+  and i: "i < m" and j: "j < n" 
+shows "\<bar>fs ! i $ j\<bar> \<le> A * m" 
+proof -
+  note inv = LLL_invD[OF inv] 
+  from \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]
+  have le: "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> int (A * m)" by simp
+  from inv(4,3) i have fsi: "fs ! i \<in> carrier_vec n" by auto
+  have "\<bar>fs ! i $ j\<bar>^1 \<le> \<bar>fs ! i $ j\<bar>^2" 
+    by (cases "fs ! i $ j \<noteq> 0", intro pow_mono_exp, auto)
+  also have "\<bar>fs ! i $ j\<bar>^2 \<le> \<parallel>fs ! i\<parallel>\<^sup>2" using fsi j by (metis vec_le_sq_norm)
+  also have "\<dots> \<le> A * m" by fact
+  finally show ?thesis by simp
+qed
+
+
+lemma LLL_partial_invariant_g_bound:
   assumes inv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" 
-  and j: "j < n" and i: "i < m" 
+  and i: "i < m" and j: "j < n" 
   and quot: "quotient_of (gs ! i $ j) = (num, denom)" 
-shows "\<bar>num\<bar> \<le> A ^ m" "\<bar>denom\<bar> \<le> A ^ m"
+shows "\<bar>num\<bar>   \<le> A ^ m" 
+  and "\<bar>denom\<bar> \<le> A ^ m"
 proof -
   note * = LLL_pinvD[OF inv]
   interpret gs: gram_schmidt_rat n .
@@ -703,13 +721,13 @@ proof -
   show "\<bar>num\<bar> \<le> int (A ^ m)" using j_m[of "i+1"] num by auto
 qed
 
-lemma LLL_invariant_mu_num_denom_bound: 
+lemma LLL_invariant_mu_bound: 
   assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
-  and i: "i < m" and j: "j < i"                
+  and i: "i < m"                 
   and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
-shows "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" 
-  and "\<bar>denom\<bar> \<le> int (A ^ m)" 
-proof -
+shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * m" 
+  and "\<bar>denom\<bar> \<le> A ^ m" 
+proof (atomize(full))
   have inv': "LLL_partial_invariant A (k, Fs, Gs) fs gs"
     using inv unfolding LLL_invariant_def by auto
   from LLL_invariant_A_pos[OF alpha inv'] i have A: "A > 0" by auto 
@@ -720,76 +738,91 @@ proof -
   note *(13)[unfolded g_bound_def, rule_format, OF i]
   note vec_le_sq_norm
   note *(2)  
-  from j i have jm: "j < m" by auto
-  from quotient_of_square[OF quot] 
-  have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
-    unfolding power2_eq_square by auto
-  from dk_approx[OF alpha inv' jm]
-  have dkj: "dk fs j \<le> int (A ^ j)" by linarith
-  from LLL_dk_pos[OF inv', of "Suc j"] i j have dksj: "0 < dk fs (Suc j)" by auto
-  hence dk_pos: "0 < (dk fs (Suc j))^2" by auto
-  from dk_approx[OF alpha inv', of "Suc j"] j i 
-  have "rat_of_int (dk fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
-    by auto
-  hence dk_j_bound: "dk fs (Suc j) \<le> int (A^Suc j)" by linarith
-  have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
-    by (rule gs.mu_bound_Gramian_determinant[OF *(10) _ _ _ j i],
-    insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
-  also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
-    unfolding sq_norm_of_int[symmetric] using *(4) i by auto
-  also have "(gs.Gramian_determinant (RAT fs) j) = of_int (dk fs j)" 
-    unfolding dk_def apply(rule of_int_Gramian_determinant)
-    using j assms
-    using *(4) dual_order.strict_trans apply simp
-    using *(3) carrier_vecD nth_mem by blast
-  also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (dk fs j * sq_norm (fs ! i))" by simp 
-  also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
-    by (rule mult_mono[OF dkj \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
-  also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
-  also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
-    by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
-  finally have mu_bound: "abs (?mu^2) \<le> of_nat (A ^ m * m)" by auto
-  have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-    by (rule gs.Gramian_determinant_mu_ints[OF *(10) _ _ _ j i],
-    insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
-  also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (dk fs (Suc j))" 
-    unfolding dk_def apply(rule of_int_Gramian_determinant)
-    using j assms
-    using *(4) dual_order.strict_trans apply simp
-    using *(3) carrier_vecD nth_mem by blast
-  finally have ints: "of_int (dk fs (Suc j)) * ?mu \<in> \<int>" .
-  have "dk fs (Suc j) \<le> A ^ (Suc j)" by fact
-  also have "\<dots> \<le> A ^ m" unfolding of_nat_le_iff
-    by (rule pow_mono_exp, insert A jm, auto)
-  finally have dk_j: "dk fs (Suc j) \<le> A ^ m" .
-  from ints have "(of_int (dk fs (Suc j)) * ?mu)^2 \<in> \<int>" by auto
-  also have "(of_int (dk fs (Suc j)) * ?mu)^2 = of_int ((dk fs (Suc j))^2) * ?mu^2" 
-    unfolding power2_eq_square of_int_mult by simp
-  finally have "of_int ((dk fs (Suc j))^2) * ?mu^2 \<in> \<int>" .
-  note quot_bounds = quotient_of_bounds[OF quot_sq this dk_pos mu_bound]
-  have "(abs denom)^2 = denom * denom" unfolding power2_eq_square by auto
-  also have "\<dots> \<le> (dk fs (Suc j))^2" by fact
-  finally have "abs denom \<le> dk fs (Suc j)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
-  also have "\<dots> \<le> A ^ m" by fact
-  finally show "\<bar>denom\<bar> \<le> int (A ^ m)" .
-  from quot_bounds(1)
-  have "\<bar>num\<bar>^2 \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * 1" 
-    unfolding power2_eq_square
-    by (subst of_int_le_iff[symmetric, where ?'a = rat], auto)
-  also have "\<dots> \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * int (A ^ m * m)" 
-    by (rule mult_left_mono, insert A i, auto)
-  also have "\<dots> = (dk fs (Suc j)* int (A ^ m * m))\<^sup>2" unfolding power2_eq_square by auto
-  finally have "\<bar>num\<bar> \<le> dk fs (Suc j)* int (A ^ m * m)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
-  also have "\<dots> \<le> A^m * int (A^m * m)" 
-    by (rule mult_right_mono[OF dk_j], auto)
-  also have "\<dots> = int ((A^m * A ^ m) * m)" by simp
-  also have "A^m * A ^ m = A^(2 * m)" unfolding power_add[symmetric] 
-    by (rule arg_cong[of _ _ "\<lambda> x. A^x"], simp)
-  finally show "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" .
+  show "\<bar>num\<bar>   \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
+  proof (cases "j < i")
+    case j: True
+    from j i have jm: "j < m" by auto
+    from quotient_of_square[OF quot] 
+    have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
+      unfolding power2_eq_square by auto
+    from dk_approx[OF alpha inv' jm]
+    have dkj: "dk fs j \<le> int (A ^ j)" by linarith
+    from LLL_dk_pos[OF inv', of "Suc j"] i j have dksj: "0 < dk fs (Suc j)" by auto
+    hence dk_pos: "0 < (dk fs (Suc j))^2" by auto
+    from dk_approx[OF alpha inv', of "Suc j"] j i 
+    have "rat_of_int (dk fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
+      by auto
+    hence dk_j_bound: "dk fs (Suc j) \<le> int (A^Suc j)" by linarith
+    have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
+      by (rule gs.mu_bound_Gramian_determinant[OF *(10) _ _ _ j i],
+      insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
+    also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
+      unfolding sq_norm_of_int[symmetric] using *(4) i by auto
+    also have "(gs.Gramian_determinant (RAT fs) j) = of_int (dk fs j)" 
+      unfolding dk_def apply(rule of_int_Gramian_determinant)
+      using j assms
+      using *(4) dual_order.strict_trans apply simp
+      using *(3) carrier_vecD nth_mem by blast
+    also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (dk fs j * sq_norm (fs ! i))" by simp 
+    also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
+      by (rule mult_mono[OF dkj \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
+    also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
+    also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
+      by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
+    finally have mu_bound: "abs (?mu^2) \<le> of_nat (A ^ m * m)" by auto
+    have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
+      by (rule gs.Gramian_determinant_mu_ints[OF *(10) _ _ _ j i],
+      insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
+    also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (dk fs (Suc j))" 
+      unfolding dk_def apply(rule of_int_Gramian_determinant)
+      using j assms
+      using *(4) dual_order.strict_trans apply simp
+      using *(3) carrier_vecD nth_mem by blast
+    finally have ints: "of_int (dk fs (Suc j)) * ?mu \<in> \<int>" .
+    have "dk fs (Suc j) \<le> A ^ (Suc j)" by fact
+    also have "\<dots> \<le> A ^ m" unfolding of_nat_le_iff
+      by (rule pow_mono_exp, insert A jm, auto)
+    finally have dk_j: "dk fs (Suc j) \<le> A ^ m" .
+    from ints have "(of_int (dk fs (Suc j)) * ?mu)^2 \<in> \<int>" by auto
+    also have "(of_int (dk fs (Suc j)) * ?mu)^2 = of_int ((dk fs (Suc j))^2) * ?mu^2" 
+      unfolding power2_eq_square of_int_mult by simp
+    finally have "of_int ((dk fs (Suc j))^2) * ?mu^2 \<in> \<int>" .
+    note quot_bounds = quotient_of_bounds[OF quot_sq this dk_pos mu_bound]
+    have "(abs denom)^2 = denom * denom" unfolding power2_eq_square by auto
+    also have "\<dots> \<le> (dk fs (Suc j))^2" by fact
+    finally have "abs denom \<le> dk fs (Suc j)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
+    also have "\<dots> \<le> A ^ m" by fact
+    finally have denom: "\<bar>denom\<bar> \<le> int (A ^ m)" .
+    from quot_bounds(1)
+    have "\<bar>num\<bar>^2 \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * 1" 
+      unfolding power2_eq_square
+      by (subst of_int_le_iff[symmetric, where ?'a = rat], auto)
+    also have "\<dots> \<le> ((dk fs (Suc j))\<^sup>2 * int (A ^ m * m)) * int (A ^ m * m)" 
+      by (rule mult_left_mono, insert A i, auto)
+    also have "\<dots> = (dk fs (Suc j)* int (A ^ m * m))\<^sup>2" unfolding power2_eq_square by auto
+    finally have "\<bar>num\<bar> \<le> dk fs (Suc j)* int (A ^ m * m)" unfolding abs_le_square_iff[symmetric] using dksj by auto 
+    also have "\<dots> \<le> A^m * int (A^m * m)" 
+      by (rule mult_right_mono[OF dk_j], auto)
+    also have "\<dots> = int ((A^m * A ^ m) * m)" by simp
+    also have "A^m * A ^ m = A^(2 * m)" unfolding power_add[symmetric] 
+      by (rule arg_cong[of _ _ "\<lambda> x. A^x"], simp)
+    finally have num: "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" .
+    from denom num show ?thesis by blast
+  next
+    case False
+    hence "?mu = 0 \<or> ?mu = 1" unfolding gs.\<mu>.simps by auto
+    hence "quotient_of ?mu = (1,1) \<or> quotient_of ?mu = (0,1)" by auto
+    from this[unfolded quot] show ?thesis using A i by auto+
+  qed
 qed
 
+text \<open>Now we have bounds on each number $(f_i)_j$, $(g_i)_j$, and $\mu_{i,j}$, i.e.,
+  for rational numbers bounds on the numerators and denominators.\<close>
 
-end
+thm LLL_invariant_f_bound
+thm LLL_partial_invariant_g_bound
+thm LLL_invariant_mu_bound
 
-
+end (* context demanding alpha \<ge> 4/3 *)
+end (* LLL locale *)
 end
