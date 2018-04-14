@@ -380,7 +380,7 @@ lemma sol_lemma:
        have "((\<lambda>\<nu>. (\<chi> i. RSadj x y \<nu> $ i)) has_derivative (\<lambda>\<nu>'. (\<chi> i . RSadj x y \<nu>' $ i))) (at (?f s) within ?f ` {0..t})"
          apply(rule has_derivative_vec)
          apply(auto simp add: RSadj_def intro:derivative_eq_intros)
-           by (simp add: Derivative.has_derivative_at_within has_derivative_proj')+
+           by (simp add: has_derivative_at_withinI has_derivative_proj')+
        then have gderiv:"(RSadj x y has_derivative (RSadj x y)) (at (?f s) within ?f ` {0..t})"
          using fun_eq1 by auto
        have hderiv:"(?h has_derivative (?g' \<circ> ?f')) (at s within {0..t})"
@@ -455,7 +455,7 @@ lemma sol_lemma2:
      have "((\<lambda>\<nu>. (\<chi> i. RSadj x y \<nu> $ i)) has_derivative (\<lambda>\<nu>'. (\<chi> i . RSadj x y \<nu>' $ i))) (at (?f s) within ?f ` {0..t})"
        apply(rule has_derivative_vec)
        apply(auto simp add: RSadj_def intro:derivative_eq_intros)
-         by (simp add: Derivative.has_derivative_at_within has_derivative_proj')+
+         by (simp add: has_derivative_at_withinI has_derivative_proj')+
      then have gderiv:"(RSadj x y has_derivative (RSadj x y)) (at (?f s) within ?f ` {0..t})"
        using fun_eq1 by auto
      have hderiv:"(?h has_derivative (?g' \<circ> ?f')) (at s within {0..t})"

@@ -1071,7 +1071,7 @@ proof -
   done
   then have fderiv:"(?f has_derivative ?f') (at s within {0..t})" using eta eta_esque by auto
   have gderiv:"(?g has_derivative ?g') (at (?f s) within ?f ` {0..t})"
-     using Derivative.has_derivative_at_within 
+     using has_derivative_at_withinI 
      using frechet_correctness free good_interp 
      by blast
   have chain:"((?g \<circ> ?f) has_derivative (?g' \<circ> ?f')) (at s within {0..t})"
