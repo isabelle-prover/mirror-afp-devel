@@ -825,14 +825,19 @@ thm LLL_invariant_mu_bound
 
 text \<open>We now prove a combined size-bound for all of these numbers\<close>
 
-lemma combined_size_bound: fixes F :: "int Matrix.vec list" and number :: int and A :: nat (* input basis *)
+lemma combined_size_bound: fixes F :: "int Matrix.vec list" (* input basis *)
+  and number M :: int and A :: nat
   assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n"
   and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
   and quot: "quotient_of x = (num, denom)" 
   and number: "number \<in> {num, denom}" 
   and number0: "number \<noteq> 0" 
+  and AF: "A = max_list (map (nat \<circ> sq_norm_vec) F)" (* max square norm of input *)
+  and MF: "M = Max {abs (F ! i $ j) | i j. i < m \<and> j < n}" (* maximal input number *)
+  and F: "set F \<subseteq> carrier_vec n" "length F = m" 
 shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" 
+      "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m"
 proof -
   from inv have pinv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" unfolding LLL_invariant_def by auto
   from LLL_invariant_A_pos[OF alpha pinv] i have A: "A > 0" by auto
@@ -880,7 +885,62 @@ proof -
     by (rule arg_cong[of _ _ "log 2"], subst powr_realpow, insert A, auto) 
   also have "\<dots> = (2 * m) * log 2 A" 
     by (subst log_powr, insert A, auto)
-  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" .
+  finally show boundA: "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" .
+  have AM: "A \<le> nat M * nat M * n" unfolding AF
+  proof (rule max_list_le, unfold set_map o_def)
+    fix ni
+    assume "ni \<in> (\<lambda>x. nat \<parallel>x\<parallel>\<^sup>2) ` set F" 
+    then obtain fi where ni: "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" and fi: "fi \<in> set F" by auto
+    from fi F obtain i where fii: "fi = F ! i" and i: "i < m" unfolding set_conv_nth by auto
+    from fi F have fi: "fi \<in> carrier_vec n" by auto
+    let ?set = "{\<bar>F ! i $v j\<bar> |i j. i < m \<and> j < n}" 
+    have id: "?set = (\<lambda> (i,j). abs (F ! i $ j)) ` ({0..<m} \<times> {0..<n})" 
+      by force
+    have fin: "finite ?set" unfolding id by auto
+    { 
+      fix j assume "j < n" 
+      hence "M \<ge> \<bar>F ! i $ j\<bar>" unfolding MF using i
+        by (intro Max_ge[of _ "abs (F ! i $ j)"], intro fin, auto)
+    } note M = this
+    from this[OF j] have M0: "M \<ge> 0" by auto
+    have "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" unfolding ni by auto
+    also have "\<dots> \<le> nat (int n * \<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)" using sq_norm_vec_le_linf_norm[OF fi]
+      by (intro nat_mono, auto)
+    also have "\<dots> = n * nat (\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)"
+      by (simp add: nat_mult_distrib)
+    also have "\<dots> \<le> n * nat (M^2)" 
+    proof (rule mult_left_mono[OF nat_mono])
+      have fi: "\<parallel>fi\<parallel>\<^sub>\<infinity> \<le> M" unfolding linf_norm_vec_def    
+      proof (rule max_list_le, unfold set_append set_map, rule ccontr)
+        fix x
+        assume "x \<in> abs ` set (list_of_vec fi) \<union> set [0]" and xM: "\<not> x \<le> M"  
+        with M0 obtain fij where fij: "fij \<in> set (list_of_vec fi)" and x: "x = abs fij" by auto
+        from fij fi obtain j where j: "j < n" and fij: "fij = fi $ j" 
+          unfolding set_list_of_vec vec_set_def by auto
+        from M[OF j] xM[unfolded x fij fii] show False by auto
+      qed auto                
+      show "\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2 \<le> M^2" unfolding abs_le_square_iff[symmetric] using fi 
+        using linf_norm_vec_ge_0[of fi] by auto
+    qed auto
+    finally show "ni \<le> nat M * nat M * n" using M0 
+      by (subst nat_mult_distrib[symmetric], auto simp: power2_eq_square ac_simps)
+  qed (insert F i, auto)
+  with A have "nat M \<noteq> 0" by auto
+  hence M: "M > 0" by simp
+  note boundA
+  also have "2 * m * log 2 A + log 2 m \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m" 
+  proof (rule add_right_mono[OF mult_left_mono])
+    have "log 2 A \<le> log 2 (M * M * n)" 
+    proof (subst log_le_cancel_iff)
+      show "real A \<le> (M * M * int n)" using AM[folded of_nat_le_iff[where ?'a = real]] M
+        by simp
+    qed (insert A M j, auto)
+    also have "\<dots> = log 2 (of_int M * of_int M * real n)" by simp 
+    also have "\<dots> = 2 * log 2 M + log 2 n" 
+      by (subst log_mult, insert j M, auto, subst log_mult, auto)
+    finally show "log 2 A \<le> 2 * log 2 M + log 2 n" .
+  qed auto
+  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m" by simp    
 qed 
     
 end (* context demanding alpha \<ge> 4/3 *)
