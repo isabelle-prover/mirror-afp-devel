@@ -55,6 +55,7 @@
 Jose Divas\'on is partially funded by the
 Spanish project MTM2017-88804-P.}}
 \author{Jose Divas\'on \and
+  Maximilian Haslbeck \and
   Sebastiaan Joosten \and
   Ren\'e Thiemann \and
   Akihisa Yamada}
@@ -117,13 +118,12 @@ To this end, we have performed the following tasks:
       the existence of Jordan normal forms \cite{ThiemannY16}. 
       Unfortunately, lemma \isa{gram\_schmidt} does not suffice for verifying the LLL algorithm and we have had to extend such a formalization. 
   \item We prove the termination of the algorithm and its soundness.
+  \item We prove polynomial runtime complexity by showing that there is a polynomial bound
+      on the required number of arithmetic operations. Moreover, we formally prove that the representation size 
+      of the numbers
+      that occur during the executation stays polynomial.
 \end{itemize}
 
-Regarding the complexity of the LLL algorithm, we did not include a formal statement
-which would have required an instrumentation of the algorithm by some instruction counter.
-However, from the termination proof of our Isabelle implementation 
-of the LLL algorithm,
-one can easily infer a polynomial bound on the number of arithmetic operations. 
 To our knowledge, this is the first formalization of the LLL algorithm in any theorem prover.
 
 

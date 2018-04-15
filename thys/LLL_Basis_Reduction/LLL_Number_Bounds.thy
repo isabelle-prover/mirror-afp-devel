@@ -1,3 +1,9 @@
+(*
+    Authors:    Maximilian Haslbeck
+                René Thiemann
+    License:    BSD
+*)
+subsection \<open>Explicit Bounds for Size of Numbers that Occur During LLL Algorithm\<close>
 theory LLL_Number_Bounds
   imports LLL
     Perron_Frobenius.HMA_Connect

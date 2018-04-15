@@ -13,6 +13,7 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     Gram_Schmidt_2
     LLL    
     LLL_Complexity
+    LLL_Number_Bounds
   document_files
     "root.tex"
     "root.bib"
