@@ -1685,21 +1685,24 @@ lemma (in conservative) induced_map_recurrent_typical:
   shows "AE z in (restrict_space M A). z \<in> recurrent_subset A"
         "AE z in (restrict_space M A). z \<in> recurrent_subset_infty A"
 proof -
-  have [measurable]: "recurrent_subset A \<in> sets M" using recurrent_subset_meas[OF A_meas] by auto
-  then have [measurable]: "recurrent_subset A \<in> sets (restrict_space M A)" using recurrent_subset_incl(1)[of A]
+  have "recurrent_subset A \<in> sets M" using recurrent_subset_meas[OF A_meas] by auto
+  then have rsA: "recurrent_subset A \<in> sets (restrict_space M A)" 
+    using recurrent_subset_incl(1)[of A]
     by (metis (no_types, lifting) A_meas sets_restrict_space_iff space_restrict_space space_restrict_space2)
 
   have "emeasure (restrict_space M A) (space (restrict_space M A) - recurrent_subset A) = emeasure (restrict_space M A) (A - recurrent_subset A)"
     by (metis (no_types, lifting) A_meas space_restrict_space2)
   also have "... = emeasure M (A - recurrent_subset A)"
-    apply (rule emeasure_restrict_space) using A_meas by auto
+    by (simp add: Diff_subset emeasure_restrict_space)
   also have "... = 0" using Poincare_recurrence_thm[OF A_meas] by auto
-  finally have "space (restrict_space M A) - recurrent_subset A \<in> null_sets (restrict_space M A)" by auto
+  finally have "space (restrict_space M A) - recurrent_subset A \<in> null_sets (restrict_space M A)"
+    using rsA by blast
   then show "AE z in (restrict_space M A). z \<in> recurrent_subset A"
       by (metis (no_types, lifting) DiffI eventually_ae_filter mem_Collect_eq subsetI)
 
-  have [measurable]: "recurrent_subset_infty A \<in> sets M" using recurrent_subset_meas[OF A_meas] by auto
-  then have [measurable]: "recurrent_subset_infty A \<in> sets (restrict_space M A)" using recurrent_subset_incl(2)[of A]
+  have "recurrent_subset_infty A \<in> sets M" using recurrent_subset_meas[OF A_meas] by auto
+  then have rsiA: "recurrent_subset_infty A \<in> sets (restrict_space M A)" 
+    using recurrent_subset_incl(2)[of A]
     by (metis (no_types, lifting) A_meas sets_restrict_space_iff space_restrict_space space_restrict_space2)
 
   have "emeasure (restrict_space M A) (space (restrict_space M A) - recurrent_subset_infty A) = emeasure (restrict_space M A) (A - recurrent_subset_infty A)"
@@ -1707,7 +1710,8 @@ proof -
   also have "... = emeasure M (A - recurrent_subset_infty A)"
     apply (rule emeasure_restrict_space) using A_meas by auto
   also have "... = 0" using Poincare_recurrence_thm[OF A_meas] by auto
-  finally have "space (restrict_space M A) - recurrent_subset_infty A \<in> null_sets (restrict_space M A)" by auto
+  finally have "space (restrict_space M A) - recurrent_subset_infty A \<in> null_sets (restrict_space M A)"
+    using rsiA by blast
   then show "AE z in (restrict_space M A). z \<in> recurrent_subset_infty A"
     by (metis (no_types, lifting) DiffI eventually_ae_filter mem_Collect_eq subsetI)
 qed
