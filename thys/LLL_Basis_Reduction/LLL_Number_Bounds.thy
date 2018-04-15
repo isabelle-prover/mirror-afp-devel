@@ -1,5 +1,5 @@
 theory LLL_Number_Bounds
-  imports LLL_Complexity
+  imports LLL
     Perron_Frobenius.HMA_Connect
 begin
 
@@ -823,6 +823,66 @@ thm LLL_invariant_f_bound
 thm LLL_partial_invariant_g_bound
 thm LLL_invariant_mu_bound
 
+text \<open>We now prove a combined size-bound for all of these numbers\<close>
+
+lemma combined_size_bound: fixes F :: "int Matrix.vec list" and number :: int and A :: nat (* input basis *)
+  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+  and i: "i < m" and j: "j < n"
+  and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
+  and quot: "quotient_of x = (num, denom)" 
+  and number: "number \<in> {num, denom}" 
+  and number0: "number \<noteq> 0" 
+shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" 
+proof -
+  from inv have pinv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" unfolding LLL_invariant_def by auto
+  from LLL_invariant_A_pos[OF alpha pinv] i have A: "A > 0" by auto
+  have "A ^ m * int 1 \<le> A ^ (2 * m) * int m" 
+    by (rule mult_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
+  hence le: "int (A ^ m) \<le> A ^ (2 * m) * m" by auto
+  from x consider (xfs) "x = of_int (fs ! i $ j)" | (xgs) "x = gs ! i $ j" | (xmu) "x = gs.\<mu> (RAT fs) i j" 
+    by auto
+  hence num_denom_bound: "\<bar>num\<bar> \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
+  proof (cases)
+    case xgs
+    from LLL_partial_invariant_g_bound[OF pinv i j quot[unfolded xgs]] le
+    show ?thesis by auto
+  next
+    case xmu
+    from LLL_invariant_mu_bound[OF inv i, of j, OF quot[unfolded xmu]]
+    show ?thesis by auto
+  next
+    case xfs
+    have "\<bar>denom\<bar> = 1" using quot[unfolded xfs] by auto
+    also have "\<dots> \<le> A ^ m" using A by auto
+    finally have denom: "\<bar>denom\<bar> \<le> A ^ m" .
+    have "\<bar>num\<bar> = \<bar>fs ! i $ j\<bar>" using quot[unfolded xfs] by auto
+    also have "\<dots> \<le> A^1 * int m" using LLL_invariant_f_bound[OF inv i j] by auto
+    also have "\<dots> \<le> A^(2 * m) * int m" 
+      by (rule mult_right_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
+    finally show ?thesis using denom by auto
+  qed
+  from number consider (num) "number = num" | (denom) "number = denom" by auto
+  hence number_bound: "\<bar>number\<bar> \<le> A^(2 * m) * m" 
+  proof (cases)
+    case num
+    with num_denom_bound show ?thesis by auto
+  next
+    case denom
+    with num_denom_bound have "\<bar>number\<bar> \<le> A ^ m" by auto
+    with le show ?thesis by auto
+  qed
+  from number_bound have bnd: "of_int \<bar>number\<bar> \<le> real (A ^ (2 * m) * m)" by linarith
+  have "log 2 \<bar>number\<bar> \<le> log 2 (A^(2 * m) * m)" 
+    by (subst log_le_cancel_iff, insert number0 bnd, auto)
+  also have "\<dots> = log 2 (A^(2 * m)) + log 2 m" 
+    by (subst log_mult[symmetric], insert i A, auto)
+  also have "log 2 (A^(2 * m)) = log 2 (A powr (2 * m))" 
+    by (rule arg_cong[of _ _ "log 2"], subst powr_realpow, insert A, auto) 
+  also have "\<dots> = (2 * m) * log 2 A" 
+    by (subst log_powr, insert A, auto)
+  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" .
+qed 
+    
 end (* context demanding alpha \<ge> 4/3 *)
 end (* LLL locale *)
 end
