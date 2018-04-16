@@ -58,16 +58,6 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma vec_cong:
-  assumes "\<And>k. k < n \<Longrightarrow> f k = g k"
-  shows "vec n f = vec n g"
-  using assms by auto
-
-lemma mat_cong:
-  assumes "\<And>m' n'. m' < m \<Longrightarrow> n' < n \<Longrightarrow> f (m', n') = g (m',n')"
-  shows "mat m n f = mat m n g"
-  using assms by auto
-
 lemma rat_of_int_dvd:
   assumes "b \<noteq> 0" "rat_of_int a / rat_of_int b \<in> \<int>"
   shows "b dvd a"
@@ -75,15 +65,9 @@ lemma rat_of_int_dvd:
   unfolding dvd_def
   by (metis nonzero_mult_div_cancel_left of_int_0_eq_iff of_int_eq_iff of_int_simps(4) times_divide_eq_right)
 
-lemma times_mat_sum:
-  fixes A::"'a::semiring_0 mat"
-  assumes "dim_col A = dim_row B"
-  shows "A * B = mat (dim_row A) (dim_col B) (\<lambda>(i, j). \<Sum>ia = 0..<dim_row B. A $$ (i, ia) * B $$ (ia, j))"
-  using assms by (auto simp add: times_mat_def scalar_prod_def)
-
 lemma denom_dvd_ints:
   fixes i::int
-  assumes "quotient_of r = (z, n)" "rat_of_int i * r \<in> \<int>"
+  assumes "quotient_of r = (z, n)" "of_int i * r \<in> \<int>"
   shows "n dvd i"
 proof -
   have "rat_of_int i * (rat_of_int z / rat_of_int n) \<in> \<int>"
@@ -96,22 +80,22 @@ proof -
 qed
 
 lemma quotient_of_bounds: 
-  assumes "quotient_of r = (z, n)" "rat_of_int i * r \<in> \<int>" "0 < i" "\<bar>r\<bar> \<le> b"
-  shows "rat_of_int \<bar>z\<bar> \<le> rat_of_int i * b" "n \<le> i" 
+  assumes "quotient_of r = (n, d)" "rat_of_int i * r \<in> \<int>" "0 < i" "\<bar>r\<bar> \<le> b"
+  shows "of_int \<bar>n\<bar> \<le> of_int i * b" "d \<le> i" 
 proof -
-  show ni: "n \<le> i"
+  show ni: "d \<le> i"
     using assms denom_dvd_ints  by (intro zdvd_imp_le) blast+
-  have "\<bar>r\<bar> = \<bar>rat_of_int z / rat_of_int n\<bar>"
+  have "\<bar>r\<bar> = \<bar>rat_of_int n / rat_of_int d\<bar>"
     using assms quotient_of_div by blast
-  also have "\<dots> = rat_of_int \<bar>z\<bar> / rat_of_int n"
+  also have "\<dots> = rat_of_int \<bar>n\<bar> / rat_of_int d"
     using assms using quotient_of_denom_pos by force
-  finally have "rat_of_int \<bar>z\<bar> = rat_of_int n * \<bar>r\<bar>"
+  finally have "of_int \<bar>n\<bar> = rat_of_int d * \<bar>r\<bar>"
     using assms by auto
-  also have "\<dots> \<le> rat_of_int n * b"
+  also have "\<dots> \<le> rat_of_int d * b"
     using assms quotient_of_denom_pos by auto
   also have "\<dots> \<le> rat_of_int i * b"
     using ni assms of_int_le_iff by (auto intro!: mult_right_mono)
-  finally show "rat_of_int \<bar>z\<bar> \<le> rat_of_int i * b" 
+  finally show "rat_of_int \<bar>n\<bar> \<le> rat_of_int i * b" 
     by simp
 qed
 
@@ -152,32 +136,6 @@ qed
     
 context gram_schmidt
 begin
-
-lemma sumlist_mult:
-  assumes "set ws \<subseteq> carrier_vec n"
-  shows "r \<cdot>\<^sub>v sumlist ws = sumlist (map (\<lambda>w. r \<cdot>\<^sub>v w) ws)"
-proof -
-  have [simp]: "dim_vec (M.sumlist (map ((\<cdot>\<^sub>v) r) ws)) = n" "\<forall>x\<in>set (map ((\<cdot>\<^sub>v) r) ws). dim_vec x = n"
-               "\<forall>x\<in>set ws. dim_vec x = n" "dim_vec (M.sumlist ws) = n"
-    using assms by (fastforce intro!: dim_sumlist)+
-  have "(r \<cdot>\<^sub>v sumlist ws) $ i = sumlist (map ((\<cdot>\<^sub>v) r) ws) $ i" if "i < n" for i
-  proof -
-    have "(r \<cdot>\<^sub>v sumlist ws) $ i = r * M.sumlist ws $ i"
-      using that by (auto)
-    also have "\<dots> = r * (\<Sum>j = 0..<length ws. ws ! j $ i)"
-      using that by (auto simp add: sumlist_nth)
-    also have "\<dots> = (\<Sum>j = 0..<length ws. r * ws ! j $ i)"
-      by (auto simp add: mult_hom.hom_sum)
-    also have "\<dots> = (\<Sum>j = 0..<length ws. (r \<cdot>\<^sub>v ws ! j) $ i)"
-      using that by (auto)
-    also have "\<dots> = sumlist (map ((\<cdot>\<^sub>v) r) ws) $ i"
-      using that by (subst sumlist_nth) auto
-    finally show ?thesis
-      by simp
-  qed
-  then show ?thesis
-    by (auto)
-qed
 
 context
   fixes m::nat
@@ -315,11 +273,10 @@ lemma gso_scalar_zero:
 proof -
   have "fs ! i \<in> set (take k fs)"
     apply(subst nth_take[symmetric, of _ k])
-    using assms apply(simp)
+    using assms apply force
     apply(rule nth_mem)
-    apply(simp)
     using assms
-    using dual_order.strict_trans len_fs by blast
+    using dual_order.strict_trans len_fs by auto
   moreover have "gso fs k \<bullet> u = 0" if "u \<in> set (take k fs)" for u
     using that gso_is_oc_projection[of k] unfolding is_oc_projection_def using assms by blast
   ultimately show ?thesis
