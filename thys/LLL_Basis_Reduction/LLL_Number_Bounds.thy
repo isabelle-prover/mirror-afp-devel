@@ -224,21 +224,6 @@ lemma ex_\<rho>:
     using less indep len_fs by (intro exI[of _ \<rho>'] eq_vecI) (auto simp add: dim_sumlist) 
 qed
 
-definition \<rho>_SOME_def:
-  "\<rho> = (SOME \<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k]))"
-
-lemma \<rho>_def:
-  assumes "k < m"
-  shows "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. \<rho> k j \<cdot>\<^sub>v fs ! j) [0..<k])"
-proof -
-  from ex_\<rho> have "\<forall>k. \<exists>\<rho>. k < m \<longrightarrow> gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> l \<cdot>\<^sub>v fs ! l) [0..<k])"
-    by blast
-  from choice[OF this] have "\<exists>\<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k])"
-    by blast
-  from someI_ex[OF this] show ?thesis
-    unfolding \<rho>_SOME_def using assms by blast
-qed
-
 lemma gso_is_oc_projection:
   assumes "i < m"
   shows "is_oc_projection (gso fs i) (set (take i fs)) (fs ! i)"
@@ -283,6 +268,20 @@ proof -
     by blast
 qed
 
+definition \<rho>_SOME_def:
+  "SOME_\<rho> = (SOME \<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k]))"
+
+lemma SOME_\<rho>_def:
+  assumes "k < m"
+  shows "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. SOME_\<rho> k j \<cdot>\<^sub>v fs ! j) [0..<k])"
+proof -
+  from ex_\<rho> have "\<forall>k. \<exists>\<rho>. k < m \<longrightarrow> gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from choice[OF this] have "\<exists>\<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from someI_ex[OF this] show ?thesis
+    unfolding \<rho>_SOME_def using assms by blast
+qed
 
 end
 
@@ -358,7 +357,7 @@ lemma inti_inti:
   assumes "i < n" "k < m"
   shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso fs k)) $ i \<in> \<int>"
 proof -
-  define \<rho>' where "\<rho>' = \<rho> m fs"
+  define \<rho>' where "\<rho>' = SOME_\<rho> m fs"
   have 1: "sum_list (map ((\<lambda>v. v \<bullet> fs ! j) \<circ> (\<lambda>j. \<rho>' k j \<cdot>\<^sub>v fs ! j)) [0..<k]) = 
            (\<Sum>i = 0..<k. \<rho>' k i * (fs ! i \<bullet> fs ! j))" if "j < k" for j
     using that assms con_assms
@@ -390,11 +389,11 @@ proof -
         using assms(2) con_assms(1) con_assms(2) gram_schmidt.f_carrier nat_SN.gt_trans that by blast
       also have "M.sumlist (map (\<lambda>j. \<rho>' k j \<cdot>\<^sub>v fs ! j) [0..<k]) = gso fs k - fs ! k"
       proof -
-        have "M.sumlist (map (\<lambda>j. \<rho> (length fs) fs k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<in> carrier_vec n"
+        have "M.sumlist (map (\<lambda>j. SOME_\<rho> (length fs) fs k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<in> carrier_vec n"
           apply(intro sumlist_carrier)
           apply(auto) using con_assms assms by simp
         then show ?thesis
-          unfolding \<rho>'_def apply(subst \<rho>_def) using con_assms assms by (auto)
+          unfolding \<rho>'_def apply(subst SOME_\<rho>_def) using con_assms assms by (auto)
       qed
       also have "(gso fs k - fs ! k) \<bullet> fs ! i = gso fs k \<bullet> fs ! i - fs ! k \<bullet> fs ! i"
         apply(rule minus_scalar_prod_distrib)
@@ -446,7 +445,7 @@ proof -
   then have 1: "(\<rho>' k i) * Gramian_determinant fs k \<in> \<int>" if "i < k" for i
     by (simp add: that)
   show ?thesis
-    apply(subst \<rho>_def)
+    apply(subst SOME_\<rho>_def)
     using con_assms assms apply(auto)[4]
     apply(subst index_smult_vec)
      apply(auto)
@@ -566,7 +565,7 @@ end
 end
 
 lemma vec_le_sq_norm:
-  fixes v :: "'a :: {conjugatable_ring_1_abs_real_line} Matrix.vec"
+  fixes v :: "'a :: conjugatable_ring_1_abs_real_line Matrix.vec"
   assumes "v \<in> carrier_vec n" "i < n"
   shows "\<bar>v $ i\<bar>\<^sup>2 \<le> \<parallel>v\<parallel>\<^sup>2"
 using assms proof (induction v arbitrary: i)
@@ -577,33 +576,71 @@ using assms proof (induction v arbitrary: i)
     case (Suc ii)
     then show ?thesis
       using IH IH(2)[of ii] le_add_same_cancel2 order_trans by fastforce
-  qed (auto)
-qed (auto)
-
-
-
-
-
-
-context LLL
-begin
+  qed auto
+qed auto
 
 lemma vec_hom_ints:
   assumes "i < n" "xs \<in> carrier_vec n"
   shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
   using assms by auto
 
-context 
-  assumes alpha: "4 / 3 \<le> \<alpha>" 
+
+context LLL_with_assms
 begin
 
+lemma fs_init: "set fs_init \<subseteq> carrier_vec n" 
+  using lin_dep[unfolded gs.lin_indpt_list_def] by auto
+
+lemma A_le_MMn: assumes m0: "m \<noteq> 0" 
+  shows "A \<le> nat M * nat M * n" 
+  unfolding A_def
+proof (rule max_list_le, unfold set_map o_def)
+  fix ni
+  assume "ni \<in> (\<lambda>x. nat \<parallel>x\<parallel>\<^sup>2) ` set fs_init" 
+  then obtain fi where ni: "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" and fi: "fi \<in> set fs_init" by auto
+  from fi len obtain i where fii: "fi = fs_init ! i" and i: "i < m" unfolding set_conv_nth by auto
+  from fi fs_init have fi: "fi \<in> carrier_vec n" by auto
+  let ?set = "{\<bar>fs_init ! i $v j\<bar> |i j. i < m \<and> j < n} \<union> {0}" 
+  have id: "?set = (\<lambda> (i,j). abs (fs_init ! i $ j)) ` ({0..<m} \<times> {0..<n}) \<union> {0}" 
+    by force
+  have fin: "finite ?set" unfolding id by auto
+  { 
+    fix j assume "j < n" 
+    hence "M \<ge> \<bar>fs_init ! i $ j\<bar>" unfolding M_def using i
+      by (intro Max_ge[of _ "abs (fs_init ! i $ j)"], intro fin, auto)
+  } note M = this
+  from Max_ge[OF fin, of 0] have M0: "M \<ge> 0" unfolding M_def by auto
+  have "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" unfolding ni by auto
+  also have "\<dots> \<le> nat (int n * \<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)" using sq_norm_vec_le_linf_norm[OF fi]
+    by (intro nat_mono, auto)
+  also have "\<dots> = n * nat (\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)"
+    by (simp add: nat_mult_distrib)
+  also have "\<dots> \<le> n * nat (M^2)" 
+  proof (rule mult_left_mono[OF nat_mono])
+    have fi: "\<parallel>fi\<parallel>\<^sub>\<infinity> \<le> M" unfolding linf_norm_vec_def    
+    proof (rule max_list_le, unfold set_append set_map, rule ccontr)
+      fix x
+      assume "x \<in> abs ` set (list_of_vec fi) \<union> set [0]" and xM: "\<not> x \<le> M"  
+      with M0 obtain fij where fij: "fij \<in> set (list_of_vec fi)" and x: "x = abs fij" by auto
+      from fij fi obtain j where j: "j < n" and fij: "fij = fi $ j" 
+        unfolding set_list_of_vec vec_set_def by auto
+      from M[OF j] xM[unfolded x fij fii] show False by auto
+    qed auto                
+    show "\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2 \<le> M^2" unfolding abs_le_square_iff[symmetric] using fi 
+      using linf_norm_vec_ge_0[of fi] by auto
+  qed auto
+  finally show "ni \<le> nat M * nat M * n" using M0 
+    by (subst nat_mult_distrib[symmetric], auto simp: power2_eq_square ac_simps)
+qed (insert m0 len, auto)
+
+
 lemma LLL_invariant_f_bound: 
-  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> A * m" 
 proof -
   note inv = LLL_invD[OF inv] 
-  from \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]
+  from \<open>f_bound fs\<close>[unfolded f_bound_def, rule_format, OF i]
   have le: "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> int (A * m)" by simp
   from inv(4,3) i have fsi: "fs ! i \<in> carrier_vec n" by auto
   have "\<bar>fs ! i $ j\<bar>^1 \<le> \<bar>fs ! i $ j\<bar>^2" 
@@ -615,7 +652,7 @@ qed
 
 
 lemma LLL_partial_invariant_g_bound:
-  assumes inv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_partial_invariant (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
   and quot: "quotient_of (gs ! i $ j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ m" 
@@ -623,7 +660,7 @@ shows "\<bar>num\<bar>   \<le> A ^ m"
 proof -
   note * = LLL_pinvD[OF inv]
   interpret gs: gram_schmidt_rat n .
-  note dk_approx[OF alpha inv i, unfolded dk_def]  
+  note dk_approx[OF inv i, unfolded dk_def]  
   note *(12)[unfolded g_bound_def, rule_format, OF i]
   let ?r = "rat_of_int" 
   let ?fs = "map of_int_hom.vec_hom fs" 
@@ -647,8 +684,8 @@ proof -
     apply (rule gsi)
     using assms by (auto simp add: \<open>\<parallel>gs ! i\<parallel>\<^sup>2 \<le> rat_of_nat A\<close>)
   from i have "m * m \<noteq> 0" by auto
-  with D_approx[OF alpha inv] LLL_D_pos[OF inv] have A0: "A \<noteq> 0"
-    by (meson nat_SN.compat nat_zero_less_power_iff order_less_irrefl)
+  with less_le_trans[OF LLL_D_pos[OF inv] D_approx[OF inv]] 
+  have A0: "A \<noteq> 0" by auto
   have "\<bar>(gs ! i $ j)\<bar> \<le> max 1 \<bar>(gs ! i $ j)\<bar>" by simp
   also have "\<dots> \<le> (max 1 \<bar>gs ! i $ j\<bar>)\<^sup>2"
     by (rule self_le_power, auto) 
@@ -663,7 +700,7 @@ proof -
   have num: "rat_of_int \<bar>num\<bar> \<le> of_int (dk fs i * int A)" 
     and denom: "denom \<le> dk fs i" by auto
   from num have num: "\<bar>num\<bar> \<le> dk fs i * int A" by linarith
-  from dk_approx[OF alpha inv i] have dk: "dk fs i \<le> int (A ^ i)" by linarith
+  from dk_approx[OF inv i] have dk: "dk fs i \<le> int (A ^ i)" by linarith
   from denom dk have denom: "denom \<le> int (A ^ i)" by auto
   note num also have "dk fs i * int A \<le> int (A ^ i) * int A" 
     by (rule mult_right_mono[OF dk], auto)
@@ -685,34 +722,34 @@ proof -
 qed
 
 lemma LLL_invariant_mu_bound: 
-  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
   and i: "i < m"                 
   and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * m" 
   and "\<bar>denom\<bar> \<le> A ^ m" 
 proof (atomize(full))
-  have inv': "LLL_partial_invariant A (k, Fs, Gs) fs gs"
+  have inv': "LLL_partial_invariant (k, Fs, Gs) fs gs"
     using inv unfolding LLL_invariant_def by auto
-  from LLL_invariant_A_pos[OF alpha inv'] i have A: "A > 0" by auto 
+  from LLL_pinv_A_pos[OF inv'] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
   let ?mu = "gs.\<mu> (RAT fs) i j" 
   interpret gs: gram_schmidt_rat n .
-  note dk_approx[OF alpha inv' i, unfolded dk_def]  
+  note dk_approx[OF inv' i, unfolded dk_def]  
   note *(13)[unfolded g_bound_def, rule_format, OF i]
   note vec_le_sq_norm
   note *(2)  
-  show "\<bar>num\<bar>   \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
+  show "\<bar>num\<bar> \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases "j < i")
     case j: True
     from j i have jm: "j < m" by auto
     from quotient_of_square[OF quot] 
     have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
       unfolding power2_eq_square by auto
-    from dk_approx[OF alpha inv' jm]
+    from dk_approx[OF inv' jm]
     have dkj: "dk fs j \<le> int (A ^ j)" by linarith
     from LLL_dk_pos[OF inv', of "Suc j"] i j have dksj: "0 < dk fs (Suc j)" by auto
     hence dk_pos: "0 < (dk fs (Suc j))^2" by auto
-    from dk_approx[OF alpha inv', of "Suc j"] j i 
+    from dk_approx[OF inv', of "Suc j"] j i 
     have "rat_of_int (dk fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
       by auto
     hence dk_j_bound: "dk fs (Suc j) \<le> int (A^Suc j)" by linarith
@@ -728,7 +765,7 @@ proof (atomize(full))
       using *(3) carrier_vecD nth_mem by blast
     also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (dk fs j * sq_norm (fs ! i))" by simp 
     also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
-      by (rule mult_mono[OF dkj \<open>f_bound A fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
+      by (rule mult_mono[OF dkj \<open>f_bound fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
     also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
     also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
       by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
@@ -782,28 +819,20 @@ qed
 text \<open>Now we have bounds on each number $(f_i)_j$, $(g_i)_j$, and $\mu_{i,j}$, i.e.,
   for rational numbers bounds on the numerators and denominators.\<close>
 
-thm LLL_invariant_f_bound
-thm LLL_partial_invariant_g_bound
-thm LLL_invariant_mu_bound
-
 text \<open>We now prove a combined size-bound for all of these numbers\<close>
 
-lemma combined_size_bound: fixes F :: "int Matrix.vec list" (* input basis *)
-  and number M :: int and A :: nat
-  assumes inv: "LLL_invariant A (k, Fs, Gs) fs gs" 
+lemma combined_size_bound: fixes number :: int 
+  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n"
   and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
   and quot: "quotient_of x = (num, denom)" 
   and number: "number \<in> {num, denom}" 
   and number0: "number \<noteq> 0" 
-  and AF: "A = max_list (map (nat \<circ> sq_norm_vec) F)" (* max square norm of input *)
-  and MF: "M = Max {abs (F ! i $ j) | i j. i < m \<and> j < n}" (* maximal input number *)
-  and F: "set F \<subseteq> carrier_vec n" "length F = m" 
 shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" 
       "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m"
 proof -
-  from inv have pinv: "LLL_partial_invariant A (k, Fs, Gs) fs gs" unfolding LLL_invariant_def by auto
-  from LLL_invariant_A_pos[OF alpha pinv] i have A: "A > 0" by auto
+  from inv have pinv: "LLL_partial_invariant (k, Fs, Gs) fs gs" unfolding LLL_invariant_def by auto
+  from LLL_pinv_A_pos[OF pinv] i have A: "A > 0" by auto
   have "A ^ m * int 1 \<le> A ^ (2 * m) * int m" 
     by (rule mult_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
   hence le: "int (A ^ m) \<le> A ^ (2 * m) * m" by auto
@@ -849,45 +878,7 @@ proof -
   also have "\<dots> = (2 * m) * log 2 A" 
     by (subst log_powr, insert A, auto)
   finally show boundA: "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" .
-  have AM: "A \<le> nat M * nat M * n" unfolding AF
-  proof (rule max_list_le, unfold set_map o_def)
-    fix ni
-    assume "ni \<in> (\<lambda>x. nat \<parallel>x\<parallel>\<^sup>2) ` set F" 
-    then obtain fi where ni: "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" and fi: "fi \<in> set F" by auto
-    from fi F obtain i where fii: "fi = F ! i" and i: "i < m" unfolding set_conv_nth by auto
-    from fi F have fi: "fi \<in> carrier_vec n" by auto
-    let ?set = "{\<bar>F ! i $v j\<bar> |i j. i < m \<and> j < n}" 
-    have id: "?set = (\<lambda> (i,j). abs (F ! i $ j)) ` ({0..<m} \<times> {0..<n})" 
-      by force
-    have fin: "finite ?set" unfolding id by auto
-    { 
-      fix j assume "j < n" 
-      hence "M \<ge> \<bar>F ! i $ j\<bar>" unfolding MF using i
-        by (intro Max_ge[of _ "abs (F ! i $ j)"], intro fin, auto)
-    } note M = this
-    from this[OF j] have M0: "M \<ge> 0" by auto
-    have "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" unfolding ni by auto
-    also have "\<dots> \<le> nat (int n * \<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)" using sq_norm_vec_le_linf_norm[OF fi]
-      by (intro nat_mono, auto)
-    also have "\<dots> = n * nat (\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)"
-      by (simp add: nat_mult_distrib)
-    also have "\<dots> \<le> n * nat (M^2)" 
-    proof (rule mult_left_mono[OF nat_mono])
-      have fi: "\<parallel>fi\<parallel>\<^sub>\<infinity> \<le> M" unfolding linf_norm_vec_def    
-      proof (rule max_list_le, unfold set_append set_map, rule ccontr)
-        fix x
-        assume "x \<in> abs ` set (list_of_vec fi) \<union> set [0]" and xM: "\<not> x \<le> M"  
-        with M0 obtain fij where fij: "fij \<in> set (list_of_vec fi)" and x: "x = abs fij" by auto
-        from fij fi obtain j where j: "j < n" and fij: "fij = fi $ j" 
-          unfolding set_list_of_vec vec_set_def by auto
-        from M[OF j] xM[unfolded x fij fii] show False by auto
-      qed auto                
-      show "\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2 \<le> M^2" unfolding abs_le_square_iff[symmetric] using fi 
-        using linf_norm_vec_ge_0[of fi] by auto
-    qed auto
-    finally show "ni \<le> nat M * nat M * n" using M0 
-      by (subst nat_mult_distrib[symmetric], auto simp: power2_eq_square ac_simps)
-  qed (insert F i, auto)
+  have AM: "A \<le> nat M * nat M * n" using A_le_MMn i by auto
   with A have "nat M \<noteq> 0" by auto
   hence M: "M > 0" by simp
   note boundA
@@ -904,8 +895,6 @@ proof -
     finally show "log 2 A \<le> 2 * log 2 M + log 2 n" .
   qed auto
   finally show "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m" by simp    
-qed 
-    
-end (* context demanding alpha \<ge> 4/3 *)
+qed     
 end (* LLL locale *)
 end
