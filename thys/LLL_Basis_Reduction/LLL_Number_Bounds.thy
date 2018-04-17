@@ -98,41 +98,6 @@ proof -
   finally show "rat_of_int \<bar>n\<bar> \<le> rat_of_int i * b" 
     by simp
 qed
-
-lemma scalar_prod_Cauchy:
-  fixes u v::"'a :: {trivial_conjugatable_ordered_field, linordered_field} Matrix.vec"
-  assumes "u \<in> carrier_vec n" "v \<in> carrier_vec n"
-  shows "(u \<bullet> v)\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2 * \<parallel>v\<parallel>\<^sup>2 "
-proof -
-  { assume v_0: "v \<noteq> 0\<^sub>v n"
-    have "0 \<le> (u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v)" for r
-      by (simp add: scalar_prod_ge_0)
-    also have "(u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v) = u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v)" for r::'a
-    proof -
-      have "(u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v) = (u - r \<cdot>\<^sub>v v) \<bullet> u - (u - r \<cdot>\<^sub>v v) \<bullet> (r \<cdot>\<^sub>v v)"
-        using assms by (subst scalar_prod_minus_distrib) auto
-      also have "\<dots> = u \<bullet> u - (r \<cdot>\<^sub>v v) \<bullet> u - r * ((u - r \<cdot>\<^sub>v v) \<bullet> v)"
-        using assms by (subst minus_scalar_prod_distrib) auto
-      also have "\<dots> = u \<bullet> u - r * (v \<bullet> u) - r * (u \<bullet> v - r * (v \<bullet> v))"
-        using assms by (subst minus_scalar_prod_distrib) auto
-      also have "\<dots> = u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v)"
-        using assms comm_scalar_prod by (auto simp add: field_simps)
-      finally show ?thesis
-        by simp
-    qed
-    also have "u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v) = sq_norm u - (u \<bullet> v)\<^sup>2 / sq_norm v"
-      if "r = (u \<bullet> v) / (v \<bullet> v)" for r
-      unfolding that by (auto simp add: sq_norm_vec_as_cscalar_prod power2_eq_square)
-    finally have "0 \<le> \<parallel>u\<parallel>\<^sup>2 - (u \<bullet> v)\<^sup>2 / \<parallel>v\<parallel>\<^sup>2"
-      by auto
-    then have "(u \<bullet> v)\<^sup>2 / \<parallel>v\<parallel>\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2"
-      by auto
-    then have "(u \<bullet> v)\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2 * \<parallel>v\<parallel>\<^sup>2"
-      using pos_divide_le_eq[of "\<parallel>v\<parallel>\<^sup>2"] v_0 assms by (auto)
-  }
-  then show ?thesis
-    by (fastforce simp add: assms)
-qed
     
 context gram_schmidt
 begin
@@ -337,26 +302,11 @@ proof -
     by (intro eq_matI) (auto simp add: Let_def)
 qed
 
-lemma Gramian_determinant_Ints:
-  assumes "k < m"
-  shows "Gramian_determinant fs k \<in> \<int>"
-proof -
-  have "\<sigma> x < m" if "\<sigma> permutes {0..<k}" "x < k" for x \<sigma>
-    using that permutes_less assms nat_SN.gt_trans by blast
-  then have "signof \<sigma> * (\<Prod>j<k. Gramian_matrix fs k $$ (\<sigma> j, j)) \<in> \<int>" if "\<sigma> permutes {0..<k}" for \<sigma>
-    unfolding Gramian_matrix_alt_alt_def using assms that
-    by (intro Ints_mult)
-      (auto simp add: Gramian_matrix_alt_alt_def signof_def intro!: fs_scalar_Ints Ints_prod)
-  then show ?thesis
-    unfolding Gramian_determinant_def using finite_permutations
-    by (auto simp add: det_col[of _ k] Gramian_matrix_alt_alt_def assms intro!: Ints_sum)
-qed
-
-
 lemma inti_inti:
   assumes "i < n" "k < m"
   shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso fs k)) $ i \<in> \<int>"
 proof -
+  note Gramian_determinant_Ints = Gramian_determinant_Ints[OF con_assms fs_int]
   define \<rho>' where "\<rho>' = SOME_\<rho> m fs"
   have 1: "sum_list (map ((\<lambda>v. v \<bullet> fs ! j) \<circ> (\<lambda>j. \<rho>' k j \<cdot>\<^sub>v fs ! j)) [0..<k]) = 
            (\<Sum>i = 0..<k. \<rho>' k i * (fs ! i \<bullet> fs ! j))" if "j < k" for j
@@ -470,23 +420,6 @@ proof -
     by (auto simp add: field_simps fs_int)
 qed
 
-lemma Gramian_determinant_div:
-  assumes "l < m"
-  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>vs ! l\<parallel>\<^sup>2"
-proof -
-  have "(\<Prod>j<Suc l. \<parallel>vs ! j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>vs ! j\<parallel>\<^sup>2)"
-    using assms by (intro prod.cong) (auto)
-  also have "\<dots> = (\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2) * \<parallel>vs ! l\<parallel>\<^sup>2"
-    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
-  finally show ?thesis
-    apply(subst Gramian_determinant)
-    using con_assms assms apply(auto)
-    apply(subst Gramian_determinant)
-    using con_assms assms apply(fastforce)
-       apply(blast) apply(blast) apply simp
-    by (metis (no_types, lifting) cring_simprules(14) finite_lessThan lessThan_iff nonzero_mult_div_cancel_right order.strict_trans order_less_irrefl prod_zero_iff sq_norm_pos)
-qed
-
 lemma Gramian_determinant_mu_ints:
   assumes "l < k" "k < m"
   shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
@@ -499,7 +432,7 @@ proof -
   show ?thesis
     unfolding \<mu>.simps using assms apply(simp)
     apply(subst (2) 2[symmetric])
-    apply(subst (1) Gramian_determinant_div[symmetric])
+    apply(subst (1) Gramian_determinant_div[symmetric, OF con_assms])
     apply(auto)
     apply(subst mult_ac)
     apply(subst scalar_prod_smult_right[symmetric])
@@ -514,48 +447,6 @@ proof -
     apply (simp add: con_assms(1) con_assms(2))
     apply(rule inti_inti)
     using assms con_assms by (auto)
-qed
-
-lemma Gramian_determinant_ge1:
-  assumes "k < m"
-  shows "1 \<le> Gramian_determinant fs k"
-proof -
-  have "0 < Gramian_determinant fs k"
-    by (simp add: assms con_assms Gramian_determinant(2) less_or_eq_imp_le)
-  moreover have "Gramian_determinant fs k \<in> \<int>"
-    by (simp add: Gramian_determinant_Ints assms)
-  ultimately show ?thesis
-    using Ints_nonzero_abs_ge1 by fastforce
-qed
-
-lemma mu_bound_Gramian_determinant:
-  assumes "l < k" "k < m"
-  shows "(\<mu> fs k l)\<^sup>2 \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2"
-proof -
-  have "(\<mu> fs k l)\<^sup>2  = (fs ! k \<bullet> gso fs l)\<^sup>2 / (\<parallel>gso fs l\<parallel>\<^sup>2)\<^sup>2"
-    using assms by (simp add: power_divide \<mu>.simps)
-  also have "\<dots> \<le> (\<parallel>fs ! k\<parallel>\<^sup>2 * \<parallel>gso fs l\<parallel>\<^sup>2) / (\<parallel>gso fs l\<parallel>\<^sup>2)\<^sup>2"
-    using assms con_assms by (auto intro!: scalar_prod_Cauchy divide_right_mono)
-  also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>gso fs l\<parallel>\<^sup>2"
-    by (auto simp add: field_simps power2_eq_square)
-  also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>vs ! l\<parallel>\<^sup>2"
-    by (metis assms(1) assms(2) atLeast0LessThan con_assms(1) con_assms(2) con_assms(3) 
-       gram_schmidt(4) gram_schmidt.main_connect(2) lessThan_iff map_eq_conv map_nth nat_SN.gt_trans set_upt)
-  also have "\<dots> =  \<parallel>fs ! k\<parallel>\<^sup>2 / (Gramian_determinant fs (Suc l) / Gramian_determinant fs l)"
-    apply(subst Gramian_determinant_div[symmetric])
-    using assms by auto
-  also have "\<dots> =  Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / Gramian_determinant fs (Suc l)"
-    by (auto simp add: field_simps)
-  also have "\<dots> \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / 1"
-    apply(rule divide_left_mono)
-      apply(auto)
-    prefer 2
-      apply (metis assms(1) assms(2) con_assms(1) con_assms(2) cring_simprules(27) gram_schmidt.Gramian_determinant(2) mult_le_cancel_left_pos nat_SN.gt_trans nat_less_le sq_norm_vec_ge_0)
-    using Gramian_determinant_ge1 assms apply fastforce
-    using Gramian_determinant_ge1 assms
-    using con_assms(1) con_assms(2) gram_schmidt.Gramian_determinant(2) by fastforce
-  finally show ?thesis
-    by simp
 qed
 
 end

@@ -1,5 +1,6 @@
 (*
     Authors:    Jose Divasón
+                Maximilian Haslbeck
                 Sebastiaan Joosten
                 René Thiemann
                 Akihisa Yamada

@@ -1,5 +1,6 @@
 (*
     Authors:    Jose Divasón
+                Maximilian Haslbeck
                 Sebastiaan Joosten
                 René Thiemann
                 Akihisa Yamada
@@ -15,33 +16,21 @@ theory Gram_Schmidt_2
     Norms
 begin
 
+(* TODO: move *)
+lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
+  by auto
+
+
 (* TODO: unify *)
 no_notation Gram_Schmidt.cscalar_prod (infix "\<bullet>c" 70)
 
 lemma vec_conjugate_connect[simp]: "Gram_Schmidt.vec_conjugate = conjugate"
   by (auto simp: vec_conjugate_def conjugate_vec_def)
 
-lemma scalar_prod_ge_0: "(x :: 'a :: linordered_idom vec) \<bullet> x \<ge> 0" 
-  unfolding scalar_prod_def
-  by (rule sum_nonneg, auto)
-
-class trivial_conjugatable_ordered_field = 
-  conjugatable_ordered_field + linordered_idom +
-  assumes conjugate_id [simp]: "conjugate x = x"
-
-lemma cscalar_prod_is_scalar_prod[simp]: "(x :: 'a :: trivial_conjugatable_ordered_field vec) \<bullet>c y = x \<bullet> y"
-  unfolding conjugate_id
-  by (rule arg_cong[of _ _ "scalar_prod x"], auto)
-
 lemma corthogonal_is_orthogonal[simp]: 
   "corthogonal (xs :: 'a :: trivial_conjugatable_ordered_field vec list) = orthogonal xs"
   unfolding corthogonal_def orthogonal_def by simp
 
-instance rat :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
-
-instance real :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
 
 (* TODO: move *)
 lemma vec_right_zero[simp]: 
@@ -713,7 +702,7 @@ end
 
 
 locale gram_schmidt = cof_vec_space n f_ty
-  for n :: nat and f_ty :: "'a :: trivial_conjugatable_ordered_field itself"
+  for n :: nat and f_ty :: "'a :: {linordered_field,trivial_conjugatable_ordered_field} itself"
 begin
 
 definition Gramian_matrix where
@@ -1817,6 +1806,83 @@ proof -
     by (rule prod_pos, intro ballI sq_norm_pos, insert k, auto)
   finally show "0 < Gramian_determinant fs k" by auto
 qed
+
+lemma Gramian_determinant_div:
+  assumes "l < m"
+  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>vs ! l\<parallel>\<^sup>2"
+proof -
+  note con_assms = indep len_fs snd_main
+  note gram = Gramian_determinant(1)[symmetric]
+  from assms have le: "Suc l \<le> m" "l \<le> m" by auto
+  have "(\<Prod>j<Suc l. \<parallel>vs ! j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>vs ! j\<parallel>\<^sup>2)"
+    using assms by (intro prod.cong) (auto)
+  also have "\<dots> = (\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2) * \<parallel>vs ! l\<parallel>\<^sup>2"
+    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
+  finally show ?thesis unfolding gram[OF le(1)] gram[OF le(2)]
+    using Gramian_determinant(2)[OF le(2)] by auto 
+qed
+
+context
+  assumes fs_int: "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i \<in> \<int>"
+begin
+
+lemma Gramian_determinant_Ints:
+  assumes "k < m"
+  shows "Gramian_determinant fs k \<in> \<int>"
+proof -
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
+  from fs_int have "\<And> i. i < n \<Longrightarrow> \<forall>j. \<exists> c. j < m \<longrightarrow> fs ! j $ i = ?oi c" unfolding Ints_def by auto
+  from choice[OF this] have "\<forall> i. \<exists> c. \<forall> j. i < n \<longrightarrow> j < m \<longrightarrow> fs ! j $ i = ?oi (c j)" by blast
+  from choice[OF this] obtain c where c: "\<And> i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i = ?oi (c i j)" by blast
+  define d where "d = map (\<lambda> j. vec n (\<lambda> i. c i j)) [0..<m]" 
+  have fs: "fs = map (map_vec ?oi) d" 
+    unfolding d_def by (rule nth_equalityI, insert len_fs, auto intro!: eq_vecI c)
+  have id: "mat k n (\<lambda>(i, y). map (map_vec ?oi) d ! i $ y) = map_mat of_int (mat k n (\<lambda>(i, y). d ! i $ y))" 
+    by (rule eq_matI, insert \<open>k < m\<close>, auto simp: d_def o_def)
+  show ?thesis unfolding fs Gramian_determinant_def Gramian_matrix_def Let_def id
+    map_mat_transpose
+    by (subst of_int_hom.mat_hom_mult[symmetric], auto)
+qed
+
+
+lemma Gramian_determinant_ge1:
+  assumes "k < m"
+  shows "1 \<le> Gramian_determinant fs k"
+proof -
+  have "0 < Gramian_determinant fs k"
+    by (simp add: assms len_fs Gramian_determinant(2) less_or_eq_imp_le)
+  moreover have "Gramian_determinant fs k \<in> \<int>"
+    by (simp add: Gramian_determinant_Ints assms)
+  ultimately show ?thesis
+    using Ints_nonzero_abs_ge1 by fastforce
+qed
+
+lemma mu_bound_Gramian_determinant:
+  assumes "l < k" "k < m"
+  shows "(\<mu> k l)\<^sup>2 \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2"
+proof -
+  note con_assms = indep len_fs snd_main
+  have "(\<mu> k l)\<^sup>2  = (fs ! k \<bullet> gso l)\<^sup>2 / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
+    using assms by (simp add: power_divide \<mu>.simps)
+  also have "\<dots> \<le> (\<parallel>fs ! k\<parallel>\<^sup>2 * \<parallel>gso l\<parallel>\<^sup>2) / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
+    using assms by (auto intro!: scalar_prod_Cauchy divide_right_mono)
+  also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>gso l\<parallel>\<^sup>2"
+    by (auto simp add: field_simps power2_eq_square)
+  also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>vs ! l\<parallel>\<^sup>2"
+    by (metis assms(1) assms(2) atLeast0LessThan con_assms(1) con_assms(2) con_assms(3) 
+       gram_schmidt(4) gram_schmidt.main_connect(2) lessThan_iff map_eq_conv map_nth less_trans set_upt)
+  also have "\<dots> =  \<parallel>fs ! k\<parallel>\<^sup>2 / (Gramian_determinant fs (Suc l) / Gramian_determinant fs l)"
+    apply(subst Gramian_determinant_div[symmetric])
+    using assms by auto
+  also have "\<dots> =  Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / Gramian_determinant fs (Suc l)"
+    by (auto simp add: field_simps)
+  also have "\<dots> \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / 1"
+    by (rule divide_left_mono, insert Gramian_determinant_ge1[of l] Gramian_determinant_ge1[of "Suc l"] assms,
+    auto intro!: mult_nonneg_nonneg) 
+  finally show ?thesis
+    by simp
+qed
+end
 end
 end
 end
