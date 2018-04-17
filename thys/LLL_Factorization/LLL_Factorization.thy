@@ -327,7 +327,7 @@ sublocale idom_vec n "TYPE(int)".
 
 (*In this context, "n" is fixed by the locale and corresponds to "j" in the book*)
 lemma upper_triangular_factorization_lattice:
-  fixes u :: "'a :: semidom poly"
+  fixes u :: "'a :: semidom poly" and d :: nat
   assumes d: "d \<le> n" and du: "d = degree u"
   shows "upper_triangular (mat_of_rows n (factorization_lattice u (n-d) k))"
     (is "upper_triangular ?M")
@@ -350,7 +350,7 @@ next
 qed
 
 lemma factorization_lattice_diag_nonzero:
-  fixes u :: "'a :: semidom poly"
+  fixes u :: "'a :: semidom poly" and d
   assumes d: "d=degree u" 
     and dn: "d\<le>n"
     and u: "u\<noteq>0" 
@@ -370,7 +370,7 @@ proof-
     done
 qed
 
-corollary factorization_lattice_diag_nonzero_RAT:
+corollary factorization_lattice_diag_nonzero_RAT: fixes d
   assumes "d=degree u" 
     and "d\<le>n"
     and "u\<noteq>0" 
@@ -382,7 +382,7 @@ corollary factorization_lattice_diag_nonzero_RAT:
 
 sublocale gs: vec_space "TYPE(rat)" n.
 
-lemma lin_indpt_list_factorization_lattice:
+lemma lin_indpt_list_factorization_lattice: fixes d
   assumes d: "d = degree u" and dn: "d \<le> n" and u: "u \<noteq> 0" and k: "k \<noteq> 0"
   shows "gs.lin_indpt_list (RAT (factorization_lattice u (n-d) k))" (is "gs.lin_indpt_list (RAT ?vs)")
 proof-
@@ -408,7 +408,7 @@ context LLL
 begin
 
 lemma lincomb_to_dvd_modulo:
-  fixes u
+  fixes u d
   defines "d \<equiv> degree u"
   assumes d: "d \<le> n"
       and lincomb: "lincomb_list c (factorization_lattice u (n-d) k) = g" (is "?l = ?r")
@@ -441,7 +441,7 @@ qed
   the correct fact is r' = q'' * u+r'' 
 *)
 lemma dvd_modulo_to_lincomb:
-  fixes u :: "int poly"
+  fixes u :: "int poly" and d
   defines "d \<equiv> degree u"
   assumes d: "d < n"
       and dvd: "poly_mod.dvdm k u (poly_of_vec g)"

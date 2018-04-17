@@ -53,21 +53,21 @@ definition \<mu>_ij :: "int vec \<Rightarrow> rat vec \<times> rat \<Rightarrow>
 
 type_synonym state = "nat \<times> f_repr \<times> g_repr"
     
-fun basis_reduction_add_row_main :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> state \<times> int" where 
+fun basis_reduction_add_row_main :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> state" where 
   "basis_reduction_add_row_main (i,F,G) fj mu = (let     
      c = floor_ceil mu
      in if c = 0 then
-       ((i,F,G), c)
+       (i,F,G)
      else 
      let 
      fi = get_nth_i F - (c \<cdot>\<^sub>v fj);
      F' = update_i F fi
-     in ((i,F',G), c))"
+     in (i,F',G))"
 
 fun basis_reduction_add_row_i_all_main :: "state \<Rightarrow> int vec list \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> state" where
   "basis_reduction_add_row_i_all_main state (Cons fj fjs) (Cons gj gjs) = (case state of (i,F,G) \<Rightarrow> 
     let fi = get_nth_i F in
-    basis_reduction_add_row_i_all_main (fst (basis_reduction_add_row_main state fj (\<mu>_ij fi gj))) fjs gjs)"
+    basis_reduction_add_row_i_all_main (basis_reduction_add_row_main state fj (\<mu>_ij fi gj)) fjs gjs)"
 | "basis_reduction_add_row_i_all_main state _ _ = state" 
 
 definition basis_reduction_add_rows :: "state \<Rightarrow> state" where 
@@ -466,13 +466,14 @@ qed
 
 lemma basis_reduction_add_row_main: assumes Linv: "LLL_partial_invariant (i,Fr,Gr) F G"
   and i: "i < m"  and j: "j < i" 
-  and res: "basis_reduction_add_row_main (i,Fr,Gr) fj mu = ((i',Fr',Gr'), c)"
+  and res: "basis_reduction_add_row_main (i,Fr,Gr) fj mu = (i',Fr',Gr')"
   and fj: "fj = F ! j" 
   and mu: "mu = gs.\<mu> (RAT F) i j" 
-shows "\<exists> v. LLL_partial_invariant (i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (mu - of_int c) \<le> inverse 2 
-  \<and> mu - of_int c = gs.\<mu> (RAT (F[ i := v])) i j
+  and c: "c = floor_ceil (gs.\<mu> (RAT F) i j)" 
+shows "\<exists> v. LLL_partial_invariant (i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (gs.\<mu> (RAT (F[ i := v])) i j) \<le> inverse 2 
   \<and> (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> (i' \<noteq> i \<or> j' > j) 
-      \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i' j' = gs.\<mu> (RAT F) i' j')"
+      \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i' j' = gs.\<mu> (RAT F) i' j')
+  \<and> (\<forall> j'. j' \<le> j \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i j' = gs.\<mu> (RAT F) i j' - of_int c * gs.\<mu> (RAT F) j j')"
 proof -
   define M where "M = map (\<lambda>i. map (gs.\<mu> (RAT F) i) [0..<m]) [0..<m]"
   note inv = LLL_pinvD[OF Linv]
@@ -692,19 +693,34 @@ proof -
     also have "\<dots> = gs.\<mu> (RAT F) i' j'"
       using ij len unfolding M'_def gs.M_def by auto
     also note calculation
-  } note mu_change = this
+  } note mu_no_change = this
+  {
+    fix j'
+    assume jj': "j' \<le> j" with j i have j': "j' < m" by auto
+    have "gs.\<mu> (RAT F1) i j' 
+      = N' $$ (i,j')" using jj' j i F1 unfolding N'_def gs.M_def by auto
+    also have "\<dots> = addrow (- ?R c) i j M' $$ (i,j')" unfolding EMN[symmetric] E_def
+      by (subst addrow_mat[OF M], insert ji, auto)
+    also have "\<dots> = - ?R c * M' $$ (j, j') + M' $$ (i, j')" 
+      by (rule index_mat_addrow, insert j' i M, auto)
+    also have "\<dots> = M' $$ (i, j') - ?R c * M' $$ (j, j')" by simp
+    also have "M' $$ (i, j') = gs.\<mu> (RAT F) i j'"
+      using i j' len unfolding M'_def gs.M_def by auto
+    also have "M' $$ (j, j') = gs.\<mu> (RAT F) j j'" 
+      using i j j' len unfolding M'_def gs.M_def by auto
+    finally have "gs.\<mu> (RAT F1) i j' = gs.\<mu> (RAT F) i j' - ?R c * gs.\<mu> (RAT F) j j'" by auto
+  } note mu_change = this  
   have sred: "gs.reduced \<alpha> i G1 (gs.\<mu> (RAT F1))"
     unfolding gs.reduced_def 
   proof (intro conjI[OF red] impI allI, goal_cases)
     case (1 i' j)
-    with mu_change[of i' j] sred[unfolded gs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
+    with mu_no_change[of i' j] sred[unfolded gs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
     show ?case by auto
   qed
   (* now let us head for the implementation *)
   have Mij: "mu = M ! i ! j" unfolding M_def mu using `i < m` ji(2) by auto
-  from res[unfolded Mij] have c: "c = floor_ceil (M ! i ! j)" 
-    by (auto simp: Let_def split: if_splits)
-  have x: "?x = ?x'" by (subst get_nth_i[OF Fr], insert add, auto simp: c Mij j)
+  from c Mij mu have cc: "c = floor_ceil (M ! i ! j)" by auto
+  have x: "?x = ?x'" by (subst get_nth_i[OF Fr], insert add, auto simp: cc Mij j)
   {
     assume c0: "c = 0" 
     have "Fr1 = update_i Fr (F ! i)" unfolding Fr1_def x[symmetric] c0 
@@ -717,7 +733,7 @@ proof -
     with Fr have "Fr1 = Fr" unfolding list_repr_def by (cases Fr, cases Fr1, auto)
   } note c0 = this
   from res[unfolded basis_reduction_add_row_main.simps Let_def fj Mij Hr]
-  have res: "i' = i" "Fr' = Fr1" "Gr' = Gr" using Mij c0 i len
+  have res: "i' = i" "Fr' = Fr1" "Gr' = Gr" using Mij c0 i len cc
     by (auto simp: j split: if_splits)
   {
     from Gr[unfolded g_repr_def] i
@@ -742,36 +758,12 @@ proof -
       apply (rule LLL_pinvI[OF repr' gso'' G1_def(2)[folded snd_gram_schmidt_int,symmetric] _ red inv(7) _ _ sred])
       by (insert F1 F1_F inv(5) indep_F1 Hs inv(12), auto)
   } note inv_gso = this
-  { 
-    fix ia assume "ia \<le> j" hence "ia < i" using ji j by auto
-    hence "(RAT F1) ! ia = (RAT F) ! ia"
-      using F1_def i len by auto 
-  }
-  hence fs_eq:"gs.gso (RAT F1) j = gs.gso (RAT F) j"
-    by (intro gs_gs_identical, auto)
-  have dima:"dim_vec a = dim_vec b \<Longrightarrow> ?RV (a + b) = ?RV a + ?RV b" for a b by auto
-  from gs.gso_times_self_is_norm[OF conn1 ji(2)]
-  have gs_norm:"(RAT F) ! j \<bullet> gs.gso (RAT F) j = \<parallel>gs.gso (RAT F) j\<parallel>\<^sup>2" by auto
-  have fc:"floor_ceil (0::rat) = 0" unfolding floor_ceil_def by linarith
-  { 
-    assume "sq_norm_vec (gs.gso (RAT F) j) = 0"
-    hence "gs.gso (RAT F) j = 0\<^sub>v n" using gs_carr(1) sq_norm_vec_eq_0 len by force
-    hence "c = 0" unfolding c M_def gs.\<mu>.simps using j i fc by auto
-  } note zero = this
-  from \<open>j < i\<close> have if_True: "(if j < i then t else e) = t" for t e by simp
-  have id1: "?RV (F ! j) = (RAT F) ! j" using ji len by auto
-  have id: "(RAT F1) ! i = (RAT F) ! i - ?R c \<cdot>\<^sub>v ?RV (F ! j)" unfolding F1_def using i len Fij by auto
-  have mudiff: "mu = (RAT F) ! i \<bullet> gs.gso (RAT F) j / \<parallel>gs.gso (RAT F) j\<parallel>\<^sup>2" 
-    unfolding mu gs.\<mu>.simps if_True id using i ji(2) by auto
   have mudiff:"mu - of_int c = gs.\<mu> (RAT F1) i j"
-    unfolding mudiff unfolding gs.\<mu>.simps fs_eq if_True id
-    apply (subst minus_scalar_prod_distrib, (insert Fij gs_carr, auto)[3])
-    apply (subst scalar_prod_smult_left, (insert Fij gs_carr, auto)[1])
-    apply (unfold id1 gs_norm)
-    using zero divide_diff_eq_iff by fastforce
-  have "abs (mu - of_int c) \<le> inverse 2" unfolding res j Mij c
+    unfolding mu
+    by (subst mu_change, auto simp: gs.\<mu>.simps)
+  have "abs (mu - of_int c) \<le> inverse 2" unfolding res j Mij cc
     by (rule floor_ceil)
-  thus ?thesis using mu_change inv_gso mudiff unfolding res j F1_def by auto
+  thus ?thesis using mu_change inv_gso mudiff mu_no_change unfolding res j F1_def by auto
 qed
 
 lemma sq_norm_fs_via_sum_mu_gso: assumes Lpinv: "LLL_partial_invariant (ii,Fr,Gr) F G"
@@ -868,7 +860,7 @@ proof -
     let ?fsn = "(?fs, \<parallel>?fs\<parallel>\<^sup>2)"       
     let ?main = "basis_reduction_add_row_main (i, Fr, Gr) (F ! ii)
         (\<mu>_ij (get_nth_i Fr) ?fsn)" 
-    obtain i'' Fr'' Gr'' c where main: "?main = ((i'', Fr'', Gr''),c)" 
+    obtain i'' Fr'' Gr'' where main: "?main = (i'', Fr'', Gr'')" 
       by (cases ?main, auto)
     from Suc(3) have ii: "ii < i" "(ii < i) = True" by auto
     have Gi: "F ! i \<in> carrier_vec n" using inv(3,4) i by auto
@@ -879,7 +871,8 @@ proof -
       gs.\<mu> (RAT F) i ii" 
       unfolding \<mu>_ij_def split gs.\<mu>.simps ii if_True id
       by auto
-    from basis_reduction_add_row_main[OF Suc(4) i ii(1) main refl pair]
+    define c where "c = floor_ceil (gs.\<mu> (RAT F) i ii)" 
+    from basis_reduction_add_row_main[OF Suc(4) i ii(1) main refl pair c_def]
     obtain v where
         Linv: "LLL_partial_invariant (i, Fr'', Gr) (F[i := v]) G" 
       and id: "i'' = i" "Gr'' = Gr" 

@@ -34,17 +34,17 @@ context
   assumes \<alpha>_gt: "\<alpha> > 4/3" and m0: "m \<noteq> 0" 
 begin
 
-fun basis_reduction_add_row_main_cost :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> (state \<times> int) cost" where 
+fun basis_reduction_add_row_main_cost :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> state cost" where 
   "basis_reduction_add_row_main_cost (i,F,G) fj mu = (let     
      c = floor_ceil mu \<comment> \<open>ignore costs for this computation\<close>
      in if c = 0 then let costs = 0 in
-       (((i,F,G), c), costs)
+       ((i,F,G), costs)
      else 
      let 
      fi = get_nth_i F - (c \<cdot>\<^sub>v fj);
      F' = update_i F fi;
      costs = n * arith_cost \<comment> \<open>n arithmetic operations in scalar-multiplication\<close>
-     in (((i,F',G), c), costs))"
+     in ((i,F',G), costs))"
 
 lemma basis_reduction_add_row_main_cost: 
    "result (basis_reduction_add_row_main_cost state fj mu) = basis_reduction_add_row_main state fj mu"  
@@ -74,9 +74,9 @@ fun basis_reduction_add_row_i_all_main_cost :: "state \<Rightarrow> int vec list
   "basis_reduction_add_row_i_all_main_cost state (Cons fj fjs) (Cons gj gjs) = (case state of (i,F,G) \<Rightarrow> 
     let fi = get_nth_i F in
     case \<mu>_ij_cost fi gj of (mu, c1) \<Rightarrow> 
-    case basis_reduction_add_row_main_cost state fj mu of (res,c2) \<Rightarrow>
-    case basis_reduction_add_row_i_all_main_cost (fst res) fjs gjs of (state, c3) \<Rightarrow>
-      (state, c1 + c2 + c3))"
+    case basis_reduction_add_row_main_cost state fj mu of (state2,c2) \<Rightarrow>
+    case basis_reduction_add_row_i_all_main_cost state2 fjs gjs of (state3, c3) \<Rightarrow>
+      (state3, c1 + c2 + c3))"
 | "basis_reduction_add_row_i_all_main_cost state _ _ = (let costs = 0 in (state,costs))" 
 
 lemma basis_reduction_add_row_i_all_main_cost: 
@@ -90,16 +90,16 @@ proof (atomize (full), induct fjs arbitrary: gjs state)
     obtain i F G where state: "state = (i, F, G)" by (cases state, auto)
     let ?fi = "get_nth_i F"
     obtain mu c1 where mu: "\<mu>_ij_cost ?fi gj = (mu, c1)" (is "?mu = _") by (cases ?mu, auto)
-    obtain res c2 where row: "basis_reduction_add_row_main_cost (i, F, G) fj mu = (res, c2)" (is "?row = _") 
+    obtain state2 c2 where row: "basis_reduction_add_row_main_cost (i, F, G) fj mu = (state2, c2)" (is "?row = _") 
       by (cases ?row, auto)
-    obtain state c3 where rec: "basis_reduction_add_row_i_all_main_cost (fst res) fjs gjs = (state, c3)" (is "?rec = _")
+    obtain state3 c3 where rec: "basis_reduction_add_row_i_all_main_cost state2 fjs gjs = (state3, c3)" (is "?rec = _")
       by (cases ?rec, auto)    
     from \<mu>_ij_cost[of ?fi gj, unfolded mu cost_simps]
     have mu': "\<mu>_ij (get_nth_i F) gj = mu" and c1: "c1 \<le> 2 * n * arith_cost" by auto
     from basis_reduction_add_row_main_cost[of "(i,F,G)" fj mu, unfolded row cost_simps]
-    have row': "basis_reduction_add_row_main (i, F, G) fj mu = res" and c2: "c2 \<le> n * arith_cost" by auto
-    from Cons[of "fst res" gjs, unfolded rec cost_simps] 
-    have rec': "basis_reduction_add_row_i_all_main (fst res) fjs gjs = state" and 
+    have row': "basis_reduction_add_row_main (i, F, G) fj mu = state2" and c2: "c2 \<le> n * arith_cost" by auto
+    from Cons[of state2 gjs, unfolded rec cost_simps] 
+    have rec': "basis_reduction_add_row_i_all_main state2 fjs gjs = state3" and 
       c3: "c3 \<le> 3 * length fjs * n * arith_cost" by auto
     have c: "c1 + c2 + c3 \<le> 3 * length (fj # fjs) * n * arith_cost" using c1 c2 c3 
       by (auto simp: distrib_right)  
