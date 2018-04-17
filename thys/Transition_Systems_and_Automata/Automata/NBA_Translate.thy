@@ -116,7 +116,7 @@ begin
           ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
       }) \<in> ?R"
     unfolding trans_algo_def by (autoref_monadic (plain))
-  concrete_definition to_nbaei_impl uses to_nbaei_impl[unfolded autoref_tag_defs CAST_def id_apply]
+  concrete_definition to_nbaei_impl uses to_nbaei_impl
   lemma to_nbaei_impl_refine'':
     fixes S :: "('statei \<times> 'state) set"
     assumes "finite (nodes A)"
