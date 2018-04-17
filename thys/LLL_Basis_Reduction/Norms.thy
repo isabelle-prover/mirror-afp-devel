@@ -584,4 +584,19 @@ lemma sq_norm_smult_vec: "sq_norm ((c :: 'a :: {conjugatable_ring,comm_semiring_
   by (subst scalar_prod_smult_left, force, unfold conjugate_smult_vec, 
     subst scalar_prod_smult_right, force, simp add: ac_simps)
 
+lemma vec_le_sq_norm:
+  fixes v :: "'a :: conjugatable_ring_1_abs_real_line vec"
+  assumes "v \<in> carrier_vec n" "i < n"
+  shows "\<bar>v $ i\<bar>\<^sup>2 \<le> \<parallel>v\<parallel>\<^sup>2"
+using assms proof (induction v arbitrary: i)
+  case (Suc n a v i)
+  note IH = Suc
+  show ?case 
+  proof (cases i)
+    case (Suc ii)
+    then show ?thesis
+      using IH IH(2)[of ii] le_add_same_cancel2 order_trans by fastforce
+  qed auto
+qed auto
+
 end
