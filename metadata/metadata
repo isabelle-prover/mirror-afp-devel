@@ -4954,6 +4954,7 @@ abstract =
 title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+contributors = Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2015-08-21
 abstract =
 	<p>
@@ -4966,7 +4967,9 @@ abstract =
 	All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
 	</p>
 extra-history =
-	Change history: [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms
+	Change history: 
+           [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms<br/>
+           [2018-04-17]: Integrated lemmas from deep-learning AFP-entry of Alexander Bentkamp
 notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
 
 [LTL_to_DRA]
@@ -6666,6 +6669,9 @@ abstract =
   present the first mechanized soundness proof of the LLL algorithm to
   compute short vectors in lattices. The formalization follows a
   textbook by von zur Gathen and Gerhard.
+extra-history =
+        Change history:
+        [2018-04-16]: Haslbeck integrated formal complexity bounds and was therefore added as author
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
