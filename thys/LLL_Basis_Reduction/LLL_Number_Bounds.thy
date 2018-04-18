@@ -14,6 +14,7 @@ hide_const (open) Determinants.det
 hide_const (open) Cartesian_Euclidean_Space.mat
 hide_const (open) Cartesian_Euclidean_Space.row
 hide_const (open) Cartesian_Euclidean_Space.vec
+hide_const (open) Path_Connected.outside
 
 no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
 no_notation Finite_Cartesian_Product.vec.vec_nth (infixl "$" 90)
@@ -511,12 +512,12 @@ qed (insert m0 len, auto)
 
 
 lemma LLL_invariant_f_bound: 
-  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> A * m" 
 proof -
   note inv = LLL_invD[OF inv] 
-  from \<open>f_bound fs\<close>[unfolded f_bound_def, rule_format, OF i]
+  from \<open>f_bound True k fs\<close>[unfolded f_bound_def, rule_format, OF i]
   have le: "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> int (A * m)" by simp
   from inv(4,3) i have fsi: "fs ! i \<in> carrier_vec n" by auto
   have one: "\<bar>fs ! i $ j\<bar>^1 \<le> \<bar>fs ! i $ j\<bar>^2" 
@@ -528,17 +529,17 @@ proof -
 qed
 
 
-lemma LLL_partial_invariant_g_bound:
-  assumes inv: "LLL_partial_invariant (k, Fs, Gs) fs gs" 
+lemma LLL_invariant_g_bound:
+  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
   and quot: "quotient_of (gs ! i $ j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ m" 
   and "\<bar>denom\<bar> \<le> A ^ m"
 proof -
-  note * = LLL_pinvD[OF inv]
+  note * = LLL_invD[OF inv]
   interpret gs: gram_schmidt_rat n .
   note d_approx[OF inv i, unfolded d_def]  
-  note *(12)[unfolded g_bound_def, rule_format, OF i]
+  note *(13)[unfolded g_bound_def, rule_format, OF i]
   let ?r = "rat_of_int" 
   let ?fs = "map of_int_hom.vec_hom fs" 
   note gs.inti_inti[OF *(10)]
@@ -599,19 +600,17 @@ proof -
 qed
 
 lemma LLL_invariant_mu_bound: 
-  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
   and i: "i < m"                 
   and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * m" 
   and "\<bar>denom\<bar> \<le> A ^ m" 
 proof (atomize(full))
-  have inv': "LLL_partial_invariant (k, Fs, Gs) fs gs"
-    using inv unfolding LLL_invariant_def by auto
-  from LLL_pinv_A_pos[OF inv'] i have A: "A > 0" by auto 
+  from LLL_inv_A_pos[OF inv] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
   let ?mu = "gs.\<mu> (RAT fs) i j" 
   interpret gs: gram_schmidt_rat n .
-  note d_approx[OF inv' i, unfolded d_def]  
+  note d_approx[OF inv i, unfolded d_def]  
   note *(13)[unfolded g_bound_def, rule_format, OF i]
   note vec_le_sq_norm
   note *(2)  
@@ -622,11 +621,11 @@ proof (atomize(full))
     from quotient_of_square[OF quot] 
     have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
       unfolding power2_eq_square by auto
-    from d_approx[OF inv' jm]
+    from d_approx[OF inv jm]
     have dj: "d fs j \<le> int (A ^ j)" by linarith
-    from LLL_d_pos[OF inv', of "Suc j"] i j have dsj: "0 < d fs (Suc j)" by auto
+    from LLL_d_pos[OF inv, of "Suc j"] i j have dsj: "0 < d fs (Suc j)" by auto
     hence d_pos: "0 < (d fs (Suc j))^2" by auto
-    from d_approx[OF inv', of "Suc j"] j i 
+    from d_approx[OF inv, of "Suc j"] j i 
     have "rat_of_int (d fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
       by auto
     hence d_j_bound: "d fs (Suc j) \<le> int (A^Suc j)" by linarith
@@ -642,7 +641,7 @@ proof (atomize(full))
       using *(3) carrier_vecD nth_mem by blast
     also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (d fs j * sq_norm (fs ! i))" by simp 
     also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
-      by (rule mult_mono[OF dj \<open>f_bound fs\<close>[unfolded f_bound_def, rule_format, OF i]], auto)
+      by (rule mult_mono[OF dj], insert \<open>f_bound True k fs\<close>[unfolded f_bound_def, rule_format, OF i], auto)
     also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
     also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
       by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
@@ -699,7 +698,7 @@ text \<open>Now we have bounds on each number $(f_i)_j$, $(g_i)_j$, and $\mu_{i,
 text \<open>We now prove a combined size-bound for all of these numbers\<close>
 
 lemma combined_size_bound: fixes number :: int 
-  assumes inv: "LLL_invariant (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n"
   and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
   and quot: "quotient_of x = (num, denom)" 
@@ -708,8 +707,7 @@ lemma combined_size_bound: fixes number :: int
 shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" 
       "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m"
 proof -
-  from inv have pinv: "LLL_partial_invariant (k, Fs, Gs) fs gs" unfolding LLL_invariant_def by auto
-  from LLL_pinv_A_pos[OF pinv] i have A: "A > 0" by auto
+  from LLL_inv_A_pos[OF inv] i have A: "A > 0" by auto
   have "A ^ m * int 1 \<le> A ^ (2 * m) * int m" 
     by (rule mult_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
   hence le: "int (A ^ m) \<le> A ^ (2 * m) * m" by auto
@@ -718,7 +716,7 @@ proof -
   hence num_denom_bound: "\<bar>num\<bar> \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases)
     case xgs
-    from LLL_partial_invariant_g_bound[OF pinv i j quot[unfolded xgs]] le
+    from LLL_invariant_g_bound[OF inv i j quot[unfolded xgs]] le
     show ?thesis by auto
   next
     case xmu
