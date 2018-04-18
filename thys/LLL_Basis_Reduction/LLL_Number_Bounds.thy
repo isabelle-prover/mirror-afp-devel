@@ -511,7 +511,7 @@ proof (cases "A = 0 \<or> m = 0")
 qed auto
 
 lemma LLL_invariant_f_bound: 
-  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (upw,k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> f_bnd outside" 
 proof -
@@ -551,7 +551,7 @@ qed
 
 
 lemma LLL_invariant_g_bound:
-  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (upw,k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
   and quot: "quotient_of (gs ! i $ j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ m" 
@@ -631,7 +631,7 @@ proof -
 qed
 
 lemma LLL_invariant_mu_bound: 
-  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (upw,k, Fs, Gs) fs gs" 
   and i: "i < m"                 
   and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * 2 ^ m * m" 
@@ -731,7 +731,7 @@ text \<open>We now prove a combined size-bound for all of these numbers. The bou
   of the vectors, and $M$ is the maximum absolute value that occurs in the input to the LLL algorithm.\<close>
 
 lemma combined_size_bound: fixes number :: int 
-  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (upw, k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n"
   and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
   and quot: "quotient_of x = (num, denom)" 

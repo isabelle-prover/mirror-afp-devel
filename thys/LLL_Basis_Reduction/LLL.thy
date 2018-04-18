@@ -53,6 +53,11 @@ definition \<mu>_ij :: "int vec \<Rightarrow> rat vec \<times> rat \<Rightarrow>
   "\<mu>_ij fi gj_norm = (case gj_norm of (gj,norm_gj) \<Rightarrow> (fi \<bullet>i gj) / norm_gj)" 
 
 type_synonym state = "nat \<times> f_repr \<times> g_repr"
+
+text \<open>The boolean in an extended state encodes 
+  whether the counter $i$ was going up (True) or down (False) in the previous iteration.\<close>
+
+type_synonym estate = "bool \<times> state"
     
 fun basis_reduction_add_row_main :: "state \<Rightarrow> int vec \<Rightarrow> rat \<Rightarrow> state" where 
   "basis_reduction_add_row_main (i,F,G) fj mu = (let     
@@ -99,34 +104,34 @@ context
   fixes \<alpha> :: rat
   and m :: nat
 begin
-definition basis_reduction_step :: "state \<Rightarrow> state" where
-  "basis_reduction_step state = (if fst state = 0 then increase_i state
-     else let state' = basis_reduction_add_rows state in
+definition basis_reduction_step :: "estate \<Rightarrow> estate" where
+  "basis_reduction_step estate = (case estate of (upw, state) \<Rightarrow> if fst state = 0 then (True, increase_i state)
+     else let state' = (if upw then basis_reduction_add_rows state else state) in
      case state' of (i, F, G) \<Rightarrow>
       if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
-      then basis_reduction_swap state'
-      else increase_i state'  
+      then (False, basis_reduction_swap state')
+      else (True, increase_i state')
      )" 
 
-partial_function (tailrec) basis_reduction_main :: "state \<Rightarrow> state" where
-  [code]: "basis_reduction_main state = (case state of (i,F,G) \<Rightarrow>
+partial_function (tailrec) basis_reduction_main :: "estate \<Rightarrow> estate" where
+  [code]: "basis_reduction_main state = (case state of (upw,i,_) \<Rightarrow>
      if i < m 
      then basis_reduction_main (basis_reduction_step state) 
      else state)"
 end
 
-definition initial_state :: "nat \<Rightarrow> int vec list \<Rightarrow> state" where
+definition initial_state :: "nat \<Rightarrow> int vec list \<Rightarrow> estate" where
   "initial_state n F = (let G = gram_schmidt_triv n (map (map_vec of_int) F);
      Fr = ([], F);
      Gr = ([], G)
-     in (0, Fr, Gr))" 
+     in (False, (0, Fr, Gr)))" 
 
-definition basis_reduction_state :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> state" where 
+definition basis_reduction_state :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> estate" where 
   "basis_reduction_state n \<alpha> F = (basis_reduction_main \<alpha> (length F) (initial_state n F))" 
 
 definition reduce_basis :: "nat \<Rightarrow> rat \<Rightarrow> int vec list \<Rightarrow> int vec list \<times> rat vec list" where
-  "reduce_basis n \<alpha> F = (\<lambda> state. ((of_list_repr o fst o snd) state, 
-     (map fst o of_list_repr o snd o snd) state))
+  "reduce_basis n \<alpha> F = (\<lambda> state. ((of_list_repr o fst o snd o snd) state, 
+     (map fst o of_list_repr o snd o snd o snd) state))
      (basis_reduction_state n \<alpha> F)" 
 
 definition short_vector :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where 
@@ -224,8 +229,10 @@ definition f_bound :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Right
   "f_bound outside ii fs = (\<forall> i < m. sq_norm (fs ! i) \<le> (if i \<noteq> ii \<or> outside then int (A * m) else 
      int (4 ^ (m - 1) * A ^ m * m * m)))" 
 
-definition LLL_invariant :: "bool \<Rightarrow> state \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where 
-  "LLL_invariant outside state F G = (case state of (i,Fr,Gr) \<Rightarrow> 
+definition "mu_small F i = (\<forall> j < i. abs (gs.\<mu> (RAT F) i j) \<le> 1/2)" 
+
+definition LLL_invariant :: "bool \<Rightarrow> estate \<Rightarrow> int vec list \<Rightarrow> rat vec list \<Rightarrow> bool" where 
+  "LLL_invariant outside estate F G = (case estate of (upw,i,Fr,Gr) \<Rightarrow> 
   snd (gram_schmidt_int n F) = G \<and>
   gs.lin_indpt_list (RAT F) \<and> 
   lattice_of F = L \<and>
@@ -233,10 +240,12 @@ definition LLL_invariant :: "bool \<Rightarrow> state \<Rightarrow> int vec list
   i \<le> m \<and>
   length F = m \<and>
   f_repr i Fr F \<and> 
-  g_repr i Gr F \<and> f_bound outside i F \<and> g_bound G
+  g_repr i Gr F \<and> 
+  f_bound outside i F \<and> g_bound G \<and>
+  (upw \<or> mu_small F i)
   )" 
 
-lemma LLL_invD: assumes "LLL_invariant outside (i,Fr,Gr) F G"
+lemma LLL_invD: assumes "LLL_invariant outside (upw,i,Fr,Gr) F G"
   shows "F = of_list_repr Fr" 
   "snd (gram_schmidt_int n F) = G" 
   "set F \<subseteq> carrier_vec n"
@@ -250,6 +259,7 @@ lemma LLL_invD: assumes "LLL_invariant outside (i,Fr,Gr) F G"
   "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_bound outside i F"
   "g_bound G"
+  "upw \<or> mu_small F i" 
   using assms gs.lin_indpt_list_def of_list_repr[of i Fr F] 
   unfolding LLL_invariant_def split gs.reduced_def by auto
 
@@ -265,7 +275,8 @@ lemma LLL_invI: assumes
   "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))" 
   "f_bound outside i F" 
   "g_bound G" 
-shows "LLL_invariant outside (i,Fr,Gr) F G" 
+  "upw \<or> mu_small F i" 
+shows "LLL_invariant outside (upw,i,Fr,Gr) F G" 
   unfolding LLL_invariant_def Let_def split using assms of_list_repr[OF assms(1)] by auto
 
 lemma f_bound_True_arbitrary: assumes "f_bound True ii fs"
@@ -297,7 +308,7 @@ proof -
 qed
   
 lemma LLL_connect: fixes F :: "int vec list" 
-  assumes inv: "LLL_invariant outside (i,Fr,Gr) F G" 
+  assumes inv: "LLL_invariant outside (upw,i,Fr,Gr) F G" 
   shows "G = map (gs.gso (RAT F)) [0..<m]"
   using gram_schmidt_int_connect[of F G] LLL_invD[OF inv] by auto
 
@@ -321,7 +332,7 @@ proof -
   show ?thesis unfolding gs.\<mu>.simps using assms id by auto
 qed
 
-lemma g_i: assumes inv: "LLL_invariant outside (i,Fr,Gr) F G" and i: "i < m"  
+lemma g_i: assumes inv: "LLL_invariant outside (upw,i,Fr,Gr) F G" and i: "i < m"  
   shows "g_i Gr = G ! i" 
     "sqnorm_g_i Gr = sq_norm (G ! i)"
 proof -
@@ -337,7 +348,7 @@ proof -
     "sqnorm_g_i Gr = sq_norm (G ! i)" by auto
 qed
   
-lemma g_im1: assumes inv: "LLL_invariant outside (i,Fr,Gr) F G" and i: "i < m" "i \<noteq> 0" 
+lemma g_im1: assumes inv: "LLL_invariant outside (upw,i,Fr,Gr) F G" and i: "i < m" "i \<noteq> 0" 
   shows "g_im1 Gr = G ! (i - 1)" 
     "sqnorm_g_im1 Gr = sq_norm (G ! (i - 1))"
 proof -
@@ -362,8 +373,8 @@ definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < 
 definition logD :: "int vec list \<Rightarrow> nat"
   where "logD fs = (if \<alpha> = 4/3 then (D fs) else nat (floor (log (1 / of_rat reduction) (D fs))))" 
 
-definition LLL_measure :: "state \<Rightarrow> nat" where 
-  "LLL_measure state = (case state of (i,fs,gs) \<Rightarrow> 2 * logD (of_list_repr fs) + m - i)" 
+definition LLL_measure :: "estate \<Rightarrow> nat" where 
+  "LLL_measure state = (case state of (upw,i,fs,gs) \<Rightarrow> 2 * logD (of_list_repr fs) + m - i)" 
 
 lemma of_int_Gramian_determinant:
   assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
@@ -385,7 +396,7 @@ proof (rule arg_cong[of _ _ det])
   qed
 qed
 
-lemma Gramian_determinant: assumes "LLL_invariant outside (i,Fr,Gr) F G" 
+lemma Gramian_determinant: assumes "LLL_invariant outside (upw,i,Fr,Gr) F G" 
   and k: "k \<le> m" 
 shows "of_int (gs.Gramian_determinant F k) = (\<Prod> j<k. sq_norm (G ! j))" 
   "gs.Gramian_determinant F k > 0" 
@@ -412,7 +423,7 @@ lemma LLL_d_pos [intro]: assumes inv: "LLL_invariant outside state F G"
   and k: "k \<le> m" 
 shows "d F k > 0"
 proof -
-  obtain i Gr gso where trip: "state = (i, Gr, gso)" by (cases state, auto)
+  obtain upw i Gr gso where trip: "state = (upw,i, Gr, gso)" by (cases state, auto)
   note inv = inv[unfolded trip]
   from Gramian_determinant[OF inv k] show ?thesis unfolding trip d_def by auto
 qed
@@ -425,11 +436,10 @@ proof -
   thus ?thesis unfolding D_def by auto
 qed
 
-lemma increase_i: assumes LLL: "LLL_invariant True (i,Fr,Gr) F G" 
+lemma increase_i: assumes LLL: "LLL_invariant True (False, i,Fr,Gr) F G" 
   and i: "i < m" 
   and red_i: "i \<noteq> 0 \<Longrightarrow> sq_norm (G ! (i - 1)) \<le> \<alpha> * sq_norm (G ! i)"
-  and sred_i: "\<And> j. j < i \<Longrightarrow> \<bar>gs.\<mu> (RAT F) i j\<bar> \<le> 1 / 2" 
-shows "LLL_invariant True (increase_i (i,Fr,Gr)) F G"
+shows "LLL_invariant True (True, increase_i (i,Fr,Gr)) F G"
 proof -
   note inv = LLL_invD[OF LLL]
   from inv have Gr: "g_repr i Gr F" and Fr: "f_repr i Fr F"
@@ -441,6 +451,8 @@ proof -
   from red red_i have red: "gs.weakly_reduced \<alpha> (Suc i) G" 
     unfolding gs.weakly_reduced_def
     by (intro allI impI, rename_tac ii, case_tac "Suc ii = i", auto)
+  from inv(14) have sred_i: "\<And> j. j < i \<Longrightarrow> \<bar>gs.\<mu> (RAT F) i j\<bar> \<le> 1 / 2" 
+    unfolding mu_small_def by auto
   from sred sred_i have sred: "gs.reduced \<alpha> (Suc i) G (gs.\<mu> (RAT F))"
     unfolding gs.reduced_def
     by (intro conjI[OF red] allI impI, rename_tac ii j, case_tac "ii = i", auto)
@@ -461,7 +473,6 @@ lemma mu_bound_rowD: assumes "mu_bound_row F bnd i" "j \<le> i"
 lemma mu_bound_row_1: assumes "mu_bound_row F bnd i" 
   shows "bnd \<ge> 1" using mu_bound_rowD[OF assms, of i]
   by (auto simp: gs.\<mu>.simps)
-
 
 lemma reduced_mu_bound_row: assumes red: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F))"  
   and ii: "ii < i" 
@@ -534,7 +545,7 @@ proof -
 qed
 end
 
-lemma LLL_inv_sq_norm_fs_mu_G_bound: assumes Linv: "LLL_invariant outside (ii,Fr,Gr) F G" 
+lemma LLL_inv_sq_norm_fs_mu_G_bound: assumes Linv: "LLL_invariant outside (upw,ii,Fr,Gr) F G" 
   and i: "i < m" 
   and mu_bound: "mu_bound_row F bnd i" 
 shows "rat_of_int \<parallel>F ! i\<parallel>\<^sup>2 \<le> of_nat (Suc i * A) * bnd" 
@@ -549,7 +560,7 @@ proof -
 qed
     
 
-lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant False (i,Fr,Gr) F G"
+lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant False (True,i,Fr,Gr) F G"
   and i: "i < m"  and j: "j < i" 
   and res: "basis_reduction_add_row_main (i,Fr,Gr) fj mu = (i',Fr',Gr')"
   and fj: "fj = F ! j" 
@@ -557,7 +568,7 @@ lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant False (i,Fr,Gr)
   and c: "c = floor_ceil (gs.\<mu> (RAT F) i j)" 
   and mu_bnd: "mu_bound_row F bnd i" 
   and bnd: "bnd \<le> 4 ^ (m - 2) * of_nat (A ^ (m - 1) * m)" 
-shows "\<exists> v. LLL_invariant False (i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (gs.\<mu> (RAT (F[ i := v])) i j) \<le> inverse 2 
+shows "\<exists> v. LLL_invariant False (True,i',Fr',Gr') (F[ i := v]) G \<and> i' = i \<and> Gr' = Gr \<and> abs (gs.\<mu> (RAT (F[ i := v])) i j) \<le> inverse 2 
   \<and> (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> (i' \<noteq> i \<or> j' > j) 
       \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i' j' = gs.\<mu> (RAT F) i' j')
   \<and> (\<forall> j'. j' \<le> j \<longrightarrow> gs.\<mu> (RAT (F[ i := v])) i j' = gs.\<mu> (RAT F) i j' - of_int c * gs.\<mu> (RAT F) j j')
@@ -936,20 +947,19 @@ proof -
         thus ?thesis unfolding True by auto
       qed
     qed
-    have "LLL_invariant False (i, Fr1, Gr) F1 G" unfolding Hs[symmetric]
+    have "LLL_invariant False (True,i, Fr1, Gr) F1 G" unfolding Hs[symmetric]
       apply (rule LLL_invI[OF repr' gso'' G1_def(2)[folded snd_gram_schmidt_int,symmetric] _ red inv(7) _ _ sred])
       by (insert F1 F1_F inv(5) fbnd indep_F1 Hs inv(13), auto)
   } note inv_gso = this
   show ?thesis using mu_bound_factor small mu_change inv_gso mudiff mu_no_change unfolding res j F1_def by auto
 qed
 
-lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant False (i,Fr,Gr) F G"
+lemma basis_reduction_add_rows: fixes Gr assumes Linv: "LLL_invariant False (True,i,Fr,Gr) F G"
   and i: "i < m" 
   and res: "basis_reduction_add_rows (i,Fr,Gr) = (i',Fr',Gr')"
   and row_bnd: "mu_bound_row F (4^(m - 1 - i) * bnd) i" 
   and bnd: "bnd = of_nat (A ^ (m - 1) * m)" 
-shows "\<exists> F' fi. LLL_invariant True (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
-  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2)"
+shows "\<exists> F' fi. LLL_invariant True (False, i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi]"
 (* unused: and 
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
     gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j') *)
@@ -974,8 +984,7 @@ proof -
     "basis_reduction_add_row_i_all_main (i, Fr, Gr) (rev (take ii F))
      (rev (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (gs.gso (RAT F)) [0..<ii]))) =
     (i', Fr', Gr')" "ii \<le> i" unfolding ii_def by auto 
-  hence "\<exists> F' fi. LLL_invariant True (i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
-  (\<forall> j < i. abs (gs.\<mu> (RAT F') i j) \<le> 1/2) \<and>
+  hence "\<exists> F' fi. LLL_invariant True (False,i,Fr',Gr) F' G \<and> i' = i \<and> Gr' = Gr \<and> F' = F[i := fi] \<and>
   (\<forall> i' j'. i' < m \<longrightarrow> j' < m \<longrightarrow> i' \<noteq> i \<longrightarrow> 
     gs.\<mu> (RAT F') i' j' = gs.\<mu> (RAT F) i' j')" using Linv small row_bnd
   proof (induct ii arbitrary: Fr F)
@@ -1005,7 +1014,7 @@ proof -
     from basis_reduction_add_row_main[OF Suc(4) i ii(1) main refl pair c_def, of "4 ^ (m - 1 - Suc ii) * bnd",
       unfolded four, OF Suc(6), folded bnd, OF upper]
     obtain v where
-        Linv: "LLL_invariant False (i, Fr'', Gr) (F[i := v]) G" 
+        Linv: "LLL_invariant False (True,i, Fr'', Gr) (F[i := v]) G" 
       and id: "i'' = i" "Gr'' = Gr" 
       and small: "?small (F[i := v]) ii" 
       and id': "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> (i' \<noteq> i \<or> ii < j') \<longrightarrow>
@@ -1045,26 +1054,25 @@ proof -
       qed
     qed
     from Suc(1)[OF res ii_le Linv small bnd'] obtain G' fi where
-      Linv: "LLL_invariant True (i, Fr', Gr) G' G" 
+      Linv: "LLL_invariant True (False,i, Fr', Gr) G' G" 
       and i': "i' = i" 
       and fi: "G' = F[i := v, i := fi]" 
       and gso': "Gr' = Gr" 
-      and small: "(\<forall>j<i. ?small G' j)" 
       and id: "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow> i' \<noteq> i \<Longrightarrow>
            gs.\<mu> (RAT G') i' j' =
            gs.\<mu> (RAT ?G) i' j'" by blast
     from fi have fi: "G' = F[i := fi]" by auto
     show ?case
-    proof (intro exI conjI, rule Linv, rule i', rule gso', rule fi, rule small, intro allI impI, goal_cases)
+    proof (intro exI conjI, rule Linv, rule i', rule gso', rule fi, intro allI impI, goal_cases)
       case (1 i' j')
       show ?case unfolding id[OF 1] 
         by (rule id'[rule_format], insert 1 i', auto)
     qed
   next
     case 0 
-    hence Linv: "LLL_invariant False (i, Fr', Gr') F G" 
+    hence Linv: "LLL_invariant False (True,i, Fr', Gr') F G" 
       and *: "\<forall>j<i. \<bar>gs.\<mu> (RAT F) i j\<bar> * 2 \<le> 1" "i' = i" "Gr' = Gr" by auto
-
+    from * have mu_small: "mu_small F i" unfolding mu_small_def by auto
     note inv = LLL_invD[OF Linv]
     from inv(12) have f_bound: "f_bound False i F" by auto
     {
@@ -1095,8 +1103,8 @@ proof -
       qed
     }
     hence f_bound: "f_bound True i F" unfolding f_bound_def by auto
-    have "LLL_invariant True (i, Fr', Gr') F G"
-      by (rule LLL_invI, insert f_bound inv, blast+)
+    have "LLL_invariant True (False, i, Fr', Gr') F G"
+      by (rule LLL_invI, insert f_bound inv mu_small, blast+)
     thus ?case by (intro exI[of _ F] exI[of _ "F ! i"], insert *, auto)
   qed
   thus ?thesis by blast
@@ -1155,7 +1163,7 @@ proof -
   finally show "d F1 k = d F2 k" by simp
 qed
 
-lemma LLL_inv_A_pos: assumes LLL: "LLL_invariant outside (i, Fr, Gr) F G" 
+lemma LLL_inv_A_pos: assumes LLL: "LLL_invariant outside (upw, i, Fr, Gr) F G" 
   and m: "m \<noteq> 0" 
 shows "A > 0" 
 proof -
@@ -1177,7 +1185,7 @@ proof -
 qed
 
 (* equation (3) in front of Lemma 16.18 *)
-lemma d_approx: assumes LLL: "LLL_invariant outside (ix, Fr, Gr) F G" 
+lemma d_approx: assumes LLL: "LLL_invariant outside (upw, ix, Fr, Gr) F G" 
   and i: "i < m" 
 shows "rat_of_int (d F i) \<le> rat_of_nat (A^i)" 
 proof -
@@ -1194,7 +1202,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma D_approx: assumes "LLL_invariant outside (i, Fr, Gr) F G" 
+lemma D_approx: assumes "LLL_invariant outside (upw, i, Fr, Gr) F G" 
   shows "D F \<le> A ^ (m * m)" 
 proof - 
   note inv = LLL_invD[OF assms]
@@ -1232,9 +1240,9 @@ lemma reduction: "0 < reduction" "reduction \<le> 1"
 
 lemma base: "\<alpha> > 4/3 \<Longrightarrow> base > 1" using reduction(1,3) unfolding reduction_def base_def by auto
 
-lemma LLL_measure_approx: assumes inv: "LLL_invariant outside (i, Fr, Gr) F G"
+lemma LLL_measure_approx: assumes inv: "LLL_invariant outside (upw, i, Fr, Gr) F G"
   and "\<alpha> > 4/3" "m \<noteq> 0" 
-shows "LLL_measure (i, Fr, Gr) \<le> m + 2 * m * m * log base A"
+shows "LLL_measure (upw,i, Fr, Gr) \<le> m + 2 * m * m * log base A"
 proof -   
   have b1: "base > 1" using base assms by auto
   have id: "base = 1 / real_of_rat reduction" unfolding base_def reduction_def using \<alpha>0 by
@@ -1259,7 +1267,7 @@ proof -
     by (rule log_nat_power, insert A0, auto)
   finally have main: "logD F \<le> m * m * log base A" by simp
 
-  have "real (LLL_measure (i, Fr, Gr)) = real (2 * logD F + m - i)"
+  have "real (LLL_measure (upw, i, Fr, Gr)) = real (2 * logD F + m - i)"
     unfolding LLL_measure_def split invD(1) by simp
   also have "\<dots> \<le> 2 * real (logD F) + m" using invD by simp
   also have "\<dots> \<le> 2 * (m * m * log base A) + m" using main by auto
@@ -1267,17 +1275,17 @@ proof -
 qed
 
 
-lemma basis_reduction_step: assumes Linv: "LLL_invariant True (i,Fr,Gr) F G"
+lemma basis_reduction_step: assumes Linv: "LLL_invariant True (upw, i,Fr,Gr) F G"
   and i: "i < m"
-  and res: "basis_reduction_step \<alpha> (i,Fr,Gr) = state"
+  and res: "basis_reduction_step \<alpha> (upw,i,Fr,Gr) = state"
 shows "(\<exists> F' G'. LLL_invariant True state F' G')" 
-  and "LLL_measure state < LLL_measure (i,Fr,Gr)" 
+  and "LLL_measure state < LLL_measure (upw, i,Fr,Gr)" 
 proof (atomize(full), cases "i = 0")
   case i0: False
-  note res = res[unfolded basis_reduction_step_def split] 
-  obtain i1 Fr1 Gr1 where 
-    il: "basis_reduction_add_rows (i,Fr,Gr) = ((i1, Fr1, Gr1))" (is "?b = _")
-    by (cases ?b, auto)
+  define state' where "state' = (if upw then basis_reduction_add_rows (i, Fr, Gr) else (i, Fr, Gr))" 
+  obtain i1 Fr1 Gr1 where state': "state' = (i1, Fr1, Gr1)" by (cases state', auto)
+  from i0 have "(i = 0) = False" by auto
+  note res = res[unfolded basis_reduction_step_def split fst_conv state'[unfolded state'_def] Let_def this if_False] 
   note inv = LLL_invD[OF Linv]
   from LLL_inv_A_pos[OF Linv] i have A0: "A > 0" by auto
   {
@@ -1316,12 +1324,25 @@ proof (atomize(full), cases "i = 0")
     finally show "(gs.\<mu> (RAT F) i j)\<^sup>2 \<le> ?bnd" . 
   qed
   have f_bnd: "f_bound False i F" using f_bound_True_arbitrary[OF inv(12)] .
-  with inv have inv: "LLL_invariant False (i,Fr,Gr) F G" by (intro LLL_invI, blast+)
-  
-  from basis_reduction_add_rows[OF inv i il mu_bnd] i0 obtain F1 
-    where Linv': "LLL_invariant True (i, Fr1, Gr1) F1 G" and ii: "i1 = i" 
-      and mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>gs.\<mu> (RAT F1) i j\<bar> \<le> 1 / 2" 
-      and m12: "\<bar>gs.\<mu> (RAT F1) i (i - 1)\<bar> \<le> inverse 2"
+  with inv have inv: "LLL_invariant False (upw,i,Fr,Gr) F G" by (intro LLL_invI, blast+)
+  have "\<exists> F1. LLL_invariant True (False, i, Fr1, Gr1) F1 G \<and> i1 = i" 
+  proof (cases upw)
+    case False
+    with state'_def[unfolded state']
+    show ?thesis by (intro exI[of _ F], insert Linv, auto)
+  next
+    case True
+    with inv have inv: "LLL_invariant False (True, i, Fr, Gr) F G" by auto
+    from state'_def[unfolded state'] True
+    have "basis_reduction_add_rows (i, Fr, Gr) = (i1, Fr1, Gr1)" by auto
+    from basis_reduction_add_rows[OF inv i this mu_bnd refl]
+    show ?thesis by auto
+  qed
+  then obtain F1 
+    where Linv': "LLL_invariant True (False, i, Fr1, Gr1) F1 G" and ii: "i1 = i" by auto
+  from LLL_invD(14)[OF Linv', unfolded mu_small_def]
+  have mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>gs.\<mu> (RAT F1) i j\<bar> \<le> 1 / 2" by auto
+  from mu_F1_i[of "i-1"] have m12: "\<bar>gs.\<mu> (RAT F1) i (i - 1)\<bar> \<le> inverse 2" using i0
     by auto
   note d = d_def  
   note Gd = Gramian_determinant(1)
@@ -1334,7 +1355,7 @@ proof (atomize(full), cases "i = 0")
   note inv = LLL_invD[OF inv] 
   note inv' = LLL_invD[OF Linv']
   from inv have repr: "f_repr i Fr F" by auto
-  note res = res[unfolded basis_reduction_step_def this split il id Let_def]
+  note res = res[unfolded basis_reduction_step_def this split ii]
   let ?x = "G ! (i - 1)" let ?y = "G ! i" 
   let ?x' = "sqnorm_g_im1 Gr1" let ?y' = "sqnorm_g_i Gr1" 
   let ?cond = "\<alpha> * sq_norm ?y < sq_norm ?x" 
@@ -1350,7 +1371,7 @@ proof (atomize(full), cases "i = 0")
   hence cond: "?cond' = ?cond" using y by auto
   from i0 have "(i = 0) = False" by auto
   note res = res[unfolded cond fst_conv this if_False]
-  show "(\<exists>H. Ex (LLL_invariant True state H)) \<and> LLL_measure state < LLL_measure (i, Fr, Gr)"
+  show "(\<exists>H. Ex (LLL_invariant True state H)) \<and> LLL_measure state < LLL_measure (upw, i, Fr, Gr)"
   proof (cases ?cond)
     case False
     from len inc_i[OF repr] repr i have repr': "f_repr (Suc i) (inc_i Fr1) F1" by auto
@@ -1372,12 +1393,12 @@ proof (atomize(full), cases "i = 0")
       qed
     qed      
     from res False ii
-    have state: "state = increase_i (i, Fr1, Gr1)" by auto
+    have state: "state = (True,increase_i (i, Fr1, Gr1))" by auto
     have invS: "LLL_invariant True state F1 G" unfolding state
       by (rule increase_i[OF Linv' i], insert False mu_F1_i, auto)
-    obtain Fr' Gr' where state: "state = (Suc i, Fr', Gr')" using state
+    obtain Fr' Gr' where state: "state = (True, Suc i, Fr', Gr')" using state
       by (cases state, auto simp: increase_i_def)
-    have "LLL_measure state < LLL_measure (i, Fr, Gr)" unfolding LLL_measure_def logD_eq split state
+    have "LLL_measure state < LLL_measure (upw,i, Fr, Gr)" unfolding LLL_measure_def logD_eq split state
       LLL_invD(1)[OF invS[unfolded state], symmetric] inv(1)[symmetric]
       using i by simp
     thus ?thesis using invS by blast
@@ -1408,7 +1429,7 @@ proof (atomize(full), cases "i = 0")
     have span': "gs.span (SRAT F1) = gs.span (SRAT F2)" 
       by (rule arg_cong[of _ _ gs.span], unfold F2_def, insert swap, auto)
     from res gH' Fr2_def Hr' gso' True ii
-    have state: "state = (i - 1, Fr2, Gr2)" by (auto simp: Let_def)
+    have state: "state = (False, i - 1, Fr2, Gr2)" by (auto simp: Let_def)
     have lF2: "lattice_of F2 = lattice_of F1" unfolding F2_def
       by (rule lattice_of_swap[OF swap refl])
     have len': "length F2 = m" using inv' unfolding F2_def by auto
@@ -1578,7 +1599,7 @@ proof (atomize(full), cases "i = 0")
       assume jj: "jj < i - 1"  
       hence id1: "jj < i - 1 \<longleftrightarrow> True" "jj < i \<longleftrightarrow> True" by auto
       have id2: "?g2 jj = ?g1 jj" by (subst g2_g1_identical, insert jj i, auto)       
-      have "?mu2 i jj = ?mu1 (i - 1) jj" 
+      have "?mu2 i jj = ?mu1 (i - 1) jj" "?mu2 (i - 1) jj = ?mu1 i jj" 
         unfolding gs.\<mu>.simps id1 id2 if_True using len i i0 by (auto simp: F2_def)
     } note mu'_mu_i = this
     let ?g2_im1 = "?g2 (i - 1)" 
@@ -1816,10 +1837,17 @@ proof (atomize(full), cases "i = 0")
         unfolding F2_def by (cases, auto)
     }
     hence f_bound: "f_bound True (i - 1) F2" unfolding f_bound_def by auto
+
+    have mu_small: "mu_small F2 (i - 1)" 
+      unfolding mu_small_def
+    proof (intro allI impI, goal_cases)
+      case (1 j)
+      show ?case  using inv'(14) 1 unfolding mu'_mu_i[OF 1] mu_small_def by auto
+    qed      
         
     (* invariant is established *)
-    have newInv: "LLL_invariant True (i - 1, Fr2, Gr2) F2 G2" 
-      by (rule LLL_invI[OF repr' g_repr gH' L red], insert g_bound f_bound connH' len' span' i m12 F2 sred, auto)
+    have newInv: "LLL_invariant True (False, i - 1, Fr2, Gr2) F2 G2" 
+      by (rule LLL_invI[OF repr' g_repr gH' L red], insert mu_small g_bound f_bound connH' len' span' i m12 F2 sred, auto)
 
     have norm_pos: "j < m \<Longrightarrow> sq_norm (?g2 j) > 0" for j 
       using gs.sq_norm_pos[OF connH',of j] unfolding G2_F2 o_def by simp
@@ -1912,34 +1940,36 @@ proof (atomize(full), cases "i = 0")
       also have "nat (floor (?log ?new)) = logD F2" unfolding logD_def False' by simp
       finally show "logD F2 < logD F" by simp
     qed
-    hence "LLL_measure state < LLL_measure (i, Fr, Gr)" unfolding LLL_measure_def state split
+    hence "LLL_measure state < LLL_measure (upw, i, Fr, Gr)" unfolding LLL_measure_def state split
       inv(1)[symmetric] of_list_repr[OF repr']
       using i logD by simp
     thus ?thesis using newInv unfolding state by auto
   qed
 next
   case i0: True
-  from res i0 have state: "state = increase_i (i, Fr, Gr)" unfolding basis_reduction_step_def by auto
+  with Linv have Linv: "LLL_invariant True (False, i, Fr, Gr) F G" 
+    unfolding LLL_invariant_def mu_small_def split by auto
+  from res i0 have state: "state = (True, increase_i (i, Fr, Gr))" unfolding basis_reduction_step_def by auto
   with increase_i[OF Linv i] i0 
   have inv': "LLL_invariant True state F G" by auto
   from LLL_invD[OF Linv] have Gr: "of_list_repr Fr = F" by simp
   from LLL_invD[OF inv'[unfolded increase_i_def state split]] 
   have Gr': "of_list_repr (inc_i Fr) = F" by simp
   have id: "of_list_repr (inc_i Fr) = of_list_repr Fr" by (simp add: Gr Gr')
-  have dec: "LLL_measure state < LLL_measure (i, Fr, Gr)" using i unfolding state i0 
+  have dec: "LLL_measure state < LLL_measure (upw, i, Fr, Gr)" using i unfolding state i0 
     unfolding LLL_measure_def by (simp add: increase_i_def id)
-  show "(\<exists>H. Ex (LLL_invariant True state H)) \<and> LLL_measure state < LLL_measure (i, Fr, Gr)" 
+  show "(\<exists>H. Ex (LLL_invariant True state H)) \<and> LLL_measure state < LLL_measure (upw, i, Fr, Gr)" 
     by (intro conjI exI dec, rule inv')
 qed
 
 lemma basis_reduction_main: fixes F G assumes "LLL_invariant True state F G"
   and "basis_reduction_main \<alpha> m state = state'" 
-shows "\<exists> F' G'. LLL_invariant True state' F' G' \<and> fst state' = m" 
+shows "\<exists> F' G'. LLL_invariant True state' F' G' \<and> (fst o snd) state' = m" 
 proof (cases "m = 0")
   case True
   from assms(2)[unfolded True basis_reduction_main.simps[of _ 0 state]] 
   have state': "state' = state" by auto
-  obtain i Fr Gr where state: "state = (i,Fr,Gr)" by (cases state, auto)
+  obtain upw i Fr Gr where state: "state = (upw,i,Fr,Gr)" by (cases state, auto)
   from LLL_invD[OF assms(1)[unfolded state]] True have i: "i = 0" by auto
   show ?thesis using assms(1) unfolding state' state i True by auto
 next
@@ -1951,14 +1981,14 @@ next
     note inv = 1(2)
     note IH = 1(1)[rule_format]
     note res = 1(3)
-    obtain i Fr1 Gr1 where state: "state = (i,Fr1,Gr1)" by (cases state, auto)
+    obtain upw i Fr1 Gr1 where state: "state = (upw,i,Fr1,Gr1)" by (cases state, auto)
     note inv = inv[unfolded state]
     note res = res[unfolded state]
     show ?case
     proof (cases "i < m")
       case True
       with inv have i: "i < m" unfolding LLL_invariant_def by auto
-      obtain state'' where b: "basis_reduction_step \<alpha> (i, Fr1, Gr1) = state''" by auto
+      obtain state'' where b: "basis_reduction_step \<alpha> (upw, i, Fr1, Gr1) = state''" by auto
       from res True b
       have res: "basis_reduction_main \<alpha> m  state'' = state'" by simp
       note bsr = basis_reduction_step[OF inv i b]
@@ -1969,7 +1999,7 @@ next
       case False
       define G1 where Gr: "G1 = of_list_repr Fr1" 
       note inv = inv[unfolded LLL_invariant_def split Gr[symmetric] Let_def]
-      from False res have state': "state' = (i, Fr1, Gr1)" by simp
+      from False res have state': "state' = (upw,i, Fr1, Gr1)" by simp
       from False inv have i: "i = m" unfolding LLL_invariant_def by auto
       show ?thesis using 1(2) unfolding state' state i by auto
     qed
@@ -2025,17 +2055,16 @@ proof -
     note f_bnd g_bnd
   }
   hence bounds: "g_bound G \<and> f_bound True 0 fs_init" unfolding g_bound_def f_bound_def by auto
-  have "LLL_invariant True (0, Fr0, ?Gr0) fs_init G"
+  have "LLL_invariant True (False, 0, Fr0, ?Gr0) fs_init G"
     by (rule LLL_invI[OF repr gso0 gs L_def[symmetric] _ _ len lin_dep], auto simp:gs.weakly_reduced_def 
-        gs.reduced_def len bounds)
-  also have "(0, Fr0, ?Gr0) = state" unfolding assms(1)[symmetric] initial_state_def Let_def
+        gs.reduced_def len bounds mu_small_def)
+  also have "(False, 0, Fr0, ?Gr0) = state" unfolding assms(1)[symmetric] initial_state_def Let_def
     Fr0_def Gr0_def ..
   finally show ?thesis by blast
 qed
 
-
 lemma basis_reduction_state: assumes "basis_reduction_state n \<alpha> fs_init = state" 
-  shows "\<exists>F' G'. LLL_invariant True state F' G' \<and> fst state = m" 
+  shows "\<exists>F' G'. LLL_invariant True state F' G' \<and> (fst o snd) state = m" 
 proof -
   let ?state = "initial_state n fs_init" 
   from initial_state[OF refl]
@@ -2052,10 +2081,10 @@ lemma reduce_basis: assumes res: "reduce_basis n \<alpha> fs_init = (F', G')"
   "gs.lin_indpt_list (RAT F')" (is ?g4)
   "length F' = m" (is ?g5)
 proof -  
-  obtain i Fr Gr where 1: "basis_reduction_state n \<alpha> fs_init = (i, Fr, Gr)" (is "?main = _") 
+  obtain upw i Fr Gr where 1: "basis_reduction_state n \<alpha> fs_init = (upw, i, Fr, Gr)" (is "?main = _") 
     by (cases ?main) auto
   from basis_reduction_state[OF 1] obtain F1 G1
-    where Linv: "LLL_invariant True (i, Fr, Gr) F1 G1" 
+    where Linv: "LLL_invariant True (upw, i, Fr, Gr) F1 G1" 
      and i_n: "i = m" by auto
   from res[unfolded reduce_basis_def 1] have R: "F' = of_list_repr Fr" 
     and Rs: "G' = map fst (of_list_repr Gr)" by auto

@@ -147,7 +147,7 @@ definition basis_reduction_add_rows_cost :: "state \<Rightarrow> state cost" whe
         gjs = fst G
       in basis_reduction_add_row_i_all_main_cost state fjs gjs)" 
 
-lemma basis_reduction_add_rows_cost: assumes "LLL_invariant outside state F G" 
+lemma basis_reduction_add_rows_cost: assumes "LLL_invariant outside (upw,state) F G" 
   shows "result (basis_reduction_add_rows_cost state) = basis_reduction_add_rows state" (is ?g1)
      "cost (basis_reduction_add_rows_cost state) \<le> 4 * m * n * arith_cost" (is ?g2)
 proof -
@@ -160,39 +160,45 @@ proof -
     by (rule order.trans, rule basis_reduction_add_row_i_all_main_cost, insert len, auto)
 qed
 
-definition basis_reduction_step_cost :: "state \<Rightarrow> state cost" where
-  "basis_reduction_step_cost state = (if fst state = 0 then (let c = 0 in (increase_i state, c))
-     else case basis_reduction_add_rows_cost state of (state',c1) \<Rightarrow>
+definition basis_reduction_step_cost :: "estate \<Rightarrow> estate cost" where
+  "basis_reduction_step_cost estate = (case estate of (upw, state) \<Rightarrow> 
+     if fst state = 0 then (let c = 0 in ((True, increase_i state), c))
+     else case (if upw then basis_reduction_add_rows_cost state else (state, 0))
+     of (state',c1) \<Rightarrow>
      case state' of (i, F, G) \<Rightarrow>
       if sqnorm_g_im1 G > \<alpha> * sqnorm_g_i G 
-      then case basis_reduction_swap_cost state' of (state'',c2) \<Rightarrow> (state'', c1 + c2)
-      else (increase_i state', c1)
+      then case basis_reduction_swap_cost state' of (state'',c2) \<Rightarrow> ((False, state''), c1 + c2)
+      else ((True, increase_i state'), c1)
      )" 
 
 definition "body_cost = (4 * m + 12) * n * arith_cost" 
 
-lemma basis_reduction_step_cost: assumes "LLL_invariant outside state F G" 
-  shows "result (basis_reduction_step_cost state) = basis_reduction_step \<alpha> state" (is ?g1)
-     "cost (basis_reduction_step_cost state) \<le> body_cost" (is ?g2)
+lemma basis_reduction_step_cost: assumes "LLL_invariant outside estate F G" 
+  shows "result (basis_reduction_step_cost estate) = basis_reduction_step \<alpha> estate" (is ?g1)
+     "cost (basis_reduction_step_cost estate) \<le> body_cost" (is ?g2)
 proof -
-  obtain state' c1 where add: "basis_reduction_add_rows_cost state = (state',c1)" (is "?add = _") by (cases ?add, auto)
+  obtain upw state where estate: "estate = (upw,state)" by (cases estate, auto)
+  obtain state' c1 where choice: "(if upw then basis_reduction_add_rows_cost state else (state, 0)) = (state',c1)" 
+    (is "?resc = _") by (cases ?resc, auto)
   obtain i F G where state': "state' = (i,F,G)" by (cases state', auto)
   obtain state'' c2 where swap: "basis_reduction_swap_cost (i,F,G) = (state'',c2)" (is "?swap = _") by (cases ?swap, auto)
-  from basis_reduction_add_rows_cost[OF assms, unfolded add cost_simps]
-  have add': "basis_reduction_add_rows state = state'" 
-    and c1: "c1 \<le> 4 * m * n * arith_cost" by auto
+  note res = basis_reduction_step_cost_def[of estate, unfolded estate split choice state', folded estate]
+  let ?res = "if upw then basis_reduction_add_rows state else state" 
+  from basis_reduction_add_rows_cost[OF assms[unfolded estate]] choice  
+  have add': "?res = state'" 
+    and c1: "c1 \<le> 4 * m * n * arith_cost" by (auto split: if_splits simp: cost_simps)
+  note res' = basis_reduction_step_def[of \<alpha> estate, unfolded estate split Let_def add' state', folded estate]  
   from basis_reduction_swap_cost[of "(i,F,G)", unfolded swap cost_simps]
   have swap': "basis_reduction_swap (i, F, G) = state''" 
     and c2: "c2 \<le> 12 * n * arith_cost" by auto
-  note d = basis_reduction_step_cost_def basis_reduction_step_def Let_def add split swap 
-      state' add' swap'
+  note d = Let_def split swap state' add' swap' res res'
   show ?g1 unfolding d by (auto split: if_splits simp: cost_simps)
   show ?g2 unfolding d nat_distrib body_cost_def using c1 c2 by (auto split: if_splits simp: cost_simps)
 qed
 
-function basis_reduction_main_cost :: "state \<Rightarrow> state cost" where
+function basis_reduction_main_cost :: "estate \<Rightarrow> estate cost" where
   "basis_reduction_main_cost state = (
-     case state of (i,F,G) \<Rightarrow>
+     case state of (_,i,F,G) \<Rightarrow>
      if i < m \<and> (\<exists> FF GG. LLL_invariant True state FF GG) 
        \<comment> \<open>The check on the invariant is just to be able to prove termination. 
           One cannot use partial-function at this point, since the function with cost is not tail-recursive.\<close>
@@ -205,11 +211,11 @@ function basis_reduction_main_cost :: "state \<Rightarrow> state cost" where
 
 termination
 proof (standard, rule wf_measure[of LLL_measure], goal_cases)
-  case (1 state i FG F G state1 c1)
-  note * = 1(1)[symmetric] 1(2)[symmetric] 1(3) 1(4)[symmetric]
-  from * obtain FF GG where i: "i < m" and inv: "LLL_invariant True (i, F, G) FF GG" by auto
+  case (1 estate upw state i FG F G state1 c1)
+  note * = 1(1-3)[symmetric] 1(4) 1(5)[symmetric]
+  from * obtain FF GG where i: "i < m" and inv: "LLL_invariant True (upw, i, F, G) FF GG" by auto
   from basis_reduction_step_cost[OF inv, unfolded *] 
-  have res: "basis_reduction_step \<alpha> (i, F, G) = state1" using * cost_simps(2) by metis
+  have res: "basis_reduction_step \<alpha> (upw, i, F, G) = state1" using * cost_simps(2) by metis
   from basis_reduction_step[OF inv i res]
   show ?case unfolding * by auto
 qed
@@ -230,17 +236,17 @@ proof -
     note inv = 1(2)
     have ex: "(\<exists>FF. Ex (LLL_invariant True state FF)) = True" using inv by auto
     note IH = 1(1)[rule_format]
-    obtain i Fr1 Gr1 where state: "state = (i,Fr1,Gr1)" by (cases state, auto)
+    obtain i upw Fr1 Gr1 where state: "state = (upw,i,Fr1,Gr1)" by (cases state, auto)
     note inv = inv[unfolded state]
     note simp = basis_reduction_main_cost.simps[of state, unfolded state split, folded state, unfolded ex]
     show ?case
     proof (cases "i < m")
       case i: True
-      obtain c1 state1 where b: "basis_reduction_step_cost (i, Fr1, Gr1) = (state1, c1)" (is "?b = _")
+      obtain c1 state1 where b: "basis_reduction_step_cost (upw,i, Fr1, Gr1) = (state1, c1)" (is "?b = _")
         by (cases ?b, auto)
       note simp = simp[unfolded state b split, folded state]
       from basis_reduction_step_cost[OF inv, unfolded state b cost_simps]
-      have c1: "c1 \<le> body_cost" and bb: "basis_reduction_step \<alpha> (i, Fr1, Gr1) = state1" by auto
+      have c1: "c1 \<le> body_cost" and bb: "basis_reduction_step \<alpha> (upw, i, Fr1, Gr1) = state1" by auto
       obtain c2 state2 where rec: "basis_reduction_main_cost state1 = (state2, c2)" (is "?rec = _")
         by (cases ?rec, auto)
       note simp = simp[unfolded rec split]
@@ -264,7 +270,7 @@ proof -
     qed
   qed
   show ?g1 by fact
-  obtain i F G where state: "state = (i, F, G)" by (cases state, auto)
+  obtain upw i F G where state: "state = (upw, i, F, G)" by (cases state, auto)
   note cost also have "body_cost * LLL_measure state \<le> body_cost * num_loops" 
   proof (rule mult_left_mono; linarith?)
     define l where "l = log base (real A)" 
@@ -359,11 +365,11 @@ qed
 
 definition "initial_gso_cost = (4 * m + 3) * m * n * arith_cost" 
 
-definition initial_state_cost :: "int vec list \<Rightarrow> state cost" where
+definition initial_state_cost :: "int vec list \<Rightarrow> estate cost" where
   "initial_state_cost F = (case gram_schmidt_triv_cost (map (map_vec of_int) F)
-     of (G,c) \<Rightarrow> ((0, ([], F), ([], G)), c))" 
+     of (G,c) \<Rightarrow> ((False, 0, ([], F), ([], G)), c))" 
 
-definition basis_reduction_state_cost :: "int vec list \<Rightarrow> state cost" where 
+definition basis_reduction_state_cost :: "int vec list \<Rightarrow> estate cost" where 
   "basis_reduction_state_cost F = (
     case initial_state_cost F of (state1, c1) \<Rightarrow> 
     case basis_reduction_main_cost state1 of (state2, c2) \<Rightarrow> 
@@ -371,7 +377,7 @@ definition basis_reduction_state_cost :: "int vec list \<Rightarrow> state cost"
 
 definition reduce_basis_cost :: "int vec list \<Rightarrow> int vec list cost" where
   "reduce_basis_cost F = (case basis_reduction_state_cost F of (state,c) \<Rightarrow> 
-    ((of_list_repr o fst o snd) state, c))" 
+    ((of_list_repr o fst o snd o snd) state, c))" 
 
 lemma initial_state_cost: "result (initial_state_cost fs_init) = initial_state n fs_init" (is ?g1)
   "cost (initial_state_cost fs_init) \<le> initial_gso_cost" (is ?g2)
