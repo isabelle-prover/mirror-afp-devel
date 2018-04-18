@@ -510,22 +510,78 @@ proof (rule max_list_le, unfold set_map o_def)
     by (subst nat_mult_distrib[symmetric], auto simp: power2_eq_square ac_simps)
 qed (insert m0 len, auto)
 
+fun f_bnd :: "bool \<Rightarrow> nat" where
+  "f_bnd False = 2 ^ (m - 1) * A ^ m * m" 
+| "f_bnd True = A * m" 
+
+lemma f_bnd_mono: "f_bnd outside \<le> f_bnd False" 
+proof (cases outside)
+  case out: True
+  show ?thesis
+  proof (cases "A = 0 \<or> m = 0")
+    case True
+    thus ?thesis using out by auto
+  next
+    case False
+    hence 0: "A > 0" "m > 0" by auto
+    let ?num = "(2 ^ (m - 1) * A ^ m)" 
+    have "(A * m) * 1 \<le> (A * m) * (2 ^ (m - 1) * A ^ (m - 1))" 
+      by (rule mult_left_mono, insert 0, auto)
+    also have "\<dots> = 2 ^ (m - 1) * A ^ (Suc (m - 1)) * m " by simp
+    also have "Suc (m - 1) = m" using 0 by simp
+    finally show ?thesis using out by auto
+  qed
+qed auto 
+
+lemma aux_bnd_mono: "A * m \<le> (4 ^ (m - 1) * A ^ m * m * m)" 
+proof (cases "A = 0 \<or> m = 0")
+  case False
+  hence 0: "A > 0" "m > 0" by auto
+  let ?num = "(4 ^ (m - 1) * A ^ m * m * m)" 
+  have "(A * m) * 1 \<le> (A * m) * (4 ^ (m - 1) * A ^ (m - 1) * m)" 
+    by (rule mult_left_mono, insert 0, auto)
+  also have "\<dots> = 4 ^ (m - 1) * A ^ (Suc (m - 1)) * m * m" by simp
+  also have "Suc (m - 1) = m" using 0 by simp
+  finally show "A * m \<le> ?num" by simp
+qed auto
 
 lemma LLL_invariant_f_bound: 
-  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n" 
-shows "\<bar>fs ! i $ j\<bar> \<le> A * m" 
+shows "\<bar>fs ! i $ j\<bar> \<le> f_bnd outside" 
 proof -
+  from LLL_inv_A_pos[OF inv] i have A0: "A > 0" by auto
   note inv = LLL_invD[OF inv] 
-  from \<open>f_bound True k fs\<close>[unfolded f_bound_def, rule_format, OF i]
-  have le: "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> int (A * m)" by simp
   from inv(4,3) i have fsi: "fs ! i \<in> carrier_vec n" by auto
   have one: "\<bar>fs ! i $ j\<bar>^1 \<le> \<bar>fs ! i $ j\<bar>^2" 
     by (cases "fs ! i $ j \<noteq> 0", intro pow_mono_exp, auto)
+  let ?num = "(4 ^ (m - 1) * A ^ m * m * m)" 
+  let ?sq_bnd = "if i \<noteq> k \<or> outside then int (A * m) else int ?num" 
   have "\<bar>fs ! i $ j\<bar>^2 \<le> \<parallel>fs ! i\<parallel>\<^sup>2" using fsi j by (metis vec_le_sq_norm)
-  also have "\<dots> \<le> A * m" by fact
-  finally have "(fs ! i $ j)^2 \<le> A * m" by simp
-  with one show "\<bar>fs ! i $ j\<bar> \<le> A * m" by auto
+  also have "\<dots> \<le> ?sq_bnd" 
+    using \<open>f_bound outside k fs\<close>[unfolded f_bound_def, rule_format, OF i] by auto
+  finally have two: "(fs ! i $ j)^2 \<le> ?sq_bnd" by simp
+  show ?thesis
+  proof (cases outside)
+    case True
+    with one two show ?thesis by auto
+  next
+    case False
+    let ?num2 = "(2 ^ (m - 1) * A ^ m * m)" 
+    have four: "(4 :: nat) = 2^2" by auto
+    have "(fs ! i $ j)^2 \<le> int (max (A * m) ?num)" 
+      by (rule order.trans[OF two], auto simp: of_nat_mult[symmetric] simp del: of_nat_mult)
+    also have "max (A * m) ?num = ?num" using aux_bnd_mono by presburger 
+    also have "int ?num = int ?num * 1" by simp
+    also have "\<dots> \<le> int ?num * A ^ m" 
+      by (rule mult_left_mono, insert A0, auto)
+    also have "\<dots> = int (?num * A ^ m)" by simp
+    also have "?num * A ^ m = ?num2^2" unfolding power2_eq_square four power_mult_distrib
+      by simp
+    also have "int \<dots> = (int ?num2)^2" by simp
+    finally have "(fs ! i $v j)\<^sup>2 \<le> (int (f_bnd outside))\<^sup>2" using False by simp
+    thus ?thesis unfolding abs_le_square_iff[symmetric] by simp 
+  qed
 qed
 
 
@@ -600,10 +656,10 @@ proof -
 qed
 
 lemma LLL_invariant_mu_bound: 
-  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
   and i: "i < m"                 
   and quot: "quotient_of (gs.\<mu> (RAT fs) i j) = (num, denom)" 
-shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * m" 
+shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * 2 ^ m * m" 
   and "\<bar>denom\<bar> \<le> A ^ m" 
 proof (atomize(full))
   from LLL_inv_A_pos[OF inv] i have A: "A > 0" by auto 
@@ -614,7 +670,7 @@ proof (atomize(full))
   note *(13)[unfolded g_bound_def, rule_format, OF i]
   note vec_le_sq_norm
   note *(2)  
-  show "\<bar>num\<bar> \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
+  show "\<bar>num\<bar> \<le> A ^ (2 * m) * 2 ^ m * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases "j < i")
     case j: True
     from j i have jm: "j < m" by auto
@@ -629,6 +685,12 @@ proof (atomize(full))
     have "rat_of_int (d fs (Suc j)) \<le> of_nat (A ^ Suc j)" 
       by auto
     hence d_j_bound: "d fs (Suc j) \<le> int (A^Suc j)" by linarith
+    let ?num = "4 ^ (m - 1) * A ^ m * m * m" 
+    let ?bnd = "A^(m - 1) * 2 ^ (m - 1) * m" 
+    from *(12)[unfolded f_bound_def, rule_format, OF i]
+      aux_bnd_mono[folded of_nat_le_iff[where ?'a = int]]
+    have sq_f_bnd: "sq_norm (fs ! i) \<le> int ?num" by (auto split: if_splits)
+    have four: "(4 :: nat) = 2^2" by auto
     have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
       by (rule gs.mu_bound_Gramian_determinant[OF *(10) _ _ _ j i],
       insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
@@ -640,12 +702,16 @@ proof (atomize(full))
       using *(4) dual_order.strict_trans apply simp
       using *(3) carrier_vecD nth_mem by blast
     also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (d fs j * sq_norm (fs ! i))" by simp 
-    also have "\<dots> \<le> of_int (int (A^j) * int (A * m))" unfolding of_int_le_iff 
-      by (rule mult_mono[OF dj], insert \<open>f_bound True k fs\<close>[unfolded f_bound_def, rule_format, OF i], auto)
-    also have "\<dots> = of_nat (A^(Suc j) * m)" by simp
-    also have "\<dots> \<le> of_nat (A^m * m)" unfolding of_nat_le_iff
-      by (rule mult_right_mono[OF pow_mono_exp], insert A jm, auto)
-    finally have mu_bound: "abs (?mu^2) \<le> of_nat (A ^ m * m)" by auto
+    also have "\<dots> \<le> of_int (int (A^j) * int ?num)" unfolding of_int_le_iff 
+      by (rule mult_mono[OF dj sq_f_bnd], auto)
+    also have "\<dots> = of_nat (A^(j + m) * (4 ^ (m - 1) * m * m))" by (simp add: power_add)
+    also have "\<dots> \<le> of_nat (A^( (m - 1) + (m-1)) * (4 ^ (m - 1) * m * m))" unfolding of_nat_le_iff
+      by (rule mult_right_mono[OF pow_mono_exp], insert A j i jm, auto)
+    also have "\<dots> = of_nat (?bnd^2)" 
+      unfolding four power_mult_distrib power2_eq_square of_nat_mult by (simp add: power_add)
+    finally have "?mu^2 \<le> (of_nat ?bnd)^2" by auto
+    from this[folded abs_le_square_iff] 
+    have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
       by (rule gs.Gramian_determinant_mu_ints[OF *(10) _ _ _ j i],
       insert *(2-), auto simp: gram_schmidt_int_def gram_schmidt_wit_def set_conv_nth)
@@ -659,36 +725,25 @@ proof (atomize(full))
     also have "\<dots> \<le> A ^ m" unfolding of_nat_le_iff
       by (rule pow_mono_exp, insert A jm, auto)
     finally have d_j: "d fs (Suc j) \<le> A ^ m" .
-    from ints have "(of_int (d fs (Suc j)) * ?mu)^2 \<in> \<int>" by auto
-    also have "(of_int (d fs (Suc j)) * ?mu)^2 = of_int ((d fs (Suc j))^2) * ?mu^2" 
-      unfolding power2_eq_square of_int_mult by simp
-    finally have "of_int ((d fs (Suc j))^2) * ?mu^2 \<in> \<int>" .
-    note quot_bounds = quotient_of_bounds[OF quot_sq this d_pos mu_bound]
-    have "(abs denom)^2 = denom * denom" unfolding power2_eq_square by auto
-    also have "\<dots> \<le> (d fs (Suc j))^2" by fact
-    finally have "abs denom \<le> d fs (Suc j)" unfolding abs_le_square_iff[symmetric] using dsj by auto 
+    note quot_bounds = quotient_of_bounds[OF quot ints dsj mu_bound]
+    have "abs denom \<le> denom" using quotient_of_denom_pos[OF quot] by auto
+    also have "\<dots> \<le> d fs (Suc j)" by fact
     also have "\<dots> \<le> A ^ m" by fact
-    finally have denom: "\<bar>denom\<bar> \<le> int (A ^ m)" .
-    from quot_bounds(1)
-    have "\<bar>num\<bar>^2 \<le> ((d fs (Suc j))\<^sup>2 * int (A ^ m * m)) * 1" 
-      unfolding power2_eq_square
-      by (subst of_int_le_iff[symmetric, where ?'a = rat], auto)
-    also have "\<dots> \<le> ((d fs (Suc j))\<^sup>2 * int (A ^ m * m)) * int (A ^ m * m)" 
-      by (rule mult_left_mono, insert A i, auto)
-    also have "\<dots> = (d fs (Suc j)* int (A ^ m * m))\<^sup>2" unfolding power2_eq_square by auto
-    finally have "\<bar>num\<bar> \<le> d fs (Suc j)* int (A ^ m * m)" unfolding abs_le_square_iff[symmetric] using dsj by auto 
-    also have "\<dots> \<le> A^m * int (A^m * m)" 
-      by (rule mult_right_mono[OF d_j], auto)
-    also have "\<dots> = int ((A^m * A ^ m) * m)" by simp
-    also have "A^m * A ^ m = A^(2 * m)" unfolding power_add[symmetric] 
-      by (rule arg_cong[of _ _ "\<lambda> x. A^x"], simp)
-    finally have num: "\<bar>num\<bar> \<le> int (A ^ (2 * m) * m)" .
+    finally have denom: "abs denom \<le> A ^ m" by auto
+    from quot_bounds(1) have "\<bar>num\<bar> \<le> d fs (Suc j) * int ?bnd" 
+      unfolding of_int_le_iff[symmetric, where ?'a = rat] by simp
+    also have "\<dots> \<le> A ^ m * int ?bnd" by (rule mult_right_mono[OF d_j], auto)
+    also have "\<dots> = (int A ^ (m + (m - 1))) * (2 ^ (m - 1)) * int m" unfolding power_add of_nat_mult by simp
+    also have "\<dots> \<le> (int A ^ (2 * m)) * (2 ^ m) * int m" unfolding of_nat_mult
+      by (intro mult_mono pow_mono_exp, insert A, auto)
+    also have "\<dots> = int (A ^ (2 * m) * 2 ^ m * m)" by simp
+    finally have num: "\<bar>num\<bar> \<le> A ^ (2 * m) * 2 ^ m * m" .
     from denom num show ?thesis by blast
   next
     case False
     hence "?mu = 0 \<or> ?mu = 1" unfolding gs.\<mu>.simps by auto
     hence "quotient_of ?mu = (1,1) \<or> quotient_of ?mu = (0,1)" by auto
-    from this[unfolded quot] show ?thesis using A i by auto+
+    from this[unfolded quot] show ?thesis using A i by (auto intro!: mult_ge_one)
   qed
 qed
 
@@ -698,22 +753,23 @@ text \<open>Now we have bounds on each number $(f_i)_j$, $(g_i)_j$, and $\mu_{i,
 text \<open>We now prove a combined size-bound for all of these numbers\<close>
 
 lemma combined_size_bound: fixes number :: int 
-  assumes inv: "LLL_invariant True (k, Fs, Gs) fs gs" 
+  assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
   and i: "i < m" and j: "j < n"
   and x: "x \<in> {of_int (fs ! i $ j), gs ! i $ j, gs.\<mu> (RAT fs) i j}" 
   and quot: "quotient_of x = (num, denom)" 
   and number: "number \<in> {num, denom}" 
   and number0: "number \<noteq> 0" 
-shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" 
-      "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m"
+shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + m + log 2 m" 
+      "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m"
 proof -
   from LLL_inv_A_pos[OF inv] i have A: "A > 0" by auto
-  have "A ^ m * int 1 \<le> A ^ (2 * m) * int m" 
+  let ?bnd = "A ^ (2 * m) * 2 ^ m * m" 
+  have "A ^ m * int 1 \<le> A ^ (2 * m) * (2^m * int m)" 
     by (rule mult_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
-  hence le: "int (A ^ m) \<le> A ^ (2 * m) * m" by auto
+  hence le: "int (A ^ m) \<le> A ^ (2 * m) * 2^m * m" by auto
   from x consider (xfs) "x = of_int (fs ! i $ j)" | (xgs) "x = gs ! i $ j" | (xmu) "x = gs.\<mu> (RAT fs) i j" 
     by auto
-  hence num_denom_bound: "\<bar>num\<bar> \<le> A ^ (2 * m) * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
+  hence num_denom_bound: "\<bar>num\<bar> \<le> ?bnd \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases)
     case xgs
     from LLL_invariant_g_bound[OF inv i j quot[unfolded xgs]] le
@@ -728,13 +784,15 @@ proof -
     also have "\<dots> \<le> A ^ m" using A by auto
     finally have denom: "\<bar>denom\<bar> \<le> A ^ m" .
     have "\<bar>num\<bar> = \<bar>fs ! i $ j\<bar>" using quot[unfolded xfs] by auto
-    also have "\<dots> \<le> A^1 * int m" using LLL_invariant_f_bound[OF inv i j] by auto
-    also have "\<dots> \<le> A^(2 * m) * int m" 
-      by (rule mult_right_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert A i, auto)
+    also have "\<dots> \<le> int (f_bnd outside)" using LLL_invariant_f_bound[OF inv i j] by auto
+    also have "\<dots> \<le> int (f_bnd False)" using f_bnd_mono[of outside] by presburger
+    also have "\<dots> = int (A ^ m * 2 ^ (m - 1) * m)" by simp
+    also have "\<dots> \<le> ?bnd" unfolding of_nat_mult of_nat_power
+      by (intro mult_mono pow_mono_exp, insert A, auto)
     finally show ?thesis using denom by auto
   qed
   from number consider (num) "number = num" | (denom) "number = denom" by auto
-  hence number_bound: "\<bar>number\<bar> \<le> A^(2 * m) * m" 
+  hence number_bound: "\<bar>number\<bar> \<le> ?bnd" 
   proof (cases)
     case num
     with num_denom_bound show ?thesis by auto
@@ -743,22 +801,25 @@ proof -
     with num_denom_bound have "\<bar>number\<bar> \<le> A ^ m" by auto
     with le show ?thesis by auto
   qed
-  from number_bound have bnd: "of_int \<bar>number\<bar> \<le> real (A ^ (2 * m) * m)" by linarith
-  have "log 2 \<bar>number\<bar> \<le> log 2 (A^(2 * m) * m)" 
+  from number_bound have bnd: "of_int \<bar>number\<bar> \<le> real ?bnd" by linarith
+  have "log 2 \<bar>number\<bar> \<le> log 2 ?bnd" 
     by (subst log_le_cancel_iff, insert number0 bnd, auto)
-  also have "\<dots> = log 2 (A^(2 * m)) + log 2 m" 
+  also have "\<dots> = log 2 (A^(2 * m) * 2^m) + log 2 m" 
+    by (subst log_mult[symmetric], insert i A, auto)
+  also have "\<dots> = log 2 (A^(2 * m)) + log 2 (2^m) + log 2 m" 
     by (subst log_mult[symmetric], insert i A, auto)
   also have "log 2 (A^(2 * m)) = log 2 (A powr (2 * m))" 
     by (rule arg_cong[of _ _ "log 2"], subst powr_realpow, insert A, auto) 
   also have "\<dots> = (2 * m) * log 2 A" 
     by (subst log_powr, insert A, auto)
-  finally show boundA: "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + log 2 m" .
+  also have "log 2 (2^m) = m" by simp
+  finally show boundA: "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + m + log 2 m" .
   have AM: "A \<le> nat M * nat M * n" using A_le_MMn i by auto
   with A have "nat M \<noteq> 0" by auto
   hence M: "M > 0" by simp
   note boundA
-  also have "2 * m * log 2 A + log 2 m \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m" 
-  proof (rule add_right_mono[OF mult_left_mono])
+  also have "2 * m * log 2 A + m + log 2 m \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m" 
+  proof (intro add_right_mono mult_left_mono)
     have "log 2 A \<le> log 2 (M * M * n)" 
     proof (subst log_le_cancel_iff)
       show "real A \<le> (M * M * int n)" using AM[folded of_nat_le_iff[where ?'a = real]] M
@@ -769,7 +830,7 @@ proof -
       by (subst log_mult, insert j M, auto, subst log_mult, auto)
     finally show "log 2 A \<le> 2 * log 2 M + log 2 n" .
   qed auto
-  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + log 2 m" by simp    
+  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m" by simp    
 qed     
 end (* LLL locale *)
 end
