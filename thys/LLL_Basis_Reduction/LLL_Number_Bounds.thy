@@ -4,6 +4,15 @@
     License:    BSD
 *)
 subsection \<open>Explicit Bounds for Size of Numbers that Occur During LLL Algorithm\<close>
+
+text \<open>The LLL invariant already contains bounds on the norms of the vectors $f_i$ and $g_i$. 
+  Based on these bounds we also prove bounds on the absolute values of the $\mu_{i,j}$,
+  and on the absolute values of the numbers in the vectors $f_i$ and $g_i$. 
+  Moreover, we further show that also the denominators in all of these numbers doesn't grow to much.
+  Finally, we prove that each number (i.e., numerator or denominator) during the execution 
+  can be represented with at most ${\cal OO}(m \cdot \log(M \cdot n))$ bits, where
+  $m$ is the number of input vectors, $n$ is the dimension of the input vectors,
+  and $M$ is the maximum absolute value of all numbers in the input vectors.\<close>
 theory LLL_Number_Bounds
   imports LLL
     Perron_Frobenius.HMA_Connect
@@ -750,7 +759,10 @@ qed
 text \<open>Now we have bounds on each number $(f_i)_j$, $(g_i)_j$, and $\mu_{i,j}$, i.e.,
   for rational numbers bounds on the numerators and denominators.\<close>
 
-text \<open>We now prove a combined size-bound for all of these numbers\<close>
+text \<open>We now prove a combined size-bound for all of these numbers. The bounds clearly indicate
+  that the size of the numbers grows at most polynomial, namely the sizes are roughly 
+  bounded by ${\cal O}(m \cdot \log(M \cdot n))$ where $m$ is the number of vectors, $n$ is the dimension
+  of the vectors, and $M$ is the maximum absolute value that occurs in the input to the LLL algorithm.\<close>
 
 lemma combined_size_bound: fixes number :: int 
   assumes inv: "LLL_invariant outside (k, Fs, Gs) fs gs" 
@@ -759,8 +771,8 @@ lemma combined_size_bound: fixes number :: int
   and quot: "quotient_of x = (num, denom)" 
   and number: "number \<in> {num, denom}" 
   and number0: "number \<noteq> 0" 
-shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + m + log 2 m" 
-      "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m"
+shows "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A       + m + log 2 m" 
+      "log 2 \<bar>number\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m"
 proof -
   from LLL_inv_A_pos[OF inv] i have A: "A > 0" by auto
   let ?bnd = "A ^ (2 * m) * 2 ^ m * m" 
@@ -814,23 +826,26 @@ proof -
     by (subst log_powr, insert A, auto)
   also have "log 2 (2^m) = m" by simp
   finally show boundA: "log 2 \<bar>number\<bar> \<le> 2 * m * log 2 A + m + log 2 m" .
-  have AM: "A \<le> nat M * nat M * n" using A_le_MMn i by auto
+  have "A \<le> nat M * nat M * n * 1" using A_le_MMn i by auto
+  also have "\<dots> \<le> nat M * nat M * n * n" by (intro mult_mono, insert j, auto)
+  finally have AM: "A \<le> nat M * nat M * n * n" by simp
   with A have "nat M \<noteq> 0" by auto
   hence M: "M > 0" by simp
   note boundA
-  also have "2 * m * log 2 A + m + log 2 m \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m" 
+  also have "2 * m * log 2 A + m + log 2 m \<le> 2 * m * (2 * log 2 (M * n)) + m + log 2 m" 
   proof (intro add_right_mono mult_left_mono)
-    have "log 2 A \<le> log 2 (M * M * n)" 
-    proof (subst log_le_cancel_iff)
-      show "real A \<le> (M * M * int n)" using AM[folded of_nat_le_iff[where ?'a = real]] M
+    have "log 2 A \<le> log 2 (M * M * n * n)" 
+    proof (subst log_le_cancel_iff)      
+      show "real A \<le> (M * M * int n * int n)" using AM[folded of_nat_le_iff[where ?'a = real]] M
         by simp
     qed (insert A M j, auto)
-    also have "\<dots> = log 2 (of_int M * of_int M * real n)" by simp 
-    also have "\<dots> = 2 * log 2 M + log 2 n" 
-      by (subst log_mult, insert j M, auto, subst log_mult, auto)
-    finally show "log 2 A \<le> 2 * log 2 M + log 2 n" .
+    also have "\<dots> = log 2 (of_int (M * n) * of_int (M * n))" 
+      unfolding of_int_mult by (simp  add: ac_simps)
+    also have "\<dots> = 2 * log 2 (M * n)" 
+      by (subst log_mult, insert j M, auto)
+    finally show "log 2 A \<le> 2 * log 2 (M * n)" .
   qed auto
-  finally show "log 2 \<bar>number\<bar> \<le> 2 * m * (2 * log 2 M + log 2 n) + m + log 2 m" by simp    
+  finally show "log 2 \<bar>number\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m" by simp    
 qed     
 end (* LLL locale *)
 end
