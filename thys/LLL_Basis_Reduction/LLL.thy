@@ -92,8 +92,10 @@ fun basis_reduction_swap :: "state \<Rightarrow> state" where
     gim1 = g_im1 G;
     fi = get_nth_i F;
     fim1 = get_nth_im1 F;
+    n1 = sqnorm_g_i G;
+    nim1 = sqnorm_g_im1 G;
     new_gim1 = gi + mu \<cdot>\<^sub>v gim1;
-    norm_gim1 = sq_norm_vec_rat new_gim1;
+    norm_gim1 = n1 + square_rat mu * nim1;
     new_gi = gim1 - (fim1 \<bullet>i new_gim1 / norm_gim1) \<cdot>\<^sub>v new_gim1;
     norm_gi = sq_norm_vec_rat new_gi;
     G' = dec_i (update_im1 (update_i G (new_gi,norm_gi)) (new_gim1,norm_gim1));
@@ -557,6 +559,43 @@ proof -
   also have "\<parallel>RAT F ! i\<parallel>\<^sup>2 = of_int \<parallel>F ! i\<parallel>\<^sup>2" unfolding sq_norm_of_int[symmetric]
     using inv(4) i by auto
   finally show ?thesis by auto
+qed
+
+lemma LLL_ortho_G_G: assumes Linv: "LLL_invariant outside (upd,k,Fr,Gr) F G" 
+  and ij: "i < m" "j < m" "i \<noteq> j" 
+shows "gs.gso (RAT F) i \<bullet> gs.gso (RAT F) j = 0" (is ?g1)
+   "G ! i \<bullet> G ! j = 0"  (is ?g2)
+proof -
+  note inv = LLL_invD[OF Linv]
+  from inv have conn: 
+    "gs.lin_indpt_list (RAT F)" 
+    "length (RAT F) = m" 
+    "snd (gs.main (RAT F)) = G" 
+    unfolding gram_schmidt_int_def gram_schmidt_wit_def by auto
+  let ?g = "gs.gso (RAT F)" 
+  from gs.main_connect[OF conn] 
+  have G_def: "G = map ?g [0 ..< m]" by auto
+  from gram_schmidt.orthogonal[OF conn ij] have "?g i \<bullet> ?g j = 0" by auto
+  thus ?g1 ?g2 using ij by (auto simp: G_def)
+qed
+
+lemma LLL_ortho_G_F: assumes Linv: "LLL_invariant outside (upd,k,Fr,Gr) F G" 
+  and ij: "j < i" "i < m"  
+shows "gs.gso (RAT F) i \<bullet> (RAT F) ! j = 0" (is ?g1)
+   "G ! i \<bullet> (RAT F) ! j = 0"  (is ?g2)
+proof -
+  note inv = LLL_invD[OF Linv]
+  from inv have conn: 
+    "gs.lin_indpt_list (RAT F)" 
+    "length (RAT F) = m" 
+    "snd (gs.main (RAT F)) = G" 
+    unfolding gram_schmidt_int_def gram_schmidt_wit_def by auto
+  let ?g = "gs.gso (RAT F)" 
+  let ?f = "\<lambda> i. (RAT F) ! i" 
+  from gs.main_connect[OF conn] 
+  have G_def: "G = map ?g [0 ..< m]" by auto
+  from gs.gso_scalar_zero[OF conn ij(2,1)] have "?g i \<bullet> ?f j = 0" by auto
+  thus ?g1 ?g2 using ij by (auto simp: G_def)
 qed
     
 
@@ -1420,8 +1459,10 @@ proof (atomize(full), cases "i = 0")
     let ?gso' = "let gi = g_i Gr1; 
         gim1 = g_im1 Gr1;
         fim1 = get_nth_im1 Fr1;
+        n1 = sqnorm_g_i Gr1;
+        nim1 = sqnorm_g_im1 Gr1;
         new_gim1 = gi + ?mu \<cdot>\<^sub>v gim1;
-        norm_gim1 = sq_norm new_gim1;
+        norm_gim1 = n1 + square_rat ?mu * nim1;
         new_gi = gim1 - (fim1 \<bullet>i new_gim1 / norm_gim1) \<cdot>\<^sub>v new_gim1;
         norm_gi = sq_norm new_gi
           in dec_i (update_im1 (update_i Gr1 (new_gi,norm_gi)) (new_gim1,norm_gim1))" 
@@ -1505,12 +1546,19 @@ proof (atomize(full), cases "i = 0")
     also have "?f2 ` {0 ..< (i - 1)} = ?fs1" 
       by (rule image_cong[OF refl], insert len i, auto simp: F2_def)
     finally have claim1: "gs.is_oc_projection (?g2 (i - 1)) ?S (?f1 i)" .
-    have "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i] @ [?g1 i])" 
-      unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i < m\<close>] by (simp add: gs.\<mu>.simps)
-    also have "\<dots> = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" 
-      by (subst gs.sumlist_append, insert i gs, auto)
-    finally have claim2: "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" (is "_ = ?sum + _") .
+    have list_id: "[0..<Suc (i - 1)] = [0..< i - 1] @ [i - 1]" 
+      "[0..< Suc i] = [0..< i] @ [i]" "map f [x] = [f x]" for f x using i by auto
+    (* f1i_sum is claim 2 *)
+    have f1i_sum: "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" (is "_ = ?sum + _") 
+      unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i < m\<close>] map_append list_id
+      by (subst gs.M.sumlist_snoc, insert i gs, auto simp: gs.\<mu>.simps)
+
+    have f1im1_sum: "?f1 (i - 1) = gs.sumlist (map (\<lambda>j. ?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) [0..<i - 1]) + ?g1 (i - 1)" (is "_ = ?sum1 + _")
+      unfolding gs.fi_is_sum_of_mu_gso[OF connH \<open>i - 1 < m\<close>] map_append list_id
+      by (subst gs.M.sumlist_snoc, insert i gs, auto simp: gs.\<mu>.simps)
+   
     have sum: "?sum \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
+    have sum1: "?sum1 \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
     from gs.span_closed[OF G] have S: "?S \<subseteq> Rn" by auto
     from gs i have gs': "\<And> j. j < i - 1 \<Longrightarrow> ?g1 j \<in> Rn" and gsi: "?g1 (i - 1) \<in> Rn" by auto
     have "[0 ..< i] = [0 ..< Suc (i - 1)]" using i0 by simp
@@ -1525,7 +1573,7 @@ proof (atomize(full), cases "i = 0")
         show inRn: "(?g1 i + ?mu_f1) \<in> Rn" using gs[OF i] gsi i by auto
         have carr: "?sum \<in> Rn" "?g1 i \<in> Rn" "?mu_f1 \<in> Rn" "?sum' \<in> Rn" using sum' sum gs[OF i] gsi i by auto
         have "?f1 i - (?g1 i + ?mu_f1) = (?sum + ?g1 i) - (?g1 i + ?mu_f1)"
-          unfolding claim2 by simp
+          unfolding f1i_sum by simp
         also have "\<dots> = ?sum - ?mu_f1" using carr by auto
         also have "?sum = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1] @ [?mu_f1])" 
           unfolding list by simp 
@@ -1594,6 +1642,7 @@ proof (atomize(full), cases "i = 0")
         by (subst gs.gso_oc_projection_span[OF connH kn], auto)
       finally have "?g2 k = ?g1 k" . 
     } note g2_g1_identical = this
+    (* calculation of new mu-values *)
     {
       fix jj
       assume jj: "jj < i - 1"  
@@ -1601,7 +1650,54 @@ proof (atomize(full), cases "i = 0")
       have id2: "?g2 jj = ?g1 jj" by (subst g2_g1_identical, insert jj i, auto)       
       have "?mu2 i jj = ?mu1 (i - 1) jj" "?mu2 (i - 1) jj = ?mu1 i jj" 
         unfolding gs.\<mu>.simps id1 id2 if_True using len i i0 by (auto simp: F2_def)
-    } note mu'_mu_i = this
+    } note mu'_mu_i_im1_j = this
+    {
+      fix jj ii
+      assume ii: "ii < i - 1" "jj < ii" 
+      have "?mu2 ii jj = ?mu1 ii jj" using ii i len
+        by (subst gs_\<mu>_identical[of _ _ "RAT F1" "RAT F2"], auto simp: F2_def)
+    } note mu'_mu_small_i = this
+   
+    {
+      have "?mu2 i (i - 1) = (?f2 i \<bullet> ?g2 (i - 1)) / sq_norm (?g2 (i - 1))" 
+        unfolding gs.\<mu>.simps using i0 by auto
+      also have "?f2 i \<bullet> ?g2 (i - 1) = ?f1 (i - 1) \<bullet> ?g2 (i - 1)" 
+        using len i i0 unfolding F2_def by auto
+      also have "\<dots> = ?f1 (i - 1) \<bullet> (?g1 i + ?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1))" 
+        unfolding g2_im1 by simp
+      also have "\<dots> = ?f1 (i - 1) \<bullet> ?g1 i + ?f1 (i - 1) \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1))" 
+        by (rule scalar_prod_add_distrib[of _ n], insert i gs g, auto)
+      also have "?f1 (i - 1) \<bullet> ?g1 i = ?g1 i \<bullet> ?f1 (i - 1)"
+        by (rule comm_scalar_prod, insert gs g i, auto)
+      also have "\<dots> = 0" 
+        by (rule LLL_ortho_G_F[OF Linv'], insert i0 i, auto)
+      also have "?f1 (i - 1) \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)) = (?sum1 + ?g1 (i - 1)) \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1))" 
+        unfolding f1im1_sum ..
+      also have "\<dots> = ?sum1 \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)) + ?g1 (i - 1) \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1))" 
+        by (rule add_scalar_prod_distrib[of _ n], insert gs g i sum1, auto) 
+      also have "?sum1 \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)) = ?mu1 i (i - 1) * (?sum1 \<bullet> ?g1 (i - 1))" 
+        by (rule scalar_prod_smult_distrib[of _ n], insert gs g i sum1, auto)
+      also have "?sum1 \<bullet> ?g1 (i - 1) = ?g1 (i - 1) \<bullet> ?sum1" 
+        by (rule comm_scalar_prod, insert gs g i sum1, auto)
+      also have "\<dots> = 0" 
+      proof -
+        {
+          fix j
+          assume j: "j < i - 1" 
+          have "?g1 (i - 1) \<bullet> (?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) = 
+            ?mu1 (i - 1) j * (?g1 (i - 1) \<bullet> ?g1 j)" 
+            by (rule scalar_prod_smult_distrib[of _ n], insert gs g i j, auto)
+          also have "?g1 (i - 1) \<bullet> ?g1 j = 0" by (rule LLL_ortho_G_G[OF Linv'], insert j i i0, auto)
+          finally have "?g1 (i - 1) \<bullet> (?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) = 0" by simp
+        }
+        thus ?thesis by (intro gs.orthogonal_sumlist, insert gs g i, auto)
+      qed
+      finally 
+      have "?mu2 i (i - 1) = ?mu1 i (i - 1) * sq_norm (?g1 (i - 1)) / sq_norm (?g2 (i - 1))" 
+        by (simp add: sq_norm_vec_as_cscalar_prod)
+    } note mu'_mu_i_im1 = this
+
+    (* calculation of g_i and g_i-1 *)
     let ?g2_im1 = "?g2 (i - 1)" 
     have g2_im1_Rn: "?g2_im1 \<in> Rn" using i by (auto intro!: gs.gso_carrier[OF connH'])
     {
@@ -1614,7 +1710,7 @@ proof (atomize(full), cases "i = 0")
         unfolding gs.gso.simps[of _ i] list by simp
       also have "?f2 i = ?f1 (i - 1)" unfolding F2_def using len i i0 by auto
       also have "map ?mu2_f2 [0 ..< i-1] = map (\<lambda>j. - ?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1]"
-        by (rule map_cong[OF refl], subst g2_g1_identical, insert i, auto simp: mu'_mu_i)
+        by (rule map_cong[OF refl], subst g2_g1_identical, insert i, auto simp: mu'_mu_i_im1_j)
       also have "gs.sumlist (\<dots> @ [?mu2_f2 (i - 1)]) = ?sum + ?mu2_f2 (i - 1)" 
         by (subst gs.sumlist_append, insert gs i mhs, auto)
       also have "?f1 (i - 1) + \<dots> = (?f1 (i - 1) + ?sum) + ?mu2_f2 (i - 1)"
@@ -1627,6 +1723,49 @@ proof (atomize(full), cases "i = 0")
       also have "?f2 i = ?f1 (i - 1)" by fact
       finally have "?g2 i = ?g1 (i - 1) - (?f1 (i - 1) \<bullet> ?g2 (i - 1) / sq_norm (?g2 (i - 1))) \<cdot>\<^sub>v ?g2 (i - 1)" .
     } note g2_i = this
+
+    { (* calculation of new norms *)
+      have "sq_norm (?g2 (i - 1)) = sq_norm (?g1 i + ?mu_f1)" unfolding g2_im1 by simp
+      also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> (?g1 i + ?mu_f1)" 
+        by (simp add: sq_norm_vec_as_cscalar_prod)
+      also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> ?g1 i + (?g1 i + ?mu_f1) \<bullet> ?mu_f1" 
+        by (rule scalar_prod_add_distrib, insert gs i, auto)
+      also have "(?g1 i + ?mu_f1) \<bullet> ?g1 i = ?g1 i \<bullet> ?g1 i + ?mu_f1 \<bullet> ?g1 i" 
+        by (rule add_scalar_prod_distrib, insert gs i, auto)
+      also have "(?g1 i + ?mu_f1) \<bullet> ?mu_f1 = ?g1 i \<bullet> ?mu_f1 + ?mu_f1 \<bullet> ?mu_f1" 
+        by (rule add_scalar_prod_distrib, insert gs i, auto)
+      also have "?mu_f1 \<bullet> ?g1 i = ?g1 i \<bullet> ?mu_f1"
+        by (rule comm_scalar_prod, insert gs i, auto)
+      also have "?g1 i \<bullet> ?g1 i = sq_norm (?g1 i)" 
+        by (simp add: sq_norm_vec_as_cscalar_prod)
+      also have "?g1 i \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?g1 i \<bullet> ?g1 (i - 1))" 
+        by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
+      also have "?g1 i \<bullet> ?g1 (i - 1) = 0" 
+        using corthogonalD[OF gs.gram_schmidt(2)[OF connH], of i "i - 1"] i len i0 unfolding Gs_fs 
+        by (auto simp: o_def)
+      also have "?mu_f1 \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?mu_f1 \<bullet> ?g1 (i - 1))" 
+        by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
+      also have "?mu_f1 \<bullet> ?g1 (i - 1) = ?mu1 i (i - 1) * (?g1 (i - 1) \<bullet> ?g1 (i - 1))" 
+        by (rule scalar_prod_smult_left, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
+      also have "?g1 (i - 1) \<bullet> ?g1 (i - 1) = sq_norm (?g1 (i - 1))" 
+        by (simp add: sq_norm_vec_as_cscalar_prod)
+      finally have "sq_norm (?g2 (i - 1)) = 
+        sq_norm (?g1 i) + (?mu1 i (i - 1) * ?mu1 i (i - 1)) * sq_norm (?g1 (i - 1))" 
+        by (simp add: ac_simps o_def)
+    } note sq_norm_g2_im1 = this
+
+
+    (* stay reduced *)
+    from inv' have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F1))" by auto
+    have sred: "gs.reduced \<alpha> (i - 1) G2 (gs.\<mu> (RAT F2))"
+      unfolding gs.reduced_def
+    proof (intro conjI[OF red] allI impI, goal_cases)
+      case (1 i' j)
+      with sred have "\<bar>?mu1 i' j\<bar> \<le> 1 / 2" unfolding gs.reduced_def by auto
+      thus ?case using mu'_mu_small_i[OF 1] by simp
+    qed
+
+    (* implementation is correct *)
     {
       from i1n have i1n': "i - 1 \<le> m" by simp
       have upd_im1: "list_repr i ba xs \<Longrightarrow> ys = (xs [i - 1 := x]) \<Longrightarrow> list_repr i (update_im1 ba x) ys" 
@@ -1635,8 +1774,9 @@ proof (atomize(full), cases "i = 0")
       have gsoH: "list_repr i Gr1 (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (GSO F1) [0..<m]))" by auto
       let ?f_im1 = "get_nth_im1 Fr1"
       let ?g2'_im1 = "g_i Gr1 + ?mu \<cdot>\<^sub>v g_im1 Gr1" 
-      let ?norm_im1 = "sq_norm ?g2'_im1" 
-      let ?g2'_i = "g_im1 Gr1 - (?f_im1 \<bullet>i ?g2'_im1 / ?norm_im1) \<cdot>\<^sub>v ?g2'_im1" 
+      let ?norm_im1 = "sq_norm (?g2 (i - 1))" 
+      define n2_im1 where "n2_im1 = sqnorm_g_i Gr1 + square_rat ?mu * sqnorm_g_im1 Gr1" 
+      let ?g2'_i = "g_im1 Gr1 - (?f_im1 \<bullet>i ?g2'_im1 / n2_im1) \<cdot>\<^sub>v ?g2'_im1" 
       define g2'_i where "g2'_i = ?g2'_i" 
       define g2'_im1 where "g2'_im1 = ?g2'_im1"
       have "?g2 (i - 1) = ?g1 i + ?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)" by fact
@@ -1644,21 +1784,26 @@ proof (atomize(full), cases "i = 0")
       also have "?g1 (i - 1) = g_im1 Gr1" unfolding g_im1[OF Linv' i i0] Gs_fs o_def using i by simp
       finally have g2im1: "?g2 (i - 1) = g2'_im1"
         unfolding mu g2'_im1_def by blast
+      have "?norm_im1 = sq_norm (?g1 i) + square_rat ?mu * sq_norm (?g1 (i - 1))" 
+        unfolding g2'_im1_def[symmetric] g2im1[symmetric] sq_norm_g2_im1 by (simp add: mu)
+      also have "\<dots> = n2_im1" unfolding n2_im1_def sqnorm_g_i_GSO[OF gso i] sqnorm_g_im1_GSO[OF gso i0] GSO_def ..
+      finally have n2_im1: "?norm_im1 = n2_im1" .
       have "?f_im1 \<in> carrier_vec n" using inv'(3-4) \<open>i - 1 < m\<close> unfolding get_nth_im1[OF inv'(8) i0] 
         by auto
       hence dim: "dim_vec ?f_im1 = n" "dim_vec ?g2'_im1 = n" unfolding g2'_im1_def[symmetric] g2im1[symmetric]
         using \<open>?g2_im1 \<in> Rn\<close> by auto
       have "?g2 i = ?g1 (i - 1) - (?f1 (i - 1) \<bullet> ?g2 (i - 1) / sq_norm (?g2 (i - 1))) \<cdot>\<^sub>v ?g2 (i - 1)"
         by (rule g2_i)
+      also have "sq_norm (?g2 (i - 1)) = n2_im1" unfolding n2_im1 ..
       also have "?g2 (i - 1) = g2'_im1" by (simp add: g2im1[symmetric])
       also have "?g1 (i - 1) = g_im1 Gr1" by fact
       also have "?f1 (i - 1) = map_vec of_int ?f_im1" 
         unfolding get_nth_im1[OF repr i0] o_def using len i by simp
       finally have g2i: "?g2 i = g2'_i" using dim unfolding g2'_i_def g2'_im1_def by simp
       have "map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (GSO F1) [0..<m])
-        [i := (g2'_i, sq_norm g2'_i), i - 1 := (g2'_im1, sq_norm g2'_im1)]
+        [i := (g2'_i, sq_norm g2'_i), i - 1 := (g2'_im1, n2_im1)]
         = map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) ((map (GSO F1) [0..<m])[i := g2'_i, i - 1 := g2'_im1])" 
-        unfolding map_update by auto
+        unfolding map_update n2_im1[symmetric] g2im1 by auto
       also have GSOH: "map (GSO F1) [0..<m] = map ?g1 [0..<m]" 
         by (rule map_cong[OF refl], auto simp: GSO_def len intro!: gs_gs_identical)
       also have id: "\<dots> [i := g2'_i, i - 1 := g2'_im1] = map ?g2 [0..<m]" (is "?Gs = ?Gs2") 
@@ -1694,52 +1839,21 @@ proof (atomize(full), cases "i = 0")
         by (rule map_cong[OF refl], auto simp: GSO_def len' intro!: gs_gs_identical)
       finally 
       have "map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (GSO F2) [0..<m]) 
-       = map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (GSO F1) [0..<m])[i := (g2'_i, \<parallel>g2'_i\<parallel>\<^sup>2), i - 1 := (g2'_im1, \<parallel>g2'_im1\<parallel>\<^sup>2)]"
+       = map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (GSO F1) [0..<m])[i := (g2'_i, \<parallel>g2'_i\<parallel>\<^sup>2), i - 1 := (g2'_im1, n2_im1)]"
         unfolding GSOH o_def by auto
-      hence "g_repr (i - 1) Gr2 F2" unfolding gso' Let_def unfolding g_repr_def Let_def g2'_i_def[symmetric]
-        unfolding g2'_im1_def[symmetric] apply (intro conjI i1n')
+      hence "g_repr (i - 1) Gr2 F2" unfolding gso' Let_def g_repr_def 
+        unfolding n2_im1_def[symmetric]
+        unfolding g2'_i_def[symmetric]
+        unfolding g2'_im1_def[symmetric] 
+        apply (intro conjI i1n')
         apply(rule dec_i[OF _ i0]) by(auto simp: i intro!:upd_im1 update_i[OF gsoH])
     } note g_repr = this
-    from inv' have sred: "gs.reduced \<alpha> i G (gs.\<mu> (RAT F1))" by auto
-    have sred: "gs.reduced \<alpha> (i - 1) G2 (gs.\<mu> (RAT F2))"
-      unfolding gs.reduced_def
-    proof (intro conjI[OF red] allI impI, goal_cases)
-      case (1 i' j)
-      with sred have "\<bar>gs.\<mu> (RAT F1) i' j\<bar> \<le> 1 / 2" unfolding gs.reduced_def by auto
-      also have "gs.\<mu> (RAT F1) i' j = gs.\<mu> (RAT F2) i' j" using 1 i len
-        by (subst gs_\<mu>_identical[of _ _ "RAT F1" "RAT F2"], auto simp: F2_def)
-      finally show ?case by auto
-    qed
+
     (* now show decrease in measure *)
     { (* 16.13 (ii) *)
-      have "sq_norm (?g2 (i - 1)) = sq_norm (?g1 i + ?mu_f1)" unfolding g2_im1 by simp
-      also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> (?g1 i + ?mu_f1)" 
-        by (simp add: sq_norm_vec_as_cscalar_prod)
-      also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> ?g1 i + (?g1 i + ?mu_f1) \<bullet> ?mu_f1" 
-        by (rule scalar_prod_add_distrib, insert gs i, auto)
-      also have "(?g1 i + ?mu_f1) \<bullet> ?g1 i = ?g1 i \<bullet> ?g1 i + ?mu_f1 \<bullet> ?g1 i" 
-        by (rule add_scalar_prod_distrib, insert gs i, auto)
-      also have "(?g1 i + ?mu_f1) \<bullet> ?mu_f1 = ?g1 i \<bullet> ?mu_f1 + ?mu_f1 \<bullet> ?mu_f1" 
-        by (rule add_scalar_prod_distrib, insert gs i, auto)
-      also have "?mu_f1 \<bullet> ?g1 i = ?g1 i \<bullet> ?mu_f1"
-        by (rule comm_scalar_prod, insert gs i, auto)
-      also have "?g1 i \<bullet> ?g1 i = sq_norm (?g1 i)" 
-        by (simp add: sq_norm_vec_as_cscalar_prod)
-      also have "?g1 i \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?g1 i \<bullet> ?g1 (i - 1))" 
-        by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
-      also have "?g1 i \<bullet> ?g1 (i - 1) = 0" 
-        using corthogonalD[OF gs.gram_schmidt(2)[OF connH], of i "i - 1"] i len i0 unfolding Gs_fs 
-        by (auto simp: o_def)
-      also have "?mu_f1 \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?mu_f1 \<bullet> ?g1 (i - 1))" 
-        by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
-      also have "?mu_f1 \<bullet> ?g1 (i - 1) = ?mu1 i (i - 1) * (?g1 (i - 1) \<bullet> ?g1 (i - 1))" 
-        by (rule scalar_prod_smult_left, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
-      also have "?g1 (i - 1) \<bullet> ?g1 (i - 1) = sq_norm (?g1 (i - 1))" 
-        by (simp add: sq_norm_vec_as_cscalar_prod)
-      finally have "sq_norm (?g2 (i - 1)) = 
-        sq_norm (?g1 i) + (?mu1 i (i - 1) * ?mu1 i (i - 1)) * sq_norm (?g1 (i - 1))" 
-        by (simp add: ac_simps o_def)
-      also have "\<dots> < 1/\<alpha> * (sq_norm (?g1 (i - 1))) + (1/2 * 1/2) * (sq_norm (?g1 (i - 1)))"
+      note sq_norm_g2_im1
+      also have "sq_norm (?g1 i) + (?mu1 i (i - 1) * ?mu1 i (i - 1)) * sq_norm (?g1 (i - 1)) 
+        < 1/\<alpha> * (sq_norm (?g1 (i - 1))) + (1/2 * 1/2) * (sq_norm (?g1 (i - 1)))"
       proof (rule add_less_le_mono[OF _ mult_mono])
         from True[unfolded mult.commute[of \<alpha>] Gs_fs,
             THEN linordered_field_class.mult_imp_less_div_pos[OF \<alpha>0(1)]]
@@ -1756,7 +1870,6 @@ proof (atomize(full), cases "i = 0")
     } note g_reduction = this (* Lemma 16.13 (ii) *)
 
     {
-      have list_id: "[0..<Suc (i - 1)] = [0..< i - 1] @ [i - 1]" "map f [x] = [f x]" for f x by auto
       define u where "u = gs.sumlist (map (\<lambda>j. gs.\<mu> (RAT F1) (i - 1) j \<cdot>\<^sub>v ?g1 j) [0..<i - 1])" 
       define U where "U = ?f1 ` {0 ..< i - 1} \<union> {?f1 i}" 
       have g2i: "?g2 i \<in> Rn" using i connH' by simp
@@ -1798,6 +1911,7 @@ proof (atomize(full), cases "i = 0")
       have "sq_norm (?g2 i) \<le> sq_norm (?g1 (i - 1))" .
     } note sq_norm_g2_i = this (* Lemma 16.13 (iii) *)
 
+    (* numbers stay small *)
     from inv' have short: "\<And> k. k < m \<Longrightarrow> \<parallel>G ! k\<parallel>\<^sup>2 \<le> of_nat A" by (auto simp: g_bound_def)
     from short[of "i - 1"] i 
     have short_im1: "sq_norm (?g1 (i - 1)) \<le> of_nat A" unfolding Gs_fs by auto
@@ -1842,7 +1956,7 @@ proof (atomize(full), cases "i = 0")
       unfolding mu_small_def
     proof (intro allI impI, goal_cases)
       case (1 j)
-      show ?case  using inv'(14) 1 unfolding mu'_mu_i[OF 1] mu_small_def by auto
+      show ?case  using inv'(14) 1 unfolding mu'_mu_i_im1_j[OF 1] mu_small_def by auto
     qed      
         
     (* invariant is established *)

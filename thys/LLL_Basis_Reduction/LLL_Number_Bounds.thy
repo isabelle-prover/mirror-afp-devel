@@ -217,37 +217,6 @@ proof -
   from someI_ex[OF this] show ?thesis
     unfolding \<rho>_SOME_def using assms by blast
 qed
-
-lemma gso_is_oc_projection:
-  assumes "i < m"
-  shows "is_oc_projection (gso fs i) (set (take i fs)) (fs ! i)"
-proof -
-  have [simp]: "v \<in> carrier_vec n" if "v \<in> set (take i fs)" for v
-    using that by (meson in_set_takeD indep lin_indpt_list_def subsetCE subsetI)
-  have "span (gso fs ` {0..<i}) = span (set (take i fs))"
-    by (rule partial_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
-  moreover have "is_oc_projection (gso fs i) (span (gso fs ` {0..<i})) (fs ! i)"
-    by (rule gso_oc_projection_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
-  ultimately have "is_oc_projection (gso fs i) (span (set (take i fs))) (fs ! i)"
-    by auto
-  moreover have "set (take i fs) \<subseteq> span (set (take i fs))"
-    by (auto intro!: span_mem)
-  ultimately show ?thesis
-    unfolding is_oc_projection_def by (subst (asm) span_span) (auto)
-qed
-
-lemma gso_scalar_zero:
-  assumes "k < m" "i < k"
-  shows "(gso fs k) \<bullet> (fs ! i) = 0"
-proof -
-  have "fs ! i \<in> set (take k fs)"
-    using assms len_fs by (subst nth_take[symmetric]) (auto intro!: nth_mem simp del: nth_take)
-  moreover have "gso fs k \<bullet> u = 0" if "u \<in> set (take k fs)" for u
-    using that gso_is_oc_projection unfolding is_oc_projection_def using assms by blast
-  ultimately show ?thesis
-    by blast
-qed
-
 end (* vs fs *)
 
 end (* m *)
