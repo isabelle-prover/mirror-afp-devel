@@ -118,20 +118,20 @@ fun basis_reduction_swap_cost :: "state \<Rightarrow> state cost" where
       gim1 = g_im1 G;
       fi = get_nth_i F;
       fim1 = get_nth_im1 F;
-      n1 = sqnorm_g_i G;
+      ni = sqnorm_g_i G;
       nim1 = sqnorm_g_im1 G;
       new_gim1 = gi + mu \<cdot>\<^sub>v gim1; \<comment> \<open>2n arithmetic operations in scalar-product and addition\<close>
-      norm_gim1 = n1 + square_rat mu * nim1;
-      new_gi = gim1 - (fim1 \<bullet>i new_gim1 / norm_gim1) \<cdot>\<^sub>v new_gim1; \<comment> \<open>4n arithmetic operations: minus, scalar-prod and scalar-mult\<close>
-      norm_gi = sq_norm new_gi; \<comment> \<open>2n arithmetic operations to compute squared norm\<close>
-      G' = dec_i (update_im1 (update_i G (new_gi,norm_gi)) (new_gim1,norm_gim1));
+      new_nim1 = ni + square_rat mu * nim1;
+      new_gi = gim1 - (fim1 \<bullet>i new_gim1 / new_nim1) \<cdot>\<^sub>v new_gim1; \<comment> \<open>4n arithmetic operations: minus, scalar-prod and scalar-mult\<close>
+      new_ni = ni * nim1 / new_nim1;
+      G' = dec_i (update_im1 (update_i G (new_gi,new_ni)) (new_gim1,new_nim1));
       F' = dec_i (update_im1 (update_i F fim1) fi);
-      c2 = (2 + 4 + 2) * n * arith_cost
+      c2 = (2 + 4) * n * arith_cost
     in ((i - 1, F', G'), c1 + c2))"
 
 lemma basis_reduction_swap_cost: 
    "result (basis_reduction_swap_cost state) = basis_reduction_swap state"  
-   "cost (basis_reduction_swap_cost state) \<le> 10 * n * arith_cost" 
+   "cost (basis_reduction_swap_cost state) \<le> 8 * n * arith_cost" 
 proof (atomize(full), goal_cases)
   case 1
   obtain i F G where state: "state = (i,F,G)" by (cases state, auto)
@@ -173,7 +173,7 @@ definition basis_reduction_step_cost :: "estate \<Rightarrow> estate cost" where
       else ((True, increase_i state'), c1)
      )" 
 
-definition "body_cost = (4 * m + 10) * n * arith_cost" 
+definition "body_cost = (4 * m + 8) * n * arith_cost" 
 
 lemma basis_reduction_step_cost: assumes "LLL_invariant outside estate F G" 
   shows "result (basis_reduction_step_cost estate) = basis_reduction_step \<alpha> estate" (is ?g1)
@@ -192,7 +192,7 @@ proof -
   note res' = basis_reduction_step_def[of \<alpha> estate, unfolded estate split Let_def add' state', folded estate]  
   from basis_reduction_swap_cost[of "(i,F,G)", unfolded swap cost_simps]
   have swap': "basis_reduction_swap (i, F, G) = state''" 
-    and c2: "c2 \<le> 10 * n * arith_cost" by auto
+    and c2: "c2 \<le> 8 * n * arith_cost" by auto
   note d = Let_def split swap state' add' swap' res res'
   show ?g1 unfolding d by (auto split: if_splits simp: cost_simps)
   show ?g2 unfolding d nat_distrib body_cost_def using c1 c2 by (auto split: if_splits simp: cost_simps)
@@ -434,7 +434,7 @@ lemma reduce_basis_cost_expanded:
   assumes "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
   and "AA = max_list (map (nat \<circ> sq_norm) fs_init)" 
   shows "cost (reduce_basis_cost fs_init)
-  \<le> (4 * m * m + 3 * m + (4 * m * m + 10 * m) * (1 + 2 * m * Log)) * n * arith_cost"
+  \<le> (4 * m * m + 3 * m + (4 * m * m + 8 * m) * (1 + 2 * m * Log)) * n * arith_cost"
   unfolding assms A_def[symmetric]
   using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
   by (auto simp: nat_distrib ac_simps)
