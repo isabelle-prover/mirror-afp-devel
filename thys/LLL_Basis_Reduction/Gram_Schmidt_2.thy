@@ -1235,6 +1235,26 @@ proof -
   qed simp
 qed
 
+lemma gi_is_fi_minus_sum_mu_gso: assumes i: "i < m" 
+  shows "gso i = fs ! i - sumlist (map (\<lambda> j. \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" (is "_ = _ - ?sum")
+proof -
+  have "fs ! i = sumlist (map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<Suc i])" unfolding fi_is_sum_of_mu_gso[OF i] ..
+  also have "map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<Suc i] = map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<i] @ [\<mu> i i \<cdot>\<^sub>v gso i]" 
+    by (rule nth_equalityI, auto)
+  also have "sumlist \<dots> = ?sum + \<mu> i i \<cdot>\<^sub>v gso i" 
+    by (rule sumlist_snoc, insert gso_carrier i, auto)
+  also have "\<mu> i i \<cdot>\<^sub>v gso i = gso i" unfolding \<mu>.simps by simp
+  finally have fs: "fs ! i = ?sum + gso i" .
+  have sum: "?sum \<in> carrier_vec n" 
+    by (rule sumlist_carrier, insert gso_carrier i, auto)
+  note gso = gso_carrier[OF i]
+  from fs have "fs ! i - ?sum = (?sum + gso i) - ?sum" by simp
+  also have "\<dots> = gso i" 
+    by (rule eq_vecI, insert sum gso, auto)
+  finally show ?thesis ..
+qed
+
+
 lemma vs:
   shows "set vs \<subseteq> carrier_vec n" "distinct vs" "corthogonal (rev vs)"
         "span (set fs) = span (set vs)" "length vs = length fs"
@@ -1474,17 +1494,38 @@ proof -
     unfolding is_oc_projection_def by (subst (asm) span_span) (auto)
 qed
 
+lemma fi_scalar_prod_gso: assumes i: "i < m" and j: "j < m" 
+  shows "fs ! i \<bullet> gso j = \<mu> i j * \<parallel>gso j\<parallel>\<^sup>2" 
+proof -
+  let ?mu = "\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j" 
+  from i have list1: "[0..< m] = [0..< Suc i] @ [Suc i ..< m]" 
+    by (intro nth_equalityI, auto simp: nth_append, rename_tac j, case_tac "j - i", auto)
+  from j have list2: "[0..< m] = [0..< j] @ [j] @ [Suc j ..< m]" 
+    by (intro nth_equalityI, auto simp: nth_append, rename_tac k, case_tac "k - j", auto)
+  have "fs ! i \<bullet> gso j = sumlist (map ?mu [0..<Suc i]) \<bullet> gso j" 
+    unfolding fi_is_sum_of_mu_gso[OF i] by simp
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + 0" 
+    by (subst scalar_prod_left_sum_distrib, insert gso_carrier i j, auto)
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + (\<Sum>v\<leftarrow>map ?mu [Suc i..<m]. v \<bullet> gso j)" 
+    by (subst (3) sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal simp: \<mu>.simps)
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< m]. v \<bullet> gso j)" 
+    unfolding list1 by simp
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) + ?mu j \<bullet> gso j + (\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j)" 
+    unfolding list2 by simp
+  also have "(\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) = 0" 
+    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+  also have "(\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j) = 0" 
+    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+  also have "?mu j \<bullet> gso j = \<mu> i j * sq_norm (gso j)" 
+    using gso_carrier[OF j] by (simp add: sq_norm_vec_as_cscalar_prod)  
+  finally show ?thesis by simp
+qed
+
 lemma gso_scalar_zero:
   assumes "k < m" "i < k"
   shows "(gso k) \<bullet> (fs ! i) = 0"
-proof -
-  have "fs ! i \<in> set (take k fs)"
-    using assms len_fs by (subst nth_take[symmetric]) (auto intro!: nth_mem simp del: nth_take)
-  moreover have "gso k \<bullet> u = 0" if "u \<in> set (take k fs)" for u
-    using that gso_is_oc_projection unfolding is_oc_projection_def using assms by blast
-  ultimately show ?thesis
-    by blast
-qed
+  by (subst comm_scalar_prod[OF gso_carrier]; (subst fi_scalar_prod_gso)?,
+  insert assms, auto simp: \<mu>.simps)
 
 lemma scalar_prod_lincomb_gso: assumes k: "k \<le> m"
   shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k])
@@ -1501,17 +1542,8 @@ proof -
 qed
 
 lemma gso_times_self_is_norm:
-  assumes "j < m" shows "fs ! j \<bullet> gso j = sq_norm_vec (gso j)" (is "?lhs = ?rhs")
-proof -
-  have "?lhs = fs ! j \<bullet>c gso j + 0" by auto
-  also have "0 = M.sumlist (map (\<lambda>ja. - \<mu> j ja \<cdot>\<^sub>v gso ja) [0..<j]) \<bullet>c gso j" using assms orthogonal
-    apply(subst scalar_prod_left_sum_distrib,force,force)
-    by(intro sum_list_0[symmetric],auto)
-  finally show ?thesis unfolding sq_norm_vec_as_cscalar_prod vec_conjugate_rat using assms
-    apply(subst (2) gso.simps)
-    apply(subst add_scalar_prod_distrib[OF f_carrier M.sumlist_carrier])
-    by auto
-qed
+  assumes "j < m" shows "fs ! j \<bullet> gso j = sq_norm (gso j)"
+  by (subst fi_scalar_prod_gso, insert assms, auto simp: \<mu>.simps)
 
 (* Lemma 16.7 *)
 lemma gram_schmidt_short_vector: assumes in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" 
