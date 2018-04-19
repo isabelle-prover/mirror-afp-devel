@@ -46,18 +46,19 @@ qed
 
 
 lemma invertible_implies_full_rank:
-fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
-assumes inv_A: "invertible A"
-shows "rank A = nrows A"
+  fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
+  assumes inv_A: "invertible A"
+  shows "rank A = nrows A"
 proof -
-have "(\<forall>x. A *v x = 0 \<longrightarrow> x = 0)" using inv_A unfolding  invertible_left_inverse[unfolded matrix_left_invertible_ker] .
-hence null_space_eq_0: "(null_space A) = {0}" unfolding null_space_def using matrix_vector_zero by fast
-have dim_null_space: "vec.dim (null_space A) = 0" unfolding vec.dim_def 
-    by (rule someI2[of _"0"], rule exI[of _ "{}"], simp add: vec.independent_empty null_space_eq_0,
-      metis card_empty empty_subsetI null_space_eq_0 vec.span_empty vec.spanning_subset_independent)
-show ?thesis using rank_nullity_theorem_matrices[of A] unfolding dim_null_space rank_eq_dim_col_space nrows_def
-unfolding col_space_eq unfolding ncols_def by simp
-qed
+  have "(\<forall>x. A *v x = 0 \<longrightarrow> x = 0)" using inv_A unfolding  invertible_left_inverse[unfolded matrix_left_invertible_ker] .
+  hence null_space_eq_0: "(null_space A) = {0}" unfolding null_space_def using matrix_vector_zero by fast
+  have dim_null_space: "vec.dim (null_space A) = 0" unfolding vec.dim_def 
+    apply (rule someI2[of _"0"], rule exI[of _ "{}"])
+     apply (simp add: vec.independent_empty null_space_eq_0)
+    by (metis (no_types) null_space_eq_0 vec.dim_def vec.dim_zero_eq')
+    show ?thesis using rank_nullity_theorem_matrices[of A] unfolding dim_null_space rank_eq_dim_col_space nrows_def
+      unfolding col_space_eq unfolding ncols_def by simp
+  qed
 
 
 definition id_upt_k :: "'a::{zero, one}^'n::{mod_type}^'n::{mod_type} \<Rightarrow> nat => bool"

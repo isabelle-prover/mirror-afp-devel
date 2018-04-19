@@ -7,8 +7,8 @@
 section{*Miscellaneous*}
 
 theory Miscellaneous
-imports 
-  Generalizations
+  imports
+  Cartesian_Space
   "HOL-Library.Bit"
   Mod_Type
   "HOL-Library.Function_Algebras"
@@ -198,31 +198,28 @@ begin
 text{*This theorem is the reciprocal theorem of @{thm "indep_card_eq_dim_span"}*}
 
 lemma card_eq_dim_span_indep:
-(*fixes A :: "('n::euclidean_space) set"*)
-assumes "dim (span A) = card A" and "finite A"
-shows "independent A" 
-by (metis assms card_le_dim_spanning dim_subset equalityE span_inc)
+  assumes "dim (span A) = card A" and "finite A"
+  shows "independent A"
+  by (metis assms card_eq_dim span_superset order_refl)
 
 lemma dim_zero_eq:
-(*fixes A::"'a::euclidean_space set"*)
-assumes dim_A: "dim A = 0"
-shows "A = {} \<or> A = {0}"
+  assumes dim_A: "dim A = 0"
+  shows "A = {} \<or> A = {0}"
 proof -
-obtain B where ind_B: "independent B" and A_in_span_B: "A \<subseteq> span B" 
-  and card_B: "card B = 0" using basis_exists[of A] unfolding dim_A by blast
-have finite_B: "finite B" using indep_card_eq_dim_span[OF ind_B] by simp
-hence B_eq_empty: "B={}" using card_B unfolding card_eq_0_iff by simp
-have "A \<subseteq> {0}" using A_in_span_B unfolding B_eq_empty span_empty .
-thus ?thesis by blast
+  obtain B where ind_B: "independent B" and A_in_span_B: "A \<subseteq> span B" 
+    and card_B: "card B = 0" using basis_exists[of A] unfolding dim_A by blast
+  have finite_B: "finite B" using indep_card_eq_dim_span[OF ind_B] by simp
+  hence B_eq_empty: "B={}" using card_B unfolding card_eq_0_iff by simp
+  have "A \<subseteq> {0}" using A_in_span_B unfolding B_eq_empty span_empty .
+  thus ?thesis by blast
 qed
 
-lemma dim_zero_eq': 
-  (*fixes A::"'a::euclidean_space set"*)
+lemma dim_zero_eq':
   assumes A: "A = {} \<or> A = {0}"
   shows "dim A = 0"
 proof -
-have "card ({}::'b set) = dim A"
-  proof (rule basis_card_eq_dim[THEN conjunct2, of "{}::'b set" A])
+  have "card ({}::'b set) = dim A"
+  proof (rule basis_card_eq_dim[of "{}::'b set" A])
      show "{} \<subseteq> A" by simp
      show "A \<subseteq> span {}" using A by fastforce
      show "independent {}" by (rule independent_empty)
@@ -232,22 +229,23 @@ qed
 
 
 lemma dim_zero_subspace_eq:
-(*  fixes A::"'a::euclidean_space set"*)
-assumes subs_A: "subspace A"
-shows "(dim A = 0) = (A = {0})" using dim_zero_eq dim_zero_eq' subspace_0[OF subs_A] by auto
+  assumes subs_A: "subspace A"
+  shows "(dim A = 0) = (A = {0})"
+  using dim_zero_eq dim_zero_eq' local.subspace_0 subs_A by auto
 
 lemma span_0_imp_set_empty_or_0:
-assumes "span A = {0}"
-shows "A = {} \<or> A = {0}" by (metis assms span_inc subset_singletonD)
+  assumes "span A = {0}"
+  shows "A = {} \<or> A = {0}"
+  by (metis assms card_empty dim_eq_card dim_zero_eq independent_empty span_empty)
+
 end
 
 context linear
 begin
 
 lemma linear_injective_ker_0:
-shows "inj f = ({x. f x = 0} = {0})"
-unfolding linear_injective_0
-using linear_0 by blast
+  shows "inj f = ({x. f x = 0} = {0})"
+  unfolding linear_injective_0 by auto
 
 end
 
@@ -383,10 +381,10 @@ unfolding vec.linear_injective_0
 using matrix_left_invertible_ker[of P] P unfolding invertible_def by blast
 
 lemma independent_image_matrix_vector_mult:
-fixes P::"'a::{field}^'n^'m"
-assumes ind_B: "vec.independent B" and inv_P: "invertible P"
-shows "vec.independent ((( *v) P)` B)"
-proof (rule vec.independent_inj_on_image)
+  fixes P::"'a::{field}^'n^'m"
+  assumes ind_B: "vec.independent B" and inv_P: "invertible P"
+  shows "vec.independent ((( *v) P)` B)"
+proof (rule vec.independent_injective_image)
   show "vec.independent B" using ind_B .
   show "inj_on (( *v) P) (vec.span B)" 
     using inj_matrix_vector_mult[OF inv_P] unfolding inj_on_def by simp

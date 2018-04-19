@@ -138,11 +138,11 @@ subsubsection{*Solving systems of linear equations*}
 
 text{*Examples on solving linear systems.*}
 
-definition print_result_solve 
+definition print_result_solve
   where "print_result_solve A = (if A = None then None else Some (vec_to_list (fst (the A)), vec_to_list` (snd (the A))))" 
 
 value "let A = (list_of_list_to_matrix [[4,5,8],[9,8,7],[4,6,1]]::real^3^3);
-                  b=(list_to_vec [4,5,8]::real^3)             
+                  b=(list_to_vec [4,5,8]::real^3)
                   in (print_result_solve (solve A b))"
 
 value "let A = (list_of_list_to_matrix [[0,0,0],[0,0,0],[0,0,1]]::real^3^3);

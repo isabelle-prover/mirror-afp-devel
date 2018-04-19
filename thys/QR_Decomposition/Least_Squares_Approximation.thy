@@ -49,17 +49,17 @@ text{*Part 3 of the Theorem 1.7 in the previous website.*}
 
 lemma least_squares_approximation:
   fixes X::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
-  and ind_X: "real_vector.independent X"
+  assumes subspace_S: "subspace S"
+  and ind_X: "independent X"
   and X: "X \<subseteq> S"
-  and span_X: "S \<subseteq> real_vector.span X"
+  and span_X: "S \<subseteq> span X"
   and o: "pairwise orthogonal X"
   and not_eq: "proj_onto v X \<noteq> y"
   and y: "y \<in> S"
   shows "norm (v - proj_onto v X) < norm (v - y)"
 proof -
-  have S_eq_spanX: "S = real_vector.span X"
-    by (metis X span_X real_vector.span_subspace subspace_S)
+  have S_eq_spanX: "S = span X"
+    using X span_X span_subspace subspace_S by auto
   let ?p="proj_onto v X"
   have not_0: "(norm(?p - y))^2 \<noteq> 0"
     by (metis (lifting) eq_iff_diff_eq_0 norm_eq_zero not_eq power_eq_0_iff)
@@ -69,11 +69,10 @@ proof -
   also have "... = (norm (v - ?p))^2 + (norm(?p - y))^2"
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal) 
     show "?p - y \<in> S" unfolding proj_onto_def proj_def[abs_def]
-    proof (rule real_vector.subspace_diff[OF subspace_S _ y], 
-        rule real_vector.subspace_sum[OF subspace_S])
-      show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-      show "\<forall>x\<in>X. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x \<in> S" 
-        by (metis S_eq_spanX real_vector.span_superset subspace_S real_vector.subspace_mul)
+    proof (rule subspace_diff[OF subspace_S _ y],
+        rule subspace_sum[OF subspace_S])
+      show "x \<in> X \<Longrightarrow> (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x \<in> S" for x
+        by (metis S_eq_spanX X rev_subsetD span_mul)
     qed
     show "v - ?p \<in> orthogonal_complement S"
       using v_minus_p_orthogonal_complement assms by auto        
@@ -85,15 +84,15 @@ qed
 
 lemma least_squares_approximation2:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   and y: "y \<in> S"
   shows "\<exists>p\<in>S. norm (v - p) \<le> norm (v - y) \<and> (v-p) \<in> orthogonal_complement S"
 proof -
-  obtain X where  ind_X: "real_vector.independent X"
+  obtain X where  ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
+    and span_X: "S \<subseteq> span X"
     and o: "pairwise orthogonal X"
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
+    by (metis order_refl orthonormal_basis_subspace subspace_S)
   let ?p="proj_onto v X"
   show ?thesis 
   proof (rule bexI[of _ ?p], rule conjI)
@@ -106,13 +105,12 @@ proof -
         by (rule least_squares_approximation[OF subspace_S ind_X X span_X o False y])
       thus "norm (v - ?p) \<le> norm (v - y)" by simp
     qed
-    show "?p \<in> S" 
+    show "?p \<in> S"
       using [[unfold_abs_def = false]]
-    proof (unfold proj_onto_def proj_def, rule real_vector.subspace_sum)
-      show "real_vector.subspace S" using subspace_S .
-      show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-      show "\<forall>x\<in>X.  proj v x \<in> S" 
-        by (metis proj_def X in_mono subspace_S real_vector.subspace_mul)
+    proof (unfold proj_onto_def proj_def, rule subspace_sum)
+      show "subspace S" using subspace_S .
+      show "x\<in>X \<Longrightarrow> proj v x \<in> S" for x
+        by (simp add: proj_def X set_rev_mp subspace_S subspace_mul)
     qed
     show "v - ?p\<in> orthogonal_complement S"
       by (rule v_minus_p_orthogonal_complement[OF subspace_S ind_X X span_X o])
@@ -121,14 +119,14 @@ qed
 
 corollary least_squares_approximation3:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   shows "\<exists>p\<in>S. \<forall>y\<in>S. norm (v - p) \<le> norm (v - y) \<and> (v-p) \<in> orthogonal_complement S"
 proof -
-  obtain X where  ind_X: "real_vector.independent X"
+  obtain X where  ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
+    and span_X: "S \<subseteq> span X"
     and o: "pairwise orthogonal X"
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
+    by (metis order_refl orthonormal_basis_subspace subspace_S)
   let ?p="proj_onto v X"
   show ?thesis
   proof (rule bexI[of _ ?p], auto)
@@ -146,11 +144,10 @@ proof -
       by (rule v_minus_p_orthogonal_complement[OF subspace_S ind_X X span_X o])
   next
     show "?p \<in> S" 
-    proof (unfold proj_onto_def, rule real_vector.subspace_sum)
-      show "real_vector.subspace S" using subspace_S .
-      show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-      show "\<forall>x\<in>X. proj v x \<in> S"
-        by (metis proj_def X in_mono subspace_S real_vector.subspace_mul)
+    proof (unfold proj_onto_def, rule subspace_sum)
+      show "subspace S" using subspace_S .
+      show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
+        by (metis Projections.proj_def X subset_iff subspace_S subspace_mul)
     qed
   qed
 qed
@@ -161,7 +158,7 @@ lemma norm_least_squares:
   shows "\<exists>x. \<forall>x'. norm (b - A *v x) \<le> norm (b - A *v x')"
 proof -
   have "\<exists>p\<in>col_space A. \<forall>y\<in>col_space A. norm (b - p) \<le> norm (b - y) \<and> (b-p) \<in> orthogonal_complement (col_space A)"
-    using least_squares_approximation3[OF subspace_col_space[of A, unfolded op_vec_scaleR]] .
+    using least_squares_approximation3[OF subspace_col_space[of A, unfolded vec_subspace_eq_subspace]] .
   from this obtain p where p: "p \<in> col_space A" and least: "\<forall>y\<in>col_space A. norm (b - p) \<le> norm (b - y)"
     and bp_orthogonal: "(b-p) \<in> orthogonal_complement (col_space A)"
     by blast
@@ -178,21 +175,20 @@ definition "set_least_squares_approximation A b = {x. \<forall>y. norm (b - A *v
 
 corollary least_squares_approximation4:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   shows "\<exists>!p\<in>S. \<forall>y\<in>S-{p}. norm (v - p) < norm (v - y)"
 proof (auto)
-  obtain X where  ind_X: "real_vector.independent X"
+  obtain X where  ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
-    and o: "pairwise orthogonal X" 
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
+    and span_X: "S \<subseteq> span X"
+    and o: "pairwise orthogonal X"
+    by (metis order_refl orthonormal_basis_subspace subspace_S)
   let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y))"
-  proof (rule exI[of _ ?p], rule conjI,  rule real_vector.subspace_sum)
-    show "real_vector.subspace S" using subspace_S .
-    show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-    show "\<forall>x\<in>X. proj v x \<in> S" 
-      by (metis proj_def X span_X real_vector.span_subspace real_vector.span_superset subspace_S real_vector.subspace_mul)
+  proof (rule exI[of _ ?p], rule conjI,  rule subspace_sum)
+    show "subspace S" using subspace_S .
+    show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
+      by (metis Projections.proj_def X subset_iff subspace_S subspace_mul)
     show "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y)" 
       using X ind_X least_squares_approximation  o span_X subspace_S proj_onto_def
       by (metis (mono_tags) Diff_iff singletonI)
@@ -208,22 +204,20 @@ qed
 
 corollary least_squares_approximation4':
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   shows "\<exists>!p\<in>S. \<forall>y\<in>S. norm (v - p) \<le> norm (v - y)"
 proof (auto)
-  obtain X where ind_X: "real_vector.independent X"
+  obtain X where ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
+    and span_X: "S \<subseteq> span X"
     and o: "pairwise orthogonal X"
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
+    by (metis order_refl orthonormal_basis_subspace subspace_S)
   let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S. norm (v - p) \<le> norm (v - y))"
-  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_sum)
-    show "real_vector.subspace S" using subspace_S .
-    show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-    show "\<forall>x\<in>X. proj v x \<in> S" 
-      by (metis proj_def X span_X real_vector.span_subspace 
-        real_vector.span_superset subspace_S real_vector.subspace_mul)
+  proof (rule exI[of _ ?p], rule conjI, rule subspace_sum)
+    show "subspace S" using subspace_S .
+    show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
+      by (metis Projections.proj_def X subset_iff subspace_S subspace_mul)
     show "\<forall>y\<in>S. norm (v - ?p) \<le> norm (v - y)"
       by (metis (mono_tags) proj_onto_def X dual_order.refl ind_X 
          least_squares_approximation less_imp_le o span_X subspace_S)
@@ -243,22 +237,20 @@ qed
 
 corollary least_squares_approximation5:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   shows "\<exists>!p\<in>S. \<forall>y\<in>S-{p}. norm (v - p) < norm (v - y) \<and> v-p \<in> orthogonal_complement S"
 proof (auto)
-  obtain X where  ind_X: "real_vector.independent X"
+  obtain X where  ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
+    and span_X: "S \<subseteq> span X"
     and o: "pairwise orthogonal X"
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
+    by (metis order_refl orthonormal_basis_subspace subspace_S)
   let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y) \<and> v - p \<in> orthogonal_complement S)"
-  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_sum)
-    show "real_vector.subspace S" using subspace_S .
-    show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
-    show "\<forall>x\<in>X. proj v x \<in> S" 
-      by (metis proj_def X span_X real_vector.span_subspace 
-        real_vector.span_superset subspace_S real_vector.subspace_mul)   
+  proof (rule exI[of _ ?p], rule conjI, rule subspace_sum)
+    show "subspace S" using subspace_S .
+    show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
+      by (simp add: Projections.proj_def X set_rev_mp subspace_S subspace_mul)
     have "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y)" 
       using least_squares_approximation[OF subspace_S ind_X X span_X o]
       unfolding proj_onto_def
@@ -266,7 +258,7 @@ proof (auto)
     moreover have "v - ?p \<in> orthogonal_complement S" 
       by (metis (no_types) X ind_X o span_X subspace_S v_minus_p_orthogonal_complement proj_onto_def)
     ultimately show "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y) \<and> v - ?p \<in> orthogonal_complement S"
-      by auto        
+      by auto
   qed
   fix p y
   assume p: "p \<in> S" and p': "\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y) \<and> v - p \<in> orthogonal_complement S"
@@ -277,13 +269,13 @@ qed
 
 corollary least_squares_approximation5':
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   shows "\<exists>!p\<in>S. \<forall>y\<in>S. norm (v - p) \<le> norm (v - y) \<and> v-p \<in> orthogonal_complement S"
   by (metis least_squares_approximation3 least_squares_approximation4' subspace_S)
 
 corollary least_squares_approximation6:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   and "p\<in>S"
   and "\<forall>y\<in>S. norm (v - p) \<le> norm (v - y)"
   shows "v-p \<in> orthogonal_complement S"
@@ -299,7 +291,7 @@ qed
 
 corollary least_squares_approximation7:
   fixes S::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
+  assumes subspace_S: "subspace S"
   and "v - p \<in> orthogonal_complement S"
   and "p\<in>S"
   and "y \<in> S"
@@ -312,7 +304,7 @@ next
     by (metis (hide_lams, no_types) add_diff_cancel_left add_ac(1) add_diff_add add_diff_cancel)
   also have "... = norm (v - p)^2 + norm (p - y)^2" 
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal)
-    show "p - y \<in> S" by (metis assms(3) assms(4) subspace_S real_vector.subspace_diff)
+    show "p - y \<in> S" by (metis assms(3) assms(4) subspace_S subspace_diff)
     show "v - p \<in> orthogonal_complement S" by (metis assms(2)) 
   qed
   finally have "norm (v - p)^2 \<le> norm (v - y)^2" by auto
@@ -328,8 +320,8 @@ proof (unfold set_least_squares_approximation_def, auto)
   fix y 
   show " norm (b - A *v x) \<le> norm (b - A *v y)"
   proof (rule least_squares_approximation7)
-    show "real_vector.subspace (col_space A)" using subspace_col_space[of A, unfolded op_vec_scaleR] .
-    show "b - A *v x \<in> orthogonal_complement (col_space A)" 
+    show "subspace (col_space A)" using subspace_col_space[of A, unfolded vec_subspace_eq_subspace] .
+    show "b - A *v x \<in> orthogonal_complement (col_space A)"
       using o subspace_orthogonal_complement[of "(col_space A)"]
       using minus_diff_eq subspace_neg by metis
     show "A *v x \<in> col_space A" unfolding col_space_eq[of A] by auto
@@ -345,7 +337,7 @@ proof
   hence a: "\<forall>a. norm (b - A *v x) \<le> norm (b - A *v a)" unfolding set_least_squares_approximation_def by simp
   have "b - A *v x \<in> orthogonal_complement (col_space A)"
   proof (rule least_squares_approximation6)
-    show "real_vector.subspace (col_space A)" using subspace_col_space[of A, unfolded op_vec_scaleR] .
+    show "subspace (col_space A)" using subspace_col_space[of A, unfolded vec_subspace_eq_subspace] .
     show "A *v x \<in> col_space A" unfolding col_space_eq[of A] by auto
     show "\<forall>y\<in>col_space A. norm (b - A *v x) \<le> norm (b - y)" using a unfolding col_space_eq by auto
   qed

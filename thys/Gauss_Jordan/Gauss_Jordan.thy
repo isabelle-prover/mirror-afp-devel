@@ -1636,11 +1636,12 @@ proof
   unfolding R_def is_zero_row_def is_zero_row_upt_ncols row_def vec_nth_inverse
   unfolding vec_lambda_unique zero_vec_def mem_Collect_eq using a_eq_Ai by force
   define least_n where "least_n = (LEAST n. A $ i $ n \<noteq> 0)"
-  have span_rw: "vec.span (R - {a}) = {y. \<exists>u. (\<Sum>v\<in>(R - {a}). u v *s v) = y}"
+  have span_rw: "vec.span (R - {a}) = range (\<lambda>u. \<Sum>v\<in>R - {a}. u v *s v)"
   proof (rule vec.span_finite)
     show "finite (R - {a})" using finite_rows[of A] unfolding rows_def R_def by simp
   qed
-  from this obtain f where f: "(\<Sum>v\<in>(R - {a}). f v *s v) = a" using a_in_span by fast
+  from this obtain f where f: "(\<Sum>v\<in>(R - {a}). f v *s v) = a" using a_in_span
+    by (metis (no_types, lifting) imageE)
   have "1 = a $ least_n"  using rref_condition2[OF rref_A] row_i_A_not_zero unfolding least_n_def a_eq_Ai by presburger
   also have"... = (\<Sum>v\<in>(R - {a}). f v *s v) $ least_n" using f by auto
   also have "... = (\<Sum>v\<in>(R - {a}). (f v *s v) $ least_n)" unfolding sum_component ..
@@ -1973,7 +1974,8 @@ lemma rref_rank:
 proof (rule vec.dim_unique[of "{row i A | i. row i A \<noteq> 0}"])
   show "{row i A |i. row i A \<noteq> 0} \<subseteq> row_space A"
   proof (auto, unfold row_space_def rows_def)
-    fix i assume "row i A \<noteq> 0" show "row i A \<in> vec.span {row i A |i. i \<in> UNIV}" by (rule vec.span_superset, auto)
+    fix i assume "row i A \<noteq> 0" show "row i A \<in> vec.span {row i A |i. i \<in> UNIV}"
+      by (rule vec.span_base, auto)
   qed
   show "row_space A \<subseteq> vec.span {row i A |i. row i A \<noteq> 0}"
   proof (unfold row_space_def rows_def, cases "\<exists>i. row i A = 0")
@@ -2049,7 +2051,7 @@ lemma rref_col_rank:
   shows "col_rank A = card {column (LEAST n. A $ i $ n \<noteq> 0) A | i. row i A \<noteq> 0}"
 proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n \<noteq> 0) A | i. row i A \<noteq> 0}"])
   show "{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} \<subseteq> col_space A" 
-  by (auto simp add: col_space_def, rule vec.span_superset, unfold columns_def, auto)
+  by (auto simp add: col_space_def, rule vec.span_base, unfold columns_def, auto)
   show "vec.independent {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}"
     proof (rule vec.independent_if_scalars_zero, auto)
       fix f i
@@ -2084,66 +2086,67 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
   fix x assume x: "x \<in> columns A"
   have f: "finite {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" by simp
   let ?f="\<lambda>v. x $ (THE i. v $ i \<noteq> 0)"
-  show "x \<in> vec.span {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" unfolding vec.span_finite[OF f]
-  proof (auto, rule exI[of _ ?f], subst (3) vec_eq_iff, clarify)
+  show "x \<in> vec.span {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}"
+    unfolding vec.span_finite[OF f] image_iff bex_UNIV
+  proof (rule exI[of _ ?f], subst (1) vec_eq_iff, clarify)
     fix i
-    show "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE i. v $ i \<noteq> 0) *s v) $ i = x $ i"
+    show "x $ i = (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE i. v $ i \<noteq> 0) *s v) $ i"
     proof (cases "\<exists>v. v \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} \<and> v $ i \<noteq> 0")
-    case False 
-    have xi_0: "x $ i = 0"
+      case False
+      have xi_0: "x $ i = 0"
       proof (rule ccontr)
-      assume xi_not_0: "x $ i \<noteq> 0"
-      hence row_iA_not_zero: "row i A \<noteq> 0" using x unfolding columns_def column_def row_def by (vector, metis vec_lambda_unique)
-      let ?v="column (LEAST n. A $ i $ n \<noteq> 0) A"
-      have "?v \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" using row_iA_not_zero by auto
-      moreover have "?v $ i = 1" unfolding column_def by (auto, metis is_zero_row_eq_row_zero row_iA_not_zero rref_A rref_condition2)
-      ultimately show False using False by auto
+        assume xi_not_0: "x $ i \<noteq> 0"
+        hence row_iA_not_zero: "row i A \<noteq> 0" using x unfolding columns_def column_def row_def by (vector, metis vec_lambda_unique)
+        let ?v="column (LEAST n. A $ i $ n \<noteq> 0) A"
+        have "?v \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" using row_iA_not_zero by auto
+        moreover have "?v $ i = 1" unfolding column_def by (auto, metis is_zero_row_eq_row_zero row_iA_not_zero rref_A rref_condition2)
+        ultimately show False using False by auto
       qed
-    show ?thesis 
-      unfolding xi_0
-      proof (unfold sum_component vector_smult_component, rule sum.neutral, rule ballI)
-      fix xa assume xa: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}"
-      have "xa $ i = 0" using False xa by auto
-      thus "x $ (THE i. xa $ i \<noteq> 0) * xa $ i = 0" by simp
-      qed          
+      show ?thesis
+        unfolding xi_0
+      proof (unfold sum_component vector_smult_component, rule sum.neutral[symmetric], rule ballI)
+        fix xa assume xa: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}"
+        have "xa $ i = 0" using False xa by auto
+        thus "x $ (THE i. xa $ i \<noteq> 0) * xa $ i = 0" by simp
+      qed
     next
-    case True
-    obtain v where v: "v \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" and vi: "v $ i \<noteq> 0"
-      using True by blast
-    obtain b where b: "v = column (LEAST n. A $ b $ n \<noteq> 0) A" and row_b: "row b A \<noteq> 0" using v by blast
-    have vb: "v $ b \<noteq> 0" unfolding b column_def by (auto, metis is_zero_row_eq_row_zero row_b rref_A rref_condition2 zero_neq_one)
-    have b_eq_i: "b = i" by (rule column_leading_coefficient_component_eq[OF rref_A v vb vi])     
-   have the_vi: "(THE a. v $ a \<noteq> 0) = i"
+      case True
+      obtain v where v: "v \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" and vi: "v $ i \<noteq> 0"
+        using True by blast
+      obtain b where b: "v = column (LEAST n. A $ b $ n \<noteq> 0) A" and row_b: "row b A \<noteq> 0" using v by blast
+      have vb: "v $ b \<noteq> 0" unfolding b column_def by (auto, metis is_zero_row_eq_row_zero row_b rref_A rref_condition2 zero_neq_one)
+      have b_eq_i: "b = i" by (rule column_leading_coefficient_component_eq[OF rref_A v vb vi])     
+      have the_vi: "(THE a. v $ a \<noteq> 0) = i"
       proof (rule the_equality, rule vi)
-      fix a assume va: "v $ a \<noteq> 0" show "a=i" by (rule column_leading_coefficient_component_eq[OF rref_A v va vi])
+        fix a assume va: "v $ a \<noteq> 0" show "a=i" by (rule column_leading_coefficient_component_eq[OF rref_A v va vi])
       qed     
-    have vi_1: "v $ i = 1"  by (rule column_leading_coefficient_component_1[OF rref_A v vi])
-    have sum0: "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i)) = 0"
+      have vi_1: "v $ i = 1"  by (rule column_leading_coefficient_component_1[OF rref_A v vi])
+      have sum0: "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i)) = 0"
       proof (rule sum.neutral, rule ballI)
         fix xa assume xa: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}"
         obtain y where y: "xa = column (LEAST n. A $ y $ n \<noteq> 0) A" and row_b: "row y A \<noteq> 0" using xa by blast
         have xa_in_V: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" using xa by simp
         have "xa $ i = 0"
-          proof (rule column_leading_coefficient_component_0[OF rref_A xa_in_V])            
-           show "xa $ y \<noteq> 0" unfolding y column_def
+        proof (rule column_leading_coefficient_component_0[OF rref_A xa_in_V])
+          show "xa $ y \<noteq> 0" unfolding y column_def
             by (auto, metis (lifting, full_types) LeastI2_ex is_zero_row_def' is_zero_row_eq_row_zero row_b)
-            have "y \<noteq> b" by (metis (mono_tags) Diff_iff b mem_Collect_eq singleton_conv2 xa y)
-            thus "y \<noteq> i" unfolding b_eq_i[symmetric] . 
-          qed
-        thus "x $ (THE a. xa $ a \<noteq> 0) * xa $ i = 0" by simp      
+          have "y \<noteq> b" by (metis (mono_tags) Diff_iff b mem_Collect_eq singleton_conv2 xa y)
+          thus "y \<noteq> i" unfolding b_eq_i[symmetric] .
+        qed
+        thus "x $ (THE a. xa $ a \<noteq> 0) * xa $ i = 0" by simp
       qed
-    have "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) *s v) $ i =
-    (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
-      unfolding sum_component vector_smult_component ..
-    also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i) 
-    + (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
-      by (simp add: sum.remove[OF _ v])
-    also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i)" unfolding sum0 by simp
-    also have "... = x $ (THE a. v $ a \<noteq> 0)" unfolding vi_1 by simp
-    also have "... = x $ i" unfolding the_vi .. 
-    finally show "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) *s v) $ i = x $ i" .
+      have "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) *s v) $ i =
+          (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
+        unfolding sum_component vector_smult_component ..
+      also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i)
+          + (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
+        by (simp add: sum.remove[OF _ v])
+      also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i)" unfolding sum0 by simp
+      also have "... = x $ (THE a. v $ a \<noteq> 0)" unfolding vi_1 by simp
+      also have "... = x $ i" unfolding the_vi ..
+      finally show ?thesis by simp
+    qed
   qed
- qed 
 qed
 qed (simp)
 
@@ -2194,11 +2197,11 @@ lemma rref_row_rank:
       by (auto, metis i row_def vec_lambda_eta)
       qed
 qed
-  
-  
+
+
 
 lemma row_rank_eq_col_rank_rref:
-fixes A::"'a::{field}^'m::{mod_type}^'n::{mod_type}"
+  fixes A::"'a::{field}^'m::{mod_type}^'n::{mod_type}"
 assumes r: "reduced_row_echelon_form A"
 shows "row_rank A = col_rank A"
   unfolding rref_row_rank[OF r] rref_col_rank[OF r] ..
@@ -2277,14 +2280,14 @@ lemma rank_greater_zero:
   assumes "A \<noteq> 0"
   shows "rank A > 0"
 proof (rule ccontr, simp)
-assume "rank A = 0"
-hence "row_space A = {} \<or> row_space A = {0}" unfolding rank_def row_rank_def using vec.dim_zero_eq by blast
-hence "row_space A = {0}" unfolding row_space_def using vec.span_0 by blast
-hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by auto
-hence "rows A = {0}" unfolding rows_def row_def by force
-hence "A = 0" unfolding rows_def row_def vec_nth_inverse
-   by (auto, metis (mono_tags) mem_Collect_eq singleton_iff vec_lambda_unique zero_index)
-thus False using assms by contradiction
+  assume "rank A = 0"
+  hence "row_space A = {} \<or> row_space A = {0}" unfolding rank_def row_rank_def using vec.dim_zero_eq by blast
+  hence "row_space A = {0}" unfolding row_space_def using vec.span_zero by auto
+  hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by auto
+  hence "rows A = {0}" unfolding rows_def row_def by force
+  hence "A = 0" unfolding rows_def row_def vec_nth_inverse
+    by (auto, metis (mono_tags) mem_Collect_eq singleton_iff vec_lambda_unique zero_index)
+  thus False using assms by contradiction
 qed
 
 lemma Gauss_Jordan_not_0:
@@ -2418,7 +2421,7 @@ lemma dim_null_space[code_unfold]:
   using rank_nullity_theorem_matrices  
   unfolding rank_eq_dim_col_space[of A]
   unfolding dimension_vector ncols_def ..
-  
+
 lemma rank_eq_dim_col_space'[code_unfold]:
  fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
  shows "vec.dim (col_space A) = rank A" unfolding  rank_eq_dim_col_space ..

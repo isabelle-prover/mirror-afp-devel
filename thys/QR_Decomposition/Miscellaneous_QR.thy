@@ -177,8 +177,8 @@ lemma is_basis_imp_full_rank:
 proof -
   have "rank A = col_rank A" unfolding rank_col_rank ..
   also have "... = vec.dim (col_space A)" unfolding col_rank_def ..
-  also have "... = card (columns A)" 
-    by (metis b col_space_def is_basis_def order_refl vec.dim_unique vec.span_inc)
+  also have "... = card (columns A)"
+    by (metis b col_space_def independent_is_basis vec.dim_eq_card_independent vec.dim_span) 
   also have "... = ncols A" using c .
   finally show ?thesis .
 qed
@@ -197,9 +197,9 @@ lemma full_rank_imp_is_basis:
 proof (rule conjI, unfold is_basis_def, rule conjI)
   have "rank A = col_rank A" unfolding rank_col_rank ..
   also have "... = vec.dim (col_space A)" unfolding col_rank_def ..
-  also have "... = card (columns A)" 
-    by (metis card_columns_le_ncols col_rank_def col_space_def eq_iff 
-      finite_columns r rank_col_rank vec.span_card_ge_dim vec.span_inc)
+  also have "... = card (columns A)"
+    by (metis (full_types) antisym_conv calculation card_columns_le_ncols col_space_def
+        finite_columns r vec.dim_le_card vec.dim_span vec.span_superset) 
   finally have *: "rank A = card (columns A)" .
   then show c_eq: "card (columns A) = ncols A" unfolding r ..
   show "vec.independent (columns A)" 
@@ -218,8 +218,8 @@ proof -
   have "rank A = col_rank A" unfolding rank_col_rank ..
   also have "... = vec.dim (col_space A)" unfolding col_rank_def ..
   also have "... = card (columns A)"
-    by (metis card_columns_le_ncols col_rank_def col_space_def
-      eq_iff finite_columns r rank_col_rank vec.span_card_ge_dim vec.span_inc)
+    by (metis (full_types) antisym_conv calculation card_columns_le_ncols col_space_def
+        finite_columns r vec.dim_le_card vec.dim_span vec.span_superset) 
   finally have *: "rank A = card (columns A)" .
   then have c_eq: "card (columns A) = ncols A" unfolding r ..
   moreover have "vec.independent (columns A)" 
@@ -331,8 +331,7 @@ lemma invertible_transpose:
   fixes A::"'a::{field}^'n^'n"
   assumes "invertible A"
   shows "invertible (transpose A)"
-  by (metis assms invertible_left_inverse invertible_right_inverse 
-      matrix_transpose_mul transpose_mat)
+  by (metis Cartesian_Space.invertible_det_nz assms det_transpose)
 
 text{*The following lemmas are generalizations of some parts of the library. They should be 
   in the file @{text "Generalizations.thy"} of the Gauss-Jordan AFP entry.*}
@@ -340,15 +339,15 @@ text{*The following lemmas are generalizations of some parts of the library. The
 context vector_space
 begin
 lemma span_eq: "(span S = span T) = (S \<subseteq> span T \<and> T \<subseteq> span S)"
-  using span_inc[unfolded subset_eq] using span_mono[of T "span S"] span_mono[of S "span T"]
+  using span_superset[unfolded subset_eq] using span_mono[of T "span S"] span_mono[of S "span T"]
   by (auto simp add: span_span)
 end
 
 lemma basis_orthogonal:
   fixes B :: "'a::real_inner set"
   assumes fB: "finite B"
-  shows "\<exists>C. finite C \<and> card C \<le> card B \<and> real_vector.span C 
-        = real_vector.span B \<and> pairwise orthogonal C"
+  shows "\<exists>C. finite C \<and> card C \<le> card B \<and> span C
+        = span B \<and> pairwise orthogonal C"
   (is " \<exists>C. ?P B C")
   using fB
 proof (induct rule: finite_induct)
@@ -360,9 +359,9 @@ proof (induct rule: finite_induct)
 next
   case (insert a B)
   note fB = `finite B` and aB = `a \<notin> B`
-  from `\<exists>C. finite C \<and> card C \<le> card B \<and> real_vector.span C = real_vector.span B \<and> pairwise orthogonal C`
+  from `\<exists>C. finite C \<and> card C \<le> card B \<and> span C = span B \<and> pairwise orthogonal C`
   obtain C where C: "finite C" "card C \<le> card B"
-    "real_vector.span C = real_vector.span B" "pairwise orthogonal C" by blast
+    "span C = span B" "pairwise orthogonal C" by blast
   let ?a = "a - sum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
   let ?C = "insert ?a C"
   from C(1) have fC: "finite ?C"
@@ -373,20 +372,19 @@ next
     fix x k
     have th0: "\<And>(a::'a) b c. a - (b - c) = c + (a - b)"
       by (simp add: field_simps)
-    have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x)) \<in> real_vector.span C 
-      \<longleftrightarrow> x - k *\<^sub>R a \<in> real_vector.span C"
+    have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x)) \<in> span C
+      \<longleftrightarrow> x - k *\<^sub>R a \<in> span C"
       apply (simp only: scaleR_right_diff_distrib th0)
-      apply (rule real_vector.span_add_eq)
-      apply (rule real_vector.span_mul)
-      apply (rule real_vector.span_sum[OF C(1)])
-      apply clarify
-      apply (rule real_vector.span_mul)
-      apply (rule real_vector.span_superset)
+      apply (rule span_add_eq)
+      apply (rule span_mul)
+      apply (rule span_sum)
+      apply (rule span_mul)
+      apply (rule span_superset)
       apply assumption
       done
   }
-  then have SC: "real_vector.span ?C = real_vector.span (insert a B)"
-    unfolding set_eq_iff real_vector.span_breakdown_eq C(3)[symmetric] by auto
+  then have SC: "span ?C = span (insert a B)"
+    unfolding set_eq_iff span_breakdown_eq C(3)[symmetric] by auto
   {
     fix y
     assume yC: "y \<in> C"
@@ -409,37 +407,6 @@ next
   from fC cC SC CPO have "?P (insert a B) ?C"
     by blast
   then show ?case by blast
-qed
-
-lemma orthogonal_basis_exists:
-  fixes V :: "('a::euclidean_space) set"
-  shows "\<exists>B. real_vector.independent B \<and> B \<subseteq> real_vector.span V 
-  \<and> V \<subseteq> real_vector.span B \<and> (card B = real_vector.dim V) \<and> pairwise orthogonal B"
-proof -
-  from euclidean_space.basis_exists[of V] obtain B where
-    B: "B \<subseteq> V" "real_vector.independent B" "V \<subseteq> real_vector.span B" "card B = real_vector.dim V"
-    by blast
-  from B have fB: "finite B" "card B = real_vector.dim V"
-    using euclidean_space.independent_bound by auto
-  from basis_orthogonal[OF fB(1)] obtain C where
-    C: "finite C" "card C \<le> card B" "real_vector.span C = real_vector.span B" "pairwise orthogonal C"
-    by blast
-  from C B have CSV: "C \<subseteq> real_vector.span V"
-    by (metis real_vector.span_inc real_vector.span_mono subset_trans)
-  from real_vector.span_mono[OF B(3)] C have SVC: "real_vector.span V \<subseteq> real_vector.span C"
-    by (simp add: real_vector.span_span)
-  from euclidean_space.card_le_dim_spanning[OF CSV SVC C(1)] C(2,3) fB
-  have iC: "real_vector.independent C"
-    by (simp add: euclidean_space.dim_span)
-  from C fB have "card C \<le> real_vector.dim V"
-    by simp
-  moreover have "real_vector.dim V \<le> card C"
-    using euclidean_space.span_card_ge_dim[OF CSV SVC C(1)]
-    by (simp add: euclidean_space.dim_span)
-  ultimately have CdV: "card C = real_vector.dim V"
-    using C(1) by simp
-  from C B CSV CdV iC show ?thesis
-    by auto
 qed
 
 lemma op_vec_scaleR: "( *s) = ( *\<^sub>R)"

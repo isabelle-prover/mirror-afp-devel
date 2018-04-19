@@ -12,6 +12,14 @@ imports
     Gauss_Jordan
 begin
 
+lemma "((\<lambda>(x, y). (x::real , - y::real)) has_derivative (\<lambda>h. (fst h, - snd h))) (at x)"
+  apply (rule has_derivative_eq_rhs)
+   apply (rule has_derivative_split)
+
+  apply (rule has_derivative_Pair)
+  by (auto intro!: derivative_eq_intros)
+
+
 subsection{*Properties about ranks and linear maps*}
 
 lemma rank_matrix_dim_range:
@@ -23,80 +31,87 @@ unfolding col_space_eq' using matrix_works[OF lf] by metis
 text{*The following two lemmas are the demonstration of theorem 2.11 that appears the book "Advanced Linear Algebra" by Steven Roman.*}
 
 lemma linear_injective_rank_eq_ncols:
-assumes lf: "linear (( *s)) (( *s)) f"
-shows "inj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
+  assumes lf: "linear (( *s)) (( *s)) f"
+  shows "inj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
 proof (rule)
-interpret lf: linear "(( *s))" "(( *s))" f using lf by simp
-assume inj: "inj f"
-hence "{x. f x = 0} = {0}" using lf.linear_injective_ker_0 by blast
-hence "vec.dim {x. f x = 0} = 0" using vec.dim_zero_eq' by blast
-thus "rank (matrix f) = ncols (matrix f)" using vec.rank_nullity_theorem unfolding ncols_def
-using rank_matrix_dim_range[OF lf]
-by (metis Generalizations.matrix_vector_mul lf plus_nat.add_0 vec.dim_univ_eq_dimension vec_dim_card)
+  interpret lf: linear "(( *s))" "(( *s))" f using lf by simp
+  assume inj: "inj f"
+  hence "{x. f x = 0} = {0}" using lf.linear_injective_ker_0 by blast
+  hence "vec.dim {x. f x = 0} = 0" using vec.dim_zero_eq' by blast
+  thus "rank (matrix f) = ncols (matrix f)" using vec.rank_nullity_theorem unfolding ncols_def
+    using rank_matrix_dim_range[OF lf]
+    by (metis add.left_neutral lf.linear_axioms vec.dim_UNIV vec.dimension_def vec_dim_card)
 next
-assume eq: "rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
-have "vec.dim {x. f x = 0} = 0"  using vec.rank_nullity_theorem[of "matrix f"] 
-   unfolding ncols_def
-using rank_matrix_dim_range[OF lf] eq unfolding matrix_vector_mul[OF lf, symmetric] 
-  by (metis add_implies_diff monoid_add_class.add.left_neutral ncols_def 
-    vec.dim_univ_eq_dimension vec_dim_card)
-hence "{x. f x = 0} = {0}" using vec.dim_zero_eq linear.linear_0[OF lf] by auto
-thus "inj f" using vec.linear_injective_ker_0[of "matrix f"] 
-  unfolding matrix_vector_mul[OF lf, symmetric] by simp
+  assume eq: "rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
+  have "vec.dim {x. f x = 0} = 0" 
+    unfolding ncols_def
+    using rank_matrix_dim_range[OF lf] eq unfolding matrix_vector_mul[OF lf, symmetric]
+    by (metis Collect_cong cancel_comm_monoid_add_class.diff_cancel dim_null_space lf ncols_def
+        null_space_eq_ker vec.dim_UNIV vec.dimension_def vec_dim_card)
+  hence "{x. f x = 0} = {0}" using vec.dim_zero_eq
+    by (metis (mono_tags) empty_iff lf linear.linear_injective_0 linear.linear_injective_ker_0 mem_Collect_eq)
+  thus "inj f" using vec.linear_injective_ker_0[of "matrix f"] 
+    unfolding matrix_vector_mul[OF lf, symmetric] by simp
 qed
 
 lemma linear_surjective_rank_eq_ncols:
-assumes lf: "linear (( *s)) (( *s)) f"
-shows "surj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = nrows (matrix f)"
+  assumes lf: "linear (( *s)) (( *s)) f"
+  shows "surj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = nrows (matrix f)"
 proof (rule)
-assume surj: "surj f"
-have "nrows (matrix f) = CARD ('rows)" unfolding nrows_def ..
-also have "... = vec.dim (range f)" by (metis surj vec_dim_card)
-also have "... = rank (matrix f)" unfolding rank_matrix_dim_range[OF lf] ..
-finally show "rank (matrix f) = nrows (matrix f)" ..
+  assume surj: "surj f"
+  have "nrows (matrix f) = CARD ('rows)" unfolding nrows_def ..
+  also have "... = vec.dim (range f)" by (metis surj vec_dim_card)
+  also have "... = rank (matrix f)" unfolding rank_matrix_dim_range[OF lf] ..
+  finally show "rank (matrix f) = nrows (matrix f)" ..
 next
-assume "rank (matrix f) = nrows (matrix f)"
-hence "vec.dim (range f) = CARD ('rows)" unfolding rank_matrix_dim_range[OF lf] nrows_def .
-thus "surj f" 
-using vec.basis_exists vec.dim_UNIV vec.dim_subset_UNIV independent_is_basis is_basis_def lf 
-  vec.subspace_UNIV vec.subspace_dim_equal vec.subspace_linear_image top_le 
-by (metis (mono_tags, hide_lams) dimension_vector top_greatest)
+  assume "rank (matrix f) = nrows (matrix f)"
+  hence "vec.dim (range f) = CARD ('rows)" unfolding rank_matrix_dim_range[OF lf] nrows_def .
+  thus "surj f"
+    using vec.basis_exists independent_is_basis is_basis_def lf
+      vec.subspace_UNIV vec.subspace_image
+    by (metis col_space_eq' col_space_eq_range vec.span_subspace)
 qed
 
 lemma linear_bij_rank_eq_ncols:
-fixes f::"('a::{field}^'n::{mod_type})=>('a::{field}^'n::{mod_type})"
-assumes lf: "linear (( *s)) (( *s)) f"
-shows "bij f \<longleftrightarrow> rank (matrix f) = ncols (matrix f)" 
-unfolding bij_def
-using vec.linear_injective_imp_surjective[OF lf]
-using vec.linear_surjective_imp_injective[OF lf]
-using linear_injective_rank_eq_ncols[OF lf]
-by auto
+  fixes f::"('a::{field}^'n::{mod_type})=>('a::{field}^'n::{mod_type})"
+  assumes lf: "linear (( *s)) (( *s)) f"
+  shows "bij f \<longleftrightarrow> rank (matrix f) = ncols (matrix f)" 
+  unfolding bij_def
+  using lf linear_injective_rank_eq_ncols vec.pairself.linear_injective_imp_surjective by blast
 
 
 subsection{*Invertible linear maps*}
 
-text{*We could get rid of the property @{text "linear (( *c)) (( *b)) g"} using 
-  @{thm "finite_dimensional_vector_space.left_inverse_linear"}*}
-
-locale invertible_lf = linear + 
-  assumes invertible_lf: "(\<exists>g. linear (( *c)) (( *b)) g \<and> (g \<circ> f = id) \<and> (f \<circ> g = id))"
-
-context linear_between_finite_dimensional_vector_spaces
+locale invertible_lf = linear +
+  assumes invertible: "(\<exists>g. g \<circ> f = id \<and> f \<circ> g = id)"
 begin
 
-lemma invertible_lf_intro[intro]:
+lemma invertible_lf: "(\<exists>g. linear (( *b)) (( *a)) g \<and> (g \<circ> f = id) \<and> (f \<circ> g = id))"
+proof -
+  have "inj_on f UNIV"
+    using invertible by (auto simp: o_def id_def inj_on_def fun_eq_iff) metis
+  from exists_left_inverse_on[OF vs1.subspace_UNIV this] obtain g where
+    g: "linear ( *b) ( *a) g" "g o f = id"
+    by (auto simp: fun_eq_iff id_def module_hom_iff_linear)
+  then have "f o g = id"
+    using invertible
+    by (auto simp: inj_on_def fun_eq_iff) metis
+  with g show ?thesis by auto
+qed
+
+end
+
+lemma (in linear) invertible_lf_intro[intro]:
   assumes "(g \<circ> f = id)"  and "(f \<circ> g = id)"
-  shows "invertible_lf (( *b)) (( *c)) f"
-  by (unfold_locales, metis assms(1) assms(2) inj_on_id inj_on_imageI2  left_right_inverse_eq linear_injective_left_inverse)
-end  
+  shows "invertible_lf (( *a)) (( *b)) f"
+  using assms
+  by unfold_locales auto
 
 lemma invertible_imp_bijective:
   assumes "invertible_lf scaleB scaleC f"
-  shows "bij f" 
+  shows "bij f"
   using assms unfolding invertible_lf_def invertible_lf_axioms_def
-  by (metis  bij_betw_comp_iff bij_betw_imp_surj inj_on_imageI2 inj_on_imp_bij_betw inv_id surj_id surj_imp_inj_inv)
-
+  by (metis bij_betw_comp_iff bij_betw_imp_surj inj_on_imageI2 inj_on_imp_bij_betw inv_id surj_id surj_imp_inj_inv)
 
 lemma invertible_matrix_imp_invertible_lf:
   fixes A::"'a::{field}^'n^'n"
@@ -114,15 +129,16 @@ qed
 lemma invertible_lf_imp_invertible_matrix:
   fixes f::"'a::{field}^'n\<Rightarrow>'a^'n"
   assumes invertible_f: "invertible_lf (( *s)) (( *s)) f"
-  shows "invertible (matrix f)" 
+  shows "invertible (matrix f)"
 proof -
   interpret i: invertible_lf "(( *s))" "(( *s))" f using invertible_f .
   obtain g where linear_g: "linear (( *s)) (( *s))  g" and gf: "(g \<circ> f = id)" and fg: "(f \<circ> g = id)"
     by (metis invertible_f invertible_lf.invertible_lf)
-  show ?thesis proof (unfold invertible_def, rule exI[of _ "matrix g"], rule conjI)
+  show ?thesis
+  proof (unfold invertible_def, rule exI[of _ "matrix g"], rule conjI)
     show "matrix f ** matrix g = mat 1"
-      by (metis fg id_def vec.left_inverse_linear linear_g vec.linear_id matrix_compose 
-          matrix_eq matrix_mul_rid matrix_vector_mul matrix_vector_mul_assoc)       
+      unfolding matrix_eq matrix_vector_mul_assoc[symmetric]
+      by (metis i.linear_axioms matrix_vector_mul_lid pointfree_idE fg linear_g matrix_vector_mul)
     show "matrix g ** matrix f = mat 1"
       by (metis `matrix f ** matrix g = mat 1` matrix_left_right_inverse)
   qed
@@ -158,15 +174,12 @@ proof -
   thus ?thesis unfolding rank_eq_dim_image using TAQ_def [abs_def] TA_def [abs_def] by auto
 qed
 
-
-
 lemma subspace_image_invertible_mat:
   fixes P::"'a::{field}^'m^'m"
   assumes inv_P: "invertible P"
-  and sub_W: "vec.subspace W"
+    and sub_W: "vec.subspace W"
   shows "vec.subspace ((\<lambda>x. P *v x)` W)"
-  by (metis (lifting) matrix_vector_mul_linear sub_W vec.subspace_linear_image)
-
+  using assms by (intro vec.subspace_image)
 
 lemma dim_image_invertible_mat:
   fixes P::"'a::{field}^'m^'m"
@@ -180,27 +193,30 @@ proof -
   define L where "L = (\<lambda>x. P *v x)"
   define C where "C = L`B"
   have finite_B: "finite B" using vec.indep_card_eq_dim_span[OF ind_B] by simp
-  have linear_L: "linear (( *s)) (( *s)) L"  using matrix_vector_mul_linear unfolding L_def .
+  interpret L: linear "( *s)" "( *s)" L  using matrix_vector_mul_linear unfolding L_def .
   have finite_C: "finite C" using vec.indep_card_eq_dim_span[OF ind_B] unfolding C_def by simp
   have inv_TP: "invertible_lf (( *s)) (( *s)) (\<lambda>x. P *v x)" using invertible_matrix_imp_invertible_lf[OF inv_P] .
   have inj_on_LW: "inj_on L W" using invertible_imp_bijective[OF inv_TP] unfolding bij_def L_def unfolding inj_on_def 
     by blast
   hence inj_on_LB: "inj_on L B" unfolding inj_on_def using B_in_W by auto  
   have ind_D: "vec.independent C"
-  proof (rule vec.independent_if_scalars_zero[OF finite_C], clarify)
+  proof (rule vec.independent_if_scalars_zero[OF finite_C])
     fix f x
     assume sum: "(\<Sum>x\<in>C. f x *s x) = 0" and x: "x \<in> C"
     obtain y where Ly_eq_x: "L y = x" and y: "y \<in> B" using x unfolding C_def L_def by auto    
     have "(\<Sum>x\<in>C. f x *s x) = sum ((\<lambda>x. f x *s x) \<circ> L) B" unfolding C_def by (rule sum.reindex[OF inj_on_LB])
     also have "... = sum (\<lambda>x. f (L x) *s L x) B" unfolding o_def .. 
     also have "... =  sum (\<lambda>x. ((f \<circ> L) x) *s L x) B" using o_def by auto
-    also have "... = L (sum (\<lambda>x. ((f \<circ> L) x) *s x) B)" by (rule linear.linear_sum_mul[OF linear_L finite_B,symmetric])
+    also have "... = L (sum (\<lambda>x. ((f \<circ> L) x) *s x) B)"
+      by (simp add: L.sum L.scale)
     finally have rw: " (\<Sum>x\<in>C. f x *s x) = L (\<Sum>x\<in>B. (f \<circ> L) x *s x)" .
     have "(\<Sum>x\<in>B. (f \<circ> L) x *s x) \<in> W"
-      by (rule vec.subspace_sum[OF sub_W finite_B], metis B_in_W in_mono sub_W vec.subspace_mul) 
+      by (rule vec.subspace_sum[OF sub_W])
+        (simp add: B_in_W set_rev_mp sub_W vec.subspace_scale)
     hence "(\<Sum>x\<in>B. (f \<circ> L) x *s x)=0"
-      using sum rw 
-      using vec.linear_injective_on_subspace_0[OF linear_L sub_W] using inj_on_LW by auto
+      using sum rw
+      using vec.linear_injective_on_subspace_0[OF sub_W, of P] using inj_on_LW
+      by (auto simp: L_def)
     hence "(f \<circ> L) y = 0"
       using vec.scalars_zero_if_independent[OF finite_B ind_B, of "(f \<circ> L)"] 
       using y by auto
@@ -210,11 +226,11 @@ proof -
   proof (unfold vec.span_finite[OF finite_C], clarify)
     fix xa assume xa_in_W: "xa \<in> W"
     obtain g where sum_g: "sum (\<lambda>x. g x *s x) B = xa"
-      using vec.span_finite[OF finite_B] W_in_span_B xa_in_W by blast    
-    show "\<exists>u. (\<Sum>v\<in>C. u v *s v) = L xa" 
-    proof (rule exI[of _ "\<lambda>x. g (THE y. y \<in> B \<and> x=L y)"])
+      using vec.span_finite[OF finite_B] W_in_span_B xa_in_W by force
+    show "L xa \<in> range (\<lambda>u. (\<Sum>v\<in>C. u v *s v))"
+    proof (rule image_eqI[where x="\<lambda>x. g (THE y. y \<in> B \<and> x=L y)"])
       have "L xa = L (sum (\<lambda>x. g x *s x) B)" using sum_g by simp
-      also have "... = sum (\<lambda>x. g x *s L x) B" using linear.linear_sum_mul[OF linear_L finite_B] .      
+      also have "... = sum (\<lambda>x. g x *s L x) B" by (simp add: L.sum L.scale)
       also have "... = sum (\<lambda>x. g (THE y. y \<in> B \<and> x=L y) *s x) (L`B)"
       proof (unfold sum.reindex[OF inj_on_LB], unfold o_def, rule sum.cong)
         fix x assume x_in_B: "x\<in>B"
@@ -225,14 +241,13 @@ proof -
         qed
         show "g x *s L x = g (THE y. y \<in> B \<and> L x = L y) *s L x" using x_eq_the by simp
       qed rule
-      finally show "(\<Sum>v\<in>C. g (THE y. y \<in> B \<and> v = L y) *s v) = L xa" unfolding C_def ..
-    qed
+      finally show "L xa = (\<Sum>v\<in>C. g (THE y. y \<in> B \<and> v = L y) *s v)" unfolding C_def by simp
+    qed rule
   qed
   have "card C = card B" using card_image[OF inj_on_LB] unfolding C_def .
-  thus ?thesis 
-    by (metis B_in_W C_def L_def W_in_span_B card_B_eq_dim_W ind_D linear_L sub_W 
-      vec.basis_exists vec.dim_span vec.span_linear_image vec.span_subspace 
-      vec.spanning_subset_independent)
+  thus ?thesis
+    by (metis B_in_W C_def L.span_image W_in_span_B \<open>L \<equiv> ( *v) P\<close> card_B_eq_dim_W ind_D sub_W
+        vec.indep_card_eq_dim_span vec.span_subspace)
 qed
 
 
@@ -246,8 +261,8 @@ proof -
   define TA where "TA = (\<lambda>x. A *v x)"
   define TPA where "TPA = (\<lambda>x. (P**A) *v x)"
   have sub: "vec.subspace (range (( *v) A))"
-    by (metis matrix_vector_mul_linear vec.subspace_UNIV vec.subspace_linear_image)
-  have "vec.dim (range TPA) = vec.dim (range (TP \<circ> TA))" 
+    by (metis vec.subspace_UNIV vec.subspace_image)
+  have "vec.dim (range TPA) = vec.dim (range (TP \<circ> TA))"
     unfolding TP_def TA_def TPA_def o_def matrix_vector_mul_assoc ..
   also have "... = vec.dim (range TA)" using dim_image_invertible_mat[OF invertible_P sub] 
     unfolding TP_def TA_def o_def fun.set_map[symmetric] .
@@ -318,11 +333,12 @@ proof (rule iffD1[OF independent_is_basis], rule conjI)
     by (rule card_image[of f "set_of_vector X"], metis invertible_imp_bijective[OF invertible_lf] bij_def inj_eq inj_on_def)
   also have "... = card (UNIV::'n set)" using basis_X unfolding independent_is_basis[symmetric] by auto
   finally show "card (f ` set_of_vector X) = card (UNIV::'n set)" .
+  interpret linear "( *s)" "( *s)" f using invertible_lf unfolding invertible_lf_def by simp
   show "vec.independent (f ` set_of_vector X)"
-  proof (rule linear.independent_injective_image)
-    show "linear (( *s)) (( *s)) f" using invertible_lf unfolding invertible_lf_def by simp
+  proof (rule independent_injective_image)
     show "vec.independent (set_of_vector X)" using basis_X unfolding is_basis_def by simp
-    show "inj f"  using invertible_imp_bijective[OF invertible_lf] unfolding bij_def by simp
+    show "inj_on f (vec.span (set_of_vector X))"
+      by (metis bij_def injD inj_onI invertible_imp_bijective invertible_lf)
   qed
 qed
 
@@ -335,15 +351,14 @@ lemma set_of_vector_cart_basis':
 
 lemma cart_basis'_i: "cart_basis' $ i = axis i 1" unfolding cart_basis'_def by simp
 
-lemma finite_cart_basis':
-  shows "finite (set_of_vector cart_basis')"
-unfolding set_of_vector_def using finite_Atleast_Atmost_nat[of "\<lambda>i. (cart_basis'::'a^'n^'n) $ i"] .
+lemma finite_set_of_vector[intro,simp]: "finite (set_of_vector X)"
+  unfolding set_of_vector_def using finite_Atleast_Atmost_nat[of "\<lambda>i. X $ i"] .
 
 lemma is_basis_cart_basis': "is_basis (set_of_vector cart_basis')"
   unfolding cart_basis_eq_set_of_vector_cart_basis'[symmetric]
   by (metis Miscellaneous.is_basis_def independent_cart_basis span_cart_basis)
-  
-lemma basis_expansion_cart_basis':"sum (\<lambda>i. x$i *s cart_basis' $ i) UNIV = x" 
+
+lemma basis_expansion_cart_basis':"sum (\<lambda>i. x$i *s cart_basis' $ i) UNIV = x"
   unfolding cart_basis'_def using basis_expansion by auto
 
 lemma basis_expansion_unique:
@@ -405,14 +420,16 @@ proof -
   qed
 qed
 
-lemma basis_UNIV: 
+lemma basis_UNIV:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis: "is_basis (set_of_vector X)"
   shows "UNIV = {x. \<exists>g. (\<Sum>i\<in>UNIV. g i *s X$i) = x}"
 proof -
   have "UNIV = {x. \<exists>g. (\<Sum>i\<in>(set_of_vector X). g i *s i) = x}"
+    using vec.span_finite[OF basis_finite[OF is_basis]]
     using is_basis unfolding is_basis_def
-    using vec.span_finite[OF basis_finite[OF is_basis]] by auto
+    by (auto simp: set_eq_iff
+        intro!: vec.sum_representation_eq exI[where x="vec.representation (set_of_vector X) x" for x])
   also have "... \<subseteq> {x. \<exists>g. (\<Sum>i\<in>UNIV. g i *s X$i) = x}"
   proof (clarify)
     fix f
@@ -538,10 +555,9 @@ lemma linear_coord:
   fixes X::"'a::{field}^'n^'n"
   assumes basis_X: "is_basis (set_of_vector X)"
   shows "linear (( *s)) (( *s)) (coord X)"
-proof (unfold linear_def additive_def linear_axioms_def coord_def, auto)
-  fix x y::"('a, 'n) vec" 
-  show  "vec_lambda (THE f. x + y = (\<Sum>x\<in>UNIV. f x *s X $ x)) 
-    = vec_lambda (THE f. x = (\<Sum>x\<in>UNIV. f x *s X $ x)) + vec_lambda (THE f. y = (\<Sum>x\<in>UNIV. f x *s X $ x))"
+proof unfold_locales
+  fix x y::"('a, 'n) vec"
+  show  "coord X (x + y) = coord X x + coord X y"
   proof -
     obtain f where f: "(\<Sum>a\<in>(UNIV::'n set). f a *s X $ a) = x + y" using basis_UNIV[OF basis_X] by blast
     obtain g where g: " (\<Sum>x\<in>UNIV. g x *s X $ x) = x" using basis_UNIV[OF basis_X] by blast
@@ -566,14 +582,14 @@ proof (unfold linear_def additive_def linear_axioms_def coord_def, auto)
     also have "... = (\<Sum>x\<in>UNIV. g x *s X $ x + h x *s X $ x)" unfolding sum.distrib[symmetric] ..
     also have "... = (\<Sum>x\<in>UNIV. (g x + h x) *s X $ x)" by (rule sum.cong, auto simp add: scaleR_left_distrib)
     also have "... = (\<Sum>x\<in>UNIV. t x *s X $ x)" unfolding t_def ..
-    finally have "(\<Sum>a\<in>UNIV. f a *s X $ a) = (\<Sum>x\<in>UNIV. t x *s X $ x)" .    
+    finally have "(\<Sum>a\<in>UNIV. f a *s X $ a) = (\<Sum>x\<in>UNIV. t x *s X $ x)" .
     hence "f=t" using basis_combination_unique[OF basis_X] by auto
     thus ?thesis
-      by (unfold the_f the_g the_h, vector, auto, unfold f g h t_def, simp)      
+      by (unfold coord_def the_f the_g the_h, vector, auto, unfold f g h t_def, simp)
   qed
 next
   fix c::'a and x::"'a^'n"
-  show "vec_lambda (THE f. c *s x = (\<Sum>x\<in>UNIV. f x *s X $ x)) = c *s vec_lambda (THE f. x = (\<Sum>x\<in>UNIV. f x *s X $ x))"
+  show "coord X (c *s x) = c *s coord X x"
   proof -
     obtain f where f: "(\<Sum>x\<in>UNIV. f x *s X $ x) = c *s x" using basis_UNIV[OF basis_X] by blast
     obtain g where g: "(\<Sum>x\<in>UNIV. g x *s X $ x) = x" using basis_UNIV[OF basis_X] by blast
@@ -591,11 +607,10 @@ next
     also have "... = (\<Sum>x\<in>UNIV. c *s (g x *s X $ x))" by (rule vec.scale_sum_right)
     also have "... =  (\<Sum>x\<in>UNIV. t x *s X $ x)" unfolding t_def by simp
     finally have " (\<Sum>x\<in>UNIV. f x *s X $ x) = (\<Sum>x\<in>UNIV. t x *s X $ x)" .
-    hence "f=t" using basis_combination_unique[OF basis_X] by auto    
+    hence "f=t" using basis_combination_unique[OF basis_X] by auto
     thus ?thesis
-      by (unfold the_f the_g, vector, auto, unfold t_def, auto)    
+      by (unfold coord_def the_f the_g, vector, auto, unfold t_def, auto)
   qed
-  show "vector_space ( *s)" by unfold_locales
 qed
 
 
@@ -721,7 +736,8 @@ lemma coord_matrix':
   and linear_f: "linear (( *s)) (( *s)) f"
   shows "coord Y (f v) = (matrix' X Y f) *v (coord X v)"  
 proof (unfold matrix_mult_sum matrix'_def column_def coord_def, vector, auto)
-  fix i 
+  fix i
+  interpret linear "( *s)" "( *s)" f by fact
   obtain g where g: "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using basis_UNIV[OF basis_Y] by auto
   obtain s where s: "(\<Sum>x\<in>UNIV. s x *s X $ x) = v" using basis_UNIV[OF basis_X] by auto
   have the_g: "(THE fa. \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. fa x * Y $ x $ a)) = g"
@@ -743,7 +759,7 @@ proof (unfold matrix_mult_sum matrix'_def column_def coord_def, vector, auto)
   define t where "t x = (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x))" for x
   have "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using g by simp
   also have "... = f (\<Sum>x\<in>UNIV. s x *s X $ x)" using s by simp
-  also have "... = (\<Sum>x\<in>UNIV. s x *s f (X $ x))" by (rule linear.linear_sum_mul[OF linear_f], simp)
+  also have "... = (\<Sum>x\<in>UNIV. s x *s f (X $ x))" by (simp add: sum scale)
   also have "... = (\<Sum>i\<in>UNIV. s i *s sum (\<lambda>j. (matrix' X Y f)$j$i *s (Y$j)) UNIV)" using matrix'[OF basis_X basis_Y] by auto
   also have "... =  (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. s i *s (matrix' X Y f $ x $ i *s Y $ x))" unfolding vec.scale_sum_right ..
   also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x) *s Y $ x)" unfolding matrix'_def unfolding coord_def by auto
@@ -773,7 +789,8 @@ lemma matrix'_compose:
 proof (unfold matrix_eq, clarify)
   fix a::"('a, 'n) vec"
   obtain v where v: "a = coord X v" using bij_coord[OF basis_X] unfolding bij_iff by metis
-  have linear_gf: "linear (( *s)) (( *s)) (g \<circ> f)" using linear_compose[OF linear_f linear_g] .
+  have linear_gf: "linear (( *s)) (( *s)) (g \<circ> f)"
+    using linear_compose[OF linear_f linear_g] .
   have "matrix' X Z (g \<circ> f) *v a = matrix' X Z (g \<circ> f) *v (coord X v)" unfolding v ..
   also have "... = coord Z ((g \<circ> f) v)" unfolding coord_matrix'[OF basis_X basis_Z linear_gf, symmetric] ..
   also have "... = coord Z (g (f v))" unfolding o_def ..
@@ -790,8 +807,14 @@ lemma exists_linear_eq_matrix':
   shows "\<exists>f. matrix' X Y f = A \<and> linear (( *s)) (( *s)) f" 
 proof -
   define f where "f v = sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV" for v
-  obtain g where linear_g: "linear (( *s)) (( *s)) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)" 
-    using vec.linear_independent_extend using basis_X unfolding is_basis_def by blast  
+  interpret pair: vector_space_pair "( *s)::_\<Rightarrow>_\<Rightarrow>'a^'m" "( *s)::_\<Rightarrow>_\<Rightarrow>'a^'n" by unfold_locales
+  have indep: "vec.independent (set_of_vector X)"
+    using basis_X unfolding is_basis_def by auto
+  define g where "g = pair.construct (set_of_vector X) f"
+  have linear_g: "linear (( *s)) (( *s)) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)"
+    using pair.module_hom_construct[OF indep] pair.construct_basis[OF indep]
+    unfolding g_def module_hom_iff_linear
+    by auto
   show ?thesis
   proof (rule exI[of _ g], rule conjI)
     show "matrix' X Y g = A"
@@ -949,7 +972,7 @@ lemma matrix_inv_matrix_change_of_basis:
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   shows"matrix_change_of_basis Y X = matrix_inv (matrix_change_of_basis X Y)"
 proof (rule matrix_inv_unique[symmetric])
-  have linear_id: "linear (( *s)) (( *s)) id" by (metis vec.linear_id)  
+  have linear_id: "linear (( *s)) (( *s)) id" by (metis vec.linear_id)
   have "(matrix_change_of_basis Y X) ** (matrix_change_of_basis X Y) = (matrix' Y X id) ** (matrix' X Y id)"
     unfolding matrix'_id_eq_matrix_change_of_basis[OF basis_X basis_Y]
     unfolding matrix'_id_eq_matrix_change_of_basis[OF basis_Y basis_X] ..
@@ -992,7 +1015,7 @@ fixes f:: "'a::{field}^'b \<Rightarrow> 'a^'b"
   by (metis assms(1) basis_X basis_Y id_o invertible_matrix_change_of_basis 
      invertible_mult is_basis_cart_basis' linear_f vec.linear_id 
     matrix'_compose matrix'_eq_matrix matrix'_id_eq_matrix_change_of_basis matrix'_matrix_change_of_basis)
-   
+
 lemma invertible_matrix_is_change_of_basis:
   assumes invertible_P: "invertible P" and basis_X: "is_basis (set_of_vector X)" 
   shows "\<exists>!Y. matrix_change_of_basis Y X = P \<and> is_basis (set_of_vector Y)"

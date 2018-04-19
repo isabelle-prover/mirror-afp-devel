@@ -461,7 +461,8 @@ from this obtain x where x: "x \<in> solution_set A 0" and x_not_0: "x \<noteq> 
 define f where "f = (\<lambda>n::nat. (of_nat n) *s x)"
 show ?thesis
   proof (unfold infinite_iff_countable_subset, rule exI[of _ f], rule conjI)
-    show "inj f" unfolding inj_on_def unfolding f_def using x_not_0 by auto
+    show "inj f" unfolding inj_on_def unfolding f_def using x_not_0
+      by (auto simp: vec_eq_iff)
     show "range f \<subseteq> solution_set A 0" using homogeneous_solution_set_subspace using x unfolding vec.subspace_def image_def f_def by fast
   qed
 qed
@@ -507,7 +508,8 @@ obtain y where y: "is_solution y A b" using con unfolding consistent_def by blas
 define f where "f = (\<lambda>n::nat. y + (of_nat n) *s x)"
 show ?thesis 
   proof (unfold infinite_iff_countable_subset, rule exI[of _ f], rule conjI)
-    show "inj f" unfolding inj_on_def unfolding f_def using x_not_0 by force
+    show "inj f" unfolding inj_on_def unfolding f_def using x_not_0
+      by (auto simp: vec_eq_iff)
     show "range f \<subseteq> solution_set A b"
       unfolding solution_set_rel[OF y] 
       using homogeneous_solution_set_subspace using x unfolding vec.subspace_def image_def f_def by fast
